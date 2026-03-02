@@ -718,21 +718,6 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private void OnChatEntrySelected()
-	{
-		_currentChatMode = ChatMode.Normal;
-	}
-
-	private void OnGiveItemEntrySelected()
-	{
-		_currentChatMode = ChatMode.Give;
-	}
-
-	private void OnShowItemEntrySelected()
-	{
-		_currentChatMode = ChatMode.Show;
-	}
-
 	private NpcPersonaProfile GetNpcPersonaProfile(Hero npc, bool createIfMissing)
 	{
 		if (npc == null)
@@ -1816,54 +1801,6 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				_npcPersonaAutoGenInFlight.Remove(id);
 			}
-		}
-	}
-
-	private bool UpdateAiTextVariable()
-	{
-		MBTextManager.SetTextVariable("AI_REPLY_TEXT", _aiResponseText);
-		return true;
-	}
-
-	private void OpenChatInput()
-	{
-		if (!ModOnboardingBehavior.EnsureSetupReady())
-		{
-			_currentChatMode = ChatMode.Normal;
-			_pendingTrade = null;
-			return;
-		}
-		string text = ((Hero.OneToOneConversationHero != null) ? Hero.OneToOneConversationHero.Name.ToString() : "陌生人");
-		try
-		{
-			Hero oneToOneConversationHero = Hero.OneToOneConversationHero;
-			string nameSuffix = BuildDirectNamePatienceBadgeForExternal(oneToOneConversationHero);
-			ConversationHelper.SetNameSuffix(nameSuffix);
-		}
-		catch
-		{
-		}
-		try
-		{
-			string arg = Mission.Current?.SceneName ?? "Unknown";
-			string arg2 = MobileParty.MainParty?.CurrentSettlement?.Name?.ToString() ?? "";
-			MissionMode? missionMode = Mission.Current?.Mode;
-			Logger.Log("SceneInfo", $"SceneName={arg}, Mode={missionMode}, Settlement={arg2}");
-		}
-		catch
-		{
-		}
-		if (_currentChatMode == ChatMode.Give)
-		{
-			BeginGiveFlow(text);
-		}
-		else if (_currentChatMode == ChatMode.Show)
-		{
-			BeginShowFlow(text);
-		}
-		else
-		{
-			InformationManager.ShowTextInquiry(new TextInquiryData("与 " + text + " 对话", "请输入内容：", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "说", "取消", OnChatConfirmed, null));
 		}
 	}
 
