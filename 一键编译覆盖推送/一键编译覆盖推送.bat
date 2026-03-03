@@ -218,14 +218,16 @@ if "%GIT_DRY_RUN%"=="1" (
     echo.
     echo [Preview] Would run:
     echo   git add -A
-    echo   git commit -m "%COMMIT_MSG_SAFE%"
+    echo   if changes exist: git commit -m "%COMMIT_MSG_SAFE%"
+    echo   if no changes   : git commit --allow-empty -m "%COMMIT_MSG_SAFE%"
     echo   git push -u origin "%BRANCH%"
     echo.
-    echo [SUCCESS] Build + Deploy + Push (Git dry-run) completed.
+    echo [SUCCESS] Build + Deploy + Push Git dry-run completed.
     pause
     exit /b 0
 )
 
+echo [3.1/3] Staging changes...
 git add -A
 if errorlevel 1 (
     echo [ERROR] git add failed.
@@ -233,6 +235,7 @@ if errorlevel 1 (
     exit /b 1
 )
 
+echo [3.2/3] Creating commit...
 git diff --cached --quiet
 if errorlevel 1 (
     git commit -m "%COMMIT_MSG_SAFE%"
@@ -242,9 +245,16 @@ if errorlevel 1 (
         exit /b 1
     )
 ) else (
-    echo [INFO] No staged changes to commit.
+    echo [INFO] No file changes detected, creating empty commit...
+    git commit --allow-empty -m "%COMMIT_MSG_SAFE%"
+    if errorlevel 1 (
+        echo [ERROR] git commit --allow-empty failed.
+        pause
+        exit /b 1
+    )
 )
 
+echo [3.3/3] Pushing to origin/%BRANCH%...
 git push -u origin "%BRANCH%"
 if errorlevel 1 (
     echo [ERROR] git push failed.

@@ -2372,7 +2372,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 		}
 		InformationManager.DisplayMessage(new InformationMessage("你盯着 " + npcData.Name + " 看了很久...", new Color(0.7f, 0.7f, 0.7f)));
 
-		string virtualInput = "(沉默地长时间注视)";
+		string virtualInput = "(沉默地长时间注视着你)";
 		CharacterObject co = targetAgent.Character as CharacterObject;
 		string kingdomIdOverride = TryGetKingdomIdOverrideFromAgent(targetAgent);
 		LogShoutLorePrequery("passive_reaction", targetAgent, co, kingdomIdOverride, virtualInput);
