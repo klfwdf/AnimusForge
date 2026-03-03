@@ -1,6 +1,10 @@
 @echo off
 setlocal EnableExtensions EnableDelayedExpansion
 
+chcp 65001 >nul
+set "LANG=en_US.UTF-8"
+set "LC_ALL=C"
+
 set "SCRIPT_DIR=%~dp0"
 for %%I in ("%SCRIPT_DIR%..") do set "PROJECT_ROOT=%%~fI"
 cd /d "%SCRIPT_DIR%"
@@ -10,12 +14,35 @@ set "CONFIG=Debug"
 set "GIT_DRY_RUN=0"
 set "COMMIT_MSG="
 
+:parse_args
+if "%~1"=="" goto args_done
+
 if /I "%~1"=="--git-dry-run" (
     set "GIT_DRY_RUN=1"
+    shift
+    goto parse_args
+)
+
+if /I "%~1"=="--msg" (
+    if "%~2"=="" (
+        echo [ERROR] --msg requires a value.
+        pause
+        exit /b 1
+    )
     set "COMMIT_MSG=%~2"
-) else (
+    shift
+    shift
+    goto parse_args
+)
+
+if not defined COMMIT_MSG (
     set "COMMIT_MSG=%~1"
 )
+
+shift
+goto parse_args
+
+:args_done
 
 set "SRC_DEBUG=%PROJECT_ROOT%\bin\Debug\net472\Voxforge.dll"
 set "SRC_RELEASE=%PROJECT_ROOT%\bin\Release\net472\Voxforge.dll"
@@ -167,23 +194,31 @@ if not defined ORIGIN_URL (
 )
 
 if not defined COMMIT_MSG (
+    set /p "INPUT_MSG=请输入本次推送备注（可留空）: "
+    if defined INPUT_MSG set "COMMIT_MSG=!INPUT_MSG!"
+)
+
+if not defined COMMIT_MSG (
     set "NOW=%DATE% %TIME%"
     set "COMMIT_MSG=auto: build+deploy+push %NOW%"
 )
+
+set "COMMIT_MSG_SAFE=%COMMIT_MSG:"='%"
+
 
 echo Branch : "%BRANCH%"
 echo Origin : "%ORIGIN_URL%"
 
 if "%GIT_DRY_RUN%"=="1" (
     echo [Preview] Current changed files:
-    git status --short
+    git -c core.quotepath=false status --short
     echo.
     echo [Preview] Commit message:
     echo   "%COMMIT_MSG%"
     echo.
     echo [Preview] Would run:
     echo   git add -A
-    echo   git commit -m "%COMMIT_MSG%"
+    echo   git commit -m "%COMMIT_MSG_SAFE%"
     echo   git push -u origin "%BRANCH%"
     echo.
     echo [SUCCESS] Build + Deploy + Push (Git dry-run) completed.
@@ -200,7 +235,7 @@ if errorlevel 1 (
 
 git diff --cached --quiet
 if errorlevel 1 (
-    git commit -m "%COMMIT_MSG%"
+    git commit -m "%COMMIT_MSG_SAFE%"
     if errorlevel 1 (
         echo [ERROR] git commit failed.
         pause

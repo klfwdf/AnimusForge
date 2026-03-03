@@ -1,6 +1,10 @@
 @echo off
 setlocal EnableExtensions EnableDelayedExpansion
 
+chcp 65001 >nul
+set "LANG=en_US.UTF-8"
+set "LC_ALL=C"
+
 set "SCRIPT_DIR=%~dp0"
 for %%I in ("%SCRIPT_DIR%..") do set "PROJECT_ROOT=%%~fI"
 cd /d "%PROJECT_ROOT%"
@@ -8,12 +12,35 @@ cd /d "%PROJECT_ROOT%"
 set "DRY_RUN=0"
 set "COMMIT_MSG="
 
+:parse_args
+if "%~1"=="" goto args_done
+
 if /I "%~1"=="--dry-run" (
     set "DRY_RUN=1"
+    shift
+    goto parse_args
+)
+
+if /I "%~1"=="--msg" (
+    if "%~2"=="" (
+        echo [ERROR] --msg requires a value.
+        pause
+        exit /b 1
+    )
     set "COMMIT_MSG=%~2"
-) else (
+    shift
+    shift
+    goto parse_args
+)
+
+if not defined COMMIT_MSG (
     set "COMMIT_MSG=%~1"
 )
+
+shift
+goto parse_args
+
+:args_done
 
 where git >nul 2>nul
 if errorlevel 1 (
@@ -45,9 +72,17 @@ if not defined ORIGIN_URL (
 )
 
 if not defined COMMIT_MSG (
+    set /p "INPUT_MSG=请输入本次推送备注（可留空）: "
+    if defined INPUT_MSG set "COMMIT_MSG=!INPUT_MSG!"
+)
+
+if not defined COMMIT_MSG (
     set "NOW=%DATE% %TIME%"
     set "COMMIT_MSG=auto: update %NOW%"
 )
+
+set "COMMIT_MSG_SAFE=%COMMIT_MSG:"='%"
+
 
 echo [Git] One-click push started...
 echo Repo   : "%PROJECT_ROOT%"
@@ -58,14 +93,14 @@ echo.
 
 if "%DRY_RUN%"=="1" (
     echo [Preview] Current changed files:
-    git status --short
+    git -c core.quotepath=false status --short
     echo.
     echo [Preview] Commit message:
     echo   "%COMMIT_MSG%"
     echo.
     echo [Preview] Would run:
     echo   git add -A
-    echo   git commit -m "%COMMIT_MSG%"
+    echo   git commit -m "%COMMIT_MSG_SAFE%"
     echo   git push -u origin "%BRANCH%"
     echo.
     echo [SUCCESS] Dry-run completed.
@@ -84,7 +119,7 @@ if errorlevel 1 (
 git diff --cached --quiet
 if errorlevel 1 (
     echo [2/3] Creating commit...
-    git commit -m "%COMMIT_MSG%"
+    git commit -m "%COMMIT_MSG_SAFE%"
     if errorlevel 1 (
         echo [ERROR] git commit failed.
         pause
