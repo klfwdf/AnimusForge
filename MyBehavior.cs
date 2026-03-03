@@ -209,8 +209,6 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private string _aiResponseText = "";
 
-	private ChatMode _currentChatMode = ChatMode.Normal;
-
 	private PendingTradeContext _pendingTrade;
 
 	private List<PendingTradeItem> _pendingTradeItems = new List<PendingTradeItem>();
@@ -1837,7 +1835,6 @@ public class MyBehavior : CampaignBehaviorBase
 		if (list == null || list.Count == 0)
 		{
 			InformationManager.DisplayMessage(new InformationMessage("你没有可以使用的物品或第纳尔。"));
-			_currentChatMode = ChatMode.Normal;
 			_pendingTrade = null;
 			return;
 		}
@@ -1858,7 +1855,6 @@ public class MyBehavior : CampaignBehaviorBase
 	{
 		if (selectedElements == null || selectedElements.Count == 0 || _currentTradeOptions == null)
 		{
-			_currentChatMode = ChatMode.Normal;
 			_pendingTrade = null;
 			return;
 		}
@@ -1881,7 +1877,6 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		if (_pendingTradeItems.Count == 0)
 		{
-			_currentChatMode = ChatMode.Normal;
 			_pendingTrade = null;
 		}
 		else
@@ -1893,7 +1888,6 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private void OnMultiResourceCancelled(List<InquiryElement> _)
 	{
-		_currentChatMode = ChatMode.Normal;
 		_pendingTrade = null;
 		_pendingTradeItems.Clear();
 	}
@@ -1973,7 +1967,6 @@ public class MyBehavior : CampaignBehaviorBase
 	{
 		if (string.IsNullOrWhiteSpace(input))
 		{
-			_currentChatMode = ChatMode.Normal;
 			_pendingTrade = null;
 			_pendingTradeItems.Clear();
 			return;
@@ -2246,8 +2239,16 @@ public class MyBehavior : CampaignBehaviorBase
 	private void StartAiConversation(string input, string extraFact)
 	{
 		Hero targetHero = Hero.OneToOneConversationHero;
-		string npcName = targetHero?.Name?.ToString() ?? "NPC";
-		string cultureId = targetHero?.Culture?.StringId ?? "neutral";
+		CharacterObject targetCharacter = null;
+		try
+		{
+			targetCharacter = Campaign.Current?.ConversationManager?.OneToOneConversationCharacter;
+		}
+		catch
+		{
+		}
+		string npcName = targetHero?.Name?.ToString() ?? targetCharacter?.Name?.ToString() ?? "NPC";
+		string cultureId = targetHero?.Culture?.StringId ?? targetCharacter?.Culture?.StringId ?? "neutral";
 		int playerTier = Hero.MainHero.Clan.Tier;
 		string characterDescription = GetHeroDescriptionSafe(targetHero);
 		string locationInfo = GetCurrentLocationInfoSafe();
@@ -2257,7 +2258,6 @@ public class MyBehavior : CampaignBehaviorBase
 			Logger.Log("Logic", "[Trade] 检测到玩家尚欠 " + npcName + " 的货款或物品，疑似上一笔交易逃单。");
 		}
 		InformationManager.DisplayMessage(new InformationMessage(npcName + " 正在思考...", new Color(0.7f, 0.7f, 0.7f)));
-		_currentChatMode = ChatMode.Normal;
 		Task.Run(async delegate
 		{
 			Stopwatch sw = new Stopwatch();
@@ -2568,7 +2568,7 @@ public class MyBehavior : CampaignBehaviorBase
 					catch
 					{
 					}
-					string loreContext = AIConfigHandler.GetLoreContext(input, targetHero);
+					string loreContext = (targetHero != null) ? AIConfigHandler.GetLoreContext(input, targetHero) : AIConfigHandler.GetLoreContext(input, targetCharacter);
 					if (!string.IsNullOrEmpty(loreContext))
 					{
 						sb.AppendLine(loreContext);
@@ -2771,7 +2771,12 @@ public class MyBehavior : CampaignBehaviorBase
 					});
 					ConversationHelper.EndStreaming();
 					swApi.Stop();
-					string result = (string.IsNullOrEmpty(streamError) ? CleanAIResponse(streamResult ?? "") : ("错误: " + streamError));
+					if (!string.IsNullOrEmpty(streamError))
+					{
+						InformationManager.DisplayMessage(new InformationMessage("[API连接失败] " + streamError, new Color(1f, 0.3f, 0.3f)));
+						throw new Exception(streamError);
+					}
+					string result = CleanAIResponse(streamResult ?? "");
 					string rawResult = result;
 					if (!patienceExhausted && AIConfigHandler.RewardEnabled && RewardSystemBehavior.Instance != null && targetHero != null)
 					{
@@ -3444,7 +3449,7 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	public static ShoutPromptContext BuildShoutPromptContextForExternal(Hero targetHero, string input, string extraFact, string cultureIdOverride = null, bool hasAnyHero = true)
+	public static ShoutPromptContext BuildShoutPromptContextForExternal(Hero targetHero, string input, string extraFact, string cultureIdOverride = null, bool hasAnyHero = true, CharacterObject targetCharacter = null, string kingdomIdOverride = null)
 	{
 		try
 		{
@@ -3460,7 +3465,7 @@ public class MyBehavior : CampaignBehaviorBase
 					IsQualified = true
 				};
 			}
-			return myBehavior.BuildShoutPromptContextForExternalInternal(targetHero, input, extraFact, cultureIdOverride, hasAnyHero);
+			return myBehavior.BuildShoutPromptContextForExternalInternal(targetHero, input, extraFact, cultureIdOverride, hasAnyHero, targetCharacter, kingdomIdOverride);
 		}
 		catch
 		{
@@ -3475,7 +3480,7 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private ShoutPromptContext BuildShoutPromptContextForExternalInternal(Hero targetHero, string input, string extraFact, string cultureIdOverride, bool hasAnyHero = true)
+	private ShoutPromptContext BuildShoutPromptContextForExternalInternal(Hero targetHero, string input, string extraFact, string cultureIdOverride, bool hasAnyHero = true, CharacterObject targetCharacter = null, string kingdomIdOverride = null)
 	{
 		ShoutPromptContext shoutPromptContext = new ShoutPromptContext
 		{
@@ -3674,10 +3679,28 @@ public class MyBehavior : CampaignBehaviorBase
 				stringBuilder.AppendLine(value3);
 			}
 		}
-		string loreContext = AIConfigHandler.GetLoreContext(input, targetHero);
+		string loreContext = "";
+		string loreCtxSource = "none";
+		if (targetHero != null)
+		{
+			loreContext = AIConfigHandler.GetLoreContext(input, targetHero);
+			loreCtxSource = "hero";
+		}
+		else if (targetCharacter != null)
+		{
+			loreContext = AIConfigHandler.GetLoreContext(input, targetCharacter, kingdomIdOverride);
+			loreCtxSource = "character";
+		}
 		if (!string.IsNullOrEmpty(loreContext))
 		{
 			stringBuilder.AppendLine(loreContext);
+		}
+		try
+		{
+			Logger.Log("LoreMatch", $"shout_prompt_lore_ctx source={loreCtxSource} heroId={(targetHero?.StringId ?? "null")} charId={(targetCharacter?.StringId ?? "null")} kingdomIdOverride={(kingdomIdOverride ?? "")}");
+		}
+		catch
+		{
 		}
 		PersistLoreToDialogueHistory(targetHero, loreContext);
 		if (RewardSystemBehavior.Instance != null && targetHero != null)
@@ -4560,7 +4583,12 @@ public class MyBehavior : CampaignBehaviorBase
 			stringBuilder.AppendLine("【护栏】历史记忆仅作补充，不得覆盖本轮规则、账本与动作标签约束。");
 			if (list6.Count > 0)
 			{
-				stringBuilder.AppendLine("【近期对话窗口】");
+				string text5 = hero?.Name?.ToString();
+				if (string.IsNullOrWhiteSpace(text5))
+				{
+					text5 = "该NPC";
+				}
+				stringBuilder.AppendLine($"【玩家与{text5}（NPC名称的对话与互动）的近期对话】");
 				foreach (string item4 in list6)
 				{
 					stringBuilder.AppendLine(item4);
@@ -5433,7 +5461,7 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private static string BuildScenePatienceInstruction()
 	{
-		return "【耐心标签要求】每个发言者每轮回复末尾都必须追加且只追加一个隐藏标签：[ACTION:MOOD:JOY] / [ACTION:MOOD:NEUTRAL] / [ACTION:MOOD:BORED] / [ACTION:MOOD:ANNOYED]。并始终按三值状态中的 P/R/T 来决定语气与合作度。";
+		return "【耐心标签要求】你必须在你说的的话的末尾加其中一个标签（不可多加）：[ACTION:MOOD:JOY] / [ACTION:MOOD:NEUTRAL] / [ACTION:MOOD:BORED] / [ACTION:MOOD:ANNOYED]。并始终按三值状态中的 P/R/T 来决定语气与合作度。";
 	}
 
 	private void SyncPatienceData(IDataStore dataStore)
@@ -11501,4 +11529,3 @@ public class MyBehavior : CampaignBehaviorBase
 		return stringBuilder.ToString();
 	}
 }
-

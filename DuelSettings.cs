@@ -133,43 +133,47 @@ public class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyGroup("7. 火山引擎 TTS（专用）")]
 	public string TtsVolcDedicatedApiKey { get; set; } = "";
 
-	[SettingPropertyText("火山专用 AppID", -1, true, "", Order = 4, RequireRestart = false, HintText = "即 V1 请求体 app.appid。注意：此字段名沿用旧配置键以兼容历史存档。")]
+	[SettingPropertyText("火山专用 AppID", -1, true, "", Order = 4, RequireRestart = false, HintText = "即 V1 请求体 app.appid。")]
+	[SettingPropertyGroup("7. 火山引擎 TTS（专用）")]
+	public string TtsVolcDedicatedAppKey { get; set; } = "";
+
+	[SettingPropertyText("火山专用 Resource ID", -1, true, "", Order = 5, RequireRestart = false, HintText = "写入请求头 X-Api-Resource-Id。\n可填：seed-tts-1.0 / seed-tts-1.0-concurr / seed-tts-2.0 / seed-icl-1.0 / seed-icl-1.0-concurr / seed-icl-2.0")]
 	[SettingPropertyGroup("7. 火山引擎 TTS（专用）")]
 	public string TtsVolcDedicatedResourceId { get; set; } = "";
 
-	[SettingPropertyText("火山专用 voice_type", -1, true, "", Order = 5, RequireRestart = false, HintText = "示例: zh_male_M392_conversation_wvae_bigtts")]
+	[SettingPropertyText("火山专用 voice_type", -1, true, "", Order = 6, RequireRestart = false, HintText = "示例: zh_male_M392_conversation_wvae_bigtts")]
 	[SettingPropertyGroup("7. 火山引擎 TTS（专用）")]
 	public string TtsVolcDedicatedSpeaker { get; set; } = "";
 
-	[SettingPropertyText("火山专用 extra_param(JSON对象)", -1, true, "", Order = 6, RequireRestart = false, HintText = "将原样写入 request.extra_param（字符串）。示例：{\"disable_markdown_filter\":true}")]
+	[SettingPropertyText("火山专用 extra_param(JSON对象)", -1, true, "", Order = 7, RequireRestart = false, HintText = "将原样写入 request.extra_param（字符串）。示例：{\"disable_markdown_filter\":true}")]
 	[SettingPropertyGroup("7. 火山引擎 TTS（专用）")]
 	public string TtsVolcDedicatedAdditionsJson { get; set; } = "{}";
 
-	[SettingPropertyText("火山专用音频格式", -1, true, "", Order = 7, RequireRestart = false, HintText = "V1 encoding，当前播放器仅支持 wav 或 pcm。")]
+	[SettingPropertyText("火山专用音频格式", -1, true, "", Order = 8, RequireRestart = false, HintText = "V1 encoding，当前播放器仅支持 wav 或 pcm。")]
 	[SettingPropertyGroup("7. 火山引擎 TTS（专用）")]
 	public string TtsVolcDedicatedAudioFormat { get; set; } = "wav";
 
-	[SettingPropertyInteger("火山专用采样率", 8000, 24000, "0", Order = 8, RequireRestart = false, HintText = "V1 rate 建议填 8000 / 16000 / 24000。")]
+	[SettingPropertyInteger("火山专用采样率", 8000, 24000, "0", Order = 9, RequireRestart = false, HintText = "V1 rate 建议填 8000 / 16000 / 24000。")]
 	[SettingPropertyGroup("7. 火山引擎 TTS（专用）")]
 	public int TtsVolcDedicatedSampleRate { get; set; } = 24000;
 
-	[SettingPropertyFloatingInteger("主语音音量(winmm)", 0f, 1f, "0.00", Order = 9, RequireRestart = false, HintText = "仅用于普通对话/测试语音（agentIndex<0）的主播放链路。场景喊话口型链路请调“口型链路音量”。")]
+	[SettingPropertyFloatingInteger("主语音音量(winmm)", 0f, 1f, "0.00", Order = 10, RequireRestart = false, HintText = "仅用于普通对话/测试语音（agentIndex<0）的主播放链路。场景喊话口型链路请调“口型链路音量”。")]
 	[SettingPropertyGroup("7. 火山引擎 TTS（专用）")]
 	public float TtsVolcDedicatedVolume { get; set; } = 1f;
 
-	[SettingPropertyBool("场景发声走winmm(防回声)", Order = 10, RequireRestart = false, HintText = "开启：场景NPC由winmm发声，口型链路仅驱动嘴型并静音。关闭：场景NPC改由口型链路发声，可调“口型链路音量”。")]
+	[SettingPropertyBool("场景发声走winmm(防回声)", Order = 11, RequireRestart = false, HintText = "开启：场景NPC由winmm发声，口型链路仅驱动嘴型并静音。关闭：场景NPC改由口型链路发声，可调“口型链路音量”。")]
 	[SettingPropertyGroup("7. 火山引擎 TTS（专用）")]
 	public bool TtsSceneUseWinmmAudible { get; set; } = true;
 
-	[SettingPropertyFloatingInteger("火山专用语速", 0.1f, 2f, "0.00", Order = 11, RequireRestart = false, HintText = "V1 speed_ratio，范围 [0.1, 2.0]。")]
+	[SettingPropertyFloatingInteger("火山专用语速", 0.1f, 2f, "0.00", Order = 12, RequireRestart = false, HintText = "V1 speed_ratio，范围 [0.1, 2.0]。")]
 	[SettingPropertyGroup("7. 火山引擎 TTS（专用）")]
 	public float TtsVolcDedicatedSpeed { get; set; } = 1f;
 
-	[SettingPropertyFloatingInteger("口型链路音量", 0f, 1f, "0.00", Order = 12, RequireRestart = false, HintText = "用于 Rhubarb 口型驱动的 SoundEvent 音量。仅当“场景发声走winmm(防回声)”关闭时作为场景可听音量。")]
+	[SettingPropertyFloatingInteger("口型链路音量", 0f, 1f, "0.00", Order = 13, RequireRestart = false, HintText = "用于 Rhubarb 口型驱动的 SoundEvent 音量。仅当“场景发声走winmm(防回声)”关闭时作为场景可听音量。")]
 	[SettingPropertyGroup("7. 火山引擎 TTS（专用）")]
 	public float TtsLipSyncSoundEventVolume { get; set; } = 0f;
 
-	[SettingPropertyButton("测试语音", -1, true, "", Content = "播放测试", Order = 13, RequireRestart = false, HintText = "使用火山 V1 原生参数测试固定文本「为您服务，旅行者！」")]
+	[SettingPropertyButton("测试语音", -1, true, "", Content = "播放测试", Order = 14, RequireRestart = false, HintText = "使用火山 V1 原生参数测试固定文本「为您服务，旅行者！」")]
 	[SettingPropertyGroup("7. 火山引擎 TTS（专用）")]
 	public Action TestTtsVolcDedicatedVoice { get; set; }
 
@@ -280,27 +284,48 @@ public class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		{
 			try
 			{
+				DuelSettings runtimeSettings = GetSettings() ?? this;
+				if (!ReferenceEquals(runtimeSettings, this))
+				{
+					bool mismatch = !string.Equals((TtsVolcDedicatedApiUrl ?? "").Trim(), (runtimeSettings.TtsVolcDedicatedApiUrl ?? "").Trim(), StringComparison.Ordinal)
+						|| !string.Equals((TtsVolcDedicatedApiKey ?? "").Trim(), (runtimeSettings.TtsVolcDedicatedApiKey ?? "").Trim(), StringComparison.Ordinal)
+						|| !string.Equals((TtsVolcDedicatedAppKey ?? "").Trim(), (runtimeSettings.TtsVolcDedicatedAppKey ?? "").Trim(), StringComparison.Ordinal)
+						|| !string.Equals((TtsVolcDedicatedResourceId ?? "").Trim(), (runtimeSettings.TtsVolcDedicatedResourceId ?? "").Trim(), StringComparison.Ordinal)
+						|| !string.Equals((TtsVolcDedicatedSpeaker ?? "").Trim(), (runtimeSettings.TtsVolcDedicatedSpeaker ?? "").Trim(), StringComparison.Ordinal);
+					if (mismatch)
+					{
+						Logger.Log("DuelSettings", "[WARN] MCM 当前编辑值与运行时设置不一致，测试语音将使用运行时设置。请先保存设置。");
+					}
+				}
 				TtsEngine instance = TtsEngine.Instance;
 				if (instance == null || !instance.IsReady)
 				{
 					InformationManager.DisplayMessage(new InformationMessage("[TTS] 引擎未初始化，无法测试。", Color.FromUint(4294901760u)));
 				}
-				else if (!EnableTtsSpeech)
+				else if (!runtimeSettings.EnableTtsSpeech)
 				{
 					InformationManager.DisplayMessage(new InformationMessage("[TTS] 请先开启【启用TTS语音】。", Color.FromUint(4294901760u)));
 				}
-				else if (!TtsVolcDedicatedEnabled)
+				else if (!runtimeSettings.TtsVolcDedicatedEnabled)
 				{
 					InformationManager.DisplayMessage(new InformationMessage("[TTS] 请先开启【启用火山专用模式】。", Color.FromUint(4294901760u)));
 				}
-				else if (string.IsNullOrWhiteSpace(TtsVolcDedicatedApiUrl))
+				else if (string.IsNullOrWhiteSpace(runtimeSettings.TtsVolcDedicatedApiUrl))
 				{
 					InformationManager.DisplayMessage(new InformationMessage("[TTS] 请先填写火山专用 API 地址。", Color.FromUint(4294901760u)));
 				}
+				else if (string.IsNullOrWhiteSpace(runtimeSettings.TtsVolcDedicatedAppKey))
+				{
+					InformationManager.DisplayMessage(new InformationMessage("[TTS] 请先填写火山专用 AppID。", Color.FromUint(4294901760u)));
+				}
+				else if (string.IsNullOrWhiteSpace(runtimeSettings.TtsVolcDedicatedResourceId))
+				{
+					InformationManager.DisplayMessage(new InformationMessage("[TTS] 请先填写火山专用 Resource ID。", Color.FromUint(4294901760u)));
+				}
 				else
 				{
-					InformationManager.DisplayMessage(new InformationMessage(string.Format("[TTS] 火山V1测试中... (API={0}, 场景通道={1}, 主语音音量={2:F2}, 语速={3:F2}, 口型链路音量={4:F2})", TtsVolcDedicatedApiUrl, TtsSceneUseWinmmAudible ? "winmm" : "口型链路", TtsVolcDedicatedVolume, TtsVolcDedicatedSpeed, TtsLipSyncSoundEventVolume), Color.FromUint(4294967040u)));
-					instance.SpeakTestAsync("为您服务，旅行者！", 1f);
+					InformationManager.DisplayMessage(new InformationMessage(string.Format("[TTS] 火山V1测试中... (API={0}, 场景通道={1}, 主语音音量={2:F2}, 语速={3:F2}, 口型链路音量={4:F2})", runtimeSettings.TtsVolcDedicatedApiUrl, runtimeSettings.TtsSceneUseWinmmAudible ? "winmm" : "口型链路", runtimeSettings.TtsVolcDedicatedVolume, runtimeSettings.TtsVolcDedicatedSpeed, runtimeSettings.TtsLipSyncSoundEventVolume), Color.FromUint(4294967040u)));
+					instance.SpeakTestAsync("为您服务，旅行者！", runtimeSettings.TtsVolcDedicatedSpeed);
 				}
 			}
 			catch (Exception ex)

@@ -1476,6 +1476,8 @@ public static class ShoutUtils
 		Vec3 lookDirection = Agent.Main.LookDirection;
 		Agent result = null;
 		float num = maxDistance;
+		const float strictCrosshairDotThreshold = 0.985f;
+		const float npcFront120DotThreshold = 0.5f;
 		foreach (Agent agent in Mission.Current.Agents)
 		{
 			if (agent == Agent.Main || !agent.IsActive() || !agent.IsHuman)
@@ -1483,15 +1485,23 @@ public static class ShoutUtils
 				continue;
 			}
 			float num2 = agent.Position.Distance(position);
-			if (num2 <= maxDistance)
+			if (num2 > maxDistance)
 			{
-				Vec3 v = agent.Position - position;
-				v.Normalize();
-				if (Vec3.DotProduct(lookDirection, v) > 0.5f && num2 < num)
-				{
-					num = num2;
-					result = agent;
-				}
+				continue;
+			}
+			Vec3 toPlayer = position - agent.Position;
+			toPlayer.Normalize();
+			Vec3 npcLookDirection = agent.LookDirection;
+			if (Vec3.DotProduct(npcLookDirection, toPlayer) < npcFront120DotThreshold)
+			{
+				continue;
+			}
+			Vec3 v = agent.Position - position;
+			v.Normalize();
+			if (Vec3.DotProduct(lookDirection, v) >= strictCrosshairDotThreshold && num2 < num)
+			{
+				num = num2;
+				result = agent;
 			}
 		}
 		return result;

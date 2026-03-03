@@ -1126,11 +1126,11 @@ public static class AIConfigHandler
 				list4.Add(guardrailRuleEval);
 				guardrailEvalSnapshot.Rules[id] = guardrailRuleEval;
 			}
-			list4 = list4.OrderByDescending((GuardrailRuleEval x) => x.MixedRaw).ThenBy((GuardrailRuleEval x) => x.RuleTag, StringComparer.OrdinalIgnoreCase).ToList();
+			list4 = list4.OrderByDescending((GuardrailRuleEval x) => x.RawInput).ThenBy((GuardrailRuleEval x) => x.RuleTag, StringComparer.OrdinalIgnoreCase).ToList();
 			float num6 = ((list4.Count > 0) ? list4.Average((GuardrailRuleEval x) => x.MixedRaw) : 0f);
 			int guardrailTopNFromMcm = GetGuardrailTopNFromMcm();
 			int num7 = Math.Max(2, Math.Min(5, (int)Math.Ceiling((float)list4.Count * 0.25f)));
-			float topGap = ((list4.Count > 1) ? (list4[0].MixedRaw - list4[1].MixedRaw) : 1f);
+			float topGap = ((list4.Count > 1) ? (list4[0].RawInput - list4[1].RawInput) : 1f);
 			for (int num8 = 0; num8 < list4.Count; num8++)
 			{
 				GuardrailRuleEval guardrailRuleEval2 = list4[num8];
@@ -1140,9 +1140,9 @@ public static class AIConfigHandler
 				string maxOtherTag = "";
 				for (int num10 = 0; num10 < list4.Count; num10++)
 				{
-					if (num10 != num8 && list4[num10].MixedRaw > num9)
+					if (num10 != num8 && list4[num10].RawInput > num9)
 					{
-						num9 = list4[num10].MixedRaw;
+						num9 = list4[num10].RawInput;
 						maxOtherTag = list4[num10].RuleTag;
 					}
 				}
@@ -1599,10 +1599,38 @@ public static class AIConfigHandler
 			}
 			try
 			{
+				enabled = duelSettings.KnowledgeRetrievalEnabled;
+			}
+			catch
+			{
+				enabled = true;
+			}
+			try
+			{
+				semanticFirst = duelSettings.KnowledgeSemanticFirst;
+			}
+			catch
+			{
+				semanticFirst = true;
+			}
+			try
+			{
+				keywordFallback = duelSettings.KnowledgeKeywordFallback;
+			}
+			catch
+			{
+				keywordFallback = false;
+			}
+			try
+			{
 				int knowledgeDirectTopN = duelSettings.KnowledgeDirectTopN;
 				if (knowledgeDirectTopN > 0)
 				{
 					topK = knowledgeDirectTopN;
+				}
+				else
+				{
+					topK = duelSettings.KnowledgeSemanticTopK;
 				}
 			}
 			catch

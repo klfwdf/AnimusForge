@@ -131,6 +131,8 @@ internal sealed class TtsEngine : IDisposable
 
 	public event Action<int, string, string, float> OnAudioFileReady;
 
+	public event Action<int, string> OnPlaybackFailed;
+
 	[DllImport("winmm.dll")]
 	internal static extern int waveOutOpen(out IntPtr phwo, uint uDeviceID, ref WAVEFORMATEX pwfx, IntPtr dwCallback, IntPtr dwInstance, uint fdwOpen);
 
@@ -422,6 +424,7 @@ internal sealed class TtsEngine : IDisposable
 				catch (Exception ex2)
 				{
 					Logger.Log("TtsEngine", "[ERROR] ProcessJob: " + ex2.Message);
+					NotifyPlaybackFailed(item, "TTS processing exception: " + ex2.Message);
 				}
 			}
 		}
@@ -430,6 +433,18 @@ internal sealed class TtsEngine : IDisposable
 			Logger.Log("TtsEngine", "[ERROR] WorkerLoop 异常退出: " + ex3.Message);
 		}
 		Logger.Log("TtsEngine", "工作线程已退出");
+	}
+
+	private void NotifyPlaybackFailed(TtsJob job, string reason)
+	{
+		string text = string.IsNullOrWhiteSpace(reason) ? "TTS failed." : reason.Trim();
+		try
+		{
+			this.OnPlaybackFailed?.Invoke(job?.AgentIndex ?? -1, text);
+		}
+		catch
+		{
+		}
 	}
 
 	private void ProcessJob(TtsJob job)
@@ -442,7 +457,8 @@ internal sealed class TtsEngine : IDisposable
 		string text2 = "";
 		string text3 = "";
 		string text4 = "";
-		string text5 = "wav";
+		string text5 = "";
+		string text6 = "wav";
 		string extraParamJson = "{}";
 		int num = 24000;
 		float speed = job.Speed;
@@ -455,9 +471,10 @@ internal sealed class TtsEngine : IDisposable
 			DuelSettings settings = DuelSettings.GetSettings();
 			text = settings?.TtsVolcDedicatedApiUrl ?? "";
 			text2 = settings?.TtsVolcDedicatedApiKey ?? "";
-			text3 = settings?.TtsVolcDedicatedResourceId ?? "";
-			text4 = settings?.TtsVolcDedicatedSpeaker ?? "";
-			text5 = settings?.TtsVolcDedicatedAudioFormat ?? "wav";
+			text3 = settings?.TtsVolcDedicatedAppKey ?? "";
+			text4 = settings?.TtsVolcDedicatedResourceId ?? "";
+			text5 = settings?.TtsVolcDedicatedSpeaker ?? "";
+			text6 = settings?.TtsVolcDedicatedAudioFormat ?? "wav";
 			extraParamJson = settings?.TtsVolcDedicatedAdditionsJson ?? "{}";
 			num = settings?.TtsVolcDedicatedSampleRate ?? 24000;
 			num2 = settings?.TtsVolcDedicatedVolume ?? 1f;
@@ -477,43 +494,62 @@ internal sealed class TtsEngine : IDisposable
 		}
 		if (!string.IsNullOrWhiteSpace(job.VoiceIdOverride))
 		{
-			text4 = job.VoiceIdOverride;
+			text5 = job.VoiceIdOverride;
 		}
 		if (!flag2)
 		{
+			NotifyPlaybackFailed(job, "TTS disabled during playback; fallback to text bubble.");
 			Logger.Log("TtsEngine", "[WARN] 火山专用模式未开启，跳过合成");
 			return;
 		}
 		if (string.IsNullOrWhiteSpace(text))
 		{
+			NotifyPlaybackFailed(job, "TTS API URL is missing.");
 			Logger.Log("TtsEngine", "[WARN] 火山 V1 API 地址未配置");
+			return;
+		}
+		if ((text ?? "").IndexOf("/api/v3/", StringComparison.OrdinalIgnoreCase) >= 0)
+		{
+			NotifyPlaybackFailed(job, "Unsupported URL for current engine. Please use V1 endpoint: https://openspeech.bytedance.com/api/v1/tts");
+			Logger.Log("TtsEngine", "[WARN] 当前引擎仅支持 V1 非流式接口，请将 API 地址改为 https://openspeech.bytedance.com/api/v1/tts");
 			return;
 		}
 		if (string.IsNullOrWhiteSpace(text2))
 		{
+			NotifyPlaybackFailed(job, "TTS token is missing.");
 			Logger.Log("TtsEngine", "[WARN] 火山 V1 Token 未配置（Authorization: Bearer;token）");
 			return;
 		}
 		if (string.IsNullOrWhiteSpace(text3))
 		{
+			NotifyPlaybackFailed(job, "TTS app id is missing.");
 			Logger.Log("TtsEngine", "[WARN] 火山 V1 AppID 未配置");
 			return;
 		}
 		if (string.IsNullOrWhiteSpace(text4))
 		{
+			NotifyPlaybackFailed(job, "TTS resource id is missing.");
+			Logger.Log("TtsEngine", "[WARN] 火山 V1 Resource ID 未配置（X-Api-Resource-Id）");
+			return;
+		}
+		if (string.IsNullOrWhiteSpace(text5))
+		{
+			NotifyPlaybackFailed(job, "TTS voice type is missing.");
 			Logger.Log("TtsEngine", "[WARN] 火山 V1 voice_type 未配置");
 			return;
 		}
-		string text6 = (text5 ?? "wav").Trim().ToLowerInvariant();
-		if (text6 != "wav" && text6 != "pcm")
+		string audioEncoding = (text6 ?? "wav").Trim().ToLowerInvariant();
+		if (audioEncoding != "wav" && audioEncoding != "pcm")
 		{
+			NotifyPlaybackFailed(job, "Unsupported TTS audio format. Only wav/pcm is supported.");
 			Logger.Log("TtsEngine", "[ERROR] 当前播放器仅支持 wav/pcm，请将【火山专用音频格式】改为 wav 或 pcm");
 			return;
 		}
-		Logger.Log("TtsEngine", $"在线合成开始: text={job.Text.Substring(0, Math.Min(50, job.Text.Length))}..., voice={text4}, override={!string.IsNullOrWhiteSpace(job.VoiceIdOverride)}");
-		byte[] array = CallVolcV1Api(text, text2, text3, text4, job.Text, text6, num, speed, loudnessRatio, extraParamJson);
+		Logger.Log("TtsEngine", $"在线合成开始: text={job.Text.Substring(0, Math.Min(50, job.Text.Length))}..., voice={text5}, override={!string.IsNullOrWhiteSpace(job.VoiceIdOverride)}");
+		byte[] array = CallVolcV1Api(text, text2, text3, text4, text5, job.Text, audioEncoding, num, speed, loudnessRatio, extraParamJson);
 		if (array == null || array.Length == 0)
 		{
+			NotifyPlaybackFailed(job, "TTS synthesis returned empty audio.");
 			Logger.Log("TtsEngine", "[WARN] 火山 V1 API 返回空音频数据");
 		}
 		else
@@ -523,8 +559,8 @@ internal sealed class TtsEngine : IDisposable
 				return;
 			}
 			Logger.Log("TtsEngine", $"在线合成完成: {array.Length} bytes");
-			ParseAudioData(array, text6, out var pcmData, out var sampleRate);
-			if (text6 == "pcm")
+			ParseAudioData(array, audioEncoding, out var pcmData, out var sampleRate);
+			if (audioEncoding == "pcm")
 			{
 				sampleRate = num;
 			}
@@ -534,6 +570,7 @@ internal sealed class TtsEngine : IDisposable
 			}
 			if (pcmData == null || pcmData.Length == 0)
 			{
+				NotifyPlaybackFailed(job, "TTS audio parse failed.");
 				Logger.Log("TtsEngine", "[WARN] 音频数据解析失败");
 			}
 			else
@@ -550,9 +587,9 @@ internal sealed class TtsEngine : IDisposable
 					if (job.AgentIndex >= 0 && this.OnAudioFileReady != null)
 					{
 						string tempAudioDir = GetTempAudioDir();
-						string text7 = $"tts_{job.AgentIndex}_{Stopwatch.GetTimestamp()}";
-						string text8 = Path.Combine(tempAudioDir, text7 + ".wav");
-						string text9 = Path.Combine(tempAudioDir, text7 + ".xml");
+							string tempFileStem = $"tts_{job.AgentIndex}_{Stopwatch.GetTimestamp()}";
+							string text8 = Path.Combine(tempAudioDir, tempFileStem + ".wav");
+							string text9 = Path.Combine(tempAudioDir, tempFileStem + ".xml");
 						float num4 = 1f;
 						if (flag3 && flag4)
 						{
@@ -661,12 +698,13 @@ internal sealed class TtsEngine : IDisposable
 		}
 	}
 
-	private byte[] CallVolcV1Api(string apiUrl, string token, string appId, string voiceType, string text, string encoding, int sampleRate, float speedRatio, float loudnessRatio, string extraParamJson)
+	private byte[] CallVolcV1Api(string apiUrl, string token, string appId, string resourceId, string voiceType, string text, string encoding, int sampleRate, float speedRatio, float loudnessRatio, string extraParamJson)
 	{
 		//IL_01b2: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01b9: Expected O, but got Unknown
 		//IL_01c7: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01d1: Expected O, but got Unknown
+		string requestId = "";
 		try
 		{
 			string text2 = NormalizeExtraParam(extraParamJson);
@@ -675,12 +713,13 @@ internal sealed class TtsEngine : IDisposable
 				Logger.Log("TtsEngine", "[ERROR] extra_param JSON 无效");
 				return null;
 			}
-			JObject jObject = new JObject
-			{
-				["app"] = new JObject
+			requestId = Guid.NewGuid().ToString();
+				JObject jObject = new JObject
 				{
-					["appid"] = appId,
-					["token"] = "token",
+					["app"] = new JObject
+					{
+						["appid"] = appId,
+						["token"] = "token",
 					["cluster"] = "volcano_tts"
 				},
 				["user"] = new JObject { ["uid"] = "voxforge" },
@@ -692,26 +731,27 @@ internal sealed class TtsEngine : IDisposable
 					["rate"] = sampleRate,
 					["loudness_ratio"] = Math.Round(loudnessRatio, 2)
 				},
-				["request"] = new JObject
-				{
-					["reqid"] = Guid.NewGuid().ToString(),
-					["text"] = text ?? "",
-					["operation"] = "query",
-					["extra_param"] = text2
-				}
-			};
+					["request"] = new JObject
+					{
+						["reqid"] = requestId,
+						["text"] = text ?? "",
+						["operation"] = "query",
+						["extra_param"] = text2
+					}
+				};
 			string text3 = jObject.ToString(Formatting.None);
 			HttpRequestMessage val = new HttpRequestMessage(HttpMethod.Post, apiUrl);
-			try
-			{
-				val.Content = (HttpContent)new StringContent(text3, Encoding.UTF8, "application/json");
-				((HttpHeaders)val.Headers).TryAddWithoutValidation("Authorization", "Bearer;" + token.Trim());
-				Task<HttpResponseMessage> task = _httpClient.SendAsync(val);
-				task.Wait();
-				HttpResponseMessage result = task.Result;
-				Task<string> task2 = result.Content.ReadAsStringAsync();
-				task2.Wait();
-				string text4 = task2.Result ?? "";
+				try
+				{
+					val.Content = (HttpContent)new StringContent(text3, Encoding.UTF8, "application/json");
+					((HttpHeaders)val.Headers).TryAddWithoutValidation("Authorization", "Bearer;" + token.Trim());
+					((HttpHeaders)val.Headers).TryAddWithoutValidation("X-Api-App-Id", (appId ?? "").Trim());
+					((HttpHeaders)val.Headers).TryAddWithoutValidation("X-Api-App-Key", (appId ?? "").Trim());
+					((HttpHeaders)val.Headers).TryAddWithoutValidation("X-Api-Access-Key", (token ?? "").Trim());
+					((HttpHeaders)val.Headers).TryAddWithoutValidation("X-Api-Resource-Id", (resourceId ?? "").Trim());
+					((HttpHeaders)val.Headers).TryAddWithoutValidation("X-Api-Request-Id", requestId);
+					HttpResponseMessage result = _httpClient.SendAsync(val).GetAwaiter().GetResult();
+					string text4 = result.Content.ReadAsStringAsync().GetAwaiter().GetResult() ?? "";
 				if (!result.IsSuccessStatusCode)
 				{
 					Logger.Log("TtsEngine", $"[ERROR] 火山 V1 HTTP {(int)result.StatusCode}: {text4.Substring(0, Math.Min(200, text4.Length))}");
@@ -765,7 +805,8 @@ internal sealed class TtsEngine : IDisposable
 		}
 		catch (Exception ex3)
 		{
-			Logger.Log("TtsEngine", "[ERROR] 火山 V1 API 调用失败: " + ex3.Message);
+			Exception ex4 = ((ex3 is AggregateException aggregateException) ? (aggregateException.Flatten().InnerException ?? ex3) : ex3);
+			Logger.Log("TtsEngine", $"[ERROR] 火山 V1 API 调用失败: reqid={requestId}, {ex4.GetType().Name}: {ex4.Message}");
 			return null;
 		}
 	}

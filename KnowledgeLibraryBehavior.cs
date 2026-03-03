@@ -12,6 +12,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Party;
+using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
 
@@ -1110,23 +1111,6 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			{
 				num = 1;
 			}
-			float num2 = 0.21f;
-			try
-			{
-				num2 = AIConfigHandler.KnowledgeSemanticMinScore;
-			}
-			catch
-			{
-				num2 = 0.21f;
-			}
-			if (num2 < 0f)
-			{
-				num2 = 0f;
-			}
-			if (num2 > 1f)
-			{
-				num2 = 1f;
-			}
 			List<RuleScore> list2 = (from x in scored
 				where x?.Rule != null
 				orderby x.RawScore descending, x.EvidenceScore descending
@@ -1135,34 +1119,19 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			{
 				return list;
 			}
-			float num3 = ((list2.Count > 0) ? list2[0].RawScore : 0f);
-			float num4 = ((list2.Count > 1) ? list2[1].RawScore : 0f);
-			float num5 = ((list2.Count > 0) ? list2[0].EvidenceScore : 0f);
-			float num6 = ((list2.Count > 1) ? list2[1].EvidenceScore : 0f);
+			float num2 = ((list2.Count > 0) ? list2[0].RawScore : 0f);
+			float num3 = ((list2.Count > 1) ? list2[1].RawScore : 0f);
+			float num4 = ((list2.Count > 0) ? list2[0].EvidenceScore : 0f);
+			float num5 = ((list2.Count > 1) ? list2[1].EvidenceScore : 0f);
 			HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-			for (int num7 = 0; num7 < list2.Count; num7++)
+			for (int i = 0; i < list2.Count; i++)
 			{
 				if (list.Count >= num)
 				{
 					break;
 				}
-				RuleScore ruleScore = list2[num7];
-				if (ruleScore?.Rule == null)
-				{
-					continue;
-				}
-				float num8 = (float.IsNaN(ruleScore.RawScore) ? 0f : ruleScore.RawScore);
-				if (num8 < num2)
-				{
-					try
-					{
-						Logger.Log("LoreMatch", string.Format("semantic_skip rule={0} rawScore={1:0.000} threshold={2:0.000} source={3}", ruleScore.Rule.Id ?? "", num8, num2, source));
-					}
-					catch
-					{
-					}
-				}
-				else
+				RuleScore ruleScore = list2[i];
+				if (ruleScore?.Rule != null)
 				{
 					string text = (ruleScore.Rule.Id ?? "").Trim();
 					if (string.IsNullOrWhiteSpace(text) || hashSet.Add(text))
@@ -1171,25 +1140,12 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 					}
 				}
 			}
-			if (list.Count <= 0)
+			try
 			{
-				try
-				{
-					Logger.Log("LoreMatch", $"semantic_reject source={source} reason=below_threshold topN={num} threshold={num2:0.000} bestRaw={num3:0.000} second={num4:0.000} bestEvidence={num5:0.000} secondEvidence={num6:0.000}");
-				}
-				catch
-				{
-				}
+				Logger.Log("LoreMatch", $"semantic_accept source={source} mode=topn_raw selected={list.Count} topN={num} bestRaw={num2:0.000} second={num3:0.000} bestEvidence={num4:0.000} secondEvidence={num5:0.000}");
 			}
-			else
+			catch
 			{
-				try
-				{
-					Logger.Log("LoreMatch", $"semantic_accept source={source} mode=topn_filtered selected={list.Count} topN={num} threshold={num2:0.000} bestRaw={num3:0.000} second={num4:0.000} bestEvidence={num5:0.000} secondEvidence={num6:0.000}");
-				}
-				catch
-				{
-				}
 			}
 		}
 		catch
@@ -1618,14 +1574,32 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 				}
 			}
 			bool semanticEnabled = true;
-			int topK = 6;
+			int injectTopK = 6;
+			int candidateTopK = 12;
 			try
 			{
 				semanticEnabled = AIConfigHandler.KnowledgeRetrievalEnabled;
-				topK = AIConfigHandler.KnowledgeSemanticTopK;
+				injectTopK = AIConfigHandler.KnowledgeSemanticTopK;
 			}
 			catch
 			{
+			}
+			if (injectTopK < 1)
+			{
+				injectTopK = 1;
+			}
+			if (injectTopK > 20)
+			{
+				injectTopK = 20;
+			}
+			candidateTopK = Math.Max(injectTopK * 4, injectTopK + 8);
+			if (candidateTopK > 20)
+			{
+				candidateTopK = 20;
+			}
+			if (candidateTopK < injectTopK)
+			{
+				candidateTopK = injectTopK;
 			}
 			Func<bool> func = delegate
 			{
@@ -1633,13 +1607,20 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 				{
 					return false;
 				}
-				List<LoreRule> list = MergeVectorRulesAcrossIntents(intentInputs, topK);
+				List<LoreRule> list = MergeVectorRulesAcrossIntents(intentInputs, candidateTopK);
 				if (list == null || list.Count <= 0)
 				{
 					return false;
 				}
 				result.MatchMode = ((intentInputs.Count > 1) ? "vector_multi" : "vector");
 				result.OrderedRules = list.Where((LoreRule x) => x != null).ToList();
+				try
+				{
+					Logger.Log("LoreMatch", $"candidate_pool mode={result.MatchMode} injectTopN={injectTopK} candidateTopN={candidateTopK} got={result.OrderedRules.Count}");
+				}
+				catch
+				{
+				}
 				return result.OrderedRules.Count > 0;
 			};
 			if (!semanticEnabled)
@@ -2000,6 +1981,25 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private static void LogLoreContextTrace(string source, string heroId, string charId, string cultureId, string kingdomId, string role, bool isFemale, bool isClanLeader, string kingdomOverride, string inputText, bool invalidContext = false)
+	{
+		try
+		{
+			string text = (source ?? "").Trim();
+			string text2 = (heroId ?? "").Trim();
+			string text3 = (charId ?? "").Trim();
+			string text4 = (cultureId ?? "").Trim().ToLowerInvariant();
+			string text5 = (kingdomId ?? "").Trim().ToLowerInvariant();
+			string text6 = (role ?? "").Trim().ToLowerInvariant();
+			string text7 = (kingdomOverride ?? "").Trim().ToLowerInvariant();
+			string text8 = Hash8(inputText ?? "");
+			Logger.Log("LoreMatch", $"lore_ctx source={text} invalid={invalidContext} hero={text2} char={text3} culture={text4} kingdom={text5} role={text6} female={isFemale} clanLeader={isClanLeader} kingdomOverride={text7} inputHash={text8}");
+		}
+		catch
+		{
+		}
+	}
+
 	public KnowledgeLibraryBehavior()
 	{
 		Instance = this;
@@ -2087,6 +2087,18 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		{
 			return "";
 		}
+		if (npcHero == null)
+		{
+			LogLoreContextTrace("hero", "", "", "neutral", "", "commoner", isFemale: false, isClanLeader: false, "", text, invalidContext: true);
+			try
+			{
+				Logger.RecordHitRate("knowledge", "__query__", hit: false, $"reason=invalid_context source=hero inputLen={text.Length}", text);
+			}
+			catch
+			{
+			}
+			return "";
+		}
 		string text2 = (npcHero?.StringId ?? "").Trim();
 		string text3 = (npcHero?.Culture?.StringId ?? "neutral").Trim().ToLower();
 		string text4 = "";
@@ -2139,6 +2151,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			text6 = "该NPC";
 		}
 		string text7 = (text6 ?? "").Replace("|", " ").Trim();
+		LogLoreContextTrace("hero", text2, "", text3, text4, text5, flag, flag2, "", text);
 		long ruleDataVersion = _ruleDataVersion;
 		string key = Hash8($"{ruleDataVersion}|H|{text2}|{text7}|{text3}|{text4}|{text5}|{(flag ? 1 : 0)}|{(flag2 ? 1 : 0)}|{text}");
 		if (TryGetLoreContextCache(key, ruleDataVersion, out var value))
@@ -2330,6 +2343,19 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			hero = null;
 		}
 		string text2 = (hero?.StringId ?? "").Trim();
+		string textCharId = (npcCharacter?.StringId ?? "").Trim();
+		if (hero == null && npcCharacter == null)
+		{
+			LogLoreContextTrace("character", "", "", "neutral", "", "commoner", isFemale: false, isClanLeader: false, kingdomIdOverride, text, invalidContext: true);
+			try
+			{
+				Logger.RecordHitRate("knowledge", "__query__", hit: false, $"reason=invalid_context source=character inputLen={text.Length}", text);
+			}
+			catch
+			{
+			}
+			return "";
+		}
 		string text3 = (hero?.Culture?.StringId ?? npcCharacter?.Culture?.StringId ?? "neutral").Trim().ToLower();
 		string text4 = (kingdomIdOverride ?? "").Trim().ToLower();
 		if (string.IsNullOrEmpty(text4))
@@ -2348,6 +2374,17 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			try
 			{
 				text4 = (MobileParty.ConversationParty?.MapFaction?.StringId ?? "").Trim().ToLower();
+			}
+			catch
+			{
+				text4 = "";
+			}
+		}
+		if (string.IsNullOrEmpty(text4))
+		{
+			try
+			{
+				text4 = (Settlement.CurrentSettlement?.OwnerClan?.Kingdom?.StringId ?? Settlement.CurrentSettlement?.MapFaction?.StringId ?? "").Trim().ToLower();
 			}
 			catch
 			{
@@ -2410,6 +2447,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			text6 = "该NPC";
 		}
 		string text7 = (text6 ?? "").Replace("|", " ").Trim();
+		LogLoreContextTrace((hero != null) ? "character_hero" : "character", text2, textCharId, text3, text4, text5, flag, flag2, kingdomIdOverride, text);
 		long ruleDataVersion = _ruleDataVersion;
 		string key = Hash8($"{ruleDataVersion}|C|{text2}|{text7}|{text3}|{text4}|{text5}|{(flag ? 1 : 0)}|{(flag2 ? 1 : 0)}|{text}");
 		if (TryGetLoreContextCache(key, ruleDataVersion, out var value))
@@ -5508,4 +5546,3 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		return _file.Rules.FirstOrDefault((LoreRule r) => r != null && r.Id == id);
 	}
 }
-
