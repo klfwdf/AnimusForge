@@ -257,7 +257,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 
 	private float _interactionGraceTimer = 0f;
 
-	private Dictionary<int, float> _passiveCooldowns = new Dictionary<int, float>();
+	private Dictionary<string, float> _passiveCooldowns = new Dictionary<string, float>(StringComparer.Ordinal);
 
 	private float _stareDebugLogTimer = 0f;
 
@@ -2151,8 +2151,8 @@ public class ShoutBehavior : CampaignBehaviorBase
 
 	private void UpdateCooldowns(float dt)
 	{
-		List<int> list = new List<int>(_passiveCooldowns.Keys);
-		foreach (int item in list)
+		List<string> list = new List<string>(_passiveCooldowns.Keys);
+		foreach (string item in list)
 		{
 			_passiveCooldowns[item] -= dt;
 			if (_passiveCooldowns[item] <= 0f)
@@ -2239,9 +2239,11 @@ public class ShoutBehavior : CampaignBehaviorBase
 			}
 			string selectedStr = ((selectedTarget != null) ? $"{selectedTarget.Index}:{selectedTarget.Name}" : "none");
 			string currentStr = ((_currentStareTarget != null) ? $"{_currentStareTarget.Index}:{_currentStareTarget.Name}" : "none");
+			string selectedKey = GetCooldownIdentityKey(selectedTarget);
+			string currentKey = GetCooldownIdentityKey(_currentStareTarget);
 			string nearestStr = ((nearestInRangeAgent != null) ? $"{nearestInRangeAgent.Index}:{nearestInRangeAgent.Name},d={nearestDistance:F2},npcDot={nearestNpcDot:F3},playerDot={nearestPlayerDot:F3}" : "none");
 			string bestStr = ((bestCrosshairAgent != null) ? $"{bestCrosshairAgent.Index}:{bestCrosshairAgent.Name},d={bestCrosshairDistance:F2},npcDot={bestCrosshairNpcDot:F3},playerDot={bestCrosshairDot:F3}" : "none");
-			Logger.Log("StareDebug", $"tick sel={selectedStr} cur={currentStr} stareT={_stareTimer:F2} lostGrace={_stareTargetLostGraceTimer:F2} interGrace={_interactionGraceTimer:F2} inRange={inRangeCount} npcFrontPass={npcFrontPassCount} crosshairPass={crosshairPassCount} eligible={eligibleCount} nearest={nearestStr} bestEligible={bestStr}");
+			Logger.Log("StareDebug", $"tick sel={selectedStr} selKey={selectedKey} cur={currentStr} curKey={currentKey} stareT={_stareTimer:F2} lostGrace={_stareTargetLostGraceTimer:F2} interGrace={_interactionGraceTimer:F2} cooldownCount={_passiveCooldowns.Count} inRange={inRangeCount} npcFrontPass={npcFrontPassCount} crosshairPass={crosshairPassCount} eligible={eligibleCount} nearest={nearestStr} bestEligible={bestStr}");
 		}
 		catch (Exception ex)
 		{
@@ -2306,33 +2308,134 @@ public class ShoutBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private void ApplyInteractionGraceAndGroupCooldown(float graceSeconds, float cooldownSeconds, IEnumerable<Agent> participants, Agent extraTarget = null)
+	private string GetCooldownIdentityKey(NpcDataPacket data, int fallbackAgentIndex = -1)
+	{
+		if (data != null)
+		{
+			if (data.IsHero)
+			{
+				Hero hero = ResolveHeroFromAgentIndex(data.AgentIndex);
+				string heroId = (hero?.StringId ?? "").Trim().ToLowerInvariant();
+				if (!string.IsNullOrWhiteSpace(heroId))
+				{
+					return "hero:" + heroId;
+				}
+			}
+			string unnamedKey = (data.UnnamedKey ?? "").Trim().ToLowerInvariant();
+			if (!string.IsNullOrWhiteSpace(unnamedKey))
+			{
+				int idx = data.AgentIndex;
+				if (idx < 0)
+				{
+					idx = fallbackAgentIndex;
+				}
+				if (idx >= 0)
+				{
+					return "unnamed:" + unnamedKey + "|agent:" + idx;
+				}
+				return "unnamed:" + unnamedKey;
+			}
+			string troopId = (data.TroopId ?? "").Trim().ToLowerInvariant();
+			if (!string.IsNullOrWhiteSpace(troopId))
+			{
+				int idx2 = data.AgentIndex;
+				if (idx2 < 0)
+				{
+					idx2 = fallbackAgentIndex;
+				}
+				if (idx2 >= 0)
+				{
+					return "troop:" + troopId + "|agent:" + idx2;
+				}
+				return "troop:" + troopId;
+			}
+			if (data.AgentIndex >= 0)
+			{
+				return "agent:" + data.AgentIndex;
+			}
+		}
+		if (fallbackAgentIndex >= 0)
+		{
+			return "agent:" + fallbackAgentIndex;
+		}
+		return "";
+	}
+
+	private string GetCooldownIdentityKey(Agent agent)
+	{
+		if (agent == null || !agent.IsActive() || !agent.IsHuman)
+		{
+			return "";
+		}
+		try
+		{
+			if (agent.Character is CharacterObject { HeroObject: not null } characterObject)
+			{
+				string heroId = (characterObject.HeroObject?.StringId ?? "").Trim().ToLowerInvariant();
+				if (!string.IsNullOrWhiteSpace(heroId))
+				{
+					return "hero:" + heroId;
+				}
+			}
+		}
+		catch
+		{
+		}
+		NpcDataPacket data = null;
+		try
+		{
+			data = ShoutUtils.ExtractNpcData(agent);
+		}
+		catch
+		{
+			data = null;
+		}
+		return GetCooldownIdentityKey(data, agent.Index);
+	}
+
+	private void ApplyInteractionGraceAndGroupCooldown(float graceSeconds, float cooldownSeconds, IEnumerable<Agent> participants, Agent extraTarget = null, IEnumerable<NpcDataPacket> participantsData = null)
 	{
 		_interactionGraceTimer = Math.Max(_interactionGraceTimer, graceSeconds);
-		HashSet<int> affectedAgentIndices = new HashSet<int>();
+		HashSet<string> affectedIdentityKeys = new HashSet<string>(StringComparer.Ordinal);
+		if (participantsData != null)
+		{
+			foreach (NpcDataPacket npc in participantsData)
+			{
+				string identityKey = GetCooldownIdentityKey(npc, npc?.AgentIndex ?? (-1));
+				if (!string.IsNullOrWhiteSpace(identityKey))
+				{
+					affectedIdentityKeys.Add(identityKey);
+				}
+			}
+		}
 		if (participants != null)
 		{
 			foreach (Agent participant in participants)
 			{
-				if (participant != null && participant.IsActive() && participant.IsHuman)
+				string identityKey2 = GetCooldownIdentityKey(participant);
+				if (!string.IsNullOrWhiteSpace(identityKey2))
 				{
-					affectedAgentIndices.Add(participant.Index);
+					affectedIdentityKeys.Add(identityKey2);
 				}
 			}
 		}
-		if (extraTarget != null && extraTarget.IsActive() && extraTarget.IsHuman)
+		if (extraTarget != null)
 		{
-			affectedAgentIndices.Add(extraTarget.Index);
-		}
-		foreach (int affectedAgentIndex in affectedAgentIndices)
-		{
-			if (_passiveCooldowns.TryGetValue(affectedAgentIndex, out var currentCooldown))
+			string identityKey3 = GetCooldownIdentityKey(extraTarget);
+			if (!string.IsNullOrWhiteSpace(identityKey3))
 			{
-				_passiveCooldowns[affectedAgentIndex] = Math.Max(currentCooldown, cooldownSeconds);
+				affectedIdentityKeys.Add(identityKey3);
+			}
+		}
+		foreach (string affectedIdentityKey in affectedIdentityKeys)
+		{
+			if (_passiveCooldowns.TryGetValue(affectedIdentityKey, out var currentCooldown))
+			{
+				_passiveCooldowns[affectedIdentityKey] = Math.Max(currentCooldown, cooldownSeconds);
 			}
 			else
 			{
-				_passiveCooldowns[affectedAgentIndex] = cooldownSeconds;
+				_passiveCooldowns[affectedIdentityKey] = cooldownSeconds;
 			}
 		}
 	}
@@ -2343,7 +2446,12 @@ public class ShoutBehavior : CampaignBehaviorBase
 		{
 			return false;
 		}
-		return !_passiveCooldowns.ContainsKey(agent.Index);
+		string identityKey = GetCooldownIdentityKey(agent);
+		if (string.IsNullOrWhiteSpace(identityKey))
+		{
+			return false;
+		}
+		return !_passiveCooldowns.ContainsKey(identityKey);
 	}
 
 	private void TriggerPassiveReaction(Agent targetAgent)
@@ -2361,7 +2469,6 @@ public class ShoutBehavior : CampaignBehaviorBase
 		}
 		string sceneDesc = ShoutUtils.GetCurrentSceneDescription();
 		List<Agent> source = ShoutUtils.GetNearbyNPCAgents() ?? new List<Agent>();
-		ApplyInteractionGraceAndGroupCooldown(PASSIVE_COOLDOWN, PASSIVE_COOLDOWN, source, targetAgent);
 		List<NpcDataPacket> allNpcData = (from a in source
 			select ShoutUtils.ExtractNpcData(a) into d
 			where d != null
@@ -2370,6 +2477,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 		{
 			allNpcData.Add(npcData);
 		}
+		ApplyInteractionGraceAndGroupCooldown(PASSIVE_COOLDOWN, PASSIVE_COOLDOWN, source, targetAgent, allNpcData);
 		InformationManager.DisplayMessage(new InformationMessage("你盯着 " + npcData.Name + " 看了很久...", new Color(0.7f, 0.7f, 0.7f)));
 
 		string virtualInput = "(沉默地长时间注视着你)";
