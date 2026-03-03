@@ -6,7 +6,14 @@ for %%I in ("%SCRIPT_DIR%..") do set "PROJECT_ROOT=%%~fI"
 cd /d "%PROJECT_ROOT%"
 
 set "DRY_RUN=0"
-if /I "%~1"=="--dry-run" set "DRY_RUN=1"
+set "COMMIT_MSG="
+
+if /I "%~1"=="--dry-run" (
+    set "DRY_RUN=1"
+    set "COMMIT_MSG=%~2"
+) else (
+    set "COMMIT_MSG=%~1"
+)
 
 where git >nul 2>nul
 if errorlevel 1 (
@@ -37,18 +44,34 @@ if not defined ORIGIN_URL (
     exit /b 1
 )
 
-set "COMMIT_MSG=%~2"
 if not defined COMMIT_MSG (
-    for /f "delims=" %%T in ('powershell -NoProfile -Command "Get-Date -Format ''yyyy-MM-dd HH:mm:ss''"') do set "NOW=%%T"
-    set "COMMIT_MSG=auto: update %%NOW%%"
+    set "NOW=%DATE% %TIME%"
+    set "COMMIT_MSG=auto: update %NOW%"
 )
 
 echo [Git] One-click push started...
 echo Repo   : "%PROJECT_ROOT%"
 echo Branch : "%BRANCH%"
 echo Origin : "%ORIGIN_URL%"
-if "%DRY_RUN%"=="1" echo Mode   : DRY RUN
+if "%DRY_RUN%"=="1" echo Mode   : DRY RUN (no add / no commit / no push)
 echo.
+
+if "%DRY_RUN%"=="1" (
+    echo [Preview] Current changed files:
+    git status --short
+    echo.
+    echo [Preview] Commit message:
+    echo   "%COMMIT_MSG%"
+    echo.
+    echo [Preview] Would run:
+    echo   git add -A
+    echo   git commit -m "%COMMIT_MSG%"
+    echo   git push -u origin "%BRANCH%"
+    echo.
+    echo [SUCCESS] Dry-run completed.
+    pause
+    exit /b 0
+)
 
 echo [1/3] Staging changes...
 git add -A
@@ -72,11 +95,7 @@ if errorlevel 1 (
 )
 
 echo [3/3] Pushing to origin/%BRANCH%...
-if "%DRY_RUN%"=="1" (
-    git push --dry-run -u origin "%BRANCH%"
-) else (
-    git push -u origin "%BRANCH%"
-)
+git push -u origin "%BRANCH%"
 if errorlevel 1 (
     echo [ERROR] git push failed.
     pause
