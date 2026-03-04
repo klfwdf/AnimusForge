@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace Voxforge;
@@ -17,4 +18,8 @@ public class GuardrailRulePromptConfig
 	public string NonHeroInstruction { get; set; } = "";
 
 	public List<string> TriggerKeywords { get; set; } = new List<string>();
+
+	public Dictionary<string, string> RuntimeInstructionTemplates { get; set; } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+	public Dictionary<string, string> RuntimeConstraintTemplates { get; set; } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 }

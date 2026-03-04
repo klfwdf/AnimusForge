@@ -103,6 +103,8 @@ public static class AIConfigHandler
 
 	private static readonly AsyncLocal<string> _guardrailSemanticRuntimeContext = new AsyncLocal<string>();
 
+	private static readonly AsyncLocal<string> _guardrailRuntimeTargetKingdomId = new AsyncLocal<string>();
+
 	private static GuardrailEvalSnapshot _lastGuardrailEval;
 
 	public static string GlobalPrompt => _guardrail?.GlobalPrompt ?? "";
@@ -723,6 +725,36 @@ public static class AIConfigHandler
 		return list;
 	}
 
+	private static Dictionary<string, string> NormalizeTemplateMap(Dictionary<string, string> source, int maxKeyLen = 80)
+	{
+		Dictionary<string, string> dictionary = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+		try
+		{
+			if (source == null || source.Count <= 0)
+			{
+				return dictionary;
+			}
+			foreach (KeyValuePair<string, string> item in source)
+			{
+				string text = NormalizeSemanticText(item.Key);
+				string text2 = (item.Value ?? "").Trim();
+				if (string.IsNullOrWhiteSpace(text) || string.IsNullOrWhiteSpace(text2))
+				{
+					continue;
+				}
+				if (maxKeyLen > 0 && text.Length > maxKeyLen)
+				{
+					text = text.Substring(0, maxKeyLen);
+				}
+				dictionary[text.ToLowerInvariant()] = text2;
+			}
+		}
+		catch
+		{
+		}
+		return dictionary;
+	}
+
 	private static GuardrailRulePromptConfig BuildLegacyRulePrompt(string id, bool enabled, string instruction, List<string> triggerKeywords, string group, int priority)
 	{
 		return new GuardrailRulePromptConfig
@@ -757,7 +789,9 @@ public static class AIConfigHandler
 				Priority = src.Priority,
 				Instruction = (src.Instruction ?? ""),
 				NonHeroInstruction = (src.NonHeroInstruction ?? ""),
-				TriggerKeywords = NormalizeTriggerKeywordList(src.TriggerKeywords)
+				TriggerKeywords = NormalizeTriggerKeywordList(src.TriggerKeywords),
+				RuntimeInstructionTemplates = NormalizeTemplateMap(src.RuntimeInstructionTemplates),
+				RuntimeConstraintTemplates = NormalizeTemplateMap(src.RuntimeConstraintTemplates)
 			};
 		}
 		catch
@@ -1369,6 +1403,14 @@ public static class AIConfigHandler
 						value = text2;
 					}
 				}
+				if (hasAnyHero && string.Equals(text, "kingdom_service", StringComparison.OrdinalIgnoreCase))
+				{
+					string runtimeKingdomServiceInstruction = BuildRuntimeKingdomServiceInstruction();
+					if (!string.IsNullOrWhiteSpace(runtimeKingdomServiceInstruction))
+					{
+						value = runtimeKingdomServiceInstruction;
+					}
+				}
 				if (!string.IsNullOrWhiteSpace(text) && !string.IsNullOrWhiteSpace(value))
 				{
 					stringBuilder.AppendLine("【附加规则:" + text + "】");
@@ -1395,6 +1437,202 @@ public static class AIConfigHandler
 		}
 	}
 
+	private static string GetKingdomServiceRuntimeTemplate(string stateKey, bool forConstraint)
+	{
+		try
+		{
+			Dictionary<string, GuardrailRulePromptConfig> dictionary = BuildRulePromptRegistry();
+			if (dictionary == null || !dictionary.TryGetValue("kingdom_service", out var value) || value == null)
+			{
+				return "";
+			}
+			Dictionary<string, string> dictionary2 = (forConstraint ? value.RuntimeConstraintTemplates : value.RuntimeInstructionTemplates);
+			if (dictionary2 == null || dictionary2.Count <= 0)
+			{
+				return "";
+			}
+			string text = (stateKey ?? "").Trim().ToLowerInvariant();
+			if (!string.IsNullOrWhiteSpace(text) && dictionary2.TryGetValue(text, out var value2) && !string.IsNullOrWhiteSpace(value2))
+			{
+				return value2;
+			}
+			if (dictionary2.TryGetValue("__default__", out var value3) && !string.IsNullOrWhiteSpace(value3))
+			{
+				return value3;
+			}
+			if (dictionary2.TryGetValue("default", out var value4) && !string.IsNullOrWhiteSpace(value4))
+			{
+				return value4;
+			}
+			return "";
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	public static void SetGuardrailRuntimeTargetKingdom(string kingdomId)
+	{
+		try
+		{
+			_guardrailRuntimeTargetKingdomId.Value = ((kingdomId ?? "").Trim().ToLowerInvariant() ?? "");
+		}
+		catch
+		{
+			_guardrailRuntimeTargetKingdomId.Value = "";
+		}
+	}
+
+	private static string ApplyRuntimeTemplate(string template, Dictionary<string, string> tokens)
+	{
+		string text = template ?? "";
+		try
+		{
+			if (string.IsNullOrWhiteSpace(text) || tokens == null || tokens.Count <= 0)
+			{
+				return text;
+			}
+			foreach (KeyValuePair<string, string> token in tokens)
+			{
+				if (!string.IsNullOrWhiteSpace(token.Key))
+				{
+					text = text.Replace("{" + token.Key + "}", token.Value ?? "");
+				}
+			}
+			return text;
+		}
+		catch
+		{
+			return template ?? "";
+		}
+	}
+
+	private static string ResolveKingdomServiceRuntimeText(string stateKey, bool forConstraint, Dictionary<string, string> tokens)
+	{
+		try
+		{
+			string kingdomServiceRuntimeTemplate = GetKingdomServiceRuntimeTemplate(stateKey, forConstraint);
+			if (!string.IsNullOrWhiteSpace(kingdomServiceRuntimeTemplate))
+			{
+				string text = ApplyRuntimeTemplate(kingdomServiceRuntimeTemplate, tokens);
+				if (!string.IsNullOrWhiteSpace(text))
+				{
+					return text;
+				}
+			}
+		}
+		catch
+		{
+		}
+		return "";
+	}
+
+	private static Kingdom ResolveConversationTargetKingdom()
+	{
+		try
+		{
+			string text = (_guardrailRuntimeTargetKingdomId.Value ?? "").Trim().ToLowerInvariant();
+			if (!string.IsNullOrWhiteSpace(text))
+			{
+				Kingdom kingdom = Kingdom.All?.FirstOrDefault((Kingdom k) => k != null && string.Equals((k.StringId ?? "").Trim().ToLowerInvariant(), text, StringComparison.OrdinalIgnoreCase));
+				if (kingdom != null)
+				{
+					return kingdom;
+				}
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			Hero oneToOneConversationHero = Hero.OneToOneConversationHero;
+			Kingdom kingdom = oneToOneConversationHero?.Clan?.Kingdom;
+			if (kingdom != null)
+			{
+				return kingdom;
+			}
+			Kingdom kingdom2 = oneToOneConversationHero?.MapFaction as Kingdom;
+			if (kingdom2 != null)
+			{
+				return kingdom2;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			CharacterObject oneToOneConversationCharacter = Campaign.Current?.ConversationManager?.OneToOneConversationCharacter;
+			Hero heroObject = oneToOneConversationCharacter?.HeroObject;
+			Kingdom kingdom3 = heroObject?.Clan?.Kingdom;
+			if (kingdom3 != null)
+			{
+				return kingdom3;
+			}
+			Kingdom kingdom4 = heroObject?.MapFaction as Kingdom;
+			if (kingdom4 != null)
+			{
+				return kingdom4;
+			}
+		}
+		catch
+		{
+		}
+		return null;
+	}
+
+	private static string BuildRuntimeKingdomServiceInstruction()
+	{
+		try
+		{
+			Clan playerClan = Clan.PlayerClan;
+			Kingdom kingdom = playerClan?.Kingdom;
+			bool flag = playerClan?.IsUnderMercenaryService == true;
+			Kingdom kingdom2 = ResolveConversationTargetKingdom();
+			bool flag2 = kingdom != null && kingdom2 != null && kingdom == kingdom2;
+			string text = kingdom?.Name?.ToString() ?? "";
+			string text2 = kingdom2?.Name?.ToString() ?? "";
+			Dictionary<string, string> dictionary = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+			{
+				["playerKingdom"] = text,
+				["playerKingdomId"] = (kingdom?.StringId ?? ""),
+				["targetKingdom"] = text2,
+				["targetKingdomId"] = (kingdom2?.StringId ?? "")
+			};
+			if (kingdom == null)
+			{
+				return ResolveKingdomServiceRuntimeText("no_kingdom", forConstraint: false, dictionary);
+			}
+			if (flag)
+			{
+				if (kingdom2 == null)
+				{
+					return ResolveKingdomServiceRuntimeText("mercenary_target_unknown", forConstraint: false, dictionary);
+				}
+				if (flag2)
+				{
+					return ResolveKingdomServiceRuntimeText("mercenary_same_kingdom", forConstraint: false, dictionary);
+				}
+				return ResolveKingdomServiceRuntimeText("mercenary_other_kingdom", forConstraint: false, dictionary);
+			}
+			if (kingdom2 == null)
+			{
+				return ResolveKingdomServiceRuntimeText("vassal_target_unknown", forConstraint: false, dictionary);
+			}
+			if (flag2)
+			{
+				return ResolveKingdomServiceRuntimeText("vassal_same_kingdom", forConstraint: false, dictionary);
+			}
+			return ResolveKingdomServiceRuntimeText("vassal_other_kingdom", forConstraint: false, dictionary);
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
 	private static string BuildRuntimeRuleConstraintHint(string tag)
 	{
 		try
@@ -1404,17 +1642,14 @@ public static class AIConfigHandler
 			{
 				return "";
 			}
-			int num = 0;
+			Clan playerClan = Clan.PlayerClan;
+			if (playerClan == null)
+			{
+				return ResolveKingdomServiceRuntimeText("no_player_clan", forConstraint: true, new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase));
+			}
+			int num = playerClan.Tier;
 			int num2 = 1;
 			int num3 = 2;
-			try
-			{
-				num = Clan.PlayerClan?.Tier ?? 0;
-			}
-			catch
-			{
-				num = 0;
-			}
 			try
 			{
 				num2 = Campaign.Current?.Models?.ClanTierModel?.MercenaryEligibleTier ?? 1;
@@ -1431,15 +1666,61 @@ public static class AIConfigHandler
 			{
 				num3 = 2;
 			}
-			if (num < num2)
+			Kingdom kingdom = playerClan.Kingdom;
+			bool flag = playerClan.IsUnderMercenaryService;
+			Kingdom kingdom2 = ResolveConversationTargetKingdom();
+			bool flag2 = kingdom != null && kingdom2 != null && kingdom == kingdom2;
+			string text2 = kingdom?.Name?.ToString() ?? "";
+			string text3 = kingdom2?.Name?.ToString() ?? "";
+			Dictionary<string, string> dictionary = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
 			{
-				return $"【运行时硬约束】当前玩家家族等级={num}，低于雇佣兵门槛={num2}（封臣门槛={num3}）。且势力效力还受综合信任门槛约束：雇佣兵>=5、封臣>=20。本轮必须拒绝势力效力请求，禁止输出任何 [ACTION:KINGDOM_SERVICE:*:*] 标签。";
-			}
-			if (num < num3)
+				["playerKingdom"] = text2,
+				["playerKingdomId"] = (kingdom?.StringId ?? ""),
+				["targetKingdom"] = text3,
+				["targetKingdomId"] = (kingdom2?.StringId ?? ""),
+				["playerTier"] = num.ToString(),
+				["mercTier"] = num2.ToString(),
+				["vassalTier"] = num3.ToString(),
+				["trustMerc"] = "5",
+				["trustVassal"] = "20"
+			};
+			if (kingdom == null)
 			{
-				return $"【运行时硬约束】当前玩家家族等级={num}，已满足雇佣兵门槛={num2}，但低于封臣门槛={num3}。且势力效力还受综合信任门槛约束：雇佣兵>=5、封臣>=20。可讨论雇佣兵；必须拒绝封臣并禁止输出 [ACTION:KINGDOM_SERVICE:VASSAL:*]。";
+				if (num < num2)
+				{
+					return ResolveKingdomServiceRuntimeText("no_kingdom_tier_below_merc", forConstraint: true, dictionary);
+				}
+				if (num < num3)
+				{
+					return ResolveKingdomServiceRuntimeText("no_kingdom_tier_merc_only", forConstraint: true, dictionary);
+				}
+				return ResolveKingdomServiceRuntimeText("no_kingdom_tier_full", forConstraint: true, dictionary);
 			}
-			return $"【运行时硬约束】当前玩家家族等级={num}，已满足雇佣兵/封臣等级门槛（{num2}/{num3}）。势力效力仍受综合信任门槛约束：雇佣兵>=5、封臣>=20。仍需满足对话对象身份约束：雇佣兵可由目标势力封臣同意，封臣仅可由目标势力领袖同意。";
+			if (flag)
+			{
+				if (kingdom2 == null)
+				{
+					return ResolveKingdomServiceRuntimeText("mercenary_target_unknown", forConstraint: true, dictionary);
+				}
+				if (flag2)
+				{
+					if (num < num3)
+					{
+						return ResolveKingdomServiceRuntimeText("mercenary_same_kingdom_tier_vassal_locked", forConstraint: true, dictionary);
+					}
+					return ResolveKingdomServiceRuntimeText("mercenary_same_kingdom_tier_vassal_ready", forConstraint: true, dictionary);
+				}
+				return ResolveKingdomServiceRuntimeText("mercenary_other_kingdom", forConstraint: true, dictionary);
+			}
+			if (kingdom2 == null)
+			{
+				return ResolveKingdomServiceRuntimeText("vassal_target_unknown", forConstraint: true, dictionary);
+			}
+			if (flag2)
+			{
+				return ResolveKingdomServiceRuntimeText("vassal_same_kingdom", forConstraint: true, dictionary);
+			}
+			return ResolveKingdomServiceRuntimeText("vassal_other_kingdom", forConstraint: true, dictionary);
 		}
 		catch
 		{
@@ -1679,6 +1960,7 @@ public static class AIConfigHandler
 				_lastGuardrailEval = null;
 			}
 			_guardrailSemanticRuntimeContext.Value = "";
+			_guardrailRuntimeTargetKingdomId.Value = "";
 			int valueOrDefault = (_guardrail?.Duel?.AcceptKeywords?.Count).GetValueOrDefault();
 			int valueOrDefault2 = (_guardrail?.Reward?.TriggerKeywords?.Count).GetValueOrDefault();
 			int valueOrDefault3 = (_guardrail?.Loan?.TriggerKeywords?.Count).GetValueOrDefault();

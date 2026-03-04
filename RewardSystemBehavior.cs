@@ -1351,6 +1351,25 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				statusText = "执行失败：未找到玩家家族。";
 				return false;
 			}
+			string text = (serviceType ?? "").Trim().ToUpperInvariant();
+			if (text == "LEAVE")
+			{
+				Kingdom currentKingdom = playerClan.Kingdom;
+				if (currentKingdom == null)
+				{
+					statusText = "执行失败：玩家当前未加入任何势力，无需退出。";
+					return false;
+				}
+				if (playerClan.IsUnderMercenaryService)
+				{
+					ChangeKingdomAction.ApplyByLeaveKingdomAsMercenary(playerClan);
+					statusText = $"执行成功：玩家已结束与 {currentKingdom.Name} 的雇佣兵契约。";
+					return true;
+				}
+				ChangeKingdomAction.ApplyByLeaveKingdom(playerClan);
+				statusText = $"执行成功：玩家已退出 {currentKingdom.Name}，不再是其正式封臣。";
+				return true;
+			}
 			Kingdom kingdom = ResolveKingdomByTag(kingdomToken, giver);
 			if (kingdom == null || kingdom.IsEliminated)
 			{
@@ -1363,7 +1382,6 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				statusText = $"执行失败：{giver.Name} 并非 {kingdom.Name} 成员，不能代表该势力授予身份。";
 				return false;
 			}
-			string text = (serviceType ?? "").Trim().ToUpperInvariant();
 			if (text == "MERCENARY")
 			{
 				if (giver == null || giver.Clan == null || giver.Clan.Kingdom != kingdom)
@@ -3413,9 +3431,10 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			Regex regex14 = new Regex("\\[ACTION:DEBT_ITEM_UNAVAILABLE:([a-zA-Z0-9_\\-]+)\\]", RegexOptions.IgnoreCase);
 			Regex regex15 = new Regex("\\[ACTION:DEBT_ITEM_PENALTY:([a-zA-Z0-9_\\-]+):(\\d+):(\\d+)\\]", RegexOptions.IgnoreCase);
 			Regex regex16 = new Regex("\\[ACTION:DEBT_PAY:([a-zA-Z0-9_\\-]+):(\\d+)\\]", RegexOptions.IgnoreCase);
-			Regex regex17 = new Regex("\\[ACTION:KINGDOM_SERVICE:(MERCENARY|VASSAL):([a-zA-Z0-9_\\-]+)\\]", RegexOptions.IgnoreCase);
+			Regex regex17 = new Regex("\\[ACTION:KINGDOM_SERVICE:(MERCENARY|VASSAL|LEAVE):([a-zA-Z0-9_\\-]+)\\]", RegexOptions.IgnoreCase);
 			Regex regex18 = new Regex("\\[ACTION:JOIN_MERCENARY:([a-zA-Z0-9_\\-]+)\\]", RegexOptions.IgnoreCase);
 			Regex regex19 = new Regex("\\[ACTION:JOIN_VASSAL:([a-zA-Z0-9_\\-]+)\\]", RegexOptions.IgnoreCase);
+			Regex regex20 = new Regex("\\[ACTION:KINGDOM_SERVICE:LEAVE\\]", RegexOptions.IgnoreCase);
 			HashSet<string> settledDebtIdsThisRound = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 			int num = 0;
 			try
@@ -3876,6 +3895,25 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				{
 					string statusText;
 					bool flag2 = TryApplyKingdomServiceAction(giver, "VASSAL", kingdomToken, out statusText);
+					if (!string.IsNullOrWhiteSpace(statusText))
+					{
+						if (flag2)
+						{
+							anyKingdomServiceApplied = true;
+						}
+						giverFacts.Add(statusText);
+						receiverFacts.Add(statusText);
+						InformationManager.DisplayMessage(new InformationMessage((flag2 ? "【势力身份】" : "【势力身份失败】") + statusText, flag2 ? Color.FromUint(4278242559u) : Color.FromUint(4294936661u)));
+					}
+				}
+				return string.Empty;
+			});
+			responseText = regex20.Replace(responseText, delegate(Match m)
+			{
+				if (receiver == Hero.MainHero && giver != Hero.MainHero)
+				{
+					string statusText;
+					bool flag2 = TryApplyKingdomServiceAction(giver, "LEAVE", "current", out statusText);
 					if (!string.IsNullOrWhiteSpace(statusText))
 					{
 						if (flag2)

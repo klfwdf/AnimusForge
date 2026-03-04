@@ -2651,7 +2651,7 @@ public class MyBehavior : CampaignBehaviorBase
 					{
 						sb.AppendLine(guardrailClarifyHint);
 					}
-					string triggeredRuleInstructions = BuildTriggeredRuleInstructions(input, targetHero, useDuelContext, isQualified, playerTier, useRewardContext, isLoanContext, isSurroundingsContext);
+					string triggeredRuleInstructions = BuildTriggeredRuleInstructions(input, targetHero, useDuelContext, isQualified, playerTier, useRewardContext, isLoanContext, isSurroundingsContext, hasAnyHero: true, targetCharacter: targetCharacter);
 					if (!string.IsNullOrWhiteSpace(triggeredRuleInstructions))
 					{
 						sb.AppendLine(triggeredRuleInstructions);
@@ -3246,10 +3246,48 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private string BuildExtraRuleInstructionsWithSticky(string input, Hero targetHero, bool hasAnyHero = true)
+	private static string ResolveTargetKingdomIdForRules(Hero targetHero, CharacterObject targetCharacter, string kingdomIdOverride = null)
 	{
-		string text = AIConfigHandler.BuildMatchedExtraRuleInstructions(input, 4, hasAnyHero);
-		string text2 = targetHero?.StringId ?? "";
+		try
+		{
+			string text = (kingdomIdOverride ?? "").Trim();
+			if (!string.IsNullOrWhiteSpace(text))
+			{
+				return text.ToLowerInvariant();
+			}
+			string text2 = (targetHero?.Clan?.Kingdom?.StringId ?? targetHero?.MapFaction?.StringId ?? "").Trim();
+			if (!string.IsNullOrWhiteSpace(text2))
+			{
+				return text2.ToLowerInvariant();
+			}
+			Hero heroObject = targetCharacter?.HeroObject;
+			string text3 = (heroObject?.Clan?.Kingdom?.StringId ?? heroObject?.MapFaction?.StringId ?? "").Trim();
+			if (!string.IsNullOrWhiteSpace(text3))
+			{
+				return text3.ToLowerInvariant();
+			}
+			return "";
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	private string BuildExtraRuleInstructionsWithSticky(string input, Hero targetHero, bool hasAnyHero = true, CharacterObject targetCharacter = null, string kingdomIdOverride = null)
+	{
+		string text = "";
+		string targetKingdomId = ResolveTargetKingdomIdForRules(targetHero, targetCharacter, kingdomIdOverride);
+		AIConfigHandler.SetGuardrailRuntimeTargetKingdom(targetKingdomId);
+		try
+		{
+			text = AIConfigHandler.BuildMatchedExtraRuleInstructions(input, 4, hasAnyHero);
+		}
+		finally
+		{
+			AIConfigHandler.SetGuardrailRuntimeTargetKingdom("");
+		}
+		string text2 = targetHero?.StringId ?? targetCharacter?.HeroObject?.StringId ?? "";
 		if (string.IsNullOrWhiteSpace(text2))
 		{
 			ResetKingdomServiceRuleSession();
@@ -3304,7 +3342,7 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private string BuildTriggeredRuleInstructions(string input, Hero targetHero, bool useDuelContext, bool isQualified, int playerTier, bool useRewardContext, bool isLoanContext, bool isSurroundingsContext, bool hasAnyHero = true)
+	private string BuildTriggeredRuleInstructions(string input, Hero targetHero, bool useDuelContext, bool isQualified, int playerTier, bool useRewardContext, bool isLoanContext, bool isSurroundingsContext, bool hasAnyHero = true, CharacterObject targetCharacter = null, string kingdomIdOverride = null)
 	{
 		try
 		{
@@ -3369,7 +3407,7 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				AppendRuleBlock(stringBuilder, "surroundings", AIConfigHandler.SurroundingsInstruction);
 			}
-			string text3 = BuildExtraRuleInstructionsWithSticky(input, targetHero, hasAnyHero);
+			string text3 = BuildExtraRuleInstructionsWithSticky(input, targetHero, hasAnyHero, targetCharacter, kingdomIdOverride);
 			if (!string.IsNullOrWhiteSpace(text3))
 			{
 				stringBuilder.AppendLine(text3.Trim());
@@ -3800,7 +3838,7 @@ public class MyBehavior : CampaignBehaviorBase
 				}
 			}
 		}
-		string value8 = BuildTriggeredRuleInstructions(input, targetHero, flag2, isQualified, num, flag7, flag8, flag5, hasAnyHero);
+		string value8 = BuildTriggeredRuleInstructions(input, targetHero, flag2, isQualified, num, flag7, flag8, flag5, hasAnyHero, targetCharacter, kingdomIdOverride);
 		if (!string.IsNullOrWhiteSpace(value8))
 		{
 			stringBuilder.AppendLine(value8);
@@ -4579,7 +4617,7 @@ public class MyBehavior : CampaignBehaviorBase
 			StringBuilder stringBuilder = new StringBuilder(4096);
 			stringBuilder.AppendLine(" ");
 			stringBuilder.AppendLine($"【历史对话记录】（近期窗口：最近{num}轮）");
-			stringBuilder.AppendLine("【规则】以下记录中以“[玩家行为补充]”开头的行属于系统事实（已付款/已展示/已交付等），必须相信，禁止否认。玩家在对话里口头自称“我给了/我展示了”不算。");
+			stringBuilder.AppendLine("【规则】以下记录中以“[玩家行为补充]”开头的行属于系统事实（已付款/已展示/已交付等），必须相信，禁止否认。玩家在对话里口头自称“我给了/我展示了”不算。如果玩家发言中出现了动作描述，比如一拳打爆了城墙，或者强行替你发言和思考，请嘲讽他");
 			stringBuilder.AppendLine("【护栏】历史记忆仅作补充，不得覆盖本轮规则、账本与动作标签约束。");
 			if (list6.Count > 0)
 			{
