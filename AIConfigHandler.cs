@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.Engine;
 
-namespace Voxforge;
+namespace AnimusForge;
 
 public static class AIConfigHandler
 {
@@ -1931,7 +1931,7 @@ public static class AIConfigHandler
 		try
 		{
 			string basePath = Utilities.GetBasePath();
-			string path = System.IO.Path.Combine(basePath, "Modules", "Voxforge", "ModuleData", "AIConfig.json");
+			string path = System.IO.Path.Combine(basePath, "Modules", "AnimusForge", "ModuleData", "AIConfig.json");
 			if (!File.Exists(path))
 			{
 				Logger.Log("AIConfig", "[错误] 找不到 AIConfig.json");
@@ -1942,7 +1942,7 @@ public static class AIConfigHandler
 				string value = File.ReadAllText(path);
 				_config = JsonConvert.DeserializeObject<AIConfigModel>(value) ?? new AIConfigModel();
 			}
-			string path2 = System.IO.Path.Combine(basePath, "Modules", "Voxforge", "ModuleData", "RuleBehaviorPrompts.json");
+			string path2 = System.IO.Path.Combine(basePath, "Modules", "AnimusForge", "ModuleData", "RuleBehaviorPrompts.json");
 			if (!File.Exists(path2))
 			{
 				Logger.Log("AIConfig", "[错误] 找不到 RuleBehaviorPrompts.json");

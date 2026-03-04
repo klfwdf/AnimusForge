@@ -29,7 +29,7 @@ using TaleWorlds.Library.EventSystem;
 using TaleWorlds.Localization;
 using TaleWorlds.MountAndBlade;
 
-namespace Voxforge;
+namespace AnimusForge;
 
 public class MyBehavior : CampaignBehaviorBase
 {
@@ -651,14 +651,14 @@ public class MyBehavior : CampaignBehaviorBase
 	{
 		AIConfigHandler.ReloadConfig();
 		TryHookOverlayQuickTalkDisable();
-		starter.AddGameMenu("Voxforge_dev_root", "{=!}开发者工具", DevRootMenuInit, GameMenu.MenuOverlayType.SettlementWithBoth);
-		starter.AddGameMenuOption("town", "Voxforge_dev_root_entry", "【开发】数据管理", DevRootEntryCondition, DevRootEntryConsequence, isLeave: false, 99);
-		starter.AddGameMenuOption("Voxforge_dev_root", "Voxforge_dev_root_hero", "HeroNPC编辑（领主/流浪者/同伴）", DevRootSubOptionCondition, DevRootHeroOptionConsequence);
-		starter.AddGameMenuOption("Voxforge_dev_root", "Voxforge_dev_root_nonhero", "非heroNPC编辑（士兵/平民/无名/无姓NPC）", DevRootSubOptionCondition, DevRootNonHeroOptionConsequence);
-		starter.AddGameMenuOption("Voxforge_dev_root", "Voxforge_dev_root_knowledge", "知识编辑", DevRootSubOptionCondition, DevRootKnowledgeOptionConsequence);
-		starter.AddGameMenuOption("Voxforge_dev_root", "Voxforge_dev_root_all", "全部导出/导入", DevRootSubOptionCondition, DevRootAllOptionConsequence);
-		starter.AddGameMenuOption("Voxforge_dev_root", "Voxforge_dev_root_voice", "声音映射管理（VoiceMapping）", DevRootSubOptionCondition, DevRootVoiceMappingOptionConsequence);
-		starter.AddGameMenuOption("Voxforge_dev_root", "Voxforge_dev_root_back", "返回", DevRootBackCondition, DevRootBackConsequence, isLeave: true);
+		starter.AddGameMenu("AnimusForge_dev_root", "{=!}开发者工具", DevRootMenuInit, GameMenu.MenuOverlayType.SettlementWithBoth);
+		starter.AddGameMenuOption("town", "AnimusForge_dev_root_entry", "【开发】数据管理", DevRootEntryCondition, DevRootEntryConsequence, isLeave: false, 99);
+		starter.AddGameMenuOption("AnimusForge_dev_root", "AnimusForge_dev_root_hero", "HeroNPC编辑（领主/流浪者/同伴）", DevRootSubOptionCondition, DevRootHeroOptionConsequence);
+		starter.AddGameMenuOption("AnimusForge_dev_root", "AnimusForge_dev_root_nonhero", "非heroNPC编辑（士兵/平民/无名/无姓NPC）", DevRootSubOptionCondition, DevRootNonHeroOptionConsequence);
+		starter.AddGameMenuOption("AnimusForge_dev_root", "AnimusForge_dev_root_knowledge", "知识编辑", DevRootSubOptionCondition, DevRootKnowledgeOptionConsequence);
+		starter.AddGameMenuOption("AnimusForge_dev_root", "AnimusForge_dev_root_all", "全部导出/导入", DevRootSubOptionCondition, DevRootAllOptionConsequence);
+		starter.AddGameMenuOption("AnimusForge_dev_root", "AnimusForge_dev_root_voice", "声音映射管理（VoiceMapping）", DevRootSubOptionCondition, DevRootVoiceMappingOptionConsequence);
+		starter.AddGameMenuOption("AnimusForge_dev_root", "AnimusForge_dev_root_back", "返回", DevRootBackCondition, DevRootBackConsequence, isLeave: true);
 	}
 
 	private void TryHookOverlayQuickTalkDisable()
@@ -5728,7 +5728,7 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		else
 		{
-			GameMenu.SwitchToMenu("Voxforge_dev_root");
+			GameMenu.SwitchToMenu("AnimusForge_dev_root");
 		}
 	}
 
@@ -7627,7 +7627,7 @@ public class MyBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			GameMenu.SwitchToMenu("Voxforge_dev_root");
+			GameMenu.SwitchToMenu("AnimusForge_dev_root");
 		}
 		catch
 		{

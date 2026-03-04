@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Voxforge;
+namespace AnimusForge;
 
 public class RewardConfig
 {

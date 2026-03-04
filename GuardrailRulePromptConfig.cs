@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Voxforge;
+namespace AnimusForge;
 
 public class GuardrailRulePromptConfig
 {

@@ -11,7 +11,7 @@ using TaleWorlds.Library;
 using TaleWorlds.ObjectSystem;
 using TaleWorlds.ScreenSystem;
 
-namespace Voxforge;
+namespace AnimusForge;
 
 public class DynamicPatcher
 {
@@ -105,7 +105,7 @@ public class DynamicPatcher
 				catch
 				{
 				}
-				Logger.LogTrace("System", "[Voxforge] BUILD_2026-01-21_x64_v1 Assembly=" + text + " LastWrite=" + text2);
+				Logger.LogTrace("System", "[AnimusForge] BUILD_2026-01-21_x64_v1 Assembly=" + text + " LastWrite=" + text2);
 			}
 			string name = __originalMethod.Name;
 			string[] junkKeywords = JunkKeywords;

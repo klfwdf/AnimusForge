@@ -13,7 +13,7 @@ using TaleWorlds.InputSystem;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
 
-namespace Voxforge;
+namespace AnimusForge;
 
 public class DuelBehavior : CampaignBehaviorBase
 {
@@ -1182,7 +1182,7 @@ public class DuelBehavior : CampaignBehaviorBase
 							if (item != null)
 							{
 								string text2 = item.GetType().FullName ?? "";
-								if (text2 == "Voxforge.ShoutBehavior+ShoutMissionBehavior")
+								if (text2 == "AnimusForge.ShoutBehavior+ShoutMissionBehavior")
 								{
 									flag2 = true;
 									break;
@@ -1826,7 +1826,7 @@ public class DuelBehavior : CampaignBehaviorBase
 			string text3 = Hero.MainHero?.CurrentSettlement?.StringId ?? "";
 			Logger.Log("DuelBehavior", "[ArenaTeleport] 尝试通过 MissionState.OpenNew 切换到竞技场。CurrentScene=" + text2 + ", TargetScene=" + text + ", SettlementId=" + text3 + ", Target=" + target?.StringId);
 			MissionInitializerRecord rec = new MissionInitializerRecord(text);
-			MissionState.OpenNew("Voxforge_ArenaDuel", rec, (Mission mission) => new MissionBehavior[4]
+			MissionState.OpenNew("AnimusForge_ArenaDuel", rec, (Mission mission) => new MissionBehavior[4]
 			{
 				new ArenaDuelMissionBehavior(target),
 				new AgentHumanAILogic(),

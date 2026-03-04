@@ -3,7 +3,7 @@ using System.Reflection;
 using HarmonyLib;
 using TaleWorlds.MountAndBlade;
 
-namespace Voxforge;
+namespace AnimusForge;
 
 public static class NameMarkerSafePatch
 {
@@ -23,7 +23,7 @@ public static class NameMarkerSafePatch
 				MethodInfo methodInfo = AccessTools.Method(type, "OnTick");
 				if (!(methodInfo == null))
 				{
-					Harmony harmony = new Harmony("Voxforge.namemarker.safety");
+					Harmony harmony = new Harmony("AnimusForge.namemarker.safety");
 					HarmonyMethod prefix = new HarmonyMethod(typeof(NameMarkerSafePatch).GetMethod("Prefix", BindingFlags.Static | BindingFlags.Public));
 					harmony.Patch(methodInfo, prefix);
 					_patched = true;

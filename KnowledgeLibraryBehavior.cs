@@ -16,7 +16,7 @@ using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
 
-namespace Voxforge;
+namespace AnimusForge;
 
 public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 {

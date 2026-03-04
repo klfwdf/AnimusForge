@@ -3,7 +3,7 @@ using System.Reflection;
 using HarmonyLib;
 using TaleWorlds.MountAndBlade;
 
-namespace Voxforge;
+namespace AnimusForge;
 
 public static class InteractionComponentSafePatch
 {
@@ -23,7 +23,7 @@ public static class InteractionComponentSafePatch
 				MethodInfo methodInfo = AccessTools.Method(type, "FocusTick");
 				if (!(methodInfo == null))
 				{
-					Harmony harmony = new Harmony("Voxforge.interactioncomponent.safety");
+					Harmony harmony = new Harmony("AnimusForge.interactioncomponent.safety");
 					HarmonyMethod prefix = new HarmonyMethod(typeof(InteractionComponentSafePatch).GetMethod("Prefix", BindingFlags.Static | BindingFlags.Public));
 					HarmonyMethod finalizer = new HarmonyMethod(typeof(InteractionComponentSafePatch).GetMethod("Finalizer", BindingFlags.Static | BindingFlags.Public));
 					harmony.Patch(methodInfo, prefix, null, null, finalizer);

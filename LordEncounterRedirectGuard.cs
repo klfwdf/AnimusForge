@@ -1,7 +1,7 @@
 using TaleWorlds.CampaignSystem.Encounters;
 using TaleWorlds.Engine;
 
-namespace Voxforge;
+namespace AnimusForge;
 
 internal static class LordEncounterRedirectGuard
 {

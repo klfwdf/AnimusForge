@@ -7,7 +7,7 @@ using Newtonsoft.Json.Linq;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.Engine;
 
-namespace Voxforge;
+namespace AnimusForge;
 
 internal static class VoiceMapper
 {
@@ -339,7 +339,7 @@ internal static class VoiceMapper
 			catch
 			{
 			}
-			string path = System.IO.Path.Combine(text, "Modules", "Voxforge", "ModuleData", "VoiceMapping.json");
+			string path = System.IO.Path.Combine(text, "Modules", "AnimusForge", "ModuleData", "VoiceMapping.json");
 			string directoryName = System.IO.Path.GetDirectoryName(path);
 			if (!string.IsNullOrEmpty(directoryName) && !Directory.Exists(directoryName))
 			{
@@ -445,7 +445,7 @@ internal static class VoiceMapper
 		catch
 		{
 		}
-		string text2 = System.IO.Path.Combine(text, "Modules", "Voxforge", "ModuleData", "VoiceMapping.json");
+		string text2 = System.IO.Path.Combine(text, "Modules", "AnimusForge", "ModuleData", "VoiceMapping.json");
 		if (!File.Exists(text2))
 		{
 			Logger.Log("VoiceMapper", "VoiceMapping.json 未找到: " + text2 + "，将使用 MCM 全局 TtsVoiceId");

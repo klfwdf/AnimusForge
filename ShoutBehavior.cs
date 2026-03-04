@@ -21,7 +21,7 @@ using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
 using TaleWorlds.MountAndBlade.Missions;
 
-namespace Voxforge;
+namespace AnimusForge;
 
 public class ShoutBehavior : CampaignBehaviorBase
 {

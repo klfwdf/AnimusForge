@@ -1,7 +1,7 @@
 using HarmonyLib;
 using TaleWorlds.CampaignSystem.Actions;
 
-namespace Voxforge;
+namespace AnimusForge;
 
 [HarmonyPatch(typeof(DeclareWarAction), "ApplyInternal")]
 public static class Patch_Meeting_SuppressDeclareWarAction

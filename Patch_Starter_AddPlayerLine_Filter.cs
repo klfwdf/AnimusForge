@@ -4,7 +4,7 @@ using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Conversation;
 using TaleWorlds.Localization;
 
-namespace Voxforge;
+namespace AnimusForge;
 
 [HarmonyPatch(typeof(CampaignGameStarter), "AddPlayerLine", new Type[]
 {

@@ -2,7 +2,7 @@ using System;
 using System.Reflection;
 using HarmonyLib;
 
-namespace Voxforge;
+namespace AnimusForge;
 
 public static class PassageUsePointSafePatch
 {
@@ -22,7 +22,7 @@ public static class PassageUsePointSafePatch
 				MethodInfo methodInfo = AccessTools.Method(type, "AfterMissionStart");
 				if (!(methodInfo == null))
 				{
-					Harmony harmony = new Harmony("Voxforge.passageusepoint.safety");
+					Harmony harmony = new Harmony("AnimusForge.passageusepoint.safety");
 					HarmonyMethod prefix = new HarmonyMethod(typeof(PassageUsePointSafePatch).GetMethod("Prefix", BindingFlags.Static | BindingFlags.Public));
 					harmony.Patch(methodInfo, prefix);
 					_patched = true;

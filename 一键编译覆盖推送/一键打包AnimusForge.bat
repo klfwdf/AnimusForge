@@ -11,7 +11,7 @@ if not exist "%PS_SCRIPT%" (
     exit /b 1
 )
 
-echo [Voxforge] Packaging started...
+echo [AnimusForge] Packaging started...
 powershell -NoProfile -ExecutionPolicy Bypass -File "%PS_SCRIPT%" %*
 set "ERR=%ERRORLEVEL%"
 

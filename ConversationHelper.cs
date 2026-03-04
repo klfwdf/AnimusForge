@@ -1,7 +1,7 @@
 using System;
 using System.Reflection;
 
-namespace Voxforge;
+namespace AnimusForge;
 
 public static class ConversationHelper
 {

@@ -1,7 +1,7 @@
 using HarmonyLib;
 using TaleWorlds.GauntletUI.BaseTypes;
 
-namespace Voxforge;
+namespace AnimusForge;
 
 [HarmonyPatch(typeof(ButtonWidget), "HandleClick")]
 public static class Patch_GlobalUI_Click

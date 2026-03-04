@@ -6,7 +6,7 @@ using TaleWorlds.Core;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
 
-namespace Voxforge;
+namespace AnimusForge;
 
 public class SubModule : MBSubModuleBase
 {
@@ -17,7 +17,7 @@ public class SubModule : MBSubModuleBase
 		try
 		{
 			Logger.LogTrace("SubModule", ">>> 正在尝试激活 Harmony 补丁...");
-			Harmony harmony = new Harmony("com.Voxforge.spy");
+			Harmony harmony = new Harmony("com.AnimusForge.spy");
 			try
 			{
 				PatchClassProcessor patchClassProcessor = harmony.CreateClassProcessor(typeof(Patch_Starter_AddPlayerLine_Filter));
@@ -152,7 +152,7 @@ public class SubModule : MBSubModuleBase
 		DuelBehavior.Instance?.OnEngineTick();
 	}
 
-	[CommandLineFunctionality.CommandLineArgumentFunction("reload", "Voxforge")]
+	[CommandLineFunctionality.CommandLineArgumentFunction("reload", "AnimusForge")]
 	public static string CommandReloadConfig(List<string> strings)
 	{
 		AIConfigHandler.ReloadConfig();

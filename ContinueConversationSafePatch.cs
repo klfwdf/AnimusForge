@@ -2,7 +2,7 @@ using System;
 using System.Reflection;
 using HarmonyLib;
 
-namespace Voxforge;
+namespace AnimusForge;
 
 public static class ContinueConversationSafePatch
 {
@@ -22,7 +22,7 @@ public static class ContinueConversationSafePatch
 				MethodInfo methodInfo = AccessTools.Method(type, "ContinueConversation");
 				if (!(methodInfo == null))
 				{
-					Harmony harmony = new Harmony("Voxforge.continueconversation.safety");
+					Harmony harmony = new Harmony("AnimusForge.continueconversation.safety");
 					HarmonyMethod finalizer = new HarmonyMethod(typeof(ContinueConversationSafePatch).GetMethod("Finalizer", BindingFlags.Static | BindingFlags.Public));
 					harmony.Patch(methodInfo, null, null, null, finalizer);
 					_patched = true;

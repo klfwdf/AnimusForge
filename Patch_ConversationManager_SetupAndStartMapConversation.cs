@@ -7,7 +7,7 @@ using TaleWorlds.CampaignSystem.Conversation;
 using TaleWorlds.CampaignSystem.Encounters;
 using TaleWorlds.CampaignSystem.Party;
 
-namespace Voxforge;
+namespace AnimusForge;
 
 [HarmonyPatch(typeof(ConversationManager), "SetupAndStartMapConversation")]
 public static class Patch_ConversationManager_SetupAndStartMapConversation

@@ -15,7 +15,7 @@ using TaleWorlds.Localization;
 using TaleWorlds.MountAndBlade;
 using TaleWorlds.MountAndBlade.View.MissionViews;
 
-namespace Voxforge;
+namespace AnimusForge;
 
 public class MeetingBattleLockMissionBehavior : MissionBehavior
 {

@@ -10,7 +10,7 @@ REM ===== Edit this if your game path is different =====
 set "BANNERLORD_ROOT=F:\SteamLibrary\steamapps\common\Mount & Blade II Bannerlord"
 set "CONFIG=Debug"
 
-echo [Voxforge] One-click build started...
+echo [AnimusForge] One-click build started...
 echo Script Dir : "%SCRIPT_DIR%"
 echo Project Dir: "%PROJECT_ROOT%"
 echo Bannerlord : "%BANNERLORD_ROOT%"
@@ -32,7 +32,7 @@ if not exist "%BANNERLORD_ROOT%" (
 )
 
 echo [1/1] Building project...
-dotnet build "%PROJECT_ROOT%\Voxforge.csproj" -c %CONFIG% /p:BannerlordRoot="%BANNERLORD_ROOT%"
+dotnet build "%PROJECT_ROOT%\AnimusForge.csproj" -c %CONFIG% /p:BannerlordRoot="%BANNERLORD_ROOT%"
 set "ERR=%ERRORLEVEL%"
 
 echo.

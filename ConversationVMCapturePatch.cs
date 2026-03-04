@@ -2,7 +2,7 @@ using System;
 using System.Reflection;
 using HarmonyLib;
 
-namespace Voxforge;
+namespace AnimusForge;
 
 public static class ConversationVMCapturePatch
 {
@@ -17,7 +17,7 @@ public static class ConversationVMCapturePatch
 			return;
 		}
 		_patched = true;
-		Harmony harmony = new Harmony("Voxforge.conversationvm.capture.v2");
+		Harmony harmony = new Harmony("AnimusForge.conversationvm.capture.v2");
 		int num = 0;
 		string[] vmTypeNames = _vmTypeNames;
 		foreach (string text in vmTypeNames)

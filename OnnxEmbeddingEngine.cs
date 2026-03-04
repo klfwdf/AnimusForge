@@ -10,7 +10,7 @@ using Microsoft.ML.OnnxRuntime.Tensors;
 using Newtonsoft.Json.Linq;
 using TaleWorlds.Engine;
 
-namespace Voxforge;
+namespace AnimusForge;
 
 public sealed class OnnxEmbeddingEngine
 {
@@ -470,8 +470,8 @@ public sealed class OnnxEmbeddingEngine
 			try
 			{
 				string basePath = Utilities.GetBasePath();
-				string text = System.IO.Path.Combine(basePath, "Modules", "Voxforge");
-				string text2 = System.IO.Path.Combine(basePath, "Modules", "Voxforge");
+				string text = System.IO.Path.Combine(basePath, "Modules", "AnimusForge");
+				string text2 = System.IO.Path.Combine(basePath, "Modules", "AnimusForge");
 				string text3 = (Directory.Exists(text) ? text : text2);
 				if (!Directory.Exists(text3))
 				{

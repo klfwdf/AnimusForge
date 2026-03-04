@@ -1,6 +1,6 @@
 using TaleWorlds.Library;
 
-namespace Voxforge;
+namespace AnimusForge;
 
 public class FloatingTextItemVM : ViewModel
 {

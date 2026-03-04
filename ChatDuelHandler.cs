@@ -2,7 +2,7 @@ using System.Text;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.MountAndBlade;
 
-namespace Voxforge;
+namespace AnimusForge;
 
 public static class ChatDuelHandler
 {

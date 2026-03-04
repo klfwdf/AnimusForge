@@ -4,7 +4,7 @@ using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Encounters;
 using TaleWorlds.CampaignSystem.Party;
 
-namespace Voxforge;
+namespace AnimusForge;
 
 [HarmonyPatch(typeof(PlayerEncounter), "Start")]
 public static class Patch_PlayerEncounter_Start
@@ -52,7 +52,7 @@ public static class Patch_PlayerEncounter_Start
 				{
 					return;
 				}
-				Logger.Log("Patch_PlayerEncounter_Start", $"检测到领主遭遇: {leaderHero.Name}，强制重定向到 Voxforge_lord_encounter");
+				Logger.Log("Patch_PlayerEncounter_Start", $"检测到领主遭遇: {leaderHero.Name}，强制重定向到 AnimusForge_lord_encounter");
 				try
 				{
 					if (Campaign.Current?.ConversationManager != null)

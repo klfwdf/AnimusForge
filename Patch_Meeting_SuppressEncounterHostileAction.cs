@@ -2,7 +2,7 @@ using HarmonyLib;
 using TaleWorlds.CampaignSystem.Actions;
 using TaleWorlds.MountAndBlade;
 
-namespace Voxforge;
+namespace AnimusForge;
 
 [HarmonyPatch(typeof(BeHostileAction), "ApplyEncounterHostileAction")]
 public static class Patch_Meeting_SuppressEncounterHostileAction

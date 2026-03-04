@@ -20,9 +20,9 @@ If `MCMv5.dll` is not auto-detected:
 - `-Mcmv5Path <full path to MCMv5.dll>`
 
 ## Notes
-- `Voxforge.csproj` now uses configurable MSBuild properties:
+- `AnimusForge.csproj` now uses configurable MSBuild properties:
   - `DepsDir`
   - `BannerlordRoot`
-  - `VoxforgeBinDir`
+  - `AnimusForgeBinDir`
   - `Mcmv5Path`
 - Build fails early with clear errors if required DLLs are missing.

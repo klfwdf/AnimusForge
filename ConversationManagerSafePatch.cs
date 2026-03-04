@@ -2,7 +2,7 @@ using System;
 using System.Reflection;
 using HarmonyLib;
 
-namespace Voxforge;
+namespace AnimusForge;
 
 public static class ConversationManagerSafePatch
 {
@@ -22,7 +22,7 @@ public static class ConversationManagerSafePatch
 				MethodInfo methodInfo = AccessTools.Method(type, "UpdateSpeakerAndListenerAgents");
 				if (!(methodInfo == null))
 				{
-					Harmony harmony = new Harmony("Voxforge.conversationmanager.safety");
+					Harmony harmony = new Harmony("AnimusForge.conversationmanager.safety");
 					HarmonyMethod finalizer = new HarmonyMethod(typeof(ConversationManagerSafePatch).GetMethod("Finalizer", BindingFlags.Static | BindingFlags.Public));
 					harmony.Patch(methodInfo, null, null, null, finalizer);
 					_patched = true;

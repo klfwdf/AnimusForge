@@ -5,7 +5,7 @@ using TaleWorlds.CampaignSystem;
 using TaleWorlds.Engine;
 using TaleWorlds.MountAndBlade;
 
-namespace Voxforge;
+namespace AnimusForge;
 
 public static class MeetingTargetWieldBlockPatch
 {
@@ -31,7 +31,7 @@ public static class MeetingTargetWieldBlockPatch
 			{
 				return;
 			}
-			Harmony harmony = new Harmony("Voxforge.meeting.target.wieldblock");
+			Harmony harmony = new Harmony("AnimusForge.meeting.target.wieldblock");
 			int num = 0;
 			MethodInfo[] methods = typeFromHandle.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 			MethodInfo[] array = methods;

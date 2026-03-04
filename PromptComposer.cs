@@ -2,7 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Text;
 
-namespace Voxforge;
+namespace AnimusForge;
 
 internal static class PromptComposer
 {

@@ -7,11 +7,11 @@ using TaleWorlds.CampaignSystem;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
 
-namespace Voxforge;
+namespace AnimusForge;
 
 public class ModOnboardingBehavior : CampaignBehaviorBase
 {
-	private const string SetupDoneKey = "_Voxforge_setup_done_v1";
+	private const string SetupDoneKey = "_AnimusForge_setup_done_v1";
 
 	private bool _setupDone;
 
@@ -41,7 +41,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 
 	public override void SyncData(IDataStore dataStore)
 	{
-		dataStore.SyncData("_Voxforge_setup_done_v1", ref _setupDone);
+		dataStore.SyncData("_AnimusForge_setup_done_v1", ref _setupDone);
 		if (!_setupDone)
 		{
 			_welcomeShownThisSession = false;
@@ -114,9 +114,9 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			}
 			_suppressWelcomeUntilUtcTicks = ticks + TimeSpan.FromMilliseconds(fromGate ? 800 : 200).Ticks;
 			string playerExportsRootPath = GetPlayerExportsRootPath();
-			string text = "首次在此存档中使用 Voxforge，必须导入编辑器导出的 JSON 数据，否则本 MOD 的对话/场景喊话将不可用。\n\n需要导入（缺一不可）：\n1) Hero：个性与背景（personality_background/*.json）\n2) 非Hero：描述（unnamed_persona/*.json）\n3) 知识：knowledge/rules/*.json（兼容旧版：knowledge/KnowledgeRules.json）\n\n导入目录（默认）：\n" + playerExportsRootPath;
+			string text = "首次在此存档中使用 AnimusForge，必须导入编辑器导出的 JSON 数据，否则本 MOD 的对话/场景喊话将不可用。\n\n需要导入（缺一不可）：\n1) Hero：个性与背景（personality_background/*.json）\n2) 非Hero：描述（unnamed_persona/*.json）\n3) 知识：knowledge/rules/*.json（兼容旧版：knowledge/KnowledgeRules.json）\n\n导入目录（默认）：\n" + playerExportsRootPath;
 			_welcomeInProgress = true;
-			InformationManager.ShowInquiry(new InquiryData("Voxforge - 首次使用", text, isAffirmativeOptionShown: true, isNegativeOptionShown: true, "一键导入", "退出（不导入不可用）", delegate
+			InformationManager.ShowInquiry(new InquiryData("AnimusForge - 首次使用", text, isAffirmativeOptionShown: true, isNegativeOptionShown: true, "一键导入", "退出（不导入不可用）", delegate
 			{
 				_welcomeInProgress = false;
 				OpenImportFolderPicker(delegate
@@ -281,7 +281,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			else
 			{
 				_setupDone = true;
-				InformationManager.DisplayMessage(new InformationMessage("首次导入完成：已解锁 Voxforge 对话/场景喊话。"));
+				InformationManager.DisplayMessage(new InformationMessage("首次导入完成：已解锁 AnimusForge 对话/场景喊话。"));
 				onReturn?.Invoke();
 			}
 		}

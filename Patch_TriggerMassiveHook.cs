@@ -4,7 +4,7 @@ using TaleWorlds.Engine;
 using TaleWorlds.InputSystem;
 using TaleWorlds.MountAndBlade;
 
-namespace Voxforge;
+namespace AnimusForge;
 
 [HarmonyPatch(typeof(Module), "OnApplicationTick")]
 public static class Patch_TriggerMassiveHook

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using HarmonyLib;
 
-namespace Voxforge;
+namespace AnimusForge;
 
 public static class LipSyncFacialAnimSuppressPatch
 {
@@ -30,7 +30,7 @@ public static class LipSyncFacialAnimSuppressPatch
 				Logger.LogTrace("System", "❌ LipSyncFacialAnimSuppressPatch: 找不到 OnMissionTick 方法。");
 				return;
 			}
-			Harmony harmony = new Harmony("Voxforge.lipsync.facialanimsuppress");
+			Harmony harmony = new Harmony("AnimusForge.lipsync.facialanimsuppress");
 			HarmonyMethod prefix = new HarmonyMethod(typeof(LipSyncFacialAnimSuppressPatch).GetMethod("Prefix", BindingFlags.Static | BindingFlags.Public));
 			harmony.Patch(methodInfo, prefix);
 			Logger.LogTrace("System", "✅ LipSyncFacialAnimSuppressPatch 已对 MissionFacialAnimationHandler.OnMissionTick 打补丁。");

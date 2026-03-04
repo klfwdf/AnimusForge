@@ -18,7 +18,7 @@ using TaleWorlds.Library;
 using TaleWorlds.Localization;
 using TaleWorlds.MountAndBlade;
 
-namespace Voxforge;
+namespace AnimusForge;
 
 public class LordEncounterBehavior : CampaignBehaviorBase
 {
@@ -729,7 +729,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		{
 			text = null;
 		}
-		if (text == "Voxforge_lord_encounter")
+		if (text == "AnimusForge_lord_encounter")
 		{
 			return;
 		}
@@ -766,7 +766,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			{
 				SetTarget(hero);
 			}
-			GameMenu.ActivateGameMenu("Voxforge_lord_encounter");
+			GameMenu.ActivateGameMenu("AnimusForge_lord_encounter");
 			string text2 = null;
 			try
 			{
@@ -776,7 +776,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			{
 				text2 = null;
 			}
-			if (text2 == "Voxforge_lord_encounter")
+			if (text2 == "AnimusForge_lord_encounter")
 			{
 				Logger.Log("LordEncounter", "Forced custom post-battle settlement menu open from pending meeting victory marker.");
 			}
@@ -1327,11 +1327,11 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 
 	private void AddConversationOptions(CampaignGameStarter starter)
 	{
-		starter.AddPlayerLine("Voxforge_meet_talk", "lord_talk_ask_something_2", "lord_talk_ask_something_2", "Let's talk.", null, null);
-		starter.AddPlayerLine("Voxforge_show_item", "lord_talk_ask_something_2", "Voxforge_show_item_response", "I want to show you something.", null, null);
-		starter.AddDialogLine("Voxforge_show_item_response", "Voxforge_show_item_response", "lord_start", "Oh? What is it?", null, null);
-		starter.AddPlayerLine("Voxforge_give_item", "lord_talk_ask_something_2", "Voxforge_give_item_response", "I have something for you.", null, null);
-		starter.AddDialogLine("Voxforge_give_item_response", "Voxforge_give_item_response", "lord_start", "Thank you, I will take a look.", null, null);
+		starter.AddPlayerLine("AnimusForge_meet_talk", "lord_talk_ask_something_2", "lord_talk_ask_something_2", "Let's talk.", null, null);
+		starter.AddPlayerLine("AnimusForge_show_item", "lord_talk_ask_something_2", "AnimusForge_show_item_response", "I want to show you something.", null, null);
+		starter.AddDialogLine("AnimusForge_show_item_response", "AnimusForge_show_item_response", "lord_start", "Oh? What is it?", null, null);
+		starter.AddPlayerLine("AnimusForge_give_item", "lord_talk_ask_something_2", "AnimusForge_give_item_response", "I have something for you.", null, null);
+		starter.AddDialogLine("AnimusForge_give_item_response", "AnimusForge_give_item_response", "lord_start", "Thank you, I will take a look.", null, null);
 	}
 
 	public static void OpenEncounterMenu(Hero target)
@@ -1360,7 +1360,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			catch
 			{
 			}
-			GameMenu.ActivateGameMenu("Voxforge_lord_encounter");
+			GameMenu.ActivateGameMenu("AnimusForge_lord_encounter");
 		}
 		catch (Exception ex)
 		{
@@ -1726,7 +1726,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		{
 			text = null;
 		}
-		if (args?.MenuContext?.GameMenu?.StringId == "Voxforge_lord_encounter")
+		if (args?.MenuContext?.GameMenu?.StringId == "AnimusForge_lord_encounter")
 		{
 			EnsureEncounterTargetHero("menu_opened");
 			TryRunPostMissionCleanupIfReady();
@@ -1758,7 +1758,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			TryRunPostMissionCleanupIfReady();
 		}
 		string text = Campaign.Current?.CurrentMenuContext?.GameMenu?.StringId;
-		if (!(text == "Voxforge_lord_encounter"))
+		if (!(text == "AnimusForge_lord_encounter"))
 		{
 			if (_cameraLockWasActive)
 			{
@@ -2226,7 +2226,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 
 	private void AddGameMenus(CampaignGameStarter starter)
 	{
-		starter.AddGameMenu("Voxforge_lord_encounter", "{MENU_BODY_TEXT}", delegate(MenuCallbackArgs args)
+		starter.AddGameMenu("AnimusForge_lord_encounter", "{MENU_BODY_TEXT}", delegate(MenuCallbackArgs args)
 		{
 			Hero hero = EnsureEncounterTargetHero("menu_init");
 			GameTexts.SetVariable("TARGET_NAME", (hero != null) ? hero.Name : new TextObject("领主"));
@@ -2245,7 +2245,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			ApplyLordEncounterMenuBackground(args, hero);
 			FocusMapCameraOnMainParty();
 		});
-		starter.AddGameMenuOption("Voxforge_lord_encounter", "meet_lord", "与{TARGET_NAME}会面", delegate(MenuCallbackArgs args)
+		starter.AddGameMenuOption("AnimusForge_lord_encounter", "meet_lord", "与{TARGET_NAME}会面", delegate(MenuCallbackArgs args)
 		{
 			if (TryBuildMeetingPostBattleSettlementText(_targetHero, out var _))
 			{
@@ -2279,7 +2279,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 				IsOpeningConversation = false;
 			}
 		});
-		starter.AddGameMenuOption("Voxforge_lord_encounter", "attack_lord", "{PRIMARY_ACTION_LABEL}", delegate
+		starter.AddGameMenuOption("AnimusForge_lord_encounter", "attack_lord", "{PRIMARY_ACTION_LABEL}", delegate
 		{
 			Hero hero = EnsureEncounterTargetHero("menu_attack_condition");
 			GameTexts.SetVariable("TARGET_NAME", (hero != null) ? hero.Name : new TextObject("领主"));
@@ -2300,7 +2300,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 				GameMenu.SwitchToMenu("encounter");
 			}
 		});
-		starter.AddGameMenuOption("Voxforge_lord_encounter", "leave_lord", "离开", delegate
+		starter.AddGameMenuOption("AnimusForge_lord_encounter", "leave_lord", "离开", delegate
 		{
 			if (TryBuildMeetingPostBattleSettlementText(_targetHero, out var _))
 			{

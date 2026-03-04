@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace Voxforge;
+namespace AnimusForge;
 
 internal sealed class TtsEngine : IDisposable
 {
@@ -722,7 +722,7 @@ internal sealed class TtsEngine : IDisposable
 						["token"] = "token",
 					["cluster"] = "volcano_tts"
 				},
-				["user"] = new JObject { ["uid"] = "voxforge" },
+				["user"] = new JObject { ["uid"] = "animusforge" },
 				["audio"] = new JObject
 				{
 					["voice_type"] = voiceType,
@@ -1100,7 +1100,7 @@ internal sealed class TtsEngine : IDisposable
 	{
 		if (_tempAudioDir == null)
 		{
-			_tempAudioDir = Path.Combine(Path.GetTempPath(), "Voxforge_TtsAudio");
+			_tempAudioDir = Path.Combine(Path.GetTempPath(), "AnimusForge_TtsAudio");
 		}
 		if (!Directory.Exists(_tempAudioDir))
 		{

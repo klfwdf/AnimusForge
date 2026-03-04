@@ -3,7 +3,7 @@ using System.Reflection;
 using HarmonyLib;
 using TaleWorlds.MountAndBlade;
 
-namespace Voxforge;
+namespace AnimusForge;
 
 public static class MissionScreenSafePatch
 {
@@ -49,7 +49,7 @@ public static class MissionScreenSafePatch
 				Logger.LogTrace("System", "❌ MissionScreenSafePatch: 未能找到 BeforeMissionTick 目标方法。");
 				return;
 			}
-			Harmony harmony = new Harmony("Voxforge.missionscreen.safety");
+			Harmony harmony = new Harmony("AnimusForge.missionscreen.safety");
 			HarmonyMethod prefix = new HarmonyMethod(typeof(MissionScreenSafePatch).GetMethod("Prefix", BindingFlags.Static | BindingFlags.Public));
 			harmony.Patch(methodInfo, prefix);
 			_patched = true;

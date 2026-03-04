@@ -1,4 +1,4 @@
-namespace Voxforge;
+namespace AnimusForge;
 
 public class NpcDataPacket
 {

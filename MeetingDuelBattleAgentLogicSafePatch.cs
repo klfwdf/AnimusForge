@@ -3,7 +3,7 @@ using System.Reflection;
 using HarmonyLib;
 using TaleWorlds.Engine;
 
-namespace Voxforge;
+namespace AnimusForge;
 
 public static class MeetingDuelBattleAgentLogicSafePatch
 {
@@ -25,7 +25,7 @@ public static class MeetingDuelBattleAgentLogicSafePatch
 				Logger.LogTrace("System", "❌ MeetingDuelBattleAgentLogicSafePatch: 找不到 BattleAgentLogic 类型。");
 				return;
 			}
-			Harmony harmony = new Harmony("Voxforge.battleagentlogic.meetingduel.safety");
+			Harmony harmony = new Harmony("AnimusForge.battleagentlogic.meetingduel.safety");
 			HarmonyMethod finalizer = new HarmonyMethod(typeof(MeetingDuelBattleAgentLogicSafePatch).GetMethod("Finalizer", BindingFlags.Static | BindingFlags.Public));
 			int num = 0;
 			foreach (MethodInfo declaredMethod in AccessTools.GetDeclaredMethods(type))

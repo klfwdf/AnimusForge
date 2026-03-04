@@ -1,6 +1,6 @@
 using TaleWorlds.CampaignSystem;
 
-namespace Voxforge;
+namespace AnimusForge;
 
 internal static class MeetingBattleRuntime
 {

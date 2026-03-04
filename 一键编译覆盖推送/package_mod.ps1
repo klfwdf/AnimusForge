@@ -48,7 +48,7 @@ function Get-NextPatchVersion {
     return "$($parts.Prefix)$major.$minor.$patch"
 }
 
-function Test-VoxforgeModuleDir {
+function Test-AnimusForgeModuleDir {
     param([Parameter(Mandatory = $true)][string]$Path)
 
     $requiredEntries = @("bin", "SubModule.xml", "ModuleData", "GUI", "PlayerExports")
@@ -73,8 +73,8 @@ function Test-VoxforgeModuleDir {
         try {
             [xml]$subXml = Get-Content -LiteralPath $subModulePathLocal
             $moduleId = [string]$subXml.Module.Id.value
-            if ($moduleId -ne "Voxforge") {
-                $missing.Add("SubModule.xml: Module/Id must be Voxforge")
+            if ($moduleId -ne "AnimusForge") {
+                $missing.Add("SubModule.xml: Module/Id must be AnimusForge")
             }
         } catch {
             $missing.Add("SubModule.xml: invalid XML")
@@ -87,7 +87,7 @@ function Test-VoxforgeModuleDir {
     }
 }
 
-function Resolve-VoxforgeModuleDir {
+function Resolve-AnimusForgeModuleDir {
     param(
         [string]$RequestedPath,
         [switch]$AllowFirstMatch
@@ -95,9 +95,9 @@ function Resolve-VoxforgeModuleDir {
 
     if (-not [string]::IsNullOrWhiteSpace($RequestedPath)) {
         $requestedFull = [System.IO.Path]::GetFullPath($RequestedPath)
-        $check = Test-VoxforgeModuleDir -Path $requestedFull
+        $check = Test-AnimusForgeModuleDir -Path $requestedFull
         if (-not $check.IsValid) {
-            throw ("ModuleDir is not a valid Voxforge module: {0}`nMissing/Invalid: {1}" -f $requestedFull, ($check.Missing -join ", "))
+            throw ("ModuleDir is not a valid AnimusForge module: {0}`nMissing/Invalid: {1}" -f $requestedFull, ($check.Missing -join ", "))
         }
         return [PSCustomObject]@{
             Path = $requestedFull
@@ -109,9 +109,9 @@ function Resolve-VoxforgeModuleDir {
     $roots = Get-PSDrive -PSProvider FileSystem | Select-Object -ExpandProperty Root
     foreach ($rootRaw in $roots) {
         $root = $rootRaw.TrimEnd('\', '/')
-        $candidatePaths.Add($root + "\SteamLibrary\steamapps\common\Mount & Blade II Bannerlord\Modules\Voxforge")
-        $candidatePaths.Add($root + "\Program Files (x86)\Steam\steamapps\common\Mount & Blade II Bannerlord\Modules\Voxforge")
-        $candidatePaths.Add($root + "\Program Files\Steam\steamapps\common\Mount & Blade II Bannerlord\Modules\Voxforge")
+        $candidatePaths.Add($root + "\SteamLibrary\steamapps\common\Mount & Blade II Bannerlord\Modules\AnimusForge")
+        $candidatePaths.Add($root + "\Program Files (x86)\Steam\steamapps\common\Mount & Blade II Bannerlord\Modules\AnimusForge")
+        $candidatePaths.Add($root + "\Program Files\Steam\steamapps\common\Mount & Blade II Bannerlord\Modules\AnimusForge")
     }
 
     $validCandidates = New-Object System.Collections.Generic.List[string]
@@ -119,18 +119,18 @@ function Resolve-VoxforgeModuleDir {
         if (-not (Test-Path -LiteralPath $candidate -PathType Container)) {
             continue
         }
-        $check = Test-VoxforgeModuleDir -Path $candidate
+        $check = Test-AnimusForgeModuleDir -Path $candidate
         if ($check.IsValid) {
             $validCandidates.Add([System.IO.Path]::GetFullPath($candidate))
         }
     }
 
     if ($validCandidates.Count -eq 0) {
-        throw "Auto-detect failed: no valid Voxforge module found. You can pass -ModuleDir explicitly."
+        throw "Auto-detect failed: no valid AnimusForge module found. You can pass -ModuleDir explicitly."
     }
     if ($validCandidates.Count -gt 1 -and -not $AllowFirstMatch) {
         $list = ($validCandidates | ForEach-Object { " - $_" }) -join "`r`n"
-        throw "Auto-detect found multiple Voxforge modules. Please pass -ModuleDir explicitly or use -UseFirstMatch.`r`n$list"
+        throw "Auto-detect found multiple AnimusForge modules. Please pass -ModuleDir explicitly or use -UseFirstMatch.`r`n$list"
     }
 
     return [PSCustomObject]@{
@@ -139,7 +139,7 @@ function Resolve-VoxforgeModuleDir {
     }
 }
 
-$resolvedModule = Resolve-VoxforgeModuleDir -RequestedPath $ModuleDir -AllowFirstMatch:$UseFirstMatch
+$resolvedModule = Resolve-AnimusForgeModuleDir -RequestedPath $ModuleDir -AllowFirstMatch:$UseFirstMatch
 $ModuleDir = $resolvedModule.Path
 $wasAutoDetected = $resolvedModule.AutoDetected
 $moduleDirFull = [System.IO.Path]::GetFullPath($ModuleDir).TrimEnd('\', '/')

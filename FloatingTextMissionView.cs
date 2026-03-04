@@ -8,7 +8,7 @@ using TaleWorlds.MountAndBlade.View.MissionViews;
 using TaleWorlds.MountAndBlade.View.Screens;
 using TaleWorlds.ScreenSystem;
 
-namespace Voxforge;
+namespace AnimusForge;
 
 public class FloatingTextMissionView : MissionView
 {

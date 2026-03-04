@@ -5,7 +5,7 @@ using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Conversation;
 using TaleWorlds.MountAndBlade;
 
-namespace Voxforge;
+namespace AnimusForge;
 
 public static class ConversationCameraSafePatch
 {
@@ -25,7 +25,7 @@ public static class ConversationCameraSafePatch
 				Logger.LogTrace("System", "❌ ConversationCameraSafePatch: 找不到 MissionConversationCameraView 类型。");
 				return;
 			}
-			Harmony harmony = new Harmony("Voxforge.conversationcamera.safety");
+			Harmony harmony = new Harmony("AnimusForge.conversationcamera.safety");
 			HarmonyMethod prefix = new HarmonyMethod(typeof(ConversationCameraSafePatch).GetMethod("Prefix", BindingFlags.Static | BindingFlags.Public));
 			MethodInfo methodInfo = AccessTools.Method(type, "UpdateAgentLooksForConversation");
 			if (methodInfo != null)

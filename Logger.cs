@@ -11,7 +11,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using TaleWorlds.Engine;
 
-namespace Voxforge;
+namespace AnimusForge;
 
 public static class Logger
 {
@@ -151,7 +151,7 @@ public static class Logger
 		try
 		{
 			string basePath = Utilities.GetBasePath();
-			string text = System.IO.Path.Combine(basePath, "Modules", "Voxforge", "Logs");
+			string text = System.IO.Path.Combine(basePath, "Modules", "AnimusForge", "Logs");
 			if (!Directory.Exists(text))
 			{
 				Directory.CreateDirectory(text);
@@ -189,7 +189,7 @@ public static class Logger
 				{
 					["ts"] = DateTime.UtcNow.ToString("o"),
 					["type"] = "boot",
-					["message"] = "Voxforge logger initialized"
+					["message"] = "AnimusForge logger initialized"
 				}) + "\n");
 			}
 		}

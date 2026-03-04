@@ -11,7 +11,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using TaleWorlds.Library;
 
-namespace Voxforge;
+namespace AnimusForge;
 
 public class DuelSettings : AttributeGlobalSettings<DuelSettings>
 {
@@ -21,11 +21,11 @@ public class DuelSettings : AttributeGlobalSettings<DuelSettings>
 
 	public static readonly HttpClient GlobalClient = new HttpClient();
 
-	public override string Id => "Voxforge_global_settings";
+	public override string Id => "AnimusForge_global_settings";
 
-	public override string DisplayName => "Voxforge设置";
+	public override string DisplayName => "AnimusForge设置";
 
-	public override string FolderName => "Voxforge";
+	public override string FolderName => "AnimusForge";
 
 	public override string FormatType => "json";
 

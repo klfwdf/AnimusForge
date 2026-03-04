@@ -15,7 +15,7 @@ using TaleWorlds.Engine;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
 
-namespace Voxforge;
+namespace AnimusForge;
 
 public static class ShoutUtils
 {
@@ -61,7 +61,7 @@ public static class ShoutUtils
 	private static string GetUnnamedProfilesPath()
 	{
 		string basePath = Utilities.GetBasePath();
-		return System.IO.Path.Combine(basePath, "Modules", "Voxforge", "ModuleData", "UnnamedNpcProfiles.json");
+		return System.IO.Path.Combine(basePath, "Modules", "AnimusForge", "ModuleData", "UnnamedNpcProfiles.json");
 	}
 
 	private static string SanitizeFileName(string s)

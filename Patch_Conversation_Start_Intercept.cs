@@ -5,7 +5,7 @@ using TaleWorlds.CampaignSystem.Conversation;
 using TaleWorlds.CampaignSystem.Encounters;
 using TaleWorlds.CampaignSystem.MapEvents;
 
-namespace Voxforge;
+namespace AnimusForge;
 
 [HarmonyPatch(typeof(ConversationManager), "StartConversation")]
 public static class Patch_Conversation_Start_Intercept
@@ -24,7 +24,7 @@ public static class Patch_Conversation_Start_Intercept
 				Logger.LogTrace("Patch_Conversation_Start_Intercept", "Custom encounter menu is disabled for current encounter; allow native StartConversation.");
 				return true;
 			}
-			if (Campaign.Current.CurrentMenuContext?.GameMenu.StringId == "Voxforge_lord_encounter")
+			if (Campaign.Current.CurrentMenuContext?.GameMenu.StringId == "AnimusForge_lord_encounter")
 			{
 				return true;
 			}

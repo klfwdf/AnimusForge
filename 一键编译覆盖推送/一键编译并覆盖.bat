@@ -8,11 +8,11 @@ cd /d "%SCRIPT_DIR%"
 set "BANNERLORD_ROOT=F:\SteamLibrary\steamapps\common\Mount & Blade II Bannerlord"
 set "CONFIG=Debug"
 
-set "SRC_DEBUG=%PROJECT_ROOT%\bin\Debug\net472\Voxforge.dll"
-set "SRC_RELEASE=%PROJECT_ROOT%\bin\Release\net472\Voxforge.dll"
+set "SRC_DEBUG=%PROJECT_ROOT%\bin\Debug\net472\AnimusForge.dll"
+set "SRC_RELEASE=%PROJECT_ROOT%\bin\Release\net472\AnimusForge.dll"
 set "SRC_DLL="
 
-echo [Voxforge] Build + Deploy started...
+echo [AnimusForge] Build + Deploy started...
 echo Script Dir : "%SCRIPT_DIR%"
 echo Project Dir: "%PROJECT_ROOT%"
 echo Bannerlord : "%BANNERLORD_ROOT%"
@@ -34,7 +34,7 @@ if not exist "%BANNERLORD_ROOT%" (
 )
 
 echo [1/2] Build...
-dotnet build "%PROJECT_ROOT%\Voxforge.csproj" -c %CONFIG% /p:BannerlordRoot="%BANNERLORD_ROOT%"
+dotnet build "%PROJECT_ROOT%\AnimusForge.csproj" -c %CONFIG% /p:BannerlordRoot="%BANNERLORD_ROOT%"
 set "ERR=%ERRORLEVEL%"
 if not "%ERR%"=="0" (
     echo.
@@ -59,7 +59,7 @@ echo.
 echo [2/2] Deploy...
 echo Source DLL : "%SRC_DLL%"
 
-set "TARGET_LIST_FILE=%TEMP%\voxforge_targets_%RANDOM%_%RANDOM%.txt"
+set "TARGET_LIST_FILE=%TEMP%\animusforge_targets_%RANDOM%_%RANDOM%.txt"
 if exist "%TARGET_LIST_FILE%" del /f /q "%TARGET_LIST_FILE%" >nul 2>nul
 
 powershell -NoProfile -ExecutionPolicy Bypass -Command ^
@@ -69,9 +69,9 @@ powershell -NoProfile -ExecutionPolicy Bypass -Command ^
   "$drives = Get-PSDrive -PSProvider FileSystem | Select-Object -ExpandProperty Root;" ^
   "foreach($root in $drives){" ^
   "  $root = $root.TrimEnd('\');" ^
-  "  $candidates.Add($root + '\SteamLibrary\steamapps\common\Mount & Blade II Bannerlord\Modules\Voxforge\bin\Win64_Shipping_Client\Voxforge.dll');" ^
-  "  $candidates.Add($root + '\Program Files (x86)\Steam\steamapps\common\Mount & Blade II Bannerlord\Modules\Voxforge\bin\Win64_Shipping_Client\Voxforge.dll');" ^
-  "  $candidates.Add($root + '\Program Files\Steam\steamapps\common\Mount & Blade II Bannerlord\Modules\Voxforge\bin\Win64_Shipping_Client\Voxforge.dll');" ^
+  "  $candidates.Add($root + '\SteamLibrary\steamapps\common\Mount & Blade II Bannerlord\Modules\AnimusForge\bin\Win64_Shipping_Client\AnimusForge.dll');" ^
+  "  $candidates.Add($root + '\Program Files (x86)\Steam\steamapps\common\Mount & Blade II Bannerlord\Modules\AnimusForge\bin\Win64_Shipping_Client\AnimusForge.dll');" ^
+  "  $candidates.Add($root + '\Program Files\Steam\steamapps\common\Mount & Blade II Bannerlord\Modules\AnimusForge\bin\Win64_Shipping_Client\AnimusForge.dll');" ^
   "};" ^
   "$hits = $candidates | Where-Object { Test-Path $_ } | Sort-Object -Unique;" ^
   "$hits | Set-Content -Path $out -Encoding Ascii;" ^
@@ -90,7 +90,7 @@ for /f "usebackq delims=" %%L in ("%TARGET_LIST_FILE%") do (
 )
 
 if "%FOUND_COUNT%"=="0" (
-    echo [ERROR] No Voxforge target DLL found.
+    echo [ERROR] No AnimusForge target DLL found.
     if exist "%TARGET_LIST_FILE%" del /f /q "%TARGET_LIST_FILE%" >nul 2>nul
     pause
     exit /b 1

@@ -1,6 +1,6 @@
 using MCM.Abstractions.Base.Global;
 
-namespace Voxforge;
+namespace AnimusForge;
 
 public static class TraceHelper
 {

@@ -2,7 +2,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.2.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Voxforge", "Voxforge.csproj", "{9D001857-00F8-27CE-0601-E04DAAAB66B8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnimusForge", "AnimusForge.csproj", "{9D001857-00F8-27CE-0601-E04DAAAB66B8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

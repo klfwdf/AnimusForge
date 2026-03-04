@@ -5,7 +5,7 @@ using TaleWorlds.CampaignSystem.Encounters;
 using TaleWorlds.CampaignSystem.MapEvents;
 using TaleWorlds.MountAndBlade;
 
-namespace Voxforge;
+namespace AnimusForge;
 
 public static class EndMissionInternalSafePatch
 {
@@ -31,7 +31,7 @@ public static class EndMissionInternalSafePatch
 				Logger.LogTrace("System", "❌ EndMissionInternalSafePatch: 找不到 EndMissionInternal 目标方法。");
 				return;
 			}
-			Harmony harmony = new Harmony("Voxforge.mission.endmissioninternal.safety");
+			Harmony harmony = new Harmony("AnimusForge.mission.endmissioninternal.safety");
 			HarmonyMethod finalizer = new HarmonyMethod(typeof(EndMissionInternalSafePatch).GetMethod("Finalizer", BindingFlags.Static | BindingFlags.Public));
 			harmony.Patch(methodInfo, null, null, null, finalizer);
 			_patched = true;

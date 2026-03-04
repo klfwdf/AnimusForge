@@ -2,7 +2,7 @@ using System;
 using System.Reflection;
 using HarmonyLib;
 
-namespace Voxforge;
+namespace AnimusForge;
 
 public static class ProcessSentenceSafePatch
 {
@@ -22,7 +22,7 @@ public static class ProcessSentenceSafePatch
 				MethodInfo methodInfo = AccessTools.Method(type, "ProcessSentence");
 				if (!(methodInfo == null))
 				{
-					Harmony harmony = new Harmony("Voxforge.processsentence.safety");
+					Harmony harmony = new Harmony("AnimusForge.processsentence.safety");
 					HarmonyMethod finalizer = new HarmonyMethod(typeof(ProcessSentenceSafePatch).GetMethod("Finalizer", BindingFlags.Static | BindingFlags.Public));
 					harmony.Patch(methodInfo, null, null, null, finalizer);
 					_patched = true;
