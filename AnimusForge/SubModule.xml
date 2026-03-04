@@ -1,0 +1,30 @@
+﻿<Module>
+    <Name value="AnimusForge" />
+    <Id value="AnimusForge" />
+    <Version value="v0.3.3" />
+    <SingleplayerModule value="true" />
+    <MultiplayerModule value="false" />
+    <DependedModules>
+        <DependedModule Id="Bannerlord.Harmony" />
+        <DependedModule Id="Native" />
+        <DependedModule Id="SandBoxCore" />
+        <DependedModule Id="Sandbox" />
+        <DependedModule Id="StoryMode" />
+        <DependedModule Id="CustomBattle" />
+    </DependedModules>
+    <SubModules>
+        <SubModule>
+            <Name value="AnimusForge" />
+            <DLLName value="AnimusForge.dll" />
+            <SubModuleClassType value="AnimusForge.SubModule" />
+            <Tags>
+                <Tag key="DedicatedServerType" value="none" />
+                <Tag key="IsNoRenderModeElement" value="false" />
+            </Tags>
+        </SubModule>
+    </SubModules>
+    <Xmls />
+    <Assemblies>
+        <Assembly value="AnimusForge.dll" />
+    </Assemblies>
+</Module>

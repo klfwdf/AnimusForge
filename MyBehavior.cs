@@ -4029,6 +4029,10 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			return true;
 		}
+		if (text.IndexOf("玩家说的话让你的脑海里浮现了这些知识", StringComparison.Ordinal) >= 0)
+		{
+			return true;
+		}
 		if (text.IndexOf("应当知晓以下信息", StringComparison.OrdinalIgnoreCase) >= 0)
 		{
 			return true;

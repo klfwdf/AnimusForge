@@ -2281,6 +2281,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			if (!flag3)
 			{
 				stringBuilder.AppendLine(" ");
+				stringBuilder.AppendLine("玩家说的话让你的脑海里浮现了这些知识");
 				flag3 = true;
 			}
 			string text10 = (string.IsNullOrWhiteSpace(text9) ? (item.Id ?? "相关语义") : text9);
@@ -2577,6 +2578,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			if (!flag3)
 			{
 				stringBuilder.AppendLine(" ");
+				stringBuilder.AppendLine("玩家说的话让你的脑海里浮现了这些知识");
 				flag3 = true;
 			}
 			string text10 = (string.IsNullOrWhiteSpace(text9) ? (item.Id ?? "相关语义") : text9);
