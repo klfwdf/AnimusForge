@@ -4383,7 +4383,6 @@ public class ShoutBehavior : CampaignBehaviorBase
 				local.AppendLine("5. 若多人在场，请注意你的身份和性格，给出与其他NPC不同的独特见解，避免重复相似的内容。");
 				local.AppendLine("6. 你说的话要考虑【当前场景公共对话与互动】中别人的发言，而不是各说各的，毕竟现在是群聊");
 				local.AppendLine("7. kingdom_service 标签去重：仅在你明确同意“加入势力/成为封臣/退出当前效力”时才可输出 [ACTION:KINGDOM_SERVICE:*:*]；若【当前场景公共对话与互动】已出现同事项的 kingdom_service 标签，本轮你只能口头补充，不得重复输出。");
-				local.AppendLine($"(回复长度要求：请将本轮回复控制在 {minTokens}-{maxTokens} 字之间；除非玩家明确要求简短，否则尽量贴近上限，不要少于 {minTokens} 字。)");
 				string fixedLayerText = "";
 				string baseExtras = StripScenePersonaBlocks((ctx?.Extras ?? "").Trim());
 				string trustBlock = ExtractTrustPromptBlock(baseExtras, out var baseExtrasWithoutTrust);
@@ -4430,7 +4429,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 					new
 					{
 						role = "user",
-						content = "玩家说：\"" + playerText + "\"\n请仅以" + (npc2.Name ?? "NPC") + "的身份回复玩家。直接输出语言内容，不可输出动作描述或者思考，你可能正处于群聊中，请结合【当前场景公共对话与互动】中其他人说的话，发表自己的见解，不可以各说各的，并且请注意【耐心标签要求】中的标签要求，且遵守【护栏】及以上所有规则！"
+						content = "玩家说：\"" + playerText + "\"\n请仅以" + (npc2.Name ?? "NPC") + "的身份回复玩家。直接输出语言内容，不可输出动作描述或者思考，你可能正处于群聊中，请结合【当前场景公共对话与互动】中其他人说的话，发表自己的见解，不可以各说各的，并且请注意【耐心标签要求】中的标签要求，且遵守【护栏】及以上所有规则！\n" + $"(回复长度要求：请将本轮回复控制在 {minTokens}-{maxTokens} 字之间；除非玩家明确要求简短，否则尽量贴近上限，不要少于 {minTokens} 字。)"
 					}
 				};
 				string output = await ShoutNetwork.CallApiWithMessages(messages, 2048);
