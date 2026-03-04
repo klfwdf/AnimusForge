@@ -265,7 +265,9 @@ public class ShoutBehavior : CampaignBehaviorBase
 
 	private const float STARE_TARGET_LOST_GRACE = 2f;
 
-	private const float PASSIVE_COOLDOWN = 120f;
+	private const float PASSIVE_STARE_COOLDOWN = 10f;
+
+	private const float ACTIVE_CHAT_COOLDOWN = 120f;
 
 	private const float PASSIVE_INTERACTION_GRACE = 0.75f;
 
@@ -2518,7 +2520,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 		{
 			allNpcData.Add(npcData);
 		}
-		ApplyInteractionGraceAndGroupCooldown(PASSIVE_INTERACTION_GRACE, PASSIVE_COOLDOWN, source, targetAgent, allNpcData);
+		ApplyInteractionGraceAndGroupCooldown(PASSIVE_INTERACTION_GRACE, PASSIVE_STARE_COOLDOWN, source, targetAgent, allNpcData);
 		InformationManager.DisplayMessage(new InformationMessage("你盯着 " + npcData.Name + " 看了很久...", new Color(0.7f, 0.7f, 0.7f)));
 
 		string virtualInput = "(沉默地长时间注视着你)";
@@ -2943,7 +2945,6 @@ public class ShoutBehavior : CampaignBehaviorBase
 			ResumeGame();
 			return;
 		}
-		ApplyInteractionGraceAndGroupCooldown(PASSIVE_COOLDOWN, PASSIVE_COOLDOWN, nearbyNPCAgents);
 		List<NpcDataPacket> source = (from a in nearbyNPCAgents
 			select ShoutUtils.ExtractNpcData(a) into d
 			where d != null
@@ -3361,7 +3362,6 @@ public class ShoutBehavior : CampaignBehaviorBase
 			ResumeGame();
 			return;
 		}
-		ApplyInteractionGraceAndGroupCooldown(PASSIVE_COOLDOWN, PASSIVE_COOLDOWN, nearbyAgents);
 		if (nearbyAgents.Count == 1)
 		{
 			string targetName = nearbyAgents[0].Name.ToString();
@@ -3402,6 +3402,12 @@ public class ShoutBehavior : CampaignBehaviorBase
 		{
 			primaryDataPacket = allNpcData.FirstOrDefault((NpcDataPacket d) => d.AgentIndex == primaryTarget.Index);
 		}
+		List<Agent> activeCooldownGroup = ((primaryTarget != null) ? GetPassiveCooldownGroupAgents(primaryTarget) : (nearbyAgents ?? new List<Agent>()));
+		List<NpcDataPacket> activeCooldownData = (from a in activeCooldownGroup
+			select ShoutUtils.ExtractNpcData(a) into d
+			where d != null
+			select d).ToList();
+		ApplyInteractionGraceAndGroupCooldown(PASSIVE_INTERACTION_GRACE, ACTIVE_CHAT_COOLDOWN, activeCooldownGroup, primaryTarget, activeCooldownData);
 		ResetStaringBehavior();
 		_stopStaringTime = Mission.Current.CurrentTime + 20f;
 		foreach (Agent agent2 in nearbyAgents)
