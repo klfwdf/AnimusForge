@@ -1476,7 +1476,7 @@ public static class ShoutUtils
 		Vec3 lookDirection = Agent.Main.LookDirection;
 		Agent result = null;
 		float num = maxDistance;
-		const float strictCrosshairDotThreshold = 0.985f;
+		const float strictCrosshairDotThreshold = 0.9f;
 		const float npcFront120DotThreshold = 0.5f;
 		foreach (Agent agent in Mission.Current.Agents)
 		{

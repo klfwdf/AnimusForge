@@ -261,11 +261,13 @@ public class ShoutBehavior : CampaignBehaviorBase
 
 	private float _stareDebugLogTimer = 0f;
 
-    private const float STARE_TRIGGER_TIME = 10f;
+    private const float STARE_TRIGGER_TIME = 6f;
 
-	private const float STARE_TARGET_LOST_GRACE = 0.8f;
+	private const float STARE_TARGET_LOST_GRACE = 2f;
 
 	private const float PASSIVE_COOLDOWN = 120f;
+
+	private const float PASSIVE_INTERACTION_GRACE = 0.75f;
 
 	private const float STARE_DEBUG_LOG_INTERVAL = 0.5f;
 
@@ -2176,7 +2178,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 			{
 				return;
 			}
-			const float strictCrosshairDotThreshold = 0.985f;
+			const float strictCrosshairDotThreshold = 0.9f;
 			const float npcFront120DotThreshold = 0.5f;
 			Vec3 playerPos = Agent.Main.Position;
 			Vec3 playerLook = Agent.Main.LookDirection;
@@ -2454,6 +2456,45 @@ public class ShoutBehavior : CampaignBehaviorBase
 		return !_passiveCooldowns.ContainsKey(identityKey);
 	}
 
+	private List<Agent> GetPassiveCooldownGroupAgents(Agent targetAgent)
+	{
+		List<Agent> list = new List<Agent>();
+		if (targetAgent == null || !targetAgent.IsActive() || Mission.Current == null || Agent.Main == null || !Agent.Main.IsActive())
+		{
+			return list;
+		}
+		Vec3 playerPos = Agent.Main.Position;
+		Vec3 playerLook = Agent.Main.LookDirection;
+		foreach (Agent agent in Mission.Current.Agents)
+		{
+			if (agent == null || agent == Agent.Main || !agent.IsActive() || !agent.IsHuman)
+			{
+				continue;
+			}
+			float num = agent.Position.Distance(targetAgent.Position);
+			if (num > 7f)
+			{
+				continue;
+			}
+			if (agent == targetAgent || num <= 3f)
+			{
+				list.Add(agent);
+				continue;
+			}
+			Vec3 v = agent.Position - playerPos;
+			v.Normalize();
+			if (Vec3.DotProduct(playerLook, v) > 0.866f)
+			{
+				list.Add(agent);
+			}
+		}
+		if (!list.Any((Agent a) => a != null && a.Index == targetAgent.Index))
+		{
+			list.Add(targetAgent);
+		}
+		return list;
+	}
+
 	private void TriggerPassiveReaction(Agent targetAgent)
 	{
 		if (targetAgent == null || _isProcessingShout)
@@ -2468,7 +2509,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 			return;
 		}
 		string sceneDesc = ShoutUtils.GetCurrentSceneDescription();
-		List<Agent> source = ShoutUtils.GetNearbyNPCAgents() ?? new List<Agent>();
+		List<Agent> source = GetPassiveCooldownGroupAgents(targetAgent);
 		List<NpcDataPacket> allNpcData = (from a in source
 			select ShoutUtils.ExtractNpcData(a) into d
 			where d != null
@@ -2477,7 +2518,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 		{
 			allNpcData.Add(npcData);
 		}
-		ApplyInteractionGraceAndGroupCooldown(PASSIVE_COOLDOWN, PASSIVE_COOLDOWN, source, targetAgent, allNpcData);
+		ApplyInteractionGraceAndGroupCooldown(PASSIVE_INTERACTION_GRACE, PASSIVE_COOLDOWN, source, targetAgent, allNpcData);
 		InformationManager.DisplayMessage(new InformationMessage("你盯着 " + npcData.Name + " 看了很久...", new Color(0.7f, 0.7f, 0.7f)));
 
 		string virtualInput = "(沉默地长时间注视着你)";
