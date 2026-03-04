@@ -3430,42 +3430,58 @@ public class ShoutBehavior : CampaignBehaviorBase
 		List<NpcDataPacket> capturedNpcData = allNpcData;
 		RecordPlayerMessage(shoutText, capturedNpcData);
 
-		Dictionary<int, string> precalculatedLore = new Dictionary<int, string>();
-		Dictionary<int, Hero> resolvedHeroes = new Dictionary<int, Hero>();
-		foreach (Agent agent in nearbyAgents)
-		{
-			if (agent == null) continue;
-			CharacterObject co = agent.Character as CharacterObject;
-			if (co != null && co.HeroObject != null)
-			{
-				resolvedHeroes[agent.Index] = co.HeroObject;
-			}
-			string kingdomIdOverride = TryGetKingdomIdOverrideFromAgent(agent);
-			LogShoutLorePrequery("group_precalc", agent, co, kingdomIdOverride, shoutText);
-			string lore = AIConfigHandler.GetLoreContext(shoutText, co, kingdomIdOverride);
-			precalculatedLore[agent.Index] = lore ?? "";
-		}
-
-		foreach (NpcDataPacket npc in capturedNpcData)
-		{
-			Agent liveAgent = nearbyAgents.FirstOrDefault(a => a != null && a.Index == npc.AgentIndex);
-			if (liveAgent != null)
-			{
-				if (ShoutUtils.TryGetUnnamedNpcPersona(liveAgent, out var up, out var ub))
-				{
-					if (string.IsNullOrWhiteSpace(npc.PersonalityDesc) && !string.IsNullOrWhiteSpace(up))
-						npc.PersonalityDesc = up.Trim();
-					if (string.IsNullOrWhiteSpace(npc.BackgroundDesc) && !string.IsNullOrWhiteSpace(ub))
-						npc.BackgroundDesc = ub.Trim();
-				}
-			}
-		}
+		ResumeGame();
 
 		_ = Task.Run(async delegate
 		{
-			await HandleGroupResponse(shoutText, capturedNpcData, sceneDesc, primaryDataPacket, extraFact, precalculatedLore, resolvedHeroes);
+			try
+			{
+				Dictionary<int, string> precalculatedLore = new Dictionary<int, string>();
+				Dictionary<int, Hero> resolvedHeroes = new Dictionary<int, Hero>();
+
+				foreach (Agent agent in nearbyAgents)
+				{
+					if (agent == null)
+					{
+						continue;
+					}
+					CharacterObject co = agent.Character as CharacterObject;
+					if (co != null && co.HeroObject != null)
+					{
+						resolvedHeroes[agent.Index] = co.HeroObject;
+					}
+					string kingdomIdOverride = TryGetKingdomIdOverrideFromAgent(agent);
+					LogShoutLorePrequery("group_precalc", agent, co, kingdomIdOverride, shoutText);
+					string lore = AIConfigHandler.GetLoreContext(shoutText, co, kingdomIdOverride);
+					precalculatedLore[agent.Index] = lore ?? "";
+				}
+
+				foreach (NpcDataPacket npc in capturedNpcData)
+				{
+					Agent liveAgent = nearbyAgents.FirstOrDefault(a => a != null && a.Index == npc.AgentIndex);
+					if (liveAgent != null)
+					{
+						if (ShoutUtils.TryGetUnnamedNpcPersona(liveAgent, out var up, out var ub))
+						{
+							if (string.IsNullOrWhiteSpace(npc.PersonalityDesc) && !string.IsNullOrWhiteSpace(up))
+							{
+								npc.PersonalityDesc = up.Trim();
+							}
+							if (string.IsNullOrWhiteSpace(npc.BackgroundDesc) && !string.IsNullOrWhiteSpace(ub))
+							{
+								npc.BackgroundDesc = ub.Trim();
+							}
+						}
+					}
+				}
+
+				await HandleGroupResponse(shoutText, capturedNpcData, sceneDesc, primaryDataPacket, extraFact, precalculatedLore, resolvedHeroes);
+			}
+			catch (Exception ex)
+			{
+				Logger.Log("ShoutBehavior", "[ERROR] ProcessShoutConfirmedInternal background failed: " + ex.Message);
+			}
 		});
-		ResumeGame();
 	}
 
 	private async Task HandleGroupResponse(string playerText, List<NpcDataPacket> allNpcData, string sceneDesc, NpcDataPacket primaryNpc, string extraFact, Dictionary<int, string> precalculatedLore, Dictionary<int, Hero> resolvedHeroes)
