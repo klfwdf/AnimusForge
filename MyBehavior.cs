@@ -2952,7 +2952,7 @@ public class MyBehavior : CampaignBehaviorBase
 					{
 						sb.AppendLine(triggeredRuleInstructions);
 					}
-					bool includeTradePricing = useRewardContext || isLoanContext;
+					bool includeTradePricing = useRewardContext || isLoanContext || useDuelContext;
 					bool includeMarriageCandidates = targetHero != null && (isMarriageHit || (_isMarriageRuleSessionActive && _marriageRuleHeroId == targetHero.StringId));
 					bool playerIdentityAlwaysOn = playerTier >= 2;
 					bool includePlayerRuleGatedFields = playerIdentityAlwaysOn;
@@ -4194,7 +4194,7 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			stringBuilder.AppendLine(value8);
 		}
-		bool includeTradePricing = flag7 || flag8;
+		bool includeTradePricing = flag7 || flag8 || flag2;
 		bool includeMarriageCandidates = targetHero != null && (marriageHit || (_isMarriageRuleSessionActive && _marriageRuleHeroId == targetHero.StringId));
 		bool flag10 = num >= 2;
 		bool includeRuleGatedFields = flag10;

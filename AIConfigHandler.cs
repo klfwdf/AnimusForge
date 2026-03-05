@@ -1731,6 +1731,28 @@ public static class AIConfigHandler
 			bool flag = playerClan.IsUnderMercenaryService;
 			Kingdom kingdom2 = ResolveConversationTargetKingdom();
 			bool flag2 = kingdom != null && kingdom2 != null && kingdom == kingdom2;
+			int num4 = 5;
+			int num5 = 20;
+			Hero hero = kingdom2?.Leader;
+			if (hero == null)
+			{
+				hero = ResolveConversationTargetHero();
+			}
+			if (hero == null)
+			{
+				hero = kingdom?.Leader;
+			}
+			int num6 = 0;
+			try
+			{
+				num6 = RewardSystemBehavior.Instance?.GetEffectiveTrust(hero) ?? 0;
+			}
+			catch
+			{
+				num6 = 0;
+			}
+			int num7 = Math.Max(0, num5 - num6);
+			string value = ((num7 > 0) ? $"玩家信任度未达标，还差{num7}" : "玩家信任度已经达标");
 			string text2 = kingdom?.Name?.ToString() ?? "";
 			string text3 = kingdom2?.Name?.ToString() ?? "";
 			Dictionary<string, string> dictionary = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
@@ -1742,8 +1764,11 @@ public static class AIConfigHandler
 				["playerTier"] = num.ToString(),
 				["mercTier"] = num2.ToString(),
 				["vassalTier"] = num3.ToString(),
-				["trustMerc"] = "5",
-				["trustVassal"] = "20"
+				["trustMerc"] = num4.ToString(),
+				["trustVassal"] = num5.ToString(),
+				["trustCurrent"] = num6.ToString(),
+				["trustVassalGap"] = num7.ToString(),
+				["vassalTrustStatus"] = value
 			};
 			if (kingdom == null)
 			{

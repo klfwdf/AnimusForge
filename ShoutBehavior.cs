@@ -2818,6 +2818,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 								string captor = hero2.PartyBelongedToAsPrisoner?.LeaderHero?.Name?.ToString();
 								line += ((!string.IsNullOrEmpty(captor)) ? (" | 状态: 囚犯（被" + captor + "关押）") : " | 状态: 囚犯");
 							}
+							line += BuildPlayerMarriageFactForNpcListLine(hero2);
 						}
 						catch
 						{
@@ -2839,6 +2840,11 @@ public class ShoutBehavior : CampaignBehaviorBase
 				if (!string.IsNullOrWhiteSpace(data.RoleDesc))
 				{
 					sysPrompt.AppendLine("身份：" + data.RoleDesc);
+				}
+				string marriageFact = BuildCurrentResponderMarriageFact(hero);
+				if (!string.IsNullOrWhiteSpace(marriageFact))
+				{
+					sysPrompt.AppendLine(marriageFact);
 				}
 				ensureFactsHeader();
 				if (!string.IsNullOrWhiteSpace(inputActionText))
@@ -3788,6 +3794,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 								string captor = hero2.PartyBelongedToAsPrisoner?.LeaderHero?.Name?.ToString();
 								line += ((!string.IsNullOrEmpty(captor)) ? (" | 状态: 囚犯（被" + captor + "关押）") : " | 状态: 囚犯");
 							}
+							line += BuildPlayerMarriageFactForNpcListLine(hero2);
 						}
 						catch
 						{
@@ -4299,6 +4306,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 							string captor = hero2.PartyBelongedToAsPrisoner?.LeaderHero?.Name?.ToString();
 							line += ((!string.IsNullOrEmpty(captor)) ? (" | 状态: 囚犯（被" + captor + "关押）") : " | 状态: 囚犯");
 						}
+						line += BuildPlayerMarriageFactForNpcListLine(hero2);
 					}
 					catch
 					{
@@ -4379,6 +4387,11 @@ public class ShoutBehavior : CampaignBehaviorBase
 				if (!string.IsNullOrWhiteSpace(npc2.RoleDesc))
 				{
 					local.AppendLine("身份：" + npc2.RoleDesc);
+				}
+				string marriageFact = BuildCurrentResponderMarriageFact(contextHero);
+				if (!string.IsNullOrWhiteSpace(marriageFact))
+				{
+					local.AppendLine(marriageFact);
 				}
 				string scenePatienceInstruction = "";
 				if (patienceStatusLines.Count > 0)
@@ -4939,6 +4952,48 @@ public class ShoutBehavior : CampaignBehaviorBase
 		{
 			return null;
 		}
+	}
+
+	private static string BuildPlayerMarriageFactForNpcListLine(Hero npcHero)
+	{
+		try
+		{
+			Hero mainHero = Hero.MainHero;
+			if (npcHero == null || mainHero == null || npcHero == mainHero)
+			{
+				return "";
+			}
+			if (npcHero.Spouse == mainHero || mainHero.Spouse == npcHero)
+			{
+				string text = (npcHero.IsFemale ? "丈夫" : "妻子");
+				return " | 与玩家关系: 配偶（玩家是其" + text + "）";
+			}
+		}
+		catch
+		{
+		}
+		return "";
+	}
+
+	private static string BuildCurrentResponderMarriageFact(Hero npcHero)
+	{
+		try
+		{
+			Hero mainHero = Hero.MainHero;
+			if (npcHero == null || mainHero == null || npcHero == mainHero)
+			{
+				return "";
+			}
+			if (npcHero.Spouse == mainHero || mainHero.Spouse == npcHero)
+			{
+				string text = (npcHero.IsFemale ? "丈夫" : "妻子");
+				return "【婚姻事实】你与玩家是合法配偶关系。玩家是你的" + text + "。你必须认出玩家并以配偶关系进行回应。";
+			}
+		}
+		catch
+		{
+		}
+		return "";
 	}
 
 	private string BuildPersistedHeroHistoryContext(int agentIndex, string currentInput, Dictionary<int, Hero> resolvedHeroes)
