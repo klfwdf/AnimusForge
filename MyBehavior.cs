@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
@@ -161,6 +163,8 @@ public class MyBehavior : CampaignBehaviorBase
 
 		public int PublicTrust;
 
+		public int PrivateLove;
+
 		public int Max;
 
 		public float Current;
@@ -172,6 +176,8 @@ public class MyBehavior : CampaignBehaviorBase
 		public string TrustLevel;
 
 		public string PublicTrustLevel;
+
+		public string PrivateLoveLevel;
 	}
 
 	private enum PatienceMood
@@ -236,6 +242,14 @@ public class MyBehavior : CampaignBehaviorBase
 	private int _kingdomServiceRuleNoHitRounds;
 
 	private string _kingdomServiceRuleCachedBlock;
+
+	private bool _isMarriageRuleSessionActive;
+
+	private string _marriageRuleHeroId;
+
+	private int _marriageRuleNoHitRounds;
+
+	private string _marriageRuleCachedBlock;
 
 	private bool _isDuelSessionActive;
 
@@ -1424,6 +1438,247 @@ public class MyBehavior : CampaignBehaviorBase
 		return "";
 	}
 
+	private static IEnumerable<Hero> GetClanMembersForPrompt(Clan clan)
+	{
+		if (clan == null)
+		{
+			yield break;
+		}
+		IEnumerable enumerable = null;
+		try
+		{
+			PropertyInfo property = clan.GetType().GetProperty("Lords", BindingFlags.Instance | BindingFlags.Public);
+			if (property != null)
+			{
+				enumerable = property.GetValue(clan, null) as IEnumerable;
+			}
+			if (enumerable == null)
+			{
+				PropertyInfo property2 = clan.GetType().GetProperty("Heroes", BindingFlags.Instance | BindingFlags.Public);
+				if (property2 != null)
+				{
+					enumerable = property2.GetValue(clan, null) as IEnumerable;
+				}
+			}
+		}
+		catch
+		{
+			enumerable = null;
+		}
+		if (enumerable == null)
+		{
+			yield break;
+		}
+		HashSet<string> yielded = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		foreach (object item in enumerable)
+		{
+			if (item is Hero hero && hero != null)
+			{
+				string text = (hero.StringId ?? "").Trim();
+				if (!string.IsNullOrWhiteSpace(text) && yielded.Add(text))
+				{
+					yield return hero;
+				}
+			}
+		}
+	}
+
+	private const int MarriageCandidateMinAgeForPrompt = 18;
+
+	private const int MarriageCandidateMaxAgeForPrompt = 55;
+
+	private const int MarriageCandidateMaxAgeGapForPrompt = 25;
+
+	private static int GetMarriageCandidateMaxAgeSettingForPrompt()
+	{
+		try
+		{
+			int valueOrDefault = (DuelSettings.GetSettings()?.MarriageCandidateMaxAge).GetValueOrDefault(MarriageCandidateMaxAgeForPrompt);
+			if (valueOrDefault < MarriageCandidateMinAgeForPrompt)
+			{
+				valueOrDefault = MarriageCandidateMinAgeForPrompt;
+			}
+			if (valueOrDefault > 80)
+			{
+				valueOrDefault = 80;
+			}
+			return valueOrDefault;
+		}
+		catch
+		{
+			return MarriageCandidateMaxAgeForPrompt;
+		}
+	}
+
+	private static int GetMarriageCandidateMaxAgeGapSettingForPrompt()
+	{
+		try
+		{
+			int valueOrDefault = (DuelSettings.GetSettings()?.MarriageCandidateMaxAgeGap).GetValueOrDefault(MarriageCandidateMaxAgeGapForPrompt);
+			if (valueOrDefault < 0)
+			{
+				valueOrDefault = 0;
+			}
+			if (valueOrDefault > 60)
+			{
+				valueOrDefault = 60;
+			}
+			return valueOrDefault;
+		}
+		catch
+		{
+			return MarriageCandidateMaxAgeGapForPrompt;
+		}
+	}
+
+	private static bool GetMarriageRequireOppositeGenderSettingForPrompt()
+	{
+		try
+		{
+			return (DuelSettings.GetSettings()?.MarriageRequireOppositeGender).GetValueOrDefault(true);
+		}
+		catch
+		{
+			return true;
+		}
+	}
+
+	private static bool IsMarriageGenderCompatibleForPrompt(Hero candidate, Hero player)
+	{
+		try
+		{
+			if (candidate == null || player == null)
+			{
+				return true;
+			}
+			if (!GetMarriageRequireOppositeGenderSettingForPrompt())
+			{
+				return true;
+			}
+			return candidate.IsFemale != player.IsFemale;
+		}
+		catch
+		{
+			return true;
+		}
+	}
+
+	private static bool IsMarriageAgeCompatibleForPrompt(Hero candidate, Hero player)
+	{
+		try
+		{
+			if (candidate == null)
+			{
+				return false;
+			}
+			int marriageCandidateMaxAgeSettingForPrompt = GetMarriageCandidateMaxAgeSettingForPrompt();
+			if (candidate.Age < (float)MarriageCandidateMinAgeForPrompt || candidate.Age > (float)marriageCandidateMaxAgeSettingForPrompt)
+			{
+				return false;
+			}
+			if (player != null)
+			{
+				return Math.Abs(candidate.Age - player.Age) <= (float)GetMarriageCandidateMaxAgeGapSettingForPrompt();
+			}
+			return true;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static bool IsMarriageCandidateForPrompt(Hero hero, Hero player)
+	{
+		if (hero == null)
+		{
+			return false;
+		}
+		try
+		{
+			if (!IsMarriageAgeCompatibleForPrompt(hero, player))
+			{
+				return false;
+			}
+		}
+		catch
+		{
+			return false;
+		}
+		try
+		{
+			if (hero.IsPrisoner)
+			{
+				return false;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (hero.Spouse != null)
+			{
+				return false;
+			}
+		}
+		catch
+		{
+		}
+		if (player != null && hero == player)
+		{
+			return false;
+		}
+		if (!IsMarriageGenderCompatibleForPrompt(hero, player))
+		{
+			return false;
+		}
+		return true;
+	}
+
+	private static string BuildClanUnmarriedCandidatesForPrompt(Hero npcHero, Hero player, int maxEntries = 12)
+	{
+		try
+		{
+			Clan clan = npcHero?.Clan;
+			if (clan == null)
+			{
+				return "无（目标无家族）";
+			}
+			Hero leader = clan.Leader;
+			List<Hero> list = (from h in GetClanMembersForPrompt(clan)
+				where IsMarriageCandidateForPrompt(h, player)
+				orderby h.Age descending
+				select h).Take(Math.Max(1, maxEntries)).ToList();
+			if (list.Count <= 0)
+			{
+				return "无（按可联姻性别/年龄范围过滤后暂无符合条件者）";
+			}
+			StringBuilder stringBuilder = new StringBuilder();
+			for (int i = 0; i < list.Count; i++)
+			{
+				Hero hero = list[i];
+				string text = hero.Name?.ToString() ?? ("Hero#" + i);
+				int num = (int)Math.Round(hero.Age);
+				string text2 = "";
+				if (hero == npcHero)
+				{
+					text2 = "（你自己）";
+				}
+				else if (hero == leader)
+				{
+					text2 = "（族长）";
+				}
+				stringBuilder.AppendLine("- " + text + text2 + $" | 年龄={num} | StringId={hero.StringId}");
+			}
+			return stringBuilder.ToString().TrimEnd();
+		}
+		catch
+		{
+			return "无（生成未婚名单时发生异常）";
+		}
+	}
+
 	private static string BuildHeroEquipmentSummaryForPrompt(Hero hero, int maxEntries = 8)
 	{
 		if (hero == null)
@@ -1575,7 +1830,7 @@ public class MyBehavior : CampaignBehaviorBase
 		return stringBuilder.ToString().Trim();
 	}
 
-	private string BuildNpcIdentityInfoForPrompt(Hero npcHero, bool includeTradePricing)
+	private string BuildNpcIdentityInfoForPrompt(Hero npcHero, bool includeTradePricing, bool includeMarriageCandidates = false)
 	{
 		if (npcHero == null)
 		{
@@ -1601,6 +1856,15 @@ public class MyBehavior : CampaignBehaviorBase
 		string text4 = BuildNpcClanRoleHintForPrompt(npcHero);
 		string text5 = BuildAgeBracketLabel(npcHero.Age);
 		string text6 = BuildHeroEquipmentSummaryForPrompt(npcHero);
+		Hero hero = null;
+		try
+		{
+			hero = npcHero.Clan?.Leader;
+		}
+		catch
+		{
+			hero = null;
+		}
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.AppendLine("[NPC身份信息]");
 		stringBuilder.AppendLine("NPC文化：" + heroCultureNameForPrompt);
@@ -1615,8 +1879,28 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			stringBuilder.AppendLine("NPC家族：" + text + $"（{Math.Max(0, num)} level）");
 		}
+		if (hero != null)
+		{
+			if (hero == npcHero)
+			{
+				stringBuilder.AppendLine("该家族族长：你本人（StringId=" + (npcHero.StringId ?? "") + "）");
+			}
+			else
+			{
+				stringBuilder.AppendLine("该家族族长：" + (hero.Name?.ToString() ?? "未知") + "（StringId=" + (hero.StringId ?? "") + "）");
+			}
+		}
 		stringBuilder.AppendLine("NPC年纪：" + text5);
 		stringBuilder.AppendLine("NPC装备：" + text6);
+		if (includeMarriageCandidates)
+		{
+			int marriageCandidateMaxAgeSettingForPrompt = GetMarriageCandidateMaxAgeSettingForPrompt();
+			int marriageCandidateMaxAgeGapSettingForPrompt = GetMarriageCandidateMaxAgeGapSettingForPrompt();
+			string text8 = (GetMarriageRequireOppositeGenderSettingForPrompt() ? "异性" : "不限性别");
+			stringBuilder.AppendLine("【该家族可婚配未婚成员（事实清单）】");
+			stringBuilder.AppendLine($"筛选口径：按玩家当前婚配条件过滤（{text8}、年龄 {MarriageCandidateMinAgeForPrompt}-{marriageCandidateMaxAgeSettingForPrompt}、与玩家年龄差不超过 {marriageCandidateMaxAgeGapSettingForPrompt} 岁、未婚、非囚犯）。");
+			stringBuilder.AppendLine(BuildClanUnmarriedCandidatesForPrompt(npcHero, Hero.MainHero, 12));
+		}
 		if (includeTradePricing && RewardSystemBehavior.Instance != null)
 		{
 			try
@@ -2366,6 +2650,13 @@ public class MyBehavior : CampaignBehaviorBase
 					{
 						isKingdomServiceHit = AIConfigHandler.IsGuardrailSemanticHit(ruleInstruction: AIConfigHandler.GetGuardrailRuleInstruction("kingdom_service"), triggerKeywords: AIConfigHandler.GetGuardrailRuleKeywords("kingdom_service"), input: input, ruleTag: "kingdom_service", matchedKeyword: out kingdomServiceHitKeyword, score: out kingdomServiceHitScore);
 					}
+					bool isMarriageHit = false;
+					string marriageHitKeyword = "";
+					float marriageHitScore = 0f;
+					if (!patienceExhausted)
+					{
+						isMarriageHit = AIConfigHandler.IsGuardrailSemanticHit(ruleInstruction: AIConfigHandler.GetGuardrailRuleInstruction("marriage"), triggerKeywords: AIConfigHandler.GetGuardrailRuleKeywords("marriage"), input: input, ruleTag: "marriage", matchedKeyword: out marriageHitKeyword, score: out marriageHitScore);
+					}
 					bool useRewardContext = isRewardContext;
 					if (AIConfigHandler.RewardEnabled && targetHero != null)
 					{
@@ -2451,7 +2742,8 @@ public class MyBehavior : CampaignBehaviorBase
 					string loanHits = (string.IsNullOrWhiteSpace(loanHitKeyword) ? "" : $"{loanHitKeyword}@{loanHitScore:0.00}");
 					string surroundingsHits = (string.IsNullOrWhiteSpace(surroundingsHitKeyword) ? "" : $"{surroundingsHitKeyword}@{surroundingsHitScore:0.00}");
 					string kingdomServiceHits = (string.IsNullOrWhiteSpace(kingdomServiceHitKeyword) ? "" : $"{kingdomServiceHitKeyword}@{kingdomServiceHitScore:0.00}");
-					Logger.Log("Logic", $"[SemanticTrigger] DuelHit={isTriggerWordDetected} [{duelHits}] StickyDuel={_isDuelSessionActive} RewardHit={isRewardContext} [{rewardHits}] LoanHit={isLoanContext} [{loanHits}] StickyReward={_isRewardSessionActive} SurroundingsHit={isSurroundingsContext} [{surroundingsHits}] KingdomServiceHit={isKingdomServiceHit} [{kingdomServiceHits}] StickyKingdomService={_isKingdomServiceRuleSessionActive} Input='{input}' NPC='{npcName}'");
+					string marriageHits = (string.IsNullOrWhiteSpace(marriageHitKeyword) ? "" : $"{marriageHitKeyword}@{marriageHitScore:0.00}");
+					Logger.Log("Logic", $"[SemanticTrigger] DuelHit={isTriggerWordDetected} [{duelHits}] StickyDuel={_isDuelSessionActive} RewardHit={isRewardContext} [{rewardHits}] LoanHit={isLoanContext} [{loanHits}] StickyReward={_isRewardSessionActive} SurroundingsHit={isSurroundingsContext} [{surroundingsHits}] KingdomServiceHit={isKingdomServiceHit} [{kingdomServiceHits}] StickyKingdomService={_isKingdomServiceRuleSessionActive} MarriageHit={isMarriageHit} [{marriageHits}] StickyMarriage={_isMarriageRuleSessionActive} Input='{input}' NPC='{npcName}'");
 					Logger.Obs("DirectChat", "keywords", new Dictionary<string, object>
 					{
 						["duelHit"] = isTriggerWordDetected,
@@ -2469,10 +2761,14 @@ public class MyBehavior : CampaignBehaviorBase
 						["kingdomServiceHit"] = isKingdomServiceHit,
 						["kingdomServiceHitKeyword"] = kingdomServiceHitKeyword ?? "",
 						["kingdomServiceHitScore"] = Math.Round(kingdomServiceHitScore, 3),
+						["marriageHit"] = isMarriageHit,
+						["marriageHitKeyword"] = marriageHitKeyword ?? "",
+						["marriageHitScore"] = Math.Round(marriageHitScore, 3),
 						["clarifyHint"] = (string.IsNullOrWhiteSpace(guardrailClarifyHint) ? "" : "on"),
 						["stickyDuel"] = _isDuelSessionActive,
 						["stickyReward"] = _isRewardSessionActive,
-						["stickyKingdomService"] = _isKingdomServiceRuleSessionActive
+						["stickyKingdomService"] = _isKingdomServiceRuleSessionActive,
+						["stickyMarriage"] = _isMarriageRuleSessionActive
 					});
 					StringBuilder sb = new StringBuilder();
 					Stopwatch swPromptBuild = Stopwatch.StartNew();
@@ -2657,6 +2953,7 @@ public class MyBehavior : CampaignBehaviorBase
 						sb.AppendLine(triggeredRuleInstructions);
 					}
 					bool includeTradePricing = useRewardContext || isLoanContext;
+					bool includeMarriageCandidates = targetHero != null && (isMarriageHit || (_isMarriageRuleSessionActive && _marriageRuleHeroId == targetHero.StringId));
 					bool playerIdentityAlwaysOn = playerTier >= 2;
 					bool includePlayerRuleGatedFields = playerIdentityAlwaysOn;
 					string playerIdentityInfo = BuildPlayerIdentityInfoForPrompt(Hero.MainHero, includePlayerRuleGatedFields, includeTradePricing);
@@ -2664,7 +2961,7 @@ public class MyBehavior : CampaignBehaviorBase
 					{
 						sb.AppendLine(playerIdentityInfo);
 					}
-					string npcIdentityInfo = BuildNpcIdentityInfoForPrompt(targetHero, includeTradePricing);
+					string npcIdentityInfo = BuildNpcIdentityInfoForPrompt(targetHero, includeTradePricing, includeMarriageCandidates);
 					if (!string.IsNullOrWhiteSpace(npcIdentityInfo))
 					{
 						sb.AppendLine(npcIdentityInfo);
@@ -2785,6 +3082,7 @@ public class MyBehavior : CampaignBehaviorBase
 							_rewardSessionNoKeywordRounds = 0;
 						}
 						RewardSystemBehavior.Instance.ApplyRewardTags(targetHero, Hero.MainHero, ref result);
+						RomanceSystemBehavior.Instance?.ApplyMarriageTags(targetHero, Hero.MainHero, ref result);
 					}
 					if (patienceExhausted && string.IsNullOrEmpty(streamError))
 					{
@@ -3219,6 +3517,14 @@ public class MyBehavior : CampaignBehaviorBase
 		_kingdomServiceRuleCachedBlock = null;
 	}
 
+	private void ResetMarriageRuleSession()
+	{
+		_isMarriageRuleSessionActive = false;
+		_marriageRuleHeroId = null;
+		_marriageRuleNoHitRounds = 0;
+		_marriageRuleCachedBlock = null;
+	}
+
 	private static bool TryExtractExtraRuleBlock(string allInstructions, string ruleId, out string block)
 	{
 		block = "";
@@ -3279,6 +3585,8 @@ public class MyBehavior : CampaignBehaviorBase
 		string text = "";
 		string targetKingdomId = ResolveTargetKingdomIdForRules(targetHero, targetCharacter, kingdomIdOverride);
 		AIConfigHandler.SetGuardrailRuntimeTargetKingdom(targetKingdomId);
+		string text2 = targetHero?.StringId ?? targetCharacter?.HeroObject?.StringId ?? "";
+		AIConfigHandler.SetGuardrailRuntimeTargetHero(text2);
 		try
 		{
 			text = AIConfigHandler.BuildMatchedExtraRuleInstructions(input, 4, hasAnyHero);
@@ -3286,19 +3594,32 @@ public class MyBehavior : CampaignBehaviorBase
 		finally
 		{
 			AIConfigHandler.SetGuardrailRuntimeTargetKingdom("");
+			AIConfigHandler.SetGuardrailRuntimeTargetHero("");
 		}
-		string text2 = targetHero?.StringId ?? targetCharacter?.HeroObject?.StringId ?? "";
 		if (string.IsNullOrWhiteSpace(text2))
 		{
 			ResetKingdomServiceRuleSession();
+			ResetMarriageRuleSession();
 			return text;
 		}
-		if (TryExtractExtraRuleBlock(text, "kingdom_service", out var block))
+		bool flag = TryExtractExtraRuleBlock(text, "kingdom_service", out var block);
+		if (flag)
 		{
 			_isKingdomServiceRuleSessionActive = true;
 			_kingdomServiceRuleHeroId = text2;
 			_kingdomServiceRuleNoHitRounds = 0;
 			_kingdomServiceRuleCachedBlock = block;
+		}
+		bool flag2 = TryExtractExtraRuleBlock(text, "marriage", out var block2);
+		if (flag2)
+		{
+			_isMarriageRuleSessionActive = true;
+			_marriageRuleHeroId = text2;
+			_marriageRuleNoHitRounds = 0;
+			_marriageRuleCachedBlock = block2;
+		}
+		if (flag || flag2)
+		{
 			return text;
 		}
 		if (_isKingdomServiceRuleSessionActive && _kingdomServiceRuleHeroId == text2)
@@ -3324,6 +3645,30 @@ public class MyBehavior : CampaignBehaviorBase
 		else if (_isKingdomServiceRuleSessionActive && _kingdomServiceRuleHeroId != text2)
 		{
 			ResetKingdomServiceRuleSession();
+		}
+		if (_isMarriageRuleSessionActive && _marriageRuleHeroId == text2)
+		{
+			_marriageRuleNoHitRounds++;
+			if (_marriageRuleNoHitRounds >= 2)
+			{
+				Logger.Log("Logic", $"[RuleSticky] marriage 连续 {_marriageRuleNoHitRounds} 轮未命中，结束延续会话。");
+				ResetMarriageRuleSession();
+				return text;
+			}
+			if (!string.IsNullOrWhiteSpace(_marriageRuleCachedBlock))
+			{
+				if (!string.IsNullOrWhiteSpace(text) && text.IndexOf("【附加规则:marriage】", StringComparison.OrdinalIgnoreCase) >= 0)
+				{
+					return text;
+				}
+				string text5 = "【会话延续】你与玩家仍在讨论婚姻事宜，本轮继续按该规则判断。";
+				string text6 = _marriageRuleCachedBlock + Environment.NewLine + text5;
+				return string.IsNullOrWhiteSpace(text) ? text6 : (text.TrimEnd() + Environment.NewLine + text6);
+			}
+		}
+		else if (_isMarriageRuleSessionActive && _marriageRuleHeroId != text2)
+		{
+			ResetMarriageRuleSession();
 		}
 		return text;
 	}
@@ -3623,6 +3968,11 @@ public class MyBehavior : CampaignBehaviorBase
 		string matchedKeyword5;
 		float score5;
 		bool flag6 = AIConfigHandler.IsGuardrailSemanticHit(input, "kingdom_service", guardrailRuleInstruction, guardrailRuleKeywords, out matchedKeyword5, out score5);
+		string guardrailMarriageInstruction = AIConfigHandler.GetGuardrailRuleInstruction("marriage");
+		List<string> guardrailMarriageKeywords = AIConfigHandler.GetGuardrailRuleKeywords("marriage");
+		string matchedKeyword6;
+		float score6;
+		bool marriageHit = AIConfigHandler.IsGuardrailSemanticHit(input, "marriage", guardrailMarriageInstruction, guardrailMarriageKeywords, out matchedKeyword6, out score6);
 		bool flag7 = flag3;
 		bool flag8 = flag4;
 		string value = "";
@@ -3635,8 +3985,9 @@ public class MyBehavior : CampaignBehaviorBase
 		string text4 = (string.IsNullOrWhiteSpace(matchedKeyword3) ? "" : $"{matchedKeyword3}@{score3:0.00}");
 		string text5 = (string.IsNullOrWhiteSpace(matchedKeyword4) ? "" : $"{matchedKeyword4}@{score4:0.00}");
 		string text6 = (string.IsNullOrWhiteSpace(matchedKeyword5) ? "" : $"{matchedKeyword5}@{score5:0.00}");
+		string text8 = (string.IsNullOrWhiteSpace(matchedKeyword6) ? "" : $"{matchedKeyword6}@{score6:0.00}");
 		string text7 = targetHero?.Name?.ToString() ?? "某人";
-		Logger.Log("Logic", $"[SemanticTrigger-Shout] DuelHit={flag} [{text2}] StickyDuel={_isDuelSessionActive} RewardHit={flag3} [{text3}] LoanHit={flag4} [{text4}] StickyReward={_isRewardSessionActive} SurroundingsHit={flag5} [{text5}] KingdomServiceHit={flag6} [{text6}] StickyKingdomService={_isKingdomServiceRuleSessionActive} Input='{input}' NPC='{text7}'");
+		Logger.Log("Logic", $"[SemanticTrigger-Shout] DuelHit={flag} [{text2}] StickyDuel={_isDuelSessionActive} RewardHit={flag3} [{text3}] LoanHit={flag4} [{text4}] StickyReward={_isRewardSessionActive} SurroundingsHit={flag5} [{text5}] KingdomServiceHit={flag6} [{text6}] StickyKingdomService={_isKingdomServiceRuleSessionActive} MarriageHit={marriageHit} [{text8}] StickyMarriage={_isMarriageRuleSessionActive} Input='{input}' NPC='{text7}'");
 		if (AIConfigHandler.RewardEnabled && targetHero != null)
 		{
 			string stringId2 = targetHero.StringId;
@@ -3844,6 +4195,7 @@ public class MyBehavior : CampaignBehaviorBase
 			stringBuilder.AppendLine(value8);
 		}
 		bool includeTradePricing = flag7 || flag8;
+		bool includeMarriageCandidates = targetHero != null && (marriageHit || (_isMarriageRuleSessionActive && _marriageRuleHeroId == targetHero.StringId));
 		bool flag10 = num >= 2;
 		bool includeRuleGatedFields = flag10;
 		string value9 = BuildPlayerIdentityInfoForPrompt(Hero.MainHero, includeRuleGatedFields, includeTradePricing);
@@ -3851,7 +4203,7 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			stringBuilder.AppendLine(value9);
 		}
-		string value10 = BuildNpcIdentityInfoForPrompt(targetHero, includeTradePricing);
+		string value10 = BuildNpcIdentityInfoForPrompt(targetHero, includeTradePricing, includeMarriageCandidates);
 		if (!string.IsNullOrWhiteSpace(value10))
 		{
 			stringBuilder.AppendLine(value10);
@@ -4971,8 +5323,10 @@ public class MyBehavior : CampaignBehaviorBase
 	{
 		snap.Trust = 0;
 		snap.PublicTrust = 0;
+		snap.PrivateLove = 0;
 		snap.TrustLevel = RewardSystemBehavior.GetTrustLevelText(0);
 		snap.PublicTrustLevel = RewardSystemBehavior.GetTrustLevelText(0);
+		snap.PrivateLoveLevel = RomanceSystemBehavior.GetPrivateLoveLevelText(0);
 		if (hero == null || RewardSystemBehavior.Instance == null)
 		{
 			return;
@@ -4984,6 +5338,8 @@ public class MyBehavior : CampaignBehaviorBase
 			snap.PublicTrust = publicTrust;
 			snap.TrustLevel = RewardSystemBehavior.GetTrustLevelText(trust);
 			snap.PublicTrustLevel = RewardSystemBehavior.GetTrustLevelText(publicTrust);
+			int privateLove = (snap.PrivateLove = (RomanceSystemBehavior.Instance?.GetPrivateLove(hero)).GetValueOrDefault());
+			snap.PrivateLoveLevel = RomanceSystemBehavior.GetPrivateLoveLevelText(privateLove);
 		}
 		catch
 		{
@@ -4993,7 +5349,7 @@ public class MyBehavior : CampaignBehaviorBase
 	private static string BuildCompactStateLine(PatienceSnapshot snap)
 	{
 		int num = (int)Math.Round(snap.Current);
-		return $"P(耐心)={num}/{snap.Max}({snap.PatienceLevel}) | R(关系)={snap.Relation}({snap.RelationLevel}) | T(综合信任)={snap.Trust}({snap.TrustLevel})";
+		return $"P(耐心)={num}/{snap.Max}({snap.PatienceLevel}) | R(关系)={snap.Relation}({snap.RelationLevel}) | T(综合信任)={snap.Trust}({snap.TrustLevel}) | L(私人关系)={snap.PrivateLove}({snap.PrivateLoveLevel})";
 	}
 
 	private static string BuildHeroPatienceKey(Hero hero)
@@ -5079,12 +5435,14 @@ public class MyBehavior : CampaignBehaviorBase
 			Relation = 0,
 			Trust = 0,
 			PublicTrust = 0,
+			PrivateLove = 0,
 			Max = 30,
 			Current = 30f,
 			PatienceLevel = "一般",
 			RelationLevel = "中立",
 			TrustLevel = RewardSystemBehavior.GetTrustLevelText(0),
-			PublicTrustLevel = RewardSystemBehavior.GetTrustLevelText(0)
+			PublicTrustLevel = RewardSystemBehavior.GetTrustLevelText(0),
+			PrivateLoveLevel = RomanceSystemBehavior.GetPrivateLoveLevelText(0)
 		};
 		if (hero == null)
 		{
@@ -5125,12 +5483,14 @@ public class MyBehavior : CampaignBehaviorBase
 			Relation = 0,
 			Trust = 0,
 			PublicTrust = 0,
+			PrivateLove = 0,
 			Max = 30,
 			Current = 30f,
 			PatienceLevel = GetPatienceLevelText(30f, 30),
 			RelationLevel = GetRelationLevelText(0),
 			TrustLevel = RewardSystemBehavior.GetTrustLevelText(0),
-			PublicTrustLevel = RewardSystemBehavior.GetTrustLevelText(0)
+			PublicTrustLevel = RewardSystemBehavior.GetTrustLevelText(0),
+			PrivateLoveLevel = RomanceSystemBehavior.GetPrivateLoveLevelText(0)
 		};
 		if (string.IsNullOrWhiteSpace(text))
 		{
@@ -5493,7 +5853,7 @@ public class MyBehavior : CampaignBehaviorBase
 			return false;
 		}
 		int num = (int)Math.Round(unnamedPatienceSnapshot.Current);
-		statusLine = $"- {unnamedPatienceSnapshot.DisplayName}: P(耐心)={num}/{unnamedPatienceSnapshot.Max}({unnamedPatienceSnapshot.PatienceLevel}) | R(关系)=0(中立) | T(综合信任)=0(中性观望)";
+		statusLine = $"- {unnamedPatienceSnapshot.DisplayName}: P(耐心)={num}/{unnamedPatienceSnapshot.Max}({unnamedPatienceSnapshot.PatienceLevel}) | R(关系)=0(中立) | T(综合信任)=0(中性观望) | L(私人关系)=0({RomanceSystemBehavior.GetPrivateLoveLevelText(0)})";
 		if (num <= 0)
 		{
 			statusLine += "，耐心已归零（可继续交流，但会额外降低关系）";
@@ -5503,7 +5863,7 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private static string BuildScenePatienceInstruction()
 	{
-		return "【耐心标签要求】你必须在你说的的话的末尾加其中一个标签（不可多加）：[ACTION:MOOD:JOY] / [ACTION:MOOD:NEUTRAL] / [ACTION:MOOD:BORED] / [ACTION:MOOD:ANNOYED]。并始终按三值状态中的 P/R/T 来决定语气与合作度。";
+		return "【耐心标签要求】：你必须在你回复的末尾加入一个合适的标签 喜悦：[ACTION:MOOD:JOY]  无聊:[ACTION:MOOD:BORED]愤怒:[ACTION:MOOD:ANNOYED],如果你什么感觉都没有，那就必须加入标签：平淡:[ACTION:MOOD:NEUTRAL]，并始终按四值状态中的 P/R/T/L 来决定语气与合作度。";
 	}
 
 	private void SyncPatienceData(IDataStore dataStore)

@@ -1109,16 +1109,20 @@ public class ShoutBehavior : CampaignBehaviorBase
 					string aiResponse = safeContent;
 					try
 					{
-						if (agent != null && agent.Character is CharacterObject { HeroObject: not null } characterObject)
-						{
-							MyBehavior.ApplyPatienceFromSceneHeroResponseExternal(characterObject.HeroObject, ref aiResponse);
-							DuelBehavior.TryCacheDuelAfterLinesFromText(characterObject.HeroObject, ref aiResponse);
-							DuelBehavior.TryCacheDuelStakeFromText(characterObject.HeroObject, ref aiResponse);
-							if (RewardSystemBehavior.Instance != null)
+							if (agent != null && agent.Character is CharacterObject { HeroObject: not null } characterObject)
 							{
-								RewardSystemBehavior.Instance.ApplyRewardTags(characterObject.HeroObject, Hero.MainHero, ref aiResponse);
+								MyBehavior.ApplyPatienceFromSceneHeroResponseExternal(characterObject.HeroObject, ref aiResponse);
+								DuelBehavior.TryCacheDuelAfterLinesFromText(characterObject.HeroObject, ref aiResponse);
+								DuelBehavior.TryCacheDuelStakeFromText(characterObject.HeroObject, ref aiResponse);
+								if (RewardSystemBehavior.Instance != null)
+								{
+									RewardSystemBehavior.Instance.ApplyRewardTags(characterObject.HeroObject, Hero.MainHero, ref aiResponse);
+								}
+								if (RomanceSystemBehavior.Instance != null)
+								{
+									RomanceSystemBehavior.Instance.ApplyMarriageTags(characterObject.HeroObject, Hero.MainHero, ref aiResponse);
+								}
 							}
-						}
 						else
 						{
 							MyBehavior.ApplyPatienceFromSceneUnnamedResponseExternal(speakerData.UnnamedKey, speakerData.Name, ref aiResponse);
@@ -2841,6 +2845,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 				{
 					sysPrompt.AppendLine("[玩家动作] " + inputActionText);
 				}
+				string scenePatienceInstruction = "";
 				try
 				{
 					string patienceLine;
@@ -2850,7 +2855,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 					{
 						sysPrompt.AppendLine("【4.三值状态】");
 						sysPrompt.AppendLine(patienceLine);
-						sysPrompt.AppendLine(MyBehavior.GetScenePatienceInstructionForExternal());
+						scenePatienceInstruction = MyBehavior.GetScenePatienceInstructionForExternal();
 					}
 				}
 				catch
@@ -2860,10 +2865,15 @@ public class ShoutBehavior : CampaignBehaviorBase
 				sysPrompt.AppendLine("1. 如果【在场人物列表】中只有一个NPC，那他必须回应玩家。");
 				sysPrompt.AppendLine("2. 【在场人物列表】中最上方的NPC是主要对话对象，必须回复玩家，其他NPC可以酌情选择是否回复");
 				sysPrompt.AppendLine("3. 你只需以自己的身份输出一行回复，不需要包含角色名开头。");
-				sysPrompt.AppendLine("4. 禁止动作描写、心理活动、括号备注；只保留角色说出口的话，不要加引号。");
+				sysPrompt.AppendLine("4. 禁止动作描写、心理活动、括号备注；只保留角色说出口的话，不要加引号，但是其他规则要求你加入标签你必须加入标签");
 				sysPrompt.AppendLine("5. 若多人在场，请注意你的身份和性格，给出与其他NPC不同的独特见解，避免重复相似的内容。");
 				sysPrompt.AppendLine("6. kingdom_service 标签去重：仅在你明确同意“加入势力/成为封臣/退出当前效力”时才可输出 [ACTION:KINGDOM_SERVICE:*:*]；若【当前场景公共对话与互动】中已出现同事项的 kingdom_service 标签，本轮你只能口头补充，不得重复输出。");
-				sysPrompt.AppendLine($"(回复长度要求：请将本轮回复控制在 {minTokens}-{maxTokens} 字之间；除非玩家明确要求简短，否则尽量贴近上限，不要少于 {minTokens} 字。)");
+				sysPrompt.AppendLine("7. marriage 标签去重：同一轮同一事项最多出现一个结婚标签；若已有角色输出 [ACTION:MARRIAGE_FORMAL:*] 或 [ACTION:MARRIAGE_ELOPE:*]，其他角色只能口头补充。");
+				sysPrompt.AppendLine($"(回复长度要求：请将本轮回复控制在 {minTokens}-{maxTokens} 字之间；除非玩家明确要求简短，否则尽量贴近上限，不要少于 {minTokens} 字。长度限制不含 ACTION 标签)");
+				if (!string.IsNullOrWhiteSpace(scenePatienceInstruction))
+				{
+					sysPrompt.AppendLine(scenePatienceInstruction);
+				}
 				Stopwatch swPrompt = Stopwatch.StartNew();
 				string fixedLayerText = "";
 				string baseExtras = StripScenePersonaBlocks((ctx?.Extras ?? "").Trim());
@@ -3793,6 +3803,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 					}
 					sysPrompt.AppendLine(line);
 				}
+				string scenePatienceInstruction = "";
 				if (patienceStatusLines.Count > 0)
 				{
 					sysPrompt.AppendLine(" ");
@@ -3802,7 +3813,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 					{
 						sysPrompt.AppendLine(line2);
 					}
-					sysPrompt.AppendLine(MyBehavior.GetScenePatienceInstructionForExternal());
+					scenePatienceInstruction = MyBehavior.GetScenePatienceInstructionForExternal();
 				}
 				int maxTokens = settings.ShoutMaxTokens;
 				int minTokens = maxTokens / 2;
@@ -3814,12 +3825,17 @@ public class ShoutBehavior : CampaignBehaviorBase
 				sysPrompt.AppendLine("1. 如果【在场人物列表】中只有一个NPC，那他必须回应玩家。");
 				sysPrompt.AppendLine("2. 【在场人物列表】中最上方的NPC是主要对话对象，必须回复玩家，其他NPC可以酌情选择是否回复");
 				sysPrompt.AppendLine("3. 格式必须为：[角色名]: [纯对话内容]（每名说话者单独一行，禁止同一行出现两个角色）。");
-				sysPrompt.AppendLine("4. 禁止动作描写、心理活动、括号备注；只保留角色说出口的话，不要加引号。");
+				sysPrompt.AppendLine("4. 禁止动作描写、心理活动、括号备注；只保留角色说出口的话，不要加引号，但是其他规则要求你加入标签你必须加入标签");
 				sysPrompt.AppendLine("5. 若多人在场，请注意你的身份和性格，给出与其他NPC不同的独特见解，避免重复相似的内容。");
 				sysPrompt.AppendLine("5. [角色名] 必须来自【在场人物列表】，即便有同名角色，也禁止自创姓名或错名，比如某某甲，某某乙，某某1，某某2");
 				sysPrompt.AppendLine("6. 若多人在场，回复之间应彼此连贯。");
 				sysPrompt.AppendLine("7. kingdom_service 标签去重：同一轮同一事项最多出现一个 [ACTION:KINGDOM_SERVICE:*:*]；若某角色已给出同事项标签，其他角色只能口头补充，禁止重复输出 kingdom_service 标签。");
-				sysPrompt.AppendLine($"(回复长度要求：请将本轮回复控制在 {minTokens}-{maxTokens} 字之间；除非玩家明确要求简短，否则尽量贴近上限，不要少于 {minTokens} 字。)");
+				sysPrompt.AppendLine("8. marriage 标签去重：同一轮同一事项最多出现一个结婚标签；若某角色已给出 [ACTION:MARRIAGE_FORMAL:*] 或 [ACTION:MARRIAGE_ELOPE:*]，其他角色只能口头补充。");
+				sysPrompt.AppendLine($"(回复长度要求：请将本轮回复控制在 {minTokens}-{maxTokens} 字之间；除非玩家明确要求简短，否则尽量贴近上限，不要少于 {minTokens} 字。长度限制不含 ACTION 标签)");
+				if (!string.IsNullOrWhiteSpace(scenePatienceInstruction))
+				{
+					sysPrompt.AppendLine(scenePatienceInstruction);
+				}
 				Stopwatch swPrompt = Stopwatch.StartNew();
 				string fixedLayerText = "";
 				string baseExtras = StripScenePersonaBlocks((ctx?.Extras ?? "").Trim());
@@ -4364,6 +4380,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 				{
 					local.AppendLine("身份：" + npc2.RoleDesc);
 				}
+				string scenePatienceInstruction = "";
 				if (patienceStatusLines.Count > 0)
 				{
 					local.AppendLine(" ");
@@ -4373,16 +4390,17 @@ public class ShoutBehavior : CampaignBehaviorBase
 					{
 						local.AppendLine(line2);
 					}
-					local.AppendLine(MyBehavior.GetScenePatienceInstructionForExternal());
+					scenePatienceInstruction = MyBehavior.GetScenePatienceInstructionForExternal();
 				}
 				local.AppendLine("【群体对话规则】");
 				local.AppendLine("1. 如果【在场人物列表】中只有一个NPC，那他必须回应玩家。");
 				local.AppendLine("2. 【在场人物列表】中最上方的NPC是主要对话对象，必须回复玩家，其他NPC可以酌情选择是否回复");
 				local.AppendLine("3. 你只需以自己的身份输出一行回复，不需要包含角色名开头。");
-				local.AppendLine("4. 禁止动作描写、心理活动、括号备注；只保留角色说出口的话，不要加引号。");
+				local.AppendLine("4. 禁止动作描写、心理活动、括号备注；只保留角色说出口的话，不要加引号，但是其他规则要求你加入标签你必须加入标签");
 				local.AppendLine("5. 若多人在场，请注意你的身份和性格，给出与其他NPC不同的独特见解，避免重复相似的内容。");
 				local.AppendLine("6. 你说的话要考虑【当前场景公共对话与互动】中别人的发言，而不是各说各的，毕竟现在是群聊");
 				local.AppendLine("7. kingdom_service 标签去重：仅在你明确同意“加入势力/成为封臣/退出当前效力”时才可输出 [ACTION:KINGDOM_SERVICE:*:*]；若【当前场景公共对话与互动】已出现同事项的 kingdom_service 标签，本轮你只能口头补充，不得重复输出。");
+				local.AppendLine("8. marriage 标签去重：同一轮同一事项最多出现一个结婚标签；若已有角色输出 [ACTION:MARRIAGE_FORMAL:*] 或 [ACTION:MARRIAGE_ELOPE:*]，你只能口头补充。");
 				string fixedLayerText = "";
 				string baseExtras = StripScenePersonaBlocks((ctx?.Extras ?? "").Trim());
 				string trustBlock = ExtractTrustPromptBlock(baseExtras, out var baseExtrasWithoutTrust);
@@ -4429,7 +4447,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 					new
 					{
 						role = "user",
-						content = "玩家说：\"" + playerText + "\"\n请仅以" + (npc2.Name ?? "NPC") + "的身份回复玩家。直接输出语言内容，不可输出动作描述或者思考，你可能正处于群聊中，请结合【当前场景公共对话与互动】中其他人说的话，发表自己的见解，不可以各说各的，并且请注意【耐心标签要求】中的标签要求，且遵守【护栏】及以上所有规则！\n" + $"(回复长度要求：请将本轮回复控制在 {minTokens}-{maxTokens} 字之间；除非玩家明确要求简短，否则尽量贴近上限，不要少于 {minTokens} 字。)"
+						content = "玩家说：\"" + playerText + "\"\n请仅以" + (npc2.Name ?? "NPC") + "的身份回复玩家。直接输出语言内容，不可输出动作描述或者思考，你可能正处于群聊中，请结合【当前场景公共对话与互动】中其他人说的话，发表自己的见解，不可以各说各的，且遵守【护栏】及以上所有规则！\n" + $"(回复长度要求：请将本轮回复控制在 {minTokens}-{maxTokens} 字之间；除非玩家明确要求简短，否则尽量贴近上限，不要少于 {minTokens} 字。长度限制不含 ACTION 标签)" + (string.IsNullOrWhiteSpace(scenePatienceInstruction) ? "" : ("\n" + scenePatienceInstruction))
 					}
 				};
 				string output = await ShoutNetwork.CallApiWithMessages(messages, 2048);
@@ -4534,6 +4552,10 @@ public class ShoutBehavior : CampaignBehaviorBase
 								if (RewardSystemBehavior.Instance != null)
 								{
 									RewardSystemBehavior.Instance.ApplyRewardTags(characterObject.HeroObject, Hero.MainHero, ref content);
+								}
+								if (RomanceSystemBehavior.Instance != null)
+								{
+									RomanceSystemBehavior.Instance.ApplyMarriageTags(characterObject.HeroObject, Hero.MainHero, ref content);
 								}
 							}
 							else

@@ -177,6 +177,18 @@ public class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyGroup("7. 火山引擎 TTS（专用）")]
 	public Action TestTtsVolcDedicatedVoice { get; set; }
 
+	[SettingPropertyInteger("可婚配最大年龄", 18, 80, "0", Order = 0, RequireRestart = false, HintText = "用于家族可婚配名单过滤。默认 55。")]
+	[SettingPropertyGroup("8. 婚姻规则")]
+	public int MarriageCandidateMaxAge { get; set; } = 55;
+
+	[SettingPropertyInteger("与玩家最大年龄差", 0, 60, "0", Order = 1, RequireRestart = false, HintText = "用于家族可婚配名单过滤。默认 25。")]
+	[SettingPropertyGroup("8. 婚姻规则")]
+	public int MarriageCandidateMaxAgeGap { get; set; } = 25;
+
+	[SettingPropertyBool("婚配名单仅限异性", Order = 2, RequireRestart = false, HintText = "开启后，家族可婚配名单将按玩家异性过滤。默认开启。")]
+	[SettingPropertyGroup("8. 婚姻规则")]
+	public bool MarriageRequireOppositeGender { get; set; } = true;
+
 	public bool UseMcmKnowledgeRetrieval { get; set; } = true;
 
 	public bool KnowledgeRetrievalEnabled { get; set; } = true;

@@ -1558,6 +1558,11 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		Logger.Metric("trust.change");
 	}
 
+	public void AdjustTrustForExternal(Hero npc, int personalDelta, int publicDelta, string reason = "external")
+	{
+		AdjustTrust(npc, personalDelta, publicDelta, reason ?? "external");
+	}
+
 	private void AdjustRelationWithPlayer(Hero npc, int delta, string reason)
 	{
 		if (npc == null || delta == 0 || Hero.MainHero == null)

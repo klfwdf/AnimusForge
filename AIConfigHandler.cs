@@ -105,6 +105,8 @@ public static class AIConfigHandler
 
 	private static readonly AsyncLocal<string> _guardrailRuntimeTargetKingdomId = new AsyncLocal<string>();
 
+	private static readonly AsyncLocal<string> _guardrailRuntimeTargetHeroId = new AsyncLocal<string>();
+
 	private static GuardrailEvalSnapshot _lastGuardrailEval;
 
 	public static string GlobalPrompt => _guardrail?.GlobalPrompt ?? "";
@@ -1484,6 +1486,18 @@ public static class AIConfigHandler
 		}
 	}
 
+	public static void SetGuardrailRuntimeTargetHero(string heroId)
+	{
+		try
+		{
+			_guardrailRuntimeTargetHeroId.Value = ((heroId ?? "").Trim().ToLowerInvariant() ?? "");
+		}
+		catch
+		{
+			_guardrailRuntimeTargetHeroId.Value = "";
+		}
+	}
+
 	private static string ApplyRuntimeTemplate(string template, Dictionary<string, string> tokens)
 	{
 		string text = template ?? "";
@@ -1583,6 +1597,48 @@ public static class AIConfigHandler
 		return null;
 	}
 
+	private static Hero ResolveConversationTargetHero()
+	{
+		try
+		{
+			string text = (_guardrailRuntimeTargetHeroId.Value ?? "").Trim().ToLowerInvariant();
+			if (!string.IsNullOrWhiteSpace(text))
+			{
+				Hero hero = Hero.Find(text);
+				if (hero != null)
+				{
+					return hero;
+				}
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			Hero oneToOneConversationHero = Hero.OneToOneConversationHero;
+			if (oneToOneConversationHero != null)
+			{
+				return oneToOneConversationHero;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			Hero heroObject = Campaign.Current?.ConversationManager?.OneToOneConversationCharacter?.HeroObject;
+			if (heroObject != null)
+			{
+				return heroObject;
+			}
+		}
+		catch
+		{
+		}
+		return null;
+	}
+
 	private static string BuildRuntimeKingdomServiceInstruction()
 	{
 		try
@@ -1638,6 +1694,11 @@ public static class AIConfigHandler
 		try
 		{
 			string text = (tag ?? "").Trim().ToLowerInvariant();
+			if (text == "marriage")
+			{
+				Hero speaker = ResolveConversationTargetHero();
+				return RomanceSystemBehavior.Instance?.BuildMarriageRuntimeConstraintHint(speaker) ?? "";
+			}
 			if (text != "kingdom_service")
 			{
 				return "";
