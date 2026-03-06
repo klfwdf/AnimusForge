@@ -3101,7 +3101,17 @@ public class ShoutBehavior : CampaignBehaviorBase
 		{
 			return list;
 		}
+		Hero hero = null;
+		string text = "";
+		if (!_shoutPendingTradeIsGive)
+		{
+			text = ResolveShownTradeTargetKey(_shoutTradeTargetNpc, out hero);
+		}
 		int num = Hero.MainHero?.Gold ?? 0;
+		if (!_shoutPendingTradeIsGive)
+		{
+			num = MyBehavior.GetRemainingShowableGoldForExternal(hero, text, num);
+		}
 		if (num > 0)
 		{
 			list.Add(new ShoutTradeResourceOption
@@ -3122,6 +3132,10 @@ public class ShoutBehavior : CampaignBehaviorBase
 				if (itemAtIndex != null)
 				{
 					int itemNumber = itemRoster.GetItemNumber(itemAtIndex);
+					if (!_shoutPendingTradeIsGive)
+					{
+						itemNumber = MyBehavior.GetRemainingShowableItemCountForExternal(hero, text, itemAtIndex.StringId, itemNumber);
+					}
 					if (itemNumber > 0)
 					{
 						list.Add(new ShoutTradeResourceOption
@@ -3266,6 +3280,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 		}
 		else
 		{
+			RecordShoutShownResources();
 			text = BuildShoutTradeFactText(isGive: false);
 		}
 		int? forcedPrimaryAgentIndex = ((_shoutTradeTargetNpc != null) ? new int?(_shoutTradeTargetNpc.AgentIndex) : ((int?)null));
@@ -3383,6 +3398,84 @@ public class ShoutBehavior : CampaignBehaviorBase
 			return text + "已经将 " + string.Join("、", list) + " 交给你。";
 		}
 		return text + "给你看了看 " + string.Join("、", list) + "，但是没有将这些东西交给你。";
+	}
+
+	private void RecordShoutShownResources()
+	{
+		if (_shoutPendingTradeItems == null || _shoutPendingTradeItems.Count == 0)
+		{
+			return;
+		}
+		Hero hero = null;
+		string targetKey = ResolveShownTradeTargetKey(_shoutTradeTargetNpc, out hero);
+		if (hero == null && string.IsNullOrWhiteSpace(targetKey))
+		{
+			return;
+		}
+		int num = 0;
+		Dictionary<string, int> dictionary = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+		for (int i = 0; i < _shoutPendingTradeItems.Count; i++)
+		{
+			ShoutPendingTradeItem shoutPendingTradeItem = _shoutPendingTradeItems[i];
+			if (shoutPendingTradeItem.Amount <= 0)
+			{
+				continue;
+			}
+			if (shoutPendingTradeItem.IsGold)
+			{
+				num += shoutPendingTradeItem.Amount;
+				continue;
+			}
+			string text = (shoutPendingTradeItem.ItemId ?? "").Trim();
+			if (!string.IsNullOrWhiteSpace(text))
+			{
+				if (!dictionary.ContainsKey(text))
+				{
+					dictionary[text] = 0;
+				}
+				dictionary[text] += shoutPendingTradeItem.Amount;
+			}
+		}
+		MyBehavior.RecordShownResourcesForExternal(hero, targetKey, num, dictionary);
+	}
+
+	private string ResolveShownTradeTargetKey(NpcDataPacket targetNpc, out Hero hero)
+	{
+		hero = null;
+		if (targetNpc == null)
+		{
+			return "";
+		}
+		if (targetNpc.IsHero)
+		{
+			try
+			{
+				hero = ResolveHeroFromAgentIndex(targetNpc.AgentIndex);
+			}
+			catch
+			{
+				hero = null;
+			}
+			if (!string.IsNullOrWhiteSpace(hero?.StringId))
+			{
+				return hero.StringId;
+			}
+		}
+		string text = (targetNpc.UnnamedKey ?? "").Trim().ToLowerInvariant();
+		if (!string.IsNullOrWhiteSpace(text))
+		{
+			return text;
+		}
+		string text2 = (targetNpc.TroopId ?? "").Trim().ToLowerInvariant();
+		if (!string.IsNullOrWhiteSpace(text2))
+		{
+			return "troop:" + text2;
+		}
+		if (!string.IsNullOrWhiteSpace(targetNpc.Name))
+		{
+			return ("name:" + targetNpc.Name).Trim().ToLowerInvariant();
+		}
+		return "";
 	}
 
 	private void ResetShoutTradeState()
@@ -3952,7 +4045,8 @@ public class ShoutBehavior : CampaignBehaviorBase
 					role = "system",
 					content = layeredPrompt
 				};
-				string userMessage = "玩家说：\"" + playerText + "\"\n现在请你直接以【在场人物列表】中角色的身份回复玩家。直接输出对话内容，格式为'角色名: 对话内容'，每人一行。\n禁止生成任何新的【】章节标题、编号规则列表、格式说明或回复要求。禁止替玩家说话或编造玩家的台词。\n立即开始输出角色对话：";
+				string addressedNpcName = primaryNpc?.Name ?? "附近的人";
+				string userMessage = "玩家对" + addressedNpcName + "说：\"" + playerText + "\"\n现在请你直接以【在场人物列表】中角色的身份回复玩家。直接输出对话内容，格式为'角色名: 对话内容'，每人一行。\n禁止生成任何新的【】章节标题、编号规则列表、格式说明或回复要求。禁止替玩家说话或编造玩家的台词。\n立即开始输出角色对话：";
 				messages.Add(new
 				{
 					role = "user",
@@ -4460,7 +4554,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 					new
 					{
 						role = "user",
-						content = "玩家说：\"" + playerText + "\"\n请仅以" + (npc2.Name ?? "NPC") + "的身份回复玩家。直接输出语言内容，不可输出动作描述或者思考，你可能正处于群聊中，请结合【当前场景公共对话与互动】中其他人说的话，发表自己的见解，不可以各说各的，且遵守【护栏】及以上所有规则！\n" + $"(回复长度要求：请将本轮回复控制在 {minTokens}-{maxTokens} 字之间；除非玩家明确要求简短，否则尽量贴近上限，不要少于 {minTokens} 字。长度限制不含 ACTION 标签)" + (string.IsNullOrWhiteSpace(scenePatienceInstruction) ? "" : ("\n" + scenePatienceInstruction))
+						content = "玩家对" + (primaryNpc?.Name ?? (npc2.Name ?? "NPC")) + "说：\"" + playerText + "\"\n请仅以" + (npc2.Name ?? "NPC") + "的身份回复玩家。直接输出语言内容，不可输出动作描述或者思考，你可能正处于群聊中，请结合【当前场景公共对话与互动】中其他人说的话，发表自己的见解，不可以各说各的，且遵守【护栏】及以上所有规则！\n" + $"(回复长度要求：请将本轮回复控制在 {minTokens}-{maxTokens} 字之间；除非玩家明确要求简短，否则尽量贴近上限，不要少于 {minTokens} 字。长度限制不含 ACTION 标签)" + (string.IsNullOrWhiteSpace(scenePatienceInstruction) ? "" : ("\n" + scenePatienceInstruction))
 					}
 				};
 				string output = await ShoutNetwork.CallApiWithMessages(messages, 2048);

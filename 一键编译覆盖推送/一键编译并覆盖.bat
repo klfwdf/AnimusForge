@@ -4,15 +4,18 @@ setlocal EnableExtensions EnableDelayedExpansion
 set "SCRIPT_DIR=%~dp0"
 for %%I in ("%SCRIPT_DIR%..") do set "PROJECT_ROOT=%%~fI"
 cd /d "%SCRIPT_DIR%"
+set "DEPLOY_SCRIPT=%SCRIPT_DIR%deploy_module.ps1"
 
 set "BANNERLORD_ROOT=F:\SteamLibrary\steamapps\common\Mount & Blade II Bannerlord"
 set "CONFIG=Debug"
+set "STEAM_EXE="
+set "STEAM_GAME_ID=261550"
 
 set "SRC_DEBUG=%PROJECT_ROOT%\bin\Debug\net472\AnimusForge.dll"
 set "SRC_RELEASE=%PROJECT_ROOT%\bin\Release\net472\AnimusForge.dll"
 set "SRC_DLL="
 
-echo [AnimusForge] Build + Deploy started...
+echo [AnimusForge] Build + Deploy + Launch started...
 echo Script Dir : "%SCRIPT_DIR%"
 echo Project Dir: "%PROJECT_ROOT%"
 echo Bannerlord : "%BANNERLORD_ROOT%"
@@ -33,7 +36,7 @@ if not exist "%BANNERLORD_ROOT%" (
     exit /b 1
 )
 
-echo [1/2] Build...
+echo [1/3] Build...
 dotnet build "%PROJECT_ROOT%\AnimusForge.csproj" -c %CONFIG% /p:BannerlordRoot="%BANNERLORD_ROOT%"
 set "ERR=%ERRORLEVEL%"
 if not "%ERR%"=="0" (
@@ -55,74 +58,57 @@ if not defined SRC_DLL (
     exit /b 1
 )
 
+if not exist "%DEPLOY_SCRIPT%" (
+    echo [ERROR] Deploy script not found:
+    echo   "%DEPLOY_SCRIPT%"
+    pause
+    exit /b 1
+)
+
 echo.
-echo [2/2] Deploy...
+echo [2/3] Deploy...
 echo Source DLL : "%SRC_DLL%"
-
-set "TARGET_LIST_FILE=%TEMP%\animusforge_targets_%RANDOM%_%RANDOM%.txt"
-if exist "%TARGET_LIST_FILE%" del /f /q "%TARGET_LIST_FILE%" >nul 2>nul
-
-powershell -NoProfile -ExecutionPolicy Bypass -Command ^
-  "$ErrorActionPreference='Stop';" ^
-  "$out='%TARGET_LIST_FILE%';" ^
-  "$candidates = New-Object System.Collections.Generic.List[string];" ^
-  "$drives = Get-PSDrive -PSProvider FileSystem | Select-Object -ExpandProperty Root;" ^
-  "foreach($root in $drives){" ^
-  "  $root = $root.TrimEnd('\');" ^
-  "  $candidates.Add($root + '\SteamLibrary\steamapps\common\Mount & Blade II Bannerlord\Modules\AnimusForge\bin\Win64_Shipping_Client\AnimusForge.dll');" ^
-  "  $candidates.Add($root + '\Program Files (x86)\Steam\steamapps\common\Mount & Blade II Bannerlord\Modules\AnimusForge\bin\Win64_Shipping_Client\AnimusForge.dll');" ^
-  "  $candidates.Add($root + '\Program Files\Steam\steamapps\common\Mount & Blade II Bannerlord\Modules\AnimusForge\bin\Win64_Shipping_Client\AnimusForge.dll');" ^
-  "};" ^
-  "$hits = $candidates | Where-Object { Test-Path $_ } | Sort-Object -Unique;" ^
-  "$hits | Set-Content -Path $out -Encoding Ascii;" ^
-  "Write-Output ('FOUND=' + $hits.Count);"
-
+powershell -NoProfile -ExecutionPolicy Bypass -File "%DEPLOY_SCRIPT%" -ProjectRoot "%PROJECT_ROOT%" -BuildDll "%SRC_DLL%" -BannerlordRoot "%BANNERLORD_ROOT%"
 if errorlevel 1 (
-    echo [ERROR] Search target path failed.
-    if exist "%TARGET_LIST_FILE%" del /f /q "%TARGET_LIST_FILE%" >nul 2>nul
+    echo [ERROR] Deploy failed.
     pause
     exit /b 1
 )
 
-set "FOUND_COUNT=0"
-for /f "usebackq delims=" %%L in ("%TARGET_LIST_FILE%") do (
-    set /a FOUND_COUNT+=1
-)
+echo.
+echo [3/3] Launch via Steam...
+for /f "usebackq delims=" %%S in (`powershell -NoProfile -ExecutionPolicy Bypass -Command "$paths=@(); $keys=@('HKCU:\\Software\\Valve\\Steam','HKLM:\\SOFTWARE\\WOW6432Node\\Valve\\Steam','HKLM:\\SOFTWARE\\Valve\\Steam'); foreach($k in $keys){ try { $v=(Get-ItemProperty -Path $k -ErrorAction Stop).SteamExe; if($v){ $paths += [Environment]::ExpandEnvironmentVariables($v) } } catch {} }; $paths += 'C:\\Program Files (x86)\\Steam\\steam.exe'; $paths += 'C:\\Program Files\\Steam\\steam.exe'; $paths | Where-Object { $_ -and (Test-Path $_) } | Select-Object -First 1"`) do set "STEAM_EXE=%%S"
 
-if "%FOUND_COUNT%"=="0" (
-    echo [ERROR] No AnimusForge target DLL found.
-    if exist "%TARGET_LIST_FILE%" del /f /q "%TARGET_LIST_FILE%" >nul 2>nul
+tasklist /FI "IMAGENAME eq Bannerlord.exe" 2>nul | find /I "Bannerlord.exe" >nul
+if not errorlevel 1 (
+    echo [INFO] Bannerlord is already running. Skip launch.
+    echo [SUCCESS] Build + Deploy completed.
     pause
-    exit /b 1
+    exit /b 0
 )
 
-for /f "usebackq delims=" %%L in ("%TARGET_LIST_FILE%") do (
-    copy /Y "%SRC_DLL%" "%%L" >nul
+if defined STEAM_EXE (
+    start "" "%STEAM_EXE%" -applaunch %STEAM_GAME_ID%
     if errorlevel 1 (
-        echo [ERROR] Copy failed: "%%L"
-        if exist "%TARGET_LIST_FILE%" del /f /q "%TARGET_LIST_FILE%" >nul 2>nul
+        echo [ERROR] Failed to launch Bannerlord via Steam:
+        echo   "%STEAM_EXE%" -applaunch %STEAM_GAME_ID%
         pause
         exit /b 1
     )
-    echo [OK] Copied to: "%%L"
-
-    powershell -NoProfile -ExecutionPolicy Bypass -Command ^
-      "$src=(Get-FileHash '%SRC_DLL%' -Algorithm SHA256).Hash;" ^
-      "$dst=(Get-FileHash '%%L' -Algorithm SHA256).Hash;" ^
-      "Write-Output ('SRC='+$src);" ^
-      "Write-Output ('DST='+$dst);" ^
-      "Write-Output ('MATCH=' + ($src -eq $dst));"
+    echo [OK] Launched via Steam:
+    echo   "%STEAM_EXE%" -applaunch %STEAM_GAME_ID%
+) else (
+    start "" "steam://rungameid/%STEAM_GAME_ID%"
     if errorlevel 1 (
-        echo [ERROR] Hash verify failed: "%%L"
-        if exist "%TARGET_LIST_FILE%" del /f /q "%TARGET_LIST_FILE%" >nul 2>nul
+        echo [ERROR] Failed to launch Steam URL:
+        echo   steam://rungameid/%STEAM_GAME_ID%
         pause
         exit /b 1
     )
-    echo ---
+    echo [OK] Launched via Steam URL:
+    echo   steam://rungameid/%STEAM_GAME_ID%
 )
 
-if exist "%TARGET_LIST_FILE%" del /f /q "%TARGET_LIST_FILE%" >nul 2>nul
-
-echo [SUCCESS] Build + Deploy completed.
+echo [SUCCESS] Build + Deploy + Launch completed.
 pause
 exit /b 0

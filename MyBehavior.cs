@@ -183,6 +183,7 @@ public class MyBehavior : CampaignBehaviorBase
 	private enum PatienceMood
 	{
 		Neutral,
+		Delighted,
 		Joy,
 		Annoyed,
 		Bored
@@ -222,6 +223,8 @@ public class MyBehavior : CampaignBehaviorBase
 	private int _pendingTradeItemIndex;
 
 	private Dictionary<string, HeroShownRecord> _shownRecords = new Dictionary<string, HeroShownRecord>();
+
+	private Dictionary<string, string> _shownRecordStorage = new Dictionary<string, string>();
 
 	private List<TradeResourceOption> _currentTradeOptions = new List<TradeResourceOption>();
 
@@ -542,6 +545,14 @@ public class MyBehavior : CampaignBehaviorBase
 
 	public override void SyncData(IDataStore dataStore)
 	{
+		if (_shownRecords == null)
+		{
+			_shownRecords = new Dictionary<string, HeroShownRecord>();
+		}
+		if (_shownRecordStorage == null)
+		{
+			_shownRecordStorage = new Dictionary<string, string>();
+		}
 		if (_dialogueHistory == null)
 		{
 			_dialogueHistory = new Dictionary<string, List<DialogueDay>>();
@@ -562,6 +573,39 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			if (dataStore != null && dataStore.IsSaving)
 			{
+				_shownRecordStorage.Clear();
+				foreach (KeyValuePair<string, HeroShownRecord> shownRecord in _shownRecords)
+				{
+					if (string.IsNullOrWhiteSpace(shownRecord.Key) || shownRecord.Value == null)
+					{
+						continue;
+					}
+					bool flag = Math.Max(0, shownRecord.Value.ShownGold) > 0;
+					if (!flag && shownRecord.Value.ShownItems != null)
+					{
+						foreach (KeyValuePair<string, int> shownItem in shownRecord.Value.ShownItems)
+						{
+							if (!string.IsNullOrWhiteSpace(shownItem.Key) && shownItem.Value > 0)
+							{
+								flag = true;
+								break;
+							}
+						}
+					}
+					if (!flag)
+					{
+						continue;
+					}
+					try
+					{
+						_shownRecordStorage[shownRecord.Key] = JsonConvert.SerializeObject(shownRecord.Value);
+					}
+					catch (Exception ex)
+					{
+						Logger.Log("TradeShown", "[ERROR] Serialize shown record for " + shownRecord.Key + ": " + ex.Message);
+					}
+				}
+				dataStore.SyncData("_shownRecords_v1", ref _shownRecordStorage);
 				_dialogueHistoryStorage.Clear();
 				foreach (KeyValuePair<string, List<DialogueDay>> item in _dialogueHistory)
 				{
@@ -598,6 +642,43 @@ public class MyBehavior : CampaignBehaviorBase
 				dataStore.SyncData("_npcPersonaProfiles_v1", ref _npcPersonaProfileStorage);
 				SyncPatienceData(dataStore);
 				return;
+			}
+			_shownRecords.Clear();
+			_shownRecordStorage.Clear();
+			dataStore.SyncData("_shownRecords_v1", ref _shownRecordStorage);
+			if (_shownRecordStorage != null)
+			{
+				foreach (KeyValuePair<string, string> shownRecord2 in _shownRecordStorage)
+				{
+					if (string.IsNullOrWhiteSpace(shownRecord2.Key) || string.IsNullOrWhiteSpace(shownRecord2.Value))
+					{
+						continue;
+					}
+					try
+					{
+						HeroShownRecord heroShownRecord = JsonConvert.DeserializeObject<HeroShownRecord>(shownRecord2.Value);
+						if (heroShownRecord != null)
+						{
+							if (heroShownRecord.ShownGold < 0)
+							{
+								heroShownRecord.ShownGold = 0;
+							}
+							if (heroShownRecord.ShownItems == null)
+							{
+								heroShownRecord.ShownItems = new Dictionary<string, int>();
+							}
+							else
+							{
+								heroShownRecord.ShownItems = heroShownRecord.ShownItems.Where((KeyValuePair<string, int> x) => !string.IsNullOrWhiteSpace(x.Key) && x.Value > 0).ToDictionary((KeyValuePair<string, int> x) => x.Key, (KeyValuePair<string, int> x) => x.Value);
+							}
+							_shownRecords[NormalizeShownRecordKey(shownRecord2.Key)] = heroShownRecord;
+						}
+					}
+					catch (Exception ex2)
+					{
+						Logger.Log("TradeShown", "[ERROR] Deserialize shown record for " + shownRecord2.Key + ": " + ex2.Message);
+					}
+				}
 			}
 			_dialogueHistory.Clear();
 			_dialogueHistoryStorage.Clear();
@@ -654,6 +735,8 @@ public class MyBehavior : CampaignBehaviorBase
 		catch (Exception ex5)
 		{
 			Logger.Log("DialogueHistory", "[ERROR] SyncData v2 failed: " + ex5.ToString());
+			_shownRecords = new Dictionary<string, HeroShownRecord>();
+			_shownRecordStorage = new Dictionary<string, string>();
 			_dialogueHistory = new Dictionary<string, List<DialogueDay>>();
 			_dialogueHistoryStorage = new Dictionary<string, string>();
 			_npcPersonaProfiles = new Dictionary<string, NpcPersonaProfile>();
@@ -1636,6 +1719,63 @@ public class MyBehavior : CampaignBehaviorBase
 		return true;
 	}
 
+	private static bool IsMarriagePoolCandidateForPrompt(Hero hero)
+	{
+		if (hero == null)
+		{
+			return false;
+		}
+		try
+		{
+			int marriageCandidateMaxAgeSettingForPrompt = GetMarriageCandidateMaxAgeSettingForPrompt();
+			if (hero.Age < (float)MarriageCandidateMinAgeForPrompt || hero.Age > (float)marriageCandidateMaxAgeSettingForPrompt)
+			{
+				return false;
+			}
+		}
+		catch
+		{
+			return false;
+		}
+		try
+		{
+			if (hero.IsPrisoner)
+			{
+				return false;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (hero.Spouse != null)
+			{
+				return false;
+			}
+		}
+		catch
+		{
+		}
+		return true;
+	}
+
+	private static string GetMarriageCandidateGenderLabelForPrompt(Hero hero)
+	{
+		if (hero == null)
+		{
+			return "未知";
+		}
+		try
+		{
+			return hero.IsFemale ? "女" : "男";
+		}
+		catch
+		{
+			return "未知";
+		}
+	}
+
 	private static string BuildClanUnmarriedCandidatesForPrompt(Hero npcHero, Hero player, int maxEntries = 12)
 	{
 		try
@@ -1647,18 +1787,19 @@ public class MyBehavior : CampaignBehaviorBase
 			}
 			Hero leader = clan.Leader;
 			List<Hero> list = (from h in GetClanMembersForPrompt(clan)
-				where IsMarriageCandidateForPrompt(h, player)
+				where IsMarriagePoolCandidateForPrompt(h)
 				orderby h.Age descending
 				select h).Take(Math.Max(1, maxEntries)).ToList();
 			if (list.Count <= 0)
 			{
-				return "无（按可联姻性别/年龄范围过滤后暂无符合条件者）";
+				return "无（该家族当前没有基础适婚条件下的未婚成员）";
 			}
 			StringBuilder stringBuilder = new StringBuilder();
 			for (int i = 0; i < list.Count; i++)
 			{
 				Hero hero = list[i];
 				string text = hero.Name?.ToString() ?? ("Hero#" + i);
+				string marriageCandidateGenderLabelForPrompt = GetMarriageCandidateGenderLabelForPrompt(hero);
 				int num = (int)Math.Round(hero.Age);
 				string text2 = "";
 				if (hero == npcHero)
@@ -1669,7 +1810,7 @@ public class MyBehavior : CampaignBehaviorBase
 				{
 					text2 = "（族长）";
 				}
-				stringBuilder.AppendLine("- " + text + text2 + $" | 年龄={num} | StringId={hero.StringId}");
+				stringBuilder.AppendLine("- " + text + text2 + $" | 性别={marriageCandidateGenderLabelForPrompt} | 年龄={num} | StringId={hero.StringId}");
 			}
 			return stringBuilder.ToString().TrimEnd();
 		}
@@ -1751,7 +1892,7 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private string BuildPlayerIdentityInfoForPrompt(Hero playerHero, bool includeRuleGatedFields, bool includeTradePricing)
+	private string BuildPlayerIdentityInfoForPrompt(Hero playerHero, bool includeRuleGatedFields, bool includeTradePricing, bool includeMarriageCandidates = false, Hero targetHero = null)
 	{
 		if (playerHero == null)
 		{
@@ -1827,6 +1968,13 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			stringBuilder.AppendLine("玩家装备：" + text5);
 		}
+		if (includeMarriageCandidates)
+		{
+			int marriageCandidateMaxAgeSettingForPrompt = GetMarriageCandidateMaxAgeSettingForPrompt();
+			stringBuilder.AppendLine("【玩家家族可婚配未婚成员（事实清单）】");
+			stringBuilder.AppendLine($"筛选口径：仅列出玩家家族内部基础适婚池（年龄 {MarriageCandidateMinAgeForPrompt}-{marriageCandidateMaxAgeSettingForPrompt}、未婚、非囚犯）。具体能否与对方成员成婚，仍以性别限制、年龄差和运行时婚姻规则为准。");
+			stringBuilder.AppendLine(BuildPlayerClanUnmarriedCandidatesForPrompt(playerHero, targetHero, 12));
+		}
 		return stringBuilder.ToString().Trim();
 	}
 
@@ -1856,6 +2004,15 @@ public class MyBehavior : CampaignBehaviorBase
 		string text4 = BuildNpcClanRoleHintForPrompt(npcHero);
 		string text5 = BuildAgeBracketLabel(npcHero.Age);
 		string text6 = BuildHeroEquipmentSummaryForPrompt(npcHero);
+		int num2 = 0;
+		try
+		{
+			num2 = Math.Max(0, npcHero.Gold);
+		}
+		catch
+		{
+			num2 = 0;
+		}
 		Hero hero = null;
 		try
 		{
@@ -1891,14 +2048,13 @@ public class MyBehavior : CampaignBehaviorBase
 			}
 		}
 		stringBuilder.AppendLine("NPC年纪：" + text5);
+		stringBuilder.AppendLine("NPC存款：" + num2 + " 第纳尔");
 		stringBuilder.AppendLine("NPC装备：" + text6);
 		if (includeMarriageCandidates)
 		{
 			int marriageCandidateMaxAgeSettingForPrompt = GetMarriageCandidateMaxAgeSettingForPrompt();
-			int marriageCandidateMaxAgeGapSettingForPrompt = GetMarriageCandidateMaxAgeGapSettingForPrompt();
-			string text8 = (GetMarriageRequireOppositeGenderSettingForPrompt() ? "异性" : "不限性别");
 			stringBuilder.AppendLine("【该家族可婚配未婚成员（事实清单）】");
-			stringBuilder.AppendLine($"筛选口径：按玩家当前婚配条件过滤（{text8}、年龄 {MarriageCandidateMinAgeForPrompt}-{marriageCandidateMaxAgeSettingForPrompt}、与玩家年龄差不超过 {marriageCandidateMaxAgeGapSettingForPrompt} 岁、未婚、非囚犯）。");
+			stringBuilder.AppendLine($"筛选口径：仅列出该家族内部基础适婚池（年龄 {MarriageCandidateMinAgeForPrompt}-{marriageCandidateMaxAgeSettingForPrompt}、未婚、非囚犯）。具体能否与玩家家族成员成婚，仍以性别限制、年龄差和运行时婚姻规则为准。");
 			stringBuilder.AppendLine(BuildClanUnmarriedCandidatesForPrompt(npcHero, Hero.MainHero, 12));
 		}
 		if (includeTradePricing && RewardSystemBehavior.Instance != null)
@@ -2364,6 +2520,95 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private static string BuildPlayerClanUnmarriedCandidatesForPrompt(Hero playerHero, Hero targetHero, int maxEntries = 12)
+	{
+		try
+		{
+			Clan clan = playerHero?.Clan;
+			if (clan == null)
+			{
+				return "无（玩家无家族）";
+			}
+			Hero leader = clan.Leader;
+			List<Hero> list = (from h in GetClanMembersForPrompt(clan)
+				where IsMarriagePoolCandidateForPrompt(h)
+				orderby h.Age descending
+				select h).Take(Math.Max(1, maxEntries)).ToList();
+			if (list.Count <= 0)
+			{
+				return "无（玩家家族当前没有基础适婚条件下的未婚成员）";
+			}
+			StringBuilder stringBuilder = new StringBuilder();
+			for (int i = 0; i < list.Count; i++)
+			{
+				Hero hero = list[i];
+				string text = hero.Name?.ToString() ?? ("Hero#" + i);
+				string marriageCandidateGenderLabelForPrompt = GetMarriageCandidateGenderLabelForPrompt(hero);
+				int num = (int)Math.Round(hero.Age);
+				string text2 = "";
+				if (hero == playerHero)
+				{
+					text2 = "（玩家本人）";
+				}
+				else if (hero == leader)
+				{
+					text2 = "（玩家家族族长）";
+				}
+				stringBuilder.AppendLine("- " + text + text2 + $" | 性别={marriageCandidateGenderLabelForPrompt} | 年龄={num} | StringId={hero.StringId}");
+			}
+			return stringBuilder.ToString().TrimEnd();
+		}
+		catch
+		{
+			return "无（生成玩家家族未婚名单时发生异常）";
+		}
+	}
+
+	public static void RecordShownResourcesForExternal(Hero hero, string targetKey, int shownGold, Dictionary<string, int> shownItems)
+	{
+		try
+		{
+			(Campaign.Current?.GetCampaignBehavior<MyBehavior>())?.RecordShownResources(hero, targetKey, shownGold, shownItems);
+		}
+		catch
+		{
+		}
+	}
+
+	public static int GetRemainingShowableGoldForExternal(Hero hero, string targetKey, int currentGold)
+	{
+		try
+		{
+			MyBehavior campaignBehavior = Campaign.Current?.GetCampaignBehavior<MyBehavior>();
+			if (campaignBehavior == null)
+			{
+				return Math.Max(0, currentGold);
+			}
+			return campaignBehavior.GetRemainingShowableGold(hero, targetKey, currentGold);
+		}
+		catch
+		{
+			return Math.Max(0, currentGold);
+		}
+	}
+
+	public static int GetRemainingShowableItemCountForExternal(Hero hero, string targetKey, string itemId, int currentAmount)
+	{
+		try
+		{
+			MyBehavior campaignBehavior = Campaign.Current?.GetCampaignBehavior<MyBehavior>();
+			if (campaignBehavior == null)
+			{
+				return Math.Max(0, currentAmount);
+			}
+			return campaignBehavior.GetRemainingShowableItemCount(hero, targetKey, itemId, currentAmount);
+		}
+		catch
+		{
+			return Math.Max(0, currentAmount);
+		}
+	}
+
 	private string BuildGiveFactText()
 	{
 		if (_pendingTradeItems == null || _pendingTradeItems.Count == 0)
@@ -2503,21 +2748,103 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private HeroShownRecord GetShownRecord(Hero hero)
 	{
-		if (hero == null)
+		return GetShownRecord(hero, null, createIfMissing: true);
+	}
+
+	private HeroShownRecord GetShownRecord(Hero hero, string targetKey, bool createIfMissing)
+	{
+		string text = ResolveShownRecordKey(hero, targetKey);
+		if (string.IsNullOrWhiteSpace(text))
 		{
 			return null;
 		}
-		string stringId = hero.StringId;
-		if (string.IsNullOrEmpty(stringId))
+		if (!_shownRecords.TryGetValue(text, out var value))
 		{
-			return null;
-		}
-		if (!_shownRecords.TryGetValue(stringId, out var value))
-		{
+			if (!createIfMissing)
+			{
+				return null;
+			}
 			value = new HeroShownRecord();
-			_shownRecords[stringId] = value;
+			_shownRecords[text] = value;
+		}
+		if (value.ShownItems == null)
+		{
+			value.ShownItems = new Dictionary<string, int>();
 		}
 		return value;
+	}
+
+	private void RecordShownResources(Hero hero, string targetKey, int shownGold, Dictionary<string, int> shownItems)
+	{
+		if (shownGold <= 0 && (shownItems == null || shownItems.Count == 0))
+		{
+			return;
+		}
+		HeroShownRecord shownRecord = GetShownRecord(hero, targetKey, createIfMissing: true);
+		if (shownRecord == null)
+		{
+			return;
+		}
+		if (shownGold > 0)
+		{
+			shownRecord.ShownGold += shownGold;
+		}
+		if (shownItems == null)
+		{
+			return;
+		}
+		foreach (KeyValuePair<string, int> shownItem in shownItems)
+		{
+			string text = (shownItem.Key ?? "").Trim();
+			if (string.IsNullOrWhiteSpace(text) || shownItem.Value <= 0)
+			{
+				continue;
+			}
+			if (!shownRecord.ShownItems.ContainsKey(text))
+			{
+				shownRecord.ShownItems[text] = 0;
+			}
+			shownRecord.ShownItems[text] += shownItem.Value;
+		}
+	}
+
+	private int GetRemainingShowableGold(Hero hero, string targetKey, int currentGold)
+	{
+		HeroShownRecord shownRecord = GetShownRecord(hero, targetKey, createIfMissing: false);
+		if (shownRecord == null)
+		{
+			return Math.Max(0, currentGold);
+		}
+		return Math.Max(0, currentGold - Math.Max(0, shownRecord.ShownGold));
+	}
+
+	private int GetRemainingShowableItemCount(Hero hero, string targetKey, string itemId, int currentAmount)
+	{
+		if (string.IsNullOrWhiteSpace(itemId))
+		{
+			return Math.Max(0, currentAmount);
+		}
+		HeroShownRecord shownRecord = GetShownRecord(hero, targetKey, createIfMissing: false);
+		if (shownRecord == null || shownRecord.ShownItems == null || !shownRecord.ShownItems.TryGetValue(itemId, out var value))
+		{
+			return Math.Max(0, currentAmount);
+		}
+		return Math.Max(0, currentAmount - Math.Max(0, value));
+	}
+
+	private static string ResolveShownRecordKey(Hero hero, string targetKey)
+	{
+		string text = hero?.StringId;
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			text = targetKey;
+		}
+		return NormalizeShownRecordKey(text);
+	}
+
+	private static string NormalizeShownRecordKey(string targetKey)
+	{
+		return (targetKey ?? "").Trim().ToLowerInvariant();
 	}
 
 	private void StartAiConversation(string input, string extraFact)
@@ -2956,7 +3283,7 @@ public class MyBehavior : CampaignBehaviorBase
 					bool includeMarriageCandidates = targetHero != null && (isMarriageHit || (_isMarriageRuleSessionActive && _marriageRuleHeroId == targetHero.StringId));
 					bool playerIdentityAlwaysOn = playerTier >= 2;
 					bool includePlayerRuleGatedFields = playerIdentityAlwaysOn;
-					string playerIdentityInfo = BuildPlayerIdentityInfoForPrompt(Hero.MainHero, includePlayerRuleGatedFields, includeTradePricing);
+					string playerIdentityInfo = BuildPlayerIdentityInfoForPrompt(Hero.MainHero, includePlayerRuleGatedFields, includeTradePricing, includeMarriageCandidates, targetHero);
 					if (!string.IsNullOrWhiteSpace(playerIdentityInfo))
 					{
 						sb.AppendLine(playerIdentityInfo);
@@ -3357,7 +3684,15 @@ public class MyBehavior : CampaignBehaviorBase
 			}
 			if (!string.IsNullOrWhiteSpace(extraFact))
 			{
-				dialogueDay.Lines.Add("[玩家行为补充] " + extraFact);
+				string text2 = extraFact.Trim();
+				if (text2.StartsWith("[玩家行为补充]", StringComparison.Ordinal) || text2.StartsWith("[NPC行为补充]", StringComparison.Ordinal))
+				{
+					dialogueDay.Lines.Add(text2);
+				}
+				else
+				{
+					dialogueDay.Lines.Add("[玩家行为补充] " + text2);
+				}
 			}
 			if (!string.IsNullOrWhiteSpace(aiText))
 			{
@@ -3422,6 +3757,51 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
+	public static void AppendExternalNpcFact(Hero hero, string factText)
+	{
+		try
+		{
+			if (hero == null)
+			{
+				return;
+			}
+			string text = (factText ?? "").Trim();
+			if (string.IsNullOrWhiteSpace(text))
+			{
+				return;
+			}
+			string text2 = (hero.Name?.ToString() ?? "NPC").Trim();
+			if (string.IsNullOrWhiteSpace(text2))
+			{
+				text2 = "NPC";
+			}
+			AppendExternalDialogueHistory(hero, null, null, "[NPC行为补充] " + text2 + ": " + text);
+		}
+		catch
+		{
+		}
+	}
+
+	public static void AppendExternalPlayerFact(Hero hero, string factText)
+	{
+		try
+		{
+			if (hero == null)
+			{
+				return;
+			}
+			string text = (factText ?? "").Trim();
+			if (string.IsNullOrWhiteSpace(text))
+			{
+				return;
+			}
+			AppendExternalDialogueHistory(hero, null, null, "[玩家行为补充] " + text);
+		}
+		catch
+		{
+		}
+	}
+
 	private static void AppendPlayerExtraFactLine(StringBuilder sb, string extraFact)
 	{
 		if (sb == null)
@@ -3431,7 +3811,7 @@ public class MyBehavior : CampaignBehaviorBase
 		string text = (extraFact ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
 		if (!string.IsNullOrWhiteSpace(text))
 		{
-			if (text.StartsWith("[玩家行为补充]", StringComparison.Ordinal))
+			if (text.StartsWith("[玩家行为补充]", StringComparison.Ordinal) || text.StartsWith("[NPC行为补充]", StringComparison.Ordinal))
 			{
 				sb.AppendLine(text);
 			}
@@ -3490,7 +3870,15 @@ public class MyBehavior : CampaignBehaviorBase
 				{
 					text3 = text3.Substring(0, 180);
 				}
-				list.Add("[玩家行为补充] " + text3.Replace("\r", " ").Replace("\n", " "));
+				string text5 = text3.Replace("\r", " ").Replace("\n", " ");
+				if (text5.StartsWith("[玩家行为补充]", StringComparison.Ordinal) || text5.StartsWith("[NPC行为补充]", StringComparison.Ordinal))
+				{
+					list.Add(text5);
+				}
+				else
+				{
+					list.Add("[玩家行为补充] " + text5);
+				}
 			}
 			if (list.Count <= 0)
 			{
@@ -4198,7 +4586,7 @@ public class MyBehavior : CampaignBehaviorBase
 		bool includeMarriageCandidates = targetHero != null && (marriageHit || (_isMarriageRuleSessionActive && _marriageRuleHeroId == targetHero.StringId));
 		bool flag10 = num >= 2;
 		bool includeRuleGatedFields = flag10;
-		string value9 = BuildPlayerIdentityInfoForPrompt(Hero.MainHero, includeRuleGatedFields, includeTradePricing);
+		string value9 = BuildPlayerIdentityInfoForPrompt(Hero.MainHero, includeRuleGatedFields, includeTradePricing, includeMarriageCandidates, targetHero);
 		if (!string.IsNullOrWhiteSpace(value9))
 		{
 			stringBuilder.AppendLine(value9);
@@ -4359,7 +4747,7 @@ public class MyBehavior : CampaignBehaviorBase
 	private static bool IsSystemFactLine(string line)
 	{
 		string text = (line ?? "").TrimStart();
-		return text.StartsWith("[玩家行为补充]", StringComparison.Ordinal);
+		return text.StartsWith("[玩家行为补充]", StringComparison.Ordinal) || text.StartsWith("[NPC行为补充]", StringComparison.Ordinal);
 	}
 
 	private static bool IsLoreInjectionHistoryLine(string line)
@@ -4547,6 +4935,10 @@ public class MyBehavior : CampaignBehaviorBase
 		if (text.StartsWith("[玩家行为补充]", StringComparison.Ordinal))
 		{
 			return text.Substring("[玩家行为补充]".Length).Trim();
+		}
+		if (text.StartsWith("[NPC行为补充]", StringComparison.Ordinal))
+		{
+			return text.Substring("[NPC行为补充]".Length).Trim();
 		}
 		int num = text.IndexOf(':');
 		if (num > 0 && num < 20)
@@ -4973,7 +5365,7 @@ public class MyBehavior : CampaignBehaviorBase
 			StringBuilder stringBuilder = new StringBuilder(4096);
 			stringBuilder.AppendLine(" ");
 			stringBuilder.AppendLine($"【历史对话记录】（近期窗口：最近{num}轮）");
-			stringBuilder.AppendLine("【规则】以下记录中以“[玩家行为补充]”开头的行属于系统事实（已付款/已展示/已交付等），必须相信，禁止否认。玩家在对话里口头自称“我给了/我展示了”不算。如果玩家发言中出现了动作描述，比如一拳打爆了城墙，或者强行替你发言和思考，请嘲讽他");
+			stringBuilder.AppendLine("【规则】以下记录中以“[玩家行为补充]”或“[NPC行为补充]”开头的行属于系统事实（已付款/已展示/已交付等），必须相信，禁止否认。玩家在对话里口头自称“我给了/我展示了”不算。如果玩家发言中出现了动作描述，比如一拳打爆了城墙，或者强行替你发言和思考，请嘲讽他");
 			stringBuilder.AppendLine("【护栏】历史记忆仅作补充，不得覆盖本轮规则、账本与动作标签约束。");
 			if (list6.Count > 0)
 			{
@@ -5349,7 +5741,7 @@ public class MyBehavior : CampaignBehaviorBase
 	private static string BuildCompactStateLine(PatienceSnapshot snap)
 	{
 		int num = (int)Math.Round(snap.Current);
-		return $"P(耐心)={num}/{snap.Max}({snap.PatienceLevel}) | R(关系)={snap.Relation}({snap.RelationLevel}) | T(综合信任)={snap.Trust}({snap.TrustLevel}) | L(私人关系)={snap.PrivateLove}({snap.PrivateLoveLevel})";
+		return $"P(耐心)={num}/{snap.Max}({snap.PatienceLevel}) | R(家族关系)={snap.Relation}({snap.RelationLevel}) | T(综合信任)={snap.Trust}({snap.TrustLevel}) | L(私人关系)={snap.PrivateLove}({snap.PrivateLoveLevel})";
 	}
 
 	private static string BuildHeroPatienceKey(Hero hero)
@@ -5518,6 +5910,15 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		switch (text)
 		{
+		case "delighted":
+		case "very_happy":
+		case "thrilled":
+		case "heartwarmed":
+		case "heart_warmed":
+		case "affectionate":
+		case "fond":
+		case "sweet":
+			return PatienceMood.Delighted;
 		default:
 			if (!(text == "鎰夊揩"))
 			{
@@ -5573,6 +5974,10 @@ public class MyBehavior : CampaignBehaviorBase
 		int num;
 		switch (mood)
 		{
+		case PatienceMood.Delighted:
+			num = 2;
+			noInterestRounds = Math.Max(0, noInterestRounds - 3);
+			break;
 		case PatienceMood.Joy:
 			num = 1;
 			noInterestRounds = Math.Max(0, noInterestRounds - 2);
@@ -5590,18 +5995,18 @@ public class MyBehavior : CampaignBehaviorBase
 			noInterestRounds++;
 			break;
 		}
-		if (mood != PatienceMood.Joy && noInterestRounds >= 3)
+		if (mood != PatienceMood.Joy && mood != PatienceMood.Delighted && noInterestRounds >= 3)
 		{
 			num--;
 		}
 		return num;
 	}
 
-	private static int ComputeRelationDelta(PatienceMood mood, int currentRelation)
+	private static int ComputeNativeRelationDelta(PatienceMood mood, int currentRelation)
 	{
 		switch (mood)
 		{
-		case PatienceMood.Joy:
+		case PatienceMood.Delighted:
 			if (currentRelation >= 95)
 			{
 				return 0;
@@ -5612,13 +6017,24 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				return 0;
 			}
-			return -2;
-		case PatienceMood.Bored:
-			if (currentRelation <= -95)
-			{
-				return 0;
-			}
 			return -1;
+		default:
+			return 0;
+		}
+	}
+
+	private static int ComputePrivateLoveDelta(PatienceMood mood)
+	{
+		switch (mood)
+		{
+		case PatienceMood.Delighted:
+			return 2;
+		case PatienceMood.Joy:
+			return 1;
+		case PatienceMood.Bored:
+			return -1;
+		case PatienceMood.Annoyed:
+			return -2;
 		default:
 			return 0;
 		}
@@ -5687,9 +6103,9 @@ public class MyBehavior : CampaignBehaviorBase
 	private static string BuildPatiencePromptText(PatienceSnapshot snap)
 	{
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.AppendLine("【4.三值状态】");
+		stringBuilder.AppendLine("【4.四值状态】");
 		stringBuilder.AppendLine(BuildCompactStateLine(snap));
-		stringBuilder.AppendLine("规则：情绪标签会影响关系（JOY=+1，BORED=-1，ANNOYED=-2，NEUTRAL=0）；回复末尾必须且只能追加一个 [ACTION:MOOD:JOY/NEUTRAL/BORED/ANNOYED]；耐心低时更不耐烦，耐心归零后仍可继续对话，但继续交流会降低关系。");
+		stringBuilder.AppendLine("规则：情绪标签优先影响私人关系 L，并在最强正负情绪下顺带影响原生关系 R。DELIGHTED=L+2 且 R+1；JOY=L+1；NEUTRAL=0；BORED=L-1；ANNOYED=L-2 且 R-1。回复末尾必须且只能追加一个 [ACTION:MOOD:DELIGHTED/JOY/NEUTRAL/BORED/ANNOYED]；耐心低时更不耐烦，耐心归零后仍可继续对话，但继续交流会额外降低关系。");
 		return stringBuilder.ToString();
 	}
 
@@ -5729,13 +6145,15 @@ public class MyBehavior : CampaignBehaviorBase
 		int after;
 		bool flag = ApplyPatienceDeltaInternal(heroPatienceSnapshot.Key, heroPatienceSnapshot.Max, patienceMood, out before, out after);
 		int relation = heroPatienceSnapshot.Relation;
-		int num = ComputeRelationDelta(patienceMood, relation);
+		int privateLove = heroPatienceSnapshot.PrivateLove;
+		int num = ComputeNativeRelationDelta(patienceMood, relation);
+		int num2 = ComputePrivateLoveDelta(patienceMood);
 		bool flag2 = before <= 0;
 		if (flag2)
 		{
 			num--;
 		}
-		int num2 = relation;
+		int num3 = relation;
 		if (num != 0)
 		{
 			try
@@ -5743,7 +6161,7 @@ public class MyBehavior : CampaignBehaviorBase
 				if (Hero.MainHero != null && targetHero != null)
 				{
 					ChangeRelationAction.ApplyRelationChangeBetweenHeroes(Hero.MainHero, targetHero, num);
-					num2 = GetRelationWithPlayerSafe(targetHero);
+					num3 = GetRelationWithPlayerSafe(targetHero);
 				}
 			}
 			catch (Exception ex)
@@ -5751,9 +6169,14 @@ public class MyBehavior : CampaignBehaviorBase
 				Logger.Log("Patience", "[WARN] apply relation delta failed: " + ex.Message);
 			}
 		}
+		if (num2 != 0)
+		{
+			RomanceSystemBehavior.Instance?.AdjustPrivateLove(targetHero, num2, "mood_tag");
+		}
+		int num4 = RomanceSystemBehavior.Instance?.GetPrivateLove(targetHero) ?? privateLove;
 		try
 		{
-			Logger.Log("Patience", $"hero={targetHero.StringId} mood={patienceMood} value={before}->{after}/{heroPatienceSnapshot.Max} relation={relation}->{num2} delta={num}");
+			Logger.Log("Patience", $"hero={targetHero.StringId} mood={patienceMood} value={before}->{after}/{heroPatienceSnapshot.Max} relation={relation}->{num3} delta={num} privateLove={privateLove}->{num4} deltaLove={num2}");
 			Logger.Obs("Patience", "hero_update", new Dictionary<string, object>
 			{
 				["heroId"] = targetHero.StringId ?? "",
@@ -5762,8 +6185,11 @@ public class MyBehavior : CampaignBehaviorBase
 				["patienceAfter"] = after,
 				["patienceMax"] = heroPatienceSnapshot.Max,
 				["relationBefore"] = relation,
-				["relationAfter"] = num2,
+				["relationAfter"] = num3,
 				["relationDelta"] = num,
+				["privateLoveBefore"] = privateLove,
+				["privateLoveAfter"] = num4,
+				["privateLoveDelta"] = num2,
 				["continuedAtZero"] = flag2,
 				["directConversation"] = directConversation
 			});
@@ -5853,7 +6279,7 @@ public class MyBehavior : CampaignBehaviorBase
 			return false;
 		}
 		int num = (int)Math.Round(unnamedPatienceSnapshot.Current);
-		statusLine = $"- {unnamedPatienceSnapshot.DisplayName}: P(耐心)={num}/{unnamedPatienceSnapshot.Max}({unnamedPatienceSnapshot.PatienceLevel}) | R(关系)=0(中立) | T(综合信任)=0(中性观望) | L(私人关系)=0({RomanceSystemBehavior.GetPrivateLoveLevelText(0)})";
+		statusLine = $"- {unnamedPatienceSnapshot.DisplayName}: P(耐心)={num}/{unnamedPatienceSnapshot.Max}({unnamedPatienceSnapshot.PatienceLevel}) | R(家族关系)=0(中立) | T(综合信任)=0(中性观望) | L(私人关系)=0({RomanceSystemBehavior.GetPrivateLoveLevelText(0)})";
 		if (num <= 0)
 		{
 			statusLine += "，耐心已归零（可继续交流，但会额外降低关系）";
@@ -5863,7 +6289,7 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private static string BuildScenePatienceInstruction()
 	{
-		return "【耐心标签要求】：你必须在你回复的末尾加入一个合适的标签 喜悦：[ACTION:MOOD:JOY]  无聊:[ACTION:MOOD:BORED]愤怒:[ACTION:MOOD:ANNOYED],如果你什么感觉都没有，那就必须加入标签：平淡:[ACTION:MOOD:NEUTRAL]，并始终按四值状态中的 P/R/T/L 来决定语气与合作度。";
+		return "【耐心标签要求】：你必须在你回复的末尾加入且只能加入一个合适的标签。强烈被打动/明显心动：[ACTION:MOOD:DELIGHTED]；喜悦友好：[ACTION:MOOD:JOY]；平淡：[ACTION:MOOD:NEUTRAL]；无聊冷淡：[ACTION:MOOD:BORED]；恼火反感：[ACTION:MOOD:ANNOYED]。并始终按四值状态中的 P/R/T/L 来决定语气与合作度。";
 	}
 
 	private void SyncPatienceData(IDataStore dataStore)

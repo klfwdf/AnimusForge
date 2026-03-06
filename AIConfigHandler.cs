@@ -1413,6 +1413,14 @@ public static class AIConfigHandler
 						value = runtimeKingdomServiceInstruction;
 					}
 				}
+				if (hasAnyHero && string.Equals(text, "marriage", StringComparison.OrdinalIgnoreCase))
+				{
+					string runtimeMarriageInstruction = RomanceSystemBehavior.Instance?.BuildMarriageRuntimeInstruction(ResolveConversationTargetHero()) ?? "";
+					if (!string.IsNullOrWhiteSpace(runtimeMarriageInstruction))
+					{
+						value = runtimeMarriageInstruction;
+					}
+				}
 				if (!string.IsNullOrWhiteSpace(text) && !string.IsNullOrWhiteSpace(value))
 				{
 					stringBuilder.AppendLine("【附加规则:" + text + "】");
@@ -1474,6 +1482,42 @@ public static class AIConfigHandler
 		}
 	}
 
+	private static string GetRuleRuntimeTemplate(string ruleId, string stateKey, bool forConstraint)
+	{
+		try
+		{
+			Dictionary<string, GuardrailRulePromptConfig> dictionary = BuildRulePromptRegistry();
+			string text = (ruleId ?? "").Trim().ToLowerInvariant();
+			if (dictionary == null || string.IsNullOrWhiteSpace(text) || !dictionary.TryGetValue(text, out var value) || value == null)
+			{
+				return "";
+			}
+			Dictionary<string, string> dictionary2 = (forConstraint ? value.RuntimeConstraintTemplates : value.RuntimeInstructionTemplates);
+			if (dictionary2 == null || dictionary2.Count <= 0)
+			{
+				return "";
+			}
+			string text2 = (stateKey ?? "").Trim().ToLowerInvariant();
+			if (!string.IsNullOrWhiteSpace(text2) && dictionary2.TryGetValue(text2, out var value2) && !string.IsNullOrWhiteSpace(value2))
+			{
+				return value2;
+			}
+			if (dictionary2.TryGetValue("__default__", out var value3) && !string.IsNullOrWhiteSpace(value3))
+			{
+				return value3;
+			}
+			if (dictionary2.TryGetValue("default", out var value4) && !string.IsNullOrWhiteSpace(value4))
+			{
+				return value4;
+			}
+			return "";
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
 	public static void SetGuardrailRuntimeTargetKingdom(string kingdomId)
 	{
 		try
@@ -1490,7 +1534,7 @@ public static class AIConfigHandler
 	{
 		try
 		{
-			_guardrailRuntimeTargetHeroId.Value = ((heroId ?? "").Trim().ToLowerInvariant() ?? "");
+			_guardrailRuntimeTargetHeroId.Value = (heroId ?? "").Trim();
 		}
 		catch
 		{
@@ -1530,6 +1574,26 @@ public static class AIConfigHandler
 			if (!string.IsNullOrWhiteSpace(kingdomServiceRuntimeTemplate))
 			{
 				string text = ApplyRuntimeTemplate(kingdomServiceRuntimeTemplate, tokens);
+				if (!string.IsNullOrWhiteSpace(text))
+				{
+					return text;
+				}
+			}
+		}
+		catch
+		{
+		}
+		return "";
+	}
+
+	public static string ResolveRuleRuntimeText(string ruleId, string stateKey, bool forConstraint, Dictionary<string, string> tokens)
+	{
+		try
+		{
+			string ruleRuntimeTemplate = GetRuleRuntimeTemplate(ruleId, stateKey, forConstraint);
+			if (!string.IsNullOrWhiteSpace(ruleRuntimeTemplate))
+			{
+				string text = ApplyRuntimeTemplate(ruleRuntimeTemplate, tokens);
 				if (!string.IsNullOrWhiteSpace(text))
 				{
 					return text;
@@ -1601,13 +1665,18 @@ public static class AIConfigHandler
 	{
 		try
 		{
-			string text = (_guardrailRuntimeTargetHeroId.Value ?? "").Trim().ToLowerInvariant();
+			string text = (_guardrailRuntimeTargetHeroId.Value ?? "").Trim();
 			if (!string.IsNullOrWhiteSpace(text))
 			{
 				Hero hero = Hero.Find(text);
 				if (hero != null)
 				{
 					return hero;
+				}
+				Hero hero2 = Hero.FindFirst((Hero x) => x != null && string.Equals((x.StringId ?? "").Trim(), text, StringComparison.OrdinalIgnoreCase));
+				if (hero2 != null)
+				{
+					return hero2;
 				}
 			}
 		}

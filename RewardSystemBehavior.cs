@@ -442,6 +442,31 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 	}
 
+	public int GetPlayerPrepaidGoldForExternal(Hero npc)
+	{
+		try
+		{
+			PendingPlayerTransfer pendingPlayerTransfer = GetPendingPlayerTransfer(npc);
+			return Math.Max(0, pendingPlayerTransfer?.Gold ?? 0);
+		}
+		catch
+		{
+			return 0;
+		}
+	}
+
+	public int ConsumePlayerPrepaidGoldForExternal(Hero npc, int request)
+	{
+		try
+		{
+			return ConsumePlayerPrepaidGold(npc, request);
+		}
+		catch
+		{
+			return 0;
+		}
+	}
+
 	private int ConsumePlayerPrepaidGold(Hero npc, int request)
 	{
 		if (request <= 0)
@@ -3957,11 +3982,18 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			Logger.Metric("action.apply_reward_tags", ok: true, stopwatch.Elapsed.TotalMilliseconds);
 			if (giverFacts.Count > 0)
 			{
-				MyBehavior.AppendExternalDialogueHistory(giver, null, null, string.Join(" ", giverFacts));
+				MyBehavior.AppendExternalNpcFact(giver, string.Join(" ", giverFacts));
 			}
 			if (receiverFacts.Count > 0)
 			{
-				MyBehavior.AppendExternalDialogueHistory(receiver, null, null, string.Join(" ", receiverFacts));
+				if (receiver == Hero.MainHero)
+				{
+					MyBehavior.AppendExternalPlayerFact(receiver, string.Join(" ", receiverFacts));
+				}
+				else
+				{
+					MyBehavior.AppendExternalNpcFact(receiver, string.Join(" ", receiverFacts));
+				}
 			}
 		}
 		catch (Exception ex)
