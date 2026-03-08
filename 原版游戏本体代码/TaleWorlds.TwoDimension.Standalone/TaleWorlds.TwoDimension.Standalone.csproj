@@ -1,0 +1,120 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x64</Platform>
+    <ProjectGuid>{E0210F34-9449-4F15-BD16-19B1977F21CC}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>TaleWorlds.TwoDimension.Standalone</RootNamespace>
+    <AssemblyName>TaleWorlds.TwoDimension.Standalone</AssemblyName>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <TargetFrameworkIdentifier>.NETStandard</TargetFrameworkIdentifier>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
+    <PlatformTarget>x64</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
+    <PlatformTarget>x64</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="netstandard" />
+    <Reference Include="StbSharp">
+      <HintPath>..\..\bin\x64\Debug\StbSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Numerics.Vectors" />
+    <Reference Include="TaleWorlds.InputSystem">
+      <HintPath>..\..\bin\x64\Debug\TaleWorlds.InputSystem.dll</HintPath>
+    </Reference>
+    <Reference Include="TaleWorlds.Library">
+      <HintPath>..\..\bin\x64\Debug\TaleWorlds.Library.dll</HintPath>
+    </Reference>
+    <Reference Include="TaleWorlds.TwoDimension">
+      <HintPath>..\..\bin\x64\Debug\TaleWorlds.TwoDimension.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <AppDesigner Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="FrameworkDomain.cs" />
+    <Compile Include="GraphicsContext.cs" />
+    <Compile Include="GraphicsForm.cs" />
+    <Compile Include="IMessageCommunicator.cs" />
+    <Compile Include="InputData.cs" />
+    <Compile Include="LayeredWindowController.cs" />
+    <Compile Include="Microsoft\CodeAnalysis\EmbeddedAttribute.cs" />
+    <Compile Include="Native\AutoPinner.cs" />
+    <Compile Include="Native\OpenGL\ArrayType.cs" />
+    <Compile Include="Native\OpenGL\AttribueMask.cs" />
+    <Compile Include="Native\OpenGL\BeginMode.cs" />
+    <Compile Include="Native\OpenGL\BlendingDestinationFactor.cs" />
+    <Compile Include="Native\OpenGL\BlendingSourceFactor.cs" />
+    <Compile Include="Native\OpenGL\BufferBindingTarget.cs" />
+    <Compile Include="Native\OpenGL\ContextParameter.cs" />
+    <Compile Include="Native\OpenGL\DataType.cs" />
+    <Compile Include="Native\OpenGL\HintMode.cs" />
+    <Compile Include="Native\OpenGL\MatrixMode.cs" />
+    <Compile Include="Native\OpenGL\Opengl32.cs" />
+    <Compile Include="Native\OpenGL\Opengl32ARB.cs" />
+    <Compile Include="Native\OpenGL\OpenGlLoadException.cs" />
+    <Compile Include="Native\OpenGL\PixelFormat.cs" />
+    <Compile Include="Native\OpenGL\ShaderType.cs" />
+    <Compile Include="Native\OpenGL\ShadingModel.cs" />
+    <Compile Include="Native\OpenGL\Target.cs" />
+    <Compile Include="Native\OpenGL\TextureInternalFormat.cs" />
+    <Compile Include="Native\OpenGL\TextureMagFilter.cs" />
+    <Compile Include="Native\OpenGL\TextureParameterName.cs" />
+    <Compile Include="Native\OpenGL\TextureUnit.cs" />
+    <Compile Include="Native\OpenGL\TextureWrapParameter.cs" />
+    <Compile Include="Native\Windows\AlphaFormatFlags.cs" />
+    <Compile Include="Native\Windows\BitmapInfo.cs" />
+    <Compile Include="Native\Windows\BitmapInfoHeader.cs" />
+    <Compile Include="Native\Windows\BlendFunction.cs" />
+    <Compile Include="Native\Windows\BlurBehindConstraints.cs" />
+    <Compile Include="Native\Windows\D3D11.cs" />
+    <Compile Include="Native\Windows\Dwmapi.cs" />
+    <Compile Include="Native\Windows\DwmBlurBehind.cs" />
+    <Compile Include="Native\Windows\DXGI.cs" />
+    <Compile Include="Native\Windows\Gdi32.cs" />
+    <Compile Include="Native\Windows\Kernel32.cs" />
+    <Compile Include="Native\Windows\NativeMessage.cs" />
+    <Compile Include="Native\Windows\PixelFormatDescriptor.cs" />
+    <Compile Include="Native\Windows\PixelFormatDescriptorFlags.cs" />
+    <Compile Include="Native\Windows\PixelFormatDescriptorLayerTypes.cs" />
+    <Compile Include="Native\Windows\PixelFormatDescriptorPixelTypes.cs" />
+    <Compile Include="Native\Windows\Point.cs" />
+    <Compile Include="Native\Windows\User32.cs" />
+    <Compile Include="Native\Windows\WindowClass.cs" />
+    <Compile Include="Native\Windows\WindowMessage.cs" />
+    <Compile Include="Native\Windows\WindowShowStyle.cs" />
+    <Compile Include="Native\Windows\WindowStyle.cs" />
+    <Compile Include="Native\Windows\WndProc.cs" />
+    <Compile Include="OpenGLTexture.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Shader.cs" />
+    <Compile Include="StandaloneInputManager.cs" />
+    <Compile Include="System\Runtime\CompilerServices\IsReadOnlyAttribute.cs" />
+    <Compile Include="TwoDimensionPlatform.cs" />
+    <Compile Include="VertexArrayObject.cs" />
+    <Compile Include="WindowsForm.cs" />
+    <Compile Include="WindowsFormMessageHandler.cs" />
+    <Compile Include="WindowsFramework.cs" />
+    <Compile Include="WindowsFrameworkThreadConfig.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

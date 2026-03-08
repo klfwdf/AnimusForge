@@ -987,6 +987,7 @@ public static class ShoutUtils
 		string text = "某个地方";
 		string text2 = "";
 		bool flag = false;
+		bool flag2 = false;
 		string text3 = "";
 		try
 		{
@@ -1014,11 +1015,13 @@ public static class ShoutUtils
 						text2 = text5.Substring("你身处野外，靠近 ".Length).Trim();
 						text2 = text2.TrimEnd('。', '.', ' ');
 						flag = true;
+						flag2 = true;
 					}
 					else if (text5 == "你身处野外。" || text5 == "你身处野外")
 					{
 						text2 = "";
 						flag = false;
+						flag2 = true;
 					}
 				}
 			}
@@ -1039,62 +1042,69 @@ public static class ShoutUtils
 			{
 			}
 		}
-		string text6 = "";
-		try
+		if (flag2)
 		{
-			text6 = (CampaignMission.Current?.Location?.StringId ?? "").Trim().ToLowerInvariant();
-		}
-		catch
-		{
-			text6 = "";
-		}
-		if (!string.IsNullOrEmpty(text6))
-		{
-			switch (text6)
-			{
-			case "lordshall":
-				text = "领主大厅";
-				break;
-			case "tavern":
-				text = "酒馆";
-				break;
-			case "arena":
-				text = "竞技场";
-				break;
-			default:
-				if (!(text6 == "dungeon"))
-				{
-					switch (text6)
-					{
-					case "alley":
-						text = "小巷";
-						break;
-					case "port":
-						text = "港口";
-						break;
-					default:
-						if (!(text6 == "village_center"))
-						{
-							text = ((!string.IsNullOrEmpty(text2)) ? "街道" : "野外");
-							break;
-						}
-						goto case "center";
-					case "center":
-						text = ((!string.IsNullOrEmpty(text2)) ? "街道" : "野外");
-						break;
-					}
-					break;
-				}
-				goto case "prison";
-			case "prison":
-				text = "地牢";
-				break;
-			}
+			text = "野外";
 		}
 		else
 		{
-			string text7 = Mission.Current.SceneName?.ToLower() ?? "";
-			text = ((!text7.Contains("lordshall") && !text7.Contains("lord_hall") && !text7.Contains("lordhall") && !text7.Contains("lord") && !text7.Contains("keep")) ? (text7.Contains("tavern") ? "酒馆" : (text7.Contains("arena") ? "竞技场" : ((text7.Contains("prison") || text7.Contains("dungeon")) ? "地牢" : (string.IsNullOrEmpty(text2) ? "野外" : "街道")))) : "领主大厅");
+			string text6 = "";
+			try
+			{
+				text6 = (CampaignMission.Current?.Location?.StringId ?? "").Trim().ToLowerInvariant();
+			}
+			catch
+			{
+				text6 = "";
+			}
+			if (!string.IsNullOrEmpty(text6))
+			{
+				switch (text6)
+				{
+				case "lordshall":
+					text = "领主大厅";
+					break;
+				case "tavern":
+					text = "酒馆";
+					break;
+				case "arena":
+					text = "竞技场";
+					break;
+				default:
+					if (!(text6 == "dungeon"))
+					{
+						switch (text6)
+						{
+						case "alley":
+							text = "小巷";
+							break;
+						case "port":
+							text = "港口";
+							break;
+						default:
+							if (!(text6 == "village_center"))
+							{
+								text = ((!string.IsNullOrEmpty(text2)) ? "街道" : "野外");
+								break;
+							}
+							goto case "center";
+						case "center":
+							text = ((!string.IsNullOrEmpty(text2)) ? "街道" : "野外");
+							break;
+						}
+						break;
+					}
+					goto case "prison";
+				case "prison":
+					text = "地牢";
+					break;
+				}
+			}
+			else
+			{
+				string text7 = Mission.Current.SceneName?.ToLower() ?? "";
+				text = ((!text7.Contains("lordshall") && !text7.Contains("lord_hall") && !text7.Contains("lordhall") && !text7.Contains("lord") && !text7.Contains("keep")) ? (text7.Contains("tavern") ? "酒馆" : (text7.Contains("arena") ? "竞技场" : ((text7.Contains("prison") || text7.Contains("dungeon")) ? "地牢" : (string.IsNullOrEmpty(text2) ? "野外" : "街道")))) : "领主大厅");
+			}
 		}
 		string text8 = (string.IsNullOrEmpty(text2) ? text : (flag ? ("靠近 " + text2 + " 的 " + text) : ("位于 " + text2 + " 的 " + text)));
 		if (!string.IsNullOrEmpty(text3))

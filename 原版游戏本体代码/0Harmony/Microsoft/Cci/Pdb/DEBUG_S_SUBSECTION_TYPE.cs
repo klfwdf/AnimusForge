@@ -1,0 +1,21 @@
+﻿using System;
+
+namespace Microsoft.Cci.Pdb
+{
+	// Token: 0x0200041A RID: 1050
+	internal enum DEBUG_S_SUBSECTION_TYPE : uint
+	{
+		// Token: 0x04000F89 RID: 3977
+		DEBUG_S_IGNORE = 2147483648U,
+		// Token: 0x04000F8A RID: 3978
+		DEBUG_S_SYMBOLS = 241U,
+		// Token: 0x04000F8B RID: 3979
+		DEBUG_S_LINES,
+		// Token: 0x04000F8C RID: 3980
+		DEBUG_S_STRINGTABLE,
+		// Token: 0x04000F8D RID: 3981
+		DEBUG_S_FILECHKSMS,
+		// Token: 0x04000F8E RID: 3982
+		DEBUG_S_FRAMEDATA
+	}
+}

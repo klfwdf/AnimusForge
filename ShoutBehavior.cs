@@ -770,14 +770,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 			return true;
 		}
 		case "user":
-			if (text2.StartsWith("玩家:", StringComparison.Ordinal) || text2.StartsWith("玩家：", StringComparison.Ordinal))
-			{
-				rendered = text2;
-			}
-			else
-			{
-				rendered = "玩家: " + text2;
-			}
+			rendered = NormalizeScenePlayerHistoryLine(text2);
 			return true;
 		case "system":
 			rendered = "[系统事实] " + text2;
@@ -986,6 +979,27 @@ public class ShoutBehavior : CampaignBehaviorBase
 		return (lines.Count == 0) ? "【当前场景公共对话与互动】\n无" : ("【当前场景公共对话与互动】\n" + string.Join("\n", lines));
 	}
 
+	private static string NormalizeScenePlayerHistoryLine(string text)
+	{
+		string text2 = (text ?? "").Trim();
+		string text3 = GetPlayerDisplayNameForShout() + "（player）";
+		if (string.IsNullOrWhiteSpace(text2))
+		{
+			return text3 + ":";
+		}
+		if (text2.StartsWith(text3 + ":", StringComparison.Ordinal) || text2.StartsWith(text3 + "：", StringComparison.Ordinal))
+		{
+			return text2;
+		}
+		if (text2.StartsWith("玩家:", StringComparison.Ordinal) || text2.StartsWith("玩家：", StringComparison.Ordinal) || text2.StartsWith("你:", StringComparison.Ordinal) || text2.StartsWith("你：", StringComparison.Ordinal))
+		{
+			int num = text2.IndexOfAny(new char[2] { ':', '：' });
+			string value = ((num >= 0 && num + 1 < text2.Length) ? text2.Substring(num + 1).Trim() : "");
+			return text3 + ": " + value;
+		}
+		return text3 + ": " + text2;
+	}
+
 	private static void SplitPersistedHeroHistorySections(string persistedHeroHistory, out string privateRecentWindowSection, out string persistedWithoutRecentWindow)
 	{
 		privateRecentWindowSection = "";
@@ -1144,7 +1158,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 					{
 						AddAgentToStareList(agent);
 					}
-					RecordResponseForAllNearbySafe(allNpcData, speakerData.Name, aiResponse);
+					RecordResponseForAllNearbySafe(allNpcData, speakerData.AgentIndex, speakerData.Name, aiResponse);
 					PersistNpcSpeechToNamedHeroes(speakerData.AgentIndex, speakerData.Name, aiResponse, allNpcData);
 					if (flag)
 					{
@@ -2917,16 +2931,14 @@ public class ShoutBehavior : CampaignBehaviorBase
 				{
 					if (_publicConversationHistory.Count > 0)
 					{
-						int start = Math.Max(0, _publicConversationHistory.Count - 20);
-						historyDump = new StringBuilder();
-						historyDump.AppendLine($">>> History(Public) count={_publicConversationHistory.Count - start}");
-						historyLines = new List<string>();
-						for (int i = start; i < _publicConversationHistory.Count; i++)
+						historyLines = BuildVisibleSceneHistoryLines(_publicConversationHistory, data.AgentIndex);
+						if (historyLines != null && historyLines.Count > 0)
 						{
-							if (TryRenderSceneHistoryLine(_publicConversationHistory[i], null, out var line))
+							historyDump = new StringBuilder();
+							historyDump.AppendLine($">>> History(Public viewerAgentIndex={data.AgentIndex}) count={historyLines.Count}");
+							for (int i = 0; i < historyLines.Count; i++)
 							{
-								historyDump.AppendLine(line);
-								historyLines.Add(line);
+								historyDump.AppendLine(historyLines[i]);
 							}
 						}
 					}
@@ -2944,7 +2956,6 @@ public class ShoutBehavior : CampaignBehaviorBase
 				string persistedWithoutRecentWindow = "";
 				SplitPersistedHeroHistorySections(persistedHeroHistory, out privateRecentWindowSection, out persistedWithoutRecentWindow);
 				string scenePublicHistorySection = BuildScenePublicHistorySection(historyLines);
-				layeredPrompt = layeredPrompt + "\n" + scenePublicHistorySection;
 				if (!string.IsNullOrWhiteSpace(privateRecentWindowSection))
 				{
 					layeredPrompt = layeredPrompt + "\n" + privateRecentWindowSection;
@@ -2958,7 +2969,8 @@ public class ShoutBehavior : CampaignBehaviorBase
 					role = "system",
 					content = layeredPrompt
 				};
-				string passiveUserMessage = "[玩家动作] " + inputActionText + "\n现在请你以" + npcName + "的身份回复。直接输出对话内容，禁止生成任何【】章节标题或格式说明。";
+				bool passiveMultiNpcScene = allNpcData != null && allNpcData.Count((NpcDataPacket npc) => npc != null) > 1;
+				string passiveUserMessage = scenePublicHistorySection + "\n" + BuildSingleNpcSceneReplyInstruction(npcName, passiveMultiNpcScene) + "\n禁止生成任何【】章节标题或格式说明。";
 				messages.Add(new
 				{
 					role = "user",
@@ -3372,7 +3384,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 		{
 			return "";
 		}
-		string text = Hero.MainHero?.Name?.ToString() ?? "玩家";
+		string text = GetPlayerDisplayNameForShout();
 		List<string> list = new List<string>();
 		for (int i = 0; i < _shoutPendingTradeItems.Count; i++)
 		{
@@ -3398,6 +3410,30 @@ public class ShoutBehavior : CampaignBehaviorBase
 			return text + "已经将 " + string.Join("、", list) + " 交给你。";
 		}
 		return text + "给你看了看 " + string.Join("、", list) + "，但是没有将这些东西交给你。";
+	}
+
+	private static string GetPlayerDisplayNameForShout()
+	{
+		string text = (Hero.MainHero?.Name?.ToString() ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text) || string.Equals(text, "玩家", StringComparison.Ordinal))
+		{
+			text = (Hero.MainHero?.FirstName?.ToString() ?? "").Trim();
+		}
+		return string.IsNullOrWhiteSpace(text) ? "玩家" : text;
+	}
+
+	private static string BuildSingleNpcSceneReplyInstruction(string npcName, bool hasMultiplePresentNpcs)
+	{
+		string text = (npcName ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			text = "NPC";
+		}
+		if (hasMultiplePresentNpcs)
+		{
+			return "请仅以" + text + "的身份参与多人对话。直接输出语言内容，不可输出动作描述或者思考，请结合【当前场景公共对话与互动】中其他人说的话，发表自己的见解，不可以各说各的，且遵守【护栏】及以上所有规则！";
+		}
+		return "请仅以" + text + "的身份回复玩家。直接输出语言内容，不可输出动作描述或者思考，遵守【护栏】及以上所有规则！";
 	}
 
 	private void RecordShoutShownResources()
@@ -3983,27 +4019,16 @@ public class ShoutBehavior : CampaignBehaviorBase
 				{
 					lock (_historyLock)
 					{
-						if (_publicConversationHistory.Count > 0) { List<ConversationMessage> history = _publicConversationHistory;
-							HashSet<string> allowedSpeakers = new HashSet<string>(from npcDataPacket in speakingCandidates
-								where npcDataPacket != null
-								select (npcDataPacket.Name ?? "").Trim() into value
-								where !string.IsNullOrWhiteSpace(value)
-								select value);
-							int start = Math.Max(0, history.Count - 20);
-							if (start < history.Count)
+						if (_publicConversationHistory.Count > 0)
+						{
+							historyLines = BuildVisibleSceneHistoryLines(_publicConversationHistory, historySourceIndex);
+							if (historyLines != null && historyLines.Count > 0)
 							{
 								historyDump = new StringBuilder();
-								historyDump.AppendLine($">>> History(sourceAgentIndex={historySourceIndex}) count={history.Count - start}");
-								historyLines = new List<string>();
-							}
-							for (int i = start; i < history.Count; i++)
-							{
-								ConversationMessage msg = history[i];
-								if (TryRenderSceneHistoryLine(msg, allowedSpeakers, out var line3))
+								historyDump.AppendLine($">>> History(viewerAgentIndex={historySourceIndex}) count={historyLines.Count}");
+								for (int i = 0; i < historyLines.Count; i++)
 								{
-									historyDump?.AppendLine(line3);
-									historyLines?.Add(line3);
-									line3 = null;
+									historyDump.AppendLine(historyLines[i]);
 								}
 							}
 						}
@@ -4031,7 +4056,6 @@ public class ShoutBehavior : CampaignBehaviorBase
 				string persistedWithoutRecentWindow = "";
 				SplitPersistedHeroHistorySections(persistedHeroHistory, out privateRecentWindowSection, out persistedWithoutRecentWindow);
 				string scenePublicHistorySection = BuildScenePublicHistorySection(historyLines);
-				layeredPrompt = layeredPrompt + "\n" + scenePublicHistorySection;
 				if (!string.IsNullOrWhiteSpace(privateRecentWindowSection))
 				{
 					layeredPrompt = layeredPrompt + "\n" + privateRecentWindowSection;
@@ -4045,8 +4069,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 					role = "system",
 					content = layeredPrompt
 				};
-				string addressedNpcName = primaryNpc?.Name ?? "附近的人";
-				string userMessage = "玩家对" + addressedNpcName + "说：\"" + playerText + "\"\n现在请你直接以【在场人物列表】中角色的身份回复玩家。直接输出对话内容，格式为'角色名: 对话内容'，每人一行。\n禁止生成任何新的【】章节标题、编号规则列表、格式说明或回复要求。禁止替玩家说话或编造玩家的台词。\n立即开始输出角色对话：";
+				string userMessage = scenePublicHistorySection + "\n现在请你直接以【在场人物列表】中角色的身份回复玩家。直接输出对话内容，格式为'角色名: 对话内容'，每人一行。\n禁止生成任何新的【】章节标题、编号规则列表、格式说明或回复要求。禁止替玩家说话或编造玩家的台词。\n立即开始输出角色对话：";
 				messages.Add(new
 				{
 					role = "user",
@@ -4209,7 +4232,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 					return;
 				}
 				ShowNpcSpeechOutput(fallbackNpc, liveAgent, c);
-				RecordResponseForAllNearbySafe(capturedAllNpcData, fallbackNpc.Name, c);
+				RecordResponseForAllNearbySafe(capturedAllNpcData, fallbackNpc.AgentIndex, fallbackNpc.Name, c);
 				PersistNpcSpeechToNamedHeroes(fallbackNpc.AgentIndex, fallbackNpc.Name, c, capturedAllNpcData);
 				goto IL_1de3;
 				end_IL_0086:;
@@ -4519,19 +4542,10 @@ public class ShoutBehavior : CampaignBehaviorBase
 				{
 					if (_publicConversationHistory.Count > 0)
 					{
-						int start = Math.Max(0, _publicConversationHistory.Count - 20);
-						historyLines = new List<string>();
-						for (int i = start; i < _publicConversationHistory.Count; i++)
-						{
-							if (TryRenderSceneHistoryLine(_publicConversationHistory[i], null, out var line))
-							{
-								historyLines.Add(line);
-							}
-						}
+						historyLines = BuildVisibleSceneHistoryLines(_publicConversationHistory, npc2.AgentIndex);
 					}
 				}
 				string scenePublicHistorySection = BuildScenePublicHistorySection(historyLines);
-				layeredPrompt = layeredPrompt + "\n" + scenePublicHistorySection;
 				string persistedHeroHistory = npc2.IsHero ? BuildPersistedHeroHistoryContext(npc2.AgentIndex, playerText, resolvedHeroes) : "";
 				string privateRecentWindowSection = "";
 				string persistedWithoutRecentWindow = "";
@@ -4544,6 +4558,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 				{
 					layeredPrompt = layeredPrompt + "\n" + persistedWithoutRecentWindow;
 				}
+				bool multiNpcScene = speakableCandidates.Count > 1;
 				List<object> messages = new List<object>
 				{
 					new
@@ -4554,7 +4569,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 					new
 					{
 						role = "user",
-						content = "玩家对" + (primaryNpc?.Name ?? (npc2.Name ?? "NPC")) + "说：\"" + playerText + "\"\n请仅以" + (npc2.Name ?? "NPC") + "的身份回复玩家。直接输出语言内容，不可输出动作描述或者思考，你可能正处于群聊中，请结合【当前场景公共对话与互动】中其他人说的话，发表自己的见解，不可以各说各的，且遵守【护栏】及以上所有规则！\n" + $"(回复长度要求：请将本轮回复控制在 {minTokens}-{maxTokens} 字之间；除非玩家明确要求简短，否则尽量贴近上限，不要少于 {minTokens} 字。长度限制不含 ACTION 标签)" + (string.IsNullOrWhiteSpace(scenePatienceInstruction) ? "" : ("\n" + scenePatienceInstruction))
+						content = scenePublicHistorySection + "\n" + BuildSingleNpcSceneReplyInstruction(npc2.Name ?? "NPC", multiNpcScene) + "\n" + $"(回复长度要求：请将本轮回复控制在 {minTokens}-{maxTokens} 字之间；除非玩家明确要求简短，否则尽量贴近上限，不要少于 {minTokens} 字。长度限制不含 ACTION 标签)" + (string.IsNullOrWhiteSpace(scenePatienceInstruction) ? "" : ("\n" + scenePatienceInstruction))
 					}
 				};
 				string output = await ShoutNetwork.CallApiWithMessages(messages, 2048);
@@ -4593,7 +4608,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 					string pureText = Regex.Replace(cleaned, "\\[ACTION:[^\\]]*\\]", "", RegexOptions.IgnoreCase).Trim();
 					if (!string.IsNullOrWhiteSpace(pureText))
 					{
-						RecordResponseForAllNearbySafe(allNpcData, npc2.Name, pureText);
+						RecordResponseForAllNearbySafe(allNpcData, npc2.AgentIndex, npc2.Name, pureText);
 						PersistNpcSpeechToNamedHeroes(npc2.AgentIndex, npc2.Name, pureText, allNpcData);
 					}
 					EnqueueSpeechLine(npc2, cleaned, allNpcData, true);
@@ -4685,7 +4700,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 							}
 							if (!skipHistory)
 							{
-								RecordResponseForAllNearbySafe(allNpcData, matchedNpc.Name, content);
+								RecordResponseForAllNearbySafe(allNpcData, matchedNpc.AgentIndex, matchedNpc.Name, content);
 								PersistNpcSpeechToNamedHeroes(matchedNpc.AgentIndex, matchedNpc.Name, content, allNpcData);
 							}
 							if (flag)
@@ -4812,13 +4827,16 @@ public class ShoutBehavior : CampaignBehaviorBase
 
 	private void RecordPlayerMessage(string text, List<NpcDataPacket> nearbyData)
 	{
+		List<int> visibleAgentIndices = BuildVisibleAgentSnapshot(nearbyData);
 		lock (_historyLock)
 		{
 			_publicConversationHistory.Add(new ConversationMessage
 			{
 				Role = "user",
 				Content = text,
-				SpeakerName = "你"
+				SpeakerName = "你",
+				SpeakerAgentIndex = -1,
+				VisibleAgentIndices = visibleAgentIndices
 			});
 			if (_publicConversationHistory.Count > 40)
 			{
@@ -4835,7 +4853,9 @@ public class ShoutBehavior : CampaignBehaviorBase
 				{
 					Role = "user",
 					Content = text,
-					SpeakerName = "你"
+					SpeakerName = "你",
+					SpeakerAgentIndex = -1,
+					VisibleAgentIndices = visibleAgentIndices
 				});
 			}
 		}
@@ -4851,8 +4871,9 @@ public class ShoutBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private void RecordResponseForAllNearbySafe(List<NpcDataPacket> nearbyData, string speakerName, string response)
+	private void RecordResponseForAllNearbySafe(List<NpcDataPacket> nearbyData, int speakerAgentIndex, string speakerName, string response)
 	{
+		List<int> visibleAgentIndices = BuildVisibleAgentSnapshot(nearbyData);
 		lock (_historyLock)
 		{
 			foreach (NpcDataPacket nearbyDatum in nearbyData)
@@ -4866,7 +4887,9 @@ public class ShoutBehavior : CampaignBehaviorBase
 				{
 					Role = "assistant",
 					Content = "[" + speakerName + "]: " + response,
-					SpeakerName = speakerName
+					SpeakerName = speakerName,
+					SpeakerAgentIndex = speakerAgentIndex,
+					VisibleAgentIndices = visibleAgentIndices
 				});
 				if (_npcConversationHistory[agentIndex].Count > 40)
 				{
@@ -4877,8 +4900,14 @@ public class ShoutBehavior : CampaignBehaviorBase
 			{
 				Role = "assistant",
 				Content = response,
-				SpeakerName = speakerName
+				SpeakerName = speakerName,
+				SpeakerAgentIndex = speakerAgentIndex,
+				VisibleAgentIndices = visibleAgentIndices
 			});
+			if (_publicConversationHistory.Count > 40)
+			{
+				_publicConversationHistory.RemoveAt(0);
+			}
 		}
 	}
 
@@ -5046,6 +5075,73 @@ public class ShoutBehavior : CampaignBehaviorBase
 		{
 			return null;
 		}
+	}
+
+	private static List<int> BuildVisibleAgentSnapshot(List<NpcDataPacket> nearbyData)
+	{
+		List<int> list = new List<int>();
+		if (nearbyData == null || nearbyData.Count == 0)
+		{
+			return list;
+		}
+		HashSet<int> hashSet = new HashSet<int>();
+		for (int i = 0; i < nearbyData.Count; i++)
+		{
+			NpcDataPacket npcDataPacket = nearbyData[i];
+			if (npcDataPacket != null && npcDataPacket.AgentIndex >= 0 && hashSet.Add(npcDataPacket.AgentIndex))
+			{
+				list.Add(npcDataPacket.AgentIndex);
+			}
+		}
+		return list;
+	}
+
+	private static bool IsSceneHistoryVisibleToAgent(ConversationMessage msg, int viewerAgentIndex)
+	{
+		if (msg == null)
+		{
+			return false;
+		}
+		if (viewerAgentIndex < 0)
+		{
+			return true;
+		}
+		List<int> visibleAgentIndices = msg.VisibleAgentIndices;
+		if (visibleAgentIndices == null || visibleAgentIndices.Count == 0)
+		{
+			return true;
+		}
+		for (int i = 0; i < visibleAgentIndices.Count; i++)
+		{
+			if (visibleAgentIndices[i] == viewerAgentIndex)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessage> history, int viewerAgentIndex)
+	{
+		if (history == null || history.Count == 0)
+		{
+			return null;
+		}
+		List<string> list = new List<string>();
+		for (int num = history.Count - 1; num >= 0 && list.Count < MAX_HISTORY_TURNS; num--)
+		{
+			ConversationMessage msg = history[num];
+			if (IsSceneHistoryVisibleToAgent(msg, viewerAgentIndex) && TryRenderSceneHistoryLine(msg, null, out var line))
+			{
+				list.Add(line);
+			}
+		}
+		if (list.Count == 0)
+		{
+			return null;
+		}
+		list.Reverse();
+		return list;
 	}
 
 	private static string BuildPlayerMarriageFactForNpcListLine(Hero npcHero)

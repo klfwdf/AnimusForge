@@ -1,0 +1,11 @@
+﻿using System;
+
+namespace System.Deployment.Internal.Isolation
+{
+	// Token: 0x02000696 RID: 1686
+	internal enum IIDENTITYAUTHORITY_DEFINITION_IDENTITY_TO_TEXT_FLAGS
+	{
+		// Token: 0x04002212 RID: 8722
+		IIDENTITYAUTHORITY_DEFINITION_IDENTITY_TO_TEXT_FLAG_CANONICAL = 1
+	}
+}

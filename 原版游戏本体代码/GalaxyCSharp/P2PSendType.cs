@@ -1,0 +1,17 @@
+﻿using System;
+
+namespace Galaxy.Api
+{
+	// Token: 0x0200017C RID: 380
+	public enum P2PSendType
+	{
+		// Token: 0x04000329 RID: 809
+		P2P_SEND_UNRELIABLE,
+		// Token: 0x0400032A RID: 810
+		P2P_SEND_RELIABLE,
+		// Token: 0x0400032B RID: 811
+		P2P_SEND_UNRELIABLE_IMMEDIATE,
+		// Token: 0x0400032C RID: 812
+		P2P_SEND_RELIABLE_IMMEDIATE
+	}
+}

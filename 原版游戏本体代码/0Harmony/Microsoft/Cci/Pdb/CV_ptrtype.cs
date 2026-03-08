@@ -1,0 +1,29 @@
+﻿using System;
+
+namespace Microsoft.Cci.Pdb
+{
+	// Token: 0x02000379 RID: 889
+	internal enum CV_ptrtype
+	{
+		// Token: 0x04000C96 RID: 3222
+		CV_PTR_BASE_SEG = 3,
+		// Token: 0x04000C97 RID: 3223
+		CV_PTR_BASE_VAL,
+		// Token: 0x04000C98 RID: 3224
+		CV_PTR_BASE_SEGVAL,
+		// Token: 0x04000C99 RID: 3225
+		CV_PTR_BASE_ADDR,
+		// Token: 0x04000C9A RID: 3226
+		CV_PTR_BASE_SEGADDR,
+		// Token: 0x04000C9B RID: 3227
+		CV_PTR_BASE_TYPE,
+		// Token: 0x04000C9C RID: 3228
+		CV_PTR_BASE_SELF,
+		// Token: 0x04000C9D RID: 3229
+		CV_PTR_NEAR32,
+		// Token: 0x04000C9E RID: 3230
+		CV_PTR_64 = 12,
+		// Token: 0x04000C9F RID: 3231
+		CV_PTR_UNUSEDPTR
+	}
+}

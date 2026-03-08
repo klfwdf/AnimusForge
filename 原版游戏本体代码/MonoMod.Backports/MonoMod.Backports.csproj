@@ -1,0 +1,145 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{C2043D23-6315-4853-B0B0-819B88470E63}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>MonoMod.Backports</RootNamespace>
+    <AssemblyName>MonoMod.Backports</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <NoStdLib>true</NoStdLib>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <NoStdLib>true</NoStdLib>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+  </ItemGroup>
+  <ItemGroup>
+    <AppDesigner Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="Microsoft\CodeAnalysis\EmbeddedAttribute.cs" />
+    <Compile Include="MonoMod\Backports\MethodImplOptionsEx.cs" />
+    <Compile Include="MonoMod\SourceGen\Attributes\EmitILOverloadsAttribute.cs" />
+    <Compile Include="MonoMod\SourceGen\Attributes\ILOverloadKind.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="System\ArrayEx.cs" />
+    <Compile Include="System\Buffers\ArrayPool.cs" />
+    <Compile Include="System\Buffers\BuffersExtensions.cs" />
+    <Compile Include="System\Buffers\ConfigurableArrayPool.cs" />
+    <Compile Include="System\Buffers\IBufferWriter.cs" />
+    <Compile Include="System\Buffers\IMemoryOwner.cs" />
+    <Compile Include="System\Buffers\IPinnable.cs" />
+    <Compile Include="System\Buffers\MemoryHandle.cs" />
+    <Compile Include="System\Buffers\MemoryManager.cs" />
+    <Compile Include="System\Buffers\ReadOnlySequence.2.cs" />
+    <Compile Include="System\Buffers\ReadOnlySequence.cs" />
+    <Compile Include="System\Buffers\ReadOnlySequenceDebugView.cs" />
+    <Compile Include="System\Buffers\ReadOnlySequenceSegment.cs" />
+    <Compile Include="System\Buffers\StandardFormat.cs" />
+    <Compile Include="System\Buffers\TlsOverPerCoreLockedStacksArrayPool.cs" />
+    <Compile Include="System\Buffers\Utilities.cs" />
+    <Compile Include="System\Collections\Concurrent\ConcurrentExtensions.cs" />
+    <Compile Include="System\Collections\HashHelpers.cs" />
+    <Compile Include="System\Diagnostics\CodeAnalysis\AllowNullAttribute.cs" />
+    <Compile Include="System\Diagnostics\CodeAnalysis\DisallowNullAttribute.cs" />
+    <Compile Include="System\Diagnostics\CodeAnalysis\DoesNotReturnAttribute.cs" />
+    <Compile Include="System\Diagnostics\CodeAnalysis\DoesNotReturnIfAttribute.cs" />
+    <Compile Include="System\Diagnostics\CodeAnalysis\DynamicallyAccessedMembersAttribute.cs" />
+    <Compile Include="System\Diagnostics\CodeAnalysis\DynamicallyAccessedMemberTypes.cs" />
+    <Compile Include="System\Diagnostics\CodeAnalysis\ExtraDynamicallyAccessedMemberTypes.cs" />
+    <Compile Include="System\Diagnostics\CodeAnalysis\MaybeNullAttribute.cs" />
+    <Compile Include="System\Diagnostics\CodeAnalysis\MaybeNullWhenAttribute.cs" />
+    <Compile Include="System\Diagnostics\CodeAnalysis\MemberNotNullAttribute.cs" />
+    <Compile Include="System\Diagnostics\CodeAnalysis\MemberNotNullWhenAttribute.cs" />
+    <Compile Include="System\Diagnostics\CodeAnalysis\NotNullAttribute.cs" />
+    <Compile Include="System\Diagnostics\CodeAnalysis\NotNullIfNotNullAttribute.cs" />
+    <Compile Include="System\Diagnostics\CodeAnalysis\NotNullWhenAttribute.cs" />
+    <Compile Include="System\Diagnostics\CodeAnalysis\UnscopedRefAttribute.cs" />
+    <Compile Include="System\EnvironmentEx.cs" />
+    <Compile Include="System\ExceptionArgument.cs" />
+    <Compile Include="System\Gen2GcCallback.cs" />
+    <Compile Include="System\HashCode.cs" />
+    <Compile Include="System\IO\StreamExtensions.cs" />
+    <Compile Include="System\MathEx.cs" />
+    <Compile Include="System\Memory.cs" />
+    <Compile Include="System\MemoryDebugView.cs" />
+    <Compile Include="System\MemoryExtensions.cs" />
+    <Compile Include="System\NonVersionableAttribute.cs" />
+    <Compile Include="System\Numerics\BitOperations.cs" />
+    <Compile Include="System\Numerics\BitOperationsEx.cs" />
+    <Compile Include="System\ReadOnlyMemory.cs" />
+    <Compile Include="System\ReadOnlySpan.cs" />
+    <Compile Include="System\Runtime\CompilerServices\CallerArgumentExpressionAttribute.cs" />
+    <Compile Include="System\Runtime\CompilerServices\ConditionalWeakTableExtensions.cs" />
+    <Compile Include="System\Runtime\CompilerServices\CWTEnumerable.cs" />
+    <Compile Include="System\Runtime\CompilerServices\DefaultInterpolatedStringHandler.cs" />
+    <Compile Include="System\Runtime\CompilerServices\DisableRuntimeMarshallingAttribute.cs" />
+    <Compile Include="System\Runtime\CompilerServices\ICWTEnumerable.cs" />
+    <Compile Include="System\Runtime\CompilerServices\InterpolatedStringHandlerArgumentAttribute.cs" />
+    <Compile Include="System\Runtime\CompilerServices\InterpolatedStringHandlerAttribute.cs" />
+    <Compile Include="System\Runtime\CompilerServices\IsByRefLikeAttribute.cs" />
+    <Compile Include="System\Runtime\CompilerServices\IsExternalInit.cs" />
+    <Compile Include="System\Runtime\CompilerServices\IsReadOnlyAttribute.cs" />
+    <Compile Include="System\Runtime\CompilerServices\ITuple.cs" />
+    <Compile Include="System\Runtime\CompilerServices\ModuleInitializerAttribute.cs" />
+    <Compile Include="System\Runtime\CompilerServices\NativeIntegerAttribute.cs" />
+    <Compile Include="System\Runtime\CompilerServices\NullableAttribute.cs" />
+    <Compile Include="System\Runtime\CompilerServices\NullableContextAttribute.cs" />
+    <Compile Include="System\Runtime\CompilerServices\RefSafetyRulesAttribute.cs" />
+    <Compile Include="System\Runtime\CompilerServices\Unsafe.cs" />
+    <Compile Include="System\Runtime\DependentHandle.cs" />
+    <Compile Include="System\Runtime\InteropServices\MarshalEx.cs" />
+    <Compile Include="System\Runtime\InteropServices\MemoryMarshal.cs" />
+    <Compile Include="System\Runtime\InteropServices\SequenceMarshal.cs" />
+    <Compile Include="System\SequencePosition.cs" />
+    <Compile Include="System\Span.cs" />
+    <Compile Include="System\SpanDebugView.cs" />
+    <Compile Include="System\SpanHelpers.cs" />
+    <Compile Include="System\StringComparerEx.cs" />
+    <Compile Include="System\StringExtensions.cs" />
+    <Compile Include="System\Text\StringBuilderExtensions.cs" />
+    <Compile Include="System\Threading\MonitorEx.cs" />
+    <Compile Include="System\ThrowHelper.cs" />
+    <Compile Include="System\TypeExtensions.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\MonoMod.ILHelpers\MonoMod.ILHelpers.csproj">
+      <Project>{C2043D23-6315-4853-B0B0-819B88470E64}</Project>
+      <Name>MonoMod.ILHelpers</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\mscorlib\mscorlib.csproj">
+      <Project>{C2043D23-6315-4853-B0B0-819B88470E5D}</Project>
+      <Name>mscorlib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\System.ValueTuple\System.ValueTuple.csproj">
+      <Project>{C2043D23-6315-4853-B0B0-819B88470E6F}</Project>
+      <Name>System.ValueTuple</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

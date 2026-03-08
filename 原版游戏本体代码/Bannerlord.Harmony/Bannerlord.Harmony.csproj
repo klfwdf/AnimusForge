@@ -1,0 +1,157 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x64</Platform>
+    <ProjectGuid>{C2043D23-6315-4853-B0B0-819B88470E5F}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Bannerlord.Harmony</RootNamespace>
+    <AssemblyName>Bannerlord.Harmony</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
+    <PlatformTarget>x64</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <NoStdLib>true</NoStdLib>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
+    <PlatformTarget>x64</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <NoStdLib>true</NoStdLib>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="TaleWorlds.Localization">
+      <HintPath>..\..\bin\x64\Debug\TaleWorlds.Localization.dll</HintPath>
+    </Reference>
+    <Reference Include="TaleWorlds.ModuleManager">
+      <HintPath>..\..\bin\x64\Debug\TaleWorlds.ModuleManager.dll</HintPath>
+    </Reference>
+    <Reference Include="TaleWorlds.MountAndBlade">
+      <HintPath>..\..\bin\x64\Debug\TaleWorlds.MountAndBlade.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <AppDesigner Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Bannerlord\BUTR\Shared\Extensions\DictionaryExtensions.cs" />
+    <Compile Include="Bannerlord\BUTR\Shared\Helpers\ApplicationVersionHelper.cs" />
+    <Compile Include="Bannerlord\BUTR\Shared\Helpers\DecoratorModelHelper.cs" />
+    <Compile Include="Bannerlord\BUTR\Shared\Helpers\ModuleInfoExtendedHelper.cs" />
+    <Compile Include="Bannerlord\BUTR\Shared\Helpers\ModuleInfoHelper.cs" />
+    <Compile Include="Bannerlord\BUTR\Shared\Utils\MBSubModuleBaseSimpleWrapper.cs" />
+    <Compile Include="Bannerlord\BUTR\Shared\Utils\WrappedConstructorInfo.cs" />
+    <Compile Include="Bannerlord\BUTR\Shared\Utils\WrappedMethodInfo.cs" />
+    <Compile Include="Bannerlord\BUTR\Shared\Utils\WrappedPropertyInfo.cs" />
+    <Compile Include="Bannerlord\Harmony\DebugUI.cs" />
+    <Compile Include="Bannerlord\Harmony\HarmonyRef.cs" />
+    <Compile Include="Bannerlord\Harmony\SubModule.cs" />
+    <Compile Include="Bannerlord\ModuleManager\AlphanumComparatorFast.cs" />
+    <Compile Include="Bannerlord\ModuleManager\ApplicationVersion.cs" />
+    <Compile Include="Bannerlord\ModuleManager\ApplicationVersionComparer.cs" />
+    <Compile Include="Bannerlord\ModuleManager\ApplicationVersionRange.cs" />
+    <Compile Include="Bannerlord\ModuleManager\ApplicationVersionType.cs" />
+    <Compile Include="Bannerlord\ModuleManager\CollectionsExtensions.cs" />
+    <Compile Include="Bannerlord\ModuleManager\DependentModule.cs" />
+    <Compile Include="Bannerlord\ModuleManager\DependentModuleMetadata.cs" />
+    <Compile Include="Bannerlord\ModuleManager\LoadType.cs" />
+    <Compile Include="Bannerlord\ModuleManager\LoadTypeParse.cs" />
+    <Compile Include="Bannerlord\ModuleManager\Models\Issues\ModuleDependencyConflictCircularIssue.cs" />
+    <Compile Include="Bannerlord\ModuleManager\Models\Issues\ModuleDependencyConflictDependentAndIncompatibleIssue.cs" />
+    <Compile Include="Bannerlord\ModuleManager\Models\Issues\ModuleDependencyConflictLoadBeforeAndAfterIssue.cs" />
+    <Compile Include="Bannerlord\ModuleManager\Models\Issues\ModuleDependencyMissingDependenciesIssue.cs" />
+    <Compile Include="Bannerlord\ModuleManager\Models\Issues\ModuleDependencyMissingIdIssue.cs" />
+    <Compile Include="Bannerlord\ModuleManager\Models\Issues\ModuleDependencyNotLoadedAfterIssue.cs" />
+    <Compile Include="Bannerlord\ModuleManager\Models\Issues\ModuleDependencyNotLoadedBeforeIssue.cs" />
+    <Compile Include="Bannerlord\ModuleManager\Models\Issues\ModuleDependencyNullIssue.cs" />
+    <Compile Include="Bannerlord\ModuleManager\Models\Issues\ModuleDependencyValidationIssue.cs" />
+    <Compile Include="Bannerlord\ModuleManager\Models\Issues\ModuleIncompatibleIssue.cs" />
+    <Compile Include="Bannerlord\ModuleManager\Models\Issues\ModuleIssueV2.cs" />
+    <Compile Include="Bannerlord\ModuleManager\Models\Issues\ModuleMissingBLSEDependencyIssue.cs" />
+    <Compile Include="Bannerlord\ModuleManager\Models\Issues\ModuleMissingExactVersionDependencyIssue.cs" />
+    <Compile Include="Bannerlord\ModuleManager\Models\Issues\ModuleMissingIdIssue.cs" />
+    <Compile Include="Bannerlord\ModuleManager\Models\Issues\ModuleMissingIssue.cs" />
+    <Compile Include="Bannerlord\ModuleManager\Models\Issues\ModuleMissingNameIssue.cs" />
+    <Compile Include="Bannerlord\ModuleManager\Models\Issues\ModuleMissingUnversionedDependencyIssue.cs" />
+    <Compile Include="Bannerlord\ModuleManager\Models\Issues\ModuleMissingVersionRangeDependencyIssue.cs" />
+    <Compile Include="Bannerlord\ModuleManager\Models\Issues\ModuleVersionMismatchGreaterThanRangeIssue.cs" />
+    <Compile Include="Bannerlord\ModuleManager\Models\Issues\ModuleVersionMismatchIssue.cs" />
+    <Compile Include="Bannerlord\ModuleManager\Models\Issues\ModuleVersionMismatchLessThanRangeIssue.cs" />
+    <Compile Include="Bannerlord\ModuleManager\Models\Issues\ModuleVersionMismatchRangeIssue.cs" />
+    <Compile Include="Bannerlord\ModuleManager\Models\Issues\ModuleVersionMismatchSpecificIssue.cs" />
+    <Compile Include="Bannerlord\ModuleManager\Models\Issues\ModuleVersionTooLowIssue.cs" />
+    <Compile Include="Bannerlord\ModuleManager\ModuleInfoExtended.cs" />
+    <Compile Include="Bannerlord\ModuleManager\ModuleInfoExtendedExtensions.cs" />
+    <Compile Include="Bannerlord\ModuleManager\ModuleIssue.cs" />
+    <Compile Include="Bannerlord\ModuleManager\ModuleIssueType.cs" />
+    <Compile Include="Bannerlord\ModuleManager\ModuleSorter.cs" />
+    <Compile Include="Bannerlord\ModuleManager\ModuleSorterOptions.cs" />
+    <Compile Include="Bannerlord\ModuleManager\ModuleUtilities.cs" />
+    <Compile Include="Bannerlord\ModuleManager\SubModuleInfoExtended.cs" />
+    <Compile Include="Bannerlord\ModuleManager\SubModuleTags.cs" />
+    <Compile Include="HarmonyLib\BUTR\Extensions\AccessCacheHandle.cs" />
+    <Compile Include="HarmonyLib\BUTR\Extensions\AccessTools2.cs" />
+    <Compile Include="HarmonyLib\BUTR\Extensions\HarmonyExtensions.cs" />
+    <Compile Include="HarmonyLib\BUTR\Extensions\SymbolExtensions2.cs" />
+    <Compile Include="HarmonyLib\BUTR\Extensions\Traverse2.2.cs" />
+    <Compile Include="HarmonyLib\BUTR\Extensions\Traverse2.cs" />
+    <Compile Include="Microsoft\CodeAnalysis\EmbeddedAttribute.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="System\Runtime\CompilerServices\IsExternalInit.cs" />
+    <Compile Include="System\Runtime\CompilerServices\NullableAttribute.cs" />
+    <Compile Include="System\Runtime\CompilerServices\NullableContextAttribute.cs" />
+    <Compile Include="System\Runtime\CompilerServices\RefSafetyRulesAttribute.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\0Harmony\0Harmony.csproj">
+      <Project>{C2043D23-6315-4853-B0B0-819B88470E5E}</Project>
+      <Name>0Harmony</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MonoMod.Backports\MonoMod.Backports.csproj">
+      <Project>{C2043D23-6315-4853-B0B0-819B88470E63}</Project>
+      <Name>MonoMod.Backports</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\mscorlib\mscorlib.csproj">
+      <Project>{C2043D23-6315-4853-B0B0-819B88470E5D}</Project>
+      <Name>mscorlib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TaleWorlds.CampaignSystem\TaleWorlds.CampaignSystem.csproj">
+      <Project>{C2043D23-6315-4853-B0B0-819B88470E72}</Project>
+      <Name>TaleWorlds.CampaignSystem</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TaleWorlds.Core\TaleWorlds.Core.csproj">
+      <Project>{C2043D23-6315-4853-B0B0-819B88470E74}</Project>
+      <Name>TaleWorlds.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TaleWorlds.Engine\TaleWorlds.Engine.csproj">
+      <Project>{C2043D23-6315-4853-B0B0-819B88470E7E}</Project>
+      <Name>TaleWorlds.Engine</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TaleWorlds.InputSystem\TaleWorlds.InputSystem.csproj">
+      <Project>{C2043D23-6315-4853-B0B0-819B88470E85}</Project>
+      <Name>TaleWorlds.InputSystem</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TaleWorlds.Library\TaleWorlds.Library.csproj">
+      <Project>{C2043D23-6315-4853-B0B0-819B88470E86}</Project>
+      <Name>TaleWorlds.Library</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

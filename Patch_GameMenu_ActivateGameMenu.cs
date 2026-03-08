@@ -21,6 +21,11 @@ public static class Patch_GameMenu_ActivateGameMenu
 			}
 			if (LordEncounterBehavior.HasPendingMeetingBattleVictorySettlement())
 			{
+				if (LordEncounterBehavior.IsEncounterRedirectSuspended() || LordEncounterRedirectGuard.IsSuppressed())
+				{
+					Logger.LogTrace("UI_Intercept", "Pending meeting victory settlement is active, but redirect is suspended/suppressed; keep native 'encounter' menu.");
+					return;
+				}
 				try
 				{
 					Hero hero = null;

@@ -1,0 +1,139 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x64</Platform>
+    <ProjectGuid>{C2043D23-6315-4853-B0B0-819B88470E7A}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>TaleWorlds.Diamond</RootNamespace>
+    <AssemblyName>TaleWorlds.Diamond</AssemblyName>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <TargetFrameworkIdentifier>.NETStandard</TargetFrameworkIdentifier>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
+    <PlatformTarget>x64</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <NoStdLib>true</NoStdLib>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
+    <PlatformTarget>x64</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <NoStdLib>true</NoStdLib>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="netstandard" />
+    <Reference Include="TaleWorlds.Localization">
+      <HintPath>..\..\bin\x64\Debug\TaleWorlds.Localization.dll</HintPath>
+    </Reference>
+    <Reference Include="TaleWorlds.Network">
+      <HintPath>..\..\bin\x64\Debug\TaleWorlds.Network.dll</HintPath>
+    </Reference>
+    <Reference Include="TaleWorlds.PlayerServices">
+      <HintPath>..\..\bin\x64\Debug\TaleWorlds.PlayerServices.dll</HintPath>
+    </Reference>
+    <Reference Include="TaleWorlds.ServiceDiscovery.Client">
+      <HintPath>..\..\bin\x64\Debug\TaleWorlds.ServiceDiscovery.Client.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <AppDesigner Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AccessObject.cs" />
+    <Compile Include="AccessObjectJsonConverter.cs" />
+    <Compile Include="AccessObjectResult.cs" />
+    <Compile Include="AesHelper.cs" />
+    <Compile Include="Client.cs" />
+    <Compile Include="ClientApplication\ClientApplicationConfiguration.cs" />
+    <Compile Include="ClientApplication\DiamondClientApplication.cs" />
+    <Compile Include="ClientApplication\DiamondClientApplicationObject.cs" />
+    <Compile Include="ClientApplication\GenericRestSessionProvider.cs" />
+    <Compile Include="ClientApplication\GenericThreadedRestSessionProvider.cs" />
+    <Compile Include="ClientApplication\SessionProviderType.cs" />
+    <Compile Include="ClientMessageHandler.cs" />
+    <Compile Include="EpicAccessObject.cs" />
+    <Compile Include="FunctionResult.cs" />
+    <Compile Include="FunctionResultJsonConverter.cs" />
+    <Compile Include="GDKAccessObject.cs" />
+    <Compile Include="GOGAccessObject.cs" />
+    <Compile Include="HandlerResult.cs" />
+    <Compile Include="IClient.cs" />
+    <Compile Include="IClientSession.cs" />
+    <Compile Include="IClientSessionProvider.cs" />
+    <Compile Include="IConnectionInformation.cs" />
+    <Compile Include="ILoginAccessProvider.cs" />
+    <Compile Include="InnerProcessConnectionInformation.cs" />
+    <Compile Include="LoginBanReason.cs" />
+    <Compile Include="LoginErrorCode.cs" />
+    <Compile Include="LoginMessage.cs" />
+    <Compile Include="LoginResult.cs" />
+    <Compile Include="LoginResultObject.cs" />
+    <Compile Include="LoginResultObjectJsonConverter.cs" />
+    <Compile Include="Message.cs" />
+    <Compile Include="MessageDescription.cs" />
+    <Compile Include="MessageJsonConverter.cs" />
+    <Compile Include="PeerId.cs" />
+    <Compile Include="PeerIdJsonConverter.cs" />
+    <Compile Include="PlayerIdExtensions.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="PSAccessObject.cs" />
+    <Compile Include="Rest\AliveMessage.cs" />
+    <Compile Include="Rest\ClientRestSession.cs" />
+    <Compile Include="Rest\ClientRestSessionTask.cs" />
+    <Compile Include="Rest\ConnectMessage.cs" />
+    <Compile Include="Rest\DisconnectMessage.cs" />
+    <Compile Include="Rest\MessageType.cs" />
+    <Compile Include="Rest\RestData.cs" />
+    <Compile Include="Rest\RestDataJsonConverter.cs" />
+    <Compile Include="Rest\RestFunctionResult.cs" />
+    <Compile Include="Rest\RestObjectFunctionResult.cs" />
+    <Compile Include="Rest\RestObjectRequestMessage.cs" />
+    <Compile Include="Rest\RestObjectResponseMessage.cs" />
+    <Compile Include="Rest\RestRequestMessage.cs" />
+    <Compile Include="Rest\RestResponse.cs" />
+    <Compile Include="Rest\RestResponseMessage.cs" />
+    <Compile Include="SessionCredentials.cs" />
+    <Compile Include="SessionKey.cs" />
+    <Compile Include="Socket\ClientSocketSession.cs" />
+    <Compile Include="Socket\SocketMessage.cs" />
+    <Compile Include="SteamAccessObject.cs" />
+    <Compile Include="TestAccessObject.cs" />
+    <Compile Include="ThreadedClient.cs" />
+    <Compile Include="ThreadedClientCantConnectTask.cs" />
+    <Compile Include="ThreadedClientConnectedTask.cs" />
+    <Compile Include="ThreadedClientDisconnectedTask.cs" />
+    <Compile Include="ThreadedClientHandleMessageTask.cs" />
+    <Compile Include="ThreadedClientSession.cs" />
+    <Compile Include="ThreadedClientSessionConnectTask.cs" />
+    <Compile Include="ThreadedClientSessionDisconnectTask.cs" />
+    <Compile Include="ThreadedClientSessionFunctionTask.cs" />
+    <Compile Include="ThreadedClientSessionLoginTask.cs" />
+    <Compile Include="ThreadedClientSessionMessageTask.cs" />
+    <Compile Include="ThreadedClientSessionTask.cs" />
+    <Compile Include="ThreadedClientTask.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Newtonsoft.Json\Newtonsoft.Json.csproj">
+      <Project>{C2043D23-6315-4853-B0B0-819B88470E66}</Project>
+      <Name>Newtonsoft.Json</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TaleWorlds.Library\TaleWorlds.Library.csproj">
+      <Project>{C2043D23-6315-4853-B0B0-819B88470E86}</Project>
+      <Name>TaleWorlds.Library</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

@@ -1,0 +1,21 @@
+﻿using System;
+
+namespace Galaxy.Api
+{
+	// Token: 0x0200017A RID: 378
+	public enum NatType
+	{
+		// Token: 0x0400031C RID: 796
+		NAT_TYPE_NONE,
+		// Token: 0x0400031D RID: 797
+		NAT_TYPE_FULL_CONE,
+		// Token: 0x0400031E RID: 798
+		NAT_TYPE_ADDRESS_RESTRICTED,
+		// Token: 0x0400031F RID: 799
+		NAT_TYPE_PORT_RESTRICTED,
+		// Token: 0x04000320 RID: 800
+		NAT_TYPE_SYMMETRIC,
+		// Token: 0x04000321 RID: 801
+		NAT_TYPE_UNKNOWN
+	}
+}

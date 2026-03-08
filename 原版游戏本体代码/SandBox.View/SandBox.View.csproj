@@ -1,0 +1,243 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x64</Platform>
+    <ProjectGuid>{C2043D23-6315-4853-B0B0-819B88470E6B}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SandBox.View</RootNamespace>
+    <AssemblyName>SandBox.View</AssemblyName>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <TargetFrameworkIdentifier>.NETStandard</TargetFrameworkIdentifier>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
+    <PlatformTarget>x64</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <NoStdLib>true</NoStdLib>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
+    <PlatformTarget>x64</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <NoStdLib>true</NoStdLib>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="netstandard" />
+    <Reference Include="TaleWorlds.Localization">
+      <HintPath>..\..\bin\x64\Debug\TaleWorlds.Localization.dll</HintPath>
+    </Reference>
+    <Reference Include="TaleWorlds.ModuleManager">
+      <HintPath>..\..\bin\x64\Debug\TaleWorlds.ModuleManager.dll</HintPath>
+    </Reference>
+    <Reference Include="TaleWorlds.MountAndBlade">
+      <HintPath>..\..\bin\x64\Debug\TaleWorlds.MountAndBlade.dll</HintPath>
+    </Reference>
+    <Reference Include="TaleWorlds.MountAndBlade.View">
+      <HintPath>..\..\bin\x64\Debug\TaleWorlds.MountAndBlade.View.dll</HintPath>
+    </Reference>
+    <Reference Include="TaleWorlds.MountAndBlade.ViewModelCollection">
+      <HintPath>..\..\bin\x64\Debug\TaleWorlds.MountAndBlade.ViewModelCollection.dll</HintPath>
+    </Reference>
+    <Reference Include="TaleWorlds.ObjectSystem">
+      <HintPath>..\..\bin\x64\Debug\TaleWorlds.ObjectSystem.dll</HintPath>
+    </Reference>
+    <Reference Include="TaleWorlds.PSAI">
+      <HintPath>..\..\bin\x64\Debug\TaleWorlds.PSAI.dll</HintPath>
+    </Reference>
+    <Reference Include="TaleWorlds.SaveSystem">
+      <HintPath>..\..\bin\x64\Debug\TaleWorlds.SaveSystem.dll</HintPath>
+    </Reference>
+    <Reference Include="TaleWorlds.ScreenSystem">
+      <HintPath>..\..\bin\x64\Debug\TaleWorlds.ScreenSystem.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <AppDesigner Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="CampaignMusicHandler.cs" />
+    <Compile Include="CharacterCreation\CharacterCreationScreen.cs" />
+    <Compile Include="CharacterCreation\CharacterCreationStageViewAttribute.cs" />
+    <Compile Include="CharacterCreation\CharacterCreationStageViewBase.cs" />
+    <Compile Include="Conversation\ConversationViewEventHandler.cs" />
+    <Compile Include="Conversation\ConversationViewEventHandlerDelegate.cs" />
+    <Compile Include="Conversation\ConversationViewManager.cs" />
+    <Compile Include="IChangeableScreen.cs" />
+    <Compile Include="MainHeroSaveVisualSupplier.cs" />
+    <Compile Include="Map\BattleSimulationMapView.cs" />
+    <Compile Include="Map\BlockadePositionScript.cs" />
+    <Compile Include="Map\CampaignEntityVisualComponent.cs" />
+    <Compile Include="Map\DefaultMapConversationDataProvider.cs" />
+    <Compile Include="Map\HeirSelectionPopupView.cs" />
+    <Compile Include="Map\IMapConversationDataProvider.cs" />
+    <Compile Include="Map\Managers\EntityVisualManagerBase.2.cs" />
+    <Compile Include="Map\Managers\EntityVisualManagerBase.cs" />
+    <Compile Include="Map\Managers\MapAudioManager.cs" />
+    <Compile Include="Map\Managers\MapTracksVisualManager.cs" />
+    <Compile Include="Map\Managers\MapWeatherVisualManager.cs" />
+    <Compile Include="Map\Managers\MobilePartyVisualManager.cs" />
+    <Compile Include="Map\Managers\SettlementVisualManager.cs" />
+    <Compile Include="Map\MapBarView.cs" />
+    <Compile Include="Map\MapBasicView.cs" />
+    <Compile Include="Map\MapCameraFadeView.cs" />
+    <Compile Include="Map\MapCameraView.cs" />
+    <Compile Include="Map\MapCampaignOptionsView.cs" />
+    <Compile Include="Map\MapCheatsView.cs" />
+    <Compile Include="Map\MapConversationTableau.cs" />
+    <Compile Include="Map\MapConversationTableauData.cs" />
+    <Compile Include="Map\MapConversationView.cs" />
+    <Compile Include="Map\MapCursor.cs" />
+    <Compile Include="Map\MapEncyclopediaView.cs" />
+    <Compile Include="Map\MapEscapeMenuView.cs" />
+    <Compile Include="Map\MapEventVisualsView.cs" />
+    <Compile Include="Map\MapGamepadEffectsView.cs" />
+    <Compile Include="Map\MapIncidentView.cs" />
+    <Compile Include="Map\MapNotificationView.cs" />
+    <Compile Include="Map\MapOverlayView.cs" />
+    <Compile Include="Map\MapParleyAnimationView.cs" />
+    <Compile Include="Map\MapPartyNameplateView.cs" />
+    <Compile Include="Map\MapReadyView.cs" />
+    <Compile Include="Map\MapSaveView.cs" />
+    <Compile Include="Map\MapScreen.cs" />
+    <Compile Include="Map\MapSettlementNameplateView.cs" />
+    <Compile Include="Map\MapSiegeOverlayView.cs" />
+    <Compile Include="Map\MapTrackersView.cs" />
+    <Compile Include="Map\MapView.cs" />
+    <Compile Include="Map\MapViewsContainer.cs" />
+    <Compile Include="Map\MarriageOfferPopupView.cs" />
+    <Compile Include="Map\Navigation\MapNavigationElementBase.cs" />
+    <Compile Include="Map\Navigation\MapNavigationHandler.cs" />
+    <Compile Include="Map\Navigation\MapNavigationHelper.cs" />
+    <Compile Include="Map\Navigation\NavigationElements\CharacterDeveloperNavigationElement.cs" />
+    <Compile Include="Map\Navigation\NavigationElements\ClanNavigationElement.cs" />
+    <Compile Include="Map\Navigation\NavigationElements\ClanScreenPermissionEvent.cs" />
+    <Compile Include="Map\Navigation\NavigationElements\EscapeMenuNavigationElement.cs" />
+    <Compile Include="Map\Navigation\NavigationElements\InventoryNavigationElement.cs" />
+    <Compile Include="Map\Navigation\NavigationElements\KingdomNavigationElement.cs" />
+    <Compile Include="Map\Navigation\NavigationElements\PartyNavigationElement.cs" />
+    <Compile Include="Map\Navigation\NavigationElements\QuestsNavigationElement.cs" />
+    <Compile Include="Map\SettlementPositionScript.cs" />
+    <Compile Include="Map\SnowAndRainTextureDefiner.cs" />
+    <Compile Include="Map\Visuals\MapEntityVisual.2.cs" />
+    <Compile Include="Map\Visuals\MapEntityVisual.cs" />
+    <Compile Include="Map\Visuals\MapWeatherVisual.cs" />
+    <Compile Include="Map\Visuals\MobilePartyVisual.cs" />
+    <Compile Include="Map\Visuals\SettlementVisual.cs" />
+    <Compile Include="Map\Visuals\TrackVisual.cs" />
+    <Compile Include="Menu\MenuBackgroundView.cs" />
+    <Compile Include="Menu\MenuBaseView.cs" />
+    <Compile Include="Menu\MenuOverlayBaseView.cs" />
+    <Compile Include="Menu\MenuRecruitVolunteersView.cs" />
+    <Compile Include="Menu\MenuTournamentLeaderboardView.cs" />
+    <Compile Include="Menu\MenuTownManagementView.cs" />
+    <Compile Include="Menu\MenuTroopSelectionView.cs" />
+    <Compile Include="Menu\MenuView.cs" />
+    <Compile Include="Menu\MenuViewContext.cs" />
+    <Compile Include="Menu\TutorialScreen.cs" />
+    <Compile Include="Microsoft\CodeAnalysis\EmbeddedAttribute.cs" />
+    <Compile Include="Missions\EavesdroppingMissionCameraView.cs" />
+    <Compile Include="Missions\MissionAgentAlarmStateView.cs" />
+    <Compile Include="Missions\MissionArenaPracticeFightView.cs" />
+    <Compile Include="Missions\MissionAudienceHandler.cs" />
+    <Compile Include="Missions\MissionCampaignBattleSpectatorView.cs" />
+    <Compile Include="Missions\MissionCampaignView.cs" />
+    <Compile Include="Missions\MissionConversationCameraView.cs" />
+    <Compile Include="Missions\MissionConversationPrepareView.cs" />
+    <Compile Include="Missions\MissionCustomCameraView.cs" />
+    <Compile Include="Missions\MissionEquipItemToolView.cs" />
+    <Compile Include="Missions\MissionHideoutAmbushBossFightCinematicView.cs" />
+    <Compile Include="Missions\MissionHideoutAmbushCinematicView.cs" />
+    <Compile Include="Missions\MissionHideoutCinematicView.cs" />
+    <Compile Include="Missions\MissionItemCalatogView.cs" />
+    <Compile Include="Missions\MissionMainAgentDetectionView.cs" />
+    <Compile Include="Missions\MissionPreloadView.cs" />
+    <Compile Include="Missions\MissionQuestBarView.cs" />
+    <Compile Include="Missions\MissionSettlementPrepareView.cs" />
+    <Compile Include="Missions\MissionSingleplayerViewHandler.cs" />
+    <Compile Include="Missions\MissionSoundParametersView.cs" />
+    <Compile Include="Missions\MissionStealthFailCounterView.cs" />
+    <Compile Include="Missions\NameMarkers\DefaultMissionNameMarkerHandler.cs" />
+    <Compile Include="Missions\NameMarkers\MissionNameMarkerUIHandler.cs" />
+    <Compile Include="Missions\NameMarkers\StealthNameMarkerProvider.cs" />
+    <Compile Include="Missions\OtherMissionViews.cs" />
+    <Compile Include="Missions\SandBoxMissionViews.cs" />
+    <Compile Include="Missions\SandBox\SpawnPointDebugView.cs" />
+    <Compile Include="Missions\SandBox\SpawnPointUnits.cs" />
+    <Compile Include="Missions\Sound\Components\MusicArenaPracticeMissionView.cs" />
+    <Compile Include="Missions\Sound\Components\MusicTournamentMissionView.cs" />
+    <Compile Include="Missions\StealthMissionUIHandler.cs" />
+    <Compile Include="Missions\Tournaments\ArenaPreloadView.cs" />
+    <Compile Include="Missions\Tournaments\MissionTournamentJoustingView.cs" />
+    <Compile Include="Missions\Tournaments\MissionTournamentView.cs" />
+    <Compile Include="Missions\Tournaments\TournamentMissionViews.cs" />
+    <Compile Include="OrderProviders\HideoutVisualOrderProvider.cs" />
+    <Compile Include="Overlay\DefaultGameMenuOverlayProvider.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SandboxView.cs" />
+    <Compile Include="SandBoxViewCheats.cs" />
+    <Compile Include="SandBoxViewCreator.cs" />
+    <Compile Include="SandBoxViewSubModule.cs" />
+    <Compile Include="SandBoxViewVisualManager.cs" />
+    <Compile Include="SaveLoadScreen.cs" />
+    <Compile Include="System\Runtime\CompilerServices\IsReadOnlyAttribute.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SandBox.ViewModelCollection\SandBox.ViewModelCollection.csproj">
+      <Project>{C2043D23-6315-4853-B0B0-819B88470E6C}</Project>
+      <Name>SandBox.ViewModelCollection</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SandBox\SandBox.csproj">
+      <Project>{C2043D23-6315-4853-B0B0-819B88470E67}</Project>
+      <Name>SandBox</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TaleWorlds.CampaignSystem.ViewModelCollection\TaleWorlds.CampaignSystem.ViewModelCollection.csproj">
+      <Project>{C2043D23-6315-4853-B0B0-819B88470E73}</Project>
+      <Name>TaleWorlds.CampaignSystem.ViewModelCollection</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TaleWorlds.CampaignSystem\TaleWorlds.CampaignSystem.csproj">
+      <Project>{C2043D23-6315-4853-B0B0-819B88470E72}</Project>
+      <Name>TaleWorlds.CampaignSystem</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TaleWorlds.Core.ViewModelCollection\TaleWorlds.Core.ViewModelCollection.csproj">
+      <Project>{C2043D23-6315-4853-B0B0-819B88470E75}</Project>
+      <Name>TaleWorlds.Core.ViewModelCollection</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TaleWorlds.Core\TaleWorlds.Core.csproj">
+      <Project>{C2043D23-6315-4853-B0B0-819B88470E74}</Project>
+      <Name>TaleWorlds.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TaleWorlds.DotNet\TaleWorlds.DotNet.csproj">
+      <Project>{C2043D23-6315-4853-B0B0-819B88470E7C}</Project>
+      <Name>TaleWorlds.DotNet</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TaleWorlds.Engine\TaleWorlds.Engine.csproj">
+      <Project>{C2043D23-6315-4853-B0B0-819B88470E7E}</Project>
+      <Name>TaleWorlds.Engine</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TaleWorlds.InputSystem\TaleWorlds.InputSystem.csproj">
+      <Project>{C2043D23-6315-4853-B0B0-819B88470E85}</Project>
+      <Name>TaleWorlds.InputSystem</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TaleWorlds.Library\TaleWorlds.Library.csproj">
+      <Project>{C2043D23-6315-4853-B0B0-819B88470E86}</Project>
+      <Name>TaleWorlds.Library</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TaleWorlds.LinQuick\TaleWorlds.LinQuick.csproj">
+      <Project>{C2043D23-6315-4853-B0B0-819B88470E87}</Project>
+      <Name>TaleWorlds.LinQuick</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

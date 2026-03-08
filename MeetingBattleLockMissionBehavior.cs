@@ -105,6 +105,26 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior
 
 	private float _startupLoadingFadeElapsed;
 
+	private Agent _meetingTargetEscortAgent;
+
+	private Agent _meetingPlayerEscortAgent;
+
+	private readonly HashSet<int> _meetingFormationManagedAgentIndices = new HashSet<int>();
+
+	private readonly Dictionary<int, Vec3> _meetingLockPositions = new Dictionary<int, Vec3>();
+
+	private readonly Dictionary<int, Vec2> _meetingLockDirections = new Dictionary<int, Vec2>();
+
+	private readonly Dictionary<int, Formation> _meetingDetachedFormations = new Dictionary<int, Formation>();
+
+	private readonly HashSet<int> _meetingMountedHardLockRiderIndices = new HashSet<int>();
+
+	private readonly HashSet<int> _meetingMountedHardLockMountIndices = new HashSet<int>();
+
+	private readonly Dictionary<int, Vec3> _meetingMountedHardLockPositions = new Dictionary<int, Vec3>();
+
+	private readonly Dictionary<int, Vec3> _meetingMountedHardLockForwards = new Dictionary<int, Vec3>();
+
 	public override MissionBehaviorType BehaviorType => MissionBehaviorType.Other;
 
 	public MeetingBattleLockMissionBehavior(Hero targetHero)
@@ -152,6 +172,12 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior
 		_startupLoadingFadeApplied = false;
 		_startupLoadingFadeAborted = false;
 		_startupLoadingFadeElapsed = 0f;
+		_meetingTargetEscortAgent = null;
+		_meetingPlayerEscortAgent = null;
+		_meetingFormationManagedAgentIndices.Clear();
+		ClearMeetingLockAnchors();
+		ClearMeetingDetachedFormations();
+		ClearMeetingMountedHardLocks();
 		try
 		{
 			_playerMapFactionAtEncounterStart = Hero.MainHero?.MapFaction;
@@ -206,8 +232,18 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior
 			catch
 			{
 			}
+			try
+			{
+				RestoreAllDetachedFormations();
+			}
+			catch
+			{
+			}
 		}
 		LordEncounterBehavior.SetEncounterMeetingMissionActive(active: false);
+		ClearMeetingLockAnchors();
+		ClearMeetingDetachedFormations();
+		ClearMeetingMountedHardLocks();
 		base.OnRemoveBehavior();
 	}
 
@@ -220,6 +256,8 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior
 		catch
 		{
 		}
+		ClearMeetingDetachedFormations();
+		ClearMeetingMountedHardLocks();
 		base.OnEndMission();
 	}
 
@@ -939,6 +977,10 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior
 				_targetLockedForward.Normalize();
 				_hasTargetLockedForward = true;
 			}
+			else
+			{
+				_hasTargetLockedForward = false;
+			}
 			_targetLockedPosition = targetFrame.origin;
 			_hasTargetLockedPosition = true;
 		}
@@ -1047,6 +1089,345 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior
 		return true;
 	}
 
+	private void ConfigureMeetingHoldFormations(Agent playerEscort, Agent targetEscort)
+	{
+		if (base.Mission == null)
+		{
+			return;
+		}
+		if (playerEscort != null && playerEscort.IsActive())
+		{
+			_meetingPlayerEscortAgent = playerEscort;
+		}
+		if (targetEscort != null && targetEscort.IsActive())
+		{
+			_meetingTargetEscortAgent = targetEscort;
+		}
+		RefreshMeetingFormationManagedAgents();
+	}
+
+	private void RefreshMeetingFormationManagedAgents()
+	{
+		_meetingFormationManagedAgentIndices.Clear();
+		RegisterMeetingFormationManagedAgent(_meetingTargetEscortAgent);
+		RegisterMeetingFormationManagedAgent(_meetingPlayerEscortAgent);
+	}
+
+	private void RegisterMeetingFormationManagedAgent(Agent agent)
+	{
+		if (agent == null || !agent.IsActive())
+		{
+			return;
+		}
+		try
+		{
+			_meetingFormationManagedAgentIndices.Add(agent.Index);
+		}
+		catch
+		{
+		}
+		try
+		{
+			Agent mountAgent = agent.MountAgent;
+			if (mountAgent != null && mountAgent.IsActive())
+			{
+				_meetingFormationManagedAgentIndices.Add(mountAgent.Index);
+			}
+		}
+		catch
+		{
+		}
+	}
+
+	private bool IsMeetingFormationManagedAgent(Agent agent)
+	{
+		if (agent == null || !agent.IsActive())
+		{
+			return false;
+		}
+		try
+		{
+			return _meetingFormationManagedAgentIndices.Contains(agent.Index);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private void ClearMeetingMountedHardLocks()
+	{
+		_meetingMountedHardLockRiderIndices.Clear();
+		_meetingMountedHardLockMountIndices.Clear();
+		_meetingMountedHardLockPositions.Clear();
+		_meetingMountedHardLockForwards.Clear();
+	}
+
+	private void ForgetMountedHardLock(Agent agent)
+	{
+		if (agent == null)
+		{
+			return;
+		}
+		int index = -1;
+		try
+		{
+			index = agent.Index;
+		}
+		catch
+		{
+			return;
+		}
+		try
+		{
+			_meetingMountedHardLockRiderIndices.Remove(index);
+			_meetingMountedHardLockMountIndices.Remove(index);
+			_meetingMountedHardLockPositions.Remove(index);
+			_meetingMountedHardLockForwards.Remove(index);
+		}
+		catch
+		{
+		}
+		try
+		{
+			Agent mountAgent = agent.MountAgent;
+			if (mountAgent != null)
+			{
+				_meetingMountedHardLockMountIndices.Remove(mountAgent.Index);
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			Agent riderAgent = agent.RiderAgent;
+			if (riderAgent != null)
+			{
+				_meetingMountedHardLockRiderIndices.Remove(riderAgent.Index);
+				_meetingMountedHardLockPositions.Remove(riderAgent.Index);
+				_meetingMountedHardLockForwards.Remove(riderAgent.Index);
+			}
+		}
+		catch
+		{
+		}
+	}
+
+	private void EnsureMountedHardLocks()
+	{
+		if (_meetingMountedHardLockRiderIndices.Count > 0 || base.Mission == null || _mainAgent == null || _targetAgent == null || !_mainAgent.IsActive() || !_targetAgent.IsActive())
+		{
+			return;
+		}
+		Team team = null;
+		Team team2 = null;
+		try
+		{
+			team = _mainAgent.Team;
+		}
+		catch
+		{
+			team = null;
+		}
+		try
+		{
+			team2 = _targetAgent.Team;
+		}
+		catch
+		{
+			team2 = null;
+		}
+		if (team == null || team2 == null || team == team2)
+		{
+			return;
+		}
+		RegisterMountedHardLocksForTeam(team);
+		RegisterMountedHardLocksForTeam(team2);
+	}
+
+	private void RegisterMountedHardLocksForTeam(Team team)
+	{
+		if (team == null || base.Mission == null)
+		{
+			return;
+		}
+		try
+		{
+			foreach (Agent agent in base.Mission.Agents)
+			{
+				if (!IsMountedHardLockCandidate(agent, team))
+				{
+					continue;
+				}
+				RegisterMountedHardLock(agent);
+			}
+		}
+		catch
+		{
+		}
+	}
+
+	private bool IsMountedHardLockCandidate(Agent agent, Team team)
+	{
+		if (agent == null || !agent.IsActive() || !agent.IsHuman || !agent.IsAIControlled || team == null)
+		{
+			return false;
+		}
+		try
+		{
+			if (agent.Team != team)
+			{
+				return false;
+			}
+		}
+		catch
+		{
+			return false;
+		}
+		if (IsMeetingFormationManagedAgent(agent) || agent == _mainAgent || agent == _targetAgent)
+		{
+			return false;
+		}
+		try
+		{
+			Agent mountAgent = agent.MountAgent;
+			return mountAgent != null && mountAgent.IsActive();
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private void RegisterMountedHardLock(Agent agent)
+	{
+		if (agent == null || !agent.IsActive())
+		{
+			return;
+		}
+		Vec3 vec = new Vec3(1f);
+		try
+		{
+			Vec3 lookDirection = agent.LookDirection;
+			lookDirection.z = 0f;
+			if (lookDirection.LengthSquared > 0.0001f)
+			{
+				lookDirection.Normalize();
+				vec = lookDirection;
+			}
+		}
+		catch
+		{
+		}
+		if (vec.LengthSquared < 0.0001f)
+		{
+			vec = new Vec3(1f);
+		}
+		vec.z = 0f;
+		vec.Normalize();
+		try
+		{
+			_meetingMountedHardLockRiderIndices.Add(agent.Index);
+			_meetingMountedHardLockPositions[agent.Index] = agent.Position;
+			_meetingMountedHardLockForwards[agent.Index] = vec;
+		}
+		catch
+		{
+		}
+		try
+		{
+			Agent mountAgent = agent.MountAgent;
+			if (mountAgent != null && mountAgent.IsActive())
+			{
+				_meetingMountedHardLockMountIndices.Add(mountAgent.Index);
+			}
+		}
+		catch
+		{
+		}
+	}
+
+	private bool IsMountedHardLockMount(Agent agent)
+	{
+		if (agent == null || !agent.IsActive())
+		{
+			return false;
+		}
+		try
+		{
+			return _meetingMountedHardLockMountIndices.Contains(agent.Index);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private bool TryGetMountedHardLock(Agent agent, out Vec3 forward, out Vec3 anchor)
+	{
+		forward = Vec3.Zero;
+		anchor = Vec3.Zero;
+		if (agent == null || !agent.IsActive())
+		{
+			return false;
+		}
+		int index;
+		try
+		{
+			index = agent.Index;
+		}
+		catch
+		{
+			return false;
+		}
+		if (!_meetingMountedHardLockRiderIndices.Contains(index))
+		{
+			return false;
+		}
+		if (!_meetingMountedHardLockPositions.TryGetValue(index, out anchor))
+		{
+			return false;
+		}
+		if (!_meetingMountedHardLockForwards.TryGetValue(index, out forward))
+		{
+			return false;
+		}
+		return true;
+	}
+
+	private void ApplyMountedHardLock(Agent agent, Vec3 forward, Vec3 anchor, bool sheathWeapons)
+	{
+		if (agent == null || !agent.IsActive())
+		{
+			return;
+		}
+		DetachAgentFromFormationForMeetingLock(agent);
+		try
+		{
+			TrySetAgentController(agent, "None");
+		}
+		catch
+		{
+		}
+		try
+		{
+			Agent mountAgent = agent.MountAgent;
+			if (mountAgent != null && mountAgent.IsActive())
+			{
+				TrySetAgentController(mountAgent, "None");
+			}
+		}
+		catch
+		{
+		}
+		if (sheathWeapons && agent.IsHuman)
+		{
+			TrySheathWeapons(agent);
+		}
+		LockAgentAndMountInPlace(agent, forward, anchor);
+	}
+
 	private void KeepLeadersFacingEachOther()
 	{
 		if (_mainAgent == null || _targetAgent == null || !_mainAgent.IsActive() || !_targetAgent.IsActive())
@@ -1088,6 +1469,7 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior
 				_hasTargetLockedPosition = true;
 			}
 			LockAgentAndMountInPlace(_targetAgent, vec2, _hasTargetLockedPosition ? new Vec3?(_targetLockedPosition) : ((Vec3?)null));
+			TrySheathWeapons(_targetAgent);
 		}
 		catch
 		{
@@ -1141,11 +1523,19 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior
 		}
 		try
 		{
-			if (agent.IsAIControlled)
+			bool flag = false;
+			try
+			{
+				flag = agent.IsMainAgent;
+			}
+			catch
+			{
+				flag = false;
+			}
+			if (!flag)
 			{
 				agent.SetIsAIPaused(isPaused: true);
 				agent.ClearTargetFrame();
-				agent.SetMovementDirection(in vec);
 				try
 				{
 					if ((agent.Position - vec2).LengthSquared > 0.04f)
@@ -1630,6 +2020,7 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior
 			catch
 			{
 			}
+			EnsureMountedHardLocks();
 			foreach (Agent agent5 in base.Mission.Agents)
 			{
 				if (agent5 == null || !agent5.IsActive())
@@ -1685,13 +2076,46 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior
 					EnsureAgentFreeMovement(agent5);
 					continue;
 				}
+				if (IsMountedHardLockMount(agent5))
+				{
+					continue;
+				}
+				if (TryGetMountedHardLock(agent5, out var forward, out var anchor))
+				{
+					ApplyMountedHardLock(agent5, forward, anchor, sheathWeapons);
+					continue;
+				}
+				DetachAgentFromFormationForMeetingLock(agent5);
 				try
 				{
 					if (agent5.IsAIControlled)
 					{
 						agent5.SetIsAIPaused(isPaused: true);
 						agent5.ClearTargetFrame();
-						TryLockAgentToCurrentPosition(agent5);
+						Agent mountAgent = null;
+						try
+						{
+							mountAgent = agent5.MountAgent;
+						}
+						catch
+						{
+							mountAgent = null;
+						}
+						if (mountAgent != null && mountAgent.IsActive())
+						{
+							try
+							{
+								agent5.DisableScriptedMovement();
+							}
+							catch
+							{
+							}
+							ForgetMeetingLockAnchor(agent5);
+						}
+						else
+						{
+							TryLockAgentToCurrentPosition(agent5);
+						}
 					}
 				}
 				catch
@@ -1708,19 +2132,19 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior
 					{
 						continue;
 					}
-					bool flag3 = mountAgent == agent2;
-					if (!flag3)
+					bool flag4 = mountAgent == agent2;
+					if (!flag4)
 					{
 						try
 						{
 							Agent riderAgent3 = mountAgent.RiderAgent;
-							flag3 = riderAgent3 != null && (riderAgent3 == agent || riderAgent3.IsMainAgent);
+							flag4 = riderAgent3 != null && (riderAgent3 == agent || riderAgent3.IsMainAgent);
 						}
 						catch
 						{
 						}
 					}
-					if (flag3)
+					if (flag4)
 					{
 						EnsureAgentFreeMovement(mountAgent);
 						continue;
@@ -1734,7 +2158,8 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior
 					mountAgent.ClearTargetFrame();
 					try
 					{
-						mountAgent.SetTargetPosition(mountAgent.Position.AsVec2);
+						Vec3 position = mountAgent.Position;
+						mountAgent.SetTargetPosition(position.AsVec2);
 					}
 					catch
 					{
@@ -1832,6 +2257,19 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior
 		catch
 		{
 		}
+		RestoreDetachedFormation(agent);
+		ForgetMountedHardLock(agent);
+		try
+		{
+			if (agent.IsAIControlled)
+			{
+				TrySetAgentController(agent, "AI");
+			}
+		}
+		catch
+		{
+		}
+		ForgetMeetingLockAnchor(agent);
 	}
 
 	private void TryEnsureMainAgentPlayerController(Agent main)
@@ -1869,35 +2307,53 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior
 		}
 	}
 
-	private void TryLockAgentToCurrentPosition(Agent agent)
+	private void TryLockAgentToCurrentPosition(Agent agent, bool recaptureMeetingAnchor = false, bool preserveFacing = false)
 	{
 		if (base.Mission == null || agent == null || !agent.IsActive())
 		{
 			return;
 		}
-		Vec3 position;
-		Vec3 lookDirection;
-		try
-		{
-			position = agent.Position;
-			lookDirection = agent.LookDirection;
-		}
-		catch
+		if (!TryGetMeetingLockAnchor(agent, recaptureMeetingAnchor, out var position, out var vec))
 		{
 			return;
 		}
-		lookDirection.z = 0f;
-		if (lookDirection.LengthSquared < 0.0001f)
+		float rotationInRadians = 0f;
+		if (preserveFacing)
 		{
-			lookDirection = new Vec3(1f);
+			Vec3 lookDirection = new Vec3(vec.x, vec.y);
+			try
+			{
+				agent.LookDirection = lookDirection;
+			}
+			catch
+			{
+			}
+			try
+			{
+				agent.SetMovementDirection(in vec);
+			}
+			catch
+			{
+			}
+			rotationInRadians = vec.RotationInRadians;
 		}
-		lookDirection.Normalize();
-		Vec2 vec = lookDirection.AsVec2;
-		if (vec.LengthSquared < 0.0001f)
+		else
 		{
-			vec = new Vec2(1f, 0f);
+			Vec2 vec2 = Vec2.Zero;
+			try
+			{
+				vec2 = agent.LookDirection.AsVec2;
+			}
+			catch
+			{
+				vec2 = Vec2.Zero;
+			}
+			if (vec2.LengthSquared < 0.0001f)
+			{
+				vec2 = vec;
+			}
+			rotationInRadians = vec2.Normalized().RotationInRadians;
 		}
-		vec = vec.Normalized();
 		try
 		{
 			if (base.Mission.Scene != null)
@@ -1918,29 +2374,8 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior
 		}
 		try
 		{
-			agent.LookDirection = lookDirection;
-		}
-		catch
-		{
-		}
-		try
-		{
-			agent.SetMovementDirection(in vec);
-		}
-		catch
-		{
-		}
-		try
-		{
-			agent.SetTargetPosition(position.AsVec2);
-		}
-		catch
-		{
-		}
-		try
-		{
 			WorldPosition scriptedPosition = new WorldPosition(base.Mission.Scene, position);
-			agent.SetScriptedPositionAndDirection(ref scriptedPosition, vec.RotationInRadians, addHumanLikeDelay: false, Agent.AIScriptedFrameFlags.NoAttack | Agent.AIScriptedFrameFlags.DoNotRun);
+			agent.SetScriptedPositionAndDirection(ref scriptedPosition, rotationInRadians, addHumanLikeDelay: false, Agent.AIScriptedFrameFlags.NoAttack | Agent.AIScriptedFrameFlags.DoNotRun);
 		}
 		catch
 		{
@@ -1977,6 +2412,184 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior
 		}
 	}
 
+	private void ClearMeetingLockAnchors()
+	{
+		_meetingLockPositions.Clear();
+		_meetingLockDirections.Clear();
+	}
+
+	private void ClearMeetingDetachedFormations()
+	{
+		_meetingDetachedFormations.Clear();
+	}
+
+	private void DetachAgentFromFormationForMeetingLock(Agent agent)
+	{
+		if (agent == null || !agent.IsActive())
+		{
+			return;
+		}
+		Formation formation = null;
+		int index;
+		try
+		{
+			if (!agent.IsHuman)
+			{
+				return;
+			}
+			index = agent.Index;
+			formation = agent.Formation;
+		}
+		catch
+		{
+			return;
+		}
+		if (formation == null)
+		{
+			return;
+		}
+		if (!_meetingDetachedFormations.ContainsKey(index))
+		{
+			_meetingDetachedFormations[index] = formation;
+		}
+		try
+		{
+			agent.Formation = null;
+		}
+		catch
+		{
+		}
+	}
+
+	private void RestoreDetachedFormation(Agent agent)
+	{
+		if (agent == null)
+		{
+			return;
+		}
+		int index;
+		try
+		{
+			index = agent.Index;
+		}
+		catch
+		{
+			return;
+		}
+		if (!_meetingDetachedFormations.TryGetValue(index, out var formation))
+		{
+			return;
+		}
+		try
+		{
+			if (formation != null && agent.IsActive())
+			{
+				agent.Formation = formation;
+			}
+		}
+		catch
+		{
+		}
+		finally
+		{
+			_meetingDetachedFormations.Remove(index);
+		}
+	}
+
+	private void RestoreAllDetachedFormations()
+	{
+		if (_meetingDetachedFormations.Count == 0)
+		{
+			return;
+		}
+		try
+		{
+			if (base.Mission != null)
+			{
+				foreach (Agent agent in base.Mission.Agents)
+				{
+					RestoreDetachedFormation(agent);
+				}
+			}
+		}
+		catch
+		{
+		}
+		finally
+		{
+			_meetingDetachedFormations.Clear();
+		}
+	}
+
+	private void ForgetMeetingLockAnchor(Agent agent)
+	{
+		if (agent == null)
+		{
+			return;
+		}
+		try
+		{
+			_meetingLockPositions.Remove(agent.Index);
+			_meetingLockDirections.Remove(agent.Index);
+		}
+		catch
+		{
+		}
+	}
+
+	private bool TryGetMeetingLockAnchor(Agent agent, bool recaptureMeetingAnchor, out Vec3 position, out Vec2 direction)
+	{
+		position = Vec3.Zero;
+		direction = Vec2.Zero;
+		if (agent == null || !agent.IsActive())
+		{
+			return false;
+		}
+		int index;
+		try
+		{
+			index = agent.Index;
+		}
+		catch
+		{
+			return false;
+		}
+		if (recaptureMeetingAnchor || !_meetingLockPositions.TryGetValue(index, out position))
+		{
+			Vec3 lookDirection;
+			try
+			{
+				position = agent.Position;
+				lookDirection = agent.LookDirection;
+			}
+			catch
+			{
+				return false;
+			}
+			lookDirection.z = 0f;
+			if (lookDirection.LengthSquared < 0.0001f)
+			{
+				lookDirection = new Vec3(1f);
+			}
+			lookDirection.Normalize();
+			direction = lookDirection.AsVec2;
+			if (direction.LengthSquared < 0.0001f)
+			{
+				direction = new Vec2(1f, 0f);
+			}
+			direction = direction.Normalized();
+			_meetingLockPositions[index] = position;
+			_meetingLockDirections[index] = direction;
+			return true;
+		}
+		if (!_meetingLockDirections.TryGetValue(index, out direction) || direction.LengthSquared < 0.0001f)
+		{
+			direction = new Vec2(1f, 0f);
+			_meetingLockDirections[index] = direction;
+		}
+		return true;
+	}
+
 	private void ResumeAllAIAgents()
 	{
 		try
@@ -1994,6 +2607,7 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior
 						agent.DisableScriptedMovement();
 						agent.ClearTargetFrame();
 						agent.SetIsAIPaused(isPaused: false);
+						RestoreDetachedFormation(agent);
 					}
 				}
 				catch
@@ -2017,6 +2631,9 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior
 		catch
 		{
 		}
+		RestoreAllDetachedFormations();
+		ClearMeetingLockAnchors();
+		ClearMeetingMountedHardLocks();
 	}
 
 	private void ReleaseMeetingLocksForCombat()
@@ -2081,6 +2698,7 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior
 		catch
 		{
 		}
+		ClearMeetingLockAnchors();
 		Logger.Log("MeetingBattle", $"Meeting combat unlock applied. ReleasedAgents={num}");
 	}
 
@@ -2091,6 +2709,14 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior
 			return false;
 		}
 		bool result = false;
+		try
+		{
+			TrySetAgentController(agent, "AI");
+			result = true;
+		}
+		catch
+		{
+		}
 		try
 		{
 			agent.DisableScriptedMovement();
@@ -2132,6 +2758,9 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior
 		catch
 		{
 		}
+		ForgetMountedHardLock(agent);
+		RestoreDetachedFormation(agent);
+		ForgetMeetingLockAnchor(agent);
 		return result;
 	}
 
@@ -2367,6 +2996,10 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior
 			list2 = CollectTopTierTeamAgents(team, list.Count);
 			list3 = CollectTopTierTeamAgents(team2, list.Count);
 		}
+		if (list2.Count > 0 || list3.Count > 0)
+		{
+			ConfigureMeetingHoldFormations(list2.FirstOrDefault(), list3.FirstOrDefault());
+		}
 		if (list2.Count > 0)
 		{
 			PositionEscortAgents(_mainAgent.Position, vec, list2, list);
@@ -2496,7 +3129,7 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior
 		{
 		}
 		foreach (var item2 in from x in list2
-			orderby x.Item2 descending, x.Item3 descending
+			orderby GetCharacterEscortPriority(x.Item1) descending, x.Item2 descending, x.Item3 descending
 			select x)
 		{
 			for (int num2 = 0; num2 < item2.Item4; num2++)
@@ -2561,12 +3194,13 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior
 			catch
 			{
 			}
+			bool noHorses = !CharacterPrefersMountedEscort(characterObject);
 			AgentBuildData agentBuildData = new AgentBuildData(characterObject).TroopOrigin(new PartyAgentOrigin(party, characterObject)).Monster(TaleWorlds.Core.FaceGen.GetMonsterWithSuffix(characterObject.Race, "_settlement")).Team(team)
 				.InitialPosition(in position)
 				.InitialDirection(vec.AsVec2.Normalized())
 				.Controller(AgentControllerType.AI)
 				.CivilianEquipment(civilianEquipment: false)
-				.NoHorses(noHorses: true);
+				.NoHorses(noHorses);
 			Agent agent = null;
 			try
 			{
@@ -2678,8 +3312,457 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior
 		catch
 		{
 		}
-		return list.OrderByDescending(GetAgentTier).ThenByDescending(GetAgentLevel).Take(maxCount)
+		return list.OrderByDescending(GetAgentEscortPriority).ThenByDescending(GetAgentTier).ThenByDescending(GetAgentLevel).Take(maxCount)
 			.ToList();
+	}
+
+	private int GetAgentEscortPriority(Agent agent)
+	{
+		if (agent == null || !agent.IsActive())
+		{
+			return 0;
+		}
+		try
+		{
+			if (agent.MountAgent != null && agent.MountAgent.IsActive())
+			{
+				return 3;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (agent.Character is CharacterObject characterObject)
+			{
+				return GetCharacterEscortPriority(characterObject);
+			}
+		}
+		catch
+		{
+		}
+		return 0;
+	}
+
+	private int GetCharacterEscortPriority(CharacterObject character)
+	{
+		if (character == null)
+		{
+			return 0;
+		}
+		try
+		{
+			if (CharacterPrefersMountedEscort(character))
+			{
+				return IsHorseArcherCharacter(character) ? 2 : 3;
+			}
+		}
+		catch
+		{
+		}
+		return 1;
+	}
+
+	private bool CharacterPrefersMountedEscort(CharacterObject character)
+	{
+		if (character == null)
+		{
+			return false;
+		}
+		try
+		{
+			if (character.IsMounted)
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			FormationClass defaultFormationClass = character.DefaultFormationClass;
+			return defaultFormationClass == FormationClass.Cavalry || defaultFormationClass == FormationClass.LightCavalry || defaultFormationClass == FormationClass.HeavyCavalry || defaultFormationClass == FormationClass.HorseArcher;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private void TryEquipMeetingEscortWeapons(Agent agent)
+	{
+		if (agent == null || !agent.IsActive())
+		{
+			return;
+		}
+		EquipmentIndex? shieldSlot = null;
+		EquipmentIndex? preferredShieldPolearmSlot = null;
+		EquipmentIndex? preferredPolearmSlot = null;
+		EquipmentIndex? preferredShieldWeaponSlot = null;
+		EquipmentIndex? preferredWeaponSlot = null;
+		int num = int.MinValue;
+		int num2 = int.MinValue;
+		int num3 = int.MinValue;
+		int num4 = int.MinValue;
+		EquipmentIndex[] array = new EquipmentIndex[5]
+		{
+			EquipmentIndex.ExtraWeaponSlot,
+			EquipmentIndex.WeaponItemBeginSlot,
+			EquipmentIndex.Weapon1,
+			EquipmentIndex.Weapon2,
+			EquipmentIndex.Weapon3
+		};
+		EquipmentIndex[] array2 = array;
+		foreach (EquipmentIndex equipmentIndex in array2)
+		{
+			ItemObject itemObject = null;
+			WeaponComponentData weaponComponentData = null;
+			try
+			{
+				itemObject = agent.Equipment[equipmentIndex].Item;
+			}
+			catch
+			{
+				itemObject = null;
+			}
+			if (itemObject == null)
+			{
+				continue;
+			}
+			try
+			{
+				weaponComponentData = itemObject.PrimaryWeapon;
+			}
+			catch
+			{
+				weaponComponentData = null;
+			}
+			if (weaponComponentData == null)
+			{
+				continue;
+			}
+			bool flag = false;
+			try
+			{
+				flag = weaponComponentData.IsShield || itemObject.Type == ItemObject.ItemTypeEnum.Shield;
+			}
+			catch
+			{
+				flag = false;
+			}
+			if (flag)
+			{
+				if (!shieldSlot.HasValue)
+				{
+					shieldSlot = equipmentIndex;
+				}
+				continue;
+			}
+			bool flag2 = false;
+			try
+			{
+				flag2 = itemObject.ItemFlags.HasAnyFlag(ItemFlags.HeldInOffHand);
+			}
+			catch
+			{
+				flag2 = false;
+			}
+			if (flag2)
+			{
+				continue;
+			}
+			int num5 = this.GetMeetingEscortWeaponScore(itemObject);
+			bool flag3 = this.IsMeetingEscortPolearmWeapon(itemObject);
+			bool flag4 = this.CanUseMeetingEscortWeaponWithShield(itemObject);
+			if (num5 > num4)
+			{
+				preferredWeaponSlot = equipmentIndex;
+				num4 = num5;
+			}
+			if (flag4 && num5 > num3)
+			{
+				preferredShieldWeaponSlot = equipmentIndex;
+				num3 = num5;
+			}
+			if (flag3 && num5 > num2)
+			{
+				preferredPolearmSlot = equipmentIndex;
+				num2 = num5;
+			}
+			if (!shieldSlot.HasValue || !flag3 || !flag4 || num5 <= num)
+			{
+				continue;
+			}
+			preferredShieldPolearmSlot = equipmentIndex;
+			num = num5;
+		}
+		EquipmentIndex? equipmentIndex2 = preferredShieldPolearmSlot ?? preferredPolearmSlot ?? preferredShieldWeaponSlot ?? preferredWeaponSlot;
+		if (!equipmentIndex2.HasValue)
+		{
+			return;
+		}
+		try
+		{
+			agent.TryToWieldWeaponInSlot(equipmentIndex2.Value, Agent.WeaponWieldActionType.Instant, isWieldedOnSpawn: false);
+		}
+		catch
+		{
+		}
+		if (shieldSlot.HasValue)
+		{
+			try
+			{
+				ItemObject item = agent.Equipment[equipmentIndex2.Value].Item;
+				if (this.CanUseMeetingEscortWeaponWithShield(item))
+				{
+					agent.TryToWieldWeaponInSlot(shieldSlot.Value, Agent.WeaponWieldActionType.Instant, isWieldedOnSpawn: false);
+				}
+			}
+			catch
+			{
+			}
+		}
+		try
+		{
+			Agent mountAgent = agent.MountAgent;
+			if (mountAgent != null && mountAgent.IsActive())
+			{
+				mountAgent.SetIsAIPaused(isPaused: true);
+			}
+		}
+		catch
+		{
+		}
+	}
+
+	private int GetMeetingEscortWeaponScore(ItemObject itemObject)
+	{
+		if (itemObject == null)
+		{
+			return int.MinValue;
+		}
+		WeaponComponentData primaryWeapon = null;
+		try
+		{
+			primaryWeapon = itemObject.PrimaryWeapon;
+		}
+		catch
+		{
+			primaryWeapon = null;
+		}
+		if (primaryWeapon == null)
+		{
+			return int.MinValue;
+		}
+		int num = 0;
+		bool flag = false;
+		try
+		{
+			flag = primaryWeapon.IsMeleeWeapon;
+		}
+		catch
+		{
+			flag = false;
+		}
+		if (flag)
+		{
+			num += 500;
+		}
+		bool flag2 = this.IsMeetingEscortPolearmWeapon(itemObject);
+		if (flag2)
+		{
+			num += 2000;
+		}
+		if (this.IsMeetingEscortPreferredPolearm(itemObject))
+		{
+			num += 1000;
+		}
+		if (this.CanUseMeetingEscortWeaponWithShield(itemObject))
+		{
+			num += 300;
+		}
+		bool flag3 = false;
+		try
+		{
+			flag3 = primaryWeapon.IsRangedWeapon;
+		}
+		catch
+		{
+			flag3 = false;
+		}
+		if (flag3)
+		{
+			num -= 800;
+		}
+		return num;
+	}
+
+	private bool IsMeetingEscortPolearmWeapon(ItemObject itemObject)
+	{
+		if (itemObject == null)
+		{
+			return false;
+		}
+		WeaponComponentData primaryWeapon = null;
+		try
+		{
+			primaryWeapon = itemObject.PrimaryWeapon;
+		}
+		catch
+		{
+			primaryWeapon = null;
+		}
+		if (primaryWeapon == null)
+		{
+			return false;
+		}
+		try
+		{
+			if (itemObject.Type == ItemObject.ItemTypeEnum.Polearm)
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			WeaponClass weaponClass = primaryWeapon.WeaponClass;
+			if (weaponClass == WeaponClass.OneHandedPolearm || weaponClass == WeaponClass.TwoHandedPolearm || weaponClass == WeaponClass.LowGripPolearm || weaponClass == WeaponClass.Javelin)
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			return primaryWeapon.IsPolearm;
+		}
+		catch
+		{
+		}
+		return this.IsMeetingEscortPreferredPolearm(itemObject);
+	}
+
+	private bool IsMeetingEscortPreferredPolearm(ItemObject itemObject)
+	{
+		if (itemObject == null)
+		{
+			return false;
+		}
+		string text = "";
+		string text2 = "";
+		try
+		{
+			text = (itemObject.StringId ?? "").ToLowerInvariant();
+		}
+		catch
+		{
+			text = "";
+		}
+		try
+		{
+			text2 = (itemObject.Name?.ToString() ?? "").ToLowerInvariant();
+		}
+		catch
+		{
+			text2 = "";
+		}
+		return text.Contains("lance") || text.Contains("spear") || text.Contains("pike") || text2.Contains("骑枪") || text2.Contains("长矛") || text2.Contains("长枪") || text2.Contains("矛") || text2.Contains("枪");
+	}
+
+	private bool CanUseMeetingEscortWeaponWithShield(ItemObject itemObject)
+	{
+		if (itemObject == null)
+		{
+			return false;
+		}
+		WeaponComponentData primaryWeapon = null;
+		try
+		{
+			primaryWeapon = itemObject.PrimaryWeapon;
+		}
+		catch
+		{
+			primaryWeapon = null;
+		}
+		if (primaryWeapon == null)
+		{
+			return false;
+		}
+		try
+		{
+			if (primaryWeapon.IsShield || itemObject.Type == ItemObject.ItemTypeEnum.Shield)
+			{
+				return false;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (itemObject.ItemFlags.HasAnyFlag(ItemFlags.HeldInOffHand))
+			{
+				return false;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (!primaryWeapon.IsOneHanded)
+			{
+				return false;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (primaryWeapon.WeaponFlags.HasAnyFlag(WeaponFlags.NotUsableWithOneHand))
+			{
+				return false;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			ItemObject.ItemUsageSetFlags itemUsageSetFlags = MBItem.GetItemUsageSetFlags(primaryWeapon.ItemUsage);
+			if (itemUsageSetFlags.HasAnyFlag(ItemObject.ItemUsageSetFlags.RequiresNoShield))
+			{
+				return false;
+			}
+		}
+		catch
+		{
+		}
+		return true;
+	}
+
+	private bool IsHorseArcherCharacter(CharacterObject character)
+	{
+		if (character == null)
+		{
+			return false;
+		}
+		try
+		{
+			return character.DefaultFormationClass == FormationClass.HorseArcher;
+		}
+		catch
+		{
+			return false;
+		}
 	}
 
 	private int GetAgentTier(Agent agent)
@@ -2709,21 +3792,10 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior
 	private List<(float fwdDist, float sideDist, bool faceBack)> BuildEscortSlots()
 	{
 		float item = 0.8f;
-		float item2 = 1.8f;
-		float item3 = -6.8f;
-		float item4 = -5.2f;
 		float num = 4.2f;
-		float num2 = 6.4f;
 		return new List<(float, float, bool)>
 		{
-			(item, num, false),
-			(item, 0f - num, false),
-			(item2, num2, false),
-			(item2, 0f - num2, false),
-			(item3, num, false),
-			(item3, 0f - num, false),
-			(item4, num2, false),
-			(item4, 0f - num2, false)
+			(item, num, false)
 		};
 	}
 
@@ -2810,23 +3882,73 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior
 			}
 			try
 			{
-				TrySheathWeapons(agent);
+				agent.SetTargetPosition(position.AsVec2);
 			}
 			catch
 			{
 			}
 			try
 			{
+				TrySheathWeapons(agent);
+			}
+			catch
+			{
+			}
+			bool flag = IsMeetingFormationManagedAgent(agent);
+			if (flag)
+			{
+				try
+				{
+					TryEquipMeetingEscortWeapons(agent);
+				}
+				catch
+				{
+				}
+			}
+			bool flag2 = false;
+			try
+			{
 				Agent mountAgent = agent.MountAgent;
 				if (mountAgent != null && mountAgent.IsActive())
 				{
+					flag2 = true;
+					mountAgent.TeleportToPosition(position);
 					mountAgent.LookDirection = lookDirection;
 					mountAgent.SetIsAIPaused(isPaused: true);
 					mountAgent.ClearTargetFrame();
+					mountAgent.SetTargetPosition(position.AsVec2);
+					if (flag)
+					{
+						TrySetAgentController(mountAgent, "None");
+					}
+					else
+					{
+						TryLockAgentToCurrentPosition(mountAgent, recaptureMeetingAnchor: true, preserveFacing: true);
+					}
 				}
 			}
 			catch
 			{
+			}
+			if (flag && flag2)
+			{
+				try
+				{
+					TrySetAgentController(agent, "None");
+				}
+				catch
+				{
+				}
+			}
+			else
+			{
+				try
+				{
+					TryLockAgentToCurrentPosition(agent, recaptureMeetingAnchor: true, preserveFacing: true);
+				}
+				catch
+				{
+				}
 			}
 		}
 	}

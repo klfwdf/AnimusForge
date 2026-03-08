@@ -1421,6 +1421,22 @@ public static class AIConfigHandler
 						value = runtimeMarriageInstruction;
 					}
 				}
+				if (hasAnyHero && string.Equals(text, "npc_major_actions", StringComparison.OrdinalIgnoreCase))
+				{
+					string text4 = MyBehavior.BuildNpcMajorActionsRuntimeInstructionForExternal(ResolveConversationTargetHero());
+					if (!string.IsNullOrWhiteSpace(text4))
+					{
+						value = text4;
+					}
+				}
+				if (hasAnyHero && string.Equals(text, "npc_recent_actions", StringComparison.OrdinalIgnoreCase))
+				{
+					string text5 = MyBehavior.BuildNpcRecentActionsRuntimeInstructionForExternal(ResolveConversationTargetHero());
+					if (!string.IsNullOrWhiteSpace(text5))
+					{
+						value = text5;
+					}
+				}
 				if (!string.IsNullOrWhiteSpace(text) && !string.IsNullOrWhiteSpace(value))
 				{
 					stringBuilder.AppendLine("【附加规则:" + text + "】");
@@ -1767,6 +1783,14 @@ public static class AIConfigHandler
 			{
 				Hero speaker = ResolveConversationTargetHero();
 				return RomanceSystemBehavior.Instance?.BuildMarriageRuntimeConstraintHint(speaker) ?? "";
+			}
+			if (text == "npc_major_actions")
+			{
+				return MyBehavior.BuildNpcActionsRuntimeConstraintHintForExternal(ResolveConversationTargetHero(), recentOnly: false);
+			}
+			if (text == "npc_recent_actions")
+			{
+				return MyBehavior.BuildNpcActionsRuntimeConstraintHintForExternal(ResolveConversationTargetHero(), recentOnly: true);
 			}
 			if (text != "kingdom_service")
 			{

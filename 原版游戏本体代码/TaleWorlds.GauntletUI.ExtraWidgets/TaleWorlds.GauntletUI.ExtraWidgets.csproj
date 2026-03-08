@@ -1,0 +1,90 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x64</Platform>
+    <ProjectGuid>{C2043D23-6315-4853-B0B0-819B88470E83}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>TaleWorlds.GauntletUI.ExtraWidgets</RootNamespace>
+    <AssemblyName>TaleWorlds.GauntletUI.ExtraWidgets</AssemblyName>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <TargetFrameworkIdentifier>.NETStandard</TargetFrameworkIdentifier>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
+    <PlatformTarget>x64</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <NoStdLib>true</NoStdLib>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
+    <PlatformTarget>x64</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <NoStdLib>true</NoStdLib>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="netstandard" />
+    <Reference Include="System.Numerics.Vectors" />
+    <Reference Include="TaleWorlds.TwoDimension">
+      <HintPath>..\..\bin\x64\Debug\TaleWorlds.TwoDimension.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <AppDesigner Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AnimatedNumberTextWidget.cs" />
+    <Compile Include="CustomWidgetManager.cs" />
+    <Compile Include="DelayedStateChanger.cs" />
+    <Compile Include="DialogButtonsParentWidget.cs" />
+    <Compile Include="DisabledAlphaChangerWidget.cs" />
+    <Compile Include="FillBar.cs" />
+    <Compile Include="FillBarHorizontalWidget.cs" />
+    <Compile Include="FillBarVerticalClipTierColorsWidget.cs" />
+    <Compile Include="FillBarVerticalClipWidget.cs" />
+    <Compile Include="FillBarVerticalWidget.cs" />
+    <Compile Include="FillBarWidget.cs" />
+    <Compile Include="Graph\GraphLinePointWidget.cs" />
+    <Compile Include="Graph\GraphLineWidget.cs" />
+    <Compile Include="Graph\GraphWidget.cs" />
+    <Compile Include="InputKeyVisualWidget.cs" />
+    <Compile Include="MouseWidget.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ScrollingRichTextWidget.cs" />
+    <Compile Include="ScrollingTextWidget.cs" />
+    <Compile Include="SiblingIndexVisibilityWidget.cs" />
+    <Compile Include="SmoothDecreaseIndicatorFillBar.cs" />
+    <Compile Include="StateSyncWidget.cs" />
+    <Compile Include="StringBasedVisibilityWidget.cs" />
+    <Compile Include="TooltipPositioningType.cs" />
+    <Compile Include="TooltipWidget.cs" />
+    <Compile Include="TwoWaySliderWidget.cs" />
+    <Compile Include="ValueBasedVisibilityWidget.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TaleWorlds.GauntletUI\TaleWorlds.GauntletUI.csproj">
+      <Project>{C2043D23-6315-4853-B0B0-819B88470E82}</Project>
+      <Name>TaleWorlds.GauntletUI</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TaleWorlds.InputSystem\TaleWorlds.InputSystem.csproj">
+      <Project>{C2043D23-6315-4853-B0B0-819B88470E85}</Project>
+      <Name>TaleWorlds.InputSystem</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TaleWorlds.Library\TaleWorlds.Library.csproj">
+      <Project>{C2043D23-6315-4853-B0B0-819B88470E86}</Project>
+      <Name>TaleWorlds.Library</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

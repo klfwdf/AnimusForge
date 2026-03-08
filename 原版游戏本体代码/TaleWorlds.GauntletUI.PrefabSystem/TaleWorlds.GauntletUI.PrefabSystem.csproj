@@ -1,0 +1,87 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x64</Platform>
+    <ProjectGuid>{C2043D23-6315-4853-B0B0-819B88470E84}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>TaleWorlds.GauntletUI.PrefabSystem</RootNamespace>
+    <AssemblyName>TaleWorlds.GauntletUI.PrefabSystem</AssemblyName>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <TargetFrameworkIdentifier>.NETStandard</TargetFrameworkIdentifier>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
+    <PlatformTarget>x64</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <NoStdLib>true</NoStdLib>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
+    <PlatformTarget>x64</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <NoStdLib>true</NoStdLib>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="netstandard" />
+    <Reference Include="TaleWorlds.TwoDimension">
+      <HintPath>..\..\bin\x64\Debug\TaleWorlds.TwoDimension.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <AppDesigner Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ConstantDefinition.cs" />
+    <Compile Include="ConstantDefinitionType.cs" />
+    <Compile Include="CreateGeneratedWidget.cs" />
+    <Compile Include="CustomWidgetType.cs" />
+    <Compile Include="GeneratedPrefabContext.cs" />
+    <Compile Include="GeneratedPrefabInstantiationResult.cs" />
+    <Compile Include="IGeneratedUIPrefabCreator.cs" />
+    <Compile Include="PrefabExtension.cs" />
+    <Compile Include="PrefabExtensionContext.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="VisualDefinitionTemplate.cs" />
+    <Compile Include="VisualStateTemplate.cs" />
+    <Compile Include="WidgetAttributeContext.cs" />
+    <Compile Include="WidgetAttributeKeyType.cs" />
+    <Compile Include="WidgetAttributeKeyTypeAttribute.cs" />
+    <Compile Include="WidgetAttributeKeyTypeId.cs" />
+    <Compile Include="WidgetAttributeKeyTypeParameter.cs" />
+    <Compile Include="WidgetAttributeTemplate.cs" />
+    <Compile Include="WidgetAttributeValueType.cs" />
+    <Compile Include="WidgetAttributeValueTypeConstant.cs" />
+    <Compile Include="WidgetAttributeValueTypeDefault.cs" />
+    <Compile Include="WidgetAttributeValueTypeParameter.cs" />
+    <Compile Include="WidgetCreationData.cs" />
+    <Compile Include="WidgetExtensions.cs" />
+    <Compile Include="WidgetFactory.cs" />
+    <Compile Include="WidgetInstantiationResult.cs" />
+    <Compile Include="WidgetInstantiationResultExtensionData.cs" />
+    <Compile Include="WidgetPrefab.cs" />
+    <Compile Include="WidgetTemplate.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TaleWorlds.GauntletUI\TaleWorlds.GauntletUI.csproj">
+      <Project>{C2043D23-6315-4853-B0B0-819B88470E82}</Project>
+      <Name>TaleWorlds.GauntletUI</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TaleWorlds.Library\TaleWorlds.Library.csproj">
+      <Project>{C2043D23-6315-4853-B0B0-819B88470E86}</Project>
+      <Name>TaleWorlds.Library</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

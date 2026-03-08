@@ -1,0 +1,169 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x64</Platform>
+    <ProjectGuid>{C2043D23-6315-4853-B0B0-819B88470E82}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>TaleWorlds.GauntletUI</RootNamespace>
+    <AssemblyName>TaleWorlds.GauntletUI</AssemblyName>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <TargetFrameworkIdentifier>.NETStandard</TargetFrameworkIdentifier>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
+    <PlatformTarget>x64</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <NoStdLib>true</NoStdLib>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
+    <PlatformTarget>x64</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <NoStdLib>true</NoStdLib>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="netstandard" />
+    <Reference Include="System.Numerics.Vectors" />
+    <Reference Include="TaleWorlds.TwoDimension">
+      <HintPath>..\..\bin\x64\Debug\TaleWorlds.TwoDimension.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <AppDesigner Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="EmptyGamepadNavigationContext.cs" />
+    <Compile Include="GauntletGamepadNavigationContext.cs" />
+    <Compile Include="IGamepadNavigationContext.cs" />
+    <Compile Include="Microsoft\CodeAnalysis\EmbeddedAttribute.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="System\Runtime\CompilerServices\IsReadOnlyAttribute.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\AlignmentAxis.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\AnimatedDropdownWidget.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\AnimationInterpolation.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\AudioProperty.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\BaseTypes\BasicContainer.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\BaseTypes\BrushWidget.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\BaseTypes\ButtonType.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\BaseTypes\ButtonWidget.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\BaseTypes\Container.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\BaseTypes\DragCarrierWidget.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\BaseTypes\DropdownWidget.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\BaseTypes\EditableTextWidget.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\BaseTypes\FloatInputTextWidget.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\BaseTypes\GridWidget.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\BaseTypes\ImageWidget.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\BaseTypes\IntegerInputPercentageTextWidget.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\BaseTypes\IntegerInputTextWidget.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\BaseTypes\ListPanel.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\BaseTypes\MaskedTextureWidget.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\BaseTypes\OnActiveTabChangeEvent.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\BaseTypes\OnlineImageTextureWidget.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\BaseTypes\RichTextWidget.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\BaseTypes\ScrollablePanel.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\BaseTypes\ScrollablePanelFixedHeaderWidget.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\BaseTypes\ScrollbarWidget.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\BaseTypes\SelectedStateBrushWidget.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\BaseTypes\SliderWidget.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\BaseTypes\SpriteFromTexture.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\BaseTypes\TabControl.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\BaseTypes\TabToggleWidget.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\BaseTypes\TextureWidget.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\BaseTypes\TextWidget.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\BaseTypes\Widget.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\BaseTypes\WidgetSearchDelegate.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\Brush.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\BrushAnimation.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\BrushAnimationKeyFrame.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\BrushAnimationProperty.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\BrushFactory.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\BrushLayer.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\BrushLayerAnimation.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\BrushLayerSizePolicy.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\BrushLayerState.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\BrushListPanel.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\BrushOverlayMethod.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\BrushRenderer.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\BrushState.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\CircleActionSelectorWidget.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\CircleItemPlacerWidget.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\ContainerItemDescription.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\EditorAttribute.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\EmptyWidget.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\EventManager.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\FontFactory.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\GamepadNavigation\GamepadNavigationForcedScopeCollection.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\GamepadNavigation\GamepadNavigationHelper.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\GamepadNavigation\GamepadNavigationScope.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\GamepadNavigation\GamepadNavigationScopeCollection.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\GamepadNavigation\GamepadNavigationTypes.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\GamepadNavigation\GauntletGamepadNavigationManager.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\GauntletEvent.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\GauntletExtensions.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\GauntletInput\GauntletInputContext.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\GauntletInput\IReadonlyInputContext.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\GuiEventResult.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\GuiEventType.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\HorizontalAlignment.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\IBrushAnimationState.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\IBrushLayerData.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\IDataSource.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\IDropContainer.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\ImageFit.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\ImageFitResult.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\Language.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\Layout\DefaultLayout.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\Layout\DragCarrierLayout.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\Layout\GridDirection.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\Layout\GridHorizontalLayoutMethod.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\Layout\GridLayout.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\Layout\GridVerticalLayoutMethod.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\Layout\ILayout.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\Layout\LayoutBox.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\Layout\LayoutMethod.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\Layout\StackLayout.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\Layout\TextLayout.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\PropertyOwnerObject.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\ResourceTextureProvider.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\SizePolicy.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\SoundProperties.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\Style.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\StyleAnimationMode.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\StyleLayer.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\TextureProvider.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\TextureProviderFactory.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\UIContext.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\UpdateAction.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\VerticalAlignment.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\VisualDefinition.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\VisualState.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\VisualStateAnimationState.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\WidgetComponent.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\WidgetContainer.cs" />
+    <Compile Include="TaleWorlds\GauntletUI\WidgetInfo.cs" />
+    <Compile Include="TaleWorlds\MountAndBlade\GauntletUI\Widgets\DimensionSyncWidget.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TaleWorlds.InputSystem\TaleWorlds.InputSystem.csproj">
+      <Project>{C2043D23-6315-4853-B0B0-819B88470E85}</Project>
+      <Name>TaleWorlds.InputSystem</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TaleWorlds.Library\TaleWorlds.Library.csproj">
+      <Project>{C2043D23-6315-4853-B0B0-819B88470E86}</Project>
+      <Name>TaleWorlds.Library</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

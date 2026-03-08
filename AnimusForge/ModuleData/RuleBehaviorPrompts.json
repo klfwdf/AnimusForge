@@ -180,6 +180,72 @@
                                                     "娶你",
                                                     "嫁给我"
                                                 ]
+                        },
+                        {
+                            "Id":  "npc_major_actions",
+                            "IsEnabled":  true,
+                            "Group":  "memory",
+                            "Priority":  76,
+                            "NonHeroInstruction":  "你没有可确认的重大军旅履历；只按系统记录答，没有记录就直说，不得编造。",
+                            "Instruction":  "【NPC重大行动】玩家问军团履历、围城经历、重大战事、战功时，只能依据系统记录回答；不得编造或篡改日期、地点、身份、胜负。可加态度，不可改事实。",
+                            "RuntimeInstructionTemplates":  {
+                                                                "has_data":  "【NPC重大行动】\n{majorActionSummary}",
+                                                                "no_data":  "【NPC重大行动】无记录；不得编造。"
+                                                            },
+                            "RuntimeConstraintTemplates":  {
+                                                               "no_data":  "【运行时硬约束】当前没有任何可确认的【NPC重大行动】记录。本轮禁止编造大战经历、围城经历、军团履历或重大战功。"
+                                                           },
+                            "TriggerKeywords":  [
+                                                    "军团经历",
+                                                    "军团履历",
+                                                    "带过哪些军团",
+                                                    "参加过哪些军团",
+                                                    "重大行动",
+                                                    "大战经历",
+                                                    "打过哪些大战",
+                                                    "重要战事",
+                                                    "围城经历",
+                                                    "参加过哪些围城",
+                                                    "攻过哪些城",
+                                                    "守过哪些城",
+                                                    "战功",
+                                                    "功绩",
+                                                    "征战经历",
+                                                    "过去打过什么大仗"
+                                                ]
+                        },
+                        {
+                            "Id":  "npc_recent_actions",
+                            "IsEnabled":  true,
+                            "Group":  "memory",
+                            "Priority":  75,
+                            "NonHeroInstruction":  "你近期做过什么只按系统记录答；没有记录就直说，不得编造。",
+                            "Instruction":  "【NPC近期行动】玩家问近况、最近去了哪、最近做了什么、最近参与了什么行动时，只能依据最近21天内的系统记录回答；不得把更早的事说成最近。可加态度，不可改事实。",
+                            "RuntimeInstructionTemplates":  {
+                                                                "has_data":  "【NPC近期行动】\n{recentActionSummary}",
+                                                                "no_data":  "【NPC近期行动】近21天无记录；不得编造。"
+                                                            },
+                            "RuntimeConstraintTemplates":  {
+                                                               "no_data":  "【运行时硬约束】当前没有最近21天内的【NPC近期行动】记录。本轮禁止编造最近去过哪里、最近参加过什么行动、最近在何处巡逻或最近打过谁。"
+                                                           },
+                            "TriggerKeywords":  [
+                                                    "最近在做什么",
+                                                    "最近忙什么",
+                                                    "最近去了哪",
+                                                    "最近在哪活动",
+                                                    "最近在干嘛",
+                                                    "近况",
+                                                    "最近行踪",
+                                                    "最近动向",
+                                                    "最近参加了什么行动",
+                                                    "最近在巡逻吗",
+                                                    "最近巡逻哪里",
+                                                    "最近打了谁",
+                                                    "最近和谁交战",
+                                                    "最近围了哪座城",
+                                                    "最近加入了哪个军团",
+                                                    "这阵子在做什么"
+                                                ]
                         }
                     ],
     "DuelStake":  {

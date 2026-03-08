@@ -1,0 +1,26 @@
+﻿using System;
+using TaleWorlds.CampaignSystem.MapEvents;
+using TaleWorlds.Library;
+using TaleWorlds.SaveSystem.Resolvers;
+
+namespace TaleWorlds.CampaignSystem.SaveCompability
+{
+	// Token: 0x020000CD RID: 205
+	public class BattleTypeEnumResolver : IEnumResolver
+	{
+		// Token: 0x0600144B RID: 5195 RVA: 0x0005E1F4 File Offset: 0x0005C3F4
+		public string ResolveObject(string originalObject)
+		{
+			if (string.IsNullOrEmpty(originalObject))
+			{
+				Debug.FailedAssert("EndCaptivityDetail data is null or empty", "C:\\BuildAgent\\work\\mb3\\Source\\Bannerlord\\TaleWorlds.CampaignSystem\\SaveCompability\\BattleTypeEnumResolver.cs", "ResolveObject", 16);
+				return MapEvent.BattleTypes.None.ToString();
+			}
+			if (originalObject.Equals("AlleyFight"))
+			{
+				return MapEvent.BattleTypes.None.ToString();
+			}
+			return originalObject;
+		}
+	}
+}

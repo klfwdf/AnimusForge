@@ -1,0 +1,432 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x64</Platform>
+    <ProjectGuid>{C2043D23-6315-4853-B0B0-819B88470E73}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>TaleWorlds.CampaignSystem.ViewModelCollection</RootNamespace>
+    <AssemblyName>TaleWorlds.CampaignSystem.ViewModelCollection</AssemblyName>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <TargetFrameworkIdentifier>.NETStandard</TargetFrameworkIdentifier>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
+    <PlatformTarget>x64</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <NoStdLib>true</NoStdLib>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
+    <PlatformTarget>x64</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <NoStdLib>true</NoStdLib>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="netstandard" />
+    <Reference Include="TaleWorlds.Localization">
+      <HintPath>..\..\bin\x64\Debug\TaleWorlds.Localization.dll</HintPath>
+    </Reference>
+    <Reference Include="TaleWorlds.ModuleManager">
+      <HintPath>..\..\bin\x64\Debug\TaleWorlds.ModuleManager.dll</HintPath>
+    </Reference>
+    <Reference Include="TaleWorlds.ObjectSystem">
+      <HintPath>..\..\bin\x64\Debug\TaleWorlds.ObjectSystem.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <AppDesigner Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Microsoft\CodeAnalysis\EmbeddedAttribute.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="System\Runtime\CompilerServices\IsReadOnlyAttribute.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\MapNavigationExtensions.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\MapNavigationItemType.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\ActionCampaignOptionData.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\ArmyManagement\ArmyCohesionBoostedByPlayerEvent.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\ArmyManagement\ArmyManagementBoostEventVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\ArmyManagement\ArmyManagementItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\ArmyManagement\ArmyManagementSortControllerVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\ArmyManagement\ArmyManagementVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\ArmyManagement\PartyAddedToArmyByPlayerEvent.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\BannerEditorVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Barter\BarterItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Barter\BarterVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\BooleanCampaignOptionData.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\CampaignOptionData.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\CampaignOptionDataType.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\CampaignOptionDisableStatus.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\CampaignOptionEnableState.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\CampaignOptionItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\CampaignOptionsControllerVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\CampaignOptionsDifficultyPresets.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\CampaignOptionSelectorVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\CampaignOptionsManager.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\CampaignOptionsVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\CampaignUIHelper.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\CharacterCreation\CharacterCreationClanNamingStageVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\CharacterCreation\CharacterCreationCultureFeatVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\CharacterCreation\CharacterCreationCultureStageVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\CharacterCreation\CharacterCreationCultureVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\CharacterCreation\CharacterCreationGainedAttributeItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\CharacterCreation\CharacterCreationGainedPropertiesVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\CharacterCreation\CharacterCreationGainedSkillItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\CharacterCreation\CharacterCreationGainGroupItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\CharacterCreation\CharacterCreationNarrativeStageVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\CharacterCreation\CharacterCreationOptionVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\CharacterCreation\CharacterCreationReviewStageItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\CharacterCreation\CharacterCreationReviewStageVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\CharacterCreation\CharacterCreationStageBaseVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\CharacterCreation\OptionsStage\CharacterCreationOptionsStageVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\CharacterDeveloper\AttributeBoundSkillItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\CharacterDeveloper\CharacterAttributeItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\CharacterDeveloper\CharacterDeveloperHeroItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\CharacterDeveloper\CharacterDeveloperVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\CharacterDeveloper\FocusAddedByPlayerEvent.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\CharacterDeveloper\PerkSelection\PerkSelectedByPlayerEvent.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\CharacterDeveloper\PerkSelection\PerkSelectionItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\CharacterDeveloper\PerkSelection\PerkSelectionToggleEvent.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\CharacterDeveloper\PerkSelection\PerkSelectionVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\CharacterDeveloper\PerkVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\CharacterDeveloper\SkillVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\ClanManagement\CardSelectionItemSpriteType.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\ClanManagement\Categories\ClanFiefsSortControllerVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\ClanManagement\Categories\ClanFiefsVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\ClanManagement\Categories\ClanIncomeSortControllerVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\ClanManagement\Categories\ClanIncomeVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\ClanManagement\Categories\ClanMembersSortControllerVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\ClanManagement\Categories\ClanMembersVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\ClanManagement\Categories\ClanPartiesSortControllerVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\ClanManagement\Categories\ClanPartiesVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\ClanManagement\ClanCardSelectionInfo.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\ClanManagement\ClanCardSelectionItemInfo.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\ClanManagement\ClanCardSelectionItemPropertyInfo.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\ClanManagement\ClanCardSelectionPopupItemPropertyVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\ClanManagement\ClanCardSelectionPopupItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\ClanManagement\ClanCardSelectionPopupVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\ClanManagement\ClanFinanceExpenseItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\ClanManagement\ClanFinanceIncomeItemBaseVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\ClanManagement\ClanFinance\ClanFinanceAlleyItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\ClanManagement\ClanFinance\ClanFinanceCommonAreaItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\ClanManagement\ClanFinance\ClanFinanceMercenaryItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\ClanManagement\ClanFinance\ClanFinanceTownItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\ClanManagement\ClanFinance\ClanFinanceWorkshopItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\ClanManagement\ClanFinance\WorkshopPercentageSelectorItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\ClanManagement\ClanLordItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\ClanManagement\ClanLordStatusItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\ClanManagement\ClanManagementVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\ClanManagement\ClanPartyBehaviorSelectorVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\ClanManagement\ClanPartyItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\ClanManagement\ClanPartyMemberItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\ClanManagement\ClanRoleAssignedThroughClanScreenEvent.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\ClanManagement\ClanRoleItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\ClanManagement\ClanRoleMemberItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\ClanManagement\ClanSettlementItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\ClanManagement\IncomeTypes.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\ClanManagement\Supporters\ClanSupporterGroupVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\ClanManagement\Supporters\ClanSupporterItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\ClanManagement\TaxType.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Conversation\ConversationAggressivePartyItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Conversation\ConversationItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Conversation\MissionConversationVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Conversation\PersuasionOptionVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Conversation\PersuasionVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\DefaultCampaignOptionsProvider.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Education\EducationGainedAttributeItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Education\EducationGainedPropertiesVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Education\EducationGainedSkillItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Education\EducationGainGroupItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Education\EducationOptionVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Education\EducationReviewItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Education\EducationReviewVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Education\EducationVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Encyclopedia\EncyclopediaHomeVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Encyclopedia\EncyclopediaLinkVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Encyclopedia\EncyclopediaNavigatorVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Encyclopedia\EncyclopediaPageChangedEvent.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Encyclopedia\EncyclopediaPages.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Encyclopedia\EncyclopediaSearchResultVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Encyclopedia\EncyclopediaSettlementPageStatItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Encyclopedia\Items\EncyclopediaDwellingVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Encyclopedia\Items\EncyclopediaFactionVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Encyclopedia\Items\EncyclopediaFamilyMemberVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Encyclopedia\Items\EncyclopediaHistoryEventVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Encyclopedia\Items\EncyclopediaSettlementVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Encyclopedia\Items\EncyclopediaShipSlotVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Encyclopedia\Items\EncyclopediaShipStatVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Encyclopedia\Items\EncyclopediaSkillVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Encyclopedia\Items\EncyclopediaTraitItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Encyclopedia\Items\EncyclopediaTroopTreeNodeVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Encyclopedia\Items\EncyclopediaUnitEquipmentSetSelectorItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Encyclopedia\Items\EncyclopediaUnitVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Encyclopedia\List\EncyclopediaFilterGroupVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Encyclopedia\List\EncyclopediaListFilterVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Encyclopedia\List\EncyclopediaListItemComparer.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Encyclopedia\List\EncyclopediaListItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Encyclopedia\List\EncyclopediaListSelectorItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Encyclopedia\List\EncyclopediaListSelectorVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Encyclopedia\List\EncyclopediaListSortControllerVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Encyclopedia\List\EncyclopediaListVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Encyclopedia\List\ListTypeVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Encyclopedia\OnEncyclopediaFilterActivatedEvent.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Encyclopedia\OnEncyclopediaListSortedEvent.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Encyclopedia\OnEncyclopediaSearchActivatedEvent.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Encyclopedia\Pages\EncyclopediaClanPageVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Encyclopedia\Pages\EncyclopediaConceptPageVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Encyclopedia\Pages\EncyclopediaContentPageVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Encyclopedia\Pages\EncyclopediaFactionPageVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Encyclopedia\Pages\EncyclopediaHeroPageVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Encyclopedia\Pages\EncyclopediaPageArgs.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Encyclopedia\Pages\EncyclopediaPageVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Encyclopedia\Pages\EncyclopediaSettlementPageVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Encyclopedia\Pages\EncyclopediaShipPageVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Encyclopedia\Pages\EncyclopediaUnitPageVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Encyclopedia\Pages\EncyclopediaViewModel.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Encyclopedia\Pages\HeroAgeComparer.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Encyclopedia\Pages\HeroRelationComparer.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Encyclopedia\PlayerToggleTrackSettlementFromEncyclopediaEvent.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\GameMenu\Events\CrimeValueInspectedInSettlementOverlayEvent.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\GameMenu\Events\PartyScreenCharacterTalkPermissionEvent.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\GameMenu\Events\SettlementOverlayLeaveCharacterPermissionEvent.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\GameMenu\Events\SettlementOverlayTalkPermissionEvent.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\GameMenu\Events\SettlementOverylayQuickTalkPermissionEvent.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\GameMenu\GameMenuItemProgressVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\GameMenu\GameMenuItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\GameMenu\GameMenuPlunderItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\GameMenu\GameMenuVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\GameMenu\Overlay\ArmyMenuOverlayVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\GameMenu\Overlay\EncounterMenuOverlayVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\GameMenu\Overlay\GameMenuOverlay.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\GameMenu\Overlay\GameMenuOverlayActionVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\GameMenu\Overlay\GameMenuOverlayFactory.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\GameMenu\Overlay\GameMenuPartyItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\GameMenu\Overlay\IGameMenuOverlayProvider.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\GameMenu\Overlay\MenuOverlay.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\GameMenu\Overlay\OverlayType.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\GameMenu\Overlay\SettlementMenuOverlayVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\GameMenu\Recruitment\RecruitmentVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\GameMenu\Recruitment\RecruitVolunteerOwnerVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\GameMenu\Recruitment\RecruitVolunteerTroopVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\GameMenu\Recruitment\RecruitVolunteerVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\GameMenu\TournamentLeaderboard\TournamentLeaderboardEntryItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\GameMenu\TournamentLeaderboard\TournamentLeaderboardSortControllerVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\GameMenu\TournamentLeaderboard\TournamentLeaderboardVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\GameMenu\TownManagement\SettlementBuildingProjectVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\GameMenu\TownManagement\SettlementDailyProjectVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\GameMenu\TownManagement\SettlementGovernorSelectionItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\GameMenu\TownManagement\SettlementGovernorSelectionVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\GameMenu\TownManagement\SettlementProjectSelectionVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\GameMenu\TownManagement\SettlementProjectVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\GameMenu\TownManagement\TownManagementDescriptionItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\GameMenu\TownManagement\TownManagementReserveControlVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\GameMenu\TownManagement\TownManagementShopItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\GameMenu\TownManagement\TownManagementVillageItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\GameMenu\TownManagement\TownManagementVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\GameMenu\TroopSelection\GameMenuTroopSelectionVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\GameMenu\TroopSelection\TroopItemComparer.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\GameMenu\TroopSelection\TroopSelectionItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\HeroViewModel.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\HeroVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\ICampaignOptionData.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\ICampaignOptionProvider.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Input\InputKeyItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Inventory\InventoryCharacterSelectorItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Inventory\InventoryEquipmentTypeChangedEvent.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Inventory\InventoryFilterChangedEvent.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Inventory\InventoryItemInspectedEvent.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Inventory\InventoryTradeVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Inventory\ItemFlagVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Inventory\ItemMenuTooltipPropertyVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Inventory\ItemMenuVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Inventory\ItemPreviewVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Inventory\SPInventorySortControllerVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Inventory\SPInventoryVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Inventory\SPItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\KingdomManagement\Armies\KingdomArmyItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\KingdomManagement\Armies\KingdomArmyPartyItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\KingdomManagement\Armies\KingdomArmySortControllerVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\KingdomManagement\Armies\KingdomArmyVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\KingdomManagement\Armies\KingdomSettlementVillageItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\KingdomManagement\Clans\KingdomClanFiefItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\KingdomManagement\Clans\KingdomClanItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\KingdomManagement\Clans\KingdomClanSortControllerVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\KingdomManagement\Clans\KingdomClanVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\KingdomManagement\Decisions\DecisionOptionVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\KingdomManagement\Decisions\DecisionSupporterVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\KingdomManagement\Decisions\ItemTypes\AcceptingCallToWarAgreementDecisionItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\KingdomManagement\Decisions\ItemTypes\DecisionItemBaseVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\KingdomManagement\Decisions\ItemTypes\DeclareWarDecisionItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\KingdomManagement\Decisions\ItemTypes\ExpelClanDecisionItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\KingdomManagement\Decisions\ItemTypes\KingdomPolicyDecisionItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\KingdomManagement\Decisions\ItemTypes\KingSelectionDecisionItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\KingdomManagement\Decisions\ItemTypes\MakePeaceDecisionItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\KingdomManagement\Decisions\ItemTypes\PolicyDecisionItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\KingdomManagement\Decisions\ItemTypes\ProposeCallToWarAgreementDecisionItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\KingdomManagement\Decisions\ItemTypes\SettlementDecisionItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\KingdomManagement\Decisions\ItemTypes\StartAllianceDecisionItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\KingdomManagement\Decisions\ItemTypes\TradeAgreementDecisionItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\KingdomManagement\Decisions\KingdomDecisionsVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\KingdomManagement\Decisions\PlayerSelectedAKingdomDecisionOptionEvent.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\KingdomManagement\Diplomacy\KingdomDiplomacyFactionItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\KingdomManagement\Diplomacy\KingdomDiplomacyItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\KingdomManagement\Diplomacy\KingdomDiplomacyProposalActionItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\KingdomManagement\Diplomacy\KingdomDiplomacyVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\KingdomManagement\Diplomacy\KingdomTruceItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\KingdomManagement\Diplomacy\KingdomWarComparableStatVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\KingdomManagement\Diplomacy\KingdomWarItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\KingdomManagement\Diplomacy\KingdomWarLogItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\KingdomManagement\Diplomacy\KingdomWarSortControllerVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\KingdomManagement\KingdomCategoryVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\KingdomManagement\KingdomGiftFiefPopupVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\KingdomManagement\KingdomItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\KingdomManagement\KingdomManagementVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\KingdomManagement\LeaveKingdomPermissionEvent.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\KingdomManagement\Policies\KingdomPoliciesVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\KingdomManagement\Policies\KingdomPolicyItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\KingdomManagement\Settlements\KingdomSettlementItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\KingdomManagement\Settlements\KingdomSettlementSortControllerVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\KingdomManagement\Settlements\KingdomSettlementVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Map\HeirSelectionPopup\HeirSelectionPopupHeroVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Map\HeirSelectionPopup\HeirSelectionPopupVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Map\MapBar\MapBarShortcuts.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Map\MapBar\MapBarVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Map\MapBar\MapInfoItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Map\MapBar\MapInfoVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Map\MapBar\MapNavigationItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Map\MapBar\MapNavigationVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Map\MapBar\MapTimeControlVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Map\MapConversation\MapConversationVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Map\MapNotificationTypes\AcceptCallToWarOfferNotificationItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Map\MapNotificationTypes\AlleyLeaderDiedMapNotificationItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Map\MapNotificationTypes\AlleyUnderAttackMapNotificationItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Map\MapNotificationTypes\AllianceOfferNotificationItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Map\MapNotificationTypes\ArmyCreationNotificationItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Map\MapNotificationTypes\ArmyDispersionItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Map\MapNotificationTypes\DeathNotificationItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Map\MapNotificationTypes\EducationNotificationItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Map\MapNotificationTypes\HeirComeOfAgeNotificationItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Map\MapNotificationTypes\KingdomDestroyedNotificationItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Map\MapNotificationTypes\KingdomVoteNotificationItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Map\MapNotificationTypes\MapNotificationItemBaseVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Map\MapNotificationTypes\MarriageNotificationItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Map\MapNotificationTypes\MarriageOfferNotificationItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Map\MapNotificationTypes\MercenaryOfferMapNotificationItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Map\MapNotificationTypes\NewBornNotificationItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Map\MapNotificationTypes\PartyLeaderChangeNotificationVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Map\MapNotificationTypes\PeaceNotificationItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Map\MapNotificationTypes\PeaceOfferNotificationItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Map\MapNotificationTypes\ProposeCallToWarOfferNotificationItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Map\MapNotificationTypes\QuestNotificationItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Map\MapNotificationTypes\RansomNotificationItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Map\MapNotificationTypes\RebellionNotificationItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Map\MapNotificationTypes\SettlementOwnerChangedNotificationItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Map\MapNotificationTypes\SettlementUnderSiegeMapNotificationItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Map\MapNotificationTypes\TraitChangedNotificationItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Map\MapNotificationTypes\TributeFinishedMapNotificationVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Map\MapNotificationTypes\VassalOfferMapNotificationItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Map\MapNotificationTypes\WarNotificationItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Map\MapNotificationVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Map\MarriageOfferPopup\MarriageOfferPopupHeroAttributeVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Map\MarriageOfferPopup\MarriageOfferPopupHeroVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Map\MarriageOfferPopup\MarriageOfferPopupVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Map\Parley\MapParleyAnimationVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\NumericCampaignOptionData.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Party\PartyCharacterVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Party\PartyCompositionVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Party\PartySortControllerVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Party\PartyTradeVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Party\PartyTroopManagerPopUp\PartyRecruitTroopVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Party\PartyTroopManagerPopUp\PartyTroopManagerItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Party\PartyTroopManagerPopUp\PartyTroopManagerVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Party\PartyTroopManagerPopUp\PartyUpgradeTroopVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Party\PartyVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Party\PlayerMoveTroopEvent.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Party\PlayerRequestUpgradeTroopEvent.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Party\PlayerToggledUpgradePopupEvent.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Party\TroopSortSelectorItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Party\UpgradeRequirementsVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Party\UpgradeTargetVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\PlayerInspectedPartySpeedEvent.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\ProfitItemPropertyVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Quests\QuestItemSortControllerVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Quests\QuestItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Quests\QuestMarkerVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Quests\QuestStageTaskVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Quests\QuestStageVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Quests\QuestsVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\SelectableFiefItemPropertyVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\SelectableItemPropertyVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\SelectionCampaignOptionData.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\TooltipRefresherCollection.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\UIColors.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\WeaponCrafting\CraftingAvailableHeroItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\WeaponCrafting\CraftingHeroPopupVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\WeaponCrafting\CraftingListPropertyItem.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\WeaponCrafting\CraftingPerkVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\WeaponCrafting\CraftingResourceItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\WeaponCrafting\CraftingSecondaryUsageItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\WeaponCrafting\CraftingVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\WeaponCrafting\Refinement\RefinementActionItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\WeaponCrafting\Refinement\RefinementVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\WeaponCrafting\Smelting\SmeltingItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\WeaponCrafting\Smelting\SmeltingSortControllerVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\WeaponCrafting\Smelting\SmeltingVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\WeaponCrafting\WeaponDesign\CraftingHistoryVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\WeaponCrafting\WeaponDesign\CraftingItemFlagVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\WeaponCrafting\WeaponDesign\CraftingOrderSelectionOpenedEvent.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\WeaponCrafting\WeaponDesign\CraftingOrderTabOpenedEvent.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\WeaponCrafting\WeaponDesign\CraftingPieceListVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\WeaponCrafting\WeaponDesign\CraftingPieceVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\WeaponCrafting\WeaponDesign\CraftingWeaponClassSelectionOpenedEvent.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\WeaponCrafting\WeaponDesign\CraftingWeaponResultPopupToggledEvent.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\WeaponCrafting\WeaponDesign\Order\CraftingOrderItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\WeaponCrafting\WeaponDesign\Order\CraftingOrderPopupVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\WeaponCrafting\WeaponDesign\TierFilterTypeVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\WeaponCrafting\WeaponDesign\WeaponAttributeVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\WeaponCrafting\WeaponDesign\WeaponClassSelectionPopupVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\WeaponCrafting\WeaponDesign\WeaponClassVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\WeaponCrafting\WeaponDesign\WeaponDesignResultPopupVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\WeaponCrafting\WeaponDesign\WeaponDesignResultPropertyItemVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\WeaponCrafting\WeaponDesign\WeaponDesignSelectorVM.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\WeaponCrafting\WeaponDesign\WeaponDesignVM.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TaleWorlds.CampaignSystem\TaleWorlds.CampaignSystem.csproj">
+      <Project>{C2043D23-6315-4853-B0B0-819B88470E72}</Project>
+      <Name>TaleWorlds.CampaignSystem</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TaleWorlds.Core.ViewModelCollection\TaleWorlds.Core.ViewModelCollection.csproj">
+      <Project>{C2043D23-6315-4853-B0B0-819B88470E75}</Project>
+      <Name>TaleWorlds.Core.ViewModelCollection</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TaleWorlds.Core\TaleWorlds.Core.csproj">
+      <Project>{C2043D23-6315-4853-B0B0-819B88470E74}</Project>
+      <Name>TaleWorlds.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TaleWorlds.InputSystem\TaleWorlds.InputSystem.csproj">
+      <Project>{C2043D23-6315-4853-B0B0-819B88470E85}</Project>
+      <Name>TaleWorlds.InputSystem</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TaleWorlds.Library\TaleWorlds.Library.csproj">
+      <Project>{C2043D23-6315-4853-B0B0-819B88470E86}</Project>
+      <Name>TaleWorlds.Library</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TaleWorlds.LinQuick\TaleWorlds.LinQuick.csproj">
+      <Project>{C2043D23-6315-4853-B0B0-819B88470E87}</Project>
+      <Name>TaleWorlds.LinQuick</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

@@ -88,6 +88,8 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 
 	private static PartyBase _pendingForceNativeDefeatCaptivityParty;
 
+	private static bool _pendingForceNativeDefeatCaptivityPlayerWasAttacker = true;
+
 	private static bool _pendingForceNativeEncounterBattleMenu;
 
 	private static float _pendingForceNativeEncounterBattleMenuAtTime;
@@ -107,6 +109,8 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 	private static Hero _pendingMeetingBattleVictorySettlementEncounterLeader;
 
 	private static MethodInfo _playerEncounterDoPlayerDefeatMethod;
+
+	private static PropertyInfo _playerEncounterStateProperty;
 
 	private static Type _mapCameraViewType;
 
@@ -249,10 +253,12 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		{
 			ClearPendingMeetingBattleVictorySettlement("mission_result_defeat");
 			MarkPendingForceNativeDefeatCaptivityMenu("meeting_battle_mission_result_defeat");
+			TryResolvePendingDefeatCaptivityImmediately("mission_ended_player_defeated");
 		}
 		else if (flag2 && flag4)
 		{
 			MarkPendingMeetingBattleVictorySettlement("meeting_battle_mission_result_victory");
+			TryResolvePendingMeetingBattleVictorySettlementImmediately("mission_ended_player_victory");
 		}
 		else if (flag11)
 		{
@@ -468,6 +474,14 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		}
 		try
 		{
+			_pendingForceNativeDefeatCaptivityPlayerWasAttacker = PlayerEncounter.Current == null || PlayerEncounter.PlayerIsAttacker;
+		}
+		catch
+		{
+			_pendingForceNativeDefeatCaptivityPlayerWasAttacker = true;
+		}
+		try
+		{
 			SuspendEncounterRedirectDuringResultResolution(reason);
 		}
 		catch
@@ -510,6 +524,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		_pendingForceNativeDefeatCaptivityLastAttemptTime = -1f;
 		_pendingForceNativeDefeatCaptivityHero = null;
 		_pendingForceNativeDefeatCaptivityParty = null;
+		_pendingForceNativeDefeatCaptivityPlayerWasAttacker = true;
 		Logger.Log("LordEncounter", "Cleared pending native defeat captivity marker. Reason=" + (reason ?? "N/A"));
 	}
 
@@ -766,6 +781,10 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			{
 				SetTarget(hero);
 			}
+			if (TryResolvePendingMeetingBattleVictorySettlementImmediately("campaign_tick_pending_meeting_victory"))
+			{
+				return;
+			}
 			GameMenu.ActivateGameMenu("AnimusForge_lord_encounter");
 			string text2 = null;
 			try
@@ -967,22 +986,31 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		{
 			text = null;
 		}
-		if (text == "defeated_and_taken_prisoner" || text == "taken_prisoner")
-		{
-			ClearPendingForceNativeDefeatCaptivityMenu("already_in_native_captivity_menu");
-			return;
-		}
 		bool flag = false;
 		try
 		{
-			object obj3 = Game.Current?.GameStateManager?.ActiveState;
-			flag = obj3 != null && obj3.GetType().Name == "MapState";
+			flag = Hero.MainHero != null && Hero.MainHero.IsPrisoner;
 		}
 		catch
 		{
 			flag = false;
 		}
-		if (!flag)
+		if ((text == "defeated_and_taken_prisoner" || text == "taken_prisoner") && flag)
+		{
+			ClearPendingForceNativeDefeatCaptivityMenu("already_in_native_captivity_menu");
+			return;
+		}
+		bool flag2 = false;
+		try
+		{
+			object obj3 = Game.Current?.GameStateManager?.ActiveState;
+			flag2 = obj3 != null && obj3.GetType().Name == "MapState";
+		}
+		catch
+		{
+			flag2 = false;
+		}
+		if (!flag2)
 		{
 			return;
 		}
@@ -999,7 +1027,12 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		{
 			_pendingForceNativeDefeatCaptivityLastAttemptTime = 0f;
 		}
-		bool flag2 = false;
+		if (TryAdvancePendingDefeatCaptivityThroughNativeEncounter())
+		{
+			ClearPendingForceNativeDefeatCaptivityMenu("advanced_native_defeat_encounter_flow");
+			return;
+		}
+		bool flag3 = false;
 		if (TryInvokeNativeDoPlayerDefeat())
 		{
 			try
@@ -1013,7 +1046,16 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 				{
 					text2 = null;
 				}
-				if (text2 == "defeated_and_taken_prisoner" || text2 == "taken_prisoner")
+				bool flag4 = false;
+				try
+				{
+					flag4 = Hero.MainHero != null && Hero.MainHero.IsPrisoner;
+				}
+				catch
+				{
+					flag4 = false;
+				}
+				if ((text2 == "defeated_and_taken_prisoner" || text2 == "taken_prisoner") && flag4)
 				{
 					ClearPendingForceNativeDefeatCaptivityMenu("native_do_player_defeat_opened_menu");
 					return;
@@ -1026,74 +1068,13 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		}
 		try
 		{
-			PartyBase partyBase = null;
-			try
-			{
-				partyBase = _pendingForceNativeDefeatCaptivityParty;
-			}
-			catch
-			{
-				partyBase = null;
-			}
-			if (partyBase == null)
-			{
-				try
-				{
-					partyBase = _pendingForceNativeDefeatCaptivityHero?.PartyBelongedTo?.Party;
-				}
-				catch
-				{
-					partyBase = null;
-				}
-			}
-			if (partyBase == null)
-			{
-				try
-				{
-					partyBase = PlayerEncounter.EncounteredParty;
-				}
-				catch
-				{
-					partyBase = null;
-				}
-			}
-			if (partyBase == null)
-			{
-				try
-				{
-					partyBase = _targetHero?.PartyBelongedTo?.Party;
-				}
-				catch
-				{
-					partyBase = null;
-				}
-			}
-			if (partyBase == null)
-			{
-				try
-				{
-					partyBase = _encounterRedirectSuspendedEncounterLeader?.PartyBelongedTo?.Party;
-				}
-				catch
-				{
-					partyBase = null;
-				}
-			}
-			bool flag3 = false;
-			try
-			{
-				flag3 = Hero.MainHero != null && Hero.MainHero.IsPrisoner;
-			}
-			catch
-			{
-				flag3 = false;
-			}
-			if (!flag3 && partyBase != null)
+			PartyBase partyBase = ResolvePendingDefeatCaptivityParty();
+			if (!flag && partyBase != null)
 			{
 				try
 				{
 					TakePrisonerAction.Apply(partyBase, Hero.MainHero);
-					flag3 = true;
+					flag = true;
 				}
 				catch (Exception ex2)
 				{
@@ -1110,9 +1091,9 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			{
 				text3 = null;
 			}
-			flag2 = text3 == "taken_prisoner" || text3 == "defeated_and_taken_prisoner";
-			Logger.Log("LordEncounter", $"Forced native captivity fallback attempted. Opened={flag2}, Prisoner={flag3}, Captor={partyBase?.Name}, CaptorHero={partyBase?.LeaderHero?.Name}");
-			if (flag2)
+			flag3 = (text3 == "taken_prisoner" || text3 == "defeated_and_taken_prisoner") && flag;
+			Logger.Log("LordEncounter", $"Forced native captivity fallback attempted. Opened={text3 == "taken_prisoner" || text3 == "defeated_and_taken_prisoner"}, Prisoner={flag}, Captor={partyBase?.Name}, CaptorHero={partyBase?.LeaderHero?.Name}");
+			if (flag3)
 			{
 				ClearPendingForceNativeDefeatCaptivityMenu("fallback_captivity_menu_opened");
 			}
@@ -1124,6 +1105,314 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		catch (Exception ex3)
 		{
 			Logger.Log("LordEncounter", "Force pending defeat captivity menu failed: " + ex3.Message);
+		}
+	}
+
+	private static bool TryResolvePendingMeetingBattleVictorySettlementImmediately(string reason)
+	{
+		if (!HasPendingMeetingBattleVictorySettlement())
+		{
+			return false;
+		}
+		Hero hero = null;
+		try
+		{
+			hero = PlayerEncounter.EncounteredParty?.LeaderHero;
+		}
+		catch
+		{
+			hero = null;
+		}
+		if (hero == null)
+		{
+			hero = _pendingMeetingBattleVictorySettlementEncounterLeader;
+		}
+		return TryEnterNativePostBattleSettlement(hero, reason, showFailureMessage: false);
+	}
+
+	private static void TryResolvePendingDefeatCaptivityImmediately(string reason)
+	{
+		if (!HasPendingForceNativeDefeatCaptivityMenu())
+		{
+			return;
+		}
+		try
+		{
+			if (TryAdvancePendingDefeatCaptivityThroughNativeEncounter())
+			{
+				ClearPendingForceNativeDefeatCaptivityMenu("immediate_native_defeat_encounter_flow_" + (reason ?? "unknown"));
+				return;
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("LordEncounter", "Immediate defeat captivity native encounter attempt failed: " + ex.Message);
+		}
+		try
+		{
+			if (TryInvokeNativeDoPlayerDefeat())
+			{
+				bool flag = false;
+				try
+				{
+					flag = Hero.MainHero != null && Hero.MainHero.IsPrisoner;
+				}
+				catch
+				{
+					flag = false;
+				}
+				string text = null;
+				try
+				{
+					text = Campaign.Current?.CurrentMenuContext?.GameMenu?.StringId;
+				}
+				catch
+				{
+					text = null;
+				}
+				if ((text == "taken_prisoner" || text == "defeated_and_taken_prisoner") && flag)
+				{
+					ClearPendingForceNativeDefeatCaptivityMenu("immediate_native_do_player_defeat_" + (reason ?? "unknown"));
+				}
+			}
+		}
+		catch (Exception ex2)
+		{
+			Logger.Log("LordEncounter", "Immediate defeat captivity DoPlayerDefeat attempt failed: " + ex2.Message);
+		}
+	}
+
+	private static PartyBase ResolvePendingDefeatCaptivityParty()
+	{
+		PartyBase partyBase = null;
+		try
+		{
+			partyBase = _pendingForceNativeDefeatCaptivityParty;
+		}
+		catch
+		{
+			partyBase = null;
+		}
+		if (partyBase == null)
+		{
+			try
+			{
+				partyBase = _pendingForceNativeDefeatCaptivityHero?.PartyBelongedTo?.Party;
+			}
+			catch
+			{
+				partyBase = null;
+			}
+		}
+		if (partyBase == null)
+		{
+			try
+			{
+				partyBase = PlayerEncounter.EncounteredParty;
+			}
+			catch
+			{
+				partyBase = null;
+			}
+		}
+		if (partyBase == null)
+		{
+			try
+			{
+				partyBase = _targetHero?.PartyBelongedTo?.Party;
+			}
+			catch
+			{
+				partyBase = null;
+			}
+		}
+		if (partyBase == null)
+		{
+			try
+			{
+				partyBase = _encounterRedirectSuspendedEncounterLeader?.PartyBelongedTo?.Party;
+			}
+			catch
+			{
+				partyBase = null;
+			}
+		}
+		return partyBase;
+	}
+
+	private static bool TryAdvancePendingDefeatCaptivityThroughNativeEncounter()
+	{
+		try
+		{
+			PartyBase partyBase;
+			if (!TryEnsureEncounterContextForDefeatCaptivity(out partyBase))
+			{
+				return false;
+			}
+			if (PlayerEncounter.Current == null)
+			{
+				return false;
+			}
+			MapEvent mapEvent = TryGetCurrentEncounterBattle();
+			if (mapEvent == null)
+			{
+				Logger.Log("LordEncounter", "Advance pending defeat captivity aborted: battle context is null.");
+				return false;
+			}
+			BattleSideEnum battleSideEnum = PartyBase.MainParty.OpponentSide;
+			BattleState winnerSide = ((battleSideEnum != BattleSideEnum.Attacker) ? BattleState.DefenderVictory : BattleState.AttackerVictory);
+			try
+			{
+				mapEvent.SetOverrideWinner(battleSideEnum);
+			}
+			catch (Exception ex)
+			{
+				Logger.Log("LordEncounter", "Advance pending defeat captivity: SetOverrideWinner failed: " + ex.Message);
+			}
+			try
+			{
+				PlayerEncounter.CampaignBattleResult = CampaignBattleResult.GetResult(winnerSide);
+			}
+			catch (Exception ex2)
+			{
+				Logger.Log("LordEncounter", "Advance pending defeat captivity: set CampaignBattleResult failed: " + ex2.Message);
+			}
+			if (!TrySetPlayerEncounterState(PlayerEncounter.Current, PlayerEncounterState.PrepareResults))
+			{
+				return false;
+			}
+			try
+			{
+				PlayerEncounter.LeaveEncounter = false;
+				PlayerEncounter.Current.IsPlayerWaiting = false;
+			}
+			catch
+			{
+			}
+			try
+			{
+				PlayerEncounter.Update();
+			}
+			catch (Exception ex3)
+			{
+				Logger.Log("LordEncounter", "Advance pending defeat captivity: PlayerEncounter.Update failed: " + ex3.Message);
+			}
+			bool flag = false;
+			try
+			{
+				flag = Hero.MainHero != null && Hero.MainHero.IsPrisoner;
+			}
+			catch
+			{
+				flag = false;
+			}
+			string text = null;
+			try
+			{
+				text = Campaign.Current?.CurrentMenuContext?.GameMenu?.StringId;
+			}
+			catch
+			{
+				text = null;
+			}
+			bool flag2 = text == "taken_prisoner" || text == "defeated_and_taken_prisoner";
+			Logger.Log("LordEncounter", $"Advanced pending defeat through native encounter flow. Menu={text ?? "null"}, Prisoner={flag}, Captor={partyBase?.Name}, PlayerWasAttacker={_pendingForceNativeDefeatCaptivityPlayerWasAttacker}");
+			return flag && flag2;
+		}
+		catch (Exception ex4)
+		{
+			Logger.Log("LordEncounter", "Advance pending defeat captivity via native encounter failed: " + ex4.Message);
+			return false;
+		}
+	}
+
+	private static bool TryEnsureEncounterContextForDefeatCaptivity(out PartyBase partyBase)
+	{
+		partyBase = ResolvePendingDefeatCaptivityParty();
+		if (partyBase == null || PartyBase.MainParty == null)
+		{
+			Logger.Log("LordEncounter", "TryEnsureEncounterContextForDefeatCaptivity failed: captor/main party is null.");
+			return false;
+		}
+		bool flag = _pendingForceNativeDefeatCaptivityPlayerWasAttacker;
+		try
+		{
+			if (PlayerEncounter.Current != null)
+			{
+				flag = PlayerEncounter.PlayerIsAttacker;
+			}
+		}
+		catch
+		{
+		}
+		PartyBase partyBase2 = flag ? partyBase : PartyBase.MainParty;
+		PartyBase partyBase3 = flag ? PartyBase.MainParty : partyBase;
+		try
+		{
+			PlayerEncounter.RestartPlayerEncounter(partyBase2, partyBase3, forcePlayerOutFromSettlement: false);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("LordEncounter", "TryEnsureEncounterContextForDefeatCaptivity: RestartPlayerEncounter failed: " + ex.Message);
+		}
+		try
+		{
+			if (PlayerEncounter.Current == null)
+			{
+				PlayerEncounter.Start();
+				if (PlayerEncounter.Current != null)
+				{
+					PlayerEncounter.Current.SetupFields(partyBase3, partyBase2);
+				}
+			}
+		}
+		catch (Exception ex2)
+		{
+			Logger.Log("LordEncounter", "TryEnsureEncounterContextForDefeatCaptivity: Start+SetupFields fallback failed: " + ex2.Message);
+		}
+		if (PlayerEncounter.Current == null)
+		{
+			Logger.Log("LordEncounter", "TryEnsureEncounterContextForDefeatCaptivity failed: PlayerEncounter.Current is null.");
+			return false;
+		}
+		try
+		{
+			if (PlayerEncounter.Battle == null && PlayerEncounter.EncounteredBattle == null && MapEvent.PlayerMapEvent == null)
+			{
+				PlayerEncounter.StartBattle();
+			}
+		}
+		catch (Exception ex3)
+		{
+			Logger.Log("LordEncounter", "TryEnsureEncounterContextForDefeatCaptivity: StartBattle failed: " + ex3.Message);
+		}
+		return TryGetCurrentEncounterBattle() != null;
+	}
+
+	private static bool TrySetPlayerEncounterState(PlayerEncounter playerEncounter, PlayerEncounterState encounterState)
+	{
+		try
+		{
+			if (playerEncounter == null)
+			{
+				return false;
+			}
+			if (_playerEncounterStateProperty == null)
+			{
+				_playerEncounterStateProperty = typeof(PlayerEncounter).GetProperty("EncounterState", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+			}
+			if (_playerEncounterStateProperty == null)
+			{
+				Logger.Log("LordEncounter", "PlayerEncounter.EncounterState property not found via reflection.");
+				return false;
+			}
+			_playerEncounterStateProperty.SetValue(playerEncounter, encounterState, null);
+			return true;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("LordEncounter", "Set PlayerEncounter.EncounterState via reflection failed: " + ex.Message);
+			return false;
 		}
 	}
 
@@ -1728,6 +2017,11 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		}
 		if (args?.MenuContext?.GameMenu?.StringId == "AnimusForge_lord_encounter")
 		{
+			if (HasPendingForceNativeDefeatCaptivityMenu())
+			{
+				TryForcePendingDefeatCaptivityMenuIfReady();
+				return;
+			}
 			EnsureEncounterTargetHero("menu_opened");
 			TryRunPostMissionCleanupIfReady();
 			_cameraLockWasActive = true;
@@ -1738,9 +2032,9 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 	private void OnCampaignTick(float dt)
 	{
 		TryClearEncounterRedirectSuspensionWhenBackOnMap();
+		TryForcePendingDefeatCaptivityMenuIfReady();
 		TryForcePendingMeetingBattleVictorySettlementIfReady();
 		TryForcePendingEncounterBattleMenuIfReady();
-		TryForcePendingDefeatCaptivityMenuIfReady();
 		try
 		{
 			IsCustomEncounterMenuDisabledForCurrentEncounter();
@@ -1981,9 +2275,14 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 
 	private static void EnterPostBattleSettlementFromMeetingMenu(Hero target)
 	{
+		TryEnterNativePostBattleSettlement(target, "manual_enter_post_battle_settlement", showFailureMessage: true);
+	}
+
+	private static bool TryEnterNativePostBattleSettlement(Hero target, string reason, bool showFailureMessage)
+	{
 		try
 		{
-			SuspendEncounterRedirectDuringResultResolution("manual_enter_post_battle_settlement");
+			SuspendEncounterRedirectDuringResultResolution(reason ?? "enter_post_battle_settlement");
 		}
 		catch
 		{
@@ -1998,15 +2297,17 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		if (!TryEnsureEncounterContextForPostBattleSettlement(target))
 		{
 			Logger.Log("LordEncounter", "EnterPostBattleSettlement aborted: failed to ensure encounter context.");
-			try
+			if (showFailureMessage)
 			{
-				InformationManager.DisplayMessage(new InformationMessage("战后结算上下文未就绪，请稍后重试。", Colors.Yellow));
-				return;
+				try
+				{
+					InformationManager.DisplayMessage(new InformationMessage("战后结算上下文未就绪，请稍后重试。", Colors.Yellow));
+				}
+				catch
+				{
+				}
 			}
-			catch
-			{
-				return;
-			}
+			return false;
 		}
 		try
 		{
@@ -2019,15 +2320,33 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		catch
 		{
 		}
-		Logger.Log("LordEncounter", $"Entering native post-battle settlement flow from custom menu. Target={target?.Name}");
+		Logger.Log("LordEncounter", $"Entering native post-battle settlement flow. Reason={reason ?? "N/A"}, Target={target?.Name}");
 		try
 		{
-			GameMenu.SwitchToMenu("encounter");
-			ClearPendingMeetingBattleVictorySettlement("enter_post_battle_settlement");
+			GameMenu.ActivateGameMenu("encounter");
+			string text = null;
+			try
+			{
+				text = Campaign.Current?.CurrentMenuContext?.GameMenu?.StringId;
+			}
+			catch
+			{
+				text = null;
+			}
+			bool flag = text == "encounter";
+			if (flag)
+			{
+				ClearPendingMeetingBattleVictorySettlement("enter_post_battle_settlement_" + (reason ?? "unknown"));
+				return true;
+			}
+			Logger.Log("LordEncounter", "EnterPostBattleSettlement did not open native encounter menu. CurrentMenu=" + (text ?? "null"));
 		}
 		catch (Exception ex)
 		{
-			Logger.Log("LordEncounter", "EnterPostBattleSettlement switch menu failed: " + ex.Message);
+			Logger.Log("LordEncounter", "EnterPostBattleSettlement activate menu failed: " + ex.Message);
+		}
+		if (showFailureMessage)
+		{
 			try
 			{
 				InformationManager.DisplayMessage(new InformationMessage("进入战后结算失败，请稍后重试。", Colors.Yellow));
@@ -2036,6 +2355,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			{
 			}
 		}
+		return false;
 	}
 
 	private static bool TryEnsureEncounterContextForPostBattleSettlement(Hero target)
@@ -2229,8 +2549,15 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		starter.AddGameMenu("AnimusForge_lord_encounter", "{MENU_BODY_TEXT}", delegate(MenuCallbackArgs args)
 		{
 			Hero hero = EnsureEncounterTargetHero("menu_init");
+			bool flag = HasPendingForceNativeDefeatCaptivityMenu();
 			GameTexts.SetVariable("TARGET_NAME", (hero != null) ? hero.Name : new TextObject("领主"));
-			if (TryBuildMeetingPostBattleSettlementText(hero, out var bodyText))
+			TextObject bodyText;
+			if (flag)
+			{
+				args.MenuTitle = new TextObject("遭遇结果");
+				bodyText = new TextObject("正在进入原版被俘结算。");
+			}
+			else if (TryBuildMeetingPostBattleSettlementText(hero, out bodyText))
 			{
 				args.MenuTitle = new TextObject("战后结算");
 			}
@@ -2247,6 +2574,10 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		});
 		starter.AddGameMenuOption("AnimusForge_lord_encounter", "meet_lord", "与{TARGET_NAME}会面", delegate(MenuCallbackArgs args)
 		{
+			if (HasPendingForceNativeDefeatCaptivityMenu())
+			{
+				return false;
+			}
 			if (TryBuildMeetingPostBattleSettlementText(_targetHero, out var _))
 			{
 				return false;
@@ -2281,6 +2612,10 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		});
 		starter.AddGameMenuOption("AnimusForge_lord_encounter", "attack_lord", "{PRIMARY_ACTION_LABEL}", delegate
 		{
+			if (HasPendingForceNativeDefeatCaptivityMenu())
+			{
+				return false;
+			}
 			Hero hero = EnsureEncounterTargetHero("menu_attack_condition");
 			GameTexts.SetVariable("TARGET_NAME", (hero != null) ? hero.Name : new TextObject("领主"));
 			TextObject bodyText;
@@ -2302,6 +2637,10 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		});
 		starter.AddGameMenuOption("AnimusForge_lord_encounter", "leave_lord", "离开", delegate
 		{
+			if (HasPendingForceNativeDefeatCaptivityMenu())
+			{
+				return false;
+			}
 			if (TryBuildMeetingPostBattleSettlementText(_targetHero, out var _))
 			{
 				return false;

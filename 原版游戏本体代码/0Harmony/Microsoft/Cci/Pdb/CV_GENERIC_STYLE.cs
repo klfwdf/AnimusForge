@@ -1,0 +1,23 @@
+﻿using System;
+
+namespace Microsoft.Cci.Pdb
+{
+	// Token: 0x020003D8 RID: 984
+	internal enum CV_GENERIC_STYLE
+	{
+		// Token: 0x04000E2B RID: 3627
+		CV_GENERIC_VOID,
+		// Token: 0x04000E2C RID: 3628
+		CV_GENERIC_REG,
+		// Token: 0x04000E2D RID: 3629
+		CV_GENERIC_ICAN,
+		// Token: 0x04000E2E RID: 3630
+		CV_GENERIC_ICAF,
+		// Token: 0x04000E2F RID: 3631
+		CV_GENERIC_IRAN,
+		// Token: 0x04000E30 RID: 3632
+		CV_GENERIC_IRAF,
+		// Token: 0x04000E31 RID: 3633
+		CV_GENERIC_UNUSED
+	}
+}

@@ -1,0 +1,241 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x64</Platform>
+    <ProjectGuid>{C2043D23-6315-4853-B0B0-819B88470E7E}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>TaleWorlds.Engine</RootNamespace>
+    <AssemblyName>TaleWorlds.Engine</AssemblyName>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <TargetFrameworkIdentifier>.NETStandard</TargetFrameworkIdentifier>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
+    <PlatformTarget>x64</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <NoStdLib>true</NoStdLib>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
+    <PlatformTarget>x64</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <NoStdLib>true</NoStdLib>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="netstandard" />
+    <Reference Include="System.Numerics.Vectors" />
+    <Reference Include="TaleWorlds.ModuleManager">
+      <HintPath>..\..\bin\x64\Debug\TaleWorlds.ModuleManager.dll</HintPath>
+    </Reference>
+    <Reference Include="TaleWorlds.ScreenSystem">
+      <HintPath>..\..\bin\x64\Debug\TaleWorlds.ScreenSystem.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <AppDesigner Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AnimResult.cs" />
+    <Compile Include="ApplicationHealthChecker.cs" />
+    <Compile Include="ApplicationInterfaceBase.cs" />
+    <Compile Include="AsyncTask.cs" />
+    <Compile Include="BillboardType.cs" />
+    <Compile Include="BodyFlags.cs" />
+    <Compile Include="BoundingBox.cs" />
+    <Compile Include="Camera.cs" />
+    <Compile Include="CapsuleData.cs" />
+    <Compile Include="CheckForSceneProblemsDelegate.cs" />
+    <Compile Include="ClothSimulatorComponent.cs" />
+    <Compile Include="CompositeComponent.cs" />
+    <Compile Include="CrashInformationCollector.cs" />
+    <Compile Include="Decal.cs" />
+    <Compile Include="DecalAtlasGroup.cs" />
+    <Compile Include="EditDataPolicy.cs" />
+    <Compile Include="EditorVisibleScriptComponentVariable.cs" />
+    <Compile Include="EngineApplicationInterface.cs" />
+    <Compile Include="EngineCallback.cs" />
+    <Compile Include="EngineController.cs" />
+    <Compile Include="EngineExtensions.cs" />
+    <Compile Include="EngineFilePaths.cs" />
+    <Compile Include="EngineManaged.cs" />
+    <Compile Include="EngineScreenManager.cs" />
+    <Compile Include="EntityFlags.cs" />
+    <Compile Include="EntityVisibilityFlags.cs" />
+    <Compile Include="FloaterVolumeDynamicUpAxis.cs" />
+    <Compile Include="FtlCapsuleData.cs" />
+    <Compile Include="GameEntity.cs" />
+    <Compile Include="GameEntityComponent.cs" />
+    <Compile Include="GameEntityPhysicsExtensions.cs" />
+    <Compile Include="GameEntityWithWorldPosition.cs" />
+    <Compile Include="HasTableauCache.cs" />
+    <Compile Include="Highlights.cs" />
+    <Compile Include="IAsyncTask.cs" />
+    <Compile Include="IBodyPart.cs" />
+    <Compile Include="ICamera.cs" />
+    <Compile Include="IClothSimulatorComponent.cs" />
+    <Compile Include="ICompositeComponent.cs" />
+    <Compile Include="IConfig.cs" />
+    <Compile Include="IDebug.cs" />
+    <Compile Include="IDecal.cs" />
+    <Compile Include="IEngineSizeChecker.cs" />
+    <Compile Include="IGameEntity.cs" />
+    <Compile Include="IGameEntityComponent.cs" />
+    <Compile Include="IHighlights.cs" />
+    <Compile Include="IImgui.cs" />
+    <Compile Include="IInput.cs" />
+    <Compile Include="ILight.cs" />
+    <Compile Include="ILoadingWindowManager.cs" />
+    <Compile Include="IManagedMeshEditOperations.cs" />
+    <Compile Include="IMaterial.cs" />
+    <Compile Include="IMesh.cs" />
+    <Compile Include="IMeshBuilder.cs" />
+    <Compile Include="IMetaMesh.cs" />
+    <Compile Include="Imgui.cs" />
+    <Compile Include="IMouseManager.cs" />
+    <Compile Include="IMusic.cs" />
+    <Compile Include="InputLayout.cs" />
+    <Compile Include="InputSystem\CheatsHotKeyCategory.cs" />
+    <Compile Include="InputSystem\DebugHotKeyCategory.cs" />
+    <Compile Include="InputSystem\EngineInputManager.cs" />
+    <Compile Include="Intersection.cs" />
+    <Compile Include="IntersectionDetails.cs" />
+    <Compile Include="IntersectionType.cs" />
+    <Compile Include="IParticleSystem.cs" />
+    <Compile Include="IPath.cs" />
+    <Compile Include="IPhysicsMaterial.cs" />
+    <Compile Include="IPhysicsShape.cs" />
+    <Compile Include="IScene.cs" />
+    <Compile Include="ISceneView.cs" />
+    <Compile Include="IScreen.cs" />
+    <Compile Include="IScriptComponent.cs" />
+    <Compile Include="IShader.cs" />
+    <Compile Include="ISkeleton.cs" />
+    <Compile Include="ISoundEvent.cs" />
+    <Compile Include="ISoundManager.cs" />
+    <Compile Include="ITableauView.cs" />
+    <Compile Include="ITexture.cs" />
+    <Compile Include="ITextureView.cs" />
+    <Compile Include="IThumbnailCreatorView.cs" />
+    <Compile Include="ITime.cs" />
+    <Compile Include="ITwoDimensionView.cs" />
+    <Compile Include="IUtil.cs" />
+    <Compile Include="IVideoPlayerView.cs" />
+    <Compile Include="IView.cs" />
+    <Compile Include="Job.cs" />
+    <Compile Include="JobManager.cs" />
+    <Compile Include="Light.cs" />
+    <Compile Include="LoadingWindow.cs" />
+    <Compile Include="ManagedExtensions.cs" />
+    <Compile Include="ManagedMeshEditOperations.cs" />
+    <Compile Include="ManagedScriptComponent.cs" />
+    <Compile Include="ManagedScriptHolder.cs" />
+    <Compile Include="Material.cs" />
+    <Compile Include="MaterialCacheIDGetMethodDelegate.cs" />
+    <Compile Include="MaterialFlags.cs" />
+    <Compile Include="MBDebug.cs" />
+    <Compile Include="MBMeshCullingMode.cs" />
+    <Compile Include="MBMouseButtonState.cs" />
+    <Compile Include="Mesh.cs" />
+    <Compile Include="MeshBuilder.cs" />
+    <Compile Include="MessageManagerBase.cs" />
+    <Compile Include="MetaMesh.cs" />
+    <Compile Include="Microsoft\CodeAnalysis\EmbeddedAttribute.cs" />
+    <Compile Include="MouseManager.cs" />
+    <Compile Include="Music.cs" />
+    <Compile Include="NativeConfig.cs" />
+    <Compile Include="NativeParallelDriver.cs" />
+    <Compile Include="NativeScriptComponent.cs" />
+    <Compile Include="Options\IBooleanOptionData.cs" />
+    <Compile Include="Options\INumericOptionData.cs" />
+    <Compile Include="Options\IOptionData.cs" />
+    <Compile Include="Options\ISelectionOptionData.cs" />
+    <Compile Include="Options\NativeBooleanOptionData.cs" />
+    <Compile Include="Options\NativeNumericOptionData.cs" />
+    <Compile Include="Options\NativeOptionData.cs" />
+    <Compile Include="Options\NativeOptions.cs" />
+    <Compile Include="Options\NativeSelectionOptionData.cs" />
+    <Compile Include="Options\SelectionData.cs" />
+    <Compile Include="ParticleSystem.cs" />
+    <Compile Include="ParticleSystemManager.cs" />
+    <Compile Include="Path.cs" />
+    <Compile Include="PerformanceAnalyzer.cs" />
+    <Compile Include="PhysicsContact.cs" />
+    <Compile Include="PhysicsContactInfo.cs" />
+    <Compile Include="PhysicsContactPair.cs" />
+    <Compile Include="PhysicsEventType.cs" />
+    <Compile Include="PhysicsJoint.cs" />
+    <Compile Include="PhysicsMaterial.cs" />
+    <Compile Include="PhysicsMaterialFlags.cs" />
+    <Compile Include="PhysicsShape.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RagdollState.cs" />
+    <Compile Include="RenderTargetComponent.cs" />
+    <Compile Include="Resource.cs" />
+    <Compile Include="RglScriptFieldType.cs" />
+    <Compile Include="Scene.cs" />
+    <Compile Include="SceneInitializationData.cs" />
+    <Compile Include="SceneProblemChecker.cs" />
+    <Compile Include="SceneView.cs" />
+    <Compile Include="Screen.cs" />
+    <Compile Include="ScreenManagerEngineConnection.cs" />
+    <Compile Include="Screens\SceneLayer.cs" />
+    <Compile Include="ScriptComponent.cs" />
+    <Compile Include="ScriptComponentBehavior.cs" />
+    <Compile Include="ScriptComponentFieldHolder.cs" />
+    <Compile Include="Shader.cs" />
+    <Compile Include="SimpleButton.cs" />
+    <Compile Include="Skeleton.cs" />
+    <Compile Include="SoundEvent.cs" />
+    <Compile Include="SoundEventParameter.cs" />
+    <Compile Include="SoundManager.cs" />
+    <Compile Include="SphereData.cs" />
+    <Compile Include="System\Runtime\CompilerServices\IsReadOnlyAttribute.cs" />
+    <Compile Include="TableauView.cs" />
+    <Compile Include="TextFlags.cs" />
+    <Compile Include="Texture.cs" />
+    <Compile Include="TextureView.cs" />
+    <Compile Include="ThumbnailCreatorView.cs" />
+    <Compile Include="ThumbnailRenderRequest.cs" />
+    <Compile Include="Time.cs" />
+    <Compile Include="TwoDimensionMeshDrawData.cs" />
+    <Compile Include="TwoDimensionTextMeshDrawData.cs" />
+    <Compile Include="TwoDimensionView.cs" />
+    <Compile Include="Utilities.cs" />
+    <Compile Include="VideoPlayerView.cs" />
+    <Compile Include="View.cs" />
+    <Compile Include="VisibilityMaskFlags.cs" />
+    <Compile Include="VolumeDataForSubmergeComputation.cs" />
+    <Compile Include="WeakGameEntity.cs" />
+    <Compile Include="WeakMaterial.cs" />
+    <Compile Include="WorldFrame.cs" />
+    <Compile Include="WorldPosition.cs" />
+    <Compile Include="ZValidityState.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TaleWorlds.DotNet\TaleWorlds.DotNet.csproj">
+      <Project>{C2043D23-6315-4853-B0B0-819B88470E7C}</Project>
+      <Name>TaleWorlds.DotNet</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TaleWorlds.InputSystem\TaleWorlds.InputSystem.csproj">
+      <Project>{C2043D23-6315-4853-B0B0-819B88470E85}</Project>
+      <Name>TaleWorlds.InputSystem</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TaleWorlds.Library\TaleWorlds.Library.csproj">
+      <Project>{C2043D23-6315-4853-B0B0-819B88470E86}</Project>
+      <Name>TaleWorlds.Library</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

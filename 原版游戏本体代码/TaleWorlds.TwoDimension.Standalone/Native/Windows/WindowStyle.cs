@@ -1,0 +1,48 @@
+﻿using System;
+
+namespace TaleWorlds.TwoDimension.Standalone.Native.Windows
+{
+	// Token: 0x0200002A RID: 42
+	[Flags]
+	public enum WindowStyle : uint
+	{
+		// Token: 0x040000DF RID: 223
+		Overlapped = 0U,
+		// Token: 0x040000E0 RID: 224
+		OverlappedWindow = 13565952U,
+		// Token: 0x040000E1 RID: 225
+		WS_POPUP = 2147483648U,
+		// Token: 0x040000E2 RID: 226
+		WS_CHILD = 1073741824U,
+		// Token: 0x040000E3 RID: 227
+		WS_MINIMIZE = 536870912U,
+		// Token: 0x040000E4 RID: 228
+		WS_VISIBLE = 268435456U,
+		// Token: 0x040000E5 RID: 229
+		WS_DISABLED = 134217728U,
+		// Token: 0x040000E6 RID: 230
+		WS_CLIPSIBLINGS = 67108864U,
+		// Token: 0x040000E7 RID: 231
+		WS_CLIPCHILDREN = 33554432U,
+		// Token: 0x040000E8 RID: 232
+		WS_MAXIMIZE = 16777216U,
+		// Token: 0x040000E9 RID: 233
+		WS_CAPTION = 12582912U,
+		// Token: 0x040000EA RID: 234
+		WS_BORDER = 8388608U,
+		// Token: 0x040000EB RID: 235
+		WS_DLGFRAME = 4194304U,
+		// Token: 0x040000EC RID: 236
+		WS_VSCROLL = 2097152U,
+		// Token: 0x040000ED RID: 237
+		WS_HSCROLL = 1048576U,
+		// Token: 0x040000EE RID: 238
+		WS_SYSMENU = 524288U,
+		// Token: 0x040000EF RID: 239
+		WS_THICKFRAME = 262144U,
+		// Token: 0x040000F0 RID: 240
+		WS_GROUP = 131072U,
+		// Token: 0x040000F1 RID: 241
+		WS_TABSTOP = 65536U
+	}
+}

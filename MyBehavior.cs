@@ -21,8 +21,10 @@ using TaleWorlds.CampaignSystem.CharacterDevelopment;
 using TaleWorlds.CampaignSystem.Extensions;
 using TaleWorlds.CampaignSystem.GameMenus;
 using TaleWorlds.CampaignSystem.MapEvents;
+using TaleWorlds.CampaignSystem.Map;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Roster;
+using TaleWorlds.CampaignSystem.Siege;
 using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.CampaignSystem.ViewModelCollection.GameMenu.Events;
 using TaleWorlds.Core;
@@ -87,6 +89,19 @@ public class MyBehavior : CampaignBehaviorBase
 		public string GameDate;
 
 		public List<string> Lines = new List<string>();
+	}
+
+	private class NpcActionEntry
+	{
+		public int Day;
+
+		public int Order;
+
+		public string GameDate;
+
+		public string Text;
+
+		public string StableKey;
 	}
 
 	private class NpcPersonaProfile
@@ -306,9 +321,23 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private const int HistoryArchiveRecallMaxItems = 12;
 
+	private const int RecentNpcActionWindowDays = 21;
+
+	private const int MaxRecentNpcActionEntriesPerHero = 96;
+
+	private const int MaxMajorNpcActionEntriesPerHero = 160;
+
 	private Dictionary<string, List<DialogueDay>> _dialogueHistory = new Dictionary<string, List<DialogueDay>>();
 
 	private Dictionary<string, string> _dialogueHistoryStorage = new Dictionary<string, string>();
+
+	private Dictionary<string, List<NpcActionEntry>> _npcMajorActions = new Dictionary<string, List<NpcActionEntry>>();
+
+	private Dictionary<string, string> _npcMajorActionStorage = new Dictionary<string, string>();
+
+	private Dictionary<string, List<NpcActionEntry>> _npcRecentActions = new Dictionary<string, List<NpcActionEntry>>();
+
+	private Dictionary<string, string> _npcRecentActionStorage = new Dictionary<string, string>();
 
 	private Dictionary<string, NpcPersonaProfile> _npcPersonaProfiles = new Dictionary<string, NpcPersonaProfile>();
 
@@ -444,6 +473,17 @@ public class MyBehavior : CampaignBehaviorBase
 		CampaignEvents.MapEventEnded.AddNonSerializedListener(this, OnMapEventEnded);
 		CampaignEvents.HeroPrisonerTaken.AddNonSerializedListener(this, OnHeroPrisonerTaken);
 		CampaignEvents.HeroPrisonerReleased.AddNonSerializedListener(this, OnHeroPrisonerReleased);
+		CampaignEvents.ArmyCreated.AddNonSerializedListener(this, OnArmyCreated);
+		CampaignEvents.ArmyGathered.AddNonSerializedListener(this, OnArmyGathered);
+		CampaignEvents.ArmyDispersed.AddNonSerializedListener(this, OnArmyDispersed);
+		CampaignEvents.OnPartyJoinedArmyEvent.AddNonSerializedListener(this, OnPartyJoinedArmy);
+		CampaignEvents.OnPartyLeftArmyEvent.AddNonSerializedListener(this, OnPartyLeftArmy);
+		CampaignEvents.OnSiegeEventStartedEvent.AddNonSerializedListener(this, OnSiegeEventStarted);
+		CampaignEvents.OnSiegeEventEndedEvent.AddNonSerializedListener(this, OnSiegeEventEnded);
+		CampaignEvents.OnMobilePartyJoinedToSiegeEventEvent.AddNonSerializedListener(this, OnMobilePartyJoinedSiege);
+		CampaignEvents.OnMobilePartyLeftSiegeEventEvent.AddNonSerializedListener(this, OnMobilePartyLeftSiege);
+		CampaignEvents.SiegeCompletedEvent.AddNonSerializedListener(this, OnSiegeCompleted);
+		CampaignEvents.DailyTickPartyEvent.AddNonSerializedListener(this, OnDailyTickParty);
 	}
 
 	private void OnMapEventEnded(MapEvent mapEvent)
@@ -469,6 +509,14 @@ public class MyBehavior : CampaignBehaviorBase
 		catch (Exception ex)
 		{
 			Logger.Log("BattleStatus", "[ERROR] OnMapEventEnded: " + ex.Message);
+		}
+		try
+		{
+			TrackNpcActionsFromMapEvent(mapEvent);
+		}
+		catch (Exception ex2)
+		{
+			Logger.Log("NpcAction", "[ERROR] TrackNpcActionsFromMapEvent: " + ex2.Message);
 		}
 	}
 
@@ -511,6 +559,1125 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			Logger.Log("BattleStatus", "[ERROR] OnHeroPrisonerReleased: " + ex.Message);
 		}
+	}
+
+	private void OnArmyCreated(Army army)
+	{
+		try
+		{
+			Hero hero = army?.ArmyOwner ?? army?.LeaderParty?.LeaderHero;
+			if (!ShouldTrackNpcActionHero(hero))
+			{
+				return;
+			}
+			string text = GetArmyDisplayName(army);
+			RecordNpcMajorAction(hero, "你组建并统领了" + text + "。", "army_create:" + text);
+			RecordNpcRecentAction(hero, "你组建并统领了" + text + "。", "army_create:" + text);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("NpcAction", "[ERROR] OnArmyCreated: " + ex.Message);
+		}
+	}
+
+	private void OnArmyGathered(Army army, IMapPoint gatheringPoint)
+	{
+		try
+		{
+			Hero hero = army?.ArmyOwner ?? army?.LeaderParty?.LeaderHero;
+			if (!ShouldTrackNpcActionHero(hero))
+			{
+				return;
+			}
+			string text = gatheringPoint?.Name?.ToString();
+			if (string.IsNullOrWhiteSpace(text))
+			{
+				text = "集结地";
+			}
+			RecordNpcRecentAction(hero, "你率领" + GetArmyDisplayName(army) + "在" + text + "集结。", "army_gather:" + GetArmyDisplayName(army) + ":" + text);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("NpcAction", "[ERROR] OnArmyGathered: " + ex.Message);
+		}
+	}
+
+	private void OnArmyDispersed(Army army, Army.ArmyDispersionReason reason, bool isNoNotification)
+	{
+		try
+		{
+			Hero hero = army?.ArmyOwner ?? army?.LeaderParty?.LeaderHero;
+			if (!ShouldTrackNpcActionHero(hero))
+			{
+				return;
+			}
+			RecordNpcRecentAction(hero, "你统领的" + GetArmyDisplayName(army) + "已解散。", "army_disperse:" + GetArmyDisplayName(army));
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("NpcAction", "[ERROR] OnArmyDispersed: " + ex.Message);
+		}
+	}
+
+	private void OnPartyJoinedArmy(MobileParty party)
+	{
+		try
+		{
+			Hero leaderHero = party?.LeaderHero;
+			Army army = party?.Army;
+			if (!ShouldTrackNpcActionHero(leaderHero) || army == null)
+			{
+				return;
+			}
+			string text = GetArmyDisplayName(army);
+			RecordNpcMajorAction(leaderHero, "你加入了" + text + "。", "army_join:" + text);
+			RecordNpcRecentAction(leaderHero, "你加入了" + text + "。", "army_join:" + text);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("NpcAction", "[ERROR] OnPartyJoinedArmy: " + ex.Message);
+		}
+	}
+
+	private void OnPartyLeftArmy(MobileParty party, Army army)
+	{
+		try
+		{
+			Hero leaderHero = party?.LeaderHero;
+			if (!ShouldTrackNpcActionHero(leaderHero))
+			{
+				return;
+			}
+			string text = GetArmyDisplayName(army);
+			RecordNpcRecentAction(leaderHero, "你离开了" + text + "。", "army_leave:" + text);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("NpcAction", "[ERROR] OnPartyLeftArmy: " + ex.Message);
+		}
+	}
+
+	private void OnSiegeEventStarted(SiegeEvent siegeEvent)
+	{
+		try
+		{
+			Settlement settlement = ResolveSiegeSettlement(siegeEvent);
+			foreach (Hero item in GetHeroesFromSiegeEventSide(siegeEvent, BattleSideEnum.Attacker))
+			{
+				string text = BuildSiegeStartNarrative(settlement, isAttacker: true, siegeEvent);
+				string text2 = settlement?.Name?.ToString() ?? "某处要塞";
+				RecordNpcMajorAction(item, text, "siege_start:" + text2);
+				RecordNpcRecentAction(item, text, "siege_start:" + text2);
+			}
+			foreach (Hero item2 in GetHeroesFromSiegeEventSide(siegeEvent, BattleSideEnum.Defender))
+			{
+				string text3 = BuildSiegeStartNarrative(settlement, isAttacker: false, siegeEvent);
+				string text4 = settlement?.Name?.ToString() ?? "某处要塞";
+				RecordNpcMajorAction(item2, text3, "siege_defend:" + text4);
+				RecordNpcRecentAction(item2, text3, "siege_defend:" + text4);
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("NpcAction", "[ERROR] OnSiegeEventStarted: " + ex.Message);
+		}
+	}
+
+	private void OnSiegeEventEnded(SiegeEvent siegeEvent)
+	{
+		try
+		{
+			Settlement settlement = ResolveSiegeSettlement(siegeEvent);
+			string text = settlement?.Name?.ToString() ?? "某处要塞";
+			foreach (Hero item in GetHeroesFromSiegeEventSide(siegeEvent, BattleSideEnum.Attacker))
+			{
+				RecordNpcRecentAction(item, "你结束了对" + text + "的围城。", "siege_end:" + text);
+			}
+			foreach (Hero item2 in GetHeroesFromSiegeEventSide(siegeEvent, BattleSideEnum.Defender))
+			{
+				RecordNpcRecentAction(item2, text + "的守城战已经结束。", "siege_end_defend:" + text);
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("NpcAction", "[ERROR] OnSiegeEventEnded: " + ex.Message);
+		}
+	}
+
+	private void OnMobilePartyJoinedSiege(MobileParty party)
+	{
+		try
+		{
+			Hero leaderHero = party?.LeaderHero;
+			if (!ShouldTrackNpcActionHero(leaderHero))
+			{
+				return;
+			}
+			Settlement settlement = party.BesiegedSettlement ?? ResolveSiegeSettlement(party.SiegeEvent);
+			string text = settlement?.Name?.ToString() ?? "某处要塞";
+			RecordNpcRecentAction(leaderHero, "你加入了对" + text + "的围城。", "siege_join:" + text);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("NpcAction", "[ERROR] OnMobilePartyJoinedSiege: " + ex.Message);
+		}
+	}
+
+	private void OnMobilePartyLeftSiege(MobileParty party)
+	{
+		try
+		{
+			Hero leaderHero = party?.LeaderHero;
+			if (!ShouldTrackNpcActionHero(leaderHero))
+			{
+				return;
+			}
+			Settlement settlement = party.BesiegedSettlement ?? ResolveSiegeSettlement(party.SiegeEvent);
+			string text = settlement?.Name?.ToString() ?? "某处要塞";
+			bool flag = settlement != null && party?.MapFaction != null && settlement.MapFaction == party.MapFaction;
+			string text2 = (flag ? (text + "结清了战利品和战俘") : (text + "处理完了围城中产生的战利品以及战俘。"));
+			RecordNpcRecentAction(leaderHero, text2, "siege_leave:" + text + ":" + flag);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("NpcAction", "[ERROR] OnMobilePartyLeftSiege: " + ex.Message);
+		}
+	}
+
+	private void OnSiegeCompleted(Settlement settlement, MobileParty party, bool siegeSuccess, MapEvent.BattleTypes battleType)
+	{
+		try
+		{
+			Hero leaderHero = party?.LeaderHero;
+			if (!ShouldTrackNpcActionHero(leaderHero))
+			{
+				return;
+			}
+			string text = settlement?.Name?.ToString() ?? "某处要塞";
+			string text2 = (siegeSuccess ? ("你在" + text + "的围城中获胜。") : ("你在" + text + "的围城中失利。"));
+			RecordNpcMajorAction(leaderHero, text2, "siege_complete:" + text + ":" + siegeSuccess);
+			RecordNpcRecentAction(leaderHero, text2, "siege_complete:" + text + ":" + siegeSuccess);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("NpcAction", "[ERROR] OnSiegeCompleted: " + ex.Message);
+		}
+	}
+
+	private void OnDailyTickParty(MobileParty party)
+	{
+		try
+		{
+			Hero leaderHero = party?.LeaderHero;
+			if (!ShouldTrackNpcActionHero(leaderHero))
+			{
+				return;
+			}
+			string text = BuildRecentPartyBehaviorText(party);
+			if (string.IsNullOrWhiteSpace(text))
+			{
+				return;
+			}
+			string text2 = BuildRecentPartyBehaviorStableKey(party);
+			if (!string.IsNullOrWhiteSpace(text2))
+			{
+				RecordNpcRecentAction(leaderHero, text, text2, dedupeAcrossWindow: true);
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("NpcAction", "[ERROR] OnDailyTickParty: " + ex.Message);
+		}
+	}
+
+	private static bool ShouldTrackNpcActionHero(Hero hero)
+	{
+		return hero != null && hero != Hero.MainHero && hero.IsLord && !string.IsNullOrWhiteSpace(hero.StringId);
+	}
+
+	private static bool ShouldMentionBattleHero(Hero hero)
+	{
+		if (hero == null)
+		{
+			return false;
+		}
+		if (hero == Hero.MainHero)
+		{
+			return true;
+		}
+		return hero.IsLord && !string.IsNullOrWhiteSpace(hero.StringId);
+	}
+
+	private static string GetNpcActionHeroKey(Hero hero)
+	{
+		return (hero?.StringId ?? "").Trim();
+	}
+
+	private static int GetCurrentGameDayIndexSafe()
+	{
+		try
+		{
+			return Math.Max(0, (int)Math.Floor(CampaignTime.Now.ToDays));
+		}
+		catch
+		{
+			return 0;
+		}
+	}
+
+	private static string GetCurrentGameDateTextSafe()
+	{
+		try
+		{
+			string text = CampaignTime.Now.ToString();
+			return string.IsNullOrWhiteSpace(text) ? ("第 " + GetCurrentGameDayIndexSafe() + " 日") : text.Trim();
+		}
+		catch
+		{
+			return "第 " + GetCurrentGameDayIndexSafe() + " 日";
+		}
+	}
+
+	private static string NormalizeNpcActionStableKey(string stableKey, string fallbackText)
+	{
+		string text = (stableKey ?? fallbackText ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
+		return string.IsNullOrWhiteSpace(text) ? "" : text.ToLowerInvariant();
+	}
+
+	private static List<NpcActionEntry> SanitizeNpcActionEntries(List<NpcActionEntry> source, bool keepOnlyRecentWindow)
+	{
+		List<NpcActionEntry> list = new List<NpcActionEntry>();
+		if (source == null || source.Count <= 0)
+		{
+			return list;
+		}
+		int num = GetCurrentGameDayIndexSafe();
+		int num2 = num - RecentNpcActionWindowDays + 1;
+		int num3 = 0;
+		foreach (NpcActionEntry item in source)
+		{
+			if (item == null)
+			{
+				continue;
+			}
+			string text = (item.Text ?? "").Trim();
+			if (string.IsNullOrWhiteSpace(text))
+			{
+				continue;
+			}
+			if (keepOnlyRecentWindow && item.Day < num2)
+			{
+				continue;
+			}
+			list.Add(new NpcActionEntry
+			{
+				Day = Math.Max(0, item.Day),
+				Order = ((item.Order > 0) ? item.Order : (++num3)),
+				GameDate = (item.GameDate ?? "").Trim(),
+				Text = text,
+				StableKey = NormalizeNpcActionStableKey(item.StableKey, text)
+			});
+		}
+		return list.OrderBy((NpcActionEntry x) => x.Day).ThenBy((NpcActionEntry x) => x.Order).ThenBy((NpcActionEntry x) => x.GameDate ?? "", StringComparer.Ordinal).ToList();
+	}
+
+	private void RecordNpcMajorAction(Hero hero, string text, string stableKey)
+	{
+		RecordNpcActionInternal(_npcMajorActions, hero, text, stableKey, keepOnlyRecentWindow: false, dedupeAcrossWindow: false, MaxMajorNpcActionEntriesPerHero);
+	}
+
+	private void RecordNpcRecentAction(Hero hero, string text, string stableKey, bool dedupeAcrossWindow = false)
+	{
+		RecordNpcActionInternal(_npcRecentActions, hero, text, stableKey, keepOnlyRecentWindow: true, dedupeAcrossWindow, MaxRecentNpcActionEntriesPerHero);
+	}
+
+	private void RecordNpcActionInternal(Dictionary<string, List<NpcActionEntry>> storage, Hero hero, string text, string stableKey, bool keepOnlyRecentWindow, bool dedupeAcrossWindow, int maxEntries)
+	{
+		try
+		{
+			if (storage == null || !ShouldTrackNpcActionHero(hero))
+			{
+				return;
+			}
+			string npcActionHeroKey = GetNpcActionHeroKey(hero);
+			string text2 = (text ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
+			if (string.IsNullOrWhiteSpace(npcActionHeroKey) || string.IsNullOrWhiteSpace(text2))
+			{
+				return;
+			}
+			string text3 = NormalizeNpcActionStableKey(stableKey, text2);
+			int currentGameDayIndexSafe = GetCurrentGameDayIndexSafe();
+			if (!storage.TryGetValue(npcActionHeroKey, out var value) || value == null)
+			{
+				value = new List<NpcActionEntry>();
+				storage[npcActionHeroKey] = value;
+			}
+			if (keepOnlyRecentWindow)
+			{
+				int num = currentGameDayIndexSafe - RecentNpcActionWindowDays + 1;
+				value.RemoveAll((NpcActionEntry x) => x == null || x.Day < num || string.IsNullOrWhiteSpace(x.Text));
+			}
+			else
+			{
+				value.RemoveAll((NpcActionEntry x) => x == null || string.IsNullOrWhiteSpace(x.Text));
+			}
+			if (dedupeAcrossWindow)
+			{
+				if (value.Any((NpcActionEntry x) => x != null && string.Equals(x.StableKey ?? "", text3, StringComparison.OrdinalIgnoreCase)))
+				{
+					return;
+				}
+			}
+			else if (value.Any((NpcActionEntry x) => x != null && x.Day == currentGameDayIndexSafe && (string.Equals(x.StableKey ?? "", text3, StringComparison.OrdinalIgnoreCase) || string.Equals((x.Text ?? "").Trim(), text2, StringComparison.Ordinal))))
+			{
+				return;
+			}
+			value.Add(new NpcActionEntry
+			{
+				Day = currentGameDayIndexSafe,
+				Order = ((value.Count > 0) ? (value.Max((NpcActionEntry x) => (x != null) ? x.Order : 0) + 1) : 1),
+				GameDate = GetCurrentGameDateTextSafe(),
+				Text = text2,
+				StableKey = text3
+			});
+			value = value.OrderBy((NpcActionEntry x) => x.Day).ThenBy((NpcActionEntry x) => x.Order).ThenBy((NpcActionEntry x) => x.GameDate ?? "", StringComparer.Ordinal).ToList();
+			if (maxEntries > 0 && value.Count > maxEntries)
+			{
+				value = value.Skip(value.Count - maxEntries).ToList();
+			}
+			storage[npcActionHeroKey] = value;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("NpcAction", "[ERROR] RecordNpcActionInternal: " + ex.Message);
+		}
+	}
+
+	private static string GetArmyDisplayName(Army army)
+	{
+		string text = army?.Name?.ToString();
+		if (!string.IsNullOrWhiteSpace(text))
+		{
+			return text.Trim();
+		}
+		Hero hero = army?.ArmyOwner ?? army?.LeaderParty?.LeaderHero;
+		string text2 = hero?.Name?.ToString();
+		return string.IsNullOrWhiteSpace(text2) ? "一支军团" : (text2.Trim() + "的军团");
+	}
+
+	private static Settlement ResolveSiegeSettlement(SiegeEvent siegeEvent)
+	{
+		if (siegeEvent == null)
+		{
+			return null;
+		}
+		try
+		{
+			foreach (Settlement item in Settlement.All)
+			{
+				if (item?.SiegeEvent == siegeEvent)
+				{
+					return item;
+				}
+			}
+		}
+		catch
+		{
+		}
+		return null;
+	}
+
+	private static IEnumerable<Hero> GetHeroesFromSiegeEventSide(SiegeEvent siegeEvent, BattleSideEnum side)
+	{
+		HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		List<Hero> list = new List<Hero>();
+		if (siegeEvent == null)
+		{
+			return list;
+		}
+		try
+		{
+			foreach (PartyBase involvedPartiesForEventType in siegeEvent.GetInvolvedPartiesForEventType(MapEvent.BattleTypes.Siege))
+			{
+				if (involvedPartiesForEventType == null || involvedPartiesForEventType.Side != side)
+				{
+					continue;
+				}
+				Hero leaderHero = involvedPartiesForEventType.LeaderHero;
+				string npcActionHeroKey = (leaderHero == Hero.MainHero) ? "__player__" : GetNpcActionHeroKey(leaderHero);
+				if (ShouldMentionBattleHero(leaderHero) && hashSet.Add(npcActionHeroKey))
+				{
+					list.Add(leaderHero);
+				}
+			}
+		}
+		catch
+		{
+		}
+		return list;
+	}
+
+	private static string GetMapEventLocationLabel(MapEvent mapEvent)
+	{
+		string text = mapEvent?.MapEventSettlement?.Name?.ToString();
+		return string.IsNullOrWhiteSpace(text) ? "野外" : text.Trim();
+	}
+
+	private static string GetPrimaryOtherSideLabel(MapEventSide side)
+	{
+		string text = side?.LeaderParty?.LeaderHero?.Name?.ToString();
+		if (!string.IsNullOrWhiteSpace(text))
+		{
+			return text.Trim();
+		}
+		text = side?.LeaderParty?.Name?.ToString();
+		if (!string.IsNullOrWhiteSpace(text))
+		{
+			return text.Trim();
+		}
+		text = side?.MapFaction?.Name?.ToString();
+		return string.IsNullOrWhiteSpace(text) ? "敌军" : text.Trim();
+	}
+
+	private static int GetMapEventTroopCount(MapEvent mapEvent)
+	{
+		try
+		{
+			return Math.Max(0, mapEvent?.GetNumberOfInvolvedMen() ?? 0);
+		}
+		catch
+		{
+			return 0;
+		}
+	}
+
+	private static int CountTrackedLordParties(MapEventSide side)
+	{
+		int num = 0;
+		try
+		{
+			if (side?.Parties == null)
+			{
+				return 0;
+			}
+			foreach (MapEventParty party in side.Parties)
+			{
+				if (ShouldTrackNpcActionHero(party?.Party?.LeaderHero))
+				{
+					num++;
+				}
+			}
+		}
+		catch
+		{
+		}
+		return num;
+	}
+
+	private static int GetTroopRosterTotalManCount(TroopRoster roster)
+	{
+		try
+		{
+			return Math.Max(0, roster?.TotalManCount ?? 0);
+		}
+		catch
+		{
+			return 0;
+		}
+	}
+
+	private static string GetFactionDisplayName(IFaction faction, string fallback = "某势力")
+	{
+		string text = faction?.Name?.ToString();
+		return string.IsNullOrWhiteSpace(text) ? fallback : text.Trim();
+	}
+
+	private static string GetHeroFactionDisplayName(Hero hero, IFaction fallbackFaction = null)
+	{
+		return GetFactionDisplayName(hero?.MapFaction ?? fallbackFaction, "某势力");
+	}
+
+	private static string BuildBattleHeroDisplayName(Hero hero, bool isHighlighted, string highlightTag)
+	{
+		string text = hero?.Name?.ToString()?.Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			text = (hero == Hero.MainHero) ? "玩家" : "";
+		}
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return "";
+		}
+		if (hero == Hero.MainHero)
+		{
+			text += "（player）";
+		}
+		if (isHighlighted && !string.IsNullOrWhiteSpace(highlightTag))
+		{
+			text += "（" + highlightTag + "）";
+		}
+		return text;
+	}
+
+	private static string BuildTrackedHeroListText(IEnumerable<Hero> heroes, Hero highlightedHero, string highlightTag, int maxCount = 5)
+	{
+		if (heroes == null)
+		{
+			return "";
+		}
+		HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		List<string> list = new List<string>();
+		foreach (Hero item in heroes.Where(ShouldMentionBattleHero).OrderByDescending((Hero x) => x == highlightedHero))
+		{
+			string text = BuildBattleHeroDisplayName(item, item == highlightedHero, highlightTag);
+			string npcActionHeroKey = (item == Hero.MainHero) ? "__player__" : GetNpcActionHeroKey(item);
+			if (string.IsNullOrWhiteSpace(text) || !hashSet.Add(npcActionHeroKey))
+			{
+				continue;
+			}
+			list.Add(text);
+		}
+		if (list.Count <= 0)
+		{
+			return "";
+		}
+		if (list.Count <= maxCount)
+		{
+			return string.Join("、", list);
+		}
+		return string.Join("、", list.Take(maxCount)) + "等" + list.Count + "人";
+	}
+
+	private static string BuildTrackedHeroListText(IEnumerable<Hero> heroes, int maxCount = 5)
+	{
+		return BuildTrackedHeroListText(heroes, null, "", maxCount);
+	}
+
+	private static string BuildTrackedHeroListText(MapEventSide side, int maxCount = 5)
+	{
+		if (side?.Parties == null)
+		{
+			return "";
+		}
+		return BuildTrackedHeroListText(side.Parties.Select((MapEventParty x) => x?.Party?.LeaderHero), side.LeaderParty?.LeaderHero, "统帅", maxCount);
+	}
+
+	private static string BuildTrackedHeroListText(SiegeEvent siegeEvent, BattleSideEnum side, int maxCount = 5)
+	{
+		Hero highlightedHero = ((side == BattleSideEnum.Attacker) ? (siegeEvent?.BesiegerCamp?.LeaderParty?.LeaderHero) : (siegeEvent?.BesiegedSettlement?.OwnerClan?.Leader));
+		return BuildTrackedHeroListText(GetHeroesFromSiegeEventSide(siegeEvent, side), highlightedHero, "统帅", maxCount);
+	}
+
+	private static string BuildMapEventCasualtyText(MapEventSide side)
+	{
+		if (side?.Parties == null)
+		{
+			return "";
+		}
+		int num = 0;
+		int num2 = 0;
+		try
+		{
+			foreach (MapEventParty party in side.Parties)
+			{
+				num += GetTroopRosterTotalManCount(party?.DiedInBattle);
+				num2 += GetTroopRosterTotalManCount(party?.WoundedInBattle);
+			}
+		}
+		catch
+		{
+		}
+		return "阵亡" + num + "、负伤" + num2;
+	}
+
+	private static int GetMapEventPartyCommittedTroopCount(MapEventParty party)
+	{
+		if (party == null)
+		{
+			return 0;
+		}
+		int troopRosterTotalManCount = GetTroopRosterTotalManCount(party.Party?.MemberRoster);
+		int troopRosterTotalManCount2 = GetTroopRosterTotalManCount(party.DiedInBattle);
+		int troopRosterTotalManCount3 = GetTroopRosterTotalManCount(party.WoundedInBattle);
+		return Math.Max(0, troopRosterTotalManCount + troopRosterTotalManCount2 + troopRosterTotalManCount3);
+	}
+
+	private static string BuildMapEventCommittedTroopText(MapEventSide side)
+	{
+		if (side?.Parties == null)
+		{
+			return "";
+		}
+		int num = 0;
+		try
+		{
+			foreach (MapEventParty party in side.Parties)
+			{
+				num += GetMapEventPartyCommittedTroopCount(party);
+			}
+		}
+		catch
+		{
+		}
+		return (num > 0) ? (num + "人") : "";
+	}
+
+	private static string BuildMapEventStandoutText(MapEventSide side)
+	{
+		if (side?.Parties == null)
+		{
+			return "";
+		}
+		List<MapEventParty> list = side.Parties.Where((MapEventParty x) => ShouldMentionBattleHero(x?.Party?.LeaderHero)).ToList();
+		if (list.Count <= 4)
+		{
+			return "";
+		}
+		MapEventParty mapEventParty = list.OrderByDescending((MapEventParty x) => x.ContributionToBattle).FirstOrDefault();
+		if (mapEventParty == null || mapEventParty.ContributionToBattle <= 0)
+		{
+			return "";
+		}
+		int num = list.Sum((MapEventParty x) => Math.Max(0, x.ContributionToBattle));
+		Hero leaderHero = mapEventParty.Party?.LeaderHero;
+		string text = BuildBattleHeroDisplayName(leaderHero, side.LeaderParty?.LeaderHero == leaderHero, "统帅");
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return "";
+		}
+		if (num <= 0)
+		{
+			return text + "战场贡献最突出。";
+		}
+		int num2 = (int)Math.Round((double)(100 * mapEventParty.ContributionToBattle) / (double)num);
+		if (num2 < 30)
+		{
+			return "";
+		}
+		string text2 = GetFactionDisplayName(leaderHero?.MapFaction ?? side.MapFaction, "某势力");
+		if (num2 > 90)
+		{
+			return "万军辟易！这根本不是一场战争，而是" + text2 + "的" + text + "与他部队的专属杀戮秀！敌人在他面前如同草芥一般不堪一击！";
+		}
+		if (num2 > 75)
+		{
+			return text2 + "的" + text + "几乎包揽了绝大多数的战果！他的大军如同利刃般撕裂敌阵，所向披靡！";
+		}
+		if (num2 > 50)
+		{
+			return text2 + "的" + text + "与他的部队在战场上战无不胜！他是" + text2 + "的英雄！";
+		}
+		return text2 + "的" + text + "与他的部队是我方的中流砥柱！他拥有最高的贡献！";
+	}
+
+	private static string BuildMapEventAftermathText(MapEvent mapEvent, MapEventSide side, bool won, string locationLabel)
+	{
+		if (mapEvent == null || side == null)
+		{
+			return "";
+		}
+		if (mapEvent.IsSiegeAssault || mapEvent.IsSiegeOutside || mapEvent.IsSallyOut)
+		{
+			return "";
+		}
+		if (mapEvent.IsRaid)
+		{
+			return won ? (locationLabel + "的袭掠已经结束，你正在清点缴获并整顿部队。") : (locationLabel + "的袭掠已经结束，你正在收拢部队并处理残局。");
+		}
+		return won ? ("这场发生在" + locationLabel + "的战斗已经结束，你正在整顿部队并清点战果。") : ("这场发生在" + locationLabel + "的战斗已经结束，你正在收拢残部并处理败战残局。");
+	}
+
+	private static string BuildArmyCommandClause(MapEventSide side, Hero actorHero)
+	{
+		Hero leaderHero = side?.LeaderParty?.LeaderHero;
+		string text = leaderHero?.Name?.ToString()?.Trim();
+		if (string.IsNullOrWhiteSpace(text) || leaderHero == actorHero)
+		{
+			return "";
+		}
+		return text + "统帅的军团";
+	}
+
+	private static string BuildMapEventNarrative(MapEvent mapEvent, MapEventSide side, Hero actorHero, bool won, string locationLabel)
+	{
+		if (mapEvent == null || side == null)
+		{
+			return "";
+		}
+		string text = GetHeroFactionDisplayName(actorHero, side.MapFaction);
+		string text2 = GetFactionDisplayName(side.OtherSide?.MapFaction, GetPrimaryOtherSideLabel(side.OtherSide));
+		Settlement mapEventSettlement = mapEvent.MapEventSettlement;
+		string text3 = BuildArmyCommandClause(side, actorHero);
+		string text4;
+		if (mapEvent.IsSiegeAssault || mapEvent.IsSiegeOutside || mapEvent.IsSallyOut)
+		{
+			string text5 = mapEventSettlement?.Name?.ToString();
+			if (string.IsNullOrWhiteSpace(text5))
+			{
+				text5 = locationLabel;
+			}
+			string text6 = GetFactionDisplayName(side.OtherSide?.MapFaction, text2);
+			text4 = ((side.MissionSide == BattleSideEnum.Attacker) ? (won ? ("你作为" + text + "的领主，在" + (string.IsNullOrWhiteSpace(text3) ? "对" : (text3 + "对")) + text6 + "的领土" + text5.Trim() + "的围城战中获胜。") : ("你作为" + text + "的领主，在" + (string.IsNullOrWhiteSpace(text3) ? "对" : (text3 + "对")) + text6 + "的领土" + text5.Trim() + "的围攻中失利。")) : (won ? ("你作为" + text + "的领主，在" + (string.IsNullOrWhiteSpace(text3) ? "" : (text3 + "参与的")) + text5.Trim() + "保卫战中击退了" + text6 + "。") : ("你作为" + text + "的领主，在" + (string.IsNullOrWhiteSpace(text3) ? "" : (text3 + "参与的")) + text5.Trim() + "保卫战中败给了" + text6 + "。")));
+		}
+		else if (mapEvent.IsRaid)
+		{
+			text4 = (won ? ("你作为" + text + "的领主，在" + (string.IsNullOrWhiteSpace(text3) ? "" : (text3 + "于")) + locationLabel + "对" + text2 + "发动的袭掠中得手。") : ("你作为" + text + "的领主，在" + (string.IsNullOrWhiteSpace(text3) ? "" : (text3 + "于")) + locationLabel + "对" + text2 + "发动的袭掠中失利。"));
+		}
+		else
+		{
+			text4 = (won ? ("你作为" + text + "的领主，在" + (string.IsNullOrWhiteSpace(text3) ? "" : (text3 + "于")) + locationLabel + "击败了" + text2 + "。") : ("你作为" + text + "的领主，在" + (string.IsNullOrWhiteSpace(text3) ? "" : (text3 + "于")) + locationLabel + "败给了" + text2 + "。"));
+		}
+		StringBuilder stringBuilder = new StringBuilder(text4);
+		string text7 = BuildTrackedHeroListText(side, 5);
+		string text8 = BuildTrackedHeroListText(side.OtherSide, 5);
+		if (!string.IsNullOrWhiteSpace(text7))
+		{
+			stringBuilder.Append(" 我方领主：").Append(text7).Append('。');
+		}
+		if (!string.IsNullOrWhiteSpace(text8))
+		{
+			stringBuilder.Append(" 敌方领主：").Append(text8).Append('。');
+		}
+		string text9 = BuildMapEventCommittedTroopText(side);
+		string text10 = BuildMapEventCommittedTroopText(side.OtherSide);
+		if (!string.IsNullOrWhiteSpace(text9) || !string.IsNullOrWhiteSpace(text10))
+		{
+			stringBuilder.Append(" 战前投入兵力：我方").Append(string.IsNullOrWhiteSpace(text9) ? "不详" : text9);
+			stringBuilder.Append("；敌方").Append(string.IsNullOrWhiteSpace(text10) ? "不详" : text10).Append('。');
+		}
+		string text11 = BuildMapEventCasualtyText(side);
+		string text12 = BuildMapEventCasualtyText(side.OtherSide);
+		stringBuilder.Append(" 我方死伤：").Append(text11);
+		stringBuilder.Append("；敌方死伤：").Append(text12).Append('。');
+		string text13 = BuildMapEventStandoutText(side);
+		if (!string.IsNullOrWhiteSpace(text13))
+		{
+			stringBuilder.Append(" ：").Append(text13);
+		}
+		return stringBuilder.ToString();
+	}
+
+	private static string BuildPlayerAddressedInput(Hero hero, string playerText)
+	{
+		string text = (playerText ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return "";
+		}
+		string text2 = Hero.MainHero?.Name?.ToString()?.Trim();
+		if (string.IsNullOrWhiteSpace(text2))
+		{
+			text2 = "玩家";
+		}
+		string text3 = hero?.Name?.ToString()?.Trim();
+		if (string.IsNullOrWhiteSpace(text3))
+		{
+			text3 = "该NPC";
+		}
+		return text2 + "（player）对" + text3 + "说: " + text;
+	}
+
+	private static bool TryStripPlayerSpeechPrefix(string line, out string stripped)
+	{
+		stripped = "";
+		string text = (line ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return false;
+		}
+		if (text.StartsWith("玩家:", StringComparison.Ordinal))
+		{
+			stripped = text.Substring("玩家:".Length).Trim();
+			return true;
+		}
+		if (text.StartsWith("玩家：", StringComparison.Ordinal))
+		{
+			stripped = text.Substring("玩家：".Length).Trim();
+			return true;
+		}
+		int num = text.IndexOf("（player）对", StringComparison.Ordinal);
+		if (num >= 0)
+		{
+			int num2 = text.IndexOf("说:", num, StringComparison.Ordinal);
+			if (num2 < 0)
+			{
+				num2 = text.IndexOf("说：", num, StringComparison.Ordinal);
+			}
+			if (num2 >= 0)
+			{
+				stripped = text.Substring(num2 + 2).Trim();
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private static string BuildSiegeStartNarrative(Settlement settlement, bool isAttacker, SiegeEvent siegeEvent)
+	{
+		string text = settlement?.Name?.ToString() ?? "某处要塞";
+		string text2 = GetFactionDisplayName(settlement?.MapFaction, "守军");
+		string text3 = GetFactionDisplayName(siegeEvent?.BesiegerCamp?.LeaderParty?.MapFaction, "攻方");
+		StringBuilder stringBuilder = new StringBuilder(isAttacker ? ("你参与了对" + text2 + "领土" + text + "的围攻。") : ("你参与了" + text + "的守城，对抗" + text3 + "。"));
+		string text4 = BuildTrackedHeroListText(siegeEvent, BattleSideEnum.Attacker, 5);
+		string text5 = BuildTrackedHeroListText(siegeEvent, BattleSideEnum.Defender, 5);
+		if (!string.IsNullOrWhiteSpace(text4))
+		{
+			stringBuilder.Append(" 攻方领主：").Append(text4).Append('。');
+		}
+		if (!string.IsNullOrWhiteSpace(text5))
+		{
+			stringBuilder.Append(" 守方领主：").Append(text5).Append('。');
+		}
+		return stringBuilder.ToString();
+	}
+
+	private void TrackNpcActionsFromMapEvent(MapEvent mapEvent)
+	{
+		if (mapEvent == null || !mapEvent.HasWinner)
+		{
+			return;
+		}
+		int mapEventTroopCount = GetMapEventTroopCount(mapEvent);
+		bool flag = mapEvent.IsSiegeAssault || mapEvent.IsSiegeOutside || mapEvent.IsSallyOut || mapEvent.IsRaid || mapEventTroopCount >= 120 || CountTrackedLordParties(mapEvent.AttackerSide) + CountTrackedLordParties(mapEvent.DefenderSide) >= 2;
+		string mapEventLocationLabel = GetMapEventLocationLabel(mapEvent);
+		TrackNpcActionsFromMapEventSide(mapEvent, mapEvent.AttackerSide, mapEvent.WinningSide == BattleSideEnum.Attacker, flag, mapEventLocationLabel);
+		TrackNpcActionsFromMapEventSide(mapEvent, mapEvent.DefenderSide, mapEvent.WinningSide == BattleSideEnum.Defender, flag, mapEventLocationLabel);
+	}
+
+	private void TrackNpcActionsFromMapEventSide(MapEvent mapEvent, MapEventSide side, bool won, bool isMajor, string locationLabel)
+	{
+		if (mapEvent == null || side?.Parties == null)
+		{
+			return;
+		}
+		foreach (MapEventParty party in side.Parties)
+		{
+			Hero leaderHero = party?.Party?.LeaderHero;
+			if (!ShouldTrackNpcActionHero(leaderHero))
+			{
+				continue;
+			}
+			string text = BuildMapEventNarrative(mapEvent, side, leaderHero, won, locationLabel);
+			string text2 = "mapevent:" + (mapEvent.StringId ?? locationLabel) + ":" + won + ":" + (leaderHero.StringId ?? "");
+			if (isMajor)
+			{
+				RecordNpcMajorAction(leaderHero, text, text2);
+			}
+			RecordNpcRecentAction(leaderHero, text, text2);
+			string text3 = BuildMapEventAftermathText(mapEvent, side, won, locationLabel);
+			if (!string.IsNullOrWhiteSpace(text3))
+			{
+				RecordNpcRecentAction(leaderHero, text3, "mapevent_aftermath:" + (mapEvent.StringId ?? locationLabel) + ":" + won + ":" + (leaderHero.StringId ?? ""));
+			}
+		}
+	}
+
+	private static string GetNearestSettlementNameForParty(MobileParty party)
+	{
+		Settlement settlement = party?.BesiegedSettlement ?? ResolveSiegeSettlement(party?.SiegeEvent);
+		if (settlement == null)
+		{
+			settlement = party?.Army?.LeaderParty?.BesiegedSettlement ?? ResolveSiegeSettlement(party?.Army?.LeaderParty?.SiegeEvent);
+		}
+		string text = settlement?.Name?.ToString();
+		if (!string.IsNullOrWhiteSpace(text))
+		{
+			return text.Trim();
+		}
+		text = party?.Army?.LeaderParty?.TargetSettlement?.Name?.ToString();
+		if (!string.IsNullOrWhiteSpace(text))
+		{
+			return text.Trim();
+		}
+		text = party?.TargetSettlement?.Name?.ToString();
+		if (!string.IsNullOrWhiteSpace(text))
+		{
+			return text.Trim();
+		}
+		text = party?.CurrentSettlement?.Name?.ToString();
+		if (!string.IsNullOrWhiteSpace(text))
+		{
+			return text.Trim();
+		}
+		text = party?.LastVisitedSettlement?.Name?.ToString();
+		if (!string.IsNullOrWhiteSpace(text))
+		{
+			return text.Trim();
+		}
+		text = party?.BesiegedSettlement?.Name?.ToString();
+		return string.IsNullOrWhiteSpace(text) ? "附近一带" : text.Trim();
+	}
+
+	private static string BuildRecentPartyBehaviorText(MobileParty party)
+	{
+		if (party == null)
+		{
+			return "";
+		}
+		MobileParty mobileParty = party.Army?.LeaderParty ?? party;
+		string text = GetNearestSettlementNameForParty(party);
+		if (party.Army != null)
+		{
+			string text2 = (party.Army.LeaderParty == party) ? "你最近正率领" : "你最近正随";
+			string text3 = GetArmyDisplayName(party.Army);
+			switch (mobileParty?.DefaultBehavior)
+			{
+			case TaleWorlds.CampaignSystem.Party.AiBehavior.BesiegeSettlement:
+				return text2 + text3 + "围攻" + text + "。";
+			case TaleWorlds.CampaignSystem.Party.AiBehavior.AssaultSettlement:
+				return text2 + text3 + "强攻" + text + "。";
+			case TaleWorlds.CampaignSystem.Party.AiBehavior.DefendSettlement:
+				return text2 + text3 + "守备" + text + "。";
+			case TaleWorlds.CampaignSystem.Party.AiBehavior.GoToSettlement:
+				return text2 + text3 + "前往" + text + "。";
+			case TaleWorlds.CampaignSystem.Party.AiBehavior.PatrolAroundPoint:
+				return text2 + text3 + "在" + text + "附近巡逻。";
+			case TaleWorlds.CampaignSystem.Party.AiBehavior.EngageParty:
+				{
+					string text4 = mobileParty?.TargetParty?.LeaderHero?.Name?.ToString() ?? mobileParty?.TargetParty?.Name?.ToString();
+					return string.IsNullOrWhiteSpace(text4) ? (text2 + text3 + "追击一支部队。") : (text2 + text3 + "追击" + text4.Trim() + "。");
+				}
+			default:
+				return text2 + text3 + "在" + text + "一带行动。";
+			}
+		}
+		switch (party.DefaultBehavior)
+		{
+		case TaleWorlds.CampaignSystem.Party.AiBehavior.BesiegeSettlement:
+			return "你最近在围攻" + text + "。";
+		case TaleWorlds.CampaignSystem.Party.AiBehavior.AssaultSettlement:
+			return "你最近在强攻" + text + "。";
+		case TaleWorlds.CampaignSystem.Party.AiBehavior.DefendSettlement:
+			return "你最近在守备" + text + "。";
+		case TaleWorlds.CampaignSystem.Party.AiBehavior.RaidSettlement:
+			return "你最近在袭扰" + text + "。";
+		case TaleWorlds.CampaignSystem.Party.AiBehavior.PatrolAroundPoint:
+			return "你最近在" + text + "附近巡逻。";
+		case TaleWorlds.CampaignSystem.Party.AiBehavior.GoToSettlement:
+			return "你最近正前往" + text + "。";
+		case TaleWorlds.CampaignSystem.Party.AiBehavior.EngageParty:
+			{
+				string text2 = party.TargetParty?.LeaderHero?.Name?.ToString() ?? party.TargetParty?.Name?.ToString();
+				return string.IsNullOrWhiteSpace(text2) ? "你最近在追击一支部队。" : ("你最近在追击" + text2.Trim() + "。");
+			}
+		case TaleWorlds.CampaignSystem.Party.AiBehavior.EscortParty:
+			{
+				string text3 = party.TargetParty?.LeaderHero?.Name?.ToString() ?? party.TargetParty?.Name?.ToString();
+				return string.IsNullOrWhiteSpace(text3) ? "你最近在护送一支部队。" : ("你最近在护送" + text3.Trim() + "。");
+			}
+		default:
+			return "";
+		}
+	}
+
+	private static string BuildRecentPartyBehaviorStableKey(MobileParty party)
+	{
+		if (party == null)
+		{
+			return "";
+		}
+		MobileParty mobileParty = party.Army?.LeaderParty ?? party;
+		string text = GetNearestSettlementNameForParty(party);
+		string text2 = mobileParty?.TargetParty?.StringId ?? mobileParty?.TargetParty?.Name?.ToString() ?? "";
+		string text3 = (party.Army != null) ? GetArmyDisplayName(party.Army) : "";
+		if (party.Army != null)
+		{
+			return "daily_behavior:army:" + (mobileParty?.DefaultBehavior).GetValueOrDefault() + ":" + text + ":" + text2 + ":" + text3;
+		}
+		return "daily_behavior:" + party.DefaultBehavior + ":" + text + ":" + text2 + ":" + text3;
+	}
+
+	private string BuildNpcActionSummary(Hero hero, bool recentOnly)
+	{
+		string npcActionHeroKey = GetNpcActionHeroKey(hero);
+		if (string.IsNullOrWhiteSpace(npcActionHeroKey))
+		{
+			return "";
+		}
+		Dictionary<string, List<NpcActionEntry>> dictionary = (recentOnly ? _npcRecentActions : _npcMajorActions);
+		if (dictionary == null || !dictionary.TryGetValue(npcActionHeroKey, out var value) || value == null || value.Count <= 0)
+		{
+			return "";
+		}
+		List<NpcActionEntry> list = SanitizeNpcActionEntries(value, keepOnlyRecentWindow: recentOnly);
+		if (list.Count <= 0)
+		{
+			return "";
+		}
+		StringBuilder stringBuilder = new StringBuilder();
+		int num = int.MinValue;
+		string text = null;
+		foreach (NpcActionEntry item in list)
+		{
+			string text2 = !string.IsNullOrWhiteSpace(item.GameDate) ? item.GameDate.Trim() : ("第 " + item.Day + " 日");
+			if (item.Day != num || !string.Equals(text, text2, StringComparison.Ordinal))
+			{
+				if (stringBuilder.Length > 0)
+				{
+					stringBuilder.AppendLine();
+				}
+				stringBuilder.AppendLine("—— " + text2 + " ——");
+				num = item.Day;
+				text = text2;
+			}
+			stringBuilder.AppendLine("- " + RenderNpcActionPromptText(hero, item.Text));
+		}
+		return stringBuilder.ToString().TrimEnd();
+	}
+
+	private static string RenderNpcActionPromptText(Hero hero, string rawText)
+	{
+		string text = (rawText ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return "";
+		}
+		string text2 = hero?.Name?.ToString()?.Trim();
+		if (string.IsNullOrWhiteSpace(text2))
+		{
+			text2 = "该人物";
+		}
+		if (text.StartsWith("你", StringComparison.Ordinal))
+		{
+			return text2 + text.Substring(1);
+		}
+		if (text.StartsWith(text2, StringComparison.Ordinal))
+		{
+			return text;
+		}
+		return text2 + "：" + text;
+	}
+
+	private string BuildNpcMajorActionsRuntimeInstruction(Hero hero)
+	{
+		string text = BuildNpcActionSummary(hero, recentOnly: false);
+		string stateKey = (string.IsNullOrWhiteSpace(text) ? "no_data" : "has_data");
+		Dictionary<string, string> dictionary = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+		{
+			["majorActionSummary"] = text ?? ""
+		};
+		return AIConfigHandler.ResolveRuleRuntimeText("npc_major_actions", stateKey, forConstraint: false, dictionary);
+	}
+
+	private string BuildNpcRecentActionsRuntimeInstruction(Hero hero)
+	{
+		string text = BuildNpcActionSummary(hero, recentOnly: true);
+		string stateKey = (string.IsNullOrWhiteSpace(text) ? "no_data" : "has_data");
+		Dictionary<string, string> dictionary = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+		{
+			["recentActionSummary"] = text ?? ""
+		};
+		return AIConfigHandler.ResolveRuleRuntimeText("npc_recent_actions", stateKey, forConstraint: false, dictionary);
+	}
+
+	private string BuildNpcActionsRuntimeConstraintHint(Hero hero, bool recentOnly)
+	{
+		string text = BuildNpcActionSummary(hero, recentOnly);
+		if (!string.IsNullOrWhiteSpace(text))
+		{
+			return "";
+		}
+		return AIConfigHandler.ResolveRuleRuntimeText(recentOnly ? "npc_recent_actions" : "npc_major_actions", "no_data", forConstraint: true, new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase));
 	}
 
 	private void OnCampaignTick(float dt)
@@ -560,6 +1727,22 @@ public class MyBehavior : CampaignBehaviorBase
 		if (_dialogueHistoryStorage == null)
 		{
 			_dialogueHistoryStorage = new Dictionary<string, string>();
+		}
+		if (_npcMajorActions == null)
+		{
+			_npcMajorActions = new Dictionary<string, List<NpcActionEntry>>();
+		}
+		if (_npcMajorActionStorage == null)
+		{
+			_npcMajorActionStorage = new Dictionary<string, string>();
+		}
+		if (_npcRecentActions == null)
+		{
+			_npcRecentActions = new Dictionary<string, List<NpcActionEntry>>();
+		}
+		if (_npcRecentActionStorage == null)
+		{
+			_npcRecentActionStorage = new Dictionary<string, string>();
 		}
 		if (_npcPersonaProfiles == null)
 		{
@@ -623,6 +1806,40 @@ public class MyBehavior : CampaignBehaviorBase
 					}
 				}
 				dataStore.SyncData("_dialogueHistory_v2", ref _dialogueHistoryStorage);
+				_npcMajorActionStorage.Clear();
+				foreach (KeyValuePair<string, List<NpcActionEntry>> npcMajorAction in _npcMajorActions)
+				{
+					if (!string.IsNullOrEmpty(npcMajorAction.Key) && npcMajorAction.Value != null && npcMajorAction.Value.Count > 0)
+					{
+						try
+						{
+							string value2 = JsonConvert.SerializeObject(npcMajorAction.Value);
+							_npcMajorActionStorage[npcMajorAction.Key] = value2;
+						}
+						catch (Exception ex2)
+						{
+							Logger.Log("NpcAction", "[ERROR] Serialize major actions for " + npcMajorAction.Key + ": " + ex2.Message);
+						}
+					}
+				}
+				dataStore.SyncData("_npcMajorActions_v1", ref _npcMajorActionStorage);
+				_npcRecentActionStorage.Clear();
+				foreach (KeyValuePair<string, List<NpcActionEntry>> npcRecentAction in _npcRecentActions)
+				{
+					if (!string.IsNullOrEmpty(npcRecentAction.Key) && npcRecentAction.Value != null && npcRecentAction.Value.Count > 0)
+					{
+						try
+						{
+							string value3 = JsonConvert.SerializeObject(npcRecentAction.Value);
+							_npcRecentActionStorage[npcRecentAction.Key] = value3;
+						}
+						catch (Exception ex3)
+						{
+							Logger.Log("NpcAction", "[ERROR] Serialize recent actions for " + npcRecentAction.Key + ": " + ex3.Message);
+						}
+					}
+				}
+				dataStore.SyncData("_npcRecentActions_v1", ref _npcRecentActionStorage);
 				_npcPersonaProfileStorage.Clear();
 				foreach (KeyValuePair<string, NpcPersonaProfile> npcPersonaProfile2 in _npcPersonaProfiles)
 				{
@@ -630,12 +1847,12 @@ public class MyBehavior : CampaignBehaviorBase
 					{
 						try
 						{
-							string value2 = JsonConvert.SerializeObject(npcPersonaProfile2.Value);
-							_npcPersonaProfileStorage[npcPersonaProfile2.Key] = value2;
+							string value4 = JsonConvert.SerializeObject(npcPersonaProfile2.Value);
+							_npcPersonaProfileStorage[npcPersonaProfile2.Key] = value4;
 						}
-						catch (Exception ex2)
+						catch (Exception ex4)
 						{
-							Logger.Log("NpcPersona", "[ERROR] Serialize profile for " + npcPersonaProfile2.Key + ": " + ex2.Message);
+							Logger.Log("NpcPersona", "[ERROR] Serialize profile for " + npcPersonaProfile2.Key + ": " + ex4.Message);
 						}
 					}
 				}
@@ -705,12 +1922,12 @@ public class MyBehavior : CampaignBehaviorBase
 					}
 				}
 			}
-			_npcPersonaProfiles.Clear();
-			_npcPersonaProfileStorage.Clear();
-			dataStore.SyncData("_npcPersonaProfiles_v1", ref _npcPersonaProfileStorage);
-			if (_npcPersonaProfileStorage != null)
+			_npcMajorActions.Clear();
+			_npcMajorActionStorage.Clear();
+			dataStore.SyncData("_npcMajorActions_v1", ref _npcMajorActionStorage);
+			if (_npcMajorActionStorage != null)
 			{
-				foreach (KeyValuePair<string, string> item3 in _npcPersonaProfileStorage)
+				foreach (KeyValuePair<string, string> item3 in _npcMajorActionStorage)
 				{
 					if (string.IsNullOrEmpty(item3.Key) || string.IsNullOrEmpty(item3.Value))
 					{
@@ -718,27 +1935,83 @@ public class MyBehavior : CampaignBehaviorBase
 					}
 					try
 					{
-						NpcPersonaProfile npcPersonaProfile = JsonConvert.DeserializeObject<NpcPersonaProfile>(item3.Value);
-						if (npcPersonaProfile != null)
+						List<NpcActionEntry> list2 = JsonConvert.DeserializeObject<List<NpcActionEntry>>(item3.Value) ?? new List<NpcActionEntry>();
+						list2 = SanitizeNpcActionEntries(list2, keepOnlyRecentWindow: false);
+						if (list2.Count > 0)
 						{
-							_npcPersonaProfiles[item3.Key] = npcPersonaProfile;
+							_npcMajorActions[item3.Key] = list2;
 						}
 					}
 					catch (Exception ex4)
 					{
-						Logger.Log("NpcPersona", "[ERROR] Deserialize profile for " + item3.Key + ": " + ex4.Message);
+						Logger.Log("NpcAction", "[ERROR] Deserialize major actions for " + item3.Key + ": " + ex4.Message);
+					}
+				}
+			}
+			_npcRecentActions.Clear();
+			_npcRecentActionStorage.Clear();
+			dataStore.SyncData("_npcRecentActions_v1", ref _npcRecentActionStorage);
+			if (_npcRecentActionStorage != null)
+			{
+				foreach (KeyValuePair<string, string> item4 in _npcRecentActionStorage)
+				{
+					if (string.IsNullOrEmpty(item4.Key) || string.IsNullOrEmpty(item4.Value))
+					{
+						continue;
+					}
+					try
+					{
+						List<NpcActionEntry> list3 = JsonConvert.DeserializeObject<List<NpcActionEntry>>(item4.Value) ?? new List<NpcActionEntry>();
+						list3 = SanitizeNpcActionEntries(list3, keepOnlyRecentWindow: true);
+						if (list3.Count > 0)
+						{
+							_npcRecentActions[item4.Key] = list3;
+						}
+					}
+					catch (Exception ex5)
+					{
+						Logger.Log("NpcAction", "[ERROR] Deserialize recent actions for " + item4.Key + ": " + ex5.Message);
+					}
+				}
+			}
+			_npcPersonaProfiles.Clear();
+			_npcPersonaProfileStorage.Clear();
+			dataStore.SyncData("_npcPersonaProfiles_v1", ref _npcPersonaProfileStorage);
+			if (_npcPersonaProfileStorage != null)
+			{
+				foreach (KeyValuePair<string, string> item5 in _npcPersonaProfileStorage)
+				{
+					if (string.IsNullOrEmpty(item5.Key) || string.IsNullOrEmpty(item5.Value))
+					{
+						continue;
+					}
+					try
+					{
+						NpcPersonaProfile npcPersonaProfile = JsonConvert.DeserializeObject<NpcPersonaProfile>(item5.Value);
+						if (npcPersonaProfile != null)
+						{
+							_npcPersonaProfiles[item5.Key] = npcPersonaProfile;
+						}
+					}
+					catch (Exception ex6)
+					{
+						Logger.Log("NpcPersona", "[ERROR] Deserialize profile for " + item5.Key + ": " + ex6.Message);
 					}
 				}
 			}
 			SyncPatienceData(dataStore);
 		}
-		catch (Exception ex5)
+		catch (Exception ex7)
 		{
-			Logger.Log("DialogueHistory", "[ERROR] SyncData v2 failed: " + ex5.ToString());
+			Logger.Log("DialogueHistory", "[ERROR] SyncData v2 failed: " + ex7.ToString());
 			_shownRecords = new Dictionary<string, HeroShownRecord>();
 			_shownRecordStorage = new Dictionary<string, string>();
 			_dialogueHistory = new Dictionary<string, List<DialogueDay>>();
 			_dialogueHistoryStorage = new Dictionary<string, string>();
+			_npcMajorActions = new Dictionary<string, List<NpcActionEntry>>();
+			_npcMajorActionStorage = new Dictionary<string, string>();
+			_npcRecentActions = new Dictionary<string, List<NpcActionEntry>>();
+			_npcRecentActionStorage = new Dictionary<string, string>();
 			_npcPersonaProfiles = new Dictionary<string, NpcPersonaProfile>();
 			_npcPersonaProfileStorage = new Dictionary<string, string>();
 		}
@@ -2847,6 +4120,8 @@ public class MyBehavior : CampaignBehaviorBase
 		return (targetKey ?? "").Trim().ToLowerInvariant();
 	}
 
+	// Maintenance note: this direct-dialogue path is kept for compatibility only.
+	// The mod's primary NPC chat path is the scene shout chain; prioritize that path for new work.
 	private void StartAiConversation(string input, string extraFact)
 	{
 		Hero targetHero = Hero.OneToOneConversationHero;
@@ -3321,7 +4596,8 @@ public class MyBehavior : CampaignBehaviorBase
 						["buildMs"] = Math.Round(swPromptBuild.Elapsed.TotalMilliseconds, 2)
 					});
 					Logger.Metric("prompt.compose.direct", ok: true, swPromptBuild.Elapsed.TotalMilliseconds);
-					Logger.Log("Logic", "[AI Request] NPC=" + npcName + " HeroId=" + (targetHero?.StringId ?? "null") + "\n[SYSTEM]=\n" + finalSystemPrompt + "\n[USER]=\n" + input + "\n");
+					string addressedInput = BuildPlayerAddressedInput(targetHero, input);
+					Logger.Log("Logic", "[AI Request] NPC=" + npcName + " HeroId=" + (targetHero?.StringId ?? "null") + "\n[SYSTEM]=\n" + finalSystemPrompt + "\n[USER]=\n" + addressedInput + "\n");
 					List<object> apiMessages = new List<object>
 					{
 						new
@@ -3332,7 +4608,7 @@ public class MyBehavior : CampaignBehaviorBase
 						new
 						{
 							role = "user",
-							content = input
+							content = addressedInput
 						}
 					};
 					string streamResult = null;
@@ -3680,7 +4956,7 @@ public class MyBehavior : CampaignBehaviorBase
 			}
 			if (!string.IsNullOrWhiteSpace(playerText))
 			{
-				dialogueDay.Lines.Add("玩家: " + playerText);
+				dialogueDay.Lines.Add(BuildPlayerAddressedInput(hero, playerText));
 			}
 			if (!string.IsNullOrWhiteSpace(extraFact))
 			{
@@ -4220,6 +5496,42 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
+	public static string BuildNpcMajorActionsRuntimeInstructionForExternal(Hero hero)
+	{
+		try
+		{
+			return (Campaign.Current?.GetCampaignBehavior<MyBehavior>())?.BuildNpcMajorActionsRuntimeInstruction(hero) ?? "";
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	public static string BuildNpcRecentActionsRuntimeInstructionForExternal(Hero hero)
+	{
+		try
+		{
+			return (Campaign.Current?.GetCampaignBehavior<MyBehavior>())?.BuildNpcRecentActionsRuntimeInstruction(hero) ?? "";
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	public static string BuildNpcActionsRuntimeConstraintHintForExternal(Hero hero, bool recentOnly)
+	{
+		try
+		{
+			return (Campaign.Current?.GetCampaignBehavior<MyBehavior>())?.BuildNpcActionsRuntimeConstraintHint(hero, recentOnly) ?? "";
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
 	public static ShoutPromptContext BuildShoutPromptContextForExternal(Hero targetHero, string input, string extraFact, string cultureIdOverride = null, bool hasAnyHero = true, CharacterObject targetCharacter = null, string kingdomIdOverride = null)
 	{
 		try
@@ -4251,6 +5563,7 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
+	// Primary runtime chat path: scene shout / non-native conversation UI.
 	private ShoutPromptContext BuildShoutPromptContextForExternalInternal(Hero targetHero, string input, string extraFact, string cultureIdOverride, bool hasAnyHero = true, CharacterObject targetCharacter = null, string kingdomIdOverride = null)
 	{
 		ShoutPromptContext shoutPromptContext = new ShoutPromptContext
@@ -4740,8 +6053,7 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private static bool IsPlayerTurnStartLine(string line)
 	{
-		string text = (line ?? "").TrimStart();
-		return text.StartsWith("玩家:", StringComparison.Ordinal);
+		return TryStripPlayerSpeechPrefix(line, out var _);
 	}
 
 	private static bool IsSystemFactLine(string line)
@@ -4940,6 +6252,10 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			return text.Substring("[NPC行为补充]".Length).Trim();
 		}
+		if (TryStripPlayerSpeechPrefix(text, out var stripped))
+		{
+			return stripped;
+		}
 		int num = text.IndexOf(':');
 		if (num > 0 && num < 20)
 		{
@@ -5075,18 +6391,9 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			return false;
 		}
-		string text = line.Trim();
-		if (text.StartsWith("玩家:", StringComparison.Ordinal))
+		if (!TryStripPlayerSpeechPrefix(line, out var text))
 		{
-			text = text.Substring("玩家:".Length).Trim();
-		}
-		else
-		{
-			if (!text.StartsWith("玩家：", StringComparison.Ordinal))
-			{
-				return false;
-			}
-			text = text.Substring("玩家：".Length).Trim();
+			return false;
 		}
 		string b = currentInput.Trim();
 		return string.Equals(text, b, StringComparison.Ordinal);

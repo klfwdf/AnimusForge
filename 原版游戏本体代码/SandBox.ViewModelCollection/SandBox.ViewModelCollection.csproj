@@ -1,0 +1,201 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x64</Platform>
+    <ProjectGuid>{C2043D23-6315-4853-B0B0-819B88470E6C}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SandBox.ViewModelCollection</RootNamespace>
+    <AssemblyName>SandBox.ViewModelCollection</AssemblyName>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <TargetFrameworkIdentifier>.NETStandard</TargetFrameworkIdentifier>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
+    <PlatformTarget>x64</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <NoStdLib>true</NoStdLib>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
+    <PlatformTarget>x64</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <NoStdLib>true</NoStdLib>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="netstandard" />
+    <Reference Include="TaleWorlds.Localization">
+      <HintPath>..\..\bin\x64\Debug\TaleWorlds.Localization.dll</HintPath>
+    </Reference>
+    <Reference Include="TaleWorlds.MountAndBlade">
+      <HintPath>..\..\bin\x64\Debug\TaleWorlds.MountAndBlade.dll</HintPath>
+    </Reference>
+    <Reference Include="TaleWorlds.MountAndBlade.ViewModelCollection">
+      <HintPath>..\..\bin\x64\Debug\TaleWorlds.MountAndBlade.ViewModelCollection.dll</HintPath>
+    </Reference>
+    <Reference Include="TaleWorlds.ObjectSystem">
+      <HintPath>..\..\bin\x64\Debug\TaleWorlds.ObjectSystem.dll</HintPath>
+    </Reference>
+    <Reference Include="TaleWorlds.SaveSystem">
+      <HintPath>..\..\bin\x64\Debug\TaleWorlds.SaveSystem.dll</HintPath>
+    </Reference>
+    <Reference Include="TaleWorlds.ScreenSystem">
+      <HintPath>..\..\bin\x64\Debug\TaleWorlds.ScreenSystem.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <AppDesigner Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="BoardGame\BoardGameInstructionsVM.cs" />
+    <Compile Include="BoardGame\BoardGameInstructionVM.cs" />
+    <Compile Include="BoardGame\BoardGameVM.cs" />
+    <Compile Include="GameOver\GameOverStatCategoryVM.cs" />
+    <Compile Include="GameOver\GameOverStatItemVM.cs" />
+    <Compile Include="GameOver\GameOverStatsProvider.cs" />
+    <Compile Include="GameOver\GameOverVM.cs" />
+    <Compile Include="GameOver\StatCategory.cs" />
+    <Compile Include="GameOver\StatItem.cs" />
+    <Compile Include="Input\InputKeyItemVM.cs" />
+    <Compile Include="MapSiege\MapSiegePOIVM.cs" />
+    <Compile Include="MapSiege\MapSiegeProductionMachineVM.cs" />
+    <Compile Include="MapSiege\MapSiegeProductionVM.cs" />
+    <Compile Include="MapSiege\MapSiegeVM.cs" />
+    <Compile Include="MapSiege\PlayerStartEngineConstructionEvent.cs" />
+    <Compile Include="Map\Cheat\CheatActionItemVM.cs" />
+    <Compile Include="Map\Cheat\CheatGroupItemVM.cs" />
+    <Compile Include="Map\Cheat\CheatItemBaseVM.cs" />
+    <Compile Include="Map\Cheat\GameplayCheatsVM.cs" />
+    <Compile Include="Map\Incidents\MapIncidentOptionVM.cs" />
+    <Compile Include="Map\Incidents\MapIncidentVM.cs" />
+    <Compile Include="Map\MapEventVisualItemVM.cs" />
+    <Compile Include="Map\MapEventVisualsVM.cs" />
+    <Compile Include="Map\Tracker\MapArmyTrackItemVM.cs" />
+    <Compile Include="Map\Tracker\MapMarkerTrackerItemVM.cs" />
+    <Compile Include="Map\Tracker\MapMobilePartyTrackItemVM.cs" />
+    <Compile Include="Map\Tracker\MapTrackerCollectionVM.cs" />
+    <Compile Include="Map\Tracker\MapTrackerProvider.cs" />
+    <Compile Include="Microsoft\CodeAnalysis\EmbeddedAttribute.cs" />
+    <Compile Include="Missions\MainAgentDetection\MainAgentDetectionVM.cs" />
+    <Compile Include="Missions\MainAgentDetection\MissionDisguiseMarkerItemVM.cs" />
+    <Compile Include="Missions\MainAgentDetection\MissionDisguiseMarkersVM.cs" />
+    <Compile Include="Missions\MainAgentDetection\MissionLosingTargetVM.cs" />
+    <Compile Include="Missions\MissionAgentAlarmStateVM.cs" />
+    <Compile Include="Missions\MissionAgentAlarmTargetVM.cs" />
+    <Compile Include="Missions\MissionArenaPracticeFightVM.cs" />
+    <Compile Include="Missions\MissionQuestBarVM.cs" />
+    <Compile Include="Missions\NameMarker\MissionNameMarkerFactory.cs" />
+    <Compile Include="Missions\NameMarker\MissionNameMarkerHelper.cs" />
+    <Compile Include="Missions\NameMarker\MissionNameMarkerProvider.cs" />
+    <Compile Include="Missions\NameMarker\MissionNameMarkerTargetBaseVM.cs" />
+    <Compile Include="Missions\NameMarker\MissionNameMarkerTargetVM.cs" />
+    <Compile Include="Missions\NameMarker\MissionNameMarkerToggleEvent.cs" />
+    <Compile Include="Missions\NameMarker\MissionNameMarkerVM.cs" />
+    <Compile Include="Missions\NameMarker\Targets\Hideout\MissionStealthAreaNameMarkerTargetVM.cs" />
+    <Compile Include="Missions\NameMarker\Targets\Hideout\MissionStealthAreaUsePointNameMarkerTargetVM.cs" />
+    <Compile Include="Missions\NameMarker\Targets\Hideout\MissionStealthFailCounterVM.cs" />
+    <Compile Include="Missions\NameMarker\Targets\Hideout\MissionStealthSentryNameMarkerTargetVM.cs" />
+    <Compile Include="Missions\NameMarker\Targets\MissionAgentMarkerTargetVM.cs" />
+    <Compile Include="Missions\NameMarker\Targets\MissionAnimatedBasicAreaIndicatorMarkerTargetVM.cs" />
+    <Compile Include="Missions\NameMarker\Targets\MissionBasicAreaIndicatorMarkerTargetVM.cs" />
+    <Compile Include="Missions\NameMarker\Targets\MissionCommonAreaMarkerTargetVM.cs" />
+    <Compile Include="Missions\NameMarker\Targets\MissionGenericMarkerTargetVM.cs" />
+    <Compile Include="Missions\NameMarker\Targets\MissionPassageUsePointNameMarkerTargetVM.cs" />
+    <Compile Include="Missions\NameMarker\Targets\MissionWorkshopNameMarkerTargetVM.cs" />
+    <Compile Include="Nameplate\NameplateNotifications\SettlementNotificationItemBaseVM.cs" />
+    <Compile Include="Nameplate\NameplateNotifications\SettlementNotificationTypes\CaravanTransactionNotificationItemVM.cs" />
+    <Compile Include="Nameplate\NameplateNotifications\SettlementNotificationTypes\IssueSolvedByLordNotificationItemVM.cs" />
+    <Compile Include="Nameplate\NameplateNotifications\SettlementNotificationTypes\ItemSoldNotificationItemVM.cs" />
+    <Compile Include="Nameplate\NameplateNotifications\SettlementNotificationTypes\PrisonerSoldNotificationItemVM.cs" />
+    <Compile Include="Nameplate\NameplateNotifications\SettlementNotificationTypes\SettlementNameplateNotificationsVM.cs" />
+    <Compile Include="Nameplate\NameplateNotifications\SettlementNotificationTypes\ShipSoldNotificationItemVM.cs" />
+    <Compile Include="Nameplate\NameplateNotifications\SettlementNotificationTypes\TroopGivenToSettlementNotificationItemVM.cs" />
+    <Compile Include="Nameplate\NameplateNotifications\SettlementNotificationTypes\TroopRecruitmentNotificationItemVM.cs" />
+    <Compile Include="Nameplate\NameplateVM.cs" />
+    <Compile Include="Nameplate\PartyNameplatesVM.cs" />
+    <Compile Include="Nameplate\PartyNameplateVM.cs" />
+    <Compile Include="Nameplate\PartyPlayerNameplateVM.cs" />
+    <Compile Include="Nameplate\SettlementNameplateEventItemVM.cs" />
+    <Compile Include="Nameplate\SettlementNameplateEventsVM.cs" />
+    <Compile Include="Nameplate\SettlementNameplatePartyMarkerItemVM.cs" />
+    <Compile Include="Nameplate\SettlementNameplatePartyMarkersVM.cs" />
+    <Compile Include="Nameplate\SettlementNameplatesVM.cs" />
+    <Compile Include="Nameplate\SettlementNameplateVM.cs" />
+    <Compile Include="PerkObjectComparer.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SandBoxUIHelper.cs" />
+    <Compile Include="SaveLoad\MapSaveVM.cs" />
+    <Compile Include="SaveLoad\SavedGameGroupVM.cs" />
+    <Compile Include="SaveLoad\SavedGameModuleInfoVM.cs" />
+    <Compile Include="SaveLoad\SavedGamePropertyVM.cs" />
+    <Compile Include="SaveLoad\SavedGameVM.cs" />
+    <Compile Include="SaveLoad\SaveLoadVM.cs" />
+    <Compile Include="SPOrderOfBattleVM.cs" />
+    <Compile Include="SPScoreboardVM.cs" />
+    <Compile Include="System\Runtime\CompilerServices\IsReadOnlyAttribute.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Map\Tracker\MapTrackerItemVM.2.cs" />
+    <Compile Include="TaleWorlds\CampaignSystem\ViewModelCollection\Map\Tracker\MapTrackerItemVM.cs" />
+    <Compile Include="TournamentRewardVM.cs" />
+    <Compile Include="Tournament\TournamentMatchVM.cs" />
+    <Compile Include="Tournament\TournamentParticipantVM.cs" />
+    <Compile Include="Tournament\TournamentRoundVM.cs" />
+    <Compile Include="Tournament\TournamentTeamVM.cs" />
+    <Compile Include="Tournament\TournamentVM.cs" />
+    <Compile Include="Tutorial\TutorialItemVM.cs" />
+    <Compile Include="Tutorial\TutorialVM.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SandBox\SandBox.csproj">
+      <Project>{C2043D23-6315-4853-B0B0-819B88470E67}</Project>
+      <Name>SandBox</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TaleWorlds.CampaignSystem.ViewModelCollection\TaleWorlds.CampaignSystem.ViewModelCollection.csproj">
+      <Project>{C2043D23-6315-4853-B0B0-819B88470E73}</Project>
+      <Name>TaleWorlds.CampaignSystem.ViewModelCollection</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TaleWorlds.CampaignSystem\TaleWorlds.CampaignSystem.csproj">
+      <Project>{C2043D23-6315-4853-B0B0-819B88470E72}</Project>
+      <Name>TaleWorlds.CampaignSystem</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TaleWorlds.Core.ViewModelCollection\TaleWorlds.Core.ViewModelCollection.csproj">
+      <Project>{C2043D23-6315-4853-B0B0-819B88470E75}</Project>
+      <Name>TaleWorlds.Core.ViewModelCollection</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TaleWorlds.Core\TaleWorlds.Core.csproj">
+      <Project>{C2043D23-6315-4853-B0B0-819B88470E74}</Project>
+      <Name>TaleWorlds.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TaleWorlds.DotNet\TaleWorlds.DotNet.csproj">
+      <Project>{C2043D23-6315-4853-B0B0-819B88470E7C}</Project>
+      <Name>TaleWorlds.DotNet</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TaleWorlds.Engine\TaleWorlds.Engine.csproj">
+      <Project>{C2043D23-6315-4853-B0B0-819B88470E7E}</Project>
+      <Name>TaleWorlds.Engine</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TaleWorlds.InputSystem\TaleWorlds.InputSystem.csproj">
+      <Project>{C2043D23-6315-4853-B0B0-819B88470E85}</Project>
+      <Name>TaleWorlds.InputSystem</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TaleWorlds.Library\TaleWorlds.Library.csproj">
+      <Project>{C2043D23-6315-4853-B0B0-819B88470E86}</Project>
+      <Name>TaleWorlds.Library</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TaleWorlds.LinQuick\TaleWorlds.LinQuick.csproj">
+      <Project>{C2043D23-6315-4853-B0B0-819B88470E87}</Project>
+      <Name>TaleWorlds.LinQuick</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

@@ -26,6 +26,11 @@
   </PropertyGroup>
   <ItemGroup />
   <ItemGroup>
+    <Compile Remove="原版游戏本体代码\**\*.cs" />
+    <EmbeddedResource Remove="原版游戏本体代码\**\*" />
+    <None Remove="原版游戏本体代码\**\*" />
+  </ItemGroup>
+  <ItemGroup>
     <Reference Include="System.Core" />
     <Reference Include="TaleWorlds.CampaignSystem">
       <HintPath>$(BannerlordBinDir)\TaleWorlds.CampaignSystem.dll</HintPath>

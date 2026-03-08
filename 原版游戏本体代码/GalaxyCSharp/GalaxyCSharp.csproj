@@ -1,0 +1,288 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{C2043D23-6315-4853-B0B0-819B88470E61}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Galaxy.Api</RootNamespace>
+    <AssemblyName>GalaxyCSharp</AssemblyName>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <NoStdLib>true</NoStdLib>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <NoStdLib>true</NoStdLib>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <ItemGroup>
+    <AppDesigner Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AvatarType.cs" />
+    <Compile Include="ChatMessageType.cs" />
+    <Compile Include="ConnectionType.cs" />
+    <Compile Include="GalaxyID.cs" />
+    <Compile Include="GalaxyInstance.cs" />
+    <Compile Include="GalaxyInstancePINVOKE.cs" />
+    <Compile Include="GalaxyTypeAwareListenerAccessToken.cs" />
+    <Compile Include="GalaxyTypeAwareListenerAchievementChange.cs" />
+    <Compile Include="GalaxyTypeAwareListenerAuth.cs" />
+    <Compile Include="GalaxyTypeAwareListenerChatRoomMessages.cs" />
+    <Compile Include="GalaxyTypeAwareListenerChatRoomMessageSend.cs" />
+    <Compile Include="GalaxyTypeAwareListenerChatRoomMessagesRetrieve.cs" />
+    <Compile Include="GalaxyTypeAwareListenerChatRoomWithUserRetrieve.cs" />
+    <Compile Include="GalaxyTypeAwareListenerConnectionClose.cs" />
+    <Compile Include="GalaxyTypeAwareListenerConnectionData.cs" />
+    <Compile Include="GalaxyTypeAwareListenerConnectionOpen.cs" />
+    <Compile Include="GalaxyTypeAwareListenerEncryptedAppTicket.cs" />
+    <Compile Include="GalaxyTypeAwareListenerFileShare.cs" />
+    <Compile Include="GalaxyTypeAwareListenerFriendAdd.cs" />
+    <Compile Include="GalaxyTypeAwareListenerFriendDelete.cs" />
+    <Compile Include="GalaxyTypeAwareListenerFriendInvitation.cs" />
+    <Compile Include="GalaxyTypeAwareListenerFriendInvitationListRetrieve.cs" />
+    <Compile Include="GalaxyTypeAwareListenerFriendInvitationRespondTo.cs" />
+    <Compile Include="GalaxyTypeAwareListenerFriendInvitationSend.cs" />
+    <Compile Include="GalaxyTypeAwareListenerFriendList.cs" />
+    <Compile Include="GalaxyTypeAwareListenerGameInvitationReceived.cs" />
+    <Compile Include="GalaxyTypeAwareListenerGameJoinRequested.cs" />
+    <Compile Include="GalaxyTypeAwareListenerGogServicesConnectionState.cs" />
+    <Compile Include="GalaxyTypeAwareListenerLeaderboardEntriesRetrieve.cs" />
+    <Compile Include="GalaxyTypeAwareListenerLeaderboardRetrieve.cs" />
+    <Compile Include="GalaxyTypeAwareListenerLeaderboardScoreUpdate.cs" />
+    <Compile Include="GalaxyTypeAwareListenerLeaderboardsRetrieve.cs" />
+    <Compile Include="GalaxyTypeAwareListenerLobbyCreated.cs" />
+    <Compile Include="GalaxyTypeAwareListenerLobbyData.cs" />
+    <Compile Include="GalaxyTypeAwareListenerLobbyDataRetrieve.cs" />
+    <Compile Include="GalaxyTypeAwareListenerLobbyDataUpdate.cs" />
+    <Compile Include="GalaxyTypeAwareListenerLobbyEntered.cs" />
+    <Compile Include="GalaxyTypeAwareListenerLobbyLeft.cs" />
+    <Compile Include="GalaxyTypeAwareListenerLobbyList.cs" />
+    <Compile Include="GalaxyTypeAwareListenerLobbyMemberDataUpdate.cs" />
+    <Compile Include="GalaxyTypeAwareListenerLobbyMemberState.cs" />
+    <Compile Include="GalaxyTypeAwareListenerLobbyMessage.cs" />
+    <Compile Include="GalaxyTypeAwareListenerLobbyOwnerChange.cs" />
+    <Compile Include="GalaxyTypeAwareListenerNatTypeDetection.cs" />
+    <Compile Include="GalaxyTypeAwareListenerNetworking.cs" />
+    <Compile Include="GalaxyTypeAwareListenerNotification.cs" />
+    <Compile Include="GalaxyTypeAwareListenerOperationalStateChange.cs" />
+    <Compile Include="GalaxyTypeAwareListenerOtherSessionStart.cs" />
+    <Compile Include="GalaxyTypeAwareListenerOverlayInitializationStateChange.cs" />
+    <Compile Include="GalaxyTypeAwareListenerOverlayVisibilityChange.cs" />
+    <Compile Include="GalaxyTypeAwareListenerPersonaDataChanged.cs" />
+    <Compile Include="GalaxyTypeAwareListenerRichPresence.cs" />
+    <Compile Include="GalaxyTypeAwareListenerRichPresenceChange.cs" />
+    <Compile Include="GalaxyTypeAwareListenerRichPresenceRetrieve.cs" />
+    <Compile Include="GalaxyTypeAwareListenerSendInvitation.cs" />
+    <Compile Include="GalaxyTypeAwareListenerSentFriendInvitationListRetrieve.cs" />
+    <Compile Include="GalaxyTypeAwareListenerSharedFileDownload.cs" />
+    <Compile Include="GalaxyTypeAwareListenerSpecificUserData.cs" />
+    <Compile Include="GalaxyTypeAwareListenerStatsAndAchievementsStore.cs" />
+    <Compile Include="GalaxyTypeAwareListenerTelemetryEventSend.cs" />
+    <Compile Include="GalaxyTypeAwareListenerUserData.cs" />
+    <Compile Include="GalaxyTypeAwareListenerUserFind.cs" />
+    <Compile Include="GalaxyTypeAwareListenerUserInformationRetrieve.cs" />
+    <Compile Include="GalaxyTypeAwareListenerUserStatsAndAchievementsRetrieve.cs" />
+    <Compile Include="GalaxyTypeAwareListenerUserTimePlayedRetrieve.cs" />
+    <Compile Include="GameServerGlobalAccessTokenListener.cs" />
+    <Compile Include="GameServerGlobalAuthListener.cs" />
+    <Compile Include="GameServerGlobalEncryptedAppTicketListener.cs" />
+    <Compile Include="GameServerGlobalGogServicesConnectionStateListener.cs" />
+    <Compile Include="GameServerGlobalLobbyCreatedListener.cs" />
+    <Compile Include="GameServerGlobalLobbyDataListener.cs" />
+    <Compile Include="GameServerGlobalLobbyDataRetrieveListener.cs" />
+    <Compile Include="GameServerGlobalLobbyDataUpdateListener.cs" />
+    <Compile Include="GameServerGlobalLobbyEnteredListener.cs" />
+    <Compile Include="GameServerGlobalLobbyLeftListener.cs" />
+    <Compile Include="GameServerGlobalLobbyMemberDataUpdateListener.cs" />
+    <Compile Include="GameServerGlobalLobbyMemberStateListener.cs" />
+    <Compile Include="GameServerGlobalLobbyMessageListener.cs" />
+    <Compile Include="GameServerGlobalNetworkingListener.cs" />
+    <Compile Include="GameServerGlobalOperationalStateChangeListener.cs" />
+    <Compile Include="GameServerGlobalRichPresenceRetrieveListener.cs" />
+    <Compile Include="GameServerGlobalSpecificUserDataListener.cs" />
+    <Compile Include="GameServerGlobalTelemetryEventSendListener.cs" />
+    <Compile Include="GameServerGlobalUserInformationRetrieveListener.cs" />
+    <Compile Include="GlobalAccessTokenListener.cs" />
+    <Compile Include="GlobalAchievementChangeListener.cs" />
+    <Compile Include="GlobalAuthListener.cs" />
+    <Compile Include="GlobalChatRoomMessageSendListener.cs" />
+    <Compile Include="GlobalChatRoomMessagesListener.cs" />
+    <Compile Include="GlobalChatRoomMessagesRetrieveListener.cs" />
+    <Compile Include="GlobalChatRoomWithUserRetrieveListener.cs" />
+    <Compile Include="GlobalConnectionCloseListener.cs" />
+    <Compile Include="GlobalConnectionDataListener.cs" />
+    <Compile Include="GlobalConnectionOpenListener.cs" />
+    <Compile Include="GlobalEncryptedAppTicketListener.cs" />
+    <Compile Include="GlobalFileShareListener.cs" />
+    <Compile Include="GlobalFriendAddListener.cs" />
+    <Compile Include="GlobalFriendDeleteListener.cs" />
+    <Compile Include="GlobalFriendInvitationListener.cs" />
+    <Compile Include="GlobalFriendInvitationListRetrieveListener.cs" />
+    <Compile Include="GlobalFriendInvitationRespondToListener.cs" />
+    <Compile Include="GlobalFriendInvitationSendListener.cs" />
+    <Compile Include="GlobalFriendListListener.cs" />
+    <Compile Include="GlobalGameInvitationReceivedListener.cs" />
+    <Compile Include="GlobalGameJoinRequestedListener.cs" />
+    <Compile Include="GlobalGogServicesConnectionStateListener.cs" />
+    <Compile Include="GlobalLeaderboardEntriesRetrieveListener.cs" />
+    <Compile Include="GlobalLeaderboardRetrieveListener.cs" />
+    <Compile Include="GlobalLeaderboardScoreUpdateListener.cs" />
+    <Compile Include="GlobalLeaderboardsRetrieveListener.cs" />
+    <Compile Include="GlobalLobbyCreatedListener.cs" />
+    <Compile Include="GlobalLobbyDataListener.cs" />
+    <Compile Include="GlobalLobbyDataRetrieveListener.cs" />
+    <Compile Include="GlobalLobbyDataUpdateListener.cs" />
+    <Compile Include="GlobalLobbyEnteredListener.cs" />
+    <Compile Include="GlobalLobbyLeftListener.cs" />
+    <Compile Include="GlobalLobbyListListener.cs" />
+    <Compile Include="GlobalLobbyMemberDataUpdateListener.cs" />
+    <Compile Include="GlobalLobbyMemberStateListener.cs" />
+    <Compile Include="GlobalLobbyMessageListener.cs" />
+    <Compile Include="GlobalLobbyOwnerChangeListener.cs" />
+    <Compile Include="GlobalNatTypeDetectionListener.cs" />
+    <Compile Include="GlobalNetworkingListener.cs" />
+    <Compile Include="GlobalNotificationListener.cs" />
+    <Compile Include="GlobalOperationalStateChangeListener.cs" />
+    <Compile Include="GlobalOtherSessionStartListener.cs" />
+    <Compile Include="GlobalOverlayInitializationStateChangeListener.cs" />
+    <Compile Include="GlobalOverlayVisibilityChangeListener.cs" />
+    <Compile Include="GlobalPersonaDataChangedListener.cs" />
+    <Compile Include="GlobalRichPresenceChangeListener.cs" />
+    <Compile Include="GlobalRichPresenceListener.cs" />
+    <Compile Include="GlobalRichPresenceRetrieveListener.cs" />
+    <Compile Include="GlobalSendInvitationListener.cs" />
+    <Compile Include="GlobalSentFriendInvitationListRetrieveListener.cs" />
+    <Compile Include="GlobalSharedFileDownloadListener.cs" />
+    <Compile Include="GlobalSpecificUserDataListener.cs" />
+    <Compile Include="GlobalStatsAndAchievementsStoreListener.cs" />
+    <Compile Include="GlobalTelemetryEventSendListener.cs" />
+    <Compile Include="GlobalUserDataListener.cs" />
+    <Compile Include="GlobalUserFindListener.cs" />
+    <Compile Include="GlobalUserInformationRetrieveListener.cs" />
+    <Compile Include="GlobalUserStatsAndAchievementsRetrieveListener.cs" />
+    <Compile Include="GlobalUserTimePlayedRetrieveListener.cs" />
+    <Compile Include="GogServicesConnectionState.cs" />
+    <Compile Include="IAccessTokenListener.cs" />
+    <Compile Include="IAchievementChangeListener.cs" />
+    <Compile Include="IApps.cs" />
+    <Compile Include="IAuthListener.cs" />
+    <Compile Include="IChat.cs" />
+    <Compile Include="IChatRoomMessageSendListener.cs" />
+    <Compile Include="IChatRoomMessagesListener.cs" />
+    <Compile Include="IChatRoomMessagesRetrieveListener.cs" />
+    <Compile Include="IChatRoomWithUserRetrieveListener.cs" />
+    <Compile Include="IConnectionCloseListener.cs" />
+    <Compile Include="IConnectionDataListener.cs" />
+    <Compile Include="IConnectionOpenListener.cs" />
+    <Compile Include="ICustomNetworking.cs" />
+    <Compile Include="IEncryptedAppTicketListener.cs" />
+    <Compile Include="IError.cs" />
+    <Compile Include="IFileShareListener.cs" />
+    <Compile Include="IFriendAddListener.cs" />
+    <Compile Include="IFriendDeleteListener.cs" />
+    <Compile Include="IFriendInvitationListener.cs" />
+    <Compile Include="IFriendInvitationListRetrieveListener.cs" />
+    <Compile Include="IFriendInvitationRespondToListener.cs" />
+    <Compile Include="IFriendInvitationSendListener.cs" />
+    <Compile Include="IFriendListListener.cs" />
+    <Compile Include="IFriends.cs" />
+    <Compile Include="IGalaxyListener.cs" />
+    <Compile Include="IGameInvitationReceivedListener.cs" />
+    <Compile Include="IGameJoinRequestedListener.cs" />
+    <Compile Include="IGogServicesConnectionStateListener.cs" />
+    <Compile Include="IInvalidArgumentError.cs" />
+    <Compile Include="IInvalidStateError.cs" />
+    <Compile Include="ILeaderboardEntriesRetrieveListener.cs" />
+    <Compile Include="ILeaderboardRetrieveListener.cs" />
+    <Compile Include="ILeaderboardScoreUpdateListener.cs" />
+    <Compile Include="ILeaderboardsRetrieveListener.cs" />
+    <Compile Include="IListenerRegistrar.cs" />
+    <Compile Include="ILobbyCreatedListener.cs" />
+    <Compile Include="ILobbyDataListener.cs" />
+    <Compile Include="ILobbyDataRetrieveListener.cs" />
+    <Compile Include="ILobbyDataUpdateListener.cs" />
+    <Compile Include="ILobbyEnteredListener.cs" />
+    <Compile Include="ILobbyLeftListener.cs" />
+    <Compile Include="ILobbyListListener.cs" />
+    <Compile Include="ILobbyMemberDataUpdateListener.cs" />
+    <Compile Include="ILobbyMemberStateListener.cs" />
+    <Compile Include="ILobbyMessageListener.cs" />
+    <Compile Include="ILobbyOwnerChangeListener.cs" />
+    <Compile Include="ILogger.cs" />
+    <Compile Include="IMatchmaking.cs" />
+    <Compile Include="INatTypeDetectionListener.cs" />
+    <Compile Include="INetworking.cs" />
+    <Compile Include="INetworkingListener.cs" />
+    <Compile Include="InitParams.cs" />
+    <Compile Include="INotificationListener.cs" />
+    <Compile Include="IOperationalStateChangeListener.cs" />
+    <Compile Include="IOtherSessionStartListener.cs" />
+    <Compile Include="IOverlayInitializationStateChangeListener.cs" />
+    <Compile Include="IOverlayVisibilityChangeListener.cs" />
+    <Compile Include="IPersonaDataChangedListener.cs" />
+    <Compile Include="IRichPresenceChangeListener.cs" />
+    <Compile Include="IRichPresenceListener.cs" />
+    <Compile Include="IRichPresenceRetrieveListener.cs" />
+    <Compile Include="IRuntimeError.cs" />
+    <Compile Include="ISendInvitationListener.cs" />
+    <Compile Include="ISentFriendInvitationListRetrieveListener.cs" />
+    <Compile Include="ISharedFileDownloadListener.cs" />
+    <Compile Include="ISpecificUserDataListener.cs" />
+    <Compile Include="IStats.cs" />
+    <Compile Include="IStatsAndAchievementsStoreListener.cs" />
+    <Compile Include="IStorage.cs" />
+    <Compile Include="ITelemetry.cs" />
+    <Compile Include="ITelemetryEventSendListener.cs" />
+    <Compile Include="IUnauthorizedAccessError.cs" />
+    <Compile Include="IUser.cs" />
+    <Compile Include="IUserDataListener.cs" />
+    <Compile Include="IUserFindListener.cs" />
+    <Compile Include="IUserInformationRetrieveListener.cs" />
+    <Compile Include="IUserStatsAndAchievementsRetrieveListener.cs" />
+    <Compile Include="IUserTimePlayedRetrieveListener.cs" />
+    <Compile Include="IUtils.cs" />
+    <Compile Include="LeaderboardDisplayType.cs" />
+    <Compile Include="LeaderboardSortMethod.cs" />
+    <Compile Include="ListenerType.cs" />
+    <Compile Include="LobbyComparisonType.cs" />
+    <Compile Include="LobbyCreateResult.cs" />
+    <Compile Include="LobbyEnterResult.cs" />
+    <Compile Include="LobbyListResult.cs" />
+    <Compile Include="LobbyMemberStateChange.cs" />
+    <Compile Include="LobbyTopologyType.cs" />
+    <Compile Include="LobbyType.cs" />
+    <Compile Include="MonoPInvokeCallbackAttribute.cs" />
+    <Compile Include="NatType.cs" />
+    <Compile Include="OverlayState.cs" />
+    <Compile Include="P2PSendType.cs" />
+    <Compile Include="PersonaState.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\mscorlib\mscorlib.csproj">
+      <Project>{C2043D23-6315-4853-B0B0-819B88470E5D}</Project>
+      <Name>mscorlib</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

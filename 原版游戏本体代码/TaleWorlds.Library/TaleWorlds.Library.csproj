@@ -1,0 +1,252 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x64</Platform>
+    <ProjectGuid>{C2043D23-6315-4853-B0B0-819B88470E86}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>TaleWorlds.Library</RootNamespace>
+    <AssemblyName>TaleWorlds.Library</AssemblyName>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <TargetFrameworkIdentifier>.NETStandard</TargetFrameworkIdentifier>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
+    <PlatformTarget>x64</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <NoStdLib>true</NoStdLib>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
+    <PlatformTarget>x64</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <NoStdLib>true</NoStdLib>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="netstandard" />
+    <Reference Include="System.Management" />
+    <Reference Include="System.Numerics.Vectors" />
+  </ItemGroup>
+  <ItemGroup>
+    <AppDesigner Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AmbientInformation.cs" />
+    <Compile Include="ApplicationPlatform.cs" />
+    <Compile Include="ApplicationVersion.cs" />
+    <Compile Include="ApplicationVersionJsonConverter.cs" />
+    <Compile Include="ApplicationVersionType.cs" />
+    <Compile Include="AreaInformation.cs" />
+    <Compile Include="AssemblyLoader.cs" />
+    <Compile Include="AsyncRunner.cs" />
+    <Compile Include="AtmosphereInfo.cs" />
+    <Compile Include="AwaitableAsyncRunner.cs" />
+    <Compile Include="BasePath.cs" />
+    <Compile Include="BinaryReader.cs" />
+    <Compile Include="BinaryWriter.cs" />
+    <Compile Include="BindingPath.cs" />
+    <Compile Include="BuildInfo.cs" />
+    <Compile Include="CachedDataAttribute.cs" />
+    <Compile Include="CodeGeneration\ClassCode.cs" />
+    <Compile Include="CodeGeneration\ClassCodeAccessModifier.cs" />
+    <Compile Include="CodeGeneration\CodeBlock.cs" />
+    <Compile Include="CodeGeneration\CodeGenerationContext.cs" />
+    <Compile Include="CodeGeneration\CodeGenerationFile.cs" />
+    <Compile Include="CodeGeneration\CommentSection.cs" />
+    <Compile Include="CodeGeneration\ConstructorCode.cs" />
+    <Compile Include="CodeGeneration\MethodCode.cs" />
+    <Compile Include="CodeGeneration\MethodCodeAccessModifier.cs" />
+    <Compile Include="CodeGeneration\MethodCodePolymorphismInfo.cs" />
+    <Compile Include="CodeGeneration\NamespaceCode.cs" />
+    <Compile Include="CodeGeneration\VariableCode.cs" />
+    <Compile Include="CodeGeneration\VariableCodeAccessModifier.cs" />
+    <Compile Include="Color.cs" />
+    <Compile Include="ColorExtensions.cs" />
+    <Compile Include="Colors.cs" />
+    <Compile Include="CommandLineFunctionality.cs" />
+    <Compile Include="Common.cs" />
+    <Compile Include="ConfigurationManager.cs" />
+    <Compile Include="CubicBezier.cs" />
+    <Compile Include="DataSourceProperty.cs" />
+    <Compile Include="Debug.cs" />
+    <Compile Include="DefaultParallelDriver.cs" />
+    <Compile Include="DiamondDebugManager.cs" />
+    <Compile Include="EngineMethod.cs" />
+    <Compile Include="EngineType.cs" />
+    <Compile Include="EnumHelper.2.cs" />
+    <Compile Include="EnumHelper.cs" />
+    <Compile Include="EventSystem\DictionaryByType.cs" />
+    <Compile Include="EventSystem\EventBase.cs" />
+    <Compile Include="EventSystem\EventManager.cs" />
+    <Compile Include="Extensions.cs" />
+    <Compile Include="FileHelper.cs" />
+    <Compile Include="FileHelperExtensions.cs" />
+    <Compile Include="FogInformation.cs" />
+    <Compile Include="GCHandleFactory.cs" />
+    <Compile Include="GenericComparer.cs" />
+    <Compile Include="Graph\GraphLinePointVM.cs" />
+    <Compile Include="Graph\GraphLineVM.cs" />
+    <Compile Include="Graph\GraphVM.cs" />
+    <Compile Include="HTMLDebugCategory.cs" />
+    <Compile Include="HTMLDebugData.cs" />
+    <Compile Include="HttpHelper.cs" />
+    <Compile Include="Http\DotNetHttpDriver.cs" />
+    <Compile Include="Http\HttpDriverManager.cs" />
+    <Compile Include="Http\HttpGetRequest.cs" />
+    <Compile Include="Http\HttpPostRequest.cs" />
+    <Compile Include="Http\HttpRequestTaskState.cs" />
+    <Compile Include="Http\IHttpDriver.cs" />
+    <Compile Include="Http\IHttpRequestTask.cs" />
+    <Compile Include="ICache.cs" />
+    <Compile Include="IConfigurationManager.cs" />
+    <Compile Include="IDebugManager.cs" />
+    <Compile Include="IMBBindingList.cs" />
+    <Compile Include="IMBCollection.cs" />
+    <Compile Include="InformationManager.cs" />
+    <Compile Include="InformationMessage.cs" />
+    <Compile Include="Information\TooltipTriggerVM.cs" />
+    <Compile Include="InputType.cs" />
+    <Compile Include="InputUsageMask.cs" />
+    <Compile Include="InquiryData.cs" />
+    <Compile Include="IParallelDriver.cs" />
+    <Compile Include="IPlatformFileHelper.cs" />
+    <Compile Include="IReader.cs" />
+    <Compile Include="ISerializableObject.cs" />
+    <Compile Include="ITask.cs" />
+    <Compile Include="ITelemetryManager.cs" />
+    <Compile Include="IViewModel.cs" />
+    <Compile Include="IWriter.cs" />
+    <Compile Include="LineSegment2D.cs" />
+    <Compile Include="ListChangedEventArgs.cs" />
+    <Compile Include="ListChangedEventHandler.cs" />
+    <Compile Include="ListChangedType.cs" />
+    <Compile Include="Logger.cs" />
+    <Compile Include="MachineId.cs" />
+    <Compile Include="ManagedArray.cs" />
+    <Compile Include="ManagedDllFolder.cs" />
+    <Compile Include="Mat2.cs" />
+    <Compile Include="Mat3.cs" />
+    <Compile Include="MathF.cs" />
+    <Compile Include="MatrixFrame.cs" />
+    <Compile Include="MBArrayList.cs" />
+    <Compile Include="MBBindingList.cs" />
+    <Compile Include="MBList.cs" />
+    <Compile Include="MBList2D.cs" />
+    <Compile Include="MBMath.cs" />
+    <Compile Include="MBQueue.cs" />
+    <Compile Include="MBReadOnlyDictionary.cs" />
+    <Compile Include="MBReadOnlyList.cs" />
+    <Compile Include="MBReadOnlyQueue.cs" />
+    <Compile Include="MBSortedMultiList.cs" />
+    <Compile Include="MBStringBuilder.cs" />
+    <Compile Include="MBUtil.cs" />
+    <Compile Include="MBWorkspace.cs" />
+    <Compile Include="Microsoft\CodeAnalysis\EmbeddedAttribute.cs" />
+    <Compile Include="NauticalInformation.cs" />
+    <Compile Include="NavigationPath.cs" />
+    <Compile Include="NewsManager\NewsItem.cs" />
+    <Compile Include="NewsManager\NewsManager.cs" />
+    <Compile Include="NewsManager\NewsType.cs" />
+    <Compile Include="ObjectInstanceTracker.cs" />
+    <Compile Include="Oriented2DArea.cs" />
+    <Compile Include="ParameterContainer.cs" />
+    <Compile Include="ParameterFile.cs" />
+    <Compile Include="ParameterLoader.cs" />
+    <Compile Include="PathFaceRecord.cs" />
+    <Compile Include="PathFinder.cs" />
+    <Compile Include="PerformanceTestBlock.cs" />
+    <Compile Include="PinnedArrayData.cs" />
+    <Compile Include="Platform.cs" />
+    <Compile Include="PlatformDirectoryPath.cs" />
+    <Compile Include="PlatformFileHelperPC.cs" />
+    <Compile Include="PlatformFilePath.cs" />
+    <Compile Include="PlatformFileType.cs" />
+    <Compile Include="PlatformInitParams.cs" />
+    <Compile Include="PostProcessInformation.cs" />
+    <Compile Include="PriorityQueue.cs" />
+    <Compile Include="ProfanityChecker.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="PropertyChangedWithBoolValueEventArgs.cs" />
+    <Compile Include="PropertyChangedWithBoolValueEventHandler.cs" />
+    <Compile Include="PropertyChangedWithColorValueEventArgs.cs" />
+    <Compile Include="PropertyChangedWithColorValueEventHandler.cs" />
+    <Compile Include="PropertyChangedWithDoubleValueEventArgs.cs" />
+    <Compile Include="PropertyChangedWithDoubleValueEventHandler.cs" />
+    <Compile Include="PropertyChangedWithFloatValueEventArgs.cs" />
+    <Compile Include="PropertyChangedWithFloatValueEventHandler.cs" />
+    <Compile Include="PropertyChangedWithIntValueEventArgs.cs" />
+    <Compile Include="PropertyChangedWithIntValueEventHandler.cs" />
+    <Compile Include="PropertyChangedWithUIntValueEventArgs.cs" />
+    <Compile Include="PropertyChangedWithUIntValueEventHandler.cs" />
+    <Compile Include="PropertyChangedWithValueEventArgs.cs" />
+    <Compile Include="PropertyChangedWithValueEventHandler.cs" />
+    <Compile Include="PropertyChangedWithVec2ValueEventArgs.cs" />
+    <Compile Include="PropertyChangedWithVec2ValueEventHandler.cs" />
+    <Compile Include="PropertyTypeFeeder.cs" />
+    <Compile Include="Quaternion.cs" />
+    <Compile Include="RainInformation.cs" />
+    <Compile Include="Ray.cs" />
+    <Compile Include="ResourceChangeEvent.cs" />
+    <Compile Include="ResourceDepot.cs" />
+    <Compile Include="ResourceDepotFile.cs" />
+    <Compile Include="ResourceDepotLocation.cs" />
+    <Compile Include="Runtime.cs" />
+    <Compile Include="SaveResult.cs" />
+    <Compile Include="SaveResultWithMessage.cs" />
+    <Compile Include="ScopedTimer.cs" />
+    <Compile Include="SerialTask.cs" />
+    <Compile Include="SingleThreadedSynchronizationContext.cs" />
+    <Compile Include="SingleThreadedSynchronizationContextManager.cs" />
+    <Compile Include="SkyInformation.cs" />
+    <Compile Include="SnowInformation.cs" />
+    <Compile Include="SRTHelper.cs" />
+    <Compile Include="StringReader.cs" />
+    <Compile Include="StringWriter.cs" />
+    <Compile Include="SunInformation.cs" />
+    <Compile Include="System\Runtime\CompilerServices\IsReadOnlyAttribute.cs" />
+    <Compile Include="TelemetryLevelMask.cs" />
+    <Compile Include="TestCommonBase.cs" />
+    <Compile Include="TestContext.cs" />
+    <Compile Include="TextInquiryData.cs" />
+    <Compile Include="TimedDictionaryCache.cs" />
+    <Compile Include="TimeInformation.cs" />
+    <Compile Include="TooltipBaseVM.cs" />
+    <Compile Include="Transformation.cs" />
+    <Compile Include="TWException.cs" />
+    <Compile Include="TWParallel.cs" />
+    <Compile Include="TWSharedMutex.cs" />
+    <Compile Include="TWSharedMutexReadLock.cs" />
+    <Compile Include="TWSharedMutexWriteLock.cs" />
+    <Compile Include="TWXmlLoadException.cs" />
+    <Compile Include="UiStringHelper.cs" />
+    <Compile Include="UniqueSceneId.cs" />
+    <Compile Include="Vec2.cs" />
+    <Compile Include="Vec2i.cs" />
+    <Compile Include="Vec3.cs" />
+    <Compile Include="Vec3i.cs" />
+    <Compile Include="ViewModel.cs" />
+    <Compile Include="VirtualDirectoryAttribute.cs" />
+    <Compile Include="VirtualFileAttribute.cs" />
+    <Compile Include="VirtualFolders.cs" />
+    <Compile Include="Watchdog.cs" />
+    <Compile Include="WindingOrder.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Newtonsoft.Json\Newtonsoft.Json.csproj">
+      <Project>{C2043D23-6315-4853-B0B0-819B88470E66}</Project>
+      <Name>Newtonsoft.Json</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

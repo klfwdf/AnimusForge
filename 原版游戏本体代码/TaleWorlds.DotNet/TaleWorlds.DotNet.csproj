@@ -1,0 +1,102 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x64</Platform>
+    <ProjectGuid>{C2043D23-6315-4853-B0B0-819B88470E7C}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>TaleWorlds.DotNet</RootNamespace>
+    <AssemblyName>TaleWorlds.DotNet</AssemblyName>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <TargetFrameworkIdentifier>.NETStandard</TargetFrameworkIdentifier>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
+    <PlatformTarget>x64</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <NoStdLib>true</NoStdLib>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
+    <PlatformTarget>x64</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <NoStdLib>true</NoStdLib>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="netstandard" />
+  </ItemGroup>
+  <ItemGroup>
+    <AppDesigner Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="CallbackDebugTool.cs" />
+    <Compile Include="CallbackStringBufferManager.cs" />
+    <Compile Include="Controller.cs" />
+    <Compile Include="CustomEngineStructMemberData.cs" />
+    <Compile Include="CustomParameter.cs" />
+    <Compile Include="DefineAsEngineStruct.cs" />
+    <Compile Include="DefineCustomEngineStructMemberData.cs" />
+    <Compile Include="DotNetObject.cs" />
+    <Compile Include="EditableScriptComponentVariable.cs" />
+    <Compile Include="EngineBaseClass.cs" />
+    <Compile Include="EngineClass.cs" />
+    <Compile Include="EngineClassTypeDefinition.cs" />
+    <Compile Include="EngineStackArray.cs" />
+    <Compile Include="EngineStruct.cs" />
+    <Compile Include="GameApplicationDomainController.cs" />
+    <Compile Include="ICallbackManager.cs" />
+    <Compile Include="ILibrarySizeChecker.cs" />
+    <Compile Include="IManaged.cs" />
+    <Compile Include="IManagedComponent.cs" />
+    <Compile Include="INativeArray.cs" />
+    <Compile Include="INativeObjectArray.cs" />
+    <Compile Include="INativeString.cs" />
+    <Compile Include="INativeStringHelper.cs" />
+    <Compile Include="ITelemetry.cs" />
+    <Compile Include="LibraryApplicationInterface.cs" />
+    <Compile Include="LibraryCallback.cs" />
+    <Compile Include="LibraryInterfaceBase.cs" />
+    <Compile Include="Managed.cs" />
+    <Compile Include="ManagedDelegate.cs" />
+    <Compile Include="ManagedFromNativeCallback.cs" />
+    <Compile Include="ManagedInitializeMethod.cs" />
+    <Compile Include="ManagedObject.cs" />
+    <Compile Include="ManagedObjectKeeper.cs" />
+    <Compile Include="ManagedObjectOwner.cs" />
+    <Compile Include="ManagedToUnmanagedScopedCallCounter.cs" />
+    <Compile Include="MonoNativeFunctionWrapperAttribute.cs" />
+    <Compile Include="MonoPInvokeCallbackAttribute.cs" />
+    <Compile Include="NativeArray.cs" />
+    <Compile Include="NativeArrayEnumerator.cs" />
+    <Compile Include="NativeObject.cs" />
+    <Compile Include="NativeObjectArray.cs" />
+    <Compile Include="NativeObjectKeeper.cs" />
+    <Compile Include="NativeObjectPointer.cs" />
+    <Compile Include="NativeString.cs" />
+    <Compile Include="NativeStringHelper.cs" />
+    <Compile Include="NativeTelemetryManager.cs" />
+    <Compile Include="OneMethodPasserDelegate.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ScriptComponentParams.cs" />
+    <Compile Include="WeakNativeObjectReference.2.cs" />
+    <Compile Include="WeakNativeObjectReference.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TaleWorlds.Library\TaleWorlds.Library.csproj">
+      <Project>{C2043D23-6315-4853-B0B0-819B88470E86}</Project>
+      <Name>TaleWorlds.Library</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
