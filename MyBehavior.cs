@@ -269,6 +269,14 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private string _marriageRuleCachedBlock;
 
+	private bool _isLordsHallAccessRuleSessionActive;
+
+	private string _lordsHallAccessRuleTargetKey;
+
+	private int _lordsHallAccessRuleNoHitRounds;
+
+	private string _lordsHallAccessRuleCachedBlock;
+
 	private bool _isDuelSessionActive;
 
 	private string _duelSessionHeroId;
@@ -302,6 +310,8 @@ public class MyBehavior : CampaignBehaviorBase
 	private bool _overlayQuickTalkDisableHooked;
 
 	private const int KingdomServiceRuleStickyRounds = 2;
+
+	private const int LordsHallAccessRuleStickyRounds = 3;
 
 	private const int MaxDialogueHistoryLines = 260;
 
@@ -1678,6 +1688,44 @@ public class MyBehavior : CampaignBehaviorBase
 			return "";
 		}
 		return AIConfigHandler.ResolveRuleRuntimeText(recentOnly ? "npc_recent_actions" : "npc_major_actions", "no_data", forConstraint: true, new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase));
+	}
+
+	private string BuildNpcCurrentActionFact(Hero hero)
+	{
+		try
+		{
+			if (hero == null)
+			{
+				return "";
+			}
+			string text = BuildRecentPartyBehaviorText(hero.PartyBelongedTo);
+			if (string.IsNullOrWhiteSpace(text))
+			{
+				string text2 = (hero.CurrentSettlement?.Name?.ToString() ?? "").Trim();
+				if (!string.IsNullOrWhiteSpace(text2))
+				{
+					text = "你当前在" + text2 + "停留。";
+				}
+			}
+			if (string.IsNullOrWhiteSpace(text))
+			{
+				string npcActionHeroKey = GetNpcActionHeroKey(hero);
+				if (!string.IsNullOrWhiteSpace(npcActionHeroKey) && _npcRecentActions != null && _npcRecentActions.TryGetValue(npcActionHeroKey, out var value) && value != null)
+				{
+					NpcActionEntry npcActionEntry = SanitizeNpcActionEntries(value, keepOnlyRecentWindow: true).LastOrDefault();
+					if (npcActionEntry != null && npcActionEntry.Day >= GetCurrentGameDayIndexSafe() - 1)
+					{
+						text = npcActionEntry.Text;
+					}
+				}
+			}
+			text = RenderNpcActionPromptText(hero, text);
+			return string.IsNullOrWhiteSpace(text) ? "" : (text);
+		}
+		catch
+		{
+			return "";
+		}
 	}
 
 	private void OnCampaignTick(float dt)
@@ -3221,7 +3269,7 @@ public class MyBehavior : CampaignBehaviorBase
 			stringBuilder.AppendLine("玩家声望：" + GetClanTierReputationLabel(num) + $"（{Math.Max(0, num)} level）");
 			stringBuilder.AppendLine("玩家势力：" + factionName + "（效忠：" + liegeName + "）");
 			stringBuilder.AppendLine("玩家身份：" + text3);
-			stringBuilder.AppendLine("玩家家族：" + text + $"（{Math.Max(0, num)} level，你是家族的族长）");
+			stringBuilder.AppendLine("玩家家族：" + text + $"（{Math.Max(0, num)} level，玩家是家族的族长）");
 		}
 		else if (flag)
 		{
@@ -3301,6 +3349,18 @@ public class MyBehavior : CampaignBehaviorBase
 		stringBuilder.AppendLine("NPC声望：" + GetClanTierReputationLabel(num) + $"（{Math.Max(0, num)} level）");
 		stringBuilder.AppendLine("NPC势力：" + factionName + "（效忠：" + liegeName + "）");
 		stringBuilder.AppendLine("NPC身份：" + text3);
+		try
+		{
+			Hero mainHero = Hero.MainHero;
+			if (mainHero != null && npcHero != null && npcHero != mainHero && (npcHero.Spouse == mainHero || mainHero.Spouse == npcHero))
+			{
+				string text7 = (npcHero.IsFemale ? "丈夫" : "妻子");
+				stringBuilder.AppendLine("NPC与玩家关系：合法配偶（玩家是你的" + text7 + "）；你必须认出玩家并以配偶关系进行回应。");
+			}
+		}
+		catch
+		{
+		}
 		if (!string.IsNullOrWhiteSpace(text4))
 		{
 			stringBuilder.AppendLine("NPC家族：" + text + $"（{Math.Max(0, num)} level，{text4}）");
@@ -4439,7 +4499,7 @@ public class MyBehavior : CampaignBehaviorBase
 						}
 						if (hasPos)
 						{
-							string nearby = ShoutUtils.BuildNearbySettlementsDetailForPrompt(pos);
+							string nearby = ShoutUtils.BuildNearbySettlementsDetailForPrompt(pos, targetHero);
 							if (!string.IsNullOrWhiteSpace(nearby))
 							{
 								sb.AppendLine(nearby);
@@ -4972,7 +5032,15 @@ public class MyBehavior : CampaignBehaviorBase
 			}
 			if (!string.IsNullOrWhiteSpace(aiText))
 			{
-				dialogueDay.Lines.Add(text + ": " + aiText);
+				string text3 = aiText.Trim();
+				if (text3.StartsWith("[场景喊话]", StringComparison.Ordinal))
+				{
+					dialogueDay.Lines.Add(text3);
+				}
+				else
+				{
+					dialogueDay.Lines.Add(text + ": " + text3);
+				}
 			}
 			List<(int, string, string)> list2 = new List<(int, string, string)>();
 			foreach (DialogueDay item in list)
@@ -5189,6 +5257,14 @@ public class MyBehavior : CampaignBehaviorBase
 		_marriageRuleCachedBlock = null;
 	}
 
+	private void ResetLordsHallAccessRuleSession()
+	{
+		_isLordsHallAccessRuleSessionActive = false;
+		_lordsHallAccessRuleTargetKey = null;
+		_lordsHallAccessRuleNoHitRounds = 0;
+		_lordsHallAccessRuleCachedBlock = null;
+	}
+
 	private static bool TryExtractExtraRuleBlock(string allInstructions, string ruleId, out string block)
 	{
 		block = "";
@@ -5244,13 +5320,50 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private string BuildExtraRuleInstructionsWithSticky(string input, Hero targetHero, bool hasAnyHero = true, CharacterObject targetCharacter = null, string kingdomIdOverride = null)
+	private static string ResolveRuleTargetKey(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex = -1)
+	{
+		try
+		{
+			string text = (targetHero?.StringId ?? targetCharacter?.HeroObject?.StringId ?? "").Trim();
+			if (!string.IsNullOrWhiteSpace(text))
+			{
+				return "hero:" + text;
+			}
+			if (targetAgentIndex >= 0)
+			{
+				return "agent:" + targetAgentIndex;
+			}
+			string text2 = (targetCharacter?.StringId ?? "").Trim().ToLowerInvariant();
+			if (!string.IsNullOrWhiteSpace(text2))
+			{
+				string text3 = (Settlement.CurrentSettlement?.StringId ?? "").Trim().ToLowerInvariant();
+				return string.IsNullOrWhiteSpace(text3) ? ("troop:" + text2) : ("troop:" + text2 + "@" + text3);
+			}
+			return "";
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	public static string BuildRuleTargetKeyForExternal(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex = -1)
+	{
+		return ResolveRuleTargetKey(targetHero, targetCharacter, targetAgentIndex);
+	}
+
+	private string BuildExtraRuleInstructionsWithSticky(string input, Hero targetHero, bool hasAnyHero = true, CharacterObject targetCharacter = null, string kingdomIdOverride = null, int targetAgentIndex = -1)
 	{
 		string text = "";
+		string text2 = ResolveRuleTargetKey(targetHero, targetCharacter, targetAgentIndex);
 		string targetKingdomId = ResolveTargetKingdomIdForRules(targetHero, targetCharacter, kingdomIdOverride);
 		AIConfigHandler.SetGuardrailRuntimeTargetKingdom(targetKingdomId);
-		string text2 = targetHero?.StringId ?? targetCharacter?.HeroObject?.StringId ?? "";
-		AIConfigHandler.SetGuardrailRuntimeTargetHero(text2);
+		string text3 = targetHero?.StringId ?? targetCharacter?.HeroObject?.StringId ?? "";
+		AIConfigHandler.SetGuardrailRuntimeTargetHero(text3);
+		AIConfigHandler.SetGuardrailRuntimeTargetCharacter(targetCharacter?.StringId ?? "");
+		AIConfigHandler.SetGuardrailRuntimeTargetTroop(targetCharacter?.StringId ?? "");
+		AIConfigHandler.SetGuardrailRuntimeTargetUnnamedRank((targetHero == null && targetCharacter != null) ? (targetCharacter.IsSoldier ? "soldier" : "commoner") : "");
+		AIConfigHandler.SetGuardrailRuntimeTargetAgentIndex(targetAgentIndex);
 		try
 		{
 			text = AIConfigHandler.BuildMatchedExtraRuleInstructions(input, 4, hasAnyHero);
@@ -5259,18 +5372,23 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			AIConfigHandler.SetGuardrailRuntimeTargetKingdom("");
 			AIConfigHandler.SetGuardrailRuntimeTargetHero("");
+			AIConfigHandler.SetGuardrailRuntimeTargetCharacter("");
+			AIConfigHandler.SetGuardrailRuntimeTargetTroop("");
+			AIConfigHandler.SetGuardrailRuntimeTargetUnnamedRank("");
+			AIConfigHandler.SetGuardrailRuntimeTargetAgentIndex(-1);
 		}
 		if (string.IsNullOrWhiteSpace(text2))
 		{
 			ResetKingdomServiceRuleSession();
 			ResetMarriageRuleSession();
+			ResetLordsHallAccessRuleSession();
 			return text;
 		}
 		bool flag = TryExtractExtraRuleBlock(text, "kingdom_service", out var block);
 		if (flag)
 		{
 			_isKingdomServiceRuleSessionActive = true;
-			_kingdomServiceRuleHeroId = text2;
+			_kingdomServiceRuleHeroId = text3;
 			_kingdomServiceRuleNoHitRounds = 0;
 			_kingdomServiceRuleCachedBlock = block;
 		}
@@ -5278,63 +5396,99 @@ public class MyBehavior : CampaignBehaviorBase
 		if (flag2)
 		{
 			_isMarriageRuleSessionActive = true;
-			_marriageRuleHeroId = text2;
+			_marriageRuleHeroId = text3;
 			_marriageRuleNoHitRounds = 0;
 			_marriageRuleCachedBlock = block2;
 		}
-		if (flag || flag2)
+		bool flag3 = TryExtractExtraRuleBlock(text, "lords_hall_access", out var block3);
+		if (flag3)
 		{
-			return text;
+			_isLordsHallAccessRuleSessionActive = true;
+			_lordsHallAccessRuleTargetKey = text2;
+			_lordsHallAccessRuleNoHitRounds = 0;
+			_lordsHallAccessRuleCachedBlock = block3;
 		}
-		if (_isKingdomServiceRuleSessionActive && _kingdomServiceRuleHeroId == text2)
+		StringBuilder stringBuilder = new StringBuilder();
+		if (_isKingdomServiceRuleSessionActive && _kingdomServiceRuleHeroId == text3)
 		{
-			_kingdomServiceRuleNoHitRounds++;
-			if (_kingdomServiceRuleNoHitRounds >= 2)
+			if (!flag)
 			{
-				Logger.Log("Logic", $"[RuleSticky] kingdom_service 连续 {_kingdomServiceRuleNoHitRounds} 轮未命中，结束延续会话。");
-				ResetKingdomServiceRuleSession();
-				return text;
-			}
-			if (!string.IsNullOrWhiteSpace(_kingdomServiceRuleCachedBlock))
-			{
-				if (!string.IsNullOrWhiteSpace(text) && text.IndexOf("【附加规则:kingdom_service】", StringComparison.OrdinalIgnoreCase) >= 0)
+				_kingdomServiceRuleNoHitRounds++;
+				if (_kingdomServiceRuleNoHitRounds >= 2)
 				{
-					return text;
+					Logger.Log("Logic", $"[RuleSticky] kingdom_service 连续 {_kingdomServiceRuleNoHitRounds} 轮未命中，结束延续会话。");
+					ResetKingdomServiceRuleSession();
 				}
-				string text3 = "【会话延续】你与玩家仍在讨论势力效力，本轮继续按该规则判断。";
-				string text4 = _kingdomServiceRuleCachedBlock + Environment.NewLine + text3;
-				return string.IsNullOrWhiteSpace(text) ? text4 : (text.TrimEnd() + Environment.NewLine + text4);
+				else if (!string.IsNullOrWhiteSpace(_kingdomServiceRuleCachedBlock) && (string.IsNullOrWhiteSpace(text) || text.IndexOf("【附加规则:kingdom_service】", StringComparison.OrdinalIgnoreCase) < 0))
+				{
+					if (stringBuilder.Length > 0)
+					{
+						stringBuilder.AppendLine();
+					}
+					stringBuilder.AppendLine(_kingdomServiceRuleCachedBlock);
+					stringBuilder.Append("【会话延续】你与玩家仍在讨论势力效力，本轮继续按该规则判断。");
+				}
 			}
 		}
-		else if (_isKingdomServiceRuleSessionActive && _kingdomServiceRuleHeroId != text2)
+		else if (_isKingdomServiceRuleSessionActive && _kingdomServiceRuleHeroId != text3)
 		{
 			ResetKingdomServiceRuleSession();
 		}
-		if (_isMarriageRuleSessionActive && _marriageRuleHeroId == text2)
+		if (_isMarriageRuleSessionActive && _marriageRuleHeroId == text3)
 		{
-			_marriageRuleNoHitRounds++;
-			if (_marriageRuleNoHitRounds >= 2)
+			if (!flag2)
 			{
-				Logger.Log("Logic", $"[RuleSticky] marriage 连续 {_marriageRuleNoHitRounds} 轮未命中，结束延续会话。");
-				ResetMarriageRuleSession();
-				return text;
-			}
-			if (!string.IsNullOrWhiteSpace(_marriageRuleCachedBlock))
-			{
-				if (!string.IsNullOrWhiteSpace(text) && text.IndexOf("【附加规则:marriage】", StringComparison.OrdinalIgnoreCase) >= 0)
+				_marriageRuleNoHitRounds++;
+				if (_marriageRuleNoHitRounds >= 2)
 				{
-					return text;
+					Logger.Log("Logic", $"[RuleSticky] marriage 连续 {_marriageRuleNoHitRounds} 轮未命中，结束延续会话。");
+					ResetMarriageRuleSession();
 				}
-				string text5 = "【会话延续】你与玩家仍在讨论婚姻事宜，本轮继续按该规则判断。";
-				string text6 = _marriageRuleCachedBlock + Environment.NewLine + text5;
-				return string.IsNullOrWhiteSpace(text) ? text6 : (text.TrimEnd() + Environment.NewLine + text6);
+				else if (!string.IsNullOrWhiteSpace(_marriageRuleCachedBlock) && (string.IsNullOrWhiteSpace(text) || text.IndexOf("【附加规则:marriage】", StringComparison.OrdinalIgnoreCase) < 0))
+				{
+					if (stringBuilder.Length > 0)
+					{
+						stringBuilder.AppendLine();
+					}
+					stringBuilder.AppendLine(_marriageRuleCachedBlock);
+					stringBuilder.Append("【会话延续】你与玩家仍在讨论婚姻事宜，本轮继续按该规则判断。");
+				}
 			}
 		}
-		else if (_isMarriageRuleSessionActive && _marriageRuleHeroId != text2)
+		else if (_isMarriageRuleSessionActive && _marriageRuleHeroId != text3)
 		{
 			ResetMarriageRuleSession();
 		}
-		return text;
+		if (_isLordsHallAccessRuleSessionActive && _lordsHallAccessRuleTargetKey == text2)
+		{
+			if (!flag3)
+			{
+				_lordsHallAccessRuleNoHitRounds++;
+				if (_lordsHallAccessRuleNoHitRounds > LordsHallAccessRuleStickyRounds)
+				{
+					Logger.Log("Logic", $"[RuleSticky] lords_hall_access 连续 {_lordsHallAccessRuleNoHitRounds} 轮未命中，结束延续会话。");
+					ResetLordsHallAccessRuleSession();
+				}
+				else if (!string.IsNullOrWhiteSpace(_lordsHallAccessRuleCachedBlock) && (string.IsNullOrWhiteSpace(text) || text.IndexOf("【附加规则:lords_hall_access】", StringComparison.OrdinalIgnoreCase) < 0))
+				{
+					if (stringBuilder.Length > 0)
+					{
+						stringBuilder.AppendLine();
+					}
+					stringBuilder.AppendLine(_lordsHallAccessRuleCachedBlock);
+					stringBuilder.Append("【会话延续】你与玩家仍在讨论是否进入领主大厅，本轮继续按该规则判断。");
+				}
+			}
+		}
+		else if (_isLordsHallAccessRuleSessionActive && _lordsHallAccessRuleTargetKey != text2)
+		{
+			ResetLordsHallAccessRuleSession();
+		}
+		if (stringBuilder.Length <= 0)
+		{
+			return text;
+		}
+		return string.IsNullOrWhiteSpace(text) ? stringBuilder.ToString().Trim() : (text.TrimEnd() + Environment.NewLine + stringBuilder.ToString().Trim());
 	}
 
 	private static void AppendRuleBlock(StringBuilder sb, string ruleId, string body)
@@ -5351,7 +5505,7 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private string BuildTriggeredRuleInstructions(string input, Hero targetHero, bool useDuelContext, bool isQualified, int playerTier, bool useRewardContext, bool isLoanContext, bool isSurroundingsContext, bool hasAnyHero = true, CharacterObject targetCharacter = null, string kingdomIdOverride = null)
+	private string BuildTriggeredRuleInstructions(string input, Hero targetHero, bool useDuelContext, bool isQualified, int playerTier, bool useRewardContext, bool isLoanContext, bool isSurroundingsContext, bool hasAnyHero = true, CharacterObject targetCharacter = null, string kingdomIdOverride = null, int targetAgentIndex = -1)
 	{
 		try
 		{
@@ -5416,7 +5570,7 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				AppendRuleBlock(stringBuilder, "surroundings", AIConfigHandler.SurroundingsInstruction);
 			}
-			string text3 = BuildExtraRuleInstructionsWithSticky(input, targetHero, hasAnyHero, targetCharacter, kingdomIdOverride);
+			string text3 = BuildExtraRuleInstructionsWithSticky(input, targetHero, hasAnyHero, targetCharacter, kingdomIdOverride, targetAgentIndex);
 			if (!string.IsNullOrWhiteSpace(text3))
 			{
 				stringBuilder.AppendLine(text3.Trim());
@@ -5520,6 +5674,18 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
+	public static string BuildNpcCurrentActionFactForExternal(Hero hero)
+	{
+		try
+		{
+			return (Campaign.Current?.GetCampaignBehavior<MyBehavior>())?.BuildNpcCurrentActionFact(hero) ?? "";
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
 	public static string BuildNpcActionsRuntimeConstraintHintForExternal(Hero hero, bool recentOnly)
 	{
 		try
@@ -5532,7 +5698,7 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	public static ShoutPromptContext BuildShoutPromptContextForExternal(Hero targetHero, string input, string extraFact, string cultureIdOverride = null, bool hasAnyHero = true, CharacterObject targetCharacter = null, string kingdomIdOverride = null)
+	public static ShoutPromptContext BuildShoutPromptContextForExternal(Hero targetHero, string input, string extraFact, string cultureIdOverride = null, bool hasAnyHero = true, CharacterObject targetCharacter = null, string kingdomIdOverride = null, int targetAgentIndex = -1)
 	{
 		try
 		{
@@ -5548,7 +5714,7 @@ public class MyBehavior : CampaignBehaviorBase
 					IsQualified = true
 				};
 			}
-			return myBehavior.BuildShoutPromptContextForExternalInternal(targetHero, input, extraFact, cultureIdOverride, hasAnyHero, targetCharacter, kingdomIdOverride);
+			return myBehavior.BuildShoutPromptContextForExternalInternal(targetHero, input, extraFact, cultureIdOverride, hasAnyHero, targetCharacter, kingdomIdOverride, targetAgentIndex);
 		}
 		catch
 		{
@@ -5564,7 +5730,7 @@ public class MyBehavior : CampaignBehaviorBase
 	}
 
 	// Primary runtime chat path: scene shout / non-native conversation UI.
-	private ShoutPromptContext BuildShoutPromptContextForExternalInternal(Hero targetHero, string input, string extraFact, string cultureIdOverride, bool hasAnyHero = true, CharacterObject targetCharacter = null, string kingdomIdOverride = null)
+	private ShoutPromptContext BuildShoutPromptContextForExternalInternal(Hero targetHero, string input, string extraFact, string cultureIdOverride, bool hasAnyHero = true, CharacterObject targetCharacter = null, string kingdomIdOverride = null, int targetAgentIndex = -1)
 	{
 		ShoutPromptContext shoutPromptContext = new ShoutPromptContext
 		{
@@ -5883,14 +6049,14 @@ public class MyBehavior : CampaignBehaviorBase
 			}
 			if (flag9)
 			{
-				string value7 = ShoutUtils.BuildNearbySettlementsDetailForPrompt(pos);
+				string value7 = ShoutUtils.BuildNearbySettlementsDetailForPrompt(pos, targetHero);
 				if (!string.IsNullOrWhiteSpace(value7))
 				{
 					stringBuilder.AppendLine(value7);
 				}
 			}
 		}
-		string value8 = BuildTriggeredRuleInstructions(input, targetHero, flag2, isQualified, num, flag7, flag8, flag5, hasAnyHero, targetCharacter, kingdomIdOverride);
+		string value8 = BuildTriggeredRuleInstructions(input, targetHero, flag2, isQualified, num, flag7, flag8, flag5, hasAnyHero, targetCharacter, kingdomIdOverride, targetAgentIndex);
 		if (!string.IsNullOrWhiteSpace(value8))
 		{
 			stringBuilder.AppendLine(value8);
@@ -6345,6 +6511,39 @@ public class MyBehavior : CampaignBehaviorBase
 		return list;
 	}
 
+	private static bool TryNormalizeSceneCalloutHistoryLine(string line, string heroDisplayName, out string normalizedLine)
+	{
+		normalizedLine = "";
+		string text = (line ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return false;
+		}
+		if (text.StartsWith("[场景喊话]", StringComparison.Ordinal))
+		{
+			normalizedLine = text;
+			return true;
+		}
+		if (!string.IsNullOrWhiteSpace(heroDisplayName))
+		{
+			string[] array = new string[2] { heroDisplayName + ":", heroDisplayName + "：" };
+			for (int i = 0; i < array.Length; i++)
+			{
+				string value = array[i];
+				if (text.StartsWith(value, StringComparison.Ordinal))
+				{
+					string text2 = text.Substring(value.Length).TrimStart();
+					if (text2.StartsWith("[场景喊话]", StringComparison.Ordinal))
+					{
+						normalizedLine = text2;
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
+
 	private static List<string> TakeTailByCharBudget(List<string> lines, int budget)
 	{
 		List<string> list = new List<string>();
@@ -6596,7 +6795,33 @@ public class MyBehavior : CampaignBehaviorBase
 			int historyArchiveTopNFromSettings = GetHistoryArchiveTopNFromSettings();
 			bool onnxUsed = false;
 			List<ArchiveHit> list5 = FindRelevantArchiveHits(list4, text, historyArchiveTopNFromSettings, out onnxUsed);
-			List<string> list6 = BuildRenderedHistoryLines(list3);
+			string text6 = (hero?.Name?.ToString() ?? "").Trim();
+			List<HistoryLineEntry> list6 = new List<HistoryLineEntry>();
+			List<HistoryLineEntry> list11 = new List<HistoryLineEntry>();
+			for (int num7 = 0; num7 < list3.Count; num7++)
+			{
+				HistoryLineEntry historyLineEntry2 = list3[num7];
+				if (historyLineEntry2 == null || string.IsNullOrWhiteSpace(historyLineEntry2.Line))
+				{
+					continue;
+				}
+				if (TryNormalizeSceneCalloutHistoryLine(historyLineEntry2.Line, text6, out var normalizedLine))
+				{
+					list11.Add(new HistoryLineEntry
+					{
+						Day = historyLineEntry2.Day,
+						Date = historyLineEntry2.Date,
+						Line = normalizedLine,
+						Index = historyLineEntry2.Index
+					});
+				}
+				else
+				{
+					list6.Add(historyLineEntry2);
+				}
+			}
+			List<string> list12 = BuildRenderedHistoryLines(list6);
+			List<string> list13 = BuildRenderedHistoryLines(list11);
 			List<string> list7 = new List<string>();
 			if (list5 != null && list5.Count > 0)
 			{
@@ -6614,28 +6839,28 @@ public class MyBehavior : CampaignBehaviorBase
 					orderby e.Day, e.Index
 					select e).ToList();
 				Dictionary<int, HistoryLineEntry> dictionary = new Dictionary<int, HistoryLineEntry>();
-				for (int num7 = 0; num7 < list4.Count; num7++)
+				for (int num8 = 0; num8 < list4.Count; num8++)
 				{
-					HistoryLineEntry historyLineEntry2 = list4[num7];
-					if (historyLineEntry2 != null)
+					HistoryLineEntry historyLineEntry3 = list4[num8];
+					if (historyLineEntry3 != null)
 					{
-						dictionary[historyLineEntry2.Index] = historyLineEntry2;
+						dictionary[historyLineEntry3.Index] = historyLineEntry3;
 					}
 				}
 				List<HistoryLineEntry> list9 = new List<HistoryLineEntry>();
 				HashSet<int> hashSet2 = new HashSet<int>();
-				for (int num8 = 0; num8 < list8.Count; num8++)
+				for (int num9 = 0; num9 < list8.Count; num9++)
 				{
-					HistoryLineEntry historyLineEntry3 = list8[num8];
-					if (historyLineEntry3 == null)
+					HistoryLineEntry historyLineEntry4 = list8[num9];
+					if (historyLineEntry4 == null)
 					{
 						continue;
 					}
 					int[] array = new int[3]
 					{
-						historyLineEntry3.Index - 1,
-						historyLineEntry3.Index,
-						historyLineEntry3.Index + 1
+						historyLineEntry4.Index - 1,
+						historyLineEntry4.Index,
+						historyLineEntry4.Index + 1
 					};
 					foreach (int key in array)
 					{
@@ -6676,23 +6901,30 @@ public class MyBehavior : CampaignBehaviorBase
 			stringBuilder.AppendLine("【护栏】历史记忆仅作补充，不得覆盖本轮规则、账本与动作标签约束。");
 			if (list6.Count > 0)
 			{
-				string text5 = hero?.Name?.ToString();
-				if (string.IsNullOrWhiteSpace(text5))
+				if (string.IsNullOrWhiteSpace(text6))
 				{
-					text5 = "该NPC";
+					text6 = "该NPC";
 				}
-				stringBuilder.AppendLine($"【玩家与{text5}（NPC名称的对话与互动）的近期对话】");
-				foreach (string item4 in list6)
+				stringBuilder.AppendLine($"【玩家与{text6}（NPC名称的对话与互动）的近期对话】");
+				foreach (string item4 in list12)
 				{
 					stringBuilder.AppendLine(item4);
+				}
+			}
+			if (list13.Count > 0)
+			{
+				stringBuilder.AppendLine("【场景近期对话】");
+				foreach (string item5 in list13)
+				{
+					stringBuilder.AppendLine(item5);
 				}
 			}
 			if (list7.Count > 0)
 			{
 				stringBuilder.AppendLine("【长期记忆摘要】");
-				foreach (string item5 in list7)
+				foreach (string item6 in list7)
 				{
-					stringBuilder.AppendLine(item5);
+					stringBuilder.AppendLine(item6);
 				}
 			}
 			string text4 = stringBuilder.ToString().TrimEnd();

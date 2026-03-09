@@ -9,15 +9,21 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using SandBox;
+using SandBox.Missions.MissionLogics;
+using SandBox.Objects.Usables;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Actions;
+using TaleWorlds.CampaignSystem.ComponentInterfaces;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Roster;
 using TaleWorlds.CampaignSystem.Settlements;
+using TaleWorlds.CampaignSystem.Settlements.Locations;
 using TaleWorlds.Core;
 using TaleWorlds.Engine;
 using TaleWorlds.InputSystem;
 using TaleWorlds.Library;
+using TaleWorlds.Localization;
 using TaleWorlds.MountAndBlade;
 using TaleWorlds.MountAndBlade.Missions;
 
@@ -56,6 +62,17 @@ public class ShoutBehavior : CampaignBehaviorBase
 		public int Amount;
 
 		public ItemObject Item;
+	}
+
+	private sealed class ScenePrepaidTransferRecord
+	{
+		public int Gold;
+
+		public int NegotiatedGold;
+
+		public int Day;
+
+		public string SettlementId;
 	}
 
 	private sealed class PendingNpcBubbleEntry
@@ -238,6 +255,8 @@ public class ShoutBehavior : CampaignBehaviorBase
 	private bool _shoutPendingTradeIsGive = false;
 
 	private NpcDataPacket _shoutTradeTargetNpc = null;
+
+	private readonly Dictionary<string, ScenePrepaidTransferRecord> _scenePrepaidTransfers = new Dictionary<string, ScenePrepaidTransferRecord>(StringComparer.OrdinalIgnoreCase);
 
 	private List<Agent> _staringAgents = new List<Agent>();
 
@@ -773,7 +792,14 @@ public class ShoutBehavior : CampaignBehaviorBase
 			rendered = NormalizeScenePlayerHistoryLine(text2);
 			return true;
 		case "system":
-			rendered = "[系统事实] " + text2;
+			if (text2.StartsWith("[玩家行为补充]", StringComparison.Ordinal) || text2.StartsWith("[NPC行为补充]", StringComparison.Ordinal))
+			{
+				rendered = text2;
+			}
+			else
+			{
+				rendered = "[系统事实] " + text2;
+			}
 			return true;
 		default:
 			rendered = text2;
@@ -2684,7 +2710,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 				Agent passiveAgent = Mission.Current?.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == data.AgentIndex);
 				CharacterObject passiveCharacter = passiveAgent?.Character as CharacterObject;
 				string passiveKingdomIdOverride = TryGetKingdomIdOverrideFromAgent(passiveAgent);
-				MyBehavior.ShoutPromptContext ctx = MyBehavior.BuildShoutPromptContextForExternal(hero, inputActionText, fullExtra, cultureId, hasAnyHero: data.IsHero, targetCharacter: passiveCharacter, kingdomIdOverride: passiveKingdomIdOverride);
+				MyBehavior.ShoutPromptContext ctx = MyBehavior.BuildShoutPromptContextForExternal(hero, inputActionText, fullExtra, cultureId, hasAnyHero: data.IsHero, targetCharacter: passiveCharacter, kingdomIdOverride: passiveKingdomIdOverride, targetAgentIndex: data.AgentIndex);
 				DuelSettings settings = DuelSettings.GetSettings();
 				int maxTokens = settings.ShoutMaxTokens;
 				int minTokens = maxTokens / 2;
@@ -2703,10 +2729,17 @@ public class ShoutBehavior : CampaignBehaviorBase
 					}
 				};
 				string npcName = (string.IsNullOrWhiteSpace(data.Name) ? "未命名NPC" : data.Name);
+				string currentSceneSettlementSuffix = (ShoutUtils.BuildCurrentSceneSettlementInlineSuffixForPrompt(hero) ?? "").Replace("\r", "").Trim();
 				if (!string.IsNullOrWhiteSpace(sceneDesc))
 				{
 					ensureFactsHeader();
-					sysPrompt.AppendLine("*场景：" + sceneDesc + "*");
+					sysPrompt.AppendLine("*场景：" + sceneDesc + currentSceneSettlementSuffix + "*");
+				}
+				string npcCurrentActionFact = (MyBehavior.BuildNpcCurrentActionFactForExternal(hero) ?? "").Replace("\r", "").Trim();
+				if (!string.IsNullOrWhiteSpace(npcCurrentActionFact))
+				{
+					ensureFactsHeader();
+					sysPrompt.AppendLine(npcCurrentActionFact);
 				}
 				try
 				{
@@ -2848,18 +2881,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 					}
 					sysPrompt.AppendLine(line);
 				}
-				sysPrompt.AppendLine("【2.动作约束】");
-				sysPrompt.AppendLine("你是当前被动回应者：" + npcName + "。");
-				sysPrompt.AppendLine("你只能以该角色身份回答，禁止替其他角色发言。");
-				if (!string.IsNullOrWhiteSpace(data.RoleDesc))
-				{
-					sysPrompt.AppendLine("身份：" + data.RoleDesc);
-				}
-				string marriageFact = BuildCurrentResponderMarriageFact(hero);
-				if (!string.IsNullOrWhiteSpace(marriageFact))
-				{
-					sysPrompt.AppendLine(marriageFact);
-				}
+				bool passiveMultiNpcScene = allNpcData != null && allNpcData.Count((NpcDataPacket npc) => npc != null) > 1;
 				ensureFactsHeader();
 				if (!string.IsNullOrWhiteSpace(inputActionText))
 				{
@@ -2881,14 +2903,17 @@ public class ShoutBehavior : CampaignBehaviorBase
 				catch
 				{
 				}
-				sysPrompt.AppendLine("【群体对话规则】");
-				sysPrompt.AppendLine("1. 如果【在场人物列表】中只有一个NPC，那他必须回应玩家。");
-				sysPrompt.AppendLine("2. 【在场人物列表】中最上方的NPC是主要对话对象，必须回复玩家，其他NPC可以酌情选择是否回复");
-				sysPrompt.AppendLine("3. 你只需以自己的身份输出一行回复，不需要包含角色名开头。");
-				sysPrompt.AppendLine("4. 禁止动作描写、心理活动、括号备注；只保留角色说出口的话，不要加引号，但是其他规则要求你加入标签你必须加入标签");
-				sysPrompt.AppendLine("5. 若多人在场，请注意你的身份和性格，给出与其他NPC不同的独特见解，避免重复相似的内容。");
-				sysPrompt.AppendLine("6. kingdom_service 标签去重：仅在你明确同意“加入势力/成为封臣/退出当前效力”时才可输出 [ACTION:KINGDOM_SERVICE:*:*]；若【当前场景公共对话与互动】中已出现同事项的 kingdom_service 标签，本轮你只能口头补充，不得重复输出。");
-				sysPrompt.AppendLine("7. marriage 标签去重：同一轮同一事项最多出现一个结婚标签；若已有角色输出 [ACTION:MARRIAGE_FORMAL:*] 或 [ACTION:MARRIAGE_ELOPE:*]，其他角色只能口头补充。");
+				if (passiveMultiNpcScene)
+				{
+					sysPrompt.AppendLine("【群体对话规则】");
+					sysPrompt.AppendLine("1. 如果【在场人物列表】中只有一个NPC，那他必须回应玩家。");
+					sysPrompt.AppendLine("2. 【在场人物列表】中最上方的NPC是主要对话对象，必须回复玩家，其他NPC可以酌情选择是否回复");
+					sysPrompt.AppendLine("3. 你只需以自己的身份输出一行回复，不需要包含角色名开头。");
+					sysPrompt.AppendLine("4. 禁止动作描写、心理活动、括号备注；只保留角色说出口的话，不要加引号，但是其他规则要求你加入标签你必须加入标签");
+					sysPrompt.AppendLine("5. 若多人在场，请注意你的身份和性格，给出与其他NPC不同的独特见解，避免重复相似的内容。");
+					sysPrompt.AppendLine("6. kingdom_service 标签去重：仅在你明确同意“加入势力/成为封臣/退出当前效力”时才可输出 [ACTION:KINGDOM_SERVICE:*:*]；若【当前场景公共对话与互动】中已出现同事项的 kingdom_service 标签，本轮你只能口头补充，不得重复输出。");
+					sysPrompt.AppendLine("7. marriage 标签去重：同一轮同一事项最多出现一个结婚标签；若已有角色输出 [ACTION:MARRIAGE_FORMAL:*] 或 [ACTION:MARRIAGE_ELOPE:*]，其他角色只能口头补充。");
+				}
 				sysPrompt.AppendLine($"(回复长度要求：请将本轮回复控制在 {minTokens}-{maxTokens} 字之间；除非玩家明确要求简短，否则尽量贴近上限，不要少于 {minTokens} 字。长度限制不含 ACTION 标签)");
 				if (!string.IsNullOrWhiteSpace(scenePatienceInstruction))
 				{
@@ -2969,7 +2994,6 @@ public class ShoutBehavior : CampaignBehaviorBase
 					role = "system",
 					content = layeredPrompt
 				};
-				bool passiveMultiNpcScene = allNpcData != null && allNpcData.Count((NpcDataPacket npc) => npc != null) > 1;
 				string passiveUserMessage = scenePublicHistorySection + "\n" + BuildSingleNpcSceneReplyInstruction(npcName, passiveMultiNpcScene) + "\n禁止生成任何【】章节标题或格式说明。";
 				messages.Add(new
 				{
@@ -3308,8 +3332,15 @@ public class ShoutBehavior : CampaignBehaviorBase
 		}
 		NpcDataPacket shoutTradeTargetNpc = _shoutTradeTargetNpc;
 		Hero hero = null;
+		Agent agent = null;
+		CharacterObject characterObject = null;
 		try
 		{
+			if (shoutTradeTargetNpc != null)
+			{
+				agent = Mission.Current?.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == shoutTradeTargetNpc.AgentIndex);
+				characterObject = agent?.Character as CharacterObject;
+			}
 			if (shoutTradeTargetNpc != null && shoutTradeTargetNpc.IsHero)
 			{
 				hero = ResolveHeroFromAgentIndex(shoutTradeTargetNpc.AgentIndex);
@@ -3319,10 +3350,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 		{
 			hero = null;
 		}
-		if (hero == null)
-		{
-			return;
-		}
+		string text = MyBehavior.BuildRuleTargetKeyForExternal(hero, characterObject, shoutTradeTargetNpc?.AgentIndex ?? (-1));
 		MobileParty mobileParty = Hero.MainHero?.PartyBelongedTo;
 		for (int i = 0; i < _shoutPendingTradeItems.Count; i++)
 		{
@@ -3336,13 +3364,21 @@ public class ShoutBehavior : CampaignBehaviorBase
 				int num = Math.Min(shoutPendingTradeItem.Amount, Hero.MainHero.Gold);
 				if (num > 0)
 				{
-					GiveGoldAction.ApplyBetweenCharacters(Hero.MainHero, hero, num);
-					try
+					if (hero != null)
 					{
-						RewardSystemBehavior.Instance?.RecordPlayerPrepaidTransfer(hero, num, null, 0);
+						GiveGoldAction.ApplyBetweenCharacters(Hero.MainHero, hero, num);
+						try
+						{
+							RewardSystemBehavior.Instance?.RecordPlayerPrepaidTransfer(hero, num, null, 0);
+						}
+						catch
+						{
+						}
 					}
-					catch
+					else
 					{
+						GiveGoldAction.ApplyBetweenCharacters(Hero.MainHero, null, num, disableNotification: true);
+						RecordScenePrepaidTransfer(text, num);
 					}
 				}
 			}
@@ -3362,19 +3398,306 @@ public class ShoutBehavior : CampaignBehaviorBase
 				if (num2 > 0)
 				{
 					itemRoster.AddToCounts(shoutPendingTradeItem.Item, -num2);
-					if (hero.PartyBelongedTo != null)
+					if (hero?.PartyBelongedTo != null)
 					{
 						hero.PartyBelongedTo.ItemRoster.AddToCounts(shoutPendingTradeItem.Item, num2);
 					}
-					try
+					if (hero != null)
 					{
-						RewardSystemBehavior.Instance?.RecordPlayerPrepaidTransfer(hero, 0, shoutPendingTradeItem.ItemId, num2);
-					}
-					catch
-					{
+						try
+						{
+							RewardSystemBehavior.Instance?.RecordPlayerPrepaidTransfer(hero, 0, shoutPendingTradeItem.ItemId, num2);
+						}
+						catch
+						{
+						}
 					}
 				}
 			}
+		}
+	}
+
+	private static int GetCurrentCampaignDaySafe()
+	{
+		try
+		{
+			return (int)CampaignTime.Now.ToDays;
+		}
+		catch
+		{
+			return -1;
+		}
+	}
+
+	private static string GetCurrentSettlementIdSafe()
+	{
+		try
+		{
+			return (Settlement.CurrentSettlement?.StringId ?? "").Trim().ToLowerInvariant();
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	private void RecordScenePrepaidTransfer(string targetKey, int goldAmount)
+	{
+		try
+		{
+			string text = (targetKey ?? "").Trim();
+			if (string.IsNullOrWhiteSpace(text) || goldAmount <= 0)
+			{
+				return;
+			}
+			int currentCampaignDaySafe = GetCurrentCampaignDaySafe();
+			string currentSettlementIdSafe = GetCurrentSettlementIdSafe();
+			lock (_historyLock)
+			{
+				if (!_scenePrepaidTransfers.TryGetValue(text, out var value) || value == null || value.Day != currentCampaignDaySafe || !string.Equals(value.SettlementId ?? "", currentSettlementIdSafe, StringComparison.OrdinalIgnoreCase))
+				{
+					value = new ScenePrepaidTransferRecord
+					{
+						Gold = 0,
+						Day = currentCampaignDaySafe,
+						SettlementId = currentSettlementIdSafe
+					};
+					_scenePrepaidTransfers[text] = value;
+				}
+				value.Gold += goldAmount;
+			}
+		}
+		catch
+		{
+		}
+	}
+
+	private void RecordNegotiatedNonHeroBribe(string targetKey, int goldAmount)
+	{
+		try
+		{
+			string text = (targetKey ?? "").Trim();
+			if (string.IsNullOrWhiteSpace(text) || goldAmount <= 0)
+			{
+				return;
+			}
+			int currentCampaignDaySafe = GetCurrentCampaignDaySafe();
+			string currentSettlementIdSafe = GetCurrentSettlementIdSafe();
+			lock (_historyLock)
+			{
+				if (!_scenePrepaidTransfers.TryGetValue(text, out var value) || value == null || value.Day != currentCampaignDaySafe || !string.Equals(value.SettlementId ?? "", currentSettlementIdSafe, StringComparison.OrdinalIgnoreCase))
+				{
+					value = new ScenePrepaidTransferRecord
+					{
+						Gold = 0,
+						NegotiatedGold = 0,
+						Day = currentCampaignDaySafe,
+						SettlementId = currentSettlementIdSafe
+					};
+					_scenePrepaidTransfers[text] = value;
+				}
+				value.NegotiatedGold = goldAmount;
+			}
+		}
+		catch
+		{
+		}
+	}
+
+	internal int GetRecentNonHeroGoldForRuleTarget(string targetKey)
+	{
+		try
+		{
+			string text = (targetKey ?? "").Trim();
+			if (string.IsNullOrWhiteSpace(text))
+			{
+				return 0;
+			}
+			int currentCampaignDaySafe = GetCurrentCampaignDaySafe();
+			string currentSettlementIdSafe = GetCurrentSettlementIdSafe();
+			lock (_historyLock)
+			{
+				if (_scenePrepaidTransfers.TryGetValue(text, out var value) && value != null && value.Day == currentCampaignDaySafe && string.Equals(value.SettlementId ?? "", currentSettlementIdSafe, StringComparison.OrdinalIgnoreCase))
+				{
+					return Math.Max(0, value.Gold);
+				}
+			}
+		}
+		catch
+		{
+		}
+		return 0;
+	}
+
+	internal int GetNegotiatedNonHeroBribeForRuleTarget(string targetKey)
+	{
+		try
+		{
+			string text = (targetKey ?? "").Trim();
+			if (string.IsNullOrWhiteSpace(text))
+			{
+				return 0;
+			}
+			int currentCampaignDaySafe = GetCurrentCampaignDaySafe();
+			string currentSettlementIdSafe = GetCurrentSettlementIdSafe();
+			lock (_historyLock)
+			{
+				if (_scenePrepaidTransfers.TryGetValue(text, out var value) && value != null && value.Day == currentCampaignDaySafe && string.Equals(value.SettlementId ?? "", currentSettlementIdSafe, StringComparison.OrdinalIgnoreCase))
+				{
+					return Math.Max(0, value.NegotiatedGold);
+				}
+			}
+		}
+		catch
+		{
+		}
+		return 0;
+	}
+
+	internal void ConsumeRecentNonHeroGoldForRuleTarget(string targetKey, int goldAmount)
+	{
+		try
+		{
+			string text = (targetKey ?? "").Trim();
+			if (string.IsNullOrWhiteSpace(text) || goldAmount <= 0)
+			{
+				return;
+			}
+			lock (_historyLock)
+			{
+				if (_scenePrepaidTransfers.TryGetValue(text, out var value) && value != null)
+				{
+					value.Gold = Math.Max(0, value.Gold - goldAmount);
+				}
+			}
+		}
+		catch
+		{
+		}
+	}
+
+	private bool TryCaptureNegotiatedLordsHallBribe(NpcDataPacket npc, Agent agent, ref string content)
+	{
+		try
+		{
+			if (string.IsNullOrWhiteSpace(content) || npc == null)
+			{
+				return false;
+			}
+			Match match = Regex.Match(content, "\\[ACTION:LORDS_HALL_BRIBE_PRICE:(\\d+)\\]", RegexOptions.IgnoreCase);
+			if (!match.Success || !int.TryParse(match.Groups[1].Value, out var result) || result <= 0)
+			{
+				return false;
+			}
+			Agent agent2 = agent ?? Mission.Current?.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == npc.AgentIndex);
+			CharacterObject characterObject = agent2?.Character as CharacterObject;
+			string text = MyBehavior.BuildRuleTargetKeyForExternal(null, characterObject, npc.AgentIndex);
+			if (!string.IsNullOrWhiteSpace(text))
+			{
+				RecordNegotiatedNonHeroBribe(text, result);
+			}
+			content = Regex.Replace(content, "\\[ACTION:LORDS_HALL_BRIBE_PRICE:(\\d+)\\]", "", RegexOptions.IgnoreCase).Trim();
+			return true;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static bool IsLordsHallGuardAgent(Agent agent)
+	{
+		try
+		{
+			if (agent == null || !(agent.Character is CharacterObject characterObject) || !characterObject.IsSoldier)
+			{
+				return false;
+			}
+			AgentNavigator agentNavigator = agent.GetComponent<CampaignAgentComponent>()?.AgentNavigator;
+			bool flag = false;
+			if (agentNavigator != null)
+			{
+				flag = agentNavigator.TargetUsableMachine != null && agent.IsUsingGameObject && agentNavigator.TargetUsableMachine.GameEntity.HasTag("sp_guard_castle");
+				if (!flag && (agentNavigator.SpecialTargetTag == "sp_guard_castle" || agentNavigator.SpecialTargetTag == "sp_guard"))
+				{
+					Location lordsHallLocation = LocationComplex.Current?.GetLocationWithId("lordshall");
+					MissionAgentHandler missionBehavior = Mission.Current?.GetMissionBehavior<MissionAgentHandler>();
+					if (lordsHallLocation != null && missionBehavior?.TownPassageProps != null)
+					{
+						UsableMachine usableMachine = missionBehavior.TownPassageProps.FirstOrDefault((UsableMachine x) => x is Passage passage && passage.ToLocation == lordsHallLocation);
+						if (usableMachine != null && usableMachine.GameEntity.GlobalPosition.DistanceSquared(agent.Position) < 100f)
+						{
+							flag = true;
+						}
+					}
+				}
+			}
+			return flag;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private bool TryUnlockLordsHallForNpc(NpcDataPacket npc, Agent agent)
+	{
+		try
+		{
+			Settlement settlement = Settlement.CurrentSettlement;
+			if (npc == null || settlement == null || !settlement.IsTown)
+			{
+				return false;
+			}
+			Agent agent2 = agent ?? Mission.Current?.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == npc.AgentIndex);
+			CharacterObject characterObject = agent2?.Character as CharacterObject;
+			if (npc.IsHero || characterObject == null || !characterObject.IsSoldier || !IsLordsHallGuardAgent(agent2))
+			{
+				return false;
+			}
+			var settlementAccessModel = Campaign.Current?.Models?.SettlementAccessModel;
+			if (settlementAccessModel == null)
+			{
+				return false;
+			}
+			bool disableOption = false;
+			TaleWorlds.Localization.TextObject disabledText = null;
+			if (settlementAccessModel.CanMainHeroAccessLocation(settlement, "lordshall", out disableOption, out disabledText))
+			{
+				return true;
+			}
+			SettlementAccessModel.AccessDetails accessDetails = default(SettlementAccessModel.AccessDetails);
+			settlementAccessModel.CanMainHeroEnterLordsHall(settlement, out accessDetails);
+			int bribeToEnterLordsHall = Campaign.Current?.Models?.BribeCalculationModel?.GetBribeToEnterLordsHall(settlement) ?? 0;
+			string text = MyBehavior.BuildRuleTargetKeyForExternal(null, characterObject, npc.AgentIndex);
+			int recentNonHeroGoldForRuleTarget = GetRecentNonHeroGoldForRuleTarget(text);
+			if (accessDetails.AccessLevel == SettlementAccessModel.AccessLevel.LimitedAccess && accessDetails.LimitedAccessSolution == SettlementAccessModel.LimitedAccessSolution.Bribe && bribeToEnterLordsHall > 0 && recentNonHeroGoldForRuleTarget > 0)
+			{
+				settlement.BribePaid += bribeToEnterLordsHall;
+				ConsumeRecentNonHeroGoldForRuleTarget(text, recentNonHeroGoldForRuleTarget);
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		return false;
+	}
+
+	private bool TryTriggerOpenLordsHallAction(NpcDataPacket npc, Agent agent, ref string content)
+	{
+		try
+		{
+			if (string.IsNullOrWhiteSpace(content) || content.IndexOf("[ACTION:OPEN_LORDS_HALL]", StringComparison.OrdinalIgnoreCase) < 0)
+			{
+				return false;
+			}
+			content = content.Replace("[ACTION:OPEN_LORDS_HALL]", "").Trim();
+			return TryUnlockLordsHallForNpc(npc, agent);
+		}
+		catch
+		{
+			return false;
 		}
 	}
 
@@ -3783,7 +4106,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 				Agent contextAgent = ((contextAgentIndex >= 0) ? Mission.Current?.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == contextAgentIndex) : null);
 				CharacterObject contextCharacter = contextAgent?.Character as CharacterObject;
 				string contextKingdomIdOverride = TryGetKingdomIdOverrideFromAgent(contextAgent);
-				MyBehavior.ShoutPromptContext ctx = MyBehavior.BuildShoutPromptContextForExternal(contextHero, playerText, extraFact, cultureId, hasAnyHero, targetCharacter: contextCharacter, kingdomIdOverride: contextKingdomIdOverride);
+				MyBehavior.ShoutPromptContext ctx = MyBehavior.BuildShoutPromptContextForExternal(contextHero, playerText, extraFact, cultureId, hasAnyHero, targetCharacter: contextCharacter, kingdomIdOverride: contextKingdomIdOverride, targetAgentIndex: contextAgentIndex);
 				bool factsHeaderAdded = false;
 				Action ensureFactsHeader = delegate
 				{
@@ -3793,10 +4116,17 @@ public class ShoutBehavior : CampaignBehaviorBase
 						factsHeaderAdded = true;
 					}
 				};
+				string currentSceneSettlementSuffix = (ShoutUtils.BuildCurrentSceneSettlementInlineSuffixForPrompt(contextHero) ?? "").Replace("\r", "").Trim();
 				if (!string.IsNullOrWhiteSpace(sceneDesc))
 				{
 					ensureFactsHeader();
-					sysPrompt.AppendLine("*场景：" + sceneDesc + "*");
+					sysPrompt.AppendLine("*场景：" + sceneDesc + currentSceneSettlementSuffix + "*");
+				}
+				string npcCurrentActionFact = (MyBehavior.BuildNpcCurrentActionFactForExternal(contextHero) ?? "").Replace("\r", "").Trim();
+				if (!string.IsNullOrWhiteSpace(npcCurrentActionFact))
+				{
+					ensureFactsHeader();
+					sysPrompt.AppendLine(npcCurrentActionFact);
 				}
 				try
 				{
@@ -3810,7 +4140,6 @@ public class ShoutBehavior : CampaignBehaviorBase
 								nativeInfo = nativeInfo.Substring(0, 900) + "…";
 							}
 							ensureFactsHeader();
-							sysPrompt.AppendLine(" ");
 							sysPrompt.AppendLine("【当前定居点（原版到达介绍）】：");
 							sysPrompt.AppendLine(nativeInfo);
 						}
@@ -3942,7 +4271,6 @@ public class ShoutBehavior : CampaignBehaviorBase
 				string scenePatienceInstruction = "";
 				if (patienceStatusLines.Count > 0)
 				{
-					sysPrompt.AppendLine(" ");
 					sysPrompt.AppendLine("【4.三值状态】");
 					sysPrompt.AppendLine("【NPC耐心状态】：");
 					foreach (string line2 in patienceStatusLines)
@@ -4460,7 +4788,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 				Agent npcAgent = Mission.Current?.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == npc2.AgentIndex);
 				CharacterObject npcCharacter = npcAgent?.Character as CharacterObject;
 				string npcKingdomIdOverride = TryGetKingdomIdOverrideFromAgent(npcAgent);
-				MyBehavior.ShoutPromptContext ctx = MyBehavior.BuildShoutPromptContextForExternal(contextHero, playerText, fullExtra, cultureId, hasAnyHero: npc2.IsHero, targetCharacter: npcCharacter, kingdomIdOverride: npcKingdomIdOverride);
+				MyBehavior.ShoutPromptContext ctx = MyBehavior.BuildShoutPromptContextForExternal(contextHero, playerText, fullExtra, cultureId, hasAnyHero: npc2.IsHero, targetCharacter: npcCharacter, kingdomIdOverride: npcKingdomIdOverride, targetAgentIndex: npc2.AgentIndex);
 				StringBuilder local = new StringBuilder();
 				bool factsHeaderAdded = false;
 				Action ensureFactsHeader = delegate
@@ -4471,10 +4799,17 @@ public class ShoutBehavior : CampaignBehaviorBase
 						factsHeaderAdded = true;
 					}
 				};
+				string currentSceneSettlementSuffix = (ShoutUtils.BuildCurrentSceneSettlementInlineSuffixForPrompt(contextHero) ?? "").Replace("\r", "").Trim();
 				if (!string.IsNullOrWhiteSpace(sceneDesc))
 				{
 					ensureFactsHeader();
-					local.AppendLine("*场景：" + sceneDesc + "*");
+					local.AppendLine("*场景：" + sceneDesc + currentSceneSettlementSuffix + "*");
+				}
+				string npcCurrentActionFact = (MyBehavior.BuildNpcCurrentActionFactForExternal(contextHero) ?? "").Replace("\r", "").Trim();
+				if (!string.IsNullOrWhiteSpace(npcCurrentActionFact))
+				{
+					ensureFactsHeader();
+					local.AppendLine(npcCurrentActionFact);
 				}
 				try
 				{
@@ -4488,7 +4823,6 @@ public class ShoutBehavior : CampaignBehaviorBase
 								nativeInfo = nativeInfo.Substring(0, 900) + "…";
 							}
 							ensureFactsHeader();
-							local.AppendLine(" ");
 							local.AppendLine("【当前定居点（原版到达介绍）】：");
 							local.AppendLine(nativeInfo);
 						}
@@ -4498,22 +4832,10 @@ public class ShoutBehavior : CampaignBehaviorBase
 				{
 				}
 				local.Append(commonCandidatesList);
-				local.AppendLine(" ");
-				local.AppendLine("【2.动作约束】");
-				local.AppendLine("当前回复角色：" + (npc2.Name ?? "NPC"));
-				if (!string.IsNullOrWhiteSpace(npc2.RoleDesc))
-				{
-					local.AppendLine("身份：" + npc2.RoleDesc);
-				}
-				string marriageFact = BuildCurrentResponderMarriageFact(contextHero);
-				if (!string.IsNullOrWhiteSpace(marriageFact))
-				{
-					local.AppendLine(marriageFact);
-				}
+				bool multiNpcScene = speakableCandidates.Count > 1;
 				string scenePatienceInstruction = "";
 				if (patienceStatusLines.Count > 0)
 				{
-					local.AppendLine(" ");
 					local.AppendLine("【4.三值状态】");
 					local.AppendLine("【NPC耐心状态】：");
 					foreach (string line2 in patienceStatusLines)
@@ -4522,15 +4844,18 @@ public class ShoutBehavior : CampaignBehaviorBase
 					}
 					scenePatienceInstruction = MyBehavior.GetScenePatienceInstructionForExternal();
 				}
-				local.AppendLine("【群体对话规则】");
-				local.AppendLine("1. 如果【在场人物列表】中只有一个NPC，那他必须回应玩家。");
-				local.AppendLine("2. 【在场人物列表】中最上方的NPC是主要对话对象，必须回复玩家，其他NPC可以酌情选择是否回复");
-				local.AppendLine("3. 你只需以自己的身份输出一行回复，不需要包含角色名开头。");
-				local.AppendLine("4. 禁止动作描写、心理活动、括号备注；只保留角色说出口的话，不要加引号，但是其他规则要求你加入标签你必须加入标签");
-				local.AppendLine("5. 若多人在场，请注意你的身份和性格，给出与其他NPC不同的独特见解，避免重复相似的内容。");
-				local.AppendLine("6. 你说的话要考虑【当前场景公共对话与互动】中别人的发言，而不是各说各的，毕竟现在是群聊");
-				local.AppendLine("7. kingdom_service 标签去重：仅在你明确同意“加入势力/成为封臣/退出当前效力”时才可输出 [ACTION:KINGDOM_SERVICE:*:*]；若【当前场景公共对话与互动】已出现同事项的 kingdom_service 标签，本轮你只能口头补充，不得重复输出。");
-				local.AppendLine("8. marriage 标签去重：同一轮同一事项最多出现一个结婚标签；若已有角色输出 [ACTION:MARRIAGE_FORMAL:*] 或 [ACTION:MARRIAGE_ELOPE:*]，你只能口头补充。");
+				if (multiNpcScene)
+				{
+					local.AppendLine("【群体对话规则】");
+					local.AppendLine("1. 如果【在场人物列表】中只有一个NPC，那他必须回应玩家。");
+					local.AppendLine("2. 【在场人物列表】中最上方的NPC是主要对话对象，必须回复玩家，其他NPC可以酌情选择是否回复");
+					local.AppendLine("3. 你只需以自己的身份输出一行回复，不需要包含角色名开头。");
+					local.AppendLine("4. 禁止动作描写、心理活动、括号备注；只保留角色说出口的话，不要加引号，但是其他规则要求你加入标签你必须加入标签");
+					local.AppendLine("5. 若多人在场，请注意你的身份和性格，给出与其他NPC不同的独特见解，避免重复相似的内容。");
+					local.AppendLine("6. 你说的话要考虑【当前场景公共对话与互动】中别人的发言，而不是各说各的，毕竟现在是群聊");
+					local.AppendLine("7. kingdom_service 标签去重：仅在你明确同意“加入势力/成为封臣/退出当前效力”时才可输出 [ACTION:KINGDOM_SERVICE:*:*]；若【当前场景公共对话与互动】已出现同事项的 kingdom_service 标签，本轮你只能口头补充，不得重复输出。");
+					local.AppendLine("8. marriage 标签去重：同一轮同一事项最多出现一个结婚标签；若已有角色输出 [ACTION:MARRIAGE_FORMAL:*] 或 [ACTION:MARRIAGE_ELOPE:*]，你只能口头补充。");
+				}
 				string fixedLayerText = "";
 				string baseExtras = StripScenePersonaBlocks((ctx?.Extras ?? "").Trim());
 				string trustBlock = ExtractTrustPromptBlock(baseExtras, out var baseExtrasWithoutTrust);
@@ -4558,7 +4883,6 @@ public class ShoutBehavior : CampaignBehaviorBase
 				{
 					layeredPrompt = layeredPrompt + "\n" + persistedWithoutRecentWindow;
 				}
-				bool multiNpcScene = speakableCandidates.Count > 1;
 				List<object> messages = new List<object>
 				{
 					new
@@ -4693,20 +5017,28 @@ public class ShoutBehavior : CampaignBehaviorBase
 						if (!string.IsNullOrWhiteSpace(content))
 						{
 							bool flag = ShoutUtils.TryTriggerDuelAction(matchedNpc, ref content);
-							ShowNpcSpeechOutput(matchedNpc, agent, content);
-							if (agent != null && agent.IsActive())
+							bool flag2 = TryTriggerOpenLordsHallAction(matchedNpc, agent, ref content);
+							if (!string.IsNullOrWhiteSpace(content))
 							{
-								AddAgentToStareList(agent);
-							}
-							if (!skipHistory)
-							{
-								RecordResponseForAllNearbySafe(allNpcData, matchedNpc.AgentIndex, matchedNpc.Name, content);
-								PersistNpcSpeechToNamedHeroes(matchedNpc.AgentIndex, matchedNpc.Name, content, allNpcData);
+								ShowNpcSpeechOutput(matchedNpc, agent, content);
+								if (agent != null && agent.IsActive())
+								{
+									AddAgentToStareList(agent);
+								}
+								if (!skipHistory)
+								{
+									RecordResponseForAllNearbySafe(allNpcData, matchedNpc.AgentIndex, matchedNpc.Name, content);
+									PersistNpcSpeechToNamedHeroes(matchedNpc.AgentIndex, matchedNpc.Name, content, allNpcData);
+								}
 							}
 							if (flag)
 							{
 								DuelBehavior.SetNextDuelRiskWarningEnabled(_lastShoutDuelLiteralHit);
 								ShoutUtils.ExecuteDuel(agent);
+							}
+							if (flag2)
+							{
+								return;
 							}
 						}
 					}
@@ -4739,8 +5071,25 @@ public class ShoutBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
+		if (!text.StartsWith("[玩家行为补充]", StringComparison.Ordinal) && !text.StartsWith("[NPC行为补充]", StringComparison.Ordinal))
+		{
+			text = "[玩家行为补充] " + text;
+		}
+		List<int> visibleAgentIndices = BuildVisibleAgentSnapshot(nearbyData);
 		lock (_historyLock)
 		{
+			_publicConversationHistory.Add(new ConversationMessage
+			{
+				Role = "system",
+				Content = text,
+				SpeakerName = "系统",
+				SpeakerAgentIndex = -1,
+				VisibleAgentIndices = visibleAgentIndices
+			});
+			if (_publicConversationHistory.Count > 40)
+			{
+				_publicConversationHistory.RemoveAt(0);
+			}
 			foreach (NpcDataPacket nearbyDatum in nearbyData)
 			{
 				int agentIndex = nearbyDatum.AgentIndex;
@@ -4752,7 +5101,9 @@ public class ShoutBehavior : CampaignBehaviorBase
 				{
 					Role = "system",
 					Content = text,
-					SpeakerName = "系统"
+					SpeakerName = "系统",
+					SpeakerAgentIndex = -1,
+					VisibleAgentIndices = visibleAgentIndices
 				});
 				while (_npcConversationHistory[agentIndex].Count > 40)
 				{
@@ -5157,27 +5508,6 @@ public class ShoutBehavior : CampaignBehaviorBase
 			{
 				string text = (npcHero.IsFemale ? "丈夫" : "妻子");
 				return " | 与玩家关系: 配偶（玩家是其" + text + "）";
-			}
-		}
-		catch
-		{
-		}
-		return "";
-	}
-
-	private static string BuildCurrentResponderMarriageFact(Hero npcHero)
-	{
-		try
-		{
-			Hero mainHero = Hero.MainHero;
-			if (npcHero == null || mainHero == null || npcHero == mainHero)
-			{
-				return "";
-			}
-			if (npcHero.Spouse == mainHero || mainHero.Spouse == npcHero)
-			{
-				string text = (npcHero.IsFemale ? "丈夫" : "妻子");
-				return "【婚姻事实】你与玩家是合法配偶关系。玩家是你的" + text + "。你必须认出玩家并以配偶关系进行回应。";
 			}
 		}
 		catch

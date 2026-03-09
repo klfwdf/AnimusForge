@@ -5,8 +5,17 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using Newtonsoft.Json;
+using SandBox;
+using SandBox.Missions.MissionLogics;
+using SandBox.Objects.Usables;
 using TaleWorlds.CampaignSystem;
+using TaleWorlds.CampaignSystem.ComponentInterfaces;
+using TaleWorlds.CampaignSystem.Settlements;
+using TaleWorlds.CampaignSystem.Settlements.Locations;
 using TaleWorlds.Engine;
+using TaleWorlds.Localization;
+using TaleWorlds.MountAndBlade;
+using TaleWorlds.MountAndBlade.Missions;
 
 namespace AnimusForge;
 
@@ -106,6 +115,14 @@ public static class AIConfigHandler
 	private static readonly AsyncLocal<string> _guardrailRuntimeTargetKingdomId = new AsyncLocal<string>();
 
 	private static readonly AsyncLocal<string> _guardrailRuntimeTargetHeroId = new AsyncLocal<string>();
+
+	private static readonly AsyncLocal<string> _guardrailRuntimeTargetCharacterId = new AsyncLocal<string>();
+
+	private static readonly AsyncLocal<string> _guardrailRuntimeTargetTroopId = new AsyncLocal<string>();
+
+	private static readonly AsyncLocal<string> _guardrailRuntimeTargetUnnamedRank = new AsyncLocal<string>();
+
+	private static readonly AsyncLocal<int> _guardrailRuntimeTargetAgentIndex = new AsyncLocal<int>();
 
 	private static GuardrailEvalSnapshot _lastGuardrailEval;
 
@@ -1437,6 +1454,14 @@ public static class AIConfigHandler
 						value = text5;
 					}
 				}
+				if (string.Equals(text, "lords_hall_access", StringComparison.OrdinalIgnoreCase))
+				{
+					string text6 = BuildRuntimeLordsHallAccessInstruction();
+					if (!string.IsNullOrWhiteSpace(text6))
+					{
+						value = text6;
+					}
+				}
 				if (!string.IsNullOrWhiteSpace(text) && !string.IsNullOrWhiteSpace(value))
 				{
 					stringBuilder.AppendLine("【附加规则:" + text + "】");
@@ -1555,6 +1580,54 @@ public static class AIConfigHandler
 		catch
 		{
 			_guardrailRuntimeTargetHeroId.Value = "";
+		}
+	}
+
+	public static void SetGuardrailRuntimeTargetCharacter(string characterId)
+	{
+		try
+		{
+			_guardrailRuntimeTargetCharacterId.Value = (characterId ?? "").Trim();
+		}
+		catch
+		{
+			_guardrailRuntimeTargetCharacterId.Value = "";
+		}
+	}
+
+	public static void SetGuardrailRuntimeTargetTroop(string troopId)
+	{
+		try
+		{
+			_guardrailRuntimeTargetTroopId.Value = ((troopId ?? "").Trim().ToLowerInvariant() ?? "");
+		}
+		catch
+		{
+			_guardrailRuntimeTargetTroopId.Value = "";
+		}
+	}
+
+	public static void SetGuardrailRuntimeTargetUnnamedRank(string unnamedRank)
+	{
+		try
+		{
+			_guardrailRuntimeTargetUnnamedRank.Value = ((unnamedRank ?? "").Trim().ToLowerInvariant() ?? "");
+		}
+		catch
+		{
+			_guardrailRuntimeTargetUnnamedRank.Value = "";
+		}
+	}
+
+	public static void SetGuardrailRuntimeTargetAgentIndex(int agentIndex)
+	{
+		try
+		{
+			_guardrailRuntimeTargetAgentIndex.Value = agentIndex;
+		}
+		catch
+		{
+			_guardrailRuntimeTargetAgentIndex.Value = -1;
 		}
 	}
 
@@ -1724,6 +1797,42 @@ public static class AIConfigHandler
 		return null;
 	}
 
+	private static int ResolveConversationTargetAgentIndex()
+	{
+		try
+		{
+			return _guardrailRuntimeTargetAgentIndex.Value;
+		}
+		catch
+		{
+			return -1;
+		}
+	}
+
+	private static string ResolveRuntimeTargetUnnamedRank()
+	{
+		try
+		{
+			return (_guardrailRuntimeTargetUnnamedRank.Value ?? "").Trim().ToLowerInvariant();
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	private static string ResolveRuntimeTargetTroopId()
+	{
+		try
+		{
+			return (_guardrailRuntimeTargetTroopId.Value ?? "").Trim().ToLowerInvariant();
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
 	private static string BuildRuntimeKingdomServiceInstruction()
 	{
 		try
@@ -1774,6 +1883,175 @@ public static class AIConfigHandler
 		}
 	}
 
+	private static bool IsRuntimeTargetCastleGuard(int agentIndex)
+	{
+		try
+		{
+			if (agentIndex < 0 || Mission.Current == null)
+			{
+				return false;
+			}
+			Agent agent = Mission.Current.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == agentIndex);
+			if (agent == null || !(agent.Character is CharacterObject characterObject) || !characterObject.IsSoldier)
+			{
+				return false;
+			}
+			AgentNavigator agentNavigator = agent.GetComponent<CampaignAgentComponent>()?.AgentNavigator;
+			bool flag = false;
+			if (agentNavigator != null)
+			{
+				flag = agentNavigator.TargetUsableMachine != null && agent.IsUsingGameObject && agentNavigator.TargetUsableMachine.GameEntity.HasTag("sp_guard_castle");
+				if (!flag && (agentNavigator.SpecialTargetTag == "sp_guard_castle" || agentNavigator.SpecialTargetTag == "sp_guard"))
+				{
+					Location lordsHallLocation = LocationComplex.Current?.GetLocationWithId("lordshall");
+					MissionAgentHandler missionBehavior = Mission.Current.GetMissionBehavior<MissionAgentHandler>();
+					if (lordsHallLocation != null && missionBehavior?.TownPassageProps != null)
+					{
+						UsableMachine usableMachine = missionBehavior.TownPassageProps.FirstOrDefault((UsableMachine x) => x is Passage passage && passage.ToLocation == lordsHallLocation);
+						if (usableMachine != null && usableMachine.GameEntity.GlobalPosition.DistanceSquared(agent.Position) < 100f)
+						{
+							flag = true;
+						}
+					}
+				}
+			}
+			return flag;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static string DescribeLordsHallAccessReason(SettlementAccessModel.AccessDetails accessDetails)
+	{
+		try
+		{
+			switch (accessDetails.AccessLimitationReason)
+			{
+			case SettlementAccessModel.AccessLimitationReason.ClanTier:
+				return "玩家家族等级不足";
+			case SettlementAccessModel.AccessLimitationReason.CrimeRating:
+				return "玩家在当地有犯罪评级";
+			case SettlementAccessModel.AccessLimitationReason.Disguised:
+				return "当前只能靠伪装混入";
+			case SettlementAccessModel.AccessLimitationReason.LocationEmpty:
+				return "领主大厅当前无人可见";
+			default:
+				return (accessDetails.AccessLevel == SettlementAccessModel.AccessLevel.FullAccess) ? "原生规则允许直接进入" : "原生规则不允许直接进入";
+			}
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	private static bool TryBuildLordsHallAccessRuntimeState(out string stateKey, out Dictionary<string, string> tokens)
+	{
+		stateKey = "not_applicable";
+		tokens = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+		try
+		{
+			Settlement settlement = Settlement.CurrentSettlement;
+			int agentIndex = ResolveConversationTargetAgentIndex();
+			string text = ResolveRuntimeTargetUnnamedRank();
+			string text2 = ResolveRuntimeTargetTroopId();
+			int num = 0;
+			int num2 = Hero.MainHero?.Gold ?? 0;
+			bool flag = !string.IsNullOrWhiteSpace(text2) && string.Equals(text, "soldier", StringComparison.OrdinalIgnoreCase) && string.IsNullOrWhiteSpace((_guardrailRuntimeTargetHeroId.Value ?? "").Trim());
+			bool flag2 = flag && IsRuntimeTargetCastleGuard(agentIndex);
+			string text3 = MyBehavior.BuildRuleTargetKeyForExternal(null, null, agentIndex);
+			if (string.IsNullOrWhiteSpace(text3) && !string.IsNullOrWhiteSpace(text2))
+			{
+				text3 = "troop:" + text2;
+			}
+			if (!string.IsNullOrWhiteSpace(text3))
+			{
+				try
+				{
+					num = ShoutBehavior.CurrentInstance?.GetRecentNonHeroGoldForRuleTarget(text3) ?? 0;
+				}
+				catch
+				{
+					num = 0;
+				}
+			}
+			tokens["settlementName"] = settlement?.Name?.ToString() ?? "";
+			tokens["settlementId"] = settlement?.StringId ?? "";
+			tokens["troopId"] = text2 ?? "";
+			tokens["targetRank"] = text ?? "";
+			tokens["targetKey"] = text3 ?? "";
+			tokens["prepaidGold"] = num.ToString();
+			tokens["playerGold"] = num2.ToString();
+			tokens["playerClanTier"] = ((Clan.PlayerClan?.Tier).GetValueOrDefault()).ToString();
+			tokens["accessReason"] = "";
+			tokens["guideBribeGold"] = "0";
+			if (settlement == null || !settlement.IsTown || !flag2)
+			{
+				stateKey = "not_applicable";
+				return true;
+			}
+			SettlementAccessModel settlementAccessModel = Campaign.Current?.Models?.SettlementAccessModel;
+			if (settlementAccessModel == null)
+			{
+				stateKey = "denied_no_bribe";
+				return true;
+			}
+			SettlementAccessModel.AccessDetails accessDetails = default(SettlementAccessModel.AccessDetails);
+			settlementAccessModel.CanMainHeroEnterLordsHall(settlement, out accessDetails);
+			bool disableOption = false;
+			TextObject disabledText = null;
+			bool flag3 = settlementAccessModel.CanMainHeroAccessLocation(settlement, "lordshall", out disableOption, out disabledText);
+			int bribeToEnterLordsHall = Campaign.Current?.Models?.BribeCalculationModel?.GetBribeToEnterLordsHall(settlement) ?? 0;
+			tokens["accessReason"] = DescribeLordsHallAccessReason(accessDetails);
+			tokens["guideBribeGold"] = bribeToEnterLordsHall.ToString();
+			if (flag3)
+			{
+				stateKey = "allowed_directly";
+				return true;
+			}
+			if (accessDetails.AccessLevel == SettlementAccessModel.AccessLevel.LimitedAccess && accessDetails.LimitedAccessSolution == SettlementAccessModel.LimitedAccessSolution.Bribe && bribeToEnterLordsHall > 0)
+			{
+				stateKey = "denied_but_bribe_available";
+				return true;
+			}
+			if (accessDetails.AccessLevel == SettlementAccessModel.AccessLevel.LimitedAccess && accessDetails.LimitedAccessSolution == SettlementAccessModel.LimitedAccessSolution.Disguise)
+			{
+				stateKey = "disguise_only";
+				return true;
+			}
+			if (accessDetails.AccessLevel == SettlementAccessModel.AccessLevel.NoAccess && accessDetails.AccessLimitationReason == SettlementAccessModel.AccessLimitationReason.LocationEmpty)
+			{
+				stateKey = "no_one_inside";
+				return true;
+			}
+			stateKey = "denied_no_bribe";
+			return true;
+		}
+		catch
+		{
+			stateKey = "not_applicable";
+			tokens = tokens ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+			return false;
+		}
+	}
+
+	private static string BuildRuntimeLordsHallAccessInstruction()
+	{
+		try
+		{
+			if (TryBuildLordsHallAccessRuntimeState(out var stateKey, out var tokens))
+			{
+				return ResolveRuleRuntimeText("lords_hall_access", stateKey, forConstraint: false, tokens);
+			}
+		}
+		catch
+		{
+		}
+		return "";
+	}
+
 	private static string BuildRuntimeRuleConstraintHint(string tag)
 	{
 		try
@@ -1791,6 +2069,14 @@ public static class AIConfigHandler
 			if (text == "npc_recent_actions")
 			{
 				return MyBehavior.BuildNpcActionsRuntimeConstraintHintForExternal(ResolveConversationTargetHero(), recentOnly: true);
+			}
+			if (text == "lords_hall_access")
+			{
+				if (TryBuildLordsHallAccessRuntimeState(out var stateKey, out var tokens))
+				{
+					return ResolveRuleRuntimeText("lords_hall_access", stateKey, forConstraint: true, tokens);
+				}
+				return "";
 			}
 			if (text != "kingdom_service")
 			{

@@ -1284,7 +1284,7 @@ public static class ShoutUtils
 		}
 	}
 
-	public static string BuildNearbySettlementsDetailForPrompt(CampaignVec2 origin)
+	public static string BuildNearbySettlementsDetailForPrompt(CampaignVec2 origin, Hero perspectiveHero = null)
 	{
 		try
 		{
@@ -1351,16 +1351,16 @@ public static class ShoutUtils
 				}
 			}
 			List<string> list = new List<string>();
-			AppendDirLine(list, "北", st, num);
-			AppendDirLine(list, "东", st2, num2);
-			AppendDirLine(list, "南", st3, num3);
-			AppendDirLine(list, "西", st4, num4);
+			AppendDirLine(list, "北", st, num, perspectiveHero);
+			AppendDirLine(list, "东", st2, num2, perspectiveHero);
+			AppendDirLine(list, "南", st3, num3, perspectiveHero);
+			AppendDirLine(list, "西", st4, num4, perspectiveHero);
 			if (list.Count == 0)
 			{
 				return "";
 			}
 			StringBuilder stringBuilder = new StringBuilder();
-			stringBuilder.AppendLine("[周边信息]");
+			stringBuilder.AppendLine("【周边定居点（地图）】");
 			foreach (string item2 in list)
 			{
 				stringBuilder.AppendLine(item2);
@@ -1373,13 +1373,205 @@ public static class ShoutUtils
 		}
 	}
 
-	private static void AppendDirLine(List<string> lines, string dir, Settlement st, float distanceSquared)
+	public static string BuildCurrentSceneSettlementInlineSuffixForPrompt(Hero perspectiveHero = null)
+	{
+		try
+		{
+			Settlement settlement = Settlement.CurrentSettlement ?? FindNearestSettlementForCurrentScene();
+			if (settlement == null)
+			{
+				return "";
+			}
+			return BuildCurrentSceneSettlementInlineSuffixForPrompt(settlement, perspectiveHero);
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	public static string BuildCurrentSceneSettlementInlineSuffixForPrompt(Settlement settlement, Hero perspectiveHero = null)
+	{
+		try
+		{
+			if (settlement == null)
+			{
+				return "";
+			}
+			string text = (settlement.Name?.ToString() ?? "").Trim();
+			if (string.IsNullOrWhiteSpace(text))
+			{
+				return "";
+			}
+			string text5 = (settlement.Culture?.Name?.ToString() ?? "").Trim();
+			string text2 = (settlement.OwnerClan?.Leader?.Name?.ToString() ?? "").Trim();
+			string text3 = (settlement.OwnerClan?.Name?.ToString() ?? "").Trim();
+			string text4 = (settlement.MapFaction?.Name?.ToString() ?? "").Trim();
+			string factionRelationSummary = BuildFactionRelationSummary(settlement.MapFaction, perspectiveHero);
+			List<string> list = new List<string>();
+			if (!string.IsNullOrWhiteSpace(text5))
+			{
+				list.Add("该定居点属" + text5 + "文化");
+			}
+			if (!string.IsNullOrWhiteSpace(text2) && !string.IsNullOrWhiteSpace(text3))
+			{
+				list.Add("由" + text2 + "所属的" + text3 + "家族统治");
+			}
+			else if (!string.IsNullOrWhiteSpace(text2))
+			{
+				list.Add("领主是" + text2);
+			}
+			else if (!string.IsNullOrWhiteSpace(text3))
+			{
+				list.Add("由" + text3 + "家族统治");
+			}
+			if (!string.IsNullOrWhiteSpace(text4))
+			{
+				list.Add("隶属" + text4);
+			}
+			if (!string.IsNullOrWhiteSpace(factionRelationSummary))
+			{
+				list.Add(factionRelationSummary);
+			}
+			return list.Count <= 0 ? "" : ("；" + string.Join("，", list));
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	private static Settlement FindNearestSettlementForCurrentScene()
+	{
+		try
+		{
+			CampaignVec2? campaignVec = MobileParty.MainParty?.Position;
+			if (!campaignVec.HasValue || !campaignVec.Value.IsValid())
+			{
+				return null;
+			}
+			Vec2 vec = campaignVec.Value.ToVec2();
+			Settlement settlement = null;
+			float num = float.MaxValue;
+			foreach (Settlement item in Settlement.All)
+			{
+				if (item == null || item.IsHideout)
+				{
+					continue;
+				}
+				Vec2 vec2 = item.GatePosition.ToVec2();
+				float num2 = vec2.x - vec.x;
+				float num3 = vec2.y - vec.y;
+				float num4 = num2 * num2 + num3 * num3;
+				if (num4 < num)
+				{
+					num = num4;
+					settlement = item;
+				}
+			}
+			return settlement;
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static string GetSettlementTypeText(Settlement settlement)
+	{
+		return settlement.IsTown ? "城镇" : (settlement.IsCastle ? "城堡" : (settlement.IsVillage ? "村庄" : ((!settlement.IsFortification) ? "定居点" : "要塞")));
+	}
+
+	private static string BuildFactionRelationSummary(IFaction faction, Hero perspectiveHero)
+	{
+		try
+		{
+			string playerRelation = GetFactionRelationLabel(faction, Hero.MainHero?.Clan?.Kingdom ?? Hero.MainHero?.MapFaction ?? Clan.PlayerClan?.Kingdom ?? Clan.PlayerClan?.MapFaction);
+			string npcRelation = GetFactionRelationLabel(faction, perspectiveHero?.Clan?.Kingdom ?? perspectiveHero?.MapFaction);
+			if (string.IsNullOrWhiteSpace(npcRelation))
+			{
+				return BuildSingleRelationPhrase("玩家", playerRelation);
+			}
+			if (string.Equals(playerRelation, npcRelation, StringComparison.Ordinal))
+			{
+				return BuildSharedRelationPhrase(playerRelation);
+			}
+			return BuildSplitRelationPhrase(npcRelation, playerRelation);
+		}
+		catch
+		{
+			return "对你和玩家都保持中立";
+		}
+	}
+
+	private static string BuildSingleRelationPhrase(string targetName, string relation)
+	{
+		switch ((relation ?? "").Trim())
+		{
+		case "敌对":
+			return "是" + targetName + "的敌人";
+		case "友方":
+			return "是" + targetName + "的友方势力";
+		default:
+			return "与" + targetName + "保持中立";
+		}
+	}
+
+	private static string BuildSharedRelationPhrase(string relation)
+	{
+		switch ((relation ?? "").Trim())
+		{
+		case "敌对":
+			return "是你和玩家的敌人";
+		case "友方":
+			return "是你和玩家的友方势力";
+		default:
+			return "对你和玩家都保持中立";
+		}
+	}
+
+	private static string BuildSplitRelationPhrase(string npcRelation, string playerRelation)
+	{
+		return BuildSingleRelationPhrase("你", npcRelation) + "，但" + BuildSingleRelationPhrase("玩家", playerRelation);
+	}
+
+	private static string GetFactionRelationLabel(IFaction faction, IFaction referenceFaction)
+	{
+		try
+		{
+			if (faction == null || referenceFaction == null)
+			{
+				return "中立";
+			}
+			string text = (faction.StringId ?? "").Trim();
+			string text2 = (referenceFaction.StringId ?? "").Trim();
+			if (!string.IsNullOrWhiteSpace(text) && string.Equals(text, text2, StringComparison.OrdinalIgnoreCase))
+			{
+				return "友方";
+			}
+			if (ReferenceEquals(faction, referenceFaction))
+			{
+				return "友方";
+			}
+			if (referenceFaction.IsAtWarWith(faction) || faction.IsAtWarWith(referenceFaction))
+			{
+				return "敌对";
+			}
+			return "中立";
+		}
+		catch
+		{
+			return "中立";
+		}
+	}
+
+	private static void AppendDirLine(List<string> lines, string dir, Settlement st, float distanceSquared, Hero perspectiveHero = null)
 	{
 		if (st == null)
 		{
 			return;
 		}
-		string text = BuildSettlementStatusLineForPrompt(st);
+		string text = BuildSettlementStatusLineForPrompt(st, perspectiveHero);
 		if (string.IsNullOrWhiteSpace(text))
 		{
 			return;
@@ -1403,7 +1595,7 @@ public static class ShoutUtils
 		lines.Add(dir + "：" + text + text2);
 	}
 
-	private static string BuildSettlementStatusLineForPrompt(Settlement settlement)
+	private static string BuildSettlementStatusLineForPrompt(Settlement settlement, Hero perspectiveHero = null)
 	{
 		try
 		{
@@ -1416,26 +1608,41 @@ public static class ShoutUtils
 			{
 				return "";
 			}
-			string item = (settlement.IsTown ? "城镇" : (settlement.IsCastle ? "城堡" : (settlement.IsVillage ? "村庄" : ((!settlement.IsFortification) ? "定居点" : "要塞"))));
+			string item = GetSettlementTypeText(settlement);
+			string cultureName = (settlement.Culture?.Name?.ToString() ?? "").Trim();
 			string text2 = (settlement.MapFaction?.Name?.ToString() ?? "").Trim();
 			string text3 = (settlement.OwnerClan?.Leader?.Name?.ToString() ?? "").Trim();
+			string text4 = (settlement.OwnerClan?.Name?.ToString() ?? "").Trim();
+			string factionRelationSummary = BuildFactionRelationSummary(settlement.MapFaction, perspectiveHero);
 			List<string> list = new List<string>();
 			list.Add(item);
-			if (!string.IsNullOrEmpty(text2))
+			if (!string.IsNullOrEmpty(cultureName))
 			{
-				list.Add("势力：" + text2);
+				list.Add("文化：" + cultureName);
 			}
 			if (!string.IsNullOrEmpty(text3))
 			{
 				list.Add("领主：" + text3);
 			}
-			string text4 = text + "（" + string.Join("，", list) + "）";
+			if (!string.IsNullOrEmpty(text4))
+			{
+				list.Add("家族：" + text4);
+			}
+			if (!string.IsNullOrEmpty(text2))
+			{
+				list.Add("隶属：" + text2);
+			}
+			if (!string.IsNullOrEmpty(factionRelationSummary))
+			{
+				list.Add(factionRelationSummary);
+			}
+			string text5 = text + "（" + string.Join("，", list) + "）";
 			string nativeSettlementInfoForPrompt = GetNativeSettlementInfoForPrompt(settlement);
 			if (string.IsNullOrWhiteSpace(nativeSettlementInfoForPrompt))
 			{
-				return text4;
+				return text5;
 			}
-			return text4 + "；" + nativeSettlementInfoForPrompt;
+			return text5 + "；" + nativeSettlementInfoForPrompt;
 		}
 		catch
 		{
