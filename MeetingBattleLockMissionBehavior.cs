@@ -49,8 +49,6 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior
 
 	private float _escortDebugLogCooldown;
 
-	private bool _fallbackEscortSpawnAttempted;
-
 	private float _leaderSheathTimer;
 
 	private Team _targetOriginalTeam;
@@ -144,7 +142,6 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior
 		_escortsPlaced = false;
 		_escortPlacementTimer = 0.3f;
 		_escortDebugLogCooldown = 0f;
-		_fallbackEscortSpawnAttempted = false;
 		_leaderSheathTimer = 0f;
 		_targetOriginalTeam = null;
 		_targetNeutralRefreshTimer = 0f;
@@ -331,8 +328,11 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior
 			RestoreTargetFormationAfterFormalDuel();
 			if (!_meetingCombatUnlockApplied)
 			{
+				EnsureMissionBattleModeForCombat();
+				EnsureMissionCombatTeamRelationships();
 				RestoreTargetLordControllerForCombat();
 				ReleaseMeetingLocksForCombat();
+				ForceAgentsIntoCombatReadiness();
 				_meetingCombatUnlockApplied = true;
 			}
 			LordEncounterBehavior.SetEncounterMeetingMissionActive(active: false);
@@ -403,6 +403,376 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior
 			PauseAllAIAgentsAndSheathWeapons(sheathWeapons: false);
 			_pauseTickTimer = 0.15f;
 		}
+	}
+
+	private void EnsureMissionBattleModeForCombat()
+	{
+		if (base.Mission == null)
+		{
+			return;
+		}
+		try
+		{
+			MissionMode mode = base.Mission.Mode;
+			if (mode == MissionMode.Battle)
+			{
+				return;
+			}
+			base.Mission.SetMissionMode(MissionMode.Battle, atStart: false);
+			Logger.Log("MeetingBattle", $"Forced mission mode to Battle for combat escalation. PreviousMode={mode}");
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("MeetingBattle", "Failed to force mission mode to Battle during combat escalation: " + ex.Message);
+		}
+	}
+
+	private void EnsureMissionCombatTeamRelationships()
+	{
+		if (base.Mission == null)
+		{
+			return;
+		}
+		Team team = null;
+		Team team2 = null;
+		Team team3 = null;
+		try
+		{
+			team = _mainAgent?.Team ?? base.Mission.PlayerTeam;
+		}
+		catch
+		{
+			team = null;
+		}
+		try
+		{
+			team2 = _targetOriginalTeam ?? _targetAgent?.Team;
+		}
+		catch
+		{
+			team2 = null;
+		}
+		try
+		{
+			team3 = base.Mission.PlayerEnemyTeam;
+		}
+		catch
+		{
+			team3 = null;
+		}
+		if ((team2 == null || team2 == team) && team3 != null && team3 != team)
+		{
+			team2 = team3;
+			try
+			{
+				if (_targetAgent != null && _targetAgent.IsActive() && _targetAgent.Team != team2)
+				{
+					_targetAgent.SetTeam(team2, sync: true);
+				}
+			}
+			catch
+			{
+			}
+			try
+			{
+				Agent mountAgent = _targetAgent?.MountAgent;
+				if (mountAgent != null && mountAgent.IsActive() && mountAgent.Team != team2)
+				{
+					mountAgent.SetTeam(team2, sync: true);
+				}
+			}
+			catch
+			{
+			}
+		}
+		if (team == null || team2 == null || team == team2)
+		{
+			Logger.Log("MeetingBattle", "Combat team relationship fix skipped: unable to resolve distinct player/target teams.");
+			return;
+		}
+		string text = GetTeamSideKey(team);
+		string text2 = GetTeamSideKey(team2);
+		List<Team> list = new List<Team>();
+		List<Team> list2 = new List<Team>();
+		AddUniqueTeam(list, team);
+		AddUniqueTeam(list2, team2);
+		try
+		{
+			foreach (Team item in base.Mission.Teams)
+			{
+				if (item == null)
+				{
+					continue;
+				}
+				string teamSideKey = GetTeamSideKey(item);
+				if (!string.IsNullOrEmpty(text) && string.Equals(teamSideKey, text, StringComparison.OrdinalIgnoreCase))
+				{
+					AddUniqueTeam(list, item);
+				}
+				else if (!string.IsNullOrEmpty(text2) && string.Equals(teamSideKey, text2, StringComparison.OrdinalIgnoreCase))
+				{
+					AddUniqueTeam(list2, item);
+				}
+			}
+		}
+		catch
+		{
+		}
+		if (list.Count == 0)
+		{
+			AddUniqueTeam(list, team);
+		}
+		if (list2.Count == 0)
+		{
+			AddUniqueTeam(list2, team2);
+		}
+		for (int i = 0; i < list.Count; i++)
+		{
+			for (int j = i + 1; j < list.Count; j++)
+			{
+				TrySetEnemyRelation(list[i], list[j], isEnemy: false);
+			}
+		}
+		for (int k = 0; k < list2.Count; k++)
+		{
+			for (int l = k + 1; l < list2.Count; l++)
+			{
+				TrySetEnemyRelation(list2[k], list2[l], isEnemy: false);
+			}
+		}
+		foreach (Team item2 in list)
+		{
+			foreach (Team item3 in list2)
+			{
+				TrySetEnemyRelation(item2, item3, isEnemy: true);
+			}
+		}
+		bool flag = false;
+		try
+		{
+			flag = team.IsEnemyOf(team2) || team2.IsEnemyOf(team);
+		}
+		catch
+		{
+			flag = false;
+		}
+		Logger.Log("MeetingBattle", $"Combat team relationship fix applied. PlayerSideKey={text ?? "unknown"}, TargetSideKey={text2 ?? "unknown"}, PlayerSideTeams={list.Count}, TargetSideTeams={list2.Count}, PlayerAgents={CountActiveAgentsOnTeams(list)}, TargetAgents={CountActiveAgentsOnTeams(list2)}, DirectEnemy={flag}");
+	}
+
+	private static void AddUniqueTeam(List<Team> teams, Team team)
+	{
+		if (teams == null || team == null || teams.Contains(team))
+		{
+			return;
+		}
+		teams.Add(team);
+	}
+
+	private void TrySetEnemyRelation(Team a, Team b, bool isEnemy)
+	{
+		if (a == null || b == null || a == b)
+		{
+			return;
+		}
+		try
+		{
+			a.SetIsEnemyOf(b, isEnemyOf: isEnemy);
+		}
+		catch
+		{
+		}
+		try
+		{
+			b.SetIsEnemyOf(a, isEnemyOf: isEnemy);
+		}
+		catch
+		{
+		}
+	}
+
+	private string GetTeamSideKey(Team team)
+	{
+		if (team == null)
+		{
+			return null;
+		}
+		try
+		{
+			PropertyInfo propertyInfo = team.GetType().GetProperty("Side") ?? team.GetType().GetProperty("BattleSide") ?? team.GetType().GetProperty("MissionSide");
+			if (propertyInfo != null)
+			{
+				object value = propertyInfo.GetValue(team, null);
+				if (value != null)
+				{
+					return value.ToString();
+				}
+			}
+		}
+		catch
+		{
+		}
+		return null;
+	}
+
+	private int CountActiveAgentsOnTeams(List<Team> teams)
+	{
+		if (teams == null || teams.Count == 0 || base.Mission == null)
+		{
+			return 0;
+		}
+		int num = 0;
+		try
+		{
+			foreach (Agent agent in base.Mission.Agents)
+			{
+				if (agent == null || !agent.IsActive())
+				{
+					continue;
+				}
+				Team team = null;
+				try
+				{
+					team = agent.Team;
+				}
+				catch
+				{
+					team = null;
+				}
+				if (team != null && teams.Contains(team))
+				{
+					num++;
+				}
+			}
+		}
+		catch
+		{
+		}
+		return num;
+	}
+
+	private void ForceAgentsIntoCombatReadiness()
+	{
+		if (base.Mission == null)
+		{
+			return;
+		}
+		int num = 0;
+		int num2 = 0;
+		int num3 = 0;
+		Team team = null;
+		try
+		{
+			team = _mainAgent?.Team ?? base.Mission.PlayerTeam;
+		}
+		catch
+		{
+			team = null;
+		}
+		try
+		{
+			foreach (Agent agent in base.Mission.Agents)
+			{
+				if (agent == null || !agent.IsActive())
+				{
+					continue;
+				}
+				try
+				{
+					if (!agent.IsMainAgent)
+					{
+						AgentFlag agentFlags = agent.GetAgentFlags();
+						agent.SetAgentFlags(agentFlags | AgentFlag.CanGetAlarmed);
+					}
+				}
+				catch
+				{
+				}
+				try
+				{
+					agent.SetAlarmState(Agent.AIStateFlag.Alarmed);
+					num++;
+				}
+				catch
+				{
+				}
+				try
+				{
+					agent.SetWatchState(Agent.WatchState.Alarmed);
+				}
+				catch
+				{
+				}
+				try
+				{
+					agent.WieldInitialWeapons(Agent.WeaponWieldActionType.InstantAfterPickUp, Equipment.InitialWeaponEquipPreference.Any);
+					num2++;
+				}
+				catch
+				{
+				}
+				try
+				{
+					agent.SetFiringOrder(FiringOrder.RangedWeaponUsageOrderEnum.FireAtWill);
+				}
+				catch
+				{
+				}
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			foreach (Team item in base.Mission.Teams)
+			{
+				if (item == null)
+				{
+					continue;
+				}
+				try
+				{
+					foreach (Formation item2 in item.FormationsIncludingEmpty)
+					{
+						if (item2 != null)
+						{
+							try
+							{
+								item2.SetFiringOrder(FiringOrder.FiringOrderFireAtWill);
+							}
+							catch
+							{
+							}
+						}
+					}
+				}
+				catch
+				{
+				}
+				if (team != null && item != team)
+				{
+					try
+					{
+						item.MasterOrderController?.SelectAllFormations();
+					}
+					catch
+					{
+					}
+					try
+					{
+						item.MasterOrderController?.SetOrder(OrderType.Charge);
+						num3++;
+					}
+					catch
+					{
+					}
+				}
+			}
+		}
+		catch
+		{
+		}
+		Logger.Log("MeetingBattle", $"Combat readiness refresh applied. AlarmedAgents={num}, WieldRefreshed={num2}, EnemyChargeTeams={num3}");
 	}
 
 	private void TryApplyStartupLoadingFade(float dt)
@@ -2985,14 +3355,13 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior
 		catch
 		{
 		}
-		bool flag = CountHealthyNonHeroTroops(party) > 0;
-		bool flag2 = CountHealthyNonHeroTroops(party2) > 0;
+		bool flag = ShouldRequireEscortForSide(team, party);
+		bool flag2 = ShouldRequireEscortForSide(team2, party2);
 		bool flag3 = flag && list2.Count < list.Count;
 		bool flag4 = flag2 && list3.Count < list.Count;
-		if ((flag3 || flag4) && !_fallbackEscortSpawnAttempted)
+		if (flag3 || flag4)
 		{
 			TrySpawnFallbackEscortsForBothSides(list.Count, team, team2, _mainAgent.Position, vec, _targetAgent.Position, vec2, list2.Count, list3.Count, flag3, flag4);
-			_fallbackEscortSpawnAttempted = true;
 			list2 = CollectTopTierTeamAgents(team, list.Count);
 			list3 = CollectTopTierTeamAgents(team2, list.Count);
 		}
@@ -3014,7 +3383,7 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior
 		{
 			if (_escortDebugLogCooldown <= 0f)
 			{
-				Logger.Log("MeetingBattle", $"Escort pending: playerCandidates={list2.Count}, targetCandidates={list3.Count}, playerHasTroops={flag}, targetHasTroops={flag2}");
+				Logger.Log("MeetingBattle", $"Escort pending: playerCandidates={list2.Count}, targetCandidates={list3.Count}, playerEscortRequired={flag}, targetEscortRequired={flag2}");
 				_escortDebugLogCooldown = 5f;
 			}
 			return false;
@@ -3024,6 +3393,160 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior
 			Logger.Log("MeetingBattle", $"Escort guards placed. PlayerSide={list2.Count}, TargetSide={list3.Count}");
 		}
 		return true;
+	}
+
+	private bool ShouldRequireEscortForSide(Team team, PartyBase primaryParty)
+	{
+		if (CountHealthyNonHeroTroops(primaryParty) > 0)
+		{
+			return true;
+		}
+		if (CountCurrentTeamEscortCandidates(team) > 0)
+		{
+			return true;
+		}
+		if (TryGetEncounterBattleTroopCountForTeam(team, out var troopCount))
+		{
+			return troopCount > 1;
+		}
+		return false;
+	}
+
+	private int CountCurrentTeamEscortCandidates(Team team)
+	{
+		if (team == null || base.Mission == null)
+		{
+			return 0;
+		}
+		int num = 0;
+		Agent agent = null;
+		Agent agent2 = null;
+		try
+		{
+			agent = _mainAgent?.MountAgent;
+		}
+		catch
+		{
+		}
+		try
+		{
+			agent2 = _targetAgent?.MountAgent;
+		}
+		catch
+		{
+		}
+		try
+		{
+			foreach (Agent agent3 in base.Mission.Agents)
+			{
+				if (agent3 == null || !agent3.IsActive() || !agent3.IsHuman || agent3 == _mainAgent || agent3 == _targetAgent || agent3 == agent || agent3 == agent2)
+				{
+					continue;
+				}
+				Team team2 = null;
+				try
+				{
+					team2 = agent3.Team;
+				}
+				catch
+				{
+					team2 = null;
+				}
+				if (team2 == null || team2 != team)
+				{
+					continue;
+				}
+				CharacterObject characterObject = null;
+				try
+				{
+					characterObject = agent3.Character as CharacterObject;
+				}
+				catch
+				{
+					characterObject = null;
+				}
+				if (characterObject != null && !characterObject.IsHero)
+				{
+					num++;
+				}
+			}
+		}
+		catch
+		{
+		}
+		return num;
+	}
+
+	private bool TryGetEncounterBattleTroopCountForTeam(Team team, out int troopCount)
+	{
+		troopCount = 0;
+		if (team == null)
+		{
+			return false;
+		}
+		if (!TryGetBattleSideForTeam(team, out var side))
+		{
+			return false;
+		}
+		MapEvent currentEncounterBattleSafe = GetCurrentEncounterBattleSafe();
+		if (currentEncounterBattleSafe == null)
+		{
+			return false;
+		}
+		try
+		{
+			troopCount = ((side == BattleSideEnum.Attacker) ? currentEncounterBattleSafe.AttackerSide.TroopCount : currentEncounterBattleSafe.DefenderSide.TroopCount);
+			return troopCount > 0;
+		}
+		catch
+		{
+			troopCount = 0;
+			return false;
+		}
+	}
+
+	private bool TryGetBattleSideForTeam(Team team, out BattleSideEnum side)
+	{
+		side = BattleSideEnum.None;
+		if (team == null)
+		{
+			return false;
+		}
+		try
+		{
+			PropertyInfo propertyInfo = team.GetType().GetProperty("Side") ?? team.GetType().GetProperty("BattleSide") ?? team.GetType().GetProperty("MissionSide");
+			object value = propertyInfo?.GetValue(team, null);
+			if (value == null)
+			{
+				return false;
+			}
+			if (value is BattleSideEnum battleSideEnum)
+			{
+				side = battleSideEnum;
+				return side != BattleSideEnum.None;
+			}
+			if (Enum.TryParse(value.ToString(), ignoreCase: true, out BattleSideEnum result))
+			{
+				side = result;
+				return side != BattleSideEnum.None;
+			}
+		}
+		catch
+		{
+		}
+		return false;
+	}
+
+	private MapEvent GetCurrentEncounterBattleSafe()
+	{
+		try
+		{
+			return PlayerEncounter.Battle ?? PlayerEncounter.EncounteredBattle ?? MapEvent.PlayerMapEvent;
+		}
+		catch
+		{
+			return null;
+		}
 	}
 
 	private void TrySpawnFallbackEscortsForBothSides(int desiredCount, Team playerTeam, Team targetTeam, Vec3 playerAnchor, Vec3 playerForward, Vec3 targetAnchor, Vec3 targetForward, int existingPlayerEscorts, int existingTargetEscorts, bool allowPlayerSpawn, bool allowTargetSpawn)
@@ -3791,11 +4314,10 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior
 
 	private List<(float fwdDist, float sideDist, bool faceBack)> BuildEscortSlots()
 	{
-		float item = 0.8f;
-		float num = 4.2f;
 		return new List<(float, float, bool)>
 		{
-			(item, num, false)
+			(-1f, -2.4f, false),
+			(-1f, 2.4f, false)
 		};
 	}
 
