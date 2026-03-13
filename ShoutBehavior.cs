@@ -1167,6 +1167,10 @@ public class ShoutBehavior : CampaignBehaviorBase
 						else
 						{
 							MyBehavior.ApplyPatienceFromSceneUnnamedResponseExternal(speakerData.UnnamedKey, speakerData.Name, ref aiResponse);
+							if (agent != null && agent.Character is CharacterObject characterObject2 && RewardSystemBehavior.Instance != null)
+							{
+								RewardSystemBehavior.Instance.ApplyMerchantRewardTags(characterObject2, Hero.MainHero, ref aiResponse);
+							}
 						}
 					}
 					catch
@@ -3351,6 +3355,8 @@ public class ShoutBehavior : CampaignBehaviorBase
 		{
 			hero = null;
 		}
+		bool flag = hero == null && characterObject != null && RewardSystemBehavior.Instance != null && RewardSystemBehavior.Instance.TryGetSettlementMerchantKind(characterObject, out var _);
+		Settlement currentSettlement = Settlement.CurrentSettlement;
 		string text = MyBehavior.BuildRuleTargetKeyForExternal(hero, characterObject, shoutTradeTargetNpc?.AgentIndex ?? (-1));
 		MobileParty mobileParty = Hero.MainHero?.PartyBelongedTo;
 		for (int i = 0; i < _shoutPendingTradeItems.Count; i++)
@@ -3375,6 +3381,11 @@ public class ShoutBehavior : CampaignBehaviorBase
 						catch
 						{
 						}
+					}
+					else if (flag && currentSettlement != null)
+					{
+						GiveGoldAction.ApplyBetweenCharacters(Hero.MainHero, null, num, disableNotification: true);
+						currentSettlement.SettlementComponent?.ChangeGold(num);
 					}
 					else
 					{
@@ -3402,6 +3413,10 @@ public class ShoutBehavior : CampaignBehaviorBase
 					if (hero?.PartyBelongedTo != null)
 					{
 						hero.PartyBelongedTo.ItemRoster.AddToCounts(shoutPendingTradeItem.Item, num2);
+					}
+					else if (flag && currentSettlement?.ItemRoster != null)
+					{
+						currentSettlement.ItemRoster.AddToCounts(shoutPendingTradeItem.Item, num2);
 					}
 					if (hero != null)
 					{
@@ -5009,6 +5024,10 @@ public class ShoutBehavior : CampaignBehaviorBase
 							else
 							{
 								MyBehavior.ApplyPatienceFromSceneUnnamedResponseExternal(matchedNpc.UnnamedKey, matchedNpc.Name, ref content);
+								if (agent != null && agent.Character is CharacterObject characterObject2 && RewardSystemBehavior.Instance != null)
+								{
+									RewardSystemBehavior.Instance.ApplyMerchantRewardTags(characterObject2, Hero.MainHero, ref content);
+								}
 							}
 						}
 						catch

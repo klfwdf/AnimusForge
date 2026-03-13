@@ -17,6 +17,15 @@ namespace AnimusForge;
 
 public class RewardSystemBehavior : CampaignBehaviorBase
 {
+	public enum SettlementMerchantKind
+	{
+		None,
+		Weapon,
+		Armor,
+		Horse,
+		Goods
+	}
+
 	public class RewardItemInfo
 	{
 		public ItemObject Item { get; set; }
@@ -664,6 +673,28 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			return 10;
 		}
 		return value;
+	}
+
+	private static int NormalizeLlmTrustDeltaValue(int value)
+	{
+		if (value < -10)
+		{
+			return -10;
+		}
+		if (value > 10)
+		{
+			return 10;
+		}
+		return value;
+	}
+
+	private static int ComputeTradePublicTrustDelta(int personalDelta)
+	{
+		if (personalDelta == 0)
+		{
+			return 0;
+		}
+		return (int)Math.Round((double)personalDelta / 3.0, MidpointRounding.AwayFromZero);
 	}
 
 	private static int GetCampaignDayIndex()
@@ -2422,6 +2453,228 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		return itemGuidePriceInfo;
 	}
 
+	public bool TryGetSettlementMerchantKind(CharacterObject character, out SettlementMerchantKind kind)
+	{
+		kind = SettlementMerchantKind.None;
+		if (character == null || character.IsHero)
+		{
+			return false;
+		}
+		switch (character.Occupation)
+		{
+		case Occupation.Weaponsmith:
+		case Occupation.Blacksmith:
+			kind = SettlementMerchantKind.Weapon;
+			return true;
+		case Occupation.Armorer:
+			kind = SettlementMerchantKind.Armor;
+			return true;
+		case Occupation.HorseTrader:
+			kind = SettlementMerchantKind.Horse;
+			return true;
+		case Occupation.GoodsTrader:
+			kind = SettlementMerchantKind.Goods;
+			return true;
+		default:
+			return false;
+		}
+	}
+
+	private static string GetSettlementMerchantRoleLabel(SettlementMerchantKind kind)
+	{
+		switch (kind)
+		{
+		case SettlementMerchantKind.Weapon:
+			return "武器商人";
+		case SettlementMerchantKind.Armor:
+			return "盔甲商人";
+		case SettlementMerchantKind.Horse:
+			return "马匹贩子";
+		case SettlementMerchantKind.Goods:
+			return "杂货商人";
+		default:
+			return "商贩";
+		}
+	}
+
+	private static string GetSettlementMerchantMarketLabel(SettlementMerchantKind kind)
+	{
+		switch (kind)
+		{
+		case SettlementMerchantKind.Weapon:
+			return "武器市场";
+		case SettlementMerchantKind.Armor:
+			return "盔甲市场";
+		case SettlementMerchantKind.Horse:
+			return "马匹市场";
+		case SettlementMerchantKind.Goods:
+			return "杂货市场";
+		default:
+			return "城镇市场";
+		}
+	}
+
+	private static string GetSettlementMerchantSpecialHint(SettlementMerchantKind kind)
+	{
+		switch (kind)
+		{
+		case SettlementMerchantKind.Weapon:
+			return "弓、弩、箭、弩矢、投掷武器和盾牌都归入你的武器市场。";
+		case SettlementMerchantKind.Armor:
+			return "头盔、身甲、臂甲、腿甲、披风等护具都归入你的盔甲市场。";
+		case SettlementMerchantKind.Horse:
+			return "马匹与马具都归入你的马匹市场。";
+		case SettlementMerchantKind.Goods:
+			return "粮食、贸易品和一般杂货都归入你的杂货市场。";
+		default:
+			return "";
+		}
+	}
+
+	private static bool MatchesSettlementMerchantKind(ItemObject item, SettlementMerchantKind kind)
+	{
+		if (item == null)
+		{
+			return false;
+		}
+		switch (kind)
+		{
+		case SettlementMerchantKind.Weapon:
+			switch (item.Type)
+			{
+			case ItemObject.ItemTypeEnum.OneHandedWeapon:
+			case ItemObject.ItemTypeEnum.TwoHandedWeapon:
+			case ItemObject.ItemTypeEnum.Polearm:
+			case ItemObject.ItemTypeEnum.Arrows:
+			case ItemObject.ItemTypeEnum.Bolts:
+			case ItemObject.ItemTypeEnum.SlingStones:
+			case ItemObject.ItemTypeEnum.Shield:
+			case ItemObject.ItemTypeEnum.Bow:
+			case ItemObject.ItemTypeEnum.Crossbow:
+			case ItemObject.ItemTypeEnum.Sling:
+			case ItemObject.ItemTypeEnum.Thrown:
+			case ItemObject.ItemTypeEnum.Pistol:
+			case ItemObject.ItemTypeEnum.Musket:
+			case ItemObject.ItemTypeEnum.Bullets:
+				return true;
+			}
+			return false;
+		case SettlementMerchantKind.Armor:
+			switch (item.Type)
+			{
+			case ItemObject.ItemTypeEnum.HeadArmor:
+			case ItemObject.ItemTypeEnum.BodyArmor:
+			case ItemObject.ItemTypeEnum.LegArmor:
+			case ItemObject.ItemTypeEnum.HandArmor:
+			case ItemObject.ItemTypeEnum.Cape:
+			case ItemObject.ItemTypeEnum.ChestArmor:
+				return true;
+			}
+			return false;
+		case SettlementMerchantKind.Horse:
+			return item.Type == ItemObject.ItemTypeEnum.Horse || item.Type == ItemObject.ItemTypeEnum.HorseHarness;
+		case SettlementMerchantKind.Goods:
+			return item.Type == ItemObject.ItemTypeEnum.Goods || item.Type == ItemObject.ItemTypeEnum.Animal;
+		default:
+			return false;
+		}
+	}
+
+	public string BuildSettlementMerchantRewardInstruction(CharacterObject character)
+	{
+		if (!TryGetSettlementMerchantKind(character, out var kind))
+		{
+			return "";
+		}
+		string settlementName = Settlement.CurrentSettlement?.Name?.ToString() ?? "当前城镇";
+		string roleLabel = GetSettlementMerchantRoleLabel(kind);
+		string marketLabel = GetSettlementMerchantMarketLabel(kind);
+		string specialHint = GetSettlementMerchantSpecialHint(kind);
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.AppendLine("【城镇商贩交易规则】你不是有名有姓的Hero，也不是在卖你个人的私人物品。");
+		stringBuilder.AppendLine($"你是{settlementName}里的{roleLabel}，代表这座城镇当前的{marketLabel}与玩家进行即时交易。");
+		stringBuilder.AppendLine("你的真实可售货物只以【当前商铺可用财富与物品】中的清单为准；那是当前城镇市场里此类商铺手上真正有的货。");
+		if (!string.IsNullOrWhiteSpace(specialHint))
+		{
+			stringBuilder.AppendLine(specialHint);
+		}
+		stringBuilder.AppendLine("你可以继续使用 [ACTION:GIVE_GOLD] 与 [ACTION:GIVE_ITEM] 完成即时交易结算，但这些标签代表的是城镇市场交付，不是你个人掏腰包或掏私人物品。");
+		stringBuilder.AppendLine("本轮只允许即时成交，禁止输出任何 DEBT 类标签，也禁止输出 [ACTION:TRADE_TRUST]。若玩家未真实付款或未真实交货，就只能继续谈价，不能真正交付。");
+		return stringBuilder.ToString().Trim();
+	}
+
+	public string BuildSettlementMerchantInventorySummaryForAI(CharacterObject character, Settlement settlement = null, int maxItems = 20, bool includeGuidePrice = true)
+	{
+		if (!TryGetSettlementMerchantKind(character, out var kind))
+		{
+			return "";
+		}
+		settlement = settlement ?? Settlement.CurrentSettlement;
+		if (settlement == null || !settlement.IsTown || settlement.ItemRoster == null)
+		{
+			return "";
+		}
+		Dictionary<string, RewardItemInfo> dictionary = new Dictionary<string, RewardItemInfo>(StringComparer.OrdinalIgnoreCase);
+		ItemRoster itemRoster = settlement.ItemRoster;
+		for (int i = 0; i < itemRoster.Count; i++)
+		{
+			ItemRosterElement elementCopyAtIndex = itemRoster.GetElementCopyAtIndex(i);
+			ItemObject item = elementCopyAtIndex.EquipmentElement.Item;
+			if (item == null || elementCopyAtIndex.Amount <= 0 || !MatchesSettlementMerchantKind(item, kind))
+			{
+				continue;
+			}
+			string text = item.StringId ?? "";
+			if (string.IsNullOrWhiteSpace(text))
+			{
+				continue;
+			}
+			if (!dictionary.TryGetValue(text, out var value))
+			{
+				value = new RewardItemInfo
+				{
+					Item = item,
+					StringId = text,
+					Name = item.Name?.ToString() ?? text,
+					Count = 0
+				};
+				dictionary[text] = value;
+			}
+			value.Count += elementCopyAtIndex.Amount;
+		}
+		StringBuilder stringBuilder = new StringBuilder();
+		int num = settlement.SettlementComponent?.Gold ?? 0;
+		stringBuilder.Append("Gold: ").Append(num).AppendLine();
+		if (includeGuidePrice)
+		{
+			stringBuilder.AppendLine("【价格说明】每个物品后面的 guidePrice 为当前城镇市场的即时指导单价（第纳尔/个）。");
+		}
+		stringBuilder.AppendLine("InventoryItems:");
+		int num2 = 0;
+		foreach (RewardItemInfo value2 in dictionary.Values.OrderByDescending((RewardItemInfo x) => x.Count).ThenBy((RewardItemInfo x) => x.Name, StringComparer.Ordinal))
+		{
+			stringBuilder.Append(value2.StringId).Append("|").Append(value2.Name)
+				.Append("|")
+				.Append(value2.Count)
+				.Append("个");
+			if (includeGuidePrice && TryGetSettlementBuyPrice(settlement, value2.Item, out var price))
+			{
+				stringBuilder.Append("|guidePrice=").Append(Math.Max(1, price));
+			}
+			stringBuilder.AppendLine();
+			num2++;
+			if (num2 >= Math.Max(1, maxItems))
+			{
+				break;
+			}
+		}
+		if (num2 == 0)
+		{
+			stringBuilder.AppendLine("（当前没有可售货物）");
+		}
+		return stringBuilder.ToString().Trim();
+	}
+
 	public List<RewardItemInfo> GetHeroInventoryItems(Hero hero)
 	{
 		List<RewardItemInfo> list = new List<RewardItemInfo>();
@@ -3465,6 +3718,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			Regex regex18 = new Regex("\\[ACTION:JOIN_MERCENARY:([a-zA-Z0-9_\\-]+)\\]", RegexOptions.IgnoreCase);
 			Regex regex19 = new Regex("\\[ACTION:JOIN_VASSAL:([a-zA-Z0-9_\\-]+)\\]", RegexOptions.IgnoreCase);
 			Regex regex20 = new Regex("\\[ACTION:KINGDOM_SERVICE:LEAVE\\]", RegexOptions.IgnoreCase);
+			Regex regex21 = new Regex("\\[ACTION:TRADE_TRUST:(-?\\d+)\\]", RegexOptions.IgnoreCase);
 			HashSet<string> settledDebtIdsThisRound = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 			int num = 0;
 			try
@@ -3552,6 +3806,17 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				}
 			}
 			responseText = regex10.Replace(responseText, string.Empty);
+			int? llmTradeTrustDelta = null;
+			MatchCollection matchCollection5 = regex21.Matches(responseText);
+			if (matchCollection5 != null && matchCollection5.Count > 0)
+			{
+				Match match3 = matchCollection5[matchCollection5.Count - 1];
+				if (match3 != null && int.TryParse(match3.Groups[1].Value, out var result7))
+				{
+					llmTradeTrustDelta = NormalizeLlmTrustDeltaValue(result7);
+				}
+			}
+			responseText = regex21.Replace(responseText, string.Empty);
 			bool hasGiveTag = regex.IsMatch(responseText) || regex2.IsMatch(responseText);
 			bool flag = regex3.IsMatch(responseText) || regex4.IsMatch(responseText) || regex5.IsMatch(responseText);
 			if (flag && !hasGiveTag)
@@ -3957,11 +4222,34 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				}
 				return string.Empty;
 			});
-			if (giver != Hero.MainHero && receiver == Hero.MainHero && anyActualGiveToPlayer && !anyDebtRecorded && !anyDebtPaymentApplied && !anyDebtMetaApplied)
+			bool flag3 = giver != Hero.MainHero && receiver == Hero.MainHero && anyActualGiveToPlayer && !anyDebtRecorded && !anyDebtPaymentApplied && !anyDebtMetaApplied;
+			if (flag3)
 			{
-				AdjustTrust(giver, 1, 2, "clean_trade");
-				giverFacts.Add("你对玩家的信任略有提升。");
-				receiverFacts.Add(giverName + " 对你的信任略有提升。");
+				if (llmTradeTrustDelta.HasValue)
+				{
+					int value3 = llmTradeTrustDelta.Value;
+					if (value3 != 0)
+					{
+						int num2 = ComputeTradePublicTrustDelta(value3);
+						AdjustTrust(giver, value3, num2, "llm_clean_trade");
+						if (value3 > 0)
+						{
+							string text = (num2 > 0) ? ("，公共信任提升 " + num2) : "";
+							giverFacts.Add($"你根据这笔交易对玩家的个人信任提升了 {value3}{text}。");
+							receiverFacts.Add($"{giverName} 因这笔交易对你的个人信任提升了 {value3}{text}。");
+						}
+						else
+						{
+							string text2 = (num2 < 0) ? ("，公共信任下降 " + Math.Abs(num2)) : "";
+							giverFacts.Add($"你因这笔交易对玩家的个人信任下降了 {Math.Abs(value3)}{text2}。");
+							receiverFacts.Add($"{giverName} 因这笔交易对你的个人信任下降了 {Math.Abs(value3)}{text2}。");
+						}
+					}
+				}
+			}
+			else if (llmTradeTrustDelta.HasValue)
+			{
+				Logger.Log("Logic", "[Reward] 警告: 检测到 [ACTION:TRADE_TRUST]，但本轮不满足即时交易信任结算条件，已忽略。");
 			}
 			responseText = responseText.Trim();
 			stopwatch.Stop();
@@ -4012,6 +4300,57 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 	}
 
+	public void ApplyMerchantRewardTags(CharacterObject giverCharacter, Hero receiver, ref string responseText)
+	{
+		if (giverCharacter == null || receiver == null || string.IsNullOrEmpty(responseText))
+		{
+			return;
+		}
+		if (!TryGetSettlementMerchantKind(giverCharacter, out var kind))
+		{
+			return;
+		}
+		Settlement currentSettlement = Settlement.CurrentSettlement;
+		if (currentSettlement == null || !currentSettlement.IsTown)
+		{
+			responseText = Regex.Replace(responseText ?? "", "\\[ACTION:[^\\]]+\\]", string.Empty, RegexOptions.IgnoreCase).Trim();
+			return;
+		}
+		string giverName = giverCharacter.Name?.ToString() ?? GetSettlementMerchantRoleLabel(kind);
+		Regex regex = new Regex("\\[ACTION:GIVE_GOLD:(\\d+)\\]", RegexOptions.IgnoreCase);
+		Regex regex2 = new Regex("\\[ACTION:GIVE_ITEM:([a-zA-Z0-9_]+):(\\d+)\\]", RegexOptions.IgnoreCase);
+		Regex regex3 = new Regex("\\[ACTION:TRADE_TRUST:(-?\\d+)\\]", RegexOptions.IgnoreCase);
+		Regex regex4 = new Regex("\\[ACTION:DEBT_[^\\]]+\\]", RegexOptions.IgnoreCase);
+		responseText = regex.Replace(responseText, delegate(Match m)
+		{
+			if (int.TryParse(m.Groups[1].Value, out var result))
+			{
+				TransferGoldFromSettlement(currentSettlement, receiver, result, giverName);
+			}
+			return string.Empty;
+		});
+		responseText = regex2.Replace(responseText, delegate(Match m)
+		{
+			string value = m.Groups[1].Value;
+			if (int.TryParse(m.Groups[2].Value, out var result))
+			{
+				TransferItemFromSettlement(currentSettlement, receiver, value, result, giverName, out var _);
+			}
+			return string.Empty;
+		});
+		if (regex3.IsMatch(responseText))
+		{
+			Logger.Log("Logic", "[Reward] 非Hero商贩输出了 [ACTION:TRADE_TRUST]，当前版本已忽略。");
+			responseText = regex3.Replace(responseText, string.Empty);
+		}
+		if (regex4.IsMatch(responseText))
+		{
+			Logger.Log("Logic", "[Reward] 非Hero商贩输出了 DEBT 类标签，当前版本已忽略。");
+			responseText = regex4.Replace(responseText, string.Empty);
+		}
+		responseText = responseText.Trim();
+	}
+
 	internal int TransferGold(Hero giver, Hero receiver, int amount)
 	{
 		if (amount <= 0)
@@ -4034,6 +4373,32 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			string arg2 = receiver?.Name?.ToString() ?? "某人";
 			InformationManager.DisplayMessage(new InformationMessage($"你给了 {arg2} {num} 第纳尔。"));
+		}
+		return num;
+	}
+
+	internal int TransferGoldFromSettlement(Settlement settlement, Hero receiver, int amount, string giverName = null)
+	{
+		if (settlement == null || receiver == null || amount <= 0)
+		{
+			return 0;
+		}
+		SettlementComponent settlementComponent = settlement.SettlementComponent;
+		if (settlementComponent == null)
+		{
+			return 0;
+		}
+		int num = Math.Min(amount, Math.Max(0, settlementComponent.Gold));
+		if (num <= 0)
+		{
+			return 0;
+		}
+		settlementComponent.ChangeGold(-num);
+		receiver.ChangeHeroGold(num);
+		if (receiver == Hero.MainHero)
+		{
+			string arg = string.IsNullOrWhiteSpace(giverName) ? (settlement.Name?.ToString() ?? "这座城镇的商人") : giverName;
+			InformationManager.DisplayMessage(new InformationMessage($"{arg} 给了你 {num} 第纳尔。"));
 		}
 		return num;
 	}
@@ -4172,6 +4537,51 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			string arg3 = receiver?.Name?.ToString() ?? "某人";
 			string arg4 = itemName ?? itemStringId;
 			InformationManager.DisplayMessage(new InformationMessage($"你给了 {arg3} {num2} 个 {arg4}。"));
+		}
+		return num2;
+	}
+
+	internal int TransferItemFromSettlement(Settlement settlement, Hero receiver, string itemStringId, int amount, string giverName, out string itemName)
+	{
+		itemName = null;
+		if (settlement == null || receiver == null || string.IsNullOrWhiteSpace(itemStringId) || amount <= 0)
+		{
+			return 0;
+		}
+		ItemRoster itemRoster = settlement.ItemRoster;
+		ItemRoster itemRoster2 = ((receiver.PartyBelongedTo != null) ? receiver.PartyBelongedTo.ItemRoster : null);
+		if (itemRoster == null || itemRoster2 == null)
+		{
+			return 0;
+		}
+		ItemObject itemObject = null;
+		int num = 0;
+		for (int i = 0; i < itemRoster.Count; i++)
+		{
+			ItemRosterElement elementCopyAtIndex = itemRoster.GetElementCopyAtIndex(i);
+			ItemObject item = elementCopyAtIndex.EquipmentElement.Item;
+			if (item != null && string.Equals(item.StringId ?? "", itemStringId, StringComparison.OrdinalIgnoreCase))
+			{
+				itemObject = item;
+				num += Math.Max(0, elementCopyAtIndex.Amount);
+			}
+		}
+		if (itemObject == null || num <= 0)
+		{
+			return 0;
+		}
+		int num2 = Math.Min(amount, num);
+		if (num2 <= 0)
+		{
+			return 0;
+		}
+		itemRoster.AddToCounts(itemObject, -num2);
+		itemRoster2.AddToCounts(itemObject, num2);
+		itemName = itemObject.Name?.ToString() ?? itemStringId;
+		if (receiver == Hero.MainHero)
+		{
+			string arg = string.IsNullOrWhiteSpace(giverName) ? (settlement.Name?.ToString() ?? "这座城镇的商人") : giverName;
+			InformationManager.DisplayMessage(new InformationMessage($"{arg} 给了你 {num2} 个 {itemName}。"));
 		}
 		return num2;
 	}

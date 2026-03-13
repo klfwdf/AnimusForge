@@ -4188,6 +4188,7 @@ public class MyBehavior : CampaignBehaviorBase
 					{
 					}
 					string npcLastUtterance = GetLatestNpcDialogueUtterance(targetHero, targetCharacter);
+					bool isSettlementMerchant = targetHero == null && targetCharacter != null && RewardSystemBehavior.Instance != null && RewardSystemBehavior.Instance.TryGetSettlementMerchantKind(targetCharacter, out var _);
 					List<string> triggerKeywords = AIConfigHandler.DuelTriggerKeywords;
 					string matchedKeyword;
 					bool duelLiteralHit = ContainsLiteralKeywordHit(input, triggerKeywords, out matchedKeyword);
@@ -4208,6 +4209,10 @@ public class MyBehavior : CampaignBehaviorBase
 					{
 						isRewardContext = AIConfigHandler.IsGuardrailSemanticHit(input, npcLastUtterance, "reward", AIConfigHandler.RewardInstruction, rewardKeywords, out rewardHitKeyword, out rewardHitScore);
 					}
+					if (isSettlementMerchant)
+					{
+						isRewardContext = true;
+					}
 					List<string> loanKeywords = AIConfigHandler.LoanTriggerKeywords;
 					bool isLoanContext = false;
 					string loanHitKeyword = "";
@@ -4215,6 +4220,10 @@ public class MyBehavior : CampaignBehaviorBase
 					if (!patienceExhausted && AIConfigHandler.LoanEnabled)
 					{
 						isLoanContext = AIConfigHandler.IsGuardrailSemanticHit(input, npcLastUtterance, "loan", AIConfigHandler.LoanInstruction, loanKeywords, out loanHitKeyword, out loanHitScore);
+					}
+					if (isSettlementMerchant)
+					{
+						isLoanContext = false;
 					}
 					List<string> surroundingsKeywords = AIConfigHandler.SurroundingsTriggerKeywords;
 					bool isSurroundingsContext = false;
@@ -4415,6 +4424,15 @@ public class MyBehavior : CampaignBehaviorBase
 							sb.AppendLine(trustHint);
 						}
 					}
+					if (RewardSystemBehavior.Instance != null && (isRewardContext || isLoanContext || useDuelContext) && targetHero == null && targetCharacter != null)
+					{
+						string merchantInventorySummary = RewardSystemBehavior.Instance.BuildSettlementMerchantInventorySummaryForAI(targetCharacter);
+						if (!string.IsNullOrWhiteSpace(merchantInventorySummary))
+						{
+							sb.AppendLine("【当前商铺可用财富与物品】");
+							sb.AppendLine(merchantInventorySummary);
+						}
+					}
 					if (!string.IsNullOrEmpty(patiencePrompt))
 					{
 						sb.AppendLine(patiencePrompt);
@@ -4458,7 +4476,7 @@ public class MyBehavior : CampaignBehaviorBase
 					{
 						sb.AppendLine(guardrailClarifyHint);
 					}
-					string triggeredRuleInstructions = BuildTriggeredRuleInstructions(input, targetHero, useDuelContext, isQualified, playerTier, useRewardContext, isLoanContext, isSurroundingsContext, hasAnyHero: true, targetCharacter: targetCharacter, npcLastUtterance: npcLastUtterance, includeDuelStakeContext: includeDuelStakeContext, playerWonLastDuel: playerWonLastDuelForRule);
+					string triggeredRuleInstructions = BuildTriggeredRuleInstructions(input, targetHero, useDuelContext, isQualified, playerTier, useRewardContext, isLoanContext, isSurroundingsContext, hasAnyHero: targetHero != null, targetCharacter: targetCharacter, npcLastUtterance: npcLastUtterance, includeDuelStakeContext: includeDuelStakeContext, playerWonLastDuel: playerWonLastDuelForRule);
 					if (!string.IsNullOrWhiteSpace(triggeredRuleInstructions))
 					{
 						sb.AppendLine(triggeredRuleInstructions);
@@ -4587,10 +4605,17 @@ public class MyBehavior : CampaignBehaviorBase
 					}
 					string result = CleanAIResponse(streamResult ?? "");
 					string rawResult = result;
-					if (!patienceExhausted && AIConfigHandler.RewardEnabled && RewardSystemBehavior.Instance != null && targetHero != null)
+					if (!patienceExhausted && AIConfigHandler.RewardEnabled && RewardSystemBehavior.Instance != null)
 					{
-						RewardSystemBehavior.Instance.ApplyRewardTags(targetHero, Hero.MainHero, ref result);
-						RomanceSystemBehavior.Instance?.ApplyMarriageTags(targetHero, Hero.MainHero, ref result);
+						if (targetHero != null)
+						{
+							RewardSystemBehavior.Instance.ApplyRewardTags(targetHero, Hero.MainHero, ref result);
+							RomanceSystemBehavior.Instance?.ApplyMarriageTags(targetHero, Hero.MainHero, ref result);
+						}
+						else if (targetCharacter != null)
+						{
+							RewardSystemBehavior.Instance.ApplyMerchantRewardTags(targetCharacter, Hero.MainHero, ref result);
+						}
 					}
 					if (patienceExhausted && string.IsNullOrEmpty(streamError))
 					{
@@ -5271,7 +5296,20 @@ public class MyBehavior : CampaignBehaviorBase
 			}
 			if (AIConfigHandler.RewardEnabled && useRewardContext)
 			{
-				string text = (hasAnyHero ? AIConfigHandler.RewardInstruction : AIConfigHandler.RewardNonHeroInstruction);
+				string text = "";
+				if (!hasAnyHero && targetCharacter != null && RewardSystemBehavior.Instance != null)
+				{
+					string settlementMerchantRewardInstruction = RewardSystemBehavior.Instance.BuildSettlementMerchantRewardInstruction(targetCharacter);
+					if (!string.IsNullOrWhiteSpace(settlementMerchantRewardInstruction))
+					{
+						string rewardInstruction = AIConfigHandler.RewardInstruction;
+						text = (string.IsNullOrWhiteSpace(rewardInstruction) ? settlementMerchantRewardInstruction : (rewardInstruction.Trim() + "\n" + settlementMerchantRewardInstruction.Trim()));
+					}
+				}
+				if (string.IsNullOrWhiteSpace(text))
+				{
+					text = (hasAnyHero ? AIConfigHandler.RewardInstruction : AIConfigHandler.RewardNonHeroInstruction);
+				}
 				if (string.IsNullOrWhiteSpace(text))
 				{
 					text = AIConfigHandler.RewardInstruction;
@@ -5496,6 +5534,7 @@ public class MyBehavior : CampaignBehaviorBase
 		int num2 = DuelSettings.GetSettings()?.MinimumClanTier ?? 0;
 		bool isQualified = num >= num2;
 		string npcLastUtterance = GetLatestNpcDialogueUtterance(targetHero, targetCharacter, targetAgentIndex);
+		bool flagMerchant = targetHero == null && targetCharacter != null && RewardSystemBehavior.Instance != null && RewardSystemBehavior.Instance.TryGetSettlementMerchantKind(targetCharacter, out var _);
 		List<string> duelTriggerKeywords = AIConfigHandler.DuelTriggerKeywords;
 		bool flag = false;
 		string matchedKeyword = "";
@@ -5536,8 +5575,8 @@ public class MyBehavior : CampaignBehaviorBase
 		string matchedKeyword6;
 		float score6;
 		bool marriageHit = AIConfigHandler.IsGuardrailSemanticHit(input, npcLastUtterance, "marriage", guardrailMarriageInstruction, guardrailMarriageKeywords, out matchedKeyword6, out score6);
-		bool flag7 = flag3;
-		bool flag8 = flag4;
+		bool flag7 = flag3 || flagMerchant;
+		bool flag8 = flag4 && !flagMerchant;
 		string value = "";
 		if (!flag2 && !flag7 && !flag8 && !flag5)
 		{
@@ -5644,6 +5683,15 @@ public class MyBehavior : CampaignBehaviorBase
 			if (!string.IsNullOrEmpty(value6))
 			{
 				stringBuilder.AppendLine(value6);
+			}
+		}
+		if (RewardSystemBehavior.Instance != null && flag7 && targetHero == null && targetCharacter != null)
+		{
+			string value6b = RewardSystemBehavior.Instance.BuildSettlementMerchantInventorySummaryForAI(targetCharacter);
+			if (!string.IsNullOrWhiteSpace(value6b))
+			{
+				stringBuilder.AppendLine("【当前商铺可用财富与物品】");
+				stringBuilder.AppendLine(value6b);
 			}
 		}
 		bool includeDuelStakeContext = false;
