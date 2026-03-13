@@ -41,21 +41,9 @@ public class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyGroup("1. AI 核心配置")]
 	public string ModelName { get; set; } = "deepseek-chat";
 
-	[SettingPropertyInteger("NPC回应字数限制 (对话)", 20, 1000, "0", Order = 3, RequireRestart = false, HintText = "设置【正式对话】时 AI 试图生成的字数目标。")]
-	[SettingPropertyGroup("1. AI 核心配置")]
-	public int MaxTokens { get; set; } = 100;
-
-	[SettingPropertyText("系统预设 (System Prompt)", -1, true, "", Order = 4, RequireRestart = false, HintText = "决定AI如何扮演角色。")]
-	[SettingPropertyGroup("1. AI 核心配置")]
-	public string SystemPrompt { get; set; } = "你是一个《骑马与砍杀2》卡拉迪亚大陆的中世纪领主。请根据玩家的对话进行沉浸式角色扮演。";
-
 	[SettingPropertyButton("测试 API 连接", -1, true, "", Content = "点击测试", Order = 5)]
 	[SettingPropertyGroup("1. AI 核心配置")]
 	public Action TestConnection { get; set; }
-
-	[SettingPropertyBool("开启调试诊断模式", Order = 6, RequireRestart = false, HintText = "开启后，屏幕左下角将显示API耗时等简略信息。")]
-	[SettingPropertyGroup("1. AI 核心配置")]
-	public bool EnableDebugMode { get; set; } = false;
 
 	[SettingPropertyInteger("最小家族等级", 0, 6, "0", Order = 0, RequireRestart = false)]
 	[SettingPropertyGroup("2. 决斗规则")]
@@ -69,9 +57,9 @@ public class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyGroup("3. 场景喊话")]
 	public string ShoutKey { get; set; } = "K";
 
-	[SettingPropertyInteger("喊话回复字数限制", 5, 500, "0", Order = 1, RequireRestart = false)]
+	[SettingPropertyInteger("喊话回复字数限制", 40, 500, "0", Order = 1, RequireRestart = false)]
 	[SettingPropertyGroup("3. 场景喊话")]
-	public int ShoutMaxTokens { get; set; } = 30;
+	public int ShoutMaxTokens { get; set; } = 40;
 
 	[SettingPropertyInteger("气泡字体大小", 10, 40, "0", Order = 2, RequireRestart = false, HintText = "设置场景喊话气泡中文字的字体大小")]
 	[SettingPropertyGroup("3. 场景喊话")]
@@ -366,11 +354,6 @@ public class DuelSettings : AttributeGlobalSettings<DuelSettings>
 							{
 								new
 								{
-									role = "system",
-									content = SystemPrompt
-								},
-								new
-								{
 									role = "user",
 									content = "我是一名冒险者，你好啊！(扮演一名叫哈宝的可爱孩童，继续生成20字左右的热情回复)"
 								}
@@ -393,10 +376,6 @@ public class DuelSettings : AttributeGlobalSettings<DuelSettings>
 								{
 									InformationManager.DisplayMessage(new InformationMessage("链接正常！可正常游玩！", Color.FromUint(4278255360u)));
 									Logger.Log("DuelSettings", "测试成功! AI回复: " + aiReply);
-									if (EnableDebugMode)
-									{
-										InformationManager.DisplayMessage(new InformationMessage("[测试回复] " + aiReply, Color.FromUint(4289374890u)));
-									}
 								}
 								else
 								{

@@ -15,7 +15,7 @@ function Get-FullPathSafe {
 function Test-SourceModuleDir {
     param([Parameter(Mandatory = $true)][string]$Path)
 
-    $requiredEntries = @("SubModule.xml", "bin", "ModuleData", "GUI", "ONNX")
+    $requiredEntries = @("SubModule.xml", "ModuleData", "GUI", "ONNX")
     $missing = New-Object System.Collections.Generic.List[string]
 
     if (-not (Test-Path -LiteralPath $Path -PathType Container)) {

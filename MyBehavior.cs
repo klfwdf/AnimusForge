@@ -4403,6 +4403,12 @@ public class MyBehavior : CampaignBehaviorBase
 					{
 						sb.AppendLine(historyContext);
 					}
+					string npcBehaviorSupplement = RewardSystemBehavior.Instance?.BuildNpcBehaviorSupplementForAI(targetHero, targetCharacter);
+					if (!string.IsNullOrWhiteSpace(npcBehaviorSupplement))
+					{
+						sb.AppendLine("【NPC行为补充】");
+						sb.AppendLine(npcBehaviorSupplement);
+					}
 					if (RewardSystemBehavior.Instance != null && targetHero != null)
 					{
 						if (isLoanContext)
@@ -4496,17 +4502,6 @@ public class MyBehavior : CampaignBehaviorBase
 						sb.AppendLine(npcIdentityInfo);
 					}
 					Logger.Log("Logic", "[Context] SystemPrompt_Base=" + basePrompt.Replace("\n", "\\n"));
-					int replyMaxChars = settings.MaxTokens;
-					int replyMinChars = ((replyMaxChars > 200) ? (replyMaxChars - 200) : ((int)Math.Ceiling((double)replyMaxChars * 0.8)));
-					if (replyMinChars < 1)
-					{
-						replyMinChars = 1;
-					}
-					if (replyMinChars > replyMaxChars)
-					{
-						replyMinChars = replyMaxChars;
-					}
-					sb.AppendLine($"(回复长度要求：请将本轮回复控制在 {replyMinChars}-{replyMaxChars} 字之间；除非玩家明确要求简短，否则尽量贴近上限，不要少于 {replyMinChars} 字。)");
 					string deltaLayerText = sb.ToString();
 					string finalSystemPrompt = PromptComposer.Compose(fixedLayerText, deltaLayerText, "直接对话");
 					swPromptBuild.Stop();
@@ -5015,6 +5010,23 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
+	public static string BuildRecentNpcFactContextForExternal(Hero hero, int maxLines = 4)
+	{
+		try
+		{
+			MyBehavior myBehavior = Campaign.Current?.GetCampaignBehavior<MyBehavior>();
+			if (myBehavior == null)
+			{
+				return "";
+			}
+			return myBehavior.BuildRecentNpcFactContext(hero, maxLines);
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
 	public static void AppendExternalNpcFact(Hero hero, string factText)
 	{
 		try
@@ -5077,6 +5089,52 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				sb.AppendLine("[玩家行为补充] " + text);
 			}
+		}
+	}
+
+	private string BuildRecentNpcFactContext(Hero hero, int maxLines = 4)
+	{
+		if (hero == null)
+		{
+			return "";
+		}
+		try
+		{
+			List<DialogueDay> list = LoadDialogueHistory(hero);
+			if (list == null || list.Count == 0)
+			{
+				return "";
+			}
+			List<string> list2 = new List<string>();
+			foreach (DialogueDay item in list)
+			{
+				if (item?.Lines == null)
+				{
+					continue;
+				}
+				foreach (string line in item.Lines)
+				{
+					string text = (line ?? "").Trim();
+					if (!string.IsNullOrWhiteSpace(text) && text.StartsWith("[NPC行为补充]", StringComparison.Ordinal))
+					{
+						list2.Add(text);
+					}
+				}
+			}
+			if (list2.Count <= 0)
+			{
+				return "";
+			}
+			int num = Math.Max(1, maxLines);
+			if (list2.Count > num)
+			{
+				list2 = list2.Skip(list2.Count - num).ToList();
+			}
+			return string.Join("\n", list2);
+		}
+		catch
+		{
+			return "";
 		}
 	}
 
@@ -5693,6 +5751,12 @@ public class MyBehavior : CampaignBehaviorBase
 				stringBuilder.AppendLine("【当前商铺可用财富与物品】");
 				stringBuilder.AppendLine(value6b);
 			}
+		}
+		string value6c = RewardSystemBehavior.Instance?.BuildNpcBehaviorSupplementForAI(targetHero, targetCharacter);
+		if (!string.IsNullOrWhiteSpace(value6c))
+		{
+			stringBuilder.AppendLine("【NPC行为补充】");
+			stringBuilder.AppendLine(value6c);
 		}
 		bool includeDuelStakeContext = false;
 		bool playerWonLastDuelForRule = false;

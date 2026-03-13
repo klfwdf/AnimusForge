@@ -1158,6 +1158,14 @@ public class ShoutBehavior : CampaignBehaviorBase
 								if (RewardSystemBehavior.Instance != null)
 								{
 									RewardSystemBehavior.Instance.ApplyRewardTags(characterObject.HeroObject, Hero.MainHero, ref aiResponse);
+									List<string> list2 = RewardSystemBehavior.Instance.ConsumeLastGeneratedNpcFactLines();
+									if (list2 != null)
+									{
+										foreach (string item in list2)
+										{
+											RecordSystemFactForNearbySafe(allNpcData, item);
+										}
+									}
 								}
 								if (RomanceSystemBehavior.Instance != null)
 								{
@@ -1170,6 +1178,14 @@ public class ShoutBehavior : CampaignBehaviorBase
 							if (agent != null && agent.Character is CharacterObject characterObject2 && RewardSystemBehavior.Instance != null)
 							{
 								RewardSystemBehavior.Instance.ApplyMerchantRewardTags(characterObject2, Hero.MainHero, ref aiResponse);
+								List<string> list = RewardSystemBehavior.Instance.ConsumeLastGeneratedNpcFactLines();
+								if (list != null)
+								{
+									foreach (string item2 in list)
+									{
+										RecordSystemFactForNearbySafe(allNpcData, item2);
+									}
+								}
 							}
 						}
 					}
@@ -2717,7 +2733,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 				string passiveKingdomIdOverride = TryGetKingdomIdOverrideFromAgent(passiveAgent);
 				MyBehavior.ShoutPromptContext ctx = MyBehavior.BuildShoutPromptContextForExternal(hero, inputActionText, fullExtra, cultureId, hasAnyHero: data.IsHero, targetCharacter: passiveCharacter, kingdomIdOverride: passiveKingdomIdOverride, targetAgentIndex: data.AgentIndex);
 				DuelSettings settings = DuelSettings.GetSettings();
-				int maxTokens = settings.ShoutMaxTokens;
+				int maxTokens = Math.Max(40, settings.ShoutMaxTokens);
 				int minTokens = maxTokens / 2;
 				if (minTokens < 5)
 				{
@@ -3355,7 +3371,8 @@ public class ShoutBehavior : CampaignBehaviorBase
 		{
 			hero = null;
 		}
-		bool flag = hero == null && characterObject != null && RewardSystemBehavior.Instance != null && RewardSystemBehavior.Instance.TryGetSettlementMerchantKind(characterObject, out var _);
+		RewardSystemBehavior.SettlementMerchantKind settlementMerchantKind = RewardSystemBehavior.SettlementMerchantKind.None;
+		bool flag = hero == null && characterObject != null && RewardSystemBehavior.Instance != null && RewardSystemBehavior.Instance.TryGetSettlementMerchantKind(characterObject, out settlementMerchantKind);
 		Settlement currentSettlement = Settlement.CurrentSettlement;
 		string text = MyBehavior.BuildRuleTargetKeyForExternal(hero, characterObject, shoutTradeTargetNpc?.AgentIndex ?? (-1));
 		MobileParty mobileParty = Hero.MainHero?.PartyBelongedTo;
@@ -3386,6 +3403,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 					{
 						GiveGoldAction.ApplyBetweenCharacters(Hero.MainHero, null, num, disableNotification: true);
 						currentSettlement.SettlementComponent?.ChangeGold(num);
+						RewardSystemBehavior.Instance?.AppendSettlementMerchantNpcFact(currentSettlement, settlementMerchantKind, $"你已经收下了玩家交来的 {num} 第纳尔。", characterObject?.Name?.ToString());
 					}
 					else
 					{
@@ -3417,6 +3435,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 					else if (flag && currentSettlement?.ItemRoster != null)
 					{
 						currentSettlement.ItemRoster.AddToCounts(shoutPendingTradeItem.Item, num2);
+						RewardSystemBehavior.Instance?.AppendSettlementMerchantNpcFact(currentSettlement, settlementMerchantKind, $"你已经收下了玩家交来的 {num2} 个 {shoutPendingTradeItem.Item?.Name?.ToString() ?? shoutPendingTradeItem.ItemId}。", characterObject?.Name?.ToString());
 					}
 					if (hero != null)
 					{
@@ -3770,9 +3789,9 @@ public class ShoutBehavior : CampaignBehaviorBase
 		}
 		if (hasMultiplePresentNpcs)
 		{
-			return "请仅以" + text + "的身份参与多人对话。直接输出语言内容，不可输出动作描述或者思考，请结合【当前场景公共对话与互动】中其他人说的话，发表自己的见解，不可以各说各的，且遵守【护栏】及以上所有规则！";
+			return "请仅以" + text + "的身份参与多人对话。直接输出语言内容，不可输出动作描述或者思考，请结合【当前场景公共对话与互动】中其他人说的话，发表自己的见解，不可以各说各的，如果需要写入多个标签，那要写的标签必须都写上，不可以漏写！";
 		}
-		return "请仅以" + text + "的身份回复玩家。直接输出语言内容，不可输出动作描述或者思考，遵守【护栏】及以上所有规则！";
+		return "请仅以" + text + "的身份回复玩家。直接输出语言内容，不可输出动作描述或者思考，并且请仔细阅读所有规则！标签必须在你回复的最写入加入，如果需要写入多个标签，那要写的标签必须都写上，不可以漏写！";
 	}
 
 	private void RecordShoutShownResources()
@@ -4295,7 +4314,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 					}
 					scenePatienceInstruction = MyBehavior.GetScenePatienceInstructionForExternal();
 				}
-				int maxTokens = settings.ShoutMaxTokens;
+				int maxTokens = Math.Max(40, settings.ShoutMaxTokens);
 				int minTokens = maxTokens / 2;
 				if (minTokens < 5)
 				{
@@ -4661,7 +4680,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 			}
 			await EnsurePersonaForCandidatesAsync(speakableCandidates, resolvedHeroes);
 			DuelSettings settings = DuelSettings.GetSettings();
-			int maxTokens = settings.ShoutMaxTokens;
+			int maxTokens = Math.Max(40, settings.ShoutMaxTokens);
 			int minTokens = Math.Max(5, maxTokens / 2);
 			StringBuilder commonCandidatesList = new StringBuilder();
 			commonCandidatesList.AppendLine("【在场人物列表】：");
@@ -5015,6 +5034,14 @@ public class ShoutBehavior : CampaignBehaviorBase
 								if (RewardSystemBehavior.Instance != null)
 								{
 									RewardSystemBehavior.Instance.ApplyRewardTags(characterObject.HeroObject, Hero.MainHero, ref content);
+									List<string> list2 = RewardSystemBehavior.Instance.ConsumeLastGeneratedNpcFactLines();
+									if (list2 != null)
+									{
+										foreach (string item in list2)
+										{
+											RecordSystemFactForNearbySafe(allNpcData, item);
+										}
+									}
 								}
 								if (RomanceSystemBehavior.Instance != null)
 								{
@@ -5027,6 +5054,14 @@ public class ShoutBehavior : CampaignBehaviorBase
 								if (agent != null && agent.Character is CharacterObject characterObject2 && RewardSystemBehavior.Instance != null)
 								{
 									RewardSystemBehavior.Instance.ApplyMerchantRewardTags(characterObject2, Hero.MainHero, ref content);
+									List<string> list = RewardSystemBehavior.Instance.ConsumeLastGeneratedNpcFactLines();
+									if (list != null)
+									{
+										foreach (string item2 in list)
+										{
+											RecordSystemFactForNearbySafe(allNpcData, item2);
+										}
+									}
 								}
 							}
 						}
@@ -5279,6 +5314,59 @@ public class ShoutBehavior : CampaignBehaviorBase
 			if (_publicConversationHistory.Count > 40)
 			{
 				_publicConversationHistory.RemoveAt(0);
+			}
+		}
+	}
+
+	private void RecordSystemFactForNearbySafe(List<NpcDataPacket> nearbyData, string factText)
+	{
+		string text = (factText ?? "").Replace("\r", "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return;
+		}
+		List<int> visibleAgentIndices = BuildVisibleAgentSnapshot(nearbyData);
+		lock (_historyLock)
+		{
+			_publicConversationHistory.Add(new ConversationMessage
+			{
+				Role = "system",
+				Content = text,
+				SpeakerName = "system",
+				SpeakerAgentIndex = -1,
+				VisibleAgentIndices = visibleAgentIndices
+			});
+			if (_publicConversationHistory.Count > 40)
+			{
+				_publicConversationHistory.RemoveAt(0);
+			}
+			if (nearbyData == null)
+			{
+				return;
+			}
+			foreach (NpcDataPacket nearbyDatum in nearbyData)
+			{
+				if (nearbyDatum == null)
+				{
+					continue;
+				}
+				int agentIndex = nearbyDatum.AgentIndex;
+				if (!_npcConversationHistory.ContainsKey(agentIndex))
+				{
+					_npcConversationHistory[agentIndex] = new List<ConversationMessage>();
+				}
+				_npcConversationHistory[agentIndex].Add(new ConversationMessage
+				{
+					Role = "system",
+					Content = text,
+					SpeakerName = "system",
+					SpeakerAgentIndex = -1,
+					VisibleAgentIndices = visibleAgentIndices
+				});
+				if (_npcConversationHistory[agentIndex].Count > 40)
+				{
+					_npcConversationHistory[agentIndex].RemoveRange(0, Math.Min(2, _npcConversationHistory[agentIndex].Count));
+				}
 			}
 		}
 	}

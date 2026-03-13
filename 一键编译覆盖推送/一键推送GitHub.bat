@@ -72,7 +72,7 @@ if not defined ORIGIN_URL (
 )
 
 if not defined COMMIT_MSG (
-    set /p "INPUT_MSG=请输入本次推送备注（可留空）: "
+    set /p "INPUT_MSG=Enter commit note (optional): "
     if defined INPUT_MSG set "COMMIT_MSG=!INPUT_MSG!"
 )
 

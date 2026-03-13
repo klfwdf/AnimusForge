@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -146,6 +146,13 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		public Dictionary<string, int> Items = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
 	}
 
+	private class MerchantFactRecord
+	{
+		public int LastTouchedDay;
+
+		public List<string> Facts = new List<string>();
+	}
+
 	private class ItemGuidePriceInfo
 	{
 		public int UnitPrice;
@@ -203,6 +210,12 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 
 	private Dictionary<string, PendingPlayerTransfer> _pendingPlayerTransfers = new Dictionary<string, PendingPlayerTransfer>(StringComparer.OrdinalIgnoreCase);
 
+	private Dictionary<string, MerchantFactRecord> _merchantFacts = new Dictionary<string, MerchantFactRecord>(StringComparer.OrdinalIgnoreCase);
+
+	private Dictionary<string, string> _merchantFactStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+	private List<string> _lastGeneratedNpcFactLines = new List<string>();
+
 	public static RewardSystemBehavior Instance { get; private set; }
 
 	public RewardSystemBehavior()
@@ -240,6 +253,14 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		if (_publicTrustStorage == null)
 		{
 			_publicTrustStorage = new Dictionary<string, int>();
+		}
+		if (_merchantFacts == null)
+		{
+			_merchantFacts = new Dictionary<string, MerchantFactRecord>(StringComparer.OrdinalIgnoreCase);
+		}
+		if (_merchantFactStorage == null)
+		{
+			_merchantFactStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 		}
 		try
 		{
@@ -292,6 +313,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 					}
 				}
 			}
+			SyncMerchantFactData(dataStore);
 			SyncTrustData(dataStore);
 		}
 		catch (Exception ex3)
@@ -303,6 +325,8 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			_publicTrust = new Dictionary<string, int>();
 			_npcTrustStorage = new Dictionary<string, int>();
 			_publicTrustStorage = new Dictionary<string, int>();
+			_merchantFacts = new Dictionary<string, MerchantFactRecord>(StringComparer.OrdinalIgnoreCase);
+			_merchantFactStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 		}
 	}
 
@@ -420,6 +444,146 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private static string BuildSettlementMerchantFactKey(Settlement settlement, SettlementMerchantKind kind)
+	{
+		string text = (settlement?.StringId ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text) || kind == SettlementMerchantKind.None)
+		{
+			return "";
+		}
+		return text.ToLowerInvariant() + ":" + kind.ToString().ToLowerInvariant();
+	}
+
+	private static void CleanupMerchantFactRecord(MerchantFactRecord record)
+	{
+		if (record == null)
+		{
+			return;
+		}
+		if (record.Facts == null)
+		{
+			record.Facts = new List<string>();
+			return;
+		}
+		List<string> list = record.Facts.Where((string x) => !string.IsNullOrWhiteSpace(x)).ToList();
+		if (list.Count > 8)
+		{
+			list = list.Skip(list.Count - 8).ToList();
+		}
+		record.Facts = list;
+	}
+
+	private MerchantFactRecord GetOrCreateMerchantFactRecord(Settlement settlement, SettlementMerchantKind kind)
+	{
+		string text = BuildSettlementMerchantFactKey(settlement, kind);
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return null;
+		}
+		if (_merchantFacts == null)
+		{
+			_merchantFacts = new Dictionary<string, MerchantFactRecord>(StringComparer.OrdinalIgnoreCase);
+		}
+		if (!_merchantFacts.TryGetValue(text, out var value) || value == null)
+		{
+			value = new MerchantFactRecord();
+			_merchantFacts[text] = value;
+		}
+		if (value.Facts == null)
+		{
+			value.Facts = new List<string>();
+		}
+		CleanupMerchantFactRecord(value);
+		value.LastTouchedDay = GetCampaignDayIndex();
+		return value;
+	}
+
+	private MerchantFactRecord GetMerchantFactRecord(Settlement settlement, SettlementMerchantKind kind)
+	{
+		string text = BuildSettlementMerchantFactKey(settlement, kind);
+		if (string.IsNullOrWhiteSpace(text) || _merchantFacts == null)
+		{
+			return null;
+		}
+		if (!_merchantFacts.TryGetValue(text, out var value) || value == null)
+		{
+			return null;
+		}
+		if (value.Facts == null)
+		{
+			value.Facts = new List<string>();
+		}
+		CleanupMerchantFactRecord(value);
+		return value;
+	}
+
+	public void AppendSettlementMerchantNpcFact(Settlement settlement, SettlementMerchantKind kind, string factText, string speakerName = null)
+	{
+		try
+		{
+			string text = (factText ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
+			if (!string.IsNullOrWhiteSpace(text))
+			{
+				MerchantFactRecord orCreateMerchantFactRecord = GetOrCreateMerchantFactRecord(settlement, kind);
+				if (orCreateMerchantFactRecord != null)
+				{
+					string text2 = (speakerName ?? GetSettlementMerchantRoleLabel(kind) ?? "商贩").Trim();
+					orCreateMerchantFactRecord.Facts.Add("[NPC行为补充] " + text2 + ": " + text);
+					CleanupMerchantFactRecord(orCreateMerchantFactRecord);
+				}
+			}
+		}
+		catch
+		{
+		}
+	}
+
+	public string BuildSettlementMerchantNpcFactSummaryForAI(CharacterObject character, Settlement settlement = null, int maxLines = 4)
+	{
+		if (!TryGetSettlementMerchantKind(character, out var kind))
+		{
+			return "";
+		}
+		settlement = settlement ?? Settlement.CurrentSettlement;
+		MerchantFactRecord merchantFactRecord = GetMerchantFactRecord(settlement, kind);
+		if (merchantFactRecord?.Facts == null || merchantFactRecord.Facts.Count <= 0)
+		{
+			return "";
+		}
+		List<string> list = merchantFactRecord.Facts;
+		int num = Math.Max(1, maxLines);
+		if (list.Count > num)
+		{
+			list = list.Skip(list.Count - num).ToList();
+		}
+		return string.Join("\n", list);
+	}
+
+	public string BuildNpcBehaviorSupplementForAI(Hero hero, CharacterObject character = null, int maxLines = 4)
+	{
+		if (hero != null)
+		{
+			return MyBehavior.BuildRecentNpcFactContextForExternal(hero, maxLines);
+		}
+		if (character != null)
+		{
+			return BuildSettlementMerchantNpcFactSummaryForAI(character, null, maxLines);
+		}
+		return "";
+	}
+
+	private void SetLastGeneratedNpcFactLines(IEnumerable<string> lines)
+	{
+		_lastGeneratedNpcFactLines = ((lines != null) ? lines.Where((string x) => !string.IsNullOrWhiteSpace(x)).ToList() : new List<string>());
+	}
+
+	public List<string> ConsumeLastGeneratedNpcFactLines()
+	{
+		List<string> result = ((_lastGeneratedNpcFactLines != null) ? new List<string>(_lastGeneratedNpcFactLines) : new List<string>());
+		_lastGeneratedNpcFactLines = new List<string>();
+		return result;
+	}
+
 	public void RecordPlayerPrepaidTransfer(Hero npc, int goldAmount, string itemId, int itemAmount)
 	{
 		try
@@ -455,8 +619,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			PendingPlayerTransfer pendingPlayerTransfer = GetPendingPlayerTransfer(npc);
-			return Math.Max(0, pendingPlayerTransfer?.Gold ?? 0);
+			return Math.Max(0, GetPendingPlayerTransfer(npc)?.Gold ?? 0);
 		}
 		catch
 		{
@@ -789,68 +952,80 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		switch (text)
 		{
 		default:
-			if (!(text == "spring"))
+			if (text == "spring")
 			{
+				break;
+			}
+			switch (text)
+			{
+			default:
+				if (text == "summer")
+				{
+					break;
+				}
 				switch (text)
 				{
 				default:
-					if (!(text == "summer"))
+					if (text == "fall")
 					{
-						switch (text)
-						{
-						default:
-							if (!(text == "fall"))
-							{
-								switch (text)
-								{
-								default:
-									if (!(text == "winter"))
-									{
-										return false;
-									}
-									goto case "4";
-								case "4":
-								case "冬":
-								case "冬季":
-									seasonIndexZeroBased = 3;
-									return true;
-								}
-							}
-							goto case "3";
-						case "3":
-						case "秋":
-						case "秋季":
-						case "autumn":
-							seasonIndexZeroBased = 2;
-							return true;
-						}
+						break;
 					}
-					goto case "2";
-				case "2":
-				case "夏":
-				case "夏季":
-					seasonIndexZeroBased = 1;
+					switch (text)
+					{
+					default:
+						if (!(text == "winter"))
+						{
+							return false;
+						}
+						break;
+					case "4":
+					case "冬":
+					case "冬季":
+						break;
+					}
+					seasonIndexZeroBased = 3;
 					return true;
+				case "3":
+				case "秋":
+				case "秋季":
+				case "autumn":
+					break;
 				}
+				seasonIndexZeroBased = 2;
+				return true;
+			case "2":
+			case "夏":
+			case "夏季":
+				break;
 			}
-			goto case "1";
+			seasonIndexZeroBased = 1;
+			return true;
 		case "1":
 		case "春":
 		case "春季":
-			seasonIndexZeroBased = 0;
-			return true;
+			break;
 		}
+		seasonIndexZeroBased = 0;
+		return true;
 	}
 
 	private static string GetSeasonTextZh(int seasonIndexZeroBased)
 	{
-		return NormalizeSeasonIndex(seasonIndexZeroBased) switch
+		int num = NormalizeSeasonIndex(seasonIndexZeroBased);
+		if (1 == 0)
+		{
+		}
+		string result = num switch
 		{
 			0 => "春", 
 			1 => "夏", 
 			2 => "秋", 
 			_ => "冬", 
 		};
+		if (1 == 0)
+		{
+		}
+		return result;
 	}
 
 	private static string FormatAbsDayAsGameDate(int absDay)
@@ -891,6 +1066,78 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		catch
 		{
 			return "D" + DateTime.UtcNow.Ticks;
+		}
+	}
+
+	private void SyncMerchantFactData(IDataStore dataStore)
+	{
+		if (dataStore == null)
+		{
+			return;
+		}
+		if (_merchantFacts == null)
+		{
+			_merchantFacts = new Dictionary<string, MerchantFactRecord>(StringComparer.OrdinalIgnoreCase);
+		}
+		if (_merchantFactStorage == null)
+		{
+			_merchantFactStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+		}
+		if (dataStore.IsSaving)
+		{
+			_merchantFactStorage.Clear();
+			foreach (KeyValuePair<string, MerchantFactRecord> merchantFact in _merchantFacts)
+			{
+				if (string.IsNullOrWhiteSpace(merchantFact.Key) || merchantFact.Value == null)
+				{
+					continue;
+				}
+				CleanupMerchantFactRecord(merchantFact.Value);
+				if (merchantFact.Value.Facts != null && merchantFact.Value.Facts.Count > 0)
+				{
+					try
+					{
+						_merchantFactStorage[merchantFact.Key] = JsonConvert.SerializeObject(merchantFact.Value);
+					}
+					catch (Exception ex)
+					{
+						Logger.Log("RewardSystem", "[ERROR] Serialize merchant facts for " + merchantFact.Key + ": " + ex.Message);
+					}
+				}
+			}
+		}
+		dataStore.SyncData("_rewardMerchantFacts_v1", ref _merchantFactStorage);
+		if (dataStore.IsSaving)
+		{
+			return;
+		}
+		_merchantFacts.Clear();
+		if (_merchantFactStorage == null)
+		{
+			return;
+		}
+		foreach (KeyValuePair<string, string> item in _merchantFactStorage)
+		{
+			if (string.IsNullOrWhiteSpace(item.Key) || string.IsNullOrWhiteSpace(item.Value))
+			{
+				continue;
+			}
+			try
+			{
+				MerchantFactRecord merchantFactRecord = JsonConvert.DeserializeObject<MerchantFactRecord>(item.Value);
+				if (merchantFactRecord != null)
+				{
+					CleanupMerchantFactRecord(merchantFactRecord);
+					if (merchantFactRecord.Facts != null && merchantFactRecord.Facts.Count > 0)
+					{
+						_merchantFacts[item.Key] = merchantFactRecord;
+					}
+				}
+			}
+			catch (Exception ex2)
+			{
+				Logger.Log("RewardSystem", "[ERROR] Deserialize merchant facts for " + item.Key + ": " + ex2.Message);
+			}
 		}
 	}
 
@@ -1410,8 +1657,8 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			string text = (serviceType ?? "").Trim().ToUpperInvariant();
 			if (text == "LEAVE")
 			{
-				Kingdom currentKingdom = playerClan.Kingdom;
-				if (currentKingdom == null)
+				Kingdom kingdom = playerClan.Kingdom;
+				if (kingdom == null)
 				{
 					statusText = "执行失败：玩家当前未加入任何势力，无需退出。";
 					return false;
@@ -1419,30 +1666,30 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				if (playerClan.IsUnderMercenaryService)
 				{
 					ChangeKingdomAction.ApplyByLeaveKingdomAsMercenary(playerClan);
-					statusText = $"执行成功：玩家已结束与 {currentKingdom.Name} 的雇佣兵契约。";
+					statusText = $"执行成功：玩家已结束与 {kingdom.Name} 的雇佣兵契约。";
 					return true;
 				}
 				ChangeKingdomAction.ApplyByLeaveKingdom(playerClan);
-				statusText = $"执行成功：玩家已退出 {currentKingdom.Name}，不再是其正式封臣。";
+				statusText = $"执行成功：玩家已退出 {kingdom.Name}，不再是其正式封臣。";
 				return true;
 			}
-			Kingdom kingdom = ResolveKingdomByTag(kingdomToken, giver);
-			if (kingdom == null || kingdom.IsEliminated)
+			Kingdom kingdom2 = ResolveKingdomByTag(kingdomToken, giver);
+			if (kingdom2 == null || kingdom2.IsEliminated)
 			{
 				statusText = "执行失败：目标势力无效（" + kingdomToken + "）。";
 				return false;
 			}
-			Kingdom kingdom2 = giver?.Clan?.Kingdom;
-			if (kingdom2 != null && kingdom2 != kingdom)
+			Kingdom kingdom3 = giver?.Clan?.Kingdom;
+			if (kingdom3 != null && kingdom3 != kingdom2)
 			{
-				statusText = $"执行失败：{giver.Name} 并非 {kingdom.Name} 成员，不能代表该势力授予身份。";
+				statusText = $"执行失败：{giver.Name} 并非 {kingdom2.Name} 成员，不能代表该势力授予身份。";
 				return false;
 			}
 			if (text == "MERCENARY")
 			{
-				if (giver == null || giver.Clan == null || giver.Clan.Kingdom != kingdom)
+				if (giver == null || giver.Clan == null || giver.Clan.Kingdom != kingdom2)
 				{
-					statusText = "执行失败：雇佣兵招募必须由目标势力封臣发起（目标势力=" + kingdom.StringId + "）。";
+					statusText = "执行失败：雇佣兵招募必须由目标势力封臣发起（目标势力=" + kingdom2.StringId + "）。";
 					return false;
 				}
 				if (giver.Clan.IsUnderMercenaryService)
@@ -1475,30 +1722,30 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 					statusText = "执行失败：玩家已是某王国正式封臣，不能再作为雇佣兵加入。";
 					return false;
 				}
-				if (!CanPlayerOfferMercenaryServiceCompat(kingdom))
+				if (!CanPlayerOfferMercenaryServiceCompat(kingdom2))
 				{
-					statusText = "执行失败：不满足原版雇佣兵加入条件（势力=" + kingdom.StringId + "）。";
+					statusText = "执行失败：不满足原版雇佣兵加入条件（势力=" + kingdom2.StringId + "）。";
 					return false;
 				}
 				int num2 = 50;
 				try
 				{
-					num2 = Campaign.Current?.Models?.MinorFactionsModel?.GetMercenaryAwardFactorToJoinKingdom(playerClan, kingdom) ?? 50;
+					num2 = Campaign.Current?.Models?.MinorFactionsModel?.GetMercenaryAwardFactorToJoinKingdom(playerClan, kingdom2) ?? 50;
 				}
 				catch
 				{
 					num2 = 50;
 				}
-				ChangeKingdomAction.ApplyByJoinFactionAsMercenary(playerClan, kingdom, default(CampaignTime), num2);
-				statusText = $"执行成功：玩家已作为雇佣兵加入 {kingdom.Name}（KingdomId={kingdom.StringId}）。";
+				ChangeKingdomAction.ApplyByJoinFactionAsMercenary(playerClan, kingdom2, default(CampaignTime), num2);
+				statusText = $"执行成功：玩家已作为雇佣兵加入 {kingdom2.Name}（KingdomId={kingdom2.StringId}）。";
 				return true;
 			}
 			if (text == "VASSAL")
 			{
-				if (kingdom.Leader == null || giver == null || giver != kingdom.Leader)
+				if (kingdom2.Leader == null || giver == null || giver != kingdom2.Leader)
 				{
-					string arg = kingdom.Leader?.Name?.ToString() ?? "该势力领袖";
-					statusText = $"执行失败：封臣宣誓必须由 {kingdom.Name} 的势力领袖 {arg} 亲自确认。请前往与其对话。";
+					string arg = kingdom2.Leader?.Name?.ToString() ?? "该势力领袖";
+					statusText = $"执行失败：封臣宣誓必须由 {kingdom2.Name} 的势力领袖 {arg} 亲自确认。请前往与其对话。";
 					return false;
 				}
 				int effectiveTrust2 = GetEffectiveTrust(giver);
@@ -1521,18 +1768,18 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 					statusText = $"执行失败：玩家家族等级不足，当前 {playerClan.Tier}，至少需要 {num3} 才能成为封臣。";
 					return false;
 				}
-				if (playerClan.Kingdom == kingdom && !playerClan.IsUnderMercenaryService)
+				if (playerClan.Kingdom == kingdom2 && !playerClan.IsUnderMercenaryService)
 				{
-					statusText = $"执行跳过：玩家已是 {kingdom.Name} 的正式封臣。";
+					statusText = $"执行跳过：玩家已是 {kingdom2.Name} 的正式封臣。";
 					return false;
 				}
-				if (!CanPlayerOfferVassalageCompat(kingdom))
+				if (!CanPlayerOfferVassalageCompat(kingdom2))
 				{
-					statusText = "执行失败：不满足原版封臣加入条件（势力=" + kingdom.StringId + "）。";
+					statusText = "执行失败：不满足原版封臣加入条件（势力=" + kingdom2.StringId + "）。";
 					return false;
 				}
-				ChangeKingdomAction.ApplyByJoinToKingdom(playerClan, kingdom);
-				statusText = $"执行成功：玩家已加入 {kingdom.Name} 成为正式封臣（KingdomId={kingdom.StringId}）。";
+				ChangeKingdomAction.ApplyByJoinToKingdom(playerClan, kingdom2);
+				statusText = $"执行成功：玩家已加入 {kingdom2.Name} 成为正式封臣（KingdomId={kingdom2.StringId}）。";
 				return true;
 			}
 			statusText = "执行失败：未知势力效力类型 " + serviceType + "。";
@@ -2482,53 +2729,38 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 
 	private static string GetSettlementMerchantRoleLabel(SettlementMerchantKind kind)
 	{
-		switch (kind)
+		return kind switch
 		{
-		case SettlementMerchantKind.Weapon:
-			return "武器商人";
-		case SettlementMerchantKind.Armor:
-			return "盔甲商人";
-		case SettlementMerchantKind.Horse:
-			return "马匹贩子";
-		case SettlementMerchantKind.Goods:
-			return "杂货商人";
-		default:
-			return "商贩";
-		}
+			SettlementMerchantKind.Weapon => "武器商人", 
+			SettlementMerchantKind.Armor => "盔甲商人", 
+			SettlementMerchantKind.Horse => "马匹贩子", 
+			SettlementMerchantKind.Goods => "杂货商人", 
+			_ => "商贩", 
+		};
 	}
 
 	private static string GetSettlementMerchantMarketLabel(SettlementMerchantKind kind)
 	{
-		switch (kind)
+		return kind switch
 		{
-		case SettlementMerchantKind.Weapon:
-			return "武器市场";
-		case SettlementMerchantKind.Armor:
-			return "盔甲市场";
-		case SettlementMerchantKind.Horse:
-			return "马匹市场";
-		case SettlementMerchantKind.Goods:
-			return "杂货市场";
-		default:
-			return "城镇市场";
-		}
+			SettlementMerchantKind.Weapon => "武器市场", 
+			SettlementMerchantKind.Armor => "盔甲市场", 
+			SettlementMerchantKind.Horse => "马匹市场", 
+			SettlementMerchantKind.Goods => "杂货市场", 
+			_ => "城镇市场", 
+		};
 	}
 
 	private static string GetSettlementMerchantSpecialHint(SettlementMerchantKind kind)
 	{
-		switch (kind)
+		return kind switch
 		{
-		case SettlementMerchantKind.Weapon:
-			return "弓、弩、箭、弩矢、投掷武器和盾牌都归入你的武器市场。";
-		case SettlementMerchantKind.Armor:
-			return "头盔、身甲、臂甲、腿甲、披风等护具都归入你的盔甲市场。";
-		case SettlementMerchantKind.Horse:
-			return "马匹与马具都归入你的马匹市场。";
-		case SettlementMerchantKind.Goods:
-			return "粮食、贸易品和一般杂货都归入你的杂货市场。";
-		default:
-			return "";
-		}
+			SettlementMerchantKind.Weapon => "弓、弩、箭、弩矢、投掷武器和盾牌都归入你的武器市场。", 
+			SettlementMerchantKind.Armor => "头盔、身甲、臂甲、腿甲、披风等护具都归入你的盔甲市场。", 
+			SettlementMerchantKind.Horse => "马匹与马具都归入你的马匹市场。", 
+			SettlementMerchantKind.Goods => "粮食、贸易品和一般杂货都归入你的杂货市场。", 
+			_ => "", 
+		};
 	}
 
 	private static bool MatchesSettlementMerchantKind(ItemObject item, SettlementMerchantKind kind)
@@ -2540,37 +2772,25 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		switch (kind)
 		{
 		case SettlementMerchantKind.Weapon:
-			switch (item.Type)
+		{
+			ItemObject.ItemTypeEnum type2 = item.Type;
+			ItemObject.ItemTypeEnum itemTypeEnum2 = type2;
+			if ((uint)(itemTypeEnum2 - 2) <= 10u || (uint)(itemTypeEnum2 - 18) <= 2u)
 			{
-			case ItemObject.ItemTypeEnum.OneHandedWeapon:
-			case ItemObject.ItemTypeEnum.TwoHandedWeapon:
-			case ItemObject.ItemTypeEnum.Polearm:
-			case ItemObject.ItemTypeEnum.Arrows:
-			case ItemObject.ItemTypeEnum.Bolts:
-			case ItemObject.ItemTypeEnum.SlingStones:
-			case ItemObject.ItemTypeEnum.Shield:
-			case ItemObject.ItemTypeEnum.Bow:
-			case ItemObject.ItemTypeEnum.Crossbow:
-			case ItemObject.ItemTypeEnum.Sling:
-			case ItemObject.ItemTypeEnum.Thrown:
-			case ItemObject.ItemTypeEnum.Pistol:
-			case ItemObject.ItemTypeEnum.Musket:
-			case ItemObject.ItemTypeEnum.Bullets:
 				return true;
 			}
 			return false;
+		}
 		case SettlementMerchantKind.Armor:
-			switch (item.Type)
+		{
+			ItemObject.ItemTypeEnum type = item.Type;
+			ItemObject.ItemTypeEnum itemTypeEnum = type;
+			if ((uint)(itemTypeEnum - 14) <= 3u || (uint)(itemTypeEnum - 23) <= 1u)
 			{
-			case ItemObject.ItemTypeEnum.HeadArmor:
-			case ItemObject.ItemTypeEnum.BodyArmor:
-			case ItemObject.ItemTypeEnum.LegArmor:
-			case ItemObject.ItemTypeEnum.HandArmor:
-			case ItemObject.ItemTypeEnum.Cape:
-			case ItemObject.ItemTypeEnum.ChestArmor:
 				return true;
 			}
 			return false;
+		}
 		case SettlementMerchantKind.Horse:
 			return item.Type == ItemObject.ItemTypeEnum.Horse || item.Type == ItemObject.ItemTypeEnum.HorseHarness;
 		case SettlementMerchantKind.Goods:
@@ -2586,20 +2806,18 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			return "";
 		}
-		string settlementName = Settlement.CurrentSettlement?.Name?.ToString() ?? "当前城镇";
-		string roleLabel = GetSettlementMerchantRoleLabel(kind);
-		string marketLabel = GetSettlementMerchantMarketLabel(kind);
-		string specialHint = GetSettlementMerchantSpecialHint(kind);
+		string text = Settlement.CurrentSettlement?.Name?.ToString() ?? "当前城镇";
+		string settlementMerchantRoleLabel = GetSettlementMerchantRoleLabel(kind);
+		string settlementMerchantMarketLabel = GetSettlementMerchantMarketLabel(kind);
+		string settlementMerchantSpecialHint = GetSettlementMerchantSpecialHint(kind);
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.AppendLine("【城镇商贩交易规则】你不是有名有姓的Hero，也不是在卖你个人的私人物品。");
-		stringBuilder.AppendLine($"你是{settlementName}里的{roleLabel}，代表这座城镇当前的{marketLabel}与玩家进行即时交易。");
-		stringBuilder.AppendLine("你的真实可售货物只以【当前商铺可用财富与物品】中的清单为准；那是当前城镇市场里此类商铺手上真正有的货。");
-		if (!string.IsNullOrWhiteSpace(specialHint))
+		stringBuilder.AppendLine("【城镇商贩补充】你不是在卖你个人的私人物品。");
+		stringBuilder.AppendLine("你是" + text + "里的" + settlementMerchantRoleLabel + "，代表这座城镇当前的" + settlementMerchantMarketLabel + "与玩家进行即时交易。");
+		stringBuilder.AppendLine("你的真实可售货物只以【当前商铺可用财富与物品】中的清单为准。");
+		if (!string.IsNullOrWhiteSpace(settlementMerchantSpecialHint))
 		{
-			stringBuilder.AppendLine(specialHint);
+			stringBuilder.AppendLine(settlementMerchantSpecialHint);
 		}
-		stringBuilder.AppendLine("你可以继续使用 [ACTION:GIVE_GOLD] 与 [ACTION:GIVE_ITEM] 完成即时交易结算，但这些标签代表的是城镇市场交付，不是你个人掏腰包或掏私人物品。");
-		stringBuilder.AppendLine("本轮只允许即时成交，禁止输出任何 DEBT 类标签，也禁止输出 [ACTION:TRADE_TRUST]。若玩家未真实付款或未真实交货，就只能继续谈价，不能真正交付。");
 		return stringBuilder.ToString().Trim();
 	}
 
@@ -2625,50 +2843,48 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				continue;
 			}
 			string text = item.StringId ?? "";
-			if (string.IsNullOrWhiteSpace(text))
+			if (!string.IsNullOrWhiteSpace(text))
 			{
-				continue;
-			}
-			if (!dictionary.TryGetValue(text, out var value))
-			{
-				value = new RewardItemInfo
+				if (!dictionary.TryGetValue(text, out var value))
 				{
-					Item = item,
-					StringId = text,
-					Name = item.Name?.ToString() ?? text,
-					Count = 0
-				};
-				dictionary[text] = value;
+					value = (dictionary[text] = new RewardItemInfo
+					{
+						Item = item,
+						StringId = text,
+						Name = (item.Name?.ToString() ?? text),
+						Count = 0
+					});
+				}
+				value.Count += elementCopyAtIndex.Amount;
 			}
-			value.Count += elementCopyAtIndex.Amount;
 		}
 		StringBuilder stringBuilder = new StringBuilder();
-		int num = settlement.SettlementComponent?.Gold ?? 0;
-		stringBuilder.Append("Gold: ").Append(num).AppendLine();
+		int value2 = settlement.SettlementComponent?.Gold ?? 0;
+		stringBuilder.Append("Gold: ").Append(value2).AppendLine();
 		if (includeGuidePrice)
 		{
 			stringBuilder.AppendLine("【价格说明】每个物品后面的 guidePrice 为当前城镇市场的即时指导单价（第纳尔/个）。");
 		}
 		stringBuilder.AppendLine("InventoryItems:");
-		int num2 = 0;
-		foreach (RewardItemInfo value2 in dictionary.Values.OrderByDescending((RewardItemInfo x) => x.Count).ThenBy((RewardItemInfo x) => x.Name, StringComparer.Ordinal))
+		int num = 0;
+		foreach (RewardItemInfo item2 in dictionary.Values.OrderByDescending((RewardItemInfo x) => x.Count).ThenBy((RewardItemInfo x) => x.Name, StringComparer.Ordinal))
 		{
-			stringBuilder.Append(value2.StringId).Append("|").Append(value2.Name)
+			stringBuilder.Append(item2.StringId).Append("|").Append(item2.Name)
 				.Append("|")
-				.Append(value2.Count)
+				.Append(item2.Count)
 				.Append("个");
-			if (includeGuidePrice && TryGetSettlementBuyPrice(settlement, value2.Item, out var price))
+			if (includeGuidePrice && TryGetSettlementBuyPrice(settlement, item2.Item, out var price))
 			{
 				stringBuilder.Append("|guidePrice=").Append(Math.Max(1, price));
 			}
 			stringBuilder.AppendLine();
-			num2++;
-			if (num2 >= Math.Max(1, maxItems))
+			num++;
+			if (num >= Math.Max(1, maxItems))
 			{
 				break;
 			}
 		}
-		if (num2 == 0)
+		if (num == 0)
 		{
 			stringBuilder.AppendLine("（当前没有可售货物）");
 		}
@@ -2734,7 +2950,8 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			EquipmentIndex.Weapon1
 		};
 		EquipmentIndex[] array2 = array;
-		foreach (EquipmentIndex index in array2)
+		EquipmentIndex[] array3 = array2;
+		foreach (EquipmentIndex index in array3)
 		{
 			EquipmentElement equipmentElement = hero.BattleEquipment[index];
 			if (equipmentElement.Item != null)
@@ -2775,7 +2992,8 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				string key = item.StringId ?? "";
 				if (!dictionary.TryGetValue(key, out var value))
 				{
-					value = (dictionary[key] = GetGuidePriceForItemNearHero(hero, item.Item));
+					ItemGuidePriceInfo itemGuidePriceInfo = (dictionary[key] = GetGuidePriceForItemNearHero(hero, item.Item));
+					value = itemGuidePriceInfo;
 				}
 				int num3 = Math.Max(1, value.UnitPrice);
 				int num4 = Math.Max(1, item.Count);
@@ -2827,7 +3045,8 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				string key = item.StringId ?? "";
 				if (!dictionary.TryGetValue(key, out var value))
 				{
-					value = (dictionary[key] = GetGuidePriceForItemNearHero(hero, item.Item));
+					ItemGuidePriceInfo itemGuidePriceInfo = (dictionary[key] = GetGuidePriceForItemNearHero(hero, item.Item));
+					value = itemGuidePriceInfo;
 				}
 				stringBuilder.Append("|guidePrice=").Append(Math.Max(1, value.UnitPrice));
 			}
@@ -2852,7 +3071,8 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 					string key2 = item2.StringId ?? "";
 					if (!dictionary.TryGetValue(key2, out var value2))
 					{
-						value2 = (dictionary[key2] = GetGuidePriceForItemNearHero(hero, item2.Item));
+						ItemGuidePriceInfo itemGuidePriceInfo = (dictionary[key2] = GetGuidePriceForItemNearHero(hero, item2.Item));
+						value2 = itemGuidePriceInfo;
 					}
 					stringBuilder.Append("|guidePrice=").Append(Math.Max(1, value2.UnitPrice));
 				}
@@ -3691,6 +3911,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 
 	public void ApplyRewardTags(Hero giver, Hero receiver, ref string responseText)
 	{
+		SetLastGeneratedNpcFactLines(null);
 		if (giver == null || receiver == null || string.IsNullOrEmpty(responseText))
 		{
 			return;
@@ -3806,14 +4027,14 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				}
 			}
 			responseText = regex10.Replace(responseText, string.Empty);
-			int? llmTradeTrustDelta = null;
+			int? num2 = null;
 			MatchCollection matchCollection5 = regex21.Matches(responseText);
 			if (matchCollection5 != null && matchCollection5.Count > 0)
 			{
 				Match match3 = matchCollection5[matchCollection5.Count - 1];
 				if (match3 != null && int.TryParse(match3.Groups[1].Value, out var result7))
 				{
-					llmTradeTrustDelta = NormalizeLlmTrustDeltaValue(result7);
+					num2 = NormalizeLlmTrustDeltaValue(result7);
 				}
 			}
 			responseText = regex21.Replace(responseText, string.Empty);
@@ -3838,14 +4059,14 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			bool anyKingdomServiceApplied = false;
 			responseText = regex.Replace(responseText, delegate(Match m)
 			{
-				if (int.TryParse(m.Groups[1].Value, out var result7))
+				if (int.TryParse(m.Groups[1].Value, out var result8))
 				{
-					Logger.Log("Logic", $"[Reward] GIVE_GOLD tag 捕获: giver={giver?.Name} receiver={receiver?.Name} amount={result7}");
-					int num2 = TransferGold(giver, receiver, result7);
-					if (num2 > 0)
+					Logger.Log("Logic", $"[Reward] GIVE_GOLD tag 捕获: giver={giver?.Name} receiver={receiver?.Name} amount={result8}");
+					int num4 = TransferGold(giver, receiver, result8);
+					if (num4 > 0)
 					{
-						giverFacts.Add($"你已经将 {num2} 第纳尔交给 {receiverName}。");
-						receiverFacts.Add($"你从 {giverName} 收到了 {num2} 第纳尔。");
+						giverFacts.Add($"你已经将 {num4} 第纳尔交给 {receiverName}。");
+						receiverFacts.Add($"你从 {giverName} 收到了 {num4} 第纳尔。");
 						if (giver != Hero.MainHero && receiver == Hero.MainHero)
 						{
 							anyActualGiveToPlayer = true;
@@ -3856,22 +4077,22 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			});
 			responseText = regex2.Replace(responseText, delegate(Match m)
 			{
-				string value3 = m.Groups[1].Value;
-				if (int.TryParse(m.Groups[2].Value, out var result7))
+				string value4 = m.Groups[1].Value;
+				if (int.TryParse(m.Groups[2].Value, out var result8))
 				{
-					Logger.Log("Logic", $"[Reward] GIVE_ITEM tag 捕获: giver={giver?.Name} receiver={receiver?.Name} itemId={value3} amount={result7}");
+					Logger.Log("Logic", $"[Reward] GIVE_ITEM tag 捕获: giver={giver?.Name} receiver={receiver?.Name} itemId={value4} amount={result8}");
 					string itemName;
-					int num2 = TransferItemById(giver, receiver, value3, result7, out itemName);
-					if (num2 > 0)
+					int num4 = TransferItemById(giver, receiver, value4, result8, out itemName);
+					if (num4 > 0)
 					{
-						string text = (string.IsNullOrEmpty(itemName) ? value3 : itemName);
-						string text2 = text;
-						giverFacts.Add($"你已经将 {num2} 个 {text2} 交给 {receiverName}。");
-						receiverFacts.Add($"你从 {giverName} 收到了 {num2} 个 {text2}。");
-						if (num2 < result7)
+						string text3 = (string.IsNullOrEmpty(itemName) ? value4 : itemName);
+						string text4 = text3;
+						giverFacts.Add($"你已经将 {num4} 个 {text4} 交给 {receiverName}。");
+						receiverFacts.Add($"你从 {giverName} 收到了 {num4} 个 {text4}。");
+						if (num4 < result8)
 						{
-							giverFacts.Add($"你本轮原计划交付 {result7} 个 {text2}，但实际仅交付 {num2} 个（库存不足）。");
-							receiverFacts.Add($"{giverName} 原计划交付 {result7} 个 {text2}，实际仅交付 {num2} 个。");
+							giverFacts.Add($"你本轮原计划交付 {result8} 个 {text4}，但实际仅交付 {num4} 个（库存不足）。");
+							receiverFacts.Add($"{giverName} 原计划交付 {result8} 个 {text4}，实际仅交付 {num4} 个。");
 						}
 						if (giver != Hero.MainHero && receiver == Hero.MainHero)
 						{
@@ -3880,37 +4101,35 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 					}
 					else
 					{
-						string text3 = ResolveItemById(value3)?.Name?.ToString();
-						string text4 = (string.IsNullOrWhiteSpace(text3) ? "该物品" : text3);
-						giverFacts.Add($"你尝试交付 {result7} 个{text4}，但库存不足，本轮未实际交付。");
-						receiverFacts.Add($"{giverName} 试图交付 {result7} 个{text4}，但其库存不足，本轮未实际交付。");
+						string text5 = ResolveItemById(value4)?.Name?.ToString();
+						string text6 = (string.IsNullOrWhiteSpace(text5) ? "该物品" : text5);
+						giverFacts.Add($"你尝试交付 {result8} 个{text6}，但库存不足，本轮未实际交付。");
+						receiverFacts.Add($"{giverName} 试图交付 {result8} 个{text6}，但其库存不足，本轮未实际交付。");
 					}
 				}
 				return string.Empty;
 			});
 			responseText = regex3.Replace(responseText, delegate(Match m)
 			{
-				if (int.TryParse(m.Groups[1].Value, out var result7))
+				if (int.TryParse(m.Groups[1].Value, out var result8))
 				{
-					Logger.Log("Logic", $"[Reward] DEBT_GOLD tag 捕获: giver={giver?.Name} receiver={receiver?.Name} amount={result7} hasGiveTag={hasGiveTag}");
+					Logger.Log("Logic", $"[Reward] DEBT_GOLD tag 捕获: giver={giver?.Name} receiver={receiver?.Name} amount={result8} hasGiveTag={hasGiveTag}");
 					if (receiver == Hero.MainHero && giver != Hero.MainHero && hasGiveTag)
 					{
-						SetDebtForNpc(giver, result7, null, 0, dueDaysOverride, dueAbsDayOverride, dueUnlimited, overdueTrustPenaltyPreset, overdueRelationPenaltyPreset);
+						SetDebtForNpc(giver, result8, null, 0, dueDaysOverride, dueAbsDayOverride, dueUnlimited, overdueTrustPenaltyPreset, overdueRelationPenaltyPreset);
 						anyDebtRecorded = true;
 						DebtRecord debtRecord = GetDebtRecord(giver);
 						NormalizeDebtRecord(debtRecord);
-						DebtRecord.DebtLine debtLine = (from x in debtRecord?.DebtLines?.Where((DebtRecord.DebtLine x) => x != null && x.IsGold && x.RemainingAmount > 0)
-							orderby x.CreatedDay descending
-							select x).FirstOrDefault();
-						string text = ((debtLine != null) ? BuildDebtDueStatusText(debtLine.DueDay, debtLine.IsDueUnlimited) : "");
-						string text2 = debtLine?.DebtId ?? "";
-						giverFacts.Add($"你已经记下：玩家欠你 {result7} 第纳尔（债务ID:{text2}）。{text}");
-						receiverFacts.Add($"你欠 {giverName} {result7} 第纳尔（债务ID:{text2}）。{text}");
-						if (result7 > 0)
+						DebtRecord.DebtLine debtLine = (debtRecord?.DebtLines?.Where((DebtRecord.DebtLine x) => x != null && x.IsGold && x.RemainingAmount > 0)).OrderByDescending((DebtRecord.DebtLine x) => x.CreatedDay).FirstOrDefault();
+						string text3 = ((debtLine != null) ? BuildDebtDueStatusText(debtLine.DueDay, debtLine.IsDueUnlimited) : "");
+						string text4 = debtLine?.DebtId ?? "";
+						giverFacts.Add($"你已经记下：玩家欠你 {result8} 第纳尔（债务ID:{text4}）。{text3}");
+						receiverFacts.Add($"你欠 {giverName} {result8} 第纳尔（债务ID:{text4}）。{text3}");
+						if (result8 > 0)
 						{
-							string text3 = (string.IsNullOrWhiteSpace(text) ? "" : ("（" + text + "）"));
-							string text4 = (string.IsNullOrWhiteSpace(text2) ? "" : ("[ID:" + text2 + "] "));
-							InformationManager.DisplayMessage(new InformationMessage($"【欠款记录】{text4}你欠 {giverName} {result7} 第纳尔{text3}", Color.FromUint(4294936576u)));
+							string text5 = (string.IsNullOrWhiteSpace(text3) ? "" : ("（" + text3 + "）"));
+							string text6 = (string.IsNullOrWhiteSpace(text4) ? "" : ("[ID:" + text4 + "] "));
+							InformationManager.DisplayMessage(new InformationMessage($"【欠款记录】{text6}你欠 {giverName} {result8} 第纳尔{text5}", Color.FromUint(4294936576u)));
 						}
 						else
 						{
@@ -3922,27 +4141,25 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			});
 			responseText = regex4.Replace(responseText, delegate(Match m)
 			{
-				if (int.TryParse(m.Groups[1].Value, out var result7))
+				if (int.TryParse(m.Groups[1].Value, out var result8))
 				{
-					Logger.Log("Logic", $"[Reward] DEBT_ADD(兼容) tag 捕获: giver={giver?.Name} receiver={receiver?.Name} amount={result7} hasGiveTag={hasGiveTag}");
+					Logger.Log("Logic", $"[Reward] DEBT_ADD(兼容) tag 捕获: giver={giver?.Name} receiver={receiver?.Name} amount={result8} hasGiveTag={hasGiveTag}");
 					if (receiver == Hero.MainHero && giver != Hero.MainHero && hasGiveTag)
 					{
-						SetDebtForNpc(giver, result7, null, 0, dueDaysOverride, dueAbsDayOverride, dueUnlimited, overdueTrustPenaltyPreset, overdueRelationPenaltyPreset);
+						SetDebtForNpc(giver, result8, null, 0, dueDaysOverride, dueAbsDayOverride, dueUnlimited, overdueTrustPenaltyPreset, overdueRelationPenaltyPreset);
 						anyDebtRecorded = true;
 						DebtRecord debtRecord = GetDebtRecord(giver);
 						NormalizeDebtRecord(debtRecord);
-						DebtRecord.DebtLine debtLine = (from x in debtRecord?.DebtLines?.Where((DebtRecord.DebtLine x) => x != null && x.IsGold && x.RemainingAmount > 0)
-							orderby x.CreatedDay descending
-							select x).FirstOrDefault();
-						string text = ((debtLine != null) ? BuildDebtDueStatusText(debtLine.DueDay, debtLine.IsDueUnlimited) : "");
-						string text2 = debtLine?.DebtId ?? "";
-						giverFacts.Add($"你已经记下：玩家欠你 {result7} 第纳尔（债务ID:{text2}）。{text}");
-						receiverFacts.Add($"你欠 {giverName} {result7} 第纳尔（债务ID:{text2}）。{text}");
-						if (result7 > 0)
+						DebtRecord.DebtLine debtLine = (debtRecord?.DebtLines?.Where((DebtRecord.DebtLine x) => x != null && x.IsGold && x.RemainingAmount > 0)).OrderByDescending((DebtRecord.DebtLine x) => x.CreatedDay).FirstOrDefault();
+						string text3 = ((debtLine != null) ? BuildDebtDueStatusText(debtLine.DueDay, debtLine.IsDueUnlimited) : "");
+						string text4 = debtLine?.DebtId ?? "";
+						giverFacts.Add($"你已经记下：玩家欠你 {result8} 第纳尔（债务ID:{text4}）。{text3}");
+						receiverFacts.Add($"你欠 {giverName} {result8} 第纳尔（债务ID:{text4}）。{text3}");
+						if (result8 > 0)
 						{
-							string text3 = (string.IsNullOrWhiteSpace(text) ? "" : ("（" + text + "）"));
-							string text4 = (string.IsNullOrWhiteSpace(text2) ? "" : ("[ID:" + text2 + "] "));
-							InformationManager.DisplayMessage(new InformationMessage($"【欠款记录】{text4}你欠 {giverName} {result7} 第纳尔{text3}", Color.FromUint(4294936576u)));
+							string text5 = (string.IsNullOrWhiteSpace(text3) ? "" : ("（" + text3 + "）"));
+							string text6 = (string.IsNullOrWhiteSpace(text4) ? "" : ("[ID:" + text4 + "] "));
+							InformationManager.DisplayMessage(new InformationMessage($"【欠款记录】{text6}你欠 {giverName} {result8} 第纳尔{text5}", Color.FromUint(4294936576u)));
 						}
 						else
 						{
@@ -3955,54 +4172,52 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			responseText = regex5.Replace(responseText, delegate(Match m)
 			{
 				string itemId = m.Groups[1].Value;
-				if (int.TryParse(m.Groups[2].Value, out var result7))
+				if (int.TryParse(m.Groups[2].Value, out var result8))
 				{
-					Logger.Log("Logic", $"[Reward] DEBT_ITEM tag 捕获: giver={giver?.Name} receiver={receiver?.Name} itemId={itemId} amount={result7} hasGiveTag={hasGiveTag}");
+					Logger.Log("Logic", $"[Reward] DEBT_ITEM tag 捕获: giver={giver?.Name} receiver={receiver?.Name} itemId={itemId} amount={result8} hasGiveTag={hasGiveTag}");
 					if (receiver == Hero.MainHero && giver != Hero.MainHero && hasGiveTag)
 					{
-						SetDebtForNpc(giver, 0, itemId, result7, dueDaysOverride, dueAbsDayOverride, dueUnlimited, overdueTrustPenaltyPreset, overdueRelationPenaltyPreset);
+						SetDebtForNpc(giver, 0, itemId, result8, dueDaysOverride, dueAbsDayOverride, dueUnlimited, overdueTrustPenaltyPreset, overdueRelationPenaltyPreset);
 						anyDebtRecorded = true;
 						DebtRecord debtRecord = GetDebtRecord(giver);
 						NormalizeDebtRecord(debtRecord);
-						DebtRecord.DebtLine debtLine = (from x in debtRecord?.DebtLines?.Where((DebtRecord.DebtLine x) => x != null && !x.IsGold && string.Equals(x.ItemId ?? "", itemId, StringComparison.OrdinalIgnoreCase) && x.RemainingAmount > 0)
-							orderby x.CreatedDay descending
-							select x).FirstOrDefault();
-						string text = ((debtLine != null) ? BuildDebtDueStatusText(debtLine.DueDay, debtLine.IsDueUnlimited) : "");
-						string text2 = debtLine?.DebtId ?? "";
-						giverFacts.Add($"你已经记下：玩家欠你 {itemId} x{result7}（债务ID:{text2}）。{text}");
-						receiverFacts.Add($"你欠 {giverName} {itemId} x{result7}（债务ID:{text2}）。{text}");
-						string text3 = (string.IsNullOrWhiteSpace(text) ? "" : ("（" + text + "）"));
-						string text4 = (string.IsNullOrWhiteSpace(text2) ? "" : ("[ID:" + text2 + "] "));
-						InformationManager.DisplayMessage(new InformationMessage($"【欠款记录】{text4}你欠 {giverName} {itemId} x{result7}{text3}", Color.FromUint(4294936576u)));
+						DebtRecord.DebtLine debtLine = (debtRecord?.DebtLines?.Where((DebtRecord.DebtLine x) => x != null && !x.IsGold && string.Equals(x.ItemId ?? "", itemId, StringComparison.OrdinalIgnoreCase) && x.RemainingAmount > 0)).OrderByDescending((DebtRecord.DebtLine x) => x.CreatedDay).FirstOrDefault();
+						string text3 = ((debtLine != null) ? BuildDebtDueStatusText(debtLine.DueDay, debtLine.IsDueUnlimited) : "");
+						string text4 = debtLine?.DebtId ?? "";
+						giverFacts.Add($"你已经记下：玩家欠你 {itemId} x{result8}（债务ID:{text4}）。{text3}");
+						receiverFacts.Add($"你欠 {giverName} {itemId} x{result8}（债务ID:{text4}）。{text3}");
+						string text5 = (string.IsNullOrWhiteSpace(text3) ? "" : ("（" + text3 + "）"));
+						string text6 = (string.IsNullOrWhiteSpace(text4) ? "" : ("[ID:" + text4 + "] "));
+						InformationManager.DisplayMessage(new InformationMessage($"【欠款记录】{text6}你欠 {giverName} {itemId} x{result8}{text5}", Color.FromUint(4294936576u)));
 					}
 				}
 				return string.Empty;
 			});
 			responseText = regex11.Replace(responseText, delegate(Match m)
 			{
-				string value3 = m.Groups[1].Value;
-				if (int.TryParse(m.Groups[2].Value, out var result7) && receiver == Hero.MainHero && giver != Hero.MainHero)
+				string value4 = m.Groups[1].Value;
+				if (int.TryParse(m.Groups[2].Value, out var result8) && receiver == Hero.MainHero && giver != Hero.MainHero)
 				{
-					string text = (value3 ?? "").Trim();
-					if (!string.IsNullOrWhiteSpace(text) && !settledDebtIdsThisRound.Add(text))
+					string text3 = (value4 ?? "").Trim();
+					if (!string.IsNullOrWhiteSpace(text3) && !settledDebtIdsThisRound.Add(text3))
 					{
-						Logger.Log("Logic", "[Reward] 跳过重复还款标签: debtId=" + text + " tag=DEBT_PAY_GOLD");
+						Logger.Log("Logic", "[Reward] 跳过重复还款标签: debtId=" + text3 + " tag=DEBT_PAY_GOLD");
 						return string.Empty;
 					}
 					string statusText;
-					bool flag2 = RegisterPlayerGoldPaymentByDebtId(giver, value3, result7, out statusText);
+					bool flag2 = RegisterPlayerGoldPaymentByDebtId(giver, value4, result8, out statusText);
 					if (!string.IsNullOrWhiteSpace(statusText))
 					{
 						anyDebtPaymentApplied = true;
-						giverFacts.Add($"你确认收到玩家对债务ID {value3} 的金币还款 {result7}。{statusText}");
-						receiverFacts.Add($"你已偿还金币债务ID {value3} 共 {result7}。{statusText}");
+						giverFacts.Add($"你确认收到玩家对债务ID {value4} 的金币还款 {result8}。{statusText}");
+						receiverFacts.Add($"你已偿还金币债务ID {value4} 共 {result8}。{statusText}");
 						if (flag2)
 						{
 							InformationManager.DisplayMessage(new InformationMessage("【欠款已清】你对 " + giverName + " 的全部欠款已还清！", Color.FromUint(4278255360u)));
 						}
 						else
 						{
-							InformationManager.DisplayMessage(new InformationMessage($"【还款确认】已偿还金币债务ID {value3}：{result7}", Color.FromUint(4278242559u)));
+							InformationManager.DisplayMessage(new InformationMessage($"【还款确认】已偿还金币债务ID {value4}：{result8}", Color.FromUint(4278242559u)));
 						}
 					}
 				}
@@ -4010,30 +4225,30 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			});
 			responseText = regex12.Replace(responseText, delegate(Match m)
 			{
-				string value3 = m.Groups[1].Value;
-				string value4 = m.Groups[2].Value;
-				if (int.TryParse(m.Groups[3].Value, out var result7) && receiver == Hero.MainHero && giver != Hero.MainHero)
+				string value4 = m.Groups[1].Value;
+				string value5 = m.Groups[2].Value;
+				if (int.TryParse(m.Groups[3].Value, out var result8) && receiver == Hero.MainHero && giver != Hero.MainHero)
 				{
-					string text = (value3 ?? "").Trim();
-					if (!string.IsNullOrWhiteSpace(text) && !settledDebtIdsThisRound.Add(text))
+					string text3 = (value4 ?? "").Trim();
+					if (!string.IsNullOrWhiteSpace(text3) && !settledDebtIdsThisRound.Add(text3))
 					{
-						Logger.Log("Logic", "[Reward] 跳过重复还款标签: debtId=" + text + " tag=DEBT_PAY_ITEM");
+						Logger.Log("Logic", "[Reward] 跳过重复还款标签: debtId=" + text3 + " tag=DEBT_PAY_ITEM");
 						return string.Empty;
 					}
 					string statusText;
-					bool flag2 = RegisterPlayerItemPaymentByDebtId(giver, value3, value4, result7, out statusText);
+					bool flag2 = RegisterPlayerItemPaymentByDebtId(giver, value4, value5, result8, out statusText);
 					if (!string.IsNullOrWhiteSpace(statusText))
 					{
 						anyDebtPaymentApplied = true;
-						giverFacts.Add($"你确认收到玩家对债务ID {value3} 的物品还款：{value4} x{result7}。{statusText}");
-						receiverFacts.Add($"你已偿还物品债务ID {value3}：{value4} x{result7}。{statusText}");
+						giverFacts.Add($"你确认收到玩家对债务ID {value4} 的物品还款：{value5} x{result8}。{statusText}");
+						receiverFacts.Add($"你已偿还物品债务ID {value4}：{value5} x{result8}。{statusText}");
 						if (flag2)
 						{
 							InformationManager.DisplayMessage(new InformationMessage("【欠款已清】你对 " + giverName + " 的全部欠款已还清！", Color.FromUint(4278255360u)));
 						}
 						else
 						{
-							InformationManager.DisplayMessage(new InformationMessage($"【还款确认】已偿还物品债务ID {value3}：{value4} x{result7}", Color.FromUint(4278242559u)));
+							InformationManager.DisplayMessage(new InformationMessage($"【还款确认】已偿还物品债务ID {value4}：{value5} x{result8}", Color.FromUint(4278242559u)));
 						}
 					}
 				}
@@ -4041,29 +4256,29 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			});
 			responseText = regex13.Replace(responseText, delegate(Match m)
 			{
-				string value3 = m.Groups[1].Value;
-				if (int.TryParse(m.Groups[2].Value, out var result7) && receiver == Hero.MainHero && giver != Hero.MainHero)
+				string value4 = m.Groups[1].Value;
+				if (int.TryParse(m.Groups[2].Value, out var result8) && receiver == Hero.MainHero && giver != Hero.MainHero)
 				{
-					string text = (value3 ?? "").Trim();
-					if (!string.IsNullOrWhiteSpace(text) && !settledDebtIdsThisRound.Add(text))
+					string text3 = (value4 ?? "").Trim();
+					if (!string.IsNullOrWhiteSpace(text3) && !settledDebtIdsThisRound.Add(text3))
 					{
-						Logger.Log("Logic", "[Reward] 跳过重复还款标签: debtId=" + text + " tag=DEBT_PAY_ITEM_GOLD");
+						Logger.Log("Logic", "[Reward] 跳过重复还款标签: debtId=" + text3 + " tag=DEBT_PAY_ITEM_GOLD");
 						return string.Empty;
 					}
 					string statusText;
-					bool flag2 = RegisterPlayerItemCompensationByDebtId(giver, value3, result7, out statusText);
+					bool flag2 = RegisterPlayerItemCompensationByDebtId(giver, value4, result8, out statusText);
 					if (!string.IsNullOrWhiteSpace(statusText))
 					{
 						anyDebtPaymentApplied = true;
-						giverFacts.Add($"你确认收到玩家对债务ID {value3} 的物品金币赔偿：{result7}。{statusText}");
-						receiverFacts.Add($"你已对物品债务ID {value3} 支付金币赔偿：{result7}。{statusText}");
+						giverFacts.Add($"你确认收到玩家对债务ID {value4} 的物品金币赔偿：{result8}。{statusText}");
+						receiverFacts.Add($"你已对物品债务ID {value4} 支付金币赔偿：{result8}。{statusText}");
 						if (flag2)
 						{
 							InformationManager.DisplayMessage(new InformationMessage("【欠款已清】你对 " + giverName + " 的全部欠款已还清！", Color.FromUint(4278255360u)));
 						}
 						else
 						{
-							InformationManager.DisplayMessage(new InformationMessage($"【赔偿确认】已按协商支付物品债务ID {value3} 的金币赔偿：{result7}", Color.FromUint(4278242559u)));
+							InformationManager.DisplayMessage(new InformationMessage($"【赔偿确认】已按协商支付物品债务ID {value4} 的金币赔偿：{result8}", Color.FromUint(4278242559u)));
 						}
 					}
 				}
@@ -4071,11 +4286,11 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			});
 			responseText = regex14.Replace(responseText, delegate(Match m)
 			{
-				string value3 = m.Groups[1].Value;
+				string value4 = m.Groups[1].Value;
 				if (receiver == Hero.MainHero && giver != Hero.MainHero)
 				{
 					string statusText;
-					bool flag2 = MarkItemDebtUnavailableById(giver, value3, out statusText);
+					bool flag2 = MarkItemDebtUnavailableById(giver, value4, out statusText);
 					if (!string.IsNullOrWhiteSpace(statusText))
 					{
 						anyDebtMetaApplied = true;
@@ -4091,10 +4306,10 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			});
 			responseText = regex15.Replace(responseText, delegate(Match m)
 			{
-				string value3 = m.Groups[1].Value;
-				if (int.TryParse(m.Groups[2].Value, out var result7) && int.TryParse(m.Groups[3].Value, out var result8) && receiver == Hero.MainHero && giver != Hero.MainHero)
+				string value4 = m.Groups[1].Value;
+				if (int.TryParse(m.Groups[2].Value, out var result8) && int.TryParse(m.Groups[3].Value, out var result9) && receiver == Hero.MainHero && giver != Hero.MainHero)
 				{
-					ApplyItemDebtLlmPenaltyById(giver, value3, result7, result8, out var statusText);
+					ApplyItemDebtLlmPenaltyById(giver, value4, result8, result9, out var statusText);
 					if (!string.IsNullOrWhiteSpace(statusText))
 					{
 						anyDebtMetaApplied = true;
@@ -4110,22 +4325,22 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			});
 			responseText = regex16.Replace(responseText, delegate(Match m)
 			{
-				string value3 = m.Groups[1].Value;
-				if (int.TryParse(m.Groups[2].Value, out var result7) && receiver == Hero.MainHero && giver != Hero.MainHero)
+				string value4 = m.Groups[1].Value;
+				if (int.TryParse(m.Groups[2].Value, out var result8) && receiver == Hero.MainHero && giver != Hero.MainHero)
 				{
-					string text = (value3 ?? "").Trim();
-					if (!string.IsNullOrWhiteSpace(text) && !settledDebtIdsThisRound.Add(text))
+					string text3 = (value4 ?? "").Trim();
+					if (!string.IsNullOrWhiteSpace(text3) && !settledDebtIdsThisRound.Add(text3))
 					{
-						Logger.Log("Logic", "[Reward] 跳过重复还款标签: debtId=" + text + " tag=DEBT_PAY(legacy)");
+						Logger.Log("Logic", "[Reward] 跳过重复还款标签: debtId=" + text3 + " tag=DEBT_PAY(legacy)");
 						return string.Empty;
 					}
 					string statusText;
-					bool flag2 = RegisterPlayerGoldPaymentByDebtId(giver, value3, result7, out statusText);
+					bool flag2 = RegisterPlayerGoldPaymentByDebtId(giver, value4, result8, out statusText);
 					if (!string.IsNullOrWhiteSpace(statusText))
 					{
 						anyDebtPaymentApplied = true;
-						giverFacts.Add($"你确认收到玩家对债务ID {value3} 的还款 {result7}。{statusText}");
-						receiverFacts.Add("你尝试偿还债务ID " + value3 + "：" + statusText);
+						giverFacts.Add($"你确认收到玩家对债务ID {value4} 的还款 {result8}。{statusText}");
+						receiverFacts.Add("你尝试偿还债务ID " + value4 + "：" + statusText);
 						if (statusText.IndexOf("必须使用 [ACTION:DEBT_PAY_ITEM", StringComparison.OrdinalIgnoreCase) >= 0)
 						{
 							InformationManager.DisplayMessage(new InformationMessage("【还款失败】该债务是物品债，请使用 [ACTION:DEBT_PAY_ITEM:债务ID:物品ID:数量]。", Color.FromUint(4294923605u)));
@@ -4136,7 +4351,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 						}
 						else
 						{
-							InformationManager.DisplayMessage(new InformationMessage($"【还款确认】已偿还债务ID {value3}：{result7}", Color.FromUint(4278242559u)));
+							InformationManager.DisplayMessage(new InformationMessage($"【还款确认】已偿还债务ID {value4}：{result8}", Color.FromUint(4278242559u)));
 						}
 					}
 				}
@@ -4203,7 +4418,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				}
 				return string.Empty;
 			});
-			responseText = regex20.Replace(responseText, delegate(Match m)
+			responseText = regex20.Replace(responseText, delegate
 			{
 				if (receiver == Hero.MainHero && giver != Hero.MainHero)
 				{
@@ -4222,32 +4437,31 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				}
 				return string.Empty;
 			});
-			bool flag3 = giver != Hero.MainHero && receiver == Hero.MainHero && anyActualGiveToPlayer && !anyDebtRecorded && !anyDebtPaymentApplied && !anyDebtMetaApplied;
-			if (flag3)
+			if (giver != Hero.MainHero && receiver == Hero.MainHero && anyActualGiveToPlayer && !anyDebtRecorded && !anyDebtPaymentApplied && !anyDebtMetaApplied)
 			{
-				if (llmTradeTrustDelta.HasValue)
+				if (num2.HasValue)
 				{
-					int value3 = llmTradeTrustDelta.Value;
+					int value3 = num2.Value;
 					if (value3 != 0)
 					{
-						int num2 = ComputeTradePublicTrustDelta(value3);
-						AdjustTrust(giver, value3, num2, "llm_clean_trade");
+						int num3 = ComputeTradePublicTrustDelta(value3);
+						AdjustTrust(giver, value3, num3, "llm_clean_trade");
 						if (value3 > 0)
 						{
-							string text = (num2 > 0) ? ("，公共信任提升 " + num2) : "";
+							string text = ((num3 > 0) ? ("，公共信任提升 " + num3) : "");
 							giverFacts.Add($"你根据这笔交易对玩家的个人信任提升了 {value3}{text}。");
 							receiverFacts.Add($"{giverName} 因这笔交易对你的个人信任提升了 {value3}{text}。");
 						}
 						else
 						{
-							string text2 = (num2 < 0) ? ("，公共信任下降 " + Math.Abs(num2)) : "";
+							string text2 = ((num3 < 0) ? ("，公共信任下降 " + Math.Abs(num3)) : "");
 							giverFacts.Add($"你因这笔交易对玩家的个人信任下降了 {Math.Abs(value3)}{text2}。");
 							receiverFacts.Add($"{giverName} 因这笔交易对你的个人信任下降了 {Math.Abs(value3)}{text2}。");
 						}
 					}
 				}
 			}
-			else if (llmTradeTrustDelta.HasValue)
+			else if (num2.HasValue)
 			{
 				Logger.Log("Logic", "[Reward] 警告: 检测到 [ACTION:TRADE_TRUST]，但本轮不满足即时交易信任结算条件，已忽略。");
 			}
@@ -4270,6 +4484,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			Logger.Metric("action.apply_reward_tags", ok: true, stopwatch.Elapsed.TotalMilliseconds);
 			if (giverFacts.Count > 0)
 			{
+				SetLastGeneratedNpcFactLines(new string[1] { "[NPC行为补充] " + giverName + ": " + string.Join(" ", giverFacts) });
 				MyBehavior.AppendExternalNpcFact(giver, string.Join(" ", giverFacts));
 			}
 			if (receiverFacts.Count > 0)
@@ -4286,6 +4501,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 		catch (Exception ex)
 		{
+			SetLastGeneratedNpcFactLines(null);
 			stopwatch.Stop();
 			Logger.Log("Logic", "[ERROR] ApplyRewardTags 异常: " + ex.ToString());
 			Logger.Obs("Action", "apply_reward_tags_error", new Dictionary<string, object>
@@ -4302,11 +4518,8 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 
 	public void ApplyMerchantRewardTags(CharacterObject giverCharacter, Hero receiver, ref string responseText)
 	{
-		if (giverCharacter == null || receiver == null || string.IsNullOrEmpty(responseText))
-		{
-			return;
-		}
-		if (!TryGetSettlementMerchantKind(giverCharacter, out var kind))
+		SetLastGeneratedNpcFactLines(null);
+		if (giverCharacter == null || receiver == null || string.IsNullOrEmpty(responseText) || !TryGetSettlementMerchantKind(giverCharacter, out var kind))
 		{
 			return;
 		}
@@ -4321,11 +4534,22 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		Regex regex2 = new Regex("\\[ACTION:GIVE_ITEM:([a-zA-Z0-9_]+):(\\d+)\\]", RegexOptions.IgnoreCase);
 		Regex regex3 = new Regex("\\[ACTION:TRADE_TRUST:(-?\\d+)\\]", RegexOptions.IgnoreCase);
 		Regex regex4 = new Regex("\\[ACTION:DEBT_[^\\]]+\\]", RegexOptions.IgnoreCase);
+		List<string> merchantFacts = new List<string>();
+		List<string> playerFacts = new List<string>();
 		responseText = regex.Replace(responseText, delegate(Match m)
 		{
 			if (int.TryParse(m.Groups[1].Value, out var result))
 			{
-				TransferGoldFromSettlement(currentSettlement, receiver, result, giverName);
+				int num = TransferGoldFromSettlement(currentSettlement, receiver, result, giverName);
+				if (num > 0)
+				{
+					merchantFacts.Add($"你已经将 {num} 第纳尔交给玩家。");
+					playerFacts.Add($"你从 {giverName} 收到了 {num} 第纳尔。");
+				}
+				else
+				{
+					merchantFacts.Add($"你试图交付 {result} 第纳尔，但当前商铺现钱不足，本轮未实际支付。");
+				}
 			}
 			return string.Empty;
 		});
@@ -4334,7 +4558,23 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			string value = m.Groups[1].Value;
 			if (int.TryParse(m.Groups[2].Value, out var result))
 			{
-				TransferItemFromSettlement(currentSettlement, receiver, value, result, giverName, out var _);
+				string itemName;
+				int num = TransferItemFromSettlement(currentSettlement, receiver, value, result, giverName, out itemName);
+				string text = ((!string.IsNullOrWhiteSpace(itemName)) ? itemName : (ResolveItemById(value)?.Name?.ToString() ?? value));
+				if (num > 0)
+				{
+					merchantFacts.Add($"你已经将 {num} 个 {text} 交给玩家。");
+					playerFacts.Add($"你从 {giverName} 收到了 {num} 个 {text}。");
+					if (num < result)
+					{
+						merchantFacts.Add($"你原本打算交付 {result} 个 {text}，但当前商铺库存不足，实际只交付了 {num} 个。");
+						playerFacts.Add($"{giverName} 原本打算交付 {result} 个 {text}，但实际只交付了 {num} 个。");
+					}
+				}
+				else
+				{
+					merchantFacts.Add($"你试图交付 {result} 个 {text}，但当前商铺库存不足，本轮未实际交货。");
+				}
 			}
 			return string.Empty;
 		});
@@ -4349,6 +4589,15 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			responseText = regex4.Replace(responseText, string.Empty);
 		}
 		responseText = responseText.Trim();
+		if (merchantFacts.Count > 0)
+		{
+			SetLastGeneratedNpcFactLines(new string[1] { "[NPC行为补充] " + giverName + ": " + string.Join(" ", merchantFacts) });
+			AppendSettlementMerchantNpcFact(currentSettlement, kind, string.Join(" ", merchantFacts), giverName);
+		}
+		if (playerFacts.Count > 0 && receiver == Hero.MainHero)
+		{
+			MyBehavior.AppendExternalPlayerFact(receiver, string.Join(" ", playerFacts));
+		}
 	}
 
 	internal int TransferGold(Hero giver, Hero receiver, int amount)
@@ -4397,7 +4646,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		receiver.ChangeHeroGold(num);
 		if (receiver == Hero.MainHero)
 		{
-			string arg = string.IsNullOrWhiteSpace(giverName) ? (settlement.Name?.ToString() ?? "这座城镇的商人") : giverName;
+			string arg = ((!string.IsNullOrWhiteSpace(giverName)) ? giverName : (settlement.Name?.ToString() ?? "这座城镇的商人"));
 			InformationManager.DisplayMessage(new InformationMessage($"{arg} 给了你 {num} 第纳尔。"));
 		}
 		return num;
@@ -4463,7 +4712,8 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			EquipmentIndex.Weapon1
 		};
 		EquipmentIndex[] array2 = array;
-		foreach (EquipmentIndex equipmentIndex in array2)
+		EquipmentIndex[] array3 = array2;
+		foreach (EquipmentIndex equipmentIndex in array3)
 		{
 			ItemObject item2 = giver.BattleEquipment[equipmentIndex].Item;
 			if (item2 != null && string.Equals(item2.StringId ?? "", itemStringId, StringComparison.OrdinalIgnoreCase))
@@ -4580,7 +4830,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		itemName = itemObject.Name?.ToString() ?? itemStringId;
 		if (receiver == Hero.MainHero)
 		{
-			string arg = string.IsNullOrWhiteSpace(giverName) ? (settlement.Name?.ToString() ?? "这座城镇的商人") : giverName;
+			string arg = ((!string.IsNullOrWhiteSpace(giverName)) ? giverName : (settlement.Name?.ToString() ?? "这座城镇的商人"));
 			InformationManager.DisplayMessage(new InformationMessage($"{arg} 给了你 {num2} 个 {itemName}。"));
 		}
 		return num2;

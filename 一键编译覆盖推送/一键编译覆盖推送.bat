@@ -71,6 +71,31 @@ if errorlevel 1 (
     exit /b 1
 )
 
+cd /d "%PROJECT_ROOT%"
+git rev-parse --is-inside-work-tree >nul 2>nul
+if errorlevel 1 (
+    echo [ERROR] Not a git repository:
+    echo "%PROJECT_ROOT%"
+    pause
+    exit /b 1
+)
+
+for /f "delims=" %%B in ('git branch --show-current') do set "BRANCH=%%B"
+if not defined BRANCH (
+    echo [ERROR] Cannot determine current branch.
+    pause
+    exit /b 1
+)
+
+for /f "delims=" %%U in ('git remote get-url origin 2^>nul') do set "ORIGIN_URL=%%U"
+if not defined ORIGIN_URL (
+    echo [ERROR] Remote 'origin' not found.
+    pause
+    exit /b 1
+)
+
+cd /d "%SCRIPT_DIR%"
+
 if not exist "%BANNERLORD_ROOT%" (
     echo [ERROR] Bannerlord root not found:
     echo "%BANNERLORD_ROOT%"
@@ -121,30 +146,8 @@ echo.
 echo [3/3] Push to GitHub...
 cd /d "%PROJECT_ROOT%"
 
-git rev-parse --is-inside-work-tree >nul 2>nul
-if errorlevel 1 (
-    echo [ERROR] Not a git repository:
-    echo "%PROJECT_ROOT%"
-    pause
-    exit /b 1
-)
-
-for /f "delims=" %%B in ('git branch --show-current') do set "BRANCH=%%B"
-if not defined BRANCH (
-    echo [ERROR] Cannot determine current branch.
-    pause
-    exit /b 1
-)
-
-for /f "delims=" %%U in ('git remote get-url origin 2^>nul') do set "ORIGIN_URL=%%U"
-if not defined ORIGIN_URL (
-    echo [ERROR] Remote 'origin' not found.
-    pause
-    exit /b 1
-)
-
 if not defined COMMIT_MSG (
-    set /p "INPUT_MSG=请输入本次推送备注（可留空）: "
+    set /p "INPUT_MSG=Enter commit note (optional): "
     if defined INPUT_MSG set "COMMIT_MSG=!INPUT_MSG!"
 )
 
