@@ -98,6 +98,13 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		public int HitCount;
 	}
 
+	private sealed class WeightedKnowledgeInput
+	{
+		public string Text;
+
+		public float Weight = 1f;
+	}
+
 	public class RuleIndexItem
 	{
 		public string Id;
@@ -1489,12 +1496,83 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		return list;
 	}
 
-	private List<LoreRule> MergeVectorRulesAcrossIntents(List<string> intentInputs, int topK)
+	private static List<WeightedKnowledgeInput> BuildKnowledgeQueryInputs(string input, string secondaryInput, float secondaryWeight = 0.6f)
+	{
+		List<WeightedKnowledgeInput> list = new List<WeightedKnowledgeInput>();
+		Dictionary<string, float> dictionary = new Dictionary<string, float>(StringComparer.OrdinalIgnoreCase);
+		try
+		{
+			appendInputs(SplitKnowledgeIntents(input), 1f);
+			string text = (secondaryInput ?? "").Trim();
+			if (!string.IsNullOrWhiteSpace(text) && !string.Equals(text, (input ?? "").Trim(), StringComparison.OrdinalIgnoreCase))
+			{
+				appendInputs(SplitKnowledgeIntents(text), secondaryWeight);
+			}
+			foreach (KeyValuePair<string, float> item in dictionary.OrderByDescending((KeyValuePair<string, float> x) => x.Value).ThenBy((KeyValuePair<string, float> x) => x.Key, StringComparer.OrdinalIgnoreCase))
+			{
+				list.Add(new WeightedKnowledgeInput
+				{
+					Text = item.Key,
+					Weight = item.Value
+				});
+			}
+		}
+		catch
+		{
+		}
+		return list;
+
+		void appendInputs(List<string> intents, float baseWeight)
+		{
+			if (intents == null || intents.Count <= 0 || baseWeight <= 0f)
+			{
+				return;
+			}
+			for (int i = 0; i < intents.Count; i++)
+			{
+				string text2 = (intents[i] ?? "").Trim();
+				if (!string.IsNullOrWhiteSpace(text2))
+				{
+					float num = ((i == 0) ? baseWeight : (baseWeight * 0.92f));
+					if (dictionary.TryGetValue(text2, out var value))
+					{
+						if (num > value)
+						{
+							dictionary[text2] = num;
+						}
+					}
+					else
+					{
+						dictionary[text2] = num;
+					}
+				}
+			}
+		}
+	}
+
+	private static string BuildKnowledgeHitRateDetail(string detail, string secondaryInput)
+	{
+		string text = (detail ?? "").Trim();
+		string text2 = (secondaryInput ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
+		string text3 = string.IsNullOrWhiteSpace(text2) ? "off" : "on";
+		if (text2.Length > 72)
+		{
+			text2 = text2.Substring(0, 72);
+		}
+		string value = $"npcRecall={text3} secondaryLen={(string.IsNullOrWhiteSpace(text2) ? 0 : text2.Length)}";
+		if (!string.IsNullOrWhiteSpace(text2))
+		{
+			value = value + " secondaryPreview=" + JsonConvert.ToString(text2);
+		}
+		return string.IsNullOrWhiteSpace(text) ? value : (text + " " + value);
+	}
+
+	private List<LoreRule> MergeVectorRulesAcrossIntents(List<WeightedKnowledgeInput> intentInputs, int topK)
 	{
 		List<LoreRule> result = new List<LoreRule>();
 		try
 		{
-			List<string> list = (intentInputs ?? new List<string>()).Where((string x) => !string.IsNullOrWhiteSpace(x)).ToList();
+			List<WeightedKnowledgeInput> list = (intentInputs ?? new List<WeightedKnowledgeInput>()).Where((WeightedKnowledgeInput x) => x != null && !string.IsNullOrWhiteSpace(x.Text) && x.Weight > 0f).ToList();
 			if (list.Count <= 0)
 			{
 				return result;
@@ -1502,7 +1580,8 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			Dictionary<LoreRule, RuleAggregate> dictionary = new Dictionary<LoreRule, RuleAggregate>();
 			for (int num = 0; num < list.Count; num++)
 			{
-				string input = list[num];
+				WeightedKnowledgeInput weightedKnowledgeInput = list[num];
+				string input = weightedKnowledgeInput.Text;
 				List<LoreRule> list2 = FindVectorCandidateRules(input, topK);
 				if (list2 == null || list2.Count <= 0)
 				{
@@ -1516,7 +1595,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 						continue;
 					}
 					float num3 = 1f / ((float)num2 + 1f);
-					float num4 = ((num == 0) ? 1f : 0.92f);
+					float num4 = weightedKnowledgeInput.Weight;
 					float num5 = num3 * num4;
 					if (!dictionary.TryGetValue(loreRule, out var value))
 					{
@@ -1557,17 +1636,17 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		return result;
 	}
 
-	private CandidateRules CollectCandidateRules(string input)
+	private CandidateRules CollectCandidateRules(string input, string secondaryInput = null)
 	{
 		CandidateRules result = new CandidateRules();
 		try
 		{
-			List<string> intentInputs = SplitKnowledgeIntents(input);
+			List<WeightedKnowledgeInput> intentInputs = BuildKnowledgeQueryInputs(input, secondaryInput);
 			if (intentInputs.Count > 1)
 			{
 				try
 				{
-					Logger.Log("LoreMatch", string.Format("intent_split count={0} intents={1}", intentInputs.Count, string.Join(" || ", intentInputs)));
+					Logger.Log("LoreMatch", string.Format("intent_split count={0} intents={1}", intentInputs.Count, string.Join(" || ", intentInputs.Select((WeightedKnowledgeInput x) => $"{x.Text}@{x.Weight:0.00}"))));
 				}
 				catch
 				{
@@ -2080,7 +2159,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		}
 	}
 
-	public string BuildLoreContext(string inputText, Hero npcHero)
+	public string BuildLoreContext(string inputText, Hero npcHero, string secondaryInput = null)
 	{
 		string text = (inputText ?? "").Trim();
 		if (string.IsNullOrEmpty(text))
@@ -2092,7 +2171,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			LogLoreContextTrace("hero", "", "", "neutral", "", "commoner", isFemale: false, isClanLeader: false, "", text, invalidContext: true);
 			try
 			{
-				Logger.RecordHitRate("knowledge", "__query__", hit: false, $"reason=invalid_context source=hero inputLen={text.Length}", text);
+				Logger.RecordHitRate("knowledge", "__query__", hit: false, BuildKnowledgeHitRateDetail($"reason=invalid_context source=hero inputLen={text.Length}", secondaryInput), text);
 			}
 			catch
 			{
@@ -2172,7 +2251,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			LogLoreMissOnce("rules_empty", text, num, text2, text3, text4, text5);
 			try
 			{
-				Logger.RecordHitRate("knowledge", "__query__", hit: false, $"reason=rules_empty rules={num} inputLen={text.Length} mode=none", text);
+				Logger.RecordHitRate("knowledge", "__query__", hit: false, BuildKnowledgeHitRateDetail($"reason=rules_empty rules={num} inputLen={text.Length} mode=none", secondaryInput), text);
 			}
 			catch
 			{
@@ -2183,7 +2262,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		int num2 = 0;
 		int loreInjectLimit = GetLoreInjectLimit();
 		StringBuilder stringBuilder = new StringBuilder();
-		CandidateRules candidateRules = CollectCandidateRules(text);
+		CandidateRules candidateRules = CollectCandidateRules(text, secondaryInput);
 		string text8 = candidateRules?.MatchMode ?? "none";
 		List<LoreRule> list = candidateRules?.OrderedRules;
 		if (list == null || list.Count == 0)
@@ -2192,7 +2271,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			PutLoreContextCache(key, ruleDataVersion, "");
 			try
 			{
-				Logger.RecordHitRate("knowledge", "__query__", hit: false, $"reason=rule_miss rules={num} inputLen={text.Length} mode={text8}", text);
+				Logger.RecordHitRate("knowledge", "__query__", hit: false, BuildKnowledgeHitRateDetail($"reason=rule_miss rules={num} inputLen={text.Length} mode={text8}", secondaryInput), text);
 			}
 			catch
 			{
@@ -2237,7 +2316,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 				}
 				try
 				{
-					Logger.RecordHitRate("knowledge", item.Id ?? "__unknown__", hit: false, "reason=variant_miss mode=" + text8, text);
+					Logger.RecordHitRate("knowledge", item.Id ?? "__unknown__", hit: false, BuildKnowledgeHitRateDetail("reason=variant_miss mode=" + text8, secondaryInput), text);
 				}
 				catch
 				{
@@ -2256,7 +2335,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 				}
 				try
 				{
-					Logger.RecordHitRate("knowledge", item.Id ?? "__unknown__", hit: false, "reason=content_empty mode=" + text8, text);
+					Logger.RecordHitRate("knowledge", item.Id ?? "__unknown__", hit: false, BuildKnowledgeHitRateDetail("reason=content_empty mode=" + text8, secondaryInput), text);
 				}
 				catch
 				{
@@ -2272,7 +2351,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			}
 			try
 			{
-				Logger.RecordHitRate("knowledge", item.Id ?? "__unknown__", hit: true, "reason=variant_hit mode=" + text8, text);
+				Logger.RecordHitRate("knowledge", item.Id ?? "__unknown__", hit: true, BuildKnowledgeHitRateDetail("reason=variant_hit mode=" + text8, secondaryInput), text);
 			}
 			catch
 			{
@@ -2294,7 +2373,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			LogLoreMissOnce("variant_or_content_miss", text, num, text2, text3, text4, text5);
 			try
 			{
-				Logger.RecordHitRate("knowledge", "__query__", hit: false, $"reason=variant_or_content_miss candidates={list?.Count ?? 0} mode={text8} inputLen={text.Length}", text);
+				Logger.RecordHitRate("knowledge", "__query__", hit: false, BuildKnowledgeHitRateDetail($"reason=variant_or_content_miss candidates={list?.Count ?? 0} mode={text8} inputLen={text.Length}", secondaryInput), text);
 			}
 			catch
 			{
@@ -2304,7 +2383,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		{
 			try
 			{
-				Logger.RecordHitRate("knowledge", "__query__", hit: true, $"reason=ok matched={num2} candidates={list?.Count ?? 0} mode={text8} inputLen={text.Length}", text);
+				Logger.RecordHitRate("knowledge", "__query__", hit: true, BuildKnowledgeHitRateDetail($"reason=ok matched={num2} candidates={list?.Count ?? 0} mode={text8} inputLen={text.Length}", secondaryInput), text);
 			}
 			catch
 			{
@@ -2327,7 +2406,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		};
 	}
 
-	public string BuildLoreContext(string inputText, CharacterObject npcCharacter, string kingdomIdOverride = null)
+	public string BuildLoreContext(string inputText, CharacterObject npcCharacter, string kingdomIdOverride = null, string secondaryInput = null)
 	{
 		string text = (inputText ?? "").Trim();
 		if (string.IsNullOrEmpty(text))
@@ -2350,7 +2429,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			LogLoreContextTrace("character", "", "", "neutral", "", "commoner", isFemale: false, isClanLeader: false, kingdomIdOverride, text, invalidContext: true);
 			try
 			{
-				Logger.RecordHitRate("knowledge", "__query__", hit: false, $"reason=invalid_context source=character inputLen={text.Length}", text);
+				Logger.RecordHitRate("knowledge", "__query__", hit: false, BuildKnowledgeHitRateDetail($"reason=invalid_context source=character inputLen={text.Length}", secondaryInput), text);
 			}
 			catch
 			{
@@ -2469,7 +2548,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			LogLoreMissOnce("rules_empty", text, num, text2, text3, text4, text5);
 			try
 			{
-				Logger.RecordHitRate("knowledge", "__query__", hit: false, $"reason=rules_empty rules={num} inputLen={text.Length} mode=none", text);
+				Logger.RecordHitRate("knowledge", "__query__", hit: false, BuildKnowledgeHitRateDetail($"reason=rules_empty rules={num} inputLen={text.Length} mode=none", secondaryInput), text);
 			}
 			catch
 			{
@@ -2480,7 +2559,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		int num2 = 0;
 		int loreInjectLimit = GetLoreInjectLimit();
 		StringBuilder stringBuilder = new StringBuilder();
-		CandidateRules candidateRules = CollectCandidateRules(text);
+		CandidateRules candidateRules = CollectCandidateRules(text, secondaryInput);
 		string text8 = candidateRules?.MatchMode ?? "none";
 		List<LoreRule> list = candidateRules?.OrderedRules;
 		if (list == null || list.Count == 0)
@@ -2489,7 +2568,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			PutLoreContextCache(key, ruleDataVersion, "");
 			try
 			{
-				Logger.RecordHitRate("knowledge", "__query__", hit: false, $"reason=rule_miss rules={num} inputLen={text.Length} mode={text8}", text);
+				Logger.RecordHitRate("knowledge", "__query__", hit: false, BuildKnowledgeHitRateDetail($"reason=rule_miss rules={num} inputLen={text.Length} mode={text8}", secondaryInput), text);
 			}
 			catch
 			{
@@ -2534,7 +2613,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 				}
 				try
 				{
-					Logger.RecordHitRate("knowledge", item.Id ?? "__unknown__", hit: false, "reason=variant_miss mode=" + text8, text);
+					Logger.RecordHitRate("knowledge", item.Id ?? "__unknown__", hit: false, BuildKnowledgeHitRateDetail("reason=variant_miss mode=" + text8, secondaryInput), text);
 				}
 				catch
 				{
@@ -2553,7 +2632,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 				}
 				try
 				{
-					Logger.RecordHitRate("knowledge", item.Id ?? "__unknown__", hit: false, "reason=content_empty mode=" + text8, text);
+					Logger.RecordHitRate("knowledge", item.Id ?? "__unknown__", hit: false, BuildKnowledgeHitRateDetail("reason=content_empty mode=" + text8, secondaryInput), text);
 				}
 				catch
 				{
@@ -2569,7 +2648,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			}
 			try
 			{
-				Logger.RecordHitRate("knowledge", item.Id ?? "__unknown__", hit: true, "reason=variant_hit mode=" + text8, text);
+				Logger.RecordHitRate("knowledge", item.Id ?? "__unknown__", hit: true, BuildKnowledgeHitRateDetail("reason=variant_hit mode=" + text8, secondaryInput), text);
 			}
 			catch
 			{
@@ -2591,7 +2670,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			LogLoreMissOnce("variant_or_content_miss", text, num, text2, text3, text4, text5);
 			try
 			{
-				Logger.RecordHitRate("knowledge", "__query__", hit: false, $"reason=variant_or_content_miss candidates={list?.Count ?? 0} mode={text8} inputLen={text.Length}", text);
+				Logger.RecordHitRate("knowledge", "__query__", hit: false, BuildKnowledgeHitRateDetail($"reason=variant_or_content_miss candidates={list?.Count ?? 0} mode={text8} inputLen={text.Length}", secondaryInput), text);
 			}
 			catch
 			{
@@ -2601,7 +2680,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		{
 			try
 			{
-				Logger.RecordHitRate("knowledge", "__query__", hit: true, $"reason=ok matched={num2} candidates={list?.Count ?? 0} mode={text8} inputLen={text.Length}", text);
+				Logger.RecordHitRate("knowledge", "__query__", hit: true, BuildKnowledgeHitRateDetail($"reason=ok matched={num2} candidates={list?.Count ?? 0} mode={text8} inputLen={text.Length}", secondaryInput), text);
 			}
 			catch
 			{

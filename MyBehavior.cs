@@ -243,53 +243,7 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private List<TradeResourceOption> _currentTradeOptions = new List<TradeResourceOption>();
 
-	private bool _isRewardSessionActive;
-
-	private string _rewardSessionHeroId;
-
-	private int _rewardSessionNoKeywordRounds;
-
-	private bool _rewardSessionFromDuel;
-
-	private bool _rewardSessionPlayerWonLastDuel;
-
-	private bool _isKingdomServiceRuleSessionActive;
-
-	private string _kingdomServiceRuleHeroId;
-
-	private int _kingdomServiceRuleNoHitRounds;
-
-	private string _kingdomServiceRuleCachedBlock;
-
-	private bool _isMarriageRuleSessionActive;
-
-	private string _marriageRuleHeroId;
-
-	private int _marriageRuleNoHitRounds;
-
-	private string _marriageRuleCachedBlock;
-
-	private bool _isLordsHallAccessRuleSessionActive;
-
-	private string _lordsHallAccessRuleTargetKey;
-
-	private int _lordsHallAccessRuleNoHitRounds;
-
-	private string _lordsHallAccessRuleCachedBlock;
-
-	private bool _isDuelSessionActive;
-
-	private string _duelSessionHeroId;
-
-	private int _duelSessionNoKeywordRounds;
-
 	private bool _nextDuelRiskWarningByLiteral = true;
-
-	private bool _isLoanSessionActive;
-
-	private string _loanSessionHeroId;
-
-	private int _loanSessionNoKeywordRounds;
 
 	private string _confirmCarryHeroId;
 
@@ -308,10 +262,6 @@ public class MyBehavior : CampaignBehaviorBase
 	private long _suppressAutoClickUntilUtcTicks;
 
 	private bool _overlayQuickTalkDisableHooked;
-
-	private const int KingdomServiceRuleStickyRounds = 2;
-
-	private const int LordsHallAccessRuleStickyRounds = 3;
 
 	private const int MaxDialogueHistoryLines = 260;
 
@@ -4237,6 +4187,7 @@ public class MyBehavior : CampaignBehaviorBase
 					catch
 					{
 					}
+					string npcLastUtterance = GetLatestNpcDialogueUtterance(targetHero, targetCharacter);
 					List<string> triggerKeywords = AIConfigHandler.DuelTriggerKeywords;
 					string matchedKeyword;
 					bool duelLiteralHit = ContainsLiteralKeywordHit(input, triggerKeywords, out matchedKeyword);
@@ -4246,48 +4197,16 @@ public class MyBehavior : CampaignBehaviorBase
 					float duelHitScore = 0f;
 					if (!patienceExhausted)
 					{
-						isTriggerWordDetected = AIConfigHandler.IsGuardrailSemanticHit(input, "duel", AIConfigHandler.DuelInstruction, triggerKeywords, out duelHitKeyword, out duelHitScore);
+						isTriggerWordDetected = AIConfigHandler.IsGuardrailSemanticHit(input, npcLastUtterance, "duel", AIConfigHandler.DuelInstruction, triggerKeywords, out duelHitKeyword, out duelHitScore);
 					}
 					bool useDuelContext = isTriggerWordDetected;
-					if (targetHero != null)
-					{
-						string heroIdForDuel = targetHero.StringId;
-						if (isTriggerWordDetected)
-						{
-							_isDuelSessionActive = true;
-							_duelSessionHeroId = heroIdForDuel;
-							_duelSessionNoKeywordRounds = 0;
-						}
-						else if (_isDuelSessionActive && _duelSessionHeroId == heroIdForDuel)
-						{
-							_duelSessionNoKeywordRounds++;
-							if (_duelSessionNoKeywordRounds >= 2)
-							{
-								_isDuelSessionActive = false;
-								_duelSessionHeroId = null;
-								_duelSessionNoKeywordRounds = 0;
-								useDuelContext = false;
-								Logger.Log("Logic", "[Duel] 连续 1 轮未命中，结束决斗规则延续。");
-							}
-							else
-							{
-								useDuelContext = true;
-							}
-						}
-						else if (_isDuelSessionActive && _duelSessionHeroId != heroIdForDuel)
-						{
-							_isDuelSessionActive = false;
-							_duelSessionHeroId = null;
-							_duelSessionNoKeywordRounds = 0;
-						}
-					}
 					List<string> rewardKeywords = AIConfigHandler.RewardTriggerKeywords;
 					bool isRewardContext = false;
 					string rewardHitKeyword = "";
 					float rewardHitScore = 0f;
 					if (!patienceExhausted && AIConfigHandler.RewardEnabled)
 					{
-						isRewardContext = AIConfigHandler.IsGuardrailSemanticHit(input, "reward", AIConfigHandler.RewardInstruction, rewardKeywords, out rewardHitKeyword, out rewardHitScore);
+						isRewardContext = AIConfigHandler.IsGuardrailSemanticHit(input, npcLastUtterance, "reward", AIConfigHandler.RewardInstruction, rewardKeywords, out rewardHitKeyword, out rewardHitScore);
 					}
 					List<string> loanKeywords = AIConfigHandler.LoanTriggerKeywords;
 					bool isLoanContext = false;
@@ -4295,7 +4214,7 @@ public class MyBehavior : CampaignBehaviorBase
 					float loanHitScore = 0f;
 					if (!patienceExhausted && AIConfigHandler.LoanEnabled)
 					{
-						isLoanContext = AIConfigHandler.IsGuardrailSemanticHit(input, "loan", AIConfigHandler.LoanInstruction, loanKeywords, out loanHitKeyword, out loanHitScore);
+						isLoanContext = AIConfigHandler.IsGuardrailSemanticHit(input, npcLastUtterance, "loan", AIConfigHandler.LoanInstruction, loanKeywords, out loanHitKeyword, out loanHitScore);
 					}
 					List<string> surroundingsKeywords = AIConfigHandler.SurroundingsTriggerKeywords;
 					bool isSurroundingsContext = false;
@@ -4303,90 +4222,23 @@ public class MyBehavior : CampaignBehaviorBase
 					float surroundingsHitScore = 0f;
 					if (!patienceExhausted && AIConfigHandler.SurroundingsEnabled)
 					{
-						isSurroundingsContext = AIConfigHandler.IsGuardrailSemanticHit(input, "surroundings", AIConfigHandler.SurroundingsInstruction, surroundingsKeywords, out surroundingsHitKeyword, out surroundingsHitScore);
+						isSurroundingsContext = AIConfigHandler.IsGuardrailSemanticHit(input, npcLastUtterance, "surroundings", AIConfigHandler.SurroundingsInstruction, surroundingsKeywords, out surroundingsHitKeyword, out surroundingsHitScore);
 					}
 					bool isKingdomServiceHit = false;
 					string kingdomServiceHitKeyword = "";
 					float kingdomServiceHitScore = 0f;
 					if (!patienceExhausted)
 					{
-						isKingdomServiceHit = AIConfigHandler.IsGuardrailSemanticHit(ruleInstruction: AIConfigHandler.GetGuardrailRuleInstruction("kingdom_service"), triggerKeywords: AIConfigHandler.GetGuardrailRuleKeywords("kingdom_service"), input: input, ruleTag: "kingdom_service", matchedKeyword: out kingdomServiceHitKeyword, score: out kingdomServiceHitScore);
+						isKingdomServiceHit = AIConfigHandler.IsGuardrailSemanticHit(input, npcLastUtterance, "kingdom_service", AIConfigHandler.GetGuardrailRuleInstruction("kingdom_service"), AIConfigHandler.GetGuardrailRuleKeywords("kingdom_service"), out kingdomServiceHitKeyword, out kingdomServiceHitScore);
 					}
 					bool isMarriageHit = false;
 					string marriageHitKeyword = "";
 					float marriageHitScore = 0f;
 					if (!patienceExhausted)
 					{
-						isMarriageHit = AIConfigHandler.IsGuardrailSemanticHit(ruleInstruction: AIConfigHandler.GetGuardrailRuleInstruction("marriage"), triggerKeywords: AIConfigHandler.GetGuardrailRuleKeywords("marriage"), input: input, ruleTag: "marriage", matchedKeyword: out marriageHitKeyword, score: out marriageHitScore);
+						isMarriageHit = AIConfigHandler.IsGuardrailSemanticHit(input, npcLastUtterance, "marriage", AIConfigHandler.GetGuardrailRuleInstruction("marriage"), AIConfigHandler.GetGuardrailRuleKeywords("marriage"), out marriageHitKeyword, out marriageHitScore);
 					}
 					bool useRewardContext = isRewardContext;
-					if (AIConfigHandler.RewardEnabled && targetHero != null)
-					{
-						string heroId = targetHero.StringId;
-						if (isRewardContext)
-						{
-							_isRewardSessionActive = true;
-							_rewardSessionHeroId = heroId;
-							_rewardSessionNoKeywordRounds = 0;
-							_rewardSessionFromDuel = false;
-							_rewardSessionPlayerWonLastDuel = false;
-						}
-						else if (_isRewardSessionActive && _rewardSessionHeroId == heroId)
-						{
-							_rewardSessionNoKeywordRounds++;
-							if (_rewardSessionNoKeywordRounds >= 2)
-							{
-								_isRewardSessionActive = false;
-								_rewardSessionHeroId = null;
-								_rewardSessionNoKeywordRounds = 0;
-								_rewardSessionFromDuel = false;
-								_rewardSessionPlayerWonLastDuel = false;
-								Logger.Log("Logic", "[Trade] 连续 1 轮未命中，结束交易规则延续。");
-							}
-							else
-							{
-								useRewardContext = true;
-							}
-						}
-						else if (_isRewardSessionActive && _rewardSessionHeroId != heroId)
-						{
-							_isRewardSessionActive = false;
-							_rewardSessionHeroId = null;
-							_rewardSessionNoKeywordRounds = 0;
-							_rewardSessionFromDuel = false;
-							_rewardSessionPlayerWonLastDuel = false;
-						}
-					}
-					if (AIConfigHandler.LoanEnabled && targetHero != null)
-					{
-						string heroId2 = targetHero.StringId;
-						if (isLoanContext)
-						{
-							_isLoanSessionActive = true;
-							_loanSessionHeroId = heroId2;
-							_loanSessionNoKeywordRounds = 0;
-						}
-						else if (_isLoanSessionActive && _loanSessionHeroId == heroId2)
-						{
-							_loanSessionNoKeywordRounds++;
-							if (_loanSessionNoKeywordRounds >= 2)
-							{
-								_isLoanSessionActive = false;
-								_loanSessionHeroId = null;
-								_loanSessionNoKeywordRounds = 0;
-							}
-							else
-							{
-								isLoanContext = true;
-							}
-						}
-						else if (_isLoanSessionActive && _loanSessionHeroId != heroId2)
-						{
-							_isLoanSessionActive = false;
-							_loanSessionHeroId = null;
-							_loanSessionNoKeywordRounds = 0;
-						}
-					}
 					if (patienceExhausted)
 					{
 						useDuelContext = false;
@@ -4405,7 +4257,7 @@ public class MyBehavior : CampaignBehaviorBase
 					string surroundingsHits = (string.IsNullOrWhiteSpace(surroundingsHitKeyword) ? "" : $"{surroundingsHitKeyword}@{surroundingsHitScore:0.00}");
 					string kingdomServiceHits = (string.IsNullOrWhiteSpace(kingdomServiceHitKeyword) ? "" : $"{kingdomServiceHitKeyword}@{kingdomServiceHitScore:0.00}");
 					string marriageHits = (string.IsNullOrWhiteSpace(marriageHitKeyword) ? "" : $"{marriageHitKeyword}@{marriageHitScore:0.00}");
-					Logger.Log("Logic", $"[SemanticTrigger] DuelHit={isTriggerWordDetected} [{duelHits}] StickyDuel={_isDuelSessionActive} RewardHit={isRewardContext} [{rewardHits}] LoanHit={isLoanContext} [{loanHits}] StickyReward={_isRewardSessionActive} SurroundingsHit={isSurroundingsContext} [{surroundingsHits}] KingdomServiceHit={isKingdomServiceHit} [{kingdomServiceHits}] StickyKingdomService={_isKingdomServiceRuleSessionActive} MarriageHit={isMarriageHit} [{marriageHits}] StickyMarriage={_isMarriageRuleSessionActive} Input='{input}' NPC='{npcName}'");
+					Logger.Log("Logic", $"[SemanticTrigger] DuelHit={isTriggerWordDetected} [{duelHits}] RewardHit={isRewardContext} [{rewardHits}] LoanHit={isLoanContext} [{loanHits}] SurroundingsHit={isSurroundingsContext} [{surroundingsHits}] KingdomServiceHit={isKingdomServiceHit} [{kingdomServiceHits}] MarriageHit={isMarriageHit} [{marriageHits}] NpcRecall={(string.IsNullOrWhiteSpace(npcLastUtterance) ? "off" : "on")} Input='{input}' NPC='{npcName}'");
 					Logger.Obs("DirectChat", "keywords", new Dictionary<string, object>
 					{
 						["duelHit"] = isTriggerWordDetected,
@@ -4427,10 +4279,7 @@ public class MyBehavior : CampaignBehaviorBase
 						["marriageHitKeyword"] = marriageHitKeyword ?? "",
 						["marriageHitScore"] = Math.Round(marriageHitScore, 3),
 						["clarifyHint"] = (string.IsNullOrWhiteSpace(guardrailClarifyHint) ? "" : "on"),
-						["stickyDuel"] = _isDuelSessionActive,
-						["stickyReward"] = _isRewardSessionActive,
-						["stickyKingdomService"] = _isKingdomServiceRuleSessionActive,
-						["stickyMarriage"] = _isMarriageRuleSessionActive
+						["npcRecall"] = !string.IsNullOrWhiteSpace(npcLastUtterance)
 					});
 					StringBuilder sb = new StringBuilder();
 					Stopwatch swPromptBuild = Stopwatch.StartNew();
@@ -4511,22 +4360,30 @@ public class MyBehavior : CampaignBehaviorBase
 						if (!LordEncounterBehavior.IsEncounterMeetingMissionActive)
 						{
 							string nativeInfo = (ShoutUtils.GetNativeSettlementInfoForPrompt() ?? "").Replace("\r", "").Trim();
-							if (!string.IsNullOrWhiteSpace(nativeInfo))
+							string heroNpcLine = (ShoutUtils.BuildCurrentSettlementHeroNpcLineForPrompt() ?? "").Replace("\r", "").Trim();
+							if (!string.IsNullOrWhiteSpace(nativeInfo) && nativeInfo.Length > 700)
 							{
-								if (nativeInfo.Length > 700)
-								{
-									nativeInfo = nativeInfo.Substring(0, 700) + "…";
-								}
+								nativeInfo = nativeInfo.Substring(0, 700) + "…";
+							}
+							if (!string.IsNullOrWhiteSpace(nativeInfo) || !string.IsNullOrWhiteSpace(heroNpcLine))
+							{
 								sb.AppendLine(" ");
 								sb.AppendLine("【当前定居点（原版到达介绍）】：");
-								sb.AppendLine(nativeInfo);
+								if (!string.IsNullOrWhiteSpace(nativeInfo))
+								{
+									sb.AppendLine(nativeInfo);
+								}
+								if (!string.IsNullOrWhiteSpace(heroNpcLine))
+								{
+									sb.AppendLine(heroNpcLine);
+								}
 							}
 						}
 					}
 					catch
 					{
 					}
-					string loreContext = (targetHero != null) ? AIConfigHandler.GetLoreContext(input, targetHero) : AIConfigHandler.GetLoreContext(input, targetCharacter);
+					string loreContext = (targetHero != null) ? AIConfigHandler.GetLoreContext(input, targetHero, npcLastUtterance) : AIConfigHandler.GetLoreContext(input, targetCharacter, null, npcLastUtterance);
 					if (!string.IsNullOrEmpty(loreContext))
 					{
 						sb.AppendLine(loreContext);
@@ -4562,19 +4419,17 @@ public class MyBehavior : CampaignBehaviorBase
 					{
 						sb.AppendLine(patiencePrompt);
 					}
+					bool includeDuelStakeContext = false;
+					bool playerWonLastDuelForRule = false;
 					if (targetHero != null && DuelBehavior.TryConsumeLastDuelResult(targetHero, out var playerWonLastDuel))
 					{
+						includeDuelStakeContext = true;
+						playerWonLastDuelForRule = playerWonLastDuel;
 						if (playerWonLastDuel)
 						{
 							sb.AppendLine("【战斗结果】你刚刚在一场正式的决斗中输给了玩家。赌注应已在决斗结束瞬间自动结算；如果【玩家行为补充】中已经记录你已支付/仍欠款，请不要重复支付，只需确认或解释。");
 							if (AIConfigHandler.RewardEnabled && !AIConfigHandler.DuelStakeEnabled)
 							{
-								string heroId3 = targetHero.StringId;
-								_isRewardSessionActive = true;
-								_rewardSessionHeroId = heroId3;
-								_rewardSessionNoKeywordRounds = 0;
-								_rewardSessionFromDuel = true;
-								_rewardSessionPlayerWonLastDuel = true;
 								useRewardContext = true;
 							}
 						}
@@ -4583,12 +4438,6 @@ public class MyBehavior : CampaignBehaviorBase
 							sb.AppendLine("【战斗结果】你刚刚在一场正式的决斗中打败了玩家。赌注应已在决斗结束瞬间自动结算；如果【玩家行为补充】中已经记录玩家欠你多少，请不要重复记账，只需确认并催促履行。");
 							if (AIConfigHandler.RewardEnabled && !AIConfigHandler.DuelStakeEnabled)
 							{
-								string heroId4 = targetHero.StringId;
-								_isRewardSessionActive = true;
-								_rewardSessionHeroId = heroId4;
-								_rewardSessionNoKeywordRounds = 0;
-								_rewardSessionFromDuel = true;
-								_rewardSessionPlayerWonLastDuel = false;
 								useRewardContext = true;
 							}
 						}
@@ -4609,13 +4458,13 @@ public class MyBehavior : CampaignBehaviorBase
 					{
 						sb.AppendLine(guardrailClarifyHint);
 					}
-					string triggeredRuleInstructions = BuildTriggeredRuleInstructions(input, targetHero, useDuelContext, isQualified, playerTier, useRewardContext, isLoanContext, isSurroundingsContext, hasAnyHero: true, targetCharacter: targetCharacter);
+					string triggeredRuleInstructions = BuildTriggeredRuleInstructions(input, targetHero, useDuelContext, isQualified, playerTier, useRewardContext, isLoanContext, isSurroundingsContext, hasAnyHero: true, targetCharacter: targetCharacter, npcLastUtterance: npcLastUtterance, includeDuelStakeContext: includeDuelStakeContext, playerWonLastDuel: playerWonLastDuelForRule);
 					if (!string.IsNullOrWhiteSpace(triggeredRuleInstructions))
 					{
 						sb.AppendLine(triggeredRuleInstructions);
 					}
 					bool includeTradePricing = useRewardContext || isLoanContext || useDuelContext;
-					bool includeMarriageCandidates = targetHero != null && (isMarriageHit || (_isMarriageRuleSessionActive && _marriageRuleHeroId == targetHero.StringId));
+					bool includeMarriageCandidates = targetHero != null && isMarriageHit;
 					bool playerIdentityAlwaysOn = playerTier >= 2;
 					bool includePlayerRuleGatedFields = playerIdentityAlwaysOn;
 					string playerIdentityInfo = BuildPlayerIdentityInfoForPrompt(Hero.MainHero, includePlayerRuleGatedFields, includeTradePricing, includeMarriageCandidates, targetHero);
@@ -4740,10 +4589,6 @@ public class MyBehavior : CampaignBehaviorBase
 					string rawResult = result;
 					if (!patienceExhausted && AIConfigHandler.RewardEnabled && RewardSystemBehavior.Instance != null && targetHero != null)
 					{
-						if (!string.IsNullOrEmpty(rawResult) && (rawResult.IndexOf("[ACTION:GIVE_GOLD:", StringComparison.OrdinalIgnoreCase) >= 0 || rawResult.IndexOf("[ACTION:GIVE_ITEM:", StringComparison.OrdinalIgnoreCase) >= 0) && _isRewardSessionActive && _rewardSessionHeroId == (targetHero?.StringId ?? ""))
-						{
-							_rewardSessionNoKeywordRounds = 0;
-						}
 						RewardSystemBehavior.Instance.ApplyRewardTags(targetHero, Hero.MainHero, ref result);
 						RomanceSystemBehavior.Instance?.ApplyMarriageTags(targetHero, Hero.MainHero, ref result);
 					}
@@ -4885,7 +4730,7 @@ public class MyBehavior : CampaignBehaviorBase
 		try
 		{
 			Hero oneToOneConversationHero = Hero.OneToOneConversationHero;
-			if (oneToOneConversationHero != null && _isDuelSessionActive && _duelSessionHeroId == oneToOneConversationHero.StringId)
+			if (oneToOneConversationHero != null)
 			{
 				DuelBehavior.TryCacheDuelStakeFromText(oneToOneConversationHero, ref aiResponse);
 			}
@@ -4902,9 +4747,6 @@ public class MyBehavior : CampaignBehaviorBase
 				DuelBehavior.TryCacheDuelStakeFromText(oneToOneConversationHero2, ref aiResponse);
 			}
 			aiResponse = aiResponse.Replace("[ACTION:DUEL]", "").Trim();
-			_isDuelSessionActive = false;
-			_duelSessionHeroId = null;
-			_duelSessionNoKeywordRounds = 0;
 			if (isQualified && oneToOneConversationHero2 != null)
 			{
 				try
@@ -5084,6 +4926,53 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private string GetLatestNpcDialogueUtterance(Hero targetHero, CharacterObject targetCharacter = null, int targetAgentIndex = -1)
+	{
+		Hero hero = targetHero ?? targetCharacter?.HeroObject;
+		if (hero == null)
+		{
+			return GetLatestSceneNpcDialogueUtteranceFallback(targetAgentIndex);
+		}
+		try
+		{
+			List<DialogueDay> list = LoadDialogueHistory(hero);
+			if (list == null || list.Count == 0)
+			{
+				return GetLatestSceneNpcDialogueUtteranceFallback(targetAgentIndex);
+			}
+			for (int i = list.Count - 1; i >= 0; i--)
+			{
+				DialogueDay dialogueDay = list[i];
+				if (dialogueDay?.Lines == null || dialogueDay.Lines.Count <= 0)
+				{
+					continue;
+				}
+				for (int num = dialogueDay.Lines.Count - 1; num >= 0; num--)
+				{
+					string text = (dialogueDay.Lines[num] ?? "").Trim();
+					if (!string.IsNullOrWhiteSpace(text) && !IsLoreInjectionHistoryLine(text) && !IsSystemFactLine(text) && !IsPlayerTurnStartLine(text))
+					{
+						return StripSpeakerPrefixForRecall(text);
+					}
+				}
+			}
+		}
+		catch
+		{
+		}
+		return GetLatestSceneNpcDialogueUtteranceFallback(targetAgentIndex);
+	}
+
+	private static string GetLatestSceneNpcDialogueUtteranceFallback(int targetAgentIndex)
+	{
+		if (targetAgentIndex < 0)
+		{
+			return "";
+		}
+		string text = ShoutBehavior.GetLatestSceneNpcUtteranceForExternal(targetAgentIndex);
+		return string.IsNullOrWhiteSpace(text) ? "" : StripSpeakerPrefixForRecall(text);
+	}
+
 	public static string BuildHistoryContextForExternal(Hero hero, int maxLines = 20, string currentInput = null)
 	{
 		try
@@ -5241,57 +5130,6 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private void ResetKingdomServiceRuleSession()
-	{
-		_isKingdomServiceRuleSessionActive = false;
-		_kingdomServiceRuleHeroId = null;
-		_kingdomServiceRuleNoHitRounds = 0;
-		_kingdomServiceRuleCachedBlock = null;
-	}
-
-	private void ResetMarriageRuleSession()
-	{
-		_isMarriageRuleSessionActive = false;
-		_marriageRuleHeroId = null;
-		_marriageRuleNoHitRounds = 0;
-		_marriageRuleCachedBlock = null;
-	}
-
-	private void ResetLordsHallAccessRuleSession()
-	{
-		_isLordsHallAccessRuleSessionActive = false;
-		_lordsHallAccessRuleTargetKey = null;
-		_lordsHallAccessRuleNoHitRounds = 0;
-		_lordsHallAccessRuleCachedBlock = null;
-	}
-
-	private static bool TryExtractExtraRuleBlock(string allInstructions, string ruleId, out string block)
-	{
-		block = "";
-		try
-		{
-			string text = allInstructions ?? "";
-			string text2 = "【附加规则:" + (ruleId ?? "").Trim() + "】";
-			if (string.IsNullOrWhiteSpace(text) || string.IsNullOrWhiteSpace(text2))
-			{
-				return false;
-			}
-			int num = text.IndexOf(text2, StringComparison.OrdinalIgnoreCase);
-			if (num < 0)
-			{
-				return false;
-			}
-			int num2 = text.IndexOf("【附加规则:", num + text2.Length, StringComparison.OrdinalIgnoreCase);
-			block = ((num2 > num) ? text.Substring(num, num2 - num) : text.Substring(num)).Trim();
-			return !string.IsNullOrWhiteSpace(block);
-		}
-		catch
-		{
-			block = "";
-			return false;
-		}
-	}
-
 	private static string ResolveTargetKingdomIdForRules(Hero targetHero, CharacterObject targetCharacter, string kingdomIdOverride = null)
 	{
 		try
@@ -5352,21 +5190,20 @@ public class MyBehavior : CampaignBehaviorBase
 		return ResolveRuleTargetKey(targetHero, targetCharacter, targetAgentIndex);
 	}
 
-	private string BuildExtraRuleInstructionsWithSticky(string input, Hero targetHero, bool hasAnyHero = true, CharacterObject targetCharacter = null, string kingdomIdOverride = null, int targetAgentIndex = -1)
+	private string BuildExtraRuleInstructions(string input, string npcLastUtterance, Hero targetHero, bool hasAnyHero = true, CharacterObject targetCharacter = null, string kingdomIdOverride = null, int targetAgentIndex = -1)
 	{
 		string text = "";
-		string text2 = ResolveRuleTargetKey(targetHero, targetCharacter, targetAgentIndex);
 		string targetKingdomId = ResolveTargetKingdomIdForRules(targetHero, targetCharacter, kingdomIdOverride);
 		AIConfigHandler.SetGuardrailRuntimeTargetKingdom(targetKingdomId);
-		string text3 = targetHero?.StringId ?? targetCharacter?.HeroObject?.StringId ?? "";
-		AIConfigHandler.SetGuardrailRuntimeTargetHero(text3);
+		string text2 = targetHero?.StringId ?? targetCharacter?.HeroObject?.StringId ?? "";
+		AIConfigHandler.SetGuardrailRuntimeTargetHero(text2);
 		AIConfigHandler.SetGuardrailRuntimeTargetCharacter(targetCharacter?.StringId ?? "");
 		AIConfigHandler.SetGuardrailRuntimeTargetTroop(targetCharacter?.StringId ?? "");
 		AIConfigHandler.SetGuardrailRuntimeTargetUnnamedRank((targetHero == null && targetCharacter != null) ? (targetCharacter.IsSoldier ? "soldier" : "commoner") : "");
 		AIConfigHandler.SetGuardrailRuntimeTargetAgentIndex(targetAgentIndex);
 		try
 		{
-			text = AIConfigHandler.BuildMatchedExtraRuleInstructions(input, 4, hasAnyHero);
+			text = AIConfigHandler.BuildMatchedExtraRuleInstructions(input, npcLastUtterance, 4, hasAnyHero);
 		}
 		finally
 		{
@@ -5377,118 +5214,7 @@ public class MyBehavior : CampaignBehaviorBase
 			AIConfigHandler.SetGuardrailRuntimeTargetUnnamedRank("");
 			AIConfigHandler.SetGuardrailRuntimeTargetAgentIndex(-1);
 		}
-		if (string.IsNullOrWhiteSpace(text2))
-		{
-			ResetKingdomServiceRuleSession();
-			ResetMarriageRuleSession();
-			ResetLordsHallAccessRuleSession();
-			return text;
-		}
-		bool flag = TryExtractExtraRuleBlock(text, "kingdom_service", out var block);
-		if (flag)
-		{
-			_isKingdomServiceRuleSessionActive = true;
-			_kingdomServiceRuleHeroId = text3;
-			_kingdomServiceRuleNoHitRounds = 0;
-			_kingdomServiceRuleCachedBlock = block;
-		}
-		bool flag2 = TryExtractExtraRuleBlock(text, "marriage", out var block2);
-		if (flag2)
-		{
-			_isMarriageRuleSessionActive = true;
-			_marriageRuleHeroId = text3;
-			_marriageRuleNoHitRounds = 0;
-			_marriageRuleCachedBlock = block2;
-		}
-		bool flag3 = TryExtractExtraRuleBlock(text, "lords_hall_access", out var block3);
-		if (flag3)
-		{
-			_isLordsHallAccessRuleSessionActive = true;
-			_lordsHallAccessRuleTargetKey = text2;
-			_lordsHallAccessRuleNoHitRounds = 0;
-			_lordsHallAccessRuleCachedBlock = block3;
-		}
-		StringBuilder stringBuilder = new StringBuilder();
-		if (_isKingdomServiceRuleSessionActive && _kingdomServiceRuleHeroId == text3)
-		{
-			if (!flag)
-			{
-				_kingdomServiceRuleNoHitRounds++;
-				if (_kingdomServiceRuleNoHitRounds >= 2)
-				{
-					Logger.Log("Logic", $"[RuleSticky] kingdom_service 连续 {_kingdomServiceRuleNoHitRounds} 轮未命中，结束延续会话。");
-					ResetKingdomServiceRuleSession();
-				}
-				else if (!string.IsNullOrWhiteSpace(_kingdomServiceRuleCachedBlock) && (string.IsNullOrWhiteSpace(text) || text.IndexOf("【附加规则:kingdom_service】", StringComparison.OrdinalIgnoreCase) < 0))
-				{
-					if (stringBuilder.Length > 0)
-					{
-						stringBuilder.AppendLine();
-					}
-					stringBuilder.AppendLine(_kingdomServiceRuleCachedBlock);
-					stringBuilder.Append("【会话延续】你与玩家仍在讨论势力效力，本轮继续按该规则判断。");
-				}
-			}
-		}
-		else if (_isKingdomServiceRuleSessionActive && _kingdomServiceRuleHeroId != text3)
-		{
-			ResetKingdomServiceRuleSession();
-		}
-		if (_isMarriageRuleSessionActive && _marriageRuleHeroId == text3)
-		{
-			if (!flag2)
-			{
-				_marriageRuleNoHitRounds++;
-				if (_marriageRuleNoHitRounds >= 2)
-				{
-					Logger.Log("Logic", $"[RuleSticky] marriage 连续 {_marriageRuleNoHitRounds} 轮未命中，结束延续会话。");
-					ResetMarriageRuleSession();
-				}
-				else if (!string.IsNullOrWhiteSpace(_marriageRuleCachedBlock) && (string.IsNullOrWhiteSpace(text) || text.IndexOf("【附加规则:marriage】", StringComparison.OrdinalIgnoreCase) < 0))
-				{
-					if (stringBuilder.Length > 0)
-					{
-						stringBuilder.AppendLine();
-					}
-					stringBuilder.AppendLine(_marriageRuleCachedBlock);
-					stringBuilder.Append("【会话延续】你与玩家仍在讨论婚姻事宜，本轮继续按该规则判断。");
-				}
-			}
-		}
-		else if (_isMarriageRuleSessionActive && _marriageRuleHeroId != text3)
-		{
-			ResetMarriageRuleSession();
-		}
-		if (_isLordsHallAccessRuleSessionActive && _lordsHallAccessRuleTargetKey == text2)
-		{
-			if (!flag3)
-			{
-				_lordsHallAccessRuleNoHitRounds++;
-				if (_lordsHallAccessRuleNoHitRounds > LordsHallAccessRuleStickyRounds)
-				{
-					Logger.Log("Logic", $"[RuleSticky] lords_hall_access 连续 {_lordsHallAccessRuleNoHitRounds} 轮未命中，结束延续会话。");
-					ResetLordsHallAccessRuleSession();
-				}
-				else if (!string.IsNullOrWhiteSpace(_lordsHallAccessRuleCachedBlock) && (string.IsNullOrWhiteSpace(text) || text.IndexOf("【附加规则:lords_hall_access】", StringComparison.OrdinalIgnoreCase) < 0))
-				{
-					if (stringBuilder.Length > 0)
-					{
-						stringBuilder.AppendLine();
-					}
-					stringBuilder.AppendLine(_lordsHallAccessRuleCachedBlock);
-					stringBuilder.Append("【会话延续】你与玩家仍在讨论是否进入领主大厅，本轮继续按该规则判断。");
-				}
-			}
-		}
-		else if (_isLordsHallAccessRuleSessionActive && _lordsHallAccessRuleTargetKey != text2)
-		{
-			ResetLordsHallAccessRuleSession();
-		}
-		if (stringBuilder.Length <= 0)
-		{
-			return text;
-		}
-		return string.IsNullOrWhiteSpace(text) ? stringBuilder.ToString().Trim() : (text.TrimEnd() + Environment.NewLine + stringBuilder.ToString().Trim());
+		return text;
 	}
 
 	private static void AppendRuleBlock(StringBuilder sb, string ruleId, string body)
@@ -5505,7 +5231,7 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private string BuildTriggeredRuleInstructions(string input, Hero targetHero, bool useDuelContext, bool isQualified, int playerTier, bool useRewardContext, bool isLoanContext, bool isSurroundingsContext, bool hasAnyHero = true, CharacterObject targetCharacter = null, string kingdomIdOverride = null, int targetAgentIndex = -1)
+	private string BuildTriggeredRuleInstructions(string input, Hero targetHero, bool useDuelContext, bool isQualified, int playerTier, bool useRewardContext, bool isLoanContext, bool isSurroundingsContext, bool hasAnyHero = true, CharacterObject targetCharacter = null, string kingdomIdOverride = null, int targetAgentIndex = -1, string npcLastUtterance = null, bool includeDuelStakeContext = false, bool playerWonLastDuel = false)
 	{
 		try
 		{
@@ -5551,9 +5277,9 @@ public class MyBehavior : CampaignBehaviorBase
 					text = AIConfigHandler.RewardInstruction;
 				}
 				AppendRuleBlock(stringBuilder, "reward", text);
-				if (AIConfigHandler.DuelStakeEnabled && _isRewardSessionActive && _rewardSessionFromDuel && _rewardSessionHeroId == (targetHero?.StringId ?? ""))
+				if (AIConfigHandler.DuelStakeEnabled && includeDuelStakeContext)
 				{
-					string body = (_rewardSessionPlayerWonLastDuel ? AIConfigHandler.DuelStakePlayerWinInstruction : AIConfigHandler.DuelStakeNpcWinInstruction);
+					string body = (playerWonLastDuel ? AIConfigHandler.DuelStakePlayerWinInstruction : AIConfigHandler.DuelStakeNpcWinInstruction);
 					AppendRuleBlock(stringBuilder, "duel_stake", body);
 				}
 			}
@@ -5570,7 +5296,7 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				AppendRuleBlock(stringBuilder, "surroundings", AIConfigHandler.SurroundingsInstruction);
 			}
-			string text3 = BuildExtraRuleInstructionsWithSticky(input, targetHero, hasAnyHero, targetCharacter, kingdomIdOverride, targetAgentIndex);
+			string text3 = BuildExtraRuleInstructions(input, npcLastUtterance, targetHero, hasAnyHero, targetCharacter, kingdomIdOverride, targetAgentIndex);
 			if (!string.IsNullOrWhiteSpace(text3))
 			{
 				stringBuilder.AppendLine(text3.Trim());
@@ -5769,50 +5495,20 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		int num2 = DuelSettings.GetSettings()?.MinimumClanTier ?? 0;
 		bool isQualified = num >= num2;
+		string npcLastUtterance = GetLatestNpcDialogueUtterance(targetHero, targetCharacter, targetAgentIndex);
 		List<string> duelTriggerKeywords = AIConfigHandler.DuelTriggerKeywords;
 		bool flag = false;
 		string matchedKeyword = "";
 		float score = 0f;
-		flag = AIConfigHandler.IsGuardrailSemanticHit(input, "duel", AIConfigHandler.DuelInstruction, duelTriggerKeywords, out matchedKeyword, out score);
+		flag = AIConfigHandler.IsGuardrailSemanticHit(input, npcLastUtterance, "duel", AIConfigHandler.DuelInstruction, duelTriggerKeywords, out matchedKeyword, out score);
 		bool flag2 = targetHero != null && flag;
-		if (targetHero != null)
-		{
-			string stringId = targetHero.StringId;
-			if (flag)
-			{
-				_isDuelSessionActive = true;
-				_duelSessionHeroId = stringId;
-				_duelSessionNoKeywordRounds = 0;
-			}
-			else if (_isDuelSessionActive && _duelSessionHeroId == stringId)
-			{
-				_duelSessionNoKeywordRounds++;
-				if (_duelSessionNoKeywordRounds >= 2)
-				{
-					_isDuelSessionActive = false;
-					_duelSessionHeroId = null;
-					_duelSessionNoKeywordRounds = 0;
-					flag2 = false;
-				}
-				else
-				{
-					flag2 = true;
-				}
-			}
-			else if (_isDuelSessionActive && _duelSessionHeroId != stringId)
-			{
-				_isDuelSessionActive = false;
-				_duelSessionHeroId = null;
-				_duelSessionNoKeywordRounds = 0;
-			}
-		}
 		List<string> rewardTriggerKeywords = AIConfigHandler.RewardTriggerKeywords;
 		bool flag3 = false;
 		string matchedKeyword2 = "";
 		float score2 = 0f;
 		if (AIConfigHandler.RewardEnabled)
 		{
-			flag3 = AIConfigHandler.IsGuardrailSemanticHit(input, "reward", AIConfigHandler.RewardInstruction, rewardTriggerKeywords, out matchedKeyword2, out score2);
+			flag3 = AIConfigHandler.IsGuardrailSemanticHit(input, npcLastUtterance, "reward", AIConfigHandler.RewardInstruction, rewardTriggerKeywords, out matchedKeyword2, out score2);
 		}
 		List<string> loanTriggerKeywords = AIConfigHandler.LoanTriggerKeywords;
 		bool flag4 = false;
@@ -5820,7 +5516,7 @@ public class MyBehavior : CampaignBehaviorBase
 		float score3 = 0f;
 		if (AIConfigHandler.LoanEnabled)
 		{
-			flag4 = AIConfigHandler.IsGuardrailSemanticHit(input, "loan", AIConfigHandler.LoanInstruction, loanTriggerKeywords, out matchedKeyword3, out score3);
+			flag4 = AIConfigHandler.IsGuardrailSemanticHit(input, npcLastUtterance, "loan", AIConfigHandler.LoanInstruction, loanTriggerKeywords, out matchedKeyword3, out score3);
 		}
 		List<string> surroundingsTriggerKeywords = AIConfigHandler.SurroundingsTriggerKeywords;
 		bool flag5 = false;
@@ -5828,18 +5524,18 @@ public class MyBehavior : CampaignBehaviorBase
 		float score4 = 0f;
 		if (AIConfigHandler.SurroundingsEnabled)
 		{
-			flag5 = AIConfigHandler.IsGuardrailSemanticHit(input, "surroundings", AIConfigHandler.SurroundingsInstruction, surroundingsTriggerKeywords, out matchedKeyword4, out score4);
+			flag5 = AIConfigHandler.IsGuardrailSemanticHit(input, npcLastUtterance, "surroundings", AIConfigHandler.SurroundingsInstruction, surroundingsTriggerKeywords, out matchedKeyword4, out score4);
 		}
 		string guardrailRuleInstruction = AIConfigHandler.GetGuardrailRuleInstruction("kingdom_service");
 		List<string> guardrailRuleKeywords = AIConfigHandler.GetGuardrailRuleKeywords("kingdom_service");
 		string matchedKeyword5;
 		float score5;
-		bool flag6 = AIConfigHandler.IsGuardrailSemanticHit(input, "kingdom_service", guardrailRuleInstruction, guardrailRuleKeywords, out matchedKeyword5, out score5);
+		bool flag6 = AIConfigHandler.IsGuardrailSemanticHit(input, npcLastUtterance, "kingdom_service", guardrailRuleInstruction, guardrailRuleKeywords, out matchedKeyword5, out score5);
 		string guardrailMarriageInstruction = AIConfigHandler.GetGuardrailRuleInstruction("marriage");
 		List<string> guardrailMarriageKeywords = AIConfigHandler.GetGuardrailRuleKeywords("marriage");
 		string matchedKeyword6;
 		float score6;
-		bool marriageHit = AIConfigHandler.IsGuardrailSemanticHit(input, "marriage", guardrailMarriageInstruction, guardrailMarriageKeywords, out matchedKeyword6, out score6);
+		bool marriageHit = AIConfigHandler.IsGuardrailSemanticHit(input, npcLastUtterance, "marriage", guardrailMarriageInstruction, guardrailMarriageKeywords, out matchedKeyword6, out score6);
 		bool flag7 = flag3;
 		bool flag8 = flag4;
 		string value = "";
@@ -5854,78 +5550,40 @@ public class MyBehavior : CampaignBehaviorBase
 		string text6 = (string.IsNullOrWhiteSpace(matchedKeyword5) ? "" : $"{matchedKeyword5}@{score5:0.00}");
 		string text8 = (string.IsNullOrWhiteSpace(matchedKeyword6) ? "" : $"{matchedKeyword6}@{score6:0.00}");
 		string text7 = targetHero?.Name?.ToString() ?? "某人";
-		Logger.Log("Logic", $"[SemanticTrigger-Shout] DuelHit={flag} [{text2}] StickyDuel={_isDuelSessionActive} RewardHit={flag3} [{text3}] LoanHit={flag4} [{text4}] StickyReward={_isRewardSessionActive} SurroundingsHit={flag5} [{text5}] KingdomServiceHit={flag6} [{text6}] StickyKingdomService={_isKingdomServiceRuleSessionActive} MarriageHit={marriageHit} [{text8}] StickyMarriage={_isMarriageRuleSessionActive} Input='{input}' NPC='{text7}'");
-		if (AIConfigHandler.RewardEnabled && targetHero != null)
-		{
-			string stringId2 = targetHero.StringId;
-			if (flag3)
-			{
-				_isRewardSessionActive = true;
-				_rewardSessionHeroId = stringId2;
-				_rewardSessionNoKeywordRounds = 0;
-				_rewardSessionFromDuel = false;
-				_rewardSessionPlayerWonLastDuel = false;
-			}
-			else if (_isRewardSessionActive && _rewardSessionHeroId == stringId2)
-			{
-				_rewardSessionNoKeywordRounds++;
-				if (_rewardSessionNoKeywordRounds >= 2)
-				{
-					_isRewardSessionActive = false;
-					_rewardSessionHeroId = null;
-					_rewardSessionNoKeywordRounds = 0;
-					_rewardSessionFromDuel = false;
-					_rewardSessionPlayerWonLastDuel = false;
-				}
-				else
-				{
-					flag7 = true;
-				}
-			}
-			else if (_isRewardSessionActive && _rewardSessionHeroId != stringId2)
-			{
-				_isRewardSessionActive = false;
-				_rewardSessionHeroId = null;
-				_rewardSessionNoKeywordRounds = 0;
-				_rewardSessionFromDuel = false;
-				_rewardSessionPlayerWonLastDuel = false;
-			}
-		}
-		if (AIConfigHandler.LoanEnabled && targetHero != null)
-		{
-			string stringId3 = targetHero.StringId;
-			if (flag4)
-			{
-				_isLoanSessionActive = true;
-				_loanSessionHeroId = stringId3;
-				_loanSessionNoKeywordRounds = 0;
-			}
-			else if (_isLoanSessionActive && _loanSessionHeroId == stringId3)
-			{
-				_loanSessionNoKeywordRounds++;
-				if (_loanSessionNoKeywordRounds >= 2)
-				{
-					_isLoanSessionActive = false;
-					_loanSessionHeroId = null;
-					_loanSessionNoKeywordRounds = 0;
-				}
-				else
-				{
-					flag8 = true;
-				}
-			}
-			else if (_isLoanSessionActive && _loanSessionHeroId != stringId3)
-			{
-				_isLoanSessionActive = false;
-				_loanSessionHeroId = null;
-				_loanSessionNoKeywordRounds = 0;
-			}
-		}
+		Logger.Log("Logic", $"[SemanticTrigger-Shout] DuelHit={flag} [{text2}] RewardHit={flag3} [{text3}] LoanHit={flag4} [{text4}] SurroundingsHit={flag5} [{text5}] KingdomServiceHit={flag6} [{text6}] MarriageHit={marriageHit} [{text8}] NpcRecall={(string.IsNullOrWhiteSpace(npcLastUtterance) ? "off" : "on")} Input='{input}' NPC='{text7}'");
 		StringBuilder stringBuilder = new StringBuilder();
 		string value2 = BuildCurrentDateFactForPrompt();
 		if (!string.IsNullOrWhiteSpace(value2))
 		{
 			stringBuilder.AppendLine(value2);
+		}
+		try
+		{
+			if (!LordEncounterBehavior.IsEncounterMeetingMissionActive)
+			{
+				string nativeInfo = (ShoutUtils.GetNativeSettlementInfoForPrompt() ?? "").Replace("\r", "").Trim();
+				string heroNpcLine = (ShoutUtils.BuildCurrentSettlementHeroNpcLineForPrompt() ?? "").Replace("\r", "").Trim();
+				if (!string.IsNullOrWhiteSpace(nativeInfo) && nativeInfo.Length > 700)
+				{
+					nativeInfo = nativeInfo.Substring(0, 700) + "…";
+				}
+				if (!string.IsNullOrWhiteSpace(nativeInfo) || !string.IsNullOrWhiteSpace(heroNpcLine))
+				{
+					stringBuilder.AppendLine(" ");
+					stringBuilder.AppendLine("【当前定居点（原版到达介绍）】：");
+					if (!string.IsNullOrWhiteSpace(nativeInfo))
+					{
+						stringBuilder.AppendLine(nativeInfo);
+					}
+					if (!string.IsNullOrWhiteSpace(heroNpcLine))
+					{
+						stringBuilder.AppendLine(heroNpcLine);
+					}
+				}
+			}
+		}
+		catch
+		{
 		}
 		if (targetHero != null)
 		{
@@ -5939,17 +5597,25 @@ public class MyBehavior : CampaignBehaviorBase
 		string loreCtxSource = "none";
 		if (targetHero != null)
 		{
-			loreContext = AIConfigHandler.GetLoreContext(input, targetHero);
+			loreContext = AIConfigHandler.GetLoreContext(input, targetHero, npcLastUtterance);
 			loreCtxSource = "hero";
 		}
 		else if (targetCharacter != null)
 		{
-			loreContext = AIConfigHandler.GetLoreContext(input, targetCharacter, kingdomIdOverride);
+			loreContext = AIConfigHandler.GetLoreContext(input, targetCharacter, kingdomIdOverride, npcLastUtterance);
 			loreCtxSource = "character";
 		}
 		if (!string.IsNullOrEmpty(loreContext))
 		{
 			stringBuilder.AppendLine(loreContext);
+		}
+		if (targetHero != null)
+		{
+			string value11 = VanillaIssueOfferBridge.BuildPromptBlock(targetHero);
+			if (!string.IsNullOrWhiteSpace(value11))
+			{
+				stringBuilder.AppendLine(value11);
+			}
 		}
 		try
 		{
@@ -5980,19 +5646,17 @@ public class MyBehavior : CampaignBehaviorBase
 				stringBuilder.AppendLine(value6);
 			}
 		}
+		bool includeDuelStakeContext = false;
+		bool playerWonLastDuelForRule = false;
 		if (targetHero != null && DuelBehavior.TryConsumeLastDuelResult(targetHero, out var playerWon))
 		{
+			includeDuelStakeContext = true;
+			playerWonLastDuelForRule = playerWon;
 			if (playerWon)
 			{
 				stringBuilder.AppendLine("【战斗结果】你刚刚在一场正式的决斗中输给了玩家。请在态度和言语中体现这一点，并认真考虑履行你在决斗前约定的赌注或补偿。");
 				if (AIConfigHandler.RewardEnabled)
 				{
-					string stringId4 = targetHero.StringId;
-					_isRewardSessionActive = true;
-					_rewardSessionHeroId = stringId4;
-					_rewardSessionNoKeywordRounds = 0;
-					_rewardSessionFromDuel = true;
-					_rewardSessionPlayerWonLastDuel = true;
 					flag7 = true;
 				}
 			}
@@ -6001,12 +5665,6 @@ public class MyBehavior : CampaignBehaviorBase
 				stringBuilder.AppendLine("【战斗结果】你刚刚在一场正式的决斗中打败了玩家。你可以据此调整对玩家的态度，或提醒玩家履行之前约定的赌注。");
 				if (AIConfigHandler.RewardEnabled)
 				{
-					string stringId5 = targetHero.StringId;
-					_isRewardSessionActive = true;
-					_rewardSessionHeroId = stringId5;
-					_rewardSessionNoKeywordRounds = 0;
-					_rewardSessionFromDuel = true;
-					_rewardSessionPlayerWonLastDuel = false;
 					flag7 = true;
 				}
 			}
@@ -6056,13 +5714,13 @@ public class MyBehavior : CampaignBehaviorBase
 				}
 			}
 		}
-		string value8 = BuildTriggeredRuleInstructions(input, targetHero, flag2, isQualified, num, flag7, flag8, flag5, hasAnyHero, targetCharacter, kingdomIdOverride, targetAgentIndex);
+		string value8 = BuildTriggeredRuleInstructions(input, targetHero, flag2, isQualified, num, flag7, flag8, flag5, hasAnyHero, targetCharacter, kingdomIdOverride, targetAgentIndex, npcLastUtterance, includeDuelStakeContext, playerWonLastDuelForRule);
 		if (!string.IsNullOrWhiteSpace(value8))
 		{
 			stringBuilder.AppendLine(value8);
 		}
 		bool includeTradePricing = flag7 || flag8 || flag2;
-		bool includeMarriageCandidates = targetHero != null && (marriageHit || (_isMarriageRuleSessionActive && _marriageRuleHeroId == targetHero.StringId));
+		bool includeMarriageCandidates = targetHero != null && marriageHit;
 		bool flag10 = num >= 2;
 		bool includeRuleGatedFields = flag10;
 		string value9 = BuildPlayerIdentityInfoForPrompt(Hero.MainHero, includeRuleGatedFields, includeTradePricing, includeMarriageCandidates, targetHero);

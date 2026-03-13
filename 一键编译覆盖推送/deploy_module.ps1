@@ -83,6 +83,60 @@ function Get-TargetModuleDirs {
     return $resolved
 }
 
+function Get-ExistingModuleXmlTargets {
+    param([string[]]$TargetModuleDirs)
+
+    $existingTargets = New-Object System.Collections.Generic.List[string]
+    foreach ($targetDir in $TargetModuleDirs) {
+        if (-not [string]::IsNullOrWhiteSpace($targetDir)) {
+            $xmlPath = Join-Path $targetDir "SubModule.xml"
+            if (Test-Path -LiteralPath $xmlPath -PathType Leaf) {
+                $existingTargets.Add((Get-FullPathSafe -Path $targetDir))
+            }
+        }
+    }
+
+    return @($existingTargets | Sort-Object -Unique)
+}
+
+function Sync-SubModuleXmlBackToSource {
+    param(
+        [Parameter(Mandatory = $true)][string]$SourceModuleDir,
+        [Parameter(Mandatory = $true)][string[]]$TargetModuleDirs
+    )
+
+    $sourceXmlPath = Join-Path $SourceModuleDir "SubModule.xml"
+    $existingTargets = @(Get-ExistingModuleXmlTargets -TargetModuleDirs $TargetModuleDirs)
+
+    if ($existingTargets.Count -eq 0) {
+        Write-Host "SubModule XML: no existing target XML found, keeping source copy"
+        return
+    }
+
+    $selectedTarget = @($existingTargets)[0]
+    $selectedXmlPath = Join-Path $selectedTarget "SubModule.xml"
+    $selectedHash = (Get-FileHash -LiteralPath $selectedXmlPath -Algorithm SHA256).Hash
+
+    if ($existingTargets.Count -gt 1) {
+        $mismatchedTargets = New-Object System.Collections.Generic.List[string]
+        foreach ($targetDir in $existingTargets | Select-Object -Skip 1) {
+            $targetXmlPath = Join-Path $targetDir "SubModule.xml"
+            $targetHash = (Get-FileHash -LiteralPath $targetXmlPath -Algorithm SHA256).Hash
+            if ($targetHash -ne $selectedHash) {
+                $mismatchedTargets.Add($targetDir)
+            }
+        }
+
+        if ($mismatchedTargets.Count -gt 0) {
+            $allTargets = ($existingTargets | ForEach-Object { " - $_" }) -join "`r`n"
+            throw "Multiple target SubModule.xml files differ. Refusing to choose one source of truth.`r`n$allTargets"
+        }
+    }
+
+    Copy-Item -LiteralPath $selectedXmlPath -Destination $sourceXmlPath -Force
+    Write-Host "Synced XML   : $selectedXmlPath -> $sourceXmlPath"
+}
+
 function Sync-BuildOutputIntoSourceModule {
     param(
         [Parameter(Mandatory = $true)][string]$SourceModuleDir,
@@ -178,9 +232,9 @@ $sourceModuleDir = Join-Path $projectRootFull "AnimusForge"
 $sourceModuleDir = Get-FullPathSafe -Path $sourceModuleDir
 
 Test-SourceModuleDir -Path $sourceModuleDir
+$targetModuleDirs = @(Get-TargetModuleDirs -BannerlordRootPath $BannerlordRoot)
+Sync-SubModuleXmlBackToSource -SourceModuleDir $sourceModuleDir -TargetModuleDirs $targetModuleDirs
 Sync-BuildOutputIntoSourceModule -SourceModuleDir $sourceModuleDir -BuildDllPath $BuildDll
-
-$targetModuleDirs = Get-TargetModuleDirs -BannerlordRootPath $BannerlordRoot
 
 Write-Host "Source Module: $sourceModuleDir"
 Write-Host "Targets      : $($targetModuleDirs.Count)"

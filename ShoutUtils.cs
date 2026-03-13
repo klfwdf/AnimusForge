@@ -1284,6 +1284,207 @@ public static class ShoutUtils
 		}
 	}
 
+	private static string GetHeroTypeForPrompt(Hero hero, bool fromNotables)
+	{
+		if (hero == null)
+		{
+			return "英雄";
+		}
+		try
+		{
+			if (hero.IsLord || hero.Occupation == Occupation.Lord)
+			{
+				return "领主";
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (hero.IsNotable || fromNotables || hero.Occupation == Occupation.Headman || hero.Occupation == Occupation.RuralNotable || hero.Occupation == Occupation.GangLeader || hero.Occupation == Occupation.Merchant || hero.Occupation == Occupation.Artisan || hero.Occupation == Occupation.Preacher)
+			{
+				return "头人";
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (hero.IsWanderer || hero.Occupation == Occupation.Wanderer)
+			{
+				return "流浪者";
+			}
+		}
+		catch
+		{
+		}
+		return "英雄";
+	}
+
+	private static int GetHeroTypePriorityForPrompt(string type)
+	{
+		switch ((type ?? "").Trim())
+		{
+		case "领主":
+			return 4;
+		case "头人":
+			return 3;
+		case "流浪者":
+			return 2;
+		default:
+			return 1;
+		}
+	}
+
+	private static bool IsHeroInSettlementForPrompt(Hero hero, Settlement settlement)
+	{
+		try
+		{
+			if (hero == null || settlement == null)
+			{
+				return false;
+			}
+			if (hero.CurrentSettlement == settlement)
+			{
+				return true;
+			}
+			if (hero.PartyBelongedTo?.CurrentSettlement == settlement)
+			{
+				return true;
+			}
+			try
+			{
+				MBReadOnlyList<Hero> heroesWithoutParty = settlement.HeroesWithoutParty;
+				if (heroesWithoutParty != null)
+				{
+					string text = (hero.StringId ?? "").Trim();
+					foreach (Hero item in heroesWithoutParty)
+					{
+						if (item == null)
+						{
+							continue;
+						}
+						if (item == hero)
+						{
+							return true;
+						}
+						string text2 = (item.StringId ?? "").Trim();
+						if (!string.IsNullOrWhiteSpace(text) && string.Equals(text, text2, StringComparison.OrdinalIgnoreCase))
+						{
+							return true;
+						}
+					}
+				}
+			}
+			catch
+			{
+			}
+			return false;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	public static string BuildCurrentSettlementHeroNpcLineForPrompt(Settlement settlement = null, int maxCount = 12, int maxLen = 320)
+	{
+		try
+		{
+			settlement = settlement ?? Settlement.CurrentSettlement;
+			if (settlement == null)
+			{
+				return "";
+			}
+			if (maxCount <= 0)
+			{
+				maxCount = 12;
+			}
+			if (maxCount > 30)
+			{
+				maxCount = 30;
+			}
+			if (maxLen <= 0)
+			{
+				maxLen = 320;
+			}
+			List<string> list = new List<string>();
+			Dictionary<string, string> dictionary = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+			Dictionary<string, string> dictionary2 = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+			Action<Hero, bool> action = delegate(Hero hero, bool fromNotables)
+			{
+				if (hero == null)
+				{
+					return;
+				}
+				string text = (hero.Name?.ToString() ?? "").Trim();
+				if (string.IsNullOrWhiteSpace(text))
+				{
+					return;
+				}
+				string text2 = (hero.StringId ?? "").Trim();
+				string text3 = (string.IsNullOrWhiteSpace(text2) ? ("name:" + text) : ("id:" + text2.ToLowerInvariant()));
+				string heroTypeForPrompt = GetHeroTypeForPrompt(hero, fromNotables);
+				if (!dictionary.ContainsKey(text3))
+				{
+					dictionary[text3] = text;
+					dictionary2[text3] = heroTypeForPrompt;
+					list.Add(text3);
+				}
+				else if (GetHeroTypePriorityForPrompt(heroTypeForPrompt) > GetHeroTypePriorityForPrompt(dictionary2[text3]))
+				{
+					dictionary2[text3] = heroTypeForPrompt;
+				}
+			};
+			action(settlement.OwnerClan?.Leader, arg2: false);
+			action(settlement.Town?.Governor, arg2: false);
+			try
+			{
+				MBReadOnlyList<Hero> notables = settlement.Notables;
+				if (notables != null)
+				{
+					foreach (Hero item in notables)
+					{
+						action(item, arg2: true);
+					}
+				}
+			}
+			catch
+			{
+			}
+			if (list.Count <= 0)
+			{
+				return "";
+			}
+			int count = list.Count;
+			List<string> list2 = new List<string>();
+			for (int i = 0; i < list.Count && i < maxCount; i++)
+			{
+				string text4 = list[i];
+				string value = dictionary[text4];
+				string value2 = dictionary2[text4];
+				list2.Add("[" + value2 + "]" + value);
+			}
+			string text5 = "当前定居点HeroNPC：" + string.Join("；", list2);
+			if (count > maxCount)
+			{
+				text5 = text5 + "；等" + count + "人";
+			}
+			text5 = text5.Replace("\r", "").Replace("\n", " ").Trim();
+			if (text5.Length > maxLen)
+			{
+				text5 = text5.Substring(0, maxLen) + "…";
+			}
+			return text5;
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
 	public static string BuildNearbySettlementsDetailForPrompt(CampaignVec2 origin, Hero perspectiveHero = null)
 	{
 		try
@@ -1404,7 +1605,8 @@ public static class ShoutUtils
 				return "";
 			}
 			string text5 = (settlement.Culture?.Name?.ToString() ?? "").Trim();
-			string text2 = (settlement.OwnerClan?.Leader?.Name?.ToString() ?? "").Trim();
+			Hero hero = settlement.OwnerClan?.Leader;
+			string text2 = (hero?.Name?.ToString() ?? "").Trim();
 			string text3 = (settlement.OwnerClan?.Name?.ToString() ?? "").Trim();
 			string text4 = (settlement.MapFaction?.Name?.ToString() ?? "").Trim();
 			string factionRelationSummary = BuildFactionRelationSummary(settlement.MapFaction, perspectiveHero);
@@ -1432,6 +1634,10 @@ public static class ShoutUtils
 			if (!string.IsNullOrWhiteSpace(factionRelationSummary))
 			{
 				list.Add(factionRelationSummary);
+			}
+			if ((settlement.IsTown || settlement.IsCastle) && hero != null && !IsHeroInSettlementForPrompt(hero, settlement))
+			{
+				list.Add("当前统治者不在此定居点");
 			}
 			return list.Count <= 0 ? "" : ("；" + string.Join("，", list));
 		}

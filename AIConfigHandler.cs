@@ -79,6 +79,33 @@ public static class AIConfigHandler
 		public Dictionary<string, GuardrailRuleEval> Rules = new Dictionary<string, GuardrailRuleEval>(StringComparer.OrdinalIgnoreCase);
 	}
 
+	private sealed class GuardrailIntentInput
+	{
+		public string Text;
+
+		public float[] Vector;
+
+		public float Weight = 1f;
+	}
+
+	private static string BuildSemanticHitRateDetail(string detail, string secondaryText)
+	{
+		string text = (detail ?? "").Trim();
+		string text2 = NormalizeSemanticText(secondaryText);
+		string text3 = string.IsNullOrWhiteSpace(text2) ? "off" : "on";
+		if (text2.Length > 72)
+		{
+			text2 = text2.Substring(0, 72);
+		}
+		text2 = text2.Replace("\r", " ").Replace("\n", " ").Trim();
+		string value = $"npcRecall={text3} secondaryLen={(string.IsNullOrWhiteSpace(text2) ? 0 : text2.Length)}";
+		if (!string.IsNullOrWhiteSpace(text2))
+		{
+			value = value + " secondaryPreview=" + JsonConvert.ToString(text2);
+		}
+		return string.IsNullOrWhiteSpace(text) ? value : (text + " " + value);
+	}
+
 	private struct GuardrailGateProfile
 	{
 		public float AmpGate;
@@ -566,12 +593,12 @@ public static class AIConfigHandler
 		return num;
 	}
 
-	private static float ComputeBuiltInIntentSemanticEvidence(string ruleTag, List<float[]> qvecs, out string bestSeed)
+	private static float ComputeBuiltInIntentSemanticEvidence(string ruleTag, List<GuardrailIntentInput> queryInputs, out string bestSeed)
 	{
 		bestSeed = "";
 		try
 		{
-			if (qvecs == null || qvecs.Count <= 0)
+			if (queryInputs == null || queryInputs.Count <= 0)
 			{
 				return 0f;
 			}
@@ -588,9 +615,14 @@ public static class AIConfigHandler
 				{
 					continue;
 				}
-				for (int j = 0; j < qvecs.Count; j++)
+				for (int j = 0; j < queryInputs.Count; j++)
 				{
-					float num2 = DotProductNormalized(qvecs[j], vec);
+					GuardrailIntentInput guardrailIntentInput = queryInputs[j];
+					if (guardrailIntentInput?.Vector == null || guardrailIntentInput.Vector.Length == 0)
+					{
+						continue;
+					}
+					float num2 = DotProductNormalized(guardrailIntentInput.Vector, vec) * Math.Max(0f, guardrailIntentInput.Weight);
 					if (num2 > num)
 					{
 						num = num2;
@@ -1050,20 +1082,23 @@ public static class AIConfigHandler
 		return true;
 	}
 
-	private static string BuildGuardrailEvalKey(string userText, string contextText)
+	private static string BuildGuardrailEvalKey(string userText, string contextText, string secondaryText)
 	{
 		string text = NormalizeSemanticText(userText);
 		string text2 = NormalizeSemanticText(contextText);
-		return text + "||" + text2;
+		string text3 = NormalizeSemanticText(secondaryText);
+		return text + "||" + text2 + "||" + text3;
 	}
 
-	private static bool TryGetGuardrailEvalSnapshot(string userText, out GuardrailEvalSnapshot snapshot)
+	private static bool TryGetGuardrailEvalSnapshot(string userText, string secondaryText, out GuardrailEvalSnapshot snapshot)
 	{
 		snapshot = null;
+		List<GuardrailIntentInput> list = new List<GuardrailIntentInput>();
+		List<string> list2 = new List<string>();
 		try
 		{
 			string runtimeGuardrailContext = GetRuntimeGuardrailContext();
-			string text = BuildGuardrailEvalKey(userText, runtimeGuardrailContext);
+			string text = BuildGuardrailEvalKey(userText, runtimeGuardrailContext, secondaryText);
 			lock (_guardrailSemanticLock)
 			{
 				if (_lastGuardrailEval != null && string.Equals(_lastGuardrailEval.Key, text, StringComparison.Ordinal))
@@ -1072,34 +1107,28 @@ public static class AIConfigHandler
 					return snapshot != null && snapshot.Rules != null && snapshot.Rules.Count > 0;
 				}
 			}
-			List<string> list = SplitGuardrailIntents(userText);
-			List<float[]> list2 = new List<float[]>();
-			List<string> list3 = new List<string>();
-			for (int i = 0; i < list.Count; i++)
+			appendInputs(SplitGuardrailIntents(userText), 1f);
+			string text2 = NormalizeSemanticText(secondaryText);
+			if (!string.IsNullOrWhiteSpace(text2) && !string.Equals(text2, NormalizeSemanticText(userText), StringComparison.Ordinal))
 			{
-				string text2 = NormalizeSemanticText(list[i]);
-				if (!string.IsNullOrWhiteSpace(text2) && TryGetInputEmbedding(text2, out var vec) && vec != null && vec.Length != 0)
-				{
-					list3.Add(text2);
-					list2.Add(vec);
-				}
+				appendInputs(SplitGuardrailIntents(text2), 0.6f);
 			}
-			if (list2.Count <= 0)
+			if (list.Count <= 0)
 			{
 				try
 				{
-					Logger.Log("GuardrailSemantic", $"snapshot_fail reason=no_input_embeddings intentCount={list.Count} input={NormalizeSemanticText(userText)}");
+					Logger.Log("GuardrailSemantic", $"snapshot_fail reason=no_input_embeddings intentCount={list2.Count} input={NormalizeSemanticText(userText)}");
 				}
 				catch
 				{
 				}
 				return false;
 			}
-			if (list3.Count > 1)
+			if (list2.Count > 1)
 			{
 				try
 				{
-					Logger.Log("GuardrailSemantic", string.Format("intent_split count={0} intents={1}", list3.Count, string.Join(" || ", list3)));
+					Logger.Log("GuardrailSemantic", string.Format("intent_split count={0} intents={1}", list2.Count, string.Join(" || ", list2)));
 				}
 				catch
 				{
@@ -1142,14 +1171,19 @@ public static class AIConfigHandler
 					{
 						continue;
 					}
-					for (int l = 0; l < list2.Count; l++)
+					for (int l = 0; l < list.Count; l++)
 					{
-						float num3 = DotProductNormalized(list2[l], vec3);
+						GuardrailIntentInput guardrailIntentInput2 = list[l];
+						if (guardrailIntentInput2?.Vector == null || guardrailIntentInput2.Vector.Length == 0)
+						{
+							continue;
+						}
+						float num3 = DotProductNormalized(guardrailIntentInput2.Vector, vec3) * Math.Max(0f, guardrailIntentInput2.Weight);
 						if (num3 > num)
 						{
 							num = num3;
 							matchedSeed = text3;
-							matchedIntent = list3[l];
+							matchedIntent = guardrailIntentInput2.Text;
 						}
 					}
 					if (flag)
@@ -1211,7 +1245,7 @@ public static class AIConfigHandler
 				if (IsBuiltInRuleTag(guardrailRuleEval2.RuleTag))
 				{
 					num12 = GetBuiltInIntentEvidenceGate(guardrailRuleEval2.RuleTag, userText.Length);
-					num11 = ComputeBuiltInIntentSemanticEvidence(guardrailRuleEval2.RuleTag, list2, out bestSeed);
+					num11 = ComputeBuiltInIntentSemanticEvidence(guardrailRuleEval2.RuleTag, list, out bestSeed);
 					lexicalAnchor = num11 >= num12;
 				}
 				bool flag3 = guardrailRuleEval2.Rank <= guardrailTopNFromMcm;
@@ -1250,10 +1284,10 @@ public static class AIConfigHandler
 						{
 							num13++;
 						}
-						Logger.RecordHitRate("guardrail", guardrailRuleEval3.RuleTag ?? "__unknown__", guardrailRuleEval3.Hit, $"raw={guardrailRuleEval3.RawInput:0.000} amp={guardrailRuleEval3.AmpScore:0.000} rank={guardrailRuleEval3.Rank} reason={guardrailRuleEval3.RejectReason}", userText);
+						Logger.RecordHitRate("guardrail", guardrailRuleEval3.RuleTag ?? "__unknown__", guardrailRuleEval3.Hit, BuildSemanticHitRateDetail($"raw={guardrailRuleEval3.RawInput:0.000} amp={guardrailRuleEval3.AmpScore:0.000} rank={guardrailRuleEval3.Rank} reason={guardrailRuleEval3.RejectReason}", secondaryText), userText);
 					}
 				}
-				Logger.RecordHitRate("guardrail", "__query__", num13 > 0, $"hits={num13}/{count} inputLen={userText.Length}", userText);
+				Logger.RecordHitRate("guardrail", "__query__", num13 > 0, BuildSemanticHitRateDetail($"hits={num13}/{count} inputLen={userText.Length}", secondaryText), userText);
 			}
 			catch
 			{
@@ -1276,12 +1310,34 @@ public static class AIConfigHandler
 			}
 			return false;
 		}
+
+		void appendInputs(List<string> intents, float weight)
+		{
+			if (intents == null || intents.Count <= 0 || weight <= 0f)
+			{
+				return;
+			}
+			for (int i = 0; i < intents.Count; i++)
+			{
+				string text4 = NormalizeSemanticText(intents[i]);
+				if (!string.IsNullOrWhiteSpace(text4) && TryGetInputEmbedding(text4, out var vec) && vec != null && vec.Length != 0)
+				{
+					list2.Add(text4);
+					list.Add(new GuardrailIntentInput
+					{
+						Text = text4,
+						Vector = vec,
+						Weight = weight
+					});
+				}
+			}
+		}
 	}
 
-	private static bool TryGetRuleEval(string userText, string ruleTag, out GuardrailRuleEval eval)
+	private static bool TryGetRuleEval(string userText, string secondaryText, string ruleTag, out GuardrailRuleEval eval)
 	{
 		eval = null;
-		if (!TryGetGuardrailEvalSnapshot(userText, out var snapshot) || snapshot == null || snapshot.Rules == null)
+		if (!TryGetGuardrailEvalSnapshot(userText, secondaryText, out var snapshot) || snapshot == null || snapshot.Rules == null)
 		{
 			return false;
 		}
@@ -1297,15 +1353,20 @@ public static class AIConfigHandler
 	{
 		string matchedKeyword;
 		float score;
-		return IsGuardrailSemanticHit(input, ruleTag, "", triggerKeywords, out matchedKeyword, out score);
+		return IsGuardrailSemanticHit(input, null, ruleTag, "", triggerKeywords, out matchedKeyword, out score);
 	}
 
 	public static bool IsGuardrailSemanticHit(string input, List<string> triggerKeywords, string ruleTag, out string matchedKeyword, out float score)
 	{
-		return IsGuardrailSemanticHit(input, ruleTag, "", triggerKeywords, out matchedKeyword, out score);
+		return IsGuardrailSemanticHit(input, null, ruleTag, "", triggerKeywords, out matchedKeyword, out score);
 	}
 
 	public static bool IsGuardrailSemanticHit(string input, string ruleTag, string ruleInstruction, List<string> triggerKeywords, out string matchedKeyword, out float score)
+	{
+		return IsGuardrailSemanticHit(input, null, ruleTag, ruleInstruction, triggerKeywords, out matchedKeyword, out score);
+	}
+
+	public static bool IsGuardrailSemanticHit(string input, string secondaryInput, string ruleTag, string ruleInstruction, List<string> triggerKeywords, out string matchedKeyword, out float score)
 	{
 		matchedKeyword = "";
 		score = 0f;
@@ -1314,7 +1375,7 @@ public static class AIConfigHandler
 		{
 			return false;
 		}
-		if (TryGetRuleEval(text, ruleTag, out var eval))
+		if (TryGetRuleEval(text, secondaryInput, ruleTag, out var eval))
 		{
 			matchedKeyword = (string.IsNullOrWhiteSpace(eval.MatchedSeed) ? "semantic_seed" : eval.MatchedSeed);
 			score = eval.AmpScore;
@@ -1329,7 +1390,7 @@ public static class AIConfigHandler
 		Logger.Log("GuardrailSemantic", "rule=" + ruleTag + " hit=False mode=semantic_unavailable");
 		try
 		{
-			Logger.RecordHitRate("guardrail", ruleTag ?? "__unknown__", hit: false, "reason=semantic_unavailable", text);
+			Logger.RecordHitRate("guardrail", ruleTag ?? "__unknown__", hit: false, BuildSemanticHitRateDetail("reason=semantic_unavailable", secondaryInput), text);
 		}
 		catch
 		{
@@ -1339,6 +1400,11 @@ public static class AIConfigHandler
 
 	public static List<GuardrailRuleHit> GetGuardrailSemanticRuleHits(string input, int maxCount = 6, bool includeBuiltInRules = false)
 	{
+		return GetGuardrailSemanticRuleHits(input, null, maxCount, includeBuiltInRules);
+	}
+
+	public static List<GuardrailRuleHit> GetGuardrailSemanticRuleHits(string input, string secondaryInput, int maxCount = 6, bool includeBuiltInRules = false)
+	{
 		List<GuardrailRuleHit> list = new List<GuardrailRuleHit>();
 		try
 		{
@@ -1347,7 +1413,7 @@ public static class AIConfigHandler
 			{
 				return list;
 			}
-			if (!TryGetGuardrailEvalSnapshot(text, out var snapshot) || snapshot?.Rules == null || snapshot.Rules.Count <= 0)
+			if (!TryGetGuardrailEvalSnapshot(text, secondaryInput, out var snapshot) || snapshot?.Rules == null || snapshot.Rules.Count <= 0)
 			{
 				return list;
 			}
@@ -1390,14 +1456,19 @@ public static class AIConfigHandler
 
 	public static string BuildMatchedExtraRuleInstructions(string input, int maxRules = 4)
 	{
-		return BuildMatchedExtraRuleInstructions(input, maxRules, hasAnyHero: true);
+		return BuildMatchedExtraRuleInstructions(input, null, maxRules, hasAnyHero: true);
 	}
 
 	public static string BuildMatchedExtraRuleInstructions(string input, int maxRules, bool hasAnyHero)
 	{
+		return BuildMatchedExtraRuleInstructions(input, null, maxRules, hasAnyHero);
+	}
+
+	public static string BuildMatchedExtraRuleInstructions(string input, string secondaryInput, int maxRules, bool hasAnyHero)
+	{
 		try
 		{
-			List<GuardrailRuleHit> guardrailSemanticRuleHits = GetGuardrailSemanticRuleHits(input, maxRules);
+			List<GuardrailRuleHit> guardrailSemanticRuleHits = GetGuardrailSemanticRuleHits(input, secondaryInput, maxRules);
 			if (guardrailSemanticRuleHits == null || guardrailSemanticRuleHits.Count <= 0)
 			{
 				return "";
@@ -2453,6 +2524,11 @@ public static class AIConfigHandler
 
 	public static string GetLoreContext(string inputText, Hero npcHero)
 	{
+		return GetLoreContext(inputText, npcHero, null);
+	}
+
+	public static string GetLoreContext(string inputText, Hero npcHero, string secondaryInput)
+	{
 		if (string.IsNullOrWhiteSpace(inputText))
 		{
 			return "";
@@ -2462,7 +2538,7 @@ public static class AIConfigHandler
 			KnowledgeLibraryBehavior instance = KnowledgeLibraryBehavior.Instance;
 			if (instance != null)
 			{
-				string text = instance.BuildLoreContext(inputText, npcHero);
+				string text = instance.BuildLoreContext(inputText, npcHero, secondaryInput);
 				if (!string.IsNullOrEmpty(text))
 				{
 					return text;
@@ -2477,6 +2553,11 @@ public static class AIConfigHandler
 
 	public static string GetLoreContext(string inputText, CharacterObject npcCharacter, string kingdomIdOverride = null)
 	{
+		return GetLoreContext(inputText, npcCharacter, kingdomIdOverride, null);
+	}
+
+	public static string GetLoreContext(string inputText, CharacterObject npcCharacter, string kingdomIdOverride, string secondaryInput)
+	{
 		if (string.IsNullOrWhiteSpace(inputText))
 		{
 			return "";
@@ -2486,7 +2567,7 @@ public static class AIConfigHandler
 			KnowledgeLibraryBehavior instance = KnowledgeLibraryBehavior.Instance;
 			if (instance != null)
 			{
-				string text = instance.BuildLoreContext(inputText, npcCharacter, kingdomIdOverride);
+				string text = instance.BuildLoreContext(inputText, npcCharacter, kingdomIdOverride, secondaryInput);
 				if (!string.IsNullOrEmpty(text))
 				{
 					return text;

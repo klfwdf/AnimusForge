@@ -1154,6 +1154,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 								MyBehavior.ApplyPatienceFromSceneHeroResponseExternal(characterObject.HeroObject, ref aiResponse);
 								DuelBehavior.TryCacheDuelAfterLinesFromText(characterObject.HeroObject, ref aiResponse);
 								DuelBehavior.TryCacheDuelStakeFromText(characterObject.HeroObject, ref aiResponse);
+								VanillaIssueOfferBridge.ApplyIssueOfferTags(characterObject.HeroObject, ref aiResponse);
 								if (RewardSystemBehavior.Instance != null)
 								{
 									RewardSystemBehavior.Instance.ApplyRewardTags(characterObject.HeroObject, Hero.MainHero, ref aiResponse);
@@ -4995,6 +4996,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 								MyBehavior.ApplyPatienceFromSceneHeroResponseExternal(characterObject.HeroObject, ref content);
 								DuelBehavior.TryCacheDuelAfterLinesFromText(characterObject.HeroObject, ref content);
 								DuelBehavior.TryCacheDuelStakeFromText(characterObject.HeroObject, ref content);
+								VanillaIssueOfferBridge.ApplyIssueOfferTags(characterObject.HeroObject, ref content);
 								if (RewardSystemBehavior.Instance != null)
 								{
 									RewardSystemBehavior.Instance.ApplyRewardTags(characterObject.HeroObject, Hero.MainHero, ref content);
@@ -5493,6 +5495,62 @@ public class ShoutBehavior : CampaignBehaviorBase
 		}
 		list.Reverse();
 		return list;
+	}
+
+	public static string GetLatestSceneNpcUtteranceForExternal(int targetAgentIndex)
+	{
+		try
+		{
+			return CurrentInstance?.GetLatestSceneNpcUtterance(targetAgentIndex) ?? "";
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	private string GetLatestSceneNpcUtterance(int targetAgentIndex)
+	{
+		if (targetAgentIndex < 0)
+		{
+			return "";
+		}
+		lock (_historyLock)
+		{
+			if (_publicConversationHistory == null || _publicConversationHistory.Count == 0)
+			{
+				return "";
+			}
+			bool seenCurrentPlayerTurn = false;
+			for (int i = _publicConversationHistory.Count - 1; i >= 0; i--)
+			{
+				ConversationMessage conversationMessage = _publicConversationHistory[i];
+				if (conversationMessage == null)
+				{
+					continue;
+				}
+				string text = (conversationMessage.Role ?? "").Trim();
+				if (text.Equals("user", StringComparison.OrdinalIgnoreCase))
+				{
+					if (!seenCurrentPlayerTurn)
+					{
+						seenCurrentPlayerTurn = true;
+						continue;
+					}
+					break;
+				}
+				if (!seenCurrentPlayerTurn || !text.Equals("assistant", StringComparison.OrdinalIgnoreCase) || conversationMessage.SpeakerAgentIndex != targetAgentIndex)
+				{
+					continue;
+				}
+				string text2 = (conversationMessage.Content ?? "").Replace("\r", "").Trim();
+				if (!string.IsNullOrWhiteSpace(text2) && !IsLeakedPromptLineForShout(text2))
+				{
+					return text2;
+				}
+			}
+		}
+		return "";
 	}
 
 	private static string BuildPlayerMarriageFactForNpcListLine(Hero npcHero)
