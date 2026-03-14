@@ -13,10 +13,10 @@ public class SubModule : MBSubModuleBase
 	protected override void OnBeforeInitialModuleScreenSetAsRoot()
 	{
 		base.OnBeforeInitialModuleScreenSetAsRoot();
-		Logger.LogTrace("SubModule", "====== 游戏主界面即将显示，开始加载模组数据 ======");
+		Logger.LogTrace("SubModule", "====== Game root screen is about to show, loading module data ======");
 		try
 		{
-			Logger.LogTrace("SubModule", ">>> 正在尝试激活 Harmony 补丁...");
+			Logger.LogTrace("SubModule", ">>> Applying Harmony patches...");
 			Harmony harmony = new Harmony("com.AnimusForge.spy");
 			try
 			{
@@ -25,7 +25,7 @@ public class SubModule : MBSubModuleBase
 			}
 			catch (Exception ex)
 			{
-				Logger.LogTrace("SubModule", ">>> ⚠\ufe0f Patch_Starter_AddPlayerLine_Filter 失败: " + ex.Message);
+				Logger.LogTrace("SubModule", ">>> Patch_Starter_AddPlayerLine_Filter failed: " + ex.Message);
 			}
 			try
 			{
@@ -34,7 +34,7 @@ public class SubModule : MBSubModuleBase
 			}
 			catch (Exception ex2)
 			{
-				Logger.LogTrace("SubModule", ">>> ⚠\ufe0f Patch_TriggerMassiveHook 失败: " + ex2.Message);
+				Logger.LogTrace("SubModule", ">>> Patch_TriggerMassiveHook failed: " + ex2.Message);
 			}
 			try
 			{
@@ -43,93 +43,84 @@ public class SubModule : MBSubModuleBase
 			}
 			catch (Exception ex3)
 			{
-				Logger.LogTrace("SubModule", ">>> ⚠\ufe0f Patch_GlobalUI_Click 失败: " + ex3.Message);
+				Logger.LogTrace("SubModule", ">>> Patch_GlobalUI_Click failed: " + ex3.Message);
 			}
 			try
 			{
-				PatchClassProcessor patchClassProcessor4 = harmony.CreateClassProcessor(typeof(Patch_Conversation_Start_Intercept));
+				PatchClassProcessor patchClassProcessor4 = harmony.CreateClassProcessor(typeof(Patch_PlayerEncounter_Start));
 				patchClassProcessor4.Patch();
 			}
 			catch (Exception ex4)
 			{
-				Logger.LogTrace("SubModule", ">>> ⚠\ufe0f Patch_Conversation_Start_Intercept 失败: " + ex4.Message);
+				Logger.LogTrace("SubModule", ">>> Patch_PlayerEncounter_Start failed: " + ex4.Message);
 			}
 			try
 			{
-				PatchClassProcessor patchClassProcessor5 = harmony.CreateClassProcessor(typeof(Patch_PlayerEncounter_Start));
+				PatchClassProcessor patchClassProcessor5 = harmony.CreateClassProcessor(typeof(Patch_GameMenu_ActivateGameMenu));
 				patchClassProcessor5.Patch();
 			}
 			catch (Exception ex5)
 			{
-				Logger.LogTrace("SubModule", ">>> ⚠\ufe0f Patch_PlayerEncounter_Start 失败: " + ex5.Message);
+				Logger.LogTrace("SubModule", ">>> Patch_GameMenu_ActivateGameMenu failed: " + ex5.Message);
 			}
 			try
 			{
-				PatchClassProcessor patchClassProcessor6 = harmony.CreateClassProcessor(typeof(Patch_GameMenu_ActivateGameMenu));
+				PatchClassProcessor patchClassProcessor6 = harmony.CreateClassProcessor(typeof(Patch_Meeting_SuppressDeclareWarAction));
 				patchClassProcessor6.Patch();
 			}
 			catch (Exception ex6)
 			{
-				Logger.LogTrace("SubModule", ">>> ⚠\ufe0f Patch_GameMenu_ActivateGameMenu 失败: " + ex6.Message);
+				Logger.LogTrace("SubModule", ">>> Patch_Meeting_SuppressDeclareWarAction failed: " + ex6.Message);
 			}
 			try
 			{
-				PatchClassProcessor patchClassProcessor7 = harmony.CreateClassProcessor(typeof(Patch_Meeting_SuppressDeclareWarAction));
+				PatchClassProcessor patchClassProcessor7 = harmony.CreateClassProcessor(typeof(Patch_Meeting_SuppressChangeRelationAction));
 				patchClassProcessor7.Patch();
 			}
 			catch (Exception ex7)
 			{
-				Logger.LogTrace("SubModule", ">>> ⚠\ufe0f Patch_Meeting_SuppressDeclareWarAction 失败: " + ex7.Message);
+				Logger.LogTrace("SubModule", ">>> Patch_Meeting_SuppressChangeRelationAction failed: " + ex7.Message);
 			}
 			try
 			{
-				PatchClassProcessor patchClassProcessor8 = harmony.CreateClassProcessor(typeof(Patch_Meeting_SuppressChangeRelationAction));
+				PatchClassProcessor patchClassProcessor8 = harmony.CreateClassProcessor(typeof(Patch_Meeting_SuppressEncounterHostileAction));
 				patchClassProcessor8.Patch();
 			}
 			catch (Exception ex8)
 			{
-				Logger.LogTrace("SubModule", ">>> ⚠\ufe0f Patch_Meeting_SuppressChangeRelationAction 失败: " + ex8.Message);
-			}
-			try
-			{
-				PatchClassProcessor patchClassProcessor9 = harmony.CreateClassProcessor(typeof(Patch_Meeting_SuppressEncounterHostileAction));
-				patchClassProcessor9.Patch();
-			}
-			catch (Exception ex9)
-			{
-				Logger.LogTrace("SubModule", ">>> ⚠\ufe0f Patch_Meeting_SuppressEncounterHostileAction 失败: " + ex9.Message);
+				Logger.LogTrace("SubModule", ">>> Patch_Meeting_SuppressEncounterHostileAction failed: " + ex8.Message);
 			}
 			try
 			{
 				Patch_ConversationManager_OpenMapConversation.ManualPatch(harmony);
 			}
-			catch (Exception ex10)
+			catch (Exception ex9)
 			{
-				Logger.LogTrace("SubModule", ">>> ⚠\ufe0f 手动注册 OpenMapConversation 失败: " + ex10.Message);
+				Logger.LogTrace("SubModule", ">>> Manual OpenMapConversation patch failed: " + ex9.Message);
 			}
 			try
 			{
 				Patch_ConversationManager_SetupAndStartMapConversation.ManualPatch(harmony);
 			}
-			catch (Exception ex11)
+			catch (Exception ex10)
 			{
-				Logger.LogTrace("SubModule", ">>> ⚠\ufe0f 手动注册 SetupAndStartMapConversation 失败: " + ex11.Message);
+				Logger.LogTrace("SubModule", ">>> Manual SetupAndStartMapConversation patch failed: " + ex10.Message);
 			}
-			Logger.LogTrace("SubModule", ">>> ✅ Harmony 补丁激活成功！(手动 Patch 完成)");
+			Logger.LogTrace("SubModule", ">>> Harmony patches applied.");
 		}
-		catch (Exception ex12)
+		catch (Exception ex11)
 		{
-			Logger.LogTrace("SubModule", ">>> ❌ Harmony 激活失败: " + ex12.ToString());
+			Logger.LogTrace("SubModule", ">>> Harmony patch bootstrap failed: " + ex11);
 		}
 		AIConfigHandler.ReloadConfig();
 		try
 		{
 			TtsEngine.Instance.Initialize();
-			Logger.LogTrace("SubModule", ">>> ✅ 在线 TTS 引擎初始化完成（后台工作线程已启动）");
+			Logger.LogTrace("SubModule", ">>> Online TTS engine initialized.");
 		}
-		catch (Exception ex13)
+		catch (Exception ex12)
 		{
-			Logger.LogTrace("SubModule", ">>> ⚠\ufe0f TTS 引擎初始化失败（非致命）: " + ex13.Message);
+			Logger.LogTrace("SubModule", ">>> TTS engine initialization failed (non-fatal): " + ex12.Message);
 		}
 	}
 

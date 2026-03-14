@@ -137,6 +137,51 @@ function Sync-SubModuleXmlBackToSource {
     Write-Host "Synced XML   : $selectedXmlPath -> $sourceXmlPath"
 }
 
+function Sync-PlayerExportsBackToSource {
+    param(
+        [Parameter(Mandatory = $true)][string]$SourceModuleDir,
+        [Parameter(Mandatory = $true)][string[]]$TargetModuleDirs
+    )
+
+    $existingTargets = @(Get-ExistingModuleXmlTargets -TargetModuleDirs $TargetModuleDirs)
+    if ($existingTargets.Count -eq 0) {
+        Write-Host "PlayerExports: no existing target module found, keeping source copy"
+        return
+    }
+
+    $selectedTarget = @($existingTargets)[0]
+    $targetPlayerExports = Join-Path $selectedTarget "PlayerExports"
+    $sourcePlayerExports = Join-Path $SourceModuleDir "PlayerExports"
+
+    if (-not (Test-Path -LiteralPath $targetPlayerExports -PathType Container)) {
+        Write-Host "PlayerExports: target folder not found, keeping source copy"
+        return
+    }
+
+    New-Item -ItemType Directory -Path $sourcePlayerExports -Force | Out-Null
+
+    $arguments = @(
+        $targetPlayerExports,
+        $sourcePlayerExports,
+        "/MIR",
+        "/R:1",
+        "/W:1",
+        "/NP",
+        "/NFL",
+        "/NDL",
+        "/NJH",
+        "/NJS"
+    )
+
+    & robocopy @arguments | Out-Null
+    $exitCode = $LASTEXITCODE
+    if ($exitCode -ge 8) {
+        throw "robocopy failed while syncing PlayerExports back to source with exit code $exitCode"
+    }
+
+    Write-Host "Synced Data  : $targetPlayerExports -> $sourcePlayerExports"
+}
+
 function Sync-BuildOutputIntoSourceModule {
     param(
         [Parameter(Mandatory = $true)][string]$SourceModuleDir,
@@ -234,6 +279,7 @@ $sourceModuleDir = Get-FullPathSafe -Path $sourceModuleDir
 Test-SourceModuleDir -Path $sourceModuleDir
 $targetModuleDirs = @(Get-TargetModuleDirs -BannerlordRootPath $BannerlordRoot)
 Sync-SubModuleXmlBackToSource -SourceModuleDir $sourceModuleDir -TargetModuleDirs $targetModuleDirs
+Sync-PlayerExportsBackToSource -SourceModuleDir $sourceModuleDir -TargetModuleDirs $targetModuleDirs
 Sync-BuildOutputIntoSourceModule -SourceModuleDir $sourceModuleDir -BuildDllPath $BuildDll
 
 Write-Host "Source Module: $sourceModuleDir"

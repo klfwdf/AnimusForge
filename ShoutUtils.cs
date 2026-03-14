@@ -1872,15 +1872,11 @@ public static class ShoutUtils
 				continue;
 			}
 			float num = agent.Position.Distance(position);
-			if (num <= 3f)
-			{
-				list.Add(agent);
-			}
-			else if (num <= 7f)
+			if (num <= 4f)
 			{
 				Vec3 v = agent.Position - position;
 				v.Normalize();
-				if (Vec3.DotProduct(lookDirection, v) > 0.866f)
+				if (Vec3.DotProduct(lookDirection, v) > 0.70710677f)
 				{
 					list.Add(agent);
 				}
@@ -1946,7 +1942,7 @@ public static class ShoutUtils
 			float length = v.Length;
 			v.Normalize();
 			float num2 = Vec3.DotProduct(lookDirection, v);
-			if (num2 > 0.866f)
+			if (num2 > 0.70710677f)
 			{
 				float num3 = num2 / (length * 0.1f + 0.1f);
 				if (num3 > num)

@@ -1496,7 +1496,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		return list;
 	}
 
-	private static List<WeightedKnowledgeInput> BuildKnowledgeQueryInputs(string input, string secondaryInput, float secondaryWeight = 0.6f)
+	private static List<WeightedKnowledgeInput> BuildKnowledgeQueryInputs(string input, string secondaryInput, float secondaryWeight = 1f)
 	{
 		List<WeightedKnowledgeInput> list = new List<WeightedKnowledgeInput>();
 		Dictionary<string, float> dictionary = new Dictionary<string, float>(StringComparer.OrdinalIgnoreCase);

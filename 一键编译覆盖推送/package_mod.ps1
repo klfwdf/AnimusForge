@@ -1,5 +1,6 @@
 param(
     [string]$ModuleDir = "",
+    [string]$BannerlordRoot = "",
     [string]$OutputDir = "$PSScriptRoot\packages",
     [string]$Version,
     [string]$PackageLabel,
@@ -90,6 +91,7 @@ function Test-AnimusForgeModuleDir {
 function Resolve-AnimusForgeModuleDir {
     param(
         [string]$RequestedPath,
+        [string]$BannerlordRootPath,
         [switch]$AllowFirstMatch
     )
 
@@ -101,6 +103,24 @@ function Resolve-AnimusForgeModuleDir {
         }
         return [PSCustomObject]@{
             Path = $requestedFull
+            AutoDetected = $false
+        }
+    }
+
+    if (-not [string]::IsNullOrWhiteSpace($BannerlordRootPath)) {
+        $bannerlordRootFull = [System.IO.Path]::GetFullPath($BannerlordRootPath)
+        if (-not (Test-Path -LiteralPath $bannerlordRootFull -PathType Container)) {
+            throw "Bannerlord root not found: $bannerlordRootFull"
+        }
+
+        $preferredPath = Join-Path (Join-Path $bannerlordRootFull "Modules") "AnimusForge"
+        $check = Test-AnimusForgeModuleDir -Path $preferredPath
+        if (-not $check.IsValid) {
+            throw ("BannerlordRoot does not contain a valid AnimusForge module: {0}`nMissing/Invalid: {1}" -f $preferredPath, ($check.Missing -join ", "))
+        }
+
+        return [PSCustomObject]@{
+            Path = [System.IO.Path]::GetFullPath($preferredPath)
             AutoDetected = $false
         }
     }
@@ -139,7 +159,7 @@ function Resolve-AnimusForgeModuleDir {
     }
 }
 
-$resolvedModule = Resolve-AnimusForgeModuleDir -RequestedPath $ModuleDir -AllowFirstMatch:$UseFirstMatch
+$resolvedModule = Resolve-AnimusForgeModuleDir -RequestedPath $ModuleDir -BannerlordRootPath $BannerlordRoot -AllowFirstMatch:$UseFirstMatch
 $ModuleDir = $resolvedModule.Path
 $wasAutoDetected = $resolvedModule.AutoDetected
 $moduleDirFull = [System.IO.Path]::GetFullPath($ModuleDir).TrimEnd('\', '/')
@@ -193,10 +213,13 @@ $labelForName = ""
 if (-not [string]::IsNullOrWhiteSpace($PackageLabel)) {
     $labelForName = "_" + ($PackageLabel -replace "[^\w\.\-]", "_")
 }
-$timestamp = Get-Date -Format "yyyyMMdd_HHmmss"
-$zipPath = Join-Path $OutputDir "$moduleName`_$versionForName$labelForName`_$timestamp.zip"
-if (Test-Path -LiteralPath $zipPath) {
-    Remove-Item -LiteralPath $zipPath -Force
+$timestamp = Get-Date -Format "yyyyMMdd_HHmmss_fff"
+$zipBaseName = "$moduleName`_$versionForName$labelForName`_$timestamp"
+$zipPath = Join-Path $OutputDir ($zipBaseName + ".zip")
+$suffix = 1
+while (Test-Path -LiteralPath $zipPath) {
+    $zipPath = Join-Path $OutputDir ("{0}_{1}.zip" -f $zipBaseName, $suffix)
+    $suffix += 1
 }
 
 Add-Type -AssemblyName "System.IO.Compression"

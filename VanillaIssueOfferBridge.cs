@@ -209,7 +209,7 @@ internal static class VanillaIssueOfferBridge
 		}
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.AppendLine("【原版任务上下文（仅供理解，不要逐字照抄）】");
-		stringBuilder.AppendLine("你当前有一项原版任务可向玩家委托，你应当积极主动向玩家提及这个任务");
+		stringBuilder.AppendLine("你当前有一项原版任务可向玩家委托");
 		if (!string.IsNullOrWhiteSpace(text))
 		{
 			stringBuilder.AppendLine("任务标题：" + text);
@@ -237,7 +237,7 @@ internal static class VanillaIssueOfferBridge
 		}
 		else
 		{
-			stringBuilder.AppendLine("当前玩家还不满足这项任务的原版接取前提。严禁输出任何接任务标签。");
+			stringBuilder.AppendLine("当前玩家还不满足这项任务的原版接取前提,请严词拒绝！");
 			if (!string.IsNullOrWhiteSpace(text5))
 			{
 				stringBuilder.AppendLine("当前不能交付的原版原因：" + text5);

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Xml.Linq;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
@@ -24,6 +25,12 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 	private bool _pendingWelcome;
 
 	private long _pendingWelcomeAfterUtcTicks;
+
+	private bool _startupNoticeShownThisSession;
+
+	private bool _pendingStartupNotice;
+
+	private long _pendingStartupNoticeAfterUtcTicks;
 
 	public static ModOnboardingBehavior Instance { get; private set; }
 
@@ -50,6 +57,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 
 	private void OnGameStarted(CampaignGameStarter starter)
 	{
+		MarkPendingStartupNotice();
 		if (!_setupDone)
 		{
 			MarkPendingWelcome();
@@ -68,16 +76,47 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private void MarkPendingStartupNotice()
+	{
+		try
+		{
+			_pendingStartupNotice = true;
+			_pendingStartupNoticeAfterUtcTicks = DateTime.UtcNow.Ticks + TimeSpan.FromSeconds(1.0).Ticks;
+		}
+		catch
+		{
+		}
+	}
+
 	private void OnTick(float dt)
 	{
 		try
 		{
+			if (_pendingStartupNotice && !_startupNoticeShownThisSession && DateTime.UtcNow.Ticks >= _pendingStartupNoticeAfterUtcTicks && Campaign.Current != null && Campaign.Current.GameStarted)
+			{
+				_pendingStartupNotice = false;
+				_startupNoticeShownThisSession = true;
+				ShowStartupNotice();
+			}
 			if (!_setupDone && _pendingWelcome && !_welcomeShownThisSession && DateTime.UtcNow.Ticks >= _pendingWelcomeAfterUtcTicks && Campaign.Current != null && Campaign.Current.GameStarted)
 			{
 				_pendingWelcome = false;
 				_welcomeShownThisSession = true;
 				ShowWelcomePopup(fromGate: false);
 			}
+		}
+		catch
+		{
+		}
+	}
+
+	private static void ShowStartupNotice()
+	{
+		try
+		{
+			string moduleVersionText = GetModuleVersionText();
+			InformationManager.DisplayMessage(new InformationMessage("AnimusForge 已启动，版本号：" + moduleVersionText + "。", Colors.Yellow));
+			InformationManager.DisplayMessage(new InformationMessage("当前版本不建议搭配其他功能性 Mod 游玩；若出现崩溃，请先排查你的 Mod 加载清单！", Colors.Yellow));
 		}
 		catch
 		{
@@ -347,6 +386,28 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 	{
 		string moduleRootPath = GetModuleRootPath();
 		return Path.Combine(moduleRootPath, "PlayerExports");
+	}
+
+	private static string GetModuleVersionText()
+	{
+		try
+		{
+			string path = Path.Combine(GetModuleRootPath(), "SubModule.xml");
+			if (!File.Exists(path))
+			{
+				return "未知版本";
+			}
+			XDocument xDocument = XDocument.Load(path);
+			string value = xDocument.Root?.Element("Version")?.Attribute("value")?.Value;
+			if (!string.IsNullOrWhiteSpace(value))
+			{
+				return value.Trim();
+			}
+		}
+		catch
+		{
+		}
+		return "未知版本";
 	}
 
 	private static string SanitizeFolderName(string input)

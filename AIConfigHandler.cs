@@ -1111,7 +1111,7 @@ public static class AIConfigHandler
 			string text2 = NormalizeSemanticText(secondaryText);
 			if (!string.IsNullOrWhiteSpace(text2) && !string.Equals(text2, NormalizeSemanticText(userText), StringComparison.Ordinal))
 			{
-				appendInputs(SplitGuardrailIntents(text2), 0.6f);
+				appendInputs(SplitGuardrailIntents(text2), 1f);
 			}
 			if (list.Count <= 0)
 			{
@@ -1908,22 +1908,29 @@ public static class AIConfigHandler
 	{
 		try
 		{
-			Clan playerClan = Clan.PlayerClan;
-			Kingdom kingdom = playerClan?.Kingdom;
-			bool flag = playerClan?.IsUnderMercenaryService == true;
-			Kingdom kingdom2 = ResolveConversationTargetKingdom();
-			bool flag2 = kingdom != null && kingdom2 != null && kingdom == kingdom2;
-			string text = kingdom?.Name?.ToString() ?? "";
-			string text2 = kingdom2?.Name?.ToString() ?? "";
-			Dictionary<string, string> dictionary = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+			Dictionary<string, string> dictionary = BuildKingdomServiceRuntimeTokens(out var playerClan, out var kingdom, out var flag, out var kingdom2, out var flag2, out var num, out var num2, out var num3, out var num4, out var num5, out var num6);
+			if (playerClan == null)
 			{
-				["playerKingdom"] = text,
-				["playerKingdomId"] = (kingdom?.StringId ?? ""),
-				["targetKingdom"] = text2,
-				["targetKingdomId"] = (kingdom2?.StringId ?? "")
-			};
+				return "";
+			}
 			if (kingdom == null)
 			{
+				if (num6 < num4)
+				{
+					return ResolveKingdomServiceRuntimeText("no_kingdom_trust_below_merc", forConstraint: false, dictionary);
+				}
+				if (num < num2)
+				{
+					return ResolveKingdomServiceRuntimeText("no_kingdom_tier_below_merc", forConstraint: false, dictionary);
+				}
+				if (num < num3)
+				{
+					return ResolveKingdomServiceRuntimeText("no_kingdom_tier_merc_only", forConstraint: false, dictionary);
+				}
+				if (num6 < num5)
+				{
+					return ResolveKingdomServiceRuntimeText("no_kingdom_trust_merc_only", forConstraint: false, dictionary);
+				}
 				return ResolveKingdomServiceRuntimeText("no_kingdom", forConstraint: false, dictionary);
 			}
 			if (flag)
@@ -1934,6 +1941,14 @@ public static class AIConfigHandler
 				}
 				if (flag2)
 				{
+					if (num < num3)
+					{
+						return ResolveKingdomServiceRuntimeText("mercenary_same_kingdom_tier_vassal_locked", forConstraint: false, dictionary);
+					}
+					if (num6 < num5)
+					{
+						return ResolveKingdomServiceRuntimeText("mercenary_same_kingdom_trust_vassal_locked", forConstraint: false, dictionary);
+					}
 					return ResolveKingdomServiceRuntimeText("mercenary_same_kingdom", forConstraint: false, dictionary);
 				}
 				return ResolveKingdomServiceRuntimeText("mercenary_other_kingdom", forConstraint: false, dictionary);
@@ -1952,6 +1967,69 @@ public static class AIConfigHandler
 		{
 			return "";
 		}
+	}
+
+	private static Dictionary<string, string> BuildKingdomServiceRuntimeTokens(out Clan playerClan, out Kingdom playerKingdom, out bool isMercenaryService, out Kingdom targetKingdom, out bool isSameKingdom, out int playerTier, out int mercTier, out int vassalTier, out int mercTrustMin, out int vassalTrustMin, out int currentTrust)
+	{
+		playerClan = Clan.PlayerClan;
+		playerKingdom = playerClan?.Kingdom;
+		isMercenaryService = playerClan?.IsUnderMercenaryService == true;
+		targetKingdom = ResolveConversationTargetKingdom();
+		isSameKingdom = playerKingdom != null && targetKingdom != null && playerKingdom == targetKingdom;
+		playerTier = playerClan?.Tier ?? 0;
+		mercTier = 1;
+		vassalTier = 2;
+		mercTrustMin = 5;
+		vassalTrustMin = 20;
+		currentTrust = 0;
+		try
+		{
+			mercTier = Campaign.Current?.Models?.ClanTierModel?.MercenaryEligibleTier ?? 1;
+		}
+		catch
+		{
+			mercTier = 1;
+		}
+		try
+		{
+			vassalTier = Campaign.Current?.Models?.ClanTierModel?.VassalEligibleTier ?? 2;
+		}
+		catch
+		{
+			vassalTier = 2;
+		}
+		Hero hero = ResolveConversationTargetHero();
+		if (hero == null)
+		{
+			hero = targetKingdom?.Leader;
+		}
+		if (hero == null)
+		{
+			hero = playerKingdom?.Leader;
+		}
+		try
+		{
+			currentTrust = RewardSystemBehavior.Instance?.GetEffectiveTrust(hero) ?? 0;
+		}
+		catch
+		{
+			currentTrust = 0;
+		}
+		return new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+		{
+			["playerKingdom"] = (playerKingdom?.Name?.ToString() ?? ""),
+			["playerKingdomId"] = (playerKingdom?.StringId ?? ""),
+			["targetKingdom"] = (targetKingdom?.Name?.ToString() ?? ""),
+			["targetKingdomId"] = (targetKingdom?.StringId ?? ""),
+			["playerTier"] = playerTier.ToString(),
+			["mercTier"] = mercTier.ToString(),
+			["vassalTier"] = vassalTier.ToString(),
+			["trustMerc"] = mercTrustMin.ToString(),
+			["trustVassal"] = vassalTrustMin.ToString(),
+			["trustCurrent"] = currentTrust.ToString(),
+			["trustMercGap"] = Math.Max(0, mercTrustMin - currentTrust).ToString(),
+			["trustVassalGap"] = Math.Max(0, vassalTrustMin - currentTrust).ToString()
+		};
 	}
 
 	private static bool IsRuntimeTargetCastleGuard(int agentIndex)
@@ -2123,6 +2201,27 @@ public static class AIConfigHandler
 		return "";
 	}
 
+	// Used by shout prompt assembly to keep the guard rule always present for gate guards.
+	public static string BuildRuntimeLordsHallAccessInstructionForExternal()
+	{
+		try
+		{
+			if (TryBuildLordsHallAccessRuntimeState(out var stateKey, out var tokens))
+			{
+				string text = (stateKey ?? "").Trim().ToLowerInvariant();
+				if (string.Equals(text, "not_applicable", StringComparison.OrdinalIgnoreCase))
+				{
+					return "";
+				}
+				return ResolveRuleRuntimeText("lords_hall_access", text, forConstraint: false, tokens);
+			}
+		}
+		catch
+		{
+		}
+		return "";
+	}
+
 	private static string BuildRuntimeRuleConstraintHint(string tag)
 	{
 		try
@@ -2158,70 +2257,13 @@ public static class AIConfigHandler
 			{
 				return ResolveKingdomServiceRuntimeText("no_player_clan", forConstraint: true, new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase));
 			}
-			int num = playerClan.Tier;
-			int num2 = 1;
-			int num3 = 2;
-			try
-			{
-				num2 = Campaign.Current?.Models?.ClanTierModel?.MercenaryEligibleTier ?? 1;
-			}
-			catch
-			{
-				num2 = 1;
-			}
-			try
-			{
-				num3 = Campaign.Current?.Models?.ClanTierModel?.VassalEligibleTier ?? 2;
-			}
-			catch
-			{
-				num3 = 2;
-			}
-			Kingdom kingdom = playerClan.Kingdom;
-			bool flag = playerClan.IsUnderMercenaryService;
-			Kingdom kingdom2 = ResolveConversationTargetKingdom();
-			bool flag2 = kingdom != null && kingdom2 != null && kingdom == kingdom2;
-			int num4 = 5;
-			int num5 = 20;
-			Hero hero = kingdom2?.Leader;
-			if (hero == null)
-			{
-				hero = ResolveConversationTargetHero();
-			}
-			if (hero == null)
-			{
-				hero = kingdom?.Leader;
-			}
-			int num6 = 0;
-			try
-			{
-				num6 = RewardSystemBehavior.Instance?.GetEffectiveTrust(hero) ?? 0;
-			}
-			catch
-			{
-				num6 = 0;
-			}
-			int num7 = Math.Max(0, num5 - num6);
-			string value = ((num7 > 0) ? $"玩家信任度未达标，还差{num7}" : "玩家信任度已经达标");
-			string text2 = kingdom?.Name?.ToString() ?? "";
-			string text3 = kingdom2?.Name?.ToString() ?? "";
-			Dictionary<string, string> dictionary = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
-			{
-				["playerKingdom"] = text2,
-				["playerKingdomId"] = (kingdom?.StringId ?? ""),
-				["targetKingdom"] = text3,
-				["targetKingdomId"] = (kingdom2?.StringId ?? ""),
-				["playerTier"] = num.ToString(),
-				["mercTier"] = num2.ToString(),
-				["vassalTier"] = num3.ToString(),
-				["trustMerc"] = num4.ToString(),
-				["trustVassal"] = num5.ToString(),
-				["trustCurrent"] = num6.ToString(),
-				["trustVassalGap"] = num7.ToString(),
-				["vassalTrustStatus"] = value
-			};
+			Dictionary<string, string> dictionary = BuildKingdomServiceRuntimeTokens(out playerClan, out var kingdom, out var flag, out var kingdom2, out var flag2, out var num, out var num2, out var num3, out var num4, out var num5, out var num6);
 			if (kingdom == null)
 			{
+				if (num6 < num4)
+				{
+					return ResolveKingdomServiceRuntimeText("no_kingdom_trust_below_merc", forConstraint: true, dictionary);
+				}
 				if (num < num2)
 				{
 					return ResolveKingdomServiceRuntimeText("no_kingdom_tier_below_merc", forConstraint: true, dictionary);
@@ -2229,6 +2271,10 @@ public static class AIConfigHandler
 				if (num < num3)
 				{
 					return ResolveKingdomServiceRuntimeText("no_kingdom_tier_merc_only", forConstraint: true, dictionary);
+				}
+				if (num6 < num5)
+				{
+					return ResolveKingdomServiceRuntimeText("no_kingdom_trust_merc_only", forConstraint: true, dictionary);
 				}
 				return ResolveKingdomServiceRuntimeText("no_kingdom_tier_full", forConstraint: true, dictionary);
 			}
@@ -2243,6 +2289,10 @@ public static class AIConfigHandler
 					if (num < num3)
 					{
 						return ResolveKingdomServiceRuntimeText("mercenary_same_kingdom_tier_vassal_locked", forConstraint: true, dictionary);
+					}
+					if (num6 < num5)
+					{
+						return ResolveKingdomServiceRuntimeText("mercenary_same_kingdom_trust_vassal_locked", forConstraint: true, dictionary);
 					}
 					return ResolveKingdomServiceRuntimeText("mercenary_same_kingdom_tier_vassal_ready", forConstraint: true, dictionary);
 				}

@@ -144,6 +144,15 @@ public class MyBehavior : CampaignBehaviorBase
 		public double Score;
 	}
 
+	private sealed class WeightedRecallQueryInput
+	{
+		public string Text;
+
+		public float Weight;
+
+		public List<string> Terms = new List<string>();
+	}
+
 	private class PatienceState
 	{
 		public float Value;
@@ -302,6 +311,10 @@ public class MyBehavior : CampaignBehaviorBase
 	private Dictionary<string, NpcPersonaProfile> _npcPersonaProfiles = new Dictionary<string, NpcPersonaProfile>();
 
 	private Dictionary<string, string> _npcPersonaProfileStorage = new Dictionary<string, string>();
+
+	private string _voiceMappingJsonStorage = "";
+
+	private string _voiceMappingExportFolderStorage = "";
 
 	private readonly object _npcPersonaAutoGenLock = new object();
 
@@ -1750,6 +1763,14 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			_npcPersonaProfileStorage = new Dictionary<string, string>();
 		}
+		if (_voiceMappingJsonStorage == null)
+		{
+			_voiceMappingJsonStorage = "";
+		}
+		if (_voiceMappingExportFolderStorage == null)
+		{
+			_voiceMappingExportFolderStorage = "";
+		}
 		try
 		{
 			if (dataStore != null && dataStore.IsSaving)
@@ -1855,6 +1876,18 @@ public class MyBehavior : CampaignBehaviorBase
 					}
 				}
 				dataStore.SyncData("_npcPersonaProfiles_v1", ref _npcPersonaProfileStorage);
+				try
+				{
+					_voiceMappingJsonStorage = VoiceMapper.ExportMappingJson(pretty: false) ?? "";
+				}
+				catch (Exception ex5)
+				{
+					_voiceMappingJsonStorage = "";
+					Logger.Log("VoiceMapper", "[ERROR] Serialize voice mapping for save failed: " + ex5.Message);
+				}
+				dataStore.SyncData("_voiceMapping_v1", ref _voiceMappingJsonStorage);
+				_voiceMappingExportFolderStorage = VoiceMapper.GetPreferredExportFolder() ?? "";
+				dataStore.SyncData("_voiceMapping_export_folder_v1", ref _voiceMappingExportFolderStorage);
 				SyncPatienceData(dataStore);
 				return;
 			}
@@ -1997,11 +2030,30 @@ public class MyBehavior : CampaignBehaviorBase
 					}
 				}
 			}
+			_voiceMappingExportFolderStorage = "";
+			dataStore.SyncData("_voiceMapping_export_folder_v1", ref _voiceMappingExportFolderStorage);
+			VoiceMapper.SetPreferredExportFolder(_voiceMappingExportFolderStorage);
+			_voiceMappingJsonStorage = "";
+			dataStore.SyncData("_voiceMapping_v1", ref _voiceMappingJsonStorage);
+			if (!string.IsNullOrWhiteSpace(_voiceMappingJsonStorage))
+			{
+				try
+				{
+					if (!VoiceMapper.ImportMappingJson(_voiceMappingJsonStorage))
+					{
+						Logger.Log("VoiceMapper", "[WARN] Save-loaded voice mapping was invalid; kept current file-backed mapping.");
+					}
+				}
+				catch (Exception ex7)
+				{
+					Logger.Log("VoiceMapper", "[ERROR] Restore voice mapping from save failed: " + ex7.Message);
+				}
+			}
 			SyncPatienceData(dataStore);
 		}
-		catch (Exception ex7)
+		catch (Exception ex8)
 		{
-			Logger.Log("DialogueHistory", "[ERROR] SyncData v2 failed: " + ex7.ToString());
+			Logger.Log("DialogueHistory", "[ERROR] SyncData v2 failed: " + ex8.ToString());
 			_shownRecords = new Dictionary<string, HeroShownRecord>();
 			_shownRecordStorage = new Dictionary<string, string>();
 			_dialogueHistory = new Dictionary<string, List<DialogueDay>>();
@@ -2012,6 +2064,8 @@ public class MyBehavior : CampaignBehaviorBase
 			_npcRecentActionStorage = new Dictionary<string, string>();
 			_npcPersonaProfiles = new Dictionary<string, NpcPersonaProfile>();
 			_npcPersonaProfileStorage = new Dictionary<string, string>();
+			_voiceMappingJsonStorage = "";
+			_voiceMappingExportFolderStorage = "";
 		}
 	}
 
@@ -3117,7 +3171,19 @@ public class MyBehavior : CampaignBehaviorBase
 			for (int i = 0; i < array2.Length; i++)
 			{
 				EquipmentIndex index = array2[i];
-				ItemObject item = hero.BattleEquipment[index].Item;
+				ItemObject item = null;
+				if (hero == Hero.MainHero && Agent.Main != null && Agent.Main.IsActive())
+				{
+					item = Agent.Main.SpawnEquipment[index].Item;
+					if (item == null)
+					{
+						item = Agent.Main.Equipment[index].Item;
+					}
+				}
+				if (item == null)
+				{
+					item = hero.BattleEquipment[index].Item;
+				}
 				if (item != null)
 				{
 					string text = (item.StringId ?? "").Trim();
@@ -4398,7 +4464,7 @@ public class MyBehavior : CampaignBehaviorBase
 						sb.AppendLine(loreContext);
 					}
 					PersistLoreToDialogueHistory(targetHero, loreContext);
-					string historyContext = BuildHistoryContext(targetHero, 0, input);
+					string historyContext = BuildHistoryContext(targetHero, 0, input, npcLastUtterance);
 					if (!string.IsNullOrEmpty(historyContext))
 					{
 						sb.AppendLine(historyContext);
@@ -4993,7 +5059,7 @@ public class MyBehavior : CampaignBehaviorBase
 		return string.IsNullOrWhiteSpace(text) ? "" : StripSpeakerPrefixForRecall(text);
 	}
 
-	public static string BuildHistoryContextForExternal(Hero hero, int maxLines = 20, string currentInput = null)
+	public static string BuildHistoryContextForExternal(Hero hero, int maxLines = 20, string currentInput = null, string secondaryInput = null)
 	{
 		try
 		{
@@ -5002,7 +5068,7 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				return "";
 			}
-			return myBehavior.BuildHistoryContext(hero, maxLines, currentInput);
+			return myBehavior.BuildHistoryContext(hero, maxLines, currentInput, secondaryInput);
 		}
 		catch
 		{
@@ -5276,10 +5342,11 @@ public class MyBehavior : CampaignBehaviorBase
 	private string BuildExtraRuleInstructions(string input, string npcLastUtterance, Hero targetHero, bool hasAnyHero = true, CharacterObject targetCharacter = null, string kingdomIdOverride = null, int targetAgentIndex = -1)
 	{
 		string text = "";
+		string text2 = "";
 		string targetKingdomId = ResolveTargetKingdomIdForRules(targetHero, targetCharacter, kingdomIdOverride);
 		AIConfigHandler.SetGuardrailRuntimeTargetKingdom(targetKingdomId);
-		string text2 = targetHero?.StringId ?? targetCharacter?.HeroObject?.StringId ?? "";
-		AIConfigHandler.SetGuardrailRuntimeTargetHero(text2);
+		string text3 = targetHero?.StringId ?? targetCharacter?.HeroObject?.StringId ?? "";
+		AIConfigHandler.SetGuardrailRuntimeTargetHero(text3);
 		AIConfigHandler.SetGuardrailRuntimeTargetCharacter(targetCharacter?.StringId ?? "");
 		AIConfigHandler.SetGuardrailRuntimeTargetTroop(targetCharacter?.StringId ?? "");
 		AIConfigHandler.SetGuardrailRuntimeTargetUnnamedRank((targetHero == null && targetCharacter != null) ? (targetCharacter.IsSoldier ? "soldier" : "commoner") : "");
@@ -5287,6 +5354,8 @@ public class MyBehavior : CampaignBehaviorBase
 		try
 		{
 			text = AIConfigHandler.BuildMatchedExtraRuleInstructions(input, npcLastUtterance, 4, hasAnyHero);
+			// Always keep this rule present for the lords-hall gate guard, regardless of semantic hits.
+			text2 = (AIConfigHandler.BuildRuntimeLordsHallAccessInstructionForExternal() ?? "").Trim();
 		}
 		finally
 		{
@@ -5296,6 +5365,11 @@ public class MyBehavior : CampaignBehaviorBase
 			AIConfigHandler.SetGuardrailRuntimeTargetTroop("");
 			AIConfigHandler.SetGuardrailRuntimeTargetUnnamedRank("");
 			AIConfigHandler.SetGuardrailRuntimeTargetAgentIndex(-1);
+		}
+		if (!string.IsNullOrWhiteSpace(text2) && (string.IsNullOrWhiteSpace(text) || text.IndexOf("【附加规则:lords_hall_access】", StringComparison.OrdinalIgnoreCase) < 0))
+		{
+			string text4 = "【附加规则:lords_hall_access】" + Environment.NewLine + text2;
+			text = string.IsNullOrWhiteSpace(text) ? text4 : (text.TrimEnd() + Environment.NewLine + text4);
 		}
 		return text;
 	}
@@ -6354,6 +6428,88 @@ public class MyBehavior : CampaignBehaviorBase
 		return string.Join("\n", values);
 	}
 
+	private static List<string> SplitHistoryRecallIntents(string query)
+	{
+		List<string> list = new List<string>();
+		string text = (query ?? "").Replace("\r", " ").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return list;
+		}
+		list.Add(text);
+		try
+		{
+			string[] array = Regex.Split(text, "[，。！？；：,.!?;:\\n]+");
+			for (int i = 0; i < array.Length; i++)
+			{
+				string text2 = (array[i] ?? "").Trim();
+				if (text2.Length >= 2 && !list.Contains(text2))
+				{
+					list.Add(text2);
+				}
+			}
+		}
+		catch
+		{
+		}
+		if (list.Count > 4)
+		{
+			list = list.Take(4).ToList();
+		}
+		return list;
+	}
+
+	private static List<WeightedRecallQueryInput> BuildHistoryRecallQueryInputs(List<HistoryLineEntry> recent, string currentInput, string secondaryInput)
+	{
+		List<WeightedRecallQueryInput> list = new List<WeightedRecallQueryInput>();
+		Dictionary<string, float> dictionary = new Dictionary<string, float>(StringComparer.OrdinalIgnoreCase);
+		string text = (string.IsNullOrWhiteSpace(currentInput) ? BuildHistoryQueryText(recent) : currentInput.Trim());
+		appendInputs(SplitHistoryRecallIntents(text), 1f);
+		string text2 = (secondaryInput ?? "").Trim();
+		if (!string.IsNullOrWhiteSpace(text2) && !string.Equals(text2, text, StringComparison.OrdinalIgnoreCase))
+		{
+			appendInputs(SplitHistoryRecallIntents(text2), 1f);
+		}
+		foreach (KeyValuePair<string, float> item in dictionary.OrderByDescending((KeyValuePair<string, float> x) => x.Value).ThenBy((KeyValuePair<string, float> x) => x.Key, StringComparer.OrdinalIgnoreCase))
+		{
+			WeightedRecallQueryInput weightedRecallQueryInput = new WeightedRecallQueryInput
+			{
+				Text = item.Key,
+				Weight = item.Value
+			};
+			weightedRecallQueryInput.Terms = ExtractQueryTerms(item.Key);
+			list.Add(weightedRecallQueryInput);
+		}
+		return list;
+
+		void appendInputs(List<string> intents, float baseWeight)
+		{
+			if (intents == null || intents.Count <= 0 || baseWeight <= 0f)
+			{
+				return;
+			}
+			for (int i = 0; i < intents.Count; i++)
+			{
+				string text3 = (intents[i] ?? "").Trim();
+				if (!string.IsNullOrWhiteSpace(text3))
+				{
+					float num = ((i == 0) ? baseWeight : (baseWeight * 0.92f));
+					if (dictionary.TryGetValue(text3, out var value))
+					{
+						if (num > value)
+						{
+							dictionary[text3] = num;
+						}
+					}
+					else
+					{
+						dictionary[text3] = num;
+					}
+				}
+			}
+		}
+	}
+
 	private static bool IsCurrentInputPlayerLine(string line, string currentInput)
 	{
 		if (string.IsNullOrWhiteSpace(line) || string.IsNullOrWhiteSpace(currentInput))
@@ -6368,15 +6524,15 @@ public class MyBehavior : CampaignBehaviorBase
 		return string.Equals(text, b, StringComparison.Ordinal);
 	}
 
-	private List<ArchiveHit> FindRelevantArchiveHits(List<HistoryLineEntry> older, string query, int topK, out bool onnxUsed)
+	private List<ArchiveHit> FindRelevantArchiveHits(List<HistoryLineEntry> older, List<WeightedRecallQueryInput> queryInputs, int topK, out bool onnxUsed)
 	{
 		onnxUsed = false;
 		List<ArchiveHit> list = new List<ArchiveHit>();
-		if (older == null || older.Count == 0 || topK <= 0)
+		List<WeightedRecallQueryInput> list10 = (queryInputs ?? new List<WeightedRecallQueryInput>()).Where((WeightedRecallQueryInput x) => x != null && !string.IsNullOrWhiteSpace(x.Text) && x.Weight > 0f).ToList();
+		if (older == null || older.Count == 0 || topK <= 0 || list10.Count == 0)
 		{
 			return list;
 		}
-		List<string> terms = ExtractQueryTerms(query);
 		List<HistoryLineEntry> list2 = older.Where((HistoryLineEntry x) => x != null && !string.IsNullOrWhiteSpace(x.Line)).ToList();
 		if (list2.Count <= 0)
 		{
@@ -6395,21 +6551,36 @@ public class MyBehavior : CampaignBehaviorBase
 			string text = historyLineEntry.Line ?? "";
 			double num3 = ((count <= 1) ? 1.0 : ((double)num2 / (double)(count - 1)));
 			double num4 = (IsSystemFactLine(text) ? 1.0 : (ContainsStructuredSignal(text) ? 0.78 : 0.35));
-			double num5 = ComputeLexicalOverlapScore(text, terms);
+			double num5 = 0.0;
+			for (int num15 = 0; num15 < list10.Count; num15++)
+			{
+				WeightedRecallQueryInput weightedRecallQueryInput = list10[num15];
+				double num16 = ComputeLexicalOverlapScore(text, weightedRecallQueryInput.Terms) * (double)Math.Max(0f, weightedRecallQueryInput.Weight);
+				if (num16 > num5)
+				{
+					num5 = num16;
+				}
+			}
 			double item = 0.6 * num4 + 0.3 * num3 + 0.1 * num5;
 			list3.Add((historyLineEntry, item));
 		}
-		float[] vector = null;
-		bool flag = !string.IsNullOrWhiteSpace(query) && query.Trim().Length >= 2;
-		bool flag2 = false;
+		List<(WeightedRecallQueryInput Query, float[] Vector)> list11 = new List<(WeightedRecallQueryInput Query, float[] Vector)>();
 		OnnxEmbeddingEngine instance = OnnxEmbeddingEngine.Instance;
-		if (flag && instance != null && instance.IsAvailable)
+		if (instance != null && instance.IsAvailable)
 		{
-			flag2 = instance.TryGetEmbedding(query, out vector) && vector != null && vector.Length != 0;
+			for (int num17 = 0; num17 < list10.Count; num17++)
+			{
+				WeightedRecallQueryInput weightedRecallQueryInput2 = list10[num17];
+				if (!string.IsNullOrWhiteSpace(weightedRecallQueryInput2.Text) && weightedRecallQueryInput2.Text.Trim().Length >= 2 && instance.TryGetEmbedding(weightedRecallQueryInput2.Text, out var vector) && vector != null && vector.Length != 0)
+				{
+					list11.Add((weightedRecallQueryInput2, vector));
+				}
+			}
 		}
-		onnxUsed = flag2;
+		bool flag = list11.Count > 0;
+		onnxUsed = flag;
 		int num6 = 120;
-		if (!flag2)
+		if (!flag)
 		{
 			list3 = list3.OrderByDescending<(HistoryLineEntry, double), double>(((HistoryLineEntry Entry, double BaseScore) x) => x.BaseScore).Take(num6).ToList();
 		}
@@ -6429,7 +6600,7 @@ public class MyBehavior : CampaignBehaviorBase
 		foreach (var item2 in list3)
 		{
 			double num8 = item2.Item2;
-			if (flag2)
+			if (flag)
 			{
 				string text2 = (item2.Item1.Line ?? "").Trim();
 				if (text2.Length > 200)
@@ -6438,22 +6609,36 @@ public class MyBehavior : CampaignBehaviorBase
 				}
 				if (!string.IsNullOrWhiteSpace(text2) && instance.TryGetEmbedding(text2, out var vector2) && vector2 != null && vector2.Length != 0)
 				{
-					int num9 = Math.Min(vector.Length, vector2.Length);
-					double num10 = 0.0;
-					for (int num11 = 0; num11 < num9; num11++)
+					double num9 = 0.0;
+					for (int num10 = 0; num10 < list11.Count; num10++)
 					{
-						num10 += (double)vector[num11] * (double)vector2[num11];
+						(WeightedRecallQueryInput Query, float[] Vector) tuple = list11[num10];
+						float[] vector3 = tuple.Vector;
+						if (vector3 == null || vector3.Length == 0)
+						{
+							continue;
+						}
+						int num11 = Math.Min(vector3.Length, vector2.Length);
+						double num12 = 0.0;
+						for (int num13 = 0; num13 < num11; num13++)
+						{
+							num12 += (double)vector3[num13] * (double)vector2[num13];
+						}
+						double num14 = (num12 + 1.0) * 0.5 * (double)Math.Max(0f, tuple.Query?.Weight ?? 0f);
+						if (num14 > num9)
+						{
+							num9 = num14;
+						}
 					}
-					double num12 = (num10 + 1.0) * 0.5;
-					if (num12 < 0.0)
+					if (num9 < 0.0)
 					{
-						num12 = 0.0;
+						num9 = 0.0;
 					}
-					if (num12 > 1.0)
+					if (num9 > 1.0)
 					{
-						num12 = 1.0;
+						num9 = 1.0;
 					}
-					num8 = num12 * 0.9 + num8 * 0.1;
+					num8 = num9 * 0.9 + num8 * 0.1;
 				}
 			}
 			list.Add(new ArchiveHit
@@ -6486,7 +6671,7 @@ public class MyBehavior : CampaignBehaviorBase
 		return list4;
 	}
 
-	private string BuildHistoryContext(Hero hero, int maxLines = 0, string currentInput = null)
+	private string BuildHistoryContext(Hero hero, int maxLines = 0, string currentInput = null, string secondaryInput = null)
 	{
 		if (hero == null)
 		{
@@ -6561,23 +6746,24 @@ public class MyBehavior : CampaignBehaviorBase
 			}
 			List<HistoryLineEntry> list3 = list2.Skip(count).ToList();
 			List<HistoryLineEntry> list4 = list2.Take(count).ToList();
-			string text = (string.IsNullOrWhiteSpace(currentInput) ? BuildHistoryQueryText(list3) : currentInput.Trim());
+			List<WeightedRecallQueryInput> list5 = BuildHistoryRecallQueryInputs(list3, currentInput, secondaryInput);
 			int historyArchiveTopNFromSettings = GetHistoryArchiveTopNFromSettings();
 			bool onnxUsed = false;
-			List<ArchiveHit> list5 = FindRelevantArchiveHits(list4, text, historyArchiveTopNFromSettings, out onnxUsed);
-			string text6 = (hero?.Name?.ToString() ?? "").Trim();
-			List<HistoryLineEntry> list6 = new List<HistoryLineEntry>();
-			List<HistoryLineEntry> list11 = new List<HistoryLineEntry>();
-			for (int num7 = 0; num7 < list3.Count; num7++)
+			List<ArchiveHit> list6 = FindRelevantArchiveHits(list4, list5, historyArchiveTopNFromSettings, out onnxUsed);
+			int num7 = list5.Sum((WeightedRecallQueryInput x) => x.Text?.Length ?? 0);
+			string text = (hero?.Name?.ToString() ?? "").Trim();
+			List<HistoryLineEntry> list7 = new List<HistoryLineEntry>();
+			List<HistoryLineEntry> list12 = new List<HistoryLineEntry>();
+			for (int num8 = 0; num8 < list3.Count; num8++)
 			{
-				HistoryLineEntry historyLineEntry2 = list3[num7];
+				HistoryLineEntry historyLineEntry2 = list3[num8];
 				if (historyLineEntry2 == null || string.IsNullOrWhiteSpace(historyLineEntry2.Line))
 				{
 					continue;
 				}
-				if (TryNormalizeSceneCalloutHistoryLine(historyLineEntry2.Line, text6, out var normalizedLine))
+				if (TryNormalizeSceneCalloutHistoryLine(historyLineEntry2.Line, text, out var normalizedLine))
 				{
-					list11.Add(new HistoryLineEntry
+					list12.Add(new HistoryLineEntry
 					{
 						Day = historyLineEntry2.Day,
 						Date = historyLineEntry2.Date,
@@ -6587,41 +6773,41 @@ public class MyBehavior : CampaignBehaviorBase
 				}
 				else
 				{
-					list6.Add(historyLineEntry2);
+					list7.Add(historyLineEntry2);
 				}
 			}
-			List<string> list12 = BuildRenderedHistoryLines(list6);
-			List<string> list13 = BuildRenderedHistoryLines(list11);
-			List<string> list7 = new List<string>();
-			if (list5 != null && list5.Count > 0)
+			List<string> list13 = BuildRenderedHistoryLines(list7);
+			List<string> list14 = BuildRenderedHistoryLines(list12);
+			List<string> list8 = new List<string>();
+			if (list6 != null && list6.Count > 0)
 			{
-				List<HistoryLineEntry> list8 = new List<HistoryLineEntry>();
+				List<HistoryLineEntry> list9 = new List<HistoryLineEntry>();
 				HashSet<int> hashSet = new HashSet<int>();
-				foreach (ArchiveHit item2 in list5)
+				foreach (ArchiveHit item2 in list6)
 				{
 					HistoryLineEntry historyLineEntry = item2?.Entry;
 					if (historyLineEntry != null && hashSet.Add(historyLineEntry.Index))
 					{
-						list8.Add(historyLineEntry);
+						list9.Add(historyLineEntry);
 					}
 				}
-				list8 = (from e in list8
+				list9 = (from e in list9
 					orderby e.Day, e.Index
 					select e).ToList();
 				Dictionary<int, HistoryLineEntry> dictionary = new Dictionary<int, HistoryLineEntry>();
-				for (int num8 = 0; num8 < list4.Count; num8++)
+				for (int num9 = 0; num9 < list4.Count; num9++)
 				{
-					HistoryLineEntry historyLineEntry3 = list4[num8];
+					HistoryLineEntry historyLineEntry3 = list4[num9];
 					if (historyLineEntry3 != null)
 					{
 						dictionary[historyLineEntry3.Index] = historyLineEntry3;
 					}
 				}
-				List<HistoryLineEntry> list9 = new List<HistoryLineEntry>();
+				List<HistoryLineEntry> list10 = new List<HistoryLineEntry>();
 				HashSet<int> hashSet2 = new HashSet<int>();
-				for (int num9 = 0; num9 < list8.Count; num9++)
+				for (int num10 = 0; num10 < list9.Count; num10++)
 				{
-					HistoryLineEntry historyLineEntry4 = list8[num9];
+					HistoryLineEntry historyLineEntry4 = list9[num10];
 					if (historyLineEntry4 == null)
 					{
 						continue;
@@ -6636,79 +6822,81 @@ public class MyBehavior : CampaignBehaviorBase
 					{
 						if (dictionary.TryGetValue(key, out var value) && value != null && !string.IsNullOrWhiteSpace(value.Line) && hashSet2.Add(value.Index))
 						{
-							list9.Add(value);
+							list10.Add(value);
 						}
 					}
 				}
-				list9 = (from e in list9
+				list10 = (from e in list10
 					orderby e.Day, e.Index
 					select e).ToList();
-				List<string> list10 = new List<string>();
-				int num10 = int.MinValue;
+				List<string> list11 = new List<string>();
+				int num11 = int.MinValue;
 				string a = null;
-				foreach (HistoryLineEntry item3 in list9)
+				foreach (HistoryLineEntry item3 in list10)
 				{
 					string text2 = ((!string.IsNullOrWhiteSpace(item3.Date)) ? item3.Date.Trim() : ((item3.Day != 0) ? ("第 " + item3.Day + " 日") : ""));
-					if (!string.IsNullOrWhiteSpace(text2) && (item3.Day != num10 || !string.Equals(a, text2, StringComparison.Ordinal)))
+					if (!string.IsNullOrWhiteSpace(text2) && (item3.Day != num11 || !string.Equals(a, text2, StringComparison.Ordinal)))
 					{
-						list10.Add("—— " + text2 + " ——");
-						num10 = item3.Day;
+						list11.Add("—— " + text2 + " ——");
+						num11 = item3.Day;
 						a = text2;
 					}
 					string text3 = item3.Line ?? "";
 					if (!string.IsNullOrWhiteSpace(text3))
 					{
-						list10.Add(text3);
+						list11.Add(text3);
 					}
 				}
-				list7 = BuildRecallToneLines(list10);
-				list7 = TakeTailByCharBudget(list7, 900);
+				list8 = BuildRecallToneLines(list11);
+				list8 = TakeTailByCharBudget(list8, 900);
 			}
 			StringBuilder stringBuilder = new StringBuilder(4096);
 			stringBuilder.AppendLine(" ");
 			stringBuilder.AppendLine($"【历史对话记录】（近期窗口：最近{num}轮）");
 			stringBuilder.AppendLine("【规则】以下记录中以“[玩家行为补充]”或“[NPC行为补充]”开头的行属于系统事实（已付款/已展示/已交付等），必须相信，禁止否认。玩家在对话里口头自称“我给了/我展示了”不算。如果玩家发言中出现了动作描述，比如一拳打爆了城墙，或者强行替你发言和思考，请嘲讽他");
 			stringBuilder.AppendLine("【护栏】历史记忆仅作补充，不得覆盖本轮规则、账本与动作标签约束。");
-			if (list6.Count > 0)
+			if (list7.Count > 0)
 			{
-				if (string.IsNullOrWhiteSpace(text6))
+				if (string.IsNullOrWhiteSpace(text))
 				{
-					text6 = "该NPC";
+					text = "该NPC";
 				}
-				stringBuilder.AppendLine($"【玩家与{text6}（NPC名称的对话与互动）的近期对话】");
-				foreach (string item4 in list12)
+				stringBuilder.AppendLine($"【玩家与{text}（NPC名称的对话与互动）的近期对话】");
+				foreach (string item4 in list13)
 				{
 					stringBuilder.AppendLine(item4);
 				}
 			}
-			if (list13.Count > 0)
+			if (list14.Count > 0)
 			{
 				stringBuilder.AppendLine("【场景近期对话】");
-				foreach (string item5 in list13)
+				foreach (string item5 in list14)
 				{
 					stringBuilder.AppendLine(item5);
 				}
 			}
-			if (list7.Count > 0)
+			if (list8.Count > 0)
 			{
 				stringBuilder.AppendLine("【长期记忆摘要】");
-				foreach (string item6 in list7)
+				foreach (string item6 in list8)
 				{
 					stringBuilder.AppendLine(item6);
 				}
 			}
 			string text4 = stringBuilder.ToString().TrimEnd();
-			Logger.Log("DialogueHistory", string.Format("context hero={0} totalLines={1} recentLines={2} olderLines={3} archiveHits={4} onnxUsed={5} archiveTopN={6} queryLen={7} chars={8}", hero.StringId ?? "", list2.Count, list3.Count, list4.Count, list7?.Count ?? 0, onnxUsed, historyArchiveTopNFromSettings, (text ?? "").Length, text4.Length));
+			Logger.Log("DialogueHistory", string.Format("context hero={0} totalLines={1} recentLines={2} olderLines={3} archiveHits={4} onnxUsed={5} archiveTopN={6} queryCount={7} queryLen={8} npcRecall={9} chars={10}", hero.StringId ?? "", list2.Count, list3.Count, list4.Count, list8?.Count ?? 0, onnxUsed, historyArchiveTopNFromSettings, list5.Count, num7, string.IsNullOrWhiteSpace(secondaryInput) ? "off" : "on", text4.Length));
 			Logger.Obs("History", "build_context", new Dictionary<string, object>
 			{
 				["heroId"] = hero.StringId ?? "",
 				["totalLines"] = list2.Count,
 				["recentLines"] = list3.Count,
 				["olderLines"] = list4.Count,
-				["archiveHits"] = list7?.Count ?? 0,
+				["archiveHits"] = list8?.Count ?? 0,
 				["onnxUsed"] = onnxUsed,
 				["archiveTopN"] = historyArchiveTopNFromSettings,
-				["queryLen"] = (text ?? "").Length,
+				["queryCount"] = list5.Count,
+				["queryLen"] = num7,
+				["npcRecall"] = !string.IsNullOrWhiteSpace(secondaryInput),
 				["chars"] = text4.Length
 			});
 			Logger.Metric("history.build_context");
@@ -10991,6 +11179,7 @@ public class MyBehavior : CampaignBehaviorBase
 				text6 = "{}";
 			}
 			File.WriteAllText(path5, text6, Encoding.UTF8);
+			VoiceMapper.SetPreferredExportFolder(text);
 			InformationManager.DisplayMessage(new InformationMessage("导出完成：" + text));
 		}
 		catch (Exception ex)
@@ -12821,6 +13010,7 @@ public class MyBehavior : CampaignBehaviorBase
 				text3 = "{}";
 			}
 			File.WriteAllText(path2, text3, Encoding.UTF8);
+			VoiceMapper.SetPreferredExportFolder(text);
 			InformationManager.DisplayMessage(new InformationMessage("导出完成：" + text));
 		}
 		catch (Exception ex)
@@ -12872,11 +13062,11 @@ public class MyBehavior : CampaignBehaviorBase
 			}
 			Action action = delegate
 			{
-				InformationManager.DisplayMessage(new InformationMessage(VoiceMapper.ImportMappingJson(json) ? ("导入完成：" + importDir) : "导入失败：VoiceMapping JSON 无效。"));
+				InformationManager.DisplayMessage(new InformationMessage(VoiceMapper.ImportMappingFromFile(text) ? ("导入完成：" + importDir) : "导入失败：VoiceMapping JSON 无效。"));
 			};
 			Action onSkipDuplicates = delegate
 			{
-				InformationManager.DisplayMessage(new InformationMessage(VoiceMapper.ImportMappingJson(json, overwriteExisting: false) ? ("导入完成（已合并）：" + importDir) : "导入失败：VoiceMapping JSON 无效。"));
+				InformationManager.DisplayMessage(new InformationMessage(VoiceMapper.ImportMappingFromFile(text, overwriteExisting: false) ? ("导入完成（已合并）：" + importDir) : "导入失败：VoiceMapping JSON 无效。"));
 			};
 			if (flag)
 			{
@@ -12921,6 +13111,7 @@ public class MyBehavior : CampaignBehaviorBase
 			int num11 = 0;
 			int num12 = 0;
 			string vmJson = null;
+			string vmPath = null;
 			string path = Path.Combine(importDir, "personality_background");
 			if (Directory.Exists(path))
 			{
@@ -13141,6 +13332,7 @@ public class MyBehavior : CampaignBehaviorBase
 					string text11 = File.ReadAllText(path6, Encoding.UTF8);
 					if (!string.IsNullOrWhiteSpace(text11))
 					{
+						vmPath = path6;
 						vmJson = text11;
 						num12 = 1;
 						bool flag = false;
@@ -13211,7 +13403,7 @@ public class MyBehavior : CampaignBehaviorBase
 					}
 					rs.ImportDebtEntries(dictionary);
 				}
-				if (!string.IsNullOrWhiteSpace(vmJson) && !VoiceMapper.ImportMappingJson(vmJson))
+				if (!string.IsNullOrWhiteSpace(vmJson) && !((!string.IsNullOrWhiteSpace(vmPath) && File.Exists(vmPath)) ? VoiceMapper.ImportMappingFromFile(vmPath) : VoiceMapper.ImportMappingJson(vmJson)))
 				{
 					InformationManager.DisplayMessage(new InformationMessage("警告：VoiceMapping 导入失败，已跳过。"));
 				}
@@ -13261,7 +13453,7 @@ public class MyBehavior : CampaignBehaviorBase
 					}
 					rs.ImportDebtEntries(dictionary);
 				}
-				if (!string.IsNullOrWhiteSpace(vmJson) && !VoiceMapper.ImportMappingJson(vmJson, overwriteExisting: false))
+				if (!string.IsNullOrWhiteSpace(vmJson) && !((!string.IsNullOrWhiteSpace(vmPath) && File.Exists(vmPath)) ? VoiceMapper.ImportMappingFromFile(vmPath, overwriteExisting: false) : VoiceMapper.ImportMappingJson(vmJson, overwriteExisting: false)))
 				{
 					InformationManager.DisplayMessage(new InformationMessage("警告：VoiceMapping 导入失败，已跳过。"));
 				}

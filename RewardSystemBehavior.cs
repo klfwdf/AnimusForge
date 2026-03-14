@@ -12,6 +12,7 @@ using TaleWorlds.CampaignSystem.Roster;
 using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
+using TaleWorlds.MountAndBlade;
 
 namespace AnimusForge;
 
@@ -32,9 +33,15 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 
 		public string StringId { get; set; }
 
+		public string PromptStringId { get; set; }
+
+		public string ModifierStringId { get; set; }
+
 		public string Name { get; set; }
 
 		public int Count { get; set; }
+
+		public EquipmentElement EquipmentElement { get; set; }
 	}
 
 	public class DebtExportEntry
@@ -2563,6 +2570,155 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		return false;
 	}
 
+	private static bool TryGetSettlementBuyPrice(Settlement settlement, EquipmentElement equipmentElement, out int price)
+	{
+		price = 0;
+		if (equipmentElement.Item == null)
+		{
+			return false;
+		}
+		if (!TryGetSettlementBuyPrice(settlement, equipmentElement.Item, out price))
+		{
+			return false;
+		}
+		ItemModifier itemModifier = equipmentElement.ItemModifier;
+		if (itemModifier != null)
+		{
+			price = Math.Max(1, (int)Math.Round((float)price * itemModifier.PriceMultiplier, MidpointRounding.AwayFromZero));
+		}
+		return price > 0;
+	}
+
+	private static string BuildSettlementMerchantInventoryKey(EquipmentElement equipmentElement)
+	{
+		string text = equipmentElement.Item?.StringId ?? "";
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return "";
+		}
+		string text2 = equipmentElement.ItemModifier?.StringId ?? "";
+		if (string.IsNullOrWhiteSpace(text2))
+		{
+			return text;
+		}
+		return text + "@" + text2;
+	}
+
+	private static string BuildSettlementMerchantDisplayName(EquipmentElement equipmentElement)
+	{
+		if (equipmentElement.Item == null)
+		{
+			return "";
+		}
+		return equipmentElement.GetModifiedItemName()?.ToString() ?? equipmentElement.Item.Name?.ToString() ?? equipmentElement.Item.StringId ?? "";
+	}
+
+	private static bool TryParseSettlementMerchantPromptStringId(string promptStringId, out string itemId, out string modifierId)
+	{
+		itemId = "";
+		modifierId = "";
+		if (string.IsNullOrWhiteSpace(promptStringId))
+		{
+			return false;
+		}
+		string text = promptStringId.Trim();
+		int num = text.IndexOf('@');
+		if (num < 0)
+		{
+			itemId = text;
+			return !string.IsNullOrWhiteSpace(itemId);
+		}
+		itemId = text.Substring(0, num).Trim();
+		modifierId = text.Substring(num + 1).Trim();
+		return !string.IsNullOrWhiteSpace(itemId);
+	}
+
+	private static bool MatchesSettlementMerchantPromptStringId(EquipmentElement equipmentElement, string promptStringId)
+	{
+		if (equipmentElement.Item == null || string.IsNullOrWhiteSpace(promptStringId))
+		{
+			return false;
+		}
+		return string.Equals(BuildSettlementMerchantInventoryKey(equipmentElement), promptStringId.Trim(), StringComparison.OrdinalIgnoreCase);
+	}
+
+	private static string ResolveSettlementMerchantDisplayNameFromPromptStringId(string promptStringId)
+	{
+		if (!TryParseSettlementMerchantPromptStringId(promptStringId, out var itemId, out var modifierId))
+		{
+			return promptStringId ?? "";
+		}
+		ItemObject itemObject = ResolveItemById(itemId);
+		if (itemObject == null)
+		{
+			return promptStringId ?? "";
+		}
+		ItemModifier itemModifier = null;
+		if (!string.IsNullOrWhiteSpace(modifierId))
+		{
+			try
+			{
+				itemModifier = Game.Current?.ObjectManager?.GetObject<ItemModifier>(modifierId);
+			}
+			catch
+			{
+				itemModifier = null;
+			}
+		}
+		EquipmentElement equipmentElement = new EquipmentElement(itemObject, itemModifier, null, isQuestItem: false);
+		string text = BuildSettlementMerchantDisplayName(equipmentElement);
+		if (!string.IsNullOrWhiteSpace(text))
+		{
+			return text;
+		}
+		return itemObject.Name?.ToString() ?? itemId;
+	}
+
+	private static string GetItemQuantityUnit(ItemObject item)
+	{
+		if (item == null)
+		{
+			return "个";
+		}
+		ItemCategory itemCategory = item.ItemCategory;
+		if (itemCategory == DefaultItemCategories.Beer || itemCategory == DefaultItemCategories.Wine)
+		{
+			return "罐";
+		}
+		if (item.IsFood)
+		{
+			return "斤";
+		}
+		switch (item.Type)
+		{
+		case ItemObject.ItemTypeEnum.Arrows:
+		case ItemObject.ItemTypeEnum.Bolts:
+		case ItemObject.ItemTypeEnum.Thrown:
+		case ItemObject.ItemTypeEnum.SlingStones:
+		case ItemObject.ItemTypeEnum.Bullets:
+			return "袋";
+		case ItemObject.ItemTypeEnum.Polearm:
+			return "支";
+		case ItemObject.ItemTypeEnum.OneHandedWeapon:
+			return "把";
+		case ItemObject.ItemTypeEnum.TwoHandedWeapon:
+			return "柄";
+		case ItemObject.ItemTypeEnum.HeadArmor:
+		case ItemObject.ItemTypeEnum.BodyArmor:
+		case ItemObject.ItemTypeEnum.LegArmor:
+		case ItemObject.ItemTypeEnum.HandArmor:
+		case ItemObject.ItemTypeEnum.Cape:
+			return "件";
+		default:
+			return "个";
+		}
+	}
+
+	private static string FormatItemAmount(int amount, ItemObject item, string itemName)
+	{
+		return $"{amount}{GetItemQuantityUnit(item)}{itemName}";
+	}
+
 	private static int GetSettlementItemStock(Settlement settlement, string itemId)
 	{
 		try
@@ -2837,12 +2993,13 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		for (int i = 0; i < itemRoster.Count; i++)
 		{
 			ItemRosterElement elementCopyAtIndex = itemRoster.GetElementCopyAtIndex(i);
-			ItemObject item = elementCopyAtIndex.EquipmentElement.Item;
+			EquipmentElement equipmentElement = elementCopyAtIndex.EquipmentElement;
+			ItemObject item = equipmentElement.Item;
 			if (item == null || elementCopyAtIndex.Amount <= 0 || !MatchesSettlementMerchantKind(item, kind))
 			{
 				continue;
 			}
-			string text = item.StringId ?? "";
+			string text = BuildSettlementMerchantInventoryKey(equipmentElement);
 			if (!string.IsNullOrWhiteSpace(text))
 			{
 				if (!dictionary.TryGetValue(text, out var value))
@@ -2850,9 +3007,12 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 					value = (dictionary[text] = new RewardItemInfo
 					{
 						Item = item,
-						StringId = text,
-						Name = (item.Name?.ToString() ?? text),
-						Count = 0
+						StringId = item.StringId ?? "",
+						PromptStringId = text,
+						ModifierStringId = (equipmentElement.ItemModifier?.StringId ?? ""),
+						Name = BuildSettlementMerchantDisplayName(equipmentElement),
+						Count = 0,
+						EquipmentElement = equipmentElement
 					});
 				}
 				value.Count += elementCopyAtIndex.Amount;
@@ -2863,28 +3023,22 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		stringBuilder.Append("Gold: ").Append(value2).AppendLine();
 		if (includeGuidePrice)
 		{
-			stringBuilder.AppendLine("【价格说明】每个物品后面的 guidePrice 为当前城镇市场的即时指导单价（第纳尔/个）。");
+			stringBuilder.AppendLine("【价格说明】每个物品后面的 guidePrice 为当前城镇市场的即时指导单价（第纳尔/当前单位；箭矢、弩矢、标枪、飞刀等远程弹药按袋计）。");
 		}
 		stringBuilder.AppendLine("InventoryItems:");
-		int num = 0;
 		foreach (RewardItemInfo item2 in dictionary.Values.OrderByDescending((RewardItemInfo x) => x.Count).ThenBy((RewardItemInfo x) => x.Name, StringComparer.Ordinal))
 		{
-			stringBuilder.Append(item2.StringId).Append("|").Append(item2.Name)
+			stringBuilder.Append(item2.PromptStringId).Append("|").Append(item2.Name)
 				.Append("|")
 				.Append(item2.Count)
-				.Append("个");
-			if (includeGuidePrice && TryGetSettlementBuyPrice(settlement, item2.Item, out var price))
+				.Append(GetItemQuantityUnit(item2.EquipmentElement.Item));
+			if (includeGuidePrice && TryGetSettlementBuyPrice(settlement, item2.EquipmentElement, out var price))
 			{
 				stringBuilder.Append("|guidePrice=").Append(Math.Max(1, price));
 			}
 			stringBuilder.AppendLine();
-			num++;
-			if (num >= Math.Max(1, maxItems))
-			{
-				break;
-			}
 		}
-		if (num == 0)
+		if (dictionary.Count == 0)
 		{
 			stringBuilder.AppendLine("（当前没有可售货物）");
 		}
@@ -2969,14 +3123,66 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		return list;
 	}
 
+	private List<RewardItemInfo> GetAgentEquipmentItems(Agent agent)
+	{
+		List<RewardItemInfo> list = new List<RewardItemInfo>();
+		if (agent == null || !agent.IsActive())
+		{
+			return list;
+		}
+		EquipmentIndex[] array = new EquipmentIndex[7]
+		{
+			EquipmentIndex.NumAllWeaponSlots,
+			EquipmentIndex.Body,
+			EquipmentIndex.Leg,
+			EquipmentIndex.Gloves,
+			EquipmentIndex.Cape,
+			EquipmentIndex.WeaponItemBeginSlot,
+			EquipmentIndex.Weapon1
+		};
+		EquipmentIndex[] array2 = array;
+		foreach (EquipmentIndex index in array2)
+		{
+			ItemObject item = agent.SpawnEquipment[index].Item;
+			if (item == null)
+			{
+				item = agent.Equipment[index].Item;
+			}
+			if (item != null)
+			{
+				list.Add(new RewardItemInfo
+				{
+					Item = item,
+					StringId = item.StringId,
+					Name = (item.Name?.ToString() ?? item.StringId),
+					Count = 1
+				});
+			}
+		}
+		return list;
+	}
+
+	private List<RewardItemInfo> GetHeroVisibleEquipmentItemsForPrompt(Hero hero)
+	{
+		if (hero == Hero.MainHero && Agent.Main != null && Agent.Main.IsActive())
+		{
+			List<RewardItemInfo> agentEquipmentItems = GetAgentEquipmentItems(Agent.Main);
+			if (agentEquipmentItems.Count > 0)
+			{
+				return agentEquipmentItems;
+			}
+		}
+		return GetHeroBattleEquipmentItems(hero);
+	}
+
 	public string BuildVisibleEquipmentValueSummaryForAI(Hero hero, int maxItems = 8)
 	{
 		if (hero == null)
 		{
 			return string.Empty;
 		}
-		List<RewardItemInfo> heroBattleEquipmentItems = GetHeroBattleEquipmentItems(hero);
-		if (heroBattleEquipmentItems == null || heroBattleEquipmentItems.Count <= 0)
+		List<RewardItemInfo> heroVisibleEquipmentItemsForPrompt = GetHeroVisibleEquipmentItemsForPrompt(hero);
+		if (heroVisibleEquipmentItemsForPrompt == null || heroVisibleEquipmentItemsForPrompt.Count <= 0)
 		{
 			return string.Empty;
 		}
@@ -2985,7 +3191,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.AppendLine("【玩家可见装备估值】以下为玩家当前穿戴/携行装备的指导估值（第纳尔）：");
 		int num2 = 0;
-		foreach (RewardItemInfo item in heroBattleEquipmentItems.OrderByDescending((RewardItemInfo x) => x.Count).ThenBy((RewardItemInfo x) => x.StringId, StringComparer.Ordinal))
+		foreach (RewardItemInfo item in heroVisibleEquipmentItemsForPrompt.OrderByDescending((RewardItemInfo x) => x.Count).ThenBy((RewardItemInfo x) => x.StringId, StringComparer.Ordinal))
 		{
 			if (item != null && item.Item != null)
 			{
@@ -3002,7 +3208,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				stringBuilder.Append(item.StringId).Append("|").Append(item.Name ?? item.StringId)
 					.Append("|")
 					.Append(num4)
-					.Append("个")
+					.Append(GetItemQuantityUnit(item.Item))
 					.Append("|guidePrice=")
 					.Append(num3)
 					.Append("|lineValue=")
@@ -3030,7 +3236,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		stringBuilder.Append("Gold: ").Append(heroGold).AppendLine();
 		if (includeGuidePrice)
 		{
-			stringBuilder.AppendLine("【价格说明】每个物品后面的 guidePrice 为指导单价（第纳尔/个）。");
+			stringBuilder.AppendLine("【价格说明】每个物品后面的 guidePrice 为指导单价（第纳尔/当前单位；箭矢、弩矢、标枪、飞刀等远程弹药按袋计）。");
 		}
 		int num = 0;
 		stringBuilder.AppendLine("InventoryItems:");
@@ -3039,7 +3245,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			stringBuilder.Append(item.StringId).Append("|").Append(item.Name)
 				.Append("|")
 				.Append(item.Count)
-				.Append("个");
+				.Append(GetItemQuantityUnit(item.Item));
 			if (includeGuidePrice)
 			{
 				string key = item.StringId ?? "";
@@ -3065,7 +3271,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				stringBuilder.Append(item2.StringId).Append("|").Append(item2.Name)
 					.Append("|")
 					.Append(item2.Count)
-					.Append("个");
+					.Append(GetItemQuantityUnit(item2.Item));
 				if (includeGuidePrice)
 				{
 					string key2 = item2.StringId ?? "";
@@ -4087,12 +4293,12 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 					{
 						string text3 = (string.IsNullOrEmpty(itemName) ? value4 : itemName);
 						string text4 = text3;
-						giverFacts.Add($"你已经将 {num4} 个 {text4} 交给 {receiverName}。");
-						receiverFacts.Add($"你从 {giverName} 收到了 {num4} 个 {text4}。");
+						giverFacts.Add($"你已经将 {FormatItemAmount(num4, ResolveItemById(value4), text4)} 交给 {receiverName}。");
+						receiverFacts.Add($"你从 {giverName} 收到了 {FormatItemAmount(num4, ResolveItemById(value4), text4)}。");
 						if (num4 < result8)
 						{
-							giverFacts.Add($"你本轮原计划交付 {result8} 个 {text4}，但实际仅交付 {num4} 个（库存不足）。");
-							receiverFacts.Add($"{giverName} 原计划交付 {result8} 个 {text4}，实际仅交付 {num4} 个。");
+							giverFacts.Add($"你本轮原计划交付 {FormatItemAmount(result8, ResolveItemById(value4), text4)}，但实际仅交付 {FormatItemAmount(num4, ResolveItemById(value4), text4)}（库存不足）。");
+							receiverFacts.Add($"{giverName} 原计划交付 {FormatItemAmount(result8, ResolveItemById(value4), text4)}，实际仅交付 {FormatItemAmount(num4, ResolveItemById(value4), text4)}。");
 						}
 						if (giver != Hero.MainHero && receiver == Hero.MainHero)
 						{
@@ -4103,8 +4309,9 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 					{
 						string text5 = ResolveItemById(value4)?.Name?.ToString();
 						string text6 = (string.IsNullOrWhiteSpace(text5) ? "该物品" : text5);
-						giverFacts.Add($"你尝试交付 {result8} 个{text6}，但库存不足，本轮未实际交付。");
-						receiverFacts.Add($"{giverName} 试图交付 {result8} 个{text6}，但其库存不足，本轮未实际交付。");
+						ItemObject itemObject2 = ResolveItemById(value4);
+						giverFacts.Add($"你尝试交付 {FormatItemAmount(result8, itemObject2, text6)}，但库存不足，本轮未实际交付。");
+						receiverFacts.Add($"{giverName} 试图交付 {FormatItemAmount(result8, itemObject2, text6)}，但其库存不足，本轮未实际交付。");
 					}
 				}
 				return string.Empty;
@@ -4531,7 +4738,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 		string giverName = giverCharacter.Name?.ToString() ?? GetSettlementMerchantRoleLabel(kind);
 		Regex regex = new Regex("\\[ACTION:GIVE_GOLD:(\\d+)\\]", RegexOptions.IgnoreCase);
-		Regex regex2 = new Regex("\\[ACTION:GIVE_ITEM:([a-zA-Z0-9_]+):(\\d+)\\]", RegexOptions.IgnoreCase);
+		Regex regex2 = new Regex("\\[ACTION:GIVE_ITEM:([a-zA-Z0-9_@\\-]+):(\\d+)\\]", RegexOptions.IgnoreCase);
 		Regex regex3 = new Regex("\\[ACTION:TRADE_TRUST:(-?\\d+)\\]", RegexOptions.IgnoreCase);
 		Regex regex4 = new Regex("\\[ACTION:DEBT_[^\\]]+\\]", RegexOptions.IgnoreCase);
 		List<string> merchantFacts = new List<string>();
@@ -4560,20 +4767,21 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			{
 				string itemName;
 				int num = TransferItemFromSettlement(currentSettlement, receiver, value, result, giverName, out itemName);
-				string text = ((!string.IsNullOrWhiteSpace(itemName)) ? itemName : (ResolveItemById(value)?.Name?.ToString() ?? value));
+				string text = ((!string.IsNullOrWhiteSpace(itemName)) ? itemName : ResolveSettlementMerchantDisplayNameFromPromptStringId(value));
+				ItemObject itemObject = ResolveItemById(value.Split('@')[0]);
 				if (num > 0)
 				{
-					merchantFacts.Add($"你已经将 {num} 个 {text} 交给玩家。");
-					playerFacts.Add($"你从 {giverName} 收到了 {num} 个 {text}。");
+					merchantFacts.Add($"你已经将 {FormatItemAmount(num, itemObject, text)} 交给玩家。");
+					playerFacts.Add($"你从 {giverName} 收到了 {FormatItemAmount(num, itemObject, text)}。");
 					if (num < result)
 					{
-						merchantFacts.Add($"你原本打算交付 {result} 个 {text}，但当前商铺库存不足，实际只交付了 {num} 个。");
-						playerFacts.Add($"{giverName} 原本打算交付 {result} 个 {text}，但实际只交付了 {num} 个。");
+						merchantFacts.Add($"你原本打算交付 {FormatItemAmount(result, itemObject, text)}，但当前商铺库存不足，实际只交付了 {FormatItemAmount(num, itemObject, text)}。");
+						playerFacts.Add($"{giverName} 原本打算交付 {FormatItemAmount(result, itemObject, text)}，但实际只交付了 {FormatItemAmount(num, itemObject, text)}。");
 					}
 				}
 				else
 				{
-					merchantFacts.Add($"你试图交付 {result} 个 {text}，但当前商铺库存不足，本轮未实际交货。");
+					merchantFacts.Add($"你试图交付 {FormatItemAmount(result, itemObject, text)}，但当前商铺库存不足，本轮未实际交货。");
 				}
 			}
 			return string.Empty;
@@ -4780,13 +4988,13 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			string arg = giver?.Name?.ToString() ?? "某人";
 			string arg2 = itemName ?? itemStringId;
-			InformationManager.DisplayMessage(new InformationMessage($"{arg} 给了你 {num2} 个 {arg2}。"));
+			InformationManager.DisplayMessage(new InformationMessage($"{arg} 给了你 {FormatItemAmount(num2, itemObject, arg2)}。"));
 		}
 		else if (giver == Hero.MainHero)
 		{
 			string arg3 = receiver?.Name?.ToString() ?? "某人";
 			string arg4 = itemName ?? itemStringId;
-			InformationManager.DisplayMessage(new InformationMessage($"你给了 {arg3} {num2} 个 {arg4}。"));
+			InformationManager.DisplayMessage(new InformationMessage($"你给了 {arg3} {FormatItemAmount(num2, itemObject, arg4)}。"));
 		}
 		return num2;
 	}
@@ -4804,19 +5012,18 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			return 0;
 		}
-		ItemObject itemObject = null;
+		EquipmentElement equipmentElement = EquipmentElement.Invalid;
 		int num = 0;
 		for (int i = 0; i < itemRoster.Count; i++)
 		{
 			ItemRosterElement elementCopyAtIndex = itemRoster.GetElementCopyAtIndex(i);
-			ItemObject item = elementCopyAtIndex.EquipmentElement.Item;
-			if (item != null && string.Equals(item.StringId ?? "", itemStringId, StringComparison.OrdinalIgnoreCase))
+			if (MatchesSettlementMerchantPromptStringId(elementCopyAtIndex.EquipmentElement, itemStringId))
 			{
-				itemObject = item;
+				equipmentElement = elementCopyAtIndex.EquipmentElement;
 				num += Math.Max(0, elementCopyAtIndex.Amount);
 			}
 		}
-		if (itemObject == null || num <= 0)
+		if (equipmentElement.Item == null || num <= 0)
 		{
 			return 0;
 		}
@@ -4825,13 +5032,13 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			return 0;
 		}
-		itemRoster.AddToCounts(itemObject, -num2);
-		itemRoster2.AddToCounts(itemObject, num2);
-		itemName = itemObject.Name?.ToString() ?? itemStringId;
+		itemRoster.AddToCounts(equipmentElement, -num2);
+		itemRoster2.AddToCounts(equipmentElement, num2);
+		itemName = BuildSettlementMerchantDisplayName(equipmentElement);
 		if (receiver == Hero.MainHero)
 		{
 			string arg = ((!string.IsNullOrWhiteSpace(giverName)) ? giverName : (settlement.Name?.ToString() ?? "这座城镇的商人"));
-			InformationManager.DisplayMessage(new InformationMessage($"{arg} 给了你 {num2} 个 {itemName}。"));
+			InformationManager.DisplayMessage(new InformationMessage($"{arg} 给了你 {FormatItemAmount(num2, equipmentElement.Item, itemName)}。"));
 		}
 		return num2;
 	}

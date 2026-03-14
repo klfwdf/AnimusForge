@@ -2404,7 +2404,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 		return text;
 	}
 
-	private static void LogShoutLorePrequery(string phase, Agent agent, CharacterObject character, string kingdomIdOverride, string inputText)
+	private static void LogShoutLorePrequery(string phase, Agent agent, CharacterObject character, string kingdomIdOverride, string inputText, string secondaryInput = null)
 	{
 		try
 		{
@@ -2426,7 +2426,12 @@ public class ShoutBehavior : CampaignBehaviorBase
 			}
 			string kingdom = (kingdomIdOverride ?? "").Trim().ToLowerInvariant();
 			string traceId = DateTime.UtcNow.Ticks.ToString() + "_" + agentIdx;
-			Logger.Log("LoreMatch", $"shout_lore_prequery phase={phase} traceId={traceId} source={source} agentIndex={agentIdx} charId={charId} culture={cultureId} kingdomOverride={kingdom} role={role} inputLen={(inputText ?? "").Length}");
+			string text = (secondaryInput ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
+			if (text.Length > 72)
+			{
+				text = text.Substring(0, 72);
+			}
+			Logger.Log("LoreMatch", $"shout_lore_prequery phase={phase} traceId={traceId} source={source} agentIndex={agentIdx} charId={charId} culture={cultureId} kingdomOverride={kingdom} role={role} inputLen={(inputText ?? "").Length} npcRecall={(string.IsNullOrWhiteSpace(text) ? "off" : "on")} secondaryLen={text.Length}");
 		}
 		catch
 		{
@@ -2647,8 +2652,9 @@ public class ShoutBehavior : CampaignBehaviorBase
 		string virtualInput = "(沉默地长时间注视着你)";
 		CharacterObject co = targetAgent.Character as CharacterObject;
 		string kingdomIdOverride = TryGetKingdomIdOverrideFromAgent(targetAgent);
-		LogShoutLorePrequery("passive_reaction", targetAgent, co, kingdomIdOverride, virtualInput);
-		string precalculatedLore = AIConfigHandler.GetLoreContext(virtualInput, co, kingdomIdOverride);
+		string secondaryInput = GetLatestSceneNpcUtterance(targetAgent.Index);
+		LogShoutLorePrequery("passive_reaction", targetAgent, co, kingdomIdOverride, virtualInput, secondaryInput);
+		string precalculatedLore = AIConfigHandler.GetLoreContext(virtualInput, co, kingdomIdOverride, secondaryInput);
 
 		Dictionary<int, Hero> resolvedHeroes = new Dictionary<int, Hero>();
 		foreach (Agent a in source)
@@ -4004,8 +4010,9 @@ public class ShoutBehavior : CampaignBehaviorBase
 						resolvedHeroes[agent.Index] = co.HeroObject;
 					}
 					string kingdomIdOverride = TryGetKingdomIdOverrideFromAgent(agent);
-					LogShoutLorePrequery("group_precalc", agent, co, kingdomIdOverride, shoutText);
-					string lore = AIConfigHandler.GetLoreContext(shoutText, co, kingdomIdOverride);
+					string secondaryInput = GetLatestSceneNpcUtterance(agent.Index);
+					LogShoutLorePrequery("group_precalc", agent, co, kingdomIdOverride, shoutText, secondaryInput);
+					string lore = AIConfigHandler.GetLoreContext(shoutText, co, kingdomIdOverride, secondaryInput);
 					precalculatedLore[agent.Index] = lore ?? "";
 				}
 
@@ -5691,7 +5698,8 @@ public class ShoutBehavior : CampaignBehaviorBase
 			{
 				return "";
 			}
-			string text = MyBehavior.BuildHistoryContextForExternal(hero, 0, currentInput);
+			string secondaryInput = GetLatestSceneNpcUtterance(agentIndex);
+			string text = MyBehavior.BuildHistoryContextForExternal(hero, 0, currentInput, secondaryInput);
 			return (text ?? "").Trim();
 		}
 		catch

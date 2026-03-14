@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -18,6 +19,8 @@ internal static class VoiceMapper
 	private static bool _loaded;
 
 	private static readonly object _loadLock = new object();
+
+	private static string _preferredExportFolder = "";
 
 	private static readonly Dictionary<int, string> _sceneCache = new Dictionary<int, string>();
 
@@ -116,6 +119,23 @@ internal static class VoiceMapper
 			_fallbackVoice = "";
 		}
 		EnsureLoaded();
+	}
+
+	public static void SetPreferredExportFolder(string exportFolderPath)
+	{
+		string text = NormalizeExportFolderPath(exportFolderPath);
+		lock (_loadLock)
+		{
+			_preferredExportFolder = text ?? "";
+		}
+	}
+
+	public static string GetPreferredExportFolder()
+	{
+		lock (_loadLock)
+		{
+			return _preferredExportFolder ?? "";
+		}
 	}
 
 	public static string GetGroupDisplayName(string key)
@@ -318,7 +338,12 @@ internal static class VoiceMapper
 				return false;
 			}
 			string json = File.ReadAllText(filePath, Encoding.UTF8);
-			return ImportMappingJson(json, overwriteExisting, saveToFile);
+			bool flag = ImportMappingJson(json, overwriteExisting, saveToFile);
+			if (flag)
+			{
+				SetPreferredExportFolder(filePath);
+			}
+			return flag;
 		}
 		catch (Exception ex)
 		{
@@ -331,15 +356,12 @@ internal static class VoiceMapper
 	{
 		try
 		{
-			string text = "";
-			try
+			string path = ResolveConfigFilePath(forSave: true);
+			if (string.IsNullOrWhiteSpace(path))
 			{
-				text = Utilities.GetBasePath();
+				Logger.Log("VoiceMapper", "[WARN] 保存 VoiceMapping.json 失败：无法解析 PlayerExports 路径");
+				return;
 			}
-			catch
-			{
-			}
-			string path = System.IO.Path.Combine(text, "Modules", "AnimusForge", "ModuleData", "VoiceMapping.json");
 			string directoryName = System.IO.Path.GetDirectoryName(path);
 			if (!string.IsNullOrEmpty(directoryName) && !Directory.Exists(directoryName))
 			{
@@ -361,7 +383,7 @@ internal static class VoiceMapper
 			}
 			jObject["fallback"] = _fallbackVoice ?? "";
 			File.WriteAllText(path, jObject.ToString(Formatting.Indented), Encoding.UTF8);
-			Logger.Log("VoiceMapper", "VoiceMapping.json 已保存");
+			Logger.Log("VoiceMapper", "VoiceMapping.json 已保存: " + path);
 		}
 		catch (Exception ex)
 		{
@@ -437,21 +459,13 @@ internal static class VoiceMapper
 
 	private static void LoadConfig()
 	{
-		string text = "";
-		try
+		string text = ResolveConfigFilePath(forSave: false);
+		if (string.IsNullOrWhiteSpace(text) || !File.Exists(text))
 		{
-			text = Utilities.GetBasePath();
-		}
-		catch
-		{
-		}
-		string text2 = System.IO.Path.Combine(text, "Modules", "AnimusForge", "ModuleData", "VoiceMapping.json");
-		if (!File.Exists(text2))
-		{
-			Logger.Log("VoiceMapper", "VoiceMapping.json 未找到: " + text2 + "，将使用 MCM 全局 TtsVoiceId");
+			Logger.Log("VoiceMapper", "PlayerExports 下未找到 VoiceMapping.json，将使用 MCM 全局 TtsVoiceId");
 			return;
 		}
-		string json = File.ReadAllText(text2, Encoding.UTF8);
+		string json = File.ReadAllText(text, Encoding.UTF8);
 		JObject jObject = JObject.Parse(json);
 		_voicePools = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
 		string[] array = new string[6] { "male_young", "male_middle", "male_old", "female_young", "female_middle", "female_old" };
@@ -485,6 +499,118 @@ internal static class VoiceMapper
 		{
 			num += voicePool.Value.Count;
 		}
-		Logger.Log("VoiceMapper", $"VoiceMapping.json 已加载: {_voicePools.Count} 个分组, {num} 个声音, fallback={_fallbackVoice}");
+		Logger.Log("VoiceMapper", $"VoiceMapping.json 已加载: {_voicePools.Count} 个分组, {num} 个声音, fallback={_fallbackVoice}, path={text}");
+	}
+
+	private static string ResolveConfigFilePath(bool forSave)
+	{
+		string text = NormalizeExportFolderPath(GetPreferredExportFolder());
+		if (!string.IsNullOrWhiteSpace(text))
+		{
+			return EnsureVoiceMappingPath(text, forSave);
+		}
+		string playerExportsRootPath = GetPlayerExportsRootPath();
+		string text2 = FindLatestExportFolder(playerExportsRootPath, requireVoiceMappingFile: !forSave);
+		if (string.IsNullOrWhiteSpace(text2) && forSave)
+		{
+			text2 = FindLatestExportFolder(playerExportsRootPath, requireVoiceMappingFile: false);
+		}
+		if (string.IsNullOrWhiteSpace(text2))
+		{
+			if (!forSave)
+			{
+				return null;
+			}
+			try
+			{
+				Directory.CreateDirectory(playerExportsRootPath);
+				text2 = System.IO.Path.Combine(playerExportsRootPath, "_voice_mapping_runtime");
+				Directory.CreateDirectory(text2);
+			}
+			catch
+			{
+				return null;
+			}
+		}
+		lock (_loadLock)
+		{
+			_preferredExportFolder = text2;
+		}
+		return EnsureVoiceMappingPath(text2, forSave);
+	}
+
+	private static string EnsureVoiceMappingPath(string exportFolderPath, bool ensureDirectory)
+	{
+		if (string.IsNullOrWhiteSpace(exportFolderPath))
+		{
+			return null;
+		}
+		string path = System.IO.Path.Combine(exportFolderPath, "voice_mapping");
+		if (ensureDirectory && !Directory.Exists(path))
+		{
+			Directory.CreateDirectory(path);
+		}
+		return System.IO.Path.Combine(path, "VoiceMapping.json");
+	}
+
+	private static string GetPlayerExportsRootPath()
+	{
+		string text = "";
+		try
+		{
+			text = Utilities.GetBasePath();
+		}
+		catch
+		{
+		}
+		return System.IO.Path.Combine(text, "Modules", "AnimusForge", "PlayerExports");
+	}
+
+	private static string NormalizeExportFolderPath(string exportFolderPath)
+	{
+		if (string.IsNullOrWhiteSpace(exportFolderPath))
+		{
+			return null;
+		}
+		try
+		{
+			string fullPath = System.IO.Path.GetFullPath(exportFolderPath.Trim());
+			if (string.Equals(System.IO.Path.GetFileName(fullPath), "VoiceMapping.json", StringComparison.OrdinalIgnoreCase))
+			{
+				DirectoryInfo parent = Directory.GetParent(fullPath);
+				return parent?.Parent?.FullName;
+			}
+			if (string.Equals(System.IO.Path.GetFileName(fullPath), "voice_mapping", StringComparison.OrdinalIgnoreCase))
+			{
+				return Directory.GetParent(fullPath)?.FullName;
+			}
+			return fullPath;
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static string FindLatestExportFolder(string root, bool requireVoiceMappingFile)
+	{
+		try
+		{
+			if (!Directory.Exists(root))
+			{
+				return null;
+			}
+			DirectoryInfo directoryInfo = new DirectoryInfo(root);
+			IEnumerable<DirectoryInfo> source = directoryInfo.GetDirectories().OrderByDescending((DirectoryInfo d) => d.LastWriteTimeUtc);
+			if (requireVoiceMappingFile)
+			{
+				source = source.Where((DirectoryInfo d) => File.Exists(System.IO.Path.Combine(d.FullName, "voice_mapping", "VoiceMapping.json")));
+			}
+			return source.FirstOrDefault()?.FullName;
+		}
+		catch
+		{
+			return null;
+		}
 	}
 }
