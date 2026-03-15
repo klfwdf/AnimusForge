@@ -5,10 +5,15 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
+using Helpers;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Actions;
+using TaleWorlds.CampaignSystem.Encounters;
+using TaleWorlds.CampaignSystem.GameComponents;
+using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
+using TaleWorlds.MountAndBlade;
 
 namespace AnimusForge;
 
@@ -534,8 +539,27 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 	private static bool TryApplyMarriageAction(Hero left, Hero right, out string failReason)
 	{
 		failReason = "";
+		string text = DescribeHeroMarriageState(left);
+		string text2 = DescribeHeroMarriageState(right);
 		try
 		{
+			string marriageSuitabilityHint = BuildMarriageSuitabilityHint(left, right);
+			bool flag = ShouldForceMarriageDespiteEncounterRuntimeBlockers(left, right, out var forceReason);
+			if (flag)
+			{
+				Logger.Log("Romance", "[WARN] MarriageAction switching to forced encounter-safe path: " + forceReason);
+				Logger.Log("Romance", "[WARN] MarriageAction left=" + text);
+				Logger.Log("Romance", "[WARN] MarriageAction right=" + text2);
+				return TryForceApplyMarriageAction(left, right, out failReason);
+			}
+			if (!string.IsNullOrWhiteSpace(marriageSuitabilityHint))
+			{
+				failReason = marriageSuitabilityHint;
+				Logger.Log("Romance", "[WARN] MarriageAction blocked by precheck: " + marriageSuitabilityHint);
+				Logger.Log("Romance", "[WARN] MarriageAction left=" + text);
+				Logger.Log("Romance", "[WARN] MarriageAction right=" + text2);
+				return false;
+			}
 			Type type = typeof(ChangeRelationAction).Assembly.GetType("TaleWorlds.CampaignSystem.Actions.MarriageAction");
 			if (type == null)
 			{
@@ -551,7 +575,15 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 			if (method != null)
 			{
 				method.Invoke(null, new object[3] { left, right, true });
-				return true;
+				if (left?.Spouse == right && right?.Spouse == left)
+				{
+					return true;
+				}
+				failReason = "MarriageAction 未抛异常，但婚姻未实际建立。";
+				Logger.Log("Romance", "[WARN] MarriageAction returned without marriage state change.");
+				Logger.Log("Romance", "[WARN] MarriageAction left(after)=" + DescribeHeroMarriageState(left));
+				Logger.Log("Romance", "[WARN] MarriageAction right(after)=" + DescribeHeroMarriageState(right));
+				return false;
 			}
 			MethodInfo method2 = type.GetMethod("Apply", BindingFlags.Public | BindingFlags.Static, null, new Type[2]
 			{
@@ -561,15 +593,779 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 			if (method2 != null)
 			{
 				method2.Invoke(null, new object[2] { left, right });
-				return true;
+				if (left?.Spouse == right && right?.Spouse == left)
+				{
+					return true;
+				}
+				failReason = "MarriageAction 未抛异常，但婚姻未实际建立。";
+				Logger.Log("Romance", "[WARN] MarriageAction returned without marriage state change.");
+				Logger.Log("Romance", "[WARN] MarriageAction left(after)=" + DescribeHeroMarriageState(left));
+				Logger.Log("Romance", "[WARN] MarriageAction right(after)=" + DescribeHeroMarriageState(right));
+				return false;
 			}
 			failReason = "MarriageAction.Apply 签名不匹配。";
 			return false;
 		}
+		catch (TargetInvocationException ex)
+		{
+			Exception ex2 = ex.InnerException ?? ex;
+			if (left?.Spouse == right && right?.Spouse == left)
+			{
+				Logger.Log("Romance", "[WARN] MarriageAction threw after marriage state changed: " + ex2);
+				Logger.Log("Romance", "[WARN] MarriageAction left(partial-success)=" + DescribeHeroMarriageState(left));
+				Logger.Log("Romance", "[WARN] MarriageAction right(partial-success)=" + DescribeHeroMarriageState(right));
+				TryEmitMarriageFallbackNotifications(left, right);
+				return true;
+			}
+			failReason = ex2.GetType().Name + ": " + ex2.Message;
+			Logger.Log("Romance", "[ERROR] MarriageAction invoke failed: " + ex2);
+			Logger.Log("Romance", "[ERROR] MarriageAction left=" + text);
+			Logger.Log("Romance", "[ERROR] MarriageAction right=" + text2);
+			return false;
+		}
 		catch (Exception ex)
 		{
-			failReason = ex.Message;
+			if (left?.Spouse == right && right?.Spouse == left)
+			{
+				Logger.Log("Romance", "[WARN] MarriageAction wrapper threw after marriage state changed: " + ex);
+				Logger.Log("Romance", "[WARN] MarriageAction left(partial-success)=" + DescribeHeroMarriageState(left));
+				Logger.Log("Romance", "[WARN] MarriageAction right(partial-success)=" + DescribeHeroMarriageState(right));
+				TryEmitMarriageFallbackNotifications(left, right);
+				return true;
+			}
+			failReason = ex.GetType().Name + ": " + ex.Message;
+			Logger.Log("Romance", "[ERROR] MarriageAction invoke wrapper failed: " + ex);
+			Logger.Log("Romance", "[ERROR] MarriageAction left=" + text);
+			Logger.Log("Romance", "[ERROR] MarriageAction right=" + text2);
 			return false;
+		}
+	}
+
+	private static bool IsMarriageEncounterRuntimeContext()
+	{
+		try
+		{
+			if (LordEncounterBehavior.IsEncounterMeetingMissionActive || MeetingBattleRuntime.IsMeetingActive)
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (PlayerEncounter.Current != null)
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (Mission.Current != null)
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (Campaign.Current?.ConversationManager?.IsConversationInProgress == true)
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		return false;
+	}
+
+	private static bool HasEncounterRuntimeMarriageBlocker(Hero hero)
+	{
+		if (hero == null)
+		{
+			return false;
+		}
+		try
+		{
+			if (hero.PartyBelongedTo?.MapEvent != null)
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (hero.PartyBelongedTo?.Army != null)
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		return false;
+	}
+
+	private static bool ShouldForceMarriageDespiteEncounterRuntimeBlockers(Hero left, Hero right, out string reason)
+	{
+		reason = "";
+		if (!IsMarriageEncounterRuntimeContext())
+		{
+			return false;
+		}
+		if (!HasEncounterRuntimeMarriageBlocker(left) && !HasEncounterRuntimeMarriageBlocker(right))
+		{
+			return false;
+		}
+		try
+		{
+			if (Campaign.Current?.Models?.MarriageModel?.IsCoupleSuitableForMarriage(left, right) == true)
+			{
+				return false;
+			}
+		}
+		catch
+		{
+		}
+		if (!TryValidateMarriagePairIgnoringRuntimeBlockers(left, right, out reason))
+		{
+			return false;
+		}
+		reason = "当前处于会面/遭遇流程，且仅被地图事件/军团等运行时状态拦截；已改走强制婚姻执行路径。";
+		return true;
+	}
+
+	private static bool TryValidateMarriagePairIgnoringRuntimeBlockers(Hero left, Hero right, out string reason)
+	{
+		reason = "";
+		if (left == null || right == null)
+		{
+			reason = "未找到婚配双方。";
+			return false;
+		}
+		var marriageModel = Campaign.Current?.Models?.MarriageModel;
+		if (marriageModel == null)
+		{
+			reason = "未找到原版 MarriageModel。";
+			return false;
+		}
+		if (!marriageModel.IsClanSuitableForMarriage(left.Clan) || !marriageModel.IsClanSuitableForMarriage(right.Clan))
+		{
+			reason = "有一方家族当前不适合结婚。";
+			return false;
+		}
+		try
+		{
+			if (left.Clan?.Leader == left && right.Clan?.Leader == right)
+			{
+				reason = "双方都是族长。";
+				return false;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (left.IsFemale == right.IsFemale)
+			{
+				reason = "双方性别相同。";
+				return false;
+			}
+		}
+		catch
+		{
+		}
+		if (!CanHeroMarryIgnoringRuntimeBlockers(left, out reason) || !CanHeroMarryIgnoringRuntimeBlockers(right, out reason))
+		{
+			return false;
+		}
+		try
+		{
+			MethodInfo methodInfo = marriageModel.GetType().GetMethod("AreHeroesRelated", BindingFlags.Instance | BindingFlags.NonPublic);
+			if (methodInfo == null)
+			{
+				methodInfo = typeof(DefaultMarriageModel).GetMethod("AreHeroesRelated", BindingFlags.Instance | BindingFlags.NonPublic);
+			}
+			if (methodInfo != null && methodInfo.Invoke(marriageModel, new object[3] { left, right, 3 }) is bool flag && flag)
+			{
+				reason = "双方存在近亲关系。";
+				return false;
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("Romance", "[WARN] AreHeroesRelated reflection check failed: " + ex);
+		}
+		try
+		{
+			Hero courtedHeroInOtherClan = Romance.GetCourtedHeroInOtherClan(left, right);
+			if (courtedHeroInOtherClan != null && courtedHeroInOtherClan != right)
+			{
+				reason = "玩家方当前已有其他婚配对象。";
+				return false;
+			}
+			Hero courtedHeroInOtherClan2 = Romance.GetCourtedHeroInOtherClan(right, left);
+			if (courtedHeroInOtherClan2 != null && courtedHeroInOtherClan2 != left)
+			{
+				reason = "对方当前已有其他婚配对象。";
+				return false;
+			}
+		}
+		catch (Exception ex2)
+		{
+			Logger.Log("Romance", "[WARN] Courtship conflict check failed: " + ex2);
+		}
+		return true;
+	}
+
+	private static bool CanHeroMarryIgnoringRuntimeBlockers(Hero hero, out string reason)
+	{
+		reason = "";
+		if (hero == null)
+		{
+			reason = "未找到婚配对象。";
+			return false;
+		}
+		try
+		{
+			if (!hero.IsActive)
+			{
+				reason = $"{hero.Name} 当前未激活。";
+				return false;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (hero.Spouse != null)
+			{
+				reason = $"{hero.Name} 已有配偶。";
+				return false;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (!hero.IsLord)
+			{
+				reason = $"{hero.Name} 不是领主英雄。";
+				return false;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (hero.IsMinorFactionHero || hero.IsNotable || hero.IsTemplate)
+			{
+				reason = $"{hero.Name} 当前不属于可婚配英雄类型。";
+				return false;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			int num = (hero.IsFemale ? (Campaign.Current?.Models?.MarriageModel?.MinimumMarriageAgeFemale ?? 18) : (Campaign.Current?.Models?.MarriageModel?.MinimumMarriageAgeMale ?? 18));
+			if (hero.CharacterObject?.Age < (float)num)
+			{
+				reason = $"{hero.Name} 年龄未达到婚配要求。";
+				return false;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			bool result = true;
+			CampaignEventDispatcher.Instance.CanHeroMarry(hero, ref result);
+			if (!result)
+			{
+				reason = $"{hero.Name} 当前被其他系统规则禁止结婚。";
+				return false;
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("Romance", "[WARN] CanHeroMarry event check failed: " + ex);
+		}
+		return true;
+	}
+
+	private static bool TryForceApplyMarriageAction(Hero left, Hero right, out string failReason)
+	{
+		failReason = "";
+		try
+		{
+			if (left == null || right == null)
+			{
+				failReason = "未找到婚配双方。";
+				return false;
+			}
+			var marriageModel = Campaign.Current?.Models?.MarriageModel;
+			if (marriageModel == null)
+			{
+				failReason = "未找到原版 MarriageModel。";
+				return false;
+			}
+			Hero hero = left;
+			Hero hero2 = right;
+			hero.Spouse = hero2;
+			hero2.Spouse = hero;
+			try
+			{
+				ChangeRelationAction.ApplyRelationChangeBetweenHeroes(hero, hero2, marriageModel.GetEffectiveRelationIncrease(hero, hero2), false);
+			}
+			catch (Exception ex)
+			{
+				Logger.Log("Romance", "[WARN] Force marriage relation increase failed: " + ex);
+			}
+			Clan clanAfterMarriage = marriageModel.GetClanAfterMarriage(hero, hero2);
+			if (clanAfterMarriage != hero.Clan)
+			{
+				Hero hero3 = hero;
+				hero = hero2;
+				hero2 = hero3;
+			}
+			bool flag = false;
+			try
+			{
+				CampaignEventDispatcher.Instance.OnBeforeHeroesMarried(hero, hero2, true);
+			}
+			catch (Exception ex2)
+			{
+				flag = true;
+				Logger.Log("Romance", "[WARN] Force marriage event chain failed, will continue and backfill notifications: " + ex2);
+			}
+			if (hero.Clan != clanAfterMarriage)
+			{
+				HandleClanChangeAfterMarriageCompat(hero, clanAfterMarriage);
+			}
+			if (hero2.Clan != clanAfterMarriage)
+			{
+				HandleClanChangeAfterMarriageCompat(hero2, clanAfterMarriage);
+			}
+			try
+			{
+				MethodInfo methodInfo = typeof(Romance).GetMethod("EndAllCourtships", BindingFlags.Static | BindingFlags.NonPublic);
+				if (methodInfo != null)
+				{
+					methodInfo.Invoke(null, new object[1] { hero });
+					methodInfo.Invoke(null, new object[1] { hero2 });
+				}
+			}
+			catch (Exception ex3)
+			{
+				Logger.Log("Romance", "[WARN] Force marriage end courtships failed: " + ex3);
+			}
+			try
+			{
+				ChangeRomanticStateAction.Apply(hero, hero2, Romance.RomanceLevelEnum.Marriage);
+			}
+			catch (Exception ex4)
+			{
+				Logger.Log("Romance", "[WARN] Force marriage romantic state update failed: " + ex4);
+			}
+			if (left?.Spouse == right && right?.Spouse == left)
+			{
+				if (flag)
+				{
+					TryEmitMarriageFallbackNotifications(left, right);
+				}
+				return true;
+			}
+			failReason = "强制婚姻执行后婚姻未实际建立。";
+			return false;
+		}
+		catch (Exception ex)
+		{
+			if (left?.Spouse == right && right?.Spouse == left)
+			{
+				Logger.Log("Romance", "[WARN] Force marriage threw after marriage state changed: " + ex);
+				TryEmitMarriageFallbackNotifications(left, right);
+				return true;
+			}
+			failReason = ex.GetType().Name + ": " + ex.Message;
+			Logger.Log("Romance", "[ERROR] Force marriage failed: " + ex);
+			return false;
+		}
+	}
+
+	private static void HandleClanChangeAfterMarriageCompat(Hero hero, Clan clanAfterMarriage)
+	{
+		if (hero == null || clanAfterMarriage == null)
+		{
+			return;
+		}
+		Clan clan = hero.Clan;
+		if (clan == null)
+		{
+			hero.Clan = clanAfterMarriage;
+			return;
+		}
+		try
+		{
+			if (hero.GovernorOf != null)
+			{
+				ChangeGovernorAction.RemoveGovernorOf(hero);
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("Romance", "[WARN] Remove governor during force marriage failed: " + ex);
+		}
+		try
+		{
+			if (hero.PartyBelongedTo != null)
+			{
+				if (clan.Kingdom != clanAfterMarriage.Kingdom)
+				{
+					if (hero.PartyBelongedTo.Army != null)
+					{
+						if (hero.PartyBelongedTo.Army.LeaderParty == hero.PartyBelongedTo)
+						{
+							DisbandArmyAction.ApplyByUnknownReason(hero.PartyBelongedTo.Army);
+						}
+						else
+						{
+							hero.PartyBelongedTo.Army = null;
+						}
+					}
+					IFaction kingdom = clanAfterMarriage.Kingdom;
+					FactionHelper.FinishAllRelatedHostileActionsOfNobleToFaction(hero, kingdom ?? clanAfterMarriage);
+				}
+				MobileParty partyBelongedTo = hero.PartyBelongedTo;
+				bool flag = hero.PartyBelongedTo.LeaderHero == hero;
+				partyBelongedTo.MemberRoster.RemoveTroop(hero.CharacterObject, 1, default(UniqueTroopDescriptor), 0);
+				MakeHeroFugitiveAction.Apply(hero, false);
+				if (flag && partyBelongedTo.IsLordParty)
+				{
+					DisbandPartyAction.StartDisband(partyBelongedTo);
+				}
+			}
+		}
+		catch (Exception ex2)
+		{
+			Logger.Log("Romance", "[WARN] Party/clan transfer during force marriage failed: " + ex2);
+		}
+		hero.Clan = clanAfterMarriage;
+		try
+		{
+			foreach (Hero item in clan.Heroes)
+			{
+				item?.UpdateHomeSettlement();
+			}
+			foreach (Hero item2 in clanAfterMarriage.Heroes)
+			{
+				item2?.UpdateHomeSettlement();
+			}
+		}
+		catch (Exception ex3)
+		{
+			Logger.Log("Romance", "[WARN] UpdateHomeSettlement during force marriage failed: " + ex3);
+		}
+	}
+
+	private static string BuildMarriageSuitabilityHint(Hero left, Hero right)
+	{
+		if (left == null || right == null)
+		{
+			return "未找到婚配双方。";
+		}
+		List<string> list = new List<string>();
+		try
+		{
+			var marriageModel = Campaign.Current?.Models?.MarriageModel;
+			if (marriageModel != null && !marriageModel.IsCoupleSuitableForMarriage(left, right))
+			{
+				list.Add("原版 MarriageModel 判定该组合当前不适合结婚");
+			}
+		}
+		catch (Exception ex)
+		{
+			list.Add("读取原版婚配判定失败: " + ex.GetType().Name);
+		}
+		try
+		{
+			if (left.IsFemale == right.IsFemale)
+			{
+				list.Add("双方性别相同");
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (left.Clan == null || right.Clan == null)
+			{
+				list.Add("有一方没有家族");
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (left.Clan?.Leader == left && right.Clan?.Leader == right)
+			{
+				list.Add("双方都是族长");
+			}
+		}
+		catch
+		{
+		}
+		TryAppendHeroMarriageBlockers(left, "玩家方", list);
+		TryAppendHeroMarriageBlockers(right, "对方", list);
+		return string.Join("；", list.Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase));
+	}
+
+	private static void TryAppendHeroMarriageBlockers(Hero hero, string sideLabel, List<string> reasons)
+	{
+		if (hero == null || reasons == null)
+		{
+			return;
+		}
+		try
+		{
+			if (!hero.IsActive)
+			{
+				reasons.Add(sideLabel + "未激活");
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (hero.Spouse != null)
+			{
+				reasons.Add(sideLabel + "已有配偶");
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (!hero.IsLord)
+			{
+				reasons.Add(sideLabel + "不是领主英雄");
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (hero.IsMinorFactionHero)
+			{
+				reasons.Add(sideLabel + "属于次要派系英雄");
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (hero.IsNotable)
+			{
+				reasons.Add(sideLabel + "是城镇要人");
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (hero.IsTemplate)
+			{
+				reasons.Add(sideLabel + "是模板英雄");
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (hero.PartyBelongedTo?.MapEvent != null)
+			{
+				reasons.Add(sideLabel + "正在地图事件中");
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (hero.PartyBelongedTo?.Army != null)
+			{
+				reasons.Add(sideLabel + "正在军团中");
+			}
+		}
+		catch
+		{
+		}
+	}
+
+	private static string DescribeHeroMarriageState(Hero hero)
+	{
+		if (hero == null)
+		{
+			return "null";
+		}
+		List<string> list = new List<string>();
+		try
+		{
+			list.Add("id=" + (hero.StringId ?? ""));
+		}
+		catch
+		{
+		}
+		try
+		{
+			list.Add("name=" + hero.Name);
+		}
+		catch
+		{
+		}
+		try
+		{
+			list.Add("gender=" + (hero.IsFemale ? "F" : "M"));
+		}
+		catch
+		{
+		}
+		try
+		{
+			list.Add("age=" + hero.Age.ToString("0"));
+		}
+		catch
+		{
+		}
+		try
+		{
+			list.Add("clan=" + (hero.Clan?.StringId ?? "null"));
+		}
+		catch
+		{
+		}
+		try
+		{
+			list.Add("leader=" + ((hero.Clan?.Leader == hero) ? "true" : "false"));
+		}
+		catch
+		{
+		}
+		try
+		{
+			list.Add("spouse=" + (hero.Spouse?.StringId ?? "null"));
+		}
+		catch
+		{
+		}
+		try
+		{
+			list.Add("active=" + hero.IsActive);
+		}
+		catch
+		{
+		}
+		try
+		{
+			list.Add("lord=" + hero.IsLord);
+		}
+		catch
+		{
+		}
+		try
+		{
+			list.Add("template=" + hero.IsTemplate);
+		}
+		catch
+		{
+		}
+		try
+		{
+			list.Add("notable=" + hero.IsNotable);
+		}
+		catch
+		{
+		}
+		try
+		{
+			list.Add("minorFaction=" + hero.IsMinorFactionHero);
+		}
+		catch
+		{
+		}
+		try
+		{
+			list.Add("prisoner=" + hero.IsPrisoner);
+		}
+		catch
+		{
+		}
+		try
+		{
+			list.Add("mapEvent=" + ((hero.PartyBelongedTo?.MapEvent != null) ? "true" : "false"));
+		}
+		catch
+		{
+		}
+		try
+		{
+			list.Add("army=" + ((hero.PartyBelongedTo?.Army != null) ? "true" : "false"));
+		}
+		catch
+		{
+		}
+		return string.Join(", ", list);
+	}
+
+	private static void TryEmitMarriageFallbackNotifications(Hero left, Hero right)
+	{
+		try
+		{
+			if (left == null || right == null)
+			{
+				return;
+			}
+			Hero hero = (left.IsFemale ? right : left);
+			Hero hero2 = (left.IsFemale ? left : right);
+			bool flag = LordEncounterBehavior.IsEncounterMeetingMissionActive || MeetingBattleRuntime.IsMeetingActive || Mission.Current != null;
+			if (!flag)
+			{
+				MBInformationManager.ShowSceneNotification(new TaleWorlds.CampaignSystem.SceneInformationPopupTypes.MarriageSceneNotificationItem(hero, hero2, CampaignTime.Now, SceneNotificationData.RelevantContextType.Any));
+			}
+			var characterMarriedLogEntry = new TaleWorlds.CampaignSystem.LogEntries.CharacterMarriedLogEntry(left, right);
+			TaleWorlds.CampaignSystem.LogEntries.LogEntry.AddLogEntry(characterMarriedLogEntry);
+			if (left.Clan == Clan.PlayerClan || right.Clan == Clan.PlayerClan)
+			{
+				Campaign.Current?.CampaignInformationManager?.NewMapNoticeAdded(new TaleWorlds.CampaignSystem.MapNotificationTypes.MarriageMapNotification(left, right, characterMarriedLogEntry.GetEncyclopediaText(), CampaignTime.Now));
+			}
+			InformationManager.DisplayMessage(new InformationMessage(flag ? "[婚姻系统] 检测到婚姻已生效；当前在会面/任务场景中，已补发婚姻记录与提示。" : "[婚姻系统] 检测到婚姻已生效，已补发婚礼通知。", Color.FromUint(4283878655u)));
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("Romance", "[ERROR] Emit marriage fallback notifications failed: " + ex);
 		}
 	}
 
@@ -1528,6 +2324,11 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 			string marriageRuntimeInstructionState = GetMarriageRuntimeInstructionState(marriageRuntimeFacts);
 			Dictionary<string, string> dictionary = BuildMarriageRuntimeTokens(marriageRuntimeFacts);
 			string text = AIConfigHandler.ResolveRuleRuntimeText("marriage", marriageRuntimeInstructionState, forConstraint: false, dictionary);
+			string text2 = BuildClanMarriageSituationPrompt(hero);
+			if (!string.IsNullOrWhiteSpace(text2))
+			{
+				text = string.IsNullOrWhiteSpace(text) ? text2 : (text.TrimEnd() + Environment.NewLine + text2);
+			}
 			return (text ?? "").Trim();
 		}
 		catch
@@ -1556,10 +2357,15 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 			string marriageRuntimeConstraintState = GetMarriageRuntimeConstraintState(marriageRuntimeFacts);
 			Dictionary<string, string> dictionary = BuildMarriageRuntimeTokens(marriageRuntimeFacts);
 			string text = AIConfigHandler.ResolveRuleRuntimeText("marriage", marriageRuntimeConstraintState, forConstraint: true, dictionary);
-			string text2 = GetMarriagePrestigeAdvantageHint(marriageRuntimeFacts);
+			string text2 = BuildClanMarriageSituationPrompt(hero);
 			if (!string.IsNullOrWhiteSpace(text2))
 			{
 				text = string.IsNullOrWhiteSpace(text) ? text2 : (text.TrimEnd() + Environment.NewLine + text2);
+			}
+			string text3 = GetMarriagePrestigeAdvantageHint(marriageRuntimeFacts);
+			if (!string.IsNullOrWhiteSpace(text3))
+			{
+				text = string.IsNullOrWhiteSpace(text) ? text3 : (text.TrimEnd() + Environment.NewLine + text3);
 			}
 			return (text ?? "").Trim();
 		}

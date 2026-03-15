@@ -3409,6 +3409,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 					{
 						GiveGoldAction.ApplyBetweenCharacters(Hero.MainHero, null, num, disableNotification: true);
 						currentSettlement.SettlementComponent?.ChangeGold(num);
+						RewardSystemBehavior.Instance?.RecordPlayerPrepaidTransferForMerchant(currentSettlement, settlementMerchantKind, num, null, 0);
 						RewardSystemBehavior.Instance?.AppendSettlementMerchantNpcFact(currentSettlement, settlementMerchantKind, $"你已经收下了玩家交来的 {num} 第纳尔。", characterObject?.Name?.ToString());
 					}
 					else
@@ -3441,6 +3442,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 					else if (flag && currentSettlement?.ItemRoster != null)
 					{
 						currentSettlement.ItemRoster.AddToCounts(shoutPendingTradeItem.Item, num2);
+						RewardSystemBehavior.Instance?.RecordPlayerPrepaidTransferForMerchant(currentSettlement, settlementMerchantKind, 0, shoutPendingTradeItem.ItemId, num2);
 						RewardSystemBehavior.Instance?.AppendSettlementMerchantNpcFact(currentSettlement, settlementMerchantKind, $"你已经收下了玩家交来的 {num2} 个 {shoutPendingTradeItem.Item?.Name?.ToString() ?? shoutPendingTradeItem.ItemId}。", characterObject?.Name?.ToString());
 					}
 					if (hero != null)
@@ -3749,6 +3751,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 			return "";
 		}
 		string text = GetPlayerDisplayNameForShout();
+		string text2 = GetShoutTradeTargetDisplayName();
 		List<string> list = new List<string>();
 		for (int i = 0; i < _shoutPendingTradeItems.Count; i++)
 		{
@@ -3771,9 +3774,9 @@ public class ShoutBehavior : CampaignBehaviorBase
 		}
 		if (isGive)
 		{
-			return text + "已经将 " + string.Join("、", list) + " 交给你。";
+			return text + "已经将 " + string.Join("、", list) + " 交给 " + text2 + "。";
 		}
-		return text + "给你看了看 " + string.Join("、", list) + "，但是没有将这些东西交给你。";
+		return text + "给 " + text2 + " 看了看 " + string.Join("、", list) + "，证明自己有这些东西。";
 	}
 
 	private static string GetPlayerDisplayNameForShout()
@@ -3784,6 +3787,12 @@ public class ShoutBehavior : CampaignBehaviorBase
 			text = (Hero.MainHero?.FirstName?.ToString() ?? "").Trim();
 		}
 		return string.IsNullOrWhiteSpace(text) ? "玩家" : text;
+	}
+
+	private string GetShoutTradeTargetDisplayName()
+	{
+		string text = (_shoutTradeTargetNpc?.Name ?? "").Trim();
+		return string.IsNullOrWhiteSpace(text) ? "对方" : text;
 	}
 
 	private static string BuildSingleNpcSceneReplyInstruction(string npcName, bool hasMultiplePresentNpcs)

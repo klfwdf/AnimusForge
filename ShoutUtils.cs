@@ -52,17 +52,9 @@ public static class ShoutUtils
 
 	private static readonly object _unnamedProfilesLock = new object();
 
-	private static bool _unnamedProfilesLoaded;
-
 	private static Dictionary<string, UnnamedNpcPersonaProfile> _unnamedProfiles = new Dictionary<string, UnnamedNpcPersonaProfile>();
 
 	private static HashSet<string> _unnamedProfilesInFlight = new HashSet<string>();
-
-	private static string GetUnnamedProfilesPath()
-	{
-		string basePath = Utilities.GetBasePath();
-		return System.IO.Path.Combine(basePath, "Modules", "AnimusForge", "ModuleData", "UnnamedNpcProfiles.json");
-	}
 
 	private static string SanitizeFileName(string s)
 	{
@@ -104,30 +96,7 @@ public static class ShoutUtils
 	{
 		lock (_unnamedProfilesLock)
 		{
-			if (_unnamedProfilesLoaded)
-			{
-				return;
-			}
-			_unnamedProfilesLoaded = true;
-			_unnamedProfiles = new Dictionary<string, UnnamedNpcPersonaProfile>();
-			try
-			{
-				string unnamedProfilesPath = GetUnnamedProfilesPath();
-				if (!File.Exists(unnamedProfilesPath))
-				{
-					return;
-				}
-				string value = File.ReadAllText(unnamedProfilesPath);
-				if (!string.IsNullOrWhiteSpace(value))
-				{
-					UnnamedNpcProfilesFile unnamedNpcProfilesFile = JsonConvert.DeserializeObject<UnnamedNpcProfilesFile>(value);
-					if (unnamedNpcProfilesFile?.Profiles != null)
-					{
-						_unnamedProfiles = unnamedNpcProfilesFile.Profiles;
-					}
-				}
-			}
-			catch
+			if (_unnamedProfiles == null)
 			{
 				_unnamedProfiles = new Dictionary<string, UnnamedNpcPersonaProfile>();
 			}
@@ -136,40 +105,6 @@ public static class ShoutUtils
 
 	private static void SaveUnnamedProfilesUnsafe()
 	{
-		string unnamedProfilesPath = GetUnnamedProfilesPath();
-		string directoryName = System.IO.Path.GetDirectoryName(unnamedProfilesPath);
-		if (!string.IsNullOrEmpty(directoryName) && !Directory.Exists(directoryName))
-		{
-			Directory.CreateDirectory(directoryName);
-		}
-		UnnamedNpcProfilesFile value = new UnnamedNpcProfilesFile
-		{
-			Profiles = (_unnamedProfiles ?? new Dictionary<string, UnnamedNpcPersonaProfile>())
-		};
-		string contents = JsonConvert.SerializeObject(value, Formatting.Indented);
-		File.WriteAllText(unnamedProfilesPath, contents, Encoding.UTF8);
-		try
-		{
-			string text = System.IO.Path.Combine(directoryName ?? "", "UnnamedNpcProfiles");
-			if (!Directory.Exists(text))
-			{
-				Directory.CreateDirectory(text);
-			}
-			if (_unnamedProfiles == null)
-			{
-				return;
-			}
-			foreach (KeyValuePair<string, UnnamedNpcPersonaProfile> unnamedProfile in _unnamedProfiles)
-			{
-				string text2 = SanitizeFileName(unnamedProfile.Key);
-				string path = System.IO.Path.Combine(text, text2 + "__" + StableHash8(unnamedProfile.Key) + ".json");
-				string contents2 = JsonConvert.SerializeObject(unnamedProfile.Value ?? new UnnamedNpcPersonaProfile(), Formatting.Indented);
-				File.WriteAllText(path, contents2, Encoding.UTF8);
-			}
-		}
-		catch
-		{
-		}
 	}
 
 	private static string GetUnnamedKey(Agent agent)
@@ -2541,6 +2476,56 @@ public static class ShoutUtils
 		}
 		catch
 		{
+		}
+	}
+
+	public static string ExportUnnamedPersonaStateJson(bool pretty = false)
+	{
+		try
+		{
+			LoadUnnamedProfilesIfNeeded();
+			lock (_unnamedProfilesLock)
+			{
+				UnnamedNpcProfilesFile unnamedNpcProfilesFile = new UnnamedNpcProfilesFile
+				{
+					Profiles = new Dictionary<string, UnnamedNpcPersonaProfile>(_unnamedProfiles ?? new Dictionary<string, UnnamedNpcPersonaProfile>())
+				};
+				return JsonConvert.SerializeObject(unnamedNpcProfilesFile, pretty ? Formatting.Indented : Formatting.None);
+			}
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	public static bool ImportUnnamedPersonaStateJson(string json, bool overwriteExisting = true)
+	{
+		try
+		{
+			LoadUnnamedProfilesIfNeeded();
+			UnnamedNpcProfilesFile unnamedNpcProfilesFile = string.IsNullOrWhiteSpace(json) ? null : JsonConvert.DeserializeObject<UnnamedNpcProfilesFile>(json);
+			Dictionary<string, UnnamedNpcPersonaProfile> dictionary = unnamedNpcProfilesFile?.Profiles ?? new Dictionary<string, UnnamedNpcPersonaProfile>();
+			lock (_unnamedProfilesLock)
+			{
+				if (_unnamedProfiles == null || overwriteExisting)
+				{
+					_unnamedProfiles = new Dictionary<string, UnnamedNpcPersonaProfile>();
+				}
+				foreach (KeyValuePair<string, UnnamedNpcPersonaProfile> item in dictionary)
+				{
+					string text = (item.Key ?? "").Trim().ToLower();
+					if (!string.IsNullOrEmpty(text) && item.Value != null && (overwriteExisting || !_unnamedProfiles.ContainsKey(text)))
+					{
+						_unnamedProfiles[text] = item.Value;
+					}
+				}
+			}
+			return true;
+		}
+		catch
+		{
+			return false;
 		}
 	}
 }

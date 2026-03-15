@@ -233,7 +233,7 @@ internal static class VanillaIssueOfferBridge
 		}
 		if (flag)
 		{
-			stringBuilder.AppendLine("当前玩家满足这项任务的原版接取前提。如果玩家同意接这个任务，你必须在回复末尾附加标签 [ACTION:ISSUE_ACCEPT_SELF]。");
+			stringBuilder.AppendLine("当前玩家满足接取条件，如果玩家同意接这个任务，你必须在本次回复末尾写入标签标签 [ACTION:ISSUE_ACCEPT_SELF]。【示例】很好。你的回复：记住，我要的是真正的斯特吉亚猎手，不是随便找些人来充数。如果你能证明自己言出必行，我会认真考虑你的请求。[ACTION:ISSUE_ACCEPT_SELF][ACTION:MOOD:NEUTRAL]");
 		}
 		else
 		{

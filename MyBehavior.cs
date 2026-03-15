@@ -316,6 +316,8 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private string _voiceMappingExportFolderStorage = "";
 
+	private string _unnamedPersonaJsonStorage = "";
+
 	private readonly object _npcPersonaAutoGenLock = new object();
 
 	private HashSet<string> _npcPersonaAutoGenInFlight = new HashSet<string>();
@@ -1771,6 +1773,10 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			_voiceMappingExportFolderStorage = "";
 		}
+		if (_unnamedPersonaJsonStorage == null)
+		{
+			_unnamedPersonaJsonStorage = "";
+		}
 		try
 		{
 			if (dataStore != null && dataStore.IsSaving)
@@ -1888,6 +1894,16 @@ public class MyBehavior : CampaignBehaviorBase
 				dataStore.SyncData("_voiceMapping_v1", ref _voiceMappingJsonStorage);
 				_voiceMappingExportFolderStorage = VoiceMapper.GetPreferredExportFolder() ?? "";
 				dataStore.SyncData("_voiceMapping_export_folder_v1", ref _voiceMappingExportFolderStorage);
+				try
+				{
+					_unnamedPersonaJsonStorage = ShoutUtils.ExportUnnamedPersonaStateJson(pretty: false) ?? "";
+				}
+				catch (Exception ex6)
+				{
+					_unnamedPersonaJsonStorage = "";
+					Logger.Log("UnnamedPersona", "[ERROR] Serialize unnamed persona for save failed: " + ex6.Message);
+				}
+				dataStore.SyncData("_unnamed_persona_v1", ref _unnamedPersonaJsonStorage);
 				SyncPatienceData(dataStore);
 				return;
 			}
@@ -2049,11 +2065,21 @@ public class MyBehavior : CampaignBehaviorBase
 					Logger.Log("VoiceMapper", "[ERROR] Restore voice mapping from save failed: " + ex7.Message);
 				}
 			}
+			_unnamedPersonaJsonStorage = "";
+			dataStore.SyncData("_unnamed_persona_v1", ref _unnamedPersonaJsonStorage);
+			try
+			{
+				ShoutUtils.ImportUnnamedPersonaStateJson(_unnamedPersonaJsonStorage, overwriteExisting: true);
+			}
+			catch (Exception ex8)
+			{
+				Logger.Log("UnnamedPersona", "[ERROR] Restore unnamed persona from save failed: " + ex8.Message);
+			}
 			SyncPatienceData(dataStore);
 		}
-		catch (Exception ex8)
+		catch (Exception ex9)
 		{
-			Logger.Log("DialogueHistory", "[ERROR] SyncData v2 failed: " + ex8.ToString());
+			Logger.Log("DialogueHistory", "[ERROR] SyncData v2 failed: " + ex9.ToString());
 			_shownRecords = new Dictionary<string, HeroShownRecord>();
 			_shownRecordStorage = new Dictionary<string, string>();
 			_dialogueHistory = new Dictionary<string, List<DialogueDay>>();
@@ -2066,6 +2092,7 @@ public class MyBehavior : CampaignBehaviorBase
 			_npcPersonaProfileStorage = new Dictionary<string, string>();
 			_voiceMappingJsonStorage = "";
 			_voiceMappingExportFolderStorage = "";
+			_unnamedPersonaJsonStorage = "";
 		}
 	}
 
@@ -2797,6 +2824,21 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private static string BuildFactionLineForPrompt(string label, string factionName, string liegeName)
+	{
+		string text = (factionName ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			text = "无（独立）";
+		}
+		string text2 = (liegeName ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text2) || text2 == "无" || text2.EndsWith("（本人）", StringComparison.Ordinal))
+		{
+			return label + text;
+		}
+		return label + text + "（效忠：" + text2 + "）";
+	}
+
 	private static string GetHeroCultureNameForPrompt(Hero hero)
 	{
 		try
@@ -3145,12 +3187,103 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private static string GetEquipmentContextLabelForPrompt(bool useCivilianEquipment)
+	{
+		return useCivilianEquipment ? "民用装" : "战斗装";
+	}
+
+	private static bool TryResolveEquipmentContextForPrompt(Hero hero, out bool useCivilianEquipment)
+	{
+		useCivilianEquipment = false;
+		try
+		{
+			Mission current = Mission.Current;
+			if (current != null)
+			{
+				useCivilianEquipment = current.DoesMissionRequireCivilianEquipment;
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			Settlement settlement = Settlement.CurrentSettlement ?? hero?.CurrentSettlement;
+			if (settlement != null)
+			{
+				useCivilianEquipment = !settlement.IsVillage;
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		return false;
+	}
+
+	private static ItemObject TryGetAgentEquipmentItemForPrompt(Hero hero, EquipmentIndex index)
+	{
+		if (hero != Hero.MainHero || Agent.Main == null || !Agent.Main.IsActive())
+		{
+			return null;
+		}
+		try
+		{
+			ItemObject item = Agent.Main.SpawnEquipment[index].Item;
+			if (item != null)
+			{
+				return item;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			return Agent.Main.Equipment[index].Item;
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static ItemObject TryGetHeroEquipmentItemForPrompt(Hero hero, EquipmentIndex index, bool useCivilianEquipment)
+	{
+		if (hero == null)
+		{
+			return null;
+		}
+		ItemObject itemObject = TryGetAgentEquipmentItemForPrompt(hero, index);
+		if (itemObject != null)
+		{
+			return itemObject;
+		}
+		try
+		{
+			Equipment equipment = (useCivilianEquipment ? hero.CivilianEquipment : hero.BattleEquipment);
+			if (equipment == null)
+			{
+				return null;
+			}
+			return equipment[index].Item;
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
 	private static string BuildHeroEquipmentSummaryForPrompt(Hero hero, int maxEntries = 8)
 	{
 		if (hero == null)
 		{
 			return "未知";
 		}
+		bool useCivilianEquipment = false;
+		bool flag = TryResolveEquipmentContextForPrompt(hero, out useCivilianEquipment);
+		string text = GetEquipmentContextLabelForPrompt(useCivilianEquipment);
 		try
 		{
 			Dictionary<string, int> dictionary = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
@@ -3171,42 +3304,30 @@ public class MyBehavior : CampaignBehaviorBase
 			for (int i = 0; i < array2.Length; i++)
 			{
 				EquipmentIndex index = array2[i];
-				ItemObject item = null;
-				if (hero == Hero.MainHero && Agent.Main != null && Agent.Main.IsActive())
-				{
-					item = Agent.Main.SpawnEquipment[index].Item;
-					if (item == null)
-					{
-						item = Agent.Main.Equipment[index].Item;
-					}
-				}
-				if (item == null)
-				{
-					item = hero.BattleEquipment[index].Item;
-				}
+				ItemObject item = TryGetHeroEquipmentItemForPrompt(hero, index, useCivilianEquipment);
 				if (item != null)
 				{
-					string text = (item.StringId ?? "").Trim();
-					if (string.IsNullOrWhiteSpace(text))
+					string text2 = (item.StringId ?? "").Trim();
+					if (string.IsNullOrWhiteSpace(text2))
 					{
-						text = index.ToString();
+						text2 = index.ToString();
 					}
 					string value = (item.Name?.ToString() ?? "").Trim();
 					if (string.IsNullOrWhiteSpace(value))
 					{
-						value = text;
+						value = text2;
 					}
-					if (!dictionary.ContainsKey(text))
+					if (!dictionary.ContainsKey(text2))
 					{
-						dictionary[text] = 0;
-						names[text] = value;
+						dictionary[text2] = 0;
+						names[text2] = value;
 					}
-					dictionary[text]++;
+					dictionary[text2]++;
 				}
 			}
 			if (dictionary.Count == 0)
 			{
-				return "无可识别装备";
+				return (flag ? (text + "：未读取到可识别装备") : "未能判断当前应显示民用装还是战斗装，且未读取到可识别装备");
 			}
 			List<string> values = (from x in (from x in dictionary.Select(delegate(KeyValuePair<string, int> kv)
 					{
@@ -3221,11 +3342,11 @@ public class MyBehavior : CampaignBehaviorBase
 					orderby x.Count descending
 					select x).ThenBy(x => x.Name, StringComparer.Ordinal).Take(Math.Max(1, maxEntries))
 				select x.Name + "x" + x.Count).ToList();
-			return string.Join("、", values);
+			return text + "：" + string.Join("、", values);
 		}
 		catch
 		{
-			return "无可识别装备";
+			return (flag ? (text + "：读取装备失败") : "装备信息读取失败");
 		}
 	}
 
@@ -3283,13 +3404,16 @@ public class MyBehavior : CampaignBehaviorBase
 		if (includeRuleGatedFields)
 		{
 			stringBuilder.AppendLine("玩家声望：" + GetClanTierReputationLabel(num) + $"（{Math.Max(0, num)} level）");
-			stringBuilder.AppendLine("玩家势力：" + factionName + "（效忠：" + liegeName + "）");
-			stringBuilder.AppendLine("玩家身份：" + text3);
+			if (flag)
+			{
+				stringBuilder.AppendLine(BuildFactionLineForPrompt("玩家势力：", factionName, liegeName));
+				stringBuilder.AppendLine("玩家身份：" + text3);
+			}
 			stringBuilder.AppendLine("玩家家族：" + text + $"（{Math.Max(0, num)} level，玩家是家族的族长）");
 		}
 		else if (flag)
 		{
-			stringBuilder.AppendLine("玩家势力：" + factionName + "（效忠：" + liegeName + "）");
+			stringBuilder.AppendLine(BuildFactionLineForPrompt("玩家势力：", factionName, liegeName));
 		}
 		else
 		{
@@ -3363,7 +3487,7 @@ public class MyBehavior : CampaignBehaviorBase
 		stringBuilder.AppendLine("[NPC身份信息]");
 		stringBuilder.AppendLine("NPC文化：" + heroCultureNameForPrompt);
 		stringBuilder.AppendLine("NPC声望：" + GetClanTierReputationLabel(num) + $"（{Math.Max(0, num)} level）");
-		stringBuilder.AppendLine("NPC势力：" + factionName + "（效忠：" + liegeName + "）");
+		stringBuilder.AppendLine(BuildFactionLineForPrompt("NPC势力：", factionName, liegeName));
 		stringBuilder.AppendLine("NPC身份：" + text3);
 		try
 		{
@@ -3767,12 +3891,12 @@ public class MyBehavior : CampaignBehaviorBase
 			if (_pendingTrade.IsGive)
 			{
 				ApplyGiveTransfer(oneToOneConversationHero);
-				extraFact = BuildGiveFactText();
+				extraFact = BuildGiveFactText(oneToOneConversationHero);
 			}
 			else
 			{
 				ApplyShowRecord(oneToOneConversationHero);
-				extraFact = BuildShowFactText();
+				extraFact = BuildShowFactText(oneToOneConversationHero);
 			}
 		}
 		_pendingTradeItems.Clear();
@@ -3958,42 +4082,20 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private string BuildGiveFactText()
+	private static string GetTradeTargetDisplayName(Hero targetHero)
 	{
-		if (_pendingTradeItems == null || _pendingTradeItems.Count == 0)
-		{
-			return "";
-		}
-		string text = Hero.MainHero?.Name?.ToString() ?? "玩家";
-		List<string> list = new List<string>();
-		foreach (PendingTradeItem pendingTradeItem in _pendingTradeItems)
-		{
-			if (pendingTradeItem.Amount > 0)
-			{
-				if (pendingTradeItem.IsGold)
-				{
-					list.Add($"{pendingTradeItem.Amount} 第纳尔");
-				}
-				else
-				{
-					list.Add($"{pendingTradeItem.Amount} 个 {pendingTradeItem.ItemName}");
-				}
-			}
-		}
-		if (list.Count == 0)
-		{
-			return "";
-		}
-		return text + "已经将 " + string.Join("、", list) + " 交给你。";
+		string text = (targetHero?.Name?.ToString() ?? "").Trim();
+		return string.IsNullOrWhiteSpace(text) ? "对方" : text;
 	}
 
-	private string BuildShowFactText()
+	private string BuildGiveFactText(Hero targetHero)
 	{
 		if (_pendingTradeItems == null || _pendingTradeItems.Count == 0)
 		{
 			return "";
 		}
 		string text = Hero.MainHero?.Name?.ToString() ?? "玩家";
+		string text2 = GetTradeTargetDisplayName(targetHero);
 		List<string> list = new List<string>();
 		foreach (PendingTradeItem pendingTradeItem in _pendingTradeItems)
 		{
@@ -4013,8 +4115,38 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			return "";
 		}
-		string text2 = string.Join("、", list);
-		return text + "给你看了看 " + text2 + "，但是没有将这些东西交给你。";
+		return text + "已经将 " + string.Join("、", list) + " 交给 " + text2 + "。";
+	}
+
+	private string BuildShowFactText(Hero targetHero)
+	{
+		if (_pendingTradeItems == null || _pendingTradeItems.Count == 0)
+		{
+			return "";
+		}
+		string text = Hero.MainHero?.Name?.ToString() ?? "玩家";
+		string text2 = GetTradeTargetDisplayName(targetHero);
+		List<string> list = new List<string>();
+		foreach (PendingTradeItem pendingTradeItem in _pendingTradeItems)
+		{
+			if (pendingTradeItem.Amount > 0)
+			{
+				if (pendingTradeItem.IsGold)
+				{
+					list.Add($"{pendingTradeItem.Amount} 第纳尔");
+				}
+				else
+				{
+					list.Add($"{pendingTradeItem.Amount} 个 {pendingTradeItem.ItemName}");
+				}
+			}
+		}
+		if (list.Count == 0)
+		{
+			return "";
+		}
+		string text3 = string.Join("、", list);
+		return text + "给 " + text2 + " 看了看 " + text3 + "，证明自己有这些东西。";
 	}
 
 	private List<TradeResourceOption> BuildResourceOptions(Hero targetHero)
@@ -4498,6 +4630,11 @@ public class MyBehavior : CampaignBehaviorBase
 					}
 					if (RewardSystemBehavior.Instance != null && (isRewardContext || isLoanContext || useDuelContext) && targetHero == null && targetCharacter != null)
 					{
+						string settlementMerchantDebtHintForAI = RewardSystemBehavior.Instance.BuildSettlementMerchantDebtHintForAI(targetCharacter);
+						if (!string.IsNullOrWhiteSpace(settlementMerchantDebtHintForAI))
+						{
+							sb.AppendLine(settlementMerchantDebtHintForAI);
+						}
 						string merchantInventorySummary = RewardSystemBehavior.Instance.BuildSettlementMerchantInventorySummaryForAI(targetCharacter);
 						if (!string.IsNullOrWhiteSpace(merchantInventorySummary))
 						{
@@ -5819,6 +5956,11 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		if (RewardSystemBehavior.Instance != null && flag7 && targetHero == null && targetCharacter != null)
 		{
+			string value6a = RewardSystemBehavior.Instance.BuildSettlementMerchantDebtHintForAI(targetCharacter);
+			if (!string.IsNullOrWhiteSpace(value6a))
+			{
+				stringBuilder.AppendLine(value6a);
+			}
 			string value6b = RewardSystemBehavior.Instance.BuildSettlementMerchantInventorySummaryForAI(targetCharacter);
 			if (!string.IsNullOrWhiteSpace(value6b))
 			{
@@ -7597,11 +7739,29 @@ public class MyBehavior : CampaignBehaviorBase
 		return array3[(refusalCount - 1) % array3.Length];
 	}
 
+	private static string BuildExhaustedPatienceInstruction(bool includeRelationPenalty)
+	{
+		if (!includeRelationPenalty)
+		{
+			return "耐心已归零：本轮优先用军务在身、行程紧、需要离开、精神疲惫或另有要事等理由，给出委婉的回避式回复，尽量收束或回避当前话题；若玩家继续追问，仍可继续回应，但语气应明显更谨慎或更不耐烦，不要直说系统规则或数值。";
+		}
+		return "耐心已归零：本轮优先用军务在身、行程紧、需要离开、精神疲惫或另有要事等理由，给出委婉的回避式回复，尽量收束或回避当前话题；若玩家继续追问，仍可继续回应，但语气应明显更谨慎或更不耐烦，系统会额外降低你与玩家的关系，不要直说系统规则或数值。";
+	}
+
 	private static string BuildPatiencePromptText(PatienceSnapshot snap)
 	{
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.AppendLine("【4.四值状态】");
 		stringBuilder.AppendLine(BuildCompactStateLine(snap));
+		stringBuilder.AppendLine("【NPC耐心状态】");
+		if (snap.Current <= 0.01f)
+		{
+			stringBuilder.AppendLine(BuildExhaustedPatienceInstruction(includeRelationPenalty: true));
+		}
+		else
+		{
+			stringBuilder.AppendLine("耐心越低，语气越不耐烦；若耐心耗尽，应优先给出委婉的回避式回复。");
+		}
 		stringBuilder.AppendLine("规则：情绪标签优先影响私人关系 L，并在最强正负情绪下顺带影响原生关系 R。DELIGHTED=L+2 且 R+1；JOY=L+1；NEUTRAL=0；BORED=L-1；ANNOYED=L-2 且 R-1。回复末尾必须且只能追加一个 [ACTION:MOOD:DELIGHTED/JOY/NEUTRAL/BORED/ANNOYED]；耐心低时更不耐烦，耐心归零后仍可继续对话，但继续交流会额外降低关系。");
 		return stringBuilder.ToString();
 	}
@@ -7619,8 +7779,6 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			StringBuilder stringBuilder = new StringBuilder();
 			stringBuilder.AppendLine(BuildPatiencePromptText(heroPatienceSnapshot).TrimEnd());
-			stringBuilder.AppendLine("【耐心状态】你当前耐心已归零。仍可继续对话，但应明显更谨慎或更不耐烦。");
-			stringBuilder.AppendLine("继续交流会额外损害你与玩家的关系（由系统结算，不要在文本中直说数值）。");
 			stringBuilder.AppendLine("除 [ACTION:MOOD:...] 外，不要输出任何 ACTION 标签。");
 			return stringBuilder.ToString();
 		}
@@ -7761,7 +7919,8 @@ public class MyBehavior : CampaignBehaviorBase
 		statusLine = "- " + heroPatienceSnapshot.DisplayName + ": " + BuildCompactStateLine(heroPatienceSnapshot);
 		if (num <= 0)
 		{
-			statusLine += "，耐心已归零（可继续交流，但会额外降低关系）";
+			statusLine += "，耐心已归零";
+			statusLine += "\n  " + BuildExhaustedPatienceInstruction(includeRelationPenalty: true);
 		}
 		return true;
 	}
@@ -7779,7 +7938,8 @@ public class MyBehavior : CampaignBehaviorBase
 		statusLine = $"- {unnamedPatienceSnapshot.DisplayName}: P(耐心)={num}/{unnamedPatienceSnapshot.Max}({unnamedPatienceSnapshot.PatienceLevel}) | R(家族关系)=0(中立) | T(综合信任)=0(中性观望) | L(私人关系)=0({RomanceSystemBehavior.GetPrivateLoveLevelText(0)})";
 		if (num <= 0)
 		{
-			statusLine += "，耐心已归零（可继续交流，但会额外降低关系）";
+			statusLine += "，耐心已归零";
+			statusLine += "\n  " + BuildExhaustedPatienceInstruction(includeRelationPenalty: false);
 		}
 		return true;
 	}
@@ -9740,7 +9900,15 @@ public class MyBehavior : CampaignBehaviorBase
 				break;
 			case "reload":
 				VoiceMapper.ReloadConfig();
-				InformationManager.DisplayMessage(new InformationMessage("已重新加载 VoiceMapping.json"));
+				if (!string.IsNullOrWhiteSpace(_voiceMappingJsonStorage))
+				{
+					VoiceMapper.ImportMappingJson(_voiceMappingJsonStorage, overwriteExisting: true, saveToFile: false);
+					InformationManager.DisplayMessage(new InformationMessage("已从当前存档重新加载声音映射。"));
+				}
+				else
+				{
+					InformationManager.DisplayMessage(new InformationMessage("当前存档中没有声音映射数据。"));
+				}
 				OpenDevVoiceMappingMenu();
 				break;
 			}

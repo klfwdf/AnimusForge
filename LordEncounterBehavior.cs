@@ -155,6 +155,12 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 	private void OnMissionEnded(IMission mission)
 	{
 		bool flag = false;
+		bool flag12 = false;
+		bool flag13 = false;
+		bool flag14 = false;
+		bool flag15 = false;
+		bool flag16 = false;
+		bool flag17 = false;
 		try
 		{
 			flag = MeetingBattleRuntime.IsCombatEscalated;
@@ -163,6 +169,46 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		{
 			flag = false;
 		}
+		try
+		{
+			flag12 = MeetingBattleRuntime.IsMeetingActive;
+		}
+		catch
+		{
+			flag12 = false;
+		}
+		try
+		{
+			flag13 = _encounterMeetingMissionActive;
+		}
+		catch
+		{
+			flag13 = false;
+		}
+		try
+		{
+			flag14 = HasPendingMeetingBattleVictorySettlement();
+		}
+		catch
+		{
+			flag14 = false;
+		}
+		try
+		{
+			flag15 = HasPendingForceNativeEncounterBattleMenu();
+		}
+		catch
+		{
+			flag15 = false;
+		}
+		try
+		{
+			flag16 = HasPendingForceNativeDefeatCaptivityMenu();
+		}
+		catch
+		{
+			flag16 = false;
+		}
 		bool flag2 = false;
 		bool flag3 = false;
 		bool flag4 = false;
@@ -170,6 +216,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		{
 			Mission mission2 = mission as Mission;
 			flag2 = mission2 != null && mission2.GetMissionBehavior<BattleEndLogic>() != null;
+			flag17 = mission2 != null && mission2.GetMissionBehavior<MeetingBattleLockMissionBehavior>() != null;
 			if (mission2 != null)
 			{
 				try
@@ -195,6 +242,13 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			flag2 = false;
 			flag3 = false;
 			flag4 = false;
+			flag17 = false;
+		}
+		bool flag18 = flag12 || flag13 || flag17 || flag || flag14 || flag15 || flag16;
+		if (!flag18)
+		{
+			Logger.Log("MeetingBattle", $"OnMissionEnded ignored for non-meeting mission. missionWasBattle={flag2}, missionResultPlayerDefeated={flag3}, missionResultPlayerVictory={flag4}");
+			return;
 		}
 		bool flag5 = false;
 		try

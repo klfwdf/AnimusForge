@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -19,8 +18,6 @@ internal static class VoiceMapper
 	private static bool _loaded;
 
 	private static readonly object _loadLock = new object();
-
-	private static string _preferredExportFolder = "";
 
 	private static readonly Dictionary<int, string> _sceneCache = new Dictionary<int, string>();
 
@@ -112,30 +109,18 @@ internal static class VoiceMapper
 
 	public static void ReloadConfig()
 	{
-		lock (_loadLock)
-		{
-			_loaded = false;
-			_voicePools = null;
-			_fallbackVoice = "";
-		}
 		EnsureLoaded();
+		ClearSceneCache();
+		Logger.Log("VoiceMapper", "运行时 VoiceMapping 已刷新（来源=当前存档/本次导入）");
 	}
 
 	public static void SetPreferredExportFolder(string exportFolderPath)
 	{
-		string text = NormalizeExportFolderPath(exportFolderPath);
-		lock (_loadLock)
-		{
-			_preferredExportFolder = text ?? "";
-		}
 	}
 
 	public static string GetPreferredExportFolder()
 	{
-		lock (_loadLock)
-		{
-			return _preferredExportFolder ?? "";
-		}
+		return "";
 	}
 
 	public static string GetGroupDisplayName(string key)
@@ -190,7 +175,7 @@ internal static class VoiceMapper
 			{
 				_voicePools[groupKey].Add(text);
 			}
-			SaveConfig();
+			ClearSceneCache();
 			Logger.Log("VoiceMapper", "添加声音: group=" + groupKey + " voice=" + text);
 		}
 	}
@@ -206,7 +191,7 @@ internal static class VoiceMapper
 			{
 				_voicePools.Remove(groupKey);
 			}
-			SaveConfig();
+			ClearSceneCache();
 			Logger.Log("VoiceMapper", "删除声音: group=" + groupKey + " voice=" + text);
 		}
 	}
@@ -215,7 +200,7 @@ internal static class VoiceMapper
 	{
 		EnsureLoaded();
 		_fallbackVoice = (voiceId ?? "").Trim();
-		SaveConfig();
+		ClearSceneCache();
 		Logger.Log("VoiceMapper", "设置 fallback: " + _fallbackVoice);
 	}
 
@@ -262,7 +247,7 @@ internal static class VoiceMapper
 		return jObject.ToString(pretty ? Formatting.Indented : Formatting.None);
 	}
 
-	public static bool ImportMappingJson(string json, bool overwriteExisting = true, bool saveToFile = true)
+	public static bool ImportMappingJson(string json, bool overwriteExisting = true, bool saveToFile = false)
 	{
 		EnsureLoaded();
 		try
@@ -314,10 +299,6 @@ internal static class VoiceMapper
 				}
 			}
 			ClearSceneCache();
-			if (saveToFile)
-			{
-				SaveConfig();
-			}
 			Logger.Log("VoiceMapper", string.Format("导入 VoiceMapping 成功: mode={0}, groups={1}, totalVoices={2}, fallback={3}", overwriteExisting ? "overwrite" : "merge", _voicePools.Count, GetTotalVoiceCount(), _fallbackVoice));
 			return true;
 		}
@@ -328,7 +309,7 @@ internal static class VoiceMapper
 		}
 	}
 
-	public static bool ImportMappingFromFile(string filePath, bool overwriteExisting = true, bool saveToFile = true)
+	public static bool ImportMappingFromFile(string filePath, bool overwriteExisting = true, bool saveToFile = false)
 	{
 		try
 		{
@@ -338,12 +319,7 @@ internal static class VoiceMapper
 				return false;
 			}
 			string json = File.ReadAllText(filePath, Encoding.UTF8);
-			bool flag = ImportMappingJson(json, overwriteExisting, saveToFile);
-			if (flag)
-			{
-				SetPreferredExportFolder(filePath);
-			}
-			return flag;
+			return ImportMappingJson(json, overwriteExisting, saveToFile);
 		}
 		catch (Exception ex)
 		{
@@ -354,41 +330,6 @@ internal static class VoiceMapper
 
 	private static void SaveConfig()
 	{
-		try
-		{
-			string path = ResolveConfigFilePath(forSave: true);
-			if (string.IsNullOrWhiteSpace(path))
-			{
-				Logger.Log("VoiceMapper", "[WARN] 保存 VoiceMapping.json 失败：无法解析 PlayerExports 路径");
-				return;
-			}
-			string directoryName = System.IO.Path.GetDirectoryName(path);
-			if (!string.IsNullOrEmpty(directoryName) && !Directory.Exists(directoryName))
-			{
-				Directory.CreateDirectory(directoryName);
-			}
-			JObject jObject = new JObject();
-			string[] allGroupKeys = AllGroupKeys;
-			foreach (string text2 in allGroupKeys)
-			{
-				JArray jArray = new JArray();
-				if (_voicePools != null && _voicePools.ContainsKey(text2))
-				{
-					foreach (string item in _voicePools[text2])
-					{
-						jArray.Add(item);
-					}
-				}
-				jObject[text2] = jArray;
-			}
-			jObject["fallback"] = _fallbackVoice ?? "";
-			File.WriteAllText(path, jObject.ToString(Formatting.Indented), Encoding.UTF8);
-			Logger.Log("VoiceMapper", "VoiceMapping.json 已保存: " + path);
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("VoiceMapper", "[ERROR] 保存 VoiceMapping.json 失败: " + ex.Message);
-		}
 	}
 
 	private static Dictionary<string, List<string>> ParseVoiceMappingJson(string json, out string fallback)
@@ -459,158 +400,8 @@ internal static class VoiceMapper
 
 	private static void LoadConfig()
 	{
-		string text = ResolveConfigFilePath(forSave: false);
-		if (string.IsNullOrWhiteSpace(text) || !File.Exists(text))
-		{
-			Logger.Log("VoiceMapper", "PlayerExports 下未找到 VoiceMapping.json，将使用 MCM 全局 TtsVoiceId");
-			return;
-		}
-		string json = File.ReadAllText(text, Encoding.UTF8);
-		JObject jObject = JObject.Parse(json);
 		_voicePools = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
-		string[] array = new string[6] { "male_young", "male_middle", "male_old", "female_young", "female_middle", "female_old" };
-		string[] array2 = array;
-		foreach (string text3 in array2)
-		{
-			if (!(jObject[text3] is JArray { Count: >0 } jArray))
-			{
-				continue;
-			}
-			List<string> list = new List<string>();
-			foreach (JToken item in jArray)
-			{
-				string text4 = item.ToString().Trim();
-				if (!string.IsNullOrEmpty(text4))
-				{
-					list.Add(text4);
-				}
-			}
-			if (list.Count > 0)
-			{
-				_voicePools[text3] = list;
-			}
-		}
-		if (jObject["fallback"] != null)
-		{
-			_fallbackVoice = jObject["fallback"].ToString().Trim();
-		}
-		int num = 0;
-		foreach (KeyValuePair<string, List<string>> voicePool in _voicePools)
-		{
-			num += voicePool.Value.Count;
-		}
-		Logger.Log("VoiceMapper", $"VoiceMapping.json 已加载: {_voicePools.Count} 个分组, {num} 个声音, fallback={_fallbackVoice}, path={text}");
-	}
-
-	private static string ResolveConfigFilePath(bool forSave)
-	{
-		string text = NormalizeExportFolderPath(GetPreferredExportFolder());
-		if (!string.IsNullOrWhiteSpace(text))
-		{
-			return EnsureVoiceMappingPath(text, forSave);
-		}
-		string playerExportsRootPath = GetPlayerExportsRootPath();
-		string text2 = FindLatestExportFolder(playerExportsRootPath, requireVoiceMappingFile: !forSave);
-		if (string.IsNullOrWhiteSpace(text2) && forSave)
-		{
-			text2 = FindLatestExportFolder(playerExportsRootPath, requireVoiceMappingFile: false);
-		}
-		if (string.IsNullOrWhiteSpace(text2))
-		{
-			if (!forSave)
-			{
-				return null;
-			}
-			try
-			{
-				Directory.CreateDirectory(playerExportsRootPath);
-				text2 = System.IO.Path.Combine(playerExportsRootPath, "_voice_mapping_runtime");
-				Directory.CreateDirectory(text2);
-			}
-			catch
-			{
-				return null;
-			}
-		}
-		lock (_loadLock)
-		{
-			_preferredExportFolder = text2;
-		}
-		return EnsureVoiceMappingPath(text2, forSave);
-	}
-
-	private static string EnsureVoiceMappingPath(string exportFolderPath, bool ensureDirectory)
-	{
-		if (string.IsNullOrWhiteSpace(exportFolderPath))
-		{
-			return null;
-		}
-		string path = System.IO.Path.Combine(exportFolderPath, "voice_mapping");
-		if (ensureDirectory && !Directory.Exists(path))
-		{
-			Directory.CreateDirectory(path);
-		}
-		return System.IO.Path.Combine(path, "VoiceMapping.json");
-	}
-
-	private static string GetPlayerExportsRootPath()
-	{
-		string text = "";
-		try
-		{
-			text = Utilities.GetBasePath();
-		}
-		catch
-		{
-		}
-		return System.IO.Path.Combine(text, "Modules", "AnimusForge", "PlayerExports");
-	}
-
-	private static string NormalizeExportFolderPath(string exportFolderPath)
-	{
-		if (string.IsNullOrWhiteSpace(exportFolderPath))
-		{
-			return null;
-		}
-		try
-		{
-			string fullPath = System.IO.Path.GetFullPath(exportFolderPath.Trim());
-			if (string.Equals(System.IO.Path.GetFileName(fullPath), "VoiceMapping.json", StringComparison.OrdinalIgnoreCase))
-			{
-				DirectoryInfo parent = Directory.GetParent(fullPath);
-				return parent?.Parent?.FullName;
-			}
-			if (string.Equals(System.IO.Path.GetFileName(fullPath), "voice_mapping", StringComparison.OrdinalIgnoreCase))
-			{
-				return Directory.GetParent(fullPath)?.FullName;
-			}
-			return fullPath;
-		}
-		catch
-		{
-			return null;
-		}
-	}
-
-	private static string FindLatestExportFolder(string root, bool requireVoiceMappingFile)
-	{
-		try
-		{
-			if (!Directory.Exists(root))
-			{
-				return null;
-			}
-			DirectoryInfo directoryInfo = new DirectoryInfo(root);
-			IEnumerable<DirectoryInfo> source = directoryInfo.GetDirectories().OrderByDescending((DirectoryInfo d) => d.LastWriteTimeUtc);
-			if (requireVoiceMappingFile)
-			{
-				source = source.Where((DirectoryInfo d) => File.Exists(System.IO.Path.Combine(d.FullName, "voice_mapping", "VoiceMapping.json")));
-			}
-			return source.FirstOrDefault()?.FullName;
-		}
-		catch
-		{
-			return null;
-		}
+		_fallbackVoice = "";
+		Logger.Log("VoiceMapper", "运行时 VoiceMapping 已初始化（外部 JSON 仅用于手动导入/导出）");
 	}
 }
