@@ -30,6 +30,7 @@ public static class Patch_TriggerMassiveHook
 		}
 		NameMarkerSafePatch.EnsurePatched();
 		MissionScreenSafePatch.EnsurePatched();
+		MissionUiInterruptionPatch.EnsurePatched();
 		EndMissionInternalSafePatch.EnsurePatched();
 		ConversationCameraSafePatch.EnsurePatched();
 		InteractionComponentSafePatch.EnsurePatched();

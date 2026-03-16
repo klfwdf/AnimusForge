@@ -153,7 +153,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			}
 			_suppressWelcomeUntilUtcTicks = ticks + TimeSpan.FromMilliseconds(fromGate ? 800 : 200).Ticks;
 			string playerExportsRootPath = GetPlayerExportsRootPath();
-			string text = "首次在此存档中使用 AnimusForge，必须导入编辑器导出的 JSON 数据，否则本 MOD 的对话/场景喊话将不可用。\n\n需要导入（缺一不可）：\n1) Hero：个性与背景（personality_background/*.json）\n2) 非Hero：描述（unnamed_persona/*.json）\n3) 知识：knowledge/rules/*.json（兼容旧版：knowledge/KnowledgeRules.json）\n\n导入目录（默认）：\n" + playerExportsRootPath;
+			string text = "首次在此存档中使用 AnimusForge，必须导入编辑器导出的 JSON 数据，否则本 MOD 的对话/场景喊话将不可用。\n\n需要导入（缺一不可）：\n1) Hero：个性与背景（personality_background/*.json）\n2) 非Hero：描述（unnamed_persona/*.json）\n3) 知识：knowledge/rules/*.json（兼容旧版：knowledge/KnowledgeRules.json）\n4) 声音映射：voice_mapping/VoiceMapping.json\n\n导入目录（默认）：\n" + playerExportsRootPath;
 			_welcomeInProgress = true;
 			InformationManager.ShowInquiry(new InquiryData("AnimusForge - 首次使用", text, isAffirmativeOptionShown: true, isNegativeOptionShown: true, "一键导入", "退出（不导入不可用）", delegate
 			{
@@ -296,6 +296,14 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 				OpenImportFolderPicker(onReturn);
 				return;
 			}
+			string path5 = Path.Combine(text, "voice_mapping", "VoiceMapping.json");
+			string path6 = Path.Combine(text, "VoiceMapping.json");
+			if (!File.Exists(path5) && !File.Exists(path6))
+			{
+				InformationManager.DisplayMessage(new InformationMessage("导入失败：缺少 voice_mapping\\VoiceMapping.json。"));
+				OpenImportFolderPicker(onReturn);
+				return;
+			}
 			MyBehavior myBehavior = Campaign.Current?.GetCampaignBehavior<MyBehavior>();
 			if (myBehavior == null)
 			{
@@ -315,6 +323,16 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			else if (!InvokePrivateImport(myBehavior, "ImportKnowledgeData", folderName))
 			{
 				InformationManager.DisplayMessage(new InformationMessage("导入失败：无法执行 知识导入。"));
+				OpenImportFolderPicker(onReturn);
+			}
+			else if (!InvokePrivateImport(myBehavior, "ImportVoiceMappingData", folderName))
+			{
+				InformationManager.DisplayMessage(new InformationMessage("导入失败：无法执行 声音映射导入。"));
+				OpenImportFolderPicker(onReturn);
+			}
+			else if (!HasLoadedVoiceMapping())
+			{
+				InformationManager.DisplayMessage(new InformationMessage("导入失败：声音映射未成功载入到当前存档。"));
 				OpenImportFolderPicker(onReturn);
 			}
 			else
@@ -346,6 +364,18 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			}
 			method.Invoke(my, new object[1] { folderName ?? "" });
 			return true;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static bool HasLoadedVoiceMapping()
+	{
+		try
+		{
+			return VoiceMapper.GetTotalVoiceCount() > 0 || !string.IsNullOrWhiteSpace(VoiceMapper.GetFallbackVoice());
 		}
 		catch
 		{

@@ -622,7 +622,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				if (orCreateMerchantFactRecord != null)
 				{
 					string text2 = (speakerName ?? GetSettlementMerchantRoleLabel(kind) ?? "商贩").Trim();
-					orCreateMerchantFactRecord.Facts.Add("[NPC行为补充] " + text2 + ": " + text);
+					orCreateMerchantFactRecord.Facts.Add("[AFEF NPC行为补充] " + text2 + ": " + text);
 					CleanupMerchantFactRecord(orCreateMerchantFactRecord);
 				}
 			}
@@ -3767,7 +3767,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.AppendLine("【系统账目提示】玩家对你代表的" + BuildSettlementMerchantDebtLabel(settlement, kind) + "有以下欠款（分笔记录）：");
-		stringBuilder.AppendLine("【还款确认】若玩家声称要还钱，并且[玩家行为补充] 中确实明确写了玩家把钱交给了你或写出了你的名字，你应立即核对债务ID并在本轮回复末尾用 [ACTION:DEBT_PAY_GOLD:债务ID:数量]（金币债）或 [ACTION:DEBT_PAY_ITEM:债务ID:物品ID:数量]（物品债）确认还款；禁止嘴炮还款，禁止自动冲抵到别的债，禁止拖沓，必须在本轮输出这些标签。");
+		stringBuilder.AppendLine("【还款确认】若玩家声称要还钱，并且[AFEF玩家行为补充] 中确实明确写了玩家把钱交给了你或写出了你的名字，你应立即核对债务ID并在本轮回复末尾用 [ACTION:DEBT_PAY_GOLD:债务ID:数量]（金币债）或 [ACTION:DEBT_PAY_ITEM:债务ID:物品ID:数量]（物品债）确认还款；禁止嘴炮还款，禁止自动冲抵到别的债，禁止拖沓，必须在本轮输出这些标签。");
 		List<DebtRecord.DebtLine> list = (from x in settlementMerchantDebtRecord.DebtLines
 			where x != null && x.RemainingAmount > 0
 			orderby x.DueDay, x.CreatedDay
@@ -4975,7 +4975,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 					int num4 = TransferGold(giver, receiver, result8);
 					if (num4 > 0)
 					{
-						giverFacts.Add($"你已经将 {num4} 第纳尔交给 {receiverName}。");
+						giverFacts.Add($"你已经将 {num4} 第纳尔交给 {receiverName}。并进入了{receiverName}的库存");
 						receiverFacts.Add($"你从 {giverName} 收到了 {num4} 第纳尔。");
 						if (giver != Hero.MainHero && receiver == Hero.MainHero)
 						{
@@ -4997,7 +4997,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 					{
 						string text3 = (string.IsNullOrEmpty(itemName) ? value4 : itemName);
 						string text4 = text3;
-						giverFacts.Add($"你已经将 {FormatItemAmount(num4, ResolveItemById(value4), text4)} 交给 {receiverName}。");
+						giverFacts.Add($"你已经将 {FormatItemAmount(num4, ResolveItemById(value4), text4)} 交给 {receiverName}。并进入了{receiverName}的库存");
 						receiverFacts.Add($"你从 {giverName} 收到了 {FormatItemAmount(num4, ResolveItemById(value4), text4)}。");
 						if (num4 < result8)
 						{
@@ -5397,7 +5397,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			Logger.Metric("action.apply_reward_tags", ok: true, stopwatch.Elapsed.TotalMilliseconds);
 			if (giverFacts.Count > 0)
 			{
-				SetLastGeneratedNpcFactLines(new string[1] { "[NPC行为补充] " + giverName + ": " + string.Join(" ", giverFacts) });
+				SetLastGeneratedNpcFactLines(new string[1] { "[AFEF NPC行为补充] " + giverName + ": " + string.Join(" ", giverFacts) });
 				MyBehavior.AppendExternalNpcFact(giver, string.Join(" ", giverFacts));
 			}
 			if (receiverFacts.Count > 0)
@@ -5513,7 +5513,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				if (num > 0)
 				{
 					anyActualGiveToPlayer = true;
-					merchantFacts.Add($"你已经将 {num} 第纳尔交给玩家。");
+					merchantFacts.Add($"你已经将 {num} 第纳尔交给玩家。并进入了玩家的的库存");
 					playerFacts.Add($"你从 {giverName} 收到了 {num} 第纳尔。");
 				}
 				else
@@ -5535,7 +5535,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				if (num > 0)
 				{
 					anyActualGiveToPlayer = true;
-					merchantFacts.Add($"你已经将 {FormatItemAmount(num, itemObject, text)} 交给玩家。");
+					merchantFacts.Add($"你已经将 {FormatItemAmount(num, itemObject, text)} 交给玩家。并进入了玩家的的库存");
 					playerFacts.Add($"你从 {giverName} 收到了 {FormatItemAmount(num, itemObject, text)}。");
 					if (num < result)
 					{
@@ -5659,7 +5659,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		responseText = responseText.Trim();
 		if (merchantFacts.Count > 0)
 		{
-			SetLastGeneratedNpcFactLines(new string[1] { "[NPC行为补充] " + giverName + ": " + string.Join(" ", merchantFacts) });
+			SetLastGeneratedNpcFactLines(new string[1] { "[AFEF NPC行为补充] " + giverName + ": " + string.Join(" ", merchantFacts) });
 			AppendSettlementMerchantNpcFact(currentSettlement, kind, string.Join(" ", merchantFacts), giverName);
 		}
 		if (playerFacts.Count > 0 && receiver == Hero.MainHero)
@@ -5734,6 +5734,52 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		GiveGoldAction.ApplyBetweenCharacters(giver, null, num, disableNotification: true);
 		settlement.SettlementComponent?.ChangeGold(num);
 		return num;
+	}
+
+	private static int MoveMatchingItemsByStringId(ItemRoster sourceRoster, ItemRoster targetRoster, string itemStringId, int amount, out EquipmentElement firstTransferredElement)
+	{
+		firstTransferredElement = EquipmentElement.Invalid;
+		if (sourceRoster == null || targetRoster == null || string.IsNullOrWhiteSpace(itemStringId) || amount <= 0)
+		{
+			return 0;
+		}
+		string text = itemStringId.Trim();
+		int num = amount;
+		int num2 = 0;
+		while (num > 0)
+		{
+			bool flag = false;
+			for (int i = 0; i < sourceRoster.Count; i++)
+			{
+				ItemRosterElement elementCopyAtIndex = sourceRoster.GetElementCopyAtIndex(i);
+				EquipmentElement equipmentElement = elementCopyAtIndex.EquipmentElement;
+				ItemObject item = equipmentElement.Item;
+				if (item == null || elementCopyAtIndex.Amount <= 0 || !string.Equals(item.StringId ?? "", text, StringComparison.OrdinalIgnoreCase))
+				{
+					continue;
+				}
+				int num3 = Math.Min(elementCopyAtIndex.Amount, num);
+				if (num3 <= 0)
+				{
+					continue;
+				}
+				if (firstTransferredElement.Item == null)
+				{
+					firstTransferredElement = equipmentElement;
+				}
+				sourceRoster.AddToCounts(equipmentElement, -num3);
+				targetRoster.AddToCounts(equipmentElement, num3);
+				num -= num3;
+				num2 += num3;
+				flag = true;
+				break;
+			}
+			if (!flag)
+			{
+				break;
+			}
+		}
+		return num2;
 	}
 
 	internal int TransferItemById(Hero giver, Hero receiver, string itemStringId, int amount, out string itemName)
@@ -5822,23 +5868,14 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		int num3 = num2;
 		if (itemRoster != null)
 		{
-			for (int k = 0; k < itemRoster.Count; k++)
+			num3 -= MoveMatchingItemsByStringId(itemRoster, itemRoster2, itemStringId, num3, out var equipmentElement);
+			if (itemObject == null && equipmentElement.Item != null)
 			{
-				if (num3 <= 0)
-				{
-					break;
-				}
-				ItemRosterElement itemRosterElement = itemRoster[k];
-				ItemObject item3 = itemRosterElement.EquipmentElement.Item;
-				if (item3 != null && string.Equals(item3.StringId ?? "", itemStringId, StringComparison.OrdinalIgnoreCase))
-				{
-					int num4 = Math.Min(itemRosterElement.Amount, num3);
-					if (num4 > 0)
-					{
-						itemRoster.AddToCounts(item3, -num4);
-						num3 -= num4;
-					}
-				}
+				itemObject = equipmentElement.Item;
+			}
+			if (string.IsNullOrWhiteSpace(itemName) && equipmentElement.Item != null)
+			{
+				itemName = equipmentElement.GetModifiedItemName()?.ToString() ?? equipmentElement.Item.Name?.ToString() ?? itemStringId;
 			}
 		}
 		for (int l = 0; l < list.Count; l++)
@@ -5848,17 +5885,26 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				break;
 			}
 			EquipmentIndex index = list[l];
-			ItemObject item4 = giver.BattleEquipment[index].Item;
+			EquipmentElement equipmentElement2 = giver.BattleEquipment[index];
+			ItemObject item4 = equipmentElement2.Item;
 			if (item4 != null && string.Equals(item4.StringId ?? "", itemStringId, StringComparison.OrdinalIgnoreCase))
 			{
 				giver.BattleEquipment[index] = EquipmentElement.Invalid;
+				itemRoster2.AddToCounts(equipmentElement2, 1);
+				if (itemObject == null)
+				{
+					itemObject = item4;
+				}
+				if (string.IsNullOrWhiteSpace(itemName))
+				{
+					itemName = equipmentElement2.GetModifiedItemName()?.ToString() ?? item4.Name?.ToString() ?? itemStringId;
+				}
 				num3--;
 			}
 		}
-		itemRoster2.AddToCounts(itemObject, num2);
 		if (itemObject != null)
 		{
-			itemName = itemObject.Name?.ToString() ?? itemStringId;
+			itemName = itemName ?? itemObject.Name?.ToString() ?? itemStringId;
 		}
 		if (receiver == Hero.MainHero)
 		{
@@ -5953,9 +5999,11 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			return 0;
 		}
-		itemRoster.AddToCounts(itemObject, -num2);
-		itemRoster2.AddToCounts(itemObject, num2);
-		itemName = itemObject.Name?.ToString() ?? itemStringId;
-		return num2;
+		int num3 = MoveMatchingItemsByStringId(itemRoster, itemRoster2, itemStringId, num2, out var equipmentElement);
+		if (num3 > 0)
+		{
+			itemName = (equipmentElement.Item != null) ? (equipmentElement.GetModifiedItemName()?.ToString() ?? equipmentElement.Item.Name?.ToString() ?? itemStringId) : (itemObject.Name?.ToString() ?? itemStringId);
+		}
+		return num3;
 	}
 }

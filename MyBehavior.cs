@@ -3938,22 +3938,23 @@ public class MyBehavior : CampaignBehaviorBase
 					continue;
 				}
 				ItemRoster itemRoster = mobileParty.ItemRoster;
-				if (itemRoster == null || pendingTradeItem.Item == null)
+				if (itemRoster == null)
 				{
 					continue;
 				}
-				int itemNumber = itemRoster.GetItemNumber(pendingTradeItem.Item);
-				int num2 = Math.Min(pendingTradeItem.Amount, itemNumber);
+				string text = (pendingTradeItem.ItemId ?? pendingTradeItem.Item?.StringId ?? "").Trim();
+				if (string.IsNullOrWhiteSpace(text))
+				{
+					continue;
+				}
+				ItemObject itemObject;
+				ItemRoster itemRoster2 = targetHero.PartyBelongedTo?.ItemRoster;
+				int num2 = TransferItemsFromRosterByStringId(itemRoster, itemRoster2, text, pendingTradeItem.Amount, out itemObject);
 				if (num2 > 0)
 				{
-					itemRoster.AddToCounts(pendingTradeItem.Item, -num2);
-					if (targetHero.PartyBelongedTo != null)
-					{
-						targetHero.PartyBelongedTo.ItemRoster.AddToCounts(pendingTradeItem.Item, num2);
-					}
 					try
 					{
-						RewardSystemBehavior.Instance?.RecordPlayerPrepaidTransfer(targetHero, 0, pendingTradeItem.ItemId, num2);
+						RewardSystemBehavior.Instance?.RecordPlayerPrepaidTransfer(targetHero, 0, text, num2);
 					}
 					catch
 					{
@@ -4146,7 +4147,7 @@ public class MyBehavior : CampaignBehaviorBase
 			return "";
 		}
 		string text3 = string.Join("、", list);
-		return text + "给 " + text2 + " 看了看 " + text3 + "，证明自己有这些东西。";
+		return text + "给 " + text2 + " 看了看 " + text3 + "，但没有将其给入你的库存。";
 	}
 
 	private List<TradeResourceOption> BuildResourceOptions(Hero targetHero)
@@ -4195,36 +4196,100 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		if (itemRoster != null)
 		{
+			Dictionary<string, TradeResourceOption> dictionary = new Dictionary<string, TradeResourceOption>(StringComparer.OrdinalIgnoreCase);
 			for (int i = 0; i < itemRoster.Count; i++)
 			{
-				ItemObject itemAtIndex = itemRoster.GetItemAtIndex(i);
-				if (itemAtIndex == null)
+				ItemRosterElement elementCopyAtIndex = itemRoster.GetElementCopyAtIndex(i);
+				ItemObject item = elementCopyAtIndex.EquipmentElement.Item;
+				int amount = elementCopyAtIndex.Amount;
+				if (item == null || amount <= 0)
 				{
 					continue;
 				}
-				int itemNumber = itemRoster.GetItemNumber(itemAtIndex);
-				if (itemNumber > 0)
+				string text = (item.StringId ?? "").Trim();
+				if (string.IsNullOrWhiteSpace(text))
 				{
-					int num2 = itemNumber;
-					if (_pendingTrade != null && !_pendingTrade.IsGive && heroShownRecord != null && heroShownRecord.ShownItems.TryGetValue(itemAtIndex.StringId, out var value))
+					continue;
+				}
+				if (dictionary.TryGetValue(text, out var value2))
+				{
+					value2.AvailableAmount += amount;
+				}
+				else
+				{
+					dictionary[text] = new TradeResourceOption
 					{
-						num2 = Math.Max(0, itemNumber - value);
-					}
-					if (num2 > 0)
-					{
-						list.Add(new TradeResourceOption
-						{
-							IsGold = false,
-							ItemId = itemAtIndex.StringId,
-							Name = itemAtIndex.Name.ToString(),
-							AvailableAmount = num2,
-							Item = itemAtIndex
-						});
-					}
+						IsGold = false,
+						ItemId = text,
+						Name = item.Name.ToString(),
+						AvailableAmount = amount,
+						Item = item
+					};
+				}
+			}
+			foreach (TradeResourceOption value3 in dictionary.Values)
+			{
+				int num2 = value3.AvailableAmount;
+				if (_pendingTrade != null && !_pendingTrade.IsGive && heroShownRecord != null && heroShownRecord.ShownItems.TryGetValue(value3.ItemId, out var value4))
+				{
+					num2 = Math.Max(0, num2 - value4);
+				}
+				if (num2 > 0)
+				{
+					value3.AvailableAmount = num2;
+					list.Add(value3);
 				}
 			}
 		}
 		return list;
+	}
+
+	public static int TransferItemsFromRosterByStringId(ItemRoster sourceRoster, ItemRoster targetRoster, string itemId, int amount, out ItemObject transferredItem)
+	{
+		transferredItem = null;
+		if (sourceRoster == null || string.IsNullOrWhiteSpace(itemId) || amount <= 0)
+		{
+			return 0;
+		}
+		string text = itemId.Trim();
+		int num = amount;
+		int num2 = 0;
+		while (num > 0)
+		{
+			bool flag = false;
+			for (int i = 0; i < sourceRoster.Count; i++)
+			{
+				ItemRosterElement elementCopyAtIndex = sourceRoster.GetElementCopyAtIndex(i);
+				EquipmentElement equipmentElement = elementCopyAtIndex.EquipmentElement;
+				ItemObject item = equipmentElement.Item;
+				if (item == null || elementCopyAtIndex.Amount <= 0 || !string.Equals(item.StringId ?? "", text, StringComparison.OrdinalIgnoreCase))
+				{
+					continue;
+				}
+				transferredItem = transferredItem ?? item;
+				int num3 = Math.Min(elementCopyAtIndex.Amount, num);
+				if (num3 <= 0)
+				{
+					continue;
+				}
+				sourceRoster.AddToCounts(equipmentElement, -num3);
+				targetRoster?.AddToCounts(equipmentElement, num3);
+				num -= num3;
+				num2 += num3;
+				flag = true;
+				break;
+			}
+			if (!flag)
+			{
+				break;
+			}
+		}
+		return num2;
+	}
+
+	public static int RemoveItemsFromRosterByStringId(ItemRoster itemRoster, string itemId, int amount, out ItemObject removedItem)
+	{
+		return TransferItemsFromRosterByStringId(itemRoster, null, itemId, amount, out removedItem);
 	}
 
 	private HeroShownRecord GetShownRecord(Hero hero)
@@ -4604,7 +4669,7 @@ public class MyBehavior : CampaignBehaviorBase
 					string npcBehaviorSupplement = RewardSystemBehavior.Instance?.BuildNpcBehaviorSupplementForAI(targetHero, targetCharacter);
 					if (!string.IsNullOrWhiteSpace(npcBehaviorSupplement))
 					{
-						sb.AppendLine("【NPC行为补充】");
+						sb.AppendLine("【AFEF NPC行为补充】");
 						sb.AppendLine(npcBehaviorSupplement);
 					}
 					if (RewardSystemBehavior.Instance != null && targetHero != null)
@@ -4654,7 +4719,7 @@ public class MyBehavior : CampaignBehaviorBase
 						playerWonLastDuelForRule = playerWonLastDuel;
 						if (playerWonLastDuel)
 						{
-							sb.AppendLine("【战斗结果】你刚刚在一场正式的决斗中输给了玩家。赌注应已在决斗结束瞬间自动结算；如果【玩家行为补充】中已经记录你已支付/仍欠款，请不要重复支付，只需确认或解释。");
+							sb.AppendLine("【战斗结果】你刚刚在一场正式的决斗中输给了玩家。赌注应已在决斗结束瞬间自动结算；如果【AFEF玩家行为补充】中已经记录你已支付/仍欠款，请不要重复支付，只需确认或解释。");
 							if (AIConfigHandler.RewardEnabled && !AIConfigHandler.DuelStakeEnabled)
 							{
 								useRewardContext = true;
@@ -4662,7 +4727,7 @@ public class MyBehavior : CampaignBehaviorBase
 						}
 						else
 						{
-							sb.AppendLine("【战斗结果】你刚刚在一场正式的决斗中打败了玩家。赌注应已在决斗结束瞬间自动结算；如果【玩家行为补充】中已经记录玩家欠你多少，请不要重复记账，只需确认并催促履行。");
+							sb.AppendLine("【战斗结果】你刚刚在一场正式的决斗中打败了玩家。赌注应已在决斗结束瞬间自动结算；如果【AFEF玩家行为补充】中已经记录玩家欠你多少，请不要重复记账，只需确认并催促履行。");
 							if (AIConfigHandler.RewardEnabled && !AIConfigHandler.DuelStakeEnabled)
 							{
 								useRewardContext = true;
@@ -5086,13 +5151,13 @@ public class MyBehavior : CampaignBehaviorBase
 			if (!string.IsNullOrWhiteSpace(extraFact))
 			{
 				string text2 = extraFact.Trim();
-				if (text2.StartsWith("[玩家行为补充]", StringComparison.Ordinal) || text2.StartsWith("[NPC行为补充]", StringComparison.Ordinal))
+				if (text2.StartsWith("[AFEF玩家行为补充]", StringComparison.Ordinal) || text2.StartsWith("[AFEF NPC行为补充]", StringComparison.Ordinal))
 				{
 					dialogueDay.Lines.Add(text2);
 				}
 				else
 				{
-					dialogueDay.Lines.Add("[玩家行为补充] " + text2);
+					dialogueDay.Lines.Add("[AFEF玩家行为补充] " + text2);
 				}
 			}
 			if (!string.IsNullOrWhiteSpace(aiText))
@@ -5248,7 +5313,7 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				text2 = "NPC";
 			}
-			AppendExternalDialogueHistory(hero, null, null, "[NPC行为补充] " + text2 + ": " + text);
+			AppendExternalDialogueHistory(hero, null, null, "[AFEF NPC行为补充] " + text2 + ": " + text);
 		}
 		catch
 		{
@@ -5268,7 +5333,7 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				return;
 			}
-			AppendExternalDialogueHistory(hero, null, null, "[玩家行为补充] " + text);
+			AppendExternalDialogueHistory(hero, null, null, "[AFEF玩家行为补充] " + text);
 		}
 		catch
 		{
@@ -5284,13 +5349,13 @@ public class MyBehavior : CampaignBehaviorBase
 		string text = (extraFact ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
 		if (!string.IsNullOrWhiteSpace(text))
 		{
-			if (text.StartsWith("[玩家行为补充]", StringComparison.Ordinal) || text.StartsWith("[NPC行为补充]", StringComparison.Ordinal))
+			if (text.StartsWith("[AFEF玩家行为补充]", StringComparison.Ordinal) || text.StartsWith("[AFEF NPC行为补充]", StringComparison.Ordinal))
 			{
 				sb.AppendLine(text);
 			}
 			else
 			{
-				sb.AppendLine("[玩家行为补充] " + text);
+				sb.AppendLine("[AFEF玩家行为补充] " + text);
 			}
 		}
 	}
@@ -5318,7 +5383,7 @@ public class MyBehavior : CampaignBehaviorBase
 				foreach (string line in item.Lines)
 				{
 					string text = (line ?? "").Trim();
-					if (!string.IsNullOrWhiteSpace(text) && text.StartsWith("[NPC行为补充]", StringComparison.Ordinal))
+					if (!string.IsNullOrWhiteSpace(text) && text.StartsWith("[AFEF NPC行为补充]", StringComparison.Ordinal))
 					{
 						list2.Add(text);
 					}
@@ -5390,13 +5455,13 @@ public class MyBehavior : CampaignBehaviorBase
 					text3 = text3.Substring(0, 180);
 				}
 				string text5 = text3.Replace("\r", " ").Replace("\n", " ");
-				if (text5.StartsWith("[玩家行为补充]", StringComparison.Ordinal) || text5.StartsWith("[NPC行为补充]", StringComparison.Ordinal))
+				if (text5.StartsWith("[AFEF玩家行为补充]", StringComparison.Ordinal) || text5.StartsWith("[AFEF NPC行为补充]", StringComparison.Ordinal))
 				{
 					list.Add(text5);
 				}
 				else
 				{
-					list.Add("[玩家行为补充] " + text5);
+					list.Add("[AFEF玩家行为补充] " + text5);
 				}
 			}
 			if (list.Count <= 0)
@@ -5971,7 +6036,7 @@ public class MyBehavior : CampaignBehaviorBase
 		string value6c = RewardSystemBehavior.Instance?.BuildNpcBehaviorSupplementForAI(targetHero, targetCharacter);
 		if (!string.IsNullOrWhiteSpace(value6c))
 		{
-			stringBuilder.AppendLine("【NPC行为补充】");
+			stringBuilder.AppendLine("【AFEF NPC行为补充】");
 			stringBuilder.AppendLine(value6c);
 		}
 		bool includeDuelStakeContext = false;
@@ -6211,7 +6276,7 @@ public class MyBehavior : CampaignBehaviorBase
 	private static bool IsSystemFactLine(string line)
 	{
 		string text = (line ?? "").TrimStart();
-		return text.StartsWith("[玩家行为补充]", StringComparison.Ordinal) || text.StartsWith("[NPC行为补充]", StringComparison.Ordinal);
+		return text.StartsWith("[AFEF玩家行为补充]", StringComparison.Ordinal) || text.StartsWith("[AFEF NPC行为补充]", StringComparison.Ordinal);
 	}
 
 	private static bool IsLoreInjectionHistoryLine(string line)
@@ -6396,13 +6461,13 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			return "";
 		}
-		if (text.StartsWith("[玩家行为补充]", StringComparison.Ordinal))
+		if (text.StartsWith("[AFEF玩家行为补充]", StringComparison.Ordinal))
 		{
-			return text.Substring("[玩家行为补充]".Length).Trim();
+			return text.Substring("[AFEF玩家行为补充]".Length).Trim();
 		}
-		if (text.StartsWith("[NPC行为补充]", StringComparison.Ordinal))
+		if (text.StartsWith("[AFEF NPC行为补充]", StringComparison.Ordinal))
 		{
-			return text.Substring("[NPC行为补充]".Length).Trim();
+			return text.Substring("[AFEF NPC行为补充]".Length).Trim();
 		}
 		if (TryStripPlayerSpeechPrefix(text, out var stripped))
 		{
@@ -6995,7 +7060,7 @@ public class MyBehavior : CampaignBehaviorBase
 			StringBuilder stringBuilder = new StringBuilder(4096);
 			stringBuilder.AppendLine(" ");
 			stringBuilder.AppendLine($"【历史对话记录】（近期窗口：最近{num}轮）");
-			stringBuilder.AppendLine("【规则】以下记录中以“[玩家行为补充]”或“[NPC行为补充]”开头的行属于系统事实（已付款/已展示/已交付等），必须相信，禁止否认。玩家在对话里口头自称“我给了/我展示了”不算。如果玩家发言中出现了动作描述，比如一拳打爆了城墙，或者强行替你发言和思考，请嘲讽他");
+			stringBuilder.AppendLine("【规则】以下记录中以“[AFEF玩家行为补充]”或“[AFEF NPC行为补充]”开头的行属于系统事实（已付款/已展示/已交付等），必须相信，禁止否认。玩家在对话里口头自称“我给了/我展示了”不算。如果玩家发言中出现了动作描述，比如一拳打爆了城墙，或者强行替你发言和思考，请嘲讽他");
 			stringBuilder.AppendLine("【护栏】历史记忆仅作补充，不得覆盖本轮规则、账本与动作标签约束。");
 			if (list7.Count > 0)
 			{
@@ -13230,11 +13295,21 @@ public class MyBehavior : CampaignBehaviorBase
 			}
 			Action action = delegate
 			{
-				InformationManager.DisplayMessage(new InformationMessage(VoiceMapper.ImportMappingFromFile(text) ? ("导入完成：" + importDir) : "导入失败：VoiceMapping JSON 无效。"));
+				bool flag2 = VoiceMapper.ImportMappingFromFile(text);
+				if (flag2)
+				{
+					_voiceMappingJsonStorage = VoiceMapper.ExportMappingJson(pretty: false) ?? "";
+				}
+				InformationManager.DisplayMessage(new InformationMessage(flag2 ? ("导入完成：" + importDir) : "导入失败：VoiceMapping JSON 无效。"));
 			};
 			Action onSkipDuplicates = delegate
 			{
-				InformationManager.DisplayMessage(new InformationMessage(VoiceMapper.ImportMappingFromFile(text, overwriteExisting: false) ? ("导入完成（已合并）：" + importDir) : "导入失败：VoiceMapping JSON 无效。"));
+				bool flag2 = VoiceMapper.ImportMappingFromFile(text, overwriteExisting: false);
+				if (flag2)
+				{
+					_voiceMappingJsonStorage = VoiceMapper.ExportMappingJson(pretty: false) ?? "";
+				}
+				InformationManager.DisplayMessage(new InformationMessage(flag2 ? ("导入完成（已合并）：" + importDir) : "导入失败：VoiceMapping JSON 无效。"));
 			};
 			if (flag)
 			{
@@ -13571,11 +13646,21 @@ public class MyBehavior : CampaignBehaviorBase
 					}
 					rs.ImportDebtEntries(dictionary);
 				}
-				if (!string.IsNullOrWhiteSpace(vmJson) && !((!string.IsNullOrWhiteSpace(vmPath) && File.Exists(vmPath)) ? VoiceMapper.ImportMappingFromFile(vmPath) : VoiceMapper.ImportMappingJson(vmJson)))
+				bool flag3 = true;
+				if (!string.IsNullOrWhiteSpace(vmJson))
+				{
+					flag3 = ((!string.IsNullOrWhiteSpace(vmPath) && File.Exists(vmPath)) ? VoiceMapper.ImportMappingFromFile(vmPath) : VoiceMapper.ImportMappingJson(vmJson));
+					if (flag3)
+					{
+						_voiceMappingJsonStorage = VoiceMapper.ExportMappingJson(pretty: false) ?? "";
+					}
+				}
+				if (!flag3)
 				{
 					InformationManager.DisplayMessage(new InformationMessage("警告：VoiceMapping 导入失败，已跳过。"));
 				}
 				ShoutUtils.ImportUnnamedPersonaFromDir(importDir);
+				_unnamedPersonaJsonStorage = ShoutUtils.ExportUnnamedPersonaStateJson(pretty: false) ?? "";
 				ImportKnowledgeFromDir(importDir, overwriteExisting: true);
 				InformationManager.DisplayMessage(new InformationMessage("导入完成：" + importDir));
 			};
@@ -13621,11 +13706,21 @@ public class MyBehavior : CampaignBehaviorBase
 					}
 					rs.ImportDebtEntries(dictionary);
 				}
-				if (!string.IsNullOrWhiteSpace(vmJson) && !((!string.IsNullOrWhiteSpace(vmPath) && File.Exists(vmPath)) ? VoiceMapper.ImportMappingFromFile(vmPath, overwriteExisting: false) : VoiceMapper.ImportMappingJson(vmJson, overwriteExisting: false)))
+				bool flag3 = true;
+				if (!string.IsNullOrWhiteSpace(vmJson))
+				{
+					flag3 = ((!string.IsNullOrWhiteSpace(vmPath) && File.Exists(vmPath)) ? VoiceMapper.ImportMappingFromFile(vmPath, overwriteExisting: false) : VoiceMapper.ImportMappingJson(vmJson, overwriteExisting: false));
+					if (flag3)
+					{
+						_voiceMappingJsonStorage = VoiceMapper.ExportMappingJson(pretty: false) ?? "";
+					}
+				}
+				if (!flag3)
 				{
 					InformationManager.DisplayMessage(new InformationMessage("警告：VoiceMapping 导入失败，已跳过。"));
 				}
 				ShoutUtils.ImportUnnamedPersonaFromDir(importDir, overwriteExisting: false);
+				_unnamedPersonaJsonStorage = ShoutUtils.ExportUnnamedPersonaStateJson(pretty: false) ?? "";
 				ImportKnowledgeFromDir(importDir, overwriteExisting: false);
 				InformationManager.DisplayMessage(new InformationMessage("导入完成（已跳过重复）：" + importDir));
 			};
