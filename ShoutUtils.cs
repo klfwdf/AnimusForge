@@ -1373,8 +1373,30 @@ public static class ShoutUtils
 					dictionary2[text3] = heroTypeForPrompt;
 				}
 			};
-			action(settlement.OwnerClan?.Leader, arg2: false);
-			action(settlement.Town?.Governor, arg2: false);
+			try
+			{
+				MBReadOnlyList<Hero> heroesWithoutParty = settlement.HeroesWithoutParty;
+				if (heroesWithoutParty != null)
+				{
+					foreach (Hero item in heroesWithoutParty)
+					{
+						action(item, item?.IsNotable ?? false);
+					}
+				}
+			}
+			catch
+			{
+			}
+			Hero leader = settlement.OwnerClan?.Leader;
+			if (IsHeroInSettlementForPrompt(leader, settlement))
+			{
+				action(leader, arg2: false);
+			}
+			Hero governor = settlement.Town?.Governor;
+			if (IsHeroInSettlementForPrompt(governor, settlement))
+			{
+				action(governor, arg2: false);
+			}
 			try
 			{
 				MBReadOnlyList<Hero> notables = settlement.Notables;
@@ -1382,7 +1404,10 @@ public static class ShoutUtils
 				{
 					foreach (Hero item in notables)
 					{
-						action(item, arg2: true);
+						if (IsHeroInSettlementForPrompt(item, settlement))
+						{
+							action(item, arg2: true);
+						}
 					}
 				}
 			}
@@ -1627,21 +1652,31 @@ public static class ShoutUtils
 	{
 		try
 		{
+			string text = MyBehavior.BuildPlayerPublicDisplayNameForExternal();
+			if (string.IsNullOrWhiteSpace(text))
+			{
+				text = "玩家";
+			}
 			string playerRelation = GetFactionRelationLabel(faction, Hero.MainHero?.Clan?.Kingdom ?? Hero.MainHero?.MapFaction ?? Clan.PlayerClan?.Kingdom ?? Clan.PlayerClan?.MapFaction);
 			string npcRelation = GetFactionRelationLabel(faction, perspectiveHero?.Clan?.Kingdom ?? perspectiveHero?.MapFaction);
 			if (string.IsNullOrWhiteSpace(npcRelation))
 			{
-				return BuildSingleRelationPhrase("玩家", playerRelation);
+				return BuildSingleRelationPhrase(text, playerRelation);
 			}
 			if (string.Equals(playerRelation, npcRelation, StringComparison.Ordinal))
 			{
-				return BuildSharedRelationPhrase(playerRelation);
+				return BuildSharedRelationPhrase(playerRelation, text);
 			}
-			return BuildSplitRelationPhrase(npcRelation, playerRelation);
+			return BuildSplitRelationPhrase(npcRelation, playerRelation, text);
 		}
 		catch
 		{
-			return "对你和玩家都保持中立";
+			string text2 = MyBehavior.BuildPlayerPublicDisplayNameForExternal();
+			if (string.IsNullOrWhiteSpace(text2))
+			{
+				text2 = "玩家";
+			}
+			return "对你和" + text2 + "都保持中立";
 		}
 	}
 
@@ -1658,22 +1693,24 @@ public static class ShoutUtils
 		}
 	}
 
-	private static string BuildSharedRelationPhrase(string relation)
+	private static string BuildSharedRelationPhrase(string relation, string playerName)
 	{
+		string text = string.IsNullOrWhiteSpace(playerName) ? "玩家" : playerName;
 		switch ((relation ?? "").Trim())
 		{
 		case "敌对":
-			return "是你和玩家的敌人";
+			return "是你和" + text + "的敌人";
 		case "友方":
-			return "是你和玩家的友方势力";
+			return "是你和" + text + "的友方势力";
 		default:
-			return "对你和玩家都保持中立";
+			return "对你和" + text + "都保持中立";
 		}
 	}
 
-	private static string BuildSplitRelationPhrase(string npcRelation, string playerRelation)
+	private static string BuildSplitRelationPhrase(string npcRelation, string playerRelation, string playerName)
 	{
-		return BuildSingleRelationPhrase("你", npcRelation) + "，但" + BuildSingleRelationPhrase("玩家", playerRelation);
+		string text = string.IsNullOrWhiteSpace(playerName) ? "玩家" : playerName;
+		return BuildSingleRelationPhrase("你", npcRelation) + "，但" + BuildSingleRelationPhrase(text, playerRelation);
 	}
 
 	private static string GetFactionRelationLabel(IFaction faction, IFaction referenceFaction)
@@ -1918,7 +1955,7 @@ public static class ShoutUtils
 				}
 				else
 				{
-					npcDataPacket.Age = characterObject.Age;
+					npcDataPacket.Age = ResolveSceneNonHeroAge(agent, characterObject);
 				}
 			}
 			catch
@@ -2004,6 +2041,88 @@ public static class ShoutUtils
 			}
 		}
 		return npcDataPacket;
+	}
+
+	private static float ResolveSceneNonHeroAge(Agent agent, CharacterObject characterObject)
+	{
+		float num = 0f;
+		try
+		{
+			num = agent?.Age ?? 0f;
+		}
+		catch
+		{
+			num = 0f;
+		}
+		if (num >= 18f && num <= 80f)
+		{
+			return num;
+		}
+		try
+		{
+			num = characterObject?.Age ?? 0f;
+		}
+		catch
+		{
+			num = 0f;
+		}
+		if (num >= 18f && num <= 55f)
+		{
+			return num;
+		}
+		float num2 = 30f;
+		try
+		{
+			if (characterObject != null)
+			{
+				if (characterObject.IsSoldier)
+				{
+					num2 = 30f;
+				}
+				else
+				{
+					switch (characterObject.Occupation)
+					{
+					case Occupation.Weaponsmith:
+					case Occupation.Blacksmith:
+					case Occupation.Armorer:
+					case Occupation.GoodsTrader:
+					case Occupation.HorseTrader:
+					case Occupation.Artisan:
+					case Occupation.Merchant:
+						num2 = 38f;
+						break;
+					case Occupation.Headman:
+					case Occupation.Preacher:
+					case Occupation.GangLeader:
+					case Occupation.RuralNotable:
+						num2 = 46f;
+						break;
+					default:
+						num2 = 30f;
+						break;
+					}
+				}
+			}
+		}
+		catch
+		{
+			num2 = 30f;
+		}
+		int num3 = -1;
+		try
+		{
+			num3 = agent?.Index ?? (-1);
+		}
+		catch
+		{
+			num3 = -1;
+		}
+		if (num3 >= 0)
+		{
+			num2 += num3 % 5 - 2;
+		}
+		return Math.Max(18f, Math.Min(55f, num2));
 	}
 
 	public static bool TryTriggerDuelAction(NpcDataPacket npcData, ref string content)

@@ -1,4 +1,5 @@
 using System;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Reflection;
@@ -29,15 +30,15 @@ public class DuelSettings : AttributeGlobalSettings<DuelSettings>
 
 	public override string FormatType => "json";
 
-	[SettingPropertyText("API 地址（需含接口尾缀）", -1, true, "", Order = 0, RequireRestart = false, HintText = "请尽量填写完整接口，例如: https://api.deepseek.com/v1/chat/completions\n若只填到 /v1，本模组会自动补全为 /v1/chat/completions")]
+	[SettingPropertyText("API 地址（支持填写 Base URL）", -1, true, "", Order = 0, RequireRestart = false, HintText = "请填写你的接口地址，例如: https://api.deepseek.com/v1 或 https://api.deepseek.com/v1/chat/completions\n当你填写到 /v1 时，本模组会自动请求 /v1/chat/completions。")]
 	[SettingPropertyGroup("1. AI 核心配置")]
-	public string ApiUrl { get; set; } = "https://api.deepseek.com/chat/completions";
+	public string ApiUrl { get; set; } = "https://api.deepseek.com/v1";
 
 	[SettingPropertyText("API 密钥 (Key)", -1, true, "", Order = 1, RequireRestart = false, HintText = "填入你的 API 密钥")]
 	[SettingPropertyGroup("1. AI 核心配置")]
 	public string ApiKey { get; set; } = "";
 
-	[SettingPropertyText("模型名称", -1, true, "", Order = 2, RequireRestart = false, HintText = "例如: deepseek-chat 或 gemini-pro")]
+	[SettingPropertyText("模型名称", -1, true, "", Order = 2, RequireRestart = false, HintText = "例如: deepseek-chat。请填写你当前接口实际支持的模型名。")]
 	[SettingPropertyGroup("1. AI 核心配置")]
 	public string ModelName { get; set; } = "deepseek-chat";
 
@@ -55,13 +56,17 @@ public class DuelSettings : AttributeGlobalSettings<DuelSettings>
 
 	[SettingPropertyText("喊话按键 (仅限单个大写字母)", -1, true, "", Order = 0, RequireRestart = false)]
 	[SettingPropertyGroup("3. 场景喊话")]
-	public string ShoutKey { get; set; } = "K";
+	public string ShoutKey { get; set; } = "T";
 
-	[SettingPropertyInteger("喊话回复字数限制", 40, 500, "0", Order = 1, RequireRestart = false)]
+	[SettingPropertyText("终端按键 (仅限单个大写字母)", -1, true, "", Order = 1, RequireRestart = false, HintText = "大地图上按此键打开 AnimusForge 终端。默认 U。")]
+	[SettingPropertyGroup("3. 场景喊话")]
+	public string TerminalKey { get; set; } = "U";
+
+	[SettingPropertyInteger("喊话回复字数限制", 40, 500, "0", Order = 2, RequireRestart = false)]
 	[SettingPropertyGroup("3. 场景喊话")]
 	public int ShoutMaxTokens { get; set; } = 40;
 
-	[SettingPropertyInteger("气泡字体大小", 10, 40, "0", Order = 2, RequireRestart = false, HintText = "设置场景喊话气泡中文字的字体大小")]
+	[SettingPropertyInteger("气泡字体大小", 10, 40, "0", Order = 3, RequireRestart = false, HintText = "设置场景喊话气泡中文字的字体大小")]
 	[SettingPropertyGroup("3. 场景喊话")]
 	public int BubbleFontSize { get; set; } = 14;
 
@@ -87,7 +92,7 @@ public class DuelSettings : AttributeGlobalSettings<DuelSettings>
 
 	[SettingPropertyBool("【日志】写入 Token_Stats.txt", Order = 5, RequireRestart = false, HintText = "Token 统计日志开关。关闭后不再写入 Token_Stats.txt。")]
 	[SettingPropertyGroup("4. 开发者选项")]
-	public bool EnableTokenStatsLog { get; set; } = false;
+	public bool EnableTokenStatsLog { get; set; } = true;
 
 	[SettingPropertyInteger("知识直通条数上限", 1, 20, "0", Order = 0, RequireRestart = false, HintText = "知识检索按得分排序后，直接放行前 N 条。默认 2。")]
 	[SettingPropertyGroup("5. 知识检索（TopN）")]
@@ -177,6 +182,10 @@ public class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyGroup("8. 婚姻规则")]
 	public bool MarriageRequireOppositeGender { get; set; } = true;
 
+	[SettingPropertyText("玩家自定义规则文案", -1, true, "", Order = 0, RequireRestart = false, HintText = "这里填写你希望额外注入提示词的规则文案。当前仅提供填写入口，具体插入到 prompt 的位置我们后续再接。")]
+	[SettingPropertyGroup("9. 提示词扩展")]
+	public string PlayerCustomPromptRule { get; set; } = "";
+
 	public bool UseMcmKnowledgeRetrieval { get; set; } = true;
 
 	public bool KnowledgeRetrievalEnabled { get; set; } = true;
@@ -263,7 +272,7 @@ public class DuelSettings : AttributeGlobalSettings<DuelSettings>
 			}
 			string text2 = (result.AbsolutePath ?? "").Trim();
 			string text3 = text2.TrimEnd('/').ToLowerInvariant();
-			if (text3.EndsWith("/chat/completions", StringComparison.Ordinal) || text3.EndsWith("/responses", StringComparison.Ordinal))
+			if (text3.EndsWith("/chat/completions", StringComparison.Ordinal))
 			{
 				return text;
 			}
@@ -276,6 +285,24 @@ public class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		{
 		}
 		return text;
+	}
+
+	private static string BuildApiErrorHint(string effectiveApiUrl, string modelName, HttpStatusCode statusCode, string responseBody)
+	{
+		if ((int)statusCode == 522)
+		{
+			return "522 通常表示网关/代理已经收到你的请求，但它连接不到上游源站。若你在用自建中转、Cloudflare 域名或第三方面板，请先检查源站是否在线，以及代理到源站的网络是否通畅。";
+		}
+		if (statusCode != HttpStatusCode.NotFound)
+		{
+			return null;
+		}
+		string text = (responseBody ?? "").ToLowerInvariant();
+		if (text.Contains("requested entity was not found") || text.Contains("\"status\": \"not_found\""))
+		{
+			return "404 NotFound 通常表示接口路径或模型名不存在，请检查 API 地址、自动补全后的聊天路径以及模型名称是否正确。";
+		}
+		return "404 NotFound 通常表示接口路径或模型名不存在，请检查 API 地址尾缀和模型名称。";
 	}
 
 	public DuelSettings()
@@ -391,6 +418,11 @@ public class DuelSettings : AttributeGlobalSettings<DuelSettings>
 						else
 						{
 							InformationManager.DisplayMessage(new InformationMessage($"[系统] 连接失败！状态码: {response.StatusCode}", Color.FromUint(4294901760u)));
+							string text = BuildApiErrorHint(effectiveApiUrl, ModelName, response.StatusCode, responseString);
+							if (!string.IsNullOrWhiteSpace(text))
+							{
+								InformationManager.DisplayMessage(new InformationMessage("[系统] 排查建议：" + text, Color.FromUint(4294936576u)));
+							}
 							Logger.Log("DuelSettings", $"测试失败! 状态码: {response.StatusCode} | 错误信息: {responseString}");
 						}
 					}

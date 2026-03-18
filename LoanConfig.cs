@@ -11,4 +11,6 @@ public class LoanConfig
 	public string NonHeroInstruction { get; set; } = "";
 
 	public List<string> TriggerKeywords { get; set; } = new List<string>();
+
+	public Dictionary<string, string> RuntimeInstructionTemplates { get; set; } = new Dictionary<string, string>(System.StringComparer.OrdinalIgnoreCase);
 }

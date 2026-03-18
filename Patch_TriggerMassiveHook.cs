@@ -42,6 +42,7 @@ public static class Patch_TriggerMassiveHook
 		ContinueConversationSafePatch.EnsurePatched();
 		ConversationVMCapturePatch.EnsurePatched();
 		MeetingTargetWieldBlockPatch.EnsurePatched();
+		SceneTauntWieldBlockPatch.EnsurePatched();
 		MeetingDuelBattleAgentLogicSafePatch.EnsurePatched();
 		LipSyncFacialAnimSuppressPatch.EnsurePatched();
 		try

@@ -184,7 +184,12 @@ internal static class VanillaIssueOfferBridge
 		{
 			return BuildInProgressPromptBlock(targetHero, issue3);
 		}
-		return BuildRecentCompletionPromptBlock(targetHero);
+		string text = BuildRecentCompletionPromptBlock(targetHero);
+		if (!string.IsNullOrWhiteSpace(text))
+		{
+			return text;
+		}
+		return BuildNoAvailableIssuePromptBlock(targetHero);
 	}
 
 	private static string BuildOfferPromptBlock(Hero targetHero, IssueBase issue)
@@ -376,8 +381,25 @@ internal static class VanillaIssueOfferBridge
 				stringBuilder.AppendLine("- " + NormalizePromptText(recentJournalEntry));
 			}
 		}
+		string playerDisplayName = GetPlayerDisplayNameForPrompt();
+		stringBuilder.AppendLine("你当前没有任何新的原版任务可以交给" + playerDisplayName + "（玩家），也请不要杜撰任何任务交给" + playerDisplayName + "（玩家）。");
 		stringBuilder.AppendLine("你现在应当把语气放在“任务已经有结果”上：表示感谢、评价结果、讨论后续影响，但不要再次发放这项任务。");
 		stringBuilder.AppendLine("严禁输出 [ACTION:ISSUE_ACCEPT_SELF] 或 [ACTION:ISSUE_ACCEPT_ALT:*]。");
+		return stringBuilder.ToString().Trim();
+	}
+
+	private static string BuildNoAvailableIssuePromptBlock(Hero targetHero)
+	{
+		if (targetHero == null)
+		{
+			return "";
+		}
+		string playerDisplayName = GetPlayerDisplayNameForPrompt();
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.AppendLine("【原版任务上下文：当前无任务】");
+		stringBuilder.AppendLine("你没有任何任务可以交给" + playerDisplayName + "（玩家），也请不要杜撰任何任务交给" + playerDisplayName + "（玩家）。");
+		stringBuilder.AppendLine("如果对方问你有没有差事、委托、任务可接，你只能明确表示当前没有可交付的原版任务，或转入普通对话。");
+		stringBuilder.AppendLine("严禁输出 [ACTION:ISSUE_ACCEPT_SELF]、[ACTION:ISSUE_ACCEPT_ALT:*] 或 [ACTION:QUEST_TURN_IN]。");
 		return stringBuilder.ToString().Trim();
 	}
 
@@ -928,6 +950,21 @@ internal static class VanillaIssueOfferBridge
 	private static string GetHeroName(Hero hero)
 	{
 		return (hero?.Name?.ToString() ?? hero?.StringId ?? "未知同伴").Trim();
+	}
+
+	private static string GetPlayerDisplayNameForPrompt()
+	{
+		string text = "";
+		try
+		{
+			text = MyBehavior.BuildPlayerPublicDisplayNameForExternal();
+		}
+		catch
+		{
+			text = "";
+		}
+		text = (text ?? "").Trim();
+		return string.IsNullOrWhiteSpace(text) ? "玩家" : text;
 	}
 
 	private static string GetText(TextObject textObject)

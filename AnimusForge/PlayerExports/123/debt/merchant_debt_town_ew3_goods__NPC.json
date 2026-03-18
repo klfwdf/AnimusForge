@@ -1,0 +1,27 @@
+﻿{
+  "OwedGold": 120,
+  "OwedItems": {},
+  "CreatedDay": 91096.53,
+  "DueDay": 91097.53,
+  "DebtLines": [
+    {
+      "DebtId": "D1F789915",
+      "IsGold": true,
+      "ItemId": null,
+      "IsDueUnlimited": false,
+      "IsItemUnavailableDeclared": false,
+      "InitialAmount": 120,
+      "RemainingAmount": 120,
+      "CreatedDay": 91096.53,
+      "DueDay": 91097.53,
+      "BestPreDueCoverage": 0.0,
+      "OnTimePenaltyTierApplied": 0,
+      "OverduePenaltyDaysApplied": 1,
+      "LastOverduePenaltyDay": 91098,
+      "OverdueTrustPenaltyPerDay": 0,
+      "OverdueRelationPenaltyPerDay": 0,
+      "CompensationUnitPrice": 0,
+      "CompensationGoldCredit": 0
+    }
+  ]
+}

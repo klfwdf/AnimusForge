@@ -106,11 +106,59 @@ public class SubModule : MBSubModuleBase
 			{
 				Logger.LogTrace("SubModule", ">>> Manual SetupAndStartMapConversation patch failed: " + ex10.Message);
 			}
+			try
+			{
+				PassageUsePointSafePatch.EnsurePatched();
+			}
+			catch (Exception ex11)
+			{
+				Logger.LogTrace("SubModule", ">>> PassageUsePointSafePatch init failed: " + ex11.Message);
+			}
+			try
+			{
+				SceneTauntWieldBlockPatch.EnsurePatched();
+			}
+			catch (Exception ex12)
+			{
+				Logger.LogTrace("SubModule", ">>> SceneTauntWieldBlockPatch init failed: " + ex12.Message);
+			}
+			try
+			{
+				SceneTauntMissionDifficultyPatch.EnsurePatched();
+			}
+			catch (Exception ex13)
+			{
+				Logger.LogTrace("SubModule", ">>> SceneTauntMissionDifficultyPatch init failed: " + ex13.Message);
+			}
+			try
+			{
+				SceneTauntNativeConversationBlockPatch.EnsurePatched();
+			}
+			catch (Exception ex14)
+			{
+				Logger.LogTrace("SubModule", ">>> SceneTauntNativeConversationBlockPatch init failed: " + ex14.Message);
+			}
+			try
+			{
+				SceneTauntLeaveMissionBlockPatch.EnsurePatched();
+			}
+			catch (Exception ex15)
+			{
+				Logger.LogTrace("SubModule", ">>> SceneTauntLeaveMissionBlockPatch init failed: " + ex15.Message);
+			}
+			try
+			{
+				SceneTauntFightAutoEndDelayPatch.EnsurePatched();
+			}
+			catch (Exception ex16)
+			{
+				Logger.LogTrace("SubModule", ">>> SceneTauntFightAutoEndDelayPatch init failed: " + ex16.Message);
+			}
 			Logger.LogTrace("SubModule", ">>> Harmony patches applied.");
 		}
-		catch (Exception ex11)
+		catch (Exception ex17)
 		{
-			Logger.LogTrace("SubModule", ">>> Harmony patch bootstrap failed: " + ex11);
+			Logger.LogTrace("SubModule", ">>> Harmony patch bootstrap failed: " + ex17);
 		}
 		AIConfigHandler.ReloadConfig();
 		try
@@ -118,9 +166,9 @@ public class SubModule : MBSubModuleBase
 			TtsEngine.Instance.Initialize();
 			Logger.LogTrace("SubModule", ">>> Online TTS engine initialized.");
 		}
-		catch (Exception ex12)
+		catch (Exception ex18)
 		{
-			Logger.LogTrace("SubModule", ">>> TTS engine initialization failed (non-fatal): " + ex12.Message);
+			Logger.LogTrace("SubModule", ">>> TTS engine initialization failed (non-fatal): " + ex18.Message);
 		}
 	}
 
@@ -133,16 +181,20 @@ public class SubModule : MBSubModuleBase
 			campaignGameStarter.AddBehavior(new ShoutBehavior());
 			campaignGameStarter.AddBehavior(new DuelBehavior());
 			campaignGameStarter.AddBehavior(new RewardSystemBehavior());
+			campaignGameStarter.AddBehavior(new AnimusForgeTerminalBehavior());
 			campaignGameStarter.AddBehavior(new RomanceSystemBehavior());
 			campaignGameStarter.AddBehavior(new KnowledgeLibraryBehavior());
 			campaignGameStarter.AddBehavior(new LordEncounterBehavior());
+			campaignGameStarter.AddBehavior(new SceneTauntBehavior());
 			campaignGameStarter.AddBehavior(new VanillaIssuePromptBehavior());
 		}
 	}
 
 	protected override void OnApplicationTick(float dt)
 	{
+		ModOnboardingBehavior.Instance?.OnEngineTick();
 		DuelBehavior.Instance?.OnEngineTick();
+		AnimusForgeTerminalBehavior.Instance?.OnEngineTick();
 	}
 
 	[CommandLineFunctionality.CommandLineArgumentFunction("reload", "AnimusForge")]

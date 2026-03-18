@@ -20,13 +20,26 @@ public static class PassageUsePointSafePatch
 			if (!(type == null))
 			{
 				MethodInfo methodInfo = AccessTools.Method(type, "AfterMissionStart");
+				MethodInfo methodInfo2 = AccessTools.Method(type, "OnUse", new Type[2]
+				{
+					typeof(TaleWorlds.MountAndBlade.Agent),
+					typeof(sbyte)
+				});
+				Harmony harmony = new Harmony("AnimusForge.passageusepoint.safety");
 				if (!(methodInfo == null))
 				{
-					Harmony harmony = new Harmony("AnimusForge.passageusepoint.safety");
 					HarmonyMethod prefix = new HarmonyMethod(typeof(PassageUsePointSafePatch).GetMethod("Prefix", BindingFlags.Static | BindingFlags.Public));
 					harmony.Patch(methodInfo, prefix);
-					_patched = true;
-					Logger.LogTrace("System", "✅ PassageUsePointSafePatch 已对 PassageUsePoint.AfterMissionStart 打补丁。");
+				}
+				if (!(methodInfo2 == null))
+				{
+					HarmonyMethod prefix2 = new HarmonyMethod(typeof(PassageUsePointSafePatch).GetMethod("OnUsePrefix", BindingFlags.Static | BindingFlags.Public));
+					harmony.Patch(methodInfo2, prefix2);
+				}
+				_patched = methodInfo != null || methodInfo2 != null;
+				if (_patched)
+				{
+					Logger.LogTrace("System", "✅ PassageUsePointSafePatch 已对 PassageUsePoint 打补丁。");
 				}
 			}
 		}
@@ -49,5 +62,25 @@ public static class PassageUsePointSafePatch
 		{
 		}
 		return true;
+	}
+
+	public static void OnUsePrefix(object __instance, TaleWorlds.MountAndBlade.Agent userAgent)
+	{
+		try
+		{
+			if (userAgent == null || !userAgent.IsMainAgent || __instance == null)
+			{
+				return;
+			}
+			PropertyInfo property = __instance.GetType().GetProperty("IsMissionExit", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+			bool flag = property != null && property.GetValue(__instance) is bool value && value;
+			if (flag)
+			{
+				SceneTauntBehavior.ClearArmedCarryoverForExternal("player_used_scene_exit");
+			}
+		}
+		catch
+		{
+		}
 	}
 }

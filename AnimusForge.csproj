@@ -32,6 +32,7 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Core" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="TaleWorlds.CampaignSystem">
       <HintPath>$(BannerlordBinDir)\TaleWorlds.CampaignSystem.dll</HintPath>
     </Reference>
@@ -331,7 +332,4 @@
     <Error Condition="!Exists('%(_RequiredRef.Identity)')" Text="Missing required dependency: %(_RequiredRef.Identity)" />
   </Target>
 </Project>
-
-
-
 

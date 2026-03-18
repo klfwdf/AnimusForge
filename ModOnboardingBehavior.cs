@@ -2,16 +2,38 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Reflection;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Xml.Linq;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using SandBox.View.Map;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
+using TaleWorlds.MountAndBlade;
 
 namespace AnimusForge;
 
 public class ModOnboardingBehavior : CampaignBehaviorBase
 {
+	private enum OnboardingUiStage
+	{
+		None,
+		Welcome,
+		BaseUrlValidation,
+		BaseUrlValidationFailure,
+		ApiValidation,
+		ModelFetch,
+		ModelSelect,
+		Import
+	}
+
 	private const string SetupDoneKey = "_AnimusForge_setup_done_v1";
 
 	private bool _setupDone;
@@ -25,6 +47,70 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 	private bool _pendingWelcome;
 
 	private long _pendingWelcomeAfterUtcTicks;
+
+	private bool _apiValidationInProgress;
+
+	private CancellationTokenSource _apiValidationCancellation;
+
+	private int _apiValidationVersion;
+
+	private bool _pendingApiValidationResult;
+
+	private bool _pendingApiValidationSuccess;
+
+	private string _pendingApiValidationMessage = "";
+
+	private string _pendingApiValidationFailureHint = "";
+
+	private bool _showApiValidationFailedHint;
+
+	private string _lastApiValidationFailureHint = "";
+
+	private bool _apiValidationReturnToModelSelection;
+
+	private bool _showModelSelectionValidationFailedHint;
+
+	private bool _baseUrlValidationInProgress;
+
+	private CancellationTokenSource _baseUrlValidationCancellation;
+
+	private int _baseUrlValidationVersion;
+
+	private bool _pendingBaseUrlValidationResult;
+
+	private bool _pendingBaseUrlValidationSuccess;
+
+	private string _pendingBaseUrlValidationMessage = "";
+
+	private string _pendingValidatedBaseUrl = "";
+
+	private string _lastBaseUrlValidationFailureMessage = "";
+
+	private bool _modelFetchInProgress;
+
+	private CancellationTokenSource _modelFetchCancellation;
+
+	private int _modelFetchVersion;
+
+	private bool _pendingModelFetchResult;
+
+	private bool _pendingModelFetchSuccess;
+
+	private string _pendingModelFetchMessage = "";
+
+	private List<string> _pendingModelFetchModels = new List<string>();
+
+	private string _lastModelFetchMessage = "";
+
+	private List<string> _lastFetchedModelNames = new List<string>();
+
+	private bool _pendingReturnToWelcome;
+
+	private OnboardingUiStage _activeOnboardingStage;
+
+	private OnboardingUiStage _pendingUnexpectedResumeStage;
+
+	private long _pendingUnexpectedResumeAfterUtcTicks;
 
 	private bool _startupNoticeShownThisSession;
 
@@ -92,6 +178,11 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 	{
 		try
 		{
+			ProcessPendingBaseUrlValidationResult();
+			ProcessPendingApiValidationResult();
+			ProcessPendingModelFetchResult();
+			ProcessPendingReturnToWelcome();
+			ProcessUnexpectedOnboardingDismissal();
 			if (_pendingStartupNotice && !_startupNoticeShownThisSession && DateTime.UtcNow.Ticks >= _pendingStartupNoticeAfterUtcTicks && Campaign.Current != null && Campaign.Current.GameStarted)
 			{
 				_pendingStartupNotice = false;
@@ -107,6 +198,211 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		}
 		catch
 		{
+		}
+	}
+
+	public void OnEngineTick()
+	{
+		try
+		{
+			ProcessPendingBaseUrlValidationResult();
+			ProcessPendingApiValidationResult();
+			ProcessPendingModelFetchResult();
+			ProcessPendingReturnToWelcome();
+			ProcessUnexpectedOnboardingDismissal();
+		}
+		catch
+		{
+		}
+	}
+
+	private void ProcessPendingReturnToWelcome()
+	{
+		if (!_pendingReturnToWelcome)
+		{
+			return;
+		}
+		_pendingReturnToWelcome = false;
+		ShowWelcomePopup(fromGate: true, ignoreSuppress: true);
+	}
+
+	private void ProcessUnexpectedOnboardingDismissal()
+	{
+		if (_setupDone || _pendingReturnToWelcome || _pendingBaseUrlValidationResult || _pendingApiValidationResult || _pendingModelFetchResult)
+		{
+			_pendingUnexpectedResumeStage = OnboardingUiStage.None;
+			return;
+		}
+		if (_activeOnboardingStage != OnboardingUiStage.Welcome && _activeOnboardingStage != OnboardingUiStage.BaseUrlValidation && _activeOnboardingStage != OnboardingUiStage.BaseUrlValidationFailure && _activeOnboardingStage != OnboardingUiStage.ApiValidation && _activeOnboardingStage != OnboardingUiStage.ModelFetch && _activeOnboardingStage != OnboardingUiStage.ModelSelect && _activeOnboardingStage != OnboardingUiStage.Import)
+		{
+			_pendingUnexpectedResumeStage = OnboardingUiStage.None;
+			return;
+		}
+		if (InformationManager.IsAnyInquiryActive())
+		{
+			_pendingUnexpectedResumeStage = OnboardingUiStage.None;
+			return;
+		}
+		if (_pendingUnexpectedResumeStage != _activeOnboardingStage)
+		{
+			_pendingUnexpectedResumeStage = _activeOnboardingStage;
+			_pendingUnexpectedResumeAfterUtcTicks = DateTime.UtcNow.Ticks + TimeSpan.FromMilliseconds(150.0).Ticks;
+			return;
+		}
+		if (DateTime.UtcNow.Ticks < _pendingUnexpectedResumeAfterUtcTicks)
+		{
+			return;
+		}
+		OnboardingUiStage pendingUnexpectedResumeStage = _pendingUnexpectedResumeStage;
+		_pendingUnexpectedResumeStage = OnboardingUiStage.None;
+		_welcomeInProgress = false;
+		switch (pendingUnexpectedResumeStage)
+		{
+		case OnboardingUiStage.BaseUrlValidation:
+			if (_baseUrlValidationInProgress)
+			{
+				ShowBaseUrlValidationProgressPopup();
+			}
+			break;
+		case OnboardingUiStage.BaseUrlValidationFailure:
+			ShowBaseUrlValidationFailurePopup();
+			break;
+		case OnboardingUiStage.ApiValidation:
+			if (_apiValidationInProgress)
+			{
+				ShowApiValidationProgressPopup();
+			}
+			break;
+		case OnboardingUiStage.ModelFetch:
+			if (_modelFetchInProgress)
+			{
+				ShowModelFetchProgressPopup();
+			}
+			break;
+		case OnboardingUiStage.ModelSelect:
+			ShowModelSelectionPopup();
+			break;
+		case OnboardingUiStage.Import:
+			ShowImportSetupPopup(fromGate: true, ignoreSuppress: true);
+			break;
+		case OnboardingUiStage.Welcome:
+			ShowWelcomePopup(fromGate: true, ignoreSuppress: true);
+			break;
+		}
+	}
+
+	private void ProcessPendingBaseUrlValidationResult()
+	{
+		if (!_pendingBaseUrlValidationResult)
+		{
+			return;
+		}
+		bool pendingBaseUrlValidationSuccess = _pendingBaseUrlValidationSuccess;
+		string pendingBaseUrlValidationMessage = _pendingBaseUrlValidationMessage ?? "";
+		string pendingValidatedBaseUrl = (_pendingValidatedBaseUrl ?? "").Trim();
+		_pendingBaseUrlValidationResult = false;
+		_pendingBaseUrlValidationSuccess = false;
+		_pendingBaseUrlValidationMessage = "";
+		_pendingValidatedBaseUrl = "";
+		_welcomeInProgress = false;
+		_activeOnboardingStage = OnboardingUiStage.None;
+		InformationManager.HideInquiry();
+		if (pendingBaseUrlValidationSuccess)
+		{
+			_lastBaseUrlValidationFailureMessage = "";
+			if (!string.IsNullOrWhiteSpace(pendingBaseUrlValidationMessage))
+			{
+				InformationManager.DisplayMessage(new InformationMessage(pendingBaseUrlValidationMessage));
+			}
+			DuelSettings settings = DuelSettings.GetSettings();
+			if (settings == null)
+			{
+				InformationManager.DisplayMessage(new InformationMessage("无法读取 MCM 设置，暂时不能保存 Base URL。"));
+				ShowWelcomePopup(fromGate: true, ignoreSuppress: true);
+				return;
+			}
+			settings.ApiUrl = pendingValidatedBaseUrl;
+			TryPersistMcmSettings(settings);
+			OpenApiKeyInput();
+		}
+		else
+		{
+			_lastBaseUrlValidationFailureMessage = pendingBaseUrlValidationMessage;
+			ShowBaseUrlValidationFailurePopup();
+		}
+	}
+
+	private void ProcessPendingModelFetchResult()
+	{
+		if (!_pendingModelFetchResult)
+		{
+			return;
+		}
+		bool pendingModelFetchSuccess = _pendingModelFetchSuccess;
+		string pendingModelFetchMessage = _pendingModelFetchMessage ?? "";
+		List<string> list = _pendingModelFetchModels?.Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList() ?? new List<string>();
+		_pendingModelFetchResult = false;
+		_pendingModelFetchSuccess = false;
+		_pendingModelFetchMessage = "";
+		_pendingModelFetchModels = new List<string>();
+		_welcomeInProgress = false;
+		_activeOnboardingStage = OnboardingUiStage.None;
+		InformationManager.HideInquiry();
+		_showModelSelectionValidationFailedHint = false;
+		_lastFetchedModelNames = list;
+		_lastModelFetchMessage = pendingModelFetchMessage;
+		if (!pendingModelFetchSuccess && !string.IsNullOrWhiteSpace(pendingModelFetchMessage))
+		{
+			InformationManager.DisplayMessage(new InformationMessage(pendingModelFetchMessage));
+		}
+		ShowModelSelectionPopup();
+	}
+
+	private void ProcessPendingApiValidationResult()
+	{
+		if (!_pendingApiValidationResult)
+		{
+			return;
+		}
+		bool pendingApiValidationSuccess = _pendingApiValidationSuccess;
+		string pendingApiValidationMessage = _pendingApiValidationMessage ?? "";
+		string pendingApiValidationFailureHint = _pendingApiValidationFailureHint ?? "";
+		_pendingApiValidationResult = false;
+		_pendingApiValidationSuccess = false;
+		_pendingApiValidationMessage = "";
+		_pendingApiValidationFailureHint = "";
+		bool apiValidationReturnToModelSelection = _apiValidationReturnToModelSelection;
+		_apiValidationReturnToModelSelection = false;
+		_welcomeInProgress = false;
+		_activeOnboardingStage = OnboardingUiStage.None;
+		InformationManager.HideInquiry();
+		if (pendingApiValidationSuccess && !string.IsNullOrWhiteSpace(pendingApiValidationMessage))
+		{
+			InformationManager.DisplayMessage(new InformationMessage(pendingApiValidationMessage));
+		}
+		if (pendingApiValidationSuccess)
+		{
+			_showApiValidationFailedHint = false;
+			_showModelSelectionValidationFailedHint = false;
+			_lastApiValidationFailureHint = "";
+			ShowImportSetupPopup(fromGate: true, ignoreSuppress: true);
+		}
+		else if (!_setupDone)
+		{
+			if (apiValidationReturnToModelSelection)
+			{
+				_showApiValidationFailedHint = false;
+				_showModelSelectionValidationFailedHint = true;
+				_lastApiValidationFailureHint = pendingApiValidationFailureHint;
+				ShowModelSelectionPopup();
+			}
+			else
+			{
+				_showApiValidationFailedHint = true;
+				_showModelSelectionValidationFailedHint = false;
+				_lastApiValidationFailureHint = pendingApiValidationFailureHint;
+				ShowWelcomePopup(fromGate: true, ignoreSuppress: true);
+			}
 		}
 	}
 
@@ -140,6 +436,749 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 
 	private void ShowWelcomePopup(bool fromGate)
 	{
+		ShowWelcomePopup(fromGate, ignoreSuppress: false);
+	}
+
+	private void ShowWelcomePopup(bool fromGate, bool ignoreSuppress)
+	{
+		try
+		{
+			if (_setupDone || _welcomeInProgress || _apiValidationInProgress)
+			{
+				return;
+			}
+			long ticks = DateTime.UtcNow.Ticks;
+			if (!ignoreSuppress && _suppressWelcomeUntilUtcTicks > ticks)
+			{
+				return;
+			}
+			_suppressWelcomeUntilUtcTicks = ticks + TimeSpan.FromMilliseconds(fromGate ? 800 : 200).Ticks;
+			_activeOnboardingStage = OnboardingUiStage.Welcome;
+			string title = "欢迎使用 AnimusForge";
+			string text = "开始游玩前，请先确认 API 信息，否则AI对话功能将无法使用。";
+			if (_showApiValidationFailedHint)
+			{
+				title = "API 连接失败";
+				text = "测试链接报错!请检查你的网络环境，或者重新填写 API 信息！";
+				if (!string.IsNullOrWhiteSpace(_lastApiValidationFailureHint))
+				{
+					text = text + "\n\n排查建议：" + _lastApiValidationFailureHint;
+				}
+			}
+			_welcomeInProgress = true;
+			InformationManager.ShowInquiry(new InquiryData(title, text, isAffirmativeOptionShown: true, isNegativeOptionShown: true, "填写 API 信息", "测试已有配置", delegate
+			{
+				_welcomeInProgress = false;
+				OpenApiBaseUrlInput();
+			}, delegate
+			{
+				_welcomeInProgress = false;
+				BeginValidateMcmApiAndContinue();
+			}), pauseGameActiveState: true);
+		}
+		catch
+		{
+			_welcomeInProgress = false;
+		}
+	}
+
+	private void OpenApiBaseUrlInput()
+	{
+		try
+		{
+			DuelSettings settings = DuelSettings.GetSettings();
+			if (settings == null)
+			{
+				InformationManager.DisplayMessage(new InformationMessage("无法读取 MCM 设置，暂时不能填写 Base URL。"));
+				ShowWelcomePopup(fromGate: true);
+				return;
+			}
+			InformationManager.ShowTextInquiry(new TextInquiryData("填写base URL", "请输入 Base URL。\n示例：https://api.deepseek.com/v1", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "下一步", "返回", delegate(string input)
+			{
+				string text2 = (input ?? "").Trim();
+				if (string.IsNullOrWhiteSpace(text2))
+				{
+					InformationManager.DisplayMessage(new InformationMessage("Base URL 不能为空。"));
+					OpenApiBaseUrlInput();
+				}
+				else
+				{
+					BeginValidateBaseUrlAndContinue(text2);
+				}
+			}, delegate
+			{
+				ShowWelcomePopup(fromGate: true, ignoreSuppress: true);
+			}));
+		}
+		catch (Exception ex)
+		{
+			InformationManager.DisplayMessage(new InformationMessage("打开 Base URL 输入框失败：" + ex.Message));
+			ShowWelcomePopup(fromGate: true, ignoreSuppress: true);
+		}
+	}
+
+	private void BeginValidateBaseUrlAndContinue(string rawBaseUrl)
+	{
+		if (_baseUrlValidationInProgress)
+		{
+			return;
+		}
+		string text = (rawBaseUrl ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			InformationManager.DisplayMessage(new InformationMessage("Base URL 不能为空。"));
+			OpenApiBaseUrlInput();
+			return;
+		}
+		if (!Uri.TryCreate(text, UriKind.Absolute, out Uri uriResult) || (uriResult.Scheme != Uri.UriSchemeHttp && uriResult.Scheme != Uri.UriSchemeHttps))
+		{
+			InformationManager.DisplayMessage(new InformationMessage("Base URL 格式不正确，请填写完整的 http/https 地址。"));
+			OpenApiBaseUrlInput();
+			return;
+		}
+		_baseUrlValidationInProgress = true;
+		int num = ++_baseUrlValidationVersion;
+		ShowBaseUrlValidationProgressPopup();
+		Task.Run(async delegate
+		{
+			bool flag = false;
+			string message = "";
+			CancellationTokenSource cancellationTokenSource = null;
+			try
+			{
+				cancellationTokenSource = new CancellationTokenSource();
+				_baseUrlValidationCancellation = cancellationTokenSource;
+				string modelsApiUrl = BuildModelsApiUrl(text);
+				using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, modelsApiUrl);
+				HttpResponseMessage httpResponseMessage = await DuelSettings.GlobalClient.SendAsync(request, cancellationTokenSource.Token);
+				string text2 = await httpResponseMessage.Content.ReadAsStringAsync();
+				if (CanUseBaseUrlStatusCode(httpResponseMessage.StatusCode))
+				{
+					flag = true;
+					message = "Base URL 检查通过，可以继续填写 API Key。";
+				}
+				else
+				{
+					message = BuildBaseUrlValidationFailureMessage(httpResponseMessage.StatusCode, text2);
+				}
+			}
+			catch (OperationCanceledException)
+			{
+				message = "Base URL 检查已取消。";
+			}
+			catch (Exception ex)
+			{
+				message = "Base URL 检查失败：" + ex.Message;
+			}
+			finally
+			{
+				if (num == _baseUrlValidationVersion)
+				{
+					if (ReferenceEquals(_baseUrlValidationCancellation, cancellationTokenSource))
+					{
+						_baseUrlValidationCancellation = null;
+					}
+					_baseUrlValidationInProgress = false;
+					_pendingBaseUrlValidationSuccess = flag;
+					_pendingBaseUrlValidationMessage = message ?? "";
+					_pendingValidatedBaseUrl = flag ? text : "";
+					_pendingBaseUrlValidationResult = true;
+				}
+				cancellationTokenSource?.Dispose();
+			}
+		});
+	}
+
+	private void ShowBaseUrlValidationProgressPopup()
+	{
+		try
+		{
+			_welcomeInProgress = true;
+			_activeOnboardingStage = OnboardingUiStage.BaseUrlValidation;
+			InformationManager.ShowInquiry(new InquiryData("正在检查base URL", "正在检查你填写的 Base URL 是否可用，请稍候……\n\n只有检查通过后，才可以进入下一步填写 API Key。", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "退出当前存档", "返回上一界面", ExitCurrentGameFromOnboarding, CancelBaseUrlValidationAndReturn), pauseGameActiveState: true);
+		}
+		catch
+		{
+		}
+	}
+
+	private void ShowBaseUrlValidationFailurePopup()
+	{
+		try
+		{
+			_welcomeInProgress = true;
+			_activeOnboardingStage = OnboardingUiStage.BaseUrlValidationFailure;
+			string text = string.IsNullOrWhiteSpace(_lastBaseUrlValidationFailureMessage) ? "你填写的 Base URL 当前不可用，请重新检查后再试。" : _lastBaseUrlValidationFailureMessage;
+			InformationManager.ShowInquiry(new InquiryData("base URL 检查失败", text, isAffirmativeOptionShown: true, isNegativeOptionShown: true, "重新填写base URL", "退出当前存档", delegate
+			{
+				_welcomeInProgress = false;
+				OpenApiBaseUrlInput();
+			}, delegate
+			{
+				_welcomeInProgress = false;
+				ExitCurrentGameFromOnboarding();
+			}), pauseGameActiveState: true);
+		}
+		catch
+		{
+			_welcomeInProgress = false;
+		}
+	}
+
+	private void CancelBaseUrlValidationAndReturn()
+	{
+		CancelBaseUrlValidationCore();
+		OpenApiBaseUrlInput();
+	}
+
+	private void CancelBaseUrlValidationCore()
+	{
+		try
+		{
+			_baseUrlValidationVersion++;
+			_baseUrlValidationInProgress = false;
+			_welcomeInProgress = false;
+			_activeOnboardingStage = OnboardingUiStage.None;
+			try
+			{
+				_baseUrlValidationCancellation?.Cancel();
+			}
+			catch
+			{
+			}
+			_baseUrlValidationCancellation = null;
+			InformationManager.HideInquiry();
+		}
+		catch
+		{
+		}
+	}
+
+	private void OpenApiKeyInput()
+	{
+		try
+		{
+			DuelSettings settings = DuelSettings.GetSettings();
+			if (settings == null)
+			{
+				InformationManager.DisplayMessage(new InformationMessage("无法读取 MCM 设置，暂时不能填写 API Key。"));
+				ShowWelcomePopup(fromGate: true, ignoreSuppress: true);
+				return;
+			}
+			InformationManager.ShowTextInquiry(new TextInquiryData("填写API Key", "请输入 API Key。", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "下一步", "返回", delegate(string input)
+			{
+				string text2 = (input ?? "").Trim();
+				if (string.IsNullOrWhiteSpace(text2))
+				{
+					InformationManager.DisplayMessage(new InformationMessage("API Key 不能为空。"));
+					OpenApiKeyInput();
+				}
+				else
+				{
+					settings.ApiKey = text2;
+					TryPersistMcmSettings(settings);
+					InformationManager.DisplayMessage(new InformationMessage("API Key 已写入 MCM。"));
+					BeginFetchAvailableModelsForSetup();
+				}
+			}, delegate
+			{
+				OpenApiBaseUrlInput();
+			}));
+		}
+		catch (Exception ex)
+		{
+			InformationManager.DisplayMessage(new InformationMessage("打开 API Key 输入框失败：" + ex.Message));
+			ShowWelcomePopup(fromGate: true, ignoreSuppress: true);
+		}
+	}
+
+	private void BeginFetchAvailableModelsForSetup()
+	{
+		if (_modelFetchInProgress)
+		{
+			return;
+		}
+		DuelSettings settings = DuelSettings.GetSettings();
+		if (settings == null)
+		{
+			InformationManager.DisplayMessage(new InformationMessage("无法读取 MCM 设置，暂时不能拉取模型列表。"));
+			ShowWelcomePopup(fromGate: true, ignoreSuppress: true);
+			return;
+		}
+		string apiUrl = (settings.ApiUrl ?? "").Trim();
+		string apiKey = (settings.ApiKey ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(apiUrl))
+		{
+			InformationManager.DisplayMessage(new InformationMessage("请先填写 Base URL。"));
+			OpenApiBaseUrlInput();
+			return;
+		}
+		if (string.IsNullOrWhiteSpace(apiKey))
+		{
+			InformationManager.DisplayMessage(new InformationMessage("请先填写 API Key。"));
+			OpenApiKeyInput();
+			return;
+		}
+		_modelFetchInProgress = true;
+		int num = ++_modelFetchVersion;
+		ShowModelFetchProgressPopup();
+		Task.Run(async delegate
+		{
+			bool flag = false;
+			string text = "";
+			List<string> list = new List<string>();
+			CancellationTokenSource cancellationTokenSource = null;
+			try
+			{
+				cancellationTokenSource = new CancellationTokenSource();
+				_modelFetchCancellation = cancellationTokenSource;
+				string modelsApiUrl = BuildModelsApiUrl(apiUrl);
+				using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, modelsApiUrl);
+				request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
+				HttpResponseMessage httpResponseMessage = await DuelSettings.GlobalClient.SendAsync(request, cancellationTokenSource.Token);
+				string text2 = await httpResponseMessage.Content.ReadAsStringAsync();
+				if (httpResponseMessage.IsSuccessStatusCode)
+				{
+					list = ExtractModelNamesFromResponse(text2);
+					if (list.Count > 0)
+					{
+						flag = true;
+						text = "已成功拉取可用模型列表，请选择模型名称。";
+					}
+					else
+					{
+						text = "接口已返回响应，但没有识别出可用模型列表。你也可以手动输入模型名称。";
+					}
+				}
+				else
+				{
+					text = BuildModelFetchFailureMessage(httpResponseMessage.StatusCode, text2);
+				}
+			}
+			catch (OperationCanceledException)
+			{
+				text = "模型列表拉取已取消。";
+			}
+			catch (Exception ex)
+			{
+				text = "拉取模型列表失败：" + ex.Message;
+			}
+			finally
+			{
+				if (num == _modelFetchVersion)
+				{
+					if (ReferenceEquals(_modelFetchCancellation, cancellationTokenSource))
+					{
+						_modelFetchCancellation = null;
+					}
+					_modelFetchInProgress = false;
+					_pendingModelFetchSuccess = flag;
+					_pendingModelFetchMessage = text ?? "";
+					_pendingModelFetchModels = list ?? new List<string>();
+					_pendingModelFetchResult = true;
+				}
+				cancellationTokenSource?.Dispose();
+			}
+		});
+	}
+
+	private void ShowModelFetchProgressPopup()
+	{
+		try
+		{
+			_welcomeInProgress = true;
+			_activeOnboardingStage = OnboardingUiStage.ModelFetch;
+			InformationManager.ShowInquiry(new InquiryData("正在拉取模型列表", "正在根据你填写的 Base URL 和 API Key 拉取当前接口可用的模型，请稍候……\n\n拉取完成后将自动进入下一步。\n如果始终无法拉取模型列表，你也可以返回上一界面重新填写，或稍后手动输入模型名称。", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "退出当前存档", "返回上一界面", ExitCurrentGameFromOnboarding, CancelModelFetchAndReturnToApiKey), pauseGameActiveState: true);
+		}
+		catch
+		{
+		}
+	}
+
+	private void CancelModelFetchAndReturnToApiKey()
+	{
+		CancelModelFetchCore();
+		OpenApiKeyInput();
+	}
+
+	private void CancelModelFetchCore()
+	{
+		try
+		{
+			_modelFetchVersion++;
+			_modelFetchInProgress = false;
+			_welcomeInProgress = false;
+			_activeOnboardingStage = OnboardingUiStage.None;
+			try
+			{
+				_modelFetchCancellation?.Cancel();
+			}
+			catch
+			{
+			}
+			_modelFetchCancellation = null;
+			InformationManager.HideInquiry();
+		}
+		catch
+		{
+		}
+	}
+
+	private void ShowModelSelectionPopup()
+	{
+		try
+		{
+			DuelSettings settings = DuelSettings.GetSettings();
+			if (settings == null)
+			{
+				InformationManager.DisplayMessage(new InformationMessage("无法读取 MCM 设置，暂时不能填写模型名称。"));
+				ShowWelcomePopup(fromGate: true, ignoreSuppress: true);
+				return;
+			}
+			_welcomeInProgress = true;
+			_activeOnboardingStage = OnboardingUiStage.ModelSelect;
+			List<InquiryElement> list = new List<InquiryElement>();
+			list.Add(new InquiryElement("__manual__", "手动输入模型名称", null));
+			list.Add(new InquiryElement("__base_url__", "重新填写base URL", null));
+			list.Add(new InquiryElement("__api_key__", "重新填写API key", null));
+			foreach (string item in _lastFetchedModelNames.Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase))
+			{
+				list.Add(new InquiryElement(item, item, null));
+			}
+			list.Add(new InquiryElement("__refresh__", "重新拉取模型列表", null));
+			list.Add(new InquiryElement("__exit__", "退出当前存档", null));
+			string title = "选择模型名称";
+			string text = "请选择一个可用模型名称。";
+			if (_showModelSelectionValidationFailedHint)
+			{
+				title = "API 连接失败";
+				text = "请重新检查base URL，API key，或模型。";
+				if (!string.IsNullOrWhiteSpace(_lastApiValidationFailureHint))
+				{
+					text = text + "\n\n排查建议：" + _lastApiValidationFailureHint;
+				}
+			}
+			if (_lastFetchedModelNames.Count > 0)
+			{
+				text += "\n\n已从当前接口拉取到可用模型列表，你也可以选择手动输入。";
+			}
+			else
+			{
+				text += "\n\n当前没有拉取到模型列表，你可以手动输入模型名称。";
+			}
+			if (!string.IsNullOrWhiteSpace(_lastModelFetchMessage))
+			{
+				text = text + "\n\n提示：" + _lastModelFetchMessage;
+			}
+			text += "\n\n如果你的base URL或API key填写错误，那你也可以将本菜单的滑条拉到最底部重新返回填写。";
+			MultiSelectionInquiryData data = new MultiSelectionInquiryData(title, text, list, isExitShown: false, 0, 1, "下一步", "返回", delegate(List<InquiryElement> selected)
+			{
+				_welcomeInProgress = false;
+				string text2 = selected?.FirstOrDefault()?.Identifier as string;
+				if (string.IsNullOrWhiteSpace(text2))
+				{
+					ShowModelSelectionPopup();
+				}
+				else if (text2 == "__manual__")
+				{
+					OpenManualModelNameInput();
+				}
+				else if (text2 == "__refresh__")
+				{
+					BeginFetchAvailableModelsForSetup();
+				}
+				else if (text2 == "__base_url__")
+				{
+					_showModelSelectionValidationFailedHint = false;
+					OpenApiBaseUrlInput();
+				}
+				else if (text2 == "__api_key__")
+				{
+					_showModelSelectionValidationFailedHint = false;
+					OpenApiKeyInput();
+				}
+				else if (text2 == "__exit__")
+				{
+					_showModelSelectionValidationFailedHint = false;
+					ExitCurrentGameFromOnboarding();
+				}
+				else
+				{
+					_showModelSelectionValidationFailedHint = false;
+					settings.ModelName = text2;
+					TryPersistMcmSettings(settings);
+					InformationManager.DisplayMessage(new InformationMessage("模型名称已写入 MCM，正在测试完整连接：" + text2));
+					BeginValidateMcmApiAndContinue(returnToModelSelection: true);
+				}
+			}, delegate
+			{
+				_welcomeInProgress = false;
+				_showModelSelectionValidationFailedHint = false;
+				OpenApiKeyInput();
+			});
+			MBInformationManager.ShowMultiSelectionInquiry(data);
+		}
+		catch (Exception ex)
+		{
+			InformationManager.DisplayMessage(new InformationMessage("打开模型选择界面失败：" + ex.Message));
+			ShowWelcomePopup(fromGate: true, ignoreSuppress: true);
+		}
+	}
+
+	private void OpenManualModelNameInput()
+	{
+		try
+		{
+			DuelSettings settings = DuelSettings.GetSettings();
+			if (settings == null)
+			{
+				InformationManager.DisplayMessage(new InformationMessage("无法读取 MCM 设置，暂时不能填写模型名称。"));
+				ShowWelcomePopup(fromGate: true, ignoreSuppress: true);
+				return;
+			}
+			InformationManager.ShowTextInquiry(new TextInquiryData("手动填写模型名称", "请输入模型名称。\n示例：deepseek-chat", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "开始测试", "返回", delegate(string input)
+			{
+				string text2 = (input ?? "").Trim();
+				if (string.IsNullOrWhiteSpace(text2))
+				{
+					InformationManager.DisplayMessage(new InformationMessage("模型名称不能为空。"));
+					OpenManualModelNameInput();
+				}
+				else
+				{
+					_showModelSelectionValidationFailedHint = false;
+					settings.ModelName = text2;
+					TryPersistMcmSettings(settings);
+					InformationManager.DisplayMessage(new InformationMessage("模型名称已写入 MCM，正在测试完整连接：" + text2));
+					BeginValidateMcmApiAndContinue(returnToModelSelection: true);
+				}
+			}, delegate
+			{
+				ShowModelSelectionPopup();
+			}));
+		}
+		catch (Exception ex)
+		{
+			InformationManager.DisplayMessage(new InformationMessage("打开模型名称输入框失败：" + ex.Message));
+			ShowWelcomePopup(fromGate: true, ignoreSuppress: true);
+		}
+	}
+
+	private void BeginValidateMcmApiAndContinue(bool returnToModelSelection = false)
+	{
+		if (_apiValidationInProgress)
+		{
+			return;
+		}
+		DuelSettings settings = DuelSettings.GetSettings();
+		if (settings == null)
+		{
+			InformationManager.DisplayMessage(new InformationMessage("无法读取 MCM 设置。"));
+			ShowWelcomePopup(fromGate: true, ignoreSuppress: true);
+			return;
+		}
+		TryPersistMcmSettings(settings);
+		string apiUrl = (settings.ApiUrl ?? "").Trim();
+		string apiKey = (settings.ApiKey ?? "").Trim();
+		string modelName = (settings.ModelName ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(apiUrl))
+		{
+			InformationManager.DisplayMessage(new InformationMessage("MCM 中尚未填写 Base URL。"));
+			ShowWelcomePopup(fromGate: true, ignoreSuppress: true);
+			return;
+		}
+		if (string.IsNullOrWhiteSpace(apiKey))
+		{
+			InformationManager.DisplayMessage(new InformationMessage("MCM 中尚未填写 API Key。"));
+			ShowWelcomePopup(fromGate: true, ignoreSuppress: true);
+			return;
+		}
+		if (string.IsNullOrWhiteSpace(modelName))
+		{
+			InformationManager.DisplayMessage(new InformationMessage("MCM 中尚未填写模型名称。"));
+			ShowWelcomePopup(fromGate: true, ignoreSuppress: true);
+			return;
+		}
+		_apiValidationReturnToModelSelection = returnToModelSelection;
+		_apiValidationInProgress = true;
+		int num = ++_apiValidationVersion;
+		ShowApiValidationProgressPopup();
+		Task.Run(async delegate
+		{
+			bool flag = false;
+			string text = "";
+			string failureHint = "";
+			CancellationTokenSource cancellationTokenSource = null;
+			try
+			{
+				cancellationTokenSource = new CancellationTokenSource();
+				_apiValidationCancellation = cancellationTokenSource;
+				string effectiveApiUrl = DuelSettings.GetEffectiveApiUrl(apiUrl);
+				var value = new
+				{
+					model = modelName,
+					messages = new[]
+					{
+						new
+						{
+							role = "user",
+							content = "请回复“连接成功”。"
+						}
+					},
+					stream = false
+				};
+				string jsonBody = JsonConvert.SerializeObject(value);
+				StringContent content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
+				DuelSettings.GlobalClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
+				HttpResponseMessage httpResponseMessage = await DuelSettings.GlobalClient.PostAsync(effectiveApiUrl, (HttpContent)(object)content, cancellationTokenSource.Token);
+				string text2 = await httpResponseMessage.Content.ReadAsStringAsync();
+				if (httpResponseMessage.IsSuccessStatusCode)
+				{
+					flag = true;
+					try
+					{
+						JObject jObject = JObject.Parse(text2);
+						string text3 = jObject["choices"]?[0]?["message"]?["content"]?.ToString();
+						text = string.IsNullOrWhiteSpace(text3) ? "MCM 中的 API 信息连接测试成功，可以进入下一步。" : ("MCM 中的 API 信息连接测试成功：" + text3.Trim());
+					}
+					catch
+					{
+						text = "MCM 中的 API 信息连接测试成功，可以进入下一步。";
+					}
+				}
+				else
+				{
+					failureHint = BuildApiValidationFailureHint(httpResponseMessage.StatusCode, text2);
+					text = BuildApiValidationFailureMessage(effectiveApiUrl, modelName, httpResponseMessage.StatusCode, text2);
+				}
+			}
+			catch (OperationCanceledException)
+			{
+				failureHint = "你已手动取消本次测试，可以返回上一界面重新测试，或改填 API 信息。";
+				text = "测试已取消，已退回上一界面。";
+			}
+			catch (Exception ex)
+			{
+				failureHint = "通常是网络异常、证书或代理设置异常，或者 Base URL 填写不正确。";
+				text = "API 连接测试异常：" + ex.Message;
+			}
+			finally
+			{
+				if (num == _apiValidationVersion)
+				{
+					if (ReferenceEquals(_apiValidationCancellation, cancellationTokenSource))
+					{
+						_apiValidationCancellation = null;
+					}
+					_apiValidationInProgress = false;
+					_pendingApiValidationSuccess = flag;
+					_pendingApiValidationMessage = text ?? "";
+					_pendingApiValidationFailureHint = failureHint ?? "";
+					_pendingApiValidationResult = true;
+				}
+				cancellationTokenSource?.Dispose();
+			}
+		});
+	}
+
+	private void ShowApiValidationProgressPopup()
+	{
+		try
+		{
+			_welcomeInProgress = true;
+			_activeOnboardingStage = OnboardingUiStage.ApiValidation;
+			InformationManager.ShowInquiry(new InquiryData("正在测试已有配置", "正在使用 MCM 中的 API 信息进行连接测试，请稍候……\n\n测试完成后将自动进入下一步。\n如果你的API测试始终未成功，你也可以在此界面直接退出存档。", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "退出当前存档", "返回上一界面", ExitCurrentGameFromOnboarding, CancelApiValidationAndReturnToWelcome), pauseGameActiveState: true);
+		}
+		catch
+		{
+		}
+	}
+
+	private void CancelApiValidationAndReturnToWelcome()
+	{
+		CancelApiValidationCore();
+		_pendingReturnToWelcome = true;
+	}
+
+	private void CancelApiValidationCore()
+	{
+		try
+		{
+			_apiValidationVersion++;
+			_apiValidationInProgress = false;
+			_welcomeInProgress = false;
+			_activeOnboardingStage = OnboardingUiStage.None;
+			try
+			{
+				_apiValidationCancellation?.Cancel();
+			}
+			catch
+			{
+			}
+			_apiValidationCancellation = null;
+			InformationManager.HideInquiry();
+		}
+		catch
+		{
+		}
+	}
+
+	private void ExitCurrentGameFromOnboarding()
+	{
+		try
+		{
+			_pendingWelcome = false;
+			_pendingReturnToWelcome = false;
+			_pendingApiValidationResult = false;
+			_pendingApiValidationSuccess = false;
+			_pendingApiValidationMessage = "";
+			_pendingApiValidationFailureHint = "";
+			_pendingBaseUrlValidationResult = false;
+			_pendingBaseUrlValidationSuccess = false;
+			_pendingBaseUrlValidationMessage = "";
+			_pendingValidatedBaseUrl = "";
+			_lastBaseUrlValidationFailureMessage = "";
+			_pendingModelFetchResult = false;
+			_pendingModelFetchSuccess = false;
+			_pendingModelFetchMessage = "";
+			_pendingModelFetchModels = new List<string>();
+			_pendingUnexpectedResumeStage = OnboardingUiStage.None;
+			_welcomeInProgress = false;
+			_showApiValidationFailedHint = false;
+			_lastApiValidationFailureHint = "";
+			if (_baseUrlValidationInProgress)
+			{
+				CancelBaseUrlValidationCore();
+			}
+			if (_apiValidationInProgress)
+			{
+				CancelApiValidationCore();
+			}
+			if (_modelFetchInProgress)
+			{
+				CancelModelFetchCore();
+			}
+			else
+			{
+				_activeOnboardingStage = OnboardingUiStage.None;
+				InformationManager.HideInquiry();
+			}
+			MBGameManager.EndGame();
+		}
+		catch (Exception ex)
+		{
+			InformationManager.DisplayMessage(new InformationMessage("退出当前存档失败：" + ex.Message));
+			ShowWelcomePopup(fromGate: true, ignoreSuppress: true);
+		}
+	}
+
+	private void ShowImportSetupPopup(bool fromGate)
+	{
+		ShowImportSetupPopup(fromGate, ignoreSuppress: false);
+	}
+
+	private void ShowImportSetupPopup(bool fromGate, bool ignoreSuppress)
+	{
 		try
 		{
 			if (_setupDone || _welcomeInProgress)
@@ -147,32 +1186,250 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 				return;
 			}
 			long ticks = DateTime.UtcNow.Ticks;
-			if (_suppressWelcomeUntilUtcTicks > ticks)
+			if (!ignoreSuppress && _suppressWelcomeUntilUtcTicks > ticks)
 			{
 				return;
 			}
 			_suppressWelcomeUntilUtcTicks = ticks + TimeSpan.FromMilliseconds(fromGate ? 800 : 200).Ticks;
+			_activeOnboardingStage = OnboardingUiStage.Import;
 			string playerExportsRootPath = GetPlayerExportsRootPath();
 			string text = "首次在此存档中使用 AnimusForge，必须导入编辑器导出的 JSON 数据，否则本 MOD 的对话/场景喊话将不可用。\n\n需要导入（缺一不可）：\n1) Hero：个性与背景（personality_background/*.json）\n2) 非Hero：描述（unnamed_persona/*.json）\n3) 知识：knowledge/rules/*.json（兼容旧版：knowledge/KnowledgeRules.json）\n4) 声音映射：voice_mapping/VoiceMapping.json\n\n导入目录（默认）：\n" + playerExportsRootPath;
 			_welcomeInProgress = true;
-			InformationManager.ShowInquiry(new InquiryData("AnimusForge - 首次使用", text, isAffirmativeOptionShown: true, isNegativeOptionShown: true, "一键导入", "退出（不导入不可用）", delegate
+			InformationManager.ShowInquiry(new InquiryData("AnimusForge - 首次使用", text, isAffirmativeOptionShown: true, isNegativeOptionShown: true, "一键导入", "退出当前存档", delegate
 			{
 				_welcomeInProgress = false;
 				OpenImportFolderPicker(delegate
 				{
-					ShowWelcomePopup(fromGate: true);
+					ShowImportSetupPopup(fromGate: true);
 				});
 			}, delegate
 			{
 				_welcomeInProgress = false;
-				InformationManager.DisplayMessage(new InformationMessage("未完成首次导入：本 MOD 的对话/场景喊话将被阻止。"));
-				ShowWelcomePopup(fromGate: true);
+				ExitCurrentGameFromOnboarding();
 			}), pauseGameActiveState: true);
 		}
 		catch
 		{
 			_welcomeInProgress = false;
 		}
+	}
+
+	private static void TryPersistMcmSettings(DuelSettings settings)
+	{
+		try
+		{
+			MethodInfo method = settings?.GetType().GetMethod("Save", BindingFlags.Instance | BindingFlags.Public, null, Type.EmptyTypes, null);
+			method?.Invoke(settings, null);
+		}
+		catch
+		{
+		}
+	}
+
+	private static string BuildApiValidationFailureMessage(string effectiveApiUrl, string modelName, HttpStatusCode statusCode, string responseBody)
+	{
+		string text = "MCM 中的 API 信息连接测试失败，暂时不能进入下一步。";
+		if (!string.IsNullOrWhiteSpace(effectiveApiUrl))
+		{
+			text = text + "\n接口：" + effectiveApiUrl;
+		}
+		if (!string.IsNullOrWhiteSpace(modelName))
+		{
+			text = text + "\n模型：" + modelName;
+		}
+		text = text + "\n状态码：" + statusCode;
+		string text2 = (responseBody ?? "").Trim();
+		if ((int)statusCode == 404)
+		{
+			text += "\n排查建议：请检查 Base URL 尾缀和模型名称是否正确。";
+		}
+		else if ((int)statusCode == 401 || (int)statusCode == 403)
+		{
+			text += "\n排查建议：请检查 API Key 是否有效。";
+		}
+		else if ((int)statusCode == 522)
+		{
+			text += "\n排查建议：网关已收到请求，但上游源站不可达。";
+		}
+		if (!string.IsNullOrWhiteSpace(text2))
+		{
+			if (text2.Length > 220)
+			{
+				text2 = text2.Substring(0, 220).Trim();
+			}
+			text = text + "\n返回：" + text2;
+		}
+		return text;
+	}
+
+	private static string BuildApiValidationFailureHint(HttpStatusCode statusCode, string responseBody)
+	{
+		int num = (int)statusCode;
+		string text = (responseBody ?? "").Trim();
+		string text2 = text.ToLowerInvariant();
+		switch (num)
+		{
+		case 400:
+			return "请求格式不符合接口要求，通常是 Base URL 尾缀不对，或当前接口并不兼容聊天补全请求格式。";
+		case 401:
+			return "API Key 无效、为空，或鉴权格式不正确。";
+		case 402:
+			return "账号额度不足、套餐受限，或当前渠道要求先充值后才能调用模型。";
+		case 403:
+			return "当前 Key 没有访问该模型或该接口的权限，也可能被平台风控拦截。";
+		case 404:
+			return "Base URL 尾缀错误、接口路径不对，或模型名称在当前服务商侧不存在。";
+		case 408:
+			return "服务端长时间未返回，通常是网络质量较差，或上游响应过慢。";
+		case 429:
+			if (text2.Contains("quota") || text2.Contains("balance") || text2.Contains("insufficient"))
+			{
+				return "账号额度可能已经用尽，或账户余额不足，导致请求被限流或拒绝。";
+			}
+			return "请求过于频繁、并发超限，或账号触发了速率限制。稍等片刻后再试。";
+		case 500:
+			return "服务端内部处理失败，通常不是本地填写错误，建议稍后重试。";
+		case 502:
+		case 503:
+		case 504:
+		case 522:
+			return "网关或上游服务暂时不可用，通常是服务商侧故障，或当前网络到上游链路异常。";
+		default:
+			return "请优先检查 Base URL、API Key、模型名称和当前网络环境是否正确。";
+		}
+	}
+
+	private static string BuildModelsApiUrl(string rawUrl)
+	{
+		string text = (rawUrl ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return "";
+		}
+		text = text.TrimEnd('/');
+		if (text.EndsWith("/chat/completions", StringComparison.OrdinalIgnoreCase))
+		{
+			text = text.Substring(0, text.Length - "/chat/completions".Length);
+		}
+		else if (text.EndsWith("/completions", StringComparison.OrdinalIgnoreCase))
+		{
+			text = text.Substring(0, text.Length - "/completions".Length);
+		}
+		return text.TrimEnd('/') + "/models";
+	}
+
+	private static bool CanUseBaseUrlStatusCode(HttpStatusCode statusCode)
+	{
+		int num = (int)statusCode;
+		return num == 200 || num == 401 || num == 403 || num == 405 || num == 429 || num == 402;
+	}
+
+	private static string BuildBaseUrlValidationFailureMessage(HttpStatusCode statusCode, string responseBody)
+	{
+		string text = "Base URL 检查失败。";
+		switch ((int)statusCode)
+		{
+		case 404:
+			text += " 当前地址很可能不正确，常见原因是 Base URL 尾缀或接口路径填写错误。";
+			break;
+		case 400:
+			text += " 当前地址返回了无效请求，说明这个接口大概率不兼容当前的 OpenAI 风格地址。";
+			break;
+		case 500:
+		case 502:
+		case 503:
+		case 504:
+		case 522:
+			text += " 当前地址暂时不可用，可能是服务端异常，或网络到服务商链路异常。";
+			break;
+		default:
+			text += " 请检查 Base URL 是否填写正确。";
+			break;
+		}
+		string text2 = (responseBody ?? "").Trim();
+		if (!string.IsNullOrWhiteSpace(text2))
+		{
+			if (text2.Length > 120)
+			{
+				text2 = text2.Substring(0, 120).Trim();
+			}
+			text = text + " 返回摘要：" + text2;
+		}
+		return text;
+	}
+
+	private static List<string> ExtractModelNamesFromResponse(string responseBody)
+	{
+		List<string> list = new List<string>();
+		try
+		{
+			if (string.IsNullOrWhiteSpace(responseBody))
+			{
+				return list;
+			}
+			JToken jToken = JToken.Parse(responseBody);
+			IEnumerable<JToken> enumerable = Enumerable.Empty<JToken>();
+			if (jToken.Type == JTokenType.Object)
+			{
+				enumerable = ((JObject)jToken)["data"] as JArray ?? ((JObject)jToken)["models"] as JArray ?? new JArray();
+			}
+			else if (jToken.Type == JTokenType.Array)
+			{
+				enumerable = (JArray)jToken;
+			}
+			foreach (JToken item in enumerable)
+			{
+				string text = item.Type switch
+				{
+					JTokenType.String => item.ToString(), 
+					_ => item["id"]?.ToString() ?? item["model"]?.ToString() ?? item["name"]?.ToString()
+				};
+				if (!string.IsNullOrWhiteSpace(text))
+				{
+					list.Add(text.Trim());
+				}
+			}
+		}
+		catch
+		{
+		}
+		return list.Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).OrderBy((string x) => x, StringComparer.OrdinalIgnoreCase).ToList();
+	}
+
+	private static string BuildModelFetchFailureMessage(HttpStatusCode statusCode, string responseBody)
+	{
+		string text = "拉取模型列表失败。";
+		switch ((int)statusCode)
+		{
+		case 401:
+			text += " 当前 API Key 无效，或鉴权未通过。";
+			break;
+		case 402:
+			text += " 当前账号额度不足，或渠道限制了接口调用。";
+			break;
+		case 403:
+			text += " 当前 Key 没有访问模型列表接口的权限，或被服务商风控拦截。";
+			break;
+		case 404:
+			text += " 当前 Base URL 很可能不正确，或该服务商不支持 /models 接口。";
+			break;
+		case 429:
+			text += " 当前请求过于频繁，或账户触发了速率限制。";
+			break;
+		default:
+			text += " 你可以手动输入模型名称继续。";
+			break;
+		}
+		string text2 = (responseBody ?? "").Trim();
+		if (!string.IsNullOrWhiteSpace(text2))
+		{
+			if (text2.Length > 120)
+			{
+				text2 = text2.Substring(0, 120).Trim();
+			}
+			text = text + " 返回摘要：" + text2;
+		}
+		return text;
 	}
 
 	private void OpenImportFolderPicker(Action onReturn)
@@ -338,8 +1595,29 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			else
 			{
 				_setupDone = true;
+				_activeOnboardingStage = OnboardingUiStage.None;
 				InformationManager.DisplayMessage(new InformationMessage("首次导入完成：已解锁 AnimusForge 对话/场景喊话。"));
-				onReturn?.Invoke();
+				try
+				{
+					KnowledgeLibraryBehavior knowledgeLibraryBehavior = KnowledgeLibraryBehavior.Instance ?? Campaign.Current?.GetCampaignBehavior<KnowledgeLibraryBehavior>();
+					if (knowledgeLibraryBehavior == null)
+					{
+						onReturn?.Invoke();
+					}
+					else
+					{
+						InformationManager.DisplayMessage(new InformationMessage("接下来请填写玩家称呼与角色介绍；角色介绍也可以直接跳过。"));
+						knowledgeLibraryBehavior.OpenPlayerPersonaSetup(delegate
+						{
+							onReturn?.Invoke();
+						});
+					}
+				}
+				catch (Exception ex2)
+				{
+					InformationManager.DisplayMessage(new InformationMessage("打开玩家角色介绍失败：" + ex2.Message));
+					onReturn?.Invoke();
+				}
 			}
 		}
 		catch (Exception ex)

@@ -7,6 +7,8 @@ using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Actions;
+using TaleWorlds.CampaignSystem.ComponentInterfaces;
+using TaleWorlds.CampaignSystem.MapEvents;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Roster;
 using TaleWorlds.CampaignSystem.Settlements;
@@ -181,6 +183,24 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 
 	private const int PublicTrustDeltaUnit = 2;
 
+	private const int AutoTrustValuePerPoint = 1000;
+
+	private const int TrustGainUnitsPerPoint = 1600;
+
+	private const int SettlementTrustUnitsPerTier = 48;
+
+	private const int PublicTrustPoolPointsPerTrust = 3;
+
+	private const int TrustGainHalvingStart = 20;
+
+	private const int TrustGainHalvingStep = 20;
+
+	private const int TrustGainHalvingMaxStage = 4;
+
+	private const int SettlementTrustContributionSharePercent = 30;
+
+	private const float SettlementTrustBattleEffectRadius = 25f;
+
 	private const int TrustGainOnCleanTrade = 1;
 
 	private const int TrustGainOnOnTimeRepay = 2;
@@ -196,6 +216,8 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 	private const int KingdomServiceMercenaryTrustMin = 5;
 
 	private const int KingdomServiceVassalTrustMin = 20;
+
+	private const int TrustGainOnQuestSuccess = 5;
 
 	private static readonly string[] TrustLevelTexts = new string[10] { "彻底不信", "极度怀疑", "强烈戒备", "不太信任", "保留态度", "中性观望", "基本信任", "较高信任", "高度信任", "完全信赖" };
 
@@ -215,6 +237,28 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 
 	private Dictionary<string, int> _publicTrustStorage = new Dictionary<string, int>();
 
+	private Dictionary<string, int> _tradeTrustValueCarry = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+
+	private Dictionary<string, int> _tradeTrustValueCarryStorage = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+
+	private Dictionary<string, int> _directTrustProgressCarry = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+
+	private Dictionary<string, int> _directTrustProgressCarryStorage = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+
+	private Dictionary<string, int> _settlementTrustCentiCarry = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+
+	private Dictionary<string, int> _settlementTrustCentiCarryStorage = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+
+	private Dictionary<string, int> _settlementTrustSharedPublicCarry = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+
+	private Dictionary<string, int> _settlementTrustSharedPublicCarryStorage = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+
+	private Dictionary<string, int> _publicTrustProgressCarry = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+
+	private Dictionary<string, int> _publicTrustProgressCarryStorage = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+
+	private int _currentBattlePlayerActualSettlementTrustUnits;
+
 	private Dictionary<string, PendingPlayerTransfer> _pendingPlayerTransfers = new Dictionary<string, PendingPlayerTransfer>(StringComparer.OrdinalIgnoreCase);
 
 	private Dictionary<string, MerchantFactRecord> _merchantFacts = new Dictionary<string, MerchantFactRecord>(StringComparer.OrdinalIgnoreCase);
@@ -233,6 +277,9 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 	public override void RegisterEvents()
 	{
 		CampaignEvents.DailyTickEvent.AddNonSerializedListener(this, OnDailyTick);
+		CampaignEvents.MapEventEnded.AddNonSerializedListener(this, OnMapEventEnded);
+		CampaignEvents.OnPlayerPartyKnockedOrKilledTroopEvent.AddNonSerializedListener(this, OnPlayerPartyKnockedOrKilledTroop);
+		CampaignEvents.OnQuestCompletedEvent.AddNonSerializedListener(this, OnQuestCompleted);
 	}
 
 	public override void SyncData(IDataStore dataStore)
@@ -260,6 +307,46 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		if (_publicTrustStorage == null)
 		{
 			_publicTrustStorage = new Dictionary<string, int>();
+		}
+		if (_tradeTrustValueCarry == null)
+		{
+			_tradeTrustValueCarry = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+		}
+		if (_tradeTrustValueCarryStorage == null)
+		{
+			_tradeTrustValueCarryStorage = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+		}
+		if (_directTrustProgressCarry == null)
+		{
+			_directTrustProgressCarry = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+		}
+		if (_directTrustProgressCarryStorage == null)
+		{
+			_directTrustProgressCarryStorage = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+		}
+		if (_settlementTrustCentiCarry == null)
+		{
+			_settlementTrustCentiCarry = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+		}
+		if (_settlementTrustCentiCarryStorage == null)
+		{
+			_settlementTrustCentiCarryStorage = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+		}
+		if (_settlementTrustSharedPublicCarry == null)
+		{
+			_settlementTrustSharedPublicCarry = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+		}
+		if (_settlementTrustSharedPublicCarryStorage == null)
+		{
+			_settlementTrustSharedPublicCarryStorage = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+		}
+		if (_publicTrustProgressCarry == null)
+		{
+			_publicTrustProgressCarry = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+		}
+		if (_publicTrustProgressCarryStorage == null)
+		{
+			_publicTrustProgressCarryStorage = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
 		}
 		if (_merchantFacts == null)
 		{
@@ -292,7 +379,9 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 					Logger.Log("RewardSystem", "[ERROR] Serialize debt for " + debt.Key + ": " + ex.Message);
 				}
 			}
-			dataStore.SyncData("_rewardDebts_v2", ref _debtStorage);
+			Dictionary<string, string> dictionary = CampaignSaveChunkHelper.FlattenStringDictionary(_debtStorage);
+			dataStore.SyncData("_rewardDebts_v2", ref dictionary);
+			_debtStorage = CampaignSaveChunkHelper.RestoreStringDictionary(dictionary, "RewardSystem");
 			_debts.Clear();
 			if (_debtStorage != null)
 			{
@@ -322,6 +411,10 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			}
 			SyncMerchantFactData(dataStore);
 			SyncTrustData(dataStore);
+			SyncTradeTrustCarryData(dataStore);
+			SyncDirectTrustProgressCarryData(dataStore);
+			SyncSettlementTrustCarryData(dataStore);
+			SyncPublicTrustProgressCarryData(dataStore);
 		}
 		catch (Exception ex3)
 		{
@@ -332,6 +425,16 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			_publicTrust = new Dictionary<string, int>();
 			_npcTrustStorage = new Dictionary<string, int>();
 			_publicTrustStorage = new Dictionary<string, int>();
+			_tradeTrustValueCarry = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+			_tradeTrustValueCarryStorage = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+			_directTrustProgressCarry = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+			_directTrustProgressCarryStorage = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+			_settlementTrustCentiCarry = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+			_settlementTrustCentiCarryStorage = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+			_settlementTrustSharedPublicCarry = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+			_settlementTrustSharedPublicCarryStorage = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+			_publicTrustProgressCarry = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+			_publicTrustProgressCarryStorage = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
 			_merchantFacts = new Dictionary<string, MerchantFactRecord>(StringComparer.OrdinalIgnoreCase);
 			_merchantFactStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 		}
@@ -1031,13 +1134,679 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		return value;
 	}
 
-	private static int ComputeTradePublicTrustDelta(int personalDelta)
+	private static int ClampPositiveLongToInt(long value)
 	{
-		if (personalDelta == 0)
+		if (value <= 0L)
 		{
 			return 0;
 		}
-		return (int)Math.Round((double)personalDelta / 3.0, MidpointRounding.AwayFromZero);
+		if (value > int.MaxValue)
+		{
+			return int.MaxValue;
+		}
+		return (int)value;
+	}
+
+	private static long ClampLong(long value, long min, long max)
+	{
+		if (value < min)
+		{
+			return min;
+		}
+		if (value > max)
+		{
+			return max;
+		}
+		return value;
+	}
+
+	private static int GetTrustGainHalvingStage(int currentTrust)
+	{
+		int num = ClampTrust(currentTrust);
+		if (num < TrustGainHalvingStart)
+		{
+			return 0;
+		}
+		int num2 = (num - TrustGainHalvingStart) / TrustGainHalvingStep + 1;
+		if (num2 < 0)
+		{
+			num2 = 0;
+		}
+		if (num2 > TrustGainHalvingMaxStage)
+		{
+			num2 = TrustGainHalvingMaxStage;
+		}
+		return num2;
+	}
+
+	private static int GetTrustGainDivisorByCurrentTrust(int currentTrust)
+	{
+		return 1 << GetTrustGainHalvingStage(currentTrust);
+	}
+
+	private int ConvertRawTrustDeltaToUnits(int rawDelta, int currentTrust)
+	{
+		if (rawDelta == 0)
+		{
+			return 0;
+		}
+		if (rawDelta < 0)
+		{
+			return rawDelta * TrustGainUnitsPerPoint;
+		}
+		return rawDelta * TrustGainUnitsPerPoint / GetTrustGainDivisorByCurrentTrust(currentTrust);
+	}
+
+	private int ApplyDirectTrustDeltaUnits(string trustKey, int currentTrust, int rawDelta, out int appliedUnits)
+	{
+		appliedUnits = 0;
+		string text = (trustKey ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text) || rawDelta == 0)
+		{
+			return 0;
+		}
+		if (_directTrustProgressCarry == null)
+		{
+			_directTrustProgressCarry = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+		}
+		_directTrustProgressCarry.TryGetValue(text, out var value);
+		long num = (long)currentTrust * (long)TrustGainUnitsPerPoint + (long)value;
+		int num2 = ConvertRawTrustDeltaToUnits(rawDelta, currentTrust);
+		long num3 = ClampLong(num + (long)num2, (long)TrustMin * (long)TrustGainUnitsPerPoint, (long)TrustMax * (long)TrustGainUnitsPerPoint);
+		appliedUnits = (int)(num3 - num);
+		int num4 = (int)(num3 / TrustGainUnitsPerPoint);
+		int num5 = (int)(num3 % TrustGainUnitsPerPoint);
+		if (num5 != 0)
+		{
+			_directTrustProgressCarry[text] = num5;
+		}
+		else
+		{
+			_directTrustProgressCarry.Remove(text);
+		}
+		return num4 - currentTrust;
+	}
+
+	private int ApplySettlementTrustUnits(Settlement settlement, int rawDelta, out int appliedUnits)
+	{
+		appliedUnits = 0;
+		if (settlement == null || rawDelta == 0)
+		{
+			return 0;
+		}
+		string text = BuildSettlementTrustCarryKey(settlement);
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return 0;
+		}
+		if (_settlementTrustCentiCarry == null)
+		{
+			_settlementTrustCentiCarry = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+		}
+		_settlementTrustCentiCarry.TryGetValue(text, out var value);
+		int settlementLocalPublicTrust = GetSettlementLocalPublicTrust(settlement);
+		long num = (long)settlementLocalPublicTrust * (long)TrustGainUnitsPerPoint + (long)value;
+		int num2 = ConvertRawTrustDeltaToUnits(rawDelta, settlementLocalPublicTrust);
+		long num3 = ClampLong(num + (long)num2, (long)TrustMin * (long)TrustGainUnitsPerPoint, (long)TrustMax * (long)TrustGainUnitsPerPoint);
+		appliedUnits = (int)(num3 - num);
+		int num4 = (int)(num3 / TrustGainUnitsPerPoint);
+		int num5 = (int)(num3 % TrustGainUnitsPerPoint);
+		if (num5 != 0)
+		{
+			_settlementTrustCentiCarry[text] = num5;
+		}
+		else
+		{
+			_settlementTrustCentiCarry.Remove(text);
+		}
+		return num4 - settlementLocalPublicTrust;
+	}
+
+	private void ApplySettlementLocalTrustWholeDeltaDirect(Settlement settlement, int localTrustDelta, string reason)
+	{
+		if (settlement == null || localTrustDelta == 0)
+		{
+			return;
+		}
+		if (_publicTrust == null)
+		{
+			_publicTrust = new Dictionary<string, int>();
+		}
+		string settlementPublicTrustKey = BuildSettlementLocalPublicTrustKey(settlement);
+		if (string.IsNullOrWhiteSpace(settlementPublicTrustKey))
+		{
+			return;
+		}
+		int settlementLocalPublicTrust = GetSettlementLocalPublicTrust(settlement);
+		int num = ClampTrust(settlementLocalPublicTrust + localTrustDelta);
+		if (num == 0)
+		{
+			_publicTrust.Remove(settlementPublicTrustKey);
+		}
+		else
+		{
+			_publicTrust[settlementPublicTrustKey] = num;
+		}
+		Logger.Log("Trust", $"settlement={settlement.StringId} reason={reason} settlementTrust={settlementLocalPublicTrust}->{num} delta={localTrustDelta}");
+	}
+
+	private static string FormatTrustUnits(int units)
+	{
+		decimal d = (decimal)units / (decimal)TrustGainUnitsPerPoint;
+		string text = d.ToString("0.######");
+		if (text == "-0")
+		{
+			return "0";
+		}
+		return text;
+	}
+
+	private int AccumulateTradeTrustValueByKey(string carryKey, int addedValue)
+	{
+		string text = (carryKey ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text) || addedValue <= 0)
+		{
+			return 0;
+		}
+		if (_tradeTrustValueCarry == null)
+		{
+			_tradeTrustValueCarry = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+		}
+		_tradeTrustValueCarry.TryGetValue(text, out var value);
+		long num = Math.Max(0, value);
+		long num2 = num + (long)addedValue;
+		int num3 = ClampPositiveLongToInt(num2 / AutoTrustValuePerPoint);
+		int num4 = (int)(num2 % AutoTrustValuePerPoint);
+		if (num4 > 0)
+		{
+			_tradeTrustValueCarry[text] = num4;
+		}
+		else
+		{
+			_tradeTrustValueCarry.Remove(text);
+		}
+		return num3;
+	}
+
+	private int GetItemTrustValueForHeroGift(Hero hero, ItemObject item, int amount)
+	{
+		if (item == null || amount <= 0)
+		{
+			return 0;
+		}
+		ItemGuidePriceInfo guidePriceForItemNearHero = GetGuidePriceForItemNearHero(hero ?? Hero.MainHero, item);
+		return ClampPositiveLongToInt((long)Math.Max(1, guidePriceForItemNearHero.UnitPrice) * (long)amount);
+	}
+
+	private int GetItemTrustValueForMerchantGift(Settlement settlement, ItemObject item, int amount)
+	{
+		if (item == null || amount <= 0)
+		{
+			return 0;
+		}
+		if (settlement != null && TryGetSettlementBuyPrice(settlement, item, out var price) && price > 0)
+		{
+			return ClampPositiveLongToInt((long)price * (long)amount);
+		}
+		return GetItemTrustValueForHeroGift(Hero.MainHero, item, amount);
+	}
+
+	private void ApplyAutoTrustGainFromHeroGiftValue(Hero giver, int addedValue, List<string> giverFacts, List<string> receiverFacts, string giverName)
+	{
+		if (giver == null || addedValue <= 0)
+		{
+			return;
+		}
+		int num = AccumulateTradeTrustValueByKey(NormalizeHeroId(giver), addedValue);
+		if (num <= 0)
+		{
+			return;
+		}
+		int num2 = AdjustTrust(giver, num, 0, "auto_gift_value_accumulated", out var appliedUnits);
+		string text = (num2 > 0) ? $"，公共信任提升 {num2}" : "";
+		string text2 = FormatTrustUnits(appliedUnits);
+		giverFacts?.Add($"你因累计向玩家实际交付的价值达到阈值，对玩家的个人信任提升了 {text2}{text}。");
+		receiverFacts?.Add($"{giverName} 因累计向你实际交付的价值达到阈值，对你的个人信任提升了 {text2}{text}。");
+		InformationManager.DisplayMessage(new InformationMessage($"【信任变化】{giverName} 因累计向你实际交付的价值，对你的个人信任 +{text2}" + ((num2 > 0) ? $"，公共信任 +{num2}" : ""), Color.FromUint(4278242559u)));
+	}
+
+	private void ApplyAutoTrustGainFromMerchantGiftValue(Settlement settlement, SettlementMerchantKind kind, int addedValue, List<string> merchantFacts, List<string> playerFacts, string giverName)
+	{
+		if (settlement == null || kind == SettlementMerchantKind.None || addedValue <= 0)
+		{
+			return;
+		}
+		int num = AccumulateTradeTrustValueByKey(BuildSettlementMerchantTrustKey(settlement, kind), addedValue);
+		if (num <= 0)
+		{
+			return;
+		}
+		int num2 = AdjustSettlementMerchantTrust(settlement, kind, num, "merchant_auto_gift_value_accumulated", out var appliedUnits);
+		string settlementMerchantDebtLabel = BuildSettlementMerchantDebtLabel(settlement, kind);
+		string text = (num2 > 0) ? $"，公共信任提升 {num2}" : "";
+		string text2 = FormatTrustUnits(appliedUnits);
+		merchantFacts?.Add($"你因累计向玩家实际交付的价值达到阈值，对玩家的市场信任提升了 {text2}{text}。");
+		playerFacts?.Add($"{giverName} 代表的{settlementMerchantDebtLabel}因累计向你实际交付的价值达到阈值，对你的市场信任提升了 {text2}{text}。");
+		InformationManager.DisplayMessage(new InformationMessage($"【市场信任变化】{settlementMerchantDebtLabel} 对你的市场信任 +{text2}" + ((num2 > 0) ? $"，公共信任 +{num2}" : ""), Color.FromUint(4278242559u)));
+	}
+
+	private static int TruncateDivisionTowardsZero(int dividend, int divisor, out int remainder)
+	{
+		remainder = 0;
+		if (divisor == 0)
+		{
+			return 0;
+		}
+		int num = dividend / divisor;
+		remainder = dividend % divisor;
+		return num;
+	}
+
+	private int AccumulatePublicTrustProgressByKey(string publicTrustKey, int sourceUnits)
+	{
+		string text = (publicTrustKey ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text) || sourceUnits == 0)
+		{
+			return 0;
+		}
+		if (_publicTrustProgressCarry == null)
+		{
+			_publicTrustProgressCarry = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+		}
+		_publicTrustProgressCarry.TryGetValue(text, out var value);
+		int num = value + sourceUnits;
+		int num2 = TruncateDivisionTowardsZero(num, PublicTrustPoolPointsPerTrust * TrustGainUnitsPerPoint, out var remainder);
+		if (remainder != 0)
+		{
+			_publicTrustProgressCarry[text] = remainder;
+		}
+		else
+		{
+			_publicTrustProgressCarry.Remove(text);
+		}
+		return num2;
+	}
+
+	private int AdjustPublicTrustByKey(string publicTrustKey, int publicDelta, string reason)
+	{
+		string text = (publicTrustKey ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text) || publicDelta == 0)
+		{
+			return 0;
+		}
+		if (_publicTrust == null)
+		{
+			_publicTrust = new Dictionary<string, int>();
+		}
+		int num = 0;
+		_publicTrust.TryGetValue(text, out num);
+		num = ClampTrust(num);
+		int num2 = ClampTrust(num + publicDelta);
+		if (num2 == 0)
+		{
+			_publicTrust.Remove(text);
+		}
+		else
+		{
+			_publicTrust[text] = num2;
+		}
+		Logger.Log("Trust", $"publicKey={text} reason={reason} publicTrust={num}->{num2} delta={publicDelta}");
+		return num2 - num;
+	}
+
+	private int ApplyPublicTrustPoolDeltaByKey(string publicTrustKey, int sourceUnits, string reason)
+	{
+		int num = AccumulatePublicTrustProgressByKey(publicTrustKey, sourceUnits);
+		if (num == 0)
+		{
+			return 0;
+		}
+		return AdjustPublicTrustByKey(publicTrustKey, num, reason);
+	}
+
+	private static string BuildSettlementTrustCarryKey(Settlement settlement)
+	{
+		return BuildSettlementLocalPublicTrustKey(settlement);
+	}
+
+	private int AccumulateSettlementTrustCenti(Settlement settlement, int centiDelta)
+	{
+		string text = BuildSettlementTrustCarryKey(settlement);
+		if (string.IsNullOrWhiteSpace(text) || centiDelta == 0)
+		{
+			return 0;
+		}
+		if (_settlementTrustCentiCarry == null)
+		{
+			_settlementTrustCentiCarry = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+		}
+		_settlementTrustCentiCarry.TryGetValue(text, out var value);
+		int num = value + centiDelta;
+		int num2 = TruncateDivisionTowardsZero(num, TrustGainUnitsPerPoint, out var remainder);
+		if (remainder != 0)
+		{
+			_settlementTrustCentiCarry[text] = remainder;
+		}
+		else
+		{
+			_settlementTrustCentiCarry.Remove(text);
+		}
+		return num2;
+	}
+
+	private static int ComputeSettlementTrustCentiForTroop(CharacterObject troop, int count)
+	{
+		if (troop == null || count <= 0)
+		{
+			return 0;
+		}
+		int num = Math.Max(1, troop.Tier);
+		return SettlementTrustUnitsPerTier * num * count;
+	}
+
+	private void OnPlayerPartyKnockedOrKilledTroop(CharacterObject strikedTroop)
+	{
+		try
+		{
+			MapEvent playerMapEvent = MapEvent.PlayerMapEvent;
+			if (playerMapEvent == null || !playerMapEvent.IsPlayerMapEvent)
+			{
+				return;
+			}
+			_currentBattlePlayerActualSettlementTrustUnits += ComputeSettlementTrustCentiForTroop(strikedTroop, 1);
+		}
+		catch
+		{
+		}
+	}
+
+	private void OnQuestCompleted(QuestBase quest, QuestBase.QuestCompleteDetails details)
+	{
+		try
+		{
+			if (quest == null || details != QuestBase.QuestCompleteDetails.Success)
+			{
+				return;
+			}
+			Hero hero = null;
+			try
+			{
+				hero = quest.QuestGiver;
+			}
+			catch
+			{
+				hero = null;
+			}
+			if (hero == null)
+			{
+				return;
+			}
+			int num = AdjustTrust(hero, TrustGainOnQuestSuccess, 0, "quest_completed_success", out var appliedUnits);
+			string text = FormatTrustUnits(appliedUnits);
+			string text2 = hero.Name?.ToString() ?? "任务发布人";
+			Logger.Log("Trust", $"quest={quest.StringId} giver={hero.StringId} completed=success personalGain={text} publicGain={num}");
+			InformationManager.DisplayMessage(new InformationMessage($"【信任变化】完成{text2}交付的任务，个人信任 +{text}" + ((num > 0) ? $"，公共信任 +{num}" : ""), Color.FromUint(4278242559u)));
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("Trust", "[ERROR] quest completion trust reward failed: " + ex);
+		}
+	}
+
+	private static bool IsPartyHostileForSettlementTrust(PartyBase party, Settlement settlement)
+	{
+		if (party == null || settlement == null)
+		{
+			return false;
+		}
+		try
+		{
+			if (party.MobileParty != null && party.MobileParty.IsBandit)
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			IFaction mapFaction = party.MapFaction;
+			IFaction mapFaction2 = settlement.MapFaction;
+			return mapFaction != null && mapFaction2 != null && mapFaction.IsAtWarWith(mapFaction2);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static IEnumerable<Settlement> GetNearbySettlementsForTrust(MapEvent mapEvent)
+	{
+		if (mapEvent == null)
+		{
+			return Enumerable.Empty<Settlement>();
+		}
+		float num = SettlementTrustBattleEffectRadius;
+		float num2 = num * num;
+		return Settlement.All.Where((Settlement x) => x != null && !x.IsHideout && x.Position.DistanceSquared(mapEvent.Position) < num2).ToList();
+	}
+
+	private static int ComputeSettlementTrustCentiFromRoster(TroopRoster roster)
+	{
+		if (roster == null)
+		{
+			return 0;
+		}
+		int num = 0;
+		for (int i = 0; i < roster.Count; i++)
+		{
+			TroopRosterElement elementCopyAtIndex = roster.GetElementCopyAtIndex(i);
+			num += ComputeSettlementTrustCentiForTroop(elementCopyAtIndex.Character, elementCopyAtIndex.Number);
+		}
+		return num;
+	}
+
+	private static int ComputeSettlementTrustCentiFromBattleRosters(MapEventParty party, bool includeSurrenderedActiveTroops)
+	{
+		if (party == null)
+		{
+			return 0;
+		}
+		int num = ComputeSettlementTrustCentiFromRoster(party.DiedInBattle) + ComputeSettlementTrustCentiFromRoster(party.WoundedInBattle);
+		if (!includeSurrenderedActiveTroops || party.Troops == null)
+		{
+			return num;
+		}
+		foreach (FlattenedTroopRosterElement troop in party.Troops)
+		{
+			if (troop.Troop != null && troop.State == RosterTroopState.Active)
+			{
+				num += ComputeSettlementTrustCentiForTroop(troop.Troop, 1);
+			}
+		}
+		return num;
+	}
+
+	private int ComputeSettlementTrustCentiFromDefeatedHostileTroops(MapEvent mapEvent, Settlement settlement)
+	{
+		if (mapEvent == null || settlement == null || !mapEvent.HasWinner)
+		{
+			return 0;
+		}
+		MapEventSide mapEventSide = mapEvent.GetMapEventSide(mapEvent.DefeatedSide);
+		if (mapEventSide?.Parties == null)
+		{
+			return 0;
+		}
+		bool flag = IsMapEventSideSurrendered(mapEventSide);
+		int num = 0;
+		foreach (MapEventParty party in mapEventSide.Parties)
+		{
+			if (party?.Party == null || !IsPartyHostileForSettlementTrust(party.Party, settlement))
+			{
+				continue;
+			}
+			num += ComputeSettlementTrustCentiFromBattleRosters(party, flag);
+		}
+		return num;
+	}
+
+	private static bool IsMapEventSideSurrendered(MapEventSide side)
+	{
+		if (side == null)
+		{
+			return false;
+		}
+		try
+		{
+			var field = typeof(MapEventSide).GetField("IsSurrendered", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+			if (field != null && field.FieldType == typeof(bool))
+			{
+				return (bool)field.GetValue(side);
+			}
+		}
+		catch
+		{
+		}
+		return false;
+	}
+
+	private int ComputePlayerContributionSharePercentForWinningSide(MapEvent mapEvent)
+	{
+		if (mapEvent == null || !mapEvent.HasWinner)
+		{
+			return 0;
+		}
+		MapEventSide mapEventSide = mapEvent.GetMapEventSide(mapEvent.WinningSide);
+		if (mapEventSide?.Parties == null)
+		{
+			return 0;
+		}
+		int num = 0;
+		int num2 = 0;
+		foreach (MapEventParty party in mapEventSide.Parties)
+		{
+			if (party == null)
+			{
+				continue;
+			}
+			int num3 = Math.Max(0, party.ContributionToBattle);
+			num += num3;
+			if (party.Party == PartyBase.MainParty)
+			{
+				num2 = num3;
+			}
+		}
+		if (num <= 0 || num2 <= 0)
+		{
+			return 0;
+		}
+		return Math.Max(0, Math.Min(100, (int)Math.Round((double)(num2 * 100) / (double)num, MidpointRounding.AwayFromZero)));
+	}
+
+	private int AdjustSettlementLocalTrustInternal(Settlement settlement, int localTrustDelta, string reason)
+	{
+		if (settlement == null || localTrustDelta == 0)
+		{
+			return 0;
+		}
+		if (_publicTrust == null)
+		{
+			_publicTrust = new Dictionary<string, int>();
+		}
+		string settlementPublicTrustKey = BuildSettlementLocalPublicTrustKey(settlement);
+		if (string.IsNullOrWhiteSpace(settlementPublicTrustKey))
+		{
+			return 0;
+		}
+		int settlementPublicTrust = GetSettlementLocalPublicTrust(settlement);
+		int appliedUnits;
+		int num2 = ApplySettlementTrustUnits(settlement, localTrustDelta, out appliedUnits);
+		int num = ClampTrust(settlementPublicTrust + num2);
+		ApplySettlementLocalTrustWholeDeltaDirect(settlement, num2, reason);
+		int num3 = ApplyPublicTrustPoolDeltaByKey(BuildSettlementSharedPublicTrustKey(settlement), appliedUnits, (reason ?? "external") + "_local_public_pool");
+		Logger.Log("Trust", $"settlement={settlement.StringId} reason={reason} settlementTrust={settlementPublicTrust}->{num} rawDelta={localTrustDelta} appliedDelta={FormatTrustUnits(appliedUnits)} publicDelta={num3}");
+		return num3;
+	}
+
+	private void OnMapEventEnded(MapEvent mapEvent)
+	{
+		try
+		{
+			int currentBattlePlayerActualSettlementTrustCenti = _currentBattlePlayerActualSettlementTrustUnits;
+			_currentBattlePlayerActualSettlementTrustUnits = 0;
+			if (mapEvent == null || !mapEvent.IsPlayerMapEvent || !mapEvent.HasWinner)
+			{
+				return;
+			}
+			if (mapEvent.WinningSide != mapEvent.PlayerSide)
+			{
+				InformationManager.DisplayMessage(new InformationMessage("【定居点信任结算】本次战斗未获胜，未获得定居点信任。", Color.FromUint(4294945365u)));
+				return;
+			}
+			List<Settlement> nearbySettlements = GetNearbySettlementsForTrust(mapEvent).ToList();
+			if (nearbySettlements.Count <= 0)
+			{
+				InformationManager.DisplayMessage(new InformationMessage("【定居点信任结算】本次战斗附近没有可受影响的定居点。", Color.FromUint(4291611750u)));
+				return;
+			}
+			List<string> list = new List<string>();
+			int num = ComputePlayerContributionSharePercentForWinningSide(mapEvent);
+			foreach (Settlement item in nearbySettlements)
+			{
+				int num2 = ComputeSettlementTrustCentiFromDefeatedHostileTroops(mapEvent, item);
+				int num3 = Math.Max(0, currentBattlePlayerActualSettlementTrustCenti);
+				int num4 = 0;
+				if (num3 <= 0 && num > 0 && num2 > 0)
+				{
+					// Fallback for battles where the engine does not emit per-kill events reliably.
+					num4 = (int)Math.Round((double)(num2 * num) / 100.0, MidpointRounding.AwayFromZero);
+				}
+				int num5 = Math.Max(num3, num4);
+				int num6 = Math.Max(0, num2 - num5);
+				int num7 = 0;
+				if (num > 0 && num6 > 0)
+				{
+					num7 = (int)Math.Round((double)(num6 * num * SettlementTrustContributionSharePercent) / 10000.0, MidpointRounding.AwayFromZero);
+				}
+				int num8 = GetTrustGainDivisorByCurrentTrust(GetSettlementLocalPublicTrust(item));
+				if (num8 > 1)
+				{
+					num5 /= num8;
+					num7 /= num8;
+				}
+				int num9 = num5 + num7;
+				if (num9 <= 0)
+				{
+					continue;
+				}
+				int num10 = AccumulateSettlementTrustCenti(item, num9);
+				int num11 = ApplyPublicTrustPoolDeltaByKey(BuildSettlementSharedPublicTrustKey(item), num9, "battle_hostile_party_defeated_local_public_pool");
+				string text = (num4 > 0) ? "估算实击" : "实击";
+				if (num10 != 0)
+				{
+					ApplySettlementLocalTrustWholeDeltaDirect(item, num10, "battle_hostile_party_defeated");
+					list.Add($"{item.Name}: 定居点信任 +{num10}" + ((num11 > 0) ? $"，公共信任 +{num11}" : "") + $"\n{text} {FormatTrustUnits(num5)}，分成 {FormatTrustUnits(num7)}，本次累计 {FormatTrustUnits(num9)}");
+				}
+				else
+				{
+					list.Add($"{item.Name}: 定居点信任累计 +{FormatTrustUnits(num9)}" + ((num11 > 0) ? $"，公共信任 +{num11}" : "") + $"\n{text} {FormatTrustUnits(num5)}，分成 {FormatTrustUnits(num7)}，未满1点");
+				}
+			}
+			if (list.Count > 0)
+			{
+				InformationManager.DisplayMessage(new InformationMessage("【定居点信任结算】\n" + string.Join("\n\n", list), Color.FromUint(4278242559u)));
+			}
+			else
+			{
+				InformationManager.DisplayMessage(new InformationMessage("【定居点信任结算】本次战斗未击败附近定居点的敌对部队，因此没有获得定居点信任。", Color.FromUint(4291611750u)));
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("Trust", "[ERROR] OnMapEventEnded settlement trust failed: " + ex);
+		}
 	}
 
 	private static int GetCampaignDayIndex()
@@ -1286,7 +2055,9 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				}
 			}
 		}
-		dataStore.SyncData("_rewardMerchantFacts_v1", ref _merchantFactStorage);
+		Dictionary<string, string> dictionary = dataStore.IsSaving ? CampaignSaveChunkHelper.FlattenStringDictionary(_merchantFactStorage) : new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+		dataStore.SyncData("_rewardMerchantFacts_v1", ref dictionary);
+		_merchantFactStorage = CampaignSaveChunkHelper.RestoreStringDictionary(dictionary, "RewardSystem");
 		if (dataStore.IsSaving)
 		{
 			return;
@@ -1407,6 +2178,260 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				}
 			}
 		}
+	}
+
+	private void SyncTradeTrustCarryData(IDataStore dataStore)
+	{
+		if (dataStore == null)
+		{
+			return;
+		}
+		if (_tradeTrustValueCarry == null)
+		{
+			_tradeTrustValueCarry = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+		}
+		if (_tradeTrustValueCarryStorage == null)
+		{
+			_tradeTrustValueCarryStorage = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+		}
+		if (dataStore.IsSaving)
+		{
+			_tradeTrustValueCarryStorage.Clear();
+			foreach (KeyValuePair<string, int> item in _tradeTrustValueCarry)
+			{
+				if (!string.IsNullOrWhiteSpace(item.Key) && item.Value > 0)
+				{
+					_tradeTrustValueCarryStorage[item.Key] = Math.Min(AutoTrustValuePerPoint - 1, Math.Max(0, item.Value));
+				}
+			}
+		}
+		dataStore.SyncData("_rewardTradeTrustCarry_v1", ref _tradeTrustValueCarryStorage);
+		if (dataStore.IsSaving)
+		{
+			return;
+		}
+		_tradeTrustValueCarry.Clear();
+		if (_tradeTrustValueCarryStorage == null)
+		{
+			return;
+		}
+		foreach (KeyValuePair<string, int> item2 in _tradeTrustValueCarryStorage)
+		{
+			if (!string.IsNullOrWhiteSpace(item2.Key))
+			{
+				int num = Math.Min(AutoTrustValuePerPoint - 1, Math.Max(0, item2.Value));
+				if (num > 0)
+				{
+					_tradeTrustValueCarry[item2.Key] = num;
+				}
+			}
+		}
+	}
+
+	private void SyncDirectTrustProgressCarryData(IDataStore dataStore)
+	{
+		if (dataStore == null)
+		{
+			return;
+		}
+		if (_directTrustProgressCarry == null)
+		{
+			_directTrustProgressCarry = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+		}
+		if (_directTrustProgressCarryStorage == null)
+		{
+			_directTrustProgressCarryStorage = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+		}
+		if (dataStore.IsSaving)
+		{
+			_directTrustProgressCarryStorage.Clear();
+			foreach (KeyValuePair<string, int> item in _directTrustProgressCarry)
+			{
+				if (!string.IsNullOrWhiteSpace(item.Key) && item.Value != 0)
+				{
+					_directTrustProgressCarryStorage[item.Key] = item.Value;
+				}
+			}
+		}
+		dataStore.SyncData("_rewardDirectTrustProgressCarry_v1", ref _directTrustProgressCarryStorage);
+		if (dataStore.IsSaving)
+		{
+			return;
+		}
+		_directTrustProgressCarry.Clear();
+		if (_directTrustProgressCarryStorage == null)
+		{
+			return;
+		}
+		foreach (KeyValuePair<string, int> item2 in _directTrustProgressCarryStorage)
+		{
+			if (!string.IsNullOrWhiteSpace(item2.Key) && item2.Value != 0)
+			{
+				_directTrustProgressCarry[item2.Key] = item2.Value;
+			}
+		}
+	}
+
+	private void SyncSettlementTrustCarryData(IDataStore dataStore)
+	{
+		if (dataStore == null)
+		{
+			return;
+		}
+		if (_settlementTrustCentiCarry == null)
+		{
+			_settlementTrustCentiCarry = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+		}
+		if (_settlementTrustCentiCarryStorage == null)
+		{
+			_settlementTrustCentiCarryStorage = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+		}
+		if (_settlementTrustSharedPublicCarry == null)
+		{
+			_settlementTrustSharedPublicCarry = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+		}
+		if (_settlementTrustSharedPublicCarryStorage == null)
+		{
+			_settlementTrustSharedPublicCarryStorage = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+		}
+		if (dataStore.IsSaving)
+		{
+			_settlementTrustCentiCarryStorage.Clear();
+			foreach (KeyValuePair<string, int> item in _settlementTrustCentiCarry)
+			{
+				if (!string.IsNullOrWhiteSpace(item.Key) && item.Value != 0)
+				{
+					_settlementTrustCentiCarryStorage[item.Key] = item.Value;
+				}
+			}
+			_settlementTrustSharedPublicCarryStorage.Clear();
+			foreach (KeyValuePair<string, int> item2 in _settlementTrustSharedPublicCarry)
+			{
+				if (!string.IsNullOrWhiteSpace(item2.Key) && item2.Value != 0)
+				{
+					_settlementTrustSharedPublicCarryStorage[item2.Key] = item2.Value;
+				}
+			}
+		}
+		dataStore.SyncData("_rewardSettlementTrustCentiCarry_v2", ref _settlementTrustCentiCarryStorage);
+		dataStore.SyncData("_rewardSettlementTrustSharedPublicCarry_v1", ref _settlementTrustSharedPublicCarryStorage);
+		if (dataStore.IsSaving)
+		{
+			return;
+		}
+		_settlementTrustCentiCarry.Clear();
+		if (_settlementTrustCentiCarryStorage != null)
+		{
+			foreach (KeyValuePair<string, int> item3 in _settlementTrustCentiCarryStorage)
+			{
+				if (!string.IsNullOrWhiteSpace(item3.Key) && item3.Value != 0)
+				{
+					_settlementTrustCentiCarry[item3.Key] = item3.Value;
+				}
+			}
+		}
+		_settlementTrustSharedPublicCarry.Clear();
+		if (_settlementTrustSharedPublicCarryStorage == null)
+		{
+			return;
+		}
+		foreach (KeyValuePair<string, int> item4 in _settlementTrustSharedPublicCarryStorage)
+		{
+			if (!string.IsNullOrWhiteSpace(item4.Key) && item4.Value != 0)
+			{
+				_settlementTrustSharedPublicCarry[item4.Key] = item4.Value;
+			}
+		}
+	}
+
+	private void SyncPublicTrustProgressCarryData(IDataStore dataStore)
+	{
+		if (dataStore == null)
+		{
+			return;
+		}
+		if (_publicTrustProgressCarry == null)
+		{
+			_publicTrustProgressCarry = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+		}
+		if (_publicTrustProgressCarryStorage == null)
+		{
+			_publicTrustProgressCarryStorage = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+		}
+		if (dataStore.IsSaving)
+		{
+			_publicTrustProgressCarryStorage.Clear();
+			foreach (KeyValuePair<string, int> item in _publicTrustProgressCarry)
+			{
+				if (!string.IsNullOrWhiteSpace(item.Key) && item.Value != 0)
+				{
+					_publicTrustProgressCarryStorage[item.Key] = item.Value;
+				}
+			}
+		}
+		dataStore.SyncData("_rewardPublicTrustProgressCarry_v2", ref _publicTrustProgressCarryStorage);
+		if (dataStore.IsSaving)
+		{
+			return;
+		}
+		_publicTrustProgressCarry.Clear();
+		if (_publicTrustProgressCarryStorage != null)
+		{
+			foreach (KeyValuePair<string, int> item2 in _publicTrustProgressCarryStorage)
+			{
+				if (!string.IsNullOrWhiteSpace(item2.Key) && item2.Value != 0)
+				{
+					_publicTrustProgressCarry[item2.Key] = item2.Value;
+				}
+			}
+		}
+		MigrateLegacySettlementSharedPublicCarryToUnifiedPool();
+	}
+
+	private static bool TryResolveSettlementByLocalPublicTrustKey(string key, out Settlement settlement)
+	{
+		settlement = null;
+		string text = (key ?? "").Trim();
+		const string text2 = "public:settlement:";
+		if (!text.StartsWith(text2, StringComparison.OrdinalIgnoreCase))
+		{
+			return false;
+		}
+		string text3 = text.Substring(text2.Length).Trim();
+		if (string.IsNullOrWhiteSpace(text3))
+		{
+			return false;
+		}
+		try
+		{
+			settlement = Settlement.All.FirstOrDefault((Settlement x) => x != null && string.Equals((x.StringId ?? "").Trim(), text3, StringComparison.OrdinalIgnoreCase));
+		}
+		catch
+		{
+			settlement = null;
+		}
+		return settlement != null;
+	}
+
+	private void MigrateLegacySettlementSharedPublicCarryToUnifiedPool()
+	{
+		if (_settlementTrustSharedPublicCarry == null || _settlementTrustSharedPublicCarry.Count <= 0)
+		{
+			return;
+		}
+		foreach (KeyValuePair<string, int> item in _settlementTrustSharedPublicCarry.ToList())
+		{
+			if (item.Value == 0 || !TryResolveSettlementByLocalPublicTrustKey(item.Key, out var settlement))
+			{
+				continue;
+			}
+			string settlementSharedPublicTrustKey = BuildSettlementSharedPublicTrustKey(settlement);
+			if (!string.IsNullOrWhiteSpace(settlementSharedPublicTrustKey))
+			{
+				ApplyPublicTrustPoolDeltaByKey(settlementSharedPublicTrustKey, item.Value * TrustGainUnitsPerPoint, "legacy_settlement_public_pool_migration");
+			}
+		}
+		_settlementTrustSharedPublicCarry.Clear();
 	}
 
 	private static int ClampTrust(int value)
@@ -1532,6 +2557,77 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		return "public:" + text;
 	}
 
+	private static string BuildSettlementLocalPublicTrustKey(Settlement settlement)
+	{
+		string text = (settlement?.StringId ?? "").Trim().ToLowerInvariant();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return "";
+		}
+		return "public:settlement:" + text;
+	}
+
+	private static string BuildSettlementPublicTrustKey(Settlement settlement)
+	{
+		return BuildSettlementLocalPublicTrustKey(settlement);
+	}
+
+	private static string BuildSettlementSharedPublicTrustKey(Settlement settlement)
+	{
+		string text = "";
+		try
+		{
+			text = (settlement?.MapFaction?.StringId ?? "").Trim().ToLowerInvariant();
+		}
+		catch
+		{
+			text = "";
+		}
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			try
+			{
+				text = (settlement?.OwnerClan?.Kingdom?.StringId ?? "").Trim().ToLowerInvariant();
+			}
+			catch
+			{
+				text = "";
+			}
+		}
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			try
+			{
+				text = (settlement?.OwnerClan?.StringId ?? "").Trim().ToLowerInvariant();
+			}
+			catch
+			{
+				text = "";
+			}
+		}
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			try
+			{
+				text = (settlement?.Culture?.StringId ?? "").Trim().ToLowerInvariant();
+			}
+			catch
+			{
+				text = "";
+			}
+		}
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return "";
+		}
+		return "public:" + text;
+	}
+
+	private static string BuildSettlementFactionPublicTrustKey(Settlement settlement)
+	{
+		return BuildSettlementSharedPublicTrustKey(settlement);
+	}
+
 	private static string BuildPublicTrustLabel(Hero npc)
 	{
 		try
@@ -1643,11 +2739,12 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		return 0;
 	}
 
-	private void AdjustSettlementMerchantTrust(Settlement settlement, SettlementMerchantKind kind, int personalDelta, string reason)
+	private int AdjustSettlementMerchantTrust(Settlement settlement, SettlementMerchantKind kind, int personalDelta, string reason, out int appliedUnits)
 	{
+		appliedUnits = 0;
 		if (settlement == null || kind == SettlementMerchantKind.None || personalDelta == 0)
 		{
-			return;
+			return 0;
 		}
 		if (_npcTrust == null)
 		{
@@ -1656,10 +2753,11 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		string text = BuildSettlementMerchantTrustKey(settlement, kind);
 		if (string.IsNullOrWhiteSpace(text))
 		{
-			return;
+			return 0;
 		}
 		int settlementMerchantTrust = GetSettlementMerchantTrust(settlement, kind);
-		int num = ClampTrust(settlementMerchantTrust + personalDelta);
+		int num2 = ApplyDirectTrustDeltaUnits(text, settlementMerchantTrust, personalDelta, out appliedUnits);
+		int num = ClampTrust(settlementMerchantTrust + num2);
 		if (num == 0)
 		{
 			_npcTrust.Remove(text);
@@ -1668,7 +2766,9 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			_npcTrust[text] = num;
 		}
-		Logger.Log("Trust", $"settlement={settlement.StringId} market={kind} reason={reason} trust={settlementMerchantTrust}->{num} delta={personalDelta}");
+		int num3 = ApplyPublicTrustPoolDeltaByKey(BuildSettlementSharedPublicTrustKey(settlement), appliedUnits, (reason ?? "merchant") + "_public_pool");
+		Logger.Log("Trust", $"settlement={settlement.StringId} market={kind} reason={reason} trust={settlementMerchantTrust}->{num} rawDelta={personalDelta} appliedDelta={FormatTrustUnits(appliedUnits)} publicDelta={num3}");
+		return num3;
 	}
 
 	public string BuildTrustStatusInlineForAI(Hero npc)
@@ -2022,59 +3122,53 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private void AdjustTrust(Hero npc, int personalDelta, int publicDelta, string reason)
+	private int AdjustTrust(Hero npc, int personalDelta, int publicDelta, string reason, out int appliedUnits)
 	{
+		appliedUnits = 0;
 		if (npc == null)
 		{
-			return;
+			return 0;
 		}
 		int npcTrust = GetNpcTrust(npc);
 		int publicTrust = GetPublicTrust(npc);
 		int num = npcTrust;
 		int num2 = publicTrust;
+		string text = BuildPublicTrustKey(npc);
 		if (personalDelta != 0)
 		{
 			if (_npcTrust == null)
 			{
 				_npcTrust = new Dictionary<string, int>();
 			}
-			string text = BuildNpcTrustKey(npc);
-			if (!string.IsNullOrWhiteSpace(text))
+			string text2 = BuildNpcTrustKey(npc);
+			if (!string.IsNullOrWhiteSpace(text2))
 			{
-				num = ClampTrust(npcTrust + personalDelta);
+				int num6 = ApplyDirectTrustDeltaUnits(text2, npcTrust, personalDelta, out appliedUnits);
+				num = ClampTrust(npcTrust + num6);
 				if (num == 0)
 				{
-					_npcTrust.Remove(text);
+					_npcTrust.Remove(text2);
 				}
 				else
 				{
-					_npcTrust[text] = num;
+					_npcTrust[text2] = num;
 				}
 			}
+		}
+		int num3 = 0;
+		if (personalDelta != 0)
+		{
+			num3 += ApplyPublicTrustPoolDeltaByKey(text, appliedUnits, (reason ?? "external") + "_public_pool");
+			num2 = GetPublicTrust(npc);
 		}
 		if (publicDelta != 0)
 		{
-			if (_publicTrust == null)
-			{
-				_publicTrust = new Dictionary<string, int>();
-			}
-			string text2 = BuildPublicTrustKey(npc);
-			if (!string.IsNullOrWhiteSpace(text2))
-			{
-				num2 = ClampTrust(publicTrust + publicDelta);
-				if (num2 == 0)
-				{
-					_publicTrust.Remove(text2);
-				}
-				else
-				{
-					_publicTrust[text2] = num2;
-				}
-			}
+			num3 += AdjustPublicTrustByKey(text, publicDelta, (reason ?? "external") + "_direct");
+			num2 = GetPublicTrust(npc);
 		}
-		int num3 = ClampTrust(npcTrust + publicTrust);
-		int num4 = ClampTrust(num + num2);
-		Logger.Log("Trust", $"npc={npc.StringId} reason={reason} personal={npcTrust}->{num} delta={personalDelta} public={publicTrust}->{num2} deltaPublic={publicDelta} effective={num3}->{num4}");
+		int num4 = ClampTrust(npcTrust + publicTrust);
+		int num5 = ClampTrust(num + num2);
+		Logger.Log("Trust", $"npc={npc.StringId} reason={reason} personal={npcTrust}->{num} rawDelta={personalDelta} appliedDelta={FormatTrustUnits(appliedUnits)} public={publicTrust}->{num2} deltaPublic={num3} requestedPublicDelta={publicDelta} effective={num4}->{num5}");
 		Logger.Obs("Trust", "change", new Dictionary<string, object>
 		{
 			["npcId"] = npc.StringId ?? "",
@@ -2083,17 +3177,113 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			["personalAfter"] = num,
 			["publicBefore"] = publicTrust,
 			["publicAfter"] = num2,
-			["effectiveBefore"] = num3,
-			["effectiveAfter"] = num4,
+			["effectiveBefore"] = num4,
+			["effectiveAfter"] = num5,
 			["personalDelta"] = personalDelta,
-			["publicDelta"] = publicDelta
+			["appliedPersonalDelta"] = FormatTrustUnits(appliedUnits),
+			["publicDelta"] = num3,
+			["requestedPublicDelta"] = publicDelta
 		});
 		Logger.Metric("trust.change");
+		return num3;
 	}
 
 	public void AdjustTrustForExternal(Hero npc, int personalDelta, int publicDelta, string reason = "external")
 	{
-		AdjustTrust(npc, personalDelta, publicDelta, reason ?? "external");
+		AdjustTrust(npc, personalDelta, publicDelta, reason ?? "external", out _);
+	}
+
+	public void AdjustSettlementMerchantTrustForExternal(Settlement settlement, SettlementMerchantKind kind, int personalDelta, string reason = "external")
+	{
+		AdjustSettlementMerchantTrust(settlement, kind, personalDelta, reason ?? "external", out _);
+	}
+
+	public int GetSettlementLocalPublicTrust(Settlement settlement)
+	{
+		if (settlement == null)
+		{
+			return 0;
+		}
+		if (_publicTrust == null)
+		{
+			_publicTrust = new Dictionary<string, int>();
+		}
+		string settlementPublicTrustKey = BuildSettlementLocalPublicTrustKey(settlement);
+		if (string.IsNullOrWhiteSpace(settlementPublicTrustKey))
+		{
+			return 0;
+		}
+		if (_publicTrust.TryGetValue(settlementPublicTrustKey, out var value))
+		{
+			return ClampTrust(value);
+		}
+		return 0;
+	}
+
+	public int GetSettlementPublicTrust(Settlement settlement)
+	{
+		return GetSettlementLocalPublicTrust(settlement);
+	}
+
+	public int GetSettlementSharedPublicTrust(Settlement settlement)
+	{
+		if (settlement == null)
+		{
+			return 0;
+		}
+		if (_publicTrust == null)
+		{
+			_publicTrust = new Dictionary<string, int>();
+		}
+		string settlementSharedPublicTrustKey = BuildSettlementSharedPublicTrustKey(settlement);
+		if (string.IsNullOrWhiteSpace(settlementSharedPublicTrustKey))
+		{
+			return 0;
+		}
+		if (_publicTrust.TryGetValue(settlementSharedPublicTrustKey, out var value))
+		{
+			return ClampTrust(value);
+		}
+		return 0;
+	}
+
+	public int GetSettlementFactionPublicTrust(Settlement settlement)
+	{
+		return GetSettlementSharedPublicTrust(settlement);
+	}
+
+	public int GetSettlementMerchantEffectiveTrust(Settlement settlement, SettlementMerchantKind kind)
+	{
+		return ClampTrust(GetSettlementMerchantTrust(settlement, kind) + GetSettlementLocalPublicTrust(settlement) + GetSettlementSharedPublicTrust(settlement));
+	}
+
+	public void AdjustSettlementLocalPublicTrustForExternal(Settlement settlement, int publicDelta, string reason = "external")
+	{
+		AdjustSettlementLocalTrustInternal(settlement, publicDelta, reason);
+	}
+
+	public void AdjustSettlementPublicTrustForExternal(Settlement settlement, int publicDelta, string reason = "external")
+	{
+		AdjustSettlementLocalPublicTrustForExternal(settlement, publicDelta, reason);
+	}
+
+	private void AdjustSettlementSharedPublicTrust(Settlement settlement, int publicDelta, string reason)
+	{
+		if (settlement == null || publicDelta == 0)
+		{
+			return;
+		}
+		string settlementSharedPublicTrustKey = BuildSettlementSharedPublicTrustKey(settlement);
+		if (string.IsNullOrWhiteSpace(settlementSharedPublicTrustKey))
+		{
+			return;
+		}
+		AdjustPublicTrustByKey(settlementSharedPublicTrustKey, publicDelta, reason);
+	}
+
+	private void AdjustSettlementFactionPublicTrust(Settlement settlement, int publicDelta, string reason)
+	{
+		AdjustSettlementSharedPublicTrust(settlement, publicDelta, reason);
 	}
 
 	private void AdjustRelationWithPlayer(Hero npc, int delta, string reason)
@@ -2195,13 +3385,14 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 								num4 = ComputeDailyOverduePenaltySeverity(debtLine2.InitialAmount, debtLine2.RemainingAmount, num3);
 								num2 = num4;
 							}
+							int num5 = 0;
 							if (num2 > 0)
 							{
-								AdjustSettlementMerchantTrust(settlement, kind, -num2, flag ? "merchant_overdue_daily_penalty_preset" : "merchant_overdue_daily_penalty_fallback");
+								num5 = AdjustSettlementMerchantTrust(settlement, kind, -num2, flag ? "merchant_overdue_daily_penalty_preset" : "merchant_overdue_daily_penalty_fallback", out _);
 							}
 							debtLine2.OverduePenaltyDaysApplied++;
 							debtLine2.LastOverduePenaltyDay = campaignDayIndex;
-							Logger.Log("Trust", string.Format("[OverduePenalty] settlement={0} market={1} debtId={2} mode={3} value={4} trust={5} fallback={6} day={7}/{8}", settlement.StringId, kind, debtLine2.DebtId, flag ? "preset" : "fallback", num3, num2, num4, debtLine2.OverduePenaltyDaysApplied, 7));
+							Logger.Log("Trust", string.Format("[OverduePenalty] settlement={0} market={1} debtId={2} mode={3} value={4} trust={5} public={6} fallback={7} day={8}/{9}", settlement.StringId, kind, debtLine2.DebtId, flag ? "preset" : "fallback", num3, num2, num5, num4, debtLine2.OverduePenaltyDaysApplied, 7));
 						}
 					}
 					NormalizeDebtRecord(value);
@@ -2239,10 +3430,10 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 							num2 = num5;
 							num3 = num5;
 						}
-						int num6 = ((num2 > 0 && debtLine.OverduePenaltyDaysApplied == 0) ? num2 : 0);
+						int num6 = 0;
 						if (num2 > 0)
 						{
-							AdjustTrust(hero, -num2, -num6, flag ? "overdue_daily_penalty_preset" : "overdue_daily_penalty_fallback");
+							num6 = AdjustTrust(hero, -num2, 0, flag ? "overdue_daily_penalty_preset" : "overdue_daily_penalty_fallback", out _);
 						}
 						if (num3 > 0)
 						{
@@ -3083,6 +4274,85 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		return $"{amount}{GetItemQuantityUnit(item)}{itemName}";
 	}
 
+	private static string BuildItemValueFactSuffixCore(ItemObject item, int amount, int unitPrice)
+	{
+		if (item == null || amount <= 0 || unitPrice <= 0)
+		{
+			return "";
+		}
+		int num = Math.Max(1, amount);
+		int num2 = Math.Max(1, unitPrice);
+		long num3 = (long)num * (long)num2;
+		return $"（指导单价约 {num2} 第纳尔/{GetItemQuantityUnit(item)}，总值约 {num3} 第纳尔）";
+	}
+
+	public string BuildItemValueFactSuffixForExternal(Hero hero, string itemId, int amount)
+	{
+		try
+		{
+			return BuildItemValueFactSuffixForExternal(hero, ResolveItemById(itemId), amount);
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	public string BuildItemValueFactSuffixForExternal(Hero hero, ItemObject item, int amount)
+	{
+		try
+		{
+			if (item == null || amount <= 0)
+			{
+				return "";
+			}
+			ItemGuidePriceInfo guidePriceForItemNearHero = GetGuidePriceForItemNearHero(hero ?? Hero.MainHero, item);
+			return BuildItemValueFactSuffixCore(item, amount, Math.Max(1, guidePriceForItemNearHero.UnitPrice));
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	public string BuildSettlementItemValueFactSuffixForExternal(Settlement settlement, string itemId, int amount)
+	{
+		try
+		{
+			string text = (itemId ?? "").Trim();
+			int num = text.IndexOf('@');
+			if (num > 0)
+			{
+				text = text.Substring(0, num);
+			}
+			return BuildSettlementItemValueFactSuffixForExternal(settlement, ResolveItemById(text), amount);
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	public string BuildSettlementItemValueFactSuffixForExternal(Settlement settlement, ItemObject item, int amount)
+	{
+		try
+		{
+			if (item == null || amount <= 0)
+			{
+				return "";
+			}
+			if (settlement != null && TryGetSettlementBuyPrice(settlement, item, out var price) && price > 0)
+			{
+				return BuildItemValueFactSuffixCore(item, amount, price);
+			}
+			return BuildItemValueFactSuffixForExternal(Hero.MainHero, item, amount);
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
 	private static int GetSettlementItemStock(Settlement settlement, string itemId)
 	{
 		try
@@ -3333,7 +4603,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.AppendLine("【城镇商贩补充】你不是在卖你个人的私人物品。");
 		stringBuilder.AppendLine("你是" + text + "里的" + settlementMerchantRoleLabel + "，代表这座城镇当前的" + settlementMerchantMarketLabel + "与玩家进行即时交易。");
-		stringBuilder.AppendLine("你的真实可售货物只以【当前商铺可用财富与物品】中的清单为准。");
+		stringBuilder.AppendLine("你的真实可售货物只以你当前摊位资产清单中的内容为准。");
 		if (!string.IsNullOrWhiteSpace(settlementMerchantSpecialHint))
 		{
 			stringBuilder.AppendLine(settlementMerchantSpecialHint);
@@ -4390,9 +5660,9 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				if (num2 > line.OnTimePenaltyTierApplied)
 				{
 					line.OnTimePenaltyTierApplied = num2;
-					AdjustTrust(npc, -num2, 0, "partial_on_time_below_95");
+					int num3 = AdjustTrust(npc, -num2, 0, "partial_on_time_below_95", out _);
 					AdjustRelationWithPlayer(npc, -num2, "partial_on_time_below_95");
-					statusText += $"；按时部分还款低于95%，按比例惩罚：信任-{num2}，关系-{num2}。";
+					statusText += $"；按时部分还款低于95%，按比例惩罚：信任-{num2}" + ((num3 != 0) ? $"，公共{(num3 > 0 ? "+" : "")}{num3}" : "") + $"，关系-{num2}。";
 				}
 				else
 				{
@@ -4417,10 +5687,9 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 		else
 		{
-			int num3 = 2;
 			int num4 = 2;
-			AdjustTrust(npc, num3, num4, "repay_on_time_full");
-			statusText += $"；该笔按时结清，信任变化：个人+{num3}，公共+{num4}。";
+			int num5 = AdjustTrust(npc, num4, 0, "repay_on_time_full", out var appliedUnits);
+			statusText += $"；该笔按时结清，信任变化：个人+{FormatTrustUnits(appliedUnits)}" + ((num5 != 0) ? $"，公共+{num5}" : "") + "。";
 		}
 		NormalizeDebtRecord(rec);
 		if (!HasDebtContent(rec) && !string.IsNullOrWhiteSpace(npc.StringId))
@@ -4562,7 +5831,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 		if (num > 0)
 		{
-			AdjustTrust(npc, -num, 0, "item_unavailable_llm_penalty");
+			AdjustTrust(npc, -num, 0, "item_unavailable_llm_penalty", out _);
 		}
 		if (num2 > 0)
 		{
@@ -4713,15 +5982,15 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				if (num2 > line.OnTimePenaltyTierApplied)
 				{
 					line.OnTimePenaltyTierApplied = num2;
-					AdjustSettlementMerchantTrust(settlement, kind, -num2, "merchant_partial_on_time_below_95");
-					statusText += $"；按时部分还款低于95%，市场信任-{num2}。";
+					int num3 = AdjustSettlementMerchantTrust(settlement, kind, -num2, "merchant_partial_on_time_below_95", out _);
+					statusText += $"；按时部分还款低于95%，市场信任-{num2}" + ((num3 != 0) ? $"，公共{(num3 > 0 ? "+" : "")}{num3}" : "") + "。";
 				}
 			}
 		}
 		else if (!flag)
 		{
-			AdjustSettlementMerchantTrust(settlement, kind, 2, "merchant_repay_on_time_full");
-			statusText += "；该笔按时结清，市场信任+2。";
+			int num4 = AdjustSettlementMerchantTrust(settlement, kind, 2, "merchant_repay_on_time_full", out var appliedMerchantUnits);
+			statusText += "；该笔按时结清，市场信任+" + FormatTrustUnits(appliedMerchantUnits) + ((num4 != 0) ? $"，公共+{num4}" : "") + "。";
 		}
 		else if (line.BestPreDueCoverage >= 0.95f)
 		{
@@ -4980,6 +6249,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 						if (giver != Hero.MainHero && receiver == Hero.MainHero)
 						{
 							anyActualGiveToPlayer = true;
+							ApplyAutoTrustGainFromHeroGiftValue(giver, num4, giverFacts, receiverFacts, giverName);
 						}
 					}
 				}
@@ -4997,16 +6267,20 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 					{
 						string text3 = (string.IsNullOrEmpty(itemName) ? value4 : itemName);
 						string text4 = text3;
-						giverFacts.Add($"你已经将 {FormatItemAmount(num4, ResolveItemById(value4), text4)} 交给 {receiverName}。并进入了{receiverName}的库存");
-						receiverFacts.Add($"你从 {giverName} 收到了 {FormatItemAmount(num4, ResolveItemById(value4), text4)}。");
+						ItemObject itemObject3 = ResolveItemById(value4);
+						string text5 = BuildItemValueFactSuffixForExternal(giver ?? receiver, itemObject3, num4);
+						giverFacts.Add($"你已经将 {FormatItemAmount(num4, itemObject3, text4)} 交给 {receiverName}{text5}。并进入了{receiverName}的库存");
+						receiverFacts.Add($"你从 {giverName} 收到了 {FormatItemAmount(num4, itemObject3, text4)}{text5}。");
 						if (num4 < result8)
 						{
-							giverFacts.Add($"你本轮原计划交付 {FormatItemAmount(result8, ResolveItemById(value4), text4)}，但实际仅交付 {FormatItemAmount(num4, ResolveItemById(value4), text4)}（库存不足）。");
-							receiverFacts.Add($"{giverName} 原计划交付 {FormatItemAmount(result8, ResolveItemById(value4), text4)}，实际仅交付 {FormatItemAmount(num4, ResolveItemById(value4), text4)}。");
+							string text6 = BuildItemValueFactSuffixForExternal(giver ?? receiver, itemObject3, result8);
+							giverFacts.Add($"你本轮原计划交付 {FormatItemAmount(result8, itemObject3, text4)}{text6}，但实际仅交付 {FormatItemAmount(num4, itemObject3, text4)}{text5}（库存不足）。");
+							receiverFacts.Add($"{giverName} 原计划交付 {FormatItemAmount(result8, itemObject3, text4)}{text6}，实际仅交付 {FormatItemAmount(num4, itemObject3, text4)}{text5}。");
 						}
 						if (giver != Hero.MainHero && receiver == Hero.MainHero)
 						{
 							anyActualGiveToPlayer = true;
+							ApplyAutoTrustGainFromHeroGiftValue(giver, GetItemTrustValueForHeroGift(giver ?? receiver, itemObject3, num4), giverFacts, receiverFacts, giverName);
 						}
 					}
 					else
@@ -5014,8 +6288,9 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 						string text5 = ResolveItemById(value4)?.Name?.ToString();
 						string text6 = (string.IsNullOrWhiteSpace(text5) ? "该物品" : text5);
 						ItemObject itemObject2 = ResolveItemById(value4);
-						giverFacts.Add($"你尝试交付 {FormatItemAmount(result8, itemObject2, text6)}，但库存不足，本轮未实际交付。");
-						receiverFacts.Add($"{giverName} 试图交付 {FormatItemAmount(result8, itemObject2, text6)}，但其库存不足，本轮未实际交付。");
+						string text7 = BuildItemValueFactSuffixForExternal(giver ?? receiver, itemObject2, result8);
+						giverFacts.Add($"你尝试交付 {FormatItemAmount(result8, itemObject2, text6)}{text7}，但库存不足，本轮未实际交付。");
+						receiverFacts.Add($"{giverName} 试图交付 {FormatItemAmount(result8, itemObject2, text6)}{text7}，但其库存不足，本轮未实际交付。");
 					}
 				}
 				return string.Empty;
@@ -5348,35 +6623,9 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				}
 				return string.Empty;
 			});
-			if (giver != Hero.MainHero && receiver == Hero.MainHero && anyActualGiveToPlayer && !anyDebtRecorded && !anyDebtPaymentApplied && !anyDebtMetaApplied)
+			if (num2.HasValue)
 			{
-				if (num2.HasValue)
-				{
-					int value3 = num2.Value;
-					if (value3 != 0)
-					{
-						int num3 = ComputeTradePublicTrustDelta(value3);
-						AdjustTrust(giver, value3, num3, "llm_clean_trade");
-						if (value3 > 0)
-						{
-							string text = ((num3 > 0) ? ("，公共信任提升 " + num3) : "");
-							giverFacts.Add($"你根据这笔交易对玩家的个人信任提升了 {value3}{text}。");
-							receiverFacts.Add($"{giverName} 因这笔交易对你的个人信任提升了 {value3}{text}。");
-							InformationManager.DisplayMessage(new InformationMessage($"【信任变化】{giverName} 因这笔交易对你的个人信任 +{value3}" + ((num3 > 0) ? $"，公共信任 +{num3}" : ""), Color.FromUint(4278242559u)));
-						}
-						else
-						{
-							string text2 = ((num3 < 0) ? ("，公共信任下降 " + Math.Abs(num3)) : "");
-							giverFacts.Add($"你因这笔交易对玩家的个人信任下降了 {Math.Abs(value3)}{text2}。");
-							receiverFacts.Add($"{giverName} 因这笔交易对你的个人信任下降了 {Math.Abs(value3)}{text2}。");
-							InformationManager.DisplayMessage(new InformationMessage($"【信任变化】{giverName} 因这笔交易对你的个人信任 -{Math.Abs(value3)}" + ((num3 < 0) ? $"，公共信任 -{Math.Abs(num3)}" : ""), Color.FromUint(4294945365u)));
-						}
-					}
-				}
-			}
-			else if (num2.HasValue)
-			{
-				Logger.Log("Logic", "[Reward] 警告: 检测到 [ACTION:TRADE_TRUST]，但本轮不满足即时交易信任结算条件，已忽略。");
+				Logger.Log("Logic", "[Reward] 提示: 检测到 [ACTION:TRADE_TRUST]，但即时交易信任现已改为按NPC实际交付价值自动累计，本标签已忽略。");
 			}
 			responseText = responseText.Trim();
 			stopwatch.Stop();
@@ -5458,9 +6707,6 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		Regex regex13 = new Regex("\\[ACTION:TRADE_TRUST:(-?\\d+)\\]", RegexOptions.IgnoreCase);
 		List<string> merchantFacts = new List<string>();
 		List<string> playerFacts = new List<string>();
-		bool anyActualGiveToPlayer = false;
-		bool anyDebtRecorded = false;
-		bool anyDebtPaymentApplied = false;
 		int? dueDaysOverride = null;
 		int? dueAbsDayOverride = null;
 		bool dueUnlimited = regex9.IsMatch(responseText);
@@ -5512,9 +6758,9 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				int num = TransferGoldFromSettlement(currentSettlement, receiver, result7, giverName);
 				if (num > 0)
 				{
-					anyActualGiveToPlayer = true;
 					merchantFacts.Add($"你已经将 {num} 第纳尔交给玩家。并进入了玩家的的库存");
 					playerFacts.Add($"你从 {giverName} 收到了 {num} 第纳尔。");
+					ApplyAutoTrustGainFromMerchantGiftValue(currentSettlement, kind, num, merchantFacts, playerFacts, giverName);
 				}
 				else
 				{
@@ -5534,18 +6780,21 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				ItemObject itemObject = ResolveItemById(value.Split('@')[0]);
 				if (num > 0)
 				{
-					anyActualGiveToPlayer = true;
-					merchantFacts.Add($"你已经将 {FormatItemAmount(num, itemObject, text)} 交给玩家。并进入了玩家的的库存");
-					playerFacts.Add($"你从 {giverName} 收到了 {FormatItemAmount(num, itemObject, text)}。");
+					string text2 = BuildSettlementItemValueFactSuffixForExternal(currentSettlement, itemObject, num);
+					merchantFacts.Add($"你已经将 {FormatItemAmount(num, itemObject, text)} 交给玩家{text2}。并进入了玩家的的库存");
+					playerFacts.Add($"你从 {giverName} 收到了 {FormatItemAmount(num, itemObject, text)}{text2}。");
+					ApplyAutoTrustGainFromMerchantGiftValue(currentSettlement, kind, GetItemTrustValueForMerchantGift(currentSettlement, itemObject, num), merchantFacts, playerFacts, giverName);
 					if (num < result)
 					{
-						merchantFacts.Add($"你原本打算交付 {FormatItemAmount(result, itemObject, text)}，但当前商铺库存不足，实际只交付了 {FormatItemAmount(num, itemObject, text)}。");
-						playerFacts.Add($"{giverName} 原本打算交付 {FormatItemAmount(result, itemObject, text)}，但实际只交付了 {FormatItemAmount(num, itemObject, text)}。");
+						string text3 = BuildSettlementItemValueFactSuffixForExternal(currentSettlement, itemObject, result);
+						merchantFacts.Add($"你原本打算交付 {FormatItemAmount(result, itemObject, text)}{text3}，但当前商铺库存不足，实际只交付了 {FormatItemAmount(num, itemObject, text)}{text2}。");
+						playerFacts.Add($"{giverName} 原本打算交付 {FormatItemAmount(result, itemObject, text)}{text3}，但实际只交付了 {FormatItemAmount(num, itemObject, text)}{text2}。");
 					}
 				}
 				else
 				{
-					merchantFacts.Add($"你试图交付 {FormatItemAmount(result, itemObject, text)}，但当前商铺库存不足，本轮未实际交货。");
+					string text4 = BuildSettlementItemValueFactSuffixForExternal(currentSettlement, itemObject, result);
+					merchantFacts.Add($"你试图交付 {FormatItemAmount(result, itemObject, text)}{text4}，但当前商铺库存不足，本轮未实际交货。");
 				}
 			}
 			return string.Empty;
@@ -5554,7 +6803,6 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			if (receiver == Hero.MainHero && hasGiveTag && int.TryParse(m.Groups[1].Value, out var result8) && result8 > 0)
 			{
-				anyDebtRecorded = true;
 				SetDebtForSettlementMerchant(currentSettlement, kind, result8, null, 0, dueDaysOverride, dueAbsDayOverride, dueUnlimited, overdueTrustPenaltyPreset);
 				merchantFacts.Add($"你已经把玩家欠 {BuildSettlementMerchantDebtLabel(currentSettlement, kind)} 的 {result8} 第纳尔记入账目。");
 				playerFacts.Add($"你欠 {BuildSettlementMerchantDebtLabel(currentSettlement, kind)} {result8} 第纳尔。");
@@ -5565,7 +6813,6 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			if (receiver == Hero.MainHero && hasGiveTag && int.TryParse(m.Groups[1].Value, out var result8) && result8 > 0)
 			{
-				anyDebtRecorded = true;
 				SetDebtForSettlementMerchant(currentSettlement, kind, result8, null, 0, dueDaysOverride, dueAbsDayOverride, dueUnlimited, overdueTrustPenaltyPreset);
 				merchantFacts.Add($"你已经把玩家欠 {BuildSettlementMerchantDebtLabel(currentSettlement, kind)} 的 {result8} 第纳尔记入账目。");
 				playerFacts.Add($"你欠 {BuildSettlementMerchantDebtLabel(currentSettlement, kind)} {result8} 第纳尔。");
@@ -5577,7 +6824,6 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			string value = m.Groups[1].Value;
 			if (receiver == Hero.MainHero && hasGiveTag && int.TryParse(m.Groups[2].Value, out var result8) && result8 > 0)
 			{
-				anyDebtRecorded = true;
 				SetDebtForSettlementMerchant(currentSettlement, kind, 0, value, result8, dueDaysOverride, dueAbsDayOverride, dueUnlimited, overdueTrustPenaltyPreset);
 				merchantFacts.Add($"你已经把玩家欠 {BuildSettlementMerchantDebtLabel(currentSettlement, kind)} 的 {value} x{result8} 记入账目。");
 				playerFacts.Add($"你欠 {BuildSettlementMerchantDebtLabel(currentSettlement, kind)} {value} x{result8}。");
@@ -5592,10 +6838,6 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				bool flag = RegisterPlayerGoldPaymentByMerchantDebtId(currentSettlement, kind, m.Groups[1].Value, result8, out statusText);
 				if (!string.IsNullOrWhiteSpace(statusText))
 				{
-					if (flag)
-					{
-						anyDebtPaymentApplied = true;
-					}
 					merchantFacts.Add(statusText);
 					playerFacts.Add(statusText);
 					InformationManager.DisplayMessage(new InformationMessage((flag ? "【市场欠款】" : "【市场还款失败】") + statusText, flag ? Color.FromUint(4278255360u) : Color.FromUint(4294923605u)));
@@ -5611,10 +6853,6 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				bool flag = RegisterPlayerItemPaymentByMerchantDebtId(currentSettlement, kind, m.Groups[1].Value, m.Groups[2].Value, result8, out statusText);
 				if (!string.IsNullOrWhiteSpace(statusText))
 				{
-					if (flag)
-					{
-						anyDebtPaymentApplied = true;
-					}
 					merchantFacts.Add(statusText);
 					playerFacts.Add(statusText);
 					InformationManager.DisplayMessage(new InformationMessage((flag ? "【市场欠款】" : "【市场还款失败】") + statusText, flag ? Color.FromUint(4278255360u) : Color.FromUint(4294923605u)));
@@ -5625,34 +6863,10 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		if (regex13.IsMatch(responseText))
 		{
 			MatchCollection matchCollection5 = regex13.Matches(responseText);
-			int? num2 = null;
 			if (matchCollection5 != null && matchCollection5.Count > 0 && int.TryParse(matchCollection5[matchCollection5.Count - 1].Groups[1].Value, out var result8))
 			{
-				num2 = NormalizeLlmTrustDeltaValue(result8);
-			}
-			if (num2.HasValue && anyActualGiveToPlayer && !anyDebtRecorded && !anyDebtPaymentApplied && !anyDebtMetaApplied)
-			{
-				int value2 = num2.Value;
-				if (value2 != 0)
-				{
-					AdjustSettlementMerchantTrust(currentSettlement, kind, value2, "llm_clean_trade");
-					if (value2 > 0)
-					{
-						merchantFacts.Add($"你根据这笔交易对玩家的市场信任提升了 {value2}。");
-						playerFacts.Add($"{giverName} 代表的{BuildSettlementMerchantDebtLabel(currentSettlement, kind)}因这笔交易对你的市场信任提升了 {value2}。");
-						InformationManager.DisplayMessage(new InformationMessage($"【市场信任变化】{BuildSettlementMerchantDebtLabel(currentSettlement, kind)} 对你的市场信任 +{value2}", Color.FromUint(4278242559u)));
-					}
-					else
-					{
-						merchantFacts.Add($"你因这笔交易对玩家的市场信任下降了 {Math.Abs(value2)}。");
-						playerFacts.Add($"{giverName} 代表的{BuildSettlementMerchantDebtLabel(currentSettlement, kind)}因这笔交易对你的市场信任下降了 {Math.Abs(value2)}。");
-						InformationManager.DisplayMessage(new InformationMessage($"【市场信任变化】{BuildSettlementMerchantDebtLabel(currentSettlement, kind)} 对你的市场信任 -{Math.Abs(value2)}", Color.FromUint(4294945365u)));
-					}
-				}
-			}
-			else
-			{
-				Logger.Log("Logic", "[Reward] 警告: 非Hero商贩检测到 [ACTION:TRADE_TRUST]，但本轮不满足即时交易市场信任结算条件，已忽略。");
+				_ = NormalizeLlmTrustDeltaValue(result8);
+				Logger.Log("Logic", "[Reward] 提示: 非Hero商贩检测到 [ACTION:TRADE_TRUST]，但即时交易信任现已改为按实际交付价值自动累计，本标签已忽略。");
 			}
 			responseText = regex13.Replace(responseText, string.Empty);
 		}

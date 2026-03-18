@@ -147,6 +147,8 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 
 		public List<string> KingdomIds;
 
+		public List<string> SettlementIds;
+
 		public List<string> Roles;
 
 		public bool? IsFemale;
@@ -157,6 +159,18 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 	}
 
 	private const string StorageKey = "_knowledge_rules_v1_json";
+
+	private const string StorageChunkCountKey = "_knowledge_rules_v1_json_chunk_count";
+
+	private const string StorageChunkKeyPrefix = "_knowledge_rules_v1_json_chunk_";
+
+	private const int StorageChunkMaxBytes = 240;
+
+	private const int LegacyInlineStorageMaxBytes = 240;
+
+	private const int MaxStorageChunkCount = 262144;
+
+	private const string PlayerPersonaRuleId = "rule_animus_player_persona";
 
 	private string _storageJson = "";
 
@@ -284,6 +298,149 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		}
 		catch
 		{
+		}
+	}
+
+	private static bool SafeSyncData<T>(IDataStore dataStore, string key, ref T data)
+	{
+		try
+		{
+			return dataStore != null && dataStore.SyncData(key, ref data);
+		}
+		catch (Exception ex)
+		{
+			try
+			{
+				Logger.Log("KnowledgeSave", "[WARN] SyncData failed for key " + key + ": " + ex.Message);
+			}
+			catch
+			{
+			}
+			return false;
+		}
+	}
+
+	private static int GetUtf8ByteCount(string value)
+	{
+		try
+		{
+			return Encoding.UTF8.GetByteCount(value ?? "");
+		}
+		catch
+		{
+			return 0;
+		}
+	}
+
+	private static List<string> SplitUtf8Chunks(string value, int maxBytesPerChunk)
+	{
+		List<string> list = new List<string>();
+		string text = value ?? "";
+		if (string.IsNullOrEmpty(text))
+		{
+			return list;
+		}
+		int num = Math.Max(32, maxBytesPerChunk);
+		StringBuilder stringBuilder = new StringBuilder();
+		int num2 = 0;
+		for (int i = 0; i < text.Length; i++)
+		{
+			int num3 = 1;
+			if (char.IsHighSurrogate(text[i]) && i + 1 < text.Length && char.IsLowSurrogate(text[i + 1]))
+			{
+				num3 = 2;
+			}
+			string text2 = text.Substring(i, num3);
+			int utf8ByteCount = GetUtf8ByteCount(text2);
+			if (stringBuilder.Length > 0 && num2 + utf8ByteCount > num)
+			{
+				list.Add(stringBuilder.ToString());
+				stringBuilder.Clear();
+				num2 = 0;
+			}
+			stringBuilder.Append(text2);
+			num2 += utf8ByteCount;
+			if (num3 == 2)
+			{
+				i++;
+			}
+		}
+		if (stringBuilder.Length > 0)
+		{
+			list.Add(stringBuilder.ToString());
+		}
+		return list;
+	}
+
+	private static void SaveStorageJson(IDataStore dataStore, string json)
+	{
+		string text = json ?? "";
+		List<string> list = SplitUtf8Chunks(text, StorageChunkMaxBytes);
+		int count = list.Count;
+		SafeSyncData(dataStore, StorageChunkCountKey, ref count);
+		for (int i = 0; i < list.Count; i++)
+		{
+			string text2 = list[i] ?? "";
+			SafeSyncData(dataStore, StorageChunkKeyPrefix + i, ref text2);
+		}
+		string text3 = (GetUtf8ByteCount(text) <= LegacyInlineStorageMaxBytes) ? text : "";
+		SafeSyncData(dataStore, StorageKey, ref text3);
+	}
+
+	private static string LoadStorageJson(IDataStore dataStore)
+	{
+		string text = TryLoadChunkedStorageJson(dataStore);
+		if (!string.IsNullOrWhiteSpace(text))
+		{
+			return text;
+		}
+		string text2 = "";
+		return SafeSyncData(dataStore, StorageKey, ref text2) ? (text2 ?? "") : "";
+	}
+
+	private static string TryLoadChunkedStorageJson(IDataStore dataStore)
+	{
+		int data = 0;
+		if (!SafeSyncData(dataStore, StorageChunkCountKey, ref data) || data <= 0 || data > MaxStorageChunkCount)
+		{
+			return "";
+		}
+		StringBuilder stringBuilder = new StringBuilder();
+		for (int i = 0; i < data; i++)
+		{
+			string text = "";
+			if (!SafeSyncData(dataStore, StorageChunkKeyPrefix + i, ref text))
+			{
+				return "";
+			}
+			stringBuilder.Append(text ?? "");
+		}
+		return stringBuilder.ToString();
+	}
+
+	private static bool TryDeserializeKnowledgeFile(string json, out KnowledgeFile knowledgeFile)
+	{
+		knowledgeFile = null;
+		try
+		{
+			if (string.IsNullOrWhiteSpace(json))
+			{
+				return false;
+			}
+			knowledgeFile = JsonConvert.DeserializeObject<KnowledgeFile>(json);
+			return knowledgeFile != null;
+		}
+		catch (Exception ex)
+		{
+			try
+			{
+				Logger.Log("KnowledgeSave", "[WARN] Deserialize knowledge storage failed: " + ex.Message);
+			}
+			catch
+			{
+			}
+			knowledgeFile = null;
+			return false;
 		}
 	}
 
@@ -2060,7 +2217,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static void LogLoreContextTrace(string source, string heroId, string charId, string cultureId, string kingdomId, string role, bool isFemale, bool isClanLeader, string kingdomOverride, string inputText, bool invalidContext = false)
+	private static void LogLoreContextTrace(string source, string heroId, string charId, string cultureId, string kingdomId, string settlementId, string role, bool isFemale, bool isClanLeader, string kingdomOverride, string inputText, bool invalidContext = false)
 	{
 		try
 		{
@@ -2069,10 +2226,11 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			string text3 = (charId ?? "").Trim();
 			string text4 = (cultureId ?? "").Trim().ToLowerInvariant();
 			string text5 = (kingdomId ?? "").Trim().ToLowerInvariant();
-			string text6 = (role ?? "").Trim().ToLowerInvariant();
-			string text7 = (kingdomOverride ?? "").Trim().ToLowerInvariant();
-			string text8 = Hash8(inputText ?? "");
-			Logger.Log("LoreMatch", $"lore_ctx source={text} invalid={invalidContext} hero={text2} char={text3} culture={text4} kingdom={text5} role={text6} female={isFemale} clanLeader={isClanLeader} kingdomOverride={text7} inputHash={text8}");
+			string text6 = (settlementId ?? "").Trim().ToLowerInvariant();
+			string text7 = (role ?? "").Trim().ToLowerInvariant();
+			string text8 = (kingdomOverride ?? "").Trim().ToLowerInvariant();
+			string text9 = Hash8(inputText ?? "");
+			Logger.Log("LoreMatch", $"lore_ctx source={text} invalid={invalidContext} hero={text2} char={text3} culture={text4} kingdom={text5} settlement={text6} role={text7} female={isFemale} clanLeader={isClanLeader} kingdomOverride={text8} inputHash={text9}");
 		}
 		catch
 		{
@@ -2095,28 +2253,25 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			_file = new KnowledgeFile();
 		}
 		StripSemanticPrototypes();
-		try
+		if (dataStore != null && dataStore.IsSaving)
 		{
-			_storageJson = JsonConvert.SerializeObject(_file, Formatting.None);
-		}
-		catch
-		{
-			_storageJson = "";
-		}
-		dataStore.SyncData("_knowledge_rules_v1_json", ref _storageJson);
-		try
-		{
-			if (!string.IsNullOrWhiteSpace(_storageJson))
+			try
 			{
-				KnowledgeFile knowledgeFile = JsonConvert.DeserializeObject<KnowledgeFile>(_storageJson);
-				if (knowledgeFile != null)
-				{
-					_file = knowledgeFile;
-				}
+				_storageJson = JsonConvert.SerializeObject(_file, Formatting.None);
 			}
+			catch
+			{
+				_storageJson = "";
+			}
+			SaveStorageJson(dataStore, _storageJson);
 		}
-		catch
+		else if (dataStore != null && dataStore.IsLoading)
 		{
+			_storageJson = LoadStorageJson(dataStore);
+			if (TryDeserializeKnowledgeFile(_storageJson, out var knowledgeFile))
+			{
+				_file = knowledgeFile;
+			}
 		}
 		if (_file == null)
 		{
@@ -2168,7 +2323,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		}
 		if (npcHero == null)
 		{
-			LogLoreContextTrace("hero", "", "", "neutral", "", "commoner", isFemale: false, isClanLeader: false, "", text, invalidContext: true);
+			LogLoreContextTrace("hero", "", "", "neutral", "", "", "commoner", isFemale: false, isClanLeader: false, "", text, invalidContext: true);
 			try
 			{
 				Logger.RecordHitRate("knowledge", "__query__", hit: false, BuildKnowledgeHitRateDetail($"reason=invalid_context source=hero inputLen={text.Length}", secondaryInput), text);
@@ -2219,20 +2374,29 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		string text6 = "";
 		try
 		{
-			text6 = (npcHero?.Name?.ToString() ?? "").Trim();
+			text6 = (Settlement.CurrentSettlement?.StringId ?? npcHero?.CurrentSettlement?.StringId ?? "").Trim().ToLowerInvariant();
 		}
 		catch
 		{
 			text6 = "";
 		}
-		if (string.IsNullOrWhiteSpace(text6))
+		string text7 = "";
+		try
 		{
-			text6 = "该NPC";
+			text7 = (npcHero?.Name?.ToString() ?? "").Trim();
 		}
-		string text7 = (text6 ?? "").Replace("|", " ").Trim();
-		LogLoreContextTrace("hero", text2, "", text3, text4, text5, flag, flag2, "", text);
+		catch
+		{
+			text7 = "";
+		}
+		if (string.IsNullOrWhiteSpace(text7))
+		{
+			text7 = "该NPC";
+		}
+		string text8 = (text7 ?? "").Replace("|", " ").Trim();
+		LogLoreContextTrace("hero", text2, "", text3, text4, text6, text5, flag, flag2, "", text);
 		long ruleDataVersion = _ruleDataVersion;
-		string key = Hash8($"{ruleDataVersion}|H|{text2}|{text7}|{text3}|{text4}|{text5}|{(flag ? 1 : 0)}|{(flag2 ? 1 : 0)}|{text}");
+		string key = Hash8($"{ruleDataVersion}|H|{text2}|{text8}|{text3}|{text4}|{text6}|{text5}|{(flag ? 1 : 0)}|{(flag2 ? 1 : 0)}|{text}");
 		if (TryGetLoreContextCache(key, ruleDataVersion, out var value))
 		{
 			return value;
@@ -2263,7 +2427,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		int loreInjectLimit = GetLoreInjectLimit();
 		StringBuilder stringBuilder = new StringBuilder();
 		CandidateRules candidateRules = CollectCandidateRules(text, secondaryInput);
-		string text8 = candidateRules?.MatchMode ?? "none";
+		string matchMode = candidateRules?.MatchMode ?? "none";
 		List<LoreRule> list = candidateRules?.OrderedRules;
 		if (list == null || list.Count == 0)
 		{
@@ -2271,7 +2435,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			PutLoreContextCache(key, ruleDataVersion, "");
 			try
 			{
-				Logger.RecordHitRate("knowledge", "__query__", hit: false, BuildKnowledgeHitRateDetail($"reason=rule_miss rules={num} inputLen={text.Length} mode={text8}", secondaryInput), text);
+				Logger.RecordHitRate("knowledge", "__query__", hit: false, BuildKnowledgeHitRateDetail($"reason=rule_miss rules={num} inputLen={text.Length} mode={matchMode}", secondaryInput), text);
 			}
 			catch
 			{
@@ -2299,12 +2463,12 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			}
 			try
 			{
-				Logger.Log("LoreMatch", "vector_hit rule=" + item.Id + " mode=" + text8 + " hero=" + text2 + " culture=" + text3 + " kingdom=" + text4 + " role=" + text5);
+				Logger.Log("LoreMatch", "vector_hit rule=" + item.Id + " mode=" + matchMode + " hero=" + text2 + " culture=" + text3 + " kingdom=" + text4 + " settlement=" + text6 + " role=" + text5);
 			}
 			catch
 			{
 			}
-			LoreVariant loreVariant = PickBestVariant(item, npcHero, null, text2, text3, text4, text5, flag, flag2);
+			LoreVariant loreVariant = PickBestVariant(item, npcHero, null, text2, text3, text4, text6, text5, flag, flag2);
 			if (loreVariant == null)
 			{
 				try
@@ -2316,7 +2480,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 				}
 				try
 				{
-					Logger.RecordHitRate("knowledge", item.Id ?? "__unknown__", hit: false, BuildKnowledgeHitRateDetail("reason=variant_miss mode=" + text8, secondaryInput), text);
+					Logger.RecordHitRate("knowledge", item.Id ?? "__unknown__", hit: false, BuildKnowledgeHitRateDetail("reason=variant_miss mode=" + matchMode, secondaryInput), text);
 				}
 				catch
 				{
@@ -2335,7 +2499,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 				}
 				try
 				{
-					Logger.RecordHitRate("knowledge", item.Id ?? "__unknown__", hit: false, BuildKnowledgeHitRateDetail("reason=content_empty mode=" + text8, secondaryInput), text);
+					Logger.RecordHitRate("knowledge", item.Id ?? "__unknown__", hit: false, BuildKnowledgeHitRateDetail("reason=content_empty mode=" + matchMode, secondaryInput), text);
 				}
 				catch
 				{
@@ -2351,7 +2515,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			}
 			try
 			{
-				Logger.RecordHitRate("knowledge", item.Id ?? "__unknown__", hit: true, BuildKnowledgeHitRateDetail("reason=variant_hit mode=" + text8, secondaryInput), text);
+				Logger.RecordHitRate("knowledge", item.Id ?? "__unknown__", hit: true, BuildKnowledgeHitRateDetail("reason=variant_hit mode=" + matchMode, secondaryInput), text);
 			}
 			catch
 			{
@@ -2360,11 +2524,11 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			if (!flag3)
 			{
 				stringBuilder.AppendLine(" ");
-				stringBuilder.AppendLine("玩家说的话让你的脑海里浮现了这些知识");
+				stringBuilder.AppendLine("参与互动让你的脑海里浮现了这些知识");
 				flag3 = true;
 			}
 			string text10 = (string.IsNullOrWhiteSpace(text9) ? (item.Id ?? "相关语义") : text9);
-			stringBuilder.AppendLine("【以下是关于（" + text10 + "）的背景知识，" + text6 + "可酌情参考，但不要假设玩家提起过此话题】");
+			stringBuilder.AppendLine("【以下是关于（" + text10 + "）的背景知识，" + text7 + "可酌情参考，但不要假设玩家提起过此话题】");
 			stringBuilder.AppendLine(value2);
 		}
 		string text11 = ((num2 > 0) ? stringBuilder.ToString() : "");
@@ -2373,7 +2537,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			LogLoreMissOnce("variant_or_content_miss", text, num, text2, text3, text4, text5);
 			try
 			{
-				Logger.RecordHitRate("knowledge", "__query__", hit: false, BuildKnowledgeHitRateDetail($"reason=variant_or_content_miss candidates={list?.Count ?? 0} mode={text8} inputLen={text.Length}", secondaryInput), text);
+				Logger.RecordHitRate("knowledge", "__query__", hit: false, BuildKnowledgeHitRateDetail($"reason=variant_or_content_miss candidates={list?.Count ?? 0} mode={matchMode} inputLen={text.Length}", secondaryInput), text);
 			}
 			catch
 			{
@@ -2383,7 +2547,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		{
 			try
 			{
-				Logger.RecordHitRate("knowledge", "__query__", hit: true, BuildKnowledgeHitRateDetail($"reason=ok matched={num2} candidates={list?.Count ?? 0} mode={text8} inputLen={text.Length}", secondaryInput), text);
+				Logger.RecordHitRate("knowledge", "__query__", hit: true, BuildKnowledgeHitRateDetail($"reason=ok matched={num2} candidates={list?.Count ?? 0} mode={matchMode} inputLen={text.Length}", secondaryInput), text);
 			}
 			catch
 			{
@@ -2426,7 +2590,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		string textCharId = (npcCharacter?.StringId ?? "").Trim();
 		if (hero == null && npcCharacter == null)
 		{
-			LogLoreContextTrace("character", "", "", "neutral", "", "commoner", isFemale: false, isClanLeader: false, kingdomIdOverride, text, invalidContext: true);
+			LogLoreContextTrace("character", "", "", "neutral", "", "", "commoner", isFemale: false, isClanLeader: false, kingdomIdOverride, text, invalidContext: true);
 			try
 			{
 				Logger.RecordHitRate("knowledge", "__query__", hit: false, BuildKnowledgeHitRateDetail($"reason=invalid_context source=character inputLen={text.Length}", secondaryInput), text);
@@ -2505,31 +2669,40 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		string text6 = "";
 		try
 		{
-			text6 = (hero?.Name?.ToString() ?? "").Trim();
+			text6 = (Settlement.CurrentSettlement?.StringId ?? hero?.CurrentSettlement?.StringId ?? "").Trim().ToLowerInvariant();
 		}
 		catch
 		{
 			text6 = "";
 		}
-		if (string.IsNullOrWhiteSpace(text6))
+		string text7 = "";
+		try
+		{
+			text7 = (hero?.Name?.ToString() ?? "").Trim();
+		}
+		catch
+		{
+			text7 = "";
+		}
+		if (string.IsNullOrWhiteSpace(text7))
 		{
 			try
 			{
-				text6 = (npcCharacter?.Name?.ToString() ?? "").Trim();
+				text7 = (npcCharacter?.Name?.ToString() ?? "").Trim();
 			}
 			catch
 			{
-				text6 = "";
+				text7 = "";
 			}
 		}
-		if (string.IsNullOrWhiteSpace(text6))
+		if (string.IsNullOrWhiteSpace(text7))
 		{
-			text6 = "该NPC";
+			text7 = "该NPC";
 		}
-		string text7 = (text6 ?? "").Replace("|", " ").Trim();
-		LogLoreContextTrace((hero != null) ? "character_hero" : "character", text2, textCharId, text3, text4, text5, flag, flag2, kingdomIdOverride, text);
+		string text8 = (text7 ?? "").Replace("|", " ").Trim();
+		LogLoreContextTrace((hero != null) ? "character_hero" : "character", text2, textCharId, text3, text4, text6, text5, flag, flag2, kingdomIdOverride, text);
 		long ruleDataVersion = _ruleDataVersion;
-		string key = Hash8($"{ruleDataVersion}|C|{text2}|{text7}|{text3}|{text4}|{text5}|{(flag ? 1 : 0)}|{(flag2 ? 1 : 0)}|{text}");
+		string key = Hash8($"{ruleDataVersion}|C|{text2}|{text8}|{text3}|{text4}|{text6}|{text5}|{(flag ? 1 : 0)}|{(flag2 ? 1 : 0)}|{text}");
 		if (TryGetLoreContextCache(key, ruleDataVersion, out var value))
 		{
 			return value;
@@ -2560,7 +2733,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		int loreInjectLimit = GetLoreInjectLimit();
 		StringBuilder stringBuilder = new StringBuilder();
 		CandidateRules candidateRules = CollectCandidateRules(text, secondaryInput);
-		string text8 = candidateRules?.MatchMode ?? "none";
+		string matchMode = candidateRules?.MatchMode ?? "none";
 		List<LoreRule> list = candidateRules?.OrderedRules;
 		if (list == null || list.Count == 0)
 		{
@@ -2568,7 +2741,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			PutLoreContextCache(key, ruleDataVersion, "");
 			try
 			{
-				Logger.RecordHitRate("knowledge", "__query__", hit: false, BuildKnowledgeHitRateDetail($"reason=rule_miss rules={num} inputLen={text.Length} mode={text8}", secondaryInput), text);
+				Logger.RecordHitRate("knowledge", "__query__", hit: false, BuildKnowledgeHitRateDetail($"reason=rule_miss rules={num} inputLen={text.Length} mode={matchMode}", secondaryInput), text);
 			}
 			catch
 			{
@@ -2596,12 +2769,12 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			}
 			try
 			{
-				Logger.Log("LoreMatch", "vector_hit rule=" + item.Id + " mode=" + text8 + " hero=" + text2 + " culture=" + text3 + " kingdom=" + text4 + " role=" + text5);
+				Logger.Log("LoreMatch", "vector_hit rule=" + item.Id + " mode=" + matchMode + " hero=" + text2 + " culture=" + text3 + " kingdom=" + text4 + " settlement=" + text6 + " role=" + text5);
 			}
 			catch
 			{
 			}
-			LoreVariant loreVariant = PickBestVariant(item, hero, npcCharacter, text2, text3, text4, text5, flag, flag2);
+			LoreVariant loreVariant = PickBestVariant(item, hero, npcCharacter, text2, text3, text4, text6, text5, flag, flag2);
 			if (loreVariant == null)
 			{
 				try
@@ -2613,7 +2786,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 				}
 				try
 				{
-					Logger.RecordHitRate("knowledge", item.Id ?? "__unknown__", hit: false, BuildKnowledgeHitRateDetail("reason=variant_miss mode=" + text8, secondaryInput), text);
+					Logger.RecordHitRate("knowledge", item.Id ?? "__unknown__", hit: false, BuildKnowledgeHitRateDetail("reason=variant_miss mode=" + matchMode, secondaryInput), text);
 				}
 				catch
 				{
@@ -2632,7 +2805,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 				}
 				try
 				{
-					Logger.RecordHitRate("knowledge", item.Id ?? "__unknown__", hit: false, BuildKnowledgeHitRateDetail("reason=content_empty mode=" + text8, secondaryInput), text);
+					Logger.RecordHitRate("knowledge", item.Id ?? "__unknown__", hit: false, BuildKnowledgeHitRateDetail("reason=content_empty mode=" + matchMode, secondaryInput), text);
 				}
 				catch
 				{
@@ -2648,7 +2821,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			}
 			try
 			{
-				Logger.RecordHitRate("knowledge", item.Id ?? "__unknown__", hit: true, BuildKnowledgeHitRateDetail("reason=variant_hit mode=" + text8, secondaryInput), text);
+				Logger.RecordHitRate("knowledge", item.Id ?? "__unknown__", hit: true, BuildKnowledgeHitRateDetail("reason=variant_hit mode=" + matchMode, secondaryInput), text);
 			}
 			catch
 			{
@@ -2657,11 +2830,11 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			if (!flag3)
 			{
 				stringBuilder.AppendLine(" ");
-				stringBuilder.AppendLine("玩家说的话让你的脑海里浮现了这些知识");
+				stringBuilder.AppendLine("参与互动让你的脑海里浮现了这些知识");
 				flag3 = true;
 			}
 			string text10 = (string.IsNullOrWhiteSpace(text9) ? (item.Id ?? "相关语义") : text9);
-			stringBuilder.AppendLine("【以下是关于（" + text10 + "）的背景知识，" + text6 + "可酌情参考，但不要假设玩家提起过此话题】");
+			stringBuilder.AppendLine("【以下是关于（" + text10 + "）的背景知识，" + text7 + "可酌情参考，但不要假设玩家提起过此话题】");
 			stringBuilder.AppendLine(value2);
 		}
 		string text11 = ((num2 > 0) ? stringBuilder.ToString() : "");
@@ -2670,7 +2843,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			LogLoreMissOnce("variant_or_content_miss", text, num, text2, text3, text4, text5);
 			try
 			{
-				Logger.RecordHitRate("knowledge", "__query__", hit: false, BuildKnowledgeHitRateDetail($"reason=variant_or_content_miss candidates={list?.Count ?? 0} mode={text8} inputLen={text.Length}", secondaryInput), text);
+				Logger.RecordHitRate("knowledge", "__query__", hit: false, BuildKnowledgeHitRateDetail($"reason=variant_or_content_miss candidates={list?.Count ?? 0} mode={matchMode} inputLen={text.Length}", secondaryInput), text);
 			}
 			catch
 			{
@@ -2680,7 +2853,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		{
 			try
 			{
-				Logger.RecordHitRate("knowledge", "__query__", hit: true, BuildKnowledgeHitRateDetail($"reason=ok matched={num2} candidates={list?.Count ?? 0} mode={text8} inputLen={text.Length}", secondaryInput), text);
+				Logger.RecordHitRate("knowledge", "__query__", hit: true, BuildKnowledgeHitRateDetail($"reason=ok matched={num2} candidates={list?.Count ?? 0} mode={matchMode} inputLen={text.Length}", secondaryInput), text);
 			}
 			catch
 			{
@@ -2795,6 +2968,10 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 				return false;
 			}
 			loreRule.Id = text;
+			if (!ValidateVariantConditionsUnique(loreRule, out var _, out var _))
+			{
+				return false;
+			}
 			if (_file == null)
 			{
 				_file = new KnowledgeFile();
@@ -2858,6 +3035,13 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			{
 				knowledgeFile.Rules = new List<LoreRule>();
 			}
+			foreach (LoreRule rule in knowledgeFile.Rules)
+			{
+				if (rule != null && !ValidateVariantConditionsUnique(rule, out var _, out var _))
+				{
+					return false;
+				}
+			}
 			if (_file == null)
 			{
 				_file = new KnowledgeFile();
@@ -2904,7 +3088,212 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static LoreVariant PickBestVariant(LoreRule rule, Hero npcHero, CharacterObject npcCharacter, string heroId, string cultureId, string kingdomId, string role, bool isFemale, bool isClanLeader)
+	private static bool ValidateVariantConditionsUnique(LoreRule rule, out int firstIndex, out int secondIndex)
+	{
+		firstIndex = -1;
+		secondIndex = -1;
+		try
+		{
+			if (rule?.Variants == null || rule.Variants.Count <= 1)
+			{
+				return true;
+			}
+			Dictionary<string, int> dictionary = new Dictionary<string, int>(StringComparer.Ordinal);
+			for (int i = 0; i < rule.Variants.Count; i++)
+			{
+				LoreVariant loreVariant = rule.Variants[i];
+				if (loreVariant == null)
+				{
+					continue;
+				}
+				string whenSignature = BuildWhenSignature(loreVariant.When);
+				if (dictionary.TryGetValue(whenSignature, out var value))
+				{
+					firstIndex = value;
+					secondIndex = i;
+					return false;
+				}
+				dictionary[whenSignature] = i;
+			}
+		}
+		catch
+		{
+		}
+		return true;
+	}
+
+	private static int FindDuplicateVariantIndex(LoreRule rule, LoreWhen when, int excludeIndex = -1)
+	{
+		try
+		{
+			if (rule?.Variants == null || rule.Variants.Count <= 0)
+			{
+				return -1;
+			}
+			string text = BuildWhenSignature(when);
+			for (int i = 0; i < rule.Variants.Count; i++)
+			{
+				if (i == excludeIndex)
+				{
+					continue;
+				}
+				LoreVariant loreVariant = rule.Variants[i];
+				if (loreVariant != null && string.Equals(BuildWhenSignature(loreVariant.When), text, StringComparison.Ordinal))
+				{
+					return i;
+				}
+			}
+		}
+		catch
+		{
+		}
+		return -1;
+	}
+
+	private static string BuildWhenSignature(LoreWhen when)
+	{
+		try
+		{
+			LoreWhen loreWhen = NormalizeWhenForStorage(CloneWhen(when));
+			if (loreWhen == null)
+			{
+				return "__generic__";
+			}
+			string text = string.Join("|", NormalizeWhenStringList(loreWhen.HeroIds));
+			string text2 = string.Join("|", NormalizeWhenStringList(loreWhen.Cultures));
+			string text3 = string.Join("|", NormalizeWhenStringList(loreWhen.KingdomIds));
+			string text4 = string.Join("|", NormalizeWhenStringList(loreWhen.SettlementIds));
+			string text5 = string.Join("|", NormalizeWhenStringList(loreWhen.Roles));
+			string text6 = (loreWhen.IsFemale.HasValue ? (loreWhen.IsFemale.Value ? "female" : "male") : "any");
+			string text7 = (loreWhen.IsClanLeader.HasValue ? (loreWhen.IsClanLeader.Value ? "leader" : "not_leader") : "any");
+			string text8 = string.Join("|", NormalizeWhenSkillMin(loreWhen.SkillMin).Select((KeyValuePair<string, int> kv) => kv.Key + ":" + kv.Value));
+			return $"hero={text};culture={text2};kingdom={text3};settlement={text4};role={text5};gender={text6};clan={text7};skill={text8}";
+		}
+		catch
+		{
+			return "__generic__";
+		}
+	}
+
+	private static List<string> NormalizeWhenStringList(List<string> list)
+	{
+		List<string> result = new List<string>();
+		try
+		{
+			if (list == null || list.Count <= 0)
+			{
+				return result;
+			}
+			result = list.Select((string x) => (x ?? "").Trim().ToLowerInvariant()).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.Ordinal).OrderBy((string x) => x, StringComparer.Ordinal).ToList();
+		}
+		catch
+		{
+		}
+		return result;
+	}
+
+	private static List<KeyValuePair<string, int>> NormalizeWhenSkillMin(Dictionary<string, int> skillMin)
+	{
+		List<KeyValuePair<string, int>> result = new List<KeyValuePair<string, int>>();
+		try
+		{
+			if (skillMin == null || skillMin.Count <= 0)
+			{
+				return result;
+			}
+			result = skillMin.Where((KeyValuePair<string, int> kv) => !string.IsNullOrWhiteSpace(kv.Key) && kv.Value >= 0).Select((KeyValuePair<string, int> kv) => new KeyValuePair<string, int>((kv.Key ?? "").Trim().ToLowerInvariant(), kv.Value)).GroupBy((KeyValuePair<string, int> kv) => kv.Key, StringComparer.Ordinal).Select((IGrouping<string, KeyValuePair<string, int>> g) => new KeyValuePair<string, int>(g.Key, g.Max((KeyValuePair<string, int> x) => x.Value))).OrderBy((KeyValuePair<string, int> kv) => kv.Key, StringComparer.Ordinal).ToList();
+		}
+		catch
+		{
+		}
+		return result;
+	}
+
+	private static LoreWhen CloneWhen(LoreWhen when)
+	{
+		if (when == null)
+		{
+			return null;
+		}
+		LoreWhen loreWhen = new LoreWhen
+		{
+			HeroIds = ((when.HeroIds != null) ? new List<string>(when.HeroIds) : null),
+			Cultures = ((when.Cultures != null) ? new List<string>(when.Cultures) : null),
+			KingdomIds = ((when.KingdomIds != null) ? new List<string>(when.KingdomIds) : null),
+			SettlementIds = ((when.SettlementIds != null) ? new List<string>(when.SettlementIds) : null),
+			Roles = ((when.Roles != null) ? new List<string>(when.Roles) : null),
+			IsFemale = when.IsFemale,
+			IsClanLeader = when.IsClanLeader,
+			SkillMin = ((when.SkillMin != null) ? new Dictionary<string, int>(when.SkillMin, StringComparer.OrdinalIgnoreCase) : null)
+		};
+		return loreWhen;
+	}
+
+	private static LoreWhen NormalizeWhenForStorage(LoreWhen when)
+	{
+		try
+		{
+			if (when == null)
+			{
+				return null;
+			}
+			when.HeroIds = NormalizeWhenStringList(when.HeroIds);
+			when.Cultures = NormalizeWhenStringList(when.Cultures);
+			when.KingdomIds = NormalizeWhenStringList(when.KingdomIds);
+			when.SettlementIds = NormalizeWhenStringList(when.SettlementIds);
+			when.Roles = NormalizeWhenStringList(when.Roles);
+			if (when.HeroIds.Count == 0)
+			{
+				when.HeroIds = null;
+			}
+			if (when.Cultures.Count == 0)
+			{
+				when.Cultures = null;
+			}
+			if (when.KingdomIds.Count == 0)
+			{
+				when.KingdomIds = null;
+			}
+			if (when.SettlementIds.Count == 0)
+			{
+				when.SettlementIds = null;
+			}
+			if (when.Roles.Count == 0)
+			{
+				when.Roles = null;
+			}
+			List<KeyValuePair<string, int>> list = NormalizeWhenSkillMin(when.SkillMin);
+			if (list.Count > 0)
+			{
+				when.SkillMin = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+				foreach (KeyValuePair<string, int> item in list)
+				{
+					when.SkillMin[item.Key] = item.Value;
+				}
+			}
+			else
+			{
+				when.SkillMin = null;
+			}
+			if (when.HeroIds == null && when.Cultures == null && when.KingdomIds == null && when.SettlementIds == null && when.Roles == null && !when.IsFemale.HasValue && !when.IsClanLeader.HasValue && when.SkillMin == null)
+			{
+				return null;
+			}
+		}
+		catch
+		{
+		}
+		return when;
+	}
+
+	private void ShowDuplicateVariantConditionPrompt(LoreWhen when, int existingIndex)
+	{
+		string text = ((existingIndex >= 0) ? ("#" + (existingIndex + 1)) : "已有");
+		string text2 = ((NormalizeWhenForStorage(CloneWhen(when)) == null) ? "通用（无条件）" : BuildWhenDetail(NormalizeWhenForStorage(CloneWhen(when))));
+		InformationManager.ShowInquiry(new InquiryData("条件重复", "不允许存在多个条件完全相同的提示词。\n\n重复对象：" + text + " 条提示词\n\n重复条件：\n" + text2, isAffirmativeOptionShown: true, isNegativeOptionShown: false, "返回", "", null, null));
+	}
+
+private static LoreVariant PickBestVariant(LoreRule rule, Hero npcHero, CharacterObject npcCharacter, string heroId, string cultureId, string kingdomId, string settlementId, string role, bool isFemale, bool isClanLeader)
 	{
 		if (rule == null || rule.Variants == null || rule.Variants.Count == 0)
 		{
@@ -2920,7 +3309,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 				continue;
 			}
 			LoreWhen when = variant.When;
-			if (!IsMatch(when, npcHero, npcCharacter, heroId, cultureId, kingdomId, role, isFemale, isClanLeader, out var score))
+			if (!IsMatch(when, npcHero, npcCharacter, heroId, cultureId, kingdomId, settlementId, role, isFemale, isClanLeader, out var score))
 			{
 				continue;
 			}
@@ -3036,7 +3425,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		return false;
 	}
 
-	private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcCharacter, string heroId, string cultureId, string kingdomId, string role, bool isFemale, bool isClanLeader, out int score)
+private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcCharacter, string heroId, string cultureId, string kingdomId, string settlementId, string role, bool isFemale, bool isClanLeader, out int score)
 	{
 		score = 0;
 		if (when == null)
@@ -3101,19 +3490,41 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			}
 			score++;
 		}
-		if (when.Roles != null && when.Roles.Count > 0)
+		if (when.SettlementIds != null && when.SettlementIds.Count > 0)
 		{
-			bool flag4 = false;
-			for (int l = 0; l < when.Roles.Count; l++)
+			if (string.IsNullOrEmpty(settlementId))
 			{
-				string text4 = (when.Roles[l] ?? "").Trim();
-				if (!string.IsNullOrEmpty(text4) && string.Equals(text4, role, StringComparison.OrdinalIgnoreCase))
+				return false;
+			}
+			bool flag4 = false;
+			for (int l = 0; l < when.SettlementIds.Count; l++)
+			{
+				string text4 = (when.SettlementIds[l] ?? "").Trim();
+				if (!string.IsNullOrEmpty(text4) && string.Equals(text4, settlementId, StringComparison.OrdinalIgnoreCase))
 				{
 					flag4 = true;
 					break;
 				}
 			}
 			if (!flag4)
+			{
+				return false;
+			}
+			score++;
+		}
+		if (when.Roles != null && when.Roles.Count > 0)
+		{
+			bool flag5 = false;
+			for (int m = 0; m < when.Roles.Count; m++)
+			{
+				string text5 = (when.Roles[m] ?? "").Trim();
+				if (!string.IsNullOrEmpty(text5) && string.Equals(text5, role, StringComparison.OrdinalIgnoreCase))
+				{
+					flag5 = true;
+					break;
+				}
+			}
+			if (!flag5)
 			{
 				return false;
 			}
@@ -3139,11 +3550,11 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		{
 			foreach (KeyValuePair<string, int> item in when.SkillMin)
 			{
-				string text5 = (item.Key ?? "").Trim();
+				string text6 = (item.Key ?? "").Trim();
 				int value = item.Value;
-				if (!string.IsNullOrEmpty(text5) && value >= 0)
+				if (!string.IsNullOrEmpty(text6) && value >= 0)
 				{
-					if (!TryGetSkillValueById(text5, npcHero, npcCharacter, out var value2))
+					if (!TryGetSkillValueById(text6, npcHero, npcCharacter, out var value2))
 					{
 						return false;
 					}
@@ -3193,6 +3604,692 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			}
 		}, delegate
 		{
+			onReturn();
+		});
+		MBInformationManager.ShowMultiSelectionInquiry(data);
+	}
+
+	public void OpenPlayerPersonaSetup(Action onReturn)
+	{
+		if (onReturn == null)
+		{
+			onReturn = delegate
+			{
+			};
+		}
+		LoreRule orCreatePlayerPersonaRule = GetOrCreatePlayerPersonaRule();
+		if (orCreatePlayerPersonaRule == null)
+		{
+			InformationManager.DisplayMessage(new InformationMessage("打开玩家角色介绍失败：无法创建知识条目。"));
+			onReturn();
+			return;
+		}
+		EnsurePlayerPersonaForcedKeyword(orCreatePlayerPersonaRule, showConflictMessage: true);
+		OpenPlayerPersonaKeywordSetupMenu(orCreatePlayerPersonaRule, delegate
+		{
+			OpenPlayerPersonaIntroSetupMenu(orCreatePlayerPersonaRule, onReturn);
+		});
+	}
+
+	private LoreRule GetOrCreatePlayerPersonaRule()
+	{
+		if (_file == null)
+		{
+			_file = new KnowledgeFile();
+		}
+		if (_file.Rules == null)
+		{
+			_file.Rules = new List<LoreRule>();
+		}
+		LoreRule loreRule = FindRule(PlayerPersonaRuleId);
+		bool flag = false;
+		if (loreRule == null)
+		{
+			loreRule = new LoreRule
+			{
+				Id = PlayerPersonaRuleId,
+				Keywords = new List<string>(),
+				Variants = new List<LoreVariant>()
+			};
+			_file.Rules.Add(loreRule);
+			flag = true;
+		}
+		if (loreRule.Keywords == null)
+		{
+			loreRule.Keywords = new List<string>();
+			flag = true;
+		}
+		if (loreRule.Variants == null)
+		{
+			loreRule.Variants = new List<LoreVariant>();
+			flag = true;
+		}
+		if (flag)
+		{
+			TouchRuleData();
+		}
+		return loreRule;
+	}
+
+	private static string GetPlayerPersonaForcedKeyword()
+	{
+		string text = (Hero.MainHero?.Name?.ToString() ?? "玩家").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return "玩家";
+		}
+		return text;
+	}
+
+	private bool EnsurePlayerPersonaForcedKeyword(LoreRule rule, bool showConflictMessage)
+	{
+		if (rule == null)
+		{
+			return false;
+		}
+		if (rule.Keywords == null)
+		{
+			rule.Keywords = new List<string>();
+		}
+		string playerPersonaForcedKeyword = GetPlayerPersonaForcedKeyword();
+		string text = NormalizeKeywordForCompare(playerPersonaForcedKeyword);
+		if (string.IsNullOrEmpty(text))
+		{
+			return false;
+		}
+		bool flag = false;
+		rule.Keywords.RemoveAll((string x) => string.IsNullOrWhiteSpace(x));
+		for (int num = rule.Keywords.Count - 1; num >= 0; num--)
+		{
+			string text2 = NormalizeKeywordForCompare(rule.Keywords[num]);
+			if (!string.Equals(text2, text, StringComparison.OrdinalIgnoreCase))
+			{
+				continue;
+			}
+			if (num == 0)
+			{
+				while (rule.Keywords.Count > 1 && string.Equals(NormalizeKeywordForCompare(rule.Keywords[1]), text, StringComparison.OrdinalIgnoreCase))
+				{
+					rule.Keywords.RemoveAt(1);
+					flag = true;
+				}
+				if (flag)
+				{
+					TouchRuleData();
+				}
+				return true;
+			}
+			rule.Keywords.RemoveAt(num);
+			flag = true;
+		}
+		string foundRuleId;
+		if (TryFindRuleIdByKeyword(playerPersonaForcedKeyword, rule.Id, out foundRuleId))
+		{
+			if (flag)
+			{
+				TouchRuleData();
+			}
+			if (showConflictMessage)
+			{
+				InformationManager.DisplayMessage(new InformationMessage("玩家本名关键词未能自动加入，因为它已被其他知识占用（RuleId=" + foundRuleId + "）。"));
+			}
+			return false;
+		}
+		rule.Keywords.Insert(0, playerPersonaForcedKeyword);
+		TouchRuleData();
+		return true;
+	}
+
+	private List<string> GetPlayerPersonaOptionalKeywords(LoreRule rule)
+	{
+		List<string> list = new List<string>();
+		if (rule?.Keywords == null || rule.Keywords.Count == 0)
+		{
+			return list;
+		}
+		string text = NormalizeKeywordForCompare(GetPlayerPersonaForcedKeyword());
+		foreach (string keyword in rule.Keywords)
+		{
+			string text2 = NormalizeKeywordForCompare(keyword);
+			if (!string.IsNullOrEmpty(text2) && !string.Equals(text2, text, StringComparison.OrdinalIgnoreCase) && !list.Any((string x) => string.Equals(NormalizeKeywordForCompare(x), text2, StringComparison.OrdinalIgnoreCase)))
+			{
+				list.Add(keyword.Trim());
+			}
+		}
+		return list;
+	}
+
+	private void OpenPlayerPersonaKeywordSetupMenu(LoreRule rule, Action onContinue)
+	{
+		if (rule == null)
+		{
+			onContinue?.Invoke();
+			return;
+		}
+		if (onContinue == null)
+		{
+			onContinue = delegate
+			{
+			};
+		}
+		bool flag = EnsurePlayerPersonaForcedKeyword(rule, showConflictMessage: false);
+		string playerPersonaForcedKeyword = GetPlayerPersonaForcedKeyword();
+		List<string> playerPersonaOptionalKeywords = GetPlayerPersonaOptionalKeywords(rule);
+		string text = "欢迎游玩Animusforge!你可以在此界面设置您的角色的额外称呼，如果您不需要，可以直接写您的角色介绍\n\n您的角色姓名：" + playerPersonaForcedKeyword + (flag ? "" : "（当前未能写入，因为与其他知识冲突）") + "\n额外称呼：" + ((playerPersonaOptionalKeywords.Count > 0) ? string.Join(" / ", playerPersonaOptionalKeywords) : "（无）");
+		List<InquiryElement> list = new List<InquiryElement>();
+		list.Add(new InquiryElement("add", "添加额外称呼", null));
+		if (playerPersonaOptionalKeywords.Count > 0)
+		{
+			list.Add(new InquiryElement("remove", "删除额外称呼", null));
+		}
+		list.Add(new InquiryElement("next", "编写角色介绍", null));
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData("玩家称呼设置", text, list, isExitShown: true, 0, 1, "选择", "继续", delegate(List<InquiryElement> selected)
+		{
+			if (selected == null || selected.Count == 0)
+			{
+				OpenPlayerPersonaKeywordSetupMenu(rule, onContinue);
+			}
+			else
+			{
+				switch (selected[0].Identifier as string)
+				{
+				case "add":
+					InformationManager.ShowTextInquiry(new TextInquiryData("添加额外称呼", "请输入一个额外称呼；玩家本名已由系统自动保留，无需重复输入。", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "确定", "取消", delegate(string input)
+					{
+						string text2 = (input ?? "").Trim();
+						string kwNorm = NormalizeKeywordForCompare(text2);
+						if (string.IsNullOrEmpty(kwNorm))
+						{
+							OpenPlayerPersonaKeywordSetupMenu(rule, onContinue);
+						}
+						else
+						{
+							bool flag = false;
+							try
+							{
+								flag = rule.Keywords.Any((string x) => string.Equals(NormalizeKeywordForCompare(x), kwNorm, StringComparison.OrdinalIgnoreCase));
+							}
+							catch
+							{
+								flag = false;
+							}
+							string foundRuleId;
+							if (flag)
+							{
+								InformationManager.DisplayMessage(new InformationMessage("这个称呼已经存在了。"));
+								OpenPlayerPersonaKeywordSetupMenu(rule, onContinue);
+							}
+							else if (TryFindRuleIdByKeyword(text2, rule.Id, out foundRuleId))
+							{
+								InformationManager.DisplayMessage(new InformationMessage("添加失败：这个称呼已被其他知识占用（RuleId=" + foundRuleId + "）。"));
+								OpenPlayerPersonaKeywordSetupMenu(rule, onContinue);
+							}
+							else
+							{
+								rule.Keywords.Add(text2);
+								TouchRuleData();
+								OpenPlayerPersonaKeywordSetupMenu(rule, onContinue);
+							}
+						}
+					}, delegate
+					{
+						OpenPlayerPersonaKeywordSetupMenu(rule, onContinue);
+					}));
+					break;
+				case "remove":
+					OpenPlayerPersonaKeywordRemoveMenu(rule, onContinue);
+					break;
+				case "next":
+					onContinue();
+					break;
+				default:
+					OpenPlayerPersonaKeywordSetupMenu(rule, onContinue);
+					break;
+				}
+			}
+		}, delegate
+		{
+			onContinue();
+		});
+		MBInformationManager.ShowMultiSelectionInquiry(data);
+	}
+
+	private void OpenPlayerPersonaKeywordRemoveMenu(LoreRule rule, Action onContinue)
+	{
+		if (rule == null)
+		{
+			onContinue?.Invoke();
+			return;
+		}
+		if (onContinue == null)
+		{
+			onContinue = delegate
+			{
+			};
+		}
+		List<string> playerPersonaOptionalKeywords = GetPlayerPersonaOptionalKeywords(rule);
+		if (playerPersonaOptionalKeywords.Count == 0)
+		{
+			OpenPlayerPersonaKeywordSetupMenu(rule, onContinue);
+			return;
+		}
+		List<InquiryElement> list = new List<InquiryElement>();
+		foreach (string item in playerPersonaOptionalKeywords)
+		{
+			list.Add(new InquiryElement(item, item, null));
+		}
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData("删除额外称呼", "系统保留的玩家本名不能删除；这里只会删除你额外添加的称呼。", list, isExitShown: true, 0, 1, "删除", "返回", delegate(List<InquiryElement> selected)
+		{
+			if (selected == null || selected.Count == 0)
+			{
+				OpenPlayerPersonaKeywordSetupMenu(rule, onContinue);
+			}
+			else
+			{
+				string text = selected[0].Identifier as string;
+				if (!string.IsNullOrWhiteSpace(text))
+				{
+					rule.Keywords.RemoveAll((string x) => string.Equals(NormalizeKeywordForCompare(x), NormalizeKeywordForCompare(text), StringComparison.OrdinalIgnoreCase));
+					TouchRuleData();
+				}
+				OpenPlayerPersonaKeywordSetupMenu(rule, onContinue);
+			}
+		}, delegate
+		{
+			OpenPlayerPersonaKeywordSetupMenu(rule, onContinue);
+		});
+		MBInformationManager.ShowMultiSelectionInquiry(data);
+	}
+
+	private void OpenPlayerPersonaIntroSetupMenu(LoreRule rule, Action onDone)
+	{
+		if (rule == null)
+		{
+			onDone?.Invoke();
+			return;
+		}
+		if (onDone == null)
+		{
+			onDone = delegate
+			{
+			};
+		}
+		int playerPersonaSimpleVariantIndex = GetPlayerPersonaSimpleVariantIndex(rule);
+		string text = "（未填写）";
+		if (playerPersonaSimpleVariantIndex >= 0 && rule.Variants != null && playerPersonaSimpleVariantIndex < rule.Variants.Count)
+		{
+			text = TrimPreview(rule.Variants[playerPersonaSimpleVariantIndex]?.Content ?? "", 80);
+			if (string.IsNullOrWhiteSpace(text))
+			{
+				text = "（未填写）";
+			}
+		}
+		List<int> playerPersonaDetailedVariantIndices = GetPlayerPersonaDetailedVariantIndices(rule);
+		string text2 = "角色介绍可以影响NPC对你的看法，当然你也可以设置不同的角色对你的看法。\n\n简单介绍（通用）：" + text + "\n细化介绍（有条件）：" + playerPersonaDetailedVariantIndices.Count + " 条";
+		List<InquiryElement> list = new List<InquiryElement>();
+		list.Add(new InquiryElement("simple", "角色介绍", null));
+		list.Add(new InquiryElement("detailed", "不同的人对您的角色的看法", null));
+		list.Add(new InquiryElement("done", "完成并开始游戏", null));
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData("玩家角色介绍", text2, list, isExitShown: true, 0, 1, "进入", "跳过", delegate(List<InquiryElement> selected)
+		{
+			if (selected == null || selected.Count == 0)
+			{
+				OpenPlayerPersonaIntroSetupMenu(rule, onDone);
+			}
+			else
+			{
+				switch (selected[0].Identifier as string)
+				{
+				case "simple":
+					OpenPlayerPersonaSimpleIntroEditor(rule, delegate
+					{
+						OpenPlayerPersonaIntroSetupMenu(rule, onDone);
+					});
+					break;
+				case "detailed":
+					OpenPlayerPersonaDetailedIntroMenu(rule, delegate
+					{
+						OpenPlayerPersonaIntroSetupMenu(rule, onDone);
+					});
+					break;
+				case "done":
+					onDone();
+					break;
+				default:
+					OpenPlayerPersonaIntroSetupMenu(rule, onDone);
+					break;
+				}
+			}
+		}, delegate
+		{
+			onDone();
+		});
+		MBInformationManager.ShowMultiSelectionInquiry(data);
+	}
+
+	private int GetPlayerPersonaSimpleVariantIndex(LoreRule rule)
+	{
+		if (rule?.Variants == null)
+		{
+			return -1;
+		}
+		for (int i = 0; i < rule.Variants.Count; i++)
+		{
+			LoreVariant loreVariant = rule.Variants[i];
+			if (loreVariant != null && NormalizeWhenForStorage(CloneWhen(loreVariant.When)) == null)
+			{
+				return i;
+			}
+		}
+		return -1;
+	}
+
+	private List<int> GetPlayerPersonaDetailedVariantIndices(LoreRule rule)
+	{
+		List<int> list = new List<int>();
+		if (rule?.Variants == null)
+		{
+			return list;
+		}
+		for (int i = 0; i < rule.Variants.Count; i++)
+		{
+			LoreVariant loreVariant = rule.Variants[i];
+			if (loreVariant != null && NormalizeWhenForStorage(CloneWhen(loreVariant.When)) != null)
+			{
+				list.Add(i);
+			}
+		}
+		return list;
+	}
+
+	private void OpenPlayerPersonaSimpleIntroEditor(LoreRule rule, Action onReturn)
+	{
+		if (rule == null)
+		{
+			onReturn?.Invoke();
+			return;
+		}
+		if (onReturn == null)
+		{
+			onReturn = delegate
+			{
+			};
+		}
+		if (rule.Variants == null)
+		{
+			rule.Variants = new List<LoreVariant>();
+		}
+		int playerPersonaSimpleVariantIndex = GetPlayerPersonaSimpleVariantIndex(rule);
+		string text = ((playerPersonaSimpleVariantIndex >= 0 && playerPersonaSimpleVariantIndex < rule.Variants.Count) ? (rule.Variants[playerPersonaSimpleVariantIndex]?.Content ?? "") : "");
+		InformationManager.ShowTextInquiry(new TextInquiryData("简单的玩家角色介绍", "请输入通用介绍内容；留空表示不设置。", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "确定", "返回", delegate(string input)
+		{
+			string text2 = (input ?? "").Trim();
+			if (string.IsNullOrWhiteSpace(text2))
+			{
+				if (playerPersonaSimpleVariantIndex >= 0 && playerPersonaSimpleVariantIndex < rule.Variants.Count)
+				{
+					rule.Variants.RemoveAt(playerPersonaSimpleVariantIndex);
+					TouchRuleData();
+				}
+			}
+			else if (playerPersonaSimpleVariantIndex >= 0 && playerPersonaSimpleVariantIndex < rule.Variants.Count)
+			{
+				LoreVariant loreVariant2 = rule.Variants[playerPersonaSimpleVariantIndex];
+				if (loreVariant2 != null)
+				{
+					loreVariant2.Priority = 0;
+					loreVariant2.When = null;
+					loreVariant2.Content = input ?? "";
+					TouchRuleData();
+				}
+			}
+			else
+			{
+				rule.Variants.Add(new LoreVariant
+				{
+					Priority = 0,
+					When = null,
+					Content = input ?? ""
+				});
+				TouchRuleData();
+			}
+			onReturn();
+		}, delegate
+		{
+			onReturn();
+		}, shouldInputBeObfuscated: false, null, text));
+	}
+
+	private void OpenPlayerPersonaDetailedIntroMenu(LoreRule rule, Action onReturn)
+	{
+		if (rule == null)
+		{
+			onReturn?.Invoke();
+			return;
+		}
+		if (onReturn == null)
+		{
+			onReturn = delegate
+			{
+			};
+		}
+		if (rule.Variants == null)
+		{
+			rule.Variants = new List<LoreVariant>();
+		}
+		List<int> playerPersonaDetailedVariantIndices = GetPlayerPersonaDetailedVariantIndices(rule);
+		List<InquiryElement> list = new List<InquiryElement>();
+		list.Add(new InquiryElement("add", "新增一条细化介绍", null));
+		foreach (int item in playerPersonaDetailedVariantIndices)
+		{
+			LoreVariant loreVariant = rule.Variants[item];
+			string arg = BuildWhenLabel(loreVariant.When);
+			string text = TrimPreview(loreVariant.Content ?? "", 24);
+			if (string.IsNullOrWhiteSpace(text))
+			{
+				text = "（空）";
+			}
+			list.Add(new InquiryElement(item, $"#{item + 1} {arg}  {text}", null));
+		}
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData("细化的玩家角色介绍", "这里编辑的是带条件的介绍。它们写入后的结构，和其他知识提示词完全一样。", list, isExitShown: true, 0, 1, "进入", "返回", delegate(List<InquiryElement> selected)
+		{
+			if (selected == null || selected.Count == 0)
+			{
+				OpenPlayerPersonaDetailedIntroMenu(rule, onReturn);
+			}
+			else
+			{
+				string text2 = selected[0].Identifier as string;
+				if (text2 == "add")
+				{
+					CreatePlayerPersonaDetailedVariant(rule, delegate
+					{
+						OpenPlayerPersonaDetailedIntroMenu(rule, onReturn);
+					});
+				}
+				else if (selected[0].Identifier is int idx)
+				{
+					OpenPlayerPersonaDetailedVariantEditor(rule, idx, delegate
+					{
+						OpenPlayerPersonaDetailedIntroMenu(rule, onReturn);
+					});
+				}
+				else
+				{
+					OpenPlayerPersonaDetailedIntroMenu(rule, onReturn);
+				}
+			}
+		}, delegate
+		{
+			onReturn();
+		});
+		MBInformationManager.ShowMultiSelectionInquiry(data);
+	}
+
+	private void CreatePlayerPersonaDetailedVariant(LoreRule rule, Action onReturn)
+	{
+		if (rule == null)
+		{
+			onReturn?.Invoke();
+			return;
+		}
+		if (onReturn == null)
+		{
+			onReturn = delegate
+			{
+			};
+		}
+		if (rule.Variants == null)
+		{
+			rule.Variants = new List<LoreVariant>();
+		}
+		LoreVariant loreVariant = new LoreVariant
+		{
+			Priority = 0,
+			When = new LoreWhen(),
+			Content = ""
+		};
+		rule.Variants.Add(loreVariant);
+		TouchRuleData();
+		int num = rule.Variants.Count - 1;
+		LoreWhen loreWhen = new LoreWhen();
+		OpenWhenEditor(loreWhen, delegate
+		{
+			loreWhen = NormalizeWhenForStorage(loreWhen);
+			if (loreWhen == null)
+			{
+				if (num >= 0 && num < rule.Variants.Count)
+				{
+					rule.Variants.RemoveAt(num);
+					TouchRuleData();
+				}
+				onReturn();
+			}
+			else
+			{
+				int duplicateVariantIndex = FindDuplicateVariantIndex(rule, loreWhen, num);
+				if (duplicateVariantIndex >= 0)
+				{
+					ShowDuplicateVariantConditionPrompt(loreWhen, duplicateVariantIndex);
+					if (num >= 0 && num < rule.Variants.Count)
+					{
+						rule.Variants.RemoveAt(num);
+						TouchRuleData();
+					}
+					onReturn();
+				}
+				else
+				{
+					loreVariant.When = loreWhen;
+					TouchRuleData();
+					OpenPlayerPersonaDetailedVariantEditor(rule, num, onReturn, isNewVariant: true);
+				}
+			}
+		});
+	}
+
+	private void OpenPlayerPersonaDetailedVariantEditor(LoreRule rule, int idx, Action onReturn, bool isNewVariant = false)
+	{
+		if (rule == null)
+		{
+			onReturn?.Invoke();
+			return;
+		}
+		if (onReturn == null)
+		{
+			onReturn = delegate
+			{
+			};
+		}
+		if (rule.Variants == null || idx < 0 || idx >= rule.Variants.Count)
+		{
+			onReturn();
+			return;
+		}
+		LoreVariant v = rule.Variants[idx];
+		if (v == null)
+		{
+			onReturn();
+			return;
+		}
+		string text = BuildWhenLabel(v.When);
+		string text2 = TrimPreview(v.Content ?? "", 220);
+		if (string.IsNullOrWhiteSpace(text2))
+		{
+			text2 = "（空）";
+		}
+		string text3 = "当前条件：" + text + "\n\n当前内容预览：\n" + text2;
+		List<InquiryElement> list = new List<InquiryElement>();
+		list.Add(new InquiryElement("content", "编辑介绍内容", null));
+		list.Add(new InquiryElement("when", "编辑条件", null));
+		list.Add(new InquiryElement("delete", "删除此条细化介绍", null));
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData("细化介绍编辑", text3, list, isExitShown: true, 0, 1, "选择", "返回", delegate(List<InquiryElement> selected)
+		{
+			if (selected == null || selected.Count == 0)
+			{
+				OpenPlayerPersonaDetailedVariantEditor(rule, idx, onReturn, isNewVariant);
+			}
+			else
+			{
+				switch (selected[0].Identifier as string)
+				{
+				case "content":
+					InformationManager.ShowTextInquiry(new TextInquiryData("编辑介绍内容", "请输入这条带条件的玩家角色介绍：", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "确定", "取消", delegate(string input)
+					{
+						v.Content = input ?? "";
+						TouchRuleData();
+						OpenPlayerPersonaDetailedVariantEditor(rule, idx, onReturn, isNewVariant);
+					}, delegate
+					{
+						OpenPlayerPersonaDetailedVariantEditor(rule, idx, onReturn, isNewVariant);
+					}, shouldInputBeObfuscated: false, null, v.Content ?? ""));
+					break;
+				case "when":
+				{
+					LoreWhen loreWhen = CloneWhen(v.When) ?? new LoreWhen();
+					OpenWhenEditor(loreWhen, delegate
+					{
+						loreWhen = NormalizeWhenForStorage(loreWhen);
+						if (loreWhen == null)
+						{
+							InformationManager.DisplayMessage(new InformationMessage("细化介绍至少需要保留一个条件；如果想写通用介绍，请回到上一层使用“简单的玩家角色介绍”。"));
+							OpenPlayerPersonaDetailedVariantEditor(rule, idx, onReturn, isNewVariant);
+						}
+						else
+						{
+							int duplicateVariantIndex = FindDuplicateVariantIndex(rule, loreWhen, idx);
+							if (duplicateVariantIndex >= 0)
+							{
+								ShowDuplicateVariantConditionPrompt(loreWhen, duplicateVariantIndex);
+								OpenPlayerPersonaDetailedVariantEditor(rule, idx, onReturn, isNewVariant);
+							}
+							else
+							{
+								v.When = loreWhen;
+								TouchRuleData();
+								OpenPlayerPersonaDetailedVariantEditor(rule, idx, onReturn, isNewVariant);
+							}
+						}
+					});
+					break;
+				}
+				case "delete":
+					rule.Variants.RemoveAt(idx);
+					TouchRuleData();
+					onReturn();
+					break;
+				default:
+					OpenPlayerPersonaDetailedVariantEditor(rule, idx, onReturn, isNewVariant);
+					break;
+				}
+			}
+		}, delegate
+		{
+			if (isNewVariant && idx >= 0 && idx < rule.Variants.Count && string.IsNullOrWhiteSpace(rule.Variants[idx]?.Content))
+			{
+				rule.Variants.RemoveAt(idx);
+				TouchRuleData();
+			}
 			onReturn();
 		});
 		MBInformationManager.ShowMultiSelectionInquiry(data);
@@ -4575,10 +5672,10 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		rule.Variants.Add(loreVariant);
 		TouchRuleData();
 		int idx = rule.Variants.Count - 1;
-		OpenVariantEditor(rule, idx, onReturn);
+		OpenVariantEditor(rule, idx, onReturn, isNewVariant: true);
 	}
 
-	private void OpenVariantEditor(LoreRule rule, int idx, Action onReturn)
+	private void OpenVariantEditor(LoreRule rule, int idx, Action onReturn, bool isNewVariant = false)
 	{
 		if (rule == null)
 		{
@@ -4629,24 +5726,42 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 				case "content":
 					InformationManager.ShowTextInquiry(new TextInquiryData("编辑提示词内容", "请输入内容：", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "确定", "取消", delegate(string input)
 					{
+						int duplicateVariantIndex = FindDuplicateVariantIndex(rule, v.When, idx);
+						if (duplicateVariantIndex >= 0)
+						{
+							ShowDuplicateVariantConditionPrompt(v.When, duplicateVariantIndex);
+							OpenVariantEditor(rule, idx, onReturn, isNewVariant);
+							return;
+						}
 						v.Content = input ?? "";
 						TouchRuleData();
-						OpenVariantEditor(rule, idx, onReturn);
+						OpenVariantEditor(rule, idx, onReturn, isNewVariant);
 					}, delegate
 					{
-						OpenVariantEditor(rule, idx, onReturn);
+						OpenVariantEditor(rule, idx, onReturn, isNewVariant);
 					}, shouldInputBeObfuscated: false, null, v.Content ?? ""));
 					break;
 				case "when":
-					if (v.When == null)
+				{
+					LoreWhen loreWhen = CloneWhen(v.When) ?? new LoreWhen();
+					OpenWhenEditor(loreWhen, delegate
 					{
-						v.When = new LoreWhen();
-					}
-					OpenWhenEditor(v.When, delegate
-					{
-						OpenVariantEditor(rule, idx, onReturn);
+						loreWhen = NormalizeWhenForStorage(loreWhen);
+						int duplicateVariantIndex2 = FindDuplicateVariantIndex(rule, loreWhen, idx);
+						if (duplicateVariantIndex2 >= 0)
+						{
+							ShowDuplicateVariantConditionPrompt(loreWhen, duplicateVariantIndex2);
+							OpenVariantEditor(rule, idx, onReturn, isNewVariant);
+						}
+						else
+						{
+							v.When = loreWhen;
+							TouchRuleData();
+							OpenVariantEditor(rule, idx, onReturn, isNewVariant);
+						}
 					});
 					break;
+				}
 				case "delete":
 					rule.Variants.RemoveAt(idx);
 					TouchRuleData();
@@ -4659,6 +5774,15 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			}
 		}, delegate
 		{
+			if (isNewVariant && idx >= 0 && rule.Variants != null && idx < rule.Variants.Count)
+			{
+				LoreVariant loreVariant = rule.Variants[idx];
+				if (loreVariant != null && FindDuplicateVariantIndex(rule, loreVariant.When, idx) >= 0)
+				{
+					rule.Variants.RemoveAt(idx);
+					TouchRuleData();
+				}
+			}
 			onReturn();
 		});
 		MBInformationManager.ShowMultiSelectionInquiry(data);
@@ -4681,7 +5805,8 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		list.Add(new InquiryElement("hero", "指定NPC（HeroId）", null));
 		list.Add(new InquiryElement("culture", "文化（CultureId）", null));
 		list.Add(new InquiryElement("kingdom", "势力/王国（KingdomId）", null));
-		list.Add(new InquiryElement("role", "身份（lord/notable/commoner/soldier/villager/townsfolk/wanderer）", null));
+		list.Add(new InquiryElement("settlement", "定居点（SettlementId）", null));
+		list.Add(new InquiryElement("role", "身份（lord/notable/commoner=未分类的对象/soldier/villager/townsfolk/wanderer）", null));
 		list.Add(new InquiryElement("gender", "性别（不限/男/女）", null));
 		list.Add(new InquiryElement("clan_leader", "是否家族族长（不限/是/否）", null));
 		list.Add(new InquiryElement("skill", "技能等级（SkillId >= 值）", null));
@@ -4727,6 +5852,16 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 						OpenWhenEditor(when, onReturn);
 					});
 					break;
+				case "settlement":
+					if (when.SettlementIds == null)
+					{
+						when.SettlementIds = new List<string>();
+					}
+					OpenStringListEditor("定居点（SettlementId）", when.SettlementIds, delegate
+					{
+						OpenWhenEditor(when, onReturn);
+					});
+					break;
 				case "role":
 					OpenRoleEditor(when, delegate
 					{
@@ -4751,6 +5886,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 					when.HeroIds = null;
 					when.Cultures = null;
 					when.KingdomIds = null;
+					when.SettlementIds = null;
 					when.Roles = null;
 					when.IsFemale = null;
 					when.IsClanLeader = null;
@@ -4794,7 +5930,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		list.Add(new InquiryElement("soldier", (when.Roles.Contains("soldier") ? "[√] " : "[ ] ") + "士兵（soldier）", null));
 		list.Add(new InquiryElement("villager", (when.Roles.Contains("villager") ? "[√] " : "[ ] ") + "村民（villager）", null));
 		list.Add(new InquiryElement("townsfolk", (when.Roles.Contains("townsfolk") ? "[√] " : "[ ] ") + "镇民（townsfolk）", null));
-		list.Add(new InquiryElement("commoner", (when.Roles.Contains("commoner") ? "[√] " : "[ ] ") + "普通人（commoner）", null));
+		list.Add(new InquiryElement("commoner", (when.Roles.Contains("commoner") ? "[√] " : "[ ] ") + "未分类的对象（commoner）", null));
 		MultiSelectionInquiryData data = new MultiSelectionInquiryData("身份条件", "可多选。当前对话目标是 Hero 时，会优先按 IsLord/IsNotable 分类；否则按 Occupation（wanderer/soldier/villager/townsfolk）分类。", list, isExitShown: true, 0, 1, "切换", "返回", delegate(List<InquiryElement> selected)
 		{
 			if (selected == null || selected.Count == 0)
@@ -5098,6 +6234,147 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		MBInformationManager.ShowMultiSelectionInquiry(data);
 	}
 
+	private void OpenSettlementIdPicker(List<string> list, Action onReturn)
+	{
+		OpenSettlementIdPickerPaged(list, onReturn, 0, null);
+	}
+
+	private void OpenSettlementIdPickerPaged(List<string> list, Action onReturn, int page, string query)
+	{
+		if (onReturn == null)
+		{
+			onReturn = delegate
+			{
+			};
+		}
+		if (list == null)
+		{
+			list = new List<string>();
+		}
+		if (page < 0)
+		{
+			page = 0;
+		}
+		List<Settlement> list2 = new List<Settlement>();
+		try
+		{
+			foreach (Settlement item in Settlement.All)
+			{
+				if (item != null && !string.IsNullOrWhiteSpace(item.StringId))
+				{
+					list2.Add(item);
+				}
+			}
+		}
+		catch
+		{
+		}
+		list2 = list2.OrderBy((Settlement s) => (s.Name != null) ? s.Name.ToString() : "", StringComparer.OrdinalIgnoreCase).ThenBy((Settlement s) => s.StringId, StringComparer.OrdinalIgnoreCase).ToList();
+		string text = (query ?? "").Trim();
+		if (!string.IsNullOrWhiteSpace(text))
+		{
+			string q = text.ToLowerInvariant();
+			list2 = list2.Where(delegate(Settlement s)
+			{
+				string text2 = ((s?.Name != null) ? s.Name.ToString() : "").Trim().ToLowerInvariant();
+				string text3 = (s?.StringId ?? "").Trim().ToLowerInvariant();
+				return text2.Contains(q) || text3.Contains(q);
+			}).ToList();
+		}
+		if (list2.Count == 0)
+		{
+			InformationManager.DisplayMessage(new InformationMessage(string.IsNullOrWhiteSpace(text) ? "未找到可选定居点。" : ("未找到匹配的定居点：" + text)));
+			onReturn();
+			return;
+		}
+		const int pageSize = 40;
+		int num = Math.Max(1, (int)Math.Ceiling((double)list2.Count / (double)pageSize));
+		if (page >= num)
+		{
+			page = num - 1;
+		}
+		int num2 = page * pageSize;
+		List<Settlement> list3 = list2.Skip(num2).Take(pageSize).ToList();
+		List<InquiryElement> list4 = new List<InquiryElement>();
+		list4.Add(new InquiryElement("__search__", "搜索定居点", null));
+		if (!string.IsNullOrWhiteSpace(text))
+		{
+			list4.Add(new InquiryElement("__clear__", "清空搜索", null));
+		}
+		if (page > 0)
+		{
+			list4.Add(new InquiryElement("__prev__", "上一页", null));
+		}
+		if (page + 1 < num)
+		{
+			list4.Add(new InquiryElement("__next__", "下一页", null));
+		}
+		list4.Add(new InquiryElement("__sep__", "----------------", null));
+		foreach (Settlement item2 in list3)
+		{
+			string text4 = ((item2.Name != null) ? item2.Name.ToString() : "").Trim();
+			if (string.IsNullOrWhiteSpace(text4))
+			{
+				text4 = item2.StringId;
+			}
+			string text5 = (item2.IsVillage ? "村庄" : (item2.IsCastle ? "城堡" : (item2.IsTown ? "城镇" : "定居点")));
+			list4.Add(new InquiryElement(item2.StringId.ToLowerInvariant(), text4 + " (" + text5 + ", " + item2.StringId + ")", null));
+		}
+		string text6 = $"共 {list2.Count} 个定居点，第 {page + 1}/{num} 页。选择一个后会加入列表。";
+		if (!string.IsNullOrWhiteSpace(text))
+		{
+			text6 = text6 + "\n当前搜索：" + TrimPreview(text, 60);
+		}
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData("选择定居点", text6, list4, isExitShown: true, 0, 1, "选择", "返回", delegate(List<InquiryElement> selected)
+		{
+			if (selected == null || selected.Count == 0)
+			{
+				OpenSettlementIdPickerPaged(list, onReturn, page, text);
+			}
+			else
+			{
+				string text7 = selected[0].Identifier as string;
+				switch (text7)
+				{
+				case "__search__":
+					InformationManager.ShowTextInquiry(new TextInquiryData("搜索定居点", "输入定居点名称或 SettlementId：", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "搜索", "取消", delegate(string input)
+					{
+						OpenSettlementIdPickerPaged(list, onReturn, 0, input);
+					}, delegate
+					{
+						OpenSettlementIdPickerPaged(list, onReturn, page, text);
+					}, shouldInputBeObfuscated: false, null, text));
+					break;
+				case "__clear__":
+					OpenSettlementIdPickerPaged(list, onReturn, 0, null);
+					break;
+				case "__prev__":
+					OpenSettlementIdPickerPaged(list, onReturn, page - 1, text);
+					break;
+				case "__next__":
+					OpenSettlementIdPickerPaged(list, onReturn, page + 1, text);
+					break;
+				case "__sep__":
+					OpenSettlementIdPickerPaged(list, onReturn, page, text);
+					break;
+				default:
+					text7 = (text7 ?? "").Trim().ToLowerInvariant();
+					if (!string.IsNullOrEmpty(text7) && !list.Any((string x) => string.Equals(x, text7, StringComparison.OrdinalIgnoreCase)))
+					{
+						list.Add(text7);
+					}
+					TouchRuleData();
+					onReturn();
+					break;
+				}
+			}
+		}, delegate
+		{
+			onReturn();
+		});
+		MBInformationManager.ShowMultiSelectionInquiry(data);
+	}
+
 	private void OpenStringListEditor(string title, List<string> list, Action onReturn)
 	{
 		if (onReturn == null)
@@ -5113,8 +6390,9 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		bool canPickHero = title != null && title.IndexOf("HeroId", StringComparison.OrdinalIgnoreCase) >= 0;
 		bool canPickCulture = title != null && title.IndexOf("CultureId", StringComparison.OrdinalIgnoreCase) >= 0;
 		bool canPickKingdom = title != null && title.IndexOf("KingdomId", StringComparison.OrdinalIgnoreCase) >= 0;
+		bool canPickSettlement = title != null && title.IndexOf("SettlementId", StringComparison.OrdinalIgnoreCase) >= 0;
 		List<InquiryElement> list2 = new List<InquiryElement>();
-		if (canPickHero || canPickCulture || canPickKingdom)
+		if (canPickHero || canPickCulture || canPickKingdom || canPickSettlement)
 		{
 			list2.Add(new InquiryElement("__pick__", "从列表选择", null));
 		}
@@ -5158,6 +6436,10 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 					else if (canPickKingdom)
 					{
 						OpenFactionIdPicker(list, action);
+					}
+					else if (canPickSettlement)
+					{
+						OpenSettlementIdPicker(list, action);
 					}
 					else
 					{
@@ -5555,6 +6837,10 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		{
 			list.Add("势力");
 		}
+		if (when.SettlementIds != null && when.SettlementIds.Count > 0)
+		{
+			list.Add("定居点");
+		}
 		if (when.Roles != null && when.Roles.Count > 0)
 		{
 			list.Add("身份");
@@ -5589,7 +6875,8 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		stringBuilder.AppendLine("HeroId: " + ListOrEmpty(when.HeroIds));
 		stringBuilder.AppendLine("CultureId: " + ListOrEmpty(when.Cultures));
 		stringBuilder.AppendLine("KingdomId: " + ListOrEmpty(when.KingdomIds));
-		stringBuilder.AppendLine("Roles: " + ListOrEmpty(when.Roles));
+		stringBuilder.AppendLine("SettlementId: " + ListOrEmpty(when.SettlementIds));
+		stringBuilder.AppendLine("Roles: " + ListOrEmpty(FormatRoleListForDisplay(when.Roles)));
 		string text = "（空）";
 		try
 		{
@@ -5607,6 +6894,40 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		stringBuilder.AppendLine("Gender: " + ((!when.IsFemale.HasValue) ? "不限" : (when.IsFemale.Value ? "女" : "男")));
 		stringBuilder.AppendLine("ClanLeader: " + ((!when.IsClanLeader.HasValue) ? "不限" : (when.IsClanLeader.Value ? "是" : "否")));
 		return stringBuilder.ToString();
+	}
+
+	private static List<string> FormatRoleListForDisplay(List<string> list)
+	{
+		List<string> result = new List<string>();
+		try
+		{
+			if (list == null || list.Count == 0)
+			{
+				return result;
+			}
+			foreach (string item in list)
+			{
+				string text = (item ?? "").Trim();
+				if (!string.IsNullOrEmpty(text))
+				{
+					result.Add(text switch
+					{
+						"lord" => "领主（lord）",
+						"notable" => "要人（notable）",
+						"wanderer" => "流浪者（wanderer）",
+						"soldier" => "士兵（soldier）",
+						"villager" => "村民（villager）",
+						"townsfolk" => "镇民（townsfolk）",
+						"commoner" => "未分类的对象（commoner）",
+						_ => text
+					});
+				}
+			}
+		}
+		catch
+		{
+		}
+		return result;
 	}
 
 	private static string ListOrEmpty(List<string> list)

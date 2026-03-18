@@ -1,0 +1,43 @@
+﻿{
+  "Id": "rule_第纳尔",
+  "Keywords": [
+    "第纳尔",
+    "金币",
+    "钱"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Trade": 0
+        }
+      },
+      "Content": "你只知道第纳尔是一种货币，用来衡量贫富的标准"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Trade": 100
+        }
+      },
+      "Content": "第纳尔是帝国铸造的货币，是整个卡拉迪亚大陆上唯一流通的货币，所有势力都只用第纳尔进行交易"
+    }
+  ]
+}

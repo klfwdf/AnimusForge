@@ -167,11 +167,15 @@ public static class AIConfigHandler
 
 	public static List<string> RewardTriggerKeywords => _guardrail?.Reward?.TriggerKeywords ?? new List<string>();
 
+	public static Dictionary<string, string> RewardRuntimeInstructionTemplates => _guardrail?.Reward?.RuntimeInstructionTemplates ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
 	public static bool LoanEnabled => _guardrail?.Loan?.IsEnabled == true;
 
 	public static string LoanInstruction => _guardrail?.Loan?.Instruction ?? "";
 
 	public static List<string> LoanTriggerKeywords => _guardrail?.Loan?.TriggerKeywords ?? new List<string>();
+
+	public static Dictionary<string, string> LoanRuntimeInstructionTemplates => _guardrail?.Loan?.RuntimeInstructionTemplates ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
 	public static bool SurroundingsEnabled => _guardrail?.Surroundings?.IsEnabled == true;
 
@@ -1509,28 +1513,36 @@ public static class AIConfigHandler
 						value = runtimeMarriageInstruction;
 					}
 				}
-				if (hasAnyHero && string.Equals(text, "npc_major_actions", StringComparison.OrdinalIgnoreCase))
+				if (string.Equals(text, "meeting_taunt", StringComparison.OrdinalIgnoreCase))
 				{
-					string text4 = MyBehavior.BuildNpcMajorActionsRuntimeInstructionForExternal(ResolveConversationTargetHero());
+					string text4 = SceneTauntBehavior.BuildUnifiedTauntRuntimeInstructionForExternal(ResolveConversationTargetHero(), ResolveConversationTargetCharacter(), ResolveConversationTargetAgentIndex());
 					if (!string.IsNullOrWhiteSpace(text4))
 					{
 						value = text4;
 					}
 				}
-				if (hasAnyHero && string.Equals(text, "npc_recent_actions", StringComparison.OrdinalIgnoreCase))
+				if (hasAnyHero && string.Equals(text, "npc_major_actions", StringComparison.OrdinalIgnoreCase))
 				{
-					string text5 = MyBehavior.BuildNpcRecentActionsRuntimeInstructionForExternal(ResolveConversationTargetHero());
+					string text5 = MyBehavior.BuildNpcMajorActionsRuntimeInstructionForExternal(ResolveConversationTargetHero());
 					if (!string.IsNullOrWhiteSpace(text5))
 					{
 						value = text5;
 					}
 				}
-				if (string.Equals(text, "lords_hall_access", StringComparison.OrdinalIgnoreCase))
+				if (hasAnyHero && string.Equals(text, "npc_recent_actions", StringComparison.OrdinalIgnoreCase))
 				{
-					string text6 = BuildRuntimeLordsHallAccessInstruction();
+					string text6 = MyBehavior.BuildNpcRecentActionsRuntimeInstructionForExternal(ResolveConversationTargetHero());
 					if (!string.IsNullOrWhiteSpace(text6))
 					{
 						value = text6;
+					}
+				}
+				if (string.Equals(text, "lords_hall_access", StringComparison.OrdinalIgnoreCase))
+				{
+					string text7 = BuildRuntimeLordsHallAccessInstruction();
+					if (!string.IsNullOrWhiteSpace(text7))
+					{
+						value = text7;
 					}
 				}
 				if (!string.IsNullOrWhiteSpace(text) && !string.IsNullOrWhiteSpace(value))
@@ -1726,6 +1738,158 @@ public static class AIConfigHandler
 		}
 	}
 
+	private static int ResolveRuntimeTrustValue(Hero targetHero, CharacterObject targetCharacter)
+	{
+		try
+		{
+			if (targetHero != null)
+			{
+				return RewardSystemBehavior.Instance?.GetEffectiveTrust(targetHero) ?? 0;
+			}
+			if (targetCharacter != null && RewardSystemBehavior.Instance != null && RewardSystemBehavior.Instance.TryGetSettlementMerchantKind(targetCharacter, out var kind))
+			{
+				return RewardSystemBehavior.Instance.GetSettlementMerchantEffectiveTrust(Settlement.CurrentSettlement, kind);
+			}
+		}
+		catch
+		{
+		}
+		return 0;
+	}
+
+	private static Dictionary<string, string> BuildLoanRuntimeTokens(Hero targetHero, CharacterObject targetCharacter = null)
+	{
+		int num = 0;
+		int trustLevelIndex = 6;
+		try
+		{
+			num = ResolveRuntimeTrustValue(targetHero, targetCharacter);
+			trustLevelIndex = RewardSystemBehavior.GetTrustLevelIndex(num);
+		}
+		catch
+		{
+			num = 0;
+			trustLevelIndex = 6;
+		}
+		string text = trustLevelIndex switch
+		{
+			1 => "彻底不信", 
+			2 => "极度怀疑", 
+			3 => "强烈戒备", 
+			4 => "不信任", 
+			5 => "保留", 
+			_ => "观望", 
+		};
+		string text2 = MyBehavior.BuildPlayerPublicDisplayNameForExternal();
+		if (string.IsNullOrWhiteSpace(text2))
+		{
+			text2 = "玩家";
+		}
+		return new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+		{
+			["playerName"] = text2,
+			["trustCurrent"] = num.ToString(),
+			["trustIndex"] = trustLevelIndex.ToString(),
+			["trustLevel"] = RewardSystemBehavior.GetTrustLevelText(num),
+			["trustAttitude"] = text
+		};
+	}
+
+	public static string BuildRuntimeLoanInstructionForExternal(Hero targetHero = null, CharacterObject targetCharacter = null)
+	{
+		try
+		{
+			Hero hero = targetHero ?? ResolveConversationTargetHero();
+			CharacterObject characterObject = targetCharacter ?? ResolveConversationTargetCharacter();
+			int num = 6;
+			try
+			{
+				num = RewardSystemBehavior.GetTrustLevelIndex(ResolveRuntimeTrustValue(hero, characterObject));
+			}
+			catch
+			{
+				num = 6;
+			}
+			Dictionary<string, string> dictionary = NormalizeTemplateMap(LoanRuntimeInstructionTemplates);
+			if (dictionary != null && dictionary.TryGetValue("level_" + num, out var value) && !string.IsNullOrWhiteSpace(value))
+			{
+				string text = ApplyRuntimeTemplate(value, BuildLoanRuntimeTokens(hero, characterObject));
+				if (!string.IsNullOrWhiteSpace(text))
+				{
+					return text.Trim();
+				}
+			}
+		}
+		catch
+		{
+		}
+		return LoanInstruction;
+	}
+
+	private static Dictionary<string, string> BuildRewardRuntimeTokens(Hero targetHero, CharacterObject targetCharacter = null)
+	{
+		int num = 0;
+		int trustLevelIndex = 6;
+		try
+		{
+			num = ResolveRuntimeTrustValue(targetHero, targetCharacter);
+			trustLevelIndex = RewardSystemBehavior.GetTrustLevelIndex(num);
+		}
+		catch
+		{
+			num = 0;
+			trustLevelIndex = 6;
+		}
+		string text = MyBehavior.BuildPlayerPublicDisplayNameForExternal();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			text = "玩家";
+		}
+		return new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+		{
+			["playerName"] = text,
+			["trustCurrent"] = num.ToString(),
+			["trustIndex"] = trustLevelIndex.ToString(),
+			["trustLevel"] = RewardSystemBehavior.GetTrustLevelText(num)
+		};
+	}
+
+	public static string BuildRuntimeRewardInstructionForExternal(Hero targetHero = null, CharacterObject targetCharacter = null)
+	{
+		try
+		{
+			Hero hero = targetHero ?? ResolveConversationTargetHero();
+			CharacterObject characterObject = targetCharacter ?? ResolveConversationTargetCharacter();
+			int num = 6;
+			try
+			{
+				num = RewardSystemBehavior.GetTrustLevelIndex(ResolveRuntimeTrustValue(hero, characterObject));
+			}
+			catch
+			{
+				num = 6;
+			}
+			Dictionary<string, string> dictionary = NormalizeTemplateMap(RewardRuntimeInstructionTemplates);
+			if (dictionary != null && dictionary.TryGetValue("level_" + num, out var value) && !string.IsNullOrWhiteSpace(value))
+			{
+				string text = ApplyRuntimeTemplate(value, BuildRewardRuntimeTokens(hero, characterObject));
+				if (!string.IsNullOrWhiteSpace(text))
+				{
+					if (num <= 1)
+					{
+						return text.Trim();
+					}
+					string text2 = (RewardInstruction ?? "").Trim();
+					return string.IsNullOrWhiteSpace(text2) ? text.Trim() : (text.Trim() + "\n" + text2);
+				}
+			}
+		}
+		catch
+		{
+		}
+		return RewardInstruction;
+	}
+
 	private static string ResolveKingdomServiceRuntimeText(string stateKey, bool forConstraint, Dictionary<string, string> tokens)
 	{
 		try
@@ -1868,6 +2032,37 @@ public static class AIConfigHandler
 		return null;
 	}
 
+	private static CharacterObject ResolveConversationTargetCharacter()
+	{
+		try
+		{
+			string text = (_guardrailRuntimeTargetCharacterId.Value ?? "").Trim();
+			if (!string.IsNullOrWhiteSpace(text))
+			{
+				CharacterObject characterObject = CharacterObject.All?.FirstOrDefault((CharacterObject x) => x != null && string.Equals((x.StringId ?? "").Trim(), text, StringComparison.OrdinalIgnoreCase));
+				if (characterObject != null)
+				{
+					return characterObject;
+				}
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			CharacterObject oneToOneConversationCharacter = Campaign.Current?.ConversationManager?.OneToOneConversationCharacter;
+			if (oneToOneConversationCharacter != null)
+			{
+				return oneToOneConversationCharacter;
+			}
+		}
+		catch
+		{
+		}
+		return null;
+	}
+
 	private static int ResolveConversationTargetAgentIndex()
 	{
 		try
@@ -1913,59 +2108,85 @@ public static class AIConfigHandler
 			{
 				return "";
 			}
-			if (kingdom == null)
+			string text = ResolveKingdomServiceRuntimeStateKey(kingdom, flag, kingdom2, flag2, num, num2, num3, num4, num5, num6);
+			if (string.IsNullOrWhiteSpace(text))
 			{
-				if (num6 < num4)
-				{
-					return ResolveKingdomServiceRuntimeText("no_kingdom_trust_below_merc", forConstraint: false, dictionary);
-				}
-				if (num < num2)
-				{
-					return ResolveKingdomServiceRuntimeText("no_kingdom_tier_below_merc", forConstraint: false, dictionary);
-				}
-				if (num < num3)
-				{
-					return ResolveKingdomServiceRuntimeText("no_kingdom_tier_merc_only", forConstraint: false, dictionary);
-				}
-				if (num6 < num5)
-				{
-					return ResolveKingdomServiceRuntimeText("no_kingdom_trust_merc_only", forConstraint: false, dictionary);
-				}
-				return ResolveKingdomServiceRuntimeText("no_kingdom", forConstraint: false, dictionary);
+				return "";
 			}
-			if (flag)
-			{
-				if (kingdom2 == null)
-				{
-					return ResolveKingdomServiceRuntimeText("mercenary_target_unknown", forConstraint: false, dictionary);
-				}
-				if (flag2)
-				{
-					if (num < num3)
-					{
-						return ResolveKingdomServiceRuntimeText("mercenary_same_kingdom_tier_vassal_locked", forConstraint: false, dictionary);
-					}
-					if (num6 < num5)
-					{
-						return ResolveKingdomServiceRuntimeText("mercenary_same_kingdom_trust_vassal_locked", forConstraint: false, dictionary);
-					}
-					return ResolveKingdomServiceRuntimeText("mercenary_same_kingdom", forConstraint: false, dictionary);
-				}
-				return ResolveKingdomServiceRuntimeText("mercenary_other_kingdom", forConstraint: false, dictionary);
-			}
-			if (kingdom2 == null)
-			{
-				return ResolveKingdomServiceRuntimeText("vassal_target_unknown", forConstraint: false, dictionary);
-			}
-			if (flag2)
-			{
-				return ResolveKingdomServiceRuntimeText("vassal_same_kingdom", forConstraint: false, dictionary);
-			}
-			return ResolveKingdomServiceRuntimeText("vassal_other_kingdom", forConstraint: false, dictionary);
+			return ResolveKingdomServiceRuntimeText(text, forConstraint: false, dictionary);
 		}
 		catch
 		{
 			return "";
+		}
+	}
+
+	private static string ResolveKingdomServiceRuntimeStateKey(Kingdom playerKingdom, bool isMercenaryService, Kingdom targetKingdom, bool isSameKingdom, int playerTier, int mercTier, int vassalTier, int mercTrustMin, int vassalTrustMin, int currentTrust)
+	{
+		if (playerKingdom == null)
+		{
+			if (currentTrust < mercTrustMin)
+			{
+				return "no_kingdom_trust_below_merc";
+			}
+			if (playerTier < mercTier)
+			{
+				return "no_kingdom_tier_below_merc";
+			}
+			if (playerTier < vassalTier)
+			{
+				return "no_kingdom_tier_merc_only";
+			}
+			if (currentTrust < vassalTrustMin)
+			{
+				return "no_kingdom_trust_merc_only";
+			}
+			return "no_kingdom";
+		}
+		if (isMercenaryService)
+		{
+			if (targetKingdom == null)
+			{
+				return "mercenary_target_unknown";
+			}
+			if (isSameKingdom)
+			{
+				if (playerTier < vassalTier)
+				{
+					return "mercenary_same_kingdom_tier_vassal_locked";
+				}
+				if (currentTrust < vassalTrustMin)
+				{
+					return "mercenary_same_kingdom_trust_vassal_locked";
+				}
+				return "mercenary_same_kingdom";
+			}
+			return "mercenary_other_kingdom";
+		}
+		if (targetKingdom == null)
+		{
+			return "vassal_target_unknown";
+		}
+		if (isSameKingdom)
+		{
+			return "vassal_same_kingdom";
+		}
+		return "vassal_other_kingdom";
+	}
+
+	private static bool ShouldAppendKingdomServiceConstraint(string stateKey)
+	{
+		switch ((stateKey ?? "").Trim().ToLowerInvariant())
+		{
+		case "no_player_clan":
+		case "no_kingdom_tier_below_merc":
+		case "no_kingdom_tier_merc_only":
+		case "no_kingdom_tier_full":
+		case "mercenary_same_kingdom_tier_vassal_locked":
+		case "mercenary_same_kingdom_tier_vassal_ready":
+			return true;
+		default:
+			return false;
 		}
 	}
 
@@ -2258,55 +2479,24 @@ public static class AIConfigHandler
 				return ResolveKingdomServiceRuntimeText("no_player_clan", forConstraint: true, new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase));
 			}
 			Dictionary<string, string> dictionary = BuildKingdomServiceRuntimeTokens(out playerClan, out var kingdom, out var flag, out var kingdom2, out var flag2, out var num, out var num2, out var num3, out var num4, out var num5, out var num6);
-			if (kingdom == null)
+			string text2 = ResolveKingdomServiceRuntimeStateKey(kingdom, flag, kingdom2, flag2, num, num2, num3, num4, num5, num6);
+			if (string.IsNullOrWhiteSpace(text2))
 			{
-				if (num6 < num4)
-				{
-					return ResolveKingdomServiceRuntimeText("no_kingdom_trust_below_merc", forConstraint: true, dictionary);
-				}
-				if (num < num2)
-				{
-					return ResolveKingdomServiceRuntimeText("no_kingdom_tier_below_merc", forConstraint: true, dictionary);
-				}
-				if (num < num3)
-				{
-					return ResolveKingdomServiceRuntimeText("no_kingdom_tier_merc_only", forConstraint: true, dictionary);
-				}
-				if (num6 < num5)
-				{
-					return ResolveKingdomServiceRuntimeText("no_kingdom_trust_merc_only", forConstraint: true, dictionary);
-				}
-				return ResolveKingdomServiceRuntimeText("no_kingdom_tier_full", forConstraint: true, dictionary);
+				return "";
 			}
-			if (flag)
+			if (string.Equals(text2, "no_kingdom", StringComparison.OrdinalIgnoreCase))
 			{
-				if (kingdom2 == null)
-				{
-					return ResolveKingdomServiceRuntimeText("mercenary_target_unknown", forConstraint: true, dictionary);
-				}
-				if (flag2)
-				{
-					if (num < num3)
-					{
-						return ResolveKingdomServiceRuntimeText("mercenary_same_kingdom_tier_vassal_locked", forConstraint: true, dictionary);
-					}
-					if (num6 < num5)
-					{
-						return ResolveKingdomServiceRuntimeText("mercenary_same_kingdom_trust_vassal_locked", forConstraint: true, dictionary);
-					}
-					return ResolveKingdomServiceRuntimeText("mercenary_same_kingdom_tier_vassal_ready", forConstraint: true, dictionary);
-				}
-				return ResolveKingdomServiceRuntimeText("mercenary_other_kingdom", forConstraint: true, dictionary);
+				text2 = "no_kingdom_tier_full";
 			}
-			if (kingdom2 == null)
+			else if (string.Equals(text2, "mercenary_same_kingdom", StringComparison.OrdinalIgnoreCase))
 			{
-				return ResolveKingdomServiceRuntimeText("vassal_target_unknown", forConstraint: true, dictionary);
+				text2 = "mercenary_same_kingdom_tier_vassal_ready";
 			}
-			if (flag2)
+			if (!ShouldAppendKingdomServiceConstraint(text2))
 			{
-				return ResolveKingdomServiceRuntimeText("vassal_same_kingdom", forConstraint: true, dictionary);
+				return "";
 			}
-			return ResolveKingdomServiceRuntimeText("vassal_other_kingdom", forConstraint: true, dictionary);
+			return ResolveKingdomServiceRuntimeText(text2, forConstraint: true, dictionary);
 		}
 		catch
 		{

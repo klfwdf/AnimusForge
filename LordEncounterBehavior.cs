@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using Helpers;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Actions;
@@ -108,6 +109,12 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 
 	private static Hero _pendingMeetingBattleVictorySettlementEncounterLeader;
 
+	private static List<string> _meetingTauntWarnedHeroIds = new List<string>();
+
+	private static readonly Regex MeetingTauntWarnTagRegex = new Regex("\\[ACTION:MEETING_TAUNT_WARN\\]", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
+	private static readonly Regex MeetingTauntBattleTagRegex = new Regex("\\[ACTION:MEETING_TAUNT_BATTLE\\]", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
 	private static MethodInfo _playerEncounterDoPlayerDefeatMethod;
 
 	private static PropertyInfo _playerEncounterStateProperty;
@@ -144,6 +151,17 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 
 	public override void SyncData(IDataStore dataStore)
 	{
+		if (_meetingTauntWarnedHeroIds == null)
+		{
+			_meetingTauntWarnedHeroIds = new List<string>();
+		}
+		dataStore.SyncData("_meetingTauntWarnedHeroIds_v1", ref _meetingTauntWarnedHeroIds);
+		if (_meetingTauntWarnedHeroIds == null)
+		{
+			_meetingTauntWarnedHeroIds = new List<string>();
+			return;
+		}
+		_meetingTauntWarnedHeroIds = _meetingTauntWarnedHeroIds.Where((string x) => !string.IsNullOrWhiteSpace(x)).Select((string x) => x.Trim()).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
 	}
 
 	private void OnSessionLaunched(CampaignGameStarter starter)
@@ -2713,6 +2731,11 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			Logger.Log("LordEncounter", "Immediate escalation consequences already applied or meeting inactive. Reason=" + (reason ?? "N/A"));
 			return false;
 		}
+		return ApplyHostileEscalationDiplomaticConsequences(defenderParty, targetHero, reason, "MeetingBattle");
+	}
+
+	internal static bool ApplyHostileEscalationDiplomaticConsequences(PartyBase defenderParty, Hero targetHero, string reason, string logChannel = "MeetingBattle")
+	{
 		bool flag = false;
 		try
 		{
@@ -2764,19 +2787,19 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 					if (clan.IsUnderMercenaryService)
 					{
 						ChangeKingdomAction.ApplyByLeaveKingdomAsMercenary(clan);
-						Logger.Log("MeetingBattle", "Immediate escalation: player clan left kingdom as mercenary.");
+						Logger.Log(logChannel, "Immediate escalation: player clan left kingdom as mercenary.");
 					}
 					else
 					{
 						ChangeKingdomAction.ApplyByLeaveKingdom(clan);
-						Logger.Log("MeetingBattle", "Immediate escalation: player clan left kingdom.");
+						Logger.Log(logChannel, "Immediate escalation: player clan left kingdom.");
 					}
 					flag = true;
 				}
 			}
 			catch (Exception ex)
 			{
-				Logger.Log("MeetingBattle", "Immediate escalation: leave kingdom failed: " + ex.Message);
+				Logger.Log(logChannel, "Immediate escalation: leave kingdom failed: " + ex.Message);
 			}
 		}
 		try
@@ -2790,12 +2813,12 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			{
 				ChangeRelationAction.ApplyPlayerRelation(hero, -10);
 				flag = true;
-				Logger.Log("MeetingBattle", $"Immediate escalation: relation penalty applied to {hero.Name}.");
+				Logger.Log(logChannel, $"Immediate escalation: relation penalty applied to {hero.Name}.");
 			}
 		}
 		catch (Exception ex2)
 		{
-			Logger.Log("MeetingBattle", "Immediate escalation: relation penalty failed: " + ex2.Message);
+			Logger.Log(logChannel, "Immediate escalation: relation penalty failed: " + ex2.Message);
 		}
 		try
 		{
@@ -2803,12 +2826,12 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			{
 				BeHostileAction.ApplyEncounterHostileAction(PartyBase.MainParty, defenderParty);
 				flag = true;
-				Logger.Log("MeetingBattle", $"Immediate escalation: encounter hostility applied. Defender={defenderParty.Name}");
+				Logger.Log(logChannel, $"Immediate escalation: encounter hostility applied. Defender={defenderParty.Name}");
 			}
 		}
 		catch (Exception ex3)
 		{
-			Logger.Log("MeetingBattle", "Immediate escalation: ApplyEncounterHostileAction failed: " + ex3.Message);
+			Logger.Log(logChannel, "Immediate escalation: ApplyEncounterHostileAction failed: " + ex3.Message);
 		}
 		try
 		{
@@ -2835,14 +2858,14 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			{
 				DeclareWarAction.ApplyByPlayerHostility(faction3, faction2);
 				flag = true;
-				Logger.Log("MeetingBattle", $"Immediate escalation: declared war. Attacker={faction3.Name}, Defender={faction2.Name}");
+				Logger.Log(logChannel, $"Immediate escalation: declared war. Attacker={faction3.Name}, Defender={faction2.Name}");
 			}
 		}
 		catch (Exception ex4)
 		{
-			Logger.Log("MeetingBattle", "Immediate escalation: declare war failed: " + ex4.Message);
+			Logger.Log(logChannel, "Immediate escalation: declare war failed: " + ex4.Message);
 		}
-		Logger.Log("MeetingBattle", string.Format("Immediate escalation consequences completed. Reason={0}, AppliedAny={1}", reason ?? "N/A", flag));
+		Logger.Log(logChannel, string.Format("Immediate escalation consequences completed. Reason={0}, AppliedAny={1}", reason ?? "N/A", flag));
 		return flag;
 	}
 
@@ -2877,6 +2900,149 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			}
 		}
 		TryApplyImmediateEscalationConsequences(partyBase, target, reason ?? "menu_attack_option");
+	}
+
+	private static string GetMeetingTauntHeroKey(Hero hero)
+	{
+		return hero?.StringId?.Trim() ?? "";
+	}
+
+	private static bool HasMeetingTauntWarning(Hero hero)
+	{
+		string meetingTauntHeroKey = GetMeetingTauntHeroKey(hero);
+		return !string.IsNullOrWhiteSpace(meetingTauntHeroKey) && _meetingTauntWarnedHeroIds != null && _meetingTauntWarnedHeroIds.Contains(meetingTauntHeroKey, StringComparer.OrdinalIgnoreCase);
+	}
+
+	private static void RememberMeetingTauntWarning(Hero hero)
+	{
+		string meetingTauntHeroKey = GetMeetingTauntHeroKey(hero);
+		if (string.IsNullOrWhiteSpace(meetingTauntHeroKey))
+		{
+			return;
+		}
+		if (_meetingTauntWarnedHeroIds == null)
+		{
+			_meetingTauntWarnedHeroIds = new List<string>();
+		}
+		if (_meetingTauntWarnedHeroIds.Contains(meetingTauntHeroKey, StringComparer.OrdinalIgnoreCase))
+		{
+			return;
+		}
+		_meetingTauntWarnedHeroIds.Add(meetingTauntHeroKey);
+		Logger.Log("MeetingTaunt", $"Recorded taunt warning state. Target={hero?.Name}, HeroId={meetingTauntHeroKey}");
+	}
+
+	private static bool IsMeetingTauntApplicable(Hero hero)
+	{
+		if (hero == null)
+		{
+			return false;
+		}
+		bool flag = false;
+		try
+		{
+			flag = MeetingBattleRuntime.IsMeetingActive || _encounterMeetingMissionActive;
+		}
+		catch
+		{
+			flag = false;
+		}
+		if (!flag)
+		{
+			return false;
+		}
+		try
+		{
+			Hero hero2 = MeetingBattleRuntime.TargetHero ?? _targetHero;
+			if (hero2 != null && hero2 != hero)
+			{
+				return false;
+			}
+		}
+		catch
+		{
+		}
+		return true;
+	}
+
+	private static bool TryEscalateMeetingTauntToBattle(Hero target, string reason)
+	{
+		try
+		{
+			Hero hero = target ?? EnsureEncounterTargetHero("meeting_taunt_battle");
+			if (!IsMeetingTauntApplicable(hero))
+			{
+				Logger.Log("MeetingTaunt", "Battle tag ignored because current context is not a valid hero meeting.");
+				return false;
+			}
+			TryApplyImmediateAttackConsequencesForEncounter(hero, reason ?? "meeting_taunt_battle");
+			try
+			{
+				Campaign.Current?.ConversationManager?.EndConversation();
+			}
+			catch
+			{
+			}
+			Logger.Log("MeetingTaunt", $"Battle escalation applied from taunt tag. Target={hero?.Name}, Reason={reason ?? "N/A"}");
+			return true;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("MeetingTaunt", "Battle escalation from taunt tag failed: " + ex.Message);
+			return false;
+		}
+	}
+
+	internal static string BuildMeetingTauntRuntimeInstructionForExternal(Hero target)
+	{
+		try
+		{
+			string stateKey = "not_applicable";
+			if (IsMeetingTauntApplicable(target))
+			{
+				stateKey = (HasMeetingTauntWarning(target) ? "battle_only" : "warn_or_battle");
+			}
+			return AIConfigHandler.ResolveRuleRuntimeText("meeting_taunt", stateKey, forConstraint: false, SceneTauntBehavior.BuildTauntRuntimeTokens(isHeroMeeting: true));
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	internal static bool TryProcessMeetingTauntAction(Hero target, ref string content, out bool escalatedToBattle)
+	{
+		escalatedToBattle = false;
+		try
+		{
+			if (string.IsNullOrWhiteSpace(content))
+			{
+				return false;
+			}
+			bool flag = MeetingTauntWarnTagRegex.IsMatch(content);
+			bool flag2 = MeetingTauntBattleTagRegex.IsMatch(content);
+			if (!flag && !flag2)
+			{
+				return false;
+			}
+			content = MeetingTauntWarnTagRegex.Replace(content, "").Trim();
+			content = MeetingTauntBattleTagRegex.Replace(content, "").Trim();
+			Hero hero = target ?? EnsureEncounterTargetHero("meeting_taunt_action");
+			if (flag && IsMeetingTauntApplicable(hero))
+			{
+				RememberMeetingTauntWarning(hero);
+			}
+			if (flag2)
+			{
+				escalatedToBattle = TryEscalateMeetingTauntToBattle(hero, "meeting_taunt_battle_tag");
+			}
+			return flag || flag2;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("MeetingTaunt", "Processing taunt tag failed: " + ex.Message);
+			return false;
+		}
 	}
 
 	public static void StartMeeting(Hero target, MenuCallbackArgs args = null)
