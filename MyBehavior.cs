@@ -5104,7 +5104,7 @@ public class MyBehavior : CampaignBehaviorBase
 					Stopwatch swApi = Stopwatch.StartNew();
 					Logger.Log("Logic", "[HTTP-Stream] 直接对话流式请求 NPC=" + npcName);
 					ConversationHelper.BeginStreaming();
-					await ShoutNetwork.CallApiWithMessagesStream(apiMessages, 4096, delegate(string delta)
+					await ShoutNetwork.CallApiWithMessagesStream(apiMessages, 10000, delegate(string delta)
 					{
 						chunkCount++;
 						streamBuf.Append(delta);
@@ -7452,7 +7452,7 @@ public class MyBehavior : CampaignBehaviorBase
 						content = user
 					}
 				},
-				max_tokens = 4096,
+				max_tokens = 10000,
 				stream = true,
 				temperature = 0.8
 			};
@@ -8702,16 +8702,13 @@ public class MyBehavior : CampaignBehaviorBase
 		string currentValue = dialogueDay.Lines[lineIndex] ?? "";
 		string displayDate = ((!string.IsNullOrEmpty(dialogueDay.GameDate)) ? dialogueDay.GameDate : $"第 {dialogueDay.GameDayIndex} 日");
 		string text = npc.Name?.ToString() ?? "NPC";
-		if (!DevHistoryEditPopup.Show("编辑对话行 - " + text, "当前日期: " + displayDate, currentValue, currentValue, delegate(string input)
+		DevTextEditorHelper.ShowLongTextEditor("编辑对话行 - " + text, "当前日期: " + displayDate, "下方输入框可直接修改整条内容，留空则删除该行。", currentValue, delegate(string input)
 		{
 			ApplyDevEditLineInput(npc, dayIndex, lineIndex, input);
 		}, delegate
 		{
 			OpenDevHistoryLineSelection(npc, dayIndex);
-		}))
-		{
-			OpenDevEditLineInput(npc, dayIndex, lineIndex, currentValue, displayDate);
-		}
+		});
 	}
 
 	private void ApplyDevEditLineInput(Hero npc, int dayIndex, int lineIndex, string input)
@@ -9380,12 +9377,7 @@ public class MyBehavior : CampaignBehaviorBase
 			_devEditingHero = npc;
 			GetNpcPersonaStrings(npc, out var personality, out var background);
 			string text = npc.Name?.ToString() ?? "NPC";
-			StringBuilder stringBuilder = new StringBuilder();
-			stringBuilder.AppendLine("当前个性：");
-			stringBuilder.AppendLine(string.IsNullOrWhiteSpace(personality) ? "（未设置）" : personality);
-			stringBuilder.AppendLine(" ");
-			stringBuilder.AppendLine("请输入新的个性描述（留空=清空）：");
-			InformationManager.ShowTextInquiry(new TextInquiryData("设置个性 - " + text, stringBuilder.ToString(), isAffirmativeOptionShown: true, isNegativeOptionShown: true, "保存", "返回", delegate(string input)
+			DevTextEditorHelper.ShowLongTextEditor("设置个性 - " + text, "当前个性已载入下方输入框。", "请输入新的个性描述（留空=清空）。", personality ?? "", delegate(string input)
 			{
 				NpcPersonaProfile npcPersonaProfile = GetNpcPersonaProfile(npc, createIfMissing: true) ?? new NpcPersonaProfile();
 				npcPersonaProfile.Personality = (input ?? "").Trim();
@@ -9396,7 +9388,7 @@ public class MyBehavior : CampaignBehaviorBase
 			}, delegate
 			{
 				OpenDevPersonaMenu(npc);
-			}));
+			});
 		}
 	}
 
@@ -9437,12 +9429,7 @@ public class MyBehavior : CampaignBehaviorBase
 			_devEditingHero = npc;
 			GetNpcPersonaStrings(npc, out var personality, out var background);
 			string text = npc.Name?.ToString() ?? "NPC";
-			StringBuilder stringBuilder = new StringBuilder();
-			stringBuilder.AppendLine("当前历史背景：");
-			stringBuilder.AppendLine(string.IsNullOrWhiteSpace(background) ? "（未设置）" : background);
-			stringBuilder.AppendLine(" ");
-			stringBuilder.AppendLine("请输入新的历史背景描述（留空=清空）：");
-			InformationManager.ShowTextInquiry(new TextInquiryData("设置历史背景 - " + text, stringBuilder.ToString(), isAffirmativeOptionShown: true, isNegativeOptionShown: true, "保存", "返回", delegate(string input)
+			DevTextEditorHelper.ShowLongTextEditor("设置历史背景 - " + text, "当前历史背景已载入下方输入框。", "请输入新的历史背景描述（留空=清空）。", background ?? "", delegate(string input)
 			{
 				NpcPersonaProfile npcPersonaProfile = GetNpcPersonaProfile(npc, createIfMissing: true) ?? new NpcPersonaProfile();
 				npcPersonaProfile.Personality = (personality ?? "").Trim();
@@ -9453,7 +9440,7 @@ public class MyBehavior : CampaignBehaviorBase
 			}, delegate
 			{
 				OpenDevPersonaMenu(npc);
-			}));
+			});
 		}
 	}
 
@@ -9880,13 +9867,7 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			text2 = text2.Substring(0, 240);
 		}
-		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.AppendLine("Key: " + k);
-		stringBuilder.AppendLine("当前描述预览：");
-		stringBuilder.AppendLine(string.IsNullOrWhiteSpace(text2) ? "（空）" : text2);
-		stringBuilder.AppendLine(" ");
-		stringBuilder.AppendLine("请输入新的“描述”（留空=清空）：");
-		InformationManager.ShowTextInquiry(new TextInquiryData("编辑未命名NPC - 描述", stringBuilder.ToString(), isAffirmativeOptionShown: true, isNegativeOptionShown: true, "保存", "返回", delegate(string input)
+		DevTextEditorHelper.ShowLongTextEditor("编辑未命名NPC - 描述", "Key: " + k, "请输入新的“描述”（留空=清空）。", text, delegate(string input)
 		{
 			string personality2 = (input ?? "").Trim();
 			ShoutUtils.SaveUnnamedPersonaByKey(k, personality2, "");
@@ -9895,7 +9876,7 @@ public class MyBehavior : CampaignBehaviorBase
 		}, delegate
 		{
 			OpenDevUnnamedPersonaIndexSelection();
-		}));
+		});
 	}
 
 	private void OpenDevSingleNpcHeroSelection()

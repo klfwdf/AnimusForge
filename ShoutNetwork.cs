@@ -14,6 +14,22 @@ namespace AnimusForge;
 
 public static class ShoutNetwork
 {
+	private const int HardcodedMaxTokens = 10000;
+
+	private static string BuildApiErrorDetail(string responseBody)
+	{
+		if (string.IsNullOrWhiteSpace(responseBody))
+		{
+			return "";
+		}
+		string text = responseBody.Replace("\r", " ").Replace("\n", " ").Trim();
+		if (text.Length > 320)
+		{
+			text = text.Substring(0, 320) + "...";
+		}
+		return " " + text;
+	}
+
 	public static async Task<string> CallApiWithMessages(List<object> messages, int maxTokens, bool recordTokenStats = true)
 	{
 		Stopwatch sw = Stopwatch.StartNew();
@@ -22,7 +38,7 @@ public static class ShoutNetwork
 		Logger.Obs("Network", "request_start", new Dictionary<string, object>
 		{
 			["mode"] = "non_stream",
-			["maxTokens"] = maxTokens,
+			["maxTokens"] = HardcodedMaxTokens,
 			["messages"] = msgCount
 		});
 		try
@@ -44,7 +60,7 @@ public static class ShoutNetwork
 			JObject payload = new JObject
 			{
 				["model"] = settings.ModelName,
-				["max_tokens"] = maxTokens
+				["max_tokens"] = HardcodedMaxTokens
 			};
 			JArray messagesArray = new JArray();
 			foreach (object msg in messages)
@@ -113,7 +129,7 @@ public static class ShoutNetwork
 					["latencyMs"] = Math.Round(sw.Elapsed.TotalMilliseconds, 2)
 				});
 				Logger.Metric("network.non_stream", ok: false, sw.Elapsed.TotalMilliseconds);
-				return $"（API请求失败: {response.StatusCode}）";
+				return $"（API请求失败: {response.StatusCode}{BuildApiErrorDetail(str)}）";
 			}
 			finally
 			{
@@ -146,7 +162,7 @@ public static class ShoutNetwork
 		Logger.Obs("Network", "request_start", new Dictionary<string, object>
 		{
 			["mode"] = "stream",
-			["maxTokens"] = maxTokens,
+			["maxTokens"] = HardcodedMaxTokens,
 			["messages"] = msgCount
 		});
 		try
@@ -169,7 +185,7 @@ public static class ShoutNetwork
 			JObject payload = new JObject
 			{
 				["model"] = settings.ModelName,
-				["max_tokens"] = maxTokens,
+				["max_tokens"] = HardcodedMaxTokens,
 				["stream"] = true
 			};
 			JArray messagesArray = new JArray();
@@ -214,7 +230,7 @@ public static class ShoutNetwork
 								["latencyMs"] = Math.Round(sw.Elapsed.TotalMilliseconds, 2)
 							});
 							Logger.Metric("network.stream", ok: false, sw.Elapsed.TotalMilliseconds);
-							onError?.Invoke($"（API请求失败: {response.StatusCode} {errBody}）");
+							onError?.Invoke($"（API请求失败: {response.StatusCode}{BuildApiErrorDetail(errBody)}）");
 							return;
 						}
 						using Stream stream = await response.Content.ReadAsStreamAsync();

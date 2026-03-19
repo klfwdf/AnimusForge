@@ -22,16 +22,16 @@ public sealed class DevHistoryEditPopup
 
 	private bool _isClosed;
 
-	private DevHistoryEditPopup(ScreenBase screen, string titleText, string dateText, string originalContentText, string editedText, Action<string> onSave, Action onCancel)
+	private DevHistoryEditPopup(ScreenBase screen, string titleText, string dateText, string originalContentText, string editedText, Action<string> onSave, Action onCancel, string inputHintText, string saveText, string cancelText)
 	{
 		_screen = screen;
 		_onSave = onSave;
 		_onCancel = onCancel;
-		_dataSource = new DevHistoryEditPopupVM(titleText, dateText, originalContentText, editedText, HandleSaveRequested, HandleCancelRequested);
+		_dataSource = new DevHistoryEditPopupVM(titleText, dateText, originalContentText, editedText, HandleSaveRequested, HandleCancelRequested, inputHintText, saveText, cancelText);
 		_layer = new GauntletLayer("DevHistoryEditPopup", 4000, false);
 	}
 
-	public static bool Show(string titleText, string dateText, string originalContentText, string editedText, Action<string> onSave, Action onCancel)
+	public static bool Show(string titleText, string dateText, string originalContentText, string editedText, Action<string> onSave, Action onCancel, string inputHintText = null, string saveText = null, string cancelText = null)
 	{
 		ScreenBase topScreen = ScreenManager.TopScreen;
 		if (topScreen == null)
@@ -41,7 +41,7 @@ public sealed class DevHistoryEditPopup
 		try
 		{
 			_activePopup?.Close(silent: true);
-			DevHistoryEditPopup devHistoryEditPopup = new DevHistoryEditPopup(topScreen, titleText, dateText, originalContentText, editedText, onSave, onCancel);
+			DevHistoryEditPopup devHistoryEditPopup = new DevHistoryEditPopup(topScreen, titleText, dateText, originalContentText, editedText, onSave, onCancel, inputHintText, saveText, cancelText);
 			devHistoryEditPopup.Open();
 			_activePopup = devHistoryEditPopup;
 			return true;

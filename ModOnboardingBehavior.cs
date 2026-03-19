@@ -1192,10 +1192,9 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			}
 			_suppressWelcomeUntilUtcTicks = ticks + TimeSpan.FromMilliseconds(fromGate ? 800 : 200).Ticks;
 			_activeOnboardingStage = OnboardingUiStage.Import;
-			string playerExportsRootPath = GetPlayerExportsRootPath();
-			string text = "首次在此存档中使用 AnimusForge，必须导入编辑器导出的 JSON 数据，否则本 MOD 的对话/场景喊话将不可用。\n\n需要导入（缺一不可）：\n1) Hero：个性与背景（personality_background/*.json）\n2) 非Hero：描述（unnamed_persona/*.json）\n3) 知识：knowledge/rules/*.json（兼容旧版：knowledge/KnowledgeRules.json）\n4) 声音映射：voice_mapping/VoiceMapping.json\n\n导入目录（默认）：\n" + playerExportsRootPath;
+			string text = "首次在此存档中使用 AnimusForge。\n\n你现在可以导入编辑器导出的 JSON 数据，或先跳过这一步，直接继续填写角色信息。";
 			_welcomeInProgress = true;
-			InformationManager.ShowInquiry(new InquiryData("AnimusForge - 首次使用", text, isAffirmativeOptionShown: true, isNegativeOptionShown: true, "一键导入", "退出当前存档", delegate
+			InformationManager.ShowInquiry(new InquiryData("AnimusForge - 首次使用", text, isAffirmativeOptionShown: true, isNegativeOptionShown: true, "一键导入", "跳过", delegate
 			{
 				_welcomeInProgress = false;
 				OpenImportFolderPicker(delegate
@@ -1205,12 +1204,78 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			}, delegate
 			{
 				_welcomeInProgress = false;
-				ExitCurrentGameFromOnboarding();
+				ShowSkipImportConfirmation(delegate
+				{
+					ShowImportSetupPopup(fromGate: true, ignoreSuppress: true);
+				});
 			}), pauseGameActiveState: true);
 		}
 		catch
 		{
 			_welcomeInProgress = false;
+		}
+	}
+
+	private void ShowSkipImportConfirmation(Action onReturn)
+	{
+		try
+		{
+			if (onReturn == null)
+			{
+				onReturn = delegate
+				{
+				};
+			}
+			_welcomeInProgress = true;
+			_activeOnboardingStage = OnboardingUiStage.Import;
+			string text = "你确定不载入数据库吗？\n不载入数据库，NPC将对您当前世界的设定几乎完全不理解。";
+			InformationManager.ShowInquiry(new InquiryData("跳过数据库导入", text, isAffirmativeOptionShown: true, isNegativeOptionShown: true, "确定", "返回", delegate
+			{
+				_welcomeInProgress = false;
+				CompleteOnboardingAndOpenPlayerPersonaSetup(onReturn, importedDatabase: false);
+			}, delegate
+			{
+				_welcomeInProgress = false;
+				onReturn();
+			}), pauseGameActiveState: true);
+		}
+		catch
+		{
+			_welcomeInProgress = false;
+			onReturn?.Invoke();
+		}
+	}
+
+	private void CompleteOnboardingAndOpenPlayerPersonaSetup(Action onReturn, bool importedDatabase)
+	{
+		try
+		{
+			_setupDone = true;
+			_activeOnboardingStage = OnboardingUiStage.None;
+			KnowledgeLibraryBehavior knowledgeLibraryBehavior = KnowledgeLibraryBehavior.Instance ?? Campaign.Current?.GetCampaignBehavior<KnowledgeLibraryBehavior>();
+			if (knowledgeLibraryBehavior == null)
+			{
+				onReturn?.Invoke();
+				return;
+			}
+			if (importedDatabase)
+			{
+				InformationManager.DisplayMessage(new InformationMessage("首次导入完成：已解锁 AnimusForge 对话/场景喊话。"));
+				InformationManager.DisplayMessage(new InformationMessage("接下来请填写玩家称呼与角色介绍；角色介绍也可以直接跳过。"));
+			}
+			else
+			{
+				InformationManager.DisplayMessage(new InformationMessage("已跳过数据库导入。接下来请填写玩家称呼与角色介绍；角色介绍也可以直接跳过。"));
+			}
+			knowledgeLibraryBehavior.OpenPlayerPersonaSetup(delegate
+			{
+				onReturn?.Invoke();
+			});
+		}
+		catch (Exception ex)
+		{
+			InformationManager.DisplayMessage(new InformationMessage("打开玩家角色介绍失败：" + ex.Message));
+			onReturn?.Invoke();
 		}
 	}
 
@@ -1594,30 +1659,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			}
 			else
 			{
-				_setupDone = true;
-				_activeOnboardingStage = OnboardingUiStage.None;
-				InformationManager.DisplayMessage(new InformationMessage("首次导入完成：已解锁 AnimusForge 对话/场景喊话。"));
-				try
-				{
-					KnowledgeLibraryBehavior knowledgeLibraryBehavior = KnowledgeLibraryBehavior.Instance ?? Campaign.Current?.GetCampaignBehavior<KnowledgeLibraryBehavior>();
-					if (knowledgeLibraryBehavior == null)
-					{
-						onReturn?.Invoke();
-					}
-					else
-					{
-						InformationManager.DisplayMessage(new InformationMessage("接下来请填写玩家称呼与角色介绍；角色介绍也可以直接跳过。"));
-						knowledgeLibraryBehavior.OpenPlayerPersonaSetup(delegate
-						{
-							onReturn?.Invoke();
-						});
-					}
-				}
-				catch (Exception ex2)
-				{
-					InformationManager.DisplayMessage(new InformationMessage("打开玩家角色介绍失败：" + ex2.Message));
-					onReturn?.Invoke();
-				}
+				CompleteOnboardingAndOpenPlayerPersonaSetup(onReturn, importedDatabase: true);
 			}
 		}
 		catch (Exception ex)

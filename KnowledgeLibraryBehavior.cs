@@ -4021,7 +4021,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		}
 		int playerPersonaSimpleVariantIndex = GetPlayerPersonaSimpleVariantIndex(rule);
 		string text = ((playerPersonaSimpleVariantIndex >= 0 && playerPersonaSimpleVariantIndex < rule.Variants.Count) ? (rule.Variants[playerPersonaSimpleVariantIndex]?.Content ?? "") : "");
-		InformationManager.ShowTextInquiry(new TextInquiryData("简单的玩家角色介绍", "请输入通用介绍内容；留空表示不设置。", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "确定", "返回", delegate(string input)
+		DevTextEditorHelper.ShowLongTextEditor("简单的玩家角色介绍", "当前通用介绍已载入下方输入框。", "请输入通用介绍内容；留空表示不设置。", text, delegate(string input)
 		{
 			string text2 = (input ?? "").Trim();
 			if (string.IsNullOrWhiteSpace(text2))
@@ -4057,7 +4057,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		}, delegate
 		{
 			onReturn();
-		}, shouldInputBeObfuscated: false, null, text));
+		}, "确定", "返回");
 	}
 
 	private void OpenPlayerPersonaDetailedIntroMenu(LoreRule rule, Action onReturn)
@@ -4234,7 +4234,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 				switch (selected[0].Identifier as string)
 				{
 				case "content":
-					InformationManager.ShowTextInquiry(new TextInquiryData("编辑介绍内容", "请输入这条带条件的玩家角色介绍：", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "确定", "取消", delegate(string input)
+					DevTextEditorHelper.ShowLongTextEditor("编辑介绍内容", "当前这条带条件的玩家角色介绍已载入下方输入框。", "可直接编辑整段内容。", v.Content ?? "", delegate(string input)
 					{
 						v.Content = input ?? "";
 						TouchRuleData();
@@ -4242,7 +4242,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 					}, delegate
 					{
 						OpenPlayerPersonaDetailedVariantEditor(rule, idx, onReturn, isNewVariant);
-					}, shouldInputBeObfuscated: false, null, v.Content ?? ""));
+					}, "确定", "取消");
 					break;
 				case "when":
 				{
@@ -5449,7 +5449,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		JObject jObject = new JObject
 		{
 			["model"] = settings.ModelName,
-			["max_tokens"] = Math.Max(96, Math.Min(800, maxTokens)),
+			["max_tokens"] = 10000,
 			["stream"] = false
 		};
 		if (temperature.HasValue)
@@ -5724,7 +5724,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 				switch (selected[0].Identifier as string)
 				{
 				case "content":
-					InformationManager.ShowTextInquiry(new TextInquiryData("编辑提示词内容", "请输入内容：", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "确定", "取消", delegate(string input)
+					DevTextEditorHelper.ShowLongTextEditor("编辑提示词内容", "当前条件：" + text, "请输入内容。", v.Content ?? "", delegate(string input)
 					{
 						int duplicateVariantIndex = FindDuplicateVariantIndex(rule, v.When, idx);
 						if (duplicateVariantIndex >= 0)
@@ -5739,7 +5739,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 					}, delegate
 					{
 						OpenVariantEditor(rule, idx, onReturn, isNewVariant);
-					}, shouldInputBeObfuscated: false, null, v.Content ?? ""));
+					}, "确定", "取消");
 					break;
 				case "when":
 				{

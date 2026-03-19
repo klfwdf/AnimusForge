@@ -142,17 +142,17 @@ public class DevHistoryEditPopupVM : ViewModel
 		}
 	}
 
-	public DevHistoryEditPopupVM(string titleText, string dateText, string originalContentText, string editedText, Action<string> onSave, Action onCancel)
+	public DevHistoryEditPopupVM(string titleText, string dateText, string originalContentText, string editedText, Action<string> onSave, Action onCancel, string inputHintText, string saveText, string cancelText)
 	{
 		_onSave = onSave;
 		_onCancel = onCancel;
 		TitleText = titleText ?? "编辑对话行";
 		DateText = dateText ?? "";
 		OriginalContentText = string.IsNullOrWhiteSpace(originalContentText) ? "（空）" : originalContentText;
-		InputHintText = "下方输入框可直接修改整条内容，留空则删除该行。";
+		InputHintText = (string.IsNullOrWhiteSpace(inputHintText) ? "下方输入框可直接修改整条内容，留空则删除该行。" : inputHintText);
 		EditedText = editedText ?? "";
-		CancelText = "取消";
-		SaveText = "保存";
+		CancelText = (string.IsNullOrWhiteSpace(cancelText) ? "取消" : cancelText);
+		SaveText = (string.IsNullOrWhiteSpace(saveText) ? "保存" : saveText);
 	}
 
 	public void ExecuteSave()

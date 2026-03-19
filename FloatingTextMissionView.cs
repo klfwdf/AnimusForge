@@ -63,6 +63,10 @@ public class FloatingTextMissionView : MissionView
 
 	private bool _positionErrorLogged = false;
 
+	private const float WORLD_ANCHOR_VERTICAL_OFFSET = 0.15f;
+
+	private const float SCREEN_ANCHOR_VERTICAL_PADDING = 18f;
+
 	public bool IsBubbleReady()
 	{
 		return _isInitialized && _layer != null && _dataSource != null;
@@ -264,14 +268,18 @@ public class FloatingTextMissionView : MissionView
 		{
 			return;
 		}
-		Vec3 groundVec = state.Agent.GetWorldPosition().GetGroundVec3();
-		groundVec.z += state.Agent.GetEyeGlobalHeight() + 0.6f;
+		Vec3 bubbleAnchor = GetBubbleAnchorWorldPosition(state.Agent);
+		if (!IsFinite(bubbleAnchor))
+		{
+			HideBubble(state);
+			return;
+		}
 		bool flag = false;
 		if (missionScreen.CombatCamera != null)
 		{
 			Vec3 direction = missionScreen.CombatCamera.Direction;
 			Vec3 position = missionScreen.CombatCamera.Position;
-			Vec3 v = groundVec - position;
+			Vec3 v = bubbleAnchor - position;
 			if (Vec3.DotProduct(direction, v) < 0.1f)
 			{
 				flag = true;
@@ -285,7 +293,12 @@ public class FloatingTextMissionView : MissionView
 		}
 		float num = 0f;
 		float num2 = 0f;
-		Vec2 vec = sceneView.WorldPointToScreenPoint(groundVec);
+		Vec2 vec = sceneView.WorldPointToScreenPoint(bubbleAnchor);
+		if (!IsFinite(vec) || vec.x < -0.25f || vec.x > 1.25f || vec.y < -0.25f || vec.y > 1.25f)
+		{
+			HideBubble(state);
+			return;
+		}
 		num = Screen.RealScreenResolutionWidth;
 		num2 = Screen.RealScreenResolutionHeight;
 		float num3 = state.VM.BubbleWidth;
@@ -293,13 +306,111 @@ public class FloatingTextMissionView : MissionView
 		{
 			num3 = 140f;
 		}
+		float bubbleHeight = EstimateBubbleHeight(state, num3);
 		state.VM.X = vec.x * num - num3 * 0.5f;
-		state.VM.Y = vec.y * num2;
+		state.VM.Y = vec.y * num2 - bubbleHeight - 18f;
 		if (!_debugLoggedOnce && state.VM.X > 0f && state.VM.Y > 0f)
 		{
 			Logger.Log("FloatingText", $"[Position] First valid position: normalized=({vec.x:F3},{vec.y:F3}) -> ui=({state.VM.X:F0},{state.VM.Y:F0}), screenRes=({num:F0},{num2:F0})");
 			_debugLoggedOnce = true;
 		}
+	}
+
+	private static Vec3 GetBubbleAnchorWorldPosition(Agent agent)
+	{
+		if (agent == null)
+		{
+			return default(Vec3);
+		}
+		Vec3 groundVec = agent.GetWorldPosition().GetGroundVec3();
+		float eyeGlobalHeight = agent.GetEyeGlobalHeight();
+		if (!IsFinite(eyeGlobalHeight) || eyeGlobalHeight < 0.5f || eyeGlobalHeight > 4.5f)
+		{
+			eyeGlobalHeight = 1.7f;
+		}
+		float num = groundVec.z + Math.Max(0.75f, eyeGlobalHeight * 0.45f);
+		float num2 = groundVec.z + Math.Max(3.5f, eyeGlobalHeight + 1.25f);
+		Vec3 result = default(Vec3);
+		bool hasCandidate = false;
+		TryUseAnchorCandidate(agent.GetEyeGlobalPosition(), WORLD_ANCHOR_VERTICAL_OFFSET, num, num2, ref result, ref hasCandidate);
+		TryUseAnchorCandidate(agent.GetChestGlobalPosition(), 0.35f, groundVec.z + 0.55f, groundVec.z + 3f, ref result, ref hasCandidate);
+		if (hasCandidate)
+		{
+			return result;
+		}
+		groundVec.z += eyeGlobalHeight + 0.45f;
+		return groundVec;
+	}
+
+	private static void TryUseAnchorCandidate(Vec3 candidate, float zOffset, float minZ, float maxZ, ref Vec3 result, ref bool hasCandidate)
+	{
+		if (!IsFinite(candidate))
+		{
+			return;
+		}
+		candidate.z += zOffset;
+		if (candidate.z < minZ || candidate.z > maxZ)
+		{
+			return;
+		}
+		if (!hasCandidate || candidate.z > result.z)
+		{
+			result = candidate;
+			hasCandidate = true;
+		}
+	}
+
+	private static float EstimateBubbleHeight(FloatingTextItemState state, float bubbleWidth)
+	{
+		string text = state?.CurrentDisplayedText;
+		if (string.IsNullOrEmpty(text))
+		{
+			text = state?.FullTargetText ?? "";
+		}
+		int fontSize = state?.VM?.FontSize ?? 14;
+		float usableWidth = Math.Max(48f, bubbleWidth - 24f);
+		float averageCharWidth = Math.Max(8f, (float)fontSize * 0.95f);
+		int maxCharsPerLine = Math.Max(1, (int)(usableWidth / averageCharWidth));
+		int lineCount = 1;
+		int currentLineLength = 0;
+		foreach (char c in text)
+		{
+			if (c == '\n')
+			{
+				lineCount++;
+				currentLineLength = 0;
+				continue;
+			}
+			currentLineLength++;
+			if (currentLineLength > maxCharsPerLine)
+			{
+				lineCount++;
+				currentLineLength = 1;
+			}
+		}
+		float lineHeight = Math.Max(fontSize + 6, 18);
+		return (float)lineCount * lineHeight + 12f;
+	}
+
+	private static bool IsFinite(Vec2 value)
+	{
+		return IsFinite(value.x) && IsFinite(value.y);
+	}
+
+	private static bool IsFinite(Vec3 value)
+	{
+		return IsFinite(value.x) && IsFinite(value.y) && IsFinite(value.z);
+	}
+
+	private static bool IsFinite(float value)
+	{
+		return !float.IsNaN(value) && !float.IsInfinity(value);
+	}
+
+	private static void HideBubble(FloatingTextItemState state)
+	{
+		state.VM.X = -10000f;
+		state.VM.Y = -10000f;
 	}
 
 	public void AddOrUpdateText(Agent agent, string text, bool isAppend = false, float typingDurationSeconds = -1f)
