@@ -1966,7 +1966,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 		{
 			return true;
 		}
-		if (text.StartsWith("Gold:", StringComparison.OrdinalIgnoreCase))
+		if (text.StartsWith("Gold:", StringComparison.OrdinalIgnoreCase) || text.StartsWith("第纳尔:", StringComparison.Ordinal))
 		{
 			return true;
 		}
@@ -3975,7 +3975,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					content = passiveUserMessage
 				});
 				Stopwatch swApi = Stopwatch.StartNew();
-				string output = await ShoutNetwork.CallApiWithMessages(messages, 10000);
+				string output = await ShoutNetwork.CallApiWithMessages(messages, 5000);
 				swApi.Stop();
 				bool ok = !string.IsNullOrWhiteSpace(output) && !output.StartsWith("（错误") && !output.StartsWith("（程序错误") && !output.StartsWith("（API请求失败");
 				Logger.Obs("API", "complete", new Dictionary<string, object>
@@ -5439,7 +5439,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				bool firstChunkSeen = false;
 				Stopwatch swApi = Stopwatch.StartNew();
 				double firstChunkMs = -1.0;
-				await ShoutNetwork.CallApiWithMessagesStream(messages, 10000, delegate(string delta)
+				await ShoutNetwork.CallApiWithMessagesStream(messages, 5000, delegate(string delta)
 				{
 					if (!firstChunkSeen)
 					{
@@ -5880,7 +5880,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 						content = singleReplyUserContent
 					}
 				};
-				string output = await ShoutNetwork.CallApiWithMessages(messages, 10000);
+				string output = await ShoutNetwork.CallApiWithMessages(messages, 5000);
 				
 				if (!string.IsNullOrWhiteSpace(output) && (output.StartsWith("（错误") || output.StartsWith("（程序错误") || output.StartsWith("（API请求失败")))
 				{
@@ -6858,7 +6858,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				content = singleReplyUserContent
 			}
 		};
-		string text2 = await ShoutNetwork.CallApiWithMessages(messages, 10000);
+		string text2 = await ShoutNetwork.CallApiWithMessages(messages, 5000);
 		if (string.IsNullOrWhiteSpace(text2))
 		{
 			return;

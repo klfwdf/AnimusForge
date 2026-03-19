@@ -784,7 +784,7 @@ public static class ShoutUtils
 					content = user
 				}
 			};
-			string rawResp = ((await ShoutNetwork.CallApiWithMessages(messages, 10000)) ?? "").Trim();
+			string rawResp = ((await ShoutNetwork.CallApiWithMessages(messages, 5000)) ?? "").Trim();
 			if (string.IsNullOrWhiteSpace(rawResp))
 			{
 				return;

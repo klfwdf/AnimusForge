@@ -14,7 +14,7 @@ namespace AnimusForge;
 
 public static class ShoutNetwork
 {
-	private const int HardcodedMaxTokens = 10000;
+	private const int HardcodedMaxTokens = 5000;
 
 	private static string BuildApiErrorDetail(string responseBody)
 	{

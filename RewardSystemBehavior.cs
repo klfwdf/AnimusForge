@@ -4353,6 +4353,73 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 	}
 
+	public long EstimateItemValueForExternal(Hero hero, string itemId, int amount)
+	{
+		try
+		{
+			return EstimateItemValueForExternal(hero, ResolveItemById(itemId), amount);
+		}
+		catch
+		{
+			return 0L;
+		}
+	}
+
+	public long EstimateItemValueForExternal(Hero hero, ItemObject item, int amount)
+	{
+		try
+		{
+			if (item == null || amount <= 0)
+			{
+				return 0L;
+			}
+			ItemGuidePriceInfo guidePriceForItemNearHero = GetGuidePriceForItemNearHero(hero ?? Hero.MainHero, item);
+			return (long)Math.Max(1, amount) * Math.Max(1, guidePriceForItemNearHero.UnitPrice);
+		}
+		catch
+		{
+			return 0L;
+		}
+	}
+
+	public long EstimateSettlementItemValueForExternal(Settlement settlement, string itemId, int amount)
+	{
+		try
+		{
+			string text = (itemId ?? "").Trim();
+			int num = text.IndexOf('@');
+			if (num > 0)
+			{
+				text = text.Substring(0, num);
+			}
+			return EstimateSettlementItemValueForExternal(settlement, ResolveItemById(text), amount);
+		}
+		catch
+		{
+			return 0L;
+		}
+	}
+
+	public long EstimateSettlementItemValueForExternal(Settlement settlement, ItemObject item, int amount)
+	{
+		try
+		{
+			if (item == null || amount <= 0)
+			{
+				return 0L;
+			}
+			if (settlement != null && TryGetSettlementBuyPrice(settlement, item, out var price) && price > 0)
+			{
+				return (long)Math.Max(1, amount) * Math.Max(1, price);
+			}
+			return EstimateItemValueForExternal(Hero.MainHero, item, amount);
+		}
+		catch
+		{
+			return 0L;
+		}
+	}
+
 	private static int GetSettlementItemStock(Settlement settlement, string itemId)
 	{
 		try
@@ -4654,7 +4721,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 		StringBuilder stringBuilder = new StringBuilder();
 		int value2 = settlement.SettlementComponent?.Gold ?? 0;
-		stringBuilder.Append("Gold: ").Append(value2).AppendLine();
+		stringBuilder.Append("第纳尔: ").Append(value2).AppendLine();
 		if (includeGuidePrice)
 		{
 			stringBuilder.AppendLine("【价格说明】每个物品后面的 guidePrice 为当前城镇市场的即时指导单价（第纳尔/当前单位；箭矢、弩矢、标枪、飞刀等远程弹药按袋计）。");
@@ -4867,7 +4934,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		string text = hero?.Name?.ToString() ?? "该NPC";
 		Dictionary<string, ItemGuidePriceInfo> dictionary = (includeGuidePrice ? new Dictionary<string, ItemGuidePriceInfo>(StringComparer.OrdinalIgnoreCase) : null);
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.Append("Gold: ").Append(heroGold).AppendLine();
+		stringBuilder.Append("第纳尔: ").Append(heroGold).AppendLine();
 		if (includeGuidePrice)
 		{
 			stringBuilder.AppendLine("【价格说明】每个物品后面的 guidePrice 为指导单价（第纳尔/当前单位；箭矢、弩矢、标枪、飞刀等远程弹药按袋计）。");

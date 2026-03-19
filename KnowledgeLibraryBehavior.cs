@@ -5449,7 +5449,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		JObject jObject = new JObject
 		{
 			["model"] = settings.ModelName,
-			["max_tokens"] = 10000,
+			["max_tokens"] = 5000,
 			["stream"] = false
 		};
 		if (temperature.HasValue)

@@ -5104,7 +5104,7 @@ public class MyBehavior : CampaignBehaviorBase
 					Stopwatch swApi = Stopwatch.StartNew();
 					Logger.Log("Logic", "[HTTP-Stream] 直接对话流式请求 NPC=" + npcName);
 					ConversationHelper.BeginStreaming();
-					await ShoutNetwork.CallApiWithMessagesStream(apiMessages, 10000, delegate(string delta)
+					await ShoutNetwork.CallApiWithMessagesStream(apiMessages, 5000, delegate(string delta)
 					{
 						chunkCount++;
 						streamBuf.Append(delta);
@@ -7452,7 +7452,7 @@ public class MyBehavior : CampaignBehaviorBase
 						content = user
 					}
 				},
-				max_tokens = 10000,
+				max_tokens = 5000,
 				stream = true,
 				temperature = 0.8
 			};
