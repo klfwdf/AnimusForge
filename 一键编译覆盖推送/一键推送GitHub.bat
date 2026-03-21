@@ -11,6 +11,7 @@ cd /d "%PROJECT_ROOT%"
 
 set "DRY_RUN=0"
 set "COMMIT_MSG="
+set "GIT_EXCLUDE_PATH=AnimusForge/ONNX/reranker"
 
 :parse_args
 if "%~1"=="" goto args_done
@@ -88,6 +89,7 @@ echo [Git] One-click push started...
 echo Repo   : "%PROJECT_ROOT%"
 echo Branch : "%BRANCH%"
 echo Origin : "%ORIGIN_URL%"
+echo Exclude: "%GIT_EXCLUDE_PATH%"
 if "%DRY_RUN%"=="1" echo Mode   : DRY RUN (no add / no commit / no push)
 echo.
 
@@ -99,6 +101,7 @@ if "%DRY_RUN%"=="1" (
     echo   "%COMMIT_MSG%"
     echo.
     echo [Preview] Would run:
+    echo   git rm -r --cached --ignore-unmatch -- "%GIT_EXCLUDE_PATH%"
     echo   git add -A
     echo   if changes exist: git commit -m "%COMMIT_MSG_SAFE%"
     echo   if no changes   : git commit --allow-empty -m "%COMMIT_MSG_SAFE%"
@@ -110,6 +113,14 @@ if "%DRY_RUN%"=="1" (
 )
 
 echo [1/3] Staging changes...
+git rm -r --cached --ignore-unmatch -- "%GIT_EXCLUDE_PATH%" >nul 2>nul
+if errorlevel 1 (
+    echo [ERROR] Failed to exclude Git path:
+    echo   "%GIT_EXCLUDE_PATH%"
+    pause
+    exit /b 1
+)
+
 git add -A
 if errorlevel 1 (
     echo [ERROR] git add failed.

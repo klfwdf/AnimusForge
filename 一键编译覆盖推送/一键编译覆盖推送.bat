@@ -14,6 +14,7 @@ set "BANNERLORD_ROOT=F:\SteamLibrary\steamapps\common\Mount & Blade II Bannerlor
 set "CONFIG=Debug"
 set "GIT_DRY_RUN=0"
 set "COMMIT_MSG="
+set "GIT_EXCLUDE_PATH=AnimusForge/ONNX/reranker"
 
 :parse_args
 if "%~1"=="" goto args_done
@@ -161,6 +162,7 @@ set "COMMIT_MSG_SAFE=%COMMIT_MSG:"='%"
 
 echo Branch : "%BRANCH%"
 echo Origin : "%ORIGIN_URL%"
+echo Exclude: "%GIT_EXCLUDE_PATH%"
 
 if "%GIT_DRY_RUN%"=="1" (
     echo [Preview] Current changed files:
@@ -170,6 +172,7 @@ if "%GIT_DRY_RUN%"=="1" (
     echo   "%COMMIT_MSG%"
     echo.
     echo [Preview] Would run:
+    echo   git rm -r --cached --ignore-unmatch -- "%GIT_EXCLUDE_PATH%"
     echo   git add -A
     echo   if changes exist: git commit -m "%COMMIT_MSG_SAFE%"
     echo   if no changes   : git commit --allow-empty -m "%COMMIT_MSG_SAFE%"
@@ -181,6 +184,14 @@ if "%GIT_DRY_RUN%"=="1" (
 )
 
 echo [3.1/3] Staging changes...
+git rm -r --cached --ignore-unmatch -- "%GIT_EXCLUDE_PATH%" >nul 2>nul
+if errorlevel 1 (
+    echo [ERROR] Failed to exclude Git path:
+    echo   "%GIT_EXCLUDE_PATH%"
+    pause
+    exit /b 1
+)
+
 git add -A
 if errorlevel 1 (
     echo [ERROR] git add failed.
