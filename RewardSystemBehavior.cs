@@ -1179,9 +1179,33 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		return num2;
 	}
 
+	private static int GetTrustLossBoostStage(int currentTrust)
+	{
+		int num = ClampTrust(currentTrust);
+		if (num > -TrustGainHalvingStart)
+		{
+			return 0;
+		}
+		int num2 = (-num - TrustGainHalvingStart) / TrustGainHalvingStep + 1;
+		if (num2 < 0)
+		{
+			num2 = 0;
+		}
+		if (num2 > TrustGainHalvingMaxStage)
+		{
+			num2 = TrustGainHalvingMaxStage;
+		}
+		return num2;
+	}
+
 	private static int GetTrustGainDivisorByCurrentTrust(int currentTrust)
 	{
 		return 1 << GetTrustGainHalvingStage(currentTrust);
+	}
+
+	private static int GetTrustLossMultiplierByCurrentTrust(int currentTrust)
+	{
+		return 1 << GetTrustLossBoostStage(currentTrust);
 	}
 
 	private int ConvertRawTrustDeltaToUnits(int rawDelta, int currentTrust)
@@ -1190,11 +1214,12 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			return 0;
 		}
-		if (rawDelta < 0)
+		if (currentTrust <= -TrustGainHalvingStart)
 		{
-			return rawDelta * TrustGainUnitsPerPoint;
+			return rawDelta * TrustGainUnitsPerPoint * GetTrustLossMultiplierByCurrentTrust(currentTrust);
 		}
-		return rawDelta * TrustGainUnitsPerPoint / GetTrustGainDivisorByCurrentTrust(currentTrust);
+		int trustGainDivisorByCurrentTrust = GetTrustGainDivisorByCurrentTrust(currentTrust);
+		return rawDelta * TrustGainUnitsPerPoint / trustGainDivisorByCurrentTrust;
 	}
 
 	private int ApplyDirectTrustDeltaUnits(string trustKey, int currentTrust, int rawDelta, out int appliedUnits)
@@ -1770,11 +1795,21 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				{
 					num7 = (int)Math.Round((double)(num6 * num * SettlementTrustContributionSharePercent) / 10000.0, MidpointRounding.AwayFromZero);
 				}
-				int num8 = GetTrustGainDivisorByCurrentTrust(GetSettlementLocalPublicTrust(item));
+				int settlementLocalPublicTrust = GetSettlementLocalPublicTrust(item);
+				int num8 = GetTrustGainDivisorByCurrentTrust(settlementLocalPublicTrust);
 				if (num8 > 1)
 				{
 					num5 /= num8;
 					num7 /= num8;
+				}
+				else if (settlementLocalPublicTrust <= -TrustGainHalvingStart)
+				{
+					int trustLossMultiplierByCurrentTrust = GetTrustLossMultiplierByCurrentTrust(settlementLocalPublicTrust);
+					if (trustLossMultiplierByCurrentTrust > 1)
+					{
+						num5 *= trustLossMultiplierByCurrentTrust;
+						num7 *= trustLossMultiplierByCurrentTrust;
+					}
 				}
 				int num9 = num5 + num7;
 				if (num9 <= 0)

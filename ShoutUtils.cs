@@ -1966,6 +1966,7 @@ public static class ShoutUtils
 			{
 				npcDataPacket.CultureId = characterObject.Culture.StringId.ToLower();
 			}
+			npcDataPacket.CultureId = ResolveSceneCultureIdWithSettlementFallback(npcDataPacket.CultureId, agent, characterObject);
 			if (characterObject.IsHero)
 			{
 				npcDataPacket.IsHero = true;
@@ -2040,7 +2041,40 @@ public static class ShoutUtils
 				}
 			}
 		}
+		npcDataPacket.CultureId = ResolveSceneCultureIdWithSettlementFallback(npcDataPacket.CultureId, agent, null);
 		return npcDataPacket;
+	}
+
+	private static string ResolveSceneCultureIdWithSettlementFallback(string cultureId, Agent agent, CharacterObject characterObject)
+	{
+		string text = (cultureId ?? "").Trim().ToLowerInvariant();
+		if (!string.IsNullOrWhiteSpace(text) && !string.Equals(text, "neutral", StringComparison.OrdinalIgnoreCase) && !string.Equals(text, "neutral_culture", StringComparison.OrdinalIgnoreCase))
+		{
+			return text;
+		}
+		try
+		{
+			string text2 = (characterObject?.Culture?.StringId ?? agent?.Character?.Culture?.StringId ?? Settlement.CurrentSettlement?.Culture?.StringId ?? "").Trim().ToLowerInvariant();
+			if (!string.IsNullOrWhiteSpace(text2) && !string.Equals(text2, "neutral", StringComparison.OrdinalIgnoreCase) && !string.Equals(text2, "neutral_culture", StringComparison.OrdinalIgnoreCase))
+			{
+				return text2;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			string text3 = (Settlement.CurrentSettlement?.MapFaction?.Culture?.StringId ?? Settlement.CurrentSettlement?.OwnerClan?.Culture?.StringId ?? "").Trim().ToLowerInvariant();
+			if (!string.IsNullOrWhiteSpace(text3) && !string.Equals(text3, "neutral", StringComparison.OrdinalIgnoreCase) && !string.Equals(text3, "neutral_culture", StringComparison.OrdinalIgnoreCase))
+			{
+				return text3;
+			}
+		}
+		catch
+		{
+		}
+		return string.IsNullOrWhiteSpace(text) ? "neutral" : text;
 	}
 
 	private static float ResolveSceneNonHeroAge(Agent agent, CharacterObject characterObject)

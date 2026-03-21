@@ -12,3 +12,4 @@ packages/
 
 *.log
 Logs/
+AnimusForge/ONNX/reranker/

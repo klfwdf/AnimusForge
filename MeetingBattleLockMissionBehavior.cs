@@ -306,9 +306,9 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior
 			catch
 			{
 			}
-			_allowTargetFreeMovementAfterFormalDuel = true;
-			EnsureTargetLordReleasedAfterFormalDuel();
-			Logger.Log("MeetingBattle", "Formal duel ended: target duelist movement released from meeting lock.");
+			_allowTargetFreeMovementAfterFormalDuel = false;
+			EnsureTargetLordNeutralized();
+			Logger.Log("MeetingBattle", "Formal duel ended: target duelist returned to meeting-neutral lock.");
 		}
 		_wasFormalDuelActiveLastTick = flag2;
 		if (flag2)
@@ -1232,19 +1232,33 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior
 		_formalDuelOrderRefreshTimer = num + 0.5f;
 		try
 		{
-			(_formalDuelTargetFormation ?? target.Formation)?.SetMovementOrder(MovementOrder.MovementOrderCharge);
+			target.ClearTargetFrame();
 		}
 		catch
 		{
 		}
 		try
 		{
-			Team team2 = target.Team;
-			if (team2 != null && team2.MasterOrderController != null)
+			target.SetTargetPosition(main.Position.AsVec2);
+		}
+		catch
+		{
+		}
+		try
+		{
+			Agent mountAgent = target.MountAgent;
+			if (mountAgent != null && mountAgent.IsActive())
 			{
-				team2.MasterOrderController.SelectAllFormations();
-				team2.MasterOrderController.SetOrder(OrderType.Charge);
+				mountAgent.ClearTargetFrame();
+				mountAgent.SetTargetPosition(main.Position.AsVec2);
 			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			(_formalDuelTargetFormation ?? target.Formation)?.SetMovementOrder(MovementOrder.MovementOrderCharge);
 		}
 		catch
 		{

@@ -94,21 +94,21 @@ public class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyGroup("4. 开发者选项")]
 	public bool EnableTokenStatsLog { get; set; } = true;
 
-	[SettingPropertyInteger("知识直通条数上限", 1, 20, "0", Order = 0, RequireRestart = false, HintText = "知识检索按得分排序后，直接放行前 N 条。默认 2。")]
-	[SettingPropertyGroup("5. 知识检索（TopN）")]
-	public int KnowledgeDirectTopN { get; set; } = 2;
+	[SettingPropertyInteger("知识返回上限", 1, 12, "0", Order = 0, RequireRestart = false, HintText = "控制每次对话最多向 AI 提供多少条相关知识。系统会自动推导召回和精排数量；若实际高相关知识不足，不会为了凑数硬塞。默认 4。")]
+	[SettingPropertyGroup("5. 知识检索（返回）")]
+	public int KnowledgeDirectTopN { get; set; } = 4;
 
 	[SettingPropertyInteger("近期对话轮数", 1, 80, "0", Order = 1, RequireRestart = false, HintText = "每轮发送最近 N 轮对话历史到 AI。旧记忆召回仍会按现有机制检索。默认 20。")]
-	[SettingPropertyGroup("5. 知识检索（TopN）")]
+	[SettingPropertyGroup("5. 知识检索（返回）")]
 	public int RecentDialogueTurns { get; set; } = 20;
 
-	[SettingPropertyInteger("旧记忆召回行数上限", 1, 20, "0", Order = 2, RequireRestart = false, HintText = "旧记忆按语义排序后，直通前 N 行。仅影响【检索到的久远相关记忆】。默认 2。")]
-	[SettingPropertyGroup("5. 知识检索（TopN）")]
-	public int HistoryRecallTopN { get; set; } = 2;
+	[SettingPropertyInteger("长期记忆返回上限", 1, 12, "0", Order = 2, RequireRestart = false, HintText = "控制每次对话最多向 AI 提供多少条长期记忆命中。系统会自动推导召回和精排数量；若实际高相关记忆不足，不会为了凑数硬塞。默认 4。")]
+	[SettingPropertyGroup("5. 知识检索（返回）")]
+	public int HistoryRecallTopN { get; set; } = 4;
 
-	[SettingPropertyInteger("规则直通条数上限", 1, 4, "0", Order = 0, RequireRestart = false, HintText = "规则类（决斗/交易/借贷/地理/扩展规则）按得分排序后，直接放行前 N 条。默认 1。")]
-	[SettingPropertyGroup("6. 规则触发（TopN）")]
-	public int GuardrailDirectTopN { get; set; } = 1;
+	[SettingPropertyInteger("规则返回上限", 1, 12, "0", Order = 0, RequireRestart = false, HintText = "控制每次对话最多向 AI 提供多少条附加规则。系统会自动推导召回和精排数量；若实际高相关规则不足，不会为了凑数硬塞。默认 4。")]
+	[SettingPropertyGroup("6. 规则触发（返回）")]
+	public int GuardrailDirectTopN { get; set; } = 4;
 
 	[SettingPropertyBool("启用TTS语音", Order = 0, RequireRestart = false, HintText = "总开关。关闭后，NPC 不再播放 TTS 语音，并回退到纯文本气泡显示。")]
 	[SettingPropertyGroup("7. 火山引擎 TTS（专用）")]
@@ -192,9 +192,7 @@ public class DuelSettings : AttributeGlobalSettings<DuelSettings>
 
 	public bool KnowledgeSemanticFirst { get; set; } = true;
 
-	public bool KnowledgeKeywordFallback { get; set; } = true;
-
-	public int KnowledgeSemanticTopK { get; set; } = 2;
+	public int KnowledgeSemanticTopK { get; set; } = 4;
 
 	public static DuelSettings GetSettings()
 	{

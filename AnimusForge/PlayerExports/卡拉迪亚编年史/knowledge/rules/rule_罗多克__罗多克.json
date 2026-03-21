@@ -1,0 +1,26 @@
+﻿{
+  "Id": "rule_罗多克",
+  "Keywords": [
+    "罗多克",
+    "南瓦兰迪亚",
+    "自由之地"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "罗多克是瓦兰迪亚南部土地，是瓦兰迪亚的祖地（沙拉斯，加伦），瓦兰迪亚的温和派都在这一地区"
+    }
+  ],
+  "TextMappings": []
+}

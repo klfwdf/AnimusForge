@@ -1,0 +1,40 @@
+﻿{
+  "Id": "rule_云梯",
+  "Keywords": [
+    "云梯"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "云梯是大梯子，攻城用的，具体不清楚"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "engineering": 50
+        }
+      },
+      "Content": "云梯主梯采用了固定式装置，简化了架梯程序，缩短了架梯时间，而活动的上城梯的设计，则大大降低了云梯在接敌前的高度。攻城时只需将主梯停靠城下，然后再在主梯上架设上城梯，便可“枕城而上”，从而减少了敌前架梯的危险和艰难，同时又保证云梯在登城前不过早与城缘接近，免遭守军破坏。而敌军则会用钩叉将云梯推下去，防止敌军上楼"
+    }
+  ],
+  "TextMappings": []
+}

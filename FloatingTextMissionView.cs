@@ -291,16 +291,13 @@ public class FloatingTextMissionView : MissionView
 			state.VM.Y = -10000f;
 			return;
 		}
-		float num = 0f;
-		float num2 = 0f;
 		Vec2 vec = sceneView.WorldPointToScreenPoint(bubbleAnchor);
 		if (!IsFinite(vec) || vec.x < -0.25f || vec.x > 1.25f || vec.y < -0.25f || vec.y > 1.25f)
 		{
 			HideBubble(state);
 			return;
 		}
-		num = Screen.RealScreenResolutionWidth;
-		num2 = Screen.RealScreenResolutionHeight;
+		GetUiCanvasSize(out var num, out var num2);
 		float num3 = state.VM.BubbleWidth;
 		if (num3 <= 0f)
 		{
@@ -313,6 +310,26 @@ public class FloatingTextMissionView : MissionView
 		{
 			Logger.Log("FloatingText", $"[Position] First valid position: normalized=({vec.x:F3},{vec.y:F3}) -> ui=({state.VM.X:F0},{state.VM.Y:F0}), screenRes=({num:F0},{num2:F0})");
 			_debugLoggedOnce = true;
+		}
+	}
+
+	private void GetUiCanvasSize(out float width, out float height)
+	{
+		width = 1920f;
+		height = 1080f;
+		try
+		{
+			if (_layer != null && _layer.UIContext != null)
+			{
+				float num = Math.Max(0.0001f, _layer.UIContext.CustomInverseScale);
+				float num2 = Math.Max(0.0001f, _layer.UsableArea.x);
+				float num3 = Math.Max(0.0001f, _layer.UsableArea.y);
+				width = Screen.RealScreenResolutionWidth * num2 * num;
+				height = Screen.RealScreenResolutionHeight * num3 * num;
+			}
+		}
+		catch
+		{
 		}
 	}
 

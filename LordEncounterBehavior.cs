@@ -2997,17 +2997,36 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			string stateKey = "not_applicable";
+			bool flag = false;
 			if (IsMeetingTauntApplicable(target))
 			{
-				stateKey = (HasMeetingTauntWarning(target) ? "battle_only" : "warn_or_battle");
+				flag = HasMeetingTauntWarning(target);
 			}
-			return AIConfigHandler.ResolveRuleRuntimeText("meeting_taunt", stateKey, forConstraint: false, SceneTauntBehavior.BuildTauntRuntimeTokens(isHeroMeeting: true));
+			return BuildMeetingTauntFallbackInstruction(target, flag);
 		}
 		catch
 		{
 			return "";
 		}
+	}
+
+	private static string BuildMeetingTauntFallbackInstruction(Hero target, bool warned)
+	{
+		if (!IsMeetingTauntApplicable(target))
+		{
+			return "";
+		}
+		string text = Hero.MainHero?.Name?.ToString()?.Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			text = "玩家";
+		}
+		text += "（玩家）";
+		if (warned)
+		{
+			return "你已警告过" + text + "。若还忍不了，就在句末输出[ACTION:MEETING_TAUNT_BATTLE]；这会把当前会面立刻升级为战斗，并按玩家攻击了你方军队来处理后果。";
+		}
+		return "若" + text + "挑衅你，可在句末输出[ACTION:MEETING_TAUNT_WARN]警告他；若忍无可忍，可直接输出[ACTION:MEETING_TAUNT_BATTLE]。这会把当前会面立刻升级为战斗，并按玩家攻击了你方军队来处理后果。";
 	}
 
 	internal static bool TryProcessMeetingTauntAction(Hero target, ref string content, out bool escalatedToBattle)

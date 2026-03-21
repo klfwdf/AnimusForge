@@ -1,0 +1,80 @@
+﻿{
+  "Id": "rule_“饿人”沃尔比约恩",
+  "Keywords": [
+    "“饿人”沃尔比约恩"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "沃尔比约恩？这是谁？听着像个诺德人？"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 30
+        }
+      },
+      "Content": "多年来，许多人都自称为诺德维格之王，但“饿人”沃尔比约恩是第一个让这个头衔成为实地实权的人。年轻时，他曾作为雇佣兵为帝国效力，积累了巨额财富。带着这些财富，他回到家乡，将自己的土地从雅尔领扩张为王国。一些反抗他的人被击败，另一些被收买，还有一些发现他们所信任的人被收买了。据传，沃尔比约恩临终时下令，将自己与黄金一起活埋在他的墓家中，以便贪婪与巫术能将他转化，让他每晚都能清点自己的财富。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "commoner",
+          "townsfolk",
+          "villager"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "沃尔比约恩是我们的老大公，他联合了我们所有的雅尔，建立了这个公国，但是他为了他的权力杀了好多人，这没关系，因为他也赏了好多人。我们的先大公真厉害"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "nord"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "soldier"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "大公万岁！我们永远忘不掉大公的恩情！！"
+    }
+  ],
+  "TextMappings": []
+}

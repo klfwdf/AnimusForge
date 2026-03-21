@@ -37,6 +37,8 @@ public static class AIConfigHandler
 
 		public float AmpScore;
 
+		public float RerankScore;
+
 		public float Delta;
 
 		public float Mean;
@@ -69,12 +71,24 @@ public static class AIConfigHandler
 
 		public string RejectReason;
 
+		public string MatchMode;
+
 		public bool Hit;
 	}
 
 	private sealed class GuardrailEvalSnapshot
 	{
 		public string Key;
+
+		public string MatchMode = "none";
+
+		public int IntentCount;
+
+		public int RecallPerIntent;
+
+		public int RerankPerIntent;
+
+		public int ReturnCap;
 
 		public Dictionary<string, GuardrailRuleEval> Rules = new Dictionary<string, GuardrailRuleEval>(StringComparer.OrdinalIgnoreCase);
 	}
@@ -86,6 +100,36 @@ public static class AIConfigHandler
 		public float[] Vector;
 
 		public float Weight = 1f;
+	}
+
+	private sealed class GuardrailRuleScore
+	{
+		public GuardrailRulePromptConfig Rule;
+
+		public float RawScore;
+
+		public float FinalScore;
+
+		public string MatchedSeed;
+
+		public string MatchedIntent;
+	}
+
+	private sealed class GuardrailRuleAggregate
+	{
+		public GuardrailRuleEval Eval;
+
+		public float ScoreSum;
+
+		public int HitCount;
+
+		public int BestRank = int.MaxValue;
+
+		public float BestScore;
+
+		public string MatchedSeed;
+
+		public string MatchedIntent;
 	}
 
 	private static string BuildSemanticHitRateDetail(string detail, string secondaryText)
@@ -193,15 +237,13 @@ public static class AIConfigHandler
 
 	private static bool GuardrailKnowledgeSemanticFirst => _guardrail?.KnowledgeRetrieval?.SemanticFirst ?? true;
 
-	private static bool GuardrailKnowledgeKeywordFallback => _guardrail?.KnowledgeRetrieval?.EnableKeywordFallback ?? true;
-
-	private static int GuardrailKnowledgeTopK => ClampKnowledgeTopK(_guardrail?.KnowledgeRetrieval?.SemanticTopK ?? 2);
+	private static int GuardrailKnowledgeTopK => ClampKnowledgeTopK(_guardrail?.KnowledgeRetrieval?.SemanticTopK ?? 4);
 
 	public static bool KnowledgeRetrievalEnabled
 	{
 		get
 		{
-			if (TryGetKnowledgeFromMcm(out var enabled, out var _, out var _, out var _))
+			if (TryGetKnowledgeFromMcm(out var enabled, out var _, out var _))
 			{
 				return enabled;
 			}
@@ -213,7 +255,7 @@ public static class AIConfigHandler
 	{
 		get
 		{
-			if (TryGetKnowledgeFromMcm(out var _, out var semanticFirst, out var _, out var _))
+			if (TryGetKnowledgeFromMcm(out var _, out var semanticFirst, out var _))
 			{
 				return semanticFirst;
 			}
@@ -221,23 +263,11 @@ public static class AIConfigHandler
 		}
 	}
 
-	public static bool KnowledgeKeywordFallback
-	{
-		get
-		{
-			if (TryGetKnowledgeFromMcm(out var _, out var _, out var keywordFallback, out var _))
-			{
-				return keywordFallback;
-			}
-			return GuardrailKnowledgeKeywordFallback;
-		}
-	}
-
 	public static int KnowledgeSemanticTopK
 	{
 		get
 		{
-			if (TryGetKnowledgeFromMcm(out var _, out var _, out var _, out var topK))
+			if (TryGetKnowledgeFromMcm(out var _, out var _, out var topK))
 			{
 				return topK;
 			}
@@ -394,12 +424,13 @@ public static class AIConfigHandler
 		catch
 		{
 		}
+		list = IntentQueryOptimizer.OptimizeSplitIntents(list, Math.Max(1, maxParts + 1));
 		if (list.Count <= 0)
 		{
 			string text9 = NormalizeSemanticText(input);
 			if (!string.IsNullOrWhiteSpace(text9))
 			{
-				list.Add(text9);
+				list = IntentQueryOptimizer.OptimizeSplitIntents(new List<string> { text9 }, 1);
 			}
 		}
 		return list;
@@ -1115,7 +1146,7 @@ public static class AIConfigHandler
 			string text2 = NormalizeSemanticText(secondaryText);
 			if (!string.IsNullOrWhiteSpace(text2) && !string.Equals(text2, NormalizeSemanticText(userText), StringComparison.Ordinal))
 			{
-				appendInputs(SplitGuardrailIntents(text2), 1f);
+				appendInputs(SplitGuardrailIntents(text2), 0.3f);
 			}
 			if (list.Count <= 0)
 			{
@@ -1154,6 +1185,7 @@ public static class AIConfigHandler
 				Key = text
 			};
 			List<GuardrailRuleEval> list4 = new List<GuardrailRuleEval>();
+			Dictionary<string, GuardrailRulePromptConfig> dictionary = new Dictionary<string, GuardrailRulePromptConfig>(StringComparer.OrdinalIgnoreCase);
 			for (int j = 0; j < allEnabledRulePrompts.Count; j++)
 			{
 				GuardrailRulePromptConfig guardrailRulePromptConfig = allEnabledRulePrompts[j];
@@ -1212,86 +1244,295 @@ public static class AIConfigHandler
 					MatchedIntent = matchedIntent,
 					RawInput = num,
 					RawContext = num2,
-					MixedRaw = mixedRaw
+					MixedRaw = mixedRaw,
+					AmpScore = mixedRaw,
+					RerankScore = mixedRaw
 				};
 				list4.Add(guardrailRuleEval);
+				dictionary[id] = guardrailRulePromptConfig;
 				guardrailEvalSnapshot.Rules[id] = guardrailRuleEval;
 			}
-			list4 = list4.OrderByDescending((GuardrailRuleEval x) => x.RawInput).ThenBy((GuardrailRuleEval x) => x.RuleTag, StringComparer.OrdinalIgnoreCase).ToList();
-			float num6 = ((list4.Count > 0) ? list4.Average((GuardrailRuleEval x) => x.MixedRaw) : 0f);
-			int guardrailTopNFromMcm = GetGuardrailTopNFromMcm();
-			int num7 = Math.Max(2, Math.Min(5, (int)Math.Ceiling((float)list4.Count * 0.25f)));
-			float topGap = ((list4.Count > 1) ? (list4[0].RawInput - list4[1].RawInput) : 1f);
-			for (int num8 = 0; num8 < list4.Count; num8++)
+			int guardrailReturnCapFromMcm = GuardrailRuleReturnCap;
+			int num6 = Math.Max(1, list.Count);
+			int guardrailRerankBudget = GetGuardrailRerankBudget(guardrailReturnCapFromMcm);
+			int guardrailPerIntentRerank = GetGuardrailPerIntentRerank(guardrailRerankBudget, num6);
+			int guardrailPerIntentRecall = GetGuardrailPerIntentRecall(guardrailPerIntentRerank);
+			guardrailEvalSnapshot.IntentCount = num6;
+			guardrailEvalSnapshot.ReturnCap = guardrailReturnCapFromMcm;
+			guardrailEvalSnapshot.RerankPerIntent = guardrailPerIntentRerank;
+			guardrailEvalSnapshot.RecallPerIntent = guardrailPerIntentRecall;
+			OnnxCrossEncoderReranker onnxCrossEncoderReranker = null;
+			bool flag2 = false;
+			try
 			{
-				GuardrailRuleEval guardrailRuleEval2 = list4[num8];
-				guardrailRuleEval2.Mean = num6;
-				guardrailRuleEval2.Rank = num8 + 1;
-				float num9 = -1f;
-				string maxOtherTag = "";
-				for (int num10 = 0; num10 < list4.Count; num10++)
+				onnxCrossEncoderReranker = OnnxCrossEncoderReranker.Instance;
+				flag2 = onnxCrossEncoderReranker != null && onnxCrossEncoderReranker.IsAvailable;
+			}
+			catch
+			{
+				flag2 = false;
+			}
+			string text4 = (flag2 ? ((list.Count > 1) ? "rerank_multi" : "rerank") : ((list.Count > 1) ? "semantic_multi" : "semantic"));
+			guardrailEvalSnapshot.MatchMode = text4;
+			Dictionary<string, GuardrailRuleAggregate> dictionary2 = new Dictionary<string, GuardrailRuleAggregate>(StringComparer.OrdinalIgnoreCase);
+			for (int k = 0; k < list.Count; k++)
+			{
+				GuardrailIntentInput guardrailIntentInput = list[k];
+				if (guardrailIntentInput?.Vector == null || guardrailIntentInput.Vector.Length == 0)
 				{
-					if (num10 != num8 && list4[num10].RawInput > num9)
+					continue;
+				}
+				List<GuardrailRuleScore> list5 = new List<GuardrailRuleScore>();
+				for (int l = 0; l < allEnabledRulePrompts.Count; l++)
+				{
+					GuardrailRulePromptConfig guardrailRulePromptConfig2 = allEnabledRulePrompts[l];
+					if (guardrailRulePromptConfig2 == null || string.IsNullOrWhiteSpace(guardrailRulePromptConfig2.Id))
 					{
-						num9 = list4[num10].RawInput;
-						maxOtherTag = list4[num10].RuleTag;
+						continue;
+					}
+					string id2 = guardrailRulePromptConfig2.Id;
+					guardrailEvalSnapshot.Rules.TryGetValue(id2, out var value);
+					List<string> list6 = BuildRuleSemanticSeeds(id2, guardrailRulePromptConfig2.Instruction ?? "", guardrailRulePromptConfig2.TriggerKeywords);
+					float num7 = 0f;
+					string text5 = "";
+					for (int m = 0; m < list6.Count; m++)
+					{
+						string text6 = list6[m];
+						if (string.IsNullOrWhiteSpace(text6) || !TryGetPhraseEmbedding(text6, out var vec3) || vec3 == null || vec3.Length == 0)
+						{
+							continue;
+						}
+						float num8 = DotProductNormalized(guardrailIntentInput.Vector, vec3) * Math.Max(0f, guardrailIntentInput.Weight);
+						if (num8 > num7)
+						{
+							num7 = num8;
+							text5 = text6;
+						}
+					}
+					float num9 = ((flag && value != null) ? value.RawContext : 0f);
+					float num10 = 0f;
+					if (flag)
+					{
+						num10 = (IsBuiltInRuleTag(id2) ? 0f : 0.12f);
+					}
+					float num11 = (flag ? (num7 * (1f - num10) + num9 * num10) : num7);
+					list5.Add(new GuardrailRuleScore
+					{
+						Rule = guardrailRulePromptConfig2,
+						RawScore = num11,
+						FinalScore = num11,
+						MatchedSeed = text5,
+						MatchedIntent = guardrailIntentInput.Text
+					});
+				}
+				list5 = list5.OrderByDescending((GuardrailRuleScore x) => x.RawScore).ThenBy((GuardrailRuleScore x) => x?.Rule?.Id ?? "", StringComparer.OrdinalIgnoreCase).Take(guardrailPerIntentRecall).ToList();
+				if (list5.Count <= 0)
+				{
+					continue;
+				}
+				int num12 = Math.Min(guardrailPerIntentRerank, list5.Count);
+				List<GuardrailRuleScore> list7 = new List<GuardrailRuleScore>();
+				List<string> rerankTexts = null;
+				List<float> rerankScores = null;
+				bool flag3 = false;
+				if (flag2)
+				{
+					rerankTexts = new List<string>(num12);
+					for (int n = 0; n < num12; n++)
+					{
+						GuardrailRuleScore guardrailRuleScore = list5[n];
+						rerankTexts.Add((guardrailRuleScore?.Rule == null) ? "" : BuildGuardrailRuleRerankText(guardrailRuleScore.Rule));
+					}
+					flag3 = onnxCrossEncoderReranker.TryScoreBatch(guardrailIntentInput.Text, rerankTexts, out rerankScores) && rerankScores != null && rerankScores.Count == num12;
+				}
+				for (int n = 0; n < num12; n++)
+				{
+					GuardrailRuleScore guardrailRuleScore = list5[n];
+					if (guardrailRuleScore?.Rule == null)
+					{
+						continue;
+					}
+					float num13 = guardrailRuleScore.RawScore;
+					if (flag2 && flag3 && rerankTexts != null && n < rerankTexts.Count && !string.IsNullOrWhiteSpace(rerankTexts[n]) && rerankScores != null && n < rerankScores.Count)
+					{
+						num13 = rerankScores[n];
+					}
+					list7.Add(new GuardrailRuleScore
+					{
+						Rule = guardrailRuleScore.Rule,
+						RawScore = guardrailRuleScore.RawScore,
+						FinalScore = num13,
+						MatchedSeed = guardrailRuleScore.MatchedSeed,
+						MatchedIntent = guardrailRuleScore.MatchedIntent
+					});
+				}
+				List<GuardrailRuleScore> list8 = SelectGuardrailCandidateScores(list7, (flag2 && flag3) ? "cross_encoder" : "recall_fallback", guardrailIntentInput.Text, num12);
+				for (int num14 = 0; num14 < list8.Count; num14++)
+				{
+					GuardrailRuleScore guardrailRuleScore2 = list8[num14];
+					if (guardrailRuleScore2?.Rule == null)
+					{
+						continue;
+					}
+					string text8 = (guardrailRuleScore2.Rule.Id ?? "").Trim();
+					if (string.IsNullOrWhiteSpace(text8) || !guardrailEvalSnapshot.Rules.TryGetValue(text8, out var value2))
+					{
+						continue;
+					}
+					if (!dictionary2.TryGetValue(text8, out var value3))
+					{
+						value3 = new GuardrailRuleAggregate
+						{
+							Eval = value2
+						};
+					}
+					value3.ScoreSum += guardrailRuleScore2.FinalScore;
+					value3.HitCount++;
+					if (num14 + 1 < value3.BestRank)
+					{
+						value3.BestRank = num14 + 1;
+					}
+					if (guardrailRuleScore2.FinalScore >= value3.BestScore)
+					{
+						value3.BestScore = guardrailRuleScore2.FinalScore;
+						value3.MatchedSeed = guardrailRuleScore2.MatchedSeed;
+						value3.MatchedIntent = guardrailRuleScore2.MatchedIntent;
+					}
+					dictionary2[text8] = value3;
+				}
+			}
+			for (int num15 = 0; num15 < list4.Count; num15++)
+			{
+				GuardrailRuleEval guardrailRuleEval2 = list4[num15];
+				if (guardrailRuleEval2 != null)
+				{
+					guardrailRuleEval2.Candidate = false;
+					guardrailRuleEval2.AmpScore = guardrailRuleEval2.MixedRaw;
+					guardrailRuleEval2.RerankScore = guardrailRuleEval2.MixedRaw;
+					guardrailRuleEval2.MatchMode = text4;
+				}
+			}
+			int num16 = 0;
+			if (dictionary2.Count > 0)
+			{
+				int num17 = Math.Max(guardrailReturnCapFromMcm * 2, guardrailPerIntentRerank * Math.Min(list.Count, 3));
+				if (num17 < guardrailReturnCapFromMcm)
+				{
+					num17 = guardrailReturnCapFromMcm;
+				}
+				if (num17 > 24)
+				{
+					num17 = 24;
+				}
+				List<GuardrailRuleAggregate> list9 = (from x in dictionary2.Values
+					orderby Math.Min(1f, x.ScoreSum / (float)Math.Max(1, x.HitCount) + (float)(x.HitCount - 1) * 0.08f) descending, x.BestRank
+					select x).ThenBy((GuardrailRuleAggregate x) => x?.Eval?.RuleTag ?? "", StringComparer.OrdinalIgnoreCase).Take(num17).ToList();
+				num16 = list9.Count;
+				for (int num18 = 0; num18 < list9.Count; num18++)
+				{
+					GuardrailRuleAggregate guardrailRuleAggregate = list9[num18];
+					if (guardrailRuleAggregate?.Eval == null)
+					{
+						continue;
+					}
+					float num19 = guardrailRuleAggregate.ScoreSum / (float)Math.Max(1, guardrailRuleAggregate.HitCount) + (float)(guardrailRuleAggregate.HitCount - 1) * 0.08f;
+					if (num19 > 1f)
+					{
+						num19 = 1f;
+					}
+					guardrailRuleAggregate.Eval.Candidate = true;
+					guardrailRuleAggregate.Eval.AmpScore = num19;
+					guardrailRuleAggregate.Eval.RerankScore = guardrailRuleAggregate.BestScore;
+					guardrailRuleAggregate.Eval.MatchMode = text4;
+					if (!string.IsNullOrWhiteSpace(guardrailRuleAggregate.MatchedSeed))
+					{
+						guardrailRuleAggregate.Eval.MatchedSeed = guardrailRuleAggregate.MatchedSeed;
+					}
+					if (!string.IsNullOrWhiteSpace(guardrailRuleAggregate.MatchedIntent))
+					{
+						guardrailRuleAggregate.Eval.MatchedIntent = guardrailRuleAggregate.MatchedIntent;
 					}
 				}
-				GuardrailGateProfile guardrailGateProfile = GetGuardrailGateProfile(guardrailRuleEval2.RuleTag, userText.Length);
-				float delta = ((num9 < -0.5f) ? guardrailRuleEval2.MixedRaw : (guardrailRuleEval2.MixedRaw - num9));
-				float ampScore = ApplyGuardrailAmplifiedScore(guardrailRuleEval2.MixedRaw, num9, num6, guardrailGateProfile);
-				bool candidate = guardrailRuleEval2.Rank <= num7;
-				bool flag2 = guardrailRuleEval2.MixedRaw >= guardrailGateProfile.RawFloor;
-				float num11 = 0f;
-				float num12 = 0f;
+			}
+			list4 = list4.OrderByDescending((GuardrailRuleEval x) => x.Candidate ? 1 : 0).ThenByDescending((GuardrailRuleEval x) => x.Candidate ? x.AmpScore : x.MixedRaw).ThenBy((GuardrailRuleEval x) => x.RuleTag, StringComparer.OrdinalIgnoreCase).ToList();
+			float num20 = ((list4.Count > 0) ? list4.Average((GuardrailRuleEval x) => x.Candidate ? x.AmpScore : x.MixedRaw) : 0f);
+			float num21 = ((list4.Count > 1) ? ((list4[0].Candidate ? list4[0].AmpScore : list4[0].MixedRaw) - (list4[1].Candidate ? list4[1].AmpScore : list4[1].MixedRaw)) : 1f);
+			for (int num22 = 0; num22 < list4.Count; num22++)
+			{
+				GuardrailRuleEval guardrailRuleEval3 = list4[num22];
+				guardrailRuleEval3.Mean = num20;
+				guardrailRuleEval3.Rank = num22 + 1;
+				float num23 = -1f;
+				string maxOtherTag = "";
+				for (int num24 = 0; num24 < list4.Count; num24++)
+				{
+					if (num24 == num22)
+					{
+						continue;
+					}
+					GuardrailRuleEval guardrailRuleEval4 = list4[num24];
+					float num25 = (guardrailRuleEval4.Candidate ? guardrailRuleEval4.AmpScore : guardrailRuleEval4.MixedRaw);
+					if (num25 > num23)
+					{
+						num23 = num25;
+						maxOtherTag = guardrailRuleEval4.RuleTag;
+					}
+				}
+				float num26 = guardrailRuleEval3.Candidate ? guardrailRuleEval3.AmpScore : guardrailRuleEval3.MixedRaw;
+				GuardrailGateProfile guardrailGateProfile = GetGuardrailGateProfile(guardrailRuleEval3.RuleTag, userText.Length);
+				float delta = ((num23 < -0.5f) ? num26 : (num26 - num23));
+				float num27 = 0f;
+				float num28 = 0f;
 				string bestSeed = "";
 				bool lexicalAnchor = false;
-				if (IsBuiltInRuleTag(guardrailRuleEval2.RuleTag))
+				if (IsBuiltInRuleTag(guardrailRuleEval3.RuleTag))
 				{
-					num12 = GetBuiltInIntentEvidenceGate(guardrailRuleEval2.RuleTag, userText.Length);
-					num11 = ComputeBuiltInIntentSemanticEvidence(guardrailRuleEval2.RuleTag, list, out bestSeed);
-					lexicalAnchor = num11 >= num12;
+					num28 = GetBuiltInIntentEvidenceGate(guardrailRuleEval3.RuleTag, userText.Length);
+					num27 = ComputeBuiltInIntentSemanticEvidence(guardrailRuleEval3.RuleTag, list, out bestSeed);
+					lexicalAnchor = num27 >= num28;
 				}
-				bool flag3 = guardrailRuleEval2.Rank <= guardrailTopNFromMcm;
-				bool forceHit = false;
-				bool absHit = flag3;
-				bool relHit = false;
-				bool highAmpHit = false;
-				string rejectReason = (flag3 ? ("topn_direct(" + guardrailRuleEval2.Rank + "/" + guardrailTopNFromMcm + ")") : "topn_overflow");
-				guardrailRuleEval2.MaxOther = num9;
-				guardrailRuleEval2.MaxOtherTag = maxOtherTag;
-				guardrailRuleEval2.Delta = delta;
-				guardrailRuleEval2.AmpScore = ampScore;
-				guardrailRuleEval2.TopGap = topGap;
-				guardrailRuleEval2.IntentEvidence = num11;
-				guardrailRuleEval2.IntentGate = num12;
-				guardrailRuleEval2.IntentSeed = bestSeed;
-				guardrailRuleEval2.LexicalAnchor = lexicalAnchor;
-				guardrailRuleEval2.Candidate = candidate;
-				guardrailRuleEval2.AbsHit = absHit;
-				guardrailRuleEval2.RelHit = relHit;
-				guardrailRuleEval2.HighAmpHit = highAmpHit;
-				guardrailRuleEval2.ForceHit = forceHit;
-				guardrailRuleEval2.RejectReason = rejectReason;
-				guardrailRuleEval2.Hit = flag3;
+				bool flag3 = guardrailRuleEval3.Candidate && guardrailRuleEval3.Rank <= guardrailReturnCapFromMcm;
+				string rejectReason = (flag3 ? (text4 + "_return(" + guardrailRuleEval3.Rank + "/" + guardrailReturnCapFromMcm + ")") : (guardrailRuleEval3.Candidate ? (text4 + "_return_overflow") : (text4 + "_recall_miss")));
+				guardrailRuleEval3.MaxOther = num23;
+				guardrailRuleEval3.MaxOtherTag = maxOtherTag;
+				guardrailRuleEval3.Delta = delta;
+				guardrailRuleEval3.TopGap = num21;
+				guardrailRuleEval3.IntentEvidence = num27;
+				guardrailRuleEval3.IntentGate = num28;
+				guardrailRuleEval3.IntentSeed = bestSeed;
+				guardrailRuleEval3.LexicalAnchor = lexicalAnchor;
+				guardrailRuleEval3.AbsHit = flag3;
+				guardrailRuleEval3.RelHit = false;
+				guardrailRuleEval3.HighAmpHit = false;
+				guardrailRuleEval3.ForceHit = false;
+				guardrailRuleEval3.RejectReason = rejectReason;
+				guardrailRuleEval3.MatchMode = text4;
+				guardrailRuleEval3.Hit = flag3;
+			}
+			try
+			{
+				Logger.Log("GuardrailSemantic", $"candidate_pool mode={text4} returnCap={guardrailReturnCapFromMcm} rerankBudget={guardrailRerankBudget} rerankPerIntent={guardrailPerIntentRerank} recallPerIntent={guardrailPerIntentRecall} intents={num6} got={num16}");
+			}
+			catch
+			{
 			}
 			try
 			{
 				int count = list4.Count;
-				int num13 = 0;
-				for (int num14 = 0; num14 < list4.Count; num14++)
+				int num29 = 0;
+				for (int num30 = 0; num30 < list4.Count; num30++)
 				{
-					GuardrailRuleEval guardrailRuleEval3 = list4[num14];
-					if (guardrailRuleEval3 != null)
+					GuardrailRuleEval guardrailRuleEval5 = list4[num30];
+					if (guardrailRuleEval5 != null)
 					{
-						if (guardrailRuleEval3.Hit)
+						if (guardrailRuleEval5.Hit)
 						{
-							num13++;
+							num29++;
 						}
-						Logger.RecordHitRate("guardrail", guardrailRuleEval3.RuleTag ?? "__unknown__", guardrailRuleEval3.Hit, BuildSemanticHitRateDetail($"raw={guardrailRuleEval3.RawInput:0.000} amp={guardrailRuleEval3.AmpScore:0.000} rank={guardrailRuleEval3.Rank} reason={guardrailRuleEval3.RejectReason}", secondaryText), userText);
+						Logger.RecordHitRate("guardrail", guardrailRuleEval5.RuleTag ?? "__unknown__", guardrailRuleEval5.Hit, BuildSemanticHitRateDetail($"raw={guardrailRuleEval5.RawInput:0.000} rerank={guardrailRuleEval5.RerankScore:0.000} amp={guardrailRuleEval5.AmpScore:0.000} rank={guardrailRuleEval5.Rank} reason={guardrailRuleEval5.RejectReason}", secondaryText), userText);
 					}
 				}
-				Logger.RecordHitRate("guardrail", "__query__", num13 > 0, BuildSemanticHitRateDetail($"hits={num13}/{count} inputLen={userText.Length}", secondaryText), userText);
+				Logger.RecordHitRate("guardrail", "__query__", num29 > 0, BuildSemanticHitRateDetail($"hits={num29}/{count} inputLen={userText.Length}", secondaryText), userText);
 			}
 			catch
 			{
@@ -1336,6 +1577,163 @@ public static class AIConfigHandler
 				}
 			}
 		}
+	}
+
+	private static string BuildGuardrailRuleRerankText(GuardrailRulePromptConfig rule)
+	{
+		try
+		{
+			if (rule == null)
+			{
+				return "";
+			}
+			string text = NormalizeSemanticText(rule.Id);
+			string text2 = NormalizeSemanticText(rule.Group);
+			string text3 = NormalizeSemanticText(BuildRuleInstructionSeed(rule.Id, rule.Instruction));
+			List<string> list = NormalizeStringList(rule.TriggerKeywords, 48);
+			if (list.Count > 6)
+			{
+				list = list.Take(6).ToList();
+			}
+			StringBuilder stringBuilder = new StringBuilder();
+			if (!string.IsNullOrWhiteSpace(text2))
+			{
+				stringBuilder.AppendLine("规则组: " + text2);
+			}
+			if (!string.IsNullOrWhiteSpace(text))
+			{
+				stringBuilder.AppendLine("规则ID: " + text);
+			}
+			if (!string.IsNullOrWhiteSpace(text3))
+			{
+				stringBuilder.AppendLine("用途: " + text3);
+			}
+			if (list.Count > 0)
+			{
+				stringBuilder.AppendLine("触发词: " + string.Join(" / ", list));
+			}
+			return NormalizeSemanticText(stringBuilder.ToString());
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	private static int GetGuardrailRerankBudget(int returnCap)
+	{
+		int num = Math.Max(1, returnCap) * 3;
+		if (num < 8)
+		{
+			num = 8;
+		}
+		if (num > 36)
+		{
+			num = 36;
+		}
+		return num;
+	}
+
+	private static int GetGuardrailPerIntentRerank(int rerankBudget, int intentCount)
+	{
+		int num = ((intentCount > 0) ? intentCount : 1);
+		int num2 = (int)Math.Round((double)rerankBudget / (double)num, MidpointRounding.AwayFromZero);
+		if (num2 < 4)
+		{
+			num2 = 4;
+		}
+		if (num2 > 12)
+		{
+			num2 = 12;
+		}
+		return num2;
+	}
+
+	private static int GetGuardrailPerIntentRecall(int rerankPerIntent)
+	{
+		int num = (int)Math.Round((double)rerankPerIntent * 2.5, MidpointRounding.AwayFromZero);
+		if (num < 10)
+		{
+			num = 10;
+		}
+		if (num > 30)
+		{
+			num = 30;
+		}
+		return num;
+	}
+
+	private static List<GuardrailRuleScore> SelectGuardrailCandidateScores(List<GuardrailRuleScore> scored, string source, string input, int topK)
+	{
+		List<GuardrailRuleScore> list = new List<GuardrailRuleScore>();
+		try
+		{
+			int num = ((topK <= 0) ? 4 : topK);
+			float num2 = 0.21f;
+			List<GuardrailRuleScore> list2 = (from x in scored
+				where x?.Rule != null && !float.IsNaN(x.FinalScore)
+				orderby x.FinalScore descending, x.RawScore descending
+				select x).ThenBy((GuardrailRuleScore x) => x?.Rule?.Id ?? "", StringComparer.OrdinalIgnoreCase).ToList();
+			if (list2.Count <= 0)
+			{
+				return list;
+			}
+			float num3 = ((list2.Count > 0) ? list2[0].FinalScore : 0f);
+			float num4 = ((list2.Count > 1) ? list2[1].FinalScore : 0f);
+			float num5 = ((list2.Count > 0) ? list2[0].RawScore : 0f);
+			float num6 = ((list2.Count > 1) ? list2[1].RawScore : 0f);
+			HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+			int num7 = 0;
+			for (int i = 0; i < list2.Count; i++)
+			{
+				if (list.Count >= num)
+				{
+					break;
+				}
+				GuardrailRuleScore guardrailRuleScore = list2[i];
+				if (guardrailRuleScore?.Rule == null || guardrailRuleScore.FinalScore < num2)
+				{
+					continue;
+				}
+				string text = (guardrailRuleScore.Rule.Id ?? "").Trim();
+				if (string.IsNullOrWhiteSpace(text) || hashSet.Add(text))
+				{
+					list.Add(guardrailRuleScore);
+					num7++;
+				}
+			}
+			if (list.Count < num)
+			{
+				for (int j = 0; j < list2.Count; j++)
+				{
+					if (list.Count >= num)
+					{
+						break;
+					}
+					GuardrailRuleScore guardrailRuleScore2 = list2[j];
+					if (guardrailRuleScore2?.Rule == null)
+					{
+						continue;
+					}
+					string text2 = (guardrailRuleScore2.Rule.Id ?? "").Trim();
+					if (string.IsNullOrWhiteSpace(text2) || hashSet.Add(text2))
+					{
+						list.Add(guardrailRuleScore2);
+					}
+				}
+			}
+			try
+			{
+				Logger.Log("GuardrailSemantic", $"semantic_accept source={source} mode=scored selected={list.Count} strictSelected={num7} topN={num} minScore={num2:0.000} bestRaw={num3:0.000} second={num4:0.000} bestEvidence={num5:0.000} secondEvidence={num6:0.000}");
+			}
+			catch
+			{
+			}
+		}
+		catch
+		{
+		}
+		return list;
 	}
 
 	private static bool TryGetRuleEval(string userText, string secondaryText, string ruleTag, out GuardrailRuleEval eval)
@@ -1388,7 +1786,7 @@ public static class AIConfigHandler
 			{
 				text2 = text2.Substring(0, 48);
 			}
-			Logger.Log("GuardrailSemantic", $"rule={ruleTag} hit={eval.Hit} mode=semantic_topn raw={eval.RawInput:0.000} ctx={eval.RawContext:0.000} mixed={eval.MixedRaw:0.000} amp={eval.AmpScore:0.000} delta={eval.Delta:0.000} topGap={eval.TopGap:0.000} rank={eval.Rank} candidate={eval.Candidate} other={eval.MaxOtherTag}@{eval.MaxOther:0.000} mean={eval.Mean:0.000} absHit={eval.AbsHit} relHit={eval.RelHit} highAmpHit={eval.HighAmpHit} forceHit={eval.ForceHit} intentEvidence={eval.IntentEvidence:0.000} intentGate={eval.IntentGate:0.000} lexicalAnchor={eval.LexicalAnchor} intentSeed={eval.IntentSeed} reason={eval.RejectReason} intent={text2}");
+			Logger.Log("GuardrailSemantic", $"rule={ruleTag} hit={eval.Hit} mode={eval.MatchMode} raw={eval.RawInput:0.000} ctx={eval.RawContext:0.000} mixed={eval.MixedRaw:0.000} rerank={eval.RerankScore:0.000} amp={eval.AmpScore:0.000} delta={eval.Delta:0.000} topGap={eval.TopGap:0.000} rank={eval.Rank} candidate={eval.Candidate} other={eval.MaxOtherTag}@{eval.MaxOther:0.000} mean={eval.Mean:0.000} absHit={eval.AbsHit} relHit={eval.RelHit} highAmpHit={eval.HighAmpHit} forceHit={eval.ForceHit} intentEvidence={eval.IntentEvidence:0.000} intentGate={eval.IntentGate:0.000} lexicalAnchor={eval.LexicalAnchor} intentSeed={eval.IntentSeed} reason={eval.RejectReason} intent={text2}");
 			return eval.Hit;
 		}
 		Logger.Log("GuardrailSemantic", "rule=" + ruleTag + " hit=False mode=semantic_unavailable");
@@ -1402,16 +1800,17 @@ public static class AIConfigHandler
 		return false;
 	}
 
-	public static List<GuardrailRuleHit> GetGuardrailSemanticRuleHits(string input, int maxCount = 6, bool includeBuiltInRules = false)
+	public static List<GuardrailRuleHit> GetGuardrailSemanticRuleHits(string input, int maxCount = 0, bool includeBuiltInRules = false)
 	{
 		return GetGuardrailSemanticRuleHits(input, null, maxCount, includeBuiltInRules);
 	}
 
-	public static List<GuardrailRuleHit> GetGuardrailSemanticRuleHits(string input, string secondaryInput, int maxCount = 6, bool includeBuiltInRules = false)
+	public static List<GuardrailRuleHit> GetGuardrailSemanticRuleHits(string input, string secondaryInput, int maxCount = 0, bool includeBuiltInRules = false)
 	{
 		List<GuardrailRuleHit> list = new List<GuardrailRuleHit>();
 		try
 		{
+			int num = ((maxCount > 0) ? ClampGuardrailReturnCap(maxCount) : GuardrailRuleReturnCap);
 			string text = NormalizeSemanticText(input);
 			if (string.IsNullOrWhiteSpace(text))
 			{
@@ -1447,9 +1846,9 @@ public static class AIConfigHandler
 			list = (from x in list
 				orderby x.Priority descending, x.Score descending
 				select x).ThenBy((GuardrailRuleHit x) => x.RuleId, StringComparer.OrdinalIgnoreCase).ToList();
-			if (maxCount > 0 && list.Count > maxCount)
+			if (num > 0 && list.Count > num)
 			{
-				list = list.Take(maxCount).ToList();
+				list = list.Take(num).ToList();
 			}
 		}
 		catch
@@ -1458,7 +1857,7 @@ public static class AIConfigHandler
 		return list;
 	}
 
-	public static string BuildMatchedExtraRuleInstructions(string input, int maxRules = 4)
+	public static string BuildMatchedExtraRuleInstructions(string input, int maxRules = 0)
 	{
 		return BuildMatchedExtraRuleInstructions(input, null, maxRules, hasAnyHero: true);
 	}
@@ -2601,48 +3000,49 @@ public static class AIConfigHandler
 		{
 			v = 1;
 		}
-		if (v > 64)
+		if (v > 12)
 		{
-			v = 64;
+			v = 12;
 		}
 		return v;
 	}
 
-	private static int ClampGuardrailTopN(int v)
+	public static int GuardrailRuleReturnCap => GetGuardrailReturnCapFromMcm();
+
+	private static int ClampGuardrailReturnCap(int v)
 	{
 		if (v < 1)
 		{
 			v = 1;
 		}
-		if (v > 4)
+		if (v > 12)
 		{
-			v = 4;
+			v = 12;
 		}
 		return v;
 	}
 
-	private static int GetGuardrailTopNFromMcm()
+	private static int GetGuardrailReturnCapFromMcm()
 	{
 		try
 		{
 			DuelSettings duelSettings = TryGetMcmSettings();
 			if (duelSettings != null)
 			{
-				return ClampGuardrailTopN(duelSettings.GuardrailDirectTopN);
+				return ClampGuardrailReturnCap(duelSettings.GuardrailDirectTopN);
 			}
 		}
 		catch
 		{
 		}
-		return 1;
+		return 4;
 	}
 
-	private static bool TryGetKnowledgeFromMcm(out bool enabled, out bool semanticFirst, out bool keywordFallback, out int topK)
+	private static bool TryGetKnowledgeFromMcm(out bool enabled, out bool semanticFirst, out int topK)
 	{
 		enabled = true;
 		semanticFirst = true;
-		keywordFallback = false;
-		topK = 2;
+		topK = 4;
 		try
 		{
 			if (!UseMcmKnowledgeRetrieval())
@@ -2669,14 +3069,6 @@ public static class AIConfigHandler
 			catch
 			{
 				semanticFirst = true;
-			}
-			try
-			{
-				keywordFallback = duelSettings.KnowledgeKeywordFallback;
-			}
-			catch
-			{
-				keywordFallback = false;
 			}
 			try
 			{
@@ -2752,7 +3144,7 @@ public static class AIConfigHandler
 				num = 0;
 			}
 			string text = (KnowledgeRetrievalFromMcm ? "MCM" : "Guardrail");
-			Logger.Log("AIConfig", string.Format("配置加载成功。触发词(决斗/奖励/借贷/地理)={0}/{1}/{2}/{3}，扩展规则={4}，启用规则总数={5}。规则TopN={6}。知识命中({7}/TopN): {8}（语义优先={9}, 关键词兜底={10}, topK={11}）。", valueOrDefault, valueOrDefault2, valueOrDefault3, valueOrDefault4, valueOrDefault5, num, GetGuardrailTopNFromMcm(), text, KnowledgeRetrievalEnabled ? "开启" : "关闭", KnowledgeSemanticFirst, KnowledgeKeywordFallback, KnowledgeSemanticTopK));
+			Logger.Log("AIConfig", string.Format("配置加载成功。触发词(决斗/奖励/借贷/地理)={0}/{1}/{2}/{3}，扩展规则={4}，启用规则总数={5}。规则返回上限={6}。知识检索({7})：{8}（语义优先={9}, returnCap={10}）。", valueOrDefault, valueOrDefault2, valueOrDefault3, valueOrDefault4, valueOrDefault5, num, GetGuardrailReturnCapFromMcm(), text, KnowledgeRetrievalEnabled ? "开启" : "关闭", KnowledgeSemanticFirst, KnowledgeSemanticTopK));
 		}
 		catch (Exception ex)
 		{

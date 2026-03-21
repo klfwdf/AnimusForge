@@ -15,6 +15,7 @@
         "HeroIds": null,
         "Cultures": null,
         "KingdomIds": null,
+        "SettlementIds": null,
         "Roles": null,
         "IsFemale": null,
         "IsClanLeader": null,
@@ -30,6 +31,7 @@
         "KingdomIds": [
           "empire"
         ],
+        "SettlementIds": null,
         "Roles": [
           "lord"
         ],
@@ -47,6 +49,7 @@
         "KingdomIds": [
           "empire_s"
         ],
+        "SettlementIds": null,
         "Roles": [
           "lord"
         ],
@@ -64,6 +67,7 @@
         "KingdomIds": [
           "khuzait"
         ],
+        "SettlementIds": null,
         "Roles": [
           "lord"
         ],
@@ -81,6 +85,7 @@
           "aserai"
         ],
         "KingdomIds": null,
+        "SettlementIds": null,
         "Roles": null,
         "IsFemale": null,
         "IsClanLeader": null,
@@ -88,5 +93,6 @@
       },
       "Content": "南帝国与阿塞莱接壤，两国边界处于通往东方的重要商路，掌握了商路就是握住了整个卡拉迪亚大陆对东方巨额贸易的命脉，南帝国与阿塞莱为争夺商路控制权常有摩擦。"
     }
-  ]
+  ],
+  "TextMappings": []
 }

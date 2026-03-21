@@ -62,6 +62,11 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 			_wasTerminalKeyDown = false;
 			return;
 		}
+		if (HotkeyInputGuard.IsTextInputFocused())
+		{
+			_wasTerminalKeyDown = true;
+			return;
+		}
 		if (_wasTerminalKeyDown || _terminalUiActive || !IsCampaignMapLikeStateActive())
 		{
 			return;

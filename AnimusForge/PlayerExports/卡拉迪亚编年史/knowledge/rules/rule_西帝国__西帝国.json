@@ -11,6 +11,7 @@
         "HeroIds": null,
         "Cultures": null,
         "KingdomIds": null,
+        "SettlementIds": null,
         "Roles": null,
         "IsFemale": null,
         "IsClanLeader": null,
@@ -23,48 +24,10 @@
       "When": {
         "HeroIds": null,
         "Cultures": null,
-        "KingdomIds": null,
-        "Roles": null,
-        "IsFemale": null,
-        "IsClanLeader": null,
-        "SkillMin": null
-      },
-      "Content": "西帝国崇尚军人至上，遵循卡拉德帝国的军事制度，每一个合法公民都要进行军事预备役的训练。军人在这个国家受到推崇，他们可以通过战功获得土地，金钱，甚至是爵位"
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "HeroIds": null,
-        "Cultures": null,
-        "KingdomIds": null,
-        "Roles": null,
-        "IsFemale": null,
-        "IsClanLeader": null,
-        "SkillMin": null
-      },
-      "Content": "在这个国家，皇位的唯一认可来自于军队的支持。唯有百战百胜的骁勇将军，可以被军人们认为他们的领导者。对于这些帝国名利的追逐者来说，他们来说，“任何关于血统和元老院的说辞都会在长枪的推进下显得苍白无力”"
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "HeroIds": null,
-        "Cultures": null,
-        "KingdomIds": null,
-        "Roles": null,
-        "IsFemale": null,
-        "IsClanLeader": null,
-        "SkillMin": null
-      },
-      "Content": "西帝国的领土处于原卡拉德帝国的西部地区，完整的继承了卡拉德帝国为防备西部各方敌人所筹建的军团。西帝国的北方是卡拉迪亚大陆原住民建立的国家巴丹尼亚，和卡拉德帝国是世代仇恨，与西帝国一直处于战争或间接战争状态；西方则是侵占了原卡拉帝国西海岸的瓦兰迪亚，在潘德拉克战役之后，瓦兰迪亚与帝国彻底对立，与西帝国的战争也在所难免；南边则是一直沉默默不作声的沙漠国家阿塞莱，目前并不与西帝国交战，但谁知道会不会在西帝国衰落的时候冲上去猛烈的撕咬。"
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "HeroIds": null,
-        "Cultures": null,
         "KingdomIds": [
           "empire_w"
         ],
+        "SettlementIds": null,
         "Roles": [
           "lord"
         ],
@@ -86,6 +49,7 @@
         "KingdomIds": [
           "empire_w"
         ],
+        "SettlementIds": null,
         "Roles": [
           "lord"
         ],
@@ -97,19 +61,7 @@
         }
       },
       "Content": "西帝国的权力完全来自于军队的支持，一开始就几乎没有任何世俗偏见的晋升机制，吸引了大量的能人，但这些能人之中是不是也有希望当上皇帝的人呢？没有人希望自己的权利更少，这意味着成为这个帝国的皇帝必须有着震慑帝国其他领主的强大军事能力。一旦没有，那么帝国的皇帝，就极有可能易主。毕竟这里不认可卡拉德帝国的“元老院”法统和血统，军队的强权才是唯一的秩序。自由的晋升机制到来时是自由的秩序，而连暴力都是被默许的自由之一。"
-    },
-    {
-      "Priority": 0,
-      "When": {
-        "HeroIds": null,
-        "Cultures": null,
-        "KingdomIds": null,
-        "Roles": null,
-        "IsFemale": null,
-        "IsClanLeader": null,
-        "SkillMin": null
-      },
-      "Content": ""
     }
-  ]
+  ],
+  "TextMappings": []
 }

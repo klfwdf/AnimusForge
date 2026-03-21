@@ -1,0 +1,24 @@
+﻿{
+  "Id": "rule_阿萨利格马",
+  "Keywords": [
+    "阿萨利格马"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "阿萨利格马是库赛特的顶级马，产自阿萨利格马场，吃着草原的牧草长大。它们又快又温顺，在速度几乎是全大陆第三的同时有着极其温顺的性格。只不过下盘有一点不稳，需要骑手调整身子姿态来避免马失前蹄，所以技巧要求比较高"
+    }
+  ],
+  "TextMappings": []
+}

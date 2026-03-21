@@ -1,0 +1,88 @@
+﻿{
+  "Id": "rule_加里俄斯",
+  "Keywords": [
+    "加里俄斯",
+    "加里俄斯大元帅",
+    "加里俄斯皇帝",
+    "加皇",
+    "西帝国统帅",
+    "西帝国皇帝"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "加里俄斯是西帝国皇帝，同时是军队的最高统帅，他爱兵如子，但‘爱’民如纸"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_w"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "commoner",
+          "notable",
+          "townsfolk",
+          "villager"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "加里俄斯是我们的皇帝呀，他当时称帝的时候，派人到处去逼着我们说“加里俄斯万万岁”，说迟一秒的全被他砍了，他又穷兵黩武，幸好俺们中原富足，要不然日子没法过了"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_w"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "加里俄斯皇帝万万岁！他能带我们打胜仗，带我们分红，和我们同甘共苦，我们永远支持他！！拉盖娅和卢孔就是俩傻逼，哪有我们伟大的大统领好？"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "加里俄斯穷兵黩武，手下又只有一帮兵痞，还公然违背了我们拉盖娅女皇归顺的旨意，紫袍加身自立为帝，真是不自量力而且愚蠢"
+    }
+  ],
+  "TextMappings": []
+}

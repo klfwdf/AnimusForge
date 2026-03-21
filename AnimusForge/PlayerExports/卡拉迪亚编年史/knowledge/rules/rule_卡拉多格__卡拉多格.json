@@ -1,0 +1,25 @@
+﻿{
+  "Id": "rule_卡拉多格",
+  "Keywords": [
+    "卡拉多格",
+    "卡拉多格至高王"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": ""
+    }
+  ],
+  "TextMappings": []
+}

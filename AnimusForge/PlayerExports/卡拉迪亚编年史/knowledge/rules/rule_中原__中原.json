@@ -1,0 +1,80 @@
+﻿{
+  "Id": "rule_中原",
+  "Keywords": [
+    "中原",
+    "卡拉迪亚中原",
+    "洛泰——贾尔马律斯平原"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "scouting": 120
+        }
+      },
+      "Content": "中原指乌卡利昂高原以南，以厄吕特律斯山为中心，珀拉斯海以北，东达奥尼石山的一片区域，主要以平原为主，包括洛泰平原，阿弥塔堤斯平原，贾尔马律斯平原三个主要区域。它是全大陆的人口中心，粮食中心，是全大陆最早开发的区域，早在纪元前就由帕拉人开垦这里的土地。这里主产粮食，亚麻，丝绸，人民富足且保守，他们勇猛尚武，保留着共和时期的踊跃参军传统，所以帝国的军头大部分都是中原人，如加里俄斯，克洛托耳等。他们还有民粹主义倾向，认为其他地方的人（包括帝国其他部分）都没有他们好"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "中原很富足，但是听说他们那的人很保守，不知道是不是真的，如果有机会，我一定会去中原看看，吃一吃他们烤的白面包"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": [
+          "castle_ew2",
+          "town_ew3",
+          "town_ew5",
+          "town_ew6"
+        ],
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "俺们中原人就是牛，你打听打听去，哪里有我们这美食多？白面包，烤猪排，蛋糕，点心，大麻籽小糕，都是一绝，俺们的文化也是最古老的，有很多传说，洛塔什的屠城，阿弥塔堤斯的地震，都是俺们这的。俺们不像别的人，俺们踏实肯干，不愿说话，虽说周边都是蛮子，俺们也不担心，俺们就愿意守好俺们的一亩三分地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_w"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "中原是我们的核心，丢了中原，我们就完了，这里产粮奇多，足够我们闭关自守，也足够我们出击外邦。我们中原人都是最棒的，其他人都是蛮子，我们支持加里俄斯皇帝和克洛托耳元帅，他们体恤我们，我们也为他们尽犬马之劳。"
+    }
+  ],
+  "TextMappings": []
+}

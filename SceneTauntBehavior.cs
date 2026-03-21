@@ -71,6 +71,10 @@ public class SceneTauntBehavior : CampaignBehaviorBase
 
 	private Dictionary<string, float> _lastObservedNativeCrimeByFactionStorage = new Dictionary<string, float>(StringComparer.OrdinalIgnoreCase);
 
+	private Dictionary<string, int> _criminalTrustRewardTenthBySettlement = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+
+	private Dictionary<string, int> _criminalTrustRewardTenthBySettlementStorage = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+
 	private bool _pendingForcedPlayerExecution;
 
 	private string _pendingForcedPlayerExecutionExecutorHeroId = "";
@@ -138,6 +142,14 @@ public class SceneTauntBehavior : CampaignBehaviorBase
 		{
 			_lastObservedNativeCrimeByFactionStorage = new Dictionary<string, float>(StringComparer.OrdinalIgnoreCase);
 		}
+		if (_criminalTrustRewardTenthBySettlement == null)
+		{
+			_criminalTrustRewardTenthBySettlement = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+		}
+		if (_criminalTrustRewardTenthBySettlementStorage == null)
+		{
+			_criminalTrustRewardTenthBySettlementStorage = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+		}
 		if (_armedSettlementCarryoverSettlementId == null)
 		{
 			_armedSettlementCarryoverSettlementId = "";
@@ -160,6 +172,7 @@ public class SceneTauntBehavior : CampaignBehaviorBase
 			_pendingDeferredCrimeByFactionStorage = _pendingDeferredCrimeByFaction.Where((KeyValuePair<string, float> x) => !string.IsNullOrWhiteSpace(x.Key) && x.Value > 0f).ToDictionary((KeyValuePair<string, float> x) => x.Key, (KeyValuePair<string, float> x) => x.Value, StringComparer.OrdinalIgnoreCase);
 			_crimeRefillReserveByFactionStorage = _crimeRefillReserveByFaction.Where((KeyValuePair<string, float> x) => !string.IsNullOrWhiteSpace(x.Key) && x.Value > 0f).ToDictionary((KeyValuePair<string, float> x) => x.Key, (KeyValuePair<string, float> x) => x.Value, StringComparer.OrdinalIgnoreCase);
 			_lastObservedNativeCrimeByFactionStorage = _lastObservedNativeCrimeByFaction.Where((KeyValuePair<string, float> x) => !string.IsNullOrWhiteSpace(x.Key)).ToDictionary((KeyValuePair<string, float> x) => x.Key, (KeyValuePair<string, float> x) => MathF.Max(0f, x.Value), StringComparer.OrdinalIgnoreCase);
+			_criminalTrustRewardTenthBySettlementStorage = _criminalTrustRewardTenthBySettlement.Where((KeyValuePair<string, int> x) => !string.IsNullOrWhiteSpace(x.Key) && x.Value > 0).ToDictionary((KeyValuePair<string, int> x) => x.Key, (KeyValuePair<string, int> x) => x.Value, StringComparer.OrdinalIgnoreCase);
 		}
 		dataStore.SyncData("_sceneTauntWarnedTargets_v1", ref _warnedSceneTargetKeysStorage);
 		dataStore.SyncData("_sceneTauntPendingTempWarPeace_v1", ref _pendingTemporaryDungeonWarPeace);
@@ -168,6 +181,7 @@ public class SceneTauntBehavior : CampaignBehaviorBase
 		dataStore.SyncData("_sceneTauntDeferredCrimeByFaction_v1", ref _pendingDeferredCrimeByFactionStorage);
 		dataStore.SyncData("_sceneTauntCrimeRefillReserveByFaction_v1", ref _crimeRefillReserveByFactionStorage);
 		dataStore.SyncData("_sceneTauntLastObservedNativeCrimeByFaction_v1", ref _lastObservedNativeCrimeByFactionStorage);
+		dataStore.SyncData("_sceneTauntCriminalTrustRewardTenthBySettlement_v1", ref _criminalTrustRewardTenthBySettlementStorage);
 		dataStore.SyncData("_sceneTauntArmedCarryoverActive_v1", ref _armedSettlementCarryoverActive);
 		dataStore.SyncData("_sceneTauntArmedCarryoverSettlementId_v1", ref _armedSettlementCarryoverSettlementId);
 		dataStore.SyncData("_sceneTauntArmedCarryoverSource_v1", ref _armedSettlementCarryoverSource);
@@ -199,6 +213,19 @@ public class SceneTauntBehavior : CampaignBehaviorBase
 					if (!string.IsNullOrWhiteSpace(text3))
 					{
 						_lastObservedNativeCrimeByFaction[text3] = MathF.Max(0f, item3.Value);
+					}
+				}
+			}
+			_criminalTrustRewardTenthBySettlement = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+			if (_criminalTrustRewardTenthBySettlementStorage != null)
+			{
+				foreach (KeyValuePair<string, int> item4 in _criminalTrustRewardTenthBySettlementStorage)
+				{
+					string text4 = (item4.Key ?? "").Trim();
+					int num2 = Math.Max(0, item4.Value);
+					if (!string.IsNullOrWhiteSpace(text4) && num2 > 0)
+					{
+						_criminalTrustRewardTenthBySettlement[text4] = num2;
 					}
 				}
 			}
@@ -933,6 +960,49 @@ public class SceneTauntBehavior : CampaignBehaviorBase
 		Instance?.TryShowTrackedCrimeTotalMessage(faction);
 	}
 
+	internal static void TryRewardSettlementTrustForCriminalKnockdownForExternal(Settlement settlement, string victimName)
+	{
+		try
+		{
+			if (settlement == null || RewardSystemBehavior.Instance == null || Instance == null)
+			{
+				return;
+			}
+			string text = (settlement.StringId ?? "").Trim().ToLowerInvariant();
+			if (string.IsNullOrWhiteSpace(text))
+			{
+				return;
+			}
+			if (Instance._criminalTrustRewardTenthBySettlement == null)
+			{
+				Instance._criminalTrustRewardTenthBySettlement = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+			}
+			Instance._criminalTrustRewardTenthBySettlement.TryGetValue(text, out var value);
+			int num = Math.Max(0, value) + 13;
+			int num2 = num / 10;
+			int num3 = num % 10;
+			if (num3 > 0)
+			{
+				Instance._criminalTrustRewardTenthBySettlement[text] = num3;
+			}
+			else
+			{
+				Instance._criminalTrustRewardTenthBySettlement.Remove(text);
+			}
+			if (num2 > 0)
+			{
+				RewardSystemBehavior.Instance.AdjustSettlementLocalPublicTrustForExternal(settlement, num2, "scene_taunt_criminal_knockdown_reward");
+			}
+			string text2 = string.IsNullOrWhiteSpace(victimName) ? "匪类" : victimName;
+			InformationManager.DisplayMessage(new InformationMessage($"击倒 {text2}：{settlement.Name} 的公共信任 +1.3。", new Color(0.45f, 1f, 0.45f)));
+			Logger.Log("SceneTaunt", $"Rewarded settlement trust for criminal knockdown. Settlement={settlement.Name}, Victim={text2}, GrantedTenths=13, WholeApplied={num2}, CarryTenths={num3}");
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SceneTaunt", "Rewarding settlement trust for criminal knockdown failed: " + ex.Message);
+		}
+	}
+
 	private float GetCrimeRefillReserveAmount(IFaction faction)
 	{
 		try
@@ -1205,6 +1275,13 @@ public class SceneTauntBehavior : CampaignBehaviorBase
 		{
 			return false;
 		}
+		switch (targetCharacter.Occupation)
+		{
+		case Occupation.Gangster:
+		case Occupation.GangLeader:
+		case Occupation.Bandit:
+			return true;
+		}
 		if (IsSoldierSceneTauntTarget(targetCharacter))
 		{
 			return true;
@@ -1213,9 +1290,6 @@ public class SceneTauntBehavior : CampaignBehaviorBase
 		{
 		case Occupation.Guard:
 		case Occupation.PrisonGuard:
-		case Occupation.Gangster:
-		case Occupation.GangLeader:
-		case Occupation.Bandit:
 		case Occupation.Mercenary:
 		case Occupation.ArenaMaster:
 			return false;
@@ -1332,17 +1406,42 @@ public class SceneTauntBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			string stateKey = "not_applicable";
+			string text = Hero.MainHero?.Name?.ToString()?.Trim();
+			if (string.IsNullOrWhiteSpace(text))
+			{
+				text = "玩家";
+			}
+			text += "（玩家）";
 			if (IsChildSceneProtectedTarget(targetCharacter))
 			{
-				stateKey = "child_protected";
+				return "他是未成年。禁止输出[ACTION:SCENE_TAUNT_WARN]或[ACTION:SCENE_TAUNT_FIGHT]；只能害怕、求救或躲开。";
 			}
-			else if (IsSceneTauntApplicable(targetHero, targetCharacter, targetAgentIndex))
+			if (!IsSceneTauntApplicable(targetHero, targetCharacter, targetAgentIndex))
 			{
-				string sceneTauntTargetKey = BuildSceneTauntTargetKey(targetHero, targetCharacter, targetAgentIndex);
-				stateKey = (HasSceneTauntWarning(sceneTauntTargetKey) ? "battle_only" : "warn_or_battle");
+				return "";
 			}
-			return AIConfigHandler.ResolveRuleRuntimeText("meeting_taunt", stateKey, forConstraint: false, BuildTauntRuntimeTokens(isHeroMeeting: false, IsSceneLordTauntTarget(targetHero)));
+			if (SceneTauntMissionBehavior.IsSettlementCriminalConflictTargetExternal(targetHero, targetCharacter))
+			{
+				return "【AFEF与匪徒冲突规则】你是匪徒/帮派成员，这一类冲突不走普通场景口角的警告-升级流程，也不要输出[ACTION:SCENE_TAUNT_WARN]。" + text + "若只是嘴硬、试探、骂你几句，你可以继续放狠话、威胁、索要买路钱或逼他滚开；只有当你明确决定和他立刻翻脸开打时，才在句末输出[ACTION:SCENE_TAUNT_FIGHT]。一旦输出，该冲突会进入原版的匪徒冲突流程。";
+			}
+			string sceneTauntTargetKey = BuildSceneTauntTargetKey(targetHero, targetCharacter, targetAgentIndex);
+			bool flag = HasSceneTauntWarning(sceneTauntTargetKey);
+			bool flag2 = IsSceneLordTauntTarget(targetHero);
+			bool flag3 = IsSoldierSceneTauntTarget(targetCharacter);
+			bool flag4 = flag2 || flag3;
+			if (flag)
+			{
+				if (flag4)
+				{
+					return "你已警告过" + text + "。若还忍不了，就在句末输出[ACTION:SCENE_TAUNT_FIGHT]；一旦开打，场上己方士兵和领主会来帮你砍他。";
+				}
+				return "你已警告过" + text + "。若还忍不了，就在句末输出[ACTION:SCENE_TAUNT_FIGHT]，用拳头教训他。";
+			}
+			if (flag4)
+			{
+				return "若" + text + "挑衅你，可在句末输出[ACTION:SCENE_TAUNT_WARN]警告他；若忍无可忍，可直接输出[ACTION:SCENE_TAUNT_FIGHT]。一旦开打，场上己方士兵和领主会来帮你砍他。";
+			}
+			return "若" + text + "挑衅你，可在句末输出[ACTION:SCENE_TAUNT_WARN]警告他；若忍无可忍，可直接输出[ACTION:SCENE_TAUNT_FIGHT]，用拳头教训他。";
 		}
 		catch
 		{
@@ -1388,6 +1487,14 @@ public class SceneTauntBehavior : CampaignBehaviorBase
 			}
 			content = SceneTauntWarnTagRegex.Replace(content, "").Trim();
 			content = SceneTauntFightTagRegex.Replace(content, "").Trim();
+			if (SceneTauntMissionBehavior.IsSettlementCriminalConflictTargetExternal(targetHero, targetCharacter))
+			{
+				if (flag || flag2)
+				{
+					escalatedToFight = TryStartSceneTauntFight(targetHero, targetCharacter, targetAgentIndex, BuildSceneTauntTargetKey(targetHero, targetCharacter, targetAgentIndex));
+				}
+				return flag || flag2;
+			}
 			if (!IsEligibleSceneTauntTarget(targetHero, targetCharacter))
 			{
 				return flag || flag2;
@@ -1487,7 +1594,7 @@ public class SceneTauntBehavior : CampaignBehaviorBase
 			catch
 			{
 			}
-			bool flag = missionBehavior.TryStartConflict(targetHero, targetCharacter, targetAgentIndex, targetKey);
+			bool flag = missionBehavior.TryStartConflict(targetHero, targetCharacter, targetAgentIndex, targetKey, fromVerbalTaunt: true);
 			if (flag)
 			{
 				Logger.Log("SceneTaunt", $"Scene taunt fight started. Target={targetHero?.Name ?? targetCharacter?.Name}, AgentIndex={targetAgentIndex}, Key={targetKey}");
@@ -1657,6 +1764,8 @@ public class SceneTauntMissionBehavior : MissionBehavior
 
 	private float _appliedCrimeRatingAmount;
 
+	private bool _armedDefeatWasCriminalConflict;
+
 	private string _activeTargetKey = "";
 
 	private string _activeTargetName = "";
@@ -1664,6 +1773,14 @@ public class SceneTauntMissionBehavior : MissionBehavior
 	private int _activeTargetAgentIndex = -1;
 
 	private bool _openedAsUnarmedBrawl;
+
+	private bool _openedFromVerbalTaunt;
+
+	private bool _suppressSettlementConsequencesForCurrentConflict;
+
+	private int _lastNativeCriminalConflictTargetAgentIndex = -1;
+
+	private float _lastNativeCriminalConflictMissionTime = -999f;
 
 	public override MissionBehaviorType BehaviorType => MissionBehaviorType.Other;
 
@@ -1878,7 +1995,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			{
 				return;
 			}
-			Agent facingAgent = ShoutUtils.GetFacingAgent(nearbyNPCAgents);
+			Agent facingAgent = FindFacingCriminalAttackTarget(nearbyNPCAgents) ?? ShoutUtils.GetFacingAgent(nearbyNPCAgents);
 			if (facingAgent == null || !facingAgent.IsActive())
 			{
 				return;
@@ -1888,6 +2005,56 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		catch (Exception ex)
 		{
 			Logger.Log("SceneTaunt", "Starting conflict from facing attack input failed: " + ex.Message);
+		}
+	}
+
+	private static Agent FindFacingCriminalAttackTarget(List<Agent> nearbyAgents)
+	{
+		try
+		{
+			if (Agent.Main == null || nearbyAgents == null || nearbyAgents.Count == 0)
+			{
+				return null;
+			}
+			Vec3 position = Agent.Main.Position;
+			Vec3 lookDirection = Agent.Main.LookDirection;
+			Agent result = null;
+			float num = -1f;
+			foreach (Agent nearbyAgent in nearbyAgents)
+			{
+				if (nearbyAgent == null || !nearbyAgent.IsHuman || !nearbyAgent.IsActive())
+				{
+					continue;
+				}
+				CharacterObject characterObject = nearbyAgent.Character as CharacterObject;
+				if (!IsSettlementCriminalConflictTarget(characterObject?.HeroObject, characterObject))
+				{
+					continue;
+				}
+				Vec3 v = nearbyAgent.Position - position;
+				float length = v.Length;
+				if (length > 3.2f)
+				{
+					continue;
+				}
+				v.Normalize();
+				float num2 = Vec3.DotProduct(lookDirection, v);
+				if (num2 < 0.9f)
+				{
+					continue;
+				}
+				float num3 = num2 / Math.Max(0.25f, length);
+				if (num3 > num)
+				{
+					num = num3;
+					result = nearbyAgent;
+				}
+			}
+			return result;
+		}
+		catch
+		{
+			return null;
 		}
 	}
 
@@ -2002,6 +2169,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 	{
 		try
 		{
+			TryApplyNativeAlleyNpcKnockdownConsequences(affectedAgent, affectorAgent, agentState);
 			if (!_conflictActive || affectedAgent == null || !affectedAgent.IsHuman)
 			{
 				return;
@@ -2032,6 +2200,76 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		}
 	}
 
+	private void TryApplyNativeAlleyNpcKnockdownConsequences(Agent affectedAgent, Agent affectorAgent, AgentState agentState)
+	{
+		try
+		{
+			if (!IsNativeAlleyFightKnockdownContext(affectedAgent, affectorAgent, agentState))
+			{
+				return;
+			}
+			if (_playerAgentIndices.Contains(affectedAgent.Index) || !_penalizedArmedKnockdownAgentIndices.Add(affectedAgent.Index))
+			{
+				return;
+			}
+			CharacterObject characterObject = affectedAgent.Character as CharacterObject;
+			ApplyPerNpcKnockdownConsequences(affectedAgent, characterObject, affectedAgent.Name?.ToString());
+			Logger.Log("SceneTaunt", $"Applied native alley criminal knockdown consequences. Victim={affectedAgent.Name}, Affector={affectorAgent?.Name}");
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SceneTaunt", "Applying native alley knockdown consequences failed: " + ex.Message);
+		}
+	}
+
+	private bool IsNativeAlleyFightKnockdownContext(Agent affectedAgent, Agent affectorAgent, AgentState agentState)
+	{
+		if (_conflictActive || affectedAgent == null || !affectedAgent.IsHuman)
+		{
+			return false;
+		}
+		if (agentState != AgentState.Killed && agentState != AgentState.Unconscious)
+		{
+			return false;
+		}
+		CharacterObject characterObject = affectedAgent.Character as CharacterObject;
+		if (!IsSettlementCriminalConflictTarget(characterObject?.HeroObject, characterObject))
+		{
+			return false;
+		}
+		CampaignAgentComponent component = affectedAgent.GetComponent<CampaignAgentComponent>();
+		if (component?.AgentNavigator?.MemberOfAlley == null)
+		{
+			return false;
+		}
+		_fightHandler = _fightHandler ?? Mission.Current?.GetMissionBehavior<MissionFightHandler>();
+		if (_fightHandler == null || !_fightHandler.IsThereActiveFight())
+		{
+			return false;
+		}
+		return IsNativeAlleyPlayerSideAgent(affectorAgent);
+	}
+
+	private static bool IsNativeAlleyPlayerSideAgent(Agent agent)
+	{
+		if (agent == null || !agent.IsHuman)
+		{
+			return false;
+		}
+		if (agent == Agent.Main)
+		{
+			return true;
+		}
+		Agent main = Agent.Main;
+		if (main == null || agent.Team == null || main.Team == null || agent.Team != main.Team)
+		{
+			return false;
+		}
+		CharacterObject characterObject = agent.Character as CharacterObject;
+		Hero hero = characterObject?.HeroObject;
+		return hero != null && !IsSettlementCriminalConflictTarget(hero, characterObject);
+	}
+
 	protected override void OnEndMission()
 	{
 		ClearRuntimeState();
@@ -2052,7 +2290,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		return agent != null && agent.IsHuman && agent.IsActive();
 	}
 
-	internal bool TryStartConflict(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, string targetKey)
+	internal bool TryStartConflict(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, string targetKey, bool fromVerbalTaunt = false)
 	{
 		try
 		{
@@ -2066,12 +2304,17 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			{
 				return false;
 			}
-			List<Agent> list = CollectPlayerSideAgents();
-			List<Agent> list2 = CollectOpponentSideAgents(agent);
-			List<Agent> list3 = CollectGuardAgents(list, list2);
 			bool flag = IsAgentUsingRealWeapon(Agent.Main);
 			bool flag2 = SceneTauntBehavior.IsSoldierSceneTauntTarget(targetCharacter);
 			bool flag3 = SceneTauntBehavior.IsSceneLordTauntTarget(targetHero);
+			bool flag4 = IsSettlementCriminalConflictTarget(targetHero, targetCharacter);
+			if (flag4)
+			{
+				return TryStartNativeCriminalConflict(agent, fromVerbalTaunt ? "scene_taunt_verbal_criminal_conflict" : "scene_taunt_physical_criminal_conflict");
+			}
+			List<Agent> list = CollectPlayerSideAgents();
+			List<Agent> list2 = CollectOpponentSideAgents(agent);
+			List<Agent> list3 = flag4 ? new List<Agent>() : CollectGuardAgents(list, list2);
 			if (flag)
 			{
 				foreach (Agent item in list3)
@@ -2089,6 +2332,9 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			_activeTargetName = agent.Name?.ToString() ?? targetHero?.Name?.ToString() ?? targetCharacter?.Name?.ToString() ?? "NPC";
 			_activeTargetAgentIndex = agent.Index;
 			_openedAsUnarmedBrawl = false;
+			_openedFromVerbalTaunt = fromVerbalTaunt;
+			_suppressSettlementConsequencesForCurrentConflict = flag4;
+			_armedDefeatWasCriminalConflict = flag4;
 			_playerAgentIndices.Clear();
 			_opponentAgentIndices.Clear();
 			_guardAgentIndices.Clear();
@@ -2107,27 +2353,34 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			}
 			_fightHandler.StartCustomFight(list, list2, dropWeapons: false, isItemUseDisabled: false, OnConflictFinished, float.Epsilon);
 			ApplyBaseConsequences(targetCharacter, (flag || flag2 || flag3) ? SceneTauntInitialArmedCrimeAmount : 5f);
-			bool flag4 = SceneTauntBehavior.HasArmedCarryoverForCurrentSettlement() && _armedCarryoverHandledInThisMission;
+			bool flag5 = SceneTauntBehavior.HasArmedCarryoverForCurrentSettlement() && _armedCarryoverHandledInThisMission;
 			if (flag3)
 			{
 				ApplyLordSceneFightConsequences(targetHero);
 			}
 			if (flag3)
 			{
-				EscalateToArmedConflict("taunted_lord_scene", flag4);
+				EscalateToArmedConflict("taunted_lord_scene", flag5);
 			}
 			else if (flag2)
 			{
-				EscalateToArmedConflict("taunted_soldier", flag4);
+				EscalateToArmedConflict("taunted_soldier", flag5);
 			}
 			else if (flag)
 			{
-				EscalateToArmedConflict("player_already_wielding", flag4);
+				EscalateToArmedConflict("player_already_wielding", flag5);
 			}
 			else
 			{
 				PrepareUnarmedConflict();
-				TryAppendPlayerBehaviorFactForOpenedBrawl(targetHero, targetCharacter, targetAgentIndex);
+				if (fromVerbalTaunt)
+				{
+					TryAppendNpcBehaviorFactForVerbalConflict(targetAgentIndex);
+				}
+				else
+				{
+					TryAppendPlayerBehaviorFactForOpenedBrawl(targetHero, targetCharacter, targetAgentIndex);
+				}
 			}
 			return true;
 		}
@@ -2153,6 +2406,28 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			{
 				return false;
 			}
+			if (IsSettlementCriminalConflictTarget(hero, characterObject))
+			{
+				if (ShouldSuppressDuplicateNativeCriminalConflict(targetAgent))
+				{
+					Logger.Log("SceneTaunt", $"Skipped duplicate native criminal conflict redirect. Reason={reason}, Target={targetAgent.Name}, AgentIndex={targetAgent.Index}");
+					return true;
+				}
+				try
+				{
+					Campaign.Current?.ConversationManager?.EndConversation();
+				}
+				catch
+				{
+				}
+				bool startedNativeCriminalConflict = TryStartNativeCriminalConflict(targetAgent, reason + "_native_alley");
+				if (startedNativeCriminalConflict)
+				{
+					RememberNativeCriminalConflictTarget(targetAgent);
+					Logger.Log("SceneTaunt", $"Physical attack bypassed custom scene conflict and redirected to native criminal conflict. Reason={reason}, Target={targetAgent.Name}, UsedWeapon={playerUsedWeapon}");
+				}
+				return startedNativeCriminalConflict;
+			}
 			try
 			{
 				Campaign.Current?.ConversationManager?.EndConversation();
@@ -2165,6 +2440,11 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			if (!flag)
 			{
 				return false;
+			}
+			if (IsSettlementCriminalConflictTarget(hero, characterObject))
+			{
+				Logger.Log("SceneTaunt", $"Physical attack redirected to native criminal conflict. Reason={reason}, Target={targetAgent.Name}, UsedWeapon={playerUsedWeapon}");
+				return true;
 			}
 			bool flag2 = IsAuthorityPhysicalAttackTarget(hero, characterObject);
 			if ((playerUsedWeapon || flag2) && !_armedConflict)
@@ -2181,6 +2461,25 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		}
 	}
 
+	private bool ShouldSuppressDuplicateNativeCriminalConflict(Agent targetAgent)
+	{
+		if (targetAgent == null || targetAgent.Index < 0 || Mission.Current == null)
+		{
+			return false;
+		}
+		return _lastNativeCriminalConflictTargetAgentIndex == targetAgent.Index && Mission.Current.CurrentTime - _lastNativeCriminalConflictMissionTime <= 0.45f;
+	}
+
+	private void RememberNativeCriminalConflictTarget(Agent targetAgent)
+	{
+		if (targetAgent == null || targetAgent.Index < 0 || Mission.Current == null)
+		{
+			return;
+		}
+		_lastNativeCriminalConflictTargetAgentIndex = targetAgent.Index;
+		_lastNativeCriminalConflictMissionTime = Mission.Current.CurrentTime;
+	}
+
 	private bool TryAddFacingAgentToArmedConflict(Agent targetAgent, string reason)
 	{
 		try
@@ -2192,6 +2491,15 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			if (targetAgent == Agent.Main || _playerAgentIndices.Contains(targetAgent.Index) || _guardAgentIndices.Contains(targetAgent.Index))
 			{
 				return false;
+			}
+			CharacterObject characterObject = targetAgent.Character as CharacterObject;
+			Hero hero = characterObject?.HeroObject;
+			if (IsAuthorityPhysicalAttackTarget(hero, characterObject))
+			{
+				_activeTargetKey = SceneTauntBehavior.BuildSceneTauntTargetKey(hero, characterObject, targetAgent.Index);
+				_activeTargetName = targetAgent.Name?.ToString() ?? hero?.Name?.ToString() ?? characterObject?.Name?.ToString() ?? _activeTargetName;
+				_activeTargetAgentIndex = targetAgent.Index;
+				EnableSettlementConsequencesForCurrentConflict(characterObject, hero, SceneTauntInitialArmedCrimeAmount, "authority_targeted_during_armed_conflict");
 			}
 			if (SceneTauntBehavior.IsChildSceneProtectedTarget(targetAgent.Character as CharacterObject))
 			{
@@ -2250,6 +2558,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 				_activeTargetKey = SceneTauntBehavior.BuildSceneTauntTargetKey(hero, characterObject, targetAgent.Index);
 				_activeTargetName = targetAgent.Name?.ToString() ?? hero?.Name?.ToString() ?? characterObject?.Name?.ToString() ?? _activeTargetName;
 				_activeTargetAgentIndex = targetAgent.Index;
+				EnableSettlementConsequencesForCurrentConflict(characterObject, hero, SceneTauntInitialArmedCrimeAmount, "authority_targeted_during_unarmed_conflict");
 				if (!_opponentAgentIndices.Contains(targetAgent.Index) && !_guardAgentIndices.Contains(targetAgent.Index))
 				{
 					AddAgentToFightSide(targetAgent, isPlayerSide: false);
@@ -2257,10 +2566,6 @@ public class SceneTauntMissionBehavior : MissionBehavior
 					{
 						AddAgentToFightSide(escortedFollower, isPlayerSide: false);
 					}
-				}
-				if (SceneTauntBehavior.IsSceneLordTauntTarget(hero))
-				{
-					ApplyLordSceneFightConsequences(hero);
 				}
 				ClearMissionFightHandlerPendingFinishTimer();
 				EscalateToArmedConflict("player_attacked_authority_during_unarmed_conflict");
@@ -2296,12 +2601,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 	{
 		try
 		{
-			string text = MyBehavior.BuildPlayerPublicDisplayNameForExternal();
-			if (string.IsNullOrWhiteSpace(text))
-			{
-				text = "玩家";
-			}
-			string factText = text + "一拳打到了你的身上，你也开始用拳头反击";
+			string factText = BuildDirectBrawlImmediateReactionFactText();
 			ShoutBehavior.TriggerImmediateSceneBehaviorReactionForExternal(factText, targetAgentIndex, persistHeroPrivateHistory: true, suppressStare: true);
 		}
 		catch (Exception ex)
@@ -2310,7 +2610,95 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		}
 	}
 
-	private void TryAppendPlayerBehaviorFactForArmedEscalation(string reason)
+	private static string BuildDirectBrawlImmediateReactionFactText()
+	{
+		string text = MyBehavior.BuildPlayerPublicDisplayNameForExternal();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			text = "玩家";
+		}
+		return "[AFEF NPC行为补充] 你和" + text + "互相殴打";
+	}
+
+	private static string BuildDirectArmedImmediateReactionFactText(Agent targetAgent)
+	{
+		string text = MyBehavior.BuildPlayerPublicDisplayNameForExternal();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			text = "玩家";
+		}
+		string text2 = TryGetActiveWeaponDisplayName(targetAgent);
+		if (string.IsNullOrWhiteSpace(text2))
+		{
+			text2 = "武器";
+		}
+		return "[AFEF NPC行为补充] 你拿着" + text2 + "与" + text + "打得刀光剑影";
+	}
+
+	private static string TryGetActiveWeaponDisplayName(Agent agent)
+	{
+		try
+		{
+			if (agent == null)
+			{
+				return "";
+			}
+			EquipmentIndex primaryWieldedItemIndex = agent.GetPrimaryWieldedItemIndex();
+			if (primaryWieldedItemIndex != EquipmentIndex.None && IsMissionWeaponRealWeapon(agent.Equipment[primaryWieldedItemIndex]))
+			{
+				string text = agent.Equipment[primaryWieldedItemIndex].Item?.Name?.ToString();
+				if (!string.IsNullOrWhiteSpace(text))
+				{
+					return text.Trim();
+				}
+			}
+			EquipmentIndex offhandWieldedItemIndex = agent.GetOffhandWieldedItemIndex();
+			if (offhandWieldedItemIndex != EquipmentIndex.None && IsMissionWeaponRealWeapon(agent.Equipment[offhandWieldedItemIndex]))
+			{
+				string text2 = agent.Equipment[offhandWieldedItemIndex].Item?.Name?.ToString();
+				if (!string.IsNullOrWhiteSpace(text2))
+				{
+					return text2.Trim();
+				}
+			}
+			for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
+			{
+				if (!IsMissionWeaponRealWeapon(agent.Equipment[equipmentIndex]))
+				{
+					continue;
+				}
+				string text3 = agent.Equipment[equipmentIndex].Item?.Name?.ToString();
+				if (!string.IsNullOrWhiteSpace(text3))
+				{
+					return text3.Trim();
+				}
+			}
+		}
+		catch
+		{
+		}
+		return "";
+	}
+
+	private static void TryAppendNpcBehaviorFactForVerbalConflict(int targetAgentIndex)
+	{
+		try
+		{
+			string text = MyBehavior.BuildPlayerPublicDisplayNameForExternal();
+			if (string.IsNullOrWhiteSpace(text))
+			{
+				text = "玩家";
+			}
+			string factText = "经过交流，你和" + text + "发生了冲突";
+			ShoutBehavior.AppendExternalTargetedSceneNpcFactForExternal(factText, targetAgentIndex, persistHeroPrivateHistory: true);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SceneTaunt", "Appending NPC behavior fact for verbal conflict failed: " + ex.Message);
+		}
+	}
+
+	private void TryAppendNpcBehaviorFactForVerbalArmedEscalation()
 	{
 		try
 		{
@@ -2330,35 +2718,51 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			bool flag2 = SceneTauntBehavior.IsSoldierSceneTauntTarget(characterObject);
 			bool flag3 = SceneTauntBehavior.IsSceneLordTauntTarget(hero);
 			bool flag4 = IsAgentCarryingRealWeapon(agent);
-			bool flag5 = IsAgentUsingRealWeapon(Agent.Main);
+			bool flag5 = IsSettlementCriminalConflictTarget(hero, characterObject);
 			string factText;
 			if (flag3)
 			{
-				factText = (_openedAsUnarmedBrawl || string.Equals(reason, "taunted_lord_scene", StringComparison.Ordinal))
-					? (text + "用他的拳头挥向了你，这一下立刻惊动了你身边的士兵，他们拔出武器开始围剿他")
-					: (text + (flag5 ? "竟敢用武器当众袭击你，这一举动立刻惊动了你身边的士兵，他们拔出武器开始围剿他，你也拔出武器开始攻击他" : "竟敢当众袭击你，这一举动立刻惊动了你身边的士兵，他们拔出武器开始围剿他，而你也开始反击"));
+				factText = "经过交流，你和" + text + "彻底撕破了脸，你身边的士兵立刻拔出武器开始围剿他";
 			}
 			else if (flag2)
 			{
-				factText = (_openedAsUnarmedBrawl || string.Equals(reason, "taunted_soldier", StringComparison.Ordinal))
-					? (text + (flag5 ? "一拳打到了你的身上，这种挑衅立刻激怒了周围的士兵，他们拔出武器开始围剿他,你也拔出武器开始攻击他" : "一拳打到了你的身上，这种挑衅立刻激怒了周围的士兵，他们拔出武器开始围剿他，而你也开始反击"))
-					: (text + (flag5 ? "用武器向你发起了袭击，这一下立刻惊动了周围的士兵，他们开始围剿他，你也拔出武器开始攻击他" : "向你发起了袭击，这一下立刻惊动了周围的士兵，他们开始围剿他，而你也开始反击"));
+				factText = "经过交流，你和" + text + "发生了冲突，周围的士兵立刻拔出武器开始围剿他";
+			}
+			else if (flag5)
+			{
+				factText = flag4 ? "经过交流，你和" + text + "彻底闹翻了，他直接亮出了武器，你也开始和他械斗" : "经过交流，你和" + text + "彻底闹翻了，他突然亮出了武器，你被吓得开始逃跑";
+			}
+			else if (flag4)
+			{
+				factText = flag ? "经过交流，你和" + text + "发生了冲突，你也拿出武器开始和他械斗，周围的守卫也开始帮助你" : "经过交流，你和" + text + "发生了冲突，你也拿出武器开始和他械斗";
 			}
 			else
 			{
-				if (flag4)
-				{
-					factText = _openedAsUnarmedBrawl
-						? (text + (flag ? "在和你斗殴的时候掏出了武器，你也拿出武器开始和他械斗，周围的守卫也开始帮助你" : "在和你斗殴的时候掏出了武器，你也拿出武器开始和他械斗"))
-						: (text + (flag ? "用武器向你发起了袭击，你也拿出武器开始和他械斗，周围的守卫也开始帮助你" : "用武器向你发起了袭击，你也拿出武器开始和他械斗"));
-				}
-				else
-				{
-					factText = _openedAsUnarmedBrawl
-						? (text + "在和你斗殴的时候掏出了武器，你被吓跑了")
-						: (text + (flag ? "用武器向你发起了袭击，他的行为被卫兵注意到了，而你被吓跑了" : "用武器向你发起了袭击，这一下把你吓跑了"));
-				}
+				factText = flag ? "经过交流，你和" + text + "发生了冲突，他随即亮出了武器，周围的守卫立刻开始围剿他" : "经过交流，你和" + text + "发生了冲突，他随即亮出了武器，你被吓得开始逃跑";
 			}
+			ShoutBehavior.AppendExternalTargetedSceneNpcFactForExternal(factText, _activeTargetAgentIndex, persistHeroPrivateHistory: true);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SceneTaunt", "Appending NPC behavior fact for verbal armed escalation failed: " + ex.Message);
+		}
+	}
+
+	private void TryAppendPlayerBehaviorFactForArmedEscalation(string reason)
+	{
+		try
+		{
+			if (_activeTargetAgentIndex < 0)
+			{
+				return;
+			}
+			if (_openedFromVerbalTaunt || string.Equals(reason, "taunted_lord_scene", StringComparison.Ordinal) || string.Equals(reason, "taunted_soldier", StringComparison.Ordinal))
+			{
+				TryAppendNpcBehaviorFactForVerbalArmedEscalation();
+				return;
+			}
+			Agent agent = Mission.Current?.Agents?.FirstOrDefault(a => a != null && a.Index == _activeTargetAgentIndex);
+			string factText = BuildDirectArmedImmediateReactionFactText(agent);
 			ShoutBehavior.TriggerImmediateSceneBehaviorReactionForExternal(factText, _activeTargetAgentIndex, persistHeroPrivateHistory: true, suppressStare: true);
 		}
 		catch (Exception ex)
@@ -2380,6 +2784,23 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		bool flag = IsAgentUsingRealWeapon(Agent.Main);
 		bool flag2 = SceneTauntBehavior.IsSceneLordTauntTarget(hero);
 		bool flag3 = SceneTauntBehavior.IsSoldierSceneTauntTarget(characterObject);
+		bool flag4 = IsSettlementCriminalConflictTarget(hero, characterObject);
+		if (_openedFromVerbalTaunt)
+		{
+			if (flag2 || flag3)
+			{
+				return text + "在定居点内与你爆发了冲突，你和其他守卫开始向他发动攻击";
+			}
+			if (flag4)
+			{
+				return text + (flag ? "在定居点内和暴徒爆发了冲突，并亮出了武器，周围的人立刻开始躲避" : "在定居点内和暴徒爆发了冲突，周围的人立刻开始躲避");
+			}
+			return text + (flag ? "在定居点内和你爆发了冲突，并亮出了武器，你和其他守卫开始向他发动攻击" : "在定居点内和你爆发了冲突，你和其他守卫开始向他发动攻击");
+		}
+		if (flag4)
+		{
+			return text + (flag ? "在定居点内和暴徒爆发了械斗，周围的人立刻开始四散躲避" : "在定居点内和暴徒爆发了冲突，周围的人立刻开始四散躲避");
+		}
 		if (!flag && (_openedAsUnarmedBrawl || flag2 || flag3))
 		{
 			return text + "在定居点内殴打了当局人员，你和其他守卫开始向他发动攻击";
@@ -2559,6 +2980,11 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		_armedDefeatOutcomeHandled = true;
 	}
 
+	internal bool WasLastArmedDefeatCriminalConflict()
+	{
+		return _armedDefeatWasCriminalConflict;
+	}
+
 	internal static bool ShouldBlockAgentWeaponWieldExternal(Agent agent)
 	{
 		try
@@ -2731,7 +3157,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 
 	private static bool IsEligiblePhysicalAttackTarget(Hero targetHero, CharacterObject targetCharacter)
 	{
-		return IsAuthorityPhysicalAttackTarget(targetHero, targetCharacter) || SceneTauntBehavior.IsSceneNotableTauntTarget(targetHero) || SceneTauntBehavior.IsEligibleSceneTauntCharacter(targetCharacter);
+		return IsAuthorityPhysicalAttackTarget(targetHero, targetCharacter) || IsSettlementCriminalConflictTarget(targetHero, targetCharacter) || SceneTauntBehavior.IsSceneNotableTauntTarget(targetHero) || SceneTauntBehavior.IsEligibleSceneTauntCharacter(targetCharacter);
 	}
 
 	private static bool IsAuthorityPhysicalAttackTarget(Hero targetHero, CharacterObject targetCharacter)
@@ -2752,6 +3178,166 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			return true;
 		default:
 			return false;
+		}
+	}
+
+	private static bool IsSettlementCriminalConflictTarget(Hero targetHero, CharacterObject targetCharacter)
+	{
+		Hero hero = targetHero ?? targetCharacter?.HeroObject;
+		if (hero != null)
+		{
+			switch (hero.Occupation)
+			{
+			case Occupation.GangLeader:
+			case Occupation.Bandit:
+				return true;
+			}
+		}
+		if (targetCharacter == null)
+		{
+			return false;
+		}
+		switch (targetCharacter.Occupation)
+		{
+		case Occupation.Gangster:
+		case Occupation.GangLeader:
+		case Occupation.Bandit:
+			return true;
+		default:
+			return false;
+		}
+	}
+
+	internal static bool IsSettlementCriminalConflictTargetExternal(Hero targetHero, CharacterObject targetCharacter)
+	{
+		return IsSettlementCriminalConflictTarget(targetHero, targetCharacter);
+	}
+
+	private bool IsActiveTargetSettlementCriminalConflict()
+	{
+		try
+		{
+			Agent agent = Mission.Current?.Agents?.FirstOrDefault(a => a != null && a.Index == _activeTargetAgentIndex);
+			CharacterObject targetCharacter = agent?.Character as CharacterObject;
+			Hero targetHero = targetCharacter?.HeroObject;
+			return IsSettlementCriminalConflictTarget(targetHero, targetCharacter);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private void TryRewardSettlementTrustForCriminalKnockdown(Settlement settlement, string victimName)
+	{
+		SceneTauntBehavior.TryRewardSettlementTrustForCriminalKnockdownForExternal(settlement, victimName);
+	}
+
+	private static Hero TryResolveCriminalOwnerHeroFromAgent(Agent victimAgent)
+	{
+		try
+		{
+			CharacterObject characterObject = victimAgent?.Character as CharacterObject;
+			Hero hero = characterObject?.HeroObject;
+			if (hero != null && hero.IsGangLeader)
+			{
+				return hero;
+			}
+			CampaignAgentComponent component = victimAgent?.GetComponent<CampaignAgentComponent>();
+			Hero hero2 = component?.AgentNavigator?.MemberOfAlley?.Owner;
+			if (hero2 != null && hero2 != Hero.MainHero)
+			{
+				return hero2;
+			}
+		}
+		catch
+		{
+		}
+		return null;
+	}
+
+	private bool TryStartNativeCriminalConflict(Agent targetAgent, string reason)
+	{
+		try
+		{
+			Alley alley = targetAgent?.GetComponent<CampaignAgentComponent>()?.AgentNavigator?.MemberOfAlley;
+			if (alley == null || Mission.Current == null)
+			{
+				Logger.Log("SceneTaunt", "Native criminal conflict start skipped because alley context is unavailable.");
+				return false;
+			}
+			Type type = AccessTools.TypeByName("SandBox.Missions.MissionLogics.MissionAlleyHandler");
+			MethodInfo methodInfo = typeof(Mission).GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).FirstOrDefault((MethodInfo m) => m.Name == "GetMissionBehavior" && m.IsGenericMethodDefinition && m.GetParameters().Length == 0);
+			MethodInfo methodInfo2 = AccessTools.Method(type, "StartCommonAreaBattle");
+			if (type == null || methodInfo == null || methodInfo2 == null)
+			{
+				Logger.Log("SceneTaunt", "Native criminal conflict start skipped because alley handler reflection failed.");
+				return false;
+			}
+			object obj = methodInfo.MakeGenericMethod(type).Invoke(Mission.Current, null);
+			if (obj == null)
+			{
+				Logger.Log("SceneTaunt", "Native criminal conflict start skipped because MissionAlleyHandler was not found.");
+				return false;
+			}
+			try
+			{
+				Campaign.Current?.ConversationManager?.EndConversation();
+			}
+			catch
+			{
+			}
+			TryTriggerNativeCriminalConflictReaction(targetAgent, reason);
+			methodInfo2.Invoke(obj, new object[1] { alley });
+			Logger.Log("SceneTaunt", $"Redirected criminal conflict to native alley flow. Reason={reason}, Target={targetAgent?.Name}, Alley={alley?.Name}");
+			return true;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SceneTaunt", "Starting native criminal conflict failed: " + ex.Message);
+			return false;
+		}
+	}
+
+	private void TryTriggerNativeCriminalConflictReaction(Agent targetAgent, string reason)
+	{
+		try
+		{
+			if (targetAgent == null || !targetAgent.IsHuman || !targetAgent.IsActive())
+			{
+				return;
+			}
+			string text = MyBehavior.BuildPlayerPublicDisplayNameForExternal();
+			if (string.IsNullOrWhiteSpace(text))
+			{
+				text = "玩家";
+			}
+			string factText = ((reason ?? "").IndexOf("verbal", StringComparison.OrdinalIgnoreCase) >= 0) ? ("经过交流，" + text + "把你彻底激怒了，你立刻招呼同伙扑上去，要狠狠干他一顿") : ("经过交流，" + text + "竟敢直接对你动手，你一边破口大骂，一边立刻招呼同伙围上去狠狠干他一顿");
+			ShoutBehavior.TriggerImmediateSceneBehaviorReactionForExternal(factText, targetAgent.Index, persistHeroPrivateHistory: true, suppressStare: true);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SceneTaunt", "Triggering native criminal conflict reaction failed: " + ex.Message);
+		}
+	}
+
+	private void TryApplyCriminalOwnerPenalty(Hero ownerHero, string victimName)
+	{
+		try
+		{
+			if (ownerHero == null || Hero.MainHero == null)
+			{
+				return;
+			}
+			RewardSystemBehavior.Instance?.AdjustTrustForExternal(ownerHero, -1, 0, "scene_taunt_criminal_owner_knockdown");
+			RomanceSystemBehavior.Instance?.AdjustPrivateLove(ownerHero, -1, "scene_taunt_criminal_owner_knockdown");
+			string text = string.IsNullOrWhiteSpace(victimName) ? "匪类" : victimName;
+			InformationManager.DisplayMessage(new InformationMessage($"击倒 {text}：{ownerHero.Name} 的个人信任 -1，私人关系 -1。", new Color(1f, 0.72f, 0.2f)));
+			Logger.Log("SceneTaunt", $"Applied criminal owner penalty after knockdown. Owner={ownerHero.Name}, Victim={text}, PersonalTrustDelta=-1, PrivateLoveDelta=-1");
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SceneTaunt", "Applying criminal owner penalty failed: " + ex.Message);
 		}
 	}
 
@@ -3562,6 +4148,10 @@ public class SceneTauntMissionBehavior : MissionBehavior
 	{
 		try
 		{
+			if (_suppressSettlementConsequencesForCurrentConflict)
+			{
+				return;
+			}
 			IFaction mapFaction = Settlement.CurrentSettlement?.MapFaction;
 			if (mapFaction == null || targetCrimeAmount <= _appliedCrimeRatingAmount)
 			{
@@ -3688,12 +4278,17 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		{
 			return;
 		}
-		_baseConsequencesApplied = true;
 		Settlement currentSettlement = Settlement.CurrentSettlement;
 		if (currentSettlement == null)
 		{
 			return;
 		}
+		if (IsSettlementCriminalConflictTarget(targetCharacter?.HeroObject, targetCharacter))
+		{
+			Logger.Log("SceneTaunt", $"Skipped settlement trust/crime consequences for criminal target conflict. Target={targetCharacter?.Name}");
+			return;
+		}
+		_baseConsequencesApplied = true;
 		try
 		{
 			if (RewardSystemBehavior.Instance != null)
@@ -3730,6 +4325,21 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		{
 			Logger.Log("SceneTaunt", "Applying crime consequence failed: " + ex2.Message);
 		}
+	}
+
+	private void EnableSettlementConsequencesForCurrentConflict(CharacterObject targetCharacter, Hero targetHero, float crimeRatingAmount, string reason)
+	{
+		if (!_suppressSettlementConsequencesForCurrentConflict)
+		{
+			return;
+		}
+		_suppressSettlementConsequencesForCurrentConflict = false;
+		ApplyBaseConsequences(targetCharacter, crimeRatingAmount);
+		if (SceneTauntBehavior.IsSceneLordTauntTarget(targetHero))
+		{
+			ApplyLordSceneFightConsequences(targetHero);
+		}
+		Logger.Log("SceneTaunt", $"Settlement crime/trust consequences were enabled for current conflict. Reason={reason}, Target={targetCharacter?.Name?.ToString() ?? targetHero?.Name?.ToString() ?? "N/A"}");
 	}
 
 	private static float ApplySceneTauntCrimeWithCap(IFaction faction, float requestedAmount)
@@ -3817,7 +4427,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 				return;
 			}
 			CharacterObject characterObject = affectedAgent.Character as CharacterObject;
-			ApplyPerNpcKnockdownConsequences(characterObject, affectedAgent.Name?.ToString());
+			ApplyPerNpcKnockdownConsequences(affectedAgent, characterObject, affectedAgent.Name?.ToString());
 		}
 		catch (Exception ex)
 		{
@@ -3825,7 +4435,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		}
 	}
 
-	private void ApplyPerNpcKnockdownConsequences(CharacterObject victimCharacter, string victimName)
+	private void ApplyPerNpcKnockdownConsequences(Agent victimAgent, CharacterObject victimCharacter, string victimName)
 	{
 		Settlement currentSettlement = Settlement.CurrentSettlement;
 		if (currentSettlement == null)
@@ -3833,6 +4443,17 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			return;
 		}
 		string text = victimName ?? victimCharacter?.Name?.ToString() ?? "目标";
+		if (IsSettlementCriminalConflictTarget(victimCharacter?.HeroObject, victimCharacter))
+		{
+			TryRewardSettlementTrustForCriminalKnockdown(currentSettlement, text);
+			Hero hero = TryResolveCriminalOwnerHeroFromAgent(victimAgent);
+			if (hero != null)
+			{
+				TryApplyCriminalOwnerPenalty(hero, text);
+			}
+			Logger.Log("SceneTaunt", $"Handled criminal target knockdown consequences. Victim={text}, Owner={hero?.Name?.ToString() ?? "N/A"}");
+			return;
+		}
 		try
 		{
 			if (RewardSystemBehavior.Instance != null)
@@ -4631,6 +5252,8 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		_activeTargetName = "";
 		_activeTargetAgentIndex = -1;
 		_openedAsUnarmedBrawl = false;
+		_openedFromVerbalTaunt = false;
+		_suppressSettlementConsequencesForCurrentConflict = false;
 		_sceneAttackReleaseSuppressed = false;
 		_pendingImmediateUnarmedFightEnd = false;
 		_pendingImmediateUnarmedFightEndPlayerWon = false;
@@ -4650,6 +5273,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		{
 			_armedConflictOccurredThisConflict = false;
 			_armedDefeatOutcomeHandled = false;
+			_armedDefeatWasCriminalConflict = false;
 		}
 	}
 
@@ -4782,8 +5406,31 @@ public class SceneTauntConsequenceMissionLogic : MissionLogic
 				Logger.Log("SceneTaunt", $"Player was defeated after armed escalation and reached execution threshold. Settlement={currentSettlement?.Name}, Faction={faction?.Name}, EffectiveCrime={effectiveCrimeRatingForExecution:0.##}, Executor={hero?.Name}");
 				return;
 			}
-			bool flag = IsCaptorSameMapFactionAsPlayer(party);
+			bool flag = missionBehavior.WasLastArmedDefeatCriminalConflict();
 			if (flag && currentSettlement != null && currentSettlement.IsTown)
+			{
+				SceneTauntBehavior.ClearArmedCarryoverForExternal("scene_taunt_defeat_criminal_target_flow");
+				try
+				{
+					Campaign.Current?.GameMenuManager?.SetNextMenu("town_inside_criminal");
+				}
+				catch
+				{
+				}
+				missionBehavior.MarkPlayerDefeatOutcomeHandled();
+				try
+				{
+					Mission.Current.NextCheckTimeEndMission = 0f;
+				}
+				catch
+				{
+				}
+				Mission.Current.EndMission();
+				Logger.Log("SceneTaunt", $"Player was defeated after criminal-target armed conflict and redirected to criminal judgment flow. Settlement={currentSettlement?.Name}, Captor={party.Name}");
+				return;
+			}
+			bool flag2 = IsCaptorSameMapFactionAsPlayer(party);
+			if (flag2 && currentSettlement != null && currentSettlement.IsTown)
 			{
 				SceneTauntBehavior.ClearArmedCarryoverForExternal("scene_taunt_defeat_criminal_flow");
 				try
@@ -4805,7 +5452,7 @@ public class SceneTauntConsequenceMissionLogic : MissionLogic
 				Logger.Log("SceneTaunt", $"Player was defeated after armed escalation and redirected to criminal judgment flow. Settlement={currentSettlement?.Name}, Captor={party.Name}");
 				return;
 			}
-			if (flag)
+			if (flag2)
 			{
 				SceneTauntBehavior.TryStartTemporaryDungeonWarForExternal(party, party.LeaderHero, "scene_taunt_armed_defeat_temp_war");
 			}

@@ -142,6 +142,10 @@ public class MyBehavior : CampaignBehaviorBase
 		public HistoryLineEntry Entry;
 
 		public double Score;
+
+		public double BaseScore;
+
+		public double RerankScore;
 	}
 
 	private sealed class WeightedRecallQueryInput
@@ -151,6 +155,30 @@ public class MyBehavior : CampaignBehaviorBase
 		public float Weight;
 
 		public List<string> Terms = new List<string>();
+	}
+
+	private sealed class RecallLineScore
+	{
+		public HistoryLineEntry Entry;
+
+		public double RawScore;
+
+		public double BaseScore;
+
+		public double RerankScore;
+	}
+
+	private sealed class HistoryRecallAggregate
+	{
+		public ArchiveHit Hit;
+
+		public double ScoreSum;
+
+		public int HitCount;
+
+		public int BestRank = int.MaxValue;
+
+		public double BestScore;
 	}
 
 	private class PatienceState
@@ -378,6 +406,14 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private string _devHistorySearchQuery = string.Empty;
 
+	private string _devHeroSelectionQuery = string.Empty;
+
+	private string _devSingleNpcSelectionQuery = string.Empty;
+
+	private int _devHeroSelectionPage;
+
+	private int _devSingleNpcSelectionPage;
+
 	[DllImport("user32.dll")]
 	private static extern void mouse_event(int dwFlags, int dx, int dy, int dwData, int dwExtraInfo);
 
@@ -415,29 +451,33 @@ public class MyBehavior : CampaignBehaviorBase
 		return 20;
 	}
 
-	private static int GetHistoryArchiveTopNFromSettings()
+	private static int ClampHistoryReturnCap(int value)
+	{
+		if (value < 1)
+		{
+			value = 1;
+		}
+		if (value > 12)
+		{
+			value = 12;
+		}
+		return value;
+	}
+
+	private static int GetHistoryReturnCapFromSettings()
 	{
 		try
 		{
 			DuelSettings settings = DuelSettings.GetSettings();
 			if (settings != null)
 			{
-				int num = settings.HistoryRecallTopN;
-				if (num < 1)
-				{
-					num = 1;
-				}
-				if (num > 20)
-				{
-					num = 20;
-				}
-				return num;
+				return ClampHistoryReturnCap(settings.HistoryRecallTopN);
 			}
 		}
 		catch
 		{
 		}
-		return 10;
+		return 4;
 	}
 
 	public override void RegisterEvents()
@@ -3803,13 +3843,6 @@ public class MyBehavior : CampaignBehaviorBase
 			.Append("，你是")
 			.Append(cultureText)
 			.Append("。");
-		if (!string.IsNullOrWhiteSpace(inventorySummary))
-		{
-			stringBuilder.AppendLine();
-			stringBuilder.AppendLine("你现在拥有的资产如下：");
-			stringBuilder.AppendLine("【NPC当前可用财富与物品】");
-			stringBuilder.Append(inventorySummary.Trim());
-		}
 		return stringBuilder.ToString().Trim();
 	}
 
@@ -5409,6 +5442,83 @@ public class MyBehavior : CampaignBehaviorBase
 		return new List<DialogueDay>();
 	}
 
+	private void TryEnsureFirstMeetingNpcFactForConversation(Hero hero)
+	{
+		if (hero == null || Hero.MainHero == null)
+		{
+			return;
+		}
+		string text = BuildFirstMeetingNpcFactText();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return;
+		}
+		List<DialogueDay> list = LoadDialogueHistory(hero);
+		if (HasDialogueHistoryLine(list, text) || HasMeaningfulDirectConversationHistory(list))
+		{
+			return;
+		}
+		AppendDialogueHistory(hero, null, null, text);
+	}
+
+	private static string BuildFirstMeetingNpcFactText()
+	{
+		string text = BuildPlayerPublicDisplayNameForPrompt();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			text = "玩家";
+		}
+		return "[AFEF NPC行为补充] 你第一次见到" + text;
+	}
+
+	private static bool HasDialogueHistoryLine(List<DialogueDay> records, string targetLine)
+	{
+		string text = (targetLine ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text) || records == null || records.Count == 0)
+		{
+			return false;
+		}
+		foreach (DialogueDay record in records)
+		{
+			if (record?.Lines == null)
+			{
+				continue;
+			}
+			foreach (string line in record.Lines)
+			{
+				if (string.Equals((line ?? "").Trim(), text, StringComparison.Ordinal))
+				{
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	private static bool HasMeaningfulDirectConversationHistory(List<DialogueDay> records)
+	{
+		if (records == null || records.Count == 0)
+		{
+			return false;
+		}
+		foreach (DialogueDay record in records)
+		{
+			if (record?.Lines == null)
+			{
+				continue;
+			}
+			foreach (string line in record.Lines)
+			{
+				string text = (line ?? "").Trim();
+				if (!string.IsNullOrWhiteSpace(text) && !IsSystemFactLine(text) && !IsLoreInjectionHistoryLine(text))
+				{
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
 	private void SaveDialogueHistory(Hero hero, List<DialogueDay> records)
 	{
 		if (hero != null && records != null)
@@ -5872,6 +5982,7 @@ public class MyBehavior : CampaignBehaviorBase
 	{
 		string text = "";
 		string text2 = "";
+		int num = AIConfigHandler.GuardrailRuleReturnCap;
 		string targetKingdomId = ResolveTargetKingdomIdForRules(targetHero, targetCharacter, kingdomIdOverride);
 		AIConfigHandler.SetGuardrailRuntimeTargetKingdom(targetKingdomId);
 		string text3 = targetHero?.StringId ?? targetCharacter?.HeroObject?.StringId ?? "";
@@ -5882,7 +5993,7 @@ public class MyBehavior : CampaignBehaviorBase
 		AIConfigHandler.SetGuardrailRuntimeTargetAgentIndex(targetAgentIndex);
 		try
 		{
-			text = AIConfigHandler.BuildMatchedExtraRuleInstructions(input, npcLastUtterance, 4, hasAnyHero);
+			text = AIConfigHandler.BuildMatchedExtraRuleInstructions(input, npcLastUtterance, AIConfigHandler.GuardrailRuleReturnCap, hasAnyHero);
 			// Always keep this rule present for the lords-hall gate guard, regardless of semantic hits.
 			text2 = (AIConfigHandler.BuildRuntimeLordsHallAccessInstructionForExternal() ?? "").Trim();
 		}
@@ -5895,12 +6006,33 @@ public class MyBehavior : CampaignBehaviorBase
 			AIConfigHandler.SetGuardrailRuntimeTargetUnnamedRank("");
 			AIConfigHandler.SetGuardrailRuntimeTargetAgentIndex(-1);
 		}
-		if (!string.IsNullOrWhiteSpace(text2) && (string.IsNullOrWhiteSpace(text) || text.IndexOf("【附加规则:lords_hall_access】", StringComparison.OrdinalIgnoreCase) < 0))
+		if (!string.IsNullOrWhiteSpace(text2) && (string.IsNullOrWhiteSpace(text) || text.IndexOf("【附加规则:lords_hall_access】", StringComparison.OrdinalIgnoreCase) < 0) && CountInjectedRuleBlocks(text) < num)
 		{
 			string text4 = "【附加规则:lords_hall_access】" + Environment.NewLine + text2;
 			text = string.IsNullOrWhiteSpace(text) ? text4 : (text.TrimEnd() + Environment.NewLine + text4);
 		}
 		return text;
+	}
+
+	private static int CountInjectedRuleBlocks(string text)
+	{
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return 0;
+		}
+		int num = 0;
+		int num2 = 0;
+		while (num2 >= 0 && num2 < text.Length)
+		{
+			num2 = text.IndexOf("【附加规则:", num2, StringComparison.Ordinal);
+			if (num2 < 0)
+			{
+				break;
+			}
+			num++;
+			num2 += 6;
+		}
+		return num;
 	}
 
 	private static void AppendRuleBlock(StringBuilder sb, string ruleId, string body)
@@ -6005,6 +6137,11 @@ public class MyBehavior : CampaignBehaviorBase
 			if (!string.IsNullOrWhiteSpace(text3))
 			{
 				stringBuilder.AppendLine(text3.Trim());
+			}
+			string text4 = SceneTauntBehavior.BuildUnifiedTauntRuntimeInstructionForExternal(targetHero, targetCharacter, targetAgentIndex);
+			if (!string.IsNullOrWhiteSpace(text4))
+			{
+				stringBuilder.AppendLine(text4.Trim());
 			}
 			return stringBuilder.ToString().Trim();
 		}
@@ -6180,7 +6317,7 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	public static ShoutPromptContext BuildShoutPromptContextForExternal(Hero targetHero, string input, string extraFact, string cultureIdOverride = null, bool hasAnyHero = true, CharacterObject targetCharacter = null, string kingdomIdOverride = null, int targetAgentIndex = -1, bool suppressDynamicRuleAndLore = false)
+	public static ShoutPromptContext BuildShoutPromptContextForExternal(Hero targetHero, string input, string extraFact, string cultureIdOverride = null, bool hasAnyHero = true, CharacterObject targetCharacter = null, string kingdomIdOverride = null, int targetAgentIndex = -1, bool suppressDynamicRuleAndLore = false, bool usePrefetchedLoreContext = false, string prefetchedLoreContext = null)
 	{
 		try
 		{
@@ -6196,7 +6333,7 @@ public class MyBehavior : CampaignBehaviorBase
 					IsQualified = true
 				};
 			}
-			return myBehavior.BuildShoutPromptContextForExternalInternal(targetHero, input, extraFact, cultureIdOverride, hasAnyHero, targetCharacter, kingdomIdOverride, targetAgentIndex, suppressDynamicRuleAndLore);
+			return myBehavior.BuildShoutPromptContextForExternalInternal(targetHero, input, extraFact, cultureIdOverride, hasAnyHero, targetCharacter, kingdomIdOverride, targetAgentIndex, suppressDynamicRuleAndLore, usePrefetchedLoreContext, prefetchedLoreContext);
 		}
 		catch
 		{
@@ -6212,7 +6349,7 @@ public class MyBehavior : CampaignBehaviorBase
 	}
 
 	// Primary runtime chat path: scene shout / non-native conversation UI.
-	private ShoutPromptContext BuildShoutPromptContextForExternalInternal(Hero targetHero, string input, string extraFact, string cultureIdOverride, bool hasAnyHero = true, CharacterObject targetCharacter = null, string kingdomIdOverride = null, int targetAgentIndex = -1, bool suppressDynamicRuleAndLore = false)
+	private ShoutPromptContext BuildShoutPromptContextForExternalInternal(Hero targetHero, string input, string extraFact, string cultureIdOverride, bool hasAnyHero = true, CharacterObject targetCharacter = null, string kingdomIdOverride = null, int targetAgentIndex = -1, bool suppressDynamicRuleAndLore = false, bool usePrefetchedLoreContext = false, string prefetchedLoreContext = null)
 	{
 		ShoutPromptContext shoutPromptContext = new ShoutPromptContext
 		{
@@ -6225,6 +6362,10 @@ public class MyBehavior : CampaignBehaviorBase
 		if (string.IsNullOrWhiteSpace(input))
 		{
 			return shoutPromptContext;
+		}
+		if (targetHero != null)
+		{
+			TryEnsureFirstMeetingNpcFactForConversation(targetHero);
 		}
 		AIConfigHandler.SetGuardrailSemanticContext(suppressDynamicRuleAndLore ? "" : BuildGuardrailSemanticContext(targetHero, extraFact));
 		string text = ((!string.IsNullOrEmpty(cultureIdOverride)) ? cultureIdOverride : (targetHero?.Culture?.StringId ?? "neutral"));
@@ -6314,7 +6455,12 @@ public class MyBehavior : CampaignBehaviorBase
 		StringBuilder stringBuilder = new StringBuilder();
 		string loreContext = "";
 		string loreCtxSource = "none";
-		if (!suppressDynamicRuleAndLore && targetHero != null)
+		if (!suppressDynamicRuleAndLore && usePrefetchedLoreContext)
+		{
+			loreContext = prefetchedLoreContext ?? "";
+			loreCtxSource = "prefetched";
+		}
+		else if (!suppressDynamicRuleAndLore && targetHero != null)
 		{
 			loreContext = AIConfigHandler.GetLoreContext(input, targetHero, npcLastUtterance);
 			loreCtxSource = "hero";
@@ -6946,10 +7092,7 @@ public class MyBehavior : CampaignBehaviorBase
 		catch
 		{
 		}
-		if (list.Count > 4)
-		{
-			list = list.Take(4).ToList();
-		}
+		list = IntentQueryOptimizer.OptimizeSplitIntents(list, 4);
 		return list;
 	}
 
@@ -6962,7 +7105,7 @@ public class MyBehavior : CampaignBehaviorBase
 		string text2 = (secondaryInput ?? "").Trim();
 		if (!string.IsNullOrWhiteSpace(text2) && !string.Equals(text2, text, StringComparison.OrdinalIgnoreCase))
 		{
-			appendInputs(SplitHistoryRecallIntents(text2), 1f);
+			appendInputs(SplitHistoryRecallIntents(text2), 0.3f);
 		}
 		foreach (KeyValuePair<string, float> item in dictionary.OrderByDescending((KeyValuePair<string, float> x) => x.Value).ThenBy((KeyValuePair<string, float> x) => x.Key, StringComparer.OrdinalIgnoreCase))
 		{
@@ -7018,151 +7161,145 @@ public class MyBehavior : CampaignBehaviorBase
 		return string.Equals(text, b, StringComparison.Ordinal);
 	}
 
-	private List<ArchiveHit> FindRelevantArchiveHits(List<HistoryLineEntry> older, List<WeightedRecallQueryInput> queryInputs, int topK, out bool onnxUsed)
+	private List<ArchiveHit> FindRelevantArchiveHits(List<HistoryLineEntry> older, List<WeightedRecallQueryInput> queryInputs, int returnCap, out bool onnxUsed, out string matchMode, out int rerankPerIntent, out int recallPerIntent)
 	{
 		onnxUsed = false;
+		matchMode = "none";
+		rerankPerIntent = 0;
+		recallPerIntent = 0;
 		List<ArchiveHit> list = new List<ArchiveHit>();
-		List<WeightedRecallQueryInput> list10 = (queryInputs ?? new List<WeightedRecallQueryInput>()).Where((WeightedRecallQueryInput x) => x != null && !string.IsNullOrWhiteSpace(x.Text) && x.Weight > 0f).ToList();
-		if (older == null || older.Count == 0 || topK <= 0 || list10.Count == 0)
+		try
 		{
-			return list;
-		}
-		List<HistoryLineEntry> list2 = older.Where((HistoryLineEntry x) => x != null && !string.IsNullOrWhiteSpace(x.Line)).ToList();
-		if (list2.Count <= 0)
-		{
-			return list;
-		}
-		int num = 260;
-		if (list2.Count > num)
-		{
-			list2 = list2.Skip(list2.Count - num).ToList();
-		}
-		int count = list2.Count;
-		List<(HistoryLineEntry, double)> list3 = new List<(HistoryLineEntry, double)>();
-		for (int num2 = 0; num2 < count; num2++)
-		{
-			HistoryLineEntry historyLineEntry = list2[num2];
-			string text = historyLineEntry.Line ?? "";
-			double num3 = ((count <= 1) ? 1.0 : ((double)num2 / (double)(count - 1)));
-			double num4 = (IsSystemFactLine(text) ? 1.0 : (ContainsStructuredSignal(text) ? 0.78 : 0.35));
-			double num5 = 0.0;
-			for (int num15 = 0; num15 < list10.Count; num15++)
+			List<WeightedRecallQueryInput> list2 = (queryInputs ?? new List<WeightedRecallQueryInput>()).Where((WeightedRecallQueryInput x) => x != null && !string.IsNullOrWhiteSpace(x.Text) && x.Weight > 0f).ToList();
+			if (older == null || older.Count == 0 || returnCap <= 0 || list2.Count == 0)
 			{
-				WeightedRecallQueryInput weightedRecallQueryInput = list10[num15];
-				double num16 = ComputeLexicalOverlapScore(text, weightedRecallQueryInput.Terms) * (double)Math.Max(0f, weightedRecallQueryInput.Weight);
-				if (num16 > num5)
-				{
-					num5 = num16;
-				}
+				return list;
 			}
-			double item = 0.6 * num4 + 0.3 * num3 + 0.1 * num5;
-			list3.Add((historyLineEntry, item));
-		}
-		List<(WeightedRecallQueryInput Query, float[] Vector)> list11 = new List<(WeightedRecallQueryInput Query, float[] Vector)>();
-		OnnxEmbeddingEngine instance = OnnxEmbeddingEngine.Instance;
-		if (instance != null && instance.IsAvailable)
-		{
-			for (int num17 = 0; num17 < list10.Count; num17++)
+			List<HistoryLineEntry> list3 = older.Where((HistoryLineEntry x) => x != null && !string.IsNullOrWhiteSpace(x.Line)).ToList();
+			if (list3.Count <= 0)
 			{
-				WeightedRecallQueryInput weightedRecallQueryInput2 = list10[num17];
-				if (!string.IsNullOrWhiteSpace(weightedRecallQueryInput2.Text) && weightedRecallQueryInput2.Text.Trim().Length >= 2 && instance.TryGetEmbedding(weightedRecallQueryInput2.Text, out var vector) && vector != null && vector.Length != 0)
-				{
-					list11.Add((weightedRecallQueryInput2, vector));
-				}
+				return list;
 			}
-		}
-		bool flag = list11.Count > 0;
-		onnxUsed = flag;
-		int num6 = 120;
-		if (!flag)
-		{
-			list3 = list3.OrderByDescending<(HistoryLineEntry, double), double>(((HistoryLineEntry Entry, double BaseScore) x) => x.BaseScore).Take(num6).ToList();
-		}
-		else if (list3.Count > num6)
-		{
-			int num7 = Math.Max(1, num6 / 2);
-			HashSet<int> topByBase = (from x in list3.OrderByDescending<(HistoryLineEntry, double), double>(((HistoryLineEntry Entry, double BaseScore) x) => x.BaseScore).Take(num7)
-				select x.Item1.Index).ToHashSet();
-			HashSet<int> latest = (from x in list3.OrderByDescending<(HistoryLineEntry, double), int>(((HistoryLineEntry Entry, double BaseScore) x) => x.Item1.Index).Take(num6 - num7)
-				select x.Item1.Index).ToHashSet();
-			list3 = list3.Where<(HistoryLineEntry, double)>(((HistoryLineEntry Entry, double BaseScore) x) => topByBase.Contains(x.Item1.Index) || latest.Contains(x.Item1.Index)).ToList();
-		}
-		if (list3.Count <= 0)
-		{
-			return list;
-		}
-		foreach (var item2 in list3)
-		{
-			double num8 = item2.Item2;
-			if (flag)
+			int num = ClampHistoryReturnCap(returnCap);
+			int num2 = Math.Max(1, list2.Count);
+			int historyRerankBudget = GetHistoryRerankBudget(num);
+			rerankPerIntent = GetHistoryPerIntentRerank(historyRerankBudget, num2);
+			recallPerIntent = GetHistoryPerIntentRecall(rerankPerIntent);
+			bool flag = false;
+			try
 			{
-				string text2 = (item2.Item1.Line ?? "").Trim();
-				if (text2.Length > 200)
+				flag = OnnxCrossEncoderReranker.Instance.IsAvailable;
+			}
+			catch
+			{
+				flag = false;
+			}
+			matchMode = (flag ? ((num2 > 1) ? "rerank_multi" : "rerank") : ((num2 > 1) ? "semantic_multi" : "semantic"));
+			Dictionary<int, HistoryRecallAggregate> dictionary = new Dictionary<int, HistoryRecallAggregate>();
+			for (int i = 0; i < list2.Count; i++)
+			{
+				WeightedRecallQueryInput weightedRecallQueryInput = list2[i];
+				List<RecallLineScore> list4 = FindHistoryCandidateScores(list3, weightedRecallQueryInput, recallPerIntent, out var onnxUsed2);
+				if (onnxUsed2)
 				{
-					text2 = text2.Substring(0, 200);
+					onnxUsed = true;
 				}
-				if (!string.IsNullOrWhiteSpace(text2) && instance.TryGetEmbedding(text2, out var vector2) && vector2 != null && vector2.Length != 0)
+				if (list4 == null || list4.Count <= 0)
 				{
-					double num9 = 0.0;
-					for (int num10 = 0; num10 < list11.Count; num10++)
+					continue;
+				}
+				List<RecallLineScore> list5 = RerankHistoryCandidateScores(weightedRecallQueryInput.Text, list4, rerankPerIntent, out var _);
+				if (list5 == null || list5.Count <= 0)
+				{
+					continue;
+				}
+				for (int j = 0; j < list5.Count; j++)
+				{
+					RecallLineScore recallLineScore = list5[j];
+					int num3 = recallLineScore?.Entry?.Index ?? int.MinValue;
+					if (num3 == int.MinValue)
 					{
-						(WeightedRecallQueryInput Query, float[] Vector) tuple = list11[num10];
-						float[] vector3 = tuple.Vector;
-						if (vector3 == null || vector3.Length == 0)
-						{
-							continue;
-						}
-						int num11 = Math.Min(vector3.Length, vector2.Length);
-						double num12 = 0.0;
-						for (int num13 = 0; num13 < num11; num13++)
-						{
-							num12 += (double)vector3[num13] * (double)vector2[num13];
-						}
-						double num14 = (num12 + 1.0) * 0.5 * (double)Math.Max(0f, tuple.Query?.Weight ?? 0f);
-						if (num14 > num9)
-						{
-							num9 = num14;
-						}
+						continue;
 					}
-					if (num9 < 0.0)
+					double num4 = recallLineScore.RerankScore * (double)Math.Max(0f, weightedRecallQueryInput.Weight);
+					if (!dictionary.TryGetValue(num3, out var value))
 					{
-						num9 = 0.0;
+						value = new HistoryRecallAggregate
+						{
+							Hit = new ArchiveHit
+							{
+								Entry = recallLineScore.Entry,
+								Score = num4,
+								BaseScore = recallLineScore.BaseScore,
+								RerankScore = recallLineScore.RerankScore
+							},
+							ScoreSum = num4,
+							HitCount = 1,
+							BestRank = j + 1,
+							BestScore = recallLineScore.RerankScore
+						};
+						dictionary[num3] = value;
+						continue;
 					}
-					if (num9 > 1.0)
+					value.ScoreSum += num4;
+					value.HitCount++;
+					if (j + 1 < value.BestRank)
 					{
-						num9 = 1.0;
+						value.BestRank = j + 1;
 					}
-					num8 = num9 * 0.9 + num8 * 0.1;
+					if (recallLineScore.RerankScore >= value.BestScore)
+					{
+						value.BestScore = recallLineScore.RerankScore;
+						value.Hit.Entry = recallLineScore.Entry;
+						value.Hit.BaseScore = recallLineScore.BaseScore;
+						value.Hit.RerankScore = recallLineScore.RerankScore;
+					}
+					dictionary[num3] = value;
 				}
 			}
-			list.Add(new ArchiveHit
+			if (dictionary.Count <= 0)
 			{
-				Entry = item2.Item1,
-				Score = num8
-			});
-		}
-		list = (from x in list
-			orderby x.Score descending, (x.Entry != null) ? x.Entry.Index : (-1) descending
-			select x).ToList();
-		List<ArchiveHit> list4 = new List<ArchiveHit>();
-		HashSet<int> hashSet = new HashSet<int>();
-		for (int num13 = 0; num13 < list.Count; num13++)
-		{
-			ArchiveHit archiveHit = list[num13];
-			int num14 = archiveHit?.Entry?.Index ?? int.MinValue;
-			if (num14 != int.MinValue && !hashSet.Contains(num14))
-			{
-				list4.Add(archiveHit);
-				hashSet.Add(num14 - 1);
-				hashSet.Add(num14);
-				hashSet.Add(num14 + 1);
-				if (list4.Count >= topK)
+				return list;
+			}
+			List<ArchiveHit> list6 = (from x in dictionary.Values
+				let finalScore = Math.Min(1.0, x.ScoreSum / (double)Math.Max(1, x.HitCount) + (double)(x.HitCount - 1) * 0.08)
+				orderby finalScore descending, x.BestRank, (x.Hit?.Entry != null) ? x.Hit.Entry.Index : (-1) descending
+				select new ArchiveHit
 				{
-					break;
+					Entry = x.Hit.Entry,
+					Score = finalScore,
+					BaseScore = x.Hit.BaseScore,
+					RerankScore = x.Hit.RerankScore
+				}).ToList();
+			HashSet<int> hashSet = new HashSet<int>();
+			for (int k = 0; k < list6.Count; k++)
+			{
+				ArchiveHit archiveHit = list6[k];
+				int num5 = archiveHit?.Entry?.Index ?? int.MinValue;
+				if (num5 != int.MinValue && !hashSet.Contains(num5))
+				{
+					list.Add(archiveHit);
+					hashSet.Add(num5 - 1);
+					hashSet.Add(num5);
+					hashSet.Add(num5 + 1);
+					if (list.Count >= num)
+					{
+						break;
+					}
 				}
 			}
+			try
+			{
+				Logger.Log("DialogueHistory", $"candidate_pool mode={matchMode} returnCap={num} rerankBudget={historyRerankBudget} rerankPerIntent={rerankPerIntent} recallPerIntent={recallPerIntent} intents={num2} got={list.Count}");
+			}
+			catch
+			{
+			}
 		}
-		return list4;
+		catch
+		{
+		}
+		return list;
 	}
 
 	private string BuildHistoryContext(Hero hero, int maxLines = 0, string currentInput = null, string secondaryInput = null)
@@ -7173,6 +7310,7 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		try
 		{
+			TryEnsureFirstMeetingNpcFactForConversation(hero);
 			int num = ((maxLines <= 0) ? GetRecentDialogueTurnsFromSettings() : ClampRecentDialogueTurns(maxLines));
 			List<DialogueDay> list = LoadDialogueHistory(hero);
 			if (list == null || list.Count == 0)
@@ -7241,9 +7379,12 @@ public class MyBehavior : CampaignBehaviorBase
 			List<HistoryLineEntry> list3 = list2.Skip(count).ToList();
 			List<HistoryLineEntry> list4 = list2.Take(count).ToList();
 			List<WeightedRecallQueryInput> list5 = BuildHistoryRecallQueryInputs(list3, currentInput, secondaryInput);
-			int historyArchiveTopNFromSettings = GetHistoryArchiveTopNFromSettings();
+			int historyReturnCapFromSettings = GetHistoryReturnCapFromSettings();
 			bool onnxUsed = false;
-			List<ArchiveHit> list6 = FindRelevantArchiveHits(list4, list5, historyArchiveTopNFromSettings, out onnxUsed);
+			string historyMatchMode = "none";
+			int historyRerankPerIntent = 0;
+			int historyRecallPerIntent = 0;
+			List<ArchiveHit> list6 = FindRelevantArchiveHits(list4, list5, historyReturnCapFromSettings, out onnxUsed, out historyMatchMode, out historyRerankPerIntent, out historyRecallPerIntent);
 			int num7 = list5.Sum((WeightedRecallQueryInput x) => x.Text?.Length ?? 0);
 			string text = (hero?.Name?.ToString() ?? "").Trim();
 			List<string> list13 = BuildRenderedHistoryLines(list3, text, addressToYou: true);
@@ -7342,7 +7483,7 @@ public class MyBehavior : CampaignBehaviorBase
 				}
 			}
 			string text4 = stringBuilder.ToString().TrimEnd();
-			Logger.Log("DialogueHistory", string.Format("context hero={0} totalLines={1} recentLines={2} olderLines={3} archiveHits={4} onnxUsed={5} archiveTopN={6} queryCount={7} queryLen={8} npcRecall={9} chars={10}", hero.StringId ?? "", list2.Count, list3.Count, list4.Count, list8?.Count ?? 0, onnxUsed, historyArchiveTopNFromSettings, list5.Count, num7, string.IsNullOrWhiteSpace(secondaryInput) ? "off" : "on", text4.Length));
+			Logger.Log("DialogueHistory", string.Format("context hero={0} totalLines={1} recentLines={2} olderLines={3} archiveHits={4} onnxUsed={5} returnCap={6} matchMode={7} rerankPerIntent={8} recallPerIntent={9} queryCount={10} queryLen={11} npcRecall={12} chars={13}", hero.StringId ?? "", list2.Count, list3.Count, list4.Count, list8?.Count ?? 0, onnxUsed, historyReturnCapFromSettings, historyMatchMode, historyRerankPerIntent, historyRecallPerIntent, list5.Count, num7, string.IsNullOrWhiteSpace(secondaryInput) ? "off" : "on", text4.Length));
 			Logger.Obs("History", "build_context", new Dictionary<string, object>
 			{
 				["heroId"] = hero.StringId ?? "",
@@ -7351,7 +7492,10 @@ public class MyBehavior : CampaignBehaviorBase
 				["olderLines"] = list4.Count,
 				["archiveHits"] = list8?.Count ?? 0,
 				["onnxUsed"] = onnxUsed,
-				["archiveTopN"] = historyArchiveTopNFromSettings,
+				["returnCap"] = historyReturnCapFromSettings,
+				["matchMode"] = historyMatchMode,
+				["rerankPerIntent"] = historyRerankPerIntent,
+				["recallPerIntent"] = historyRecallPerIntent,
 				["queryCount"] = list5.Count,
 				["queryLen"] = num7,
 				["npcRecall"] = !string.IsNullOrWhiteSpace(secondaryInput),
@@ -7691,6 +7835,277 @@ public class MyBehavior : CampaignBehaviorBase
 		catch
 		{
 		}
+	}
+
+	private static int GetHistoryRerankBudget(int returnCap)
+	{
+		int num = Math.Max(1, returnCap) * 3;
+		if (num < 8)
+		{
+			num = 8;
+		}
+		if (num > 36)
+		{
+			num = 36;
+		}
+		return num;
+	}
+
+	private static int GetHistoryPerIntentRerank(int rerankBudget, int intentCount)
+	{
+		int num = ((intentCount > 0) ? intentCount : 1);
+		int num2 = (int)Math.Round((double)rerankBudget / (double)num, MidpointRounding.AwayFromZero);
+		if (num2 < 4)
+		{
+			num2 = 4;
+		}
+		if (num2 > 12)
+		{
+			num2 = 12;
+		}
+		return num2;
+	}
+
+	private static int GetHistoryPerIntentRecall(int rerankPerIntent)
+	{
+		int num = (int)Math.Round((double)rerankPerIntent * 2.5, MidpointRounding.AwayFromZero);
+		if (num < 10)
+		{
+			num = 10;
+		}
+		if (num > 30)
+		{
+			num = 30;
+		}
+		return num;
+	}
+
+	private static string BuildHistoryRerankText(HistoryLineEntry entry)
+	{
+		string text = (entry?.Line ?? "").Trim();
+		if (text.Length > 220)
+		{
+			text = text.Substring(0, 220);
+		}
+		return text;
+	}
+
+	private static List<RecallLineScore> SelectHistoryCandidateScores(List<RecallLineScore> scored, string source, string input, int topK)
+	{
+		List<RecallLineScore> list = new List<RecallLineScore>();
+		try
+		{
+			int num = ((topK <= 0) ? 4 : topK);
+			double num2 = 0.21;
+			List<RecallLineScore> list2 = (from x in scored
+				where x?.Entry != null && !double.IsNaN(x.RerankScore)
+				orderby x.RerankScore descending, x.BaseScore descending, (x.Entry != null) ? x.Entry.Index : (-1) descending
+				select x).ToList();
+			if (list2.Count <= 0)
+			{
+				return list;
+			}
+			double num3 = ((list2.Count > 0) ? list2[0].RerankScore : 0.0);
+			double num4 = ((list2.Count > 1) ? list2[1].RerankScore : 0.0);
+			double num5 = ((list2.Count > 0) ? list2[0].BaseScore : 0.0);
+			double num6 = ((list2.Count > 1) ? list2[1].BaseScore : 0.0);
+			HashSet<int> hashSet = new HashSet<int>();
+			int num7 = 0;
+			for (int i = 0; i < list2.Count; i++)
+			{
+				if (list.Count >= num)
+				{
+					break;
+				}
+				RecallLineScore recallLineScore = list2[i];
+				int num8 = recallLineScore?.Entry?.Index ?? int.MinValue;
+				if (num8 == int.MinValue || recallLineScore.RerankScore < num2 || !hashSet.Add(num8))
+				{
+					continue;
+				}
+				list.Add(recallLineScore);
+				num7++;
+			}
+			if (list.Count < num)
+			{
+				for (int j = 0; j < list2.Count; j++)
+				{
+					if (list.Count >= num)
+					{
+						break;
+					}
+					RecallLineScore recallLineScore2 = list2[j];
+					int num9 = recallLineScore2?.Entry?.Index ?? int.MinValue;
+					if (num9 != int.MinValue && hashSet.Add(num9))
+					{
+						list.Add(recallLineScore2);
+					}
+				}
+			}
+			try
+			{
+				Logger.Log("DialogueHistory", $"semantic_accept source={source} mode=scored selected={list.Count} strictSelected={num7} topN={num} minScore={num2:0.000} bestRaw={num3:0.000} second={num4:0.000} bestEvidence={num5:0.000} secondEvidence={num6:0.000}");
+			}
+			catch
+			{
+			}
+		}
+		catch
+		{
+		}
+		return list;
+	}
+
+	private List<RecallLineScore> FindHistoryCandidateScores(List<HistoryLineEntry> older, WeightedRecallQueryInput queryInput, int topK, out bool onnxUsed)
+	{
+		onnxUsed = false;
+		List<RecallLineScore> list = new List<RecallLineScore>();
+		try
+		{
+			if (older == null || older.Count == 0 || queryInput == null || string.IsNullOrWhiteSpace(queryInput.Text) || topK <= 0)
+			{
+				return list;
+			}
+			List<HistoryLineEntry> list2 = older.Where((HistoryLineEntry x) => x != null && !string.IsNullOrWhiteSpace(x.Line)).ToList();
+			if (list2.Count <= 0)
+			{
+				return list;
+			}
+			if (list2.Count > 260)
+			{
+				list2 = list2.Skip(list2.Count - 260).ToList();
+			}
+			int count = list2.Count;
+			float[] array = null;
+			OnnxEmbeddingEngine instance = OnnxEmbeddingEngine.Instance;
+			if (instance != null && instance.IsAvailable && queryInput.Text.Trim().Length >= 2 && instance.TryGetEmbedding(queryInput.Text, out var vector) && vector != null && vector.Length != 0)
+			{
+				array = vector;
+				onnxUsed = true;
+			}
+			for (int i = 0; i < count; i++)
+			{
+				HistoryLineEntry historyLineEntry = list2[i];
+				string text = historyLineEntry.Line ?? "";
+				double num = ((count <= 1) ? 1.0 : ((double)i / (double)(count - 1)));
+				double num2 = (IsSystemFactLine(text) ? 1.0 : (ContainsStructuredSignal(text) ? 0.78 : 0.35));
+				double num3 = ComputeLexicalOverlapScore(text, queryInput.Terms) * (double)Math.Max(0f, queryInput.Weight);
+				double num4 = 0.6 * num2 + 0.3 * num + 0.1 * num3;
+				double num5 = num4;
+				if (array != null)
+				{
+					string text2 = text.Trim();
+					if (text2.Length > 200)
+					{
+						text2 = text2.Substring(0, 200);
+					}
+					if (!string.IsNullOrWhiteSpace(text2) && instance.TryGetEmbedding(text2, out var vector2) && vector2 != null && vector2.Length != 0)
+					{
+						int num6 = Math.Min(array.Length, vector2.Length);
+						double num7 = 0.0;
+						for (int j = 0; j < num6; j++)
+						{
+							num7 += (double)array[j] * (double)vector2[j];
+						}
+						double num8 = (num7 + 1.0) * 0.5 * (double)Math.Max(0f, queryInput.Weight);
+						if (num8 < 0.0)
+						{
+							num8 = 0.0;
+						}
+						if (num8 > 1.0)
+						{
+							num8 = 1.0;
+						}
+						num5 = num8 * 0.9 + num4 * 0.1;
+					}
+				}
+				list.Add(new RecallLineScore
+				{
+					Entry = historyLineEntry,
+					RawScore = num5,
+					BaseScore = num4,
+					RerankScore = num5
+				});
+			}
+			list = (from x in list
+				orderby x.RawScore descending, x.BaseScore descending, (x.Entry != null) ? x.Entry.Index : (-1) descending
+				select x).Take(topK).ToList();
+		}
+		catch
+		{
+		}
+		return list;
+	}
+
+	private List<RecallLineScore> RerankHistoryCandidateScores(string input, List<RecallLineScore> recalled, int rerankTopK, out bool rerankUsed)
+	{
+		rerankUsed = false;
+		List<RecallLineScore> list = new List<RecallLineScore>();
+		try
+		{
+			List<RecallLineScore> list2 = (recalled ?? new List<RecallLineScore>()).Where((RecallLineScore x) => x?.Entry != null).OrderByDescending((RecallLineScore x) => x.RawScore).ThenByDescending((RecallLineScore x) => x.BaseScore).ThenByDescending((RecallLineScore x) => x.Entry?.Index ?? (-1)).ToList();
+			if (list2.Count <= 0)
+			{
+				return list;
+			}
+			int num = ((rerankTopK <= 0) ? 4 : rerankTopK);
+			if (num > list2.Count)
+			{
+				num = list2.Count;
+			}
+			list2 = list2.Take(num).ToList();
+			OnnxCrossEncoderReranker onnxCrossEncoderReranker = null;
+			bool flag = false;
+			try
+			{
+				onnxCrossEncoderReranker = OnnxCrossEncoderReranker.Instance;
+				flag = onnxCrossEncoderReranker != null && onnxCrossEncoderReranker.IsAvailable;
+			}
+			catch
+			{
+				flag = false;
+			}
+			rerankUsed = flag;
+			List<string> list3 = null;
+			List<float> list4 = null;
+			bool flag2 = false;
+			if (flag)
+			{
+				list3 = new List<string>(list2.Count);
+				for (int i = 0; i < list2.Count; i++)
+				{
+					list3.Add((list2[i]?.Entry == null) ? "" : BuildHistoryRerankText(list2[i].Entry));
+				}
+				flag2 = onnxCrossEncoderReranker.TryScoreBatch(input, list3, out list4) && list4 != null && list4.Count == list2.Count;
+			}
+			rerankUsed = flag && flag2;
+			for (int i = 0; i < list2.Count; i++)
+			{
+				RecallLineScore recallLineScore = list2[i];
+				if (recallLineScore?.Entry == null)
+				{
+					continue;
+				}
+				double num2 = recallLineScore.RawScore;
+				double num3 = num2;
+				if (flag && flag2 && list3 != null && i < list3.Count && !string.IsNullOrWhiteSpace(list3[i]) && list4 != null && i < list4.Count)
+				{
+					num3 = list4[i];
+				}
+				list.Add(new RecallLineScore
+				{
+					Entry = recallLineScore.Entry,
+					RawScore = num2,
+					BaseScore = recallLineScore.BaseScore,
+					RerankScore = num3
+				});
+			}
+			list = SelectHistoryCandidateScores(list, (flag && flag2) ? "cross_encoder" : "recall_fallback", input, num);
+		}
+		catch
+		{
+		}
+		return list;
 	}
 
 	private static void FillSettlementMerchantTrustSnapshot(ref PatienceSnapshot snap, CharacterObject character)
@@ -8654,24 +9069,87 @@ public class MyBehavior : CampaignBehaviorBase
 	{
 		_devEditingHero = null;
 		_devHistorySearchQuery = string.Empty;
+		_devHeroSelectionQuery = string.Empty;
 		_devEditableHeroes = BuildDevEditableHeroList();
 		if (_devEditableHeroes == null || _devEditableHeroes.Count == 0)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("当前没有任何可编辑的NPC（尚未产生对话历史或欠款）。"));
+			InformationManager.DisplayMessage(new InformationMessage("当前没有可编辑的 NPC。"));
 			OpenDevHeroNpcMenu();
 			return;
 		}
+		OpenDevTownEditorHeroSelectionPaged(0, null);
+	}
+
+	private void OpenDevTownEditorHeroSelectionPaged(int page, string query)
+	{
+		if (_devEditableHeroes == null || _devEditableHeroes.Count == 0)
+		{
+			_devEditableHeroes = BuildDevEditableHeroList();
+		}
+		if (_devEditableHeroes == null || _devEditableHeroes.Count == 0)
+		{
+			InformationManager.DisplayMessage(new InformationMessage("当前没有可编辑的 NPC。"));
+			OpenDevHeroNpcMenu();
+			return;
+		}
+		if (page < 0)
+		{
+			page = 0;
+		}
+		string text = (query ?? "").Trim();
+		_devHeroSelectionQuery = text;
+		List<Hero> filteredHeroes = _devEditableHeroes;
+		if (!string.IsNullOrWhiteSpace(text))
+		{
+			string q = text.ToLowerInvariant();
+			filteredHeroes = _devEditableHeroes.Where(delegate(Hero h)
+			{
+				string text5 = ((h?.Name != null) ? h.Name.ToString() : "").Trim().ToLowerInvariant();
+				string text6 = (h?.StringId ?? "").Trim().ToLowerInvariant();
+				return text5.Contains(q) || text6.Contains(q);
+			}).ToList();
+		}
 		List<InquiryElement> list = new List<InquiryElement>();
 		list.Add(new InquiryElement("back", "返回", null));
-		for (int i = 0; i < _devEditableHeroes.Count; i++)
+		list.Add(new InquiryElement("search", "搜索 NPC", null));
+		if (!string.IsNullOrWhiteSpace(text))
 		{
-			Hero hero = _devEditableHeroes[i];
-			string text = hero.Name?.ToString() ?? "NPC";
-			string text2 = hero.StringId ?? "";
-			string title = (string.IsNullOrEmpty(text2) ? text : (text + " (ID=" + text2 + ")"));
-			list.Add(new InquiryElement(hero, title, null));
+			list.Add(new InquiryElement("clear_search", "清空搜索", null));
 		}
-		string descriptionText = "请选择要编辑的 NPC。";
+		const int pageSize = 40;
+		int num = Math.Max(1, (int)Math.Ceiling((double)filteredHeroes.Count / (double)pageSize));
+		if (page >= num)
+		{
+			page = num - 1;
+		}
+		_devHeroSelectionPage = page;
+		if (page > 0)
+		{
+			list.Add(new InquiryElement("prev_page", "上一页", null));
+		}
+		if (page + 1 < num)
+		{
+			list.Add(new InquiryElement("next_page", "下一页", null));
+		}
+		list.Add(new InquiryElement("__sep__", "----------------", null));
+		int num2 = page * pageSize;
+		foreach (Hero item in filteredHeroes.Skip(num2).Take(pageSize))
+		{
+			string text2 = item?.Name?.ToString() ?? "NPC";
+			string text3 = item?.StringId ?? "";
+			string title = string.IsNullOrEmpty(text3) ? text2 : (text2 + " (ID=" + text3 + ")");
+			list.Add(new InquiryElement(item, title, null));
+		}
+		string descriptionText = $"全部 NPC：{_devEditableHeroes.Count} 个";
+		descriptionText = descriptionText + $"\n当前结果：{filteredHeroes.Count} 个，第 {page + 1}/{num} 页。";
+		if (!string.IsNullOrWhiteSpace(text))
+		{
+			descriptionText = descriptionText + "\n搜索关键词：" + text;
+		}
+		if (filteredHeroes.Count == 0)
+		{
+			descriptionText += "\n没有匹配结果，可以重新搜索。";
+		}
 		MultiSelectionInquiryData data = new MultiSelectionInquiryData("编辑 HeroNPC - 选择NPC", descriptionText, list, isExitShown: true, 0, 1, "确定", "返回", OnDevHeroSelected, delegate
 		{
 			OpenDevHeroNpcMenu();
@@ -8758,51 +9236,36 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private List<Hero> BuildDevEditableHeroList()
 	{
-		HashSet<string> hashSet = new HashSet<string>();
+		HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		List<Hero> list = new List<Hero>();
+		Action<string> action = delegate(string id)
+		{
+			string text6 = (id ?? "").Trim();
+			if (string.IsNullOrWhiteSpace(text6) || !hashSet.Add(text6))
+			{
+				return;
+			}
+			try
+			{
+				Hero hero5 = Hero.FindFirst((Hero h) => h != null && string.Equals((h.StringId ?? "").Trim(), text6, StringComparison.OrdinalIgnoreCase));
+				if (hero5 != null && hero5 != Hero.MainHero)
+				{
+					list.Add(hero5);
+				}
+			}
+			catch
+			{
+			}
+		};
 		try
 		{
-			Settlement currentSettlement = Settlement.CurrentSettlement;
-			if (currentSettlement != null)
+			foreach (Hero allAliveHero in Hero.AllAliveHeroes)
 			{
-				try
+				if (allAliveHero == null || allAliveHero == Hero.MainHero)
 				{
-					MBReadOnlyList<Hero> notables = currentSettlement.Notables;
-					if (notables != null)
-					{
-						foreach (Hero item in notables)
-						{
-							if (item != null && !string.IsNullOrEmpty(item.StringId))
-							{
-								hashSet.Add(item.StringId);
-							}
-						}
-					}
+					continue;
 				}
-				catch
-				{
-				}
-				try
-				{
-					Hero hero = currentSettlement.OwnerClan?.Leader;
-					if (hero != null && !string.IsNullOrEmpty(hero.StringId))
-					{
-						hashSet.Add(hero.StringId);
-					}
-				}
-				catch
-				{
-				}
-				try
-				{
-					Hero hero2 = currentSettlement.Town?.Governor;
-					if (hero2 != null && !string.IsNullOrEmpty(hero2.StringId))
-					{
-						hashSet.Add(hero2.StringId);
-					}
-				}
-				catch
-				{
-				}
+				action(allAliveHero.StringId);
 			}
 		}
 		catch
@@ -8814,7 +9277,7 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				if (!string.IsNullOrEmpty(item2.Key))
 				{
-					hashSet.Add(item2.Key);
+					action(item2.Key);
 				}
 			}
 		}
@@ -8824,7 +9287,7 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				if (!string.IsNullOrEmpty(npcPersonaProfile.Key))
 				{
-					hashSet.Add(npcPersonaProfile.Key);
+					action(npcPersonaProfile.Key);
 				}
 			}
 		}
@@ -8837,23 +9300,14 @@ public class MyBehavior : CampaignBehaviorBase
 				{
 					if (!string.IsNullOrEmpty(item3))
 					{
-						hashSet.Add(item3);
+						action(item3);
 					}
 				}
 			}
 		}
-		List<Hero> list = new List<Hero>();
-		foreach (string id in hashSet)
-		{
-			Hero hero3 = Hero.FindFirst((Hero h) => h != null && h.StringId == id);
-			if (hero3 != null)
-			{
-				list.Add(hero3);
-			}
-		}
 		if (list.Count > 1)
 		{
-			list = list.OrderBy((Hero h) => h.Name?.ToString()).ToList();
+			list = list.OrderBy((Hero h) => h.Name?.ToString() ?? "", StringComparer.OrdinalIgnoreCase).ThenBy((Hero h) => h.StringId ?? "", StringComparer.OrdinalIgnoreCase).ToList();
 		}
 		return list;
 	}
@@ -8869,6 +9323,33 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			OpenDevHeroNpcMenu();
 			return;
+		}
+		if (selected[0].Identifier is string text2)
+		{
+			switch (text2)
+			{
+			case "search":
+				InformationManager.ShowTextInquiry(new TextInquiryData("搜索 NPC", "输入 NPC 名称或 HeroId，可查询全部 NPC。", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "搜索", "返回", delegate(string input)
+				{
+					OpenDevTownEditorHeroSelectionPaged(0, input);
+				}, delegate
+				{
+					OpenDevTownEditorHeroSelectionPaged(0, _devHeroSelectionQuery);
+				}, shouldInputBeObfuscated: false, null, _devHeroSelectionQuery ?? ""));
+				return;
+			case "clear_search":
+				OpenDevTownEditorHeroSelectionPaged(0, null);
+				return;
+			case "prev_page":
+				OpenDevTownEditorHeroSelectionPaged(_devHeroSelectionPage - 1, _devHeroSelectionQuery);
+				return;
+			case "next_page":
+				OpenDevTownEditorHeroSelectionPaged(_devHeroSelectionPage + 1, _devHeroSelectionQuery);
+				return;
+			case "__sep__":
+				OpenDevTownEditorHeroSelectionPaged(_devHeroSelectionPage, _devHeroSelectionQuery);
+				return;
+			}
 		}
 		if (!(selected[0].Identifier is Hero devEditingHero))
 		{
@@ -9881,34 +10362,84 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private void OpenDevSingleNpcHeroSelection()
 	{
-		List<Hero> list = BuildDevEditableHeroList() ?? new List<Hero>();
-		try
+		_devSingleNpcSelectionQuery = string.Empty;
+		_devSingleNpcSelectionPage = 0;
+		_devEditableHeroes = BuildDevEditableHeroList() ?? new List<Hero>();
+		OpenDevSingleNpcHeroSelectionPaged(0, null);
+	}
+
+	private void OpenDevSingleNpcHeroSelectionPaged(int page, string query)
+	{
+		if (_devEditableHeroes == null || _devEditableHeroes.Count == 0)
 		{
-			if (Hero.MainHero != null && !list.Contains(Hero.MainHero))
+			_devEditableHeroes = BuildDevEditableHeroList() ?? new List<Hero>();
+		}
+		if (page < 0)
+		{
+			page = 0;
+		}
+		string text = (query ?? "").Trim();
+		_devSingleNpcSelectionQuery = text;
+		List<Hero> filteredHeroes = _devEditableHeroes ?? new List<Hero>();
+		if (!string.IsNullOrWhiteSpace(text))
+		{
+			string q = text.ToLowerInvariant();
+			filteredHeroes = filteredHeroes.Where(delegate(Hero h)
 			{
-				list.Insert(0, Hero.MainHero);
+				string text5 = ((h?.Name != null) ? h.Name.ToString() : "").Trim().ToLowerInvariant();
+				string text6 = (h?.StringId ?? "").Trim().ToLowerInvariant();
+				return text5.Contains(q) || text6.Contains(q);
+			}).ToList();
+		}
+		List<InquiryElement> list = new List<InquiryElement>();
+		list.Add(new InquiryElement("back", "返回", null));
+		list.Add(new InquiryElement("pick_from_export", "从导出文件夹选择NPC…", null));
+		list.Add(new InquiryElement("manual_id", "手动输入 HeroId…", null));
+		list.Add(new InquiryElement("search", "搜索 NPC", null));
+		if (!string.IsNullOrWhiteSpace(text))
+		{
+			list.Add(new InquiryElement("clear_search", "清空搜索", null));
+		}
+		const int pageSize = 40;
+		int num = Math.Max(1, (int)Math.Ceiling((double)filteredHeroes.Count / (double)pageSize));
+		if (page >= num)
+		{
+			page = num - 1;
+		}
+		_devSingleNpcSelectionPage = page;
+		if (page > 0)
+		{
+			list.Add(new InquiryElement("prev_page", "上一页", null));
+		}
+		if (page + 1 < num)
+		{
+			list.Add(new InquiryElement("next_page", "下一页", null));
+		}
+		list.Add(new InquiryElement("__sep__", "----------------", null));
+		int num2 = page * pageSize;
+		foreach (Hero item in filteredHeroes.Skip(num2).Take(pageSize))
+		{
+			if (item == null)
+			{
+				continue;
+			}
+			string text2 = (item.StringId ?? "").Trim();
+			if (!string.IsNullOrEmpty(text2))
+			{
+				string text3 = item.Name?.ToString() ?? "NPC";
+				list.Add(new InquiryElement(item, text3 + " (ID=" + text2 + ")", null));
 			}
 		}
-		catch
+		string descriptionText = $"可从当前存档全部 NPC 中选择，也可从旧导出文件夹读取 JSON。\n全部 NPC：{_devEditableHeroes.Count} 个；当前结果：{filteredHeroes.Count} 个，第 {page + 1}/{num} 页。";
+		if (!string.IsNullOrWhiteSpace(text))
 		{
+			descriptionText = descriptionText + "\n搜索关键词：" + text;
 		}
-		List<InquiryElement> list2 = new List<InquiryElement>();
-		list2.Add(new InquiryElement("back", "返回", null));
-		list2.Add(new InquiryElement("pick_from_export", "从导出文件夹选择NPC…", null));
-		list2.Add(new InquiryElement("manual_id", "手动输入 HeroId…", null));
-		foreach (Hero item in list)
+		if (filteredHeroes.Count == 0)
 		{
-			if (item != null)
-			{
-				string text = (item.StringId ?? "").Trim();
-				if (!string.IsNullOrEmpty(text))
-				{
-					string text2 = item.Name?.ToString() ?? "NPC";
-					list2.Add(new InquiryElement(item, text2 + " (ID=" + text + ")", null));
-				}
-			}
+			descriptionText += "\n没有匹配结果，可以重新搜索。";
 		}
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("单个 HeroNPC 导入/导出 - 选择NPC", "可从当前存档列表选择，也可从旧导出文件夹里读取 JSON 后选择。", list2, isExitShown: true, 0, 1, "进入", "返回", OnDevSingleNpcHeroSelected, delegate
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData("单个 HeroNPC 导入/导出 - 选择NPC", descriptionText, list, isExitShown: true, 0, 1, "进入", "返回", OnDevSingleNpcHeroSelected, delegate
 		{
 			OpenDevHeroNpcMenu();
 		});
@@ -10068,6 +10599,27 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 			case "back":
 				OpenDevHeroNpcMenu();
+				return;
+			case "search":
+				InformationManager.ShowTextInquiry(new TextInquiryData("搜索 NPC", "输入 NPC 名称或 HeroId，可查询全部 NPC。", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "搜索", "返回", delegate(string input)
+				{
+					OpenDevSingleNpcHeroSelectionPaged(0, input);
+				}, delegate
+				{
+					OpenDevSingleNpcHeroSelectionPaged(_devSingleNpcSelectionPage, _devSingleNpcSelectionQuery);
+				}, shouldInputBeObfuscated: false, null, _devSingleNpcSelectionQuery ?? ""));
+				return;
+			case "clear_search":
+				OpenDevSingleNpcHeroSelectionPaged(0, null);
+				return;
+			case "prev_page":
+				OpenDevSingleNpcHeroSelectionPaged(_devSingleNpcSelectionPage - 1, _devSingleNpcSelectionQuery);
+				return;
+			case "next_page":
+				OpenDevSingleNpcHeroSelectionPaged(_devSingleNpcSelectionPage + 1, _devSingleNpcSelectionQuery);
+				return;
+			case "__sep__":
+				OpenDevSingleNpcHeroSelectionPaged(_devSingleNpcSelectionPage, _devSingleNpcSelectionQuery);
 				return;
 			case "pick_from_export":
 				OpenFolderPickerWithCallback("单个 HeroNPC - 选择导入文件夹", isExport: false, delegate(string folderName)
@@ -11886,6 +12438,10 @@ public class MyBehavior : CampaignBehaviorBase
 				error = "KnowledgeLibraryBehavior 未初始化。";
 				return false;
 			}
+			if (!knowledgeLibraryBehavior.TryValidateKnowledgeExport(out error))
+			{
+				return false;
+			}
 			string value = knowledgeLibraryBehavior.ExportRulesJson();
 			KnowledgeLibraryBehavior.KnowledgeFile knowledgeFile = (string.IsNullOrWhiteSpace(value) ? null : JsonConvert.DeserializeObject<KnowledgeLibraryBehavior.KnowledgeFile>(value));
 			if (knowledgeFile?.Rules == null || knowledgeFile.Rules.Count <= 0)
@@ -11990,6 +12546,11 @@ public class MyBehavior : CampaignBehaviorBase
 			if (knowledgeLibraryBehavior == null)
 			{
 				InformationManager.DisplayMessage(new InformationMessage("导出失败：KnowledgeLibraryBehavior 未初始化。"));
+				return;
+			}
+			if (!knowledgeLibraryBehavior.TryValidateSingleRuleExport(text, out var error))
+			{
+				InformationManager.DisplayMessage(new InformationMessage("导出失败：" + error));
 				return;
 			}
 			string text2 = knowledgeLibraryBehavior.ExportSingleRuleJson(text, pretty: true);
@@ -14273,6 +14834,17 @@ public class MyBehavior : CampaignBehaviorBase
 			if (string.IsNullOrWhiteSpace(text))
 			{
 				return "RuleId 为空。";
+			}
+			if (rule.RagShortTexts != null)
+			{
+				for (int i = 0; i < rule.RagShortTexts.Count; i++)
+				{
+					string text2 = (rule.RagShortTexts[i] ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
+					if (!string.IsNullOrWhiteSpace(text2) && text2.Length > KnowledgeLibraryBehavior.RagShortTextMaxLength)
+					{
+						return "RAG专用短句超过 " + KnowledgeLibraryBehavior.RagShortTextMaxLength + " 字符限制。";
+					}
+				}
 			}
 			if (!ValidateKnowledgeKeywordsForSingleRuleImport(kb, rule, overwriteExisting, out var error))
 			{

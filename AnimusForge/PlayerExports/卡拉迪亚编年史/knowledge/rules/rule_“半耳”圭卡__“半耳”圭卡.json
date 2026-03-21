@@ -1,0 +1,65 @@
+﻿{
+  "Id": "rule_“半耳”圭卡",
+  "Keywords": [
+    "“半耳”圭卡"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "圭卡？我听说他只有半个耳朵，他挺有名的，往来的诺德人经常提及他"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "“半耳”圭卡出身于肖尔德家族的一个贫寒分支，在他的雅尔叔叔及其随从被不明身份的战士们困在蜜酒大厅并点燃了屋顶的那一夜前，他一直不被人放在眼里。老国王沃尔比约恩匆忙确认了他的雅尔身份，这让人几乎认定他就是罪魁祸首，并且是被狡诈无情的诺德维格统一派收买了。尽管如此，或许正因如此，沃尔比约恩的儿子兼继承人哈尔达尔一直对他忌惮三分"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": [
+          "nord"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "commoner",
+          "notable",
+          "soldier",
+          "townsfolk",
+          "villager",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "圭卡？他好惨的，叔叔被活活烧死，听说就是大公干的，他还要找大公算账呢"
+    }
+  ],
+  "TextMappings": []
+}
