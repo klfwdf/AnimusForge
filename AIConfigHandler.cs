@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using Newtonsoft.Json;
 using SandBox;
 using SandBox.Missions.MissionLogics;
@@ -177,6 +179,12 @@ public static class AIConfigHandler
 
 	private static readonly Dictionary<string, float[]> _guardrailInputVecCache = new Dictionary<string, float[]>(StringComparer.Ordinal);
 
+	private static int _guardrailWarmupState;
+
+	private static long _guardrailWarmupVersion = -1L;
+
+	private static long _guardrailConfigVersion = 1L;
+
 	private const int GuardrailPhraseVecCacheMax = 1024;
 
 	private const int GuardrailInputVecCacheMax = 256;
@@ -330,7 +338,7 @@ public static class AIConfigHandler
 		return text2.Replace("\r", " ").Replace("\n", " ").Trim();
 	}
 
-	private static List<string> SplitGuardrailIntents(string input, int maxParts = 3)
+	private static List<string> SplitGuardrailIntents(string input, int maxParts = IntentQueryOptimizer.MaxCombinedIntentCount)
 	{
 		List<string> list = new List<string>();
 		try
@@ -410,7 +418,7 @@ public static class AIConfigHandler
 			hashSet.Add(text);
 			for (int l = 0; l < list3.Count; l++)
 			{
-				if (list.Count >= Math.Max(1, maxParts + 1))
+				if (list.Count >= Math.Max(1, maxParts))
 				{
 					break;
 				}
@@ -424,7 +432,7 @@ public static class AIConfigHandler
 		catch
 		{
 		}
-		list = IntentQueryOptimizer.OptimizeSplitIntents(list, Math.Max(1, maxParts + 1));
+		list = IntentQueryOptimizer.OptimizeSplitIntents(list, Math.Max(1, maxParts));
 		if (list.Count <= 0)
 		{
 			string text9 = NormalizeSemanticText(input);
@@ -1043,6 +1051,99 @@ public static class AIConfigHandler
 		}
 	}
 
+	internal static void TryStartBackgroundSemanticWarmup(string source)
+	{
+		try
+		{
+			long num = Volatile.Read(ref _guardrailConfigVersion);
+			if (num <= 0)
+			{
+				num = 1L;
+			}
+			if (Volatile.Read(ref _guardrailWarmupState) == 2 && Volatile.Read(ref _guardrailWarmupVersion) == num)
+			{
+				return;
+			}
+			if (Interlocked.CompareExchange(ref _guardrailWarmupState, 1, 0) != 0)
+			{
+				return;
+			}
+			Interlocked.Exchange(ref _guardrailWarmupVersion, num);
+			string warmupSource = string.IsNullOrWhiteSpace(source) ? "unknown" : source.Trim();
+			Logger.Log("GuardrailWarmup", $"start source={warmupSource} version={num}");
+			Task.Run(delegate
+			{
+				RunGuardrailSemanticWarmup(warmupSource, num);
+			});
+		}
+		catch
+		{
+		}
+	}
+
+	private static void RunGuardrailSemanticWarmup(string source, long version)
+	{
+		Stopwatch stopwatch = Stopwatch.StartNew();
+		int num = 0;
+		int num2 = 0;
+		string text = "";
+		try
+		{
+			HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+			List<GuardrailRulePromptConfig> allEnabledRulePrompts = GetAllEnabledRulePrompts();
+			for (int i = 0; i < allEnabledRulePrompts.Count; i++)
+			{
+				GuardrailRulePromptConfig guardrailRulePromptConfig = allEnabledRulePrompts[i];
+				if (guardrailRulePromptConfig == null || string.IsNullOrWhiteSpace(guardrailRulePromptConfig.Id))
+				{
+					continue;
+				}
+				List<string> list = BuildRuleSemanticSeeds(guardrailRulePromptConfig.Id, guardrailRulePromptConfig.Instruction ?? "", guardrailRulePromptConfig.TriggerKeywords);
+				for (int j = 0; j < list.Count; j++)
+				{
+					string item = NormalizeSemanticText(list[j]);
+					if (!string.IsNullOrWhiteSpace(item))
+					{
+						hashSet.Add(item);
+					}
+				}
+				List<string> builtInIntentAnchorSeeds = GetBuiltInIntentAnchorSeeds(guardrailRulePromptConfig.Id);
+				for (int k = 0; k < builtInIntentAnchorSeeds.Count; k++)
+				{
+					string item2 = NormalizeSemanticText(builtInIntentAnchorSeeds[k]);
+					if (!string.IsNullOrWhiteSpace(item2))
+					{
+						hashSet.Add(item2);
+					}
+				}
+			}
+			num = hashSet.Count;
+			foreach (string item3 in hashSet)
+			{
+				if (TryGetPhraseEmbedding(item3, out var vec) && vec != null && vec.Length != 0)
+				{
+					num2++;
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			text = ex.Message ?? "guardrail warmup exception";
+		}
+		stopwatch.Stop();
+		bool flag = Volatile.Read(ref _guardrailConfigVersion) != version;
+		if (flag)
+		{
+			Interlocked.Exchange(ref _guardrailWarmupState, 0);
+			Interlocked.Exchange(ref _guardrailWarmupVersion, -1L);
+		}
+		else
+		{
+			Interlocked.Exchange(ref _guardrailWarmupState, 2);
+		}
+		Logger.Log("GuardrailWarmup", $"complete source={source} version={version} stale={flag} ms={Math.Round(stopwatch.Elapsed.TotalMilliseconds, 2)} seedCount={num} warmed={num2} error={text}");
+	}
+
 	private static bool TryGetInputEmbedding(string input, out float[] vec)
 	{
 		vec = null;
@@ -1146,7 +1247,7 @@ public static class AIConfigHandler
 			string text2 = NormalizeSemanticText(secondaryText);
 			if (!string.IsNullOrWhiteSpace(text2) && !string.Equals(text2, NormalizeSemanticText(userText), StringComparison.Ordinal))
 			{
-				appendInputs(SplitGuardrailIntents(text2), 0.3f);
+				appendInputs(SplitGuardrailIntents(text2), 0.1f);
 			}
 			if (list.Count <= 0)
 			{
@@ -1564,6 +1665,10 @@ public static class AIConfigHandler
 			}
 			for (int i = 0; i < intents.Count; i++)
 			{
+				if (list.Count >= IntentQueryOptimizer.MaxCombinedIntentCount)
+				{
+					break;
+				}
 				string text4 = NormalizeSemanticText(intents[i]);
 				if (!string.IsNullOrWhiteSpace(text4) && TryGetInputEmbedding(text4, out var vec) && vec != null && vec.Length != 0)
 				{
@@ -3127,6 +3232,9 @@ public static class AIConfigHandler
 				_guardrailInputVecCache.Clear();
 				_lastGuardrailEval = null;
 			}
+			long num = Interlocked.Increment(ref _guardrailConfigVersion);
+			Interlocked.Exchange(ref _guardrailWarmupState, 0);
+			Interlocked.Exchange(ref _guardrailWarmupVersion, -1L);
 			_guardrailSemanticRuntimeContext.Value = "";
 			_guardrailRuntimeTargetKingdomId.Value = "";
 			int valueOrDefault = (_guardrail?.Duel?.AcceptKeywords?.Count).GetValueOrDefault();
@@ -3134,17 +3242,17 @@ public static class AIConfigHandler
 			int valueOrDefault3 = (_guardrail?.Loan?.TriggerKeywords?.Count).GetValueOrDefault();
 			int valueOrDefault4 = (_guardrail?.Surroundings?.TriggerKeywords?.Count).GetValueOrDefault();
 			int valueOrDefault5 = (_guardrail?.RulePrompts?.Count).GetValueOrDefault();
-			int num = 0;
+			int num2 = 0;
 			try
 			{
-				num = GetAllEnabledRulePrompts().Count;
+				num2 = GetAllEnabledRulePrompts().Count;
 			}
 			catch
 			{
-				num = 0;
+				num2 = 0;
 			}
 			string text = (KnowledgeRetrievalFromMcm ? "MCM" : "Guardrail");
-			Logger.Log("AIConfig", string.Format("配置加载成功。触发词(决斗/奖励/借贷/地理)={0}/{1}/{2}/{3}，扩展规则={4}，启用规则总数={5}。规则返回上限={6}。知识检索({7})：{8}（语义优先={9}, returnCap={10}）。", valueOrDefault, valueOrDefault2, valueOrDefault3, valueOrDefault4, valueOrDefault5, num, GetGuardrailReturnCapFromMcm(), text, KnowledgeRetrievalEnabled ? "开启" : "关闭", KnowledgeSemanticFirst, KnowledgeSemanticTopK));
+			Logger.Log("AIConfig", string.Format("配置加载成功。触发词(决斗/奖励/借贷/地理)={0}/{1}/{2}/{3}，扩展规则={4}，启用规则总数={5}。规则返回上限={6}。知识检索({7})：{8}（语义优先={9}, returnCap={10}）。", valueOrDefault, valueOrDefault2, valueOrDefault3, valueOrDefault4, valueOrDefault5, num2, GetGuardrailReturnCapFromMcm(), text, KnowledgeRetrievalEnabled ? "开启" : "关闭", KnowledgeSemanticFirst, KnowledgeSemanticTopK));
 		}
 		catch (Exception ex)
 		{

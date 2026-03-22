@@ -639,6 +639,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 		bool hasBubble = hasAgent && TryDequeuePendingNpcBubble(agentIndex, out bubble, out typingDuration);
 		string failText = string.IsNullOrWhiteSpace(errorMessage) ? "语音合成失败，已切换为文字气泡。" : ("语音合成失败：" + errorMessage);
 		Logger.Log("LipSync", $"[OnPlaybackFailed] agentIndex={agentIndex}, error={errorMessage}");
+		LogTtsReport("PlaybackFailed", agentIndex, $"error={errorMessage};hasInteractionToken={hasInteractionToken};hasBubble={hasBubble};typingDuration={typingDuration:F2}");
 		_mainThreadActions.Enqueue(delegate
 		{
 			try
@@ -669,6 +670,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 			{
 				if (hasAgent)
 				{
+					StopAgentRhubarbRecordIfPossible(agentIndex, "PlaybackFailed");
 					SoundEvent value = null;
 					string value2 = null;
 					string value3 = null;
@@ -688,6 +690,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 						}
 					}
 					QueueDeferredCleanup(value, value2, value3, "PlaybackFailed", agentIndex);
+					LogTtsReport("PlaybackFailed.CleanupQueued", agentIndex, $"hasSe={(value != null)};hasWav={(!string.IsNullOrWhiteSpace(value2))};hasXml={(!string.IsNullOrWhiteSpace(value3))}");
 				}
 			}
 			catch
@@ -696,7 +699,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 		});
 	}
 
-	private void ShowNpcSpeechOutput(NpcDataPacket npc, Agent liveAgent, string content)
+	private void ShowNpcSpeechOutput(NpcDataPacket npc, Agent liveAgent, string content, bool allowTts = true, bool attachTtsToSceneAgent = true)
 	{
 		if (!CanAgentParticipateInSceneSpeech(liveAgent))
 		{
@@ -721,12 +724,34 @@ public class ShoutBehavior : CampaignBehaviorBase
 			interactionToken = value.InteractionToken;
 		}
 		bool flag = false;
-		bool flag2 = IsTtsPlaybackEnabledForShout();
-		if (flag2)
+		bool flag2 = allowTts && IsTtsPlaybackEnabledForShout();
+		int num2 = ((flag2 && attachTtsToSceneAgent && num >= 0 && CanAgentParticipateInSceneSpeech(liveAgent)) ? num : (-1));
+		LogTtsReport("ShowNpcSpeechOutput.Enter", num, $"allowTts={allowTts};attachToSceneAgent={attachTtsToSceneAgent};effectiveAgentIndex={num2};contentLen={(content ?? string.Empty).Length}");
+		if (!allowTts)
 		{
 			try
 			{
-				string text3 = "";
+				Logger.Log("LipSync", "[SAFEGUARD] Skip TTS for current speech. agentIndex=" + num);
+			}
+			catch
+			{
+			}
+		}
+		else if (flag2 && num2 < 0)
+		{
+			try
+			{
+				Logger.Log("LipSync", "[SAFEGUARD] Use detached TTS for combat/immediate speech. agentIndex=" + num);
+			}
+			catch
+			{
+			}
+		}
+		if (flag2)
+		{
+			string text3 = "";
+			try
+			{
 				if (npc != null && npc.IsHero)
 				{
 					Hero hero = ResolveHeroFromAgentIndex(npc.AgentIndex);
@@ -743,31 +768,34 @@ public class ShoutBehavior : CampaignBehaviorBase
 				{
 					text3 = VoiceMapper.ResolveVoiceIdForNonHero(npc.IsFemale, npc.Age, npc.AgentIndex);
 				}
-				flag = TtsEngine.Instance.SpeakAsync(content, -1, -1f, num, text3);
+				flag = TtsEngine.Instance.SpeakAsync(content, -1, -1f, num2, text3);
 			}
 			catch
 			{
 			}
+			LogTtsReport("ShowNpcSpeechOutput.SpeakAttempt", num, $"effectiveAgentIndex={num2};speakAccepted={flag};voiceId={text3}");
 		}
-		if (flag && num >= 0 && CanAgentParticipateInSceneSpeech(liveAgent))
+		if (flag && num2 >= 0 && CanAgentParticipateInSceneSpeech(liveAgent))
 		{
 			if (interactionToken != 0L)
 			{
 				EnqueuePendingSpeechCompletionToken(num, interactionToken);
 			}
 			EnqueuePendingNpcBubble(num, liveAgent, text, npc?.Name ?? "NPC");
+			LogTtsReport("ShowNpcSpeechOutput.SceneBubbleQueued", num, $"interactionToken={interactionToken};uiLen={text.Length}");
 			return;
 		}
-		float num2 = EstimateBubbleTypingDurationSeconds(text);
-		if (!TryShowNpcBubble(liveAgent, text, num2))
+		float num3 = EstimateBubbleTypingDurationSeconds(text);
+		if (!TryShowNpcBubble(liveAgent, text, num3))
 		{
 			Logger.Log("FloatingText", "[Fallback] bubble unavailable, use message: npc=" + (npc?.Name ?? "NPC"));
 			InformationManager.DisplayMessage(new InformationMessage("[" + (npc?.Name ?? "NPC") + "] " + text, new Color(1f, 0.8f, 0.2f)));
 		}
 		if (interactionToken != 0L)
 		{
-			ScheduleInteractionTimeoutArm(num, interactionToken, num2);
+			ScheduleInteractionTimeoutArm(num, interactionToken, num3);
 		}
+		LogTtsReport("ShowNpcSpeechOutput.BubbleFallback", num, $"interactionToken={interactionToken};typingDuration={num3:F2};ttsAccepted={flag};ttsEnabled={flag2}");
 		if (!(!flag && flag2))
 		{
 			return;
@@ -791,7 +819,8 @@ public class ShoutBehavior : CampaignBehaviorBase
 			{
 				text4 = VoiceMapper.ResolveVoiceIdForNonHero(npc.IsFemale, npc.Age, npc.AgentIndex);
 			}
-			TtsEngine.Instance.SpeakAsync(content, -1, -1f, num, text4);
+			TtsEngine.Instance.SpeakAsync(content, -1, -1f, num2, text4);
+			LogTtsReport("ShowNpcSpeechOutput.DetachedSpeakFallback", num, $"effectiveAgentIndex={num2};voiceId={text4}");
 		}
 		catch
 		{
@@ -1028,7 +1057,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 		StringBuilder stringBuilder = new StringBuilder();
 		if (hero != null)
 		{
-			string clanRoleText = (clanRole == "族长") ? "统治者" : "成员";
+			string clanRoleText = (clanRole == "族长") ? "统治者" : (hero.IsFemale ? "女性成员" : "男性成员");
 			stringBuilder.Append("你名叫")
 				.Append(name)
 				.Append("，是")
@@ -2447,6 +2476,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 		Interlocked.Increment(ref _sceneHistorySessionId);
 		RagWarmupCoordinator.TryStartBackgroundWarmup("mission_start");
+		AIConfigHandler.TryStartBackgroundSemanticWarmup("mission_start");
 		Mission.Current.AddMissionBehavior(new ShoutMissionBehavior(this));
 		Mission.Current.AddMissionBehavior(new FloatingTextMissionView());
 		SubscribeTtsPlaybackEvents();
@@ -2512,6 +2542,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 							_agentWavPaths[agentIndex] = wavPath;
 							_agentXmlPaths[agentIndex] = xmlPath;
 						}
+						LogTtsReport("AudioFileReady", agentIndex, $"duration={durationSecs:F2};wav={System.IO.Path.GetFileName(wavPath)};xml={System.IO.Path.GetFileName(xmlPath)}");
 						_mainThreadActions.Enqueue(delegate
 						{
 							try
@@ -2552,6 +2583,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 											{
 												foreach (KeyValuePair<int, SoundEvent> agentSoundEvent in _agentSoundEvents)
 												{
+													StopAgentRhubarbRecordIfPossible(agentSoundEvent.Key, "OnAudioFileReady.ReplaceExisting");
 													if (!IsInEscapeTransitionWindow())
 													{
 														SafeStopAndReleaseSoundEvent(agentSoundEvent.Value);
@@ -2614,6 +2646,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 												{
 													if (_agentSoundEvents.TryGetValue(agentIndex, out var value) && !IsInEscapeTransitionWindow())
 													{
+														StopAgentRhubarbRecordIfPossible(agentIndex, "OnAudioFileReady.ReplaceSameAgent");
 														SafeStopAndReleaseSoundEvent(value);
 													}
 													_agentSoundEvents[agentIndex] = soundEvent;
@@ -2641,6 +2674,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 							_speakingAgentIndices.Add(agentIndex);
 						}
 						Logger.Log("LipSync", $"[OnPlaybackStarted] agentIndex={agentIndex} added to speaking set");
+						LogTtsReport("PlaybackStarted", agentIndex);
 						if (TryDequeuePendingNpcBubble(agentIndex, out var bubble, out var typingDuration))
 						{
 							_mainThreadActions.Enqueue(delegate
@@ -2670,6 +2704,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 							_speakingAgentIndices.Remove(agentIndex);
 						}
 						Logger.Log("LipSync", $"[OnPlaybackFinished] agentIndex={agentIndex} removed from speaking set");
+						LogTtsReport("PlaybackFinished", agentIndex, $"hasInteractionToken={hasInteractionToken};interactionToken={interactionToken}");
 						if (hasInteractionToken)
 						{
 							_mainThreadActions.Enqueue(delegate
@@ -2687,6 +2722,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 						{
 							try
 							{
+								StopAgentRhubarbRecordIfPossible(agentIndex, "PlaybackFinished");
 								SoundEvent value = null;
 								string value2 = null;
 								string value3 = null;
@@ -2707,6 +2743,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 								}
 								QueueDeferredCleanup(value, value2, value3, "PlaybackFinished", agentIndex);
 								Logger.Log("LipSync", $"[Rhubarb] cleanup queued, agentIndex={agentIndex}, hasSe={(value != null)}, hasWav={(!string.IsNullOrWhiteSpace(value2))}, hasXml={(!string.IsNullOrWhiteSpace(value3))}");
+								LogTtsReport("PlaybackFinished.CleanupQueued", agentIndex, $"hasSe={(value != null)};hasWav={(!string.IsNullOrWhiteSpace(value2))};hasXml={(!string.IsNullOrWhiteSpace(value3))}");
 							}
 							catch
 							{
@@ -3270,8 +3307,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		ClearPendingTtsBubbleSyncQueues();
 		_ttsPausedByInterruption = false;
 		_ttsPausedByShoutUi = false;
+		List<int> list = null;
 		lock (_speakingLock)
 		{
+			list = _agentSoundEvents.Keys.ToList();
 			_speakingAgentIndices.Clear();
 			foreach (KeyValuePair<int, SoundEvent> agentSoundEvent in _agentSoundEvents)
 			{
@@ -3345,6 +3384,13 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			{
 			}
 		}
+		if (list != null)
+		{
+			for (int i = 0; i < list.Count; i++)
+			{
+				StopAgentRhubarbRecordIfPossible(list[i], "StopAllLipSyncPlaybackAndCleanup");
+			}
+		}
 	}
 
 	private void TickLipSyncAnimations(float dt)
@@ -3380,6 +3426,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				{
 					_speakingAgentIndices.Remove(agentIndex);
 				}
+				LogTtsReport("AgentInvalidDuringLipSync", agentIndex);
 				SoundEvent value = null;
 				string value2 = null;
 				string value3 = null;
@@ -3828,7 +3875,17 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 	{
 		try
 		{
-			return DuelBehavior.IsArenaMissionActive || DuelBehavior.IsFormalDuelActive;
+			if (DuelBehavior.IsArenaMissionActive || DuelBehavior.IsFormalDuelActive)
+			{
+				return true;
+			}
+			string text = (Mission.Current?.SceneName ?? "").Trim().ToLowerInvariant();
+			if (!string.IsNullOrWhiteSpace(text) && text.Contains("arena"))
+			{
+				return true;
+			}
+			string text2 = (ShoutUtils.GetCurrentSceneDescription() ?? "").Trim();
+			return !string.IsNullOrWhiteSpace(text2) && text2.IndexOf("竞技场", StringComparison.OrdinalIgnoreCase) >= 0;
 		}
 		catch
 		{
@@ -3858,7 +3915,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			text = "武器";
 		}
-		return opponentContext ? ("[AFEF NPC行为补充] 你拿着" + text + "与" + playerName + "作为对手激烈交锋") : ("[AFEF NPC行为补充] 你拿着" + text + "与" + playerName + "作为敌人拼杀");
+		return opponentContext ? ("[AFEF NPC行为补充] 你现在拿着" + text + "与" + playerName + "作为对手激烈交锋，但还未决出胜负") : ("[AFEF NPC行为补充] 你现在正拿着" + text + "与" + playerName + "作为敌人拼杀，还未决出胜负");
 	}
 
 	private static string TryGetActiveWeaponDisplayNameForPassiveReaction(Agent agent)
@@ -4056,7 +4113,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 							}
 							if (!string.IsNullOrWhiteSpace(rulerName))
 							{
-								line = line + " | 统治者: " + rulerName;
+								line = line + " | 效忠于: " + rulerName;
 							}
 							if (string.IsNullOrWhiteSpace(lordId))
 							{
@@ -6399,8 +6456,13 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 							bool flag3 = !flagSceneTaunt && TryTriggerOpenLordsHallAction(matchedNpc, agent, ref content);
 							if (!string.IsNullOrWhiteSpace(content))
 							{
-								ShowNpcSpeechOutput(matchedNpc, agent, content);
-								if (CanAgentParticipateInSceneSpeech(agent) && !suppressStare)
+								bool flag4 = IsAgentHostileToMainAgent(agent);
+								ShowNpcSpeechOutput(matchedNpc, agent, content, allowTts: true, attachTtsToSceneAgent: true);
+								if (flag4)
+								{
+									RefreshHostileCombatAgentAutonomy(agent);
+								}
+								if (CanAgentParticipateInSceneSpeech(agent) && !suppressStare && !flag4)
 								{
 									AddAgentToStareList(agent, interruptCurrentUse: true);
 								}
@@ -7079,7 +7141,16 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			{
 				return;
 			}
-			TrackPlayerInteraction(npcDataPacket, postSpeechLeaveSeconds);
+			if (IsAgentHostileToMainAgent(agent))
+			{
+				_activeInteractionSessions.Remove(targetAgentIndex);
+				_pendingInteractionTimeoutArms.Remove(targetAgentIndex);
+				RefreshHostileCombatAgentAutonomy(agent);
+			}
+			else
+			{
+				TrackPlayerInteraction(npcDataPacket, postSpeechLeaveSeconds);
+			}
 			if (!list.Any(d => d != null && d.AgentIndex == targetAgentIndex))
 			{
 				list.Insert(0, npcDataPacket);
@@ -7119,6 +7190,176 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		catch (Exception ex)
 		{
 			Logger.Log("ShoutBehavior", "[ERROR] TriggerImmediateSceneBehaviorReaction failed: " + ex.Message);
+		}
+	}
+
+	private void StopAgentRhubarbRecordIfPossible(int agentIndex, string reason = "Unknown")
+	{
+		if (agentIndex < 0 || Mission.Current == null)
+		{
+			return;
+		}
+		try
+		{
+			Agent agent = Mission.Current.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == agentIndex && a.IsActive());
+			if (agent == null || agent.AgentVisuals == null)
+			{
+				return;
+			}
+			agent.AgentVisuals.StartRhubarbRecord("", -1);
+			Logger.Log("LipSync", $"[Rhubarb] StopRhubarbRecord called, agentIndex={agentIndex}, reason={reason}");
+			LogTtsReport("StopRhubarbRecord", agentIndex, "reason=" + reason);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("LipSync", $"[WARN] StopRhubarbRecord failed, agentIndex={agentIndex}, reason={reason}, error={ex.Message}");
+			LogTtsReport("StopRhubarbRecord.Failed", agentIndex, $"reason={reason};error={ex.Message}");
+		}
+	}
+
+	private void LogTtsReport(string stage, int agentIndex, string extra = null)
+	{
+		try
+		{
+			Agent agent = Mission.Current?.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == agentIndex);
+			bool active = agent != null && agent.IsActive();
+			bool hostile = IsAgentHostileToMainAgent(agent);
+			string agentName = (agent?.Name?.ToString() ?? "").Trim();
+			bool speaking = false;
+			bool hasSe = false;
+			bool hasWav = false;
+			bool hasXml = false;
+			lock (_speakingLock)
+			{
+				speaking = _speakingAgentIndices.Contains(agentIndex);
+				hasSe = _agentSoundEvents.ContainsKey(agentIndex);
+				hasWav = _agentWavPaths.ContainsKey(agentIndex);
+				hasXml = _agentXmlPaths.ContainsKey(agentIndex);
+			}
+			bool hasPendingBubble = false;
+			int pendingBubbleCount = 0;
+			bool hasPendingDuration = false;
+			int pendingDurationCount = 0;
+			bool hasPendingSpeechToken = false;
+			int pendingSpeechTokenCount = 0;
+			lock (_ttsBubbleSyncLock)
+			{
+				if (_pendingNpcBubbleQueues.TryGetValue(agentIndex, out var bubbleQueue) && bubbleQueue != null)
+				{
+					hasPendingBubble = bubbleQueue.Count > 0;
+					pendingBubbleCount = bubbleQueue.Count;
+				}
+				if (_pendingAudioDurationQueues.TryGetValue(agentIndex, out var durationQueue) && durationQueue != null)
+				{
+					hasPendingDuration = durationQueue.Count > 0;
+					pendingDurationCount = durationQueue.Count;
+				}
+				if (_pendingSpeechCompletionTokenQueues.TryGetValue(agentIndex, out var tokenQueue) && tokenQueue != null)
+				{
+					hasPendingSpeechToken = tokenQueue.Count > 0;
+					pendingSpeechTokenCount = tokenQueue.Count;
+				}
+			}
+			bool hasInteraction = _activeInteractionSessions.TryGetValue(agentIndex, out var session) && session != null;
+			long interactionToken = hasInteraction ? session.InteractionToken : 0L;
+			bool timeoutArmed = hasInteraction && session.TimeoutArmed;
+			bool hasPendingArm = _pendingInteractionTimeoutArms.TryGetValue(agentIndex, out var pendingArm) && pendingArm != null;
+			float missionTime = Mission.Current?.CurrentTime ?? (-1f);
+			string sceneName = (Mission.Current?.SceneName ?? "").Trim();
+			string pendingArmAt = hasPendingArm ? pendingArm.ArmAtMissionTime.ToString("F2") : "-";
+			string extraSuffix = string.IsNullOrWhiteSpace(extra) ? string.Empty : ", " + extra;
+			Logger.Log("TTSReport", $"[{stage}] agentIndex={agentIndex}, name={agentName}, active={active}, hostile={hostile}, speaking={speaking}, hasSe={hasSe}, hasWav={hasWav}, hasXml={hasXml}, hasInteraction={hasInteraction}, interactionToken={interactionToken}, timeoutArmed={timeoutArmed}, hasPendingArm={hasPendingArm}, pendingArmAt={pendingArmAt}, pendingBubble={hasPendingBubble}, pendingBubbleCount={pendingBubbleCount}, pendingDuration={hasPendingDuration}, pendingDurationCount={pendingDurationCount}, pendingSpeechToken={hasPendingSpeechToken}, pendingSpeechTokenCount={pendingSpeechTokenCount}, missionTime={missionTime:F2}, scene={sceneName}{extraSuffix}");
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("TTSReport", $"[{stage}] report_failed agentIndex={agentIndex}, error={ex.Message}");
+		}
+	}
+
+	private static bool IsAgentHostileToMainAgent(Agent agent)
+	{
+		try
+		{
+			Agent main = Agent.Main;
+			return agent != null && !agent.IsMainAgent && agent.IsActive() && main != null && main.IsActive() && agent.Team != null && main.Team != null && agent.Team.IsEnemyOf(main.Team);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static void RefreshHostileCombatAgentAutonomy(Agent agent)
+	{
+		if (!IsAgentHostileToMainAgent(agent) || !agent.IsAIControlled)
+		{
+			return;
+		}
+		try
+		{
+			AgentFlag agentFlags = agent.GetAgentFlags();
+			agent.SetAgentFlags(agentFlags | AgentFlag.CanGetAlarmed);
+		}
+		catch
+		{
+		}
+		try
+		{
+			agent.SetLookAgent(null);
+		}
+		catch
+		{
+		}
+		try
+		{
+			agent.SetMaximumSpeedLimit(-1f, isMultiplier: false);
+		}
+		catch
+		{
+		}
+		try
+		{
+			agent.DisableScriptedMovement();
+		}
+		catch
+		{
+		}
+		try
+		{
+			agent.ClearTargetFrame();
+		}
+		catch
+		{
+		}
+		try
+		{
+			agent.SetIsAIPaused(isPaused: false);
+		}
+		catch
+		{
+		}
+		try
+		{
+			agent.ResetEnemyCaches();
+			agent.InvalidateTargetAgent();
+			agent.InvalidateAIWeaponSelections();
+		}
+		catch
+		{
+		}
+		try
+		{
+			agent.SetAlarmState(Agent.AIStateFlag.Alarmed);
+		}
+		catch
+		{
+		}
+		try
+		{
+			agent.SetWatchState(Agent.WatchState.Alarmed);
+		}
+		catch
+		{
 		}
 	}
 
@@ -7310,6 +7551,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			return;
 		}
+		if (IsAgentHostileToMainAgent(agent))
+		{
+			RestoreAgentAutonomy(agent);
+			return;
+		}
 		string text = (session.TargetName ?? "").Trim();
 		if (string.IsNullOrWhiteSpace(text))
 		{
@@ -7343,6 +7589,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			return;
 		}
+		bool flag = IsAgentHostileToMainAgent(agent);
 		try
 		{
 			if (_staringUseConversationAgents.Remove(agent.Index) && agent.CurrentlyUsedGameObject != null)
@@ -7387,6 +7634,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 		catch
 		{
+		}
+		if (flag)
+		{
+			RefreshHostileCombatAgentAutonomy(agent);
+			return;
 		}
 		try
 		{

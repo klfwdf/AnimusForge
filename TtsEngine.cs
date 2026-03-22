@@ -438,6 +438,7 @@ internal sealed class TtsEngine : IDisposable
 	private void NotifyPlaybackFailed(TtsJob job, string reason)
 	{
 		string text = string.IsNullOrWhiteSpace(reason) ? "TTS failed." : reason.Trim();
+		LogTtsReport("NotifyPlaybackFailed", job?.AgentIndex ?? (-1), $"reason={text}");
 		try
 		{
 			this.OnPlaybackFailed?.Invoke(job?.AgentIndex ?? -1, text);
@@ -453,6 +454,7 @@ internal sealed class TtsEngine : IDisposable
 		{
 			return;
 		}
+		LogTtsReport("ProcessJob.Start", job.AgentIndex, $"speakerId={job.SpeakerId};speed={job.Speed:F2};voiceOverride={job.VoiceIdOverride};textLen={(job.Text ?? string.Empty).Length}");
 		string text = "";
 		string text2 = "";
 		string text3 = "";
@@ -546,6 +548,7 @@ internal sealed class TtsEngine : IDisposable
 			return;
 		}
 		Logger.Log("TtsEngine", $"在线合成开始: text={job.Text.Substring(0, Math.Min(50, job.Text.Length))}..., voice={text5}, override={!string.IsNullOrWhiteSpace(job.VoiceIdOverride)}");
+		LogTtsReport("ProcessJob.SynthesisBegin", job.AgentIndex, $"voice={text5};encoding={audioEncoding};sampleRate={num};audible={flag}");
 		byte[] array = CallVolcV1Api(text, text2, text3, text4, text5, job.Text, audioEncoding, num, speed, loudnessRatio, extraParamJson);
 		if (array == null || array.Length == 0)
 		{
@@ -559,6 +562,7 @@ internal sealed class TtsEngine : IDisposable
 				return;
 			}
 			Logger.Log("TtsEngine", $"在线合成完成: {array.Length} bytes");
+			LogTtsReport("ProcessJob.SynthesisReady", job.AgentIndex, $"bytes={array.Length}");
 			ParseAudioData(array, audioEncoding, out var pcmData, out var sampleRate);
 			if (audioEncoding == "pcm")
 			{
@@ -582,6 +586,7 @@ internal sealed class TtsEngine : IDisposable
 				float num3 = (float)pcmData.Length / ((float)sampleRate * 2f);
 				bool flag3 = job.AgentIndex >= 0;
 				bool flag4 = !flag3 || flag;
+				LogTtsReport("ProcessJob.PlaybackPrepared", job.AgentIndex, $"duration={num3:F2};sampleRate={sampleRate};sceneAgent={flag3};playAudible={flag4}");
 				try
 				{
 					if (job.AgentIndex >= 0 && this.OnAudioFileReady != null)
@@ -620,6 +625,7 @@ internal sealed class TtsEngine : IDisposable
 						try
 						{
 							this.OnAudioFileReady(job.AgentIndex, text8, text9, num3);
+							LogTtsReport("ProcessJob.OnAudioFileReadyDispatched", job.AgentIndex, $"wav={Path.GetFileName(text8)};xml={Path.GetFileName(text9)};duration={num3:F2}");
 						}
 						catch
 						{
@@ -633,6 +639,7 @@ internal sealed class TtsEngine : IDisposable
 				try
 				{
 					this.OnPlaybackStarted?.Invoke(job.AgentIndex);
+					LogTtsReport("ProcessJob.OnPlaybackStartedDispatched", job.AgentIndex);
 				}
 				catch
 				{
@@ -689,12 +696,35 @@ internal sealed class TtsEngine : IDisposable
 					try
 					{
 						this.OnPlaybackFinished?.Invoke(job.AgentIndex);
+						LogTtsReport("ProcessJob.OnPlaybackFinishedDispatched", job.AgentIndex, $"cancelCurrent={_cancelCurrent};stopWorker={_stopWorker}");
 					}
 					catch
 					{
 					}
 				}
 			}
+		}
+	}
+
+	private void LogTtsReport(string stage, int agentIndex, string extra = null)
+	{
+		try
+		{
+			int queueCount = 0;
+			try
+			{
+				queueCount = _jobQueue?.Count ?? 0;
+			}
+			catch
+			{
+				queueCount = -1;
+			}
+			string extraSuffix = string.IsNullOrWhiteSpace(extra) ? string.Empty : ", " + extra;
+			Logger.Log("TTSReport", $"[Engine.{stage}] agentIndex={agentIndex}, queueCount={queueCount}, ready={_initialized}, disposed={_disposed}, cancelCurrent={_cancelCurrent}, pauseRequested={_pauseRequested}, stopWorker={_stopWorker}, waveOutActive={(_currentWaveOut != IntPtr.Zero)}{extraSuffix}");
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("TTSReport", $"[Engine.{stage}] report_failed agentIndex={agentIndex}, error={ex.Message}");
 		}
 	}
 

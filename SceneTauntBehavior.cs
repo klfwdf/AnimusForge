@@ -75,6 +75,8 @@ public class SceneTauntBehavior : CampaignBehaviorBase
 
 	private Dictionary<string, int> _criminalTrustRewardTenthBySettlementStorage = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
 
+	private bool _isCommittingDeferredCrime;
+
 	private bool _pendingForcedPlayerExecution;
 
 	private string _pendingForcedPlayerExecutionExecutorHeroId = "";
@@ -602,6 +604,14 @@ public class SceneTauntBehavior : CampaignBehaviorBase
 			{
 				return false;
 			}
+			if (Hero.MainHero != null && Hero.MainHero.IsPrisoner)
+			{
+				return false;
+			}
+			if (GetActiveSettlementSafe() != null)
+			{
+				return false;
+			}
 		}
 		catch
 		{
@@ -681,58 +691,70 @@ public class SceneTauntBehavior : CampaignBehaviorBase
 
 	private void TryCommitDeferredCrimeWhenBackOnWorldMap()
 	{
-		if (_pendingDeferredCrimeByFaction == null || _pendingDeferredCrimeByFaction.Count == 0 || !IsReadyToCommitDeferredCrime())
+		if (_isCommittingDeferredCrime || _pendingDeferredCrimeByFaction == null || _pendingDeferredCrimeByFaction.Count == 0 || !IsReadyToCommitDeferredCrime())
 		{
 			return;
 		}
-		foreach (KeyValuePair<string, float> item in _pendingDeferredCrimeByFaction.ToList())
+		_isCommittingDeferredCrime = true;
+		try
 		{
-			string text = (item.Key ?? "").Trim();
-			float num = MathF.Max(0f, item.Value);
-			if (string.IsNullOrWhiteSpace(text) || num <= 0f)
+			foreach (KeyValuePair<string, float> item in _pendingDeferredCrimeByFaction.ToList())
 			{
-				_pendingDeferredCrimeByFaction.Remove(item.Key);
-				continue;
-			}
-			IFaction factionById = ResolveFactionById(text);
-			if (factionById == null)
-			{
-				Logger.Log("SceneTaunt", $"Deferred scene crime dropped because faction could not be resolved. FactionId={text}, Amount={num:0.##}");
-				_pendingDeferredCrimeByFaction.Remove(item.Key);
-				continue;
-			}
-			try
-			{
-				float num2 = MathF.Max(0f, factionById.MainHeroCrimeRating);
-				float num3 = Campaign.Current?.Models?.CrimeModel?.GetMaxCrimeRating() ?? 100f;
-				float num4 = MathF.Max(0f, num3 - num2);
-				if (num4 <= 0f)
-				{
-					Logger.Log("SceneTaunt", $"Deferred scene-taunt crime pool not injected because native crime is already at max. Faction={factionById.Name}, NativeCrime={num2:0.##}, Pool={num:0.##}, Max={num3:0.##}");
-					continue;
-				}
-				float num5 = MathF.Min(num, num4);
-				if (num5 <= 0f)
-				{
-					continue;
-				}
-				ChangeCrimeRatingAction.Apply(factionById, num5, true);
-				float num6 = MathF.Max(0f, num - num5);
-				if (num6 <= 0f)
+				string text = (item.Key ?? "").Trim();
+				float num = MathF.Max(0f, item.Value);
+				if (string.IsNullOrWhiteSpace(text) || num <= 0f)
 				{
 					_pendingDeferredCrimeByFaction.Remove(item.Key);
+					continue;
 				}
-				else
+				IFaction factionById = ResolveFactionById(text);
+				if (factionById == null)
 				{
-					_pendingDeferredCrimeByFaction[text] = num6;
+					Logger.Log("SceneTaunt", $"Deferred scene crime dropped because faction could not be resolved. FactionId={text}, Amount={num:0.##}");
+					_pendingDeferredCrimeByFaction.Remove(item.Key);
+					continue;
 				}
-				InformationManager.DisplayMessage(new InformationMessage($"离开当前场景后，{factionById.Name} 的累计犯罪度 +{num5:0.#}。", new Color(1f, 0.45f, 0.2f)));
-				Logger.Log("SceneTaunt", $"Injected scene-taunt crime pool into native crime. Faction={factionById.Name}, NativeBefore={num2:0.##}, Added={num5:0.##}, RemainingPool={num6:0.##}, NativeAfter={MathF.Max(0f, factionById.MainHeroCrimeRating):0.##}");
+				try
+				{
+					float num2 = MathF.Max(0f, factionById.MainHeroCrimeRating);
+					float num3 = Campaign.Current?.Models?.CrimeModel?.GetMaxCrimeRating() ?? 100f;
+					float num4 = MathF.Max(0f, num3 - num2);
+					if (num4 <= 0f)
+					{
+						Logger.Log("SceneTaunt", $"Deferred scene-taunt crime pool not injected because native crime is already at max. Faction={factionById.Name}, NativeCrime={num2:0.##}, Pool={num:0.##}, Max={num3:0.##}");
+						continue;
+					}
+					float num5 = MathF.Min(num, num4);
+					if (num5 <= 0f)
+					{
+						continue;
+					}
+					float num6 = MathF.Max(0f, num - num5);
+					if (num6 <= 0f)
+					{
+						_pendingDeferredCrimeByFaction.Remove(item.Key);
+					}
+					else
+					{
+						_pendingDeferredCrimeByFaction[text] = num6;
+					}
+					ChangeCrimeRatingAction.Apply(factionById, num5, true);
+					InformationManager.DisplayMessage(new InformationMessage($"离开当前场景后，{factionById.Name} 的累计犯罪度 +{num5:0.#}。", new Color(1f, 0.45f, 0.2f)));
+					Logger.Log("SceneTaunt", $"Injected scene-taunt crime pool into native crime. Faction={factionById.Name}, NativeBefore={num2:0.##}, Added={num5:0.##}, RemainingPool={num6:0.##}, NativeAfter={MathF.Max(0f, factionById.MainHeroCrimeRating):0.##}");
+				}
+				catch (Exception ex)
+				{
+					if (num > 0f)
+					{
+						_pendingDeferredCrimeByFaction[text] = num;
+					}
+					Logger.Log("SceneTaunt", "Committing deferred scene crime on world map failed: " + ex.Message);
+				}
 			}
-			catch (Exception ex)
-			{
-				Logger.Log("SceneTaunt", "Committing deferred scene crime on world map failed: " + ex.Message);
-			}
+		}
+		finally
+		{
+			_isCommittingDeferredCrime = false;
 		}
 	}
 
@@ -1756,6 +1778,12 @@ public class SceneTauntMissionBehavior : MissionBehavior
 
 	private float _pendingPlayerRearmAfterArmedConflictEndAtMissionTime = -1f;
 
+	private bool _pendingActiveUnarmedTargetFlee;
+
+	private int _pendingActiveUnarmedTargetFleeAgentIndex = -1;
+
+	private float _pendingActiveUnarmedTargetFleeAtMissionTime = -1f;
+
 	private bool _armedConflictOccurredThisConflict;
 
 	private bool _armedDefeatOutcomeHandled;
@@ -1837,6 +1865,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		TryCommitPendingImmediateUnarmedFightEnd();
 		TryCommitPendingPlayerUnarmedPrep();
 		TryCommitPendingPlayerRearmAfterArmedConflictEnd();
+		TryCommitPendingActiveUnarmedTargetFlee();
 		TryMaintainMainAgentArmedPresence();
 		TryMaintainArmedBystanderReactions();
 		TryAppendNearbyArmedEscalationBehaviorFacts();
@@ -1851,6 +1880,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		}
 		if (!IsPlayerInteractionInputSuppressed() && ShouldTriggerPlayerAttackRelease())
 		{
+			Logger.Log("SceneTaunt", $"[AttackTiming] release_triggered time={Mission.Current?.CurrentTime:0.###} location={(CampaignMission.Current?.Location?.StringId ?? "").Trim().ToLowerInvariant()} settlement={Settlement.CurrentSettlement?.StringId} weapon={IsAgentUsingRealWeapon(Agent.Main)} conflict={_conflictActive} armed={_armedConflict}");
 			if (!_sceneAttackReleaseSuppressed)
 			{
 				if (!_conflictActive)
@@ -1893,7 +1923,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			return false;
 		}
 		bool flag = mainAgentAttackStage == Agent.ActionStage.AttackRelease && _lastMainAgentAttackStage != Agent.ActionStage.AttackRelease;
-		if (flag && _playerAttackReleasePrimed)
+		if (flag && (_playerAttackReleasePrimed || IsAgentUsingRealWeapon(Agent.Main)))
 		{
 			_playerAttackReleasePrimed = false;
 			return true;
@@ -1991,11 +2021,8 @@ public class SceneTauntMissionBehavior : MissionBehavior
 				return;
 			}
 			List<Agent> nearbyNPCAgents = ShoutUtils.GetNearbyNPCAgents();
-			if (nearbyNPCAgents == null || nearbyNPCAgents.Count == 0)
-			{
-				return;
-			}
-			Agent facingAgent = FindFacingCriminalAttackTarget(nearbyNPCAgents) ?? ShoutUtils.GetFacingAgent(nearbyNPCAgents);
+			Agent facingAgent = FindFacingCriminalAttackTarget(nearbyNPCAgents) ?? FindFacingPhysicalAttackTarget() ?? FindClosestEligiblePhysicalAttackTarget();
+			Logger.Log("SceneTaunt", $"[AttackTiming] facing_attack_scan time={Mission.Current?.CurrentTime:0.###} location={(CampaignMission.Current?.Location?.StringId ?? "").Trim().ToLowerInvariant()} settlement={Settlement.CurrentSettlement?.StringId} nearbyCount={(nearbyNPCAgents != null ? nearbyNPCAgents.Count : 0)} target={(facingAgent?.Name?.ToString() ?? "null")} targetIndex={(facingAgent != null ? facingAgent.Index : -1)}");
 			if (facingAgent == null || !facingAgent.IsActive())
 			{
 				return;
@@ -2005,6 +2032,106 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		catch (Exception ex)
 		{
 			Logger.Log("SceneTaunt", "Starting conflict from facing attack input failed: " + ex.Message);
+		}
+	}
+
+	private static Agent FindFacingPhysicalAttackTarget()
+	{
+		try
+		{
+			if (Mission.Current == null || Agent.Main == null || !Agent.Main.IsActive())
+			{
+				return null;
+			}
+			Vec3 position = Agent.Main.Position;
+			Vec3 lookDirection = Agent.Main.LookDirection;
+			Agent result = null;
+			float num = -1f;
+			foreach (Agent agent in Mission.Current.Agents)
+			{
+				if (agent == null || agent == Agent.Main || !agent.IsHuman || !agent.IsActive())
+				{
+					continue;
+				}
+				CharacterObject characterObject = agent.Character as CharacterObject;
+				Hero hero = characterObject?.HeroObject;
+				if (!IsEligiblePhysicalAttackTarget(hero, characterObject) || SceneTauntBehavior.IsChildSceneProtectedTarget(characterObject))
+				{
+					continue;
+				}
+				Vec3 v = agent.Position - position;
+				float length = v.Length;
+				if (length > 4.5f)
+				{
+					continue;
+				}
+				v.Normalize();
+				float num2 = Vec3.DotProduct(lookDirection, v);
+				if (num2 < 0.55f)
+				{
+					continue;
+				}
+				float num3 = num2 / Math.Max(0.35f, length);
+				if (num3 > num)
+				{
+					num = num3;
+					result = agent;
+				}
+			}
+			return result;
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static Agent FindClosestEligiblePhysicalAttackTarget()
+	{
+		try
+		{
+			if (Mission.Current == null || Agent.Main == null || !Agent.Main.IsActive())
+			{
+				return null;
+			}
+			Vec3 position = Agent.Main.Position;
+			Vec3 lookDirection = Agent.Main.LookDirection;
+			Agent result = null;
+			float num = float.MaxValue;
+			foreach (Agent agent in Mission.Current.Agents)
+			{
+				if (agent == null || agent == Agent.Main || !agent.IsHuman || !agent.IsActive())
+				{
+					continue;
+				}
+				CharacterObject characterObject = agent.Character as CharacterObject;
+				Hero hero = characterObject?.HeroObject;
+				if (!IsEligiblePhysicalAttackTarget(hero, characterObject) || SceneTauntBehavior.IsChildSceneProtectedTarget(characterObject))
+				{
+					continue;
+				}
+				Vec3 v = agent.Position - position;
+				float length = v.Length;
+				if (length > 2.2f)
+				{
+					continue;
+				}
+				v.Normalize();
+				if (Vec3.DotProduct(lookDirection, v) < 0.2f)
+				{
+					continue;
+				}
+				if (length < num)
+				{
+					num = length;
+					result = agent;
+				}
+			}
+			return result;
+		}
+		catch
+		{
+			return null;
 		}
 	}
 
@@ -2124,6 +2251,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		{
 			return;
 		}
+		Logger.Log("SceneTaunt", $"[AttackTiming] on_agent_hit time={Mission.Current?.CurrentTime:0.###} location={(CampaignMission.Current?.Location?.StringId ?? "").Trim().ToLowerInvariant()} settlement={Settlement.CurrentSettlement?.StringId} target={affectedAgent.Name} targetIndex={affectedAgent.Index} weapon={IsMissionWeaponRealWeapon(attackerWeapon)} conflict={_conflictActive} armed={_armedConflict}");
 		if (!_conflictActive)
 		{
 			TryStartConflictFromPhysicalAttack(affectedAgent, IsMissionWeaponRealWeapon(attackerWeapon), "player_physical_hit");
@@ -2149,6 +2277,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		{
 			return;
 		}
+		Logger.Log("SceneTaunt", $"[AttackTiming] on_score_hit time={Mission.Current?.CurrentTime:0.###} location={(CampaignMission.Current?.Location?.StringId ?? "").Trim().ToLowerInvariant()} settlement={Settlement.CurrentSettlement?.StringId} target={affectedAgent.Name} targetIndex={affectedAgent.Index} weapon={IsWeaponComponentRealWeapon(attackerWeapon)} damage={damagedHp:0.##} blocked={isBlocked} conflict={_conflictActive} armed={_armedConflict}");
 		if (!_conflictActive)
 		{
 			TryStartConflictFromPhysicalAttack(affectedAgent, IsWeaponComponentRealWeapon(attackerWeapon), "player_physical_score_hit");
@@ -2290,7 +2419,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		return agent != null && agent.IsHuman && agent.IsActive();
 	}
 
-	internal bool TryStartConflict(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, string targetKey, bool fromVerbalTaunt = false)
+	internal bool TryStartConflict(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, string targetKey, bool fromVerbalTaunt = false, bool playerUsedWeaponOverride = false)
 	{
 		try
 		{
@@ -2304,7 +2433,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			{
 				return false;
 			}
-			bool flag = IsAgentUsingRealWeapon(Agent.Main);
+			bool flag = playerUsedWeaponOverride || IsAgentUsingRealWeapon(Agent.Main);
 			bool flag2 = SceneTauntBehavior.IsSoldierSceneTauntTarget(targetCharacter);
 			bool flag3 = SceneTauntBehavior.IsSceneLordTauntTarget(targetHero);
 			bool flag4 = IsSettlementCriminalConflictTarget(targetHero, targetCharacter);
@@ -2396,6 +2525,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 	{
 		try
 		{
+			Logger.Log("SceneTaunt", $"[AttackTiming] try_start_conflict_from_physical_attack time={Mission.Current?.CurrentTime:0.###} location={(CampaignMission.Current?.Location?.StringId ?? "").Trim().ToLowerInvariant()} settlement={Settlement.CurrentSettlement?.StringId} reason={reason} target={(targetAgent?.Name?.ToString() ?? "null")} targetIndex={(targetAgent != null ? targetAgent.Index : -1)} playerUsedWeapon={playerUsedWeapon} conflict={_conflictActive} armed={_armedConflict}");
 			if (_conflictActive || targetAgent == null || !targetAgent.IsHuman || !targetAgent.IsActive())
 			{
 				return false;
@@ -2436,7 +2566,8 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			{
 			}
 			string sceneTauntTargetKey = SceneTauntBehavior.BuildSceneTauntTargetKey(hero, characterObject, targetAgent.Index);
-			bool flag = TryStartConflict(hero, characterObject, targetAgent.Index, sceneTauntTargetKey);
+			bool flag = TryStartConflict(hero, characterObject, targetAgent.Index, sceneTauntTargetKey, fromVerbalTaunt: false, playerUsedWeaponOverride: playerUsedWeapon);
+			Logger.Log("SceneTaunt", $"[AttackTiming] try_start_conflict_result time={Mission.Current?.CurrentTime:0.###} reason={reason} target={(targetAgent?.Name?.ToString() ?? "null")} started={flag} conflict={_conflictActive} armed={_armedConflict}");
 			if (!flag)
 			{
 				return false;
@@ -2617,7 +2748,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		{
 			text = "玩家";
 		}
-		return "[AFEF NPC行为补充] 你和" + text + "互相殴打";
+		return "[AFEF NPC行为补充] "+text + "一拳打到了你的身上，你也开始拿拳头反击。";
 	}
 
 	private static string BuildDirectArmedImmediateReactionFactText(Agent targetAgent)
@@ -2632,7 +2763,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		{
 			text2 = "武器";
 		}
-		return "[AFEF NPC行为补充] 你拿着" + text2 + "与" + text + "打得刀光剑影";
+		return "[AFEF NPC行为补充] ，" + text + "一刀看向了你，而你现在也拔出了" + text2 + "与" + text + "肉搏。";
 	}
 
 	private static string TryGetActiveWeaponDisplayName(Agent agent)
@@ -3780,6 +3911,76 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		_pendingPlayerRearmAfterArmedConflictEndAtMissionTime = (Mission.Current?.CurrentTime ?? 0f) + 0.2f;
 	}
 
+	private void QueuePendingActiveUnarmedTargetFleeIfNeeded()
+	{
+		try
+		{
+			_pendingActiveUnarmedTargetFlee = false;
+			_pendingActiveUnarmedTargetFleeAgentIndex = -1;
+			_pendingActiveUnarmedTargetFleeAtMissionTime = -1f;
+			if (!_armedConflict || _activeTargetAgentIndex < 0 || Mission.Current == null)
+			{
+				return;
+			}
+			Agent agent = Mission.Current.Agents?.FirstOrDefault(a => a != null && a.Index == _activeTargetAgentIndex);
+			if (agent == null || !agent.IsActive() || !ShouldFleeWhenArmedVictim(agent))
+			{
+				return;
+			}
+			_pendingActiveUnarmedTargetFlee = true;
+			_pendingActiveUnarmedTargetFleeAgentIndex = agent.Index;
+			_pendingActiveUnarmedTargetFleeAtMissionTime = Mission.Current.CurrentTime + 0.12f;
+			TryForceUnarmedBystanderToFlee(agent);
+			Logger.Log("SceneTaunt", $"Queued active unarmed target to flee after armed escalation. Agent={agent.Name}, AgentIndex={agent.Index}, ExecuteAt={_pendingActiveUnarmedTargetFleeAtMissionTime:0.###}");
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SceneTaunt", "Queueing active unarmed target flee failed: " + ex.Message);
+		}
+	}
+
+	private void TryCommitPendingActiveUnarmedTargetFlee()
+	{
+		try
+		{
+			if (!_pendingActiveUnarmedTargetFlee || Mission.Current == null)
+			{
+				return;
+			}
+			if (Mission.Current.CurrentTime < _pendingActiveUnarmedTargetFleeAtMissionTime)
+			{
+				return;
+			}
+			Agent agent = Mission.Current.Agents?.FirstOrDefault(a => a != null && a.Index == _pendingActiveUnarmedTargetFleeAgentIndex);
+			bool flag = agent != null && agent.IsActive();
+			bool flag2 = flag && ShouldFleeWhenArmedVictim(agent);
+			bool flag3 = false;
+			if (flag2)
+			{
+				flag3 = TryRemoveAgentFromOpponentFightSide(agent);
+			}
+			if (flag3)
+			{
+				TryForceUnarmedBystanderToFlee(agent);
+				Logger.Log("SceneTaunt", $"Converted active unarmed civilian target to fleeing bystander after armed escalation delay. Agent={agent.Name}");
+			}
+			else
+			{
+				Logger.Log("SceneTaunt", $"Skipped converting active unarmed target after delay. Agent={(agent?.Name?.ToString() ?? "null")}, AgentIndex={_pendingActiveUnarmedTargetFleeAgentIndex}, Active={flag}, ShouldFlee={flag2}, Removed={flag3}");
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SceneTaunt", "Committing active unarmed target flee failed: " + ex.Message);
+		}
+		finally
+		{
+			_pendingActiveUnarmedTargetFlee = false;
+			_pendingActiveUnarmedTargetFleeAgentIndex = -1;
+			_pendingActiveUnarmedTargetFleeAtMissionTime = -1f;
+		}
+	}
+
 	private void TryCommitPendingPlayerRearmAfterArmedConflictEnd()
 	{
 		try
@@ -4023,6 +4224,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			TryArmAgent(agent2);
 		}
 		TryConvertUnarmedCivilianOpponentsToFleeingBystanders();
+		QueuePendingActiveUnarmedTargetFleeIfNeeded();
 		ForceAllNonPlayerSceneAgentsMortal();
 		EnsureCrimeRatingAtLeast(SceneTauntInitialArmedCrimeAmount);
 		AlarmNearbyBystanders();
@@ -4043,6 +4245,10 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			foreach (int item in _opponentAgentIndices.ToList())
 			{
 				Agent agent = Mission.Current?.Agents?.FirstOrDefault(x => x != null && x.Index == item);
+				if (agent != null && agent.Index == _activeTargetAgentIndex)
+				{
+					continue;
+				}
 				if (agent == null || !ShouldFleeWhenArmedVictim(agent))
 				{
 					continue;
@@ -5260,6 +5466,9 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		_armedCarryoverSceneInitialized = false;
 		_armedCarryoverNoAuthoritySceneNotified = false;
 		_lastArmedCarryoverAttemptAtMissionTime = -1f;
+		_pendingActiveUnarmedTargetFlee = false;
+		_pendingActiveUnarmedTargetFleeAgentIndex = -1;
+		_pendingActiveUnarmedTargetFleeAtMissionTime = -1f;
 		ClearPendingPlayerUnarmedPrep();
 		ClearPendingPlayerRearmAfterArmedConflictEnd();
 		_sceneNotableRecentHitNonLethal.Clear();

@@ -29,6 +29,15 @@ public class SubModule : MBSubModuleBase
 			}
 			try
 			{
+				PatchClassProcessor patchClassProcessorClipboard = harmony.CreateClassProcessor(typeof(InputClipboardUnicodePatch));
+				patchClassProcessorClipboard.Patch();
+			}
+			catch (Exception exClipboard)
+			{
+				Logger.LogTrace("SubModule", ">>> InputClipboardUnicodePatch failed: " + exClipboard.Message);
+			}
+			try
+			{
 				PatchClassProcessor patchClassProcessor2 = harmony.CreateClassProcessor(typeof(Patch_TriggerMassiveHook));
 				patchClassProcessor2.Patch();
 			}

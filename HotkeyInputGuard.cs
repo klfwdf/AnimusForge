@@ -9,6 +9,10 @@ internal static class HotkeyInputGuard
 {
 	public static bool IsTextInputFocused()
 	{
+		if (DevHistoryEditPopup.IsOpen)
+		{
+			return true;
+		}
 		try
 		{
 			if (InformationManager.IsAnyInquiryActive())

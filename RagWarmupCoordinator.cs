@@ -50,6 +50,23 @@ internal static class RagWarmupCoordinator
 		}
 		stopwatch.Stop();
 		Interlocked.Exchange(ref _warmupState, 2);
+		if (embeddingOk)
+		{
+			try
+			{
+				KnowledgeLibraryBehavior.TryStartBackgroundIndexWarmup("rag_warmup_complete");
+			}
+			catch
+			{
+			}
+			try
+			{
+				AIConfigHandler.TryStartBackgroundSemanticWarmup("rag_warmup_complete");
+			}
+			catch
+			{
+			}
+		}
 		Logger.Log("RagWarmup", $"complete source={source} ms={Math.Round(stopwatch.Elapsed.TotalMilliseconds, 2)} embeddingOk={embeddingOk} rerankerOk={rerankerOk} embeddingError={embeddingError} rerankerError={rerankerError}");
 	}
 }

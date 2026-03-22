@@ -25,7 +25,6 @@ public class DynamicPatcher
 		typeof(GameStateManager),
 		typeof(InformationManager),
 		typeof(ScreenManager),
-		typeof(MBObjectManager),
 		typeof(Campaign)
 	};
 

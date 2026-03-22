@@ -6,6 +6,7 @@ param(
     [string]$PackageLabel,
     [switch]$UseFirstMatch,
     [switch]$NoBump,
+    [switch]$IncludeOnnx,
     [switch]$IncludeReranker
 )
 
@@ -207,6 +208,7 @@ New-Item -ItemType Directory -Path $OutputDir -Force | Out-Null
 $outputDirFull = [System.IO.Path]::GetFullPath($OutputDir).TrimEnd('\', '/')
 $isOutputInsideModule = $outputDirFull.StartsWith($moduleDirFull + "\", [System.StringComparison]::OrdinalIgnoreCase) -or
     $outputDirFull.Equals($moduleDirFull, [System.StringComparison]::OrdinalIgnoreCase)
+$onnxDirFull = [System.IO.Path]::GetFullPath((Join-Path $ModuleDir "ONNX")).TrimEnd('\', '/')
 $rerankerDirFull = [System.IO.Path]::GetFullPath((Join-Path $ModuleDir "ONNX\reranker")).TrimEnd('\', '/')
 
 $moduleName = Split-Path -Path $ModuleDir -Leaf
@@ -239,11 +241,12 @@ try {
             $fullPath.StartsWith($outputDirFull + "\", [System.StringComparison]::OrdinalIgnoreCase) -or
             $fullPath.Equals($outputDirFull, [System.StringComparison]::OrdinalIgnoreCase)
         )
-        $isRerankerFile = (-not $IncludeReranker) -and (
-            $fullPath.StartsWith($rerankerDirFull + "\", [System.StringComparison]::OrdinalIgnoreCase) -or
+        $isOnnxFile = $fullPath.StartsWith($onnxDirFull + "\", [System.StringComparison]::OrdinalIgnoreCase) -or
+            $fullPath.Equals($onnxDirFull, [System.StringComparison]::OrdinalIgnoreCase)
+        $isRerankerFile = $fullPath.StartsWith($rerankerDirFull + "\", [System.StringComparison]::OrdinalIgnoreCase) -or
             $fullPath.Equals($rerankerDirFull, [System.StringComparison]::OrdinalIgnoreCase)
-        )
-        -not $isLogFile -and -not $isOutputFile -and -not $isRerankerFile
+        $excludeOnnxFile = $isOnnxFile -and -not $IncludeOnnx -and (-not $IncludeReranker -or -not $isRerankerFile)
+        -not $isLogFile -and -not $isOutputFile -and -not $excludeOnnxFile
     }
 
     foreach ($file in $files) {
@@ -269,4 +272,4 @@ if (-not [string]::IsNullOrWhiteSpace($PackageLabel)) {
     Write-Host "Package Label: $PackageLabel"
 }
 Write-Host "Exclude Rule : Logs/**/* (all files under Logs)"
-Write-Host "Reranker ZIP : $(if ($IncludeReranker) { 'Included' } else { 'Excluded by default, pass -IncludeReranker to include it' })"
+Write-Host "ONNX ZIP     : $(if ($IncludeOnnx) { 'Included' } elseif ($IncludeReranker) { 'Only ONNX/reranker included' } else { 'Excluded by default, pass -IncludeOnnx to include it' })"

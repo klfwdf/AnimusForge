@@ -2269,6 +2269,7 @@ public class MyBehavior : CampaignBehaviorBase
 	private void OnSessionLaunched(CampaignGameStarter starter)
 	{
 		AIConfigHandler.ReloadConfig();
+		AIConfigHandler.TryStartBackgroundSemanticWarmup("session_launch");
 		TryHookOverlayQuickTalkDisable();
 		starter.AddGameMenu("AnimusForge_dev_root", "{=!}开发者工具", DevRootMenuInit, GameMenu.MenuOverlayType.SettlementWithBoth);
 		starter.AddGameMenuOption("town", "AnimusForge_dev_root_entry", "【开发】数据管理", DevRootEntryCondition, DevRootEntryConsequence, isLeave: false, 99);
@@ -3795,7 +3796,7 @@ public class MyBehavior : CampaignBehaviorBase
 		GetNpcPersonaStrings(npcHero, out var personality, out var background);
 		string personalityText = string.IsNullOrWhiteSpace(personality) ? "暂无记录" : personality.Trim();
 		string backgroundText = string.IsNullOrWhiteSpace(background) ? "暂无记录" : background.Trim();
-		string clanRole = "成员";
+		string clanRole = npcHero.IsFemale ? "女性成员" : "男性成员";
 		try
 		{
 			Hero leader = npcHero.Clan?.Leader;
@@ -7092,7 +7093,7 @@ public class MyBehavior : CampaignBehaviorBase
 		catch
 		{
 		}
-		list = IntentQueryOptimizer.OptimizeSplitIntents(list, 4);
+		list = IntentQueryOptimizer.OptimizeSplitIntents(list, IntentQueryOptimizer.MaxCombinedIntentCount);
 		return list;
 	}
 
@@ -7105,9 +7106,9 @@ public class MyBehavior : CampaignBehaviorBase
 		string text2 = (secondaryInput ?? "").Trim();
 		if (!string.IsNullOrWhiteSpace(text2) && !string.Equals(text2, text, StringComparison.OrdinalIgnoreCase))
 		{
-			appendInputs(SplitHistoryRecallIntents(text2), 0.3f);
+			appendInputs(SplitHistoryRecallIntents(text2), 0.1f);
 		}
-		foreach (KeyValuePair<string, float> item in dictionary.OrderByDescending((KeyValuePair<string, float> x) => x.Value).ThenBy((KeyValuePair<string, float> x) => x.Key, StringComparer.OrdinalIgnoreCase))
+		foreach (KeyValuePair<string, float> item in dictionary.OrderByDescending((KeyValuePair<string, float> x) => x.Value).ThenBy((KeyValuePair<string, float> x) => x.Key, StringComparer.OrdinalIgnoreCase).Take(IntentQueryOptimizer.MaxCombinedIntentCount))
 		{
 			WeightedRecallQueryInput weightedRecallQueryInput = new WeightedRecallQueryInput
 			{

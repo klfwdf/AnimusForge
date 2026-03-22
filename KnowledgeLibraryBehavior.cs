@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -8,6 +9,7 @@ using System.Net.Http.Headers;
 using System.Reflection;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using TaleWorlds.CampaignSystem;
@@ -15,12 +17,19 @@ using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
+using TaleWorlds.MountAndBlade;
 
 namespace AnimusForge;
 
 public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 {
 	public const int RagShortTextMaxLength = 100;
+
+	public const int RagShortTextGeneratedMaxLength = 50;
+
+	private const int RagShortTextGenerationMaxTokens = 5000;
+
+	private const int RagShortTextAutoGenerateCount = 3;
 
 	private struct LoreContextCacheItem
 	{
@@ -158,6 +167,8 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 
 		public List<string> Roles;
 
+		public List<string> IdentityIds;
+
 		public bool? IsFemale;
 
 		public bool? IsClanLeader;
@@ -189,6 +200,13 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		public string CategoryKey;
 
 		public string Kind;
+
+		public string Label;
+	}
+
+	private sealed class RoleDetailOption
+	{
+		public string EncodedId;
 
 		public string Label;
 	}
@@ -421,6 +439,10 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 
 	private static long _onnxIndexVersion = -1L;
 
+	private static int _indexWarmupState;
+
+	private static long _indexWarmupVersion = -1L;
+
 	private static readonly object _loreContextCacheLock = new object();
 
 	private static Dictionary<string, LoreContextCacheItem> _loreContextCache = new Dictionary<string, LoreContextCacheItem>();
@@ -501,6 +523,8 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		catch
 		{
 		}
+		Interlocked.Exchange(ref _indexWarmupState, 0);
+		Interlocked.Exchange(ref _indexWarmupVersion, -1L);
 	}
 
 	private static bool SafeSyncData<T>(IDataStore dataStore, string key, ref T data)
@@ -1229,10 +1253,13 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 					return;
 				}
 				List<OnnxRuleEntry> entries = new List<OnnxRuleEntry>();
+				int num = 0;
+				bool flag = false;
 				try
 				{
 					OnnxEmbeddingEngine engine = OnnxEmbeddingEngine.Instance;
-					if (engine != null && engine.IsAvailable && _file != null && _file.Rules != null)
+					flag = engine != null && engine.IsAvailable;
+					if (flag && _file != null && _file.Rules != null)
 					{
 						for (int i = 0; i < _file.Rules.Count; i++)
 						{
@@ -1253,15 +1280,19 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 								foreach (string seed in seeds)
 								{
 									string text = (seed ?? "").Trim();
-									if (!string.IsNullOrWhiteSpace(text) && engine.TryGetEmbedding(text, out var vector) && vector != null && vector.Length != 0)
+									if (!string.IsNullOrWhiteSpace(text))
 									{
-										entries.Add(new OnnxRuleEntry
+										num++;
+										if (engine.TryGetEmbedding(text, out var vector) && vector != null && vector.Length != 0)
 										{
-											Rule = r,
-											Seed = text,
-											Vector = vector,
-											IsEvidence = isEvidence
-										});
+											entries.Add(new OnnxRuleEntry
+											{
+												Rule = r,
+												Seed = text,
+												Vector = vector,
+												IsEvidence = isEvidence
+											});
+										}
 									}
 								}
 							}
@@ -1271,8 +1302,23 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 				catch
 				{
 				}
-				_onnxRuleEntries = entries;
-				_onnxIndexVersion = _ruleDataVersion;
+				bool flag2 = _file == null || _file.Rules == null || _file.Rules.Count == 0;
+				bool flag3 = num <= 0;
+				if (!flag)
+				{
+					_onnxRuleEntries = null;
+					_onnxIndexVersion = -1L;
+				}
+				else if (entries.Count > 0 || flag2 || flag3)
+				{
+					_onnxRuleEntries = entries;
+					_onnxIndexVersion = _ruleDataVersion;
+				}
+				else
+				{
+					_onnxRuleEntries = null;
+					_onnxIndexVersion = -1L;
+				}
 			}
 		}
 		catch
@@ -1798,7 +1844,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		return FindVectorCandidateScores(input, topK).Where((RuleScore x) => x?.Rule != null).Select((RuleScore x) => x.Rule).ToList();
 	}
 
-	private static List<string> SplitKnowledgeIntents(string input, int maxParts = 3)
+	private static List<string> SplitKnowledgeIntents(string input, int maxParts = IntentQueryOptimizer.MaxCombinedIntentCount)
 	{
 		List<string> list = new List<string>();
 		try
@@ -1878,7 +1924,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			hashSet.Add(text);
 			for (int l = 0; l < list3.Count; l++)
 			{
-				if (list.Count >= Math.Max(1, maxParts + 1))
+				if (list.Count >= Math.Max(1, maxParts))
 				{
 					break;
 				}
@@ -1892,7 +1938,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		catch
 		{
 		}
-		list = IntentQueryOptimizer.OptimizeSplitIntents(list, Math.Max(1, maxParts + 1));
+		list = IntentQueryOptimizer.OptimizeSplitIntents(list, Math.Max(1, maxParts));
 		if (list.Count <= 0)
 		{
 			string text9 = (input ?? "").Trim();
@@ -1904,7 +1950,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		return list;
 	}
 
-	private static List<WeightedKnowledgeInput> BuildKnowledgeQueryInputs(string input, string secondaryInput, float secondaryWeight = 0.3f)
+	private static List<WeightedKnowledgeInput> BuildKnowledgeQueryInputs(string input, string secondaryInput, float secondaryWeight = 0.1f)
 	{
 		List<WeightedKnowledgeInput> list = new List<WeightedKnowledgeInput>();
 		Dictionary<string, float> dictionary = new Dictionary<string, float>(StringComparer.OrdinalIgnoreCase);
@@ -1916,7 +1962,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			{
 				appendInputs(SplitKnowledgeIntents(text), secondaryWeight);
 			}
-			foreach (KeyValuePair<string, float> item in dictionary.OrderByDescending((KeyValuePair<string, float> x) => x.Value).ThenBy((KeyValuePair<string, float> x) => x.Key, StringComparer.OrdinalIgnoreCase))
+			foreach (KeyValuePair<string, float> item in dictionary.OrderByDescending((KeyValuePair<string, float> x) => x.Value).ThenBy((KeyValuePair<string, float> x) => x.Key, StringComparer.OrdinalIgnoreCase).Take(IntentQueryOptimizer.MaxCombinedIntentCount))
 			{
 				list.Add(new WeightedKnowledgeInput
 				{
@@ -2569,6 +2615,106 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 
 	public override void RegisterEvents()
 	{
+		CampaignEvents.OnSessionLaunchedEvent.AddNonSerializedListener(this, OnSessionLaunched);
+		CampaignEvents.OnMissionStartedEvent.AddNonSerializedListener(this, OnMissionStarted);
+	}
+
+	private void OnSessionLaunched(CampaignGameStarter starter)
+	{
+		TryStartBackgroundIndexWarmup("session_launch");
+	}
+
+	private void OnMissionStarted(IMission mission)
+	{
+		if (mission == null || Mission.Current == null)
+		{
+			return;
+		}
+		TryStartBackgroundIndexWarmup("mission_start");
+	}
+
+	internal static void TryStartBackgroundIndexWarmup(string source)
+	{
+		try
+		{
+			KnowledgeLibraryBehavior instance = Instance;
+			if (instance == null)
+			{
+				return;
+			}
+			long num = _ruleDataVersion;
+			if (num <= 0)
+			{
+				num = 1L;
+			}
+			if (Volatile.Read(ref _indexWarmupState) == 2 && Volatile.Read(ref _indexWarmupVersion) == num)
+			{
+				return;
+			}
+			if (Interlocked.CompareExchange(ref _indexWarmupState, 1, 0) != 0)
+			{
+				return;
+			}
+			Interlocked.Exchange(ref _indexWarmupVersion, num);
+			string warmupSource = string.IsNullOrWhiteSpace(source) ? "unknown" : source.Trim();
+			Logger.Log("KnowledgeIndexWarmup", $"start source={warmupSource} version={num}");
+			Task.Run(delegate
+			{
+				instance.RunIndexWarmup(warmupSource, num);
+			});
+		}
+		catch
+		{
+		}
+	}
+
+	private void RunIndexWarmup(string source, long version)
+	{
+		Stopwatch stopwatch = Stopwatch.StartNew();
+		bool flag = false;
+		bool flag2 = false;
+		int num = 0;
+		int num2 = 0;
+		string text = "";
+		string text2 = "";
+		try
+		{
+			EnsureVectorIndex();
+			flag = _vectorRuleEntries != null && _vectorIndexVersion == version;
+			num = _vectorRuleEntries?.Count ?? 0;
+		}
+		catch (Exception ex)
+		{
+			text = ex.Message ?? "vector index warmup exception";
+		}
+		try
+		{
+			EnsureOnnxIndex();
+			bool flag5 = _file == null || _file.Rules == null || _file.Rules.Count == 0;
+			num2 = _onnxRuleEntries?.Count ?? 0;
+			flag2 = _onnxRuleEntries != null && _onnxIndexVersion == version && (num2 > 0 || flag5);
+		}
+		catch (Exception ex2)
+		{
+			text2 = ex2.Message ?? "onnx index warmup exception";
+		}
+		stopwatch.Stop();
+		bool flag3 = _ruleDataVersion != version;
+		bool flag4 = !flag3 && (!flag2 || num2 <= 0) && string.IsNullOrWhiteSpace(text2);
+		if (flag3)
+		{
+			Interlocked.Exchange(ref _indexWarmupState, 0);
+			Interlocked.Exchange(ref _indexWarmupVersion, -1L);
+		}
+		else if (flag4)
+		{
+			Interlocked.Exchange(ref _indexWarmupState, 0);
+		}
+		else
+		{
+			Interlocked.Exchange(ref _indexWarmupState, 2);
+		}
+		Logger.Log("KnowledgeIndexWarmup", $"complete source={source} version={version} stale={flag3} retryPending={flag4} ms={Math.Round(stopwatch.Elapsed.TotalMilliseconds, 2)} sparseOk={flag} sparseEntries={num} onnxOk={flag2} onnxEntries={num2} sparseError={text} onnxError={text2}");
 	}
 
 	public override void SyncData(IDataStore dataStore)
@@ -3535,9 +3681,64 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private static string TryGetSingleBoundHeroIdFromRule(LoreRule rule)
+	{
+		try
+		{
+			if (rule?.Variants == null)
+			{
+				return "";
+			}
+			HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+			foreach (LoreVariant variant in rule.Variants)
+			{
+				LoreWhen when = variant?.When;
+				if (when?.HeroIds != null)
+				{
+					foreach (string heroId in when.HeroIds)
+					{
+						string text = (heroId ?? "").Trim();
+						if (!string.IsNullOrWhiteSpace(text))
+						{
+							hashSet.Add(text);
+							if (hashSet.Count > 1)
+							{
+								return "";
+							}
+						}
+					}
+				}
+				if (when?.IdentityIds == null)
+				{
+					continue;
+				}
+				foreach (string identityId in when.IdentityIds)
+				{
+					if (!TryParseRoleIdentityId(identityId, out var kind, out var targetId) || !string.Equals(kind, "hero", StringComparison.OrdinalIgnoreCase))
+					{
+						continue;
+					}
+					if (!string.IsNullOrWhiteSpace(targetId))
+					{
+						hashSet.Add(targetId);
+						if (hashSet.Count > 1)
+						{
+							return "";
+						}
+					}
+				}
+			}
+			return hashSet.FirstOrDefault() ?? "";
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
 	private static Hero ResolveBoundHeroFromRule(LoreRule rule)
 	{
-		return FindHeroById(TryGetSingleBoundIdFromRule(rule, (LoreWhen when) => when?.HeroIds));
+		return FindHeroById(TryGetSingleBoundHeroIdFromRule(rule));
 	}
 
 	private static Kingdom ResolveBoundKingdomFromRule(LoreRule rule)
@@ -4734,6 +4935,163 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		};
 	}
 
+	private static string GetRoleKeyForHero(Hero hero)
+	{
+		try
+		{
+			if (hero == null)
+			{
+				return "commoner";
+			}
+			if (hero.IsLord)
+			{
+				return "lord";
+			}
+			if (hero.IsNotable)
+			{
+				return "notable";
+			}
+			if (hero.IsWanderer)
+			{
+				return "wanderer";
+			}
+			return RoleFromOccupation(hero.Occupation);
+		}
+		catch
+		{
+			return "commoner";
+		}
+	}
+
+	private static string GetRoleKeyForCharacter(CharacterObject character)
+	{
+		try
+		{
+			if (character == null)
+			{
+				return "commoner";
+			}
+			Hero heroObject = character.HeroObject;
+			if (heroObject != null)
+			{
+				return GetRoleKeyForHero(heroObject);
+			}
+			if (character.IsSoldier)
+			{
+				return "soldier";
+			}
+			return RoleFromOccupation(character.Occupation);
+		}
+		catch
+		{
+			return "commoner";
+		}
+	}
+
+	private static string GetCurrentCharacterId(Hero npcHero, CharacterObject npcCharacter)
+	{
+		try
+		{
+			string text = (npcCharacter?.StringId ?? "").Trim();
+			if (!string.IsNullOrEmpty(text))
+			{
+				return text;
+			}
+			return (npcHero?.CharacterObject?.StringId ?? "").Trim();
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	private static string EncodeRoleIdentityHeroId(string heroId)
+	{
+		string text = (heroId ?? "").Trim();
+		return string.IsNullOrEmpty(text) ? "" : ("hero:" + text.ToLowerInvariant());
+	}
+
+	private static string EncodeRoleIdentityCharacterId(string characterId)
+	{
+		string text = (characterId ?? "").Trim();
+		return string.IsNullOrEmpty(text) ? "" : ("char:" + text.ToLowerInvariant());
+	}
+
+	private static bool TryParseRoleIdentityId(string encodedId, out string kind, out string targetId)
+	{
+		kind = "";
+		targetId = "";
+		string text = (encodedId ?? "").Trim();
+		if (string.IsNullOrEmpty(text))
+		{
+			return false;
+		}
+		int num = text.IndexOf(':');
+		if (num <= 0 || num >= text.Length - 1)
+		{
+			return false;
+		}
+		kind = text.Substring(0, num).Trim().ToLowerInvariant();
+		targetId = text.Substring(num + 1).Trim();
+		return !string.IsNullOrEmpty(kind) && !string.IsNullOrEmpty(targetId);
+	}
+
+	private static string GetRoleDisplayName(string roleKey)
+	{
+		return ((roleKey ?? "").Trim().ToLowerInvariant()) switch
+		{
+			"lord" => "领主",
+			"notable" => "要人",
+			"wanderer" => "流浪者",
+			"soldier" => "士兵",
+			"villager" => "村民",
+			"townsfolk" => "镇民",
+			"commoner" => "未分类对象",
+			_ => string.IsNullOrWhiteSpace(roleKey) ? "未知" : roleKey
+		};
+	}
+
+	private static string[] GetRoleCategoryKeys()
+	{
+		return new string[7] { "lord", "notable", "wanderer", "soldier", "villager", "townsfolk", "commoner" };
+	}
+
+	private static bool ListContainsIgnoreCase(List<string> list, string value)
+	{
+		if (list == null || list.Count == 0)
+		{
+			return false;
+		}
+		string text = (value ?? "").Trim();
+		if (string.IsNullOrEmpty(text))
+		{
+			return false;
+		}
+		return list.Any((string x) => string.Equals((x ?? "").Trim(), text, StringComparison.OrdinalIgnoreCase));
+	}
+
+	private static void ToggleListValueIgnoreCase(List<string> list, string value)
+	{
+		if (list == null)
+		{
+			return;
+		}
+		string text = (value ?? "").Trim();
+		if (string.IsNullOrEmpty(text))
+		{
+			return;
+		}
+		int num = list.FindIndex((string x) => string.Equals((x ?? "").Trim(), text, StringComparison.OrdinalIgnoreCase));
+		if (num >= 0)
+		{
+			list.RemoveAt(num);
+		}
+		else
+		{
+			list.Add(text);
+		}
+	}
+
 	public string BuildLoreContext(string inputText, CharacterObject npcCharacter, string kingdomIdOverride = null, string secondaryInput = null)
 	{
 		string text = (inputText ?? "").Trim();
@@ -5502,10 +5860,11 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			string text3 = string.Join("|", NormalizeWhenStringList(loreWhen.KingdomIds));
 			string text4 = string.Join("|", NormalizeWhenStringList(loreWhen.SettlementIds));
 			string text5 = string.Join("|", NormalizeWhenStringList(loreWhen.Roles));
-			string text6 = (loreWhen.IsFemale.HasValue ? (loreWhen.IsFemale.Value ? "female" : "male") : "any");
-			string text7 = (loreWhen.IsClanLeader.HasValue ? (loreWhen.IsClanLeader.Value ? "leader" : "not_leader") : "any");
-			string text8 = string.Join("|", NormalizeWhenSkillMin(loreWhen.SkillMin).Select((KeyValuePair<string, int> kv) => kv.Key + ":" + kv.Value));
-			return $"hero={text};culture={text2};kingdom={text3};settlement={text4};role={text5};gender={text6};clan={text7};skill={text8}";
+			string text6 = string.Join("|", NormalizeWhenStringList(loreWhen.IdentityIds));
+			string text7 = (loreWhen.IsFemale.HasValue ? (loreWhen.IsFemale.Value ? "female" : "male") : "any");
+			string text8 = (loreWhen.IsClanLeader.HasValue ? (loreWhen.IsClanLeader.Value ? "leader" : "not_leader") : "any");
+			string text9 = string.Join("|", NormalizeWhenSkillMin(loreWhen.SkillMin).Select((KeyValuePair<string, int> kv) => kv.Key + ":" + kv.Value));
+			return $"hero={text};culture={text2};kingdom={text3};settlement={text4};role={text5};identity={text6};gender={text7};clan={text8};skill={text9}";
 		}
 		catch
 		{
@@ -5560,6 +5919,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			KingdomIds = ((when.KingdomIds != null) ? new List<string>(when.KingdomIds) : null),
 			SettlementIds = ((when.SettlementIds != null) ? new List<string>(when.SettlementIds) : null),
 			Roles = ((when.Roles != null) ? new List<string>(when.Roles) : null),
+			IdentityIds = ((when.IdentityIds != null) ? new List<string>(when.IdentityIds) : null),
 			IsFemale = when.IsFemale,
 			IsClanLeader = when.IsClanLeader,
 			SkillMin = ((when.SkillMin != null) ? new Dictionary<string, int>(when.SkillMin, StringComparer.OrdinalIgnoreCase) : null)
@@ -5580,6 +5940,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			when.KingdomIds = NormalizeWhenStringList(when.KingdomIds);
 			when.SettlementIds = NormalizeWhenStringList(when.SettlementIds);
 			when.Roles = NormalizeWhenStringList(when.Roles);
+			when.IdentityIds = NormalizeWhenStringList(when.IdentityIds);
 			if (when.HeroIds.Count == 0)
 			{
 				when.HeroIds = null;
@@ -5600,6 +5961,10 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			{
 				when.Roles = null;
 			}
+			if (when.IdentityIds.Count == 0)
+			{
+				when.IdentityIds = null;
+			}
 			List<KeyValuePair<string, int>> list = NormalizeWhenSkillMin(when.SkillMin);
 			if (list.Count > 0)
 			{
@@ -5613,7 +5978,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			{
 				when.SkillMin = null;
 			}
-			if (when.HeroIds == null && when.Cultures == null && when.KingdomIds == null && when.SettlementIds == null && when.Roles == null && !when.IsFemale.HasValue && !when.IsClanLeader.HasValue && when.SkillMin == null)
+			if (when.HeroIds == null && when.Cultures == null && when.KingdomIds == null && when.SettlementIds == null && when.Roles == null && when.IdentityIds == null && !when.IsFemale.HasValue && !when.IsClanLeader.HasValue && when.SkillMin == null)
 			{
 				return null;
 			}
@@ -5850,16 +6215,41 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			}
 			score++;
 		}
-		if (when.Roles != null && when.Roles.Count > 0)
+		if ((when.Roles != null && when.Roles.Count > 0) || (when.IdentityIds != null && when.IdentityIds.Count > 0))
 		{
 			bool flag5 = false;
-			for (int m = 0; m < when.Roles.Count; m++)
+			if (when.Roles != null)
 			{
-				string text5 = (when.Roles[m] ?? "").Trim();
-				if (!string.IsNullOrEmpty(text5) && string.Equals(text5, role, StringComparison.OrdinalIgnoreCase))
+				for (int m = 0; m < when.Roles.Count; m++)
 				{
-					flag5 = true;
-					break;
+					string text5 = (when.Roles[m] ?? "").Trim();
+					if (!string.IsNullOrEmpty(text5) && string.Equals(text5, role, StringComparison.OrdinalIgnoreCase))
+					{
+						flag5 = true;
+						break;
+					}
+				}
+			}
+			if (!flag5 && when.IdentityIds != null)
+			{
+				string currentCharacterId = GetCurrentCharacterId(npcHero, npcCharacter);
+				string text6 = (heroId ?? "").Trim();
+				for (int n = 0; n < when.IdentityIds.Count; n++)
+				{
+					if (!TryParseRoleIdentityId(when.IdentityIds[n], out var kind, out var targetId))
+					{
+						continue;
+					}
+					if (kind == "hero" && !string.IsNullOrEmpty(text6) && string.Equals(targetId, text6, StringComparison.OrdinalIgnoreCase))
+					{
+						flag5 = true;
+						break;
+					}
+					if (kind == "char" && !string.IsNullOrEmpty(currentCharacterId) && string.Equals(targetId, currentCharacterId, StringComparison.OrdinalIgnoreCase))
+					{
+						flag5 = true;
+						break;
+					}
 				}
 			}
 			if (!flag5)
@@ -5888,11 +6278,11 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		{
 			foreach (KeyValuePair<string, int> item in when.SkillMin)
 			{
-				string text6 = (item.Key ?? "").Trim();
+				string text7 = (item.Key ?? "").Trim();
 				int value = item.Value;
-				if (!string.IsNullOrEmpty(text6) && value >= 0)
+				if (!string.IsNullOrEmpty(text7) && value >= 0)
 				{
-					if (!TryGetSkillValueById(text6, npcHero, npcCharacter, out var value2))
+					if (!TryGetSkillValueById(text7, npcHero, npcCharacter, out var value2))
 					{
 						return false;
 					}
@@ -6893,6 +7283,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			list3.Add(new InquiryElement("__next__", "下一页", null));
 		}
 		list3.Add(new InquiryElement("__create__", "创建新知识", null));
+		list3.Add(new InquiryElement("__bulk_delete__", "批量删除知识", null));
 		if (list.Count > 0)
 		{
 			list3.Add(new InquiryElement("__sep__", "----------------", null));
@@ -6940,6 +7331,9 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 					break;
 				case "__create__":
 					CreateNewRule(onReturn);
+					break;
+				case "__bulk_delete__":
+					OpenRuleBulkDeleteMenuPaged(onReturn, page, query);
 					break;
 				default:
 				{
@@ -7032,6 +7426,206 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		}));
 	}
 
+	private void OpenRuleBulkDeleteMenuPaged(Action onReturn, int page, string query)
+	{
+		if (onReturn == null)
+		{
+			onReturn = delegate
+			{
+			};
+		}
+		if (page < 0)
+		{
+			page = 0;
+		}
+		if (_file == null)
+		{
+			_file = new KnowledgeFile();
+		}
+		if (_file.Rules == null)
+		{
+			_file.Rules = new List<LoreRule>();
+		}
+		EnsureRuleIndexCache();
+		string text = (query ?? "").Trim();
+		string[] array = null;
+		try
+		{
+			if (!string.IsNullOrWhiteSpace(text))
+			{
+				array = text.Split((char[])null, StringSplitOptions.RemoveEmptyEntries);
+			}
+		}
+		catch
+		{
+			array = null;
+		}
+		int num = page * RuleListPageSize;
+		int num2 = num + RuleListPageSize;
+		int num3 = 0;
+		List<RuleIndexItem> list = new List<RuleIndexItem>();
+		try
+		{
+			List<RuleIndexItem> list2 = _ruleIndexCache ?? new List<RuleIndexItem>();
+			for (int i = 0; i < list2.Count; i++)
+			{
+				RuleIndexItem ruleIndexItem = list2[i];
+				if (ruleIndexItem != null && IsRuleListMatch(ruleIndexItem, array))
+				{
+					if (num3 >= num && num3 < num2)
+					{
+						list.Add(ruleIndexItem);
+					}
+					num3++;
+				}
+			}
+		}
+		catch
+		{
+			num3 = 0;
+			list = new List<RuleIndexItem>();
+		}
+		int num4 = ((num3 > 0) ? ((num3 + RuleListPageSize - 1) / RuleListPageSize) : 0);
+		if (num4 > 0 && page >= num4)
+		{
+			OpenRuleBulkDeleteMenuPaged(onReturn, num4 - 1, query);
+			return;
+		}
+		List<InquiryElement> list3 = new List<InquiryElement>();
+		list3.Add(new InquiryElement("__search__", "搜索（按关键词/ID）", null));
+		if (!string.IsNullOrWhiteSpace(text))
+		{
+			list3.Add(new InquiryElement("__clear__", "清空搜索", null));
+		}
+		if (page > 0)
+		{
+			list3.Add(new InquiryElement("__prev__", "上一页", null));
+		}
+		if (num4 > 0 && page + 1 < num4)
+		{
+			list3.Add(new InquiryElement("__next__", "下一页", null));
+		}
+		if (list.Count > 0)
+		{
+			list3.Add(new InquiryElement("__sep__", "----------------", null));
+			foreach (RuleIndexItem item in list)
+			{
+				string text2 = (item?.Id ?? "").Trim();
+				if (!string.IsNullOrEmpty(text2))
+				{
+					string label = (item?.Label ?? text2).Trim();
+					list3.Add(new InquiryElement(text2, label, null));
+				}
+			}
+		}
+		string text3 = (num4 > 0) ? $"批量删除知识（{num3} 条，{page + 1}/{num4}）" : "批量删除知识（0 条）";
+		string text4 = "可多选当前页的知识后一起删除。";
+		if (!string.IsNullOrWhiteSpace(text))
+		{
+			text4 = text4 + "\n当前搜索：" + TrimPreview(text, 80);
+		}
+		if (num3 <= 0)
+		{
+			text4 += "\n\n没有匹配项。";
+		}
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(text3, text4, list3, isExitShown: true, 0, Math.Max(1, list3.Count), "删除选中", "返回", delegate(List<InquiryElement> selected)
+		{
+			if (selected == null || selected.Count == 0)
+			{
+				OpenRuleBulkDeleteMenuPaged(onReturn, page, query);
+				return;
+			}
+			List<string> list4 = new List<string>();
+			foreach (InquiryElement item2 in selected)
+			{
+				string text5 = item2?.Identifier as string;
+				if (!string.IsNullOrWhiteSpace(text5))
+				{
+					list4.Add(text5);
+				}
+			}
+			if (list4.Count == 0)
+			{
+				OpenRuleBulkDeleteMenuPaged(onReturn, page, query);
+				return;
+			}
+			List<string> list5 = list4.Where((string x) => x.StartsWith("__", StringComparison.Ordinal)).Distinct(StringComparer.Ordinal).ToList();
+			if (list5.Count > 0)
+			{
+				if (list4.Count > 1)
+				{
+					InformationManager.DisplayMessage(new InformationMessage("批量删除页里，操作按钮不能和知识条目一起多选。"));
+					OpenRuleBulkDeleteMenuPaged(onReturn, page, query);
+					return;
+				}
+				switch (list5[0])
+				{
+				case "__search__":
+					InformationManager.ShowTextInquiry(new TextInquiryData("搜索知识", "输入关键词或 RuleId（可用空格分隔多个词）：", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "搜索", "取消", delegate(string input)
+					{
+						OpenRuleBulkDeleteMenuPaged(onReturn, 0, input);
+					}, delegate
+					{
+						OpenRuleBulkDeleteMenuPaged(onReturn, page, query);
+					}, shouldInputBeObfuscated: false, null, text));
+					return;
+				case "__clear__":
+					OpenRuleBulkDeleteMenuPaged(onReturn, 0, null);
+					return;
+				case "__prev__":
+					OpenRuleBulkDeleteMenuPaged(onReturn, page - 1, query);
+					return;
+				case "__next__":
+					OpenRuleBulkDeleteMenuPaged(onReturn, page + 1, query);
+					return;
+				default:
+					OpenRuleBulkDeleteMenuPaged(onReturn, page, query);
+					return;
+				}
+			}
+			List<RuleIndexItem> list6 = list.Where((RuleIndexItem x) => x != null && list4.Contains((x.Id ?? "").Trim(), StringComparer.OrdinalIgnoreCase)).ToList();
+			if (list6.Count == 0)
+			{
+				InformationManager.DisplayMessage(new InformationMessage("没有选中可删除的知识。"));
+				OpenRuleBulkDeleteMenuPaged(onReturn, page, query);
+				return;
+			}
+			List<string> list7 = list6.Select((RuleIndexItem x) => (x.Id ?? "").Trim()).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+			string text6 = string.Join("\n", list6.Take(8).Select((RuleIndexItem x) => "- " + TrimPreview((x.Label ?? x.Id ?? "").Trim(), 80)));
+			if (list6.Count > 8)
+			{
+				text6 = text6 + "\n- ... 以及另外 " + (list6.Count - 8) + " 条";
+			}
+			InformationManager.ShowInquiry(new InquiryData("确认批量删除", "将要删除以下知识：\n\n" + text6 + "\n\n共 " + list7.Count + " 条。此操作不可撤销。", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "确认删除", "返回", delegate
+			{
+				int num5 = 0;
+				try
+				{
+					HashSet<string> hashSet = new HashSet<string>(list7, StringComparer.OrdinalIgnoreCase);
+					num5 = _file.Rules.RemoveAll((LoreRule r) => r != null && !string.IsNullOrWhiteSpace(r.Id) && hashSet.Contains(r.Id.Trim()));
+					if (!string.IsNullOrWhiteSpace(_editingRuleId) && hashSet.Contains(_editingRuleId.Trim()))
+					{
+						_editingRuleId = null;
+					}
+					TouchRuleData();
+				}
+				catch
+				{
+					num5 = 0;
+				}
+				InformationManager.DisplayMessage(new InformationMessage("已删除知识 " + num5 + " 条。"));
+				OpenRuleBulkDeleteMenuPaged(onReturn, page, query);
+			}, delegate
+			{
+				OpenRuleBulkDeleteMenuPaged(onReturn, page, query);
+			}));
+		}, delegate
+		{
+			OpenRuleListMenuPaged(onReturn, page, query);
+		});
+		MBInformationManager.ShowMultiSelectionInquiry(data);
+	}
+
 	private void OpenRuleEditorMenu(LoreRule rule, Action onReturn)
 	{
 		if (rule == null)
@@ -7052,6 +7646,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		List<InquiryElement> list = new List<InquiryElement>();
 		list.Add(new InquiryElement("keywords", "编辑关键词", null));
 		list.Add(new InquiryElement("rag_short_texts", "编辑RAG专用短句", null));
+		list.Add(new InquiryElement("generate_rag_short_texts", "一键生成RAG专用短句", null));
 		list.Add(new InquiryElement("variants", "编辑提示词（条件组合）", null));
 		list.Add(new InquiryElement("text_mappings", "编辑词汇映射", null));
 		list.Add(new InquiryElement("delete", "删除此知识", null));
@@ -7073,6 +7668,12 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 					break;
 				case "rag_short_texts":
 					OpenRagShortTextMenu(rule, delegate
+					{
+						OpenRuleEditorMenu(rule, onReturn);
+					});
+					break;
+				case "generate_rag_short_texts":
+					GenerateRagShortTextsByLlm(rule, delegate
 					{
 						OpenRuleEditorMenu(rule, onReturn);
 					});
@@ -8213,6 +8814,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		EnsureRagShortTexts(rule);
 		List<InquiryElement> list = new List<InquiryElement>();
 		list.Add(new InquiryElement("__add__", "添加RAG专用短句（一次一条）", null));
+		list.Add(new InquiryElement("__generate__", "一键生成RAG专用短句", null));
 		if (rule.RagShortTexts.Count > 0)
 		{
 			list.Add(new InquiryElement("__remove__", "删除RAG专用短句", null));
@@ -8225,7 +8827,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 				list.Add(new InquiryElement("__r__" + text, "RAG短句：" + text, null));
 			}
 		}
-		string descriptionText = "用于知识检索与重排的短句。建议写成便于提问匹配的简短描述，不要直接复制完整提示词正文；每条最多 " + RagShortTextMaxLength + " 字符。";
+		string descriptionText = "用于知识检索与重排的短句。建议写成便于提问匹配的简短描述，不要直接复制完整提示词正文；手动填写每条最多 " + RagShortTextMaxLength + " 字符，AI 自动生成会限制在 " + RagShortTextGeneratedMaxLength + " 字符内，max_tokens 上限为 " + RagShortTextGenerationMaxTokens + "。";
 		MultiSelectionInquiryData data = new MultiSelectionInquiryData("编辑RAG专用短句", descriptionText, list, isExitShown: true, 0, 1, "选择", "返回", delegate(List<InquiryElement> selected)
 		{
 			if (selected == null || selected.Count == 0)
@@ -8275,6 +8877,13 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 					{
 						OpenRagShortTextMenu(rule, onReturn);
 					}));
+				}
+				else if (text2 == "__generate__")
+				{
+					GenerateRagShortTextsByLlm(rule, delegate
+					{
+						OpenRagShortTextMenu(rule, onReturn);
+					});
 				}
 				else if (text2 == "__remove__")
 				{
@@ -8336,6 +8945,464 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			OpenRagShortTextMenu(rule, onReturn);
 		});
 		MBInformationManager.ShowMultiSelectionInquiry(data);
+	}
+
+	private static string BuildRagShortTextGenerationSystemPrompt()
+	{
+		return "你是一个本地RAG知识库的“检索短句生成器”。\n" + "你的输出会直接用于知识召回与重排，不是给NPC直接说的话。\n" + "请严格遵守：\n" + "1) 只围绕提供的知识材料生成，不得编造；\n" + "2) 每条都要显式保留实体名、主题词或关键概念，便于语义检索命中；\n" + "3) 可以写成简洁描述句或简洁提问式短句，但必须适合RAG程序检索；\n" + "4) 禁止第一人称口吻、抒情、解释、提示词说明、系统术语、ACTION标签；\n" + "5) 禁止直接照抄长提示词正文，只保留可检索的核心事实；\n" + "6) 每条最多 " + RagShortTextGeneratedMaxLength + " 个字符；\n" + "7) 只输出 JSON 数组字符串，例如 [\"...\",\"...\"]；禁止 Markdown 代码块、标题、序号和额外说明。";
+	}
+
+	private static string BuildRagShortTextGenerationUserPrompt(LoreRule rule, int targetCount, IEnumerable<string> existingForPrompt = null)
+	{
+		try
+		{
+			if (rule == null)
+			{
+				return "";
+			}
+			if (targetCount <= 0)
+			{
+				targetCount = RagShortTextAutoGenerateCount;
+			}
+			StringBuilder stringBuilder = new StringBuilder();
+			string text = (rule.Id ?? "").Trim();
+			if (!string.IsNullOrEmpty(text))
+			{
+				stringBuilder.AppendLine("规则ID: " + text);
+			}
+			List<string> list = new List<string>();
+			try
+			{
+				if (rule.Keywords != null)
+				{
+					foreach (string keyword in rule.Keywords)
+					{
+						string text2 = NormalizeKeywordForCompare(keyword);
+						if (!string.IsNullOrEmpty(text2))
+						{
+							list.Add(text2);
+							if (list.Count >= 12)
+							{
+								break;
+							}
+						}
+					}
+				}
+			}
+			catch
+			{
+			}
+			stringBuilder.AppendLine("关键词: " + ((list.Count > 0) ? string.Join(" / ", list) : "（无）"));
+			List<string> list2 = new List<string>();
+			try
+			{
+				IEnumerable<string> enumerable = existingForPrompt ?? rule.RagShortTexts;
+				if (enumerable != null)
+				{
+					foreach (string item in enumerable)
+					{
+						string text3 = NormalizeKeywordForCompare(item);
+						if (!string.IsNullOrEmpty(text3))
+						{
+							list2.Add(text3);
+							if (list2.Count >= 12)
+							{
+								break;
+							}
+						}
+					}
+				}
+			}
+			catch
+			{
+			}
+			stringBuilder.AppendLine("已有RAG短句: " + ((list2.Count > 0) ? string.Join(" | ", list2) : "（无）"));
+			List<string> list3 = new List<string>();
+			try
+			{
+				if (rule.Variants != null)
+				{
+					for (int i = 0; i < rule.Variants.Count; i++)
+					{
+						LoreVariant loreVariant = rule.Variants[i];
+						if (loreVariant == null)
+						{
+							continue;
+						}
+						string text4 = (loreVariant.Content ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
+						if (string.IsNullOrEmpty(text4))
+						{
+							continue;
+						}
+						if (text4.Length > 220)
+						{
+							text4 = text4.Substring(0, 220).Trim() + "...";
+						}
+						list3.Add($"#{i + 1} {BuildWhenLabel(loreVariant.When)}: {text4}");
+						if (list3.Count >= 6)
+						{
+							break;
+						}
+					}
+				}
+			}
+			catch
+			{
+			}
+			stringBuilder.AppendLine("提示词内容：");
+			if (list3.Count <= 0)
+			{
+				stringBuilder.AppendLine("（无）");
+			}
+			else
+			{
+				foreach (string item2 in list3)
+				{
+					stringBuilder.AppendLine(item2);
+				}
+			}
+			stringBuilder.AppendLine("任务：请基于“关键词 + 提示词内容”，生成 " + targetCount + " 条新的 RAG专用短句。");
+			stringBuilder.AppendLine("生成要求：");
+			stringBuilder.AppendLine("1) 每条 8~" + RagShortTextGeneratedMaxLength + " 字，中文自然，不要太虚；");
+			stringBuilder.AppendLine("2) 每条都要能帮助程序匹配玩家提问，尽量直接点明主题、实体与核心事实；");
+			stringBuilder.AppendLine("3) 不要直接复制原提示词正文的大段表达；");
+			stringBuilder.AppendLine("4) 不要与“已有RAG短句”重复；");
+			stringBuilder.AppendLine("5) 只输出 JSON 数组字符串。");
+			return stringBuilder.ToString().Trim();
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	private static List<string> ParseRagShortTextCandidates(string raw, int maxCount)
+	{
+		List<string> result = new List<string>();
+		if (maxCount <= 0)
+		{
+			maxCount = RagShortTextAutoGenerateCount;
+		}
+		if (string.IsNullOrWhiteSpace(raw))
+		{
+			return result;
+		}
+		string text = raw.Trim();
+		if (text.StartsWith("```", StringComparison.Ordinal))
+		{
+			int num = text.IndexOf('\n');
+			if (num >= 0)
+			{
+				int num2 = text.LastIndexOf("```", StringComparison.Ordinal);
+				if (num2 > num)
+				{
+					text = text.Substring(num + 1, num2 - num - 1).Trim();
+				}
+			}
+		}
+		bool flag = false;
+		try
+		{
+			JArray jArray = JArray.Parse(text);
+			foreach (JToken item in jArray)
+			{
+				if (result.Count >= maxCount)
+				{
+					break;
+				}
+				addCandidate(item?.ToString() ?? "");
+			}
+			flag = true;
+		}
+		catch
+		{
+		}
+		if (!flag)
+		{
+			try
+			{
+				JObject jObject = JObject.Parse(text);
+				JArray jArray2 = null;
+				if (jObject["rag_short_texts"] is JArray jArray3)
+				{
+					jArray2 = jArray3;
+				}
+				else if (jObject["items"] is JArray jArray4)
+				{
+					jArray2 = jArray4;
+				}
+				else if (jObject["data"] is JArray jArray5)
+				{
+					jArray2 = jArray5;
+				}
+				if (jArray2 != null)
+				{
+					foreach (JToken item2 in jArray2)
+					{
+						if (result.Count >= maxCount)
+						{
+							break;
+						}
+						addCandidate(item2?.ToString() ?? "");
+					}
+					flag = true;
+				}
+			}
+			catch
+			{
+			}
+		}
+		if (!flag)
+		{
+			string[] array = text.Split(new char[2] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+			foreach (string raw2 in array)
+			{
+				if (result.Count >= maxCount)
+				{
+					break;
+				}
+				addCandidate(raw2);
+			}
+		}
+		return result;
+		void addCandidate(string raw3)
+		{
+			string text2 = NormalizeRagShortTextCandidate(raw3);
+			if (!string.IsNullOrWhiteSpace(text2) && !result.Any((string x) => string.Equals(x, text2, StringComparison.OrdinalIgnoreCase)))
+			{
+				result.Add(text2);
+			}
+		}
+	}
+
+	private static string NormalizeRagShortTextCandidate(string raw)
+	{
+		try
+		{
+			string text = (raw ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
+			if (string.IsNullOrWhiteSpace(text))
+			{
+				return string.Empty;
+			}
+			if (text.StartsWith("```", StringComparison.Ordinal) || string.Equals(text, "```", StringComparison.Ordinal))
+			{
+				return string.Empty;
+			}
+			if (string.Equals(text, "json", StringComparison.OrdinalIgnoreCase) || string.Equals(text, "```json", StringComparison.OrdinalIgnoreCase))
+			{
+				return string.Empty;
+			}
+			while (text.StartsWith("-") || text.StartsWith("*") || text.StartsWith("•"))
+			{
+				text = text.Substring(1).Trim();
+			}
+			int num;
+			for (num = 0; num < text.Length && char.IsDigit(text[num]); num++)
+			{
+			}
+			if (num > 0 && num < text.Length)
+			{
+				char c = text[num];
+				if (c == '.' || c == '、' || c == ')' || c == '）' || c == ':' || c == '：')
+				{
+					text = text.Substring(num + 1).Trim();
+				}
+			}
+			text = text.Trim().Trim('"').Trim('\'').Trim();
+			while (text.EndsWith(",") || text.EndsWith("，") || text.EndsWith(";") || text.EndsWith("；"))
+			{
+				text = text.Substring(0, text.Length - 1).Trim();
+			}
+			if (text.IndexOf("[ACTION:", StringComparison.OrdinalIgnoreCase) >= 0)
+			{
+				return string.Empty;
+			}
+			if (text.IndexOf("提示词", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("RAG", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("检索短句", StringComparison.OrdinalIgnoreCase) >= 0)
+			{
+				return string.Empty;
+			}
+			text = NormalizeKeywordForCompare(text);
+			if (string.IsNullOrWhiteSpace(text))
+			{
+				return string.Empty;
+			}
+			if (text.Length > RagShortTextGeneratedMaxLength)
+			{
+				text = text.Substring(0, RagShortTextGeneratedMaxLength).Trim();
+			}
+			if (text.Length < 4)
+			{
+				return string.Empty;
+			}
+			return text;
+		}
+		catch
+		{
+			return string.Empty;
+		}
+	}
+
+	private static List<string> BuildDeterministicRagShortTextFallback(LoreRule rule, int maxCount)
+	{
+		List<string> list = new List<string>();
+		if (maxCount <= 0)
+		{
+			return list;
+		}
+		HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		void add(string raw)
+		{
+			string text = NormalizeRagShortTextCandidate(raw);
+			if (!string.IsNullOrWhiteSpace(text) && hashSet.Add(text))
+			{
+				list.Add(text);
+			}
+		}
+		List<string> list2 = new List<string>();
+		try
+		{
+			if (rule?.Keywords != null)
+			{
+				foreach (string keyword in rule.Keywords)
+				{
+					string text = NormalizeKeywordForCompare(keyword);
+					if (!string.IsNullOrWhiteSpace(text))
+					{
+						list2.Add(text);
+						if (list2.Count >= 6)
+						{
+							break;
+						}
+					}
+				}
+			}
+		}
+		catch
+		{
+		}
+		foreach (string item in list2)
+		{
+			add(item + "是什么");
+			if (list.Count >= maxCount)
+			{
+				return list;
+			}
+			add("介绍" + item);
+			if (list.Count >= maxCount)
+			{
+				return list;
+			}
+			add(item + "的背景与特点");
+			if (list.Count >= maxCount)
+			{
+				return list;
+			}
+		}
+		try
+		{
+			if (rule?.Variants != null)
+			{
+				foreach (LoreVariant variant in rule.Variants)
+				{
+					string text2 = NormalizeRagShortTextCandidate(variant?.Content);
+					if (!string.IsNullOrWhiteSpace(text2))
+					{
+						add(text2);
+						if (list.Count >= maxCount)
+						{
+							return list;
+						}
+					}
+				}
+			}
+		}
+		catch
+		{
+		}
+		return list;
+	}
+
+	private void GenerateRagShortTextsByLlm(LoreRule rule, Action onDone)
+	{
+		if (rule == null)
+		{
+			onDone?.Invoke();
+			return;
+		}
+		if (onDone == null)
+		{
+			onDone = delegate
+			{
+			};
+		}
+		EnsureRagShortTexts(rule);
+		List<string> list = new List<string>();
+		try
+		{
+			if (rule.RagShortTexts != null)
+			{
+				foreach (string ragShortText in rule.RagShortTexts)
+				{
+					string text = NormalizeKeywordForCompare(ragShortText);
+					if (!string.IsNullOrWhiteSpace(text) && !list.Any((string x) => string.Equals(x, text, StringComparison.OrdinalIgnoreCase)))
+					{
+						list.Add(text);
+					}
+				}
+			}
+		}
+		catch
+		{
+			list.Clear();
+		}
+		string text2 = BuildRagShortTextGenerationUserPrompt(rule, RagShortTextAutoGenerateCount, list);
+		if (string.IsNullOrWhiteSpace(text2))
+		{
+			InformationManager.DisplayMessage(new InformationMessage("[知识] 生成失败：当前知识缺少可供生成的内容。"));
+			onDone();
+			return;
+		}
+		InformationManager.DisplayMessage(new InformationMessage("[知识] 正在生成 RAG专用短句，请稍候..."));
+		try
+		{
+			string systemPrompt = BuildRagShortTextGenerationSystemPrompt();
+			string raw = RequestLlmTextOnce(systemPrompt, text2, RagShortTextGenerationMaxTokens, 0.2f);
+			List<string> list2 = ParseRagShortTextCandidates(raw, Math.Max(RagShortTextAutoGenerateCount * 2, 6));
+			if (list2.Count <= 0)
+			{
+				list2 = BuildDeterministicRagShortTextFallback(rule, RagShortTextAutoGenerateCount);
+			}
+			int num = 0;
+			foreach (string item in list2)
+			{
+				string text3 = NormalizeRagShortTextCandidate(item);
+				if (string.IsNullOrWhiteSpace(text3) || rule.RagShortTexts.Any((string x) => string.Equals(NormalizeKeywordForCompare(x), text3, StringComparison.OrdinalIgnoreCase)))
+				{
+					continue;
+				}
+				rule.RagShortTexts.Add(text3);
+				num++;
+				if (num >= RagShortTextAutoGenerateCount)
+				{
+					break;
+				}
+			}
+			if (num > 0)
+			{
+				TouchRuleData();
+				InformationManager.DisplayMessage(new InformationMessage("[知识] 已生成并添加 " + num + " 条 RAG专用短句。"));
+			}
+			else
+			{
+				InformationManager.DisplayMessage(new InformationMessage("[知识] 未生成新的 RAG专用短句，可能与现有内容重复。"));
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("Logic", "[Knowledge] 生成RAG专用短句失败: " + ex);
+			InformationManager.DisplayMessage(new InformationMessage("[知识] 生成RAG专用短句失败：" + TrimPreview(ex.Message, 120)));
+		}
+		onDone();
 	}
 
 	private void OpenPrototypeMenu(LoreRule rule, Action onReturn)
@@ -8912,7 +9979,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		JObject jObject = new JObject
 		{
 			["model"] = settings.ModelName,
-			["max_tokens"] = 5000,
+			["max_tokens"] = Math.Max(1, Math.Min(RagShortTextGenerationMaxTokens, maxTokens)),
 			["stream"] = false
 		};
 		if (temperature.HasValue)
@@ -9265,11 +10332,10 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			};
 		}
 		List<InquiryElement> list = new List<InquiryElement>();
-		list.Add(new InquiryElement("hero", "指定NPC（HeroId）", null));
 		list.Add(new InquiryElement("culture", "文化（CultureId）", null));
 		list.Add(new InquiryElement("kingdom", "势力/王国（KingdomId）", null));
 		list.Add(new InquiryElement("settlement", "定居点（SettlementId）", null));
-		list.Add(new InquiryElement("role", "身份（lord/notable/commoner=未分类的对象/soldier/villager/townsfolk/wanderer）", null));
+		list.Add(new InquiryElement("role", "身份（大类 + 细分NPC）", null));
 		list.Add(new InquiryElement("gender", "性别（不限/男/女）", null));
 		list.Add(new InquiryElement("clan_leader", "是否家族族长（不限/是/否）", null));
 		list.Add(new InquiryElement("skill", "技能等级（SkillId >= 值）", null));
@@ -9285,16 +10351,6 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			{
 				switch (selected[0].Identifier as string)
 				{
-				case "hero":
-					if (when.HeroIds == null)
-					{
-						when.HeroIds = new List<string>();
-					}
-					OpenStringListEditor("指定NPC（HeroId）", when.HeroIds, delegate
-					{
-						OpenWhenEditor(when, onReturn);
-					});
-					break;
 				case "culture":
 					if (when.Cultures == null)
 					{
@@ -9351,6 +10407,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 					when.KingdomIds = null;
 					when.SettlementIds = null;
 					when.Roles = null;
+					when.IdentityIds = null;
 					when.IsFemale = null;
 					when.IsClanLeader = null;
 					when.SkillMin = null;
@@ -9365,6 +10422,478 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		}, delegate
 		{
 			onReturn();
+		});
+		MBInformationManager.ShowMultiSelectionInquiry(data);
+	}
+
+	private static string ResolveRoleIdentityDisplayText(string encodedId)
+	{
+		try
+		{
+			if (!TryParseRoleIdentityId(encodedId, out var kind, out var targetId))
+			{
+				return (encodedId ?? "").Trim();
+			}
+			if (kind == "hero")
+			{
+				Hero hero = Hero.FindFirst((Hero x) => x != null && string.Equals(x.StringId, targetId, StringComparison.OrdinalIgnoreCase));
+				string text = hero?.Name?.ToString();
+				if (string.IsNullOrWhiteSpace(text))
+				{
+					text = targetId;
+				}
+				return text + "（HeroId=" + targetId + "）";
+			}
+			if (kind == "char")
+			{
+				CharacterObject characterObject = null;
+				try
+				{
+					MBReadOnlyList<CharacterObject> objectTypeList = Game.Current?.ObjectManager?.GetObjectTypeList<CharacterObject>();
+					if (objectTypeList != null)
+					{
+						characterObject = objectTypeList.FirstOrDefault((CharacterObject x) => x != null && string.Equals(x.StringId, targetId, StringComparison.OrdinalIgnoreCase));
+					}
+				}
+				catch
+				{
+				}
+				string text2 = characterObject?.Name?.ToString();
+				if (string.IsNullOrWhiteSpace(text2))
+				{
+					text2 = targetId;
+				}
+				return text2 + "（CharacterId=" + targetId + "）";
+			}
+		}
+		catch
+		{
+		}
+		return (encodedId ?? "").Trim();
+	}
+
+	private static string BuildLegacyHeroIdentityDisplayText(string heroId)
+	{
+		string text = (heroId ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return "";
+		}
+		Hero hero = null;
+		try
+		{
+			hero = Hero.FindFirst((Hero x) => x != null && string.Equals(x.StringId, text, StringComparison.OrdinalIgnoreCase));
+		}
+		catch
+		{
+		}
+		string text2 = hero?.Name?.ToString();
+		if (string.IsNullOrWhiteSpace(text2))
+		{
+			text2 = text;
+		}
+		return text2 + "（HeroId=" + text + "）";
+	}
+
+	private static string GetRoleKeyForLegacyHeroId(string heroId)
+	{
+		string text = (heroId ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return "";
+		}
+		try
+		{
+			Hero hero = Hero.FindFirst((Hero x) => x != null && string.Equals(x.StringId, text, StringComparison.OrdinalIgnoreCase));
+			if (hero != null)
+			{
+				return GetRoleKeyForHero(hero);
+			}
+		}
+		catch
+		{
+		}
+		return "commoner";
+	}
+
+	private static bool IsRoleIdentitySelected(LoreWhen when, string encodedId)
+	{
+		if (when == null)
+		{
+			return false;
+		}
+		if (ListContainsIgnoreCase(when.IdentityIds, encodedId))
+		{
+			return true;
+		}
+		if (TryParseRoleIdentityId(encodedId, out var kind, out var targetId) && string.Equals(kind, "hero", StringComparison.OrdinalIgnoreCase))
+		{
+			return ListContainsIgnoreCase(when.HeroIds, targetId);
+		}
+		return false;
+	}
+
+	private static void ToggleRoleIdentitySelection(LoreWhen when, string encodedId)
+	{
+		if (when == null)
+		{
+			return;
+		}
+		if (when.IdentityIds == null)
+		{
+			when.IdentityIds = new List<string>();
+		}
+		string text = (encodedId ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return;
+		}
+		if (TryParseRoleIdentityId(text, out var kind, out var targetId) && string.Equals(kind, "hero", StringComparison.OrdinalIgnoreCase))
+		{
+			bool flag = ListContainsIgnoreCase(when.IdentityIds, text) || ListContainsIgnoreCase(when.HeroIds, targetId);
+			when.IdentityIds.RemoveAll((string x) => string.Equals((x ?? "").Trim(), text, StringComparison.OrdinalIgnoreCase));
+			when.HeroIds?.RemoveAll((string x) => string.Equals((x ?? "").Trim(), targetId, StringComparison.OrdinalIgnoreCase));
+			if (!flag)
+			{
+				when.IdentityIds.Add(text);
+			}
+			return;
+		}
+		ToggleListValueIgnoreCase(when.IdentityIds, text);
+	}
+
+	private static void ClearRoleSpecificSelections(LoreWhen when, string roleKey)
+	{
+		if (when == null)
+		{
+			return;
+		}
+		if (when.IdentityIds != null)
+		{
+			when.IdentityIds.RemoveAll((string x) => string.Equals(GetRoleKeyForIdentityId(x), roleKey, StringComparison.OrdinalIgnoreCase));
+		}
+		if (when.HeroIds != null)
+		{
+			when.HeroIds.RemoveAll((string x) => string.Equals(GetRoleKeyForLegacyHeroId(x), roleKey, StringComparison.OrdinalIgnoreCase));
+		}
+	}
+
+	private static string GetRoleKeyForIdentityId(string encodedId)
+	{
+		try
+		{
+			if (!TryParseRoleIdentityId(encodedId, out var kind, out var targetId))
+			{
+				return "";
+			}
+			if (kind == "hero")
+			{
+				Hero hero = Hero.FindFirst((Hero x) => x != null && string.Equals(x.StringId, targetId, StringComparison.OrdinalIgnoreCase));
+				return GetRoleKeyForHero(hero);
+			}
+			if (kind == "char")
+			{
+				MBReadOnlyList<CharacterObject> objectTypeList = Game.Current?.ObjectManager?.GetObjectTypeList<CharacterObject>();
+				CharacterObject characterObject = objectTypeList?.FirstOrDefault((CharacterObject x) => x != null && string.Equals(x.StringId, targetId, StringComparison.OrdinalIgnoreCase));
+				return GetRoleKeyForCharacter(characterObject);
+			}
+		}
+		catch
+		{
+		}
+		return "";
+	}
+
+	private static int CountSelectedRoleIdentities(LoreWhen when, string roleKey)
+	{
+		try
+		{
+			if (when == null)
+			{
+				return 0;
+			}
+			HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+			if (when.IdentityIds != null)
+			{
+				foreach (string identityId in when.IdentityIds)
+				{
+					if (string.Equals(GetRoleKeyForIdentityId(identityId), roleKey, StringComparison.OrdinalIgnoreCase))
+					{
+						hashSet.Add((identityId ?? "").Trim());
+					}
+				}
+			}
+			if (when.HeroIds != null)
+			{
+				foreach (string heroId in when.HeroIds)
+				{
+					if (string.Equals(GetRoleKeyForLegacyHeroId(heroId), roleKey, StringComparison.OrdinalIgnoreCase))
+					{
+						string text = EncodeRoleIdentityHeroId(heroId);
+						if (!string.IsNullOrWhiteSpace(text))
+						{
+							hashSet.Add(text);
+						}
+					}
+				}
+			}
+			return hashSet.Count;
+		}
+		catch
+		{
+			return 0;
+		}
+	}
+
+	private static List<RoleDetailOption> BuildRoleDetailOptions(string roleKey, string query)
+	{
+		List<RoleDetailOption> list = new List<RoleDetailOption>();
+		string text = (query ?? "").Trim();
+		bool flag = !string.IsNullOrWhiteSpace(text);
+		try
+		{
+			if (roleKey == "lord" || roleKey == "notable" || roleKey == "wanderer")
+			{
+				List<Hero> list2 = new List<Hero>();
+				try
+				{
+					List<Hero> devEditableHeroListForExternal = MyBehavior.GetDevEditableHeroListForExternal();
+					if (devEditableHeroListForExternal != null && devEditableHeroListForExternal.Count > 0)
+					{
+						list2 = devEditableHeroListForExternal.Where((Hero h) => h != null && !string.IsNullOrWhiteSpace(h.StringId)).ToList();
+					}
+				}
+				catch
+				{
+				}
+				if (list2.Count == 0)
+				{
+					foreach (Hero allAliveHero in Hero.AllAliveHeroes)
+					{
+						if (allAliveHero != null && !string.IsNullOrWhiteSpace(allAliveHero.StringId))
+						{
+							list2.Add(allAliveHero);
+						}
+					}
+				}
+				foreach (Hero item in list2)
+				{
+					if (!string.Equals(GetRoleKeyForHero(item), roleKey, StringComparison.OrdinalIgnoreCase))
+					{
+						continue;
+					}
+					string text2 = item.Name?.ToString();
+					if (string.IsNullOrWhiteSpace(text2))
+					{
+						text2 = item.StringId;
+					}
+					string text3 = text2 + "（HeroId=" + item.StringId + "）";
+					if (!flag || text3.IndexOf(text, StringComparison.OrdinalIgnoreCase) >= 0 || item.StringId.IndexOf(text, StringComparison.OrdinalIgnoreCase) >= 0)
+					{
+						string text4 = EncodeRoleIdentityHeroId(item.StringId);
+						if (!string.IsNullOrEmpty(text4))
+						{
+							list.Add(new RoleDetailOption
+							{
+								EncodedId = text4,
+								Label = text3
+							});
+						}
+					}
+				}
+			}
+			else
+			{
+				MBReadOnlyList<CharacterObject> objectTypeList = Game.Current?.ObjectManager?.GetObjectTypeList<CharacterObject>();
+				if (objectTypeList != null)
+				{
+					foreach (CharacterObject item2 in objectTypeList)
+					{
+						if (item2 == null || string.IsNullOrWhiteSpace(item2.StringId) || !string.Equals(GetRoleKeyForCharacter(item2), roleKey, StringComparison.OrdinalIgnoreCase))
+						{
+							continue;
+						}
+						string text5 = item2.Name?.ToString();
+						if (string.IsNullOrWhiteSpace(text5))
+						{
+							text5 = item2.StringId;
+						}
+						string text6 = text5 + "（CharacterId=" + item2.StringId + "）";
+						if (!flag || text6.IndexOf(text, StringComparison.OrdinalIgnoreCase) >= 0 || item2.StringId.IndexOf(text, StringComparison.OrdinalIgnoreCase) >= 0)
+						{
+							string text7 = EncodeRoleIdentityCharacterId(item2.StringId);
+							if (!string.IsNullOrEmpty(text7))
+							{
+								list.Add(new RoleDetailOption
+								{
+									EncodedId = text7,
+									Label = text6
+								});
+							}
+						}
+					}
+				}
+			}
+		}
+		catch
+		{
+		}
+		return list.OrderBy((RoleDetailOption x) => x.Label ?? "", StringComparer.OrdinalIgnoreCase).ThenBy((RoleDetailOption x) => x.EncodedId ?? "", StringComparer.OrdinalIgnoreCase).ToList();
+	}
+
+	private void OpenRoleCategoryEditor(LoreWhen when, string roleKey, Action onReturn, int page = 0, string query = null)
+	{
+		if (when == null)
+		{
+			onReturn?.Invoke();
+			return;
+		}
+		if (onReturn == null)
+		{
+			onReturn = delegate
+			{
+			};
+		}
+		if (when.Roles == null)
+		{
+			when.Roles = new List<string>();
+		}
+		if (when.IdentityIds == null)
+		{
+			when.IdentityIds = new List<string>();
+		}
+		roleKey = ((roleKey ?? "").Trim().ToLowerInvariant());
+		List<RoleDetailOption> list = BuildRoleDetailOptions(roleKey, query);
+		if (when.HeroIds != null && when.HeroIds.Count > 0)
+		{
+			string text = (query ?? "").Trim();
+			bool flag = !string.IsNullOrWhiteSpace(text);
+			HashSet<string> hashSet = new HashSet<string>(list.Select((RoleDetailOption x) => (x.EncodedId ?? "").Trim()), StringComparer.OrdinalIgnoreCase);
+			foreach (string heroId in when.HeroIds)
+			{
+				if (!string.Equals(GetRoleKeyForLegacyHeroId(heroId), roleKey, StringComparison.OrdinalIgnoreCase))
+				{
+					continue;
+				}
+				string text2 = EncodeRoleIdentityHeroId(heroId);
+				if (string.IsNullOrWhiteSpace(text2) || hashSet.Contains(text2))
+				{
+					continue;
+				}
+				string text3 = BuildLegacyHeroIdentityDisplayText(heroId);
+				if (flag && text3.IndexOf(text, StringComparison.OrdinalIgnoreCase) < 0 && ((heroId ?? "").IndexOf(text, StringComparison.OrdinalIgnoreCase) < 0))
+				{
+					continue;
+				}
+				list.Add(new RoleDetailOption
+				{
+					EncodedId = text2,
+					Label = text3
+				});
+				hashSet.Add(text2);
+			}
+			list = list.OrderBy((RoleDetailOption x) => x.Label ?? "", StringComparer.OrdinalIgnoreCase).ThenBy((RoleDetailOption x) => x.EncodedId ?? "", StringComparer.OrdinalIgnoreCase).ToList();
+		}
+		int num = 18;
+		int num2 = Math.Max(1, (int)Math.Ceiling((double)Math.Max(1, list.Count) / (double)num));
+		page = Math.Max(0, Math.Min(page, num2 - 1));
+		List<RoleDetailOption> list2 = list.Skip(page * num).Take(num).ToList();
+		int num3 = CountSelectedRoleIdentities(when, roleKey);
+		bool flag2 = ListContainsIgnoreCase(when.Roles, roleKey);
+		List<InquiryElement> list3 = new List<InquiryElement>();
+		list3.Add(new InquiryElement("__toggle_all__", (flag2 ? "[√] " : "[ ] ") + "整类生效：" + GetRoleDisplayName(roleKey), null));
+		list3.Add(new InquiryElement("__search__", string.IsNullOrWhiteSpace(query) ? "搜索本类具体NPC…" : ("搜索：" + query), null));
+		if (!string.IsNullOrWhiteSpace(query))
+		{
+			list3.Add(new InquiryElement("__clear_search__", "清除搜索", null));
+		}
+		if (num3 > 0)
+		{
+			list3.Add(new InquiryElement("__clear_specific__", "清空本类细分已选（" + num3 + "）", null));
+		}
+		if (page > 0)
+		{
+			list3.Add(new InquiryElement("__prev__", "上一页", null));
+		}
+		if (page < num2 - 1)
+		{
+			list3.Add(new InquiryElement("__next__", "下一页", null));
+		}
+		foreach (RoleDetailOption item3 in list2)
+		{
+			bool flag3 = IsRoleIdentitySelected(when, item3.EncodedId);
+			list3.Add(new InquiryElement(item3.EncodedId, (flag3 ? "[√] " : "[ ] ") + item3.Label, null));
+		}
+		string descriptionText = $"{GetRoleDisplayName(roleKey)}：可直接勾整类，也可只勾本类里的具体NPC。\n当前整类：{(flag2 ? "已选中" : "未选中")}\n当前细分已选：{num3}\n结果总数：{list.Count}，第 {page + 1}/{num2} 页";
+		int num4 = Math.Max(1, list3.Count);
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData("身份细分 - " + GetRoleDisplayName(roleKey), descriptionText, list3, isExitShown: true, 0, num4, "切换选中", "返回", delegate(List<InquiryElement> selected)
+		{
+			if (selected == null || selected.Count == 0)
+			{
+				OpenRoleCategoryEditor(when, roleKey, onReturn, page, query);
+				return;
+			}
+			List<string> list4 = selected.Select((InquiryElement x) => x?.Identifier as string).Where((string x) => !string.IsNullOrWhiteSpace(x)).ToList();
+			if (list4.Count == 0)
+			{
+				OpenRoleCategoryEditor(when, roleKey, onReturn, page, query);
+				return;
+			}
+			List<string> list5 = list4.Where((string x) => x.StartsWith("__", StringComparison.Ordinal)).Distinct(StringComparer.Ordinal).ToList();
+			if (list5.Count > 0)
+			{
+				if (list4.Count > 1)
+				{
+					InformationManager.DisplayMessage(new InformationMessage("搜索、翻页、整类切换这类操作项不能和细分NPC一起多选。"));
+					OpenRoleCategoryEditor(when, roleKey, onReturn, page, query);
+					return;
+				}
+				string text = list5[0];
+				switch (text)
+				{
+				case "__toggle_all__":
+					ToggleListValueIgnoreCase(when.Roles, roleKey);
+					TouchRuleData();
+					OpenRoleCategoryEditor(when, roleKey, onReturn, page, query);
+					break;
+				case "__search__":
+					InformationManager.ShowTextInquiry(new TextInquiryData("搜索 " + GetRoleDisplayName(roleKey), "输入名称、HeroId 或 CharacterId。搜索只在当前大类内进行。", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "搜索", "返回", delegate(string input)
+					{
+						OpenRoleCategoryEditor(when, roleKey, onReturn, 0, input);
+					}, delegate
+					{
+						OpenRoleCategoryEditor(when, roleKey, onReturn, page, query);
+					}, shouldInputBeObfuscated: false, null, query ?? ""));
+					break;
+				case "__clear_search__":
+					OpenRoleCategoryEditor(when, roleKey, onReturn, 0, null);
+					break;
+				case "__clear_specific__":
+					ClearRoleSpecificSelections(when, roleKey);
+					TouchRuleData();
+					OpenRoleCategoryEditor(when, roleKey, onReturn, 0, query);
+					break;
+				case "__prev__":
+					OpenRoleCategoryEditor(when, roleKey, onReturn, page - 1, query);
+					break;
+				case "__next__":
+					OpenRoleCategoryEditor(when, roleKey, onReturn, page + 1, query);
+					break;
+				default:
+					OpenRoleCategoryEditor(when, roleKey, onReturn, page, query);
+					break;
+				}
+				return;
+			}
+			foreach (string item4 in list4.Distinct(StringComparer.OrdinalIgnoreCase))
+			{
+				ToggleRoleIdentitySelection(when, item4);
+			}
+			TouchRuleData();
+			OpenRoleCategoryEditor(when, roleKey, onReturn, page, query);
+		}, delegate
+		{
+			OpenRoleEditor(when, onReturn);
 		});
 		MBInformationManager.ShowMultiSelectionInquiry(data);
 	}
@@ -9386,41 +10915,42 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		{
 			when.Roles = new List<string>();
 		}
+		if (when.IdentityIds == null)
+		{
+			when.IdentityIds = new List<string>();
+		}
 		List<InquiryElement> list = new List<InquiryElement>();
-		list.Add(new InquiryElement("lord", (when.Roles.Contains("lord") ? "[√] " : "[ ] ") + "领主（lord）", null));
-		list.Add(new InquiryElement("notable", (when.Roles.Contains("notable") ? "[√] " : "[ ] ") + "要人（notable）", null));
-		list.Add(new InquiryElement("wanderer", (when.Roles.Contains("wanderer") ? "[√] " : "[ ] ") + "流浪者（wanderer）", null));
-		list.Add(new InquiryElement("soldier", (when.Roles.Contains("soldier") ? "[√] " : "[ ] ") + "士兵（soldier）", null));
-		list.Add(new InquiryElement("villager", (when.Roles.Contains("villager") ? "[√] " : "[ ] ") + "村民（villager）", null));
-		list.Add(new InquiryElement("townsfolk", (when.Roles.Contains("townsfolk") ? "[√] " : "[ ] ") + "镇民（townsfolk）", null));
-		list.Add(new InquiryElement("commoner", (when.Roles.Contains("commoner") ? "[√] " : "[ ] ") + "未分类的对象（commoner）", null));
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("身份条件", "可多选。当前对话目标是 Hero 时，会优先按 IsLord/IsNotable 分类；否则按 Occupation（wanderer/soldier/villager/townsfolk）分类。", list, isExitShown: true, 0, 1, "切换", "返回", delegate(List<InquiryElement> selected)
+		foreach (string roleCategoryKey in GetRoleCategoryKeys())
+		{
+			bool flag = ListContainsIgnoreCase(when.Roles, roleCategoryKey);
+			int num = CountSelectedRoleIdentities(when, roleCategoryKey);
+			string text = (flag ? "[整类√] " : "") + GetRoleDisplayName(roleCategoryKey);
+			if (num > 0)
+			{
+				text += "（细分已选 " + num + "）";
+			}
+			list.Add(new InquiryElement(roleCategoryKey, text, null));
+		}
+		if (when.IdentityIds.Count > 0)
+		{
+			list.Add(new InquiryElement("__clear_all_specific__", "清空全部细分身份", null));
+		}
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData("身份条件", "先选一个大类，再进入该类选择具体NPC。整类勾选继续保留；细分选择会在当前大类内搜索和分页。", list, isExitShown: true, 0, 1, "进入", "返回", delegate(List<InquiryElement> selected)
 		{
 			if (selected == null || selected.Count == 0)
 			{
 				OpenRoleEditor(when, onReturn);
+				return;
 			}
-			else
+			string text = selected[0].Identifier as string;
+			if (text == "__clear_all_specific__")
 			{
-				string id = selected[0].Identifier as string;
-				if (string.IsNullOrWhiteSpace(id))
-				{
-					OpenRoleEditor(when, onReturn);
-				}
-				else
-				{
-					if (when.Roles.Contains(id))
-					{
-						when.Roles.RemoveAll((string x) => x == id);
-					}
-					else
-					{
-						when.Roles.Add(id);
-					}
-					TouchRuleData();
-					OpenRoleEditor(when, onReturn);
-				}
+				when.IdentityIds.Clear();
+				TouchRuleData();
+				OpenRoleEditor(when, onReturn);
+				return;
 			}
+			OpenRoleCategoryEditor(when, text, onReturn);
 		}, delegate
 		{
 			onReturn();
@@ -10891,10 +12421,6 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			return "通用";
 		}
 		List<string> list = new List<string>();
-		if (when.HeroIds != null && when.HeroIds.Count > 0)
-		{
-			list.Add("指定NPC");
-		}
 		if (when.Cultures != null && when.Cultures.Count > 0)
 		{
 			list.Add("文化");
@@ -10910,6 +12436,10 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		if (when.Roles != null && when.Roles.Count > 0)
 		{
 			list.Add("身份");
+		}
+		if ((when.HeroIds != null && when.HeroIds.Count > 0) || (when.IdentityIds != null && when.IdentityIds.Count > 0))
+		{
+			list.Add("细分身份");
 		}
 		if (when.IsFemale.HasValue)
 		{
@@ -10938,11 +12468,11 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		}
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.AppendLine("当前条件：");
-		stringBuilder.AppendLine("HeroId: " + ListOrEmpty(when.HeroIds));
 		stringBuilder.AppendLine("CultureId: " + ListOrEmpty(when.Cultures));
 		stringBuilder.AppendLine("KingdomId: " + ListOrEmpty(when.KingdomIds));
 		stringBuilder.AppendLine("SettlementId: " + ListOrEmpty(when.SettlementIds));
 		stringBuilder.AppendLine("Roles: " + ListOrEmpty(FormatRoleListForDisplay(when.Roles)));
+		stringBuilder.AppendLine("细分身份: " + ListOrEmpty(FormatEffectiveIdentityListForDisplay(when)));
 		string text = "（空）";
 		try
 		{
@@ -10976,17 +12506,70 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 				string text = (item ?? "").Trim();
 				if (!string.IsNullOrEmpty(text))
 				{
-					result.Add(text switch
+					result.Add(GetRoleDisplayName(text) + "（" + text + "）");
+				}
+			}
+		}
+		catch
+		{
+		}
+		return result;
+	}
+
+	private static List<string> FormatIdentityListForDisplay(List<string> list)
+	{
+		List<string> result = new List<string>();
+		try
+		{
+			if (list == null || list.Count == 0)
+			{
+				return result;
+			}
+			foreach (string item in list)
+			{
+				string text = ResolveRoleIdentityDisplayText(item);
+				if (!string.IsNullOrWhiteSpace(text))
+				{
+					result.Add(text);
+				}
+			}
+		}
+		catch
+		{
+		}
+		return result;
+	}
+
+	private static List<string> FormatEffectiveIdentityListForDisplay(LoreWhen when)
+	{
+		List<string> result = new List<string>();
+		try
+		{
+			if (when == null)
+			{
+				return result;
+			}
+			HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+			if (when.HeroIds != null)
+			{
+				foreach (string heroId in when.HeroIds)
+				{
+					string text = BuildLegacyHeroIdentityDisplayText(heroId);
+					if (!string.IsNullOrWhiteSpace(text) && hashSet.Add(text))
 					{
-						"lord" => "领主（lord）",
-						"notable" => "要人（notable）",
-						"wanderer" => "流浪者（wanderer）",
-						"soldier" => "士兵（soldier）",
-						"villager" => "村民（villager）",
-						"townsfolk" => "镇民（townsfolk）",
-						"commoner" => "未分类的对象（commoner）",
-						_ => text
-					});
+						result.Add(text);
+					}
+				}
+			}
+			if (when.IdentityIds != null)
+			{
+				foreach (string identityId in when.IdentityIds)
+				{
+					string text2 = ResolveRoleIdentityDisplayText(identityId);
+					if (!string.IsNullOrWhiteSpace(text2) && hashSet.Add(text2))
+					{
+						result.Add(text2);
+					}
 				}
 			}
 		}

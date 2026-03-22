@@ -15,7 +15,7 @@ public static class Patch_TriggerMassiveHook
 
 	public static void Postfix(float dt)
 	{
-		if (!_initialized)
+		if (!_initialized && TraceHelper.IsEnabled)
 		{
 			_initialized = true;
 			try

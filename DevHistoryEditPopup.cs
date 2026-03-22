@@ -22,6 +22,8 @@ public sealed class DevHistoryEditPopup
 
 	private bool _isClosed;
 
+	public static bool IsOpen => _activePopup != null && !_activePopup._isClosed;
+
 	private DevHistoryEditPopup(ScreenBase screen, string titleText, string dateText, string originalContentText, string editedText, Action<string> onSave, Action onCancel, string inputHintText, string saveText, string cancelText)
 	{
 		_screen = screen;

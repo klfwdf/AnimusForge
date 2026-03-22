@@ -7,17 +7,18 @@ namespace AnimusForge;
 
 internal static class WindowsClipboardHelper
 {
-	public static string GetText()
+	public static bool TryGetUnicodeText(out string text)
 	{
+		text = string.Empty;
 		try
 		{
-			string result = null;
+			string capturedText = null;
 			Exception exception = null;
 			Thread thread = new Thread((ThreadStart)delegate
 			{
 				try
 				{
-					result = Clipboard.ContainsText(TextDataFormat.UnicodeText) ? Clipboard.GetText(TextDataFormat.UnicodeText) : Clipboard.GetText();
+					capturedText = Clipboard.ContainsText(TextDataFormat.UnicodeText) ? Clipboard.GetText(TextDataFormat.UnicodeText) : Clipboard.GetText();
 				}
 				catch (Exception ex)
 				{
@@ -29,16 +30,26 @@ internal static class WindowsClipboardHelper
 			thread.Join();
 			if (exception == null)
 			{
-				return result ?? string.Empty;
+				text = capturedText ?? string.Empty;
+				return true;
 			}
 		}
 		catch
 		{
 		}
+		return false;
+	}
+
+	public static string GetText()
+	{
+		if (TryGetUnicodeText(out var text))
+		{
+			return text;
+		}
 		return Input.GetClipboardText() ?? string.Empty;
 	}
 
-	public static void SetText(string text)
+	public static bool TrySetUnicodeText(string text)
 	{
 		text ??= string.Empty;
 		try
@@ -58,13 +69,19 @@ internal static class WindowsClipboardHelper
 			thread.SetApartmentState(ApartmentState.STA);
 			thread.Start();
 			thread.Join();
-			if (exception == null)
-			{
-				return;
-			}
+			return exception == null;
 		}
 		catch
 		{
+		}
+		return false;
+	}
+
+	public static void SetText(string text)
+	{
+		if (TrySetUnicodeText(text))
+		{
+			return;
 		}
 		Input.SetClipboardText(text);
 	}

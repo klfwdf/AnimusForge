@@ -8,6 +8,8 @@ namespace AnimusForge;
 
 internal static class IntentQueryOptimizer
 {
+	internal const int MaxCombinedIntentCount = 3;
+
 	private static readonly string[] LowSignalExactPhrases = new string[30]
 	{
 		"你好", "您好", "哈喽", "嗨", "hi", "hello", "hey", "喂", "在吗", "在不在",
