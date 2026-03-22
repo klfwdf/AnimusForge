@@ -137,6 +137,46 @@ public class ShoutBehavior : CampaignBehaviorBase
 		public string PersistedHistoryContext;
 	}
 
+	private sealed class SceneSpeechQueueItem
+	{
+		public NpcDataPacket Npc;
+
+		public string Content;
+
+		public List<NpcDataPacket> ContextSnapshot;
+
+		public bool CommitHistory;
+
+		public bool SuppressStare;
+
+		public bool AllowPlayerDirectedActions = true;
+
+		public int RequiredConversationEpoch;
+	}
+
+	private sealed class AutoNpcGroupChatSession
+	{
+		public int ConversationEpoch;
+
+		public int PrimaryAgentIndex = -1;
+
+		public List<int> ParticipantAgentIndices = new List<int>();
+
+		public int NextSpeakerCursor;
+
+		public int LastSpeakerAgentIndex = -1;
+
+		public int AutoLinesGenerated;
+
+		public int ConsecutiveNoContinueCount;
+
+		public int MaxAutoLines = 8;
+
+		public bool IsActive = true;
+
+		public bool GenerationInFlight;
+	}
+
 	private class ShoutMissionBehavior : MissionBehavior
 	{
 		private ShoutBehavior _parent;
@@ -278,7 +318,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 
 	private readonly object _speechQueueLock = new object();
 
-	private readonly Queue<(NpcDataPacket npc, string content, List<NpcDataPacket> contextSnapshot, bool skipHistory, bool suppressStare)> _speechQueue = new Queue<(NpcDataPacket, string, List<NpcDataPacket>, bool, bool)>();
+	private readonly Queue<SceneSpeechQueueItem> _speechQueue = new Queue<SceneSpeechQueueItem>();
 
 	private bool _speechWorkerRunning = false;
 
@@ -310,7 +350,21 @@ public class ShoutBehavior : CampaignBehaviorBase
 
 	private static int _sceneHistorySessionId = 0;
 
+	private int _sceneConversationEpoch = 0;
+
+	private readonly object _autoGroupChatLock = new object();
+
+	private AutoNpcGroupChatSession _autoGroupChatSession = null;
+
+	private bool _autoGroupChatLoopRunning = false;
+
 	private const int MAX_HISTORY_TURNS = 20;
+
+	private const int AUTO_GROUP_CHAT_MAX_LINES = 8;
+
+	private const int AUTO_GROUP_CHAT_IDLE_POLL_MS = 250;
+
+	private const int AUTO_GROUP_CHAT_CONSECUTIVE_NO_CONTINUE_LIMIT = 2;
 
 	private Agent _currentStareTarget = null;
 
@@ -718,15 +772,25 @@ public class ShoutBehavior : CampaignBehaviorBase
 		{
 		}
 		int num = npc?.AgentIndex ?? (-1);
+		bool flagHostileSpeech = IsAgentHostileToMainAgent(liveAgent);
+		if (flagHostileSpeech && num >= 0)
+		{
+			_activeInteractionSessions.Remove(num);
+			_pendingInteractionTimeoutArms.Remove(num);
+			lock (_ttsBubbleSyncLock)
+			{
+				_pendingSpeechCompletionTokenQueues.Remove(num);
+			}
+		}
 		long interactionToken = 0L;
-		if (num >= 0 && _activeInteractionSessions.TryGetValue(num, out var value) && value != null)
+		if (!flagHostileSpeech && num >= 0 && _activeInteractionSessions.TryGetValue(num, out var value) && value != null)
 		{
 			interactionToken = value.InteractionToken;
 		}
 		bool flag = false;
 		bool flag2 = allowTts && IsTtsPlaybackEnabledForShout();
 		int num2 = ((flag2 && attachTtsToSceneAgent && num >= 0 && CanAgentParticipateInSceneSpeech(liveAgent)) ? num : (-1));
-		LogTtsReport("ShowNpcSpeechOutput.Enter", num, $"allowTts={allowTts};attachToSceneAgent={attachTtsToSceneAgent};effectiveAgentIndex={num2};contentLen={(content ?? string.Empty).Length}");
+		LogTtsReport("ShowNpcSpeechOutput.Enter", num, $"allowTts={allowTts};attachToSceneAgent={attachTtsToSceneAgent};effectiveAgentIndex={num2};contentLen={(content ?? string.Empty).Length};hostileSpeech={flagHostileSpeech}");
 		if (!allowTts)
 		{
 			try
@@ -824,6 +888,23 @@ public class ShoutBehavior : CampaignBehaviorBase
 		}
 		catch
 		{
+		}
+	}
+
+	public static bool CanAgentParticipateInSceneSpeechExternal(int agentIndex)
+	{
+		if (agentIndex < 0 || Mission.Current == null)
+		{
+			return false;
+		}
+		try
+		{
+			Agent agent = Mission.Current.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == agentIndex);
+			return CanAgentParticipateInSceneSpeech(agent);
+		}
+		catch
+		{
+			return false;
 		}
 	}
 
@@ -2159,6 +2240,21 @@ public class ShoutBehavior : CampaignBehaviorBase
 		return text2.Trim();
 	}
 
+	private static string StripActionTagsForSceneSpeech(string text)
+	{
+		return Regex.Replace((text ?? "").Replace("\r", ""), "\\[ACTION:[^\\]]*\\]", "", RegexOptions.IgnoreCase).Trim();
+	}
+
+	private static bool ContainsAutoGroupNoContinueSignal(string text)
+	{
+		return !string.IsNullOrWhiteSpace(text) && text.IndexOf("[NO_CONTINUE]", StringComparison.OrdinalIgnoreCase) >= 0;
+	}
+
+	private static string StripAutoGroupStopSignal(string text)
+	{
+		return Regex.Replace((text ?? "").Replace("\r", ""), "\\[NO_CONTINUE\\]", "", RegexOptions.IgnoreCase).Trim();
+	}
+
 	private static bool IsPrivateRecentWindowHeader(string line)
 	{
 		string text = (line ?? "").Trim();
@@ -2468,8 +2564,14 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		lock (_speechQueueLock)
 		{
 			_speechQueue.Clear();
-			_speechWorkerRunning = false;
 		}
+		_speechWorkerRunning = false;
+		lock (_autoGroupChatLock)
+		{
+			_autoGroupChatSession = null;
+			_autoGroupChatLoopRunning = false;
+		}
+		_sceneConversationEpoch = 0;
 		Action result;
 		while (_mainThreadActions.TryDequeue(out result))
 		{
@@ -2669,6 +2771,17 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				{
 					if (agentIndex >= 0)
 					{
+						if (!CanAgentParticipateInSceneSpeechExternal(agentIndex))
+						{
+							lock (_ttsBubbleSyncLock)
+							{
+								_pendingNpcBubbleQueues.Remove(agentIndex);
+								_pendingAudioDurationQueues.Remove(agentIndex);
+								_pendingSpeechCompletionTokenQueues.Remove(agentIndex);
+							}
+							LogTtsReport("PlaybackStarted.InvalidAgent", agentIndex);
+							return;
+						}
 						lock (_speakingLock)
 						{
 							_speakingAgentIndices.Add(agentIndex);
@@ -2699,12 +2812,21 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					{
 						long interactionToken = 0L;
 						bool hasInteractionToken = TryDequeuePendingSpeechCompletionToken(agentIndex, out interactionToken);
+						Agent finishedAgent = Mission.Current?.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == agentIndex);
+						bool hostileFinishedSpeech = IsAgentHostileToMainAgent(finishedAgent);
+						if (hostileFinishedSpeech)
+						{
+							hasInteractionToken = false;
+							interactionToken = 0L;
+							_pendingInteractionTimeoutArms.Remove(agentIndex);
+							_activeInteractionSessions.Remove(agentIndex);
+						}
 						lock (_speakingLock)
 						{
 							_speakingAgentIndices.Remove(agentIndex);
 						}
 						Logger.Log("LipSync", $"[OnPlaybackFinished] agentIndex={agentIndex} removed from speaking set");
-						LogTtsReport("PlaybackFinished", agentIndex, $"hasInteractionToken={hasInteractionToken};interactionToken={interactionToken}");
+						LogTtsReport("PlaybackFinished", agentIndex, $"hasInteractionToken={hasInteractionToken};interactionToken={interactionToken};hostileFinishedSpeech={hostileFinishedSpeech}");
 						if (hasInteractionToken)
 						{
 							_mainThreadActions.Enqueue(delegate
@@ -2722,6 +2844,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 						{
 							try
 							{
+								LogTtsReport("PlaybackFinished.MainThreadCleanupStart", agentIndex);
 								StopAgentRhubarbRecordIfPossible(agentIndex, "PlaybackFinished");
 								SoundEvent value = null;
 								string value2 = null;
@@ -2744,6 +2867,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 								QueueDeferredCleanup(value, value2, value3, "PlaybackFinished", agentIndex);
 								Logger.Log("LipSync", $"[Rhubarb] cleanup queued, agentIndex={agentIndex}, hasSe={(value != null)}, hasWav={(!string.IsNullOrWhiteSpace(value2))}, hasXml={(!string.IsNullOrWhiteSpace(value3))}");
 								LogTtsReport("PlaybackFinished.CleanupQueued", agentIndex, $"hasSe={(value != null)};hasWav={(!string.IsNullOrWhiteSpace(value2))};hasXml={(!string.IsNullOrWhiteSpace(value3))}");
+								LogTtsReport("PlaybackFinished.MainThreadCleanupEnd", agentIndex);
 							}
 							catch
 							{
@@ -3422,30 +3546,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				{
 					continue;
 				}
-				lock (_speakingLock)
-				{
-					_speakingAgentIndices.Remove(agentIndex);
-				}
 				LogTtsReport("AgentInvalidDuringLipSync", agentIndex);
-				SoundEvent value = null;
-				string value2 = null;
-				string value3 = null;
-				lock (_speakingLock)
-				{
-					if (_agentSoundEvents.TryGetValue(agentIndex, out value))
-					{
-						_agentSoundEvents.Remove(agentIndex);
-					}
-					if (_agentWavPaths.TryGetValue(agentIndex, out value2))
-					{
-						_agentWavPaths.Remove(agentIndex);
-					}
-					if (_agentXmlPaths.TryGetValue(agentIndex, out value3))
-					{
-						_agentXmlPaths.Remove(agentIndex);
-					}
-				}
-				QueueDeferredCleanup(value, value2, value3, "AgentInvalid", agentIndex);
+				CancelAgentSpeechForRemoval(agentIndex, "agent_invalid_during_lipsync");
 			}
 			catch
 			{
@@ -4013,6 +4115,147 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		catch
 		{
 			return false;
+		}
+	}
+
+	private static string BuildAutoGroupChatReplyInstruction(string npcName, List<NpcDataPacket> allNpcData)
+	{
+		string text = (npcName ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			text = "NPC";
+		}
+		string text2 = string.Join("、", (allNpcData ?? new List<NpcDataPacket>()).Where((NpcDataPacket npc) => npc != null && npc.AgentIndex >= 0 && npc.Name != null && !string.Equals((npc.Name ?? "").Trim(), text, StringComparison.Ordinal))
+			.Select((NpcDataPacket npc) => npc.Name.Trim())
+			.Where((string name) => !string.IsNullOrWhiteSpace(name))
+			.Distinct()
+			.Take(5));
+		if (string.IsNullOrWhiteSpace(text2))
+		{
+			text2 = "周围的人";
+		}
+		return text + "现在正在和" + text2 + "继续聊天，玩家暂时没有插话。请只以" + text + "的身份，自然接续【当前场景公共对话与互动】里最新的内容，对周围NPC说一句话。优先回应别人刚刚说的话，不要重复自己，不要替其他角色发言，不要输出角色名，不要动作描写、心理活动、旁白，不要输出任何[ACTION:*]标签。如果你觉得此时没有必要继续说话，请只输出 [NO_CONTINUE]。";
+	}
+
+	private async Task<string> GenerateAutoGroupChatLineAsync(NpcDataPacket speakerNpc, List<NpcDataPacket> allNpcData, Dictionary<int, Hero> resolvedHeroes)
+	{
+		try
+		{
+			if (speakerNpc == null || allNpcData == null || allNpcData.Count < 2)
+			{
+				return "";
+			}
+			await EnsurePersonaForCandidatesAsync(new List<NpcDataPacket> { speakerNpc }, resolvedHeroes ?? new Dictionary<int, Hero>());
+			DuelSettings settings = DuelSettings.GetSettings();
+			int maxTokens = Math.Max(28, settings.ShoutMaxTokens / 2);
+			int minTokens = Math.Max(10, maxTokens / 2);
+			Agent agent = Mission.Current?.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == speakerNpc.AgentIndex);
+			if (!CanAgentParticipateInSceneSpeech(agent))
+			{
+				return "";
+			}
+			CharacterObject characterObject = agent.Character as CharacterObject;
+			Hero hero = null;
+			if (speakerNpc.IsHero && resolvedHeroes != null)
+			{
+				resolvedHeroes.TryGetValue(speakerNpc.AgentIndex, out hero);
+			}
+			string kingdomIdOverride = TryGetKingdomIdOverrideFromAgent(agent);
+			MyBehavior.ShoutPromptContext shoutPromptContext = MyBehavior.BuildShoutPromptContextForExternal(hero, "请根据当前场景公共对话与互动继续和周围NPC闲聊。", null, speakerNpc.CultureId ?? "neutral", hasAnyHero: speakerNpc.IsHero, targetCharacter: characterObject, kingdomIdOverride: kingdomIdOverride, targetAgentIndex: speakerNpc.AgentIndex, suppressDynamicRuleAndLore: true);
+			StringBuilder stringBuilder = new StringBuilder();
+			stringBuilder.AppendLine("【在场人物列表】：");
+			foreach (NpcDataPacket npc in allNpcData)
+			{
+				if (npc != null)
+				{
+					stringBuilder.AppendLine("- 名字: " + npc.Name + " | 身份: " + npc.RoleDesc);
+				}
+			}
+			stringBuilder.AppendLine("【群体续聊规则】");
+			stringBuilder.AppendLine("1. 现在是NPC之间自己继续聊天，不是在回复玩家。");
+			stringBuilder.AppendLine("2. 只输出你自己说的一句话，不要替其他NPC说话。");
+			stringBuilder.AppendLine("3. 不要输出任何[ACTION:*]标签。");
+			stringBuilder.AppendLine("4. 如果此时没必要继续说话，只输出 [NO_CONTINUE]。");
+			string baseExtras = StripScenePersonaBlocks((shoutPromptContext?.Extras ?? "").Trim());
+			string trustBlock = ExtractTrustPromptBlock(baseExtras, out var baseExtrasWithoutTrust);
+			string localExtras = InjectTrustBlockBelowTriState(stringBuilder.ToString().Trim(), trustBlock);
+			string text = string.IsNullOrWhiteSpace(baseExtrasWithoutTrust) ? localExtras : ((!string.IsNullOrWhiteSpace(localExtras)) ? (baseExtrasWithoutTrust + "\n" + localExtras) : baseExtrasWithoutTrust);
+			List<string> historyLines = null;
+			lock (_historyLock)
+			{
+				if (_publicConversationHistory.Count > 0)
+				{
+					historyLines = BuildVisibleSceneHistoryLines(_publicConversationHistory, speakerNpc.AgentIndex, speakerNpc.Name ?? "", useNpcNameAddress: false);
+				}
+			}
+			string scenePublicHistorySection = BuildScenePublicHistorySection(historyLines);
+			string persistedHeroHistory = speakerNpc.IsHero ? BuildPersistedHeroHistoryContext(speakerNpc.AgentIndex, "", resolvedHeroes) : "";
+			string privateRecentWindowSection = "";
+			string persistedWithoutRecentWindow = "";
+			SplitPersistedHeroHistorySections(persistedHeroHistory, out privateRecentWindowSection, out persistedWithoutRecentWindow);
+			string layeredPrompt = text;
+			if (!string.IsNullOrWhiteSpace(privateRecentWindowSection))
+			{
+				layeredPrompt = layeredPrompt + "\n" + privateRecentWindowSection;
+			}
+			if (!string.IsNullOrWhiteSpace(persistedWithoutRecentWindow))
+			{
+				layeredPrompt = layeredPrompt + "\n" + persistedWithoutRecentWindow;
+			}
+			if (!string.IsNullOrWhiteSpace(scenePublicHistorySection))
+			{
+				layeredPrompt = layeredPrompt + "\n" + scenePublicHistorySection;
+			}
+			string roleTopIntro = BuildSceneSystemTopPromptIntroForSingle(speakerNpc, hero, allNpcData);
+			if (!string.IsNullOrWhiteSpace(roleTopIntro))
+			{
+				layeredPrompt = roleTopIntro + "\n" + layeredPrompt;
+			}
+			string userContent = BuildAutoGroupChatReplyInstruction(speakerNpc.Name ?? "NPC", allNpcData) + "\n" + $"(回复长度要求：请将本轮回复控制在 {minTokens}-{maxTokens} 字之间；如果没必要继续说话，只输出 [NO_CONTINUE])";
+			List<object> messages = new List<object>
+			{
+				new
+				{
+					role = "system",
+					content = layeredPrompt
+				},
+				new
+				{
+					role = "user",
+					content = userContent
+				}
+			};
+			string text2 = await ShoutNetwork.CallApiWithMessages(messages, 5000);
+			if (string.IsNullOrWhiteSpace(text2) || text2.StartsWith("（错误") || text2.StartsWith("（程序错误") || text2.StartsWith("（API请求失败"))
+			{
+				return "";
+			}
+			string text3 = (text2 ?? "").Replace("\r", "").Trim();
+			if (!string.IsNullOrWhiteSpace(text3))
+			{
+				int num = text3.IndexOf(':');
+				if (num == -1)
+				{
+					num = text3.IndexOf('：');
+				}
+				if (num > 0 && num < 30)
+				{
+					string text4 = text3.Substring(num + 1).Trim();
+					if (!string.IsNullOrWhiteSpace(text4))
+					{
+						text3 = text4;
+					}
+				}
+			}
+			text3 = StripLeakedPromptContentForShout(text3);
+			text3 = StripStageDirectionsForPassiveShout(text3);
+			text3 = StripActionTagsForSceneSpeech(text3);
+			return text3.Trim();
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("ShoutBehavior", "[AutoGroupChat] prompt failed: " + ex.Message);
+			return "";
 		}
 	}
 
@@ -5246,6 +5489,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			_lastShoutDuelLiteralHit = false;
 		}
+		int conversationEpoch = BeginNewPlayerDrivenSceneConversationEpoch();
 		List<Agent> nearbyAgents = ShoutUtils.GetNearbyNPCAgents();
 		if (nearbyAgents.Count == 0)
 		{
@@ -5368,7 +5612,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					}
 				}
 
-				await HandleGroupResponse(shoutText, capturedNpcData, sceneDesc, primaryDataPacket, extraFact, precomputedContexts, resolvedHeroes);
+				await HandleGroupResponse(shoutText, capturedNpcData, sceneDesc, primaryDataPacket, extraFact, precomputedContexts, resolvedHeroes, conversationEpoch);
 			}
 			catch (Exception ex)
 			{
@@ -5377,7 +5621,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		});
 	}
 
-	private async Task HandleGroupResponse(string playerText, List<NpcDataPacket> allNpcData, string sceneDesc, NpcDataPacket primaryNpc, string extraFact, Dictionary<int, PrecomputedShoutRagContext> precomputedContexts, Dictionary<int, Hero> resolvedHeroes)
+	private async Task HandleGroupResponse(string playerText, List<NpcDataPacket> allNpcData, string sceneDesc, NpcDataPacket primaryNpc, string extraFact, Dictionary<int, PrecomputedShoutRagContext> precomputedContexts, Dictionary<int, Hero> resolvedHeroes, int conversationEpoch)
 	{
 		try
 		{
@@ -5392,7 +5636,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				bool usePerHeroIndependentRequests = true;
 				if (usePerHeroIndependentRequests)
 				{
-					await HandleGroupResponsePerHeroIndependent(playerText, allNpcData, sceneDesc, primaryNpc, extraFact, precomputedContexts, resolvedHeroes);
+					await HandleGroupResponsePerHeroIndependent(playerText, allNpcData, sceneDesc, primaryNpc, extraFact, precomputedContexts, resolvedHeroes, conversationEpoch);
 					return;
 				}
 				DuelSettings settings = DuelSettings.GetSettings();
@@ -5932,10 +6176,14 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 	}
 
-	private async Task HandleGroupResponsePerHeroIndependent(string playerText, List<NpcDataPacket> allNpcData, string sceneDesc, NpcDataPacket primaryNpc, string extraFact, Dictionary<int, PrecomputedShoutRagContext> precomputedContexts, Dictionary<int, Hero> resolvedHeroes)
+	private async Task HandleGroupResponsePerHeroIndependent(string playerText, List<NpcDataPacket> allNpcData, string sceneDesc, NpcDataPacket primaryNpc, string extraFact, Dictionary<int, PrecomputedShoutRagContext> precomputedContexts, Dictionary<int, Hero> resolvedHeroes, int conversationEpoch)
 	{
 		try
 		{
+			if (!IsSceneConversationEpochCurrent(conversationEpoch))
+			{
+				return;
+			}
 			if (allNpcData == null)
 			{
 				allNpcData = new List<NpcDataPacket>();
@@ -6000,6 +6248,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			DuelSettings settings = DuelSettings.GetSettings();
 			int maxTokens = Math.Max(40, settings.ShoutMaxTokens);
 			int minTokens = Math.Max(5, maxTokens / 2);
+			int lastSpeakerAgentIndex = -1;
 			StringBuilder commonCandidatesList = new StringBuilder();
 			commonCandidatesList.AppendLine("【在场人物列表】：");
 			foreach (NpcDataPacket npc2 in speakableCandidates)
@@ -6114,6 +6363,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			}
 			foreach (NpcDataPacket npc2 in speakableCandidates)
 			{
+				if (!IsSceneConversationEpochCurrent(conversationEpoch))
+				{
+					return;
+				}
 				if (npc2 == null)
 				{
 					continue;
@@ -6218,6 +6471,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					}
 				};
 				string output = await ShoutNetwork.CallApiWithMessages(messages, 5000);
+				if (!IsSceneConversationEpochCurrent(conversationEpoch))
+				{
+					return;
+				}
 				
 				if (!string.IsNullOrWhiteSpace(output) && (output.StartsWith("（错误") || output.StartsWith("（程序错误") || output.StartsWith("（API请求失败")))
 				{
@@ -6250,14 +6507,13 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				cleaned = StripStageDirectionsForPassiveShout(cleaned);
 				if (!string.IsNullOrWhiteSpace(cleaned))
 				{
-					string pureText = Regex.Replace(cleaned, "\\[ACTION:[^\\]]*\\]", "", RegexOptions.IgnoreCase).Trim();
-					if (!string.IsNullOrWhiteSpace(pureText))
-					{
-						RecordResponseForAllNearbySafe(allNpcData, npc2.AgentIndex, npc2.Name, pureText);
-						PersistNpcSpeechToNamedHeroes(npc2.AgentIndex, npc2.Name, pureText, allNpcData);
-					}
-					EnqueueSpeechLine(npc2, cleaned, allNpcData, true);
+					lastSpeakerAgentIndex = npc2.AgentIndex;
+					EnqueueSpeechLineWithOptions(npc2, cleaned, allNpcData, commitHistory: true, suppressStare: false, allowPlayerDirectedActions: true, conversationEpoch);
 				}
+			}
+			if (IsSceneConversationEpochCurrent(conversationEpoch) && speakableCandidates.Count > 1)
+			{
+				StartAutoGroupChatSession(speakableCandidates, primaryNpc, conversationEpoch, lastSpeakerAgentIndex);
 			}
 		}
 		catch (Exception ex)
@@ -6336,6 +6592,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 
 	private void EnqueueSpeechLine(NpcDataPacket npc, string content, List<NpcDataPacket> allNpcData, bool skipHistory = false, bool suppressStare = false)
 	{
+		EnqueueSpeechLineWithOptions(npc, content, allNpcData, !skipHistory, suppressStare, allowPlayerDirectedActions: true, requiredConversationEpoch: 0);
+	}
+
+	private void EnqueueSpeechLineWithOptions(NpcDataPacket npc, string content, List<NpcDataPacket> allNpcData, bool commitHistory, bool suppressStare, bool allowPlayerDirectedActions, int requiredConversationEpoch)
+	{
 		if (npc == null || string.IsNullOrWhiteSpace(content))
 		{
 			return;
@@ -6355,7 +6616,16 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 		lock (_speechQueueLock)
 		{
-			_speechQueue.Enqueue((value, content, value2, skipHistory, suppressStare));
+			_speechQueue.Enqueue(new SceneSpeechQueueItem
+			{
+				Npc = value,
+				Content = content,
+				ContextSnapshot = value2,
+				CommitHistory = commitHistory,
+				SuppressStare = suppressStare,
+				AllowPlayerDirectedActions = allowPlayerDirectedActions,
+				RequiredConversationEpoch = requiredConversationEpoch
+			});
 			if (_speechWorkerRunning)
 			{
 				return;
@@ -6374,7 +6644,12 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			while (true)
 			{
-				(NpcDataPacket npc, string content, List<NpcDataPacket> contextSnapshot, bool skipHistory, bool suppressStare) item;
+				if (_isProcessingShout)
+				{
+					await Task.Delay(100);
+					continue;
+				}
+				SceneSpeechQueueItem item;
 				lock (_speechQueueLock)
 				{
 					if (_speechQueue.Count == 0)
@@ -6384,12 +6659,21 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					}
 					item = _speechQueue.Dequeue();
 				}
-				var (matchedNpc, content, contextSnapshot, skipHistory, suppressStare) = item;
-				List<NpcDataPacket> allNpcData = contextSnapshot ?? new List<NpcDataPacket>();
+				NpcDataPacket matchedNpc = item.Npc;
+				string content = item.Content;
+				List<NpcDataPacket> allNpcData = item.ContextSnapshot ?? new List<NpcDataPacket>();
+				bool commitHistory = item.CommitHistory;
+				bool suppressStare = item.SuppressStare;
+				bool allowPlayerDirectedActions = item.AllowPlayerDirectedActions;
+				int requiredConversationEpoch = item.RequiredConversationEpoch;
 				_mainThreadActions.Enqueue(delegate
 				{
 					try
 					{
+						if (!IsSceneConversationEpochCurrent(requiredConversationEpoch))
+						{
+							return;
+						}
 						Agent agent = Mission.Current?.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == matchedNpc.AgentIndex);
 						if (!CanAgentParticipateInSceneSpeech(agent))
 						{
@@ -6402,32 +6686,35 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 							if (agent != null && agent.Character is CharacterObject { HeroObject: not null } characterObject)
 							{
 								MyBehavior.ApplyPatienceFromSceneHeroResponseExternal(characterObject.HeroObject, ref content);
-								DuelBehavior.TryCacheDuelAfterLinesFromText(characterObject.HeroObject, ref content);
-								DuelBehavior.TryCacheDuelStakeFromText(characterObject.HeroObject, ref content);
-								VanillaIssueOfferBridge.ApplyIssueOfferTags(characterObject.HeroObject, ref content);
-								if (RewardSystemBehavior.Instance != null)
+								if (allowPlayerDirectedActions)
 								{
-									RewardSystemBehavior.Instance.ApplyRewardTags(characterObject.HeroObject, Hero.MainHero, ref content);
-									List<string> list2 = RewardSystemBehavior.Instance.ConsumeLastGeneratedNpcFactLines();
-									if (list2 != null)
+									DuelBehavior.TryCacheDuelAfterLinesFromText(characterObject.HeroObject, ref content);
+									DuelBehavior.TryCacheDuelStakeFromText(characterObject.HeroObject, ref content);
+									VanillaIssueOfferBridge.ApplyIssueOfferTags(characterObject.HeroObject, ref content);
+									if (RewardSystemBehavior.Instance != null)
 									{
-										foreach (string item in list2)
+										RewardSystemBehavior.Instance.ApplyRewardTags(characterObject.HeroObject, Hero.MainHero, ref content);
+										List<string> list2 = RewardSystemBehavior.Instance.ConsumeLastGeneratedNpcFactLines();
+										if (list2 != null)
 										{
-											RecordSystemFactForNearbySafe(allNpcData, item);
+											foreach (string item2 in list2)
+											{
+												RecordSystemFactForNearbySafe(allNpcData, item2);
+											}
 										}
 									}
+									if (RomanceSystemBehavior.Instance != null)
+									{
+										RomanceSystemBehavior.Instance.ApplyMarriageTags(characterObject.HeroObject, Hero.MainHero, ref content);
+									}
+									LordEncounterBehavior.TryProcessMeetingTauntAction(characterObject.HeroObject, ref content, out flag);
+									SceneTauntBehavior.TryProcessSceneTauntAction(characterObject.HeroObject, characterObject, matchedNpc.AgentIndex, ref content, out flagSceneTaunt);
 								}
-								if (RomanceSystemBehavior.Instance != null)
-								{
-									RomanceSystemBehavior.Instance.ApplyMarriageTags(characterObject.HeroObject, Hero.MainHero, ref content);
-								}
-								LordEncounterBehavior.TryProcessMeetingTauntAction(characterObject.HeroObject, ref content, out flag);
-								SceneTauntBehavior.TryProcessSceneTauntAction(characterObject.HeroObject, characterObject, matchedNpc.AgentIndex, ref content, out flagSceneTaunt);
 							}
 							else
 							{
 								MyBehavior.ApplyPatienceFromSceneUnnamedResponseExternal(matchedNpc.UnnamedKey, matchedNpc.Name, ref content);
-								if (agent != null && agent.Character is CharacterObject characterObject2 && RewardSystemBehavior.Instance != null)
+								if (allowPlayerDirectedActions && agent != null && agent.Character is CharacterObject characterObject2 && RewardSystemBehavior.Instance != null)
 								{
 									RewardSystemBehavior.Instance.ApplyMerchantRewardTags(characterObject2, Hero.MainHero, ref content);
 									List<string> list = RewardSystemBehavior.Instance.ConsumeLastGeneratedNpcFactLines();
@@ -6439,7 +6726,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 										}
 									}
 								}
-								if (agent != null && agent.Character is CharacterObject characterObject3)
+								if (allowPlayerDirectedActions && agent != null && agent.Character is CharacterObject characterObject3)
 								{
 									SceneTauntBehavior.TryProcessSceneTauntAction(characterObject3.HeroObject, characterObject3, matchedNpc.AgentIndex, ref content, out flagSceneTaunt);
 								}
@@ -6450,12 +6737,21 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 						}
 						content = StripLeakedPromptContentForShout(content);
 						content = StripStageDirectionsForPassiveShout(content);
+						if (!allowPlayerDirectedActions)
+						{
+							content = StripActionTagsForSceneSpeech(content);
+						}
 						if (!string.IsNullOrWhiteSpace(content))
 						{
-							bool flag2 = !flag && !flagSceneTaunt && ShoutUtils.TryTriggerDuelAction(matchedNpc, ref content);
-							bool flag3 = !flagSceneTaunt && TryTriggerOpenLordsHallAction(matchedNpc, agent, ref content);
+							bool flag2 = allowPlayerDirectedActions && !flag && !flagSceneTaunt && ShoutUtils.TryTriggerDuelAction(matchedNpc, ref content);
+							bool flag3 = allowPlayerDirectedActions && !flagSceneTaunt && TryTriggerOpenLordsHallAction(matchedNpc, agent, ref content);
 							if (!string.IsNullOrWhiteSpace(content))
 							{
+								if (!IsSceneConversationEpochCurrent(requiredConversationEpoch))
+								{
+									return;
+								}
+								string historyText = StripActionTagsForSceneSpeech(content);
 								bool flag4 = IsAgentHostileToMainAgent(agent);
 								ShowNpcSpeechOutput(matchedNpc, agent, content, allowTts: true, attachTtsToSceneAgent: true);
 								if (flag4)
@@ -6466,10 +6762,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 								{
 									AddAgentToStareList(agent, interruptCurrentUse: true);
 								}
-								if (!skipHistory)
+								if (commitHistory && !string.IsNullOrWhiteSpace(historyText))
 								{
-									RecordResponseForAllNearbySafe(allNpcData, matchedNpc.AgentIndex, matchedNpc.Name, content);
-									PersistNpcSpeechToNamedHeroes(matchedNpc.AgentIndex, matchedNpc.Name, content, allNpcData);
+									RecordResponseForAllNearbySafe(allNpcData, matchedNpc.AgentIndex, matchedNpc.Name, historyText);
+									PersistNpcSpeechToNamedHeroes(matchedNpc.AgentIndex, matchedNpc.Name, historyText, allNpcData);
 								}
 							}
 							if (flag2)
@@ -6489,7 +6785,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					}
 				});
 				await Task.Delay(2000);
-				item = default((NpcDataPacket, string, List<NpcDataPacket>, bool, bool));
+				item = null;
 			}
 		}
 		catch
@@ -7193,6 +7489,28 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 	}
 
+	public static void InterruptAgentSpeechForCombatExternal(int agentIndex, string reason = "combat_hit")
+	{
+		try
+		{
+			CurrentInstance?.InterruptAgentSpeechForCombat(agentIndex, reason);
+		}
+		catch
+		{
+		}
+	}
+
+	public static void CancelAgentSpeechForRemovalExternal(int agentIndex, string reason = "agent_removed")
+	{
+		try
+		{
+			CurrentInstance?.CancelAgentSpeechForRemoval(agentIndex, reason);
+		}
+		catch
+		{
+		}
+	}
+
 	private void StopAgentRhubarbRecordIfPossible(int agentIndex, string reason = "Unknown")
 	{
 		if (agentIndex < 0 || Mission.Current == null)
@@ -7215,6 +7533,111 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			Logger.Log("LipSync", $"[WARN] StopRhubarbRecord failed, agentIndex={agentIndex}, reason={reason}, error={ex.Message}");
 			LogTtsReport("StopRhubarbRecord.Failed", agentIndex, $"reason={reason};error={ex.Message}");
 		}
+	}
+
+	private void InterruptAgentSpeechForCombat(int agentIndex, string reason)
+	{
+		if (agentIndex < 0)
+		{
+			return;
+		}
+		bool speaking = false;
+		SoundEvent soundEvent = null;
+		string wavPath = null;
+		string xmlPath = null;
+		lock (_speakingLock)
+		{
+			speaking = _speakingAgentIndices.Remove(agentIndex);
+			if (_agentSoundEvents.TryGetValue(agentIndex, out soundEvent))
+			{
+				_agentSoundEvents.Remove(agentIndex);
+			}
+			if (_agentWavPaths.TryGetValue(agentIndex, out wavPath))
+			{
+				_agentWavPaths.Remove(agentIndex);
+			}
+			if (_agentXmlPaths.TryGetValue(agentIndex, out xmlPath))
+			{
+				_agentXmlPaths.Remove(agentIndex);
+			}
+		}
+		lock (_ttsBubbleSyncLock)
+		{
+			_pendingNpcBubbleQueues.Remove(agentIndex);
+			_pendingAudioDurationQueues.Remove(agentIndex);
+			_pendingSpeechCompletionTokenQueues.Remove(agentIndex);
+		}
+		_pendingInteractionTimeoutArms.Remove(agentIndex);
+		_activeInteractionSessions.Remove(agentIndex);
+		bool interrupted = false;
+		try
+		{
+			interrupted = TtsEngine.Instance?.InterruptCurrentPlaybackForAgent(agentIndex, reason) ?? false;
+		}
+		catch
+		{
+			interrupted = false;
+		}
+		if (!speaking && soundEvent == null && string.IsNullOrWhiteSpace(wavPath) && string.IsNullOrWhiteSpace(xmlPath) && !interrupted)
+		{
+			return;
+		}
+		LogTtsReport("InterruptAgentSpeechForCombat", agentIndex, $"reason={reason};speaking={speaking};interrupted={interrupted};hadSe={(soundEvent != null)};hadWav={(!string.IsNullOrWhiteSpace(wavPath))};hadXml={(!string.IsNullOrWhiteSpace(xmlPath))}");
+		StopAgentRhubarbRecordIfPossible(agentIndex, "Interrupt:" + reason);
+		QueueDeferredCleanup(soundEvent, wavPath, xmlPath, "Interrupt:" + reason, agentIndex);
+	}
+
+	private void CancelAgentSpeechForRemoval(int agentIndex, string reason)
+	{
+		if (agentIndex < 0)
+		{
+			return;
+		}
+		bool speaking = false;
+		SoundEvent soundEvent = null;
+		string wavPath = null;
+		string xmlPath = null;
+		lock (_speakingLock)
+		{
+			speaking = _speakingAgentIndices.Remove(agentIndex);
+			if (_agentSoundEvents.TryGetValue(agentIndex, out soundEvent))
+			{
+				_agentSoundEvents.Remove(agentIndex);
+			}
+			if (_agentWavPaths.TryGetValue(agentIndex, out wavPath))
+			{
+				_agentWavPaths.Remove(agentIndex);
+			}
+			if (_agentXmlPaths.TryGetValue(agentIndex, out xmlPath))
+			{
+				_agentXmlPaths.Remove(agentIndex);
+			}
+		}
+		lock (_ttsBubbleSyncLock)
+		{
+			_pendingNpcBubbleQueues.Remove(agentIndex);
+			_pendingAudioDurationQueues.Remove(agentIndex);
+			_pendingSpeechCompletionTokenQueues.Remove(agentIndex);
+		}
+		_pendingInteractionTimeoutArms.Remove(agentIndex);
+		_activeInteractionSessions.Remove(agentIndex);
+		bool interrupted = false;
+		try
+		{
+			interrupted = TtsEngine.Instance?.InterruptCurrentPlaybackForAgent(agentIndex, reason) ?? false;
+		}
+		catch
+		{
+			interrupted = false;
+		}
+		if (!speaking && soundEvent == null && string.IsNullOrWhiteSpace(wavPath) && string.IsNullOrWhiteSpace(xmlPath) && !interrupted)
+		{
+			LogTtsReport("CancelAgentSpeechForRemoval.Noop", agentIndex, "reason=" + reason);
+			return;
+		}
+		LogTtsReport("CancelAgentSpeechForRemoval", agentIndex, $"reason={reason};speaking={speaking};interrupted={interrupted};hadSe={(soundEvent != null)};hadWav={(!string.IsNullOrWhiteSpace(wavPath))};hadXml={(!string.IsNullOrWhiteSpace(xmlPath))}");
+		StopAgentRhubarbRecordIfPossible(agentIndex, "Removed:" + reason);
+		QueueDeferredCleanup(soundEvent, wavPath, xmlPath, "Removed:" + reason, agentIndex);
 	}
 
 	private void LogTtsReport(string stage, int agentIndex, string extra = null)
@@ -7286,6 +7709,374 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		catch
 		{
 			return false;
+		}
+	}
+
+	private void StartAutoGroupChatSession(List<NpcDataPacket> participants, NpcDataPacket primaryNpc, int conversationEpoch, int lastSpeakerAgentIndex)
+	{
+		if (!IsSceneConversationEpochCurrent(conversationEpoch) || participants == null)
+		{
+			return;
+		}
+		List<int> list = participants.Where((NpcDataPacket npc) => npc != null)
+			.Select((NpcDataPacket npc) => npc.AgentIndex)
+			.Where((int agentIndex) => agentIndex >= 0)
+			.Distinct()
+			.ToList();
+		if (list.Count < 2)
+		{
+			return;
+		}
+		lock (_autoGroupChatLock)
+		{
+			_autoGroupChatSession = new AutoNpcGroupChatSession
+			{
+				ConversationEpoch = conversationEpoch,
+				PrimaryAgentIndex = ((primaryNpc != null && primaryNpc.AgentIndex >= 0) ? primaryNpc.AgentIndex : list[0]),
+				ParticipantAgentIndices = list,
+				LastSpeakerAgentIndex = lastSpeakerAgentIndex,
+				MaxAutoLines = AUTO_GROUP_CHAT_MAX_LINES,
+				IsActive = true
+			};
+			int num = (lastSpeakerAgentIndex >= 0) ? list.IndexOf(lastSpeakerAgentIndex) : (-1);
+			_autoGroupChatSession.NextSpeakerCursor = ((num >= 0) ? ((num + 1) % list.Count) : 0);
+		}
+		EnsureAutoGroupChatLoopRunning();
+	}
+
+	private void EnsureAutoGroupChatLoopRunning()
+	{
+		lock (_autoGroupChatLock)
+		{
+			if (_autoGroupChatLoopRunning)
+			{
+				return;
+			}
+			_autoGroupChatLoopRunning = true;
+		}
+		_ = Task.Run(async delegate
+		{
+			await RunAutoGroupChatLoopAsync();
+		});
+	}
+
+	private async Task RunAutoGroupChatLoopAsync()
+	{
+		try
+		{
+			while (true)
+			{
+				AutoNpcGroupChatSession autoNpcGroupChatSession;
+				lock (_autoGroupChatLock)
+				{
+					if (_autoGroupChatSession == null || !_autoGroupChatSession.IsActive)
+					{
+						_autoGroupChatLoopRunning = false;
+						return;
+					}
+					autoNpcGroupChatSession = new AutoNpcGroupChatSession
+					{
+						ConversationEpoch = _autoGroupChatSession.ConversationEpoch,
+						PrimaryAgentIndex = _autoGroupChatSession.PrimaryAgentIndex,
+						ParticipantAgentIndices = new List<int>(_autoGroupChatSession.ParticipantAgentIndices),
+						NextSpeakerCursor = _autoGroupChatSession.NextSpeakerCursor,
+						LastSpeakerAgentIndex = _autoGroupChatSession.LastSpeakerAgentIndex,
+						AutoLinesGenerated = _autoGroupChatSession.AutoLinesGenerated,
+						ConsecutiveNoContinueCount = _autoGroupChatSession.ConsecutiveNoContinueCount,
+						MaxAutoLines = _autoGroupChatSession.MaxAutoLines,
+						IsActive = _autoGroupChatSession.IsActive,
+						GenerationInFlight = _autoGroupChatSession.GenerationInFlight
+					};
+				}
+				if (!IsSceneConversationEpochCurrent(autoNpcGroupChatSession.ConversationEpoch))
+				{
+					StopAutoGroupChatSession("stale_epoch");
+					continue;
+				}
+				if (_isProcessingShout || _ttsPausedByShoutUi)
+				{
+					await Task.Delay(AUTO_GROUP_CHAT_IDLE_POLL_MS);
+					continue;
+				}
+				if (Mission.Current == null || Agent.Main == null || !Agent.Main.IsActive() || Campaign.Current?.ConversationManager?.IsConversationInProgress == true)
+				{
+					StopAutoGroupChatSession("scene_invalid");
+					continue;
+				}
+				if (autoNpcGroupChatSession.AutoLinesGenerated >= autoNpcGroupChatSession.MaxAutoLines)
+				{
+					StopAutoGroupChatSession("line_limit");
+					continue;
+				}
+				if (autoNpcGroupChatSession.GenerationInFlight || IsSpeechPipelineBusy())
+				{
+					await Task.Delay(AUTO_GROUP_CHAT_IDLE_POLL_MS);
+					continue;
+				}
+				if (!TryBuildAutoGroupChatSnapshot(autoNpcGroupChatSession, out var participants, out var resolvedHeroes))
+				{
+					StopAutoGroupChatSession("participants_lost");
+					continue;
+				}
+				NpcDataPacket nextSpeaker = SelectNextAutoGroupChatSpeaker(autoNpcGroupChatSession, participants, resolvedHeroes);
+				if (nextSpeaker == null)
+				{
+					StopAutoGroupChatSession("no_speaker");
+					continue;
+				}
+				lock (_autoGroupChatLock)
+				{
+					if (_autoGroupChatSession == null || !_autoGroupChatSession.IsActive || _autoGroupChatSession.ConversationEpoch != autoNpcGroupChatSession.ConversationEpoch)
+					{
+						continue;
+					}
+					_autoGroupChatSession.GenerationInFlight = true;
+				}
+				string text = "";
+				try
+				{
+					text = await GenerateAutoGroupChatLineAsync(nextSpeaker, participants, resolvedHeroes);
+				}
+				catch (Exception ex)
+				{
+					Logger.Log("ShoutBehavior", "[AutoGroupChat] generate failed: " + ex.Message);
+				}
+				finally
+				{
+					lock (_autoGroupChatLock)
+					{
+						if (_autoGroupChatSession != null && _autoGroupChatSession.ConversationEpoch == autoNpcGroupChatSession.ConversationEpoch)
+						{
+							_autoGroupChatSession.GenerationInFlight = false;
+						}
+					}
+				}
+				if (!IsSceneConversationEpochCurrent(autoNpcGroupChatSession.ConversationEpoch))
+				{
+					continue;
+				}
+				bool flag = ContainsAutoGroupNoContinueSignal(text);
+				string text2 = StripAutoGroupStopSignal(text);
+				if (flag || string.IsNullOrWhiteSpace(text2))
+				{
+					bool flag2 = false;
+					lock (_autoGroupChatLock)
+					{
+						if (_autoGroupChatSession != null && _autoGroupChatSession.ConversationEpoch == autoNpcGroupChatSession.ConversationEpoch)
+						{
+							_autoGroupChatSession.LastSpeakerAgentIndex = nextSpeaker.AgentIndex;
+							_autoGroupChatSession.ConsecutiveNoContinueCount++;
+							flag2 = _autoGroupChatSession.ConsecutiveNoContinueCount >= AUTO_GROUP_CHAT_CONSECUTIVE_NO_CONTINUE_LIMIT;
+						}
+					}
+					if (flag2)
+					{
+						StopAutoGroupChatSession("no_continue");
+						continue;
+					}
+					await Task.Delay(AUTO_GROUP_CHAT_IDLE_POLL_MS);
+					continue;
+				}
+				NpcDataPacket npcDataPacket = participants.FirstOrDefault((NpcDataPacket npc) => npc != null && npc.AgentIndex == autoNpcGroupChatSession.PrimaryAgentIndex) ?? participants.FirstOrDefault();
+				lock (_autoGroupChatLock)
+				{
+					if (_autoGroupChatSession != null && _autoGroupChatSession.ConversationEpoch == autoNpcGroupChatSession.ConversationEpoch)
+					{
+						_autoGroupChatSession.LastSpeakerAgentIndex = nextSpeaker.AgentIndex;
+						_autoGroupChatSession.AutoLinesGenerated++;
+						_autoGroupChatSession.ConsecutiveNoContinueCount = 0;
+					}
+				}
+				if (npcDataPacket != null)
+				{
+					TrackPlayerInteraction(npcDataPacket);
+				}
+				EnqueueSpeechLineWithOptions(nextSpeaker, text2, participants, commitHistory: true, suppressStare: false, allowPlayerDirectedActions: false, autoNpcGroupChatSession.ConversationEpoch);
+				await Task.Delay(AUTO_GROUP_CHAT_IDLE_POLL_MS);
+			}
+		}
+		finally
+		{
+			lock (_autoGroupChatLock)
+			{
+				if (_autoGroupChatSession == null || !_autoGroupChatSession.IsActive)
+				{
+					_autoGroupChatLoopRunning = false;
+				}
+			}
+		}
+	}
+
+	private bool TryBuildAutoGroupChatSnapshot(AutoNpcGroupChatSession session, out List<NpcDataPacket> participants, out Dictionary<int, Hero> resolvedHeroes)
+	{
+		participants = new List<NpcDataPacket>();
+		resolvedHeroes = new Dictionary<int, Hero>();
+		if (session == null || session.ParticipantAgentIndices == null || session.ParticipantAgentIndices.Count == 0 || Mission.Current == null || Agent.Main == null || !Agent.Main.IsActive())
+		{
+			return false;
+		}
+		Vec3 position = Agent.Main.Position;
+		foreach (int participantAgentIndex in session.ParticipantAgentIndices)
+		{
+			Agent agent = Mission.Current.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == participantAgentIndex);
+			if (!CanAgentParticipateInSceneSpeech(agent))
+			{
+				continue;
+			}
+			try
+			{
+				if (agent.Position.Distance(position) > 8f)
+				{
+					continue;
+				}
+			}
+			catch
+			{
+			}
+			NpcDataPacket npcDataPacket = ShoutUtils.ExtractNpcData(agent);
+			if (npcDataPacket == null)
+			{
+				continue;
+			}
+			participants.Add(npcDataPacket);
+			if (npcDataPacket.IsHero && agent.Character is CharacterObject { HeroObject: not null } characterObject)
+			{
+				resolvedHeroes[npcDataPacket.AgentIndex] = characterObject.HeroObject;
+			}
+		}
+		return participants.Count >= 2;
+	}
+
+	private NpcDataPacket SelectNextAutoGroupChatSpeaker(AutoNpcGroupChatSession session, List<NpcDataPacket> participants, Dictionary<int, Hero> resolvedHeroes)
+	{
+		if (session == null || participants == null || participants.Count < 2)
+		{
+			return null;
+		}
+		List<NpcDataPacket> list = new List<NpcDataPacket>();
+		foreach (NpcDataPacket participant in participants)
+		{
+			if (participant == null)
+			{
+				continue;
+			}
+			bool canSpeak = true;
+			string statusLine = "";
+			bool hasStatus;
+			if (participant.IsHero)
+			{
+				Hero hero = null;
+				if (resolvedHeroes != null)
+				{
+					resolvedHeroes.TryGetValue(participant.AgentIndex, out hero);
+				}
+				hasStatus = MyBehavior.TryGetSceneHeroPatienceStatusForExternal(hero, out statusLine, out canSpeak);
+			}
+			else
+			{
+				hasStatus = MyBehavior.TryGetSceneUnnamedPatienceStatusForExternal(participant.UnnamedKey, participant.Name, out statusLine, out canSpeak);
+			}
+			if (!hasStatus || canSpeak)
+			{
+				list.Add(participant);
+			}
+		}
+		if (list.Count < 2)
+		{
+			return null;
+		}
+		List<int> list2 = participants.Select((NpcDataPacket npc) => npc.AgentIndex).ToList();
+		int num = session.NextSpeakerCursor;
+		NpcDataPacket npcDataPacket = null;
+		for (int i = 0; i < list2.Count; i++)
+		{
+			int num2 = (num + i) % list2.Count;
+			int num3 = list2[num2];
+			NpcDataPacket npcDataPacket2 = list.FirstOrDefault((NpcDataPacket npc) => npc.AgentIndex == num3);
+			if (npcDataPacket2 == null)
+			{
+				continue;
+			}
+			if (npcDataPacket2.AgentIndex == session.LastSpeakerAgentIndex && list.Count > 1)
+			{
+				continue;
+			}
+			npcDataPacket = npcDataPacket2;
+			num = (num2 + 1) % list2.Count;
+			break;
+		}
+		if (npcDataPacket == null)
+		{
+			npcDataPacket = list.FirstOrDefault();
+			int num4 = list2.IndexOf(npcDataPacket?.AgentIndex ?? (-1));
+			num = ((num4 >= 0 && list2.Count > 0) ? ((num4 + 1) % list2.Count) : 0);
+		}
+		lock (_autoGroupChatLock)
+		{
+			if (_autoGroupChatSession != null && _autoGroupChatSession.ConversationEpoch == session.ConversationEpoch)
+			{
+				_autoGroupChatSession.NextSpeakerCursor = num;
+			}
+		}
+		return npcDataPacket;
+	}
+
+	private int BeginNewPlayerDrivenSceneConversationEpoch()
+	{
+		int num = Interlocked.Increment(ref _sceneConversationEpoch);
+		StopAutoGroupChatSession("player_turn");
+		ClearQueuedSceneSpeech();
+		try
+		{
+			StopAllLipSyncPlaybackAndCleanup();
+		}
+		catch
+		{
+		}
+		return num;
+	}
+
+	private bool IsSceneConversationEpochCurrent(int epoch)
+	{
+		return epoch <= 0 || epoch == Volatile.Read(ref _sceneConversationEpoch);
+	}
+
+	private void ClearQueuedSceneSpeech()
+	{
+		lock (_speechQueueLock)
+		{
+			_speechQueue.Clear();
+		}
+	}
+
+	private bool IsSpeechPipelineBusy()
+	{
+		lock (_speechQueueLock)
+		{
+			if (_speechQueue.Count > 0 || _speechWorkerRunning)
+			{
+				return true;
+			}
+		}
+		lock (_speakingLock)
+		{
+			return _speakingAgentIndices.Count > 0;
+		}
+	}
+
+	private void StopAutoGroupChatSession(string reason)
+	{
+		lock (_autoGroupChatLock)
+		{
+			if (_autoGroupChatSession != null)
+			{
+				_autoGroupChatSession.IsActive = false;
+				_autoGroupChatSession = null;
+			}
+		}
+		if (!string.IsNullOrWhiteSpace(reason))
+		{
+			Logger.Log("ShoutBehavior", "[AutoGroupChat] stopped: " + reason);
 		}
 	}
 

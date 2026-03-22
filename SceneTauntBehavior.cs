@@ -2247,6 +2247,10 @@ public class SceneTauntMissionBehavior : MissionBehavior
 
 	public override void OnAgentHit(Agent affectedAgent, Agent affectorAgent, in MissionWeapon attackerWeapon, in Blow blow, in AttackCollisionData attackCollisionData)
 	{
+		if (affectedAgent != null && affectedAgent.IsHuman && affectedAgent != Agent.Main)
+		{
+			ShoutBehavior.InterruptAgentSpeechForCombatExternal(affectedAgent.Index, affectorAgent == Agent.Main ? "scene_taunt_agent_hit" : "scene_agent_hit_any_source");
+		}
 		if (affectorAgent != Agent.Main || affectedAgent == null || !affectedAgent.IsHuman || affectedAgent == Agent.Main)
 		{
 			return;
@@ -2273,6 +2277,10 @@ public class SceneTauntMissionBehavior : MissionBehavior
 	{
 		base.OnScoreHit(affectedAgent, affectorAgent, attackerWeapon, isBlocked, isSiegeEngineHit, in blow, in collisionData, damagedHp, hitDistance, shotDifficulty);
 		RememberSceneNotableHitLethality(affectedAgent, attackerWeapon, in blow, damagedHp);
+		if (affectedAgent != null && affectedAgent.IsHuman && affectedAgent != Agent.Main && damagedHp > 0f)
+		{
+			ShoutBehavior.InterruptAgentSpeechForCombatExternal(affectedAgent.Index, affectorAgent == Agent.Main ? "scene_taunt_score_hit" : "scene_score_hit_any_source");
+		}
 		if (damagedHp <= 0f || affectorAgent != Agent.Main || affectedAgent == null || !affectedAgent.IsHuman || affectedAgent == Agent.Main)
 		{
 			return;
@@ -2298,6 +2306,10 @@ public class SceneTauntMissionBehavior : MissionBehavior
 	{
 		try
 		{
+			if (affectedAgent != null && affectedAgent.IsHuman)
+			{
+				ShoutBehavior.CancelAgentSpeechForRemovalExternal(affectedAgent.Index, "scene_taunt_agent_removed_" + agentState);
+			}
 			TryApplyNativeAlleyNpcKnockdownConsequences(affectedAgent, affectorAgent, agentState);
 			if (!_conflictActive || affectedAgent == null || !affectedAgent.IsHuman)
 			{

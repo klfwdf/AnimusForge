@@ -95,6 +95,8 @@ internal sealed class TtsEngine : IDisposable
 
 	private volatile bool _pauseRequested;
 
+	private volatile int _currentAgentIndex = -1;
+
 	private static readonly uint _currentProcessId = (uint)Process.GetCurrentProcess().Id;
 
 	internal const uint WAVE_MAPPER = uint.MaxValue;
@@ -454,6 +456,7 @@ internal sealed class TtsEngine : IDisposable
 		{
 			return;
 		}
+		_currentAgentIndex = job.AgentIndex;
 		LogTtsReport("ProcessJob.Start", job.AgentIndex, $"speakerId={job.SpeakerId};speed={job.Speed:F2};voiceOverride={job.VoiceIdOverride};textLen={(job.Text ?? string.Empty).Length}");
 		string text = "";
 		string text2 = "";
@@ -549,6 +552,12 @@ internal sealed class TtsEngine : IDisposable
 		}
 		Logger.Log("TtsEngine", $"在线合成开始: text={job.Text.Substring(0, Math.Min(50, job.Text.Length))}..., voice={text5}, override={!string.IsNullOrWhiteSpace(job.VoiceIdOverride)}");
 		LogTtsReport("ProcessJob.SynthesisBegin", job.AgentIndex, $"voice={text5};encoding={audioEncoding};sampleRate={num};audible={flag}");
+		if (job.AgentIndex >= 0 && !ShoutBehavior.CanAgentParticipateInSceneSpeechExternal(job.AgentIndex))
+		{
+			LogTtsReport("ProcessJob.AbortInvalidAgent.BeforeSynthesis", job.AgentIndex, "speakerId=" + job.SpeakerId);
+			_currentAgentIndex = -1;
+			return;
+		}
 		byte[] array = CallVolcV1Api(text, text2, text3, text4, text5, job.Text, audioEncoding, num, speed, loudnessRatio, extraParamJson);
 		if (array == null || array.Length == 0)
 		{
@@ -581,6 +590,12 @@ internal sealed class TtsEngine : IDisposable
 			{
 				if (_cancelCurrent || _stopWorker)
 				{
+					return;
+				}
+				if (job.AgentIndex >= 0 && !ShoutBehavior.CanAgentParticipateInSceneSpeechExternal(job.AgentIndex))
+				{
+					LogTtsReport("ProcessJob.AbortInvalidAgent.BeforePlayback", job.AgentIndex, $"bytes={array.Length}");
+					_currentAgentIndex = -1;
 					return;
 				}
 				float num3 = (float)pcmData.Length / ((float)sampleRate * 2f);
@@ -701,8 +716,50 @@ internal sealed class TtsEngine : IDisposable
 					catch
 					{
 					}
+					finally
+					{
+						_currentAgentIndex = -1;
+					}
 				}
 			}
+		}
+	}
+
+	public bool InterruptCurrentPlaybackForAgent(int agentIndex, string reason = "")
+	{
+		if (agentIndex < 0)
+		{
+			return false;
+		}
+		if (_currentAgentIndex != agentIndex)
+		{
+			LogTtsReport("InterruptCurrentPlaybackForAgent.Skip", agentIndex, "reason=" + reason + ";currentAgentIndex=" + _currentAgentIndex);
+			return false;
+		}
+		try
+		{
+			_cancelCurrent = true;
+			_pauseRequested = false;
+			lock (_playbackLock)
+			{
+				if (_currentWaveOut != IntPtr.Zero)
+				{
+					try
+					{
+						waveOutReset(_currentWaveOut);
+					}
+					catch
+					{
+					}
+				}
+			}
+			LogTtsReport("InterruptCurrentPlaybackForAgent", agentIndex, "reason=" + reason);
+			return true;
+		}
+		catch (Exception ex)
+		{
+			LogTtsReport("InterruptCurrentPlaybackForAgent.Failed", agentIndex, "reason=" + reason + ";error=" + ex.Message);
+			return false;
 		}
 	}
 
