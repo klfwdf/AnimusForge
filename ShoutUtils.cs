@@ -13,7 +13,9 @@ using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.Core;
 using TaleWorlds.Engine;
 using TaleWorlds.Library;
+using TaleWorlds.Localization;
 using TaleWorlds.MountAndBlade;
+using TaleWorlds.ObjectSystem;
 
 namespace AnimusForge;
 
@@ -55,6 +57,10 @@ public static class ShoutUtils
 	private static Dictionary<string, UnnamedNpcPersonaProfile> _unnamedProfiles = new Dictionary<string, UnnamedNpcPersonaProfile>();
 
 	private static HashSet<string> _unnamedProfilesInFlight = new HashSet<string>();
+
+	private static readonly object _promptNamePoolLock = new object();
+
+	private static readonly Dictionary<string, List<string>> _promptNamePoolCache = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
 
 	private static string SanitizeFileName(string s)
 	{
@@ -2042,7 +2048,308 @@ public static class ShoutUtils
 			}
 		}
 		npcDataPacket.CultureId = ResolveSceneCultureIdWithSettlementFallback(npcDataPacket.CultureId, agent, null);
+		EnsurePromptNameFields(npcDataPacket);
 		return npcDataPacket;
+	}
+
+	public static void EnsurePromptNameFields(NpcDataPacket npc)
+	{
+		if (npc == null)
+		{
+			return;
+		}
+		if (npc.IsHero)
+		{
+			npc.PromptGivenName = "";
+			npc.PromptDisplayName = (npc.Name ?? "").Trim();
+			return;
+		}
+		string promptGivenName = PickPromptGivenName(npc, null);
+		npc.PromptGivenName = promptGivenName;
+		npc.PromptDisplayName = BuildPromptDisplayName(npc.Name, promptGivenName);
+	}
+
+	public static void EnsureScenePromptNames(List<NpcDataPacket> allNpcData)
+	{
+		if (allNpcData == null || allNpcData.Count == 0)
+		{
+			return;
+		}
+		foreach (NpcDataPacket npc in allNpcData)
+		{
+			EnsurePromptNameFields(npc);
+		}
+		HashSet<string> usedGivenNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		foreach (NpcDataPacket item in allNpcData.Where((NpcDataPacket npc) => npc != null && !npc.IsHero).OrderBy((NpcDataPacket npc) => npc.AgentIndex))
+		{
+			string text = PickPromptGivenName(item, usedGivenNames);
+			if (!string.IsNullOrWhiteSpace(text))
+			{
+				item.PromptGivenName = text;
+			}
+			item.PromptDisplayName = BuildPromptDisplayName(item.Name, item.PromptGivenName);
+		}
+	}
+
+	public static string GetPromptIdentityName(NpcDataPacket npc)
+	{
+		if (npc == null)
+		{
+			return "";
+		}
+		string text = (npc.Name ?? "").Trim();
+		if (!string.IsNullOrWhiteSpace(text))
+		{
+			return text;
+		}
+		text = (npc.RoleDesc ?? "").Trim();
+		return string.IsNullOrWhiteSpace(text) ? "未命名NPC" : text;
+	}
+
+	public static string GetPromptListName(NpcDataPacket npc)
+	{
+		if (npc == null)
+		{
+			return "";
+		}
+		EnsurePromptNameFields(npc);
+		if (!npc.IsHero)
+		{
+			string text = (npc.PromptGivenName ?? "").Trim();
+			if (!string.IsNullOrWhiteSpace(text))
+			{
+				return text;
+			}
+		}
+		return GetPromptIdentityName(npc);
+	}
+
+	public static string GetPromptHistoryName(NpcDataPacket npc)
+	{
+		if (npc == null)
+		{
+			return "";
+		}
+		EnsurePromptNameFields(npc);
+		if (!npc.IsHero)
+		{
+			string text = (npc.PromptDisplayName ?? "").Trim();
+			if (!string.IsNullOrWhiteSpace(text))
+			{
+				return text;
+			}
+		}
+		return GetPromptIdentityName(npc);
+	}
+
+	public static string GetPromptPatienceName(NpcDataPacket npc)
+	{
+		if (npc == null)
+		{
+			return "";
+		}
+		EnsurePromptNameFields(npc);
+		if (!npc.IsHero)
+		{
+			string text = (npc.PromptGivenName ?? "").Trim();
+			if (!string.IsNullOrWhiteSpace(text))
+			{
+				return text;
+			}
+		}
+		return GetPromptHistoryName(npc);
+	}
+
+	private static string BuildPromptDisplayName(string identityName, string givenName)
+	{
+		string text = (identityName ?? "").Trim();
+		string text2 = (givenName ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return string.IsNullOrWhiteSpace(text2) ? "未命名NPC" : text2;
+		}
+		if (string.IsNullOrWhiteSpace(text2))
+		{
+			return text;
+		}
+		if (text.IndexOf(text2, StringComparison.OrdinalIgnoreCase) >= 0)
+		{
+			return text;
+		}
+		return text + text2;
+	}
+
+	private static string PickPromptGivenName(NpcDataPacket npc, HashSet<string> usedGivenNames)
+	{
+		if (npc == null || npc.IsHero)
+		{
+			return "";
+		}
+		List<string> promptNamePool = GetPromptNamePool(npc.CultureId, npc.IsFemale);
+		if (promptNamePool.Count == 0)
+		{
+			string text = (npc.PromptGivenName ?? "").Trim();
+			return string.IsNullOrWhiteSpace(text) ? "路人" : text;
+		}
+		int num = ComputeStablePromptNameHash(BuildPromptNameSeed(npc));
+		int num2 = num % promptNamePool.Count;
+		string text2 = "";
+		for (int i = 0; i < promptNamePool.Count; i++)
+		{
+			string text3 = (promptNamePool[(num2 + i) % promptNamePool.Count] ?? "").Trim();
+			if (string.IsNullOrWhiteSpace(text3))
+			{
+				continue;
+			}
+			if (string.IsNullOrWhiteSpace(text2))
+			{
+				text2 = text3;
+			}
+			if (usedGivenNames == null || usedGivenNames.Add(text3))
+			{
+				return text3;
+			}
+		}
+		if (usedGivenNames != null && !string.IsNullOrWhiteSpace(text2))
+		{
+			usedGivenNames.Add(text2);
+		}
+		return text2;
+	}
+
+	private static List<string> GetPromptNamePool(string cultureId, bool isFemale)
+	{
+		string text = ((cultureId ?? "").Trim().ToLowerInvariant() + "|" + (isFemale ? "f" : "m")).Trim();
+		lock (_promptNamePoolLock)
+		{
+			if (_promptNamePoolCache.TryGetValue(text, out var value))
+			{
+				return value;
+			}
+		}
+		List<string> list = BuildPromptNamePool(cultureId, isFemale);
+		lock (_promptNamePoolLock)
+		{
+			_promptNamePoolCache[text] = list;
+		}
+		return list;
+	}
+
+	private static List<string> BuildPromptNamePool(string cultureId, bool isFemale)
+	{
+		List<string> list = new List<string>();
+		CultureObject cultureObject = ResolvePromptNameCulture(cultureId);
+		IEnumerable<TextObject> enumerable = null;
+		try
+		{
+			enumerable = NameGenerator.Current?.GetNameListForCulture(cultureObject, isFemale)?.ToList();
+		}
+		catch
+		{
+			enumerable = null;
+		}
+		if ((enumerable == null || !enumerable.Any()) && cultureObject != null)
+		{
+			try
+			{
+				enumerable = (isFemale ? cultureObject.FemaleNameList : cultureObject.MaleNameList)?.ToList();
+			}
+			catch
+			{
+				enumerable = null;
+			}
+		}
+		if (enumerable == null)
+		{
+			return list;
+		}
+		foreach (TextObject item in enumerable)
+		{
+			string text = (item?.ToString() ?? "").Trim();
+			if (!string.IsNullOrWhiteSpace(text) && !list.Contains(text, StringComparer.OrdinalIgnoreCase))
+			{
+				list.Add(text);
+			}
+		}
+		return list;
+	}
+
+	private static CultureObject ResolvePromptNameCulture(string cultureId)
+	{
+		string text = (cultureId ?? "").Trim();
+		if (!string.IsNullOrWhiteSpace(text))
+		{
+			try
+			{
+				CultureObject @object = MBObjectManager.Instance?.GetObject<CultureObject>(text);
+				if (@object != null)
+				{
+					return @object;
+				}
+			}
+			catch
+			{
+			}
+			try
+			{
+				CultureObject cultureObject = MBObjectManager.Instance?.GetObjectTypeList<CultureObject>()?.FirstOrDefault((CultureObject c) => c != null && string.Equals((c.StringId ?? "").Trim(), text, StringComparison.OrdinalIgnoreCase));
+				if (cultureObject != null)
+				{
+					return cultureObject;
+				}
+			}
+			catch
+			{
+			}
+		}
+		try
+		{
+			if (Settlement.CurrentSettlement?.Culture != null)
+			{
+				return Settlement.CurrentSettlement.Culture;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (Hero.MainHero?.Culture != null)
+			{
+				return Hero.MainHero.Culture;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			return MBObjectManager.Instance?.GetObjectTypeList<CultureObject>()?.FirstOrDefault((CultureObject c) => c != null);
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static string BuildPromptNameSeed(NpcDataPacket npc)
+	{
+		bool flag = npc != null && npc.IsFemale;
+		return ((npc?.UnnamedKey ?? "").Trim().ToLowerInvariant()) + "|" + ((npc?.TroopId ?? "").Trim().ToLowerInvariant()) + "|" + ((npc?.CultureId ?? "").Trim().ToLowerInvariant()) + "|" + (flag ? "f" : "m") + "|" + ((npc?.AgentIndex ?? 0).ToString(CultureInfo.InvariantCulture));
+	}
+
+	private static int ComputeStablePromptNameHash(string text)
+	{
+		unchecked
+		{
+			int num = 17;
+			string text2 = text ?? "";
+			for (int i = 0; i < text2.Length; i++)
+			{
+				num = num * 31 + text2[i];
+			}
+			return num & int.MaxValue;
+		}
 	}
 
 	private static string ResolveSceneCultureIdWithSettlementFallback(string cultureId, Agent agent, CharacterObject characterObject)

@@ -601,7 +601,7 @@ internal sealed class TtsEngine : IDisposable
 				float num3 = (float)pcmData.Length / ((float)sampleRate * 2f);
 				bool flag3 = job.AgentIndex >= 0;
 				bool flag4 = !flag3 || flag;
-				LogTtsReport("ProcessJob.PlaybackPrepared", job.AgentIndex, $"duration={num3:F2};sampleRate={sampleRate};sceneAgent={flag3};playAudible={flag4}");
+		LogTtsReport("ProcessJob.PlaybackPrepared", job.AgentIndex, $"duration={num3:F2};sampleRate={sampleRate};sceneAgent={flag3};playAudible={flag4}");
 				try
 				{
 					if (job.AgentIndex >= 0 && this.OnAudioFileReady != null)
@@ -650,14 +650,17 @@ internal sealed class TtsEngine : IDisposable
 				catch (Exception ex)
 				{
 					Logger.Log("TtsEngine", "[WARN] Rhubarb 准备失败: " + ex.Message);
+					LogTtsReport("ProcessJob.OnAudioFileReadyFailed", job.AgentIndex, "error=" + ex.Message);
 				}
 				try
 				{
+					LogTtsReport("ProcessJob.OnPlaybackStartedDispatching", job.AgentIndex);
 					this.OnPlaybackStarted?.Invoke(job.AgentIndex);
 					LogTtsReport("ProcessJob.OnPlaybackStartedDispatched", job.AgentIndex);
 				}
-				catch
+				catch (Exception ex2)
 				{
+					LogTtsReport("ProcessJob.OnPlaybackStartedFailed", job.AgentIndex, "error=" + ex2.Message);
 				}
 				try
 				{
@@ -710,11 +713,13 @@ internal sealed class TtsEngine : IDisposable
 				{
 					try
 					{
+						LogTtsReport("ProcessJob.OnPlaybackFinishedDispatching", job.AgentIndex, $"cancelCurrent={_cancelCurrent};stopWorker={_stopWorker}");
 						this.OnPlaybackFinished?.Invoke(job.AgentIndex);
 						LogTtsReport("ProcessJob.OnPlaybackFinishedDispatched", job.AgentIndex, $"cancelCurrent={_cancelCurrent};stopWorker={_stopWorker}");
 					}
-					catch
+					catch (Exception ex3)
 					{
+						LogTtsReport("ProcessJob.OnPlaybackFinishedFailed", job.AgentIndex, "error=" + ex3.Message);
 					}
 					finally
 					{

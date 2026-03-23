@@ -4890,7 +4890,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 				flag3 = true;
 			}
 			string text10 = (string.IsNullOrWhiteSpace(text9) ? (item.Id ?? "相关语义") : text9);
-			stringBuilder.AppendLine("【以下是关于（" + text10 + "）的背景知识，" + text7 + "可酌情参考，但不要假设玩家提起过此话题】");
+			stringBuilder.AppendLine("【以下是关于（" + text10 + "）的背景知识，" + text7 + "可酌情参考作为聊天素材】");
 			stringBuilder.AppendLine(value2);
 		}
 		string text11 = ((num2 > 0) ? stringBuilder.ToString() : "");
@@ -5360,7 +5360,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 				flag3 = true;
 			}
 			string text10 = (string.IsNullOrWhiteSpace(text9) ? (item.Id ?? "相关语义") : text9);
-			stringBuilder.AppendLine("【以下是关于（" + text10 + "）的背景知识，" + text7 + "可酌情参考，但不要假设玩家提起过此话题】");
+			stringBuilder.AppendLine("【以下是关于（" + text10 + "）的背景知识，" + text7 + "可酌情参考作为聊天素材");
 			stringBuilder.AppendLine(value2);
 		}
 		string text11 = ((num2 > 0) ? stringBuilder.ToString() : "");

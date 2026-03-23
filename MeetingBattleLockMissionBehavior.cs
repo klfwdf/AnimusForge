@@ -123,6 +123,12 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior
 
 	private readonly Dictionary<int, Vec3> _meetingMountedHardLockForwards = new Dictionary<int, Vec3>();
 
+	private bool _deferredDetachedFormationRestoreActive;
+
+	private bool _deferredDetachedFormationRestoreApplied;
+
+	private float _deferredDetachedFormationRestoreEarliestTime;
+
 	public override MissionBehaviorType BehaviorType => MissionBehaviorType.Other;
 
 	public MeetingBattleLockMissionBehavior(Hero targetHero)
@@ -172,6 +178,9 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior
 		_meetingTargetEscortAgent = null;
 		_meetingPlayerEscortAgent = null;
 		_meetingFormationManagedAgentIndices.Clear();
+		_deferredDetachedFormationRestoreActive = false;
+		_deferredDetachedFormationRestoreApplied = false;
+		_deferredDetachedFormationRestoreEarliestTime = 0f;
 		ClearMeetingLockAnchors();
 		ClearMeetingDetachedFormations();
 		ClearMeetingMountedHardLocks();
@@ -328,6 +337,7 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior
 			RestoreTargetFormationAfterFormalDuel();
 			if (!_meetingCombatUnlockApplied)
 			{
+				ArmDeferredDetachedFormationRestoreForCombat();
 				EnsureMissionBattleModeForCombat();
 				EnsureMissionCombatTeamRelationships();
 				RestoreTargetLordControllerForCombat();
@@ -343,6 +353,7 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior
 				ResumeAllAIAgents();
 				_combatResumed = true;
 			}
+			TryRestoreDeferredDetachedFormationsAfterCombat();
 			return;
 		}
 		RestoreTargetFormationAfterFormalDuel();
@@ -2641,7 +2652,7 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior
 		catch
 		{
 		}
-		RestoreDetachedFormation(agent);
+		TryRestoreDetachedFormationWhenSafe(agent);
 		ForgetMountedHardLock(agent);
 		try
 		{
@@ -2805,40 +2816,22 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior
 	private void ClearMeetingDetachedFormations()
 	{
 		_meetingDetachedFormations.Clear();
+		_deferredDetachedFormationRestoreActive = false;
+		_deferredDetachedFormationRestoreApplied = false;
+		_deferredDetachedFormationRestoreEarliestTime = 0f;
 	}
 
 	private void DetachAgentFromFormationForMeetingLock(Agent agent)
 	{
-		if (agent == null || !agent.IsActive())
+		if (agent == null)
 		{
 			return;
 		}
-		Formation formation = null;
-		int index;
+		// Keep original formation ownership intact during meeting staging.
+		// This avoids leaving meeting combat with partially reconstructed formation state.
 		try
 		{
-			if (!agent.IsHuman)
-			{
-				return;
-			}
-			index = agent.Index;
-			formation = agent.Formation;
-		}
-		catch
-		{
-			return;
-		}
-		if (formation == null)
-		{
-			return;
-		}
-		if (!_meetingDetachedFormations.ContainsKey(index))
-		{
-			_meetingDetachedFormations[index] = formation;
-		}
-		try
-		{
-			agent.Formation = null;
+			_meetingDetachedFormations.Remove(agent.Index);
 		}
 		catch
 		{
@@ -2880,6 +2873,19 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior
 		}
 	}
 
+	private void TryRestoreDetachedFormationWhenSafe(Agent agent)
+	{
+		if (agent == null)
+		{
+			return;
+		}
+		if (_deferredDetachedFormationRestoreActive && !_deferredDetachedFormationRestoreApplied)
+		{
+			return;
+		}
+		RestoreDetachedFormation(agent);
+	}
+
 	private void RestoreAllDetachedFormations()
 	{
 		if (_meetingDetachedFormations.Count == 0)
@@ -2903,6 +2909,42 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior
 		{
 			_meetingDetachedFormations.Clear();
 		}
+	}
+
+	private void ArmDeferredDetachedFormationRestoreForCombat()
+	{
+		if (base.Mission == null || _meetingDetachedFormations.Count == 0 || _deferredDetachedFormationRestoreApplied || _deferredDetachedFormationRestoreActive)
+		{
+			return;
+		}
+		_deferredDetachedFormationRestoreActive = true;
+		_deferredDetachedFormationRestoreEarliestTime = base.Mission.CurrentTime + 0.3f;
+		Logger.Log("MeetingBattle", $"Deferred detached formation restore armed. Count={_meetingDetachedFormations.Count}, EarliestTime={_deferredDetachedFormationRestoreEarliestTime:0.00}");
+	}
+
+	private void TryRestoreDeferredDetachedFormationsAfterCombat()
+	{
+		if (!_deferredDetachedFormationRestoreActive || _deferredDetachedFormationRestoreApplied || base.Mission == null)
+		{
+			return;
+		}
+		if (_meetingDetachedFormations.Count == 0)
+		{
+			_deferredDetachedFormationRestoreActive = false;
+			_deferredDetachedFormationRestoreApplied = true;
+			_deferredDetachedFormationRestoreEarliestTime = 0f;
+			return;
+		}
+		if (base.Mission.CurrentTime < _deferredDetachedFormationRestoreEarliestTime)
+		{
+			return;
+		}
+		int count = _meetingDetachedFormations.Count;
+		RestoreAllDetachedFormations();
+		_deferredDetachedFormationRestoreActive = false;
+		_deferredDetachedFormationRestoreApplied = true;
+		_deferredDetachedFormationRestoreEarliestTime = 0f;
+		Logger.Log("MeetingBattle", $"Deferred detached formation restore applied. RestoredAgents={count}");
 	}
 
 	private void ForgetMeetingLockAnchor(Agent agent)
@@ -2991,7 +3033,7 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior
 						agent.DisableScriptedMovement();
 						agent.ClearTargetFrame();
 						agent.SetIsAIPaused(isPaused: false);
-						RestoreDetachedFormation(agent);
+						TryRestoreDetachedFormationWhenSafe(agent);
 					}
 				}
 				catch
@@ -3015,7 +3057,10 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior
 		catch
 		{
 		}
-		RestoreAllDetachedFormations();
+		if (!(_deferredDetachedFormationRestoreActive && !_deferredDetachedFormationRestoreApplied))
+		{
+			RestoreAllDetachedFormations();
+		}
 		ClearMeetingLockAnchors();
 		ClearMeetingMountedHardLocks();
 	}
@@ -3072,9 +3117,12 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior
 					{
 						agent3 = null;
 					}
-					if (agent3 != null && agent3.IsActive() && agent3 != agent && agent3 != agent2 && ReleaseSingleAgentFromMeetingLock(agent3))
+					if (agent3 != null && agent3.IsActive() && agent3 != agent && agent3 != agent2)
 					{
-						num++;
+						if (ReleaseSingleAgentFromMeetingLock(agent3))
+						{
+							num++;
+						}
 					}
 				}
 			}
@@ -3143,7 +3191,7 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior
 		{
 		}
 		ForgetMountedHardLock(agent);
-		RestoreDetachedFormation(agent);
+		TryRestoreDetachedFormationWhenSafe(agent);
 		ForgetMeetingLockAnchor(agent);
 		return result;
 	}

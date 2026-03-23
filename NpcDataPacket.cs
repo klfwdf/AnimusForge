@@ -25,4 +25,8 @@ public class NpcDataPacket
 	public bool IsFemale;
 
 	public float Age;
+
+	public string PromptGivenName;
+
+	public string PromptDisplayName;
 }

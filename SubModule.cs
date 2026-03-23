@@ -163,11 +163,19 @@ public class SubModule : MBSubModuleBase
 			{
 				Logger.LogTrace("SubModule", ">>> SceneTauntFightAutoEndDelayPatch init failed: " + ex16.Message);
 			}
+			try
+			{
+				BannerlordExceptionSentinel.Initialize(harmony);
+			}
+			catch (Exception ex17)
+			{
+				Logger.LogTrace("SubModule", ">>> BannerlordExceptionSentinel init failed: " + ex17.Message);
+			}
 			Logger.LogTrace("SubModule", ">>> Harmony patches applied.");
 		}
-		catch (Exception ex17)
+		catch (Exception ex18)
 		{
-			Logger.LogTrace("SubModule", ">>> Harmony patch bootstrap failed: " + ex17);
+			Logger.LogTrace("SubModule", ">>> Harmony patch bootstrap failed: " + ex18);
 		}
 		AIConfigHandler.ReloadConfig();
 		try
@@ -175,9 +183,9 @@ public class SubModule : MBSubModuleBase
 			TtsEngine.Instance.Initialize();
 			Logger.LogTrace("SubModule", ">>> Online TTS engine initialized.");
 		}
-		catch (Exception ex18)
+		catch (Exception ex19)
 		{
-			Logger.LogTrace("SubModule", ">>> TTS engine initialization failed (non-fatal): " + ex18.Message);
+			Logger.LogTrace("SubModule", ">>> TTS engine initialization failed (non-fatal): " + ex19.Message);
 		}
 	}
 
@@ -201,6 +209,7 @@ public class SubModule : MBSubModuleBase
 
 	protected override void OnApplicationTick(float dt)
 	{
+		BannerlordExceptionSentinel.OnApplicationTick();
 		ModOnboardingBehavior.Instance?.OnEngineTick();
 		DuelBehavior.Instance?.OnEngineTick();
 		AnimusForgeTerminalBehavior.Instance?.OnEngineTick();

@@ -67,9 +67,65 @@ public class FloatingTextMissionView : MissionView
 
 	private const float SCREEN_ANCHOR_VERTICAL_PADDING = 18f;
 
+	private bool _typingPaused = false;
+
 	public bool IsBubbleReady()
 	{
 		return _isInitialized && _layer != null && _dataSource != null;
+	}
+
+	public void SetTypingPaused(bool paused)
+	{
+		_typingPaused = paused;
+	}
+
+	public void StopTypingForAll(bool fadeSoon = false)
+	{
+		List<Agent> list = new List<Agent>();
+		foreach (KeyValuePair<Agent, FloatingTextItemState> agentState in _agentStates)
+		{
+			Agent key = agentState.Key;
+			FloatingTextItemState value = agentState.Value;
+			if (value == null)
+			{
+				if (key != null)
+				{
+					list.Add(key);
+				}
+				continue;
+			}
+			StopTypingForState(value, fadeSoon);
+			if (string.IsNullOrWhiteSpace(value.CurrentDisplayedText) && string.IsNullOrWhiteSpace(value.FullTargetText) && key != null)
+			{
+				list.Add(key);
+			}
+		}
+		foreach (Agent item in list)
+		{
+			RemoveItem(item);
+		}
+	}
+
+	private void StopTypingForState(FloatingTextItemState state, bool fadeSoon)
+	{
+		if (state == null)
+		{
+			return;
+		}
+		string text = state.CurrentDisplayedText ?? "";
+		state.FullTargetText = text;
+		state.CurrentDisplayedText = text;
+		state.TypingTimer = 0f;
+		if (state.VM != null)
+		{
+			state.VM.Text = text;
+		}
+		UpdateBubbleWidth(state);
+		if (fadeSoon)
+		{
+			state.IsFading = true;
+			state.Lifetime = Math.Max(state.Lifetime, Math.Max(0f, state.MaxLifetime - 0.35f));
+		}
 	}
 
 	private MissionScreen GetMissionScreen()
@@ -189,7 +245,7 @@ public class FloatingTextMissionView : MissionView
 				list.Add(agent);
 				continue;
 			}
-			if (value.CurrentDisplayedText.Length < value.FullTargetText.Length)
+			if (!_typingPaused && value.CurrentDisplayedText.Length < value.FullTargetText.Length)
 			{
 				value.TypingTimer += dt;
 				while (value.TypingTimer >= value.TypingInterval)
@@ -204,7 +260,7 @@ public class FloatingTextMissionView : MissionView
 				UpdateBubbleWidth(value);
 				value.Lifetime = 0f;
 			}
-			else
+			else if (!_typingPaused)
 			{
 				value.Lifetime += dt;
 			}

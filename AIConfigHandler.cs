@@ -1894,6 +1894,13 @@ public static class AIConfigHandler
 			Logger.Log("GuardrailSemantic", $"rule={ruleTag} hit={eval.Hit} mode={eval.MatchMode} raw={eval.RawInput:0.000} ctx={eval.RawContext:0.000} mixed={eval.MixedRaw:0.000} rerank={eval.RerankScore:0.000} amp={eval.AmpScore:0.000} delta={eval.Delta:0.000} topGap={eval.TopGap:0.000} rank={eval.Rank} candidate={eval.Candidate} other={eval.MaxOtherTag}@{eval.MaxOther:0.000} mean={eval.Mean:0.000} absHit={eval.AbsHit} relHit={eval.RelHit} highAmpHit={eval.HighAmpHit} forceHit={eval.ForceHit} intentEvidence={eval.IntentEvidence:0.000} intentGate={eval.IntentGate:0.000} lexicalAnchor={eval.LexicalAnchor} intentSeed={eval.IntentSeed} reason={eval.RejectReason} intent={text2}");
 			return eval.Hit;
 		}
+		if (TryLexicalRuleKeywordHit(input, secondaryInput, triggerKeywords, out var lexicalKeyword))
+		{
+			matchedKeyword = lexicalKeyword;
+			score = 1f;
+			Logger.Log("GuardrailSemantic", $"rule={ruleTag} hit=True mode=lexical_fallback matched={lexicalKeyword}");
+			return true;
+		}
 		Logger.Log("GuardrailSemantic", "rule=" + ruleTag + " hit=False mode=semantic_unavailable");
 		try
 		{
@@ -1962,6 +1969,95 @@ public static class AIConfigHandler
 		return list;
 	}
 
+	private static bool TryLexicalRuleKeywordHit(string input, string secondaryInput, List<string> triggerKeywords, out string matchedKeyword)
+	{
+		matchedKeyword = "";
+		try
+		{
+			if (triggerKeywords == null || triggerKeywords.Count <= 0)
+			{
+				return false;
+			}
+			string text = NormalizeSemanticText(input);
+			string text2 = NormalizeSemanticText(secondaryInput);
+			if (string.IsNullOrWhiteSpace(text) && string.IsNullOrWhiteSpace(text2))
+			{
+				return false;
+			}
+			for (int i = 0; i < triggerKeywords.Count; i++)
+			{
+				string text3 = NormalizeSemanticText(triggerKeywords[i]);
+				if (string.IsNullOrWhiteSpace(text3))
+				{
+					continue;
+				}
+				if ((!string.IsNullOrWhiteSpace(text) && text.IndexOf(text3, StringComparison.OrdinalIgnoreCase) >= 0) || (!string.IsNullOrWhiteSpace(text2) && text2.IndexOf(text3, StringComparison.OrdinalIgnoreCase) >= 0))
+				{
+					matchedKeyword = text3;
+					return true;
+				}
+			}
+		}
+		catch
+		{
+		}
+		return false;
+	}
+
+	private static List<GuardrailRuleHit> GetGuardrailLexicalRuleHits(string input, string secondaryInput, int maxCount = 0, bool includeBuiltInRules = false)
+	{
+		List<GuardrailRuleHit> list = new List<GuardrailRuleHit>();
+		try
+		{
+			int num = ((maxCount > 0) ? ClampGuardrailReturnCap(maxCount) : GuardrailRuleReturnCap);
+			Dictionary<string, GuardrailRulePromptConfig> dictionary = BuildRulePromptRegistry();
+			if (dictionary == null || dictionary.Count <= 0)
+			{
+				return list;
+			}
+			foreach (GuardrailRulePromptConfig value in dictionary.Values)
+			{
+				string text = (value?.Id ?? "").Trim().ToLowerInvariant();
+				if (value == null || !value.IsEnabled || string.IsNullOrWhiteSpace(text) || (!includeBuiltInRules && IsBuiltInRuleTag(text)))
+				{
+					continue;
+				}
+				if (!TryLexicalRuleKeywordHit(input, secondaryInput, value.TriggerKeywords, out var matchedKeyword))
+				{
+					continue;
+				}
+				string text2 = (value.Instruction ?? "").Trim();
+				if (!string.IsNullOrWhiteSpace(text2))
+				{
+					list.Add(new GuardrailRuleHit
+					{
+						RuleId = text,
+						Group = (value.Group ?? ""),
+						Priority = value.Priority,
+						Score = 1f,
+						MatchedSeed = matchedKeyword,
+						Instruction = text2
+					});
+				}
+			}
+			list = (from x in list
+				orderby x.Priority descending, x.Score descending
+				select x).ThenBy((GuardrailRuleHit x) => x.RuleId, StringComparer.OrdinalIgnoreCase).ToList();
+			if (num > 0 && list.Count > num)
+			{
+				list = list.Take(num).ToList();
+			}
+			if (list.Count > 0)
+			{
+				Logger.Log("GuardrailSemantic", $"lexical_rule_fallback count={list.Count} input={NormalizeSemanticText(input)}");
+			}
+		}
+		catch
+		{
+		}
+		return list;
+	}
+
 	public static string BuildMatchedExtraRuleInstructions(string input, int maxRules = 0)
 	{
 		return BuildMatchedExtraRuleInstructions(input, null, maxRules, hasAnyHero: true);
@@ -1977,6 +2073,10 @@ public static class AIConfigHandler
 		try
 		{
 			List<GuardrailRuleHit> guardrailSemanticRuleHits = GetGuardrailSemanticRuleHits(input, secondaryInput, maxRules);
+			if (guardrailSemanticRuleHits == null || guardrailSemanticRuleHits.Count <= 0)
+			{
+				guardrailSemanticRuleHits = GetGuardrailLexicalRuleHits(input, secondaryInput, maxRules);
+			}
 			if (guardrailSemanticRuleHits == null || guardrailSemanticRuleHits.Count <= 0)
 			{
 				return "";

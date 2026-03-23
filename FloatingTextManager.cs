@@ -185,7 +185,7 @@ public class FloatingTextManager
 				_pendingContent.Clear();
 
 				// 兼容 AI 输出“角色名 内容”（缺少冒号）的情况，避免整行被误判或丢弃。
-				string text5 = StripSpeakerPrefix(text, npcDataPacket.Name);
+				string text5 = StripSpeakerPrefix(text, npcDataPacket);
 				if (!string.Equals(text5, text, StringComparison.Ordinal))
 				{
 					string text6 = CleanContent(text5);
@@ -306,6 +306,20 @@ public class FloatingTextManager
 		return text;
 	}
 
+	private static string StripSpeakerPrefix(string rawLine, NpcDataPacket npc)
+	{
+		string text = (rawLine ?? "").Trim();
+		foreach (string candidateNameVariant in GetCandidateNameVariants(npc))
+		{
+			string text2 = StripSpeakerPrefix(text, candidateNameVariant);
+			if (!string.Equals(text2, text, StringComparison.Ordinal))
+			{
+				return text2;
+			}
+		}
+		return text;
+	}
+
 	private NpcDataPacket PickWithRoundRobin(List<NpcDataPacket> matches, string key, bool advanceRoundRobin)
 	{
 		if (matches == null || matches.Count == 0)
@@ -346,16 +360,19 @@ public class FloatingTextManager
 			{
 				continue;
 			}
-			string normName = NormalizeSpeakerToken(currentCandidate.Name ?? "");
-			if (string.IsNullOrWhiteSpace(normName))
+			foreach (string candidateNameVariant in GetCandidateNameVariants(currentCandidate))
 			{
-				continue;
+				string normName = NormalizeSpeakerToken(candidateNameVariant);
+				if (string.IsNullOrWhiteSpace(normName))
+				{
+					continue;
+				}
+				normalizedCandidates.Add(new CandidateNameEntry
+				{
+					Npc = currentCandidate,
+					NormName = normName
+				});
 			}
-			normalizedCandidates.Add(new CandidateNameEntry
-			{
-				Npc = currentCandidate,
-				NormName = normName
-			});
 		}
 
 		List<NpcDataPacket> exactMatches = new List<NpcDataPacket>();
@@ -445,9 +462,10 @@ public class FloatingTextManager
 		}
 		List<string> list2 = (from n in _currentCandidates
 			where n != null
-			select (n.Name ?? "").Trim() into n
-			where !string.IsNullOrWhiteSpace(n)
-			select n).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+			from alias in GetCandidateNameVariants(n)
+			let normalizedAlias = (alias ?? "").Trim()
+			where !string.IsNullOrWhiteSpace(normalizedAlias)
+			select normalizedAlias).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
 		if (list2.Count == 0)
 		{
 			list.Add(text);
@@ -535,6 +553,29 @@ public class FloatingTextManager
 		public NpcDataPacket Npc;
 
 		public string NormName;
+	}
+
+	private static IEnumerable<string> GetCandidateNameVariants(NpcDataPacket npc)
+	{
+		if (npc == null)
+		{
+			yield break;
+		}
+		HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		string[] array = new string[3]
+		{
+			npc.Name,
+			npc.PromptGivenName,
+			npc.PromptDisplayName
+		};
+		for (int i = 0; i < array.Length; i++)
+		{
+			string text = (array[i] ?? "").Trim();
+			if (!string.IsNullOrWhiteSpace(text) && hashSet.Add(text))
+			{
+				yield return text;
+			}
+		}
 	}
 
 	private static string CleanContent(string text)

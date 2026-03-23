@@ -57,6 +57,12 @@ public class SceneTauntBehavior : CampaignBehaviorBase
 
 	private static PartyBase _pendingLocalDungeonCaptivityParty;
 
+	private static bool _pendingMainHeroBattleDeath;
+
+	private static string _pendingMainHeroBattleDeathKillerHeroId = "";
+
+	private static long _pendingMainHeroBattleDeathRequestUtcTicks;
+
 	private readonly Dictionary<Hero, Hero> _pendingSceneNotableBattleDeaths = new Dictionary<Hero, Hero>();
 
 	private Dictionary<string, float> _pendingDeferredCrimeByFaction = new Dictionary<string, float>(StringComparer.OrdinalIgnoreCase);
@@ -256,6 +262,10 @@ public class SceneTauntBehavior : CampaignBehaviorBase
 			{
 				mission2.AddMissionBehavior(new SceneTauntConsequenceMissionLogic());
 			}
+			if (mission2.GetMissionBehavior<SceneTauntPlayerDeathAgentStateDeciderLogic>() == null)
+			{
+				mission2.AddMissionBehavior(new SceneTauntPlayerDeathAgentStateDeciderLogic());
+			}
 		}
 		catch (Exception ex)
 		{
@@ -265,6 +275,10 @@ public class SceneTauntBehavior : CampaignBehaviorBase
 
 	private void OnCampaignTick(float dt)
 	{
+		if (TryCommitPendingMainHeroBattleDeath())
+		{
+			return;
+		}
 		if (TryCommitPendingForcedPlayerExecution())
 		{
 			return;
@@ -282,12 +296,14 @@ public class SceneTauntBehavior : CampaignBehaviorBase
 
 	private void OnGameMenuOpened(MenuCallbackArgs args)
 	{
+		TryCommitPendingMainHeroBattleDeath();
 		TryCommitPendingForcedPlayerExecution();
 		TryCommitDeferredCrimeWhenBackOnWorldMap();
 	}
 
 	private void OnDailyTick()
 	{
+		TryCommitPendingMainHeroBattleDeath();
 		TryCommitDeferredCrimeWhenBackOnWorldMap();
 	}
 
@@ -326,6 +342,7 @@ public class SceneTauntBehavior : CampaignBehaviorBase
 		{
 			_pendingDeferredCrimeByFaction?.Clear();
 			_crimeRefillReserveByFaction?.Clear();
+			ClearPendingMainHeroBattleDeath("main_character_died");
 			Logger.Log("SceneTaunt", $"Cleared scene-taunt crime tracking after main hero death. Detail={detail}");
 		}
 		catch (Exception ex)
@@ -424,6 +441,64 @@ public class SceneTauntBehavior : CampaignBehaviorBase
 			{
 				Logger.Log("SceneTaunt", "Committing deferred scene notable battle death failed: " + ex.Message);
 			}
+		}
+	}
+
+	private bool TryCommitPendingMainHeroBattleDeath()
+	{
+		if (!_pendingMainHeroBattleDeath)
+		{
+			return false;
+		}
+		try
+		{
+			if (Hero.MainHero == null || !Hero.MainHero.IsAlive)
+			{
+				ClearPendingMainHeroBattleDeath("main_hero_not_alive");
+				return false;
+			}
+			if (Mission.Current != null || Game.Current?.GameStateManager?.ActiveState is MissionState || Campaign.Current == null)
+			{
+				return true;
+			}
+			bool flag = false;
+			try
+			{
+				flag = Campaign.Current.ConversationManager?.OneToOneConversationAgent != null;
+			}
+			catch
+			{
+			}
+			if (flag)
+			{
+				return true;
+			}
+			bool flag2 = false;
+			try
+			{
+				string text = (Game.Current?.GameStateManager?.ActiveState)?.GetType()?.FullName ?? string.Empty;
+				flag2 = !string.IsNullOrEmpty(text) && text.IndexOf("MapState", StringComparison.OrdinalIgnoreCase) >= 0;
+			}
+			catch
+			{
+				flag2 = false;
+			}
+			if (!flag2)
+			{
+				return true;
+			}
+			Hero hero = ResolveHeroById(_pendingMainHeroBattleDeathKillerHeroId);
+			ClearPendingMainHeroBattleDeath("committed");
+			ClearPendingLocalDungeonCaptivityForExternal("scene_taunt_battle_death_committed");
+			ClearArmedCarryoverForExternal("scene_taunt_battle_death_committed");
+			KillCharacterAction.ApplyByBattle(Hero.MainHero, hero);
+			Logger.Log("SceneTaunt", $"Committed pending scene-taunt main hero battle death. Killer={hero?.Name}");
+			return true;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SceneTaunt", "Committing pending scene-taunt main hero battle death failed: " + ex.Message);
+			return true;
 		}
 	}
 
@@ -1189,12 +1264,33 @@ public class SceneTauntBehavior : CampaignBehaviorBase
 		}
 	}
 
+	internal static void QueuePendingMainHeroBattleDeathForExternal(Hero killer, string reason)
+	{
+		string text = (killer?.StringId ?? "").Trim();
+		_pendingMainHeroBattleDeath = true;
+		if (!string.IsNullOrWhiteSpace(text))
+		{
+			_pendingMainHeroBattleDeathKillerHeroId = text;
+		}
+		_pendingMainHeroBattleDeathRequestUtcTicks = DateTime.UtcNow.Ticks;
+		Instance?.ClearPendingForcedPlayerExecution("scene_taunt_battle_death");
+		Logger.Log("SceneTaunt", $"Marked pending scene-taunt main hero battle death. Killer={killer?.Name}, Reason={reason ?? "N/A"}");
+	}
+
 	private void ClearPendingForcedPlayerExecution(string reason)
 	{
 		_pendingForcedPlayerExecution = false;
 		_pendingForcedPlayerExecutionExecutorHeroId = "";
 		_pendingForcedPlayerExecutionMenuId = "";
 		Logger.Log("SceneTaunt", "Cleared pending forced player execution. Reason=" + (reason ?? "N/A"));
+	}
+
+	private void ClearPendingMainHeroBattleDeath(string reason)
+	{
+		_pendingMainHeroBattleDeath = false;
+		_pendingMainHeroBattleDeathKillerHeroId = "";
+		_pendingMainHeroBattleDeathRequestUtcTicks = 0L;
+		Logger.Log("SceneTaunt", "Cleared pending scene-taunt main hero battle death. Reason=" + (reason ?? "N/A"));
 	}
 
 	private static IFaction ResolveFactionById(string factionId)
@@ -1790,6 +1886,12 @@ public class SceneTauntMissionBehavior : MissionBehavior
 
 	private bool _baseConsequencesApplied;
 
+	private bool _pendingPlayerBattleDeathAfterMission;
+
+	private bool _pendingPlayerBattleDeathDecisionCaptured;
+
+	private Hero _pendingPlayerBattleDeathKiller;
+
 	private float _appliedCrimeRatingAmount;
 
 	private bool _armedDefeatWasCriminalConflict;
@@ -2310,6 +2412,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			{
 				ShoutBehavior.CancelAgentSpeechForRemovalExternal(affectedAgent.Index, "scene_taunt_agent_removed_" + agentState);
 			}
+			TryQueuePendingPlayerBattleDeathOutcome(affectedAgent, affectorAgent, agentState);
 			TryApplyNativeAlleyNpcKnockdownConsequences(affectedAgent, affectorAgent, agentState);
 			if (!_conflictActive || affectedAgent == null || !affectedAgent.IsHuman)
 			{
@@ -3104,7 +3207,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 
 	internal bool ShouldSendPlayerToLocalDungeonOnDefeat()
 	{
-		if (_armedDefeatOutcomeHandled || !_armedConflictOccurredThisConflict)
+		if (_armedDefeatOutcomeHandled || !_armedConflictOccurredThisConflict || ShouldCommitPlayerBattleDeathAfterMission())
 		{
 			return false;
 		}
@@ -3121,6 +3224,44 @@ public class SceneTauntMissionBehavior : MissionBehavior
 	internal void MarkPlayerDefeatOutcomeHandled()
 	{
 		_armedDefeatOutcomeHandled = true;
+	}
+
+	internal bool TryUseSafeMainHeroDefeatState(Agent effectedAgent, float deathProbability, out AgentState result)
+	{
+		result = AgentState.Unconscious;
+		try
+		{
+			if (!_conflictActive || (!_armedConflict && !_armedConflictOccurredThisConflict) || effectedAgent == null || !effectedAgent.IsMainAgent)
+			{
+				return false;
+			}
+			if (!_pendingPlayerBattleDeathDecisionCaptured)
+			{
+				_pendingPlayerBattleDeathAfterMission = RollDeferredPlayerBattleDeath(deathProbability);
+				_pendingPlayerBattleDeathDecisionCaptured = true;
+				Logger.Log("SceneTaunt", $"Deferred main hero defeat state inside mission. PendingBattleDeath={_pendingPlayerBattleDeathAfterMission}, DeathProbability={MathF.Max(0f, MathF.Min(1f, deathProbability)):0.###}");
+			}
+			return true;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SceneTaunt", "Deferring main hero defeat state failed: " + ex.Message);
+			return false;
+		}
+	}
+
+	internal bool ShouldCommitPlayerBattleDeathAfterMission()
+	{
+		return _pendingPlayerBattleDeathAfterMission && _armedConflictOccurredThisConflict;
+	}
+
+	internal void EnsurePendingPlayerBattleDeathQueued(string reason)
+	{
+		if (!ShouldCommitPlayerBattleDeathAfterMission())
+		{
+			return;
+		}
+		SceneTauntBehavior.QueuePendingMainHeroBattleDeathForExternal(_pendingPlayerBattleDeathKiller, reason);
 	}
 
 	internal bool WasLastArmedDefeatCriminalConflict()
@@ -5492,6 +5633,9 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		_penalizedArmedKnockdownAgentIndices.Clear();
 		if (!preserveArmedDefeatState)
 		{
+			_pendingPlayerBattleDeathAfterMission = false;
+			_pendingPlayerBattleDeathDecisionCaptured = false;
+			_pendingPlayerBattleDeathKiller = null;
 			_armedConflictOccurredThisConflict = false;
 			_armedDefeatOutcomeHandled = false;
 			_armedDefeatWasCriminalConflict = false;
@@ -5552,6 +5696,89 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			return false;
 		}
 	}
+
+	private static bool RollDeferredPlayerBattleDeath(float deathProbability)
+	{
+		float num = deathProbability;
+		if (num < 0f)
+		{
+			num = 0f;
+		}
+		if (num > 1f)
+		{
+			num = 1f;
+		}
+		return MBRandom.RandomFloat <= num;
+	}
+
+	private void TryQueuePendingPlayerBattleDeathOutcome(Agent affectedAgent, Agent affectorAgent, AgentState agentState)
+	{
+		try
+		{
+			if (!_conflictActive || affectedAgent == null || !affectedAgent.IsMainAgent)
+			{
+				return;
+			}
+			if (agentState != AgentState.Killed && agentState != AgentState.Unconscious)
+			{
+				return;
+			}
+			Hero hero = null;
+			try
+			{
+				hero = ((affectorAgent?.Character is CharacterObject characterObject) ? characterObject.HeroObject : null);
+			}
+			catch
+			{
+			}
+			if (hero == null && affectorAgent == Agent.Main)
+			{
+				hero = Hero.MainHero;
+			}
+			if (hero != null)
+			{
+				_pendingPlayerBattleDeathKiller = hero;
+			}
+			if (!_armedConflictOccurredThisConflict || !_pendingPlayerBattleDeathAfterMission)
+			{
+				return;
+			}
+			SceneTauntBehavior.QueuePendingMainHeroBattleDeathForExternal(_pendingPlayerBattleDeathKiller, agentState == AgentState.Killed ? "scene_taunt_player_killed" : "scene_taunt_player_unconscious_deathmark");
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SceneTaunt", "Queueing pending player battle death outcome failed: " + ex.Message);
+		}
+	}
+}
+
+public sealed class SceneTauntPlayerDeathAgentStateDeciderLogic : MissionLogic, IAgentStateDecider, IMissionBehavior
+{
+	public AgentState GetAgentState(Agent effectedAgent, float deathProbability, out bool usedSurgery)
+	{
+		usedSurgery = false;
+		try
+		{
+			SceneTauntMissionBehavior missionBehavior = Mission.Current?.GetMissionBehavior<SceneTauntMissionBehavior>();
+			if (missionBehavior != null && missionBehavior.TryUseSafeMainHeroDefeatState(effectedAgent, deathProbability, out var result))
+			{
+				return result;
+			}
+		}
+		catch
+		{
+		}
+		float num = deathProbability;
+		if (num < 0f)
+		{
+			num = 0f;
+		}
+		if (num > 1f)
+		{
+			num = 1f;
+		}
+		return (MBRandom.RandomFloat <= num) ? AgentState.Killed : AgentState.Unconscious;
+	}
 }
 
 public class SceneTauntConsequenceMissionLogic : MissionLogic
@@ -5575,7 +5802,26 @@ public class SceneTauntConsequenceMissionLogic : MissionLogic
 	public override void OnMissionTick(float dt)
 	{
 		SceneTauntMissionBehavior missionBehavior = Mission.Current?.GetMissionBehavior<SceneTauntMissionBehavior>();
-		if (missionBehavior == null || !missionBehavior.ShouldSendPlayerToLocalDungeonOnDefeat())
+		if (missionBehavior == null)
+		{
+			_pendingDefeatCaptivityAtMissionTime = -1f;
+			return;
+		}
+		if (missionBehavior.ShouldCommitPlayerBattleDeathAfterMission())
+		{
+			if (_pendingDefeatCaptivityAtMissionTime < 0f)
+			{
+				_pendingDefeatCaptivityAtMissionTime = Mission.Current.CurrentTime + 0.2f;
+				return;
+			}
+			if (Mission.Current.CurrentTime < _pendingDefeatCaptivityAtMissionTime)
+			{
+				return;
+			}
+			TryCommitPendingPlayerBattleDeath(missionBehavior);
+			return;
+		}
+		if (!missionBehavior.ShouldSendPlayerToLocalDungeonOnDefeat())
 		{
 			_pendingDefeatCaptivityAtMissionTime = -1f;
 			return;
@@ -5590,6 +5836,31 @@ public class SceneTauntConsequenceMissionLogic : MissionLogic
 			return;
 		}
 		TryCommitLocalDungeonCaptivity(missionBehavior);
+	}
+
+	private void TryCommitPendingPlayerBattleDeath(SceneTauntMissionBehavior missionBehavior)
+	{
+		try
+		{
+			missionBehavior.EnsurePendingPlayerBattleDeathQueued("scene_taunt_defeat_battle_death");
+			SceneTauntBehavior.ClearArmedCarryoverForExternal("scene_taunt_defeat_battle_death");
+			SceneTauntBehavior.ClearPendingLocalDungeonCaptivityForExternal("scene_taunt_defeat_battle_death");
+			missionBehavior.MarkPlayerDefeatOutcomeHandled();
+			try
+			{
+				Mission.Current.NextCheckTimeEndMission = 0f;
+			}
+			catch
+			{
+			}
+			Mission.Current.EndMission();
+			Logger.Log("SceneTaunt", "Player was defeated after scene-taunt armed escalation and will die after mission cleanup.");
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SceneTaunt", "Ending mission for pending player battle death failed: " + ex.Message);
+			missionBehavior.MarkPlayerDefeatOutcomeHandled();
+		}
 	}
 
 	private void TryCommitLocalDungeonCaptivity(SceneTauntMissionBehavior missionBehavior)

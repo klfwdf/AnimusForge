@@ -6456,7 +6456,7 @@ public class MyBehavior : CampaignBehaviorBase
 		StringBuilder stringBuilder = new StringBuilder();
 		string loreContext = "";
 		string loreCtxSource = "none";
-		if (!suppressDynamicRuleAndLore && usePrefetchedLoreContext)
+		if (!suppressDynamicRuleAndLore && usePrefetchedLoreContext && !string.IsNullOrWhiteSpace(prefetchedLoreContext))
 		{
 			loreContext = prefetchedLoreContext ?? "";
 			loreCtxSource = "prefetched";
@@ -6464,12 +6464,12 @@ public class MyBehavior : CampaignBehaviorBase
 		else if (!suppressDynamicRuleAndLore && targetHero != null)
 		{
 			loreContext = AIConfigHandler.GetLoreContext(input, targetHero, npcLastUtterance);
-			loreCtxSource = "hero";
+			loreCtxSource = ((usePrefetchedLoreContext && string.IsNullOrWhiteSpace(prefetchedLoreContext)) ? "prefetch_empty_fallback_hero" : "hero");
 		}
 		else if (!suppressDynamicRuleAndLore && targetCharacter != null)
 		{
 			loreContext = AIConfigHandler.GetLoreContext(input, targetCharacter, kingdomIdOverride, npcLastUtterance);
-			loreCtxSource = "character";
+			loreCtxSource = ((usePrefetchedLoreContext && string.IsNullOrWhiteSpace(prefetchedLoreContext)) ? "prefetch_empty_fallback_character" : "character");
 		}
 		if (targetHero != null)
 		{
@@ -8271,13 +8271,13 @@ public class MyBehavior : CampaignBehaviorBase
 		return snap;
 	}
 
-	private PatienceSnapshot GetUnnamedPatienceSnapshot(string unnamedKey, string npcName)
+	private PatienceSnapshot GetUnnamedPatienceSnapshot(string unnamedKey, string npcName, string displayName = null)
 	{
 		string text = BuildUnnamedPatienceKey(unnamedKey, npcName);
 		PatienceSnapshot result = new PatienceSnapshot
 		{
 			Key = text,
-			DisplayName = (string.IsNullOrWhiteSpace(npcName) ? "NPC" : npcName.Trim()),
+			DisplayName = (string.IsNullOrWhiteSpace(displayName) ? (string.IsNullOrWhiteSpace(npcName) ? "NPC" : npcName.Trim()) : displayName.Trim()),
 			Relation = 0,
 			Trust = 0,
 			PublicTrust = 0,
@@ -8705,11 +8705,11 @@ public class MyBehavior : CampaignBehaviorBase
 		return true;
 	}
 
-	private bool TryGetUnnamedSceneStatus(string unnamedKey, string npcName, out string statusLine, out bool canSpeak)
+	private bool TryGetUnnamedSceneStatus(string unnamedKey, string npcName, string displayName, out string statusLine, out bool canSpeak)
 	{
 		statusLine = "";
 		canSpeak = true;
-		PatienceSnapshot unnamedPatienceSnapshot = GetUnnamedPatienceSnapshot(unnamedKey, npcName);
+		PatienceSnapshot unnamedPatienceSnapshot = GetUnnamedPatienceSnapshot(unnamedKey, npcName, displayName);
 		if (string.IsNullOrWhiteSpace(unnamedPatienceSnapshot.Key))
 		{
 			return false;
@@ -8722,6 +8722,11 @@ public class MyBehavior : CampaignBehaviorBase
 			statusLine += "\n  " + BuildExhaustedPatienceInstruction(includeRelationPenalty: false);
 		}
 		return true;
+	}
+
+	private bool TryGetUnnamedSceneStatus(string unnamedKey, string npcName, out string statusLine, out bool canSpeak)
+	{
+		return TryGetUnnamedSceneStatus(unnamedKey, npcName, null, out statusLine, out canSpeak);
 	}
 
 	private static string BuildScenePatienceInstruction()
@@ -8898,11 +8903,16 @@ public class MyBehavior : CampaignBehaviorBase
 
 	public static bool TryGetSceneUnnamedPatienceStatusForExternal(string unnamedKey, string npcName, out string statusLine, out bool canSpeak)
 	{
+		return TryGetSceneUnnamedPatienceStatusForExternal(unnamedKey, npcName, null, out statusLine, out canSpeak);
+	}
+
+	public static bool TryGetSceneUnnamedPatienceStatusForExternal(string unnamedKey, string npcName, string displayName, out string statusLine, out bool canSpeak)
+	{
 		statusLine = "";
 		canSpeak = true;
 		try
 		{
-			return (Campaign.Current?.GetCampaignBehavior<MyBehavior>())?.TryGetUnnamedSceneStatus(unnamedKey, npcName, out statusLine, out canSpeak) ?? false;
+			return (Campaign.Current?.GetCampaignBehavior<MyBehavior>())?.TryGetUnnamedSceneStatus(unnamedKey, npcName, displayName, out statusLine, out canSpeak) ?? false;
 		}
 		catch
 		{
