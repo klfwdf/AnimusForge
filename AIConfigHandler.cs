@@ -1107,15 +1107,6 @@ public static class AIConfigHandler
 						hashSet.Add(item);
 					}
 				}
-				List<string> builtInIntentAnchorSeeds = GetBuiltInIntentAnchorSeeds(guardrailRulePromptConfig.Id);
-				for (int k = 0; k < builtInIntentAnchorSeeds.Count; k++)
-				{
-					string item2 = NormalizeSemanticText(builtInIntentAnchorSeeds[k]);
-					if (!string.IsNullOrWhiteSpace(item2))
-					{
-						hashSet.Add(item2);
-					}
-				}
 			}
 			num = hashSet.Count;
 			foreach (string item3 in hashSet)
@@ -1243,11 +1234,11 @@ public static class AIConfigHandler
 					return snapshot != null && snapshot.Rules != null && snapshot.Rules.Count > 0;
 				}
 			}
-			appendInputs(SplitGuardrailIntents(userText), 1f);
+			appendInputs(SplitGuardrailIntents(userText, IntentQueryOptimizer.MaxIntentCountPerSpeaker), IntentQueryOptimizer.MaxIntentCountPerSpeaker, 1f);
 			string text2 = NormalizeSemanticText(secondaryText);
 			if (!string.IsNullOrWhiteSpace(text2) && !string.Equals(text2, NormalizeSemanticText(userText), StringComparison.Ordinal))
 			{
-				appendInputs(SplitGuardrailIntents(text2), 0.1f);
+				appendInputs(SplitGuardrailIntents(text2, IntentQueryOptimizer.MaxIntentCountPerSpeaker), IntentQueryOptimizer.MaxIntentCountPerSpeaker, 1f);
 			}
 			if (list.Count <= 0)
 			{
@@ -1333,10 +1324,6 @@ public static class AIConfigHandler
 					}
 				}
 				float num5 = 0f;
-				if (flag)
-				{
-					num5 = (IsBuiltInRuleTag(id) ? 0f : 0.12f);
-				}
 				float mixedRaw = (flag ? (num * (1f - num5) + num2 * num5) : num);
 				GuardrailRuleEval guardrailRuleEval = new GuardrailRuleEval
 				{
@@ -1412,10 +1399,6 @@ public static class AIConfigHandler
 					}
 					float num9 = ((flag && value != null) ? value.RawContext : 0f);
 					float num10 = 0f;
-					if (flag)
-					{
-						num10 = (IsBuiltInRuleTag(id2) ? 0f : 0.12f);
-					}
 					float num11 = (flag ? (num7 * (1f - num10) + num9 * num10) : num7);
 					list5.Add(new GuardrailRuleScore
 					{
@@ -1456,7 +1439,7 @@ public static class AIConfigHandler
 					float num13 = guardrailRuleScore.RawScore;
 					if (flag2 && flag3 && rerankTexts != null && n < rerankTexts.Count && !string.IsNullOrWhiteSpace(rerankTexts[n]) && rerankScores != null && n < rerankScores.Count)
 					{
-						num13 = rerankScores[n];
+						num13 = rerankScores[n] * Math.Max(0f, guardrailIntentInput.Weight);
 					}
 					list7.Add(new GuardrailRuleScore
 					{
@@ -1580,18 +1563,11 @@ public static class AIConfigHandler
 					}
 				}
 				float num26 = guardrailRuleEval3.Candidate ? guardrailRuleEval3.AmpScore : guardrailRuleEval3.MixedRaw;
-				GuardrailGateProfile guardrailGateProfile = GetGuardrailGateProfile(guardrailRuleEval3.RuleTag, userText.Length);
 				float delta = ((num23 < -0.5f) ? num26 : (num26 - num23));
 				float num27 = 0f;
 				float num28 = 0f;
 				string bestSeed = "";
 				bool lexicalAnchor = false;
-				if (IsBuiltInRuleTag(guardrailRuleEval3.RuleTag))
-				{
-					num28 = GetBuiltInIntentEvidenceGate(guardrailRuleEval3.RuleTag, userText.Length);
-					num27 = ComputeBuiltInIntentSemanticEvidence(guardrailRuleEval3.RuleTag, list, out bestSeed);
-					lexicalAnchor = num27 >= num28;
-				}
 				bool flag3 = guardrailRuleEval3.Candidate && guardrailRuleEval3.Rank <= guardrailReturnCapFromMcm;
 				string rejectReason = (flag3 ? (text4 + "_return(" + guardrailRuleEval3.Rank + "/" + guardrailReturnCapFromMcm + ")") : (guardrailRuleEval3.Candidate ? (text4 + "_return_overflow") : (text4 + "_recall_miss")));
 				guardrailRuleEval3.MaxOther = num23;
@@ -1657,12 +1633,13 @@ public static class AIConfigHandler
 			return false;
 		}
 
-		void appendInputs(List<string> intents, float weight)
+		void appendInputs(List<string> intents, int perSourceLimit, float weight)
 		{
-			if (intents == null || intents.Count <= 0 || weight <= 0f)
+			if (intents == null || intents.Count <= 0 || weight <= 0f || perSourceLimit <= 0)
 			{
 				return;
 			}
+			int num = 0;
 			for (int i = 0; i < intents.Count; i++)
 			{
 				if (list.Count >= IntentQueryOptimizer.MaxCombinedIntentCount)
@@ -1672,6 +1649,11 @@ public static class AIConfigHandler
 				string text4 = NormalizeSemanticText(intents[i]);
 				if (!string.IsNullOrWhiteSpace(text4) && TryGetInputEmbedding(text4, out var vec) && vec != null && vec.Length != 0)
 				{
+					num++;
+					if (num > perSourceLimit)
+					{
+						break;
+					}
 					list2.Add(text4);
 					list.Add(new GuardrailIntentInput
 					{

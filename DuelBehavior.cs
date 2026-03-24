@@ -608,6 +608,10 @@ public class DuelBehavior : CampaignBehaviorBase
 
 	private bool _hasPreDuelPlayerState;
 
+	private Team _preDuelPlayerMountTeam;
+
+	private Team _preDuelTargetMountTeam;
+
 	private bool _currentDuelIsArena;
 
 	private bool _meetingPreFightActive;
@@ -1596,6 +1600,131 @@ public class DuelBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private bool TryInitializeFormalDuelTeams(Mission current, Agent targetAgent)
+	{
+		if (current == null || Agent.Main == null || targetAgent == null)
+		{
+			return false;
+		}
+		if (_currentDuelIsArena)
+		{
+			_duelPlayerTeam = Agent.Main.Team ?? current.PlayerTeam;
+			_duelEnemyTeam = targetAgent.Team;
+			return _duelPlayerTeam != null && _duelEnemyTeam != null && _duelPlayerTeam != _duelEnemyTeam;
+		}
+		uint color = Hero.MainHero?.MapFaction?.Color ?? 4278190335u;
+		uint color2 = Hero.MainHero?.MapFaction?.Color2 ?? 4278190208u;
+		Banner banner = Hero.MainHero?.Clan?.Banner;
+		uint color3 = (_targetHero?.MapFaction?.Color ?? 4294901760u);
+		uint color4 = (_targetHero?.MapFaction?.Color2 ?? 4286578688u);
+		Banner banner2 = _targetHero?.Clan?.Banner;
+		try
+		{
+			_duelPlayerTeam = current.Teams.Add(BattleSideEnum.Attacker, color, color2, banner, isPlayerGeneral: true, isPlayerSergeant: false);
+			_duelEnemyTeam = current.Teams.Add(BattleSideEnum.Defender, color3, color4, banner2, isPlayerGeneral: false, isPlayerSergeant: true);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("DuelBehavior", "[FormalDuel][ERROR] 创建临时决斗队伍失败: " + ex.Message);
+			_duelPlayerTeam = null;
+			_duelEnemyTeam = null;
+			return false;
+		}
+		if (_duelPlayerTeam == null || _duelEnemyTeam == null || _duelPlayerTeam == _duelEnemyTeam)
+		{
+			Logger.Log("DuelBehavior", "[FormalDuel][ERROR] 临时决斗队伍无效。");
+			return false;
+		}
+		try
+		{
+			current.PlayerTeam = _duelPlayerTeam;
+		}
+		catch
+		{
+		}
+		try
+		{
+			Agent.Main.SetTeam(_duelPlayerTeam, sync: true);
+		}
+		catch
+		{
+		}
+		try
+		{
+			Agent mainMount = Agent.Main.MountAgent;
+			if (mainMount != null && mainMount.IsActive())
+			{
+				mainMount.SetTeam(_duelPlayerTeam, sync: true);
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			targetAgent.SetTeam(_duelEnemyTeam, sync: true);
+		}
+		catch
+		{
+		}
+		try
+		{
+			Agent targetMount = targetAgent.MountAgent;
+			if (targetMount != null && targetMount.IsActive())
+			{
+				targetMount.SetTeam(_duelEnemyTeam, sync: true);
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			foreach (Team team in current.Teams)
+			{
+				if (team == null || team == _duelPlayerTeam || team == _duelEnemyTeam)
+				{
+					continue;
+				}
+				try
+				{
+					team.SetIsEnemyOf(_duelPlayerTeam, isEnemyOf: false);
+				}
+				catch
+				{
+				}
+				try
+				{
+					_duelPlayerTeam.SetIsEnemyOf(team, isEnemyOf: false);
+				}
+				catch
+				{
+				}
+				try
+				{
+					team.SetIsEnemyOf(_duelEnemyTeam, isEnemyOf: false);
+				}
+				catch
+				{
+				}
+				try
+				{
+					_duelEnemyTeam.SetIsEnemyOf(team, isEnemyOf: false);
+				}
+				catch
+				{
+				}
+			}
+			_duelEnemyTeam.SetIsEnemyOf(_duelPlayerTeam, isEnemyOf: true);
+			_duelPlayerTeam.SetIsEnemyOf(_duelEnemyTeam, isEnemyOf: true);
+		}
+		catch
+		{
+		}
+		Logger.Log("DuelBehavior", "[FormalDuel] 已创建临时决斗队伍，非决斗参与者与双方中立。");
+		return true;
+	}
+
 	internal static void ShowDuelRiskWarning()
 	{
 		try
@@ -1656,6 +1785,8 @@ public class DuelBehavior : CampaignBehaviorBase
 			_hasPreDuelTargetState = true;
 			_preDuelPlayerTeam = Agent.Main?.Team ?? current.PlayerTeam;
 			_hasPreDuelPlayerState = _preDuelPlayerTeam != null;
+			_preDuelPlayerMountTeam = Agent.Main?.MountAgent?.Team;
+			_preDuelTargetMountTeam = agent.MountAgent?.Team;
 			_currentDuelIsArena = flag;
 			_meetingPreFightActive = false;
 			if (!_arenaMissionActive && flag && current != null && (current.Mode == MissionMode.Conversation || Campaign.Current.ConversationManager.OneToOneConversationAgent != null))
@@ -1670,93 +1801,11 @@ public class DuelBehavior : CampaignBehaviorBase
 				current.SetMissionMode(MissionMode.Battle, atStart: true);
 				if (!flag)
 				{
-					_duelPlayerTeam = Agent.Main?.Team ?? current.PlayerTeam;
-					_duelEnemyTeam = agent.Team;
-					if (_duelEnemyTeam == null || _duelEnemyTeam == _duelPlayerTeam)
-					{
-						Team team = null;
-						try
-						{
-							team = current.PlayerEnemyTeam;
-						}
-						catch
-						{
-						}
-						if (team != null && team != _duelPlayerTeam)
-						{
-							_duelEnemyTeam = team;
-							try
-							{
-								agent.SetTeam(_duelEnemyTeam, sync: true);
-							}
-							catch
-							{
-							}
-							Logger.Log("DuelBehavior", "[MeetingDuel] 目标与玩家同队，已切到原生敌方队伍作为决斗对手。");
-						}
-					}
-					if (_duelPlayerTeam == null || _duelEnemyTeam == null || _duelEnemyTeam == _duelPlayerTeam)
+					if (!TryInitializeFormalDuelTeams(current, agent))
 					{
 						Logger.Log("DuelBehavior", "[MeetingDuel][ERROR] 无法建立稳定的决斗队伍关系，已取消本次决斗以避免闪退。");
 						_isDuelActive = false;
 						return;
-					}
-					try
-					{
-						foreach (Team team2 in current.Teams)
-						{
-							if (team2 != null && team2 != _duelPlayerTeam && team2 != _duelEnemyTeam)
-							{
-								try
-								{
-									team2.SetIsEnemyOf(_duelPlayerTeam, isEnemyOf: false);
-								}
-								catch
-								{
-								}
-								try
-								{
-									_duelPlayerTeam.SetIsEnemyOf(team2, isEnemyOf: false);
-								}
-								catch
-								{
-								}
-								try
-								{
-									team2.SetIsEnemyOf(_duelEnemyTeam, isEnemyOf: false);
-								}
-								catch
-								{
-								}
-								try
-								{
-									_duelEnemyTeam.SetIsEnemyOf(team2, isEnemyOf: false);
-								}
-								catch
-								{
-								}
-							}
-						}
-						if (_duelPlayerTeam != null && _duelEnemyTeam != null)
-						{
-							try
-							{
-								_duelEnemyTeam.SetIsEnemyOf(_duelPlayerTeam, isEnemyOf: true);
-							}
-							catch
-							{
-							}
-							try
-							{
-								_duelPlayerTeam.SetIsEnemyOf(_duelEnemyTeam, isEnemyOf: true);
-							}
-							catch
-							{
-							}
-						}
-					}
-					catch
-					{
 					}
 					TrySetAgentController(agent, "None");
 					try
@@ -2068,6 +2117,13 @@ public class DuelBehavior : CampaignBehaviorBase
 				Agent mountAgent = agent.MountAgent;
 				if (mountAgent != null && mountAgent.IsActive())
 				{
+					try
+					{
+						mountAgent.SetTeam(_preDuelTargetMountTeam ?? _preDuelTargetTeam ?? mountAgent.Team, sync: true);
+					}
+					catch
+					{
+					}
 					TrySetAgentController(mountAgent, "AI");
 					UnlockAgentMovement(mountAgent, unpauseAi: true, clearTargetFrame: true);
 				}
@@ -2082,6 +2138,13 @@ public class DuelBehavior : CampaignBehaviorBase
 			{
 				if (_hasPreDuelPlayerState && _preDuelPlayerTeam != null)
 				{
+					try
+					{
+						Mission.Current.PlayerTeam = _preDuelPlayerTeam;
+					}
+					catch
+					{
+					}
 					Agent.Main.SetTeam(_preDuelPlayerTeam, sync: true);
 				}
 			}
@@ -2095,6 +2158,13 @@ public class DuelBehavior : CampaignBehaviorBase
 				Agent mountAgent2 = Agent.Main.MountAgent;
 				if (mountAgent2 != null && mountAgent2.IsActive())
 				{
+					try
+					{
+						mountAgent2.SetTeam(_preDuelPlayerMountTeam ?? _preDuelPlayerTeam ?? mountAgent2.Team, sync: true);
+					}
+					catch
+					{
+					}
 					UnlockAgentMovement(mountAgent2, unpauseAi: true, clearTargetFrame: true);
 				}
 			}
@@ -2131,6 +2201,8 @@ public class DuelBehavior : CampaignBehaviorBase
 		}
 		_hasPreDuelTargetState = false;
 		_hasPreDuelPlayerState = false;
+		_preDuelPlayerMountTeam = null;
+		_preDuelTargetMountTeam = null;
 	}
 
 	private void FinishDuel()

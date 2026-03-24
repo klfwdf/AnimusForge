@@ -8,7 +8,9 @@ namespace AnimusForge;
 
 internal static class IntentQueryOptimizer
 {
-	internal const int MaxCombinedIntentCount = 3;
+	internal const int MaxIntentCountPerSpeaker = 2;
+
+	internal const int MaxCombinedIntentCount = MaxIntentCountPerSpeaker * 2;
 
 	private static readonly string[] LowSignalExactPhrases = new string[30]
 	{

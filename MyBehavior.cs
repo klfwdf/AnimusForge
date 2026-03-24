@@ -7069,7 +7069,7 @@ public class MyBehavior : CampaignBehaviorBase
 		return string.Join("\n", values);
 	}
 
-	private static List<string> SplitHistoryRecallIntents(string query)
+	private static List<string> SplitHistoryRecallIntents(string query, int maxParts = IntentQueryOptimizer.MaxCombinedIntentCount)
 	{
 		List<string> list = new List<string>();
 		string text = (query ?? "").Replace("\r", " ").Trim();
@@ -7093,55 +7093,46 @@ public class MyBehavior : CampaignBehaviorBase
 		catch
 		{
 		}
-		list = IntentQueryOptimizer.OptimizeSplitIntents(list, IntentQueryOptimizer.MaxCombinedIntentCount);
+		list = IntentQueryOptimizer.OptimizeSplitIntents(list, Math.Max(1, maxParts));
 		return list;
 	}
 
 	private static List<WeightedRecallQueryInput> BuildHistoryRecallQueryInputs(List<HistoryLineEntry> recent, string currentInput, string secondaryInput)
 	{
 		List<WeightedRecallQueryInput> list = new List<WeightedRecallQueryInput>();
-		Dictionary<string, float> dictionary = new Dictionary<string, float>(StringComparer.OrdinalIgnoreCase);
+		HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 		string text = (string.IsNullOrWhiteSpace(currentInput) ? BuildHistoryQueryText(recent) : currentInput.Trim());
-		appendInputs(SplitHistoryRecallIntents(text), 1f);
+		appendInputs(SplitHistoryRecallIntents(text, IntentQueryOptimizer.MaxIntentCountPerSpeaker), IntentQueryOptimizer.MaxIntentCountPerSpeaker);
 		string text2 = (secondaryInput ?? "").Trim();
 		if (!string.IsNullOrWhiteSpace(text2) && !string.Equals(text2, text, StringComparison.OrdinalIgnoreCase))
 		{
-			appendInputs(SplitHistoryRecallIntents(text2), 0.1f);
-		}
-		foreach (KeyValuePair<string, float> item in dictionary.OrderByDescending((KeyValuePair<string, float> x) => x.Value).ThenBy((KeyValuePair<string, float> x) => x.Key, StringComparer.OrdinalIgnoreCase).Take(IntentQueryOptimizer.MaxCombinedIntentCount))
-		{
-			WeightedRecallQueryInput weightedRecallQueryInput = new WeightedRecallQueryInput
-			{
-				Text = item.Key,
-				Weight = item.Value
-			};
-			weightedRecallQueryInput.Terms = ExtractQueryTerms(item.Key);
-			list.Add(weightedRecallQueryInput);
+			appendInputs(SplitHistoryRecallIntents(text2, IntentQueryOptimizer.MaxIntentCountPerSpeaker), IntentQueryOptimizer.MaxIntentCountPerSpeaker);
 		}
 		return list;
 
-		void appendInputs(List<string> intents, float baseWeight)
+		void appendInputs(List<string> intents, int perSourceLimit)
 		{
-			if (intents == null || intents.Count <= 0 || baseWeight <= 0f)
+			if (intents == null || intents.Count <= 0 || perSourceLimit <= 0)
 			{
 				return;
 			}
+			int num = 0;
 			for (int i = 0; i < intents.Count; i++)
 			{
 				string text3 = (intents[i] ?? "").Trim();
-				if (!string.IsNullOrWhiteSpace(text3))
+				if (!string.IsNullOrWhiteSpace(text3) && hashSet.Add(text3))
 				{
-					float num = ((i == 0) ? baseWeight : (baseWeight * 0.92f));
-					if (dictionary.TryGetValue(text3, out var value))
+					WeightedRecallQueryInput weightedRecallQueryInput = new WeightedRecallQueryInput
 					{
-						if (num > value)
-						{
-							dictionary[text3] = num;
-						}
-					}
-					else
+						Text = text3,
+						Weight = 1f
+					};
+					weightedRecallQueryInput.Terms = ExtractQueryTerms(text3);
+					list.Add(weightedRecallQueryInput);
+					num++;
+					if (num >= perSourceLimit || list.Count >= IntentQueryOptimizer.MaxCombinedIntentCount)
 					{
-						dictionary[text3] = num;
+						break;
 					}
 				}
 			}
@@ -7209,7 +7200,7 @@ public class MyBehavior : CampaignBehaviorBase
 				{
 					continue;
 				}
-				List<RecallLineScore> list5 = RerankHistoryCandidateScores(weightedRecallQueryInput.Text, list4, rerankPerIntent, out var _);
+				List<RecallLineScore> list5 = RerankHistoryCandidateScores(weightedRecallQueryInput.Text, list4, rerankPerIntent, out var _, weightedRecallQueryInput.Weight);
 				if (list5 == null || list5.Count <= 0)
 				{
 					continue;
@@ -7222,7 +7213,7 @@ public class MyBehavior : CampaignBehaviorBase
 					{
 						continue;
 					}
-					double num4 = recallLineScore.RerankScore * (double)Math.Max(0f, weightedRecallQueryInput.Weight);
+					double num4 = recallLineScore.RerankScore;
 					if (!dictionary.TryGetValue(num3, out var value))
 					{
 						value = new HistoryRecallAggregate
@@ -8038,7 +8029,7 @@ public class MyBehavior : CampaignBehaviorBase
 		return list;
 	}
 
-	private List<RecallLineScore> RerankHistoryCandidateScores(string input, List<RecallLineScore> recalled, int rerankTopK, out bool rerankUsed)
+	private List<RecallLineScore> RerankHistoryCandidateScores(string input, List<RecallLineScore> recalled, int rerankTopK, out bool rerankUsed, float scoreWeight = 1f)
 	{
 		rerankUsed = false;
 		List<RecallLineScore> list = new List<RecallLineScore>();
@@ -8080,6 +8071,7 @@ public class MyBehavior : CampaignBehaviorBase
 				flag2 = onnxCrossEncoderReranker.TryScoreBatch(input, list3, out list4) && list4 != null && list4.Count == list2.Count;
 			}
 			rerankUsed = flag && flag2;
+			double num2 = (double)Math.Max(0f, scoreWeight);
 			for (int i = 0; i < list2.Count; i++)
 			{
 				RecallLineScore recallLineScore = list2[i];
@@ -8087,18 +8079,18 @@ public class MyBehavior : CampaignBehaviorBase
 				{
 					continue;
 				}
-				double num2 = recallLineScore.RawScore;
-				double num3 = num2;
+				double num3 = recallLineScore.RawScore;
+				double num4 = num3;
 				if (flag && flag2 && list3 != null && i < list3.Count && !string.IsNullOrWhiteSpace(list3[i]) && list4 != null && i < list4.Count)
 				{
-					num3 = list4[i];
+					num4 = (double)list4[i] * num2;
 				}
 				list.Add(new RecallLineScore
 				{
 					Entry = recallLineScore.Entry,
-					RawScore = num2,
+					RawScore = num3,
 					BaseScore = recallLineScore.BaseScore,
-					RerankScore = num3
+					RerankScore = num4
 				});
 			}
 			list = SelectHistoryCandidateScores(list, (flag && flag2) ? "cross_encoder" : "recall_fallback", input, num);

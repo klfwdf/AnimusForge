@@ -1950,25 +1950,17 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		return list;
 	}
 
-	private static List<WeightedKnowledgeInput> BuildKnowledgeQueryInputs(string input, string secondaryInput, float secondaryWeight = 0.1f)
+	private static List<WeightedKnowledgeInput> BuildKnowledgeQueryInputs(string input, string secondaryInput)
 	{
 		List<WeightedKnowledgeInput> list = new List<WeightedKnowledgeInput>();
-		Dictionary<string, float> dictionary = new Dictionary<string, float>(StringComparer.OrdinalIgnoreCase);
+		HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 		try
 		{
-			appendInputs(SplitKnowledgeIntents(input), 1f);
+			appendInputs(SplitKnowledgeIntents(input, IntentQueryOptimizer.MaxIntentCountPerSpeaker), IntentQueryOptimizer.MaxIntentCountPerSpeaker);
 			string text = (secondaryInput ?? "").Trim();
 			if (!string.IsNullOrWhiteSpace(text) && !string.Equals(text, (input ?? "").Trim(), StringComparison.OrdinalIgnoreCase))
 			{
-				appendInputs(SplitKnowledgeIntents(text), secondaryWeight);
-			}
-			foreach (KeyValuePair<string, float> item in dictionary.OrderByDescending((KeyValuePair<string, float> x) => x.Value).ThenBy((KeyValuePair<string, float> x) => x.Key, StringComparer.OrdinalIgnoreCase).Take(IntentQueryOptimizer.MaxCombinedIntentCount))
-			{
-				list.Add(new WeightedKnowledgeInput
-				{
-					Text = item.Key,
-					Weight = item.Value
-				});
+				appendInputs(SplitKnowledgeIntents(text, IntentQueryOptimizer.MaxIntentCountPerSpeaker), IntentQueryOptimizer.MaxIntentCountPerSpeaker);
 			}
 		}
 		catch
@@ -1976,28 +1968,27 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		}
 		return list;
 
-		void appendInputs(List<string> intents, float baseWeight)
+		void appendInputs(List<string> intents, int perSourceLimit)
 		{
-			if (intents == null || intents.Count <= 0 || baseWeight <= 0f)
+			if (intents == null || intents.Count <= 0 || perSourceLimit <= 0)
 			{
 				return;
 			}
+			int num = 0;
 			for (int i = 0; i < intents.Count; i++)
 			{
 				string text2 = (intents[i] ?? "").Trim();
-				if (!string.IsNullOrWhiteSpace(text2))
+				if (!string.IsNullOrWhiteSpace(text2) && hashSet.Add(text2))
 				{
-					float num = ((i == 0) ? baseWeight : (baseWeight * 0.92f));
-					if (dictionary.TryGetValue(text2, out var value))
+					list.Add(new WeightedKnowledgeInput
 					{
-						if (num > value)
-						{
-							dictionary[text2] = num;
-						}
-					}
-					else
+						Text = text2,
+						Weight = 1f
+					});
+					num++;
+					if (num >= perSourceLimit || list.Count >= IntentQueryOptimizer.MaxCombinedIntentCount)
 					{
-						dictionary[text2] = num;
+						break;
 					}
 				}
 			}
@@ -2021,7 +2012,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		return string.IsNullOrWhiteSpace(text) ? value : (text + " " + value);
 	}
 
-	private List<RuleScore> RerankCandidateScores(string input, List<RuleScore> recalled, int rerankTopK)
+	private List<RuleScore> RerankCandidateScores(string input, List<RuleScore> recalled, int rerankTopK, float scoreWeight = 1f)
 	{
 		List<RuleScore> list = new List<RuleScore>();
 		try
@@ -2060,6 +2051,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 				}
 				flag2 = onnxCrossEncoderReranker.TryScoreBatch(input, list3, out list4) && list4 != null && list4.Count == list2.Count;
 			}
+			float num2 = Math.Max(0f, scoreWeight);
 			for (int i = 0; i < list2.Count; i++)
 			{
 				RuleScore ruleScore = list2[i];
@@ -2067,26 +2059,27 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 				{
 					continue;
 				}
-				float num2 = ruleScore.RawScore;
-				if (float.IsNaN(num2) || float.IsNegativeInfinity(num2))
+				float num3 = ruleScore.RawScore;
+				if (float.IsNaN(num3) || float.IsNegativeInfinity(num3))
 				{
-					num2 = ruleScore.EvidenceScore;
+					num3 = ruleScore.EvidenceScore;
 				}
-				if (float.IsNaN(num2) || float.IsNegativeInfinity(num2))
+				if (float.IsNaN(num3) || float.IsNegativeInfinity(num3))
 				{
-					num2 = 0f;
+					num3 = 0f;
 				}
-				float num3 = num2;
+				float num4 = num3 * num2;
+				float num5 = num4;
 				if (flag && flag2 && list3 != null && i < list3.Count && !string.IsNullOrWhiteSpace(list3[i]) && list4 != null && i < list4.Count)
 				{
-					num3 = list4[i];
+					num5 = list4[i] * num2;
 				}
 				list.Add(new RuleScore
 				{
 					Rule = ruleScore.Rule,
-					RawScore = num3,
-					EvidenceScore = num2,
-					RerankScore = num3
+					RawScore = num5,
+					EvidenceScore = num4,
+					RerankScore = num5
 				});
 			}
 			list = SelectSemanticCandidateScores(list, (flag && flag2) ? "cross_encoder" : "recall_fallback", input, num);
@@ -2127,7 +2120,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 				{
 					continue;
 				}
-				List<RuleScore> list3 = RerankCandidateScores(weightedKnowledgeInput.Text, list2, rerankTopK);
+				List<RuleScore> list3 = RerankCandidateScores(weightedKnowledgeInput.Text, list2, rerankTopK, weightedKnowledgeInput.Weight);
 				if (list3 == null || list3.Count <= 0)
 				{
 					continue;
@@ -2139,7 +2132,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 					{
 						continue;
 					}
-					float num3 = ruleScore2.RawScore * weightedKnowledgeInput.Weight;
+					float num3 = ruleScore2.RawScore;
 					if (!dictionary.TryGetValue(ruleScore2.Rule, out var value))
 					{
 						dictionary[ruleScore2.Rule] = new RuleAggregate

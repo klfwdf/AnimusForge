@@ -2626,6 +2626,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					}
 					if (flag)
 					{
+						ReleaseSceneConversationConstraints(allNpcData, speakerData.AgentIndex, stopAutoGroupSession: true, clearQueuedSpeech: true, forceFullAutonomyRelease: true);
 						DuelBehavior.SetNextDuelRiskWarningEnabled(_lastShoutDuelLiteralHit);
 						ShoutUtils.ExecuteDuel(agent);
 					}
@@ -4097,7 +4098,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		armed = false;
 		try
 		{
-			if (MeetingBattleRuntime.IsMeetingActive && !MeetingBattleRuntime.IsCombatEscalated)
+			if (IsSceneConversationMissionEnding())
+			{
+				return false;
+			}
+			if (IsMeetingPseudoCombatContext())
 			{
 				return false;
 			}
@@ -4106,7 +4111,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			{
 				return false;
 			}
-			bool flag = DuelBehavior.IsFormalDuelActive;
+			bool flag = IsActiveSceneConversationDuelCombat();
 			if (!flag)
 			{
 				try
@@ -4121,7 +4126,19 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			}
 			if (!flag && main.Team != null && targetAgent.Team != null)
 			{
-				flag = main.Team.IsEnemyOf(targetAgent.Team);
+				try
+				{
+					Mission current = Mission.Current;
+					if (current != null)
+					{
+						MissionMode mode = current.Mode;
+						flag = (mode == MissionMode.Battle || mode == MissionMode.Duel) && main.Team.IsEnemyOf(targetAgent.Team);
+					}
+				}
+				catch
+				{
+					flag = false;
+				}
 			}
 			if (!flag)
 			{
@@ -4141,7 +4158,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 	{
 		try
 		{
-			if (DuelBehavior.IsArenaMissionActive || DuelBehavior.IsFormalDuelActive)
+			if (IsActiveSceneConversationDuelCombat())
 			{
 				return true;
 			}
@@ -4182,6 +4199,72 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			text = "武器";
 		}
 		return opponentContext ? ("[AFEF NPC行为补充] 你现在拿着" + text + "与" + playerName + "作为对手激烈交锋，但还未决出胜负") : ("[AFEF NPC行为补充] 你现在正拿着" + text + "与" + playerName + "作为敌人拼杀，还未决出胜负");
+	}
+
+	private static string BuildCombatActiveShoutExtraFact(Agent targetAgent)
+	{
+		try
+		{
+			if (!ShouldUseCombatPassiveReactionText(targetAgent, out var armed))
+			{
+				return "";
+			}
+			bool opponentContext = IsPassiveReactionOpponentContext();
+			return armed ? BuildCombatPassiveArmedFactText(targetAgent, opponentContext) : BuildCombatPassiveBrawlFactText(opponentContext);
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	private static bool IsActiveSceneConversationDuelCombat()
+	{
+		try
+		{
+			if (DuelBehavior.IsDuelEnded)
+			{
+				return false;
+			}
+			if (DuelBehavior.IsArenaMissionActive)
+			{
+				return true;
+			}
+			if (!DuelBehavior.IsFormalDuelActive)
+			{
+				return false;
+			}
+			return !DuelBehavior.IsFormalDuelPreFightActive;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static bool IsMeetingPseudoCombatContext()
+	{
+		try
+		{
+			return MeetingBattleRuntime.IsMeetingActive && !MeetingBattleRuntime.IsCombatEscalated && !IsActiveSceneConversationDuelCombat();
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static bool IsSceneConversationMissionEnding()
+	{
+		try
+		{
+			Mission current = Mission.Current;
+			return current != null && (current.IsMissionEnding || current.MissionEnded);
+		}
+		catch
+		{
+			return false;
+		}
 	}
 
 	private static string TryGetActiveWeaponDisplayNameForPassiveReaction(Agent agent)
@@ -5846,6 +5929,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			extraFact = string.IsNullOrWhiteSpace(extraFact) ? sceneTauntExtraFact : (extraFact + "\n" + sceneTauntExtraFact);
 		}
+		string combatShoutExtraFact = BuildCombatActiveShoutExtraFact(primaryTarget);
+		if (!string.IsNullOrWhiteSpace(combatShoutExtraFact))
+		{
+			extraFact = string.IsNullOrWhiteSpace(extraFact) ? combatShoutExtraFact : (extraFact + "\n" + combatShoutExtraFact);
+		}
 		ResetStaringForActiveInteraction(nearbyAgents, primaryTarget);
 		ExtendStaringHoldForPlayerDrivenSceneRound(nearbyAgents.Count);
 		if (!string.IsNullOrWhiteSpace(extraFact))
@@ -7156,6 +7244,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 							}
 							if (flag2)
 							{
+								ReleaseSceneConversationConstraints(allNpcData, matchedNpc.AgentIndex, stopAutoGroupSession: true, clearQueuedSpeech: true, forceFullAutonomyRelease: true);
 								DuelBehavior.SetNextDuelRiskWarningEnabled(_lastShoutDuelLiteralHit);
 								ShoutUtils.ExecuteDuel(agent);
 							}
@@ -8756,12 +8845,87 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 	{
 		try
 		{
-			return MeetingBattleRuntime.IsMeetingActive;
+			if (MeetingBattleRuntime.IsMeetingActive)
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		return IsSceneConversationCombatContext();
+	}
+
+	private static bool IsSceneConversationCombatContext()
+	{
+		try
+		{
+			if (IsSceneConversationMissionEnding())
+			{
+				return false;
+			}
+			if (IsMeetingPseudoCombatContext())
+			{
+				return false;
+			}
+			if (IsActiveSceneConversationDuelCombat())
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			MissionFightHandler missionBehavior = Mission.Current?.GetMissionBehavior<MissionFightHandler>();
+			if (missionBehavior != null && missionBehavior.IsThereActiveFight())
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			Mission current = Mission.Current;
+			if (current != null)
+			{
+				MissionMode mode = current.Mode;
+				if (mode == MissionMode.Battle || mode == MissionMode.Duel)
+				{
+					return true;
+				}
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			Agent main = Agent.Main;
+			if (main != null && main.IsActive() && main.Team != null && Mission.Current?.Agents != null)
+			{
+				foreach (Agent agent in Mission.Current.Agents)
+				{
+					if (agent != null && agent.IsActive() && agent != main && agent.Team != null && agent.Team.IsEnemyOf(main.Team))
+					{
+						return true;
+					}
+				}
+			}
 		}
 		catch
 		{
 			return false;
 		}
+		return false;
+	}
+
+	private static bool ShouldReleaseSceneConversationControlForCombat()
+	{
+		return IsSceneConversationCombatContext();
 	}
 
 	private static void StripMeetingTauntTagsForSceneConversation(ref string content)
@@ -8785,8 +8949,59 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			return;
 		}
+		if (ShouldReleaseSceneConversationControlForCombat())
+		{
+			ReleaseAllSceneConversationControlForCombat();
+			return;
+		}
 		DeactivateMultiSceneMovementSuppression();
 		ClearPendingSceneConversationAttentionRelease();
+		_staringAgents.Clear();
+		_staringAgentAnchors.Clear();
+		_staringUseConversationAgents.Clear();
+		_stareTimer = 0f;
+		_stareTargetLostGraceTimer = 0f;
+		_currentStareTarget = null;
+		_stopStaringTime = 0f;
+	}
+
+	private void ReleaseAllSceneConversationControlForCombat()
+	{
+		HashSet<int> hashSet = new HashSet<int>();
+		lock (_multiSceneMovementSuppressionLock)
+		{
+			foreach (int multiSceneMovementSuppressionAgentIndex in _multiSceneMovementSuppressionAgentIndices)
+			{
+				if (multiSceneMovementSuppressionAgentIndex >= 0)
+				{
+					hashSet.Add(multiSceneMovementSuppressionAgentIndex);
+				}
+			}
+		}
+		lock (_pendingSceneConversationAttentionReleaseLock)
+		{
+			foreach (int pendingSceneConversationAttentionReleaseAgentIndex in _pendingSceneConversationAttentionReleaseAgentIndices)
+			{
+				if (pendingSceneConversationAttentionReleaseAgentIndex >= 0)
+				{
+					hashSet.Add(pendingSceneConversationAttentionReleaseAgentIndex);
+				}
+			}
+		}
+		for (int i = 0; i < _staringAgents.Count; i++)
+		{
+			Agent agent = _staringAgents[i];
+			if (agent != null)
+			{
+				hashSet.Add(agent.Index);
+			}
+		}
+		DeactivateMultiSceneMovementSuppression();
+		ClearPendingSceneConversationAttentionRelease();
+		if (hashSet.Count > 0)
+		{
+			ReleaseSceneConversationAttention(hashSet, fullyRestoreAutonomy: true);
+		}
 		_staringAgents.Clear();
 		_staringAgentAnchors.Clear();
 		_staringUseConversationAgents.Clear();
@@ -8907,7 +9122,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 	}
 
-	private void ReleaseSceneConversationConstraints(List<NpcDataPacket> participants, int fallbackAgentIndex = -1, bool stopAutoGroupSession = true, bool clearQueuedSpeech = true)
+	private void ReleaseSceneConversationConstraints(List<NpcDataPacket> participants, int fallbackAgentIndex = -1, bool stopAutoGroupSession = true, bool clearQueuedSpeech = true, bool forceFullAutonomyRelease = false)
 	{
 		List<int> list = new List<int>();
 		if (participants != null)
@@ -8938,7 +9153,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 		ClearPendingSceneConversationAttentionRelease();
 		RemoveSceneMovementSuppressionAgents(list);
-		ReleaseSceneConversationAttention(list, !IsMeetingSceneConversationReleaseSensitive());
+		ReleaseSceneConversationAttention(list, forceFullAutonomyRelease || !IsMeetingSceneConversationReleaseSensitive());
 		foreach (int item in list)
 		{
 			_pendingInteractionTimeoutArms.Remove(item);
