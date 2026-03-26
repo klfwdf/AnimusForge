@@ -1722,6 +1722,8 @@ public class ShoutBehavior : CampaignBehaviorBase
 		return stringBuilder.ToString().Trim();
 	}
 
+	// This sentence is appended to the scene-facing player intro. The no-faction branch is intentional:
+	// without it, NPCs tend to over-associate the player with their culture's kingdom.
 	private static string BuildPlayerSceneIdentitySentenceForPrompt(Hero playerHero)
 	{
 		if (playerHero == null)
@@ -2885,6 +2887,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			{
 				return;
 			}
+			// Keep revisit markers across saves so "距离上次见面 X 天" survives save/load and scene re-entry.
 			Dictionary<string, string> dictionary = dataStore.IsSaving ? CampaignSaveChunkHelper.FlattenStringDictionary(_sceneHeroRevisitDayStorage) : new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 			if (dataStore.IsSaving)
 			{
@@ -5924,6 +5927,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		return text + "@" + text2;
 	}
 
+	// Same-day revisits should not read as "0天前"; use a dedicated sentence so the prompt stays natural.
 	private static string BuildSceneRevisitFactBody(string playerDisplayName, int elapsedDays)
 	{
 		string text = string.IsNullOrWhiteSpace(playerDisplayName) ? "玩家" : playerDisplayName.Trim();
@@ -5934,6 +5938,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		return "距离你上次与" + text + "见面，已有" + elapsedDays + "天了。";
 	}
 
+	// Inject the scene revisit AFEF before the player's new line is written, otherwise Token_Stats will place it below the player utterance.
 	private void TryInjectSceneRevisitFactsBeforePlayerMessage(List<NpcDataPacket> nearbyData)
 	{
 		if (nearbyData == null || nearbyData.Count == 0)
@@ -8002,6 +8007,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 
 	private void RecordPlayerMessage(string text, List<NpcDataPacket> nearbyData, int primaryTargetAgentIndex = -1, string primaryTargetName = "")
 	{
+		// Must happen first so the dynamic AFEF fact sits directly above the player's current scene utterance.
 		TryInjectSceneRevisitFactsBeforePlayerMessage(nearbyData);
 		List<int> visibleAgentIndices = BuildVisibleAgentSnapshot(nearbyData);
 		string text2 = ResolveSceneTargetNameForPrompt(primaryTargetAgentIndex, primaryTargetName, nearbyData);

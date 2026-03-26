@@ -176,6 +176,9 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		public Dictionary<string, int> SkillMin;
 	}
 
+	// 词汇映射的最小存储单元：
+	// SourceText 是提示词里要被替换的原文本，Kind/TargetId 决定去哪里取值，
+	// EmptyValueText 和 TrueText/FalseText 分别用于空值兜底和状态判断分支。
 	public class LoreTextMapping
 	{
 		public string SourceText;
@@ -225,15 +228,53 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 
 	private const string PlayerPersonaRuleId = "rule_animus_player_persona";
 
+	// 下面这组常量定义了词汇映射支持的全部取值类型。
+	// 编辑器里看到的“你想取谁的什么”最终都会落到这些 kind 上。
 	private const string TextMappingKindKingdomName = "kingdom_name";
 
 	private const string TextMappingKindKingdomLeaderName = "kingdom_leader_name";
+
+	private const string TextMappingKindKingdomRulingClanName = "kingdom_ruling_clan_name";
+
+	private const string TextMappingKindKingdomCultureName = "kingdom_culture_name";
+
+	private const string TextMappingKindKingdomInitialHomeSettlementName = "kingdom_initial_home_settlement_name";
+
+	private const string TextMappingKindKingdomAllClans = "kingdom_all_clans";
+
+	private const string TextMappingKindKingdomAllLords = "kingdom_all_lords";
+
+	private const string TextMappingKindKingdomAllTowns = "kingdom_all_towns";
+
+	private const string TextMappingKindKingdomAllCastles = "kingdom_all_castles";
+
+	private const string TextMappingKindKingdomAllVillages = "kingdom_all_villages";
+
+	private const string TextMappingKindKingdomAllSettlements = "kingdom_all_settlements";
+
+	private const string TextMappingKindKingdomActivePolicies = "kingdom_active_policies";
+
+	private const string TextMappingKindKingdomAlliedKingdoms = "kingdom_allied_kingdoms";
+
+	private const string TextMappingKindKingdomWarFactions = "kingdom_war_factions";
 
 	private const string TextMappingKindSettlementName = "settlement_name";
 
 	private const string TextMappingKindSettlementOwnerClanName = "settlement_owner_clan_name";
 
 	private const string TextMappingKindSettlementOwnerLeaderName = "settlement_owner_leader_name";
+
+	private const string TextMappingKindSettlementOwnerKingdomName = "settlement_owner_kingdom_name";
+
+	private const string TextMappingKindSettlementOwnerKingdomLeaderName = "settlement_owner_kingdom_leader_name";
+
+	private const string TextMappingKindSettlementCultureName = "settlement_culture_name";
+
+	private const string TextMappingKindSettlementNotables = "settlement_notables";
+
+	private const string TextMappingKindSettlementParties = "settlement_parties";
+
+	private const string TextMappingKindSettlementBoundVillages = "settlement_bound_villages";
 
 	private const string TextMappingKindClanName = "clan_name";
 
@@ -299,6 +340,30 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 
 	private const string TextMappingKindCurrentNpcKingdomLeaderName = "current_npc_kingdom_leader_name";
 
+	private const string TextMappingKindCurrentNpcKingdomRulingClanName = "current_npc_kingdom_ruling_clan_name";
+
+	private const string TextMappingKindCurrentNpcKingdomCultureName = "current_npc_kingdom_culture_name";
+
+	private const string TextMappingKindCurrentNpcKingdomInitialHomeSettlementName = "current_npc_kingdom_initial_home_settlement_name";
+
+	private const string TextMappingKindCurrentNpcKingdomAllClans = "current_npc_kingdom_all_clans";
+
+	private const string TextMappingKindCurrentNpcKingdomAllLords = "current_npc_kingdom_all_lords";
+
+	private const string TextMappingKindCurrentNpcKingdomAllTowns = "current_npc_kingdom_all_towns";
+
+	private const string TextMappingKindCurrentNpcKingdomAllCastles = "current_npc_kingdom_all_castles";
+
+	private const string TextMappingKindCurrentNpcKingdomAllVillages = "current_npc_kingdom_all_villages";
+
+	private const string TextMappingKindCurrentNpcKingdomAllSettlements = "current_npc_kingdom_all_settlements";
+
+	private const string TextMappingKindCurrentNpcKingdomActivePolicies = "current_npc_kingdom_active_policies";
+
+	private const string TextMappingKindCurrentNpcKingdomAlliedKingdoms = "current_npc_kingdom_allied_kingdoms";
+
+	private const string TextMappingKindCurrentNpcKingdomWarFactions = "current_npc_kingdom_war_factions";
+
 	private const string TextMappingKindCurrentNpcSpouseName = "current_npc_spouse_name";
 
 	private const string TextMappingKindCurrentNpcFatherName = "current_npc_father_name";
@@ -306,6 +371,22 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 	private const string TextMappingKindCurrentNpcMotherName = "current_npc_mother_name";
 
 	private const string TextMappingKindCurrentNpcCurrentSettlementName = "current_npc_current_settlement_name";
+
+	private const string TextMappingKindCurrentNpcCurrentSettlementOwnerClanName = "current_npc_current_settlement_owner_clan_name";
+
+	private const string TextMappingKindCurrentNpcCurrentSettlementOwnerLeaderName = "current_npc_current_settlement_owner_leader_name";
+
+	private const string TextMappingKindCurrentNpcCurrentSettlementOwnerKingdomName = "current_npc_current_settlement_owner_kingdom_name";
+
+	private const string TextMappingKindCurrentNpcCurrentSettlementOwnerKingdomLeaderName = "current_npc_current_settlement_owner_kingdom_leader_name";
+
+	private const string TextMappingKindCurrentNpcCurrentSettlementCultureName = "current_npc_current_settlement_culture_name";
+
+	private const string TextMappingKindCurrentNpcCurrentSettlementNotables = "current_npc_current_settlement_notables";
+
+	private const string TextMappingKindCurrentNpcCurrentSettlementParties = "current_npc_current_settlement_parties";
+
+	private const string TextMappingKindCurrentNpcCurrentSettlementBoundVillages = "current_npc_current_settlement_bound_villages";
 
 	private const string TextMappingKindPlayerName = "player_name";
 
@@ -341,6 +422,30 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 
 	private const string TextMappingKindBoundKingdomLeaderName = "bound_kingdom_leader_name";
 
+	private const string TextMappingKindBoundKingdomRulingClanName = "bound_kingdom_ruling_clan_name";
+
+	private const string TextMappingKindBoundKingdomCultureName = "bound_kingdom_culture_name";
+
+	private const string TextMappingKindBoundKingdomInitialHomeSettlementName = "bound_kingdom_initial_home_settlement_name";
+
+	private const string TextMappingKindBoundKingdomAllClans = "bound_kingdom_all_clans";
+
+	private const string TextMappingKindBoundKingdomAllLords = "bound_kingdom_all_lords";
+
+	private const string TextMappingKindBoundKingdomAllTowns = "bound_kingdom_all_towns";
+
+	private const string TextMappingKindBoundKingdomAllCastles = "bound_kingdom_all_castles";
+
+	private const string TextMappingKindBoundKingdomAllVillages = "bound_kingdom_all_villages";
+
+	private const string TextMappingKindBoundKingdomAllSettlements = "bound_kingdom_all_settlements";
+
+	private const string TextMappingKindBoundKingdomActivePolicies = "bound_kingdom_active_policies";
+
+	private const string TextMappingKindBoundKingdomAlliedKingdoms = "bound_kingdom_allied_kingdoms";
+
+	private const string TextMappingKindBoundKingdomWarFactions = "bound_kingdom_war_factions";
+
 	private const string TextMappingKindBoundSettlementName = "bound_settlement_name";
 
 	private const string TextMappingKindBoundSettlementOwnerClanName = "bound_settlement_owner_clan_name";
@@ -364,6 +469,18 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 	private const string TextMappingKindBoundSettlementOwnerClanAgeRangeMembers = "bound_settlement_owner_clan_age_range_members";
 
 	private const string TextMappingKindBoundSettlementOwnerLeaderName = "bound_settlement_owner_leader_name";
+
+	private const string TextMappingKindBoundSettlementOwnerKingdomName = "bound_settlement_owner_kingdom_name";
+
+	private const string TextMappingKindBoundSettlementOwnerKingdomLeaderName = "bound_settlement_owner_kingdom_leader_name";
+
+	private const string TextMappingKindBoundSettlementCultureName = "bound_settlement_culture_name";
+
+	private const string TextMappingKindBoundSettlementNotables = "bound_settlement_notables";
+
+	private const string TextMappingKindBoundSettlementParties = "bound_settlement_parties";
+
+	private const string TextMappingKindBoundSettlementBoundVillages = "bound_settlement_bound_villages";
 
 	private const string TextMappingKindBoundHeroName = "bound_hero_name";
 
@@ -2800,6 +2917,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		}
 	}
 
+	// 确保规则上始终有 TextMappings 列表，避免编辑器和运行时到处判空。
 	private static void EnsureTextMappings(LoreRule rule)
 	{
 		try
@@ -2814,6 +2932,8 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		}
 	}
 
+	// 只要知识库里存在有效的词汇映射，就不能安全复用通用 lore context 缓存，
+	// 因为最终提示词会依赖当前 NPC / 玩家 / 绑定对象的即时状态。
 	private bool HasAnyTextMappings()
 	{
 		try
@@ -2826,6 +2946,8 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		}
 	}
 
+	// status|source|condition 是状态型映射的内部协议格式，
+	// 例如“当前NPC是否已婚”会被编码成一条 kind，而不是普通字段取值。
 	private static bool IsStatusMappingKind(string kind)
 	{
 		return ((kind ?? "").Trim()).StartsWith("status|", StringComparison.OrdinalIgnoreCase);
@@ -3045,6 +3167,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		};
 	}
 
+	// 真/假文案只在状态型映射里生效，这里统一做读取和 trim。
 	private static string GetTextMappingStatusTrueText(LoreTextMapping mapping)
 	{
 		try
@@ -3069,6 +3192,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		}
 	}
 
+	// 把内部 kind 转成编辑器里可读的中文标签，方便列表展示和搜索。
 	private static string GetTextMappingKindLabel(string kind)
 	{
 		if (TryParseStatusMappingKind(kind, out var sourceKey, out var statusKey))
@@ -3079,9 +3203,27 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		{
 			TextMappingKindKingdomName => "王国名称",
 			TextMappingKindKingdomLeaderName => "王国当前领袖",
+			TextMappingKindKingdomRulingClanName => "王国执政家族",
+			TextMappingKindKingdomCultureName => "王国文化",
+			TextMappingKindKingdomInitialHomeSettlementName => "王国初始都城",
+			TextMappingKindKingdomAllClans => "王国全部家族",
+			TextMappingKindKingdomAllLords => "王国全部领主",
+			TextMappingKindKingdomAllTowns => "王国拥有的所有城镇",
+			TextMappingKindKingdomAllCastles => "王国拥有的所有城堡",
+			TextMappingKindKingdomAllVillages => "王国拥有的所有村庄",
+			TextMappingKindKingdomAllSettlements => "王国拥有的所有定居点",
+			TextMappingKindKingdomActivePolicies => "王国生效政策",
+			TextMappingKindKingdomAlliedKingdoms => "王国盟友",
+			TextMappingKindKingdomWarFactions => "王国交战势力",
 			TextMappingKindSettlementName => "定居点名称",
 			TextMappingKindSettlementOwnerClanName => "定居点统治家族",
 			TextMappingKindSettlementOwnerLeaderName => "定居点统治者",
+			TextMappingKindSettlementOwnerKingdomName => "定居点所属王国",
+			TextMappingKindSettlementOwnerKingdomLeaderName => "定居点所属王国领袖",
+			TextMappingKindSettlementCultureName => "定居点文化",
+			TextMappingKindSettlementNotables => "定居点要人",
+			TextMappingKindSettlementParties => "定居点驻留队伍",
+			TextMappingKindSettlementBoundVillages => "定居点绑定村庄",
 			TextMappingKindClanName => "家族名称",
 			TextMappingKindClanLeaderName => "家族当前族长",
 			TextMappingKindClanKingdomName => "家族所属王国",
@@ -3114,10 +3256,30 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			TextMappingKindCurrentNpcClanAgeRangeMembers => "当前NPC所属家族的年龄段成员",
 			TextMappingKindCurrentNpcKingdomName => "当前NPC所属王国",
 			TextMappingKindCurrentNpcKingdomLeaderName => "当前NPC效忠君主",
+			TextMappingKindCurrentNpcKingdomRulingClanName => "当前NPC所属王国执政家族",
+			TextMappingKindCurrentNpcKingdomCultureName => "当前NPC所属王国文化",
+			TextMappingKindCurrentNpcKingdomInitialHomeSettlementName => "当前NPC所属王国初始都城",
+			TextMappingKindCurrentNpcKingdomAllClans => "当前NPC所属王国全部家族",
+			TextMappingKindCurrentNpcKingdomAllLords => "当前NPC所属王国全部领主",
+			TextMappingKindCurrentNpcKingdomAllTowns => "当前NPC所属王国拥有的所有城镇",
+			TextMappingKindCurrentNpcKingdomAllCastles => "当前NPC所属王国拥有的所有城堡",
+			TextMappingKindCurrentNpcKingdomAllVillages => "当前NPC所属王国拥有的所有村庄",
+			TextMappingKindCurrentNpcKingdomAllSettlements => "当前NPC所属王国拥有的所有定居点",
+			TextMappingKindCurrentNpcKingdomActivePolicies => "当前NPC所属王国生效政策",
+			TextMappingKindCurrentNpcKingdomAlliedKingdoms => "当前NPC所属王国盟友",
+			TextMappingKindCurrentNpcKingdomWarFactions => "当前NPC所属王国交战势力",
 			TextMappingKindCurrentNpcSpouseName => "当前NPC配偶",
 			TextMappingKindCurrentNpcFatherName => "当前NPC父亲",
 			TextMappingKindCurrentNpcMotherName => "当前NPC母亲",
 			TextMappingKindCurrentNpcCurrentSettlementName => "当前NPC所在定居点",
+			TextMappingKindCurrentNpcCurrentSettlementOwnerClanName => "当前NPC所在定居点统治家族",
+			TextMappingKindCurrentNpcCurrentSettlementOwnerLeaderName => "当前NPC所在定居点统治者",
+			TextMappingKindCurrentNpcCurrentSettlementOwnerKingdomName => "当前NPC所在定居点所属王国",
+			TextMappingKindCurrentNpcCurrentSettlementOwnerKingdomLeaderName => "当前NPC所在定居点所属王国领袖",
+			TextMappingKindCurrentNpcCurrentSettlementCultureName => "当前NPC所在定居点文化",
+			TextMappingKindCurrentNpcCurrentSettlementNotables => "当前NPC所在定居点要人",
+			TextMappingKindCurrentNpcCurrentSettlementParties => "当前NPC所在定居点驻留队伍",
+			TextMappingKindCurrentNpcCurrentSettlementBoundVillages => "当前NPC所在定居点绑定村庄",
 			TextMappingKindPlayerName => "玩家名字",
 			TextMappingKindPlayerClanName => "玩家家族",
 			TextMappingKindPlayerClanKingdomName => "玩家家族所属王国",
@@ -3135,6 +3297,18 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			TextMappingKindPlayerCurrentSettlementName => "玩家所在定居点",
 			TextMappingKindBoundKingdomName => "本知识绑定王国",
 			TextMappingKindBoundKingdomLeaderName => "本知识绑定王国领袖",
+			TextMappingKindBoundKingdomRulingClanName => "本知识绑定王国执政家族",
+			TextMappingKindBoundKingdomCultureName => "本知识绑定王国文化",
+			TextMappingKindBoundKingdomInitialHomeSettlementName => "本知识绑定王国初始都城",
+			TextMappingKindBoundKingdomAllClans => "本知识绑定王国全部家族",
+			TextMappingKindBoundKingdomAllLords => "本知识绑定王国全部领主",
+			TextMappingKindBoundKingdomAllTowns => "本知识绑定王国拥有的所有城镇",
+			TextMappingKindBoundKingdomAllCastles => "本知识绑定王国拥有的所有城堡",
+			TextMappingKindBoundKingdomAllVillages => "本知识绑定王国拥有的所有村庄",
+			TextMappingKindBoundKingdomAllSettlements => "本知识绑定王国拥有的所有定居点",
+			TextMappingKindBoundKingdomActivePolicies => "本知识绑定王国生效政策",
+			TextMappingKindBoundKingdomAlliedKingdoms => "本知识绑定王国盟友",
+			TextMappingKindBoundKingdomWarFactions => "本知识绑定王国交战势力",
 			TextMappingKindBoundSettlementName => "本知识绑定定居点",
 			TextMappingKindBoundSettlementOwnerClanName => "本知识绑定定居点统治家族",
 			TextMappingKindBoundSettlementOwnerClanKingdomName => "本知识绑定定居点统治家族的所属王国",
@@ -3147,6 +3321,12 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			TextMappingKindBoundSettlementOwnerClanFemaleMembers => "本知识绑定定居点统治家族的女性成员",
 			TextMappingKindBoundSettlementOwnerClanAgeRangeMembers => "本知识绑定定居点统治家族的年龄段成员",
 			TextMappingKindBoundSettlementOwnerLeaderName => "本知识绑定定居点统治者",
+			TextMappingKindBoundSettlementOwnerKingdomName => "本知识绑定定居点所属王国",
+			TextMappingKindBoundSettlementOwnerKingdomLeaderName => "本知识绑定定居点所属王国领袖",
+			TextMappingKindBoundSettlementCultureName => "本知识绑定定居点文化",
+			TextMappingKindBoundSettlementNotables => "本知识绑定定居点要人",
+			TextMappingKindBoundSettlementParties => "本知识绑定定居点驻留队伍",
+			TextMappingKindBoundSettlementBoundVillages => "本知识绑定定居点绑定村庄",
 			TextMappingKindBoundHeroName => "本知识绑定英雄",
 			TextMappingKindBoundHeroClanName => "本知识绑定英雄所属家族",
 			TextMappingKindBoundHeroClanKingdomName => "本知识绑定英雄所属家族的所属王国",
@@ -3168,6 +3348,8 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		};
 	}
 
+	// 告诉编辑器“这个 kind 需要选什么目标”：
+	// 手动对象会走选择器，自动对象则会直接绑定到当前NPC/玩家/绑定实体。
 	private static string GetTextMappingTargetTypeLabel(string kind)
 	{
 		if (TryParseStatusMappingKind(kind, out var sourceKey, out var _))
@@ -3178,9 +3360,27 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		{
 			TextMappingKindKingdomName => "王国",
 			TextMappingKindKingdomLeaderName => "王国",
+			TextMappingKindKingdomRulingClanName => "王国",
+			TextMappingKindKingdomCultureName => "王国",
+			TextMappingKindKingdomInitialHomeSettlementName => "王国",
+			TextMappingKindKingdomAllClans => "王国",
+			TextMappingKindKingdomAllLords => "王国",
+			TextMappingKindKingdomAllTowns => "王国",
+			TextMappingKindKingdomAllCastles => "王国",
+			TextMappingKindKingdomAllVillages => "王国",
+			TextMappingKindKingdomAllSettlements => "王国",
+			TextMappingKindKingdomActivePolicies => "王国",
+			TextMappingKindKingdomAlliedKingdoms => "王国",
+			TextMappingKindKingdomWarFactions => "王国",
 			TextMappingKindSettlementName => "定居点",
 			TextMappingKindSettlementOwnerClanName => "定居点",
 			TextMappingKindSettlementOwnerLeaderName => "定居点",
+			TextMappingKindSettlementOwnerKingdomName => "定居点",
+			TextMappingKindSettlementOwnerKingdomLeaderName => "定居点",
+			TextMappingKindSettlementCultureName => "定居点",
+			TextMappingKindSettlementNotables => "定居点",
+			TextMappingKindSettlementParties => "定居点",
+			TextMappingKindSettlementBoundVillages => "定居点",
 			TextMappingKindClanName => "家族",
 			TextMappingKindClanLeaderName => "家族",
 			TextMappingKindClanKingdomName => "家族",
@@ -3213,10 +3413,30 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			TextMappingKindCurrentNpcClanAgeRangeMembers => "自动目标",
 			TextMappingKindCurrentNpcKingdomName => "自动目标",
 			TextMappingKindCurrentNpcKingdomLeaderName => "自动目标",
+			TextMappingKindCurrentNpcKingdomRulingClanName => "自动目标",
+			TextMappingKindCurrentNpcKingdomCultureName => "自动目标",
+			TextMappingKindCurrentNpcKingdomInitialHomeSettlementName => "自动目标",
+			TextMappingKindCurrentNpcKingdomAllClans => "自动目标",
+			TextMappingKindCurrentNpcKingdomAllLords => "自动目标",
+			TextMappingKindCurrentNpcKingdomAllTowns => "自动目标",
+			TextMappingKindCurrentNpcKingdomAllCastles => "自动目标",
+			TextMappingKindCurrentNpcKingdomAllVillages => "自动目标",
+			TextMappingKindCurrentNpcKingdomAllSettlements => "自动目标",
+			TextMappingKindCurrentNpcKingdomActivePolicies => "自动目标",
+			TextMappingKindCurrentNpcKingdomAlliedKingdoms => "自动目标",
+			TextMappingKindCurrentNpcKingdomWarFactions => "自动目标",
 			TextMappingKindCurrentNpcSpouseName => "自动目标",
 			TextMappingKindCurrentNpcFatherName => "自动目标",
 			TextMappingKindCurrentNpcMotherName => "自动目标",
 			TextMappingKindCurrentNpcCurrentSettlementName => "自动目标",
+			TextMappingKindCurrentNpcCurrentSettlementOwnerClanName => "自动目标",
+			TextMappingKindCurrentNpcCurrentSettlementOwnerLeaderName => "自动目标",
+			TextMappingKindCurrentNpcCurrentSettlementOwnerKingdomName => "自动目标",
+			TextMappingKindCurrentNpcCurrentSettlementOwnerKingdomLeaderName => "自动目标",
+			TextMappingKindCurrentNpcCurrentSettlementCultureName => "自动目标",
+			TextMappingKindCurrentNpcCurrentSettlementNotables => "自动目标",
+			TextMappingKindCurrentNpcCurrentSettlementParties => "自动目标",
+			TextMappingKindCurrentNpcCurrentSettlementBoundVillages => "自动目标",
 			TextMappingKindPlayerName => "自动目标",
 			TextMappingKindPlayerClanName => "自动目标",
 			TextMappingKindPlayerClanKingdomName => "自动目标",
@@ -3234,6 +3454,18 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			TextMappingKindPlayerCurrentSettlementName => "自动目标",
 			TextMappingKindBoundKingdomName => "自动目标",
 			TextMappingKindBoundKingdomLeaderName => "自动目标",
+			TextMappingKindBoundKingdomRulingClanName => "自动目标",
+			TextMappingKindBoundKingdomCultureName => "自动目标",
+			TextMappingKindBoundKingdomInitialHomeSettlementName => "自动目标",
+			TextMappingKindBoundKingdomAllClans => "自动目标",
+			TextMappingKindBoundKingdomAllLords => "自动目标",
+			TextMappingKindBoundKingdomAllTowns => "自动目标",
+			TextMappingKindBoundKingdomAllCastles => "自动目标",
+			TextMappingKindBoundKingdomAllVillages => "自动目标",
+			TextMappingKindBoundKingdomAllSettlements => "自动目标",
+			TextMappingKindBoundKingdomActivePolicies => "自动目标",
+			TextMappingKindBoundKingdomAlliedKingdoms => "自动目标",
+			TextMappingKindBoundKingdomWarFactions => "自动目标",
 			TextMappingKindBoundSettlementName => "自动目标",
 			TextMappingKindBoundSettlementOwnerClanName => "自动目标",
 			TextMappingKindBoundSettlementOwnerClanKingdomName => "自动目标",
@@ -3246,6 +3478,12 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			TextMappingKindBoundSettlementOwnerClanFemaleMembers => "自动目标",
 			TextMappingKindBoundSettlementOwnerClanAgeRangeMembers => "自动目标",
 			TextMappingKindBoundSettlementOwnerLeaderName => "自动目标",
+			TextMappingKindBoundSettlementOwnerKingdomName => "自动目标",
+			TextMappingKindBoundSettlementOwnerKingdomLeaderName => "自动目标",
+			TextMappingKindBoundSettlementCultureName => "自动目标",
+			TextMappingKindBoundSettlementNotables => "自动目标",
+			TextMappingKindBoundSettlementParties => "自动目标",
+			TextMappingKindBoundSettlementBoundVillages => "自动目标",
 			TextMappingKindBoundHeroName => "自动目标",
 			TextMappingKindBoundHeroClanName => "自动目标",
 			TextMappingKindBoundHeroClanKingdomName => "自动目标",
@@ -3267,6 +3505,8 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		};
 	}
 
+	// 某些 kind 天生就是自动目标，比如当前NPC、玩家、绑定王国。
+	// 这里把 kind 映射到内部 target token，省掉用户再选一次对象。
 	private static string GetAutomaticTargetIdForKind(string kind)
 	{
 		if (TryParseStatusMappingKind(kind, out var sourceKey, out var _))
@@ -3288,10 +3528,30 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			TextMappingKindCurrentNpcClanAgeRangeMembers => TextMappingTargetCurrentNpc,
 			TextMappingKindCurrentNpcKingdomName => TextMappingTargetCurrentNpc,
 			TextMappingKindCurrentNpcKingdomLeaderName => TextMappingTargetCurrentNpc,
+			TextMappingKindCurrentNpcKingdomRulingClanName => TextMappingTargetCurrentNpc,
+			TextMappingKindCurrentNpcKingdomCultureName => TextMappingTargetCurrentNpc,
+			TextMappingKindCurrentNpcKingdomInitialHomeSettlementName => TextMappingTargetCurrentNpc,
+			TextMappingKindCurrentNpcKingdomAllClans => TextMappingTargetCurrentNpc,
+			TextMappingKindCurrentNpcKingdomAllLords => TextMappingTargetCurrentNpc,
+			TextMappingKindCurrentNpcKingdomAllTowns => TextMappingTargetCurrentNpc,
+			TextMappingKindCurrentNpcKingdomAllCastles => TextMappingTargetCurrentNpc,
+			TextMappingKindCurrentNpcKingdomAllVillages => TextMappingTargetCurrentNpc,
+			TextMappingKindCurrentNpcKingdomAllSettlements => TextMappingTargetCurrentNpc,
+			TextMappingKindCurrentNpcKingdomActivePolicies => TextMappingTargetCurrentNpc,
+			TextMappingKindCurrentNpcKingdomAlliedKingdoms => TextMappingTargetCurrentNpc,
+			TextMappingKindCurrentNpcKingdomWarFactions => TextMappingTargetCurrentNpc,
 			TextMappingKindCurrentNpcSpouseName => TextMappingTargetCurrentNpc,
 			TextMappingKindCurrentNpcFatherName => TextMappingTargetCurrentNpc,
 			TextMappingKindCurrentNpcMotherName => TextMappingTargetCurrentNpc,
 			TextMappingKindCurrentNpcCurrentSettlementName => TextMappingTargetCurrentNpc,
+			TextMappingKindCurrentNpcCurrentSettlementOwnerClanName => TextMappingTargetCurrentNpc,
+			TextMappingKindCurrentNpcCurrentSettlementOwnerLeaderName => TextMappingTargetCurrentNpc,
+			TextMappingKindCurrentNpcCurrentSettlementOwnerKingdomName => TextMappingTargetCurrentNpc,
+			TextMappingKindCurrentNpcCurrentSettlementOwnerKingdomLeaderName => TextMappingTargetCurrentNpc,
+			TextMappingKindCurrentNpcCurrentSettlementCultureName => TextMappingTargetCurrentNpc,
+			TextMappingKindCurrentNpcCurrentSettlementNotables => TextMappingTargetCurrentNpc,
+			TextMappingKindCurrentNpcCurrentSettlementParties => TextMappingTargetCurrentNpc,
+			TextMappingKindCurrentNpcCurrentSettlementBoundVillages => TextMappingTargetCurrentNpc,
 			TextMappingKindPlayerName => TextMappingTargetPlayer,
 			TextMappingKindPlayerClanName => TextMappingTargetPlayer,
 			TextMappingKindPlayerClanKingdomName => TextMappingTargetPlayer,
@@ -3309,6 +3569,18 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			TextMappingKindPlayerCurrentSettlementName => TextMappingTargetPlayer,
 			TextMappingKindBoundKingdomName => TextMappingTargetBoundKingdom,
 			TextMappingKindBoundKingdomLeaderName => TextMappingTargetBoundKingdom,
+			TextMappingKindBoundKingdomRulingClanName => TextMappingTargetBoundKingdom,
+			TextMappingKindBoundKingdomCultureName => TextMappingTargetBoundKingdom,
+			TextMappingKindBoundKingdomInitialHomeSettlementName => TextMappingTargetBoundKingdom,
+			TextMappingKindBoundKingdomAllClans => TextMappingTargetBoundKingdom,
+			TextMappingKindBoundKingdomAllLords => TextMappingTargetBoundKingdom,
+			TextMappingKindBoundKingdomAllTowns => TextMappingTargetBoundKingdom,
+			TextMappingKindBoundKingdomAllCastles => TextMappingTargetBoundKingdom,
+			TextMappingKindBoundKingdomAllVillages => TextMappingTargetBoundKingdom,
+			TextMappingKindBoundKingdomAllSettlements => TextMappingTargetBoundKingdom,
+			TextMappingKindBoundKingdomActivePolicies => TextMappingTargetBoundKingdom,
+			TextMappingKindBoundKingdomAlliedKingdoms => TextMappingTargetBoundKingdom,
+			TextMappingKindBoundKingdomWarFactions => TextMappingTargetBoundKingdom,
 			TextMappingKindBoundSettlementName => TextMappingTargetBoundSettlement,
 			TextMappingKindBoundSettlementOwnerClanName => TextMappingTargetBoundSettlement,
 			TextMappingKindBoundSettlementOwnerClanKingdomName => TextMappingTargetBoundSettlement,
@@ -3321,6 +3593,12 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			TextMappingKindBoundSettlementOwnerClanFemaleMembers => TextMappingTargetBoundSettlement,
 			TextMappingKindBoundSettlementOwnerClanAgeRangeMembers => TextMappingTargetBoundSettlement,
 			TextMappingKindBoundSettlementOwnerLeaderName => TextMappingTargetBoundSettlement,
+			TextMappingKindBoundSettlementOwnerKingdomName => TextMappingTargetBoundSettlement,
+			TextMappingKindBoundSettlementOwnerKingdomLeaderName => TextMappingTargetBoundSettlement,
+			TextMappingKindBoundSettlementCultureName => TextMappingTargetBoundSettlement,
+			TextMappingKindBoundSettlementNotables => TextMappingTargetBoundSettlement,
+			TextMappingKindBoundSettlementParties => TextMappingTargetBoundSettlement,
+			TextMappingKindBoundSettlementBoundVillages => TextMappingTargetBoundSettlement,
 			TextMappingKindBoundHeroName => TextMappingTargetBoundHero,
 			TextMappingKindBoundHeroClanName => TextMappingTargetBoundHero,
 			TextMappingKindBoundHeroClanKingdomName => TextMappingTargetBoundHero,
@@ -3378,6 +3656,32 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private static string GetCultureDisplayName(CultureObject culture)
+	{
+		try
+		{
+			return (culture?.Name?.ToString() ?? "").Trim();
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	private static string GetFactionDisplayName(IFaction faction)
+	{
+		try
+		{
+			return (faction?.Name?.ToString() ?? "").Trim();
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	// 下面这些 Build*Text 方法专门把“列表型信息”整理成适合注入提示词的短文本，
+	// 比如王国全部家族、定居点驻留队伍、绑定村庄等。
 	private static string GetSettlementDisplayName(Settlement settlement)
 	{
 		try
@@ -3453,6 +3757,46 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		}
 		string text2 = GetSettlementTypeLabel(settlement);
 		return string.IsNullOrWhiteSpace(text2) ? text : (text + "（" + text2 + "）");
+	}
+
+	private static string BuildKingdomSettlementListText(Kingdom kingdom, bool includeTowns, bool includeCastles, bool includeVillages)
+	{
+		try
+		{
+			if (kingdom?.Settlements == null)
+			{
+				return "";
+			}
+			List<Settlement> list = new List<Settlement>();
+			foreach (Settlement settlement in kingdom.Settlements)
+			{
+				if (settlement == null)
+				{
+					continue;
+				}
+				if (settlement.IsTown && includeTowns)
+				{
+					list.Add(settlement);
+				}
+				else if (settlement.IsCastle && includeCastles)
+				{
+					list.Add(settlement);
+				}
+				else if (settlement.IsVillage && includeVillages)
+				{
+					list.Add(settlement);
+				}
+			}
+			if (list.Count == 0)
+			{
+				return "";
+			}
+			return string.Join("，", list.OrderBy((Settlement s) => GetSettlementTypeOrder(s)).ThenBy((Settlement s) => GetSettlementDisplayName(s), StringComparer.OrdinalIgnoreCase).Select(FormatSettlementWithType).Where((string x) => !string.IsNullOrWhiteSpace(x)));
+		}
+		catch
+		{
+			return "";
+		}
 	}
 
 	private static string BuildClanOwnedSettlementListText(Clan clan, bool includeTowns, bool includeCastles, bool includeVillages)
@@ -3533,6 +3877,111 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 				return "";
 			}
 			return string.Join("，", clanLivingMembers.Select(GetHeroDisplayName).Where((string x) => !string.IsNullOrWhiteSpace(x)));
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	private static string BuildKingdomClanListText(Kingdom kingdom)
+	{
+		try
+		{
+			if (kingdom?.Clans == null)
+			{
+				return "";
+			}
+			List<Clan> list = kingdom.Clans.Where((Clan c) => c != null).OrderByDescending((Clan c) => (kingdom.RulingClan == c) ? 1 : 0).ThenBy((Clan c) => GetClanDisplayName(c), StringComparer.OrdinalIgnoreCase).ThenBy((Clan c) => c.StringId ?? "", StringComparer.OrdinalIgnoreCase).ToList();
+			if (list.Count == 0)
+			{
+				return "";
+			}
+			return string.Join("，", list.Select(GetClanDisplayName).Where((string x) => !string.IsNullOrWhiteSpace(x)));
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	private static string BuildKingdomLordListText(Kingdom kingdom)
+	{
+		try
+		{
+			if (kingdom?.AliveLords == null)
+			{
+				return "";
+			}
+			List<Hero> list = kingdom.AliveLords.Where((Hero h) => h != null).OrderByDescending((Hero h) => (kingdom.Leader == h) ? 1 : 0).ThenBy((Hero h) => GetHeroDisplayName(h), StringComparer.OrdinalIgnoreCase).ThenBy((Hero h) => h.StringId ?? "", StringComparer.OrdinalIgnoreCase).ToList();
+			if (list.Count == 0)
+			{
+				return "";
+			}
+			return string.Join("，", list.Select(GetHeroDisplayName).Where((string x) => !string.IsNullOrWhiteSpace(x)));
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	private static string BuildPolicyListText(IEnumerable<PolicyObject> policies)
+	{
+		try
+		{
+			if (policies == null)
+			{
+				return "";
+			}
+			List<string> list = policies.Where((PolicyObject p) => p != null).Select((PolicyObject p) => (p.Name?.ToString() ?? "").Trim()).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).OrderBy((string x) => x, StringComparer.OrdinalIgnoreCase).ToList();
+			if (list.Count == 0)
+			{
+				return "";
+			}
+			return string.Join("，", list);
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	private static string BuildKingdomListText(IEnumerable<Kingdom> kingdoms)
+	{
+		try
+		{
+			if (kingdoms == null)
+			{
+				return "";
+			}
+			List<string> list = kingdoms.Where((Kingdom k) => k != null).Select(GetKingdomDisplayName).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).OrderBy((string x) => x, StringComparer.OrdinalIgnoreCase).ToList();
+			if (list.Count == 0)
+			{
+				return "";
+			}
+			return string.Join("，", list);
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	private static string BuildFactionListText(IEnumerable<IFaction> factions)
+	{
+		try
+		{
+			if (factions == null)
+			{
+				return "";
+			}
+			List<string> list = factions.Where((IFaction f) => f != null).Select(GetFactionDisplayName).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).OrderBy((string x) => x, StringComparer.OrdinalIgnoreCase).ToList();
+			if (list.Count == 0)
+			{
+				return "";
+			}
+			return string.Join("，", list);
 		}
 		catch
 		{
@@ -3781,6 +4230,96 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		return GetHeroDisplayName(clan?.Kingdom?.Leader);
 	}
 
+	private static Kingdom GetSettlementKingdom(Settlement settlement)
+	{
+		try
+		{
+			return settlement?.OwnerClan?.Kingdom ?? ((settlement?.MapFaction != null && settlement.MapFaction.IsKingdomFaction) ? settlement.MapFaction as Kingdom : null);
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static string GetSettlementKingdomName(Settlement settlement)
+	{
+		return GetKingdomDisplayName(GetSettlementKingdom(settlement));
+	}
+
+	private static string GetSettlementKingdomLeaderName(Settlement settlement)
+	{
+		return GetHeroDisplayName(GetSettlementKingdom(settlement)?.Leader);
+	}
+
+	private static string GetSettlementCultureName(Settlement settlement)
+	{
+		return GetCultureDisplayName(settlement?.Culture);
+	}
+
+	private static string BuildSettlementNotableListText(Settlement settlement)
+	{
+		try
+		{
+			if (settlement?.Notables == null)
+			{
+				return "";
+			}
+			List<string> list = settlement.Notables.Where((Hero h) => h != null).Select(GetHeroDisplayName).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).OrderBy((string x) => x, StringComparer.OrdinalIgnoreCase).ToList();
+			if (list.Count == 0)
+			{
+				return "";
+			}
+			return string.Join("，", list);
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	private static string BuildSettlementPartyListText(Settlement settlement)
+	{
+		try
+		{
+			if (settlement?.Parties == null)
+			{
+				return "";
+			}
+			List<string> list = settlement.Parties.Where((MobileParty p) => p?.Party != null).Select((MobileParty p) => (p.Party.Name?.ToString() ?? "").Trim()).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).OrderBy((string x) => x, StringComparer.OrdinalIgnoreCase).ToList();
+			if (list.Count == 0)
+			{
+				return "";
+			}
+			return string.Join("，", list);
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	private static string BuildSettlementBoundVillageListText(Settlement settlement)
+	{
+		try
+		{
+			if (settlement?.BoundVillages == null)
+			{
+				return "";
+			}
+			List<string> list = settlement.BoundVillages.Where((Village v) => v?.Settlement != null).Select((Village v) => FormatSettlementWithType(v.Settlement)).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).OrderBy((string x) => x, StringComparer.OrdinalIgnoreCase).ToList();
+			if (list.Count == 0)
+			{
+				return "";
+			}
+			return string.Join("，", list);
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
 	private static string GetHeroSpouseName(Hero hero)
 	{
 		return GetHeroDisplayName(hero?.Spouse);
@@ -3801,6 +4340,9 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		return GetSettlementDisplayName(hero?.CurrentSettlement ?? hero?.StayingInSettlement);
 	}
 
+	// 运行时解析层：
+	// 根据 mapping.TargetId 和 kind，把“当前NPC/玩家/绑定对象/手动指定对象”
+	// 统一还原成真正的 Hero/Clan/Kingdom/Settlement 实例。
 	private static Hero ResolveRuntimeHeroFromMapping(LoreTextMapping mapping, LoreRule rule, Hero npcHero, CharacterObject npcCharacter)
 	{
 		try
@@ -4046,6 +4588,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		}
 	}
 
+	// 状态型映射不会直接返回对象名字，而是先算布尔结果，再走真/假文案分支。
 	private static bool? EvaluateHeroStatus(Hero hero, string statusKey, LoreTextMapping mapping)
 	{
 		if (hero == null)
@@ -4308,6 +4851,8 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		}
 	}
 
+	// 编辑器里展示的“目标说明 / 当前预览”都依赖这里的可读化处理，
+	// 它会尽量把自动目标和手动目标都解释成当前玩家能看懂的名字。
 	private static string GetTextMappingTargetDisplayName(LoreTextMapping mapping, LoreRule rule = null, Hero npcHero = null, CharacterObject npcCharacter = null)
 	{
 		try
@@ -4350,6 +4895,18 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			{
 			case TextMappingKindKingdomName:
 			case TextMappingKindKingdomLeaderName:
+			case TextMappingKindKingdomRulingClanName:
+			case TextMappingKindKingdomCultureName:
+			case TextMappingKindKingdomInitialHomeSettlementName:
+			case TextMappingKindKingdomAllClans:
+			case TextMappingKindKingdomAllLords:
+			case TextMappingKindKingdomAllTowns:
+			case TextMappingKindKingdomAllCastles:
+			case TextMappingKindKingdomAllVillages:
+			case TextMappingKindKingdomAllSettlements:
+			case TextMappingKindKingdomActivePolicies:
+			case TextMappingKindKingdomAlliedKingdoms:
+			case TextMappingKindKingdomWarFactions:
 			{
 				Kingdom kingdom = FindKingdomById(text);
 				string text11 = GetKingdomDisplayName(kingdom);
@@ -4358,6 +4915,12 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			case TextMappingKindSettlementName:
 			case TextMappingKindSettlementOwnerClanName:
 			case TextMappingKindSettlementOwnerLeaderName:
+			case TextMappingKindSettlementOwnerKingdomName:
+			case TextMappingKindSettlementOwnerKingdomLeaderName:
+			case TextMappingKindSettlementCultureName:
+			case TextMappingKindSettlementNotables:
+			case TextMappingKindSettlementParties:
+			case TextMappingKindSettlementBoundVillages:
 			{
 				Settlement settlement = FindSettlementById(text);
 				string text10 = GetSettlementDisplayName(settlement);
@@ -4402,6 +4965,8 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		}
 	}
 
+	// 真正的取值入口：
+	// 先看是不是状态映射；如果不是，再按 kind 读取对象字段或拼装列表文本。
 	private static string ResolveTextMappingValue(LoreTextMapping mapping, LoreRule rule = null, Hero npcHero = null, CharacterObject npcCharacter = null)
 	{
 		try
@@ -4419,19 +4984,96 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			{
 			case TextMappingKindKingdomName:
 			case TextMappingKindBoundKingdomName:
+			case TextMappingKindCurrentNpcKingdomName:
 				return GetKingdomDisplayName(ResolveRuntimeKingdomFromMapping(mapping, rule, npcHero, npcCharacter));
 			case TextMappingKindKingdomLeaderName:
 			case TextMappingKindBoundKingdomLeaderName:
+			case TextMappingKindCurrentNpcKingdomLeaderName:
 				return GetHeroDisplayName(ResolveRuntimeKingdomFromMapping(mapping, rule, npcHero, npcCharacter)?.Leader);
+			case TextMappingKindKingdomRulingClanName:
+			case TextMappingKindCurrentNpcKingdomRulingClanName:
+			case TextMappingKindBoundKingdomRulingClanName:
+				return GetClanDisplayName(ResolveRuntimeKingdomFromMapping(mapping, rule, npcHero, npcCharacter)?.RulingClan);
+			case TextMappingKindKingdomCultureName:
+			case TextMappingKindCurrentNpcKingdomCultureName:
+			case TextMappingKindBoundKingdomCultureName:
+				return GetCultureDisplayName(ResolveRuntimeKingdomFromMapping(mapping, rule, npcHero, npcCharacter)?.Culture);
+			case TextMappingKindKingdomInitialHomeSettlementName:
+			case TextMappingKindCurrentNpcKingdomInitialHomeSettlementName:
+			case TextMappingKindBoundKingdomInitialHomeSettlementName:
+				return GetSettlementDisplayName(ResolveRuntimeKingdomFromMapping(mapping, rule, npcHero, npcCharacter)?.InitialHomeSettlement);
+			case TextMappingKindKingdomAllClans:
+			case TextMappingKindCurrentNpcKingdomAllClans:
+			case TextMappingKindBoundKingdomAllClans:
+				return BuildKingdomClanListText(ResolveRuntimeKingdomFromMapping(mapping, rule, npcHero, npcCharacter));
+			case TextMappingKindKingdomAllLords:
+			case TextMappingKindCurrentNpcKingdomAllLords:
+			case TextMappingKindBoundKingdomAllLords:
+				return BuildKingdomLordListText(ResolveRuntimeKingdomFromMapping(mapping, rule, npcHero, npcCharacter));
+			case TextMappingKindKingdomAllTowns:
+			case TextMappingKindCurrentNpcKingdomAllTowns:
+			case TextMappingKindBoundKingdomAllTowns:
+				return BuildKingdomSettlementListText(ResolveRuntimeKingdomFromMapping(mapping, rule, npcHero, npcCharacter), includeTowns: true, includeCastles: false, includeVillages: false);
+			case TextMappingKindKingdomAllCastles:
+			case TextMappingKindCurrentNpcKingdomAllCastles:
+			case TextMappingKindBoundKingdomAllCastles:
+				return BuildKingdomSettlementListText(ResolveRuntimeKingdomFromMapping(mapping, rule, npcHero, npcCharacter), includeTowns: false, includeCastles: true, includeVillages: false);
+			case TextMappingKindKingdomAllVillages:
+			case TextMappingKindCurrentNpcKingdomAllVillages:
+			case TextMappingKindBoundKingdomAllVillages:
+				return BuildKingdomSettlementListText(ResolveRuntimeKingdomFromMapping(mapping, rule, npcHero, npcCharacter), includeTowns: false, includeCastles: false, includeVillages: true);
+			case TextMappingKindKingdomAllSettlements:
+			case TextMappingKindCurrentNpcKingdomAllSettlements:
+			case TextMappingKindBoundKingdomAllSettlements:
+				return BuildKingdomSettlementListText(ResolveRuntimeKingdomFromMapping(mapping, rule, npcHero, npcCharacter), includeTowns: true, includeCastles: true, includeVillages: true);
+			case TextMappingKindKingdomActivePolicies:
+			case TextMappingKindCurrentNpcKingdomActivePolicies:
+			case TextMappingKindBoundKingdomActivePolicies:
+				return BuildPolicyListText(ResolveRuntimeKingdomFromMapping(mapping, rule, npcHero, npcCharacter)?.ActivePolicies);
+			case TextMappingKindKingdomAlliedKingdoms:
+			case TextMappingKindCurrentNpcKingdomAlliedKingdoms:
+			case TextMappingKindBoundKingdomAlliedKingdoms:
+				return BuildKingdomListText(ResolveRuntimeKingdomFromMapping(mapping, rule, npcHero, npcCharacter)?.AlliedKingdoms);
+			case TextMappingKindKingdomWarFactions:
+			case TextMappingKindCurrentNpcKingdomWarFactions:
+			case TextMappingKindBoundKingdomWarFactions:
+				return BuildFactionListText(ResolveRuntimeKingdomFromMapping(mapping, rule, npcHero, npcCharacter)?.FactionsAtWarWith);
 			case TextMappingKindSettlementName:
 			case TextMappingKindBoundSettlementName:
+			case TextMappingKindCurrentNpcCurrentSettlementName:
 				return GetSettlementDisplayName(ResolveRuntimeSettlementFromMapping(mapping, rule, npcHero, npcCharacter));
 			case TextMappingKindSettlementOwnerClanName:
 			case TextMappingKindBoundSettlementOwnerClanName:
+			case TextMappingKindCurrentNpcCurrentSettlementOwnerClanName:
 				return GetClanDisplayName(ResolveRuntimeSettlementFromMapping(mapping, rule, npcHero, npcCharacter)?.OwnerClan);
 			case TextMappingKindSettlementOwnerLeaderName:
 			case TextMappingKindBoundSettlementOwnerLeaderName:
+			case TextMappingKindCurrentNpcCurrentSettlementOwnerLeaderName:
 				return GetHeroDisplayName(ResolveRuntimeSettlementFromMapping(mapping, rule, npcHero, npcCharacter)?.OwnerClan?.Leader);
+			case TextMappingKindSettlementOwnerKingdomName:
+			case TextMappingKindCurrentNpcCurrentSettlementOwnerKingdomName:
+			case TextMappingKindBoundSettlementOwnerKingdomName:
+				return GetSettlementKingdomName(ResolveRuntimeSettlementFromMapping(mapping, rule, npcHero, npcCharacter));
+			case TextMappingKindSettlementOwnerKingdomLeaderName:
+			case TextMappingKindCurrentNpcCurrentSettlementOwnerKingdomLeaderName:
+			case TextMappingKindBoundSettlementOwnerKingdomLeaderName:
+				return GetSettlementKingdomLeaderName(ResolveRuntimeSettlementFromMapping(mapping, rule, npcHero, npcCharacter));
+			case TextMappingKindSettlementCultureName:
+			case TextMappingKindCurrentNpcCurrentSettlementCultureName:
+			case TextMappingKindBoundSettlementCultureName:
+				return GetSettlementCultureName(ResolveRuntimeSettlementFromMapping(mapping, rule, npcHero, npcCharacter));
+			case TextMappingKindSettlementNotables:
+			case TextMappingKindCurrentNpcCurrentSettlementNotables:
+			case TextMappingKindBoundSettlementNotables:
+				return BuildSettlementNotableListText(ResolveRuntimeSettlementFromMapping(mapping, rule, npcHero, npcCharacter));
+			case TextMappingKindSettlementParties:
+			case TextMappingKindCurrentNpcCurrentSettlementParties:
+			case TextMappingKindBoundSettlementParties:
+				return BuildSettlementPartyListText(ResolveRuntimeSettlementFromMapping(mapping, rule, npcHero, npcCharacter));
+			case TextMappingKindSettlementBoundVillages:
+			case TextMappingKindCurrentNpcCurrentSettlementBoundVillages:
+			case TextMappingKindBoundSettlementBoundVillages:
+				return BuildSettlementBoundVillageListText(ResolveRuntimeSettlementFromMapping(mapping, rule, npcHero, npcCharacter));
 			case TextMappingKindClanName:
 				return GetClanDisplayName(ResolveRuntimeClanFromMapping(mapping, rule, npcHero, npcCharacter));
 			case TextMappingKindClanLeaderName:
@@ -4519,12 +5161,10 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			case TextMappingKindBoundHeroClanName:
 				return GetHeroClanName(ResolveRuntimeHeroFromMapping(mapping, rule, npcHero, npcCharacter));
 			case TextMappingKindHeroKingdomName:
-			case TextMappingKindCurrentNpcKingdomName:
 			case TextMappingKindPlayerKingdomName:
 			case TextMappingKindBoundHeroKingdomName:
 				return GetHeroKingdomName(ResolveRuntimeHeroFromMapping(mapping, rule, npcHero, npcCharacter));
 			case TextMappingKindHeroKingdomLeaderName:
-			case TextMappingKindCurrentNpcKingdomLeaderName:
 			case TextMappingKindPlayerKingdomLeaderName:
 			case TextMappingKindBoundHeroKingdomLeaderName:
 				return GetHeroKingdomLeaderName(ResolveRuntimeHeroFromMapping(mapping, rule, npcHero, npcCharacter));
@@ -4542,7 +5182,6 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			case TextMappingKindBoundHeroMotherName:
 				return GetHeroMotherName(ResolveRuntimeHeroFromMapping(mapping, rule, npcHero, npcCharacter));
 			case TextMappingKindHeroCurrentSettlementName:
-			case TextMappingKindCurrentNpcCurrentSettlementName:
 			case TextMappingKindPlayerCurrentSettlementName:
 			case TextMappingKindBoundHeroCurrentSettlementName:
 				return GetHeroCurrentSettlementName(ResolveRuntimeHeroFromMapping(mapping, rule, npcHero, npcCharacter));
@@ -4568,6 +5207,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		}
 	}
 
+	// 空值时优先使用 EmptyValueText；如果连兜底都没有，就保持“取不到值”状态。
 	private static string ResolveTextMappingValueOrFallback(LoreTextMapping mapping, LoreRule rule = null, Hero npcHero = null, CharacterObject npcCharacter = null)
 	{
 		string text = ResolveTextMappingValue(mapping, rule, npcHero, npcCharacter);
@@ -4578,6 +5218,8 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		return GetTextMappingEmptyValueText(mapping);
 	}
 
+	// 这个摘要会直接出现在“编辑词汇映射”列表里，所以强调的是：
+	// 原文本、映射类型、目标对象和当前预览值。
 	private static string BuildTextMappingSummary(LoreRule rule, LoreTextMapping mapping)
 	{
 		string text = TrimPreview((mapping?.SourceText ?? "").Trim(), 28);
@@ -4616,6 +5258,8 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		return text + " -> " + text2 + "（" + text3 + "） => " + text4;
 	}
 
+	// 命中知识后，最终会在变体内容上执行这里的多轮替换。
+	// 它不是模板引擎，而是受控的字符串替换，所以 SourceText 应该尽量明确。
 	private string ApplyRuleTextMappings(LoreRule rule, string content, Hero npcHero = null, CharacterObject npcCharacter = null)
 	{
 		string text = content ?? "";
@@ -7700,6 +8344,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		MBInformationManager.ShowMultiSelectionInquiry(data);
 	}
 
+	// 词汇映射的主菜单，负责列出当前规则下的全部映射并进入新增/编辑流程。
 	private void OpenTextMappingMenu(LoreRule rule, Action onReturn)
 	{
 		if (rule == null)
@@ -7759,6 +8404,8 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		MBInformationManager.ShowMultiSelectionInquiry(data);
 	}
 
+	// 创建/编辑流程分成三步：
+	// 输入原文本 -> 选择 kind -> 选择目标并补充额外配置（年龄段或状态文案）。
 	private void CreateTextMapping(LoreRule rule, Action onReturn)
 	{
 		if (rule == null)
@@ -7981,6 +8628,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		};
 	}
 
+	// 状态映射和年龄段映射都需要额外参数，这里单独拆成小编辑器，避免主流程太乱。
 	private void OpenTextMappingAgeRangeEditor(LoreTextMapping mapping, Action<LoreTextMapping> onConfigured, Action onCancel)
 	{
 		if (mapping == null || onConfigured == null)
@@ -8117,6 +8765,8 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		onPicked(mapping);
 	}
 
+	// kind 选择器负责“映射类型”这一层，不直接关心目标对象。
+	// 它支持分类浏览和全文搜索，适合在映射项很多时快速定位。
 	private static string GetTextMappingKindCategoryLabel(string categoryKey)
 	{
 		return (categoryKey ?? "").Trim() switch
@@ -8308,10 +8958,30 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcClanAllSettlements, "所属家族的所有定居点");
 			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcKingdomName, "所属王国");
 			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcKingdomLeaderName, "效忠君主");
+			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcKingdomRulingClanName, "所属王国执政家族");
+			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcKingdomCultureName, "所属王国文化");
+			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcKingdomInitialHomeSettlementName, "所属王国初始都城");
+			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcKingdomAllClans, "所属王国全部家族");
+			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcKingdomAllLords, "所属王国全部领主");
+			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcKingdomAllTowns, "所属王国拥有的所有城镇");
+			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcKingdomAllCastles, "所属王国拥有的所有城堡");
+			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcKingdomAllVillages, "所属王国拥有的所有村庄");
+			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcKingdomAllSettlements, "所属王国拥有的所有定居点");
+			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcKingdomActivePolicies, "所属王国生效政策");
+			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcKingdomAlliedKingdoms, "所属王国盟友");
+			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcKingdomWarFactions, "所属王国交战势力");
 			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcSpouseName, "配偶");
 			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcFatherName, "父亲");
 			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcMotherName, "母亲");
 			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcCurrentSettlementName, "所在定居点");
+			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcCurrentSettlementOwnerClanName, "所在定居点统治家族");
+			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcCurrentSettlementOwnerLeaderName, "所在定居点统治者");
+			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcCurrentSettlementOwnerKingdomName, "所在定居点所属王国");
+			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcCurrentSettlementOwnerKingdomLeaderName, "所在定居点所属王国领袖");
+			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcCurrentSettlementCultureName, "所在定居点文化");
+			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcCurrentSettlementNotables, "所在定居点要人");
+			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcCurrentSettlementParties, "所在定居点驻留队伍");
+			AddTextMappingKindOption(list, text, TextMappingKindCurrentNpcCurrentSettlementBoundVillages, "所在定居点绑定村庄");
 			break;
 		case "player":
 			AddTextMappingKindOption(list, text, TextMappingKindPlayerName, "名字");
@@ -8333,6 +9003,18 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		case "bound":
 			AddTextMappingKindOption(list, text, TextMappingKindBoundKingdomName, "王国名称");
 			AddTextMappingKindOption(list, text, TextMappingKindBoundKingdomLeaderName, "王国领袖");
+			AddTextMappingKindOption(list, text, TextMappingKindBoundKingdomRulingClanName, "王国执政家族");
+			AddTextMappingKindOption(list, text, TextMappingKindBoundKingdomCultureName, "王国文化");
+			AddTextMappingKindOption(list, text, TextMappingKindBoundKingdomInitialHomeSettlementName, "王国初始都城");
+			AddTextMappingKindOption(list, text, TextMappingKindBoundKingdomAllClans, "王国全部家族");
+			AddTextMappingKindOption(list, text, TextMappingKindBoundKingdomAllLords, "王国全部领主");
+			AddTextMappingKindOption(list, text, TextMappingKindBoundKingdomAllTowns, "王国拥有的所有城镇");
+			AddTextMappingKindOption(list, text, TextMappingKindBoundKingdomAllCastles, "王国拥有的所有城堡");
+			AddTextMappingKindOption(list, text, TextMappingKindBoundKingdomAllVillages, "王国拥有的所有村庄");
+			AddTextMappingKindOption(list, text, TextMappingKindBoundKingdomAllSettlements, "王国拥有的所有定居点");
+			AddTextMappingKindOption(list, text, TextMappingKindBoundKingdomActivePolicies, "王国生效政策");
+			AddTextMappingKindOption(list, text, TextMappingKindBoundKingdomAlliedKingdoms, "王国盟友");
+			AddTextMappingKindOption(list, text, TextMappingKindBoundKingdomWarFactions, "王国交战势力");
 			AddTextMappingKindOption(list, text, TextMappingKindBoundSettlementName, "定居点名称");
 			AddTextMappingKindOption(list, text, TextMappingKindBoundSettlementOwnerClanName, "定居点统治家族");
 			AddTextMappingKindOption(list, text, TextMappingKindBoundSettlementOwnerClanKingdomName, "定居点统治家族的所属王国");
@@ -8345,6 +9027,12 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			AddTextMappingKindOption(list, text, TextMappingKindBoundSettlementOwnerClanAllVillages, "定居点统治家族的所有村子");
 			AddTextMappingKindOption(list, text, TextMappingKindBoundSettlementOwnerClanAllSettlements, "定居点统治家族的所有定居点");
 			AddTextMappingKindOption(list, text, TextMappingKindBoundSettlementOwnerLeaderName, "定居点统治者");
+			AddTextMappingKindOption(list, text, TextMappingKindBoundSettlementOwnerKingdomName, "定居点所属王国");
+			AddTextMappingKindOption(list, text, TextMappingKindBoundSettlementOwnerKingdomLeaderName, "定居点所属王国领袖");
+			AddTextMappingKindOption(list, text, TextMappingKindBoundSettlementCultureName, "定居点文化");
+			AddTextMappingKindOption(list, text, TextMappingKindBoundSettlementNotables, "定居点要人");
+			AddTextMappingKindOption(list, text, TextMappingKindBoundSettlementParties, "定居点驻留队伍");
+			AddTextMappingKindOption(list, text, TextMappingKindBoundSettlementBoundVillages, "定居点绑定村庄");
 			AddTextMappingKindOption(list, text, TextMappingKindBoundHeroName, "英雄名字");
 			AddTextMappingKindOption(list, text, TextMappingKindBoundHeroClanName, "英雄所属家族");
 			AddTextMappingKindOption(list, text, TextMappingKindBoundHeroClanKingdomName, "英雄所属家族的所属王国");
@@ -8364,13 +9052,31 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			AddTextMappingKindOption(list, text, TextMappingKindBoundHeroCurrentSettlementName, "英雄所在定居点");
 			break;
 		case "kingdom":
-			AddTextMappingKindOption(list, text, TextMappingKindKingdomLeaderName, "当前领袖");
 			AddTextMappingKindOption(list, text, TextMappingKindKingdomName, "名称");
+			AddTextMappingKindOption(list, text, TextMappingKindKingdomLeaderName, "当前领袖");
+			AddTextMappingKindOption(list, text, TextMappingKindKingdomRulingClanName, "执政家族");
+			AddTextMappingKindOption(list, text, TextMappingKindKingdomCultureName, "文化");
+			AddTextMappingKindOption(list, text, TextMappingKindKingdomInitialHomeSettlementName, "初始都城");
+			AddTextMappingKindOption(list, text, TextMappingKindKingdomAllClans, "全部家族");
+			AddTextMappingKindOption(list, text, TextMappingKindKingdomAllLords, "全部领主");
+			AddTextMappingKindOption(list, text, TextMappingKindKingdomAllTowns, "拥有的所有城镇");
+			AddTextMappingKindOption(list, text, TextMappingKindKingdomAllCastles, "拥有的所有城堡");
+			AddTextMappingKindOption(list, text, TextMappingKindKingdomAllVillages, "拥有的所有村庄");
+			AddTextMappingKindOption(list, text, TextMappingKindKingdomAllSettlements, "拥有的所有定居点");
+			AddTextMappingKindOption(list, text, TextMappingKindKingdomActivePolicies, "生效政策");
+			AddTextMappingKindOption(list, text, TextMappingKindKingdomAlliedKingdoms, "盟友");
+			AddTextMappingKindOption(list, text, TextMappingKindKingdomWarFactions, "交战势力");
 			break;
 		case "settlement":
+			AddTextMappingKindOption(list, text, TextMappingKindSettlementName, "名称");
 			AddTextMappingKindOption(list, text, TextMappingKindSettlementOwnerLeaderName, "统治者");
 			AddTextMappingKindOption(list, text, TextMappingKindSettlementOwnerClanName, "统治家族");
-			AddTextMappingKindOption(list, text, TextMappingKindSettlementName, "名称");
+			AddTextMappingKindOption(list, text, TextMappingKindSettlementOwnerKingdomName, "所属王国");
+			AddTextMappingKindOption(list, text, TextMappingKindSettlementOwnerKingdomLeaderName, "所属王国领袖");
+			AddTextMappingKindOption(list, text, TextMappingKindSettlementCultureName, "文化");
+			AddTextMappingKindOption(list, text, TextMappingKindSettlementNotables, "要人");
+			AddTextMappingKindOption(list, text, TextMappingKindSettlementParties, "驻留队伍");
+			AddTextMappingKindOption(list, text, TextMappingKindSettlementBoundVillages, "绑定村庄");
 			break;
 		case "clan":
 			AddTextMappingKindOption(list, text, TextMappingKindClanLeaderName, "当前族长");
@@ -11361,6 +12067,8 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		MBInformationManager.ShowMultiSelectionInquiry(data);
 	}
 
+	// 目标选择器负责“这个 kind 具体取谁”的那一层：
+	// 自动目标直接返回 token，手动目标则打开王国/定居点/家族/英雄选择器。
 	private void OpenTextMappingTargetPicker(string kind, Action<string> onPickTargetId, Action onCancel)
 	{
 		if (onPickTargetId == null)
@@ -11399,11 +12107,29 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		{
 		case TextMappingKindKingdomName:
 		case TextMappingKindKingdomLeaderName:
+		case TextMappingKindKingdomRulingClanName:
+		case TextMappingKindKingdomCultureName:
+		case TextMappingKindKingdomInitialHomeSettlementName:
+		case TextMappingKindKingdomAllClans:
+		case TextMappingKindKingdomAllLords:
+		case TextMappingKindKingdomAllTowns:
+		case TextMappingKindKingdomAllCastles:
+		case TextMappingKindKingdomAllVillages:
+		case TextMappingKindKingdomAllSettlements:
+		case TextMappingKindKingdomActivePolicies:
+		case TextMappingKindKingdomAlliedKingdoms:
+		case TextMappingKindKingdomWarFactions:
 			OpenKingdomPickerSingle(onPickTargetId, onCancel);
 			break;
 		case TextMappingKindSettlementName:
 		case TextMappingKindSettlementOwnerClanName:
 		case TextMappingKindSettlementOwnerLeaderName:
+		case TextMappingKindSettlementOwnerKingdomName:
+		case TextMappingKindSettlementOwnerKingdomLeaderName:
+		case TextMappingKindSettlementCultureName:
+		case TextMappingKindSettlementNotables:
+		case TextMappingKindSettlementParties:
+		case TextMappingKindSettlementBoundVillages:
 			OpenSettlementPickerSingle(onPickTargetId, onCancel);
 			break;
 		case TextMappingKindClanName:
