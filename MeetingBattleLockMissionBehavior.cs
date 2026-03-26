@@ -19,6 +19,8 @@ namespace AnimusForge;
 
 public class MeetingBattleLockMissionBehavior : MissionBehavior
 {
+	private static MeetingBattleLockMissionBehavior _currentInstance;
+
 	private const float StartupLoadingBlackTimeSeconds = 4f;
 
 	private const float StartupLoadingFadeOutSeconds = 0.08f;
@@ -81,9 +83,15 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior
 
 	private bool _formalDuelCombatReleaseApplied;
 
+	private Formation _mainOriginalFormation;
+
+	private bool _hasCapturedMainOriginalFormation;
+
 	private Formation _targetOriginalFormation;
 
 	private bool _hasCapturedTargetOriginalFormation;
+
+	private Formation _formalDuelPlayerFormation;
 
 	private Formation _formalDuelTargetFormation;
 
@@ -136,9 +144,21 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior
 		_targetHero = targetHero;
 	}
 
+	internal static void ReapplyMeetingLockForAgentIfNeeded(Agent agent, bool recaptureAnchor = false, bool preserveFacing = true)
+	{
+		try
+		{
+			_currentInstance?.TryReapplyMeetingLockForAgent(agent, recaptureAnchor, preserveFacing);
+		}
+		catch
+		{
+		}
+	}
+
 	public override void AfterStart()
 	{
 		base.AfterStart();
+		_currentInstance = this;
 		LordEncounterBehavior.SetEncounterMeetingMissionActive(active: true);
 		_findAgentsTimer = 0f;
 		_pauseTickTimer = 0f;
@@ -164,8 +184,11 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior
 		_targetLockedPosition = Vec3.Zero;
 		_hasTargetLockedPosition = false;
 		_formalDuelCombatReleaseApplied = false;
+		_mainOriginalFormation = null;
+		_hasCapturedMainOriginalFormation = false;
 		_targetOriginalFormation = null;
 		_hasCapturedTargetOriginalFormation = false;
+		_formalDuelPlayerFormation = null;
 		_formalDuelTargetFormation = null;
 		_formalDuelOrderRefreshTimer = 0f;
 		_wasFormalDuelActiveLastTick = false;
@@ -206,6 +229,10 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior
 
 	public override void OnRemoveBehavior()
 	{
+		if (_currentInstance == this)
+		{
+			_currentInstance = null;
+		}
 		bool flag = false;
 		try
 		{
@@ -315,6 +342,7 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior
 			catch
 			{
 			}
+			_formalDuelCombatReleaseApplied = false;
 			_allowTargetFreeMovementAfterFormalDuel = false;
 			EnsureTargetLordNeutralized();
 			Logger.Log("MeetingBattle", "Formal duel ended: target duelist returned to meeting-neutral lock.");
@@ -561,7 +589,7 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior
 		bool flag = false;
 		try
 		{
-			flag = team.IsEnemyOf(team2) || team2.IsEnemyOf(team);
+			flag = AreTeamsHostileSafely(team, team2);
 		}
 		catch
 		{
@@ -577,6 +605,30 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior
 			return;
 		}
 		teams.Add(team);
+	}
+
+	private static bool IsUsableTeam(Team team)
+	{
+		try
+		{
+			return team != null && team != Team.Invalid && team.IsValid;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static bool AreTeamsHostileSafely(Team firstTeam, Team secondTeam)
+	{
+		try
+		{
+			return IsUsableTeam(firstTeam) && IsUsableTeam(secondTeam) && firstTeam != secondTeam && (firstTeam.IsEnemyOf(secondTeam) || secondTeam.IsEnemyOf(firstTeam));
+		}
+		catch
+		{
+			return false;
+		}
 	}
 
 	private void TrySetEnemyRelation(Team a, Team b, bool isEnemy)
@@ -977,8 +1029,8 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior
 				}
 				else if (!_formalDuelCombatReleaseApplied)
 				{
-					agent.DisableScriptedMovement();
-					agent.ClearTargetFrame();
+					TryEnsureMainAgentPlayerController(agent);
+					EnsureAgentFreeMovement(agent);
 				}
 			}
 		}
@@ -997,8 +1049,7 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior
 				}
 				else if (!_formalDuelCombatReleaseApplied)
 				{
-					agent2.DisableScriptedMovement();
-					agent2.ClearTargetFrame();
+					EnsureAgentFreeMovement(agent2);
 				}
 			}
 		}
@@ -1018,9 +1069,15 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior
 				}
 				else if (!_formalDuelCombatReleaseApplied)
 				{
-					targetAgent.DisableScriptedMovement();
-					targetAgent.ClearTargetFrame();
+					ReleaseSingleAgentFromMeetingLock(targetAgent);
 					targetAgent.SetWatchState(Agent.WatchState.Alarmed);
+					try
+					{
+						targetAgent.WieldInitialWeapons(Agent.WeaponWieldActionType.InstantAfterPickUp, Equipment.InitialWeaponEquipPreference.MeleeForMainHand);
+					}
+					catch
+					{
+					}
 				}
 			}
 		}
@@ -1040,8 +1097,7 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior
 				}
 				else if (!_formalDuelCombatReleaseApplied)
 				{
-					agent3.DisableScriptedMovement();
-					agent3.ClearTargetFrame();
+					ReleaseSingleAgentFromMeetingLock(agent3);
 				}
 			}
 		}
@@ -1159,6 +1215,18 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior
 		{
 			return;
 		}
+		if (!_hasCapturedMainOriginalFormation)
+		{
+			try
+			{
+				_mainOriginalFormation = main.Formation;
+			}
+			catch
+			{
+				_mainOriginalFormation = null;
+			}
+			_hasCapturedMainOriginalFormation = true;
+		}
 		if (!_hasCapturedTargetOriginalFormation)
 		{
 			try
@@ -1178,41 +1246,34 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior
 		catch
 		{
 		}
+		if (_formalDuelPlayerFormation == null)
+		{
+			_formalDuelPlayerFormation = CreateFormalDuelDetachedFormation(main, 0, null);
+		}
 		if (_formalDuelTargetFormation == null)
 		{
-			Team team = null;
+			int num2 = 0;
 			try
 			{
-				team = target.Team;
+				num2 = ((target.Team != null && target.Team == main.Team) ? 1 : 0);
 			}
 			catch
 			{
-				team = null;
+				num2 = 0;
 			}
-			if (team != null)
+			_formalDuelTargetFormation = CreateFormalDuelDetachedFormation(target, num2, _formalDuelPlayerFormation);
+		}
+		if (_formalDuelPlayerFormation != null)
+		{
+			try
 			{
-				try
+				if (main.Formation != _formalDuelPlayerFormation)
 				{
-					foreach (Formation item in team.FormationsIncludingEmpty)
-					{
-						if (item != null)
-						{
-							if (target.Formation == item && item.CountOfUnits <= 1)
-							{
-								_formalDuelTargetFormation = item;
-								break;
-							}
-							if (item.CountOfUnits == 0)
-							{
-								_formalDuelTargetFormation = item;
-								break;
-							}
-						}
-					}
+					main.Formation = _formalDuelPlayerFormation;
 				}
-				catch
-				{
-				}
+			}
+			catch
+			{
 			}
 		}
 		if (_formalDuelTargetFormation != null)
@@ -1250,19 +1311,18 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior
 		}
 		try
 		{
-			target.SetTargetPosition(main.Position.AsVec2);
+			Agent mountAgent = target.MountAgent;
+			if (mountAgent != null && mountAgent.IsActive())
+			{
+				mountAgent.ClearTargetFrame();
+			}
 		}
 		catch
 		{
 		}
 		try
 		{
-			Agent mountAgent = target.MountAgent;
-			if (mountAgent != null && mountAgent.IsActive())
-			{
-				mountAgent.ClearTargetFrame();
-				mountAgent.SetTargetPosition(main.Position.AsVec2);
-			}
+			(_formalDuelPlayerFormation ?? main.Formation)?.SetMovementOrder(MovementOrder.MovementOrderStop);
 		}
 		catch
 		{
@@ -1278,9 +1338,25 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior
 
 	private void RestoreTargetFormationAfterFormalDuel()
 	{
-		if (!_hasCapturedTargetOriginalFormation)
+		if (!_hasCapturedMainOriginalFormation && !_hasCapturedTargetOriginalFormation)
 		{
 			return;
+		}
+		try
+		{
+			if (_mainAgent != null && _mainAgent.IsActive())
+			{
+				try
+				{
+					_mainAgent.Formation = _mainOriginalFormation;
+				}
+				catch
+				{
+				}
+			}
+		}
+		catch
+		{
 		}
 		try
 		{
@@ -1298,10 +1374,90 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior
 		catch
 		{
 		}
+		_mainOriginalFormation = null;
+		_hasCapturedMainOriginalFormation = false;
 		_targetOriginalFormation = null;
 		_hasCapturedTargetOriginalFormation = false;
+		_formalDuelPlayerFormation = null;
 		_formalDuelTargetFormation = null;
 		_formalDuelOrderRefreshTimer = 0f;
+	}
+
+	private Formation ResolveFormalDuelSoloFormation(Agent agent, Formation avoidFormation)
+	{
+		if (agent == null || !agent.IsActive())
+		{
+			return null;
+		}
+		Formation formation = null;
+		try
+		{
+			formation = agent.Formation;
+		}
+		catch
+		{
+			formation = null;
+		}
+		try
+		{
+			if (formation != null && formation != avoidFormation && formation.CountOfUnits <= 1)
+			{
+				return formation;
+			}
+		}
+		catch
+		{
+		}
+		Team team = null;
+		try
+		{
+			team = agent.Team;
+		}
+		catch
+		{
+			team = null;
+		}
+		if (team != null)
+		{
+			try
+			{
+				foreach (Formation item in team.FormationsIncludingEmpty)
+				{
+					if (item != null && item != avoidFormation && item.CountOfUnits == 0)
+					{
+						return item;
+					}
+				}
+			}
+			catch
+			{
+			}
+		}
+		return formation;
+	}
+
+	private Formation CreateFormalDuelDetachedFormation(Agent agent, int formationIndex, Formation avoidFormation)
+	{
+		if (agent == null || !agent.IsActive())
+		{
+			return null;
+		}
+		try
+		{
+			Team team = agent.Team;
+			if (team != null)
+			{
+				Formation formation = new Formation(team, formationIndex);
+				if (formation != null && formation != avoidFormation)
+				{
+					return formation;
+				}
+			}
+		}
+		catch
+		{
+		}
+		return ResolveFormalDuelSoloFormation(agent, avoidFormation);
 	}
 
 	private void ResetLeaderLockAnchorAfterFormalDuel()
@@ -2226,9 +2382,9 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior
 				Team team = agent?.Team;
 				Team team2 = affectorAgent?.Team;
 				Team team3 = affectedAgent?.Team;
-				if (team != null && team2 != null && team3 != null && team2 != team3)
+				if (IsUsableTeam(team) && IsUsableTeam(team2) && IsUsableTeam(team3) && team2 != team3)
 				{
-					bool flag3 = team2.IsEnemyOf(team3) || team3.IsEnemyOf(team2);
+					bool flag3 = AreTeamsHostileSafely(team2, team3);
 					bool flag4 = team2 == team || team3 == team;
 					flag2 = flag3 && flag4;
 				}
@@ -2257,9 +2413,9 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior
 		{
 			Team team4 = agent.Team;
 			Team team5 = affectedAgent.Team;
-			if (team4 != null && team5 != null && team4 != team5)
+			if (IsUsableTeam(team4) && IsUsableTeam(team5) && team4 != team5)
 			{
-				flag7 = team5.IsEnemyOf(team4) || team4.IsEnemyOf(team5);
+				flag7 = AreTeamsHostileSafely(team5, team4);
 			}
 		}
 		catch
@@ -2771,6 +2927,68 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior
 		{
 			WorldPosition scriptedPosition = new WorldPosition(base.Mission.Scene, position);
 			agent.SetScriptedPositionAndDirection(ref scriptedPosition, rotationInRadians, addHumanLikeDelay: false, Agent.AIScriptedFrameFlags.NoAttack | Agent.AIScriptedFrameFlags.DoNotRun);
+		}
+		catch
+		{
+		}
+	}
+
+	private void TryReapplyMeetingLockForAgent(Agent agent, bool recaptureAnchor, bool preserveFacing)
+	{
+		if (base.Mission == null || agent == null || !agent.IsActive())
+		{
+			return;
+		}
+		if (!MeetingBattleRuntime.IsMeetingActive || MeetingBattleRuntime.IsCombatEscalated)
+		{
+			return;
+		}
+		if (agent == _mainAgent)
+		{
+			return;
+		}
+		bool flag = false;
+		try
+		{
+			flag = DuelBehavior.IsFormalDuelActive;
+		}
+		catch
+		{
+			flag = false;
+		}
+		if (flag && agent == _targetAgent)
+		{
+			return;
+		}
+		try
+		{
+			TrySetAgentController(agent, "None");
+		}
+		catch
+		{
+		}
+		try
+		{
+			TrySheathWeapons(agent);
+		}
+		catch
+		{
+		}
+		try
+		{
+			TryLockAgentToCurrentPosition(agent, recaptureAnchor, preserveFacing);
+		}
+		catch
+		{
+		}
+		try
+		{
+			Agent mountAgent = agent.MountAgent;
+			if (mountAgent != null && mountAgent.IsActive())
+			{
+				TrySetAgentController(mountAgent, "None");
+				TryLockAgentToCurrentPosition(mountAgent, recaptureAnchor, preserveFacing);
+			}
 		}
 		catch
 		{

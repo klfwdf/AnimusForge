@@ -1880,6 +1880,10 @@ public class SceneTauntMissionBehavior : MissionBehavior
 
 	private float _pendingActiveUnarmedTargetFleeAtMissionTime = -1f;
 
+	private float _lastArmedEscalationAtMissionTime = -1f;
+
+	private readonly Dictionary<int, float> _recentNeutralizedFleeingCivilianUntilMissionTime = new Dictionary<int, float>();
+
 	private bool _armedConflictOccurredThisConflict;
 
 	private bool _armedDefeatOutcomeHandled;
@@ -1968,6 +1972,9 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		TryCommitPendingPlayerUnarmedPrep();
 		TryCommitPendingPlayerRearmAfterArmedConflictEnd();
 		TryCommitPendingActiveUnarmedTargetFlee();
+		TryForceActiveUnarmedTargetFleeFallback();
+		TryMaintainRecentlyNeutralizedFleeingCivilians();
+		TryMaintainHostileUnarmedOpponentsFleeing();
 		TryMaintainMainAgentArmedPresence();
 		TryMaintainArmedBystanderReactions();
 		TryAppendNearbyArmedEscalationBehaviorFacts();
@@ -2329,17 +2336,8 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			{
 				return;
 			}
-			List<Agent> nearbyNPCAgents = ShoutUtils.GetNearbyNPCAgents();
-			if (nearbyNPCAgents == null || nearbyNPCAgents.Count == 0)
-			{
-				return;
-			}
-			Agent facingAgent = ShoutUtils.GetFacingAgent(nearbyNPCAgents);
-			if (facingAgent == null || !facingAgent.IsActive())
-			{
-				return;
-			}
-			TryAddFacingAgentToUnarmedConflict(facingAgent, "player_attack_release_targeting_existing_unarmed_conflict");
+			// During an unarmed brawl, only actual hits should pull additional civilians into the conflict.
+			// Mere facing/attack release was causing nearby townsfolk to get swept into the brawl unexpectedly.
 		}
 		catch (Exception ex)
 		{
@@ -2751,12 +2749,27 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			{
 				return false;
 			}
+			bool flag = ShouldFleeWhenArmedVictim(targetAgent);
 			if (_opponentAgentIndices.Contains(targetAgent.Index))
 			{
 				if (_armedBystanderWatcherIndices.Contains(targetAgent.Index))
 				{
 					ReleaseArmedBystanderWatcher(targetAgent);
-					Logger.Log("SceneTaunt", $"Released frozen armed bystander into active combat. Reason={reason}, Target={targetAgent.Name}");
+					if (flag)
+					{
+						TryForceUnarmedBystanderToFlee(targetAgent);
+						Logger.Log("SceneTaunt", $"Released frozen fleeing civilian into active armed conflict while preserving flee. Reason={reason}, Target={targetAgent.Name}");
+					}
+					else
+					{
+						Logger.Log("SceneTaunt", $"Released frozen armed bystander into active combat. Reason={reason}, Target={targetAgent.Name}");
+					}
+					return true;
+				}
+				if (flag)
+				{
+					TryForceUnarmedBystanderToFlee(targetAgent);
+					Logger.Log("SceneTaunt", $"Refreshed fleeing hostile civilian during armed conflict. Reason={reason}, Target={targetAgent.Name}");
 					return true;
 				}
 				return false;
@@ -2770,7 +2783,15 @@ public class SceneTauntMissionBehavior : MissionBehavior
 				TryForceAgentMortal(escortedFollower);
 				TryAlarmAgent(escortedFollower);
 			}
-			Logger.Log("SceneTaunt", $"Added facing civilian to armed scene conflict. Reason={reason}, Target={targetAgent.Name}, Opponents={_opponentAgentIndices.Count}");
+			if (flag)
+			{
+				TryForceUnarmedBystanderToFlee(targetAgent);
+				Logger.Log("SceneTaunt", $"Added fleeing civilian to armed scene conflict while preserving flee. Reason={reason}, Target={targetAgent.Name}, Opponents={_opponentAgentIndices.Count}");
+			}
+			else
+			{
+				Logger.Log("SceneTaunt", $"Added facing civilian to armed scene conflict. Reason={reason}, Target={targetAgent.Name}, Opponents={_opponentAgentIndices.Count}");
+			}
 			return true;
 		}
 		catch (Exception ex)
@@ -2890,22 +2911,14 @@ public class SceneTauntMissionBehavior : MissionBehavior
 				return "";
 			}
 			EquipmentIndex primaryWieldedItemIndex = agent.GetPrimaryWieldedItemIndex();
-			if (primaryWieldedItemIndex != EquipmentIndex.None && IsMissionWeaponRealWeapon(agent.Equipment[primaryWieldedItemIndex]))
+			if (TryGetRealWeaponDisplayName(agent, primaryWieldedItemIndex, out var weaponName))
 			{
-				string text = agent.Equipment[primaryWieldedItemIndex].Item?.Name?.ToString();
-				if (!string.IsNullOrWhiteSpace(text))
-				{
-					return text.Trim();
-				}
+				return weaponName;
 			}
 			EquipmentIndex offhandWieldedItemIndex = agent.GetOffhandWieldedItemIndex();
-			if (offhandWieldedItemIndex != EquipmentIndex.None && IsMissionWeaponRealWeapon(agent.Equipment[offhandWieldedItemIndex]))
+			if (TryGetRealWeaponDisplayName(agent, offhandWieldedItemIndex, out weaponName))
 			{
-				string text2 = agent.Equipment[offhandWieldedItemIndex].Item?.Name?.ToString();
-				if (!string.IsNullOrWhiteSpace(text2))
-				{
-					return text2.Trim();
-				}
+				return weaponName;
 			}
 			for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
 			{
@@ -2924,6 +2937,29 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		{
 		}
 		return "";
+	}
+
+	private static bool TryGetRealWeaponDisplayName(Agent agent, EquipmentIndex equipmentIndex, out string weaponName)
+	{
+		weaponName = "";
+		try
+		{
+			if (!IsRealWeaponWieldedSlot(agent, equipmentIndex))
+			{
+				return false;
+			}
+			string text = agent.Equipment[equipmentIndex].Item?.Name?.ToString();
+			if (string.IsNullOrWhiteSpace(text))
+			{
+				return false;
+			}
+			weaponName = text.Trim();
+			return weaponName.Length > 0;
+		}
+		catch
+		{
+			return false;
+		}
 	}
 
 	private static void TryAppendNpcBehaviorFactForVerbalConflict(int targetAgentIndex)
@@ -3049,7 +3085,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		}
 		if (!flag && (_openedAsUnarmedBrawl || flag2 || flag3))
 		{
-			return text + "在定居点内殴打了当局人员，你和其他守卫开始向他发动攻击";
+			return text + "在定居点内殴打了平民，你和其他守卫开始向他发动攻击";
 		}
 		return text + "在定居点内拿武器乱砍人，你和其他守卫开始向他发动攻击";
 	}
@@ -3884,7 +3920,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			AlarmNearbyBystanders();
 			_armedCarryoverSceneInitialized = true;
 			_armedCarryoverHandledInThisMission = true;
-			InformationManager.DisplayMessage(new InformationMessage("你的持械冲突已经蔓延到这个场景，守卫和当局人员立刻开始围堵你。", new Color(1f, 0.35f, 0.2f)));
+			InformationManager.DisplayMessage(new InformationMessage("你的持械冲突已经蔓延到这个场景，守卫和武装平民立刻开始围堵你。", new Color(1f, 0.35f, 0.2f)));
 			Logger.Log("SceneTaunt", $"Activated armed settlement carryover in scene. Settlement={Settlement.CurrentSettlement?.Name}, Opponents={list2.Count}, Guards={guardAgents.Count}, Source={SceneTauntBehavior.GetArmedCarryoverSourceForCurrentSettlement()}");
 		}
 		catch (Exception ex)
@@ -4134,6 +4170,111 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		}
 	}
 
+	private void ClearPendingActiveUnarmedTargetFlee()
+	{
+		_pendingActiveUnarmedTargetFlee = false;
+		_pendingActiveUnarmedTargetFleeAgentIndex = -1;
+		_pendingActiveUnarmedTargetFleeAtMissionTime = -1f;
+	}
+
+	private void TryForceActiveUnarmedTargetFleeFallback()
+	{
+		try
+		{
+			if (!_armedConflict || !_pendingActiveUnarmedTargetFlee || Mission.Current == null || _pendingActiveUnarmedTargetFleeAgentIndex < 0)
+			{
+				return;
+			}
+			if (Mission.Current.CurrentTime < _pendingActiveUnarmedTargetFleeAtMissionTime)
+			{
+				return;
+			}
+			Agent agent = Mission.Current.Agents?.FirstOrDefault(a => a != null && a.Index == _pendingActiveUnarmedTargetFleeAgentIndex);
+			if (agent == null || !agent.IsActive())
+			{
+				ClearPendingActiveUnarmedTargetFlee();
+				return;
+			}
+			if (!ShouldFleeWhenArmedVictim(agent))
+			{
+				ClearPendingActiveUnarmedTargetFlee();
+				return;
+			}
+			if (!_opponentAgentIndices.Contains(agent.Index))
+			{
+				TryForceUnarmedBystanderToFlee(agent);
+				ClearPendingActiveUnarmedTargetFlee();
+				return;
+			}
+			if (!TryRemoveAgentFromOpponentFightSide(agent))
+			{
+				return;
+			}
+			TryForceUnarmedBystanderToFlee(agent);
+			ClearPendingActiveUnarmedTargetFlee();
+			Logger.Log("SceneTaunt", $"Fallback-converted active unarmed civilian target to fleeing bystander after armed escalation. Agent={agent.Name}, AgentIndex={agent.Index}");
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SceneTaunt", "Fallback-converting active unarmed target after armed escalation failed: " + ex.Message);
+		}
+	}
+
+	private void TryMaintainRecentlyNeutralizedFleeingCivilians()
+	{
+		try
+		{
+			if (Mission.Current == null || _recentNeutralizedFleeingCivilianUntilMissionTime.Count == 0)
+			{
+				return;
+			}
+			float currentTime = Mission.Current.CurrentTime;
+			foreach (int item in _recentNeutralizedFleeingCivilianUntilMissionTime.Keys.ToList())
+			{
+				if (!_recentNeutralizedFleeingCivilianUntilMissionTime.TryGetValue(item, out var value) || currentTime > value)
+				{
+					_recentNeutralizedFleeingCivilianUntilMissionTime.Remove(item);
+					continue;
+				}
+				Agent agent = Mission.Current.Agents?.FirstOrDefault(a => a != null && a.Index == item);
+				if (agent == null || !agent.IsActive() || _opponentAgentIndices.Contains(item) || !ShouldFleeWhenArmedVictim(agent))
+				{
+					_recentNeutralizedFleeingCivilianUntilMissionTime.Remove(item);
+					continue;
+				}
+				TryForceUnarmedBystanderToFlee(agent);
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SceneTaunt", "Maintaining recently neutralized fleeing civilians failed: " + ex.Message);
+		}
+	}
+
+	private void TryMaintainHostileUnarmedOpponentsFleeing()
+	{
+		try
+		{
+			if (!_conflictActive || !_armedConflict || Mission.Current?.Agents == null || _opponentAgentIndices.Count == 0)
+			{
+				return;
+			}
+			foreach (int item in _opponentAgentIndices.ToList())
+			{
+				Agent agent = Mission.Current.Agents?.FirstOrDefault(a => a != null && a.Index == item);
+				if (agent == null || !agent.IsActive() || !ShouldFleeWhenArmedVictim(agent))
+				{
+					continue;
+				}
+				TryForceUnarmedBystanderToFlee(agent);
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SceneTaunt", "Maintaining hostile unarmed opponents fleeing failed: " + ex.Message);
+		}
+	}
+
 	private void TryCommitPendingPlayerRearmAfterArmedConflictEnd()
 	{
 		try
@@ -4355,6 +4496,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		ClearMissionFightHandlerPendingFinishTimer();
 		_armedConflict = true;
 		_armedConflictOccurredThisConflict = true;
+		_lastArmedEscalationAtMissionTime = Mission.Current?.CurrentTime ?? -1f;
 		_armedCarryoverHandledInThisMission = true;
 		SceneTauntBehavior.MarkArmedCarryoverForCurrentSettlement(reason);
 		_blockedAiWeaponAgentIndices.Clear();
@@ -4473,6 +4615,10 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			catch
 			{
 			}
+			if (Mission.Current != null && ShouldFleeWhenArmedVictim(agent))
+			{
+				_recentNeutralizedFleeingCivilianUntilMissionTime[agent.Index] = Mission.Current.CurrentTime + 6f;
+			}
 			return true;
 		}
 		catch (Exception ex)
@@ -4581,6 +4727,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			Team team = agent.Team;
 			_fightHandler.AddAgentToSide(agent, isPlayerSide);
 			FixMissionFightHandlerStoredTeam(agent, isPlayerSide, team);
+			_recentNeutralizedFleeingCivilianUntilMissionTime.Remove(agent.Index);
 			if (isPlayerSide)
 			{
 				_playerAgentIndices.Add(agent.Index);
@@ -5494,7 +5641,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		try
 		{
 			EquipmentIndex primaryWieldedItemIndex = agent.GetPrimaryWieldedItemIndex();
-			if (primaryWieldedItemIndex != EquipmentIndex.None && IsMissionWeaponRealWeapon(agent.Equipment[primaryWieldedItemIndex]))
+			if (IsRealWeaponWieldedSlot(agent, primaryWieldedItemIndex))
 			{
 				return true;
 			}
@@ -5505,7 +5652,23 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		try
 		{
 			EquipmentIndex offhandWieldedItemIndex = agent.GetOffhandWieldedItemIndex();
-			return offhandWieldedItemIndex != EquipmentIndex.None && IsMissionWeaponRealWeapon(agent.Equipment[offhandWieldedItemIndex]);
+			return IsRealWeaponWieldedSlot(agent, offhandWieldedItemIndex);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static bool IsRealWeaponWieldedSlot(Agent agent, EquipmentIndex equipmentIndex)
+	{
+		try
+		{
+			if (agent == null || equipmentIndex == EquipmentIndex.None || equipmentIndex < EquipmentIndex.WeaponItemBeginSlot || equipmentIndex >= EquipmentIndex.NumAllWeaponSlots)
+			{
+				return false;
+			}
+			return IsMissionWeaponRealWeapon(agent.Equipment[equipmentIndex]);
 		}
 		catch
 		{

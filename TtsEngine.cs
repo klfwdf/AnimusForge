@@ -426,6 +426,7 @@ internal sealed class TtsEngine : IDisposable
 				catch (Exception ex2)
 				{
 					Logger.Log("TtsEngine", "[ERROR] ProcessJob: " + ex2.Message);
+					BannerlordExceptionSentinel.ReportObservedException("TtsEngine.ProcessJob", ex2, "agentIndex=" + (item?.AgentIndex ?? (-1)));
 					NotifyPlaybackFailed(item, "TTS processing exception: " + ex2.Message);
 				}
 			}
@@ -433,6 +434,7 @@ internal sealed class TtsEngine : IDisposable
 		catch (Exception ex3)
 		{
 			Logger.Log("TtsEngine", "[ERROR] WorkerLoop 异常退出: " + ex3.Message);
+			BannerlordExceptionSentinel.ReportObservedException("TtsEngine.WorkerLoop", ex3);
 		}
 		Logger.Log("TtsEngine", "工作线程已退出");
 	}
@@ -445,8 +447,9 @@ internal sealed class TtsEngine : IDisposable
 		{
 			this.OnPlaybackFailed?.Invoke(job?.AgentIndex ?? -1, text);
 		}
-		catch
+		catch (Exception ex)
 		{
+			BannerlordExceptionSentinel.ReportObservedException("TtsEngine.NotifyPlaybackFailed", ex, "agentIndex=" + (job?.AgentIndex ?? (-1)));
 		}
 	}
 
@@ -642,8 +645,9 @@ internal sealed class TtsEngine : IDisposable
 							this.OnAudioFileReady(job.AgentIndex, text8, text9, num3);
 							LogTtsReport("ProcessJob.OnAudioFileReadyDispatched", job.AgentIndex, $"wav={Path.GetFileName(text8)};xml={Path.GetFileName(text9)};duration={num3:F2}");
 						}
-						catch
+						catch (Exception ex)
 						{
+							BannerlordExceptionSentinel.ReportObservedException("TtsEngine.OnAudioFileReady", ex, "agentIndex=" + job.AgentIndex);
 						}
 					}
 				}
@@ -661,6 +665,7 @@ internal sealed class TtsEngine : IDisposable
 				catch (Exception ex2)
 				{
 					LogTtsReport("ProcessJob.OnPlaybackStartedFailed", job.AgentIndex, "error=" + ex2.Message);
+					BannerlordExceptionSentinel.ReportObservedException("TtsEngine.OnPlaybackStarted", ex2, "agentIndex=" + job.AgentIndex);
 				}
 				try
 				{
@@ -720,6 +725,7 @@ internal sealed class TtsEngine : IDisposable
 					catch (Exception ex3)
 					{
 						LogTtsReport("ProcessJob.OnPlaybackFinishedFailed", job.AgentIndex, "error=" + ex3.Message);
+						BannerlordExceptionSentinel.ReportObservedException("TtsEngine.OnPlaybackFinished", ex3, "agentIndex=" + job.AgentIndex);
 					}
 					finally
 					{

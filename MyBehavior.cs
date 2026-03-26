@@ -60,6 +60,8 @@ public class MyBehavior : CampaignBehaviorBase
 		public int Amount;
 
 		public ItemObject Item;
+
+		public int InventoryUnitValue;
 	}
 
 	private class HeroShownRecord
@@ -80,6 +82,10 @@ public class MyBehavior : CampaignBehaviorBase
 		public int AvailableAmount;
 
 		public ItemObject Item;
+
+		public long InventoryTotalValue;
+
+		public int InventoryUnitValue;
 	}
 
 	private class DialogueDay
@@ -282,19 +288,13 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private bool _nextDuelRiskWarningByLiteral = true;
 
-	private string _confirmCarryHeroId;
+	private string _ruleStickyTargetKey;
 
-	private int _confirmCarryRoundsLeft;
+	private int _ruleStickyDuelRoundsLeft;
 
-	private bool _confirmCarryDuel;
+	private int _ruleStickyRewardRoundsLeft;
 
-	private bool _confirmCarryReward;
-
-	private bool _confirmCarryLoan;
-
-	private bool _confirmCarrySurroundings;
-
-	private bool _confirmCarryKingdomService;
+	private int _ruleStickyLoanRoundsLeft;
 
 	private long _suppressAutoClickUntilUtcTicks;
 
@@ -2779,74 +2779,120 @@ public class MyBehavior : CampaignBehaviorBase
 		return false;
 	}
 
-	private void ClearRuleConfirmCarry()
-	{
-		_confirmCarryHeroId = null;
-		_confirmCarryRoundsLeft = 0;
-		_confirmCarryDuel = false;
-		_confirmCarryReward = false;
-		_confirmCarryLoan = false;
-		_confirmCarrySurroundings = false;
-		_confirmCarryKingdomService = false;
-	}
-
-	private bool TryConsumeRuleConfirmCarry(Hero targetHero, string playerInput, out bool duel, out bool reward, out bool loan, out bool surroundings, out bool kingdomService)
-	{
-		duel = false;
-		reward = false;
-		loan = false;
-		surroundings = false;
-		kingdomService = false;
-		string text = targetHero?.StringId ?? "";
-		if (string.IsNullOrWhiteSpace(text) || _confirmCarryRoundsLeft <= 0)
-		{
-			ClearRuleConfirmCarry();
-			return false;
-		}
-		if (!string.Equals(_confirmCarryHeroId ?? "", text, StringComparison.Ordinal))
-		{
-			ClearRuleConfirmCarry();
-			return false;
-		}
-		if (!IsShortAckForRuleFollowup(playerInput))
-		{
-			ClearRuleConfirmCarry();
-			return false;
-		}
-		duel = _confirmCarryDuel;
-		reward = _confirmCarryReward;
-		loan = _confirmCarryLoan;
-		surroundings = _confirmCarrySurroundings;
-		kingdomService = _confirmCarryKingdomService;
-		ClearRuleConfirmCarry();
-		return duel | reward | loan | surroundings | kingdomService;
-	}
-
-	private void UpdateRuleConfirmCarryFromResponse(Hero targetHero, bool duel, bool reward, bool loan, bool surroundings, bool kingdomService, string npcResponse)
+	private static string ResolveRuleStickyTargetKey(Hero targetHero, CharacterObject targetCharacter)
 	{
 		string text = targetHero?.StringId ?? "";
 		if (string.IsNullOrWhiteSpace(text))
 		{
-			ClearRuleConfirmCarry();
-			return;
+			text = targetCharacter?.StringId ?? "";
 		}
-		if (!(duel || reward || loan || surroundings || kingdomService))
+		if (string.IsNullOrWhiteSpace(text))
 		{
-			ClearRuleConfirmCarry();
-			return;
+			text = targetCharacter?.HeroObject?.StringId ?? "";
 		}
-		if (!IsNpcAskingForConfirmation(npcResponse))
+		return (text ?? "").Trim().ToLowerInvariant();
+	}
+
+	private static int GetBuiltInRuleStickyTurnLimit(string ruleId)
+	{
+		switch ((ruleId ?? "").Trim().ToLowerInvariant())
 		{
-			ClearRuleConfirmCarry();
+		case "duel":
+		case "reward":
+			return 2;
+		case "loan":
+			return 3;
+		default:
+			return 0;
+		}
+	}
+
+	private void ClearRuleStickyCarry()
+	{
+		_ruleStickyTargetKey = null;
+		_ruleStickyDuelRoundsLeft = 0;
+		_ruleStickyRewardRoundsLeft = 0;
+		_ruleStickyLoanRoundsLeft = 0;
+	}
+
+	private bool TryConsumeRuleStickyCarry(Hero targetHero, CharacterObject targetCharacter, string playerInput, out bool duel, out bool reward, out bool loan)
+	{
+		duel = false;
+		reward = false;
+		loan = false;
+		string text = ResolveRuleStickyTargetKey(targetHero, targetCharacter);
+		if (string.IsNullOrWhiteSpace(text) || string.IsNullOrWhiteSpace(_ruleStickyTargetKey) || (_ruleStickyDuelRoundsLeft <= 0 && _ruleStickyRewardRoundsLeft <= 0 && _ruleStickyLoanRoundsLeft <= 0))
+		{
+			ClearRuleStickyCarry();
+			return false;
+		}
+		if (!string.Equals(_ruleStickyTargetKey, text, StringComparison.Ordinal))
+		{
+			ClearRuleStickyCarry();
+			return false;
+		}
+		if (!IsShortAckForRuleFollowup(playerInput))
+		{
+			ClearRuleStickyCarry();
+			return false;
+		}
+		if (_ruleStickyDuelRoundsLeft > 0)
+		{
+			duel = true;
+			_ruleStickyDuelRoundsLeft--;
+		}
+		if (_ruleStickyRewardRoundsLeft > 0)
+		{
+			reward = true;
+			_ruleStickyRewardRoundsLeft--;
+		}
+		if (_ruleStickyLoanRoundsLeft > 0)
+		{
+			loan = true;
+			_ruleStickyLoanRoundsLeft--;
+		}
+		if (!duel && !reward && !loan)
+		{
+			ClearRuleStickyCarry();
+			return false;
+		}
+		if (_ruleStickyDuelRoundsLeft <= 0 && _ruleStickyRewardRoundsLeft <= 0 && _ruleStickyLoanRoundsLeft <= 0)
+		{
+			ClearRuleStickyCarry();
+		}
+		try
+		{
+			Logger.Log("GuardrailSemantic", $"builtin_rule_sticky_consume target={text} duel={duel} reward={reward} loan={loan} left=({_ruleStickyDuelRoundsLeft},{_ruleStickyRewardRoundsLeft},{_ruleStickyLoanRoundsLeft})");
+		}
+		catch
+		{
+		}
+		return true;
+	}
+
+	private void UpdateRuleStickyCarryFromHits(Hero targetHero, CharacterObject targetCharacter, bool duel, bool reward, bool loan)
+	{
+		string text = ResolveRuleStickyTargetKey(targetHero, targetCharacter);
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			ClearRuleStickyCarry();
 			return;
 		}
-		_confirmCarryHeroId = text;
-		_confirmCarryRoundsLeft = 1;
-		_confirmCarryDuel = duel;
-		_confirmCarryReward = reward;
-		_confirmCarryLoan = loan;
-		_confirmCarrySurroundings = surroundings;
-		_confirmCarryKingdomService = kingdomService;
+		if (!(duel || reward || loan))
+		{
+			return;
+		}
+		_ruleStickyTargetKey = text;
+		_ruleStickyDuelRoundsLeft = (duel ? GetBuiltInRuleStickyTurnLimit("duel") : 0);
+		_ruleStickyRewardRoundsLeft = (reward ? GetBuiltInRuleStickyTurnLimit("reward") : 0);
+		_ruleStickyLoanRoundsLeft = (loan ? GetBuiltInRuleStickyTurnLimit("loan") : 0);
+		try
+		{
+			Logger.Log("GuardrailSemantic", $"builtin_rule_sticky_prime target={text} duel={_ruleStickyDuelRoundsLeft} reward={_ruleStickyRewardRoundsLeft} loan={_ruleStickyLoanRoundsLeft}");
+		}
+		catch
+		{
+		}
 	}
 
 	private static string BuildHeroIdentityTitleForPrompt(Hero hero)
@@ -4082,6 +4128,7 @@ public class MyBehavior : CampaignBehaviorBase
 					ItemId = tradeResourceOption.ItemId,
 					ItemName = tradeResourceOption.Name,
 					Item = tradeResourceOption.Item,
+					InventoryUnitValue = tradeResourceOption.InventoryUnitValue,
 					Amount = 0
 				});
 			}
@@ -4195,6 +4242,7 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				ApplyShowRecord(oneToOneConversationHero);
 				extraFact = BuildShowFactText(oneToOneConversationHero);
+				ShowPendingDisplayValueMessage(oneToOneConversationHero, EstimatePendingShowTotalValue());
 			}
 		}
 		_pendingTradeItems.Clear();
@@ -4428,6 +4476,7 @@ public class MyBehavior : CampaignBehaviorBase
 		string text = Hero.MainHero?.Name?.ToString() ?? "玩家";
 		string text2 = GetTradeTargetDisplayName(targetHero);
 		List<string> list = new List<string>();
+		long num = 0L;
 		foreach (PendingTradeItem pendingTradeItem in _pendingTradeItems)
 		{
 			if (pendingTradeItem.Amount > 0)
@@ -4435,12 +4484,13 @@ public class MyBehavior : CampaignBehaviorBase
 				if (pendingTradeItem.IsGold)
 				{
 					list.Add($"{pendingTradeItem.Amount} 第纳尔");
+					num += pendingTradeItem.Amount;
 				}
 				else
 				{
-					string text3 = pendingTradeItem.ItemId ?? pendingTradeItem.Item?.StringId ?? "";
-					string text4 = RewardSystemBehavior.Instance?.BuildItemValueFactSuffixForExternal(targetHero ?? Hero.MainHero, text3, pendingTradeItem.Amount) ?? "";
-					list.Add($"{pendingTradeItem.Amount} 个 {pendingTradeItem.ItemName}{text4}");
+					string text3 = RewardSystemBehavior.Instance?.BuildInventoryActualItemValueFactSuffixForExternal(pendingTradeItem.Item, pendingTradeItem.Amount, pendingTradeItem.InventoryUnitValue) ?? "";
+					num += RewardSystemBehavior.Instance?.EstimateInventoryActualItemValueForExternal(pendingTradeItem.Item, pendingTradeItem.Amount, pendingTradeItem.InventoryUnitValue) ?? 0L;
+					list.Add($"{pendingTradeItem.Amount} 个 {pendingTradeItem.ItemName}{text3}");
 				}
 			}
 		}
@@ -4448,8 +4498,42 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			return "";
 		}
-		string text6 = string.Join("、", list);
-		return text + "给 " + text2 + " 看了看 " + text6 + "，但没有将其给入你的库存。";
+		return text + "给 " + text2 + " 看了看 总值为 " + num + " 第纳尔的各类财物：" + string.Join("、", list) + "，但没有将其给入你的库存。";
+	}
+
+	private long EstimatePendingShowTotalValue()
+	{
+		if (_pendingTradeItems == null || _pendingTradeItems.Count == 0)
+		{
+			return 0L;
+		}
+		long num = 0L;
+		foreach (PendingTradeItem pendingTradeItem in _pendingTradeItems)
+		{
+			if (pendingTradeItem == null || pendingTradeItem.Amount <= 0)
+			{
+				continue;
+			}
+			if (pendingTradeItem.IsGold)
+			{
+				num += pendingTradeItem.Amount;
+			}
+			else
+			{
+				num += RewardSystemBehavior.Instance?.EstimateInventoryActualItemValueForExternal(pendingTradeItem.Item, pendingTradeItem.Amount, pendingTradeItem.InventoryUnitValue) ?? 0L;
+			}
+		}
+		return num;
+	}
+
+	private void ShowPendingDisplayValueMessage(Hero targetHero, long totalValue)
+	{
+		if (totalValue <= 0)
+		{
+			return;
+		}
+		string tradeTargetDisplayName = GetTradeTargetDisplayName(targetHero);
+		InformationManager.DisplayMessage(new InformationMessage("【展示估值】你向 " + tradeTargetDisplayName + " 展示了总值为 " + totalValue + " 第纳尔的财物。", new Color(0.95f, 0.85f, 0.25f)));
 	}
 
 	private List<TradeResourceOption> BuildResourceOptions(Hero targetHero)
@@ -4516,6 +4600,7 @@ public class MyBehavior : CampaignBehaviorBase
 				if (dictionary.TryGetValue(text, out var value2))
 				{
 					value2.AvailableAmount += amount;
+					value2.InventoryTotalValue += (long)amount * (RewardSystemBehavior.Instance?.GetInventoryActualItemUnitValueForExternal(elementCopyAtIndex.EquipmentElement) ?? 1);
 				}
 				else
 				{
@@ -4525,13 +4610,15 @@ public class MyBehavior : CampaignBehaviorBase
 						ItemId = text,
 						Name = item.Name.ToString(),
 						AvailableAmount = amount,
-						Item = item
+						Item = item,
+						InventoryTotalValue = (long)amount * (RewardSystemBehavior.Instance?.GetInventoryActualItemUnitValueForExternal(elementCopyAtIndex.EquipmentElement) ?? 1)
 					};
 				}
 			}
 			foreach (TradeResourceOption value3 in dictionary.Values)
 			{
 				int num2 = value3.AvailableAmount;
+				value3.InventoryUnitValue = (num2 > 0) ? Math.Max(1, (int)Math.Round((double)value3.InventoryTotalValue / (double)num2, MidpointRounding.AwayFromZero)) : 1;
 				if (_pendingTrade != null && !_pendingTrade.IsGive && heroShownRecord != null && heroShownRecord.ShownItems.TryGetValue(value3.ItemId, out var value4))
 				{
 					num2 = Math.Max(0, num2 - value4);
@@ -4779,6 +4866,7 @@ public class MyBehavior : CampaignBehaviorBase
 					{
 						isTriggerWordDetected = AIConfigHandler.IsGuardrailSemanticHit(input, npcLastUtterance, "duel", AIConfigHandler.DuelInstruction, triggerKeywords, out duelHitKeyword, out duelHitScore);
 					}
+					bool liveDuelSemanticHit = isTriggerWordDetected;
 					bool useDuelContext = isTriggerWordDetected;
 					List<string> rewardKeywords = AIConfigHandler.RewardTriggerKeywords;
 					bool isRewardContext = false;
@@ -4788,6 +4876,7 @@ public class MyBehavior : CampaignBehaviorBase
 					{
 						isRewardContext = AIConfigHandler.IsGuardrailSemanticHit(input, npcLastUtterance, "reward", AIConfigHandler.RewardInstruction, rewardKeywords, out rewardHitKeyword, out rewardHitScore);
 					}
+					bool liveRewardSemanticHit = isRewardContext;
 					if (isSettlementMerchant)
 					{
 						isRewardContext = true;
@@ -4800,6 +4889,7 @@ public class MyBehavior : CampaignBehaviorBase
 					{
 						isLoanContext = AIConfigHandler.IsGuardrailSemanticHit(input, npcLastUtterance, "loan", AIConfigHandler.LoanInstruction, loanKeywords, out loanHitKeyword, out loanHitScore);
 					}
+					bool liveLoanSemanticHit = isLoanContext;
 					if (isSettlementMerchant)
 					{
 						isLoanContext = true;
@@ -4833,6 +4923,33 @@ public class MyBehavior : CampaignBehaviorBase
 						useRewardContext = false;
 						isLoanContext = false;
 						isSurroundingsContext = false;
+					}
+					else
+					{
+						if (TryConsumeRuleStickyCarry(targetHero, targetCharacter, input, out var carryDuel, out var carryReward, out var carryLoan))
+						{
+							if (!isTriggerWordDetected && carryDuel)
+							{
+								isTriggerWordDetected = true;
+								useDuelContext = true;
+								duelHitKeyword = "sticky";
+								duelHitScore = Math.Max(duelHitScore, 0.18f);
+							}
+							if (!isRewardContext && carryReward)
+							{
+								isRewardContext = true;
+								useRewardContext = true;
+								rewardHitKeyword = "sticky";
+								rewardHitScore = Math.Max(rewardHitScore, 0.18f);
+							}
+							if (!isLoanContext && carryLoan)
+							{
+								isLoanContext = true;
+								loanHitKeyword = "sticky";
+								loanHitScore = Math.Max(loanHitScore, 0.18f);
+							}
+						}
+						UpdateRuleStickyCarryFromHits(targetHero, targetCharacter, liveDuelSemanticHit, liveRewardSemanticHit, liveLoanSemanticHit);
 					}
 					string guardrailClarifyHint = "";
 					if (!patienceExhausted && !useDuelContext && !useRewardContext && !isLoanContext && !isSurroundingsContext)
@@ -5445,21 +5562,42 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private void TryEnsureFirstMeetingNpcFactForConversation(Hero hero)
 	{
+		GetFirstMeetingNpcFactTextForPromptIfNeededInternal(hero, persistToHistory: true);
+	}
+
+	public static string GetFirstMeetingNpcFactTextForPromptIfNeeded(Hero hero, bool persistToHistory = true)
+	{
+		try
+		{
+			return (Campaign.Current?.GetCampaignBehavior<MyBehavior>())?.GetFirstMeetingNpcFactTextForPromptIfNeededInternal(hero, persistToHistory) ?? "";
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	private string GetFirstMeetingNpcFactTextForPromptIfNeededInternal(Hero hero, bool persistToHistory)
+	{
 		if (hero == null || Hero.MainHero == null)
 		{
-			return;
+			return "";
 		}
 		string text = BuildFirstMeetingNpcFactText();
 		if (string.IsNullOrWhiteSpace(text))
 		{
-			return;
+			return "";
 		}
 		List<DialogueDay> list = LoadDialogueHistory(hero);
 		if (HasDialogueHistoryLine(list, text) || HasMeaningfulDirectConversationHistory(list))
 		{
-			return;
+			return "";
 		}
-		AppendDialogueHistory(hero, null, null, text);
+		if (persistToHistory)
+		{
+			AppendDialogueHistory(hero, null, null, text);
+		}
+		return text;
 	}
 
 	private static string BuildFirstMeetingNpcFactText()
@@ -5511,7 +5649,7 @@ public class MyBehavior : CampaignBehaviorBase
 			foreach (string line in record.Lines)
 			{
 				string text = (line ?? "").Trim();
-				if (!string.IsNullOrWhiteSpace(text) && !IsSystemFactLine(text) && !IsLoreInjectionHistoryLine(text))
+				if (!string.IsNullOrWhiteSpace(text) && !IsActiveSceneSessionHistoryLine(text) && !IsSystemFactLine(text) && !IsLoreInjectionHistoryLine(text))
 				{
 					return true;
 				}
@@ -6403,6 +6541,7 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			flag = AIConfigHandler.IsGuardrailSemanticHit(input, npcLastUtterance, "duel", AIConfigHandler.DuelInstruction, duelTriggerKeywords, out matchedKeyword, out score);
 		}
+		bool liveDuelSemanticHit = flag;
 		bool flag2 = targetHero != null && flag;
 		List<string> rewardTriggerKeywords = AIConfigHandler.RewardTriggerKeywords;
 		bool flag3 = false;
@@ -6412,6 +6551,7 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			flag3 = AIConfigHandler.IsGuardrailSemanticHit(input, npcLastUtterance, "reward", AIConfigHandler.RewardInstruction, rewardTriggerKeywords, out matchedKeyword2, out score2);
 		}
+		bool liveRewardSemanticHit = flag3;
 		List<string> loanTriggerKeywords = AIConfigHandler.LoanTriggerKeywords;
 		bool flag4 = false;
 		string matchedKeyword3 = "";
@@ -6420,6 +6560,7 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			flag4 = AIConfigHandler.IsGuardrailSemanticHit(input, npcLastUtterance, "loan", AIConfigHandler.LoanInstruction, loanTriggerKeywords, out matchedKeyword3, out score3);
 		}
+		bool liveLoanSemanticHit = flag4;
 		List<string> surroundingsTriggerKeywords = AIConfigHandler.SurroundingsTriggerKeywords;
 		bool flag5 = false;
 		string matchedKeyword4 = "";
@@ -6438,6 +6579,32 @@ public class MyBehavior : CampaignBehaviorBase
 		string matchedKeyword6 = "";
 		float score6 = 0f;
 		bool marriageHit = !suppressDynamicRuleAndLore && AIConfigHandler.IsGuardrailSemanticHit(input, npcLastUtterance, "marriage", guardrailMarriageInstruction, guardrailMarriageKeywords, out matchedKeyword6, out score6);
+		if (!suppressDynamicRuleAndLore && TryConsumeRuleStickyCarry(targetHero, targetCharacter, input, out var carryDuel, out var carryReward, out var carryLoan))
+		{
+			if (!flag && carryDuel)
+			{
+				flag = true;
+				matchedKeyword = "sticky";
+				score = Math.Max(score, 0.18f);
+			}
+			if (!flag3 && carryReward)
+			{
+				flag3 = true;
+				matchedKeyword2 = "sticky";
+				score2 = Math.Max(score2, 0.18f);
+			}
+			if (!flag4 && carryLoan)
+			{
+				flag4 = true;
+				matchedKeyword3 = "sticky";
+				score3 = Math.Max(score3, 0.18f);
+			}
+		}
+		if (!suppressDynamicRuleAndLore)
+		{
+			UpdateRuleStickyCarryFromHits(targetHero, targetCharacter, liveDuelSemanticHit, liveRewardSemanticHit, liveLoanSemanticHit);
+		}
+		flag2 = targetHero != null && flag;
 		bool flag7 = flag3 || flagMerchant;
 		bool flag8 = flag4 || flagMerchant;
 		string value = "";

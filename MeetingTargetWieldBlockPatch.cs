@@ -108,6 +108,10 @@ public static class MeetingTargetWieldBlockPatch
 		}
 		try
 		{
+			if (DuelBehavior.IsFormalDuelActive)
+			{
+				return false;
+			}
 			if (!LordEncounterBehavior.IsEncounterMeetingMissionActive)
 			{
 				return false;

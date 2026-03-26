@@ -717,6 +717,21 @@ internal static class BannerlordExceptionSentinel
 		return flag ? null : __exception;
 	}
 
+	internal static void ReportObservedException(string category, Exception exception, string extra = null, bool forceDetailed = true)
+	{
+		if (exception == null)
+		{
+			return;
+		}
+		try
+		{
+			LogException(string.IsNullOrWhiteSpace(category) ? "ObservedException" : category, null, exception, suppress: true, extra, forceDetailed);
+		}
+		catch
+		{
+		}
+	}
+
 	private static bool ShouldSuppressBoundaryException(MethodBase originalMethod, Exception exception)
 	{
 		if (originalMethod == null || exception == null)

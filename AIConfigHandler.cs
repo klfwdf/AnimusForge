@@ -134,6 +134,25 @@ public static class AIConfigHandler
 		public string MatchedIntent;
 	}
 
+	private sealed class StickyGuardrailRuleState
+	{
+		public string RuleId = "";
+
+		public string Group = "";
+
+		public int Priority;
+
+		public float LastScore;
+
+		public string MatchedSeed = "";
+
+		public int RemainingCarryTurns;
+
+		public int MaxCarryTurns;
+
+		public int CarryTurnIndex;
+	}
+
 	private static string BuildSemanticHitRateDetail(string detail, string secondaryText)
 	{
 		string text = (detail ?? "").Trim();
@@ -202,6 +221,18 @@ public static class AIConfigHandler
 	private static readonly AsyncLocal<string> _guardrailRuntimeTargetUnnamedRank = new AsyncLocal<string>();
 
 	private static readonly AsyncLocal<int> _guardrailRuntimeTargetAgentIndex = new AsyncLocal<int>();
+
+	private static readonly object _stickyGuardrailRuleLock = new object();
+
+	private static readonly Dictionary<string, List<StickyGuardrailRuleState>> _stickyGuardrailRules = new Dictionary<string, List<StickyGuardrailRuleState>>(StringComparer.OrdinalIgnoreCase);
+
+	private static readonly string[] StickyGuardrailFollowUpPhrases = new string[17]
+	{
+		"然后", "然后呢", "接着呢", "接下来呢", "那然后呢", "那接下来呢", "那我该怎么办", "我该怎么办", "下一步呢", "下一步怎么做",
+		"具体怎么做", "具体呢", "细说", "继续说", "继续", "展开说说", "后面呢"
+	};
+
+	private const int MaxStickyGuardrailRulesPerTarget = 3;
 
 	private static GuardrailEvalSnapshot _lastGuardrailEval;
 
@@ -2040,6 +2071,374 @@ public static class AIConfigHandler
 		return list;
 	}
 
+	private static string ResolveGuardrailStickyTargetKey()
+	{
+		try
+		{
+			string text = (_guardrailRuntimeTargetHeroId.Value ?? "").Trim();
+			if (!string.IsNullOrWhiteSpace(text))
+			{
+				return "hero:" + text;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			int value = _guardrailRuntimeTargetAgentIndex.Value;
+			if (value >= 0)
+			{
+				return "agent:" + value;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			string text2 = (_guardrailRuntimeTargetCharacterId.Value ?? _guardrailRuntimeTargetTroopId.Value ?? "").Trim().ToLowerInvariant();
+			if (!string.IsNullOrWhiteSpace(text2))
+			{
+				string text3 = (Settlement.CurrentSettlement?.StringId ?? "").Trim().ToLowerInvariant();
+				return string.IsNullOrWhiteSpace(text3) ? ("troop:" + text2) : ("troop:" + text2 + "@" + text3);
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			Hero hero = ResolveConversationTargetHero();
+			string text4 = (hero?.StringId ?? "").Trim();
+			if (!string.IsNullOrWhiteSpace(text4))
+			{
+				return "hero:" + text4;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			CharacterObject characterObject = ResolveConversationTargetCharacter();
+			string text5 = (characterObject?.StringId ?? "").Trim().ToLowerInvariant();
+			if (!string.IsNullOrWhiteSpace(text5))
+			{
+				string text6 = (Settlement.CurrentSettlement?.StringId ?? "").Trim().ToLowerInvariant();
+				return string.IsNullOrWhiteSpace(text6) ? ("troop:" + text5) : ("troop:" + text5 + "@" + text6);
+			}
+		}
+		catch
+		{
+		}
+		return "";
+	}
+
+	private static int GetStickyGuardrailTurnLimit(string ruleId)
+	{
+		string text = (ruleId ?? "").Trim().ToLowerInvariant();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return 0;
+		}
+		switch (text)
+		{
+		case "kingdom_service":
+		case "marriage":
+			return 3;
+		default:
+			return 0;
+		}
+	}
+
+	private static bool IsStickyGuardrailFollowUpInput(string input)
+	{
+		string text = NormalizeSemanticText(input);
+		if (string.IsNullOrWhiteSpace(text) || text.Length > 24)
+		{
+			return false;
+		}
+		for (int i = 0; i < StickyGuardrailFollowUpPhrases.Length; i++)
+		{
+			string value = StickyGuardrailFollowUpPhrases[i];
+			if (!string.IsNullOrWhiteSpace(value) && text.IndexOf(value, StringComparison.OrdinalIgnoreCase) >= 0)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private static bool DidGuardrailRuleRecentlyComplete(string ruleId, string secondaryInput)
+	{
+		string text = (secondaryInput ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return false;
+		}
+		switch ((ruleId ?? "").Trim().ToLowerInvariant())
+		{
+		case "duel":
+			return text.IndexOf("[ACTION:DUEL]", StringComparison.OrdinalIgnoreCase) >= 0;
+		case "reward":
+			return text.IndexOf("[ACTION:GIVE_GOLD:", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("[ACTION:GIVE_ITEM:", StringComparison.OrdinalIgnoreCase) >= 0;
+		case "loan":
+			return text.IndexOf("[ACTION:DEBT_", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("[ACTION:DEBT_PAY_", StringComparison.OrdinalIgnoreCase) >= 0;
+		case "kingdom_service":
+			return text.IndexOf("[ACTION:KINGDOM_SERVICE:", StringComparison.OrdinalIgnoreCase) >= 0;
+		case "marriage":
+			return text.IndexOf("[ACTION:MARRIAGE_", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("[ACTION:DIVORCE:", StringComparison.OrdinalIgnoreCase) >= 0;
+		case "lords_hall_access":
+			return text.IndexOf("[ACTION:OPEN_LORDS_HALL]", StringComparison.OrdinalIgnoreCase) >= 0;
+		default:
+			return false;
+		}
+	}
+
+	private static bool ShouldStartStickyGuardrailRule(string input, string secondaryInput, GuardrailRuleHit hit, int rank)
+	{
+		if (hit == null)
+		{
+			return false;
+		}
+		string text = (hit.RuleId ?? "").Trim();
+		if (GetStickyGuardrailTurnLimit(text) <= 0 || DidGuardrailRuleRecentlyComplete(text, secondaryInput))
+		{
+			return false;
+		}
+		if (hit.Score >= 0.999f)
+		{
+			return true;
+		}
+		if (TryGetRuleEval(input, secondaryInput, text, out var eval) && eval != null && eval.Hit)
+		{
+			if (eval.ForceHit || eval.HighAmpHit || eval.AbsHit)
+			{
+				return true;
+			}
+			if (eval.Rank <= 1 && eval.AmpScore >= 0.48f)
+			{
+				return true;
+			}
+		}
+		if (rank == 0 && hit.Score >= 0.56f)
+		{
+			return true;
+		}
+		return hit.Score >= 0.62f;
+	}
+
+	private static bool ShouldContinueStickyGuardrailRule(StickyGuardrailRuleState state, GuardrailRulePromptConfig rule, string input, int currentLiveCount, string secondaryInput)
+	{
+		if (state == null || rule == null || state.RemainingCarryTurns <= 0 || DidGuardrailRuleRecentlyComplete(state.RuleId, secondaryInput))
+		{
+			return false;
+		}
+		if (currentLiveCount > 0)
+		{
+			return false;
+		}
+		if (TryLexicalRuleKeywordHit(input, null, rule.TriggerKeywords, out var _))
+		{
+			return true;
+		}
+		string text = NormalizeSemanticText(input);
+		string text2 = NormalizeSemanticText(state.MatchedSeed);
+		if (!string.IsNullOrWhiteSpace(text) && !string.IsNullOrWhiteSpace(text2) && text.IndexOf(text2, StringComparison.OrdinalIgnoreCase) >= 0)
+		{
+			return true;
+		}
+		return IsStickyGuardrailFollowUpInput(input);
+	}
+
+	private static float ApplyStickyGuardrailScoreDecay(float score, int maxCarryTurns, int carryTurnIndex)
+	{
+		float num = ((score > 0f) ? score : 0.6f);
+		float num2;
+		if (maxCarryTurns >= 3)
+		{
+			num2 = ((carryTurnIndex <= 1) ? 0.78f : ((carryTurnIndex == 2) ? 0.58f : 0.36f));
+		}
+		else
+		{
+			num2 = ((carryTurnIndex <= 1) ? 0.72f : 0.45f);
+		}
+		return Math.Max(0.18f, num * num2);
+	}
+
+	private static List<GuardrailRuleHit> MergeStickyGuardrailRuleHits(string input, string secondaryInput, List<GuardrailRuleHit> liveHits, int maxCount)
+	{
+		List<GuardrailRuleHit> list = (liveHits ?? new List<GuardrailRuleHit>()).Where((GuardrailRuleHit x) => x != null && !string.IsNullOrWhiteSpace(x.RuleId)).OrderByDescending((GuardrailRuleHit x) => x.Priority).ThenByDescending((GuardrailRuleHit x) => x.Score).ThenBy((GuardrailRuleHit x) => x.RuleId, StringComparer.OrdinalIgnoreCase).ToList();
+		int num = ((maxCount > 0) ? ClampGuardrailReturnCap(maxCount) : GuardrailRuleReturnCap);
+		string text = ResolveGuardrailStickyTargetKey();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return (num > 0 && list.Count > num) ? list.Take(num).ToList() : list;
+		}
+		Dictionary<string, GuardrailRulePromptConfig> dictionary = BuildRulePromptRegistry();
+		if (dictionary == null || dictionary.Count <= 0)
+		{
+			return (num > 0 && list.Count > num) ? list.Take(num).ToList() : list;
+		}
+		HashSet<string> hashSet = new HashSet<string>(list.Select((GuardrailRuleHit x) => (x.RuleId ?? "").Trim()), StringComparer.OrdinalIgnoreCase);
+		List<StickyGuardrailRuleState> list2 = new List<StickyGuardrailRuleState>();
+		lock (_stickyGuardrailRuleLock)
+		{
+			_stickyGuardrailRules.TryGetValue(text, out var value);
+			value = value ?? new List<StickyGuardrailRuleState>();
+			List<StickyGuardrailRuleState> list3 = new List<StickyGuardrailRuleState>();
+			for (int i = 0; i < value.Count; i++)
+			{
+				StickyGuardrailRuleState stickyGuardrailRuleState = value[i];
+				if (stickyGuardrailRuleState == null || string.IsNullOrWhiteSpace(stickyGuardrailRuleState.RuleId) || hashSet.Contains(stickyGuardrailRuleState.RuleId))
+				{
+					continue;
+				}
+				string text2 = stickyGuardrailRuleState.RuleId.Trim();
+				if (GetStickyGuardrailTurnLimit(text2) <= 0 || !dictionary.TryGetValue(text2, out var value2) || value2 == null || !value2.IsEnabled)
+				{
+					continue;
+				}
+				if (!ShouldContinueStickyGuardrailRule(stickyGuardrailRuleState, value2, input, list.Count, secondaryInput))
+				{
+					continue;
+				}
+				stickyGuardrailRuleState.CarryTurnIndex = Math.Max(1, stickyGuardrailRuleState.MaxCarryTurns - stickyGuardrailRuleState.RemainingCarryTurns + 1);
+				list2.Add(new StickyGuardrailRuleState
+				{
+					RuleId = text2,
+					Group = stickyGuardrailRuleState.Group,
+					Priority = stickyGuardrailRuleState.Priority,
+					LastScore = stickyGuardrailRuleState.LastScore,
+					MatchedSeed = stickyGuardrailRuleState.MatchedSeed,
+					RemainingCarryTurns = stickyGuardrailRuleState.RemainingCarryTurns,
+					MaxCarryTurns = stickyGuardrailRuleState.MaxCarryTurns,
+					CarryTurnIndex = stickyGuardrailRuleState.CarryTurnIndex
+				});
+				stickyGuardrailRuleState.RemainingCarryTurns = Math.Max(0, stickyGuardrailRuleState.RemainingCarryTurns - 1);
+				if (stickyGuardrailRuleState.RemainingCarryTurns > 0)
+				{
+					list3.Add(stickyGuardrailRuleState);
+				}
+			}
+			for (int j = 0; j < list.Count; j++)
+			{
+				GuardrailRuleHit guardrailRuleHit = list[j];
+				if (!ShouldStartStickyGuardrailRule(input, secondaryInput, guardrailRuleHit, j))
+				{
+					continue;
+				}
+				string text3 = (guardrailRuleHit.RuleId ?? "").Trim();
+				int stickyGuardrailTurnLimit = GetStickyGuardrailTurnLimit(text3);
+				StickyGuardrailRuleState stickyGuardrailRuleState2 = list3.FirstOrDefault((StickyGuardrailRuleState x) => x != null && string.Equals(x.RuleId, text3, StringComparison.OrdinalIgnoreCase));
+				if (stickyGuardrailRuleState2 == null)
+				{
+					list3.Add(new StickyGuardrailRuleState
+					{
+						RuleId = text3,
+						Group = (guardrailRuleHit.Group ?? ""),
+						Priority = guardrailRuleHit.Priority,
+						LastScore = guardrailRuleHit.Score,
+						MatchedSeed = (guardrailRuleHit.MatchedSeed ?? ""),
+						RemainingCarryTurns = stickyGuardrailTurnLimit,
+						MaxCarryTurns = stickyGuardrailTurnLimit
+					});
+					continue;
+				}
+				stickyGuardrailRuleState2.Group = (guardrailRuleHit.Group ?? stickyGuardrailRuleState2.Group);
+				stickyGuardrailRuleState2.Priority = guardrailRuleHit.Priority;
+				stickyGuardrailRuleState2.LastScore = guardrailRuleHit.Score;
+				stickyGuardrailRuleState2.MatchedSeed = (guardrailRuleHit.MatchedSeed ?? stickyGuardrailRuleState2.MatchedSeed);
+				stickyGuardrailRuleState2.RemainingCarryTurns = stickyGuardrailTurnLimit;
+				stickyGuardrailRuleState2.MaxCarryTurns = stickyGuardrailTurnLimit;
+			}
+			list3 = list3.OrderByDescending((StickyGuardrailRuleState x) => x.Priority).ThenByDescending((StickyGuardrailRuleState x) => x.LastScore).ThenBy((StickyGuardrailRuleState x) => x.RuleId, StringComparer.OrdinalIgnoreCase).Take(MaxStickyGuardrailRulesPerTarget).ToList();
+			if (list3.Count > 0)
+			{
+				_stickyGuardrailRules[text] = list3;
+			}
+			else
+			{
+				_stickyGuardrailRules.Remove(text);
+			}
+		}
+		if (list2.Count > 0)
+		{
+			for (int k = 0; k < list2.Count; k++)
+			{
+				StickyGuardrailRuleState stickyGuardrailRuleState3 = list2[k];
+				if (stickyGuardrailRuleState3 == null || hashSet.Contains(stickyGuardrailRuleState3.RuleId) || !dictionary.TryGetValue(stickyGuardrailRuleState3.RuleId, out var value3) || value3 == null)
+				{
+					continue;
+				}
+				list.Add(new GuardrailRuleHit
+				{
+					RuleId = stickyGuardrailRuleState3.RuleId,
+					Group = stickyGuardrailRuleState3.Group,
+					Priority = stickyGuardrailRuleState3.Priority,
+					Score = ApplyStickyGuardrailScoreDecay(stickyGuardrailRuleState3.LastScore, stickyGuardrailRuleState3.MaxCarryTurns, stickyGuardrailRuleState3.CarryTurnIndex),
+					MatchedSeed = (stickyGuardrailRuleState3.MatchedSeed ?? ""),
+					Instruction = (value3.Instruction ?? "")
+				});
+			}
+		}
+		list = list.OrderByDescending((GuardrailRuleHit x) => x.Priority).ThenByDescending((GuardrailRuleHit x) => x.Score).ThenBy((GuardrailRuleHit x) => x.RuleId, StringComparer.OrdinalIgnoreCase).ToList();
+		if (num > 0 && list.Count > num)
+		{
+			list = list.Take(num).ToList();
+		}
+		try
+		{
+			Logger.Log("GuardrailSemantic", $"sticky_rule_merge target={text} live={hashSet.Count} sticky={list2.Count} final={list.Count}");
+		}
+		catch
+		{
+		}
+		return list;
+	}
+
+	private static string BuildExtraRuleHitDebugDetail(string input, string secondaryInput, GuardrailRuleHit hit)
+	{
+		try
+		{
+			if (hit == null)
+			{
+				return "";
+			}
+			string text = NormalizeSemanticText(input);
+			string text2 = (hit.RuleId ?? "").Trim();
+			if (!string.IsNullOrWhiteSpace(text) && !string.IsNullOrWhiteSpace(text2) && TryGetRuleEval(text, secondaryInput, text2, out var eval) && eval != null)
+			{
+				string text3 = NormalizeSemanticText(eval.MatchedIntent);
+				if (text3.Length > 48)
+				{
+					text3 = text3.Substring(0, 48);
+				}
+				string text4 = NormalizeSemanticText(eval.MatchedSeed);
+				if (text4.Length > 32)
+				{
+					text4 = text4.Substring(0, 32);
+				}
+				return $" raw={eval.RawInput:0.000} ctx={eval.RawContext:0.000} mixed={eval.MixedRaw:0.000} rerank={eval.RerankScore:0.000} amp={eval.AmpScore:0.000} rank={eval.Rank} candidate={eval.Candidate} other={eval.MaxOtherTag}@{eval.MaxOther:0.000} mean={eval.Mean:0.000} reason={eval.RejectReason} lexicalAnchor={eval.LexicalAnchor} matchedSeed={JsonConvert.ToString(text4)} intent={JsonConvert.ToString(text3)}";
+			}
+			string text5 = NormalizeSemanticText(hit.MatchedSeed);
+			if (text5.Length > 32)
+			{
+				text5 = text5.Substring(0, 32);
+			}
+			if (!string.IsNullOrWhiteSpace(text5))
+			{
+				return " source=lexical_fallback matchedSeed=" + JsonConvert.ToString(text5);
+			}
+			return " source=unknown";
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
 	public static string BuildMatchedExtraRuleInstructions(string input, int maxRules = 0)
 	{
 		return BuildMatchedExtraRuleInstructions(input, null, maxRules, hasAnyHero: true);
@@ -2059,6 +2458,7 @@ public static class AIConfigHandler
 			{
 				guardrailSemanticRuleHits = GetGuardrailLexicalRuleHits(input, secondaryInput, maxRules);
 			}
+			guardrailSemanticRuleHits = MergeStickyGuardrailRuleHits(input, secondaryInput, guardrailSemanticRuleHits, maxRules);
 			if (guardrailSemanticRuleHits == null || guardrailSemanticRuleHits.Count <= 0)
 			{
 				return "";
@@ -2142,7 +2542,7 @@ public static class AIConfigHandler
 					}
 					try
 					{
-						Logger.Log("GuardrailSemantic", $"extra_rule_hit rule={text} score={guardrailRuleHit.Score:0.000} group={guardrailRuleHit.Group} priority={guardrailRuleHit.Priority} nonHero={!hasAnyHero}");
+						Logger.Log("GuardrailSemantic", $"extra_rule_hit rule={text} score={guardrailRuleHit.Score:0.000} group={guardrailRuleHit.Group} priority={guardrailRuleHit.Priority} nonHero={!hasAnyHero}{BuildExtraRuleHitDebugDetail(input, secondaryInput, guardrailRuleHit)}");
 					}
 					catch
 					{

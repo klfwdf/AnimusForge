@@ -536,7 +536,8 @@ public class DuelBehavior : CampaignBehaviorBase
 		{
 			try
 			{
-				if (affectedAgent != null && affectedAgent.IsMainAgent && (agentState == AgentState.Unconscious || agentState == AgentState.Killed))
+				DuelBehavior instance = Instance;
+				if (instance != null && instance._isDuelActive && affectedAgent != null && affectedAgent.IsMainAgent && (agentState == AgentState.Unconscious || agentState == AgentState.Killed))
 				{
 					Hero hero = null;
 					try
@@ -546,7 +547,7 @@ public class DuelBehavior : CampaignBehaviorBase
 					catch
 					{
 					}
-					ForceKillMainHero(Instance?._targetHero ?? hero);
+					ForceKillMainHero(instance._targetHero ?? hero);
 				}
 			}
 			catch
@@ -602,11 +603,7 @@ public class DuelBehavior : CampaignBehaviorBase
 
 	private Team _preDuelTargetTeam;
 
-	private bool _hasPreDuelTargetState;
-
 	private Team _preDuelPlayerTeam;
-
-	private bool _hasPreDuelPlayerState;
 
 	private Team _preDuelPlayerMountTeam;
 
@@ -619,6 +616,10 @@ public class DuelBehavior : CampaignBehaviorBase
 	private float _meetingPreFightEndTime;
 
 	private bool _meetingPendingStart;
+
+	private float _formalDuelSpectatorRefreshTimer;
+
+	private readonly HashSet<int> _formalDuelSpectatorAgentIndices = new HashSet<int>();
 
 	private Team _duelPlayerTeam;
 
@@ -1349,63 +1350,6 @@ public class DuelBehavior : CampaignBehaviorBase
 				_meetingPreFightActive = false;
 				try
 				{
-					if (_duelPlayerTeam != null && _duelEnemyTeam != null)
-					{
-						foreach (Team team in Mission.Current.Teams)
-						{
-							if (team != null && team != _duelPlayerTeam && team != _duelEnemyTeam)
-							{
-								try
-								{
-									team.SetIsEnemyOf(_duelPlayerTeam, isEnemyOf: false);
-								}
-								catch
-								{
-								}
-								try
-								{
-									_duelPlayerTeam.SetIsEnemyOf(team, isEnemyOf: false);
-								}
-								catch
-								{
-								}
-								try
-								{
-									team.SetIsEnemyOf(_duelEnemyTeam, isEnemyOf: false);
-								}
-								catch
-								{
-								}
-								try
-								{
-									_duelEnemyTeam.SetIsEnemyOf(team, isEnemyOf: false);
-								}
-								catch
-								{
-								}
-							}
-						}
-						try
-						{
-							_duelEnemyTeam.SetIsEnemyOf(_duelPlayerTeam, isEnemyOf: true);
-						}
-						catch
-						{
-						}
-						try
-						{
-							_duelPlayerTeam.SetIsEnemyOf(_duelEnemyTeam, isEnemyOf: true);
-						}
-						catch
-						{
-						}
-					}
-				}
-				catch
-				{
-				}
-				try
-				{
 					main.SetMortalityState(Agent.MortalityState.Mortal);
 				}
 				catch
@@ -1424,7 +1368,7 @@ public class DuelBehavior : CampaignBehaviorBase
 				string information = $"【决斗开始】当前场景: {arg}。规则：任一方生命值低于 {healthThreshold:P0} 判定为战败。";
 				InformationManager.DisplayMessage(new InformationMessage(information, Color.FromUint(4294901760u)));
 			}
-			else if (main.State == AgentState.Unconscious)
+			if (main.State == AgentState.Unconscious)
 			{
 				try
 				{
@@ -1437,18 +1381,20 @@ public class DuelBehavior : CampaignBehaviorBase
 				ForceKillMainHero(_targetHero);
 				Logger.Log("DuelBehavior", "判定: 玩家战败 (Unconscious->Death)");
 				EndDuel(playerDefeated: true);
+				return;
 			}
-			else if (!main.IsActive() || main.State == AgentState.Killed)
+			if (!main.IsActive() || main.State == AgentState.Killed)
 			{
 				Logger.Log("DuelBehavior", $"判定: 玩家战败 (State={main.State})");
 				EndDuel(playerDefeated: true);
+				return;
 			}
-			else if (!agent.IsActive() || agent.State == AgentState.Killed || agent.State == AgentState.Unconscious || agent.Health <= 0f)
+			if (!agent.IsActive() || agent.State == AgentState.Killed || agent.State == AgentState.Unconscious || agent.Health <= 0f)
 			{
 				Logger.Log("DuelBehavior", $"判定: 玩家获胜 (State={agent.State}, Active={agent.IsActive()}, HP={agent.Health:0.0})");
 				EndDuel(playerDefeated: false);
+				return;
 			}
-			else
 			{
 				float healthThreshold2 = DuelSettings.GetHealthThreshold();
 				float num = main.Health / main.HealthLimit;
@@ -1594,6 +1540,250 @@ public class DuelBehavior : CampaignBehaviorBase
 		try
 		{
 			targetAgent.SetWatchState(Agent.WatchState.Alarmed);
+		}
+		catch
+		{
+		}
+	}
+
+	private void KeepFormalDuelTargetFocusedOnPlayer(Agent targetAgent)
+	{
+		try
+		{
+			Agent main = Agent.Main;
+			if (main == null || !main.IsActive() || targetAgent == null || !targetAgent.IsActive())
+			{
+				return;
+			}
+			TrySetAgentController(targetAgent, "AI");
+			try
+			{
+				if (targetAgent.IsAIControlled)
+				{
+					targetAgent.SetIsAIPaused(isPaused: false);
+				}
+			}
+			catch
+			{
+			}
+			try
+			{
+				targetAgent.ResetEnemyCaches();
+				targetAgent.InvalidateTargetAgent();
+				targetAgent.InvalidateAIWeaponSelections();
+			}
+			catch
+			{
+			}
+			try
+			{
+				targetAgent.ClearTargetFrame();
+			}
+			catch
+			{
+			}
+			try
+			{
+				targetAgent.SetTargetPosition(main.Position.AsVec2);
+			}
+			catch
+			{
+			}
+			try
+			{
+				targetAgent.WieldInitialWeapons(Agent.WeaponWieldActionType.InstantAfterPickUp, Equipment.InitialWeaponEquipPreference.MeleeForMainHand);
+			}
+			catch
+			{
+			}
+			try
+			{
+				targetAgent.SetWatchState(Agent.WatchState.Alarmed);
+			}
+			catch
+			{
+			}
+			try
+			{
+				Agent mountAgent = targetAgent.MountAgent;
+				if (mountAgent != null && mountAgent.IsActive())
+				{
+					mountAgent.ResetEnemyCaches();
+					mountAgent.InvalidateTargetAgent();
+					mountAgent.ClearTargetFrame();
+					mountAgent.SetTargetPosition(main.Position.AsVec2);
+				}
+			}
+			catch
+			{
+			}
+		}
+		catch
+		{
+		}
+	}
+
+	private void KeepFormalDuelSpectatorsOutOfFight(Agent playerAgent, Agent targetAgent)
+	{
+		try
+		{
+			if (_currentDuelIsArena || Mission.Current == null || playerAgent == null || targetAgent == null)
+			{
+				return;
+			}
+			if (Mission.Current.CurrentTime < _formalDuelSpectatorRefreshTimer)
+			{
+				return;
+			}
+			_formalDuelSpectatorRefreshTimer = Mission.Current.CurrentTime + 0.2f;
+			Team team = playerAgent.Team;
+			Team team2 = targetAgent.Team;
+			Agent mountAgent = playerAgent.MountAgent;
+			Agent mountAgent2 = targetAgent.MountAgent;
+			foreach (Agent agent in Mission.Current.Agents)
+			{
+				if (agent == null || !agent.IsActive() || agent == playerAgent || agent == targetAgent || agent == mountAgent || agent == mountAgent2)
+				{
+					continue;
+				}
+				if (agent.Team != team && agent.Team != team2)
+				{
+					continue;
+				}
+				_formalDuelSpectatorAgentIndices.Add(agent.Index);
+				TrySetAgentController(agent, "None");
+				try
+				{
+					if (agent.IsAIControlled)
+					{
+						agent.SetIsAIPaused(isPaused: true);
+					}
+				}
+				catch
+				{
+				}
+				try
+				{
+					agent.ResetEnemyCaches();
+					agent.InvalidateTargetAgent();
+					agent.InvalidateAIWeaponSelections();
+				}
+				catch
+				{
+				}
+				try
+				{
+					agent.ClearTargetFrame();
+				}
+				catch
+				{
+				}
+				try
+				{
+					agent.SetWatchState(Agent.WatchState.Patrolling);
+				}
+				catch
+				{
+				}
+				UnlockAgentMovement(agent, unpauseAi: false, clearTargetFrame: true);
+				TrySheathWeapons(agent);
+				try
+				{
+					Agent mountAgent3 = agent.MountAgent;
+					if (mountAgent3 != null && mountAgent3.IsActive())
+					{
+						TrySetAgentController(mountAgent3, "None");
+						mountAgent3.SetIsAIPaused(isPaused: true);
+						mountAgent3.ClearTargetFrame();
+						UnlockAgentMovement(mountAgent3, unpauseAi: false, clearTargetFrame: true);
+					}
+				}
+				catch
+				{
+				}
+			}
+		}
+		catch
+		{
+		}
+	}
+
+	private void RestoreFormalDuelSpectatorControl()
+	{
+		try
+		{
+			if (_formalDuelSpectatorAgentIndices.Count == 0 || Mission.Current == null)
+			{
+				_formalDuelSpectatorRefreshTimer = 0f;
+				return;
+			}
+			foreach (int formalDuelSpectatorAgentIndex in _formalDuelSpectatorAgentIndices.ToList())
+			{
+				Agent agent = Mission.Current.Agents.FirstOrDefault((Agent a) => a != null && a.Index == formalDuelSpectatorAgentIndex);
+				if (agent == null || !agent.IsActive())
+				{
+					continue;
+				}
+				TrySetAgentController(agent, "AI");
+				try
+				{
+					if (agent.IsAIControlled)
+					{
+						agent.SetIsAIPaused(isPaused: false);
+					}
+				}
+				catch
+				{
+				}
+				try
+				{
+					agent.SetWatchState(Agent.WatchState.Patrolling);
+				}
+				catch
+				{
+				}
+				UnlockAgentMovement(agent, unpauseAi: true, clearTargetFrame: true);
+				try
+				{
+					Agent mountAgent = agent.MountAgent;
+					if (mountAgent != null && mountAgent.IsActive())
+					{
+						TrySetAgentController(mountAgent, "AI");
+						mountAgent.SetIsAIPaused(isPaused: false);
+						UnlockAgentMovement(mountAgent, unpauseAi: true, clearTargetFrame: true);
+					}
+				}
+				catch
+				{
+				}
+			}
+		}
+		catch
+		{
+		}
+		finally
+		{
+			_formalDuelSpectatorAgentIndices.Clear();
+			_formalDuelSpectatorRefreshTimer = 0f;
+		}
+	}
+
+	private static void TrySheathWeapons(Agent agent)
+	{
+		if (agent == null || !agent.IsActive())
+		{
+			return;
+		}
+		try
+		{
+			agent.TryToSheathWeaponInHand(Agent.HandIndex.MainHand, Agent.WeaponWieldActionType.Instant);
+		}
+		catch
+		{
+		}
+		try
+		{
+			agent.TryToSheathWeaponInHand(Agent.HandIndex.OffHand, Agent.WeaponWieldActionType.Instant);
 		}
 		catch
 		{
@@ -1782,9 +1972,7 @@ public class DuelBehavior : CampaignBehaviorBase
 			_forcedMainHeroDeath = false;
 			EnsureDeathBehaviorsPresent();
 			_preDuelTargetTeam = agent.Team;
-			_hasPreDuelTargetState = true;
 			_preDuelPlayerTeam = Agent.Main?.Team ?? current.PlayerTeam;
-			_hasPreDuelPlayerState = _preDuelPlayerTeam != null;
 			_preDuelPlayerMountTeam = Agent.Main?.MountAgent?.Team;
 			_preDuelTargetMountTeam = agent.MountAgent?.Team;
 			_currentDuelIsArena = flag;
@@ -1801,11 +1989,90 @@ public class DuelBehavior : CampaignBehaviorBase
 				current.SetMissionMode(MissionMode.Battle, atStart: true);
 				if (!flag)
 				{
-					if (!TryInitializeFormalDuelTeams(current, agent))
+					_duelPlayerTeam = Agent.Main?.Team ?? current.PlayerTeam;
+					_duelEnemyTeam = agent.Team;
+					if (_duelEnemyTeam == null || _duelEnemyTeam == _duelPlayerTeam)
 					{
-						Logger.Log("DuelBehavior", "[MeetingDuel][ERROR] 无法建立稳定的决斗队伍关系，已取消本次决斗以避免闪退。");
+						Team team = null;
+						try
+						{
+							team = current.PlayerEnemyTeam;
+						}
+						catch
+						{
+							team = null;
+						}
+						if (team != null && team != _duelPlayerTeam)
+						{
+							_duelEnemyTeam = team;
+							try
+							{
+								agent.SetTeam(_duelEnemyTeam, sync: true);
+							}
+							catch
+							{
+							}
+							try
+							{
+								Agent mountAgent = agent.MountAgent;
+								if (mountAgent != null && mountAgent.IsActive())
+								{
+									mountAgent.SetTeam(_duelEnemyTeam, sync: true);
+								}
+							}
+							catch
+							{
+							}
+							Logger.Log("DuelBehavior", "[MeetingDuel] 目标与玩家同队，已切到原生敌方队伍作为决斗对手。");
+						}
+					}
+					if (_duelPlayerTeam == null || _duelEnemyTeam == null || _duelEnemyTeam == _duelPlayerTeam)
+					{
+						Logger.Log("DuelBehavior", "[MeetingDuel][ERROR] 无法建立稳定的决斗队伍关系，已取消本次决斗以避免异常。");
 						_isDuelActive = false;
 						return;
+					}
+					try
+					{
+						foreach (Team item in current.Teams)
+						{
+							if (item != null && item != _duelPlayerTeam && item != _duelEnemyTeam)
+							{
+								try
+								{
+									item.SetIsEnemyOf(_duelPlayerTeam, isEnemyOf: false);
+								}
+								catch
+								{
+								}
+								try
+								{
+									_duelPlayerTeam.SetIsEnemyOf(item, isEnemyOf: false);
+								}
+								catch
+								{
+								}
+								try
+								{
+									item.SetIsEnemyOf(_duelEnemyTeam, isEnemyOf: false);
+								}
+								catch
+								{
+								}
+								try
+								{
+									_duelEnemyTeam.SetIsEnemyOf(item, isEnemyOf: false);
+								}
+								catch
+								{
+								}
+							}
+						}
+						_duelEnemyTeam.SetIsEnemyOf(_duelPlayerTeam, isEnemyOf: true);
+						_duelPlayerTeam.SetIsEnemyOf(_duelEnemyTeam, isEnemyOf: true);
+					}
+					catch
+					{
 					}
 					TrySetAgentController(agent, "None");
 					try
@@ -2074,26 +2341,27 @@ public class DuelBehavior : CampaignBehaviorBase
 
 	private void RestoreState()
 	{
+		Agent agent = GetAgent(_targetHero);
 		try
 		{
 			_meetingPreFightActive = false;
 			_meetingPreFightEndTime = 0f;
-			_duelPlayerTeam = null;
-			_duelEnemyTeam = null;
+			RestoreFormalDuelSpectatorControl();
 		}
 		catch
 		{
 		}
-		Agent agent = GetAgent(_targetHero);
 		if (agent != null)
 		{
-			if (_hasPreDuelTargetState && _preDuelTargetTeam != null)
+			try
 			{
-				agent.SetTeam(_preDuelTargetTeam, sync: true);
+				if (_preDuelTargetTeam != null)
+				{
+					agent.SetTeam(_preDuelTargetTeam, sync: true);
+				}
 			}
-			else if (Mission.Current != null)
+			catch
 			{
-				agent.SetTeam(Mission.Current.PlayerTeam, sync: true);
 			}
 			agent.Health = agent.HealthLimit;
 			TrySetAgentController(agent, "AI");
@@ -2119,7 +2387,10 @@ public class DuelBehavior : CampaignBehaviorBase
 				{
 					try
 					{
-						mountAgent.SetTeam(_preDuelTargetMountTeam ?? _preDuelTargetTeam ?? mountAgent.Team, sync: true);
+						if (_preDuelTargetMountTeam != null)
+						{
+							mountAgent.SetTeam(_preDuelTargetMountTeam, sync: true);
+						}
 					}
 					catch
 					{
@@ -2134,38 +2405,14 @@ public class DuelBehavior : CampaignBehaviorBase
 		}
 		if (Agent.Main != null)
 		{
-			try
-			{
-				if (_hasPreDuelPlayerState && _preDuelPlayerTeam != null)
-				{
-					try
-					{
-						Mission.Current.PlayerTeam = _preDuelPlayerTeam;
-					}
-					catch
-					{
-					}
-					Agent.Main.SetTeam(_preDuelPlayerTeam, sync: true);
-				}
-			}
-			catch
-			{
-			}
 			TrySetAgentController(Agent.Main, "Player");
 			UnlockAgentMovement(Agent.Main, unpauseAi: true, clearTargetFrame: true);
 			try
 			{
-				Agent mountAgent2 = Agent.Main.MountAgent;
-				if (mountAgent2 != null && mountAgent2.IsActive())
+				Agent mountAgent3 = Agent.Main.MountAgent;
+				if (mountAgent3 != null && mountAgent3.IsActive())
 				{
-					try
-					{
-						mountAgent2.SetTeam(_preDuelPlayerMountTeam ?? _preDuelPlayerTeam ?? mountAgent2.Team, sync: true);
-					}
-					catch
-					{
-					}
-					UnlockAgentMovement(mountAgent2, unpauseAi: true, clearTargetFrame: true);
+					UnlockAgentMovement(mountAgent3, unpauseAi: true, clearTargetFrame: true);
 				}
 			}
 			catch
@@ -2199,8 +2446,8 @@ public class DuelBehavior : CampaignBehaviorBase
 			{
 			}
 		}
-		_hasPreDuelTargetState = false;
-		_hasPreDuelPlayerState = false;
+		_preDuelPlayerTeam = null;
+		_preDuelTargetTeam = null;
 		_preDuelPlayerMountTeam = null;
 		_preDuelTargetMountTeam = null;
 	}

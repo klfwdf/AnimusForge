@@ -4273,7 +4273,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		ItemCategory itemCategory = item.ItemCategory;
 		if (itemCategory == DefaultItemCategories.Beer || itemCategory == DefaultItemCategories.Wine)
 		{
-			return "罐";
+			return "桶";
 		}
 		if (item.IsFood)
 		{
@@ -4319,6 +4319,85 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		int num2 = Math.Max(1, unitPrice);
 		long num3 = (long)num * (long)num2;
 		return $"（指导单价约 {num2} 第纳尔/{GetItemQuantityUnit(item)}，总值约 {num3} 第纳尔）";
+	}
+
+	private static int GetInventoryActualItemUnitValueCore(EquipmentElement equipmentElement)
+	{
+		try
+		{
+			int num = equipmentElement.ItemValue;
+			if (num > 0)
+			{
+				return num;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			int num2 = equipmentElement.Item?.Value ?? 0;
+			if (num2 > 0)
+			{
+				return num2;
+			}
+		}
+		catch
+		{
+		}
+		return 1;
+	}
+
+	private static string BuildInventoryActualItemValueFactSuffixCore(ItemObject item, int amount, int unitValue)
+	{
+		if (item == null || amount <= 0 || unitValue <= 0)
+		{
+			return "";
+		}
+		int num = Math.Max(1, amount);
+		int num2 = Math.Max(1, unitValue);
+		long num3 = (long)num * (long)num2;
+		return $"（库存实际单价约 {num2} 第纳尔/{GetItemQuantityUnit(item)}，该项总值约 {num3} 第纳尔）";
+	}
+
+	public int GetInventoryActualItemUnitValueForExternal(EquipmentElement equipmentElement)
+	{
+		try
+		{
+			return GetInventoryActualItemUnitValueCore(equipmentElement);
+		}
+		catch
+		{
+			return 1;
+		}
+	}
+
+	public string BuildInventoryActualItemValueFactSuffixForExternal(ItemObject item, int amount, int inventoryUnitValue)
+	{
+		try
+		{
+			return BuildInventoryActualItemValueFactSuffixCore(item, amount, inventoryUnitValue);
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	public long EstimateInventoryActualItemValueForExternal(ItemObject item, int amount, int inventoryUnitValue)
+	{
+		try
+		{
+			if (item == null || amount <= 0 || inventoryUnitValue <= 0)
+			{
+				return 0L;
+			}
+			return (long)Math.Max(1, amount) * Math.Max(1, inventoryUnitValue);
+		}
+		catch
+		{
+			return 0L;
+		}
 	}
 
 	public string BuildItemValueFactSuffixForExternal(Hero hero, string itemId, int amount)
@@ -4822,7 +4901,37 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		return list;
 	}
 
-	public List<RewardItemInfo> GetHeroBattleEquipmentItems(Hero hero)
+	private static bool TryResolvePromptEquipmentContext(Hero hero, out bool useCivilianEquipment)
+	{
+		useCivilianEquipment = false;
+		try
+		{
+			Mission current = Mission.Current;
+			if (current != null)
+			{
+				useCivilianEquipment = current.DoesMissionRequireCivilianEquipment;
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			Settlement settlement = Settlement.CurrentSettlement ?? hero?.CurrentSettlement;
+			if (settlement != null)
+			{
+				useCivilianEquipment = !settlement.IsVillage;
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		return false;
+	}
+
+	private List<RewardItemInfo> GetHeroEquipmentItems(Hero hero, bool useCivilianEquipment)
 	{
 		List<RewardItemInfo> list = new List<RewardItemInfo>();
 		if (hero == null)
@@ -4843,7 +4952,8 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		EquipmentIndex[] array3 = array2;
 		foreach (EquipmentIndex index in array3)
 		{
-			EquipmentElement equipmentElement = hero.BattleEquipment[index];
+			Equipment equipment = useCivilianEquipment ? hero.CivilianEquipment : hero.BattleEquipment;
+			EquipmentElement equipmentElement = equipment[index];
 			if (equipmentElement.Item != null)
 			{
 				ItemObject item = equipmentElement.Item;
@@ -4852,11 +4962,17 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 					Item = item,
 					StringId = item.StringId,
 					Name = (item.Name?.ToString() ?? item.StringId),
-					Count = 1
+					Count = 1,
+					EquipmentElement = equipmentElement
 				});
 			}
 		}
 		return list;
+	}
+
+	public List<RewardItemInfo> GetHeroBattleEquipmentItems(Hero hero)
+	{
+		return GetHeroEquipmentItems(hero, useCivilianEquipment: false);
 	}
 
 	private List<RewardItemInfo> GetAgentEquipmentItems(Agent agent)
@@ -4900,6 +5016,17 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 
 	private List<RewardItemInfo> GetHeroVisibleEquipmentItemsForPrompt(Hero hero)
 	{
+		if (hero == null)
+		{
+			return new List<RewardItemInfo>();
+		}
+		bool useCivilianEquipment = false;
+		TryResolvePromptEquipmentContext(hero, out useCivilianEquipment);
+		List<RewardItemInfo> heroEquipmentItems = GetHeroEquipmentItems(hero, useCivilianEquipment);
+		if (heroEquipmentItems.Count > 0)
+		{
+			return heroEquipmentItems;
+		}
 		if (hero == Hero.MainHero && Agent.Main != null && Agent.Main.IsActive())
 		{
 			List<RewardItemInfo> agentEquipmentItems = GetAgentEquipmentItems(Agent.Main);
@@ -4911,7 +5038,81 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		return GetHeroBattleEquipmentItems(hero);
 	}
 
-	public string BuildVisibleEquipmentValueSummaryForAI(Hero hero, int maxItems = 8)
+	private int GetVisibleEquipmentActualUnitValue(RewardItemInfo itemInfo)
+	{
+		if (itemInfo == null)
+		{
+			return 0;
+		}
+		try
+		{
+			if (itemInfo.EquipmentElement.Item != null)
+			{
+				return Math.Max(1, GetInventoryActualItemUnitValueForExternal(itemInfo.EquipmentElement));
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			return Math.Max(1, itemInfo.Item?.Value ?? 1);
+		}
+		catch
+		{
+			return 1;
+		}
+	}
+
+	public long EstimateVisibleEquipmentActualValueForAI(Hero hero, int maxItems = 8)
+	{
+		if (hero == null)
+		{
+			return 0L;
+		}
+		List<RewardItemInfo> heroVisibleEquipmentItemsForPrompt = GetHeroVisibleEquipmentItemsForPrompt(hero);
+		if (heroVisibleEquipmentItemsForPrompt == null || heroVisibleEquipmentItemsForPrompt.Count <= 0)
+		{
+			return 0L;
+		}
+		long num = 0L;
+		int num2 = 0;
+		foreach (RewardItemInfo item in heroVisibleEquipmentItemsForPrompt.OrderByDescending((RewardItemInfo x) => x.Count).ThenBy((RewardItemInfo x) => x.StringId, StringComparer.Ordinal))
+		{
+			if (item == null || item.Item == null)
+			{
+				continue;
+			}
+			int visibleEquipmentActualUnitValue = Math.Max(1, GetVisibleEquipmentActualUnitValue(item));
+			int num3 = Math.Max(1, item.Count);
+			num += (long)visibleEquipmentActualUnitValue * (long)num3;
+			num2++;
+			if (num2 >= Math.Max(1, maxItems))
+			{
+				break;
+			}
+		}
+		return Math.Max(0L, num);
+	}
+
+	public string BuildVisibleEquipmentActualValueInlineFactForAI(Hero hero, int maxItems = 8)
+	{
+		try
+		{
+			long num = EstimateVisibleEquipmentActualValueForAI(hero, maxItems);
+			if (num <= 0L)
+			{
+				return "";
+			}
+			return "这身当前可见装备按玩家库存中的实际价值计算，总值约 " + num + " 第纳尔";
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	public string BuildVisibleEquipmentActualValueSummaryForAI(Hero hero, int maxItems = 8)
 	{
 		if (hero == null)
 		{
@@ -4922,43 +5123,42 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			return string.Empty;
 		}
-		Dictionary<string, ItemGuidePriceInfo> dictionary = new Dictionary<string, ItemGuidePriceInfo>(StringComparer.OrdinalIgnoreCase);
 		long num = 0L;
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.AppendLine("【玩家可见装备估值】以下为玩家当前穿戴/携行装备的指导估值（第纳尔）：");
+		stringBuilder.AppendLine("【玩家可见装备实际估值】以下为玩家当前穿戴/携行装备按库存实际价值计算（第纳尔）：");
 		int num2 = 0;
 		foreach (RewardItemInfo item in heroVisibleEquipmentItemsForPrompt.OrderByDescending((RewardItemInfo x) => x.Count).ThenBy((RewardItemInfo x) => x.StringId, StringComparer.Ordinal))
 		{
-			if (item != null && item.Item != null)
+			if (item == null || item.Item == null)
 			{
-				string key = item.StringId ?? "";
-				if (!dictionary.TryGetValue(key, out var value))
-				{
-					ItemGuidePriceInfo itemGuidePriceInfo = (dictionary[key] = GetGuidePriceForItemNearHero(hero, item.Item));
-					value = itemGuidePriceInfo;
-				}
-				int num3 = Math.Max(1, value.UnitPrice);
-				int num4 = Math.Max(1, item.Count);
-				long num5 = (long)num3 * (long)num4;
-				num += num5;
-				stringBuilder.Append(item.StringId).Append("|").Append(item.Name ?? item.StringId)
-					.Append("|")
-					.Append(num4)
-					.Append(GetItemQuantityUnit(item.Item))
-					.Append("|guidePrice=")
-					.Append(num3)
-					.Append("|lineValue=")
-					.Append(num5)
-					.AppendLine();
-				num2++;
-				if (num2 >= Math.Max(1, maxItems))
-				{
-					break;
-				}
+				continue;
+			}
+			int visibleEquipmentActualUnitValue = Math.Max(1, GetVisibleEquipmentActualUnitValue(item));
+			int num3 = Math.Max(1, item.Count);
+			long num4 = (long)visibleEquipmentActualUnitValue * (long)num3;
+			num += num4;
+			stringBuilder.Append(item.StringId).Append("|").Append(item.Name ?? item.StringId)
+				.Append("|")
+				.Append(num3)
+				.Append(GetItemQuantityUnit(item.Item))
+				.Append("|inventoryUnitValue=")
+				.Append(visibleEquipmentActualUnitValue)
+				.Append("|lineValue=")
+				.Append(num4)
+				.AppendLine();
+			num2++;
+			if (num2 >= Math.Max(1, maxItems))
+			{
+				break;
 			}
 		}
 		stringBuilder.AppendLine("总估值约 " + Math.Max(0L, num) + " 第纳尔。");
 		return stringBuilder.ToString().Trim();
+	}
+
+	public string BuildVisibleEquipmentValueSummaryForAI(Hero hero, int maxItems = 8)
+	{
+		return BuildVisibleEquipmentActualValueSummaryForAI(hero, maxItems);
 	}
 
 	public string BuildInventorySummaryForAI(Hero hero, int maxItems = 20, bool includeGuidePrice = true)

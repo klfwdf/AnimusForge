@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -50,6 +51,10 @@ public class ShoutBehavior : CampaignBehaviorBase
 		public int AvailableAmount;
 
 		public ItemObject Item;
+
+		public long InventoryTotalValue;
+
+		public int InventoryUnitValue;
 	}
 
 	private class ShoutPendingTradeItem
@@ -63,6 +68,8 @@ public class ShoutBehavior : CampaignBehaviorBase
 		public int Amount;
 
 		public ItemObject Item;
+
+		public int InventoryUnitValue;
 	}
 
 	private sealed class ScenePrepaidTransferRecord
@@ -197,23 +204,26 @@ public class ShoutBehavior : CampaignBehaviorBase
 				{
 					result();
 				}
-				catch
+				catch (Exception ex)
 				{
+					BannerlordExceptionSentinel.ReportObservedException("LipSync.MainThreadAction", ex, "behavior=ShoutMissionBehavior");
 				}
 			}
 			try
 			{
 				_parent.ProcessDeferredCleanup();
 			}
-			catch
+			catch (Exception ex2)
 			{
+				BannerlordExceptionSentinel.ReportObservedException("LipSync.ProcessDeferredCleanup", ex2, "behavior=ShoutMissionBehavior");
 			}
 			try
 			{
 				_parent.TickLipSyncAnimations(dt);
 			}
-			catch
+			catch (Exception ex3)
 			{
+				BannerlordExceptionSentinel.ReportObservedException("LipSync.TickLipSyncAnimations", ex3, "behavior=ShoutMissionBehavior");
 			}
 			bool flag = ShoutBehavior.ShouldSuppressSceneConversationControlForMeeting();
 			if (flag)
@@ -357,6 +367,12 @@ public class ShoutBehavior : CampaignBehaviorBase
 
 	private readonly Dictionary<string, ScenePrepaidTransferRecord> _scenePrepaidTransfers = new Dictionary<string, ScenePrepaidTransferRecord>(StringComparer.OrdinalIgnoreCase);
 
+	private Dictionary<string, int> _sceneHeroRevisitDays = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+
+	private Dictionary<string, string> _sceneHeroRevisitDayStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+	private readonly HashSet<string> _sceneHeroRevisitHandledThisSession = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
 	private List<Agent> _staringAgents = new List<Agent>();
 
 	private readonly Dictionary<int, Vec3> _staringAgentAnchors = new Dictionary<int, Vec3>();
@@ -406,7 +422,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 	private Dictionary<string, float> _passiveCooldowns = new Dictionary<string, float>(StringComparer.Ordinal);
 
 
-    private const float STARE_TRIGGER_TIME = 6f;
+    private const float STARE_TRIGGER_TIME = 25f;
 
 	private const float STARE_TARGET_LOST_GRACE = 2f;
 
@@ -500,6 +516,126 @@ public class ShoutBehavior : CampaignBehaviorBase
 
 	private readonly bool _enableRhubarbSoundEventPlayback = true;
 
+	private static void LogLipSyncNativeProbe(string stage, int agentIndex, string extra = null)
+	{
+		try
+		{
+			int managedThreadId = -1;
+			try
+			{
+				managedThreadId = Thread.CurrentThread.ManagedThreadId;
+			}
+			catch
+			{
+			}
+			string sceneName = "";
+			try
+			{
+				sceneName = Mission.Current?.SceneName ?? "";
+			}
+			catch
+			{
+			}
+			string suffix = string.IsNullOrWhiteSpace(extra) ? string.Empty : ", " + extra;
+			Logger.Log("LipSyncProbe", $"stage={stage}, agentIndex={agentIndex}, thread={managedThreadId}, scene={sceneName}{suffix}");
+		}
+		catch
+		{
+		}
+	}
+
+	private void CleanupPreviousLipSyncPlaybackForReplacement(string reason)
+	{
+		List<int> list = new List<int>();
+		List<SoundEvent> list2 = new List<SoundEvent>();
+		List<string> list3 = new List<string>();
+		List<string> list4 = new List<string>();
+		lock (_speakingLock)
+		{
+			HashSet<int> hashSet = new HashSet<int>();
+			foreach (int key in _agentSoundEvents.Keys)
+			{
+				hashSet.Add(key);
+			}
+			foreach (int key2 in _agentWavPaths.Keys)
+			{
+				hashSet.Add(key2);
+			}
+			foreach (int key3 in _agentXmlPaths.Keys)
+			{
+				hashSet.Add(key3);
+			}
+			foreach (int item in hashSet)
+			{
+				SoundEvent value = null;
+				string value2 = null;
+				string value3 = null;
+				if (_agentSoundEvents.TryGetValue(item, out value))
+				{
+					_agentSoundEvents.Remove(item);
+				}
+				if (_agentWavPaths.TryGetValue(item, out value2))
+				{
+					_agentWavPaths.Remove(item);
+				}
+				if (_agentXmlPaths.TryGetValue(item, out value3))
+				{
+					_agentXmlPaths.Remove(item);
+				}
+				if (value != null || !string.IsNullOrWhiteSpace(value2) || !string.IsNullOrWhiteSpace(value3))
+				{
+					list.Add(item);
+					list2.Add(value);
+					list3.Add(value2);
+					list4.Add(value3);
+				}
+			}
+		}
+		for (int i = 0; i < list.Count; i++)
+		{
+			int num = list[i];
+			StopAgentRhubarbRecordIfPossible(num, reason);
+			if (!IsInEscapeTransitionWindow())
+			{
+				SafeStopAndReleaseSoundEvent(list2[i]);
+			}
+			QueueDeferredCleanup(null, list3[i], list4[i], reason, num);
+		}
+	}
+
+	private static void PrepareAgentForTrueLipSyncIfPossible(Agent agent)
+	{
+		if (agent == null || !agent.IsHuman)
+		{
+			return;
+		}
+		try
+		{
+			string defaultFaceIdle = "";
+			try
+			{
+				Type type = AppDomain.CurrentDomain.GetAssemblies().Select((Assembly a) => a?.GetType("TaleWorlds.CampaignSystem.CharacterHelper", throwOnError: false) ?? a?.GetType("TaleWorlds.CampaignSystem.Helpers.CharacterHelper", throwOnError: false)).FirstOrDefault((Type t) => t != null);
+				MethodInfo methodInfo = type?.GetMethod("GetDefaultFaceIdle", BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic, null, new Type[1] { typeof(CharacterObject) }, null);
+				defaultFaceIdle = (methodInfo?.Invoke(null, new object[1] { agent.Character as CharacterObject }) as string) ?? "";
+			}
+			catch
+			{
+				defaultFaceIdle = "";
+			}
+			if (!string.IsNullOrWhiteSpace(defaultFaceIdle))
+			{
+				agent.SetAgentFacialAnimation(Agent.FacialAnimChannel.Mid, defaultFaceIdle, true);
+			}
+			agent.SetAgentFacialAnimation(Agent.FacialAnimChannel.High, "", false);
+			LogLipSyncNativeProbe("PrepareTrueLipSyncFaceIdle", agent.Index, "idle=" + (defaultFaceIdle ?? ""));
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("LipSync", $"[WARN] PrepareAgentForTrueLipSyncIfPossible failed, agentIndex={agent.Index}, error={ex.Message}");
+			BannerlordExceptionSentinel.ReportObservedException("LipSync.PrepareTrueLipSyncFaceIdle", ex, "agentIndex=" + agent.Index);
+		}
+	}
+
 	private FloatingTextMissionView _floatingTextView => FloatingTextManager.Instance.MissionView;
 
 	internal static ShoutBehavior CurrentInstance
@@ -522,6 +658,17 @@ public class ShoutBehavior : CampaignBehaviorBase
 		try
 		{
 			CurrentInstance?.HandleEscapePressedForAudioSafety(string.IsNullOrWhiteSpace(reason) ? "UI_SCREEN" : reason);
+		}
+		catch
+		{
+		}
+	}
+
+	internal static void NotifyCriticalUiTransition(string reason = "UI_TRANSITION")
+	{
+		try
+		{
+			CurrentInstance?.HandleCriticalUiTransitionForLipSyncSafety(string.IsNullOrWhiteSpace(reason) ? "UI_TRANSITION" : reason);
 		}
 		catch
 		{
@@ -806,13 +953,17 @@ public class ShoutBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
-		string text = content;
+		string text = SanitizeSceneSpeechText(content);
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return;
+		}
 		try
 		{
 			string text2 = BuildPatienceBadgeForNpc(npc, liveAgent);
-			if (!string.IsNullOrWhiteSpace(text2) && !string.IsNullOrWhiteSpace(content))
+			if (!string.IsNullOrWhiteSpace(text2))
 			{
-				text = "【" + text2 + "】" + content;
+				text = "【" + text2 + "】" + text;
 			}
 		}
 		catch
@@ -842,7 +993,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 		bool flag = false;
 		bool flag2 = allowTts && IsTtsPlaybackEnabledForShout();
 		int num2 = ((flag2 && attachTtsToSceneAgent && num >= 0 && CanAgentParticipateInSceneSpeech(liveAgent)) ? num : (-1));
-		LogTtsReport("ShowNpcSpeechOutput.Enter", num, $"allowTts={allowTts};attachToSceneAgent={attachTtsToSceneAgent};effectiveAgentIndex={num2};contentLen={(content ?? string.Empty).Length};hostileSpeech={flagHostileSpeech}");
+		LogTtsReport("ShowNpcSpeechOutput.Enter", num, $"allowTts={allowTts};attachToSceneAgent={attachTtsToSceneAgent};effectiveAgentIndex={num2};contentLen={(text ?? string.Empty).Length};hostileSpeech={flagHostileSpeech}");
 		if (!allowTts)
 		{
 			try
@@ -898,6 +1049,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 				EnqueuePendingSpeechCompletionToken(num, interactionToken);
 			}
 			EnqueuePendingNpcBubble(num, liveAgent, text, npcDisplayName);
+			MeetingBattleLockMissionBehavior.ReapplyMeetingLockForAgentIfNeeded(liveAgent, recaptureAnchor: false, preserveFacing: true);
 			LogTtsReport("ShowNpcSpeechOutput.SceneBubbleQueued", num, $"interactionToken={interactionToken};uiLen={text.Length}");
 			return;
 		}
@@ -911,6 +1063,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 		{
 			ScheduleInteractionTimeoutArm(num, interactionToken, num3);
 		}
+		MeetingBattleLockMissionBehavior.ReapplyMeetingLockForAgentIfNeeded(liveAgent, recaptureAnchor: false, preserveFacing: true);
 		LogTtsReport("ShowNpcSpeechOutput.BubbleFallback", num, $"interactionToken={interactionToken};typingDuration={num3:F2};ttsAccepted={flag};ttsEnabled={flag2}");
 		if (!(!flag && flag2))
 		{
@@ -1107,7 +1260,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 		return "【非HeroNPC命名说明】：【在场人物列表】里的“名字”是非HeroNPC的个人名字；在【当前场景公共对话与互动】等历史里，会使用“身份+名字”的写法，例如“帝国女镇民利娅”，两者指向同一人。";
 	}
 
-	private static string BuildSceneNpcRoleIntroForPrompt(NpcDataPacket npc, Hero hero, IEnumerable<NpcDataPacket> presentNpcs = null)
+	private static string BuildSceneNpcRoleIntroForPrompt(NpcDataPacket npc, Hero hero, IEnumerable<NpcDataPacket> presentNpcs = null, bool includeInventorySummary = false, bool includeTradePricing = false)
 	{
 		if (npc == null)
 		{
@@ -1175,7 +1328,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 				}
 				age = MyBehavior.BuildAgeBracketLabelForExternal(hero.Age);
 				equipment = MyBehavior.BuildHeroEquipmentSummaryForExternal(hero);
-				if (RewardSystemBehavior.Instance != null)
+				if (includeInventorySummary && RewardSystemBehavior.Instance != null)
 				{
 					inventorySummary = (RewardSystemBehavior.Instance.BuildInventorySummaryForAI(hero) ?? "").Trim();
 				}
@@ -1204,7 +1357,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 			{
 				Agent agent = Mission.Current?.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == npc.AgentIndex);
 				CharacterObject characterObject = agent?.Character as CharacterObject;
-				if (RewardSystemBehavior.Instance != null && characterObject != null && RewardSystemBehavior.Instance.TryGetSettlementMerchantKind(characterObject, out var _))
+				if (includeInventorySummary && RewardSystemBehavior.Instance != null && characterObject != null && RewardSystemBehavior.Instance.TryGetSettlementMerchantKind(characterObject, out var _))
 				{
 					string text = RewardSystemBehavior.Instance.BuildSettlementMerchantInventorySummaryForAI(characterObject);
 					if (!string.IsNullOrWhiteSpace(text))
@@ -1345,7 +1498,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 			stringBuilder.AppendLine();
 			stringBuilder.Append(settlementRulerPresenceLine);
 		}
-		string playerIntroLine = BuildScenePlayerIntroForPrompt();
+		string playerIntroLine = BuildScenePlayerIntroForPrompt(includeTradePricing);
 		if (!string.IsNullOrWhiteSpace(playerIntroLine))
 		{
 			stringBuilder.AppendLine();
@@ -1356,6 +1509,13 @@ public class ShoutBehavior : CampaignBehaviorBase
 		{
 			stringBuilder.AppendLine();
 			stringBuilder.Append(nearbyPresentNpcLine);
+		}
+		if (includeInventorySummary && !string.IsNullOrWhiteSpace(inventorySummary))
+		{
+			stringBuilder.AppendLine();
+			stringBuilder.Append(hero != null ? "【NPC当前可用财富与物品】" : "【当前商铺可用财富与物品】");
+			stringBuilder.AppendLine();
+			stringBuilder.Append(inventorySummary);
 		}
 		string customPromptRule = (DuelSettings.GetSettings()?.PlayerCustomPromptRule ?? "").Replace("\r", "").Trim();
 		stringBuilder.AppendLine();
@@ -1525,9 +1685,9 @@ public class ShoutBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static string BuildSceneSystemTopPromptIntroForSingle(NpcDataPacket npc, Hero hero, IEnumerable<NpcDataPacket> presentNpcs = null)
+	private static string BuildSceneSystemTopPromptIntroForSingle(NpcDataPacket npc, Hero hero, IEnumerable<NpcDataPacket> presentNpcs = null, bool includeInventorySummary = false, bool includeTradePricing = false)
 	{
-		return BuildSceneNpcRoleIntroForPrompt(npc, hero, presentNpcs);
+		return BuildSceneNpcRoleIntroForPrompt(npc, hero, presentNpcs, includeInventorySummary, includeTradePricing);
 	}
 
 	private static string BuildSceneSystemTopPromptIntroForGroup(IEnumerable<NpcDataPacket> npcs, Dictionary<int, Hero> resolvedHeroes)
@@ -1562,7 +1722,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 		return stringBuilder.ToString().Trim();
 	}
 
-	private static string BuildPlayerSceneIdentityClauseForPrompt(Hero playerHero)
+	private static string BuildPlayerSceneIdentitySentenceForPrompt(Hero playerHero)
 	{
 		if (playerHero == null)
 		{
@@ -1577,7 +1737,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 				string kingdomName = (kingdom.Name?.ToString() ?? "").Trim();
 				if (!string.IsNullOrWhiteSpace(kingdomName))
 				{
-					return kingdomName + "的雇佣兵";
+					return "而且他还是" + kingdomName + "的雇佣兵。";
 				}
 			}
 		}
@@ -1590,20 +1750,29 @@ public class ShoutBehavior : CampaignBehaviorBase
 			string factionName = (kingdom?.Name?.ToString() ?? "").Trim();
 			if (playerHero.IsFactionLeader && kingdom != null && kingdom.Leader == playerHero && !string.IsNullOrWhiteSpace(factionName))
 			{
-				return factionName + "的统治者";
+				return "而且他还是" + factionName + "的统治者。";
 			}
 			if (playerHero.IsLord && !playerHero.IsFactionLeader && kingdom != null && !string.IsNullOrWhiteSpace(factionName))
 			{
-				return factionName + "的封臣";
+				return "而且他还是" + factionName + "的封臣。";
 			}
 		}
 		catch
 		{
 		}
-		return "";
+		string text = (MyBehavior.BuildPlayerPublicDisplayNameForExternal() ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text) || string.Equals(text, "玩家", StringComparison.Ordinal))
+		{
+			text = (playerHero.Name?.ToString() ?? "").Trim();
+		}
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			text = "这名玩家";
+		}
+		return text + "（玩家）没有效忠于任何人。";
 	}
 
-	private static string BuildScenePlayerIntroForPrompt()
+	private static string BuildScenePlayerIntroForPrompt(bool includeTradePricing = false)
 	{
 		Hero playerHero = Hero.MainHero;
 		if (playerHero == null)
@@ -1613,7 +1782,8 @@ public class ShoutBehavior : CampaignBehaviorBase
 		string culture = "未知文化";
 		string age = "未知";
 		string equipment = "未知";
-		string identityClause = BuildPlayerSceneIdentityClauseForPrompt(playerHero);
+		string equipmentValueInline = "";
+		string identitySentence = BuildPlayerSceneIdentitySentenceForPrompt(playerHero);
 		int clanTier = 0;
 		string clanName = "无家族";
 		bool isClanLeader = false;
@@ -1648,6 +1818,19 @@ public class ShoutBehavior : CampaignBehaviorBase
 		{
 			equipment = "未知";
 		}
+		if (includeTradePricing)
+		{
+			try
+			{
+				if (RewardSystemBehavior.Instance != null)
+				{
+					equipmentValueInline = (RewardSystemBehavior.Instance.BuildVisibleEquipmentActualValueInlineFactForAI(playerHero) ?? "").Trim();
+				}
+			}
+			catch
+			{
+			}
+		}
 		try
 		{
 			clanTier = playerHero.Clan?.Tier ?? 0;
@@ -1668,10 +1851,17 @@ public class ShoutBehavior : CampaignBehaviorBase
 		StringBuilder stringBuilder = new StringBuilder();
 		if (clanTier >= 2)
 		{
+			string playerPublicName = (MyBehavior.BuildPlayerPublicDisplayNameForExternal() ?? "").Trim();
+			if (string.IsNullOrWhiteSpace(playerPublicName) || string.Equals(playerPublicName, "玩家", StringComparison.Ordinal))
+			{
+				playerPublicName = (playerHero.Name?.ToString() ?? "").Trim();
+			}
 			string reputation = MyBehavior.GetClanTierReputationLabelForExternal(clanTier) + $"（{Math.Max(0, clanTier)} level）";
 			stringBuilder.Append("你面前站着一个")
 				.Append(culture)
-				.Append("，你知道他的名声，他")
+				.Append("，你知道他叫")
+				.Append(string.IsNullOrWhiteSpace(playerPublicName) ? "这人" : playerPublicName)
+				.Append("，他")
 				.Append(reputation)
 				.Append("，是")
 				.Append(clanName)
@@ -1693,9 +1883,13 @@ public class ShoutBehavior : CampaignBehaviorBase
 				.Append(equipment)
 				.Append("。");
 		}
-		if (!string.IsNullOrWhiteSpace(identityClause))
+		if (!string.IsNullOrWhiteSpace(equipmentValueInline))
 		{
-			stringBuilder.Append("而且他还是").Append(identityClause).Append("。");
+			stringBuilder.Append(equipmentValueInline).Append("。");
+		}
+		if (!string.IsNullOrWhiteSpace(identitySentence))
+		{
+			stringBuilder.Append(identitySentence);
 		}
 		return stringBuilder.ToString().Trim();
 	}
@@ -2343,6 +2537,18 @@ public class ShoutBehavior : CampaignBehaviorBase
 		return Regex.Replace((text ?? "").Replace("\r", ""), "\\[ACTION:[^\\]]*\\]", "", RegexOptions.IgnoreCase).Trim();
 	}
 
+	private static string SanitizeSceneSpeechText(string text)
+	{
+		string text2 = StripLeakedPromptContentForShout(text);
+		text2 = StripStageDirectionsForPassiveShout(text2);
+		text2 = StripActionTagsForSceneSpeech(text2);
+		text2 = Regex.Replace(text2, "\\[(?:ACTION:)?MOOD:[^\\]\\r\\n]*\\]?", "", RegexOptions.IgnoreCase);
+		text2 = Regex.Replace(text2, "(?:^|\\s)(?:ACTION:)?MOOD:[A-Z_]+\\]?(?=$|\\s)", " ", RegexOptions.IgnoreCase);
+		text2 = Regex.Replace(text2, "\\[(?:NO_CONTINUE|END)\\]", "", RegexOptions.IgnoreCase);
+		text2 = Regex.Replace(text2, "[ \\t]{2,}", " ");
+		return text2.Trim(' ', '\t', '\r', '\n', '[', ']', ':');
+	}
+
 	private static bool ContainsAutoGroupEndSignal(string text)
 	{
 		return !string.IsNullOrWhiteSpace(text) && text.IndexOf(AUTO_GROUP_CHAT_END_TAG, StringComparison.OrdinalIgnoreCase) >= 0;
@@ -2461,6 +2667,25 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		persistedWithoutRecentWindow = othersSb.ToString().Trim();
 	}
 
+	private static string BuildSceneFirstMeetingNpcFactSection(Hero hero)
+	{
+		string text = MyBehavior.GetFirstMeetingNpcFactTextForPromptIfNeeded(hero);
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return "";
+		}
+		return "【AFEF NPC行为补充】\n" + text.Trim();
+	}
+
+	private static string BuildSceneFirstMeetingNpcFactSection(int agentIndex, Dictionary<int, Hero> resolvedHeroes)
+	{
+		if (agentIndex < 0 || resolvedHeroes == null || !resolvedHeroes.TryGetValue(agentIndex, out var value))
+		{
+			return "";
+		}
+		return BuildSceneFirstMeetingNpcFactSection(value);
+	}
+
 	private string BuildPatienceBadgeForNpc(NpcDataPacket npc, Agent liveAgent)
 	{
 		if (npc == null)
@@ -2547,6 +2772,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					Agent agent = Mission.Current?.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == speakerData.AgentIndex);
 					string aiResponse = safeContent;
 					bool meetingTauntEscalated = false;
+					bool sceneTauntActionHandled = false;
 					bool sceneTauntEscalated = false;
 					try
 					{
@@ -2580,7 +2806,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 								{
 									StripMeetingTauntTagsForSceneConversation(ref aiResponse);
 								}
-								SceneTauntBehavior.TryProcessSceneTauntAction(characterObject.HeroObject, characterObject, speakerData.AgentIndex, ref aiResponse, out sceneTauntEscalated);
+								sceneTauntActionHandled = SceneTauntBehavior.TryProcessSceneTauntAction(characterObject.HeroObject, characterObject, speakerData.AgentIndex, ref aiResponse, out sceneTauntEscalated);
 							}
 						else
 						{
@@ -2599,12 +2825,16 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 							}
 							if (agent != null && agent.Character is CharacterObject characterObject3)
 							{
-								SceneTauntBehavior.TryProcessSceneTauntAction(characterObject3.HeroObject, characterObject3, speakerData.AgentIndex, ref aiResponse, out sceneTauntEscalated);
+								sceneTauntActionHandled = SceneTauntBehavior.TryProcessSceneTauntAction(characterObject3.HeroObject, characterObject3, speakerData.AgentIndex, ref aiResponse, out sceneTauntEscalated);
 							}
 						}
 					}
 					catch
 					{
+					}
+					if (sceneTauntActionHandled && string.IsNullOrWhiteSpace(aiResponse))
+					{
+						aiResponse = BuildFallbackSceneTauntSpeech(sceneTauntEscalated);
 					}
 					bool flag = false;
 					try
@@ -2651,6 +2881,45 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 	{
 		try
 		{
+			if (dataStore == null)
+			{
+				return;
+			}
+			Dictionary<string, string> dictionary = dataStore.IsSaving ? CampaignSaveChunkHelper.FlattenStringDictionary(_sceneHeroRevisitDayStorage) : new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+			if (dataStore.IsSaving)
+			{
+				_sceneHeroRevisitDayStorage.Clear();
+				lock (_historyLock)
+				{
+					foreach (KeyValuePair<string, int> sceneHeroRevisitDay in _sceneHeroRevisitDays)
+					{
+						if (!string.IsNullOrWhiteSpace(sceneHeroRevisitDay.Key) && sceneHeroRevisitDay.Value >= 0)
+						{
+							_sceneHeroRevisitDayStorage[sceneHeroRevisitDay.Key] = sceneHeroRevisitDay.Value.ToString();
+						}
+					}
+				}
+				dictionary = CampaignSaveChunkHelper.FlattenStringDictionary(_sceneHeroRevisitDayStorage);
+				dataStore.SyncData("_sceneHeroRevisitDays_v1", ref dictionary);
+				return;
+			}
+			dataStore.SyncData("_sceneHeroRevisitDays_v1", ref dictionary);
+			_sceneHeroRevisitDayStorage = CampaignSaveChunkHelper.RestoreStringDictionary(dictionary, "SceneHeroRevisit");
+			lock (_historyLock)
+			{
+				_sceneHeroRevisitDays.Clear();
+				if (_sceneHeroRevisitDayStorage == null)
+				{
+					return;
+				}
+				foreach (KeyValuePair<string, string> item in _sceneHeroRevisitDayStorage)
+				{
+					if (!string.IsNullOrWhiteSpace(item.Key) && !string.IsNullOrWhiteSpace(item.Value) && int.TryParse(item.Value.Trim(), out var result) && result >= 0)
+					{
+						_sceneHeroRevisitDays[item.Key] = result;
+					}
+				}
+			}
 		}
 		catch (Exception ex)
 		{
@@ -2672,6 +2941,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			_npcConversationHistory.Clear();
 			_publicConversationHistory.Clear();
+			_sceneHeroRevisitHandledThisSession.Clear();
 		}
 		_staringAgents.Clear();
 		_staringAgentAnchors.Clear();
@@ -2760,11 +3030,6 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					{
 						Logger.Log("LipSync", $"[OnAudioFileReady] agentIndex={agentIndex}, wav={wavPath}, xml={xmlPath}, dur={durationSecs:F2}s");
 						EnqueuePendingAudioDuration(agentIndex, durationSecs);
-						lock (_speakingLock)
-						{
-							_agentWavPaths[agentIndex] = wavPath;
-							_agentXmlPaths[agentIndex] = xmlPath;
-						}
 						LogTtsReport("AudioFileReady", agentIndex, $"duration={durationSecs:F2};wav={System.IO.Path.GetFileName(wavPath)};xml={System.IO.Path.GetFileName(xmlPath)}");
 						_mainThreadActions.Enqueue(delegate
 						{
@@ -2801,37 +3066,29 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 									Agent agent = Mission.Current.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == agentIndex);
 									if (agent != null && agent.IsActive() && !(agent.AgentVisuals == null))
 									{
-										lock (_speakingLock)
-										{
-											if (_agentSoundEvents.Count > 0)
-											{
-												foreach (KeyValuePair<int, SoundEvent> agentSoundEvent in _agentSoundEvents)
-												{
-													StopAgentRhubarbRecordIfPossible(agentSoundEvent.Key, "OnAudioFileReady.ReplaceExisting");
-													if (!IsInEscapeTransitionWindow())
-													{
-														SafeStopAndReleaseSoundEvent(agentSoundEvent.Value);
-													}
-												}
-												_agentSoundEvents.Clear();
-											}
+										CleanupPreviousLipSyncPlaybackForReplacement("OnAudioFileReady.ReplaceExisting");
+								LogLipSyncNativeProbe("CreateEventFromExternalFile.Before", agentIndex, "wav=" + System.IO.Path.GetFileName(wavPath));
+								SoundEvent soundEvent = SoundEvent.CreateEventFromExternalFile("event:/Extra/voiceover", wavPath, Mission.Current.Scene, is3d: false, isBlocking: false);
+								if (soundEvent == null)
+								{
+									Logger.Log("LipSync", $"[WARN] SoundEvent.CreateEventFromExternalFile 返回 null, agentIndex={agentIndex}");
+									LogTtsReport("AudioFileReady.CreateSoundEventNull", agentIndex, $"wav={System.IO.Path.GetFileName(wavPath)}");
+									QueueDeferredCleanup(null, wavPath, xmlPath, "OnAudioFileReady.CreateSoundEventNull", agentIndex);
 										}
-										SoundEvent soundEvent = SoundEvent.CreateEventFromExternalFile("event:/Extra/voiceover", wavPath, Mission.Current.Scene, is3d: false, isBlocking: false);
-										if (soundEvent == null)
-										{
-											Logger.Log("LipSync", $"[WARN] SoundEvent.CreateEventFromExternalFile 返回 null, agentIndex={agentIndex}");
-											LogTtsReport("AudioFileReady.CreateSoundEventNull", agentIndex, $"wav={System.IO.Path.GetFileName(wavPath)}");
-										}
-										else
-										{
-											LogTtsReport("AudioFileReady.SoundEventCreated", agentIndex, $"wav={System.IO.Path.GetFileName(wavPath)}");
-											soundEvent.SetPosition(agent.Position);
-											soundEvent.Play();
-											float num = 0f;
-											bool flag = true;
-											try
-											{
-												flag = DuelSettings.GetSettings()?.TtsSceneUseWinmmAudible ?? true;
+								else
+								{
+									LogTtsReport("AudioFileReady.SoundEventCreated", agentIndex, $"wav={System.IO.Path.GetFileName(wavPath)}");
+									LogLipSyncNativeProbe("SoundEvent.SetPosition.Before", agentIndex);
+									soundEvent.SetPosition(agent.Position);
+									LogLipSyncNativeProbe("SoundEvent.SetPosition.After", agentIndex);
+									LogLipSyncNativeProbe("SoundEvent.Play.Before", agentIndex);
+									soundEvent.Play();
+									LogLipSyncNativeProbe("SoundEvent.Play.After", agentIndex);
+									float num = 0f;
+									bool flag = true;
+									try
+									{
+										flag = DuelSettings.GetSettings()?.TtsSceneUseWinmmAudible ?? true;
 												num = DuelSettings.GetSettings()?.TtsLipSyncSoundEventVolume ?? 0f;
 											}
 											catch
@@ -2856,43 +3113,49 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 												soundEvent.SetParameter("Volume", num);
 											}
 											catch (Exception ex2)
-											{
-												Logger.Log("LipSync", "[WARN] 设置 SoundEvent 音量失败(Volume): " + ex2.Message);
-											}
-											int soundId = soundEvent.GetSoundId();
-											if (soundId <= 0)
-											{
-												Logger.Log("LipSync", $"[WARN] SoundEvent.GetSoundId 非法({soundId})，跳过 StartRhubarbRecord, agentIndex={agentIndex}");
-												SafeStopAndReleaseSoundEvent(soundEvent);
-											}
+									{
+										Logger.Log("LipSync", "[WARN] 设置 SoundEvent 音量失败(Volume): " + ex2.Message);
+									}
+									LogLipSyncNativeProbe("SoundEvent.GetSoundId.Before", agentIndex);
+									int soundId = soundEvent.GetSoundId();
+									LogLipSyncNativeProbe("SoundEvent.GetSoundId.After", agentIndex, "soundId=" + soundId);
+									if (soundId <= 0)
+									{
+										Logger.Log("LipSync", $"[WARN] SoundEvent.GetSoundId 非法({soundId})，跳过 StartRhubarbRecord, agentIndex={agentIndex}");
+										SafeStopAndReleaseSoundEvent(soundEvent);
+										QueueDeferredCleanup(null, wavPath, xmlPath, "OnAudioFileReady.InvalidSoundId", agentIndex);
+									}
 											else
 											{
 												Logger.Log("LipSync", $"[Rhubarb] SoundEvent created, vol={num:F2}, agentIndex={agentIndex}, soundId={soundId}");
+												PrepareAgentForTrueLipSyncIfPossible(agent);
+												LogLipSyncNativeProbe("StartRhubarbRecord.Before", agentIndex, $"soundId={soundId};xml={System.IO.Path.GetFileName(xmlPath)}");
+												agent.AgentVisuals.StartRhubarbRecord(xmlPath, soundId);
+												LogLipSyncNativeProbe("StartRhubarbRecord.After", agentIndex, "soundId=" + soundId);
 												lock (_speakingLock)
 												{
-													if (_agentSoundEvents.TryGetValue(agentIndex, out var value) && !IsInEscapeTransitionWindow())
-													{
-														StopAgentRhubarbRecordIfPossible(agentIndex, "OnAudioFileReady.ReplaceSameAgent");
-														SafeStopAndReleaseSoundEvent(value);
-													}
 													_agentSoundEvents[agentIndex] = soundEvent;
+													_agentWavPaths[agentIndex] = wavPath;
+													_agentXmlPaths[agentIndex] = xmlPath;
 												}
-												agent.AgentVisuals.StartRhubarbRecord(xmlPath, soundId);
 												Logger.Log("LipSync", $"[Rhubarb] StartRhubarbRecord 调用成功, agentIndex={agentIndex}, soundId={soundId}");
-											}
 										}
+									}
 									}
 									else
 									{
 										LogTtsReport("AudioFileReady.AgentUnavailable", agentIndex, $"agentMissing={(agent == null)};active={(agent != null && agent.IsActive())};visualsMissing={(agent != null && agent.AgentVisuals == null)}");
+										QueueDeferredCleanup(null, wavPath, xmlPath, "OnAudioFileReady.AgentUnavailable", agentIndex);
 									}
 								}
 								LogTtsReport("AudioFileReady.MainThreadEnd", agentIndex);
 							}
 							catch (Exception ex3)
 							{
+								QueueDeferredCleanup(null, wavPath, xmlPath, "OnAudioFileReady.MainThreadFailed", agentIndex);
 								Logger.Log("LipSync", "[ERROR] OnAudioFileReady 主线程处理失败: " + ex3.Message);
 								LogTtsReport("AudioFileReady.MainThreadFailed", agentIndex, "error=" + ex3.Message);
+								BannerlordExceptionSentinel.ReportObservedException("LipSync.OnAudioFileReady.MainThread", ex3, "agentIndex=" + agentIndex);
 							}
 						});
 					}
@@ -2935,6 +3198,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 								{
 									Logger.Log("LipSync", $"[ERROR] PlaybackStarted bubble dispatch failed, agentIndex={agentIndex}, error={ex4.Message}");
 									LogTtsReport("PlaybackStarted.BubbleDispatchFailed", agentIndex, "error=" + ex4.Message);
+									BannerlordExceptionSentinel.ReportObservedException("LipSync.PlaybackStarted.BubbleDispatch", ex4, "agentIndex=" + agentIndex);
 								}
 							});
 						}
@@ -2979,34 +3243,26 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 							try
 							{
 								LogTtsReport("PlaybackFinished.MainThreadCleanupStart", agentIndex);
-								StopAgentRhubarbRecordIfPossible(agentIndex, "PlaybackFinished");
-								SoundEvent value = null;
-								string value2 = null;
-								string value3 = null;
+								LogLipSyncNativeProbe("PlaybackFinished.CleanupEnter", agentIndex);
+								bool flag2 = false;
+								bool flag3 = false;
+								bool flag4 = false;
 								lock (_speakingLock)
 								{
-									if (_agentSoundEvents.TryGetValue(agentIndex, out value))
-									{
-										_agentSoundEvents.Remove(agentIndex);
-									}
-									if (_agentWavPaths.TryGetValue(agentIndex, out value2))
-									{
-										_agentWavPaths.Remove(agentIndex);
-									}
-									if (_agentXmlPaths.TryGetValue(agentIndex, out value3))
-									{
-										_agentXmlPaths.Remove(agentIndex);
-									}
+									flag2 = _agentSoundEvents.ContainsKey(agentIndex);
+									flag3 = _agentWavPaths.ContainsKey(agentIndex);
+									flag4 = _agentXmlPaths.ContainsKey(agentIndex);
 								}
-								QueueDeferredCleanup(value, value2, value3, "PlaybackFinished", agentIndex);
-								Logger.Log("LipSync", $"[Rhubarb] cleanup queued, agentIndex={agentIndex}, hasSe={(value != null)}, hasWav={(!string.IsNullOrWhiteSpace(value2))}, hasXml={(!string.IsNullOrWhiteSpace(value3))}");
-								LogTtsReport("PlaybackFinished.CleanupQueued", agentIndex, $"hasSe={(value != null)};hasWav={(!string.IsNullOrWhiteSpace(value2))};hasXml={(!string.IsNullOrWhiteSpace(value3))}");
+								Logger.Log("LipSync", $"[Rhubarb] keep native lipsync state after playback finished, agentIndex={agentIndex}, hasSe={flag2}, hasWav={flag3}, hasXml={flag4}");
+								LogTtsReport("PlaybackFinished.NoImmediateCleanup", agentIndex, $"hasSe={flag2};hasWav={flag3};hasXml={flag4}");
+								LogLipSyncNativeProbe("PlaybackFinished.NoImmediateCleanup", agentIndex, $"hasSe={flag2};hasWav={flag3};hasXml={flag4}");
 								LogTtsReport("PlaybackFinished.MainThreadCleanupEnd", agentIndex);
 							}
 							catch (Exception ex5)
 							{
 								Logger.Log("LipSync", $"[ERROR] PlaybackFinished main-thread cleanup failed, agentIndex={agentIndex}, error={ex5.Message}");
 								LogTtsReport("PlaybackFinished.MainThreadCleanupFailed", agentIndex, "error=" + ex5.Message);
+								BannerlordExceptionSentinel.ReportObservedException("LipSync.PlaybackFinished.MainThreadCleanup", ex5, "agentIndex=" + agentIndex);
 							}
 						});
 					}
@@ -3483,8 +3739,9 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			{
 				SafeStopAndReleaseSoundEvent(deferredCleanupItem4.SoundEvent);
 			}
-			catch
+			catch (Exception ex)
 			{
+				BannerlordExceptionSentinel.ReportObservedException("LipSync.DeferredCleanup.SoundEvent", ex, $"agentIndex={deferredCleanupItem4.AgentIndex};itemId={deferredCleanupItem4.ItemId};source={deferredCleanupItem4.Source}");
 			}
 			try
 			{
@@ -3540,6 +3797,49 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 	}
 
+	private bool HasLipSyncOrSceneSpeechWork()
+	{
+		if (IsSpeechPipelineBusy())
+		{
+			return true;
+		}
+		lock (_speakingLock)
+		{
+			if (_speakingAgentIndices.Count > 0 || _agentSoundEvents.Count > 0 || _agentWavPaths.Count > 0 || _agentXmlPaths.Count > 0 || _deferredCleanupQueue.Count > 0)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private void HandleCriticalUiTransitionForLipSyncSafety(string reason = "UI_TRANSITION")
+	{
+		try
+		{
+			Interlocked.Exchange(ref _lastEscapePressedUtcTicks, DateTime.UtcNow.Ticks);
+		}
+		catch
+		{
+		}
+		try
+		{
+			Interlocked.Exchange(ref _deferredCleanupStableSinceUtcTicks, 0L);
+		}
+		catch
+		{
+		}
+		if (!HasLipSyncOrSceneSpeechWork())
+		{
+			return;
+		}
+		ClearQueuedSceneSpeech();
+		Logger.Log("LipSync", $"[{reason}] critical UI transition detected, forcing native lipsync teardown");
+		LogLipSyncNativeProbe("CriticalUiTransition.StopAll.Before", -1, reason);
+		StopAllLipSyncPlaybackAndCleanup();
+		LogLipSyncNativeProbe("CriticalUiTransition.StopAll.After", -1, reason);
+	}
+
 	private static void SafeStopAndReleaseSoundEvent(SoundEvent se)
 	{
 		if (se == null)
@@ -3557,21 +3857,34 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			soundId = -1;
 		}
 		Logger.Log("LipSync", $"[SoundEvent] SafeStopAndRelease start, soundId={soundId}");
+		LogLipSyncNativeProbe("SafeStopAndRelease.Enter", -1, "soundId=" + soundId);
+		bool isValid = false;
 		try
 		{
-			se.SetParameter("Volume", 0f);
+			isValid = se.IsValid;
 		}
 		catch (Exception ex)
 		{
-			Logger.Log("LipSync", $"[SoundEvent] SetParameter(Volume) failed, soundId={soundId}, error={ex.Message}");
+			Logger.Log("LipSync", $"[SoundEvent] IsValid probe failed, soundId={soundId}, error={ex.Message}");
+			BannerlordExceptionSentinel.ReportObservedException("LipSync.SoundEvent.IsValid", ex, "soundId=" + soundId);
+			return;
+		}
+		if (!isValid)
+		{
+			Logger.Log("LipSync", $"[SoundEvent] SafeStopAndRelease skipped: invalid soundId={soundId}");
+			LogLipSyncNativeProbe("SafeStopAndRelease.SkipInvalid", -1, "soundId=" + soundId);
+			return;
 		}
 		try
 		{
-			se.Pause();
+			LogLipSyncNativeProbe("SoundEvent.Stop.Before", -1, "soundId=" + soundId);
+			se.Stop();
+			LogLipSyncNativeProbe("SoundEvent.Stop.After", -1, "soundId=" + soundId);
 		}
 		catch (Exception ex2)
 		{
-			Logger.Log("LipSync", $"[SoundEvent] Pause failed, soundId={soundId}, error={ex2.Message}");
+			Logger.Log("LipSync", $"[SoundEvent] Stop failed, soundId={soundId}, error={ex2.Message}");
+			BannerlordExceptionSentinel.ReportObservedException("LipSync.SoundEvent.Stop", ex2, "soundId=" + soundId);
 		}
 		Logger.Log("LipSync", $"[SoundEvent] SafeStopAndRelease end, soundId={soundId}");
 	}
@@ -4124,15 +4437,13 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					flag = false;
 				}
 			}
-			if (!flag && main.Team != null && targetAgent.Team != null)
+			if (!flag)
 			{
 				try
 				{
-					Mission current = Mission.Current;
-					if (current != null)
+					if (AreAgentsHostileForSceneConversation(main, targetAgent))
 					{
-						MissionMode mode = current.Mode;
-						flag = (mode == MissionMode.Battle || mode == MissionMode.Duel) && main.Team.IsEnemyOf(targetAgent.Team);
+						flag = true;
 					}
 				}
 				catch
@@ -4162,18 +4473,95 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			{
 				return true;
 			}
-			string text = (Mission.Current?.SceneName ?? "").Trim().ToLowerInvariant();
-			if (!string.IsNullOrWhiteSpace(text) && text.Contains("arena"))
+			if (IsArenaLikePassiveReactionContext())
 			{
 				return true;
 			}
-			string text2 = (ShoutUtils.GetCurrentSceneDescription() ?? "").Trim();
-			return !string.IsNullOrWhiteSpace(text2) && text2.IndexOf("竞技场", StringComparison.OrdinalIgnoreCase) >= 0;
+			return false;
 		}
 		catch
 		{
 			return false;
 		}
+	}
+
+	private static bool IsArenaLikePassiveReactionContext()
+	{
+		try
+		{
+			if (DuelBehavior.IsArenaMissionActive)
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			string text = (CampaignMission.Current?.Location?.StringId ?? "").Trim().ToLowerInvariant();
+			if (text == "arena")
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			string text2 = (Mission.Current?.SceneName ?? "").Trim().ToLowerInvariant();
+			if (!string.IsNullOrWhiteSpace(text2) && text2.Contains("arena"))
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			string text3 = (ShoutUtils.GetCurrentSceneDescription() ?? "").Trim();
+			if (!string.IsNullOrWhiteSpace(text3) && text3.IndexOf("竞技场", StringComparison.OrdinalIgnoreCase) >= 0)
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		return HasMissionBehaviorTypeNameForPassiveReaction("ArenaPracticeFightMissionController", "TournamentFightMissionController", "ArenaDuelMissionController", "TournamentJoustingMissionController", "TournamentArcheryMissionController");
+	}
+
+	private static bool HasMissionBehaviorTypeNameForPassiveReaction(params string[] typeNames)
+	{
+		try
+		{
+			Mission current = Mission.Current;
+			if (current == null || typeNames == null || typeNames.Length == 0)
+			{
+				return false;
+			}
+			foreach (MissionBehavior missionBehavior in current.MissionBehaviors)
+			{
+				string text = missionBehavior?.GetType()?.Name;
+				if (string.IsNullOrWhiteSpace(text))
+				{
+					continue;
+				}
+				for (int i = 0; i < typeNames.Length; i++)
+				{
+					if (string.Equals(text, typeNames[i], StringComparison.Ordinal))
+					{
+						return true;
+					}
+				}
+			}
+		}
+		catch
+		{
+		}
+		return false;
 	}
 
 	private static string BuildCombatPassiveBrawlFactText(bool opponentContext)
@@ -4199,6 +4587,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			text = "武器";
 		}
 		return opponentContext ? ("[AFEF NPC行为补充] 你现在拿着" + text + "与" + playerName + "作为对手激烈交锋，但还未决出胜负") : ("[AFEF NPC行为补充] 你现在正拿着" + text + "与" + playerName + "作为敌人拼杀，还未决出胜负");
+	}
+
+	private static string BuildFallbackSceneTauntSpeech(bool escalatedToFight)
+	{
+		return escalatedToFight ? "少废话，既然你想找打，那就来吧。" : "嘴巴放干净点，别逼我动手。";
 	}
 
 	private static string BuildCombatActiveShoutExtraFact(Agent targetAgent)
@@ -4276,22 +4669,14 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				return "";
 			}
 			EquipmentIndex primaryWieldedItemIndex = agent.GetPrimaryWieldedItemIndex();
-			if (primaryWieldedItemIndex != EquipmentIndex.None && IsRealWeaponMissionWeaponForPassiveReaction(agent.Equipment[primaryWieldedItemIndex]))
+			if (TryGetRealWeaponDisplayNameFromWieldedSlotForPassiveReaction(agent, primaryWieldedItemIndex, out var weaponName))
 			{
-				string text = agent.Equipment[primaryWieldedItemIndex].Item?.Name?.ToString();
-				if (!string.IsNullOrWhiteSpace(text))
-				{
-					return text.Trim();
-				}
+				return weaponName;
 			}
 			EquipmentIndex offhandWieldedItemIndex = agent.GetOffhandWieldedItemIndex();
-			if (offhandWieldedItemIndex != EquipmentIndex.None && IsRealWeaponMissionWeaponForPassiveReaction(agent.Equipment[offhandWieldedItemIndex]))
+			if (TryGetRealWeaponDisplayNameFromWieldedSlotForPassiveReaction(agent, offhandWieldedItemIndex, out weaponName))
 			{
-				string text2 = agent.Equipment[offhandWieldedItemIndex].Item?.Name?.ToString();
-				if (!string.IsNullOrWhiteSpace(text2))
-				{
-					return text2.Trim();
-				}
+				return weaponName;
 			}
 			for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
 			{
@@ -4321,12 +4706,81 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				return false;
 			}
 			EquipmentIndex primaryWieldedItemIndex = agent.GetPrimaryWieldedItemIndex();
-			if (primaryWieldedItemIndex != EquipmentIndex.None && IsRealWeaponMissionWeaponForPassiveReaction(agent.Equipment[primaryWieldedItemIndex]))
+			if (IsRealWeaponWieldedSlotForPassiveReaction(agent, primaryWieldedItemIndex))
 			{
 				return true;
 			}
 			EquipmentIndex offhandWieldedItemIndex = agent.GetOffhandWieldedItemIndex();
-			return offhandWieldedItemIndex != EquipmentIndex.None && IsRealWeaponMissionWeaponForPassiveReaction(agent.Equipment[offhandWieldedItemIndex]);
+			return IsRealWeaponWieldedSlotForPassiveReaction(agent, offhandWieldedItemIndex);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static bool TryGetRealWeaponDisplayNameFromWieldedSlotForPassiveReaction(Agent agent, EquipmentIndex equipmentIndex, out string weaponName)
+	{
+		weaponName = "";
+		try
+		{
+			if (!IsRealWeaponWieldedSlotForPassiveReaction(agent, equipmentIndex))
+			{
+				return false;
+			}
+			string text = null;
+			try
+			{
+				text = agent.Equipment[equipmentIndex].Item?.Name?.ToString();
+			}
+			catch
+			{
+				text = null;
+			}
+			if (string.IsNullOrWhiteSpace(text))
+			{
+				try
+				{
+					text = agent.SpawnEquipment[equipmentIndex].Item?.Name?.ToString();
+				}
+				catch
+				{
+					text = null;
+				}
+			}
+			if (string.IsNullOrWhiteSpace(text))
+			{
+				return false;
+			}
+			weaponName = text.Trim();
+			return weaponName.Length > 0;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static bool IsRealWeaponWieldedSlotForPassiveReaction(Agent agent, EquipmentIndex equipmentIndex)
+	{
+		try
+		{
+			if (agent == null || equipmentIndex == EquipmentIndex.None || equipmentIndex < EquipmentIndex.WeaponItemBeginSlot || equipmentIndex >= EquipmentIndex.NumAllWeaponSlots)
+			{
+				return false;
+			}
+			if (IsRealWeaponMissionWeaponForPassiveReaction(agent.Equipment[equipmentIndex]))
+			{
+				return true;
+			}
+			try
+			{
+				return IsRealWeaponEquipmentElementForPassiveReaction(agent.SpawnEquipment[equipmentIndex]);
+			}
+			catch
+			{
+				return false;
+			}
 		}
 		catch
 		{
@@ -4571,6 +5025,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			if (!string.IsNullOrWhiteSpace(persistedWithoutRecentWindow))
 			{
 				layeredPrompt = layeredPrompt + "\n" + persistedWithoutRecentWindow;
+			}
+			string firstMeetingNpcFactSection = BuildSceneFirstMeetingNpcFactSection(hero);
+			if (!string.IsNullOrWhiteSpace(firstMeetingNpcFactSection))
+			{
+				layeredPrompt = layeredPrompt + "\n" + firstMeetingNpcFactSection;
 			}
 			if (!string.IsNullOrWhiteSpace(scenePublicHistorySection))
 			{
@@ -4839,7 +5298,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				string localExtras = InjectTrustBlockBelowTriState(sysPrompt.ToString().Trim(), trustBlock);
 				string deltaLayerText = (string.IsNullOrWhiteSpace(baseExtrasWithoutTrust) ? localExtras : ((!string.IsNullOrWhiteSpace(localExtras)) ? (baseExtrasWithoutTrust + "\n" + localExtras) : baseExtrasWithoutTrust));
 				string layeredPrompt = (string.IsNullOrWhiteSpace(fixedLayerText) ? deltaLayerText : ((!string.IsNullOrWhiteSpace(deltaLayerText)) ? (fixedLayerText + "\n" + deltaLayerText) : fixedLayerText));
-				string roleTopIntro = BuildSceneSystemTopPromptIntroForSingle(data, hero, allNpcData);
+				bool includeTradePricing = ctx != null && (ctx.UseRewardContext || ctx.IsLoanContext || ctx.UseDuelContext);
+				string roleTopIntro = BuildSceneSystemTopPromptIntroForSingle(data, hero, allNpcData, includeTradePricing: includeTradePricing);
 				string playerNameForTask = GetPlayerDisplayNameForShout();
 				if (string.IsNullOrWhiteSpace(playerNameForTask))
 				{
@@ -4907,6 +5367,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				if (!string.IsNullOrWhiteSpace(persistedWithoutRecentWindow))
 				{
 					layeredPrompt = layeredPrompt + "\n" + persistedWithoutRecentWindow;
+				}
+				string firstMeetingNpcFactSection = BuildSceneFirstMeetingNpcFactSection(hero);
+				if (!string.IsNullOrWhiteSpace(firstMeetingNpcFactSection))
+				{
+					layeredPrompt = layeredPrompt + "\n" + firstMeetingNpcFactSection;
 				}
 				if (!string.IsNullOrWhiteSpace(scenePublicHistorySection))
 				{
@@ -5108,6 +5573,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				if (dictionary.TryGetValue(text2, out var value))
 				{
 					value.AvailableAmount += amount;
+					value.InventoryTotalValue += (long)amount * (RewardSystemBehavior.Instance?.GetInventoryActualItemUnitValueForExternal(elementCopyAtIndex.EquipmentElement) ?? 1);
 				}
 				else
 				{
@@ -5117,13 +5583,15 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 						ItemId = text2,
 						Name = item.Name.ToString(),
 						AvailableAmount = amount,
-						Item = item
+						Item = item,
+						InventoryTotalValue = (long)amount * (RewardSystemBehavior.Instance?.GetInventoryActualItemUnitValueForExternal(elementCopyAtIndex.EquipmentElement) ?? 1)
 					};
 				}
 			}
 			foreach (ShoutTradeResourceOption value2 in dictionary.Values)
 			{
 				int availableAmount = value2.AvailableAmount;
+				value2.InventoryUnitValue = (availableAmount > 0) ? Math.Max(1, (int)Math.Round((double)value2.InventoryTotalValue / (double)availableAmount, MidpointRounding.AwayFromZero)) : 1;
 				if (!_shoutPendingTradeIsGive)
 				{
 					availableAmount = MyBehavior.GetRemainingShowableItemCountForExternal(hero, text, value2.ItemId, availableAmount);
@@ -5159,6 +5627,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					ItemId = shoutTradeResourceOption.ItemId,
 					ItemName = shoutTradeResourceOption.Name,
 					Item = shoutTradeResourceOption.Item,
+					InventoryUnitValue = shoutTradeResourceOption.InventoryUnitValue,
 					Amount = 0
 				});
 			}
@@ -5267,6 +5736,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			RecordShoutShownResources();
 			text = BuildShoutTradeFactText(isGive: false);
+			ShowShoutPendingDisplayValueMessage(EstimateShoutPendingShowTotalValue());
 		}
 		int? forcedPrimaryAgentIndex = ((_shoutTradeTargetNpc != null) ? new int?(_shoutTradeTargetNpc.AgentIndex) : ((int?)null));
 		ResetShoutTradeState();
@@ -5408,6 +5878,126 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		catch
 		{
 			return "";
+		}
+	}
+
+	private static string NormalizeSceneRevisitKeyToken(string text)
+	{
+		string text2 = (text ?? "").Trim().ToLowerInvariant();
+		if (string.IsNullOrWhiteSpace(text2))
+		{
+			return "";
+		}
+		text2 = Regex.Replace(text2, "\\s+", " ");
+		return text2.Trim();
+	}
+
+	private static string BuildCurrentSceneRevisitKeySafe()
+	{
+		try
+		{
+			ParseCurrentScenePlaceAndSpotForPrompt(out var placeName, out var spotName);
+			string[] value = new string[4]
+			{
+				NormalizeSceneRevisitKeyToken(GetCurrentSettlementIdSafe()),
+				NormalizeSceneRevisitKeyToken(Mission.Current?.SceneName),
+				NormalizeSceneRevisitKeyToken(placeName),
+				NormalizeSceneRevisitKeyToken(spotName)
+			};
+			string text = string.Join("|", value.Where(x => !string.IsNullOrWhiteSpace(x)));
+			return text.Trim();
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	private static string BuildSceneHeroRevisitRecordKey(Hero hero, string sceneKey)
+	{
+		string text = (hero?.StringId ?? "").Trim();
+		string text2 = (sceneKey ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text) || string.IsNullOrWhiteSpace(text2))
+		{
+			return "";
+		}
+		return text + "@" + text2;
+	}
+
+	private static string BuildSceneRevisitFactBody(string playerDisplayName, int elapsedDays)
+	{
+		string text = string.IsNullOrWhiteSpace(playerDisplayName) ? "玩家" : playerDisplayName.Trim();
+		if (elapsedDays <= 0)
+		{
+			return "你今天稍早时候刚与" + text + "见过面。";
+		}
+		return "距离你上次与" + text + "见面，已有" + elapsedDays + "天了。";
+	}
+
+	private void TryInjectSceneRevisitFactsBeforePlayerMessage(List<NpcDataPacket> nearbyData)
+	{
+		if (nearbyData == null || nearbyData.Count == 0)
+		{
+			return;
+		}
+		int currentCampaignDaySafe = GetCurrentCampaignDaySafe();
+		if (currentCampaignDaySafe < 0)
+		{
+			return;
+		}
+		string text = BuildCurrentSceneRevisitKeySafe();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return;
+		}
+		string playerDisplayNameForShout = GetPlayerDisplayNameForShout();
+		if (string.IsNullOrWhiteSpace(playerDisplayNameForShout))
+		{
+			playerDisplayNameForShout = "玩家";
+		}
+		List<(Hero Hero, string SceneHistoryName, string RecordKey, int ElapsedDays)> list = new List<(Hero, string, string, int)>();
+		lock (_historyLock)
+		{
+			HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+			foreach (NpcDataPacket nearbyDatum in nearbyData)
+			{
+				if (!(nearbyDatum?.IsHero ?? false))
+				{
+					continue;
+				}
+				Hero hero = ResolveHeroFromAgentIndex(nearbyDatum.AgentIndex);
+				if (hero == null)
+				{
+					continue;
+				}
+				string text2 = BuildSceneHeroRevisitRecordKey(hero, text);
+				if (string.IsNullOrWhiteSpace(text2) || !hashSet.Add(text2))
+				{
+					continue;
+				}
+				if (_sceneHeroRevisitHandledThisSession.Contains(text2))
+				{
+					continue;
+				}
+				if (_sceneHeroRevisitDays.TryGetValue(text2, out var value))
+				{
+					list.Add((hero, GetSceneNpcHistoryNameForPrompt(nearbyDatum), text2, Math.Max(0, currentCampaignDaySafe - value)));
+				}
+				_sceneHeroRevisitDays[text2] = currentCampaignDaySafe;
+				_sceneHeroRevisitHandledThisSession.Add(text2);
+			}
+		}
+		if (list.Count == 0)
+		{
+			return;
+		}
+		foreach (var item in list)
+		{
+			string text3 = string.IsNullOrWhiteSpace(item.SceneHistoryName) ? (item.Hero.Name?.ToString() ?? "对方") : item.SceneHistoryName;
+			string text4 = BuildSceneRevisitFactBody(playerDisplayNameForShout, item.ElapsedDays);
+			string extraFact = "[AFEF NPC行为补充] 对" + text3 + "：" + text4;
+			RecordExtraFactToSceneHistory(extraFact, nearbyData);
+			MyBehavior.AppendExternalDialogueHistory(item.Hero, null, null, "[AFEF NPC行为补充] " + text4);
 		}
 	}
 
@@ -5680,6 +6270,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		string text = GetPlayerDisplayNameForShout();
 		string text2 = GetShoutTradeTargetDisplayName();
 		List<string> list = new List<string>();
+		long num = 0L;
 		for (int i = 0; i < _shoutPendingTradeItems.Count; i++)
 		{
 			ShoutPendingTradeItem shoutPendingTradeItem = _shoutPendingTradeItems[i];
@@ -5688,30 +6279,44 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				if (shoutPendingTradeItem.IsGold)
 				{
 					list.Add($"{shoutPendingTradeItem.Amount} 第纳尔");
+					if (!isGive)
+					{
+						num += shoutPendingTradeItem.Amount;
+					}
 				}
 				else
 				{
-					string text3 = shoutPendingTradeItem.ItemId ?? shoutPendingTradeItem.Item?.StringId ?? "";
-					string text4 = "";
-					try
+					string text3;
+					if (isGive)
 					{
-						Agent agent = Mission.Current?.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == (_shoutTradeTargetNpc?.AgentIndex ?? (-1)));
-						CharacterObject characterObject = agent?.Character as CharacterObject;
-						Hero hero = characterObject?.HeroObject;
-						if (characterObject != null && hero == null && RewardSystemBehavior.Instance != null && RewardSystemBehavior.Instance.TryGetSettlementMerchantKind(characterObject, out var _))
+						text3 = shoutPendingTradeItem.ItemId ?? shoutPendingTradeItem.Item?.StringId ?? "";
+						string text4 = "";
+						try
 						{
-							text4 = RewardSystemBehavior.Instance.BuildSettlementItemValueFactSuffixForExternal(Settlement.CurrentSettlement, text3, shoutPendingTradeItem.Amount);
+							Agent agent = Mission.Current?.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == (_shoutTradeTargetNpc?.AgentIndex ?? (-1)));
+							CharacterObject characterObject = agent?.Character as CharacterObject;
+							Hero hero = characterObject?.HeroObject;
+							if (characterObject != null && hero == null && RewardSystemBehavior.Instance != null && RewardSystemBehavior.Instance.TryGetSettlementMerchantKind(characterObject, out var _))
+							{
+								text4 = RewardSystemBehavior.Instance.BuildSettlementItemValueFactSuffixForExternal(Settlement.CurrentSettlement, text3, shoutPendingTradeItem.Amount);
+							}
+							else
+							{
+								text4 = RewardSystemBehavior.Instance?.BuildItemValueFactSuffixForExternal(hero ?? Hero.MainHero, text3, shoutPendingTradeItem.Amount) ?? "";
+							}
 						}
-						else
+						catch
 						{
-							text4 = RewardSystemBehavior.Instance?.BuildItemValueFactSuffixForExternal(hero ?? Hero.MainHero, text3, shoutPendingTradeItem.Amount) ?? "";
+							text4 = RewardSystemBehavior.Instance?.BuildItemValueFactSuffixForExternal(Hero.MainHero, text3, shoutPendingTradeItem.Amount) ?? "";
 						}
+						list.Add($"{shoutPendingTradeItem.Amount} 个 {shoutPendingTradeItem.ItemName}{text4}");
 					}
-					catch
+					else
 					{
-						text4 = RewardSystemBehavior.Instance?.BuildItemValueFactSuffixForExternal(Hero.MainHero, text3, shoutPendingTradeItem.Amount) ?? "";
+						string text5 = RewardSystemBehavior.Instance?.BuildInventoryActualItemValueFactSuffixForExternal(shoutPendingTradeItem.Item, shoutPendingTradeItem.Amount, shoutPendingTradeItem.InventoryUnitValue) ?? "";
+						num += RewardSystemBehavior.Instance?.EstimateInventoryActualItemValueForExternal(shoutPendingTradeItem.Item, shoutPendingTradeItem.Amount, shoutPendingTradeItem.InventoryUnitValue) ?? 0L;
+						list.Add($"{shoutPendingTradeItem.Amount} 个 {shoutPendingTradeItem.ItemName}{text5}");
 					}
-					list.Add($"{shoutPendingTradeItem.Amount} 个 {shoutPendingTradeItem.ItemName}{text4}");
 				}
 			}
 		}
@@ -5723,7 +6328,42 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			return text + "已经将 " + string.Join("、", list) + " 交给 " + text2 + "。";
 		}
-		return text + "给 " + text2 + " 看了看 " + string.Join("、", list) + "，证明自己有这些东西。";
+		return text + "给 " + text2 + " 看了看 总值为 " + num + " 第纳尔的各类财物：" + string.Join("、", list) + "，证明自己有这些东西。";
+	}
+
+	private long EstimateShoutPendingShowTotalValue()
+	{
+		if (_shoutPendingTradeItems == null || _shoutPendingTradeItems.Count == 0)
+		{
+			return 0L;
+		}
+		long num = 0L;
+		for (int i = 0; i < _shoutPendingTradeItems.Count; i++)
+		{
+			ShoutPendingTradeItem shoutPendingTradeItem = _shoutPendingTradeItems[i];
+			if (shoutPendingTradeItem == null || shoutPendingTradeItem.Amount <= 0)
+			{
+				continue;
+			}
+			if (shoutPendingTradeItem.IsGold)
+			{
+				num += shoutPendingTradeItem.Amount;
+			}
+			else
+			{
+				num += RewardSystemBehavior.Instance?.EstimateInventoryActualItemValueForExternal(shoutPendingTradeItem.Item, shoutPendingTradeItem.Amount, shoutPendingTradeItem.InventoryUnitValue) ?? 0L;
+			}
+		}
+		return num;
+	}
+
+	private void ShowShoutPendingDisplayValueMessage(long totalValue)
+	{
+		if (totalValue <= 0)
+		{
+			return;
+		}
+		InformationManager.DisplayMessage(new InformationMessage("【展示估值】你向 " + GetShoutTradeTargetDisplayName() + " 展示了总值为 " + totalValue + " 第纳尔的财物。", new Color(0.95f, 0.85f, 0.25f)));
 	}
 
 	private static string GetPlayerDisplayNameForShout()
@@ -6381,6 +7021,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				{
 					layeredPrompt = layeredPrompt + "\n" + persistedWithoutRecentWindow;
 				}
+				string firstMeetingNpcFactSection = BuildSceneFirstMeetingNpcFactSection(persistedHistorySourceIndex, resolvedHeroes);
+				if (!string.IsNullOrWhiteSpace(firstMeetingNpcFactSection))
+				{
+					layeredPrompt = layeredPrompt + "\n" + firstMeetingNpcFactSection;
+				}
 				if (!string.IsNullOrWhiteSpace(scenePublicHistorySection))
 				{
 					layeredPrompt = layeredPrompt + "\n" + scenePublicHistorySection;
@@ -6853,11 +7498,18 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				{
 					layeredPrompt = layeredPrompt + "\n" + persistedWithoutRecentWindow;
 				}
+				string firstMeetingNpcFactSection = BuildSceneFirstMeetingNpcFactSection(contextHero);
+				if (!string.IsNullOrWhiteSpace(firstMeetingNpcFactSection))
+				{
+					layeredPrompt = layeredPrompt + "\n" + firstMeetingNpcFactSection;
+				}
 				if (!string.IsNullOrWhiteSpace(scenePublicHistorySection))
 				{
 					layeredPrompt = layeredPrompt + "\n" + scenePublicHistorySection;
 				}
-				string roleTopIntro = BuildSceneSystemTopPromptIntroForSingle(npc2, contextHero, speakableCandidates);
+				bool includeInventorySummary = ctx != null && (ctx.UseRewardContext || ctx.IsLoanContext || ctx.UseDuelContext);
+				bool includeTradePricing = includeInventorySummary;
+				string roleTopIntro = BuildSceneSystemTopPromptIntroForSingle(npc2, contextHero, speakableCandidates, includeInventorySummary, includeTradePricing);
 				if (!string.IsNullOrWhiteSpace(roleTopIntro))
 				{
 					layeredPrompt = roleTopIntro + "\n" + layeredPrompt;
@@ -7201,6 +7853,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 						{
 							content = StripActionTagsForSceneSpeech(content);
 						}
+						if (flagSceneTaunt2 && string.IsNullOrWhiteSpace(content))
+						{
+							content = BuildFallbackSceneTauntSpeech(flagSceneTaunt);
+						}
 						if (flagSceneTaunt2 && !IsMeetingSceneConversationReleaseSensitive() && string.IsNullOrWhiteSpace(content))
 						{
 							ReleaseSceneConversationConstraints(allNpcData, matchedNpc.AgentIndex, stopAutoGroupSession: true, clearQueuedSpeech: true);
@@ -7220,9 +7876,9 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 								{
 									return;
 								}
-								string historyText = StripActionTagsForSceneSpeech(content);
+								string historyText = SanitizeSceneSpeechText(content);
 								bool flag4 = IsAgentHostileToMainAgent(agent);
-								ShowNpcSpeechOutput(matchedNpc, agent, content, allowTts: true, attachTtsToSceneAgent: true);
+								ShowNpcSpeechOutput(matchedNpc, agent, historyText, allowTts: true, attachTtsToSceneAgent: true);
 								if (flag4)
 								{
 									RefreshHostileCombatAgentAutonomy(agent);
@@ -7346,6 +8002,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 
 	private void RecordPlayerMessage(string text, List<NpcDataPacket> nearbyData, int primaryTargetAgentIndex = -1, string primaryTargetName = "")
 	{
+		TryInjectSceneRevisitFactsBeforePlayerMessage(nearbyData);
 		List<int> visibleAgentIndices = BuildVisibleAgentSnapshot(nearbyData);
 		string text2 = ResolveSceneTargetNameForPrompt(primaryTargetAgentIndex, primaryTargetName, nearbyData);
 		lock (_historyLock)
@@ -8003,7 +8660,9 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				LogTtsReport("StopRhubarbRecord.Skip", agentIndex, $"reason={reason};agentMissing={(agent == null)};visualsMissing={(agent != null && agent.AgentVisuals == null)}");
 				return;
 			}
+			LogLipSyncNativeProbe("StopRhubarbRecord.Before", agentIndex, "reason=" + reason);
 			agent.AgentVisuals.StartRhubarbRecord("", -1);
+			LogLipSyncNativeProbe("StopRhubarbRecord.After", agentIndex, "reason=" + reason);
 			Logger.Log("LipSync", $"[Rhubarb] StopRhubarbRecord called, agentIndex={agentIndex}, reason={reason}");
 			LogTtsReport("StopRhubarbRecord", agentIndex, "reason=" + reason);
 		}
@@ -8011,6 +8670,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			Logger.Log("LipSync", $"[WARN] StopRhubarbRecord failed, agentIndex={agentIndex}, reason={reason}, error={ex.Message}");
 			LogTtsReport("StopRhubarbRecord.Failed", agentIndex, $"reason={reason};error={ex.Message}");
+			BannerlordExceptionSentinel.ReportObservedException("LipSync.StopRhubarbRecord", ex, $"agentIndex={agentIndex};reason={reason}");
 		}
 	}
 
@@ -8195,12 +8855,55 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		try
 		{
 			Agent main = Agent.Main;
-			return agent != null && !agent.IsMainAgent && agent.IsActive() && main != null && main.IsActive() && agent.Team != null && main.Team != null && agent.Team.IsEnemyOf(main.Team);
+			return agent != null && !agent.IsMainAgent && agent.IsActive() && main != null && main.IsActive() && AreAgentsHostileForSceneConversation(agent, main);
 		}
 		catch
 		{
 			return false;
 		}
+	}
+
+	private static bool IsUsableTeam(Team team)
+	{
+		try
+		{
+			return team != null && team != Team.Invalid && team.IsValid;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static bool AreTeamsHostileSafely(Team firstTeam, Team secondTeam)
+	{
+		try
+		{
+			return IsUsableTeam(firstTeam) && IsUsableTeam(secondTeam) && firstTeam != secondTeam && (firstTeam.IsEnemyOf(secondTeam) || secondTeam.IsEnemyOf(firstTeam));
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static bool AreAgentsHostileForSceneConversation(Agent a, Agent b)
+	{
+		if (a == null || b == null || !a.IsActive() || !b.IsActive())
+		{
+			return false;
+		}
+		try
+		{
+			if (a.IsEnemyOf(b) || b.IsEnemyOf(a))
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		return AreTeamsHostileSafely(a.Team, b.Team);
 	}
 
 	private void StartAutoGroupChatSession(List<NpcDataPacket> participants, NpcDataPacket primaryNpc, int conversationEpoch, int lastSpeakerAgentIndex)
@@ -8845,7 +9548,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 	{
 		try
 		{
-			if (MeetingBattleRuntime.IsMeetingActive)
+			if (IsMeetingPseudoCombatContext())
 			{
 				return true;
 			}
@@ -8890,12 +9593,19 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		try
 		{
 			Mission current = Mission.Current;
-			if (current != null)
+			Agent main = Agent.Main;
+			if (current != null && main != null && main.IsActive() && current.Agents != null)
 			{
 				MissionMode mode = current.Mode;
 				if (mode == MissionMode.Battle || mode == MissionMode.Duel)
 				{
-					return true;
+					foreach (Agent agent in current.Agents)
+					{
+						if (agent != null && agent.IsActive() && agent != main && AreAgentsHostileForSceneConversation(agent, main))
+						{
+							return true;
+						}
+					}
 				}
 			}
 		}
@@ -8905,11 +9615,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		try
 		{
 			Agent main = Agent.Main;
-			if (main != null && main.IsActive() && main.Team != null && Mission.Current?.Agents != null)
+			if (main != null && main.IsActive() && Mission.Current?.Agents != null)
 			{
 				foreach (Agent agent in Mission.Current.Agents)
 				{
-					if (agent != null && agent.IsActive() && agent != main && agent.Team != null && agent.Team.IsEnemyOf(main.Team))
+					if (agent != null && agent.IsActive() && agent != main && AreAgentsHostileForSceneConversation(agent, main))
 					{
 						return true;
 					}
@@ -9015,7 +9725,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 	{
 		try
 		{
-			return MeetingBattleRuntime.IsMeetingActive;
+			return IsMeetingPseudoCombatContext();
 		}
 		catch
 		{
@@ -9023,7 +9733,19 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 	}
 
-	private void ReleaseAgentFromSceneConversationLocks(Agent agent)
+	private static bool ShouldPreserveMeetingSceneAutonomy()
+	{
+		try
+		{
+			return IsMeetingPseudoCombatContext();
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private void ClearAgentSceneConversationFocus(Agent agent)
 	{
 		if (agent == null || !agent.IsActive())
 		{
@@ -9052,6 +9774,19 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 		catch
 		{
+		}
+	}
+
+	private void ReleaseAgentFromSceneConversationLocks(Agent agent)
+	{
+		if (agent == null || !agent.IsActive())
+		{
+			return;
+		}
+		ClearAgentSceneConversationFocus(agent);
+		if (ShouldPreserveMeetingSceneAutonomy())
+		{
+			return;
 		}
 		try
 		{
@@ -9490,6 +10225,18 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			RestoreAgentAutonomy(agent);
 			return;
 		}
+		if (ShouldPreserveMeetingSceneAutonomy())
+		{
+			_staringAgents.RemoveAll((Agent a) => a == null || a.Index == session.TargetAgentIndex);
+			_staringAgentAnchors.Remove(session.TargetAgentIndex);
+			if (_staringAgents.Count == 0)
+			{
+				_stopStaringTime = 0f;
+			}
+			RemoveSceneMovementSuppressionAgents(new int[1] { session.TargetAgentIndex });
+			ReleaseAgentFromSceneConversationLocks(agent);
+			return;
+		}
 		string text = (session.TargetName ?? "").Trim();
 		if (string.IsNullOrWhiteSpace(text))
 		{
@@ -9500,7 +10247,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			text2 = "玩家";
 		}
-		string factText = text + ": "+ text2 +"长时间没有发言，你决定走开去干自己的事了。";
+		string factText = text + ": "+ text2 +"长时间没有发言，你决定去干自己的事了。";
 		string prefixedFactText = "[AFEF NPC行为补充] " + factText;
 		if (session.TimeoutSeconds > 3.5f)
 		{
@@ -9525,29 +10272,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			return;
 		}
 		bool flag = IsAgentHostileToMainAgent(agent);
-		try
+		ClearAgentSceneConversationFocus(agent);
+		if (ShouldPreserveMeetingSceneAutonomy())
 		{
-			if (_staringUseConversationAgents.Remove(agent.Index) && agent.CurrentlyUsedGameObject != null)
-			{
-				agent.CurrentlyUsedGameObject.OnUserConversationEnd();
-			}
-		}
-		catch
-		{
-		}
-		try
-		{
-			agent.SetLookAgent(null);
-		}
-		catch
-		{
-		}
-		try
-		{
-			agent.SetMaximumSpeedLimit(-1f, isMultiplier: false);
-		}
-		catch
-		{
+			return;
 		}
 		try
 		{
@@ -9953,6 +10681,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			layeredPrompt = layeredPrompt + "\n" + persistedWithoutRecentWindow;
 		}
+		string firstMeetingNpcFactSection = BuildSceneFirstMeetingNpcFactSection(targetNpc.IsHero ? ResolveHeroFromAgentIndex(targetNpc.AgentIndex) : null);
+		if (!string.IsNullOrWhiteSpace(firstMeetingNpcFactSection))
+		{
+			layeredPrompt = layeredPrompt + "\n" + firstMeetingNpcFactSection;
+		}
 		if (!string.IsNullOrWhiteSpace(scenePublicHistorySection))
 		{
 			layeredPrompt = layeredPrompt + "\n" + scenePublicHistorySection;
@@ -10173,7 +10906,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				{
 					staringAgent.SetLookAgent(null);
 					staringAgent.SetMaximumSpeedLimit(-1f, isMultiplier: false);
-					staringAgent.DisableScriptedMovement();
+					if (!ShouldPreserveMeetingSceneAutonomy())
+					{
+						staringAgent.DisableScriptedMovement();
+					}
 				}
 				catch
 				{
