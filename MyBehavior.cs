@@ -20,8 +20,10 @@ using TaleWorlds.CampaignSystem.Actions;
 using TaleWorlds.CampaignSystem.CharacterDevelopment;
 using TaleWorlds.CampaignSystem.Extensions;
 using TaleWorlds.CampaignSystem.GameMenus;
+using TaleWorlds.CampaignSystem.LogEntries;
 using TaleWorlds.CampaignSystem.MapEvents;
 using TaleWorlds.CampaignSystem.Map;
+using TaleWorlds.CampaignSystem.Election;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Roster;
 using TaleWorlds.CampaignSystem.Siege;
@@ -103,11 +105,100 @@ public class MyBehavior : CampaignBehaviorBase
 
 		public int Order;
 
+		public int Sequence;
+
 		public string GameDate;
 
 		public string Text;
 
 		public string StableKey;
+
+		public string ActionKind;
+
+		public string ActorHeroId;
+
+		public string ActorClanId;
+
+		public string ActorKingdomId;
+
+		public string TargetHeroId;
+
+		public string TargetClanId;
+
+		public string TargetKingdomId;
+
+		public string SettlementId;
+
+		public string SettlementName;
+
+		public string SettlementOwnerHeroId;
+
+		public string SettlementOwnerClanId;
+
+		public string SettlementOwnerKingdomId;
+
+		public string PreviousSettlementOwnerHeroId;
+
+		public string PreviousSettlementOwnerClanId;
+
+		public string PreviousSettlementOwnerKingdomId;
+
+		public string LocationText;
+
+		public bool? Won;
+
+		public bool IsMajor;
+
+		public List<string> RelatedHeroIds = new List<string>();
+
+		public List<string> RelatedClanIds = new List<string>();
+
+		public List<string> RelatedKingdomIds = new List<string>();
+	}
+
+	private sealed class NpcActionFacts
+	{
+		public string ActionKind;
+
+		public string ActorHeroId;
+
+		public string ActorClanId;
+
+		public string ActorKingdomId;
+
+		public string TargetHeroId;
+
+		public string TargetClanId;
+
+		public string TargetKingdomId;
+
+		public string SettlementId;
+
+		public string SettlementName;
+
+		public string SettlementOwnerHeroId;
+
+		public string SettlementOwnerClanId;
+
+		public string SettlementOwnerKingdomId;
+
+		public string PreviousSettlementOwnerHeroId;
+
+		public string PreviousSettlementOwnerClanId;
+
+		public string PreviousSettlementOwnerKingdomId;
+
+		public string LocationText;
+
+		public bool? Won;
+
+		public bool IsMajor;
+
+		public List<string> RelatedHeroIds = new List<string>();
+
+		public List<string> RelatedClanIds = new List<string>();
+
+		public List<string> RelatedKingdomIds = new List<string>();
 	}
 
 	private class NpcPersonaProfile
@@ -117,6 +208,99 @@ public class MyBehavior : CampaignBehaviorBase
 		public string Background;
 
 		public string VoiceId;
+	}
+
+	private sealed class DevKingdomSummaryMenuItem
+	{
+		public string KingdomId;
+
+		public string DisplayName;
+	}
+
+	private sealed class EventMaterialReference
+	{
+		public string MaterialType;
+
+		public string Label;
+
+		public string SnapshotText;
+
+		public string HeroId;
+
+		public string KingdomId;
+
+		public string SettlementId;
+
+		public bool RecentOnly;
+
+		public string ActionStableKey;
+
+		public int? ActionDay;
+
+		public int? ActionOrder;
+
+		public int? ActionSequence;
+	}
+
+	private sealed class EventRecordEntry
+	{
+		public string EventId;
+
+		public int WeekIndex;
+
+		public string EventKind;
+
+		public string ScopeKingdomId;
+
+		public string Title;
+
+		public string Summary;
+
+		public int CreatedDay;
+
+		public string CreatedDate;
+
+		public List<EventMaterialReference> Materials = new List<EventMaterialReference>();
+	}
+
+	private sealed class EventSourceMaterialEntry
+	{
+		public int Day;
+
+		public int Sequence;
+
+		public string GameDate;
+
+		public string MaterialKind;
+
+		public string Label;
+
+		public string SnapshotText;
+
+		public string StableKey;
+
+		public string KingdomId;
+
+		public string SettlementId;
+
+		public bool IncludeInWorld;
+
+		public bool IncludeInKingdom;
+	}
+
+	private sealed class TownStatSnapshot
+	{
+		public float Prosperity;
+
+		public float Loyalty;
+
+		public float Security;
+
+		public float FoodStocks;
+
+		public float Militia;
+
+		public int Garrison;
 	}
 
 	public class ShoutPromptContext
@@ -255,6 +439,7 @@ public class MyBehavior : CampaignBehaviorBase
 		UnnamedPersona,
 		DialogueHistory,
 		Debt,
+		EventData,
 		Knowledge,
 		VoiceMapping
 	}
@@ -266,6 +451,39 @@ public class MyBehavior : CampaignBehaviorBase
 		public string Personality;
 
 		public string Background;
+	}
+
+	private sealed class EventWorldOpeningSummaryJson
+	{
+		public string Summary;
+	}
+
+	private sealed class EventImportPayload
+	{
+		public bool HasWorldSummaryFile;
+
+		public string WorldSummary;
+
+		public bool HasKingdomSummariesFile;
+
+		public Dictionary<string, string> KingdomSummaries = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+		public bool HasEventRecordsFile;
+
+		public List<EventRecordEntry> EventRecords = new List<EventRecordEntry>();
+	}
+
+	private sealed class WeeklyEventMaterialPreviewGroup
+	{
+		public string GroupKind;
+
+		public string KingdomId;
+
+		public string Title;
+
+		public string Summary;
+
+		public List<EventMaterialReference> Materials = new List<EventMaterialReference>();
 	}
 
 	private const int MOUSEEVENTF_LEFTDOWN = 2;
@@ -336,15 +554,33 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private Dictionary<string, string> _npcRecentActionStorage = new Dictionary<string, string>();
 
+	private int _npcActionGlobalOrderCounter;
+
 	private Dictionary<string, NpcPersonaProfile> _npcPersonaProfiles = new Dictionary<string, NpcPersonaProfile>();
 
 	private Dictionary<string, string> _npcPersonaProfileStorage = new Dictionary<string, string>();
+
+	private Dictionary<string, string> _eventKingdomOpeningSummaries = new Dictionary<string, string>();
+
+	private Dictionary<string, string> _eventKingdomOpeningSummaryStorage = new Dictionary<string, string>();
+
+	private string _eventWorldOpeningSummary = "";
+
+	private List<EventRecordEntry> _eventRecordEntries = new List<EventRecordEntry>();
+
+	private string _eventRecordJsonStorage = "";
+
+	private List<EventSourceMaterialEntry> _eventSourceMaterials = new List<EventSourceMaterialEntry>();
+
+	private string _eventSourceMaterialJsonStorage = "";
 
 	private string _voiceMappingJsonStorage = "";
 
 	private string _voiceMappingExportFolderStorage = "";
 
 	private string _unnamedPersonaJsonStorage = "";
+
+	private readonly Dictionary<string, TownStatSnapshot> _townStatSnapshots = new Dictionary<string, TownStatSnapshot>(StringComparer.OrdinalIgnoreCase);
 
 	private readonly object _npcPersonaAutoGenLock = new object();
 
@@ -488,6 +724,7 @@ public class MyBehavior : CampaignBehaviorBase
 		CampaignEvents.MapEventEnded.AddNonSerializedListener(this, OnMapEventEnded);
 		CampaignEvents.HeroPrisonerTaken.AddNonSerializedListener(this, OnHeroPrisonerTaken);
 		CampaignEvents.HeroPrisonerReleased.AddNonSerializedListener(this, OnHeroPrisonerReleased);
+		CampaignEvents.DailyTickTownEvent.AddNonSerializedListener(this, OnDailyTickTown);
 		CampaignEvents.ArmyCreated.AddNonSerializedListener(this, OnArmyCreated);
 		CampaignEvents.ArmyGathered.AddNonSerializedListener(this, OnArmyGathered);
 		CampaignEvents.ArmyDispersed.AddNonSerializedListener(this, OnArmyDispersed);
@@ -499,6 +736,20 @@ public class MyBehavior : CampaignBehaviorBase
 		CampaignEvents.OnMobilePartyLeftSiegeEventEvent.AddNonSerializedListener(this, OnMobilePartyLeftSiege);
 		CampaignEvents.SiegeCompletedEvent.AddNonSerializedListener(this, OnSiegeCompleted);
 		CampaignEvents.DailyTickPartyEvent.AddNonSerializedListener(this, OnDailyTickParty);
+		CampaignEvents.BeforeHeroesMarried.AddNonSerializedListener(this, OnBeforeHeroesMarried);
+		CampaignEvents.OnClanChangedKingdomEvent.AddNonSerializedListener(this, OnClanChangedKingdom);
+		CampaignEvents.OnClanDefectedEvent.AddNonSerializedListener(this, OnClanDefected);
+		CampaignEvents.KingdomDecisionConcluded.AddNonSerializedListener(this, OnKingdomDecisionConcluded);
+		CampaignEvents.RulingClanChanged.AddNonSerializedListener(this, OnRulingClanChanged);
+		CampaignEvents.OnSettlementOwnerChangedEvent.AddNonSerializedListener(this, OnSettlementOwnerChanged);
+		CampaignEvents.HeroKilledEvent.AddNonSerializedListener(this, OnHeroKilled);
+		CampaignEvents.OnGivenBirthEvent.AddNonSerializedListener(this, OnGivenBirth);
+		CampaignEvents.OnClanLeaderChangedEvent.AddNonSerializedListener(this, OnClanLeaderChanged);
+		CampaignEvents.OnSiegeAftermathAppliedEvent.AddNonSerializedListener(this, OnSiegeAftermathApplied);
+		CampaignEvents.VillageBeingRaided.AddNonSerializedListener(this, OnVillageBeingRaided);
+		CampaignEvents.RaidCompletedEvent.AddNonSerializedListener(this, OnRaidCompleted);
+		CampaignEvents.KingdomDestroyedEvent.AddNonSerializedListener(this, OnKingdomDestroyed);
+		CampaignEvents.OnClanDestroyedEvent.AddNonSerializedListener(this, OnClanDestroyed);
 	}
 
 	private void OnMapEventEnded(MapEvent mapEvent)
@@ -539,6 +790,41 @@ public class MyBehavior : CampaignBehaviorBase
 	{
 		try
 		{
+			Hero hero = capturer?.LeaderHero ?? capturer?.MobileParty?.LeaderHero;
+			Settlement settlement = ResolveSettlementForPartyBase(capturer);
+			string text = GetLocationLabelForPartyBase(capturer);
+			string text2 = BuildPrisonerTakenStableKey(hero, prisoner);
+			if (ShouldTrackNpcActionHero(hero))
+			{
+				NpcActionFacts npcActionFacts = CreateNpcActionFacts("prisoner_taken_captor", hero);
+				npcActionFacts.LocationText = text;
+				ApplySettlementFacts(npcActionFacts, settlement, locationText: text);
+				ApplyTargetFacts(npcActionFacts, prisoner);
+				if (prisoner?.MapFaction != null)
+				{
+					AddRelatedFactionFacts(npcActionFacts, prisoner.MapFaction);
+				}
+				string text3 = "你俘虏了" + GetHeroDisplayName(prisoner) + "。";
+				RecordNpcMajorAction(hero, text3, text2 + ":captor", npcActionFacts);
+				RecordNpcRecentAction(hero, text3, text2 + ":captor", facts: npcActionFacts);
+			}
+			if (ShouldTrackNpcActionHero(prisoner))
+			{
+				NpcActionFacts npcActionFacts2 = CreateNpcActionFacts("prisoner_taken_prisoner", prisoner);
+				npcActionFacts2.LocationText = text;
+				ApplySettlementFacts(npcActionFacts2, settlement, locationText: text);
+				if (hero != null)
+				{
+					ApplyTargetFacts(npcActionFacts2, hero);
+				}
+				else if (capturer?.MobileParty?.MapFaction != null)
+				{
+					AddRelatedFactionFacts(npcActionFacts2, capturer.MobileParty.MapFaction);
+				}
+				string text4 = ((hero != null) ? ("你被" + GetHeroDisplayName(hero) + "俘虏了。") : "你被敌方俘虏了。");
+				RecordNpcMajorAction(prisoner, text4, text2 + ":prisoner", npcActionFacts2);
+				RecordNpcRecentAction(prisoner, text4, text2 + ":prisoner", facts: npcActionFacts2);
+			}
 			if (prisoner != null && prisoner != Hero.MainHero && prisoner.IsLord && (capturer?.LeaderHero == Hero.MainHero || capturer?.MobileParty?.ActualClan == Clan.PlayerClan))
 			{
 				Logger.Log("BattleStatus", $"NPC {prisoner.Name} 被玩家俘虏");
@@ -555,10 +841,42 @@ public class MyBehavior : CampaignBehaviorBase
 	{
 		try
 		{
+			Hero hero = party?.LeaderHero ?? party?.MobileParty?.LeaderHero;
+			Settlement settlement = ResolveSettlementForPartyBase(party);
+			string text = GetLocationLabelForPartyBase(party);
+			string text2 = BuildPrisonerReleasedStableKey(hero, prisoner, detail);
+			string endCaptivityDetailLabel = GetEndCaptivityDetailLabel(detail);
+			if (ShouldTrackNpcActionHero(prisoner))
+			{
+				NpcActionFacts npcActionFacts = CreateNpcActionFacts("prisoner_released_prisoner", prisoner);
+				npcActionFacts.LocationText = text;
+				ApplySettlementFacts(npcActionFacts, settlement, locationText: text);
+				if (hero != null)
+				{
+					ApplyTargetFacts(npcActionFacts, hero);
+				}
+				else
+				{
+					AddRelatedFactionFacts(npcActionFacts, capturerFaction);
+				}
+				string text3 = string.IsNullOrWhiteSpace(endCaptivityDetailLabel) ? "你结束了囚禁状态。" : ("你" + endCaptivityDetailLabel + "并恢复了自由。");
+				RecordNpcMajorAction(prisoner, text3, text2 + ":prisoner", npcActionFacts);
+				RecordNpcRecentAction(prisoner, text3, text2 + ":prisoner", facts: npcActionFacts);
+			}
+			if (ShouldTrackNpcActionHero(hero))
+			{
+				NpcActionFacts npcActionFacts2 = CreateNpcActionFacts("prisoner_released_captor", hero);
+				npcActionFacts2.LocationText = text;
+				ApplySettlementFacts(npcActionFacts2, settlement, locationText: text);
+				ApplyTargetFacts(npcActionFacts2, prisoner);
+				string text4 = string.IsNullOrWhiteSpace(endCaptivityDetailLabel) ? ("你失去了对" + GetHeroDisplayName(prisoner) + "的控制。") : (GetHeroDisplayName(prisoner) + endCaptivityDetailLabel + "，不再是你的囚犯。");
+				RecordNpcMajorAction(hero, text4, text2 + ":captor", npcActionFacts2);
+				RecordNpcRecentAction(hero, text4, text2 + ":captor", facts: npcActionFacts2);
+			}
 			if (prisoner != null && prisoner != Hero.MainHero && prisoner.IsLord && (capturerFaction == Hero.MainHero?.MapFaction || party?.LeaderHero == Hero.MainHero || party?.MobileParty?.ActualClan == Clan.PlayerClan))
 			{
 				_recentlyReleasedPrisoners.Add(prisoner.StringId);
-				string text = detail switch
+				string text5 = detail switch
 				{
 					EndCaptivityDetail.Ransom => "通过支付赎金", 
 					EndCaptivityDetail.ReleasedByChoice => "被主动释放", 
@@ -566,8 +884,8 @@ public class MyBehavior : CampaignBehaviorBase
 					EndCaptivityDetail.ReleasedAfterEscape => "成功逃脱", 
 					_ => "", 
 				};
-				Logger.Log("BattleStatus", $"NPC {prisoner.Name} {text}获得自由 (detail={detail})");
-				AppendExternalDialogueHistory(prisoner, null, null, $"你{text}从 {Hero.MainHero.Name} 的囚禁中获得了自由。");
+				Logger.Log("BattleStatus", $"NPC {prisoner.Name} {text5}获得自由 (detail={detail})");
+				AppendExternalDialogueHistory(prisoner, null, null, $"你{text5}从 {Hero.MainHero.Name} 的囚禁中获得了自由。");
 			}
 		}
 		catch (Exception ex)
@@ -586,8 +904,12 @@ public class MyBehavior : CampaignBehaviorBase
 				return;
 			}
 			string text = GetArmyDisplayName(army);
-			RecordNpcMajorAction(hero, "你组建并统领了" + text + "。", "army_create:" + text);
-			RecordNpcRecentAction(hero, "你组建并统领了" + text + "。", "army_create:" + text);
+			NpcActionFacts npcActionFacts = CreateNpcActionFacts("army_create", hero);
+			Settlement settlement = ResolveGatheringPointSettlement(army?.LeaderParty, army?.LeaderParty);
+			npcActionFacts.LocationText = GetNearestSettlementNameForParty(army?.LeaderParty);
+			ApplySettlementFacts(npcActionFacts, settlement, locationText: npcActionFacts.LocationText);
+			RecordNpcMajorAction(hero, "你组建并统领了" + text + "。", "army_create:" + text, npcActionFacts);
+			RecordNpcRecentAction(hero, "你组建并统领了" + text + "。", "army_create:" + text, facts: npcActionFacts);
 		}
 		catch (Exception ex)
 		{
@@ -604,12 +926,12 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				return;
 			}
-			string text = gatheringPoint?.Name?.ToString();
-			if (string.IsNullOrWhiteSpace(text))
-			{
-				text = "集结地";
-			}
-			RecordNpcRecentAction(hero, "你率领" + GetArmyDisplayName(army) + "在" + text + "集结。", "army_gather:" + GetArmyDisplayName(army) + ":" + text);
+			Settlement settlement = ResolveGatheringPointSettlement(gatheringPoint, army?.LeaderParty);
+			string text = ResolveGatheringPointLabel(gatheringPoint, army?.LeaderParty);
+			NpcActionFacts npcActionFacts = CreateNpcActionFacts("army_gather", hero);
+			npcActionFacts.LocationText = text;
+			ApplySettlementFacts(npcActionFacts, settlement, locationText: text);
+			RecordNpcRecentAction(hero, "你率领" + GetArmyDisplayName(army) + "在" + text + "集结。", "army_gather:" + GetArmyDisplayName(army) + ":" + text, facts: npcActionFacts);
 		}
 		catch (Exception ex)
 		{
@@ -626,7 +948,9 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				return;
 			}
-			RecordNpcRecentAction(hero, "你统领的" + GetArmyDisplayName(army) + "已解散。", "army_disperse:" + GetArmyDisplayName(army));
+			NpcActionFacts npcActionFacts = CreateNpcActionFacts("army_disperse", hero);
+			npcActionFacts.LocationText = GetNearestSettlementNameForParty(army?.LeaderParty);
+			RecordNpcRecentAction(hero, "你统领的" + GetArmyDisplayName(army) + "已解散。", "army_disperse:" + GetArmyDisplayName(army), facts: npcActionFacts);
 		}
 		catch (Exception ex)
 		{
@@ -644,9 +968,15 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				return;
 			}
+			if (party == army.LeaderParty || leaderHero == army.ArmyOwner || leaderHero == army.LeaderParty?.LeaderHero)
+			{
+				return;
+			}
 			string text = GetArmyDisplayName(army);
-			RecordNpcMajorAction(leaderHero, "你加入了" + text + "。", "army_join:" + text);
-			RecordNpcRecentAction(leaderHero, "你加入了" + text + "。", "army_join:" + text);
+			NpcActionFacts npcActionFacts = CreateNpcActionFacts("army_join", leaderHero);
+			npcActionFacts.LocationText = GetNearestSettlementNameForParty(party);
+			RecordNpcMajorAction(leaderHero, "你加入了" + text + "。", "army_join:" + text, npcActionFacts);
+			RecordNpcRecentAction(leaderHero, "你加入了" + text + "。", "army_join:" + text, facts: npcActionFacts);
 		}
 		catch (Exception ex)
 		{
@@ -664,7 +994,9 @@ public class MyBehavior : CampaignBehaviorBase
 				return;
 			}
 			string text = GetArmyDisplayName(army);
-			RecordNpcRecentAction(leaderHero, "你离开了" + text + "。", "army_leave:" + text);
+			NpcActionFacts npcActionFacts = CreateNpcActionFacts("army_leave", leaderHero);
+			npcActionFacts.LocationText = GetNearestSettlementNameForParty(party);
+			RecordNpcRecentAction(leaderHero, "你离开了" + text + "。", "army_leave:" + text, facts: npcActionFacts);
 		}
 		catch (Exception ex)
 		{
@@ -681,15 +1013,21 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				string text = BuildSiegeStartNarrative(settlement, isAttacker: true, siegeEvent);
 				string text2 = settlement?.Name?.ToString() ?? "某处要塞";
-				RecordNpcMajorAction(item, text, "siege_start:" + text2);
-				RecordNpcRecentAction(item, text, "siege_start:" + text2);
+				NpcActionFacts npcActionFacts = CreateNpcActionFacts("siege_start_attack", item);
+				ApplySettlementFacts(npcActionFacts, settlement);
+				npcActionFacts.TargetKingdomId = GetKingdomId(settlement?.MapFaction);
+				RecordNpcMajorAction(item, text, "siege_start:" + text2, npcActionFacts);
+				RecordNpcRecentAction(item, text, "siege_start:" + text2, facts: npcActionFacts);
 			}
 			foreach (Hero item2 in GetHeroesFromSiegeEventSide(siegeEvent, BattleSideEnum.Defender))
 			{
 				string text3 = BuildSiegeStartNarrative(settlement, isAttacker: false, siegeEvent);
 				string text4 = settlement?.Name?.ToString() ?? "某处要塞";
-				RecordNpcMajorAction(item2, text3, "siege_defend:" + text4);
-				RecordNpcRecentAction(item2, text3, "siege_defend:" + text4);
+				NpcActionFacts npcActionFacts2 = CreateNpcActionFacts("siege_start_defend", item2);
+				ApplySettlementFacts(npcActionFacts2, settlement);
+				npcActionFacts2.TargetKingdomId = GetKingdomId(siegeEvent?.BesiegerCamp?.LeaderParty?.MapFaction);
+				RecordNpcMajorAction(item2, text3, "siege_defend:" + text4, npcActionFacts2);
+				RecordNpcRecentAction(item2, text3, "siege_defend:" + text4, facts: npcActionFacts2);
 			}
 		}
 		catch (Exception ex)
@@ -706,11 +1044,15 @@ public class MyBehavior : CampaignBehaviorBase
 			string text = settlement?.Name?.ToString() ?? "某处要塞";
 			foreach (Hero item in GetHeroesFromSiegeEventSide(siegeEvent, BattleSideEnum.Attacker))
 			{
-				RecordNpcRecentAction(item, "你结束了对" + text + "的围城。", "siege_end:" + text);
+				NpcActionFacts npcActionFacts = CreateNpcActionFacts("siege_end_attack", item);
+				ApplySettlementFacts(npcActionFacts, settlement);
+				RecordNpcRecentAction(item, "你结束了对" + text + "的围城。", "siege_end:" + text, facts: npcActionFacts);
 			}
 			foreach (Hero item2 in GetHeroesFromSiegeEventSide(siegeEvent, BattleSideEnum.Defender))
 			{
-				RecordNpcRecentAction(item2, text + "的守城战已经结束。", "siege_end_defend:" + text);
+				NpcActionFacts npcActionFacts2 = CreateNpcActionFacts("siege_end_defend", item2);
+				ApplySettlementFacts(npcActionFacts2, settlement);
+				RecordNpcRecentAction(item2, text + "的守城战已经结束。", "siege_end_defend:" + text, facts: npcActionFacts2);
 			}
 		}
 		catch (Exception ex)
@@ -730,7 +1072,9 @@ public class MyBehavior : CampaignBehaviorBase
 			}
 			Settlement settlement = party.BesiegedSettlement ?? ResolveSiegeSettlement(party.SiegeEvent);
 			string text = settlement?.Name?.ToString() ?? "某处要塞";
-			RecordNpcRecentAction(leaderHero, "你加入了对" + text + "的围城。", "siege_join:" + text);
+			NpcActionFacts npcActionFacts = CreateNpcActionFacts("siege_join", leaderHero);
+			ApplySettlementFacts(npcActionFacts, settlement);
+			RecordNpcRecentAction(leaderHero, "你加入了对" + text + "的围城。", "siege_join:" + text, facts: npcActionFacts);
 		}
 		catch (Exception ex)
 		{
@@ -751,7 +1095,9 @@ public class MyBehavior : CampaignBehaviorBase
 			string text = settlement?.Name?.ToString() ?? "某处要塞";
 			bool flag = settlement != null && party?.MapFaction != null && settlement.MapFaction == party.MapFaction;
 			string text2 = (flag ? (text + "结清了战利品和战俘") : (text + "处理完了围城中产生的战利品以及战俘。"));
-			RecordNpcRecentAction(leaderHero, text2, "siege_leave:" + text + ":" + flag);
+			NpcActionFacts npcActionFacts = CreateNpcActionFacts("siege_leave", leaderHero);
+			ApplySettlementFacts(npcActionFacts, settlement);
+			RecordNpcRecentAction(leaderHero, text2, "siege_leave:" + text + ":" + flag, facts: npcActionFacts);
 		}
 		catch (Exception ex)
 		{
@@ -770,8 +1116,11 @@ public class MyBehavior : CampaignBehaviorBase
 			}
 			string text = settlement?.Name?.ToString() ?? "某处要塞";
 			string text2 = (siegeSuccess ? ("你在" + text + "的围城中获胜。") : ("你在" + text + "的围城中失利。"));
-			RecordNpcMajorAction(leaderHero, text2, "siege_complete:" + text + ":" + siegeSuccess);
-			RecordNpcRecentAction(leaderHero, text2, "siege_complete:" + text + ":" + siegeSuccess);
+			NpcActionFacts npcActionFacts = CreateNpcActionFacts("siege_complete", leaderHero);
+			ApplySettlementFacts(npcActionFacts, settlement);
+			npcActionFacts.Won = siegeSuccess;
+			RecordNpcMajorAction(leaderHero, text2, "siege_complete:" + text + ":" + siegeSuccess, npcActionFacts);
+			RecordNpcRecentAction(leaderHero, text2, "siege_complete:" + text + ":" + siegeSuccess, facts: npcActionFacts);
 		}
 		catch (Exception ex)
 		{
@@ -796,7 +1145,15 @@ public class MyBehavior : CampaignBehaviorBase
 			string text2 = BuildRecentPartyBehaviorStableKey(party);
 			if (!string.IsNullOrWhiteSpace(text2))
 			{
-				RecordNpcRecentAction(leaderHero, text, text2, dedupeAcrossWindow: true);
+				NpcActionFacts npcActionFacts = CreateNpcActionFacts("daily_behavior", leaderHero);
+				MobileParty mobileParty = party.Army?.LeaderParty ?? party;
+				Settlement settlement = mobileParty?.BesiegedSettlement ?? ResolveSiegeSettlement(mobileParty?.SiegeEvent) ?? mobileParty?.TargetSettlement ?? party.TargetSettlement ?? party.CurrentSettlement ?? party.LastVisitedSettlement;
+				ApplySettlementFacts(npcActionFacts, settlement, locationText: GetNearestSettlementNameForParty(party));
+				if (mobileParty?.TargetParty?.LeaderHero != null)
+				{
+					ApplyTargetFacts(npcActionFacts, mobileParty.TargetParty.LeaderHero);
+				}
+				RecordNpcRecentAction(leaderHero, text, text2, dedupeAcrossWindow: true, facts: npcActionFacts);
 			}
 		}
 		catch (Exception ex)
@@ -805,9 +1162,761 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private void OnBeforeHeroesMarried(Hero hero1, Hero hero2, bool showNotification)
+	{
+		try
+		{
+			string text = BuildOrderedHeroPairStableKey("marriage", hero1, hero2);
+			if (ShouldTrackNpcActionHero(hero1))
+			{
+				NpcActionFacts npcActionFacts = CreateNpcActionFacts("marriage", hero1);
+				ApplyTargetFacts(npcActionFacts, hero2);
+				RecordNpcMajorAction(hero1, "你与" + GetHeroDisplayName(hero2) + "缔结了婚姻。", text, npcActionFacts);
+				RecordNpcRecentAction(hero1, "你与" + GetHeroDisplayName(hero2) + "缔结了婚姻。", text, facts: npcActionFacts);
+			}
+			if (ShouldTrackNpcActionHero(hero2))
+			{
+				NpcActionFacts npcActionFacts2 = CreateNpcActionFacts("marriage", hero2);
+				ApplyTargetFacts(npcActionFacts2, hero1);
+				RecordNpcMajorAction(hero2, "你与" + GetHeroDisplayName(hero1) + "缔结了婚姻。", text, npcActionFacts2);
+				RecordNpcRecentAction(hero2, "你与" + GetHeroDisplayName(hero1) + "缔结了婚姻。", text, facts: npcActionFacts2);
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("NpcAction", "[ERROR] OnBeforeHeroesMarried: " + ex.Message);
+		}
+	}
+
+	private void OnClanChangedKingdom(Clan clan, Kingdom oldKingdom, Kingdom newKingdom, ChangeKingdomAction.ChangeKingdomActionDetail detail, bool showNotification)
+	{
+		try
+		{
+			string text = BuildClanChangedKingdomStableKey(clan, oldKingdom, newKingdom, detail);
+			string text2 = BuildClanChangedKingdomNarrative(clan, oldKingdom, newKingdom, detail);
+			foreach (Hero item in GetTrackedLordsForClan(clan))
+			{
+				NpcActionFacts npcActionFacts = CreateNpcActionFacts("clan_changed_kingdom", item);
+				npcActionFacts.TargetKingdomId = GetKingdomId(newKingdom ?? oldKingdom);
+				AddUniqueId(npcActionFacts.RelatedClanIds, GetClanId(clan));
+				AddUniqueId(npcActionFacts.RelatedKingdomIds, GetKingdomId(oldKingdom));
+				AddUniqueId(npcActionFacts.RelatedKingdomIds, GetKingdomId(newKingdom));
+				RecordNpcMajorAction(item, text2, text, npcActionFacts);
+				RecordNpcRecentAction(item, text2, text, facts: npcActionFacts);
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("NpcAction", "[ERROR] OnClanChangedKingdom: " + ex.Message);
+		}
+	}
+
+	private void OnClanDefected(Clan clan, Kingdom oldKingdom, Kingdom newKingdom)
+	{
+		try
+		{
+			string text = BuildClanChangedKingdomStableKey(clan, oldKingdom, newKingdom, ChangeKingdomAction.ChangeKingdomActionDetail.JoinKingdomByDefection);
+			string text2 = "你所在的" + GetClanDisplayName(clan) + "家族已脱离" + GetKingdomDisplayName(oldKingdom, "原王国") + "，转投" + GetKingdomDisplayName(newKingdom, "新王国") + "。";
+			foreach (Hero item in GetTrackedLordsForClan(clan))
+			{
+				NpcActionFacts npcActionFacts = CreateNpcActionFacts("clan_defected", item);
+				npcActionFacts.TargetKingdomId = GetKingdomId(newKingdom);
+				AddUniqueId(npcActionFacts.RelatedClanIds, GetClanId(clan));
+				AddUniqueId(npcActionFacts.RelatedKingdomIds, GetKingdomId(oldKingdom));
+				AddUniqueId(npcActionFacts.RelatedKingdomIds, GetKingdomId(newKingdom));
+				RecordNpcMajorAction(item, text2, text, npcActionFacts);
+				RecordNpcRecentAction(item, text2, text, facts: npcActionFacts);
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("NpcAction", "[ERROR] OnClanDefected: " + ex.Message);
+		}
+	}
+
+	private void OnKingdomDecisionConcluded(KingdomDecision decision, DecisionOutcome chosenOutcome, bool isPlayerInvolved)
+	{
+		try
+		{
+			if (decision == null)
+			{
+				return;
+			}
+			string text = BuildKingdomDecisionStableKey(decision);
+			string text2 = BuildKingdomDecisionNarrative(decision, chosenOutcome, isPlayerInvolved, forProposer: true);
+			Hero leader = decision.ProposerClan?.Leader;
+			if (ShouldTrackNpcActionHero(leader))
+			{
+				NpcActionFacts npcActionFacts = CreateNpcActionFacts("kingdom_decision_concluded", leader);
+				AddUniqueId(npcActionFacts.RelatedClanIds, GetClanId(decision.ProposerClan));
+				AddUniqueId(npcActionFacts.RelatedKingdomIds, GetKingdomId(decision.Kingdom));
+				ApplyKingdomDecisionSpecificFacts(npcActionFacts, decision, chosenOutcome);
+				RecordNpcMajorAction(leader, text2, text + ":proposer", npcActionFacts);
+				RecordNpcRecentAction(leader, text2, text + ":proposer", facts: npcActionFacts);
+			}
+			Hero leader2 = decision.DetermineChooser()?.Leader;
+			if (ShouldTrackNpcActionHero(leader2) && !string.Equals(GetHeroId(leader2), GetHeroId(leader), StringComparison.OrdinalIgnoreCase))
+			{
+				NpcActionFacts npcActionFacts2 = CreateNpcActionFacts("kingdom_decision_concluded", leader2);
+				AddUniqueId(npcActionFacts2.RelatedClanIds, GetClanId(decision.ProposerClan));
+				AddUniqueId(npcActionFacts2.RelatedKingdomIds, GetKingdomId(decision.Kingdom));
+				ApplyKingdomDecisionSpecificFacts(npcActionFacts2, decision, chosenOutcome);
+				string text3 = BuildKingdomDecisionNarrative(decision, chosenOutcome, isPlayerInvolved, forProposer: false);
+				RecordNpcMajorAction(leader2, text3, text + ":chooser", npcActionFacts2);
+				RecordNpcRecentAction(leader2, text3, text + ":chooser", facts: npcActionFacts2);
+			}
+			string text4 = BuildKingdomDecisionSupporterSummary(decision, chosenOutcome);
+			if (!string.IsNullOrWhiteSpace(text4))
+			{
+				string kingdomId = GetKingdomId(decision.Kingdom);
+				RecordEventSourceMaterial("kingdom_decision_support", "决议支持明细 - " + GetKingdomDisplayName(decision.Kingdom, "该王国"), text4, text + ":supporters", kingdomId, "", includeInWorld: false, includeInKingdom: true);
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("NpcAction", "[ERROR] OnKingdomDecisionConcluded: " + ex.Message);
+		}
+	}
+
+	private void OnRulingClanChanged(Kingdom kingdom, Clan newRulingClan)
+	{
+		try
+		{
+			string text = "ruling_clan_changed:" + GetKingdomId(kingdom) + ":" + GetClanId(newRulingClan);
+			string text2 = "你所在的" + GetClanDisplayName(newRulingClan) + "家族已成为" + GetKingdomDisplayName(kingdom, "该王国") + "的执政家族。";
+			foreach (Hero item in GetTrackedLordsForClan(newRulingClan))
+			{
+				NpcActionFacts npcActionFacts = CreateNpcActionFacts("ruling_clan_changed", item);
+				AddUniqueId(npcActionFacts.RelatedClanIds, GetClanId(newRulingClan));
+				AddUniqueId(npcActionFacts.RelatedKingdomIds, GetKingdomId(kingdom));
+				RecordNpcMajorAction(item, text2, text, npcActionFacts);
+				RecordNpcRecentAction(item, text2, text, facts: npcActionFacts);
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("NpcAction", "[ERROR] OnRulingClanChanged: " + ex.Message);
+		}
+	}
+
+	private void OnSettlementOwnerChanged(Settlement settlement, bool openToClaim, Hero newOwner, Hero oldOwner, Hero capturerHero, ChangeOwnerOfSettlementAction.ChangeOwnerOfSettlementDetail detail)
+	{
+		try
+		{
+			string text = BuildSettlementOwnerChangedStableKey(settlement, newOwner, oldOwner, detail);
+			string text2 = GetSettlementDisplayName(settlement);
+			if (ShouldTrackNpcActionHero(newOwner))
+			{
+				NpcActionFacts npcActionFacts = CreateNpcActionFacts("settlement_owner_changed_gain", newOwner);
+				ApplyTargetFacts(npcActionFacts, oldOwner);
+				ApplySettlementFacts(npcActionFacts, settlement, newOwner, oldOwner);
+				RecordNpcMajorAction(newOwner, "你获得了" + text2 + "的所有权（方式：" + GetSettlementOwnerChangeDetailLabel(detail) + "）。", text + ":gain", npcActionFacts);
+				RecordNpcRecentAction(newOwner, "你获得了" + text2 + "的所有权（方式：" + GetSettlementOwnerChangeDetailLabel(detail) + "）。", text + ":gain", facts: npcActionFacts);
+			}
+			if (ShouldTrackNpcActionHero(oldOwner))
+			{
+				NpcActionFacts npcActionFacts2 = CreateNpcActionFacts("settlement_owner_changed_loss", oldOwner);
+				ApplyTargetFacts(npcActionFacts2, newOwner);
+				ApplySettlementFacts(npcActionFacts2, settlement, newOwner, oldOwner);
+				RecordNpcMajorAction(oldOwner, "你失去了" + text2 + "的所有权（方式：" + GetSettlementOwnerChangeDetailLabel(detail) + "）。", text + ":loss", npcActionFacts2);
+				RecordNpcRecentAction(oldOwner, "你失去了" + text2 + "的所有权（方式：" + GetSettlementOwnerChangeDetailLabel(detail) + "）。", text + ":loss", facts: npcActionFacts2);
+			}
+			if (ShouldTrackNpcActionHero(capturerHero) && !string.Equals(GetHeroId(capturerHero), GetHeroId(newOwner), StringComparison.OrdinalIgnoreCase))
+			{
+				NpcActionFacts npcActionFacts3 = CreateNpcActionFacts("settlement_owner_changed_capture", capturerHero);
+				ApplyTargetFacts(npcActionFacts3, newOwner);
+				ApplySettlementFacts(npcActionFacts3, settlement, newOwner, oldOwner);
+				RecordNpcMajorAction(capturerHero, "你促成了" + text2 + "的易主，新的所有者是" + GetHeroDisplayName(newOwner) + "。", text + ":capture", npcActionFacts3);
+				RecordNpcRecentAction(capturerHero, "你促成了" + text2 + "的易主，新的所有者是" + GetHeroDisplayName(newOwner) + "。", text + ":capture", facts: npcActionFacts3);
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("NpcAction", "[ERROR] OnSettlementOwnerChanged: " + ex.Message);
+		}
+	}
+
+	private void OnHeroKilled(Hero victim, Hero killer, KillCharacterAction.KillCharacterActionDetail detail, bool showNotification)
+	{
+		try
+		{
+			if (victim == null)
+			{
+				return;
+			}
+			string text = "hero_killed:" + GetHeroId(victim) + ":" + detail;
+			if (ShouldTrackNpcActionHero(killer))
+			{
+				NpcActionFacts npcActionFacts = CreateNpcActionFacts("hero_killed", killer);
+				ApplyTargetFacts(npcActionFacts, victim);
+				RecordNpcMajorAction(killer, "你" + GetHeroKilledVerb(detail) + GetHeroDisplayName(victim) + "。", text + ":killer", npcActionFacts);
+				RecordNpcRecentAction(killer, "你" + GetHeroKilledVerb(detail) + GetHeroDisplayName(victim) + "。", text + ":killer", facts: npcActionFacts);
+			}
+			Hero leader = victim.Clan?.Leader;
+			if (ShouldTrackNpcActionHero(leader) && !string.Equals(GetHeroId(leader), GetHeroId(victim), StringComparison.OrdinalIgnoreCase))
+			{
+				NpcActionFacts npcActionFacts2 = CreateNpcActionFacts("clan_member_killed", leader);
+				ApplyTargetFacts(npcActionFacts2, victim);
+				if (killer != null)
+				{
+					AddUniqueId(npcActionFacts2.RelatedHeroIds, GetHeroId(killer));
+					AddUniqueId(npcActionFacts2.RelatedClanIds, GetClanId(killer.Clan));
+					AddUniqueId(npcActionFacts2.RelatedKingdomIds, GetKingdomId(killer.MapFaction));
+				}
+				string text2 = "你所在的" + GetClanDisplayName(victim.Clan) + "家族失去了" + GetHeroDisplayName(victim) + "。";
+				RecordNpcMajorAction(leader, text2, text + ":clan", npcActionFacts2);
+				RecordNpcRecentAction(leader, text2, text + ":clan", facts: npcActionFacts2);
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("NpcAction", "[ERROR] OnHeroKilled: " + ex.Message);
+		}
+	}
+
+	private void OnGivenBirth(Hero mother, List<Hero> aliveChildren, int stillbornCount)
+	{
+		try
+		{
+			if (!ShouldTrackNpcActionHero(mother))
+			{
+				return;
+			}
+			Hero hero = aliveChildren?.FirstOrDefault((Hero x) => x != null);
+			string text = "birth:" + GetHeroId(mother) + ":" + GetHeroId(hero);
+			NpcActionFacts npcActionFacts = CreateNpcActionFacts("birth", mother);
+			if (hero != null)
+			{
+				AddUniqueId(npcActionFacts.RelatedHeroIds, GetHeroId(hero));
+			}
+			string text2 = "你诞下一名子嗣";
+			if (hero != null)
+			{
+				text2 = text2 + "，孩子是" + GetHeroDisplayName(hero);
+			}
+			if (stillbornCount > 0)
+			{
+				text2 = text2 + "。此次分娩还伴随" + stillbornCount + "名夭折婴儿";
+			}
+			text2 += "。";
+			RecordNpcMajorAction(mother, text2, text, npcActionFacts);
+			RecordNpcRecentAction(mother, text2, text, facts: npcActionFacts);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("NpcAction", "[ERROR] OnGivenBirth: " + ex.Message);
+		}
+	}
+
+	private void OnClanLeaderChanged(Hero oldLeader, Hero newLeader)
+	{
+		try
+		{
+			Clan clan = newLeader?.Clan ?? oldLeader?.Clan;
+			if (clan == null)
+			{
+				return;
+			}
+			string text = "clan_leader_changed:" + GetClanId(clan) + ":" + GetHeroId(newLeader);
+			foreach (Hero item in GetTrackedLordsForClan(clan))
+			{
+				NpcActionFacts npcActionFacts = CreateNpcActionFacts("clan_leader_changed", item);
+				ApplyTargetFacts(npcActionFacts, newLeader);
+				AddUniqueId(npcActionFacts.RelatedClanIds, GetClanId(clan));
+				string text2 = string.Equals(GetHeroId(item), GetHeroId(newLeader), StringComparison.OrdinalIgnoreCase) ? ("你已成为" + GetClanDisplayName(clan) + "家族的新族长。") : (GetHeroDisplayName(newLeader) + "已成为" + GetClanDisplayName(clan) + "家族的新族长。");
+				RecordNpcMajorAction(item, text2, text, npcActionFacts);
+				RecordNpcRecentAction(item, text2, text, facts: npcActionFacts);
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("NpcAction", "[ERROR] OnClanLeaderChanged: " + ex.Message);
+		}
+	}
+
+	private void OnDailyTickTown(Town town)
+	{
+		try
+		{
+			TrackTownWeeklyMaterialChanges(town);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("EventMaterial", "[ERROR] OnDailyTickTown: " + ex.Message);
+		}
+	}
+
+	private void OnSiegeAftermathApplied(MobileParty attackerParty, Settlement settlement, SiegeAftermathAction.SiegeAftermath aftermathType, Clan previousSettlementOwner, Dictionary<MobileParty, float> partyContributions)
+	{
+		try
+		{
+			string settlementDisplayName = GetSettlementDisplayName(settlement);
+			string siegeAftermathLabel = GetSiegeAftermathLabel(aftermathType);
+			string kingdomId = GetKingdomId(attackerParty?.MapFaction);
+			string text = GetHeroDisplayName(attackerParty?.LeaderHero) + "在攻取" + settlementDisplayName + "后选择了" + siegeAftermathLabel + "。";
+			string text2 = GetClanDisplayName(previousSettlementOwner);
+			string kingdomDisplayName = GetKingdomDisplayName(previousSettlementOwner?.Kingdom, "原所属王国");
+			if (!string.IsNullOrWhiteSpace(text2) && !string.IsNullOrWhiteSpace(kingdomDisplayName))
+			{
+				text += " 该地此前由" + text2 + "掌控，隶属于" + kingdomDisplayName + "。";
+			}
+			RecordEventSourceMaterial("siege_aftermath", "围城后处理 - " + settlementDisplayName, text, "siege_aftermath:" + GetSettlementId(settlement) + ":" + aftermathType + ":" + GetHeroId(attackerParty?.LeaderHero), kingdomId, GetSettlementId(settlement), includeInWorld: settlement?.IsTown == true && aftermathType != SiegeAftermathAction.SiegeAftermath.ShowMercy, includeInKingdom: true);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("EventMaterial", "[ERROR] OnSiegeAftermathApplied: " + ex.Message);
+		}
+	}
+
+	private void OnVillageBeingRaided(Village village)
+	{
+		try
+		{
+			Settlement settlement = village?.Settlement;
+			string settlementDisplayName = GetSettlementDisplayName(settlement);
+			string text = settlementDisplayName + "村庄正在遭到掠夺。";
+			string clanDisplayName = GetClanDisplayName(settlement?.OwnerClan);
+			string kingdomDisplayName = GetKingdomDisplayName(settlement?.MapFaction as Kingdom, "所属王国");
+			if (!string.IsNullOrWhiteSpace(clanDisplayName) && !string.IsNullOrWhiteSpace(kingdomDisplayName))
+			{
+				text += " 该地由" + clanDisplayName + "掌控，隶属于" + kingdomDisplayName + "。";
+			}
+			RecordEventSourceMaterial("village_raid_started", "掠夺开始 - " + settlementDisplayName + "村庄", text, "village_raid_started:" + GetSettlementId(settlement), GetKingdomId(settlement?.MapFaction), GetSettlementId(settlement), includeInWorld: false, includeInKingdom: true);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("EventMaterial", "[ERROR] OnVillageBeingRaided: " + ex.Message);
+		}
+	}
+
+	private void OnRaidCompleted(BattleSideEnum winnerSide, RaidEventComponent raidEvent)
+	{
+		try
+		{
+			Settlement settlement = raidEvent?.MapEventSettlement;
+			string settlementDisplayName = GetSettlementDisplayName(settlement);
+			string text = settlementDisplayName + "村庄的掠夺结果是：" + GetRaidOutcomeLabel(winnerSide) + "。";
+			Hero hero = raidEvent?.AttackerSide?.LeaderParty?.LeaderHero;
+			if (hero != null)
+			{
+				text = text + " 发起掠夺的一方领袖是" + GetHeroDisplayName(hero) + "。";
+			}
+			RecordEventSourceMaterial("raid_completed", "掠夺结果 - " + settlementDisplayName + "村庄", text, "raid_completed:" + GetSettlementId(settlement) + ":" + winnerSide, GetKingdomId(settlement?.MapFaction), GetSettlementId(settlement), includeInWorld: false, includeInKingdom: true);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("EventMaterial", "[ERROR] OnRaidCompleted: " + ex.Message);
+		}
+	}
+
+	private void OnKingdomDestroyed(Kingdom destroyedKingdom)
+	{
+		try
+		{
+			string kingdomDisplayName = GetKingdomDisplayName(destroyedKingdom, "某个王国");
+			string text = kingdomDisplayName + "已经覆灭。";
+			RecordEventSourceMaterial("kingdom_destroyed", "王国覆灭 - " + kingdomDisplayName, text, "kingdom_destroyed:" + GetKingdomId(destroyedKingdom), GetKingdomId(destroyedKingdom), "", includeInWorld: true, includeInKingdom: true);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("EventMaterial", "[ERROR] OnKingdomDestroyed: " + ex.Message);
+		}
+	}
+
+	private void OnClanDestroyed(Clan destroyedClan)
+	{
+		try
+		{
+			string clanDisplayName = GetClanDisplayName(destroyedClan);
+			string kingdomId = GetKingdomId(destroyedClan?.Kingdom);
+			string text = clanDisplayName + "家族已经覆灭。";
+			bool includeInWorld = destroyedClan != null && destroyedClan == destroyedClan.Kingdom?.RulingClan;
+			RecordEventSourceMaterial("clan_destroyed", "家族覆灭 - " + clanDisplayName, text, "clan_destroyed:" + GetClanId(destroyedClan), kingdomId, "", includeInWorld, includeInKingdom: true);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("EventMaterial", "[ERROR] OnClanDestroyed: " + ex.Message);
+		}
+	}
+
 	private static bool ShouldTrackNpcActionHero(Hero hero)
 	{
 		return hero != null && hero != Hero.MainHero && hero.IsLord && !string.IsNullOrWhiteSpace(hero.StringId);
+	}
+
+	private static List<Hero> GetTrackedLordsForClan(Clan clan)
+	{
+		List<Hero> list = new List<Hero>();
+		if (clan == null)
+		{
+			return list;
+		}
+		try
+		{
+			foreach (Hero lord in clan.Heroes)
+			{
+				if (ShouldTrackNpcActionHero(lord) && !list.Any((Hero x) => string.Equals(x.StringId, lord.StringId, StringComparison.OrdinalIgnoreCase)))
+				{
+					list.Add(lord);
+				}
+			}
+		}
+		catch
+		{
+		}
+		return list;
+	}
+
+	private static string GetHeroDisplayName(Hero hero)
+	{
+		string text = (hero?.Name?.ToString() ?? "").Trim();
+		return string.IsNullOrWhiteSpace(text) ? "某位领主" : text;
+	}
+
+	private static string GetClanDisplayName(Clan clan)
+	{
+		string text = (clan?.Name?.ToString() ?? "").Trim();
+		return string.IsNullOrWhiteSpace(text) ? "某个" : text;
+	}
+
+	private static string GetKingdomDisplayName(Kingdom kingdom, string fallback = "某个王国")
+	{
+		string text = (kingdom?.Name?.ToString() ?? "").Trim();
+		return string.IsNullOrWhiteSpace(text) ? fallback : text;
+	}
+
+	private static string GetSettlementDisplayName(Settlement settlement)
+	{
+		string text = (settlement?.Name?.ToString() ?? "").Trim();
+		return string.IsNullOrWhiteSpace(text) ? "某处定居点" : text;
+	}
+
+	private static string GetSettlementTypeLabel(Settlement settlement)
+	{
+		if (settlement == null)
+		{
+			return "";
+		}
+		if (settlement.IsVillage)
+		{
+			return "村庄";
+		}
+		if (settlement.IsTown)
+		{
+			return "城镇";
+		}
+		if (settlement.IsCastle)
+		{
+			return "城堡";
+		}
+		return "定居点";
+	}
+
+	private static string BuildSettlementTypeSuffix(Settlement settlement)
+	{
+		string text = GetSettlementTypeLabel(settlement);
+		return string.IsNullOrWhiteSpace(text) ? "" : ("（" + text + "）");
+	}
+
+	private static string BuildOrderedHeroPairStableKey(string prefix, Hero hero1, Hero hero2)
+	{
+		string text = GetHeroId(hero1);
+		string text2 = GetHeroId(hero2);
+		if (string.CompareOrdinal(text, text2) > 0)
+		{
+			string text3 = text;
+			text = text2;
+			text2 = text3;
+		}
+		return prefix + ":" + text + ":" + text2;
+	}
+
+	private static string BuildClanChangedKingdomStableKey(Clan clan, Kingdom oldKingdom, Kingdom newKingdom, ChangeKingdomAction.ChangeKingdomActionDetail detail)
+	{
+		return "clan_changed_kingdom:" + GetClanId(clan) + ":" + GetKingdomId(oldKingdom) + ":" + GetKingdomId(newKingdom) + ":" + detail;
+	}
+
+	private static string BuildClanChangedKingdomNarrative(Clan clan, Kingdom oldKingdom, Kingdom newKingdom, ChangeKingdomAction.ChangeKingdomActionDetail detail)
+	{
+		string kingdomDisplayName = GetKingdomDisplayName(oldKingdom, "原王国");
+		string kingdomDisplayName2 = GetKingdomDisplayName(newKingdom, "新王国");
+		switch (detail)
+		{
+		case ChangeKingdomAction.ChangeKingdomActionDetail.JoinAsMercenary:
+			return "你所在的" + GetClanDisplayName(clan) + "家族已作为佣兵加入" + kingdomDisplayName2 + "。";
+		case ChangeKingdomAction.ChangeKingdomActionDetail.JoinKingdom:
+			return "你所在的" + GetClanDisplayName(clan) + "家族已正式加入" + kingdomDisplayName2 + "。";
+		case ChangeKingdomAction.ChangeKingdomActionDetail.JoinKingdomByDefection:
+			return "你所在的" + GetClanDisplayName(clan) + "家族已背离" + kingdomDisplayName + "，改投" + kingdomDisplayName2 + "。";
+		case ChangeKingdomAction.ChangeKingdomActionDetail.LeaveKingdom:
+			return "你所在的" + GetClanDisplayName(clan) + "家族已脱离" + kingdomDisplayName + "。";
+		case ChangeKingdomAction.ChangeKingdomActionDetail.LeaveWithRebellion:
+			return "你所在的" + GetClanDisplayName(clan) + "家族已脱离" + kingdomDisplayName + "并发动叛乱。";
+		case ChangeKingdomAction.ChangeKingdomActionDetail.LeaveAsMercenary:
+			return "你所在的" + GetClanDisplayName(clan) + "家族已结束在" + kingdomDisplayName + "的佣兵服务。";
+		case ChangeKingdomAction.ChangeKingdomActionDetail.CreateKingdom:
+			return "你所在的" + GetClanDisplayName(clan) + "家族已建立" + kingdomDisplayName2 + "。";
+		case ChangeKingdomAction.ChangeKingdomActionDetail.LeaveByKingdomDestruction:
+			return "由于" + kingdomDisplayName + "覆灭，你所在的" + GetClanDisplayName(clan) + "家族已脱离原王国。";
+		case ChangeKingdomAction.ChangeKingdomActionDetail.LeaveByClanDestruction:
+			return "你所在的" + GetClanDisplayName(clan) + "家族因家族灭亡而退出原王国体系。";
+		default:
+			return "你所在的" + GetClanDisplayName(clan) + "家族发生了王国归属变更。";
+		}
+	}
+
+	private static string BuildKingdomDecisionStableKey(KingdomDecision decision)
+	{
+		string text = (decision?.GetType()?.Name ?? "decision").Trim();
+		string text2 = GetKingdomId(decision?.Kingdom);
+		string text3 = GetClanId(decision?.ProposerClan);
+		string text4 = "";
+		try
+		{
+			text4 = decision?.TriggerTime.ToString() ?? "";
+		}
+		catch
+		{
+			text4 = "";
+		}
+		return "kingdom_decision:" + text2 + ":" + text3 + ":" + text + ":" + text4;
+	}
+
+	private static string BuildKingdomDecisionNarrative(KingdomDecision decision, DecisionOutcome chosenOutcome, bool isPlayerInvolved, bool forProposer)
+	{
+		string text = "";
+		try
+		{
+			text = new KingdomDecisionConcludedLogEntry(decision, chosenOutcome, isPlayerInvolved).GetNotificationText()?.ToString() ?? "";
+		}
+		catch
+		{
+			text = "";
+		}
+		text = (text ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			try
+			{
+				text = decision?.GetGeneralTitle()?.ToString() ?? "";
+			}
+			catch
+			{
+				text = "";
+			}
+		}
+		string kingdomDisplayName = GetKingdomDisplayName(decision?.Kingdom, "该王国");
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return (forProposer ? "你推动的" : "你所参与的") + kingdomDisplayName + "王国决议已经得出结果。";
+		}
+		return (forProposer ? "你推动的" : "你所参与的") + kingdomDisplayName + "王国决议已有结果：" + text;
+	}
+
+	private static void ApplyKingdomDecisionSpecificFacts(NpcActionFacts facts, KingdomDecision decision, DecisionOutcome chosenOutcome)
+	{
+		if (facts == null || decision == null)
+		{
+			return;
+		}
+		AddUniqueId(facts.RelatedKingdomIds, GetKingdomId(decision.Kingdom));
+		if (decision is DeclareWarDecision declareWarDecision)
+		{
+			AddRelatedFactionFacts(facts, declareWarDecision.FactionToDeclareWarOn);
+		}
+		else if (decision is MakePeaceKingdomDecision makePeaceKingdomDecision)
+		{
+			AddRelatedFactionFacts(facts, makePeaceKingdomDecision.FactionToMakePeaceWith);
+		}
+		else if (decision is SettlementClaimantPreliminaryDecision settlementClaimantPreliminaryDecision)
+		{
+			ApplySettlementFacts(facts, settlementClaimantPreliminaryDecision.Settlement);
+			AddUniqueId(facts.RelatedClanIds, GetClanId(settlementClaimantPreliminaryDecision.Settlement?.OwnerClan));
+			AddUniqueId(facts.RelatedKingdomIds, GetKingdomId(settlementClaimantPreliminaryDecision.Settlement?.MapFaction));
+		}
+		if (chosenOutcome is KingSelectionKingdomDecision.KingSelectionDecisionOutcome kingSelectionDecisionOutcome)
+		{
+			ApplyTargetFacts(facts, kingSelectionDecisionOutcome.King);
+		}
+	}
+
+	private static string BuildSettlementOwnerChangedStableKey(Settlement settlement, Hero newOwner, Hero oldOwner, ChangeOwnerOfSettlementAction.ChangeOwnerOfSettlementDetail detail)
+	{
+		return "settlement_owner_changed:" + GetSettlementId(settlement) + ":" + GetHeroId(newOwner) + ":" + GetHeroId(oldOwner) + ":" + detail;
+	}
+
+	private static string GetSettlementOwnerChangeDetailLabel(ChangeOwnerOfSettlementAction.ChangeOwnerOfSettlementDetail detail)
+	{
+		switch (detail)
+		{
+		case ChangeOwnerOfSettlementAction.ChangeOwnerOfSettlementDetail.BySiege:
+			return "围城";
+		case ChangeOwnerOfSettlementAction.ChangeOwnerOfSettlementDetail.ByBarter:
+			return "易物";
+		case ChangeOwnerOfSettlementAction.ChangeOwnerOfSettlementDetail.ByLeaveFaction:
+			return "脱离王国";
+		case ChangeOwnerOfSettlementAction.ChangeOwnerOfSettlementDetail.ByKingDecision:
+			return "王国决议";
+		case ChangeOwnerOfSettlementAction.ChangeOwnerOfSettlementDetail.ByGift:
+			return "赠与";
+		case ChangeOwnerOfSettlementAction.ChangeOwnerOfSettlementDetail.ByRebellion:
+			return "叛乱";
+		case ChangeOwnerOfSettlementAction.ChangeOwnerOfSettlementDetail.ByClanDestruction:
+			return "家族覆灭";
+		default:
+			return "常规变更";
+		}
+	}
+
+	private static string GetHeroKilledVerb(KillCharacterAction.KillCharacterActionDetail detail)
+	{
+		switch (detail)
+		{
+		case KillCharacterAction.KillCharacterActionDetail.Murdered:
+			return "谋杀了";
+		case KillCharacterAction.KillCharacterActionDetail.DiedInLabor:
+			return "间接导致分娩中失去了";
+		case KillCharacterAction.KillCharacterActionDetail.DiedOfOldAge:
+			return "见证了";
+		case KillCharacterAction.KillCharacterActionDetail.DiedInBattle:
+			return "在战场上杀死了";
+		case KillCharacterAction.KillCharacterActionDetail.WoundedInBattle:
+			return "在战斗中重创并导致死亡的是";
+		case KillCharacterAction.KillCharacterActionDetail.Executed:
+		case KillCharacterAction.KillCharacterActionDetail.ExecutionAfterMapEvent:
+			return "处决了";
+		default:
+			return "使其死亡：";
+		}
+	}
+
+	private static string BuildPrisonerTakenStableKey(Hero capturerHero, Hero prisoner)
+	{
+		return "prisoner_taken:" + GetHeroId(capturerHero) + ":" + GetHeroId(prisoner);
+	}
+
+	private static string BuildPrisonerReleasedStableKey(Hero capturerHero, Hero prisoner, EndCaptivityDetail detail)
+	{
+		return "prisoner_released:" + GetHeroId(capturerHero) + ":" + GetHeroId(prisoner) + ":" + detail;
+	}
+
+	private static string GetEndCaptivityDetailLabel(EndCaptivityDetail detail)
+	{
+		switch (detail)
+		{
+		case EndCaptivityDetail.Ransom:
+			return "通过赎金获释";
+		case EndCaptivityDetail.ReleasedByChoice:
+			return "被主动释放";
+		case EndCaptivityDetail.ReleasedAfterPeace:
+			return "因议和获释";
+		case EndCaptivityDetail.ReleasedAfterEscape:
+			return "成功逃脱";
+		case EndCaptivityDetail.ReleasedAfterBattle:
+			return "在战后获释";
+		case EndCaptivityDetail.ReleasedByCompensation:
+			return "在补偿后获释";
+		case EndCaptivityDetail.Death:
+			return "在囚禁中死亡";
+		default:
+			return "脱离囚禁";
+		}
+	}
+
+	private static string GetSiegeAftermathLabel(SiegeAftermathAction.SiegeAftermath aftermathType)
+	{
+		switch (aftermathType)
+		{
+		case SiegeAftermathAction.SiegeAftermath.Devastate:
+			return "毁灭";
+		case SiegeAftermathAction.SiegeAftermath.Pillage:
+			return "劫掠";
+		case SiegeAftermathAction.SiegeAftermath.ShowMercy:
+			return "宽恕";
+		default:
+			return aftermathType.ToString();
+		}
+	}
+
+	private static string GetBattleSideLabel(BattleSideEnum side)
+	{
+		return side switch
+		{
+			BattleSideEnum.Attacker => "进攻方",
+			BattleSideEnum.Defender => "防守方",
+			_ => side.ToString()
+		};
+	}
+
+	private static string GetRaidOutcomeLabel(BattleSideEnum side)
+	{
+		return side switch
+		{
+			BattleSideEnum.Attacker => "掠夺成功",
+			BattleSideEnum.Defender => "掠夺被击退",
+			_ => "掠夺中止"
+		};
+	}
+
+	private static string BuildKingdomDecisionSupporterSummary(KingdomDecision decision, DecisionOutcome chosenOutcome)
+	{
+		if (decision == null || chosenOutcome == null)
+		{
+			return "";
+		}
+		string text = "";
+		try
+		{
+			text = chosenOutcome.GetDecisionTitle()?.ToString() ?? "";
+		}
+		catch
+		{
+			text = "";
+		}
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			try
+			{
+				text = chosenOutcome.GetDecisionDescription()?.ToString() ?? "";
+			}
+			catch
+			{
+				text = "";
+			}
+		}
+		List<string> list = new List<string>();
+		foreach (Supporter supporter in chosenOutcome.SupporterList ?? new List<Supporter>())
+		{
+			if (supporter?.Clan?.Leader == null)
+			{
+				continue;
+			}
+			list.Add(GetHeroDisplayName(supporter.Clan.Leader) + "（" + GetSupportWeightLabel(supporter.SupportWeight) + "）");
+		}
+		if (list.Count == 0)
+		{
+			return "";
+		}
+		return GetKingdomDisplayName(decision.Kingdom, "该王国") + "的决议“" + (string.IsNullOrWhiteSpace(text) ? "本次决议结果" : text.Trim()) + "”最终得到这些支持者表态：" + string.Join("；", list) + "。";
+	}
+
+	private static string GetSupportWeightLabel(Supporter.SupportWeights supportWeight)
+	{
+		switch (supportWeight)
+		{
+		case Supporter.SupportWeights.SlightlyFavor:
+			return "轻度支持";
+		case Supporter.SupportWeights.StronglyFavor:
+			return "强力支持";
+		case Supporter.SupportWeights.FullyPush:
+			return "全力推动";
+		case Supporter.SupportWeights.StayNeutral:
+			return "中立";
+		case Supporter.SupportWeights.Choose:
+			return "选择";
+		default:
+			return supportWeight.ToString();
+		}
 	}
 
 	private static bool ShouldMentionBattleHero(Hero hero)
@@ -859,6 +1968,381 @@ public class MyBehavior : CampaignBehaviorBase
 		return string.IsNullOrWhiteSpace(text) ? "" : text.ToLowerInvariant();
 	}
 
+	private static string GetClanId(Clan clan)
+	{
+		return (clan?.StringId ?? "").Trim();
+	}
+
+	private static string GetKingdomId(Kingdom kingdom)
+	{
+		return (kingdom?.StringId ?? "").Trim();
+	}
+
+	private static string GetKingdomId(IFaction faction)
+	{
+		if (faction is Kingdom kingdom)
+		{
+			return GetKingdomId(kingdom);
+		}
+		return "";
+	}
+
+	private static string GetHeroId(Hero hero)
+	{
+		return (hero?.StringId ?? "").Trim();
+	}
+
+	private static string GetSettlementId(Settlement settlement)
+	{
+		return (settlement?.StringId ?? "").Trim();
+	}
+
+	private static Settlement ResolveGatheringPointSettlement(IMapPoint gatheringPoint, MobileParty fallbackParty = null)
+	{
+		if (gatheringPoint is Settlement settlement)
+		{
+			return settlement;
+		}
+		try
+		{
+			if (gatheringPoint != null)
+			{
+				Settlement settlement2 = Helpers.SettlementHelper.FindNearestSettlementToPoint(gatheringPoint.Position, (Settlement x) => x != null && !x.IsHideout);
+				if (settlement2 != null)
+				{
+					return settlement2;
+				}
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (fallbackParty != null)
+			{
+				return Helpers.SettlementHelper.FindNearestSettlementToMobileParty(fallbackParty, MobileParty.NavigationType.All, (Settlement x) => x != null && !x.IsHideout);
+			}
+		}
+		catch
+		{
+		}
+		return null;
+	}
+
+	private static Settlement ResolveSettlementForPartyBase(PartyBase party)
+	{
+		MobileParty mobileParty = party?.MobileParty;
+		if (mobileParty == null)
+		{
+			return null;
+		}
+		return mobileParty.BesiegedSettlement ?? ResolveSiegeSettlement(mobileParty.SiegeEvent) ?? mobileParty.TargetSettlement ?? mobileParty.CurrentSettlement ?? mobileParty.LastVisitedSettlement;
+	}
+
+	private static string GetLocationLabelForPartyBase(PartyBase party)
+	{
+		string text = GetNearestSettlementNameForParty(party?.MobileParty);
+		return string.IsNullOrWhiteSpace(text) ? "" : text;
+	}
+
+	private static string ResolveGatheringPointLabel(IMapPoint gatheringPoint, MobileParty fallbackParty = null)
+	{
+		Settlement settlement = ResolveGatheringPointSettlement(gatheringPoint, fallbackParty);
+		string text = (settlement?.Name?.ToString() ?? "").Trim();
+		if (!string.IsNullOrWhiteSpace(text))
+		{
+			return text;
+		}
+		text = (gatheringPoint?.Name?.ToString() ?? "").Trim();
+		if (!string.IsNullOrWhiteSpace(text) && !string.Equals(text, "集结地", StringComparison.OrdinalIgnoreCase) && !string.Equals(text, "Gathering Point", StringComparison.OrdinalIgnoreCase))
+		{
+			return text;
+		}
+		text = GetNearestSettlementNameForParty(fallbackParty);
+		return string.IsNullOrWhiteSpace(text) ? "集结地" : text;
+	}
+
+	private static NpcActionFacts CreateNpcActionFacts(string actionKind, Hero actorHero = null)
+	{
+		NpcActionFacts npcActionFacts = new NpcActionFacts
+		{
+			ActionKind = (actionKind ?? "").Trim()
+		};
+		ApplyActorFacts(npcActionFacts, actorHero);
+		return npcActionFacts;
+	}
+
+	private static void ApplyActorFacts(NpcActionFacts facts, Hero hero)
+	{
+		if (facts == null || hero == null)
+		{
+			return;
+		}
+		facts.ActorHeroId = GetHeroId(hero);
+		facts.ActorClanId = GetClanId(hero.Clan);
+		facts.ActorKingdomId = GetKingdomId(hero.MapFaction);
+		AddUniqueId(facts.RelatedHeroIds, facts.ActorHeroId);
+		AddUniqueId(facts.RelatedClanIds, facts.ActorClanId);
+		AddUniqueId(facts.RelatedKingdomIds, facts.ActorKingdomId);
+	}
+
+	private static void ApplyTargetFacts(NpcActionFacts facts, Hero hero)
+	{
+		if (facts == null || hero == null)
+		{
+			return;
+		}
+		facts.TargetHeroId = GetHeroId(hero);
+		facts.TargetClanId = GetClanId(hero.Clan);
+		facts.TargetKingdomId = GetKingdomId(hero.MapFaction);
+		AddUniqueId(facts.RelatedHeroIds, facts.TargetHeroId);
+		AddUniqueId(facts.RelatedClanIds, facts.TargetClanId);
+		AddUniqueId(facts.RelatedKingdomIds, facts.TargetKingdomId);
+	}
+
+	private static void ApplySettlementFacts(NpcActionFacts facts, Settlement settlement, Hero currentOwnerOverride = null, Hero previousOwnerOverride = null, string locationText = null)
+	{
+		if (facts == null || settlement == null)
+		{
+			return;
+		}
+		facts.SettlementId = GetSettlementId(settlement);
+		facts.SettlementName = (settlement.Name?.ToString() ?? "").Trim();
+		facts.LocationText = string.IsNullOrWhiteSpace(locationText) ? facts.SettlementName : locationText.Trim();
+		Hero hero = currentOwnerOverride ?? settlement.OwnerClan?.Leader;
+		Hero hero2 = previousOwnerOverride;
+		facts.SettlementOwnerHeroId = GetHeroId(hero);
+		facts.SettlementOwnerClanId = GetClanId(hero?.Clan ?? settlement.OwnerClan);
+		facts.SettlementOwnerKingdomId = GetKingdomId(hero?.MapFaction ?? settlement.MapFaction);
+		facts.PreviousSettlementOwnerHeroId = GetHeroId(hero2);
+		facts.PreviousSettlementOwnerClanId = GetClanId(hero2?.Clan);
+		facts.PreviousSettlementOwnerKingdomId = GetKingdomId(hero2?.MapFaction);
+		AddUniqueId(facts.RelatedHeroIds, facts.SettlementOwnerHeroId);
+		AddUniqueId(facts.RelatedClanIds, facts.SettlementOwnerClanId);
+		AddUniqueId(facts.RelatedKingdomIds, facts.SettlementOwnerKingdomId);
+		AddUniqueId(facts.RelatedHeroIds, facts.PreviousSettlementOwnerHeroId);
+		AddUniqueId(facts.RelatedClanIds, facts.PreviousSettlementOwnerClanId);
+		AddUniqueId(facts.RelatedKingdomIds, facts.PreviousSettlementOwnerKingdomId);
+	}
+
+	private static void AddRelatedFactionFacts(NpcActionFacts facts, IFaction faction)
+	{
+		if (facts == null || faction == null)
+		{
+			return;
+		}
+		if (faction is Kingdom kingdom)
+		{
+			string kingdomId = GetKingdomId(kingdom);
+			if (string.IsNullOrWhiteSpace(facts.TargetKingdomId))
+			{
+				facts.TargetKingdomId = kingdomId;
+			}
+			AddUniqueId(facts.RelatedKingdomIds, kingdomId);
+			return;
+		}
+		if (faction is Clan clan)
+		{
+			string clanId = GetClanId(clan);
+			if (string.IsNullOrWhiteSpace(facts.TargetClanId))
+			{
+				facts.TargetClanId = clanId;
+			}
+			AddUniqueId(facts.RelatedClanIds, clanId);
+			AddUniqueId(facts.RelatedKingdomIds, GetKingdomId(clan.Kingdom));
+		}
+	}
+
+	private static void AddUniqueId(List<string> list, string id)
+	{
+		string text = (id ?? "").Trim();
+		if (list == null || string.IsNullOrWhiteSpace(text))
+		{
+			return;
+		}
+		if (!list.Any((string x) => string.Equals((x ?? "").Trim(), text, StringComparison.OrdinalIgnoreCase)))
+		{
+			list.Add(text);
+		}
+	}
+
+	private static void CopyFactIds(List<string> source, List<string> destination)
+	{
+		if (source == null || destination == null)
+		{
+			return;
+		}
+		foreach (string item in source)
+		{
+			AddUniqueId(destination, item);
+		}
+	}
+
+	private void RecordEventSourceMaterial(string materialKind, string label, string snapshotText, string stableKey, string kingdomId, string settlementId, bool includeInWorld, bool includeInKingdom)
+	{
+		string text = (snapshotText ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return;
+		}
+		if (_eventSourceMaterials == null)
+		{
+			_eventSourceMaterials = new List<EventSourceMaterialEntry>();
+		}
+		int currentGameDayIndexSafe = GetCurrentGameDayIndexSafe();
+		string text2 = NormalizeNpcActionStableKey(stableKey, label + ":" + text);
+		EventSourceMaterialEntry eventSourceMaterialEntry = _eventSourceMaterials.FirstOrDefault((EventSourceMaterialEntry x) => x != null && x.Day == currentGameDayIndexSafe && string.Equals((x.StableKey ?? "").Trim(), text2, StringComparison.OrdinalIgnoreCase));
+		if (eventSourceMaterialEntry != null)
+		{
+			eventSourceMaterialEntry.Label = (label ?? "").Trim();
+			eventSourceMaterialEntry.SnapshotText = text;
+			eventSourceMaterialEntry.MaterialKind = (materialKind ?? "").Trim();
+			eventSourceMaterialEntry.KingdomId = (kingdomId ?? "").Trim();
+			eventSourceMaterialEntry.SettlementId = (settlementId ?? "").Trim();
+			eventSourceMaterialEntry.IncludeInWorld = eventSourceMaterialEntry.IncludeInWorld || includeInWorld;
+			eventSourceMaterialEntry.IncludeInKingdom = eventSourceMaterialEntry.IncludeInKingdom || includeInKingdom;
+			return;
+		}
+		_eventSourceMaterials.Add(new EventSourceMaterialEntry
+		{
+			Day = currentGameDayIndexSafe,
+			Sequence = ++_npcActionGlobalOrderCounter,
+			GameDate = GetCurrentGameDateTextSafe(),
+			MaterialKind = (materialKind ?? "").Trim(),
+			Label = (label ?? "").Trim(),
+			SnapshotText = text,
+			StableKey = text2,
+			KingdomId = (kingdomId ?? "").Trim(),
+			SettlementId = (settlementId ?? "").Trim(),
+			IncludeInWorld = includeInWorld,
+			IncludeInKingdom = includeInKingdom
+		});
+		_eventSourceMaterials = SanitizeEventSourceMaterials(_eventSourceMaterials);
+	}
+
+	private void TrackTownWeeklyMaterialChanges(Town town)
+	{
+		if (town?.Settlement == null || !town.Settlement.IsFortification)
+		{
+			return;
+		}
+		string settlementId = GetSettlementId(town.Settlement);
+		if (string.IsNullOrWhiteSpace(settlementId))
+		{
+			return;
+		}
+		TownStatSnapshot townStatSnapshot = CaptureTownSnapshot(town);
+		if (!_townStatSnapshots.TryGetValue(settlementId, out var value) || value == null)
+		{
+			_townStatSnapshots[settlementId] = townStatSnapshot;
+			return;
+		}
+		List<string> list = new List<string>();
+		AppendTownChangeLine(list, "繁荣", value.Prosperity, townStatSnapshot.Prosperity, 100f);
+		AppendTownChangeLine(list, "忠诚", value.Loyalty, townStatSnapshot.Loyalty, 2f);
+		AppendTownChangeLine(list, "治安", value.Security, townStatSnapshot.Security, 2f);
+		AppendTownChangeLine(list, "粮食", value.FoodStocks, townStatSnapshot.FoodStocks, 5f);
+		AppendTownChangeLine(list, "民兵", value.Militia, townStatSnapshot.Militia, 8f);
+		AppendTownChangeLine(list, "驻军", value.Garrison, townStatSnapshot.Garrison, 10f);
+		_townStatSnapshots[settlementId] = townStatSnapshot;
+		if (list.Count == 0)
+		{
+			return;
+		}
+		string settlementDisplayName = GetSettlementDisplayName(town.Settlement);
+		string text = settlementDisplayName + "本日出现定居点状态波动：" + string.Join("；", list) + "。";
+		string clanDisplayName = GetClanDisplayName(town.Settlement.OwnerClan);
+		string kingdomDisplayName = GetKingdomDisplayName(town.Settlement.MapFaction as Kingdom, "所属王国");
+		if (!string.IsNullOrWhiteSpace(clanDisplayName) && !string.IsNullOrWhiteSpace(kingdomDisplayName))
+		{
+			text = text + " 当前由" + clanDisplayName + "掌控，隶属于" + kingdomDisplayName + "。";
+		}
+		RecordEventSourceMaterial("settlement_stats", "定居点状态变化 - " + settlementDisplayName, text, "settlement_stats:" + settlementId + ":" + GetCurrentGameDayIndexSafe(), GetKingdomId(town.Settlement.MapFaction), settlementId, includeInWorld: false, includeInKingdom: true);
+	}
+
+	private static TownStatSnapshot CaptureTownSnapshot(Town town)
+	{
+		return new TownStatSnapshot
+		{
+			Prosperity = town?.Prosperity ?? 0f,
+			Loyalty = town?.Loyalty ?? 0f,
+			Security = town?.Security ?? 0f,
+			FoodStocks = town?.FoodStocks ?? 0f,
+			Militia = town?.Settlement?.Militia ?? 0f,
+			Garrison = town?.GarrisonParty?.MemberRoster?.TotalManCount ?? 0
+		};
+	}
+
+	private static void AppendTownChangeLine(List<string> lines, string label, float oldValue, float newValue, float threshold)
+	{
+		if (lines == null)
+		{
+			return;
+		}
+		float num = newValue - oldValue;
+		if (MathF.Abs(num) < threshold)
+		{
+			return;
+		}
+		lines.Add(label + (num > 0f ? "上升" : "下降") + MathF.Abs(num).ToString("0.#"));
+	}
+
+	private static void AppendTownChangeLine(List<string> lines, string label, int oldValue, int newValue, int threshold)
+	{
+		if (lines == null)
+		{
+			return;
+		}
+		int num = newValue - oldValue;
+		if (Math.Abs(num) < threshold)
+		{
+			return;
+		}
+		lines.Add(label + (num > 0 ? "上升" : "下降") + Math.Abs(num));
+	}
+
+	private static NpcActionEntry CreateNpcActionEntry(Hero hero, string text, string stableKey, int day, int order, int sequence, NpcActionFacts facts, bool isMajor)
+	{
+		NpcActionFacts npcActionFacts = facts ?? CreateNpcActionFacts("", hero);
+		if (string.IsNullOrWhiteSpace(npcActionFacts.ActorHeroId))
+		{
+			ApplyActorFacts(npcActionFacts, hero);
+		}
+		npcActionFacts.IsMajor = isMajor;
+		NpcActionEntry npcActionEntry = new NpcActionEntry
+		{
+			Day = Math.Max(0, day),
+			Order = Math.Max(1, order),
+			Sequence = Math.Max(0, sequence),
+			GameDate = GetCurrentGameDateTextSafe(),
+			Text = (text ?? "").Trim(),
+			StableKey = NormalizeNpcActionStableKey(stableKey, text),
+			ActionKind = (npcActionFacts.ActionKind ?? "").Trim(),
+			ActorHeroId = (npcActionFacts.ActorHeroId ?? "").Trim(),
+			ActorClanId = (npcActionFacts.ActorClanId ?? "").Trim(),
+			ActorKingdomId = (npcActionFacts.ActorKingdomId ?? "").Trim(),
+			TargetHeroId = (npcActionFacts.TargetHeroId ?? "").Trim(),
+			TargetClanId = (npcActionFacts.TargetClanId ?? "").Trim(),
+			TargetKingdomId = (npcActionFacts.TargetKingdomId ?? "").Trim(),
+			SettlementId = (npcActionFacts.SettlementId ?? "").Trim(),
+			SettlementName = (npcActionFacts.SettlementName ?? "").Trim(),
+			SettlementOwnerHeroId = (npcActionFacts.SettlementOwnerHeroId ?? "").Trim(),
+			SettlementOwnerClanId = (npcActionFacts.SettlementOwnerClanId ?? "").Trim(),
+			SettlementOwnerKingdomId = (npcActionFacts.SettlementOwnerKingdomId ?? "").Trim(),
+			PreviousSettlementOwnerHeroId = (npcActionFacts.PreviousSettlementOwnerHeroId ?? "").Trim(),
+			PreviousSettlementOwnerClanId = (npcActionFacts.PreviousSettlementOwnerClanId ?? "").Trim(),
+			PreviousSettlementOwnerKingdomId = (npcActionFacts.PreviousSettlementOwnerKingdomId ?? "").Trim(),
+			LocationText = (npcActionFacts.LocationText ?? "").Trim(),
+			Won = npcActionFacts.Won,
+			IsMajor = isMajor
+		};
+		CopyFactIds(npcActionFacts.RelatedHeroIds, npcActionEntry.RelatedHeroIds);
+		CopyFactIds(npcActionFacts.RelatedClanIds, npcActionEntry.RelatedClanIds);
+		CopyFactIds(npcActionFacts.RelatedKingdomIds, npcActionEntry.RelatedKingdomIds);
+		return npcActionEntry;
+	}
+
 	private static List<NpcActionEntry> SanitizeNpcActionEntries(List<NpcActionEntry> source, bool keepOnlyRecentWindow)
 	{
 		List<NpcActionEntry> list = new List<NpcActionEntry>();
@@ -869,6 +2353,7 @@ public class MyBehavior : CampaignBehaviorBase
 		int num = GetCurrentGameDayIndexSafe();
 		int num2 = num - RecentNpcActionWindowDays + 1;
 		int num3 = 0;
+		int num4 = 0;
 		foreach (NpcActionEntry item in source)
 		{
 			if (item == null)
@@ -888,25 +2373,47 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				Day = Math.Max(0, item.Day),
 				Order = ((item.Order > 0) ? item.Order : (++num3)),
+				Sequence = ((item.Sequence > 0) ? item.Sequence : (++num4)),
 				GameDate = (item.GameDate ?? "").Trim(),
 				Text = text,
-				StableKey = NormalizeNpcActionStableKey(item.StableKey, text)
+				StableKey = NormalizeNpcActionStableKey(item.StableKey, text),
+				ActionKind = (item.ActionKind ?? "").Trim(),
+				ActorHeroId = (item.ActorHeroId ?? "").Trim(),
+				ActorClanId = (item.ActorClanId ?? "").Trim(),
+				ActorKingdomId = (item.ActorKingdomId ?? "").Trim(),
+				TargetHeroId = (item.TargetHeroId ?? "").Trim(),
+				TargetClanId = (item.TargetClanId ?? "").Trim(),
+				TargetKingdomId = (item.TargetKingdomId ?? "").Trim(),
+				SettlementId = (item.SettlementId ?? "").Trim(),
+				SettlementName = (item.SettlementName ?? "").Trim(),
+				SettlementOwnerHeroId = (item.SettlementOwnerHeroId ?? "").Trim(),
+				SettlementOwnerClanId = (item.SettlementOwnerClanId ?? "").Trim(),
+				SettlementOwnerKingdomId = (item.SettlementOwnerKingdomId ?? "").Trim(),
+				PreviousSettlementOwnerHeroId = (item.PreviousSettlementOwnerHeroId ?? "").Trim(),
+				PreviousSettlementOwnerClanId = (item.PreviousSettlementOwnerClanId ?? "").Trim(),
+				PreviousSettlementOwnerKingdomId = (item.PreviousSettlementOwnerKingdomId ?? "").Trim(),
+				LocationText = (item.LocationText ?? "").Trim(),
+				Won = item.Won,
+				IsMajor = item.IsMajor
 			});
+			CopyFactIds(item.RelatedHeroIds, list[list.Count - 1].RelatedHeroIds);
+			CopyFactIds(item.RelatedClanIds, list[list.Count - 1].RelatedClanIds);
+			CopyFactIds(item.RelatedKingdomIds, list[list.Count - 1].RelatedKingdomIds);
 		}
-		return list.OrderBy((NpcActionEntry x) => x.Day).ThenBy((NpcActionEntry x) => x.Order).ThenBy((NpcActionEntry x) => x.GameDate ?? "", StringComparer.Ordinal).ToList();
+		return list.OrderBy((NpcActionEntry x) => x.Day).ThenBy((NpcActionEntry x) => (x.Sequence > 0) ? x.Sequence : int.MaxValue).ThenBy((NpcActionEntry x) => x.Order).ThenBy((NpcActionEntry x) => x.GameDate ?? "", StringComparer.Ordinal).ToList();
 	}
 
-	private void RecordNpcMajorAction(Hero hero, string text, string stableKey)
+	private void RecordNpcMajorAction(Hero hero, string text, string stableKey, NpcActionFacts facts = null)
 	{
-		RecordNpcActionInternal(_npcMajorActions, hero, text, stableKey, keepOnlyRecentWindow: false, dedupeAcrossWindow: false, MaxMajorNpcActionEntriesPerHero);
+		RecordNpcActionInternal(_npcMajorActions, hero, text, stableKey, keepOnlyRecentWindow: false, dedupeAcrossWindow: false, MaxMajorNpcActionEntriesPerHero, facts, isMajor: true);
 	}
 
-	private void RecordNpcRecentAction(Hero hero, string text, string stableKey, bool dedupeAcrossWindow = false)
+	private void RecordNpcRecentAction(Hero hero, string text, string stableKey, bool dedupeAcrossWindow = false, NpcActionFacts facts = null)
 	{
-		RecordNpcActionInternal(_npcRecentActions, hero, text, stableKey, keepOnlyRecentWindow: true, dedupeAcrossWindow, MaxRecentNpcActionEntriesPerHero);
+		RecordNpcActionInternal(_npcRecentActions, hero, text, stableKey, keepOnlyRecentWindow: true, dedupeAcrossWindow, MaxRecentNpcActionEntriesPerHero, facts, isMajor: false);
 	}
 
-	private void RecordNpcActionInternal(Dictionary<string, List<NpcActionEntry>> storage, Hero hero, string text, string stableKey, bool keepOnlyRecentWindow, bool dedupeAcrossWindow, int maxEntries)
+	private void RecordNpcActionInternal(Dictionary<string, List<NpcActionEntry>> storage, Hero hero, string text, string stableKey, bool keepOnlyRecentWindow, bool dedupeAcrossWindow, int maxEntries, NpcActionFacts facts, bool isMajor)
 	{
 		try
 		{
@@ -947,15 +2454,10 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				return;
 			}
-			value.Add(new NpcActionEntry
-			{
-				Day = currentGameDayIndexSafe,
-				Order = ((value.Count > 0) ? (value.Max((NpcActionEntry x) => (x != null) ? x.Order : 0) + 1) : 1),
-				GameDate = GetCurrentGameDateTextSafe(),
-				Text = text2,
-				StableKey = text3
-			});
-			value = value.OrderBy((NpcActionEntry x) => x.Day).ThenBy((NpcActionEntry x) => x.Order).ThenBy((NpcActionEntry x) => x.GameDate ?? "", StringComparer.Ordinal).ToList();
+			int order = (value.Count > 0) ? (value.Max((NpcActionEntry x) => (x != null && x.Day == currentGameDayIndexSafe) ? x.Order : 0) + 1) : 1;
+			int sequence = ++_npcActionGlobalOrderCounter;
+			value.Add(CreateNpcActionEntry(hero, text2, text3, currentGameDayIndexSafe, order, sequence, facts, isMajor));
+			value = value.OrderBy((NpcActionEntry x) => x.Day).ThenBy((NpcActionEntry x) => (x.Sequence > 0) ? x.Sequence : int.MaxValue).ThenBy((NpcActionEntry x) => x.Order).ThenBy((NpcActionEntry x) => x.GameDate ?? "", StringComparer.Ordinal).ToList();
 			if (maxEntries > 0 && value.Count > maxEntries)
 			{
 				value = value.Skip(value.Count - maxEntries).ToList();
@@ -1591,15 +3093,25 @@ public class MyBehavior : CampaignBehaviorBase
 			}
 			string text = BuildMapEventNarrative(mapEvent, side, leaderHero, won, locationLabel);
 			string text2 = "mapevent:" + (mapEvent.StringId ?? locationLabel) + ":" + won + ":" + (leaderHero.StringId ?? "");
+			NpcActionFacts npcActionFacts = CreateNpcActionFacts("map_event", leaderHero);
+			npcActionFacts.LocationText = locationLabel;
+			npcActionFacts.Won = won;
+			ApplySettlementFacts(npcActionFacts, mapEvent.MapEventSettlement, locationText: locationLabel);
+			AddRelatedFactionFacts(npcActionFacts, side.OtherSide?.MapFaction);
 			if (isMajor)
 			{
-				RecordNpcMajorAction(leaderHero, text, text2);
+				RecordNpcMajorAction(leaderHero, text, text2, npcActionFacts);
 			}
-			RecordNpcRecentAction(leaderHero, text, text2);
+			RecordNpcRecentAction(leaderHero, text, text2, facts: npcActionFacts);
 			string text3 = BuildMapEventAftermathText(mapEvent, side, won, locationLabel);
 			if (!string.IsNullOrWhiteSpace(text3))
 			{
-				RecordNpcRecentAction(leaderHero, text3, "mapevent_aftermath:" + (mapEvent.StringId ?? locationLabel) + ":" + won + ":" + (leaderHero.StringId ?? ""));
+				NpcActionFacts npcActionFacts2 = CreateNpcActionFacts("map_event_aftermath", leaderHero);
+				npcActionFacts2.LocationText = locationLabel;
+				npcActionFacts2.Won = won;
+				ApplySettlementFacts(npcActionFacts2, mapEvent.MapEventSettlement, locationText: locationLabel);
+				AddRelatedFactionFacts(npcActionFacts2, side.OtherSide?.MapFaction);
+				RecordNpcRecentAction(leaderHero, text3, "mapevent_aftermath:" + (mapEvent.StringId ?? locationLabel) + ":" + won + ":" + (leaderHero.StringId ?? ""), facts: npcActionFacts2);
 			}
 		}
 	}
@@ -1745,14 +3257,14 @@ public class MyBehavior : CampaignBehaviorBase
 			if (item.Day != num || !string.Equals(text, text2, StringComparison.Ordinal))
 			{
 				if (stringBuilder.Length > 0)
-				{
-					stringBuilder.AppendLine();
-				}
-				stringBuilder.AppendLine("—— " + text2 + " ——");
-				num = item.Day;
-				text = text2;
+			{
+				stringBuilder.AppendLine();
 			}
-			stringBuilder.AppendLine("- " + RenderNpcActionPromptText(hero, item.Text));
+			stringBuilder.AppendLine("—— " + text2 + " ——");
+			num = item.Day;
+			text = text2;
+		}
+			stringBuilder.AppendLine("- " + RenderNpcActionPromptText(hero, item.Text) + BuildNpcActionMetadataNarrativeSuffix(item));
 		}
 		return stringBuilder.ToString().TrimEnd();
 	}
@@ -1778,6 +3290,234 @@ public class MyBehavior : CampaignBehaviorBase
 			return text;
 		}
 		return text2 + "：" + text;
+	}
+
+	private static string BuildNpcActionMetadataNarrativeSuffix(NpcActionEntry entry)
+	{
+		if (entry == null)
+		{
+			return "";
+		}
+		List<string> list = new List<string>();
+		string text = TranslateNpcActionKindForPrompt(entry.ActionKind);
+		if (!string.IsNullOrWhiteSpace(text))
+		{
+			list.Add("这属于" + text);
+		}
+		string text2 = ResolveDisplayNameBySettlementEntry(entry);
+		if (!string.IsNullOrWhiteSpace(text2))
+		{
+			list.Add("事情发生在" + text2);
+		}
+		string text3 = ResolveHeroName(entry.TargetHeroId);
+		if (!string.IsNullOrWhiteSpace(text3))
+		{
+			list.Add("主要涉及的人物是" + text3);
+		}
+		string text4 = ResolveClanName(entry.TargetClanId);
+		if (!string.IsNullOrWhiteSpace(text4))
+		{
+			list.Add("对方家族是" + text4);
+		}
+		string text5 = ResolveKingdomName(entry.TargetKingdomId);
+		if (!string.IsNullOrWhiteSpace(text5))
+		{
+			list.Add("对方所属王国是" + text5);
+		}
+		string text6 = ResolveClanName(entry.SettlementOwnerClanId);
+		string text7 = ResolveKingdomName(entry.SettlementOwnerKingdomId);
+		if (!string.IsNullOrWhiteSpace(text6) && !string.IsNullOrWhiteSpace(text7))
+		{
+			list.Add("当时该定居点由" + text6 + "掌控，隶属于" + text7);
+		}
+		else if (!string.IsNullOrWhiteSpace(text6))
+		{
+			list.Add("当时该定居点由" + text6 + "掌控");
+		}
+		else if (!string.IsNullOrWhiteSpace(text7))
+		{
+			list.Add("当时该定居点隶属于" + text7);
+		}
+		string text8 = ResolveClanName(entry.PreviousSettlementOwnerClanId);
+		string text9 = ResolveKingdomName(entry.PreviousSettlementOwnerKingdomId);
+		if (!string.IsNullOrWhiteSpace(text8) && !string.IsNullOrWhiteSpace(text9))
+		{
+			list.Add("此前这里由" + text8 + "掌控，归属" + text9);
+		}
+		else if (!string.IsNullOrWhiteSpace(text8))
+		{
+			list.Add("此前这里由" + text8 + "掌控");
+		}
+		else if (!string.IsNullOrWhiteSpace(text9))
+		{
+			list.Add("此前这里归属" + text9);
+		}
+		if (entry.Won.HasValue)
+		{
+			list.Add("结果是" + (entry.Won.Value ? "获胜" : "失利"));
+		}
+		if (entry.IsMajor)
+		{
+			list.Add("这是一件重大行动");
+		}
+		if (list.Count <= 0)
+		{
+			return "";
+		}
+		return " " + string.Join("；", list) + "。";
+	}
+
+	private static string TranslateNpcActionKindForPrompt(string actionKind)
+	{
+		switch ((actionKind ?? "").Trim().ToLowerInvariant())
+		{
+		case "army_create":
+			return "组建军团的行动";
+		case "army_gather":
+			return "军团集结行动";
+		case "army_disperse":
+			return "军团解散行动";
+		case "army_join":
+			return "加入军团的行动";
+		case "army_leave":
+			return "离开军团的行动";
+		case "siege_start_attack":
+			return "参与围攻的行动";
+		case "siege_start_defend":
+			return "参与守城的行动";
+		case "siege_end_attack":
+			return "围城结束后的攻方行动";
+		case "siege_end_defend":
+			return "围城结束后的守方行动";
+		case "siege_join":
+			return "加入围城的行动";
+		case "siege_leave":
+			return "离开围城的行动";
+		case "siege_complete":
+			return "围城结果事件";
+		case "daily_behavior":
+			return "近期行军动向";
+		case "map_event":
+			return "战场交锋";
+		case "map_event_aftermath":
+			return "战后余波";
+		case "marriage":
+			return "联姻事件";
+		case "clan_changed_kingdom":
+			return "家族更换效忠对象的事件";
+		case "clan_defected":
+			return "家族叛逃事件";
+		case "kingdom_decision_concluded":
+			return "王国决议事件";
+		case "ruling_clan_changed":
+			return "执政家族变更事件";
+		case "settlement_owner_changed_gain":
+			return "定居点归属增加事件";
+		case "settlement_owner_changed_loss":
+			return "定居点归属失去事件";
+		case "settlement_owner_changed_capture":
+			return "定居点易主事件";
+		case "hero_killed":
+			return "英雄死亡事件";
+		case "clan_member_killed":
+			return "家族成员死亡事件";
+		case "prisoner_taken_captor":
+			return "俘获领主事件";
+		case "prisoner_taken_prisoner":
+			return "被俘事件";
+		case "prisoner_released_captor":
+			return "囚犯获释事件";
+		case "prisoner_released_prisoner":
+			return "结束囚禁事件";
+		case "birth":
+			return "家族新生事件";
+		case "clan_leader_changed":
+			return "家族族长更替事件";
+		default:
+			return "";
+		}
+	}
+
+	private static string ResolveDisplayNameBySettlementEntry(NpcActionEntry entry)
+	{
+		string text = (entry?.LocationText ?? "").Trim();
+		if (!string.IsNullOrWhiteSpace(text))
+		{
+			return text;
+		}
+		text = (entry?.SettlementName ?? "").Trim();
+		if (!string.IsNullOrWhiteSpace(text))
+		{
+			return text;
+		}
+		string text2 = (entry?.SettlementId ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text2))
+		{
+			return "";
+		}
+		try
+		{
+			Settlement settlement = Settlement.All.FirstOrDefault((Settlement x) => x != null && string.Equals((x.StringId ?? "").Trim(), text2, StringComparison.OrdinalIgnoreCase));
+			return (settlement?.Name?.ToString() ?? "").Trim();
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	private static string ResolveHeroName(string heroId)
+	{
+		string text = (heroId ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return "";
+		}
+		try
+		{
+			Hero hero = Hero.AllAliveHeroes.FirstOrDefault((Hero x) => x != null && string.Equals((x.StringId ?? "").Trim(), text, StringComparison.OrdinalIgnoreCase));
+			return (hero?.Name?.ToString() ?? "").Trim();
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	private static string ResolveClanName(string clanId)
+	{
+		string text = (clanId ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return "";
+		}
+		try
+		{
+			Clan clan = Clan.All.FirstOrDefault((Clan x) => x != null && string.Equals((x.StringId ?? "").Trim(), text, StringComparison.OrdinalIgnoreCase));
+			return (clan?.Name?.ToString() ?? "").Trim();
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	private static string ResolveKingdomName(string kingdomId)
+	{
+		string text = (kingdomId ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return "";
+		}
+		try
+		{
+			Kingdom kingdom = Kingdom.All.FirstOrDefault((Kingdom x) => x != null && string.Equals((x.StringId ?? "").Trim(), text, StringComparison.OrdinalIgnoreCase));
+			return (kingdom?.Name?.ToString() ?? "").Trim();
+		}
+		catch
+		{
+			return "";
+		}
 	}
 
 	private string BuildNpcMajorActionsRuntimeInstruction(Hero hero)
@@ -1914,6 +3654,10 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			_npcRecentActionStorage = new Dictionary<string, string>();
 		}
+		if (_npcActionGlobalOrderCounter < 0)
+		{
+			_npcActionGlobalOrderCounter = 0;
+		}
 		if (_npcPersonaProfiles == null)
 		{
 			_npcPersonaProfiles = new Dictionary<string, NpcPersonaProfile>();
@@ -1921,6 +3665,34 @@ public class MyBehavior : CampaignBehaviorBase
 		if (_npcPersonaProfileStorage == null)
 		{
 			_npcPersonaProfileStorage = new Dictionary<string, string>();
+		}
+		if (_eventKingdomOpeningSummaries == null)
+		{
+			_eventKingdomOpeningSummaries = new Dictionary<string, string>();
+		}
+		if (_eventKingdomOpeningSummaryStorage == null)
+		{
+			_eventKingdomOpeningSummaryStorage = new Dictionary<string, string>();
+		}
+		if (_eventWorldOpeningSummary == null)
+		{
+			_eventWorldOpeningSummary = "";
+		}
+		if (_eventRecordEntries == null)
+		{
+			_eventRecordEntries = new List<EventRecordEntry>();
+		}
+		if (_eventRecordJsonStorage == null)
+		{
+			_eventRecordJsonStorage = "";
+		}
+		if (_eventSourceMaterials == null)
+		{
+			_eventSourceMaterials = new List<EventSourceMaterialEntry>();
+		}
+		if (_eventSourceMaterialJsonStorage == null)
+		{
+			_eventSourceMaterialJsonStorage = "";
 		}
 		if (_voiceMappingJsonStorage == null)
 		{
@@ -2026,6 +3798,7 @@ public class MyBehavior : CampaignBehaviorBase
 				}
 				Dictionary<string, string> dictionary4 = CampaignSaveChunkHelper.FlattenStringDictionary(_npcRecentActionStorage);
 				dataStore.SyncData("_npcRecentActions_v1", ref dictionary4);
+				dataStore.SyncData("_npcActionGlobalOrderCounter_v1", ref _npcActionGlobalOrderCounter);
 				_npcPersonaProfileStorage.Clear();
 				foreach (KeyValuePair<string, NpcPersonaProfile> npcPersonaProfile2 in _npcPersonaProfiles)
 				{
@@ -2044,14 +3817,47 @@ public class MyBehavior : CampaignBehaviorBase
 				}
 				Dictionary<string, string> dictionary5 = CampaignSaveChunkHelper.FlattenStringDictionary(_npcPersonaProfileStorage);
 				dataStore.SyncData("_npcPersonaProfiles_v1", ref dictionary5);
+				_eventKingdomOpeningSummaryStorage.Clear();
+				foreach (KeyValuePair<string, string> item2 in _eventKingdomOpeningSummaries)
+				{
+					string text = (item2.Key ?? "").Trim();
+					string text2 = (item2.Value ?? "").Trim();
+					if (!string.IsNullOrWhiteSpace(text) && !string.IsNullOrWhiteSpace(text2))
+					{
+						_eventKingdomOpeningSummaryStorage[text] = text2;
+					}
+				}
+				Dictionary<string, string> dictionary6 = CampaignSaveChunkHelper.FlattenStringDictionary(_eventKingdomOpeningSummaryStorage);
+				dataStore.SyncData("_eventKingdomOpeningSummaries_v1", ref dictionary6);
+				CampaignSaveChunkHelper.SaveChunkedString(dataStore, "_eventWorldOpeningSummary_v1", _eventWorldOpeningSummary ?? "", "EventOpeningSummary");
+				try
+				{
+					_eventRecordJsonStorage = JsonConvert.SerializeObject(SanitizeEventRecordEntries(_eventRecordEntries));
+				}
+				catch (Exception ex5)
+				{
+					_eventRecordJsonStorage = "[]";
+					Logger.Log("EventRecord", "[ERROR] Serialize event records failed: " + ex5.Message);
+				}
+				CampaignSaveChunkHelper.SaveChunkedString(dataStore, "_eventRecordEntries_v1", _eventRecordJsonStorage ?? "[]", "EventRecord");
+				try
+				{
+					_eventSourceMaterialJsonStorage = JsonConvert.SerializeObject(SanitizeEventSourceMaterials(_eventSourceMaterials));
+				}
+				catch (Exception ex6)
+				{
+					_eventSourceMaterialJsonStorage = "[]";
+					Logger.Log("EventMaterial", "[ERROR] Serialize event source materials failed: " + ex6.Message);
+				}
+				CampaignSaveChunkHelper.SaveChunkedString(dataStore, "_eventSourceMaterials_v1", _eventSourceMaterialJsonStorage ?? "[]", "EventMaterial");
 				try
 				{
 					_voiceMappingJsonStorage = VoiceMapper.ExportMappingJson(pretty: false) ?? "";
 				}
-				catch (Exception ex5)
+				catch (Exception ex7)
 				{
 					_voiceMappingJsonStorage = "";
-					Logger.Log("VoiceMapper", "[ERROR] Serialize voice mapping for save failed: " + ex5.Message);
+					Logger.Log("VoiceMapper", "[ERROR] Serialize voice mapping for save failed: " + ex7.Message);
 				}
 				CampaignSaveChunkHelper.SaveChunkedString(dataStore, "_voiceMapping_v1", _voiceMappingJsonStorage, "VoiceMapper");
 				_voiceMappingExportFolderStorage = VoiceMapper.GetPreferredExportFolder() ?? "";
@@ -2060,10 +3866,10 @@ public class MyBehavior : CampaignBehaviorBase
 				{
 					_unnamedPersonaJsonStorage = ShoutUtils.ExportUnnamedPersonaStateJson(pretty: false) ?? "";
 				}
-				catch (Exception ex6)
+				catch (Exception ex8)
 				{
 					_unnamedPersonaJsonStorage = "";
-					Logger.Log("UnnamedPersona", "[ERROR] Serialize unnamed persona for save failed: " + ex6.Message);
+					Logger.Log("UnnamedPersona", "[ERROR] Serialize unnamed persona for save failed: " + ex8.Message);
 				}
 				CampaignSaveChunkHelper.SaveChunkedString(dataStore, "_unnamed_persona_v1", _unnamedPersonaJsonStorage, "UnnamedPersona");
 				SyncPatienceData(dataStore);
@@ -2071,9 +3877,9 @@ public class MyBehavior : CampaignBehaviorBase
 			}
 			_shownRecords.Clear();
 			_shownRecordStorage.Clear();
-			Dictionary<string, string> dictionary6 = new Dictionary<string, string>();
-			dataStore.SyncData("_shownRecords_v1", ref dictionary6);
-			_shownRecordStorage = CampaignSaveChunkHelper.RestoreStringDictionary(dictionary6, "TradeShown");
+			Dictionary<string, string> dictionary7 = new Dictionary<string, string>();
+			dataStore.SyncData("_shownRecords_v1", ref dictionary7);
+			_shownRecordStorage = CampaignSaveChunkHelper.RestoreStringDictionary(dictionary7, "TradeShown");
 			if (_shownRecordStorage != null)
 			{
 				foreach (KeyValuePair<string, string> shownRecord2 in _shownRecordStorage)
@@ -2110,9 +3916,9 @@ public class MyBehavior : CampaignBehaviorBase
 			}
 			_dialogueHistory.Clear();
 			_dialogueHistoryStorage.Clear();
-			Dictionary<string, string> dictionary7 = new Dictionary<string, string>();
-			dataStore.SyncData("_dialogueHistory_v2", ref dictionary7);
-			_dialogueHistoryStorage = CampaignSaveChunkHelper.RestoreStringDictionary(dictionary7, "DialogueHistory");
+			Dictionary<string, string> dictionary8 = new Dictionary<string, string>();
+			dataStore.SyncData("_dialogueHistory_v2", ref dictionary8);
+			_dialogueHistoryStorage = CampaignSaveChunkHelper.RestoreStringDictionary(dictionary8, "DialogueHistory");
 			if (_dialogueHistoryStorage != null)
 			{
 				foreach (KeyValuePair<string, string> item2 in _dialogueHistoryStorage)
@@ -2137,9 +3943,9 @@ public class MyBehavior : CampaignBehaviorBase
 			}
 			_npcMajorActions.Clear();
 			_npcMajorActionStorage.Clear();
-			Dictionary<string, string> dictionary8 = new Dictionary<string, string>();
-			dataStore.SyncData("_npcMajorActions_v1", ref dictionary8);
-			_npcMajorActionStorage = CampaignSaveChunkHelper.RestoreStringDictionary(dictionary8, "NpcAction");
+			Dictionary<string, string> dictionary9 = new Dictionary<string, string>();
+			dataStore.SyncData("_npcMajorActions_v1", ref dictionary9);
+			_npcMajorActionStorage = CampaignSaveChunkHelper.RestoreStringDictionary(dictionary9, "NpcAction");
 			if (_npcMajorActionStorage != null)
 			{
 				foreach (KeyValuePair<string, string> item3 in _npcMajorActionStorage)
@@ -2165,9 +3971,9 @@ public class MyBehavior : CampaignBehaviorBase
 			}
 			_npcRecentActions.Clear();
 			_npcRecentActionStorage.Clear();
-			Dictionary<string, string> dictionary9 = new Dictionary<string, string>();
-			dataStore.SyncData("_npcRecentActions_v1", ref dictionary9);
-			_npcRecentActionStorage = CampaignSaveChunkHelper.RestoreStringDictionary(dictionary9, "NpcAction");
+			Dictionary<string, string> dictionary10 = new Dictionary<string, string>();
+			dataStore.SyncData("_npcRecentActions_v1", ref dictionary10);
+			_npcRecentActionStorage = CampaignSaveChunkHelper.RestoreStringDictionary(dictionary10, "NpcAction");
 			if (_npcRecentActionStorage != null)
 			{
 				foreach (KeyValuePair<string, string> item4 in _npcRecentActionStorage)
@@ -2193,9 +3999,9 @@ public class MyBehavior : CampaignBehaviorBase
 			}
 			_npcPersonaProfiles.Clear();
 			_npcPersonaProfileStorage.Clear();
-			Dictionary<string, string> dictionary10 = new Dictionary<string, string>();
-			dataStore.SyncData("_npcPersonaProfiles_v1", ref dictionary10);
-			_npcPersonaProfileStorage = CampaignSaveChunkHelper.RestoreStringDictionary(dictionary10, "NpcPersona");
+			Dictionary<string, string> dictionary11 = new Dictionary<string, string>();
+			dataStore.SyncData("_npcPersonaProfiles_v1", ref dictionary11);
+			_npcPersonaProfileStorage = CampaignSaveChunkHelper.RestoreStringDictionary(dictionary11, "NpcPersona");
 			if (_npcPersonaProfileStorage != null)
 			{
 				foreach (KeyValuePair<string, string> item5 in _npcPersonaProfileStorage)
@@ -2218,6 +4024,58 @@ public class MyBehavior : CampaignBehaviorBase
 					}
 				}
 			}
+			dataStore.SyncData("_npcActionGlobalOrderCounter_v1", ref _npcActionGlobalOrderCounter);
+			NormalizeNpcActionSequences(_npcMajorActions);
+			NormalizeNpcActionSequences(_npcRecentActions);
+			_npcActionGlobalOrderCounter = Math.Max(_npcActionGlobalOrderCounter, GetMaxNpcActionSequence(_npcMajorActions, _npcRecentActions, _eventSourceMaterials));
+			_eventKingdomOpeningSummaries.Clear();
+			_eventKingdomOpeningSummaryStorage.Clear();
+			Dictionary<string, string> dictionary12 = new Dictionary<string, string>();
+			dataStore.SyncData("_eventKingdomOpeningSummaries_v1", ref dictionary12);
+			_eventKingdomOpeningSummaryStorage = CampaignSaveChunkHelper.RestoreStringDictionary(dictionary12, "EventOpeningSummary");
+			if (_eventKingdomOpeningSummaryStorage != null)
+			{
+				foreach (KeyValuePair<string, string> item6 in _eventKingdomOpeningSummaryStorage)
+				{
+					string text3 = (item6.Key ?? "").Trim();
+					string text4 = (item6.Value ?? "").Trim();
+					if (!string.IsNullOrWhiteSpace(text3) && !string.IsNullOrWhiteSpace(text4))
+					{
+						_eventKingdomOpeningSummaries[text3] = text4;
+					}
+				}
+			}
+			_eventWorldOpeningSummary = CampaignSaveChunkHelper.LoadChunkedString(dataStore, "_eventWorldOpeningSummary_v1", "EventOpeningSummary") ?? "";
+			_eventRecordEntries.Clear();
+			_eventRecordJsonStorage = CampaignSaveChunkHelper.LoadChunkedString(dataStore, "_eventRecordEntries_v1", "EventRecord") ?? "";
+			if (!string.IsNullOrWhiteSpace(_eventRecordJsonStorage))
+			{
+				try
+				{
+					List<EventRecordEntry> list4 = JsonConvert.DeserializeObject<List<EventRecordEntry>>(_eventRecordJsonStorage) ?? new List<EventRecordEntry>();
+					_eventRecordEntries = SanitizeEventRecordEntries(list4);
+				}
+				catch (Exception ex7)
+				{
+					Logger.Log("EventRecord", "[ERROR] Deserialize event records failed: " + ex7.Message);
+					_eventRecordEntries = new List<EventRecordEntry>();
+				}
+			}
+			_eventSourceMaterials.Clear();
+			_eventSourceMaterialJsonStorage = CampaignSaveChunkHelper.LoadChunkedString(dataStore, "_eventSourceMaterials_v1", "EventMaterial") ?? "";
+			if (!string.IsNullOrWhiteSpace(_eventSourceMaterialJsonStorage))
+			{
+				try
+				{
+					List<EventSourceMaterialEntry> list5 = JsonConvert.DeserializeObject<List<EventSourceMaterialEntry>>(_eventSourceMaterialJsonStorage) ?? new List<EventSourceMaterialEntry>();
+					_eventSourceMaterials = SanitizeEventSourceMaterials(list5);
+				}
+				catch (Exception ex8)
+				{
+					Logger.Log("EventMaterial", "[ERROR] Deserialize event source materials failed: " + ex8.Message);
+					_eventSourceMaterials = new List<EventSourceMaterialEntry>();
+				}
+			}
 			_voiceMappingExportFolderStorage = "";
 			dataStore.SyncData("_voiceMapping_export_folder_v1", ref _voiceMappingExportFolderStorage);
 			VoiceMapper.SetPreferredExportFolder(_voiceMappingExportFolderStorage);
@@ -2231,9 +4089,9 @@ public class MyBehavior : CampaignBehaviorBase
 						Logger.Log("VoiceMapper", "[WARN] Save-loaded voice mapping was invalid; kept current file-backed mapping.");
 					}
 				}
-				catch (Exception ex7)
+				catch (Exception ex8)
 				{
-					Logger.Log("VoiceMapper", "[ERROR] Restore voice mapping from save failed: " + ex7.Message);
+					Logger.Log("VoiceMapper", "[ERROR] Restore voice mapping from save failed: " + ex8.Message);
 				}
 			}
 			_unnamedPersonaJsonStorage = CampaignSaveChunkHelper.LoadChunkedString(dataStore, "_unnamed_persona_v1", "UnnamedPersona");
@@ -2241,15 +4099,15 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				ShoutUtils.ImportUnnamedPersonaStateJson(_unnamedPersonaJsonStorage, overwriteExisting: true);
 			}
-			catch (Exception ex8)
+			catch (Exception ex9)
 			{
-				Logger.Log("UnnamedPersona", "[ERROR] Restore unnamed persona from save failed: " + ex8.Message);
+				Logger.Log("UnnamedPersona", "[ERROR] Restore unnamed persona from save failed: " + ex9.Message);
 			}
 			SyncPatienceData(dataStore);
 		}
-		catch (Exception ex9)
+		catch (Exception ex10)
 		{
-			Logger.Log("DialogueHistory", "[ERROR] SyncData v2 failed: " + ex9.ToString());
+			Logger.Log("DialogueHistory", "[ERROR] SyncData v2 failed: " + ex10.ToString());
 			_shownRecords = new Dictionary<string, HeroShownRecord>();
 			_shownRecordStorage = new Dictionary<string, string>();
 			_dialogueHistory = new Dictionary<string, List<DialogueDay>>();
@@ -2258,8 +4116,16 @@ public class MyBehavior : CampaignBehaviorBase
 			_npcMajorActionStorage = new Dictionary<string, string>();
 			_npcRecentActions = new Dictionary<string, List<NpcActionEntry>>();
 			_npcRecentActionStorage = new Dictionary<string, string>();
+			_npcActionGlobalOrderCounter = 0;
 			_npcPersonaProfiles = new Dictionary<string, NpcPersonaProfile>();
 			_npcPersonaProfileStorage = new Dictionary<string, string>();
+			_eventKingdomOpeningSummaries = new Dictionary<string, string>();
+			_eventKingdomOpeningSummaryStorage = new Dictionary<string, string>();
+			_eventWorldOpeningSummary = "";
+			_eventRecordEntries = new List<EventRecordEntry>();
+			_eventRecordJsonStorage = "";
+			_eventSourceMaterials = new List<EventSourceMaterialEntry>();
+			_eventSourceMaterialJsonStorage = "";
 			_voiceMappingJsonStorage = "";
 			_voiceMappingExportFolderStorage = "";
 			_unnamedPersonaJsonStorage = "";
@@ -2276,6 +4142,7 @@ public class MyBehavior : CampaignBehaviorBase
 		starter.AddGameMenuOption("AnimusForge_dev_root", "AnimusForge_dev_root_hero", "HeroNPC编辑（领主/流浪者/同伴）", DevRootSubOptionCondition, DevRootHeroOptionConsequence);
 		starter.AddGameMenuOption("AnimusForge_dev_root", "AnimusForge_dev_root_nonhero", "非heroNPC编辑（士兵/平民/无名/无姓NPC）", DevRootSubOptionCondition, DevRootNonHeroOptionConsequence);
 		starter.AddGameMenuOption("AnimusForge_dev_root", "AnimusForge_dev_root_knowledge", "知识编辑", DevRootSubOptionCondition, DevRootKnowledgeOptionConsequence);
+		starter.AddGameMenuOption("AnimusForge_dev_root", "AnimusForge_dev_root_event", "事件编辑", DevRootSubOptionCondition, DevRootEventOptionConsequence);
 		starter.AddGameMenuOption("AnimusForge_dev_root", "AnimusForge_dev_root_all", "全部导出/导入", DevRootSubOptionCondition, DevRootAllOptionConsequence);
 		starter.AddGameMenuOption("AnimusForge_dev_root", "AnimusForge_dev_root_voice", "声音映射管理（VoiceMapping）", DevRootSubOptionCondition, DevRootVoiceMappingOptionConsequence);
 		starter.AddGameMenuOption("AnimusForge_dev_root", "AnimusForge_dev_root_back", "返回", DevRootBackCondition, DevRootBackConsequence, isLeave: true);
@@ -9152,6 +11019,11 @@ public class MyBehavior : CampaignBehaviorBase
 		OpenDevKnowledgeMenu();
 	}
 
+	private void DevRootEventOptionConsequence(MenuCallbackArgs args)
+	{
+		OpenDevEventEditorMenu();
+	}
+
 	private void DevRootAllOptionConsequence(MenuCallbackArgs args)
 	{
 		OpenDevAllDataMenu();
@@ -9206,6 +11078,1552 @@ public class MyBehavior : CampaignBehaviorBase
 				break;
 			}
 		}
+	}
+
+	private void OpenDevEventEditorMenu()
+	{
+		List<InquiryElement> list = new List<InquiryElement>();
+		list.Add(new InquiryElement("edit_world_summary", "编辑世界开局概要", null));
+		list.Add(new InquiryElement("edit_kingdom_summary", "编辑王国开局概要", null));
+		list.Add(new InquiryElement("preview_weekly_materials", "查看本周事件素材预览", null));
+		list.Add(new InquiryElement("view_events", "查看事件与素材", null));
+		list.Add(new InquiryElement("export_event_data", "全量导出（事件编辑，选文件夹）", null));
+		list.Add(new InquiryElement("import_event_data", "全量导入（事件编辑，选文件夹）", null));
+		list.Add(new InquiryElement("clear_all", "清空全部事件概要", null));
+		list.Add(new InquiryElement("back", "返回", null));
+		string text = BuildDevEventEditorMenuDescription();
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData("事件编辑", text, list, isExitShown: true, 0, 1, "进入", "返回", OnDevEventEditorMenuSelected, delegate
+		{
+		});
+		MBInformationManager.ShowMultiSelectionInquiry(data);
+	}
+
+	private void OnDevEventEditorMenuSelected(List<InquiryElement> selected)
+	{
+		if (selected == null || selected.Count == 0)
+		{
+			return;
+		}
+		switch (selected[0].Identifier as string)
+		{
+		case "edit_world_summary":
+			OpenDevEditWorldOpeningSummary();
+			break;
+		case "edit_kingdom_summary":
+			OpenDevKingdomOpeningSummaryMenu();
+			break;
+		case "preview_weekly_materials":
+			OpenDevWeeklyEventMaterialPreviewMenu();
+			break;
+		case "view_events":
+			OpenDevEventViewerMenu(0);
+			break;
+		case "export_event_data":
+			OpenExportFolderPicker("全量导出（事件编辑）- 选择文件夹", ExportImportScope.EventData, OpenDevEventEditorMenu);
+			break;
+		case "import_event_data":
+			OpenImportFolderPicker("全量导入（事件编辑）- 选择文件夹", ExportImportScope.EventData, OpenDevEventEditorMenu);
+			break;
+		case "clear_all":
+			ConfirmClearAllEventOpeningSummaries();
+			break;
+		}
+	}
+
+	private string BuildDevEventEditorMenuDescription()
+	{
+		int num = 0;
+		if (_eventKingdomOpeningSummaries != null)
+		{
+			num = _eventKingdomOpeningSummaries.Count((KeyValuePair<string, string> x) => !string.IsNullOrWhiteSpace(x.Key) && !string.IsNullOrWhiteSpace(x.Value));
+		}
+		int num2 = 0;
+		try
+		{
+			num2 = Kingdom.All.Count((Kingdom x) => x != null && !string.IsNullOrWhiteSpace(x.StringId));
+		}
+		catch
+		{
+		}
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.AppendLine("这里用于维护事件系统的基础底稿。");
+		stringBuilder.AppendLine("当前可编辑：世界开局概要、各王国开局概要。");
+		stringBuilder.AppendLine(" ");
+		stringBuilder.AppendLine("世界开局概要：" + (string.IsNullOrWhiteSpace(_eventWorldOpeningSummary) ? "未设置" : "已设置"));
+		stringBuilder.AppendLine("王国开局概要：" + num + "/" + num2 + " 已设置");
+		stringBuilder.AppendLine("事件记录：" + ((_eventRecordEntries != null) ? SanitizeEventRecordEntries(_eventRecordEntries).Count : 0) + " 条");
+		string text = BuildDevSummaryPreview(_eventWorldOpeningSummary, 120);
+		if (!string.IsNullOrWhiteSpace(text))
+		{
+			stringBuilder.AppendLine(" ");
+			stringBuilder.AppendLine("世界概要预览：");
+			stringBuilder.AppendLine(text);
+		}
+		return stringBuilder.ToString().TrimEnd();
+	}
+
+	private void OpenDevEditWorldOpeningSummary()
+	{
+		DevTextEditorHelper.ShowLongTextEditor("编辑世界开局概要", "这段文本会作为世界事件系统的初始背景底稿。", "请输入世界开局概要（留空=清空）。", _eventWorldOpeningSummary ?? "", delegate(string input)
+		{
+			_eventWorldOpeningSummary = (input ?? "").Trim();
+			InformationManager.DisplayMessage(new InformationMessage(string.IsNullOrWhiteSpace(_eventWorldOpeningSummary) ? "已清空世界开局概要。" : "世界开局概要已更新。"));
+			OpenDevEventEditorMenu();
+		}, delegate
+		{
+			OpenDevEventEditorMenu();
+		});
+	}
+
+	private void OpenDevKingdomOpeningSummaryMenu()
+	{
+		List<Kingdom> list = GetDevEditableKingdoms();
+		if (list.Count == 0)
+		{
+			InformationManager.DisplayMessage(new InformationMessage("当前没有可编辑的王国。"));
+			OpenDevEventEditorMenu();
+			return;
+		}
+		List<InquiryElement> list2 = new List<InquiryElement>();
+		list2.Add(new InquiryElement("back", "返回", null));
+		foreach (Kingdom item in list)
+		{
+			string devKingdomSummaryLabel = BuildDevKingdomSummaryLabel(item);
+			list2.Add(new InquiryElement(new DevKingdomSummaryMenuItem
+			{
+				KingdomId = item.StringId ?? "",
+				DisplayName = item.Name?.ToString() ?? (item.StringId ?? "王国")
+			}, devKingdomSummaryLabel, null));
+		}
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.AppendLine("请选择要编辑的王国开局概要。");
+		stringBuilder.AppendLine("这些文本会作为该王国后续每周事件生成的基础背景。");
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData("编辑王国开局概要", stringBuilder.ToString().TrimEnd(), list2, isExitShown: true, 0, 1, "编辑", "返回", OnDevKingdomOpeningSummaryMenuSelected, delegate
+		{
+			OpenDevEventEditorMenu();
+		});
+		MBInformationManager.ShowMultiSelectionInquiry(data);
+	}
+
+	private void OnDevKingdomOpeningSummaryMenuSelected(List<InquiryElement> selected)
+	{
+		if (selected == null || selected.Count == 0)
+		{
+			OpenDevEventEditorMenu();
+			return;
+		}
+		if (selected[0].Identifier is string text && text == "back")
+		{
+			OpenDevEventEditorMenu();
+			return;
+		}
+		if (selected[0].Identifier is DevKingdomSummaryMenuItem devKingdomSummaryMenuItem)
+		{
+			Kingdom kingdom = FindKingdomById(devKingdomSummaryMenuItem.KingdomId);
+			if (kingdom == null)
+			{
+				InformationManager.DisplayMessage(new InformationMessage("找不到对应的王国。"));
+				OpenDevKingdomOpeningSummaryMenu();
+			}
+			else
+			{
+				OpenDevEditKingdomOpeningSummary(kingdom);
+			}
+		}
+		else
+		{
+			OpenDevKingdomOpeningSummaryMenu();
+		}
+	}
+
+	private void OpenDevEditKingdomOpeningSummary(Kingdom kingdom)
+	{
+		if (kingdom == null)
+		{
+			OpenDevKingdomOpeningSummaryMenu();
+			return;
+		}
+		string text = GetKingdomOpeningSummary(kingdom);
+		string text2 = kingdom.Name?.ToString() ?? (kingdom.StringId ?? "王国");
+		string subtitleText = "这段文本会作为该王国的开局底稿，供后续事件系统生成该王国的周事件时参考。";
+		DevTextEditorHelper.ShowLongTextEditor("编辑王国开局概要 - " + text2, subtitleText, "请输入该王国的开局概要（留空=清空）。", text, delegate(string input)
+		{
+			SaveKingdomOpeningSummary(kingdom, input);
+			InformationManager.DisplayMessage(new InformationMessage(string.IsNullOrWhiteSpace(input) ? ("已清空 " + text2 + " 的开局概要。") : (text2 + " 的开局概要已更新。")));
+			OpenDevKingdomOpeningSummaryMenu();
+		}, delegate
+		{
+			OpenDevKingdomOpeningSummaryMenu();
+		});
+	}
+
+	private void ConfirmClearAllEventOpeningSummaries()
+	{
+		InformationManager.ShowInquiry(new InquiryData("确认清空事件概要", "这会清空世界开局概要，以及所有王国的开局概要。\n此操作不可撤销，是否继续？", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "确认清空", "取消", delegate
+		{
+			_eventWorldOpeningSummary = "";
+			if (_eventKingdomOpeningSummaries == null)
+			{
+				_eventKingdomOpeningSummaries = new Dictionary<string, string>();
+			}
+			else
+			{
+				_eventKingdomOpeningSummaries.Clear();
+			}
+			InformationManager.DisplayMessage(new InformationMessage("已清空全部事件概要。"));
+			OpenDevEventEditorMenu();
+		}, delegate
+		{
+			OpenDevEventEditorMenu();
+		}));
+	}
+
+	private static List<Kingdom> GetDevEditableKingdoms()
+	{
+		try
+		{
+			return Kingdom.All.Where((Kingdom x) => x != null && !string.IsNullOrWhiteSpace(x.StringId)).OrderBy((Kingdom x) => x.Name?.ToString() ?? "", StringComparer.OrdinalIgnoreCase).ThenBy((Kingdom x) => x.StringId ?? "", StringComparer.OrdinalIgnoreCase).ToList();
+		}
+		catch
+		{
+			return new List<Kingdom>();
+		}
+	}
+
+	private string BuildDevKingdomSummaryLabel(Kingdom kingdom)
+	{
+		if (kingdom == null)
+		{
+			return "无效王国";
+		}
+		string text = kingdom.Name?.ToString() ?? (kingdom.StringId ?? "王国");
+		string kingdomOpeningSummary = GetKingdomOpeningSummary(kingdom);
+		string text2 = string.IsNullOrWhiteSpace(kingdomOpeningSummary) ? "未设置" : "已设置";
+		string devSummaryPreview = BuildDevSummaryPreview(kingdomOpeningSummary, 72);
+		if (string.IsNullOrWhiteSpace(devSummaryPreview))
+		{
+			return text + " [" + text2 + "]";
+		}
+		return text + " [" + text2 + "] " + devSummaryPreview;
+	}
+
+	private static string BuildDevSummaryPreview(string text, int maxLen)
+	{
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return "";
+		}
+		StringBuilder stringBuilder = new StringBuilder(text.Length);
+		bool flag = false;
+		foreach (char c in text)
+		{
+			if (char.IsWhiteSpace(c))
+			{
+				if (!flag)
+				{
+					stringBuilder.Append(' ');
+					flag = true;
+				}
+			}
+			else
+			{
+				stringBuilder.Append(c);
+				flag = false;
+			}
+		}
+		string text2 = stringBuilder.ToString().Trim();
+		if (text2.Length <= maxLen)
+		{
+			return text2;
+		}
+		return text2.Substring(0, Math.Max(1, maxLen)) + "...";
+	}
+
+	private string GetKingdomOpeningSummary(Kingdom kingdom)
+	{
+		if (kingdom == null || _eventKingdomOpeningSummaries == null)
+		{
+			return "";
+		}
+		string text = (kingdom.StringId ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return "";
+		}
+		if (!_eventKingdomOpeningSummaries.TryGetValue(text, out var value))
+		{
+			return "";
+		}
+		return (value ?? "").Trim();
+	}
+
+	private void SaveKingdomOpeningSummary(Kingdom kingdom, string summary)
+	{
+		if (kingdom == null)
+		{
+			return;
+		}
+		if (_eventKingdomOpeningSummaries == null)
+		{
+			_eventKingdomOpeningSummaries = new Dictionary<string, string>();
+		}
+		string text = (kingdom.StringId ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return;
+		}
+		string text2 = (summary ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text2))
+		{
+			_eventKingdomOpeningSummaries.Remove(text);
+		}
+		else
+		{
+			_eventKingdomOpeningSummaries[text] = text2;
+		}
+	}
+
+	private static Kingdom FindKingdomById(string kingdomId)
+	{
+		string text = (kingdomId ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return null;
+		}
+		try
+		{
+			return Kingdom.All.FirstOrDefault((Kingdom x) => x != null && string.Equals((x.StringId ?? "").Trim(), text, StringComparison.OrdinalIgnoreCase));
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static List<EventRecordEntry> SanitizeEventRecordEntries(List<EventRecordEntry> source)
+	{
+		List<EventRecordEntry> list = new List<EventRecordEntry>();
+		if (source == null)
+		{
+			return list;
+		}
+		foreach (EventRecordEntry item in source)
+		{
+			if (item == null)
+			{
+				continue;
+			}
+			string text = (item.EventId ?? "").Trim();
+			string text2 = (item.Title ?? "").Trim();
+			if (string.IsNullOrWhiteSpace(text) || string.IsNullOrWhiteSpace(text2))
+			{
+				continue;
+			}
+			EventRecordEntry eventRecordEntry = new EventRecordEntry
+			{
+				EventId = text,
+				WeekIndex = Math.Max(0, item.WeekIndex),
+				EventKind = (item.EventKind ?? "").Trim(),
+				ScopeKingdomId = (item.ScopeKingdomId ?? "").Trim(),
+				Title = text2,
+				Summary = (item.Summary ?? "").Trim(),
+				CreatedDay = Math.Max(0, item.CreatedDay),
+				CreatedDate = (item.CreatedDate ?? "").Trim(),
+				Materials = new List<EventMaterialReference>()
+			};
+			if (item.Materials != null)
+			{
+				foreach (EventMaterialReference material in item.Materials)
+				{
+					if (material == null)
+					{
+						continue;
+					}
+					eventRecordEntry.Materials.Add(new EventMaterialReference
+					{
+						MaterialType = (material.MaterialType ?? "").Trim(),
+						Label = (material.Label ?? "").Trim(),
+						SnapshotText = (material.SnapshotText ?? "").Trim(),
+						HeroId = (material.HeroId ?? "").Trim(),
+						KingdomId = (material.KingdomId ?? "").Trim(),
+						SettlementId = (material.SettlementId ?? "").Trim(),
+						RecentOnly = material.RecentOnly,
+						ActionStableKey = (material.ActionStableKey ?? "").Trim(),
+						ActionDay = material.ActionDay,
+						ActionOrder = material.ActionOrder,
+						ActionSequence = material.ActionSequence
+					});
+				}
+			}
+			list.Add(eventRecordEntry);
+		}
+		return list.OrderByDescending((EventRecordEntry x) => x.WeekIndex).ThenByDescending((EventRecordEntry x) => x.CreatedDay).ThenBy((EventRecordEntry x) => x.Title ?? "", StringComparer.OrdinalIgnoreCase).ToList();
+	}
+
+	private static List<EventSourceMaterialEntry> SanitizeEventSourceMaterials(List<EventSourceMaterialEntry> source)
+	{
+		List<EventSourceMaterialEntry> list = new List<EventSourceMaterialEntry>();
+		if (source == null)
+		{
+			return list;
+		}
+		foreach (EventSourceMaterialEntry item in source)
+		{
+			string text = (item?.SnapshotText ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
+			if (item == null || string.IsNullOrWhiteSpace(text))
+			{
+				continue;
+			}
+			list.Add(new EventSourceMaterialEntry
+			{
+				Day = Math.Max(0, item.Day),
+				Sequence = Math.Max(0, item.Sequence),
+				GameDate = (item.GameDate ?? "").Trim(),
+				MaterialKind = (item.MaterialKind ?? "").Trim(),
+				Label = (item.Label ?? "").Trim(),
+				SnapshotText = text,
+				StableKey = NormalizeNpcActionStableKey(item.StableKey, text),
+				KingdomId = (item.KingdomId ?? "").Trim(),
+				SettlementId = (item.SettlementId ?? "").Trim(),
+				IncludeInWorld = item.IncludeInWorld,
+				IncludeInKingdom = item.IncludeInKingdom
+			});
+		}
+		return list.OrderBy((EventSourceMaterialEntry x) => x.Day).ThenBy((EventSourceMaterialEntry x) => (x.Sequence > 0) ? x.Sequence : int.MaxValue).ThenBy((EventSourceMaterialEntry x) => x.Label ?? "", StringComparer.OrdinalIgnoreCase).ToList();
+	}
+
+	private void OpenDevEventViewerMenu(int page)
+	{
+		List<EventRecordEntry> list = SanitizeEventRecordEntries(_eventRecordEntries);
+		if (page < 0)
+		{
+			page = 0;
+		}
+		const int pageSize = 14;
+		int num = Math.Max(1, (int)Math.Ceiling((double)Math.Max(1, list.Count) / (double)pageSize));
+		if (page >= num)
+		{
+			page = num - 1;
+		}
+		List<InquiryElement> list2 = new List<InquiryElement>();
+		list2.Add(new InquiryElement("back", "返回", null));
+		if (page > 0)
+		{
+			list2.Add(new InquiryElement("prev_page", "上一页", null));
+		}
+		if (page + 1 < num)
+		{
+			list2.Add(new InquiryElement("next_page", "下一页", null));
+		}
+		list2.Add(new InquiryElement("__sep__", "----------------", null));
+		foreach (EventRecordEntry item in list.Skip(page * pageSize).Take(pageSize))
+		{
+			list2.Add(new InquiryElement(item, BuildDevEventRecordItemLabel(item), null));
+		}
+		string text = BuildDevEventViewerDescription(list, page, num);
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData("事件查看器", text, list2, isExitShown: true, 0, 1, "查看", "返回", delegate(List<InquiryElement> selected)
+		{
+			if (selected == null || selected.Count == 0)
+			{
+				OpenDevEventEditorMenu();
+			}
+			else if (selected[0].Identifier is string text2)
+			{
+				switch (text2)
+				{
+				case "back":
+					OpenDevEventEditorMenu();
+					break;
+				case "prev_page":
+					OpenDevEventViewerMenu(page - 1);
+					break;
+				case "next_page":
+					OpenDevEventViewerMenu(page + 1);
+					break;
+				default:
+					OpenDevEventViewerMenu(page);
+					break;
+				}
+			}
+			else if (selected[0].Identifier is EventRecordEntry eventRecordEntry)
+			{
+				OpenDevEventRecordDetail(eventRecordEntry, page);
+			}
+			else
+			{
+				OpenDevEventViewerMenu(page);
+			}
+		}, delegate
+		{
+			OpenDevEventEditorMenu();
+		});
+		MBInformationManager.ShowMultiSelectionInquiry(data);
+	}
+
+	private string BuildDevEventViewerDescription(List<EventRecordEntry> entries, int page, int totalPages)
+	{
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.AppendLine("这里用于查看事件系统已经记录下来的事件，以及每条事件引用了哪些素材。");
+		stringBuilder.AppendLine("素材可能包括：世界开局概要、王国开局概要、NPC近期行动、NPC重大行动，以及未来接入的其他摘要。");
+		stringBuilder.AppendLine(" ");
+		stringBuilder.AppendLine("事件总数：" + ((entries != null) ? entries.Count : 0));
+		stringBuilder.AppendLine("页码：" + (page + 1) + "/" + Math.Max(1, totalPages));
+		if (entries == null || entries.Count == 0)
+		{
+			stringBuilder.AppendLine(" ");
+			stringBuilder.AppendLine("当前还没有事件记录。");
+			stringBuilder.AppendLine("后续周事件系统接入后，每条事件都会显示在这里，并能展开查看引用素材。");
+		}
+		return stringBuilder.ToString().TrimEnd();
+	}
+
+	private static string BuildDevEventRecordItemLabel(EventRecordEntry entry)
+	{
+		if (entry == null)
+		{
+			return "无效事件";
+		}
+		string text = TranslateEventKindForDev(entry.EventKind);
+		string text2 = string.IsNullOrWhiteSpace(entry.CreatedDate) ? ("第 " + Math.Max(0, entry.CreatedDay) + " 日") : entry.CreatedDate.Trim();
+		string text3 = string.IsNullOrWhiteSpace(entry.ScopeKingdomId) ? "" : ResolveKingdomDisplay(entry.ScopeKingdomId);
+		string text4 = string.IsNullOrWhiteSpace(text3) ? "" : (" [" + text3 + "]");
+		int count = (entry.Materials != null) ? entry.Materials.Count : 0;
+		return text2 + " [" + text + "] 第" + Math.Max(0, entry.WeekIndex) + "周" + text4 + " " + (entry.Title ?? "").Trim() + " (素材 " + count + " 条)";
+	}
+
+	private void OpenDevEventRecordDetail(EventRecordEntry entry, int returnPage)
+	{
+		if (entry == null)
+		{
+			OpenDevEventViewerMenu(returnPage);
+			return;
+		}
+		List<EventMaterialReference> list = entry.Materials ?? new List<EventMaterialReference>();
+		List<InquiryElement> list2 = new List<InquiryElement>();
+		list2.Add(new InquiryElement("back", "返回事件列表", null));
+		list2.Add(new InquiryElement("__sep__", "----------------", null));
+		foreach (EventMaterialReference item in list)
+		{
+			list2.Add(new InquiryElement(item, BuildDevEventMaterialItemLabel(item), null));
+		}
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData("事件详情 - " + ((entry.Title ?? "").Trim()), BuildDevEventRecordDetailText(entry), list2, isExitShown: true, 0, 1, "查看素材", "返回", delegate(List<InquiryElement> selected)
+		{
+			if (selected == null || selected.Count == 0)
+			{
+				OpenDevEventViewerMenu(returnPage);
+			}
+			else if (selected[0].Identifier is string text)
+			{
+				if (text == "back")
+				{
+					OpenDevEventViewerMenu(returnPage);
+				}
+				else
+				{
+					OpenDevEventRecordDetail(entry, returnPage);
+				}
+			}
+			else if (selected[0].Identifier is EventMaterialReference eventMaterialReference)
+			{
+				OpenDevEventMaterialDetail(entry, eventMaterialReference, returnPage);
+			}
+			else
+			{
+				OpenDevEventRecordDetail(entry, returnPage);
+			}
+		}, delegate
+		{
+			OpenDevEventViewerMenu(returnPage);
+		});
+		MBInformationManager.ShowMultiSelectionInquiry(data);
+	}
+
+	private string BuildDevEventRecordDetailText(EventRecordEntry entry)
+	{
+		StringBuilder stringBuilder = new StringBuilder();
+		AppendDevNpcActionField(stringBuilder, "事件标题", (entry.Title ?? "").Trim());
+		AppendDevNpcActionField(stringBuilder, "事件类型", TranslateEventKindForDev(entry.EventKind));
+		AppendDevNpcActionField(stringBuilder, "周数", "第 " + Math.Max(0, entry.WeekIndex) + " 周");
+		AppendDevNpcActionField(stringBuilder, "生成日期", !string.IsNullOrWhiteSpace(entry.CreatedDate) ? entry.CreatedDate.Trim() : ("第 " + Math.Max(0, entry.CreatedDay) + " 日"));
+		AppendDevNpcActionField(stringBuilder, "归属王国", ResolveKingdomDisplay(entry.ScopeKingdomId));
+		AppendDevNpcActionField(stringBuilder, "素材数量", ((entry.Materials != null) ? entry.Materials.Count : 0).ToString());
+		if (!string.IsNullOrWhiteSpace(entry.Summary))
+		{
+			stringBuilder.AppendLine();
+			stringBuilder.AppendLine("【事件摘要】");
+			stringBuilder.AppendLine(entry.Summary.Trim());
+		}
+		if (entry.Materials == null || entry.Materials.Count == 0)
+		{
+			stringBuilder.AppendLine();
+			stringBuilder.AppendLine("【素材情况】");
+			stringBuilder.AppendLine("这条事件当前还没有挂载任何素材引用。");
+		}
+		else
+		{
+			stringBuilder.AppendLine();
+			stringBuilder.AppendLine("【素材情况】");
+			stringBuilder.AppendLine("下方列表中的每一项，都是这条事件在生成时引用过的素材。");
+		}
+		return stringBuilder.ToString().TrimEnd();
+	}
+
+	private static string BuildDevEventMaterialItemLabel(EventMaterialReference material)
+	{
+		if (material == null)
+		{
+			return "无效素材";
+		}
+		string text = TranslateEventMaterialTypeForDev(material.MaterialType);
+		string text2 = BuildDevSummaryPreview(material.Label, 56);
+		if (string.IsNullOrWhiteSpace(text2))
+		{
+			text2 = BuildDevSummaryPreview(material.SnapshotText, 56);
+		}
+		if (string.IsNullOrWhiteSpace(text2))
+		{
+			text2 = "无预览";
+		}
+		return "[" + text + "] " + text2;
+	}
+
+	private void OpenDevEventMaterialDetail(EventRecordEntry entry, EventMaterialReference material, int returnPage)
+	{
+		string text = BuildDevEventMaterialDetailText(material);
+		string text2 = BuildDevEventMaterialItemLabel(material);
+		InformationManager.ShowInquiry(new InquiryData("素材详情 - " + text2, text, isAffirmativeOptionShown: true, isNegativeOptionShown: false, "返回事件详情", "", delegate
+		{
+			OpenDevEventRecordDetail(entry, returnPage);
+		}, null));
+	}
+
+	private string BuildDevEventMaterialDetailText(EventMaterialReference material)
+	{
+		if (material == null)
+		{
+			return "无效素材。";
+		}
+		StringBuilder stringBuilder = new StringBuilder();
+		AppendDevNpcActionField(stringBuilder, "素材类型", TranslateEventMaterialTypeForDev(material.MaterialType));
+		AppendDevNpcActionField(stringBuilder, "素材标签", (material.Label ?? "").Trim());
+		AppendDevNpcActionField(stringBuilder, "人物", ResolveHeroDisplay(material.HeroId));
+		AppendDevNpcActionField(stringBuilder, "王国", ResolveKingdomDisplay(material.KingdomId));
+		AppendDevNpcActionField(stringBuilder, "定居点", ResolveSettlementDisplay(material.SettlementId));
+		switch ((material.MaterialType ?? "").Trim().ToLowerInvariant())
+		{
+		case "world_opening_summary":
+			stringBuilder.AppendLine();
+			stringBuilder.AppendLine("【素材正文】");
+			stringBuilder.AppendLine(!string.IsNullOrWhiteSpace(material.SnapshotText) ? material.SnapshotText.Trim() : ((_eventWorldOpeningSummary ?? "").Trim()));
+			break;
+		case "kingdom_opening_summary":
+			stringBuilder.AppendLine();
+			stringBuilder.AppendLine("【素材正文】");
+			stringBuilder.AppendLine(!string.IsNullOrWhiteSpace(material.SnapshotText) ? material.SnapshotText.Trim() : ResolveKingdomOpeningSummaryById(material.KingdomId));
+			break;
+		case "npc_recent_action":
+		case "npc_major_action":
+			NpcActionEntry npcActionEntry = ResolveEventMaterialNpcAction(material);
+			if (npcActionEntry != null)
+			{
+				stringBuilder.AppendLine();
+				stringBuilder.AppendLine(BuildDevNpcActionDetailText(npcActionEntry));
+			}
+			else
+			{
+				stringBuilder.AppendLine();
+				stringBuilder.AppendLine("【素材正文】");
+				if (!string.IsNullOrWhiteSpace(material.SnapshotText))
+				{
+					stringBuilder.AppendLine(material.SnapshotText.Trim());
+				}
+				else
+				{
+					stringBuilder.AppendLine("未能在当前行动记录中定位到这条 NPC 行为，可能是旧记录被裁剪掉了。");
+				}
+			}
+			break;
+		default:
+			stringBuilder.AppendLine();
+			stringBuilder.AppendLine("【素材正文】");
+			stringBuilder.AppendLine(string.IsNullOrWhiteSpace(material.SnapshotText) ? "这条素材当前没有额外快照文本。" : material.SnapshotText.Trim());
+			break;
+		}
+		return stringBuilder.ToString().TrimEnd();
+	}
+
+	private string ResolveKingdomOpeningSummaryById(string kingdomId)
+	{
+		Kingdom kingdom = FindKingdomById(kingdomId);
+		return (kingdom == null) ? "" : GetKingdomOpeningSummary(kingdom);
+	}
+
+	private bool TryLoadEventDataFromImportDir(string importDir, out EventImportPayload payload, out string error)
+	{
+		payload = new EventImportPayload();
+		error = "";
+		try
+		{
+			string text = Path.Combine(importDir, "event_data");
+			string text2 = Directory.Exists(text) ? text : importDir;
+			string path = Path.Combine(text2, "WorldOpeningSummary.json");
+			if (File.Exists(path))
+			{
+				payload.HasWorldSummaryFile = true;
+				EventWorldOpeningSummaryJson eventWorldOpeningSummaryJson = ReadJson<EventWorldOpeningSummaryJson>(path);
+				payload.WorldSummary = (eventWorldOpeningSummaryJson?.Summary ?? "").Trim();
+			}
+			string path2 = Path.Combine(text2, "KingdomOpeningSummaries.json");
+			if (File.Exists(path2))
+			{
+				payload.HasKingdomSummariesFile = true;
+				Dictionary<string, string> dictionary = ReadJson<Dictionary<string, string>>(path2) ?? new Dictionary<string, string>();
+				foreach (KeyValuePair<string, string> item in dictionary)
+				{
+					string text3 = (item.Key ?? "").Trim();
+					if (!string.IsNullOrWhiteSpace(text3))
+					{
+						payload.KingdomSummaries[text3] = (item.Value ?? "").Trim();
+					}
+				}
+			}
+			string path3 = Path.Combine(text2, "EventRecords.json");
+			if (File.Exists(path3))
+			{
+				payload.HasEventRecordsFile = true;
+				List<EventRecordEntry> source = ReadJson<List<EventRecordEntry>>(path3) ?? new List<EventRecordEntry>();
+				payload.EventRecords = SanitizeEventRecordEntries(source);
+			}
+			if (!payload.HasWorldSummaryFile && !payload.HasKingdomSummariesFile && !payload.HasEventRecordsFile)
+			{
+				error = "找不到 event_data\\WorldOpeningSummary.json、event_data\\KingdomOpeningSummaries.json 或 event_data\\EventRecords.json。";
+				return false;
+			}
+			return true;
+		}
+		catch (Exception ex)
+		{
+			error = ex.Message;
+			return false;
+		}
+	}
+
+	private void ApplyImportedEventData(EventImportPayload payload, bool overwriteExisting)
+	{
+		if (payload == null)
+		{
+			return;
+		}
+		if (payload.HasWorldSummaryFile && (overwriteExisting || string.IsNullOrWhiteSpace(_eventWorldOpeningSummary)))
+		{
+			_eventWorldOpeningSummary = (payload.WorldSummary ?? "").Trim();
+		}
+		if (payload.HasKingdomSummariesFile)
+		{
+			if (_eventKingdomOpeningSummaries == null)
+			{
+				_eventKingdomOpeningSummaries = new Dictionary<string, string>();
+			}
+			foreach (KeyValuePair<string, string> item in payload.KingdomSummaries)
+			{
+				string text = (item.Key ?? "").Trim();
+				if (string.IsNullOrWhiteSpace(text))
+				{
+					continue;
+				}
+				string text2 = (item.Value ?? "").Trim();
+				if (overwriteExisting)
+				{
+					if (string.IsNullOrWhiteSpace(text2))
+					{
+						_eventKingdomOpeningSummaries.Remove(text);
+					}
+					else
+					{
+						_eventKingdomOpeningSummaries[text] = text2;
+					}
+				}
+				else if (!_eventKingdomOpeningSummaries.ContainsKey(text) && !string.IsNullOrWhiteSpace(text2))
+				{
+					_eventKingdomOpeningSummaries[text] = text2;
+				}
+			}
+		}
+		if (payload.HasEventRecordsFile)
+		{
+			if (_eventRecordEntries == null)
+			{
+				_eventRecordEntries = new List<EventRecordEntry>();
+			}
+			if (overwriteExisting)
+			{
+				Dictionary<string, EventRecordEntry> dictionary = new Dictionary<string, EventRecordEntry>(StringComparer.OrdinalIgnoreCase);
+				foreach (EventRecordEntry eventRecordEntry in _eventRecordEntries)
+				{
+					string text3 = (eventRecordEntry?.EventId ?? "").Trim();
+					if (!string.IsNullOrWhiteSpace(text3))
+					{
+						dictionary[text3] = eventRecordEntry;
+					}
+				}
+				foreach (EventRecordEntry eventRecordEntry2 in payload.EventRecords)
+				{
+					string text4 = (eventRecordEntry2?.EventId ?? "").Trim();
+					if (!string.IsNullOrWhiteSpace(text4))
+					{
+						dictionary[text4] = eventRecordEntry2;
+					}
+				}
+				_eventRecordEntries = SanitizeEventRecordEntries(dictionary.Values.ToList());
+			}
+			else
+			{
+				HashSet<string> hashSet = new HashSet<string>(_eventRecordEntries.Where((EventRecordEntry x) => x != null && !string.IsNullOrWhiteSpace(x.EventId)).Select((EventRecordEntry x) => x.EventId.Trim()), StringComparer.OrdinalIgnoreCase);
+				foreach (EventRecordEntry eventRecordEntry3 in payload.EventRecords)
+				{
+					string text5 = (eventRecordEntry3?.EventId ?? "").Trim();
+					if (!string.IsNullOrWhiteSpace(text5) && hashSet.Add(text5))
+					{
+						_eventRecordEntries.Add(eventRecordEntry3);
+					}
+				}
+				_eventRecordEntries = SanitizeEventRecordEntries(_eventRecordEntries);
+			}
+		}
+	}
+
+	private NpcActionEntry ResolveEventMaterialNpcAction(EventMaterialReference material)
+	{
+		if (material == null || string.IsNullOrWhiteSpace(material.HeroId))
+		{
+			return null;
+		}
+		Hero hero = Hero.FindFirst((Hero h) => h != null && string.Equals((h.StringId ?? "").Trim(), (material.HeroId ?? "").Trim(), StringComparison.OrdinalIgnoreCase));
+		if (hero == null)
+		{
+			return null;
+		}
+		List<NpcActionEntry> devNpcActionEntries = GetDevNpcActionEntries(hero, material.RecentOnly);
+		if (devNpcActionEntries == null || devNpcActionEntries.Count == 0)
+		{
+			return null;
+		}
+		NpcActionEntry npcActionEntry = devNpcActionEntries.FirstOrDefault((NpcActionEntry x) => x != null && (!material.ActionDay.HasValue || x.Day == material.ActionDay.Value) && (!material.ActionOrder.HasValue || x.Order == material.ActionOrder.Value) && (string.IsNullOrWhiteSpace(material.ActionStableKey) || string.Equals((x.StableKey ?? "").Trim(), material.ActionStableKey.Trim(), StringComparison.OrdinalIgnoreCase)));
+		if (npcActionEntry != null)
+		{
+			return npcActionEntry;
+		}
+		if (!string.IsNullOrWhiteSpace(material.ActionStableKey))
+		{
+			npcActionEntry = devNpcActionEntries.FirstOrDefault((NpcActionEntry x) => x != null && string.Equals((x.StableKey ?? "").Trim(), material.ActionStableKey.Trim(), StringComparison.OrdinalIgnoreCase));
+		}
+		return npcActionEntry;
+	}
+
+	private static string TranslateEventKindForDev(string eventKind)
+	{
+		switch ((eventKind ?? "").Trim().ToLowerInvariant())
+		{
+		case "world":
+			return "世界事件";
+		case "kingdom":
+			return "王国事件";
+		case "player_local":
+			return "玩家周边事件";
+		default:
+			return string.IsNullOrWhiteSpace(eventKind) ? "未分类事件" : eventKind.Trim();
+		}
+	}
+
+	private static string TranslateEventMaterialTypeForDev(string materialType)
+	{
+		switch ((materialType ?? "").Trim().ToLowerInvariant())
+		{
+		case "world_opening_summary":
+			return "世界开局概要";
+		case "kingdom_opening_summary":
+			return "王国开局概要";
+		case "npc_recent_action":
+			return "NPC近期行动";
+		case "npc_major_action":
+			return "NPC重大行动";
+		case "raw_text":
+			return "原始文本素材";
+		default:
+			return string.IsNullOrWhiteSpace(materialType) ? "未分类素材" : materialType.Trim();
+		}
+	}
+
+	private static string ResolveSettlementDisplay(string settlementId)
+	{
+		string text = (settlementId ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return "";
+		}
+		try
+		{
+			Settlement settlement = Settlement.Find(text);
+			if (settlement != null)
+			{
+				string text2 = settlement.Name?.ToString() ?? "";
+				if (!string.IsNullOrWhiteSpace(text2))
+				{
+					return text2;
+				}
+			}
+		}
+		catch
+		{
+		}
+		return text;
+	}
+
+	private void OpenDevWeeklyEventMaterialPreviewMenu()
+	{
+		List<WeeklyEventMaterialPreviewGroup> list = BuildWeeklyEventMaterialPreviewGroups();
+		List<InquiryElement> list2 = new List<InquiryElement>();
+		list2.Add(new InquiryElement("back", "返回", null));
+		foreach (WeeklyEventMaterialPreviewGroup item in list)
+		{
+			list2.Add(new InquiryElement(item, BuildWeeklyEventMaterialPreviewGroupLabel(item), null));
+		}
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData("本周事件素材预览", BuildWeeklyEventMaterialPreviewMenuDescription(list), list2, isExitShown: true, 0, 1, "查看", "返回", delegate(List<InquiryElement> selected)
+		{
+			if (selected == null || selected.Count == 0)
+			{
+				OpenDevEventEditorMenu();
+			}
+			else if (selected[0].Identifier is string text && text == "back")
+			{
+				OpenDevEventEditorMenu();
+			}
+			else if (selected[0].Identifier is WeeklyEventMaterialPreviewGroup weeklyEventMaterialPreviewGroup)
+			{
+				OpenDevWeeklyEventMaterialPreviewGroupDetail(weeklyEventMaterialPreviewGroup, 0);
+			}
+			else
+			{
+				OpenDevWeeklyEventMaterialPreviewMenu();
+			}
+		}, delegate
+		{
+			OpenDevEventEditorMenu();
+		});
+		MBInformationManager.ShowMultiSelectionInquiry(data);
+	}
+
+	private string BuildWeeklyEventMaterialPreviewMenuDescription(List<WeeklyEventMaterialPreviewGroup> groups)
+	{
+		int currentGameDayIndexSafe = GetCurrentGameDayIndexSafe();
+		int num = Math.Max(0, currentGameDayIndexSafe - currentGameDayIndexSafe % 7);
+		int num2 = Math.Max(1, currentGameDayIndexSafe / 7 + 1);
+		int num3 = (groups != null) ? groups.Sum((WeeklyEventMaterialPreviewGroup x) => (x?.Materials?.Count).GetValueOrDefault()) : 0;
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.AppendLine("这里展示“如果现在生成本周事件”，系统会拿去喂给事件生成器的素材池。");
+		stringBuilder.AppendLine("当前按世界事件与各王国事件分组展示。");
+		stringBuilder.AppendLine(" ");
+		stringBuilder.AppendLine("当前周数：第 " + num2 + " 周");
+		stringBuilder.AppendLine("当前取材区间：第 " + num + " 日 到 第 " + currentGameDayIndexSafe + " 日");
+		stringBuilder.AppendLine("分组数量：" + ((groups != null) ? groups.Count : 0));
+		stringBuilder.AppendLine("素材总数：" + num3);
+		stringBuilder.AppendLine(" ");
+		stringBuilder.AppendLine("当前已接入的素材：世界开局概要、王国开局概要、本周 NPC 行动。");
+		return stringBuilder.ToString().TrimEnd();
+	}
+
+	private static string BuildWeeklyEventMaterialPreviewGroupLabel(WeeklyEventMaterialPreviewGroup group)
+	{
+		if (group == null)
+		{
+			return "无效分组";
+		}
+		string text = string.IsNullOrWhiteSpace(group.Summary) ? "" : BuildDevSummaryPreview(group.Summary, 44);
+		string text2 = ((group.Materials != null) ? group.Materials.Count : 0) + " 条素材";
+		return (group.Title ?? "未命名分组") + " [" + text2 + "]" + (string.IsNullOrWhiteSpace(text) ? "" : (" " + text));
+	}
+
+	private List<WeeklyEventMaterialPreviewGroup> BuildWeeklyEventMaterialPreviewGroups()
+	{
+		int currentGameDayIndexSafe = GetCurrentGameDayIndexSafe();
+		int num = Math.Max(0, currentGameDayIndexSafe - currentGameDayIndexSafe % 7);
+		List<WeeklyEventMaterialPreviewGroup> list = new List<WeeklyEventMaterialPreviewGroup>();
+		list.Add(BuildWorldWeeklyEventMaterialPreviewGroup(num, currentGameDayIndexSafe));
+		foreach (Kingdom devEditableKingdom in GetDevEditableKingdoms())
+		{
+			WeeklyEventMaterialPreviewGroup item = BuildKingdomWeeklyEventMaterialPreviewGroup(devEditableKingdom, num, currentGameDayIndexSafe);
+			list.Add(item);
+		}
+		return list;
+	}
+
+	private WeeklyEventMaterialPreviewGroup BuildWorldWeeklyEventMaterialPreviewGroup(int startDay, int endDay)
+	{
+		WeeklyEventMaterialPreviewGroup weeklyEventMaterialPreviewGroup = new WeeklyEventMaterialPreviewGroup
+		{
+			GroupKind = "world",
+			Title = "世界事件素材预览",
+			Summary = "用于世界事件的本周素材。",
+			Materials = new List<EventMaterialReference>()
+		};
+		if (!string.IsNullOrWhiteSpace(_eventWorldOpeningSummary))
+		{
+			weeklyEventMaterialPreviewGroup.Materials.Add(new EventMaterialReference
+			{
+				MaterialType = "world_opening_summary",
+				Label = "世界开局概要",
+				SnapshotText = (_eventWorldOpeningSummary ?? "").Trim()
+			});
+		}
+		foreach (EventSourceMaterialEntry item in SanitizeEventSourceMaterials(_eventSourceMaterials))
+		{
+			if (item != null && item.IncludeInWorld && item.Day >= startDay && item.Day <= endDay)
+			{
+				TryAddPreviewSourceMaterial(weeklyEventMaterialPreviewGroup.Materials, item);
+			}
+		}
+		foreach (KeyValuePair<string, List<NpcActionEntry>> npcRecentAction in _npcRecentActions ?? new Dictionary<string, List<NpcActionEntry>>())
+		{
+			Hero hero = FindHeroById(npcRecentAction.Key);
+			if (hero == null || npcRecentAction.Value == null)
+			{
+				continue;
+			}
+			foreach (NpcActionEntry item in npcRecentAction.Value)
+			{
+				if (item != null && item.Day >= startDay && item.Day <= endDay && ShouldIncludeWorldPreviewAction(hero, item))
+				{
+					TryAddPreviewActionMaterial(weeklyEventMaterialPreviewGroup.Materials, hero, item, recentOnly: true);
+				}
+			}
+		}
+		foreach (KeyValuePair<string, List<NpcActionEntry>> npcMajorAction in _npcMajorActions ?? new Dictionary<string, List<NpcActionEntry>>())
+		{
+			Hero hero = FindHeroById(npcMajorAction.Key);
+			if (hero == null || npcMajorAction.Value == null)
+			{
+				continue;
+			}
+			foreach (NpcActionEntry item in npcMajorAction.Value)
+			{
+				if (item != null && item.Day >= startDay && item.Day <= endDay && ShouldIncludeWorldPreviewAction(hero, item))
+				{
+					TryAddPreviewActionMaterial(weeklyEventMaterialPreviewGroup.Materials, hero, item, recentOnly: false);
+				}
+			}
+		}
+		weeklyEventMaterialPreviewGroup.Summary = "世界事件将使用世界开局概要，以及本周更能代表大陆格局变化的重大行动、领导层震荡与世界级通用素材。军团从属加入或离开这类细碎动作会被压缩。";
+		return weeklyEventMaterialPreviewGroup;
+	}
+
+	private WeeklyEventMaterialPreviewGroup BuildKingdomWeeklyEventMaterialPreviewGroup(Kingdom kingdom, int startDay, int endDay)
+	{
+		string text = kingdom?.Name?.ToString() ?? (kingdom?.StringId ?? "王国");
+		WeeklyEventMaterialPreviewGroup weeklyEventMaterialPreviewGroup = new WeeklyEventMaterialPreviewGroup
+		{
+			GroupKind = "kingdom",
+			KingdomId = kingdom?.StringId ?? "",
+			Title = text + " 事件素材预览",
+			Summary = text + " 本周会使用该国开局概要，以及与该国有关的本周高价值行动。普通行军会被压缩，守备、袭扰和外国领主入境会优先保留。",
+			Materials = new List<EventMaterialReference>()
+		};
+		string kingdomOpeningSummary = GetKingdomOpeningSummary(kingdom);
+		if (!string.IsNullOrWhiteSpace(kingdomOpeningSummary))
+		{
+			weeklyEventMaterialPreviewGroup.Materials.Add(new EventMaterialReference
+			{
+				MaterialType = "kingdom_opening_summary",
+				Label = text + " 开局概要",
+				KingdomId = kingdom?.StringId ?? "",
+				SnapshotText = kingdomOpeningSummary
+			});
+		}
+		foreach (EventSourceMaterialEntry item in SanitizeEventSourceMaterials(_eventSourceMaterials))
+		{
+			if (item != null && item.IncludeInKingdom && item.Day >= startDay && item.Day <= endDay && string.Equals((item.KingdomId ?? "").Trim(), (kingdom?.StringId ?? "").Trim(), StringComparison.OrdinalIgnoreCase))
+			{
+				TryAddPreviewSourceMaterial(weeklyEventMaterialPreviewGroup.Materials, item);
+			}
+		}
+		foreach (KeyValuePair<string, List<NpcActionEntry>> npcRecentAction in _npcRecentActions ?? new Dictionary<string, List<NpcActionEntry>>())
+		{
+			Hero hero = FindHeroById(npcRecentAction.Key);
+			if (hero == null || npcRecentAction.Value == null)
+			{
+				continue;
+			}
+			foreach (NpcActionEntry item in npcRecentAction.Value)
+			{
+				if (item != null && item.Day >= startDay && item.Day <= endDay && DoesNpcActionRelateToKingdom(item, kingdom) && ShouldIncludeKingdomPreviewAction(hero, item, kingdom))
+				{
+					TryAddPreviewActionMaterial(weeklyEventMaterialPreviewGroup.Materials, hero, item, recentOnly: true);
+				}
+			}
+		}
+		foreach (KeyValuePair<string, List<NpcActionEntry>> npcMajorAction in _npcMajorActions ?? new Dictionary<string, List<NpcActionEntry>>())
+		{
+			Hero hero = FindHeroById(npcMajorAction.Key);
+			if (hero == null || npcMajorAction.Value == null)
+			{
+				continue;
+			}
+			foreach (NpcActionEntry item2 in npcMajorAction.Value)
+			{
+				if (item2 != null && item2.Day >= startDay && item2.Day <= endDay && DoesNpcActionRelateToKingdom(item2, kingdom))
+				{
+					TryAddPreviewActionMaterial(weeklyEventMaterialPreviewGroup.Materials, hero, item2, recentOnly: false);
+				}
+			}
+		}
+		return weeklyEventMaterialPreviewGroup;
+	}
+
+	private static Hero FindHeroById(string heroId)
+	{
+		string text = (heroId ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return null;
+		}
+		try
+		{
+			return Hero.FindFirst((Hero h) => h != null && string.Equals((h.StringId ?? "").Trim(), text, StringComparison.OrdinalIgnoreCase));
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static bool DoesNpcActionRelateToKingdom(NpcActionEntry entry, Kingdom kingdom)
+	{
+		string text = (kingdom?.StringId ?? "").Trim();
+		if (entry == null || string.IsNullOrWhiteSpace(text))
+		{
+			return false;
+		}
+		if (string.Equals((entry.ActorKingdomId ?? "").Trim(), text, StringComparison.OrdinalIgnoreCase) || string.Equals((entry.TargetKingdomId ?? "").Trim(), text, StringComparison.OrdinalIgnoreCase) || string.Equals((entry.SettlementOwnerKingdomId ?? "").Trim(), text, StringComparison.OrdinalIgnoreCase) || string.Equals((entry.PreviousSettlementOwnerKingdomId ?? "").Trim(), text, StringComparison.OrdinalIgnoreCase))
+		{
+			return true;
+		}
+		return entry.RelatedKingdomIds != null && entry.RelatedKingdomIds.Any((string x) => string.Equals((x ?? "").Trim(), text, StringComparison.OrdinalIgnoreCase));
+	}
+
+	private static bool ShouldIncludeKingdomPreviewAction(Hero hero, NpcActionEntry entry, Kingdom kingdom)
+	{
+		if (hero == null || entry == null || kingdom == null)
+		{
+			return false;
+		}
+		string text = (entry.ActionKind ?? "").Trim();
+		if (!string.Equals(text, "daily_behavior", StringComparison.OrdinalIgnoreCase))
+		{
+			if (string.Equals(text, "army_join", StringComparison.OrdinalIgnoreCase))
+			{
+				return hero.Clan?.Leader == hero;
+			}
+			return true;
+		}
+		if (IsArmyCommanderDailyBehavior(entry))
+		{
+			return true;
+		}
+		string text2 = (entry.StableKey ?? "").Trim();
+		if (text2.IndexOf("raidsettlement", StringComparison.OrdinalIgnoreCase) >= 0 || (entry.Text ?? "").IndexOf("袭扰", StringComparison.OrdinalIgnoreCase) >= 0)
+		{
+			return true;
+		}
+		if (text2.IndexOf("defendsettlement", StringComparison.OrdinalIgnoreCase) >= 0 || (entry.Text ?? "").IndexOf("守备", StringComparison.OrdinalIgnoreCase) >= 0 || (entry.Text ?? "").IndexOf("保卫", StringComparison.OrdinalIgnoreCase) >= 0)
+		{
+			return true;
+		}
+		string text3 = (kingdom.StringId ?? "").Trim();
+		string text4 = (entry.ActorKingdomId ?? "").Trim();
+		string text5 = (entry.SettlementOwnerKingdomId ?? "").Trim();
+		if (!string.IsNullOrWhiteSpace(text3) && !string.IsNullOrWhiteSpace(text4) && !string.Equals(text4, text3, StringComparison.OrdinalIgnoreCase) && string.Equals(text5, text3, StringComparison.OrdinalIgnoreCase))
+		{
+			return true;
+		}
+		return false;
+	}
+
+	private static bool ShouldIncludeWorldPreviewAction(Hero hero, NpcActionEntry entry)
+	{
+		if (hero == null || entry == null)
+		{
+			return false;
+		}
+		string text = (entry.ActionKind ?? "").Trim();
+		if (string.Equals(text, "army_join", StringComparison.OrdinalIgnoreCase) || string.Equals(text, "army_leave", StringComparison.OrdinalIgnoreCase))
+		{
+			return false;
+		}
+		if (string.Equals(text, "daily_behavior", StringComparison.OrdinalIgnoreCase))
+		{
+			return IsArmyCommanderDailyBehavior(entry) || IsDailyBehaviorDefend(entry);
+		}
+		if (IsPrisonerTakenAction(entry))
+		{
+			return IsLeadershipCaptureAction(entry);
+		}
+		if (IsPrisonerReleasedAction(entry))
+		{
+			return IsLeadershipReleaseAction(entry);
+		}
+		return true;
+	}
+
+	private static bool IsPrisonerTakenAction(NpcActionEntry entry)
+	{
+		string text = (entry?.ActionKind ?? "").Trim();
+		return string.Equals(text, "prisoner_taken_captor", StringComparison.OrdinalIgnoreCase) || string.Equals(text, "prisoner_taken_prisoner", StringComparison.OrdinalIgnoreCase);
+	}
+
+	private static bool IsLeadershipCaptureAction(NpcActionEntry entry)
+	{
+		Hero capturedHero = FindHeroById(GetCapturedHeroId(entry));
+		return capturedHero != null && (capturedHero.Clan?.Leader == capturedHero || capturedHero.IsFactionLeader);
+	}
+
+	private static bool IsPrisonerReleasedAction(NpcActionEntry entry)
+	{
+		string text = (entry?.ActionKind ?? "").Trim();
+		return string.Equals(text, "prisoner_released_captor", StringComparison.OrdinalIgnoreCase) || string.Equals(text, "prisoner_released_prisoner", StringComparison.OrdinalIgnoreCase);
+	}
+
+	private static bool IsLeadershipReleaseAction(NpcActionEntry entry)
+	{
+		Hero releasedHero = FindHeroById(GetReleasedHeroId(entry));
+		return releasedHero != null && (releasedHero.Clan?.Leader == releasedHero || releasedHero.IsFactionLeader);
+	}
+
+	private static string GetCapturedHeroId(NpcActionEntry entry)
+	{
+		string text = (entry?.ActionKind ?? "").Trim();
+		if (string.Equals(text, "prisoner_taken_captor", StringComparison.OrdinalIgnoreCase))
+		{
+			return (entry?.TargetHeroId ?? "").Trim();
+		}
+		if (string.Equals(text, "prisoner_taken_prisoner", StringComparison.OrdinalIgnoreCase))
+		{
+			return (entry?.ActorHeroId ?? "").Trim();
+		}
+		return "";
+	}
+
+	private static string GetReleasedHeroId(NpcActionEntry entry)
+	{
+		string text = (entry?.ActionKind ?? "").Trim();
+		if (string.Equals(text, "prisoner_released_captor", StringComparison.OrdinalIgnoreCase))
+		{
+			return (entry?.TargetHeroId ?? "").Trim();
+		}
+		if (string.Equals(text, "prisoner_released_prisoner", StringComparison.OrdinalIgnoreCase))
+		{
+			return (entry?.ActorHeroId ?? "").Trim();
+		}
+		return "";
+	}
+
+	private static bool IsArmyCommanderDailyBehavior(NpcActionEntry entry)
+	{
+		string text = (entry?.StableKey ?? "").Trim();
+		if (!text.StartsWith("daily_behavior:army:", StringComparison.OrdinalIgnoreCase))
+		{
+			return false;
+		}
+		string text2 = (entry?.Text ?? "").Trim();
+		return text2.IndexOf("率领", StringComparison.OrdinalIgnoreCase) >= 0;
+	}
+
+	private static bool IsDailyBehaviorRaid(NpcActionEntry entry)
+	{
+		string text = (entry?.StableKey ?? "").Trim();
+		if (text.IndexOf("raidsettlement", StringComparison.OrdinalIgnoreCase) >= 0)
+		{
+			return true;
+		}
+		string text2 = (entry?.Text ?? "").Trim();
+		return text2.IndexOf("袭扰", StringComparison.OrdinalIgnoreCase) >= 0;
+	}
+
+	private static bool IsDailyBehaviorDefend(NpcActionEntry entry)
+	{
+		string text = (entry?.StableKey ?? "").Trim();
+		if (text.IndexOf("defendsettlement", StringComparison.OrdinalIgnoreCase) >= 0)
+		{
+			return true;
+		}
+		string text2 = (entry?.Text ?? "").Trim();
+		return text2.IndexOf("守备", StringComparison.OrdinalIgnoreCase) >= 0 || text2.IndexOf("保卫", StringComparison.OrdinalIgnoreCase) >= 0;
+	}
+
+	private void TryAddPreviewActionMaterial(List<EventMaterialReference> materials, Hero hero, NpcActionEntry entry, bool recentOnly)
+	{
+		if (materials == null || hero == null || entry == null)
+		{
+			return;
+		}
+		EventMaterialReference eventMaterialReference = materials.FirstOrDefault((EventMaterialReference x) => x != null && string.Equals((x.HeroId ?? "").Trim(), (hero.StringId ?? "").Trim(), StringComparison.OrdinalIgnoreCase) && x.ActionDay.GetValueOrDefault() == entry.Day && string.Equals((x.ActionStableKey ?? "").Trim(), (entry.StableKey ?? "").Trim(), StringComparison.OrdinalIgnoreCase));
+		string text = ResolveHeroDisplay(hero.StringId) + " - " + BuildDevSummaryPreview(BuildDevNpcActionPreviewText(entry), 60);
+		EventMaterialReference eventMaterialReference2 = new EventMaterialReference
+		{
+			MaterialType = recentOnly ? "npc_recent_action" : "npc_major_action",
+			Label = text,
+			SnapshotText = BuildDevNpcActionPreviewText(entry),
+			HeroId = hero.StringId ?? "",
+			KingdomId = entry.ActorKingdomId ?? "",
+			SettlementId = entry.SettlementId ?? "",
+			RecentOnly = recentOnly,
+			ActionStableKey = entry.StableKey ?? "",
+			ActionDay = entry.Day,
+			ActionOrder = entry.Order,
+			ActionSequence = entry.Sequence
+		};
+		if (eventMaterialReference != null)
+		{
+			if (!recentOnly && eventMaterialReference.RecentOnly)
+			{
+				int num = materials.IndexOf(eventMaterialReference);
+				if (num >= 0)
+				{
+					materials[num] = eventMaterialReference2;
+				}
+			}
+			return;
+		}
+		materials.Add(eventMaterialReference2);
+	}
+
+	private static void TryAddPreviewSourceMaterial(List<EventMaterialReference> materials, EventSourceMaterialEntry entry)
+	{
+		if (materials == null || entry == null)
+		{
+			return;
+		}
+		if (materials.Any((EventMaterialReference x) => x != null && string.Equals((x.MaterialType ?? "").Trim(), "raw_text", StringComparison.OrdinalIgnoreCase) && x.ActionDay.GetValueOrDefault() == entry.Day && x.ActionSequence.GetValueOrDefault() == entry.Sequence && string.Equals((x.ActionStableKey ?? "").Trim(), (entry.StableKey ?? "").Trim(), StringComparison.OrdinalIgnoreCase)))
+		{
+			return;
+		}
+		materials.Add(new EventMaterialReference
+		{
+			MaterialType = "raw_text",
+			Label = (entry.Label ?? "").Trim(),
+			SnapshotText = (entry.SnapshotText ?? "").Trim(),
+			KingdomId = (entry.KingdomId ?? "").Trim(),
+			SettlementId = (entry.SettlementId ?? "").Trim(),
+			ActionStableKey = (entry.StableKey ?? "").Trim(),
+			ActionDay = entry.Day,
+			ActionSequence = entry.Sequence
+		});
+	}
+
+	private void OpenDevWeeklyEventMaterialPreviewGroupDetail(WeeklyEventMaterialPreviewGroup group, int page)
+	{
+		if (group == null)
+		{
+			OpenDevWeeklyEventMaterialPreviewMenu();
+			return;
+		}
+		List<EventMaterialReference> list = OrderWeeklyPreviewMaterials(group.Materials).ToList();
+		if (page < 0)
+		{
+			page = 0;
+		}
+		const int pageSize = 16;
+		int num = Math.Max(1, (int)Math.Ceiling((double)Math.Max(1, list.Count) / (double)pageSize));
+		if (page >= num)
+		{
+			page = num - 1;
+		}
+		List<InquiryElement> list2 = new List<InquiryElement>();
+		list2.Add(new InquiryElement("back", "返回分组列表", null));
+		if (page > 0)
+		{
+			list2.Add(new InquiryElement("prev_page", "上一页", null));
+		}
+		if (page + 1 < num)
+		{
+			list2.Add(new InquiryElement("next_page", "下一页", null));
+		}
+		list2.Add(new InquiryElement("__sep__", "----------------", null));
+		foreach (EventMaterialReference item in list.Skip(page * pageSize).Take(pageSize))
+		{
+			list2.Add(new InquiryElement(item, BuildWeeklyPreviewMaterialLabel(item), null));
+		}
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(group.Title ?? "素材预览", BuildWeeklyPreviewGroupDetailText(group, page, num), list2, isExitShown: true, 0, 1, "查看素材", "返回", delegate(List<InquiryElement> selected)
+		{
+			if (selected == null || selected.Count == 0)
+			{
+				OpenDevWeeklyEventMaterialPreviewMenu();
+			}
+			else if (selected[0].Identifier is string text)
+			{
+				switch (text)
+				{
+				case "back":
+					OpenDevWeeklyEventMaterialPreviewMenu();
+					break;
+				case "prev_page":
+					OpenDevWeeklyEventMaterialPreviewGroupDetail(group, page - 1);
+					break;
+				case "next_page":
+					OpenDevWeeklyEventMaterialPreviewGroupDetail(group, page + 1);
+					break;
+				default:
+					OpenDevWeeklyEventMaterialPreviewGroupDetail(group, page);
+					break;
+				}
+			}
+			else if (selected[0].Identifier is EventMaterialReference eventMaterialReference)
+			{
+				OpenDevWeeklyPreviewMaterialDetail(group, eventMaterialReference, page);
+			}
+			else
+			{
+				OpenDevWeeklyEventMaterialPreviewGroupDetail(group, page);
+			}
+		}, delegate
+		{
+			OpenDevWeeklyEventMaterialPreviewMenu();
+		});
+		MBInformationManager.ShowMultiSelectionInquiry(data);
+	}
+
+	private static string BuildWeeklyPreviewMaterialLabel(EventMaterialReference material)
+	{
+		if (material == null)
+		{
+			return "无效素材";
+		}
+		string text = TranslateEventMaterialTypeForDev(material.MaterialType);
+		string text6 = material.ActionDay.HasValue ? ("[第" + material.ActionDay.Value + "日] ") : "";
+		if ((material.MaterialType ?? "").Trim().StartsWith("npc_", StringComparison.OrdinalIgnoreCase))
+		{
+			string text2 = ResolveHeroDisplay(material.HeroId);
+			string text3 = ResolveSettlementDisplay(material.SettlementId);
+			string text4 = BuildDevSummaryPreview(material.SnapshotText, 18);
+			if (!string.IsNullOrWhiteSpace(text3))
+			{
+				return text6 + "[" + text + "] " + (string.IsNullOrWhiteSpace(text2) ? "某领主" : text2) + " - " + text3;
+			}
+			if (!string.IsNullOrWhiteSpace(text4))
+			{
+				return text6 + "[" + text + "] " + (string.IsNullOrWhiteSpace(text2) ? "某领主" : text2) + " - " + text4;
+			}
+			return text6 + "[" + text + "] " + (string.IsNullOrWhiteSpace(text2) ? "某领主" : text2);
+		}
+		string text5 = BuildDevSummaryPreview(!string.IsNullOrWhiteSpace(material.Label) ? material.Label : material.SnapshotText, 24);
+		return text6 + "[" + text + "] " + (string.IsNullOrWhiteSpace(text5) ? "无预览" : text5);
+	}
+
+	private static IEnumerable<EventMaterialReference> OrderWeeklyPreviewMaterials(List<EventMaterialReference> materials)
+	{
+		return (materials ?? new List<EventMaterialReference>()).OrderBy((EventMaterialReference x) => GetWeeklyPreviewMaterialSortBucket(x)).ThenBy((EventMaterialReference x) => x?.ActionDay ?? int.MinValue).ThenBy((EventMaterialReference x) => x?.ActionSequence ?? int.MaxValue).ThenBy((EventMaterialReference x) => x?.ActionOrder ?? int.MinValue).ThenBy((EventMaterialReference x) => x?.Label ?? "", StringComparer.OrdinalIgnoreCase);
+	}
+
+	private static void NormalizeNpcActionSequences(Dictionary<string, List<NpcActionEntry>> storage)
+	{
+		if (storage == null)
+		{
+			return;
+		}
+		int num = 0;
+		foreach (KeyValuePair<string, List<NpcActionEntry>> item in storage.OrderBy((KeyValuePair<string, List<NpcActionEntry>> x) => x.Key ?? "", StringComparer.OrdinalIgnoreCase))
+		{
+			if (item.Value == null)
+			{
+				continue;
+			}
+			foreach (NpcActionEntry item2 in item.Value.OrderBy((NpcActionEntry x) => x?.Day ?? int.MinValue).ThenBy((NpcActionEntry x) => x?.Order ?? int.MinValue).ThenBy((NpcActionEntry x) => x?.GameDate ?? "", StringComparer.Ordinal))
+			{
+				if (item2 != null && item2.Sequence <= 0)
+				{
+					item2.Sequence = ++num;
+				}
+			}
+		}
+	}
+
+	private static int GetMaxNpcActionSequence(params Dictionary<string, List<NpcActionEntry>>[] storages)
+	{
+		int num = 0;
+		foreach (Dictionary<string, List<NpcActionEntry>> dictionary in storages ?? Array.Empty<Dictionary<string, List<NpcActionEntry>>>())
+		{
+			if (dictionary == null)
+			{
+				continue;
+			}
+			foreach (List<NpcActionEntry> value in dictionary.Values)
+			{
+				if (value == null)
+				{
+					continue;
+				}
+				foreach (NpcActionEntry item in value)
+				{
+					if (item != null && item.Sequence > num)
+					{
+						num = item.Sequence;
+					}
+				}
+			}
+		}
+		return num;
+	}
+
+	private static int GetMaxNpcActionSequence(Dictionary<string, List<NpcActionEntry>> majorStorage, Dictionary<string, List<NpcActionEntry>> recentStorage, List<EventSourceMaterialEntry> sourceMaterials)
+	{
+		int num = GetMaxNpcActionSequence(majorStorage, recentStorage);
+		foreach (EventSourceMaterialEntry item in sourceMaterials ?? new List<EventSourceMaterialEntry>())
+		{
+			if (item != null && item.Sequence > num)
+			{
+				num = item.Sequence;
+			}
+		}
+		return num;
+	}
+
+	private static int GetWeeklyPreviewMaterialSortBucket(EventMaterialReference material)
+	{
+		string text = (material?.MaterialType ?? "").Trim().ToLowerInvariant();
+		if (text == "world_opening_summary" || text == "kingdom_opening_summary")
+		{
+			return 0;
+		}
+		return 1;
+	}
+
+	private string BuildWeeklyPreviewGroupDetailText(WeeklyEventMaterialPreviewGroup group, int page, int totalPages)
+	{
+		StringBuilder stringBuilder = new StringBuilder();
+		AppendDevNpcActionField(stringBuilder, "分组标题", group.Title ?? "");
+		AppendDevNpcActionField(stringBuilder, "分组类型", TranslateEventKindForDev(group.GroupKind));
+		AppendDevNpcActionField(stringBuilder, "关联王国", ResolveKingdomDisplay(group.KingdomId));
+		AppendDevNpcActionField(stringBuilder, "素材数量", ((group.Materials != null) ? group.Materials.Count : 0).ToString());
+		AppendDevNpcActionField(stringBuilder, "页码", (page + 1) + "/" + Math.Max(1, totalPages));
+		if (!string.IsNullOrWhiteSpace(group.Summary))
+		{
+			stringBuilder.AppendLine();
+			stringBuilder.AppendLine("【说明】");
+			stringBuilder.AppendLine(group.Summary.Trim());
+		}
+		if (group.Materials == null || group.Materials.Count == 0)
+		{
+			stringBuilder.AppendLine();
+			stringBuilder.AppendLine("当前这个分组还没有可用素材。");
+		}
+		return stringBuilder.ToString().TrimEnd();
+	}
+
+	private void OpenDevWeeklyPreviewMaterialDetail(WeeklyEventMaterialPreviewGroup group, EventMaterialReference material, int returnPage)
+	{
+		string text = BuildDevEventMaterialDetailText(material);
+		InformationManager.ShowInquiry(new InquiryData("本周素材详情", text, isAffirmativeOptionShown: true, isNegativeOptionShown: false, "返回素材列表", "", delegate
+		{
+			OpenDevWeeklyEventMaterialPreviewGroupDetail(group, returnPage);
+		}, null));
 	}
 
 	private void OpenDevAllDataMenu()
@@ -9542,11 +12960,13 @@ public class MyBehavior : CampaignBehaviorBase
 			stringBuilder.AppendLine(" - 编辑对话历史");
 			stringBuilder.AppendLine(" - 编辑赊账/欠款");
 			stringBuilder.AppendLine(" - 编辑角色个性/历史背景");
+			stringBuilder.AppendLine(" - 查看行动记录（结构化）");
 			stringBuilder.AppendLine(" - 切换 NPC");
 			List<InquiryElement> list = new List<InquiryElement>();
 			list.Add(new InquiryElement("edit_history", "编辑对话历史", null));
 			list.Add(new InquiryElement("edit_debt", "编辑赊账/欠款", null));
 			list.Add(new InquiryElement("edit_persona", "编辑角色个性/历史背景", null));
+			list.Add(new InquiryElement("view_actions", "查看行动记录（结构化）", null));
 			list.Add(new InquiryElement("switch_npc", "切换 NPC", null));
 			MultiSelectionInquiryData data = new MultiSelectionInquiryData("编辑 HeroNPC - " + text, stringBuilder.ToString(), list, isExitShown: true, 0, 1, "进入", "返回", OnDevNpcMainMenuSelected, delegate
 			{
@@ -9671,11 +13091,467 @@ public class MyBehavior : CampaignBehaviorBase
 			case "edit_persona":
 				OpenDevPersonaMenu(devEditingHero);
 				break;
+			case "view_actions":
+				OpenDevNpcActionMenu(devEditingHero, recentOnly: true, 0);
+				break;
 			case "switch_npc":
 				OpenDevTownEditorHeroSelection();
 				break;
 			}
 		}
+	}
+
+	private void OpenDevNpcActionMenu(Hero npc, bool recentOnly, int page)
+	{
+		if (npc == null)
+		{
+			return;
+		}
+		_devEditingHero = npc;
+		List<NpcActionEntry> devNpcActionEntries = GetDevNpcActionEntries(npc, recentOnly);
+		List<NpcActionEntry> devNpcActionEntries2 = GetDevNpcActionEntries(npc, recentOnly: false);
+		if (page < 0)
+		{
+			page = 0;
+		}
+		const int pageSize = 18;
+		int num = Math.Max(1, (int)Math.Ceiling((double)devNpcActionEntries.Count / (double)pageSize));
+		if (page >= num)
+		{
+			page = num - 1;
+		}
+		List<InquiryElement> list = new List<InquiryElement>();
+		list.Add(new InquiryElement("back", "返回", null));
+		list.Add(new InquiryElement("recent", "查看近期行动", null));
+		list.Add(new InquiryElement("major", "查看重大行动", null));
+		if (page > 0)
+		{
+			list.Add(new InquiryElement("prev_page", "上一页", null));
+		}
+		if (page + 1 < num)
+		{
+			list.Add(new InquiryElement("next_page", "下一页", null));
+		}
+		list.Add(new InquiryElement("__sep__", "----------------", null));
+		int num2 = page * pageSize;
+		foreach (NpcActionEntry item in devNpcActionEntries.Skip(num2).Take(pageSize))
+		{
+			list.Add(new InquiryElement(item, BuildDevNpcActionItemLabel(item), null));
+		}
+		string text = npc.Name?.ToString() ?? "NPC";
+		string descriptionText = BuildDevNpcActionMenuDescription(npc, recentOnly, page, num, devNpcActionEntries.Count, devNpcActionEntries2.Count);
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData("行动记录 - " + text, descriptionText, list, isExitShown: true, 0, 1, "查看", "返回", delegate(List<InquiryElement> selected)
+		{
+			if (selected == null || selected.Count == 0)
+			{
+				ShowDevEditInquiry(npc);
+			}
+			else if (selected[0].Identifier is string text2)
+			{
+				switch (text2)
+				{
+				case "back":
+					ShowDevEditInquiry(npc);
+					break;
+				case "recent":
+					OpenDevNpcActionMenu(npc, recentOnly: true, 0);
+					break;
+				case "major":
+					OpenDevNpcActionMenu(npc, recentOnly: false, 0);
+					break;
+				case "prev_page":
+					OpenDevNpcActionMenu(npc, recentOnly, page - 1);
+					break;
+				case "next_page":
+					OpenDevNpcActionMenu(npc, recentOnly, page + 1);
+					break;
+				default:
+					OpenDevNpcActionMenu(npc, recentOnly, page);
+					break;
+				}
+			}
+			else if (selected[0].Identifier is NpcActionEntry npcActionEntry)
+			{
+				OpenDevNpcActionDetail(npc, recentOnly, page, npcActionEntry);
+			}
+			else
+			{
+				OpenDevNpcActionMenu(npc, recentOnly, page);
+			}
+		}, delegate
+		{
+			ShowDevEditInquiry(npc);
+		});
+		MBInformationManager.ShowMultiSelectionInquiry(data);
+	}
+
+	private List<NpcActionEntry> GetDevNpcActionEntries(Hero npc, bool recentOnly)
+	{
+		string npcActionHeroKey = GetNpcActionHeroKey(npc);
+		if (string.IsNullOrWhiteSpace(npcActionHeroKey))
+		{
+			return new List<NpcActionEntry>();
+		}
+		Dictionary<string, List<NpcActionEntry>> dictionary = (recentOnly ? _npcRecentActions : _npcMajorActions);
+		if (dictionary == null || !dictionary.TryGetValue(npcActionHeroKey, out var value) || value == null)
+		{
+			return new List<NpcActionEntry>();
+		}
+		return SanitizeNpcActionEntries(value, keepOnlyRecentWindow: recentOnly);
+	}
+
+	private string BuildDevNpcActionMenuDescription(Hero npc, bool recentOnly, int page, int totalPages, int currentCount, int majorCount)
+	{
+		string text = npc?.Name?.ToString() ?? "NPC";
+		List<NpcActionEntry> devNpcActionEntries = GetDevNpcActionEntries(npc, recentOnly: true);
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.AppendLine("当前 NPC：" + text);
+		stringBuilder.AppendLine("当前视图：" + (recentOnly ? "近期行动" : "重大行动"));
+		stringBuilder.AppendLine("近期行动数：" + devNpcActionEntries.Count);
+		stringBuilder.AppendLine("重大行动数：" + majorCount);
+		stringBuilder.AppendLine($"第 {page + 1}/{Math.Max(1, totalPages)} 页，本页类型总数：{currentCount}");
+		stringBuilder.AppendLine();
+		stringBuilder.AppendLine("说明：");
+		stringBuilder.AppendLine(" - 行动记录已按单个 NPC 存储");
+		stringBuilder.AppendLine(" - 详情里会显示时间、地点、人物、家族、王国、定居点归属等结构化字段");
+		return stringBuilder.ToString().TrimEnd();
+	}
+
+	private static string BuildDevNpcActionItemLabel(NpcActionEntry entry)
+	{
+		if (entry == null)
+		{
+			return "无效行动";
+		}
+		string text = !string.IsNullOrWhiteSpace(entry.GameDate) ? entry.GameDate.Trim() : ("第 " + entry.Day + " 日");
+		string text2 = BuildDevNpcActionPreviewText(entry);
+		if (text2.Length > 108)
+		{
+			text2 = text2.Substring(0, 108) + "...";
+		}
+		return text + " " + text2;
+	}
+
+	private void OpenDevNpcActionDetail(Hero npc, bool recentOnly, int page, NpcActionEntry entry)
+	{
+		if (npc == null || entry == null)
+		{
+			ShowDevEditInquiry(npc);
+			return;
+		}
+		List<InquiryElement> list = new List<InquiryElement>();
+		list.Add(new InquiryElement("back", "返回行动列表", null));
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData("行动详情 - " + (npc.Name?.ToString() ?? "NPC"), BuildDevNpcActionDetailText(entry), list, isExitShown: true, 0, 1, "返回", "关闭", delegate
+		{
+			OpenDevNpcActionMenu(npc, recentOnly, page);
+		}, delegate
+		{
+			OpenDevNpcActionMenu(npc, recentOnly, page);
+		});
+		MBInformationManager.ShowMultiSelectionInquiry(data);
+	}
+
+	private static string BuildDevNpcActionDetailText(NpcActionEntry entry)
+	{
+		StringBuilder stringBuilder = new StringBuilder();
+		string text = BuildDevNpcActionNarrative(entry);
+		if (!string.IsNullOrWhiteSpace(text))
+		{
+			stringBuilder.AppendLine("【易读说明】");
+			stringBuilder.AppendLine(text);
+			stringBuilder.AppendLine();
+		}
+		stringBuilder.AppendLine("【原始字段】");
+		AppendDevNpcActionField(stringBuilder, "日期", !string.IsNullOrWhiteSpace(entry.GameDate) ? entry.GameDate.Trim() : ("第 " + entry.Day + " 日"));
+		AppendDevNpcActionField(stringBuilder, "日序", entry.Day.ToString());
+		AppendDevNpcActionField(stringBuilder, "显示文本", (entry.Text ?? "").Trim());
+		AppendDevNpcActionField(stringBuilder, "StableKey", (entry.StableKey ?? "").Trim());
+		AppendDevNpcActionField(stringBuilder, "行动类型", GetDevNpcActionKindDisplay(entry.ActionKind));
+		AppendDevNpcActionField(stringBuilder, "是否重大行动", entry.IsMajor ? "是" : "否");
+		AppendDevNpcActionField(stringBuilder, "结果", !entry.Won.HasValue ? "" : (entry.Won.Value ? "获胜" : "失利"));
+		AppendDevNpcActionField(stringBuilder, "地点文本", (entry.LocationText ?? "").Trim());
+		AppendDevNpcActionField(stringBuilder, "定居点", ResolveDisplayNameBySettlementEntry(entry));
+		AppendDevNpcActionField(stringBuilder, "定居点ID", (entry.SettlementId ?? "").Trim());
+		AppendDevNpcActionField(stringBuilder, "定居点所属领主", ResolveHeroDisplay(entry.SettlementOwnerHeroId));
+		AppendDevNpcActionField(stringBuilder, "定居点所属家族", ResolveClanDisplay(entry.SettlementOwnerClanId));
+		AppendDevNpcActionField(stringBuilder, "定居点所属王国", ResolveKingdomDisplay(entry.SettlementOwnerKingdomId));
+		AppendDevNpcActionField(stringBuilder, "定居点前任领主", ResolveHeroDisplay(entry.PreviousSettlementOwnerHeroId));
+		AppendDevNpcActionField(stringBuilder, "定居点前任家族", ResolveClanDisplay(entry.PreviousSettlementOwnerClanId));
+		AppendDevNpcActionField(stringBuilder, "定居点前任王国", ResolveKingdomDisplay(entry.PreviousSettlementOwnerKingdomId));
+		AppendDevNpcActionField(stringBuilder, "行动人物", ResolveHeroDisplay(entry.ActorHeroId));
+		AppendDevNpcActionField(stringBuilder, "行动家族", ResolveClanDisplay(entry.ActorClanId));
+		AppendDevNpcActionField(stringBuilder, "行动王国", ResolveKingdomDisplay(entry.ActorKingdomId));
+		AppendDevNpcActionField(stringBuilder, "目标人物", ResolveHeroDisplay(entry.TargetHeroId));
+		AppendDevNpcActionField(stringBuilder, "目标家族", ResolveClanDisplay(entry.TargetClanId));
+		AppendDevNpcActionField(stringBuilder, "目标王国", ResolveKingdomDisplay(entry.TargetKingdomId));
+		AppendDevNpcActionField(stringBuilder, "相关人物ID", JoinDevActionIds(entry.RelatedHeroIds));
+		AppendDevNpcActionField(stringBuilder, "相关家族ID", JoinDevActionIds(entry.RelatedClanIds));
+		AppendDevNpcActionField(stringBuilder, "相关王国ID", JoinDevActionIds(entry.RelatedKingdomIds));
+		if (!HasStructuredNpcActionMetadata(entry))
+		{
+			stringBuilder.AppendLine();
+			stringBuilder.AppendLine("提示：这条行动缺少较完整的结构化元数据，可能是旧版本记录，或当时游戏未提供足够目标信息。");
+			stringBuilder.AppendLine("建议让游戏继续跑 1-2 天，再观察新生成的行动记录。");
+		}
+		return stringBuilder.ToString().TrimEnd();
+	}
+
+	private static string BuildDevNpcActionPreviewText(NpcActionEntry entry)
+	{
+		if (entry == null)
+		{
+			return "无效行动";
+		}
+		List<string> list = new List<string>();
+		string text = BuildNpcActionActorNarrativeText(entry);
+		string text2 = TranslateNpcActionKindForPrompt(entry.ActionKind);
+		string text3 = ResolveDisplayNameBySettlementEntry(entry);
+		string text4 = ResolveKingdomDisplay(entry.SettlementOwnerKingdomId);
+		string text5 = ResolveClanDisplay(entry.SettlementOwnerClanId);
+		string text6 = ResolveKingdomDisplay(entry.TargetKingdomId);
+		string text7 = ResolveClanDisplay(entry.TargetClanId);
+		string text8 = ResolveHeroDisplay(entry.TargetHeroId);
+		string text9 = ResolveClanDisplay(entry.ActorClanId);
+		string text10 = ResolveKingdomDisplay(entry.ActorKingdomId);
+		if (!string.IsNullOrWhiteSpace(text))
+		{
+			list.Add(text);
+		}
+		else if (!string.IsNullOrWhiteSpace(text2))
+		{
+			list.Add("这是一条" + text2);
+		}
+		if (!string.IsNullOrWhiteSpace(text3) && string.IsNullOrWhiteSpace(entry.SettlementId) && !text.Contains(text3))
+		{
+			list.Add("地点在" + text3);
+		}
+		if (!string.IsNullOrWhiteSpace(text9) && !string.IsNullOrWhiteSpace(text10))
+		{
+			list.Add("其所属家族是" + text9 + "，隶属于" + text10);
+		}
+		else if (!string.IsNullOrWhiteSpace(text9))
+		{
+			list.Add("其所属家族是" + text9);
+		}
+		else if (!string.IsNullOrWhiteSpace(text10))
+		{
+			list.Add("其隶属于" + text10);
+		}
+		if (!string.IsNullOrWhiteSpace(text5) && !string.IsNullOrWhiteSpace(text4))
+		{
+			list.Add("当时该地由" + text5 + "掌控，隶属于" + text4);
+		}
+		else if (!string.IsNullOrWhiteSpace(text4))
+		{
+			list.Add("当时该地隶属于" + text4);
+		}
+		else if (!string.IsNullOrWhiteSpace(text5))
+		{
+			list.Add("当时该地由" + text5 + "掌控");
+		}
+		if (!string.IsNullOrWhiteSpace(text8))
+		{
+			list.Add("涉及人物是" + text8);
+		}
+		else if (!string.IsNullOrWhiteSpace(text7))
+		{
+			list.Add("涉及家族是" + text7);
+		}
+		else if (!string.IsNullOrWhiteSpace(text6))
+		{
+			list.Add("涉及王国是" + text6);
+		}
+		if (entry.Won.HasValue)
+		{
+			list.Add("结果是" + (entry.Won.Value ? "获胜" : "失利"));
+		}
+		if (entry.IsMajor)
+		{
+			list.Add("属于重大行动");
+		}
+		if (list.Count == 0)
+		{
+			return "这条记录暂时没有可读摘要。";
+		}
+		if (!HasStructuredNpcActionMetadata(entry))
+		{
+			list.Add("这条记录的结构化信息较少");
+		}
+		return string.Join("；", list) + "。";
+	}
+
+	private static string BuildDevNpcActionNarrative(NpcActionEntry entry)
+	{
+		if (entry == null)
+		{
+			return "";
+		}
+		List<string> list = new List<string>();
+		string text = !string.IsNullOrWhiteSpace(entry.GameDate) ? entry.GameDate.Trim() : ("第 " + entry.Day + " 日");
+		string text2 = TranslateNpcActionKindForPrompt(entry.ActionKind);
+		string text3 = ResolveHeroDisplay(entry.ActorHeroId);
+		string text15 = string.IsNullOrWhiteSpace(text3) ? "该人物" : text3;
+		string text4 = ResolveDisplayNameBySettlementEntry(entry);
+		string text5 = ResolveHeroDisplay(entry.TargetHeroId);
+		string text6 = ResolveClanDisplay(entry.TargetClanId);
+		string text7 = ResolveKingdomDisplay(entry.TargetKingdomId);
+		string text8 = ResolveClanDisplay(entry.SettlementOwnerClanId);
+		string text9 = ResolveKingdomDisplay(entry.SettlementOwnerKingdomId);
+		string text10 = ResolveClanDisplay(entry.PreviousSettlementOwnerClanId);
+		string text11 = ResolveKingdomDisplay(entry.PreviousSettlementOwnerKingdomId);
+		string text12 = ResolveClanDisplay(entry.ActorClanId);
+		string text13 = ResolveKingdomDisplay(entry.ActorKingdomId);
+		list.Add(text + "。");
+		string text14 = BuildNpcActionActorNarrativeText(entry);
+		if (!string.IsNullOrWhiteSpace(text14))
+		{
+			list.Add(text14 + "。");
+		}
+		if (!string.IsNullOrWhiteSpace(text2))
+		{
+			list.Add("这属于" + text2 + "。");
+		}
+		if (!string.IsNullOrWhiteSpace(text12) && !string.IsNullOrWhiteSpace(text13))
+		{
+			list.Add(text15 + "所属家族是" + text12 + "，隶属于" + text13 + "。");
+		}
+		else if (!string.IsNullOrWhiteSpace(text12))
+		{
+			list.Add(text15 + "所属家族是" + text12 + "。");
+		}
+		else if (!string.IsNullOrWhiteSpace(text13))
+		{
+			list.Add(text15 + "隶属于" + text13 + "。");
+		}
+		if (!string.IsNullOrWhiteSpace(text4))
+		{
+			list.Add("地点是" + text4 + "。");
+		}
+		if (!string.IsNullOrWhiteSpace(text8) && !string.IsNullOrWhiteSpace(text9))
+		{
+			list.Add("当时该定居点由" + text8 + "掌控，隶属于" + text9 + "。");
+		}
+		else if (!string.IsNullOrWhiteSpace(text8))
+		{
+			list.Add("当时该定居点由" + text8 + "掌控。");
+		}
+		else if (!string.IsNullOrWhiteSpace(text9))
+		{
+			list.Add("当时该定居点隶属于" + text9 + "。");
+		}
+		if (!string.IsNullOrWhiteSpace(text10) && !string.IsNullOrWhiteSpace(text11))
+		{
+			list.Add("在此之前，这里由" + text10 + "掌控，归属" + text11 + "。");
+		}
+		if (!string.IsNullOrWhiteSpace(text5))
+		{
+			list.Add("直接涉及的人物是" + text5 + "。");
+		}
+		if (!string.IsNullOrWhiteSpace(text6))
+		{
+			list.Add("涉及的家族是" + text6 + "。");
+		}
+		if (!string.IsNullOrWhiteSpace(text7))
+		{
+			list.Add("涉及的王国是" + text7 + "。");
+		}
+		if (entry.Won.HasValue)
+		{
+			list.Add("结果是" + (entry.Won.Value ? "获胜" : "失利") + "。");
+		}
+		if (entry.IsMajor)
+		{
+			list.Add("这被归类为重大行动。");
+		}
+		return string.Join("", list);
+	}
+
+	private static string BuildNpcActionActorNarrativeText(NpcActionEntry entry)
+	{
+		string text = (entry?.Text ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return "";
+		}
+		string text2 = ResolveHeroDisplay(entry.ActorHeroId);
+		if (string.IsNullOrWhiteSpace(text2))
+		{
+			return text;
+		}
+		if (text.StartsWith("你的", StringComparison.Ordinal))
+		{
+			return text2 + "的" + text.Substring(2);
+		}
+		if (text.StartsWith("你", StringComparison.Ordinal))
+		{
+			return text2 + text.Substring(1);
+		}
+		return text.Replace(" 你", " " + text2).Replace("；你", "；" + text2).Replace("，你", "，" + text2);
+	}
+
+	private static bool HasStructuredNpcActionMetadata(NpcActionEntry entry)
+	{
+		return entry != null && (!string.IsNullOrWhiteSpace(entry.ActionKind) || !string.IsNullOrWhiteSpace(entry.LocationText) || !string.IsNullOrWhiteSpace(entry.SettlementId) || !string.IsNullOrWhiteSpace(entry.TargetHeroId) || !string.IsNullOrWhiteSpace(entry.TargetClanId) || !string.IsNullOrWhiteSpace(entry.TargetKingdomId) || !string.IsNullOrWhiteSpace(entry.SettlementOwnerClanId) || !string.IsNullOrWhiteSpace(entry.SettlementOwnerKingdomId) || !string.IsNullOrWhiteSpace(entry.ActorHeroId) || !string.IsNullOrWhiteSpace(entry.ActorClanId) || !string.IsNullOrWhiteSpace(entry.ActorKingdomId));
+	}
+
+	private static string GetDevNpcActionKindDisplay(string actionKind)
+	{
+		string text = (actionKind ?? "").Trim();
+		string text2 = TranslateNpcActionKindForPrompt(text);
+		if (string.IsNullOrWhiteSpace(text2))
+		{
+			return text;
+		}
+		return string.IsNullOrWhiteSpace(text) ? text2 : (text2 + " (" + text + ")");
+	}
+
+	private static string ResolveHeroDisplay(string heroId)
+	{
+		string text = ResolveHeroName(heroId);
+		if (!string.IsNullOrWhiteSpace(text))
+		{
+			return text;
+		}
+		return (heroId ?? "").Trim();
+	}
+
+	private static string ResolveClanDisplay(string clanId)
+	{
+		string text = ResolveClanName(clanId);
+		if (!string.IsNullOrWhiteSpace(text))
+		{
+			return text;
+		}
+		return (clanId ?? "").Trim();
+	}
+
+	private static string ResolveKingdomDisplay(string kingdomId)
+	{
+		string text = ResolveKingdomName(kingdomId);
+		if (!string.IsNullOrWhiteSpace(text))
+		{
+			return text;
+		}
+		return (kingdomId ?? "").Trim();
+	}
+
+	private static void AppendDevNpcActionField(StringBuilder stringBuilder, string label, string value)
+	{
+		if (stringBuilder == null || string.IsNullOrWhiteSpace(label) || string.IsNullOrWhiteSpace(value))
+		{
+			return;
+		}
+		stringBuilder.AppendLine(label + "：" + value.Trim());
+	}
+
+	private static string JoinDevActionIds(List<string> ids)
+	{
+		if (ids == null || ids.Count == 0)
+		{
+			return "";
+		}
+		List<string> list = ids.Where((string x) => !string.IsNullOrWhiteSpace(x)).Select((string x) => x.Trim()).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+		return (list.Count == 0) ? "" : string.Join(", ", list);
 	}
 
 	private void OpenDevPersonaMenu(Hero npc)
@@ -11527,6 +15403,10 @@ public class MyBehavior : CampaignBehaviorBase
 				{
 					ExportDebtData(folderName);
 				}
+				else if (scope == ExportImportScope.EventData)
+				{
+					ExportEventData(folderName);
+				}
 				else if (scope == ExportImportScope.Knowledge)
 				{
 					ExportKnowledgeData(folderName);
@@ -11582,6 +15462,10 @@ public class MyBehavior : CampaignBehaviorBase
 		else if (scope == ExportImportScope.Debt)
 		{
 			ImportDebtData(folderName);
+		}
+		else if (scope == ExportImportScope.EventData)
+		{
+			ImportEventData(folderName);
 		}
 		else if (scope == ExportImportScope.Knowledge)
 		{
@@ -12445,6 +16329,7 @@ public class MyBehavior : CampaignBehaviorBase
 				text6 = "{}";
 			}
 			File.WriteAllText(path5, text6, Encoding.UTF8);
+			ExportEventDataToDir(text);
 			VoiceMapper.SetPreferredExportFolder(text);
 			InformationManager.DisplayMessage(new InformationMessage("导出完成：" + text));
 		}
@@ -12589,6 +16474,56 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			InformationManager.DisplayMessage(new InformationMessage("导出失败：" + ex.Message));
 		}
+	}
+
+	private void ExportEventData(string folderName)
+	{
+		try
+		{
+			string playerExportsRootPath = GetPlayerExportsRootPath();
+			Directory.CreateDirectory(playerExportsRootPath);
+			string path = ResolveExportFolderName(folderName);
+			string text = Path.Combine(playerExportsRootPath, path);
+			Directory.CreateDirectory(text);
+			ExportEventDataToDir(text);
+			InformationManager.DisplayMessage(new InformationMessage("导出完成：" + text));
+		}
+		catch (Exception ex)
+		{
+			InformationManager.DisplayMessage(new InformationMessage("导出失败：" + ex.Message));
+		}
+	}
+
+	private void ExportEventDataToDir(string exportDir)
+	{
+		string text = Path.Combine(exportDir, "event_data");
+		Directory.CreateDirectory(text);
+		ClearJsonFiles(text);
+		WriteJson(Path.Combine(text, "WorldOpeningSummary.json"), new EventWorldOpeningSummaryJson
+		{
+			Summary = (_eventWorldOpeningSummary ?? "").Trim()
+		});
+		WriteJson(Path.Combine(text, "KingdomOpeningSummaries.json"), BuildEventKingdomSummaryExportMap());
+		WriteJson(Path.Combine(text, "EventRecords.json"), SanitizeEventRecordEntries(_eventRecordEntries));
+	}
+
+	private Dictionary<string, string> BuildEventKingdomSummaryExportMap()
+	{
+		Dictionary<string, string> dictionary = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+		if (_eventKingdomOpeningSummaries == null)
+		{
+			return dictionary;
+		}
+		foreach (KeyValuePair<string, string> item in _eventKingdomOpeningSummaries)
+		{
+			string text = (item.Key ?? "").Trim();
+			string text2 = (item.Value ?? "").Trim();
+			if (!string.IsNullOrWhiteSpace(text) && !string.IsNullOrWhiteSpace(text2))
+			{
+				dictionary[text] = text2;
+			}
+		}
+		return dictionary;
 	}
 
 	private void ExportKnowledgeToDir(string exportDir)
@@ -14150,6 +18085,98 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private void ImportEventData(string folderName)
+	{
+		try
+		{
+			string importDir = ResolveImportFolderPath(folderName);
+			if (string.IsNullOrEmpty(importDir) || !Directory.Exists(importDir))
+			{
+				InformationManager.DisplayMessage(new InformationMessage("导入失败：找不到导出目录。"));
+				return;
+			}
+			if (!TryLoadEventDataFromImportDir(importDir, out var payload, out var error))
+			{
+				InformationManager.DisplayMessage(new InformationMessage("导入失败：" + error));
+				return;
+			}
+			int num = 0;
+			int num2 = 0;
+			if (payload.HasWorldSummaryFile)
+			{
+				num2 = 1;
+				if (!string.IsNullOrWhiteSpace(_eventWorldOpeningSummary))
+				{
+					num = 1;
+				}
+			}
+			int num3 = 0;
+			int num4 = payload.HasKingdomSummariesFile ? payload.KingdomSummaries.Count : 0;
+			if (payload.HasKingdomSummariesFile && _eventKingdomOpeningSummaries != null)
+			{
+				foreach (string key in payload.KingdomSummaries.Keys)
+				{
+					if (!string.IsNullOrWhiteSpace(key) && _eventKingdomOpeningSummaries.ContainsKey(key))
+					{
+						num3++;
+					}
+				}
+			}
+			int num5 = 0;
+			int num6 = payload.HasEventRecordsFile ? payload.EventRecords.Count : 0;
+			HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+			if (_eventRecordEntries != null)
+			{
+				foreach (EventRecordEntry eventRecordEntry in _eventRecordEntries)
+				{
+					string text = (eventRecordEntry?.EventId ?? "").Trim();
+					if (!string.IsNullOrWhiteSpace(text))
+					{
+						hashSet.Add(text);
+					}
+				}
+			}
+			if (payload.HasEventRecordsFile)
+			{
+				foreach (EventRecordEntry eventRecordEntry2 in payload.EventRecords)
+				{
+					string text2 = (eventRecordEntry2?.EventId ?? "").Trim();
+					if (!string.IsNullOrWhiteSpace(text2) && hashSet.Contains(text2))
+					{
+						num5++;
+					}
+				}
+			}
+			bool flag = num + num3 + num5 > 0;
+			Action action = delegate
+			{
+				ApplyImportedEventData(payload, overwriteExisting: true);
+				InformationManager.DisplayMessage(new InformationMessage("导入完成：" + importDir));
+			};
+			Action onSkipDuplicates = delegate
+			{
+				ApplyImportedEventData(payload, overwriteExisting: false);
+				InformationManager.DisplayMessage(new InformationMessage("导入完成（已跳过重复）：" + importDir));
+			};
+			if (flag)
+			{
+				string text3 = "导入数据与当前游戏存在重复。\n世界开局概要：" + num + "/" + num2 + "\n王国开局概要：" + num3 + "/" + num4 + "\n事件记录：" + num5 + "/" + num6 + "\n请选择处理方式：";
+				ShowDuplicateImportInquiry("检测到重复 - 事件编辑", text3, action, onSkipDuplicates, delegate
+				{
+					OpenDevEventEditorMenu();
+				});
+			}
+			else
+			{
+				action();
+			}
+		}
+		catch (Exception ex)
+		{
+			InformationManager.DisplayMessage(new InformationMessage("导入失败：" + ex.Message));
+		}
+	}
+
 	private void ImportUnnamedPersonaData(string folderName)
 	{
 		try
@@ -14421,8 +18448,15 @@ public class MyBehavior : CampaignBehaviorBase
 			int num10 = 0;
 			int num11 = 0;
 			int num12 = 0;
+			int eventWorldDupCount = 0;
+			int eventWorldTotalCount = 0;
+			int eventKingdomDupCount = 0;
+			int eventKingdomTotalCount = 0;
+			int eventRecordDupCount = 0;
+			int eventRecordTotalCount = 0;
 			string vmJson = null;
 			string vmPath = null;
+			EventImportPayload eventPayload = null;
 			string path = Path.Combine(importDir, "personality_background");
 			if (Directory.Exists(path))
 			{
@@ -14668,7 +18702,69 @@ public class MyBehavior : CampaignBehaviorBase
 				num12 = 0;
 				vmJson = null;
 			}
-			bool flag2 = num + num3 + num5 + num7 + num9 + num11 > 0;
+			try
+			{
+				if (TryLoadEventDataFromImportDir(importDir, out eventPayload, out var _))
+				{
+					if (eventPayload.HasWorldSummaryFile)
+					{
+						eventWorldTotalCount = 1;
+						if (!string.IsNullOrWhiteSpace(_eventWorldOpeningSummary))
+						{
+							eventWorldDupCount = 1;
+						}
+					}
+					if (eventPayload.HasKingdomSummariesFile)
+					{
+						eventKingdomTotalCount = eventPayload.KingdomSummaries.Count;
+						if (_eventKingdomOpeningSummaries != null)
+						{
+							foreach (string key4 in eventPayload.KingdomSummaries.Keys)
+							{
+								if (!string.IsNullOrWhiteSpace(key4) && _eventKingdomOpeningSummaries.ContainsKey(key4))
+								{
+									eventKingdomDupCount++;
+								}
+							}
+						}
+					}
+					if (eventPayload.HasEventRecordsFile)
+					{
+						eventRecordTotalCount = eventPayload.EventRecords.Count;
+						HashSet<string> hashSet4 = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+						if (_eventRecordEntries != null)
+						{
+							foreach (EventRecordEntry eventRecordEntry in _eventRecordEntries)
+							{
+								string text12 = (eventRecordEntry?.EventId ?? "").Trim();
+								if (!string.IsNullOrWhiteSpace(text12))
+								{
+									hashSet4.Add(text12);
+								}
+							}
+						}
+						foreach (EventRecordEntry eventRecordEntry2 in eventPayload.EventRecords)
+						{
+							string text13 = (eventRecordEntry2?.EventId ?? "").Trim();
+							if (!string.IsNullOrWhiteSpace(text13) && hashSet4.Contains(text13))
+							{
+								eventRecordDupCount++;
+							}
+						}
+					}
+				}
+			}
+			catch
+			{
+				eventWorldDupCount = 0;
+				eventWorldTotalCount = 0;
+				eventKingdomDupCount = 0;
+				eventKingdomTotalCount = 0;
+				eventRecordDupCount = 0;
+				eventRecordTotalCount = 0;
+				eventPayload = null;
+			}
+			bool flag2 = num + num3 + num5 + num7 + num9 + num11 + eventWorldDupCount + eventKingdomDupCount + eventRecordDupCount > 0;
 			Action action = delegate
 			{
 				if (pbNew != null)
@@ -14726,6 +18822,10 @@ public class MyBehavior : CampaignBehaviorBase
 				if (!flag3)
 				{
 					InformationManager.DisplayMessage(new InformationMessage("警告：VoiceMapping 导入失败，已跳过。"));
+				}
+				if (eventPayload != null)
+				{
+					ApplyImportedEventData(eventPayload, overwriteExisting: true);
 				}
 				ShoutUtils.ImportUnnamedPersonaFromDir(importDir);
 				_unnamedPersonaJsonStorage = ShoutUtils.ExportUnnamedPersonaStateJson(pretty: false) ?? "";
@@ -14794,6 +18894,10 @@ public class MyBehavior : CampaignBehaviorBase
 				{
 					InformationManager.DisplayMessage(new InformationMessage("警告：VoiceMapping 导入失败，已跳过。"));
 				}
+				if (eventPayload != null)
+				{
+					ApplyImportedEventData(eventPayload, overwriteExisting: false);
+				}
 				ShoutUtils.ImportUnnamedPersonaFromDir(importDir, overwriteExisting: false);
 				_unnamedPersonaJsonStorage = ShoutUtils.ExportUnnamedPersonaStateJson(pretty: false) ?? "";
 				if (!ImportKnowledgeFromDir(importDir, overwriteExisting: false, out var knowledgeImportMessage))
@@ -14808,8 +18912,8 @@ public class MyBehavior : CampaignBehaviorBase
 			};
 			if (flag2)
 			{
-				string text12 = "导入数据与当前游戏存在重复。\n个性/背景：" + num + "/" + num2 + "\n对话历史：" + num3 + "/" + num4 + "\n欠款：" + num5 + "/" + num6 + "\n未命名NPC：" + num7 + "/" + num8 + "\nKnowledge：" + num9 + "/" + num10 + "\n声音映射：" + num11 + "/" + num12 + "\n请选择处理方式：";
-				ShowDuplicateImportInquiry("检测到重复 - 全部导入", text12, action, onSkipDuplicates, delegate
+				string text14 = "导入数据与当前游戏存在重复。\n个性/背景：" + num + "/" + num2 + "\n对话历史：" + num3 + "/" + num4 + "\n欠款：" + num5 + "/" + num6 + "\n未命名NPC：" + num7 + "/" + num8 + "\nKnowledge：" + num9 + "/" + num10 + "\n声音映射：" + num11 + "/" + num12 + "\n世界开局概要：" + eventWorldDupCount + "/" + eventWorldTotalCount + "\n王国开局概要：" + eventKingdomDupCount + "/" + eventKingdomTotalCount + "\n事件记录：" + eventRecordDupCount + "/" + eventRecordTotalCount + "\n请选择处理方式：";
+				ShowDuplicateImportInquiry("检测到重复 - 全部导入", text14, action, onSkipDuplicates, delegate
 				{
 				});
 			}

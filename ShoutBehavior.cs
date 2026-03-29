@@ -444,6 +444,8 @@ public class ShoutBehavior : CampaignBehaviorBase
 
 	private const float MULTI_SCENE_MOVEMENT_SUPPRESSION_HOLD_SECONDS = 0.25f;
 
+	private const float LIP_SYNC_SAFE_MAX_DISTANCE = 6.5f;
+
 	private static readonly Regex MeetingSceneShoutTauntTagRegex = new Regex("\\[ACTION:MEETING_TAUNT_(?:WARN|BATTLE)\\]", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
 	private ConcurrentQueue<Action> _mainThreadActions = new ConcurrentQueue<Action>();
@@ -467,6 +469,8 @@ public class ShoutBehavior : CampaignBehaviorBase
 	private readonly Dictionary<int, string> _agentWavPaths = new Dictionary<int, string>();
 
 	private readonly Dictionary<int, string> _agentXmlPaths = new Dictionary<int, string>();
+
+	private readonly HashSet<int> _agentLipSyncDetachedForSafety = new HashSet<int>();
 
 	private readonly Dictionary<int, SceneInteractionSession> _activeInteractionSessions = new Dictionary<int, SceneInteractionSession>();
 
@@ -582,6 +586,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 				{
 					_agentXmlPaths.Remove(item);
 				}
+				_agentLipSyncDetachedForSafety.Remove(item);
 				if (value != null || !string.IsNullOrWhiteSpace(value2) || !string.IsNullOrWhiteSpace(value3))
 				{
 					list.Add(item);
@@ -880,6 +885,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 			lock (_speakingLock)
 			{
 				_speakingAgentIndices.Remove(agentIndex);
+				_agentLipSyncDetachedForSafety.Remove(agentIndex);
 			}
 		}
 		PendingNpcBubbleEntry bubble = null;
@@ -936,6 +942,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 						{
 							_agentXmlPaths.Remove(agentIndex);
 						}
+						_agentLipSyncDetachedForSafety.Remove(agentIndex);
 					}
 					QueueDeferredCleanup(value, value2, value3, "PlaybackFailed", agentIndex);
 					LogTtsReport("PlaybackFailed.CleanupQueued", agentIndex, $"hasSe={(value != null)};hasWav={(!string.IsNullOrWhiteSpace(value2))};hasXml={(!string.IsNullOrWhiteSpace(value3))}");
@@ -992,8 +999,10 @@ public class ShoutBehavior : CampaignBehaviorBase
 		}
 		bool flag = false;
 		bool flag2 = allowTts && IsTtsPlaybackEnabledForShout();
-		int num2 = ((flag2 && attachTtsToSceneAgent && num >= 0 && CanAgentParticipateInSceneSpeech(liveAgent)) ? num : (-1));
-		LogTtsReport("ShowNpcSpeechOutput.Enter", num, $"allowTts={allowTts};attachToSceneAgent={attachTtsToSceneAgent};effectiveAgentIndex={num2};contentLen={(text ?? string.Empty).Length};hostileSpeech={flagHostileSpeech}");
+		string text3 = "scene_lipsync_not_requested";
+		bool flag3 = flag2 && attachTtsToSceneAgent && num >= 0 && CanAgentParticipateInSceneSpeech(liveAgent) && CanAgentUseSceneLipSync(liveAgent, out text3);
+		int num2 = (flag3 ? num : (-1));
+		LogTtsReport("ShowNpcSpeechOutput.Enter", num, $"allowTts={allowTts};attachToSceneAgent={attachTtsToSceneAgent};effectiveAgentIndex={num2};contentLen={(text ?? string.Empty).Length};hostileSpeech={flagHostileSpeech};lipSyncSafe={flag3};lipSyncReason={text3}");
 		if (!allowTts)
 		{
 			try
@@ -1004,11 +1013,11 @@ public class ShoutBehavior : CampaignBehaviorBase
 			{
 			}
 		}
-		else if (flag2 && num2 < 0)
+		else if (flag2 && attachTtsToSceneAgent && num >= 0 && num2 < 0)
 		{
 			try
 			{
-				Logger.Log("LipSync", "[SAFEGUARD] Use detached TTS for combat/immediate speech. agentIndex=" + num);
+				Logger.Log("LipSync", "[SAFEGUARD] Use detached TTS without scene lipsync. agentIndex=" + num + ", reason=" + text3);
 			}
 			catch
 			{
@@ -1016,7 +1025,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 		}
 		if (flag2)
 		{
-			string text3 = "";
+			string text4 = "";
 			try
 			{
 				if (npc != null && npc.IsHero)
@@ -1024,23 +1033,23 @@ public class ShoutBehavior : CampaignBehaviorBase
 					Hero hero = ResolveHeroFromAgentIndex(npc.AgentIndex);
 					if (hero != null)
 					{
-						text3 = MyBehavior.GetNpcVoiceIdForExternal(hero);
-						if (string.IsNullOrWhiteSpace(text3))
+						text4 = MyBehavior.GetNpcVoiceIdForExternal(hero);
+						if (string.IsNullOrWhiteSpace(text4))
 						{
-							text3 = VoiceMapper.ResolveVoiceId(hero);
+							text4 = VoiceMapper.ResolveVoiceId(hero);
 						}
 					}
 				}
-				if (string.IsNullOrWhiteSpace(text3) && npc != null)
+				if (string.IsNullOrWhiteSpace(text4) && npc != null)
 				{
-					text3 = VoiceMapper.ResolveVoiceIdForNonHero(npc.IsFemale, npc.Age, npc.AgentIndex);
+					text4 = VoiceMapper.ResolveVoiceIdForNonHero(npc.IsFemale, npc.Age, npc.AgentIndex);
 				}
-				flag = TtsEngine.Instance.SpeakAsync(content, -1, -1f, num2, text3);
+				flag = TtsEngine.Instance.SpeakAsync(content, -1, -1f, num2, text4);
 			}
 			catch
 			{
 			}
-			LogTtsReport("ShowNpcSpeechOutput.SpeakAttempt", num, $"effectiveAgentIndex={num2};speakAccepted={flag};voiceId={text3}");
+			LogTtsReport("ShowNpcSpeechOutput.SpeakAttempt", num, $"effectiveAgentIndex={num2};speakAccepted={flag};voiceId={text4};lipSyncSafe={flag3};lipSyncReason={text3}");
 		}
 		if (flag && num2 >= 0 && CanAgentParticipateInSceneSpeech(liveAgent))
 		{
@@ -3009,6 +3018,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			lock (_speakingLock)
 			{
 				_speakingAgentIndices.Clear();
+				_agentLipSyncDetachedForSafety.Clear();
 			}
 			_agentSoundEvents.Clear();
 			_agentWavPaths.Clear();
@@ -3067,7 +3077,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 								if (_enableRhubarbSoundEventPlayback && Mission.Current != null && !(Mission.Current.Scene == null))
 								{
 									Agent agent = Mission.Current.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == agentIndex);
-									if (agent != null && agent.IsActive() && !(agent.AgentVisuals == null))
+									if (agent != null && agent.IsActive())
 									{
 										CleanupPreviousLipSyncPlaybackForReplacement("OnAudioFileReady.ReplaceExisting");
 								LogLipSyncNativeProbe("CreateEventFromExternalFile.Before", agentIndex, "wav=" + System.IO.Path.GetFileName(wavPath));
@@ -3130,24 +3140,42 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 									}
 											else
 											{
-												Logger.Log("LipSync", $"[Rhubarb] SoundEvent created, vol={num:F2}, agentIndex={agentIndex}, soundId={soundId}");
-												PrepareAgentForTrueLipSyncIfPossible(agent);
-												LogLipSyncNativeProbe("StartRhubarbRecord.Before", agentIndex, $"soundId={soundId};xml={System.IO.Path.GetFileName(xmlPath)}");
-												agent.AgentVisuals.StartRhubarbRecord(xmlPath, soundId);
-												LogLipSyncNativeProbe("StartRhubarbRecord.After", agentIndex, "soundId=" + soundId);
+												string text = "";
+												bool flag2 = CanAgentUseSceneLipSync(agent, out text);
+												Logger.Log("LipSync", $"[Rhubarb] SoundEvent created, vol={num:F2}, agentIndex={agentIndex}, soundId={soundId}, lipSyncSafe={flag2}, reason={text}");
 												lock (_speakingLock)
 												{
+													if (flag2)
+													{
+														_agentLipSyncDetachedForSafety.Remove(agentIndex);
+													}
+													else
+													{
+														_agentLipSyncDetachedForSafety.Add(agentIndex);
+													}
 													_agentSoundEvents[agentIndex] = soundEvent;
 													_agentWavPaths[agentIndex] = wavPath;
 													_agentXmlPaths[agentIndex] = xmlPath;
 												}
-												Logger.Log("LipSync", $"[Rhubarb] StartRhubarbRecord 调用成功, agentIndex={agentIndex}, soundId={soundId}");
+												if (flag2)
+												{
+													PrepareAgentForTrueLipSyncIfPossible(agent);
+													LogLipSyncNativeProbe("StartRhubarbRecord.Before", agentIndex, $"soundId={soundId};xml={System.IO.Path.GetFileName(xmlPath)}");
+													agent.AgentVisuals.StartRhubarbRecord(xmlPath, soundId);
+													LogLipSyncNativeProbe("StartRhubarbRecord.After", agentIndex, "soundId=" + soundId);
+													Logger.Log("LipSync", $"[Rhubarb] StartRhubarbRecord 调用成功, agentIndex={agentIndex}, soundId={soundId}");
+												}
+												else
+												{
+													Logger.Log("LipSync", $"[SAFEGUARD] Skip StartRhubarbRecord for unsafe scene agent. agentIndex={agentIndex}, reason={text}");
+													LogTtsReport("AudioFileReady.LipSyncDetached", agentIndex, "reason=" + text);
+												}
 										}
 									}
 									}
 									else
 									{
-										LogTtsReport("AudioFileReady.AgentUnavailable", agentIndex, $"agentMissing={(agent == null)};active={(agent != null && agent.IsActive())};visualsMissing={(agent != null && agent.AgentVisuals == null)}");
+										LogTtsReport("AudioFileReady.AgentUnavailable", agentIndex, $"agentMissing={(agent == null)};active={(agent != null && agent.IsActive())}");
 										QueueDeferredCleanup(null, wavPath, xmlPath, "OnAudioFileReady.AgentUnavailable", agentIndex);
 									}
 								}
@@ -3178,12 +3206,23 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 							LogTtsReport("PlaybackStarted.InvalidAgent", agentIndex);
 							return;
 						}
+						string text = "";
+						bool flag2 = CanAgentUseSceneLipSyncExternal(agentIndex, out text);
 						lock (_speakingLock)
 						{
-							_speakingAgentIndices.Add(agentIndex);
+							if (flag2)
+							{
+								_agentLipSyncDetachedForSafety.Remove(agentIndex);
+								_speakingAgentIndices.Add(agentIndex);
+							}
+							else
+							{
+								_speakingAgentIndices.Remove(agentIndex);
+								_agentLipSyncDetachedForSafety.Add(agentIndex);
+							}
 						}
-						Logger.Log("LipSync", $"[OnPlaybackStarted] agentIndex={agentIndex} added to speaking set");
-						LogTtsReport("PlaybackStarted", agentIndex);
+						Logger.Log("LipSync", $"[OnPlaybackStarted] agentIndex={agentIndex}, lipSyncSafe={flag2}, reason={text}");
+						LogTtsReport("PlaybackStarted", agentIndex, $"lipSyncSafe={flag2};reason={text}");
 						if (TryDequeuePendingNpcBubble(agentIndex, out var bubble, out var typingDuration))
 						{
 							_mainThreadActions.Enqueue(delegate
@@ -3250,15 +3289,44 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 								bool flag2 = false;
 								bool flag3 = false;
 								bool flag4 = false;
+								bool flag5 = false;
+								SoundEvent value = null;
+								string value2 = null;
+								string value3 = null;
 								lock (_speakingLock)
 								{
 									flag2 = _agentSoundEvents.ContainsKey(agentIndex);
 									flag3 = _agentWavPaths.ContainsKey(agentIndex);
 									flag4 = _agentXmlPaths.ContainsKey(agentIndex);
+									flag5 = _agentLipSyncDetachedForSafety.Remove(agentIndex);
+									if (flag5)
+									{
+										if (_agentSoundEvents.TryGetValue(agentIndex, out value))
+										{
+											_agentSoundEvents.Remove(agentIndex);
+										}
+										if (_agentWavPaths.TryGetValue(agentIndex, out value2))
+										{
+											_agentWavPaths.Remove(agentIndex);
+										}
+										if (_agentXmlPaths.TryGetValue(agentIndex, out value3))
+										{
+											_agentXmlPaths.Remove(agentIndex);
+										}
+									}
 								}
-								Logger.Log("LipSync", $"[Rhubarb] keep native lipsync state after playback finished, agentIndex={agentIndex}, hasSe={flag2}, hasWav={flag3}, hasXml={flag4}");
-								LogTtsReport("PlaybackFinished.NoImmediateCleanup", agentIndex, $"hasSe={flag2};hasWav={flag3};hasXml={flag4}");
-								LogLipSyncNativeProbe("PlaybackFinished.NoImmediateCleanup", agentIndex, $"hasSe={flag2};hasWav={flag3};hasXml={flag4}");
+								if (flag5)
+								{
+									QueueDeferredCleanup(value, value2, value3, "PlaybackFinished.DetachedSafety", agentIndex);
+									Logger.Log("LipSync", $"[SAFEGUARD] queued detached lipsync cleanup after playback finished, agentIndex={agentIndex}, hasSe={(value != null)}, hasWav={(!string.IsNullOrWhiteSpace(value2))}, hasXml={(!string.IsNullOrWhiteSpace(value3))}");
+									LogTtsReport("PlaybackFinished.DetachedCleanupQueued", agentIndex, $"hasSe={(value != null)};hasWav={(!string.IsNullOrWhiteSpace(value2))};hasXml={(!string.IsNullOrWhiteSpace(value3))}");
+								}
+								else
+								{
+									Logger.Log("LipSync", $"[Rhubarb] keep native lipsync state after playback finished, agentIndex={agentIndex}, hasSe={flag2}, hasWav={flag3}, hasXml={flag4}");
+									LogTtsReport("PlaybackFinished.NoImmediateCleanup", agentIndex, $"hasSe={flag2};hasWav={flag3};hasXml={flag4}");
+									LogLipSyncNativeProbe("PlaybackFinished.NoImmediateCleanup", agentIndex, $"hasSe={flag2};hasWav={flag3};hasXml={flag4}");
+								}
 								LogTtsReport("PlaybackFinished.MainThreadCleanupEnd", agentIndex);
 							}
 							catch (Exception ex5)
@@ -3917,6 +3985,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			list = _agentSoundEvents.Keys.ToList();
 			_speakingAgentIndices.Clear();
+			_agentLipSyncDetachedForSafety.Clear();
 			foreach (KeyValuePair<int, SoundEvent> agentSoundEvent in _agentSoundEvents)
 			{
 				_ = agentSoundEvent.Value;
@@ -4023,12 +4092,18 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			try
 			{
 				Agent agent = agents.FirstOrDefault((Agent a) => a != null && a.Index == agentIndex);
-				if (agent != null && agent.IsActive())
+				if (agent == null || !agent.IsActive())
+				{
+					LogTtsReport("AgentInvalidDuringLipSync", agentIndex);
+					CancelAgentSpeechForRemoval(agentIndex, "agent_invalid_during_lipsync");
+					continue;
+				}
+				string reason = "";
+				if (CanAgentUseSceneLipSync(agent, out reason))
 				{
 					continue;
 				}
-				LogTtsReport("AgentInvalidDuringLipSync", agentIndex);
-				CancelAgentSpeechForRemoval(agentIndex, "agent_invalid_during_lipsync");
+				DetachAgentLipSyncForSafety(agentIndex, reason);
 			}
 			catch
 			{
@@ -4718,6 +4793,76 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 		catch
 		{
+			return false;
+		}
+	}
+
+	private static bool CanAgentUseSceneLipSync(Agent agent, out string reason)
+	{
+		reason = "unknown";
+		try
+		{
+			if (!CanAgentParticipateInSceneSpeech(agent))
+			{
+				reason = "agent_not_participating";
+				return false;
+			}
+			if (Mission.Current?.Scene == null)
+			{
+				reason = "mission_scene_unavailable";
+				return false;
+			}
+			if (Agent.Main == null || !Agent.Main.IsActive())
+			{
+				reason = "main_agent_unavailable";
+				return false;
+			}
+			if (agent.AgentVisuals == null)
+			{
+				reason = "agent_visuals_missing";
+				return false;
+			}
+			float distanceSquared = agent.Position.AsVec2.DistanceSquared(Agent.Main.Position.AsVec2);
+			if (float.IsNaN(distanceSquared) || float.IsInfinity(distanceSquared))
+			{
+				reason = "distance_invalid";
+				return false;
+			}
+			if (distanceSquared > LIP_SYNC_SAFE_MAX_DISTANCE * LIP_SYNC_SAFE_MAX_DISTANCE)
+			{
+				reason = $"distance={Math.Sqrt(distanceSquared):0.00}>{LIP_SYNC_SAFE_MAX_DISTANCE:0.0}";
+				return false;
+			}
+			reason = "ok";
+			return true;
+		}
+		catch (Exception ex)
+		{
+			reason = "exception:" + ex.GetType().Name;
+			return false;
+		}
+	}
+
+	private static bool CanAgentUseSceneLipSyncExternal(int agentIndex, out string reason)
+	{
+		reason = "agent_index_invalid";
+		if (agentIndex < 0 || Mission.Current == null)
+		{
+			return false;
+		}
+		try
+		{
+			Agent agent = Mission.Current.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == agentIndex);
+			if (agent == null)
+			{
+				reason = "agent_missing";
+				return false;
+			}
+			return CanAgentUseSceneLipSync(agent, out reason);
+		}
+		catch (Exception ex)
+		{
+			reason = "exception:" + ex.GetType().Name;
 			return false;
 		}
 	}
@@ -8680,6 +8825,24 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 	}
 
+	private void DetachAgentLipSyncForSafety(int agentIndex, string reason)
+	{
+		if (agentIndex < 0)
+		{
+			return;
+		}
+		bool hadSpeakingEntry = false;
+		bool alreadyDetached = false;
+		lock (_speakingLock)
+		{
+			hadSpeakingEntry = _speakingAgentIndices.Remove(agentIndex);
+			alreadyDetached = !_agentLipSyncDetachedForSafety.Add(agentIndex);
+		}
+		StopAgentRhubarbRecordIfPossible(agentIndex, "SafetyDetach:" + reason);
+		Logger.Log("LipSync", $"[SAFEGUARD] Detached scene lipsync for agentIndex={agentIndex}, reason={reason}, hadSpeaking={hadSpeakingEntry}, alreadyDetached={alreadyDetached}");
+		LogTtsReport("LipSyncSafeguard.Detached", agentIndex, $"reason={reason};hadSpeaking={hadSpeakingEntry};alreadyDetached={alreadyDetached}");
+	}
+
 	private void InterruptAgentSpeechForCombat(int agentIndex, string reason)
 	{
 		if (agentIndex < 0)
@@ -8705,6 +8868,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			{
 				_agentXmlPaths.Remove(agentIndex);
 			}
+			_agentLipSyncDetachedForSafety.Remove(agentIndex);
 		}
 		lock (_ttsBubbleSyncLock)
 		{
@@ -8769,6 +8933,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			{
 				_agentXmlPaths.Remove(agentIndex);
 			}
+			_agentLipSyncDetachedForSafety.Remove(agentIndex);
 		}
 		lock (_ttsBubbleSyncLock)
 		{
