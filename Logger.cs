@@ -101,6 +101,8 @@ public static class Logger
 
 	private static string _tokenStatsPath;
 
+	private static string _eventLogsPath;
+
 	private static readonly object _fileLock;
 
 	private static readonly AsyncLocal<TraceScopeState> _traceState;
@@ -161,11 +163,13 @@ public static class Logger
 			_obsLogPath = System.IO.Path.Combine(text, "Observability.jsonl");
 			_hitRatePath = System.IO.Path.Combine(text, "HitRate_Stats.txt");
 			_tokenStatsPath = System.IO.Path.Combine(text, "Token_Stats.txt");
+			_eventLogsPath = System.IO.Path.Combine(text, "Event_Logs.txt");
 			EnsureUtf8Bom(_modLogPath);
 			EnsureUtf8Bom(_gameTracePath);
 			EnsureUtf8Bom(_obsLogPath);
 			EnsureUtf8Bom(_hitRatePath);
 			EnsureUtf8Bom(_tokenStatsPath);
+			EnsureUtf8Bom(_eventLogsPath);
 			string contents = $"\n\n====== 游戏启动 {DateTime.Now:yyyy-MM-dd HH:mm:ss} ======\n";
 			if (IsPathEnabled(_modLogPath))
 			{
@@ -182,6 +186,10 @@ public static class Logger
 			if (IsPathEnabled(_tokenStatsPath))
 			{
 				AppendUtf8(_tokenStatsPath, contents);
+			}
+			if (IsPathEnabled(_eventLogsPath))
+			{
+				AppendUtf8(_eventLogsPath, contents);
 			}
 			if (IsPathEnabled(_obsLogPath))
 			{
@@ -240,6 +248,42 @@ public static class Logger
 	public static void LogTrace(string source, string message)
 	{
 		WriteHumanLine(_gameTracePath, source, message);
+	}
+
+	public static void LogEventPromptExchange(string targetLabel, string requestText, string replyText)
+	{
+		try
+		{
+			if (string.IsNullOrWhiteSpace(_eventLogsPath) || !IsPathEnabled(_eventLogsPath))
+			{
+				return;
+			}
+			string text = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+			string currentTraceId = CurrentTraceId;
+			StringBuilder stringBuilder = new StringBuilder();
+			stringBuilder.AppendLine("==================================================");
+			stringBuilder.AppendLine("[时间] " + text);
+			if (!string.IsNullOrWhiteSpace(currentTraceId))
+			{
+				stringBuilder.AppendLine("[Trace] " + currentTraceId);
+			}
+			if (!string.IsNullOrWhiteSpace(targetLabel))
+			{
+				stringBuilder.AppendLine("[目标] " + targetLabel.Trim());
+			}
+			stringBuilder.AppendLine("[请求]");
+			stringBuilder.AppendLine((requestText ?? "").Trim());
+			stringBuilder.AppendLine("[回复]");
+			stringBuilder.AppendLine((replyText ?? "").Trim());
+			stringBuilder.AppendLine();
+			lock (_fileLock)
+			{
+				AppendUtf8(_eventLogsPath, stringBuilder.ToString());
+			}
+		}
+		catch
+		{
+		}
 	}
 
 	public static void Obs(string source, string stage, Dictionary<string, object> fields = null)
@@ -778,6 +822,10 @@ public static class Logger
 			if (string.Equals(path, _tokenStatsPath, StringComparison.OrdinalIgnoreCase))
 			{
 				return duelSettings.EnableTokenStatsLog;
+			}
+			if (string.Equals(path, _eventLogsPath, StringComparison.OrdinalIgnoreCase))
+			{
+				return duelSettings.EnableEventLogs;
 			}
 			return true;
 		}

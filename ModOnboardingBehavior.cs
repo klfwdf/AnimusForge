@@ -434,9 +434,51 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		return false;
 	}
 
+	public static bool OpenApiRepairFlow()
+	{
+		ModOnboardingBehavior modOnboardingBehavior = Instance ?? Campaign.Current?.GetCampaignBehavior<ModOnboardingBehavior>();
+		if (modOnboardingBehavior == null)
+		{
+			return false;
+		}
+		modOnboardingBehavior.ShowApiRepairPopup();
+		return true;
+	}
+
 	private void ShowWelcomePopup(bool fromGate)
 	{
 		ShowWelcomePopup(fromGate, ignoreSuppress: false);
+	}
+
+	private void ShowApiRepairPopup()
+	{
+		try
+		{
+			if (_welcomeInProgress || _apiValidationInProgress || _baseUrlValidationInProgress || _modelFetchInProgress)
+			{
+				return;
+			}
+			_activeOnboardingStage = OnboardingUiStage.Welcome;
+			_welcomeInProgress = true;
+			string text = "周事件自动生成失败，请检查你的 Base URL、API Key、模型名或当前网络环境。";
+			if (!string.IsNullOrWhiteSpace(_lastApiValidationFailureHint))
+			{
+				text = text + "\n\n排查建议：" + _lastApiValidationFailureHint;
+			}
+			InformationManager.ShowInquiry(new InquiryData("调整 API 信息", text, isAffirmativeOptionShown: true, isNegativeOptionShown: true, "填写 API 信息", "测试已有配置", delegate
+			{
+				_welcomeInProgress = false;
+				OpenApiBaseUrlInput();
+			}, delegate
+			{
+				_welcomeInProgress = false;
+				BeginValidateMcmApiAndContinue();
+			}), pauseGameActiveState: true);
+		}
+		catch
+		{
+			_welcomeInProgress = false;
+		}
 	}
 
 	private void ShowWelcomePopup(bool fromGate, bool ignoreSuppress)
@@ -1192,7 +1234,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			}
 			_suppressWelcomeUntilUtcTicks = ticks + TimeSpan.FromMilliseconds(fromGate ? 800 : 200).Ticks;
 			_activeOnboardingStage = OnboardingUiStage.Import;
-			string text = "首次在此存档中使用 AnimusForge。\n\n你现在可以导入编辑器导出的 JSON 数据，或先跳过这一步，直接继续填写角色信息。";
+			string text = "首次在此存档中使用 AnimusForge。\n\n你现在可以导入编辑器导出的 JSON 数据，或先跳过这一步，直接继续填写角色信息。\n\n首次导入会同时载入：人物个性、未命名NPC、知识库、声音映射，以及事件库（开局概要/事件记录）。";
 			_welcomeInProgress = true;
 			InformationManager.ShowInquiry(new InquiryData("AnimusForge - 首次使用", text, isAffirmativeOptionShown: true, isNegativeOptionShown: true, "一键导入", "跳过", delegate
 			{
@@ -1626,6 +1668,14 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 				OpenImportFolderPicker(onReturn);
 				return;
 			}
+			string path7 = Path.Combine(text, "event_data", "WorldOpeningSummary.json");
+			string path8 = Path.Combine(text, "event_data", "KingdomOpeningSummaries.json");
+			if (!File.Exists(path7) || !File.Exists(path8))
+			{
+				InformationManager.DisplayMessage(new InformationMessage("导入失败：缺少 event_data\\WorldOpeningSummary.json 或 event_data\\KingdomOpeningSummaries.json。"));
+				OpenImportFolderPicker(onReturn);
+				return;
+			}
 			MyBehavior myBehavior = Campaign.Current?.GetCampaignBehavior<MyBehavior>();
 			if (myBehavior == null)
 			{
@@ -1650,6 +1700,11 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			else if (!InvokePrivateImport(myBehavior, "ImportVoiceMappingData", folderName))
 			{
 				InformationManager.DisplayMessage(new InformationMessage("导入失败：无法执行 声音映射导入。"));
+				OpenImportFolderPicker(onReturn);
+			}
+			else if (!InvokePrivateImport(myBehavior, "ImportEventData", folderName))
+			{
+				InformationManager.DisplayMessage(new InformationMessage("导入失败：无法执行 事件库导入。"));
 				OpenImportFolderPicker(onReturn);
 			}
 			else if (!HasLoadedVoiceMapping())

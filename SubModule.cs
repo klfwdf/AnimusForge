@@ -211,6 +211,7 @@ public class SubModule : MBSubModuleBase
 	{
 		BannerlordExceptionSentinel.OnApplicationTick();
 		ModOnboardingBehavior.Instance?.OnEngineTick();
+		MyBehavior.Instance?.OnEngineTick();
 		DuelBehavior.Instance?.OnEngineTick();
 		AnimusForgeTerminalBehavior.Instance?.OnEngineTick();
 	}

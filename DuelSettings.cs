@@ -94,6 +94,10 @@ public class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyGroup("4. 开发者选项")]
 	public bool EnableTokenStatsLog { get; set; } = true;
 
+	[SettingPropertyBool("【日志】写入 Event_Logs.txt", Order = 6, RequireRestart = false, HintText = "事件系统周报生成日志开关。关闭后不再写入 Event_Logs.txt。")]
+	[SettingPropertyGroup("4. 开发者选项")]
+	public bool EnableEventLogs { get; set; } = true;
+
 	[SettingPropertyInteger("知识返回上限", 1, 12, "0", Order = 0, RequireRestart = false, HintText = "控制每次对话最多向 AI 提供多少条相关知识。系统会自动推导召回和精排数量；若实际高相关知识不足，不会为了凑数硬塞。默认 4。")]
 	[SettingPropertyGroup("5. 知识检索（返回）")]
 	public int KnowledgeDirectTopN { get; set; } = 4;
@@ -185,6 +189,19 @@ public class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyText("玩家自定义规则文案", -1, true, "", Order = 0, RequireRestart = false, HintText = "这里填写你希望额外注入提示词的规则文案。当前仅提供填写入口，具体插入到 prompt 的位置我们后续再接。")]
 	[SettingPropertyGroup("9. 提示词扩展")]
 	public string PlayerCustomPromptRule { get; set; } = "";
+
+	[SettingPropertyInteger("周报篇幅档位", 1, 4, "0", Order = 0, RequireRestart = false, HintText = "1=200-400字；2=200-800字；3=200-1200字；4=200-1500字。世界周报和王国周报共用这一档位。")]
+	[SettingPropertyGroup("10. 事件系统（开发）")]
+	public int WeeklyReportLengthPreset { get; set; } = 2;
+
+	[SettingPropertyInteger("每分钟最多生成周报数", 1, 20, "0", Order = 1, RequireRestart = false, HintText = "限制开发态周报生成的请求速率。默认 5；最高 20。用于应对部分 API 渠道的 RPM 或并发限制。")]
+	[SettingPropertyGroup("10. 事件系统（开发）")]
+	public int WeeklyReportRequestsPerMinute { get; set; } = 5;
+
+	[SettingPropertyBool("每周自动生成周报", Order = 2, RequireRestart = false, HintText = "开启后，系统会在每个新周开始时自动结算上一周，并生成世界周报与各王国周报。第0天会自动写入开局概要作为 week 0 事件。")]
+	[SettingPropertyGroup("10. 事件系统（开发）")]
+	public bool AutoGenerateWeeklyReports { get; set; } = true;
+
 
 	public bool UseMcmKnowledgeRetrieval { get; set; } = true;
 
