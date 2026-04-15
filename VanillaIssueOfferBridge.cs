@@ -170,26 +170,65 @@ internal static class VanillaIssueOfferBridge
 
 	private static PendingAlternativeDispatch _pendingAlternativeDispatch;
 
-	public static string BuildPromptBlock(Hero targetHero)
+	public static bool IsRagEligibleForExternal(Hero targetHero)
 	{
-		if (TryGetOfferableIssue(targetHero, out var issue))
+		return TryGetRuntimeState(targetHero, out var _, out var _, out var _);
+	}
+
+	public static string BuildRagSemanticStateForExternal(Hero targetHero)
+	{
+		return TryGetRuntimeState(targetHero, out var stateKey, out var _, out var _) ? ("vanilla_issue:" + stateKey) : "";
+	}
+
+	public static string BuildRuntimePromptBlockForExternal(Hero targetHero)
+	{
+		return TryBuildRuntimePromptBlock(targetHero, out var _, out var promptText) ? promptText : "";
+	}
+
+	private static bool TryBuildRuntimePromptBlock(Hero targetHero, out string stateKey, out string promptText)
+	{
+		promptText = "";
+		if (!TryGetRuntimeState(targetHero, out stateKey, out var issue, out var probe))
 		{
-			return BuildOfferPromptBlock(targetHero, issue);
+			return false;
 		}
-		if (TryGetReadyToTurnInIssue(targetHero, out var issue2, out var probe))
+		switch (stateKey)
 		{
-			return BuildReadyToTurnInPromptBlock(targetHero, issue2, probe);
+		case "offer":
+			promptText = BuildOfferPromptBlock(targetHero, issue);
+			break;
+		case "ready_to_turn_in":
+			promptText = BuildReadyToTurnInPromptBlock(targetHero, issue, probe);
+			break;
+		case "in_progress":
+		case "in_progress_alternative":
+			promptText = BuildInProgressPromptBlock(targetHero, issue);
+			break;
 		}
-		if (TryGetInProgressIssue(targetHero, out var issue3))
+		return !string.IsNullOrWhiteSpace(promptText);
+	}
+
+	private static bool TryGetRuntimeState(Hero targetHero, out string stateKey, out IssueBase issue, out TurnInProbeResult probe)
+	{
+		stateKey = "";
+		issue = null;
+		probe = null;
+		if (TryGetOfferableIssue(targetHero, out issue))
 		{
-			return BuildInProgressPromptBlock(targetHero, issue3);
+			stateKey = "offer";
+			return true;
 		}
-		string text = BuildRecentCompletionPromptBlock(targetHero);
-		if (!string.IsNullOrWhiteSpace(text))
+		if (TryGetReadyToTurnInIssue(targetHero, out issue, out probe))
 		{
-			return text;
+			stateKey = "ready_to_turn_in";
+			return true;
 		}
-		return BuildNoAvailableIssuePromptBlock(targetHero);
+		if (TryGetInProgressIssue(targetHero, out issue))
+		{
+			stateKey = (issue.IsSolvingWithAlternative ? "in_progress_alternative" : "in_progress");
+			return true;
+		}
+		return false;
 	}
 
 	private static string BuildOfferPromptBlock(Hero targetHero, IssueBase issue)
@@ -238,7 +277,7 @@ internal static class VanillaIssueOfferBridge
 		}
 		if (flag)
 		{
-			stringBuilder.AppendLine("当前玩家满足接取条件，如果玩家同意接这个任务，你必须在本次回复末尾写入标签标签 [ACTION:ISSUE_ACCEPT_SELF]。【示例】很好。你的回复：记住，我要的是真正的斯特吉亚猎手，不是随便找些人来充数。如果你能证明自己言出必行，我会认真考虑你的请求。[ACTION:ISSUE_ACCEPT_SELF][ACTION:MOOD:NEUTRAL]");
+			stringBuilder.AppendLine("当前玩家满足接取条件，如果玩家明确同意接这个任务，你必须在本次回复末尾写入标签标签 [ACTION:ISSUE_ACCEPT_SELF]。【示例】很好。你的回复：记住，我要的是真正的斯特吉亚猎手，不是随便找些人来充数。如果你能证明自己言出必行，我会认真考虑你的请求。[ACTION:ISSUE_ACCEPT_SELF][ACTION:MOOD:NEUTRAL]");
 		}
 		else
 		{
@@ -350,7 +389,7 @@ internal static class VanillaIssueOfferBridge
 
 	private static string BuildRecentCompletionPromptBlock(Hero targetHero)
 	{
-		if (targetHero == null || targetHero.Issue != null)
+		if (targetHero == null)
 		{
 			return "";
 		}
@@ -381,10 +420,8 @@ internal static class VanillaIssueOfferBridge
 				stringBuilder.AppendLine("- " + NormalizePromptText(recentJournalEntry));
 			}
 		}
-		string playerDisplayName = GetPlayerDisplayNameForPrompt();
-		stringBuilder.AppendLine("你当前没有任何新的原版任务可以交给" + playerDisplayName + "（玩家），也请不要杜撰任何任务交给" + playerDisplayName + "（玩家）。");
-		stringBuilder.AppendLine("你现在应当把语气放在“任务已经有结果”上：表示感谢、评价结果、讨论后续影响，但不要再次发放这项任务。");
-		stringBuilder.AppendLine("严禁输出 [ACTION:ISSUE_ACCEPT_SELF] 或 [ACTION:ISSUE_ACCEPT_ALT:*]。");
+		stringBuilder.AppendLine("这条“最近完成”事实只用于下一次与你的对话，表示那项旧任务已经有结果了。");
+		stringBuilder.AppendLine("如果你现在还有别的原版任务可谈，可以继续谈新的任务；但不要把这项刚完成的旧任务当成还没完成，也不要把同一件旧任务重新发给玩家。");
 		return stringBuilder.ToString().Trim();
 	}
 
@@ -1037,8 +1074,8 @@ internal static class VanillaIssueOfferBridge
 			return false;
 		}
 		string safeIssueTitle = GetSafeIssueTitle(issue);
-		MyBehavior.AppendExternalNpcFact(giver, "你已确认玩家完成了任务“" + safeIssueTitle + "”。");
-		MyBehavior.AppendExternalPlayerFact(giver, "你已向对方交付并验收任务“" + safeIssueTitle + "”。");
+		MyBehavior.AppendExternalNpcFact(giver, "你已确认玩家完成了任务“" + safeIssueTitle + "”。该任务奖励会按原版流程自动发放，无需你手动再次支付。");
+		MyBehavior.AppendExternalPlayerFact(giver, "你已向对方交付并验收任务“" + safeIssueTitle + "”。该任务奖励会按原版流程自动结算，无需NPC手动再次发放。");
 		ShowInfo("已交付任务：" + safeIssueTitle, isError: false);
 		Logger.Log("Logic", "[IssueOffer] 任务交付成功 giver=" + (giver?.StringId ?? "") + " issue=" + safeIssueTitle + " option=" + (probe?.SuccessOptionId ?? ""));
 		return true;
@@ -1207,6 +1244,21 @@ internal static class VanillaIssueOfferBridge
 			}
 		}
 		return num;
+	}
+
+	private static string JoinPromptBlocks(string first, string second)
+	{
+		string text = (first ?? "").Trim();
+		string text2 = (second ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return text2;
+		}
+		if (string.IsNullOrWhiteSpace(text2))
+		{
+			return text;
+		}
+		return text + Environment.NewLine + Environment.NewLine + text2;
 	}
 
 	private static bool ExecuteTurnInOption(ConversationManager conversationManager, QuestBase quest, TurnInProbeResult probe, out string error)

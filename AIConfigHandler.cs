@@ -236,17 +236,17 @@ public static class AIConfigHandler
 
 	private static GuardrailEvalSnapshot _lastGuardrailEval;
 
-	public static string GlobalPrompt => _guardrail?.GlobalPrompt ?? "";
+	public static string GlobalPrompt => ApplyPlayerDisplayNameToGuardrailText(_guardrail?.GlobalPrompt ?? "");
 
-	public static string GlobalGuardrail => _guardrail?.GlobalGuardrail ?? "";
+	public static string GlobalGuardrail => ApplyPlayerDisplayNameToGuardrailText(_guardrail?.GlobalGuardrail ?? "");
 
-	public static string DuelInstruction => _guardrail?.Duel?.TriggerInstruction ?? "";
+	public static string DuelInstruction => ApplyPlayerDisplayNameToGuardrailText(_guardrail?.Duel?.TriggerInstruction ?? "");
 
 	public static List<string> DuelTriggerKeywords => _guardrail?.Duel?.AcceptKeywords ?? new List<string>();
 
 	public static bool RewardEnabled => _guardrail?.Reward?.IsEnabled == true;
 
-	public static string RewardInstruction => _guardrail?.Reward?.Instruction ?? "";
+	public static string RewardInstruction => ApplyPlayerDisplayNameToGuardrailText(_guardrail?.Reward?.Instruction ?? "");
 
 	public static List<string> RewardTriggerKeywords => _guardrail?.Reward?.TriggerKeywords ?? new List<string>();
 
@@ -254,7 +254,7 @@ public static class AIConfigHandler
 
 	public static bool LoanEnabled => _guardrail?.Loan?.IsEnabled == true;
 
-	public static string LoanInstruction => _guardrail?.Loan?.Instruction ?? "";
+	public static string LoanInstruction => ApplyPlayerDisplayNameToGuardrailText(_guardrail?.Loan?.Instruction ?? "");
 
 	public static List<string> LoanTriggerKeywords => _guardrail?.Loan?.TriggerKeywords ?? new List<string>();
 
@@ -262,15 +262,15 @@ public static class AIConfigHandler
 
 	public static bool SurroundingsEnabled => _guardrail?.Surroundings?.IsEnabled == true;
 
-	public static string SurroundingsInstruction => _guardrail?.Surroundings?.Instruction ?? "";
+	public static string SurroundingsInstruction => ApplyPlayerDisplayNameToGuardrailText(_guardrail?.Surroundings?.Instruction ?? "");
 
 	public static List<string> SurroundingsTriggerKeywords => _guardrail?.Surroundings?.TriggerKeywords ?? new List<string>();
 
-	public static string DuelNonHeroInstruction => _guardrail?.Duel?.NonHeroInstruction ?? "";
+	public static string DuelNonHeroInstruction => ApplyPlayerDisplayNameToGuardrailText(_guardrail?.Duel?.NonHeroInstruction ?? "");
 
-	public static string RewardNonHeroInstruction => _guardrail?.Reward?.NonHeroInstruction ?? "";
+	public static string RewardNonHeroInstruction => ApplyPlayerDisplayNameToGuardrailText(_guardrail?.Reward?.NonHeroInstruction ?? "");
 
-	public static string LoanNonHeroInstruction => _guardrail?.Loan?.NonHeroInstruction ?? "";
+	public static string LoanNonHeroInstruction => ApplyPlayerDisplayNameToGuardrailText(_guardrail?.Loan?.NonHeroInstruction ?? "");
 
 	private static bool GuardrailKnowledgeEnabled => _guardrail?.KnowledgeRetrieval?.IsEnabled ?? true;
 
@@ -333,9 +333,9 @@ public static class AIConfigHandler
 
 	public static bool DuelStakeEnabled => _guardrail?.DuelStake?.IsEnabled == true;
 
-	public static string DuelStakePlayerWinInstruction => _guardrail?.DuelStake?.PlayerWinInstruction ?? "";
+	public static string DuelStakePlayerWinInstruction => ApplyPlayerDisplayNameToGuardrailText(_guardrail?.DuelStake?.PlayerWinInstruction ?? "");
 
-	public static string DuelStakeNpcWinInstruction => _guardrail?.DuelStake?.NpcWinInstruction ?? "";
+	public static string DuelStakeNpcWinInstruction => ApplyPlayerDisplayNameToGuardrailText(_guardrail?.DuelStake?.NpcWinInstruction ?? "");
 
 	public static string DuelStakeInstruction
 	{
@@ -355,7 +355,7 @@ public static class AIConfigHandler
 			{
 				stringBuilder.AppendLine(duelStakeConfig.NpcWinInstruction);
 			}
-			return stringBuilder.ToString().Trim();
+			return ApplyPlayerDisplayNameToGuardrailText(stringBuilder.ToString().Trim());
 		}
 	}
 
@@ -778,6 +778,27 @@ public static class AIConfigHandler
 		return (byte)result != 0;
 	}
 
+	private static bool IsRuleCurrentlyEligibleForRag(string ruleId)
+	{
+		string text = (ruleId ?? "").Trim().ToLowerInvariant();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return false;
+		}
+		if (!string.Equals(text, "vanilla_issue", StringComparison.OrdinalIgnoreCase))
+		{
+			return true;
+		}
+		try
+		{
+			return VanillaIssueOfferBridge.IsRagEligibleForExternal(ResolveConversationTargetHero());
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
 	private static List<string> NormalizeStringList(List<string> source, int maxLen = 80)
 	{
 		List<string> list = new List<string>();
@@ -967,7 +988,7 @@ public static class AIConfigHandler
 		{
 			Dictionary<string, GuardrailRulePromptConfig> dictionary = BuildRulePromptRegistry();
 			return (from r in dictionary.Values
-				where r != null && r.IsEnabled && !string.IsNullOrWhiteSpace(r.Id)
+				where r != null && r.IsEnabled && !string.IsNullOrWhiteSpace(r.Id) && IsRuleCurrentlyEligibleForRag(r.Id)
 				orderby r.Priority descending
 				select r).ThenBy((GuardrailRulePromptConfig r) => r.Id, StringComparer.OrdinalIgnoreCase).ToList();
 		}
@@ -2031,7 +2052,7 @@ public static class AIConfigHandler
 			foreach (GuardrailRulePromptConfig value in dictionary.Values)
 			{
 				string text = (value?.Id ?? "").Trim().ToLowerInvariant();
-				if (value == null || !value.IsEnabled || string.IsNullOrWhiteSpace(text) || (!includeBuiltInRules && IsBuiltInRuleTag(text)))
+				if (value == null || !value.IsEnabled || string.IsNullOrWhiteSpace(text) || (!includeBuiltInRules && IsBuiltInRuleTag(text)) || !IsRuleCurrentlyEligibleForRag(text))
 				{
 					continue;
 				}
@@ -2499,6 +2520,10 @@ public static class AIConfigHandler
 						value = runtimeMarriageInstruction;
 					}
 				}
+				if (hasAnyHero && string.Equals(text, "vanilla_issue", StringComparison.OrdinalIgnoreCase))
+				{
+					value = VanillaIssueOfferBridge.BuildRuntimePromptBlockForExternal(ResolveConversationTargetHero()) ?? "";
+				}
 				if (string.Equals(text, "meeting_taunt", StringComparison.OrdinalIgnoreCase))
 				{
 					string text4 = SceneTauntBehavior.BuildUnifiedTauntRuntimeInstructionForExternal(ResolveConversationTargetHero(), ResolveConversationTargetCharacter(), ResolveConversationTargetAgentIndex());
@@ -2549,7 +2574,7 @@ public static class AIConfigHandler
 					}
 				}
 			}
-			return stringBuilder.ToString().Trim();
+			return ApplyPlayerDisplayNameToGuardrailText(stringBuilder.ToString().Trim());
 		}
 		catch
 		{
@@ -2721,6 +2746,37 @@ public static class AIConfigHandler
 		catch
 		{
 			return template ?? "";
+		}
+	}
+
+	private static string ApplyPlayerDisplayNameToGuardrailText(string text)
+	{
+		try
+		{
+			string text2 = text ?? "";
+			if (string.IsNullOrWhiteSpace(text2))
+			{
+				return text2;
+			}
+			string text3 = MyBehavior.BuildPlayerPublicDisplayNameForExternal();
+			if (string.IsNullOrWhiteSpace(text3) || string.Equals(text3, "玩家", StringComparison.Ordinal))
+			{
+				return text2;
+			}
+			const string text4 = "__AFEF_PLAYER_FACT__";
+			const string text5 = "__PLAYER_CLAN_FACT__";
+			text2 = text2.Replace("[AFEF玩家行为补充]", text4);
+			text2 = text2.Replace("【玩家家族可婚配未婚成员（事实清单）】", text5);
+			text2 = text2.Replace("玩家家族", "__PLAYER_CLAN__");
+			text2 = text2.Replace("玩家", text3);
+			text2 = text2.Replace("__PLAYER_CLAN__", "玩家家族");
+			text2 = text2.Replace(text4, "[AFEF玩家行为补充]");
+			text2 = text2.Replace(text5, "【玩家家族可婚配未婚成员（事实清单）】");
+			return text2;
+		}
+		catch
+		{
+			return text ?? "";
 		}
 	}
 
@@ -3168,8 +3224,6 @@ public static class AIConfigHandler
 		case "no_kingdom_tier_below_merc":
 		case "no_kingdom_tier_merc_only":
 		case "no_kingdom_tier_full":
-		case "mercenary_same_kingdom_tier_vassal_locked":
-		case "mercenary_same_kingdom_tier_vassal_ready":
 			return true;
 		default:
 			return false;

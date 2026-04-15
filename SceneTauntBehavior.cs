@@ -1524,12 +1524,11 @@ public class SceneTauntBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			string text = Hero.MainHero?.Name?.ToString()?.Trim();
+			string text = (MyBehavior.BuildPlayerPublicDisplayNameForExternal() ?? "").Trim();
 			if (string.IsNullOrWhiteSpace(text))
 			{
 				text = "玩家";
 			}
-			text += "（玩家）";
 			if (IsChildSceneProtectedTarget(targetCharacter))
 			{
 				return "他是未成年。禁止输出[ACTION:SCENE_TAUNT_WARN]或[ACTION:SCENE_TAUNT_FIGHT]；只能害怕、求救或躲开。";

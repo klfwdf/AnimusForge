@@ -11,12 +11,14 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using SandBox;
+using SandBox.Missions.AgentBehaviors;
 using SandBox.Missions.MissionLogics;
 using SandBox.Objects.AnimationPoints;
 using SandBox.Objects.Usables;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Actions;
 using TaleWorlds.CampaignSystem.ComponentInterfaces;
+using TaleWorlds.CampaignSystem.Encounters;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Roster;
 using TaleWorlds.CampaignSystem.Settlements;
@@ -90,6 +92,8 @@ public class ShoutBehavior : CampaignBehaviorBase
 		public string UiContent;
 
 		public string NpcName;
+
+		public float FallbackDurationSeconds;
 	}
 
 	private sealed class DeferredCleanupItem
@@ -122,6 +126,8 @@ public class ShoutBehavior : CampaignBehaviorBase
 		public float TimeoutSeconds;
 
 		public long InteractionToken;
+
+		public bool ReturnSceneSummonOnTimeout;
 	}
 
 	private sealed class PendingInteractionTimeoutArm
@@ -131,6 +137,45 @@ public class ShoutBehavior : CampaignBehaviorBase
 		public long InteractionToken;
 
 		public float ArmAtMissionTime;
+	}
+
+	private sealed class PendingSceneSummonReturnAfterSpeech
+	{
+		public int AgentIndex;
+
+		public SceneSummonConversationSession Session;
+
+		public bool WaitForPlaybackFinished;
+
+		public float ExecuteAtMissionTime = -1f;
+	}
+
+	private sealed class PendingSceneFollowCommand
+	{
+		public int AgentIndex;
+
+		public bool StartFollow;
+
+		public bool WaitForPlaybackFinished;
+
+		public float ExecuteAtMissionTime = -1f;
+	}
+
+	private sealed class PendingSceneGuideReturnAfterSpeech
+	{
+		public int AgentIndex;
+
+		public string DisplayName;
+
+		public LocationCharacter LocationCharacter;
+
+		public Location OriginalLocation;
+
+		public Vec3? OriginalPosition;
+
+		public bool WaitForPlaybackFinished;
+
+		public float ExecuteAtMissionTime = -1f;
 	}
 
 	private sealed class PrecomputedShoutRagContext
@@ -152,6 +197,10 @@ public class ShoutBehavior : CampaignBehaviorBase
 
 		public List<NpcDataPacket> ContextSnapshot;
 
+		public List<SceneSummonPromptTarget> SceneSummonTargets;
+
+		public List<SceneGuidePromptTarget> SceneGuideTargets;
+
 		public bool CommitHistory;
 
 		public bool SuppressStare;
@@ -159,6 +208,231 @@ public class ShoutBehavior : CampaignBehaviorBase
 		public bool AllowPlayerDirectedActions = true;
 
 		public int RequiredConversationEpoch;
+	}
+
+	private sealed class SceneSummonPromptTarget
+	{
+		public int PromptId;
+
+		public string DisplayName;
+
+		public string LocationCode;
+
+		public LocationCharacter LocationCharacter;
+
+		public Location SourceLocation;
+	}
+
+	private sealed class SceneGuidePromptTarget
+	{
+		public int PromptId;
+
+		public string DisplayName;
+
+		public string LocationCode;
+
+		public LocationCharacter LocationCharacter;
+
+		public Location SourceLocation;
+	}
+
+	private enum SceneGuideStage
+	{
+		Guiding
+	}
+
+	private sealed class ActiveSceneGuideRequest
+	{
+		public int GuideAgentIndex = -1;
+
+		public string GuideName;
+
+		public string TargetName;
+
+		public int TargetPromptId = -1;
+
+		public LocationCharacter GuideLocationCharacter;
+
+		public LocationCharacter TargetLocationCharacter;
+
+		public Location CurrentLocation;
+
+		public Location OriginalGuideLocation;
+
+		public Vec3? OriginalGuidePosition;
+
+		public Location TargetSourceLocation;
+
+		public Passage TargetDoorPassage;
+
+		public SceneGuideStage Stage = SceneGuideStage.Guiding;
+
+		public float NextStageMissionTime;
+
+		public float PlayerOutOfRangeSinceMissionTime = -1f;
+	}
+
+	private sealed class ActiveSceneSummonRequest
+	{
+		public int BatchId = -1;
+
+		public int SpeakerAgentIndex = -1;
+
+		public string SpeakerName;
+
+		public int TargetPromptId;
+
+		public string TargetName;
+
+		public LocationCharacter SpeakerLocationCharacter;
+
+		public LocationCharacter TargetLocationCharacter;
+
+		public Location CurrentLocation;
+
+		public Location OriginalSpeakerLocation;
+
+		public Location OriginalTargetLocation;
+
+		public Location TargetSourceLocation;
+
+		public Location PassageHopLocation;
+
+		public Vec3? OriginalSpeakerPosition;
+
+		public Vec3? OriginalTargetPosition;
+
+		public Passage MessengerDoorPassage;
+
+		public int DoorProxyAgentIndex = -1;
+
+		public float NextStageMissionTime;
+
+		public float ArrivalSpeechDeadlineMissionTime;
+
+		public string PreGeneratedArrivalSpeech;
+
+		public bool ArrivalSpeechConsumed;
+
+		public SceneSummonStage Stage;
+
+		public SceneSummonStage PendingLaunchStage;
+
+		public string LaunchAnnouncement;
+
+		public bool KeepMessengerWithTarget = true;
+
+		public bool BatchContinuationStarted;
+	}
+
+	private sealed class SceneSpeechPlaybackInfo
+	{
+		public bool TtsEnabled;
+
+		public bool TtsAccepted;
+
+		public bool WaitForPlaybackFinished;
+
+		public float VisualDurationSeconds;
+	}
+
+	private sealed class PendingSceneDialogueFeedEntry
+	{
+		public string SpeakerLabel;
+
+		public string Content;
+
+		public Color Color;
+
+		public bool WaitForPlaybackFinished;
+
+		public float ExecuteAtMissionTime = -1f;
+	}
+
+	private sealed class SceneSummonConversationParticipant
+	{
+		public string DisplayName;
+
+		public LocationCharacter LocationCharacter;
+
+		public Location OriginalLocation;
+
+		public Vec3? OriginalPosition;
+	}
+
+	private sealed class SceneSummonConversationSession
+	{
+		public int BatchId = -1;
+
+		public int SpeakerAgentIndex = -1;
+
+		public string SpeakerName;
+
+		public LocationCharacter SpeakerLocationCharacter;
+
+		public Location OriginalSpeakerLocation;
+
+		public Vec3? OriginalSpeakerPosition;
+
+		public bool KeepSpeakerNearby = true;
+
+		public List<SceneSummonConversationParticipant> Participants = new List<SceneSummonConversationParticipant>();
+	}
+
+	private sealed class SceneSummonBatchState
+	{
+		public int BatchId = -1;
+
+		public int SpeakerAgentIndex = -1;
+
+		public string SpeakerName;
+
+		public LocationCharacter SpeakerLocationCharacter;
+
+		public Location OriginalSpeakerLocation;
+
+		public Vec3? OriginalSpeakerPosition;
+
+		public Queue<SceneSummonPromptTarget> PendingTargets = new Queue<SceneSummonPromptTarget>();
+
+		public bool CompletionFactRecorded;
+	}
+
+	private sealed class SceneReturnJob
+	{
+		public string DisplayName;
+
+		public LocationCharacter LocationCharacter;
+
+		public Location CurrentLocation;
+
+		public Location OriginalLocation;
+
+		public Vec3? OriginalPosition;
+
+		public Passage ExitPassage;
+
+		public int DoorProxyAgentIndex = -1;
+	}
+
+	private sealed class SceneFollowReturnState
+	{
+		public string DisplayName;
+
+		public LocationCharacter LocationCharacter;
+
+		public Location OriginalLocation;
+
+		public Vec3? OriginalPosition;
+	}
+
+	private enum SceneSummonStage
+	{
+		PendingLaunch,
+		MessengerToTarget,
+		MessengerToDoor,
+		WaitingForTarget,
+		TargetToPlayer
 	}
 
 	private sealed class AutoNpcGroupChatSession
@@ -252,6 +526,16 @@ public class ShoutBehavior : CampaignBehaviorBase
 			}
 			_parent.ProcessPendingInteractionTimeoutArms();
 			_parent.UpdateActiveInteractionTimeouts();
+			_parent.UpdatePendingSceneDialogueFeeds();
+			_parent.UpdatePendingSceneSummonReturnsAfterSpeech();
+			_parent.UpdatePendingSceneGuideReturnsAfterSpeech();
+			_parent.UpdatePendingSceneFollowCommands();
+			_parent.UpdateSceneSummonConversationEscortMovement();
+			_parent.UpdateSceneFollowHostilityState();
+			_parent.UpdateSceneFollowSpacing();
+			_parent.UpdateActiveSceneSummonRequests();
+			_parent.UpdateActiveSceneGuideRequests();
+			_parent.UpdateActiveSceneReturnJobs();
 			if (_parent._interactionGraceTimer > 0f)
 			{
 				_parent._interactionGraceTimer -= dt;
@@ -438,6 +722,18 @@ public class ShoutBehavior : CampaignBehaviorBase
 
 	private const float ACTIVE_INTERACTION_IDLE_PLAYER_RANGE = 10f;
 
+	private const float SCENE_FOLLOW_MAX_IDLE_DISTANCE = 0f;
+
+	private const float SCENE_SUMMON_ESCORT_REPOSITION_DISTANCE_SQ = 25f;
+
+	private const float SCENE_GUIDE_PLAYER_REQUIRED_DISTANCE_SQ = 100f;
+
+	private const float SCENE_GUIDE_TARGET_REACHED_DISTANCE_SQ = 36f;
+
+	private const float SCENE_GUIDE_PLAYER_LOST_TIMEOUT = 15f;
+
+	private static readonly FieldInfo FollowAgentBehaviorIdleDistanceField = typeof(FollowAgentBehavior).GetField("_idleDistance", BindingFlags.Instance | BindingFlags.NonPublic);
+
 	private const float PLAYER_DRIVEN_MULTI_SCENE_STARE_HOLD_SECONDS = 60f;
 
 	private const float MULTI_SCENE_MOVEMENT_SUPPRESSION_INTERVAL = 0.01f;
@@ -447,6 +743,30 @@ public class ShoutBehavior : CampaignBehaviorBase
 	private const float LIP_SYNC_SAFE_MAX_DISTANCE = 6.5f;
 
 	private static readonly Regex MeetingSceneShoutTauntTagRegex = new Regex("\\[ACTION:MEETING_TAUNT_(?:WARN|BATTLE)\\]", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
+	private static readonly Regex SceneSummonActionTagRegex = new Regex("\\[(?:ASS|ACTION:SCENE_SUMMON):([0-9\\s,]+)\\]", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
+	private static readonly Regex SceneGuideActionTagRegex = new Regex("\\[(?:GUI|ACTION:SCENE_GUIDE):([0-9]+)\\]", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
+	private static readonly Regex SceneFollowStartTagRegex = new Regex("\\[(?:FOL|ACTION:SCENE_FOLLOW_PLAYER)\\]", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
+	private static readonly Regex SceneFollowStopTagRegex = new Regex("\\[(?:STP|ACTION:SCENE_STOP_FOLLOW)\\]", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
+	private static readonly Regex SceneEndChatActionTagRegex = new Regex("\\[END\\]", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
+	private const int SCENE_SUMMON_PROMPT_TARGET_LIMIT = 12;
+
+	private const int SCENE_GUIDE_PROMPT_TARGET_LIMIT = 6;
+
+	private const float SCENE_SUMMON_MESSENGER_DOOR_DISTANCE_SQ = 2.25f;
+
+	private const float SCENE_SUMMON_MESSENGER_TARGET_DISTANCE_SQ = 100f;
+
+	private const float SCENE_SUMMON_RELAY_DISTANCE_SQ = 9f;
+
+	private const float SCENE_SUMMON_TARGET_ARRIVAL_DISTANCE_SQ = 9f;
+
+	private const float SCENE_SUMMON_DELAY_SECONDS = 2.25f;
 
 	private ConcurrentQueue<Action> _mainThreadActions = new ConcurrentQueue<Action>();
 
@@ -467,6 +787,18 @@ public class ShoutBehavior : CampaignBehaviorBase
 	private readonly Dictionary<int, SoundEvent> _agentSoundEvents = new Dictionary<int, SoundEvent>();
 
 	private readonly Dictionary<int, string> _agentWavPaths = new Dictionary<int, string>();
+
+	private readonly List<ActiveSceneSummonRequest> _activeSceneSummonRequests = new List<ActiveSceneSummonRequest>();
+
+	private readonly List<ActiveSceneGuideRequest> _activeSceneGuideRequests = new List<ActiveSceneGuideRequest>();
+
+	private readonly List<SceneSummonConversationSession> _activeSceneSummonConversationSessions = new List<SceneSummonConversationSession>();
+
+	private readonly Dictionary<int, SceneSummonBatchState> _activeSceneSummonBatches = new Dictionary<int, SceneSummonBatchState>();
+
+	private readonly List<SceneReturnJob> _activeSceneReturnJobs = new List<SceneReturnJob>();
+
+	private readonly HashSet<int> _sceneSummonScriptedAgentIndices = new HashSet<int>();
 
 	private readonly Dictionary<int, string> _agentXmlPaths = new Dictionary<int, string>();
 
@@ -508,9 +840,27 @@ public class ShoutBehavior : CampaignBehaviorBase
 
 	private readonly Dictionary<int, Queue<float>> _pendingAudioDurationQueues = new Dictionary<int, Queue<float>>();
 
+	private readonly HashSet<int> _ttsPlaybackStartedAgents = new HashSet<int>();
+
 	private readonly Dictionary<int, Queue<long>> _pendingSpeechCompletionTokenQueues = new Dictionary<int, Queue<long>>();
 
+	private readonly Dictionary<int, Queue<ActiveSceneSummonRequest>> _pendingSceneSummonLaunchQueues = new Dictionary<int, Queue<ActiveSceneSummonRequest>>();
+
+	private readonly Dictionary<int, Queue<ActiveSceneGuideRequest>> _pendingSceneGuideLaunchQueues = new Dictionary<int, Queue<ActiveSceneGuideRequest>>();
+
+	private readonly Dictionary<int, Queue<PendingSceneDialogueFeedEntry>> _pendingSceneDialogueFeedQueues = new Dictionary<int, Queue<PendingSceneDialogueFeedEntry>>();
+
 	private readonly Dictionary<int, PendingInteractionTimeoutArm> _pendingInteractionTimeoutArms = new Dictionary<int, PendingInteractionTimeoutArm>();
+
+	private readonly Dictionary<int, PendingSceneSummonReturnAfterSpeech> _pendingSceneSummonReturnsAfterSpeech = new Dictionary<int, PendingSceneSummonReturnAfterSpeech>();
+
+	private readonly Dictionary<int, PendingSceneFollowCommand> _pendingSceneFollowCommands = new Dictionary<int, PendingSceneFollowCommand>();
+
+	private readonly Dictionary<int, PendingSceneGuideReturnAfterSpeech> _pendingSceneGuideReturnsAfterSpeech = new Dictionary<int, PendingSceneGuideReturnAfterSpeech>();
+
+	private readonly Dictionary<int, SceneFollowReturnState> _sceneFollowReturnStates = new Dictionary<int, SceneFollowReturnState>();
+
+	private int _nextSceneSummonBatchId = 1;
 
 	private static readonly object _ttsEventSubLock = new object();
 
@@ -756,7 +1106,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private void EnqueuePendingNpcBubble(int agentIndex, Agent liveAgent, string uiContent, string npcName)
+	private void EnqueuePendingNpcBubble(int agentIndex, Agent liveAgent, string uiContent, string npcName, float fallbackDurationSeconds = -1f)
 	{
 		if (agentIndex < 0 || liveAgent == null || string.IsNullOrWhiteSpace(uiContent))
 		{
@@ -773,7 +1123,8 @@ public class ShoutBehavior : CampaignBehaviorBase
 			{
 				Agent = liveAgent,
 				UiContent = uiContent,
-				NpcName = npcName
+				NpcName = npcName,
+				FallbackDurationSeconds = fallbackDurationSeconds
 			});
 		}
 	}
@@ -825,6 +1176,253 @@ public class ShoutBehavior : CampaignBehaviorBase
 		return bubble != null;
 	}
 
+	private bool TryDispatchPendingNpcBubbleForTts(int agentIndex, bool allowFallbackDuration)
+	{
+		PendingNpcBubbleEntry bubble = null;
+		float typingDurationSeconds = -1f;
+		if (agentIndex < 0)
+		{
+			return false;
+		}
+		lock (_ttsBubbleSyncLock)
+		{
+			if (!_pendingNpcBubbleQueues.TryGetValue(agentIndex, out var value) || value == null || value.Count == 0)
+			{
+				return false;
+			}
+			bool flag = _pendingAudioDurationQueues.TryGetValue(agentIndex, out var value2) && value2 != null && value2.Count > 0;
+			if (!flag && !allowFallbackDuration)
+			{
+				return false;
+			}
+			bubble = value.Dequeue();
+			if (value.Count == 0)
+			{
+				_pendingNpcBubbleQueues.Remove(agentIndex);
+			}
+			if (flag)
+			{
+				typingDurationSeconds = value2.Dequeue();
+				if (value2.Count == 0)
+				{
+					_pendingAudioDurationQueues.Remove(agentIndex);
+				}
+			}
+			else
+			{
+				typingDurationSeconds = bubble?.FallbackDurationSeconds ?? (-1f);
+			}
+		}
+		if (bubble == null)
+		{
+			return false;
+		}
+		if (typingDurationSeconds <= 0f || float.IsNaN(typingDurationSeconds) || float.IsInfinity(typingDurationSeconds))
+		{
+			typingDurationSeconds = EstimateBubbleTypingDurationSeconds(bubble.UiContent);
+		}
+		LogTtsReport("PlaybackStarted.BubbleDispatchStart", agentIndex, $"bubbleAgent={(bubble.Agent?.Index ?? -1)};typingDuration={typingDurationSeconds:F2};fallback={(typingDurationSeconds == bubble.FallbackDurationSeconds)}");
+		TryShowNpcBubble(bubble.Agent, bubble.UiContent, typingDurationSeconds);
+		LogTtsReport("PlaybackStarted.BubbleDispatchEnd", agentIndex, $"typingDuration={typingDurationSeconds:F2}");
+		return true;
+	}
+
+	private void SchedulePendingNpcBubbleFallbackDispatch(int agentIndex, int delayMs = 180, int remainingRetries = 3)
+	{
+		if (agentIndex < 0)
+		{
+			return;
+		}
+		_ = Task.Run(async delegate
+		{
+			try
+			{
+				await Task.Delay(Math.Max(50, delayMs));
+				_mainThreadActions.Enqueue(delegate
+				{
+					try
+					{
+						bool flag;
+						lock (_ttsBubbleSyncLock)
+						{
+							flag = _ttsPlaybackStartedAgents.Contains(agentIndex);
+						}
+						if (flag)
+						{
+							bool flag2;
+							lock (_ttsBubbleSyncLock)
+							{
+								flag2 = _pendingAudioDurationQueues.TryGetValue(agentIndex, out var value) && value != null && value.Count > 0;
+							}
+							if (flag2)
+							{
+								TryDispatchPendingNpcBubbleForTts(agentIndex, allowFallbackDuration: false);
+							}
+							else if (remainingRetries > 0)
+							{
+								SchedulePendingNpcBubbleFallbackDispatch(agentIndex, delayMs, remainingRetries - 1);
+							}
+							else
+							{
+								TryDispatchPendingNpcBubbleForTts(agentIndex, allowFallbackDuration: true);
+							}
+						}
+					}
+					catch
+					{
+					}
+				});
+			}
+			catch
+			{
+			}
+		});
+	}
+
+	private void ClearOrphanPendingAudioDuration(int agentIndex)
+	{
+		if (agentIndex < 0)
+		{
+			return;
+		}
+		lock (_ttsBubbleSyncLock)
+		{
+			bool flag = _pendingNpcBubbleQueues.TryGetValue(agentIndex, out var value) && value != null && value.Count > 0;
+			if (!flag)
+			{
+				_pendingAudioDurationQueues.Remove(agentIndex);
+			}
+		}
+	}
+
+	private void ClearPendingTtsBubbleSyncForAgent(int agentIndex, bool clearInteractionToken = false)
+	{
+		if (agentIndex < 0)
+		{
+			return;
+		}
+		lock (_ttsBubbleSyncLock)
+		{
+			_pendingNpcBubbleQueues.Remove(agentIndex);
+			_pendingAudioDurationQueues.Remove(agentIndex);
+			_ttsPlaybackStartedAgents.Remove(agentIndex);
+			if (clearInteractionToken)
+			{
+				_pendingSpeechCompletionTokenQueues.Remove(agentIndex);
+			}
+		}
+	}
+
+	private void ClearPendingSceneDialogueFeedForAgent(int agentIndex)
+	{
+		if (agentIndex < 0)
+		{
+			return;
+		}
+		lock (_ttsBubbleSyncLock)
+		{
+			_pendingSceneDialogueFeedQueues.Remove(agentIndex);
+		}
+	}
+
+	private void EnqueuePendingSceneDialogueFeed(int agentIndex, string speakerLabel, string content, Color color, bool waitForPlaybackFinished, float executeAtMissionTime = -1f)
+	{
+		if (agentIndex < 0)
+		{
+			return;
+		}
+		string text = (content ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return;
+		}
+		string text2 = (speakerLabel ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text2))
+		{
+			text2 = "NPC";
+		}
+		lock (_ttsBubbleSyncLock)
+		{
+			if (!_pendingSceneDialogueFeedQueues.TryGetValue(agentIndex, out var value))
+			{
+				value = new Queue<PendingSceneDialogueFeedEntry>();
+				_pendingSceneDialogueFeedQueues[agentIndex] = value;
+			}
+			value.Enqueue(new PendingSceneDialogueFeedEntry
+			{
+				SpeakerLabel = text2,
+				Content = text,
+				Color = color,
+				WaitForPlaybackFinished = waitForPlaybackFinished,
+				ExecuteAtMissionTime = executeAtMissionTime
+			});
+		}
+	}
+
+	private bool TryDequeuePendingSceneDialogueFeed(int agentIndex, out PendingSceneDialogueFeedEntry entry)
+	{
+		entry = null;
+		if (agentIndex < 0)
+		{
+			return false;
+		}
+		lock (_ttsBubbleSyncLock)
+		{
+			if (_pendingSceneDialogueFeedQueues.TryGetValue(agentIndex, out var value) && value != null && value.Count > 0)
+			{
+				entry = value.Dequeue();
+				if (value.Count == 0)
+				{
+					_pendingSceneDialogueFeedQueues.Remove(agentIndex);
+				}
+			}
+		}
+		return entry != null;
+	}
+
+	private void FlushPendingSceneDialogueFeedAfterSpeech(int agentIndex)
+	{
+		if (!TryDequeuePendingSceneDialogueFeed(agentIndex, out var entry) || entry == null)
+		{
+			return;
+		}
+		RecordSceneDialogueToMessageFeed(entry.SpeakerLabel, entry.Content, entry.Color);
+	}
+
+	private void ConvertPendingSceneDialogueFeedToTimedFlush(int agentIndex, float delaySeconds)
+	{
+		if (agentIndex < 0 || Mission.Current == null)
+		{
+			return;
+		}
+		lock (_ttsBubbleSyncLock)
+		{
+			if (!_pendingSceneDialogueFeedQueues.TryGetValue(agentIndex, out var value) || value == null || value.Count == 0)
+			{
+				return;
+			}
+			PendingSceneDialogueFeedEntry[] array = value.ToArray();
+			value.Clear();
+			bool flag = false;
+			float num = Mission.Current.CurrentTime + Math.Max(0f, delaySeconds);
+			for (int i = 0; i < array.Length; i++)
+			{
+				PendingSceneDialogueFeedEntry pendingSceneDialogueFeedEntry = array[i];
+				if (!flag && pendingSceneDialogueFeedEntry != null && pendingSceneDialogueFeedEntry.WaitForPlaybackFinished)
+				{
+					pendingSceneDialogueFeedEntry.WaitForPlaybackFinished = false;
+					pendingSceneDialogueFeedEntry.ExecuteAtMissionTime = num;
+					flag = true;
+				}
+				value.Enqueue(pendingSceneDialogueFeedEntry);
+			}
+			if (value.Count == 0)
+			{
+				_pendingSceneDialogueFeedQueues.Remove(agentIndex);
+			}
+		}
+	}
+
 	private void EnqueuePendingSpeechCompletionToken(int agentIndex, long interactionToken)
 	{
 		if (agentIndex < 0 || interactionToken == 0L)
@@ -871,6 +1469,9 @@ public class ShoutBehavior : CampaignBehaviorBase
 			_pendingNpcBubbleQueues.Clear();
 			_pendingAudioDurationQueues.Clear();
 			_pendingSpeechCompletionTokenQueues.Clear();
+			_pendingSceneSummonLaunchQueues.Clear();
+			_pendingSceneDialogueFeedQueues.Clear();
+			_ttsPlaybackStartedAgents.Clear();
 		}
 		_pendingInteractionTimeoutArms.Clear();
 	}
@@ -887,6 +1488,10 @@ public class ShoutBehavior : CampaignBehaviorBase
 				_speakingAgentIndices.Remove(agentIndex);
 				_agentLipSyncDetachedForSafety.Remove(agentIndex);
 			}
+			lock (_ttsBubbleSyncLock)
+			{
+				_ttsPlaybackStartedAgents.Remove(agentIndex);
+			}
 		}
 		PendingNpcBubbleEntry bubble = null;
 		float typingDuration = -1f;
@@ -898,17 +1503,20 @@ public class ShoutBehavior : CampaignBehaviorBase
 		{
 			try
 			{
+				if (hasAgent)
+				{
+					ConvertPendingSceneDialogueFeedToTimedFlush(agentIndex, (typingDuration > 0f) ? typingDuration : ((hasBubble && bubble != null) ? EstimateBubbleTypingDurationSeconds(bubble.UiContent) : 0f));
+				}
 				if (hasBubble && bubble != null)
 				{
-					if (!TryShowNpcBubble(bubble.Agent, bubble.UiContent, typingDuration))
-					{
-						InformationManager.DisplayMessage(new InformationMessage("[" + (bubble.NpcName ?? "NPC") + "] " + bubble.UiContent, new Color(1f, 0.8f, 0.2f)));
-					}
+					TryShowNpcBubble(bubble.Agent, bubble.UiContent, typingDuration);
 					if (hasInteractionToken)
 					{
 						ScheduleInteractionTimeoutArm(agentIndex, interactionToken, (typingDuration > 0f) ? typingDuration : EstimateBubbleTypingDurationSeconds(bubble.UiContent));
 					}
 				}
+				FlushPendingSceneSummonLaunches(agentIndex, (typingDuration > 0f) ? typingDuration : 0f);
+				FlushPendingSceneGuideLaunches(agentIndex, (typingDuration > 0f) ? typingDuration : 0f);
 			}
 			catch
 			{
@@ -954,16 +1562,54 @@ public class ShoutBehavior : CampaignBehaviorBase
 		});
 	}
 
-	private void ShowNpcSpeechOutput(NpcDataPacket npc, Agent liveAgent, string content, bool allowTts = true, bool attachTtsToSceneAgent = true)
+	private void RecordSceneDialogueToMessageFeed(string speakerLabel, string content, Color color)
 	{
-		if (!CanAgentParticipateInSceneSpeech(liveAgent))
+		string text = (content ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
+		if (string.IsNullOrWhiteSpace(text))
 		{
 			return;
+		}
+		string text2 = (speakerLabel ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text2))
+		{
+			text2 = "NPC";
+		}
+		InformationManager.DisplayMessage(new InformationMessage("[" + text2 + "] " + text, color));
+	}
+
+	private void RecordPlayerSpeechToMessageFeed(string content)
+	{
+		RecordSceneDialogueToMessageFeed("你", content, new Color(0.3f, 1f, 0.3f));
+	}
+
+	private void RecordNpcSpeechToMessageFeed(string npcDisplayName, string content)
+	{
+		RecordSceneDialogueToMessageFeed(npcDisplayName, content, new Color(1f, 0.8f, 0.2f));
+	}
+
+	private void ScheduleNpcSpeechToMessageFeed(int agentIndex, string npcDisplayName, string content, SceneSpeechPlaybackInfo playbackInfo)
+	{
+		if (agentIndex < 0 || string.IsNullOrWhiteSpace(content) || Mission.Current == null)
+		{
+			return;
+		}
+		float num = Math.Max(0f, playbackInfo?.VisualDurationSeconds ?? 0f);
+		bool flag = playbackInfo != null && playbackInfo.TtsAccepted && playbackInfo.WaitForPlaybackFinished;
+		float executeAtMissionTime = flag ? (-1f) : (Mission.Current.CurrentTime + num);
+		EnqueuePendingSceneDialogueFeed(agentIndex, npcDisplayName, content, new Color(1f, 0.8f, 0.2f), flag, executeAtMissionTime);
+	}
+
+	private SceneSpeechPlaybackInfo ShowNpcSpeechOutput(NpcDataPacket npc, Agent liveAgent, string content, bool allowTts = true, bool attachTtsToSceneAgent = true)
+	{
+		SceneSpeechPlaybackInfo sceneSpeechPlaybackInfo = new SceneSpeechPlaybackInfo();
+		if (!CanAgentParticipateInSceneSpeech(liveAgent))
+		{
+			return sceneSpeechPlaybackInfo;
 		}
 		string text = SanitizeSceneSpeechText(content);
 		if (string.IsNullOrWhiteSpace(text))
 		{
-			return;
+			return sceneSpeechPlaybackInfo;
 		}
 		try
 		{
@@ -999,6 +1645,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 		}
 		bool flag = false;
 		bool flag2 = allowTts && IsTtsPlaybackEnabledForShout();
+		sceneSpeechPlaybackInfo.TtsEnabled = flag2;
 		string text3 = "scene_lipsync_not_requested";
 		bool flag3 = flag2 && attachTtsToSceneAgent && num >= 0 && CanAgentParticipateInSceneSpeech(liveAgent) && CanAgentUseSceneLipSync(liveAgent, out text3);
 		int num2 = (flag3 ? num : (-1));
@@ -1044,39 +1691,45 @@ public class ShoutBehavior : CampaignBehaviorBase
 				{
 					text4 = VoiceMapper.ResolveVoiceIdForNonHero(npc.IsFemale, npc.Age, npc.AgentIndex);
 				}
-				flag = TtsEngine.Instance.SpeakAsync(content, -1, -1f, num2, text4);
+				flag = TtsEngine.Instance.SpeakAsync(text, -1, -1f, num2, text4);
 			}
 			catch
 			{
 			}
+			sceneSpeechPlaybackInfo.TtsAccepted = flag;
+			sceneSpeechPlaybackInfo.WaitForPlaybackFinished = flag && num2 >= 0;
 			LogTtsReport("ShowNpcSpeechOutput.SpeakAttempt", num, $"effectiveAgentIndex={num2};speakAccepted={flag};voiceId={text4};lipSyncSafe={flag3};lipSyncReason={text3}");
 		}
 		if (flag && num2 >= 0 && CanAgentParticipateInSceneSpeech(liveAgent))
 		{
+			sceneSpeechPlaybackInfo.VisualDurationSeconds = Math.Max(0.75f, EstimateBubbleTypingDurationSeconds(text));
+			ClearPendingTtsBubbleSyncForAgent(num);
 			if (interactionToken != 0L)
 			{
 				EnqueuePendingSpeechCompletionToken(num, interactionToken);
 			}
-			EnqueuePendingNpcBubble(num, liveAgent, text, npcDisplayName);
+			EnqueuePendingNpcBubble(num, liveAgent, text, npcDisplayName, sceneSpeechPlaybackInfo.VisualDurationSeconds);
+			ScheduleNpcSpeechToMessageFeed(num, npcDisplayName, text, sceneSpeechPlaybackInfo);
 			MeetingBattleLockMissionBehavior.ReapplyMeetingLockForAgentIfNeeded(liveAgent, recaptureAnchor: false, preserveFacing: true);
 			LogTtsReport("ShowNpcSpeechOutput.SceneBubbleQueued", num, $"interactionToken={interactionToken};uiLen={text.Length}");
-			return;
+			return sceneSpeechPlaybackInfo;
 		}
 		float num3 = EstimateBubbleTypingDurationSeconds(text);
+		sceneSpeechPlaybackInfo.VisualDurationSeconds = num3;
 		if (!TryShowNpcBubble(liveAgent, text, num3))
 		{
 			Logger.Log("FloatingText", "[Fallback] bubble unavailable, use message: npc=" + npcDisplayName);
-			InformationManager.DisplayMessage(new InformationMessage("[" + npcDisplayName + "] " + text, new Color(1f, 0.8f, 0.2f)));
 		}
 		if (interactionToken != 0L)
 		{
 			ScheduleInteractionTimeoutArm(num, interactionToken, num3);
 		}
+		ScheduleNpcSpeechToMessageFeed(num, npcDisplayName, text, sceneSpeechPlaybackInfo);
 		MeetingBattleLockMissionBehavior.ReapplyMeetingLockForAgentIfNeeded(liveAgent, recaptureAnchor: false, preserveFacing: true);
 		LogTtsReport("ShowNpcSpeechOutput.BubbleFallback", num, $"interactionToken={interactionToken};typingDuration={num3:F2};ttsAccepted={flag};ttsEnabled={flag2}");
 		if (!(!flag && flag2))
 		{
-			return;
+			return sceneSpeechPlaybackInfo;
 		}
 		try
 		{
@@ -1097,12 +1750,13 @@ public class ShoutBehavior : CampaignBehaviorBase
 			{
 				text4 = VoiceMapper.ResolveVoiceIdForNonHero(npc.IsFemale, npc.Age, npc.AgentIndex);
 			}
-			TtsEngine.Instance.SpeakAsync(content, -1, -1f, num2, text4);
+			TtsEngine.Instance.SpeakAsync(text, -1, -1f, num2, text4);
 			LogTtsReport("ShowNpcSpeechOutput.DetachedSpeakFallback", num, $"effectiveAgentIndex={num2};voiceId={text4}");
 		}
 		catch
 		{
 		}
+		return sceneSpeechPlaybackInfo;
 	}
 
 	public static bool CanAgentParticipateInSceneSpeechExternal(int agentIndex)
@@ -1267,6 +1921,656 @@ public class ShoutBehavior : CampaignBehaviorBase
 			return "";
 		}
 		return "【非HeroNPC命名说明】：【在场人物列表】里的“名字”是非HeroNPC的个人名字；在【当前场景公共对话与互动】等历史里，会使用“身份+名字”的写法，例如“帝国女镇民利娅”，两者指向同一人。";
+	}
+
+	private static string GetSceneSummonTargetDisplayName(NpcDataPacket npc)
+	{
+		if (npc == null)
+		{
+			return "";
+		}
+		return (npc.IsHero ? GetSceneNpcIdentityNameForPrompt(npc) : GetSceneNpcGivenNameForPrompt(npc)).Trim();
+	}
+
+	private static string GetSceneSummonLocationCode(Location location)
+	{
+		string text = (location?.StringId ?? "").Trim().ToLowerInvariant();
+		return text switch
+		{
+			"center" => "中",
+			"village_center" => "村",
+			"tavern" => "酒",
+			"lordshall" => "厅",
+			"prison" => "狱",
+			"arena" => "场",
+			"alley" => "巷",
+			"port" => "港",
+			_ => "处",
+		};
+	}
+
+	private static List<Location> FindSceneLocationPath(Location fromLocation, Location toLocation)
+	{
+		if (fromLocation == null || toLocation == null)
+		{
+			return null;
+		}
+		if (fromLocation == toLocation)
+		{
+			return new List<Location> { fromLocation };
+		}
+		Queue<Location> queue = new Queue<Location>();
+		Dictionary<Location, Location> dictionary = new Dictionary<Location, Location>();
+		HashSet<Location> hashSet = new HashSet<Location>();
+		hashSet.Add(fromLocation);
+		queue.Enqueue(fromLocation);
+		while (queue.Count > 0)
+		{
+			Location location = queue.Dequeue();
+			IEnumerable<Location> enumerable = location.LocationsOfPassages ?? Enumerable.Empty<Location>();
+			foreach (Location item in enumerable)
+			{
+				if (item == null || !hashSet.Add(item))
+				{
+					continue;
+				}
+				dictionary[item] = location;
+				if (item == toLocation)
+				{
+					List<Location> list = new List<Location> { toLocation };
+					Location location2 = toLocation;
+					while (dictionary.TryGetValue(location2, out var value))
+					{
+						list.Add(value);
+						if (value == fromLocation)
+						{
+							break;
+						}
+						location2 = value;
+					}
+					list.Reverse();
+					return list;
+				}
+				queue.Enqueue(item);
+			}
+		}
+		return null;
+	}
+
+	private List<SceneSummonPromptTarget> BuildSceneSummonPromptTargets(IEnumerable<NpcDataPacket> presentNpcs, Dictionary<int, Hero> resolvedHeroes = null)
+	{
+		List<SceneSummonPromptTarget> list = new List<SceneSummonPromptTarget>();
+		LocationComplex locationComplex = LocationComplex.Current;
+		Location location = CampaignMission.Current?.Location;
+		if (locationComplex == null || location == null)
+		{
+			return list;
+		}
+		HashSet<LocationCharacter> hashSet = new HashSet<LocationCharacter>();
+		void tryAdd(LocationCharacter locationCharacter, string displayName)
+		{
+			if (locationCharacter == null || hashSet.Contains(locationCharacter) || locationCharacter.Character == null || locationCharacter.Character == CharacterObject.PlayerCharacter)
+			{
+				return;
+			}
+			Location locationOfCharacter = locationComplex.GetLocationOfCharacter(locationCharacter);
+			if (locationOfCharacter == null)
+			{
+				return;
+			}
+			List<Location> sceneLocationPath = FindSceneLocationPath(location, locationOfCharacter);
+			if (sceneLocationPath == null || sceneLocationPath.Count == 0)
+			{
+				return;
+			}
+			string text = (displayName ?? "").Trim();
+			if (string.IsNullOrWhiteSpace(text))
+			{
+				text = (locationCharacter.Character.Name?.ToString() ?? "").Trim();
+			}
+			if (string.IsNullOrWhiteSpace(text))
+			{
+				return;
+			}
+			hashSet.Add(locationCharacter);
+			list.Add(new SceneSummonPromptTarget
+			{
+				DisplayName = text,
+				LocationCode = GetSceneSummonLocationCode(locationOfCharacter),
+				LocationCharacter = locationCharacter,
+				SourceLocation = locationOfCharacter
+			});
+		}
+		if (presentNpcs != null)
+		{
+			foreach (NpcDataPacket presentNpc in presentNpcs)
+			{
+				if (presentNpc == null)
+				{
+					continue;
+				}
+				LocationCharacter locationCharacter2 = null;
+				if (presentNpc.IsHero)
+				{
+					Hero hero = null;
+					if (resolvedHeroes != null)
+					{
+						resolvedHeroes.TryGetValue(presentNpc.AgentIndex, out hero);
+					}
+					hero ??= ResolveHeroFromAgentIndex(presentNpc.AgentIndex);
+					if (hero != null)
+					{
+						locationCharacter2 = locationComplex.GetLocationCharacterOfHero(hero);
+					}
+				}
+				else
+				{
+					Agent agent = Mission.Current?.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == presentNpc.AgentIndex);
+					if (agent != null)
+					{
+						locationCharacter2 = locationComplex.FindCharacter(agent);
+					}
+				}
+				tryAdd(locationCharacter2, GetSceneSummonTargetDisplayName(presentNpc));
+				if (list.Count >= SCENE_SUMMON_PROMPT_TARGET_LIMIT)
+				{
+					break;
+				}
+			}
+		}
+		if (list.Count < SCENE_SUMMON_PROMPT_TARGET_LIMIT)
+		{
+			IEnumerable<IGrouping<Location, LocationCharacter>> enumerable2 = from locationCharacter3 in locationComplex.GetListOfCharacters()
+				where locationCharacter3 != null && locationCharacter3.Character != null && locationCharacter3.Character.IsHero && locationCharacter3.Character.HeroObject != null && locationCharacter3.Character.HeroObject != Hero.MainHero
+				group locationCharacter3 by locationComplex.GetLocationOfCharacter(locationCharacter3) into grouped
+				orderby (FindSceneLocationPath(location, grouped.Key)?.Count ?? int.MaxValue), (grouped.Key?.StringId ?? ""), (grouped.FirstOrDefault()?.Character?.Name?.ToString() ?? "")
+				select grouped;
+			foreach (IGrouping<Location, LocationCharacter> item in enumerable2)
+			{
+				foreach (LocationCharacter item2 in item.OrderBy((LocationCharacter x) => (x.Character?.Name?.ToString() ?? "").Trim(), StringComparer.CurrentCulture))
+				{
+					tryAdd(item2, item2.Character?.HeroObject?.Name?.ToString());
+					if (list.Count >= SCENE_SUMMON_PROMPT_TARGET_LIMIT)
+					{
+						break;
+					}
+				}
+				if (list.Count >= SCENE_SUMMON_PROMPT_TARGET_LIMIT)
+				{
+					break;
+				}
+			}
+		}
+		for (int i = 0; i < list.Count; i++)
+		{
+			list[i].PromptId = i + 1;
+		}
+		return list;
+	}
+
+	private static List<SceneSummonPromptTarget> CloneSceneSummonPromptTargets(List<SceneSummonPromptTarget> source)
+	{
+		if (source == null || source.Count == 0)
+		{
+			return null;
+		}
+		List<SceneSummonPromptTarget> list = new List<SceneSummonPromptTarget>(source.Count);
+		foreach (SceneSummonPromptTarget item in source)
+		{
+			if (item == null)
+			{
+				continue;
+			}
+			list.Add(new SceneSummonPromptTarget
+			{
+				PromptId = item.PromptId,
+				DisplayName = item.DisplayName,
+				LocationCode = item.LocationCode,
+				LocationCharacter = item.LocationCharacter,
+				SourceLocation = item.SourceLocation
+			});
+		}
+		return list;
+	}
+
+	private static string GetSceneGuideCategoryDisplayName(Occupation occupation)
+	{
+		return occupation switch
+		{
+			Occupation.Armorer => "盔甲匠",
+			Occupation.Weaponsmith => "武器匠",
+			Occupation.Blacksmith => "武器匠",
+			Occupation.HorseTrader => "马匹贩子",
+			Occupation.Merchant => "商贩",
+			Occupation.GoodsTrader => "商贩",
+			_ => ""
+		};
+	}
+
+	private static bool TryGetSceneGuideTargetLabel(LocationCharacter locationCharacter, out string displayName, out bool preferNearest)
+	{
+		displayName = "";
+		preferNearest = false;
+		Occupation occupation = Occupation.NotAssigned;
+		try
+		{
+			if (locationCharacter?.Character is CharacterObject characterObject)
+			{
+				occupation = characterObject.Occupation;
+			}
+		}
+		catch
+		{
+			occupation = Occupation.NotAssigned;
+		}
+		displayName = GetSceneGuideCategoryDisplayName(occupation);
+		preferNearest = occupation == Occupation.Merchant || occupation == Occupation.GoodsTrader;
+		return !string.IsNullOrWhiteSpace(displayName);
+	}
+
+	private List<SceneGuidePromptTarget> BuildSceneGuidePromptTargets(Agent guideAgent = null)
+	{
+		List<SceneGuidePromptTarget> list = new List<SceneGuidePromptTarget>();
+		LocationComplex locationComplex = LocationComplex.Current;
+		Location location = CampaignMission.Current?.Location;
+		if (locationComplex == null || location == null)
+		{
+			return list;
+		}
+		Dictionary<string, List<LocationCharacter>> dictionary = new Dictionary<string, List<LocationCharacter>>(StringComparer.OrdinalIgnoreCase);
+		foreach (LocationCharacter item in locationComplex.GetListOfCharacters())
+		{
+			if (!TryGetSceneGuideTargetLabel(item, out var displayName, out var _))
+			{
+				continue;
+			}
+			if (string.Equals(displayName, "商贩", StringComparison.OrdinalIgnoreCase) && (item.Character?.IsHero ?? false))
+			{
+				continue;
+			}
+			Location locationOfCharacter = locationComplex.GetLocationOfCharacter(item);
+			if (locationOfCharacter == null)
+			{
+				continue;
+			}
+			List<Location> sceneLocationPath = FindSceneLocationPath(location, locationOfCharacter);
+			if (sceneLocationPath == null || sceneLocationPath.Count == 0)
+			{
+				continue;
+			}
+			if (!dictionary.TryGetValue(displayName, out var value))
+			{
+				value = new List<LocationCharacter>();
+				dictionary[displayName] = value;
+			}
+			value.Add(item);
+		}
+		Vec3 vec = guideAgent?.Position ?? Agent.Main?.Position ?? Vec3.Zero;
+		string[] array = new string[4] { "盔甲匠", "武器匠", "马匹贩子", "商贩" };
+		foreach (string text in array)
+		{
+			if (!dictionary.TryGetValue(text, out var value2) || value2 == null || value2.Count == 0)
+			{
+				continue;
+			}
+			LocationCharacter locationCharacter = value2[0];
+			if (string.Equals(text, "商贩", StringComparison.OrdinalIgnoreCase))
+			{
+				locationCharacter = value2.OrderBy(delegate(LocationCharacter x)
+				{
+					Agent agent = ResolveAgentForLocationCharacter(x);
+					if (agent != null && agent.IsActive())
+					{
+						return agent.Position.DistanceSquared(vec);
+					}
+					return float.MaxValue;
+				}).ThenBy((LocationCharacter x) => (x.Character?.Name?.ToString() ?? "").Trim(), StringComparer.CurrentCulture).FirstOrDefault();
+			}
+			else
+			{
+				locationCharacter = value2.OrderBy((LocationCharacter x) => (x.Character?.Name?.ToString() ?? "").Trim(), StringComparer.CurrentCulture).FirstOrDefault();
+			}
+			if (locationCharacter == null)
+			{
+				continue;
+			}
+			Location locationOfCharacter2 = locationComplex.GetLocationOfCharacter(locationCharacter);
+			if (locationOfCharacter2 == null)
+			{
+				continue;
+			}
+			list.Add(new SceneGuidePromptTarget
+			{
+				PromptId = list.Count + 1,
+				DisplayName = text,
+				LocationCode = GetSceneSummonLocationCode(locationOfCharacter2),
+				LocationCharacter = locationCharacter,
+				SourceLocation = locationOfCharacter2
+			});
+			if (list.Count >= SCENE_GUIDE_PROMPT_TARGET_LIMIT)
+			{
+				break;
+			}
+		}
+		return list;
+	}
+
+	private static List<SceneGuidePromptTarget> CloneSceneGuidePromptTargets(List<SceneGuidePromptTarget> source)
+	{
+		if (source == null || source.Count == 0)
+		{
+			return null;
+		}
+		List<SceneGuidePromptTarget> list = new List<SceneGuidePromptTarget>(source.Count);
+		foreach (SceneGuidePromptTarget item in source)
+		{
+			if (item == null)
+			{
+				continue;
+			}
+			list.Add(new SceneGuidePromptTarget
+			{
+				PromptId = item.PromptId,
+				DisplayName = item.DisplayName,
+				LocationCode = item.LocationCode,
+				LocationCharacter = item.LocationCharacter,
+				SourceLocation = item.SourceLocation
+			});
+		}
+		return list;
+	}
+
+	private static void AppendSceneSummonPromptSection(StringBuilder prompt, List<SceneSummonPromptTarget> targets)
+	{
+		if (prompt == null || targets == null || targets.Count == 0)
+		{
+			return;
+		}
+		prompt.AppendLine("【可召目标】：");
+		foreach (SceneSummonPromptTarget target in targets)
+		{
+			if (target != null && target.PromptId > 0 && !string.IsNullOrWhiteSpace(target.DisplayName))
+			{
+				prompt.AppendLine(target.PromptId + " " + target.DisplayName.Trim() + " " + (target.LocationCode ?? "处"));
+			}
+		}
+	}
+
+	private void EnqueuePendingSceneSummonLaunch(int agentIndex, ActiveSceneSummonRequest request)
+	{
+		if (agentIndex < 0 || request == null)
+		{
+			return;
+		}
+		lock (_ttsBubbleSyncLock)
+		{
+			if (!_pendingSceneSummonLaunchQueues.TryGetValue(agentIndex, out var value))
+			{
+				value = new Queue<ActiveSceneSummonRequest>();
+				_pendingSceneSummonLaunchQueues[agentIndex] = value;
+			}
+			value.Enqueue(request);
+		}
+	}
+
+	private void EnqueuePendingSceneGuideLaunch(int agentIndex, ActiveSceneGuideRequest request)
+	{
+		if (agentIndex < 0 || request == null)
+		{
+			return;
+		}
+		lock (_ttsBubbleSyncLock)
+		{
+			if (!_pendingSceneGuideLaunchQueues.TryGetValue(agentIndex, out var value))
+			{
+				value = new Queue<ActiveSceneGuideRequest>();
+				_pendingSceneGuideLaunchQueues[agentIndex] = value;
+			}
+			value.Enqueue(request);
+		}
+	}
+
+	private bool TryDequeuePendingSceneSummonLaunch(int agentIndex, out ActiveSceneSummonRequest request)
+	{
+		request = null;
+		if (agentIndex < 0)
+		{
+			return false;
+		}
+		lock (_ttsBubbleSyncLock)
+		{
+			if (_pendingSceneSummonLaunchQueues.TryGetValue(agentIndex, out var value) && value.Count > 0)
+			{
+				request = value.Dequeue();
+				if (value.Count == 0)
+				{
+					_pendingSceneSummonLaunchQueues.Remove(agentIndex);
+				}
+				return request != null;
+			}
+		}
+		return false;
+	}
+
+	private bool TryDequeuePendingSceneGuideLaunch(int agentIndex, out ActiveSceneGuideRequest request)
+	{
+		request = null;
+		if (agentIndex < 0)
+		{
+			return false;
+		}
+		lock (_ttsBubbleSyncLock)
+		{
+			if (_pendingSceneGuideLaunchQueues.TryGetValue(agentIndex, out var value) && value.Count > 0)
+			{
+				request = value.Dequeue();
+				if (value.Count == 0)
+				{
+					_pendingSceneGuideLaunchQueues.Remove(agentIndex);
+				}
+				return request != null;
+			}
+		}
+		return false;
+	}
+
+	private void FlushPendingSceneSummonLaunches(int agentIndex, float additionalDelaySeconds = 0f)
+	{
+		if (agentIndex < 0 || Mission.Current == null)
+		{
+			return;
+		}
+		while (TryDequeuePendingSceneSummonLaunch(agentIndex, out var request))
+		{
+			request.NextStageMissionTime = Mission.Current.CurrentTime + Math.Max(0f, additionalDelaySeconds);
+			LogSceneSummonState("pending_launch_tts_finished", request, ResolveAgentForLocationCharacter(request.SpeakerLocationCharacter), ResolveAgentForLocationCharacter(request.TargetLocationCharacter), "extraDelay=" + additionalDelaySeconds.ToString("F2"), force: true);
+		}
+	}
+
+	private void FlushPendingSceneGuideLaunches(int agentIndex, float additionalDelaySeconds = 0f)
+	{
+		if (agentIndex < 0 || Mission.Current == null)
+		{
+			return;
+		}
+		while (TryDequeuePendingSceneGuideLaunch(agentIndex, out var request))
+		{
+			request.NextStageMissionTime = Mission.Current.CurrentTime + Math.Max(0f, additionalDelaySeconds);
+		}
+	}
+
+	private void CancelSceneSummonBatch(int batchId)
+	{
+		if (batchId < 0)
+		{
+			return;
+		}
+		_activeSceneSummonBatches.Remove(batchId);
+		foreach (ActiveSceneSummonRequest item in _activeSceneSummonRequests.Where((ActiveSceneSummonRequest x) => x != null && x.BatchId == batchId).ToList())
+		{
+			CleanupSceneSummonDoorProxyAgent(item);
+		}
+		_activeSceneSummonRequests.RemoveAll((ActiveSceneSummonRequest x) => x != null && x.BatchId == batchId);
+		lock (_ttsBubbleSyncLock)
+		{
+			List<int> list = _pendingSceneSummonLaunchQueues.Keys.ToList();
+			foreach (int item in list)
+			{
+				if (!_pendingSceneSummonLaunchQueues.TryGetValue(item, out var value) || value == null || value.Count == 0)
+				{
+					continue;
+				}
+				Queue<ActiveSceneSummonRequest> queue = new Queue<ActiveSceneSummonRequest>(value.Where((ActiveSceneSummonRequest x) => x != null && x.BatchId != batchId));
+				if (queue.Count == 0)
+				{
+					_pendingSceneSummonLaunchQueues.Remove(item);
+				}
+				else
+				{
+					_pendingSceneSummonLaunchQueues[item] = queue;
+				}
+			}
+		}
+	}
+
+	private void TryAdvanceSceneSummonBatch(ActiveSceneSummonRequest request, Agent speakerAgent)
+	{
+		if (request == null || request.BatchContinuationStarted || request.BatchId < 0 || request.KeepMessengerWithTarget)
+		{
+			return;
+		}
+		request.BatchContinuationStarted = true;
+		if (!_activeSceneSummonBatches.TryGetValue(request.BatchId, out var value) || value == null || value.PendingTargets.Count == 0)
+		{
+			return;
+		}
+		if (TryStartNextSceneSummonBatchRequest(value, speakerAgent, isInitialRequest: false, out var preparedRequest))
+		{
+			LogSceneSummonState("batch_followup_queued", preparedRequest, speakerAgent, ResolveAgentForLocationCharacter(preparedRequest.TargetLocationCharacter), "remaining=" + value.PendingTargets.Count, force: true);
+			return;
+		}
+		CancelSceneSummonBatch(request.BatchId);
+	}
+
+	private static string BuildSceneSummonBatchTargetSummary(SceneSummonBatchState batch, SceneSummonPromptTarget currentTarget)
+	{
+		List<string> list = new List<string>();
+		if (currentTarget != null && !string.IsNullOrWhiteSpace(currentTarget.DisplayName))
+		{
+			list.Add(currentTarget.DisplayName.Trim());
+		}
+		if (batch != null)
+		{
+			foreach (SceneSummonPromptTarget pendingTarget in batch.PendingTargets)
+			{
+				string text = pendingTarget?.DisplayName;
+				if (!string.IsNullOrWhiteSpace(text))
+				{
+					text = text.Trim();
+					if (!list.Contains(text))
+					{
+						list.Add(text);
+					}
+				}
+			}
+		}
+		if (list.Count == 0)
+		{
+			return "那些人";
+		}
+		if (list.Count == 1)
+		{
+			return list[0];
+		}
+		return string.Join("、", list);
+	}
+
+	private string BuildSceneSummonArrivedDisplayNames(int batchId, string fallbackTargetName)
+	{
+		if (batchId >= 0)
+		{
+			SceneSummonConversationSession sceneSummonConversationSession = _activeSceneSummonConversationSessions.FirstOrDefault((SceneSummonConversationSession x) => x != null && x.BatchId == batchId);
+			if (sceneSummonConversationSession != null)
+			{
+				List<string> list = sceneSummonConversationSession.Participants.Where((SceneSummonConversationParticipant x) => x != null && !string.IsNullOrWhiteSpace(x.DisplayName)).Select((SceneSummonConversationParticipant x) => x.DisplayName.Trim()).Distinct().ToList();
+				if (list.Count == 1)
+				{
+					return list[0];
+				}
+				if (list.Count > 1)
+				{
+					return string.Join("、", list);
+				}
+			}
+		}
+		return fallbackTargetName ?? "那个人";
+	}
+
+	private void TryRecordSceneSummonBatchCompletionFact(ActiveSceneSummonRequest request)
+	{
+		if (request == null || request.BatchId < 0 || request.SpeakerAgentIndex < 0)
+		{
+			return;
+		}
+		if (!_activeSceneSummonBatches.TryGetValue(request.BatchId, out var value) || value == null || value.CompletionFactRecorded)
+		{
+			return;
+		}
+		if (value.PendingTargets.Count > 0)
+		{
+			return;
+		}
+		int num = _activeSceneSummonRequests.Count((ActiveSceneSummonRequest x) => x != null && x.BatchId == request.BatchId);
+		if (num > 1)
+		{
+			return;
+		}
+		string text = BuildSceneSummonArrivedDisplayNames(request.BatchId, request.TargetName);
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return;
+		}
+		string text2 = GetPlayerDisplayNameForShout();
+		if (string.IsNullOrWhiteSpace(text2))
+		{
+			text2 = "此人";
+		}
+		AppendTargetedSceneNpcFact("你已将" + text2 + "要求召集的" + text + "都带到了" + text2 + "身边。", request.SpeakerAgentIndex, persistHeroPrivateHistory: true);
+		value.CompletionFactRecorded = true;
+	}
+
+	private string BuildSceneSummonClosurePromptInstruction(IEnumerable<NpcDataPacket> participants)
+	{
+		if (participants == null)
+		{
+			return "";
+		}
+		foreach (NpcDataPacket participant in participants)
+		{
+			if (participant == null || participant.AgentIndex < 0)
+			{
+				continue;
+			}
+			if (TryGetSceneSummonConversationSessionForAgentIndex(participant.AgentIndex) != null)
+			{
+				return "【当前是传唤后的会面】若你同意之后跟随此人，可在句末输出[FOL]；若想结束这次会面，可输出[END]；若此人改让你去叫【可召目标】中的人，也可输出[ASS:id]；若此人改让你带路去找【可带路目标】，也可输出[GUI:id]。";
+			}
+		}
+		return "";
+	}
+
+	private string BuildSceneFollowControlPromptInstruction(NpcDataPacket speaker)
+	{
+		Agent agent = Mission.Current?.Agents?.FirstOrDefault((Agent a) => a != null && speaker != null && a.Index == speaker.AgentIndex);
+		if (!CanAgentParticipateInSceneSpeech(agent))
+		{
+			return "";
+		}
+		if (TryGetSceneSummonConversationSessionForAgentIndex(agent.Index) != null)
+		{
+			return "";
+		}
+		return IsAgentFollowingPlayerBySceneCommand(agent) ? "【当前正跟随玩家】若此人明确让你停止跟随且你同意，可在句末输出[STP]；若此人改让你去叫【可召目标】中的人，也可输出[ASS:id]，多人可写[ASS:id1,id2]；若此人改让你带路去找【可带路目标】，也可输出[GUI:id]。" : "";
 	}
 
 	private static string BuildSceneNpcRoleIntroForPrompt(NpcDataPacket npc, Hero hero, IEnumerable<NpcDataPacket> presentNpcs = null, bool includeInventorySummary = false, bool includeTradePricing = false)
@@ -1507,7 +2811,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 			stringBuilder.AppendLine();
 			stringBuilder.Append(settlementRulerPresenceLine);
 		}
-		string playerIntroLine = BuildScenePlayerIntroForPrompt(includeTradePricing);
+		string playerIntroLine = BuildScenePlayerIntroForPrompt(hero, includeTradePricing);
 		if (!string.IsNullOrWhiteSpace(playerIntroLine))
 		{
 			stringBuilder.AppendLine();
@@ -1778,12 +3082,34 @@ public class ShoutBehavior : CampaignBehaviorBase
 		}
 		if (string.IsNullOrWhiteSpace(text))
 		{
-			text = "这名玩家";
+			text = "此人";
 		}
-		return text + "（玩家）没有效忠于任何人。";
+		return text + "没有效忠于任何人。";
+	}
+
+	private static bool ShouldForceDetailedPlayerIntroForObserver(Hero observerHero)
+	{
+		try
+		{
+			Hero mainHero = Hero.MainHero;
+			if (observerHero == null || mainHero == null)
+			{
+				return false;
+			}
+			return observerHero.Clan != null && observerHero.Clan == mainHero.Clan;
+		}
+		catch
+		{
+			return false;
+		}
 	}
 
 	private static string BuildScenePlayerIntroForPrompt(bool includeTradePricing = false)
+	{
+		return BuildScenePlayerIntroForPrompt(null, includeTradePricing);
+	}
+
+	private static string BuildScenePlayerIntroForPrompt(Hero observerHero, bool includeTradePricing = false)
 	{
 		Hero playerHero = Hero.MainHero;
 		if (playerHero == null)
@@ -1860,7 +3186,8 @@ public class ShoutBehavior : CampaignBehaviorBase
 		{
 		}
 		StringBuilder stringBuilder = new StringBuilder();
-		if (clanTier >= 2)
+		bool forceDetailed = ShouldForceDetailedPlayerIntroForObserver(observerHero);
+		if (clanTier >= 2 || forceDetailed)
 		{
 			string playerPublicName = (MyBehavior.BuildPlayerPublicDisplayNameForExternal() ?? "").Trim();
 			if (string.IsNullOrWhiteSpace(playerPublicName) || string.Equals(playerPublicName, "玩家", StringComparison.Ordinal))
@@ -1903,6 +3230,18 @@ public class ShoutBehavior : CampaignBehaviorBase
 			stringBuilder.Append(identitySentence);
 		}
 		return stringBuilder.ToString().Trim();
+	}
+
+	public static string BuildPlayerSceneIntroForExternal(Hero observerHero = null, bool includeTradePricing = false)
+	{
+		try
+		{
+			return BuildScenePlayerIntroForPrompt(observerHero, includeTradePricing);
+		}
+		catch
+		{
+			return "";
+		}
 	}
 
 	private static string BuildNearbyPresentNpcLineForPrompt(NpcDataPacket selfNpc, IEnumerable<NpcDataPacket> presentNpcs)
@@ -2545,7 +3884,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 
 	private static string StripActionTagsForSceneSpeech(string text)
 	{
-		return Regex.Replace((text ?? "").Replace("\r", ""), "\\[ACTION:[^\\]]*\\]", "", RegexOptions.IgnoreCase).Trim();
+		return Regex.Replace((text ?? "").Replace("\r", ""), "\\[(?:ACTION:[^\\]]*|ASS:[^\\]]*|GUI:[^\\]]*|FOL|STP)\\]", "", RegexOptions.IgnoreCase).Trim();
 	}
 
 	private static string SanitizeSceneSpeechText(string text)
@@ -2562,7 +3901,11 @@ public class ShoutBehavior : CampaignBehaviorBase
 
 	private static bool ContainsAutoGroupEndSignal(string text)
 	{
-		return !string.IsNullOrWhiteSpace(text) && text.IndexOf(AUTO_GROUP_CHAT_END_TAG, StringComparison.OrdinalIgnoreCase) >= 0;
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return false;
+		}
+		return text.IndexOf(AUTO_GROUP_CHAT_END_TAG, StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("[STP]", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("[ACTION:SCENE_STOP_FOLLOW]", StringComparison.OrdinalIgnoreCase) >= 0;
 	}
 
 	private static bool ContainsAutoGroupNoContinueSignal(string text)
@@ -2575,6 +3918,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 		string text2 = (text ?? "").Replace("\r", "");
 		text2 = Regex.Replace(text2, "\\[NO_CONTINUE\\]", "", RegexOptions.IgnoreCase);
 		text2 = Regex.Replace(text2, "\\[END\\]", "", RegexOptions.IgnoreCase);
+		text2 = Regex.Replace(text2, "\\[(?:STP|ACTION:SCENE_STOP_FOLLOW)\\]", "", RegexOptions.IgnoreCase);
 		return text2.Trim();
 	}
 
@@ -3044,6 +4388,27 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 						Logger.Log("LipSync", $"[OnAudioFileReady] agentIndex={agentIndex}, wav={wavPath}, xml={xmlPath}, dur={durationSecs:F2}s");
 						EnqueuePendingAudioDuration(agentIndex, durationSecs);
 						LogTtsReport("AudioFileReady", agentIndex, $"duration={durationSecs:F2};wav={System.IO.Path.GetFileName(wavPath)};xml={System.IO.Path.GetFileName(xmlPath)}");
+						bool flag = false;
+						lock (_ttsBubbleSyncLock)
+						{
+							flag = _ttsPlaybackStartedAgents.Contains(agentIndex);
+						}
+						if (flag)
+						{
+							_mainThreadActions.Enqueue(delegate
+							{
+								try
+								{
+									if (!TryDispatchPendingNpcBubbleForTts(agentIndex, allowFallbackDuration: false))
+									{
+										ClearOrphanPendingAudioDuration(agentIndex);
+									}
+								}
+								catch
+								{
+								}
+							});
+						}
 						_mainThreadActions.Enqueue(delegate
 						{
 							try
@@ -3202,6 +4567,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 								_pendingNpcBubbleQueues.Remove(agentIndex);
 								_pendingAudioDurationQueues.Remove(agentIndex);
 								_pendingSpeechCompletionTokenQueues.Remove(agentIndex);
+								_pendingSceneDialogueFeedQueues.Remove(agentIndex);
 							}
 							LogTtsReport("PlaybackStarted.InvalidAgent", agentIndex);
 							return;
@@ -3223,27 +4589,27 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 						}
 						Logger.Log("LipSync", $"[OnPlaybackStarted] agentIndex={agentIndex}, lipSyncSafe={flag2}, reason={text}");
 						LogTtsReport("PlaybackStarted", agentIndex, $"lipSyncSafe={flag2};reason={text}");
-						if (TryDequeuePendingNpcBubble(agentIndex, out var bubble, out var typingDuration))
+						lock (_ttsBubbleSyncLock)
 						{
-							_mainThreadActions.Enqueue(delegate
-							{
-								try
-								{
-									LogTtsReport("PlaybackStarted.BubbleDispatchStart", agentIndex, $"bubbleAgent={(bubble?.Agent?.Index ?? -1)};typingDuration={typingDuration:F2}");
-									if (!TryShowNpcBubble(bubble.Agent, bubble.UiContent, typingDuration))
-									{
-										InformationManager.DisplayMessage(new InformationMessage("[" + (bubble.NpcName ?? "NPC") + "] " + bubble.UiContent, new Color(1f, 0.8f, 0.2f)));
-									}
-									LogTtsReport("PlaybackStarted.BubbleDispatchEnd", agentIndex);
-								}
-								catch (Exception ex4)
-								{
-									Logger.Log("LipSync", $"[ERROR] PlaybackStarted bubble dispatch failed, agentIndex={agentIndex}, error={ex4.Message}");
-									LogTtsReport("PlaybackStarted.BubbleDispatchFailed", agentIndex, "error=" + ex4.Message);
-									BannerlordExceptionSentinel.ReportObservedException("LipSync.PlaybackStarted.BubbleDispatch", ex4, "agentIndex=" + agentIndex);
-								}
-							});
+							_ttsPlaybackStartedAgents.Add(agentIndex);
 						}
+						_mainThreadActions.Enqueue(delegate
+						{
+							try
+							{
+								bool flag3 = TryDispatchPendingNpcBubbleForTts(agentIndex, allowFallbackDuration: false);
+								if (!flag3)
+								{
+									SchedulePendingNpcBubbleFallbackDispatch(agentIndex);
+								}
+							}
+							catch (Exception ex4)
+							{
+								Logger.Log("LipSync", $"[ERROR] PlaybackStarted bubble dispatch failed, agentIndex={agentIndex}, error={ex4.Message}");
+								LogTtsReport("PlaybackStarted.BubbleDispatchFailed", agentIndex, "error=" + ex4.Message);
+								BannerlordExceptionSentinel.ReportObservedException("LipSync.PlaybackStarted.BubbleDispatch", ex4, "agentIndex=" + agentIndex);
+							}
+						});
 					}
 				};
 				_ttsOnPlaybackFinishedHandler = delegate(int agentIndex)
@@ -3265,6 +4631,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 						{
 							_speakingAgentIndices.Remove(agentIndex);
 						}
+						lock (_ttsBubbleSyncLock)
+						{
+							_ttsPlaybackStartedAgents.Remove(agentIndex);
+						}
 						Logger.Log("LipSync", $"[OnPlaybackFinished] agentIndex={agentIndex} removed from speaking set");
 						LogTtsReport("PlaybackFinished", agentIndex, $"hasInteractionToken={hasInteractionToken};interactionToken={interactionToken};hostileFinishedSpeech={hostileFinishedSpeech}");
 						if (hasInteractionToken)
@@ -3280,6 +4650,57 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 								}
 							});
 						}
+						_mainThreadActions.Enqueue(delegate
+						{
+							try
+							{
+								FlushPendingSceneDialogueFeedAfterSpeech(agentIndex);
+							}
+							catch
+							{
+							}
+						});
+						_mainThreadActions.Enqueue(delegate
+						{
+							try
+							{
+								FlushSceneFollowCommandAfterSpeech(agentIndex);
+							}
+							catch
+							{
+							}
+						});
+						_mainThreadActions.Enqueue(delegate
+						{
+							try
+							{
+								FlushSceneSummonReturnAfterSpeech(agentIndex);
+							}
+							catch
+							{
+							}
+						});
+						_mainThreadActions.Enqueue(delegate
+						{
+							try
+							{
+								FlushSceneGuideReturnAfterSpeech(agentIndex);
+							}
+							catch
+							{
+							}
+						});
+						_mainThreadActions.Enqueue(delegate
+						{
+							try
+							{
+								FlushPendingSceneSummonLaunches(agentIndex);
+								FlushPendingSceneGuideLaunches(agentIndex);
+							}
+							catch
+							{
+							}
+						});
 						_mainThreadActions.Enqueue(delegate
 						{
 							try
@@ -5392,6 +6813,16 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				{
 					sysPrompt.AppendLine(sceneNamingNote);
 				}
+				string sceneSummonClosureInstruction = BuildSceneSummonClosurePromptInstruction(allNpcData);
+				if (!string.IsNullOrWhiteSpace(sceneSummonClosureInstruction))
+				{
+					sysPrompt.AppendLine(sceneSummonClosureInstruction);
+				}
+				string sceneFollowControlInstruction = BuildSceneFollowControlPromptInstruction(data);
+				if (!string.IsNullOrWhiteSpace(sceneFollowControlInstruction))
+				{
+					sysPrompt.AppendLine(sceneFollowControlInstruction);
+				}
 				bool passiveMultiNpcScene = allNpcData != null && allNpcData.Count((NpcDataPacket npc) => npc != null) > 1;
 				if (!string.IsNullOrWhiteSpace(inputActionText))
 				{
@@ -5420,14 +6851,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					{
 						playerNameForPrompt = "玩家";
 					}
-					sysPrompt.AppendLine("【群体对话规则】");
-					sysPrompt.AppendLine("1. 如果【在场人物列表】中只有一个NPC，那他必须回应" + playerNameForPrompt + "。");
-					sysPrompt.AppendLine("2. 【在场人物列表】中最上方的NPC是主要对话对象，必须回复" + playerNameForPrompt + "，其他NPC可以酌情选择是否回复");
-					sysPrompt.AppendLine("3. 你只需以自己的身份输出一行回复，不需要包含角色名开头。");
-					sysPrompt.AppendLine("4. 禁止动作描写、心理活动、括号备注；只保留角色说出口的话，不要加引号，但是其他规则要求你加入标签你必须加入标签");
-					sysPrompt.AppendLine("5. 若多人在场，请注意你的身份和性格，给出与其他NPC不同的独特见解，避免重复相似的内容。");
-					sysPrompt.AppendLine("6. kingdom_service 标签去重：仅在你明确同意“加入势力/成为封臣/退出当前效力”时才可输出 [ACTION:KINGDOM_SERVICE:*:*]；若【当前场景公共对话与互动】中已出现同事项的 kingdom_service 标签，本轮你只能口头补充，不得重复输出。");
-					sysPrompt.AppendLine("7. marriage 标签去重：同一轮同一事项最多出现一个结婚标签；若已有角色输出 [ACTION:MARRIAGE_FORMAL:*] 或 [ACTION:MARRIAGE_ELOPE:*]，其他角色只能口头补充。");
+
 				}
 				string playerNameForLength = GetPlayerDisplayNameForShout();
 				if (string.IsNullOrWhiteSpace(playerNameForLength))
@@ -6734,7 +8158,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				PersistExtraFactToNamedHeroes(extraFact, allNpcData);
 			});
 		}
-		InformationManager.DisplayMessage(new InformationMessage("[你] " + shoutText, new Color(0.3f, 1f, 0.3f)));
+		RecordPlayerSpeechToMessageFeed(shoutText);
 		if (_floatingTextView != null && Agent.Main != null)
 		{
 			_floatingTextView.AddOrUpdateText(Agent.Main, shoutText);
@@ -6913,6 +8337,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				PrecomputedShoutRagContext contextPrecomputed = null;
 				bool hasContextPrecomputed = precomputedContexts != null && precomputedContexts.TryGetValue(contextAgentIndex, out contextPrecomputed);
 				MyBehavior.ShoutPromptContext ctx = MyBehavior.BuildShoutPromptContextForExternal(contextHero, playerText, extraFact, cultureId, hasAnyHero, targetCharacter: contextCharacter, kingdomIdOverride: contextKingdomIdOverride, targetAgentIndex: contextAgentIndex, usePrefetchedLoreContext: hasContextPrecomputed && contextPrecomputed != null && contextPrecomputed.HasLoreContext, prefetchedLoreContext: contextPrecomputed?.LoreContext);
+				List<SceneSummonPromptTarget> sceneSummonTargets = BuildSceneSummonPromptTargets(speakingCandidates, resolvedHeroes);
+				List<SceneGuidePromptTarget> sceneGuideTargets = BuildSceneGuidePromptTargets();
 				sysPrompt.AppendLine("【在场人物列表】：");
 				foreach (NpcDataPacket npc2 in speakingCandidates)
 				{
@@ -7030,6 +8456,18 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				{
 					sysPrompt.AppendLine(sceneNamingNote);
 				}
+				AppendSceneSummonPromptSection(sysPrompt, sceneSummonTargets);
+				AppendSceneGuidePromptSection(sysPrompt, sceneGuideTargets);
+				string sceneSummonClosureInstruction = BuildSceneSummonClosurePromptInstruction(speakingCandidates);
+				if (!string.IsNullOrWhiteSpace(sceneSummonClosureInstruction))
+				{
+					sysPrompt.AppendLine(sceneSummonClosureInstruction);
+				}
+				string sceneFollowControlInstruction = BuildSceneFollowControlPromptInstruction(primaryNpc);
+				if (!string.IsNullOrWhiteSpace(sceneFollowControlInstruction))
+				{
+					sysPrompt.AppendLine(sceneFollowControlInstruction);
+				}
 				string scenePatienceInstruction = "";
 				if (patienceStatusLines.Count > 0)
 				{
@@ -7053,16 +8491,6 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				{
 					playerNameForPrompt = "玩家";
 				}
-				sysPrompt.AppendLine("1. 如果【在场人物列表】中只有一个NPC，那他必须回应" + playerNameForPrompt + "。");
-				sysPrompt.AppendLine("2. 【在场人物列表】中最上方的NPC是主要对话对象，必须回复" + playerNameForPrompt + "，其他NPC可以酌情选择是否回复");
-				sysPrompt.AppendLine("3. 格式必须为：[角色名]: [纯对话内容]（每名说话者单独一行，禁止同一行出现两个角色）。");
-				sysPrompt.AppendLine("4. 禁止动作描写、心理活动、括号备注；只保留角色说出口的话，不要加引号，但是其他规则要求你加入标签你必须加入标签");
-				sysPrompt.AppendLine("5. 若多人在场，请注意你的身份和性格，给出与其他NPC不同的独特见解，避免重复相似的内容。");
-				sysPrompt.AppendLine("5. [角色名] 必须来自【在场人物列表】，即便有同名角色，也禁止自创姓名或错名，比如某某甲，某某乙，某某1，某某2");
-				sysPrompt.AppendLine("6. 对于非HeroNPC，[角色名]请使用【在场人物列表】中的“名字”字段；历史里出现的“身份+名字”只是同一人的说明写法。");
-				sysPrompt.AppendLine("7. 若多人在场，回复之间应彼此连贯。");
-				sysPrompt.AppendLine("8. kingdom_service 标签去重：同一轮同一事项最多出现一个 [ACTION:KINGDOM_SERVICE:*:*]；若某角色已给出同事项标签，其他角色只能口头补充，禁止重复输出 kingdom_service 标签。");
-				sysPrompt.AppendLine("9. marriage 标签去重：同一轮同一事项最多出现一个结婚标签；若某角色已给出 [ACTION:MARRIAGE_FORMAL:*] 或 [ACTION:MARRIAGE_ELOPE:*]，其他角色只能口头补充。");
 				string playerNameForLength = GetPlayerDisplayNameForShout();
 				if (string.IsNullOrWhiteSpace(playerNameForLength))
 				{
@@ -7201,6 +8629,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				FloatingTextManager ftm = FloatingTextManager.Instance;
 				ftm.BeginStream(speakingCandidates);
 				List<NpcDataPacket> capturedAllNpcData = allNpcData;
+				List<SceneSummonPromptTarget> capturedSceneSummonTargets = CloneSceneSummonPromptTargets(sceneSummonTargets);
+				List<SceneGuidePromptTarget> capturedSceneGuideTargets = CloneSceneGuidePromptTargets(sceneGuideTargets);
 				bool hasAnyQueuedLine = false;
 				ftm.OnPartialLineUpdated = null;
 				ftm.OnNewLineReady = delegate(NpcDataPacket npcDataPacket, string content)
@@ -7208,7 +8638,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					if (npcDataPacket != null && !string.IsNullOrWhiteSpace(content))
 					{
 						hasAnyQueuedLine = true;
-						EnqueueSpeechLine(npcDataPacket, content.Trim(), capturedAllNpcData);
+						EnqueueSpeechLine(npcDataPacket, content.Trim(), capturedAllNpcData, skipHistory: false, suppressStare: false, capturedSceneSummonTargets, capturedSceneGuideTargets);
 					}
 				};
 				bool streamCompleted = false;
@@ -7448,6 +8878,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			int maxTokens = Math.Max(40, settings.ShoutMaxTokens);
 			int minTokens = Math.Max(5, maxTokens / 2);
 			int lastSpeakerAgentIndex = -1;
+			List<SceneSummonPromptTarget> sceneSummonTargets = BuildSceneSummonPromptTargets(speakableCandidates, resolvedHeroes);
+			List<SceneGuidePromptTarget> sceneGuideTargets = BuildSceneGuidePromptTargets();
 			StringBuilder commonCandidatesList = new StringBuilder();
 			commonCandidatesList.AppendLine("【在场人物列表】：");
 			foreach (NpcDataPacket npc2 in speakableCandidates)
@@ -7565,6 +8997,13 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			{
 				commonCandidatesList.AppendLine(sceneNamingNote);
 			}
+			AppendSceneSummonPromptSection(commonCandidatesList, sceneSummonTargets);
+			AppendSceneGuidePromptSection(commonCandidatesList, sceneGuideTargets);
+			string sceneSummonClosureInstruction = BuildSceneSummonClosurePromptInstruction(speakableCandidates);
+			if (!string.IsNullOrWhiteSpace(sceneSummonClosureInstruction))
+			{
+				commonCandidatesList.AppendLine(sceneSummonClosureInstruction);
+			}
 			foreach (NpcDataPacket npc2 in speakableCandidates)
 			{
 				if (!IsSceneConversationEpochCurrent(conversationEpoch))
@@ -7610,16 +9049,6 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					{
 						playerNameForPrompt = "玩家";
 					}
-					local.AppendLine("【群体对话规则】");
-					local.AppendLine("1. 如果【在场人物列表】中只有一个NPC，那他必须回应" + playerNameForPrompt + "。");
-					local.AppendLine("2. 【在场人物列表】中最上方的NPC是主要对话对象，必须回复" + playerNameForPrompt + "，其他NPC可以酌情选择是否回复");
-					local.AppendLine("3. 你只需以自己的身份输出一行回复，不需要包含角色名开头。");
-					local.AppendLine("4. 禁止动作描写、心理活动、括号备注；只保留角色说出口的话，不要加引号，但是其他规则要求你加入标签你必须加入标签");
-					local.AppendLine("5. 若多人在场，请注意你的身份和性格，给出与其他NPC不同的独特见解，避免重复相似的内容。");
-					local.AppendLine("6. 对于非HeroNPC，历史里出现的“身份+名字”与列表中的“名字”指向同一个人。");
-					local.AppendLine("7. 你说的话要考虑【当前场景公共对话与互动】中别人的发言，而不是各说各的，毕竟现在是群聊");
-					local.AppendLine("8. kingdom_service 标签去重：仅在你明确同意“加入势力/成为封臣/退出当前效力”时才可输出 [ACTION:KINGDOM_SERVICE:*:*]；若【当前场景公共对话与互动】已出现同事项的 kingdom_service 标签，本轮你只能口头补充，不得重复输出。");
-					local.AppendLine("9. marriage 标签去重：同一轮同一事项最多出现一个结婚标签；若已有角色输出 [ACTION:MARRIAGE_FORMAL:*] 或 [ACTION:MARRIAGE_ELOPE:*]，你只能口头补充。");
 				}
 				string fixedLayerText = "";
 				string baseExtras = StripScenePersonaBlocks((ctx?.Extras ?? "").Trim());
@@ -7627,6 +9056,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				string localExtras = InjectTrustBlockBelowTriState(local.ToString().Trim(), trustBlock);
 				string deltaLayerText = (string.IsNullOrWhiteSpace(baseExtrasWithoutTrust) ? localExtras : ((!string.IsNullOrWhiteSpace(localExtras)) ? (baseExtrasWithoutTrust + "\n" + localExtras) : baseExtrasWithoutTrust));
 				string layeredPrompt = (string.IsNullOrWhiteSpace(fixedLayerText) ? deltaLayerText : ((!string.IsNullOrWhiteSpace(deltaLayerText)) ? (fixedLayerText + "\n" + deltaLayerText) : fixedLayerText));
+				string sceneFollowControlInstruction = BuildSceneFollowControlPromptInstruction(npc2);
+				if (!string.IsNullOrWhiteSpace(sceneFollowControlInstruction))
+				{
+					layeredPrompt = layeredPrompt + "\n" + sceneFollowControlInstruction;
+				}
 				List<string> historyLines = null;
 				lock (_historyLock)
 				{
@@ -7727,11 +9161,24 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				{
 					autoGroupEndRequested = true;
 				}
+				bool flag9 = endRequested && IsAgentFollowingPlayerBySceneCommand(Mission.Current?.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == npc2.AgentIndex && a.IsActive()));
+				bool flag10 = endRequested && TryGetSceneSummonConversationSessionForAgentIndex(npc2.AgentIndex) != null;
 				cleaned = StripAutoGroupStopSignal(cleaned);
+				if (endRequested)
+				{
+					if (flag9)
+					{
+						cleaned = (string.IsNullOrWhiteSpace(cleaned) ? "" : (cleaned + " ")) + "[STP]";
+					}
+					if (flag10)
+					{
+						cleaned = (string.IsNullOrWhiteSpace(cleaned) ? "" : (cleaned + " ")) + "[END]";
+					}
+				}
 				if (!string.IsNullOrWhiteSpace(cleaned))
 				{
 					lastSpeakerAgentIndex = npc2.AgentIndex;
-					EnqueueSpeechLineWithOptions(npc2, cleaned, allNpcData, commitHistory: true, suppressStare: false, allowPlayerDirectedActions: true, conversationEpoch);
+					EnqueueSpeechLineWithOptions(npc2, cleaned, allNpcData, commitHistory: true, suppressStare: false, allowPlayerDirectedActions: true, conversationEpoch, sceneSummonTargets, sceneGuideTargets);
 				}
 			}
 			if (IsSceneConversationEpochCurrent(conversationEpoch) && speakableCandidates.Count > 1 && !autoGroupEndRequested)
@@ -7842,12 +9289,12 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		ShoutUtils.EnsureScenePromptNames(allNpcData);
 	}
 
-	private void EnqueueSpeechLine(NpcDataPacket npc, string content, List<NpcDataPacket> allNpcData, bool skipHistory = false, bool suppressStare = false)
+	private void EnqueueSpeechLine(NpcDataPacket npc, string content, List<NpcDataPacket> allNpcData, bool skipHistory = false, bool suppressStare = false, List<SceneSummonPromptTarget> sceneSummonTargets = null, List<SceneGuidePromptTarget> sceneGuideTargets = null)
 	{
-		EnqueueSpeechLineWithOptions(npc, content, allNpcData, !skipHistory, suppressStare, allowPlayerDirectedActions: true, requiredConversationEpoch: 0);
+		EnqueueSpeechLineWithOptions(npc, content, allNpcData, !skipHistory, suppressStare, allowPlayerDirectedActions: true, requiredConversationEpoch: 0, sceneSummonTargets, sceneGuideTargets);
 	}
 
-	private void EnqueueSpeechLineWithOptions(NpcDataPacket npc, string content, List<NpcDataPacket> allNpcData, bool commitHistory, bool suppressStare, bool allowPlayerDirectedActions, int requiredConversationEpoch)
+	private void EnqueueSpeechLineWithOptions(NpcDataPacket npc, string content, List<NpcDataPacket> allNpcData, bool commitHistory, bool suppressStare, bool allowPlayerDirectedActions, int requiredConversationEpoch, List<SceneSummonPromptTarget> sceneSummonTargets = null, List<SceneGuidePromptTarget> sceneGuideTargets = null)
 	{
 		if (npc == null || string.IsNullOrWhiteSpace(content))
 		{
@@ -7875,6 +9322,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				Npc = value,
 				Content = content,
 				ContextSnapshot = value2,
+				SceneSummonTargets = CloneSceneSummonPromptTargets(sceneSummonTargets),
+				SceneGuideTargets = CloneSceneGuidePromptTargets(sceneGuideTargets),
 				CommitHistory = commitHistory,
 				SuppressStare = suppressStare,
 				AllowPlayerDirectedActions = allowPlayerDirectedActions,
@@ -7916,6 +9365,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				NpcDataPacket matchedNpc = item.Npc;
 				string content = item.Content;
 				List<NpcDataPacket> allNpcData = item.ContextSnapshot ?? new List<NpcDataPacket>();
+				List<SceneSummonPromptTarget> sceneSummonTargets = item.SceneSummonTargets;
+				List<SceneGuidePromptTarget> sceneGuideTargets = item.SceneGuideTargets;
 				bool commitHistory = item.CommitHistory;
 				bool suppressStare = item.SuppressStare;
 				bool allowPlayerDirectedActions = item.AllowPlayerDirectedActions;
@@ -8003,6 +9454,12 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 						{
 							content = StripActionTagsForSceneSpeech(content);
 						}
+						SceneSummonConversationSession sceneSummonConversationSession = null;
+						ActiveSceneSummonRequest activeSceneSummonRequest = null;
+						ActiveSceneGuideRequest activeSceneGuideRequest = null;
+						bool flag7 = allowPlayerDirectedActions && !flagSceneTaunt && TryConsumeSceneFollowStopTag(matchedNpc, agent, ref content);
+						bool flag8 = allowPlayerDirectedActions && !flagSceneTaunt && TryConsumeSceneFollowStartTag(matchedNpc, agent, ref content);
+						bool flag5 = allowPlayerDirectedActions && !flagSceneTaunt && TryConsumeSceneEndChatActionTag(matchedNpc, agent, ref content, out sceneSummonConversationSession);
 						if (flagSceneTaunt2 && string.IsNullOrWhiteSpace(content))
 						{
 							content = BuildFallbackSceneTauntSpeech(flagSceneTaunt);
@@ -8020,6 +9477,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 						{
 							bool flag2 = allowPlayerDirectedActions && !flag && !flagSceneTaunt && ShoutUtils.TryTriggerDuelAction(matchedNpc, ref content);
 							bool flag3 = allowPlayerDirectedActions && !flagSceneTaunt && TryTriggerOpenLordsHallAction(matchedNpc, agent, ref content);
+							bool flag6 = allowPlayerDirectedActions && !flagSceneTaunt && TryTriggerSceneSummonAction(matchedNpc, agent, sceneSummonTargets, ref content, out activeSceneSummonRequest);
+							bool flag10 = allowPlayerDirectedActions && !flagSceneTaunt && TryTriggerSceneGuideAction(matchedNpc, agent, sceneGuideTargets, ref content, out activeSceneGuideRequest);
 							if (!string.IsNullOrWhiteSpace(content))
 							{
 								if (!IsSceneConversationEpochCurrent(requiredConversationEpoch))
@@ -8027,13 +9486,40 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 									return;
 								}
 								string historyText = SanitizeSceneSpeechText(content);
+								RefreshSceneSummonConversationForSpeaker((agent != null) ? agent.Index : matchedNpc.AgentIndex);
 								bool flag4 = IsAgentHostileToMainAgent(agent);
-								ShowNpcSpeechOutput(matchedNpc, agent, historyText, allowTts: true, attachTtsToSceneAgent: true);
+								SceneSpeechPlaybackInfo sceneSpeechPlaybackInfo = ShowNpcSpeechOutput(matchedNpc, agent, historyText, allowTts: true, attachTtsToSceneAgent: true);
+								if (flag7)
+								{
+									ScheduleSceneFollowCommandAfterSpeech(matchedNpc.AgentIndex, startFollow: false, sceneSpeechPlaybackInfo);
+								}
+								else if (flag8)
+								{
+									ScheduleSceneFollowCommandAfterSpeech(matchedNpc.AgentIndex, startFollow: true, sceneSpeechPlaybackInfo);
+								}
+								if (flag5 && sceneSummonConversationSession != null)
+								{
+									_pendingSceneSummonReturnsAfterSpeech[matchedNpc.AgentIndex] = new PendingSceneSummonReturnAfterSpeech
+									{
+										AgentIndex = matchedNpc.AgentIndex,
+										Session = sceneSummonConversationSession
+									};
+								}
+								ScheduleSceneSummonReturnAfterSpeech(matchedNpc.AgentIndex, sceneSpeechPlaybackInfo);
+								ScheduleSceneGuideReturnAfterSpeech(matchedNpc.AgentIndex, sceneSpeechPlaybackInfo);
+								if (flag6 && activeSceneSummonRequest != null)
+								{
+									SchedulePreparedSceneSummonLaunch(activeSceneSummonRequest, sceneSpeechPlaybackInfo, historyText);
+								}
+								if (flag10 && activeSceneGuideRequest != null)
+								{
+									SchedulePreparedSceneGuideLaunch(activeSceneGuideRequest, sceneSpeechPlaybackInfo, historyText);
+								}
 								if (flag4)
 								{
 									RefreshHostileCombatAgentAutonomy(agent);
 								}
-								if (CanAgentParticipateInSceneSpeech(agent) && !suppressStare && !flag4)
+								if (CanAgentParticipateInSceneSpeech(agent) && !suppressStare && !flag4 && !flag6 && !flag10)
 								{
 									HoldSceneConversationParticipants(allNpcData);
 									AddAgentToStareList(agent, interruptCurrentUse: false);
@@ -8048,6 +9534,14 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 									ReleaseSceneConversationConstraints(allNpcData, matchedNpc.AgentIndex, stopAutoGroupSession: true, clearQueuedSpeech: true);
 								}
 							}
+							else if (flag7)
+							{
+								ScheduleSceneFollowCommandAfterSpeech(matchedNpc.AgentIndex, startFollow: false, null);
+							}
+							else if (flag8)
+							{
+								ScheduleSceneFollowCommandAfterSpeech(matchedNpc.AgentIndex, startFollow: true, null);
+							}
 							if (flag2)
 							{
 								ReleaseSceneConversationConstraints(allNpcData, matchedNpc.AgentIndex, stopAutoGroupSession: true, clearQueuedSpeech: true, forceFullAutonomyRelease: true);
@@ -8058,6 +9552,18 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 							{
 								return;
 							}
+							else if (flag6 && activeSceneSummonRequest != null && string.IsNullOrWhiteSpace(content))
+							{
+								SchedulePreparedSceneSummonLaunch(activeSceneSummonRequest, null, "");
+							}
+							else if (flag10 && activeSceneGuideRequest != null && string.IsNullOrWhiteSpace(content))
+							{
+								SchedulePreparedSceneGuideLaunch(activeSceneGuideRequest, null, "");
+							}
+						}
+						if (flag5 && sceneSummonConversationSession != null && string.IsNullOrWhiteSpace(content))
+						{
+							BeginSceneSummonConversationReturn(sceneSummonConversationSession);
 						}
 					}
 					catch (Exception ex)
@@ -8474,6 +9980,2617 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 	}
 
+	private static Agent ResolveAgentForLocationCharacter(LocationCharacter locationCharacter)
+	{
+		if (locationCharacter == null || Mission.Current?.Agents == null)
+		{
+			return null;
+		}
+		IAgentOriginBase agentOrigin = locationCharacter.AgentOrigin;
+		if (agentOrigin != null)
+		{
+			Agent agent = Mission.Current.Agents.FirstOrDefault((Agent a) => a != null && a.Origin == agentOrigin);
+			if (agent != null)
+			{
+				return agent;
+			}
+		}
+		CharacterObject character = locationCharacter.Character;
+		if (character == null)
+		{
+			return null;
+		}
+		return Mission.Current.Agents.FirstOrDefault((Agent a) => a != null && a.Character == character);
+	}
+
+	private static Passage FindCurrentScenePassageToLocation(Location targetLocation)
+	{
+		if (targetLocation == null)
+		{
+			return null;
+		}
+		MissionAgentHandler missionBehavior = Mission.Current?.GetMissionBehavior<MissionAgentHandler>();
+		IEnumerable<UsableMachine> enumerable = Enumerable.Empty<UsableMachine>();
+		if (missionBehavior?.TownPassageProps != null)
+		{
+			enumerable = enumerable.Concat(missionBehavior.TownPassageProps);
+		}
+		if (missionBehavior?.DisabledPassages != null)
+		{
+			enumerable = enumerable.Concat(missionBehavior.DisabledPassages);
+		}
+		return enumerable.OfType<Passage>().FirstOrDefault((Passage x) => x != null && x.ToLocation == targetLocation);
+	}
+
+	private Agent ResolveSceneSummonDoorProxyAgent(ActiveSceneSummonRequest request)
+	{
+		if (request == null || request.DoorProxyAgentIndex < 0 || Mission.Current?.Agents == null)
+		{
+			return null;
+		}
+		Agent agent = Mission.Current.Agents.FirstOrDefault((Agent a) => a != null && a.Index == request.DoorProxyAgentIndex);
+		if (agent == null || !agent.IsActive())
+		{
+			request.DoorProxyAgentIndex = -1;
+			return null;
+		}
+		return agent;
+	}
+
+	private Agent EnsureSceneSummonDoorProxyAgent(ActiveSceneSummonRequest request, Passage passage, Agent speakerAgent)
+	{
+		Agent agent = ResolveSceneSummonDoorProxyAgent(request);
+		if (agent != null)
+		{
+			return agent;
+		}
+		if (request == null || passage == null || Mission.Current?.Scene == null)
+		{
+			return null;
+		}
+		CharacterObject characterObject = speakerAgent?.Character as CharacterObject;
+		if (characterObject == null)
+		{
+			characterObject = request.SpeakerLocationCharacter?.Character as CharacterObject;
+		}
+		if (characterObject == null)
+		{
+			return null;
+		}
+		Vec3 passageWaitingPosition = GetPassageWaitingPosition(passage);
+		passageWaitingPosition.z = Mission.Current.Scene.GetGroundHeightAtPosition(passageWaitingPosition, BodyFlags.CommonCollisionExcludeFlags);
+		Vec3 vec3 = passageWaitingPosition;
+		vec3.z -= 25f;
+		Vec2 vec = Vec2.Forward;
+		try
+		{
+			Vec2 vec2 = ((Agent.Main != null && Agent.Main.IsActive()) ? (Agent.Main.Position - passageWaitingPosition).AsVec2 : Vec2.Zero);
+			if (vec2.LengthSquared > 0.001f)
+			{
+				vec = vec2.Normalized();
+			}
+			else if (speakerAgent != null)
+			{
+				vec = speakerAgent.LookDirection.AsVec2;
+			}
+		}
+		catch
+		{
+		}
+		Equipment equipment = null;
+		try
+		{
+			equipment = speakerAgent?.SpawnEquipment?.Clone(false);
+		}
+		catch
+		{
+		}
+		if (equipment == null)
+		{
+			try
+			{
+				equipment = (Mission.Current.DoesMissionRequireCivilianEquipment ? characterObject.FirstCivilianEquipment : characterObject.FirstBattleEquipment)?.Clone(false);
+			}
+			catch
+			{
+			}
+		}
+		Team team = null;
+		if (IsUsableTeam(speakerAgent?.Team))
+		{
+			team = speakerAgent.Team;
+		}
+		else if (IsUsableTeam(Mission.Current.PlayerTeam))
+		{
+			team = Mission.Current.PlayerTeam;
+		}
+		else if (IsUsableTeam(Mission.Current.DefenderTeam))
+		{
+			team = Mission.Current.DefenderTeam;
+		}
+		else if (IsUsableTeam(Mission.Current.AttackerTeam))
+		{
+			team = Mission.Current.AttackerTeam;
+		}
+		if (!IsUsableTeam(team))
+		{
+			return null;
+		}
+		try
+		{
+			AgentBuildData agentBuildData = new AgentBuildData(characterObject).Team(team).InitialPosition(in passageWaitingPosition)
+				.InitialDirection(in vec)
+				.NoHorses(true)
+				.Controller(AgentControllerType.AI);
+			if (equipment != null)
+			{
+				agentBuildData = agentBuildData.Equipment(equipment);
+			}
+			Agent agent2 = Mission.Current.SpawnAgent(agentBuildData, false);
+			if (agent2 == null)
+			{
+				return null;
+			}
+			request.DoorProxyAgentIndex = agent2.Index;
+			try
+			{
+				agent2.AgentVisuals?.SetVisible(false);
+			}
+			catch
+			{
+			}
+			try
+			{
+				agent2.AgentVisuals?.GetEntity()?.SetVisibilityExcludeParents(false);
+			}
+			catch
+			{
+			}
+			try
+			{
+				agent2.TeleportToPosition(vec3);
+			}
+			catch
+			{
+			}
+			try
+			{
+				agent2.SetMaximumSpeedLimit(0f, isMultiplier: false);
+			}
+			catch
+			{
+			}
+			try
+			{
+				agent2.SetIsAIPaused(isPaused: true);
+			}
+			catch
+			{
+			}
+			try
+			{
+				agent2.SetMortalityState(Agent.MortalityState.Invulnerable);
+			}
+			catch
+			{
+			}
+			LogSceneSummonState("cross_scene_proxy_spawned", request, speakerAgent, agent2, "waitPos=" + FormatSceneSummonPosition(passageWaitingPosition) + " hiddenPos=" + FormatSceneSummonPosition(vec3), force: true);
+			return agent2;
+		}
+		catch
+		{
+			request.DoorProxyAgentIndex = -1;
+			return null;
+		}
+	}
+
+	private void CleanupSceneSummonDoorProxyAgent(ActiveSceneSummonRequest request)
+	{
+		if (request == null)
+		{
+			return;
+		}
+		Agent agent = ResolveSceneSummonDoorProxyAgent(request);
+		request.DoorProxyAgentIndex = -1;
+		if (agent == null)
+		{
+			return;
+		}
+		try
+		{
+			agent.SetIsAIPaused(isPaused: false);
+		}
+		catch
+		{
+		}
+		try
+		{
+			agent.SetMaximumSpeedLimit(-1f, isMultiplier: false);
+		}
+		catch
+		{
+		}
+		try
+		{
+			agent.FadeOut(false, true);
+		}
+		catch
+		{
+		}
+	}
+
+	private Agent ResolveSceneReturnDoorProxyAgent(SceneReturnJob job)
+	{
+		if (job == null || job.DoorProxyAgentIndex < 0 || Mission.Current?.Agents == null)
+		{
+			return null;
+		}
+		Agent agent = Mission.Current.Agents.FirstOrDefault((Agent a) => a != null && a.Index == job.DoorProxyAgentIndex);
+		if (agent == null || !agent.IsActive())
+		{
+			job.DoorProxyAgentIndex = -1;
+			return null;
+		}
+		return agent;
+	}
+
+	private Agent EnsureSceneReturnDoorProxyAgent(SceneReturnJob job, Passage passage, Agent movingAgent)
+	{
+		Agent agent = ResolveSceneReturnDoorProxyAgent(job);
+		if (agent != null)
+		{
+			return agent;
+		}
+		if (job == null || passage == null || Mission.Current?.Scene == null)
+		{
+			return null;
+		}
+		CharacterObject characterObject = movingAgent?.Character as CharacterObject;
+		if (characterObject == null)
+		{
+			characterObject = job.LocationCharacter?.Character as CharacterObject;
+		}
+		if (characterObject == null)
+		{
+			return null;
+		}
+		Vec3 passageWaitingPosition = GetPassageWaitingPosition(passage);
+		passageWaitingPosition.z = Mission.Current.Scene.GetGroundHeightAtPosition(passageWaitingPosition, BodyFlags.CommonCollisionExcludeFlags);
+		Vec3 vec3 = passageWaitingPosition;
+		vec3.z -= 25f;
+		Vec2 vec = Vec2.Forward;
+		try
+		{
+			Vec2 vec2 = ((Agent.Main != null && Agent.Main.IsActive()) ? (Agent.Main.Position - passageWaitingPosition).AsVec2 : Vec2.Zero);
+			if (vec2.LengthSquared > 0.001f)
+			{
+				vec = vec2.Normalized();
+			}
+			else if (movingAgent != null)
+			{
+				vec = movingAgent.LookDirection.AsVec2;
+			}
+		}
+		catch
+		{
+		}
+		Equipment equipment = null;
+		try
+		{
+			equipment = movingAgent?.SpawnEquipment?.Clone(false);
+		}
+		catch
+		{
+		}
+		if (equipment == null)
+		{
+			try
+			{
+				equipment = (Mission.Current.DoesMissionRequireCivilianEquipment ? characterObject.FirstCivilianEquipment : characterObject.FirstBattleEquipment)?.Clone(false);
+			}
+			catch
+			{
+			}
+		}
+		Team team = null;
+		if (IsUsableTeam(movingAgent?.Team))
+		{
+			team = movingAgent.Team;
+		}
+		else if (IsUsableTeam(Mission.Current.PlayerTeam))
+		{
+			team = Mission.Current.PlayerTeam;
+		}
+		else if (IsUsableTeam(Mission.Current.DefenderTeam))
+		{
+			team = Mission.Current.DefenderTeam;
+		}
+		else if (IsUsableTeam(Mission.Current.AttackerTeam))
+		{
+			team = Mission.Current.AttackerTeam;
+		}
+		if (!IsUsableTeam(team))
+		{
+			return null;
+		}
+		try
+		{
+			AgentBuildData agentBuildData = new AgentBuildData(characterObject).Team(team).InitialPosition(in passageWaitingPosition)
+				.InitialDirection(in vec)
+				.NoHorses(true)
+				.Controller(AgentControllerType.AI);
+			if (equipment != null)
+			{
+				agentBuildData = agentBuildData.Equipment(equipment);
+			}
+			Agent agent2 = Mission.Current.SpawnAgent(agentBuildData, false);
+			if (agent2 == null)
+			{
+				return null;
+			}
+			job.DoorProxyAgentIndex = agent2.Index;
+			try
+			{
+				agent2.AgentVisuals?.SetVisible(false);
+			}
+			catch
+			{
+			}
+			try
+			{
+				agent2.AgentVisuals?.GetEntity()?.SetVisibilityExcludeParents(false);
+			}
+			catch
+			{
+			}
+			try
+			{
+				agent2.TeleportToPosition(vec3);
+			}
+			catch
+			{
+			}
+			try
+			{
+				agent2.SetMaximumSpeedLimit(0f, isMultiplier: false);
+			}
+			catch
+			{
+			}
+			try
+			{
+				agent2.SetIsAIPaused(isPaused: true);
+			}
+			catch
+			{
+			}
+			try
+			{
+				agent2.SetMortalityState(Agent.MortalityState.Invulnerable);
+			}
+			catch
+			{
+			}
+			return agent2;
+		}
+		catch
+		{
+			job.DoorProxyAgentIndex = -1;
+			return null;
+		}
+	}
+
+	private void CleanupSceneReturnDoorProxyAgent(SceneReturnJob job)
+	{
+		if (job == null)
+		{
+			return;
+		}
+		Agent agent = ResolveSceneReturnDoorProxyAgent(job);
+		job.DoorProxyAgentIndex = -1;
+		if (agent == null)
+		{
+			return;
+		}
+		try
+		{
+			agent.SetIsAIPaused(isPaused: false);
+		}
+		catch
+		{
+		}
+		try
+		{
+			agent.SetMaximumSpeedLimit(-1f, isMultiplier: false);
+		}
+		catch
+		{
+		}
+		try
+		{
+			agent.FadeOut(false, true);
+		}
+		catch
+		{
+		}
+	}
+
+	private NpcDataPacket BuildSceneNpcDataFromLocationCharacter(LocationCharacter locationCharacter)
+	{
+		if (locationCharacter?.Character == null)
+		{
+			return null;
+		}
+		Agent agent = ResolveAgentForLocationCharacter(locationCharacter);
+		if (agent != null)
+		{
+			return ShoutUtils.ExtractNpcData(agent);
+		}
+		CharacterObject character = locationCharacter.Character;
+		NpcDataPacket npcDataPacket = new NpcDataPacket
+		{
+			Name = character.Name?.ToString() ?? "NPC",
+			AgentIndex = -1,
+			IsHero = character.IsHero,
+			CultureId = character.Culture?.StringId?.ToLowerInvariant() ?? "neutral",
+			IsFemale = character.IsFemale,
+			Age = character.IsHero ? (character.HeroObject?.Age ?? 30f) : 30f,
+			UnnamedKey = "",
+			TroopId = "",
+			UnnamedRank = "",
+			RoleDesc = character.IsHero ? "英雄" : "平民",
+			PersonalityDesc = "",
+			BackgroundDesc = ""
+		};
+		if (character.IsHero && character.HeroObject != null)
+		{
+			Hero hero = character.HeroObject;
+			if (hero.IsLord)
+			{
+				npcDataPacket.RoleDesc = "领主";
+			}
+			else if (hero.IsWanderer)
+			{
+				npcDataPacket.RoleDesc = "流浪者";
+			}
+			else if (hero.IsNotable)
+			{
+				npcDataPacket.RoleDesc = "要人";
+			}
+			MyBehavior.GetNpcPersonaForExternal(hero, out var personality, out var background);
+			npcDataPacket.PersonalityDesc = (personality ?? "").Trim();
+			npcDataPacket.BackgroundDesc = (background ?? "").Trim();
+		}
+		else
+		{
+			npcDataPacket.TroopId = (character.StringId ?? "").Trim().ToLowerInvariant();
+			if (character.Occupation == Occupation.Villager)
+			{
+				npcDataPacket.RoleDesc = "村民";
+			}
+			else if (character.Occupation == Occupation.Guard)
+			{
+				npcDataPacket.RoleDesc = "守卫";
+			}
+			else if (character.Occupation == Occupation.Mercenary)
+			{
+				npcDataPacket.RoleDesc = "士兵";
+			}
+			else
+			{
+				npcDataPacket.RoleDesc = "平民";
+			}
+		}
+		ShoutUtils.EnsurePromptNameFields(npcDataPacket);
+		return npcDataPacket;
+	}
+
+	private List<NpcDataPacket> BuildSceneSummonArrivalContextSnapshot(LocationCharacter targetLocationCharacter, Agent speakerAgent)
+	{
+		List<NpcDataPacket> list = (ShoutUtils.GetNearbyNPCAgents() ?? new List<Agent>()).Select((Agent a) => ShoutUtils.ExtractNpcData(a)).Where((NpcDataPacket d) => d != null).ToList();
+		if (speakerAgent != null && !list.Any((NpcDataPacket x) => x != null && x.AgentIndex == speakerAgent.Index))
+		{
+			NpcDataPacket item = ShoutUtils.ExtractNpcData(speakerAgent);
+			if (item != null)
+			{
+				list.Add(item);
+			}
+		}
+		NpcDataPacket sceneNpcDataFromLocationCharacter = BuildSceneNpcDataFromLocationCharacter(targetLocationCharacter);
+		if (sceneNpcDataFromLocationCharacter != null)
+		{
+			if (sceneNpcDataFromLocationCharacter.AgentIndex >= 0)
+			{
+				if (!list.Any((NpcDataPacket x) => x != null && x.AgentIndex == sceneNpcDataFromLocationCharacter.AgentIndex))
+				{
+					list.Add(sceneNpcDataFromLocationCharacter);
+				}
+			}
+			else if (!list.Any((NpcDataPacket x) => x != null && string.Equals((x.Name ?? "").Trim(), (sceneNpcDataFromLocationCharacter.Name ?? "").Trim(), StringComparison.OrdinalIgnoreCase) && x.IsHero == sceneNpcDataFromLocationCharacter.IsHero))
+			{
+				list.Add(sceneNpcDataFromLocationCharacter);
+			}
+		}
+		ApplySceneLocalDisambiguatedNames(list);
+		return list;
+	}
+
+	private async Task<string> GenerateCompactSceneReactionLineAsync(NpcDataPacket targetNpc, Hero contextHero, List<NpcDataPacket> allNpcData, string extraFactLine, string singleReplyUserContent)
+	{
+		if (targetNpc == null || allNpcData == null || allNpcData.Count == 0)
+		{
+			return "";
+		}
+		allNpcData = CloneNpcDataSnapshot(allNpcData);
+		ApplySceneLocalDisambiguatedNames(allNpcData);
+		targetNpc = allNpcData.FirstOrDefault((NpcDataPacket x) => x != null && x.AgentIndex >= 0 && x.AgentIndex == targetNpc.AgentIndex) ?? CloneNpcDataPacket(targetNpc);
+		if (targetNpc == null)
+		{
+			return "";
+		}
+		await EnsurePersonaForCandidatesAsync(new List<NpcDataPacket> { targetNpc }, contextHero != null ? new Dictionary<int, Hero> { [targetNpc.AgentIndex] = contextHero } : new Dictionary<int, Hero>());
+		Agent npcAgent = (targetNpc.AgentIndex >= 0) ? Mission.Current?.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == targetNpc.AgentIndex) : null;
+		CharacterObject npcCharacter = (npcAgent?.Character as CharacterObject) ?? contextHero?.CharacterObject;
+		string npcKingdomIdOverride = TryGetKingdomIdOverrideFromAgent(npcAgent);
+		MyBehavior.ShoutPromptContext shoutPromptContext = MyBehavior.BuildShoutPromptContextForExternal(contextHero, "请直接根据刚刚发生的公开互动做出即时反应。", null, targetNpc.CultureId ?? "neutral", hasAnyHero: targetNpc.IsHero, targetCharacter: npcCharacter, kingdomIdOverride: npcKingdomIdOverride, targetAgentIndex: targetNpc.AgentIndex, suppressDynamicRuleAndLore: true);
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.AppendLine("【在场人物列表】：");
+		foreach (NpcDataPacket allNpcDatum in allNpcData)
+		{
+			if (allNpcDatum != null)
+			{
+				stringBuilder.AppendLine(BuildSceneNpcListLineForPrompt(allNpcDatum));
+			}
+		}
+		string sceneNamingNote = BuildSceneNonHeroNamingNoteForPrompt(allNpcData);
+		if (!string.IsNullOrWhiteSpace(sceneNamingNote))
+		{
+			stringBuilder.AppendLine(sceneNamingNote);
+		}
+		string baseExtras = StripScenePersonaBlocks((shoutPromptContext?.Extras ?? "").Trim());
+		string trustBlock = ExtractTrustPromptBlock(baseExtras, out var baseExtrasWithoutTrust);
+		string localExtras = InjectTrustBlockBelowTriState(stringBuilder.ToString().Trim(), trustBlock);
+		string text = string.IsNullOrWhiteSpace(baseExtrasWithoutTrust) ? localExtras : ((!string.IsNullOrWhiteSpace(localExtras)) ? (baseExtrasWithoutTrust + "\n" + localExtras) : baseExtrasWithoutTrust);
+		List<string> historyLines = null;
+		lock (_historyLock)
+		{
+			if (_publicConversationHistory.Count > 0)
+			{
+				historyLines = BuildVisibleSceneHistoryLines(_publicConversationHistory, targetNpc.AgentIndex, GetSceneNpcHistoryNameForPrompt(targetNpc), useNpcNameAddress: false);
+			}
+		}
+		string scenePublicHistorySection = BuildScenePublicHistorySection(historyLines);
+		string persistedHeroHistory = (contextHero != null) ? MyBehavior.BuildHistoryContextForExternal(contextHero, 0, "", GetLatestSceneNpcUtterance(targetNpc.AgentIndex)) : "";
+		string privateRecentWindowSection = "";
+		string persistedWithoutRecentWindow = "";
+		SplitPersistedHeroHistorySections(persistedHeroHistory, out privateRecentWindowSection, out persistedWithoutRecentWindow);
+		string layeredPrompt = text;
+		if (!string.IsNullOrWhiteSpace(extraFactLine))
+		{
+			layeredPrompt = layeredPrompt + "\n【AFEF玩家行为补充】\n" + extraFactLine.Trim();
+		}
+		if (!string.IsNullOrWhiteSpace(privateRecentWindowSection))
+		{
+			layeredPrompt = layeredPrompt + "\n" + privateRecentWindowSection;
+		}
+		if (!string.IsNullOrWhiteSpace(persistedWithoutRecentWindow))
+		{
+			layeredPrompt = layeredPrompt + "\n" + persistedWithoutRecentWindow;
+		}
+		string firstMeetingNpcFactSection = BuildSceneFirstMeetingNpcFactSection(contextHero);
+		if (!string.IsNullOrWhiteSpace(firstMeetingNpcFactSection))
+		{
+			layeredPrompt = layeredPrompt + "\n" + firstMeetingNpcFactSection;
+		}
+		if (!string.IsNullOrWhiteSpace(scenePublicHistorySection))
+		{
+			layeredPrompt = layeredPrompt + "\n" + scenePublicHistorySection;
+		}
+		string roleTopIntro = BuildSceneSystemTopPromptIntroForSingle(targetNpc, contextHero, new List<NpcDataPacket> { targetNpc });
+		if (!string.IsNullOrWhiteSpace(roleTopIntro))
+		{
+			layeredPrompt = roleTopIntro + "\n" + layeredPrompt;
+		}
+		List<object> messages = new List<object>
+		{
+			new
+			{
+				role = "system",
+				content = layeredPrompt
+			},
+			new
+			{
+				role = "user",
+				content = singleReplyUserContent
+			}
+		};
+		string text2 = await ShoutNetwork.CallApiWithMessages(messages, 5000);
+		if (string.IsNullOrWhiteSpace(text2))
+		{
+			return "";
+		}
+		string text3 = (text2 ?? "").Replace("\r", "").Trim();
+		text3 = Regex.Replace(text3, "\\[(?:ACTION:[^\\]]*|ASS:[^\\]]*|GUI:[^\\]]*|FOL|STP)\\]", "", RegexOptions.IgnoreCase).Trim();
+		int num = text3.IndexOf(':');
+		if (num < 0)
+		{
+			num = text3.IndexOf('：');
+		}
+		if (num > 0 && num < 30)
+		{
+			string text4 = text3.Substring(num + 1).Trim();
+			if (!string.IsNullOrWhiteSpace(text4))
+			{
+				text3 = text4;
+			}
+		}
+		text3 = StripLeakedPromptContentForShout(text3);
+		text3 = StripStageDirectionsForPassiveShout(text3);
+		return text3.Trim();
+	}
+
+	private void PrimeSceneSummonArrivalSpeechAsync(ActiveSceneSummonRequest request)
+	{
+		if (request == null || request.TargetLocationCharacter?.Character == null)
+		{
+			return;
+		}
+		Agent agent = Mission.Current?.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == request.SpeakerAgentIndex);
+		List<NpcDataPacket> sceneSummonArrivalContextSnapshot = BuildSceneSummonArrivalContextSnapshot(request.TargetLocationCharacter, agent);
+		NpcDataPacket sceneNpcDataFromLocationCharacter = BuildSceneNpcDataFromLocationCharacter(request.TargetLocationCharacter);
+		if (sceneNpcDataFromLocationCharacter == null)
+		{
+			return;
+		}
+		Hero hero = request.TargetLocationCharacter.Character.HeroObject;
+		string text = GetPlayerDisplayNameForShout();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			text = "玩家";
+		}
+		string extraFactLine = request.SpeakerName + "将你带到了" + text + "面前，" + text + "找你有些事。";
+		string singleReplyUserContent = "请只根据【当前场景公共对话与互动】和上面的【AFEF玩家行为补充】，以你的身份主动开口问" + text + "找你有什么事。控制在 18-40 字之间，只输出你说出口的话。";
+		_ = Task.Run(async delegate
+		{
+			try
+			{
+				string text2 = await GenerateCompactSceneReactionLineAsync(sceneNpcDataFromLocationCharacter, hero, sceneSummonArrivalContextSnapshot, extraFactLine, singleReplyUserContent);
+				request.PreGeneratedArrivalSpeech = text2;
+			}
+			catch (Exception ex)
+			{
+				Logger.Log("ShoutBehavior", "[ERROR] PrimeSceneSummonArrivalSpeechAsync failed: " + ex.Message);
+				request.PreGeneratedArrivalSpeech = "";
+			}
+		});
+	}
+
+	private void PlaySceneSummonArrivalSpeechIfReady(ActiveSceneSummonRequest request, Agent speakerAgent)
+	{
+		if (request == null || request.ArrivalSpeechConsumed)
+		{
+			return;
+		}
+		request.ArrivalSpeechConsumed = true;
+		string text = (request.PreGeneratedArrivalSpeech ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return;
+		}
+		NpcDataPacket sceneNpcDataFromLocationCharacter = BuildSceneNpcDataFromLocationCharacter(request.TargetLocationCharacter);
+		if (sceneNpcDataFromLocationCharacter == null)
+		{
+			return;
+		}
+		List<NpcDataPacket> sceneSummonArrivalContextSnapshot = BuildSceneSummonArrivalContextSnapshot(request.TargetLocationCharacter, speakerAgent);
+		if (!sceneSummonArrivalContextSnapshot.Any((NpcDataPacket x) => x != null && x.AgentIndex >= 0 && x.AgentIndex == sceneNpcDataFromLocationCharacter.AgentIndex))
+		{
+			sceneSummonArrivalContextSnapshot.Add(sceneNpcDataFromLocationCharacter);
+			ApplySceneLocalDisambiguatedNames(sceneSummonArrivalContextSnapshot);
+		}
+		EnqueueSpeechLine(sceneNpcDataFromLocationCharacter, text, sceneSummonArrivalContextSnapshot, skipHistory: false, suppressStare: false);
+	}
+
+	private SceneSummonConversationSession TryGetSceneSummonConversationSessionForAgentIndex(int agentIndex)
+	{
+		if (agentIndex < 0)
+		{
+			return null;
+		}
+		for (int i = 0; i < _activeSceneSummonConversationSessions.Count; i++)
+		{
+			SceneSummonConversationSession sceneSummonConversationSession = _activeSceneSummonConversationSessions[i];
+			if (sceneSummonConversationSession == null)
+			{
+				continue;
+			}
+			Agent agent = ResolveAgentForLocationCharacter(sceneSummonConversationSession.SpeakerLocationCharacter);
+			if (agent != null && agent.Index == agentIndex)
+			{
+				return sceneSummonConversationSession;
+			}
+			for (int j = 0; j < sceneSummonConversationSession.Participants.Count; j++)
+			{
+				SceneSummonConversationParticipant sceneSummonConversationParticipant = sceneSummonConversationSession.Participants[j];
+				if (sceneSummonConversationParticipant == null)
+				{
+					continue;
+				}
+				Agent agent2 = ResolveAgentForLocationCharacter(sceneSummonConversationParticipant.LocationCharacter);
+				if (agent2 != null && agent2.Index == agentIndex)
+				{
+					return sceneSummonConversationSession;
+				}
+			}
+		}
+		return null;
+	}
+
+	private void RegisterSceneSummonConversationSession(ActiveSceneSummonRequest request, Agent speakerAgent, Agent targetAgent)
+	{
+		if (request == null || request.SpeakerLocationCharacter == null || request.TargetLocationCharacter == null)
+		{
+			return;
+		}
+		SceneSummonConversationSession sceneSummonConversationSession = null;
+		if (request.BatchId >= 0)
+		{
+			sceneSummonConversationSession = _activeSceneSummonConversationSessions.FirstOrDefault((SceneSummonConversationSession x) => x != null && x.BatchId == request.BatchId);
+		}
+		if (sceneSummonConversationSession == null)
+		{
+			_activeSceneSummonConversationSessions.RemoveAll(delegate(SceneSummonConversationSession x)
+			{
+				if (x == null)
+				{
+					return true;
+				}
+				if (x.SpeakerLocationCharacter == request.SpeakerLocationCharacter)
+				{
+					return true;
+				}
+				return x.Participants.Any((SceneSummonConversationParticipant p) => p != null && p.LocationCharacter == request.TargetLocationCharacter);
+			});
+			sceneSummonConversationSession = new SceneSummonConversationSession
+			{
+				BatchId = request.BatchId,
+				SpeakerAgentIndex = request.SpeakerAgentIndex,
+				SpeakerName = request.SpeakerName,
+				SpeakerLocationCharacter = request.SpeakerLocationCharacter,
+				OriginalSpeakerLocation = request.TargetSourceLocation == request.CurrentLocation ? request.CurrentLocation : request.OriginalSpeakerLocation ?? request.CurrentLocation,
+				OriginalSpeakerPosition = request.OriginalSpeakerPosition ?? ((speakerAgent != null && speakerAgent.IsActive()) ? new Vec3?(speakerAgent.Position) : null),
+				KeepSpeakerNearby = request.KeepMessengerWithTarget
+			};
+			_activeSceneSummonConversationSessions.Add(sceneSummonConversationSession);
+		}
+		if (!sceneSummonConversationSession.Participants.Any((SceneSummonConversationParticipant x) => x != null && x.LocationCharacter == request.TargetLocationCharacter))
+		{
+			sceneSummonConversationSession.Participants.Add(new SceneSummonConversationParticipant
+			{
+				DisplayName = request.TargetName,
+				LocationCharacter = request.TargetLocationCharacter,
+				OriginalLocation = request.OriginalTargetLocation ?? request.TargetSourceLocation ?? request.CurrentLocation,
+				OriginalPosition = request.OriginalTargetPosition ?? ((targetAgent != null && targetAgent.IsActive()) ? new Vec3?(targetAgent.Position) : null)
+			});
+		}
+		RefreshSceneSummonConversationInteractions(sceneSummonConversationSession);
+		LogSceneSummonState("conversation_session_registered", request, speakerAgent, targetAgent, null, force: true);
+	}
+
+	private void RefreshSceneSummonConversationInteractions(SceneSummonConversationSession session)
+	{
+		if (session == null)
+		{
+			return;
+		}
+		List<NpcDataPacket> list = new List<NpcDataPacket>();
+		NpcDataPacket sceneNpcDataFromLocationCharacter = BuildSceneNpcDataFromLocationCharacter(session.SpeakerLocationCharacter);
+		if (sceneNpcDataFromLocationCharacter != null && sceneNpcDataFromLocationCharacter.AgentIndex >= 0)
+		{
+			list.Add(sceneNpcDataFromLocationCharacter);
+		}
+		for (int i = 0; i < session.Participants.Count; i++)
+		{
+			NpcDataPacket sceneNpcDataFromLocationCharacter2 = BuildSceneNpcDataFromLocationCharacter(session.Participants[i]?.LocationCharacter);
+			if (sceneNpcDataFromLocationCharacter2 != null && sceneNpcDataFromLocationCharacter2.AgentIndex >= 0 && !list.Any((NpcDataPacket x) => x != null && x.AgentIndex == sceneNpcDataFromLocationCharacter2.AgentIndex))
+			{
+				list.Add(sceneNpcDataFromLocationCharacter2);
+			}
+		}
+		int num = Math.Max(1, list.Count);
+		for (int j = 0; j < list.Count; j++)
+		{
+			TrackPlayerInteraction(list[j], num, ACTIVE_INTERACTION_IDLE_TIMEOUT);
+		}
+	}
+
+	private void RemoveAgentFromSceneSummonConversationForFollow(Agent agent)
+	{
+		if (!CanAgentParticipateInSceneSpeech(agent))
+		{
+			return;
+		}
+		SceneSummonConversationSession sceneSummonConversationSession = TryGetSceneSummonConversationSessionForAgentIndex(agent.Index);
+		if (sceneSummonConversationSession == null)
+		{
+			return;
+		}
+		ClearSceneSummonConversationInteractionTimers(sceneSummonConversationSession);
+		bool flag = false;
+		for (int num = sceneSummonConversationSession.Participants.Count - 1; num >= 0; num--)
+		{
+			SceneSummonConversationParticipant sceneSummonConversationParticipant = sceneSummonConversationSession.Participants[num];
+			if (sceneSummonConversationParticipant != null && sceneSummonConversationParticipant.LocationCharacter != null && ResolveAgentForLocationCharacter(sceneSummonConversationParticipant.LocationCharacter) == agent)
+			{
+				sceneSummonConversationSession.Participants.RemoveAt(num);
+				flag = true;
+			}
+		}
+		if (!flag)
+		{
+			return;
+		}
+		Agent agent2 = ResolveAgentForLocationCharacter(sceneSummonConversationSession.SpeakerLocationCharacter);
+		if (sceneSummonConversationSession.Participants.Count == 0)
+		{
+			_activeSceneSummonConversationSessions.Remove(sceneSummonConversationSession);
+			if (CanAgentParticipateInSceneSpeech(agent2) && agent2 != agent)
+			{
+				StopSceneSummonFollowPlayer(agent2);
+				_sceneFollowReturnStates.Remove(agent2.Index);
+				QueueSceneReturnJob(sceneSummonConversationSession.SpeakerName, sceneSummonConversationSession.SpeakerLocationCharacter, sceneSummonConversationSession.OriginalSpeakerLocation, sceneSummonConversationSession.OriginalSpeakerPosition);
+			}
+			if (agent2 != null)
+			{
+				_pendingInteractionTimeoutArms.Remove(agent2.Index);
+				_activeInteractionSessions.Remove(agent2.Index);
+			}
+		}
+		else
+		{
+			RefreshSceneSummonConversationInteractions(sceneSummonConversationSession);
+		}
+		_pendingInteractionTimeoutArms.Remove(agent.Index);
+		_activeInteractionSessions.Remove(agent.Index);
+	}
+
+	private void ClearSceneSummonConversationInteractionTimers(SceneSummonConversationSession session)
+	{
+		if (session == null)
+		{
+			return;
+		}
+		HashSet<int> hashSet = new HashSet<int>();
+		Agent agent = ResolveAgentForLocationCharacter(session.SpeakerLocationCharacter);
+		if (agent != null)
+		{
+			hashSet.Add(agent.Index);
+		}
+		for (int i = 0; i < session.Participants.Count; i++)
+		{
+			Agent agent2 = ResolveAgentForLocationCharacter(session.Participants[i]?.LocationCharacter);
+			if (agent2 != null)
+			{
+				hashSet.Add(agent2.Index);
+			}
+		}
+		foreach (int item in hashSet)
+		{
+			_pendingInteractionTimeoutArms.Remove(item);
+			_activeInteractionSessions.Remove(item);
+		}
+	}
+
+	private void BeginSceneSummonConversationReturn(SceneSummonConversationSession session)
+	{
+		if (session == null || CampaignMission.Current?.Location == null)
+		{
+			return;
+		}
+		string text = string.Join("、", session.Participants.Where((SceneSummonConversationParticipant x) => x != null && !string.IsNullOrWhiteSpace(x.DisplayName)).Select((SceneSummonConversationParticipant x) => x.DisplayName).Distinct());
+		_activeSceneSummonConversationSessions.Remove(session);
+		CancelSceneSummonBatch(session.BatchId);
+		Agent agent = ResolveAgentForLocationCharacter(session.SpeakerLocationCharacter);
+		StopSceneSummonFollowPlayer(agent);
+		if (agent != null)
+		{
+			_sceneFollowReturnStates.Remove(agent.Index);
+		}
+		QueueSceneReturnJob(session.SpeakerName, session.SpeakerLocationCharacter, session.OriginalSpeakerLocation, session.OriginalSpeakerPosition);
+		for (int i = 0; i < session.Participants.Count; i++)
+		{
+			SceneSummonConversationParticipant sceneSummonConversationParticipant = session.Participants[i];
+			if (sceneSummonConversationParticipant != null)
+			{
+				Agent agent2 = ResolveAgentForLocationCharacter(sceneSummonConversationParticipant.LocationCharacter);
+				StopSceneSummonFollowPlayer(agent2);
+				if (agent2 != null)
+				{
+					_sceneFollowReturnStates.Remove(agent2.Index);
+				}
+				QueueSceneReturnJob(sceneSummonConversationParticipant.DisplayName, sceneSummonConversationParticipant.LocationCharacter, sceneSummonConversationParticipant.OriginalLocation, sceneSummonConversationParticipant.OriginalPosition);
+			}
+		}
+		List<int> list = new List<int>();
+		if (agent != null)
+		{
+			list.Add(agent.Index);
+		}
+		for (int j = 0; j < session.Participants.Count; j++)
+		{
+			Agent agent2 = ResolveAgentForLocationCharacter(session.Participants[j]?.LocationCharacter);
+			if (agent2 != null && !list.Contains(agent2.Index))
+			{
+				list.Add(agent2.Index);
+			}
+		}
+		if (list.Count > 0)
+		{
+			ClearPendingSceneConversationAttentionRelease();
+			RemoveSceneMovementSuppressionAgents(list);
+			ReleaseSceneConversationAttention(list, fullyRestoreAutonomy: true);
+			foreach (int item in list)
+			{
+				_pendingSceneFollowCommands.Remove(item);
+				_pendingSceneSummonReturnsAfterSpeech.Remove(item);
+				_pendingInteractionTimeoutArms.Remove(item);
+				_activeInteractionSessions.Remove(item);
+			}
+		}
+	}
+
+	private void QueueSceneReturnJob(string displayName, LocationCharacter locationCharacter, Location originalLocation, Vec3? originalPosition)
+	{
+		if (locationCharacter == null)
+		{
+			return;
+		}
+		Location currentLocation = CampaignMission.Current?.Location;
+		if (currentLocation == null)
+		{
+			return;
+		}
+		foreach (SceneReturnJob item in _activeSceneReturnJobs.Where((SceneReturnJob x) => x != null && x.LocationCharacter == locationCharacter).ToList())
+		{
+			CleanupSceneReturnDoorProxyAgent(item);
+		}
+		_activeSceneReturnJobs.RemoveAll((SceneReturnJob x) => x == null || x.LocationCharacter == locationCharacter);
+		_activeSceneReturnJobs.Add(new SceneReturnJob
+		{
+			DisplayName = displayName,
+			LocationCharacter = locationCharacter,
+			CurrentLocation = currentLocation,
+			OriginalLocation = originalLocation ?? currentLocation,
+			OriginalPosition = originalPosition,
+			ExitPassage = null
+		});
+	}
+
+	private void PrepareAgentForSceneSummonMovement(Agent agent)
+	{
+		if (agent == null || !agent.IsActive())
+		{
+			return;
+		}
+		_staringAgents.RemoveAll((Agent a) => a == null || a.Index == agent.Index);
+		_staringAgentAnchors.Remove(agent.Index);
+		RemoveSceneMovementSuppressionAgents(new int[1] { agent.Index });
+		ReleaseAgentFromSceneConversationLocks(agent);
+		RestoreAgentAutonomy(agent);
+	}
+
+	private void TrackSceneSummonScriptedAgent(Agent agent)
+	{
+		if (agent != null && agent.IsActive() && agent.Index >= 0)
+		{
+			_sceneSummonScriptedAgentIndices.Add(agent.Index);
+		}
+	}
+
+	private void ClearSceneSummonScriptedBehavior(Agent agent)
+	{
+		if (agent == null || agent.Index < 0 || !_sceneSummonScriptedAgentIndices.Contains(agent.Index))
+		{
+			return;
+		}
+		_sceneSummonScriptedAgentIndices.Remove(agent.Index);
+		try
+		{
+			CampaignAgentComponent component = agent.GetComponent<CampaignAgentComponent>();
+			DailyBehaviorGroup behaviorGroup = component?.AgentNavigator?.GetBehaviorGroup<DailyBehaviorGroup>();
+			if (behaviorGroup?.ScriptedBehavior is ScriptBehavior)
+			{
+				behaviorGroup.DisableScriptedBehavior();
+			}
+		}
+		catch
+		{
+		}
+	}
+
+	private void ReleaseAgentForSceneSummonAction(Agent agent)
+	{
+		if (agent == null || !agent.IsActive())
+		{
+			return;
+		}
+		_staringAgents.RemoveAll((Agent a) => a == null || a.Index == agent.Index);
+		_staringAgentAnchors.Remove(agent.Index);
+		RemoveSceneMovementSuppressionAgents(new int[1] { agent.Index });
+		lock (_pendingSceneConversationAttentionReleaseLock)
+		{
+			_pendingSceneConversationAttentionReleaseAgentIndices.Remove(agent.Index);
+		}
+		_pendingInteractionTimeoutArms.Remove(agent.Index);
+		_activeInteractionSessions.Remove(agent.Index);
+		try
+		{
+			if (_staringUseConversationAgents.Remove(agent.Index) && agent.CurrentlyUsedGameObject != null)
+			{
+				agent.CurrentlyUsedGameObject.OnUserConversationEnd();
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			agent.SetLookAgent(null);
+		}
+		catch
+		{
+		}
+		try
+		{
+			agent.SetMaximumSpeedLimit(-1f, isMultiplier: false);
+		}
+		catch
+		{
+		}
+		if (!ShouldPreserveMeetingSceneAutonomy())
+		{
+			try
+			{
+				agent.DisableScriptedMovement();
+			}
+			catch
+			{
+			}
+		}
+		try
+		{
+			agent.SetIsAIPaused(isPaused: false);
+		}
+		catch
+		{
+		}
+	}
+
+	private bool NavigateAgentToScenePassage(Agent agent, Passage passage)
+	{
+		if (agent == null || !agent.IsActive() || passage == null)
+		{
+			return false;
+		}
+		Vec3 passageWaitingPosition = GetPassageWaitingPosition(passage);
+		return NavigateAgentToWorldPosition(agent, passageWaitingPosition, 0.9f, doNotRun: false);
+	}
+
+	private Vec3 GetPassageWaitingPosition(Passage passage)
+	{
+		Vec3 result;
+		if (Mission.Current?.Scene == null || passage == null)
+		{
+			return Vec3.Zero;
+		}
+		try
+		{
+			if (passage.PilotStandingPoint != null && passage.PilotStandingPoint.GameEntity != null)
+			{
+				MatrixFrame globalFrame = passage.PilotStandingPoint.GameEntity.GetGlobalFrame();
+				result = globalFrame.origin;
+				Vec3 vec = globalFrame.rotation.f;
+				if (vec.LengthSquared > 0.0001f)
+				{
+					vec.Normalize();
+					result -= vec * 0.35f;
+				}
+				result.z = Mission.Current.Scene.GetGroundHeightAtPosition(result, BodyFlags.CommonCollisionExcludeFlags);
+				return result;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			result = passage.GameEntity.GlobalPosition;
+			result.z = Mission.Current.Scene.GetGroundHeightAtPosition(result, BodyFlags.CommonCollisionExcludeFlags);
+			return result;
+		}
+		catch
+		{
+			return Vec3.Zero;
+		}
+	}
+
+	private bool NavigateAgentToWorldPosition(Agent agent, Vec3 targetPosition, float rangeThreshold = 0.8f, bool doNotRun = false)
+	{
+		if (agent == null || !agent.IsActive() || Mission.Current?.Scene == null)
+		{
+			return false;
+		}
+		try
+		{
+			PrepareAgentForSceneSummonMovement(agent);
+			Vec2 vec = (targetPosition - agent.Position).AsVec2;
+			float rotationInRadians = agent.LookDirection.AsVec2.RotationInRadians;
+			if (vec.LengthSquared > 0.0001f)
+			{
+				rotationInRadians = vec.RotationInRadians;
+			}
+			targetPosition.z = Mission.Current.Scene.GetGroundHeightAtPosition(targetPosition, BodyFlags.CommonCollisionExcludeFlags);
+			CampaignAgentComponent component = agent.GetComponent<CampaignAgentComponent>();
+			AgentNavigator agentNavigator = component?.AgentNavigator ?? component?.CreateAgentNavigator();
+			if (agentNavigator == null)
+			{
+				return false;
+			}
+			WorldPosition worldPosition = new WorldPosition(Mission.Current.Scene, targetPosition);
+			WorldFrame targetWorldFrame = new WorldFrame(Mat3.CreateMat3WithForward(Vec3.Forward), worldPosition);
+			try
+			{
+				Vec2 vec2 = new Vec2((float)Math.Cos(rotationInRadians), (float)Math.Sin(rotationInRadians));
+				targetWorldFrame = new WorldFrame(Mat3.CreateMat3WithForward(vec2.ToVec3()), worldPosition);
+			}
+			catch
+			{
+			}
+			ScriptBehavior.AddWorldFrameTarget(agent, targetWorldFrame);
+			TrackSceneSummonScriptedAgent(agent);
+			try
+			{
+				WorldPosition origin = targetWorldFrame.Origin;
+				agent.SetScriptedPosition(ref origin, addHumanLikeDelay: false, doNotRun ? Agent.AIScriptedFrameFlags.DoNotRun : Agent.AIScriptedFrameFlags.NeverSlowDown);
+			}
+			catch
+			{
+			}
+			return true;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static void BuildSceneSummonStandPositions(Agent main, out Vec3 primaryPosition, out Vec3 secondaryPosition)
+	{
+		Vec3 position = main.Position;
+		Vec2 vec = main.LookDirection.AsVec2;
+		if (vec.LengthSquared < 0.0001f)
+		{
+			vec = new Vec2(0f, 1f);
+		}
+		else
+		{
+			vec.Normalize();
+		}
+		Vec2 vec2 = new Vec2(-vec.y, vec.x);
+		primaryPosition = position + (vec.ToVec3() * 1.85f) - (vec2.ToVec3() * 0.85f);
+		secondaryPosition = position + (vec.ToVec3() * 1.55f) + (vec2.ToVec3() * 0.85f);
+	}
+
+	private static Vec3 BuildSceneSummonEscortPosition(Agent main, int slotIndex, int slotCount)
+	{
+		Vec3 position = main.Position;
+		Vec2 vec = main.LookDirection.AsVec2;
+		if (vec.LengthSquared < 0.0001f)
+		{
+			vec = new Vec2(0f, 1f);
+		}
+		else
+		{
+			vec.Normalize();
+		}
+		Vec2 vec2 = new Vec2(-vec.y, vec.x);
+		int num = Math.Max(1, slotCount);
+		float num2 = (num == 1) ? 0f : ((float)slotIndex - (float)(num - 1) * 0.5f);
+		float num3 = 1.7f + 0.25f * Math.Min(slotIndex, 3);
+		float num4 = 0.85f * num2;
+		return position + (vec.ToVec3() * num3) + (vec2.ToVec3() * num4);
+	}
+
+	private static string GetSceneSummonLocationDebugName(Location location)
+	{
+		string text = (location?.StringId ?? "").Trim();
+		if (!string.IsNullOrWhiteSpace(text))
+		{
+			return text;
+		}
+		text = (location?.Name?.ToString() ?? "").Trim();
+		return string.IsNullOrWhiteSpace(text) ? "null" : text;
+	}
+
+	private static string GetSceneSummonPassageDebugName(Passage passage)
+	{
+		if (passage == null)
+		{
+			return "null";
+		}
+		string text = "";
+		try
+		{
+			text = (passage.GameEntity.Name ?? "").Trim();
+		}
+		catch
+		{
+			text = "";
+		}
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			text = passage.GetType().Name;
+		}
+		return text + "->" + GetSceneSummonLocationDebugName(passage.ToLocation);
+	}
+
+	private static string FormatSceneSummonPosition(Vec3? position)
+	{
+		if (!position.HasValue)
+		{
+			return "null";
+		}
+		Vec3 value = position.Value;
+		return value.x.ToString("F2") + "," + value.y.ToString("F2") + "," + value.z.ToString("F2");
+	}
+
+	private string GetSceneSummonAgentDebugState(Agent agent)
+	{
+		if (agent == null)
+		{
+			return "null";
+		}
+		try
+		{
+			CampaignAgentComponent component = agent.GetComponent<CampaignAgentComponent>();
+			UsableMachine targetUsableMachine = component?.AgentNavigator?.TargetUsableMachine;
+			string text = (targetUsableMachine?.GetType().Name ?? "none").Trim();
+			if (targetUsableMachine != null)
+			{
+				try
+				{
+					string text2 = (targetUsableMachine.GameEntity.Name ?? "").Trim();
+					if (!string.IsNullOrWhiteSpace(text2))
+					{
+						text = text2;
+					}
+				}
+				catch
+				{
+				}
+			}
+			if (string.IsNullOrWhiteSpace(text))
+			{
+				text = "none";
+			}
+			return "idx=" + agent.Index + " pos=" + FormatSceneSummonPosition(agent.Position) + " using=" + agent.IsUsingGameObject + " curUse=" + (agent.CurrentlyUsedGameObject?.GetType().Name ?? "none") + " nav=" + text;
+		}
+		catch (Exception ex)
+		{
+			return "idx=" + agent.Index + " debug_err=" + ex.GetType().Name;
+		}
+	}
+
+	private void LogSceneSummonState(string phase, ActiveSceneSummonRequest request, Agent speakerAgent = null, Agent targetAgent = null, string extra = null, bool force = false)
+	{
+		return;
+	}
+
+	private static List<int> ParseSceneSummonPromptIds(string rawIds)
+	{
+		if (string.IsNullOrWhiteSpace(rawIds))
+		{
+			return null;
+		}
+		List<int> list = new List<int>();
+		HashSet<int> hashSet = new HashSet<int>();
+		string[] array = rawIds.Split(new char[1] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+		foreach (string text in array)
+		{
+			if (int.TryParse((text ?? "").Trim(), out var result) && result > 0 && hashSet.Add(result))
+			{
+				list.Add(result);
+			}
+		}
+		return list;
+	}
+
+	private bool TryTriggerSceneSummonAction(NpcDataPacket npc, Agent agent, List<SceneSummonPromptTarget> summonTargets, ref string content, out ActiveSceneSummonRequest preparedRequest)
+	{
+		preparedRequest = null;
+		if (string.IsNullOrWhiteSpace(content))
+		{
+			return false;
+		}
+		Match match = SceneSummonActionTagRegex.Match(content);
+		if (!match.Success)
+		{
+			return false;
+		}
+		content = SceneSummonActionTagRegex.Replace(content, "").Trim();
+		List<int> list = ParseSceneSummonPromptIds(match.Groups[1].Value);
+		if (list == null || list.Count == 0 || summonTargets == null || summonTargets.Count == 0)
+		{
+			return false;
+		}
+		List<SceneSummonPromptTarget> list2 = new List<SceneSummonPromptTarget>();
+		HashSet<LocationCharacter> hashSet = new HashSet<LocationCharacter>();
+		foreach (int item in list)
+		{
+			SceneSummonPromptTarget sceneSummonPromptTarget = summonTargets.FirstOrDefault((SceneSummonPromptTarget x) => x != null && x.PromptId == item);
+			if (sceneSummonPromptTarget != null && sceneSummonPromptTarget.LocationCharacter != null && hashSet.Add(sceneSummonPromptTarget.LocationCharacter))
+			{
+				list2.Add(sceneSummonPromptTarget);
+			}
+		}
+		if (list2.Count == 0)
+		{
+			return false;
+		}
+		return StartSceneSummonBatchAction(npc, agent, list2, out preparedRequest);
+	}
+
+	private bool StartSceneSummonBatchAction(NpcDataPacket npc, Agent agent, List<SceneSummonPromptTarget> targets, out ActiveSceneSummonRequest preparedRequest)
+	{
+		preparedRequest = null;
+		LocationComplex locationComplex = LocationComplex.Current;
+		Location location = CampaignMission.Current?.Location;
+		LocationCharacter locationCharacter = locationComplex?.FindCharacter(agent);
+		if (npc == null || agent == null || !agent.IsActive() || locationComplex == null || location == null || locationCharacter == null || targets == null || targets.Count == 0)
+		{
+			return false;
+		}
+		SceneSummonConversationSession sceneSummonConversationSession = TryGetSceneSummonConversationSessionForAgentIndex(npc.AgentIndex);
+		if (sceneSummonConversationSession != null)
+		{
+			BeginSceneSummonConversationReturn(sceneSummonConversationSession);
+		}
+		foreach (ActiveSceneSummonRequest item in _activeSceneSummonRequests.Where((ActiveSceneSummonRequest x) => x == null || x.SpeakerAgentIndex == npc.AgentIndex).ToList())
+		{
+			CleanupSceneSummonDoorProxyAgent(item);
+		}
+		_activeSceneSummonRequests.RemoveAll((ActiveSceneSummonRequest x) => x == null || x.SpeakerAgentIndex == npc.AgentIndex);
+		List<int> list = _activeSceneSummonBatches.Values.Where((SceneSummonBatchState x) => x != null && x.SpeakerAgentIndex == npc.AgentIndex).Select((SceneSummonBatchState x) => x.BatchId).ToList();
+		foreach (int item in list)
+		{
+			CancelSceneSummonBatch(item);
+		}
+		SceneSummonBatchState sceneSummonBatchState = new SceneSummonBatchState
+		{
+			BatchId = _nextSceneSummonBatchId++,
+			SpeakerAgentIndex = npc.AgentIndex,
+			SpeakerName = (string.IsNullOrWhiteSpace(npc.Name) ? (agent.Name?.ToString() ?? "有人") : npc.Name),
+			SpeakerLocationCharacter = locationCharacter,
+			OriginalSpeakerLocation = location,
+			OriginalSpeakerPosition = agent.Position
+		};
+		foreach (SceneSummonPromptTarget target in targets)
+		{
+			if (target != null)
+			{
+				sceneSummonBatchState.PendingTargets.Enqueue(target);
+			}
+		}
+		if (sceneSummonBatchState.PendingTargets.Count == 0)
+		{
+			return false;
+		}
+		_activeSceneSummonBatches[sceneSummonBatchState.BatchId] = sceneSummonBatchState;
+		if (!TryStartNextSceneSummonBatchRequest(sceneSummonBatchState, agent, isInitialRequest: true, out preparedRequest))
+		{
+			_activeSceneSummonBatches.Remove(sceneSummonBatchState.BatchId);
+			return false;
+		}
+		return true;
+	}
+
+	private bool TryTriggerSceneGuideAction(NpcDataPacket npc, Agent agent, List<SceneGuidePromptTarget> guideTargets, ref string content, out ActiveSceneGuideRequest preparedRequest)
+	{
+		preparedRequest = null;
+		if (string.IsNullOrWhiteSpace(content))
+		{
+			return false;
+		}
+		Match match = SceneGuideActionTagRegex.Match(content);
+		if (!match.Success)
+		{
+			return false;
+		}
+		content = SceneGuideActionTagRegex.Replace(content, "").Trim();
+		if (!int.TryParse(match.Groups[1].Value.Trim(), out var result) || guideTargets == null || guideTargets.Count == 0)
+		{
+			return false;
+		}
+		SceneGuidePromptTarget sceneGuidePromptTarget = guideTargets.FirstOrDefault((SceneGuidePromptTarget x) => x != null && x.PromptId == result);
+		if (sceneGuidePromptTarget == null)
+		{
+			return false;
+		}
+		return StartSceneGuideAction(npc, agent, sceneGuidePromptTarget, out preparedRequest);
+	}
+
+	private bool StartSceneGuideAction(NpcDataPacket npc, Agent agent, SceneGuidePromptTarget target, out ActiveSceneGuideRequest preparedRequest)
+	{
+		preparedRequest = null;
+		LocationComplex locationComplex = LocationComplex.Current;
+		Location location = CampaignMission.Current?.Location;
+		LocationCharacter locationCharacter = locationComplex?.FindCharacter(agent);
+		if (npc == null || agent == null || !agent.IsActive() || target == null || target.LocationCharacter == null || locationComplex == null || location == null || locationCharacter == null)
+		{
+			return false;
+		}
+		Location originalGuideLocation = location;
+		Vec3? originalGuidePosition = agent.Position;
+		if (_sceneFollowReturnStates.TryGetValue(agent.Index, out var value) && value != null)
+		{
+			originalGuideLocation = value.OriginalLocation ?? originalGuideLocation;
+			originalGuidePosition = value.OriginalPosition ?? originalGuidePosition;
+			StopSceneSummonFollowPlayer(agent, restoreDailyBehaviors: false);
+		}
+		CancelSceneGuideActionForAgent(npc.AgentIndex);
+		preparedRequest = new ActiveSceneGuideRequest
+		{
+			GuideAgentIndex = npc.AgentIndex,
+			GuideName = (string.IsNullOrWhiteSpace(npc.Name) ? (agent.Name?.ToString() ?? "有人") : npc.Name),
+			TargetName = target.DisplayName,
+			TargetPromptId = target.PromptId,
+			GuideLocationCharacter = locationCharacter,
+			TargetLocationCharacter = target.LocationCharacter,
+			CurrentLocation = location,
+			OriginalGuideLocation = originalGuideLocation,
+			OriginalGuidePosition = originalGuidePosition,
+			TargetSourceLocation = target.SourceLocation,
+			NextStageMissionTime = Mission.Current?.CurrentTime ?? 0f
+		};
+		_activeSceneGuideRequests.Add(preparedRequest);
+		return true;
+	}
+
+	private void CancelSceneGuideActionForAgent(int guideAgentIndex)
+	{
+		if (guideAgentIndex < 0)
+		{
+			return;
+		}
+		_activeSceneGuideRequests.RemoveAll((ActiveSceneGuideRequest x) => x == null || x.GuideAgentIndex == guideAgentIndex);
+		lock (_ttsBubbleSyncLock)
+		{
+			_pendingSceneGuideLaunchQueues.Remove(guideAgentIndex);
+		}
+		_pendingSceneGuideReturnsAfterSpeech.Remove(guideAgentIndex);
+	}
+
+	private bool TryStartNextSceneSummonBatchRequest(SceneSummonBatchState batch, Agent fallbackSpeakerAgent, bool isInitialRequest, out ActiveSceneSummonRequest preparedRequest)
+	{
+		preparedRequest = null;
+		if (batch == null || batch.PendingTargets.Count == 0)
+		{
+			return false;
+		}
+		Agent agent = ResolveAgentForLocationCharacter(batch.SpeakerLocationCharacter) ?? fallbackSpeakerAgent;
+		if (!CanAgentParticipateInSceneSpeech(agent))
+		{
+			return false;
+		}
+		while (batch.PendingTargets.Count > 0)
+		{
+			SceneSummonPromptTarget target = batch.PendingTargets.Dequeue();
+			bool keepMessengerWithTarget = batch.PendingTargets.Count == 0;
+			preparedRequest = BuildSceneSummonRequest(batch, agent, target, keepMessengerWithTarget, isInitialRequest);
+			if (preparedRequest == null)
+			{
+				continue;
+			}
+			LocationCharacter preparedTargetLocationCharacter = preparedRequest.TargetLocationCharacter;
+			foreach (ActiveSceneSummonRequest item in _activeSceneSummonRequests.Where((ActiveSceneSummonRequest x) => x == null || (x.BatchId == batch.BatchId && x.TargetLocationCharacter == preparedTargetLocationCharacter)).ToList())
+			{
+				CleanupSceneSummonDoorProxyAgent(item);
+			}
+			_activeSceneSummonRequests.RemoveAll((ActiveSceneSummonRequest x) => x == null || (x.BatchId == batch.BatchId && x.TargetLocationCharacter == preparedTargetLocationCharacter));
+			_activeSceneSummonRequests.Add(preparedRequest);
+			PrimeSceneSummonArrivalSpeechAsync(preparedRequest);
+			return true;
+		}
+		return false;
+	}
+
+	private ActiveSceneSummonRequest BuildSceneSummonRequest(SceneSummonBatchState batch, Agent speakerAgent, SceneSummonPromptTarget target, bool keepMessengerWithTarget, bool isInitialRequest)
+	{
+		LocationComplex locationComplex = LocationComplex.Current;
+		Location location = CampaignMission.Current?.Location;
+		if (batch == null || speakerAgent == null || !speakerAgent.IsActive() || target == null || target.LocationCharacter == null || locationComplex == null || location == null)
+		{
+			return null;
+		}
+		Location locationOfCharacter = locationComplex.GetLocationOfCharacter(target.LocationCharacter) ?? target.SourceLocation;
+		if (locationOfCharacter == null || target.LocationCharacter.Character == null || target.LocationCharacter.Character == CharacterObject.PlayerCharacter || target.LocationCharacter.Character == speakerAgent.Character)
+		{
+			return null;
+		}
+		List<Location> sceneLocationPath = FindSceneLocationPath(location, locationOfCharacter);
+		if (sceneLocationPath == null || sceneLocationPath.Count == 0)
+		{
+			return null;
+		}
+		string text = string.IsNullOrWhiteSpace(target.DisplayName) ? (target.LocationCharacter.Character.Name?.ToString() ?? "那个人") : target.DisplayName;
+		string text2 = BuildSceneSummonBatchTargetSummary(batch, target);
+		LocationCharacter locationCharacter = batch.SpeakerLocationCharacter ?? locationComplex.FindCharacter(speakerAgent);
+		if (locationCharacter == null)
+		{
+			return null;
+		}
+		if (locationOfCharacter == location)
+		{
+			Agent agent = ResolveAgentForLocationCharacter(target.LocationCharacter);
+			if (!CanAgentParticipateInSceneSpeech(agent))
+			{
+				return null;
+			}
+			ActiveSceneSummonRequest activeSceneSummonRequest = new ActiveSceneSummonRequest
+			{
+				BatchId = batch.BatchId,
+				SpeakerAgentIndex = batch.SpeakerAgentIndex,
+				SpeakerName = batch.SpeakerName,
+				TargetPromptId = target.PromptId,
+				TargetName = text,
+				SpeakerLocationCharacter = locationCharacter,
+				TargetLocationCharacter = target.LocationCharacter,
+				CurrentLocation = location,
+				OriginalSpeakerLocation = batch.OriginalSpeakerLocation ?? location,
+				OriginalTargetLocation = locationOfCharacter,
+				TargetSourceLocation = locationOfCharacter,
+				PassageHopLocation = location,
+				OriginalSpeakerPosition = batch.OriginalSpeakerPosition ?? speakerAgent.Position,
+				OriginalTargetPosition = agent.Position,
+				NextStageMissionTime = Mission.Current.CurrentTime,
+				ArrivalSpeechDeadlineMissionTime = Mission.Current.CurrentTime + 6f,
+				Stage = SceneSummonStage.PendingLaunch,
+				PendingLaunchStage = SceneSummonStage.MessengerToTarget,
+				LaunchAnnouncement = (isInitialRequest ? (batch.SpeakerName + " 去叫" + text2 + "了。") : null),
+				KeepMessengerWithTarget = keepMessengerWithTarget
+			};
+			LogSceneSummonState(isInitialRequest ? "start_same_scene" : "start_same_scene_followup", activeSceneSummonRequest, speakerAgent, agent, "pathLen=1 keepMessenger=" + keepMessengerWithTarget, force: true);
+			if (!isInitialRequest)
+			{
+				activeSceneSummonRequest.NextStageMissionTime = Mission.Current.CurrentTime + 0.25f;
+			}
+			return activeSceneSummonRequest;
+		}
+		Location location2 = sceneLocationPath[1];
+		Passage currentScenePassageToLocation = FindCurrentScenePassageToLocation(location2);
+		if (currentScenePassageToLocation == null)
+		{
+			return null;
+		}
+		ActiveSceneSummonRequest activeSceneSummonRequest2 = new ActiveSceneSummonRequest
+		{
+			BatchId = batch.BatchId,
+			SpeakerAgentIndex = batch.SpeakerAgentIndex,
+			SpeakerName = batch.SpeakerName,
+			TargetPromptId = target.PromptId,
+			TargetName = text,
+			SpeakerLocationCharacter = locationCharacter,
+			TargetLocationCharacter = target.LocationCharacter,
+			CurrentLocation = location,
+			OriginalSpeakerLocation = batch.OriginalSpeakerLocation ?? location,
+			OriginalTargetLocation = locationOfCharacter,
+			TargetSourceLocation = locationOfCharacter,
+			PassageHopLocation = location2,
+			OriginalSpeakerPosition = batch.OriginalSpeakerPosition ?? speakerAgent.Position,
+			OriginalTargetPosition = null,
+			MessengerDoorPassage = currentScenePassageToLocation,
+			NextStageMissionTime = Mission.Current.CurrentTime + (isInitialRequest ? SCENE_SUMMON_DELAY_SECONDS : 0.25f),
+			ArrivalSpeechDeadlineMissionTime = Mission.Current.CurrentTime + 8f,
+			Stage = SceneSummonStage.PendingLaunch,
+			PendingLaunchStage = SceneSummonStage.MessengerToDoor,
+			LaunchAnnouncement = (isInitialRequest ? (batch.SpeakerName + " 去帮你叫" + text2 + "了。") : null),
+			KeepMessengerWithTarget = keepMessengerWithTarget
+		};
+		LogSceneSummonState(isInitialRequest ? "start_cross_scene" : "start_cross_scene_followup", activeSceneSummonRequest2, speakerAgent, null, "pathLen=" + sceneLocationPath.Count + " keepMessenger=" + keepMessengerWithTarget, force: true);
+		return activeSceneSummonRequest2;
+	}
+
+	private void UpdateActiveSceneSummonRequests()
+	{
+		if (_activeSceneSummonRequests.Count == 0 || Mission.Current == null)
+		{
+			return;
+		}
+		float currentTime = Mission.Current.CurrentTime;
+		for (int num = _activeSceneSummonRequests.Count - 1; num >= 0; num--)
+		{
+			ActiveSceneSummonRequest activeSceneSummonRequest = _activeSceneSummonRequests[num];
+			if (!IsSceneSummonRequestStillValid(activeSceneSummonRequest))
+			{
+				LogSceneSummonState("request_invalidated", activeSceneSummonRequest, ResolveAgentForLocationCharacter(activeSceneSummonRequest.SpeakerLocationCharacter), ResolveAgentForLocationCharacter(activeSceneSummonRequest.TargetLocationCharacter), "campaignLocationChangedOrTargetMissing", force: true);
+				CleanupSceneSummonDoorProxyAgent(activeSceneSummonRequest);
+				if (activeSceneSummonRequest.BatchId >= 0)
+				{
+					CancelSceneSummonBatch(activeSceneSummonRequest.BatchId);
+				}
+				else
+				{
+					_activeSceneSummonRequests.RemoveAt(num);
+				}
+				continue;
+			}
+			bool flag = activeSceneSummonRequest.Stage switch
+			{
+				SceneSummonStage.PendingLaunch => TickSceneSummonPendingLaunchStage(activeSceneSummonRequest, currentTime),
+				SceneSummonStage.MessengerToTarget => TickSceneSummonMessengerToTargetStage(activeSceneSummonRequest, currentTime),
+				SceneSummonStage.MessengerToDoor => TickSceneSummonMessengerStage(activeSceneSummonRequest, currentTime),
+				SceneSummonStage.WaitingForTarget => TickSceneSummonWaitStage(activeSceneSummonRequest, currentTime),
+				SceneSummonStage.TargetToPlayer => TickSceneSummonTargetStage(activeSceneSummonRequest, currentTime),
+				_ => true,
+			};
+			if (flag)
+			{
+				CleanupSceneSummonDoorProxyAgent(activeSceneSummonRequest);
+				_activeSceneSummonRequests.RemoveAt(num);
+			}
+		}
+	}
+
+	private static bool IsSceneSummonRequestStillValid(ActiveSceneSummonRequest request)
+	{
+		return request != null && request.TargetLocationCharacter != null && CampaignMission.Current?.Location == request.CurrentLocation;
+	}
+
+	private void SchedulePreparedSceneSummonLaunch(ActiveSceneSummonRequest request, SceneSpeechPlaybackInfo playbackInfo, string spokenText)
+	{
+		if (request == null || Mission.Current == null)
+		{
+			return;
+		}
+		if (playbackInfo != null && playbackInfo.TtsEnabled && playbackInfo.TtsAccepted && playbackInfo.WaitForPlaybackFinished && request.SpeakerAgentIndex >= 0)
+		{
+			request.NextStageMissionTime = float.MaxValue;
+			EnqueuePendingSceneSummonLaunch(request.SpeakerAgentIndex, request);
+			LogSceneSummonState("pending_launch_wait_tts_finish", request, ResolveAgentForLocationCharacter(request.SpeakerLocationCharacter), ResolveAgentForLocationCharacter(request.TargetLocationCharacter), "speakerAgentIndex=" + request.SpeakerAgentIndex, force: true);
+			return;
+		}
+		float num = EstimateBubbleTypingDurationSeconds(spokenText ?? "");
+		if (playbackInfo != null && playbackInfo.VisualDurationSeconds > num)
+		{
+			num = playbackInfo.VisualDurationSeconds;
+		}
+		if (playbackInfo != null && playbackInfo.TtsEnabled && playbackInfo.TtsAccepted)
+		{
+			num = Math.Max(num, EstimateBubbleTypingDurationSeconds(spokenText ?? ""));
+		}
+		float num2 = Math.Max(0.15f, num);
+		request.NextStageMissionTime = Mission.Current.CurrentTime + num2;
+		LogSceneSummonState("pending_launch_scheduled", request, ResolveAgentForLocationCharacter(request.SpeakerLocationCharacter), ResolveAgentForLocationCharacter(request.TargetLocationCharacter), "delay=" + num2.ToString("F2") + " ttsAccepted=" + ((playbackInfo != null) ? playbackInfo.TtsAccepted.ToString() : "False") + " waitForFinish=" + ((playbackInfo != null) ? playbackInfo.WaitForPlaybackFinished.ToString() : "False") + " speechLen=" + ((spokenText ?? "").Length), force: true);
+	}
+
+	private void SchedulePreparedSceneGuideLaunch(ActiveSceneGuideRequest request, SceneSpeechPlaybackInfo playbackInfo, string spokenText)
+	{
+		if (request == null || Mission.Current == null)
+		{
+			return;
+		}
+		if (playbackInfo != null && playbackInfo.TtsEnabled && playbackInfo.TtsAccepted && playbackInfo.WaitForPlaybackFinished && request.GuideAgentIndex >= 0)
+		{
+			request.NextStageMissionTime = float.MaxValue;
+			EnqueuePendingSceneGuideLaunch(request.GuideAgentIndex, request);
+			return;
+		}
+		float num = EstimateBubbleTypingDurationSeconds(spokenText ?? "");
+		if (playbackInfo != null && playbackInfo.VisualDurationSeconds > num)
+		{
+			num = playbackInfo.VisualDurationSeconds;
+		}
+		request.NextStageMissionTime = Mission.Current.CurrentTime + Math.Max(0.15f, num);
+	}
+
+	private bool TickSceneGuideRequest(ActiveSceneGuideRequest request, float currentTime)
+	{
+		if (request == null || currentTime < request.NextStageMissionTime)
+		{
+			return false;
+		}
+		Agent agent = Mission.Current?.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == request.GuideAgentIndex);
+		Agent main = Agent.Main;
+		if (!CanAgentParticipateInSceneSpeech(agent) || main == null || !main.IsActive())
+		{
+			return true;
+		}
+		if (agent.Position.DistanceSquared(main.Position) > SCENE_GUIDE_PLAYER_REQUIRED_DISTANCE_SQ)
+		{
+			if (request.PlayerOutOfRangeSinceMissionTime < 0f)
+			{
+				request.PlayerOutOfRangeSinceMissionTime = currentTime;
+			}
+			else if (currentTime - request.PlayerOutOfRangeSinceMissionTime >= SCENE_GUIDE_PLAYER_LOST_TIMEOUT)
+			{
+				TriggerSceneGuideTimeoutAndReturn(request);
+				return true;
+			}
+			return false;
+		}
+		request.PlayerOutOfRangeSinceMissionTime = -1f;
+		Location currentLocation = CampaignMission.Current?.Location;
+		if (currentLocation == null || request.TargetSourceLocation == null)
+		{
+			return true;
+		}
+		if (request.TargetSourceLocation == currentLocation)
+		{
+			Agent agent2 = ResolveAgentForLocationCharacter(request.TargetLocationCharacter);
+			if (!CanAgentParticipateInSceneSpeech(agent2))
+			{
+				return true;
+			}
+			NavigateAgentToWorldPosition(agent, agent2.Position, 1f, doNotRun: false);
+			if (agent.Position.DistanceSquared(agent2.Position) <= SCENE_GUIDE_TARGET_REACHED_DISTANCE_SQ)
+			{
+				TriggerSceneGuideArrivalAndReturn(request, reachedDoor: false);
+				return true;
+			}
+			return false;
+		}
+		List<Location> sceneLocationPath = FindSceneLocationPath(currentLocation, request.TargetSourceLocation);
+		if (sceneLocationPath == null || sceneLocationPath.Count < 2)
+		{
+			return true;
+		}
+		Location location = sceneLocationPath[1];
+		Passage passage = request.TargetDoorPassage ?? FindCurrentScenePassageToLocation(location);
+		if (passage == null)
+		{
+			return true;
+		}
+		request.TargetDoorPassage = passage;
+		Vec3 passageWaitingPosition = GetPassageWaitingPosition(passage);
+		NavigateAgentToWorldPosition(agent, passageWaitingPosition, 0.9f, doNotRun: false);
+		if (passageWaitingPosition.AsVec2.DistanceSquared(agent.Position.AsVec2) <= SCENE_GUIDE_TARGET_REACHED_DISTANCE_SQ)
+		{
+			TriggerSceneGuideArrivalAndReturn(request, reachedDoor: true);
+			return true;
+		}
+		return false;
+	}
+
+	private void TriggerSceneGuideArrivalAndReturn(ActiveSceneGuideRequest request, bool reachedDoor)
+	{
+		if (request == null || request.GuideAgentIndex < 0)
+		{
+			return;
+		}
+		string text = GetPlayerDisplayNameForShout();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			text = "此人";
+		}
+		string factText = reachedDoor ? ("[AFEF NPC行为补充] 你已把" + text + "带到了前往" + request.TargetName + "所在之处的门口。") : ("[AFEF NPC行为补充] 你已把" + text + "带到了" + request.TargetName + "身边。");
+		ScheduleSceneGuideReturnAfterNextSpeech(request);
+		TriggerImmediateSceneBehaviorReaction(factText, request.GuideAgentIndex, persistHeroPrivateHistory: true, suppressStare: false, postSpeechLeaveSeconds: 0.5f, skipSceneFactRecord: false, returnSceneSummonOnTimeout: false);
+	}
+
+	private void TriggerSceneGuideTimeoutAndReturn(ActiveSceneGuideRequest request)
+	{
+		if (request == null || request.GuideAgentIndex < 0)
+		{
+			return;
+		}
+		string text = GetPlayerDisplayNameForShout();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			text = "此人";
+		}
+		string factText = "[AFEF NPC行为补充] " + text + "长时间没有跟上你，你决定不再继续带路，先回去忙自己的事。";
+		ScheduleSceneGuideReturnAfterNextSpeech(request);
+		TriggerImmediateSceneBehaviorReaction(factText, request.GuideAgentIndex, persistHeroPrivateHistory: true, suppressStare: false, postSpeechLeaveSeconds: 0.5f, skipSceneFactRecord: false, returnSceneSummonOnTimeout: false);
+	}
+
+	private void ScheduleSceneGuideReturnAfterNextSpeech(ActiveSceneGuideRequest request)
+	{
+		if (request == null || request.GuideAgentIndex < 0 || request.GuideLocationCharacter == null)
+		{
+			return;
+		}
+		_pendingSceneGuideReturnsAfterSpeech[request.GuideAgentIndex] = new PendingSceneGuideReturnAfterSpeech
+		{
+			AgentIndex = request.GuideAgentIndex,
+			DisplayName = request.GuideName,
+			LocationCharacter = request.GuideLocationCharacter,
+			OriginalLocation = request.OriginalGuideLocation,
+			OriginalPosition = request.OriginalGuidePosition
+		};
+	}
+
+	private bool TickSceneSummonPendingLaunchStage(ActiveSceneSummonRequest request, float currentTime)
+	{
+		if (request == null)
+		{
+			return true;
+		}
+		if (currentTime < request.NextStageMissionTime)
+		{
+			return false;
+		}
+		request.Stage = request.PendingLaunchStage;
+		if (!string.IsNullOrWhiteSpace(request.LaunchAnnouncement))
+		{
+			InformationManager.DisplayMessage(new InformationMessage(request.LaunchAnnouncement, new Color(1f, 0.85f, 0.35f)));
+		}
+		LogSceneSummonState("pending_launch_begin", request, ResolveAgentForLocationCharacter(request.SpeakerLocationCharacter), ResolveAgentForLocationCharacter(request.TargetLocationCharacter), "launchStage=" + request.PendingLaunchStage, force: true);
+		return false;
+	}
+
+	private bool TickSceneSummonMessengerToTargetStage(ActiveSceneSummonRequest request, float currentTime)
+	{
+		Agent agent = Mission.Current?.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == request.SpeakerAgentIndex);
+		Agent agent2 = ResolveAgentForLocationCharacter(request.TargetLocationCharacter);
+		if (!CanAgentParticipateInSceneSpeech(agent) || !CanAgentParticipateInSceneSpeech(agent2))
+		{
+			LogSceneSummonState("same_scene_abort", request, agent, agent2, "speakerOrTargetInactive", force: true);
+			return true;
+		}
+		if (agent.Position.DistanceSquared(agent2.Position) <= SCENE_SUMMON_MESSENGER_TARGET_DISTANCE_SQ)
+		{
+			try
+			{
+				agent.SetLookAgent(agent2);
+			}
+			catch
+			{
+			}
+			request.Stage = SceneSummonStage.TargetToPlayer;
+			request.NextStageMissionTime = currentTime + 0.25f;
+			TryAdvanceSceneSummonBatch(request, agent);
+			LogSceneSummonState("same_scene_reached_target", request, agent, agent2, null, force: true);
+			return false;
+		}
+		try
+		{
+			PrepareAgentForSceneSummonMovement(agent);
+			ScriptBehavior.AddAgentTarget(agent, agent2);
+			TrackSceneSummonScriptedAgent(agent);
+		}
+		catch
+		{
+		}
+		LogSceneSummonState("same_scene_moving_to_target", request, agent, agent2, "targetDistanceSq=" + agent.Position.DistanceSquared(agent2.Position).ToString("F2"));
+		return false;
+	}
+
+	private bool TickSceneSummonMessengerStage(ActiveSceneSummonRequest request, float currentTime)
+	{
+		Agent agent = Mission.Current?.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == request.SpeakerAgentIndex);
+		if (agent == null || !agent.IsActive())
+		{
+			CleanupSceneSummonDoorProxyAgent(request);
+			request.Stage = SceneSummonStage.WaitingForTarget;
+			request.NextStageMissionTime = currentTime + SCENE_SUMMON_DELAY_SECONDS;
+			LogSceneSummonState("cross_scene_speaker_missing", request, agent, null, "fallback_to_wait", force: true);
+			return false;
+		}
+		Passage messengerDoorPassage = request.MessengerDoorPassage ?? FindCurrentScenePassageToLocation(request.PassageHopLocation);
+		if (messengerDoorPassage == null)
+		{
+			CleanupSceneSummonDoorProxyAgent(request);
+			LogSceneSummonState("cross_scene_no_passage", request, agent, null, null, force: true);
+			return true;
+		}
+		request.MessengerDoorPassage = messengerDoorPassage;
+		Vec3 passageWaitingPosition = GetPassageWaitingPosition(messengerDoorPassage);
+		Agent agent2 = EnsureSceneSummonDoorProxyAgent(request, messengerDoorPassage, agent);
+		float num = passageWaitingPosition.AsVec2.DistanceSquared(agent.Position.AsVec2);
+		if (num <= SCENE_SUMMON_RELAY_DISTANCE_SQ)
+		{
+			CleanupSceneSummonDoorProxyAgent(request);
+			request.Stage = SceneSummonStage.WaitingForTarget;
+			request.NextStageMissionTime = currentTime + SCENE_SUMMON_DELAY_SECONDS;
+			TryAdvanceSceneSummonBatch(request, agent);
+			LogSceneSummonState("cross_scene_reached_door", request, agent, null, "distanceSq2D=" + num.ToString("F2") + " waitPos=" + FormatSceneSummonPosition(passageWaitingPosition), force: true);
+			return false;
+		}
+		if (agent2 != null && agent2.IsActive())
+		{
+			try
+			{
+				PrepareAgentForSceneSummonMovement(agent);
+				ScriptBehavior.AddAgentTarget(agent, agent2);
+				TrackSceneSummonScriptedAgent(agent);
+			}
+			catch
+			{
+			}
+			LogSceneSummonState("cross_scene_reissue_proxy_target", request, agent, agent2, "distanceSq2D=" + num.ToString("F2") + " waitPos=" + FormatSceneSummonPosition(passageWaitingPosition), force: true);
+		}
+		else
+		{
+			LogSceneSummonState("cross_scene_reissue_passage_target", request, agent, null, "distanceSq2D=" + num.ToString("F2") + " waitPos=" + FormatSceneSummonPosition(passageWaitingPosition), force: true);
+			NavigateAgentToScenePassage(agent, messengerDoorPassage);
+		}
+		return false;
+	}
+
+	private bool TickSceneSummonWaitStage(ActiveSceneSummonRequest request, float currentTime)
+	{
+		CleanupSceneSummonDoorProxyAgent(request);
+		if (currentTime < request.NextStageMissionTime)
+		{
+			return false;
+		}
+		LocationComplex locationComplex = LocationComplex.Current;
+		if (locationComplex == null || request.PassageHopLocation == null)
+		{
+			LogSceneSummonState("wait_stage_abort", request, ResolveAgentForLocationCharacter(request.SpeakerLocationCharacter), ResolveAgentForLocationCharacter(request.TargetLocationCharacter), "locationComplexOrHopMissing", force: true);
+			return true;
+		}
+		BringLocationCharacterIntoCurrentScene(request.TargetLocationCharacter, request.PassageHopLocation, request.CurrentLocation);
+		request.Stage = SceneSummonStage.TargetToPlayer;
+		request.NextStageMissionTime = currentTime + 0.35f;
+		LogSceneSummonState("wait_stage_spawn_back", request, ResolveAgentForLocationCharacter(request.SpeakerLocationCharacter), ResolveAgentForLocationCharacter(request.TargetLocationCharacter), null, force: true);
+		return false;
+	}
+
+	private void BringLocationCharacterIntoCurrentScene(LocationCharacter locationCharacter, Location visibleFromLocation, Location currentLocation)
+	{
+		LocationComplex locationComplex = LocationComplex.Current;
+		MissionAgentHandler missionBehavior = Mission.Current?.GetMissionBehavior<MissionAgentHandler>();
+		if (locationCharacter == null || locationComplex == null || currentLocation == null || visibleFromLocation == null || missionBehavior == null)
+		{
+			return;
+		}
+		Agent agent = ResolveAgentForLocationCharacter(locationCharacter);
+		Location locationOfCharacter = locationComplex.GetLocationOfCharacter(locationCharacter);
+		if (locationOfCharacter != visibleFromLocation)
+		{
+			locationComplex.ChangeLocation(locationCharacter, locationOfCharacter, visibleFromLocation);
+			locationOfCharacter = visibleFromLocation;
+		}
+		if (locationOfCharacter != currentLocation)
+		{
+			locationComplex.ChangeLocation(locationCharacter, locationOfCharacter, currentLocation);
+		}
+		if (agent == null || !agent.IsActive())
+		{
+			try
+			{
+				missionBehavior.SpawnEnteringLocationCharacter(locationCharacter, visibleFromLocation);
+			}
+			catch
+			{
+			}
+		}
+	}
+
+	private bool TryConsumeSceneEndChatActionTag(NpcDataPacket npc, Agent agent, ref string content, out SceneSummonConversationSession session)
+	{
+		session = null;
+		if (string.IsNullOrWhiteSpace(content) || npc == null)
+		{
+			return false;
+		}
+		bool flag = SceneEndChatActionTagRegex.IsMatch(content);
+		bool flag2 = SceneFollowStopTagRegex.IsMatch(content);
+		if (!flag && !flag2)
+		{
+			return false;
+		}
+		if (flag)
+		{
+			content = SceneEndChatActionTagRegex.Replace(content, "").Trim();
+		}
+		if (flag2)
+		{
+			content = SceneFollowStopTagRegex.Replace(content, "").Trim();
+		}
+		session = TryGetSceneSummonConversationSessionForAgentIndex((agent != null) ? agent.Index : npc.AgentIndex);
+		return session != null || IsAgentFollowingPlayerBySceneCommand(agent);
+	}
+
+	private bool TryConsumeSceneFollowStartTag(NpcDataPacket npc, Agent agent, ref string content)
+	{
+		if (string.IsNullOrWhiteSpace(content) || npc == null)
+		{
+			return false;
+		}
+		if (!SceneFollowStartTagRegex.IsMatch(content))
+		{
+			return false;
+		}
+		content = SceneFollowStartTagRegex.Replace(content, "").Trim();
+		return CanAgentParticipateInSceneSpeech(agent) && agent != Agent.Main && !IsAgentFollowingPlayerBySceneCommand(agent);
+	}
+
+	private bool TryConsumeSceneFollowStopTag(NpcDataPacket npc, Agent agent, ref string content)
+	{
+		if (string.IsNullOrWhiteSpace(content) || npc == null)
+		{
+			return false;
+		}
+		bool flag = SceneFollowStopTagRegex.IsMatch(content);
+		bool flag2 = SceneEndChatActionTagRegex.IsMatch(content);
+		if (!flag && !flag2)
+		{
+			return false;
+		}
+		if (flag)
+		{
+			content = SceneFollowStopTagRegex.Replace(content, "").Trim();
+		}
+		if (flag2)
+		{
+			content = SceneEndChatActionTagRegex.Replace(content, "").Trim();
+		}
+		return CanAgentParticipateInSceneSpeech(agent) && agent != Agent.Main && IsAgentFollowingPlayerBySceneCommand(agent);
+	}
+
+	private void RefreshSceneSummonConversationForSpeaker(int agentIndex)
+	{
+		if (agentIndex < 0)
+		{
+			return;
+		}
+		SceneSummonConversationSession sceneSummonConversationSession = TryGetSceneSummonConversationSessionForAgentIndex(agentIndex);
+		if (sceneSummonConversationSession != null)
+		{
+			RefreshSceneSummonConversationInteractions(sceneSummonConversationSession);
+		}
+	}
+
+	private void UpdateActiveSceneGuideRequests()
+	{
+		if (_activeSceneGuideRequests.Count == 0 || Mission.Current == null)
+		{
+			return;
+		}
+		float currentTime = Mission.Current.CurrentTime;
+		for (int num = _activeSceneGuideRequests.Count - 1; num >= 0; num--)
+		{
+			ActiveSceneGuideRequest activeSceneGuideRequest = _activeSceneGuideRequests[num];
+			if (activeSceneGuideRequest == null || CampaignMission.Current?.Location != activeSceneGuideRequest.CurrentLocation)
+			{
+				_activeSceneGuideRequests.RemoveAt(num);
+				continue;
+			}
+			if (TickSceneGuideRequest(activeSceneGuideRequest, currentTime))
+			{
+				_activeSceneGuideRequests.RemoveAt(num);
+			}
+		}
+	}
+
+	private bool IsAgentBusyWithSceneSummonErrand(int agentIndex)
+	{
+		if (agentIndex < 0)
+		{
+			return false;
+		}
+		if (_activeSceneSummonRequests.Any((ActiveSceneSummonRequest x) => x != null && x.SpeakerAgentIndex == agentIndex))
+		{
+			return true;
+		}
+		if (_activeSceneSummonBatches.Values.Any((SceneSummonBatchState x) => x != null && x.SpeakerAgentIndex == agentIndex && x.PendingTargets.Count > 0))
+		{
+			return true;
+		}
+		lock (_ttsBubbleSyncLock)
+		{
+			return _pendingSceneSummonLaunchQueues.TryGetValue(agentIndex, out var value) && value != null && value.Count > 0;
+		}
+	}
+
+	private bool IsAgentBusyWithSceneGuideErrand(int agentIndex)
+	{
+		if (agentIndex < 0)
+		{
+			return false;
+		}
+		if (_activeSceneGuideRequests.Any((ActiveSceneGuideRequest x) => x != null && x.GuideAgentIndex == agentIndex))
+		{
+			return true;
+		}
+		lock (_ttsBubbleSyncLock)
+		{
+			return _pendingSceneGuideLaunchQueues.TryGetValue(agentIndex, out var value) && value != null && value.Count > 0;
+		}
+	}
+
+	private void UpdateSceneSummonConversationEscortMovement()
+	{
+		Agent main = Agent.Main;
+		if (main == null || !main.IsActive() || _activeSceneSummonConversationSessions.Count == 0)
+		{
+			return;
+		}
+		foreach (SceneSummonConversationSession item in _activeSceneSummonConversationSessions)
+		{
+			if (item == null)
+			{
+				continue;
+			}
+			List<Agent> list = new List<Agent>();
+			for (int i = 0; i < item.Participants.Count; i++)
+			{
+				Agent agent = ResolveAgentForLocationCharacter(item.Participants[i]?.LocationCharacter);
+				if (CanAgentParticipateInSceneSpeech(agent) && agent != main)
+				{
+					list.Add(agent);
+				}
+			}
+			if (item.KeepSpeakerNearby)
+			{
+				Agent agent2 = ResolveAgentForLocationCharacter(item.SpeakerLocationCharacter);
+				if (CanAgentParticipateInSceneSpeech(agent2) && agent2 != main && !list.Contains(agent2))
+				{
+					list.Add(agent2);
+				}
+			}
+			for (int j = 0; j < list.Count; j++)
+			{
+				if (list[j].Position.DistanceSquared(main.Position) <= SCENE_SUMMON_ESCORT_REPOSITION_DISTANCE_SQ)
+				{
+					continue;
+				}
+				Vec3 targetPosition = BuildSceneSummonEscortPosition(main, j, list.Count);
+				TryGuideSummonParticipantToPosition(list[j], targetPosition);
+			}
+		}
+	}
+
+	private static void AppendSceneGuidePromptSection(StringBuilder prompt, List<SceneGuidePromptTarget> targets)
+	{
+		if (prompt == null || targets == null || targets.Count == 0)
+		{
+			return;
+		}
+		prompt.AppendLine("【可带路目标】：");
+		foreach (SceneGuidePromptTarget target in targets)
+		{
+			if (target != null && target.PromptId > 0)
+			{
+				prompt.AppendLine(target.PromptId + " " + target.DisplayName.Trim() + " " + (target.LocationCode ?? "处"));
+			}
+		}
+	}
+
+	private void UpdateActiveSceneReturnJobs()
+	{
+		if (_activeSceneReturnJobs.Count == 0 || CampaignMission.Current?.Location == null)
+		{
+			return;
+		}
+		for (int num = _activeSceneReturnJobs.Count - 1; num >= 0; num--)
+		{
+			SceneReturnJob sceneReturnJob = _activeSceneReturnJobs[num];
+			if (sceneReturnJob == null || sceneReturnJob.LocationCharacter == null || sceneReturnJob.CurrentLocation != CampaignMission.Current.Location)
+			{
+				CleanupSceneReturnDoorProxyAgent(sceneReturnJob);
+				_activeSceneReturnJobs.RemoveAt(num);
+				continue;
+			}
+			if (TickSceneReturnJob(sceneReturnJob))
+			{
+				CleanupSceneReturnDoorProxyAgent(sceneReturnJob);
+				_activeSceneReturnJobs.RemoveAt(num);
+			}
+		}
+	}
+
+	private bool TickSceneReturnJob(SceneReturnJob job)
+	{
+		LocationComplex locationComplex = LocationComplex.Current;
+		Location currentLocation = CampaignMission.Current?.Location;
+		if (job == null || locationComplex == null || currentLocation == null)
+		{
+			return true;
+		}
+		Location originalLocation = job.OriginalLocation ?? currentLocation;
+		Agent agent = ResolveAgentForLocationCharacter(job.LocationCharacter);
+		if (originalLocation == currentLocation)
+		{
+			if (!job.OriginalPosition.HasValue || !CanAgentParticipateInSceneSpeech(agent))
+			{
+				if (agent != null)
+				{
+					RestoreAgentAutonomy(agent);
+				}
+				return true;
+			}
+			ApplySceneReturnWalkPacing(agent);
+			NavigateAgentToWorldPosition(agent, job.OriginalPosition.Value, 0.6f, doNotRun: true);
+			if (agent.Position.DistanceSquared(job.OriginalPosition.Value) > SCENE_SUMMON_TARGET_ARRIVAL_DISTANCE_SQ)
+			{
+				return false;
+			}
+			RestoreAgentAutonomy(agent);
+			return true;
+		}
+		if (!CanAgentParticipateInSceneSpeech(agent))
+		{
+			return true;
+		}
+		List<Location> sceneLocationPath = FindSceneLocationPath(currentLocation, originalLocation);
+		if (sceneLocationPath == null || sceneLocationPath.Count < 2)
+		{
+			return true;
+		}
+		Location location = sceneLocationPath[1];
+		Passage passage = job.ExitPassage ?? FindCurrentScenePassageToLocation(location);
+		if (passage == null)
+		{
+			return true;
+		}
+		job.ExitPassage = passage;
+		Vec3 passageWaitingPosition = GetPassageWaitingPosition(passage);
+		Agent agent2 = EnsureSceneReturnDoorProxyAgent(job, passage, agent);
+		if (passageWaitingPosition.AsVec2.DistanceSquared(agent.Position.AsVec2) > SCENE_SUMMON_MESSENGER_DOOR_DISTANCE_SQ)
+		{
+			ApplySceneReturnWalkPacing(agent);
+			NavigateAgentToWorldPosition(agent, passageWaitingPosition, 0.9f, doNotRun: true);
+			return false;
+		}
+		CleanupSceneReturnDoorProxyAgent(job);
+		locationComplex.ChangeLocation(job.LocationCharacter, currentLocation, location);
+		if (originalLocation != location)
+		{
+			locationComplex.ChangeLocation(job.LocationCharacter, location, originalLocation);
+		}
+		try
+		{
+			agent.FadeOut(false, true);
+		}
+		catch
+		{
+		}
+		return true;
+	}
+
+	private void ApplySceneReturnWalkPacing(Agent agent)
+	{
+		if (agent == null || !agent.IsActive())
+		{
+			return;
+		}
+		try
+		{
+			agent.SetMaximumSpeedLimit(1.55f, isMultiplier: false);
+		}
+		catch
+		{
+		}
+	}
+
+	private bool TryGuideSummonParticipantToPosition(Agent agent, Vec3 targetPosition)
+	{
+		if (!CanAgentParticipateInSceneSpeech(agent) || Mission.Current?.Scene == null)
+		{
+			return false;
+		}
+		targetPosition.z = Mission.Current.Scene.GetGroundHeightAtPosition(targetPosition, BodyFlags.CommonCollisionExcludeFlags);
+		NavigateAgentToWorldPosition(agent, targetPosition, 0.75f, doNotRun: false);
+		return agent.Position.DistanceSquared(targetPosition) <= SCENE_SUMMON_TARGET_ARRIVAL_DISTANCE_SQ;
+	}
+
+	private void StartSceneSummonFollowPlayer(Agent agent)
+	{
+		if (!CanAgentParticipateInSceneSpeech(agent) || Agent.Main == null || !Agent.Main.IsActive() || agent == Agent.Main)
+		{
+			return;
+		}
+		try
+		{
+			ClearSceneSummonScriptedBehavior(agent);
+			RememberSceneFollowReturnState(agent, overwriteExisting: false);
+			TrySetSceneFollowPersistence(agent, isFollowing: true);
+			_activeInteractionSessions.Remove(agent.Index);
+			_pendingInteractionTimeoutArms.Remove(agent.Index);
+			TryEnableVanillaSceneFollowBehavior(agent, Agent.Main);
+		}
+		catch
+		{
+		}
+	}
+
+	private void StopSceneSummonFollowPlayer(Agent agent, bool restoreDailyBehaviors = true)
+	{
+		if (agent == null || !agent.IsActive())
+		{
+			return;
+		}
+		try
+		{
+			TrySetSceneFollowPersistence(agent, isFollowing: false);
+			TryDisableVanillaSceneFollowBehavior(agent, restoreDailyBehaviors);
+		}
+		catch
+		{
+		}
+	}
+
+	private void RememberSceneFollowReturnState(Agent agent, bool overwriteExisting = true)
+	{
+		if (!CanAgentParticipateInSceneSpeech(agent))
+		{
+			return;
+		}
+		if (!overwriteExisting && _sceneFollowReturnStates.ContainsKey(agent.Index))
+		{
+			return;
+		}
+		SceneFollowReturnState sceneFollowReturnState = BuildSceneFollowReturnState(agent);
+		if (sceneFollowReturnState != null)
+		{
+			_sceneFollowReturnStates[agent.Index] = sceneFollowReturnState;
+		}
+	}
+
+	private SceneFollowReturnState BuildSceneFollowReturnState(Agent agent)
+	{
+		try
+		{
+			LocationComplex locationComplex = LocationComplex.Current;
+			Location currentLocation = CampaignMission.Current?.Location;
+			if (!CanAgentParticipateInSceneSpeech(agent) || locationComplex == null || currentLocation == null)
+			{
+				return null;
+			}
+			LocationCharacter locationCharacter = locationComplex.FindCharacter(agent);
+			if (locationCharacter == null)
+			{
+				return null;
+			}
+			SceneSummonConversationSession sceneSummonConversationSession = TryGetSceneSummonConversationSessionForAgentIndex(agent.Index);
+			if (sceneSummonConversationSession != null)
+			{
+				SceneSummonConversationParticipant sceneSummonConversationParticipant = sceneSummonConversationSession.Participants.FirstOrDefault((SceneSummonConversationParticipant p) => p != null && p.LocationCharacter == locationCharacter);
+				if (sceneSummonConversationParticipant != null)
+				{
+					return new SceneFollowReturnState
+					{
+						DisplayName = sceneSummonConversationParticipant.DisplayName,
+						LocationCharacter = locationCharacter,
+						OriginalLocation = sceneSummonConversationParticipant.OriginalLocation ?? currentLocation,
+						OriginalPosition = sceneSummonConversationParticipant.OriginalPosition
+					};
+				}
+				if (sceneSummonConversationSession.SpeakerLocationCharacter == locationCharacter)
+				{
+					return new SceneFollowReturnState
+					{
+						DisplayName = sceneSummonConversationSession.SpeakerName,
+						LocationCharacter = locationCharacter,
+						OriginalLocation = sceneSummonConversationSession.OriginalSpeakerLocation ?? currentLocation,
+						OriginalPosition = sceneSummonConversationSession.OriginalSpeakerPosition
+					};
+				}
+			}
+			return new SceneFollowReturnState
+			{
+				DisplayName = agent.Name?.ToString() ?? "NPC",
+				LocationCharacter = locationCharacter,
+				OriginalLocation = currentLocation,
+				OriginalPosition = agent.Position
+			};
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private void ReturnAgentAfterStoppingSceneFollow(Agent agent)
+	{
+		if (agent == null)
+		{
+			return;
+		}
+		if (_sceneFollowReturnStates.TryGetValue(agent.Index, out var value) && value != null && value.LocationCharacter != null)
+		{
+			_sceneFollowReturnStates.Remove(agent.Index);
+			QueueSceneReturnJob(value.DisplayName, value.LocationCharacter, value.OriginalLocation, value.OriginalPosition);
+			try
+			{
+				agent.ClearTargetFrame();
+				ClearSceneSummonScriptedBehavior(agent);
+			}
+			catch
+			{
+			}
+			return;
+		}
+		RestoreAgentAutonomy(agent);
+	}
+
+	private static bool TryEnableVanillaSceneFollowBehavior(Agent agent, Agent target)
+	{
+		try
+		{
+			if (agent == null || target == null || !agent.IsActive() || !target.IsActive())
+			{
+				return false;
+			}
+			CampaignAgentComponent component = agent.GetComponent<CampaignAgentComponent>();
+			AgentNavigator agentNavigator = component?.AgentNavigator;
+			DailyBehaviorGroup behaviorGroup = agentNavigator?.GetBehaviorGroup<DailyBehaviorGroup>();
+			if (behaviorGroup == null)
+			{
+				return false;
+			}
+			FollowAgentBehavior followAgentBehavior = behaviorGroup.GetBehavior<FollowAgentBehavior>() ?? behaviorGroup.AddBehavior<FollowAgentBehavior>();
+			behaviorGroup.SetScriptedBehavior<FollowAgentBehavior>();
+			followAgentBehavior.IsActive = true;
+			followAgentBehavior.SetTargetAgent(target);
+			ScriptBehavior behavior = behaviorGroup.GetBehavior<ScriptBehavior>();
+			if (behavior != null)
+			{
+				behavior.IsActive = false;
+			}
+			WalkingBehavior behavior2 = behaviorGroup.GetBehavior<WalkingBehavior>();
+			if (behavior2 != null)
+			{
+				behavior2.IsActive = false;
+			}
+			return true;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static void TryDisableVanillaSceneFollowBehavior(Agent agent, bool restoreDailyBehaviors = true)
+	{
+		try
+		{
+			CampaignAgentComponent component = agent?.GetComponent<CampaignAgentComponent>();
+			AgentNavigator agentNavigator = component?.AgentNavigator;
+			DailyBehaviorGroup behaviorGroup = agentNavigator?.GetBehaviorGroup<DailyBehaviorGroup>();
+			if (behaviorGroup == null)
+			{
+				return;
+			}
+			behaviorGroup.RemoveBehavior<FollowAgentBehavior>();
+			if (restoreDailyBehaviors)
+			{
+				ScriptBehavior behavior = behaviorGroup.GetBehavior<ScriptBehavior>();
+				if (behavior != null)
+				{
+					behavior.IsActive = true;
+				}
+				WalkingBehavior behavior2 = behaviorGroup.GetBehavior<WalkingBehavior>() ?? behaviorGroup.AddBehavior<WalkingBehavior>();
+				behavior2.IsActive = true;
+			}
+		}
+		catch
+		{
+		}
+	}
+
+	private static bool TrySetSceneFollowPersistence(Agent agent, bool isFollowing)
+	{
+		try
+		{
+			LocationEncounter locationEncounter = PlayerEncounter.LocationEncounter;
+			LocationComplex locationComplex = LocationComplex.Current;
+			if (agent == null || locationEncounter == null || locationComplex == null)
+			{
+				return false;
+			}
+			LocationCharacter locationCharacter = locationComplex.FindCharacter(agent);
+			if (locationCharacter == null)
+			{
+				return false;
+			}
+			if (isFollowing)
+			{
+				AccompanyingCharacter accompanyingCharacter = locationEncounter.GetAccompanyingCharacter(locationCharacter);
+				if (accompanyingCharacter == null || !accompanyingCharacter.IsFollowingPlayerAtMissionStart)
+				{
+					locationEncounter.RemoveAccompanyingCharacter(locationCharacter);
+					locationEncounter.AddAccompanyingCharacter(locationCharacter, isFollowing: true);
+				}
+			}
+			else
+			{
+				locationEncounter.RemoveAccompanyingCharacter(locationCharacter);
+			}
+			return true;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private bool IsAgentFollowingPlayerBySceneCommand(Agent agent)
+	{
+		try
+		{
+			if (!CanAgentParticipateInSceneSpeech(agent) || agent == Agent.Main)
+			{
+				return false;
+			}
+			LocationEncounter locationEncounter = PlayerEncounter.LocationEncounter;
+			LocationComplex locationComplex = LocationComplex.Current;
+			if (locationEncounter == null || locationComplex == null)
+			{
+				return false;
+			}
+			LocationCharacter locationCharacter = locationComplex.FindCharacter(agent);
+			AccompanyingCharacter accompanyingCharacter = ((locationCharacter != null) ? locationEncounter.GetAccompanyingCharacter(locationCharacter) : null);
+			return accompanyingCharacter != null && accompanyingCharacter.IsFollowingPlayerAtMissionStart;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private bool TickSceneSummonTargetStage(ActiveSceneSummonRequest request, float currentTime)
+	{
+		if (currentTime < request.NextStageMissionTime)
+		{
+			return false;
+		}
+		Agent agent = ResolveAgentForLocationCharacter(request.TargetLocationCharacter);
+		Agent agent2 = ResolveAgentForLocationCharacter(request.SpeakerLocationCharacter);
+		Agent main = Agent.Main;
+		if (!CanAgentParticipateInSceneSpeech(agent) || main == null || !main.IsActive())
+		{
+			LogSceneSummonState("target_to_player_wait_abort", request, agent2, agent, "targetOrPlayerUnavailable", force: currentTime >= request.NextStageMissionTime + 6f);
+			return currentTime >= request.NextStageMissionTime + 6f;
+		}
+		BuildSceneSummonStandPositions(main, out var primaryPosition, out var secondaryPosition);
+		bool flag = TryGuideSummonParticipantToPosition(agent, primaryPosition);
+		bool flag2 = true;
+		if (request.KeepMessengerWithTarget && CanAgentParticipateInSceneSpeech(agent2) && agent2 != agent)
+		{
+			flag2 = TryGuideSummonParticipantToPosition(agent2, secondaryPosition);
+		}
+		if (!flag)
+		{
+			LogSceneSummonState("target_to_player_moving", request, agent2, agent, "targetArrived=" + flag + " messengerArrived=" + flag2 + " targetStand=" + FormatSceneSummonPosition(primaryPosition) + " messengerStand=" + FormatSceneSummonPosition(secondaryPosition));
+			return false;
+		}
+		if (!request.ArrivalSpeechConsumed && string.IsNullOrWhiteSpace(request.PreGeneratedArrivalSpeech) && currentTime < request.ArrivalSpeechDeadlineMissionTime)
+		{
+			LogSceneSummonState("target_to_player_waiting_speech", request, agent2, agent, "deadline=" + request.ArrivalSpeechDeadlineMissionTime.ToString("F2"));
+			return false;
+		}
+		ForceAgentFacePlayer(agent);
+		bool flag3 = request.KeepMessengerWithTarget && CanAgentParticipateInSceneSpeech(agent2) && agent2 != agent && flag2;
+		if (request.KeepMessengerWithTarget && CanAgentParticipateInSceneSpeech(agent2) && agent2 != agent && !flag2)
+		{
+			RestoreAgentAutonomy(agent2);
+		}
+		if (flag3)
+		{
+			ForceAgentFacePlayer(agent2);
+			PlaySceneSummonArrivalSpeechIfReady(request, agent2);
+			RegisterSceneSummonConversationSession(request, agent2, agent);
+			TryRecordSceneSummonBatchCompletionFact(request);
+			LogSceneSummonState("target_to_player_arrived_pair", request, agent2, agent, null, force: true);
+			string text = BuildSceneSummonArrivedDisplayNames(request.BatchId, request.TargetName);
+			InformationManager.DisplayMessage(new InformationMessage(request.SpeakerName + " 带着" + text + "过来了。", new Color(0.75f, 1f, 0.75f)));
+		}
+		else
+		{
+			PlaySceneSummonArrivalSpeechIfReady(request, agent2 ?? agent);
+			RegisterSceneSummonConversationSession(request, agent2, agent);
+			TryRecordSceneSummonBatchCompletionFact(request);
+			LogSceneSummonState("target_to_player_arrived_single", request, agent2, agent, null, force: true);
+			string text2 = BuildSceneSummonArrivedDisplayNames(request.BatchId, request.TargetName);
+			InformationManager.DisplayMessage(new InformationMessage(text2 + " 被叫过来了。", new Color(0.75f, 1f, 0.75f)));
+		}
+		return true;
+	}
+
 	private static List<int> BuildVisibleAgentSnapshot(List<NpcDataPacket> nearbyData)
 	{
 		List<int> list = new List<int>();
@@ -8695,7 +12812,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 	}
 
-	private void TriggerImmediateSceneBehaviorReaction(string factText, int targetAgentIndex, bool persistHeroPrivateHistory, bool suppressStare, float postSpeechLeaveSeconds = -1f, bool skipSceneFactRecord = false)
+	private void TriggerImmediateSceneBehaviorReaction(string factText, int targetAgentIndex, bool persistHeroPrivateHistory, bool suppressStare, float postSpeechLeaveSeconds = -1f, bool skipSceneFactRecord = false, bool returnSceneSummonOnTimeout = false)
 	{
 		if (string.IsNullOrWhiteSpace(factText) || targetAgentIndex < 0 || Mission.Current == null)
 		{
@@ -8730,7 +12847,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			}
 			else
 			{
-				TrackPlayerInteraction(npcDataPacket, list?.Count ?? 0, postSpeechLeaveSeconds);
+				TrackPlayerInteraction(npcDataPacket, list?.Count ?? 0, postSpeechLeaveSeconds, returnSceneSummonOnTimeout);
 			}
 			if (!list.Any(d => d != null && d.AgentIndex == targetAgentIndex))
 			{
@@ -8875,6 +12992,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			_pendingNpcBubbleQueues.Remove(agentIndex);
 			_pendingAudioDurationQueues.Remove(agentIndex);
 			_pendingSpeechCompletionTokenQueues.Remove(agentIndex);
+			_pendingSceneDialogueFeedQueues.Remove(agentIndex);
 		}
 		_pendingInteractionTimeoutArms.Remove(agentIndex);
 		_activeInteractionSessions.Remove(agentIndex);
@@ -8940,6 +13058,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			_pendingNpcBubbleQueues.Remove(agentIndex);
 			_pendingAudioDurationQueues.Remove(agentIndex);
 			_pendingSpeechCompletionTokenQueues.Remove(agentIndex);
+			_pendingSceneDialogueFeedQueues.Remove(agentIndex);
 		}
 		_pendingInteractionTimeoutArms.Remove(agentIndex);
 		_activeInteractionSessions.Remove(agentIndex);
@@ -9246,6 +13365,27 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				}
 				if (flag2 && string.IsNullOrWhiteSpace(text2))
 				{
+					int speakerAgentIndex = nextSpeaker.AgentIndex;
+					_mainThreadActions.Enqueue(delegate
+					{
+						try
+						{
+							Agent agent = Mission.Current?.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == speakerAgentIndex && a.IsActive());
+							if (IsAgentFollowingPlayerBySceneCommand(agent))
+							{
+								StopSceneSummonFollowPlayer(agent, restoreDailyBehaviors: false);
+								ReturnAgentAfterStoppingSceneFollow(agent);
+							}
+							SceneSummonConversationSession sceneSummonConversationSession = TryGetSceneSummonConversationSessionForAgentIndex(speakerAgentIndex);
+							if (sceneSummonConversationSession != null)
+							{
+								BeginSceneSummonConversationReturn(sceneSummonConversationSession);
+							}
+						}
+						catch
+						{
+						}
+					});
 					StopAutoGroupChatSession("end_tag");
 					continue;
 				}
@@ -9265,7 +13405,19 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				}
 				if (!string.IsNullOrWhiteSpace(text2))
 				{
-					EnqueueSpeechLineWithOptions(nextSpeaker, text2, participants, commitHistory: true, suppressStare: false, allowPlayerDirectedActions: false, autoNpcGroupChatSession.ConversationEpoch);
+					Agent agent2 = Mission.Current?.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == nextSpeaker.AgentIndex && a.IsActive());
+					bool flag4 = flag2 && IsAgentFollowingPlayerBySceneCommand(agent2);
+					bool flag5 = flag2 && TryGetSceneSummonConversationSessionForAgentIndex(nextSpeaker.AgentIndex) != null;
+					string text3 = text2;
+					if (flag4)
+					{
+						text3 = (string.IsNullOrWhiteSpace(text3) ? "" : (text3 + " ")) + "[STP]";
+					}
+					if (flag5)
+					{
+						text3 = (string.IsNullOrWhiteSpace(text3) ? "" : (text3 + " ")) + "[END]";
+					}
+					EnqueueSpeechLineWithOptions(nextSpeaker, text3, participants, commitHistory: true, suppressStare: false, allowPlayerDirectedActions: flag4 || flag5, autoNpcGroupChatSession.ConversationEpoch);
 				}
 				if (flag2)
 				{
@@ -10201,10 +14353,23 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		return (participantCount > 1) ? ACTIVE_INTERACTION_GROUP_IDLE_TIMEOUT : ACTIVE_INTERACTION_IDLE_TIMEOUT;
 	}
 
-	private void TrackPlayerInteraction(NpcDataPacket primaryTarget, int participantCount = 1, float timeoutSeconds = -1f)
+	private void TrackPlayerInteraction(NpcDataPacket primaryTarget, int participantCount = 1, float timeoutSeconds = -1f, bool returnSceneSummonOnTimeout = false)
 	{
 		if (primaryTarget == null || primaryTarget.AgentIndex < 0 || Mission.Current == null)
 		{
+			return;
+		}
+		Agent agent = Mission.Current.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == primaryTarget.AgentIndex && a.IsActive());
+		if (IsAgentBusyWithSceneSummonErrand(primaryTarget.AgentIndex) || IsAgentBusyWithSceneGuideErrand(primaryTarget.AgentIndex))
+		{
+			_pendingInteractionTimeoutArms.Remove(primaryTarget.AgentIndex);
+			_activeInteractionSessions.Remove(primaryTarget.AgentIndex);
+			return;
+		}
+		if (IsAgentFollowingPlayerBySceneCommand(agent))
+		{
+			_pendingInteractionTimeoutArms.Remove(primaryTarget.AgentIndex);
+			_activeInteractionSessions.Remove(primaryTarget.AgentIndex);
 			return;
 		}
 		string text = (primaryTarget.Name ?? "").Trim();
@@ -10219,7 +14384,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			LastActivityTime = Mission.Current.CurrentTime,
 			TimeoutArmed = false,
 			TimeoutSeconds = ResolveActiveInteractionTimeoutSeconds(participantCount, timeoutSeconds),
-			InteractionToken = DateTime.UtcNow.Ticks
+			InteractionToken = DateTime.UtcNow.Ticks,
+			ReturnSceneSummonOnTimeout = returnSceneSummonOnTimeout
 		};
 		_pendingInteractionTimeoutArms.Remove(primaryTarget.AgentIndex);
 	}
@@ -10252,6 +14418,49 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		value.LastActivityTime = Mission.Current.CurrentTime;
 		value.TimeoutArmed = true;
 		_pendingInteractionTimeoutArms.Remove(agentIndex);
+	}
+
+	private void UpdatePendingSceneDialogueFeeds()
+	{
+		if (Mission.Current == null || _pendingSceneDialogueFeedQueues.Count == 0)
+		{
+			return;
+		}
+		float currentTime = Mission.Current.CurrentTime;
+		List<int> list = null;
+		lock (_ttsBubbleSyncLock)
+		{
+			foreach (KeyValuePair<int, Queue<PendingSceneDialogueFeedEntry>> pendingSceneDialogueFeedQueue in _pendingSceneDialogueFeedQueues)
+			{
+				Queue<PendingSceneDialogueFeedEntry> value = pendingSceneDialogueFeedQueue.Value;
+				if (value == null || value.Count == 0)
+				{
+					if (list == null)
+					{
+						list = new List<int>();
+					}
+					list.Add(pendingSceneDialogueFeedQueue.Key);
+					continue;
+				}
+				PendingSceneDialogueFeedEntry pendingSceneDialogueFeedEntry = value.Peek();
+				if (pendingSceneDialogueFeedEntry != null && !pendingSceneDialogueFeedEntry.WaitForPlaybackFinished && pendingSceneDialogueFeedEntry.ExecuteAtMissionTime >= 0f && currentTime >= pendingSceneDialogueFeedEntry.ExecuteAtMissionTime)
+				{
+					if (list == null)
+					{
+						list = new List<int>();
+					}
+					list.Add(pendingSceneDialogueFeedQueue.Key);
+				}
+			}
+		}
+		if (list == null)
+		{
+			return;
+		}
+		foreach (int item in list)
+		{
+			FlushPendingSceneDialogueFeedAfterSpeech(item);
+		}
 	}
 
 	private void ProcessPendingInteractionTimeoutArms()
@@ -10290,6 +14499,238 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				{
 					_pendingInteractionTimeoutArms.Remove(item);
 				}
+			}
+		}
+	}
+
+	private void ScheduleSceneSummonReturnAfterSpeech(int agentIndex, SceneSpeechPlaybackInfo playbackInfo)
+	{
+		if (agentIndex < 0 || Mission.Current == null || !_pendingSceneSummonReturnsAfterSpeech.TryGetValue(agentIndex, out var value) || value == null)
+		{
+			return;
+		}
+		float num = Math.Max(0.25f, playbackInfo?.VisualDurationSeconds ?? 0f);
+		value.WaitForPlaybackFinished = playbackInfo != null && playbackInfo.TtsAccepted && playbackInfo.WaitForPlaybackFinished;
+		value.ExecuteAtMissionTime = value.WaitForPlaybackFinished ? (-1f) : (Mission.Current.CurrentTime + num);
+	}
+
+	private void FlushSceneSummonReturnAfterSpeech(int agentIndex)
+	{
+		if (agentIndex < 0 || !_pendingSceneSummonReturnsAfterSpeech.TryGetValue(agentIndex, out var value) || value == null)
+		{
+			return;
+		}
+		_pendingSceneSummonReturnsAfterSpeech.Remove(agentIndex);
+		if (value.Session != null && _activeSceneSummonConversationSessions.Contains(value.Session))
+		{
+			BeginSceneSummonConversationReturn(value.Session);
+		}
+	}
+
+	private void ScheduleSceneFollowCommandAfterSpeech(int agentIndex, bool startFollow, SceneSpeechPlaybackInfo playbackInfo)
+	{
+		if (agentIndex < 0 || Mission.Current == null)
+		{
+			return;
+		}
+		float num = Math.Max(0.25f, playbackInfo?.VisualDurationSeconds ?? 0f);
+		_pendingSceneFollowCommands[agentIndex] = new PendingSceneFollowCommand
+		{
+			AgentIndex = agentIndex,
+			StartFollow = startFollow,
+			WaitForPlaybackFinished = playbackInfo != null && playbackInfo.TtsAccepted && playbackInfo.WaitForPlaybackFinished,
+			ExecuteAtMissionTime = ((playbackInfo != null && playbackInfo.TtsAccepted && playbackInfo.WaitForPlaybackFinished) ? (-1f) : (Mission.Current.CurrentTime + num))
+		};
+	}
+
+	private void FlushSceneFollowCommandAfterSpeech(int agentIndex)
+	{
+		if (agentIndex < 0 || !_pendingSceneFollowCommands.TryGetValue(agentIndex, out var value) || value == null)
+		{
+			return;
+		}
+		_pendingSceneFollowCommands.Remove(agentIndex);
+		Agent agent = Mission.Current?.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == agentIndex);
+		if (!CanAgentParticipateInSceneSpeech(agent))
+		{
+			return;
+		}
+		if (value.StartFollow)
+		{
+			RememberSceneFollowReturnState(agent, overwriteExisting: true);
+			RemoveAgentFromSceneSummonConversationForFollow(agent);
+			StartSceneSummonFollowPlayer(agent);
+		}
+		else
+		{
+			StopSceneSummonFollowPlayer(agent, restoreDailyBehaviors: false);
+			ReturnAgentAfterStoppingSceneFollow(agent);
+		}
+	}
+
+	private void ScheduleSceneGuideReturnAfterSpeech(int agentIndex, SceneSpeechPlaybackInfo playbackInfo)
+	{
+		if (agentIndex < 0 || Mission.Current == null || !_pendingSceneGuideReturnsAfterSpeech.TryGetValue(agentIndex, out var value) || value == null)
+		{
+			return;
+		}
+		float num = Math.Max(0.25f, playbackInfo?.VisualDurationSeconds ?? 0f);
+		value.WaitForPlaybackFinished = playbackInfo != null && playbackInfo.TtsAccepted && playbackInfo.WaitForPlaybackFinished;
+		value.ExecuteAtMissionTime = value.WaitForPlaybackFinished ? (-1f) : (Mission.Current.CurrentTime + num);
+	}
+
+	private void FlushSceneGuideReturnAfterSpeech(int agentIndex)
+	{
+		if (agentIndex < 0 || !_pendingSceneGuideReturnsAfterSpeech.TryGetValue(agentIndex, out var value) || value == null)
+		{
+			return;
+		}
+		_pendingSceneGuideReturnsAfterSpeech.Remove(agentIndex);
+		if (value.LocationCharacter != null)
+		{
+			QueueSceneReturnJob(value.DisplayName, value.LocationCharacter, value.OriginalLocation, value.OriginalPosition);
+		}
+	}
+
+	private void UpdatePendingSceneSummonReturnsAfterSpeech()
+	{
+		if (Mission.Current == null || _pendingSceneSummonReturnsAfterSpeech.Count == 0)
+		{
+			return;
+		}
+		float currentTime = Mission.Current.CurrentTime;
+		List<int> list = null;
+		foreach (KeyValuePair<int, PendingSceneSummonReturnAfterSpeech> pendingSceneSummonReturnsAfterSpeech in _pendingSceneSummonReturnsAfterSpeech)
+		{
+			PendingSceneSummonReturnAfterSpeech value = pendingSceneSummonReturnsAfterSpeech.Value;
+			if (value != null && !value.WaitForPlaybackFinished && value.ExecuteAtMissionTime >= 0f && currentTime >= value.ExecuteAtMissionTime)
+			{
+				if (list == null)
+				{
+					list = new List<int>();
+				}
+				list.Add(pendingSceneSummonReturnsAfterSpeech.Key);
+			}
+		}
+		if (list == null)
+		{
+			return;
+		}
+		foreach (int item in list)
+		{
+			FlushSceneSummonReturnAfterSpeech(item);
+		}
+	}
+
+	private void UpdatePendingSceneGuideReturnsAfterSpeech()
+	{
+		if (Mission.Current == null || _pendingSceneGuideReturnsAfterSpeech.Count == 0)
+		{
+			return;
+		}
+		float currentTime = Mission.Current.CurrentTime;
+		List<int> list = null;
+		foreach (KeyValuePair<int, PendingSceneGuideReturnAfterSpeech> pendingSceneGuideReturnsAfterSpeech in _pendingSceneGuideReturnsAfterSpeech)
+		{
+			PendingSceneGuideReturnAfterSpeech value = pendingSceneGuideReturnsAfterSpeech.Value;
+			if (value != null && !value.WaitForPlaybackFinished && value.ExecuteAtMissionTime >= 0f && currentTime >= value.ExecuteAtMissionTime)
+			{
+				if (list == null)
+				{
+					list = new List<int>();
+				}
+				list.Add(pendingSceneGuideReturnsAfterSpeech.Key);
+			}
+		}
+		if (list == null)
+		{
+			return;
+		}
+		foreach (int item in list)
+		{
+			FlushSceneGuideReturnAfterSpeech(item);
+		}
+	}
+
+	private void UpdatePendingSceneFollowCommands()
+	{
+		if (Mission.Current == null || _pendingSceneFollowCommands.Count == 0)
+		{
+			return;
+		}
+		float currentTime = Mission.Current.CurrentTime;
+		List<int> list = null;
+		foreach (KeyValuePair<int, PendingSceneFollowCommand> pendingSceneFollowCommand in _pendingSceneFollowCommands)
+		{
+			PendingSceneFollowCommand value = pendingSceneFollowCommand.Value;
+			if (value != null && !value.WaitForPlaybackFinished && value.ExecuteAtMissionTime >= 0f && currentTime >= value.ExecuteAtMissionTime)
+			{
+				if (list == null)
+				{
+					list = new List<int>();
+				}
+				list.Add(pendingSceneFollowCommand.Key);
+			}
+		}
+		if (list == null)
+		{
+			return;
+		}
+		foreach (int item in list)
+		{
+			FlushSceneFollowCommandAfterSpeech(item);
+		}
+	}
+
+	private void UpdateSceneFollowSpacing()
+	{
+		if (Mission.Current == null || Agent.Main == null || !Agent.Main.IsActive() || FollowAgentBehaviorIdleDistanceField == null)
+		{
+			return;
+		}
+		foreach (Agent agent in Mission.Current.Agents)
+		{
+			if (!IsAgentFollowingPlayerBySceneCommand(agent))
+			{
+				continue;
+			}
+			try
+			{
+				FollowAgentBehavior followAgentBehavior = agent.GetComponent<CampaignAgentComponent>()?.AgentNavigator?.GetBehaviorGroup<DailyBehaviorGroup>()?.GetBehavior<FollowAgentBehavior>();
+				if (followAgentBehavior != null)
+				{
+					FollowAgentBehaviorIdleDistanceField.SetValue(followAgentBehavior, SCENE_FOLLOW_MAX_IDLE_DISTANCE);
+				}
+			}
+			catch
+			{
+			}
+		}
+	}
+
+	private void UpdateSceneFollowHostilityState()
+	{
+		if (Mission.Current == null)
+		{
+			return;
+		}
+		foreach (Agent agent in Mission.Current.Agents)
+		{
+			if (!IsAgentFollowingPlayerBySceneCommand(agent) || !IsAgentHostileToMainAgent(agent))
+			{
+				continue;
+			}
+			try
+			{
+				_pendingSceneFollowCommands.Remove(agent.Index);
+				_pendingInteractionTimeoutArms.Remove(agent.Index);
+				_activeInteractionSessions.Remove(agent.Index);
+				_sceneFollowReturnStates.Remove(agent.Index);
+				StopSceneSummonFollowPlayer(agent);
+				RefreshHostileCombatAgentAutonomy(agent);
+			}
+			catch
+			{
 			}
 		}
 	}
@@ -10346,7 +14787,27 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			{
 				continue;
 			}
+			if (IsAgentBusyWithSceneSummonErrand(activeInteractionSession.Key) || IsAgentBusyWithSceneGuideErrand(activeInteractionSession.Key))
+			{
+				if (list == null)
+				{
+					list = new List<int>();
+				}
+				list.Add(activeInteractionSession.Key);
+				_pendingInteractionTimeoutArms.Remove(activeInteractionSession.Key);
+				continue;
+			}
 			Agent agent = Mission.Current.Agents?.FirstOrDefault(a => a != null && a.Index == activeInteractionSession.Key && a.IsActive());
+			if (IsAgentFollowingPlayerBySceneCommand(agent))
+			{
+				if (list == null)
+				{
+					list = new List<int>();
+				}
+				list.Add(activeInteractionSession.Key);
+				_pendingInteractionTimeoutArms.Remove(activeInteractionSession.Key);
+				continue;
+			}
 			if (!IsPlayerWithinActiveInteractionRange(agent))
 			{
 				value.LastActivityTime = currentTime;
@@ -10385,15 +14846,36 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			return;
 		}
 		Agent agent = Mission.Current?.Agents?.FirstOrDefault(a => a != null && a.Index == session.TargetAgentIndex && a.IsActive());
+		SceneSummonConversationSession sceneSummonConversationSession = TryGetSceneSummonConversationSessionForAgentIndex(session.TargetAgentIndex);
+		if (IsAgentBusyWithSceneSummonErrand(session.TargetAgentIndex) || IsAgentBusyWithSceneGuideErrand(session.TargetAgentIndex))
+		{
+			_pendingInteractionTimeoutArms.Remove(session.TargetAgentIndex);
+			_activeInteractionSessions.Remove(session.TargetAgentIndex);
+			return;
+		}
+		if (IsAgentFollowingPlayerBySceneCommand(agent))
+		{
+			_pendingInteractionTimeoutArms.Remove(session.TargetAgentIndex);
+			_activeInteractionSessions.Remove(session.TargetAgentIndex);
+			return;
+		}
 		if (!CanAgentParticipateInSceneSpeech(agent))
 		{
 			RemoveSceneMovementSuppressionAgents(new int[1] { session.TargetAgentIndex });
+			if (sceneSummonConversationSession != null)
+			{
+				BeginSceneSummonConversationReturn(sceneSummonConversationSession);
+			}
 			return;
 		}
 		if (IsAgentHostileToMainAgent(agent))
 		{
 			RemoveSceneMovementSuppressionAgents(new int[1] { session.TargetAgentIndex });
 			RestoreAgentAutonomy(agent);
+			if (sceneSummonConversationSession != null)
+			{
+				BeginSceneSummonConversationReturn(sceneSummonConversationSession);
+			}
 			return;
 		}
 		if (ShouldPreserveMeetingSceneAutonomy())
@@ -10422,7 +14904,16 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		string prefixedFactText = "[AFEF NPC行为补充] " + factText;
 		if (session.TimeoutSeconds > 3.5f)
 		{
-			TriggerImmediateSceneBehaviorReaction(prefixedFactText, session.TargetAgentIndex, persistHeroPrivateHistory: true, suppressStare: false, postSpeechLeaveSeconds: 3f);
+			if (sceneSummonConversationSession != null)
+			{
+				ClearSceneSummonConversationInteractionTimers(sceneSummonConversationSession);
+				_pendingSceneSummonReturnsAfterSpeech[session.TargetAgentIndex] = new PendingSceneSummonReturnAfterSpeech
+				{
+					AgentIndex = session.TargetAgentIndex,
+					Session = sceneSummonConversationSession
+				};
+			}
+			TriggerImmediateSceneBehaviorReaction(prefixedFactText, session.TargetAgentIndex, persistHeroPrivateHistory: true, suppressStare: false, postSpeechLeaveSeconds: 3f, skipSceneFactRecord: false, returnSceneSummonOnTimeout: false);
 			return;
 		}
 		AppendTargetedSceneNpcFact(prefixedFactText, session.TargetAgentIndex, persistHeroPrivateHistory: true);
@@ -10434,6 +14925,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 		RemoveSceneMovementSuppressionAgents(new int[1] { session.TargetAgentIndex });
 		RestoreAgentAutonomy(agent);
+		if (sceneSummonConversationSession != null)
+		{
+			BeginSceneSummonConversationReturn(sceneSummonConversationSession);
+		}
 	}
 
 	private void RestoreAgentAutonomy(Agent agent)
@@ -10442,6 +14937,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			return;
 		}
+		ClearSceneSummonScriptedBehavior(agent);
 		bool flag = IsAgentHostileToMainAgent(agent);
 		ClearAgentSceneConversationFocus(agent);
 		if (ShouldPreserveMeetingSceneAutonomy())
@@ -10886,7 +15382,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			return;
 		}
 		string text3 = (text2 ?? "").Replace("\r", "").Trim();
-		text3 = Regex.Replace(text3, "\\[ACTION:[^\\]]*\\]", "", RegexOptions.IgnoreCase).Trim();
+		text3 = Regex.Replace(text3, "\\[(?:ACTION:[^\\]]*|ASS:[^\\]]*|GUI:[^\\]]*|FOL|STP)\\]", "", RegexOptions.IgnoreCase).Trim();
 		int num = text3.IndexOf(':');
 		if (num < 0)
 		{

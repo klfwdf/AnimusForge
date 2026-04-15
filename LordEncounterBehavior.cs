@@ -7,6 +7,7 @@ using Helpers;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Actions;
 using TaleWorlds.CampaignSystem.ComponentInterfaces;
+using TaleWorlds.CampaignSystem.Conversation;
 using TaleWorlds.CampaignSystem.Encounters;
 using TaleWorlds.CampaignSystem.GameMenus;
 using TaleWorlds.CampaignSystem.Map;
@@ -2682,6 +2683,36 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 				IsOpeningConversation = false;
 			}
 		});
+		starter.AddGameMenuOption("AnimusForge_lord_encounter", "native_dialogue_lord", "进入原版对话", delegate(MenuCallbackArgs args)
+		{
+			if (HasPendingForceNativeDefeatCaptivityMenu())
+			{
+				return false;
+			}
+			if (TryBuildMeetingPostBattleSettlementText(_targetHero, out var _))
+			{
+				return false;
+			}
+			args.optionLeaveType = GameMenuOption.LeaveType.Conversation;
+			Hero hero = EnsureEncounterTargetHero("menu_native_dialogue_condition");
+			GameTexts.SetVariable("TARGET_NAME", (hero != null) ? hero.Name : new TextObject("领主"));
+			if (hero == null)
+			{
+				args.IsEnabled = false;
+				args.Tooltip = new TextObject("无法识别当前遭遇领主，请先离开后重新接触。");
+			}
+			return true;
+		}, delegate
+		{
+			Hero hero = EnsureEncounterTargetHero("menu_native_dialogue_click");
+			if (hero == null)
+			{
+				Logger.Log("LordEncounter", "Native dialogue option clicked but target hero is null after refresh.");
+				InformationManager.DisplayMessage(new InformationMessage("当前未识别到遭遇领主，请先离开并重新接触。", Colors.Yellow));
+				return;
+			}
+			OpenNativeEncounterConversation(hero);
+		});
 		starter.AddGameMenuOption("AnimusForge_lord_encounter", "attack_lord", "{PRIMARY_ACTION_LABEL}", delegate
 		{
 			if (HasPendingForceNativeDefeatCaptivityMenu())
@@ -3016,12 +3047,11 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		{
 			return "";
 		}
-		string text = Hero.MainHero?.Name?.ToString()?.Trim();
+		string text = (MyBehavior.BuildPlayerPublicDisplayNameForExternal() ?? "").Trim();
 		if (string.IsNullOrWhiteSpace(text))
 		{
 			text = "玩家";
 		}
-		text += "（玩家）";
 		if (warned)
 		{
 			return "你已警告过" + text + "。若还忍不了，就在句末输出[ACTION:MEETING_TAUNT_BATTLE]；这会把当前会面立刻升级为战斗，并按玩家攻击了你方军队来处理后果。";
@@ -3131,6 +3161,74 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			Logger.Log("LordEncounter", "StartMeeting failed: " + ex2);
 			MeetingBattleRuntime.EndMeeting();
 			DisableMeetingSpawnOverride();
+		}
+	}
+
+	private static void OpenNativeEncounterConversation(Hero target)
+	{
+		try
+		{
+			if (target == null)
+			{
+				target = EnsureEncounterTargetHero("open_native_conversation_null_target");
+				if (target == null)
+				{
+					Logger.Log("LordEncounter", "OpenNativeEncounterConversation aborted because target hero is null.");
+					return;
+				}
+			}
+			SetTarget(target);
+			Campaign.Current.CurrentConversationContext = ConversationContext.PartyEncounter;
+			try
+			{
+				if (PlayerEncounter.Current != null)
+				{
+					PlayerEncounter.LeaveEncounter = false;
+					PlayerEncounter.Current.IsPlayerWaiting = false;
+				}
+			}
+			catch
+			{
+			}
+			try
+			{
+				PlayerEncounter.SetMeetingDone();
+			}
+			catch
+			{
+			}
+			PartyBase partyBase = null;
+			try
+			{
+				partyBase = PlayerEncounter.EncounteredParty;
+			}
+			catch
+			{
+				partyBase = null;
+			}
+			partyBase = partyBase ?? target.PartyBelongedTo?.Party;
+			ConversationCharacterData playerCharacterData = new ConversationCharacterData(CharacterObject.PlayerCharacter, PartyBase.MainParty, false, false, false, false, false, false);
+			ConversationCharacterData conversationPartnerData = new ConversationCharacterData(target.CharacterObject, partyBase, false, false, false, false, false, false);
+			IsOpeningConversation = true;
+			try
+			{
+				if (PartyBase.MainParty.MobileParty.IsCurrentlyAtSea)
+				{
+					CampaignMission.OpenConversationMission(playerCharacterData, conversationPartnerData, "", "", false);
+				}
+				else
+				{
+					CampaignMapConversation.OpenConversation(playerCharacterData, conversationPartnerData);
+				}
+			}
+			finally
+			{
+				IsOpeningConversation = false;
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("LordEncounter", "OpenNativeEncounterConversation failed: " + ex);
 		}
 	}
 

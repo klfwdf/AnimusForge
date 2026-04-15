@@ -19,6 +19,7 @@ using Newtonsoft.Json.Linq;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Actions;
 using TaleWorlds.CampaignSystem.CharacterDevelopment;
+using TaleWorlds.CampaignSystem.Encounters;
 using TaleWorlds.CampaignSystem.Extensions;
 using TaleWorlds.CampaignSystem.GameMenus;
 using TaleWorlds.CampaignSystem.LogEntries;
@@ -30,6 +31,7 @@ using TaleWorlds.CampaignSystem.Party.PartyComponents;
 using TaleWorlds.CampaignSystem.Roster;
 using TaleWorlds.CampaignSystem.Siege;
 using TaleWorlds.CampaignSystem.Settlements;
+using TaleWorlds.CampaignSystem.Settlements.Locations;
 using TaleWorlds.CampaignSystem.ViewModelCollection.GameMenu.Events;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
@@ -636,6 +638,8 @@ public class MyBehavior : CampaignBehaviorBase
 		public bool Eligible;
 
 		public string Note;
+
+		public List<string> PreviewFollowerClanNames = new List<string>();
 	}
 
 	private sealed class KingdomRebellionFollowerInfo
@@ -4111,12 +4115,12 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private static bool IsEligibleRebelFollowerByStandardRules(int relationToKing, int relationToLeader, float score)
 	{
-		return relationToLeader >= 5 && relationToKing <= -5 && score >= 40f;
+		return relationToLeader - relationToKing >= 15;
 	}
 
 	private static bool IsEligibleRebelFollowerByRelativeFallback(int relationToKing, int relationToLeader, float score)
 	{
-		return relationToLeader < 0 && relationToKing < 0 && relationToLeader > relationToKing && score >= 40f;
+		return false;
 	}
 
 	private static float ComputeKingdomRebellionFollowerScore(Clan clan, Kingdom kingdom, Clan leaderClan, int relationToKing, int relationToLeader)
@@ -4176,21 +4180,14 @@ public class MyBehavior : CampaignBehaviorBase
 				bool flag = IsEligibleRebelFollowerByStandardRules(relationToKing, relationToLeader, kingdomRebellionFollowerInfo.Score);
 				bool flag2 = IsEligibleRebelFollowerByRelativeFallback(relationToKing, relationToLeader, kingdomRebellionFollowerInfo.Score);
 				kingdomRebellionFollowerInfo.Eligible = flag || flag2;
+				int num = relationToLeader - relationToKing;
 				if (flag)
 				{
-					kingdomRebellionFollowerInfo.Note = "满足联合叛乱跟随条件。";
-				}
-				else if (flag2)
-				{
-					kingdomRebellionFollowerInfo.Note = "对叛乱领袖与旧国王关系都差，但相较之下更不反感叛乱领袖，因此会加入叛乱。";
-				}
-				else if (relationToLeader < 0 && relationToKing < 0 && relationToLeader <= relationToKing)
-				{
-					kingdomRebellionFollowerInfo.Note = "对两边关系都差，但相较之下更不反感旧王国，因此不会加入叛乱。";
+					kingdomRebellionFollowerInfo.Note = "满足联合叛乱跟随条件：对叛乱领袖关系减去对国王关系 = " + num + "（>= 15）。";
 				}
 				else
 				{
-					kingdomRebellionFollowerInfo.Note = "与叛乱领袖/旧王国关系不足以支持联合叛乱。";
+					kingdomRebellionFollowerInfo.Note = "不满足联合叛乱跟随条件：对叛乱领袖关系减去对国王关系 = " + num + "（需 >= 15）。";
 				}
 			}
 			list.Add(kingdomRebellionFollowerInfo);
@@ -4272,6 +4269,10 @@ public class MyBehavior : CampaignBehaviorBase
 			return kingdomRebellionResolutionResult;
 		}
 		kingdomRebellionResolutionResult.Candidates = EvaluateKingdomRebellionCandidates(kingdom, forceTrigger: false);
+		foreach (KingdomRebellionCandidateInfo item in kingdomRebellionResolutionResult.Candidates.Where((KingdomRebellionCandidateInfo x) => x != null && x.Clan != null))
+		{
+			item.PreviewFollowerClanNames = EvaluateKingdomRebellionFollowers(kingdom, item.Clan, forceTrigger: false).Where((KingdomRebellionFollowerInfo x) => x != null && x.Eligible && x.Clan != null).Select((KingdomRebellionFollowerInfo x) => GetClanDisplayName(x.Clan)).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+		}
 		if (!forceTrigger)
 		{
 			if (kingdomRebellionResolutionResult.TriggerChance <= 0f)
@@ -8283,7 +8284,7 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		else
 		{
-			stringBuilder.AppendLine("提示：你感觉player（玩家）只是个普通人。");
+			stringBuilder.AppendLine("提示：你感觉此人只是个普通人。");
 		}
 		stringBuilder.AppendLine("玩家年纪：" + text4);
 		if (!string.IsNullOrWhiteSpace(value))
@@ -9949,6 +9950,10 @@ public class MyBehavior : CampaignBehaviorBase
 					}
 					string result = CleanAIResponse(streamResult ?? "");
 					string rawResult = result;
+					if (!patienceExhausted && targetHero != null)
+					{
+						VanillaIssueOfferBridge.ApplyIssueOfferTags(targetHero, ref result);
+					}
 					if (!patienceExhausted && AIConfigHandler.RewardEnabled && RewardSystemBehavior.Instance != null)
 					{
 						if (targetHero != null)
@@ -10677,6 +10682,11 @@ public class MyBehavior : CampaignBehaviorBase
 					list.Add("[AFEF玩家行为补充] " + text5);
 				}
 			}
+			string text6 = VanillaIssueOfferBridge.BuildRagSemanticStateForExternal(hero);
+			if (!string.IsNullOrWhiteSpace(text6))
+			{
+				list.Add(text6);
+			}
 			if (list.Count <= 0)
 			{
 				return "";
@@ -10787,7 +10797,54 @@ public class MyBehavior : CampaignBehaviorBase
 			string text4 = "【附加规则:lords_hall_access】" + Environment.NewLine + text2;
 			text = string.IsNullOrWhiteSpace(text) ? text4 : (text.TrimEnd() + Environment.NewLine + text4);
 		}
+		if (IsSceneFollowingAgentForRules(targetAgentIndex))
+		{
+			text = ReplaceSceneMechanismRuleForFollowing(text);
+		}
 		return text;
+	}
+
+	private static bool IsSceneFollowingAgentForRules(int targetAgentIndex)
+	{
+		try
+		{
+			if (targetAgentIndex < 0 || Mission.Current == null || PlayerEncounter.LocationEncounter == null || TaleWorlds.CampaignSystem.Settlements.Locations.LocationComplex.Current == null)
+			{
+				return false;
+			}
+			Agent agent = Mission.Current.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == targetAgentIndex && a.IsActive());
+			if (agent == null || agent == Agent.Main)
+			{
+				return false;
+			}
+			TaleWorlds.CampaignSystem.Settlements.Locations.LocationCharacter locationCharacter = TaleWorlds.CampaignSystem.Settlements.Locations.LocationComplex.Current.FindCharacter(agent);
+			AccompanyingCharacter accompanyingCharacter = ((locationCharacter != null) ? PlayerEncounter.LocationEncounter.GetAccompanyingCharacter(locationCharacter) : null);
+			return accompanyingCharacter != null && accompanyingCharacter.IsFollowingPlayerAtMissionStart;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static string ReplaceSceneMechanismRuleForFollowing(string text)
+	{
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return text;
+		}
+		const string replacement = "【附加规则:scene_mechanism_actions】" + "\r\n" + "【当前正跟随玩家】若此人明确让你停止跟随且你同意，可在句末输出[STP]；若此人改让你去叫【可召目标】中的人，也可输出[ASS:id]，多人可写[ASS:id1,id2]；若此人改让你带路去找【可带路目标】，也可输出[GUI:id]。";
+		int num = text.IndexOf("【附加规则:scene_mechanism_actions】", StringComparison.OrdinalIgnoreCase);
+		if (num < 0)
+		{
+			return text;
+		}
+		int num2 = text.IndexOf("【附加规则:", num + 1, StringComparison.Ordinal);
+		if (num2 < 0)
+		{
+			return text.Substring(0, num).TrimEnd() + Environment.NewLine + replacement;
+		}
+		return text.Substring(0, num).TrimEnd() + Environment.NewLine + replacement + Environment.NewLine + text.Substring(num2).TrimStart();
 	}
 
 	private static int CountInjectedRuleBlocks(string text)
@@ -11274,14 +11331,6 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			loreContext = AIConfigHandler.GetLoreContext(input, targetCharacter, kingdomIdOverride, npcLastUtterance);
 			loreCtxSource = ((usePrefetchedLoreContext && string.IsNullOrWhiteSpace(prefetchedLoreContext)) ? "prefetch_empty_fallback_character" : "character");
-		}
-		if (targetHero != null)
-		{
-			string value11 = VanillaIssueOfferBridge.BuildPromptBlock(targetHero);
-			if (!string.IsNullOrWhiteSpace(value11))
-			{
-				stringBuilder.AppendLine(value11);
-			}
 		}
 		try
 		{
@@ -13967,9 +14016,6 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 		}
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.AppendLine("这里用于维护事件系统的基础底稿。");
-		stringBuilder.AppendLine("当前可编辑：世界开局概要、各王国开局概要。");
-		stringBuilder.AppendLine(" ");
 		stringBuilder.AppendLine("世界开局概要：" + (string.IsNullOrWhiteSpace(_eventWorldOpeningSummary) ? "未设置" : "已设置"));
 		stringBuilder.AppendLine("王国开局概要：" + num + "/" + num2 + " 已设置");
 		stringBuilder.AppendLine("事件记录：" + ((_eventRecordEntries != null) ? SanitizeEventRecordEntries(_eventRecordEntries).Count : 0) + " 条");
@@ -13977,13 +14023,6 @@ public class MyBehavior : CampaignBehaviorBase
 		int num3 = GetDevEditableKingdoms().Count;
 		int num4 = GetDevEditableKingdoms().Count((Kingdom x) => GetKingdomStabilityValue(x) != KingdomStabilityDefaultValue);
 		stringBuilder.AppendLine("王国稳定度：" + num4 + "/" + num3 + " 已偏离默认值");
-		string text = BuildDevSummaryPreview(_eventWorldOpeningSummary, 120);
-		if (!string.IsNullOrWhiteSpace(text))
-		{
-			stringBuilder.AppendLine(" ");
-			stringBuilder.AppendLine("世界概要预览：");
-			stringBuilder.AppendLine(text);
-		}
 		return stringBuilder.ToString().TrimEnd();
 	}
 
@@ -14183,10 +14222,6 @@ public class MyBehavior : CampaignBehaviorBase
 		stringBuilder.AppendLine("当前国王：" + GetHeroDisplayName(kingdom.Leader));
 		stringBuilder.AppendLine("执政家族：" + GetClanDisplayName(kingdom.RulingClan));
 		stringBuilder.AppendLine(" ");
-		stringBuilder.AppendLine("档位说明：较差=0.5%，很差=5%，极差=25%。");
-		stringBuilder.AppendLine("当前逻辑：每周每个王国只抽一次；命中后从候选家族里选一个带城反出。");
-		stringBuilder.AppendLine("手动强制叛乱：仅跳过稳定度概率判定，主导家族与联合响应家族仍需满足自动叛乱的关系条件。");
-		stringBuilder.AppendLine("联合响应补充规则：若某家族对叛乱领袖和旧国王两边关系都差，则会偏向关系相对没那么差的一边。");
 		stringBuilder.AppendLine(" ");
 		if (list2.Count > 0)
 		{
@@ -14320,6 +14355,14 @@ public class MyBehavior : CampaignBehaviorBase
 				if (!string.IsNullOrWhiteSpace(item.Note))
 				{
 					stringBuilder.AppendLine("  " + item.Note.Trim());
+				}
+				if (item.PreviewFollowerClanNames != null && item.PreviewFollowerClanNames.Count > 0)
+				{
+					stringBuilder.AppendLine("  若由其主导叛乱，预计联合响应：" + string.Join("、", item.PreviewFollowerClanNames));
+				}
+				else
+				{
+					stringBuilder.AppendLine("  若由其主导叛乱，预计没有其他家族联合响应。");
 				}
 			}
 		}

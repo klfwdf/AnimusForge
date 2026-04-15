@@ -20,15 +20,6 @@ public class SubModule : MBSubModuleBase
 			Harmony harmony = new Harmony("com.AnimusForge.spy");
 			try
 			{
-				PatchClassProcessor patchClassProcessor = harmony.CreateClassProcessor(typeof(Patch_Starter_AddPlayerLine_Filter));
-				patchClassProcessor.Patch();
-			}
-			catch (Exception ex)
-			{
-				Logger.LogTrace("SubModule", ">>> Patch_Starter_AddPlayerLine_Filter failed: " + ex.Message);
-			}
-			try
-			{
 				PatchClassProcessor patchClassProcessorClipboard = harmony.CreateClassProcessor(typeof(InputClipboardUnicodePatch));
 				patchClassProcessorClipboard.Patch();
 			}

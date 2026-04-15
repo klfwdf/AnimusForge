@@ -5262,6 +5262,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.AppendLine("【系统账目提示】玩家对你有以下欠款（分笔记录）：");
+		stringBuilder.AppendLine("【还款确认】若玩家声称要还钱，并且[AFEF玩家行为补充] 中确实明确写了玩家把钱交给了你或写出了你的名字，你应立即核对债务ID并在本轮回复末尾用 [ACTION:DEBT_PAY_GOLD:债务ID:数量]（金币债）或 [ACTION:DEBT_PAY_ITEM:债务ID:物品ID:数量]（物品债）确认还款；禁止嘴炮还款，禁止自动冲抵到别的债，禁止拖沓，必须在本轮输出这些标签。");
 		if (debtRecord.DebtLines != null)
 		{
 			List<DebtRecord.DebtLine> list = (from x in debtRecord.DebtLines
