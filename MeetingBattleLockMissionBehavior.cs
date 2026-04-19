@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using SandBox;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.AgentOrigins;
 using TaleWorlds.CampaignSystem.Encounters;
@@ -17,9 +18,20 @@ using TaleWorlds.MountAndBlade.View.MissionViews;
 
 namespace AnimusForge;
 
-public class MeetingBattleLockMissionBehavior : MissionBehavior
+public class MeetingBattleLockMissionBehavior : MissionBehavior, IAgentStateDecider
 {
 	private static MeetingBattleLockMissionBehavior _currentInstance;
+
+	private sealed class PendingFatalHitContext
+	{
+		internal DamageTypes DamageType;
+
+		internal bool CanDamageKillEvenIfBlunt;
+
+		internal PartyBase VictimParty;
+
+		internal PartyBase EnemyParty;
+	}
 
 	private const float StartupLoadingBlackTimeSeconds = 4f;
 
@@ -131,6 +143,8 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior
 
 	private readonly Dictionary<int, Vec3> _meetingMountedHardLockForwards = new Dictionary<int, Vec3>();
 
+	private readonly Dictionary<int, PendingFatalHitContext> _pendingFatalHitContexts = new Dictionary<int, PendingFatalHitContext>();
+
 	private bool _deferredDetachedFormationRestoreActive;
 
 	private bool _deferredDetachedFormationRestoreApplied;
@@ -204,6 +218,7 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior
 		_deferredDetachedFormationRestoreActive = false;
 		_deferredDetachedFormationRestoreApplied = false;
 		_deferredDetachedFormationRestoreEarliestTime = 0f;
+		_pendingFatalHitContexts.Clear();
 		ClearMeetingLockAnchors();
 		ClearMeetingDetachedFormations();
 		ClearMeetingMountedHardLocks();
@@ -277,6 +292,7 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior
 		ClearMeetingLockAnchors();
 		ClearMeetingDetachedFormations();
 		ClearMeetingMountedHardLocks();
+		_pendingFatalHitContexts.Clear();
 		base.OnRemoveBehavior();
 	}
 
@@ -291,7 +307,33 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior
 		}
 		ClearMeetingDetachedFormations();
 		ClearMeetingMountedHardLocks();
+		_pendingFatalHitContexts.Clear();
 		base.OnEndMission();
+	}
+
+	public AgentState GetAgentState(Agent effectedAgent, float deathProbability, out bool usedSurgery)
+	{
+		usedSurgery = false;
+		try
+		{
+			if (TryUseMeetingNaturalDefeatState(effectedAgent, out var result))
+			{
+				return result;
+			}
+		}
+		catch
+		{
+		}
+		float num = deathProbability;
+		if (num < 0f)
+		{
+			num = 0f;
+		}
+		if (num > 1f)
+		{
+			num = 1f;
+		}
+		return (MBRandom.RandomFloat <= num) ? AgentState.Killed : AgentState.Unconscious;
 	}
 
 	public override void OnMissionTick(float dt)
@@ -2289,6 +2331,12 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior
 		_targetMountControllerSuppressed = false;
 	}
 
+	public override void OnAgentHit(Agent affectedAgent, Agent affectorAgent, in MissionWeapon attackerWeapon, in Blow blow, in AttackCollisionData attackCollisionData)
+	{
+		base.OnAgentHit(affectedAgent, affectorAgent, in attackerWeapon, in blow, in attackCollisionData);
+		TryCapturePreEscalationFatalHitContext(affectedAgent, affectorAgent, in attackerWeapon, in blow);
+	}
+
 	private void TrySetAgentController(Agent agent, string controllerType)
 	{
 		try
@@ -2336,6 +2384,21 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior
 			if (obj != null)
 			{
 				propertyInfo.SetValue(agent, obj);
+			}
+		}
+		catch
+		{
+		}
+	}
+
+	public override void OnAgentRemoved(Agent affectedAgent, Agent affectorAgent, AgentState agentState, KillingBlow killingBlow)
+	{
+		base.OnAgentRemoved(affectedAgent, affectorAgent, agentState, killingBlow);
+		try
+		{
+			if (affectedAgent != null)
+			{
+				_pendingFatalHitContexts.Remove(affectedAgent.Index);
 			}
 		}
 		catch
@@ -2462,6 +2525,239 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior
 			MeetingBattleRuntime.RequestCombatEscalation(reason);
 			MeetingBattleRuntime.UnlockDiplomaticSideEffects(reason);
 		}
+	}
+
+	private void TryCapturePreEscalationFatalHitContext(Agent affectedAgent, Agent affectorAgent, in MissionWeapon attackerWeapon, in Blow blow)
+	{
+		if (affectedAgent == null || !affectedAgent.IsHuman)
+		{
+			return;
+		}
+		try
+		{
+			if (DuelBehavior.IsFormalDuelActive)
+			{
+				return;
+			}
+		}
+		catch
+		{
+		}
+		if (!MeetingBattleRuntime.IsMeetingActive || _meetingCombatUnlockApplied)
+		{
+			return;
+		}
+		Agent agent = NormalizeDamageAffector(affectorAgent);
+		if (agent == null || agent == affectedAgent)
+		{
+			return;
+		}
+		float num = 0f;
+		try
+		{
+			num = affectedAgent.Health - (float)blow.InflictedDamage;
+		}
+		catch
+		{
+			return;
+		}
+		if (num >= 1f)
+		{
+			_pendingFatalHitContexts.Remove(affectedAgent.Index);
+			return;
+		}
+		WeaponComponentData weaponComponentData = null;
+		try
+		{
+			weaponComponentData = attackerWeapon.CurrentUsageItem;
+		}
+		catch
+		{
+			weaponComponentData = null;
+		}
+		_pendingFatalHitContexts[affectedAgent.Index] = new PendingFatalHitContext
+		{
+			DamageType = blow.DamageType,
+			CanDamageKillEvenIfBlunt = weaponComponentData != null && weaponComponentData.WeaponFlags.HasAnyFlag(WeaponFlags.CanKillEvenIfBlunt),
+			VictimParty = ResolveAgentParty(affectedAgent),
+			EnemyParty = ResolveAgentParty(agent)
+		};
+	}
+
+	private bool TryUseMeetingNaturalDefeatState(Agent effectedAgent, out AgentState result)
+	{
+		result = AgentState.Unconscious;
+		if (effectedAgent == null || !effectedAgent.IsHuman)
+		{
+			return false;
+		}
+		try
+		{
+			if (DuelBehavior.IsFormalDuelActive)
+			{
+				return false;
+			}
+		}
+		catch
+		{
+		}
+		if (!MeetingBattleRuntime.IsMeetingActive || _meetingCombatUnlockApplied)
+		{
+			return false;
+		}
+		Agent agent = _mainAgent;
+		if (agent == null || !agent.IsActive())
+		{
+			try
+			{
+				agent = base.Mission?.MainAgent ?? Agent.Main;
+			}
+			catch
+			{
+				agent = null;
+			}
+		}
+		if (agent != null)
+		{
+			try
+			{
+				if (effectedAgent == agent || effectedAgent == agent.MountAgent)
+				{
+					return false;
+				}
+			}
+			catch
+			{
+			}
+		}
+		if (!_pendingFatalHitContexts.TryGetValue(effectedAgent.Index, out var value))
+		{
+			return false;
+		}
+		_pendingFatalHitContexts.Remove(effectedAgent.Index);
+		CharacterObject characterObject = effectedAgent.Character as CharacterObject;
+		if (characterObject == null)
+		{
+			return false;
+		}
+		PartyBase partyBase = value.VictimParty ?? ResolveAgentParty(effectedAgent);
+		PartyBase enemyParty = value.EnemyParty;
+		if (partyBase == null && _targetAgent != null && effectedAgent == _targetAgent)
+		{
+			try
+			{
+				partyBase = _targetHero?.PartyBelongedTo?.Party ?? PlayerEncounter.EncounteredParty;
+			}
+			catch
+			{
+				partyBase = _targetHero?.PartyBelongedTo?.Party;
+			}
+		}
+		if (enemyParty == null && agent != null)
+		{
+			enemyParty = ResolveAgentParty(agent);
+		}
+		if (partyBase == null)
+		{
+			Logger.Log("MeetingBattle", $"Pre-escalation natural defeat fallback skipped because victim party is missing. Victim={effectedAgent.Name}");
+			return false;
+		}
+		float num = 1f - Campaign.Current.Models.PartyHealingModel.GetSurvivalChance(partyBase, characterObject, value.DamageType, value.CanDamageKillEvenIfBlunt, enemyParty);
+		if (num < 0f)
+		{
+			num = 0f;
+		}
+		if (num > 1f)
+		{
+			num = 1f;
+		}
+		result = ((MBRandom.RandomFloat <= num) ? AgentState.Killed : AgentState.Unconscious);
+		Hero heroObject = characterObject.HeroObject;
+		if (heroObject != null)
+		{
+			Logger.Log("MeetingBattle", $"Applied pre-escalation natural defeat state. Victim={heroObject.Name}, DeathChance={num:0.###}, Result={result}, VictimParty={partyBase.Name}");
+		}
+		return true;
+	}
+
+	private Agent NormalizeDamageAffector(Agent affectorAgent)
+	{
+		if (affectorAgent == null)
+		{
+			return null;
+		}
+		try
+		{
+			if (affectorAgent.IsMount && affectorAgent.RiderAgent != null)
+			{
+				return affectorAgent.RiderAgent;
+			}
+		}
+		catch
+		{
+		}
+		return affectorAgent;
+	}
+
+	private PartyBase ResolveAgentParty(Agent agent)
+	{
+		if (agent == null)
+		{
+			return null;
+		}
+		try
+		{
+			CampaignAgentComponent component = agent.GetComponent<CampaignAgentComponent>();
+			if (component?.OwnerParty != null)
+			{
+				return component.OwnerParty;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (agent.Origin?.BattleCombatant is PartyBase partyBase)
+			{
+				return partyBase;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			Hero hero2 = (agent.Character as CharacterObject)?.HeroObject;
+			if (hero2?.PartyBelongedTo?.Party != null)
+			{
+				return hero2.PartyBelongedTo.Party;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (agent == _mainAgent || agent.IsMainAgent)
+			{
+				return PartyBase.MainParty;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (_targetAgent != null && agent == _targetAgent)
+			{
+				return _targetHero?.PartyBelongedTo?.Party ?? PlayerEncounter.EncounteredParty;
+			}
+		}
+		catch
+		{
+		}
+		return null;
 	}
 
 	private void TryNotifySameFactionAttackWarning(Agent affectedAgent)

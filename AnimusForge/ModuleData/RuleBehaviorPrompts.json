@@ -114,11 +114,11 @@
                             "Group":  "politics",
                             "Priority":  88,
                             "NonHeroInstruction":  "如果玩家说要效忠于你的国家，你可以引导玩家去找领主或者势力领袖。",
-                            "Instruction":  "【势力效力规则】以本轮运行时状态为准。玩家未加入势力时才讨论加入；若身份未明确，先问清是雇佣兵还是正式封臣。玩家已是雇佣兵或封臣时，只讨论是否退出当前效力；若你明确同意退出，必须在回复末尾输出 [ACTION:KINGDOM_SERVICE:LEAVE:current]，不得只口头答应。只有在玩家当前未加入势力、你明确同意且条件满足时，才可输出 [ACTION:KINGDOM_SERVICE:MERCENARY:kingdomId] 或 [ACTION:KINGDOM_SERVICE:VASSAL:kingdomId]。",
+                            "Instruction":  "【势力效力规则】以本轮运行时状态为准。玩家未加入势力时才讨论加入；若身份未明确，先问清是雇佣兵还是正式封臣。玩家已是雇佣兵或封臣时，只讨论是否退出当前效力；若你明确同意退出，必须在回复末尾输出 [ACTION:KINGDOM_SERVICE:LEAVE:current]，不得只口头答应。只有在玩家当前未加入势力、你明确同意且条件满足时，才可输出带有目标王国真实ID的 [ACTION:KINGDOM_SERVICE:MERCENARY:*] 或 [ACTION:KINGDOM_SERVICE:VASSAL:*]。",
                             "RuntimeInstructionTemplates":  {
-                                                                "no_kingdom":  "【势力效力规则】玩家当前未加入任何势力。若要效力你方，先确认是雇佣兵还是正式封臣；身份未明确前只能反问。只有在你明确同意且条件满足时，才可输出 [ACTION:KINGDOM_SERVICE:MERCENARY:kingdomId] 或 [ACTION:KINGDOM_SERVICE:VASSAL:kingdomId]。",
+                                                                "no_kingdom":  "【势力效力规则】玩家当前未加入任何势力。若要效力你方，先确认是雇佣兵还是正式封臣；身份未明确前只能反问。只有在你明确同意且条件满足时，才可输出 [ACTION:KINGDOM_SERVICE:MERCENARY:{targetKingdomId}] 或 [ACTION:KINGDOM_SERVICE:VASSAL:{targetKingdomId}]。",
                                                                 "no_kingdom_trust_below_merc":  "【势力效力规则】玩家当前未加入任何势力，但综合信任仅为 {trustCurrent}，低于最低雇佣兵门槛 {trustMerc}。本轮只能拒绝，不要输出任何势力效力标签。可简短建议玩家先替你方做事、积累信任后再来。",
-                                                                "no_kingdom_trust_merc_only":  "【势力效力规则】玩家当前未加入任何势力，综合信任为 {trustCurrent}；已达到雇佣兵门槛 {trustMerc}，但未达到封臣门槛 {trustVassal}。本轮只能讨论雇佣兵；若你明确同意，才可输出 [ACTION:KINGDOM_SERVICE:MERCENARY:kingdomId]。",
+                                                                "no_kingdom_trust_merc_only":  "【势力效力规则】玩家当前未加入任何势力，综合信任为 {trustCurrent}；已达到雇佣兵门槛 {trustMerc}，但未达到封臣门槛 {trustVassal}。本轮只能讨论雇佣兵；若你明确同意，才可输出 [ACTION:KINGDOM_SERVICE:MERCENARY:{targetKingdomId}]。",
                                                                 "mercenary_target_unknown":  "【势力效力规则】玩家当前是 {playerKingdom} 的雇佣兵。本轮只处理是否退出当前效力；若你明确同意退出，必须在回复末尾输出 [ACTION:KINGDOM_SERVICE:LEAVE:current]。",
                                                                 "mercenary_same_kingdom":  "【势力效力规则】玩家当前已是本势力（{playerKingdom}）的雇佣兵。本轮只讨论是否退出当前效力；若你明确同意退出，必须在回复末尾输出 [ACTION:KINGDOM_SERVICE:LEAVE:current]。",
                                                                 "mercenary_same_kingdom_tier_vassal_locked":  "【势力效力规则】玩家当前已是本势力（{playerKingdom}）的雇佣兵。本轮只讨论是否退出当前效力；若你明确同意退出，必须在回复末尾输出 [ACTION:KINGDOM_SERVICE:LEAVE:current]。",
@@ -169,7 +169,7 @@
                             "NonHeroInstruction":  "【领主大厅通行规则】这条只给城镇领主大厅门口的普通守卫用。玩家嘴上说已经给钱不算，只有系统记录的真实交付才算。是否放行由你决定；若你最终决定让玩家通过，必须在回复末尾追加 [ACTION:OPEN_LORDS_HALL]。",
                             "Instruction":  "【领主大厅通行规则】玩家谈进入领主大厅、见领主或进 keep 时，以本轮运行时规则为准。只认系统记录的真实交钱，不认玩家嘴炮。是否放行由你决定；若决定放行，必须在回复末尾输出 [ACTION:OPEN_LORDS_HALL]。",
                             "RuntimeInstructionTemplates":  {
-                                                                "not_applicable":  "【领主大厅通行规则】如果玩家想要见领主，你可以引导玩家去领主大厅，如果玩家身份尊贵，你可以主动将领主带到玩家面前",
+                                                                "not_applicable":  "【领主大厅通行规则】领主一般在领主大厅",
                                                                 "allowed_directly":  "【领主大厅通行规则】请允许玩家直接进入 {settlementName} 的领主大厅。你必须在回复末尾输出 [ACTION:OPEN_LORDS_HALL]。",
                                                                 "denied_but_bribe_available":  "【领主大厅通行规则】暂不允许直接进入 {settlementName} 的领主大厅，原因：{accessReason}。你可以暗示玩家贿赂你让其进入领主大厅，放行指导价 {guideBribeGold} 第纳尔，若你在【当前场景公共对话与互动】的[AFEF玩家行为补充] 中看到玩家给你合适的物品或者金额，你可以考虑在回复末尾输出[ACTION:OPEN_LORDS_HALL]，让玩家进入领主大厅，若不满意，请不要输出",
                                                                 "disguise_only":  "【领主大厅通行规则】这不是收钱问题，请引导玩家离开此处。",
@@ -180,10 +180,8 @@
                                                     "领主大厅",
                                                     "进领主大厅",
                                                     "进入领主大厅",
-                                                    "我要见领主",
                                                     "我要进大厅",
-                                                    "见城主",
-                                                    "见领主",
+                                                    "领主",
                                                     "进城堡大厅",
                                                     "门为什么锁了"
                                                 ]
@@ -246,8 +244,8 @@
                             "IsEnabled":  true,
                             "Group":  "scene",
                             "Priority":  77,
-                            "NonHeroInstruction":  "【场景行为】如果你在句末输出[FOL]，可让你跟随此人；如果你在句末输出[ASS:id]，可把【可召目标】中的人叫来；如果你在句末输出[GUI:id]，可给此人带路去找【可带路目标】。你必须实际输入标签才能触发，不可只是嘴上同意。",
-                            "Instruction":  "【场景行为】仅在此人明确要求且你明确同意时，才在句末追加标签：跟随用[FOL]；叫来【可召目标】中的人用[ASS:id]，多人可写[ASS:id1,id2]；带路去找【可带路目标】用[GUI:id]。id只能取自系统给出的目标表，不得编造。否则只正常说话，不输出标签。",
+                            "NonHeroInstruction":  "【场景行为】如果你在句末输出[FOL]，可让你跟随此人；如果你在句末输出[ASS:id]，可把【可召目标】中的人叫来；如果你在句末输出[GUI:id]，可给此人带路去找【可带路目标】，也可带此人去见【可召目标】中的人；若目标在酒馆或领主大厅，只需带到对应门口。当你同意了对方的要求之后，你必须在本次回复输出此标签，不可拖沓。",
+                            "Instruction":  "【场景行为】如果你在句末输出[FOL]，可让你跟随此人；如果你在句末输出[ASS:id]，可把【可召目标】中的人叫来；如果你在句末输出[GUI:id]，可给此人带路去找【可带路目标】，也可带此人去见【可召目标】中的人；若目标在酒馆或领主大厅，只需带到对应门口。当你同意了对方的要求之后，你必须在本次回复输出此标签，不可拖沓。",
                             "TriggerKeywords":  [
                                                     "把他叫来",
                                                     "把她叫来",

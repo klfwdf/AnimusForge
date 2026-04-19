@@ -320,6 +320,27 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			{
 			}
 		}
+		if (flag2 && flag)
+		{
+			try
+			{
+				PartyBase partyBase = null;
+				try
+				{
+					partyBase = PlayerEncounter.EncounteredParty;
+				}
+				catch
+				{
+					partyBase = null;
+				}
+				partyBase = partyBase ?? _targetHero?.PartyBelongedTo?.Party;
+				TryApplyImmediateEscalationConsequences(partyBase, _targetHero, "meeting_battle_mission_end_fallback");
+			}
+			catch (Exception ex)
+			{
+				Logger.Log("MeetingBattle", "OnMissionEnded fallback escalation failed: " + ex.Message);
+			}
+		}
 		bool flag10 = flag2 && !flag && !flag3;
 		bool flag11 = flag2 && flag && !flag3 && !flag4 && !flag6;
 		if (flag2 && flag3)
@@ -330,8 +351,16 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		}
 		else if (flag2 && flag4)
 		{
-			MarkPendingMeetingBattleVictorySettlement("meeting_battle_mission_result_victory");
-			TryResolvePendingMeetingBattleVictorySettlementImmediately("mission_ended_player_victory");
+			if (_lastMeetingWasSameMapFactionConflict)
+			{
+				ClearPendingMeetingBattleVictorySettlement("mission_result_victory_same_faction_meeting");
+				Logger.Log("MeetingBattle", "Skipped legacy post-battle settlement flow because the meeting started with same-faction parties.");
+			}
+			else
+			{
+				MarkPendingMeetingBattleVictorySettlement("meeting_battle_mission_result_victory");
+				TryResolvePendingMeetingBattleVictorySettlementImmediately("mission_ended_player_victory");
+			}
 		}
 		else if (flag11)
 		{
@@ -740,6 +769,11 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 	{
 		if (!_pendingMeetingBattleVictorySettlement)
 		{
+			return false;
+		}
+		if (_lastMeetingWasSameMapFactionConflict)
+		{
+			ClearPendingMeetingBattleVictorySettlement("blocked_same_faction_meeting_victory_flow");
 			return false;
 		}
 		float num = 0f;
@@ -2304,6 +2338,14 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 	private static bool TryBuildMeetingPostBattleSettlementText(Hero target, out TextObject bodyText)
 	{
 		bodyText = new TextObject("");
+		if (_lastMeetingWasSameMapFactionConflict)
+		{
+			if (_pendingMeetingBattleVictorySettlement)
+			{
+				ClearPendingMeetingBattleVictorySettlement("suppress_same_faction_meeting_post_battle_text");
+			}
+			return false;
+		}
 		CampaignBattleResult campaignBattleResult = null;
 		try
 		{
