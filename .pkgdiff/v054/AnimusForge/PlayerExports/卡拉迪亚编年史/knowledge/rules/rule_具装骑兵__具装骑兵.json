@@ -1,0 +1,31 @@
+﻿{
+  "Id": "rule_具装骑兵",
+  "Keywords": [
+    "具装骑兵"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "具装骑兵是帝国的大杀器，他们人马具装呀，战无不胜"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "tactics": 100
+        }
+      },
+      "Content": "具装骑兵很强，但不是战无不胜。他们的矛又长又重，这固然赋予了他们无与伦比的进攻性，但这也让他们无法架枪，也无法举盾，遇到远程部队就只能被射成刺猬"
+    }
+  ],
+  "TextMappings": []
+}

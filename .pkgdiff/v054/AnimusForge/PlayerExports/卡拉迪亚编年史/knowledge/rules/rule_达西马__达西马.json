@@ -1,0 +1,24 @@
+﻿{
+  "Id": "rule_达西马",
+  "Keywords": [
+    "达西马"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "达西马是阿塞莱的制式军马，标准化就是它的代名词。算是一种各项都比帕尔马廷马弱一点的马，但也算是极品马了，各地喜欢马的人们都把它视为入门级的好马"
+    }
+  ],
+  "TextMappings": []
+}

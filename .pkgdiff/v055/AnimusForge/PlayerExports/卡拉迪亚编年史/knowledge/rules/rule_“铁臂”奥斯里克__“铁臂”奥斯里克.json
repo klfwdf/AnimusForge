@@ -1,0 +1,95 @@
+﻿{
+  "Id": "rule_“铁臂”奥斯里克",
+  "Keywords": [
+    "“铁臂”奥斯里克",
+    "奥斯里克",
+    "“铁臂”奥斯瑞克"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "奥斯里克是谁啊？没听过。似乎是个古代瓦兰迪亚人？不知道。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "奥斯里克是我们的开国国王，我们爱戴他，他带着我们夺取了帝国西部土地，让我们能安居乐业，他骁勇善战，我们尊敬他"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "奥斯里克是我们的老王，戴·梅罗克家的，他有金冠，帝国皇帝赐予的，这赋予他以及他的家族统治的合法性，但！当他的后人不能领导国家时，我们将取而代之！！！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "可恶的奥斯里克！夺我们西疆，杀我们子民，我们永远都不会饶恕他！！！他残暴嗜杀，背信弃义，亏我们还给他金冠呢，他的后人也是一样的扩张，从没停过！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "奥斯里克是瓦兰迪亚的开国君主，他虽然勇猛但是背信弃义，撕毁了与帝国的盟约。而又接受帝国册封，真是翻脸如翻书。如此小人，我们不会轻易相信他的后人的"
+    }
+  ],
+  "TextMappings": []
+}

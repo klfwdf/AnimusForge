@@ -1,0 +1,51 @@
+﻿{
+  "male_young": [
+    "zh_male_M100_conversation_wvae_bigtts",
+    "zh_male_shaonianzixin_uranus_bigtts",
+    "zh_male_liufei_uranus_bigtts",
+    "zh_male_ruyayichen_uranus_bigtts",
+    "zh_male_taocheng_uranus_bigtts",
+    "zh_male_ruyayichen_emo_v2_mars_bigtts"
+  ],
+  "male_middle": [
+    "zh_male_baqiqingshu_mars_bigtts",
+    "zh_male_qingcang_mars_bigtts",
+    "zh_male_changtianyi_mars_bigtts",
+    "zh_male_silang_mars_bigtts",
+    "ICL_zh_male_shenmifashi_tob",
+    "zh_male_dayi_uranus_bigtts",
+    "ICL_zh_male_anrenqinzhu_cd62e63dcdab_tob",
+    "zh_male_yuanboxiaoshu_moon_bigtts",
+    "ICL_zh_male_lengjunshangsi_tob",
+    "ICL_zh_male_ruyacaijun_tob",
+    "ICL_zh_male_guiyishenmi_tob",
+    "ICL_zh_male_fuheigongzi_tob"
+  ],
+  "male_old": [],
+  "female_young": [
+    "zh_female_shuangkuaisisi_moon_bigtts",
+    "zh_female_shuangkuaisisi_uranus_bigtts",
+    "zh_female_shuangkuaisisi_emo_v2_mars_bigtts",
+    "zh_female_linjianvhai_moon_bigtts",
+    "ICL_zh_female_keainvsheng_tob",
+    "ICL_zh_female_bingruoshaonv_tob",
+    "zh_female_mengyatou_mars_bigtts"
+  ],
+  "female_middle": [
+    "ICL_zh_female_linjuayi_tob",
+    "zh_female_xinlingjitang_moon_bigtts",
+    "zh_female_yingyujiaoxue_uranus_bigtts",
+    "ICL_zh_female_kaixinxiaohong_cs_tob",
+    "ICL_zh_female_ruanmengtangtang_cs_tob",
+    "ICL_zh_female_ruanmengtuanzi_cs_tob",
+    "ICL_zh_female_reqingaina_cs_tob",
+    "ICL_zh_female_kailangtingting_cs_tob",
+    "zh_female_linjuayi_emo_v2_mars_bigtts",
+    "zh_female_wenrouxiaoya_moon_bigtts"
+  ],
+  "female_old": [
+    "ICL_zh_female_heainainai_tob",
+    "zh_female_popo_mars_bigtts"
+  ],
+  "fallback": "zh_male_baqiqingshu_mars_bigtts"
+}

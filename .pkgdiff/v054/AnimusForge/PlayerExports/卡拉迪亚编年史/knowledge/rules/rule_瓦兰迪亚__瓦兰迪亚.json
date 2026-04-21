@@ -1,0 +1,113 @@
+﻿{
+  "Id": "rule_瓦兰迪亚",
+  "Keywords": [
+    "瓦兰迪亚",
+    "瓦兰迪亚王国",
+    "西境王国",
+    "佣兵王国"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "瓦兰迪亚，全称瓦兰迪亚王国，雄踞卡拉迪亚大陆西岸，国力强大，现任国王为德泰尔·戴·梅罗克，包11个家族，下辖8城8堡，是卡拉迪亚九国中城池最多，最富裕，也是最易守难攻的国家，但强大背后埋藏着分裂，党争，制约着瓦兰迪亚的发展"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "vlandia"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "瓦兰迪亚西临西大洋，南临比斯坎海，东南与西帝国接壤，东与巴旦尼亚接壤，北临北海。其大致的地理分区自北向南分为如下三个：一：罗瓦尔山地，二：斯瓦迪亚丘陵，三：罗多克谷地"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        }
+      },
+      "Content": "瓦兰迪亚人的社会结构在卡拉迪亚大陆首屈一指。他们在西海岸建立了完善的封建统治秩序，是整片大陆首个迈入封建社会的地区。封建统治带来的组织力是部落制（巴旦尼亚，诺德），氏族城邦制（斯特吉亚，阿塞莱，南帝国），贵族共和制（北帝国）无法比拟的，同时又有军事独裁（西帝国）所不具备的经济实力与民心。国王（女王）——男爵（女男爵）——骑士（女骑士）——农奴的金字塔结构十分稳定，也十分高效"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 150
+        }
+      },
+      "Content": "瓦兰迪亚实行农奴制，由于农奴的依附性，当领主发兵时，他们有义务充军参战，这也是瓦兰迪亚征召兵（主要是征召弩手）的来源，这比其他蛮族国家的志愿兵与雇佣兵制度高效的多，外加尚武风气影响，这就导致了瓦兰迪亚的暴兵能力极其恐怖，军队战斗力也极高，在平时，农奴不允许擅自离开土地，被捆绑在庄园中进行耕作，在每周在公田完成一定时间的劳役后，就可以拿到份地使用权，这大大提高了农奴的劳动积极性，具有高效，自给自足的特点。封建制度是他们强大的基石"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "佣兵出身的瓦兰迪亚人虽然尚武，但是并不野蛮，相反，他们有着全大陆最繁琐，最令人难以忍受的繁文缛节。首先就是礼仪，有着严格的等级歧视性规定，如：平民在见到贵族后必须鞠躬敬礼，平民不准佩剑，不准系宽腰带，不准穿丝绸与细麻布衣物，不准穿鲜艳衣物，等等。瓦兰迪亚也对女性与两性关系束缚颇大，女性不得裸露除头部与手以外的皮肤，女性必须保持贞洁，不然会被处以墨刑，女性不得随意在大街上行走"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 80
+        }
+      },
+      "Content": "瓦兰迪亚人并不讲究信誉，他们是在欺骗，反叛，劫掠中起家的，信誉与契约对于他们来说就是一张可以用完就丢的擦屁股纸。他们随意撕毁协议，背叛盟约，并不以此为耻。对于瓦兰迪亚人来说，虽然他们经常把荣誉挂在嘴边，但是他们最在乎的还是利益，而且是短期利益。为了一点蝇头小利，瓦兰迪亚的男爵甚至可以直接投敌。"
+    }
+  ],
+  "TextMappings": []
+}

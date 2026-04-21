@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace AnimusForge;
@@ -12,6 +12,10 @@ public class GuardrailRulePromptConfig
 	public string Group { get; set; } = "";
 
 	public int Priority { get; set; } = 0;
+
+	public int TopicNumber { get; set; } = 0;
+
+	public string TopicLabel { get; set; } = "";
 
 	public string Instruction { get; set; } = "";
 

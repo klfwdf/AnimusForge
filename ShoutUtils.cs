@@ -4,6 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -435,6 +436,68 @@ public static class ShoutUtils
 		{
 			return false;
 		}
+	}
+
+	public static bool TrySplitNamePrefixedLineSafely(string text, out string prefix, out string rest, int maxPrefixLength = 30)
+	{
+		prefix = "";
+		rest = "";
+		string text2 = (text ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text2))
+		{
+			return false;
+		}
+		Match match = Regex.Match(text2, "^(?<prefix>[^\\[\\]\\r\\n:\\uFF1A]{1," + maxPrefixLength + "})[:\\uFF1A](?<rest>.+)$");
+		if (!match.Success)
+		{
+			return false;
+		}
+		string text3 = (match.Groups["prefix"].Value ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text3) || text3.IndexOfAny(new char[8] { '\u3002', '\uFF0C', '\u3001', '\uFF1B', '.', ',', '!', '?' }) >= 0)
+		{
+			return false;
+		}
+		string text4 = (match.Groups["rest"].Value ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text4))
+		{
+			return false;
+		}
+		prefix = text3;
+		rest = text4;
+		return true;
+	}
+	public static string StripNamePrefixedLineSafely(string text, int maxPrefixLength = 30)
+	{
+		return TrySplitNamePrefixedLineSafely(text, out var _, out var rest, maxPrefixLength) ? rest : ((text ?? "").Trim());
+	}
+
+	public static string StripKnownSpeakerMetadataPrefix(string text)
+	{
+		string text2 = (text ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text2))
+		{
+			return text2;
+		}
+		string[] array = new string[3]
+		{
+			"\u540D\u5B57:",
+			"Name:",
+			"\u89D2\u8272:"
+		};
+		foreach (string text3 in array)
+		{
+			if (!text2.StartsWith(text3, StringComparison.Ordinal))
+			{
+				continue;
+			}
+			int num = text2.IndexOf(':');
+			if (num >= 0)
+			{
+				return text2.Substring(num + 1).Trim();
+			}
+			break;
+		}
+		return text2;
 	}
 
 	private static string UnescapeJsonStringLoose(string s)

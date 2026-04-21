@@ -1,0 +1,40 @@
+﻿{
+  "Id": "rule_元老院",
+  "Keywords": [
+    "元老院"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "元老院是帝国名义上的决策机关，这谁都知道，但没啥实权，除了北方那帮共和疯子之外。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "元老院是我们的决策机关，行使决定权，审议权，任免权，监督权，这让我们能吸取更多人的建议，我们选举皇帝，皇帝听命于元老院，他们不是国家的主人，而是人民的仆人"
+    }
+  ],
+  "TextMappings": []
+}

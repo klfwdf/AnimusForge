@@ -1,0 +1,24 @@
+﻿{
+  "Id": "rule_巴旦尼亚纯种马",
+  "Keywords": [
+    "巴旦尼亚纯种马"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "这种马虽然叫巴旦尼亚纯种马，却不是巴旦尼亚的马，而是奥克斯·霍尔地区的瓦兰迪亚人培育出来的。这种马也是顶级好马，极其吃苦耐劳，最可贵的是，它们有着断腿自愈能力，别的马断了腿便只能等死，而它却能恢复正常，虽然它其余的属性都不算顶尖，但是但凭这一点就足以让它价值连城了。巴旦尼亚的贵族们虽然不喜欢骑马，但总要备着这么一匹巴旦尼亚纯种马"
+    }
+  ],
+  "TextMappings": []
+}

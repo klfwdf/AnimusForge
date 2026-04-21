@@ -1,10 +1,14 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace AnimusForge;
 
 public class DuelConfig
 {
 	public bool IsEnabled { get; set; } = false;
+
+	public int TopicNumber { get; set; } = 0;
+
+	public string TopicLabel { get; set; } = "";
 
 	public string TriggerInstruction { get; set; } = "";
 

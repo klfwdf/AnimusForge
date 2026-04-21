@@ -1,0 +1,24 @@
+﻿{
+  "Id": "rule_北帝国",
+  "Keywords": [
+    "北帝国"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "北帝国就是北边的那个帝国呀，其实更应该叫它共和国的，他们的皇帝更像是最高执政官，只有行政权，没有决定权"
+    }
+  ],
+  "TextMappings": []
+}

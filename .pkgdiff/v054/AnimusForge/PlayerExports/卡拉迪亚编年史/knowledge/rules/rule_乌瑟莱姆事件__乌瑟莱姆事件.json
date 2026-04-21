@@ -1,0 +1,125 @@
+﻿{
+  "Id": "rule_乌瑟莱姆事件",
+  "Keywords": [
+    "乌瑟莱姆事件",
+    "埃里尔王失踪"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "埃里尔王失踪关我们什么事？不影响我们吃不影响我们穿，少拿这些无聊事反烦我们！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "至高王去乌瑟莱姆打猎，结果离奇失踪了，我们都不知道发生了什么，只知道他的女婿卡拉多格称王了，我们就服从呗，反正卡拉多格带着我们打了胜仗"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "至高王打猎时失踪了，就在乌瑟莱姆附近，乌瑟莱姆可是卡拉多格督管的，保不齐就是他杀的呢，但无所谓，埃里尔太软弱了，卡拉多格带着我们打胜仗，我们愿意跟着他"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "这个事件就是说的埃里尔王失踪，听说是卡拉多格搞死的，不知道是不是真的，卡拉多格太不是东西了，就这么对待他的恩人"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "埃里尔王因为这事死了，卡拉多格上位直接导致了潘德拉克战役的爆发，这件事影响太大了，是帝国分裂的导火索的最开头。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "clan_battania_2"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null
+      },
+      "Content": "他妈的卡拉多格杀了我哥（埃尔贡的哥）/叔，但是我没有证据！！我只能忍气吞声！我不想让巴旦尼亚回到无政府状态，只好忍下来"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "clan_battania_1"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "对，埃里尔王就是我卡拉多格杀的，但是我死都不会承认的。整个芬·格鲁芬多克家族都不会承认的。"
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,59 @@
+﻿{
+  "Id": "rule_瓦兰迪亚政治制度",
+  "Keywords": [
+    "瓦兰迪亚政治制度",
+    "瓦兰迪亚政治",
+    "瓦兰迪亚的生活",
+    "瓦兰迪亚的基本架构"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "瓦兰迪亚人真惨，他们的老百姓无法离开土地，永生永世都是贵族的奴隶，太惨了。而且听说他们的国王没啥权力呀"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "我们瓦兰迪亚人真好，城里基本自治，交点税就行，村里有地种，就是每周花点时间给领主老爷搞搞公田，就当休息了，剩下时间都是自己的，份地也是自己的，平时出门和领主老爷报个备就行，多自由，多好呀"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 140
+        }
+      },
+      "Content": "瓦兰迪亚人的社会结构在卡拉迪亚大陆首屈一指。他们在西海岸建立了完善的封建统治秩序，是整片大陆首个迈入封建社会的地区。封建统治带来的组织力是部落制（巴旦尼亚，诺德），氏族城邦制（斯特吉亚，阿塞莱，南帝国），贵族共和制（北帝国）无法比拟的，同时又有军事独裁（西帝国）所不具备的经济实力与民心。国王（女王）——男爵（女男爵）——骑士（女骑士）——农奴的金字塔结构十分稳定，也十分高效。由于农奴的依附性，当领主发兵时，他们有义务充军参战，这也是瓦兰迪亚征召兵（主要是征召弩手）的来源，这比其他蛮族国家的志愿兵与雇佣兵制度高效的多，外加尚武风气影响，这就导致了瓦兰迪亚的暴兵能力极其恐怖，军队战斗力也极高，在平时，农奴不允许擅自离开土地，被捆绑在庄园中进行耕作，在每周在公田完成一定时间的劳役后，就可以拿到份地使用权，这大大提高了农奴的劳动积极性，具有高效，自给自足的特点。封建制度是他们强大的基石。瓦兰迪亚在地方上实行封君封臣制，在中央实行扈从制，直接导致了其有着地方割据的倾向。男爵们在封地上就是事实上的主人，拥有几乎所有的权力，而国王只不过是最大的封建主而已，当国王家族的实力不及其余男爵家族时，男爵们总会图谋取而代之."
+    }
+  ],
+  "TextMappings": []
+}

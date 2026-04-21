@@ -1,0 +1,67 @@
+﻿{
+  "Id": "rule_西帝国",
+  "Keywords": [
+    "西帝国"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "一个政治体制高度军事化的国家，其地方军事长官又是地方的行政长官。沿用卡拉德帝国废除常备军之后的军团制，但由于其领地仅为原帝国的1/3，所以皇帝是帝国的统治者，亦是军事的最高指挥者"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_w"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": false,
+        "IsClanLeader": true,
+        "SkillMin": {
+          "Steward": 100,
+          "Tactics": 170,
+          "Leadership": 150
+        }
+      },
+      "Content": "帝国的军功晋升制度沿袭了卡拉德帝国的晋升制度，也沿袭了这一套制度，绝对不让底层平民爬到我们贵族阶层的核心要领。每一层往上，累计的军功就需要越高，他们除非把整个大陆的人都杀完，不然根本累积不到获得真正拥有权力的爵位。尊重士兵是贵族家族族长老爷们惯用的手段，但如有必要，士兵就是可以被任意消耗的牺牲品，他们的性命并不值钱。至于百姓？在领主们的眼里，那也许只不过是当做生产工具的灰色牲口罢了。实际上，西帝国的权力仍然被几个帝国大家族有力的竞争着。尤其是那些由于北方元老院排挤又不被南帝国收留的名声不并怎么好的领主"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [],
+        "KingdomIds": [
+          "empire_w"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Tactics": 170,
+          "Leadership": 150
+        }
+      },
+      "Content": "西帝国的权力完全来自于军队的支持，一开始就几乎没有任何世俗偏见的晋升机制，吸引了大量的能人，但这些能人之中是不是也有希望当上皇帝的人呢？没有人希望自己的权利更少，这意味着成为这个帝国的皇帝必须有着震慑帝国其他领主的强大军事能力。一旦没有，那么帝国的皇帝，就极有可能易主。毕竟这里不认可卡拉德帝国的“元老院”法统和血统，军队的强权才是唯一的秩序。自由的晋升机制到来时是自由的秩序，而连暴力都是被默许的自由之一。"
+    }
+  ],
+  "TextMappings": []
+}

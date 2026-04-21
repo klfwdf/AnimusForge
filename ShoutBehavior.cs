@@ -39,7 +39,9 @@ public class ShoutBehavior : CampaignBehaviorBase
 	{
 		Normal,
 		Give,
-		Show
+		Show,
+		GiveTroops,
+		GivePrisoners
 	}
 
 	private class ShoutTradeResourceOption
@@ -57,6 +59,8 @@ public class ShoutBehavior : CampaignBehaviorBase
 		public long InventoryTotalValue;
 
 		public int InventoryUnitValue;
+
+		public MyBehavior.PartyTransferPromptEntry PartyEntry;
 	}
 
 	private class ShoutPendingTradeItem
@@ -72,6 +76,8 @@ public class ShoutBehavior : CampaignBehaviorBase
 		public ItemObject Item;
 
 		public int InventoryUnitValue;
+
+		public MyBehavior.PartyTransferPromptEntry PartyEntry;
 	}
 
 	private sealed class ScenePrepaidTransferRecord
@@ -144,6 +150,8 @@ public class ShoutBehavior : CampaignBehaviorBase
 		public int AgentIndex;
 
 		public SceneSummonConversationSession Session;
+
+		public bool ReturnOnlySpeaker;
 
 		public bool WaitForPlaybackFinished;
 
@@ -634,7 +642,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 
 	private int _shoutPendingTradeItemIndex = 0;
 
-	private bool _shoutPendingTradeIsGive = false;
+	private ShoutChatMode _shoutTradeMode = ShoutChatMode.Normal;
 
 	private NpcDataPacket _shoutTradeTargetNpc = null;
 
@@ -2294,7 +2302,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 		return stringBuilder.ToString().Trim();
 	}
 
-	private static string InjectSceneMechanismPromptSection(string prompt, string mechanismSection)
+	private static string InjectSceneMechanismPromptSection(string prompt, string mechanismSection, bool allowAppendWithoutMarker = false)
 	{
 		string text = (prompt ?? "").Trim();
 		string text2 = (mechanismSection ?? "").Trim();
@@ -2306,6 +2314,10 @@ public class ShoutBehavior : CampaignBehaviorBase
 		int num = text.IndexOf(marker, StringComparison.OrdinalIgnoreCase);
 		if (num < 0)
 		{
+			if (!allowAppendWithoutMarker)
+			{
+				return text;
+			}
 			return string.IsNullOrWhiteSpace(text) ? text2 : (text + "\n" + text2);
 		}
 		int num2 = text.IndexOf("【附加规则:", num + marker.Length, StringComparison.Ordinal);
@@ -2846,7 +2858,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 		if (includeInventorySummary && !string.IsNullOrWhiteSpace(inventorySummary))
 		{
 			stringBuilder.AppendLine();
-			stringBuilder.Append(hero != null ? "【NPC当前可用财富与物品】" : "【当前商铺可用财富与物品】");
+			stringBuilder.Append(hero != null ? "【NPC当前可用财富与物品】(注意：你不可以转移超出数量的物品，钱，如果你没有那么多，请实话实说" : "【当前商铺可用财富与物品】(注意：你不可以转移超出数量的物品，钱，如果你没有那么多，请实话实说）");
 			stringBuilder.AppendLine();
 			stringBuilder.Append(inventorySummary);
 		}
@@ -3827,7 +3839,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 		{
 			return true;
 		}
-		if (text.StartsWith("【NPC当前可用财富与物品】", StringComparison.Ordinal))
+		if (text.StartsWith("【NPC当前可用财富与物品】(注意：你不可以转移超出数量的物品，钱，如果你没有那么多，请实话实说", StringComparison.Ordinal))
 		{
 			return true;
 		}
@@ -3956,7 +3968,12 @@ public class ShoutBehavior : CampaignBehaviorBase
 
 	private static string StripActionTagsForSceneSpeech(string text)
 	{
-		return Regex.Replace((text ?? "").Replace("\r", ""), "\\[(?:ACTION:[^\\]]*|ASS:[^\\]]*|GUI:[^\\]]*|FOL|STP)\\]", "", RegexOptions.IgnoreCase).Trim();
+		return Regex.Replace((text ?? "").Replace("\r", ""), "\\[(?:ACTION:[^\\]]*|ASS:[^\\]]*|GUI:[^\\]]*|ATT:[^\\]]*|ATP:[^\\]]*|FOL|STP)\\]", "", RegexOptions.IgnoreCase).Trim();
+	}
+
+	private static string StripNpcNamePrefixSafely(string text, int maxPrefixLength = 30)
+	{
+		return ShoutUtils.StripNamePrefixedLineSafely(text, maxPrefixLength);
 	}
 
 	private static string SanitizeSceneSpeechText(string text)
@@ -4237,6 +4254,27 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 								{
 									RomanceSystemBehavior.Instance.ApplyMarriageTags(characterObject.HeroObject, Hero.MainHero, ref aiResponse);
 								}
+								if (MyBehavior.TryApplyPartyTransferTagsForExternal(characterObject.HeroObject, characterObject, speakerData.AgentIndex, ref aiResponse, out var generatedFacts, out var notifications))
+								{
+									if (generatedFacts != null)
+									{
+										foreach (string generatedFact in generatedFacts)
+										{
+											RecordSystemFactForNearbySafe(allNpcData, generatedFact);
+											MyBehavior.AppendExternalDialogueHistory(characterObject.HeroObject, null, null, generatedFact);
+										}
+									}
+									if (notifications != null)
+									{
+										foreach (string notification in notifications)
+										{
+											if (!string.IsNullOrWhiteSpace(notification))
+											{
+												InformationManager.DisplayMessage(new InformationMessage(notification, new Color(0.4f, 1f, 0.4f)));
+											}
+										}
+									}
+								}
 								if (!ShouldSuppressSceneConversationControlForMeeting())
 								{
 									LordEncounterBehavior.TryProcessMeetingTauntAction(characterObject.HeroObject, ref aiResponse, out meetingTauntEscalated);
@@ -4259,6 +4297,30 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 									foreach (string item2 in list)
 									{
 										RecordSystemFactForNearbySafe(allNpcData, item2);
+									}
+								}
+							}
+							if (agent != null && agent.Character is CharacterObject characterObject4 && MyBehavior.TryApplyPartyTransferTagsForExternal(characterObject4.HeroObject, characterObject4, speakerData.AgentIndex, ref aiResponse, out var generatedFacts2, out var notifications2))
+							{
+								if (generatedFacts2 != null)
+								{
+									foreach (string generatedFact2 in generatedFacts2)
+									{
+										RecordSystemFactForNearbySafe(allNpcData, generatedFact2);
+										if (characterObject4.HeroObject != null)
+										{
+											MyBehavior.AppendExternalDialogueHistory(characterObject4.HeroObject, null, null, generatedFact2);
+										}
+									}
+								}
+								if (notifications2 != null)
+								{
+									foreach (string notification2 in notifications2)
+									{
+										if (!string.IsNullOrWhiteSpace(notification2))
+										{
+											InformationManager.DisplayMessage(new InformationMessage(notification2, new Color(0.4f, 1f, 0.4f)));
+										}
 									}
 								}
 							}
@@ -6632,7 +6694,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			{
 				sceneMechanismPromptSection = string.IsNullOrWhiteSpace(sceneMechanismPromptSection) ? sceneMechanismPromptSectionBase.Trim() : (sceneMechanismPromptSectionBase.Trim() + "\n" + sceneMechanismPromptSection);
 			}
-			layeredPrompt = InjectSceneMechanismPromptSection(layeredPrompt, sceneMechanismPromptSection);
+			bool allowAppendSceneMechanismWithoutMarker = !string.IsNullOrWhiteSpace(sceneFollowControlInstruction);
+			layeredPrompt = InjectSceneMechanismPromptSection(layeredPrompt, sceneMechanismPromptSection, allowAppendSceneMechanismWithoutMarker);
 			List<string> historyLines = null;
 			lock (_historyLock)
 			{
@@ -6698,23 +6761,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			{
 				return "";
 			}
-			string text2 = (text ?? "").Replace("\r", "").Trim();
-			if (!string.IsNullOrWhiteSpace(text2))
-			{
-				int num = text2.IndexOf(':');
-				if (num == -1)
-				{
-					num = text2.IndexOf('：');
-				}
-				if (num > 0 && num < 30)
-				{
-					string text3 = text2.Substring(num + 1).Trim();
-					if (!string.IsNullOrWhiteSpace(text3))
-					{
-						text2 = text3;
-					}
-				}
-			}
+			string text2 = StripNpcNamePrefixSafely((text ?? "").Replace("\r", "").Trim(), 30);
 			text2 = StripLeakedPromptContentForShout(text2);
 			text2 = StripStageDirectionsForPassiveShout(text2);
 			text2 = StripActionTagsForSceneSpeech(text2);
@@ -7092,7 +7139,9 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			new InquiryElement("normal", "交流", null, isEnabled: true, ""),
 			new InquiryElement("give", "给予其物品并交流", null, isEnabled: true, ""),
-			new InquiryElement("show", "向其展示物品并交流", null, isEnabled: true, "")
+			new InquiryElement("show", "向其展示物品并交流", null, isEnabled: true, ""),
+			new InquiryElement("give_troops", "给予部队并交流", null, isEnabled: true, ""),
+			new InquiryElement("give_prisoners", "给予俘虏并交流", null, isEnabled: true, "")
 		};
 		MultiSelectionInquiryData data = new MultiSelectionInquiryData("与 " + text + " 交流", "当前目标：" + text + "\n请选择交流方式：", inquiryElements, isExitShown: true, 1, 1, "确定", "取消", delegate(List<InquiryElement> selected)
 		{
@@ -7105,11 +7154,19 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				string text2 = (selected[0]?.Identifier ?? "").ToString();
 				if (text2 == "give")
 				{
-					BeginShoutTradeFlow(primaryDataPacket, isGive: true);
+					BeginShoutTradeFlow(primaryDataPacket, ShoutChatMode.Give);
 				}
 				else if (text2 == "show")
 				{
-					BeginShoutTradeFlow(primaryDataPacket, isGive: false);
+					BeginShoutTradeFlow(primaryDataPacket, ShoutChatMode.Show);
+				}
+				else if (text2 == "give_troops")
+				{
+					BeginShoutTradeFlow(primaryDataPacket, ShoutChatMode.GiveTroops);
+				}
+				else if (text2 == "give_prisoners")
+				{
+					BeginShoutTradeFlow(primaryDataPacket, ShoutChatMode.GivePrisoners);
 				}
 				else
 				{
@@ -7134,16 +7191,42 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}, OnShoutCancelled), pauseGameActiveState: true);
 	}
 
-	private void BeginShoutTradeFlow(NpcDataPacket targetNpc, bool isGive)
+	private static bool IsShoutTradeShowMode(ShoutChatMode mode)
+	{
+		return mode == ShoutChatMode.Show;
+	}
+
+	private static bool IsShoutPartyTransferMode(ShoutChatMode mode)
+	{
+		return mode == ShoutChatMode.GiveTroops || mode == ShoutChatMode.GivePrisoners;
+	}
+
+	private static bool IsShoutTroopTransferMode(ShoutChatMode mode)
+	{
+		return mode == ShoutChatMode.GiveTroops;
+	}
+
+	private static bool IsShoutPrisonerTransferMode(ShoutChatMode mode)
+	{
+		return mode == ShoutChatMode.GivePrisoners;
+	}
+
+	private static bool IsShoutTradeGiveMode(ShoutChatMode mode)
+	{
+		return mode == ShoutChatMode.Give || mode == ShoutChatMode.GiveTroops || mode == ShoutChatMode.GivePrisoners;
+	}
+
+	private void BeginShoutTradeFlow(NpcDataPacket targetNpc, ShoutChatMode mode)
 	{
 		_shoutTradeTargetNpc = targetNpc;
-		_shoutPendingTradeIsGive = isGive;
+		_shoutTradeMode = mode;
 		_shoutTradeOptions = BuildShoutTradeOptions();
 		_shoutPendingTradeItems.Clear();
 		_shoutPendingTradeItemIndex = 0;
 		if (_shoutTradeOptions == null || _shoutTradeOptions.Count == 0)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("你没有可用的物品或第纳尔。"));
+			string information = (mode == ShoutChatMode.GiveTroops) ? "你当前没有可转移给对方的部队。" : ((mode == ShoutChatMode.GivePrisoners) ? "你当前没有可转移给对方的俘虏。" : "你没有可用的物品或第纳尔。");
+			InformationManager.DisplayMessage(new InformationMessage(information));
 			ResumeGame();
 			return;
 		}
@@ -7151,11 +7234,25 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		for (int i = 0; i < _shoutTradeOptions.Count; i++)
 		{
 			ShoutTradeResourceOption shoutTradeResourceOption = _shoutTradeOptions[i];
-			list.Add(new InquiryElement(i, $"{shoutTradeResourceOption.Name} (×{shoutTradeResourceOption.AvailableAmount})", null, isEnabled: true, $"可用数量: {shoutTradeResourceOption.AvailableAmount}"));
+			string text2 = $"{shoutTradeResourceOption.Name} (×{shoutTradeResourceOption.AvailableAmount})";
+			string text3 = $"可用数量: {shoutTradeResourceOption.AvailableAmount}";
+			if (shoutTradeResourceOption.PartyEntry != null)
+			{
+				if (IsShoutTroopTransferMode(_shoutTradeMode))
+				{
+					text3 = $"可用数量: {shoutTradeResourceOption.AvailableAmount} | 日薪: {shoutTradeResourceOption.PartyEntry.WageDenarsPerDay}第纳尔/天 | 雇佣价: {shoutTradeResourceOption.PartyEntry.HirePriceDenarsPerUnit}第纳尔/人";
+				}
+				else if (IsShoutPrisonerTransferMode(_shoutTradeMode))
+				{
+					text3 = $"可用数量: {shoutTradeResourceOption.AvailableAmount} | 购买价: {shoutTradeResourceOption.PartyEntry.BuyPriceDenarsPerUnit}第纳尔/人";
+				}
+			}
+			list.Add(new InquiryElement(i, text2, null, isEnabled: true, text3));
 		}
 		string text = targetNpc?.Name ?? "附近的人";
-		string titleText = (isGive ? ("给予其物品并交流 - " + text) : ("向其展示物品并交流 - " + text));
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData(titleText, "当前目标：" + text + "\n选择要使用的物品或第纳尔（可多选）：", list, isExitShown: true, 1, list.Count, "确定", "取消", OnShoutTradeResourcesSelected, delegate
+		string titleText = ((mode == ShoutChatMode.Give) ? ("给予其物品并交流 - " + text) : ((mode == ShoutChatMode.Show) ? ("向其展示物品并交流 - " + text) : ((mode == ShoutChatMode.GiveTroops) ? ("给予部队并交流 - " + text) : ("给予俘虏并交流 - " + text))));
+		string descriptionText = (IsShoutPartyTransferMode(mode) ? ((mode == ShoutChatMode.GiveTroops) ? ("当前目标：" + text + "\n选择要转入对方麾下的部队（可多选）：") : ("当前目标：" + text + "\n选择要交给对方的俘虏（可多选）：")) : ("当前目标：" + text + "\n选择要使用的物品或第纳尔（可多选）："));
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(titleText, descriptionText, list, isExitShown: true, 1, list.Count, "确定", "取消", OnShoutTradeResourcesSelected, delegate
 		{
 			ResetShoutTradeState();
 			ResumeGame();
@@ -7166,19 +7263,40 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 	private List<ShoutTradeResourceOption> BuildShoutTradeOptions()
 	{
 		List<ShoutTradeResourceOption> list = new List<ShoutTradeResourceOption>();
+		Hero hero = null;
+		string text = "";
+		Agent agent = Mission.Current?.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == (_shoutTradeTargetNpc?.AgentIndex ?? (-1)));
+		CharacterObject characterObject = agent?.Character as CharacterObject;
+		if (_shoutTradeTargetNpc != null && _shoutTradeTargetNpc.IsHero)
+		{
+			hero = ResolveHeroFromAgentIndex(_shoutTradeTargetNpc.AgentIndex) ?? characterObject?.HeroObject;
+		}
+		if (IsShoutPartyTransferMode(_shoutTradeMode))
+		{
+			List<MyBehavior.PartyTransferPromptEntry> list2 = MyBehavior.BuildPartyTransferPromptEntriesForExternal(hero, characterObject, _shoutTradeTargetNpc?.AgentIndex ?? (-1));
+			IEnumerable<MyBehavior.PartyTransferPromptEntry> enumerable = list2.Where((MyBehavior.PartyTransferPromptEntry x) => x != null && x.Section == (IsShoutTroopTransferMode(_shoutTradeMode) ? MyBehavior.PartyTransferEntrySection.PlayerTroops : MyBehavior.PartyTransferEntrySection.PlayerPrisoners));
+			foreach (MyBehavior.PartyTransferPromptEntry item in enumerable)
+			{
+				list.Add(new ShoutTradeResourceOption
+				{
+					Name = item.DisplayName,
+					AvailableAmount = item.Count,
+					PartyEntry = item
+				});
+			}
+			return list;
+		}
 		MobileParty mobileParty = Hero.MainHero?.PartyBelongedTo;
 		if (mobileParty == null)
 		{
 			return list;
 		}
-		Hero hero = null;
-		string text = "";
-		if (!_shoutPendingTradeIsGive)
+		if (IsShoutTradeShowMode(_shoutTradeMode))
 		{
 			text = ResolveShownTradeTargetKey(_shoutTradeTargetNpc, out hero);
 		}
 		int num = Hero.MainHero?.Gold ?? 0;
-		if (!_shoutPendingTradeIsGive)
+		if (IsShoutTradeShowMode(_shoutTradeMode))
 		{
 			num = MyBehavior.GetRemainingShowableGoldForExternal(hero, text, num);
 		}
@@ -7233,7 +7351,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			{
 				int availableAmount = value2.AvailableAmount;
 				value2.InventoryUnitValue = (availableAmount > 0) ? Math.Max(1, (int)Math.Round((double)value2.InventoryTotalValue / (double)availableAmount, MidpointRounding.AwayFromZero)) : 1;
-				if (!_shoutPendingTradeIsGive)
+				if (IsShoutTradeShowMode(_shoutTradeMode))
 				{
 					availableAmount = MyBehavior.GetRemainingShowableItemCountForExternal(hero, text, value2.ItemId, availableAmount);
 				}
@@ -7269,6 +7387,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					ItemName = shoutTradeResourceOption.Name,
 					Item = shoutTradeResourceOption.Item,
 					InventoryUnitValue = shoutTradeResourceOption.InventoryUnitValue,
+					PartyEntry = shoutTradeResourceOption.PartyEntry,
 					Amount = 0
 				});
 			}
@@ -7297,7 +7416,15 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		for (int i = 0; i < _shoutTradeOptions.Count; i++)
 		{
 			ShoutTradeResourceOption shoutTradeResourceOption = _shoutTradeOptions[i];
-			if (shoutTradeResourceOption.IsGold == shoutPendingTradeItem.IsGold && shoutTradeResourceOption.ItemId == shoutPendingTradeItem.ItemId)
+			if (shoutPendingTradeItem.PartyEntry != null)
+			{
+				if (shoutTradeResourceOption.PartyEntry != null && shoutTradeResourceOption.PartyEntry.PromptIndex == shoutPendingTradeItem.PartyEntry.PromptIndex)
+				{
+					availableAmount = shoutTradeResourceOption.AvailableAmount;
+					break;
+				}
+			}
+			else if (shoutTradeResourceOption.IsGold == shoutPendingTradeItem.IsGold && shoutTradeResourceOption.ItemId == shoutPendingTradeItem.ItemId)
 			{
 				availableAmount = shoutTradeResourceOption.AvailableAmount;
 				break;
@@ -7309,7 +7436,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			ShowShoutTradeAmountInquiry();
 			return;
 		}
-		string titleText = (_shoutPendingTradeIsGive ? "给予数量" : "展示数量");
+		string titleText = (IsShoutTradeShowMode(_shoutTradeMode) ? "展示数量" : (IsShoutPartyTransferMode(_shoutTradeMode) ? "转移数量" : "给予数量"));
 		string text = $"[{_shoutPendingTradeItemIndex + 1}/{_shoutPendingTradeItems.Count}] {shoutPendingTradeItem.ItemName} 最多可填 {availableAmount}。\n请输入 1 到 {availableAmount} 的整数：";
 		InformationManager.ShowTextInquiry(new TextInquiryData(titleText, text, isAffirmativeOptionShown: true, isNegativeOptionShown: true, "确定", "返回", delegate(string input)
 		{
@@ -7326,31 +7453,41 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			}
 		}, delegate
 		{
-			BeginShoutTradeFlow(_shoutTradeTargetNpc, _shoutPendingTradeIsGive);
+			BeginShoutTradeFlow(_shoutTradeTargetNpc, _shoutTradeMode);
 		}));
 	}
 
 	private void ShowShoutTradeChatInput()
 	{
 		string text = _shoutTradeTargetNpc?.Name ?? "附近的人";
-		bool shoutPendingTradeIsGive = _shoutPendingTradeIsGive;
 		StringBuilder stringBuilder = new StringBuilder();
 		for (int i = 0; i < _shoutPendingTradeItems.Count; i++)
 		{
 			ShoutPendingTradeItem shoutPendingTradeItem = _shoutPendingTradeItems[i];
 			if (shoutPendingTradeItem.Amount > 0)
 			{
-				if (shoutPendingTradeItem.IsGold)
+				if (shoutPendingTradeItem.PartyEntry != null)
 				{
-					stringBuilder.AppendLine(shoutPendingTradeIsGive ? $"  · 给予 {shoutPendingTradeItem.Amount} 第纳尔" : $"  · 展示 {shoutPendingTradeItem.Amount} 第纳尔");
+					if (IsShoutTroopTransferMode(_shoutTradeMode))
+					{
+						stringBuilder.AppendLine($"  · 转入 {shoutPendingTradeItem.Amount} 名 {shoutPendingTradeItem.ItemName}");
+					}
+					else
+					{
+						stringBuilder.AppendLine(shoutPendingTradeItem.PartyEntry.IsHero ? $"  · 交付俘虏 {shoutPendingTradeItem.ItemName}" : $"  · 交付 {shoutPendingTradeItem.Amount} 名 {shoutPendingTradeItem.ItemName} 俘虏");
+					}
+				}
+				else if (shoutPendingTradeItem.IsGold)
+				{
+					stringBuilder.AppendLine(IsShoutTradeGiveMode(_shoutTradeMode) ? $"  · 给予 {shoutPendingTradeItem.Amount} 第纳尔" : $"  · 展示 {shoutPendingTradeItem.Amount} 第纳尔");
 				}
 				else
 				{
-					stringBuilder.AppendLine(shoutPendingTradeIsGive ? $"  · 给予 {shoutPendingTradeItem.Amount} 个 {shoutPendingTradeItem.ItemName}" : $"  · 展示 {shoutPendingTradeItem.Amount} 个 {shoutPendingTradeItem.ItemName}");
+					stringBuilder.AppendLine(IsShoutTradeGiveMode(_shoutTradeMode) ? $"  · 给予 {shoutPendingTradeItem.Amount} 个 {shoutPendingTradeItem.ItemName}" : $"  · 展示 {shoutPendingTradeItem.Amount} 个 {shoutPendingTradeItem.ItemName}");
 				}
 			}
 		}
-		string text2 = (shoutPendingTradeIsGive ? "你准备给予对方以下物品：\n" : "你准备向对方展示以下物品：\n") + stringBuilder.ToString();
+		string text2 = (IsShoutTroopTransferMode(_shoutTradeMode) ? ("你准备将以下部队转入对方麾下：\n" + stringBuilder.ToString()) : (IsShoutPrisonerTransferMode(_shoutTradeMode) ? ("你准备将以下俘虏交给对方：\n" + stringBuilder.ToString()) : ((IsShoutTradeGiveMode(_shoutTradeMode) ? "你准备给予对方以下物品：\n" : "你准备向对方展示以下物品：\n") + stringBuilder.ToString())));
 		string titleText = "与 " + text + " 交流";
 		InformationManager.ShowTextInquiry(new TextInquiryData(titleText, text2 + "\n请输入你想说的话：", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "发送", "取消", OnShoutTradeChatConfirmed, delegate
 		{
@@ -7368,7 +7505,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			return;
 		}
 		string text = "";
-		if (_shoutPendingTradeIsGive)
+		if (IsShoutTradeGiveMode(_shoutTradeMode))
 		{
 			ApplyShoutGiveTransfer();
 			text = BuildShoutTradeFactText(isGive: true);
@@ -7422,17 +7559,28 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			{
 				continue;
 			}
-			if (shoutPendingTradeItem.IsGold)
+			if (shoutPendingTradeItem.PartyEntry != null)
 			{
-				int num = Math.Min(shoutPendingTradeItem.Amount, Hero.MainHero.Gold);
+				int num = MyBehavior.TransferPlayerPartyEntryToCounterpartyForExternal(hero, characterObject, shoutTradeTargetNpc?.AgentIndex ?? (-1), shoutPendingTradeItem.PartyEntry, shoutPendingTradeItem.Amount);
+				shoutPendingTradeItem.Amount = num;
 				if (num > 0)
+				{
+					string information = (shoutPendingTradeItem.PartyEntry.Section == MyBehavior.PartyTransferEntrySection.PlayerTroops) ? ("已将 " + num + " 名" + shoutPendingTradeItem.ItemName + "转入" + GetShoutTradeTargetDisplayName() + "的麾下") : (shoutPendingTradeItem.PartyEntry.IsHero ? ("已将俘虏" + shoutPendingTradeItem.ItemName + "交给" + GetShoutTradeTargetDisplayName()) : ("已将 " + num + " 名" + shoutPendingTradeItem.ItemName + "俘虏交给" + GetShoutTradeTargetDisplayName()));
+					InformationManager.DisplayMessage(new InformationMessage(information, new Color(0.4f, 1f, 0.4f)));
+				}
+			}
+			else if (shoutPendingTradeItem.IsGold)
+			{
+				int num2 = Math.Min(shoutPendingTradeItem.Amount, Hero.MainHero.Gold);
+				shoutPendingTradeItem.Amount = num2;
+				if (num2 > 0)
 				{
 					if (hero != null)
 					{
-						GiveGoldAction.ApplyBetweenCharacters(Hero.MainHero, hero, num);
+						GiveGoldAction.ApplyBetweenCharacters(Hero.MainHero, hero, num2);
 						try
 						{
-							RewardSystemBehavior.Instance?.RecordPlayerPrepaidTransfer(hero, num, null, 0);
+							RewardSystemBehavior.Instance?.RecordPlayerPrepaidTransfer(hero, num2, null, 0);
 						}
 						catch
 						{
@@ -7440,15 +7588,15 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					}
 					else if (flag && currentSettlement != null)
 					{
-						GiveGoldAction.ApplyBetweenCharacters(Hero.MainHero, null, num, disableNotification: true);
-						currentSettlement.SettlementComponent?.ChangeGold(num);
-						RewardSystemBehavior.Instance?.RecordPlayerPrepaidTransferForMerchant(currentSettlement, settlementMerchantKind, num, null, 0);
-						RewardSystemBehavior.Instance?.AppendSettlementMerchantNpcFact(currentSettlement, settlementMerchantKind, $"你已经收下了玩家交来的 {num} 第纳尔。", characterObject?.Name?.ToString());
+						GiveGoldAction.ApplyBetweenCharacters(Hero.MainHero, null, num2, disableNotification: true);
+						currentSettlement.SettlementComponent?.ChangeGold(num2);
+						RewardSystemBehavior.Instance?.RecordPlayerPrepaidTransferForMerchant(currentSettlement, settlementMerchantKind, num2, null, 0);
+						RewardSystemBehavior.Instance?.AppendSettlementMerchantNpcFact(currentSettlement, settlementMerchantKind, $"你已经收下了玩家交来的 {num2} 第纳尔。", characterObject?.Name?.ToString());
 					}
 					else
 					{
-						GiveGoldAction.ApplyBetweenCharacters(Hero.MainHero, null, num, disableNotification: true);
-						RecordScenePrepaidTransfer(text, num);
+						GiveGoldAction.ApplyBetweenCharacters(Hero.MainHero, null, num2, disableNotification: true);
+						RecordScenePrepaidTransfer(text, num2);
 					}
 				}
 			}
@@ -7469,25 +7617,26 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					continue;
 				}
 				ItemObject itemObject;
-				int num2 = MyBehavior.RemoveItemsFromRosterByStringId(itemRoster, text2, shoutPendingTradeItem.Amount, out itemObject);
-				if (num2 > 0)
+				int num3 = MyBehavior.RemoveItemsFromRosterByStringId(itemRoster, text2, shoutPendingTradeItem.Amount, out itemObject);
+				shoutPendingTradeItem.Amount = num3;
+				if (num3 > 0)
 				{
 					if (hero?.PartyBelongedTo != null && itemObject != null)
 					{
-						hero.PartyBelongedTo.ItemRoster.AddToCounts(itemObject, num2);
+						hero.PartyBelongedTo.ItemRoster.AddToCounts(itemObject, num3);
 					}
 					else if (flag && currentSettlement?.ItemRoster != null && itemObject != null)
 					{
-						currentSettlement.ItemRoster.AddToCounts(itemObject, num2);
-						RewardSystemBehavior.Instance?.RecordPlayerPrepaidTransferForMerchant(currentSettlement, settlementMerchantKind, 0, text2, num2);
-						string text3 = RewardSystemBehavior.Instance?.BuildSettlementItemValueFactSuffixForExternal(currentSettlement, itemObject, num2) ?? "";
-						RewardSystemBehavior.Instance?.AppendSettlementMerchantNpcFact(currentSettlement, settlementMerchantKind, $"你已经收下了玩家交来的 {num2} 个 {itemObject.Name?.ToString() ?? text2}{text3}。", characterObject?.Name?.ToString());
+						currentSettlement.ItemRoster.AddToCounts(itemObject, num3);
+						RewardSystemBehavior.Instance?.RecordPlayerPrepaidTransferForMerchant(currentSettlement, settlementMerchantKind, 0, text2, num3);
+						string text3 = RewardSystemBehavior.Instance?.BuildSettlementItemValueFactSuffixForExternal(currentSettlement, itemObject, num3) ?? "";
+						RewardSystemBehavior.Instance?.AppendSettlementMerchantNpcFact(currentSettlement, settlementMerchantKind, $"你已经收下了玩家交来的 {num3} 个 {itemObject.Name?.ToString() ?? text2}{text3}。", characterObject?.Name?.ToString());
 					}
 					if (hero != null)
 					{
 						try
 						{
-							RewardSystemBehavior.Instance?.RecordPlayerPrepaidTransfer(hero, 0, text2, num2);
+							RewardSystemBehavior.Instance?.RecordPlayerPrepaidTransfer(hero, 0, text2, num3);
 						}
 						catch
 						{
@@ -7910,6 +8059,39 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			return "";
 		}
+		if (isGive && IsShoutPartyTransferMode(_shoutTradeMode))
+		{
+			Hero hero = null;
+			CharacterObject characterObject = null;
+			try
+			{
+				Agent agent = Mission.Current?.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == (_shoutTradeTargetNpc?.AgentIndex ?? (-1)));
+				characterObject = agent?.Character as CharacterObject;
+				if (_shoutTradeTargetNpc != null && _shoutTradeTargetNpc.IsHero)
+				{
+					hero = ResolveHeroFromAgentIndex(_shoutTradeTargetNpc.AgentIndex) ?? characterObject?.HeroObject;
+				}
+			}
+			catch
+			{
+				hero = null;
+			}
+			List<string> facts = new List<string>();
+			for (int i = 0; i < _shoutPendingTradeItems.Count; i++)
+			{
+				ShoutPendingTradeItem shoutPendingTradeItem = _shoutPendingTradeItems[i];
+				if (shoutPendingTradeItem?.PartyEntry == null || shoutPendingTradeItem.Amount <= 0)
+				{
+					continue;
+				}
+				string item = ((shoutPendingTradeItem.PartyEntry.Section == MyBehavior.PartyTransferEntrySection.PlayerTroops) ? MyBehavior.BuildPlayerToNpcTroopTransferFactForExternal(hero, characterObject, _shoutTradeTargetNpc?.AgentIndex ?? (-1), shoutPendingTradeItem.PartyEntry, shoutPendingTradeItem.Amount) : MyBehavior.BuildPlayerToNpcPrisonerTransferFactForExternal(hero, characterObject, _shoutTradeTargetNpc?.AgentIndex ?? (-1), shoutPendingTradeItem.PartyEntry, shoutPendingTradeItem.Amount));
+				if (!string.IsNullOrWhiteSpace(item))
+				{
+					facts.Add(item);
+				}
+			}
+			return string.Join("\n", facts.Where((string x) => !string.IsNullOrWhiteSpace(x)));
+		}
 		string text = GetPlayerDisplayNameForShout();
 		string text2 = GetShoutTradeTargetDisplayName();
 		List<string> list = new List<string>();
@@ -8122,7 +8304,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		_shoutTradeOptions.Clear();
 		_shoutPendingTradeItems.Clear();
 		_shoutPendingTradeItemIndex = 0;
-		_shoutPendingTradeIsGive = false;
+		_shoutTradeMode = ShoutChatMode.Normal;
 		_shoutTradeTargetNpc = null;
 	}
 
@@ -8574,7 +8756,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				string localExtras = InjectTrustBlockBelowTriState(sysPrompt.ToString().Trim(), trustBlock);
 				string deltaLayerText = (string.IsNullOrWhiteSpace(baseExtrasWithoutTrust) ? localExtras : ((!string.IsNullOrWhiteSpace(localExtras)) ? (baseExtrasWithoutTrust + "\n" + localExtras) : baseExtrasWithoutTrust));
 				string layeredPrompt = (string.IsNullOrWhiteSpace(fixedLayerText) ? deltaLayerText : ((!string.IsNullOrWhiteSpace(deltaLayerText)) ? (fixedLayerText + "\n" + deltaLayerText) : fixedLayerText));
-				layeredPrompt = InjectSceneMechanismPromptSection(layeredPrompt, sceneMechanismPromptSection);
+				bool allowAppendSceneMechanismWithoutMarker2 = !string.IsNullOrWhiteSpace(sceneSummonClosureInstruction) || !string.IsNullOrWhiteSpace(sceneFollowControlInstruction);
+				layeredPrompt = InjectSceneMechanismPromptSection(layeredPrompt, sceneMechanismPromptSection, allowAppendSceneMechanismWithoutMarker2);
 				string roleTopIntro = BuildSceneSystemTopPromptIntroForGroup(speakingCandidates, resolvedHeroes);
 				string playerNameForTask = GetPlayerDisplayNameForShout();
 				if (string.IsNullOrWhiteSpace(playerNameForTask))
@@ -8790,20 +8973,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					}
 					if (fallbackNpc != null)
 					{
-						c = (fullText ?? "").Trim();
-						int ci = c.IndexOf(':');
-						if (ci == -1)
-						{
-							ci = c.IndexOf('：');
-						}
-						if (ci > 0 && ci < 20)
-						{
-							string rest = c.Substring(ci + 1).Trim();
-							if (!string.IsNullOrWhiteSpace(rest))
-							{
-								c = rest;
-							}
-						}
+						c = StripNpcNamePrefixSafely((fullText ?? "").Trim(), 20);
 						c = Regex.Replace(c, "\\（.*?\\）", "");
 						c = Regex.Replace(c, "\\(.*?\\)", "");
 						c = Regex.Replace(c, "\\*.*?\\*", "");
@@ -9120,7 +9290,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					string layeredPrompt = string.IsNullOrWhiteSpace(fixedLayerText) ? deltaLayerText : ((!string.IsNullOrWhiteSpace(deltaLayerText)) ? (fixedLayerText + "\n" + deltaLayerText) : fixedLayerText);
 					string sceneFollowControlInstruction = BuildSceneFollowControlPromptInstruction(currentSpeaker);
 					string sceneMechanismPromptSection = BuildSceneMechanismPromptSection(sceneSummonTargets, sceneGuideTargets, sceneSummonClosureInstruction, sceneFollowControlInstruction);
-					layeredPrompt = InjectSceneMechanismPromptSection(layeredPrompt, sceneMechanismPromptSection);
+					bool allowAppendSceneMechanismWithoutMarker3 = !string.IsNullOrWhiteSpace(sceneSummonClosureInstruction) || !string.IsNullOrWhiteSpace(sceneFollowControlInstruction);
+					layeredPrompt = InjectSceneMechanismPromptSection(layeredPrompt, sceneMechanismPromptSection, allowAppendSceneMechanismWithoutMarker3);
 					List<string> historyLines = null;
 					lock (_historyLock)
 					{
@@ -9195,23 +9366,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 						});
 						break;
 					}
-					cleaned = (output ?? "").Replace("\r", "").Trim();
-					if (!string.IsNullOrWhiteSpace(cleaned))
-					{
-						int ci = cleaned.IndexOf(':');
-						if (ci == -1)
-						{
-							ci = cleaned.IndexOf('：');
-						}
-						if (ci > 0 && ci < 30)
-						{
-							string rest = cleaned.Substring(ci + 1).Trim();
-							if (!string.IsNullOrWhiteSpace(rest))
-							{
-								cleaned = rest;
-							}
-						}
-					}
+					cleaned = StripNpcNamePrefixSafely((output ?? "").Replace("\r", "").Trim(), 30);
 				}
 				else
 				{
@@ -9490,6 +9645,27 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 									{
 										RomanceSystemBehavior.Instance.ApplyMarriageTags(characterObject.HeroObject, Hero.MainHero, ref content);
 									}
+									if (MyBehavior.TryApplyPartyTransferTagsForExternal(characterObject.HeroObject, characterObject, matchedNpc.AgentIndex, ref content, out var generatedFacts, out var notifications))
+									{
+										if (generatedFacts != null)
+										{
+											foreach (string generatedFact in generatedFacts)
+											{
+												RecordSystemFactForNearbySafe(allNpcData, generatedFact);
+												MyBehavior.AppendExternalDialogueHistory(characterObject.HeroObject, null, null, generatedFact);
+											}
+										}
+										if (notifications != null)
+										{
+											foreach (string notification in notifications)
+											{
+												if (!string.IsNullOrWhiteSpace(notification))
+												{
+													InformationManager.DisplayMessage(new InformationMessage(notification, new Color(0.4f, 1f, 0.4f)));
+												}
+											}
+										}
+									}
 									if (!ShouldSuppressSceneConversationControlForMeeting())
 									{
 										LordEncounterBehavior.TryProcessMeetingTauntAction(characterObject.HeroObject, ref content, out flag);
@@ -9513,6 +9689,30 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 										foreach (string item2 in list)
 										{
 											RecordSystemFactForNearbySafe(allNpcData, item2);
+										}
+									}
+								}
+								if (allowPlayerDirectedActions && agent != null && agent.Character is CharacterObject characterObject4 && MyBehavior.TryApplyPartyTransferTagsForExternal(characterObject4.HeroObject, characterObject4, matchedNpc.AgentIndex, ref content, out var generatedFacts2, out var notifications2))
+								{
+									if (generatedFacts2 != null)
+									{
+										foreach (string generatedFact2 in generatedFacts2)
+										{
+											RecordSystemFactForNearbySafe(allNpcData, generatedFact2);
+											if (characterObject4.HeroObject != null)
+											{
+												MyBehavior.AppendExternalDialogueHistory(characterObject4.HeroObject, null, null, generatedFact2);
+											}
+										}
+									}
+									if (notifications2 != null)
+									{
+										foreach (string notification2 in notifications2)
+										{
+											if (!string.IsNullOrWhiteSpace(notification2))
+											{
+												InformationManager.DisplayMessage(new InformationMessage(notification2, new Color(0.4f, 1f, 0.4f)));
+											}
 										}
 									}
 								}
@@ -9579,7 +9779,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 									_pendingSceneSummonReturnsAfterSpeech[matchedNpc.AgentIndex] = new PendingSceneSummonReturnAfterSpeech
 									{
 										AgentIndex = matchedNpc.AgentIndex,
-										Session = sceneSummonConversationSession
+										Session = sceneSummonConversationSession,
+										ReturnOnlySpeaker = ShouldReturnOnlySceneSummonSpeaker(sceneSummonConversationSession, agent)
 									};
 								}
 								ScheduleSceneSummonReturnAfterSpeech(matchedNpc.AgentIndex, sceneSpeechPlaybackInfo);
@@ -10689,19 +10890,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 		string text3 = (text2 ?? "").Replace("\r", "").Trim();
 		text3 = Regex.Replace(text3, "\\[(?:ACTION:[^\\]]*|ASS:[^\\]]*|GUI:[^\\]]*|FOL|STP)\\]", "", RegexOptions.IgnoreCase).Trim();
-		int num = text3.IndexOf(':');
-		if (num < 0)
-		{
-			num = text3.IndexOf('：');
-		}
-		if (num > 0 && num < 30)
-		{
-			string text4 = text3.Substring(num + 1).Trim();
-			if (!string.IsNullOrWhiteSpace(text4))
-			{
-				text3 = text4;
-			}
-		}
+		text3 = StripNpcNamePrefixSafely(text3, 30);
 		text3 = StripLeakedPromptContentForShout(text3);
 		text3 = StripStageDirectionsForPassiveShout(text3);
 		return text3.Trim();
@@ -11015,6 +11204,48 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				_activeInteractionSessions.Remove(item);
 			}
 		}
+	}
+
+	private bool IsSceneSummonConversationSpeaker(SceneSummonConversationSession session, Agent agent)
+	{
+		if (session == null || agent == null || !agent.IsActive())
+		{
+			return false;
+		}
+		Agent agent2 = ResolveAgentForLocationCharacter(session.SpeakerLocationCharacter);
+		return agent2 != null && agent2.Index == agent.Index;
+	}
+
+	private void BeginSceneSummonSpeakerReturn(SceneSummonConversationSession session)
+	{
+		if (session == null || CampaignMission.Current?.Location == null)
+		{
+			return;
+		}
+		CancelSceneSummonBatch(session.BatchId);
+		Agent agent = ResolveAgentForLocationCharacter(session.SpeakerLocationCharacter);
+		if (agent != null)
+		{
+			_pendingSceneFollowCommands.Remove(agent.Index);
+			_pendingSceneSummonReturnsAfterSpeech.Remove(agent.Index);
+			_pendingInteractionTimeoutArms.Remove(agent.Index);
+			_activeInteractionSessions.Remove(agent.Index);
+			StopSceneSummonFollowPlayer(agent);
+			_sceneFollowReturnStates.Remove(agent.Index);
+			RemoveSceneMovementSuppressionAgents(new int[1] { agent.Index });
+			ReleaseSceneConversationAttention(new List<int> { agent.Index }, fullyRestoreAutonomy: true);
+		}
+		QueueSceneReturnJob(session.SpeakerName, session.SpeakerLocationCharacter, session.OriginalSpeakerLocation, session.OriginalSpeakerPosition);
+		session.SpeakerAgentIndex = -1;
+		session.SpeakerLocationCharacter = null;
+		session.KeepSpeakerNearby = false;
+		if (session.Participants.Count == 0)
+		{
+			_activeSceneSummonConversationSessions.Remove(session);
+			return;
+		}
+		ClearSceneSummonConversationInteractionTimers(session);
+		RefreshSceneSummonConversationInteractions(session);
 	}
 
 	private void QueueSceneReturnJob(string displayName, LocationCharacter locationCharacter, Location originalLocation, Vec3? originalPosition)
@@ -11390,23 +11621,43 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			return false;
 		}
-		Match match = SceneSummonActionTagRegex.Match(content);
-		if (!match.Success)
+		MatchCollection matchCollection = SceneSummonActionTagRegex.Matches(content);
+		if (matchCollection == null || matchCollection.Count == 0)
 		{
 			return false;
 		}
 		content = SceneSummonActionTagRegex.Replace(content, "").Trim();
-		List<int> list = ParseSceneSummonPromptIds(match.Groups[1].Value);
+		HashSet<int> hashSet = new HashSet<int>();
+		List<int> list = new List<int>();
+		foreach (Match item2 in matchCollection)
+		{
+			if (item2 == null || !item2.Success)
+			{
+				continue;
+			}
+			List<int> list3 = ParseSceneSummonPromptIds(item2.Groups[1].Value);
+			if (list3 == null || list3.Count == 0)
+			{
+				continue;
+			}
+			foreach (int item in list3)
+			{
+				if (hashSet.Add(item))
+				{
+					list.Add(item);
+				}
+			}
+		}
 		if (list == null || list.Count == 0 || summonTargets == null || summonTargets.Count == 0)
 		{
 			return false;
 		}
 		List<SceneSummonPromptTarget> list2 = new List<SceneSummonPromptTarget>();
-		HashSet<LocationCharacter> hashSet = new HashSet<LocationCharacter>();
+		HashSet<LocationCharacter> hashSet2 = new HashSet<LocationCharacter>();
 		foreach (int item in list)
 		{
 			SceneSummonPromptTarget sceneSummonPromptTarget = summonTargets.FirstOrDefault((SceneSummonPromptTarget x) => x != null && x.PromptId == item);
-			if (sceneSummonPromptTarget != null && sceneSummonPromptTarget.LocationCharacter != null && hashSet.Add(sceneSummonPromptTarget.LocationCharacter))
+			if (sceneSummonPromptTarget != null && sceneSummonPromptTarget.LocationCharacter != null && hashSet2.Add(sceneSummonPromptTarget.LocationCharacter))
 			{
 				list2.Add(sceneSummonPromptTarget);
 			}
@@ -12197,6 +12448,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 		session = TryGetSceneSummonConversationSessionForAgentIndex((agent != null) ? agent.Index : npc.AgentIndex);
 		return session != null || IsAgentFollowingPlayerBySceneCommand(agent);
+	}
+
+	private bool ShouldReturnOnlySceneSummonSpeaker(SceneSummonConversationSession session, Agent agent)
+	{
+		return session != null && agent != null && IsSceneSummonConversationSpeaker(session, agent) && session.Participants.Count > 0;
 	}
 
 	private bool TryConsumeSceneFollowStartTag(NpcDataPacket npc, Agent agent, ref string content)
@@ -14349,7 +14605,14 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		_pendingSceneSummonReturnsAfterSpeech.Remove(agentIndex);
 		if (value.Session != null && _activeSceneSummonConversationSessions.Contains(value.Session))
 		{
-			BeginSceneSummonConversationReturn(value.Session);
+			if (value.ReturnOnlySpeaker)
+			{
+				BeginSceneSummonSpeakerReturn(value.Session);
+			}
+			else
+			{
+				BeginSceneSummonConversationReturn(value.Session);
+			}
 		}
 	}
 
@@ -14902,7 +15165,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			_pendingSceneSummonReturnsAfterSpeech[npcDataPacket.AgentIndex] = new PendingSceneSummonReturnAfterSpeech
 			{
 				AgentIndex = npcDataPacket.AgentIndex,
-				Session = representativeSummonSession
+				Session = representativeSummonSession,
+				ReturnOnlySpeaker = ShouldReturnOnlySceneSummonSpeaker(representativeSummonSession, agent)
 			};
 		}
 		else
@@ -15034,7 +15298,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				_pendingSceneSummonReturnsAfterSpeech[session.TargetAgentIndex] = new PendingSceneSummonReturnAfterSpeech
 				{
 					AgentIndex = session.TargetAgentIndex,
-					Session = sceneSummonConversationSession
+					Session = sceneSummonConversationSession,
+					ReturnOnlySpeaker = ShouldReturnOnlySceneSummonSpeaker(sceneSummonConversationSession, agent)
 				};
 			}
 			TriggerImmediateSceneBehaviorReaction(prefixedFactText, session.TargetAgentIndex, persistHeroPrivateHistory: true, suppressStare: false, postSpeechLeaveSeconds: 3f, skipSceneFactRecord: false, returnSceneSummonOnTimeout: false);
@@ -15507,19 +15772,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 		string text3 = (text2 ?? "").Replace("\r", "").Trim();
 		text3 = Regex.Replace(text3, "\\[(?:ACTION:[^\\]]*|ASS:[^\\]]*|GUI:[^\\]]*|FOL|STP)\\]", "", RegexOptions.IgnoreCase).Trim();
-		int num = text3.IndexOf(':');
-		if (num < 0)
-		{
-			num = text3.IndexOf('：');
-		}
-		if (num > 0 && num < 30)
-		{
-			string text4 = text3.Substring(num + 1).Trim();
-			if (!string.IsNullOrWhiteSpace(text4))
-			{
-				text3 = text4;
-			}
-		}
+		text3 = StripNpcNamePrefixSafely(text3, 30);
 		text3 = StripLeakedPromptContentForShout(text3);
 		text3 = StripStageDirectionsForPassiveShout(text3);
 		if (string.IsNullOrWhiteSpace(text3))

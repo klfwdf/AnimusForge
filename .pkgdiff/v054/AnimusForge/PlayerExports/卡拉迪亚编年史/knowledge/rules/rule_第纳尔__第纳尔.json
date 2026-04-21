@@ -1,0 +1,49 @@
+﻿{
+  "Id": "rule_第纳尔",
+  "Keywords": [
+    "第纳尔",
+    "金币",
+    "钱"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "你只知道第纳尔是一种货币，用来衡量贫富的标准"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "trade": 100
+        }
+      },
+      "Content": "第纳尔是帝国铸造的货币，是整个卡拉迪亚大陆上唯一流通的货币，所有势力都只用第纳尔进行交易"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 120
+        }
+      },
+      "Content": "帝国银制第纳尔是卡拉迪亚大陆的通用货币。即使是最偏远的部落也认识第纳尔的模样，而且可以轻松判断其是否混入了廉价金属。而黄金由于太过贵重，只用于王国间或大领主间的交易。你需要第纳尔来满足游戏中几乎所有的基本需求，如装备、食物、征兵和养兵等等，同时在政治问题和解决任务时第纳尔也非常好用。也有一些东西是钱买不到的，更不是能免费得来的。比如，战士们浴血奋战是出于对自己家园、指挥官、地位或是冒险的热爱。只有最愤世嫉俗的雇佣兵才只在乎钱，但哪怕最忠诚的士兵也期待自己的牺牲得到某种形式的回报。在叛乱期间，很少有领主会因为一袋金子之类的愚蠢贿赂而叛变。但倘若他们的确认为你比当今国君更明智，一袋金子会使其更愿为你承担风险"
+    }
+  ],
+  "TextMappings": []
+}

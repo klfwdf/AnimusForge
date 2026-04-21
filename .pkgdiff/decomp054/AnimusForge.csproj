@@ -1,0 +1,52 @@
+<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+  <PropertyGroup>
+    <AssemblyName>AnimusForge</AssemblyName>
+    <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
+    <UseWindowsForms>True</UseWindowsForms>
+    <TargetFramework>net472</TargetFramework>
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup>
+    <LangVersion>12.0</LangVersion>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup />
+  <ItemGroup />
+  <ItemGroup>
+    <Reference Include="System.Core" />
+    <Reference Include="TaleWorlds.CampaignSystem" />
+    <Reference Include="TaleWorlds.MountAndBlade" />
+    <Reference Include="SandBox" />
+    <Reference Include="TaleWorlds.Engine" />
+    <Reference Include="TaleWorlds.Library" />
+    <Reference Include="TaleWorlds.Localization" />
+    <Reference Include="TaleWorlds.MountAndBlade.View" />
+    <Reference Include="TaleWorlds.InputSystem" />
+    <Reference Include="TaleWorlds.ScreenSystem" />
+    <Reference Include="TaleWorlds.Core" />
+    <Reference Include="0Harmony">
+      <HintPath>..\v054\AnimusForge\bin\Win64_Shipping_Client\0Harmony.dll</HintPath>
+    </Reference>
+    <Reference Include="TaleWorlds.Engine.GauntletUI" />
+    <Reference Include="TaleWorlds.GauntletUI" />
+    <Reference Include="TaleWorlds.TwoDimension" />
+    <Reference Include="System.Numerics.Vectors" />
+    <Reference Include="MCMv5" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="Newtonsoft.Json" />
+    <Reference Include="SandBox.View" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="TaleWorlds.CampaignSystem.ViewModelCollection" />
+    <Reference Include="Microsoft.ML.OnnxRuntime">
+      <HintPath>..\v054\AnimusForge\bin\Win64_Shipping_Client\Microsoft.ML.OnnxRuntime.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Memory">
+      <HintPath>..\v054\AnimusForge\bin\Win64_Shipping_Client\System.Memory.dll</HintPath>
+    </Reference>
+    <Reference Include="TaleWorlds.ObjectSystem" />
+    <Reference Include="SandBox.ViewModelCollection" />
+    <Reference Include="TaleWorlds.MountAndBlade.ViewModelCollection" />
+    <Reference Include="TaleWorlds.DotNet" />
+    <Reference Include="Microsoft.CSharp" />
+  </ItemGroup>
+</Project>

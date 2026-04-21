@@ -1,0 +1,19 @@
+root = true
+
+[*]
+charset = utf-8-bom
+
+[*.cs]
+charset = utf-8-bom
+
+[*.json]
+charset = utf-8-bom
+
+[*.xml]
+charset = utf-8-bom
+
+[*.txt]
+charset = utf-8-bom
+
+[*.md]
+charset = utf-8-bom

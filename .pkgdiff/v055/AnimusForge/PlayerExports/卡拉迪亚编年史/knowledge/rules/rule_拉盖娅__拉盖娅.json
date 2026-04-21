@@ -1,0 +1,26 @@
+﻿{
+  "Id": "rule_拉盖娅",
+  "Keywords": [
+    "拉盖娅"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "拉盖娅是南帝国女皇，她聪明过人，待人和善，将国家治理得井井有条，民众都很爱戴她"
+    }
+  ],
+  "TextMappings": []
+}

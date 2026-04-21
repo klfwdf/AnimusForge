@@ -114,6 +114,26 @@ public class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyGroup("6. 规则触发（返回）")]
 	public int GuardrailDirectTopN { get; set; } = 4;
 
+	[SettingPropertyBool("规则检索使用辅助API", Order = 1, RequireRestart = false, HintText = "开启后，规则话题筛选将先调用一次辅助API做低成本路由，再进行正文生成；关闭后继续使用传统 RAG 检索。")]
+	[SettingPropertyGroup("6. 规则触发（返回）")]
+	public bool UseAuxiliaryRuleApi { get; set; } = false;
+
+	[SettingPropertyText("辅助API 地址（支持填写 Base URL）", -1, true, "", Order = 0, RequireRestart = false, HintText = "用于规则检索的低成本接口地址，例如: https://api.deepseek.com/v1。填写到 /v1 时会自动补全为 /v1/chat/completions。")]
+	[SettingPropertyGroup("6.1 辅助API（规则检索）")]
+	public string AuxiliaryApiUrl { get; set; } = "https://api.deepseek.com/v1";
+
+	[SettingPropertyText("辅助API 密钥 (Key)", -1, true, "", Order = 1, RequireRestart = false, HintText = "填入辅助API的密钥。")]
+	[SettingPropertyGroup("6.1 辅助API（规则检索）")]
+	public string AuxiliaryApiKey { get; set; } = "";
+
+	[SettingPropertyText("辅助模型名称", -1, true, "", Order = 2, RequireRestart = false, HintText = "用于规则检索的廉价模型名称。")]
+	[SettingPropertyGroup("6.1 辅助API（规则检索）")]
+	public string AuxiliaryModelName { get; set; } = "deepseek-chat";
+
+	[SettingPropertyButton("测试辅助API连接", -1, true, "", Content = "点击测试", Order = 3)]
+	[SettingPropertyGroup("6.1 辅助API（规则检索）")]
+	public Action TestAuxiliaryConnection { get; set; }
+
 	[SettingPropertyBool("启用TTS语音", Order = 0, RequireRestart = false, HintText = "总开关。关闭后，NPC 不再播放 TTS 语音，并回退到纯文本气泡显示。")]
 	[SettingPropertyGroup("7. 火山引擎 TTS（专用）")]
 	public bool EnableTtsSpeech { get; set; } = true;
@@ -244,6 +264,18 @@ public class DuelSettings : AttributeGlobalSettings<DuelSettings>
 			}
 		}
 		return _fallbackSettings;
+	}
+
+	public static bool HasLiveMcmInstance()
+	{
+		try
+		{
+			return GlobalSettings<DuelSettings>.Instance != null;
+		}
+		catch
+		{
+			return false;
+		}
 	}
 
 	public static float GetHealthThreshold()
@@ -447,6 +479,83 @@ public class DuelSettings : AttributeGlobalSettings<DuelSettings>
 					Exception ex2 = ex;
 					InformationManager.DisplayMessage(new InformationMessage("[系统] 异常: " + ex2.Message, Color.FromUint(4294901760u)));
 					Logger.Log("DuelSettings", "测试崩溃: " + ex2.Message);
+				}
+			});
+		};
+		TestAuxiliaryConnection = delegate
+		{
+			Task.Run(async delegate
+			{
+				try
+				{
+					Logger.Log("DuelSettings", "用户点击了[测试辅助API连接]按钮...");
+					if (string.IsNullOrWhiteSpace(AuxiliaryApiKey))
+					{
+						InformationManager.DisplayMessage(new InformationMessage("[系统] 错误：辅助API 密钥未填写！", Color.FromUint(4294901760u)));
+						return;
+					}
+					if (string.IsNullOrWhiteSpace(AuxiliaryModelName))
+					{
+						InformationManager.DisplayMessage(new InformationMessage("[系统] 错误：辅助模型名称未填写！", Color.FromUint(4294901760u)));
+						return;
+					}
+					InformationManager.DisplayMessage(new InformationMessage("[系统] 正在测试辅助API连接...", Color.FromUint(4294967040u)));
+					var requestPayload = new
+					{
+						model = AuxiliaryModelName,
+						messages = new[]
+						{
+							new
+							{
+								role = "system",
+								content = "你是一个编号输出工具。"
+							},
+							new
+							{
+								role = "user",
+								content = "只输出 1,2,3,4"
+							}
+						},
+						stream = false,
+						max_tokens = 32,
+						temperature = 0.0
+					};
+					string jsonBody = JsonConvert.SerializeObject(requestPayload);
+					StringContent content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
+					string effectiveApiUrl = GetEffectiveApiUrl(AuxiliaryApiUrl);
+					using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, effectiveApiUrl);
+					request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", AuxiliaryApiKey);
+					request.Content = content;
+					HttpResponseMessage response = await GlobalClient.SendAsync(request);
+					string responseString = await response.Content.ReadAsStringAsync();
+					if (response.IsSuccessStatusCode)
+					{
+						string reply = "";
+						try
+						{
+							JObject jsonResponse = JObject.Parse(responseString);
+							reply = jsonResponse["choices"]?[0]?["message"]?["content"]?.ToString() ?? "";
+						}
+						catch
+						{
+						}
+						InformationManager.DisplayMessage(new InformationMessage("辅助API 连接正常：" + (string.IsNullOrWhiteSpace(reply) ? "（返回为空）" : reply.Trim()), Color.FromUint(4278255360u)));
+					}
+					else
+					{
+						InformationManager.DisplayMessage(new InformationMessage($"[系统] 辅助API连接失败！状态码: {response.StatusCode}", Color.FromUint(4294901760u)));
+						string hint = BuildApiErrorHint(effectiveApiUrl, AuxiliaryModelName, response.StatusCode, responseString);
+						if (!string.IsNullOrWhiteSpace(hint))
+						{
+							InformationManager.DisplayMessage(new InformationMessage("[系统] 排查建议：" + hint, Color.FromUint(4294936576u)));
+						}
+						Logger.Log("DuelSettings", $"辅助API测试失败! 状态码: {response.StatusCode} | 错误信息: {responseString}");
+					}
+				}
+				catch (Exception ex)
+				{
+					InformationManager.DisplayMessage(new InformationMessage("[系统] 辅助API异常: " + ex.Message, Color.FromUint(4294901760u)));
+					Logger.Log("DuelSettings", "辅助API测试崩溃: " + ex.Message);
 				}
 			});
 		};

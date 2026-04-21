@@ -1,0 +1,24 @@
+﻿{
+  "Id": "rule_竞技马",
+  "Keywords": [
+    "竞技马"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "竞技马是瓦兰迪亚专门给方旗骑士培育的马匹。它们高大威猛，力大如牛，跑起来声响震天。而且它下盘极稳，不易摔倒，赋予了它极强的冲阵能力。虽不如它的极品变种王家竞技马，但也是卡拉迪亚最无可阻挡的马了。但它和王家竞技马一样，也跑得很慢，所以方旗骑士被其他国家戏谑地叫做‘驴骑士’"
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,24 @@
+﻿{
+  "Id": "rule_纳哈撒维马",
+  "Keywords": [
+    "纳哈撒维马"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "纳哈撒维马是阿塞莱最好的马，这种马也是跑的极快，但难以操纵，甚至比热血马还难以操纵，阿塞莱的法里斯们钟爱这种马，因为极高的马速可以让他们的标枪更具杀伤力"
+    }
+  ],
+  "TextMappings": []
+}

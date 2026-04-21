@@ -26,12 +26,19 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 	{
 		None,
 		Welcome,
+		AuxiliaryChoice,
 		BaseUrlValidation,
 		BaseUrlValidationFailure,
 		ApiValidation,
 		ModelFetch,
 		ModelSelect,
 		Import
+	}
+
+	private enum ApiSetupTarget
+	{
+		Primary,
+		Auxiliary
 	}
 
 	private const string SetupDoneKey = "_AnimusForge_setup_done_v1";
@@ -118,11 +125,16 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 
 	private long _pendingStartupNoticeAfterUtcTicks;
 
+	private ApiSetupTarget _currentApiSetupTarget;
+
+	private bool _apiRepairFlowActive;
+
 	public static ModOnboardingBehavior Instance { get; private set; }
 
 	public ModOnboardingBehavior()
 	{
 		Instance = this;
+		_currentApiSetupTarget = ApiSetupTarget.Primary;
 	}
 
 	public override void RegisterEvents()
@@ -216,6 +228,150 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private bool IsAuxiliaryApiSetupTarget()
+	{
+		return _currentApiSetupTarget == ApiSetupTarget.Auxiliary;
+	}
+
+	private string CurrentApiDisplayName()
+	{
+		return IsAuxiliaryApiSetupTarget() ? "辅助API" : "API";
+	}
+
+	private string CurrentApiBaseUrlDisplayName()
+	{
+		return IsAuxiliaryApiSetupTarget() ? "辅助API Base URL" : "Base URL";
+	}
+
+	private string CurrentApiKeyDisplayName()
+	{
+		return IsAuxiliaryApiSetupTarget() ? "辅助API Key" : "API Key";
+	}
+
+	private string CurrentApiModelDisplayName()
+	{
+		return IsAuxiliaryApiSetupTarget() ? "辅助模型名称" : "模型名称";
+	}
+
+	private void SetApiSetupTarget(ApiSetupTarget target)
+	{
+		_currentApiSetupTarget = target;
+	}
+
+	private void SetApiRepairFlowActive(bool active)
+	{
+		_apiRepairFlowActive = active;
+	}
+
+	private static string GetApiUrlForTarget(DuelSettings settings, ApiSetupTarget target)
+	{
+		if (settings == null)
+		{
+			return "";
+		}
+		return target == ApiSetupTarget.Auxiliary ? (settings.AuxiliaryApiUrl ?? "") : (settings.ApiUrl ?? "");
+	}
+
+	private static string GetApiKeyForTarget(DuelSettings settings, ApiSetupTarget target)
+	{
+		if (settings == null)
+		{
+			return "";
+		}
+		return target == ApiSetupTarget.Auxiliary ? (settings.AuxiliaryApiKey ?? "") : (settings.ApiKey ?? "");
+	}
+
+	private static string GetModelNameForTarget(DuelSettings settings, ApiSetupTarget target)
+	{
+		if (settings == null)
+		{
+			return "";
+		}
+		return target == ApiSetupTarget.Auxiliary ? (settings.AuxiliaryModelName ?? "") : (settings.ModelName ?? "");
+	}
+
+	private static bool HasCompleteApiConfigForTarget(DuelSettings settings, ApiSetupTarget target)
+	{
+		if (settings == null)
+		{
+			return false;
+		}
+		return !string.IsNullOrWhiteSpace(GetApiUrlForTarget(settings, target))
+			&& !string.IsNullOrWhiteSpace(GetApiKeyForTarget(settings, target))
+			&& !string.IsNullOrWhiteSpace(GetModelNameForTarget(settings, target));
+	}
+
+	private static void SetApiUrlForTarget(DuelSettings settings, ApiSetupTarget target, string value)
+	{
+		if (settings == null)
+		{
+			return;
+		}
+		if (target == ApiSetupTarget.Auxiliary)
+		{
+			settings.AuxiliaryApiUrl = value ?? "";
+		}
+		else
+		{
+			settings.ApiUrl = value ?? "";
+		}
+	}
+
+	private static void SetApiKeyForTarget(DuelSettings settings, ApiSetupTarget target, string value)
+	{
+		if (settings == null)
+		{
+			return;
+		}
+		if (target == ApiSetupTarget.Auxiliary)
+		{
+			settings.AuxiliaryApiKey = value ?? "";
+		}
+		else
+		{
+			settings.ApiKey = value ?? "";
+		}
+	}
+
+	private static void SetModelNameForTarget(DuelSettings settings, ApiSetupTarget target, string value)
+	{
+		if (settings == null)
+		{
+			return;
+		}
+		if (target == ApiSetupTarget.Auxiliary)
+		{
+			settings.AuxiliaryModelName = value ?? "";
+		}
+		else
+		{
+			settings.ModelName = value ?? "";
+		}
+	}
+
+	private void ReopenCurrentApiEntry(bool ignoreSuppress = true)
+	{
+		if (_apiRepairFlowActive)
+		{
+			if (IsAuxiliaryApiSetupTarget())
+			{
+				ShowAuxiliaryApiRepairPopup();
+			}
+			else
+			{
+				ShowApiRepairPopup();
+			}
+		}
+		else if (IsAuxiliaryApiSetupTarget())
+		{
+			ShowAuxiliaryApiSetupPopup(ignoreSuppress);
+		}
+		else
+		{
+			ShowWelcomePopup(fromGate: true, ignoreSuppress: ignoreSuppress);
+		}
+	}
+
 	private void ProcessPendingReturnToWelcome()
 	{
 		if (!_pendingReturnToWelcome)
@@ -233,7 +389,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			_pendingUnexpectedResumeStage = OnboardingUiStage.None;
 			return;
 		}
-		if (_activeOnboardingStage != OnboardingUiStage.Welcome && _activeOnboardingStage != OnboardingUiStage.BaseUrlValidation && _activeOnboardingStage != OnboardingUiStage.BaseUrlValidationFailure && _activeOnboardingStage != OnboardingUiStage.ApiValidation && _activeOnboardingStage != OnboardingUiStage.ModelFetch && _activeOnboardingStage != OnboardingUiStage.ModelSelect && _activeOnboardingStage != OnboardingUiStage.Import)
+		if (_activeOnboardingStage != OnboardingUiStage.Welcome && _activeOnboardingStage != OnboardingUiStage.AuxiliaryChoice && _activeOnboardingStage != OnboardingUiStage.BaseUrlValidation && _activeOnboardingStage != OnboardingUiStage.BaseUrlValidationFailure && _activeOnboardingStage != OnboardingUiStage.ApiValidation && _activeOnboardingStage != OnboardingUiStage.ModelFetch && _activeOnboardingStage != OnboardingUiStage.ModelSelect && _activeOnboardingStage != OnboardingUiStage.Import)
 		{
 			_pendingUnexpectedResumeStage = OnboardingUiStage.None;
 			return;
@@ -258,6 +414,9 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		_welcomeInProgress = false;
 		switch (pendingUnexpectedResumeStage)
 		{
+		case OnboardingUiStage.AuxiliaryChoice:
+			ShowAuxiliaryApiSetupPopup(ignoreSuppress: true);
+			break;
 		case OnboardingUiStage.BaseUrlValidation:
 			if (_baseUrlValidationInProgress)
 			{
@@ -286,7 +445,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			ShowImportSetupPopup(fromGate: true, ignoreSuppress: true);
 			break;
 		case OnboardingUiStage.Welcome:
-			ShowWelcomePopup(fromGate: true, ignoreSuppress: true);
+			ReopenCurrentApiEntry(ignoreSuppress: true);
 			break;
 		}
 	}
@@ -318,10 +477,10 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			if (settings == null)
 			{
 				InformationManager.DisplayMessage(new InformationMessage("无法读取 MCM 设置，暂时不能保存 Base URL。"));
-				ShowWelcomePopup(fromGate: true, ignoreSuppress: true);
+				ReopenCurrentApiEntry(ignoreSuppress: true);
 				return;
 			}
-			settings.ApiUrl = pendingValidatedBaseUrl;
+			SetApiUrlForTarget(settings, _currentApiSetupTarget, pendingValidatedBaseUrl);
 			TryPersistMcmSettings(settings);
 			OpenApiKeyInput();
 		}
@@ -385,9 +544,33 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			_showApiValidationFailedHint = false;
 			_showModelSelectionValidationFailedHint = false;
 			_lastApiValidationFailureHint = "";
-			ShowImportSetupPopup(fromGate: true, ignoreSuppress: true);
+			if (IsAuxiliaryApiSetupTarget())
+			{
+				DuelSettings settings = DuelSettings.GetSettings();
+				if (settings != null)
+				{
+					settings.UseAuxiliaryRuleApi = true;
+					TryPersistMcmSettings(settings);
+				}
+			}
+			if (_apiRepairFlowActive)
+			{
+				SetApiRepairFlowActive(active: false);
+			}
+			else if (IsAuxiliaryApiSetupTarget())
+			{
+				ShowImportSetupPopup(fromGate: true, ignoreSuppress: true);
+			}
+			else if (!_setupDone)
+			{
+				ShowAuxiliaryApiSetupPopup(ignoreSuppress: true);
+			}
+			else
+			{
+				ShowImportSetupPopup(fromGate: true, ignoreSuppress: true);
+			}
 		}
-		else if (!_setupDone)
+		else if (_apiRepairFlowActive || !_setupDone)
 		{
 			if (apiValidationReturnToModelSelection)
 			{
@@ -401,7 +584,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 				_showApiValidationFailedHint = true;
 				_showModelSelectionValidationFailedHint = false;
 				_lastApiValidationFailureHint = pendingApiValidationFailureHint;
-				ShowWelcomePopup(fromGate: true, ignoreSuppress: true);
+				ReopenCurrentApiEntry(ignoreSuppress: true);
 			}
 		}
 	}
@@ -445,6 +628,17 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		return true;
 	}
 
+	public static bool OpenAuxiliaryApiRepairFlow()
+	{
+		ModOnboardingBehavior modOnboardingBehavior = Instance ?? Campaign.Current?.GetCampaignBehavior<ModOnboardingBehavior>();
+		if (modOnboardingBehavior == null)
+		{
+			return false;
+		}
+		modOnboardingBehavior.ShowAuxiliaryApiRepairPopup();
+		return true;
+	}
+
 	private void ShowWelcomePopup(bool fromGate)
 	{
 		ShowWelcomePopup(fromGate, ignoreSuppress: false);
@@ -454,6 +648,8 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 	{
 		try
 		{
+			SetApiSetupTarget(ApiSetupTarget.Primary);
+			SetApiRepairFlowActive(active: true);
 			if (_welcomeInProgress || _apiValidationInProgress || _baseUrlValidationInProgress || _modelFetchInProgress)
 			{
 				return;
@@ -481,10 +677,63 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private void ShowAuxiliaryApiRepairPopup()
+	{
+		try
+		{
+			SetApiSetupTarget(ApiSetupTarget.Auxiliary);
+			SetApiRepairFlowActive(active: true);
+			if (_welcomeInProgress || _apiValidationInProgress || _baseUrlValidationInProgress || _modelFetchInProgress)
+			{
+				return;
+			}
+			_activeOnboardingStage = OnboardingUiStage.AuxiliaryChoice;
+			_welcomeInProgress = true;
+			DuelSettings settings = DuelSettings.GetSettings();
+			bool hasExistingConfig = HasCompleteApiConfigForTarget(settings, ApiSetupTarget.Auxiliary);
+			string text = hasExistingConfig
+				? "辅助API规则检索当前不可用。你可以直接测试 MCM 中的现有配置，也可以重新填写辅助API信息。"
+				: "辅助API规则检索当前不可用，请检查辅助API的 Base URL、API Key、模型名称，或当前网络环境。";
+			if (!string.IsNullOrWhiteSpace(_lastApiValidationFailureHint))
+			{
+				text = text + "\n\n排查建议：" + _lastApiValidationFailureHint;
+			}
+			string negativeText = hasExistingConfig ? "测试现有配置" : "回退回RAG检索";
+			InformationManager.ShowInquiry(new InquiryData("调整辅助API信息", text, isAffirmativeOptionShown: true, isNegativeOptionShown: true, "填写辅助API信息", negativeText, delegate
+			{
+				_welcomeInProgress = false;
+				OpenApiBaseUrlInput();
+			}, delegate
+			{
+				_welcomeInProgress = false;
+				if (hasExistingConfig)
+				{
+					BeginValidateMcmApiAndContinue();
+				}
+				else
+				{
+					DuelSettings settings2 = DuelSettings.GetSettings();
+					if (settings2 != null)
+					{
+						settings2.UseAuxiliaryRuleApi = false;
+						TryPersistMcmSettings(settings2);
+					}
+					ShowImportSetupPopup(fromGate: true, ignoreSuppress: true);
+				}
+			}), pauseGameActiveState: true);
+		}
+		catch
+		{
+			_welcomeInProgress = false;
+		}
+	}
+
 	private void ShowWelcomePopup(bool fromGate, bool ignoreSuppress)
 	{
 		try
 		{
+			SetApiSetupTarget(ApiSetupTarget.Primary);
+			SetApiRepairFlowActive(active: false);
 			if (_setupDone || _welcomeInProgress || _apiValidationInProgress)
 			{
 				return;
@@ -497,11 +746,11 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			_suppressWelcomeUntilUtcTicks = ticks + TimeSpan.FromMilliseconds(fromGate ? 800 : 200).Ticks;
 			_activeOnboardingStage = OnboardingUiStage.Welcome;
 			string title = "欢迎使用 AnimusForge";
-			string text = "开始游玩前，请先确认 API 信息，否则AI对话功能将无法使用。";
+			string text = "开始游玩前，请先确认 API 信息，否则 AI 对话功能将无法使用。";
 			if (_showApiValidationFailedHint)
 			{
 				title = "API 连接失败";
-				text = "测试链接报错!请检查你的网络环境，或者重新填写 API 信息！";
+				text = "测试连接失败，请检查你的网络环境，或者重新填写 API 信息。";
 				if (!string.IsNullOrWhiteSpace(_lastApiValidationFailureHint))
 				{
 					text = text + "\n\n排查建议：" + _lastApiValidationFailureHint;
@@ -524,6 +773,71 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private void ShowAuxiliaryApiSetupPopup(bool ignoreSuppress = false)
+	{
+		try
+		{
+			SetApiSetupTarget(ApiSetupTarget.Auxiliary);
+			SetApiRepairFlowActive(active: false);
+			if (_setupDone || _welcomeInProgress || _apiValidationInProgress)
+			{
+				return;
+			}
+			long ticks = DateTime.UtcNow.Ticks;
+			if (!ignoreSuppress && _suppressWelcomeUntilUtcTicks > ticks)
+			{
+				return;
+			}
+			_suppressWelcomeUntilUtcTicks = ticks + TimeSpan.FromMilliseconds(250.0).Ticks;
+			_activeOnboardingStage = OnboardingUiStage.AuxiliaryChoice;
+			_welcomeInProgress = true;
+			DuelSettings settings = DuelSettings.GetSettings();
+			bool hasExistingConfig = HasCompleteApiConfigForTarget(settings, ApiSetupTarget.Auxiliary);
+			string title = "配置辅助API";
+			string text = "辅助API专门用于规则检索。启用后，规则话题会先走一次廉价模型筛选，再进入正文生成；如果你暂时不想配置，也可以继续使用传统RAG检索。";
+			if (_showApiValidationFailedHint)
+			{
+				title = "辅助API连接失败";
+				text = hasExistingConfig
+					? "刚才的辅助API连接测试没有通过。你可以重新填写辅助API信息，或者再次测试 MCM 中的现有配置。"
+					: "刚才的辅助API连接测试没有通过。你可以重新填写辅助API信息，或者先继续使用传统RAG检索。";
+				if (!string.IsNullOrWhiteSpace(_lastApiValidationFailureHint))
+				{
+					text = text + "\n\n排查建议：" + _lastApiValidationFailureHint;
+				}
+			}
+			string negativeText = hasExistingConfig ? "测试现有配置" : "回退回RAG检索";
+			InformationManager.ShowInquiry(new InquiryData(title, text, isAffirmativeOptionShown: true, isNegativeOptionShown: true, "填写辅助API", negativeText, delegate
+			{
+				_welcomeInProgress = false;
+				_showApiValidationFailedHint = false;
+				OpenApiBaseUrlInput();
+			}, delegate
+			{
+				_welcomeInProgress = false;
+				_showApiValidationFailedHint = false;
+				if (hasExistingConfig)
+				{
+					BeginValidateMcmApiAndContinue();
+				}
+				else
+				{
+					DuelSettings settings2 = DuelSettings.GetSettings();
+					if (settings2 != null)
+					{
+						settings2.UseAuxiliaryRuleApi = false;
+						TryPersistMcmSettings(settings2);
+					}
+					ShowImportSetupPopup(fromGate: true, ignoreSuppress: true);
+				}
+			}), pauseGameActiveState: true);
+		}
+		catch
+		{
+			_welcomeInProgress = false;
+		}
+	}
+
 	private void OpenApiBaseUrlInput()
 	{
 		try
@@ -531,16 +845,16 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			DuelSettings settings = DuelSettings.GetSettings();
 			if (settings == null)
 			{
-				InformationManager.DisplayMessage(new InformationMessage("无法读取 MCM 设置，暂时不能填写 Base URL。"));
-				ShowWelcomePopup(fromGate: true);
+				InformationManager.DisplayMessage(new InformationMessage("无法读取 MCM 设置，暂时不能填写 " + CurrentApiBaseUrlDisplayName() + "。"));
+				ReopenCurrentApiEntry(ignoreSuppress: true);
 				return;
 			}
-			InformationManager.ShowTextInquiry(new TextInquiryData("填写base URL", "请输入 Base URL。\n示例：https://api.deepseek.com/v1", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "下一步", "返回", delegate(string input)
+			InformationManager.ShowTextInquiry(new TextInquiryData("填写 Base URL", "请输入 " + CurrentApiBaseUrlDisplayName() + "。\n示例：https://api.deepseek.com/v1", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "下一步", "返回", delegate(string input)
 			{
 				string text2 = (input ?? "").Trim();
 				if (string.IsNullOrWhiteSpace(text2))
 				{
-					InformationManager.DisplayMessage(new InformationMessage("Base URL 不能为空。"));
+					InformationManager.DisplayMessage(new InformationMessage(CurrentApiBaseUrlDisplayName() + " 不能为空。"));
 					OpenApiBaseUrlInput();
 				}
 				else
@@ -549,13 +863,13 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 				}
 			}, delegate
 			{
-				ShowWelcomePopup(fromGate: true, ignoreSuppress: true);
+				ReopenCurrentApiEntry(ignoreSuppress: true);
 			}));
 		}
 		catch (Exception ex)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("打开 Base URL 输入框失败：" + ex.Message));
-			ShowWelcomePopup(fromGate: true, ignoreSuppress: true);
+			InformationManager.DisplayMessage(new InformationMessage("打开 " + CurrentApiBaseUrlDisplayName() + " 输入框失败：" + ex.Message));
+			ReopenCurrentApiEntry(ignoreSuppress: true);
 		}
 	}
 
@@ -703,23 +1017,23 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			DuelSettings settings = DuelSettings.GetSettings();
 			if (settings == null)
 			{
-				InformationManager.DisplayMessage(new InformationMessage("无法读取 MCM 设置，暂时不能填写 API Key。"));
-				ShowWelcomePopup(fromGate: true, ignoreSuppress: true);
+				InformationManager.DisplayMessage(new InformationMessage("无法读取 MCM 设置，暂时不能填写 " + CurrentApiKeyDisplayName() + "。"));
+				ReopenCurrentApiEntry(ignoreSuppress: true);
 				return;
 			}
-			InformationManager.ShowTextInquiry(new TextInquiryData("填写API Key", "请输入 API Key。", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "下一步", "返回", delegate(string input)
+			InformationManager.ShowTextInquiry(new TextInquiryData("填写 API Key", "请输入 " + CurrentApiKeyDisplayName() + "。", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "下一步", "返回", delegate(string input)
 			{
 				string text2 = (input ?? "").Trim();
 				if (string.IsNullOrWhiteSpace(text2))
 				{
-					InformationManager.DisplayMessage(new InformationMessage("API Key 不能为空。"));
+					InformationManager.DisplayMessage(new InformationMessage(CurrentApiKeyDisplayName() + " 不能为空。"));
 					OpenApiKeyInput();
 				}
 				else
 				{
-					settings.ApiKey = text2;
+					SetApiKeyForTarget(settings, _currentApiSetupTarget, text2);
 					TryPersistMcmSettings(settings);
-					InformationManager.DisplayMessage(new InformationMessage("API Key 已写入 MCM。"));
+					InformationManager.DisplayMessage(new InformationMessage(CurrentApiKeyDisplayName() + " 已写入 MCM。"));
 					BeginFetchAvailableModelsForSetup();
 				}
 			}, delegate
@@ -729,8 +1043,8 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		}
 		catch (Exception ex)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("打开 API Key 输入框失败：" + ex.Message));
-			ShowWelcomePopup(fromGate: true, ignoreSuppress: true);
+			InformationManager.DisplayMessage(new InformationMessage("打开 " + CurrentApiKeyDisplayName() + " 输入框失败：" + ex.Message));
+			ReopenCurrentApiEntry(ignoreSuppress: true);
 		}
 	}
 
@@ -744,11 +1058,11 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		if (settings == null)
 		{
 			InformationManager.DisplayMessage(new InformationMessage("无法读取 MCM 设置，暂时不能拉取模型列表。"));
-			ShowWelcomePopup(fromGate: true, ignoreSuppress: true);
+			ReopenCurrentApiEntry(ignoreSuppress: true);
 			return;
 		}
-		string apiUrl = (settings.ApiUrl ?? "").Trim();
-		string apiKey = (settings.ApiKey ?? "").Trim();
+		string apiUrl = GetApiUrlForTarget(settings, _currentApiSetupTarget).Trim();
+		string apiKey = GetApiKeyForTarget(settings, _currentApiSetupTarget).Trim();
 		if (string.IsNullOrWhiteSpace(apiUrl))
 		{
 			InformationManager.DisplayMessage(new InformationMessage("请先填写 Base URL。"));
@@ -873,8 +1187,8 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			DuelSettings settings = DuelSettings.GetSettings();
 			if (settings == null)
 			{
-				InformationManager.DisplayMessage(new InformationMessage("无法读取 MCM 设置，暂时不能填写模型名称。"));
-				ShowWelcomePopup(fromGate: true, ignoreSuppress: true);
+				InformationManager.DisplayMessage(new InformationMessage("无法读取 MCM 设置，暂时不能填写" + CurrentApiModelDisplayName() + "。"));
+				ReopenCurrentApiEntry(ignoreSuppress: true);
 				return;
 			}
 			_welcomeInProgress = true;
@@ -947,9 +1261,9 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 				else
 				{
 					_showModelSelectionValidationFailedHint = false;
-					settings.ModelName = text2;
+					SetModelNameForTarget(settings, _currentApiSetupTarget, text2);
 					TryPersistMcmSettings(settings);
-					InformationManager.DisplayMessage(new InformationMessage("模型名称已写入 MCM，正在测试完整连接：" + text2));
+					InformationManager.DisplayMessage(new InformationMessage(CurrentApiModelDisplayName() + " 已写入 MCM，正在测试完整连接：" + text2));
 					BeginValidateMcmApiAndContinue(returnToModelSelection: true);
 				}
 			}, delegate
@@ -963,7 +1277,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		catch (Exception ex)
 		{
 			InformationManager.DisplayMessage(new InformationMessage("打开模型选择界面失败：" + ex.Message));
-			ShowWelcomePopup(fromGate: true, ignoreSuppress: true);
+			ReopenCurrentApiEntry(ignoreSuppress: true);
 		}
 	}
 
@@ -974,24 +1288,24 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			DuelSettings settings = DuelSettings.GetSettings();
 			if (settings == null)
 			{
-				InformationManager.DisplayMessage(new InformationMessage("无法读取 MCM 设置，暂时不能填写模型名称。"));
-				ShowWelcomePopup(fromGate: true, ignoreSuppress: true);
+				InformationManager.DisplayMessage(new InformationMessage("无法读取 MCM 设置，暂时不能填写" + CurrentApiModelDisplayName() + "。"));
+				ReopenCurrentApiEntry(ignoreSuppress: true);
 				return;
 			}
-			InformationManager.ShowTextInquiry(new TextInquiryData("手动填写模型名称", "请输入模型名称。\n示例：deepseek-chat", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "开始测试", "返回", delegate(string input)
+			InformationManager.ShowTextInquiry(new TextInquiryData("手动填写模型名称", "请输入" + CurrentApiModelDisplayName() + "。\n示例：deepseek-chat", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "开始测试", "返回", delegate(string input)
 			{
 				string text2 = (input ?? "").Trim();
 				if (string.IsNullOrWhiteSpace(text2))
 				{
-					InformationManager.DisplayMessage(new InformationMessage("模型名称不能为空。"));
+					InformationManager.DisplayMessage(new InformationMessage(CurrentApiModelDisplayName() + " 不能为空。"));
 					OpenManualModelNameInput();
 				}
 				else
 				{
 					_showModelSelectionValidationFailedHint = false;
-					settings.ModelName = text2;
+					SetModelNameForTarget(settings, _currentApiSetupTarget, text2);
 					TryPersistMcmSettings(settings);
-					InformationManager.DisplayMessage(new InformationMessage("模型名称已写入 MCM，正在测试完整连接：" + text2));
+					InformationManager.DisplayMessage(new InformationMessage(CurrentApiModelDisplayName() + " 已写入 MCM，正在测试完整连接：" + text2));
 					BeginValidateMcmApiAndContinue(returnToModelSelection: true);
 				}
 			}, delegate
@@ -1002,7 +1316,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		catch (Exception ex)
 		{
 			InformationManager.DisplayMessage(new InformationMessage("打开模型名称输入框失败：" + ex.Message));
-			ShowWelcomePopup(fromGate: true, ignoreSuppress: true);
+			ReopenCurrentApiEntry(ignoreSuppress: true);
 		}
 	}
 
@@ -1016,29 +1330,29 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		if (settings == null)
 		{
 			InformationManager.DisplayMessage(new InformationMessage("无法读取 MCM 设置。"));
-			ShowWelcomePopup(fromGate: true, ignoreSuppress: true);
+			ReopenCurrentApiEntry(ignoreSuppress: true);
 			return;
 		}
 		TryPersistMcmSettings(settings);
-		string apiUrl = (settings.ApiUrl ?? "").Trim();
-		string apiKey = (settings.ApiKey ?? "").Trim();
-		string modelName = (settings.ModelName ?? "").Trim();
+		string apiUrl = GetApiUrlForTarget(settings, _currentApiSetupTarget).Trim();
+		string apiKey = GetApiKeyForTarget(settings, _currentApiSetupTarget).Trim();
+		string modelName = GetModelNameForTarget(settings, _currentApiSetupTarget).Trim();
 		if (string.IsNullOrWhiteSpace(apiUrl))
 		{
-			InformationManager.DisplayMessage(new InformationMessage("MCM 中尚未填写 Base URL。"));
-			ShowWelcomePopup(fromGate: true, ignoreSuppress: true);
+			InformationManager.DisplayMessage(new InformationMessage("MCM 中尚未填写 " + CurrentApiBaseUrlDisplayName() + "。"));
+			ReopenCurrentApiEntry(ignoreSuppress: true);
 			return;
 		}
 		if (string.IsNullOrWhiteSpace(apiKey))
 		{
-			InformationManager.DisplayMessage(new InformationMessage("MCM 中尚未填写 API Key。"));
-			ShowWelcomePopup(fromGate: true, ignoreSuppress: true);
+			InformationManager.DisplayMessage(new InformationMessage("MCM 中尚未填写 " + CurrentApiKeyDisplayName() + "。"));
+			ReopenCurrentApiEntry(ignoreSuppress: true);
 			return;
 		}
 		if (string.IsNullOrWhiteSpace(modelName))
 		{
-			InformationManager.DisplayMessage(new InformationMessage("MCM 中尚未填写模型名称。"));
-			ShowWelcomePopup(fromGate: true, ignoreSuppress: true);
+			InformationManager.DisplayMessage(new InformationMessage("MCM 中尚未填写" + CurrentApiModelDisplayName() + "。"));
+			ReopenCurrentApiEntry(ignoreSuppress: true);
 			return;
 		}
 		_apiValidationReturnToModelSelection = returnToModelSelection;
@@ -1081,11 +1395,11 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 					{
 						JObject jObject = JObject.Parse(text2);
 						string text3 = jObject["choices"]?[0]?["message"]?["content"]?.ToString();
-						text = string.IsNullOrWhiteSpace(text3) ? "MCM 中的 API 信息连接测试成功，可以进入下一步。" : ("MCM 中的 API 信息连接测试成功：" + text3.Trim());
+						text = string.IsNullOrWhiteSpace(text3) ? ("MCM 中的" + CurrentApiDisplayName() + "连接测试成功，可以进入下一步。") : ("MCM 中的" + CurrentApiDisplayName() + "连接测试成功：" + text3.Trim());
 					}
 					catch
 					{
-						text = "MCM 中的 API 信息连接测试成功，可以进入下一步。";
+						text = "MCM 中的" + CurrentApiDisplayName() + "连接测试成功，可以进入下一步。";
 					}
 				}
 				else
@@ -1102,7 +1416,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			catch (Exception ex)
 			{
 				failureHint = "通常是网络异常、证书或代理设置异常，或者 Base URL 填写不正确。";
-				text = "API 连接测试异常：" + ex.Message;
+				text = CurrentApiDisplayName() + "连接测试异常：" + ex.Message;
 			}
 			finally
 			{
@@ -1129,7 +1443,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		{
 			_welcomeInProgress = true;
 			_activeOnboardingStage = OnboardingUiStage.ApiValidation;
-			InformationManager.ShowInquiry(new InquiryData("正在测试已有配置", "正在使用 MCM 中的 API 信息进行连接测试，请稍候……\n\n测试完成后将自动进入下一步。\n如果你的API测试始终未成功，你也可以在此界面直接退出存档。", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "退出当前存档", "返回上一界面", ExitCurrentGameFromOnboarding, CancelApiValidationAndReturnToWelcome), pauseGameActiveState: true);
+			InformationManager.ShowInquiry(new InquiryData("正在测试现有配置", "正在使用 MCM 中的" + CurrentApiDisplayName() + "信息进行连接测试，请稍候……\n\n测试完成后将自动进入下一步。\n如果你的 API 测试始终未成功，你也可以在此界面直接退出存档。", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "退出当前存档", "返回上一界面", ExitCurrentGameFromOnboarding, CancelApiValidationAndReturnToWelcome), pauseGameActiveState: true);
 		}
 		catch
 		{
@@ -1139,7 +1453,14 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 	private void CancelApiValidationAndReturnToWelcome()
 	{
 		CancelApiValidationCore();
-		_pendingReturnToWelcome = true;
+		if (_apiValidationReturnToModelSelection)
+		{
+			ShowModelSelectionPopup();
+		}
+		else
+		{
+			ReopenCurrentApiEntry(ignoreSuppress: true);
+		}
 	}
 
 	private void CancelApiValidationCore()
@@ -1186,6 +1507,8 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			_pendingModelFetchModels = new List<string>();
 			_pendingUnexpectedResumeStage = OnboardingUiStage.None;
 			_welcomeInProgress = false;
+			_apiRepairFlowActive = false;
+			_currentApiSetupTarget = ApiSetupTarget.Primary;
 			_showApiValidationFailedHint = false;
 			_lastApiValidationFailureHint = "";
 			if (_baseUrlValidationInProgress)
@@ -1210,7 +1533,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		catch (Exception ex)
 		{
 			InformationManager.DisplayMessage(new InformationMessage("退出当前存档失败：" + ex.Message));
-			ShowWelcomePopup(fromGate: true, ignoreSuppress: true);
+			ReopenCurrentApiEntry(ignoreSuppress: true);
 		}
 	}
 

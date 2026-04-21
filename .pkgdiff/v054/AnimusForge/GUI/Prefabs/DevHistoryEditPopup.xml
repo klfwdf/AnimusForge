@@ -1,0 +1,65 @@
+<Prefab>
+  <Window>
+    <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#6F000000">
+      <Children>
+        <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="980" SuggestedHeight="760" HorizontalAlignment="Center" VerticalAlignment="Center">
+          <Children>
+            <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="StdAssets\Popup\canvas" />
+            <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="StdAssets\Popup\canvas_gradient" IsEnabled="false" />
+            <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" ExtendLeft="18" ExtendTop="18" ExtendRight="18" ExtendBottom="18" IsEnabled="false" />
+            <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="26" MarginRight="26" MarginTop="18" MarginBottom="18">
+              <Children>
+                <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="78" VerticalAlignment="Top" MarginLeft="4" MarginRight="4" Sprite="General\CharacterCreation\character_creation_background_gradient" AlphaFactor="0.35" Color="#000000FF">
+                  <Children>
+                    <AutoHideRichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Center" MarginLeft="20" MarginRight="20" Brush="Popup.Title.Text" Text="@TitleText" />
+                  </Children>
+                </Widget>
+                <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="15" VerticalAlignment="Top" MarginTop="84" Sprite="StdAssets\Popup\divider" />
+                <RichTextWidget Text="@DateText" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="32" VerticalAlignment="Top" MarginTop="102" MarginLeft="8" MarginRight="8" Brush="Popup.Description.Text" />
+                <RichTextWidget Text="@InputHintText" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Top" MarginTop="142" MarginLeft="8" MarginRight="8" Brush="Popup.Description.Text" />
+                <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="500" VerticalAlignment="Top" MarginTop="190" Sprite="BlankWhite" Color="#000000FF" AlphaFactor="0.18">
+                  <Children>
+                    <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" ExtendLeft="5" ExtendTop="5" ExtendRight="5" ExtendBottom="5" AlphaFactor="0.25" />
+                    <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" HorizontalAlignment="Center" VerticalAlignment="Center" MarginLeft="10" MarginRight="10" MarginTop="10" MarginBottom="10" Sprite="General\CharacterCreation\name_input_area">
+                      <Children>
+                        <ScrollablePanel WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipRect="EditorClipRect" InnerPanel="EditorClipRect\EditorInnerPanel" MarginLeft="8" MarginRight="16" MarginTop="8" MarginBottom="8" AutoHideScrollBars="true" VerticalScrollbar="..\EditorScrollbar\Scrollbar">
+                          <Children>
+                            <Widget Id="EditorClipRect" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipContents="true">
+                              <Children>
+                                <Widget Id="EditorInnerPanel" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MinHeight="440">
+                                  <Children>
+                                    <DevMultilineEditableTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MinHeight="440" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="12" MarginRight="12" MarginTop="12" MarginBottom="12" Brush="Review.NameInput.Text" Brush.FontSize="12" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Top" EditorFontSize="16" MaxLength="-1" RealText="@EditedText" IsObfuscationEnabled="false" Command.FocusGained="StartTyping" Command.FocusLost="StopTyping" />
+                                  </Children>
+                                </Widget>
+                              </Children>
+                            </Widget>
+                          </Children>
+                        </ScrollablePanel>
+                        <Standard.VerticalScrollbar Id="EditorScrollbar" HeightSizePolicy="StretchToParent" HorizontalAlignment="Right" VerticalAlignment="Bottom" MarginTop="8" MarginBottom="8" MarginRight="4" />
+                      </Children>
+                    </Widget>
+                  </Children>
+                </Widget>
+                <ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="55" HorizontalAlignment="Center" VerticalAlignment="Bottom" MarginBottom="10" LayoutImp.LayoutMethod="HorizontalLeftToRight">
+                  <Children>
+                    <ButtonWidget DoNotPassEventsToChildren="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="200" SuggestedHeight="55" HorizontalAlignment="Right" VerticalAlignment="Center" Brush="Popup.Cancel.Button" Command.Click="ExecuteCancel" UpdateChildrenStates="true">
+                      <Children>
+                        <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="22" VerticalAlignment="Center" MarginLeft="30" MarginRight="25" Brush="Popup.Button.Text" Text="@CancelText" />
+                      </Children>
+                    </ButtonWidget>
+                    <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="26" SuggestedHeight="1" />
+                    <ButtonWidget DoNotPassEventsToChildren="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="200" SuggestedHeight="55" HorizontalAlignment="Right" VerticalAlignment="Center" Brush="Popup.Done.Button" Command.Click="ExecuteSave" UpdateChildrenStates="true">
+                      <Children>
+                        <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="22" VerticalAlignment="Center" MarginLeft="30" MarginRight="25" Brush="Popup.Button.Text" Text="@SaveText" />
+                      </Children>
+                    </ButtonWidget>
+                  </Children>
+                </ListPanel>
+              </Children>
+            </Widget>
+          </Children>
+        </Widget>
+      </Children>
+    </Widget>
+  </Window>
+</Prefab>

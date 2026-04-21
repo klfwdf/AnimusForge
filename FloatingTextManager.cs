@@ -122,18 +122,12 @@ public class FloatingTextManager
 		{
 			return;
 		}
-		int num = rawLine.IndexOf(':');
-		if (num == -1)
-		{
-			num = rawLine.IndexOf('：');
-		}
 		NpcDataPacket npcDataPacket = null;
 		string text = "";
-		if (num > 0 && num < 30)
+		if (ShoutUtils.TrySplitNamePrefixedLineSafely(rawLine, out var prefix, out var rest, 30))
 		{
-			string name = rawLine.Substring(0, num).Trim();
-			text = rawLine.Substring(num + 1);
-			npcDataPacket = ResolveCandidate(name, advanceRoundRobin: false);
+			text = rest;
+			npcDataPacket = ResolveCandidate(prefix, advanceRoundRobin: false);
 		}
 		if (npcDataPacket != null)
 		{
@@ -150,30 +144,15 @@ public class FloatingTextManager
 			EmitPartialUpdate(_pendingSpeaker, content);
 		}
 	}
-
 	private void ProcessSingleLine(string rawLine)
 	{
-		string text = rawLine;
-		if (text.StartsWith("名字:") || text.StartsWith("Name:") || text.StartsWith("角色:"))
-		{
-			int num = text.IndexOf(':');
-			if (num >= 0)
-			{
-				text = text.Substring(num + 1).Trim();
-			}
-		}
-		int num2 = text.IndexOf(':');
-		if (num2 == -1)
-		{
-			num2 = text.IndexOf('：');
-		}
+		string text = ShoutUtils.StripKnownSpeakerMetadataPrefix(rawLine);
 		NpcDataPacket npcDataPacket = null;
 		string text2 = "";
-		if (num2 > 0 && num2 < 30)
+		if (ShoutUtils.TrySplitNamePrefixedLineSafely(text, out var prefix, out var rest, 30))
 		{
-			string name = text.Substring(0, num2).Trim();
-			text2 = text.Substring(num2 + 1).Trim();
-			npcDataPacket = ResolveCandidate(name, advanceRoundRobin: true);
+			text2 = rest.Trim();
+			npcDataPacket = ResolveCandidate(prefix, advanceRoundRobin: true);
 		}
 		if (npcDataPacket == null)
 		{

@@ -1,12 +1,16 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using SandBox;
 using SandBox.Missions.MissionLogics;
 using SandBox.Objects.Usables;
@@ -93,6 +97,15 @@ public static class AIConfigHandler
 		public int ReturnCap;
 
 		public Dictionary<string, GuardrailRuleEval> Rules = new Dictionary<string, GuardrailRuleEval>(StringComparer.OrdinalIgnoreCase);
+	}
+
+	private sealed class GuardrailAuxiliaryTopic
+	{
+		public int Number;
+
+		public string Label;
+
+		public string RuleId;
 	}
 
 	private sealed class GuardrailIntentInput
@@ -236,6 +249,8 @@ public static class AIConfigHandler
 
 	private static GuardrailEvalSnapshot _lastGuardrailEval;
 
+	private static readonly Regex AuxiliaryGuardrailNumberRegex = new Regex("\\d+", RegexOptions.Compiled);
+
 	public static string GlobalPrompt => ApplyPlayerDisplayNameToGuardrailText(_guardrail?.GlobalPrompt ?? "");
 
 	public static string GlobalGuardrail => ApplyPlayerDisplayNameToGuardrailText(_guardrail?.GlobalGuardrail ?? "");
@@ -330,6 +345,21 @@ public static class AIConfigHandler
 	}
 
 	public static bool KnowledgeRetrievalFromMcm => UseMcmKnowledgeRetrieval();
+
+	public static bool UseAuxiliaryRuleApiRetrieval
+	{
+		get
+		{
+			try
+			{
+				return DuelSettings.GetSettings()?.UseAuxiliaryRuleApi == true;
+			}
+			catch
+			{
+				return false;
+			}
+		}
+	}
 
 	public static bool DuelStakeEnabled => _guardrail?.DuelStake?.IsEnabled == true;
 
@@ -732,7 +762,7 @@ public static class AIConfigHandler
 	{
 		try
 		{
-			_guardrailSemanticRuntimeContext.Value = NormalizeSemanticText(contextText);
+			_guardrailSemanticRuntimeContext.Value = NormalizeGuardrailContextText(contextText);
 		}
 		catch
 		{
@@ -743,7 +773,7 @@ public static class AIConfigHandler
 	{
 		try
 		{
-			string text = NormalizeSemanticText(_guardrailSemanticRuntimeContext.Value);
+			string text = NormalizeGuardrailContextText(_guardrailSemanticRuntimeContext.Value);
 			if (string.IsNullOrWhiteSpace(text))
 			{
 				return "";
@@ -757,6 +787,32 @@ public static class AIConfigHandler
 		catch
 		{
 			return "";
+		}
+	}
+
+	private static string NormalizeGuardrailContextText(string text)
+	{
+		try
+		{
+			if (string.IsNullOrWhiteSpace(text))
+			{
+				return "";
+			}
+			string[] array = (text ?? "").Replace("\r\n", "\n").Replace('\r', '\n').Split(new char[1] { '\n' }, StringSplitOptions.None);
+			List<string> list = new List<string>();
+			for (int i = 0; i < array.Length; i++)
+			{
+				string text2 = (array[i] ?? "").Trim();
+				if (!string.IsNullOrWhiteSpace(text2))
+				{
+					list.Add(text2);
+				}
+			}
+			return string.Join("\n", list);
+		}
+		catch
+		{
+			return NormalizeSemanticText(text);
 		}
 	}
 
@@ -901,12 +957,14 @@ public static class AIConfigHandler
 		return dictionary;
 	}
 
-	private static GuardrailRulePromptConfig BuildLegacyRulePrompt(string id, bool enabled, string instruction, List<string> triggerKeywords, string group, int priority)
+	private static GuardrailRulePromptConfig BuildLegacyRulePrompt(string id, bool enabled, string instruction, List<string> triggerKeywords, string group, int priority, int topicNumber, string topicLabel)
 	{
 		return new GuardrailRulePromptConfig
 		{
 			Id = (id ?? "").Trim().ToLowerInvariant(),
 			IsEnabled = enabled,
+			TopicNumber = topicNumber,
+			TopicLabel = (topicLabel ?? "").Trim(),
 			Instruction = (instruction ?? ""),
 			TriggerKeywords = NormalizeTriggerKeywordList(triggerKeywords),
 			Group = (group ?? "").Trim(),
@@ -933,6 +991,8 @@ public static class AIConfigHandler
 				IsEnabled = src.IsEnabled,
 				Group = (src.Group ?? "").Trim(),
 				Priority = src.Priority,
+				TopicNumber = src.TopicNumber,
+				TopicLabel = (src.TopicLabel ?? "").Trim(),
 				Instruction = (src.Instruction ?? ""),
 				NonHeroInstruction = (src.NonHeroInstruction ?? ""),
 				TriggerKeywords = NormalizeTriggerKeywordList(src.TriggerKeywords),
@@ -951,10 +1011,10 @@ public static class AIConfigHandler
 		Dictionary<string, GuardrailRulePromptConfig> map = new Dictionary<string, GuardrailRulePromptConfig>(StringComparer.OrdinalIgnoreCase);
 		try
 		{
-			upsert(BuildLegacyRulePrompt("duel", _guardrail?.Duel?.IsEnabled ?? true, _guardrail?.Duel?.TriggerInstruction ?? "", _guardrail?.Duel?.AcceptKeywords ?? new List<string>(), "combat", 90));
-			upsert(BuildLegacyRulePrompt("reward", _guardrail?.Reward?.IsEnabled ?? true, _guardrail?.Reward?.Instruction ?? "", _guardrail?.Reward?.TriggerKeywords ?? new List<string>(), "trade", 80));
-			upsert(BuildLegacyRulePrompt("loan", _guardrail?.Loan?.IsEnabled ?? true, _guardrail?.Loan?.Instruction ?? "", _guardrail?.Loan?.TriggerKeywords ?? new List<string>(), "finance", 85));
-			upsert(BuildLegacyRulePrompt("surroundings", _guardrail?.Surroundings?.IsEnabled ?? true, _guardrail?.Surroundings?.Instruction ?? "", _guardrail?.Surroundings?.TriggerKeywords ?? new List<string>(), "world", 70));
+			upsert(BuildLegacyRulePrompt("duel", _guardrail?.Duel?.IsEnabled ?? true, _guardrail?.Duel?.TriggerInstruction ?? "", _guardrail?.Duel?.AcceptKeywords ?? new List<string>(), "combat", 90, _guardrail?.Duel?.TopicNumber ?? 0, _guardrail?.Duel?.TopicLabel ?? ""));
+			upsert(BuildLegacyRulePrompt("reward", _guardrail?.Reward?.IsEnabled ?? true, _guardrail?.Reward?.Instruction ?? "", _guardrail?.Reward?.TriggerKeywords ?? new List<string>(), "trade", 80, _guardrail?.Reward?.TopicNumber ?? 0, _guardrail?.Reward?.TopicLabel ?? ""));
+			upsert(BuildLegacyRulePrompt("loan", _guardrail?.Loan?.IsEnabled ?? true, _guardrail?.Loan?.Instruction ?? "", _guardrail?.Loan?.TriggerKeywords ?? new List<string>(), "finance", 85, _guardrail?.Loan?.TopicNumber ?? 0, _guardrail?.Loan?.TopicLabel ?? ""));
+			upsert(BuildLegacyRulePrompt("surroundings", _guardrail?.Surroundings?.IsEnabled ?? true, _guardrail?.Surroundings?.Instruction ?? "", _guardrail?.Surroundings?.TriggerKeywords ?? new List<string>(), "world", 70, _guardrail?.Surroundings?.TopicNumber ?? 0, _guardrail?.Surroundings?.TopicLabel ?? ""));
 			if (_guardrail?.RulePrompts != null && _guardrail.RulePrompts.Count > 0)
 			{
 				for (int i = 0; i < _guardrail.RulePrompts.Count; i++)
@@ -1269,6 +1329,437 @@ public static class AIConfigHandler
 		return text + "||" + text2 + "||" + text3;
 	}
 
+	private static bool TryGetAuxiliaryRuleRoutingConfig(out string apiUrl, out string apiKey, out string modelName)
+	{
+		apiUrl = "";
+		apiKey = "";
+		modelName = "";
+		try
+		{
+			DuelSettings settings = DuelSettings.GetSettings();
+			if (settings == null || !settings.UseAuxiliaryRuleApi)
+			{
+				return false;
+			}
+			apiUrl = DuelSettings.GetEffectiveApiUrl(settings.AuxiliaryApiUrl ?? "");
+			apiKey = (settings.AuxiliaryApiKey ?? "").Trim();
+			modelName = (settings.AuxiliaryModelName ?? "").Trim();
+			bool flag = !string.IsNullOrWhiteSpace(apiUrl) && !string.IsNullOrWhiteSpace(apiKey) && !string.IsNullOrWhiteSpace(modelName);
+			if (!flag)
+			{
+				LogAuxiliaryRouterTokenTrace("auxiliary_router_config_invalid", null, "[AUXILIARY ROUTER CONFIG]" + "\n" + "enabled=True" + "\n" + "url=" + (string.IsNullOrWhiteSpace(apiUrl) ? "(empty)" : apiUrl) + "\n" + "model=" + (string.IsNullOrWhiteSpace(modelName) ? "(empty)" : modelName) + "\n" + "apiKey=" + (string.IsNullOrWhiteSpace(apiKey) ? "(empty)" : "(present)") + "\n" + "reason=missing_required_field", 0);
+			}
+			return flag;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static object[] BuildAuxiliaryRouterMessages(string prompt)
+	{
+		return new object[2]
+		{
+			new
+			{
+				role = "system",
+				content = "你是一个对话检索工具，只能输出编号列表。"
+			},
+			new
+			{
+				role = "user",
+				content = prompt ?? ""
+			}
+		};
+	}
+
+	private static string BuildAuxiliaryRouterExceptionText(Exception ex)
+	{
+		try
+		{
+			if (ex == null)
+			{
+				return "unknown_exception";
+			}
+			StringBuilder stringBuilder = new StringBuilder();
+			Exception ex2 = ex;
+			int num = 0;
+			while (ex2 != null && num < 4)
+			{
+				if (stringBuilder.Length > 0)
+				{
+					stringBuilder.Append(" | ");
+				}
+				stringBuilder.Append(ex2.GetType().Name).Append(": ").Append(ex2.Message);
+				ex2 = ex2.InnerException;
+				num++;
+			}
+			return stringBuilder.ToString();
+		}
+		catch
+		{
+			return ex?.Message ?? "unknown_exception";
+		}
+	}
+
+	private static void LogAuxiliaryRouterTokenTrace(string mode, IEnumerable<object> messages, string outputContent, int outputTokens = -1)
+	{
+		try
+		{
+			int num = Logger.EstimateTokensFromMessages(messages);
+			int num2 = ((outputTokens >= 0) ? outputTokens : Logger.EstimateTokens(outputContent));
+			Logger.RecordTokenStats(num, num2, messages, outputContent, mode);
+		}
+		catch
+		{
+		}
+	}
+
+	private static List<GuardrailAuxiliaryTopic> GetEligibleAuxiliaryGuardrailTopics(IEnumerable<string> availableRuleIds)
+	{
+		HashSet<string> hashSet = new HashSet<string>((availableRuleIds ?? Enumerable.Empty<string>()).Where((string x) => !string.IsNullOrWhiteSpace(x)), StringComparer.OrdinalIgnoreCase);
+		List<GuardrailAuxiliaryTopic> list = new List<GuardrailAuxiliaryTopic>();
+		Dictionary<string, GuardrailRulePromptConfig> dictionary = null;
+		try
+		{
+			dictionary = BuildRulePromptRegistry();
+		}
+		catch
+		{
+			dictionary = new Dictionary<string, GuardrailRulePromptConfig>(StringComparer.OrdinalIgnoreCase);
+		}
+		foreach (GuardrailRulePromptConfig value in dictionary.Values)
+		{
+			string text = (value?.Id ?? "").Trim();
+			string text2 = (value?.TopicLabel ?? "").Trim();
+			int num = value?.TopicNumber ?? 0;
+			if (num > 0 && !string.IsNullOrWhiteSpace(text) && !string.IsNullOrWhiteSpace(text2) && hashSet.Contains(text) && IsRuleCurrentlyEligibleForRag(text))
+			{
+				list.Add(new GuardrailAuxiliaryTopic
+				{
+					Number = num,
+					Label = text2,
+					RuleId = text
+				});
+			}
+		}
+		list = list.OrderBy((GuardrailAuxiliaryTopic x) => x.Number).ToList();
+		return list;
+	}
+
+	private static string BuildAuxiliaryGuardrailHistoryBlock(string runtimeGuardrailContext, string secondaryText)
+	{
+		List<string> list = new List<string>();
+		try
+		{
+			string text = NormalizeGuardrailContextText(runtimeGuardrailContext);
+			if (!string.IsNullOrWhiteSpace(text))
+			{
+				string[] array = text.Replace("\r\n", "\n").Replace('\r', '\n').Split(new char[1] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
+				for (int i = 0; i < array.Length; i++)
+				{
+					string text2 = NormalizeSemanticText(array[i]);
+					if (IsAuxiliaryDialogueHistoryLine(text2))
+					{
+						list.Add(text2);
+					}
+				}
+			}
+			string text3 = NormalizeSemanticText(secondaryText);
+			if (!string.IsNullOrWhiteSpace(text3) && HasAuxiliaryConversationHistory(list))
+			{
+				list.Add("上一句NPC发言：" + text3);
+			}
+		}
+		catch
+		{
+		}
+		if (list.Count <= 0)
+		{
+			return "（无）";
+		}
+		int num = Math.Max(3, Math.Min(6, list.Count));
+		if (list.Count > num)
+		{
+			list = list.Skip(list.Count - num).ToList();
+		}
+		return string.Join("\n", list);
+	}
+
+	private static bool IsAuxiliaryDialogueHistoryLine(string line)
+	{
+		string text = (line ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return false;
+		}
+		if (text.StartsWith("[AFEF玩家行为补充]", StringComparison.Ordinal) || text.StartsWith("[AFEF NPC行为补充]", StringComparison.Ordinal))
+		{
+			return false;
+		}
+		if (text.StartsWith("vanilla_issue:", StringComparison.OrdinalIgnoreCase))
+		{
+			return false;
+		}
+		return true;
+	}
+
+	private static bool HasAuxiliaryConversationHistory(List<string> lines)
+	{
+		try
+		{
+			if (lines == null || lines.Count == 0)
+			{
+				return false;
+			}
+			for (int i = 0; i < lines.Count; i++)
+			{
+				string text = (lines[i] ?? "").Trim();
+				if (string.IsNullOrWhiteSpace(text))
+				{
+					continue;
+				}
+				if (text.StartsWith("[AFEF玩家行为补充]", StringComparison.Ordinal) || text.StartsWith("[AFEF NPC行为补充]", StringComparison.Ordinal))
+				{
+					continue;
+				}
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		return false;
+	}
+
+	private static string BuildAuxiliaryGuardrailRoutingPrompt(string userText, string secondaryText, string runtimeGuardrailContext, List<GuardrailAuxiliaryTopic> topics, int topN)
+	{
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.AppendLine("你是一个对话检索工具，请分析如下对话，判断和什么话题有关。");
+		stringBuilder.AppendLine();
+		stringBuilder.AppendLine("当前玩家输入：");
+		stringBuilder.AppendLine(string.IsNullOrWhiteSpace(userText) ? "（无）" : NormalizeSemanticText(userText));
+		stringBuilder.AppendLine();
+		stringBuilder.AppendLine("场景互动历史（往上3轮对话）：");
+		stringBuilder.AppendLine(BuildAuxiliaryGuardrailHistoryBlock(runtimeGuardrailContext, secondaryText));
+		for (int i = 0; i < topics.Count; i++)
+		{
+			GuardrailAuxiliaryTopic guardrailAuxiliaryTopic = topics[i];
+			if (guardrailAuxiliaryTopic != null)
+			{
+				stringBuilder.AppendLine(guardrailAuxiliaryTopic.Number + "：" + guardrailAuxiliaryTopic.Label);
+			}
+		}
+		stringBuilder.AppendLine("请选择最相似的" + Math.Max(1, topN) + "个话题，然后只输出编号(格式：8,1,2,3)不要输出其他任何内容。");
+		return stringBuilder.ToString().Trim();
+	}
+
+	private static bool TryCallAuxiliaryRuleRouterApi(string apiUrl, string apiKey, string modelName, string prompt, out string content, out string error)
+	{
+		content = "";
+		error = "";
+		object[] array = BuildAuxiliaryRouterMessages(prompt);
+		try
+		{
+			var value = new
+			{
+				model = modelName,
+				messages = array,
+				stream = false,
+				max_tokens = 48,
+				temperature = 0.0
+			};
+			string jsonBody = JsonConvert.SerializeObject(value);
+			using HttpRequestMessage httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, apiUrl);
+			httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
+			httpRequestMessage.Content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
+			HttpResponseMessage result = DuelSettings.GlobalClient.SendAsync(httpRequestMessage).GetAwaiter().GetResult();
+			string text = result.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+			if (!result.IsSuccessStatusCode)
+			{
+				error = "http_" + (int)result.StatusCode;
+				LogAuxiliaryRouterTokenTrace("auxiliary_router_http_error", array, "[AUXILIARY ROUTER HTTP]" + "\n" + "url=" + apiUrl + "\n" + "model=" + modelName + "\n" + "status=" + (int)result.StatusCode + " " + (result.ReasonPhrase ?? "") + "\n" + "response_body=" + "\n" + (text ?? ""), 0);
+				return false;
+			}
+			JObject jObject = JObject.Parse(text);
+			content = (jObject["choices"]?[0]?["message"]?["content"]?.ToString() ?? "").Trim();
+			if (string.IsNullOrWhiteSpace(content))
+			{
+				error = "empty_content";
+				LogAuxiliaryRouterTokenTrace("auxiliary_router_empty_content", array, "[AUXILIARY ROUTER HTTP]" + "\n" + "url=" + apiUrl + "\n" + "model=" + modelName + "\n" + "status=" + (int)result.StatusCode + " " + (result.ReasonPhrase ?? "") + "\n" + "response_body=" + "\n" + (text ?? ""), 0);
+				return false;
+			}
+			LogAuxiliaryRouterTokenTrace("auxiliary_router_http", array, "[AUXILIARY ROUTER HTTP]" + "\n" + "url=" + apiUrl + "\n" + "model=" + modelName + "\n" + "status=" + (int)result.StatusCode + " " + (result.ReasonPhrase ?? "") + "\n" + "ai_response=" + "\n" + content + "\n" + "raw_response=" + "\n" + (text ?? ""), Logger.EstimateTokens(content));
+			return true;
+		}
+		catch (Exception ex)
+		{
+			error = BuildAuxiliaryRouterExceptionText(ex);
+			LogAuxiliaryRouterTokenTrace("auxiliary_router_exception", array, "[AUXILIARY ROUTER EXCEPTION]" + "\n" + "url=" + apiUrl + "\n" + "model=" + modelName + "\n" + "error=" + error + "\n" + "stack=" + "\n" + (ex?.StackTrace ?? ""), 0);
+			return false;
+		}
+	}
+
+	private static List<int> ParseAuxiliaryGuardrailTopicNumbers(string content)
+	{
+		List<int> list = new List<int>();
+		try
+		{
+			string text = (content ?? "").Trim();
+			if (string.IsNullOrWhiteSpace(text))
+			{
+				return list;
+			}
+			HashSet<int> hashSet = new HashSet<int>();
+			foreach (Match item in AuxiliaryGuardrailNumberRegex.Matches(text))
+			{
+				if (item == null || !int.TryParse(item.Value, out var result) || result < 1 || result > 12 || !hashSet.Add(result))
+				{
+					continue;
+				}
+				list.Add(result);
+			}
+		}
+		catch
+		{
+		}
+		return list;
+	}
+
+	private static bool TryBuildAuxiliaryGuardrailEvalSnapshot(string userText, string runtimeGuardrailContext, string secondaryText, string cacheKey, out GuardrailEvalSnapshot snapshot)
+	{
+		snapshot = null;
+		try
+		{
+			if (!TryGetAuxiliaryRuleRoutingConfig(out var apiUrl, out var apiKey, out var modelName))
+			{
+				return false;
+			}
+			List<GuardrailRulePromptConfig> allEnabledRulePrompts = GetAllEnabledRulePrompts();
+			if (allEnabledRulePrompts == null || allEnabledRulePrompts.Count <= 0)
+			{
+				return false;
+			}
+			snapshot = new GuardrailEvalSnapshot
+			{
+				Key = cacheKey,
+				MatchMode = "auxiliary_api",
+				ReturnCap = GuardrailRuleReturnCap
+			};
+			for (int i = 0; i < allEnabledRulePrompts.Count; i++)
+			{
+				GuardrailRulePromptConfig guardrailRulePromptConfig = allEnabledRulePrompts[i];
+				if (guardrailRulePromptConfig == null || string.IsNullOrWhiteSpace(guardrailRulePromptConfig.Id))
+				{
+					continue;
+				}
+				string text = guardrailRulePromptConfig.Id.Trim();
+				snapshot.Rules[text] = new GuardrailRuleEval
+				{
+					RuleTag = text,
+					MatchedIntent = NormalizeSemanticText(userText),
+					MatchMode = "auxiliary_api",
+					Rank = int.MaxValue,
+					RejectReason = "auxiliary_api_miss"
+				};
+			}
+			List<GuardrailAuxiliaryTopic> list = GetEligibleAuxiliaryGuardrailTopics(snapshot.Rules.Keys);
+			if (list.Count <= 0)
+			{
+				snapshot = null;
+				return false;
+			}
+			string text2 = BuildAuxiliaryGuardrailRoutingPrompt(userText, secondaryText, runtimeGuardrailContext, list, snapshot.ReturnCap);
+			if (!TryCallAuxiliaryRuleRouterApi(apiUrl, apiKey, modelName, text2, out var content, out var error))
+			{
+				Logger.Log("GuardrailSemantic", "auxiliary_router failed reason=" + error);
+				snapshot = null;
+				return false;
+			}
+			List<int> list2 = ParseAuxiliaryGuardrailTopicNumbers(content);
+			if (list2.Count <= 0)
+			{
+				Logger.Log("GuardrailSemantic", "auxiliary_router failed reason=parse_empty raw=" + JsonConvert.ToString(content ?? ""));
+				LogAuxiliaryRouterTokenTrace("auxiliary_router_parse_empty", BuildAuxiliaryRouterMessages(text2), "[AUXILIARY ROUTER PARSE]" + "\n" + "url=" + apiUrl + "\n" + "model=" + modelName + "\n" + "reason=parse_empty" + "\n" + "ai_response=" + "\n" + (content ?? ""), 0);
+				snapshot = null;
+				return false;
+			}
+			HashSet<string> hashSet2 = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+			List<string> list3 = new List<string>();
+			for (int j = 0; j < list2.Count; j++)
+			{
+				GuardrailAuxiliaryTopic guardrailAuxiliaryTopic = list.FirstOrDefault((GuardrailAuxiliaryTopic x) => x != null && x.Number == list2[j]);
+				string text3 = guardrailAuxiliaryTopic?.RuleId ?? "";
+				if (!string.IsNullOrWhiteSpace(text3) && hashSet2.Add(text3))
+				{
+					list3.Add(text3);
+				}
+				if (list3.Count >= snapshot.ReturnCap)
+				{
+					break;
+				}
+			}
+			if (list3.Count <= 0)
+			{
+				snapshot = null;
+				return false;
+			}
+			float num = 0f;
+			for (int k = 0; k < list3.Count; k++)
+			{
+				string text4 = list3[k];
+				if (!snapshot.Rules.TryGetValue(text4, out var value2))
+				{
+					continue;
+				}
+				GuardrailAuxiliaryTopic guardrailAuxiliaryTopic2 = list.FirstOrDefault((GuardrailAuxiliaryTopic x) => x != null && string.Equals(x.RuleId, text4, StringComparison.OrdinalIgnoreCase));
+				float num2 = Math.Max(0.2f, 1f - (float)k * 0.08f);
+				value2.MatchedSeed = guardrailAuxiliaryTopic2?.Label ?? ("topic_" + (k + 1));
+				value2.RawInput = num2;
+				value2.MixedRaw = num2;
+				value2.AmpScore = num2;
+				value2.RerankScore = num2;
+				value2.Candidate = true;
+				value2.AbsHit = true;
+				value2.Hit = true;
+				value2.Rank = k + 1;
+				value2.RejectReason = $"auxiliary_api_return({k + 1}/{snapshot.ReturnCap})";
+				num += num2;
+			}
+			float num3 = (list3.Count > 0) ? (num / (float)list3.Count) : 0f;
+			for (int l = 0; l < list3.Count; l++)
+			{
+				string text5 = list3[l];
+				if (!snapshot.Rules.TryGetValue(text5, out var value3))
+				{
+					continue;
+				}
+				value3.Mean = num3;
+				if (l == 0 && list3.Count > 1 && snapshot.Rules.TryGetValue(list3[1], out var value4))
+				{
+					value3.TopGap = Math.Max(0f, value3.AmpScore - value4.AmpScore);
+					value3.MaxOther = value4.AmpScore;
+					value3.MaxOtherTag = value4.RuleTag;
+				}
+				else if (list3.Count > 0)
+				{
+					value3.TopGap = 1f;
+					value3.MaxOther = (l > 0 && snapshot.Rules.TryGetValue(list3[0], out var value5)) ? value5.AmpScore : 0f;
+					value3.MaxOtherTag = ((l > 0) ? list3[0] : "");
+				}
+			}
+			Logger.Log("GuardrailSemantic", $"auxiliary_router success returnCap={snapshot.ReturnCap} raw={JsonConvert.ToString(content ?? "")} selected={string.Join(",", list3)}");
+			return true;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("GuardrailSemantic", "auxiliary_router exception=" + ex.Message);
+			snapshot = null;
+			return false;
+		}
+	}
+
 	private static bool TryGetGuardrailEvalSnapshot(string userText, string secondaryText, out GuardrailEvalSnapshot snapshot)
 	{
 		snapshot = null;
@@ -1277,7 +1768,7 @@ public static class AIConfigHandler
 		try
 		{
 			string runtimeGuardrailContext = GetRuntimeGuardrailContext();
-			string text = BuildGuardrailEvalKey(userText, runtimeGuardrailContext, secondaryText);
+			string text = BuildGuardrailEvalKey(userText, runtimeGuardrailContext, secondaryText) + (UseAuxiliaryRuleApiRetrieval ? "|aux" : "|rag");
 			lock (_guardrailSemanticLock)
 			{
 				if (_lastGuardrailEval != null && string.Equals(_lastGuardrailEval.Key, text, StringComparison.Ordinal))
@@ -1285,6 +1776,14 @@ public static class AIConfigHandler
 					snapshot = _lastGuardrailEval;
 					return snapshot != null && snapshot.Rules != null && snapshot.Rules.Count > 0;
 				}
+			}
+			if (UseAuxiliaryRuleApiRetrieval && TryBuildAuxiliaryGuardrailEvalSnapshot(userText, runtimeGuardrailContext, secondaryText, text, out snapshot))
+			{
+				lock (_guardrailSemanticLock)
+				{
+					_lastGuardrailEval = snapshot;
+				}
+				return snapshot != null && snapshot.Rules != null && snapshot.Rules.Count > 0;
 			}
 			appendInputs(SplitGuardrailIntents(userText, IntentQueryOptimizer.MaxIntentCountPerSpeaker), IntentQueryOptimizer.MaxIntentCountPerSpeaker, 1f);
 			string text2 = NormalizeSemanticText(secondaryText);
@@ -2210,6 +2709,8 @@ public static class AIConfigHandler
 			return text.IndexOf("[ACTION:KINGDOM_SERVICE:", StringComparison.OrdinalIgnoreCase) >= 0;
 		case "marriage":
 			return text.IndexOf("[ACTION:MARRIAGE_", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("[ACTION:DIVORCE:", StringComparison.OrdinalIgnoreCase) >= 0;
+		case "party_transfer":
+			return text.IndexOf("[ATT:", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("[ATP:", StringComparison.OrdinalIgnoreCase) >= 0;
 		case "lords_hall_access":
 			return text.IndexOf("[ACTION:OPEN_LORDS_HALL]", StringComparison.OrdinalIgnoreCase) >= 0;
 		default:
@@ -2894,6 +3395,61 @@ public static class AIConfigHandler
 			["trustIndex"] = trustLevelIndex.ToString(),
 			["trustLevel"] = RewardSystemBehavior.GetTrustLevelText(num)
 		};
+	}
+
+	private static Dictionary<string, string> BuildPartyTransferRuntimeTokens(Hero targetHero, CharacterObject targetCharacter = null)
+	{
+		int num = 0;
+		int trustLevelIndex = 6;
+		try
+		{
+			num = ResolveRuntimeTrustValue(targetHero, targetCharacter);
+			trustLevelIndex = RewardSystemBehavior.GetTrustLevelIndex(num);
+		}
+		catch
+		{
+			num = 0;
+			trustLevelIndex = 6;
+		}
+		string text = MyBehavior.BuildPlayerPublicDisplayNameForExternal();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			text = "玩家";
+		}
+		return new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+		{
+			["playerName"] = text,
+			["trustCurrent"] = num.ToString(),
+			["trustIndex"] = trustLevelIndex.ToString(),
+			["trustLevel"] = RewardSystemBehavior.GetTrustLevelText(num)
+		};
+	}
+
+	public static string BuildRuntimePartyTransferInstructionForExternal(Hero targetHero = null, CharacterObject targetCharacter = null)
+	{
+		try
+		{
+			Hero hero = targetHero ?? ResolveConversationTargetHero();
+			CharacterObject characterObject = targetCharacter ?? ResolveConversationTargetCharacter();
+			int num = 6;
+			try
+			{
+				num = RewardSystemBehavior.GetTrustLevelIndex(ResolveRuntimeTrustValue(hero, characterObject));
+			}
+			catch
+			{
+				num = 6;
+			}
+			string text = ResolveRuleRuntimeText("party_transfer", "level_" + num, forConstraint: false, BuildPartyTransferRuntimeTokens(hero, characterObject));
+			if (!string.IsNullOrWhiteSpace(text))
+			{
+				return text.Trim();
+			}
+		}
+		catch
+		{
+		}
+		return GetGuardrailRuleInstruction("party_transfer");
 	}
 
 	public static string BuildRuntimeRewardInstructionForExternal(Hero targetHero = null, CharacterObject targetCharacter = null)

@@ -1,0 +1,24 @@
+﻿{
+  "Id": "rule_响马",
+  "Keywords": [
+    "响马"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "响马团是一群库赛特破落贵族带领的强盗团，他们来去如风，行踪不定，极难抓捕，是最棘手的强盗"
+    }
+  ],
+  "TextMappings": []
+}

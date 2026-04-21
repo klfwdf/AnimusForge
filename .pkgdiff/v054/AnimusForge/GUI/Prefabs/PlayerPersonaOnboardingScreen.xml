@@ -1,0 +1,197 @@
+<Prefab>
+  <Window>
+    <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent">
+      <Children>
+        <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare" Color="#aa0f1217" />
+        <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1500" SuggestedHeight="900" HorizontalAlignment="Center" VerticalAlignment="Center" Sprite="BlankWhiteSquare_9" Color="#ff1a1f27">
+          <Children>
+            <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="36" MarginRight="36" MarginTop="28" MarginBottom="24">
+              <Children>
+                <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren">
+                  <Children>
+                    <TextWidget Text="AnimusForge 玩家角色介绍" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" Brush.FontSize="32" Color="#fff2f2f2" />
+                    <TextWidget Text="首次导入完成后，你可以在这里定义“别人如何称呼你”、你的基础角色介绍，以及不同 NPC 对你的不同看法。" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginTop="42" Brush.FontSize="18" Color="#ffbfc7d1" />
+                    <TextWidget Text="这里保存的是知识系统数据。关键词决定别人如何提到你，角色介绍和条件看法会在命中时注入到对话中。" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginTop="74" Brush.FontSize="16" Color="#ff93a1b1" />
+                  </Children>
+                </Widget>
+
+                <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="1" MarginTop="18" MarginBottom="18" Sprite="BlankWhiteSquare" Color="#334b5664" />
+
+                <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" LayoutImp.LayoutMethod="HorizontalLeftToRight">
+                  <Children>
+                    <Widget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="430" Sprite="BlankWhiteSquare_9" Color="#ff202632">
+                      <Children>
+                        <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="18" MarginRight="18" MarginTop="18" MarginBottom="18">
+                          <Children>
+                            <TextWidget Text="角色称呼 / 关键词" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" Brush.FontSize="24" Color="#fff3f3f3" />
+                            <TextWidget Text="先填别人会怎么称呼你的角色。可填多个。保存后系统会优先把第一个称呼当作玩家公开称呼。" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginTop="34" Brush.FontSize="15" Color="#ff9ba8b8" />
+
+                            <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="52" MarginTop="18" Sprite="BlankWhiteSquare_9" Color="#ff11151b">
+                              <Children>
+                                <EditableTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="14" MarginRight="14" VerticalAlignment="Center" HorizontalAlignment="Center" RealText="@KeywordInput" IsObfuscationEnabled="false" Brush.FontSize="20" Color="#fff1f1f1" />
+                              </Children>
+                            </Widget>
+
+                            <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginTop="12" LayoutImp.LayoutMethod="HorizontalLeftToRight">
+                              <Children>
+                                <ButtonWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="44" MarginRight="6" DoNotPassEventsToChildren="true" Command.Click="ExecuteAddKeyword">
+                                  <Children>
+                                    <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#ff3c6e91" />
+                                    <TextWidget Text="添加称呼" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" Brush.FontSize="18" Color="#ffffffff" />
+                                  </Children>
+                                </ButtonWidget>
+                                <ButtonWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="44" MarginLeft="6" DoNotPassEventsToChildren="true" Command.Click="ExecuteRemoveKeyword" IsEnabled="@CanRemoveKeyword">
+                                  <Children>
+                                    <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#ff6a3844" />
+                                    <TextWidget Text="移除选中" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" Brush.FontSize="18" Color="#ffffffff" />
+                                  </Children>
+                                </ButtonWidget>
+                              </Children>
+                            </ListPanel>
+
+                            <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="420" MarginTop="16" Sprite="BlankWhiteSquare_9" Color="#8011161d">
+                              <Children>
+                                <ListPanel DataSource="{Keywords}" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginLeft="12" MarginRight="12" MarginTop="12" LayoutImp.LayoutMethod="VerticalTopToBottom">
+                                  <ItemTemplate>
+                                    <ButtonWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="46" MarginBottom="8" DoNotPassEventsToChildren="true" Command.Click="ExecuteSelect">
+                                      <Children>
+                                        <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="@BackgroundColor" />
+                                        <TextWidget Text="@KeywordText" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginLeft="14" MarginRight="14" VerticalAlignment="Center" Brush.FontSize="18" Color="#fff8f8f8" />
+                                      </Children>
+                                    </ButtonWidget>
+                                  </ItemTemplate>
+                                </ListPanel>
+                              </Children>
+                            </Widget>
+                          </Children>
+                        </ListPanel>
+                      </Children>
+                    </Widget>
+
+                    <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="18">
+                      <Children>
+                        <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent">
+                          <Children>
+                            <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="220" Sprite="BlankWhiteSquare_9" Color="#ff202632">
+                              <Children>
+                                <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="18" MarginRight="18" MarginTop="18" MarginBottom="18">
+                                  <Children>
+                                    <TextWidget Text="通用角色介绍" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" Brush.FontSize="24" Color="#fff3f3f3" />
+                                    <TextWidget Text="这是所有人都适用的基础介绍。你可以把身世、性格、自我认知、想让 NPC 理解你的信息写在这里。" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginTop="34" Brush.FontSize="15" Color="#ff9ba8b8" />
+                                    <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginTop="16" Sprite="BlankWhiteSquare_9" Color="#8011161d">
+                                      <Children>
+                                        <TextWidget Text="@BaseIntroPreview" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="14" MarginRight="14" MarginTop="12" MarginBottom="12" Brush.FontSize="17" Color="#ffe7edf5" />
+                                      </Children>
+                                    </Widget>
+                                    <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginTop="14" LayoutImp.LayoutMethod="HorizontalLeftToRight">
+                                      <Children>
+                                        <ButtonWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="42" MarginRight="6" DoNotPassEventsToChildren="true" Command.Click="ExecuteEditBaseIntro">
+                                          <Children>
+                                            <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#ff3c6e91" />
+                                            <TextWidget Text="编辑介绍" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" Brush.FontSize="18" Color="#ffffffff" />
+                                          </Children>
+                                        </ButtonWidget>
+                                        <ButtonWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="42" MarginLeft="6" DoNotPassEventsToChildren="true" Command.Click="ExecuteClearBaseIntro">
+                                          <Children>
+                                            <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#ff6a3844" />
+                                            <TextWidget Text="清空介绍" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" Brush.FontSize="18" Color="#ffffffff" />
+                                          </Children>
+                                        </ButtonWidget>
+                                      </Children>
+                                    </ListPanel>
+                                  </Children>
+                                </ListPanel>
+                              </Children>
+                            </Widget>
+
+                            <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginTop="18" Sprite="BlankWhiteSquare_9" Color="#ff202632">
+                              <Children>
+                                <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="18" MarginRight="18" MarginTop="18" MarginBottom="18">
+                                  <Children>
+                                    <TextWidget Text="不同的人怎么看你" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" Brush.FontSize="24" Color="#fff3f3f3" />
+                                    <TextWidget Text="这里新增的是“条件化提示词”。条件针对当前与你互动的 NPC，例如领主、要人、士兵、某个 Hero、某种文化或王国。" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginTop="34" Brush.FontSize="15" Color="#ff9ba8b8" />
+
+                                    <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginTop="16" Sprite="BlankWhiteSquare_9" Color="#8011161d">
+                                      <Children>
+                                        <ListPanel DataSource="{Opinions}" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginLeft="12" MarginRight="12" MarginTop="12" LayoutImp.LayoutMethod="VerticalTopToBottom">
+                                          <ItemTemplate>
+                                            <ButtonWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="68" MarginBottom="8" DoNotPassEventsToChildren="true" Command.Click="ExecuteSelect">
+                                              <Children>
+                                                <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="@BackgroundColor" />
+                                                <TextWidget Text="@TitleText" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginLeft="14" MarginRight="14" MarginTop="10" Brush.FontSize="18" Color="#ffffffff" />
+                                                <TextWidget Text="@PreviewText" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginLeft="14" MarginRight="14" MarginTop="34" Brush.FontSize="14" Color="#ffd8e3ef" />
+                                              </Children>
+                                            </ButtonWidget>
+                                          </ItemTemplate>
+                                        </ListPanel>
+                                      </Children>
+                                    </Widget>
+
+                                    <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginTop="14" LayoutImp.LayoutMethod="HorizontalLeftToRight">
+                                      <Children>
+                                        <ButtonWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="42" MarginRight="6" DoNotPassEventsToChildren="true" Command.Click="ExecuteAddOpinion">
+                                          <Children>
+                                            <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#ff3c6e91" />
+                                            <TextWidget Text="新增看法" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" Brush.FontSize="17" Color="#ffffffff" />
+                                          </Children>
+                                        </ButtonWidget>
+                                        <ButtonWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="42" MarginLeft="6" MarginRight="6" DoNotPassEventsToChildren="true" Command.Click="ExecuteEditOpinionContent" IsEnabled="@CanEditOpinion">
+                                          <Children>
+                                            <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#ff4b647e" />
+                                            <TextWidget Text="编辑内容" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" Brush.FontSize="17" Color="#ffffffff" />
+                                          </Children>
+                                        </ButtonWidget>
+                                        <ButtonWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="42" MarginLeft="6" MarginRight="6" DoNotPassEventsToChildren="true" Command.Click="ExecuteEditOpinionCondition" IsEnabled="@CanEditOpinion">
+                                          <Children>
+                                            <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#ff4b647e" />
+                                            <TextWidget Text="编辑条件" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" Brush.FontSize="17" Color="#ffffffff" />
+                                          </Children>
+                                        </ButtonWidget>
+                                        <ButtonWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="42" MarginLeft="6" DoNotPassEventsToChildren="true" Command.Click="ExecuteRemoveOpinion" IsEnabled="@CanRemoveOpinion">
+                                          <Children>
+                                            <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#ff6a3844" />
+                                            <TextWidget Text="删除" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" Brush.FontSize="17" Color="#ffffffff" />
+                                          </Children>
+                                        </ButtonWidget>
+                                      </Children>
+                                    </ListPanel>
+                                  </Children>
+                                </ListPanel>
+                              </Children>
+                            </Widget>
+                          </Children>
+                        </ListPanel>
+                      </Children>
+                    </Widget>
+                  </Children>
+                </ListPanel>
+
+                <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="78" MarginTop="18" Sprite="BlankWhiteSquare_9" Color="#ff18202a">
+                  <Children>
+                    <TextWidget Text="@StatusText" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginLeft="18" MarginRight="360" VerticalAlignment="Center" Brush.FontSize="17" Color="#ffe5edf7" />
+                    <ListPanel WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="320" HorizontalAlignment="Right" VerticalAlignment="Center" MarginRight="18" LayoutImp.LayoutMethod="HorizontalLeftToRight">
+                      <Children>
+                        <ButtonWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedWidth="150" SuggestedHeight="44" MarginRight="6" DoNotPassEventsToChildren="true" Command.Click="ExecuteSkip">
+                          <Children>
+                            <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#ff5c4350" />
+                            <TextWidget Text="先跳过" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" Brush.FontSize="18" Color="#ffffffff" />
+                          </Children>
+                        </ButtonWidget>
+                        <ButtonWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedWidth="150" SuggestedHeight="44" MarginLeft="6" DoNotPassEventsToChildren="true" Command.Click="ExecuteSave">
+                          <Children>
+                            <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#ff3f7f59" />
+                            <TextWidget Text="保存并开始" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" Brush.FontSize="18" Color="#ffffffff" />
+                          </Children>
+                        </ButtonWidget>
+                      </Children>
+                    </ListPanel>
+                  </Children>
+                </Widget>
+              </Children>
+            </ListPanel>
+          </Children>
+        </Widget>
+      </Children>
+    </Widget>
+  </Window>
+</Prefab>

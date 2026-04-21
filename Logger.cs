@@ -250,6 +250,11 @@ public static class Logger
 		WriteHumanLine(_gameTracePath, source, message);
 	}
 
+	public static void LogEvent(string source, string message)
+	{
+		WriteHumanLine(_eventLogsPath, source, message);
+	}
+
 	public static void LogEventPromptExchange(string targetLabel, string requestText, string replyText)
 	{
 		try

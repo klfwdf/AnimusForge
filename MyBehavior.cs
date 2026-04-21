@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -59,6 +59,20 @@ public class MyBehavior : CampaignBehaviorBase
 		RetryProgress
 	}
 
+	private enum SaveAndExitStage
+	{
+		None,
+		WaitingForCurrentSave,
+		WaitingForRequestedQuickSave
+	}
+
+	private enum SaveAndExitReason
+	{
+		None,
+		MissingOnnx,
+		WeeklyReport
+	}
+
 	private enum KingdomStabilityTier
 	{
 		ExtremelyPoor,
@@ -112,6 +126,39 @@ public class MyBehavior : CampaignBehaviorBase
 		public long InventoryTotalValue;
 
 		public int InventoryUnitValue;
+	}
+
+	public enum PartyTransferEntrySection
+	{
+		PlayerTroops,
+		PlayerPrisoners,
+		NpcTroops,
+		NpcPrisoners
+	}
+
+	public sealed class PartyTransferPromptEntry
+	{
+		public int PromptIndex;
+
+		public PartyTransferEntrySection Section;
+
+		public CharacterObject Character;
+
+		public string DisplayName;
+
+		public int Count;
+
+		public int WoundedCount;
+
+		public int WageDenarsPerDay;
+
+		public int HirePriceDenarsPerUnit;
+
+		public int BuyPriceDenarsPerUnit;
+
+		public bool IsHero;
+
+		public PartyBase OwnerParty;
 	}
 
 	private class DialogueDay
@@ -1069,6 +1116,10 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private long _missingOnnxGateResumeAfterUtcTicks;
 
+	private SaveAndExitStage _saveAndExitStage;
+
+	private SaveAndExitReason _saveAndExitReason;
+
 	private bool _devForcedKingdomRebellionInProgress;
 
 	private bool _pendingDevForcedKingdomRebellionReady;
@@ -1146,6 +1197,10 @@ public class MyBehavior : CampaignBehaviorBase
 	private static readonly string[] RelationAiBehaviorTexts = new string[10] { "把玩家视为重大威胁，语气强硬且排斥，不愿合作。", "明显敌意与戒备，倾向拒绝请求，回应尖锐。", "主观反感较强，容易挑刺，合作意愿很低。", "保持距离与怀疑，只做最基本交流。", "态度偏冷，交流克制，基本不主动示好。", "无明显好恶，按利益与场面决定态度。", "对玩家有一定熟悉感，语气较缓，可有限合作。", "整体友好，愿意倾听并给出建设性回应。", "明显信任玩家，交流积极，合作意愿高。", "高度信任与支持，语气亲近，优先站在玩家一边。" };
 
 	private static readonly Regex MoodTagRegex = new Regex("\\[ACTION:MOOD:([^\\]\\r\\n]+)\\]", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
+	private static readonly Regex TransferTroopTagRegex = new Regex("\\[ATT:(\\d+):(\\d+)\\]", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
+	private static readonly Regex TransferPrisonerTagRegex = new Regex("\\[ATP:(\\d+):(\\d+)\\]", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
 	private Dictionary<string, PatienceState> _patienceStates = new Dictionary<string, PatienceState>();
 
@@ -1251,6 +1306,7 @@ public class MyBehavior : CampaignBehaviorBase
 		CampaignEvents.OnSessionLaunchedEvent.AddNonSerializedListener(this, OnSessionLaunched);
 		CampaignEvents.OnGameLoadFinishedEvent.AddNonSerializedListener(this, OnGameLoadFinished);
 		CampaignEvents.OnMissionStartedEvent.AddNonSerializedListener(this, OnMissionStarted);
+		CampaignEvents.OnSaveOverEvent.AddNonSerializedListener(this, OnSaveOver);
 		CampaignEvents.TickEvent.AddNonSerializedListener(this, OnCampaignTick);
 		CampaignEvents.MapEventEnded.AddNonSerializedListener(this, OnMapEventEnded);
 		CampaignEvents.HeroPrisonerTaken.AddNonSerializedListener(this, OnHeroPrisonerTaken);
@@ -2324,7 +2380,7 @@ public class MyBehavior : CampaignBehaviorBase
 		for (int i = 1; i <= 3; i++)
 		{
 			await WaitForWeekZeroShortSummaryRequestSlotAsync();
-			ApiCallResult apiCallResult = await CallUniversalApiDetailed(BuildWeekZeroShortSummarySystemPrompt(request.EventKind, request.KingdomId, request.Title), BuildWeekZeroShortSummaryUserPrompt(request.Summary));
+			ApiCallResult apiCallResult = await CallUniversalApiDetailed(BuildWeekZeroShortSummarySystemPrompt(request.EventKind, request.KingdomId, request.Title), BuildWeekZeroShortSummaryUserPrompt(request.Summary), logToEventLogs: true, eventLogSource: "EventWeeklyReport");
 			if (apiCallResult.Success)
 			{
 				string text = NormalizeWeekZeroShortSummaryResponse(apiCallResult.Content, request.Summary);
@@ -3653,6 +3709,59 @@ public class MyBehavior : CampaignBehaviorBase
 		return GetKingdomDisplayName(kingdom, "该王国") + "是当前叛乱所脱离的旧政权。";
 	}
 
+	private string BuildSettlementBackgroundForRebelNamingPrompt(Settlement settlement)
+	{
+		if (settlement == null)
+		{
+			return "无";
+		}
+		string text = NormalizeRebelPromptSourceText(settlement.EncyclopediaText?.ToString() ?? "", 600);
+		if (!string.IsNullOrWhiteSpace(text))
+		{
+			return text;
+		}
+		string settlementDisplayName = GetSettlementDisplayName(settlement);
+		string text2 = settlement.IsTown ? "城镇" : (settlement.IsCastle ? "城堡" : "定居点");
+		string text3 = (settlement.Culture?.Name?.ToString() ?? "").Trim();
+		string kingdomDisplayName = GetKingdomDisplayName(settlement.MapFaction as Kingdom, "无明确王国归属");
+		return NormalizeRebelPromptSourceText(settlementDisplayName + "是一处" + text2 + "，文化为" + (string.IsNullOrWhiteSpace(text3) ? "未知" : text3) + "，当前归属于" + kingdomDisplayName + "。", 220);
+	}
+
+	private string BuildRebelSettlementSummaryForNamingPrompt(IEnumerable<Settlement> settlements)
+	{
+		if (settlements == null)
+		{
+			return "无";
+		}
+		List<string> list = new List<string>();
+		foreach (Settlement settlement in settlements.Where((Settlement x) => x != null && (x.IsTown || x.IsCastle)).Take(4))
+		{
+			string settlementDisplayName = GetSettlementDisplayName(settlement);
+			string settlementBackgroundForRebelNamingPrompt = BuildSettlementBackgroundForRebelNamingPrompt(settlement);
+			list.Add("- " + settlementDisplayName + "：" + settlementBackgroundForRebelNamingPrompt);
+		}
+		if (list.Count == 0)
+		{
+			return "无";
+		}
+		return string.Join("\n", list);
+	}
+
+	private string BuildRebelBackgroundForNamingPrompt(Kingdom oldKingdom, int weekIndex)
+	{
+		EventRecordEntry weeklyReportRecordByWeek = FindWeeklyReportRecordByWeek("kingdom", GetKingdomId(oldKingdom), weekIndex - 1);
+		string text = NormalizeRebelPromptSourceText(weeklyReportRecordByWeek?.ShortSummary ?? "", 320);
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			text = NormalizeRebelPromptSourceText(weeklyReportRecordByWeek?.Summary ?? "", 420);
+		}
+		if (!string.IsNullOrWhiteSpace(text))
+		{
+			return "叛乱背景：上周" + GetKingdomDisplayName(oldKingdom, "原王国") + "周报提到，" + text + "。这场叛乱正是在这样的局势中爆发，主导家族带着现有封地脱离旧王国，准备自立为新的政治实体。";
+		}
+		return "叛乱背景：该家族因与旧王国统治层关系恶化，在王国内部稳定度恶化时带着现有封地脱离旧王国，并准备自立为新的政治实体。";
+	}
+
 	private EventRecordEntry FindWeeklyReportRecordByWeek(string eventKind, string scopeKingdomId, int weekIndex)
 	{
 		string text = (eventKind ?? "").Trim();
@@ -4011,10 +4120,12 @@ public class MyBehavior : CampaignBehaviorBase
 		string text2 = string.Join("、", list.Distinct(StringComparer.OrdinalIgnoreCase));
 		List<Settlement> list2 = clan?.Settlements?.Where((Settlement x) => x != null && (x.IsTown || x.IsCastle)).ToList() ?? new List<Settlement>();
 		string text3 = (list2.Count > 0) ? string.Join("、", list2.Select(GetSettlementDisplayName)) : "无";
+		string rebelSettlementSummaryForNamingPrompt = BuildRebelSettlementSummaryForNamingPrompt(list2);
 		string rebelFollowerSummaryForNamingPrompt = BuildRebelFollowerSummaryForNamingPrompt(followerClans);
 		string heroBackgroundForRebelNamingPrompt = BuildHeroBackgroundForRebelNamingPrompt(clan?.Leader);
 		string heroBackgroundForRebelNamingPrompt2 = BuildHeroBackgroundForRebelNamingPrompt(oldKingdom?.Leader);
 		string kingdomBackgroundForRebelNamingPrompt = BuildKingdomBackgroundForRebelNamingPrompt(oldKingdom);
+		string rebelBackgroundForNamingPrompt = BuildRebelBackgroundForNamingPrompt(oldKingdom, weekIndex);
 		EventRecordEntry weeklyReportRecordByWeek = FindWeeklyReportRecordByWeek("world", "", weekIndex - 1);
 		EventRecordEntry weeklyReportRecordByWeek2 = FindWeeklyReportRecordByWeek("kingdom", GetKingdomId(oldKingdom), weekIndex - 1);
 		StringBuilder stringBuilder = new StringBuilder();
@@ -4027,7 +4138,10 @@ public class MyBehavior : CampaignBehaviorBase
 		stringBuilder.AppendLine("原所属王国领袖（被背叛者）：" + GetHeroDisplayName(oldKingdom?.Leader));
 		stringBuilder.AppendLine("原王国执政家族：" + GetClanDisplayName(oldKingdom?.RulingClan));
 		stringBuilder.AppendLine("当前核心封地：" + text3);
-		stringBuilder.AppendLine("叛乱背景：该家族因与旧王国统治层关系恶化，在王国内部稳定度恶化时带着现有封地脱离旧王国，并准备自立为新的政治实体。");
+		stringBuilder.AppendLine(rebelBackgroundForNamingPrompt);
+		stringBuilder.AppendLine();
+		stringBuilder.AppendLine("【叛乱核心定居点百科】");
+		stringBuilder.AppendLine(rebelSettlementSummaryForNamingPrompt);
 		stringBuilder.AppendLine();
 		stringBuilder.AppendLine("【联合响应家族】");
 		stringBuilder.AppendLine(rebelFollowerSummaryForNamingPrompt);
@@ -7805,7 +7919,7 @@ public class MyBehavior : CampaignBehaviorBase
 	{
 		_missingOnnxGateResumeAfterUtcTicks = DateTime.UtcNow.Ticks + TimeSpan.FromMilliseconds(100.0).Ticks;
 		InformationManager.HideInquiry();
-		InformationManager.ShowInquiry(new InquiryData("缺少ONNX文件", "检测到你的mod缺乏ONNX文件，请前往群文件下载RAG专用模型，并将里面的onnx拖入AnimusForge的mod文件中", isAffirmativeOptionShown: true, isNegativeOptionShown: false, "退出存档", "", ExitCurrentGameBecauseOnnxMissing, null), pauseGameActiveState: true);
+		InformationManager.ShowInquiry(new InquiryData("缺少ONNX文件", "检测到你的mod缺乏ONNX文件，请前往群文件下载RAG专用模型，并将里面的onnx拖入AnimusForge的mod文件中", isAffirmativeOptionShown: true, isNegativeOptionShown: false, "保存并退出", "", ExitCurrentGameBecauseOnnxMissing, null), pauseGameActiveState: true);
 	}
 
 	private void ExitCurrentGameBecauseOnnxMissing()
@@ -7815,13 +7929,11 @@ public class MyBehavior : CampaignBehaviorBase
 			_missingOnnxGateActive = false;
 			_missingOnnxGateResumeAfterUtcTicks = 0L;
 			InformationManager.HideInquiry();
-			MBGameManager.EndGame();
+			BeginSaveAndExitCurrentGame(SaveAndExitReason.MissingOnnx);
 		}
 		catch (Exception ex)
 		{
-			_missingOnnxGateActive = true;
-			_missingOnnxGateResumeAfterUtcTicks = DateTime.UtcNow.Ticks + TimeSpan.FromMilliseconds(100.0).Ticks;
-			InformationManager.DisplayMessage(new InformationMessage("退出当前存档失败：" + ex.Message));
+			HandleSaveAndExitFailure(SaveAndExitReason.MissingOnnx, "保存并退出失败：" + ex.Message);
 		}
 	}
 
@@ -8947,7 +9059,7 @@ public class MyBehavior : CampaignBehaviorBase
 				string text7 = RewardSystemBehavior.Instance.BuildInventorySummaryForAI(npcHero);
 				if (!string.IsNullOrWhiteSpace(text7))
 				{
-					stringBuilder.AppendLine("【NPC当前可用财富与物品】");
+					stringBuilder.AppendLine("【NPC当前可用财富与物品】(注意：你不可以转移超出数量的物品，钱，如果你没有那么多，请实话实说");
 					stringBuilder.AppendLine(text7);
 					Logger.Log("Logic", "[Context] InventorySummary=\n" + text7);
 				}
@@ -9846,6 +9958,747 @@ public class MyBehavior : CampaignBehaviorBase
 		return TransferItemsFromRosterByStringId(itemRoster, null, itemId, amount, out removedItem);
 	}
 
+	private static string ParseLordIdFromUnnamedKey(string unnamedKey)
+	{
+		string text = (unnamedKey ?? "").Trim().ToLowerInvariant();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return "";
+		}
+		int num = text.IndexOf(":lord:", StringComparison.OrdinalIgnoreCase);
+		if (num < 0)
+		{
+			return "";
+		}
+		string text2 = text.Substring(num + ":lord:".Length).Trim();
+		int num2 = text2.IndexOf(':');
+		if (num2 >= 0)
+		{
+			text2 = text2.Substring(0, num2).Trim();
+		}
+		return text2;
+	}
+
+	private static Hero ResolveTransferTargetHeroFromAgent(Agent agent)
+	{
+		try
+		{
+			CharacterObject characterObject = agent?.Character as CharacterObject;
+			if (characterObject?.HeroObject != null)
+			{
+				return characterObject.HeroObject;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			string text = ParseLordIdFromUnnamedKey(ShoutUtils.ExtractNpcData(agent)?.UnnamedKey);
+			if (!string.IsNullOrWhiteSpace(text))
+			{
+				return Hero.Find(text);
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			return Settlement.CurrentSettlement?.OwnerClan?.Leader;
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static PartyBase ResolvePartyTransferCounterpartyInternal(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex = -1)
+	{
+		try
+		{
+			Hero hero = targetHero ?? targetCharacter?.HeroObject;
+			if (hero != null)
+			{
+				if (hero.PartyBelongedTo?.Party != null)
+				{
+					return hero.PartyBelongedTo.Party;
+				}
+				if (hero.IsPrisoner && hero.PartyBelongedToAsPrisoner != null)
+				{
+					return hero.PartyBelongedToAsPrisoner;
+				}
+				if (hero.Clan?.Leader?.PartyBelongedTo?.Party != null)
+				{
+					return hero.Clan.Leader.PartyBelongedTo.Party;
+				}
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (targetAgentIndex >= 0)
+			{
+				Agent agent = Mission.Current?.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == targetAgentIndex);
+				PartyBase partyBase = agent?.Origin?.BattleCombatant as PartyBase;
+				if (partyBase != null)
+				{
+					return partyBase;
+				}
+				Hero hero2 = ResolveTransferTargetHeroFromAgent(agent);
+				if (hero2?.PartyBelongedTo?.Party != null)
+				{
+					return hero2.PartyBelongedTo.Party;
+				}
+				if (hero2?.Clan?.Leader?.PartyBelongedTo?.Party != null)
+				{
+					return hero2.Clan.Leader.PartyBelongedTo.Party;
+				}
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (Settlement.CurrentSettlement?.Town?.GarrisonParty?.Party != null)
+			{
+				return Settlement.CurrentSettlement.Town.GarrisonParty.Party;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (Settlement.CurrentSettlement?.OwnerClan?.Leader?.PartyBelongedTo?.Party != null)
+			{
+				return Settlement.CurrentSettlement.OwnerClan.Leader.PartyBelongedTo.Party;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			return Settlement.CurrentSettlement?.Party;
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	public static PartyBase ResolvePartyTransferCounterpartyForExternal(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex = -1)
+	{
+		return ResolvePartyTransferCounterpartyInternal(targetHero, targetCharacter, targetAgentIndex);
+	}
+
+	private static string ResolvePartyTransferTargetDisplayName(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex = -1)
+	{
+		string text = (targetHero?.Name?.ToString() ?? targetCharacter?.Name?.ToString() ?? "").Trim();
+		if (!string.IsNullOrWhiteSpace(text))
+		{
+			return text;
+		}
+		try
+		{
+			if (targetAgentIndex >= 0)
+			{
+				Agent agent = Mission.Current?.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == targetAgentIndex);
+				text = (agent?.Name?.ToString() ?? "").Trim();
+				if (!string.IsNullOrWhiteSpace(text))
+				{
+					return text;
+				}
+			}
+		}
+		catch
+		{
+		}
+		return "对方";
+	}
+
+	private static string GetPartyTransferEntryDisplayName(CharacterObject character)
+	{
+		if (character == null)
+		{
+			return "未知";
+		}
+		string text = (character.Name?.ToString() ?? "").Trim();
+		if (!string.IsNullOrWhiteSpace(text))
+		{
+			return text;
+		}
+		return (character.StringId ?? "未知").Trim();
+	}
+
+	private static void AddPartyTransferEntriesFromRoster(List<PartyTransferPromptEntry> entries, TroopRoster roster, PartyBase ownerParty, PartyTransferEntrySection section, ref int nextPromptIndex)
+	{
+		if (entries == null || roster == null)
+		{
+			return;
+		}
+		bool flag = section == PartyTransferEntrySection.PlayerPrisoners || section == PartyTransferEntrySection.NpcPrisoners;
+		for (int i = 0; i < roster.Count; i++)
+		{
+			TroopRosterElement elementCopyAtIndex = roster.GetElementCopyAtIndex(i);
+			CharacterObject character = elementCopyAtIndex.Character;
+			if (character == null || elementCopyAtIndex.Number <= 0)
+			{
+				continue;
+			}
+			if (!flag && (character.IsHero || character == CharacterObject.PlayerCharacter))
+			{
+				continue;
+			}
+			PartyTransferPromptEntry item = new PartyTransferPromptEntry
+			{
+				PromptIndex = nextPromptIndex++,
+				Section = section,
+				Character = character,
+				DisplayName = GetPartyTransferEntryDisplayName(character),
+				Count = Math.Max(0, elementCopyAtIndex.Number),
+				WoundedCount = flag ? 0 : Math.Max(0, elementCopyAtIndex.WoundedNumber),
+				WageDenarsPerDay = flag ? 0 : Math.Max(1, character.TroopWage),
+				HirePriceDenarsPerUnit = flag ? 0 : GetPartyTransferHirePrice(character),
+				BuyPriceDenarsPerUnit = flag ? GetPartyTransferPrisonerPrice(character) : 0,
+				IsHero = character.IsHero,
+				OwnerParty = ownerParty
+			};
+			entries.Add(item);
+		}
+	}
+
+	private static int GetPartyTransferHirePrice(CharacterObject character)
+	{
+		if (character == null)
+		{
+			return 1;
+		}
+		try
+		{
+			return Math.Max(1, Campaign.Current.Models.PartyWageModel.GetTroopRecruitmentCost(character, Hero.MainHero, withoutItemCost: false).RoundedResultNumber);
+		}
+		catch
+		{
+			return 1;
+		}
+	}
+
+	private static int GetPartyTransferPrisonerPrice(CharacterObject character)
+	{
+		if (character == null)
+		{
+			return 1;
+		}
+		try
+		{
+			return Math.Max(1, Campaign.Current.Models.RansomValueCalculationModel.PrisonerRansomValue(character, null));
+		}
+		catch
+		{
+			return 1;
+		}
+	}
+
+	private static List<PartyTransferPromptEntry> BuildPartyTransferPromptEntriesInternal(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex = -1)
+	{
+		List<PartyTransferPromptEntry> list = new List<PartyTransferPromptEntry>();
+		PartyBase partyBase = Hero.MainHero?.PartyBelongedTo?.Party ?? MobileParty.MainParty?.Party;
+		PartyBase partyBase2 = ResolvePartyTransferCounterpartyInternal(targetHero, targetCharacter, targetAgentIndex);
+		int num = 1;
+		if (partyBase != null)
+		{
+			AddPartyTransferEntriesFromRoster(list, partyBase.MemberRoster, partyBase, PartyTransferEntrySection.PlayerTroops, ref num);
+			AddPartyTransferEntriesFromRoster(list, partyBase.PrisonRoster, partyBase, PartyTransferEntrySection.PlayerPrisoners, ref num);
+		}
+		if (partyBase2 != null)
+		{
+			AddPartyTransferEntriesFromRoster(list, partyBase2.MemberRoster, partyBase2, PartyTransferEntrySection.NpcTroops, ref num);
+			AddPartyTransferEntriesFromRoster(list, partyBase2.PrisonRoster, partyBase2, PartyTransferEntrySection.NpcPrisoners, ref num);
+		}
+		return list;
+	}
+
+	public static List<PartyTransferPromptEntry> BuildPartyTransferPromptEntriesForExternal(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex = -1)
+	{
+		try
+		{
+			return BuildPartyTransferPromptEntriesInternal(targetHero, targetCharacter, targetAgentIndex);
+		}
+		catch
+		{
+			return new List<PartyTransferPromptEntry>();
+		}
+	}
+
+	private static void AppendPartyTransferPromptSection(StringBuilder sb, string header, IEnumerable<PartyTransferPromptEntry> entries, bool isPrisoner, bool showPromptIndex)
+	{
+		if (sb == null)
+		{
+			return;
+		}
+		sb.AppendLine(header);
+		List<PartyTransferPromptEntry> list = (entries ?? Enumerable.Empty<PartyTransferPromptEntry>()).ToList();
+		if (list.Count == 0)
+		{
+			sb.AppendLine("（无）");
+			return;
+		}
+		foreach (PartyTransferPromptEntry item in list)
+		{
+			if (item == null)
+			{
+				continue;
+			}
+			StringBuilder stringBuilder = new StringBuilder();
+			if (showPromptIndex)
+			{
+				stringBuilder.Append(item.PromptIndex).Append(" ");
+			}
+			stringBuilder.Append(item.DisplayName).Append(" | 数量 ").Append(Math.Max(0, item.Count));
+			if (isPrisoner)
+			{
+				if (item.IsHero)
+				{
+					stringBuilder.Append(" | 英雄俘虏");
+				}
+				stringBuilder.Append(" | 购买价 ").Append(Math.Max(1, item.BuyPriceDenarsPerUnit)).Append("第纳尔/人");
+			}
+			else
+			{
+				if (item.WoundedCount > 0)
+				{
+					stringBuilder.Append(" | 其中伤兵 ").Append(item.WoundedCount);
+				}
+				stringBuilder.Append(" | 日薪 ").Append(Math.Max(1, item.WageDenarsPerDay)).Append("第纳尔/天");
+				stringBuilder.Append(" | 雇佣价 ").Append(Math.Max(1, item.HirePriceDenarsPerUnit)).Append("第纳尔/人");
+			}
+			sb.AppendLine(stringBuilder.ToString());
+		}
+	}
+
+	private static int GetPartyTransferTroopTier(PartyTransferPromptEntry entry)
+	{
+		return Math.Max(0, entry?.Character?.Tier ?? 0);
+	}
+
+	private static int ResolvePartyTransferRecruitTrustLevelIndex(Hero targetHero, CharacterObject targetCharacter)
+	{
+		int num = 6;
+		try
+		{
+			Hero hero = targetHero ?? targetCharacter?.HeroObject;
+			if (hero != null)
+			{
+				return RewardSystemBehavior.GetTrustLevelIndex(RewardSystemBehavior.Instance?.GetEffectiveTrust(hero) ?? 0);
+			}
+			if (targetCharacter != null && RewardSystemBehavior.Instance != null && RewardSystemBehavior.Instance.TryGetSettlementMerchantKind(targetCharacter, out var kind))
+			{
+				return RewardSystemBehavior.GetTrustLevelIndex(RewardSystemBehavior.Instance.GetSettlementMerchantEffectiveTrust(Settlement.CurrentSettlement, kind));
+			}
+		}
+		catch
+		{
+		}
+		return num;
+	}
+
+	private static int ResolvePartyTransferRecruitMaxTier(int trustLevelIndex)
+	{
+		if (trustLevelIndex <= 4)
+		{
+			return 0;
+		}
+		if (trustLevelIndex == 5)
+		{
+			return 1;
+		}
+		if (trustLevelIndex == 6)
+		{
+			return 2;
+		}
+		if (trustLevelIndex == 7)
+		{
+			return 3;
+		}
+		if (trustLevelIndex == 8)
+		{
+			return 4;
+		}
+		return int.MaxValue;
+	}
+
+	private static void AppendPartyTransferHiddenTroopSection(StringBuilder sb, string header, IEnumerable<PartyTransferPromptEntry> entries)
+	{
+		if (sb == null)
+		{
+			return;
+		}
+		List<PartyTransferPromptEntry> list = (entries ?? Enumerable.Empty<PartyTransferPromptEntry>()).Where((PartyTransferPromptEntry x) => x != null).ToList();
+		if (list.Count == 0)
+		{
+			return;
+		}
+		sb.AppendLine(header);
+		foreach (PartyTransferPromptEntry item in list)
+		{
+			StringBuilder stringBuilder = new StringBuilder();
+			stringBuilder.Append(item.DisplayName).Append(" | 阶级 ").Append(GetPartyTransferTroopTier(item)).Append(" | 数量 ").Append(Math.Max(0, item.Count));
+			if (item.WoundedCount > 0)
+			{
+				stringBuilder.Append(" | 其中伤兵 ").Append(item.WoundedCount);
+			}
+			sb.AppendLine(stringBuilder.ToString());
+		}
+	}
+
+	private static List<PartyTransferPromptEntry> BuildDisplayIndexedPartyTransferEntries(IEnumerable<PartyTransferPromptEntry> entries)
+	{
+		List<PartyTransferPromptEntry> list = new List<PartyTransferPromptEntry>();
+		int num = 1;
+		foreach (PartyTransferPromptEntry entry in entries ?? Enumerable.Empty<PartyTransferPromptEntry>())
+		{
+			if (entry == null)
+			{
+				continue;
+			}
+			list.Add(new PartyTransferPromptEntry
+			{
+				PromptIndex = num++,
+				Section = entry.Section,
+				Character = entry.Character,
+				DisplayName = entry.DisplayName,
+				Count = entry.Count,
+				WoundedCount = entry.WoundedCount,
+				WageDenarsPerDay = entry.WageDenarsPerDay,
+				HirePriceDenarsPerUnit = entry.HirePriceDenarsPerUnit,
+				BuyPriceDenarsPerUnit = entry.BuyPriceDenarsPerUnit,
+				IsHero = entry.IsHero,
+				OwnerParty = entry.OwnerParty
+			});
+		}
+		return list;
+	}
+
+	private static PartyTransferPromptEntry ResolveNpcTransferEntryByDisplayIndex(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, PartyTransferEntrySection section, int displayIndex)
+	{
+		if (displayIndex <= 0)
+		{
+			return null;
+		}
+		List<PartyTransferPromptEntry> list = BuildPartyTransferPromptEntriesInternal(targetHero, targetCharacter, targetAgentIndex);
+		IEnumerable<PartyTransferPromptEntry> enumerable = Enumerable.Empty<PartyTransferPromptEntry>();
+		if (section == PartyTransferEntrySection.NpcTroops)
+		{
+			int partyTransferRecruitTrustLevelIndex = ResolvePartyTransferRecruitTrustLevelIndex(targetHero, targetCharacter);
+			int partyTransferRecruitMaxTier = ResolvePartyTransferRecruitMaxTier(partyTransferRecruitTrustLevelIndex);
+			if (partyTransferRecruitMaxTier > 0)
+			{
+				enumerable = list.Where((PartyTransferPromptEntry x) => x != null && x.Section == PartyTransferEntrySection.NpcTroops && GetPartyTransferTroopTier(x) > 0 && GetPartyTransferTroopTier(x) <= partyTransferRecruitMaxTier);
+			}
+		}
+		else if (section == PartyTransferEntrySection.NpcPrisoners)
+		{
+			enumerable = list.Where((PartyTransferPromptEntry x) => x != null && x.Section == PartyTransferEntrySection.NpcPrisoners);
+		}
+		return enumerable.Skip(displayIndex - 1).FirstOrDefault();
+	}
+
+	public static string BuildPartyTransferRuntimeInstructionForExternal(Hero targetHero, CharacterObject targetCharacter = null, int targetAgentIndex = -1)
+	{
+		try
+		{
+			List<PartyTransferPromptEntry> list = BuildPartyTransferPromptEntriesInternal(targetHero, targetCharacter, targetAgentIndex);
+			string text = BuildPlayerPublicDisplayNameForPrompt();
+			if (string.IsNullOrWhiteSpace(text))
+			{
+				text = "玩家";
+			}
+			int partyTransferRecruitTrustLevelIndex = ResolvePartyTransferRecruitTrustLevelIndex(targetHero, targetCharacter);
+			int partyTransferRecruitMaxTier = ResolvePartyTransferRecruitMaxTier(partyTransferRecruitTrustLevelIndex);
+			List<PartyTransferPromptEntry> list2 = list.Where((PartyTransferPromptEntry x) => x != null && x.Section == PartyTransferEntrySection.NpcTroops).ToList();
+			List<PartyTransferPromptEntry> list3 = list2.Where((PartyTransferPromptEntry x) => GetPartyTransferTroopTier(x) > 0 && GetPartyTransferTroopTier(x) <= partyTransferRecruitMaxTier).ToList();
+			List<PartyTransferPromptEntry> list4 = list2.Where((PartyTransferPromptEntry x) => !list3.Contains(x)).ToList();
+			List<PartyTransferPromptEntry> list5 = BuildDisplayIndexedPartyTransferEntries(list3);
+			List<PartyTransferPromptEntry> list6 = BuildDisplayIndexedPartyTransferEntries(list.Where((PartyTransferPromptEntry x) => x.Section == PartyTransferEntrySection.NpcPrisoners));
+			StringBuilder stringBuilder = new StringBuilder();
+			string runtimeHint = AIConfigHandler.BuildRuntimePartyTransferInstructionForExternal(targetHero, targetCharacter);
+			if (!string.IsNullOrWhiteSpace(runtimeHint))
+			{
+				stringBuilder.AppendLine(runtimeHint.Trim());
+			}
+			if (partyTransferRecruitMaxTier <= 0)
+			{
+				stringBuilder.AppendLine("【当前招募限制】你当前对" + text + "的信任不足，任何士兵都不可开放招募。本轮不要展示【你当前可转移部队】清单，也绝不可以输出任何 ATT 标签。");
+			}
+			else if (partyTransferRecruitMaxTier == int.MaxValue)
+			{
+				stringBuilder.AppendLine("【当前招募限制】你当前对" + text + "的信任已足够，所有已编号的士兵都可正常谈招募。若你决定放人，可在句末输出 [ATT:序号:数量]。");
+			}
+			else
+			{
+				stringBuilder.AppendLine("【当前招募限制】你当前只可向" + text + "开放 " + partyTransferRecruitMaxTier + " 阶及以下士兵的招募。只有本轮仍带编号的士兵才可使用 ATT。");
+				stringBuilder.AppendLine("【隐藏编号硬约束】未编号的更高阶兵种绝不可以卖给" + text + "，也绝不可以对其输出 ATT 标签。");
+			}
+			stringBuilder.AppendLine("若你决定把【你当前可转移俘虏】中的俘虏交给玩家，可在句末输出 [ATP:序号:数量]。");
+			stringBuilder.AppendLine("可用于 ATT/ATP 的序号只来自本轮仍带编号的清单。未编号或未展示的兵种/俘虏，绝不可以使用 ATT/ATP。");
+			stringBuilder.AppendLine("ATT 只能用于部队序号，ATP 只能用于俘虏序号；数量不得超过当前数量。若本轮尚未明确成交，就不要输出。");
+			stringBuilder.AppendLine("日薪表示每名士兵每天需要支付多少第纳尔；雇佣价与购买价表示当前谈判指导单价。");
+			stringBuilder.AppendLine("当前与你交易的人：" + text);
+			AppendPartyTransferPromptSection(stringBuilder, "【玩家当前可转移部队】：", list.Where((PartyTransferPromptEntry x) => x.Section == PartyTransferEntrySection.PlayerTroops), isPrisoner: false, showPromptIndex: false);
+			AppendPartyTransferPromptSection(stringBuilder, "【玩家当前可转移俘虏】：", list.Where((PartyTransferPromptEntry x) => x.Section == PartyTransferEntrySection.PlayerPrisoners), isPrisoner: true, showPromptIndex: false);
+			if (partyTransferRecruitMaxTier > 0)
+			{
+				AppendPartyTransferPromptSection(stringBuilder, "【你当前可转移部队】：", list5, isPrisoner: false, showPromptIndex: true);
+			}
+			if (partyTransferRecruitMaxTier > 0 && partyTransferRecruitMaxTier < int.MaxValue)
+			{
+				AppendPartyTransferHiddenTroopSection(stringBuilder, "【由于你对" + text + "不够信任，你当前不可向" + text + "开放招募的更高阶部队】：", list4);
+			}
+			AppendPartyTransferPromptSection(stringBuilder, "【你当前可转移俘虏】：", list6, isPrisoner: true, showPromptIndex: true);
+			return stringBuilder.ToString().Trim();
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	private static int TransferPartyMemberEntry(PartyTransferPromptEntry entry, int requestedAmount, PartyBase targetParty)
+	{
+		if (entry == null || targetParty == null || entry.OwnerParty == null || entry.OwnerParty == targetParty || entry.Character == null)
+		{
+			return 0;
+		}
+		TroopRoster memberRoster = entry.OwnerParty.MemberRoster;
+		TroopRoster memberRoster2 = targetParty.MemberRoster;
+		if (memberRoster == null || memberRoster2 == null)
+		{
+			return 0;
+		}
+		int num = memberRoster.FindIndexOfTroop(entry.Character);
+		if (num < 0)
+		{
+			return 0;
+		}
+		TroopRosterElement elementCopyAtIndex = memberRoster.GetElementCopyAtIndex(num);
+		int num2 = Math.Min(Math.Max(0, requestedAmount), Math.Max(0, elementCopyAtIndex.Number));
+		if (num2 <= 0)
+		{
+			return 0;
+		}
+		int num3 = 0;
+		if (elementCopyAtIndex.Number > 0 && elementCopyAtIndex.WoundedNumber > 0)
+		{
+			num3 = (num2 >= elementCopyAtIndex.Number) ? elementCopyAtIndex.WoundedNumber : Math.Min(num2, Math.Max(0, (int)Math.Round((double)elementCopyAtIndex.WoundedNumber * (double)num2 / (double)elementCopyAtIndex.Number, MidpointRounding.AwayFromZero)));
+		}
+		int num4 = 0;
+		if (elementCopyAtIndex.Number > 0 && elementCopyAtIndex.Xp > 0)
+		{
+			num4 = (num2 >= elementCopyAtIndex.Number) ? elementCopyAtIndex.Xp : Math.Max(0, (int)Math.Round((double)elementCopyAtIndex.Xp * (double)num2 / (double)elementCopyAtIndex.Number, MidpointRounding.AwayFromZero));
+		}
+		memberRoster.AddToCounts(entry.Character, -num2, insertAtFront: false, -num3, 0, false, -1);
+		if (num4 > 0)
+		{
+			memberRoster.AddXpToTroop(entry.Character, -num4);
+		}
+		memberRoster2.AddToCounts(entry.Character, num2, insertAtFront: false, num3, 0, false, -1);
+		if (num4 > 0)
+		{
+			memberRoster2.AddXpToTroop(entry.Character, num4);
+		}
+		return num2;
+	}
+
+	private static int TransferPartyPrisonerEntry(PartyTransferPromptEntry entry, int requestedAmount, PartyBase targetParty)
+	{
+		if (entry == null || targetParty == null || entry.OwnerParty == null || entry.OwnerParty == targetParty || entry.Character == null)
+		{
+			return 0;
+		}
+		if (entry.Character.IsHero)
+		{
+			if (requestedAmount <= 0)
+			{
+				return 0;
+			}
+			try
+			{
+				TransferPrisonerAction.Apply(entry.Character, entry.OwnerParty, targetParty);
+				return 1;
+			}
+			catch
+			{
+				return 0;
+			}
+		}
+		TroopRoster prisonRoster = entry.OwnerParty.PrisonRoster;
+		if (prisonRoster == null)
+		{
+			return 0;
+		}
+		int num = prisonRoster.FindIndexOfTroop(entry.Character);
+		if (num < 0)
+		{
+			return 0;
+		}
+		TroopRosterElement elementCopyAtIndex = prisonRoster.GetElementCopyAtIndex(num);
+		int num2 = Math.Min(Math.Max(0, requestedAmount), Math.Max(0, elementCopyAtIndex.Number));
+		if (num2 <= 0)
+		{
+			return 0;
+		}
+		int num3 = 0;
+		if (elementCopyAtIndex.Number > 0 && elementCopyAtIndex.Xp > 0)
+		{
+			num3 = (num2 >= elementCopyAtIndex.Number) ? elementCopyAtIndex.Xp : Math.Max(0, (int)Math.Round((double)elementCopyAtIndex.Xp * (double)num2 / (double)elementCopyAtIndex.Number, MidpointRounding.AwayFromZero));
+		}
+		prisonRoster.AddToCounts(entry.Character, -num2, insertAtFront: false, 0, 0, false, -1);
+		if (num3 > 0)
+		{
+			prisonRoster.AddXpToTroop(entry.Character, -num3);
+		}
+		targetParty.AddPrisoner(entry.Character, num2);
+		if (num3 > 0)
+		{
+			targetParty.PrisonRoster?.AddXpToTroop(entry.Character, num3);
+		}
+		return num2;
+	}
+
+	private static string BuildNpcToPlayerTroopTransferFact(string npcName, PartyTransferPromptEntry entry, int amount)
+	{
+		return "[AFEF NPC行为补充] " + npcName + "已将" + amount + "名" + entry.DisplayName + "转入玩家麾下。";
+	}
+
+	private static string BuildNpcToPlayerPrisonerTransferFact(string npcName, PartyTransferPromptEntry entry, int amount)
+	{
+		if (entry?.IsHero ?? false)
+		{
+			return "[AFEF NPC行为补充] " + npcName + "已将俘虏" + entry.DisplayName + "交给玩家。";
+		}
+		return "[AFEF NPC行为补充] " + npcName + "已将" + amount + "名" + entry.DisplayName + "俘虏交给玩家。";
+	}
+
+	public static bool TryApplyPartyTransferTagsForExternal(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, ref string content, out List<string> generatedFacts, out List<string> notifications)
+	{
+		generatedFacts = new List<string>();
+		notifications = new List<string>();
+		try
+		{
+			string text = content ?? "";
+			MatchCollection matchCollection = TransferTroopTagRegex.Matches(text);
+			MatchCollection matchCollection2 = TransferPrisonerTagRegex.Matches(text);
+			if ((matchCollection?.Count ?? 0) <= 0 && (matchCollection2?.Count ?? 0) <= 0)
+			{
+				return false;
+			}
+			List<PartyTransferPromptEntry> list = BuildPartyTransferPromptEntriesInternal(targetHero, targetCharacter, targetAgentIndex);
+			PartyBase party = Hero.MainHero?.PartyBelongedTo?.Party ?? MobileParty.MainParty?.Party;
+			string text2 = ResolvePartyTransferTargetDisplayName(targetHero, targetCharacter, targetAgentIndex);
+			bool flag = false;
+			if (party != null)
+			{
+				foreach (Match item in matchCollection)
+				{
+					if (!item.Success)
+					{
+						continue;
+					}
+					int num = 0;
+					int num2 = 0;
+					int.TryParse(item.Groups[1].Value, out num);
+					int.TryParse(item.Groups[2].Value, out num2);
+					PartyTransferPromptEntry partyTransferPromptEntry = ResolveNpcTransferEntryByDisplayIndex(targetHero, targetCharacter, targetAgentIndex, PartyTransferEntrySection.NpcTroops, num);
+					int num3 = TransferPartyMemberEntry(partyTransferPromptEntry, num2, party);
+					if (num3 > 0)
+					{
+						flag = true;
+						generatedFacts.Add(BuildNpcToPlayerTroopTransferFact(text2, partyTransferPromptEntry, num3));
+						notifications.Add("已获得 " + num3 + " 名" + partyTransferPromptEntry.DisplayName);
+					}
+				}
+				foreach (Match item2 in matchCollection2)
+				{
+					if (!item2.Success)
+					{
+						continue;
+					}
+					int num4 = 0;
+					int num5 = 0;
+					int.TryParse(item2.Groups[1].Value, out num4);
+					int.TryParse(item2.Groups[2].Value, out num5);
+					PartyTransferPromptEntry partyTransferPromptEntry2 = ResolveNpcTransferEntryByDisplayIndex(targetHero, targetCharacter, targetAgentIndex, PartyTransferEntrySection.NpcPrisoners, num4);
+					int num6 = TransferPartyPrisonerEntry(partyTransferPromptEntry2, num5, party);
+					if (num6 > 0)
+					{
+						flag = true;
+						generatedFacts.Add(BuildNpcToPlayerPrisonerTransferFact(text2, partyTransferPromptEntry2, num6));
+						notifications.Add("已获得 " + (partyTransferPromptEntry2.IsHero ? ("俘虏" + partyTransferPromptEntry2.DisplayName) : (num6 + " 名" + partyTransferPromptEntry2.DisplayName + "俘虏")));
+					}
+				}
+			}
+			text = TransferTroopTagRegex.Replace(text, "").Trim();
+			text = TransferPrisonerTagRegex.Replace(text, "").Trim();
+			content = text;
+			return flag;
+		}
+		catch
+		{
+			content = TransferTroopTagRegex.Replace(content ?? "", "").Trim();
+			content = TransferPrisonerTagRegex.Replace(content, "").Trim();
+			return false;
+		}
+	}
+
+	public static string BuildPlayerToNpcTroopTransferFactForExternal(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, PartyTransferPromptEntry entry, int amount)
+	{
+		string text = ResolvePartyTransferTargetDisplayName(targetHero, targetCharacter, targetAgentIndex);
+		string text2 = BuildPlayerPublicDisplayNameForPrompt();
+		if (string.IsNullOrWhiteSpace(text2))
+		{
+			text2 = "玩家";
+		}
+		return "[AFEF玩家行为补充] " + text2 + "已将" + amount + "名" + entry.DisplayName + "转入" + text + "的麾下。";
+	}
+
+	public static string BuildPlayerToNpcPrisonerTransferFactForExternal(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, PartyTransferPromptEntry entry, int amount)
+	{
+		string text = ResolvePartyTransferTargetDisplayName(targetHero, targetCharacter, targetAgentIndex);
+		string text2 = BuildPlayerPublicDisplayNameForPrompt();
+		if (string.IsNullOrWhiteSpace(text2))
+		{
+			text2 = "玩家";
+		}
+		if (entry?.IsHero ?? false)
+		{
+			return "[AFEF玩家行为补充] " + text2 + "已将俘虏" + entry.DisplayName + "交给" + text + "。";
+		}
+		return "[AFEF玩家行为补充] " + text2 + "已将" + amount + "名" + entry.DisplayName + "俘虏交给" + text + "。";
+	}
+
+	public static int TransferPlayerPartyEntryToCounterpartyForExternal(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, PartyTransferPromptEntry entry, int amount)
+	{
+		PartyBase partyBase = ResolvePartyTransferCounterpartyInternal(targetHero, targetCharacter, targetAgentIndex);
+		if (entry == null || partyBase == null)
+		{
+			return 0;
+		}
+		if (entry.Section == PartyTransferEntrySection.PlayerTroops)
+		{
+			return TransferPartyMemberEntry(entry, amount, partyBase);
+		}
+		if (entry.Section == PartyTransferEntrySection.PlayerPrisoners)
+		{
+			return TransferPartyPrisonerEntry(entry, amount, partyBase);
+		}
+		return 0;
+	}
+
 	private HeroShownRecord GetShownRecord(Hero hero)
 	{
 		return GetShownRecord(hero, null, createIfMissing: true);
@@ -10081,7 +10934,22 @@ public class MyBehavior : CampaignBehaviorBase
 					{
 						isMarriageHit = AIConfigHandler.IsGuardrailSemanticHit(input, npcLastUtterance, "marriage", AIConfigHandler.GetGuardrailRuleInstruction("marriage"), AIConfigHandler.GetGuardrailRuleKeywords("marriage"), out marriageHitKeyword, out marriageHitScore);
 					}
+					bool partyTransferHit = false;
+					string partyTransferHitKeyword = "";
+					float partyTransferHitScore = 0f;
+					if (!patienceExhausted)
+					{
+						partyTransferHit = AIConfigHandler.IsGuardrailSemanticHit(input, npcLastUtterance, "party_transfer", AIConfigHandler.GetGuardrailRuleInstruction("party_transfer"), AIConfigHandler.GetGuardrailRuleKeywords("party_transfer"), out partyTransferHitKeyword, out partyTransferHitScore);
+					}
 					bool useRewardContext = isRewardContext;
+					if (partyTransferHit)
+					{
+						useRewardContext = AIConfigHandler.RewardEnabled || useRewardContext;
+						if (AIConfigHandler.LoanEnabled)
+						{
+							isLoanContext = true;
+						}
+					}
 					if (patienceExhausted)
 					{
 						useDuelContext = false;
@@ -10127,7 +10995,8 @@ public class MyBehavior : CampaignBehaviorBase
 					string surroundingsHits = (string.IsNullOrWhiteSpace(surroundingsHitKeyword) ? "" : $"{surroundingsHitKeyword}@{surroundingsHitScore:0.00}");
 					string kingdomServiceHits = (string.IsNullOrWhiteSpace(kingdomServiceHitKeyword) ? "" : $"{kingdomServiceHitKeyword}@{kingdomServiceHitScore:0.00}");
 					string marriageHits = (string.IsNullOrWhiteSpace(marriageHitKeyword) ? "" : $"{marriageHitKeyword}@{marriageHitScore:0.00}");
-					Logger.Log("Logic", $"[SemanticTrigger] DuelHit={isTriggerWordDetected} [{duelHits}] RewardHit={isRewardContext} [{rewardHits}] LoanHit={isLoanContext} [{loanHits}] SurroundingsHit={isSurroundingsContext} [{surroundingsHits}] KingdomServiceHit={isKingdomServiceHit} [{kingdomServiceHits}] MarriageHit={isMarriageHit} [{marriageHits}] NpcRecall={(string.IsNullOrWhiteSpace(npcLastUtterance) ? "off" : "on")} Input='{input}' NPC='{npcName}'");
+					string partyTransferHits = (string.IsNullOrWhiteSpace(partyTransferHitKeyword) ? "" : $"{partyTransferHitKeyword}@{partyTransferHitScore:0.00}");
+					Logger.Log("Logic", $"[SemanticTrigger] DuelHit={isTriggerWordDetected} [{duelHits}] RewardHit={isRewardContext} [{rewardHits}] LoanHit={isLoanContext} [{loanHits}] PartyTransferHit={partyTransferHit} [{partyTransferHits}] SurroundingsHit={isSurroundingsContext} [{surroundingsHits}] KingdomServiceHit={isKingdomServiceHit} [{kingdomServiceHits}] MarriageHit={isMarriageHit} [{marriageHits}] NpcRecall={(string.IsNullOrWhiteSpace(npcLastUtterance) ? "off" : "on")} Input='{input}' NPC='{npcName}'");
 					Logger.Obs("DirectChat", "keywords", new Dictionary<string, object>
 					{
 						["duelHit"] = isTriggerWordDetected,
@@ -10139,6 +11008,9 @@ public class MyBehavior : CampaignBehaviorBase
 						["loanHit"] = isLoanContext,
 						["loanHitKeyword"] = loanHitKeyword ?? "",
 						["loanHitScore"] = Math.Round(loanHitScore, 3),
+						["partyTransferHit"] = partyTransferHit,
+						["partyTransferHitKeyword"] = partyTransferHitKeyword ?? "",
+						["partyTransferHitScore"] = Math.Round(partyTransferHitScore, 3),
 						["surroundingsHit"] = isSurroundingsContext,
 						["surroundingsHitKeyword"] = surroundingsHitKeyword ?? "",
 						["surroundingsHitScore"] = Math.Round(surroundingsHitScore, 3),
@@ -10502,6 +11374,36 @@ public class MyBehavior : CampaignBehaviorBase
 						else if (targetCharacter != null)
 						{
 							RewardSystemBehavior.Instance.ApplyMerchantRewardTags(targetCharacter, Hero.MainHero, ref result);
+						}
+					}
+					if (!patienceExhausted && string.IsNullOrEmpty(streamError))
+					{
+						try
+						{
+							if (TryApplyPartyTransferTagsForExternal(targetHero, targetCharacter, targetAgentIndex, ref result, out var generatedFacts, out var notifications))
+							{
+								Hero hero = targetHero ?? targetCharacter?.HeroObject;
+								if (hero != null && generatedFacts != null)
+								{
+									foreach (string generatedFact in generatedFacts)
+									{
+										AppendExternalDialogueHistory(hero, null, null, generatedFact);
+									}
+								}
+								if (notifications != null)
+								{
+									foreach (string notification in notifications)
+									{
+										if (!string.IsNullOrWhiteSpace(notification))
+										{
+											InformationManager.DisplayMessage(new InformationMessage(notification, new Color(0.4f, 1f, 0.4f)));
+										}
+									}
+								}
+							}
+						}
+						catch
+						{
 						}
 					}
 					if (patienceExhausted && string.IsNullOrEmpty(streamError))
@@ -10975,14 +11877,14 @@ public class MyBehavior : CampaignBehaviorBase
 		Hero hero = targetHero ?? targetCharacter?.HeroObject;
 		if (hero == null)
 		{
-			return GetLatestSceneNpcDialogueUtteranceFallback(targetAgentIndex);
+			return "";
 		}
 		try
 		{
 			List<DialogueDay> list = LoadDialogueHistory(hero);
 			if (list == null || list.Count == 0)
 			{
-				return GetLatestSceneNpcDialogueUtteranceFallback(targetAgentIndex);
+				return "";
 			}
 			for (int i = list.Count - 1; i >= 0; i--)
 			{
@@ -11004,7 +11906,7 @@ public class MyBehavior : CampaignBehaviorBase
 		catch
 		{
 		}
-		return GetLatestSceneNpcDialogueUtteranceFallback(targetAgentIndex);
+		return "";
 	}
 
 	private static string GetLatestSceneNpcDialogueUtteranceFallback(int targetAgentIndex)
@@ -11182,7 +12084,7 @@ public class MyBehavior : CampaignBehaviorBase
 						for (int i = 0; i < item.Lines.Count; i++)
 						{
 							string text = (item.Lines[i] ?? "").Trim();
-							if (!string.IsNullOrWhiteSpace(text))
+							if (ShouldIncludeGuardrailSemanticContextLine(text))
 							{
 								list3.Add(text);
 							}
@@ -11204,7 +12106,7 @@ public class MyBehavior : CampaignBehaviorBase
 				}
 			}
 			string text3 = (extraFact ?? "").Trim();
-			if (!string.IsNullOrWhiteSpace(text3))
+			if (ShouldIncludeGuardrailSemanticContextLine(text3))
 			{
 				if (text3.Length > 180)
 				{
@@ -11240,6 +12142,32 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			return "";
 		}
+	}
+
+	private static bool ShouldIncludeGuardrailSemanticContextLine(string line)
+	{
+		string text = (line ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return false;
+		}
+		if (IsActiveSceneSessionHistoryLine(text) || IsLoreInjectionHistoryLine(text) || IsPlayerTurnStartLine(text))
+		{
+			return false;
+		}
+		if (text.IndexOf("参与互动让你的脑海里浮现了这些知识", StringComparison.Ordinal) >= 0)
+		{
+			return false;
+		}
+		if (text.IndexOf("【以下是关于（", StringComparison.Ordinal) >= 0)
+		{
+			return false;
+		}
+		if (text.IndexOf("【触发相关话题/背景】", StringComparison.Ordinal) >= 0)
+		{
+			return false;
+		}
+		return true;
 	}
 
 	private static string ResolveTargetKingdomIdForRules(Hero targetHero, CharacterObject targetCharacter, string kingdomIdOverride = null)
@@ -11318,6 +12246,14 @@ public class MyBehavior : CampaignBehaviorBase
 		try
 		{
 			text = AIConfigHandler.BuildMatchedExtraRuleInstructions(input, npcLastUtterance, AIConfigHandler.GuardrailRuleReturnCap, hasAnyHero);
+			if (!string.IsNullOrWhiteSpace(text) && text.IndexOf("【附加规则:party_transfer】", StringComparison.OrdinalIgnoreCase) >= 0)
+			{
+				string partyTransferRuntimeInstructionForExternal = BuildPartyTransferRuntimeInstructionForExternal(targetHero, targetCharacter, targetAgentIndex);
+				if (!string.IsNullOrWhiteSpace(partyTransferRuntimeInstructionForExternal))
+				{
+					text = ReplaceSingleRuleBlockBody(text, "party_transfer", partyTransferRuntimeInstructionForExternal);
+				}
+			}
 			// Always keep this rule present for the lords-hall gate guard, regardless of semantic hits.
 			text2 = (AIConfigHandler.BuildRuntimeLordsHallAccessInstructionForExternal() ?? "").Trim();
 		}
@@ -11340,6 +12276,40 @@ public class MyBehavior : CampaignBehaviorBase
 			text = ReplaceSceneMechanismRuleForFollowing(text);
 		}
 		return PrependExtraRuleDisclaimer(text);
+	}
+
+	private static string ReplaceSingleRuleBlockBody(string text, string ruleId, string newBody)
+	{
+		string text2 = (text ?? "").Trim();
+		string text3 = (ruleId ?? "").Trim();
+		string text4 = (newBody ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text2) || string.IsNullOrWhiteSpace(text3) || string.IsNullOrWhiteSpace(text4))
+		{
+			return text2;
+		}
+		string value = "【附加规则:" + text3 + "】";
+		int num = text2.IndexOf(value, StringComparison.OrdinalIgnoreCase);
+		if (num < 0)
+		{
+			return text2;
+		}
+		int num2 = text2.IndexOf("【附加规则:", num + value.Length, StringComparison.Ordinal);
+		string text5 = text2.Substring(0, num).TrimEnd();
+		string text6 = value;
+		string text7 = ((num2 >= 0) ? text2.Substring(num2).TrimStart() : "");
+		StringBuilder stringBuilder = new StringBuilder();
+		if (!string.IsNullOrWhiteSpace(text5))
+		{
+			stringBuilder.AppendLine(text5);
+		}
+		stringBuilder.AppendLine(text6);
+		stringBuilder.Append(text4.Trim());
+		if (!string.IsNullOrWhiteSpace(text7))
+		{
+			stringBuilder.AppendLine();
+			stringBuilder.Append(text7);
+		}
+		return stringBuilder.ToString().Trim();
 	}
 
 	private static bool IsSceneFollowingAgentForRules(int targetAgentIndex)
@@ -11519,6 +12489,49 @@ public class MyBehavior : CampaignBehaviorBase
 				AppendRuleBlock(stringBuilder, "surroundings", AIConfigHandler.SurroundingsInstruction);
 			}
 			string text3 = BuildExtraRuleInstructions(input, npcLastUtterance, targetHero, hasAnyHero, targetCharacter, kingdomIdOverride, targetAgentIndex);
+			if (!string.IsNullOrWhiteSpace(text3) && text3.IndexOf("【附加规则:party_transfer】", StringComparison.OrdinalIgnoreCase) >= 0)
+			{
+				bool flag12 = stringBuilder.ToString().IndexOf("【附加规则:reward】", StringComparison.OrdinalIgnoreCase) >= 0;
+				bool flag13 = stringBuilder.ToString().IndexOf("【附加规则:loan】", StringComparison.OrdinalIgnoreCase) >= 0;
+				if (AIConfigHandler.RewardEnabled && !flag12)
+				{
+					string rewardText = "";
+					if (!hasAnyHero && targetCharacter != null && RewardSystemBehavior.Instance != null)
+					{
+						string settlementMerchantRewardInstruction = RewardSystemBehavior.Instance.BuildSettlementMerchantRewardInstruction(targetCharacter);
+						if (!string.IsNullOrWhiteSpace(settlementMerchantRewardInstruction))
+						{
+							string rewardInstruction = AIConfigHandler.BuildRuntimeRewardInstructionForExternal(null, targetCharacter);
+							rewardText = (string.IsNullOrWhiteSpace(rewardInstruction) ? settlementMerchantRewardInstruction : (rewardInstruction.Trim() + "\n" + settlementMerchantRewardInstruction.Trim()));
+						}
+					}
+					if (string.IsNullOrWhiteSpace(rewardText))
+					{
+						rewardText = (hasAnyHero ? AIConfigHandler.BuildRuntimeRewardInstructionForExternal(targetHero, targetCharacter) : AIConfigHandler.RewardNonHeroInstruction);
+					}
+					if (string.IsNullOrWhiteSpace(rewardText))
+					{
+						rewardText = AIConfigHandler.RewardInstruction;
+					}
+					if (!string.IsNullOrWhiteSpace(rewardText))
+					{
+						AppendRuleBlock(stringBuilder, "reward", rewardText);
+					}
+				}
+				if (AIConfigHandler.LoanEnabled && !flag13)
+				{
+					bool flag11 = !hasAnyHero && targetCharacter != null && RewardSystemBehavior.Instance != null && RewardSystemBehavior.Instance.TryGetSettlementMerchantKind(targetCharacter, out var _);
+					string text5 = ((hasAnyHero || flag11) ? AIConfigHandler.BuildRuntimeLoanInstructionForExternal(targetHero, targetCharacter) : AIConfigHandler.LoanNonHeroInstruction);
+					if (string.IsNullOrWhiteSpace(text5))
+					{
+						text5 = AIConfigHandler.LoanInstruction;
+					}
+					if (!string.IsNullOrWhiteSpace(text5))
+					{
+						AppendRuleBlock(stringBuilder, "loan", text5);
+					}
+				}
+			}
 			if (!string.IsNullOrWhiteSpace(text3))
 			{
 				stringBuilder.AppendLine(text3.Trim());
@@ -11825,6 +12838,11 @@ public class MyBehavior : CampaignBehaviorBase
 		string matchedKeyword6 = "";
 		float score6 = 0f;
 		bool marriageHit = !suppressDynamicRuleAndLore && AIConfigHandler.IsGuardrailSemanticHit(input, npcLastUtterance, "marriage", guardrailMarriageInstruction, guardrailMarriageKeywords, out matchedKeyword6, out score6);
+		string guardrailPartyTransferInstruction = AIConfigHandler.GetGuardrailRuleInstruction("party_transfer");
+		List<string> guardrailPartyTransferKeywords = AIConfigHandler.GetGuardrailRuleKeywords("party_transfer");
+		string matchedKeyword7 = "";
+		float score7 = 0f;
+		bool partyTransferHit = !suppressDynamicRuleAndLore && AIConfigHandler.IsGuardrailSemanticHit(input, npcLastUtterance, "party_transfer", guardrailPartyTransferInstruction, guardrailPartyTransferKeywords, out matchedKeyword7, out score7);
 		if (!suppressDynamicRuleAndLore && TryConsumeRuleStickyCarry(targetHero, targetCharacter, input, out var carryDuel, out var carryReward, out var carryLoan))
 		{
 			if (!flag && carryDuel)
@@ -11853,6 +12871,11 @@ public class MyBehavior : CampaignBehaviorBase
 		flag2 = targetHero != null && flag;
 		bool flag7 = flag3 || flagMerchant;
 		bool flag8 = flag4 || flagMerchant;
+		if (partyTransferHit)
+		{
+			flag7 = flag7 || AIConfigHandler.RewardEnabled;
+			flag8 = flag8 || AIConfigHandler.LoanEnabled;
+		}
 		string value = "";
 		if (!suppressDynamicRuleAndLore && !flag2 && !flag7 && !flag8 && !flag5)
 		{
@@ -11864,8 +12887,9 @@ public class MyBehavior : CampaignBehaviorBase
 		string text5 = (string.IsNullOrWhiteSpace(matchedKeyword4) ? "" : $"{matchedKeyword4}@{score4:0.00}");
 		string text6 = (string.IsNullOrWhiteSpace(matchedKeyword5) ? "" : $"{matchedKeyword5}@{score5:0.00}");
 		string text8 = (string.IsNullOrWhiteSpace(matchedKeyword6) ? "" : $"{matchedKeyword6}@{score6:0.00}");
+		string text9 = (string.IsNullOrWhiteSpace(matchedKeyword7) ? "" : $"{matchedKeyword7}@{score7:0.00}");
 		string text7 = targetHero?.Name?.ToString() ?? "某人";
-		Logger.Log("Logic", $"[SemanticTrigger-Shout] DuelHit={flag} [{text2}] RewardHit={flag3} [{text3}] LoanHit={flag4} [{text4}] SurroundingsHit={flag5} [{text5}] KingdomServiceHit={flag6} [{text6}] MarriageHit={marriageHit} [{text8}] NpcRecall={(string.IsNullOrWhiteSpace(npcLastUtterance) ? "off" : "on")} Input='{input}' NPC='{text7}'");
+		Logger.Log("Logic", $"[SemanticTrigger-Shout] DuelHit={flag} [{text2}] RewardHit={flag3} [{text3}] LoanHit={flag4} [{text4}] PartyTransferHit={partyTransferHit} [{text9}] SurroundingsHit={flag5} [{text5}] KingdomServiceHit={flag6} [{text6}] MarriageHit={marriageHit} [{text8}] NpcRecall={(string.IsNullOrWhiteSpace(npcLastUtterance) ? "off" : "on")} Input='{input}' NPC='{text7}'");
 		StringBuilder stringBuilder = new StringBuilder();
 		string loreContext = "";
 		string loreCtxSource = "none";
@@ -12351,11 +13375,7 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			return stripped;
 		}
-		int num = text.IndexOf(':');
-		if (num > 0 && num < 20)
-		{
-			return text.Substring(num + 1).Trim();
-		}
+		text = ShoutUtils.StripNamePrefixedLineSafely(text, 20);
 		return text;
 	}
 
@@ -12978,9 +13998,20 @@ public class MyBehavior : CampaignBehaviorBase
 		mouse_event(4, 0, 0, 0, 0);
 	}
 
-	private async Task<ApiCallResult> CallUniversalApiDetailed(string sys, string user)
+	private async Task<ApiCallResult> CallUniversalApiDetailed(string sys, string user, bool logToEventLogs = false, string eventLogSource = "EventWeeklyReport")
 	{
 		ApiCallResult apiCallResult = new ApiCallResult();
+		Action<string> apiLog = delegate(string message)
+		{
+			if (logToEventLogs)
+			{
+				Logger.LogEvent(eventLogSource, message);
+			}
+			else
+			{
+				Logger.Log("Logic", message);
+			}
+		};
 		try
 		{
 			DuelSettings settings = DuelSettings.GetSettings();
@@ -13024,7 +14055,7 @@ public class MyBehavior : CampaignBehaviorBase
 			httpLog.AppendLine(sys);
 			httpLog.AppendLine("  UserInput:");
 			httpLog.AppendLine(user);
-			Logger.Log("Logic", httpLog.ToString());
+			apiLog(httpLog.ToString());
 			HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, effectiveApiUrl);
 			try
 			{
@@ -13034,7 +14065,7 @@ public class MyBehavior : CampaignBehaviorBase
 				try
 				{
 					string statusLine = (int)response.StatusCode + " " + response.ReasonPhrase;
-					Logger.Log("Logic", "[HTTP] 响应状态: " + statusLine);
+					apiLog("[HTTP] 响应状态: " + statusLine);
 					if (!response.IsSuccessStatusCode)
 					{
 						string text = await response.Content.ReadAsStringAsync();
@@ -13050,7 +14081,7 @@ public class MyBehavior : CampaignBehaviorBase
 					using Stream stream = await response.Content.ReadAsStreamAsync();
 					if (stream == null)
 					{
-						Logger.Log("Logic", "[HTTP] 响应流为空。");
+						apiLog("[HTTP] 响应流为空。");
 						apiCallResult.ErrorMessage = "响应流为空";
 						return apiCallResult;
 					}
@@ -13075,12 +14106,12 @@ public class MyBehavior : CampaignBehaviorBase
 							catch (Exception ex)
 							{
 								Exception parseEx = ex;
-								Logger.Log("Logic", "[HTTP] 流解析异常: " + parseEx.ToString());
+								apiLog("[HTTP] 流解析异常: " + parseEx.ToString());
 							}
 						}
 					}
 					string raw = fullContent.ToString();
-					Logger.Log("Logic", "[HTTP] 流式原始内容=\n" + raw);
+					apiLog("[HTTP] 流式原始内容=\n" + raw);
 					apiCallResult.Success = true;
 					apiCallResult.Content = CleanAIResponse(raw);
 					return apiCallResult;
@@ -13098,7 +14129,7 @@ public class MyBehavior : CampaignBehaviorBase
 		catch (Exception ex)
 		{
 			Exception ex2 = ex;
-			Logger.Log("Logic", "[ERROR] CallUniversalApi 异常: " + ex2.ToString());
+			apiLog("[ERROR] CallUniversalApi 异常: " + ex2.ToString());
 			apiCallResult.ErrorMessage = ex2.Message;
 			return apiCallResult;
 		}
@@ -13120,7 +14151,10 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			return text;
 		}
-		return Regex.Replace(text, "\\[ACTION:[^\\]]*\\]", "").Trim();
+		text = Regex.Replace(text, "\\[ACTION:[^\\]]*\\]", "");
+		text = TransferTroopTagRegex.Replace(text, "");
+		text = TransferPrisonerTagRegex.Replace(text, "");
+		return text.Trim();
 	}
 
 	private string CleanAIResponse(string input)
@@ -17800,7 +18834,7 @@ public class MyBehavior : CampaignBehaviorBase
 		string text4 = BuildWeeklyReportGroupDisplayLabel(group);
 		for (int i = 1; i <= Math.Max(1, maxAttempts); i++)
 		{
-			ApiCallResult apiCallResult = await CallUniversalApiDetailed(text, text2);
+			ApiCallResult apiCallResult = await CallUniversalApiDetailed(text, text2, logToEventLogs: true, eventLogSource: "EventWeeklyReport");
 			string text5 = apiCallResult.Success ? (apiCallResult.Content ?? "") : ("错误: " + (apiCallResult.ErrorMessage ?? "未知错误"));
 			Logger.LogEventPromptExchange(text4 + " [尝试 " + i + "/" + maxAttempts + "]", text3, text5);
 			if (!apiCallResult.Success)
@@ -17855,7 +18889,7 @@ public class MyBehavior : CampaignBehaviorBase
 		weeklyReportBatchRequestResult.PromptPreview = text3;
 		for (int i = 1; i <= Math.Max(1, maxAttempts); i++)
 		{
-			ApiCallResult apiCallResult = await CallUniversalApiDetailed(text, text2);
+			ApiCallResult apiCallResult = await CallUniversalApiDetailed(text, text2, logToEventLogs: true, eventLogSource: "EventWeeklyReport");
 			string text5 = apiCallResult.Success ? (apiCallResult.Content ?? "") : ("閿欒: " + (apiCallResult.ErrorMessage ?? "鏈煡閿欒"));
 			weeklyReportBatchRequestResult.RawResponse = text5;
 			Logger.LogEventPromptExchange(text4 + " [灏濊瘯 " + i + "/" + maxAttempts + "]", text3, text5);
@@ -18097,7 +19131,7 @@ public class MyBehavior : CampaignBehaviorBase
 		_weeklyReportUiStage = WeeklyReportUiStage.RetryProgress;
 		_weeklyReportUiResumeAfterUtcTicks = DateTime.UtcNow.Ticks + TimeSpan.FromMilliseconds(150.0).Ticks;
 		string text = "正在重试生成第" + _weeklyReportRetryContext.WeekIndex + "周周报中的这个事件，请稍候……\n\n- 当前失败分组：" + (_weeklyReportRetryContext.FailedGroupTitle ?? "未命名分组") + "\n- 后台会再次按每条分组三次重试的规则执行\n- 如果你不想继续等待，可以直接退出当前存档\n- 也可以返回上一界面，稍后再决定是否继续重试";
-		InformationManager.ShowInquiry(new InquiryData("正在重试生成此事件", text, isAffirmativeOptionShown: true, isNegativeOptionShown: true, "退出当前存档", "返回上一界面", ExitCurrentGameFromWeeklyReportGate, CancelWeeklyReportManualRetryAndReturn), pauseGameActiveState: true);
+		InformationManager.ShowInquiry(new InquiryData("正在重试生成此事件", text, isAffirmativeOptionShown: true, isNegativeOptionShown: true, "保存并退出", "返回上一界面", ExitCurrentGameFromWeeklyReportGate, CancelWeeklyReportManualRetryAndReturn), pauseGameActiveState: true);
 	}
 
 	private void BeginRetryBlockedWeeklyReports()
@@ -18139,12 +19173,91 @@ public class MyBehavior : CampaignBehaviorBase
 			_weeklyReportUiStage = WeeklyReportUiStage.None;
 			_weeklyReportReopenAfterApiConfig = false;
 			InformationManager.HideInquiry();
-			MBGameManager.EndGame();
+			BeginSaveAndExitCurrentGame(SaveAndExitReason.WeeklyReport);
 		}
 		catch (Exception ex)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("退出当前存档失败：" + ex.Message));
+			HandleSaveAndExitFailure(SaveAndExitReason.WeeklyReport, "保存并退出失败：" + ex.Message);
+		}
+	}
+
+	private void BeginSaveAndExitCurrentGame(SaveAndExitReason reason)
+	{
+		_saveAndExitReason = reason;
+		SaveHandler saveHandler = Campaign.Current?.SaveHandler;
+		if (saveHandler == null)
+		{
+			_saveAndExitReason = SaveAndExitReason.None;
+			MBGameManager.EndGame();
+			return;
+		}
+		if (saveHandler.IsSaving)
+		{
+			_saveAndExitStage = SaveAndExitStage.WaitingForCurrentSave;
+			InformationManager.DisplayMessage(new InformationMessage("检测到当前已有保存进行中，完成后将再保存一次并自动退出。"));
+			return;
+		}
+		_saveAndExitStage = SaveAndExitStage.WaitingForRequestedQuickSave;
+		saveHandler.QuickSaveCurrentGame();
+		InformationManager.DisplayMessage(new InformationMessage("正在保存当前存档，保存完成后将自动退出。"));
+	}
+
+	private void OnSaveOver(bool isSuccessful, string saveName)
+	{
+		if (_saveAndExitStage == SaveAndExitStage.None || _saveAndExitReason == SaveAndExitReason.None)
+		{
+			return;
+		}
+		try
+		{
+			if (_saveAndExitStage == SaveAndExitStage.WaitingForCurrentSave)
+			{
+				SaveHandler saveHandler = Campaign.Current?.SaveHandler;
+				if (saveHandler == null)
+				{
+					SaveAndExitReason saveAndExitReason = _saveAndExitReason;
+					_saveAndExitStage = SaveAndExitStage.None;
+					_saveAndExitReason = SaveAndExitReason.None;
+					HandleSaveAndExitFailure(saveAndExitReason, "保存并退出失败：未找到存档保存器。");
+					return;
+				}
+				_saveAndExitStage = SaveAndExitStage.WaitingForRequestedQuickSave;
+				saveHandler.QuickSaveCurrentGame();
+				InformationManager.DisplayMessage(new InformationMessage("正在保存当前存档，保存完成后将自动退出。"));
+				return;
+			}
+			SaveAndExitReason saveAndExitReason2 = _saveAndExitReason;
+			_saveAndExitStage = SaveAndExitStage.None;
+			_saveAndExitReason = SaveAndExitReason.None;
+			if (isSuccessful)
+			{
+				MBGameManager.EndGame();
+				return;
+			}
+			HandleSaveAndExitFailure(saveAndExitReason2, "保存当前存档失败，已取消退出。");
+		}
+		catch (Exception ex)
+		{
+			SaveAndExitReason saveAndExitReason3 = _saveAndExitReason;
+			_saveAndExitStage = SaveAndExitStage.None;
+			_saveAndExitReason = SaveAndExitReason.None;
+			HandleSaveAndExitFailure(saveAndExitReason3, "保存并退出失败：" + ex.Message);
+		}
+	}
+
+	private void HandleSaveAndExitFailure(SaveAndExitReason reason, string message)
+	{
+		InformationManager.DisplayMessage(new InformationMessage(message));
+		switch (reason)
+		{
+		case SaveAndExitReason.MissingOnnx:
+			_missingOnnxGateActive = true;
+			_missingOnnxGateResumeAfterUtcTicks = DateTime.UtcNow.Ticks + TimeSpan.FromMilliseconds(100.0).Ticks;
+			ShowMissingOnnxGatePopup();
+			break;
+		case SaveAndExitReason.WeeklyReport:
 			QueueWeeklyReportFailurePopup(_weeklyReportRetryContext, showImmediate: true);
+			break;
 		}
 	}
 

@@ -1,0 +1,40 @@
+﻿{
+  "Id": "rule_伊勒坦人",
+  "Keywords": [
+    "伊勒坦人"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "不知道，这是什么人种？"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 120
+        }
+      },
+      "Content": "这时库赛特人的近亲，已经灭亡了一百多年了，我可厚非的一个小民族罢了"
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,77 @@
+﻿{
+  "Id": "rule_萨涅俄帕",
+  "Keywords": [
+    "萨涅俄帕",
+    "新帝都"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "萨涅俄帕是帝国首都，听说现在迁都到吕卡隆了"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "萨涅俄帕是我们光荣的帝都，虽然在涅雷采斯之后就迁到了吕卡隆，但这只是暂时的，等到帝国一统，我们就把迁回萨涅俄帕。应该吧？"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "萨涅俄帕是传统帝都，我们从巴拉维诺斯迁都到这里已经三百多年了，但是可恶的涅雷采斯皇帝——我都不愿叫他皇帝——让我们的阿雷尼科斯陛下不得不把首都迁到了吕卡隆，现在造成了帝国分裂。如果帝国重归一统，我们依旧希望将帝都迁回萨涅俄帕"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null
+      },
+      "Content": "帝都虽然伟大，但是我们在我们自己的封地上过得更好，我们从来不希望将都城迁回萨涅俄帕，因为迁回去，我们在新都培育的势力就全没了"
+    }
+  ],
+  "TextMappings": []
+}

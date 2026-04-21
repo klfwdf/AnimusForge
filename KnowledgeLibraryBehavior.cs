@@ -2472,6 +2472,162 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		return false;
 	}
 
+	private bool TryFindRuleByExactKeyword(string keyword, HashSet<string> excludeRuleIds, out LoreRule matchedRule)
+	{
+		matchedRule = null;
+		try
+		{
+			string text = NormalizeKeywordForCompare(keyword);
+			if (string.IsNullOrEmpty(text) || _file == null || _file.Rules == null)
+			{
+				return false;
+			}
+			foreach (LoreRule rule in _file.Rules)
+			{
+				if (rule == null)
+				{
+					continue;
+				}
+				string text2 = (rule.Id ?? "").Trim();
+				if (string.IsNullOrEmpty(text2) || (excludeRuleIds != null && excludeRuleIds.Contains(text2)) || rule.Keywords == null || rule.Keywords.Count <= 0)
+				{
+					continue;
+				}
+				foreach (string keyword2 in rule.Keywords)
+				{
+					string text3 = NormalizeKeywordForCompare(keyword2);
+					if (!string.IsNullOrEmpty(text3) && string.Equals(text3, text, StringComparison.OrdinalIgnoreCase))
+					{
+						matchedRule = rule;
+						return true;
+					}
+				}
+			}
+		}
+		catch
+		{
+		}
+		return false;
+	}
+
+	private static string GetPlayerKeywordSlotKeyword()
+	{
+		try
+		{
+			Hero mainHero = Hero.MainHero;
+			if (mainHero == null || (mainHero.Clan?.Tier ?? 0) < 2)
+			{
+				return "";
+			}
+			return (mainHero.Name?.ToString() ?? "").Trim();
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	private static string BuildExactKeywordSlotCacheSignature()
+	{
+		string text = NormalizeKeywordForCompare(GetPlayerKeywordSlotKeyword());
+		return string.IsNullOrEmpty(text) ? "player_slot=off" : ("player_slot=" + text);
+	}
+
+	private bool TryAppendExactKeywordSlotLore(StringBuilder stringBuilder, ref bool wroteHeader, LoreRule rule, string matchMode, Hero npcHero, CharacterObject npcCharacter, string heroId, string cultureId, string kingdomId, string settlementId, string role, bool isFemale, bool isClanLeader, string npcDisplayName, string inputText, string secondaryInput, HashSet<string> injectedRuleIds)
+	{
+		if (rule == null)
+		{
+			return false;
+		}
+		string text = (rule.Id ?? "").Trim();
+		if (!string.IsNullOrEmpty(text) && injectedRuleIds != null && injectedRuleIds.Contains(text))
+		{
+			return false;
+		}
+		string text2 = "";
+		try
+		{
+			text2 = rule.Keywords?.FirstOrDefault((string x) => !string.IsNullOrWhiteSpace(x))?.Trim() ?? "";
+		}
+		catch
+		{
+			text2 = "";
+		}
+		try
+		{
+			Logger.Log("LoreMatch", "knowledge_hit rule=" + text + " mode=" + matchMode + " hero=" + heroId + " culture=" + cultureId + " kingdom=" + kingdomId + " settlement=" + settlementId + " role=" + role);
+		}
+		catch
+		{
+		}
+		LoreVariant loreVariant = PickBestVariant(rule, npcHero, npcCharacter, heroId, cultureId, kingdomId, settlementId, role, isFemale, isClanLeader);
+		if (loreVariant == null)
+		{
+			try
+			{
+				Logger.Log("LoreMatch", "variant_miss rule=" + text + " hero=" + heroId + " culture=" + cultureId + " kingdom=" + kingdomId + " role=" + role);
+			}
+			catch
+			{
+			}
+			try
+			{
+				Logger.RecordHitRate("knowledge", text ?? "__unknown__", hit: false, BuildKnowledgeHitRateDetail("reason=variant_miss mode=" + matchMode, secondaryInput), inputText);
+			}
+			catch
+			{
+			}
+			return false;
+		}
+		string text3 = ApplyRuleTextMappings(rule, loreVariant.Content ?? "", npcHero, npcCharacter).Trim();
+		if (string.IsNullOrEmpty(text3))
+		{
+			try
+			{
+				Logger.Log("LoreMatch", "content_empty rule=" + text + " hero=" + heroId + " culture=" + cultureId + " kingdom=" + kingdomId + " role=" + role);
+			}
+			catch
+			{
+			}
+			try
+			{
+				Logger.RecordHitRate("knowledge", text ?? "__unknown__", hit: false, BuildKnowledgeHitRateDetail("reason=content_empty mode=" + matchMode, secondaryInput), inputText);
+			}
+			catch
+			{
+			}
+			return false;
+		}
+		try
+		{
+			Logger.Log("LoreMatch", "variant_hit rule=" + text + " hero=" + heroId + " culture=" + cultureId + " kingdom=" + kingdomId + " role=" + role);
+		}
+		catch
+		{
+		}
+		try
+		{
+			Logger.RecordHitRate("knowledge", text ?? "__unknown__", hit: true, BuildKnowledgeHitRateDetail("reason=variant_hit mode=" + matchMode, secondaryInput), inputText);
+		}
+		catch
+		{
+		}
+		if (!wroteHeader)
+		{
+			stringBuilder.AppendLine(" ");
+			stringBuilder.AppendLine("参与互动让你的脑海里浮现了这些知识");
+			wroteHeader = true;
+		}
+		string text4 = string.IsNullOrWhiteSpace(text2) ? (text ?? "相关语义") : text2;
+		stringBuilder.AppendLine("【以下是关于（" + text4 + "）的背景知识，" + npcDisplayName + "可酌情参考作为聊天素材】");
+		stringBuilder.AppendLine(text3);
+		if (!string.IsNullOrEmpty(text) && injectedRuleIds != null)
+		{
+			injectedRuleIds.Add(text);
+		}
+		return true;
+	}
+
 	private string BuildRuleIdFromKeyword(string keyword)
 	{
 		string text = SanitizeRuleIdPart(keyword);
@@ -5384,6 +5540,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		{
 			text7 = "";
 		}
+		string text7Keyword = text7;
 		if (string.IsNullOrWhiteSpace(text7))
 		{
 			text7 = "该NPC";
@@ -5392,7 +5549,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		LogLoreContextTrace("hero", text2, "", text3, text4, text6, text5, flag, flag2, "", text);
 		long ruleDataVersion = _ruleDataVersion;
 		bool allowLoreContextCache = !HasAnyTextMappings();
-		string key = Hash8($"{ruleDataVersion}|H|{text2}|{text8}|{text3}|{text4}|{text6}|{text5}|{(flag ? 1 : 0)}|{(flag2 ? 1 : 0)}|{text}");
+		string key = Hash8($"{ruleDataVersion}|H|{text2}|{text8}|{text3}|{text4}|{text6}|{text5}|{(flag ? 1 : 0)}|{(flag2 ? 1 : 0)}|{BuildExactKeywordSlotCacheSignature()}|{text}");
 		if (allowLoreContextCache && TryGetLoreContextCache(key, ruleDataVersion, out var value))
 		{
 			return value;
@@ -5420,123 +5577,45 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		}
 		bool flag3 = false;
 		int num2 = 0;
+		int num3 = 0;
 		StringBuilder stringBuilder = new StringBuilder();
 		CandidateRules candidateRules = CollectCandidateRules(text, secondaryInput);
 		int loreInjectLimit = candidateRules?.InjectLimit ?? GetLoreInjectLimit(GetKnowledgeReturnCap());
 		string matchMode = candidateRules?.MatchMode ?? "none";
 		List<LoreRule> list = candidateRules?.OrderedRules;
-		if (list == null || list.Count == 0)
+		HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		if (list != null)
 		{
-			LogLoreMissOnce("rule_miss", text, num, text2, text3, text4, text5);
-			if (allowLoreContextCache)
+			foreach (LoreRule item in list)
 			{
-				PutLoreContextCache(key, ruleDataVersion, "");
+				if (num3 >= loreInjectLimit)
+				{
+					break;
+				}
+				if (TryAppendExactKeywordSlotLore(stringBuilder, ref flag3, item, matchMode, npcHero, null, text2, text3, text4, text6, text5, flag, flag2, text7, text, secondaryInput, hashSet))
+				{
+					num3++;
+					num2++;
+				}
 			}
-			try
-			{
-				Logger.RecordHitRate("knowledge", "__query__", hit: false, BuildKnowledgeHitRateDetail($"reason=rule_miss rules={num} inputLen={text.Length} mode={matchMode}", secondaryInput), text);
-			}
-			catch
-			{
-			}
-			return "";
 		}
-		foreach (LoreRule item in list)
+		string text9 = GetPlayerKeywordSlotKeyword();
+		if (!string.IsNullOrWhiteSpace(text9) && TryFindRuleByExactKeyword(text9, hashSet, out var matchedRule) && TryAppendExactKeywordSlotLore(stringBuilder, ref flag3, matchedRule, "keyword_slot_player", npcHero, null, text2, text3, text4, text6, text5, flag, flag2, text7, text, secondaryInput, hashSet))
 		{
-			if (num2 >= loreInjectLimit)
-			{
-				break;
-			}
-			if (item == null)
-			{
-				continue;
-			}
-			string text9 = "";
-			try
-			{
-				text9 = item?.Keywords?.FirstOrDefault((string x) => !string.IsNullOrWhiteSpace(x))?.Trim() ?? "";
-			}
-			catch
-			{
-				text9 = "";
-			}
-			try
-			{
-				Logger.Log("LoreMatch", "knowledge_hit rule=" + item.Id + " mode=" + matchMode + " hero=" + text2 + " culture=" + text3 + " kingdom=" + text4 + " settlement=" + text6 + " role=" + text5);
-			}
-			catch
-			{
-			}
-			LoreVariant loreVariant = PickBestVariant(item, npcHero, null, text2, text3, text4, text6, text5, flag, flag2);
-			if (loreVariant == null)
-			{
-				try
-				{
-					Logger.Log("LoreMatch", "variant_miss rule=" + item.Id + " hero=" + text2 + " culture=" + text3 + " kingdom=" + text4 + " role=" + text5);
-				}
-				catch
-				{
-				}
-				try
-				{
-					Logger.RecordHitRate("knowledge", item.Id ?? "__unknown__", hit: false, BuildKnowledgeHitRateDetail("reason=variant_miss mode=" + matchMode, secondaryInput), text);
-				}
-				catch
-				{
-				}
-				continue;
-			}
-			string value2 = ApplyRuleTextMappings(item, loreVariant.Content ?? "", npcHero, null).Trim();
-			if (string.IsNullOrEmpty(value2))
-			{
-				try
-				{
-					Logger.Log("LoreMatch", "content_empty rule=" + item.Id + " hero=" + text2 + " culture=" + text3 + " kingdom=" + text4 + " role=" + text5);
-				}
-				catch
-				{
-				}
-				try
-				{
-					Logger.RecordHitRate("knowledge", item.Id ?? "__unknown__", hit: false, BuildKnowledgeHitRateDetail("reason=content_empty mode=" + matchMode, secondaryInput), text);
-				}
-				catch
-				{
-				}
-				continue;
-			}
-			try
-			{
-				Logger.Log("LoreMatch", "variant_hit rule=" + item.Id + " hero=" + text2 + " culture=" + text3 + " kingdom=" + text4 + " role=" + text5);
-			}
-			catch
-			{
-			}
-			try
-			{
-				Logger.RecordHitRate("knowledge", item.Id ?? "__unknown__", hit: true, BuildKnowledgeHitRateDetail("reason=variant_hit mode=" + matchMode, secondaryInput), text);
-			}
-			catch
-			{
-			}
 			num2++;
-			if (!flag3)
-			{
-				stringBuilder.AppendLine(" ");
-				stringBuilder.AppendLine("参与互动让你的脑海里浮现了这些知识");
-				flag3 = true;
-			}
-			string text10 = (string.IsNullOrWhiteSpace(text9) ? (item.Id ?? "相关语义") : text9);
-			stringBuilder.AppendLine("【以下是关于（" + text10 + "）的背景知识，" + text7 + "可酌情参考作为聊天素材】");
-			stringBuilder.AppendLine(value2);
+		}
+		if (!string.IsNullOrWhiteSpace(text7Keyword) && TryFindRuleByExactKeyword(text7Keyword, hashSet, out var matchedNpcRule) && TryAppendExactKeywordSlotLore(stringBuilder, ref flag3, matchedNpcRule, "keyword_slot_npc", npcHero, null, text2, text3, text4, text6, text5, flag, flag2, text7, text, secondaryInput, hashSet))
+		{
+			num2++;
 		}
 		string text11 = ((num2 > 0) ? stringBuilder.ToString() : "");
 		if (num2 == 0)
 		{
-			LogLoreMissOnce("variant_or_content_miss", text, num, text2, text3, text4, text5);
+			LogLoreMissOnce(((list == null || list.Count == 0) ? "rule_miss" : "variant_or_content_miss"), text, num, text2, text3, text4, text5);
 			try
 			{
-				Logger.RecordHitRate("knowledge", "__query__", hit: false, BuildKnowledgeHitRateDetail($"reason=variant_or_content_miss candidates={list?.Count ?? 0} mode={matchMode} inputLen={text.Length}", secondaryInput), text);
+				string value2 = ((list == null || list.Count == 0) ? $"reason=rule_miss rules={num} inputLen={text.Length} mode={matchMode}" : $"reason=variant_or_content_miss candidates={list?.Count ?? 0} mode={matchMode} inputLen={text.Length}");
+				Logger.RecordHitRate("knowledge", "__query__", hit: false, BuildKnowledgeHitRateDetail(value2, secondaryInput), text);
 			}
 			catch
 			{
@@ -5854,6 +5933,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 				text7 = "";
 			}
 		}
+		string text7Keyword = text7;
 		if (string.IsNullOrWhiteSpace(text7))
 		{
 			text7 = "该NPC";
@@ -5862,7 +5942,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		LogLoreContextTrace((hero != null) ? "character_hero" : "character", text2, textCharId, text3, text4, text6, text5, flag, flag2, kingdomIdOverride, text);
 		long ruleDataVersion = _ruleDataVersion;
 		bool allowLoreContextCache = !HasAnyTextMappings();
-		string key = Hash8($"{ruleDataVersion}|C|{text2}|{text8}|{text3}|{text4}|{text6}|{text5}|{(flag ? 1 : 0)}|{(flag2 ? 1 : 0)}|{text}");
+		string key = Hash8($"{ruleDataVersion}|C|{text2}|{text8}|{text3}|{text4}|{text6}|{text5}|{(flag ? 1 : 0)}|{(flag2 ? 1 : 0)}|{BuildExactKeywordSlotCacheSignature()}|{text}");
 		if (allowLoreContextCache && TryGetLoreContextCache(key, ruleDataVersion, out var value))
 		{
 			return value;
@@ -5890,123 +5970,45 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		}
 		bool flag3 = false;
 		int num2 = 0;
+		int num3 = 0;
 		StringBuilder stringBuilder = new StringBuilder();
 		CandidateRules candidateRules = CollectCandidateRules(text, secondaryInput);
 		int loreInjectLimit = candidateRules?.InjectLimit ?? GetLoreInjectLimit(GetKnowledgeReturnCap());
 		string matchMode = candidateRules?.MatchMode ?? "none";
 		List<LoreRule> list = candidateRules?.OrderedRules;
-		if (list == null || list.Count == 0)
+		HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		if (list != null)
 		{
-			LogLoreMissOnce("rule_miss", text, num, text2, text3, text4, text5);
-			if (allowLoreContextCache)
+			foreach (LoreRule item in list)
 			{
-				PutLoreContextCache(key, ruleDataVersion, "");
+				if (num3 >= loreInjectLimit)
+				{
+					break;
+				}
+				if (TryAppendExactKeywordSlotLore(stringBuilder, ref flag3, item, matchMode, hero, npcCharacter, text2, text3, text4, text6, text5, flag, flag2, text7, text, secondaryInput, hashSet))
+				{
+					num3++;
+					num2++;
+				}
 			}
-			try
-			{
-				Logger.RecordHitRate("knowledge", "__query__", hit: false, BuildKnowledgeHitRateDetail($"reason=rule_miss rules={num} inputLen={text.Length} mode={matchMode}", secondaryInput), text);
-			}
-			catch
-			{
-			}
-			return "";
 		}
-		foreach (LoreRule item in list)
+		string text9 = GetPlayerKeywordSlotKeyword();
+		if (!string.IsNullOrWhiteSpace(text9) && TryFindRuleByExactKeyword(text9, hashSet, out var matchedRule) && TryAppendExactKeywordSlotLore(stringBuilder, ref flag3, matchedRule, "keyword_slot_player", hero, npcCharacter, text2, text3, text4, text6, text5, flag, flag2, text7, text, secondaryInput, hashSet))
 		{
-			if (num2 >= loreInjectLimit)
-			{
-				break;
-			}
-			if (item == null)
-			{
-				continue;
-			}
-			string text9 = "";
-			try
-			{
-				text9 = item?.Keywords?.FirstOrDefault((string x) => !string.IsNullOrWhiteSpace(x))?.Trim() ?? "";
-			}
-			catch
-			{
-				text9 = "";
-			}
-			try
-			{
-				Logger.Log("LoreMatch", "knowledge_hit rule=" + item.Id + " mode=" + matchMode + " hero=" + text2 + " culture=" + text3 + " kingdom=" + text4 + " settlement=" + text6 + " role=" + text5);
-			}
-			catch
-			{
-			}
-			LoreVariant loreVariant = PickBestVariant(item, hero, npcCharacter, text2, text3, text4, text6, text5, flag, flag2);
-			if (loreVariant == null)
-			{
-				try
-				{
-					Logger.Log("LoreMatch", "variant_miss rule=" + item.Id + " hero=" + text2 + " culture=" + text3 + " kingdom=" + text4 + " role=" + text5);
-				}
-				catch
-				{
-				}
-				try
-				{
-					Logger.RecordHitRate("knowledge", item.Id ?? "__unknown__", hit: false, BuildKnowledgeHitRateDetail("reason=variant_miss mode=" + matchMode, secondaryInput), text);
-				}
-				catch
-				{
-				}
-				continue;
-			}
-			string value2 = ApplyRuleTextMappings(item, loreVariant.Content ?? "", hero, npcCharacter).Trim();
-			if (string.IsNullOrEmpty(value2))
-			{
-				try
-				{
-					Logger.Log("LoreMatch", "content_empty rule=" + item.Id + " hero=" + text2 + " culture=" + text3 + " kingdom=" + text4 + " role=" + text5);
-				}
-				catch
-				{
-				}
-				try
-				{
-					Logger.RecordHitRate("knowledge", item.Id ?? "__unknown__", hit: false, BuildKnowledgeHitRateDetail("reason=content_empty mode=" + matchMode, secondaryInput), text);
-				}
-				catch
-				{
-				}
-				continue;
-			}
-			try
-			{
-				Logger.Log("LoreMatch", "variant_hit rule=" + item.Id + " hero=" + text2 + " culture=" + text3 + " kingdom=" + text4 + " role=" + text5);
-			}
-			catch
-			{
-			}
-			try
-			{
-				Logger.RecordHitRate("knowledge", item.Id ?? "__unknown__", hit: true, BuildKnowledgeHitRateDetail("reason=variant_hit mode=" + matchMode, secondaryInput), text);
-			}
-			catch
-			{
-			}
 			num2++;
-			if (!flag3)
-			{
-				stringBuilder.AppendLine(" ");
-				stringBuilder.AppendLine("参与互动让你的脑海里浮现了这些知识");
-				flag3 = true;
-			}
-			string text10 = (string.IsNullOrWhiteSpace(text9) ? (item.Id ?? "相关语义") : text9);
-			stringBuilder.AppendLine("【以下是关于（" + text10 + "）的背景知识，" + text7 + "可酌情参考作为聊天素材");
-			stringBuilder.AppendLine(value2);
+		}
+		if (!string.IsNullOrWhiteSpace(text7Keyword) && TryFindRuleByExactKeyword(text7Keyword, hashSet, out var matchedNpcRule) && TryAppendExactKeywordSlotLore(stringBuilder, ref flag3, matchedNpcRule, "keyword_slot_npc", hero, npcCharacter, text2, text3, text4, text6, text5, flag, flag2, text7, text, secondaryInput, hashSet))
+		{
+			num2++;
 		}
 		string text11 = ((num2 > 0) ? stringBuilder.ToString() : "");
 		if (num2 == 0)
 		{
-			LogLoreMissOnce("variant_or_content_miss", text, num, text2, text3, text4, text5);
+			LogLoreMissOnce(((list == null || list.Count == 0) ? "rule_miss" : "variant_or_content_miss"), text, num, text2, text3, text4, text5);
 			try
 			{
-				Logger.RecordHitRate("knowledge", "__query__", hit: false, BuildKnowledgeHitRateDetail($"reason=variant_or_content_miss candidates={list?.Count ?? 0} mode={matchMode} inputLen={text.Length}", secondaryInput), text);
+				string value2 = ((list == null || list.Count == 0) ? $"reason=rule_miss rules={num} inputLen={text.Length} mode={matchMode}" : $"reason=variant_or_content_miss candidates={list?.Count ?? 0} mode={matchMode} inputLen={text.Length}");
+				Logger.RecordHitRate("knowledge", "__query__", hit: false, BuildKnowledgeHitRateDetail(value2, secondaryInput), text);
 			}
 			catch
 			{
