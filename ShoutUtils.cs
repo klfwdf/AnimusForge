@@ -738,6 +738,44 @@ public static class ShoutUtils
 				n = "路人";
 			}
 			string t = (troopId ?? "").Trim().ToLower();
+			string cultureName = c;
+			try
+			{
+				CultureObject cultureObject = ResolvePromptNameCulture(c);
+				string text = (cultureObject?.Name?.ToString() ?? "").Trim();
+				if (!string.IsNullOrWhiteSpace(text))
+				{
+					cultureName = text;
+				}
+			}
+			catch
+			{
+			}
+			string roleName = r;
+			if (string.Equals(r, "soldier", StringComparison.OrdinalIgnoreCase))
+			{
+				roleName = "士兵";
+			}
+			else if (string.Equals(r, "commoner", StringComparison.OrdinalIgnoreCase))
+			{
+				roleName = "平民";
+			}
+			string troopName = "";
+			try
+			{
+				if (!string.IsNullOrWhiteSpace(t))
+				{
+					CharacterObject characterObject = MBObjectManager.Instance?.GetObjectTypeList<CharacterObject>()?.FirstOrDefault((CharacterObject x) => x != null && string.Equals((x.StringId ?? "").Trim(), t, StringComparison.OrdinalIgnoreCase));
+					troopName = (characterObject?.Name?.ToString() ?? "").Trim();
+				}
+			}
+			catch
+			{
+				troopName = "";
+			}
+			t = troopName;
+			c = cultureName;
+			r = roleName;
 			string kingdom = "";
 			try
 			{
@@ -786,6 +824,10 @@ public static class ShoutUtils
 			catch
 			{
 			}
+			if ((string.IsNullOrWhiteSpace(kingdomName) || string.Equals(kingdomName, kingdom, StringComparison.OrdinalIgnoreCase)) && !string.IsNullOrWhiteSpace(cultureName))
+			{
+				kingdomName = cultureName;
+			}
 			string lordId2 = "";
 			string lordName = "";
 			try
@@ -809,6 +851,10 @@ public static class ShoutUtils
 			{
 				lordId2 = "";
 				lordName = "";
+			}
+			if (string.IsNullOrWhiteSpace(lordName))
+			{
+				lordId2 = "";
 			}
 			string sys = "你是《骑马与砍杀2：霸主》的无名NPC描述生成器。你只输出严格 JSON，不要输出任何额外文字，不要 Markdown，不要代码块。JSON 仅包含 1 个字段：profile。profile 是一段中文描述，请生成100字左右的描述，不换行。描述必须与提供的势力/效忠事实一致，不得让该 NPC 自称属于其他国家或效忠其他统治者。";
 			StringBuilder userSb = new StringBuilder();
@@ -840,6 +886,14 @@ public static class ShoutUtils
 				userSb.AppendLine("隶属领主Id: " + lordId2);
 			}
 			string user = userSb.ToString().Trim();
+			if (!string.IsNullOrWhiteSpace(kingdom))
+			{
+				user = user.Replace(" (StringId=" + kingdom + ")", "");
+			}
+			else
+			{
+				user = user.Replace(" (StringId=)", "");
+			}
 			List<object> messages = new List<object>
 			{
 				new

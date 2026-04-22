@@ -44,6 +44,23 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		public int Count { get; set; }
 
 		public EquipmentElement EquipmentElement { get; set; }
+
+		public bool IsPrivateEquipment { get; set; }
+	}
+
+	public class DuelStakeOption
+	{
+		public string ItemId { get; set; }
+
+		public string Name { get; set; }
+
+		public int Count { get; set; }
+
+		public int GuidePrice { get; set; }
+
+		public ItemObject Item { get; set; }
+
+		public bool IsPrivateEquipment { get; set; }
 	}
 
 	public class DebtExportEntry
@@ -4792,7 +4809,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		return stringBuilder.ToString().Trim();
 	}
 
-	public string BuildSettlementMerchantInventorySummaryForAI(CharacterObject character, Settlement settlement = null, int maxItems = 20, bool includeGuidePrice = true)
+	public string BuildSettlementMerchantInventorySummaryForAI(CharacterObject character, Settlement settlement = null, int maxItems = 200, bool includeGuidePrice = true)
 	{
 		if (!TryGetSettlementMerchantKind(character, out var kind))
 		{
@@ -4840,16 +4857,16 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			stringBuilder.AppendLine("【价格说明】每个物品后面的 guidePrice 为当前城镇市场的即时指导单价（第纳尔/当前单位；箭矢、弩矢、标枪、飞刀等远程弹药按袋计）。");
 		}
-		stringBuilder.AppendLine("InventoryItems:");
+		stringBuilder.AppendLine("库存物品：");
 		foreach (RewardItemInfo item2 in dictionary.Values.OrderByDescending((RewardItemInfo x) => x.Count).ThenBy((RewardItemInfo x) => x.Name, StringComparer.Ordinal))
 		{
-			stringBuilder.Append(item2.PromptStringId).Append("|").Append(item2.Name)
-				.Append("|")
+			stringBuilder.Append(item2.Name)
+				.Append(" | ")
 				.Append(item2.Count)
 				.Append(GetItemQuantityUnit(item2.EquipmentElement.Item));
 			if (includeGuidePrice && TryGetSettlementBuyPrice(settlement, item2.EquipmentElement, out var price))
 			{
-				stringBuilder.Append("|guidePrice=").Append(Math.Max(1, price));
+				stringBuilder.Append(" | guidePrice=").Append(Math.Max(1, price));
 			}
 			stringBuilder.AppendLine();
 		}
@@ -4938,7 +4955,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			return list;
 		}
-		EquipmentIndex[] array = new EquipmentIndex[7]
+		EquipmentIndex[] array = new EquipmentIndex[9]
 		{
 			EquipmentIndex.NumAllWeaponSlots,
 			EquipmentIndex.Body,
@@ -4946,7 +4963,9 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			EquipmentIndex.Gloves,
 			EquipmentIndex.Cape,
 			EquipmentIndex.WeaponItemBeginSlot,
-			EquipmentIndex.Weapon1
+			EquipmentIndex.Weapon1,
+			EquipmentIndex.Weapon2,
+			EquipmentIndex.Weapon3
 		};
 		EquipmentIndex[] array2 = array;
 		EquipmentIndex[] array3 = array2;
@@ -4963,7 +4982,8 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 					StringId = item.StringId,
 					Name = (item.Name?.ToString() ?? item.StringId),
 					Count = 1,
-					EquipmentElement = equipmentElement
+					EquipmentElement = equipmentElement,
+					IsPrivateEquipment = !useCivilianEquipment
 				});
 			}
 		}
@@ -4982,7 +5002,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			return list;
 		}
-		EquipmentIndex[] array = new EquipmentIndex[7]
+		EquipmentIndex[] array = new EquipmentIndex[9]
 		{
 			EquipmentIndex.NumAllWeaponSlots,
 			EquipmentIndex.Body,
@@ -4990,7 +5010,9 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			EquipmentIndex.Gloves,
 			EquipmentIndex.Cape,
 			EquipmentIndex.WeaponItemBeginSlot,
-			EquipmentIndex.Weapon1
+			EquipmentIndex.Weapon1,
+			EquipmentIndex.Weapon2,
+			EquipmentIndex.Weapon3
 		};
 		EquipmentIndex[] array2 = array;
 		foreach (EquipmentIndex index in array2)
@@ -5156,12 +5178,168 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		return stringBuilder.ToString().Trim();
 	}
 
-	public string BuildVisibleEquipmentValueSummaryForAI(Hero hero, int maxItems = 8)
+	public string BuildVisibleEquipmentGuidePriceSummaryForAI(Hero hero, int maxItems = 8)
 	{
+		if (hero == null)
+		{
+			return string.Empty;
+		}
+		List<RewardItemInfo> heroVisibleEquipmentItemsForPrompt = GetHeroVisibleEquipmentItemsForPrompt(hero);
+		if (heroVisibleEquipmentItemsForPrompt == null || heroVisibleEquipmentItemsForPrompt.Count <= 0)
+		{
+			return string.Empty;
+		}
+		Dictionary<string, ItemGuidePriceInfo> dictionary = new Dictionary<string, ItemGuidePriceInfo>(StringComparer.OrdinalIgnoreCase);
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.AppendLine("【玩家可见装备 guidePrice】以下为玩家当前穿戴/携行装备的指导单价（第纳尔/当前单位）：");
+		int num = 0;
+		foreach (RewardItemInfo item in heroVisibleEquipmentItemsForPrompt.OrderByDescending((RewardItemInfo x) => x.Count).ThenBy((RewardItemInfo x) => x.StringId, StringComparer.Ordinal))
+		{
+			if (item == null || item.Item == null)
+			{
+				continue;
+			}
+			string key = item.StringId ?? "";
+			if (!dictionary.TryGetValue(key, out var value))
+			{
+				ItemGuidePriceInfo itemGuidePriceInfo = (dictionary[key] = GetGuidePriceForItemNearHero(hero, item.Item));
+				value = itemGuidePriceInfo;
+			}
+			stringBuilder.Append(item.Name ?? item.StringId)
+				.Append(" | ")
+				.Append(Math.Max(1, item.Count))
+				.Append(GetItemQuantityUnit(item.Item))
+				.Append(" | guidePrice=")
+				.Append(Math.Max(1, value.UnitPrice))
+				.AppendLine();
+			num++;
+			if (num >= Math.Max(1, maxItems))
+			{
+				break;
+			}
+		}
+		return stringBuilder.ToString().Trim();
+	}
+
+	public List<RewardItemInfo> BuildSettlementMerchantPostprocessItems(CharacterObject character, Settlement settlement = null, int maxItems = 0)
+	{
+		List<RewardItemInfo> list = new List<RewardItemInfo>();
+		if (!TryGetSettlementMerchantKind(character, out var kind))
+		{
+			return list;
+		}
+		settlement = settlement ?? Settlement.CurrentSettlement;
+		if (settlement == null || !settlement.IsTown || settlement.ItemRoster == null)
+		{
+			return list;
+		}
+		Dictionary<string, RewardItemInfo> dictionary = new Dictionary<string, RewardItemInfo>(StringComparer.OrdinalIgnoreCase);
+		ItemRoster itemRoster = settlement.ItemRoster;
+		for (int i = 0; i < itemRoster.Count; i++)
+		{
+			ItemRosterElement elementCopyAtIndex = itemRoster.GetElementCopyAtIndex(i);
+			EquipmentElement equipmentElement = elementCopyAtIndex.EquipmentElement;
+			ItemObject item = equipmentElement.Item;
+			if (item == null || elementCopyAtIndex.Amount <= 0 || !MatchesSettlementMerchantKind(item, kind))
+			{
+				continue;
+			}
+			string text = BuildSettlementMerchantInventoryKey(equipmentElement);
+			if (string.IsNullOrWhiteSpace(text))
+			{
+				continue;
+			}
+			if (!dictionary.TryGetValue(text, out var value))
+			{
+				value = (dictionary[text] = new RewardItemInfo
+				{
+					Item = item,
+					StringId = item.StringId ?? "",
+					PromptStringId = text,
+					ModifierStringId = equipmentElement.ItemModifier?.StringId ?? "",
+					Name = BuildSettlementMerchantDisplayName(equipmentElement),
+					Count = 0,
+					EquipmentElement = equipmentElement
+				});
+			}
+			value.Count += elementCopyAtIndex.Amount;
+		}
+		IEnumerable<RewardItemInfo> enumerable = dictionary.Values.OrderByDescending((RewardItemInfo x) => x.Count).ThenBy((RewardItemInfo x) => x.Name, StringComparer.Ordinal);
+		if (maxItems > 0)
+		{
+			enumerable = enumerable.Take(maxItems);
+		}
+		return enumerable.ToList();
+	}
+
+	public List<RewardItemInfo> BuildHeroRewardPostprocessItems(Hero hero, int maxItems = 0)
+	{
+		List<RewardItemInfo> list = GetHeroInventoryItems(hero)
+			.Where((RewardItemInfo x) => x != null && x.Item != null && x.Count > 0)
+			.OrderByDescending((RewardItemInfo x) => x.Count)
+			.ThenBy((RewardItemInfo x) => x.Name, StringComparer.Ordinal)
+			.ToList();
+		List<RewardItemInfo> list2 = GetHeroBattleEquipmentItems(hero)
+			.Where((RewardItemInfo x) => x != null && x.Item != null)
+			.Select(delegate(RewardItemInfo x)
+			{
+				x.IsPrivateEquipment = true;
+				return x;
+			})
+			.OrderBy((RewardItemInfo x) => x.Name, StringComparer.Ordinal)
+			.ToList();
+		List<RewardItemInfo> list3 = new List<RewardItemInfo>(list.Count + list2.Count);
+		list3.AddRange(list);
+		list3.AddRange(list2);
+		if (maxItems > 0)
+		{
+			return list3.Take(maxItems).ToList();
+		}
+		return list3;
+	}
+
+	public string BuildVisibleEquipmentValueSummaryForAI(Hero hero, int maxItems = 8, bool useGuidePrice = false)
+	{
+		if (useGuidePrice)
+		{
+			return BuildVisibleEquipmentGuidePriceSummaryForAI(hero, maxItems);
+		}
 		return BuildVisibleEquipmentActualValueSummaryForAI(hero, maxItems);
 	}
 
-	public string BuildInventorySummaryForAI(Hero hero, int maxItems = 20, bool includeGuidePrice = true)
+	public string BuildVisibleEquipmentPostprocessListForAI(Hero hero, int maxItems = 64)
+	{
+		if (hero == null)
+		{
+			return "（无）";
+		}
+		List<RewardItemInfo> heroVisibleEquipmentItemsForPrompt = GetHeroVisibleEquipmentItemsForPrompt(hero);
+		if (heroVisibleEquipmentItemsForPrompt == null || heroVisibleEquipmentItemsForPrompt.Count <= 0)
+		{
+			return "（无）";
+		}
+		StringBuilder stringBuilder = new StringBuilder();
+		int num = 0;
+		foreach (RewardItemInfo item in heroVisibleEquipmentItemsForPrompt.OrderByDescending((RewardItemInfo x) => x.Count).ThenBy((RewardItemInfo x) => x.StringId, StringComparer.Ordinal))
+		{
+			if (item == null || item.Item == null)
+			{
+				continue;
+			}
+			stringBuilder.Append(item.Name ?? item.StringId ?? "未知物品")
+				.Append(" x")
+				.Append(Math.Max(1, item.Count))
+				.AppendLine();
+			num++;
+			if (num >= Math.Max(1, maxItems))
+			{
+				break;
+			}
+		}
+		return stringBuilder.Length > 0 ? stringBuilder.ToString().TrimEnd() : "（无）";
+	}
+
+	public string BuildInventorySummaryForAI(Hero hero, int maxItems = 200, bool includeGuidePrice = true, bool includePrivateBattleEquipment = false, int maxPrivateEquipmentItems = 32)
 	{
 		int heroGold = GetHeroGold(hero);
 		List<RewardItemInfo> heroInventoryItems = GetHeroInventoryItems(hero);
@@ -5175,37 +5353,41 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			stringBuilder.AppendLine("【价格说明】每个物品后面的 guidePrice 为指导单价（第纳尔/当前单位；箭矢、弩矢、标枪、飞刀等远程弹药按袋计）。");
 		}
 		int num = 0;
-		stringBuilder.AppendLine("InventoryItems:");
-		foreach (RewardItemInfo item in heroInventoryItems.OrderByDescending((RewardItemInfo i) => i.Count))
+		if (heroInventoryItems != null && heroInventoryItems.Count > 0)
 		{
-			stringBuilder.Append(item.StringId).Append("|").Append(item.Name)
-				.Append("|")
-				.Append(item.Count)
-				.Append(GetItemQuantityUnit(item.Item));
-			if (includeGuidePrice)
+			stringBuilder.AppendLine("库存物品：");
+			foreach (RewardItemInfo item in heroInventoryItems.OrderByDescending((RewardItemInfo i) => i.Count))
 			{
-				string key = item.StringId ?? "";
-				if (!dictionary.TryGetValue(key, out var value))
+				stringBuilder.Append(item.Name)
+					.Append(" | ")
+					.Append(item.Count)
+					.Append(GetItemQuantityUnit(item.Item));
+				if (includeGuidePrice)
 				{
-					ItemGuidePriceInfo itemGuidePriceInfo = (dictionary[key] = GetGuidePriceForItemNearHero(hero, item.Item));
-					value = itemGuidePriceInfo;
+					string key = item.StringId ?? "";
+					if (!dictionary.TryGetValue(key, out var value))
+					{
+						ItemGuidePriceInfo itemGuidePriceInfo = (dictionary[key] = GetGuidePriceForItemNearHero(hero, item.Item));
+						value = itemGuidePriceInfo;
+					}
+					stringBuilder.Append(" | guidePrice=").Append(Math.Max(1, value.UnitPrice));
 				}
-				stringBuilder.Append("|guidePrice=").Append(Math.Max(1, value.UnitPrice));
-			}
-			stringBuilder.AppendLine();
-			num++;
-			if (num >= maxItems)
-			{
-				break;
+				stringBuilder.AppendLine();
+				num++;
+				if (num >= maxItems)
+				{
+					break;
+				}
 			}
 		}
-		if (heroBattleEquipmentItems != null && heroBattleEquipmentItems.Count > 0 && num < maxItems)
+		if (includePrivateBattleEquipment && heroBattleEquipmentItems != null && heroBattleEquipmentItems.Count > 0)
 		{
+			int num2 = 0;
 			stringBuilder.AppendLine(text + "的私人战斗装备:");
-			foreach (RewardItemInfo item2 in heroBattleEquipmentItems)
+			foreach (RewardItemInfo item2 in heroBattleEquipmentItems.OrderByDescending((RewardItemInfo i) => i.Count))
 			{
-				stringBuilder.Append(item2.StringId).Append("|").Append(item2.Name)
-					.Append("|")
+				stringBuilder.Append(item2.Name)
+					.Append(" | ")
 					.Append(item2.Count)
 					.Append(GetItemQuantityUnit(item2.Item));
 				if (includeGuidePrice)
@@ -5216,11 +5398,11 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 						ItemGuidePriceInfo itemGuidePriceInfo = (dictionary[key2] = GetGuidePriceForItemNearHero(hero, item2.Item));
 						value2 = itemGuidePriceInfo;
 					}
-					stringBuilder.Append("|guidePrice=").Append(Math.Max(1, value2.UnitPrice));
+					stringBuilder.Append(" | guidePrice=").Append(Math.Max(1, value2.UnitPrice));
 				}
 				stringBuilder.AppendLine();
-				num++;
-				if (num >= maxItems)
+				num2++;
+				if (num2 >= Math.Max(1, maxPrivateEquipmentItems))
 				{
 					break;
 				}
@@ -5246,6 +5428,110 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			}
 		}
 		return stringBuilder.ToString();
+	}
+
+	public List<DuelStakeOption> BuildDuelStakeOptionsForAI(Hero hero, int maxItems = 12)
+	{
+		List<DuelStakeOption> list = new List<DuelStakeOption>();
+		if (hero == null)
+		{
+			return list;
+		}
+		try
+		{
+			List<DuelStakeOption> buildOptions(IEnumerable<RewardItemInfo> source, bool isPrivateEquipment)
+			{
+				Dictionary<string, DuelStakeOption> dictionary = new Dictionary<string, DuelStakeOption>(System.StringComparer.OrdinalIgnoreCase);
+				if (source == null)
+				{
+					return new List<DuelStakeOption>();
+				}
+				foreach (RewardItemInfo item in source)
+				{
+					if (item == null || item.Item == null || item.Count <= 0)
+					{
+						continue;
+					}
+					string text = (item.StringId ?? item.Item.StringId ?? "").Trim();
+					if (string.IsNullOrWhiteSpace(text))
+					{
+						continue;
+					}
+					if (!dictionary.TryGetValue(text, out var value))
+					{
+						ItemGuidePriceInfo guidePriceForItemNearHero = GetGuidePriceForItemNearHero(hero, item.Item);
+						value = new DuelStakeOption
+						{
+							ItemId = text,
+							Name = ((item.Name ?? item.Item.Name?.ToString() ?? text).Trim()),
+							Count = 0,
+							GuidePrice = System.Math.Max(1, guidePriceForItemNearHero.UnitPrice),
+							Item = item.Item,
+							IsPrivateEquipment = isPrivateEquipment
+						};
+						dictionary[text] = value;
+					}
+					value.Count += System.Math.Max(1, item.Count);
+				}
+				return dictionary.Values.Where((DuelStakeOption x) => x != null && x.Count > 0 && !string.IsNullOrWhiteSpace(x.Name)).OrderByDescending((DuelStakeOption x) => (long)System.Math.Max(1, x.GuidePrice) * System.Math.Max(1, x.Count)).ThenByDescending((DuelStakeOption x) => x.GuidePrice).ThenBy((DuelStakeOption x) => x.Name ?? "", System.StringComparer.OrdinalIgnoreCase).ToList();
+			}
+			List<DuelStakeOption> list2 = buildOptions(GetHeroInventoryItems(hero), isPrivateEquipment: false);
+			List<DuelStakeOption> list3 = buildOptions(GetHeroBattleEquipmentItems(hero), isPrivateEquipment: true);
+			list = list2.Concat(list3).Take(System.Math.Max(1, maxItems)).ToList();
+		}
+		catch
+		{
+			list = new List<DuelStakeOption>();
+		}
+		return list;
+	}
+
+	public string BuildDuelStakeSummaryForAI(Hero hero, out List<DuelStakeOption> options, int maxItems = 12)
+	{
+		options = BuildDuelStakeOptionsForAI(hero, maxItems);
+		if (options == null || options.Count <= 0)
+		{
+			if (GetHeroGold(hero) > 0)
+			{
+				return "";
+			}
+			return "【可作为决斗赌注的物品】\n当前没有可用于赌注的财物。";
+		}
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.AppendLine("【可作为决斗赌注的物品】");
+		List<DuelStakeOption> list = options.Where((DuelStakeOption x) => x != null && !x.IsPrivateEquipment).ToList();
+		List<DuelStakeOption> list2 = options.Where((DuelStakeOption x) => x != null && x.IsPrivateEquipment).ToList();
+		if (list.Count > 0)
+		{
+			stringBuilder.AppendLine("库存物品：");
+			foreach (DuelStakeOption option in list)
+			{
+				stringBuilder.Append("- ")
+					.Append(option.Name ?? option.ItemId ?? "未知物品")
+					.Append(" | guidePrice=")
+					.Append(System.Math.Max(1, option.GuidePrice))
+					.Append(" | ")
+					.Append(System.Math.Max(1, option.Count))
+					.Append(GetItemQuantityUnit(option.Item))
+					.AppendLine();
+			}
+		}
+		if (list2.Count > 0)
+		{
+			stringBuilder.AppendLine("私人装备：");
+			foreach (DuelStakeOption option2 in list2)
+			{
+				stringBuilder.Append("- ")
+					.Append(option2.Name ?? option2.ItemId ?? "未知物品")
+					.Append(" | guidePrice=")
+					.Append(System.Math.Max(1, option2.GuidePrice))
+					.Append(" | ")
+					.Append(System.Math.Max(1, option2.Count))
+					.Append(GetItemQuantityUnit(option2.Item))
+					.AppendLine();
+			}
+		}
+		return stringBuilder.ToString().TrimEnd();
 	}
 
 	public string BuildDebtHintForAI(Hero npc)

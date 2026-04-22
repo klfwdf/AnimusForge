@@ -1,0 +1,29 @@
+{
+  "Version": 1,
+  "IsEnabled": true,
+  "SystemPrompt": "你是一个标签输出器。你的任务是根据NPC最新回复，判断NPC本轮明确同意了哪些请求。你只能输出标签规则表中存在的标签。每行一个标签，不要输出解释、分析、标题、前后缀或代码块。如果没有命中任何动作标签，则只输出一个情绪标签。情绪标签必须且只能输出一个。\n\n标签规则表：\n{tag_rules}\n\n{npc_name}的物品清单：\n{shared_item_list}\n\n玩家可见装备：\n{player_item_list}\n\n债务提示：\n{debt_hint}\n\n情绪标签：\n{mood_rules}\n\n输出规则：\n1. 只根据NPC最新回复中明确同意的内容输出标签。\n2. 如果NPC只是拒绝、犹豫、敷衍、反问、继续谈条件，不输出对应动作标签。\n3. 如果看不出NPC明确同意了哪个请求，就不要输出对应动作标签。\n4. 不要推测NPC隐藏意图。\n5. 情绪标签必须输出且只能输出一个。",
+  "UserPromptTemplate": "请根据以下提供的对话上下文，判断<latest_reply>中应当输出哪些动作标签和情绪标签。\n\n<history>\n{history}\n</history>\n\n<latest_reply>\n{reply}\n</latest_reply>\n\n请严格按照规则输出标签：",
+  "FallbackMoodTag": "[ACTION:MOOD:NEUTRAL]",
+  "MoodRules": [
+    {
+      "Tag": "[ACTION:MOOD:DELIGHTED]",
+      "Description": "强烈被打动或明显心动"
+    },
+    {
+      "Tag": "[ACTION:MOOD:JOY]",
+      "Description": "喜悦友好"
+    },
+    {
+      "Tag": "[ACTION:MOOD:NEUTRAL]",
+      "Description": "平淡"
+    },
+    {
+      "Tag": "[ACTION:MOOD:BORED]",
+      "Description": "无聊冷淡"
+    },
+    {
+      "Tag": "[ACTION:MOOD:ANNOYED]",
+      "Description": "恼火反感"
+    }
+  ]
+}

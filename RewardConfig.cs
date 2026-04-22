@@ -14,6 +14,8 @@ public class RewardConfig
 
 	public string NonHeroInstruction { get; set; } = "";
 
+	public List<PostprocessRuleEntry> PostprocessRules { get; set; } = new List<PostprocessRuleEntry>();
+
 	public List<string> TriggerKeywords { get; set; } = new List<string>();
 
 	public Dictionary<string, string> RuntimeInstructionTemplates { get; set; } = new Dictionary<string, string>(System.StringComparer.OrdinalIgnoreCase);

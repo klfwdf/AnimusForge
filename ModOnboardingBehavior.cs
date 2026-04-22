@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -794,7 +794,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			DuelSettings settings = DuelSettings.GetSettings();
 			bool hasExistingConfig = HasCompleteApiConfigForTarget(settings, ApiSetupTarget.Auxiliary);
 			string title = "配置辅助API";
-			string text = "辅助API专门用于规则检索。启用后，规则话题会先走一次廉价模型筛选，再进入正文生成；如果你暂时不想配置，也可以继续使用传统RAG检索。";
+			string text = "辅助API专门用于规则检索。启用后，规则话题会先走一次廉价模型筛选，再进入正文生成,这将大幅提升AI的感知和理解能力；如果你暂时不想配置，也可以继续使用传统RAG检索。";
 			if (_showApiValidationFailedHint)
 			{
 				title = "辅助API连接失败";
@@ -1634,6 +1634,13 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			}
 			knowledgeLibraryBehavior.OpenPlayerPersonaSetup(delegate
 			{
+				try
+				{
+					(MyBehavior.Instance ?? Campaign.Current?.GetCampaignBehavior<MyBehavior>())?.QueueMissingOnnxGateCheckAfterOnboarding();
+				}
+				catch
+				{
+				}
 				onReturn?.Invoke();
 			});
 		}

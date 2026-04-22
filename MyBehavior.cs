@@ -1116,6 +1116,10 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private long _missingOnnxGateResumeAfterUtcTicks;
 
+	private bool _pendingMissingOnnxGateCheck;
+
+	private long _pendingMissingOnnxGateCheckAfterUtcTicks;
+
 	private SaveAndExitStage _saveAndExitStage;
 
 	private SaveAndExitReason _saveAndExitReason;
@@ -5846,6 +5850,36 @@ public class MyBehavior : CampaignBehaviorBase
 		return text2 + "对" + text3 + "说: " + text;
 	}
 
+	private static string MergeUserHistoryAndInput(string historyContext, string addressedInput)
+	{
+		string text = (historyContext ?? "").Trim();
+		string text2 = (addressedInput ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return text2;
+		}
+		if (string.IsNullOrWhiteSpace(text2))
+		{
+			return text;
+		}
+		return text + "\n" + text2;
+	}
+
+	private static string AppendPlayerCustomPromptRuleToSystemPrompt(string systemPrompt)
+	{
+		string text = (systemPrompt ?? "").Trim();
+		string text2 = (DuelSettings.GetSettings()?.PlayerCustomPromptRule ?? "").Replace("\r", "").Trim();
+		if (string.IsNullOrWhiteSpace(text2))
+		{
+			return text;
+		}
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return "请遵循以下规则参与互动：\n" + text2;
+		}
+		return text + "\n请遵循以下规则参与互动：\n" + text2;
+	}
+
 	private const string SceneHistorySessionMarkerPrefix = "[AF_SCENE_SESSION:";
 
 	private static string TagSceneSessionHistoryLine(string line, int sceneSessionId)
@@ -7484,7 +7518,11 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			if (hero.Culture != null)
 			{
-				stringBuilder.AppendLine("文化: " + hero.Culture.StringId);
+				string heroCultureNameForPrompt = GetHeroCultureNameForPrompt(hero);
+				if (!string.IsNullOrWhiteSpace(heroCultureNameForPrompt))
+				{
+					stringBuilder.AppendLine("文化: " + heroCultureNameForPrompt);
+				}
 			}
 		}
 		catch
@@ -7494,7 +7532,11 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			if (hero.Clan != null)
 			{
-				stringBuilder.AppendLine($"家族: {hero.Clan.Name} (StringId={hero.Clan.StringId})");
+				string clanDisplayName = GetClanDisplayName(hero.Clan);
+				if (!string.IsNullOrWhiteSpace(clanDisplayName))
+				{
+					stringBuilder.AppendLine("家族: " + clanDisplayName);
+				}
 			}
 		}
 		catch
@@ -7504,7 +7546,11 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			if (hero.Clan != null && hero.Clan.Kingdom != null)
 			{
-				stringBuilder.AppendLine($"势力: {hero.Clan.Kingdom.Name} (StringId={hero.Clan.Kingdom.StringId})");
+				string kingdomDisplayName = GetKingdomDisplayName(hero.Clan.Kingdom, "某个势力");
+				if (!string.IsNullOrWhiteSpace(kingdomDisplayName))
+				{
+					stringBuilder.AppendLine("势力: " + kingdomDisplayName);
+				}
 			}
 		}
 		catch
@@ -7515,7 +7561,7 @@ public class MyBehavior : CampaignBehaviorBase
 			Kingdom kingdom = hero.Clan?.Kingdom;
 			if (kingdom != null && kingdom.Leader != null)
 			{
-				stringBuilder.AppendLine($"势力领袖: {kingdom.Leader.Name} (HeroId={kingdom.Leader.StringId})");
+				stringBuilder.AppendLine("势力领袖: " + (kingdom.Leader.Name?.ToString() ?? "未知"));
 				if (hero.IsFactionLeader)
 				{
 					stringBuilder.AppendLine("效忠: 你本人即该势力领袖");
@@ -7849,6 +7895,7 @@ public class MyBehavior : CampaignBehaviorBase
 	{
 		try
 		{
+			ProcessPendingMissingOnnxGateCheck();
 			ProcessMissingOnnxGateUiResume();
 			ProcessPendingWeeklyReportManualRetryResult();
 			ProcessWeeklyReportUiResume();
@@ -7863,6 +7910,49 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private void OnGameLoadFinished()
 	{
+		QueueMissingOnnxGateCheck(TimeSpan.Zero);
+	}
+
+	public void QueueMissingOnnxGateCheckAfterOnboarding()
+	{
+		QueueMissingOnnxGateCheck(TimeSpan.FromMilliseconds(100.0));
+	}
+
+	private void QueueMissingOnnxGateCheck(TimeSpan delay)
+	{
+		try
+		{
+			_pendingMissingOnnxGateCheck = true;
+			_pendingMissingOnnxGateCheckAfterUtcTicks = DateTime.UtcNow.Ticks + delay.Ticks;
+		}
+		catch
+		{
+			_pendingMissingOnnxGateCheck = true;
+			_pendingMissingOnnxGateCheckAfterUtcTicks = 0L;
+		}
+	}
+
+	private void ProcessPendingMissingOnnxGateCheck()
+	{
+		if (!_pendingMissingOnnxGateCheck)
+		{
+			return;
+		}
+		if (Campaign.Current == null || !Campaign.Current.GameStarted)
+		{
+			return;
+		}
+		if (DateTime.UtcNow.Ticks < _pendingMissingOnnxGateCheckAfterUtcTicks)
+		{
+			return;
+		}
+		_pendingMissingOnnxGateCheck = false;
+		_pendingMissingOnnxGateCheckAfterUtcTicks = 0L;
+		EvaluateMissingOnnxGate();
+	}
+
+	private void EvaluateMissingOnnxGate()
+	{
 		try
 		{
 			if (HasCompleteRequiredOnnxFiles())
@@ -7876,7 +7966,7 @@ public class MyBehavior : CampaignBehaviorBase
 			ShowMissingOnnxGatePopup();
 			try
 			{
-				Logger.Log("OnnxGate", "save load blocked because required ONNX files are missing.");
+				Logger.Log("OnnxGate", "campaign start blocked because required ONNX files are missing.");
 			}
 			catch
 			{
@@ -8694,7 +8784,7 @@ public class MyBehavior : CampaignBehaviorBase
 				{
 					text2 = "（族长）";
 				}
-				stringBuilder.AppendLine("- " + text + text2 + $" | 性别={marriageCandidateGenderLabelForPrompt} | 年龄={num} | StringId={hero.StringId}");
+				stringBuilder.AppendLine("- " + text + text2 + $" | 性别={marriageCandidateGenderLabelForPrompt} | 年龄={num} | targetHeroId={hero.StringId}");
 			}
 			return stringBuilder.ToString().TrimEnd();
 		}
@@ -8867,7 +8957,7 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private string BuildPlayerIdentityInfoForPrompt(Hero playerHero, bool includeRuleGatedFields, bool includeTradePricing, bool includeMarriageCandidates = false, Hero targetHero = null)
+	private string BuildPlayerIdentityInfoForPrompt(Hero playerHero, bool includeRuleGatedFields, bool includeTradePricing, bool includeGuidePriceDetails, bool includeMarriageCandidates = false, Hero targetHero = null)
 	{
 		if (playerHero == null)
 		{
@@ -8908,7 +8998,7 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				if (RewardSystemBehavior.Instance != null)
 				{
-					value = RewardSystemBehavior.Instance.BuildVisibleEquipmentValueSummaryForAI(playerHero);
+					value = RewardSystemBehavior.Instance.BuildVisibleEquipmentValueSummaryForAI(playerHero, useGuidePrice: includeGuidePriceDetails);
 				}
 			}
 			catch
@@ -9035,11 +9125,11 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			if (hero == npcHero)
 			{
-				stringBuilder.AppendLine("该家族族长：你本人（StringId=" + (npcHero.StringId ?? "") + "）");
+				stringBuilder.AppendLine("该家族族长：你本人");
 			}
 			else
 			{
-				stringBuilder.AppendLine("该家族族长：" + (hero.Name?.ToString() ?? "未知") + "（StringId=" + (hero.StringId ?? "") + "）");
+				stringBuilder.AppendLine("该家族族长：" + (hero.Name?.ToString() ?? "未知"));
 			}
 		}
 		stringBuilder.AppendLine("NPC年纪：" + text5);
@@ -9056,10 +9146,10 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			try
 			{
-				string text7 = RewardSystemBehavior.Instance.BuildInventorySummaryForAI(npcHero);
+				string text7 = RewardSystemBehavior.Instance.BuildInventorySummaryForAI(npcHero, includePrivateBattleEquipment: includeTradePricing);
 				if (!string.IsNullOrWhiteSpace(text7))
 				{
-					stringBuilder.AppendLine("【NPC当前可用财富与物品】(注意：你不可以转移超出数量的物品，钱，如果你没有那么多，请实话实说");
+					stringBuilder.AppendLine(BuildNpcInventorySummaryHeader(npcHero));
 					stringBuilder.AppendLine(text7);
 					Logger.Log("Logic", "[Context] InventorySummary=\n" + text7);
 				}
@@ -9069,6 +9159,16 @@ public class MyBehavior : CampaignBehaviorBase
 			}
 		}
 		return stringBuilder.ToString().Trim();
+	}
+
+	private static string BuildNpcInventorySummaryHeader(Hero npcHero)
+	{
+		string text = (npcHero?.Name?.ToString() ?? "").Replace("\r", "").Replace("\n", "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			text = "NPC";
+		}
+		return "【" + text + "当前可用财富与物品】(注意：你不可以转移超出数量的物品，钱，如果你没有那么多，请实话实说)";
 	}
 
 	private string BuildNpcSystemTopPromptIntro(Hero npcHero, bool includeTradePricing)
@@ -9136,7 +9236,7 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			try
 			{
-				inventorySummary = RewardSystemBehavior.Instance.BuildInventorySummaryForAI(npcHero);
+				inventorySummary = RewardSystemBehavior.Instance.BuildInventorySummaryForAI(npcHero, includePrivateBattleEquipment: includeTradePricing);
 			}
 			catch
 			{
@@ -9651,7 +9751,7 @@ public class MyBehavior : CampaignBehaviorBase
 				{
 					text2 = "（玩家家族族长）";
 				}
-				stringBuilder.AppendLine("- " + text + text2 + $" | 性别={marriageCandidateGenderLabelForPrompt} | 年龄={num} | StringId={hero.StringId}");
+				stringBuilder.AppendLine("- " + text + text2 + $" | 性别={marriageCandidateGenderLabelForPrompt} | 年龄={num} | playerClanHeroId={hero.StringId}");
 			}
 			return stringBuilder.ToString().TrimEnd();
 		}
@@ -10207,6 +10307,10 @@ public class MyBehavior : CampaignBehaviorBase
 	private static List<PartyTransferPromptEntry> BuildPartyTransferPromptEntriesInternal(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex = -1)
 	{
 		List<PartyTransferPromptEntry> list = new List<PartyTransferPromptEntry>();
+		if (!IsPartyTransferLordEligible(targetHero, targetCharacter))
+		{
+			return list;
+		}
 		PartyBase partyBase = Hero.MainHero?.PartyBelongedTo?.Party ?? MobileParty.MainParty?.Party;
 		PartyBase partyBase2 = ResolvePartyTransferCounterpartyInternal(targetHero, targetCharacter, targetAgentIndex);
 		int num = 1;
@@ -10284,6 +10388,29 @@ public class MyBehavior : CampaignBehaviorBase
 	private static int GetPartyTransferTroopTier(PartyTransferPromptEntry entry)
 	{
 		return Math.Max(0, entry?.Character?.Tier ?? 0);
+	}
+
+	private static Hero ResolvePartyTransferRuleHero(Hero targetHero, CharacterObject targetCharacter)
+	{
+		return targetHero ?? targetCharacter?.HeroObject;
+	}
+
+	private static bool IsPartyTransferLordEligible(Hero targetHero, CharacterObject targetCharacter = null)
+	{
+		Hero hero = ResolvePartyTransferRuleHero(targetHero, targetCharacter);
+		return hero != null && hero.IsLord;
+	}
+
+	public static bool IsPartyTransferLordEligibleForExternal(Hero targetHero, CharacterObject targetCharacter = null)
+	{
+		try
+		{
+			return IsPartyTransferLordEligible(targetHero, targetCharacter);
+		}
+		catch
+		{
+			return false;
+		}
 	}
 
 	private static int ResolvePartyTransferRecruitTrustLevelIndex(Hero targetHero, CharacterObject targetCharacter)
@@ -10412,6 +10539,11 @@ public class MyBehavior : CampaignBehaviorBase
 	{
 		try
 		{
+			if (!IsPartyTransferLordEligible(targetHero, targetCharacter))
+			{
+				string guardrailRuleNonHeroInstruction = AIConfigHandler.GetGuardrailRuleNonHeroInstruction("party_transfer");
+				return string.IsNullOrWhiteSpace(guardrailRuleNonHeroInstruction) ? "" : guardrailRuleNonHeroInstruction.Trim();
+			}
 			List<PartyTransferPromptEntry> list = BuildPartyTransferPromptEntriesInternal(targetHero, targetCharacter, targetAgentIndex);
 			string text = BuildPlayerPublicDisplayNameForPrompt();
 			if (string.IsNullOrWhiteSpace(text))
@@ -10591,6 +10723,12 @@ public class MyBehavior : CampaignBehaviorBase
 		try
 		{
 			string text = content ?? "";
+			if (!IsPartyTransferLordEligible(targetHero, targetCharacter))
+			{
+				content = TransferTroopTagRegex.Replace(text, "").Trim();
+				content = TransferPrisonerTagRegex.Replace(content, "").Trim();
+				return false;
+			}
 			MatchCollection matchCollection = TransferTroopTagRegex.Matches(text);
 			MatchCollection matchCollection2 = TransferPrisonerTagRegex.Matches(text);
 			if ((matchCollection?.Count ?? 0) <= 0 && (matchCollection2?.Count ?? 0) <= 0)
@@ -10683,6 +10821,10 @@ public class MyBehavior : CampaignBehaviorBase
 
 	public static int TransferPlayerPartyEntryToCounterpartyForExternal(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, PartyTransferPromptEntry entry, int amount)
 	{
+		if (!IsPartyTransferLordEligible(targetHero, targetCharacter))
+		{
+			return 0;
+		}
 		PartyBase partyBase = ResolvePartyTransferCounterpartyInternal(targetHero, targetCharacter, targetAgentIndex);
 		if (entry == null || partyBase == null)
 		{
@@ -10942,7 +11084,7 @@ public class MyBehavior : CampaignBehaviorBase
 						partyTransferHit = AIConfigHandler.IsGuardrailSemanticHit(input, npcLastUtterance, "party_transfer", AIConfigHandler.GetGuardrailRuleInstruction("party_transfer"), AIConfigHandler.GetGuardrailRuleKeywords("party_transfer"), out partyTransferHitKeyword, out partyTransferHitScore);
 					}
 					bool useRewardContext = isRewardContext;
-					if (partyTransferHit)
+					if (partyTransferHit && IsPartyTransferLordEligible(targetHero, targetCharacter))
 					{
 						useRewardContext = AIConfigHandler.RewardEnabled || useRewardContext;
 						if (AIConfigHandler.LoanEnabled)
@@ -11131,10 +11273,6 @@ public class MyBehavior : CampaignBehaviorBase
 						sb.AppendLine(loreContext);
 					}
 					string historyContext = BuildHistoryContext(targetHero, 0, input, npcLastUtterance);
-					if (!string.IsNullOrEmpty(historyContext))
-					{
-						sb.AppendLine(historyContext);
-					}
 					string npcBehaviorSupplement = RewardSystemBehavior.Instance?.BuildNpcBehaviorSupplementForAI(targetHero, targetCharacter);
 					if (!string.IsNullOrWhiteSpace(npcBehaviorSupplement))
 					{
@@ -11227,6 +11365,9 @@ public class MyBehavior : CampaignBehaviorBase
 						sb.AppendLine(guardrailClarifyHint);
 					}
 					string triggeredRuleInstructions = BuildTriggeredRuleInstructions(input, targetHero, useDuelContext, isQualified, playerTier, useRewardContext, isLoanContext, isSurroundingsContext, hasAnyHero: targetHero != null, targetCharacter: targetCharacter, kingdomIdOverride: null, targetAgentIndex: targetAgentIndex, npcLastUtterance: npcLastUtterance, includeDuelStakeContext: includeDuelStakeContext, playerWonLastDuel: playerWonLastDuelForRule);
+					bool duelRuleInjected = HasInjectedRuleBlock(triggeredRuleInstructions, "duel");
+					bool kingdomServiceRuleInjected = triggeredRuleInstructions.IndexOf("【附加规则:kingdom_service】", StringComparison.OrdinalIgnoreCase) >= 0;
+					List<RewardSystemBehavior.DuelStakeOption> duelStakeOptions = null;
 					bool excludeNpcShortReport = ShouldExcludeNpcShortReportFromWeeklyShortLayer(triggeredRuleInstructions, targetHero, targetCharacter);
 					string weeklyShortReportsPromptBlock = BuildWeeklyShortReportsPromptBlock(targetHero, targetCharacter, null, excludeNpcShortReport);
 					if (!string.IsNullOrWhiteSpace(weeklyShortReportsPromptBlock))
@@ -11242,11 +11383,13 @@ public class MyBehavior : CampaignBehaviorBase
 					{
 						sb.AppendLine(triggeredWeeklyFullReportsPromptBlock);
 					}
-					bool includeTradePricing = useRewardContext || isLoanContext || useDuelContext;
+					bool rewardRuleInjected = triggeredRuleInstructions.IndexOf("【附加规则:reward】", StringComparison.OrdinalIgnoreCase) >= 0;
+					bool loanRuleInjected = triggeredRuleInstructions.IndexOf("【附加规则:loan】", StringComparison.OrdinalIgnoreCase) >= 0;
+					bool includeTradePricing = useRewardContext || isLoanContext || duelRuleInjected;
 					bool includeMarriageCandidates = targetHero != null && isMarriageHit;
 					bool playerIdentityAlwaysOn = playerTier >= 2;
 					bool includePlayerRuleGatedFields = playerIdentityAlwaysOn;
-					string playerIdentityInfo = BuildPlayerIdentityInfoForPrompt(Hero.MainHero, includePlayerRuleGatedFields, includeTradePricing, includeMarriageCandidates, targetHero);
+					string playerIdentityInfo = BuildPlayerIdentityInfoForPrompt(Hero.MainHero, includePlayerRuleGatedFields, includeTradePricing, includeTradePricing, includeMarriageCandidates, targetHero);
 					if (!string.IsNullOrWhiteSpace(playerIdentityInfo))
 					{
 						sb.AppendLine(playerIdentityInfo);
@@ -11256,6 +11399,10 @@ public class MyBehavior : CampaignBehaviorBase
 					{
 						sb.AppendLine(npcIdentityInfo);
 					}
+					if (duelRuleInjected && isQualified && targetHero != null && RewardSystemBehavior.Instance != null)
+					{
+						duelStakeOptions = RewardSystemBehavior.Instance.BuildDuelStakeOptionsForAI(targetHero);
+					}
 					Logger.Log("Logic", "[Context] SystemPrompt_Base=" + basePrompt.Replace("\n", "\\n"));
 					string deltaLayerText = sb.ToString();
 					string finalSystemPrompt = PromptComposer.Compose(fixedLayerText, deltaLayerText, "直接对话");
@@ -11264,6 +11411,7 @@ public class MyBehavior : CampaignBehaviorBase
 					{
 						finalSystemPrompt = npcSystemTopIntro + "\n" + finalSystemPrompt;
 					}
+					finalSystemPrompt = AppendPlayerCustomPromptRuleToSystemPrompt(finalSystemPrompt);
 					swPromptBuild.Stop();
 					Logger.Log("Logic", $"[PromptLayer] mode=direct fixedChars={PromptComposer.CountChars(fixedLayerText)} deltaChars={PromptComposer.CountChars(deltaLayerText)} totalChars={PromptComposer.CountChars(finalSystemPrompt)} fixedCacheHit={fixedLayerCacheHit} personaReady={personaReadyForFixedCache} personaInFlight={personaInFlight} fixedCacheSize={PromptComposer.GetFixedLayerCacheSize()}");
 					Logger.Obs("Prompt", "compose", new Dictionary<string, object>
@@ -11278,7 +11426,7 @@ public class MyBehavior : CampaignBehaviorBase
 						["buildMs"] = Math.Round(swPromptBuild.Elapsed.TotalMilliseconds, 2)
 					});
 					Logger.Metric("prompt.compose.direct", ok: true, swPromptBuild.Elapsed.TotalMilliseconds);
-					string addressedInput = BuildPlayerAddressedInput(targetHero, input);
+					string addressedInput = MergeUserHistoryAndInput(historyContext, BuildPlayerAddressedInput(targetHero, input));
 					Logger.Log("Logic", "[AI Request] NPC=" + npcName + " HeroId=" + (targetHero?.StringId ?? "null") + "\n[SYSTEM]=\n" + finalSystemPrompt + "\n[USER]=\n" + addressedInput + "\n");
 					List<object> apiMessages = new List<object>
 					{
@@ -11359,6 +11507,18 @@ public class MyBehavior : CampaignBehaviorBase
 						throw new Exception(streamError);
 					}
 					string result = CleanAIResponse(streamResult ?? "");
+					if (!patienceExhausted && duelRuleInjected && targetHero != null)
+					{
+						result = TryRunDuelActionPostprocess(targetHero, extraFact, result, duelStakeOptions);
+					}
+					if (!patienceExhausted && (rewardRuleInjected || loanRuleInjected))
+					{
+						result = TryRunTransactionActionPostprocess(targetHero, targetCharacter, extraFact, result, MergePostprocessRules(rewardRuleInjected ? AIConfigHandler.RewardPostprocessRules : null, loanRuleInjected ? AIConfigHandler.LoanPostprocessRules : null), rewardRuleInjected && loanRuleInjected ? "RewardLoanPostprocess" : (loanRuleInjected ? "LoanPostprocess" : "RewardPostprocess"));
+					}
+					if (!patienceExhausted && kingdomServiceRuleInjected && targetHero != null)
+					{
+						result = TryRunKingdomServiceActionPostprocess(targetHero, extraFact, result);
+					}
 					string rawResult = result;
 					if (!patienceExhausted && targetHero != null)
 					{
@@ -12421,20 +12581,13 @@ public class MyBehavior : CampaignBehaviorBase
 				}
 				else
 				{
-					string value = AIConfigHandler.DuelInstruction;
-					if (string.IsNullOrWhiteSpace(value))
-					{
-						value = "受到侮辱可发起决斗。";
-					}
 					if (isQualified)
 					{
-						StringBuilder stringBuilder2 = new StringBuilder();
-						stringBuilder2.AppendLine(value);
-						stringBuilder2.AppendLine("如果你决定同意决斗并使用 [ACTION:DUEL]，请在同一条回复末尾额外输出两条隐藏标签（不会展示给玩家，用于战后喊话）：");
-						stringBuilder2.AppendLine("[ACTION:DUEL_LINE_WIN:你获胜后要喊的一句话]");
-						stringBuilder2.AppendLine("[ACTION:DUEL_LINE_LOSE:你战败后要喊的一句话]");
-						stringBuilder2.Append("两句话都必须是纯口语一句话；不要写解释；不要包含括号/星号；不要出现 ] 字符。");
-						AppendRuleBlock(stringBuilder, "duel", stringBuilder2.ToString());
+						string value = AIConfigHandler.DuelDialogueInstruction;
+						if (!string.IsNullOrWhiteSpace(value))
+						{
+							AppendRuleBlock(stringBuilder, "duel", value);
+						}
 					}
 					else
 					{
@@ -12489,7 +12642,7 @@ public class MyBehavior : CampaignBehaviorBase
 				AppendRuleBlock(stringBuilder, "surroundings", AIConfigHandler.SurroundingsInstruction);
 			}
 			string text3 = BuildExtraRuleInstructions(input, npcLastUtterance, targetHero, hasAnyHero, targetCharacter, kingdomIdOverride, targetAgentIndex);
-			if (!string.IsNullOrWhiteSpace(text3) && text3.IndexOf("【附加规则:party_transfer】", StringComparison.OrdinalIgnoreCase) >= 0)
+			if (IsPartyTransferLordEligible(targetHero, targetCharacter) && !string.IsNullOrWhiteSpace(text3) && text3.IndexOf("【附加规则:party_transfer】", StringComparison.OrdinalIgnoreCase) >= 0)
 			{
 				bool flag12 = stringBuilder.ToString().IndexOf("【附加规则:reward】", StringComparison.OrdinalIgnoreCase) >= 0;
 				bool flag13 = stringBuilder.ToString().IndexOf("【附加规则:loan】", StringComparison.OrdinalIgnoreCase) >= 0;
@@ -12765,7 +12918,10 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			TryEnsureFirstMeetingNpcFactForConversation(targetHero);
 		}
-		AIConfigHandler.SetGuardrailSemanticContext(suppressDynamicRuleAndLore ? "" : BuildGuardrailSemanticContext(targetHero, extraFact));
+		AIConfigHandler.SetGuardrailRuntimeTargetAgentIndex(targetAgentIndex);
+		try
+		{
+			AIConfigHandler.SetGuardrailSemanticContext(suppressDynamicRuleAndLore ? "" : BuildGuardrailSemanticContext(targetHero, extraFact));
 		string text = ((!string.IsNullOrEmpty(cultureIdOverride)) ? cultureIdOverride : (targetHero?.Culture?.StringId ?? "neutral"));
 		int num = _cachedPlayerClanTier;
 		if (num <= 0)
@@ -12871,7 +13027,7 @@ public class MyBehavior : CampaignBehaviorBase
 		flag2 = targetHero != null && flag;
 		bool flag7 = flag3 || flagMerchant;
 		bool flag8 = flag4 || flagMerchant;
-		if (partyTransferHit)
+		if (partyTransferHit && IsPartyTransferLordEligible(targetHero, targetCharacter))
 		{
 			flag7 = flag7 || AIConfigHandler.RewardEnabled;
 			flag8 = flag8 || AIConfigHandler.LoanEnabled;
@@ -12946,12 +13102,6 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				stringBuilder.AppendLine(value6a);
 			}
-		}
-		string value6c = RewardSystemBehavior.Instance?.BuildNpcBehaviorSupplementForAI(targetHero, targetCharacter);
-		if (!string.IsNullOrWhiteSpace(value6c))
-		{
-			stringBuilder.AppendLine("【AFEF NPC行为补充】");
-			stringBuilder.AppendLine(value6c);
 		}
 		bool includeDuelStakeContext = false;
 		bool playerWonLastDuelForRule = false;
@@ -13061,6 +13211,11 @@ public class MyBehavior : CampaignBehaviorBase
 		shoutPromptContext.IsLoanContext = flag8;
 		shoutPromptContext.IsQualified = isQualified;
 		return shoutPromptContext;
+		}
+		finally
+		{
+			AIConfigHandler.SetGuardrailRuntimeTargetAgentIndex(-1);
+		}
 	}
 
 	public static void AppendExternalLoreHistory(Hero hero, string loreText)
@@ -14157,6 +14312,549 @@ public class MyBehavior : CampaignBehaviorBase
 		return text.Trim();
 	}
 
+	private static string StripDuelActionTags(string text)
+	{
+		string text2 = text ?? "";
+		text2 = Regex.Replace(text2, "\\[ACTION:DUEL\\]", "", RegexOptions.IgnoreCase);
+		text2 = Regex.Replace(text2, "\\[ACTION:DUEL_STAKE[_-]GOLD:[^\\]]*\\]", "", RegexOptions.IgnoreCase);
+		text2 = Regex.Replace(text2, "\\[ACTION:DUEL_STAKE[_-]ITEM:[^\\]]*\\]", "", RegexOptions.IgnoreCase);
+		text2 = Regex.Replace(text2, "\\[ACTION:DUEL_LINE_WIN:[^\\]]*\\]", "", RegexOptions.IgnoreCase);
+		text2 = Regex.Replace(text2, "\\[ACTION:DUEL_LINE_LOSE:[^\\]]*\\]", "", RegexOptions.IgnoreCase);
+		return text2.Trim();
+	}
+
+	private static string BuildPostprocessRuleText(IEnumerable<PostprocessRuleEntry> entries)
+	{
+		StringBuilder stringBuilder = new StringBuilder();
+		foreach (PostprocessRuleEntry entry in entries ?? new List<PostprocessRuleEntry>())
+		{
+			string text = (entry?.Tag ?? "").Trim();
+			string text2 = (entry?.Description ?? "").Trim();
+			if (!string.IsNullOrWhiteSpace(text))
+			{
+				stringBuilder.AppendLine(string.IsNullOrWhiteSpace(text2) ? text : (text + "：" + text2));
+			}
+		}
+		return stringBuilder.ToString().TrimEnd();
+	}
+
+	private static string BuildDuelPostprocessItemList(List<RewardSystemBehavior.DuelStakeOption> options)
+	{
+		if (options == null || options.Count <= 0)
+		{
+			return "（无）";
+		}
+		StringBuilder stringBuilder = new StringBuilder();
+		List<RewardSystemBehavior.DuelStakeOption> list = options.Where((RewardSystemBehavior.DuelStakeOption x) => x != null && !x.IsPrivateEquipment).ToList();
+		List<RewardSystemBehavior.DuelStakeOption> list2 = options.Where((RewardSystemBehavior.DuelStakeOption x) => x != null && x.IsPrivateEquipment).ToList();
+		int num = 1;
+		if (list.Count > 0)
+		{
+			stringBuilder.AppendLine("库存物品：");
+			foreach (RewardSystemBehavior.DuelStakeOption duelStakeOption in list)
+			{
+				stringBuilder.Append(num++).Append(". ")
+					.Append(duelStakeOption.Name ?? duelStakeOption.ItemId ?? "未知物品")
+					.Append(" x")
+					.Append(System.Math.Max(1, duelStakeOption.Count))
+					.AppendLine();
+			}
+		}
+		if (list2.Count > 0)
+		{
+			stringBuilder.AppendLine("私人装备：");
+			foreach (RewardSystemBehavior.DuelStakeOption duelStakeOption2 in list2)
+			{
+				stringBuilder.Append(num++).Append(". ")
+					.Append(duelStakeOption2.Name ?? duelStakeOption2.ItemId ?? "未知物品")
+					.Append(" x")
+					.Append(System.Math.Max(1, duelStakeOption2.Count))
+					.AppendLine();
+			}
+		}
+		return stringBuilder.ToString().TrimEnd();
+	}
+
+	private static string TranslateDuelStakeItemIndexes(string text, List<RewardSystemBehavior.DuelStakeOption> options)
+	{
+		if (string.IsNullOrWhiteSpace(text) || options == null || options.Count == 0)
+		{
+			return text ?? "";
+		}
+		return Regex.Replace(text, "\\[ACTION:DUEL_STAKE_ITEM:(\\d+):(\\d+)\\]", delegate(Match m)
+		{
+			if (!int.TryParse(m.Groups[1].Value, out var result) || !int.TryParse(m.Groups[2].Value, out var result2) || result <= 0 || result > options.Count || result2 <= 0)
+			{
+				return "";
+			}
+			RewardSystemBehavior.DuelStakeOption duelStakeOption = options[result - 1];
+			if (duelStakeOption == null || string.IsNullOrWhiteSpace(duelStakeOption.ItemId))
+			{
+				return "";
+			}
+			result2 = System.Math.Min(System.Math.Max(1, result2), System.Math.Max(1, duelStakeOption.Count));
+			return "[ACTION:DUEL_STAKE_ITEM:" + duelStakeOption.ItemId.Trim() + ":" + result2 + "]";
+		}, RegexOptions.IgnoreCase);
+	}
+
+	private static string NormalizeDuelPostprocessTags(string raw, List<RewardSystemBehavior.DuelStakeOption> options)
+	{
+		List<string> list = new List<string>();
+		HashSet<string> hashSet = new HashSet<string>(System.StringComparer.OrdinalIgnoreCase);
+		string text = "";
+		foreach (Match item in Regex.Matches(raw ?? "", "\\[ACTION:[^\\]\\r\\n]*\\]", RegexOptions.IgnoreCase))
+		{
+			string text2 = (item?.Value ?? "").Trim();
+			if (string.IsNullOrWhiteSpace(text2))
+			{
+				continue;
+			}
+			if (text2.StartsWith("[ACTION:MOOD:", System.StringComparison.OrdinalIgnoreCase))
+			{
+				text = text2;
+				continue;
+			}
+			if (hashSet.Add(text2))
+			{
+				list.Add(text2);
+			}
+		}
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			text = AIConfigHandler.ActionPostprocessFallbackMoodTag;
+		}
+		string text3 = string.Join("\n", list.Concat(new string[1] { text }).Where((string x) => !string.IsNullOrWhiteSpace(x))).Trim();
+		return TranslateDuelStakeItemIndexes(text3, options).Trim();
+	}
+
+	private static string StripRewardActionTags(string text)
+	{
+		string text2 = text ?? "";
+		text2 = Regex.Replace(text2, "\\[ACTION:GIVE_GOLD:[^\\]]*\\]", "", RegexOptions.IgnoreCase);
+		text2 = Regex.Replace(text2, "\\[ACTION:GIVE_ITEM:[^\\]]*\\]", "", RegexOptions.IgnoreCase);
+		text2 = Regex.Replace(text2, "\\[ACTION:DEBT_GOLD:[^\\]]*\\]", "", RegexOptions.IgnoreCase);
+		text2 = Regex.Replace(text2, "\\[ACTION:DEBT_ITEM:[^\\]]*\\]", "", RegexOptions.IgnoreCase);
+		text2 = Regex.Replace(text2, "\\[ACTION:DEBT_PAY_GOLD:[^\\]]*\\]", "", RegexOptions.IgnoreCase);
+		text2 = Regex.Replace(text2, "\\[ACTION:DEBT_PAY_ITEM:[^\\]]*\\]", "", RegexOptions.IgnoreCase);
+		text2 = Regex.Replace(text2, "\\[ACTION:DEBT_PAY_ITEM_GOLD:[^\\]]*\\]", "", RegexOptions.IgnoreCase);
+		text2 = Regex.Replace(text2, "\\[ACTION:DEBT_ITEM_UNAVAILABLE:[^\\]]*\\]", "", RegexOptions.IgnoreCase);
+		text2 = Regex.Replace(text2, "\\[ACTION:DEBT_ITEM_PENALTY:[^\\]]*\\]", "", RegexOptions.IgnoreCase);
+		text2 = Regex.Replace(text2, "\\[ACTION:DEBT_DUE_DAYS:[^\\]]*\\]", "", RegexOptions.IgnoreCase);
+		text2 = Regex.Replace(text2, "\\[ACTION:DEBT_DUE_ABS_DAY:[^\\]]*\\]", "", RegexOptions.IgnoreCase);
+		text2 = Regex.Replace(text2, "\\[ACTION:DEBT_DUE_DATE:[^\\]]*\\]", "", RegexOptions.IgnoreCase);
+		text2 = Regex.Replace(text2, "\\[ACTION:DEBT_DUE_NONE\\]", "", RegexOptions.IgnoreCase);
+		return text2.Trim();
+	}
+
+	private static string StripKingdomServiceActionTags(string text)
+	{
+		string text2 = text ?? "";
+		text2 = Regex.Replace(text2, "\\[ACTION:KINGDOM_SERVICE:[^\\]]*\\]", "", RegexOptions.IgnoreCase);
+		return text2.Trim();
+	}
+
+	private static string BuildRewardPostprocessItemList(List<RewardSystemBehavior.RewardItemInfo> options, int gold)
+	{
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.Append("第纳尔: ").Append(Math.Max(0, gold)).AppendLine();
+		if (options == null || options.Count <= 0)
+		{
+			return stringBuilder.ToString().TrimEnd();
+		}
+		List<RewardSystemBehavior.RewardItemInfo> list = options.Where((RewardSystemBehavior.RewardItemInfo x) => x != null && !x.IsPrivateEquipment).ToList();
+		List<RewardSystemBehavior.RewardItemInfo> list2 = options.Where((RewardSystemBehavior.RewardItemInfo x) => x != null && x.IsPrivateEquipment).ToList();
+		int num = 1;
+		if (list.Count > 0)
+		{
+			stringBuilder.AppendLine("库存物品：");
+			foreach (RewardSystemBehavior.RewardItemInfo item in list)
+			{
+				stringBuilder.Append(num++).Append(". ")
+					.Append(item.Name ?? item.PromptStringId ?? item.StringId ?? "未知物品")
+					.Append(" x")
+					.Append(Math.Max(1, item.Count))
+					.AppendLine();
+			}
+		}
+		if (list2.Count > 0)
+		{
+			stringBuilder.AppendLine("私人战斗装备：");
+			foreach (RewardSystemBehavior.RewardItemInfo item2 in list2)
+			{
+				stringBuilder.Append(num++).Append(". ")
+					.Append(item2.Name ?? item2.PromptStringId ?? item2.StringId ?? "未知物品")
+					.Append(" x")
+					.Append(Math.Max(1, item2.Count))
+					.AppendLine();
+			}
+		}
+		return stringBuilder.ToString().TrimEnd();
+	}
+
+	private static string TranslateRewardItemIndexes(string text, List<RewardSystemBehavior.RewardItemInfo> options)
+	{
+		if (string.IsNullOrWhiteSpace(text) || options == null || options.Count == 0)
+		{
+			return text ?? "";
+		}
+		return Regex.Replace(text, "\\[ACTION:(GIVE_ITEM|DEBT_ITEM):(\\d+):(\\d+)\\]", delegate(Match m)
+		{
+			string value = m.Groups[1].Value;
+			if (!int.TryParse(m.Groups[2].Value, out var result) || !int.TryParse(m.Groups[3].Value, out var result2) || result <= 0 || result > options.Count || result2 <= 0)
+			{
+				return "";
+			}
+			RewardSystemBehavior.RewardItemInfo rewardItemInfo = options[result - 1];
+			string text2 = rewardItemInfo?.StringId ?? "";
+			if (string.IsNullOrWhiteSpace(text2))
+			{
+				return "";
+			}
+			result2 = Math.Min(Math.Max(1, result2), Math.Max(1, rewardItemInfo.Count));
+			return "[ACTION:" + value + ":" + text2.Trim() + ":" + result2 + "]";
+		}, RegexOptions.IgnoreCase);
+	}
+
+	private static string TranslateRewardDebtPayItemIndexes(string text, List<RewardSystemBehavior.RewardItemInfo> options)
+	{
+		if (string.IsNullOrWhiteSpace(text) || options == null || options.Count == 0)
+		{
+			return text ?? "";
+		}
+		return Regex.Replace(text, "\\[ACTION:DEBT_PAY_ITEM:([a-zA-Z0-9_\\-]+):(\\d+):(\\d+)\\]", delegate(Match m)
+		{
+			string value = m.Groups[1].Value;
+			if (!int.TryParse(m.Groups[2].Value, out var result) || !int.TryParse(m.Groups[3].Value, out var result2) || result <= 0 || result > options.Count || result2 <= 0)
+			{
+				return "";
+			}
+			RewardSystemBehavior.RewardItemInfo rewardItemInfo = options[result - 1];
+			string text2 = rewardItemInfo?.StringId ?? "";
+			if (string.IsNullOrWhiteSpace(text2))
+			{
+				return "";
+			}
+			result2 = Math.Min(Math.Max(1, result2), Math.Max(1, rewardItemInfo.Count));
+			return "[ACTION:DEBT_PAY_ITEM:" + value.Trim() + ":" + text2.Trim() + ":" + result2 + "]";
+		}, RegexOptions.IgnoreCase);
+	}
+
+	private static string NormalizeRewardPostprocessTags(string raw, List<RewardSystemBehavior.RewardItemInfo> options)
+	{
+		List<string> list = new List<string>();
+		HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		string text = "";
+		foreach (Match item in Regex.Matches(raw ?? "", "\\[ACTION:[^\\]\\r\\n]*\\]", RegexOptions.IgnoreCase))
+		{
+			string text2 = (item?.Value ?? "").Trim();
+			if (string.IsNullOrWhiteSpace(text2))
+			{
+				continue;
+			}
+			if (text2.StartsWith("[ACTION:MOOD:", StringComparison.OrdinalIgnoreCase))
+			{
+				text = text2;
+				continue;
+			}
+			if (!text2.StartsWith("[ACTION:GIVE_GOLD:", StringComparison.OrdinalIgnoreCase) && !text2.StartsWith("[ACTION:GIVE_ITEM:", StringComparison.OrdinalIgnoreCase) && !text2.StartsWith("[ACTION:DEBT_GOLD:", StringComparison.OrdinalIgnoreCase) && !text2.StartsWith("[ACTION:DEBT_ITEM:", StringComparison.OrdinalIgnoreCase) && !text2.StartsWith("[ACTION:DEBT_PAY_GOLD:", StringComparison.OrdinalIgnoreCase) && !text2.StartsWith("[ACTION:DEBT_PAY_ITEM:", StringComparison.OrdinalIgnoreCase) && !text2.StartsWith("[ACTION:DEBT_PAY_ITEM_GOLD:", StringComparison.OrdinalIgnoreCase) && !text2.StartsWith("[ACTION:DEBT_ITEM_UNAVAILABLE:", StringComparison.OrdinalIgnoreCase) && !text2.StartsWith("[ACTION:DEBT_ITEM_PENALTY:", StringComparison.OrdinalIgnoreCase) && !text2.StartsWith("[ACTION:DEBT_DUE_DAYS:", StringComparison.OrdinalIgnoreCase) && !text2.StartsWith("[ACTION:DEBT_DUE_ABS_DAY:", StringComparison.OrdinalIgnoreCase) && !text2.StartsWith("[ACTION:DEBT_DUE_DATE:", StringComparison.OrdinalIgnoreCase) && !text2.StartsWith("[ACTION:DEBT_DUE_NONE]", StringComparison.OrdinalIgnoreCase))
+			{
+				continue;
+			}
+			if (hashSet.Add(text2))
+			{
+				list.Add(text2);
+			}
+		}
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			text = AIConfigHandler.ActionPostprocessFallbackMoodTag;
+		}
+		string text3 = string.Join("\n", list.Concat(new string[1] { text }).Where((string x) => !string.IsNullOrWhiteSpace(x))).Trim();
+		text3 = TranslateRewardItemIndexes(text3, options);
+		text3 = TranslateRewardDebtPayItemIndexes(text3, options);
+		return text3.Trim();
+	}
+
+	private static List<PostprocessRuleEntry> MergePostprocessRules(params List<PostprocessRuleEntry>[] ruleSets)
+	{
+		List<PostprocessRuleEntry> list = new List<PostprocessRuleEntry>();
+		HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		if (ruleSets == null)
+		{
+			return list;
+		}
+		foreach (List<PostprocessRuleEntry> ruleSet in ruleSets)
+		{
+			if (ruleSet == null)
+			{
+				continue;
+			}
+			foreach (PostprocessRuleEntry item in ruleSet)
+			{
+				string text = item?.Tag ?? "";
+				if (!string.IsNullOrWhiteSpace(text) && hashSet.Add(text))
+				{
+					list.Add(item);
+				}
+			}
+		}
+		return list;
+	}
+
+	private static string NormalizeKingdomServicePostprocessTags(string raw, List<PostprocessRuleEntry> rules)
+	{
+		HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		foreach (PostprocessRuleEntry rule in rules ?? new List<PostprocessRuleEntry>())
+		{
+			string text2 = (rule?.Tag ?? "").Trim();
+			if (!string.IsNullOrWhiteSpace(text2))
+			{
+				hashSet.Add(text2);
+			}
+		}
+		List<string> list = new List<string>();
+		HashSet<string> hashSet2 = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		string text = "";
+		foreach (Match item in Regex.Matches(raw ?? "", "\\[ACTION:[^\\]\\r\\n]*\\]", RegexOptions.IgnoreCase))
+		{
+			string text3 = (item?.Value ?? "").Trim();
+			if (string.IsNullOrWhiteSpace(text3))
+			{
+				continue;
+			}
+			if (text3.StartsWith("[ACTION:MOOD:", StringComparison.OrdinalIgnoreCase))
+			{
+				text = text3;
+				continue;
+			}
+			if (!hashSet.Contains(text3))
+			{
+				continue;
+			}
+			if (hashSet2.Add(text3))
+			{
+				list.Add(text3);
+			}
+		}
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			text = AIConfigHandler.ActionPostprocessFallbackMoodTag;
+		}
+		return string.Join("\n", list.Concat(new string[1] { text }).Where((string x) => !string.IsNullOrWhiteSpace(x))).Trim();
+	}
+
+	private string TryRunTransactionActionPostprocess(Hero targetHero, CharacterObject targetCharacter, string extraFact, string replyText, List<PostprocessRuleEntry> rules, string logPrefix)
+	{
+		string text = StripRewardActionTags(replyText);
+		if ((targetHero == null && targetCharacter == null) || !AIConfigHandler.CanUseAuxiliaryActionPostprocess())
+		{
+			if (Regex.Matches(text ?? "", "\\[ACTION:MOOD:[^\\]]+\\]", RegexOptions.IgnoreCase).Count <= 0 && !string.IsNullOrWhiteSpace(AIConfigHandler.ActionPostprocessFallbackMoodTag))
+			{
+				text = (text + "\n" + AIConfigHandler.ActionPostprocessFallbackMoodTag).Trim();
+			}
+			return text.Trim();
+		}
+		string actionPostprocessSystemPrompt = AIConfigHandler.ActionPostprocessSystemPrompt;
+		string actionPostprocessUserPromptTemplate = AIConfigHandler.ActionPostprocessUserPromptTemplate;
+		if (string.IsNullOrWhiteSpace(actionPostprocessSystemPrompt) || string.IsNullOrWhiteSpace(actionPostprocessUserPromptTemplate))
+		{
+			return (text + "\n" + AIConfigHandler.ActionPostprocessFallbackMoodTag).Trim();
+		}
+		if (rules == null || rules.Count == 0)
+		{
+			if (Regex.Matches(text ?? "", "\\[ACTION:MOOD:[^\\]]+\\]", RegexOptions.IgnoreCase).Count <= 0 && !string.IsNullOrWhiteSpace(AIConfigHandler.ActionPostprocessFallbackMoodTag))
+			{
+				text = (text + "\n" + AIConfigHandler.ActionPostprocessFallbackMoodTag).Trim();
+			}
+			return text.Trim();
+		}
+		string text2 = BuildGuardrailSemanticContext(targetHero, extraFact);
+		if (string.IsNullOrWhiteSpace(text2))
+		{
+			text2 = string.IsNullOrWhiteSpace(extraFact) ? "（无）" : extraFact.Trim();
+		}
+		string text3 = BuildPostprocessRuleText(rules);
+		string text4 = BuildPostprocessRuleText(AIConfigHandler.ActionPostprocessMoodRules);
+		string text5 = "（无）";
+		string text6 = "（无）";
+		string text12 = "（无）";
+		string text7 = targetHero?.Name?.ToString() ?? targetCharacter?.Name?.ToString() ?? "NPC";
+		List<RewardSystemBehavior.RewardItemInfo> list = null;
+		try
+		{
+			if (RewardSystemBehavior.Instance != null)
+			{
+				text6 = RewardSystemBehavior.Instance.BuildVisibleEquipmentPostprocessListForAI(Hero.MainHero);
+				if (targetHero != null)
+				{
+					list = RewardSystemBehavior.Instance.BuildHeroRewardPostprocessItems(targetHero);
+					text5 = BuildRewardPostprocessItemList(list, RewardSystemBehavior.Instance.GetHeroGold(targetHero));
+					text12 = RewardSystemBehavior.Instance.BuildDebtHintForAI(targetHero);
+				}
+				else if (targetCharacter != null)
+				{
+					list = RewardSystemBehavior.Instance.BuildSettlementMerchantPostprocessItems(targetCharacter);
+					int num = Settlement.CurrentSettlement?.SettlementComponent?.Gold ?? 0;
+					text5 = BuildRewardPostprocessItemList(list, num);
+					text12 = RewardSystemBehavior.Instance.BuildSettlementMerchantDebtHintForAI(targetCharacter);
+				}
+			}
+		}
+		catch
+		{
+			text5 = "（无）";
+			text6 = "（无）";
+			text12 = "（无）";
+			list = null;
+		}
+		string text8 = actionPostprocessSystemPrompt.Replace("{tag_rules}", string.IsNullOrWhiteSpace(text3) ? "（无）" : text3)
+			.Replace("{shared_item_list}", text5)
+			.Replace("{player_item_list}", text6)
+			.Replace("{debt_hint}", string.IsNullOrWhiteSpace(text12) ? "（无）" : text12)
+			.Replace("{mood_rules}", string.IsNullOrWhiteSpace(text4) ? "（无）" : text4)
+			.Replace("{npc_name}", text7);
+		string text9 = actionPostprocessUserPromptTemplate.Replace("{history}", text2)
+			.Replace("{reply}", text);
+		if (!AIConfigHandler.TryCallAuxiliaryActionPostprocess(text8, text9, 220, 0f, out var content, out var error))
+		{
+			Logger.Log("Logic", "[" + logPrefix + "] 调用失败: " + error);
+			return (text + "\n" + AIConfigHandler.ActionPostprocessFallbackMoodTag).Trim();
+		}
+		string text10 = NormalizeRewardPostprocessTags(content, list);
+		if (string.IsNullOrWhiteSpace(text10))
+		{
+			text10 = AIConfigHandler.ActionPostprocessFallbackMoodTag;
+		}
+		string text11 = (text + "\n" + text10).Trim();
+		Logger.Log("Logic", "[" + logPrefix + "] RAW=\n" + content + "\nFINAL=\n" + text11 + "\n");
+		return text11;
+	}
+
+	private string TryRunRewardActionPostprocess(Hero targetHero, CharacterObject targetCharacter, string extraFact, string replyText)
+	{
+		return TryRunTransactionActionPostprocess(targetHero, targetCharacter, extraFact, replyText, AIConfigHandler.RewardPostprocessRules, "RewardPostprocess");
+	}
+
+	private string TryRunLoanActionPostprocess(Hero targetHero, CharacterObject targetCharacter, string extraFact, string replyText)
+	{
+		return TryRunTransactionActionPostprocess(targetHero, targetCharacter, extraFact, replyText, AIConfigHandler.LoanPostprocessRules, "LoanPostprocess");
+	}
+
+	private string TryRunKingdomServiceActionPostprocess(Hero targetHero, string extraFact, string replyText)
+	{
+		string text = StripKingdomServiceActionTags(replyText);
+		if (targetHero == null || !AIConfigHandler.CanUseAuxiliaryActionPostprocess())
+		{
+			if (Regex.Matches(text ?? "", "\\[ACTION:MOOD:[^\\]]+\\]", RegexOptions.IgnoreCase).Count <= 0 && !string.IsNullOrWhiteSpace(AIConfigHandler.ActionPostprocessFallbackMoodTag))
+			{
+				text = (text + "\n" + AIConfigHandler.ActionPostprocessFallbackMoodTag).Trim();
+			}
+			return text.Trim();
+		}
+		string actionPostprocessSystemPrompt = AIConfigHandler.ActionPostprocessSystemPrompt;
+		string actionPostprocessUserPromptTemplate = AIConfigHandler.ActionPostprocessUserPromptTemplate;
+		if (string.IsNullOrWhiteSpace(actionPostprocessSystemPrompt) || string.IsNullOrWhiteSpace(actionPostprocessUserPromptTemplate))
+		{
+			return (text + "\n" + AIConfigHandler.ActionPostprocessFallbackMoodTag).Trim();
+		}
+		string text2 = BuildGuardrailSemanticContext(targetHero, extraFact);
+		if (string.IsNullOrWhiteSpace(text2))
+		{
+			text2 = string.IsNullOrWhiteSpace(extraFact) ? "（无）" : extraFact.Trim();
+		}
+		List<PostprocessRuleEntry> list = AIConfigHandler.BuildRuntimeKingdomServicePostprocessRules();
+		if (list == null || list.Count == 0)
+		{
+			if (Regex.Matches(text ?? "", "\\[ACTION:MOOD:[^\\]]+\\]", RegexOptions.IgnoreCase).Count <= 0 && !string.IsNullOrWhiteSpace(AIConfigHandler.ActionPostprocessFallbackMoodTag))
+			{
+				text = (text + "\n" + AIConfigHandler.ActionPostprocessFallbackMoodTag).Trim();
+			}
+			return text.Trim();
+		}
+		string text3 = BuildPostprocessRuleText(list);
+		string text4 = BuildPostprocessRuleText(AIConfigHandler.ActionPostprocessMoodRules);
+		string text5 = actionPostprocessSystemPrompt.Replace("{tag_rules}", string.IsNullOrWhiteSpace(text3) ? "（无）" : text3)
+			.Replace("{shared_item_list}", "（无）")
+			.Replace("{player_item_list}", "（无）")
+			.Replace("{debt_hint}", "（无）")
+			.Replace("{mood_rules}", string.IsNullOrWhiteSpace(text4) ? "（无）" : text4)
+			.Replace("{npc_name}", targetHero?.Name?.ToString() ?? "NPC");
+		string text6 = actionPostprocessUserPromptTemplate.Replace("{history}", text2)
+			.Replace("{reply}", text);
+		if (!AIConfigHandler.TryCallAuxiliaryActionPostprocess(text5, text6, 180, 0f, out var content, out var error))
+		{
+			Logger.Log("Logic", "[KingdomServicePostprocess] 调用失败: " + error);
+			return (text + "\n" + AIConfigHandler.ActionPostprocessFallbackMoodTag).Trim();
+		}
+		string text7 = NormalizeKingdomServicePostprocessTags(content, list);
+		if (string.IsNullOrWhiteSpace(text7))
+		{
+			text7 = AIConfigHandler.ActionPostprocessFallbackMoodTag;
+		}
+		string text8 = (text + "\n" + text7).Trim();
+		Logger.Log("Logic", "[KingdomServicePostprocess] RAW=\n" + content + "\nFINAL=\n" + text8 + "\n");
+		return text8;
+	}
+
+	private string TryRunDuelActionPostprocess(Hero targetHero, string extraFact, string replyText, List<RewardSystemBehavior.DuelStakeOption> duelStakeOptions)
+	{
+		string text = StripDuelActionTags(replyText);
+		if (targetHero == null || !AIConfigHandler.CanUseAuxiliaryActionPostprocess())
+		{
+			if (Regex.Matches(text ?? "", "\\[ACTION:MOOD:[^\\]]+\\]", RegexOptions.IgnoreCase).Count <= 0 && !string.IsNullOrWhiteSpace(AIConfigHandler.ActionPostprocessFallbackMoodTag))
+			{
+				text = (text + "\n" + AIConfigHandler.ActionPostprocessFallbackMoodTag).Trim();
+			}
+			return text.Trim();
+		}
+		string actionPostprocessSystemPrompt = AIConfigHandler.ActionPostprocessSystemPrompt;
+		string actionPostprocessUserPromptTemplate = AIConfigHandler.ActionPostprocessUserPromptTemplate;
+		if (string.IsNullOrWhiteSpace(actionPostprocessSystemPrompt) || string.IsNullOrWhiteSpace(actionPostprocessUserPromptTemplate))
+		{
+			return (text + "\n" + AIConfigHandler.ActionPostprocessFallbackMoodTag).Trim();
+		}
+		string text2 = BuildGuardrailSemanticContext(targetHero, extraFact);
+		if (string.IsNullOrWhiteSpace(text2))
+		{
+			text2 = "（无）";
+		}
+		string text3 = BuildPostprocessRuleText(AIConfigHandler.DuelPostprocessRules);
+		string text4 = BuildPostprocessRuleText(AIConfigHandler.ActionPostprocessMoodRules);
+		string text5 = BuildDuelPostprocessItemList(duelStakeOptions);
+		string text7 = "（无）";
+		try
+		{
+			if (RewardSystemBehavior.Instance != null && Hero.MainHero != null)
+			{
+				text7 = RewardSystemBehavior.Instance.BuildVisibleEquipmentPostprocessListForAI(Hero.MainHero);
+			}
+		}
+		catch
+		{
+			text7 = "（无）";
+		}
+		string text6 = actionPostprocessSystemPrompt.Replace("{tag_rules}", string.IsNullOrWhiteSpace(text3) ? "（无）" : text3)
+			.Replace("{shared_item_list}", text5)
+			.Replace("{player_item_list}", text7)
+			.Replace("{mood_rules}", string.IsNullOrWhiteSpace(text4) ? "（无）" : text4)
+			.Replace("{npc_name}", targetHero?.Name?.ToString() ?? "NPC");
+		string text8 = actionPostprocessUserPromptTemplate.Replace("{history}", text2)
+			.Replace("{reply}", text);
+		if (!AIConfigHandler.TryCallAuxiliaryActionPostprocess(text6, text8, 220, 0f, out var content, out var error))
+		{
+			Logger.Log("Logic", "[DuelPostprocess] 调用失败: " + error);
+			return (text + "\n" + AIConfigHandler.ActionPostprocessFallbackMoodTag).Trim();
+		}
+		string text9 = NormalizeDuelPostprocessTags(content, duelStakeOptions);
+		if (string.IsNullOrWhiteSpace(text9))
+		{
+			text9 = AIConfigHandler.ActionPostprocessFallbackMoodTag;
+		}
+		string text10 = (text + "\n" + text9).Trim();
+		Logger.Log("Logic", "[DuelPostprocess] RAW=\n" + content + "\nFINAL=\n" + text10 + "\n");
+		return text10;
+	}
+
 	private string CleanAIResponse(string input)
 	{
 		if (string.IsNullOrEmpty(input))
@@ -15011,7 +15709,6 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			stringBuilder.AppendLine("耐心越低，语气越不耐烦；若耐心耗尽，应优先给出委婉的回避式回复。");
 		}
-		stringBuilder.AppendLine("规则：情绪标签优先影响私人关系 L，并在最强正负情绪下顺带影响原生关系 R。DELIGHTED=L+2 且 R+1；JOY=L+1；NEUTRAL=0；BORED=L-1；ANNOYED=L-2 且 R-1。回复末尾必须且只能追加一个 [ACTION:MOOD:DELIGHTED/JOY/NEUTRAL/BORED/ANNOYED]；耐心低时更不耐烦，耐心归零后仍可继续对话，但继续交流会额外降低关系。");
 		return stringBuilder.ToString();
 	}
 
@@ -15026,10 +15723,7 @@ public class MyBehavior : CampaignBehaviorBase
 		PatienceSnapshot heroPatienceSnapshot = GetHeroPatienceSnapshot(targetHero);
 		if (heroPatienceSnapshot.Current <= 0.01f)
 		{
-			StringBuilder stringBuilder = new StringBuilder();
-			stringBuilder.AppendLine(BuildPatiencePromptText(heroPatienceSnapshot).TrimEnd());
-			stringBuilder.AppendLine("除 [ACTION:MOOD:...] 外，不要输出任何 ACTION 标签。");
-			return stringBuilder.ToString();
+			return BuildPatiencePromptText(heroPatienceSnapshot);
 		}
 		return BuildPatiencePromptText(heroPatienceSnapshot);
 	}
@@ -15200,7 +15894,7 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private static string BuildScenePatienceInstruction()
 	{
-		return "【耐心标签要求】：你必须在你回复的末尾加入且只能加入一个合适的标签。强烈被打动/明显心动：[ACTION:MOOD:DELIGHTED]；喜悦友好：[ACTION:MOOD:JOY]；平淡：[ACTION:MOOD:NEUTRAL]；无聊冷淡：[ACTION:MOOD:BORED]；恼火反感：[ACTION:MOOD:ANNOYED]。并始终按四值状态中的 P/R/T/L 来决定语气与合作度。";
+		return "";
 	}
 
 	private void SyncPatienceData(IDataStore dataStore)
