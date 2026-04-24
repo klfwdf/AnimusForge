@@ -16,6 +16,23 @@ public static class ShoutNetwork
 {
 	private const int HardcodedMaxTokens = 5000;
 
+	private static string BuildTokenStatsOutputContent(string finalContent, string reasoningContent = null)
+	{
+		string text = (finalContent ?? "").Trim();
+		string text2 = (reasoningContent ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text2))
+		{
+			return text;
+		}
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.AppendLine("[REASONING]");
+		stringBuilder.AppendLine(text2);
+		stringBuilder.AppendLine();
+		stringBuilder.AppendLine("[FINAL]");
+		stringBuilder.AppendLine(string.IsNullOrWhiteSpace(text) ? "（空）" : text);
+		return stringBuilder.ToString().TrimEnd();
+	}
+
 	private static string BuildApiErrorDetail(string responseBody)
 	{
 		if (string.IsNullOrWhiteSpace(responseBody))
@@ -87,6 +104,7 @@ public static class ShoutNetwork
 					{
 						JObject responseJson = JObject.Parse(str);
 						string content = ((string)responseJson.SelectToken("choices[0].message.content")) ?? ((string)responseJson.SelectToken("content")) ?? ((string)responseJson.SelectToken("text"));
+						string reasoning = ((string)responseJson.SelectToken("choices[0].message.reasoning_content")) ?? ((string)responseJson.SelectToken("reasoning_content")) ?? "";
 						if (string.IsNullOrWhiteSpace(content))
 						{
 							content = "（没说话）";
@@ -103,7 +121,8 @@ public static class ShoutNetwork
 						Logger.Metric("network.non_stream", ok: true, sw.Elapsed.TotalMilliseconds);
 						if (recordTokenStats)
 						{
-							Logger.RecordTokenStats(inputTokens, Logger.EstimateTokens(content), messages, content, "non_stream");
+							string outputContent = BuildTokenStatsOutputContent(content, reasoning);
+							Logger.RecordTokenStats(inputTokens, Logger.EstimateTokens(outputContent), messages, outputContent, "non_stream");
 						}
 						return content.Trim();
 					}
@@ -154,6 +173,7 @@ public static class ShoutNetwork
 	public static async Task CallApiWithMessagesStream(List<object> messages, int maxTokens, Action<string> onChunk, Action<string> onComplete, Action<string> onError, CancellationToken cancellationToken = default(CancellationToken))
 	{
 		StringBuilder fullText = new StringBuilder();
+		StringBuilder fullReasoning = new StringBuilder();
 		Stopwatch sw = Stopwatch.StartNew();
 		double firstChunkMs = -1.0;
 		int chunkCount = 0;
@@ -256,6 +276,19 @@ public static class ShoutNetwork
 							try
 							{
 								JObject chunk = JObject.Parse(data);
+								string reasoningDelta = (string)chunk.SelectToken("choices[0].delta.reasoning_content");
+								if (reasoningDelta == null)
+								{
+									reasoningDelta = (string)chunk.SelectToken("delta.reasoning_content");
+								}
+								if (reasoningDelta == null)
+								{
+									reasoningDelta = (string)chunk.SelectToken("reasoning_content");
+								}
+								if (!string.IsNullOrEmpty(reasoningDelta))
+								{
+									fullReasoning.Append(reasoningDelta);
+								}
 								string delta = (string)chunk.SelectToken("choices[0].delta.content");
 								if (delta == null)
 								{
@@ -328,7 +361,7 @@ public static class ShoutNetwork
 						["resultLen"] = fallback.Length
 					});
 					Logger.Metric("network.stream", ok: true, sw.Elapsed.TotalMilliseconds);
-					Logger.RecordTokenStats(inputTokens, Logger.EstimateTokens(fallback), messages, fallback, "stream_fallback");
+					Logger.RecordTokenStats(inputTokens, Logger.EstimateTokens(fallback), messages, BuildTokenStatsOutputContent(fallback), "stream_fallback");
 					onComplete?.Invoke(fallback.Trim());
 					return;
 				}
@@ -347,7 +380,8 @@ public static class ShoutNetwork
 						["resultLen"] = fullText.Length
 					});
 					Logger.Metric("network.stream", ok: true, sw.Elapsed.TotalMilliseconds);
-					Logger.RecordTokenStats(inputTokens, Logger.EstimateTokens(fullText.ToString()), messages, fullText.ToString(), "stream_partial");
+					string outputContent3 = BuildTokenStatsOutputContent(fullText.ToString(), fullReasoning.ToString());
+					Logger.RecordTokenStats(inputTokens, Logger.EstimateTokens(outputContent3), messages, outputContent3, "stream_partial");
 					onComplete?.Invoke(fullText.ToString().Trim());
 					return;
 				}
@@ -384,7 +418,8 @@ public static class ShoutNetwork
 				["resultLen"] = finalText.Length
 			});
 			Logger.Metric("network.stream", ok: true, sw.Elapsed.TotalMilliseconds);
-			Logger.RecordTokenStats(inputTokens, Logger.EstimateTokens(finalText), messages, finalText, "stream");
+			string outputContent2 = BuildTokenStatsOutputContent(finalText, fullReasoning.ToString());
+			Logger.RecordTokenStats(inputTokens, Logger.EstimateTokens(outputContent2), messages, outputContent2, "stream");
 			onComplete?.Invoke(finalText);
 		}
 		catch (OperationCanceledException)
@@ -397,7 +432,8 @@ public static class ShoutNetwork
 				["partialLen"] = fullText.Length
 			});
 			Logger.Metric("network.stream", ok: true, sw.Elapsed.TotalMilliseconds);
-			Logger.RecordTokenStats(inputTokens, Logger.EstimateTokens(fullText.ToString()), messages, fullText.ToString(), "stream_cancelled");
+			string outputContent4 = BuildTokenStatsOutputContent(fullText.ToString(), fullReasoning.ToString());
+			Logger.RecordTokenStats(inputTokens, Logger.EstimateTokens(outputContent4), messages, outputContent4, "stream_cancelled");
 			onComplete?.Invoke(fullText.ToString().Trim());
 		}
 		catch (Exception ex3)
@@ -417,7 +453,8 @@ public static class ShoutNetwork
 					["resultLen"] = partial.Length
 				});
 				Logger.Metric("network.stream", ok: true, sw.Elapsed.TotalMilliseconds);
-				Logger.RecordTokenStats(inputTokens, Logger.EstimateTokens(partial), messages, partial, "stream_exception_partial");
+				string outputContent5 = BuildTokenStatsOutputContent(partial, fullReasoning.ToString());
+				Logger.RecordTokenStats(inputTokens, Logger.EstimateTokens(outputContent5), messages, outputContent5, "stream_exception_partial");
 				onComplete?.Invoke(partial);
 			}
 			else

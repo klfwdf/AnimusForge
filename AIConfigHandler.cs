@@ -408,6 +408,56 @@ public static class AIConfigHandler
 
 	public static List<PostprocessRuleEntry> ActionPostprocessMoodRules => _actionPostprocess?.MoodRules ?? new List<PostprocessRuleEntry>();
 
+	private static string NormalizeActionPostprocessOptionalValue(string value)
+	{
+		string text = (value ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text) || string.Equals(text, "（无）", StringComparison.Ordinal))
+		{
+			return "";
+		}
+		return text;
+	}
+
+	private static string ReplaceActionPostprocessOptionalSection(string template, string titleLine, string tokenName, string value)
+	{
+		string text = template ?? "";
+		string text2 = NormalizeActionPostprocessOptionalValue(value);
+		string text3 = "{" + (tokenName ?? "") + "}";
+		if (string.IsNullOrWhiteSpace(text3))
+		{
+			return text;
+		}
+		if (string.IsNullOrEmpty(text2))
+		{
+			if (!string.IsNullOrWhiteSpace(titleLine))
+			{
+				string pattern = "(?:\\r?\\n){0,2}" + Regex.Escape(titleLine) + "\\r?\\n" + Regex.Escape(text3) + "(?:\\r?\\n)?";
+				text = Regex.Replace(text, pattern, "", RegexOptions.CultureInvariant);
+			}
+			return text.Replace(text3, "");
+		}
+		return text.Replace(text3, text2);
+	}
+
+	public static string BuildActionPostprocessSystemPrompt(string tagRules, string moodRules, string npcName, string sharedItemList = null, string playerItemList = null, string debtHint = null, string marriagePlayerCandidates = null, string marriageTargetCandidates = null, string marriageFactHint = null)
+	{
+		string text = ActionPostprocessSystemPrompt;
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return "";
+		}
+		text = ReplaceActionPostprocessOptionalSection(text, "{npc_name}的物品清单：", "shared_item_list", sharedItemList);
+		text = ReplaceActionPostprocessOptionalSection(text, "玩家可见装备：", "player_item_list", playerItemList);
+		text = ReplaceActionPostprocessOptionalSection(text, "债务提示：", "debt_hint", debtHint);
+		text = ReplaceActionPostprocessOptionalSection(text, "玩家家族可婚配未婚成员（事实清单）：", "marriage_player_candidates", marriagePlayerCandidates);
+		text = ReplaceActionPostprocessOptionalSection(text, "对方家族可婚配未婚成员（事实清单）：", "marriage_target_candidates", marriageTargetCandidates);
+		text = ReplaceActionPostprocessOptionalSection(text, "当前可直接成立的正规婚配组合与现有婚姻（事实清单）：", "marriage_fact_hint", marriageFactHint);
+		text = text.Replace("{tag_rules}", string.IsNullOrWhiteSpace(tagRules) ? "（无）" : tagRules.Trim())
+			.Replace("{mood_rules}", string.IsNullOrWhiteSpace(moodRules) ? "（无）" : moodRules.Trim())
+			.Replace("{npc_name}", string.IsNullOrWhiteSpace(npcName) ? "NPC" : npcName.Trim());
+		return Regex.Replace(text.Trim(), "(\\r?\\n){3,}", Environment.NewLine + Environment.NewLine);
+	}
+
 	public static bool DuelStakeEnabled => _guardrail?.DuelStake?.IsEnabled == true;
 
 	public static string DuelStakePlayerWinInstruction => ApplyPlayerDisplayNameToGuardrailText(_guardrail?.DuelStake?.PlayerWinInstruction ?? "");
@@ -894,7 +944,7 @@ public static class AIConfigHandler
 		}
 		try
 		{
-			return VanillaIssueOfferBridge.IsRagEligibleForExternal(ResolveConversationTargetHero());
+			return ResolveConversationTargetHero() != null;
 		}
 		catch
 		{
@@ -1042,6 +1092,11 @@ public static class AIConfigHandler
 				TopicLabel = (src.TopicLabel ?? "").Trim(),
 				Instruction = (src.Instruction ?? ""),
 				NonHeroInstruction = (src.NonHeroInstruction ?? ""),
+				PostprocessRules = ((src.PostprocessRules != null) ? src.PostprocessRules.Where((PostprocessRuleEntry x) => x != null && !string.IsNullOrWhiteSpace((x.Tag ?? "").Trim())).Select((PostprocessRuleEntry x) => new PostprocessRuleEntry
+				{
+					Tag = (x.Tag ?? "").Trim(),
+					Description = (x.Description ?? "").Trim()
+				}).ToList() : new List<PostprocessRuleEntry>()),
 				TriggerKeywords = NormalizeTriggerKeywordList(src.TriggerKeywords),
 				RuntimeInstructionTemplates = NormalizeTemplateMap(src.RuntimeInstructionTemplates),
 				RuntimeConstraintTemplates = NormalizeTemplateMap(src.RuntimeConstraintTemplates)
@@ -1058,7 +1113,12 @@ public static class AIConfigHandler
 		Dictionary<string, GuardrailRulePromptConfig> map = new Dictionary<string, GuardrailRulePromptConfig>(StringComparer.OrdinalIgnoreCase);
 		try
 		{
-			upsert(BuildLegacyRulePrompt("duel", _guardrail?.Duel?.IsEnabled ?? true, _guardrail?.Duel?.TriggerInstruction ?? "", _guardrail?.Duel?.AcceptKeywords ?? new List<string>(), "combat", 90, _guardrail?.Duel?.TopicNumber ?? 0, _guardrail?.Duel?.TopicLabel ?? ""));
+			string duelRegistryInstruction = (_guardrail?.Duel?.TriggerInstruction ?? "").Trim();
+			if (string.IsNullOrWhiteSpace(duelRegistryInstruction))
+			{
+				duelRegistryInstruction = (_guardrail?.Duel?.DialogueInstruction ?? "").Trim();
+			}
+			upsert(BuildLegacyRulePrompt("duel", _guardrail?.Duel?.IsEnabled ?? true, duelRegistryInstruction, _guardrail?.Duel?.AcceptKeywords ?? new List<string>(), "combat", 90, _guardrail?.Duel?.TopicNumber ?? 0, _guardrail?.Duel?.TopicLabel ?? ""));
 			upsert(BuildLegacyRulePrompt("reward", _guardrail?.Reward?.IsEnabled ?? true, _guardrail?.Reward?.Instruction ?? "", _guardrail?.Reward?.TriggerKeywords ?? new List<string>(), "trade", 80, _guardrail?.Reward?.TopicNumber ?? 0, _guardrail?.Reward?.TopicLabel ?? ""));
 			upsert(BuildLegacyRulePrompt("loan", _guardrail?.Loan?.IsEnabled ?? true, _guardrail?.Loan?.Instruction ?? "", _guardrail?.Loan?.TriggerKeywords ?? new List<string>(), "finance", 85, _guardrail?.Loan?.TopicNumber ?? 0, _guardrail?.Loan?.TopicLabel ?? ""));
 			upsert(BuildLegacyRulePrompt("surroundings", _guardrail?.Surroundings?.IsEnabled ?? true, _guardrail?.Surroundings?.Instruction ?? "", _guardrail?.Surroundings?.TriggerKeywords ?? new List<string>(), "world", 70, _guardrail?.Surroundings?.TopicNumber ?? 0, _guardrail?.Surroundings?.TopicLabel ?? ""));
@@ -1376,6 +1436,71 @@ public static class AIConfigHandler
 		return text + "||" + text2 + "||" + text3;
 	}
 
+	private static bool ContainsAnyIgnoreCase(string source, params string[] patterns)
+	{
+		string text = (source ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text) || patterns == null || patterns.Length == 0)
+		{
+			return false;
+		}
+		for (int i = 0; i < patterns.Length; i++)
+		{
+			string value = (patterns[i] ?? "").Trim();
+			if (!string.IsNullOrWhiteSpace(value) && text.IndexOf(value, StringComparison.OrdinalIgnoreCase) >= 0)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private static string ResolveAuxiliaryThinkingControlMode(string apiUrl, string modelName)
+	{
+		if (ContainsAnyIgnoreCase(apiUrl, "anthropic") || ContainsAnyIgnoreCase(modelName, "claude"))
+		{
+			return "anthropic_non_thinking";
+		}
+		if (ContainsAnyIgnoreCase(apiUrl, "deepseek") || ContainsAnyIgnoreCase(modelName, "deepseek"))
+		{
+			return "deepseek_non_thinking";
+		}
+		return "plain";
+	}
+
+	private static JObject BuildAuxiliaryRouterRequestPayload(string apiUrl, string modelName, IEnumerable<object> messages, int maxTokens, float temperature, out string controlMode)
+	{
+		controlMode = ResolveAuxiliaryThinkingControlMode(apiUrl, modelName);
+		JObject jObject = new JObject
+		{
+			["model"] = modelName ?? "",
+			["messages"] = JArray.FromObject(messages ?? Array.Empty<object>()),
+			["stream"] = false,
+			["max_tokens"] = Math.Max(16, maxTokens),
+			["temperature"] = Math.Max(0f, Math.Min(1.5f, temperature))
+		};
+		switch (controlMode)
+		{
+		case "deepseek_non_thinking":
+			jObject["thinking"] = new JObject
+			{
+				["type"] = "disabled"
+			};
+			break;
+		case "anthropic_non_thinking":
+			jObject["thinking"] = new JObject
+			{
+				["type"] = "disabled"
+			};
+			break;
+		}
+		return jObject;
+	}
+
+	public static string BuildAuxiliaryRouterRequestJsonForExternal(string apiUrl, string modelName, IEnumerable<object> messages, int maxTokens, float temperature, out string controlMode)
+	{
+		return BuildAuxiliaryRouterRequestPayload(apiUrl, modelName, messages, maxTokens, temperature, out controlMode).ToString(Formatting.None);
+	}
+
 	private static bool TryGetAuxiliaryRuleRoutingConfig(out string apiUrl, out string apiKey, out string modelName)
 	{
 		apiUrl = "";
@@ -1404,9 +1529,83 @@ public static class AIConfigHandler
 		}
 	}
 
+	private static bool TryGetDedicatedActionPostprocessConfig(out string apiUrl, out string apiKey, out string modelName)
+	{
+		apiUrl = "";
+		apiKey = "";
+		modelName = "";
+		try
+		{
+			DuelSettings settings = DuelSettings.GetSettings();
+			if (settings == null)
+			{
+				return false;
+			}
+			string text = (settings.ActionPostprocessApiUrl ?? "").Trim();
+			string text2 = (settings.ActionPostprocessApiKey ?? "").Trim();
+			string text3 = (settings.ActionPostprocessModelName ?? "").Trim();
+			bool flag = !string.IsNullOrWhiteSpace(text) || !string.IsNullOrWhiteSpace(text2) || !string.IsNullOrWhiteSpace(text3);
+			if (!flag)
+			{
+				return false;
+			}
+			apiUrl = DuelSettings.GetEffectiveApiUrl(text);
+			apiKey = text2;
+			modelName = text3;
+			bool flag2 = !string.IsNullOrWhiteSpace(apiUrl) && !string.IsNullOrWhiteSpace(apiKey) && !string.IsNullOrWhiteSpace(modelName);
+			if (!flag2)
+			{
+				LogAuxiliaryRouterTokenTrace("action_postprocess_config_invalid", null, "[ACTION POSTPROCESS CONFIG]\nmode=dedicated\nurl=" + (string.IsNullOrWhiteSpace(apiUrl) ? "(empty)" : apiUrl) + "\nmodel=" + (string.IsNullOrWhiteSpace(modelName) ? "(empty)" : modelName) + "\napiKey=" + (string.IsNullOrWhiteSpace(apiKey) ? "(empty)" : "(present)") + "\nreason=missing_required_field", 0);
+			}
+			return flag2;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static bool TryGetPrimaryChatConfig(out string apiUrl, out string apiKey, out string modelName)
+	{
+		apiUrl = "";
+		apiKey = "";
+		modelName = "";
+		try
+		{
+			DuelSettings settings = DuelSettings.GetSettings();
+			if (settings == null)
+			{
+				return false;
+			}
+			apiUrl = DuelSettings.GetEffectiveApiUrl(settings.ApiUrl ?? "");
+			apiKey = (settings.ApiKey ?? "").Trim();
+			modelName = (settings.ModelName ?? "").Trim();
+			return !string.IsNullOrWhiteSpace(apiUrl) && !string.IsNullOrWhiteSpace(apiKey) && !string.IsNullOrWhiteSpace(modelName);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static bool TryGetActionPostprocessConfig(out string apiUrl, out string apiKey, out string modelName)
+	{
+		DuelSettings settings = DuelSettings.GetSettings();
+		bool flag = settings != null && (!string.IsNullOrWhiteSpace(settings.ActionPostprocessApiUrl) || !string.IsNullOrWhiteSpace(settings.ActionPostprocessApiKey) || !string.IsNullOrWhiteSpace(settings.ActionPostprocessModelName));
+		if (flag)
+		{
+			return TryGetDedicatedActionPostprocessConfig(out apiUrl, out apiKey, out modelName);
+		}
+		if (TryGetDedicatedActionPostprocessConfig(out apiUrl, out apiKey, out modelName))
+		{
+			return true;
+		}
+		return TryGetPrimaryChatConfig(out apiUrl, out apiKey, out modelName);
+	}
+
 	public static bool CanUseAuxiliaryActionPostprocess()
 	{
-		return ActionPostprocessEnabled && TryGetAuxiliaryRuleRoutingConfig(out var _, out var _, out var _);
+		return ActionPostprocessEnabled && TryGetActionPostprocessConfig(out var _, out var _, out var _);
 	}
 
 	private static object[] BuildAuxiliaryRouterMessages(string prompt)
@@ -1494,9 +1693,9 @@ public static class AIConfigHandler
 			error = "postprocess_disabled";
 			return false;
 		}
-		if (!TryGetAuxiliaryRuleRoutingConfig(out var apiUrl, out var apiKey, out var modelName))
+		if (!TryGetActionPostprocessConfig(out var apiUrl, out var apiKey, out var modelName))
 		{
-			error = "auxiliary_config_invalid";
+			error = "action_postprocess_config_invalid";
 			return false;
 		}
 		object[] array = BuildAuxiliaryChatMessages(systemPrompt, userPrompt);
@@ -1507,7 +1706,7 @@ public static class AIConfigHandler
 				model = modelName,
 				messages = array,
 				stream = false,
-				max_tokens = Math.Max(16, Math.Min(512, maxTokens)),
+				max_tokens = Math.Max(16, maxTokens),
 				temperature = Math.Max(0f, Math.Min(1.5f, temperature))
 			};
 			string jsonBody = JsonConvert.SerializeObject(value);
@@ -1754,7 +1953,7 @@ public static class AIConfigHandler
 				stringBuilder.AppendLine(guardrailAuxiliaryTopic.Number + "：" + guardrailAuxiliaryTopic.Label);
 			}
 		}
-		stringBuilder.AppendLine("请选择最相似的" + Math.Max(1, topN) + "个话题，然后只输出编号(格式：数字,数字,数字,数字)不要输出其他任何内容。");
+		stringBuilder.AppendLine("请选择最相似的话题，你最多输出" + Math.Max(1, topN) + "个话题，如果你认为对话内容和已有话题毫不相干，可以输出0，(格式：数字,数字,,,,,,)不要输出其他任何内容。");
 		return stringBuilder.ToString().Trim();
 	}
 
@@ -1765,15 +1964,7 @@ public static class AIConfigHandler
 		object[] array = BuildAuxiliaryRouterMessages(prompt);
 		try
 		{
-			var value = new
-			{
-				model = modelName,
-				messages = array,
-				stream = false,
-				max_tokens = 48,
-				temperature = 0.0
-			};
-			string jsonBody = JsonConvert.SerializeObject(value);
+			string jsonBody = BuildAuxiliaryRouterRequestJsonForExternal(apiUrl, modelName, array, 1000, 0f, out var controlMode);
 			using HttpRequestMessage httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, apiUrl);
 			httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
 			httpRequestMessage.Content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
@@ -1782,7 +1973,7 @@ public static class AIConfigHandler
 			if (!result.IsSuccessStatusCode)
 			{
 				error = "http_" + (int)result.StatusCode;
-				LogAuxiliaryRouterTokenTrace("auxiliary_router_http_error", array, "[AUXILIARY ROUTER HTTP]" + "\n" + "url=" + apiUrl + "\n" + "model=" + modelName + "\n" + "status=" + (int)result.StatusCode + " " + (result.ReasonPhrase ?? "") + "\n" + "response_body=" + "\n" + (text ?? ""), 0);
+				LogAuxiliaryRouterTokenTrace("auxiliary_router_http_error", array, "[AUXILIARY ROUTER HTTP]" + "\n" + "url=" + apiUrl + "\n" + "model=" + modelName + "\n" + "control_mode=" + controlMode + "\n" + "status=" + (int)result.StatusCode + " " + (result.ReasonPhrase ?? "") + "\n" + "response_body=" + "\n" + (text ?? ""), 0);
 				return false;
 			}
 			JObject jObject = JObject.Parse(text);
@@ -1790,10 +1981,10 @@ public static class AIConfigHandler
 			if (string.IsNullOrWhiteSpace(content))
 			{
 				error = "empty_content";
-				LogAuxiliaryRouterTokenTrace("auxiliary_router_empty_content", array, "[AUXILIARY ROUTER HTTP]" + "\n" + "url=" + apiUrl + "\n" + "model=" + modelName + "\n" + "status=" + (int)result.StatusCode + " " + (result.ReasonPhrase ?? "") + "\n" + "response_body=" + "\n" + (text ?? ""), 0);
+				LogAuxiliaryRouterTokenTrace("auxiliary_router_empty_content", array, "[AUXILIARY ROUTER HTTP]" + "\n" + "url=" + apiUrl + "\n" + "model=" + modelName + "\n" + "control_mode=" + controlMode + "\n" + "status=" + (int)result.StatusCode + " " + (result.ReasonPhrase ?? "") + "\n" + "response_body=" + "\n" + (text ?? ""), 0);
 				return false;
 			}
-			LogAuxiliaryRouterTokenTrace("auxiliary_router_http", array, "[AUXILIARY ROUTER HTTP]" + "\n" + "url=" + apiUrl + "\n" + "model=" + modelName + "\n" + "status=" + (int)result.StatusCode + " " + (result.ReasonPhrase ?? "") + "\n" + "ai_response=" + "\n" + content + "\n" + "raw_response=" + "\n" + (text ?? ""), Logger.EstimateTokens(content));
+			LogAuxiliaryRouterTokenTrace("auxiliary_router_http", array, "[AUXILIARY ROUTER HTTP]" + "\n" + "url=" + apiUrl + "\n" + "model=" + modelName + "\n" + "control_mode=" + controlMode + "\n" + "status=" + (int)result.StatusCode + " " + (result.ReasonPhrase ?? "") + "\n" + "ai_response=" + "\n" + content + "\n" + "raw_response=" + "\n" + (text ?? ""), Logger.EstimateTokens(content));
 			return true;
 		}
 		catch (Exception ex)
@@ -3779,16 +3970,59 @@ public static class AIConfigHandler
 		}
 		try
 		{
-			Hero oneToOneConversationHero = Hero.OneToOneConversationHero;
-			Kingdom kingdom = oneToOneConversationHero?.Clan?.Kingdom;
-			if (kingdom != null)
+			string text2 = (_guardrailRuntimeTargetHeroId.Value ?? "").Trim();
+			if (!string.IsNullOrWhiteSpace(text2))
 			{
-				return kingdom;
+				Hero hero = Hero.Find(text2) ?? Hero.FindFirst((Hero x) => x != null && string.Equals((x.StringId ?? "").Trim(), text2, StringComparison.OrdinalIgnoreCase));
+				Kingdom kingdom = hero?.Clan?.Kingdom;
+				if (kingdom != null)
+				{
+					return kingdom;
+				}
+				Kingdom kingdom2 = hero?.MapFaction as Kingdom;
+				if (kingdom2 != null)
+				{
+					return kingdom2;
+				}
 			}
-			Kingdom kingdom2 = oneToOneConversationHero?.MapFaction as Kingdom;
-			if (kingdom2 != null)
+		}
+		catch
+		{
+		}
+		try
+		{
+			string text3 = (_guardrailRuntimeTargetCharacterId.Value ?? _guardrailRuntimeTargetTroopId.Value ?? "").Trim();
+			if (!string.IsNullOrWhiteSpace(text3))
 			{
-				return kingdom2;
+				CharacterObject characterObject = CharacterObject.All?.FirstOrDefault((CharacterObject x) => x != null && string.Equals((x.StringId ?? "").Trim(), text3, StringComparison.OrdinalIgnoreCase));
+				Hero heroObject = characterObject?.HeroObject;
+				Kingdom kingdom3 = heroObject?.Clan?.Kingdom;
+				if (kingdom3 != null)
+				{
+					return kingdom3;
+				}
+				Kingdom kingdom4 = heroObject?.MapFaction as Kingdom;
+				if (kingdom4 != null)
+				{
+					return kingdom4;
+				}
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			Hero oneToOneConversationHero = Hero.OneToOneConversationHero;
+			Kingdom kingdom5 = oneToOneConversationHero?.Clan?.Kingdom;
+			if (kingdom5 != null)
+			{
+				return kingdom5;
+			}
+			Kingdom kingdom6 = oneToOneConversationHero?.MapFaction as Kingdom;
+			if (kingdom6 != null)
+			{
+				return kingdom6;
 			}
 		}
 		catch
@@ -3798,15 +4032,15 @@ public static class AIConfigHandler
 		{
 			CharacterObject oneToOneConversationCharacter = Campaign.Current?.ConversationManager?.OneToOneConversationCharacter;
 			Hero heroObject = oneToOneConversationCharacter?.HeroObject;
-			Kingdom kingdom3 = heroObject?.Clan?.Kingdom;
-			if (kingdom3 != null)
+			Kingdom kingdom7 = heroObject?.Clan?.Kingdom;
+			if (kingdom7 != null)
 			{
-				return kingdom3;
+				return kingdom7;
 			}
-			Kingdom kingdom4 = heroObject?.MapFaction as Kingdom;
-			if (kingdom4 != null)
+			Kingdom kingdom8 = heroObject?.MapFaction as Kingdom;
+			if (kingdom8 != null)
 			{
-				return kingdom4;
+				return kingdom8;
 			}
 		}
 		catch
@@ -3959,11 +4193,13 @@ public static class AIConfigHandler
 			Dictionary<string, string> dictionary = BuildKingdomServiceRuntimeTokens(out var playerClan, out var kingdom, out var flag, out var kingdom2, out var flag2, out var num, out var num2, out var num3, out var num4, out var num5, out var num6);
 			if (playerClan == null)
 			{
+				Logger.Log("AIConfig", "[KingdomServicePostprocessRules] playerClan=null targetKingdomId=" + ((dictionary != null && dictionary.TryGetValue("targetKingdomId", out var value0)) ? (value0 ?? "") : "") + " playerTier=" + num + " mercTier=" + num2 + " vassalTier=" + num3 + " trustCurrent=" + num6 + " trustMerc=" + num4 + " trustVassal=" + num5);
 				return list;
 			}
 			string text = ResolveRuntimeKingdomServiceStateKeyForPostprocess(kingdom, flag, kingdom2, flag2, num, num2, num3, num4, num5, num6);
 			if (string.IsNullOrWhiteSpace(text))
 			{
+				Logger.Log("AIConfig", "[KingdomServicePostprocessRules] empty_state playerClan=" + (playerClan?.StringId ?? "") + " playerKingdom=" + (kingdom?.StringId ?? "") + " targetKingdom=" + (kingdom2?.StringId ?? "") + " isMercenaryService=" + flag + " isSameKingdom=" + flag2 + " playerTier=" + num + " mercTier=" + num2 + " vassalTier=" + num3 + " trustCurrent=" + num6 + " trustMerc=" + num4 + " trustVassal=" + num5);
 				return list;
 			}
 			string text2 = "";
@@ -3998,6 +4234,7 @@ public static class AIConfigHandler
 					Description = description
 				});
 			}
+			Logger.Log("AIConfig", "[KingdomServicePostprocessRules] state=" + text + " playerClan=" + (playerClan?.StringId ?? "") + " playerKingdom=" + (kingdom?.StringId ?? "") + " targetKingdom=" + (kingdom2?.StringId ?? "") + " targetKingdomIdToken=" + text2 + " isMercenaryService=" + flag + " isSameKingdom=" + flag2 + " playerTier=" + num + " mercTier=" + num2 + " vassalTier=" + num3 + " trustCurrent=" + num6 + " trustMerc=" + num4 + " trustVassal=" + num5 + " rules=" + ((list.Count == 0) ? "（无）" : string.Join(",", list.Select((PostprocessRuleEntry x) => x?.Tag ?? "").Where((string x) => !string.IsNullOrWhiteSpace(x)))));
 		}
 		catch
 		{
@@ -4039,27 +4276,32 @@ public static class AIConfigHandler
 
 	private static string ResolveRuntimeKingdomServiceStateKeyForPostprocess(Kingdom playerKingdom, bool isMercenaryService, Kingdom targetKingdom, bool isSameKingdom, int playerTier, int mercTier, int vassalTier, int mercTrustMin, int vassalTrustMin, int currentTrust)
 	{
-		if (playerKingdom == null)
+		string text = ResolveKingdomServiceRuntimeStateKey(playerKingdom, isMercenaryService, targetKingdom, isSameKingdom, playerTier, mercTier, vassalTier, mercTrustMin, vassalTrustMin, currentTrust);
+		if (string.IsNullOrWhiteSpace(text))
 		{
-			if (currentTrust < mercTrustMin || playerTier < mercTier)
-			{
-				return "blocked";
-			}
-			if (playerTier < vassalTier || currentTrust < vassalTrustMin)
-			{
-				return "merc_only";
-			}
-			if (targetKingdom == null)
-			{
-				return "blocked";
-			}
+			return "";
+		}
+		switch (text.Trim().ToLowerInvariant())
+		{
+		case "no_kingdom":
+		case "no_kingdom_tier_full":
 			return "merc_or_vassal";
-		}
-		if (isMercenaryService)
-		{
+		case "no_kingdom_tier_merc_only":
+		case "no_kingdom_trust_merc_only":
+			return "merc_only";
+		case "mercenary_target_unknown":
+		case "mercenary_same_kingdom":
+		case "mercenary_same_kingdom_tier_vassal_locked":
+		case "mercenary_same_kingdom_trust_vassal_locked":
+		case "mercenary_same_kingdom_tier_vassal_ready":
+		case "mercenary_other_kingdom":
+		case "vassal_target_unknown":
+		case "vassal_same_kingdom":
+		case "vassal_other_kingdom":
 			return "leave_only";
+		default:
+			return "blocked";
 		}
-		return "leave_only";
 	}
 
 	private static bool ShouldIncludeKingdomServicePostprocessTag(string stateKey, string tag)
@@ -4136,7 +4378,9 @@ public static class AIConfigHandler
 		switch ((stateKey ?? "").Trim().ToLowerInvariant())
 		{
 		case "no_player_clan":
+		case "no_kingdom_trust_below_merc":
 		case "no_kingdom_tier_below_merc":
+		case "no_kingdom_trust_merc_only":
 		case "no_kingdom_tier_merc_only":
 		case "no_kingdom_tier_full":
 			return true;

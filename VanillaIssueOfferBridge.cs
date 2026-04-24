@@ -182,7 +182,54 @@ internal static class VanillaIssueOfferBridge
 
 	public static string BuildRuntimePromptBlockForExternal(Hero targetHero)
 	{
-		return TryBuildRuntimePromptBlock(targetHero, out var _, out var promptText) ? promptText : "";
+		if (TryBuildRuntimePromptBlock(targetHero, out var _, out var promptText))
+		{
+			return promptText;
+		}
+		return BuildNoAvailableIssuePromptBlock(targetHero);
+	}
+
+	public static List<PostprocessRuleEntry> BuildRuntimePostprocessRulesForExternal(Hero targetHero)
+	{
+		List<PostprocessRuleEntry> list = new List<PostprocessRuleEntry>();
+		try
+		{
+			if (!TryGetRuntimeState(targetHero, out var stateKey, out var _, out var _))
+			{
+				return list;
+			}
+			List<PostprocessRuleEntry> guardrailRulePostprocessRules = AIConfigHandler.GetGuardrailRulePostprocessRules("vanilla_issue") ?? new List<PostprocessRuleEntry>();
+			foreach (PostprocessRuleEntry item in guardrailRulePostprocessRules)
+			{
+				string text = (item?.Tag ?? "").Trim();
+				if (string.IsNullOrWhiteSpace(text))
+				{
+					continue;
+				}
+				bool flag = false;
+				switch ((stateKey ?? "").Trim().ToLowerInvariant())
+				{
+				case "offer":
+					flag = text.Equals("[ACTION:ISSUE_ACCEPT_SELF]", StringComparison.OrdinalIgnoreCase) || text.StartsWith("[ACTION:ISSUE_ACCEPT_ALT:COMPANION=", StringComparison.OrdinalIgnoreCase);
+					break;
+				case "ready_to_turn_in":
+					flag = text.Equals("[ACTION:QUEST_TURN_IN]", StringComparison.OrdinalIgnoreCase);
+					break;
+				}
+				if (flag)
+				{
+					list.Add(new PostprocessRuleEntry
+					{
+						Tag = item.Tag,
+						Description = item.Description
+					});
+				}
+			}
+		}
+		catch
+		{
+		}
+		return list;
 	}
 
 	private static bool TryBuildRuntimePromptBlock(Hero targetHero, out string stateKey, out string promptText)
@@ -277,7 +324,7 @@ internal static class VanillaIssueOfferBridge
 		}
 		if (flag)
 		{
-			stringBuilder.AppendLine("当前玩家满足接取条件，如果玩家明确同意接这个任务，你必须在本次回复末尾写入标签标签 [ACTION:ISSUE_ACCEPT_SELF]。【示例】很好。你的回复：记住，我要的是真正的斯特吉亚猎手，不是随便找些人来充数。如果你能证明自己言出必行，我会认真考虑你的请求。[ACTION:ISSUE_ACCEPT_SELF][ACTION:MOOD:NEUTRAL]");
+			stringBuilder.AppendLine("当前玩家满足接取条件。如果玩家明确同意接这个任务，你在正文里只需自然口头确认或答应即可，不要输出任何动作标签；是否真正接取，由后处理依据你的表态判断。");
 		}
 		else
 		{
@@ -290,14 +337,14 @@ internal static class VanillaIssueOfferBridge
 		if (flag2 && flag3)
 		{
 			stringBuilder.AppendLine("这项任务也支持“由玩家的一名同伴率队代办”。");
-			stringBuilder.AppendLine("若玩家明确要求由同伴代办，并且明确指定了下列候选中的某一人，你才可以在回复末尾附加隐藏标签 [ACTION:ISSUE_ACCEPT_ALT:COMPANION=<HeroId>]。");
-			stringBuilder.AppendLine("若玩家只说“派个同伴去”但没有明确指名，你必须先追问，不得输出任何同伴代办标签。");
+			stringBuilder.AppendLine("若玩家明确要求由同伴代办，并且明确指定了下列候选中的某一人，你在正文里只需自然口头同意由该同伴代办即可，不要输出任何动作标签；是否真正按该同伴代办，由后处理判断。");
+			stringBuilder.AppendLine("若玩家只说“派个同伴去”但没有明确指名，你必须先追问，不得把事情当成已经定下。");
 			stringBuilder.AppendLine("你只能从下列候选名单中选择，绝对不能编造新的同伴：");
 			foreach (CompanionCandidate item in list)
 			{
 				stringBuilder.AppendLine(item.PromptLine);
 			}
-			stringBuilder.AppendLine("当你输出同伴代办标签后，系统会接着弹出原生派兵界面来选择随行士兵；你只负责决定是否接受以及由谁带队。");
+			stringBuilder.AppendLine("若后处理最终判定为同伴代办，系统会接着弹出原生派兵界面来选择随行士兵；你正文里只负责决定是否接受以及由谁带队。");
 		}
 		else
 		{
@@ -340,7 +387,7 @@ internal static class VanillaIssueOfferBridge
 		}
 		AppendRecentJournalLines(stringBuilder, issueQuest.JournalEntries);
 		stringBuilder.AppendLine("你现在应当根据玩家的话讨论进度、提醒要求、回答是否快办成，而不是重新介绍“要不要接任务”。");
-		stringBuilder.AppendLine("严禁输出 [ACTION:ISSUE_ACCEPT_SELF] 或 [ACTION:ISSUE_ACCEPT_ALT:*]。");
+		stringBuilder.AppendLine("正文严禁输出 [ACTION:ISSUE_ACCEPT_SELF]、[ACTION:ISSUE_ACCEPT_ALT:*] 或 [ACTION:QUEST_TURN_IN]；是否触发只交给后处理判断。");
 		return stringBuilder.ToString().Trim();
 	}
 
@@ -381,9 +428,9 @@ internal static class VanillaIssueOfferBridge
 				stringBuilder.AppendLine("- " + visibleOption);
 			}
 		}
-		stringBuilder.AppendLine("玩家已经满足了任务完成条件，如果玩家说要任务已经做完，或者要交付任务之类的，你必须在回复尾部输出 [ACTION:QUEST_TURN_IN]。使得任务实际完成。输出之后，会自动向玩家发放奖励，请不要自行转账！");
-		stringBuilder.AppendLine("如果玩家只是询问进度、还没有完成、或者表述不清，请不要附加该标签。");
-		stringBuilder.AppendLine("严禁输出 [ACTION:ISSUE_ACCEPT_SELF] 或 [ACTION:ISSUE_ACCEPT_ALT:*]。");
+		stringBuilder.AppendLine("玩家已经满足了任务完成条件。如果玩家说要交付任务、确认已经做完，或来让你验收，你在正文里只需自然确认验收完成或指出仍未完成，不要输出任何动作标签；是否真正交付，由后处理依据你的表态判断。");
+		stringBuilder.AppendLine("如果玩家只是询问进度、还没有完成、或者表述不清，你就只按对话回应，不要把事情说成已经验收。");
+		stringBuilder.AppendLine("正文严禁输出 [ACTION:ISSUE_ACCEPT_SELF]、[ACTION:ISSUE_ACCEPT_ALT:*] 或 [ACTION:QUEST_TURN_IN]；是否触发只交给后处理判断。");
 		return stringBuilder.ToString().Trim();
 	}
 
@@ -431,13 +478,12 @@ internal static class VanillaIssueOfferBridge
 		{
 			return "";
 		}
-		string playerDisplayName = GetPlayerDisplayNameForPrompt();
-		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.AppendLine("【原版任务上下文：当前无任务】");
-		stringBuilder.AppendLine("你没有任何任务可以交给" + playerDisplayName + "（玩家），也请不要杜撰任何任务交给" + playerDisplayName + "（玩家）。");
-		stringBuilder.AppendLine("如果对方问你有没有差事、委托、任务可接，你只能明确表示当前没有可交付的原版任务，或转入普通对话。");
-		stringBuilder.AppendLine("严禁输出 [ACTION:ISSUE_ACCEPT_SELF]、[ACTION:ISSUE_ACCEPT_ALT:*] 或 [ACTION:QUEST_TURN_IN]。");
-		return stringBuilder.ToString().Trim();
+		string text = targetHero.Name?.ToString();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			text = "你";
+		}
+		return $"【原版任务上下文：当前无任务】{text}当前没有任何可派发的原版任务。";
 	}
 
 	public static void ApplyIssueOfferTags(Hero speaker, ref string responseText)
@@ -451,6 +497,7 @@ internal static class VanillaIssueOfferBridge
 			Match match = IssueAcceptSelfRegex.Match(responseText);
 			Match match2 = IssueAcceptAltRegex.Match(responseText);
 			Match match3 = QuestTurnInRegex.Match(responseText);
+			Logger.Log("Logic", "[IssueOffer] ApplyIssueOfferTags enter speaker=" + (speaker.StringId ?? "") + " hasSelf=" + match.Success + " hasAlt=" + match2.Success + " hasTurnIn=" + match3.Success + " raw=" + ((responseText ?? "").Replace("\r", "\\r").Replace("\n", "\\n")));
 			int num = -1;
 			int num2 = int.MaxValue;
 			if (match.Success && match.Index < num2)
@@ -469,15 +516,22 @@ internal static class VanillaIssueOfferBridge
 			}
 			if (num == 0)
 			{
-				TryAcceptIssueSelf(speaker);
+				bool flag = TryAcceptIssueSelf(speaker);
+				Logger.Log("Logic", "[IssueOffer] ApplyIssueOfferTags self_result=" + flag + " speaker=" + (speaker.StringId ?? ""));
 			}
 			else if (num == 1)
 			{
-				TryAcceptIssueWithCompanion(speaker, match2.Groups[1].Value);
+				bool flag2 = TryAcceptIssueWithCompanion(speaker, match2.Groups[1].Value);
+				Logger.Log("Logic", "[IssueOffer] ApplyIssueOfferTags alt_result=" + flag2 + " speaker=" + (speaker.StringId ?? "") + " companion=" + match2.Groups[1].Value);
 			}
 			else if (num == 2)
 			{
-				TryTurnInIssue(speaker);
+				bool flag3 = TryTurnInIssue(speaker);
+				Logger.Log("Logic", "[IssueOffer] ApplyIssueOfferTags turnin_result=" + flag3 + " speaker=" + (speaker.StringId ?? ""));
+			}
+			else
+			{
+				Logger.Log("Logic", "[IssueOffer] ApplyIssueOfferTags no_action speaker=" + (speaker.StringId ?? ""));
 			}
 		}
 		catch (Exception ex)
@@ -491,13 +545,17 @@ internal static class VanillaIssueOfferBridge
 
 	private static bool TryAcceptIssueSelf(Hero giver)
 	{
+		IssueBase issue2 = giver?.Issue;
+		Logger.Log("Logic", "[IssueOffer] TryAcceptIssueSelf enter giver=" + (giver?.StringId ?? "") + " issuePresent=" + (issue2 != null) + " issueOwner=" + (issue2?.IssueOwner?.StringId ?? "") + " isOngoingWithoutQuest=" + ((issue2 != null) ? issue2.IsOngoingWithoutQuest.ToString() : "false") + " questPresent=" + ((issue2?.IssueQuest != null) ? "true" : "false"));
 		if (!TryGetOfferableIssue(giver, out var issue))
 		{
+			Logger.Log("Logic", "[IssueOffer] TryAcceptIssueSelf fail=no_offerable_issue giver=" + (giver?.StringId ?? ""));
 			ShowInfo("当前没有可接取的原版任务。", isError: true);
 			return false;
 		}
 		if (!TryCheckQuestPreconditions(issue, giver, out var text))
 		{
+			Logger.Log("Logic", "[IssueOffer] TryAcceptIssueSelf fail=preconditions giver=" + (giver?.StringId ?? "") + " issue=" + (issue?.StringId ?? "") + " reason=" + (text ?? ""));
 			ShowInfo(string.IsNullOrWhiteSpace(text) ? "当前不满足该任务的接取条件。" : ("当前还不能接这项任务：" + text), isError: true);
 			return false;
 		}
@@ -505,17 +563,21 @@ internal static class VanillaIssueOfferBridge
 		{
 			if (Campaign.Current?.IssueManager == null)
 			{
+				Logger.Log("Logic", "[IssueOffer] TryAcceptIssueSelf fail=issue_manager_null giver=" + (giver?.StringId ?? "") + " issue=" + (issue?.StringId ?? ""));
 				ShowInfo("IssueManager 不可用，无法启动任务。", isError: true);
 				return false;
 			}
 			bool flag = Campaign.Current.IssueManager.StartIssueQuest(giver);
+			Logger.Log("Logic", "[IssueOffer] TryAcceptIssueSelf after_StartIssueQuest giver=" + (giver?.StringId ?? "") + " issue=" + (issue?.StringId ?? "") + " started=" + flag + " questPresentNow=" + ((issue?.IssueQuest != null) ? "true" : "false") + " questId=" + (issue?.IssueQuest?.StringId ?? ""));
 			if (!flag)
 			{
+				Logger.Log("Logic", "[IssueOffer] TryAcceptIssueSelf fail=start_issue_quest_false giver=" + (giver?.StringId ?? "") + " issue=" + (issue?.StringId ?? ""));
 				ShowInfo("原版任务启动失败。", isError: true);
 				return false;
 			}
 			if (!FinalizeClassicQuestAcceptance(issue, out var text2))
 			{
+				Logger.Log("Logic", "[IssueOffer] TryAcceptIssueSelf fail=finalize giver=" + (giver?.StringId ?? "") + " issue=" + (issue?.StringId ?? "") + " questId=" + (issue?.IssueQuest?.StringId ?? "") + " error=" + (text2 ?? ""));
 				ShowInfo(string.IsNullOrWhiteSpace(text2) ? "任务已生成，但未能完成原版接受收尾。" : text2, isError: true);
 				return false;
 			}
@@ -766,6 +828,7 @@ internal static class VanillaIssueOfferBridge
 		QuestBase issueQuest = issue?.IssueQuest;
 		if (issueQuest == null)
 		{
+			Logger.Log("Logic", "[IssueOffer] FinalizeClassicQuestAcceptance fail=no_issueQuest issue=" + (issue?.StringId ?? ""));
 			error = "任务对象未创建。";
 			return false;
 		}
@@ -776,6 +839,7 @@ internal static class VanillaIssueOfferBridge
 			flag = TryInvokeQuestAcceptHook(issueQuest, "OfferDialogFlowConsequence") || flag;
 			if (!issueQuest.IsOngoing)
 			{
+				Logger.Log("Logic", "[IssueOffer] FinalizeClassicQuestAcceptance fail=quest_not_ongoing issue=" + (issue?.StringId ?? "") + " quest=" + (issueQuest?.StringId ?? "") + " hook=" + flag + " logs=" + issueQuest.JournalEntries.Count);
 				issueQuest.StartQuest();
 			}
 			if (!issueQuest.IsOngoing)

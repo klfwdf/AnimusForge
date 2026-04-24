@@ -208,11 +208,9 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 
 	private const int PublicTrustPoolPointsPerTrust = 3;
 
-	private const int TrustGainHalvingStart = 20;
+	private const double TrustCurveExponent = 3.0;
 
-	private const int TrustGainHalvingStep = 20;
-
-	private const int TrustGainHalvingMaxStage = 4;
+	private const double TrustCurveMaxScaleOffset = 15.0;
 
 	private const int SettlementTrustContributionSharePercent = 30;
 
@@ -1177,66 +1175,110 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		return value;
 	}
 
-	private static int GetTrustGainHalvingStage(int currentTrust)
+	private static double GetTrustCurveNormalizedPosition(double currentTrust)
 	{
-		int num = ClampTrust(currentTrust);
-		if (num < TrustGainHalvingStart)
+		double num = Math.Abs(currentTrust) / (double)TrustMax;
+		if (num < 0.0)
 		{
-			return 0;
+			return 0.0;
 		}
-		int num2 = (num - TrustGainHalvingStart) / TrustGainHalvingStep + 1;
-		if (num2 < 0)
+		if (num > 1.0)
 		{
-			num2 = 0;
+			return 1.0;
 		}
-		if (num2 > TrustGainHalvingMaxStage)
-		{
-			num2 = TrustGainHalvingMaxStage;
-		}
-		return num2;
+		return num;
 	}
 
-	private static int GetTrustLossBoostStage(int currentTrust)
+	private static double GetTrustDeltaScaleByCurrentTrust(double currentTrust)
 	{
-		int num = ClampTrust(currentTrust);
-		if (num > -TrustGainHalvingStart)
+		double trustCurveNormalizedPosition = GetTrustCurveNormalizedPosition(currentTrust);
+		double num = 1.0 + TrustCurveMaxScaleOffset * Math.Pow(trustCurveNormalizedPosition, TrustCurveExponent);
+		if (currentTrust < 0.0)
 		{
-			return 0;
+			return num;
 		}
-		int num2 = (-num - TrustGainHalvingStart) / TrustGainHalvingStep + 1;
-		if (num2 < 0)
-		{
-			num2 = 0;
-		}
-		if (num2 > TrustGainHalvingMaxStage)
-		{
-			num2 = TrustGainHalvingMaxStage;
-		}
-		return num2;
+		return 1.0 / num;
 	}
 
-	private static int GetTrustGainDivisorByCurrentTrust(int currentTrust)
-	{
-		return 1 << GetTrustGainHalvingStage(currentTrust);
-	}
-
-	private static int GetTrustLossMultiplierByCurrentTrust(int currentTrust)
-	{
-		return 1 << GetTrustLossBoostStage(currentTrust);
-	}
-
-	private int ConvertRawTrustDeltaToUnits(int rawDelta, int currentTrust)
+	private double ConvertRawTrustDeltaToUnits(int rawDelta, double currentTrust)
 	{
 		if (rawDelta == 0)
 		{
+			return 0.0;
+		}
+		return (double)rawDelta * (double)TrustGainUnitsPerPoint * GetTrustDeltaScaleByCurrentTrust(currentTrust);
+	}
+
+	private int ApplyProgressiveTrustDeltaUnits(Dictionary<string, int> carryStore, string trustKey, int currentTrust, int rawDelta, out int appliedUnits)
+	{
+		appliedUnits = 0;
+		string text = (trustKey ?? "").Trim();
+		if (carryStore == null || string.IsNullOrWhiteSpace(text) || rawDelta == 0)
+		{
 			return 0;
 		}
-		if (currentTrust <= -TrustGainHalvingStart)
+		carryStore.TryGetValue(text, out var value);
+		double num = (double)((long)currentTrust * (long)TrustGainUnitsPerPoint + (long)value);
+		long num2 = (long)num;
+		long min = (long)TrustMin * (long)TrustGainUnitsPerPoint;
+		long max = (long)TrustMax * (long)TrustGainUnitsPerPoint;
+		int num3 = Math.Sign(rawDelta);
+		int num4 = Math.Abs(rawDelta);
+		for (int i = 0; i < num4; i++)
 		{
-			return rawDelta * TrustGainUnitsPerPoint * GetTrustLossMultiplierByCurrentTrust(currentTrust);
+			if (num <= (double)min || num >= (double)max)
+			{
+				break;
+			}
+			double currentTrust2 = num / (double)TrustGainUnitsPerPoint;
+			double num5 = ConvertRawTrustDeltaToUnits(num3, currentTrust2);
+			if (Math.Abs(num5) < 0.0001)
+			{
+				continue;
+			}
+			double num6 = Math.Max((double)min, Math.Min((double)max, num + num5));
+			if (Math.Abs(num6 - num) < 0.0001)
+			{
+				break;
+			}
+			num = num6;
 		}
-		int trustGainDivisorByCurrentTrust = GetTrustGainDivisorByCurrentTrust(currentTrust);
-		return rawDelta * TrustGainUnitsPerPoint / trustGainDivisorByCurrentTrust;
+		long num7 = (long)num;
+		appliedUnits = (int)(num7 - num2);
+		int num8 = (int)(num7 / TrustGainUnitsPerPoint);
+		int num9 = (int)(num7 % TrustGainUnitsPerPoint);
+		if (num9 != 0)
+		{
+			carryStore[text] = num9;
+		}
+		else
+		{
+			carryStore.Remove(text);
+		}
+		return num8 - currentTrust;
+	}
+
+	private static long GetTrustTotalUnitsWithCarry(int currentTrust, int carryUnits)
+	{
+		return (long)currentTrust * (long)TrustGainUnitsPerPoint + (long)carryUnits;
+	}
+
+	private int ApplyPositiveTrustSourceUnitsProgressively(long currentUnits, int sourceUnits, out long finalUnits)
+	{
+		finalUnits = currentUnits;
+		if (sourceUnits <= 0)
+		{
+			return 0;
+		}
+		double num = (double)currentUnits;
+		long max = (long)TrustMax * (long)TrustGainUnitsPerPoint;
+		for (int i = 0; i < sourceUnits && num < (double)max; i++)
+		{
+			double currentTrust = num / (double)TrustGainUnitsPerPoint;
+			num = Math.Min((double)max, num + GetTrustDeltaScaleByCurrentTrust(currentTrust));
+		}
+		finalUnits = (long)num;
+		return (int)(finalUnits - currentUnits);
 	}
 
 	private int ApplyDirectTrustDeltaUnits(string trustKey, int currentTrust, int rawDelta, out int appliedUnits)
@@ -1251,22 +1293,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			_directTrustProgressCarry = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
 		}
-		_directTrustProgressCarry.TryGetValue(text, out var value);
-		long num = (long)currentTrust * (long)TrustGainUnitsPerPoint + (long)value;
-		int num2 = ConvertRawTrustDeltaToUnits(rawDelta, currentTrust);
-		long num3 = ClampLong(num + (long)num2, (long)TrustMin * (long)TrustGainUnitsPerPoint, (long)TrustMax * (long)TrustGainUnitsPerPoint);
-		appliedUnits = (int)(num3 - num);
-		int num4 = (int)(num3 / TrustGainUnitsPerPoint);
-		int num5 = (int)(num3 % TrustGainUnitsPerPoint);
-		if (num5 != 0)
-		{
-			_directTrustProgressCarry[text] = num5;
-		}
-		else
-		{
-			_directTrustProgressCarry.Remove(text);
-		}
-		return num4 - currentTrust;
+		return ApplyProgressiveTrustDeltaUnits(_directTrustProgressCarry, text, currentTrust, rawDelta, out appliedUnits);
 	}
 
 	private int ApplySettlementTrustUnits(Settlement settlement, int rawDelta, out int appliedUnits)
@@ -1285,23 +1312,8 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			_settlementTrustCentiCarry = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
 		}
-		_settlementTrustCentiCarry.TryGetValue(text, out var value);
 		int settlementLocalPublicTrust = GetSettlementLocalPublicTrust(settlement);
-		long num = (long)settlementLocalPublicTrust * (long)TrustGainUnitsPerPoint + (long)value;
-		int num2 = ConvertRawTrustDeltaToUnits(rawDelta, settlementLocalPublicTrust);
-		long num3 = ClampLong(num + (long)num2, (long)TrustMin * (long)TrustGainUnitsPerPoint, (long)TrustMax * (long)TrustGainUnitsPerPoint);
-		appliedUnits = (int)(num3 - num);
-		int num4 = (int)(num3 / TrustGainUnitsPerPoint);
-		int num5 = (int)(num3 % TrustGainUnitsPerPoint);
-		if (num5 != 0)
-		{
-			_settlementTrustCentiCarry[text] = num5;
-		}
-		else
-		{
-			_settlementTrustCentiCarry.Remove(text);
-		}
-		return num4 - settlementLocalPublicTrust;
+		return ApplyProgressiveTrustDeltaUnits(_settlementTrustCentiCarry, text, settlementLocalPublicTrust, rawDelta, out appliedUnits);
 	}
 
 	private void ApplySettlementLocalTrustWholeDeltaDirect(Settlement settlement, int localTrustDelta, string reason)
@@ -1812,22 +1824,15 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				{
 					num7 = (int)Math.Round((double)(num6 * num * SettlementTrustContributionSharePercent) / 10000.0, MidpointRounding.AwayFromZero);
 				}
-				int settlementLocalPublicTrust = GetSettlementLocalPublicTrust(item);
-				int num8 = GetTrustGainDivisorByCurrentTrust(settlementLocalPublicTrust);
-				if (num8 > 1)
+				string settlementTrustCarryKey = BuildSettlementTrustCarryKey(item);
+				int num8 = 0;
+				if (!string.IsNullOrWhiteSpace(settlementTrustCarryKey) && _settlementTrustCentiCarry != null)
 				{
-					num5 /= num8;
-					num7 /= num8;
+					_settlementTrustCentiCarry.TryGetValue(settlementTrustCarryKey, out num8);
 				}
-				else if (settlementLocalPublicTrust <= -TrustGainHalvingStart)
-				{
-					int trustLossMultiplierByCurrentTrust = GetTrustLossMultiplierByCurrentTrust(settlementLocalPublicTrust);
-					if (trustLossMultiplierByCurrentTrust > 1)
-					{
-						num5 *= trustLossMultiplierByCurrentTrust;
-						num7 *= trustLossMultiplierByCurrentTrust;
-					}
-				}
+				long trustTotalUnitsWithCarry = GetTrustTotalUnitsWithCarry(GetSettlementLocalPublicTrust(item), num8);
+				num5 = ApplyPositiveTrustSourceUnitsProgressively(trustTotalUnitsWithCarry, num5, out trustTotalUnitsWithCarry);
+				num7 = ApplyPositiveTrustSourceUnitsProgressively(trustTotalUnitsWithCarry, num7, out trustTotalUnitsWithCarry);
 				int num9 = num5 + num7;
 				if (num9 <= 0)
 				{
@@ -3240,6 +3245,59 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		return num3;
 	}
 
+	public int AdjustPersonalTrustWholeDeltaForExternal(Hero npc, int exactDelta, string reason = "external_direct_whole")
+	{
+		if (npc == null || exactDelta == 0)
+		{
+			return 0;
+		}
+		if (_npcTrust == null)
+		{
+			_npcTrust = new Dictionary<string, int>();
+		}
+		string text = BuildNpcTrustKey(npc);
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return 0;
+		}
+		int npcTrust = GetNpcTrust(npc);
+		int publicTrust = GetPublicTrust(npc);
+		int num = ClampTrust(npcTrust + exactDelta);
+		int num2 = num - npcTrust;
+		if (num2 == 0)
+		{
+			return 0;
+		}
+		if (num == 0)
+		{
+			_npcTrust.Remove(text);
+		}
+		else
+		{
+			_npcTrust[text] = num;
+		}
+		int num3 = ClampTrust(npcTrust + publicTrust);
+		int num4 = ClampTrust(num + publicTrust);
+		Logger.Log("Trust", $"npc={npc.StringId} reason={reason} personal={npcTrust}->{num} exactDelta={exactDelta} appliedExactDelta={num2} public={publicTrust}->{publicTrust} effective={num3}->{num4}");
+		Logger.Obs("Trust", "change", new Dictionary<string, object>
+		{
+			["npcId"] = npc.StringId ?? "",
+			["reason"] = reason ?? "",
+			["personalBefore"] = npcTrust,
+			["personalAfter"] = num,
+			["publicBefore"] = publicTrust,
+			["publicAfter"] = publicTrust,
+			["effectiveBefore"] = num3,
+			["effectiveAfter"] = num4,
+			["personalDelta"] = exactDelta,
+			["appliedPersonalDelta"] = num2.ToString(),
+			["publicDelta"] = 0,
+			["requestedPublicDelta"] = 0
+		});
+		Logger.Metric("trust.change");
+		return num2;
+	}
+
 	public void AdjustTrustForExternal(Hero npc, int personalDelta, int publicDelta, string reason = "external")
 	{
 		AdjustTrust(npc, personalDelta, publicDelta, reason ?? "external", out _);
@@ -4220,6 +4278,208 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		return equipmentElement.GetModifiedItemName()?.ToString() ?? equipmentElement.Item.Name?.ToString() ?? equipmentElement.Item.StringId ?? "";
 	}
 
+	private static string GetWeaponClassTypeLabel(WeaponClass weaponClass)
+	{
+		switch (weaponClass)
+		{
+		case WeaponClass.Dagger:
+			return "匕首";
+		case WeaponClass.OneHandedSword:
+		case WeaponClass.TwoHandedSword:
+			return "剑";
+		case WeaponClass.OneHandedAxe:
+		case WeaponClass.TwoHandedAxe:
+			return "斧";
+		case WeaponClass.Mace:
+		case WeaponClass.TwoHandedMace:
+			return "锤";
+		case WeaponClass.Pick:
+			return "镐";
+		case WeaponClass.OneHandedPolearm:
+		case WeaponClass.TwoHandedPolearm:
+		case WeaponClass.LowGripPolearm:
+			return "长柄";
+		case WeaponClass.Arrow:
+			return "箭";
+		case WeaponClass.Bolt:
+			return "弩矢";
+		case WeaponClass.SlingStone:
+		case WeaponClass.Stone:
+		case WeaponClass.Boulder:
+		case WeaponClass.BallistaStone:
+		case WeaponClass.BallistaBoulder:
+			return "石弹";
+		case WeaponClass.Cartridge:
+			return "弹药";
+		case WeaponClass.Bow:
+			return "弓";
+		case WeaponClass.Crossbow:
+			return "弩";
+		case WeaponClass.Sling:
+			return "投石索";
+		case WeaponClass.ThrowingAxe:
+			return "投斧";
+		case WeaponClass.ThrowingKnife:
+			return "飞刀";
+		case WeaponClass.Javelin:
+			return "标枪";
+		case WeaponClass.Pistol:
+		case WeaponClass.Musket:
+			return "火器";
+		case WeaponClass.SmallShield:
+		case WeaponClass.LargeShield:
+			return "盾牌";
+		case WeaponClass.Banner:
+			return "旗帜";
+		default:
+			return "";
+		}
+	}
+
+	private static string GetGoodsTypeLabel(ItemObject item)
+	{
+		if (item == null)
+		{
+			return "";
+		}
+		ItemCategory itemCategory = item.ItemCategory;
+		if (item.IsFood)
+		{
+			if (itemCategory == DefaultItemCategories.Beer || itemCategory == DefaultItemCategories.Wine)
+			{
+				return "酒类";
+			}
+			return "食物";
+		}
+		if (item.Type == ItemObject.ItemTypeEnum.Animal)
+		{
+			if (itemCategory == DefaultItemCategories.PackAnimal)
+			{
+				return "驮兽";
+			}
+			return "牲畜";
+		}
+		if (itemCategory == DefaultItemCategories.Wood || itemCategory == DefaultItemCategories.Planks)
+		{
+			return "木材";
+		}
+		if (itemCategory == DefaultItemCategories.Iron)
+		{
+			return "铁料";
+		}
+		if (itemCategory == DefaultItemCategories.Salt)
+		{
+			return "盐";
+		}
+		if (itemCategory == DefaultItemCategories.Tools)
+		{
+			return "工具";
+		}
+		if (itemCategory == DefaultItemCategories.Clay || itemCategory == DefaultItemCategories.Pottery)
+		{
+			return "陶器";
+		}
+		if (itemCategory == DefaultItemCategories.Cloth || itemCategory == DefaultItemCategories.Linen || itemCategory == DefaultItemCategories.Velvet)
+		{
+			return "布料";
+		}
+		if (itemCategory == DefaultItemCategories.Leather || itemCategory == DefaultItemCategories.Hides || itemCategory == DefaultItemCategories.Fur || itemCategory == DefaultItemCategories.Felt || itemCategory == DefaultItemCategories.Wool || itemCategory == DefaultItemCategories.Flax || itemCategory == DefaultItemCategories.Cotton)
+		{
+			return "原料";
+		}
+		if (itemCategory == DefaultItemCategories.Oil)
+		{
+			return "油料";
+		}
+		if (itemCategory == DefaultItemCategories.Silver || itemCategory == DefaultItemCategories.Jewelry)
+		{
+			return "贵重品";
+		}
+		return "货物";
+	}
+
+	private static string GetItemPromptTypeLabel(ItemObject item)
+	{
+		if (item == null)
+		{
+			return "";
+		}
+		try
+		{
+			WeaponComponentData primaryWeapon = item.PrimaryWeapon;
+			if (primaryWeapon != null)
+			{
+				string weaponClassTypeLabel = GetWeaponClassTypeLabel(primaryWeapon.WeaponClass);
+				if (!string.IsNullOrWhiteSpace(weaponClassTypeLabel))
+				{
+					return weaponClassTypeLabel;
+				}
+			}
+		}
+		catch
+		{
+		}
+		switch (item.Type)
+		{
+		case ItemObject.ItemTypeEnum.Horse:
+			return "马匹";
+		case ItemObject.ItemTypeEnum.OneHandedWeapon:
+			return "单手武器";
+		case ItemObject.ItemTypeEnum.TwoHandedWeapon:
+			return "双手武器";
+		case ItemObject.ItemTypeEnum.Polearm:
+			return "长柄武器";
+		case ItemObject.ItemTypeEnum.Arrows:
+			return "箭";
+		case ItemObject.ItemTypeEnum.Bolts:
+			return "弩矢";
+		case ItemObject.ItemTypeEnum.SlingStones:
+		case ItemObject.ItemTypeEnum.Bullets:
+			return "弹药";
+		case ItemObject.ItemTypeEnum.Shield:
+			return "盾牌";
+		case ItemObject.ItemTypeEnum.Bow:
+			return "弓";
+		case ItemObject.ItemTypeEnum.Crossbow:
+			return "弩";
+		case ItemObject.ItemTypeEnum.Sling:
+			return "投石索";
+		case ItemObject.ItemTypeEnum.Thrown:
+			return "投掷武器";
+		case ItemObject.ItemTypeEnum.Goods:
+		case ItemObject.ItemTypeEnum.Animal:
+			return GetGoodsTypeLabel(item);
+		case ItemObject.ItemTypeEnum.HeadArmor:
+			return "头盔";
+		case ItemObject.ItemTypeEnum.BodyArmor:
+		case ItemObject.ItemTypeEnum.ChestArmor:
+			return "身甲";
+		case ItemObject.ItemTypeEnum.LegArmor:
+			return "腿甲";
+		case ItemObject.ItemTypeEnum.HandArmor:
+			return "手甲";
+		case ItemObject.ItemTypeEnum.Pistol:
+		case ItemObject.ItemTypeEnum.Musket:
+			return "火器";
+		case ItemObject.ItemTypeEnum.Book:
+			return "书籍";
+		case ItemObject.ItemTypeEnum.Cape:
+			return "披风";
+		case ItemObject.ItemTypeEnum.HorseHarness:
+			return "马具";
+		case ItemObject.ItemTypeEnum.Banner:
+			return "旗帜";
+		default:
+			return "物品";
+		}
+	}
+
+	private static void AppendItemTypeField(StringBuilder stringBuilder, ItemObject item)
+	{
+		string itemPromptTypeLabel = GetItemPromptTypeLabel(item);
+		stringBuilder.Append("type=").Append(string.IsNullOrWhiteSpace(itemPromptTypeLabel) ? "物品" : itemPromptTypeLabel);
+	}
+
 	private static bool TryParseSettlementMerchantPromptStringId(string promptStringId, out string itemId, out string modifierId)
 	{
 		itemId = "";
@@ -4861,7 +5121,9 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		foreach (RewardItemInfo item2 in dictionary.Values.OrderByDescending((RewardItemInfo x) => x.Count).ThenBy((RewardItemInfo x) => x.Name, StringComparer.Ordinal))
 		{
 			stringBuilder.Append(item2.Name)
-				.Append(" | ")
+				.Append(" | ");
+			AppendItemTypeField(stringBuilder, item2.EquipmentElement.Item);
+			stringBuilder.Append(" | ")
 				.Append(item2.Count)
 				.Append(GetItemQuantityUnit(item2.EquipmentElement.Item));
 			if (includeGuidePrice && TryGetSettlementBuyPrice(settlement, item2.EquipmentElement, out var price))
@@ -5160,6 +5422,8 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			long num4 = (long)visibleEquipmentActualUnitValue * (long)num3;
 			num += num4;
 			stringBuilder.Append(item.StringId).Append("|").Append(item.Name ?? item.StringId)
+				.Append("|type=")
+				.Append(GetItemPromptTypeLabel(item.Item))
 				.Append("|")
 				.Append(num3)
 				.Append(GetItemQuantityUnit(item.Item))
@@ -5206,7 +5470,9 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				value = itemGuidePriceInfo;
 			}
 			stringBuilder.Append(item.Name ?? item.StringId)
-				.Append(" | ")
+				.Append(" | ");
+			AppendItemTypeField(stringBuilder, item.Item);
+			stringBuilder.Append(" | ")
 				.Append(Math.Max(1, item.Count))
 				.Append(GetItemQuantityUnit(item.Item))
 				.Append(" | guidePrice=")
@@ -5327,7 +5593,9 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				continue;
 			}
 			stringBuilder.Append(item.Name ?? item.StringId ?? "未知物品")
-				.Append(" x")
+				.Append(" | type=")
+				.Append(GetItemPromptTypeLabel(item.Item))
+				.Append(" | x")
 				.Append(Math.Max(1, item.Count))
 				.AppendLine();
 			num++;
@@ -5359,7 +5627,9 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			foreach (RewardItemInfo item in heroInventoryItems.OrderByDescending((RewardItemInfo i) => i.Count))
 			{
 				stringBuilder.Append(item.Name)
-					.Append(" | ")
+					.Append(" | ");
+				AppendItemTypeField(stringBuilder, item.Item);
+				stringBuilder.Append(" | ")
 					.Append(item.Count)
 					.Append(GetItemQuantityUnit(item.Item));
 				if (includeGuidePrice)
@@ -5387,7 +5657,9 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			foreach (RewardItemInfo item2 in heroBattleEquipmentItems.OrderByDescending((RewardItemInfo i) => i.Count))
 			{
 				stringBuilder.Append(item2.Name)
-					.Append(" | ")
+					.Append(" | ");
+				AppendItemTypeField(stringBuilder, item2.Item);
+				stringBuilder.Append(" | ")
 					.Append(item2.Count)
 					.Append(GetItemQuantityUnit(item2.Item));
 				if (includeGuidePrice)
@@ -5508,6 +5780,8 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			{
 				stringBuilder.Append("- ")
 					.Append(option.Name ?? option.ItemId ?? "未知物品")
+					.Append(" | type=")
+					.Append(GetItemPromptTypeLabel(option.Item))
 					.Append(" | guidePrice=")
 					.Append(System.Math.Max(1, option.GuidePrice))
 					.Append(" | ")
@@ -5523,6 +5797,8 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			{
 				stringBuilder.Append("- ")
 					.Append(option2.Name ?? option2.ItemId ?? "未知物品")
+					.Append(" | type=")
+					.Append(GetItemPromptTypeLabel(option2.Item))
 					.Append(" | guidePrice=")
 					.Append(System.Math.Max(1, option2.GuidePrice))
 					.Append(" | ")
@@ -5548,7 +5824,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.AppendLine("【系统账目提示】玩家对你有以下欠款（分笔记录）：");
-		stringBuilder.AppendLine("【还款确认】若玩家声称要还钱，并且[AFEF玩家行为补充] 中确实明确写了玩家把钱交给了你或写出了你的名字，你应立即核对债务ID并在本轮回复末尾用 [ACTION:DEBT_PAY_GOLD:债务ID:数量]（金币债）或 [ACTION:DEBT_PAY_ITEM:债务ID:物品ID:数量]（物品债）确认还款；禁止嘴炮还款，禁止自动冲抵到别的债，禁止拖沓，必须在本轮输出这些标签。");
+		stringBuilder.AppendLine("【还款确认】若玩家声称要还钱，并且[AFEF玩家行为补充] 中确实明确写了玩家把钱交给了你或写出了你的名字，你应立即核对债务ID并在本轮回复末尾用 [ACTION:DEBT_PAY_GOLD:债务ID:数量]（金币债）或 [ACTION:DEBT_PAY_ITEM:债务ID:物品名称:数量]（物品债）确认还款；禁止嘴炮还款，禁止自动冲抵到别的债，禁止拖沓，必须在本轮输出这些标签。");
 		if (debtRecord.DebtLines != null)
 		{
 			List<DebtRecord.DebtLine> list = (from x in debtRecord.DebtLines
@@ -5626,7 +5902,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.AppendLine("【系统账目提示】玩家对你代表的" + BuildSettlementMerchantDebtLabel(settlement, kind) + "有以下欠款（分笔记录）：");
-		stringBuilder.AppendLine("【还款确认】若玩家声称要还钱，并且[AFEF玩家行为补充] 中确实明确写了玩家把钱交给了你或写出了你的名字，你应立即核对债务ID并在本轮回复末尾用 [ACTION:DEBT_PAY_GOLD:债务ID:数量]（金币债）或 [ACTION:DEBT_PAY_ITEM:债务ID:物品ID:数量]（物品债）确认还款；禁止嘴炮还款，禁止自动冲抵到别的债，禁止拖沓，必须在本轮输出这些标签。");
+		stringBuilder.AppendLine("【还款确认】若玩家声称要还钱，并且[AFEF玩家行为补充] 中确实明确写了玩家把钱交给了你或写出了你的名字，你应立即核对债务ID并在本轮回复末尾用 [ACTION:DEBT_PAY_GOLD:债务ID:数量]（金币债）或 [ACTION:DEBT_PAY_ITEM:债务ID:物品名称:数量]（物品债）确认还款；禁止嘴炮还款，禁止自动冲抵到别的债，禁止拖沓，必须在本轮输出这些标签。");
 		List<DebtRecord.DebtLine> list = (from x in settlementMerchantDebtRecord.DebtLines
 			where x != null && x.RemainingAmount > 0
 			orderby x.DueDay, x.CreatedDay
@@ -6303,7 +6579,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 		if (!line.IsGold)
 		{
-			statusText = "债务ID " + line.DebtId + " 是物品债，默认应使用 [ACTION:DEBT_PAY_ITEM:债务ID:物品ID:数量]；若物品遗失且已协商赔偿，可用 [ACTION:DEBT_PAY_ITEM_GOLD:债务ID:金额]，并可用 [ACTION:DEBT_ITEM_PENALTY:债务ID:信任扣减:关系扣减] 由 LLM 决定扣减。";
+			statusText = "债务ID " + line.DebtId + " 是物品债，默认应使用 [ACTION:DEBT_PAY_ITEM:债务ID:物品名称:数量]；若物品遗失且已协商赔偿，可用 [ACTION:DEBT_PAY_ITEM_GOLD:债务ID:金额]，并可用 [ACTION:DEBT_ITEM_PENALTY:债务ID:信任扣减:关系扣减] 由 LLM 决定扣减。";
 			return false;
 		}
 		int num = ConsumePlayerPrepaidGold(npc, amount);
@@ -6612,7 +6888,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 		if (!line.IsGold)
 		{
-			statusText = "债务ID " + line.DebtId + " 是物品债，必须使用 [ACTION:DEBT_PAY_ITEM:债务ID:物品ID:数量]。";
+			statusText = "债务ID " + line.DebtId + " 是物品债，必须使用 [ACTION:DEBT_PAY_ITEM:债务ID:物品名称:数量]。";
 			return false;
 		}
 		int num = ConsumePlayerPrepaidGoldForMerchant(settlement, kind, amount);
@@ -7118,7 +7394,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 						receiverFacts.Add("你尝试偿还债务ID " + value4 + "：" + statusText);
 						if (statusText.IndexOf("必须使用 [ACTION:DEBT_PAY_ITEM", StringComparison.OrdinalIgnoreCase) >= 0)
 						{
-							InformationManager.DisplayMessage(new InformationMessage("【还款失败】该债务是物品债，请使用 [ACTION:DEBT_PAY_ITEM:债务ID:物品ID:数量]。", Color.FromUint(4294923605u)));
+							InformationManager.DisplayMessage(new InformationMessage("【还款失败】该债务是物品债，请使用 [ACTION:DEBT_PAY_ITEM:债务ID:物品名称:数量]。", Color.FromUint(4294923605u)));
 						}
 						else if (flag2)
 						{

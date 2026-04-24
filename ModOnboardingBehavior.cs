@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using MCM.Abstractions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SandBox.View.Map;
@@ -27,6 +28,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		None,
 		Welcome,
 		AuxiliaryChoice,
+		PostprocessChoice,
 		BaseUrlValidation,
 		BaseUrlValidationFailure,
 		ApiValidation,
@@ -38,7 +40,8 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 	private enum ApiSetupTarget
 	{
 		Primary,
-		Auxiliary
+		Auxiliary,
+		ActionPostprocess
 	}
 
 	private const string SetupDoneKey = "_AnimusForge_setup_done_v1";
@@ -129,6 +132,12 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 
 	private bool _apiRepairFlowActive;
 
+	private bool _pendingActionPostprocessSetup;
+
+	private long _pendingActionPostprocessSetupAfterUtcTicks;
+
+	private bool _actionPostprocessSetupShownThisSession;
+
 	public static ModOnboardingBehavior Instance { get; private set; }
 
 	public ModOnboardingBehavior()
@@ -160,6 +169,10 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		{
 			MarkPendingWelcome();
 		}
+		else if (ShouldPromptActionPostprocessSetup())
+		{
+			MarkPendingActionPostprocessSetup();
+		}
 	}
 
 	private void MarkPendingWelcome()
@@ -180,6 +193,35 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		{
 			_pendingStartupNotice = true;
 			_pendingStartupNoticeAfterUtcTicks = DateTime.UtcNow.Ticks + TimeSpan.FromSeconds(1.0).Ticks;
+		}
+		catch
+		{
+		}
+	}
+
+	private bool ShouldPromptActionPostprocessSetup()
+	{
+		try
+		{
+			DuelSettings settings = DuelSettings.GetSettings();
+			if (settings == null || !AIConfigHandler.ActionPostprocessEnabled)
+			{
+				return false;
+			}
+			return !HasCompleteApiConfigForTarget(settings, ApiSetupTarget.ActionPostprocess);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private void MarkPendingActionPostprocessSetup()
+	{
+		try
+		{
+			_pendingActionPostprocessSetup = true;
+			_pendingActionPostprocessSetupAfterUtcTicks = DateTime.UtcNow.Ticks + TimeSpan.FromSeconds(3.0).Ticks;
 		}
 		catch
 		{
@@ -207,6 +249,12 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 				_welcomeShownThisSession = true;
 				ShowWelcomePopup(fromGate: false);
 			}
+			if (_setupDone && _pendingActionPostprocessSetup && !_actionPostprocessSetupShownThisSession && DateTime.UtcNow.Ticks >= _pendingActionPostprocessSetupAfterUtcTicks && Campaign.Current != null && Campaign.Current.GameStarted)
+			{
+				_pendingActionPostprocessSetup = false;
+				_actionPostprocessSetupShownThisSession = true;
+				ShowActionPostprocessApiSetupPopup(ignoreSuppress: true, allowWhenSetupDone: true);
+			}
 		}
 		catch
 		{
@@ -233,24 +281,61 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		return _currentApiSetupTarget == ApiSetupTarget.Auxiliary;
 	}
 
+	private bool IsActionPostprocessApiSetupTarget()
+	{
+		return _currentApiSetupTarget == ApiSetupTarget.ActionPostprocess;
+	}
+
 	private string CurrentApiDisplayName()
 	{
-		return IsAuxiliaryApiSetupTarget() ? "辅助API" : "API";
+		if (IsAuxiliaryApiSetupTarget())
+		{
+			return "前处理API";
+		}
+		if (IsActionPostprocessApiSetupTarget())
+		{
+			return "后处理API";
+		}
+		return "主API";
 	}
 
 	private string CurrentApiBaseUrlDisplayName()
 	{
-		return IsAuxiliaryApiSetupTarget() ? "辅助API Base URL" : "Base URL";
+		if (IsAuxiliaryApiSetupTarget())
+		{
+			return "前处理API Base URL";
+		}
+		if (IsActionPostprocessApiSetupTarget())
+		{
+			return "后处理API Base URL";
+		}
+		return "主API Base URL";
 	}
 
 	private string CurrentApiKeyDisplayName()
 	{
-		return IsAuxiliaryApiSetupTarget() ? "辅助API Key" : "API Key";
+		if (IsAuxiliaryApiSetupTarget())
+		{
+			return "前处理API Key";
+		}
+		if (IsActionPostprocessApiSetupTarget())
+		{
+			return "后处理API Key";
+		}
+		return "主API Key";
 	}
 
 	private string CurrentApiModelDisplayName()
 	{
-		return IsAuxiliaryApiSetupTarget() ? "辅助模型名称" : "模型名称";
+		if (IsAuxiliaryApiSetupTarget())
+		{
+			return "前处理模型名称";
+		}
+		if (IsActionPostprocessApiSetupTarget())
+		{
+			return "后处理模型名称";
+		}
+		return "主模型名称";
 	}
 
 	private void SetApiSetupTarget(ApiSetupTarget target)
@@ -269,7 +354,15 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		{
 			return "";
 		}
-		return target == ApiSetupTarget.Auxiliary ? (settings.AuxiliaryApiUrl ?? "") : (settings.ApiUrl ?? "");
+		if (target == ApiSetupTarget.Auxiliary)
+		{
+			return settings.AuxiliaryApiUrl ?? "";
+		}
+		if (target == ApiSetupTarget.ActionPostprocess)
+		{
+			return settings.ActionPostprocessApiUrl ?? "";
+		}
+		return settings.ApiUrl ?? "";
 	}
 
 	private static string GetApiKeyForTarget(DuelSettings settings, ApiSetupTarget target)
@@ -278,7 +371,15 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		{
 			return "";
 		}
-		return target == ApiSetupTarget.Auxiliary ? (settings.AuxiliaryApiKey ?? "") : (settings.ApiKey ?? "");
+		if (target == ApiSetupTarget.Auxiliary)
+		{
+			return settings.AuxiliaryApiKey ?? "";
+		}
+		if (target == ApiSetupTarget.ActionPostprocess)
+		{
+			return settings.ActionPostprocessApiKey ?? "";
+		}
+		return settings.ApiKey ?? "";
 	}
 
 	private static string GetModelNameForTarget(DuelSettings settings, ApiSetupTarget target)
@@ -287,7 +388,15 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		{
 			return "";
 		}
-		return target == ApiSetupTarget.Auxiliary ? (settings.AuxiliaryModelName ?? "") : (settings.ModelName ?? "");
+		if (target == ApiSetupTarget.Auxiliary)
+		{
+			return settings.AuxiliaryModelName ?? "";
+		}
+		if (target == ApiSetupTarget.ActionPostprocess)
+		{
+			return settings.ActionPostprocessModelName ?? "";
+		}
+		return settings.ModelName ?? "";
 	}
 
 	private static bool HasCompleteApiConfigForTarget(DuelSettings settings, ApiSetupTarget target)
@@ -311,6 +420,10 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		{
 			settings.AuxiliaryApiUrl = value ?? "";
 		}
+		else if (target == ApiSetupTarget.ActionPostprocess)
+		{
+			settings.ActionPostprocessApiUrl = value ?? "";
+		}
 		else
 		{
 			settings.ApiUrl = value ?? "";
@@ -326,6 +439,10 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		if (target == ApiSetupTarget.Auxiliary)
 		{
 			settings.AuxiliaryApiKey = value ?? "";
+		}
+		else if (target == ApiSetupTarget.ActionPostprocess)
+		{
+			settings.ActionPostprocessApiKey = value ?? "";
 		}
 		else
 		{
@@ -343,6 +460,10 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		{
 			settings.AuxiliaryModelName = value ?? "";
 		}
+		else if (target == ApiSetupTarget.ActionPostprocess)
+		{
+			settings.ActionPostprocessModelName = value ?? "";
+		}
 		else
 		{
 			settings.ModelName = value ?? "";
@@ -357,6 +478,10 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			{
 				ShowAuxiliaryApiRepairPopup();
 			}
+			else if (IsActionPostprocessApiSetupTarget())
+			{
+				ShowActionPostprocessApiRepairPopup();
+			}
 			else
 			{
 				ShowApiRepairPopup();
@@ -365,6 +490,10 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		else if (IsAuxiliaryApiSetupTarget())
 		{
 			ShowAuxiliaryApiSetupPopup(ignoreSuppress);
+		}
+		else if (IsActionPostprocessApiSetupTarget())
+		{
+			ShowActionPostprocessApiSetupPopup(ignoreSuppress, allowWhenSetupDone: true);
 		}
 		else
 		{
@@ -389,7 +518,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			_pendingUnexpectedResumeStage = OnboardingUiStage.None;
 			return;
 		}
-		if (_activeOnboardingStage != OnboardingUiStage.Welcome && _activeOnboardingStage != OnboardingUiStage.AuxiliaryChoice && _activeOnboardingStage != OnboardingUiStage.BaseUrlValidation && _activeOnboardingStage != OnboardingUiStage.BaseUrlValidationFailure && _activeOnboardingStage != OnboardingUiStage.ApiValidation && _activeOnboardingStage != OnboardingUiStage.ModelFetch && _activeOnboardingStage != OnboardingUiStage.ModelSelect && _activeOnboardingStage != OnboardingUiStage.Import)
+		if (_activeOnboardingStage != OnboardingUiStage.Welcome && _activeOnboardingStage != OnboardingUiStage.AuxiliaryChoice && _activeOnboardingStage != OnboardingUiStage.PostprocessChoice && _activeOnboardingStage != OnboardingUiStage.BaseUrlValidation && _activeOnboardingStage != OnboardingUiStage.BaseUrlValidationFailure && _activeOnboardingStage != OnboardingUiStage.ApiValidation && _activeOnboardingStage != OnboardingUiStage.ModelFetch && _activeOnboardingStage != OnboardingUiStage.ModelSelect && _activeOnboardingStage != OnboardingUiStage.Import)
 		{
 			_pendingUnexpectedResumeStage = OnboardingUiStage.None;
 			return;
@@ -416,6 +545,9 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		{
 		case OnboardingUiStage.AuxiliaryChoice:
 			ShowAuxiliaryApiSetupPopup(ignoreSuppress: true);
+			break;
+		case OnboardingUiStage.PostprocessChoice:
+			ShowActionPostprocessApiSetupPopup(ignoreSuppress: true, allowWhenSetupDone: true);
 			break;
 		case OnboardingUiStage.BaseUrlValidation:
 			if (_baseUrlValidationInProgress)
@@ -557,9 +689,13 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			{
 				SetApiRepairFlowActive(active: false);
 			}
-			else if (IsAuxiliaryApiSetupTarget())
+			else if (IsActionPostprocessApiSetupTarget())
 			{
 				ShowImportSetupPopup(fromGate: true, ignoreSuppress: true);
+			}
+			else if (IsAuxiliaryApiSetupTarget())
+			{
+				ShowActionPostprocessApiSetupPopup(ignoreSuppress: true);
 			}
 			else if (!_setupDone)
 			{
@@ -639,6 +775,17 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		return true;
 	}
 
+	public static bool OpenActionPostprocessApiRepairFlow()
+	{
+		ModOnboardingBehavior modOnboardingBehavior = Instance ?? Campaign.Current?.GetCampaignBehavior<ModOnboardingBehavior>();
+		if (modOnboardingBehavior == null)
+		{
+			return false;
+		}
+		modOnboardingBehavior.ShowActionPostprocessApiRepairPopup();
+		return true;
+	}
+
 	private void ShowWelcomePopup(bool fromGate)
 	{
 		ShowWelcomePopup(fromGate, ignoreSuppress: false);
@@ -692,14 +839,14 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			DuelSettings settings = DuelSettings.GetSettings();
 			bool hasExistingConfig = HasCompleteApiConfigForTarget(settings, ApiSetupTarget.Auxiliary);
 			string text = hasExistingConfig
-				? "辅助API规则检索当前不可用。你可以直接测试 MCM 中的现有配置，也可以重新填写辅助API信息。"
-				: "辅助API规则检索当前不可用，请检查辅助API的 Base URL、API Key、模型名称，或当前网络环境。";
+				? "前处理API（规则检索/规则路由）当前不可用。你可以直接测试 MCM 中的现有配置，也可以重新填写前处理API信息。"
+				: "前处理API（规则检索/规则路由）当前不可用，请检查前处理API的 Base URL、API Key、模型名称，或当前网络环境。";
 			if (!string.IsNullOrWhiteSpace(_lastApiValidationFailureHint))
 			{
 				text = text + "\n\n排查建议：" + _lastApiValidationFailureHint;
 			}
 			string negativeText = hasExistingConfig ? "测试现有配置" : "回退回RAG检索";
-			InformationManager.ShowInquiry(new InquiryData("调整辅助API信息", text, isAffirmativeOptionShown: true, isNegativeOptionShown: true, "填写辅助API信息", negativeText, delegate
+			InformationManager.ShowInquiry(new InquiryData("调整前处理API信息", text, isAffirmativeOptionShown: true, isNegativeOptionShown: true, "填写前处理API信息", negativeText, delegate
 			{
 				_welcomeInProgress = false;
 				OpenApiBaseUrlInput();
@@ -728,6 +875,51 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private void ShowActionPostprocessApiRepairPopup()
+	{
+		try
+		{
+			SetApiSetupTarget(ApiSetupTarget.ActionPostprocess);
+			SetApiRepairFlowActive(active: true);
+			if (_welcomeInProgress || _apiValidationInProgress || _baseUrlValidationInProgress || _modelFetchInProgress)
+			{
+				return;
+			}
+			_activeOnboardingStage = OnboardingUiStage.PostprocessChoice;
+			_welcomeInProgress = true;
+			DuelSettings settings = DuelSettings.GetSettings();
+			bool hasExistingConfig = HasCompleteApiConfigForTarget(settings, ApiSetupTarget.ActionPostprocess);
+			string text = hasExistingConfig
+				? "后处理API当前不可用。你可以直接测试 MCM 中的现有配置，也可以重新填写后处理API信息。\n\n后处理任务对判定稳定性要求较高，建议优先选择带思考模式的模型，或直接使用更高级模型。"
+				: "后处理API当前不可用。你可以重新填写后处理API信息，或继续回退使用主API处理后处理任务。\n\n后处理任务对判定稳定性要求较高，建议优先选择带思考模式的模型，或直接使用更高级模型。";
+			if (!string.IsNullOrWhiteSpace(_lastApiValidationFailureHint))
+			{
+				text = text + "\n\n排查建议：" + _lastApiValidationFailureHint;
+			}
+			string negativeText = hasExistingConfig ? "测试现有配置" : "继续使用主API";
+			InformationManager.ShowInquiry(new InquiryData("调整后处理API信息", text, isAffirmativeOptionShown: true, isNegativeOptionShown: true, "填写后处理API", negativeText, delegate
+			{
+				_welcomeInProgress = false;
+				OpenApiBaseUrlInput();
+			}, delegate
+			{
+				_welcomeInProgress = false;
+				if (hasExistingConfig)
+				{
+					BeginValidateMcmApiAndContinue();
+				}
+				else
+				{
+					SetApiRepairFlowActive(active: false);
+				}
+			}), pauseGameActiveState: true);
+		}
+		catch
+		{
+			_welcomeInProgress = false;
+		}
+	}
+
 	private void ShowWelcomePopup(bool fromGate, bool ignoreSuppress)
 	{
 		try
@@ -746,18 +938,18 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			_suppressWelcomeUntilUtcTicks = ticks + TimeSpan.FromMilliseconds(fromGate ? 800 : 200).Ticks;
 			_activeOnboardingStage = OnboardingUiStage.Welcome;
 			string title = "欢迎使用 AnimusForge";
-			string text = "开始游玩前，请先确认 API 信息，否则 AI 对话功能将无法使用。";
+			string text = "开始游玩前，请先确认主API信息。主API用于NPC正文生成，如果未正确配置，AI 对话功能将无法使用。";
 			if (_showApiValidationFailedHint)
 			{
-				title = "API 连接失败";
-				text = "测试连接失败，请检查你的网络环境，或者重新填写 API 信息。";
+				title = "主API连接失败";
+				text = "主API测试连接失败，请检查你的网络环境，或者重新填写主API信息。";
 				if (!string.IsNullOrWhiteSpace(_lastApiValidationFailureHint))
 				{
 					text = text + "\n\n排查建议：" + _lastApiValidationFailureHint;
 				}
 			}
 			_welcomeInProgress = true;
-			InformationManager.ShowInquiry(new InquiryData(title, text, isAffirmativeOptionShown: true, isNegativeOptionShown: true, "填写 API 信息", "测试已有配置", delegate
+			InformationManager.ShowInquiry(new InquiryData(title, text, isAffirmativeOptionShown: true, isNegativeOptionShown: true, "填写主API信息", "测试已有配置", delegate
 			{
 				_welcomeInProgress = false;
 				OpenApiBaseUrlInput();
@@ -793,21 +985,21 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			_welcomeInProgress = true;
 			DuelSettings settings = DuelSettings.GetSettings();
 			bool hasExistingConfig = HasCompleteApiConfigForTarget(settings, ApiSetupTarget.Auxiliary);
-			string title = "配置辅助API";
-			string text = "辅助API专门用于规则检索。启用后，规则话题会先走一次廉价模型筛选，再进入正文生成,这将大幅提升AI的感知和理解能力；如果你暂时不想配置，也可以继续使用传统RAG检索。";
+			string title = "配置前处理API";
+			string text = "前处理API专门用于规则检索/规则路由。启用后，规则话题会先走一次低成本筛选，再进入主API正文生成；如果你暂时不想配置，也可以继续使用传统RAG检索。";
 			if (_showApiValidationFailedHint)
 			{
-				title = "辅助API连接失败";
+				title = "前处理API连接失败";
 				text = hasExistingConfig
-					? "刚才的辅助API连接测试没有通过。你可以重新填写辅助API信息，或者再次测试 MCM 中的现有配置。"
-					: "刚才的辅助API连接测试没有通过。你可以重新填写辅助API信息，或者先继续使用传统RAG检索。";
+					? "刚才的前处理API连接测试没有通过。你可以重新填写前处理API信息，或者再次测试 MCM 中的现有配置。"
+					: "刚才的前处理API连接测试没有通过。你可以重新填写前处理API信息，或者先继续使用传统RAG检索。";
 				if (!string.IsNullOrWhiteSpace(_lastApiValidationFailureHint))
 				{
 					text = text + "\n\n排查建议：" + _lastApiValidationFailureHint;
 				}
 			}
 			string negativeText = hasExistingConfig ? "测试现有配置" : "回退回RAG检索";
-			InformationManager.ShowInquiry(new InquiryData(title, text, isAffirmativeOptionShown: true, isNegativeOptionShown: true, "填写辅助API", negativeText, delegate
+			InformationManager.ShowInquiry(new InquiryData(title, text, isAffirmativeOptionShown: true, isNegativeOptionShown: true, "填写前处理API", negativeText, delegate
 			{
 				_welcomeInProgress = false;
 				_showApiValidationFailedHint = false;
@@ -829,6 +1021,68 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 						TryPersistMcmSettings(settings2);
 					}
 					ShowImportSetupPopup(fromGate: true, ignoreSuppress: true);
+				}
+			}), pauseGameActiveState: true);
+		}
+		catch
+		{
+			_welcomeInProgress = false;
+		}
+	}
+
+	private void ShowActionPostprocessApiSetupPopup(bool ignoreSuppress = false, bool allowWhenSetupDone = false)
+	{
+		try
+		{
+			SetApiSetupTarget(ApiSetupTarget.ActionPostprocess);
+			SetApiRepairFlowActive(active: false);
+			if ((!allowWhenSetupDone && _setupDone) || _welcomeInProgress || _apiValidationInProgress)
+			{
+				return;
+			}
+			long ticks = DateTime.UtcNow.Ticks;
+			if (!ignoreSuppress && _suppressWelcomeUntilUtcTicks > ticks)
+			{
+				return;
+			}
+			_suppressWelcomeUntilUtcTicks = ticks + TimeSpan.FromMilliseconds(250.0).Ticks;
+			_activeOnboardingStage = OnboardingUiStage.PostprocessChoice;
+			_welcomeInProgress = true;
+			DuelSettings settings = DuelSettings.GetSettings();
+			bool hasExistingConfig = HasCompleteApiConfigForTarget(settings, ApiSetupTarget.ActionPostprocess);
+			string title = "配置后处理API";
+			string text = "后处理API专门用于动作标签/情绪标签判定。配置后可以把后处理链路和前处理、主API正文生成彻底拆开；如果你暂时不想配置，也可以继续回退使用主API处理后处理任务。\n\n后处理任务对判定稳定性要求较高，建议优先选择带思考模式的模型，或直接使用更高级模型。";
+			if (_showApiValidationFailedHint)
+			{
+				title = "后处理API连接失败";
+				text = hasExistingConfig
+					? "刚才的后处理API连接测试没有通过。你可以重新填写后处理API信息，或者再次测试 MCM 中的现有配置。\n\n后处理任务对判定稳定性要求较高，建议优先选择带思考模式的模型，或直接使用更高级模型。"
+					: "刚才的后处理API连接测试没有通过。你可以重新填写后处理API信息，或者先继续使用主API处理后处理任务。\n\n后处理任务对判定稳定性要求较高，建议优先选择带思考模式的模型，或直接使用更高级模型。";
+				if (!string.IsNullOrWhiteSpace(_lastApiValidationFailureHint))
+				{
+					text = text + "\n\n排查建议：" + _lastApiValidationFailureHint;
+				}
+			}
+			string negativeText = hasExistingConfig ? "测试现有配置" : "继续使用主API";
+			InformationManager.ShowInquiry(new InquiryData(title, text, isAffirmativeOptionShown: true, isNegativeOptionShown: true, "填写后处理API", negativeText, delegate
+			{
+				_welcomeInProgress = false;
+				_showApiValidationFailedHint = false;
+				OpenApiBaseUrlInput();
+			}, delegate
+			{
+				_welcomeInProgress = false;
+				_showApiValidationFailedHint = false;
+				if (hasExistingConfig)
+				{
+					BeginValidateMcmApiAndContinue();
+				}
+				else
+				{
+					if (!_setupDone)
+					{
+						ShowImportSetupPopup(fromGate: true, ignoreSuppress: true);
+					}
 				}
 			}), pauseGameActiveState: true);
 		}
@@ -1653,13 +1907,29 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 
 	private static void TryPersistMcmSettings(DuelSettings settings)
 	{
+		if (settings == null)
+		{
+			return;
+		}
 		try
 		{
-			MethodInfo method = settings?.GetType().GetMethod("Save", BindingFlags.Instance | BindingFlags.Public, null, Type.EmptyTypes, null);
+			if (BaseSettingsProvider.Instance != null)
+			{
+				BaseSettingsProvider.Instance.SaveSettings(settings);
+				return;
+			}
+			MethodInfo method = settings.GetType().GetMethod("Save", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, null, Type.EmptyTypes, null);
 			method?.Invoke(settings, null);
 		}
-		catch
+		catch (Exception ex)
 		{
+			try
+			{
+				Logger.Log("ModOnboarding", "[WARN] 持久化 MCM 设置失败：" + ex.Message);
+			}
+			catch
+			{
+			}
 		}
 	}
 

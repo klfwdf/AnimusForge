@@ -29,8 +29,8 @@
                                               "Description":  "如果所有人同意赌注是金额，输出这个"
                                           },
                                           {
-                                              "Tag":  "[ACTION:DUEL_STAKE_ITEM:物品序号:数量]",
-                                              "Description":  "如果所有人同意赌注是物品，输出这个"
+                                              "Tag":  "[ACTION:DUEL_STAKE_ITEM:物品名称:数量]",
+                                              "Description":  "如果所有人同意赌注是物品，输出这个；这里要写物品名称，不要写物品序号"
                                           },
                                           {
                                               "Tag":  "[ACTION:DUEL_LINE_WIN:吹嘘的内容]",
@@ -47,23 +47,23 @@
                    "TopicNumber":  2,
                    "TopicLabel":  "物品交易或转移",
                    "NonHeroInstruction":  "你不是一个有名有姓的NPC，你只是普通士兵或平民，你无法进行交易或者物品转让",
-                   "Instruction":  "【交易规则】你只能承诺转移或交易【{npcName}当前可用财富与物品】或【当前商铺可用财富与物品】中真实存在且数量足够的财物。",
+                   "Instruction":  "【交易规则】你只能承诺转移或交易【（{npcName}）商铺可用财富与物品】中真实存在且数量足够的财物。",
                    "PostprocessRules":  [
                                             {
                                                 "Tag":  "[ACTION:GIVE_GOLD:金额]",
-                                                "Description":  "如果NPC在最新回复里明确同意立即给玩家金币，就输出这个"
+                                                "Description":  "如果NPC在<latest_reply>里明确同意立即给玩家金币，就输出这个"
                                             },
                                             {
-                                                "Tag":  "[ACTION:GIVE_ITEM:物品序号:数量]",
-                                                "Description":  "如果NPC在最新回复里明确同意立即给玩家某个物品，就输出这个"
+                                                "Tag":  "[ACTION:GIVE_ITEM:物品名称:数量]",
+                                                "Description":  "如果NPC在<latest_reply>里明确同意立即给玩家某个物品，就输出这个；这里要写物品名称，不要写物品序号"
                                             },
                                             {
                                                 "Tag":  "[ACTION:DEBT_GOLD:金额]",
                                                 "Description":  "如果NPC同意先给钱，那么通过此标签输出玩家应当交付的金额"
                                             },
                                             {
-                                                "Tag":  "[ACTION:DEBT_ITEM:物品序号:数量]",
-                                                "Description":  "如果NPC同意先给钱，那么通过此标签输出玩家应当交付的物品"
+                                                "Tag":  "[ACTION:DEBT_ITEM:物品名称:数量]",
+                                                "Description":  "如果NPC同意先给钱，那么通过此标签输出玩家应当交付的物品；这里要写物品名称，不要写物品序号"
                                             }
                                         ],
                    "RuntimeInstructionTemplates":  {
@@ -97,59 +97,59 @@
                  "TopicNumber":  3,
                  "TopicLabel":  "欠款和赊账",
                  "NonHeroInstruction":  "你不是一个有名有姓的NPC，你只是普通士兵或平民，你无法与玩家进行经济往来、借贷或赊账。如果玩家提出借钱，你应当婉拒或表示你没有这个权限。",
-                 "Instruction":  "【借贷与赊账规则】当玩家提出借钱、周转、延期、赊账或先拿货后付款时，你可以先谈期限、利息、风险与还法。\n【是否同意新增债务】即使信任足够，你也仍可因财力不足、库存不足、局势危险、玩家信用差、关系不好、性格保守或单纯不愿承担风险而拒绝。\n【新增债务】只有当你明确同意先给钱、先给货或允许赊欠时，才算建立新债务；若你仍在追问、压价、谈条件或拒绝，就只文本回复，不要把它当成已经成交。\n【还款与罚则】还款、逾期、罚则、延期等细节可以继续协商，但本轮是否真的新增债务，仍只以你最终明确答应的内容为准。",
+                 "Instruction":  "【借贷与赊账规则】当玩家提出借钱、周转、延期、赊账或先拿货后付款时，你可以先谈期限、利息、风险与还法。\n【是否同意新增债务】即使信任足够，你也仍可因财力不足、库存不足、局势危险、玩家信用差、关系不好、性格保守或单纯不愿承担风险而拒绝。\n【新增债务】只有当你明确同意先给钱、先给货或允许赊欠时，才算建立新债务；若你仍在追问、压价、谈条件或拒绝，就只文本回复，不要把它当成已经成交。\n【还款与罚则】还款、逾期、罚则、延期等细节可以继续协商，但本轮是否真的新增债务，仍只以你最终明确答应的内容为准。注意，你只可以让玩家欠钱或物，不可以让你自己欠钱或物！",
                  "PostprocessRules":  [
                                             {
                                                 "Tag":  "[ACTION:GIVE_GOLD:金额]",
-                                                "Description":  "如果NPC在最新回复里明确同意立即先给玩家金币，就输出这个"
+                                                "Description":  "如果NPC在<latest_reply>里明确同意立即先给玩家金币，就输出这个"
                                             },
                                             {
-                                                "Tag":  "[ACTION:GIVE_ITEM:物品序号:数量]",
-                                                "Description":  "如果NPC在最新回复里明确同意立即先给玩家某个物品，就输出这个"
+                                                "Tag":  "[ACTION:GIVE_ITEM:物品名称:数量]",
+                                                "Description":  "如果NPC在<latest_reply>里明确同意立即先给玩家某个物品，就输出这个"
                                             },
                                             {
                                                 "Tag":  "[ACTION:DEBT_GOLD:金额]",
-                                                "Description":  "如果NPC在最新回复里明确同意新增金币债务，就输出这个"
+                                                "Description":  "如果NPC在<latest_reply>里明确同意新增金币债务，就输出这个,此标签可让玩家欠NPC金钱（请分清楚谁欠谁！）"
                                             },
                                             {
-                                                "Tag":  "[ACTION:DEBT_ITEM:物品序号:数量]",
-                                                "Description":  "如果NPC在最新回复里明确同意新增物品债务，就输出这个"
+                                                "Tag":  "[ACTION:DEBT_ITEM:物品名称:数量]",
+                                                "Description":  "如果NPC在<latest_reply>里明确同意新增物品债务，就输出这个；此标签可让玩家欠NPC物品（请分清楚谁欠谁！）"
                                             },
                                             {
                                                 "Tag":  "[ACTION:DEBT_PAY_GOLD:债务ID:数量]",
-                                                "Description":  "如果NPC在最新回复里明确确认玩家正在偿还某笔金币债务，就输出这个"
+                                                "Description":  "如果NPC在<latest_reply>里明确确认玩家正在偿还某笔金币债务，就输出这个"
                                             },
                                             {
-                                                "Tag":  "[ACTION:DEBT_PAY_ITEM:债务ID:物品序号:数量]",
-                                                "Description":  "如果NPC在最新回复里明确确认玩家正在偿还某笔物品债务，就输出这个"
+                                                "Tag":  "[ACTION:DEBT_PAY_ITEM:债务ID:物品名称:数量]",
+                                                "Description":  "如果NPC在<latest_reply>里明确确认玩偿还了某笔物品债务，就输出这个"
                                             },
                                             {
                                                 "Tag":  "[ACTION:DEBT_PAY_ITEM_GOLD:债务ID:金额]",
-                                                "Description":  "如果NPC在最新回复里明确确认玩家以金币赔偿某笔物品债务，就输出这个"
+                                                "Description":  "如果NPC在<latest_reply>里明确确认玩家以金币赔偿了某笔物品债务，就输出这个"
                                             },
                                             {
                                                 "Tag":  "[ACTION:DEBT_ITEM_UNAVAILABLE:债务ID]",
-                                                "Description":  "如果NPC在最新回复里明确确认某笔物品债务已经声明无法归还原物，就输出这个"
+                                                "Description":  "如果NPC在<latest_reply>里明确确认某笔物品债务已经声明无法归还原物，就输出这个"
                                             },
                                             {
                                                 "Tag":  "[ACTION:DEBT_ITEM_PENALTY:债务ID:信任扣减:关系扣减]",
-                                                "Description":  "如果NPC在最新回复里明确决定对无法归还原物的债务追加信任和关系惩罚，就输出这个"
+                                                "Description":  "如果NPC在<latest_reply>里明确决定对无法归还原物的债务追加信任和关系惩罚，就输出这个"
                                             },
                                             {
                                                 "Tag":  "[ACTION:DEBT_DUE_DAYS:天数]",
-                                                "Description":  "如果NPC在最新回复里明确确认新的还款期限是若干天后，就输出这个"
+                                                "Description":  "如果NPC在<latest_reply>里明确确认新的还款期限是若干天后，就输出这个"
                                             },
                                             {
                                                 "Tag":  "[ACTION:DEBT_DUE_ABS_DAY:天数]",
-                                                "Description":  "如果NPC在最新回复里明确确认新的绝对还款日，就输出这个"
+                                                "Description":  "如果NPC在<latest_reply>里明确确认新的绝对还款日，就输出这个"
                                             },
                                             {
                                                 "Tag":  "[ACTION:DEBT_DUE_DATE:年:季:日]",
-                                                "Description":  "如果NPC在最新回复里明确确认新的还款日期是某年某季某日，就输出这个"
+                                                "Description":  "如果NPC在<latest_reply>里明确确认新的还款日期是某年某季某日，就输出这个"
                                             },
                                             {
                                                 "Tag":  "[ACTION:DEBT_DUE_NONE]",
-                                                "Description":  "如果NPC在最新回复里明确同意这笔债务没有还款期限，就输出这个"
+                                                "Description":  "如果NPC在<latest_reply>里明确同意这笔债务没有还款期限，就输出这个"
                                             }
                                         ],
                  "RuntimeInstructionTemplates":  {
@@ -206,15 +206,15 @@
                             "PostprocessRules":  [
                                                      {
                                                          "Tag":  "[ACTION:KINGDOM_SERVICE:LEAVE:current]",
-                                                         "Description":  "如果NPC在最新回复里明确同意玩家退出当前效力，就输出这个"
+                                                         "Description":  "如果NPC在<latest_reply>里明确同意玩家退出当前效力，就输出这个"
                                                      },
                                                      {
                                                          "Tag":  "[ACTION:KINGDOM_SERVICE:MERCENARY:{targetKingdomId}]",
-                                                         "Description":  "如果NPC在最新回复里明确同意玩家以雇佣兵身份加入目标王国，就输出这个"
+                                                         "Description":  "如果NPC在<latest_reply>里明确同意玩家以雇佣兵身份加入目标王国，就输出这个"
                                                      },
                                                      {
                                                          "Tag":  "[ACTION:KINGDOM_SERVICE:VASSAL:{targetKingdomId}]",
-                                                         "Description":  "如果NPC在最新回复里明确同意玩家以正式封臣身份加入目标王国，就输出这个"
+                                                         "Description":  "如果NPC在<latest_reply>里明确同意玩家以正式封臣身份加入目标王国，就输出这个"
                                                      }
                                                  ],
                             "RuntimeInstructionTemplates":  {
@@ -271,7 +271,7 @@
                             "PostprocessRules":  [
                                                      {
                                                          "Tag":  "[ACTION:OPEN_LORDS_HALL]",
-                                                         "Description":  "如果NPC在最新回复里明确同意让玩家进入领主大厅，就输出这个"
+                                                         "Description":  "如果NPC在<latest_reply>里明确同意让玩家进入领主大厅，就输出这个"
                                                      }
                                                  ],
                             "RuntimeInstructionTemplates":  {
@@ -303,31 +303,45 @@
                             "TopicNumber":  7,
                             "TopicLabel":  "婚姻和嫁娶",
                             "NonHeroInstruction":  "如果玩家提到联姻事务，请引导玩家去寻找领主，或者国家的领袖",
-                            "Instruction":  "【婚姻规则】婚姻分为正规联姻、私奔、离婚三条路径。正规联姻在第一阶段支持“玩家家族未婚成员”与“对方家族未婚成员”谈婚事；由谁有权表态、双方可婚配成员有哪些、双方当前是否已经成婚、是否可输出哪个标签、是否需要彩礼、彩礼是否已交足，以及当前门槛是否达标，一律以本轮运行时规则为准。玩家询问双方家族谁可联姻时，你只能依据系统提供的【玩家家族可婚配未婚成员（事实清单）】和【该家族可婚配未婚成员（事实清单）】回答，严禁编造名单外的人。若系统已经列出双方现有婚配情况，则谈离婚时必须明确是哪两人离婚；若双方谈妥返还彩礼，可在离婚标签中附带返还金额，否则也可以不返还。若运行时规则要求拒绝或引导，你必须照做，并禁止输出任何结婚/离婚标签。",
+                            "Instruction":  "【婚姻规则】只处理三类事：正规结婚、私奔、离婚。谁有权答应、当前只能走哪条路径、条件是否达标、是否要谈彩礼，都以本轮运行时规则为准。玩家询问可婚配人选时，你只能依据系统给出的两份未婚成员事实清单回答，严禁编造名单外的人。若运行时规则要求拒绝、引导或只准谈某一条路径，你必须照做。",
+                             "PostprocessRules":  [
+                                                      {
+                                                          "Tag":  "[ACTION:MARRIAGE_FORMAL:playerClanHeroId:targetHeroId]",
+                                                          "Description":  "如果NPC在<latest_reply>里明确同意某一对系统事实清单中的婚配对象正式成婚，就输出对应标签；若同时明确彩礼金额，也可在末尾追加 :金额"
+                                                      },
+                                                      {
+                                                          "Tag":  "[ACTION:MARRIAGE_ELOPE:targetHeroId]",
+                                                          "Description":  "如果NPC在<latest_reply>里明确同意与玩家私奔，就输出这个"
+                                                      },
+                                                      {
+                                                          "Tag":  "[ACTION:DIVORCE:playerClanHeroId:targetHeroId]",
+                                                          "Description":  "如果NPC在<latest_reply>里明确同意系统事实清单中的这一对对象离婚，就输出对应标签。只有当NPC明确同意把钱退还给玩家时，才可在末尾追加 :金额；不要把玩家向NPC还钱写进这个标签"
+                                                      }
+                                                  ],
                             "RuntimeInstructionTemplates":  {
-                                                                "no_player_hero":  "【婚姻规则】当前未识别到玩家婚配主体，本轮只能说明情况，禁止输出任何结婚标签。",
-                                                                "no_target":  "【婚姻规则】当前未识别到明确对话对象，本轮只能解释婚姻流程，禁止输出任何结婚标签。",
-                                                                "unavailable":  "【婚姻规则】当前婚配对象不满足基础婚配条件（{pairUnavailableReason}）。你只能说明原因并拒绝，禁止输出任何结婚标签。",
-                                                                "leader_path":  "【婚姻规则】你是 {clanName} 的族长。第一阶段的正规联姻允许“玩家家族未婚成员”与“你方家族未婚成员”配对；具体人选必须来自本轮系统给出的两份事实清单。正规联姻是否能批准，由你决定；具体门槛、是否需要彩礼、彩礼是否已提前交给你，以本轮运行时硬约束为准。你的当前存款与已收预付都以系统事实为准，不准假装自己没钱、也不准忘记自己已经收过的钱。若条件满足，可在回复末尾输出 [ACTION:MARRIAGE_FORMAL:playerClanHeroId:targetHeroId]，或在需要明确金额时输出 [ACTION:MARRIAGE_FORMAL:playerClanHeroId:targetHeroId:金额]。若玩家谈系统已列出的现有婚姻，你也可以在离婚谈妥后输出 [ACTION:DIVORCE:playerClanHeroId:targetHeroId]，或在约定返还金额时输出 [ACTION:DIVORCE:playerClanHeroId:targetHeroId:金额]。若玩家谈私奔，只有当事人本人才能决定。",
-                                                                "member_path":  "【婚姻规则】你不是 {clanName} 的族长，族长是 {leaderName}。第一阶段的正规联姻允许“玩家家族未婚成员”与“你方家族未婚成员”配对，但具体人选必须来自本轮系统给出的两份事实清单。正规联姻你无权拍板，只能引导玩家去找族长；如果玩家谈的是与你本人私奔，你只能按本轮运行时硬约束判断是否可输出 [ACTION:MARRIAGE_ELOPE:targetHeroId]。若玩家谈的是系统已列出的、与你本人直接相关的现有婚姻，离婚谈妥后你也可输出 [ACTION:DIVORCE:playerClanHeroId:targetHeroId]，或在约定返还金额时输出 [ACTION:DIVORCE:playerClanHeroId:targetHeroId:金额]。",
-                                                                "clanless_path":  "【婚姻规则】你没有可走家族联姻的家族结构。正规联姻不可用；若玩家谈的是与你本人结合，只能按本轮运行时硬约束判断是否可输出 [ACTION:MARRIAGE_ELOPE:targetHeroId]。若玩家谈的是你与玩家之间已经存在的婚姻，在离婚谈妥后可输出 [ACTION:DIVORCE:playerClanHeroId:targetHeroId]，或在约定返还金额时输出 [ACTION:DIVORCE:playerClanHeroId:targetHeroId:金额]。"
+                                                                "no_player_hero":  "【婚姻规则】当前未识别到玩家婚配主体。本轮只能解释情况，不准答应结婚、私奔或离婚。",
+                                                                "no_target":  "【婚姻规则】当前未识别到明确对象。本轮只能解释流程，不准答应结婚、私奔或离婚。",
+                                                                "unavailable":  "【婚姻规则】当前对象不满足基础婚配条件（{pairUnavailableReason}）。你必须直接拒绝，不准转成别的路径。",
+                                                                "leader_path":  "【婚姻规则】你是 {clanName} 的族长。正规结婚由你拍板；人选只能来自两份系统事实清单。私奔不是你替别人决定的事。离婚只可谈系统已列出的现有婚姻。正文只口头答应、拒绝或谈条件，不写标签。",
+                                                                "member_path":  "【婚姻规则】你不是 {clanName} 的族长，族长是 {leaderName}。正规结婚你无权批准，只能引导去找族长。若谈与你本人相关的私奔或离婚，只按本轮运行时硬约束表态。正文只口头答应、拒绝或引导，不写标签。",
+                                                                "clanless_path":  "【婚姻规则】你没有家族联姻路径。正规结婚不可谈；若谈与你本人结合，只能按私奔处理；若谈你与玩家的现有婚姻，只能按离婚处理。正文只口头答应、拒绝或谈条件，不写标签。"
                                                             },
                             "RuntimeConstraintTemplates":  {
-                                                               "no_player_hero":  "【运行时硬约束】未找到玩家婚配主体，本轮禁止输出任何结婚标签。",
-                                                               "no_target":  "【运行时硬约束】未找到当前对话对象，本轮禁止输出任何结婚标签。",
-                                                               "unavailable":  "【运行时硬约束】当前婚配对象不满足基础婚配条件：{pairUnavailableReason}。你必须拒绝，并禁止输出任何结婚标签。",
-                                                               "leader_blocked_tier_gap":  "【运行时硬约束】你是族长，但玩家家族等级={playerTier}，你方家族等级={targetTier}，D={tierDiff}。等级差距过大，无法谈正规联姻。你必须直接拒绝，并禁止输出任何结婚标签。",
-                                                               "leader_need_brideprice_ready":  "【运行时硬约束】你是族长，且 D={tierDiff}。正规联姻门槛已达标：家族关系R={clanRelation}、综合信任T={effectiveTrust}。按门第惯例，你通常会提高要价，彩礼大多会落在 {bridePriceMin}~{bridePriceMax} 这一档。你当前自有存款为 {leaderGold}，另已收到玩家预付彩礼 {prepaidGold}。这里谈的是玩家要付给你的彩礼，不是你倒贴；你不得否认已收到的预付，也不要把自己的存款和预付金额混为一谈。若你决定在本轮明确金额，可输出 [ACTION:MARRIAGE_FORMAL:playerClanHeroId:targetHeroId:金额]；若暂不写金额，也可只输出 [ACTION:MARRIAGE_FORMAL:playerClanHeroId:targetHeroId]。",
-                                                               "leader_need_brideprice_blocked":  "【运行时硬约束】你是族长，且 D={tierDiff}，但正规联姻门槛未达标：家族关系R={clanRelation}、综合信任T={effectiveTrust}，需要至少 20/20。你应拒绝这桩婚事，禁止输出任何结婚标签。",
-                                                               "leader_need_heavy_brideprice":  "【运行时硬约束】你是族长，且 D={tierDiff}。玩家家族地位明显低于你方，正常来说这桩联姻会让你很没面子；但如果对方愿意给出大笔钱，你也可以接受。按门第惯例，彩礼常见于 {bridePriceMin}~{bridePriceMax} 这一档。你当前自有存款为 {leaderGold}，另已收到玩家预付彩礼 {prepaidGold}。这里谈的是玩家要付给你的彩礼，不是你倒贴；你不得否认已收到的预付，也不要把自己的存款和预付金额混为一谈。若你决定在本轮明确金额，可输出 [ACTION:MARRIAGE_FORMAL:playerClanHeroId:targetHeroId:金额]；若暂不写金额，也可只输出 [ACTION:MARRIAGE_FORMAL:playerClanHeroId:targetHeroId]。",
-                                                               "leader_offer_brideprice_minor":  "【运行时硬约束】你是族长，且 D={tierDiff}。玩家家族比你更高贵，你应当更加主动。若你明确同意联姻，可以主动给玩家一分彩礼，常见金额区间为 {bridePriceMin}~{bridePriceMax}。你当前存款为 {leaderGold}；若你决定给彩礼，金额不得超过你当前存款，资金不足时不要输出带金额标签，也不要假装自己付得起。若你决定给彩礼，可输出 [ACTION:MARRIAGE_FORMAL:playerClanHeroId:targetHeroId:金额]，该金额将由你支付给玩家；若不在本轮写金额，也可只输出 [ACTION:MARRIAGE_FORMAL:playerClanHeroId:targetHeroId]。",
-                                                               "leader_offer_brideprice_major":  "【运行时硬约束】你是族长，且 D={tierDiff}。玩家家族明显比你更高贵，与他们家族联姻是极其难得的机会。你应当更主动，并可主动给玩家高额彩礼，常见金额区间为 {bridePriceMin}~{bridePriceMax}。你当前存款为 {leaderGold}；若你决定给彩礼，金额不得超过你当前存款，资金不足时不要输出带金额标签，也不要假装自己付得起。若你决定给彩礼，可输出 [ACTION:MARRIAGE_FORMAL:playerClanHeroId:targetHeroId:金额]，该金额将由你支付给玩家；若你已明确同意但暂不写金额，也可只输出 [ACTION:MARRIAGE_FORMAL:playerClanHeroId:targetHeroId]。",
-                                                               "leader_standard_ready":  "【运行时硬约束】你是族长。正规联姻判定：玩家家族等级={playerTier}，你方家族等级={targetTier}，D={tierDiff}；家族关系R={clanRelation}，综合信任T={effectiveTrust}，当前门槛为 >= {formalThreshold}。本轮若要同意，playerClanHeroId 与 targetHeroId 必须分别来自系统提供的两份未婚成员事实清单。你的当前存款为 {leaderGold}，已收到玩家预付彩礼 {prepaidGold}；若你顺带谈金额，必须参考这两项系统事实，不准承诺超出自己现钱的支付，也不准无视已经收到的预付。条件已达标。若你明确同意，可输出 [ACTION:MARRIAGE_FORMAL:playerClanHeroId:targetHeroId]；若你还想顺带谈彩礼，也可输出带金额的正式联姻标签。",
-                                                               "leader_standard_blocked":  "【运行时硬约束】你是族长。正规联姻判定：D={tierDiff}，家族关系R={clanRelation}，综合信任T={effectiveTrust}，当前门槛为 >= {formalThreshold}。条件未达标，你必须拒绝，并禁止输出任何结婚标签。",
-                                                               "member_redirect_elope_ready":  "【运行时硬约束】你不是族长，族长是 {leaderName}。正规联姻你无权批准，只能引导玩家去找族长。若玩家谈的是与你本人私奔，则你当前私奔条件达标：L={privateLove}（{privateLoveLevel}）/需>={elopeLoveNeed}，私人信任={npcTrust}/需>={elopeTrustNeed}，家族融洽度F={familyHarmony}。此时仅可输出 [ACTION:MARRIAGE_ELOPE:targetHeroId]；禁止输出任何正式联姻标签。",
-                                                               "member_redirect_elope_blocked":  "【运行时硬约束】你不是族长，族长是 {leaderName}。正规联姻你无权批准，只能引导玩家去找族长。若玩家谈的是与你本人私奔，你当前条件不足：L={privateLove}（{privateLoveLevel}）/需>={elopeLoveNeed}，私人信任={npcTrust}/需>={elopeTrustNeed}，家族融洽度F={familyHarmony}。你必须拒绝私奔，并禁止输出任何结婚标签。",
-                                                               "clanless_elope_ready":  "【运行时硬约束】你无家族联姻路径。若玩家谈的是与你本人结合，只能按私奔处理。当前私奔条件达标：L={privateLove}（{privateLoveLevel}）/需>={elopeLoveNeed}，私人信任={npcTrust}/需>={elopeTrustNeed}。此时仅可输出 [ACTION:MARRIAGE_ELOPE:targetHeroId]。",
-                                                               "clanless_elope_blocked":  "【运行时硬约束】你无家族联姻路径。若玩家谈的是与你本人结合，只能按私奔处理。你当前条件不足：L={privateLove}（{privateLoveLevel}）/需>={elopeLoveNeed}，私人信任={npcTrust}/需>={elopeTrustNeed}。你必须拒绝，并禁止输出任何结婚标签。"
+                                                               "no_player_hero":  "【运行时硬约束】未找到玩家婚配主体。本轮只能解释情况，不准答应任何婚事。",
+                                                               "no_target":  "【运行时硬约束】未找到当前对象。本轮只能解释流程，不准答应任何婚事。",
+                                                               "unavailable":  "【运行时硬约束】当前对象不满足基础婚配条件：{pairUnavailableReason}。你必须直接拒绝。",
+                                                               "leader_blocked_tier_gap":  "【运行时硬约束】你是族长，但玩家家族等级={playerTier}，你方家族等级={targetTier}，D={tierDiff}。门第差距过大，正规结婚必须直接拒绝。",
+                                                               "leader_need_brideprice_ready":  "【运行时硬约束】你是族长，D={tierDiff}。正规结婚门槛已达标：R={clanRelation}，T={effectiveTrust}。这门婚事可以谈，但你应索取彩礼；常见区间 {bridePriceMin}~{bridePriceMax}。你当前自有存款 {leaderGold}，已收玩家预付 {prepaidGold}。正文要么明确答应并说清金额，要么继续谈金额；不要模糊放行。",
+                                                               "leader_need_brideprice_blocked":  "【运行时硬约束】你是族长，D={tierDiff}，但正规结婚门槛未达标：R={clanRelation}，T={effectiveTrust}，需要至少 20/20。你必须直接拒绝。",
+                                                               "leader_need_heavy_brideprice":  "【运行时硬约束】你是族长，D={tierDiff}。这桩正规结婚会让你很没面子，除非对方拿出大笔彩礼。常见区间 {bridePriceMin}~{bridePriceMax}。你当前自有存款 {leaderGold}，已收玩家预付 {prepaidGold}。正文要么明确答应并说清高额彩礼，要么拒绝；不要含糊。",
+                                                               "leader_offer_brideprice_minor":  "【运行时硬约束】你是族长，D={tierDiff}。玩家家族更高贵，正规结婚若同意，你应更主动，并可给玩家彩礼。常见区间 {bridePriceMin}~{bridePriceMax}。你当前存款 {leaderGold}；金额不得超过现钱。正文要么明确答应并说清金额，要么拒绝。",
+                                                               "leader_offer_brideprice_major":  "【运行时硬约束】你是族长，D={tierDiff}。玩家家族明显更高贵，若同意这桩正规结婚，你应主动给较高彩礼。常见区间 {bridePriceMin}~{bridePriceMax}。你当前存款 {leaderGold}；金额不得超过现钱。正文要么明确答应并说清金额，要么拒绝。",
+                                                               "leader_standard_ready":  "【运行时硬约束】你是族长。正规结婚条件已达标：D={tierDiff}，R={clanRelation}，T={effectiveTrust}，门槛 >= {formalThreshold}。若同意，人选必须来自两份系统事实清单。正文要么明确答应这对人结婚，要么拒绝；若要谈彩礼，就把金额直接说清楚。",
+                                                               "leader_standard_blocked":  "【运行时硬约束】你是族长。正规结婚条件未达标：D={tierDiff}，R={clanRelation}，T={effectiveTrust}，门槛 >= {formalThreshold}。你必须直接拒绝。",
+                                                               "member_redirect_elope_ready":  "【运行时硬约束】你不是族长，族长是 {leaderName}。正规结婚你无权批准，只能引导去找族长。若谈与你本人私奔，则当前条件已达标：L={privateLove}（{privateLoveLevel}）/需>={elopeLoveNeed}，私人信任={npcTrust}/需>={elopeTrustNeed}，家族融洽度F={familyHarmony}。正文只能二选一：引导正规结婚去找族长，或明确答应与你本人私奔。",
+                                                               "member_redirect_elope_blocked":  "【运行时硬约束】你不是族长，族长是 {leaderName}。正规结婚你无权批准，只能引导去找族长。若谈与你本人私奔，当前条件不足：L={privateLove}（{privateLoveLevel}）/需>={elopeLoveNeed}，私人信任={npcTrust}/需>={elopeTrustNeed}，家族融洽度F={familyHarmony}。你必须拒绝私奔。",
+                                                               "clanless_elope_ready":  "【运行时硬约束】你无家族联姻路径。正规结婚不可谈；若谈与你本人结合，只能按私奔处理。当前私奔条件已达标：L={privateLove}（{privateLoveLevel}）/需>={elopeLoveNeed}，私人信任={npcTrust}/需>={elopeTrustNeed}。正文只能明确答应或拒绝私奔，不要扯到家族联姻。",
+                                                               "clanless_elope_blocked":  "【运行时硬约束】你无家族联姻路径。正规结婚不可谈；若谈与你本人结合，只能按私奔处理。当前条件不足：L={privateLove}（{privateLoveLevel}）/需>={elopeLoveNeed}，私人信任={npcTrust}/需>={elopeTrustNeed}。你必须拒绝。"
                                                            },
                             "TriggerKeywords":  [
                                                     "我想和你们族长谈谈两家联姻的事情。",
@@ -353,8 +367,30 @@
                             "Priority":  77,
                             "TopicNumber":  8,
                             "TopicLabel":  "带路，传唤与跟随",
-                            "NonHeroInstruction":  "【场景行为】如果你在句末输出[FOL]，可让你跟随此人；如果你在句末输出[ASS:id]，可把【可召目标】中的人叫来；如果你在句末输出[GUI:id]，可给此人带路去找【可带路目标】，也可带此人去见【可召目标】中的人；若目标在酒馆或领主大厅，只需带到对应门口。当你同意了对方的要求之后，你必须在本次回复输出此标签，不可拖沓。",
-                            "Instruction":  "【场景行为】如果你在句末输出[FOL]，可让你跟随此人；如果你在句末输出[ASS:id]，可把【可召目标】中的人叫来；如果你在句末输出[GUI:id]，可给此人带路去找【可带路目标】，也可带此人去见【可召目标】中的人；若目标在酒馆或领主大厅，只需带到对应门口。当你同意了对方的要求之后，你必须在本次回复输出此标签，不可拖沓。",
+                            "NonHeroInstruction":  "【场景行为规则】即使你只是无名士兵或平民，只要本轮系统确实给了【目标清单】或相关状态提示，你也可以决定是否带路、传唤、跟随、停止跟随或结束这次会面；但你只能对系统当前列出的目标表态，不能编造名单外的人或地点。只有当你在正文里最终明确答应时，才算真的执行；若你还在拒绝、推脱、反问、拖延或继续谈条件，就不算已经执行。正文只自然说话，不要自己写任何动作标签。",
+                            "Instruction":  "【场景行为规则】带路、传唤、跟随、停止跟随、结束传唤后的会面，都只以本轮运行时状态为准。你只能依据系统当前给出的【目标清单】和状态提示回答；没有列出来的目标，不得擅自答应。若目标在酒馆或领主大厅，带路只需带到对应门口。只有当你在<latest_reply>里最终明确同意时，才算真的执行；若你仍在拒绝、解释、反问、拖延或继续谈条件，就不要当成已经执行。正文只自然说话，不要自己写任何动作标签。",
+                            "PostprocessRules":  [
+                                                     {
+                                                         "Tag":  "[ACTION:SCENE_FOLLOW_PLAYER]",
+                                                         "Description":  "如果NPC在<latest_reply>里明确同意之后跟随玩家，就输出这个"
+                                                     },
+                                                     {
+                                                         "Tag":  "[ACTION:SCENE_STOP_FOLLOW]",
+                                                         "Description":  "如果NPC在<latest_reply>里明确同意停止跟随玩家，就输出这个"
+                                                     },
+                                                     {
+                                                         "Tag":  "[END]",
+                                                         "Description":  "如果NPC在<latest_reply>里明确表示这次传唤后的会面到此结束，就输出这个"
+                                                     },
+                                                     {
+                                                         "Tag":  "[ACTION:SCENE_SUMMON:人物名称列表]",
+                                                         "Description":  "如果NPC在<latest_reply>里明确同意去把【目标清单】中的一个或多个人叫来，就输出这个；把人物名称写进标签，若有多人可用逗号分隔"
+                                                     },
+                                                     {
+                                                         "Tag":  "[ACTION:SCENE_GUIDE:人物名称]",
+                                                         "Description":  "如果NPC在<latest_reply>里明确同意给玩家带路去【目标清单】中的目标，就输出这个；把人物名称写进标签"
+                                                     }
+                                                 ],
                             "TriggerKeywords":  [
                                                     "你能带我去找城里的铁匠或者马匹贩子吗？",
                                                     "前面带路，领我去见你们这能做主的人。",
@@ -366,7 +402,11 @@
                                                     "帮我把他喊过来见我。",
                                                     "你接下来跟紧我，别掉队了，跟我走。",
                                                     "你跟着我，保护我的安全。",
-                                                    "你就留在我身边跟随我行动吧。"
+                                                    "你就留在我身边跟随我行动吧。",
+                                                    "行了，你别再跟着我了，回你自己的岗位去。",
+                                                    "到这儿就行，你先退下吧。",
+                                                    "这次会面到此为止，你们都散了吧。",
+                                                    "人已经见到了，你可以回去了。"
                                                 ]
                         },
                         {
@@ -376,8 +416,18 @@
                             "Priority":  84,
                             "TopicNumber":  9,
                             "TopicLabel":  "雇佣士兵与俘虏处置",
-                            "NonHeroInstruction":  "你无法进行俘虏或士兵转让，因为你不是领主",
-                            "Instruction":  "【雇佣士兵与俘虏处置规则】谈士兵时，应把他们视作可被雇佣、借调、收编的人手，而不是货物；谈俘虏时，才可用赎取、买卖、移交之类说法。你只能依据系统清单作答，不得编造清单外的士兵、俘虏、编号、数量或价格。玩家是否真实付款、交货、让人改投你麾下、或把俘虏移交给你，只能通过[AFEF玩家行为补充]判断；若本轮尚未明确成交，就不要输出 ATT/ATP。",
+                            "NonHeroInstruction":  "【雇佣士兵与俘虏处置规则】你不是领主，无权把部队或俘虏正式转给玩家。若玩家坚持，请让他去找能做主的领主；正文只口头拒绝或引导，不写 ATT/ATP。",
+                            "Instruction":  "【雇佣士兵与俘虏处置规则】只处理两类事：士兵招募/借调/收编/改投麾下，以及俘虏赎取/买卖/移交。谈士兵时，应把他们视作人手、兵力和效忠对象，而不是货物；谈俘虏时，才可用赎取、买卖、移交之类说法。你只能依据系统在本轮给出的清单与编号作答，不得编造清单外的士兵、俘虏、编号、数量或价格。玩家嘴上说已经付钱、已经交货、已经把人带走，都不算真实发生；只有[AFEF玩家行为补充]或[AFEF NPC行为补充]里的系统事实才算成交。只有当你在<latest_reply>里最终明确同意放人、移交或让人改投玩家麾下时，才算真的成交；若你仍在压价、讨价还价、追问条件、拒绝、挽留、反问或拖延，就不算已经成交。正文只口头答应、拒绝或谈条件，不写 ATT/ATP。",
+                            "PostprocessRules":  [
+                                                     {
+                                                         "Tag":  "[ATT:士兵名称:数量]",
+                                                         "Description":  "如果NPC在<latest_reply>里明确同意让【你当前可转移部队】中的某种士兵转入玩家麾下，就输出这个；这里填写士兵名称和数量，不要写序号；数量不得超过当前数量"
+                                                     },
+                                                     {
+                                                         "Tag":  "[ATP:俘虏名称:数量]",
+                                                         "Description":  "如果NPC在<latest_reply>里明确同意把【你当前可转移俘虏】中的某种俘虏交给玩家，就输出这个；这里填写俘虏名称和数量，不要写序号；数量不得超过当前数量"
+                                                     }
+                                                 ],
                             "RuntimeInstructionTemplates":  {
                                                             "level_1":  "【信任动态提示】你对{playerName}处于第1级信任（彻底不信）。请直接拒绝任何雇佣士兵、借调人手、转入麾下、赎取俘虏或俘虏买卖请求。",
                                                             "level_2":  "【信任动态提示】你对{playerName}处于第2级信任（极度怀疑）。只有在已看到系统事实确认玩家先付款或先交货时，才可考虑极小规模的人手调动或俘虏交易；通常不要先放人。",
@@ -410,7 +460,37 @@
                             "Priority":  82,
                             "TopicNumber":  10,
                             "TopicLabel":  "任务委托",
-                            "Instruction":  "【原版任务动态提示】当玩家谈委托、差事、任务、进度、代办、是否做完、是否验收时，你应优先参考当前原版任务的实际状态，只在系统当前确有活跃任务状态时讨论。",
+                            "NonHeroInstruction":  "【原版任务规则】你不是有名有姓、能发布原版任务的英雄。本轮不得向玩家发布、验收或结算任何原版任务；若玩家来问差事、任务进度或交付，你只能口头说明自己无权处理，或引导他去找真正的委托人。",
+                            "Instruction":  "【原版任务规则】只处理系统当前确实存在的原版任务状态：可发布、进行中、同伴代办进行中、可交付、刚完成、当前无任务。你必须以本轮运行时状态为准，不得编造不存在的委托、目标、进度、完成结果、失败原因或奖励。\n【发布边界】只有当你在<latest_reply>里最终明确把当前任务正式交给玩家时，才算真的发布；如果你还在介绍情况、试探、谈条件、反问、拒绝、挽留、拖延，或玩家只是说“我接了”，都不算已经接任务。\n【同伴代办边界】只有当玩家明确要求由同伴代办，且明确指定系统给出的可用同伴之一，而你也在<latest_reply>里最终明确同意时，才算真的以同伴代办方式接取；如果玩家没点名、你还在追问、或目标不在系统候选里，就不算成立。\n【交付边界】只有当系统当前已处于可交付状态，且你在<latest_reply>里最终明确确认任务完成并验收时，才算真的交付；如果你只是在讨论进度、提醒要求、质疑完成度、继续追问细节，或玩家单方面声称“我做完了”，都不算已经结算。\n【奖励边界】原版任务的奖励、声望、关系和日志推进由系统在交付成功后自动处理。你可以在正文里口头提及报酬，但不要把原版任务奖励当成普通交易或借贷，也不要自行转账、交货或生成别的经济标签。",
+                            "PostprocessRules":  [
+                                                     {
+                                                         "Tag":  "[ACTION:ISSUE_ACCEPT_SELF]",
+                                                         "Description":  "如果NPC在<latest_reply>里明确同意把当前原版任务正式交给玩家本人接取，就输出这个"
+                                                     },
+                                                     {
+                                                         "Tag":  "[ACTION:ISSUE_ACCEPT_ALT:COMPANION=HeroId]",
+                                                         "Description":  "如果NPC在<latest_reply>里明确同意由系统当前给出的某位可用同伴代办当前原版任务，就输出这个；HeroId必须填写系统候选中的那位同伴ID"
+                                                     },
+                                                     {
+                                                         "Tag":  "[ACTION:QUEST_TURN_IN]",
+                                                         "Description":  "如果NPC在<latest_reply>里明确确认当前原版任务已经完成并正式验收，就输出这个；输出后由系统自动发放原版奖励"
+                                                     }
+                                                 ],
+                            "RuntimeInstructionTemplates":  {
+                                                                "offer":  "【原版任务规则】当前你这里有一项可正式提供给玩家的原版任务。本轮只可讨论任务内容、接取条件、是否接受，以及是否允许由指定同伴代办；只有当你最终明确同意时，才算真的接取。",
+                                                                "in_progress":  "【原版任务规则】当前这项原版任务已经由玩家本人接下，任务仍在进行中。本轮只讨论进度、要求、期限、提醒和是否快完成；禁止再次发布同一任务，也禁止把未完成任务当成已交付。",
+                                                                "in_progress_alternative":  "【原版任务规则】当前这项原版任务已经交由玩家的一名同伴代办，任务仍在进行中。本轮只讨论代办进展、剩余时间、要求和提醒；禁止再次发布同一任务，也禁止把未完成任务当成已交付。",
+                                                                "ready_to_turn_in":  "【原版任务规则】当前这项原版任务已经满足可交付条件。本轮重点应放在验收、确认结果与结算；只有当你最终明确确认完成时，才算真的交付。",
+                                                                "recently_completed":  "【原版任务规则】玩家最近刚完成过你的一项原版任务。这条事实只用于承接后续对话，提醒你不要把刚完成的旧任务当成仍未完成，也不要立刻把同一件旧任务重新发给玩家。",
+                                                                "no_available":  "【原版任务规则】你当前没有可讨论的原版任务。本轮不得临时编造新委托；如果玩家来问差事、进度或交付，只能据实说明当前无事可托。"
+                                                            },
+                            "RuntimeConstraintTemplates":  {
+                                                               "offer_accept_only":  "【运行时硬约束】当前状态是“可发布”。本轮只可讨论是否接取当前原版任务；若玩家未明确接受、未满足前提，或你未明确同意，就不准输出任何接取标签。",
+                                                               "offer_alt_requires_named_companion":  "【运行时硬约束】若要以同伴代办方式接取，玩家必须明确点名系统候选中的某位同伴；未点名、点错人、或你尚未明确同意时，严禁输出 [ACTION:ISSUE_ACCEPT_ALT:COMPANION=HeroId]。",
+                                                               "progress_only":  "【运行时硬约束】当前状态是“进行中”。本轮只可讨论任务进展，不准再次发布同一任务，也不准把未完成状态误判为已交付。",
+                                                               "turn_in_only_when_ready":  "【运行时硬约束】只有系统当前明确处于“可交付”状态，且你在正文里明确确认验收完成时，才可输出 [ACTION:QUEST_TURN_IN]；玩家单方面自称做完、或你仍在追问时，一律不得输出。",
+                                                               "no_available":  "【运行时硬约束】当前没有可用原版任务。本轮不得编造任务、奖励、进度或验收结果，也不准输出任何原版任务标签。"
+                                                           },
                             "TriggerKeywords":  [
                                                     "你之前交代我的那件差事，我已经办妥了。",
                                                     "最近领地里有没有什么麻烦事需要我帮忙？",
@@ -420,6 +500,10 @@
                                                     "这事我接下了，你放心交给我吧。",
                                                     "有什么我可以代劳的吗？",
                                                     "派我的同伴去帮你解决那个麻烦吧。",
+                                                    "我让阿莱西斯替我去办这件事，你意下如何？",
+                                                    "这差事先交给我的同伴去跑一趟吧。",
+                                                    "你再把任务要求跟我说清楚些，我马上动身。",
+                                                    "事情还没彻底办成，我先来和你说说进展。",
                                                     "你要我做的事情都完成了，验收一下吧。",
                                                     "你不是有事找人帮忙吗？说吧，要我做什么。",
                                                     "任务做完了，奖励拿来吧。"
