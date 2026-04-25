@@ -261,7 +261,23 @@ public static class AIConfigHandler
 
 	public static string DuelDialogueInstruction => ApplyPlayerDisplayNameToGuardrailText(_guardrail?.Duel?.DialogueInstruction ?? "");
 
+	public static string DuelHealthBlockedInstruction => ApplyPlayerDisplayNameToGuardrailText(_guardrail?.Duel?.HealthBlockedInstruction ?? "");
+
+	public static string DuelHealthBlockedMessage => ApplyPlayerDisplayNameToGuardrailText(_guardrail?.Duel?.HealthBlockedMessage ?? "");
+
 	public static string DuelLegacyFollowupInstruction => ApplyPlayerDisplayNameToGuardrailText(_guardrail?.Duel?.LegacyFollowupInstruction ?? "");
+
+	public static string FormatDuelHealthTemplate(string template, string npcName, float healthRatio)
+	{
+		string text = ApplyPlayerDisplayNameToGuardrailText(template ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return "";
+		}
+		string name = string.IsNullOrWhiteSpace(npcName) ? "目标NPC" : npcName.Trim();
+		string percent = Math.Max(0f, Math.Min(1f, healthRatio)).ToString("P0");
+		return text.Replace("{npcName}", name).Replace("{healthPercent}", percent).Replace("{healthRatio}", percent);
+	}
 
 	public static List<string> DuelTriggerKeywords => _guardrail?.Duel?.AcceptKeywords ?? new List<string>();
 
@@ -446,6 +462,12 @@ public static class AIConfigHandler
 		{
 			return "";
 		}
+		sharedItemList = NormalizeActionPostprocessNameReferences(sharedItemList, npcName);
+		playerItemList = NormalizeActionPostprocessNameReferences(playerItemList, npcName);
+		debtHint = NormalizeActionPostprocessNameReferences(debtHint, npcName);
+		marriagePlayerCandidates = NormalizeActionPostprocessNameReferences(marriagePlayerCandidates, npcName);
+		marriageTargetCandidates = NormalizeActionPostprocessNameReferences(marriageTargetCandidates, npcName);
+		marriageFactHint = NormalizeActionPostprocessNameReferences(marriageFactHint, npcName);
 		text = ReplaceActionPostprocessOptionalSection(text, "{npc_name}的物品清单：", "shared_item_list", sharedItemList);
 		text = ReplaceActionPostprocessOptionalSection(text, "玩家可见装备：", "player_item_list", playerItemList);
 		text = ReplaceActionPostprocessOptionalSection(text, "债务提示：", "debt_hint", debtHint);
@@ -454,8 +476,73 @@ public static class AIConfigHandler
 		text = ReplaceActionPostprocessOptionalSection(text, "当前可直接成立的正规婚配组合与现有婚姻（事实清单）：", "marriage_fact_hint", marriageFactHint);
 		text = text.Replace("{tag_rules}", string.IsNullOrWhiteSpace(tagRules) ? "（无）" : tagRules.Trim())
 			.Replace("{mood_rules}", string.IsNullOrWhiteSpace(moodRules) ? "（无）" : moodRules.Trim())
-			.Replace("{npc_name}", string.IsNullOrWhiteSpace(npcName) ? "NPC" : npcName.Trim());
+			.Replace("{npc_name}", "NPC");
 		return Regex.Replace(text.Trim(), "(\\r?\\n){3,}", Environment.NewLine + Environment.NewLine);
+	}
+
+	public static string BuildActionPostprocessLatestReplyBlock(string playerText, string npcReplyText, string npcName, string historyText = null)
+	{
+		string text = NormalizeActionPostprocessDialogueText(playerText);
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			text = ExtractLatestPlayerUtteranceForActionPostprocess(historyText);
+		}
+		string text2 = NormalizeActionPostprocessDialogueText(npcReplyText);
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.Append("玩家: ").Append(string.IsNullOrWhiteSpace(text) ? "（无）" : text);
+		stringBuilder.AppendLine();
+		stringBuilder.Append("NPC: ").Append(string.IsNullOrWhiteSpace(text2) ? "（无）" : text2);
+		return stringBuilder.ToString().Trim();
+	}
+
+	private static string NormalizeActionPostprocessDialogueText(string text)
+	{
+		string text2 = (text ?? "").Replace("\r\n", "\n").Replace('\r', '\n').Trim();
+		if (string.IsNullOrWhiteSpace(text2))
+		{
+			return "";
+		}
+		return Regex.Replace(text2, "\\s+", " ").Trim();
+	}
+
+	private static string ExtractLatestPlayerUtteranceForActionPostprocess(string historyText)
+	{
+		try
+		{
+			string text = (historyText ?? "").Replace("\r\n", "\n").Replace('\r', '\n');
+			if (string.IsNullOrWhiteSpace(text))
+			{
+				return "";
+			}
+			string[] array = text.Split(new char[1] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
+			for (int i = array.Length - 1; i >= 0; i--)
+			{
+				string text2 = (array[i] ?? "").Trim();
+				if (string.IsNullOrWhiteSpace(text2) || text2.StartsWith("【", StringComparison.Ordinal) || text2.StartsWith("[AFEF", StringComparison.Ordinal))
+				{
+					continue;
+				}
+				int num = text2.IndexOfAny(new char[2] { ':', '：' });
+				if (num < 0 || num + 1 >= text2.Length)
+				{
+					continue;
+				}
+				string text3 = text2.Substring(0, num).Trim();
+				string text4 = text2.Substring(num + 1).Trim();
+				if (string.IsNullOrWhiteSpace(text4))
+				{
+					continue;
+				}
+				if (text3.Equals("玩家", StringComparison.OrdinalIgnoreCase) || text3.Equals("你", StringComparison.OrdinalIgnoreCase) || (text3.Contains("对") && text3.EndsWith("说", StringComparison.Ordinal)))
+				{
+					return NormalizeActionPostprocessDialogueText(text4);
+				}
+			}
+		}
+		catch
+		{
+		}
+		return "";
 	}
 
 	public static bool DuelStakeEnabled => _guardrail?.DuelStake?.IsEnabled == true;
@@ -1515,7 +1602,7 @@ public static class AIConfigHandler
 			}
 			apiUrl = DuelSettings.GetEffectiveApiUrl(settings.AuxiliaryApiUrl ?? "");
 			apiKey = (settings.AuxiliaryApiKey ?? "").Trim();
-			modelName = (settings.AuxiliaryModelName ?? "").Trim();
+			modelName = settings.GetEffectiveAuxiliaryModelName();
 			bool flag = !string.IsNullOrWhiteSpace(apiUrl) && !string.IsNullOrWhiteSpace(apiKey) && !string.IsNullOrWhiteSpace(modelName);
 			if (!flag)
 			{
@@ -1543,8 +1630,9 @@ public static class AIConfigHandler
 			}
 			string text = (settings.ActionPostprocessApiUrl ?? "").Trim();
 			string text2 = (settings.ActionPostprocessApiKey ?? "").Trim();
-			string text3 = (settings.ActionPostprocessModelName ?? "").Trim();
-			bool flag = !string.IsNullOrWhiteSpace(text) || !string.IsNullOrWhiteSpace(text2) || !string.IsNullOrWhiteSpace(text3);
+			string text3 = settings.GetEffectiveActionPostprocessModelName();
+			string text4 = settings.GetActionPostprocessSelectedModelOption();
+			bool flag = !string.IsNullOrWhiteSpace(text) || !string.IsNullOrWhiteSpace(text2) || !string.IsNullOrWhiteSpace((settings.ActionPostprocessModelName ?? "").Trim()) || !string.IsNullOrWhiteSpace(text4);
 			if (!flag)
 			{
 				return false;
@@ -1579,7 +1667,7 @@ public static class AIConfigHandler
 			}
 			apiUrl = DuelSettings.GetEffectiveApiUrl(settings.ApiUrl ?? "");
 			apiKey = (settings.ApiKey ?? "").Trim();
-			modelName = (settings.ModelName ?? "").Trim();
+			modelName = settings.GetEffectiveMainModelName();
 			return !string.IsNullOrWhiteSpace(apiUrl) && !string.IsNullOrWhiteSpace(apiKey) && !string.IsNullOrWhiteSpace(modelName);
 		}
 		catch
@@ -1591,14 +1679,14 @@ public static class AIConfigHandler
 	private static bool TryGetActionPostprocessConfig(out string apiUrl, out string apiKey, out string modelName)
 	{
 		DuelSettings settings = DuelSettings.GetSettings();
-		bool flag = settings != null && (!string.IsNullOrWhiteSpace(settings.ActionPostprocessApiUrl) || !string.IsNullOrWhiteSpace(settings.ActionPostprocessApiKey) || !string.IsNullOrWhiteSpace(settings.ActionPostprocessModelName));
+		bool flag = settings != null && (!string.IsNullOrWhiteSpace(settings.ActionPostprocessApiUrl) || !string.IsNullOrWhiteSpace(settings.ActionPostprocessApiKey) || !string.IsNullOrWhiteSpace(settings.ActionPostprocessModelName) || !string.IsNullOrWhiteSpace(settings.GetActionPostprocessSelectedModelOption()));
 		if (flag)
 		{
-			return TryGetDedicatedActionPostprocessConfig(out apiUrl, out apiKey, out modelName);
-		}
-		if (TryGetDedicatedActionPostprocessConfig(out apiUrl, out apiKey, out modelName))
-		{
-			return true;
+			if (TryGetDedicatedActionPostprocessConfig(out apiUrl, out apiKey, out modelName))
+			{
+				return true;
+			}
+			LogAuxiliaryRouterTokenTrace("action_postprocess_config_fallback_main", null, "[ACTION POSTPROCESS CONFIG]\nmode=fallback_main\nreason=dedicated_config_incomplete", 0);
 		}
 		return TryGetPrimaryChatConfig(out apiUrl, out apiKey, out modelName);
 	}
@@ -1615,12 +1703,12 @@ public static class AIConfigHandler
 			new
 			{
 				role = "system",
-				content = "你是一个对话检索工具，只能输出编号列表。"
+				content = NormalizeAuxiliaryPlayerReferences("你是一个对话检索工具，只能输出编号列表。")
 			},
 			new
 			{
 				role = "user",
-				content = prompt ?? ""
+				content = NormalizeAuxiliaryPlayerReferences(prompt ?? "")
 			}
 		};
 	}
@@ -1632,14 +1720,88 @@ public static class AIConfigHandler
 			new
 			{
 				role = "system",
-				content = systemPrompt ?? ""
+				content = NormalizeAuxiliaryPlayerReferences(systemPrompt ?? "")
 			},
 			new
 			{
 				role = "user",
-				content = userPrompt ?? ""
+				content = NormalizeAuxiliaryPlayerReferences(userPrompt ?? "")
 			}
 		};
+	}
+
+	private static string NormalizeAuxiliaryPlayerReferences(string text)
+	{
+		try
+		{
+			string text2 = text ?? "";
+			if (string.IsNullOrWhiteSpace(text2))
+			{
+				return text2;
+			}
+			HashSet<string> hashSet = new HashSet<string>(StringComparer.Ordinal);
+			try
+			{
+				string text3 = (Hero.MainHero?.Name?.ToString() ?? "").Trim();
+				if (!string.IsNullOrWhiteSpace(text3) && !string.Equals(text3, "玩家", StringComparison.Ordinal))
+				{
+					hashSet.Add(text3);
+				}
+			}
+			catch
+			{
+			}
+			try
+			{
+				string text4 = (MyBehavior.BuildPlayerPublicDisplayNameForExternal() ?? "").Trim();
+				if (!string.IsNullOrWhiteSpace(text4) && !string.Equals(text4, "玩家", StringComparison.Ordinal))
+				{
+					hashSet.Add(text4);
+				}
+			}
+			catch
+			{
+			}
+			foreach (string item in hashSet.OrderByDescending((string x) => x.Length))
+			{
+				text2 = text2.Replace(item, "玩家");
+			}
+			return text2;
+		}
+		catch
+		{
+			return text ?? "";
+		}
+	}
+
+	public static string NormalizeActionPostprocessNameReferences(string text, params string[] npcNames)
+	{
+		try
+		{
+			string text2 = NormalizeAuxiliaryPlayerReferences(text ?? "");
+			if (string.IsNullOrWhiteSpace(text2))
+			{
+				return text2;
+			}
+			HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+			foreach (string text3 in npcNames ?? Array.Empty<string>())
+			{
+				string text4 = (text3 ?? "").Trim();
+				if (!string.IsNullOrWhiteSpace(text4) && !string.Equals(text4, "NPC", StringComparison.OrdinalIgnoreCase))
+				{
+					hashSet.Add(text4);
+				}
+			}
+			foreach (string item in hashSet.OrderByDescending((string x) => x.Length))
+			{
+				text2 = text2.Replace(item, "NPC");
+			}
+			return text2;
+		}
+		catch
+		{
+			return text ?? "";
+		}
 	}
 
 	private static string BuildAuxiliaryRouterExceptionText(Exception ex)
@@ -3098,13 +3260,15 @@ public static class AIConfigHandler
 		case "reward":
 			return text.IndexOf("[ACTION:GIVE_GOLD:", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("[ACTION:GIVE_ITEM:", StringComparison.OrdinalIgnoreCase) >= 0;
 		case "loan":
-			return text.IndexOf("[ACTION:DEBT_", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("[ACTION:DEBT_PAY_", StringComparison.OrdinalIgnoreCase) >= 0;
+			return text.IndexOf("[AD;", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("[ADP;", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("[ADP:", StringComparison.OrdinalIgnoreCase) >= 0;
 		case "kingdom_service":
 			return text.IndexOf("[ACTION:KINGDOM_SERVICE:", StringComparison.OrdinalIgnoreCase) >= 0;
 		case "marriage":
 			return text.IndexOf("[ACTION:MARRIAGE_", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("[ACTION:DIVORCE:", StringComparison.OrdinalIgnoreCase) >= 0;
 		case "party_transfer":
 			return text.IndexOf("[ATT:", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("[ATP:", StringComparison.OrdinalIgnoreCase) >= 0;
+		case "settlement_transfer":
+			return text.IndexOf("[ACTION:SETTLEMENT_TRANSFER:", StringComparison.OrdinalIgnoreCase) >= 0;
 		case "lords_hall_access":
 			return text.IndexOf("[ACTION:OPEN_LORDS_HALL]", StringComparison.OrdinalIgnoreCase) >= 0;
 		default:
@@ -4291,9 +4455,10 @@ public static class AIConfigHandler
 			return "merc_only";
 		case "mercenary_target_unknown":
 		case "mercenary_same_kingdom":
+		case "mercenary_same_kingdom_tier_vassal_ready":
+			return "leave_or_vassal";
 		case "mercenary_same_kingdom_tier_vassal_locked":
 		case "mercenary_same_kingdom_trust_vassal_locked":
-		case "mercenary_same_kingdom_tier_vassal_ready":
 		case "mercenary_other_kingdom":
 		case "vassal_target_unknown":
 		case "vassal_same_kingdom":
@@ -4313,6 +4478,8 @@ public static class AIConfigHandler
 			return text.StartsWith("[ACTION:KINGDOM_SERVICE:MERCENARY:", StringComparison.OrdinalIgnoreCase);
 		case "merc_or_vassal":
 			return text.StartsWith("[ACTION:KINGDOM_SERVICE:MERCENARY:", StringComparison.OrdinalIgnoreCase) || text.StartsWith("[ACTION:KINGDOM_SERVICE:VASSAL:", StringComparison.OrdinalIgnoreCase);
+		case "leave_or_vassal":
+			return text.Equals("[ACTION:KINGDOM_SERVICE:LEAVE:current]", StringComparison.OrdinalIgnoreCase) || text.StartsWith("[ACTION:KINGDOM_SERVICE:VASSAL:", StringComparison.OrdinalIgnoreCase);
 		case "leave_only":
 			return text.Equals("[ACTION:KINGDOM_SERVICE:LEAVE:current]", StringComparison.OrdinalIgnoreCase);
 		default:
@@ -4358,7 +4525,7 @@ public static class AIConfigHandler
 				{
 					return "mercenary_same_kingdom_trust_vassal_locked";
 				}
-				return "mercenary_same_kingdom";
+				return "mercenary_same_kingdom_tier_vassal_ready";
 			}
 			return "mercenary_other_kingdom";
 		}

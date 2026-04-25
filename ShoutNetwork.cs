@@ -4,11 +4,14 @@ using System.Diagnostics;
 using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using TaleWorlds.CampaignSystem;
 
 namespace AnimusForge;
 
@@ -16,10 +19,38 @@ public static class ShoutNetwork
 {
 	private const int HardcodedMaxTokens = 5000;
 
+	private sealed class PlayerReferenceStreamFilter
+	{
+		private string _pending = "";
+
+		public string Push(string text)
+		{
+			string text2 = (_pending ?? "") + (text ?? "");
+			_pending = "";
+			if (string.IsNullOrEmpty(text2))
+			{
+				return "";
+			}
+			if (text2.EndsWith("玩", StringComparison.Ordinal))
+			{
+				_pending = "玩";
+				text2 = text2.Substring(0, text2.Length - 1);
+			}
+			return ApplyPlayerDynamicNameToMainText(text2);
+		}
+
+		public string Flush()
+		{
+			string text = _pending ?? "";
+			_pending = "";
+			return ApplyPlayerDynamicNameToMainText(text);
+		}
+	}
+
 	private static string BuildTokenStatsOutputContent(string finalContent, string reasoningContent = null)
 	{
-		string text = (finalContent ?? "").Trim();
-		string text2 = (reasoningContent ?? "").Trim();
+		string text = ApplyPlayerDynamicNameToMainText(finalContent ?? "").Trim();
+		string text2 = ApplyPlayerDynamicNameToMainText(reasoningContent ?? "").Trim();
 		if (string.IsNullOrWhiteSpace(text2))
 		{
 			return text;
@@ -47,8 +78,269 @@ public static class ShoutNetwork
 		return " " + text;
 	}
 
+	private static bool ContainsAnyIgnoreCase(string text, params string[] patterns)
+	{
+		text = text ?? "";
+		if (patterns == null || patterns.Length == 0)
+		{
+			return false;
+		}
+		for (int i = 0; i < patterns.Length; i++)
+		{
+			string text2 = (patterns[i] ?? "").Trim();
+			if (!string.IsNullOrWhiteSpace(text2) && text.IndexOf(text2, StringComparison.OrdinalIgnoreCase) >= 0)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private static bool TryApplyDeepSeekThinkingControls(JObject payload, string apiUrl, string modelName, out string thinkingMode)
+	{
+		thinkingMode = "plain";
+		if (payload == null)
+		{
+			return false;
+		}
+		if (!ContainsAnyIgnoreCase(apiUrl, "deepseek") && !ContainsAnyIgnoreCase(modelName, "deepseek"))
+		{
+			return false;
+		}
+		payload["thinking"] = new JObject
+		{
+			["type"] = "enabled"
+		};
+		payload["reasoning_effort"] = "high";
+		thinkingMode = "deepseek_enabled_high";
+		return true;
+	}
+
+	private static bool LooksLikeThinkingControlError(string responseBody)
+	{
+		string text = (responseBody ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return false;
+		}
+		bool flag = ContainsAnyIgnoreCase(text, "thinking", "reasoning_effort");
+		bool flag2 = ContainsAnyIgnoreCase(text, "unsupported", "unknown", "invalid", "unexpected", "not allowed", "not supported", "extra inputs are not permitted");
+		return flag && flag2;
+	}
+
+	private static JObject BuildPrimaryChatPayload(List<object> messages, string apiUrl, string modelName, bool stream, out string thinkingMode)
+	{
+		JObject jObject = new JObject
+		{
+			["model"] = modelName ?? "",
+			["max_tokens"] = HardcodedMaxTokens
+		};
+		if (stream)
+		{
+			jObject["stream"] = true;
+		}
+		JArray jArray = new JArray();
+		foreach (object message in messages ?? new List<object>())
+		{
+			dynamic val = message;
+			jArray.Add(new JObject
+			{
+				["role"] = val.role,
+				["content"] = val.content
+			});
+		}
+		jObject["messages"] = jArray;
+		TryApplyDeepSeekThinkingControls(jObject, apiUrl, modelName, out thinkingMode);
+		return jObject;
+	}
+
+	private static List<object> ApplyPlayerDisplayNameToOutgoingMessages(List<object> messages)
+	{
+		try
+		{
+			if (messages == null || messages.Count == 0)
+			{
+				return messages ?? new List<object>();
+			}
+			List<object> list = new List<object>(messages.Count);
+			foreach (object message in messages)
+			{
+				if (TryReadMessage(message, out var role, out var content))
+				{
+					list.Add(new
+					{
+						role = role,
+						content = ApplyPlayerDynamicNameToMainText(content)
+					});
+				}
+				else
+				{
+					list.Add(message);
+				}
+			}
+			return list;
+		}
+		catch
+		{
+			return messages ?? new List<object>();
+		}
+	}
+
+	private static bool TryReadMessage(object message, out string role, out string content)
+	{
+		role = "";
+		content = "";
+		if (message == null)
+		{
+			return false;
+		}
+		try
+		{
+			if (message is JObject jObject)
+			{
+				role = (string)jObject["role"] ?? "";
+				content = (string)jObject["content"] ?? "";
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (message is IDictionary<string, object> dictionary)
+			{
+				if (dictionary.TryGetValue("role", out var value) && value != null)
+				{
+					role = value.ToString();
+				}
+				if (dictionary.TryGetValue("content", out var value2) && value2 != null)
+				{
+					content = value2.ToString();
+				}
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			Type type = message.GetType();
+			PropertyInfo propertyInfo = type.GetProperty("role") ?? type.GetProperty("Role");
+			PropertyInfo propertyInfo2 = type.GetProperty("content") ?? type.GetProperty("Content");
+			if (propertyInfo != null)
+			{
+				object value3 = propertyInfo.GetValue(message, null);
+				if (value3 != null)
+				{
+					role = value3.ToString();
+				}
+			}
+			if (propertyInfo2 != null)
+			{
+				object value4 = propertyInfo2.GetValue(message, null);
+				if (value4 != null)
+				{
+					content = value4.ToString();
+				}
+			}
+			return propertyInfo != null || propertyInfo2 != null;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static string ApplyPlayerDynamicNameToMainText(string text)
+	{
+		try
+		{
+			string text2 = text ?? "";
+			if (string.IsNullOrWhiteSpace(text2))
+			{
+				return text2;
+			}
+			string text3 = ResolvePlayerDynamicNameForOutgoingText();
+			if (string.IsNullOrWhiteSpace(text3))
+			{
+				text3 = "玩家";
+			}
+			const string text4 = "__AFEF_PLAYER_FACT__";
+			const string text5 = "__PLAYER_MARRIAGE_SECTION__";
+			if (!string.Equals(text3, "玩家", StringComparison.Ordinal))
+			{
+				text2 = text2.Replace("[AFEF" + text3 + "行为补充]", text4);
+				text2 = text2.Replace("【" + text3 + "家族可婚配未婚成员（事实清单）】", text5);
+			}
+			text2 = text2.Replace("[AFEF玩家行为补充]", text4);
+			text2 = text2.Replace("【玩家家族可婚配未婚成员（事实清单）】", text5);
+			text2 = NormalizeLegacyDuelStakeText(text2, "玩家");
+			if (!string.Equals(text3, "玩家", StringComparison.Ordinal))
+			{
+				text2 = text2.Replace("玩家", text3);
+			}
+			text2 = NormalizeLegacyDuelStakeText(text2, text3);
+			text2 = text2.Replace(text4, "[AFEF玩家行为补充]");
+			text2 = text2.Replace(text5, "【玩家家族可婚配未婚成员（事实清单）】");
+			return text2;
+		}
+		catch
+		{
+			return text ?? "";
+		}
+	}
+
+	private static string NormalizeLegacyDuelStakeText(string text, string playerName)
+	{
+		try
+		{
+			string text2 = text ?? "";
+			string text3 = (playerName ?? "").Trim();
+			if (string.IsNullOrWhiteSpace(text2) || string.IsNullOrWhiteSpace(text3))
+			{
+				return text2;
+			}
+			string pattern = Regex.Escape(text3);
+			text2 = Regex.Replace(text2, "你已经将\\s*(\\d+)\\s*第纳尔交给\\s*" + pattern + "\\s*（决斗赌注）[。.]?", "你在决斗中输给了 " + text3 + "，并已按赌注将 $1 第纳尔交给 " + text3 + "。");
+			text2 = Regex.Replace(text2, "你已经将\\s*(\\d+)\\s*个\\s*([^（\\r\\n]+?)\\s*交给\\s*" + pattern + "\\s*（决斗赌注）[。.]?", "你在决斗中输给了 " + text3 + "，并已按赌注将 $1 个 $2 交给 " + text3 + "。");
+			text2 = Regex.Replace(text2, "你从\\s*([^（\\r\\n]+?)\\s*收到了\\s*(\\d+)\\s*第纳尔（决斗赌注）[。.]?", "你在决斗中击败了 $1，并从 $1 收到了 $2 第纳尔（决斗赌注）。");
+			text2 = Regex.Replace(text2, "你从\\s*([^（\\r\\n]+?)\\s*收到了\\s*(\\d+)\\s*个\\s*([^（\\r\\n]+?)\\s*（决斗赌注）[。.]?", "你在决斗中击败了 $1，并从 $1 收到了 $2 个 $3（决斗赌注）。");
+			return text2;
+		}
+		catch
+		{
+			return text ?? "";
+		}
+	}
+
+	private static string ResolvePlayerDynamicNameForOutgoingText()
+	{
+		try
+		{
+			string text = (Hero.MainHero?.Name?.ToString() ?? "").Trim();
+			if (!string.IsNullOrWhiteSpace(text))
+			{
+				return text;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			return (MyBehavior.BuildPlayerPublicDisplayNameForExternal() ?? "").Trim();
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
 	public static async Task<string> CallApiWithMessages(List<object> messages, int maxTokens, bool recordTokenStats = true)
 	{
+		messages = ApplyPlayerDisplayNameToOutgoingMessages(messages);
 		Stopwatch sw = Stopwatch.StartNew();
 		int msgCount = messages?.Count ?? 0;
 		int inputTokens = Logger.EstimateTokensFromMessages(messages);
@@ -74,22 +366,7 @@ public static class ShoutNetwork
 				return "（错误：未配置 API Key）";
 			}
 			string effectiveApiUrl = DuelSettings.GetEffectiveApiUrl(settings.ApiUrl);
-			JObject payload = new JObject
-			{
-				["model"] = settings.ModelName,
-				["max_tokens"] = HardcodedMaxTokens
-			};
-			JArray messagesArray = new JArray();
-			foreach (object msg in messages)
-			{
-				dynamic dict = msg;
-				messagesArray.Add(new JObject
-				{
-					["role"] = dict.role,
-					["content"] = dict.content
-				});
-			}
-			payload["messages"] = messagesArray;
+			JObject payload = BuildPrimaryChatPayload(messages, effectiveApiUrl, settings.ModelName, stream: false, out var thinkingMode);
 			string jsonBody = payload.ToString(Formatting.None);
 			HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, effectiveApiUrl);
 			try
@@ -98,6 +375,21 @@ public static class ShoutNetwork
 				request.Content = (HttpContent)new StringContent(jsonBody, Encoding.UTF8, "application/json");
 				HttpResponseMessage response = await DuelSettings.GlobalClient.SendAsync(request);
 				string str = await response.Content.ReadAsStringAsync();
+				if (!response.IsSuccessStatusCode && response.StatusCode == System.Net.HttpStatusCode.BadRequest && thinkingMode != "plain" && LooksLikeThinkingControlError(str))
+				{
+					Logger.Log("ShoutNetwork", "[PrimaryChat] DeepSeek thinking payload rejected; retrying without thinking controls.");
+					response.Dispose();
+					JObject payload2 = BuildPrimaryChatPayload(messages, effectiveApiUrl, settings.ModelName, stream: false, out var _);
+					payload2.Remove("thinking");
+					payload2.Remove("reasoning_effort");
+					string jsonBody2 = payload2.ToString(Formatting.None);
+					using HttpRequestMessage httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, effectiveApiUrl);
+					httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", settings.ApiKey);
+					httpRequestMessage.Content = (HttpContent)new StringContent(jsonBody2, Encoding.UTF8, "application/json");
+					response = await DuelSettings.GlobalClient.SendAsync(httpRequestMessage);
+					str = await response.Content.ReadAsStringAsync();
+					thinkingMode = "deepseek_retry_plain";
+				}
 				if (response.IsSuccessStatusCode)
 				{
 					try
@@ -109,12 +401,14 @@ public static class ShoutNetwork
 						{
 							content = "（没说话）";
 						}
+						content = ApplyPlayerDynamicNameToMainText(content);
 						sw.Stop();
 						Logger.Obs("Network", "request_complete", new Dictionary<string, object>
 						{
 							["mode"] = "non_stream",
 							["ok"] = true,
 							["status"] = (int)response.StatusCode,
+							["thinkingMode"] = thinkingMode,
 							["latencyMs"] = Math.Round(sw.Elapsed.TotalMilliseconds, 2),
 							["resultLen"] = content.Length
 						});
@@ -145,6 +439,7 @@ public static class ShoutNetwork
 					["mode"] = "non_stream",
 					["ok"] = false,
 					["status"] = (int)response.StatusCode,
+					["thinkingMode"] = thinkingMode,
 					["latencyMs"] = Math.Round(sw.Elapsed.TotalMilliseconds, 2)
 				});
 				Logger.Metric("network.non_stream", ok: false, sw.Elapsed.TotalMilliseconds);
@@ -172,6 +467,8 @@ public static class ShoutNetwork
 
 	public static async Task CallApiWithMessagesStream(List<object> messages, int maxTokens, Action<string> onChunk, Action<string> onComplete, Action<string> onError, CancellationToken cancellationToken = default(CancellationToken))
 	{
+		messages = ApplyPlayerDisplayNameToOutgoingMessages(messages);
+		PlayerReferenceStreamFilter outputFilter = new PlayerReferenceStreamFilter();
 		StringBuilder fullText = new StringBuilder();
 		StringBuilder fullReasoning = new StringBuilder();
 		Stopwatch sw = Stopwatch.StartNew();
@@ -304,6 +601,7 @@ public static class ShoutNetwork
 								}
 								if (!string.IsNullOrEmpty(delta))
 								{
+									string text2 = outputFilter.Push(delta);
 									if (chunkCount == 0)
 									{
 										firstChunkMs = sw.Elapsed.TotalMilliseconds;
@@ -314,13 +612,16 @@ public static class ShoutNetwork
 										});
 									}
 									chunkCount++;
-									fullText.Append(delta);
-									try
+									if (!string.IsNullOrEmpty(text2))
 									{
-										onChunk?.Invoke(delta);
-									}
-									catch
-									{
+										fullText.Append(text2);
+										try
+										{
+											onChunk?.Invoke(text2);
+										}
+										catch
+										{
+										}
 									}
 								}
 							}
@@ -332,6 +633,18 @@ public static class ShoutNetwork
 					finally
 					{
 						((IDisposable)request)?.Dispose();
+					}
+					string text3 = outputFilter.Flush();
+					if (!string.IsNullOrEmpty(text3))
+					{
+						fullText.Append(text3);
+						try
+						{
+							onChunk?.Invoke(text3);
+						}
+						catch
+						{
+						}
 					}
 					streamSucceeded = true;
 				}
@@ -367,6 +680,11 @@ public static class ShoutNetwork
 				}
 				if (fullText.Length > 0)
 				{
+					string text4 = outputFilter.Flush();
+					if (!string.IsNullOrEmpty(text4))
+					{
+						fullText.Append(text4);
+					}
 					sw.Stop();
 					Logger.Obs("Network", "request_complete", new Dictionary<string, object>
 					{
@@ -382,7 +700,7 @@ public static class ShoutNetwork
 					Logger.Metric("network.stream", ok: true, sw.Elapsed.TotalMilliseconds);
 					string outputContent3 = BuildTokenStatsOutputContent(fullText.ToString(), fullReasoning.ToString());
 					Logger.RecordTokenStats(inputTokens, Logger.EstimateTokens(outputContent3), messages, outputContent3, "stream_partial");
-					onComplete?.Invoke(fullText.ToString().Trim());
+					onComplete?.Invoke(ApplyPlayerDynamicNameToMainText(fullText.ToString()).Trim());
 					return;
 				}
 				if (lastStreamException != null)
@@ -402,6 +720,7 @@ public static class ShoutNetwork
 				}
 			}
 			string finalText = fullText.ToString().Trim();
+			finalText = ApplyPlayerDynamicNameToMainText(finalText);
 			if (string.IsNullOrWhiteSpace(finalText))
 			{
 				finalText = "（没说话）";
@@ -434,11 +753,11 @@ public static class ShoutNetwork
 			Logger.Metric("network.stream", ok: true, sw.Elapsed.TotalMilliseconds);
 			string outputContent4 = BuildTokenStatsOutputContent(fullText.ToString(), fullReasoning.ToString());
 			Logger.RecordTokenStats(inputTokens, Logger.EstimateTokens(outputContent4), messages, outputContent4, "stream_cancelled");
-			onComplete?.Invoke(fullText.ToString().Trim());
+			onComplete?.Invoke(ApplyPlayerDynamicNameToMainText(fullText.ToString()).Trim());
 		}
 		catch (Exception ex3)
 		{
-			string partial = fullText.ToString().Trim();
+			string partial = ApplyPlayerDynamicNameToMainText(fullText.ToString()).Trim();
 			if (!string.IsNullOrEmpty(partial))
 			{
 				sw.Stop();

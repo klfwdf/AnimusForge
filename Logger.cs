@@ -600,6 +600,38 @@ public static class Logger
 		}
 	}
 
+	public static void RecordMessageDump(string title, IEnumerable<object> messages, string mode = null)
+	{
+		try
+		{
+			if (string.IsNullOrWhiteSpace(_tokenStatsPath) || !IsPathEnabled(_tokenStatsPath))
+			{
+				return;
+			}
+			string text = BuildMessagesDump(messages);
+			if (string.IsNullOrWhiteSpace(text))
+			{
+				return;
+			}
+			string text2 = DateTime.Now.ToString("HH:mm:ss");
+			string currentTraceId = CurrentTraceId;
+			string text3 = string.IsNullOrWhiteSpace(currentTraceId) ? "" : (" trace=" + currentTraceId);
+			string text4 = string.IsNullOrWhiteSpace(mode) ? "" : (" mode=" + mode.Trim());
+			string text5 = string.IsNullOrWhiteSpace(title) ? "" : (" title=" + title.Trim());
+			lock (_fileLock)
+			{
+				StringBuilder stringBuilder = new StringBuilder();
+				stringBuilder.AppendLine($"[{text2}] STRICT_MESSAGES{text3}{text4}{text5}");
+				stringBuilder.AppendLine(text);
+				stringBuilder.AppendLine("----");
+				AppendUtf8(_tokenStatsPath, stringBuilder.ToString());
+			}
+		}
+		catch
+		{
+		}
+	}
+
 	private static string BuildMessagesDump(IEnumerable<object> messages)
 	{
 		try

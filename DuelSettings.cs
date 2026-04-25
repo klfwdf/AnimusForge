@@ -1,4 +1,5 @@
-using System;
+﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -9,6 +10,7 @@ using MCM.Abstractions;
 using MCM.Abstractions.Attributes;
 using MCM.Abstractions.Attributes.v2;
 using MCM.Abstractions.Base.Global;
+using MCM.Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using TaleWorlds.Library;
@@ -21,6 +23,43 @@ public class DuelSettings : AttributeGlobalSettings<DuelSettings>
 
 	private static bool _settingsFallbackWarned;
 
+	private sealed class ModelListFetchResult
+	{
+		public bool Success;
+
+		public string RequestUrl = "";
+
+		public List<string> Models = new List<string>();
+
+		public HttpStatusCode StatusCode;
+
+		public string ResponseBody = "";
+
+		public string ErrorMessage = "";
+	}
+
+	private const string DefaultDropdownModelName = "gpt-4o-mini";
+
+	private const string ManualDropdownModelName = "*手动填写*";
+
+	private List<string> _mainApiModelOptions = new List<string>();
+
+	private List<string> _auxiliaryApiModelOptions = new List<string>();
+
+	private List<string> _actionPostprocessApiModelOptions = new List<string>();
+
+	private List<string> _eventAndRebellionApiModelOptions = new List<string>();
+
+	private Dropdown<string> _mainApiModelDropdown = Dropdown<string>.Empty;
+
+	private Dropdown<string> _auxiliaryApiModelDropdown = Dropdown<string>.Empty;
+
+	private Dropdown<string> _actionPostprocessApiModelDropdown = Dropdown<string>.Empty;
+
+	private Dropdown<string> _eventAndRebellionApiModelDropdown = Dropdown<string>.Empty;
+
+	private const string UnsupportedContextExtractionApiWarningMessage = "该站点使用的模型不满足本mod的上下文提取要求，你依然可以继续使用，但使用后产生的任何回复内容不合理问题，不由本mod负责。";
+
 	public static readonly HttpClient GlobalClient = new HttpClient();
 
 	public override string Id => "AnimusForge_global_settings";
@@ -31,17 +70,38 @@ public class DuelSettings : AttributeGlobalSettings<DuelSettings>
 
 	public override string FormatType => "json";
 
-	[SettingPropertyText("API 地址（支持填写 Base URL）", -1, true, "", Order = 0, RequireRestart = false, HintText = "请填写你的接口地址，例如: https://api.deepseek.com/v1 或 https://api.deepseek.com/v1/chat/completions\n当你填写到 /v1 时，本模组会自动请求 /v1/chat/completions。")]
+	[SettingPropertyText("API 地址（支持填写 Base URL）", -1, true, "", Order = 0, RequireRestart = false, HintText = "请填写你的接口地址，例如: https://api.openai.com/v1 或 https://api.openai.com/v1/chat/completions\n当你填写到 /v1 时，本模组会自动请求 /v1/chat/completions。")]
 	[SettingPropertyGroup("1. AI 核心配置/1. 主API（正文生成）", GroupOrder = -300)]
-	public string ApiUrl { get; set; } = "https://api.deepseek.com/v1";
+	public string ApiUrl { get; set; } = "https://api.openai.com/v1";
 
 	[SettingPropertyText("API 密钥 (Key)", -1, true, "", Order = 1, RequireRestart = false, HintText = "填入你的 API 密钥")]
 	[SettingPropertyGroup("1. AI 核心配置/1. 主API（正文生成）", GroupOrder = -300)]
 	public string ApiKey { get; set; } = "";
 
-	[SettingPropertyText("模型名称", -1, true, "", Order = 2, RequireRestart = false, HintText = "例如: deepseek-chat。请填写你当前接口实际支持的模型名。")]
+	[SettingPropertyText("模型名称", -1, true, "", Order = 2, RequireRestart = false, HintText = "例如: gpt-4o-mini。请填写你当前接口实际支持的模型名。")]
 	[SettingPropertyGroup("1. AI 核心配置/1. 主API（正文生成）", GroupOrder = -300)]
-	public string ModelName { get; set; } = "deepseek-chat";
+	public string ModelName { get; set; } = "gpt-4o-mini";
+
+	[SettingPropertyButton("拉取模型列表", -1, true, "", Content = "点击拉取", Order = 3)]
+	[SettingPropertyGroup("1. AI 核心配置/1. 主API（正文生成）", GroupOrder = -300)]
+	public Action FetchMainModelList { get; set; }
+
+	[SettingPropertyDropdown("模型名称（下拉）", Order = 4, RequireRestart = false, HintText = "请先点击“拉取模型列表”，然后从下拉中选择模型。若选择“*手动填写*”，则使用上方文本框中的模型名。")]
+	[SettingPropertyGroup("1. AI 核心配置/1. 主API（正文生成）", GroupOrder = -300)]
+	public Dropdown<string> MainModelDropdown
+	{
+		get
+		{
+			string selectedOption = GetMainSelectedModelOption();
+			_mainApiModelDropdown = BuildDropdownFromOptions(_mainApiModelOptions, selectedOption, DefaultDropdownModelName, preserveBlankSelection: false, out _mainApiModelOptions, out var _);
+			return _mainApiModelDropdown;
+		}
+		set
+		{
+			string selectedOption = GetMainSelectedModelOption();
+			_mainApiModelDropdown = BuildDropdownFromIncoming(value, _mainApiModelOptions, selectedOption, DefaultDropdownModelName, preserveBlankSelection: false, out _mainApiModelOptions, out var _);
+		}
+	}
 
 	[SettingPropertyButton("测试 API 连接", -1, true, "", Content = "点击测试", Order = 5)]
 	[SettingPropertyGroup("1. AI 核心配置/1. 主API（正文生成）", GroupOrder = -300)]
@@ -119,9 +179,9 @@ public class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyGroup("6. 规则触发（返回）")]
 	public bool UseAuxiliaryRuleApi { get; set; } = false;
 
-	[SettingPropertyText("辅助API 地址（支持填写 Base URL）", -1, true, "", Order = 0, RequireRestart = false, HintText = "用于规则检索的低成本接口地址，例如: https://api.deepseek.com/v1。填写到 /v1 时会自动补全为 /v1/chat/completions。")]
+	[SettingPropertyText("辅助API 地址（支持填写 Base URL）", -1, true, "", Order = 0, RequireRestart = false, HintText = "用于规则检索的低成本接口地址，例如: https://api.openai.com/v1。填写到 /v1 时会自动补全为 /v1/chat/completions。")]
 	[SettingPropertyGroup("1. AI 核心配置/2. 前处理API（规则检索与规则路由）", GroupOrder = -290)]
-	public string AuxiliaryApiUrl { get; set; } = "https://api.deepseek.com/v1";
+	public string AuxiliaryApiUrl { get; set; } = "https://api.openai.com/v1";
 
 	[SettingPropertyText("辅助API 密钥 (Key)", -1, true, "", Order = 1, RequireRestart = false, HintText = "填入辅助API的密钥。")]
 	[SettingPropertyGroup("1. AI 核心配置/2. 前处理API（规则检索与规则路由）", GroupOrder = -290)]
@@ -129,12 +189,34 @@ public class DuelSettings : AttributeGlobalSettings<DuelSettings>
 
 	[SettingPropertyText("辅助模型名称", -1, true, "", Order = 2, RequireRestart = false, HintText = "用于规则检索的廉价模型名称。")]
 	[SettingPropertyGroup("1. AI 核心配置/2. 前处理API（规则检索与规则路由）", GroupOrder = -290)]
-	public string AuxiliaryModelName { get; set; } = "deepseek-chat";
+	public string AuxiliaryModelName { get; set; } = "gpt-4o-mini";
 
-	[SettingPropertyButton("测试辅助API连接", -1, true, "", Content = "点击测试", Order = 3)]
+	[SettingPropertyButton("拉取模型列表", -1, true, "", Content = "点击拉取", Order = 3)]
+	[SettingPropertyGroup("1. AI 核心配置/2. 前处理API（规则检索与规则路由）", GroupOrder = -290)]
+	public Action FetchAuxiliaryModelList { get; set; }
+
+	[SettingPropertyDropdown("辅助模型名称（下拉）", Order = 4, RequireRestart = false, HintText = "请先点击“拉取模型列表”，然后从下拉中选择模型。若选择“*手动填写*”，则使用上方文本框中的模型名。")]
+	[SettingPropertyGroup("1. AI 核心配置/2. 前处理API（规则检索与规则路由）", GroupOrder = -290)]
+	public Dropdown<string> AuxiliaryModelDropdown
+	{
+		get
+		{
+			string selectedOption = GetAuxiliarySelectedModelOption();
+			_auxiliaryApiModelDropdown = BuildDropdownFromOptions(_auxiliaryApiModelOptions, selectedOption, "", preserveBlankSelection: false, out _auxiliaryApiModelOptions, out var _);
+			return _auxiliaryApiModelDropdown;
+		}
+		set
+		{
+			string selectedOption = GetAuxiliarySelectedModelOption();
+			_auxiliaryApiModelDropdown = BuildDropdownFromIncoming(value, _auxiliaryApiModelOptions, selectedOption, "", preserveBlankSelection: false, out _auxiliaryApiModelOptions, out var _);
+		}
+	}
+
+	[SettingPropertyButton("测试辅助API连接", -1, true, "", Content = "点击测试", Order = 5)]
 	[SettingPropertyGroup("1. AI 核心配置/2. 前处理API（规则检索与规则路由）", GroupOrder = -290)]
 	public Action TestAuxiliaryConnection { get; set; }
-	[SettingPropertyText("后处理API 地址（支持填写 Base URL）", -1, true, "", Order = 0, RequireRestart = false, HintText = "用于标签后处理的独立接口地址，例如: https://api.deepseek.com/v1。填写到 /v1 时会自动补全为 /v1/chat/completions。留空时将继续回退使用主API。")]
+
+	[SettingPropertyText("后处理API 地址（支持填写 Base URL）", -1, true, "", Order = 0, RequireRestart = false, HintText = "用于标签后处理的独立接口地址，例如: https://api.openai.com/v1。填写到 /v1 时会自动补全为 /v1/chat/completions。留空时将继续回退使用主API。")]
 	[SettingPropertyGroup("1. AI 核心配置/3. 后处理API（动作标签与情绪标签判定）", GroupOrder = -280)]
 	public string ActionPostprocessApiUrl { get; set; } = "";
 
@@ -142,13 +224,71 @@ public class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyGroup("1. AI 核心配置/3. 后处理API（动作标签与情绪标签判定）", GroupOrder = -280)]
 	public string ActionPostprocessApiKey { get; set; } = "";
 
-	[SettingPropertyText("后处理模型名称", -1, true, "", Order = 2, RequireRestart = false, HintText = "用于标签后处理的模型名称。留空时将继续回退使用主API。后处理建议优先使用带思考模式的模型（例如 DeepSeek 的思考模式）或更高级模型，以提升标签判定稳定性。")]
+	[SettingPropertyText("后处理模型名称", -1, true, "", Order = 2, RequireRestart = false, HintText = "用于标签后处理的模型名称。留空时将继续回退使用主API。后处理建议优先使用带思考/推理能力的模型（例如 OpenAI 的推理模型）或更高级模型，以提升标签判定稳定性。")]
 	[SettingPropertyGroup("1. AI 核心配置/3. 后处理API（动作标签与情绪标签判定）", GroupOrder = -280)]
 	public string ActionPostprocessModelName { get; set; } = "";
 
-	[SettingPropertyButton("测试后处理API连接", -1, true, "", Content = "点击测试", Order = 3)]
+	[SettingPropertyButton("拉取模型列表", -1, true, "", Content = "点击拉取", Order = 3)]
+	[SettingPropertyGroup("1. AI 核心配置/3. 后处理API（动作标签与情绪标签判定）", GroupOrder = -280)]
+	public Action FetchActionPostprocessModelList { get; set; }
+
+	[SettingPropertyDropdown("后处理模型名称（下拉）", Order = 4, RequireRestart = false, HintText = "请先点击“拉取模型列表”，然后从下拉中选择模型。若选择“*手动填写*”，则使用上方文本框中的模型名。")]
+	[SettingPropertyGroup("1. AI 核心配置/3. 后处理API（动作标签与情绪标签判定）", GroupOrder = -280)]
+	public Dropdown<string> ActionPostprocessModelDropdown
+	{
+		get
+		{
+			string selectedOption = GetActionPostprocessSelectedModelOption();
+			_actionPostprocessApiModelDropdown = BuildDropdownFromOptions(_actionPostprocessApiModelOptions, selectedOption, "", preserveBlankSelection: false, out _actionPostprocessApiModelOptions, out var _);
+			return _actionPostprocessApiModelDropdown;
+		}
+		set
+		{
+			string selectedOption = GetActionPostprocessSelectedModelOption();
+			_actionPostprocessApiModelDropdown = BuildDropdownFromIncoming(value, _actionPostprocessApiModelOptions, selectedOption, "", preserveBlankSelection: false, out _actionPostprocessApiModelOptions, out var _);
+		}
+	}
+
+	[SettingPropertyButton("测试后处理API连接", -1, true, "", Content = "点击测试", Order = 5)]
 	[SettingPropertyGroup("1. AI 核心配置/3. 后处理API（动作标签与情绪标签判定）", GroupOrder = -280)]
 	public Action TestActionPostprocessConnection { get; set; }
+
+	[SettingPropertyText("事件/叛乱API 地址（支持填写 Base URL）", -1, true, "", Order = 0, RequireRestart = false, HintText = "用于事件系统周报与王国叛乱命名的独立接口地址，例如: https://api.openai.com/v1。填写到 /v1 时会自动补全为 /v1/chat/completions。留空时将继续回退使用主API。")]
+	[SettingPropertyGroup("1. AI 核心配置/4. 事件与王国叛乱API（周报生成与叛乱命名）", GroupOrder = -270)]
+	public string EventAndRebellionApiUrl { get; set; } = "";
+
+	[SettingPropertyText("事件/叛乱API 密钥 (Key)", -1, true, "", Order = 1, RequireRestart = false, HintText = "填入事件/叛乱专用API的密钥。留空时将继续回退使用主API。")]
+	[SettingPropertyGroup("1. AI 核心配置/4. 事件与王国叛乱API（周报生成与叛乱命名）", GroupOrder = -270)]
+	public string EventAndRebellionApiKey { get; set; } = "";
+
+	[SettingPropertyText("事件/叛乱模型名称", -1, true, "", Order = 2, RequireRestart = false, HintText = "用于事件周报与王国叛乱命名的模型名称。留空时将继续回退使用主API。")]
+	[SettingPropertyGroup("1. AI 核心配置/4. 事件与王国叛乱API（周报生成与叛乱命名）", GroupOrder = -270)]
+	public string EventAndRebellionModelName { get; set; } = "";
+
+	[SettingPropertyButton("拉取模型列表", -1, true, "", Content = "点击拉取", Order = 3)]
+	[SettingPropertyGroup("1. AI 核心配置/4. 事件与王国叛乱API（周报生成与叛乱命名）", GroupOrder = -270)]
+	public Action FetchEventAndRebellionModelList { get; set; }
+
+	[SettingPropertyDropdown("事件/叛乱模型名称（下拉）", Order = 4, RequireRestart = false, HintText = "请先点击“拉取模型列表”，然后从下拉中选择模型。若选择“*手动填写*”，则使用上方文本框中的模型名。")]
+	[SettingPropertyGroup("1. AI 核心配置/4. 事件与王国叛乱API（周报生成与叛乱命名）", GroupOrder = -270)]
+	public Dropdown<string> EventAndRebellionModelDropdown
+	{
+		get
+		{
+			string selectedOption = GetEventAndRebellionSelectedModelOption();
+			_eventAndRebellionApiModelDropdown = BuildDropdownFromOptions(_eventAndRebellionApiModelOptions, selectedOption, "", preserveBlankSelection: false, out _eventAndRebellionApiModelOptions, out var _);
+			return _eventAndRebellionApiModelDropdown;
+		}
+		set
+		{
+			string selectedOption = GetEventAndRebellionSelectedModelOption();
+			_eventAndRebellionApiModelDropdown = BuildDropdownFromIncoming(value, _eventAndRebellionApiModelOptions, selectedOption, "", preserveBlankSelection: false, out _eventAndRebellionApiModelOptions, out var _);
+		}
+	}
+
+	[SettingPropertyButton("测试事件/叛乱API连接", -1, true, "", Content = "点击测试", Order = 5)]
+	[SettingPropertyGroup("1. AI 核心配置/4. 事件与王国叛乱API（周报生成与叛乱命名）", GroupOrder = -270)]
+	public Action TestEventAndRebellionConnection { get; set; }
 
 	[SettingPropertyBool("启用TTS语音", Order = 0, RequireRestart = false, HintText = "总开关。关闭后，NPC 不再播放 TTS 语音，并回退到纯文本气泡显示。")]
 	[SettingPropertyGroup("7. 火山引擎 TTS（专用）")]
@@ -326,6 +466,467 @@ public class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		return num;
 	}
 
+	private static string NormalizeModelOption(string value)
+	{
+		return (value ?? "").Trim();
+	}
+
+	private static bool IsManualModelOption(string value)
+	{
+		return string.Equals(NormalizeModelOption(value), ManualDropdownModelName, StringComparison.Ordinal);
+	}
+
+	private static bool ContainsModelOption(IEnumerable<string> options, string candidate)
+	{
+		string text = NormalizeModelOption(candidate);
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return false;
+		}
+		if (options == null)
+		{
+			return false;
+		}
+		foreach (string option in options)
+		{
+			if (string.Equals(NormalizeModelOption(option), text, StringComparison.OrdinalIgnoreCase))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private static void AddModelOption(List<string> target, HashSet<string> seen, string value)
+	{
+		string text = NormalizeModelOption(value);
+		if (!string.IsNullOrWhiteSpace(text) && seen.Add(text))
+		{
+			target.Add(text);
+		}
+	}
+
+	private static string ReadSelectedModelOption(Dropdown<string> dropdown)
+	{
+		if (dropdown == null || dropdown.Count <= 0)
+		{
+			return null;
+		}
+		int selectedIndex = dropdown.SelectedIndex;
+		if (selectedIndex < 0 || selectedIndex >= dropdown.Count)
+		{
+			selectedIndex = 0;
+		}
+		return NormalizeModelOption(dropdown[selectedIndex]);
+	}
+
+	private static string ResolveSelectedModelOption(IEnumerable<string> cachedOptions, Dropdown<string> dropdown, string manualModel, string fallbackModel, bool preserveBlankSelection)
+	{
+		string text = ReadSelectedModelOption(dropdown);
+		if (text != null)
+		{
+			if (string.IsNullOrWhiteSpace(text))
+			{
+				return preserveBlankSelection ? string.Empty : NormalizeModelOption(fallbackModel);
+			}
+			return text;
+		}
+		string text2 = NormalizeModelOption(manualModel);
+		if (string.IsNullOrWhiteSpace(text2))
+		{
+			return preserveBlankSelection ? string.Empty : NormalizeModelOption(fallbackModel);
+		}
+		if (string.Equals(text2, NormalizeModelOption(fallbackModel), StringComparison.OrdinalIgnoreCase) || ContainsModelOption(cachedOptions, text2))
+		{
+			return text2;
+		}
+		return ManualDropdownModelName;
+	}
+
+	private static string ResolveEffectiveModelName(IEnumerable<string> cachedOptions, Dropdown<string> dropdown, string manualModel, string fallbackModel, bool preserveBlankSelection)
+	{
+		string text = ResolveSelectedModelOption(cachedOptions, dropdown, manualModel, fallbackModel, preserveBlankSelection);
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return "";
+		}
+		if (IsManualModelOption(text))
+		{
+			return NormalizeModelOption(manualModel);
+		}
+		return text;
+	}
+
+	private static List<string> BuildModelOptionList(IEnumerable<string> candidates, string selectedOption, string fallbackModel, bool preserveBlankSelection)
+	{
+		List<string> list = new List<string>();
+		HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		if (preserveBlankSelection)
+		{
+			list.Add(string.Empty);
+			seen.Add(string.Empty);
+		}
+		list.Add(ManualDropdownModelName);
+		seen.Add(ManualDropdownModelName);
+		if (candidates != null)
+		{
+			foreach (string candidate in candidates)
+			{
+				if (string.IsNullOrWhiteSpace(NormalizeModelOption(candidate)) || IsManualModelOption(candidate))
+				{
+					continue;
+				}
+				AddModelOption(list, seen, candidate);
+			}
+		}
+		AddModelOption(list, seen, selectedOption);
+		AddModelOption(list, seen, fallbackModel);
+		if (list.Count == 0)
+		{
+			list.Add(preserveBlankSelection ? string.Empty : DefaultDropdownModelName);
+		}
+		return list;
+	}
+
+	private static int ResolveModelOptionIndex(List<string> options, string selectedOption)
+	{
+		if (options == null || options.Count == 0)
+		{
+			return 0;
+		}
+		string text = NormalizeModelOption(selectedOption);
+		for (int i = 0; i < options.Count; i++)
+		{
+			if (string.Equals(options[i], text, StringComparison.OrdinalIgnoreCase))
+			{
+				return i;
+			}
+		}
+		return 0;
+	}
+
+	private static List<string> ReadDropdownValues(Dropdown<string> dropdown)
+	{
+		List<string> list = new List<string>();
+		if (dropdown == null)
+		{
+			return list;
+		}
+		for (int i = 0; i < dropdown.Count; i++)
+		{
+			list.Add(dropdown[i]);
+		}
+		return list;
+	}
+
+	private static Dropdown<string> BuildDropdownFromOptions(List<string> cachedOptions, string selectedOption, string fallbackModel, bool preserveBlankSelection, out List<string> normalizedOptions, out string normalizedSelectedOption)
+	{
+		normalizedOptions = BuildModelOptionList(cachedOptions, selectedOption, fallbackModel, preserveBlankSelection);
+		int num = ResolveModelOptionIndex(normalizedOptions, selectedOption);
+		normalizedSelectedOption = normalizedOptions[num];
+		return new Dropdown<string>(normalizedOptions, num);
+	}
+
+	private static Dropdown<string> BuildDropdownFromIncoming(Dropdown<string> incoming, List<string> cachedOptions, string selectedOption, string fallbackModel, bool preserveBlankSelection, out List<string> normalizedOptions, out string normalizedSelectedOption)
+	{
+		if (incoming != null && incoming.Count > 0)
+		{
+			List<string> list = ReadDropdownValues(incoming);
+			string text = ReadSelectedModelOption(incoming);
+			normalizedOptions = BuildModelOptionList(list, text, fallbackModel, preserveBlankSelection);
+			int num = ResolveModelOptionIndex(normalizedOptions, text);
+			normalizedSelectedOption = normalizedOptions[num];
+			return new Dropdown<string>(normalizedOptions, num);
+		}
+		return BuildDropdownFromOptions(cachedOptions, selectedOption, fallbackModel, preserveBlankSelection, out normalizedOptions, out normalizedSelectedOption);
+	}
+
+	private static string BuildModelListApiUrl(string rawApiUrl)
+	{
+		string text = (rawApiUrl ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return "";
+		}
+		try
+		{
+			if (!Uri.TryCreate(text, UriKind.Absolute, out var result))
+			{
+				return text.TrimEnd('/') + "/models";
+			}
+			string text2 = (result.AbsolutePath ?? "").Trim();
+			if (string.IsNullOrWhiteSpace(text2))
+			{
+				text2 = "/v1";
+			}
+			string text3 = text2.TrimEnd('/');
+			if (text3.EndsWith("/chat/completions", StringComparison.OrdinalIgnoreCase))
+			{
+				text3 = text3.Substring(0, text3.Length - "/chat/completions".Length);
+			}
+			if (string.IsNullOrWhiteSpace(text3))
+			{
+				text3 = "/v1";
+			}
+			UriBuilder uriBuilder = new UriBuilder(result)
+			{
+				Path = text3.TrimEnd('/') + "/models",
+				Query = ""
+			};
+			return uriBuilder.Uri.ToString();
+		}
+		catch
+		{
+			return text.TrimEnd('/') + "/models";
+		}
+	}
+
+	private static List<string> ParseModelListFromResponse(string responseBody)
+	{
+		List<string> list = new List<string>();
+		HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		if (string.IsNullOrWhiteSpace(responseBody))
+		{
+			return list;
+		}
+		try
+		{
+			void AppendFromArray(JToken token)
+			{
+				if (!(token is JArray jArray))
+				{
+					return;
+				}
+				foreach (JToken item in jArray)
+				{
+					if (item == null)
+					{
+						continue;
+					}
+					if (item.Type == JTokenType.String)
+					{
+						AddModelOption(list, seen, item.ToString());
+						continue;
+					}
+					AddModelOption(list, seen, item["id"]?.ToString());
+					AddModelOption(list, seen, item["name"]?.ToString());
+					AddModelOption(list, seen, item["model"]?.ToString());
+				}
+			}
+
+			JToken jToken = JToken.Parse(responseBody);
+			AppendFromArray(jToken);
+			AppendFromArray(jToken["data"]);
+			AppendFromArray(jToken["models"]);
+			AppendFromArray(jToken["result"]?["data"]);
+			AppendFromArray(jToken["result"]?["models"]);
+		}
+		catch
+		{
+		}
+		return list;
+	}
+
+	private static async Task<ModelListFetchResult> FetchModelListAsync(string rawApiUrl, string apiKey)
+	{
+		ModelListFetchResult modelListFetchResult = new ModelListFetchResult();
+		try
+		{
+			modelListFetchResult.RequestUrl = BuildModelListApiUrl(rawApiUrl);
+			if (string.IsNullOrWhiteSpace(modelListFetchResult.RequestUrl))
+			{
+				modelListFetchResult.ErrorMessage = "API 地址为空，无法拉取模型列表。";
+				return modelListFetchResult;
+			}
+			if (string.IsNullOrWhiteSpace(apiKey))
+			{
+				modelListFetchResult.ErrorMessage = "API Key 为空，无法拉取模型列表。";
+				return modelListFetchResult;
+			}
+			using HttpRequestMessage httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, modelListFetchResult.RequestUrl);
+			httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", apiKey.Trim());
+			HttpResponseMessage result = await GlobalClient.SendAsync(httpRequestMessage);
+			try
+			{
+				modelListFetchResult.StatusCode = result.StatusCode;
+				modelListFetchResult.ResponseBody = await result.Content.ReadAsStringAsync();
+				if (!result.IsSuccessStatusCode)
+				{
+					modelListFetchResult.ErrorMessage = $"HTTP {(int)result.StatusCode} {result.ReasonPhrase}";
+					return modelListFetchResult;
+				}
+				modelListFetchResult.Models = ParseModelListFromResponse(modelListFetchResult.ResponseBody);
+				if (modelListFetchResult.Models.Count == 0)
+				{
+					modelListFetchResult.ErrorMessage = "接口返回成功，但模型列表为空或解析失败。";
+					return modelListFetchResult;
+				}
+				modelListFetchResult.Success = true;
+				return modelListFetchResult;
+			}
+			finally
+			{
+				((IDisposable)result)?.Dispose();
+			}
+		}
+		catch (Exception ex)
+		{
+			modelListFetchResult.ErrorMessage = ex.Message;
+			return modelListFetchResult;
+		}
+	}
+
+	private void ApplyMainModelList(List<string> models)
+	{
+		string selectedOption = GetMainSelectedModelOption();
+		_mainApiModelDropdown = BuildDropdownFromOptions(models ?? new List<string>(), selectedOption, DefaultDropdownModelName, preserveBlankSelection: false, out _mainApiModelOptions, out var _);
+	}
+
+	private void ApplyAuxiliaryModelList(List<string> models)
+	{
+		string selectedOption = GetAuxiliarySelectedModelOption();
+		_auxiliaryApiModelDropdown = BuildDropdownFromOptions(models ?? new List<string>(), selectedOption, "", preserveBlankSelection: false, out _auxiliaryApiModelOptions, out var _);
+	}
+
+	private void ApplyActionPostprocessModelList(List<string> models)
+	{
+		string selectedOption = GetActionPostprocessSelectedModelOption();
+		_actionPostprocessApiModelDropdown = BuildDropdownFromOptions(models ?? new List<string>(), selectedOption, "", preserveBlankSelection: false, out _actionPostprocessApiModelOptions, out var _);
+	}
+
+	private void ApplyEventAndRebellionModelList(List<string> models)
+	{
+		string selectedOption = GetEventAndRebellionSelectedModelOption();
+		_eventAndRebellionApiModelDropdown = BuildDropdownFromOptions(models ?? new List<string>(), selectedOption, "", preserveBlankSelection: false, out _eventAndRebellionApiModelOptions, out var _);
+	}
+
+	public string GetMainSelectedModelOption()
+	{
+		return ResolveSelectedModelOption(_mainApiModelOptions, _mainApiModelDropdown, ModelName, DefaultDropdownModelName, preserveBlankSelection: false);
+	}
+
+	public string GetAuxiliarySelectedModelOption()
+	{
+		return ResolveSelectedModelOption(_auxiliaryApiModelOptions, _auxiliaryApiModelDropdown, AuxiliaryModelName, "", preserveBlankSelection: false);
+	}
+
+	public string GetActionPostprocessSelectedModelOption()
+	{
+		return ResolveSelectedModelOption(_actionPostprocessApiModelOptions, _actionPostprocessApiModelDropdown, ActionPostprocessModelName, "", preserveBlankSelection: false);
+	}
+
+	public string GetEventAndRebellionSelectedModelOption()
+	{
+		return ResolveSelectedModelOption(_eventAndRebellionApiModelOptions, _eventAndRebellionApiModelDropdown, EventAndRebellionModelName, "", preserveBlankSelection: false);
+	}
+
+	public string GetEffectiveMainModelName()
+	{
+		return ResolveEffectiveModelName(_mainApiModelOptions, _mainApiModelDropdown, ModelName, DefaultDropdownModelName, preserveBlankSelection: false);
+	}
+
+	public string GetEffectiveAuxiliaryModelName()
+	{
+		return ResolveEffectiveModelName(_auxiliaryApiModelOptions, _auxiliaryApiModelDropdown, AuxiliaryModelName, "", preserveBlankSelection: false);
+	}
+
+	public string GetEffectiveActionPostprocessModelName()
+	{
+		return ResolveEffectiveModelName(_actionPostprocessApiModelOptions, _actionPostprocessApiModelDropdown, ActionPostprocessModelName, "", preserveBlankSelection: false);
+	}
+
+	public string GetEffectiveEventAndRebellionModelName()
+	{
+		return ResolveEffectiveModelName(_eventAndRebellionApiModelOptions, _eventAndRebellionApiModelDropdown, EventAndRebellionModelName, "", preserveBlankSelection: false);
+	}
+
+	private void StartFetchModelList(string channelName, string rawApiUrl, string apiKey, Action<List<string>> applyModels)
+	{
+		Task.Run(async delegate
+		{
+			try
+			{
+				string text = (channelName ?? "").Trim();
+				string text2 = (rawApiUrl ?? "").Trim();
+				string text3 = (apiKey ?? "").Trim();
+				if (string.IsNullOrWhiteSpace(text2))
+				{
+					InformationManager.DisplayMessage(new InformationMessage("[系统] " + text + "：API 地址未填写，无法拉取模型列表。", Color.FromUint(4294901760u)));
+					return;
+				}
+				if (string.IsNullOrWhiteSpace(text3))
+				{
+					InformationManager.DisplayMessage(new InformationMessage("[系统] " + text + "：API Key 未填写，无法拉取模型列表。", Color.FromUint(4294901760u)));
+					return;
+				}
+				InformationManager.DisplayMessage(new InformationMessage("[系统] " + text + "：正在拉取模型列表...", Color.FromUint(4294967040u)));
+				ModelListFetchResult modelListFetchResult = await FetchModelListAsync(text2, text3);
+				if (!modelListFetchResult.Success)
+				{
+					string text4 = modelListFetchResult.ErrorMessage ?? "未知错误";
+					if ((int)modelListFetchResult.StatusCode > 0)
+					{
+						string text5 = BuildApiErrorHint(modelListFetchResult.RequestUrl, "", modelListFetchResult.StatusCode, modelListFetchResult.ResponseBody);
+						if (!string.IsNullOrWhiteSpace(text5))
+						{
+							text4 = text4 + "；" + text5;
+						}
+					}
+					InformationManager.DisplayMessage(new InformationMessage("[系统] " + text + "：拉取模型列表失败 - " + text4, Color.FromUint(4294901760u)));
+					Logger.Log("DuelSettings", "[" + text + "] 拉取模型列表失败: " + text4 + " | url=" + (modelListFetchResult.RequestUrl ?? ""));
+					return;
+				}
+				applyModels?.Invoke(modelListFetchResult.Models);
+				McmDropdownRuntimeRefresh.RequestRefresh();
+				string text6 = "";
+				if (string.Equals(text, "主API", StringComparison.Ordinal))
+				{
+					text6 = GetMainSelectedModelOption();
+				}
+				else if (string.Equals(text, "前处理API", StringComparison.Ordinal))
+				{
+					text6 = GetAuxiliarySelectedModelOption();
+				}
+				else if (string.Equals(text, "后处理API", StringComparison.Ordinal))
+				{
+					text6 = GetActionPostprocessSelectedModelOption();
+				}
+				else if (string.Equals(text, "事件/叛乱API", StringComparison.Ordinal))
+				{
+					text6 = GetEventAndRebellionSelectedModelOption();
+				}
+				if (IsManualModelOption(text6))
+				{
+					string text7 = "";
+					if (string.Equals(text, "主API", StringComparison.Ordinal))
+					{
+						text7 = NormalizeModelOption(ModelName);
+					}
+					else if (string.Equals(text, "前处理API", StringComparison.Ordinal))
+					{
+						text7 = NormalizeModelOption(AuxiliaryModelName);
+					}
+					else if (string.Equals(text, "后处理API", StringComparison.Ordinal))
+					{
+						text7 = NormalizeModelOption(ActionPostprocessModelName);
+					}
+					else if (string.Equals(text, "事件/叛乱API", StringComparison.Ordinal))
+					{
+						text7 = NormalizeModelOption(EventAndRebellionModelName);
+					}
+					text6 = ManualDropdownModelName + " -> " + (string.IsNullOrWhiteSpace(text7) ? "(空)" : text7);
+				}
+				InformationManager.DisplayMessage(new InformationMessage("[系统] " + text + "：模型列表拉取成功，共 " + modelListFetchResult.Models.Count + " 个，当前已选中 " + (string.IsNullOrWhiteSpace(text6) ? "空值" : text6), Color.FromUint(4278255360u)));
+				Logger.Log("DuelSettings", "[" + text + "] 拉取模型列表成功: count=" + modelListFetchResult.Models.Count + " url=" + (modelListFetchResult.RequestUrl ?? ""));
+			}
+			catch (Exception ex)
+			{
+				InformationManager.DisplayMessage(new InformationMessage("[系统] 拉取模型列表异常: " + ex.Message, Color.FromUint(4294901760u)));
+				Logger.Log("DuelSettings", "[拉取模型列表异常] " + ex);
+			}
+		});
+	}
+
 	public static string GetEffectiveApiUrl(string rawUrl)
 	{
 		string text = (rawUrl ?? "").Trim();
@@ -354,6 +955,41 @@ public class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		{
 		}
 		return text;
+	}
+
+	public static bool ShouldWarnForContextExtractionApi(string rawUrl)
+	{
+		string text = (rawUrl ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return false;
+		}
+		try
+		{
+			if (!Uri.TryCreate(text, UriKind.Absolute, out var result))
+			{
+				return false;
+			}
+			string text2 = (result.Host ?? "").Trim().ToLowerInvariant();
+			if (text2 == "api.deepseek.com")
+			{
+				return true;
+			}
+			if (text2 == "ark.cn-beijing.volces.com")
+			{
+				string text3 = (result.AbsolutePath ?? "").Trim();
+				return text3.StartsWith("/api", StringComparison.OrdinalIgnoreCase);
+			}
+		}
+		catch
+		{
+		}
+		return false;
+	}
+
+	public static string GetContextExtractionCompatibilityWarningMessage()
+	{
+		return UnsupportedContextExtractionApiWarningMessage;
 	}
 
 	private static string BuildApiErrorHint(string effectiveApiUrl, string modelName, HttpStatusCode statusCode, string responseBody)
@@ -429,6 +1065,22 @@ public class DuelSettings : AttributeGlobalSettings<DuelSettings>
 				InformationManager.DisplayMessage(new InformationMessage("[TTS] 火山测试异常: " + ex.Message, Color.FromUint(4294901760u)));
 			}
 		};
+		FetchMainModelList = delegate
+		{
+			StartFetchModelList("主API", ApiUrl, ApiKey, ApplyMainModelList);
+		};
+		FetchAuxiliaryModelList = delegate
+		{
+			StartFetchModelList("前处理API", AuxiliaryApiUrl, AuxiliaryApiKey, ApplyAuxiliaryModelList);
+		};
+		FetchActionPostprocessModelList = delegate
+		{
+			StartFetchModelList("后处理API", ActionPostprocessApiUrl, ActionPostprocessApiKey, ApplyActionPostprocessModelList);
+		};
+		FetchEventAndRebellionModelList = delegate
+		{
+			StartFetchModelList("事件/叛乱API", EventAndRebellionApiUrl, EventAndRebellionApiKey, ApplyEventAndRebellionModelList);
+		};
 		TestConnection = delegate
 		{
 			Task.Run(async delegate
@@ -436,16 +1088,25 @@ public class DuelSettings : AttributeGlobalSettings<DuelSettings>
 				try
 				{
 					Logger.Log("DuelSettings", "用户点击了 [测试 API 连接] 按钮...");
+					string effectiveModelName = GetEffectiveMainModelName();
 					if (string.IsNullOrWhiteSpace(ApiKey))
 					{
 						InformationManager.DisplayMessage(new InformationMessage("[系统] 错误：API 密钥未填写！", Color.FromUint(4294901760u)));
 					}
+					else if (string.IsNullOrWhiteSpace(effectiveModelName))
+					{
+						InformationManager.DisplayMessage(new InformationMessage("[系统] 错误：模型名称未填写！若下拉选择了“*手动填写*”，请在上方文本框填写模型名。", Color.FromUint(4294901760u)));
+					}
 					else
 					{
 						InformationManager.DisplayMessage(new InformationMessage("[系统] 正在呼叫哈宝 ...", Color.FromUint(4294967040u)));
+						if (ShouldWarnForContextExtractionApi(ApiUrl))
+						{
+							InformationManager.DisplayMessage(new InformationMessage(GetContextExtractionCompatibilityWarningMessage(), Color.FromUint(4294936576u)));
+						}
 						var requestPayload = new
 						{
-							model = ModelName,
+							model = effectiveModelName,
 							messages = new[]
 							{
 								new
@@ -487,7 +1148,7 @@ public class DuelSettings : AttributeGlobalSettings<DuelSettings>
 						else
 						{
 							InformationManager.DisplayMessage(new InformationMessage($"[系统] 连接失败！状态码: {response.StatusCode}", Color.FromUint(4294901760u)));
-							string text = BuildApiErrorHint(effectiveApiUrl, ModelName, response.StatusCode, responseString);
+							string text = BuildApiErrorHint(effectiveApiUrl, effectiveModelName, response.StatusCode, responseString);
 							if (!string.IsNullOrWhiteSpace(text))
 							{
 								InformationManager.DisplayMessage(new InformationMessage("[系统] 排查建议：" + text, Color.FromUint(4294936576u)));
@@ -511,20 +1172,21 @@ public class DuelSettings : AttributeGlobalSettings<DuelSettings>
 				try
 				{
 					Logger.Log("DuelSettings", "用户点击了[测试辅助API连接]按钮...");
+					string effectiveModelName = GetEffectiveAuxiliaryModelName();
 					if (string.IsNullOrWhiteSpace(AuxiliaryApiKey))
 					{
 						InformationManager.DisplayMessage(new InformationMessage("[系统] 错误：辅助API 密钥未填写！", Color.FromUint(4294901760u)));
 						return;
 					}
-					if (string.IsNullOrWhiteSpace(AuxiliaryModelName))
+					if (string.IsNullOrWhiteSpace(effectiveModelName))
 					{
-						InformationManager.DisplayMessage(new InformationMessage("[系统] 错误：辅助模型名称未填写！", Color.FromUint(4294901760u)));
+						InformationManager.DisplayMessage(new InformationMessage("[系统] 错误：辅助模型名称未填写！若下拉选择了“*手动填写*”，请在上方文本框填写模型名。", Color.FromUint(4294901760u)));
 						return;
 					}
 					InformationManager.DisplayMessage(new InformationMessage("[系统] 正在测试辅助API连接...", Color.FromUint(4294967040u)));
 					var requestPayload = new
 					{
-						model = AuxiliaryModelName,
+						model = effectiveModelName,
 						messages = new[]
 						{
 							new
@@ -539,7 +1201,7 @@ public class DuelSettings : AttributeGlobalSettings<DuelSettings>
 							}
 						}
 					};
-					string jsonBody = AIConfigHandler.BuildAuxiliaryRouterRequestJsonForExternal(GetEffectiveApiUrl(AuxiliaryApiUrl), AuxiliaryModelName, requestPayload.messages, 32, 0f, out var controlMode);
+					string jsonBody = AIConfigHandler.BuildAuxiliaryRouterRequestJsonForExternal(GetEffectiveApiUrl(AuxiliaryApiUrl), effectiveModelName, requestPayload.messages, 32, 0f, out var controlMode);
 					StringContent content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
 					string effectiveApiUrl = GetEffectiveApiUrl(AuxiliaryApiUrl);
 					using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, effectiveApiUrl);
@@ -564,7 +1226,7 @@ public class DuelSettings : AttributeGlobalSettings<DuelSettings>
 					else
 					{
 						InformationManager.DisplayMessage(new InformationMessage($"[系统] 辅助API连接失败！状态码: {response.StatusCode}", Color.FromUint(4294901760u)));
-						string hint = BuildApiErrorHint(effectiveApiUrl, AuxiliaryModelName, response.StatusCode, responseString);
+						string hint = BuildApiErrorHint(effectiveApiUrl, effectiveModelName, response.StatusCode, responseString);
 						if (!string.IsNullOrWhiteSpace(hint))
 						{
 							InformationManager.DisplayMessage(new InformationMessage("[系统] 排查建议：" + hint, Color.FromUint(4294936576u)));
@@ -586,20 +1248,25 @@ public class DuelSettings : AttributeGlobalSettings<DuelSettings>
 				try
 				{
 					Logger.Log("DuelSettings", "用户点击了[测试后处理API连接]按钮...");
+					string effectiveModelName = GetEffectiveActionPostprocessModelName();
 					if (string.IsNullOrWhiteSpace(ActionPostprocessApiKey))
 					{
 						InformationManager.DisplayMessage(new InformationMessage("[系统] 错误：后处理API 密钥未填写！", Color.FromUint(4294901760u)));
 						return;
 					}
-					if (string.IsNullOrWhiteSpace(ActionPostprocessModelName))
+					if (string.IsNullOrWhiteSpace(effectiveModelName))
 					{
-						InformationManager.DisplayMessage(new InformationMessage("[系统] 错误：后处理模型名称未填写！", Color.FromUint(4294901760u)));
+						InformationManager.DisplayMessage(new InformationMessage("[系统] 错误：后处理模型名称未填写！若下拉选择了“*手动填写*”，请在上方文本框填写模型名。", Color.FromUint(4294901760u)));
 						return;
 					}
 					InformationManager.DisplayMessage(new InformationMessage("[系统] 正在测试后处理API连接...", Color.FromUint(4294967040u)));
+					if (ShouldWarnForContextExtractionApi(ActionPostprocessApiUrl))
+					{
+						InformationManager.DisplayMessage(new InformationMessage(GetContextExtractionCompatibilityWarningMessage(), Color.FromUint(4294936576u)));
+					}
 					var requestPayload = new
 					{
-						model = ActionPostprocessModelName,
+						model = effectiveModelName,
 						messages = new[]
 						{
 							new
@@ -641,7 +1308,7 @@ public class DuelSettings : AttributeGlobalSettings<DuelSettings>
 					else
 					{
 						InformationManager.DisplayMessage(new InformationMessage($"[系统] 后处理API连接失败！状态码: {response.StatusCode}", Color.FromUint(4294901760u)));
-						string hint = BuildApiErrorHint(effectiveApiUrl, ActionPostprocessModelName, response.StatusCode, responseString);
+						string hint = BuildApiErrorHint(effectiveApiUrl, effectiveModelName, response.StatusCode, responseString);
 						if (!string.IsNullOrWhiteSpace(hint))
 						{
 							InformationManager.DisplayMessage(new InformationMessage("[系统] 排查建议：" + hint, Color.FromUint(4294936576u)));
@@ -653,6 +1320,89 @@ public class DuelSettings : AttributeGlobalSettings<DuelSettings>
 				{
 					InformationManager.DisplayMessage(new InformationMessage("[系统] 后处理API异常: " + ex.Message, Color.FromUint(4294901760u)));
 					Logger.Log("DuelSettings", "后处理API测试崩溃: " + ex.Message);
+				}
+			});
+		};
+		TestEventAndRebellionConnection = delegate
+		{
+			Task.Run(async delegate
+			{
+				try
+				{
+					Logger.Log("DuelSettings", "用户点击了[测试事件/叛乱专用API连接]按钮...");
+					string effectiveModelName = GetEffectiveEventAndRebellionModelName();
+					if (string.IsNullOrWhiteSpace(EventAndRebellionApiUrl))
+					{
+						InformationManager.DisplayMessage(new InformationMessage("[系统] 错误：事件/叛乱API 地址未填写！", Color.FromUint(4294901760u)));
+						return;
+					}
+					if (string.IsNullOrWhiteSpace(EventAndRebellionApiKey))
+					{
+						InformationManager.DisplayMessage(new InformationMessage("[系统] 错误：事件/叛乱API 密钥未填写！", Color.FromUint(4294901760u)));
+						return;
+					}
+					if (string.IsNullOrWhiteSpace(effectiveModelName))
+					{
+						InformationManager.DisplayMessage(new InformationMessage("[系统] 错误：事件/叛乱模型名称未填写！若下拉选择了“*手动填写*”，请在上方文本框填写模型名。", Color.FromUint(4294901760u)));
+						return;
+					}
+					InformationManager.DisplayMessage(new InformationMessage("[系统] 正在测试事件/叛乱专用API连接...", Color.FromUint(4294967040u)));
+					var requestPayload = new
+					{
+						model = effectiveModelName,
+						messages = new[]
+						{
+							new
+							{
+								role = "system",
+								content = "你是一名测试回显助手，只输出一句短回复。"
+							},
+							new
+							{
+								role = "user",
+								content = "请回复：事件与叛乱接口连通"
+							}
+						},
+						stream = false,
+						max_tokens = 32,
+						temperature = 0.0
+					};
+					string jsonBody = JsonConvert.SerializeObject(requestPayload);
+					StringContent content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
+					string effectiveApiUrl = GetEffectiveApiUrl(EventAndRebellionApiUrl);
+					using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, effectiveApiUrl);
+					request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", EventAndRebellionApiKey);
+					request.Content = content;
+					HttpResponseMessage response = await GlobalClient.SendAsync(request);
+					string responseString = await response.Content.ReadAsStringAsync();
+					if (response.IsSuccessStatusCode)
+					{
+						string reply = "";
+						try
+						{
+							JObject jsonResponse = JObject.Parse(responseString);
+							reply = jsonResponse["choices"]?[0]?["message"]?["content"]?.ToString() ?? "";
+						}
+						catch
+						{
+						}
+						InformationManager.DisplayMessage(new InformationMessage("事件/叛乱API 连接正常：" + (string.IsNullOrWhiteSpace(reply) ? "（返回为空）" : reply.Trim()), Color.FromUint(4278255360u)));
+					}
+					else
+					{
+						InformationManager.DisplayMessage(new InformationMessage($"[系统] 事件/叛乱API连接失败！状态码: {response.StatusCode}", Color.FromUint(4294901760u)));
+						string hint = BuildApiErrorHint(effectiveApiUrl, effectiveModelName, response.StatusCode, responseString);
+						if (!string.IsNullOrWhiteSpace(hint))
+						{
+							InformationManager.DisplayMessage(new InformationMessage("[系统] 排查建议：" + hint, Color.FromUint(4294936576u)));
+						}
+						Logger.Log("DuelSettings", $"事件/叛乱API测试失败! 状态码: {response.StatusCode} | 错误信息: {responseString}");
+					}
+				}
+				catch (Exception ex)
+				{
+					InformationManager.DisplayMessage(new InformationMessage("[系统] 事件/叛乱API异常: " + ex.Message, Color.FromUint(4294901760u)));
+					Logger.Log("DuelSettings", "事件/叛乱API测试崩溃: " + ex.Message);
 				}
 			});
 		};

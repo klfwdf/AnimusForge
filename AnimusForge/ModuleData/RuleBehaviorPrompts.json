@@ -5,7 +5,9 @@
                  "IsEnabled":  true,
                  "TopicNumber":  1,
                  "TopicLabel":  "决斗",
-                 "DialogueInstruction":  "【决斗规则】当玩家用挑衅、辱骂或明确提出\u0027决斗/单挑/比试\u0027时，你可以考虑与其进行正式决斗。\n决斗可以谈论赌注和彩头，如果一个人说出了自己的赌注，你得先确定他有没有。",
+                 "DialogueInstruction":  "【决斗规则】当玩家用挑衅、辱骂或明确提出\u0027决斗/单挑/比试\u0027时，你可以考虑与其进行正式决斗。\n决斗可以谈论赌注和彩头，如果一个人说出了自己的赌注，你得先确定他有没有,你只能和他进行真刀真枪决斗。",
+                 "HealthBlockedInstruction":  "【决斗禁止提示】系统检测到{npcName}当前血量未满100%（约{healthPercent}），本轮禁止接受任何决斗、单挑、比试或约战请求。你必须在正文中拒绝决斗；可以用受伤、状态不佳、时机不合适等口吻解释，但不要声称自己知道精确血量。正文不允许带任何动作标签，严禁输出[ACTION:DUEL]、[ACTION:DUEL_STAKE_GOLD:...]、[ACTION:DUEL_STAKE_ITEM:...]、[ACTION:DUEL_STAKE_NPC_GOLD:...]、[ACTION:DUEL_STAKE_NPC_ITEM:...]、[ACTION:DUEL_STAKE_PLAYER_GOLD:...]、[ACTION:DUEL_STAKE_PLAYER_ITEM:...]、[ACTION:DUEL_LINE_WIN:...]、[ACTION:DUEL_LINE_LOSE:...]。",
+                 "HealthBlockedMessage":  "[决斗失败] {npcName} 当前血量为 {healthPercent}，不足100%，无法进行决斗。",
                  "NonHeroInstruction":  "你不是一个有名有姓的NPC，你只是普通士兵或平民，你无法与玩家进行正式决斗。如果玩家提出决斗，你应当婉拒或表示你没有这个资格。",
                  "AcceptKeywords":  [
                                         "我要和你决斗。",
@@ -22,23 +24,31 @@
                  "PostprocessRules":  [
                                           {
                                               "Tag":  "[ACTION:DUEL]",
-                                              "Description":  "如果所有人同意决斗，输出这个"
+                                              "Description":  "如果玩家和NPC都同意真剑，武器，比武决斗，输出这个"
                                           },
                                           {
-                                              "Tag":  "[ACTION:DUEL_STAKE_GOLD:金额]",
-                                              "Description":  "如果所有人同意赌注是金额，输出这个"
+                                              "Tag":  "[ACTION:DUEL_STAKE_NPC_GOLD:金额]",
+                                              "Description":  "如果明确约定的是NPC自己押上的金额（NPC输了就付给玩家），输出这个；可与 [ACTION:DUEL_STAKE_NPC_ITEM:...] 同时出现"
                                           },
                                           {
-                                              "Tag":  "[ACTION:DUEL_STAKE_ITEM:物品名称:数量]",
-                                              "Description":  "如果所有人同意赌注是物品，输出这个；这里要写物品名称，不要写物品序号"
+                                              "Tag":  "[ACTION:DUEL_STAKE_NPC_ITEM:物品名称:数量]",
+                                              "Description":  "此处填写NPC的赌注，彩头；若有多件物品可逐条输出多行；物品字段必须填写NPC物品清单或<latest_reply>AFEF系统提示中的完整物品名称"
+                                          },
+                                          {
+                                              "Tag":  "[ACTION:DUEL_STAKE_PLAYER_GOLD:金额]",
+                                              "Description":  "如果明确约定的是玩家押上的金额（玩家输了就欠给NPC），输出这个；可与 [ACTION:DUEL_STAKE_PLAYER_ITEM:...] 同时出现"
+                                          },
+                                          {
+                                              "Tag":  "[ACTION:DUEL_STAKE_PLAYER_ITEM:物品名称:数量]",
+                                              "Description":  "此处填写玩家的赌注，彩头；若有多件物品可逐条输出多行；物品字段必须填写玩家可见装备或<latest_reply>AFEF系统提示中的完整物品名称"
                                           },
                                           {
                                               "Tag":  "[ACTION:DUEL_LINE_WIN:吹嘘的内容]",
-                                              "Description":  "*吹嘘的内容*写NPC在决斗胜利后的发出的吹嘘，如果你输出了[ACTION:DUEL]，那么你也要输出这个"
+                                              "Description":  "如果输出了[ACTION:DUEL]，那么也必须要输出这个NPC决斗胜利后的吹嘘，内容由标签输出器自行创作"
                                           },
                                           {
                                               "Tag":  "[ACTION:DUEL_LINE_LOSE:吐槽的内容]",
-                                              "Description":  "*吐槽的内容*写NPC在决斗败下阵后的吐槽，如果NPC同意了决斗，那么必须输出此标签，如果你输出了[ACTION:DUEL]，那么你也要输出这个"
+                                              "Description":  "如果输出了[ACTION:DUEL]，那么也必须要输出这个NPC决斗失败后的吐槽，内容由标签输出器自行创作"
                                           }
                                       ]
              },
@@ -51,19 +61,19 @@
                    "PostprocessRules":  [
                                             {
                                                 "Tag":  "[ACTION:GIVE_GOLD:金额]",
-                                                "Description":  "如果NPC在<latest_reply>里明确同意立即给玩家金币，就输出这个"
+                                                "Description":  "如果NPC现在在<latest_reply>里给了玩家金币，第纳尔，就输出这个"
                                             },
                                             {
                                                 "Tag":  "[ACTION:GIVE_ITEM:物品名称:数量]",
-                                                "Description":  "如果NPC在<latest_reply>里明确同意立即给玩家某个物品，就输出这个；这里要写物品名称，不要写物品序号"
+                                                "Description":  "如果NPC现在在<latest_reply>里给了玩家某个物品，就输出这个"
                                             },
                                             {
-                                                "Tag":  "[ACTION:DEBT_GOLD:金额]",
-                                                "Description":  "如果NPC同意先给钱，那么通过此标签输出玩家应当交付的金额"
+                                                "Tag":  "[AD;金额;天数;备注内容]",
+                                                "Description":  "如果NPC在<latest_reply>里明确同意新增玩家欠NPC的债务，就输出这个，物品按实际价格折算。天数填0表示无限期。（天数说明：21天=一季度，84天=一年，不存在周的概念）"
                                             },
                                             {
-                                                "Tag":  "[ACTION:DEBT_ITEM:物品名称:数量]",
-                                                "Description":  "如果NPC同意先给钱，那么通过此标签输出玩家应当交付的物品；这里要写物品名称，不要写物品序号"
+                                                "Tag":  "[ADP;债务ID]",
+                                                "Description":  "如果NPC在<latest_reply>里明确确认解除某笔债务（含还清、豁免、免除），就输出这个。"
                                             }
                                         ],
                    "RuntimeInstructionTemplates":  {
@@ -108,48 +118,12 @@
                                                 "Description":  "如果NPC在<latest_reply>里明确同意立即先给玩家某个物品，就输出这个"
                                             },
                                             {
-                                                "Tag":  "[ACTION:DEBT_GOLD:金额]",
-                                                "Description":  "如果NPC在<latest_reply>里明确同意新增金币债务，就输出这个,此标签可让玩家欠NPC金钱（请分清楚谁欠谁！）"
+                                                "Tag":  "[AD;金额;天数;备注内容]",
+                                                "Description":  "如果NPC在<latest_reply>里明确同意新增玩家欠NPC的金币债务，就输出这个。格式固定为 [AD;金额;天数;备注内容]，其中天数=0 表示无限期。(天数说明：一季度=21天，一年=84天，不存在周的概念）"
                                             },
                                             {
-                                                "Tag":  "[ACTION:DEBT_ITEM:物品名称:数量]",
-                                                "Description":  "如果NPC在<latest_reply>里明确同意新增物品债务，就输出这个；此标签可让玩家欠NPC物品（请分清楚谁欠谁！）"
-                                            },
-                                            {
-                                                "Tag":  "[ACTION:DEBT_PAY_GOLD:债务ID:数量]",
-                                                "Description":  "如果NPC在<latest_reply>里明确确认玩家正在偿还某笔金币债务，就输出这个"
-                                            },
-                                            {
-                                                "Tag":  "[ACTION:DEBT_PAY_ITEM:债务ID:物品名称:数量]",
-                                                "Description":  "如果NPC在<latest_reply>里明确确认玩偿还了某笔物品债务，就输出这个"
-                                            },
-                                            {
-                                                "Tag":  "[ACTION:DEBT_PAY_ITEM_GOLD:债务ID:金额]",
-                                                "Description":  "如果NPC在<latest_reply>里明确确认玩家以金币赔偿了某笔物品债务，就输出这个"
-                                            },
-                                            {
-                                                "Tag":  "[ACTION:DEBT_ITEM_UNAVAILABLE:债务ID]",
-                                                "Description":  "如果NPC在<latest_reply>里明确确认某笔物品债务已经声明无法归还原物，就输出这个"
-                                            },
-                                            {
-                                                "Tag":  "[ACTION:DEBT_ITEM_PENALTY:债务ID:信任扣减:关系扣减]",
-                                                "Description":  "如果NPC在<latest_reply>里明确决定对无法归还原物的债务追加信任和关系惩罚，就输出这个"
-                                            },
-                                            {
-                                                "Tag":  "[ACTION:DEBT_DUE_DAYS:天数]",
-                                                "Description":  "如果NPC在<latest_reply>里明确确认新的还款期限是若干天后，就输出这个"
-                                            },
-                                            {
-                                                "Tag":  "[ACTION:DEBT_DUE_ABS_DAY:天数]",
-                                                "Description":  "如果NPC在<latest_reply>里明确确认新的绝对还款日，就输出这个"
-                                            },
-                                            {
-                                                "Tag":  "[ACTION:DEBT_DUE_DATE:年:季:日]",
-                                                "Description":  "如果NPC在<latest_reply>里明确确认新的还款日期是某年某季某日，就输出这个"
-                                            },
-                                            {
-                                                "Tag":  "[ACTION:DEBT_DUE_NONE]",
-                                                "Description":  "如果NPC在<latest_reply>里明确同意这笔债务没有还款期限，就输出这个"
+                                                "Tag":  "[ADP;债务ID]",
+                                                "Description":  "如果NPC在<latest_reply>里明确确认解除某笔债务（含还清、豁免、免除），就输出这个。"
                                             }
                                         ],
                  "RuntimeInstructionTemplates":  {
@@ -206,15 +180,15 @@
                             "PostprocessRules":  [
                                                      {
                                                          "Tag":  "[ACTION:KINGDOM_SERVICE:LEAVE:current]",
-                                                         "Description":  "如果NPC在<latest_reply>里明确同意玩家退出当前效力，就输出这个"
+                                                         "Description":  "如果NPC在<latest_reply>里正式同意玩家退出当前效力，就输出这个"
                                                      },
                                                      {
                                                          "Tag":  "[ACTION:KINGDOM_SERVICE:MERCENARY:{targetKingdomId}]",
-                                                         "Description":  "如果NPC在<latest_reply>里明确同意玩家以雇佣兵身份加入目标王国，就输出这个"
+                                                         "Description":  "如果NPC在<latest_reply>里正式同意玩家以雇佣兵身份加入目标王国，就输出这个"
                                                      },
                                                      {
                                                          "Tag":  "[ACTION:KINGDOM_SERVICE:VASSAL:{targetKingdomId}]",
-                                                         "Description":  "如果NPC在<latest_reply>里明确同意玩家以正式封臣身份加入目标王国，就输出这个"
+                                                         "Description":  "如果NPC在<latest_reply>里正式同意玩家以正式封臣身份加入目标王国，就输出这个"
                                                      }
                                                  ],
                             "RuntimeInstructionTemplates":  {
@@ -222,13 +196,14 @@
                                                                 "no_kingdom_trust_below_merc":  "【势力效力规则】玩家当前未加入任何势力，但综合信任仅为 {trustCurrent}，低于最低雇佣兵门槛 {trustMerc}。本轮只能拒绝。可简短建议玩家先替你方做事、积累信任后再来。",
                                                                 "no_kingdom_trust_merc_only":  "【势力效力规则】玩家当前未加入任何势力，综合信任为 {trustCurrent}；已达到雇佣兵门槛 {trustMerc}，但未达到封臣门槛 {trustVassal}。本轮只能讨论雇佣兵；只有在你最终明确同意时，才算允许加入。",
                                                                 "mercenary_target_unknown":  "【势力效力规则】玩家当前是 {playerKingdom} 的雇佣兵。本轮只处理是否退出当前效力；只有在你最终明确同意时，才算允许退出。",
-                                                                "mercenary_same_kingdom":  "【势力效力规则】玩家当前已是本势力（{playerKingdom}）的雇佣兵。只有当你在对话文本中明确同意他退出时，才算允许退出；如果你在挽留、拒绝或反驳，就不算同意。",
-                                                                "mercenary_same_kingdom_tier_vassal_locked":  "【势力效力规则】玩家当前已是本势力（{playerKingdom}）的雇佣兵。只有当你在对话文本中明确同意他退出时，才算允许退出；如果你在挽留、拒绝或反驳，就不算同意。",
-                                                                "mercenary_same_kingdom_trust_vassal_locked":  "【势力效力规则】玩家当前已是本势力（{playerKingdom}）的雇佣兵。只有当你在对话文本中明确同意他退出时，才算允许退出；如果你在挽留、拒绝或反驳，就不算同意。",
-                                                                "mercenary_other_kingdom":  "【势力效力规则】玩家当前为 {playerKingdom} 的雇佣兵。若要转投你方，必须先退出原效力；只有在你最终明确同意时，才算允许退出。",
+                                                                "mercenary_same_kingdom":  "【势力效力规则】玩家当前已是本势力（{playerKingdom}）的雇佣兵。如果他不想干了，你可以根据情况选择是否挽留，但是他执意要走，你必须正式同意",
+                                                                "mercenary_same_kingdom_tier_vassal_locked":  "【势力效力规则】玩家当前已是本势力（{playerKingdom}）的雇佣兵。如果他不想干了，你可以根据情况选择是否挽留，但是他执意要走，你必须正式同意",
+                                                                "mercenary_same_kingdom_trust_vassal_locked":  "【势力效力规则】玩家当前已是本势力（{playerKingdom}）的雇佣兵。如果他不想干了，你可以根据情况选择是否挽留，但是他执意要走，你必须正式同意",
+                                                                "mercenary_same_kingdom_tier_vassal_ready":  "【势力效力规则】玩家当前已是本势力（{playerKingdom}）的雇佣兵。他现在已经可以转为正式封城，如果你是国家的统治者，那么你可以同意，如果你不是国家统治者，请让他去找你国的统治者，不过你可以同意解除他的雇佣兵契约",
+                                                                "mercenary_other_kingdom":  "【势力效力规则】玩家当前为 {playerKingdom} 的雇佣兵。若要转投你方，他必须先退出原效力；你现在只能拒绝他的效力",
                                                                 "vassal_target_unknown":  "【势力效力规则】玩家当前是 {playerKingdom} 的正式封臣。本轮只处理是否退出当前效力；只有在你最终明确同意时，才算允许退出。",
-                                                                "vassal_same_kingdom":  "【势力效力规则】玩家当前已是本势力（{playerKingdom}）的正式封臣。只有当你在对话文本中明确同意他退出时，才算允许退出；如果你在挽留、拒绝或反驳，就不算同意。",
-                                                                "vassal_other_kingdom":  "【势力效力规则】玩家当前是 {playerKingdom} 的正式封臣。若要转投你方，必须先退出原效力；只有在你最终明确同意时，才算允许退出。"
+                                                                "vassal_same_kingdom":  "【势力效力规则】玩家当前已是本势力（{playerKingdom}）的正式封臣。如果他不想干了，你可以根据情况选择是否挽留，但是他执意要走，你必须正式同意",
+                                                                "vassal_other_kingdom":  "【势力效力规则】玩家当前是 {playerKingdom} 的正式封臣。若他要为你效力，他就必须解除和 {playerKingdom} 的封臣契约"
                                                             },
                             "RuntimeConstraintTemplates":  {
                                                                "no_player_clan":  "【运行时硬约束】未找到玩家家族信息。本轮只能解释情况，不能真的批准加入或退出任何势力。",
@@ -367,8 +342,8 @@
                             "Priority":  77,
                             "TopicNumber":  8,
                             "TopicLabel":  "带路，传唤与跟随",
-                            "NonHeroInstruction":  "【场景行为规则】即使你只是无名士兵或平民，只要本轮系统确实给了【目标清单】或相关状态提示，你也可以决定是否带路、传唤、跟随、停止跟随或结束这次会面；但你只能对系统当前列出的目标表态，不能编造名单外的人或地点。只有当你在正文里最终明确答应时，才算真的执行；若你还在拒绝、推脱、反问、拖延或继续谈条件，就不算已经执行。正文只自然说话，不要自己写任何动作标签。",
-                            "Instruction":  "【场景行为规则】带路、传唤、跟随、停止跟随、结束传唤后的会面，都只以本轮运行时状态为准。你只能依据系统当前给出的【目标清单】和状态提示回答；没有列出来的目标，不得擅自答应。若目标在酒馆或领主大厅，带路只需带到对应门口。只有当你在<latest_reply>里最终明确同意时，才算真的执行；若你仍在拒绝、解释、反问、拖延或继续谈条件，就不要当成已经执行。正文只自然说话，不要自己写任何动作标签。",
+                            "NonHeroInstruction":  "【场景行为规则】即使你只是无名士兵或平民，只要本轮系统确实给了【带路与传唤目标清单】或相关状态提示，你也可以决定是否带路、传唤、跟随、停止跟随或结束这次会面；但你只能对系统当前列出的目标表态，不能编造名单外的人或地点。只有当你在正文里最终明确答应时，才算真的执行；若你还在拒绝、推脱、反问、拖延或继续谈条件，就不算已经执行。正文只自然说话，不要自己写任何动作标签。",
+                            "Instruction":  "【场景行为规则】带路、传唤、跟随、停止跟随、结束传唤后的会面，都只以本轮运行时状态为准。你只能依据系统当前给出的【带路与传唤目标清单】和状态提示回答；没有列出来的目标，不得擅自答应。若目标在酒馆或领主大厅，带路只需带到对应门口。只有当你在<latest_reply>里最终明确同意时，才算真的执行；若你仍在拒绝、解释、反问、拖延或继续谈条件，就不要当成已经执行。正文只自然说话，不要自己写任何动作标签。",
                             "PostprocessRules":  [
                                                      {
                                                          "Tag":  "[ACTION:SCENE_FOLLOW_PLAYER]",
@@ -384,11 +359,11 @@
                                                      },
                                                      {
                                                          "Tag":  "[ACTION:SCENE_SUMMON:人物名称列表]",
-                                                         "Description":  "如果NPC在<latest_reply>里明确同意去把【目标清单】中的一个或多个人叫来，就输出这个；把人物名称写进标签，若有多人可用逗号分隔"
+                                                         "Description":  "如果NPC在<latest_reply>里明确同意去把【带路与传唤目标清单】中的一个或多个人叫来，就输出这个；把人物名称写进标签，若有多人可用逗号分隔"
                                                      },
                                                      {
                                                          "Tag":  "[ACTION:SCENE_GUIDE:人物名称]",
-                                                         "Description":  "如果NPC在<latest_reply>里明确同意给玩家带路去【目标清单】中的目标，就输出这个；把人物名称写进标签"
+                                                         "Description":  "如果NPC在<latest_reply>里明确同意给玩家带路去【带路与传唤目标清单】中的目标，就输出这个；把人物名称写进标签"
                                                      }
                                                  ],
                             "TriggerKeywords":  [
@@ -454,12 +429,44 @@
                                                 ]
                         },
                         {
+                            "Id":  "settlement_transfer",
+                            "IsEnabled":  true,
+                            "Group":  "politics",
+                            "Priority":  83,
+                            "TopicNumber":  10,
+                            "TopicLabel":  "城市与城堡转移",
+                            "NonHeroInstruction":  "【领地转移规则】只有家族族长才有权和玩家讨论城市或城堡的正式转移。若你不是家族族长，不管你是普通路人、士兵，还是同家族的其他领主，你都必须明确引导玩家去找你的家族族长；正文只口头解释或引导，不写任何领地转移标签。",
+                            "Instruction":  "【领地转移规则】只讨论城市与城堡，不谈村庄。只认系统本轮给出的领地清单、收益和指导价；不得编造。只有当你在<latest_reply>里最终明确同意时，才算真的转移；若你还在压价、拒绝、反问或继续谈条件，就不算成交。正文只口头答应、拒绝或谈条件，不写标签。",
+                            "PostprocessRules":  [
+                                                     {
+                                                         "Tag":  "[ACTION:SETTLEMENT_TRANSFER:TO_PLAYER:定居点ID或编号]",
+                                                         "Description":  "如果NPC在<latest_reply>里明确同意把【你家族当前可转移的城市和城堡】中的某座城市或城堡转给玩家家族，就输出这个；目标只能填写本轮清单中的编号、名称或ID"
+                                                     },
+                                                     {
+                                                         "Tag":  "[ACTION:SETTLEMENT_TRANSFER:TO_NPC:定居点ID或编号]",
+                                                         "Description":  "如果NPC在<latest_reply>里明确同意接收【玩家家族当前可转移的城市和城堡】中的某座城市或城堡，就输出这个；目标只能填写本轮清单中的编号、名称或ID"
+                                                     }
+                                                 ],
+                            "TriggerKeywords":  [
+                                                    "我们谈谈领地转让。",
+                                                    "把你家族的一座城转给我吧。",
+                                                    "把这座城堡卖给我。",
+                                                    "我想买你家族的一座城市。",
+                                                    "我想把我家族的一座城堡转给你。",
+                                                    "我把这座城交给你，你开个价。",
+                                                    "你的家族名下有哪些城市和城堡能谈转让？",
+                                                    "把你们家的领地清单和价码报给我。",
+                                                    "这座城一天能收多少税？",
+                                                    "这座城一次结清大概要多少钱？"
+                                                ]
+                        },
+                        {
                             "Id":  "vanilla_issue",
                             "IsEnabled":  true,
                             "Group":  "quest",
                             "Priority":  82,
-                            "TopicNumber":  10,
-                            "TopicLabel":  "任务委托",
+                            "TopicNumber":  11,
+                            "TopicLabel":  "任务委托,帮忙与解决麻烦",
                             "NonHeroInstruction":  "【原版任务规则】你不是有名有姓、能发布原版任务的英雄。本轮不得向玩家发布、验收或结算任何原版任务；若玩家来问差事、任务进度或交付，你只能口头说明自己无权处理，或引导他去找真正的委托人。",
                             "Instruction":  "【原版任务规则】只处理系统当前确实存在的原版任务状态：可发布、进行中、同伴代办进行中、可交付、刚完成、当前无任务。你必须以本轮运行时状态为准，不得编造不存在的委托、目标、进度、完成结果、失败原因或奖励。\n【发布边界】只有当你在<latest_reply>里最终明确把当前任务正式交给玩家时，才算真的发布；如果你还在介绍情况、试探、谈条件、反问、拒绝、挽留、拖延，或玩家只是说“我接了”，都不算已经接任务。\n【同伴代办边界】只有当玩家明确要求由同伴代办，且明确指定系统给出的可用同伴之一，而你也在<latest_reply>里最终明确同意时，才算真的以同伴代办方式接取；如果玩家没点名、你还在追问、或目标不在系统候选里，就不算成立。\n【交付边界】只有当系统当前已处于可交付状态，且你在<latest_reply>里最终明确确认任务完成并验收时，才算真的交付；如果你只是在讨论进度、提醒要求、质疑完成度、继续追问细节，或玩家单方面声称“我做完了”，都不算已经结算。\n【奖励边界】原版任务的奖励、声望、关系和日志推进由系统在交付成功后自动处理。你可以在正文里口头提及报酬，但不要把原版任务奖励当成普通交易或借贷，也不要自行转账、交货或生成别的经济标签。",
                             "PostprocessRules":  [
@@ -572,7 +579,7 @@
                     ],
     "DuelStake":  {
                       "IsEnabled":  true,
-                      "PlayerWinInstruction":  "【决斗赌注与欠款】：你在正式决斗中输给了玩家，你欠玩家赌注：按约定金额用 [ACTION:GIVE_GOLD:金额] 或 [ACTION:GIVE_ITEM:物品ID:数量] 支付；资金不足时，可以先用 [ACTION:GIVE_GOLD:已付金额] 支付一部分，再用 [ACTION:DEBT_GOLD:剩余金额] 记录你仍然欠玩家的部分，禁止用 DEBT_ 让玩家反过来欠你。决斗场景与一般奖励规则冲突时，以本条为准。",
-                      "NpcWinInstruction":  "【决斗赌注与欠款】：你在正式决斗中打败了玩家，玩家欠你赌注：严禁使用任何 [ACTION:GIVE_GOLD:...] 或 [ACTION:GIVE_ITEM:...] 给玩家好处，只能提醒玩家履行赌注，并用 [ACTION:DEBT_GOLD:金额] 或 [ACTION:DEBT_ITEM:物品ID:数量] 记录玩家欠你的赌注；如玩家部分付款，可之后用新的 [ACTION:DEBT_GOLD:剩余金额] 更新。决斗场景与一般奖励规则冲突时，以本条为准。"
+                      "PlayerWinInstruction":  "【决斗赌注与欠款】：你在正式决斗中输给了玩家，你欠玩家赌注：按约定金额用 [ACTION:GIVE_GOLD:金额] 或 [ACTION:GIVE_ITEM:物品名称:数量] 支付；物品必须填写清单中出现的完整物品名称，禁止写物品ID，禁止写序号。当前债务标签仅用于“玩家欠NPC”，本场景不要生成任何赊账标签。",
+                      "NpcWinInstruction":  "【决斗赌注与欠款】：你在正式决斗中打败了玩家，玩家欠你赌注：严禁使用任何 [ACTION:GIVE_GOLD:...] 或 [ACTION:GIVE_ITEM:...] 给玩家好处，只能提醒玩家履行赌注，并用 [AD;金额;天数;备注内容] 记录玩家欠你的金币债务（天数=0 表示无限期）。如果你明确确认某笔赌注债务已经解除，则用 [ADP;债务ID]。决斗场景与一般奖励规则冲突时，以本条为准。"
                   }
 }

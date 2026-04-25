@@ -12,6 +12,10 @@ public class DuelConfig
 
 	public string DialogueInstruction { get; set; } = "";
 
+	public string HealthBlockedInstruction { get; set; } = "";
+
+	public string HealthBlockedMessage { get; set; } = "";
+
 	public string TriggerInstruction { get; set; } = "";
 
 	public string LegacyFollowupInstruction { get; set; } = "";

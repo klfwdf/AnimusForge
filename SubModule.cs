@@ -162,6 +162,14 @@ public class SubModule : MBSubModuleBase
 			{
 				Logger.LogTrace("SubModule", ">>> BannerlordExceptionSentinel init failed: " + ex17.Message);
 			}
+			try
+			{
+				McmDropdownRuntimeRefresh.EnsurePatched();
+			}
+			catch (Exception ex18a)
+			{
+				Logger.LogTrace("SubModule", ">>> McmDropdownRuntimeRefresh init failed: " + ex18a.Message);
+			}
 			Logger.LogTrace("SubModule", ">>> Harmony patches applied.");
 		}
 		catch (Exception ex18)
@@ -201,6 +209,7 @@ public class SubModule : MBSubModuleBase
 	protected override void OnApplicationTick(float dt)
 	{
 		BannerlordExceptionSentinel.OnApplicationTick();
+		McmDropdownRuntimeRefresh.OnApplicationTick();
 		ModOnboardingBehavior.Instance?.OnEngineTick();
 		MyBehavior.Instance?.OnEngineTick();
 		DuelBehavior.Instance?.OnEngineTick();

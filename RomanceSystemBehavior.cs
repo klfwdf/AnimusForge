@@ -2697,11 +2697,6 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 			string marriageRuntimeConstraintState = GetMarriageRuntimeConstraintState(marriageRuntimeFacts);
 			Dictionary<string, string> dictionary = BuildMarriageRuntimeTokens(marriageRuntimeFacts);
 			string text = AIConfigHandler.ResolveRuleRuntimeText("marriage", marriageRuntimeConstraintState, forConstraint: true, dictionary);
-			string text2 = BuildClanMarriageSituationPrompt(hero);
-			if (!string.IsNullOrWhiteSpace(text2))
-			{
-				text = string.IsNullOrWhiteSpace(text) ? text2 : (text.TrimEnd() + Environment.NewLine + text2);
-			}
 			string text3 = GetMarriagePrestigeAdvantageHint(marriageRuntimeFacts);
 			if (!string.IsNullOrWhiteSpace(text3))
 			{

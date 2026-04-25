@@ -338,6 +338,44 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		return "主模型名称";
 	}
 
+	private string CurrentApiBaseUrlExample()
+	{
+		return "https://api.openai.com/v1";
+	}
+
+	private bool ShouldDisplayContextExtractionApiWarningForCurrentTarget()
+	{
+		return !IsAuxiliaryApiSetupTarget();
+	}
+
+	private bool ShouldPromptContextExtractionApiWarning(string rawApiUrl)
+	{
+		if (!ShouldDisplayContextExtractionApiWarningForCurrentTarget())
+		{
+			return false;
+		}
+		return DuelSettings.ShouldWarnForContextExtractionApi(rawApiUrl);
+	}
+
+	private bool ShowContextExtractionApiWarningInquiry(Action onContinue, Action onReturn)
+	{
+		try
+		{
+			InformationManager.ShowInquiry(new InquiryData("兼容性提示", DuelSettings.GetContextExtractionCompatibilityWarningMessage() + "\n\n是否继续当前流程？", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "继续", "返回", delegate
+			{
+				onContinue?.Invoke();
+			}, delegate
+			{
+				onReturn?.Invoke();
+			}), pauseGameActiveState: true);
+			return true;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
 	private void SetApiSetupTarget(ApiSetupTarget target)
 	{
 		_currentApiSetupTarget = target;
@@ -1103,7 +1141,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 				ReopenCurrentApiEntry(ignoreSuppress: true);
 				return;
 			}
-			InformationManager.ShowTextInquiry(new TextInquiryData("填写 Base URL", "请输入 " + CurrentApiBaseUrlDisplayName() + "。\n示例：https://api.deepseek.com/v1", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "下一步", "返回", delegate(string input)
+			InformationManager.ShowTextInquiry(new TextInquiryData("填写 Base URL", "请输入 " + CurrentApiBaseUrlDisplayName() + "。\n示例：" + CurrentApiBaseUrlExample(), isAffirmativeOptionShown: true, isNegativeOptionShown: true, "下一步", "返回", delegate(string input)
 			{
 				string text2 = (input ?? "").Trim();
 				if (string.IsNullOrWhiteSpace(text2))
@@ -1127,23 +1165,10 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private void BeginValidateBaseUrlAndContinue(string rawBaseUrl)
+	private void BeginValidateBaseUrlAndContinueCore(string validatedBaseUrl)
 	{
 		if (_baseUrlValidationInProgress)
 		{
-			return;
-		}
-		string text = (rawBaseUrl ?? "").Trim();
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			InformationManager.DisplayMessage(new InformationMessage("Base URL 不能为空。"));
-			OpenApiBaseUrlInput();
-			return;
-		}
-		if (!Uri.TryCreate(text, UriKind.Absolute, out Uri uriResult) || (uriResult.Scheme != Uri.UriSchemeHttp && uriResult.Scheme != Uri.UriSchemeHttps))
-		{
-			InformationManager.DisplayMessage(new InformationMessage("Base URL 格式不正确，请填写完整的 http/https 地址。"));
-			OpenApiBaseUrlInput();
 			return;
 		}
 		_baseUrlValidationInProgress = true;
@@ -1158,7 +1183,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			{
 				cancellationTokenSource = new CancellationTokenSource();
 				_baseUrlValidationCancellation = cancellationTokenSource;
-				string modelsApiUrl = BuildModelsApiUrl(text);
+				string modelsApiUrl = BuildModelsApiUrl(validatedBaseUrl);
 				using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, modelsApiUrl);
 				HttpResponseMessage httpResponseMessage = await DuelSettings.GlobalClient.SendAsync(request, cancellationTokenSource.Token);
 				string text2 = await httpResponseMessage.Content.ReadAsStringAsync();
@@ -1191,12 +1216,40 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 					_baseUrlValidationInProgress = false;
 					_pendingBaseUrlValidationSuccess = flag;
 					_pendingBaseUrlValidationMessage = message ?? "";
-					_pendingValidatedBaseUrl = flag ? text : "";
+					_pendingValidatedBaseUrl = flag ? validatedBaseUrl : "";
 					_pendingBaseUrlValidationResult = true;
 				}
 				cancellationTokenSource?.Dispose();
 			}
 		});
+	}
+
+	private void BeginValidateBaseUrlAndContinue(string rawBaseUrl)
+	{
+		string text = (rawBaseUrl ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			InformationManager.DisplayMessage(new InformationMessage("Base URL 不能为空。"));
+			OpenApiBaseUrlInput();
+			return;
+		}
+		if (!Uri.TryCreate(text, UriKind.Absolute, out Uri uriResult) || (uriResult.Scheme != Uri.UriSchemeHttp && uriResult.Scheme != Uri.UriSchemeHttps))
+		{
+			InformationManager.DisplayMessage(new InformationMessage("Base URL 格式不正确，请填写完整的 http/https 地址。"));
+			OpenApiBaseUrlInput();
+			return;
+		}
+		if (ShouldPromptContextExtractionApiWarning(text) && ShowContextExtractionApiWarningInquiry(delegate
+		{
+			BeginValidateBaseUrlAndContinueCore(text);
+		}, delegate
+		{
+			OpenApiBaseUrlInput();
+		}))
+		{
+			return;
+		}
+		BeginValidateBaseUrlAndContinueCore(text);
 	}
 
 	private void ShowBaseUrlValidationProgressPopup()
@@ -1546,7 +1599,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 				ReopenCurrentApiEntry(ignoreSuppress: true);
 				return;
 			}
-			InformationManager.ShowTextInquiry(new TextInquiryData("手动填写模型名称", "请输入" + CurrentApiModelDisplayName() + "。\n示例：deepseek-chat", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "开始测试", "返回", delegate(string input)
+			InformationManager.ShowTextInquiry(new TextInquiryData("手动填写模型名称", "请输入" + CurrentApiModelDisplayName() + "。\n示例：gpt-4o-mini", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "开始测试", "返回", delegate(string input)
 			{
 				string text2 = (input ?? "").Trim();
 				if (string.IsNullOrWhiteSpace(text2))
@@ -1574,41 +1627,8 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private void BeginValidateMcmApiAndContinue(bool returnToModelSelection = false)
+	private void BeginValidateMcmApiAndContinueCore(string apiUrl, string apiKey, string modelName, bool returnToModelSelection)
 	{
-		if (_apiValidationInProgress)
-		{
-			return;
-		}
-		DuelSettings settings = DuelSettings.GetSettings();
-		if (settings == null)
-		{
-			InformationManager.DisplayMessage(new InformationMessage("无法读取 MCM 设置。"));
-			ReopenCurrentApiEntry(ignoreSuppress: true);
-			return;
-		}
-		TryPersistMcmSettings(settings);
-		string apiUrl = GetApiUrlForTarget(settings, _currentApiSetupTarget).Trim();
-		string apiKey = GetApiKeyForTarget(settings, _currentApiSetupTarget).Trim();
-		string modelName = GetModelNameForTarget(settings, _currentApiSetupTarget).Trim();
-		if (string.IsNullOrWhiteSpace(apiUrl))
-		{
-			InformationManager.DisplayMessage(new InformationMessage("MCM 中尚未填写 " + CurrentApiBaseUrlDisplayName() + "。"));
-			ReopenCurrentApiEntry(ignoreSuppress: true);
-			return;
-		}
-		if (string.IsNullOrWhiteSpace(apiKey))
-		{
-			InformationManager.DisplayMessage(new InformationMessage("MCM 中尚未填写 " + CurrentApiKeyDisplayName() + "。"));
-			ReopenCurrentApiEntry(ignoreSuppress: true);
-			return;
-		}
-		if (string.IsNullOrWhiteSpace(modelName))
-		{
-			InformationManager.DisplayMessage(new InformationMessage("MCM 中尚未填写" + CurrentApiModelDisplayName() + "。"));
-			ReopenCurrentApiEntry(ignoreSuppress: true);
-			return;
-		}
 		_apiValidationReturnToModelSelection = returnToModelSelection;
 		_apiValidationInProgress = true;
 		int num = ++_apiValidationVersion;
@@ -1689,6 +1709,44 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 				cancellationTokenSource?.Dispose();
 			}
 		});
+	}
+
+	private void BeginValidateMcmApiAndContinue(bool returnToModelSelection = false)
+	{
+		if (_apiValidationInProgress)
+		{
+			return;
+		}
+		DuelSettings settings = DuelSettings.GetSettings();
+		if (settings == null)
+		{
+			InformationManager.DisplayMessage(new InformationMessage("无法读取 MCM 设置。"));
+			ReopenCurrentApiEntry(ignoreSuppress: true);
+			return;
+		}
+		TryPersistMcmSettings(settings);
+		string apiUrl = GetApiUrlForTarget(settings, _currentApiSetupTarget).Trim();
+		string apiKey = GetApiKeyForTarget(settings, _currentApiSetupTarget).Trim();
+		string modelName = GetModelNameForTarget(settings, _currentApiSetupTarget).Trim();
+		if (string.IsNullOrWhiteSpace(apiUrl))
+		{
+			InformationManager.DisplayMessage(new InformationMessage("MCM 中尚未填写 " + CurrentApiBaseUrlDisplayName() + "。"));
+			ReopenCurrentApiEntry(ignoreSuppress: true);
+			return;
+		}
+		if (string.IsNullOrWhiteSpace(apiKey))
+		{
+			InformationManager.DisplayMessage(new InformationMessage("MCM 中尚未填写 " + CurrentApiKeyDisplayName() + "。"));
+			ReopenCurrentApiEntry(ignoreSuppress: true);
+			return;
+		}
+		if (string.IsNullOrWhiteSpace(modelName))
+		{
+			InformationManager.DisplayMessage(new InformationMessage("MCM 中尚未填写" + CurrentApiModelDisplayName() + "。"));
+			ReopenCurrentApiEntry(ignoreSuppress: true);
+			return;
+		}
+		BeginValidateMcmApiAndContinueCore(apiUrl, apiKey, modelName, returnToModelSelection);
 	}
 
 	private void ShowApiValidationProgressPopup()

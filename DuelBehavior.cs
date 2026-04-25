@@ -30,9 +30,15 @@ public class DuelBehavior : CampaignBehaviorBase
 	{
 		public int Gold;
 
-		public string ItemId;
+		public Dictionary<string, int> Items;
 
-		public int ItemCount;
+		public int PlayerGold;
+
+		public Dictionary<string, int> PlayerItems;
+
+		public int NpcGold;
+
+		public Dictionary<string, int> NpcItems;
 
 		public long UtcTicks;
 	}
@@ -726,6 +732,15 @@ public class DuelBehavior : CampaignBehaviorBase
 			Logger.Log("DuelBehavior", "[ArenaTeleport] 收到空目标的决斗请求，已忽略。");
 			return;
 		}
+		if (!CanTargetNpcStartDuel(target, out string blockedReason))
+		{
+			Logger.Log("DuelBehavior", "[DuelHealthGate] " + blockedReason);
+			if (!string.IsNullOrWhiteSpace(blockedReason))
+			{
+				InformationManager.DisplayMessage(new InformationMessage(blockedReason, Color.FromUint(4294901760u)));
+			}
+			return;
+		}
 		ShowDuelRiskWarning();
 		bool flag = false;
 		try
@@ -777,6 +792,32 @@ public class DuelBehavior : CampaignBehaviorBase
 		_preDuelTimer = delaySeconds;
 		string information = $"[系统] 双方约定 {delaySeconds:F0} 秒后开始决斗！";
 		InformationManager.DisplayMessage(new InformationMessage(information, Color.FromUint(4294901760u)));
+	}
+
+	private static bool CanTargetNpcStartDuel(Hero target, out string blockedReason)
+	{
+		blockedReason = "";
+		if (target == null)
+		{
+			return false;
+		}
+		Agent agent = Mission.Current?.Agents.FirstOrDefault((Agent a) => a.Character == target.CharacterObject);
+		if (agent != null && agent.HealthLimit > 0f)
+		{
+			float healthRatio = agent.Health / agent.HealthLimit;
+			if (healthRatio < 0.999f)
+			{
+				blockedReason = AIConfigHandler.FormatDuelHealthTemplate(AIConfigHandler.DuelHealthBlockedMessage, target.Name?.ToString(), healthRatio);
+				return false;
+			}
+		}
+		if (target.MaxHitPoints > 0 && target.HitPoints < target.MaxHitPoints)
+		{
+			float healthRatio2 = (float)target.HitPoints / target.MaxHitPoints;
+			blockedReason = AIConfigHandler.FormatDuelHealthTemplate(AIConfigHandler.DuelHealthBlockedMessage, target.Name?.ToString(), healthRatio2);
+			return false;
+		}
+		return true;
 	}
 
 	public static void GlobalDuelStarterTick()
@@ -906,11 +947,18 @@ public class DuelBehavior : CampaignBehaviorBase
 				return false;
 			}
 			int stakeGold = 0;
-			string stakeItemId = null;
-			int stakeItemCount = 0;
+			Dictionary<string, int> stakeItems = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+			int playerStakeGold = 0;
+			Dictionary<string, int> playerStakeItems = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+			int npcStakeGold = 0;
+			Dictionary<string, int> npcStakeItems = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
 			bool any = false;
 			Regex regex = new Regex("\\[ACTION:DUEL_STAKE[_-]GOLD:(\\d+)\\]", RegexOptions.IgnoreCase);
-			Regex regex2 = new Regex("\\[ACTION:DUEL_STAKE[_-]ITEM:([a-zA-Z0-9_]+):(\\d+)\\]", RegexOptions.IgnoreCase);
+			Regex regex2 = new Regex("\\[ACTION:DUEL_STAKE[_-]ITEM:([^:\\]\\r\\n]+):(\\d+)\\]", RegexOptions.IgnoreCase);
+			Regex regex3 = new Regex("\\[ACTION:DUEL_STAKE[_-]PLAYER[_-]GOLD:(\\d+)\\]", RegexOptions.IgnoreCase);
+			Regex regex4 = new Regex("\\[ACTION:DUEL_STAKE[_-]PLAYER[_-]ITEM:([^:\\]\\r\\n]+):(\\d+)\\]", RegexOptions.IgnoreCase);
+			Regex regex5 = new Regex("\\[ACTION:DUEL_STAKE[_-]NPC[_-]GOLD:(\\d+)\\]", RegexOptions.IgnoreCase);
+			Regex regex6 = new Regex("\\[ACTION:DUEL_STAKE[_-]NPC[_-]ITEM:([^:\\]\\r\\n]+):(\\d+)\\]", RegexOptions.IgnoreCase);
 			responseText = regex.Replace(responseText, delegate(Match m)
 			{
 				any = true;
@@ -923,23 +971,60 @@ public class DuelBehavior : CampaignBehaviorBase
 			responseText = regex2.Replace(responseText, delegate(Match m)
 			{
 				any = true;
-				string value = m.Groups[1].Value;
+				string value = (m.Groups[1].Value ?? "").Trim();
 				if (int.TryParse(m.Groups[2].Value, out var result2) && result2 > 0 && !string.IsNullOrEmpty(value))
 				{
-					stakeItemId = value;
-					stakeItemCount = result2;
+					AddStakeItem(stakeItems, value, result2);
+				}
+				return string.Empty;
+			});
+			responseText = regex3.Replace(responseText, delegate(Match m)
+			{
+				any = true;
+				if (int.TryParse(m.Groups[1].Value, out var result2))
+				{
+					playerStakeGold = Math.Max(playerStakeGold, result2);
+				}
+				return string.Empty;
+			});
+			responseText = regex4.Replace(responseText, delegate(Match m)
+			{
+				any = true;
+				string value = (m.Groups[1].Value ?? "").Trim();
+				if (int.TryParse(m.Groups[2].Value, out var result2) && result2 > 0 && !string.IsNullOrEmpty(value))
+				{
+					AddStakeItem(playerStakeItems, value, result2);
+				}
+				return string.Empty;
+			});
+			responseText = regex5.Replace(responseText, delegate(Match m)
+			{
+				any = true;
+				if (int.TryParse(m.Groups[1].Value, out var result2))
+				{
+					npcStakeGold = Math.Max(npcStakeGold, result2);
+				}
+				return string.Empty;
+			});
+			responseText = regex6.Replace(responseText, delegate(Match m)
+			{
+				any = true;
+				string value = (m.Groups[1].Value ?? "").Trim();
+				if (int.TryParse(m.Groups[2].Value, out var result2) && result2 > 0 && !string.IsNullOrEmpty(value))
+				{
+					AddStakeItem(npcStakeItems, value, result2);
 				}
 				return string.Empty;
 			});
 			if (responseText.IndexOf("[ACTION:DUEL_STAKE", StringComparison.OrdinalIgnoreCase) >= 0)
 			{
-				Regex regex3 = new Regex("\\[ACTION:DUEL_STAKE[^\\]\\r\\n]*\\]?", RegexOptions.IgnoreCase);
-				responseText = regex3.Replace(responseText, string.Empty);
+				Regex regex7 = new Regex("\\[ACTION:DUEL_STAKE[^\\]\\r\\n]*\\]?", RegexOptions.IgnoreCase);
+				responseText = regex7.Replace(responseText, string.Empty);
 			}
 			if (!any && (responseText.Contains("赌") || responseText.Contains("赌注") || responseText.Contains("押") || responseText.Contains("压") || responseText.Contains("筹码")))
 			{
-				Regex regex4 = new Regex("(?:赌|赌注|押|压|筹码)[^0-9]{0,12}(\\d{1,9})\\s*第纳尔", RegexOptions.IgnoreCase);
-				Match match = regex4.Match(responseText);
+				Regex regex8 = new Regex("(?:赌|赌注|押|压|筹码)[^0-9]{0,12}(\\d{1,9})\\s*第纳尔", RegexOptions.IgnoreCase);
+				Match match = regex8.Match(responseText);
 				if (match.Success && int.TryParse(match.Groups[1].Value, out var result))
 				{
 					stakeGold = Math.Max(stakeGold, result);
@@ -951,7 +1036,7 @@ public class DuelBehavior : CampaignBehaviorBase
 				responseText = responseText.Trim();
 				return false;
 			}
-			CachePendingDuelStake(stringId, stakeGold, stakeItemId, stakeItemCount);
+			CachePendingDuelStake(stringId, stakeGold, stakeItems, playerStakeGold, playerStakeItems, npcStakeGold, npcStakeItems);
 			responseText = responseText.Trim();
 			return true;
 		}
@@ -961,7 +1046,7 @@ public class DuelBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static void CachePendingDuelStake(string heroId, int gold, string itemId, int itemCount)
+	private static void CachePendingDuelStake(string heroId, int gold, Dictionary<string, int> items, int playerGold, Dictionary<string, int> playerItems, int npcGold, Dictionary<string, int> npcItems)
 	{
 		if (!string.IsNullOrEmpty(heroId))
 		{
@@ -976,12 +1061,27 @@ public class DuelBehavior : CampaignBehaviorBase
 			}
 			if (gold > 0)
 			{
-				value.Gold = gold;
+				value.Gold = Math.Max(value.Gold, gold);
 			}
-			if (!string.IsNullOrEmpty(itemId) && itemCount > 0)
+			if (HasStakeItems(items))
 			{
-				value.ItemId = itemId;
-				value.ItemCount = itemCount;
+				value.Items = CloneStakeItems(items);
+			}
+			if (playerGold > 0)
+			{
+				value.PlayerGold = Math.Max(value.PlayerGold, playerGold);
+			}
+			if (HasStakeItems(playerItems))
+			{
+				value.PlayerItems = CloneStakeItems(playerItems);
+			}
+			if (npcGold > 0)
+			{
+				value.NpcGold = Math.Max(value.NpcGold, npcGold);
+			}
+			if (HasStakeItems(npcItems))
+			{
+				value.NpcItems = CloneStakeItems(npcItems);
 			}
 			value.UtcTicks = DateTime.UtcNow.Ticks;
 		}
@@ -1010,6 +1110,76 @@ public class DuelBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private static void AddStakeItem(Dictionary<string, int> items, string itemId, int count)
+	{
+		if (items == null || string.IsNullOrWhiteSpace(itemId) || count <= 0)
+		{
+			return;
+		}
+		string text = itemId.Trim();
+		if (text.Length == 0)
+		{
+			return;
+		}
+		if (!items.ContainsKey(text))
+		{
+			items[text] = 0;
+		}
+		items[text] += count;
+	}
+
+	private static bool HasStakeItems(Dictionary<string, int> items)
+	{
+		return items != null && items.Any((KeyValuePair<string, int> x) => !string.IsNullOrWhiteSpace(x.Key) && x.Value > 0);
+	}
+
+	private static Dictionary<string, int> CloneStakeItems(Dictionary<string, int> items)
+	{
+		Dictionary<string, int> dictionary = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+		if (items == null)
+		{
+			return dictionary;
+		}
+		foreach (KeyValuePair<string, int> item in items)
+		{
+			if (!string.IsNullOrWhiteSpace(item.Key) && item.Value > 0)
+			{
+				dictionary[item.Key.Trim()] = item.Value;
+			}
+		}
+		return dictionary;
+	}
+
+	private static Dictionary<string, int> SelectStakeItemsForSettlement(PendingDuelStake stake, bool playerWon)
+	{
+		if (stake == null)
+		{
+			return new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+		}
+		if (playerWon)
+		{
+			return HasStakeItems(stake.NpcItems) ? CloneStakeItems(stake.NpcItems) : CloneStakeItems(stake.Items);
+		}
+		return HasStakeItems(stake.PlayerItems) ? CloneStakeItems(stake.PlayerItems) : CloneStakeItems(stake.Items);
+	}
+
+	private static string BuildStakeSummaryText(int gold, Dictionary<string, int> items)
+	{
+		List<string> list = new List<string>();
+		if (gold > 0)
+		{
+			list.Add(gold + " 第纳尔");
+		}
+		if (items != null)
+		{
+			foreach (KeyValuePair<string, int> item in items.Where((KeyValuePair<string, int> x) => !string.IsNullOrWhiteSpace(x.Key) && x.Value > 0).OrderBy((KeyValuePair<string, int> x) => x.Key, StringComparer.OrdinalIgnoreCase))
+			{
+				list.Add(item.Key.Trim() + " x" + item.Value);
+			}
+		}
+		return (list.Count > 0) ? string.Join("，", list) : "（无）";
+	}
+
 	private static string ApplyDuelStakeSettlementAndBuildResultText(Hero targetHero, bool playerWon)
 	{
 		try
@@ -1023,101 +1193,120 @@ public class DuelBehavior : CampaignBehaviorBase
 				return "";
 			}
 			string text = targetHero?.Name?.ToString() ?? "NPC";
+			string text2 = Hero.MainHero?.Name?.ToString();
+			if (string.IsNullOrWhiteSpace(text2))
+			{
+				text2 = "主角";
+			}
+			int num = (playerWon ? ((stake.NpcGold > 0) ? stake.NpcGold : stake.Gold) : ((stake.PlayerGold > 0) ? stake.PlayerGold : stake.Gold));
+			Dictionary<string, int> dictionary = SelectStakeItemsForSettlement(stake, playerWon);
 			RewardSystemBehavior instance = RewardSystemBehavior.Instance;
+			if (num <= 0 && !HasStakeItems(dictionary))
+			{
+				return "";
+			}
 			if (playerWon)
 			{
 				if (instance == null)
 				{
 					return " " + text + "没有结算赌注。";
 				}
-				if (stake.Gold > 0)
+				int num2 = 0;
+				if (num > 0)
 				{
-					int num = 0;
 					try
 					{
-						num = instance.TransferGold(targetHero, Hero.MainHero, stake.Gold);
+						num2 = instance.TransferGold(targetHero, Hero.MainHero, num);
 					}
 					catch
 					{
 					}
-					if (num > 0)
-					{
-						MyBehavior.AppendExternalDialogueHistory(targetHero, null, null, $"你已经将 {num} 第纳尔交给玩家（决斗赌注）。");
-						MyBehavior.AppendExternalDialogueHistory(Hero.MainHero, null, null, $"你从 {text} 收到了 {num} 第纳尔（决斗赌注）。");
-					}
-					if (num >= stake.Gold)
-					{
-						return $" 你从 {text} 收到了 {num} 第纳尔（决斗赌注）。";
-					}
-					if (num > 0)
-					{
-						return $" 你从 {text} 收到了 {num} 第纳尔（决斗赌注），但对方无法支付剩余 {stake.Gold - num}。";
-					}
-					return $" 但 {text}无法支付赌注 {stake.Gold} 第纳尔。";
 				}
-				if (!string.IsNullOrEmpty(stake.ItemId) && stake.ItemCount > 0)
+				List<string> list = new List<string>();
+				List<string> list2 = new List<string>();
+				if (num2 > 0)
 				{
-					int num2 = 0;
+					list.Add(num2 + " 第纳尔");
+				}
+				if (num > num2)
+				{
+					list2.Add((num - num2) + " 第纳尔");
+				}
+				foreach (KeyValuePair<string, int> item in dictionary)
+				{
+					int num3 = Math.Max(1, item.Value);
+					if (string.IsNullOrWhiteSpace(item.Key))
+					{
+						continue;
+					}
+					int num4 = 0;
 					string itemName = null;
 					try
 					{
-						num2 = instance.TransferItemById(targetHero, Hero.MainHero, stake.ItemId, stake.ItemCount, out itemName);
+						num4 = instance.TransferItemById(targetHero, Hero.MainHero, item.Key, num3, out itemName);
 					}
 					catch
 					{
 					}
-					string text2 = (string.IsNullOrEmpty(itemName) ? stake.ItemId : itemName);
-					if (num2 > 0)
+					string text3 = (string.IsNullOrEmpty(itemName) ? item.Key : itemName);
+					if (num4 > 0)
 					{
-						MyBehavior.AppendExternalDialogueHistory(targetHero, null, null, $"你已经将 {num2} 个 {text2} 交给玩家（决斗赌注）。");
-						MyBehavior.AppendExternalDialogueHistory(Hero.MainHero, null, null, $"你从 {text} 收到了 {num2} 个 {text2}（决斗赌注）。");
+						list.Add(num4 + " 个 " + text3);
 					}
-					if (num2 >= stake.ItemCount)
+					if (num3 > num4)
 					{
-						return $" 你从 {text} 收到了 {num2} 个 {text2}（决斗赌注）。";
+						list2.Add(text3 + " x" + (num3 - num4));
 					}
-					if (num2 > 0)
-					{
-						return $" 你从 {text} 收到了 {num2} 个 {text2}（决斗赌注），但对方无法支付剩余 {stake.ItemCount - num2} 个。";
-					}
-					return $" 但 {text}无法支付赌注 {text2} x{stake.ItemCount}。";
 				}
-				return "";
+				if (list.Count > 0)
+				{
+					string text4 = string.Join("，", list);
+					MyBehavior.AppendExternalDialogueHistory(targetHero, null, null, $"你在决斗中输给了 {text2}，并已按赌注交付：{text4}。");
+					MyBehavior.AppendExternalDialogueHistory(Hero.MainHero, null, null, $"你在决斗中击败了 {text}，并从 {text} 收到了 {text4}（决斗赌注）。");
+					if (list2.Count > 0)
+					{
+						string text5 = string.Join("，", list2);
+						return $" 你在决斗中击败了 {text}，并从 {text} 收到了 {text4}（决斗赌注），但对方无法支付剩余 {text5}。";
+					}
+					return $" 你在决斗中击败了 {text}，并从 {text} 收到了 {text4}（决斗赌注）。";
+				}
+				string text6 = string.Join("，", list2);
+				return $" 你在决斗中击败了 {text}，但 {text}无法支付赌注 {text6}。";
 			}
 			if (instance != null)
 			{
 				instance.GetDebtSnapshot(targetHero, out var owedGold, out var owedItems);
-				if (stake.Gold > 0)
+				if (num > 0)
 				{
-					owedGold += stake.Gold;
+					owedGold += num;
 				}
-				if (!string.IsNullOrEmpty(stake.ItemId) && stake.ItemCount > 0)
+				if (HasStakeItems(dictionary))
 				{
 					if (owedItems == null)
 					{
 						owedItems = new Dictionary<string, int>();
 					}
-					if (!owedItems.ContainsKey(stake.ItemId))
+					foreach (KeyValuePair<string, int> item2 in dictionary)
 					{
-						owedItems[stake.ItemId] = 0;
+						string text7 = (item2.Key ?? "").Trim();
+						int num5 = Math.Max(0, item2.Value);
+						if (string.IsNullOrWhiteSpace(text7) || num5 <= 0)
+						{
+							continue;
+						}
+						if (!owedItems.ContainsKey(text7))
+						{
+							owedItems[text7] = 0;
+						}
+						owedItems[text7] += num5;
 					}
-					owedItems[stake.ItemId] += stake.ItemCount;
 				}
 				instance.SetDebt(targetHero, owedGold, owedItems);
 			}
-			if (stake.Gold > 0)
-			{
-				MyBehavior.AppendExternalDialogueHistory(targetHero, null, null, $"你已经记下：玩家欠你 {stake.Gold} 第纳尔（决斗赌注）。");
-				MyBehavior.AppendExternalDialogueHistory(Hero.MainHero, null, null, $"你欠 {text} {stake.Gold} 第纳尔（决斗赌注）。");
-				return $" 你现在欠{text} {stake.Gold} 第纳尔（决斗赌注）。";
-			}
-			if (!string.IsNullOrEmpty(stake.ItemId) && stake.ItemCount > 0)
-			{
-				MyBehavior.AppendExternalDialogueHistory(targetHero, null, null, $"你已经记下：玩家欠你 {stake.ItemId} x{stake.ItemCount}（决斗赌注）。");
-				MyBehavior.AppendExternalDialogueHistory(Hero.MainHero, null, null, $"你欠 {text} {stake.ItemId} x{stake.ItemCount}（决斗赌注）。");
-				return $" 你现在欠{text} {stake.ItemId} x{stake.ItemCount}（决斗赌注）。";
-			}
-			return "";
+			string text8 = BuildStakeSummaryText(num, dictionary);
+			MyBehavior.AppendExternalDialogueHistory(targetHero, null, null, $"你在决斗中击败了 {text2}，并已记下：{text2} 欠你 {text8}（决斗赌注）。");
+			MyBehavior.AppendExternalDialogueHistory(Hero.MainHero, null, null, $"你在决斗中输给了 {text}，欠 {text} {text8}（决斗赌注）。");
+			return $" 你在决斗中输给了{text}，现在欠{text} {text8}（决斗赌注）。";
 		}
 		catch
 		{

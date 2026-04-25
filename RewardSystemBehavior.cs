@@ -224,7 +224,15 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 
 	private const float DebtCoverageThreshold = 0.95f;
 
-	private const int OverduePenaltyMaxDays = 7;
+	private const int OverduePenaltyIntervalDays = 7;
+
+	private const int OverduePenaltyDurationDays = 84;
+
+	private const int OverduePenaltyMaxWeeks = OverduePenaltyDurationDays / OverduePenaltyIntervalDays;
+
+	private const int OverdueTrustPenaltyPerWeekValueStep = 10000;
+
+	private const int OverdueRelationPenaltyPerWeekTrustStep = 5;
 
 	private const int LlmManualPenaltyMax = 10;
 
@@ -1069,58 +1077,55 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		return num2;
 	}
 
-	private static int ComputeDailyOverduePenaltyByCoverage(int initialAmount, int remainingAmount)
-	{
-		int num = Math.Max(1, initialAmount);
-		int num2 = Math.Max(0, remainingAmount);
-		float num3 = Clamp01((float)num2 / (float)num);
-		if (num3 >= 0.7f)
-		{
-			return 3;
-		}
-		if (num3 >= 0.3f)
-		{
-			return 2;
-		}
-		return 1;
-	}
-
-	private static int ComputeDailyOverduePenaltyByDebtValue(int debtValue)
+	private static int ComputeWeeklyOverdueTrustPenaltyByDebtValue(int debtValue)
 	{
 		int num = Math.Max(0, debtValue);
-		if (num >= 1000000)
+		if (num <= 0)
 		{
-			return 5;
+			return 0;
 		}
-		if (num >= 500000)
-		{
-			return 4;
-		}
-		if (num >= 100000)
-		{
-			return 3;
-		}
-		if (num >= 20000)
-		{
-			return 2;
-		}
-		return 1;
+		return Math.Max(1, num / OverdueTrustPenaltyPerWeekValueStep);
 	}
 
-	private static int ComputeDailyOverduePenaltySeverity(int initialAmount, int remainingAmount, int debtValue)
+	private static int ComputeWeeklyOverdueRelationPenaltyTotal(int weeksApplied, int trustPenaltyPerWeek)
 	{
-		int val = ComputeDailyOverduePenaltyByCoverage(initialAmount, remainingAmount);
-		int val2 = ComputeDailyOverduePenaltyByDebtValue(debtValue);
-		int num = Math.Max(val, val2);
-		if (num < 1)
+		if (weeksApplied <= 0 || trustPenaltyPerWeek <= 0)
 		{
-			num = 1;
+			return 0;
 		}
-		if (num > 5)
+		long num = (long)weeksApplied * (long)trustPenaltyPerWeek;
+		long num2 = num / OverdueRelationPenaltyPerWeekTrustStep;
+		if (num2 > int.MaxValue)
 		{
-			num = 5;
+			return int.MaxValue;
 		}
-		return num;
+		return Math.Max(0, (int)num2);
+	}
+
+	private static int ComputeWeeklyOverdueRelationPenaltyDelta(int previousWeeksApplied, int currentWeeksApplied, int trustPenaltyPerWeek)
+	{
+		int num = ComputeWeeklyOverdueRelationPenaltyTotal(Math.Max(0, previousWeeksApplied), trustPenaltyPerWeek);
+		int num2 = ComputeWeeklyOverdueRelationPenaltyTotal(Math.Max(0, currentWeeksApplied), trustPenaltyPerWeek);
+		return Math.Max(0, num2 - num);
+	}
+
+	private static int ComputeOverdueElapsedWeeks(float nowCampaignDay, float dueDay)
+	{
+		if (dueDay <= 0f || nowCampaignDay <= dueDay + 0.01f)
+		{
+			return 0;
+		}
+		int num = Math.Max(0, (int)Math.Floor(nowCampaignDay - dueDay));
+		int num2 = num / OverduePenaltyIntervalDays;
+		if (num2 < 0)
+		{
+			num2 = 0;
+		}
+		if (num2 > OverduePenaltyMaxWeeks)
+		{
+			num2 = OverduePenaltyMaxWeeks;
+		}
+		return num2;
 	}
 
 	private static int NormalizeLlmPenaltyValue(int value)
@@ -2849,6 +2854,122 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		return stringBuilder.ToString().TrimEnd();
 	}
 
+	private static int CompareSettlementTransferEntries(MyBehavior.SettlementTransferPromptEntry x, MyBehavior.SettlementTransferPromptEntry y)
+	{
+		int num = Math.Max(-999999999, x?.DailyIncomeDenars ?? 0).CompareTo(Math.Max(-999999999, y?.DailyIncomeDenars ?? 0));
+		if (num != 0)
+		{
+			return num;
+		}
+		num = Math.Max(0, x?.GuidePriceDenars ?? 0).CompareTo(Math.Max(0, y?.GuidePriceDenars ?? 0));
+		if (num != 0)
+		{
+			return num;
+		}
+		num = string.Compare((x?.SettlementId ?? "").Trim(), (y?.SettlementId ?? "").Trim(), StringComparison.OrdinalIgnoreCase);
+		if (num != 0)
+		{
+			return num;
+		}
+		return string.Compare((x?.DisplayName ?? "").Trim(), (y?.DisplayName ?? "").Trim(), StringComparison.OrdinalIgnoreCase);
+	}
+
+	private static List<MyBehavior.SettlementTransferPromptEntry> SortSettlementTransferEntries(IEnumerable<MyBehavior.SettlementTransferPromptEntry> entries)
+	{
+		return (entries ?? Enumerable.Empty<MyBehavior.SettlementTransferPromptEntry>()).Where((MyBehavior.SettlementTransferPromptEntry x) => x != null && x.Settlement != null).OrderBy((MyBehavior.SettlementTransferPromptEntry x) => x, Comparer<MyBehavior.SettlementTransferPromptEntry>.Create(CompareSettlementTransferEntries)).ToList();
+	}
+
+	public int GetSettlementTransferTalkTrust(Hero npc)
+	{
+		return GetEffectiveTrust(npc);
+	}
+
+	public List<MyBehavior.SettlementTransferPromptEntry> GetAllowedNpcSettlementTransferEntriesForPlayer(Hero targetHero, CharacterObject targetCharacter = null)
+	{
+		Hero hero = targetHero ?? targetCharacter?.HeroObject;
+		List<MyBehavior.SettlementTransferPromptEntry> list = SortSettlementTransferEntries(MyBehavior.BuildSettlementTransferPromptEntriesForExternal(targetHero, targetCharacter).Where((MyBehavior.SettlementTransferPromptEntry x) => x != null && x.Section == MyBehavior.SettlementTransferEntrySection.NpcFiefs));
+		int settlementTransferTalkTrust = GetSettlementTransferTalkTrust(hero);
+		if (settlementTransferTalkTrust < 60)
+		{
+			return new List<MyBehavior.SettlementTransferPromptEntry>();
+		}
+		if (settlementTransferTalkTrust < 80)
+		{
+			MyBehavior.SettlementTransferPromptEntry settlementTransferPromptEntry = list.FirstOrDefault();
+			return (settlementTransferPromptEntry != null) ? new List<MyBehavior.SettlementTransferPromptEntry> { settlementTransferPromptEntry } : new List<MyBehavior.SettlementTransferPromptEntry>();
+		}
+		return list;
+	}
+
+	public string BuildSettlementTransferPromptGuidanceForAI(Hero targetHero, CharacterObject targetCharacter = null)
+	{
+		Hero hero = targetHero ?? targetCharacter?.HeroObject;
+		int settlementTransferTalkTrust = GetSettlementTransferTalkTrust(hero);
+		int num = (int)MathF.Round(hero?.GetRelationWithPlayer() ?? 0f);
+		if (settlementTransferTalkTrust < 60)
+		{
+			return $"【领地转移限制】综合信任{settlementTransferTalkTrust}<60。本轮必须直接拒绝任何城市或城堡转移；不要谈价，不要松口，不要输出任何领地转移标签。";
+		}
+		if (settlementTransferTalkTrust < 80)
+		{
+			MyBehavior.SettlementTransferPromptEntry settlementTransferPromptEntry = GetAllowedNpcSettlementTransferEntriesForPlayer(targetHero, targetCharacter).FirstOrDefault();
+			string text = settlementTransferPromptEntry?.DisplayName ?? "（无可谈目标）";
+			return $"【领地转移限制】综合信任{settlementTransferTalkTrust}。本轮最多只可谈你名下最差的一座城市或城堡：{text}；其他领地直接拒绝。玩家通常还得拿出真利益，最好走交易；若想不经交易直接白拿，通常只在你与玩家关系达到100时才考虑。当前关系={num}。";
+		}
+		return $"【领地转移限制】综合信任{settlementTransferTalkTrust}。本轮可谈正常城市或城堡转移，但玩家通常仍得拿出明显利益，最好走交易；若想不经交易直接白拿，通常只在你与玩家关系达到100时才考虑。当前关系={num}。";
+	}
+
+	public bool TryApplyPlayerSettlementTransferForExternal(Hero receiverHero, Settlement settlement, out string statusText)
+	{
+		statusText = "";
+		try
+		{
+			if (receiverHero == null)
+			{
+				statusText = "执行失败：缺少目标领主。";
+				return false;
+			}
+			if (receiverHero.Clan == null || receiverHero.Clan.Leader != receiverHero)
+			{
+				statusText = $"执行失败：{receiverHero.Name} 不是家族族长，不能接收领地转移。";
+				return false;
+			}
+			if (settlement == null)
+			{
+				statusText = "执行失败：缺少目标定居点。";
+				return false;
+			}
+			if (!settlement.IsFortification || settlement.Town == null)
+			{
+				statusText = $"执行失败：{settlement.Name} 不是可转移的城市或城堡。";
+				return false;
+			}
+			if (Clan.PlayerClan == null || settlement.OwnerClan != Clan.PlayerClan)
+			{
+				statusText = $"执行失败：{settlement.Name} 当前不属于玩家家族。";
+				return false;
+			}
+			if (settlement.IsUnderSiege || settlement.Party?.MapEvent != null)
+			{
+				statusText = $"执行失败：{settlement.Name} 当前处于战事或围攻状态，不能转移。";
+				return false;
+			}
+			if (settlement.OwnerClan == receiverHero.Clan)
+			{
+				statusText = $"执行跳过：{settlement.Name} 已经属于 {receiverHero.Name} 的家族。";
+				return false;
+			}
+			ChangeOwnerOfSettlementAction.ApplyByBarter(receiverHero, settlement);
+			statusText = $"执行成功：玩家已将 {settlement.Name} 转交给 {receiverHero.Name} 的家族（原版方式：ByBarter）。";
+			return true;
+		}
+		catch (Exception ex)
+		{
+			statusText = "执行失败（异常）：" + ex.Message;
+			return false;
+		}
+	}
+
 	private static Kingdom ResolveKingdomByTag(string kingdomToken, Hero giver)
 	{
 		try
@@ -3179,6 +3300,112 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private bool TryApplySettlementTransferAction(Hero giver, Hero receiver, string directionToken, string settlementToken, out string statusText)
+	{
+		statusText = "";
+		try
+		{
+			if (giver == null || receiver == null)
+			{
+				statusText = "执行失败：缺少转移双方。";
+				return false;
+			}
+			if (giver.Clan == null || giver.Clan.Leader != giver)
+			{
+				statusText = $"执行失败：{giver.Name} 不是家族族长，无权决定领地转移。";
+				return false;
+			}
+			string text = (directionToken ?? "").Trim().ToUpperInvariant();
+			Settlement settlement = MyBehavior.ResolveSettlementTransferSettlementForExternal(giver, null, text, settlementToken);
+			if (settlement == null)
+			{
+				statusText = "执行失败：未找到可转移的目标定居点（" + settlementToken + "）。";
+				return false;
+			}
+			if (!settlement.IsFortification)
+			{
+				statusText = $"执行失败：{settlement.Name} 不是城市或城堡，不能单独转移。";
+				return false;
+			}
+			if (settlement.Town == null || settlement.OwnerClan == null)
+			{
+				statusText = $"执行失败：{settlement.Name} 当前没有可识别的合法归属。";
+				return false;
+			}
+			if (settlement.IsUnderSiege || settlement.Party?.MapEvent != null)
+			{
+				statusText = $"执行失败：{settlement.Name} 当前处于战事或围攻状态，不能转移。";
+				return false;
+			}
+			Hero hero;
+			if (text == "TO_PLAYER")
+			{
+				int settlementTransferTalkTrust = GetSettlementTransferTalkTrust(giver);
+				if (settlementTransferTalkTrust < 60)
+				{
+					statusText = $"执行失败：{giver.Name} 对玩家的综合信任仅 {settlementTransferTalkTrust}，低于 60，当前不允许谈领地转移。";
+					return false;
+				}
+				if (settlement.OwnerClan != giver.Clan)
+				{
+					statusText = $"执行失败：{settlement.Name} 不属于 {giver.Name} 的家族，不能由其转给玩家。";
+					return false;
+				}
+				List<MyBehavior.SettlementTransferPromptEntry> allowedNpcSettlementTransferEntriesForPlayer = GetAllowedNpcSettlementTransferEntriesForPlayer(giver);
+				if (allowedNpcSettlementTransferEntriesForPlayer == null || allowedNpcSettlementTransferEntriesForPlayer.Count == 0)
+				{
+					statusText = $"执行失败：{giver.Name} 当前没有对玩家开放可转移的城市或城堡。";
+					return false;
+				}
+				if (!allowedNpcSettlementTransferEntriesForPlayer.Any((MyBehavior.SettlementTransferPromptEntry x) => x != null && x.Settlement != null && string.Equals((x.Settlement.StringId ?? "").Trim(), (settlement.StringId ?? "").Trim(), StringComparison.OrdinalIgnoreCase)))
+				{
+					statusText = (settlementTransferTalkTrust < 80) ? $"执行失败：综合信任只有 {settlementTransferTalkTrust}，当前最多只允许转移收益最差的一座城市或城堡。{settlement.Name} 不在允许范围内。" : $"执行失败：{settlement.Name} 当前不在允许转移范围内。";
+					return false;
+				}
+				hero = receiver;
+			}
+			else
+			{
+				if (text != "TO_NPC")
+				{
+					statusText = "执行失败：未知领地转移方向 " + directionToken + "。";
+					return false;
+				}
+				if (Clan.PlayerClan == null || settlement.OwnerClan != Clan.PlayerClan)
+				{
+					statusText = $"执行失败：{settlement.Name} 不属于玩家家族，不能转给 {giver.Name}。";
+					return false;
+				}
+				hero = giver;
+			}
+			if (hero?.Clan == null)
+			{
+				statusText = "执行失败：目标接收方没有合法家族。";
+				return false;
+			}
+			if (settlement.OwnerClan == hero.Clan)
+			{
+				statusText = $"执行跳过：{settlement.Name} 已经属于 {(hero == giver ? giver.Name.ToString() : "玩家")} 的家族。";
+				return false;
+			}
+			ChangeOwnerOfSettlementAction.ApplyByBarter(hero, settlement);
+			if (text == "TO_PLAYER")
+			{
+				statusText = $"执行成功：{settlement.Name} 已转交给玩家家族（原版方式：ByBarter）。";
+			}
+			else
+			{
+				statusText = $"执行成功：玩家已将 {settlement.Name} 转交给 {giver.Name} 的家族（原版方式：ByBarter）。";
+			}
+			return true;
+		}
+		catch (Exception ex)
+		{
+			statusText = "执行失败（异常）：" + ex.Message;
+			return false;
+		}
+	}
+
 	private int AdjustTrust(Hero npc, int personalDelta, int publicDelta, string reason, out int appliedUnits)
 	{
 		appliedUnits = 0;
@@ -3482,27 +3709,23 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 						{
 							continue;
 						}
-						int num = Math.Max(0, (int)Math.Floor(nowCampaignDay - debtLine2.DueDay));
-						if (num > 0 && num <= 7 && !(debtLine2.BestPreDueCoverage >= 0.95f) && debtLine2.OverduePenaltyDaysApplied < 7 && debtLine2.LastOverduePenaltyDay != campaignDayIndex)
+						int num = ComputeOverdueElapsedWeeks(nowCampaignDay, debtLine2.DueDay);
+						int num2 = Math.Max(0, debtLine2.OverduePenaltyDaysApplied);
+						if (num > num2 && !(debtLine2.BestPreDueCoverage >= 0.95f))
 						{
-							int num2 = NormalizeLlmPenaltyValue(debtLine2.OverdueTrustPenaltyPerDay);
-							bool flag = num2 > 0;
-							int num3 = 0;
-							int num4 = 0;
-							if (!flag)
+							for (int k = num2 + 1; k <= num; k++)
 							{
-								num3 = EstimateDebtLineRemainingValueForSettlement(settlement, debtLine2);
-								num4 = ComputeDailyOverduePenaltySeverity(debtLine2.InitialAmount, debtLine2.RemainingAmount, num3);
-								num2 = num4;
+								int num3 = EstimateDebtLineRemainingValueForSettlement(settlement, debtLine2);
+								int num4 = ComputeWeeklyOverdueTrustPenaltyByDebtValue(num3);
+								int num5 = 0;
+								if (num4 > 0)
+								{
+									num5 = AdjustSettlementMerchantTrust(settlement, kind, -num4, "merchant_overdue_weekly_penalty_by_amount", out _);
+								}
+								Logger.Log("Trust", string.Format("[OverduePenalty] settlement={0} market={1} debtId={2} mode={3} value={4} trust={5} public={6} week={7}/{8}", settlement.StringId, kind, debtLine2.DebtId, "amount_weekly", num3, num4, num5, k, OverduePenaltyMaxWeeks));
 							}
-							int num5 = 0;
-							if (num2 > 0)
-							{
-								num5 = AdjustSettlementMerchantTrust(settlement, kind, -num2, flag ? "merchant_overdue_daily_penalty_preset" : "merchant_overdue_daily_penalty_fallback", out _);
-							}
-							debtLine2.OverduePenaltyDaysApplied++;
+							debtLine2.OverduePenaltyDaysApplied = num;
 							debtLine2.LastOverduePenaltyDay = campaignDayIndex;
-							Logger.Log("Trust", string.Format("[OverduePenalty] settlement={0} market={1} debtId={2} mode={3} value={4} trust={5} public={6} fallback={7} day={8}/{9}", settlement.StringId, kind, debtLine2.DebtId, flag ? "preset" : "fallback", num3, num2, num5, num4, debtLine2.OverduePenaltyDaysApplied, 7));
 						}
 					}
 					NormalizeDebtRecord(value);
@@ -3525,33 +3748,28 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 					{
 						continue;
 					}
-					int num = Math.Max(0, (int)Math.Floor(nowCampaignDay - debtLine.DueDay));
-					if (num > 0 && num <= 7 && !(debtLine.BestPreDueCoverage >= 0.95f) && debtLine.OverduePenaltyDaysApplied < 7 && debtLine.LastOverduePenaltyDay != campaignDayIndex)
+					int num = ComputeOverdueElapsedWeeks(nowCampaignDay, debtLine.DueDay);
+					int num2 = Math.Max(0, debtLine.OverduePenaltyDaysApplied);
+					if (num > num2 && !(debtLine.BestPreDueCoverage >= 0.95f))
 					{
-						int num2 = NormalizeLlmPenaltyValue(debtLine.OverdueTrustPenaltyPerDay);
-						int num3 = NormalizeLlmPenaltyValue(debtLine.OverdueRelationPenaltyPerDay);
-						bool flag = num2 > 0 || num3 > 0;
-						int num4 = 0;
-						int num5 = 0;
-						if (!flag)
+						for (int k = num2 + 1; k <= num; k++)
 						{
-							num4 = EstimateDebtLineRemainingValue(hero, debtLine);
-							num5 = ComputeDailyOverduePenaltySeverity(debtLine.InitialAmount, debtLine.RemainingAmount, num4);
-							num2 = num5;
-							num3 = num5;
+							int num3 = EstimateDebtLineRemainingValue(hero, debtLine);
+							int num4 = ComputeWeeklyOverdueTrustPenaltyByDebtValue(num3);
+							int num5 = 0;
+							if (num4 > 0)
+							{
+								num5 = AdjustTrust(hero, -num4, 0, "overdue_weekly_penalty_by_amount", out _);
+							}
+							int num6 = ComputeWeeklyOverdueRelationPenaltyDelta(k - 1, k, num4);
+							if (num6 > 0)
+							{
+								AdjustRelationWithPlayer(hero, -num6, "overdue_weekly_penalty_by_amount");
+							}
+							Logger.Log("Trust", string.Format("[OverduePenalty] npc={0} debtId={1} mode={2} value={3} trustPersonal={4} trustPublic={5} relation={6} week={7}/{8}", hero.StringId, debtLine.DebtId, "amount_weekly", num3, num4, num5, num6, k, OverduePenaltyMaxWeeks));
 						}
-						int num6 = 0;
-						if (num2 > 0)
-						{
-							num6 = AdjustTrust(hero, -num2, 0, flag ? "overdue_daily_penalty_preset" : "overdue_daily_penalty_fallback", out _);
-						}
-						if (num3 > 0)
-						{
-							AdjustRelationWithPlayer(hero, -num3, flag ? "overdue_daily_penalty_preset" : "overdue_daily_penalty_fallback");
-						}
-						debtLine.OverduePenaltyDaysApplied++;
+						debtLine.OverduePenaltyDaysApplied = num;
 						debtLine.LastOverduePenaltyDay = campaignDayIndex;
-						Logger.Log("Trust", string.Format("[OverduePenalty] npc={0} debtId={1} mode={2} value={3} trustPersonal={4} trustPublic={5} relation={6} fallback={7} day={8}/{9}", hero.StringId, debtLine.DebtId, flag ? "preset" : "fallback", num4, num2, num6, num3, num5, debtLine.OverduePenaltyDaysApplied, 7));
 					}
 				}
 				NormalizeDebtRecord(value);
@@ -3685,7 +3903,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				}
 				debtLine.BestPreDueCoverage = Clamp01(debtLine.BestPreDueCoverage);
 				debtLine.OnTimePenaltyTierApplied = Math.Max(0, Math.Min(5, debtLine.OnTimePenaltyTierApplied));
-				debtLine.OverduePenaltyDaysApplied = Math.Max(0, Math.Min(7, debtLine.OverduePenaltyDaysApplied));
+				debtLine.OverduePenaltyDaysApplied = Math.Max(0, Math.Min(OverduePenaltyMaxWeeks, debtLine.OverduePenaltyDaysApplied));
 				if (debtLine.LastOverduePenaltyDay < -1)
 				{
 					debtLine.LastOverduePenaltyDay = -1;
@@ -4252,6 +4470,31 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			price = Math.Max(1, (int)Math.Round((float)price * itemModifier.PriceMultiplier, MidpointRounding.AwayFromZero));
 		}
 		return price > 0;
+	}
+
+	private static bool MatchesItemLookupToken(EquipmentElement equipmentElement, string itemToken)
+	{
+		ItemObject item = equipmentElement.Item;
+		if (item == null || string.IsNullOrWhiteSpace(itemToken))
+		{
+			return false;
+		}
+		string text = itemToken.Trim();
+		if (string.Equals(item.StringId ?? "", text, StringComparison.OrdinalIgnoreCase))
+		{
+			return true;
+		}
+		if (TryParseSettlementMerchantPromptStringId(text, out var itemId, out var modifierId) && !string.IsNullOrWhiteSpace(modifierId))
+		{
+			return string.Equals(item.StringId ?? "", itemId, StringComparison.OrdinalIgnoreCase) && string.Equals(equipmentElement.ItemModifier?.StringId ?? "", modifierId, StringComparison.OrdinalIgnoreCase);
+		}
+		string modifiedName = equipmentElement.GetModifiedItemName()?.ToString();
+		if (!string.IsNullOrWhiteSpace(modifiedName) && string.Equals(modifiedName.Trim(), text, StringComparison.OrdinalIgnoreCase))
+		{
+			return true;
+		}
+		string itemName = item.Name?.ToString();
+		return !string.IsNullOrWhiteSpace(itemName) && string.Equals(itemName.Trim(), text, StringComparison.OrdinalIgnoreCase);
 	}
 
 	private static string BuildSettlementMerchantInventoryKey(EquipmentElement equipmentElement)
@@ -5166,12 +5409,14 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 					int amount = elementCopyAtIndex.Amount;
 					if (amount > 0)
 					{
+						EquipmentElement equipmentElement = elementCopyAtIndex.EquipmentElement;
 						list.Add(new RewardItemInfo
 						{
 							Item = item,
 							StringId = item.StringId,
-							Name = (item.Name?.ToString() ?? item.StringId),
-							Count = amount
+							Name = (equipmentElement.GetModifiedItemName()?.ToString() ?? item.Name?.ToString() ?? item.StringId),
+							Count = amount,
+							EquipmentElement = equipmentElement
 						});
 					}
 				}
@@ -5242,7 +5487,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				{
 					Item = item,
 					StringId = item.StringId,
-					Name = (item.Name?.ToString() ?? item.StringId),
+					Name = (equipmentElement.GetModifiedItemName()?.ToString() ?? item.Name?.ToString() ?? item.StringId),
 					Count = 1,
 					EquipmentElement = equipmentElement,
 					IsPrivateEquipment = !useCivilianEquipment
@@ -5279,6 +5524,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		EquipmentIndex[] array2 = array;
 		foreach (EquipmentIndex index in array2)
 		{
+			EquipmentElement equipmentElement = EquipmentElement.Invalid;
 			ItemObject item = agent.SpawnEquipment[index].Item;
 			if (item == null)
 			{
@@ -5286,12 +5532,14 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			}
 			if (item != null)
 			{
+				string itemName = item.Name?.ToString() ?? item.StringId;
 				list.Add(new RewardItemInfo
 				{
 					Item = item,
 					StringId = item.StringId,
-					Name = (item.Name?.ToString() ?? item.StringId),
-					Count = 1
+					Name = itemName,
+					Count = 1,
+					EquipmentElement = equipmentElement
 				});
 			}
 		}
@@ -5824,7 +6072,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.AppendLine("【系统账目提示】玩家对你有以下欠款（分笔记录）：");
-		stringBuilder.AppendLine("【还款确认】若玩家声称要还钱，并且[AFEF玩家行为补充] 中确实明确写了玩家把钱交给了你或写出了你的名字，你应立即核对债务ID并在本轮回复末尾用 [ACTION:DEBT_PAY_GOLD:债务ID:数量]（金币债）或 [ACTION:DEBT_PAY_ITEM:债务ID:物品名称:数量]（物品债）确认还款；禁止嘴炮还款，禁止自动冲抵到别的债，禁止拖沓，必须在本轮输出这些标签。");
+		stringBuilder.AppendLine("【债务解除确认】若玩家本轮行为已被系统事实明确记录为偿还、豁免或免除，请在回复末尾输出 [ADP;债务ID] 解除对应债务；每笔债务单独确认，禁止口头声称已结清却不输出标签。");
 		if (debtRecord.DebtLines != null)
 		{
 			List<DebtRecord.DebtLine> list = (from x in debtRecord.DebtLines
@@ -5854,28 +6102,22 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 					stringBuilder.Append("，指导赔偿单价约 ").Append(value4).Append(" 第纳尔/个");
 				}
 				stringBuilder.Append("，剩余估值约 ").Append(Math.Max(0, num2)).Append(" 第纳尔");
-				int num3 = NormalizeLlmPenaltyValue(debtLine.OverdueTrustPenaltyPerDay);
-				int num4 = NormalizeLlmPenaltyValue(debtLine.OverdueRelationPenaltyPerDay);
-				int num5 = ComputeDailyOverduePenaltySeverity(debtLine.InitialAmount, debtLine.RemainingAmount, num2);
-				int value5 = ((num3 > 0) ? num3 : num5);
-				int value6 = ((num4 > 0) ? num4 : num5);
-				if (num3 > 0 || num4 > 0)
-				{
-					stringBuilder.Append("，逾期日惩罚预设：信任 -").Append(num3).Append(" / 关系 -")
-						.Append(num4);
-				}
-				else
-				{
-					stringBuilder.Append("，逾期日惩罚预设：未指定（将使用兼容推断）");
-				}
+				int num3 = ComputeWeeklyOverdueTrustPenaltyByDebtValue(num2);
+				stringBuilder.Append("，逾期周惩罚：每周信任 -").Append(num3)
+					.Append("（按剩余估值每10000第纳尔折算1点）");
+				stringBuilder.Append("，关系按信任的1/5累计扣减（平均每周约 -")
+					.Append(num3)
+					.Append("/5）");
+				stringBuilder.Append("，最长持续 ").Append(OverduePenaltyMaxWeeks).Append(" 周（1年）");
 				if (!string.IsNullOrWhiteSpace(value3))
 				{
 					stringBuilder.Append("，").Append(value3);
 				}
 				if (!debtLine.IsDueUnlimited && debtLine.DueDay > 0f && GetNowCampaignDay() > debtLine.DueDay + 0.01f && (!debtLine.IsItemUnavailableDeclared || debtLine.IsGold))
 				{
-					stringBuilder.Append("，当前逾期日惩罚预计：信任 -").Append(value5).Append(" / 关系 -")
-						.Append(value6);
+					int overdueElapsedWeeks = ComputeOverdueElapsedWeeks(GetNowCampaignDay(), debtLine.DueDay);
+					int weeksLeft = Math.Max(0, OverduePenaltyMaxWeeks - Math.Max(0, debtLine.OverduePenaltyDaysApplied));
+					stringBuilder.Append("，当前逾期进度：第 ").Append(overdueElapsedWeeks).Append(" 周，剩余惩罚窗口约 ").Append(weeksLeft).Append(" 周");
 				}
 				stringBuilder.AppendLine();
 			}
@@ -5902,7 +6144,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.AppendLine("【系统账目提示】玩家对你代表的" + BuildSettlementMerchantDebtLabel(settlement, kind) + "有以下欠款（分笔记录）：");
-		stringBuilder.AppendLine("【还款确认】若玩家声称要还钱，并且[AFEF玩家行为补充] 中确实明确写了玩家把钱交给了你或写出了你的名字，你应立即核对债务ID并在本轮回复末尾用 [ACTION:DEBT_PAY_GOLD:债务ID:数量]（金币债）或 [ACTION:DEBT_PAY_ITEM:债务ID:物品名称:数量]（物品债）确认还款；禁止嘴炮还款，禁止自动冲抵到别的债，禁止拖沓，必须在本轮输出这些标签。");
+		stringBuilder.AppendLine("【债务解除确认】若玩家本轮行为已被系统事实明确记录为偿还、豁免或免除，请在回复末尾输出 [ADP;债务ID] 解除对应债务；每笔债务单独确认，禁止口头声称已结清却不输出标签。");
 		List<DebtRecord.DebtLine> list = (from x in settlementMerchantDebtRecord.DebtLines
 			where x != null && x.RemainingAmount > 0
 			orderby x.DueDay, x.CreatedDay
@@ -5924,15 +6166,12 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			{
 				stringBuilder.Append("，").Append(text);
 			}
-			int num = NormalizeLlmPenaltyValue(debtLine.OverdueTrustPenaltyPerDay);
-			if (num > 0)
-			{
-				stringBuilder.Append("，逾期日惩罚预设：信任 -").Append(num);
-			}
-			else
-			{
-				stringBuilder.Append("，逾期日惩罚预设：未指定（将使用兼容推断）");
-			}
+			int num = EstimateDebtLineRemainingValueForSettlement(settlement, debtLine);
+			int num2 = ComputeWeeklyOverdueTrustPenaltyByDebtValue(num);
+			stringBuilder.Append("，逾期周惩罚：每周信任 -").Append(num2)
+				.Append("（按剩余估值每10000第纳尔折算1点，最长 ")
+				.Append(OverduePenaltyMaxWeeks)
+				.Append(" 周）");
 			stringBuilder.AppendLine();
 		}
 		return stringBuilder.ToString().Trim();
@@ -6565,6 +6804,25 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		return false;
 	}
 
+	public bool ResolveDebtByIdByAgreement(Hero npc, string debtId, out string statusText)
+	{
+		statusText = "";
+		if (!TryFindDebtLineById(npc, debtId, out var rec, out var line, out statusText))
+		{
+			return false;
+		}
+		int remainingAmount = Math.Max(0, line.RemainingAmount);
+		line.RemainingAmount = 0;
+		NormalizeDebtRecord(rec);
+		statusText = $"债务ID {line.DebtId} 已按协商解除（{remainingAmount} -> 0）。";
+		if (!HasDebtContent(rec) && !string.IsNullOrWhiteSpace(npc?.StringId))
+		{
+			_debts.Remove(npc.StringId);
+			return true;
+		}
+		return false;
+	}
+
 	public bool RegisterPlayerGoldPaymentByDebtId(Hero npc, string debtId, int amount, out string statusText)
 	{
 		statusText = "";
@@ -6874,6 +7132,25 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		return false;
 	}
 
+	public bool ResolveSettlementMerchantDebtByIdByAgreement(Settlement settlement, SettlementMerchantKind kind, string debtId, out string statusText)
+	{
+		statusText = "";
+		if (!TryFindSettlementMerchantDebtLineById(settlement, kind, debtId, out var rec, out var line, out statusText))
+		{
+			return false;
+		}
+		int remainingAmount = Math.Max(0, line.RemainingAmount);
+		line.RemainingAmount = 0;
+		NormalizeDebtRecord(rec);
+		statusText = $"债务ID {line.DebtId} 已按协商解除（{remainingAmount} -> 0）。";
+		if (!HasDebtContent(rec))
+		{
+			_debts.Remove(BuildSettlementMerchantDebtKey(settlement, kind));
+			return true;
+		}
+		return false;
+	}
+
 	public bool RegisterPlayerGoldPaymentByMerchantDebtId(Settlement settlement, SettlementMerchantKind kind, string debtId, int amount, out string statusText)
 	{
 		statusText = "";
@@ -6984,6 +7261,10 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			Regex regex19 = new Regex("\\[ACTION:JOIN_VASSAL:([a-zA-Z0-9_\\-]+)\\]", RegexOptions.IgnoreCase);
 			Regex regex20 = new Regex("\\[ACTION:KINGDOM_SERVICE:LEAVE\\]", RegexOptions.IgnoreCase);
 			Regex regex21 = new Regex("\\[ACTION:TRADE_TRUST:(-?\\d+)\\]", RegexOptions.IgnoreCase);
+			Regex regex22 = new Regex("\\[ACTION:SETTLEMENT_TRANSFER:(TO_PLAYER|TO_NPC):([^\\]\\r\\n:]+)\\]", RegexOptions.IgnoreCase);
+			Regex regex23 = new Regex("\\[AD;(\\d+);(\\d+);([^\\]]*)\\]", RegexOptions.IgnoreCase);
+			Regex regex24 = new Regex("\\[ADP[:;]([a-zA-Z0-9_\\-]+)\\]", RegexOptions.IgnoreCase);
+			Regex regexLegacyDebtTag = new Regex("\\[ACTION:DEBT[^\\]]*\\]", RegexOptions.IgnoreCase);
 			HashSet<string> settledDebtIdsThisRound = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 			int num = 0;
 			try
@@ -7082,6 +7363,11 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				}
 			}
 			responseText = regex21.Replace(responseText, string.Empty);
+			if (regexLegacyDebtTag.IsMatch(responseText))
+			{
+				Logger.Log("Logic", "[Reward] 检测到旧版 DEBT_* 标签，已停用并忽略。");
+				responseText = regexLegacyDebtTag.Replace(responseText, string.Empty);
+			}
 			bool hasGiveTag = regex.IsMatch(responseText) || regex2.IsMatch(responseText);
 			bool flag = regex3.IsMatch(responseText) || regex4.IsMatch(responseText) || regex5.IsMatch(responseText);
 			if (flag && !hasGiveTag)
@@ -7101,6 +7387,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			bool anyDebtPaymentApplied = false;
 			bool anyDebtMetaApplied = false;
 			bool anyKingdomServiceApplied = false;
+			bool anySettlementTransferApplied = false;
 			responseText = regex.Replace(responseText, delegate(Match m)
 			{
 				if (int.TryParse(m.Groups[1].Value, out var result8))
@@ -7156,6 +7443,64 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 						string text7 = BuildItemValueFactSuffixForExternal(giver ?? receiver, itemObject2, result8);
 						giverFacts.Add($"你尝试交付 {FormatItemAmount(result8, itemObject2, text6)}{text7}，但库存不足，本轮未实际交付。");
 						receiverFacts.Add($"{giverName} 试图交付 {FormatItemAmount(result8, itemObject2, text6)}{text7}，但其库存不足，本轮未实际交付。");
+					}
+				}
+				return string.Empty;
+			});
+			responseText = regex23.Replace(responseText, delegate(Match m)
+			{
+				if (!int.TryParse(m.Groups[1].Value, out var result8) || !int.TryParse(m.Groups[2].Value, out var result9))
+				{
+					return string.Empty;
+				}
+				string text3 = (m.Groups[3].Value ?? "").Trim();
+				if (receiver == Hero.MainHero && giver != Hero.MainHero)
+				{
+					if (result8 > 0)
+					{
+						bool dueUnlimited2 = result9 <= 0;
+						int? dueDaysOverride2 = dueUnlimited2 ? null : NormalizeDueDays(result9);
+						SetDebtForNpc(giver, result8, null, 0, dueDaysOverride2, null, dueUnlimited2, null, null);
+						anyDebtRecorded = true;
+						DebtRecord debtRecord = GetDebtRecord(giver);
+						NormalizeDebtRecord(debtRecord);
+						DebtRecord.DebtLine debtLine = (debtRecord?.DebtLines?.Where((DebtRecord.DebtLine x) => x != null && x.IsGold && x.RemainingAmount > 0)).OrderByDescending((DebtRecord.DebtLine x) => x.CreatedDay).FirstOrDefault();
+						string text4 = ((debtLine != null) ? BuildDebtDueStatusText(debtLine.DueDay, debtLine.IsDueUnlimited) : "");
+						string text5 = debtLine?.DebtId ?? "";
+						string text6 = string.IsNullOrWhiteSpace(text3) ? "" : ("；备注：" + text3);
+						giverFacts.Add($"你已经记下：玩家欠你 {result8} 第纳尔（债务ID:{text5}）。{text4}{text6}");
+						receiverFacts.Add($"你欠 {giverName} {result8} 第纳尔（债务ID:{text5}）。{text4}{text6}");
+						string text7 = (string.IsNullOrWhiteSpace(text4) ? "" : ("（" + text4 + "）"));
+						string text8 = (string.IsNullOrWhiteSpace(text5) ? "" : ("[ID:" + text5 + "] "));
+						string text9 = string.IsNullOrWhiteSpace(text3) ? "" : (" 备注：" + text3);
+						InformationManager.DisplayMessage(new InformationMessage($"【欠款记录】{text8}你欠 {giverName} {result8} 第纳尔{text7}{text9}", Color.FromUint(4294936576u)));
+					}
+				}
+				return string.Empty;
+			});
+			responseText = regex24.Replace(responseText, delegate(Match m)
+			{
+				string value4 = (m.Groups[1].Value ?? "").Trim();
+				if (receiver == Hero.MainHero && giver != Hero.MainHero)
+				{
+					if (!string.IsNullOrWhiteSpace(value4) && !settledDebtIdsThisRound.Add(value4))
+					{
+						Logger.Log("Logic", "[Reward] 跳过重复债务解除标签: debtId=" + value4 + " tag=ADP");
+						return string.Empty;
+					}
+					string statusText;
+					bool flag2 = ResolveDebtByIdByAgreement(giver, value4, out statusText);
+					if (!string.IsNullOrWhiteSpace(statusText))
+					{
+						anyDebtPaymentApplied = true;
+						giverFacts.Add($"你确认债务ID {value4} 已解除。{statusText}");
+						receiverFacts.Add($"你的债务ID {value4} 已解除。{statusText}");
+						bool flag3 = statusText.IndexOf("已按协商解除", StringComparison.OrdinalIgnoreCase) >= 0;
+						InformationManager.DisplayMessage(new InformationMessage((flag3 ? "【债务解除】" : "【债务解除失败】") + statusText, flag3 ? Color.FromUint(4278255360u) : Color.FromUint(4294923605u)));
+						if (flag2)
+						{
+							InformationManager.DisplayMessage(new InformationMessage("【欠款已清】你对 " + giverName + " 的全部欠款已还清！", Color.FromUint(4278255360u)));
+						}
 					}
 				}
 				return string.Empty;
@@ -7488,6 +7833,42 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				}
 				return string.Empty;
 			});
+			responseText = regex22.Replace(responseText, delegate(Match m)
+			{
+				string directionToken = (m.Groups[1].Value ?? "").Trim();
+				string settlementToken = (m.Groups[2].Value ?? "").Trim();
+				if (receiver == Hero.MainHero && giver != Hero.MainHero)
+				{
+					string statusText;
+					bool flag2 = TryApplySettlementTransferAction(giver, receiver, directionToken, settlementToken, out statusText);
+					Settlement settlement = MyBehavior.ResolveSettlementTransferSettlementForExternal(giver, null, directionToken, settlementToken);
+					string text3 = settlement?.Name?.ToString() ?? settlementToken;
+					if (flag2)
+					{
+						anySettlementTransferApplied = true;
+						if (string.Equals(directionToken, "TO_PLAYER", StringComparison.OrdinalIgnoreCase))
+						{
+							giverFacts.Add($"你已经将 {text3} 转交给玩家家族。");
+							receiverFacts.Add($"你已经从 {giverName} 那里取得了 {text3}。");
+						}
+						else
+						{
+							giverFacts.Add($"玩家已经将 {text3} 转交给你的家族。");
+							receiverFacts.Add($"你已经将 {text3} 转交给了 {giverName} 的家族。");
+						}
+					}
+					else if (!string.IsNullOrWhiteSpace(statusText))
+					{
+						giverFacts.Add(statusText);
+						receiverFacts.Add(statusText);
+					}
+					if (!string.IsNullOrWhiteSpace(statusText))
+					{
+						InformationManager.DisplayMessage(new InformationMessage((flag2 ? "【领地转移】" : "【领地转移失败】") + statusText, flag2 ? Color.FromUint(4278242559u) : Color.FromUint(4294936661u)));
+					}
+				}
+				return string.Empty;
+			});
 			if (num2.HasValue)
 			{
 				Logger.Log("Logic", "[Reward] 提示: 检测到 [ACTION:TRADE_TRUST]，但即时交易信任现已改为按NPC实际交付价值自动累计，本标签已忽略。");
@@ -7503,6 +7884,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				["anyDebtPaymentApplied"] = anyDebtPaymentApplied,
 				["anyDebtMetaApplied"] = anyDebtMetaApplied,
 				["anyKingdomServiceApplied"] = anyKingdomServiceApplied,
+				["anySettlementTransferApplied"] = anySettlementTransferApplied,
 				["giverFactsCount"] = giverFacts.Count,
 				["receiverFactsCount"] = receiverFacts.Count,
 				["textLenAfter"] = (responseText ?? "").Length,
@@ -7554,6 +7936,8 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		if (currentSettlement == null || !currentSettlement.IsTown)
 		{
 			responseText = Regex.Replace(responseText ?? "", "\\[ACTION:[^\\]]+\\]", string.Empty, RegexOptions.IgnoreCase).Trim();
+			responseText = Regex.Replace(responseText, "\\[AD;[^\\]]+\\]", string.Empty, RegexOptions.IgnoreCase).Trim();
+			responseText = Regex.Replace(responseText, "\\[ADP[:;][^\\]]+\\]", string.Empty, RegexOptions.IgnoreCase).Trim();
 			return;
 		}
 		string giverName = giverCharacter.Name?.ToString() ?? GetSettlementMerchantRoleLabel(kind);
@@ -7570,6 +7954,9 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		Regex regex11 = new Regex("\\[ACTION:DEBT_PAY_GOLD:([a-zA-Z0-9_\\-]+):(\\d+)\\]", RegexOptions.IgnoreCase);
 		Regex regex12 = new Regex("\\[ACTION:DEBT_PAY_ITEM:([a-zA-Z0-9_\\-]+):([a-zA-Z0-9_@\\-]+):(\\d+)\\]", RegexOptions.IgnoreCase);
 		Regex regex13 = new Regex("\\[ACTION:TRADE_TRUST:(-?\\d+)\\]", RegexOptions.IgnoreCase);
+		Regex regex14 = new Regex("\\[AD;(\\d+);(\\d+);([^\\]]*)\\]", RegexOptions.IgnoreCase);
+		Regex regex15 = new Regex("\\[ADP[:;]([a-zA-Z0-9_\\-]+)\\]", RegexOptions.IgnoreCase);
+		Regex regexLegacyDebtTag = new Regex("\\[ACTION:DEBT[^\\]]*\\]", RegexOptions.IgnoreCase);
 		List<string> merchantFacts = new List<string>();
 		List<string> playerFacts = new List<string>();
 		int? dueDaysOverride = null;
@@ -7615,6 +8002,11 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		responseText = regex8.Replace(responseText, string.Empty);
 		responseText = regex7.Replace(responseText, string.Empty);
 		responseText = regex6.Replace(responseText, string.Empty);
+		if (regexLegacyDebtTag.IsMatch(responseText))
+		{
+			Logger.Log("Logic", "[Reward] 非Hero商贩链路检测到旧版 DEBT_* 标签，已停用并忽略。");
+			responseText = regexLegacyDebtTag.Replace(responseText, string.Empty);
+		}
 		bool hasGiveTag = regex.IsMatch(responseText) || regex2.IsMatch(responseText);
 		responseText = regex.Replace(responseText, delegate(Match m)
 		{
@@ -7660,6 +8052,52 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				{
 					string text4 = BuildSettlementItemValueFactSuffixForExternal(currentSettlement, itemObject, result);
 					merchantFacts.Add($"你试图交付 {FormatItemAmount(result, itemObject, text)}{text4}，但当前商铺库存不足，本轮未实际交货。");
+				}
+			}
+			return string.Empty;
+		});
+		responseText = regex14.Replace(responseText, delegate(Match m)
+		{
+			if (!int.TryParse(m.Groups[1].Value, out var result8) || !int.TryParse(m.Groups[2].Value, out var result9))
+			{
+				return string.Empty;
+			}
+			string text = (m.Groups[3].Value ?? "").Trim();
+			if (receiver == Hero.MainHero)
+			{
+				if (result8 > 0)
+				{
+					bool dueUnlimited2 = result9 <= 0;
+					int? dueDaysOverride2 = dueUnlimited2 ? null : NormalizeDueDays(result9);
+					SetDebtForSettlementMerchant(currentSettlement, kind, result8, null, 0, dueDaysOverride2, null, dueUnlimited2, null);
+					merchantFacts.Add($"你已经把玩家欠 {BuildSettlementMerchantDebtLabel(currentSettlement, kind)} 的 {result8} 第纳尔记入账目。");
+					playerFacts.Add($"你欠 {BuildSettlementMerchantDebtLabel(currentSettlement, kind)} {result8} 第纳尔。");
+					if (!string.IsNullOrWhiteSpace(text))
+					{
+						merchantFacts.Add("本笔备注：" + text);
+						playerFacts.Add("本笔备注：" + text);
+					}
+				}
+			}
+			return string.Empty;
+		});
+		responseText = regex15.Replace(responseText, delegate(Match m)
+		{
+			string value = (m.Groups[1].Value ?? "").Trim();
+			if (receiver == Hero.MainHero)
+			{
+				string statusText;
+				bool flag = ResolveSettlementMerchantDebtByIdByAgreement(currentSettlement, kind, value, out statusText);
+				if (!string.IsNullOrWhiteSpace(statusText))
+				{
+					merchantFacts.Add(statusText);
+					playerFacts.Add(statusText);
+					bool flag2 = statusText.IndexOf("已按协商解除", StringComparison.OrdinalIgnoreCase) >= 0;
+					InformationManager.DisplayMessage(new InformationMessage((flag2 ? "【市场债务解除】" : "【市场债务解除失败】") + statusText, flag2 ? Color.FromUint(4278255360u) : Color.FromUint(4294923605u)));
+					if (flag)
+					{
+						InformationManager.DisplayMessage(new InformationMessage("【市场欠款】当前市场债务已全部结清。", Color.FromUint(4278255360u)));
+					}
 				}
 			}
 			return string.Empty;
@@ -7833,7 +8271,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				ItemRosterElement elementCopyAtIndex = sourceRoster.GetElementCopyAtIndex(i);
 				EquipmentElement equipmentElement = elementCopyAtIndex.EquipmentElement;
 				ItemObject item = equipmentElement.Item;
-				if (item == null || elementCopyAtIndex.Amount <= 0 || !string.Equals(item.StringId ?? "", text, StringComparison.OrdinalIgnoreCase))
+				if (item == null || elementCopyAtIndex.Amount <= 0 || !MatchesItemLookupToken(equipmentElement, text))
 				{
 					continue;
 				}
@@ -7902,7 +8340,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			{
 				ItemRosterElement elementCopyAtIndex = itemRoster.GetElementCopyAtIndex(i);
 				ItemObject item = elementCopyAtIndex.EquipmentElement.Item;
-				if (item != null && string.Equals(item.StringId ?? "", itemStringId, StringComparison.OrdinalIgnoreCase))
+				if (item != null && MatchesItemLookupToken(elementCopyAtIndex.EquipmentElement, itemStringId))
 				{
 					itemObject = item;
 					num += elementCopyAtIndex.Amount;
@@ -7925,7 +8363,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		foreach (EquipmentIndex equipmentIndex in array3)
 		{
 			ItemObject item2 = giver.BattleEquipment[equipmentIndex].Item;
-			if (item2 != null && string.Equals(item2.StringId ?? "", itemStringId, StringComparison.OrdinalIgnoreCase))
+			if (item2 != null && MatchesItemLookupToken(giver.BattleEquipment[equipmentIndex], itemStringId))
 			{
 				if (itemObject == null)
 				{
@@ -7966,7 +8404,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			EquipmentIndex index = list[l];
 			EquipmentElement equipmentElement2 = giver.BattleEquipment[index];
 			ItemObject item4 = equipmentElement2.Item;
-			if (item4 != null && string.Equals(item4.StringId ?? "", itemStringId, StringComparison.OrdinalIgnoreCase))
+			if (item4 != null && MatchesItemLookupToken(equipmentElement2, itemStringId))
 			{
 				giver.BattleEquipment[index] = EquipmentElement.Invalid;
 				itemRoster2.AddToCounts(equipmentElement2, 1);
