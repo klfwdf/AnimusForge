@@ -1,0 +1,28 @@
+﻿{
+  "Id": "rule_喀拉卡兹河",
+  "Keywords": [
+    "喀拉卡兹河"
+  ],
+  "RagShortTexts": [
+    "喀拉卡兹河是诺德与库赛特的界河"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "这是诺德和库赛特的界河，水流量大但是常年封冻"
+    }
+  ],
+  "TextMappings": []
+}

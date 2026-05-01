@@ -3,6 +3,11 @@
   "Keywords": [
     "巴旦尼亚纯种马"
   ],
+  "RagShortTexts": [
+    "巴旦尼亚纯种马由瓦兰迪亚人培育。",
+    "巴旦尼亚纯种马拥有断腿自愈能力。",
+    "巴旦尼亚纯种马因自愈能力而价值连城。"
+  ],
   "SemanticPrototypes": [],
   "Variants": [
     {
@@ -13,6 +18,7 @@
         "KingdomIds": null,
         "SettlementIds": null,
         "Roles": null,
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": null

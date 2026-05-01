@@ -1,0 +1,56 @@
+﻿{
+  "Id": "rule_奥特尔",
+  "Keywords": [
+    "奥特尔"
+  ],
+  "RagShortTexts": [
+    "诺德人敬奥特尔家族敢向王座挥斧的硬气，却叹其战败后靠联姻求全。阿丝葛莎虽以盾女之姿挣回脸面，族人今仍在许尔夫家族手下受辱。诺德人以为：家族可战败，不可活看脊梁被踩断。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null
+      },
+      "Content": "奥特尔家族在统一战争中领导贝恩兰殖民者反抗沃尔比约恩国王。战败后，他们向不可避免的命运低头，将首领的女儿阿丝葛莎许配给国王更年轻、更受欢迎的弟弟苏尼尔。尽管这桩婚姻的起源并不吉利，但结果却很好。阿丝葛莎是一名是个大胆和理性的盾女，这对夫妻并肩作战，直到有一天苏尼尔在与斯特吉亚人的小规模冲突中被杀。新国王哈尔达尔任命她为贝恩兰的雅尔，但她的众多族人却在许尔夫家族的统治下饱受屈辱"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "commoner",
+          "notable",
+          "soldier",
+          "townsfolk",
+          "villager",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "诺德人敬奥特尔家族当年敢向王座挥斧的硬气，却叹他们战败后靠联姻求全——虽说阿丝葛莎用盾女的本事挣回了脸面，可如今族人仍在许尔夫家族手下受辱，在诺德人看来，一个家族可以战败，但不能活着看脊梁被人踩断。"
+    }
+  ],
+  "TextMappings": []
+}

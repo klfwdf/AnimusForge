@@ -3,6 +3,9 @@
   "Keywords": [
     "“饿人”沃尔比约恩"
   ],
+  "RagShortTexts": [
+    "“饿人”沃尔比约恩建立了诺德维格王国。"
+  ],
   "SemanticPrototypes": [],
   "Variants": [
     {
@@ -13,6 +16,7 @@
         "KingdomIds": null,
         "SettlementIds": null,
         "Roles": null,
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": null
@@ -29,6 +33,7 @@
         "KingdomIds": null,
         "SettlementIds": null,
         "Roles": null,
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": {
@@ -51,6 +56,7 @@
           "townsfolk",
           "villager"
         ],
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": null
@@ -69,6 +75,7 @@
         "Roles": [
           "soldier"
         ],
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": null

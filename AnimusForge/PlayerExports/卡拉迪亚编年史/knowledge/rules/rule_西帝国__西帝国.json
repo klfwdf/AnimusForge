@@ -3,6 +3,11 @@
   "Keywords": [
     "西帝国"
   ],
+  "RagShortTexts": [
+    "西帝国政治体制军事化，皇帝是最高军事指挥者",
+    "西帝国权力源于军队，皇帝需强大军事能力",
+    "西帝国军功晋升制度，底层难获爵位"
+  ],
   "SemanticPrototypes": [],
   "Variants": [
     {
@@ -13,6 +18,7 @@
         "KingdomIds": null,
         "SettlementIds": null,
         "Roles": null,
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": null
@@ -31,6 +37,7 @@
         "Roles": [
           "lord"
         ],
+        "IdentityIds": null,
         "IsFemale": false,
         "IsClanLeader": true,
         "SkillMin": {
@@ -53,6 +60,7 @@
         "Roles": [
           "lord"
         ],
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": {

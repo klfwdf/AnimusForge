@@ -1,0 +1,30 @@
+﻿{
+  "Id": "rule_吕卡里亚",
+  "Keywords": [
+    "吕卡里亚",
+    "吕卡里亚平原",
+    "吕卡隆平原"
+  ],
+  "RagShortTexts": [
+    "吕卡隆平原是帝国重要马场与粮食产区"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "吕卡里亚平原是帝国东南部的一个大平原，是优良的马场和粮仓，坎忒里翁军马便是这里的特产，一部分帕尔马廷马也在这里长大"
+    }
+  ],
+  "TextMappings": []
+}

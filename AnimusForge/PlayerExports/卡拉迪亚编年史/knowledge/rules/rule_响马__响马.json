@@ -3,6 +3,9 @@
   "Keywords": [
     "响马"
   ],
+  "RagShortTexts": [
+    "响马团行踪不定，极难抓捕的强盗团伙。"
+  ],
   "SemanticPrototypes": [],
   "Variants": [
     {
@@ -13,11 +16,12 @@
         "KingdomIds": null,
         "SettlementIds": null,
         "Roles": null,
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": null
       },
-      "Content": "响马团是一群库赛特破落贵族带领的强盗团，他们来去如风，行踪不定，极难抓捕，是最棘手的强盗"
+      "Content": "响马团是一群库赛特破落贵族带领的强盗团，他们来去如风，行踪不定，极难抓捕，是最棘手的强盗团伙，他们不仅敢抢劫村民，还敢抢劫商队，甚至是小股正规军"
     }
   ],
   "TextMappings": []

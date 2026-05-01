@@ -1,0 +1,52 @@
+﻿{
+  "Id": "rule_巴旦尼亚_帕拉宗教",
+  "Keywords": [
+    "巴旦尼亚/帕拉宗教"
+  ],
+  "RagShortTexts": [
+    "巴丹尼亚宗教核心是崇拜自然",
+    "巴丹尼亚德鲁伊的社会地位与职责",
+    "巴丹尼亚的神圣场所包括圣泉古树"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "巴丹尼亚的宗教核心是崇拜自然。作为祭司、法官和学识传承者，德鲁伊在凯尔特社会中地位极高。信仰众多掌管森林、河流、天空、战争与丰产的神灵。森林中的圣泉、古树和特定山丘被认为是神圣的场所。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire",
+          "nord",
+          "sturgia",
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "巴丹尼亚人信奉自然那一套"
+    }
+  ],
+  "TextMappings": []
+}

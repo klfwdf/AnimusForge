@@ -2,7 +2,10 @@
   "Id": "rule_“金发”哈尔达尔",
   "Keywords": [
     "“金发”哈尔达尔",
-    "哈尔达尔大公"
+    "哈尔达尔国王"
+  ],
+  "RagShortTexts": [
+    "哈尔达尔国王统治不甘愿的土地。"
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -22,6 +25,7 @@
           "townsfolk",
           "villager"
         ],
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": null
@@ -36,6 +40,7 @@
         "KingdomIds": null,
         "SettlementIds": null,
         "Roles": null,
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": null
@@ -53,11 +58,12 @@
           "lord",
           "wanderer"
         ],
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": null
       },
-      "Content": "哈尔达尔是诺德大公，他勇猛善战，是个不可多得的战士，他还善于航海，是老道的航海家，但是他的治国水平吗？差点意思"
+      "Content": "哈尔达尔是诺德国王，统治着B，他勇猛善战，是个不可多得的战士，他还善于航海，是老道的航海家，但是他的治国水平吗？差点意思。"
     },
     {
       "Priority": 0,
@@ -71,12 +77,24 @@
         "Roles": [
           "soldier"
         ],
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": null
       },
-      "Content": "大公万岁！！！！！！！誓死效忠大公！！！！！！！"
+      "Content": "国王万岁！！！！！！！誓死效忠国王！！！！！！！"
     }
   ],
-  "TextMappings": []
+  "TextMappings": [
+    {
+      "SourceText": "B",
+      "Kind": "clan_all_towns",
+      "TargetId": "clan_nord_1",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
 }

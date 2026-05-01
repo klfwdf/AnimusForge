@@ -10,6 +10,18 @@ namespace AnimusForge;
 
 public class SubModule : MBSubModuleBase
 {
+	private bool _pendingInitialApiGuideNotice;
+
+	private bool _initialApiGuideNoticeShown;
+
+	private long _initialApiGuideNoticeAfterUtcTicks;
+
+	public override void OnInitialState()
+	{
+		base.OnInitialState();
+		MarkPendingInitialApiGuideNotice();
+	}
+
 	protected override void OnBeforeInitialModuleScreenSetAsRoot()
 	{
 		base.OnBeforeInitialModuleScreenSetAsRoot();
@@ -18,15 +30,6 @@ public class SubModule : MBSubModuleBase
 		{
 			Logger.LogTrace("SubModule", ">>> Applying Harmony patches...");
 			Harmony harmony = new Harmony("com.AnimusForge.spy");
-			try
-			{
-				PatchClassProcessor patchClassProcessorClipboard = harmony.CreateClassProcessor(typeof(InputClipboardUnicodePatch));
-				patchClassProcessorClipboard.Patch();
-			}
-			catch (Exception exClipboard)
-			{
-				Logger.LogTrace("SubModule", ">>> InputClipboardUnicodePatch failed: " + exClipboard.Message);
-			}
 			try
 			{
 				PatchClassProcessor patchClassProcessor2 = harmony.CreateClassProcessor(typeof(Patch_TriggerMassiveHook));
@@ -208,12 +211,46 @@ public class SubModule : MBSubModuleBase
 
 	protected override void OnApplicationTick(float dt)
 	{
+		ProcessPendingInitialApiGuideNotice();
 		BannerlordExceptionSentinel.OnApplicationTick();
 		McmDropdownRuntimeRefresh.OnApplicationTick();
 		ModOnboardingBehavior.Instance?.OnEngineTick();
 		MyBehavior.Instance?.OnEngineTick();
 		DuelBehavior.Instance?.OnEngineTick();
 		AnimusForgeTerminalBehavior.Instance?.OnEngineTick();
+	}
+
+	private void MarkPendingInitialApiGuideNotice()
+	{
+		try
+		{
+			if (_initialApiGuideNoticeShown)
+			{
+				return;
+			}
+			_pendingInitialApiGuideNotice = true;
+			_initialApiGuideNoticeAfterUtcTicks = DateTime.UtcNow.Ticks + TimeSpan.FromSeconds(1.0).Ticks;
+		}
+		catch
+		{
+		}
+	}
+
+	private void ProcessPendingInitialApiGuideNotice()
+	{
+		try
+		{
+			if (!_pendingInitialApiGuideNotice || _initialApiGuideNoticeShown || DateTime.UtcNow.Ticks < _initialApiGuideNoticeAfterUtcTicks)
+			{
+				return;
+			}
+			_pendingInitialApiGuideNotice = false;
+			_initialApiGuideNoticeShown = true;
+			InformationManager.DisplayMessage(new InformationMessage("欢迎使用 AnimusForge。若要配置 API 信息，你无需进入 MCM 页面；进入存档之后的首次引导会引导你填写 API 信息。", Colors.Yellow));
+		}
+		catch
+		{
+		}
 	}
 
 	[CommandLineFunctionality.CommandLineArgumentFunction("reload", "AnimusForge")]

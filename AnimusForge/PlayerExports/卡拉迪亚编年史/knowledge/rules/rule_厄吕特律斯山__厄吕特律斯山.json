@@ -1,0 +1,46 @@
+﻿{
+  "Id": "rule_厄吕特律斯山",
+  "Keywords": [
+    "厄吕特律斯山",
+    "卡拉迪亚最高峰"
+  ],
+  "RagShortTexts": [
+    "厄吕特律斯山是卡拉迪亚大陆最高峰"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "厄吕特律斯山是卡拉迪亚大陆最高峰。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "scouting": 80
+        }
+      },
+      "Content": "厄吕特律斯山是卡拉迪亚最高峰，山顶白雪皑皑，十分美丽，据说半山腰有个山洞群，是个著名的隐居地，那里有很多修行的人，他们从不下山，在山上过着无欲无求的生活。"
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,232 @@
+﻿{
+  "Id": "rule_因加泰尔",
+  "Keywords": [
+    "因加泰尔",
+    "因加泰尔伯爵"
+  ],
+  "RagShortTexts": [
+    "因加泰尔是戴·科尔坦家族族长，瓦兰迪亚最忌惮男爵。",
+    "因加泰尔对德泰尔国王不敬，为扩张地盘而战。",
+    "因加泰尔从半兄夺得继承权，曾觊觎杰屈朗领地。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "因加泰尔是戴·科尔坦家族的族长，瓦兰迪亚最让人忌惮的男爵之一。他的封地沙拉斯是当年帝国人首次踏上瓦兰迪亚土地的地方，如今却成了他窥伺东方的据点。这个人从骨子里就好战，对国王德泰尔也谈不上什么敬畏。有人说他是瓦兰迪亚当之无愧的鹰派，也有人说他只是一条随时会咬人的野狗。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "因加泰尔？他是我们瓦兰迪亚最凶狠的男爵，没有之一。他的沙拉斯就在帝国边境上，每次和帝国开战，他都是冲在最前面的那个。但别以为他是什么忠君爱国的骑士——他打仗是为了扩张自己的地盘。德泰尔国王对他既要用又要防，因为谁都知道，如果让这条野狗再吞下一块肥肉，他下一个咬的可能就是王座。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "因加泰尔这个人，和他打交道你得打起十二分精神。当年他能从一个同父异母的哥哥手里夺下戴·科尔坦家族的继承权，手段之狠辣可想而知。更别提他在卡拉蒂尔德继承杰屈朗时耍的那套把戏了——他故意宣称自己对杰屈朗有继承权，逼得卡拉蒂尔德的族人们不得不团结在她身边，宁可让一个女人当家，也不让因加泰尔这条外来的狼进门。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "因加泰尔男爵的名声可不太好。他领地里的税是出了名的重，因为他要养兵。他的兵也确实多，随时准备着和帝国人打仗——或者说，随时准备着抢帝国人的地盘。你要是住在他的领地上，最好祈祷他打胜仗，因为打输了的话，他会从你身上榨出更多的第纳尔来补他的损失。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "因加泰尔是帝国边境上最让人头疼的敌人。他的沙拉斯就在我们的家门口，当年帝国的舰队就是从他家族的土地上第一次登陆的。如今这个家伙却成了帝国西境最大的威胁。他打仗不按常理，凶狠而且不择手段。比起瓦兰迪亚的其他男爵，他才是真正让我们边防将领睡不好觉的人。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "因加泰尔那个疯子，潘德拉克战役的时候他还只是个侍从，如今已经是一方诸侯了。这个人从底层爬上来的经历让他比那些世袭的贵族更饥渴、更不择手段。据说他当年在战场上亲眼见证了帝国具装骑兵碾碎瓦兰迪亚弩手的那一幕，从那时起他就发誓要让帝国人付出代价。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "南边那个叫因加泰尔的瓦兰迪亚男爵，据说是个狠角色。我们北方人虽然不太关心南边的事，但也听说过他从同父异母的哥哥手里抢家产的故事。这种兄弟阋墙的事在我们斯特吉亚也不少见，但能做得这么干净利落的，确实是个厉害人物。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "因加泰尔是瓦兰迪亚的鹰派男爵，他的封地沙拉斯就在帝国边境上。这个人野心勃勃，对国王也缺乏敬畏。巴旦尼亚虽然不直接和他接壤，但瓦兰迪亚如果出现这样一位强势的边境领主，对我们来说不是好消息。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "因加泰尔是瓦兰迪亚最激进的男爵之一。他对帝国的态度比德泰尔国王要强硬得多。我们阿塞莱虽然远在南方，但瓦兰迪亚的动向也影响着整个大陆的平衡。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer",
+          "mercenary"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "因加泰尔？我在瓦兰迪亚混过一阵子，听不少人说起过他。他从同父异母的哥哥手里夺了家产，又在卡拉蒂尔德女男爵继位的时候插了一脚——他想抢杰屈朗，结果反而帮了卡拉蒂尔德的忙，因为戴·阿罗曼克家族的人宁愿让自家女儿当家，也不肯让因加泰尔这条野狗进门。德泰尔国王也站在卡拉蒂尔德那边，因为谁都知道，如果再让因加泰尔吞下杰屈朗，这条狼的尾巴就要翘到天上去了。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 150
+        }
+      },
+      "Content": "因加泰尔是瓦兰迪亚封建政治中典型的'崛起者'案例。他从潘德拉克战役时的一个普通侍从，通过夺取同父异母兄长的继承权成为戴·科尔坦家族的族长，后来又试图通过宣称对杰屈朗的继承权来扩张势力，最终被德泰尔国王和其他男爵联手遏制。他的存在代表了瓦兰迪亚封建体系中的一种不稳定力量——那些对现有秩序不满、渴望通过战争和阴谋来重新洗牌的边境领主。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "因加泰尔",
+      "Kind": "bound_hero_name",
+      "TargetId": "__bound_hero__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "戴·科尔坦",
+      "Kind": "bound_clan_name",
+      "TargetId": "__bound_clan__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "沙拉斯",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

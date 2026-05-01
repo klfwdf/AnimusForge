@@ -3,6 +3,9 @@
   "Keywords": [
     "云梯"
   ],
+  "RagShortTexts": [
+    "云梯是用于攻城的大型梯子。"
+  ],
   "SemanticPrototypes": [],
   "Variants": [
     {
@@ -13,6 +16,7 @@
         "KingdomIds": null,
         "SettlementIds": null,
         "Roles": null,
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": null
@@ -27,6 +31,7 @@
         "KingdomIds": null,
         "SettlementIds": null,
         "Roles": null,
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": {

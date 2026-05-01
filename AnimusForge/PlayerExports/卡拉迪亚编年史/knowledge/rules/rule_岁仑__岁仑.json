@@ -1,0 +1,65 @@
+﻿{
+  "Id": "rule_岁仑",
+  "Keywords": [
+    "岁仑",
+    "大那颜岁仑"
+  ],
+  "RagShortTexts": [
+    "岁仑是库吉特家族前族长，潘德拉克战役中战死",
+    "岁仑之死如何影响库吉特家族地位？",
+    "墨速宜为何因岁仑之死不满蒙楚格？"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "岁仑是库吉特家族的前任族长，墨速宜的前夫，在潘德拉克战役中与墨速宜的两个兄弟及其他家族男丁一同战死。他的死使库吉特家族男丁凋零，导致家族在库塞特诸部中地位一落千丈，成为阿契特等家族觊觎的对象。墨速宜因岁仑之死对蒙楚格心怀不满，却不得不依附强权以求家族延续。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": [
+          "town_k1"
+        ],
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "岁仑以前才是库吉特家族的族长，统治着a，但是在潘德拉克战役，他和库吉特家族的不少男丁都死了。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "a",
+      "Kind": "clan_all_settlements",
+      "TargetId": "clan_khuzait_2",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

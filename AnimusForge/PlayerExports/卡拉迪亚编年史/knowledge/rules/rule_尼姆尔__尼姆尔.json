@@ -1,0 +1,51 @@
+﻿{
+  "Id": "rule_尼姆尔",
+  "Keywords": [
+    "尼姆尔"
+  ],
+  "RagShortTexts": [
+    "尼姆尔是阿塞莱萨兰部族年轻勇士",
+    "尼姆尔因勾引吉勒德女孩被处决",
+    "尼姆尔事件导致萨兰吉勒德家族世仇"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "阿塞莱的尼姆尔是萨兰部族的一名年轻勇士，在潘德拉克战役中率领阿塞莱军作为预备队。在潘德拉克战役结束后回到家乡，被族人捧为英雄，但因为阵亡名单里面来自吉勒德家族的青年不在少数，从而招致吉勒德家族的怨恨。更加要命的由于勾引了吉勒德部族的一名年轻女孩，他最终被该部族处决。尽管吉勒德部族和萨兰部族各有说辞，但没人能否定的是，两个家族最终还是结下了不可化解的仇恨。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "阿塞莱的尼姆尔是萨兰部族的勇士，在潘德拉克战役中作战英勇，是阿塞莱的英雄。但是他和吉勒德家族的一名少女相爱引起吉勒德家族的不满，竟然被该家族处决了。此后，两家族结下不解之仇。"
+    }
+  ],
+  "TextMappings": []
+}

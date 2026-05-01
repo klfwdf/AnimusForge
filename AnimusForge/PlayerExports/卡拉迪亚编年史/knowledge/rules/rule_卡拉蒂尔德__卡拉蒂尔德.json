@@ -1,0 +1,213 @@
+﻿{
+  "Id": "rule_卡拉蒂尔德",
+  "Keywords": [
+    "卡拉蒂尔德",
+    "杰屈朗",
+    "女男爵"
+  ],
+  "RagShortTexts": [
+    "卡拉蒂尔德是瓦兰迪亚唯一女男爵，继承权曾受挑战。",
+    "卡拉蒂尔德丈夫恩泰里军方有权，她却爱领兵。",
+    "卡拉蒂尔德因因加泰尔威胁，获家族与国王支持。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "卡拉蒂尔德是戴·阿罗曼克家族的族长，瓦兰迪亚唯一的女男爵。按照瓦兰迪亚的习惯法，女性本来没有继承权，但她的父亲只有她一个女儿。当因加泰尔那个野心家宣称对杰屈朗有继承权时，她的族人们宁可让自家的女儿当家，也不肯让外来的狼进门。德泰尔国王也支持她，这才让她坐稳了男爵的位置。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "卡拉蒂尔德是我们瓦兰迪亚唯一的女男爵。说起来，她这个位子坐得并不容易。按规矩，女人是不能继承的，但她父亲只有她一个女儿。当年因加泰尔那条狼想吞掉杰屈朗，宣称自己也有继承权。戴·阿罗曼克家族的人一听，立刻团结在卡拉蒂尔德身边——自家的女儿再怎么样，也比让外人来当家的强。德泰尔国王也站在她这边，毕竟谁也不想让因加泰尔的势力再膨胀下去。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "卡拉蒂尔德这个人很有意思。她是个女人，在瓦兰迪亚当男爵本就名不正言不顺，但她的丈夫恩泰里却是瓦兰迪亚军方的一个实权人物，在潘德拉克战役中指挥过弩手方阵。按理说，丈夫是军人，妻子在家守城才对，但他们家正好反过来——卡拉蒂尔德特别喜欢带军团出征，反倒是恩泰里不怎么喜欢领兵。有人说是她需要通过军功来证明自己配得上这个男爵的头衔。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "卡拉蒂尔德女男爵的名声还不错，听说她公正诚实，就是有点吝啬。不过这也正常，一个女人在全是男人的贵族圈子里站稳脚跟，不精打细算怎么行？她和恩泰里伯爵的结合，有人说是一场政治联姻——她需要军方支持，恩泰里需要一个体面的身份。但不管怎样，他们的女儿茜尔文可是个厉害角色，比她父母都能打。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "瓦兰迪亚那个女男爵卡拉蒂尔德，是个有意思的角色。她的丈夫恩泰里在潘德拉克战役中指挥弩手，被我们的具装骑兵碾过去了，虽然保住了命，但那一仗他手下的弩手几乎全军覆没。有意思的是，这个恩泰里在瓦兰迪亚的军队里很有话语权，但他本人却不喜欢带兵打仗。反倒是他那个靠特殊手段上位的妻子卡拉蒂尔德，特别喜欢领兵出征。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "瓦兰迪亚有个女男爵叫卡拉蒂尔德，是杰屈朗的领主。我们北方人不太关心南边的事，但一个女人能在瓦兰迪亚当上男爵，这事本身就挺稀奇。听说她能上位，一部分原因是因加泰尔那条狼想抢她的地盘，反而逼得她的族人团结起来支持她。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "卡拉蒂尔德是瓦兰迪亚唯一的女男爵，统治着杰屈朗。她能上位是因为因加泰尔想抢她家的继承权，反而让戴·阿罗曼克家族的人团结在她身边。她的丈夫恩泰里是军方的人，但这夫妻俩的角色好像反过来了——她爱带兵，丈夫不爱带兵。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "瓦兰迪亚那位女男爵卡拉蒂尔德，是个靠特殊机缘上位的人物。她的丈夫恩泰里是军方的实力派，在潘德拉克战役中有过指挥经历。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer",
+          "mercenary"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "卡拉蒂尔德女男爵，我在瓦兰迪亚混的时候听说过她的故事。她父亲没有儿子，按照习惯法她本来不能继承。但那个野心勃勃的因加泰尔宣称自己对杰屈朗有继承权，这下戴·阿罗曼克家族的人慌了——与其让外人来当家，不如支持自家的女儿。德泰尔国王也怕因加泰尔势力太大，就顺势支持了她。就这样，卡拉蒂尔德成了瓦兰迪亚唯一的女男爵。后来她嫁给了恩泰里，一个在军方有影响力但在潘德拉克被打得很惨的伯爵。这两人也挺有意思，恩泰里不喜欢带兵，她反而特别喜欢领军团出征。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 150
+        }
+      },
+      "Content": "卡拉蒂尔德的继承案是瓦兰迪亚封建制度中一个颇具分析价值的案例。按照瓦兰迪亚的习惯法，女性没有继承权，但她的父亲只有她一个女儿。真正促成她继位的，是来自外部的威胁——因加泰尔对杰屈朗的觊觎，使得戴·阿罗曼克家族在'女性继承'和'外人夺权'之间选择了前者。德泰尔国王的支持也是关键因素，因为从王权的角度出发，维持一个弱势的女男爵，远比让野心勃勃的因加泰尔继续扩张更有利。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "卡拉蒂尔德",
+      "Kind": "bound_hero_name",
+      "TargetId": "__bound_hero__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "戴·阿罗曼克",
+      "Kind": "bound_clan_name",
+      "TargetId": "__bound_clan__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "杰屈朗",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

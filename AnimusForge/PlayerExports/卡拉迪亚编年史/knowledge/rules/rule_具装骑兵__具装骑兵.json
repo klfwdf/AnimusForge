@@ -3,6 +3,9 @@
   "Keywords": [
     "具装骑兵"
   ],
+  "RagShortTexts": [
+    "具装骑兵是帝国大杀器，人马具装。"
+  ],
   "SemanticPrototypes": [],
   "Variants": [
     {
@@ -18,6 +21,7 @@
         "KingdomIds": null,
         "SettlementIds": null,
         "Roles": null,
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": {
@@ -25,6 +29,44 @@
         }
       },
       "Content": "具装骑兵很强，但不是战无不胜。他们的矛又长又重，这固然赋予了他们无与伦比的进攻性，但这也让他们无法架枪，也无法举盾，遇到远程部队就只能被射成刺猬"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "char:bucellarii",
+          "char:empire_marine_t3",
+          "char:empire_marine_t4",
+          "char:empire_marine_t5",
+          "char:imperial_archer",
+          "char:imperial_cataphract",
+          "char:imperial_crossbowman",
+          "char:imperial_elite_cataphract",
+          "char:imperial_elite_menavliaton",
+          "char:imperial_equite",
+          "char:imperial_heavy_horseman",
+          "char:imperial_infantryman",
+          "char:imperial_legionary",
+          "char:imperial_menavliaton",
+          "char:imperial_palatine_guard",
+          "char:imperial_recruit",
+          "char:imperial_sergeant_crossbowman",
+          "char:imperial_trained_archer",
+          "char:imperial_trained_infantryman",
+          "char:imperial_veteran_archer",
+          "char:imperial_veteran_infantryman",
+          "char:imperial_vigla_recruit"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "我们帝国军队里的具装骑兵就是战无不胜的，他们人马具装，无视一切攻击，胯下一匹帕尔马廷马赋予了他们极大的机动能力，没有什么可以阻止具装骑兵们的冲锋，除了他们自己"
     }
   ],
   "TextMappings": []

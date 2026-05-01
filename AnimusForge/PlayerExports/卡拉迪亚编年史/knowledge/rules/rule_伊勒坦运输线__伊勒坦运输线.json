@@ -3,6 +3,9 @@
   "Keywords": [
     "伊勒坦运输线"
   ],
+  "RagShortTexts": [
+    "伊勒坦运输线是帝国北方防务的粮食生命线"
+  ],
   "SemanticPrototypes": [],
   "Variants": [
     {
@@ -13,6 +16,7 @@
         "KingdomIds": null,
         "SettlementIds": null,
         "Roles": null,
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": null
@@ -32,11 +36,12 @@
           "lord",
           "notable"
         ],
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": null
       },
-      "Content": "这是我们帝国的生命线，北方防务有一半的粮食都从这条线过，它太重要了，我们就让自由民部队去守这条线——他们不要饷，因为他们就是一帮强盗。我们还在安普雷拉和罗卡那堡放了一大堆守军，让居福尔去守，保障粮道的安全"
+      "Content": "这是我们帝国的生命线，北方防务有一半的粮食都从这条线过，它太重要了，我们就让自由民部队去守这条线——他们不要饷，因为他们就是一帮强盗。我们还在安普雷拉和罗卡那堡放了一大堆守军，让A去守，保障粮道的安全"
     },
     {
       "Priority": 0,
@@ -51,6 +56,7 @@
           "lord",
           "notable"
         ],
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": null
@@ -58,5 +64,16 @@
       "Content": "这条运输线就是为了防御我们而开设的，我们会经常在这条线上劫掠，给帝国造成补给压力，好让我们南下"
     }
   ],
-  "TextMappings": []
+  "TextMappings": [
+    {
+      "SourceText": "A",
+      "Kind": "settlement_owner_leader_name",
+      "TargetId": "town_EN6",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
 }

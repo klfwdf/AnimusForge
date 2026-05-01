@@ -1,0 +1,63 @@
+﻿{
+  "Id": "rule_巴努·卡拉兹",
+  "Keywords": [
+    "巴努·卡拉兹",
+    "卡拉修斯"
+  ],
+  "RagShortTexts": [
+    "巴努·卡拉兹家族原名卡拉修斯，源自帝国。",
+    "卡拉修斯是卡拉狄乌斯大帝的直系子孙。",
+    "巴努·卡拉兹在阿塞莱苏丹议事会有席位。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "卡拉兹家族原本是从帝国那边过来的，在南方扎根久了，跟当地部落结了亲。现在人们都叫他们卡拉兹，是阿塞莱数得上的大家族，在苏丹的议事会上也能说得上话。家族的定居点是a"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "卡拉兹家族原本叫卡拉修斯，也就是卡拉德家族的意思，是帝国卡拉狄乌斯大帝的直系子孙，作为帝国自治前哨站以亚基斯的统治者，他们看到了帝国将要向南建立霸权的苗头，于是开始和纳哈撒的部落民通婚联姻。如今，人们称他们为卡拉兹，他们也和其他阿塞莱的显贵家族一样，在苏丹的御前会议上占有一席之地。\n家族统治的定居点是a"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "a",
+      "Kind": "clan_all_settlements",
+      "TargetId": "clan_aserai_4",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

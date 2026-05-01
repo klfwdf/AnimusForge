@@ -3,6 +3,9 @@
   "Keywords": [
     "元老"
   ],
+  "RagShortTexts": [
+    "元老是共和制基础，带领开发北方土地。"
+  ],
   "SemanticPrototypes": [],
   "Variants": [
     {
@@ -13,6 +16,7 @@
         "KingdomIds": null,
         "SettlementIds": null,
         "Roles": null,
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": null
@@ -29,6 +33,7 @@
         ],
         "SettlementIds": null,
         "Roles": null,
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": null
@@ -47,6 +52,7 @@
         "Roles": [
           "lord"
         ],
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": true,
         "SkillMin": null

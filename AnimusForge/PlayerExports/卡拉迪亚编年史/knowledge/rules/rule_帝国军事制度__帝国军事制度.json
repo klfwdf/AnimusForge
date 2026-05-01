@@ -1,0 +1,60 @@
+﻿{
+  "Id": "rule_帝国军事制度",
+  "Keywords": [
+    "帝国军事制度"
+  ],
+  "RagShortTexts": [
+    "帝国军事制度从正规军团转为贵族私兵体系。",
+    "阿雷尼科斯皇帝废除常备军团与背弃者军团。",
+    "帝国军团步兵和具装骑兵的特点与体系挑战。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "帝国军事制度在故事背景中经历了从国家直属正规军团向贵族私兵体系的根本转变。潘德拉克战役的失败促使皇帝阿雷尼科斯推行改革，废除了帝国最后一支常备军团，转而依赖各地贵族自行募集的扈从，这一变革直接导致了被解散的职业军人组建了名为“背弃者军团”的雇佣兵组织，他们因感到被帝国背叛而延续着旧军团的传统。帝国最引以为豪的兵种有两个，其一是帝国军团步兵，他们是正规军团制度的核心力量，代表着帝国的纪律与组织能力，其身份认同与军团荣誉紧密相连，是帝国军事传统的基石；其二是帝国具装骑兵，他们是帝国武力巅峰的象征，与土地授予制度绑定，属于军事贵族阶层，"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai",
+          "battania",
+          "darshi",
+          "khuzait",
+          "nord",
+          "sturgia",
+          "vakken",
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "各阵营普遍认为，帝国军事制度经历了从国家正规军团向贵族私兵体系的根本转变，阿雷尼科斯皇帝废除常备军团是这一衰落的标志，被解散的军团士兵组建“背弃者军团”则印证了旧帝国军事精神与国家体系的断裂。对于帝国引以为豪的军团步兵与具装骑兵，各阵营的评价因自身军事传统而异——或认可其纪律与防御，或质疑其对战场条件的依赖，或指出其在复杂地形中的局限。总体而言，这套高度专业化但过度依赖稳定财政与领土扩张的体系，在帝国收缩的背景下正面临可持续性的严峻挑战。"
+    }
+  ],
+  "TextMappings": []
+}

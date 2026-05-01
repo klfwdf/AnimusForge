@@ -1,0 +1,50 @@
+﻿{
+  "Id": "rule_塔奈西斯湖",
+  "Keywords": [
+    "塔奈西斯湖"
+  ],
+  "RagShortTexts": [
+    "达那孜海（帝国称塔奈西斯湖）为马凯布、柴坎、席隆尼亚环绕的淡水湖，盛产鲈鱼、鲷鱼及巨型梭鱼。马凯布一带常有库塞特纤夫在湍流中以摆渡收费为生。",
+    "塔奈西斯湖（库塞特称达那孜海）为马凯布、柴坎、席隆尼亚环绕的淡水湖，盛产鲈鱼、鲷鱼及巨型梭鱼。原为帝国内湖，库塞特人到来后就被迫变成双方共享这个湖泊。",
+    "塔奈西斯湖原本是区分帝国本土和东部行省的分界线"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire",
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "塔奈西斯湖，又被库塞特人称为达那孜海。此处原先是帝国的内湖，是指被马凯布，柴坎，席隆尼亚共同包围的淡水湖，湖中盛产鲈鱼和鲷鱼，有时甚至可以见到巨型梭鱼。塔奈西斯湖原本是帝国的东部行省与帝国本土分界线，但自从库塞特人强行西进，推翻了东部行省对这片土地的统治权后，帝国人就不得不和他们共享这片湖泊了。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "达那孜海，又被帝国人称为塔奈西斯湖。是指被马凯布，柴坎，席隆尼亚共同包围的淡水湖，湖中盛产鲈鱼和鲷鱼，有时甚至可以见到巨型梭鱼。马凯布经常会有库塞特纤夫在湍流中提供摆渡以收取过路费为生。游牧民族们世世代代生活在塔奈西斯湖的东岸，但是在一个世纪前，帝国派遣军队占领了这里，宣称这里是帝国的“东部行省”，采用分而治之的方式让部落间互相争斗，如今，在兀尔浑乃特部落的领导下，草原民族们终于夺回了原本就属于我们自己的土地，重新成为塔奈西斯湖东岸这片丰饶土地的主人。"
+    }
+  ],
+  "TextMappings": []
+}

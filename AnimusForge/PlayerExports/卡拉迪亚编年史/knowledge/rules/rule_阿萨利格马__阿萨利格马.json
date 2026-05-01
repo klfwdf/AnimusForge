@@ -3,6 +3,11 @@
   "Keywords": [
     "阿萨利格马"
   ],
+  "RagShortTexts": [
+    "阿萨利格马是库赛特顶级马，产自阿萨利格马场。",
+    "阿萨利格马速度全大陆第三，性格极其温顺。",
+    "阿萨利格马下盘不稳，骑手需高技巧驾驭。"
+  ],
   "SemanticPrototypes": [],
   "Variants": [
     {
@@ -13,6 +18,7 @@
         "KingdomIds": null,
         "SettlementIds": null,
         "Roles": null,
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": null

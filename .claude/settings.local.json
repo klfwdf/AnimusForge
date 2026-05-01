@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(Get-Item *)",
+      "PowerShell(Test-Path *)",
+      "PowerShell(.\\\\build.ps1 2>&1 | Select-Object -Last 60)"
+    ]
+  }
+}

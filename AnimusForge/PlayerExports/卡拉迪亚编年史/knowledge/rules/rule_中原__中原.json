@@ -5,6 +5,9 @@
     "卡拉迪亚中原",
     "洛泰——贾尔马律斯平原"
   ],
+  "RagShortTexts": [
+    "中原人富足保守勇猛尚武有民粹倾向"
+  ],
   "SemanticPrototypes": [],
   "Variants": [
     {
@@ -15,13 +18,14 @@
         "KingdomIds": null,
         "SettlementIds": null,
         "Roles": null,
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": {
           "scouting": 120
         }
       },
-      "Content": "中原指乌卡利昂高原以南，以厄吕特律斯山为中心，珀拉斯海以北，东达奥尼石山的一片区域，主要以平原为主，包括洛泰平原，阿弥塔堤斯平原，贾尔马律斯平原三个主要区域。它是全大陆的人口中心，粮食中心，是全大陆最早开发的区域，早在纪元前就由帕拉人开垦这里的土地。这里主产粮食，亚麻，丝绸，人民富足且保守，他们勇猛尚武，保留着共和时期的踊跃参军传统，所以帝国的军头大部分都是中原人，如加里俄斯，克洛托耳等。他们还有民粹主义倾向，认为其他地方的人（包括帝国其他部分）都没有他们好"
+      "Content": "中原指乌卡利昂高原以南，以厄吕特律斯山为中心，珀拉斯海以北，东达奥尼石山的一片区域，主要以平原为主，包括洛泰平原，阿弥塔堤斯平原，贾尔马律斯平原三个主要区域。它是全大陆的人口中心，粮食中心，是全大陆最早开发的区域，早在纪元前就由帕拉人开垦这里的土地。这里主产粮食，亚麻，丝绸，人民富足且保守，他们勇猛尚武，保留着共和时期的踊跃参军传统，所以帝国的军头大部分都是中原人，如加里俄斯，克洛托耳等。他们还有民粹主义倾向，认为其他地方的人（包括帝国其他部分）都没有他们好。现在由C和D当着该地区的执政官"
     },
     {
       "Priority": 0,
@@ -31,11 +35,12 @@
         "KingdomIds": null,
         "SettlementIds": null,
         "Roles": null,
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": null
       },
-      "Content": "中原很富足，但是听说他们那的人很保守，不知道是不是真的，如果有机会，我一定会去中原看看，吃一吃他们烤的白面包"
+      "Content": "中原很富足，但是听说他们那的人很保守，不知道是不是真的，如果有机会，我一定会去中原看看，吃一吃他们烤的白面包。"
     },
     {
       "Priority": 0,
@@ -50,6 +55,7 @@
           "town_ew6"
         ],
         "Roles": null,
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": null
@@ -69,12 +75,54 @@
           "lord",
           "notable"
         ],
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": null
       },
-      "Content": "中原是我们的核心，丢了中原，我们就完了，这里产粮奇多，足够我们闭关自守，也足够我们出击外邦。我们中原人都是最棒的，其他人都是蛮子，我们支持加里俄斯皇帝和克洛托耳元帅，他们体恤我们，我们也为他们尽犬马之劳。"
+      "Content": "中原是我们的核心，丢了中原，我们就完了，这里产粮奇多，足够我们闭关自守，也足够我们出击外邦。我们中原人都是最棒的，其他人都是蛮子，我们支持A皇帝和B元帅，他们体恤我们，我们也为他们尽犬马之劳。"
     }
   ],
-  "TextMappings": []
+  "TextMappings": [
+    {
+      "SourceText": "A",
+      "Kind": "kingdom_leader_name",
+      "TargetId": "empire_w",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "B",
+      "Kind": "clan_leader_name",
+      "TargetId": "clan_empire_west_3",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "C",
+      "Kind": "settlement_owner_leader_name",
+      "TargetId": "town_EW6",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "D",
+      "Kind": "settlement_owner_leader_name",
+      "TargetId": "town_EW5",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
 }

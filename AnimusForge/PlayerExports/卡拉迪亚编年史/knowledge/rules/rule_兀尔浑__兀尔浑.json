@@ -1,7 +1,11 @@
 ﻿{
   "Id": "rule_兀尔浑",
   "Keywords": [
-    "兀尔浑"
+    "兀尔浑",
+    "兀儿浑"
+  ],
+  "RagShortTexts": [
+    "兀尔浑统一库赛特并吞并帝国东方行省"
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -13,6 +17,7 @@
         "KingdomIds": null,
         "SettlementIds": null,
         "Roles": null,
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": null
@@ -29,6 +34,7 @@
         "KingdomIds": null,
         "SettlementIds": null,
         "Roles": null,
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": null

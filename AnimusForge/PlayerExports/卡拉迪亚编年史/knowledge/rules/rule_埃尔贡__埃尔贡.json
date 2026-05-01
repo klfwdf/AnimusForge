@@ -1,0 +1,67 @@
+﻿{
+  "Id": "rule_埃尔贡",
+  "Keywords": [
+    "埃尔贡",
+    "埃尔贡·芬·登吉尔",
+    "先王兄弟"
+  ],
+  "RagShortTexts": [
+    "埃尔贡是芬·登吉尔族长，先王埃里尔之弟。家族怨恨卡拉多格，视其为低贱暴发户，并疑其与先王乌瑟莱恩失踪有关。但埃尔贡仍要求家族对其忠诚。他支持君主制，不愿巴旦尼亚重陷无政府的乱世。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null
+      },
+      "Content": "埃尔贡是芬·登吉尔家族的族长，先王埃里尔的兄弟。他的家族怨恨卡拉多格，视他为血脉低贱的暴发户，靠着先王的赏识收为养子才得以得到今天的地位。还认为先王乌瑟莱恩的失踪和他脱不了干系。尽管如此，埃尔贡仍然要求他的家族对卡拉多格保持忠诚。芬·登吉尔家族长久以来一向支持强有力的君主制，埃尔贡最不愿意发生的就是让巴旦尼亚人回到无政府时代，那是一段占冗长且不堪回首的历史。埃尔贡的家族目前统治的定居点是a"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "埃尔贡是芬·登吉尔家族的族长,似乎对至高王有些不满，但很少有人知道为什么。埃尔贡的家族目前统治的定居点是a"
+    },
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "埃尔贡听名字似乎是一个巴丹尼亚人"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "a",
+      "Kind": "clan_all_settlements",
+      "TargetId": "clan_battania_2",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

@@ -8,6 +8,9 @@
     "西帝国统帅",
     "西帝国皇帝"
   ],
+  "RagShortTexts": [
+    "加里俄斯是西帝国皇帝，军队最高统帅。"
+  ],
   "SemanticPrototypes": [],
   "Variants": [
     {
@@ -18,11 +21,12 @@
         "KingdomIds": null,
         "SettlementIds": null,
         "Roles": null,
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": null
       },
-      "Content": "加里俄斯是西帝国皇帝，同时是军队的最高统帅，他爱兵如子，但‘爱’民如纸"
+      "Content": "A，同时是军队的最高统帅，他爱兵如子，但‘爱’民如纸"
     },
     {
       "Priority": 0,
@@ -39,11 +43,12 @@
           "townsfolk",
           "villager"
         ],
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": null
       },
-      "Content": "加里俄斯是我们的皇帝呀，他当时称帝的时候，派人到处去逼着我们说“加里俄斯万万岁”，说迟一秒的全被他砍了，他又穷兵黩武，幸好俺们中原富足，要不然日子没法过了"
+      "Content": "加里俄斯是我们的皇帝呀，他当时称帝的时候，派人到处去逼着我们说“加里俄斯万万岁”，说迟一秒的全被他砍了，他又穷兵黩武，幸好俺们中原富足，要不然日子没法过了。现在的皇帝是就是B，日子太不好过了"
     },
     {
       "Priority": 0,
@@ -58,11 +63,12 @@
           "lord",
           "soldier"
         ],
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": null
       },
-      "Content": "加里俄斯皇帝万万岁！他能带我们打胜仗，带我们分红，和我们同甘共苦，我们永远支持他！！拉盖娅和卢孔就是俩傻逼，哪有我们伟大的大统领好？"
+      "Content": "加里俄斯皇帝万万岁！他能带我们打胜仗，带我们分红，和我们同甘共苦，我们永远支持他！！拉盖娅和卢孔就是俩傻逼，哪有我们伟大的大统领好？A"
     },
     {
       "Priority": 0,
@@ -77,12 +83,34 @@
           "lord",
           "notable"
         ],
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": null
       },
-      "Content": "加里俄斯穷兵黩武，手下又只有一帮兵痞，还公然违背了我们拉盖娅女皇归顺的旨意，紫袍加身自立为帝，真是不自量力而且愚蠢"
+      "Content": "加里俄斯穷兵黩武，手下又只有一帮兵痞，还公然违背了我们拉盖娅女皇归顺的旨意，紫袍加身自立为帝，真是不自量力而且愚蠢。A"
     }
   ],
-  "TextMappings": []
+  "TextMappings": [
+    {
+      "SourceText": "A",
+      "Kind": "status|hero|is_alive",
+      "TargetId": "lord_1_7",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": "加里俄斯是西帝国皇帝",
+      "FalseText": "加里俄斯是西帝国老皇帝，他已经死了"
+    },
+    {
+      "SourceText": "B",
+      "Kind": "kingdom_leader_name",
+      "TargetId": "empire_w",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
 }

@@ -4,6 +4,9 @@
     "农奴",
     "依附农"
   ],
+  "RagShortTexts": [
+    "瓦兰迪亚农奴无法离开土地，是贵族奴隶"
+  ],
   "SemanticPrototypes": [],
   "Variants": [
     {
@@ -14,6 +17,7 @@
         "KingdomIds": null,
         "SettlementIds": null,
         "Roles": null,
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": null
@@ -32,6 +36,7 @@
         "Roles": [
           "villager"
         ],
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": null
@@ -50,6 +55,7 @@
         "Roles": [
           "lord"
         ],
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": null
@@ -66,6 +72,7 @@
         "KingdomIds": null,
         "SettlementIds": null,
         "Roles": null,
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": null

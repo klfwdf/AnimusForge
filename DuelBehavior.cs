@@ -43,6 +43,17 @@ public class DuelBehavior : CampaignBehaviorBase
 		public long UtcTicks;
 	}
 
+	private class PendingDuelDebtTag
+	{
+		public int Amount;
+
+		public int DueDays;
+
+		public string Note;
+
+		public long UtcTicks;
+	}
+
 	private class ArenaDuelMissionBehavior : MissionBehavior
 	{
 		private readonly Hero _targetHero;
@@ -461,6 +472,7 @@ public class DuelBehavior : CampaignBehaviorBase
 				{
 					Instance._lastDuelResults[_targetHero.StringId] = (flag ? 1 : (-1));
 				}
+				SetDuelDebtTagGateState(_targetHero, playerDefeated ? -1 : 1);
 				_localPostDuelFreezeActive = true;
 				float currentTime = base.Mission.CurrentTime;
 				_localPostDuelExitTimer = currentTime + 10f;
@@ -667,6 +679,10 @@ public class DuelBehavior : CampaignBehaviorBase
 
 	private static Dictionary<string, PendingDuelStake> _pendingDuelStakes = new Dictionary<string, PendingDuelStake>();
 
+	private static Dictionary<string, PendingDuelDebtTag> _pendingDuelDebtTags = new Dictionary<string, PendingDuelDebtTag>(StringComparer.OrdinalIgnoreCase);
+
+	private static Dictionary<string, int> _duelDebtTagGateStates = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+
 	public static DuelBehavior Instance { get; private set; }
 
 	public static bool IsArenaMissionActive => _arenaMissionActive;
@@ -702,6 +718,104 @@ public class DuelBehavior : CampaignBehaviorBase
 	}
 
 	public static bool IsDuelEnded => _duelResultRecorded;
+
+	private static void SetDuelDebtTagGateState(Hero hero, int state)
+	{
+		try
+		{
+			string text = hero?.StringId;
+			if (string.IsNullOrWhiteSpace(text))
+			{
+				return;
+			}
+			if (_duelDebtTagGateStates == null)
+			{
+				_duelDebtTagGateStates = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+			}
+			_duelDebtTagGateStates[text] = state;
+		}
+		catch
+		{
+		}
+	}
+
+	public static bool TryConsumeDuelDebtTagPermission(Hero hero, out bool allowDebtTag)
+	{
+		allowDebtTag = true;
+		try
+		{
+			string text = hero?.StringId;
+			if (string.IsNullOrWhiteSpace(text) || _duelDebtTagGateStates == null || !_duelDebtTagGateStates.TryGetValue(text, out var value))
+			{
+				return false;
+			}
+			if (value == 0)
+			{
+				allowDebtTag = false;
+				return true;
+			}
+			_duelDebtTagGateStates.Remove(text);
+			allowDebtTag = value < 0;
+			return true;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	public static void CachePendingDuelDebtTag(Hero hero, int amount, int dueDays, string note)
+	{
+		try
+		{
+			string text = hero?.StringId;
+			if (string.IsNullOrWhiteSpace(text) || amount <= 0)
+			{
+				return;
+			}
+			if (_pendingDuelDebtTags == null)
+			{
+				_pendingDuelDebtTags = new Dictionary<string, PendingDuelDebtTag>(StringComparer.OrdinalIgnoreCase);
+			}
+			_pendingDuelDebtTags[text] = new PendingDuelDebtTag
+			{
+				Amount = Math.Max(1, amount),
+				DueDays = Math.Max(0, dueDays),
+				Note = (note ?? "").Trim(),
+				UtcTicks = DateTime.UtcNow.Ticks
+			};
+		}
+		catch
+		{
+		}
+	}
+
+	public static bool TryConsumePendingDuelDebtTag(Hero hero, out int amount, out int dueDays, out string note)
+	{
+		amount = 0;
+		dueDays = 0;
+		note = null;
+		try
+		{
+			string text = hero?.StringId;
+			if (string.IsNullOrWhiteSpace(text) || _pendingDuelDebtTags == null || !_pendingDuelDebtTags.TryGetValue(text, out var value) || value == null)
+			{
+				return false;
+			}
+			_pendingDuelDebtTags.Remove(text);
+			amount = Math.Max(0, value.Amount);
+			dueDays = Math.Max(0, value.DueDays);
+			note = (value.Note ?? "").Trim();
+			return amount > 0;
+		}
+		catch
+		{
+			amount = 0;
+			dueDays = 0;
+			note = null;
+			return false;
+		}
+	}
 
 	public override void RegisterEvents()
 	{
@@ -1188,8 +1302,23 @@ public class DuelBehavior : CampaignBehaviorBase
 			{
 				return "";
 			}
+			bool flag = TryConsumePendingDuelDebtTag(targetHero, out var amount, out var dueDays, out var note) && amount > 0;
 			if (!TryConsumePendingDuelStake(targetHero.StringId, out var stake) || stake == null)
 			{
+				if (!playerWon && flag && RewardSystemBehavior.Instance != null)
+				{
+					string npcName2 = targetHero?.Name?.ToString() ?? "NPC";
+					string playerName2 = Hero.MainHero?.Name?.ToString() ?? "玩家";
+					if (RewardSystemBehavior.Instance.RecordDeferredDuelDebtForNpc(targetHero, amount, dueDays, note, out var debtId, out var dueStatusText))
+					{
+						string text3 = string.IsNullOrWhiteSpace(dueStatusText) ? "" : ("，" + dueStatusText);
+						string text4 = string.IsNullOrWhiteSpace(note) ? "" : ("，备注：" + note);
+						string text5 = string.IsNullOrWhiteSpace(debtId) ? "" : ("（债务ID:" + debtId + "）");
+						MyBehavior.AppendExternalDialogueHistory(targetHero, null, null, $"你在决斗中击败了 {playerName2}，并已记下：{playerName2} 欠你 {amount} 第纳尔{text5}（决斗赌注）{text3}{text4}。");
+						MyBehavior.AppendExternalDialogueHistory(Hero.MainHero, null, null, $"你在决斗中输给了 {npcName2}，欠 {npcName2} {amount} 第纳尔{text5}（决斗赌注）{text3}{text4}。");
+						return $" 你在决斗中输给了{npcName2}，现在欠{npcName2} {amount} 第纳尔{text5}（决斗赌注）{text3}{text4}。";
+					}
+				}
 				return "";
 			}
 			string text = targetHero?.Name?.ToString() ?? "NPC";
@@ -1207,6 +1336,7 @@ public class DuelBehavior : CampaignBehaviorBase
 			}
 			if (playerWon)
 			{
+				TryConsumePendingDuelDebtTag(targetHero, out var _, out var _, out var _);
 				if (instance == null)
 				{
 					return " " + text + "没有结算赌注。";
@@ -1273,35 +1403,17 @@ public class DuelBehavior : CampaignBehaviorBase
 				string text6 = string.Join("，", list2);
 				return $" 你在决斗中击败了 {text}，但 {text}无法支付赌注 {text6}。";
 			}
-			if (instance != null)
+			if (instance != null && flag)
 			{
-				instance.GetDebtSnapshot(targetHero, out var owedGold, out var owedItems);
-				if (num > 0)
+				if (instance.RecordDeferredDuelDebtForNpc(targetHero, amount, dueDays, note, out var debtId, out var dueStatusText))
 				{
-					owedGold += num;
+					string text7 = string.IsNullOrWhiteSpace(dueStatusText) ? "" : ("，" + dueStatusText);
+					string text10 = string.IsNullOrWhiteSpace(note) ? "" : ("，备注：" + note);
+					string text11 = string.IsNullOrWhiteSpace(debtId) ? "" : ("（债务ID:" + debtId + "）");
+					MyBehavior.AppendExternalDialogueHistory(targetHero, null, null, $"你在决斗中击败了 {text2}，并已记下：{text2} 欠你 {amount} 第纳尔{text11}（决斗赌注）{text7}{text10}。");
+					MyBehavior.AppendExternalDialogueHistory(Hero.MainHero, null, null, $"你在决斗中输给了 {text}，欠 {text} {amount} 第纳尔{text11}（决斗赌注）{text7}{text10}。");
+					return $" 你在决斗中输给了{text}，现在欠{text} {amount} 第纳尔{text11}（决斗赌注）{text7}{text10}。";
 				}
-				if (HasStakeItems(dictionary))
-				{
-					if (owedItems == null)
-					{
-						owedItems = new Dictionary<string, int>();
-					}
-					foreach (KeyValuePair<string, int> item2 in dictionary)
-					{
-						string text7 = (item2.Key ?? "").Trim();
-						int num5 = Math.Max(0, item2.Value);
-						if (string.IsNullOrWhiteSpace(text7) || num5 <= 0)
-						{
-							continue;
-						}
-						if (!owedItems.ContainsKey(text7))
-						{
-							owedItems[text7] = 0;
-						}
-						owedItems[text7] += num5;
-					}
-				}
-				instance.SetDebt(targetHero, owedGold, owedItems);
 			}
 			string text8 = BuildStakeSummaryText(num, dictionary);
 			MyBehavior.AppendExternalDialogueHistory(targetHero, null, null, $"你在决斗中击败了 {text2}，并已记下：{text2} 欠你 {text8}（决斗赌注）。");
@@ -2158,6 +2270,7 @@ public class DuelBehavior : CampaignBehaviorBase
 				_preDuelMode = current.Mode;
 			}
 			_duelResultRecorded = false;
+			SetDuelDebtTagGateState(_targetHero, 0);
 			_forcedMainHeroDeath = false;
 			EnsureDeathBehaviorsPresent();
 			_preDuelTargetTeam = agent.Team;
@@ -2494,6 +2607,7 @@ public class DuelBehavior : CampaignBehaviorBase
 		{
 			_lastDuelResults[_targetHero.StringId] = (flag ? 1 : (-1));
 		}
+		SetDuelDebtTagGateState(_targetHero, playerDefeated ? -1 : 1);
 		Agent agent = GetAgent(_targetHero);
 		TryPostDuelAiShout(_targetHero, agent, flag);
 		if (!_currentDuelIsArena)
@@ -2530,6 +2644,15 @@ public class DuelBehavior : CampaignBehaviorBase
 
 	private void RestoreState()
 	{
+		bool flag = false;
+		try
+		{
+			flag = LordEncounterBehavior.IsEncounterMeetingMissionActive || MeetingBattleRuntime.IsMeetingActive;
+		}
+		catch
+		{
+			flag = false;
+		}
 		Agent agent = GetAgent(_targetHero);
 		try
 		{
@@ -2618,15 +2741,6 @@ public class DuelBehavior : CampaignBehaviorBase
 		}
 		if (Mission.Current != null)
 		{
-			bool flag = false;
-			try
-			{
-				flag = LordEncounterBehavior.IsEncounterMeetingMissionActive;
-			}
-			catch
-			{
-				flag = false;
-			}
 			try
 			{
 				Mission.Current.SetMissionMode(flag ? MissionMode.Battle : _preDuelMode, atStart: true);

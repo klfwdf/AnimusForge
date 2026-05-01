@@ -1,0 +1,45 @@
+﻿{
+  "Id": "rule_古拉姆",
+  "Keywords": [
+    "古拉姆"
+  ],
+  "RagShortTexts": [
+    "古拉姆是由达西人组成的骆驼骑兵雇佣团"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "古拉姆是一群达西人组成的雇佣兵，他们战斗力很强，喜欢骑着骆驼作战，是骑兵里的一朵奇葩。他们过着集体生活，共同分佣金，自由自在。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "古拉姆是一群雇佣兵，他们来自卡拉迪亚南部的部落和远东地区。从法理上说，他们既是自己的奴隶也是自己的主人：每个人都把自己“卖”给组织，并逐渐成为组织的共同所有者。他们以鲜衣怒马而闻名。但不能因为他们精心打理的头发、身上的香水味和孔雀羽毛饰品，而误以为他们更专注于打扮而非训练。他们的骑射技术无人能及，而使用骑枪的本领仅次于瓦兰迪亚人和帝国具装骑兵。"
+    }
+  ],
+  "TextMappings": []
+}

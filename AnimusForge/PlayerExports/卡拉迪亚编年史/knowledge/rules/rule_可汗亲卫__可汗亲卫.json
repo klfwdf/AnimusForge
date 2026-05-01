@@ -1,0 +1,66 @@
+﻿{
+  "Id": "rule_可汗亲卫",
+  "Keywords": [
+    "可汗亲卫",
+    "可汗卫士"
+  ],
+  "RagShortTexts": [
+    "可汗亲卫是库赛特可汗的直属亲兵，战力顶尖"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "可汗亲卫？这些人是库赛特可汗A的亲兵，战斗力极强"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "leadership": 80
+        }
+      },
+      "Content": "库赛特可汗卫士，是专为可汗服务的亲兵，他们头戴面具尖刺盔，脚踩弯靴，身着铜扎甲衬链甲，肩披扎甲披肩，手带夹板皮护臂，手持一把偃月大刀，身背草原反曲弓，腰挂两袋草原箭，一共四十八支箭。胯下一匹喀拉罕马，披挂半身链甲马铠，装备精良，弓马娴熟，远则射箭骚扰，近则挥刀猛砍，可谓是极其勇猛，不可多得"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "库赛特可汗卫士，是专为可汗服务的亲兵，他们头戴面具尖刺盔，脚踩弯靴，身着铜扎甲衬链甲，肩披扎甲披肩，手带夹板皮护臂，手持一把偃月大刀，身背草原反曲弓，腰挂两袋草原箭，一共四十八支箭。胯下一匹喀拉罕马，披挂半身链甲马铠，装备精良，弓马娴熟，远则射箭骚扰，近则挥刀猛砍，可谓是极其勇猛，不可多得"
+    }
+  ],
+  "TextMappings": []
+}

@@ -3,6 +3,9 @@
   "Keywords": [
     "伊勒坦人"
   ],
+  "RagShortTexts": [
+    "伊勒坦人是库赛特人的近亲"
+  ],
   "SemanticPrototypes": [],
   "Variants": [
     {
@@ -13,6 +16,7 @@
         "KingdomIds": null,
         "SettlementIds": null,
         "Roles": null,
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": null
@@ -27,6 +31,7 @@
         "KingdomIds": null,
         "SettlementIds": null,
         "Roles": null,
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": {

@@ -1,0 +1,123 @@
+﻿{
+  "Id": "rule_达鲁索斯",
+  "Keywords": [
+    "达鲁索斯"
+  ],
+  "RagShortTexts": [
+    "达鲁索斯因缺乏政治手腕和军事决断被废黜。",
+    "达鲁索斯被废黜后下落不明，民间传说他将归来。",
+    "达鲁索斯皇帝圣洁但软弱，导致将军坐大并政变。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 60
+        }
+      },
+      "Content": "达鲁索斯是帝国近一个世纪前的一位年轻皇帝，后世对其评价可用一句话概括：圣洁但无能。他性情虔敬温和，私德无可指摘，但缺乏驾驭帝国的政治手腕与军事决断。他未能有效掌控军队，最终被麾下一位将军发动政变推翻。\n\n达鲁索斯被废黜后下落不明，官方记载称其死于流放。然而他的结局越模糊，传说便越丰沛。民间逐渐流传起一种说法：达鲁索斯并未真正死去，他将在一个注定的时刻归来，为帝国带来黄金时代。这一信念催生了反叛运动“火焰余烬”——该组织声称自己正在为天堂带回达鲁索斯，并为迎接黄金时代做准备。与其他许多反叛运动一样，“火焰余烬”最终被迫以敲诈勒索维持生存，但达鲁索斯的名字仍被他们奉为旗帜。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "达鲁索斯？我们一般不主动提这个名字。太尴尬了。\n\n说他的好话，等于承认元老院当年看走了眼。说他的坏话，又有失体面——他毕竟没有作恶，只是无能。一个虔敬、温和、私德无可挑剔的年轻人，坐在一个需要铁腕的位子上。元老院当时有人支持他，觉得一个听话的皇帝比一个能干的皇帝好控制。结果呢？你不光控制不了他，你也控制不了把他推翻的将军。政变那天，元老院的卫兵站在门口，看着将军的兵走进皇宫，什么也没做。这件事我们到现在都不愿多谈。\n\n他死后——或者说消失后——民间的说法我们当然知道。什么黄金时代，什么归来。荒唐。但对荒唐的事太过认真，反而显得我们心虚。所以最好的办法就是不提。提到达鲁索斯，我们就说一句“那位不幸的年轻皇帝”，然后转移话题。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_1_1",
+          "hero:lord_1_14",
+          "hero:lord_1_7"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "达鲁索斯是所有皇帝都不愿照的一面镜子。\n\n我坐在这个位子上之后才真正理解他。外面的人以为皇帝什么都能做。实际上你能做的不多。你要让军队满意，让元老院满意，让民众满意，让神满意——这些都是互相矛盾的。你稍微软一点，底下的人就开始替你做决定了。达鲁索斯不是坏皇帝，他是被这个位子吃掉了。\n\n但他太软。一个皇帝软弱不是个人性格缺陷，是治理事故。他治下将军坐大，政变发生，帝国险些分裂。这些事情不会因为他是个好人就一笔勾销。我承认他的圣洁，但圣洁不是政绩。\n\n至于火焰余烬那帮人——他们根本不是达鲁索斯的信徒。他们是一群借他名字讨生活的匪徒。我剿过他们，不是因为恨达鲁索斯，是因为帝国不能容忍任何人在乡下拦路要钱的时候嘴里喊着先帝的名号。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_w"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "达鲁索斯？就是那个连马都不敢骑的皇帝。我听我父亲说的。他当年在宫廷卫队服役，亲眼看见达鲁索斯在阅兵式上脸色发白，手里攥着缰绳像攥着毒蛇。一个不敢骑马的皇帝，在这个帝国能坐多久？答案大家都知道了。\n\n他信神信得太深。我父亲说他把一半时间花在祈祷上，剩下一半花在听元老们吵架上。军队？军队的事他全交给了将军们。最后推翻他的那个将军，就是他最信任的那个。这说明什么？说明你可以把祈祷交给神，把争论交给元老，但不能把刀交给别人。\n\n听说他是个圣人。行，圣人去天堂坐着吧。人间的事还是留给会骑马的人。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "达鲁索斯？我爷爷的爷爷那辈的事了吧。谁记得清楚。\n\n老辈人说他是个好人。怎么个好法？不打仗，不杀人，拜神拜得勤，底下人吵架他劝不住。好人是好人，就是太软了，压不住人。后来果然被他手下一个将军掀翻了。我奶奶以前念叨过，说做好人别做皇帝，做了皇帝就别当好人。也不知道是她自己编的还是听来的。\n\n他被掀翻以后怎么样了，说法多得很。有的人说死在牢里了，有的人说跑山里躲着了，还有的人说根本没死，说好人不该死，早晚会回来。说他会回来的人最多，大概是因为大家都愿意信这个。好人被坏蛋坑了，哪天回来把坏蛋收拾了，听着就解气。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "达鲁索斯是很久之前帝国的一个皇帝，后来被政变杀掉了"
+    }
+  ],
+  "TextMappings": []
+}

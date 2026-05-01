@@ -1,0 +1,30 @@
+﻿{
+  "Id": "rule_奥巴斯",
+  "Keywords": [
+    "奥巴斯"
+  ],
+  "RagShortTexts": [
+    "奥巴斯是山上一位已故的斯特吉亚酋长，“奥巴斯之屋”（罗多巴斯）便是以他命名。该村坐落在俯瞰伊卡拉荒原的山脊上，是猎人们前往山下暗林猎取毛皮的基地。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "奥巴斯是山上一位已故的斯特吉亚酋长，“奥巴斯之屋”（罗多巴斯）便是以他命名。该村坐落在俯瞰伊卡拉荒原的山脊上，是猎人们前往山下暗林猎取毛皮的基地。"
+    }
+  ],
+  "TextMappings": []
+}

@@ -2167,10 +2167,11 @@ public static class AIConfigHandler
 			{
 				return list;
 			}
+			int auxiliaryGuardrailTopicNumberUpperBound = GetAuxiliaryGuardrailTopicNumberUpperBound();
 			HashSet<int> hashSet = new HashSet<int>();
 			foreach (Match item in AuxiliaryGuardrailNumberRegex.Matches(text))
 			{
-				if (item == null || !int.TryParse(item.Value, out var result) || result < 1 || result > 12 || !hashSet.Add(result))
+				if (item == null || !int.TryParse(item.Value, out var result) || result < 1 || result > auxiliaryGuardrailTopicNumberUpperBound || !hashSet.Add(result))
 				{
 					continue;
 				}
@@ -2181,6 +2182,30 @@ public static class AIConfigHandler
 		{
 		}
 		return list;
+	}
+
+	private static int GetAuxiliaryGuardrailTopicNumberUpperBound()
+	{
+		try
+		{
+			Dictionary<string, GuardrailRulePromptConfig> dictionary = BuildRulePromptRegistry();
+			int num = 12;
+			if (dictionary != null)
+			{
+				foreach (GuardrailRulePromptConfig value in dictionary.Values)
+				{
+					if (value != null && value.TopicNumber > num)
+					{
+						num = value.TopicNumber;
+					}
+				}
+			}
+			return Math.Max(12, num);
+		}
+		catch
+		{
+			return 12;
+		}
 	}
 
 	private static bool TryBuildAuxiliaryGuardrailEvalSnapshot(string userText, string runtimeGuardrailContext, string secondaryText, string cacheKey, out GuardrailEvalSnapshot snapshot)

@@ -1,0 +1,32 @@
+﻿{
+  "Id": "rule_山贼",
+  "Keywords": [
+    "山贼",
+    "土匪",
+    "强盗"
+  ],
+  "RagShortTexts": [
+    "山贼藏身卡拉迪亚丛林，以木寨为据点。",
+    "山贼多为战乱农民、逃兵与罪犯，无严格阶级。",
+    "山贼常用散兵战术，骑马伏击旅人与商队。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "这群亡命之徒常年藏身于卡拉迪亚的丛林深处，以简陋的木质营寨为据点。他们身披破烂布衣，少数人裹着偷来的破损皮甲，武器多为猎弓、生锈斧头和草叉。缺乏纪律与重甲，却擅长利用树木与山石作掩护，有些甚至是骑马掠袭的好手，经常以散兵战术伏击落单的旅人。白天分散劫掠商路，夜间聚在篝火旁分赃豪饮。山贼内部没有严格的阶级，全凭武力与胆识服众。他们既是被战乱驱离土地的农民，也是逃兵与罪犯的集合体，靠着掠夺村庄和袭击车队维系生存，成为令地方官头疼的顽疾。"
+    }
+  ],
+  "TextMappings": []
+}

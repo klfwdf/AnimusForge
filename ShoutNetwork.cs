@@ -49,19 +49,7 @@ public static class ShoutNetwork
 
 	private static string BuildTokenStatsOutputContent(string finalContent, string reasoningContent = null)
 	{
-		string text = ApplyPlayerDynamicNameToMainText(finalContent ?? "").Trim();
-		string text2 = ApplyPlayerDynamicNameToMainText(reasoningContent ?? "").Trim();
-		if (string.IsNullOrWhiteSpace(text2))
-		{
-			return text;
-		}
-		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.AppendLine("[REASONING]");
-		stringBuilder.AppendLine(text2);
-		stringBuilder.AppendLine();
-		stringBuilder.AppendLine("[FINAL]");
-		stringBuilder.AppendLine(string.IsNullOrWhiteSpace(text) ? "（空）" : text);
-		return stringBuilder.ToString().TrimEnd();
+		return ApplyPlayerDynamicNameToMainText(finalContent ?? "").Trim();
 	}
 
 	private static string BuildApiErrorDetail(string responseBody)
@@ -109,10 +97,10 @@ public static class ShoutNetwork
 		}
 		payload["thinking"] = new JObject
 		{
-			["type"] = "enabled"
+			["type"] = "disabled"
 		};
-		payload["reasoning_effort"] = "high";
-		thinkingMode = "deepseek_enabled_high";
+		payload.Remove("reasoning_effort");
+		thinkingMode = "deepseek_disabled";
 		return true;
 	}
 
@@ -126,6 +114,32 @@ public static class ShoutNetwork
 		bool flag = ContainsAnyIgnoreCase(text, "thinking", "reasoning_effort");
 		bool flag2 = ContainsAnyIgnoreCase(text, "unsupported", "unknown", "invalid", "unexpected", "not allowed", "not supported", "extra inputs are not permitted");
 		return flag && flag2;
+	}
+
+	private static bool TryResolvePrimaryModelByDropdownState(DuelSettings settings, out string modelName, out string selectedOption, out bool manualSelected)
+	{
+		modelName = "";
+		selectedOption = "";
+		manualSelected = true;
+		if (settings == null)
+		{
+			return false;
+		}
+		selectedOption = (settings.GetMainSelectedModelOption() ?? "").Trim();
+		manualSelected = string.Equals(selectedOption, "*手动填写*", StringComparison.Ordinal);
+		if (manualSelected)
+		{
+			modelName = (settings.ModelName ?? "").Trim();
+		}
+		else
+		{
+			modelName = selectedOption;
+		}
+		if (string.IsNullOrWhiteSpace(modelName))
+		{
+			modelName = (settings.GetEffectiveMainModelName() ?? "").Trim();
+		}
+		return !string.IsNullOrWhiteSpace(modelName);
 	}
 
 	private static JObject BuildPrimaryChatPayload(List<object> messages, string apiUrl, string modelName, bool stream, out string thinkingMode)
@@ -365,8 +379,22 @@ public static class ShoutNetwork
 				Logger.Metric("network.non_stream", ok: false, sw.Elapsed.TotalMilliseconds);
 				return "（错误：未配置 API Key）";
 			}
+			if (!TryResolvePrimaryModelByDropdownState(settings, out var effectiveModelName, out var selectedOption, out var manualSelected))
+			{
+				sw.Stop();
+				Logger.Obs("Network", "request_error", new Dictionary<string, object>
+				{
+					["mode"] = "non_stream",
+					["latencyMs"] = Math.Round(sw.Elapsed.TotalMilliseconds, 2),
+					["message"] = "missing_model_name",
+					["selectedOption"] = selectedOption ?? "",
+					["manualSelected"] = manualSelected
+				});
+				Logger.Metric("network.non_stream", ok: false, sw.Elapsed.TotalMilliseconds);
+				return "（错误：未配置模型名称）";
+			}
 			string effectiveApiUrl = DuelSettings.GetEffectiveApiUrl(settings.ApiUrl);
-			JObject payload = BuildPrimaryChatPayload(messages, effectiveApiUrl, settings.ModelName, stream: false, out var thinkingMode);
+			JObject payload = BuildPrimaryChatPayload(messages, effectiveApiUrl, effectiveModelName, stream: false, out var thinkingMode);
 			string jsonBody = payload.ToString(Formatting.None);
 			HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, effectiveApiUrl);
 			try
@@ -379,7 +407,7 @@ public static class ShoutNetwork
 				{
 					Logger.Log("ShoutNetwork", "[PrimaryChat] DeepSeek thinking payload rejected; retrying without thinking controls.");
 					response.Dispose();
-					JObject payload2 = BuildPrimaryChatPayload(messages, effectiveApiUrl, settings.ModelName, stream: false, out var _);
+					JObject payload2 = BuildPrimaryChatPayload(messages, effectiveApiUrl, effectiveModelName, stream: false, out var _);
 					payload2.Remove("thinking");
 					payload2.Remove("reasoning_effort");
 					string jsonBody2 = payload2.ToString(Formatting.None);
@@ -396,7 +424,7 @@ public static class ShoutNetwork
 					{
 						JObject responseJson = JObject.Parse(str);
 						string content = ((string)responseJson.SelectToken("choices[0].message.content")) ?? ((string)responseJson.SelectToken("content")) ?? ((string)responseJson.SelectToken("text"));
-						string reasoning = ((string)responseJson.SelectToken("choices[0].message.reasoning_content")) ?? ((string)responseJson.SelectToken("reasoning_content")) ?? "";
+						string reasoning = "";
 						if (string.IsNullOrWhiteSpace(content))
 						{
 							content = "（没说话）";
@@ -498,10 +526,25 @@ public static class ShoutNetwork
 				onError?.Invoke("（错误：未配置 API Key）");
 				return;
 			}
+			if (!TryResolvePrimaryModelByDropdownState(settings, out var effectiveModelName, out var selectedOption, out var manualSelected))
+			{
+				sw.Stop();
+				Logger.Obs("Network", "request_error", new Dictionary<string, object>
+				{
+					["mode"] = "stream",
+					["latencyMs"] = Math.Round(sw.Elapsed.TotalMilliseconds, 2),
+					["message"] = "missing_model_name",
+					["selectedOption"] = selectedOption ?? "",
+					["manualSelected"] = manualSelected
+				});
+				Logger.Metric("network.stream", ok: false, sw.Elapsed.TotalMilliseconds);
+				onError?.Invoke("（错误：未配置模型名称）");
+				return;
+			}
 			string effectiveApiUrl = DuelSettings.GetEffectiveApiUrl(settings.ApiUrl);
 			JObject payload = new JObject
 			{
-				["model"] = settings.ModelName,
+				["model"] = effectiveModelName,
 				["max_tokens"] = HardcodedMaxTokens,
 				["stream"] = true
 			};

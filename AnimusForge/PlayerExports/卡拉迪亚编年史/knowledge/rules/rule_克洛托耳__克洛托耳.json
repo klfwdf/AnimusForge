@@ -5,6 +5,9 @@
     "克洛托耳元帅",
     "克帅"
   ],
+  "RagShortTexts": [
+    "克洛托耳元帅战无不胜，效忠西帝国。"
+  ],
   "SemanticPrototypes": [],
   "Variants": [
     {
@@ -15,11 +18,12 @@
         "KingdomIds": null,
         "SettlementIds": null,
         "Roles": null,
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": null
       },
-      "Content": "谁不认识克洛托耳？他家世代镇守帝国西疆，满门忠烈，这大家都知道。而且他战无不胜，是加里俄斯的得力助手，效忠于西帝国"
+      "Content": "谁不认识克洛托耳？他家世代镇守帝国西疆，满门忠烈，这大家都知道。而且他战无不胜，是加里俄斯的得力助手，效忠于西帝国。A"
     },
     {
       "Priority": 0,
@@ -31,12 +35,53 @@
         ],
         "SettlementIds": null,
         "Roles": null,
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": null
       },
-      "Content": "哎呀，克大帅可是我们的重臣呀，他和我们家唇齿相依呀，离了谁都不行"
+      "Content": "哎呀，克大帅可是我们的重臣呀，他和我们家唇齿相依呀，离了谁都不行，A，科穆诺斯和狄俄尼科斯永远是一家"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_w"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "克大帅可是我们帝国的肱骨之臣呀，他们家世代镇守帝国西疆，满门忠烈呀，他本人，他儿子，他妻子，甚至她女儿都是极其出色的将领。分家后，加里俄斯皇帝很器重他，他也没有辜负加皇帝的信任，他真是一个极其好的将领，一个纯粹为国家着想的人，A"
     }
   ],
-  "TextMappings": []
+  "TextMappings": [
+    {
+      "SourceText": "B",
+      "Kind": "clan_leader_name",
+      "TargetId": "clan_empire_west_3",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "A",
+      "Kind": "status|hero|is_dead",
+      "TargetId": "lord_1_11",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": "他已经与世长辞了",
+      "FalseText": "他依旧活着，是在世传奇"
+    }
+  ]
 }

@@ -497,14 +497,17 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		if (target == ApiSetupTarget.Auxiliary)
 		{
 			settings.AuxiliaryModelName = value ?? "";
+			settings.ForceAuxiliaryModelDropdownToManual();
 		}
 		else if (target == ApiSetupTarget.ActionPostprocess)
 		{
 			settings.ActionPostprocessModelName = value ?? "";
+			settings.ForceActionPostprocessModelDropdownToManual();
 		}
 		else
 		{
 			settings.ModelName = value ?? "";
+			settings.ForceMainModelDropdownToManual();
 		}
 	}
 
@@ -877,34 +880,20 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			DuelSettings settings = DuelSettings.GetSettings();
 			bool hasExistingConfig = HasCompleteApiConfigForTarget(settings, ApiSetupTarget.Auxiliary);
 			string text = hasExistingConfig
-				? "前处理API（规则检索/规则路由）当前不可用。你可以直接测试 MCM 中的现有配置，也可以重新填写前处理API信息。"
-				: "前处理API（规则检索/规则路由）当前不可用，请检查前处理API的 Base URL、API Key、模型名称，或当前网络环境。";
+				? "前处理API（规则检索/规则路由）当前不可用。你可以直接测试 MCM 中的现有配置，也可以重新填写前处理API信息。前处理API为必填，不提供回退RAG选项。"
+				: "前处理API（规则检索/规则路由）当前不可用，请检查前处理API的 Base URL、API Key、模型名称，或当前网络环境。前处理API为必填，不提供回退RAG选项。";
 			if (!string.IsNullOrWhiteSpace(_lastApiValidationFailureHint))
 			{
 				text = text + "\n\n排查建议：" + _lastApiValidationFailureHint;
 			}
-			string negativeText = hasExistingConfig ? "测试现有配置" : "回退回RAG检索";
-			InformationManager.ShowInquiry(new InquiryData("调整前处理API信息", text, isAffirmativeOptionShown: true, isNegativeOptionShown: true, "填写前处理API信息", negativeText, delegate
+			InformationManager.ShowInquiry(new InquiryData("调整前处理API信息", text, isAffirmativeOptionShown: true, isNegativeOptionShown: true, "填写前处理API信息", "测试现有配置", delegate
 			{
 				_welcomeInProgress = false;
 				OpenApiBaseUrlInput();
 			}, delegate
 			{
 				_welcomeInProgress = false;
-				if (hasExistingConfig)
-				{
-					BeginValidateMcmApiAndContinue();
-				}
-				else
-				{
-					DuelSettings settings2 = DuelSettings.GetSettings();
-					if (settings2 != null)
-					{
-						settings2.UseAuxiliaryRuleApi = false;
-						TryPersistMcmSettings(settings2);
-					}
-					ShowImportSetupPopup(fromGate: true, ignoreSuppress: true);
-				}
+				BeginValidateMcmApiAndContinue();
 			}), pauseGameActiveState: true);
 		}
 		catch
@@ -1023,21 +1012,20 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			_welcomeInProgress = true;
 			DuelSettings settings = DuelSettings.GetSettings();
 			bool hasExistingConfig = HasCompleteApiConfigForTarget(settings, ApiSetupTarget.Auxiliary);
-			string title = "配置前处理API";
-			string text = "前处理API专门用于规则检索/规则路由。启用后，规则话题会先走一次低成本筛选，再进入主API正文生成；如果你暂时不想配置，也可以继续使用传统RAG检索。";
+			string title = "配置前处理API（必填）";
+			string text = "前处理API专门用于规则检索/规则路由。启用后，规则话题会先走一次低成本筛选，再进入主API正文生成。前处理API为必填，不提供回退RAG选项。";
 			if (_showApiValidationFailedHint)
 			{
 				title = "前处理API连接失败";
 				text = hasExistingConfig
 					? "刚才的前处理API连接测试没有通过。你可以重新填写前处理API信息，或者再次测试 MCM 中的现有配置。"
-					: "刚才的前处理API连接测试没有通过。你可以重新填写前处理API信息，或者先继续使用传统RAG检索。";
+					: "刚才的前处理API连接测试没有通过。你可以重新填写前处理API信息，或者再次测试 MCM 中的现有配置。";
 				if (!string.IsNullOrWhiteSpace(_lastApiValidationFailureHint))
 				{
 					text = text + "\n\n排查建议：" + _lastApiValidationFailureHint;
 				}
 			}
-			string negativeText = hasExistingConfig ? "测试现有配置" : "回退回RAG检索";
-			InformationManager.ShowInquiry(new InquiryData(title, text, isAffirmativeOptionShown: true, isNegativeOptionShown: true, "填写前处理API", negativeText, delegate
+			InformationManager.ShowInquiry(new InquiryData(title, text, isAffirmativeOptionShown: true, isNegativeOptionShown: true, "填写前处理API", "测试现有配置", delegate
 			{
 				_welcomeInProgress = false;
 				_showApiValidationFailedHint = false;
@@ -1046,20 +1034,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			{
 				_welcomeInProgress = false;
 				_showApiValidationFailedHint = false;
-				if (hasExistingConfig)
-				{
-					BeginValidateMcmApiAndContinue();
-				}
-				else
-				{
-					DuelSettings settings2 = DuelSettings.GetSettings();
-					if (settings2 != null)
-					{
-						settings2.UseAuxiliaryRuleApi = false;
-						TryPersistMcmSettings(settings2);
-					}
-					ShowImportSetupPopup(fromGate: true, ignoreSuppress: true);
-				}
+				BeginValidateMcmApiAndContinue();
 			}), pauseGameActiveState: true);
 		}
 		catch

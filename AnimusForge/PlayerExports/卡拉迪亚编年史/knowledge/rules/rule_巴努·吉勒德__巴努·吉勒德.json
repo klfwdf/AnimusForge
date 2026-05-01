@@ -1,0 +1,62 @@
+﻿{
+  "Id": "rule_巴努·吉勒德",
+  "Keywords": [
+    "巴努·吉勒德"
+  ],
+  "RagShortTexts": [
+    "巴努·吉勒德部族起源与凶狠风格。",
+    "吉勒德部族为何厌恶尼姆尔的潘德拉克战役？",
+    "尼姆尔如何被吉勒德部族在胡比亚城处决？"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "吉勒德部族以胡比亚城为根基。该城建于残暴的图兰王狩猎小屋遗址之上，相传图兰王曾奴役阿塞莱族长家人，最终被复仇杀死——这段历史塑造了吉勒德部族凶狠严酷的处世风格，他们厌恶轻浮之事。\n在潘德拉克战役中，吉勒德部族的数百名青年随萨兰部族的尼姆尔出征，却死伤惨重，且部族认为这场行动一无所获。当尼姆尔被外界奉为英雄时，吉勒德部族深感厌恶。此后，尼姆尔在胡比亚城与一名吉勒德少女私通，被部族按世代相传的方式处决——关死在集市上的铁笼中。吉勒德部族称此举是抹去污点，两个部族的仇恨自此不可化解。\n家族统治的定居点是a"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "吉勒德部族以胡比亚城为根基。该城建于图兰王狩猎小屋的遗址之上，相传图兰王曾奴役阿塞莱族长家人，后被复仇杀死。外界多将这段历史视为吉勒德部族行事严酷、不喜轻浮的缘由。\n潘德拉克战役中，该部族数百名青年随萨兰部族的尼姆尔出征，死伤惨重。战后尼姆尔被许多人奉为英雄，吉勒德部族则对此不以为然。此后，尼姆尔在胡比亚城因与吉勒德部族中一名女子往来而被擒获，最终死于集市上的铁笼之中。两家族自此结仇。此家族统治的定居点是a"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "a",
+      "Kind": "clan_all_settlements",
+      "TargetId": "clan_aserai_3",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

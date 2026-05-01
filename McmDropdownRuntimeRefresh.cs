@@ -19,6 +19,10 @@ public static class McmDropdownRuntimeRefresh
 
 	private static bool _patched;
 
+	private static bool _selectorVmDirectRefreshDisabled;
+
+	private static bool _selectorVmCompatibilityWarned;
+
 	public static void EnsurePatched()
 	{
 		if (_patched)
@@ -199,9 +203,26 @@ public static class McmDropdownRuntimeRefresh
 		{
 			TryRebuildCurrentSettingsPage(modOptionsTarget);
 		}
+		if (_selectorVmDirectRefreshDisabled)
+		{
+			return;
+		}
 		foreach (object target in targets)
 		{
-			TryRefreshDropdown(target);
+			try
+			{
+				TryRefreshDropdown(target);
+			}
+			catch (TargetInvocationException ex) when (ex.InnerException is MissingMethodException && ex.ToString().IndexOf("MCMSelectorItemVM", StringComparison.OrdinalIgnoreCase) >= 0)
+			{
+				_selectorVmDirectRefreshDisabled = true;
+				if (!_selectorVmCompatibilityWarned)
+				{
+					_selectorVmCompatibilityWarned = true;
+					Logger.Log("MCM", "[WARN] 检测到 MCM 下拉构造器兼容差异，已停用直接反射刷新并回退为页面重建刷新。");
+				}
+				break;
+			}
 		}
 	}
 

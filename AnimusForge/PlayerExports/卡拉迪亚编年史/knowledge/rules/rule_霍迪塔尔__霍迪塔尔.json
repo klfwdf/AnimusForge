@@ -1,0 +1,71 @@
+﻿{
+  "Id": "rule_霍迪塔尔",
+  "Keywords": [
+    "霍迪塔尔",
+    "帕迪沙阿霍迪塔尔"
+  ],
+  "RagShortTexts": [
+    "帕迪沙阿霍迪塔尔建造了白色要塞阿克卡拉特。",
+    "霍迪塔尔以武力威慑统治德夫赛格高原。",
+    "白色要塞圣火昭示霍迪塔尔对高原的宗主权。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 80
+        }
+      },
+      "Content": "帕迪沙阿霍什塔尔，帕迪沙阿政权的可怖君主，“帕迪沙阿”即其帝王头衔，意为众王之首。他在对德夫赛格高原的历次出征期间，下令建造了阿克卡拉特——“白色要塞”，作为其征服行动的军事据点与统治象征。要塞顶端燃有圣火，数十年间未曾熄灭，以此昭示他对德夫赛格高原各部落的宗主权。\n\n霍什塔尔对德夫赛格的统治以武力威慑为根基，其征战手段酷烈，在高原诸部族记忆中留下长久烙印。然而他的霸权未能持久，如帝国一样，帕迪沙阿的势力逐渐转入守势，最终向东退却。白色要塞亦随之易手，顶端飘扬的旗帜由圣火徽记变更为库赛特可汗的马尾大纛。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": [
+          "town_k2"
+        ],
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "我们对霍什塔尔这个名字的态度，说不上憎恨，也谈不上敬畏，更多的是一种隔了太多代人的漠然。太久远了，久到他的功过都变成了墙根下晒太阳时随口带过的一句话，跟议论一场百年前的大雪没什么分别。\n\n我们当然知道白色要塞是他修的。城墙确实结实，几代人过去了，城门换了不知多少茬守军，墙还是那面墙。住在结实墙后头的人，对修墙的人总归骂不了太狠。至于这墙当年压的是谁、防的是谁，那是墙外边的人该记的账。\n\n圣火也是他点的。老辈人传下来的说法，他每踏平一个部落，就往火里扔一件从首领帐篷里搜出来的祭物，烧的是各部的脸面。说法归说法，现在往火里添柴的人早就换了，谁还惦记最早点火的那个。\n\n他杀人不眨眼，这也不假。但阿克卡拉特居民的祖上多半不是挨刀的那一批——挨刀的是不听话的头人。他们的祖上是砌墙的、打铁的、赶车送粮的，换个主子照样干活吃饭。德夫赛格高原上哪个王公不杀人？霍什塔尔杀得多，只说明他打得远，跟平头百姓有什么相干。\n\n说到底，霍什塔尔修了城，点了火，杀了人，然后走了——或者说被赶走了。如今城头飘的是马尾大纛，管事的是A，税交给B。他不过是头一个主子，跟后来的一连串主子没什么两样。真要说有什么不同，也就是他留下来的那堵墙确实修得不错，仅此而已。\n\n"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "A",
+      "Kind": "settlement_owner_clan_name",
+      "TargetId": "town_K2",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "B",
+      "Kind": "settlement_owner_leader_name",
+      "TargetId": "town_K2",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

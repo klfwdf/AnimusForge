@@ -3,6 +3,9 @@
   "Keywords": [
     "劫匪"
   ],
+  "RagShortTexts": [
+    "劫匪聚集打劫良善村民"
+  ],
   "SemanticPrototypes": [],
   "Variants": [
     {
@@ -13,6 +16,7 @@
         "KingdomIds": null,
         "SettlementIds": null,
         "Roles": null,
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": null

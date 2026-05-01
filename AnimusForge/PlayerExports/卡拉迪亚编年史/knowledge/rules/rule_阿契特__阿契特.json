@@ -1,0 +1,246 @@
+﻿{
+  "Id": "rule_阿契特",
+  "Keywords": [
+    "阿契特"
+  ],
+  "RagShortTexts": [
+    "阿契特部是古老的库赛特部族，曾被兀儿浑击败。",
+    "库吉特人不满阿契特部占领巴尔加德。",
+    "阿契特部自称母狼长子后代，温都勒被斯特吉亚击败。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": [
+          "clan_khuzait_2"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_6_4"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "阿契特部。这三个字从我嘴里出来，吐在地上还要踩一脚。我库吉特的男儿在潘德拉克流干了血，库由格那头老狼趁我们伤重，占了巴尔加德。不是从敌人手里夺的，是从库赛特同胞手里偷的。现在他们恢复了元气，巴尔加德的集市又热闹了，那热闹底下埋着我们库吉特人的骨头。突剌格现在口口声声说尊重汗位，尊重可汗的旗帜——当年他伯父库由格尊重过吗？兀儿浑打败过他们一次，我看该再败一次。我活着一天，阿契特的帐房别想安安稳稳立在巴尔加德的土地上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": [
+          "clan_khuzait_1"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "阿契特部？那帮抱着母狼长子名号不肯撒手的老顽固。当年兀儿浑先祖统一草原，他们不服。不服就打。打输了，并进来了，现在倒安分守己了，还知道说一句“尊重汗位”。但他们的尊重是怎么来的？是从兀儿浑先祖的马蹄子底下捡回来的。他们占了瓦尔加德恢复元气，这事我们看在眼里。只要他们不越界，我们懒得翻旧账。但他们要是再想立什么汗国，兀儿浑乃特的后人不介意再教他们一次规矩。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": [
+          "town_s4"
+        ],
+        "Roles": [
+          "commoner",
+          "notable",
+          "townsfolk",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "阿契特？哦，你说那些骑马的草原人。祖上说他们在我们这儿建过一个小汗国，但没多久就被打跑了。我们这地方，来过帝国人，来过诺德人，来过阿契特人，现在归奥米多夫家。谁来了都说这地方是自己的，我们听着就是一阵风，刮完就走。阿契特人当年在的时候，在湖边立过几块石碑，刻着他们祖先的名字。后来诺德人来把石碑推湖里了。湖还在，石碑早没了。我们瓦尔诺瓦波尔人不在乎上头是谁。反正过几十年再换一波。阿契特也好，奥米多夫也好，都是暂住的客。我们才是长住的人，但从来没人问我们怎么想。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "阿契特部。我们帝国在草原那一侧跟他们隔得很远，但不等于不关心他们的事。我们情报里有一条很明确：阿契特部是最古老的库赛特部族，曾短暂建立独立汗国，被兀儿浑击败后衰落，近日又通过占领巴尔加德恢复元气。这个模式我们太熟悉了。一个古老部族，沉寂又复兴，接下来不是内战就是外侵。目前他们主要盯着的还是草原内部和斯特吉亚方向的血仇。但只要草原局势稳定下来，这支恢复元气的部族迟早会把目光转向南方。阿契特这个名字，以后元老院议事的时候会多起来的。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "阿契特人？爷爷说他们来过。骑着矮马，拿着弓，在湖边扎过营。后来被赶走了。跟诺德人来的时候差不多，跟帝国人来的时候也差不多。谁来了我们不是照样打鱼？不过阿契特人留下的一个东西我倒记得——他们管拉科尼斯湖叫“天落水”。我跟你说，这名字比帝国人起的“拉科尼斯”好听。但他们人不行。听说后来那个温都勒被我们斯特吉亚的女武神给砍了。草原人骑马厉害，碰上我们的盾女还是不行。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": [
+          "clan_khuzait_3"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "我们是母狼长子的后代。这话在外面说，人家笑。在部里说，大家一起点头。笑什么？兀儿浑当年是厉害，但我们阿契特更古老。后来库由格那颜把巴尔加德拿下来，我们又有了自己的地方。温都勒那颜死得冤枉，斯特吉亚人用女人使阴招。突剌格那颜说会报仇，我们信。我们阿契特人从兀儿浑时代活到现在，差点被踩进土里都活过来了。报仇需要时间，我们有耐心。在草原上，谁活得久谁说了算。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_2_4"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "阿契特部想要我的命。突剌格在他父亲墓前起誓，要割断我的喉咙祭温都勒。好，他在等，我也在等。\n\n温都勒是我杀的。我不会否认。他或许是个勇武的战士，或许在公平对决中不输任何人——但那天晚上没有公平。他以为娶的是我妹妹，就能把斯特吉亚的血脉拴在阿契特的马桩上。朗瓦德把我妹妹当牲口送人，我就要让收牲口的人付出代价。我不后悔。倒是朗瓦德——他把瓦尔拉的头砍下来，装在盒子里送给阿契特人，就为了保住他自己的体面。他杀我妹妹比我杀温都勒干净不到哪儿去，但他有王冠，没人要他偿命。我恨阿契特部，我不怕说。但那恨就和恨朗瓦德一样，都是活着的人替死去的人扛着。突剌格要找我，我等他。见面的时候我们都会知道，最后是谁割断谁的喉咙。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": [
+          "clan_sturgia_2"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_2_3"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "朗瓦德。阿契特。这两个名字在我心里绑在一起。\n\n西加杀了温都勒，我不拦她，现在也不会说她一句错。我妹妹瓦尔拉被朗瓦德当成结盟的礼物送出去，西加救她，是天经地义。朗瓦德杀了瓦尔拉，然后拿她的首级去跟阿契特人握手，好像一颗人头能把账本抹平。阿契特人收下了那颗头，现在又口口声声要西加偿命。他们要血债血偿？瓦尔拉的命谁来偿？朗瓦德的王座还安安稳稳地搁在京城，他才是该偿命的人。\n\n我对阿契特部没有理解的余地。他们是我妹夫的死主，也是收下我另一个妹妹首级的买家。突剌格要血，让他来找朗瓦德要。他要是只想找西加，那就是挑软的捏。西加不软。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": [
+          "clan_sturgia_1"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_2_1"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "阿契特部。温都勒的部族。\n\n我把瓦尔拉嫁给温都勒，是想给斯特吉亚北境换一道屏障。库赛特人不安分，与其让他们盯着我们的边境，不如给他们一个联姻的理由。我是国王，我用他们的婚姻换和平，这是做波耶的代价。但西加不懂。她一把火烧了温都勒的城堡，把我给斯特吉亚换来的和平烧成了灰。杀了温都勒，我本可以让库赛特人拿西加偿命——但我没有。我杀了奥列克的妹妹瓦尔拉，把她的头送去阿契特部，就为了让他们收手。你以为我想这样做？我看着那个盒子的时候，手没抖，心也没抖？但国王的手不能抖。库洛夫家族不听话，也该用这种方法治一治了\n\n阿契特人收下了瓦尔拉的头，现在又想要西加的头。贪得无厌。突剌格在他父亲墓前起誓，那是他的事。我欠阿契特一条命，已经用瓦尔拉还了。他要是再来讨，那就是另一笔债。我不会再给。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "阿契特的事，在朝堂上朗瓦德大公从来不主动提。我们也不提。太丢人了。这事从头到尾都是一笔糊涂账——国王联姻想稳住库赛特人，这想法不算错，但你把王公家的女儿送出去，好歹先问问人家愿不愿意。结果呢？西加把温都勒杀了，瓦尔拉被国王杀了，阿契特现在恨斯特吉亚恨得咬牙切齿。奥列克王公明面上还站在朝堂上，但他看国王的眼神我们都看在眼里。据说西加还在边境游荡，随时可能被阿契特人找到。我们这些旁观的，不敢说国王错，也不敢说西加对。只能喝酒的时候说一句——朗瓦德大公这辈子最倒霉的一件事，就是把奥列克家的两个女儿卷进了这桩事里。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "阿契特？是不是草原上那帮人？听说他们跟斯特吉亚人结了血仇。两个女人一个被杀一个还在逃。细节不太清楚，但我们这儿跑商的人说，以后过北边的路最好绕远点，阿契特骑兵见到斯特吉亚商队就劫。两边都不好惹，我们老百姓只想平平安安把货卖了，谁打谁跟我们没关系。不过那个叫西加的斯特吉亚女人据说厉害得很，一个人杀了草原上一个首领。有人说她是女武神，有人说她是疯子。疯子也好武神也好，别打到我们村就行。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "阿契特部是库赛特诸部中的一个异数。从兀儿浑时代起就扮演着不服管的角色，曾独立建汗国，被击败后沉寂数代，又趁库吉特部虚弱重新崛起。这种部族的生命力本身就是值得研究的课题。更值得注意的是他们与斯特吉亚的血仇——温都勒之死和瓦尔拉之死在草原上被视为尚未清偿的双重血债。突剌格要西加偿命，但西加背后站着奥列克王公，奥列克对朗瓦德国王的怨恨可能比对阿契特更深。\n\n从地缘角度看，阿契特如今占据巴尔加德，与库吉特部墨速宜那颜结下死仇，同时与斯特吉亚存有未了血债。一个复兴的古老部族，被两股仇恨驱动，在草原与雪原交界处坐拥一座战略城镇。这个态势不用多久就会有人利用——要么是可汗试图重新驾驭他们，要么是斯特吉亚内部有人想借奥列克的不满做些文章。我们这些外人唯一要判断的是：阿契特的下一刀砍向谁。"
+    }
+  ],
+  "TextMappings": []
+}

@@ -3,6 +3,11 @@
   "Keywords": [
     "达西马"
   ],
+  "RagShortTexts": [
+    "达西马是阿塞莱的制式军马",
+    "达西马的标准化特点",
+    "达西马与帕尔马廷马的性能比较"
+  ],
   "SemanticPrototypes": [],
   "Variants": [
     {
@@ -13,6 +18,7 @@
         "KingdomIds": null,
         "SettlementIds": null,
         "Roles": null,
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": null

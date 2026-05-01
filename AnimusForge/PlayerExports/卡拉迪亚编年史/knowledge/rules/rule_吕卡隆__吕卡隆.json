@@ -1,0 +1,97 @@
+﻿{
+  "Id": "rule_吕卡隆",
+  "Keywords": [
+    "吕卡隆",
+    "行在"
+  ],
+  "RagShortTexts": [
+    "吕卡隆是南帝国都城，背靠奥尼石山。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "吕卡隆是阿雷尼科斯皇帝时期的帝都，也是现在南帝国的都城。这里背靠奥尼石山，易守难攻，城市建设也金碧辉煌。它现在被A统治。B"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 100
+        }
+      },
+      "Content": "吕卡隆这座天然要塞位于巍峨的奥尼石山向外突出的一处缓坡之上。在帝国征服的最后几年，帕拉部落同帝国协商，进行了和平的合邦，结果他们的家园又被叛军首领革图夺走。接踵而至的围城战仅仅是吕卡隆在接下来的几个世纪中屡遭围攻的第一次，因为该城周边有着丰富的银矿脉，任何想在内战中攫取权力的皇位觊觎者都会盯上这里。甚至有人传言，居住在石山顶上的秃鹫已经享用过卡拉迪亚大陆上的每一种民族。吕卡隆现在由A统治，是南帝国皇都。B"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire",
+          "empire_w"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "吕卡隆是伪皇帝C统治的南帝国的都城，我们完全不承认这个都城的地位，我们迟早会收复吕卡隆，将伪皇帝和伪执政官们都推翻掉，打倒这个披着帝国外衣的世袭君主国！"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "A",
+      "Kind": "settlement_owner_leader_name",
+      "TargetId": "town_ES4",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "B",
+      "Kind": "status|clan|has_any_town",
+      "TargetId": "clan_empire_south_1",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": "吕卡隆是个好地方，现在作为南帝国皇都也是个好地方",
+      "FalseText": "吕卡隆现在已经不是南帝国的皇都了，因为它已经陷落"
+    },
+    {
+      "SourceText": "C",
+      "Kind": "kingdom_leader_name",
+      "TargetId": "empire_s",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

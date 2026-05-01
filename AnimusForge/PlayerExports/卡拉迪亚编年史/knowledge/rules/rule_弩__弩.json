@@ -1,0 +1,35 @@
+﻿{
+  "Id": "rule_弩",
+  "Keywords": [
+    "弩"
+  ],
+  "RagShortTexts": [
+    "弩是什么？",
+    "弩是干什么的？",
+    "弩很厉害"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania",
+          "darshi",
+          "khuzait",
+          "vakken"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "什么是弩？不知道"
+    }
+  ],
+  "TextMappings": []
+}

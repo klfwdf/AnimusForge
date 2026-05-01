@@ -1,0 +1,30 @@
+﻿{
+  "Id": "rule_阿斯凯尔马",
+  "Keywords": [
+    "阿斯凯尔马"
+  ],
+  "RagShortTexts": [
+    "阿斯凯尔马是什么实体？",
+    "阿斯凯尔马有哪些主要特征？",
+    "阿斯凯尔马的背景或来源。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": ""
+    }
+  ],
+  "TextMappings": []
+}

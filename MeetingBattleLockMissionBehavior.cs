@@ -5,14 +5,12 @@ using System.Reflection;
 using SandBox;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.AgentOrigins;
-using TaleWorlds.CampaignSystem.Conversation;
 using TaleWorlds.CampaignSystem.Encounters;
 using TaleWorlds.CampaignSystem.MapEvents;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Roster;
 using TaleWorlds.Core;
 using TaleWorlds.Engine;
-using TaleWorlds.InputSystem;
 using TaleWorlds.Library;
 using TaleWorlds.Localization;
 using TaleWorlds.MountAndBlade;
@@ -45,13 +43,9 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior, IAgentStateDeci
 
 	private readonly Hero _targetHero;
 
-	private List<Hero> _targetHeroes;
-
 	private Agent _mainAgent;
 
 	private Agent _targetAgent;
-
-	private readonly List<Agent> _additionalTargetAgents = new List<Agent>();
 
 	private bool _leadersPlaced;
 
@@ -133,7 +127,15 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior, IAgentStateDeci
 
 	private Agent _meetingPlayerEscortAgent;
 
+	private bool _playerEscortPlacementFinalized;
+
+	private bool _targetEscortPlacementFinalized;
+
 	private readonly HashSet<int> _meetingFormationManagedAgentIndices = new HashSet<int>();
+
+	private readonly HashSet<int> _meetingEscortPositionedAgentIndices = new HashSet<int>();
+
+	private readonly HashSet<int> _meetingEscortWeaponConfiguredAgentIndices = new HashSet<int>();
 
 	private readonly Dictionary<int, Vec3> _meetingLockPositions = new Dictionary<int, Vec3>();
 
@@ -162,23 +164,6 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior, IAgentStateDeci
 	public MeetingBattleLockMissionBehavior(Hero targetHero)
 	{
 		_targetHero = targetHero;
-		_targetHeroes = new List<Hero> { targetHero };
-	}
-
-	public MeetingBattleLockMissionBehavior(List<Hero> targetHeroes)
-		{
-			_targetHeroes = new List<Hero>();
-		if (targetHeroes != null)
-		{
-			foreach (Hero hero in targetHeroes)
-			{
-				if (hero != null && hero != Hero.MainHero && hero.IsLord && !_targetHeroes.Contains(hero))
-				{
-					_targetHeroes.Add(hero);
-				}
-			}
-		}
-		_targetHero = (_targetHeroes.Count > 0) ? _targetHeroes[0] : null;
 	}
 
 	internal static void ReapplyMeetingLockForAgentIfNeeded(Agent agent, bool recaptureAnchor = false, bool preserveFacing = true)
@@ -237,7 +222,11 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior, IAgentStateDeci
 		_startupLoadingFadeElapsed = 0f;
 		_meetingTargetEscortAgent = null;
 		_meetingPlayerEscortAgent = null;
+		_playerEscortPlacementFinalized = false;
+		_targetEscortPlacementFinalized = false;
 		_meetingFormationManagedAgentIndices.Clear();
+		_meetingEscortPositionedAgentIndices.Clear();
+		_meetingEscortWeaponConfiguredAgentIndices.Clear();
 		_deferredDetachedFormationRestoreActive = false;
 		_deferredDetachedFormationRestoreApplied = false;
 		_deferredDetachedFormationRestoreEarliestTime = 0f;
@@ -389,7 +378,6 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior, IAgentStateDeci
 		}
 		TryApplyStartupLoadingFade(dt);
 		TrySkipDeploymentPhaseForMeeting();
-		TryDetectManualInteractionKey(dt);
 		bool flag2 = false;
 		try
 		{
@@ -401,17 +389,9 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior, IAgentStateDeci
 		}
 		if (_wasFormalDuelActiveLastTick && !flag2)
 		{
-			try
-			{
-				ResetLeaderLockAnchorAfterFormalDuel();
-			}
-			catch
-			{
-			}
 			_formalDuelCombatReleaseApplied = false;
-			_allowTargetFreeMovementAfterFormalDuel = false;
-			EnsureTargetLordNeutralized();
-			Logger.Log("MeetingBattle", "Formal duel ended: target duelist returned to meeting-neutral lock.");
+			_allowTargetFreeMovementAfterFormalDuel = true;
+			Logger.Log("MeetingBattle", "Formal duel ended: target duelist skipped by meeting lock.");
 		}
 		_wasFormalDuelActiveLastTick = flag2;
 		if (flag2)
@@ -466,11 +446,7 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior, IAgentStateDeci
 		}
 		if (_targetNeutralRefreshTimer <= 0f)
 		{
-			if (_allowTargetFreeMovementAfterFormalDuel)
-			{
-				EnsureTargetLordReleasedAfterFormalDuel();
-			}
-			else
+			if (!_allowTargetFreeMovementAfterFormalDuel)
 			{
 				EnsureTargetLordNeutralized();
 			}
@@ -1526,26 +1502,6 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior, IAgentStateDeci
 		return ResolveFormalDuelSoloFormation(agent, avoidFormation);
 	}
 
-	private void ResetLeaderLockAnchorAfterFormalDuel()
-	{
-		FindMainAndTargetAgents();
-		_hasTargetLockedPosition = false;
-		_hasTargetLockedForward = false;
-		try
-		{
-			if (_targetAgent != null && _targetAgent.IsActive())
-			{
-				_targetLockedPosition = _targetAgent.Position;
-				_hasTargetLockedPosition = true;
-				_targetLockedForward = _targetAgent.LookDirection;
-				_hasTargetLockedForward = true;
-			}
-		}
-		catch
-		{
-		}
-	}
-
 	private void FindMainAndTargetAgents()
 	{
 		try
@@ -1557,65 +1513,18 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior, IAgentStateDeci
 		}
 		if (_targetAgent != null && _targetAgent.IsActive())
 		{
-			bool allFound = true;
-			if (_targetHeroes != null && _targetHeroes.Count > 1)
-			{
-				for (int i = 1; i < _targetHeroes.Count; i++)
-				{
-					Agent existingAgent = _additionalTargetAgents.Count >= i ? _additionalTargetAgents[i - 1] : null;
-					if (existingAgent == null || !existingAgent.IsActive())
-					{
-						allFound = false;
-						break;
-					}
-				}
-			}
-			if (allFound)
-			{
-				return;
-			}
+			return;
 		}
 		try
 		{
-			Hero primaryHero = _targetHero;
 			foreach (Agent agent in base.Mission.Agents)
 			{
-				if (agent == null || !agent.IsHuman || !agent.IsActive())
+				if (agent == null || !agent.IsHuman || !agent.IsActive() || ((agent.Character is CharacterObject characterObject) ? characterObject.HeroObject : null) != _targetHero)
 				{
 					continue;
 				}
-				CharacterObject characterObject = agent.Character as CharacterObject;
-				Hero heroObject = (characterObject != null) ? characterObject.HeroObject : null;
-				if (heroObject == null)
-				{
-					continue;
-				}
-				if (heroObject == primaryHero)
-				{
-					_targetAgent = agent;
-				}
-				else if (_targetHeroes != null && _targetHeroes.Count > 1)
-				{
-					for (int j = 1; j < _targetHeroes.Count; j++)
-					{
-						if (heroObject == _targetHeroes[j] && !_additionalTargetAgents.Contains(agent))
-						{
-							while (_additionalTargetAgents.Count < j)
-							{
-								_additionalTargetAgents.Add(null);
-							}
-							if (_additionalTargetAgents.Count >= j)
-							{
-								_additionalTargetAgents[j - 1] = agent;
-							}
-							else
-							{
-								_additionalTargetAgents.Add(agent);
-							}
-							break;
-						}
-					}
-				}
+				_targetAgent = agent;
+				break;
 			}
 		}
 		catch
@@ -1623,172 +1532,7 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior, IAgentStateDeci
 		}
 	}
 
-	private void SpawnAdditionalTargetLords(MatrixFrame primaryTargetFrame)
-		{
-			Logger.Log("MeetingBattle", $"[MultiLord] SpawnAdditionalTargetLords invoked. TargetHeroes.Count={(_targetHeroes?.Count ?? 0)}, PrimaryTarget={_targetHero?.Name?.ToString() ?? "null"}");
-			try
-			{
-				InformationManager.DisplayMessage(new InformationMessage($"[AF诊断] 场景生成副领主开始 TargetHeroes={(_targetHeroes?.Count ?? 0)}", Colors.Yellow));
-			}
-			catch
-			{
-			}
-			if (_targetHeroes == null || _targetHeroes.Count <= 1)
-			{
-				Logger.Log("MeetingBattle", $"[MultiLord] SpawnAdditionalTargetLords: skipping — only {(_targetHeroes?.Count ?? 0)} lord(s) in list.");
-				return;
-			}
-			if (base.Mission == null || _targetAgent == null)
-			{
-				Logger.Log("MeetingBattle", $"[MultiLord] SpawnAdditionalTargetLords: skipping — Mission={(base.Mission != null)}, TargetAgent={(_targetAgent != null)}.");
-				return;
-			}
-			Team targetTeam = _targetAgent.Team;
-			if (targetTeam == null)
-			{
-				Logger.Log("MeetingBattle", "[MultiLord] SpawnAdditionalTargetLords: skipping — target team is null.");
-				return;
-			}
-			float spacing = ((LordEncounterConfig.LordSpacingInMeters > 0f) ? LordEncounterConfig.LordSpacingInMeters : 2.5f);
-			Vec3 primaryOrigin = primaryTargetFrame.origin;
-			Vec3 forward = primaryTargetFrame.rotation.f;
-			forward.z = 0f;
-			if (forward.LengthSquared < 0.0001f)
-			{
-				forward = new Vec3(1f);
-			}
-			forward.Normalize();
-			Vec3 lateral = new Vec3(0f - forward.y, forward.x);
-			if (lateral.LengthSquared < 0.0001f)
-			{
-				lateral = new Vec3(0f, 1f);
-			}
-			lateral.Normalize();
-			int spawnedCount = 0;
-			int skippedCount = 0;
-			for (int i = 1; i < _targetHeroes.Count; i++)
-			{
-				Hero hero = _targetHeroes[i];
-				if (hero == null || hero.CharacterObject == null)
-				{
-					Logger.Log("MeetingBattle", $"[MultiLord] SpawnAdditionalTargetLords: slot {i} skipped — hero/character null.");
-					skippedCount++;
-					continue;
-				}
-				bool alreadySpawned = false;
-				foreach (Agent existing in _additionalTargetAgents)
-				{
-					if (existing != null && existing.IsActive() && (existing.Character as CharacterObject)?.HeroObject == hero)
-					{
-						alreadySpawned = true;
-						break;
-					}
-				}
-				if (alreadySpawned)
-				{
-					continue;
-				}
-				int positionIndex = i;
-				bool isRightSide = positionIndex % 2 == 1;
-				int offsetCount = (positionIndex + 1) / 2;
-				float lateralOffset = spacing * (float)offsetCount;
-				if (!isRightSide)
-				{
-					lateralOffset = 0f - lateralOffset;
-				}
-				Vec3 spawnOrigin = primaryOrigin + lateral * lateralOffset;
-				LordEncounterBehavior.ClampPointInsideMissionBoundary(ref spawnOrigin, primaryOrigin);
-				LordEncounterBehavior.ResolveSceneGroundHeight(base.Mission.Scene, ref spawnOrigin);
-				PartyBase heroParty = null;
-				try
-				{
-					heroParty = hero.PartyBelongedTo?.Party;
-				}
-				catch
-				{
-					heroParty = null;
-				}
-				if (heroParty == null)
-				{
-					try
-					{
-						heroParty = _targetHero?.PartyBelongedTo?.Party ?? PlayerEncounter.EncounteredParty;
-						Logger.Log("MeetingBattle", $"[MultiLord] SpawnAdditionalTargetLords: using fallback party for {hero.Name} (hero.PartyBelongedTo was null).");
-					}
-					catch
-					{
-						heroParty = null;
-					}
-				}
-				if (heroParty == null)
-				{
-					Logger.Log("MeetingBattle", $"[MultiLord] SpawnAdditionalTargetLords: slot {i} ({hero.Name}) skipped — no resolvable party.");
-					skippedCount++;
-					continue;
-				}
-				MatrixFrame spawnFrame = MatrixFrame.Identity;
-				spawnFrame.origin = spawnOrigin;
-				spawnFrame.rotation.f = forward;
-				spawnFrame.rotation.OrthonormalizeAccordingToForwardAndKeepUpAsZAxis();
-				CharacterObject characterObject = hero.CharacterObject;
-				Monster monster = TaleWorlds.Core.FaceGen.GetMonsterWithSuffix(characterObject.Race, "_settlement");
-				Vec3 initialPosition = spawnOrigin;
-				Vec2 initialDirection = forward.AsVec2.Normalized();
-				AgentBuildData agentBuildData = new AgentBuildData(characterObject)
-					.TroopOrigin(new PartyAgentOrigin(heroParty, characterObject))
-					.Monster(monster)
-					.Team(targetTeam)
-					.InitialPosition(in initialPosition)
-					.InitialDirection(in initialDirection)
-					.Controller(AgentControllerType.AI)
-					.CivilianEquipment(civilianEquipment: false)
-					.NoHorses(noHorses: true);
-				Agent newAgent = null;
-				try
-				{
-					newAgent = base.Mission.SpawnAgent(agentBuildData);
-				}
-				catch (Exception ex)
-				{
-					Logger.Log("MeetingBattle", "[MultiLord] Failed to spawn agent for additional lord " + (hero.Name?.ToString() ?? "?") + ": " + ex.Message);
-				}
-				if (newAgent != null)
-				{
-					while (_additionalTargetAgents.Count < i)
-					{
-						_additionalTargetAgents.Add(null);
-					}
-					if (_additionalTargetAgents.Count >= i)
-					{
-						_additionalTargetAgents[i - 1] = newAgent;
-					}
-					else
-					{
-						_additionalTargetAgents.Add(newAgent);
-					}
-					try { TrySetAgentController(newAgent, "None"); } catch { }
-					try { newAgent.SetIsAIPaused(isPaused: true); } catch { }
-					try { newAgent.ClearTargetFrame(); } catch { }
-					try { TrySheathWeapons(newAgent); } catch { }
-					spawnedCount++;
-					Logger.Log("MeetingBattle", $"[MultiLord] Spawned additional lord agent: {hero.Name} at slot {i} (origin={spawnOrigin.x:0.0},{spawnOrigin.y:0.0},{spawnOrigin.z:0.0}).");
-				}
-				else
-				{
-					skippedCount++;
-				}
-			}
-			Logger.Log("MeetingBattle", $"[MultiLord] SpawnAdditionalTargetLords complete. Spawned={spawnedCount}, Skipped={skippedCount}, TotalAdditional={_additionalTargetAgents.Count}.");
-			try
-			{
-				InformationManager.DisplayMessage(new InformationMessage($"[AF诊断] 副领主生成结果 Spawned={spawnedCount} Skipped={skippedCount}", Colors.Yellow));
-			}
-			catch
-			{
-			}
-		}
-	
-		private void PlaceLeadersForMeeting()
+	private void PlaceLeadersForMeeting()
 	{
 		try
 		{
@@ -1812,70 +1556,11 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior, IAgentStateDeci
 			}
 			_targetLockedPosition = targetFrame.origin;
 			_hasTargetLockedPosition = true;
-			SpawnAdditionalTargetLords(targetFrame);
-			PlaceAdditionalTargetLords(targetFrame);
 		}
 		catch (Exception ex)
 		{
 			Logger.Log("MeetingBattle", "PlaceLeadersForMeeting failed: " + ex.Message);
 		}
-	}
-
-	private void PlaceAdditionalTargetLords(MatrixFrame primaryTargetFrame)
-	{
-		if (_targetHeroes == null || _targetHeroes.Count <= 1)
-		{
-			return;
-		}
-		if (_additionalTargetAgents == null || _additionalTargetAgents.Count == 0)
-		{
-			return;
-		}
-		float spacing = LordEncounterConfig.LordSpacingInMeters;
-		Vec3 primaryOrigin = primaryTargetFrame.origin;
-		Vec3 forward = primaryTargetFrame.rotation.f;
-		forward.z = 0f;
-		if (forward.LengthSquared < 0.0001f)
-		{
-			forward = new Vec3(1f);
-		}
-		forward.Normalize();
-		Vec3 lateral = new Vec3(0f - forward.y, forward.x);
-		if (lateral.LengthSquared < 0.0001f)
-		{
-			lateral = new Vec3(0f, 1f);
-		}
-		lateral.Normalize();
-		int count = _additionalTargetAgents.Count;
-		if (count <= 0)
-		{
-			return;
-		}
-		for (int i = 0; i < count; i++)
-		{
-			Agent additionalAgent = _additionalTargetAgents[i];
-			if (additionalAgent == null || !additionalAgent.IsActive())
-			{
-				continue;
-			}
-			int positionIndex = i + 1;
-			bool isRightSide = positionIndex % 2 == 1;
-			int offsetCount = (positionIndex + 1) / 2;
-			float lateralOffset = spacing * (float)offsetCount;
-			if (!isRightSide)
-			{
-				lateralOffset = 0f - lateralOffset;
-			}
-			Vec3 additionalOrigin = primaryOrigin + lateral * lateralOffset;
-			LordEncounterBehavior.ClampPointInsideMissionBoundary(ref additionalOrigin, primaryOrigin);
-			LordEncounterBehavior.ResolveSceneGroundHeight(base.Mission?.Scene, ref additionalOrigin);
-			MatrixFrame additionalFrame = MatrixFrame.Identity;
-			additionalFrame.origin = additionalOrigin;
-			additionalFrame.rotation.f = forward;
-			additionalFrame.rotation.OrthonormalizeAccordingToForwardAndKeepUpAsZAxis();
-			ApplyFrame(additionalAgent, additionalFrame);
-		}
-		Logger.Log("MeetingBattle", $"Placed {count} additional target lords in meeting.");
 	}
 
 	private bool TryBuildMeetingFramesFromBattleLines(out MatrixFrame targetFrame, out MatrixFrame playerFrame)
@@ -2510,39 +2195,6 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior, IAgentStateDeci
 			EnsureTargetLordControllerSuppressed();
 			ForceLockTargetLordInPlace();
 			TrySheathWeapons(_targetAgent);
-		}
-		// Neutralize additional target lords too
-		if (_additionalTargetAgents != null && _additionalTargetAgents.Count > 0)
-		{
-			foreach (Agent additionalAgent in _additionalTargetAgents)
-			{
-				if (additionalAgent == null || !additionalAgent.IsActive())
-				{
-					continue;
-				}
-				try
-				{
-					TrySetAgentController(additionalAgent, "None");
-					Agent addMount = null;
-					try { addMount = additionalAgent.MountAgent; } catch { }
-					if (addMount != null && addMount.IsActive())
-					{
-						TrySetAgentController(addMount, "None");
-					}
-					Vec3 addForward = additionalAgent.LookDirection;
-						addForward.z = 0f;
-						if (addForward.LengthSquared < 0.0001f)
-						{
-							addForward = new Vec3(1f);
-						}
-						addForward.Normalize();
-						LockAgentAndMountInPlace(additionalAgent, addForward, new Vec3?(additionalAgent.Position));
-					TrySheathWeapons(additionalAgent);
-				}
-				catch
-				{
-				}
-			}
 		}
 	}
 
@@ -3248,7 +2900,6 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior, IAgentStateDeci
 				}
 				if (flag2)
 				{
-					EnsureAgentFreeMovement(agent5);
 					continue;
 				}
 				if (IsMountedHardLockMount(agent5))
@@ -3326,7 +2977,6 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior, IAgentStateDeci
 					}
 					if (_allowTargetFreeMovementAfterFormalDuel && (mountAgent == agent4 || mountAgent == agent3))
 					{
-						EnsureAgentFreeMovement(mountAgent);
 						continue;
 					}
 					mountAgent.SetIsAIPaused(isPaused: true);
@@ -4273,16 +3923,18 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior, IAgentStateDeci
 		{
 			ConfigureMeetingHoldFormations(list2.FirstOrDefault(), list3.FirstOrDefault());
 		}
-		if (list2.Count > 0)
+		bool flag5 = !flag || list2.Count > 0;
+		bool flag6 = !flag2 || list3.Count > 0;
+		if (list2.Count > 0 && ShouldPositionEscortSide(list2, _playerEscortPlacementFinalized, list.Count))
 		{
 			PositionEscortAgents(_mainAgent.Position, vec, list2, list);
 		}
-		if (list3.Count > 0)
+		if (list3.Count > 0 && ShouldPositionEscortSide(list3, _targetEscortPlacementFinalized, list.Count))
 		{
 			PositionEscortAgents(_targetAgent.Position, vec2, list3, list);
 		}
-		bool flag5 = !flag || list2.Count > 0;
-		bool flag6 = !flag2 || list3.Count > 0;
+		_playerEscortPlacementFinalized = flag5;
+		_targetEscortPlacementFinalized = flag6;
 		if (!flag5 || !flag6)
 		{
 			if (_escortDebugLogCooldown <= 0f)
@@ -4379,6 +4031,27 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior, IAgentStateDeci
 		{
 		}
 		return num;
+	}
+
+	private bool ShouldPositionEscortSide(List<Agent> escorts, bool sideFinalized, int maxCount)
+	{
+		if (escorts == null || escorts.Count == 0 || maxCount <= 0)
+		{
+			return false;
+		}
+		if (!sideFinalized)
+		{
+			return true;
+		}
+		int num = Math.Min(escorts.Count, maxCount);
+		for (int i = 0; i < num; i++)
+		{
+			if (!IsMeetingEscortAlreadyPositioned(escorts[i]))
+			{
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private bool TryGetEncounterBattleTroopCountForTeam(Team team, out int troopCount)
@@ -5225,6 +4898,134 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior, IAgentStateDeci
 		};
 	}
 
+	private void PositionSingleAgentLikeEscort(Agent agent, Vec3 position, Vec3 lookDirection, bool configureWeapons, bool rememberPositioned)
+	{
+		if (agent == null || !agent.IsActive())
+		{
+			return;
+		}
+		try
+		{
+			if (base.Mission?.Scene != null)
+			{
+				float height = position.z;
+				if (base.Mission.Scene.GetHeightAtPoint(position.AsVec2, BodyFlags.CommonCollisionExcludeFlags, ref height))
+				{
+					position.z = height;
+				}
+				else
+				{
+					position.z = base.Mission.Scene.GetGroundHeightAtPosition(position);
+				}
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			agent.TeleportToPosition(position);
+		}
+		catch
+		{
+		}
+		try
+		{
+			agent.LookDirection = lookDirection;
+		}
+		catch
+		{
+		}
+		try
+		{
+			agent.SetIsAIPaused(isPaused: true);
+		}
+		catch
+		{
+		}
+		try
+		{
+			agent.ClearTargetFrame();
+		}
+		catch
+		{
+		}
+		try
+		{
+			agent.SetTargetPosition(position.AsVec2);
+		}
+		catch
+		{
+		}
+		try
+		{
+			TrySheathWeapons(agent);
+		}
+		catch
+		{
+		}
+		bool flag = IsMeetingFormationManagedAgent(agent) || agent == _targetAgent;
+		if (configureWeapons && flag && MarkMeetingEscortWeaponConfigured(agent))
+		{
+			try
+			{
+				TryEquipMeetingEscortWeapons(agent);
+			}
+			catch
+			{
+			}
+		}
+		bool flag2 = false;
+		try
+		{
+			Agent mountAgent = agent.MountAgent;
+			if (mountAgent != null && mountAgent.IsActive())
+			{
+				flag2 = true;
+				mountAgent.TeleportToPosition(position);
+				mountAgent.LookDirection = lookDirection;
+				mountAgent.SetIsAIPaused(isPaused: true);
+				mountAgent.ClearTargetFrame();
+				mountAgent.SetTargetPosition(position.AsVec2);
+				if (flag)
+				{
+					TrySetAgentController(mountAgent, "None");
+				}
+				else
+				{
+					TryLockAgentToCurrentPosition(mountAgent, recaptureMeetingAnchor: true, preserveFacing: true);
+				}
+			}
+		}
+		catch
+		{
+		}
+		if (flag && flag2)
+		{
+			try
+			{
+				TrySetAgentController(agent, "None");
+			}
+			catch
+			{
+			}
+		}
+		else
+		{
+			try
+			{
+				TryLockAgentToCurrentPosition(agent, recaptureMeetingAnchor: true, preserveFacing: true);
+			}
+			catch
+			{
+			}
+		}
+		if (rememberPositioned)
+		{
+			RememberMeetingEscortPositioned(agent);
+		}
+	}
+
 	private void PositionEscortAgents(Vec3 anchor, Vec3 forward, List<Agent> escorts, List<(float fwdDist, float sideDist, bool faceBack)> slots)
 	{
 		if (escorts == null || slots == null || escorts.Count == 0 || slots.Count == 0)
@@ -5248,7 +5049,7 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior, IAgentStateDeci
 		for (int i = 0; i < num; i++)
 		{
 			Agent agent = escorts[i];
-			if (agent == null || !agent.IsActive())
+			if (agent == null || !agent.IsActive() || IsMeetingEscortAlreadyPositioned(agent))
 			{
 				continue;
 			}
@@ -5260,376 +5061,54 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior, IAgentStateDeci
 				lookDirection = vec;
 			}
 			lookDirection.Normalize();
-			try
-			{
-				if (base.Mission?.Scene != null)
-				{
-					float height = position.z;
-					if (base.Mission.Scene.GetHeightAtPoint(position.AsVec2, BodyFlags.CommonCollisionExcludeFlags, ref height))
-					{
-						position.z = height;
-					}
-					else
-					{
-						position.z = base.Mission.Scene.GetGroundHeightAtPosition(position);
-					}
-				}
-			}
-			catch
-			{
-			}
-			try
-			{
-				agent.TeleportToPosition(position);
-			}
-			catch
-			{
-			}
-			try
-			{
-				agent.LookDirection = lookDirection;
-			}
-			catch
-			{
-			}
-			try
-			{
-				agent.SetIsAIPaused(isPaused: true);
-			}
-			catch
-			{
-			}
-			try
-			{
-				agent.ClearTargetFrame();
-			}
-			catch
-			{
-			}
-			try
-			{
-				agent.SetTargetPosition(position.AsVec2);
-			}
-			catch
-			{
-			}
-			try
-			{
-				TrySheathWeapons(agent);
-			}
-			catch
-			{
-			}
-			bool flag = IsMeetingFormationManagedAgent(agent);
-			if (flag)
-			{
-				try
-				{
-					TryEquipMeetingEscortWeapons(agent);
-				}
-				catch
-				{
-				}
-			}
-			bool flag2 = false;
-			try
-			{
-				Agent mountAgent = agent.MountAgent;
-				if (mountAgent != null && mountAgent.IsActive())
-				{
-					flag2 = true;
-					mountAgent.TeleportToPosition(position);
-					mountAgent.LookDirection = lookDirection;
-					mountAgent.SetIsAIPaused(isPaused: true);
-					mountAgent.ClearTargetFrame();
-					mountAgent.SetTargetPosition(position.AsVec2);
-					if (flag)
-					{
-						TrySetAgentController(mountAgent, "None");
-					}
-					else
-					{
-						TryLockAgentToCurrentPosition(mountAgent, recaptureMeetingAnchor: true, preserveFacing: true);
-					}
-				}
-			}
-			catch
-			{
-			}
-			if (flag && flag2)
-			{
-				try
-				{
-					TrySetAgentController(agent, "None");
-				}
-				catch
-				{
-				}
-			}
-			else
-			{
-				try
-				{
-					TryLockAgentToCurrentPosition(agent, recaptureMeetingAnchor: true, preserveFacing: true);
-				}
-				catch
-				{
-				}
-			}
+			PositionSingleAgentLikeEscort(agent, position, lookDirection, configureWeapons: true, rememberPositioned: true);
 		}
 	}
 
-	public override bool IsThereAgentAction(Agent userAgent, Agent otherAgent)
-	{
-		try
-		{
-			if (!LordEncounterConfig.MultiLordMeetingEnabled)
-			{
-				return base.IsThereAgentAction(userAgent, otherAgent);
-			}
-			if (!MeetingBattleRuntime.IsMeetingActive || MeetingBattleRuntime.IsCombatEscalated)
-			{
-				return base.IsThereAgentAction(userAgent, otherAgent);
-			}
-			if (userAgent == null || otherAgent == null || !userAgent.IsMainAgent || !otherAgent.IsActive() || !otherAgent.IsHuman)
-			{
-				return base.IsThereAgentAction(userAgent, otherAgent);
-			}
-			Hero hero = ResolveMeetingTargetHeroFromAgent(otherAgent);
-			if (hero == null)
-			{
-				return base.IsThereAgentAction(userAgent, otherAgent);
-			}
-			float distance = otherAgent.GetDistanceTo(userAgent);
-			if (distance > 3.5f)
-			{
-				return false;
-			}
-			return true;
-		}
-		catch
-		{
-			return base.IsThereAgentAction(userAgent, otherAgent);
-		}
-	}
-
-	public override void OnAgentInteraction(Agent userAgent, Agent agent, sbyte agentBoneIndex)
-	{
-		try
-		{
-			if (!LordEncounterConfig.MultiLordMeetingEnabled)
-			{
-				base.OnAgentInteraction(userAgent, agent, agentBoneIndex);
-				return;
-			}
-			if (!MeetingBattleRuntime.IsMeetingActive || MeetingBattleRuntime.IsCombatEscalated)
-			{
-				base.OnAgentInteraction(userAgent, agent, agentBoneIndex);
-				return;
-			}
-			if (userAgent == null || agent == null || !userAgent.IsMainAgent || !agent.IsActive() || !agent.IsHuman)
-			{
-				base.OnAgentInteraction(userAgent, agent, agentBoneIndex);
-				return;
-			}
-			Hero hero = ResolveMeetingTargetHeroFromAgent(agent);
-			if (hero == null)
-			{
-				Logger.Log("MeetingBattle", "[MultiLord] OnAgentInteraction: interaction target is not a meeting lord; deferring to base.");
-				base.OnAgentInteraction(userAgent, agent, agentBoneIndex);
-				return;
-			}
-			if (Campaign.Current?.ConversationManager != null && Campaign.Current.ConversationManager.IsConversationInProgress)
-			{
-				Logger.Log("MeetingBattle", "[MultiLord] OnAgentInteraction ignored because a conversation is already in progress.");
-				return;
-			}
-			Logger.Log("MeetingBattle", $"[MultiLord] OnAgentInteraction triggered. SelectedLord={hero.Name}, Distance={agent.GetDistanceTo(userAgent):0.00}");
-			TryOpenMeetingConversation(hero, agent);
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("MeetingBattle", "[MultiLord] OnAgentInteraction failed: " + ex.Message);
-		}
-	}
-
-	private Hero ResolveMeetingTargetHeroFromAgent(Agent agent)
+	private bool IsMeetingEscortAlreadyPositioned(Agent agent)
 	{
 		if (agent == null)
 		{
-			return null;
+			return false;
 		}
-		Hero candidate = null;
 		try
 		{
-			candidate = (agent.Character as CharacterObject)?.HeroObject;
+			return _meetingEscortPositionedAgentIndices.Contains(agent.Index);
 		}
 		catch
 		{
-			candidate = null;
-		}
-		if (candidate == null)
-		{
-			return null;
-		}
-		if (agent == _targetAgent && _targetHero != null)
-		{
-			return _targetHero;
-		}
-		if (_targetHeroes != null && _targetHeroes.Contains(candidate))
-		{
-			return candidate;
-		}
-		if (_additionalTargetAgents != null)
-		{
-			for (int i = 0; i < _additionalTargetAgents.Count; i++)
-			{
-				if (_additionalTargetAgents[i] == agent)
-				{
-					if (_targetHeroes != null && i + 1 < _targetHeroes.Count)
-					{
-						return _targetHeroes[i + 1] ?? candidate;
-					}
-					return candidate;
-				}
-			}
-		}
-		return null;
-	}
-
-	private void TryOpenMeetingConversation(Hero lord, Agent lordAgent)
-	{
-		if (lord == null)
-		{
-			Logger.Log("MeetingBattle", "[MultiLord] TryOpenMeetingConversation aborted: lord is null.");
-			return;
-		}
-		try
-		{
-			PartyBase lordParty = null;
-			try
-			{
-				lordParty = lord.PartyBelongedTo?.Party;
-			}
-			catch
-			{
-				lordParty = null;
-			}
-			if (lordParty == null)
-			{
-				try
-				{
-					lordParty = PlayerEncounter.EncounteredParty;
-				}
-				catch
-				{
-					lordParty = null;
-				}
-			}
-			ConversationCharacterData playerData = new ConversationCharacterData(CharacterObject.PlayerCharacter, PartyBase.MainParty, false, false, false, false, false, false);
-			ConversationCharacterData partnerData = new ConversationCharacterData(lord.CharacterObject, lordParty, false, false, false, false, false, false);
-			Logger.Log("MeetingBattle", $"[MultiLord] Opening in-scene conversation with {lord.Name}. LordParty={(lordParty != null ? lordParty.Name?.ToString() ?? "?" : "null")}");
-			LordEncounterBehavior.IsOpeningConversation = true;
-			try
-			{
-				Campaign.Current.CurrentConversationContext = ConversationContext.PartyEncounter;
-				CampaignMapConversation.OpenConversation(playerData, partnerData);
-			}
-			finally
-			{
-				LordEncounterBehavior.IsOpeningConversation = false;
-			}
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("MeetingBattle", "[MultiLord] TryOpenMeetingConversation failed: " + ex.Message);
+			return false;
 		}
 	}
 
-	private float _multiLordInteractCooldown;
-
-	private void TryDetectManualInteractionKey(float dt)
+	private void RememberMeetingEscortPositioned(Agent agent)
 	{
-		if (!LordEncounterConfig.MultiLordMeetingEnabled)
+		if (agent == null)
 		{
 			return;
 		}
-		if (!MeetingBattleRuntime.IsMeetingActive || MeetingBattleRuntime.IsCombatEscalated)
-		{
-			return;
-		}
-		if (_mainAgent == null || !_mainAgent.IsActive())
-		{
-			return;
-		}
-		if (_multiLordInteractCooldown > 0f)
-		{
-			_multiLordInteractCooldown -= dt;
-			return;
-		}
-		bool pressed = false;
 		try
 		{
-			pressed = Input.IsKeyPressed(InputKey.F);
-		}
-		catch
-		{
-			pressed = false;
-		}
-		if (!pressed)
-		{
-			return;
-		}
-		if (Campaign.Current?.ConversationManager != null && Campaign.Current.ConversationManager.IsConversationInProgress)
-		{
-			return;
-		}
-		Agent nearest = null;
-		Hero nearestHero = null;
-		float nearestDist = float.MaxValue;
-		try
-		{
-			if (_targetAgent != null && _targetAgent.IsActive())
-			{
-				float d = _targetAgent.GetDistanceTo(_mainAgent);
-				if (d < nearestDist)
-				{
-					nearestDist = d;
-					nearest = _targetAgent;
-					nearestHero = _targetHero;
-				}
-			}
-			if (_additionalTargetAgents != null && _targetHeroes != null)
-			{
-				for (int i = 0; i < _additionalTargetAgents.Count; i++)
-				{
-					Agent a = _additionalTargetAgents[i];
-					if (a == null || !a.IsActive())
-					{
-						continue;
-					}
-					float d = a.GetDistanceTo(_mainAgent);
-					if (d < nearestDist)
-					{
-						nearestDist = d;
-						nearest = a;
-						if (i + 1 < _targetHeroes.Count)
-						{
-							nearestHero = _targetHeroes[i + 1];
-						}
-					}
-				}
-			}
+			_meetingEscortPositionedAgentIndices.Add(agent.Index);
 		}
 		catch
 		{
 		}
-		if (nearest == null || nearestHero == null || nearestDist > 3.5f)
+	}
+
+	private bool MarkMeetingEscortWeaponConfigured(Agent agent)
+	{
+		if (agent == null)
 		{
-			return;
+			return false;
 		}
-		_multiLordInteractCooldown = 0.6f;
-		Logger.Log("MeetingBattle", $"[MultiLord] Manual F key detected. NearestLord={nearestHero.Name}, Distance={nearestDist:0.00}");
-		TryOpenMeetingConversation(nearestHero, nearest);
+		try
+		{
+			return _meetingEscortWeaponConfiguredAgentIndices.Add(agent.Index);
+		}
+		catch
+		{
+			return false;
+		}
 	}
 }

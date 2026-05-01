@@ -542,7 +542,7 @@ public class DevMultilineEditableTextWidget : BrushWidget
 			string selectedText = GetSelectedText();
 			if (!string.IsNullOrEmpty(selectedText))
 			{
-				WindowsClipboardHelper.SetText(selectedText);
+				Input.SetClipboardText(selectedText);
 			}
 			return true;
 		}
@@ -551,14 +551,14 @@ public class DevMultilineEditableTextWidget : BrushWidget
 			string selectedText2 = GetSelectedText();
 			if (!string.IsNullOrEmpty(selectedText2))
 			{
-				WindowsClipboardHelper.SetText(selectedText2);
+				Input.SetClipboardText(selectedText2);
 				ReplaceSelection(string.Empty);
 			}
 			return true;
 		}
 		if (Input.IsKeyPressed(InputKey.V))
 		{
-			ReplaceSelection(SanitizeClipboardText(WindowsClipboardHelper.GetText()));
+			ReplaceSelection(SanitizeClipboardText(Input.GetClipboardText() ?? string.Empty));
 			return true;
 		}
 		return false;

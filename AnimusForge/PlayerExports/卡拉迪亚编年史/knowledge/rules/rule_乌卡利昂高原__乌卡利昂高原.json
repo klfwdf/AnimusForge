@@ -4,6 +4,10 @@
     "乌卡利昂高原",
     "巴旦尼亚高地"
   ],
+  "RagShortTexts": [
+    "乌卡利昂高原是卡拉迪亚大陆最高高原。",
+    "巴旦尼亚人以原始方式生活在乌卡利昂高原。"
+  ],
   "SemanticPrototypes": [],
   "Variants": [
     {
@@ -14,6 +18,7 @@
         "KingdomIds": null,
         "SettlementIds": null,
         "Roles": null,
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": null
@@ -28,6 +33,7 @@
         "KingdomIds": null,
         "SettlementIds": null,
         "Roles": null,
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": {
@@ -46,6 +52,7 @@
         "KingdomIds": null,
         "SettlementIds": null,
         "Roles": null,
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": null

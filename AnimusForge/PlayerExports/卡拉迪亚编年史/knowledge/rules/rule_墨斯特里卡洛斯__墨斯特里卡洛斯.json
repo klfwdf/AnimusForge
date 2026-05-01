@@ -1,0 +1,58 @@
+﻿{
+  "Id": "rule_墨斯特里卡洛斯",
+  "Keywords": [
+    "墨斯特里卡洛斯"
+  ],
+  "RagShortTexts": [
+    "墨斯特里卡洛斯家族，南帝国贵族，领地以沃斯特鲁姆为中心。重视荣誉与帝国法统，内战中支持拉盖娅女王。以军事传统和骑兵著称，家族成员多任边境将领，抵御阿塞莱、库塞特及远东达西诸沙阿的进犯。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": [
+          "town_es1"
+        ],
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "南帝国贵族家族，领地以沃斯特鲁姆为中心。重视家族荣誉与帝国法统，在帝国内战中坚定支持拉盖娅女王。以军事传统和骑兵力量著称，家族成员多担任边境将领，长期抵御阿塞莱与库塞特的侵扰，以及远东达西人的各类沙阿与帕迪沙阿的进犯。\n在墨斯特里卡洛斯家族领地驻防的帝国士兵常常抱怨驻地的炎热以及蚊虫，然而本地居民早已习以为常，往往对此一笑了之，并对自己身肩保家卫国之责而感到骄傲。\n家族目前统治的定居点是a"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "南帝国贵族家族，领地以沃斯特鲁姆为中心。家族忠诚于帝国正统，在帝国内战中坚定支持拉盖娅女王。以军事传统和骑兵力量著称，家族成员多担任边境将领，长期抵御阿塞莱与库塞特的侵扰。家族目前统治的定居点是a"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "a",
+      "Kind": "clan_all_settlements",
+      "TargetId": "clan_empire_south_3",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

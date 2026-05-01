@@ -1,0 +1,48 @@
+﻿{
+  "Id": "rule_塞堤斯河",
+  "Keywords": [
+    "塞堤斯河"
+  ],
+  "RagShortTexts": [
+    "塞堤斯河发源自密泽亚德高原，流经南帝国波罗斯，注入珀拉斯海。咸淡水交汇的河口形成富饶渔场，滋养西鲱、沙丁鱼，也吸引金枪鱼前来觅食。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "塞堤斯河是几乎贯穿南帝国境内的一条淡水河，发源自密泽亚德高原，途径南帝国的城镇波罗斯，注入珀拉斯海。咸淡水交汇使得河口区域形成了富饶的渔场既滋养了在微咸水域繁衍生息的西鲱和沙丁鱼，也吸引了以这些鱼群为食的金枪鱼前来觅食。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai",
+          "empire_w"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "塞堤斯河是南帝国内注入珀拉斯海的一条河。那里的鱼味道不错。"
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,47 @@
+﻿{
+  "Id": "rule_西大洋",
+  "Keywords": [
+    "西大洋"
+  ],
+  "RagShortTexts": [
+    "西大洋又称比斯坎海，位于卡拉迪亚大陆西岸",
+    "西大洋渔获丰富，盛产鲸鱼，沿岸有渔业、鲸业、晒盐业",
+    "西大洋是瓦兰迪亚人和卡拉德人的发源地"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "西大洋就是大陆西边的那片大洋，也没啥特别的，就是一眼望不到头，听说无边无际。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "scouting": 40
+        }
+      },
+      "Content": "西大又叫比斯坎海，是一片广袤的水域，位于卡拉迪亚大陆西岸，渔获丰富，特别是鲸鱼，沿岸多以渔业，鲸业，晒盐业为生。西大洋也是瓦兰迪亚人以及卡拉德人的发源地，先是卡拉德人，在1000年前登陆了大陆西岸，建立了伟大的卡拉德帝国，而后八百年，瓦兰迪亚人也在西海岸登陆，随后建立了瓦兰迪亚王国"
+    }
+  ],
+  "TextMappings": []
+}

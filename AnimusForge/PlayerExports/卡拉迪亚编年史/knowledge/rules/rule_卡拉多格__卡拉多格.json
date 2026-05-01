@@ -4,6 +4,9 @@
     "卡拉多格",
     "卡拉多格至高王"
   ],
+  "RagShortTexts": [
+    "卡拉多格带领巴旦尼亚在潘德拉克战役击败帝国"
+  ],
   "SemanticPrototypes": [],
   "Variants": [
     {
@@ -14,12 +17,88 @@
         "KingdomIds": null,
         "SettlementIds": null,
         "Roles": null,
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": null
       },
-      "Content": ""
+      "Content": "B，听说他武艺高强，孔武有力，能在千军之中取将领首级。但是听说他的至高王位子得的不太正，但是也没啥证据。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "卡拉多格是我们的至高王，A，他孔武有力，魅力非凡，而且够狡猾，够精明，带领我们赢得了潘德拉克战役的胜利，让巴旦尼亚足以脱离帝国的羁靡，数百年来，我们第一次彻底的自由了。但是他弑了老至高王埃里尔·芬·乌瑟莱恩，还把它包装成一次狩猎事故（我们不能对外族人说，本族人聊聊也就算了），我们支持他的统治，但是我们不认同他的人品"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "A，他带领我们打赢了帝国，让我们不必再向帝国纳税，我们终于能在乌卡利昂安稳的生活了，我们获得了一大堆的战利品，我们每个人都分到了一点点，我们支持卡拉多格，至于他的品行？那没人在乎。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "B，卡拉多格就是一个纯纯的小人，他甚至都不愿意演一下。他贪婪，小气，残暴。虽然他孔武有力，那又能如何呢？他如此的短视，与帝国，库赛特，阿塞莱，瓦兰迪亚，斯特吉亚的关系都搞得一塌糊涂，他又如此的傲慢，不愿意与任何一方交涉，他斤斤计较，在潘德拉克战役上甚至因为一点战利品与盟友吵了起来，我们从没见过如此的国家领袖，他简直是不可理喻！"
     }
   ],
-  "TextMappings": []
+  "TextMappings": [
+    {
+      "SourceText": "B",
+      "Kind": "status|hero|is_dead",
+      "TargetId": "lord_5_1",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": "卡拉多格是巴旦尼亚的前至高王，他已经死了",
+      "FalseText": "卡拉多格是巴旦尼亚的至高王"
+    },
+    {
+      "SourceText": "A",
+      "Kind": "status|hero|is_dead",
+      "TargetId": "lord_5_1",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": "卡拉多格是我们的至高王，但他已经与世长辞了，现在的至高王另有其人",
+      "FalseText": "卡拉多格是我们的至高王"
+    }
+  ]
 }

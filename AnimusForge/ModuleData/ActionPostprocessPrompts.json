@@ -7,7 +7,7 @@
   "MoodRules": [
     {
       "Tag": "[ACTION:MOOD:DELIGHTED]",
-      "Description": "NPC被玩家强烈的打动或明显心动"
+      "Description": "NPC对玩家表示赞赏"
     },
     {
       "Tag": "[ACTION:MOOD:JOY]",

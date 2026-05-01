@@ -4,6 +4,9 @@
     "伊丽卡",
     "哈尔达尔的妈"
   ],
+  "RagShortTexts": [
+    "伊丽卡确保儿子哈尔达尔继位"
+  ],
   "SemanticPrototypes": [],
   "Variants": [
     {
@@ -14,6 +17,7 @@
         "KingdomIds": null,
         "SettlementIds": null,
         "Roles": null,
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": null
@@ -30,6 +34,7 @@
         "KingdomIds": null,
         "SettlementIds": null,
         "Roles": null,
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": null

@@ -3,6 +3,9 @@
   "Keywords": [
     "伯爵"
   ],
+  "RagShortTexts": [
+    "巴旦尼亚伯爵是部落酋长的尊称。"
+  ],
   "SemanticPrototypes": [],
   "Variants": [
     {
@@ -13,11 +16,12 @@
         "KingdomIds": null,
         "SettlementIds": null,
         "Roles": null,
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": null
       },
-      "Content": "伯爵是巴旦尼亚的酋长尊称"
+      "Content": "伯爵是巴旦尼亚部落酋长的尊称，巴旦尼亚正式建国后，模仿帝国建立了巴旦尼亚的爵位系统，伯爵就是其中最重要的一级，它只被封给原部落的酋长，并给予部落土地的统治权。"
     }
   ],
   "TextMappings": []

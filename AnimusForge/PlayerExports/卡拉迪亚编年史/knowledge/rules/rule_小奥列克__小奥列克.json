@@ -1,0 +1,78 @@
+﻿{
+  "Id": "rule_小奥列克",
+  "Keywords": [
+    "小奥列克",
+    "奥列克波耶"
+  ],
+  "RagShortTexts": [
+    "小奥列克是年长奥列克的儿子。",
+    "小奥列克家族不接受君主制，坚信波耶才是土地主人。",
+    "小奥列克曾对王公抱怨税金痛苦。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "小奥列克是“年长的”奥列克的儿子。其家族是斯特吉亚最古老的家族之一，他们自始至终从未真正接受过君主制的观念。奥列克始终坚信，波耶们才应该是自己土地的主人。他最有名的事迹就是曾对王公直言道：“在你麾下作战，我新添的每道伤口都如同妻子的爱抚那般轻柔。但我付给你的每一分税金，都好似肚子挨了一箭，痛苦万分。”随着年纪的增长，如今的他变得不露衷曲。但没人会觉得他对王公权威的怨恨有半点消减。\n目前统治的定居点是a"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "小奥列克是“年长的”奥列克的儿子。其家族是斯特吉亚最古老的家族之一。与大公朗瓦德关系极差，已经到了水火不容地步。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "奥列克是库洛夫家族的族长。与朗瓦德关系不和。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "a",
+      "Kind": "clan_all_settlements",
+      "TargetId": "clan_sturgia_2",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

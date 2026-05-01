@@ -1556,9 +1556,9 @@ public class SceneTauntBehavior : CampaignBehaviorBase
 			}
 			if (flag4)
 			{
-				return "若" + text + "挑衅你，可在句末输出[ACTION:SCENE_TAUNT_WARN]警告他；若忍无可忍，可直接输出[ACTION:SCENE_TAUNT_FIGHT]。一旦开打，场上己方士兵和领主会来帮你砍他。";
+				return "若" + text + "辱骂，贬低或者招惹你你可在句末输出[ACTION:SCENE_TAUNT_WARN]警告他；若忍无可忍，可直接输出[ACTION:SCENE_TAUNT_FIGHT]。一旦开打，场上己方士兵和领主会来帮你砍他。";
 			}
-			return "若" + text + "挑衅你，可在句末输出[ACTION:SCENE_TAUNT_WARN]警告他；若忍无可忍，可直接输出[ACTION:SCENE_TAUNT_FIGHT]，用拳头教训他。";
+			return "若" + text + "辱骂，贬低或者招惹你可在句末输出[ACTION:SCENE_TAUNT_WARN]警告他；若忍无可忍，可直接输出[ACTION:SCENE_TAUNT_FIGHT]，用拳头教训他。";
 		}
 		catch
 		{

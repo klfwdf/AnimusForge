@@ -1,0 +1,108 @@
+﻿{
+  "Id": "rule_南帝国的军事实力",
+  "Keywords": [
+    "南帝国的军事实力",
+    "南帝国军力"
+  ],
+  "RagShortTexts": [
+    "南帝国兵力较多，但需防库赛特及西北帝国"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "南帝国的军事力量？我们其实不太清楚的，我们只知道南帝国似乎比较强，他们马场多，骑兵也多，具装骑兵相对其它两个帝国多些"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "我们南帝国控制着卡拉迪亚最富庶的区域，而且还是比较易守难攻的，我们的实力比阿塞莱强，我们会谋求与阿塞莱的战争，以获得新的领土。我们不愿意打仗，但有的时候战争是不得不打的，但是我们也得防御东边的库赛特以及西部北部的僭越者（西帝国，北帝国），所以我们的压力还是蛮大的，虽然我们兵力多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire",
+          "empire_w"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "南帝国算什么东西？他们那帮养尊处优的城主们根本不知道如何打仗，像他们的俄洛斯与图里亚多斯，简直就是完全不懂军事，却还掌握着兵权，真是可笑。拉盖娅本人也不懂军事，她管理能力尚可，但是用兵打仗太差了。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "khuzait"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "我们与南帝国接壤，但是我们主要还是以防御为主，毕竟谁也不愿意陷入双线作战，同时招惹两个帝国不是明智的选择"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "南帝国比我们强大，但是也没有强大多少，我们抗击南帝国的侵略，保证他们不击穿我们的防线即可，进攻就别想了"
+    }
+  ],
+  "TextMappings": []
+}

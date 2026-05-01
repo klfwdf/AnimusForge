@@ -1,0 +1,30 @@
+﻿{
+  "Id": "rule_达尔马河",
+  "Keywords": [
+    "达玛尔河"
+  ],
+  "RagShortTexts": [
+    "达玛尔河是诺德维格与库塞特的界河。",
+    "诺德维格和库塞特之间的界河是什么？",
+    "达玛尔河划分了诺德维格和库塞特。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "达玛尔河是诺德维格和库塞特的界河"
+    }
+  ],
+  "TextMappings": []
+}

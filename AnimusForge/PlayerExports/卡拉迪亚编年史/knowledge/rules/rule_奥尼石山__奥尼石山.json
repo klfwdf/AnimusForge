@@ -1,0 +1,31 @@
+﻿{
+  "Id": "rule_奥尼石山",
+  "Keywords": [
+    "奥尼石山",
+    "奥尼山"
+  ],
+  "RagShortTexts": [
+    "奥尼石山是南帝国境内吕卡里亚谷中央耸立的一块巨岩，其西侧坐落着塞斯塔代姆和塞斯塔代姆堡。其西侧坐落着南帝国重镇吕卡隆。石山得名于成群聚集于此啄食死尸的秃鹫，那些死者生前多在当地的盐矿场劳作。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "奥尼石山是南帝国境内吕卡里亚谷中央耸立的一块巨岩，其西侧坐落着塞斯塔代姆和塞斯塔代姆堡。其西侧坐落着南帝国重镇吕卡隆。石山得名于成群聚集于此啄食死尸的秃鹫，那些死者生前多在当地的盐矿场劳作。"
+    }
+  ],
+  "TextMappings": []
+}

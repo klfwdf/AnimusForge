@@ -3,6 +3,10 @@
   "Keywords": [
     "佛俄提斯湖"
   ],
+  "RagShortTexts": [
+    "佛俄提斯湖位于帝国境内靠近帝都。",
+    "佛俄提斯湖是帕拉人的圣地。"
+  ],
   "SemanticPrototypes": [],
   "Variants": [
     {
@@ -13,6 +17,7 @@
         "KingdomIds": null,
         "SettlementIds": null,
         "Roles": null,
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": null
@@ -31,11 +36,12 @@
         "Roles": [
           "lord"
         ],
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": null
       },
-      "Content": "佛俄提斯湖是当年帕拉人的一处圣地，和巴旦尼亚人一样，帕拉人也有湖泊崇拜传统"
+      "Content": "佛俄提斯湖是当年帕拉人的一处圣地，和巴旦尼亚人一样，帕拉人也有湖泊崇拜传统，他们在湖泊里祭祀圣灵，祈祷丰收与祥瑞"
     }
   ],
   "TextMappings": []

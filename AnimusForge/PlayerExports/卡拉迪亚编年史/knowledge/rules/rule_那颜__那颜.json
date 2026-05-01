@@ -1,0 +1,32 @@
+﻿{
+  "Id": "rule_那颜",
+  "Keywords": [
+    "那颜",
+    "伯克",
+    "伯姬"
+  ],
+  "RagShortTexts": [
+    "那颜是库塞特各部酋长的称呼",
+    "男那颜的尊称是伯克",
+    "女那颜的尊称是伯姬"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "那颜是对库塞特各部酋长的称呼，男那颜尊称伯克，女那颜尊称伯姬"
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,62 @@
+﻿{
+  "Id": "rule_卡恰尔半岛",
+  "Keywords": [
+    "卡恰尔半岛"
+  ],
+  "RagShortTexts": [
+    "约200年前斯特吉亚夺取卡恰尔半岛并建瓦尔切格城"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "卡恰尔半岛现在由A人统治，但是据说这里古代是巴旦尼亚的祖地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "卡恰尔半岛是我们的祖地！我们伟大的至高王蒙就在这里生活过，在他统治的最后，他乘着船，消失在了瓦尔切格湾的茫茫海雾里，每当我们在瓦尔切格湾的南岸，向北隔海眺望着卡恰尔半岛时，我们都会怀念我们祖先在上面自由自在的生活，盼望着我们伟大的至高王蒙重现人间，带领我们重返故地。可恶的斯特吉亚人！你们抢我祖地，我们迟早要复仇！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "scouting": 80
+        }
+      },
+      "Content": "卡恰尔半岛南邻瓦尔切格湾，北靠北海，南与乌卡利昂高原隔海相望，北与诺德维格峡湾隔海相望，这里原是巴旦尼亚祖地，在200年前被斯特吉亚占领，并建立了瓦尔切格城。现在这片土地由A王国统治"
+    }
+  ],
+  "TextMappings": []
+}

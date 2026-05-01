@@ -147,7 +147,8 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 		_terminalUiActive = true;
 		List<InquiryElement> list = new List<InquiryElement>
 		{
-			new InquiryElement("trust_query", "信任度查询", null, isEnabled: true, "")
+			new InquiryElement("trust_query", "信任度查询", null, isEnabled: true, ""),
+			new InquiryElement("weekly_reports", "查看周报", null, isEnabled: true, "")
 		};
 		MultiSelectionInquiryData data = new MultiSelectionInquiryData("你现在想做什么？", "请选择终端功能：", list, isExitShown: true, 1, 1, "确定", "关闭", delegate(List<InquiryElement> selected)
 		{
@@ -161,6 +162,10 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 			{
 				OpenTrustQueryMenu(CloseTerminal);
 			}
+			else if (string.Equals(text, "weekly_reports", StringComparison.Ordinal))
+			{
+				OpenWeeklyReportBrowser();
+			}
 			else
 			{
 				CloseTerminal();
@@ -170,6 +175,16 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 			CloseTerminal();
 		}, "", isSeachAvailable: true);
 		MBInformationManager.ShowMultiSelectionInquiry(data, pauseGameActiveState: true);
+	}
+
+	private void OpenWeeklyReportBrowser()
+	{
+		List<MyBehavior.WeeklyReportBrowserCountryData> terminalWeeklyReportBrowserCountries = MyBehavior.Instance?.GetTerminalWeeklyReportBrowserCountries() ?? new List<MyBehavior.WeeklyReportBrowserCountryData>();
+		CloseTerminal();
+		if (!TerminalWeeklyReportBrowserPopup.Show(terminalWeeklyReportBrowserCountries))
+		{
+			InformationManager.DisplayMessage(new InformationMessage("打开周报浏览器失败。"));
+		}
 	}
 
 	private void OpenTrustQueryMenu(Action onReturn)

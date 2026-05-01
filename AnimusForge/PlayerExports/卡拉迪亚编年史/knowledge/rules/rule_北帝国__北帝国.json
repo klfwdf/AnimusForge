@@ -1,7 +1,14 @@
 ﻿{
   "Id": "rule_北帝国",
   "Keywords": [
-    "北帝国"
+    "北帝国",
+    "北部帝国",
+    "北卡拉德帝国",
+    "帝国北部",
+    "元老院和卡拉德人民"
+  ],
+  "RagShortTexts": [
+    "北帝国是元老院与卡拉德人民的集合体。"
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -13,12 +20,114 @@
         "KingdomIds": null,
         "SettlementIds": null,
         "Roles": null,
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": null
       },
-      "Content": "北帝国就是北边的那个帝国呀，其实更应该叫它共和国的，他们的皇帝更像是最高执政官，只有行政权，没有决定权"
+      "Content": "北帝国就是北边的那个帝国呀，其实更应该叫它共和国的，他们的皇帝更像是最高执政官，只有行政权，没有决定权,权力都掌握在元老院手里。现任皇帝是A。B，C"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "我们北帝国是正统帝国，是元老院与卡拉德人民的集合体，我们的皇帝是元老院选举而来的，我们在元老院都有一席之地，皇帝只不过是元老院的公仆。我们的皇帝A十分的英明，从不去褫夺我们的权利，也从不回避自己的义务。我们虽然多是文官，但我们依旧可以用兵。西帝国那位所谓的士兵皇帝不过是匹夫之勇。而拉盖娅？她只是一个靠着先帝亲缘上位的投机者罢了。只有我们能够复兴帝国。B，C"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "北帝国是篡逆者卢孔建立的帝国，他没有听从我们女皇的命令，擅自回到了北方召集元老开会，选举自己为皇帝。北帝国那帮老古董们竟然还在强调什么老掉牙的共和制？真是可笑。每个人的私有财产都是不可侵犯的，都是可以正当的传给自己的下一代的。我们的拉盖娅女皇是先皇阿雷尼科斯的遗孀，理应继承大统，哪轮得到卢孔呢？就算排资论辈，卢孔也就是个偏将，哪里轮得到他即为呢？不过是答应了元老们的那些条件，继续维持他们可笑的共和罢了。我们迟早有一天会回到帝都萨涅俄帕，将那些篡逆者全部驱逐！B，C"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_w"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "北帝国？算什么东西？我们分分钟灭掉他们，我们西帝国才是最强的，管他什么正统，天子者，兵强马壮者为之，凭什么元老院一投票，我们就得把皇位给那个老顽固？这是完全不合道理的。我们军人没有投票权，我们是永远无法让我们爱戴的元帅继承皇位的，这就是问题所在。历来的皇帝都不尊重我们，我们又如何要尊重他们呢？我们会踏平元老院，将那些徒有虚名的元老们都吊死！B，C"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "khuzait"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "townsfolk",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "北帝国是我们进攻的首选目标，他们与我们世代为敌，况且在潘德拉克战役上元老院根本没有支付我们的佣金，我们总是要去攻打北帝国的。我们不管它们是共和还是专制，还是寡头政治，我们反正要去攻打北帝国，夺取北方那肥沃的土地以供放牧。B，C"
     }
   ],
-  "TextMappings": []
+  "TextMappings": [
+    {
+      "SourceText": "A",
+      "Kind": "kingdom_leader_name",
+      "TargetId": "empire",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "B",
+      "Kind": "status|kingdom|is_eliminated",
+      "TargetId": "empire",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": "但这都是往事了，北帝国已经灭亡了",
+      "FalseText": "北帝国就是这样一个国家"
+    }
+  ]
 }

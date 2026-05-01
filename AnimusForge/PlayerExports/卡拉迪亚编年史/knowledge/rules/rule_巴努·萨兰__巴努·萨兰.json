@@ -1,0 +1,62 @@
+﻿{
+  "Id": "rule_巴努·萨兰",
+  "Keywords": [
+    "巴努·萨兰"
+  ],
+  "RagShortTexts": [
+    "巴努·萨兰家族与吉勒德部族的仇恨原因",
+    "尼姆尔潘德拉克战役经历及在胡比亚城被处决",
+    "萨兰家族尼姆尔潘德拉克战役中击退巴旦尼亚射手"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "萨兰家族是阿塞莱的组成部分之一。潘德拉克战役中，该家族的尼姆尔率领包括本族在内的阿塞莱战士参战。据家族中亲历者讲述，他们在战场上先击溃了巴旦尼亚射手，随后遭到瓦兰迪亚骑士的侧击，而帝国方面的援军并未及时抵达。\n尼姆尔战后返回家乡，被家族视为英雄。此后，他与吉勒德部族的一名女子往来，被吉勒德部族擒获并处决，尸体示众于胡比亚城的集市。萨兰家族认为，帝国和瓦兰迪亚人的所作所为尚可宽恕，但与吉勒德部族的仇怨则无法化解。\n家族统治的定居点是a"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "家族统治的定居点是a\n萨兰家族是阿塞莱的部族之一。潘德拉克战役中，该家族一名叫尼姆尔的战士带领一批阿塞莱人参战，其中既有萨兰家族的人，也有吉勒德家族的人。据传战场上先击退了巴旦尼亚射手，后遭遇瓦兰迪亚骑兵冲击，而帝国的援军没有赶到。\n战后尼姆尔返回家乡，被称为英雄。后来他在吉勒德家族所在的胡比亚城，因与吉勒德家族一名女子往来，被该家族擒获处决，尸体悬挂于集市铁笼中。自那以后，两个家族结仇，外界对此事多有传闻。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "a",
+      "Kind": "clan_all_settlements",
+      "TargetId": "clan_aserai_2",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

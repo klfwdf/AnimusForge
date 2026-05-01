@@ -3,6 +3,9 @@
   "Keywords": [
     "加隆托海峡"
   ],
+  "RagShortTexts": [
+    "加隆托海峡是卡拉迪亚与纳哈撒的交界处。"
+  ],
   "SemanticPrototypes": [],
   "Variants": [
     {
@@ -13,12 +16,42 @@
         "KingdomIds": null,
         "SettlementIds": null,
         "Roles": null,
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": null
       },
-      "Content": "加隆托海峡是哪？不知道。好像是卡拉迪亚和"
+      "Content": "加隆托海峡是哪？不知道。好像是卡拉迪亚和纳哈撒的交界处？"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": [
+          "town_a1",
+          "town_ew4"
+        ],
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "加隆托湾就在我们这附近，是A和阿塞莱的交界处，这地方很繁忙，阿塞莱的商队会源源不断地从这里往返"
     }
   ],
-  "TextMappings": []
+  "TextMappings": [
+    {
+      "SourceText": "A",
+      "Kind": "settlement_owner_clan_name",
+      "TargetId": "town_EW4",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
 }

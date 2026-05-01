@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using Helpers;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Actions;
+using TaleWorlds.CampaignSystem.BarterSystem.Barterables;
 using TaleWorlds.CampaignSystem.ComponentInterfaces;
 using TaleWorlds.CampaignSystem.Conversation;
 using TaleWorlds.CampaignSystem.Encounters;
@@ -25,36 +26,6 @@ namespace AnimusForge;
 public class LordEncounterBehavior : CampaignBehaviorBase
 {
 	private static Hero _targetHero;
-
-	private static List<Hero> _targetHeroes = new List<Hero>();
-
-	public static Hero TargetHero
-	{
-		get
-		{
-			if (_targetHeroes != null && _targetHeroes.Count > 0)
-			{
-				return _targetHeroes[0] ?? _targetHero;
-			}
-			return _targetHero;
-		}
-	}
-
-	public static IReadOnlyList<Hero> TargetHeroes
-	{
-		get
-		{
-			if (_targetHeroes == null || _targetHeroes.Count == 0)
-			{
-				if (_targetHero != null)
-			{
-					return new List<Hero> { _targetHero };
-			}
-				return new List<Hero>();
-			}
-			return _targetHeroes.AsReadOnly();
-		}
-	}
 
 	public static bool IsOpeningConversation = false;
 
@@ -89,6 +60,10 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 	private static bool _pendingPeacefulMeetingBattleCleanup;
 
 	private static bool _cameraLockWasActive;
+
+	private static bool _meetingPlayerReleaseAuthorized;
+
+	private static bool _pendingReturnToEncounterMenuAfterUnauthorizedMeetingExit;
 
 	private static bool _suspendEncounterRedirectDuringResultResolution;
 
@@ -146,6 +121,8 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 
 	private static readonly Regex MeetingTauntBattleTagRegex = new Regex("\\[ACTION:MEETING_TAUNT_BATTLE\\]", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
+	private static readonly Regex MeetingReleasePlayerTagRegex = new Regex("\\[ACTION:LET_PLAYER_GO\\]", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
 	private static MethodInfo _playerEncounterDoPlayerDefeatMethod;
 
 	private static PropertyInfo _playerEncounterStateProperty;
@@ -163,6 +140,38 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 	internal static void SetEncounterMeetingMissionActive(bool active)
 	{
 		_encounterMeetingMissionActive = active;
+	}
+
+	private static void AuthorizeMeetingPlayerRelease(string reason)
+	{
+		_meetingPlayerReleaseAuthorized = true;
+		Logger.Log("MeetingRelease", "Meeting player release authorized. Reason=" + (reason ?? "N/A"));
+	}
+
+	private static bool ConsumeMeetingPlayerReleaseAuthorization(string reason)
+	{
+		bool meetingPlayerReleaseAuthorized = _meetingPlayerReleaseAuthorized;
+		_meetingPlayerReleaseAuthorized = false;
+		Logger.Log("MeetingRelease", $"Meeting player release authorization consumed={meetingPlayerReleaseAuthorized}. Reason={reason ?? "N/A"}");
+		return meetingPlayerReleaseAuthorized;
+	}
+
+	private static void ClearMeetingPlayerReleaseAuthorization(string reason)
+	{
+		_meetingPlayerReleaseAuthorized = false;
+		Logger.Log("MeetingRelease", "Meeting player release authorization cleared. Reason=" + (reason ?? "N/A"));
+	}
+
+	private static void MarkPendingReturnToEncounterMenuAfterUnauthorizedMeetingExit(string reason)
+	{
+		_pendingReturnToEncounterMenuAfterUnauthorizedMeetingExit = true;
+		Logger.Log("MeetingRelease", "Pending return to encounter menu after unauthorized meeting exit. Reason=" + (reason ?? "N/A"));
+	}
+
+	private static void ClearPendingReturnToEncounterMenuAfterUnauthorizedMeetingExit(string reason)
+	{
+		_pendingReturnToEncounterMenuAfterUnauthorizedMeetingExit = false;
+		Logger.Log("MeetingRelease", "Cleared pending unauthorized meeting exit return. Reason=" + (reason ?? "N/A"));
 	}
 
 	internal static bool TryGetSavedMainPartyPosition(out CampaignVec2 pos)
@@ -193,15 +202,6 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			return;
 		}
 		_meetingTauntWarnedHeroIds = _meetingTauntWarnedHeroIds.Where((string x) => !string.IsNullOrWhiteSpace(x)).Select((string x) => x.Trim()).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
-		if (_targetHeroes == null)
-		{
-			_targetHeroes = new List<Hero>();
-		}
-		dataStore.SyncData("_targetHeroes_v1", ref _targetHeroes);
-		if (_targetHeroes == null)
-		{
-			_targetHeroes = new List<Hero>();
-		}
 	}
 
 	private void OnSessionLaunched(CampaignGameStarter starter)
@@ -278,21 +278,21 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			if (mission2 != null)
 			{
 				try
-			{
+				{
 					flag3 = mission2.MissionResult != null && mission2.MissionResult.PlayerDefeated;
-			}
+				}
 				catch
-			{
+				{
 					flag3 = false;
-			}
+				}
 				try
-			{
+				{
 					flag4 = mission2.MissionResult != null && mission2.MissionResult.PlayerVictory;
-			}
+				}
 				catch
-			{
+				{
 					flag4 = false;
-			}
+				}
 			}
 		}
 		catch
@@ -325,22 +325,22 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			if (PlayerEncounter.Current != null)
 			{
 				try
-			{
+				{
 					flag7 = PlayerEncounter.Battle != null || PlayerEncounter.EncounteredBattle != null || MapEvent.PlayerMapEvent != null;
-			}
+				}
 				catch
-			{
+				{
 					flag7 = false;
-			}
+				}
 				try
-			{
+				{
 					PlayerEncounterState encounterState = PlayerEncounter.Current.EncounterState;
 					flag8 = encounterState != PlayerEncounterState.Begin && encounterState != PlayerEncounterState.Wait;
-			}
+				}
 				catch
-			{
+				{
 					flag8 = false;
-			}
+				}
 			}
 		}
 		catch
@@ -365,13 +365,13 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			{
 				PartyBase partyBase = null;
 				try
-			{
+				{
 					partyBase = PlayerEncounter.EncounteredParty;
-			}
+				}
 				catch
-			{
+				{
 					partyBase = null;
-			}
+				}
 				partyBase = partyBase ?? _targetHero?.PartyBelongedTo?.Party;
 				TryApplyImmediateEscalationConsequences(partyBase, _targetHero, "meeting_battle_mission_end_fallback");
 			}
@@ -381,8 +381,23 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			}
 		}
 		bool flag10 = flag2 && !flag && !flag3;
+		bool flag19 = ConsumeMeetingPlayerReleaseAuthorization("mission_ended");
+		bool flag20 = flag10 && !flag19 && IsHostileEncounterInitiatedByOpponent();
 		bool flag11 = flag2 && flag && !flag3 && !flag4 && !flag6;
-		if (flag2 && flag3)
+		if (flag19)
+		{
+			flag10 = flag2;
+			flag11 = false;
+			ClearPendingReturnToEncounterMenuAfterUnauthorizedMeetingExit("meeting_release_authorized_exit");
+			try
+			{
+				ApplyMeetingPlayerReleaseWorldMapCooldown(_targetHero, "meeting_release_authorized_exit");
+			}
+			catch
+			{
+			}
+		}
+		else if (flag2 && flag3)
 		{
 			ClearPendingMeetingBattleVictorySettlement("mission_result_defeat");
 			MarkPendingForceNativeDefeatCaptivityMenu("meeting_battle_mission_result_defeat");
@@ -405,11 +420,30 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		{
 			MarkPendingForceNativeEncounterBattleMenu("meeting_battle_mission_exit_incomplete");
 		}
-		if (flag2 && !flag4)
+		if (flag20)
+		{
+			flag10 = false;
+			MarkPendingReturnToEncounterMenuAfterUnauthorizedMeetingExit("meeting_mission_exit_without_release");
+			try
+			{
+				PlayerEncounter.LeaveEncounter = false;
+			}
+			catch
+			{
+			}
+			try
+			{
+				PlayerEncounter.Current.IsPlayerWaiting = false;
+			}
+			catch
+			{
+			}
+		}
+		if (flag2 && !flag4 && !flag20)
 		{
 			DisableCustomEncounterMenuForCurrentEncounter("meeting_battle_mission_ended");
 		}
-		Logger.Log("MeetingBattle", $"OnMissionEnded: combatEscalated={flag}, missionWasBattle={flag2}, missionResultPlayerDefeated={flag3}, missionResultPlayerVictory={flag4}, hasBattleResult={flag5}, hasResolvedBattleResult={flag6}, hasEncounterBattleContext={flag7}, hasEncounterResolvingState={flag8}, nativeResultFlow={flag9}, peacefulCleanup={flag10}, forceNativeEncounterMenu={flag11}");
+		Logger.Log("MeetingBattle", $"OnMissionEnded: combatEscalated={flag}, missionWasBattle={flag2}, missionResultPlayerDefeated={flag3}, missionResultPlayerVictory={flag4}, hasBattleResult={flag5}, hasResolvedBattleResult={flag6}, hasEncounterBattleContext={flag7}, hasEncounterResolvingState={flag8}, nativeResultFlow={flag9}, peacefulCleanup={flag10}, forceNativeEncounterMenu={flag11}, releaseAuthorized={flag19}, unauthorizedMeetingExit={flag20}");
 		MeetingBattleRuntime.EndMeeting();
 		_pendingPostMissionCleanup = true;
 		_pendingPostMissionCleanupDelay = 0f;
@@ -493,48 +527,48 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 				bool flag4 = false;
 				bool flag5 = false;
 				try
-			{
+				{
 					partyBase = PlayerEncounter.EncounteredParty;
-			}
+				}
 				catch
-			{
+				{
 					partyBase = null;
-			}
+				}
 				try
-			{
+				{
 					flag3 = PlayerEncounter.Battle != null || PlayerEncounter.EncounteredBattle != null || MapEvent.PlayerMapEvent != null;
-			}
+				}
 				catch
-			{
+				{
 					flag3 = false;
-			}
+				}
 				try
-			{
+				{
 					flag4 = PlayerEncounter.CampaignBattleResult != null;
-			}
+				}
 				catch
-			{
+				{
 					flag4 = false;
-			}
+				}
 				try
-			{
+				{
 					PlayerEncounterState encounterState = PlayerEncounter.Current.EncounterState;
 					flag5 = encounterState != PlayerEncounterState.Begin && encounterState != PlayerEncounterState.Wait;
-			}
+				}
 				catch
-			{
+				{
 					flag5 = false;
-			}
+				}
 				if (_disableCustomEncounterMenuEncounterParty != null && partyBase != null && partyBase != _disableCustomEncounterMenuEncounterParty)
-			{
+				{
 					ClearCustomEncounterMenuDisable("encounter_party_changed");
 					return false;
-			}
+				}
 				if (!(flag3 || flag4 || flag5 || flag || flag2))
-			{
+				{
 					ClearCustomEncounterMenuDisable("active_encounter_no_result_context");
 					return false;
-			}
+				}
 				return true;
 			}
 		}
@@ -1006,9 +1040,9 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			try
 			{
 				if (_pendingForceNativeEncounterBattleMenuAtTime > 0f)
-			{
+				{
 					num = Time.ApplicationTime - _pendingForceNativeEncounterBattleMenuAtTime;
-			}
+				}
 			}
 			catch
 			{
@@ -1067,6 +1101,99 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		catch (Exception ex)
 		{
 			Logger.Log("LordEncounter", "Force pending encounter battle menu failed: " + ex.Message);
+		}
+	}
+
+	private static void TryForcePendingReturnToEncounterMenuAfterUnauthorizedMeetingExitIfReady()
+	{
+		if (!_pendingReturnToEncounterMenuAfterUnauthorizedMeetingExit)
+		{
+			return;
+		}
+		try
+		{
+			if (Game.Current?.GameStateManager?.ActiveState is MissionState)
+			{
+				return;
+			}
+		}
+		catch
+		{
+		}
+		bool flag = false;
+		try
+		{
+			object obj = Game.Current?.GameStateManager?.ActiveState;
+			flag = obj != null && obj.GetType().Name == "MapState";
+		}
+		catch
+		{
+			flag = false;
+		}
+		if (!flag)
+		{
+			return;
+		}
+		bool flag2 = false;
+		try
+		{
+			flag2 = PlayerEncounter.Current != null;
+		}
+		catch
+		{
+			flag2 = false;
+		}
+		if (!flag2)
+		{
+			ClearPendingReturnToEncounterMenuAfterUnauthorizedMeetingExit("missing_player_encounter");
+			return;
+		}
+		try
+		{
+			ClearCustomEncounterMenuDisable("unauthorized_meeting_exit_return");
+		}
+		catch
+		{
+		}
+		try
+		{
+			PlayerEncounter.LeaveEncounter = false;
+		}
+		catch
+		{
+		}
+		try
+		{
+			PlayerEncounter.Current.IsPlayerWaiting = false;
+		}
+		catch
+		{
+		}
+		try
+		{
+			EnsureEncounterTargetHero("unauthorized_meeting_exit_return");
+		}
+		catch
+		{
+		}
+		try
+		{
+			GameMenu.ActivateGameMenu("AnimusForge_lord_encounter");
+			if (string.Equals(Campaign.Current?.CurrentMenuContext?.GameMenu?.StringId, "AnimusForge_lord_encounter", StringComparison.Ordinal))
+			{
+				ClearPendingReturnToEncounterMenuAfterUnauthorizedMeetingExit("custom_encounter_menu_opened");
+				try
+				{
+					InformationManager.DisplayMessage(new InformationMessage("对方并没有同意放你离开。", Colors.Yellow));
+				}
+				catch
+				{
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("MeetingRelease", "Force return to encounter menu after unauthorized meeting exit failed: " + ex.Message);
 		}
 	}
 
@@ -1185,27 +1312,27 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			{
 				string text2 = null;
 				try
-			{
+				{
 					text2 = Campaign.Current?.CurrentMenuContext?.GameMenu?.StringId;
-			}
+				}
 				catch
-			{
+				{
 					text2 = null;
-			}
+				}
 				bool flag4 = false;
 				try
-			{
+				{
 					flag4 = Hero.MainHero != null && Hero.MainHero.IsPrisoner;
-			}
+				}
 				catch
-			{
+				{
 					flag4 = false;
-			}
+				}
 				if ((text2 == "defeated_and_taken_prisoner" || text2 == "taken_prisoner") && flag4)
-			{
+				{
 					ClearPendingForceNativeDefeatCaptivityMenu("native_do_player_defeat_opened_menu");
 					return;
-			}
+				}
 			}
 			catch (Exception ex)
 			{
@@ -1218,14 +1345,14 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			if (!flag && partyBase != null)
 			{
 				try
-			{
+				{
 					TakePrisonerAction.Apply(partyBase, Hero.MainHero);
 					flag = true;
-			}
+				}
 				catch (Exception ex2)
-			{
+				{
 					Logger.Log("LordEncounter", "Force pending captivity: TakePrisonerAction failed: " + ex2.Message);
-			}
+				}
 			}
 			GameMenu.ActivateGameMenu("taken_prisoner");
 			string text3 = null;
@@ -1300,26 +1427,26 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			{
 				bool flag = false;
 				try
-			{
+				{
 					flag = Hero.MainHero != null && Hero.MainHero.IsPrisoner;
-			}
+				}
 				catch
-			{
+				{
 					flag = false;
-			}
+				}
 				string text = null;
 				try
-			{
+				{
 					text = Campaign.Current?.CurrentMenuContext?.GameMenu?.StringId;
-			}
+				}
 				catch
-			{
+				{
 					text = null;
-			}
+				}
 				if ((text == "taken_prisoner" || text == "defeated_and_taken_prisoner") && flag)
-			{
+				{
 					ClearPendingForceNativeDefeatCaptivityMenu("immediate_native_do_player_defeat_" + (reason ?? "unknown"));
-			}
+				}
 			}
 		}
 		catch (Exception ex2)
@@ -1507,9 +1634,9 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			{
 				PlayerEncounter.Start();
 				if (PlayerEncounter.Current != null)
-			{
+				{
 					PlayerEncounter.Current.SetupFields(partyBase3, partyBase2);
-			}
+				}
 			}
 		}
 		catch (Exception ex2)
@@ -1614,17 +1741,17 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			{
 				bool flag = false;
 				try
-			{
+				{
 					flag = mission2.GetMissionBehavior<BattleEndLogic>() != null;
-			}
+				}
 				catch
-			{
-			}
+				{
+				}
 				if (flag && mission2.GetMissionBehavior<MeetingBattleLockMissionBehavior>() == null)
-			{
+				{
 					Logger.Log("LordEncounter", "Attaching MeetingBattleLockMissionBehavior to native battle mission.");
-					mission2.AddMissionBehavior(new MeetingBattleLockMissionBehavior(new List<Hero>(MeetingBattleRuntime.TargetHeroes)));
-			}
+					mission2.AddMissionBehavior(new MeetingBattleLockMissionBehavior(MeetingBattleRuntime.TargetHero));
+				}
 			}
 		}
 		catch (Exception ex)
@@ -1644,9 +1771,9 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			try
 			{
 				if (PlayerEncounter.Current != null)
-			{
+				{
 					return;
-			}
+				}
 			}
 			catch
 			{
@@ -1697,61 +1824,61 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			{
 				Logger.Log("MeetingBattle", "Peaceful meeting exit detected. Clearing temporary encounter-battle state.");
 				try
-			{
+				{
 					PlayerEncounter.CampaignBattleResult = null;
-			}
+				}
 				catch
-			{
-			}
+				{
+				}
 				try
-			{
+				{
 					PlayerEncounter.Current.FinalizeBattle();
-			}
+				}
 				catch
-			{
-			}
+				{
+				}
 				try
-			{
+				{
 					PlayerEncounter.LeaveEncounter = true;
-			}
+				}
 				catch
-			{
-			}
+				{
+				}
 				try
-			{
+				{
 					PlayerEncounter.Current.IsPlayerWaiting = false;
-			}
+				}
 				catch
-			{
-			}
+				{
+				}
 				try
-			{
+				{
 					PlayerEncounter.Update();
-			}
+				}
 				catch
-			{
-			}
+				{
+				}
 				try
-			{
+				{
 					PlayerEncounter.Finish();
-			}
+				}
 				catch
-			{
-			}
+				{
+				}
 				bool flag = false;
 				try
-			{
+				{
 					flag = PlayerEncounter.Battle != null || PlayerEncounter.EncounteredBattle != null || MapEvent.PlayerMapEvent != null;
-			}
+				}
 				catch
-			{
+				{
 					flag = false;
-			}
+				}
 				if (flag)
-			{
+				{
 					pendingPeacefulMeetingBattleCleanup = true;
 					Logger.Log("MeetingBattle", "Peaceful cleanup incomplete; will retry on next campaign tick.");
-			}
+				}
 			}
 		}
 		finally
@@ -1806,266 +1933,6 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 	public static void SetTarget(Hero target)
 	{
 		_targetHero = target;
-		if (target != null)
-		{
-			if (_targetHeroes == null)
-			{
-				_targetHeroes = new List<Hero>();
-			}
-			if (!_targetHeroes.Contains(target))
-			{
-				_targetHeroes.Add(target);
-			}
-		}
-	}
-
-	public static void SetTargets(IEnumerable<Hero> targets)
-	{
-		_targetHeroes = new List<Hero>();
-		_targetHero = null;
-		if (targets != null)
-		{
-			foreach (Hero hero in targets)
-			{
-				if (hero != null && hero != Hero.MainHero && hero.IsLord && !_targetHeroes.Contains(hero))
-			{
-					_targetHeroes.Add(hero);
-			}
-			}
-		}
-		if (_targetHeroes.Count > 0)
-		{
-			_targetHero = _targetHeroes[0];
-		}
-	}
-
-	public static List<Hero> GetTargetHeroes()
-	{
-		if (_targetHeroes == null)
-		{
-			_targetHeroes = new List<Hero>();
-		}
-		if (_targetHeroes.Count == 0 && _targetHero != null)
-		{
-			_targetHeroes.Add(_targetHero);
-		}
-		return _targetHeroes;
-	}
-
-	public static void SetPrimaryTarget(Hero target)
-	{
-		if (target == null)
-		{
-			return;
-		}
-		if (_targetHeroes == null)
-		{
-			_targetHeroes = new List<Hero>();
-		}
-		int idx = _targetHeroes.IndexOf(target);
-		if (idx > 0)
-		{
-			_targetHeroes.RemoveAt(idx);
-			_targetHeroes.Insert(0, target);
-			Logger.Log("LordEncounter", $"[MultiLord] Promoted {target.Name} to primary meeting target. TotalLords={_targetHeroes.Count}");
-		}
-		else if (idx < 0)
-		{
-			_targetHeroes.Insert(0, target);
-			Logger.Log("LordEncounter", $"[MultiLord] Added {target.Name} as primary meeting target (not previously resolved). TotalLords={_targetHeroes.Count}");
-		}
-		_targetHero = target;
-	}
-
-	public static void ResolveEncounterLords()
-	{
-		List<Hero> list = new List<Hero>();
-		try
-		{
-			PartyBase encounteredParty = null;
-			try
-			{
-				encounteredParty = PlayerEncounter.EncounteredParty;
-			}
-			catch
-			{
-			}
-			if (encounteredParty == null)
-			{
-				Logger.Log("LordEncounter", "[MultiLord] ResolveEncounterLords: PlayerEncounter.EncounteredParty is null; aborting.");
-				return;
-			}
-			Logger.Log("LordEncounter", $"[MultiLord] ResolveEncounterLords start. EncounteredParty={encounteredParty.Name?.ToString() ?? "?"}, LeaderHero={encounteredParty.LeaderHero?.Name?.ToString() ?? "none"}");
-			MobileParty encounteredMobileParty = encounteredParty.MobileParty;
-			if (encounteredMobileParty == null)
-			{
-				Hero leaderHero = encounteredParty.LeaderHero;
-				if (leaderHero != null && leaderHero != Hero.MainHero && leaderHero.IsLord)
-				{
-					list.Add(leaderHero);
-				}
-				Logger.Log("LordEncounter", $"[MultiLord] ResolveEncounterLords: MobileParty is null. AddedLeader={leaderHero?.Name?.ToString() ?? "none"}");
-				SetTargets(list);
-				return;
-			}
-			Army army = null;
-			try
-			{
-				army = encounteredMobileParty.Army;
-			}
-			catch
-			{
-			}
-			Logger.Log("LordEncounter", $"[MultiLord] ResolveEncounterLords: Army={(army != null ? (army.Name?.ToString() ?? "unnamed") : "none")}, LeaderParty={(army?.LeaderParty?.Name?.ToString() ?? "N/A")}");
-			if (army != null && army.LeaderParty != null)
-			{
-				Hero leaderHero2 = army.LeaderParty.LeaderHero;
-				if (leaderHero2 != null && leaderHero2 != Hero.MainHero && leaderHero2.IsLord)
-				{
-					list.Add(leaderHero2);
-				}
-				try
-				{
-					foreach (MobileParty attachedParty in army.LeaderParty.AttachedParties)
-					{
-						if (attachedParty != null)
-						{
-							Hero leaderHero3 = attachedParty.LeaderHero;
-							if (leaderHero3 != null && leaderHero3 != Hero.MainHero && leaderHero3.IsLord && !list.Contains(leaderHero3))
-							{
-								list.Add(leaderHero3);
-							}
-						}
-					}
-				}
-				catch
-				{
-				}
-				if (list.Count <= 1)
-				{
-					try
-					{
-						foreach (MobileParty armyParty in army.Parties)
-						{
-							if (armyParty != null && armyParty != army.LeaderParty)
-							{
-								Hero leaderHero4 = armyParty.LeaderHero;
-								if (leaderHero4 != null && leaderHero4 != Hero.MainHero && leaderHero4.IsLord && !list.Contains(leaderHero4))
-								{
-									list.Add(leaderHero4);
-								}
-							}
-						}
-					}
-					catch
-					{
-					}
-				}
-				Logger.Log("LordEncounter", $"[MultiLord] ResolveEncounterLords: After army traversal, lordsFound={list.Count}");
-			}
-			if (list.Count == 0)
-			{
-				Hero leaderHero5 = encounteredMobileParty.LeaderHero;
-				if (leaderHero5 != null && leaderHero5 != Hero.MainHero && leaderHero5.IsLord)
-				{
-					list.Add(leaderHero5);
-				}
-			}
-			TryCollectMapEventOpponentLords(list);
-			TryCollectPartyMemberHeroes(encounteredParty, list);
-			if (army != null)
-			{
-				try
-				{
-					foreach (MobileParty armyParty in army.Parties)
-					{
-						TryCollectPartyMemberHeroes(armyParty?.Party, list);
-					}
-				}
-				catch
-				{
-				}
-			}
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("LordEncounter", "ResolveEncounterLords failed: " + ex.Message);
-		}
-		SetTargets(list);
-		Logger.Log("LordEncounter", $"[MultiLord] ResolveEncounterLords done. Total lords resolved={list.Count}. Names=[{string.Join(", ", list.Select((Hero h) => h?.Name?.ToString() ?? "?"))}]");
-	}
-
-	private static void TryCollectMapEventOpponentLords(List<Hero> list)
-	{
-		try
-		{
-			MapEvent mapEvent = PlayerEncounter.Battle ?? PlayerEncounter.EncounteredBattle ?? MapEvent.PlayerMapEvent;
-			if (mapEvent == null)
-			{
-				return;
-			}
-			BattleSideEnum opponentSide = PartyBase.MainParty?.OpponentSide ?? BattleSideEnum.Attacker;
-			foreach (MapEventParty mapEventParty in mapEvent.PartiesOnSide(opponentSide))
-			{
-				PartyBase party = mapEventParty?.Party;
-				if (party == null)
-				{
-					continue;
-				}
-				Hero leaderHero = party.LeaderHero;
-				if (leaderHero != null && leaderHero != Hero.MainHero && leaderHero.IsLord && !list.Contains(leaderHero))
-				{
-					list.Add(leaderHero);
-					Logger.Log("LordEncounter", $"[MultiLord] ResolveEncounterLords: MapEvent opponent-side added {leaderHero.Name} from party {party.Name}");
-				}
-				TryCollectPartyMemberHeroes(party, list);
-			}
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("LordEncounter", "[MultiLord] TryCollectMapEventOpponentLords failed: " + ex.Message);
-		}
-	}
-
-	private static void TryCollectPartyMemberHeroes(PartyBase party, List<Hero> list)
-	{
-		if (party == null || list == null)
-		{
-			return;
-		}
-		try
-		{
-			if (party.MemberRoster == null)
-			{
-				return;
-			}
-			for (int i = 0; i < party.MemberRoster.Count; i++)
-			{
-				CharacterObject character = party.MemberRoster.GetCharacterAtIndex(i);
-				if (character == null || !character.IsHero)
-				{
-					continue;
-				}
-				Hero hero = character.HeroObject;
-				if (hero == null || hero == Hero.MainHero || !hero.IsAlive)
-				{
-					continue;
-				}
-				if (!hero.IsLord && hero.Clan == null)
-				{
-					continue;
-				}
-				if (!list.Contains(hero))
-				{
-					list.Add(hero);
-					Logger.Log("LordEncounter", $"[MultiLord] ResolveEncounterLords: Added hero {hero.Name} from MemberRoster of party {party.Name}");
-				}
-			}
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("LordEncounter", "[MultiLord] TryCollectPartyMemberHeroes failed: " + ex.Message);
-		}
 	}
 
 	internal static void SuspendEncounterRedirectDuringResultResolution(string reason)
@@ -2167,43 +2034,43 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 				bool flag2 = false;
 				bool flag3 = false;
 				try
-			{
+				{
 					flag = Game.Current?.GameStateManager?.ActiveState is MissionState;
-			}
+				}
 				catch
-			{
+				{
 					flag = false;
-			}
+				}
 				try
-			{
+				{
 					flag2 = PlayerEncounter.CampaignBattleResult != null;
-			}
+				}
 				catch
-			{
+				{
 					flag2 = false;
-			}
+				}
 				try
-			{
+				{
 					flag3 = MeetingBattleRuntime.IsMeetingActive;
-			}
+				}
 				catch
-			{
+				{
 					flag3 = false;
-			}
+				}
 				if (!flag && !flag2 && !flag3 && num2 >= 1.5f)
-			{
+				{
 					ClearEncounterRedirectSuspension("no_active_encounter_grace_elapsed");
 					return false;
-			}
+				}
 				if (_encounterRedirectSuspendUntilTime > 0f && num <= _encounterRedirectSuspendUntilTime)
-			{
+				{
 					return true;
-			}
+				}
 				if (_encounterRedirectSuspendUntilTime > 0f && num > _encounterRedirectSuspendUntilTime)
-			{
+				{
 					ClearEncounterRedirectSuspension("suspension_window_elapsed");
 					return false;
-			}
+				}
 				ClearEncounterRedirectSuspension("no_active_player_encounter");
 				return false;
 			}
@@ -2247,9 +2114,9 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			if (!(flag4 || flag5 || flag6 || flag7) && !MeetingBattleRuntime.IsMeetingActive)
 			{
 				if (num2 <= 0.2f)
-			{
+				{
 					return true;
-			}
+				}
 				ClearEncounterRedirectSuspension("active_encounter_no_result_context");
 				return false;
 			}
@@ -2441,6 +2308,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		TryForcePendingDefeatCaptivityMenuIfReady();
 		TryForcePendingMeetingBattleVictorySettlementIfReady();
 		TryForcePendingEncounterBattleMenuIfReady();
+		TryForcePendingReturnToEncounterMenuAfterUnauthorizedMeetingExitIfReady();
 		try
 		{
 			IsCustomEncounterMenuDisabledForCurrentEncounter();
@@ -2572,31 +2440,31 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			if (mobileParty != null)
 			{
 				if (flag && (mobileParty.IsVillager || mobileParty.IsCaravan || partyBase?.MapFaction == null))
-			{
+				{
 					text = "encounter_naval";
-			}
-			else if (mobileParty.IsVillager)
-			{
+				}
+				else if (mobileParty.IsVillager)
+				{
 					text = "encounter_peasant";
-			}
-			else if (mobileParty.IsCaravan)
-			{
+				}
+				else if (mobileParty.IsCaravan)
+				{
 					text = "encounter_caravan";
-			}
+				}
 			}
 			if (string.IsNullOrEmpty(text))
 			{
 				CultureObject cultureObject = null;
 				try
-			{
+				{
 					cultureObject = partyBase?.MapFaction?.Culture;
-			}
+				}
 				catch
-			{
+				{
 					cultureObject = null;
-			}
+				}
 				if (cultureObject == null)
-			{
+				{
 					try
 					{
 						cultureObject = target?.MapFaction?.Culture;
@@ -2605,9 +2473,9 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 					{
 						cultureObject = null;
 					}
-			}
+				}
 				if (cultureObject == null)
-			{
+				{
 					try
 					{
 						cultureObject = Hero.MainHero?.MapFaction?.Culture;
@@ -2616,11 +2484,11 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 					{
 						cultureObject = null;
 					}
-			}
+				}
 				if (cultureObject != null)
-			{
+				{
 					text = MenuHelper.GetEncounterCultureBackgroundMesh(cultureObject);
-			}
+				}
 			}
 			if (string.IsNullOrEmpty(text))
 			{
@@ -2714,12 +2582,12 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			if (showFailureMessage)
 			{
 				try
-			{
+				{
 					InformationManager.DisplayMessage(new InformationMessage("战后结算上下文未就绪，请稍后重试。", Colors.Yellow));
-			}
+				}
 				catch
-			{
-			}
+				{
+				}
 			}
 			return false;
 		}
@@ -2849,7 +2717,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			if (hero2 != null)
 			{
 				try
-			{
+				{
 					foreach (MobileParty item in MobileParty.All)
 					{
 						if (item != null && item.Party != null)
@@ -2870,11 +2738,11 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 							}
 						}
 					}
-			}
+				}
 				catch
-			{
+				{
 					partyBase = null;
-			}
+				}
 			}
 		}
 		if (partyBase == null || PartyBase.MainParty == null)
@@ -2896,9 +2764,9 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			{
 				PlayerEncounter.Start();
 				if (PlayerEncounter.Current != null)
-			{
+				{
 					PlayerEncounter.Current.SetupFields(PartyBase.MainParty, partyBase);
-			}
+				}
 			}
 		}
 		catch (Exception ex2)
@@ -2963,7 +2831,6 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		starter.AddGameMenu("AnimusForge_lord_encounter", "{MENU_BODY_TEXT}", delegate(MenuCallbackArgs args)
 		{
 			Hero hero = EnsureEncounterTargetHero("menu_init");
-			List<Hero> list = GetTargetHeroes();
 			bool flag = HasPendingForceNativeDefeatCaptivityMenu();
 			GameTexts.SetVariable("TARGET_NAME", (hero != null) ? hero.Name : new TextObject("领主"));
 			TextObject bodyText;
@@ -2975,14 +2842,6 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			else if (TryBuildMeetingPostBattleSettlementText(hero, out bodyText))
 			{
 				args.MenuTitle = new TextObject("战后结算");
-			}
-			else if (list.Count > 1)
-			{
-				args.MenuTitle = new TextObject("遭遇领主团");
-				string lordNames = string.Join("、", list.Select((Hero h) => h.Name));
-				TextObject content = (IsHostileEncounterInitiatedByOpponent() ? new TextObject("对方试图向你发动进攻。") : new TextObject(""));
-				GameTexts.SetVariable("ENCOUNTER_INTENT", content);
-				bodyText = new TextObject("你在荒野中遇到了" + lordNames + "的军团。{ENCOUNTER_INTENT}");
 			}
 			else
 			{
@@ -3063,92 +2922,6 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			}
 			OpenNativeEncounterConversation(hero);
 		});
-		List<Hero> allTargets = GetTargetHeroes();
-		if (allTargets.Count > 1)
-		{
-			Logger.Log("LordEncounter", $"[MultiLord] AddGameMenus invoked with {allTargets.Count} pre-resolved lords; per-lord slots will still be registered statically.");
-		}
-		int maxSlots = 20;
-		try
-		{
-			if (LordEncounterConfig.MaxMeetingLords > 0 && LordEncounterConfig.MaxMeetingLords <= 20)
-			{
-				maxSlots = LordEncounterConfig.MaxMeetingLords;
-			}
-		}
-		catch
-		{
-		}
-		for (int slotIndex = 0; slotIndex < maxSlots; slotIndex++)
-		{
-			int capturedSlot = slotIndex;
-			string optionId = "meet_lord_slot_" + capturedSlot;
-			string varKey = "AF_MEET_LORD_SLOT_" + capturedSlot + "_NAME";
-			string optionText = "与{" + varKey + "}会面";
-			starter.AddGameMenuOption("AnimusForge_lord_encounter", optionId, optionText, delegate(MenuCallbackArgs args)
-			{
-				if (!LordEncounterConfig.MultiLordMeetingEnabled)
-				{
-					return false;
-				}
-				if (HasPendingForceNativeDefeatCaptivityMenu())
-				{
-					return false;
-				}
-				if (TryBuildMeetingPostBattleSettlementText(_targetHero, out var _))
-				{
-					return false;
-				}
-				List<Hero> currentTargets = GetTargetHeroes();
-				if (currentTargets.Count <= 1)
-				{
-					return false;
-				}
-				if (capturedSlot >= currentTargets.Count)
-				{
-					return false;
-				}
-				Hero slotHero = currentTargets[capturedSlot];
-				if (slotHero == null || slotHero == Hero.MainHero)
-				{
-					return false;
-				}
-				if (capturedSlot == 0 && currentTargets[0] == _targetHero)
-				{
-					GameTexts.SetVariable(varKey, slotHero.Name);
-					args.optionLeaveType = GameMenuOption.LeaveType.Conversation;
-					return false;
-				}
-				GameTexts.SetVariable(varKey, slotHero.Name);
-				args.optionLeaveType = GameMenuOption.LeaveType.Conversation;
-				return true;
-			}, delegate(MenuCallbackArgs args)
-			{
-				List<Hero> currentTargets = GetTargetHeroes();
-				if (capturedSlot >= currentTargets.Count)
-				{
-					Logger.Log("LordEncounter", $"[MultiLord] Slot {capturedSlot} clicked but no hero at that slot (count={currentTargets.Count}).");
-					return;
-				}
-				Hero slotHero = currentTargets[capturedSlot];
-				if (slotHero == null)
-				{
-					Logger.Log("LordEncounter", $"[MultiLord] Slot {capturedSlot} clicked but hero is null.");
-					return;
-				}
-				Logger.Log("LordEncounter", $"[MultiLord] Slot {capturedSlot} clicked. Selected lord={slotHero.Name}. Promoting to primary and starting meeting.");
-				SetPrimaryTarget(slotHero);
-				IsOpeningConversation = true;
-				try
-				{
-					StartMeeting(slotHero, args);
-				}
-				finally
-				{
-					IsOpeningConversation = false;
-				}
-			});
-		}
 		starter.AddGameMenuOption("AnimusForge_lord_encounter", "attack_lord", "{PRIMARY_ACTION_LABEL}", delegate
 		{
 			if (HasPendingForceNativeDefeatCaptivityMenu())
@@ -3190,6 +2963,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			PlayerEncounter.Finish();
 		}, isLeave: true);
 	}
+
 	internal static bool TryApplyImmediateEscalationConsequences(PartyBase defenderParty, Hero targetHero, string reason)
 	{
 		if (!MeetingBattleRuntime.TryMarkCombatEscalationConsequencesApplied())
@@ -3249,7 +3023,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			{
 				Clan clan = Clan.PlayerClan ?? Hero.MainHero?.Clan;
 				if (clan != null && clan.Kingdom != null)
-			{
+				{
 					if (clan.IsUnderMercenaryService)
 					{
 						ChangeKingdomAction.ApplyByLeaveKingdomAsMercenary(clan);
@@ -3261,7 +3035,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 						Logger.Log(logChannel, "Immediate escalation: player clan left kingdom.");
 					}
 					flag = true;
-			}
+				}
 			}
 			catch (Exception ex)
 			{
@@ -3313,12 +3087,12 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			if (faction3 == faction2)
 			{
 				try
-			{
+				{
 					faction3 = Clan.PlayerClan;
-			}
+				}
 				catch
-			{
-			}
+				{
+				}
 			}
 			if (faction3 != null && faction2 != null && faction3 != faction2 && !FactionManager.IsAtWarAgainstFaction(faction3, faction2))
 			{
@@ -3491,7 +3265,333 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		{
 			return "你已警告过" + text + "。若还忍不了，就在句末输出[ACTION:MEETING_TAUNT_BATTLE]；这会把当前会面立刻升级为战斗，并按玩家攻击了你方军队来处理后果。";
 		}
-		return "若" + text + "挑衅你，可在句末输出[ACTION:MEETING_TAUNT_WARN]警告他；若忍无可忍，可直接输出[ACTION:MEETING_TAUNT_BATTLE]。这会把当前会面立刻升级为战斗，并按玩家攻击了你方军队来处理后果。";
+		return "若" + text + "辱骂，贬低或者挑衅你，可在句末输出[ACTION:MEETING_TAUNT_WARN]警告他；若忍无可忍，可直接输出[ACTION:MEETING_TAUNT_BATTLE]。这会把当前会面立刻升级为战斗，并按玩家攻击了你方军队来处理后果。";
+	}
+
+	private static int GetRelationToPlayerSafe(Hero hero)
+	{
+		try
+		{
+			if (hero == null || Hero.MainHero == null)
+			{
+				return 0;
+			}
+			return hero.GetRelation(Hero.MainHero);
+		}
+		catch
+		{
+			return 0;
+		}
+	}
+
+	private static int GetEncounterReleaseClanRelationWithPlayer(Hero target)
+	{
+		Hero hero = target?.Clan?.Leader ?? target;
+		return GetRelationToPlayerSafe(hero);
+	}
+
+	private static int GetEncounterReleasePrivateRelationWithPlayer(Hero target)
+	{
+		try
+		{
+			return RomanceSystemBehavior.Instance?.GetPrivateLove(target) ?? 0;
+		}
+		catch
+		{
+			return 0;
+		}
+	}
+
+	private static Hero GetEncounterReleaseKingHero(Hero target)
+	{
+		try
+		{
+			Kingdom kingdom = target?.Clan?.Kingdom;
+			return kingdom?.Leader ?? kingdom?.RulingClan?.Leader;
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static int TryGetEncounterReleaseVanillaSafePassageQuote(Hero target)
+	{
+		try
+		{
+			Hero hero = target ?? EnsureEncounterTargetHero("meeting_release_quote");
+			PartyBase party = hero?.PartyBelongedTo?.Party;
+			if (hero == null || party == null || PartyBase.MainParty == null)
+			{
+				return 0;
+			}
+			IFaction faction = (IFaction)hero.Clan ?? hero.MapFaction ?? party.MapFaction;
+			if (faction == null)
+			{
+				return 0;
+			}
+			SafePassageBarterable safePassageBarterable = new SafePassageBarterable(hero, Hero.MainHero, party, PartyBase.MainParty);
+			NoAttackBarterable noAttackBarterable = new NoAttackBarterable(Hero.MainHero, hero, PartyBase.MainParty, party, CampaignTime.Days(5f));
+			int valueForFaction = safePassageBarterable.GetValueForFaction(faction);
+			int valueForFaction2 = noAttackBarterable.GetValueForFaction(faction);
+			return Math.Max(0, -(valueForFaction + valueForFaction2));
+		}
+		catch
+		{
+			return 0;
+		}
+	}
+
+	private static bool TryGetMeetingReleaseContext(Hero target, out Hero resolvedTarget, out int clanRelation, out int privateRelation, out int averageRelation, out int kingRelation, out string kingName, out bool negotiable)
+	{
+		resolvedTarget = null;
+		clanRelation = 0;
+		privateRelation = 0;
+		averageRelation = 0;
+		kingRelation = 0;
+		kingName = "该势力的国王";
+		negotiable = false;
+		try
+		{
+			resolvedTarget = target ?? EnsureEncounterTargetHero("meeting_release_context");
+			if (resolvedTarget == null)
+			{
+				return false;
+			}
+			bool flag = false;
+			try
+			{
+				flag = MeetingBattleRuntime.IsMeetingActive || _encounterMeetingMissionActive || Campaign.Current?.CurrentConversationContext == ConversationContext.PartyEncounter;
+			}
+			catch
+			{
+				flag = false;
+			}
+			if (!flag || !IsHostileEncounterInitiatedByOpponent())
+			{
+				return false;
+			}
+			clanRelation = GetEncounterReleaseClanRelationWithPlayer(resolvedTarget);
+			privateRelation = GetEncounterReleasePrivateRelationWithPlayer(resolvedTarget);
+			averageRelation = (int)Math.Round((clanRelation + privateRelation) / 2.0, MidpointRounding.AwayFromZero);
+			Hero encounterReleaseKingHero = GetEncounterReleaseKingHero(resolvedTarget);
+			kingRelation = GetRelationToPlayerSafe(encounterReleaseKingHero);
+			kingName = encounterReleaseKingHero?.Name?.ToString() ?? "该势力的国王";
+			negotiable = averageRelation > kingRelation;
+			return true;
+		}
+		catch
+		{
+			resolvedTarget = null;
+			return false;
+		}
+	}
+
+	internal static string BuildMeetingPlayerReleaseRuntimeInstructionForExternal(Hero target)
+	{
+		if (!TryGetMeetingReleaseContext(target, out var resolvedTarget, out var clanRelation, out var privateRelation, out var averageRelation, out var kingRelation, out var kingName, out var negotiable))
+		{
+			return "";
+		}
+		string text = MyBehavior.BuildPlayerPublicDisplayNameForExternal();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			text = "玩家";
+		}
+		if (negotiable)
+		{
+			int encounterReleaseVanillaSafePassageQuote = TryGetEncounterReleaseVanillaSafePassageQuote(resolvedTarget);
+			string text2 = (encounterReleaseVanillaSafePassageQuote > 0) ? $"按原版谈判口径，这次“安全放行并约定五天内不主动攻击”的参考估值约为 {encounterReleaseVanillaSafePassageQuote} 第纳尔，你可以把它当作软参考来谈价、索赔或换物，但不必机械照搬这个数字。" : "";
+			return $"【遭遇放走规则】当前是你在野外主动追上{text}的强制遭遇，{text}本来不可以直接离开。现在你这边可参考的关系是：家族关系={clanRelation}，私人关系={privateRelation}，平均值={averageRelation}；而{text}与{kingName}的关系={kingRelation}。由于平均值更高，本轮你可以和{text}讨论“放走”的条件，也可以要求赔偿、立誓、交人、交钱或别的交换。{text2}但只有当你在正文里最终明确同意让{text}立刻离开这次遭遇时，才算真的放走；如果你还在威胁、索价、审问、拖延、试探或继续谈条件，就不算放走。正文只自然说话，不要自己写标签。";
+		}
+		return $"【遭遇放走规则】当前是你在野外主动追上{text}的强制遭遇，{text}本来不可以直接离开。现在你这边可参考的关系是：家族关系={clanRelation}，私人关系={privateRelation}，平均值={averageRelation}；而{text}与{kingName}的关系={kingRelation}。由于平均值没有高于这层王权关系，本轮你绝对不可以放{text}离开；可以威胁、审问、索价、逼迫、要求投降或提出别的条件，但最终不得同意让{text}直接脱离这次遭遇。正文只自然说话，不要自己写标签。";
+	}
+
+	internal static List<PostprocessRuleEntry> BuildMeetingPlayerReleasePostprocessRulesForExternal(Hero target)
+	{
+		if (!TryGetMeetingReleaseContext(target, out var _, out var _, out var _, out var _, out var _, out var _, out var negotiable) || !negotiable)
+		{
+			return new List<PostprocessRuleEntry>();
+		}
+		return AIConfigHandler.GetGuardrailRulePostprocessRules("encounter_release_player") ?? new List<PostprocessRuleEntry>();
+	}
+
+	internal static void StripMeetingPlayerReleaseTag(ref string content)
+	{
+		if (!string.IsNullOrWhiteSpace(content))
+		{
+			content = MeetingReleasePlayerTagRegex.Replace(content, "").Trim();
+		}
+	}
+
+	internal static bool TryConsumeMeetingPlayerReleaseTag(Hero target, ref string content, out bool shouldRelease)
+	{
+		shouldRelease = false;
+		try
+		{
+			if (string.IsNullOrWhiteSpace(content) || !MeetingReleasePlayerTagRegex.IsMatch(content))
+			{
+				return false;
+			}
+			content = MeetingReleasePlayerTagRegex.Replace(content, "").Trim();
+			bool flag = TryGetMeetingReleaseContext(target, out var resolvedTarget, out var _, out var _, out var _, out var _, out var _, out var negotiable);
+			shouldRelease = flag && resolvedTarget != null && negotiable;
+			if (!shouldRelease)
+			{
+				Logger.Log("MeetingRelease", "Release tag ignored because current encounter is not in negotiable release state.");
+			}
+			return true;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("MeetingRelease", "Consume release tag failed: " + ex.Message);
+			return false;
+		}
+	}
+
+	private static bool TryEndCurrentMeetingMissionByReflection(string reason)
+	{
+		try
+		{
+			Mission current = Mission.Current;
+			if (current == null)
+			{
+				return false;
+			}
+			MethodInfo method = current.GetType().GetMethod("EndMission", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, null, Type.EmptyTypes, null);
+			if (method == null)
+			{
+				Logger.Log("MeetingRelease", "EndMission method not found on current mission. Reason=" + (reason ?? "N/A"));
+				return false;
+			}
+			method.Invoke(current, null);
+			return true;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("MeetingRelease", "End mission by reflection failed: " + ex.Message);
+			return false;
+		}
+	}
+
+	private static void ApplyMeetingPlayerReleaseWorldMapCooldown(Hero releasedByHero, string reason)
+	{
+		try
+		{
+			List<MobileParty> list = new List<MobileParty>();
+			try
+			{
+				MobileParty encounteredMobileParty = PlayerEncounter.EncounteredMobileParty;
+				if (encounteredMobileParty != null)
+				{
+					list.Add(encounteredMobileParty);
+					foreach (MobileParty item in encounteredMobileParty.Army?.Parties ?? Enumerable.Empty<MobileParty>())
+					{
+						if (item != null && !list.Contains(item))
+						{
+							list.Add(item);
+						}
+					}
+				}
+			}
+			catch
+			{
+			}
+			try
+			{
+				MobileParty partyBelongedTo = releasedByHero?.PartyBelongedTo;
+				if (partyBelongedTo != null && !list.Contains(partyBelongedTo))
+				{
+					list.Add(partyBelongedTo);
+				}
+			}
+			catch
+			{
+			}
+			int num = 0;
+			foreach (MobileParty item2 in list.Where((MobileParty x) => x != null && x != MobileParty.MainParty).Distinct())
+			{
+				try
+				{
+					item2.Ai?.SetDoNotAttackMainParty(6);
+				}
+				catch
+				{
+				}
+				try
+				{
+					item2.SetMoveModeHold();
+				}
+				catch
+				{
+				}
+				try
+				{
+					if (item2.Ai != null)
+					{
+						item2.Ai.RethinkAtNextHourlyTick = true;
+					}
+				}
+				catch
+				{
+				}
+				num++;
+			}
+			try
+			{
+				MobileParty.MainParty?.IgnoreForHours(0.5f);
+			}
+			catch
+			{
+			}
+			try
+			{
+				LordEncounterRedirectGuard.SuppressForSeconds(12f);
+			}
+			catch
+			{
+			}
+			Logger.Log("MeetingRelease", $"Applied release world-map cooldown. ProtectedParties={num}, Reason={reason ?? "N/A"}");
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("MeetingRelease", "Apply release world-map cooldown failed: " + ex.Message);
+		}
+	}
+
+	internal static bool TryExecuteMeetingPlayerRelease(Hero target, string reason)
+	{
+		try
+		{
+			if (!TryGetMeetingReleaseContext(target, out var resolvedTarget, out var _, out var _, out var _, out var _, out var _, out var negotiable) || !negotiable)
+			{
+				Logger.Log("MeetingRelease", "Execute release ignored because current encounter is not eligible.");
+				return false;
+			}
+			Logger.Log("MeetingRelease", $"Player release triggered. Target={resolvedTarget?.Name}, Reason={reason ?? "N/A"}");
+			try
+			{
+				Campaign.Current?.ConversationManager?.EndConversation();
+			}
+			catch
+			{
+			}
+			AuthorizeMeetingPlayerRelease(reason ?? "meeting_release_player");
+			ClearPendingReturnToEncounterMenuAfterUnauthorizedMeetingExit("meeting_release_player");
+			try
+			{
+				InformationManager.DisplayMessage(new InformationMessage("对方同意放你离开。你现在可以按TAB自行退出场景。", new Color(0.4f, 1f, 0.4f)));
+			}
+			catch
+			{
+			}
+			return true;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("MeetingRelease", "Execute release failed: " + ex.Message);
+			return false;
+		}
 	}
 
 	internal static bool TryProcessMeetingTauntAction(Hero target, ref string content, out bool escalatedToBattle)
@@ -3537,12 +3637,14 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			{
 				target = EnsureEncounterTargetHero("start_meeting_null_target");
 				if (target == null)
-			{
+				{
 					Logger.Log("LordEncounter", "StartMeeting aborted because target hero is null.");
 					return;
-			}
+				}
 			}
 			SetTarget(target);
+			ClearMeetingPlayerReleaseAuthorization("start_meeting");
+			ClearPendingReturnToEncounterMenuAfterUnauthorizedMeetingExit("start_meeting");
 			_lastMeetingWasSameMapFactionConflict = false;
 			_lastMeetingPlayerFactionName = new TextObject("你的势力");
 			try
@@ -3551,30 +3653,14 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 				IFaction faction2 = target?.MapFaction;
 				_lastMeetingWasSameMapFactionConflict = faction != null && faction2 != null && faction == faction2;
 				if (faction?.Name != null)
-			{
+				{
 					_lastMeetingPlayerFactionName = faction.Name;
-			}
-			}
-			catch
-			{
-			}
-			ResolveEncounterLords();
-			if (target != null && !_targetHeroes.Contains(target))
-			{
-				SetPrimaryTarget(target);
-			}
-			else if (target != null && _targetHeroes.Count > 0 && _targetHeroes[0] != target)
-			{
-				SetPrimaryTarget(target);
-			}
-			try
-			{
-				InformationManager.DisplayMessage(new InformationMessage($"[AF诊断] 会面解析到领主数: {_targetHeroes.Count}（主目标: {target?.Name}）", Colors.Yellow));
+				}
 			}
 			catch
 			{
 			}
-			MeetingBattleRuntime.BeginMeeting(GetTargetHeroes());
+			MeetingBattleRuntime.BeginMeeting(target);
 			Campaign.Current.CurrentConversationContext = ConversationContext.PartyEncounter;
 			SaveMainPartyPosition();
 			if (args == null)
@@ -3589,10 +3675,10 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			try
 			{
 				if (PlayerEncounter.Current != null)
-			{
+				{
 					PlayerEncounter.LeaveEncounter = false;
 					PlayerEncounter.Current.IsPlayerWaiting = false;
-			}
+				}
 			}
 			catch
 			{
@@ -3623,20 +3709,20 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			{
 				target = EnsureEncounterTargetHero("open_native_conversation_null_target");
 				if (target == null)
-			{
+				{
 					Logger.Log("LordEncounter", "OpenNativeEncounterConversation aborted because target hero is null.");
 					return;
-			}
+				}
 			}
 			SetTarget(target);
 			Campaign.Current.CurrentConversationContext = ConversationContext.PartyEncounter;
 			try
 			{
 				if (PlayerEncounter.Current != null)
-			{
+				{
 					PlayerEncounter.LeaveEncounter = false;
 					PlayerEncounter.Current.IsPlayerWaiting = false;
-			}
+				}
 			}
 			catch
 			{
@@ -3664,13 +3750,13 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			try
 			{
 				if (PartyBase.MainParty.MobileParty.IsCurrentlyAtSea)
-			{
+				{
 					CampaignMission.OpenConversationMission(playerCharacterData, conversationPartnerData, "", "", false);
-			}
-			else
-			{
+				}
+				else
+				{
 					CampaignMapConversation.OpenConversation(playerCharacterData, conversationPartnerData);
-			}
+				}
 			}
 			finally
 			{
@@ -3680,52 +3766,6 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		catch (Exception ex)
 		{
 			Logger.Log("LordEncounter", "OpenNativeEncounterConversation failed: " + ex);
-		}
-	}
-
-	public static void OpenConversationWithSecondaryHero(Hero target)
-	{
-		if (target == null)
-		{
-			Logger.Log("LordEncounter", "OpenConversationWithSecondaryHero aborted: target is null.");
-			return;
-		}
-		try
-		{
-			Logger.Log("LordEncounter", "Opening secondary hero conversation. Target=" + target.Name);
-			SetPrimaryTarget(target);
-			try
-			{
-				MeetingBattleRuntime.UnlockDiplomaticSideEffects("secondary_hero_conversation");
-			}
-			catch
-			{
-			}
-			Campaign.Current.CurrentConversationContext = ConversationContext.PartyEncounter;
-			PartyBase partyBase = null;
-			try
-			{
-				partyBase = PlayerEncounter.EncounteredParty ?? target.PartyBelongedTo?.Party;
-			}
-			catch
-			{
-				partyBase = target.PartyBelongedTo?.Party;
-			}
-			ConversationCharacterData playerCharacterData = new ConversationCharacterData(CharacterObject.PlayerCharacter, PartyBase.MainParty, false, false, false, false, false, false);
-			ConversationCharacterData conversationPartnerData = new ConversationCharacterData(target.CharacterObject, partyBase, false, false, false, false, false, false);
-			IsOpeningConversation = true;
-			try
-			{
-				CampaignMission.OpenConversationMission(playerCharacterData, conversationPartnerData, "", "", false);
-			}
-			finally
-			{
-				IsOpeningConversation = false;
-			}
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("LordEncounter", "OpenConversationWithSecondaryHero failed: " + ex);
 		}
 	}
 
@@ -3755,14 +3795,14 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			{
 				PartyBase partyBase = null;
 				try
-			{
+				{
 					partyBase = PlayerEncounter.EncounteredParty;
-			}
+				}
 				catch
-			{
-			}
+				{
+				}
 				if (partyBase == null)
-			{
+				{
 					try
 					{
 						partyBase = target?.PartyBelongedTo?.Party;
@@ -3770,12 +3810,12 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 					catch
 					{
 					}
-			}
+				}
 				if (partyBase != null)
-			{
+				{
 					Logger.Log("LordEncounter", $"Fallback battle prep via StartBattleAction.Apply. Defender={partyBase.Name}");
 					StartBattleAction.Apply(PartyBase.MainParty, partyBase);
-			}
+				}
 			}
 			mapEvent = TryGetCurrentEncounterBattle();
 			if (mapEvent != null)
@@ -3862,9 +3902,9 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 				Vec2 vec2 = mapEvent.DefenderSide.LeaderParty.Position.ToVec2();
 				Vec2 vec3 = vec - vec2;
 				if (vec3.LengthSquared > 0.0001f)
-			{
+				{
 					return vec3.Normalized();
-			}
+				}
 			}
 		}
 		catch
@@ -3876,9 +3916,9 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			{
 				Vec2 vec4 = MobileParty.MainParty.Position.ToVec2() - target.PartyBelongedTo.Position.ToVec2();
 				if (vec4.LengthSquared > 0.0001f)
-			{
+				{
 					result = vec4.Normalized();
-			}
+				}
 			}
 		}
 		catch
@@ -4017,7 +4057,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			if (num > 2)
 			{
 				for (int i = 0; i < num; i++)
-			{
+				{
 					try
 					{
 						polygon.Add(scene.GetHardBoundaryVertex(i));
@@ -4025,21 +4065,21 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 					catch
 					{
 					}
-			}
+				}
 			}
 			if (polygon.Count < 3)
 			{
 				polygon.Clear();
 				try
-			{
+				{
 					num = scene.GetSoftBoundaryVertexCount();
-			}
+				}
 				catch
-			{
+				{
 					num = 0;
-			}
+				}
 				if (num > 2)
-			{
+				{
 					for (int j = 0; j < num; j++)
 					{
 						try
@@ -4050,7 +4090,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 						{
 						}
 					}
-			}
+				}
 			}
 		}
 		catch
@@ -4175,7 +4215,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 				float b = num2 + (num4 - num2) * ((float)k / (float)num6);
 				Vec2 vec2 = new Vec2(a, b);
 				if (IsPointInsidePolygon(vec2, polygon))
-			{
+				{
 					float lengthSquared = (vec2 - preferred).LengthSquared;
 					if (!flag || lengthSquared < num5)
 					{
@@ -4183,7 +4223,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 						num5 = lengthSquared;
 						insidePoint = vec2;
 					}
-			}
+				}
 			}
 		}
 		return flag;
@@ -4234,18 +4274,18 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 				float num = (float)i / 25f;
 				Vec2 vec2 = asVec + (asVec2 - asVec) * num;
 				if (IsPointInsidePolygon(vec2, polygon))
-			{
+				{
 					vec = vec2;
 					flag = true;
 					break;
-			}
+				}
 			}
 			if (!flag)
 			{
 				if (!TryFindNearestInsidePoint(polygon, asVec2, out var insidePoint))
-			{
+				{
 					return;
-			}
+				}
 				vec = insidePoint;
 			}
 			candidate.x = vec.x;
@@ -4283,13 +4323,13 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			{
 				float height = candidate.z;
 				if (scene.GetHeightAtPoint(candidate.AsVec2, BodyFlags.CommonCollisionExcludeFlags, ref height))
-			{
+				{
 					candidate.z = height;
-			}
-			else
-			{
+				}
+				else
+				{
 					candidate.z = scene.GetGroundHeightAtPosition(candidate);
-			}
+				}
 			}
 		}
 		catch
@@ -4376,23 +4416,23 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			{
 				string text = FormatSettlementNameWithType(Settlement.CurrentSettlement);
 				if (string.IsNullOrEmpty(text))
-			{
+				{
 					text = Settlement.CurrentSettlement.Name.ToString();
-			}
+				}
 				_encounterMeetingLocationInfoOverride = "你位于 " + text + "。";
 			}
 			else
 			{
 				Settlement settlement = null;
 				try
-			{
+				{
 					settlement = SettlementHelper.FindNearestSettlementToMobileParty(MobileParty.MainParty, MobileParty.NavigationType.All, (Settlement s) => s != null && !s.IsHideout);
-			}
+				}
 				catch
-			{
-			}
+				{
+				}
 				if (settlement != null)
-			{
+				{
 					string text2 = FormatSettlementNameWithType(settlement);
 					if (string.IsNullOrEmpty(text2))
 					{
@@ -4418,21 +4458,21 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 						flag = false;
 					}
 					_encounterMeetingLocationInfoOverride = (flag ? $"你身处野外，靠近 {text2}。距离：{num:0.0} 公里。" : ("你身处野外，靠近 " + text2 + "。"));
-			}
-			else
-			{
+				}
+				else
+				{
 					_encounterMeetingLocationInfoOverride = "你身处野外。";
-			}
+				}
 			}
 			try
 			{
 				if (!_hasSavedMainPartyPosition || Campaign.Current == null || Campaign.Current.MapSceneWrapper == null)
-			{
+				{
 					return;
-			}
+				}
 				TerrainType terrainTypeAtPosition = Campaign.Current.MapSceneWrapper.GetTerrainTypeAtPosition(in _savedMainPartyPosition);
 				string text3 = terrainTypeAtPosition switch
-			{
+				{
 					TerrainType.Plain => "平原", 
 					TerrainType.Forest => "森林", 
 					TerrainType.Mountain => "山地", 
@@ -4445,10 +4485,10 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 					TerrainType.RuralArea => "乡野", 
 					TerrainType.Beach => "海滩", 
 					_ => terrainTypeAtPosition.ToString(), 
-			};
+				};
 				string text4 = "";
 				try
-			{
+				{
 					MapWeatherModel mapWeatherModel = Campaign.Current.Models?.MapWeatherModel;
 					if (mapWeatherModel != null)
 					{
@@ -4464,31 +4504,31 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 							_ => weatherEventInPosition.ToString(), 
 						};
 					}
-			}
+				}
 				catch
-			{
+				{
 					text4 = "";
-			}
+				}
 				List<string> list = new List<string>();
 				list.Add("地形：" + text3);
 				if (!string.IsNullOrEmpty(text4))
-			{
+				{
 					list.Add("天气：" + text4);
-			}
+				}
 				if (list.Count <= 0)
-			{
+				{
 					return;
-			}
+				}
 				string text5 = string.Join("；", list).Trim();
 				if (!string.IsNullOrEmpty(text5))
-			{
+				{
 					_encounterMeetingLocationInfoOverride = (_encounterMeetingLocationInfoOverride ?? "").Trim();
 					if (!string.IsNullOrEmpty(_encounterMeetingLocationInfoOverride) && !_encounterMeetingLocationInfoOverride.EndsWith("。", StringComparison.Ordinal))
 					{
 						_encounterMeetingLocationInfoOverride += "。";
 					}
 					_encounterMeetingLocationInfoOverride = _encounterMeetingLocationInfoOverride + " " + text5 + "。";
-			}
+				}
 			}
 			catch
 			{

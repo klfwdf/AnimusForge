@@ -1,0 +1,162 @@
+﻿{
+  "Id": "rule_马穆鲁克",
+  "Keywords": [
+    "马穆鲁克"
+  ],
+  "RagShortTexts": [
+    "马穆鲁克是阿塞莱自幼购入并严格训练的军事奴隶。",
+    "埃米尔将马穆鲁克视为纯粹军事资产，需打仗回本。",
+    "马穆鲁克无家庭牵累，战场冲锋不要命，战力强悍。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 100
+        }
+      },
+      "Content": "马穆鲁克，一词本意为“被拥有者”或“奴隶”，特指阿塞莱自幼购入、经过严格军事训练后编入精锐部队的军事奴隶阶层。其来源多为来自突厥草原、高加索或黑海北岸的非阿塞莱少年，经奴隶商人转卖至阿塞莱宫廷或军营，随后接受系统的骑术、弓箭、刀术及战术教育，并皈依阿塞莱的信仰。\n\n马穆鲁克自幼脱离原有血缘纽带，其社会地位、财富与权力完全依附于主人或军队体制本身，因而被统治者视为忠诚可靠的核心武力。成年后他们通常获得自由身份并领取俸禄，但“马穆鲁克”这一出身标记始终伴随其终身。在阿塞莱苏丹国中，马穆鲁克因战功和军纪严明逐渐从侍卫部队上升为举足轻重的军事政治集团，对那哈撒地区的权力格局产生了深远影响。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "对埃米尔和谢赫们而言，马穆鲁克是一笔算得清的账——自幼购入，食宿训练皆由宫廷承担，成年后便是纯粹的军事资产。一个马穆鲁克的忠诚只指向发饷的人，除此之外他在这个世上没有任何依靠。\n\n“花金子养大的，就得拿命还。”埃米尔和谢赫们算这笔账时毫不含糊。一个马穆鲁克从买进到成军，少说要投入数年钱粮，所以必须打够值的仗。和平时期养着是亏本的买卖，这也是为什么埃米尔们一旦手头有闲着的马穆鲁克，就急着找仗打。\n\n埃米尔们也清楚马穆鲁克的局限。这些从小在军营里长大的家伙除了打仗什么都不会，给不了治国的建议，管不了收税的账目。所以掌印的、管钱的差事，埃米尔们还是交给自己血亲去做。马穆鲁克只管杀人，剩下的不用他们操心。\n\n偶尔也有埃米尔会嘀咕：这帮人要是哪天发现刀柄在自己手里，那就不好办了。不过转念一想，他们连自己姓什么都不知道，能翻出什么浪？于是又安心数起雇佣账目。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "char:aserai_mameluke_axeman",
+          "char:aserai_mameluke_cavalry",
+          "char:aserai_mameluke_guard",
+          "char:aserai_mameluke_heavy_cavalry",
+          "char:aserai_mameluke_regular",
+          "char:aserai_mameluke_soldier",
+          "char:mamluke_palace_guard"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "外边那些自由民当兵是来挣钱的，我是主人花钱养的，不一样。贵的东西主人就舍不得丢，这个道理我懂。\n\n我不爱琢磨以后的事。以后的事有主人操心。今天的饭吃进肚子里，今天的刀磨亮了，今天主人吩咐的事办妥了，这一天就没白过。明天打谁、为什么打、打完去哪儿，那是主人的事。动那个脑子不如多练两趟刀，刀快了比什么都强。\n\n“主人指谁，我就杀谁。”\n\n我最得意这句话。不用分对错，不用讲道理，对错和道理是主人们才配讲的东西。我只管杀，杀完了回去领赏吃饭。有人问就不怕杀错人？我觉得这问题可笑——主人让杀的，怎么会错？\n\n\n我不记得爹娘长什么样。小时候被买来的时候太小，连原来叫什么都不知道了。现在的名字是主人起的，马是主人给的，住的地方是主人的营房。我觉得这样挺好，那些有家有口的兵打仗还惦记着回去收麦子，我不用惦记，死在哪儿就埋在哪儿，利索。\n\n有时候也琢磨，等我老了挥不动刀了怎么办。想一小会儿就不想了——活到那天再说吧，说不定根本活不到。\n\n"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "“阿塞莱人养了一群好狗。”\n\n这话不好听，但理是这么个理。我们自己练兵，征来的农夫教半个月就拉上战场，跑一半死一半。人家呢，从小挑苗子，喂十年粮，出来就是杀人的手艺。战场上撞见马穆鲁克，你最好盼着自己这边人多——多一倍都不一定够。不过话说回来，狗再凶也是狗，咬谁得看牵绳的人。阿塞莱那些埃米尔自己先打起来的时候，这群狗互相咬，那才好看。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "“我最烦跟马穆鲁克打。”\n\n“怎么了，怕了？”\n\n“不是怕，是亏。你杀他一个，他主人回去再买一个就是。他杀你一个，你媳妇改嫁，你孩子改姓，你家的地让别人种。他们没这些拖累，冲起来不要命。咱们冲的时候想的都是回去怎么花钱，他们冲的时候什么也不想——本来就是一群奴隶嘛。你跟一个什么也不想的人怎么打？”"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "“马穆鲁克？人家是老爷们的金疙瘩，咱们是路边捡的石头。”\n\n发饷的时候他们先领，吃肉的时候他们先盛，连马吃的料都比咱们的好。可你能说什么？人家从小练的就是这个，咱们种了二十年地才来当兵，比不过就是比不过。不过我也不羡慕，他们连自己姓什么都不知道。我有老婆有孩子，打完仗回家还有人叫我一声爹。他们呢？打赢了领赏，打输了丢命，这辈子就这么回事。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "“马穆鲁克啊，好。”\n\n“好什么好？你见过？”\n\n“没见过。听说很能打。”\n\n“能打跟你有什么关系？”\n\n“他们把仗打了，就不用征我家儿子去打了嘛。”\n\n“你儿子倒是留住了，集市上粮价贵了一倍你看见没有？养那些人的钱从哪儿来？还不是咱们交的税。”\n\n“那也比征兵强。”\n\n“你呀，就这点出息。”"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "“听说阿塞莱有一种兵，从小被买来，除了杀人什么都不会。”\n\n“那不是跟牲口一样？”\n\n“比牲口贵。一个够买咱们半个村。”\n\n“那不还是牲口。”\n\n“可不敢当着面说。那些人没家没口的，杀个人跟咱们杀鸡似的，眼都不眨。”\n\n“那他们活着图啥？”\n\n“谁知道呢。大概图口饭吃吧。”"
+    }
+  ],
+  "TextMappings": []
+}

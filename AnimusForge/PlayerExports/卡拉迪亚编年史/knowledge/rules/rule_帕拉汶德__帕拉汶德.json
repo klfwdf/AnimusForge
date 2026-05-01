@@ -1,0 +1,106 @@
+﻿{
+  "Id": "rule_帕拉汶德",
+  "Keywords": [
+    "帕拉汶德",
+    "巴拉维诺斯",
+    "旧帝都"
+  ],
+  "RagShortTexts": [
+    "帕拉汶德是瓦兰迪亚西部最繁华的城市。",
+    "巴拉维诺斯是卡拉狄乌斯大帝亲手建造的帝国旧都。",
+    "帝国贵族视巴拉维诺斯沦陷为帝国衰落的历史节点。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "帕拉汶德是瓦兰迪亚西部最繁华的城市，城墙高大，港口繁忙。平民知晓这座城市曾是帝国首都，但如今它的市场、法庭与竞技场都由瓦兰迪亚贵族掌管。对普通瓦兰迪亚人而言，帕拉汶德是“我们的城市”——尽管城里仍有不少帝国后裔操着旧语，做着祖传的生意。铁匠与商贩更在意关税与行会规矩，而非百年前的投降协定。他们敬畏“铁臂”奥斯里克的名号，视其为将战利品转化为基业的睿智先祖。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "瓦兰迪亚贵族将帕拉汶德视为王朝西部的王冠。戴·提哈家族虽非王座直系，却因持有此城而拥有不逊于公爵的威信。贵族们在议会中常以“谁掌控帕拉汶德，谁就掌控西部商路”为由争夺影响力。他们熟知奥斯里克当年绕过劫掠、收买元老的故事，并将其作为“征服者亦需治国之才”的典范。对帝国遗存的态度颇为复杂：既利用其行政经验与财富网络，又警惕其可能暗通帝国东部残余势力。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "在帝国的城镇与乡村，年轻的平民会对这座早就沦为瓦兰迪亚重镇的城镇感到陌生，而年长的平民提起帕拉汶德时，语气中常带着惋惜与不甘。\n他们记得帕拉汶德的真名是巴拉维诺斯，是卡拉狄乌斯亲手建起的荣耀之城。如今它被蛮族更名，元老后裔沦为附庸，港口停满瓦兰迪亚商船。年长者偶尔低语“若当年元老们未降……”，但更多人承认，帕拉汶德至少未遭屠城，教堂与浴场尚存。帝国平民视其为失地，却也暗羡其未像南部诸城般沦为战场。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "帝国贵族有时在私下的宴会中，会提及对帕拉汶德-这个原名巴拉维诺斯，卡拉狄乌斯大帝亲自建立的第二座重要的殖民地的沦陷感到惋惜和耻辱。\n贵族们会痛骂“铁壁”奥斯里克对帝国发动的叛乱，随后又将话题转移到潘德拉克中，“铁壁”奥斯里克的后裔德泰尔国王同样选择背信弃义离开了帝国，与帝国为敌，最终，心中一切话语都化成唉声叹气。总之，绝大多数贵族们把帕拉汶德的沦陷视为帝国正逐渐走向衰落的又一个重要的历史节点。少数务实派则私下承认，奥斯里克选择招降帝国元老为他所用的策略确实保全了城市肌理，若换作库赛特或斯特吉亚人，恐怕只剩焦土。无论派系，帕拉汶德始终是帝国贵族心中“必须收回却暂不可及”的标靶。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "巴旦尼亚山民对帕拉汶德的记忆混合着敌意与疏离。他们记得帝国时代，巴拉维诺斯的驻军曾深入林地征粮；也记得瓦兰迪亚接管后，林缘地带被划为贵族猎场。对普通巴旦尼亚人而言，无论这座城镇属于帝国或瓦兰迪亚，都是砍伐圣林、铺设石路的异族据点。商贩往来者少，弓箭手伏击商队的故事倒不少。"
+    }
+  ],
+  "TextMappings": []
+}

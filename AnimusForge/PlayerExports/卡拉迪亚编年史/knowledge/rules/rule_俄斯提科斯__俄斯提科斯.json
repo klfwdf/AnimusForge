@@ -1,0 +1,104 @@
+﻿{
+  "Id": "rule_俄斯提科斯",
+  "Keywords": [
+    "俄斯提科斯"
+  ],
+  "RagShortTexts": [
+    "俄斯提科斯是北帝国最古老的家族"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "俄斯提科斯？这不是北帝国的一个大家族吗？著名的卢孔就是出自这个家族，他们几乎是整个帝国最古老的家族了，A是他们的族长，他们统治着B，势力非常大。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s",
+          "empire_w"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "俄斯提科斯是篡逆者卢孔的家族，这家族非常古老，可以追溯到共和时期，他们家族经常出皇帝，而且都不是什么好鸟，他们家族是出了名的表里不一，不是他们家族当皇帝时，他们就支持共和，一旦他们家族选上了皇帝，那可坏了，他们会竭尽全力地加强皇权，可谓是居心叵测。他们靠着沽名钓誉获得了B，真是可恶！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "俄斯提科斯的族长是A，我们帝国分裂后的第一个皇帝卢孔就是这个家族的族长，他们是老共和了，一切都依着元老院来，十分遵守共和制度，我们北帝国离不开他们。他们有着B，这几座城都是我们的北疆苦寒之地，真是太大公无私了"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "俄斯提科斯是北帝国A的家族，他们冥顽不化，恪守传统，不知变通，竟然还能支持奴隶制，真是滑天下之大稽，除了诺德人，现在谁还不允许奴隶赎身？真是闹麻了。他们还自称帝国传人呢，屁！他们就是一群沽名钓誉，徒有其表的小人！现在统治着B，都是他们的祖地。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "A",
+      "Kind": "clan_leader_name",
+      "TargetId": "clan_empire_north_1",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "B",
+      "Kind": "clan_all_towns",
+      "TargetId": "clan_empire_north_1",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

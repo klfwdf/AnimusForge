@@ -1,0 +1,79 @@
+﻿{
+  "Id": "rule_埃米尔",
+  "Keywords": [
+    "埃米尔"
+  ],
+  "RagShortTexts": [
+    "“埃米尔”源于纳哈撒语“阿米尔”，本义“命令者”，原指战场指挥官。今阿塞莱人中指拥有军权与地方统治权的家族族长，苏丹亦属此列，承载沙漠部落传统。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania",
+          "empire",
+          "khuzait",
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "埃米尔是指阿塞莱的那些部落族长，用来称呼一位拥有军事指挥权与地方统治权的贵族。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "commoner",
+          "soldier",
+          "townsfolk",
+          "villager",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "埃米尔是指统治着我们的高贵的贵族，只有家族族长才有资格被称为埃米尔。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "“埃米尔”在纳哈撒语中由 “阿米尔”衍生而来，埃米尔最早指战场上统率军队的指挥官。\n本义是 “命令者”“发号施令者”。\n现在阿塞莱人称呼的埃米尔，指的是一位拥有军事指挥权与地方统治权的家族族长，就连阿塞莱的苏丹，其实也属于埃米尔。它承载着我们沙漠部落的古老传统。"
+    }
+  ],
+  "TextMappings": []
+}

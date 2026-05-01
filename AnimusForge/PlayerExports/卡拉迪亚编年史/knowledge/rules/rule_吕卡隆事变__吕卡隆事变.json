@@ -1,0 +1,86 @@
+﻿{
+  "Id": "rule_吕卡隆事变",
+  "Keywords": [
+    "吕卡隆事变",
+    "阿雷尼科斯遇刺"
+  ],
+  "RagShortTexts": [
+    "1084年吕卡隆事变中阿雷尼科斯遇刺身亡"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "阿雷尼科斯皇帝在1084年于吕卡隆的暴乱中被刺杀，凶手至今没有找到，这是帝国分裂的导火索，拉盖娅，卢孔，加里俄斯分别代表着宗室，元老院以及军方三方势力，分别称帝，是为南帝国，北帝国，西帝国。（如果说话的是平民百姓，那么说的不要这么详细，笼统一说即可）"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "吕卡隆事变，当时驻守皇宫的维吉亚卫队玩忽职守，没有保护好皇帝，让暴民们刺杀了皇帝，结果拉盖娅这个投机者硬说是卢孔指使人杀的皇帝，并将卢孔赶出了吕卡隆，随后这个老巫婆便称帝了，我们拥立卢孔为帝，与老巫婆分庭抗礼，绝不能让她把帝国变成自家私产！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "那是1084年的春天，阿雷尼科斯皇帝从前线返回，在皇宫里被暴徒刺杀，狡猾的卢孔在元老院的支持下立刻宣布称帝，完全无视了先皇的遗孀和孤女。维吉亚卫队一定是元老院收买的，就是他们害死了先皇！我们的女皇拉盖娅给市民们展示了先皇带血的紫袍，市民们立刻云集响应，配合我们的女皇将卢孔及其走狗赶出了皇城，卢孔灰溜溜的跑回北方，另立王庭，妄图对抗我们伟大的女皇。加里俄斯也趁机称帝，这个投机的将军只是被利益迷住了心窍，他迟早有一天会归顺我们的"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_w"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "1084年春天，我们的加里俄斯大帅和克洛托耳副帅带着我们在西边打仗，阿雷尼克斯皇帝亲自来督战，我们受宠若惊。先皇陛下很体恤我们，我们士气大振，击退了瓦兰迪亚的进攻。陛下见状就回到吕卡隆了。没想到，短短10天后就得到了陛下遇刺的消息，世界上不可能有这么巧的事情，要么是元老院，要么是拉盖娅，若非他们，陛下哪里会死的这么惨？我们无法为弑君者效劳！我们加里俄斯大帅也正有此意。所以我们一不做，二不休，拥立加里俄斯为帝，定贾尔马律斯为都。因为我们知道，只有加里俄斯对我们最好，他把我们当人看，元老院和拉盖娅都觉得我们是一帮兵痞和土匪，我们受不得那委屈！"
+    }
+  ],
+  "TextMappings": []
+}

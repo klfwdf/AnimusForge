@@ -3,6 +3,9 @@
   "Keywords": [
     "元老院"
   ],
+  "RagShortTexts": [
+    "元老院选举皇帝并使其听命于元老院。"
+  ],
   "SemanticPrototypes": [],
   "Variants": [
     {
@@ -13,6 +16,7 @@
         "KingdomIds": null,
         "SettlementIds": null,
         "Roles": null,
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": null
@@ -29,11 +33,32 @@
         ],
         "SettlementIds": null,
         "Roles": null,
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": null
       },
       "Content": "元老院是我们的决策机关，行使决定权，审议权，任免权，监督权，这让我们能吸取更多人的建议，我们选举皇帝，皇帝听命于元老院，他们不是国家的主人，而是人民的仆人"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s",
+          "empire_w"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "元老院那帮共和疯子竟然选择了效忠某某这个背叛者，而不效忠真正的正统，我们与元老院势不两立！总有一天会血洗他们，然后选出真正适合民心的元老！而不是那群老顽固，老疯子，臭文官！现在的元老院已经成为叛徒的聚居地，我们绝不能姑息。但是当我们平叛成功后，我们自会新设元老院。"
     }
   ],
   "TextMappings": []

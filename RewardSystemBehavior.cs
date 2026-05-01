@@ -8,10 +8,12 @@ using Newtonsoft.Json;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Actions;
 using TaleWorlds.CampaignSystem.ComponentInterfaces;
+using TaleWorlds.CampaignSystem.Encounters;
 using TaleWorlds.CampaignSystem.MapEvents;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Roster;
 using TaleWorlds.CampaignSystem.Settlements;
+using TaleWorlds.CampaignSystem.Settlements.Locations;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
@@ -111,6 +113,8 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		public int CompensationUnitPrice;
 
 		public int CompensationGoldCredit;
+
+		public string DebtNote;
 	}
 
 	private class DebtRecord
@@ -150,6 +154,8 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			public int CompensationUnitPrice;
 
 			public int CompensationGoldCredit;
+
+			public string DebtNote;
 		}
 
 		public int OwedGold;
@@ -2970,6 +2976,53 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 	}
 
+	public bool TryApplyHeroJoinPlayerPartyForExternal(Hero joiningHero, out string statusText)
+	{
+		statusText = "";
+		try
+		{
+			if (joiningHero == null)
+			{
+				statusText = "执行失败：缺少要加入队伍的目标英雄。";
+				return false;
+			}
+			if (joiningHero == Hero.MainHero)
+			{
+				statusText = "执行跳过：目标本来就是玩家本人。";
+				return false;
+			}
+			if (Clan.PlayerClan == null || MobileParty.MainParty == null)
+			{
+				statusText = "执行失败：玩家家族或玩家队伍不可用。";
+				return false;
+			}
+			if (joiningHero.PartyBelongedTo == MobileParty.MainParty && joiningHero.IsPlayerCompanion)
+			{
+				statusText = $"执行跳过：{joiningHero.Name} 已经在玩家队伍中。";
+				return false;
+			}
+			Settlement currentSettlement = joiningHero.CurrentSettlement;
+			if (currentSettlement != null)
+			{
+				LeaveSettlementAction.ApplyForCharacterOnly(joiningHero);
+			}
+			AddCompanionAction.Apply(Clan.PlayerClan, joiningHero);
+			AddHeroToPartyAction.Apply(joiningHero, MobileParty.MainParty, showNotification: true);
+			if (LocationComplex.Current != null)
+			{
+				LocationComplex.Current.RemoveCharacterIfExists(joiningHero);
+			}
+			PlayerEncounter.LocationEncounter?.RemoveAccompanyingCharacter(joiningHero);
+			statusText = $"执行成功：{joiningHero.Name} 已加入玩家队伍。";
+			return true;
+		}
+		catch (Exception ex)
+		{
+			statusText = "执行失败（异常）：" + ex.Message;
+			return false;
+		}
+	}
+
 	private static Kingdom ResolveKingdomByTag(string kingdomToken, Hero giver)
 	{
 		try
@@ -3912,6 +3965,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				debtLine.OverdueRelationPenaltyPerDay = NormalizeLlmPenaltyValue(debtLine.OverdueRelationPenaltyPerDay);
 				debtLine.CompensationUnitPrice = Math.Max(0, debtLine.CompensationUnitPrice);
 				debtLine.CompensationGoldCredit = Math.Max(0, debtLine.CompensationGoldCredit);
+				debtLine.DebtNote = NormalizeDebtNote(debtLine.DebtNote);
 				list.Add(debtLine);
 			}
 		}
@@ -3990,6 +4044,20 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 		int num3 = Math.Max(1, (int)Math.Ceiling(0f - num));
 		return $"还款期限：已逾期 {num3} 天（截止 {text}）";
+	}
+
+	private static string NormalizeDebtNote(string note)
+	{
+		string text = (note ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return "";
+		}
+		if (text.Length > 120)
+		{
+			text = text.Substring(0, 120);
+		}
+		return text;
 	}
 
 	private int EstimateDebtLineRemainingValue(Hero npc, DebtRecord.DebtLine line)
@@ -4244,7 +4312,8 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 							OverdueTrustPenaltyPerDay = debtLine.OverdueTrustPenaltyPerDay,
 							OverdueRelationPenaltyPerDay = debtLine.OverdueRelationPenaltyPerDay,
 							CompensationUnitPrice = debtLine.CompensationUnitPrice,
-							CompensationGoldCredit = debtLine.CompensationGoldCredit
+							CompensationGoldCredit = debtLine.CompensationGoldCredit,
+							DebtNote = debtLine.DebtNote
 						});
 					}
 				}
@@ -4327,7 +4396,8 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 							OverdueTrustPenaltyPerDay = debtLineExportEntry.OverdueTrustPenaltyPerDay,
 							OverdueRelationPenaltyPerDay = debtLineExportEntry.OverdueRelationPenaltyPerDay,
 							CompensationUnitPrice = debtLineExportEntry.CompensationUnitPrice,
-							CompensationGoldCredit = debtLineExportEntry.CompensationGoldCredit
+							CompensationGoldCredit = debtLineExportEntry.CompensationGoldCredit,
+							DebtNote = debtLineExportEntry.DebtNote
 						});
 					}
 				}
@@ -4504,12 +4574,45 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			return "";
 		}
-		string text2 = equipmentElement.ItemModifier?.StringId ?? "";
+		string text2 = BuildSettlementMerchantModifierKey(equipmentElement);
 		if (string.IsNullOrWhiteSpace(text2))
 		{
 			return text;
 		}
 		return text + "@" + text2;
+	}
+
+	private static string BuildSettlementMerchantModifierKey(EquipmentElement equipmentElement)
+	{
+		if (equipmentElement.ItemModifier == null)
+		{
+			return "";
+		}
+		string text = equipmentElement.ItemModifier.StringId ?? "";
+		if (!string.IsNullOrWhiteSpace(text))
+		{
+			return text.Trim();
+		}
+		string text2 = BuildSettlementMerchantDisplayName(equipmentElement);
+		if (string.IsNullOrWhiteSpace(text2))
+		{
+			text2 = equipmentElement.ItemModifier.Name?.ToString() ?? "";
+		}
+		return string.IsNullOrWhiteSpace(text2) ? "" : ("name_" + StablePromptKeyHash(text2.Trim()));
+	}
+
+	private static string StablePromptKeyHash(string text)
+	{
+		unchecked
+		{
+			uint num = 2166136261u;
+			foreach (char c in text ?? "")
+			{
+				num ^= c;
+				num *= 16777619u;
+			}
+			return num.ToString("X8");
+		}
 	}
 
 	private static string BuildSettlementMerchantDisplayName(EquipmentElement equipmentElement)
@@ -6072,7 +6175,6 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.AppendLine("【系统账目提示】玩家对你有以下欠款（分笔记录）：");
-		stringBuilder.AppendLine("【债务解除确认】若玩家本轮行为已被系统事实明确记录为偿还、豁免或免除，请在回复末尾输出 [ADP;债务ID] 解除对应债务；每笔债务单独确认，禁止口头声称已结清却不输出标签。");
 		if (debtRecord.DebtLines != null)
 		{
 			List<DebtRecord.DebtLine> list = (from x in debtRecord.DebtLines
@@ -6082,42 +6184,27 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			for (int num = 0; num < list.Count; num++)
 			{
 				DebtRecord.DebtLine debtLine = list[num];
-				string value = (debtLine.IsGold ? "金币" : ("物品 " + debtLine.ItemId));
-				string value2 = (debtLine.IsGold ? (debtLine.RemainingAmount + " 第纳尔") : ("x" + debtLine.RemainingAmount));
 				string value3 = BuildDebtDueStatusText(debtLine.DueDay, debtLine.IsDueUnlimited);
-				int num2 = EstimateDebtLineRemainingValue(npc, debtLine);
 				stringBuilder.Append("- [债务ID:").Append(debtLine.DebtId).Append("] ")
-					.Append(value)
-					.Append("，未还 ")
-					.Append(value2);
-				if (!debtLine.IsGold && debtLine.IsItemUnavailableDeclared)
-				{
-					stringBuilder.Append("，状态：已声明无法归还原物（该笔关系/信任改动由你决定）");
-				}
-				if (!debtLine.IsGold)
-				{
-					ItemObject item = ResolveItemById(debtLine.ItemId);
-					ItemGuidePriceInfo guidePriceForItemNearHero = GetGuidePriceForItemNearHero(npc, item);
-					int value4 = Math.Max(1, guidePriceForItemNearHero.UnitPrice);
-					stringBuilder.Append("，指导赔偿单价约 ").Append(value4).Append(" 第纳尔/个");
-				}
-				stringBuilder.Append("，剩余估值约 ").Append(Math.Max(0, num2)).Append(" 第纳尔");
-				int num3 = ComputeWeeklyOverdueTrustPenaltyByDebtValue(num2);
-				stringBuilder.Append("，逾期周惩罚：每周信任 -").Append(num3)
-					.Append("（按剩余估值每10000第纳尔折算1点）");
-				stringBuilder.Append("，关系按信任的1/5累计扣减（平均每周约 -")
-					.Append(num3)
-					.Append("/5）");
-				stringBuilder.Append("，最长持续 ").Append(OverduePenaltyMaxWeeks).Append(" 周（1年）");
+					.Append(debtLine.IsGold ? "金币" : ("物品 " + debtLine.ItemId))
+					.Append("，玩家欠你")
+					.Append(debtLine.IsGold ? (debtLine.RemainingAmount + "第纳尔") : ("x" + debtLine.RemainingAmount));
 				if (!string.IsNullOrWhiteSpace(value3))
 				{
 					stringBuilder.Append("，").Append(value3);
 				}
-				if (!debtLine.IsDueUnlimited && debtLine.DueDay > 0f && GetNowCampaignDay() > debtLine.DueDay + 0.01f && (!debtLine.IsItemUnavailableDeclared || debtLine.IsGold))
+				else
 				{
-					int overdueElapsedWeeks = ComputeOverdueElapsedWeeks(GetNowCampaignDay(), debtLine.DueDay);
-					int weeksLeft = Math.Max(0, OverduePenaltyMaxWeeks - Math.Max(0, debtLine.OverduePenaltyDaysApplied));
-					stringBuilder.Append("，当前逾期进度：第 ").Append(overdueElapsedWeeks).Append(" 周，剩余惩罚窗口约 ").Append(weeksLeft).Append(" 周");
+					stringBuilder.Append("，还款期限：未设定");
+				}
+				if (!debtLine.IsGold && debtLine.IsItemUnavailableDeclared)
+				{
+					stringBuilder.Append("，状态：已声明无法归还原物");
+				}
+				stringBuilder.Append(",债务备注内容：");
+				if (!string.IsNullOrWhiteSpace(debtLine.DebtNote))
+				{
+					stringBuilder.Append(debtLine.DebtNote);
 				}
 				stringBuilder.AppendLine();
 			}
@@ -6155,23 +6242,26 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			stringBuilder.Append("- [债务ID:").Append(debtLine.DebtId).Append("] ");
 			if (debtLine.IsGold)
 			{
-				stringBuilder.Append("金币，未还 ").Append(debtLine.RemainingAmount).Append(" 第纳尔");
+				stringBuilder.Append("金币，玩家欠你").Append(debtLine.RemainingAmount).Append("第纳尔");
 			}
 			else
 			{
-				stringBuilder.Append("物品 ").Append(debtLine.ItemId).Append("，未还 x").Append(debtLine.RemainingAmount);
+				stringBuilder.Append("物品 ").Append(debtLine.ItemId).Append("，玩家欠你x").Append(debtLine.RemainingAmount);
 			}
 			string text = BuildDebtDueStatusText(debtLine.DueDay, debtLine.IsDueUnlimited);
 			if (!string.IsNullOrWhiteSpace(text))
 			{
 				stringBuilder.Append("，").Append(text);
 			}
-			int num = EstimateDebtLineRemainingValueForSettlement(settlement, debtLine);
-			int num2 = ComputeWeeklyOverdueTrustPenaltyByDebtValue(num);
-			stringBuilder.Append("，逾期周惩罚：每周信任 -").Append(num2)
-				.Append("（按剩余估值每10000第纳尔折算1点，最长 ")
-				.Append(OverduePenaltyMaxWeeks)
-				.Append(" 周）");
+			else
+			{
+				stringBuilder.Append("，还款期限：未设定");
+			}
+			stringBuilder.Append(",债务备注内容：");
+			if (!string.IsNullOrWhiteSpace(debtLine.DebtNote))
+			{
+				stringBuilder.Append(debtLine.DebtNote);
+			}
 			stringBuilder.AppendLine();
 		}
 		return stringBuilder.ToString().Trim();
@@ -6518,7 +6608,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private void SetDebtForNpc(Hero npc, int goldAmount, string itemId, int itemAmount, int? dueDays, int? dueAbsDay, bool dueUnlimited, int? overdueTrustPenaltyPreset, int? overdueRelationPenaltyPreset)
+	private void SetDebtForNpc(Hero npc, int goldAmount, string itemId, int itemAmount, int? dueDays, int? dueAbsDay, bool dueUnlimited, int? overdueTrustPenaltyPreset, int? overdueRelationPenaltyPreset, string debtNote = null)
 	{
 		if (npc == null)
 		{
@@ -6533,6 +6623,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		float nowCampaignDay = GetNowCampaignDay();
 		float num = 0f;
 		bool flag = dueUnlimited;
+		string text = NormalizeDebtNote(debtNote);
 		int overdueTrustPenaltyPerDay = NormalizeLlmPenaltyValue(overdueTrustPenaltyPreset.GetValueOrDefault());
 		int overdueRelationPenaltyPerDay = NormalizeLlmPenaltyValue(overdueRelationPenaltyPreset.GetValueOrDefault());
 		if (!flag)
@@ -6571,7 +6662,8 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				OverdueTrustPenaltyPerDay = overdueTrustPenaltyPerDay,
 				OverdueRelationPenaltyPerDay = overdueRelationPenaltyPerDay,
 				CompensationUnitPrice = 0,
-				CompensationGoldCredit = 0
+				CompensationGoldCredit = 0,
+				DebtNote = text
 			});
 		}
 		if (!string.IsNullOrEmpty(itemId) && itemAmount > 0)
@@ -6594,13 +6686,76 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				OverdueTrustPenaltyPerDay = overdueTrustPenaltyPerDay,
 				OverdueRelationPenaltyPerDay = overdueRelationPenaltyPerDay,
 				CompensationUnitPrice = 0,
-				CompensationGoldCredit = 0
+				CompensationGoldCredit = 0,
+				DebtNote = text
 			});
 		}
 		NormalizeDebtRecord(orCreateDebtRecord);
 		if (!HasDebtContent(orCreateDebtRecord) && !string.IsNullOrEmpty(npc.StringId))
 		{
 			_debts.Remove(npc.StringId);
+		}
+	}
+
+	public bool RecordDeferredDuelDebtForNpc(Hero npc, int goldAmount, int dueDays, string debtNote, out string debtId, out string dueStatusText)
+	{
+		debtId = "";
+		dueStatusText = "";
+		try
+		{
+			if (npc == null || goldAmount <= 0)
+			{
+				return false;
+			}
+			DebtRecord orCreateDebtRecord = GetOrCreateDebtRecord(npc);
+			if (orCreateDebtRecord == null)
+			{
+				return false;
+			}
+			NormalizeDebtRecord(orCreateDebtRecord);
+			float nowCampaignDay = GetNowCampaignDay();
+			bool dueUnlimited = dueDays <= 0;
+			float dueDay = 0f;
+			if (!dueUnlimited)
+			{
+				dueDay = nowCampaignDay + (float)NormalizeDueDays(dueDays);
+				if (dueDay <= 0f)
+				{
+					dueDay = nowCampaignDay + 1f;
+				}
+			}
+			DebtRecord.DebtLine debtLine = new DebtRecord.DebtLine
+			{
+				DebtId = BuildDebtId(),
+				IsGold = true,
+				ItemId = null,
+				IsDueUnlimited = dueUnlimited,
+				IsItemUnavailableDeclared = false,
+				InitialAmount = Math.Max(1, goldAmount),
+				RemainingAmount = Math.Max(1, goldAmount),
+				CreatedDay = nowCampaignDay,
+				DueDay = dueUnlimited ? 0f : dueDay,
+				BestPreDueCoverage = 0f,
+				OnTimePenaltyTierApplied = 0,
+				OverduePenaltyDaysApplied = 0,
+				LastOverduePenaltyDay = -1,
+				OverdueTrustPenaltyPerDay = 0,
+				OverdueRelationPenaltyPerDay = 0,
+				CompensationUnitPrice = 0,
+				CompensationGoldCredit = 0,
+				DebtNote = NormalizeDebtNote(debtNote)
+			};
+			orCreateDebtRecord.DebtLines.Add(debtLine);
+			NormalizeDebtRecord(orCreateDebtRecord);
+			debtId = debtLine.DebtId ?? "";
+			dueStatusText = BuildDebtDueStatusText(debtLine.DueDay, debtLine.IsDueUnlimited) ?? "";
+			return true;
+		}
+		catch
+		{
+			debtId = "";
+			dueStatusText = "";
+			return false;
 		}
 	}
 
@@ -7264,6 +7419,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			Regex regex22 = new Regex("\\[ACTION:SETTLEMENT_TRANSFER:(TO_PLAYER|TO_NPC):([^\\]\\r\\n:]+)\\]", RegexOptions.IgnoreCase);
 			Regex regex23 = new Regex("\\[AD;(\\d+);(\\d+);([^\\]]*)\\]", RegexOptions.IgnoreCase);
 			Regex regex24 = new Regex("\\[ADP[:;]([a-zA-Z0-9_\\-]+)\\]", RegexOptions.IgnoreCase);
+			Regex regex25 = new Regex("\\[A:H_J_P_P\\]", RegexOptions.IgnoreCase);
 			Regex regexLegacyDebtTag = new Regex("\\[ACTION:DEBT[^\\]]*\\]", RegexOptions.IgnoreCase);
 			HashSet<string> settledDebtIdsThisRound = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 			int num = 0;
@@ -7274,6 +7430,15 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			catch
 			{
 				num = 0;
+			}
+			bool hasDuelActionTagInCurrentReply = false;
+			try
+			{
+				hasDuelActionTagInCurrentReply = (responseText ?? "").IndexOf("[ACTION:DUEL]", StringComparison.OrdinalIgnoreCase) >= 0;
+			}
+			catch
+			{
+				hasDuelActionTagInCurrentReply = false;
 			}
 			Logger.Obs("Action", "apply_reward_tags_start", new Dictionary<string, object>
 			{
@@ -7388,6 +7553,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			bool anyDebtMetaApplied = false;
 			bool anyKingdomServiceApplied = false;
 			bool anySettlementTransferApplied = false;
+			bool anyHeroJoinPlayerPartyApplied = false;
 			responseText = regex.Replace(responseText, delegate(Match m)
 			{
 				if (int.TryParse(m.Groups[1].Value, out var result8))
@@ -7456,11 +7622,26 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				string text3 = (m.Groups[3].Value ?? "").Trim();
 				if (receiver == Hero.MainHero && giver != Hero.MainHero)
 				{
+					if (hasDuelActionTagInCurrentReply)
+					{
+						if (result8 > 0)
+						{
+							DuelBehavior.CachePendingDuelDebtTag(giver, result8, result9, text3);
+						}
+						Logger.Log("Logic", "[Reward] AD 标签与 [ACTION:DUEL] 同轮出现，已延后到决斗结算后再判定。");
+						return string.Empty;
+					}
+					bool flag2 = DuelBehavior.TryConsumeDuelDebtTagPermission(giver, out var allowDebtTag);
+					if (flag2 && !allowDebtTag)
+					{
+						Logger.Log("Logic", "[Reward] AD 标签被决斗门控阻止：仅在玩家战败后才允许触发。");
+						return string.Empty;
+					}
 					if (result8 > 0)
 					{
 						bool dueUnlimited2 = result9 <= 0;
 						int? dueDaysOverride2 = dueUnlimited2 ? null : NormalizeDueDays(result9);
-						SetDebtForNpc(giver, result8, null, 0, dueDaysOverride2, null, dueUnlimited2, null, null);
+						SetDebtForNpc(giver, result8, null, 0, dueDaysOverride2, null, dueUnlimited2, null, null, text3);
 						anyDebtRecorded = true;
 						DebtRecord debtRecord = GetDebtRecord(giver);
 						NormalizeDebtRecord(debtRecord);
@@ -7483,6 +7664,11 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				string value4 = (m.Groups[1].Value ?? "").Trim();
 				if (receiver == Hero.MainHero && giver != Hero.MainHero)
 				{
+					if (hasDuelActionTagInCurrentReply)
+					{
+						Logger.Log("Logic", "[Reward] ADP 标签与 [ACTION:DUEL] 同轮出现，已延后到决斗结算后再判定。");
+						return string.Empty;
+					}
 					if (!string.IsNullOrWhiteSpace(value4) && !settledDebtIdsThisRound.Add(value4))
 					{
 						Logger.Log("Logic", "[Reward] 跳过重复债务解除标签: debtId=" + value4 + " tag=ADP");
@@ -7869,6 +8055,30 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				}
 				return string.Empty;
 			});
+			responseText = regex25.Replace(responseText, delegate
+			{
+				if (receiver == Hero.MainHero && giver != Hero.MainHero)
+				{
+					string statusText;
+					bool flag2 = TryApplyHeroJoinPlayerPartyForExternal(giver, out statusText);
+					if (!string.IsNullOrWhiteSpace(statusText))
+					{
+						if (flag2)
+						{
+							anyHeroJoinPlayerPartyApplied = true;
+							giverFacts.Add($"你已经加入了 {receiverName} 的队伍。");
+							receiverFacts.Add($"{giverName} 已加入你的队伍。");
+						}
+						else
+						{
+							giverFacts.Add(statusText);
+							receiverFacts.Add(statusText);
+						}
+						InformationManager.DisplayMessage(new InformationMessage((flag2 ? "【加入队伍】" : "【加入队伍失败】") + statusText, flag2 ? Color.FromUint(4278242559u) : Color.FromUint(4294936661u)));
+					}
+				}
+				return string.Empty;
+			});
 			if (num2.HasValue)
 			{
 				Logger.Log("Logic", "[Reward] 提示: 检测到 [ACTION:TRADE_TRUST]，但即时交易信任现已改为按NPC实际交付价值自动累计，本标签已忽略。");
@@ -7885,6 +8095,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				["anyDebtMetaApplied"] = anyDebtMetaApplied,
 				["anyKingdomServiceApplied"] = anyKingdomServiceApplied,
 				["anySettlementTransferApplied"] = anySettlementTransferApplied,
+				["anyHeroJoinPlayerPartyApplied"] = anyHeroJoinPlayerPartyApplied,
 				["giverFactsCount"] = giverFacts.Count,
 				["receiverFactsCount"] = receiverFacts.Count,
 				["textLenAfter"] = (responseText ?? "").Length,
@@ -8450,6 +8661,38 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		if (itemRoster == null || itemRoster2 == null)
 		{
 			return 0;
+		}
+		string requestedItemId;
+		string requestedModifierId;
+		bool requestedHasModifier = TryParseSettlementMerchantPromptStringId(itemStringId, out requestedItemId, out requestedModifierId) && !string.IsNullOrWhiteSpace(requestedModifierId);
+		if (!requestedHasModifier && !string.IsNullOrWhiteSpace(requestedItemId))
+		{
+			HashSet<string> variantKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+			for (int i = 0; i < itemRoster.Count; i++)
+			{
+				ItemRosterElement elementCopyAtIndex = itemRoster.GetElementCopyAtIndex(i);
+				EquipmentElement equipmentElement2 = elementCopyAtIndex.EquipmentElement;
+				ItemObject item = equipmentElement2.Item;
+				if (item != null && elementCopyAtIndex.Amount > 0 && string.Equals(item.StringId ?? "", requestedItemId, StringComparison.OrdinalIgnoreCase))
+				{
+					string text = BuildSettlementMerchantInventoryKey(equipmentElement2);
+					if (!string.IsNullOrWhiteSpace(text))
+					{
+						variantKeys.Add(text);
+					}
+				}
+			}
+			if (variantKeys.Count > 1)
+			{
+				try
+				{
+					Logger.Log("Logic", "[RewardTransfer] ambiguous_settlement_item itemId=" + requestedItemId + " variants=" + string.Join("|", variantKeys) + " rawTag=" + itemStringId);
+				}
+				catch
+				{
+				}
+				return 0;
+			}
 		}
 		EquipmentElement equipmentElement = EquipmentElement.Invalid;
 		int num = 0;
