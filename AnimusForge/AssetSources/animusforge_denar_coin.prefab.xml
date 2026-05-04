@@ -1,0 +1,13 @@
+<prefabs>
+  <game_entity name="animusforge_denar_coin" old_prefab_name="" season_mask="255">
+    <tags>
+      <tag name="animusforge"/>
+      <tag name="denar_coin"/>
+    </tags>
+    <transform position="0.000, 0.000, 0.000" rotation_euler="0.000, 0.000, 0.000"/>
+    <physics shape="bo_animusforge_denar_coin" mass="0.020"/>
+    <components>
+      <meta_mesh_component name="animusforge_denar_coin"/>
+    </components>
+  </game_entity>
+</prefabs>

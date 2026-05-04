@@ -1,0 +1,42 @@
+<Items>
+  <Item
+    id="animusforge_denar_coin_item"
+    name="Denar Coin"
+    is_merchandise="false"
+    body_name="bo_animusforge_denar_coin"
+    holster_body_name="bo_animusforge_denar_coin"
+    mesh="animusforge_denar_coin"
+    holster_mesh="animusforge_denar_coin"
+    holster_mesh_with_weapon="animusforge_denar_coin"
+    value="1"
+    weight="0.01"
+    appearance="1"
+    Type="Thrown"
+    item_holsters="throwing_stone:throwing_stone_2">
+    <ItemComponent>
+      <Weapon
+        weapon_class="Stone"
+        ammo_class="Stone"
+        stack_amount="1"
+        physics_material="missile"
+        accuracy="100"
+        thrust_speed="1"
+        speed_rating="1"
+        missile_speed="1"
+        weapon_length="4"
+        thrust_damage="1"
+        thrust_damage_type="Blunt"
+        item_usage="stone"
+        rotation="0,0,0"
+        passby_sound_code=""
+        rotation_speed="0,0,0">
+        <WeaponFlags
+          AttachAmmoToVisual="true"
+          Consumable="true"
+          UseHandAsThrowBase="true" />
+      </Weapon>
+    </ItemComponent>
+    <Flags
+      ForceAttachOffHandPrimaryItemBone="true" />
+  </Item>
+</Items>

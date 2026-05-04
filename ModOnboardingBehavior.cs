@@ -1921,20 +1921,81 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			}
 			knowledgeLibraryBehavior.OpenPlayerPersonaSetup(delegate
 			{
-				try
+				ShowPeaceSceneConflictChoiceAfterPersona(delegate
 				{
-					(MyBehavior.Instance ?? Campaign.Current?.GetCampaignBehavior<MyBehavior>())?.QueueMissingOnnxGateCheckAfterOnboarding();
-				}
-				catch
-				{
-				}
-				onReturn?.Invoke();
+					try
+					{
+						(MyBehavior.Instance ?? Campaign.Current?.GetCampaignBehavior<MyBehavior>())?.QueueMissingOnnxGateCheckAfterOnboarding();
+					}
+					catch
+					{
+					}
+					onReturn?.Invoke();
+				});
 			});
 		}
 		catch (Exception ex)
 		{
 			InformationManager.DisplayMessage(new InformationMessage("打开玩家角色介绍失败：" + ex.Message));
 			onReturn?.Invoke();
+		}
+	}
+
+	private void ShowPeaceSceneConflictChoiceAfterPersona(Action onDone)
+	{
+		if (onDone == null)
+		{
+			onDone = delegate
+			{
+			};
+		}
+		try
+		{
+			_welcomeInProgress = true;
+			string text = "是否允许玩家直接攻击和平场景 NPC？\n\n开启后，玩家直接攻击城镇、领主会面等和平场景内的 NPC 可以造成伤害并触发打架。\n\n关闭后，玩家在和平状态下无法对 NPC 造成伤害，也不能靠直接攻击开打；但对话中的吵架/挑衅仍然可以触发冲突升级。\n\n这个选择会同步写入 MCM，之后可在“场景喊话”中随时修改。";
+			InformationManager.ShowInquiry(new InquiryData("AnimusForge - 场景冲突", text, isAffirmativeOptionShown: true, isNegativeOptionShown: true, "开启", "关闭", delegate
+			{
+				_welcomeInProgress = false;
+				ApplyPeaceSceneConflictOnboardingChoice(enabled: true);
+				onDone();
+			}, delegate
+			{
+				_welcomeInProgress = false;
+				ApplyPeaceSceneConflictOnboardingChoice(enabled: false);
+				onDone();
+			}), pauseGameActiveState: true);
+		}
+		catch (Exception ex)
+		{
+			_welcomeInProgress = false;
+			try
+			{
+				Logger.Log("ModOnboarding", "[WARN] 显示和平场景冲突设置失败：" + ex.Message);
+			}
+			catch
+			{
+			}
+			onDone();
+		}
+	}
+
+	private static void ApplyPeaceSceneConflictOnboardingChoice(bool enabled)
+	{
+		try
+		{
+			DuelSettings settings = DuelSettings.GetSettings();
+			if (settings == null)
+			{
+				InformationManager.DisplayMessage(new InformationMessage("无法读取 MCM 设置，暂时不能保存和平场景冲突选项。"));
+				return;
+			}
+			settings.EnablePeaceSceneConflict = enabled;
+			TryPersistMcmSettings(settings);
+			InformationManager.DisplayMessage(new InformationMessage(enabled ? "已允许玩家直接攻击和平场景 NPC。" : "已禁止玩家直接攻击和平场景 NPC；对话吵架仍可升级冲突。"));
+		}
+		catch (Exception ex)
+		{
+			InformationManager.DisplayMessage(new InformationMessage("保存和平场景冲突选项失败：" + ex.Message));
 		}
 	}
 

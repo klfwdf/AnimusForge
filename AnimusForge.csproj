@@ -27,8 +27,11 @@
   <ItemGroup />
   <ItemGroup>
     <Compile Remove="原版游戏本体代码\**\*.cs" />
+    <Compile Remove="阅兵\**\*.cs" />
     <EmbeddedResource Remove="原版游戏本体代码\**\*" />
+    <EmbeddedResource Remove="阅兵\**\*" />
     <None Remove="原版游戏本体代码\**\*" />
+    <None Remove="阅兵\**\*" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Core" />
@@ -332,4 +335,3 @@
     <Error Condition="!Exists('%(_RequiredRef.Identity)')" Text="Missing required dependency: %(_RequiredRef.Identity)" />
   </Target>
 </Project>
-

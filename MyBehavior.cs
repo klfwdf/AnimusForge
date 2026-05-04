@@ -8921,6 +8921,56 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private static bool IsWeaponEquipmentIndexForPrompt(EquipmentIndex index)
+	{
+		return index == EquipmentIndex.WeaponItemBeginSlot || index == EquipmentIndex.Weapon1 || index == EquipmentIndex.Weapon2 || index == EquipmentIndex.Weapon3;
+	}
+
+	private static void AddEquipmentSummaryItemForPrompt(Dictionary<string, int> counts, Dictionary<string, string> names, EquipmentIndex index, ItemObject item)
+	{
+		if (counts == null || names == null || item == null)
+		{
+			return;
+		}
+		string text = (item.StringId ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			text = index.ToString();
+		}
+		string value = (item.Name?.ToString() ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(value))
+		{
+			value = text;
+		}
+		if (!counts.ContainsKey(text))
+		{
+			counts[text] = 0;
+			names[text] = value;
+		}
+		counts[text]++;
+	}
+
+	private static List<string> BuildEquipmentSummaryItemLinesForPrompt(Dictionary<string, int> counts, Dictionary<string, string> names, int maxEntries)
+	{
+		if (counts == null || counts.Count == 0)
+		{
+			return new List<string>();
+		}
+		return (from x in (from x in counts.Select(delegate(KeyValuePair<string, int> kv)
+				{
+					string value;
+					string name = (names != null && names.TryGetValue(kv.Key, out value)) ? value : kv.Key;
+					return new
+					{
+						Name = name,
+						Count = kv.Value
+					};
+				})
+				orderby x.Count descending
+				select x).ThenBy(x => x.Name, StringComparer.Ordinal).Take(Math.Max(1, maxEntries))
+			select x.Name + "x" + x.Count).ToList();
+	}
+
 	private static string BuildHeroEquipmentSummaryForPrompt(Hero hero, int maxEntries = 8)
 	{
 		if (hero == null)
@@ -8928,12 +8978,14 @@ public class MyBehavior : CampaignBehaviorBase
 			return "未知";
 		}
 		bool useCivilianEquipment = false;
-		bool flag = TryResolveEquipmentContextForPrompt(hero, out useCivilianEquipment);
+		TryResolveEquipmentContextForPrompt(hero, out useCivilianEquipment);
 		string text = GetEquipmentContextLabelForPrompt(useCivilianEquipment);
 		try
 		{
-			Dictionary<string, int> dictionary = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
-			Dictionary<string, string> names = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+			Dictionary<string, int> wornCounts = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+			Dictionary<string, string> wornNames = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+			Dictionary<string, int> weaponCounts = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+			Dictionary<string, string> weaponNames = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 			EquipmentIndex[] array = new EquipmentIndex[9]
 			{
 				EquipmentIndex.NumAllWeaponSlots,
@@ -8953,46 +9005,26 @@ public class MyBehavior : CampaignBehaviorBase
 				ItemObject item = TryGetHeroEquipmentItemForPrompt(hero, index, useCivilianEquipment);
 				if (item != null)
 				{
-					string text2 = (item.StringId ?? "").Trim();
-					if (string.IsNullOrWhiteSpace(text2))
-					{
-						text2 = index.ToString();
-					}
-					string value = (item.Name?.ToString() ?? "").Trim();
-					if (string.IsNullOrWhiteSpace(value))
-					{
-						value = text2;
-					}
-					if (!dictionary.ContainsKey(text2))
-					{
-						dictionary[text2] = 0;
-						names[text2] = value;
-					}
-					dictionary[text2]++;
+					AddEquipmentSummaryItemForPrompt(IsWeaponEquipmentIndexForPrompt(index) ? weaponCounts : wornCounts, IsWeaponEquipmentIndexForPrompt(index) ? weaponNames : wornNames, index, item);
 				}
 			}
-			if (dictionary.Count == 0)
+			List<string> wornItems = BuildEquipmentSummaryItemLinesForPrompt(wornCounts, wornNames, maxEntries);
+			List<string> weaponItems = BuildEquipmentSummaryItemLinesForPrompt(weaponCounts, weaponNames, maxEntries);
+			if (wornItems.Count == 0 && weaponItems.Count == 0)
 			{
-				return (flag ? (text + "：未读取到可识别装备") : "未能判断当前应显示民用装还是战斗装，且未读取到可识别装备");
+				return text + "：赤身裸体";
 			}
-			List<string> values = (from x in (from x in dictionary.Select(delegate(KeyValuePair<string, int> kv)
-					{
-						string value2;
-						string name = (names.TryGetValue(kv.Key, out value2) ? value2 : kv.Key);
-						return new
-						{
-							Name = name,
-							Count = kv.Value
-						};
-					})
-					orderby x.Count descending
-					select x).ThenBy(x => x.Name, StringComparer.Ordinal).Take(Math.Max(1, maxEntries))
-				select x.Name + "x" + x.Count).ToList();
-			return text + "：" + string.Join("、", values);
+			StringBuilder stringBuilder = new StringBuilder();
+			stringBuilder.Append(text).Append("：").Append(wornItems.Count > 0 ? string.Join("、", wornItems) : "赤身裸体");
+			if (weaponItems.Count > 0)
+			{
+				stringBuilder.Append("，携带的武器：").Append(string.Join("、", weaponItems));
+			}
+			return stringBuilder.ToString();
 		}
 		catch
 		{
-			return (flag ? (text + "：读取装备失败") : "装备信息读取失败");
+			return text + "：赤身裸体";
 		}
 	}
 
@@ -11578,11 +11610,38 @@ public class MyBehavior : CampaignBehaviorBase
 				text = string.IsNullOrWhiteSpace(text) ? text5 : (text.TrimEnd() + Environment.NewLine + text5);
 			}
 		}
+		string nobleDeferenceInstruction = BuildNobleDeferenceRuntimeInstruction(hasAnyHero);
+		if (!string.IsNullOrWhiteSpace(nobleDeferenceInstruction) && (string.IsNullOrWhiteSpace(text) || text.IndexOf("【附加规则:noble_deference】", StringComparison.OrdinalIgnoreCase) < 0))
+		{
+			string text6 = "【附加规则:noble_deference】" + Environment.NewLine + nobleDeferenceInstruction;
+			text = string.IsNullOrWhiteSpace(text) ? text6 : (text.TrimEnd() + Environment.NewLine + text6);
+		}
 		if (IsSceneFollowingAgentForRules(targetAgentIndex))
 		{
 			text = ReplaceSceneMechanismRuleForFollowing(text);
 		}
 		return PrependExtraRuleDisclaimer(text);
+	}
+
+	private static string BuildNobleDeferenceRuntimeInstruction(bool hasAnyHero)
+	{
+		try
+		{
+			if (hasAnyHero || (Clan.PlayerClan?.Tier ?? Hero.MainHero?.Clan?.Tier ?? 0) <= 2)
+			{
+				return "";
+			}
+			string text = (AIConfigHandler.GetGuardrailRuleNonHeroInstruction("noble_deference") ?? "").Trim();
+			if (string.IsNullOrWhiteSpace(text))
+			{
+				text = (AIConfigHandler.GetGuardrailRuleInstruction("noble_deference") ?? "").Trim();
+			}
+			return text;
+		}
+		catch
+		{
+			return "";
+		}
 	}
 
 	private static string ReplaceSingleRuleBlockBody(string text, string ruleId, string newBody)
@@ -11648,7 +11707,7 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			return text;
 		}
-		const string replacement = "【附加规则:scene_mechanism_actions】" + "\r\n" + "【当前正跟随玩家】若此人明确让你停止跟随且你同意，系统会记录停止跟随；若此人改让你去叫【带路与传唤目标清单】中的人，系统会记录传唤；若此人改让你带路去找【带路与传唤目标清单】中的目标，系统会记录带路。正文只自然说话，不要自己写标签。";
+		const string replacement = "【附加规则:scene_mechanism_actions】" + "\r\n" + "【当前正跟随玩家】若此人明确让你停止跟随且你同意，系统会记录停止跟随；若此人改让你去叫【带路与传唤NPC清单】中的人，系统会记录传唤；若此人改让你带路去找【带路与传唤NPC清单】中的目标，系统会记录带路。正文只自然说话，不要自己写标签。";
 		int num = text.IndexOf("【附加规则:scene_mechanism_actions】", StringComparison.OrdinalIgnoreCase);
 		if (num < 0)
 		{
@@ -11783,7 +11842,7 @@ public class MyBehavior : CampaignBehaviorBase
 						{
 							text10 = "玩家";
 						}
-						AppendRuleBlock(stringBuilder, "duel", $"{text10}触发了决斗相关话题，但等级({playerTier})过低。请拒绝决斗并羞辱其不自量力。严禁使用决斗标签。");
+						AppendRuleBlock(stringBuilder, "duel", $"{text10}触发了决斗相关话题，但等级({playerTier})过低。请拒绝决斗并羞辱其不自量力。严禁使用决斗标签，如果玩家执意要和你单挑，那么你可以在回复末尾输出[ACTION:MEETING_TAUNT_BATTLE]，这样可以让你率领的所有军队攻击他");
 					}
 				}
 			}
@@ -13881,6 +13940,7 @@ public class MyBehavior : CampaignBehaviorBase
 			foreach (RewardSystemBehavior.RewardItemInfo item in list)
 			{
 				stringBuilder.Append(item.Name ?? item.PromptStringId ?? item.StringId ?? "未知物品")
+					.Append(string.IsNullOrWhiteSpace(item.PromptStringId) || string.Equals(item.PromptStringId, item.StringId, StringComparison.OrdinalIgnoreCase) ? "" : (" | id=" + item.PromptStringId))
 					.Append(" x")
 					.Append(Math.Max(1, item.Count))
 					.AppendLine();
@@ -14196,15 +14256,22 @@ public class MyBehavior : CampaignBehaviorBase
 		string text6 = "（无）";
 		string text12 = "（无）";
 		List<RewardSystemBehavior.RewardItemInfo> list = null;
-		try
+		if (RewardSystemBehavior.Instance != null)
 		{
-			if (RewardSystemBehavior.Instance != null)
+			try
 			{
 				text6 = RewardSystemBehavior.Instance.BuildVisibleEquipmentPostprocessListForAI(Hero.MainHero);
+			}
+			catch
+			{
+				text6 = "赤身裸体";
+			}
+			try
+			{
 				if (targetHero != null)
 				{
 					list = RewardSystemBehavior.Instance.BuildHeroRewardPostprocessItems(targetHero);
-					text5 = BuildRewardPostprocessItemList(list, RewardSystemBehavior.Instance.GetHeroGold(targetHero));
+					text5 = BuildRewardPostprocessItemList(list, RewardSystemBehavior.Instance.GetRewardPostprocessGoldForHero(targetHero));
 					text12 = NormalizePlayerNameForPostprocess(RewardSystemBehavior.Instance.BuildDebtHintForAI(targetHero), text7);
 				}
 				else if (targetCharacter != null)
@@ -14215,17 +14282,15 @@ public class MyBehavior : CampaignBehaviorBase
 					text12 = NormalizePlayerNameForPostprocess(RewardSystemBehavior.Instance.BuildSettlementMerchantDebtHintForAI(targetCharacter), text7);
 				}
 			}
-		}
-		catch
-		{
-			text5 = "（无）";
-			text6 = "（无）";
-			text12 = "（无）";
-			list = null;
+			catch
+			{
+				text5 = "（无）";
+				text12 = "（无）";
+				list = null;
+			}
 		}
 		string text8 = AIConfigHandler.BuildActionPostprocessSystemPrompt(text3, text4, text7, text5, text6, text12);
-		string text9 = actionPostprocessUserPromptTemplate.Replace("{history}", text2)
-			.Replace("{reply}", AIConfigHandler.BuildActionPostprocessLatestReplyBlock(null, text, text7, text2));
+		string text9 = AIConfigHandler.BuildActionPostprocessUserPrompt(actionPostprocessUserPromptTemplate, text3, text7, text2, AIConfigHandler.BuildActionPostprocessLatestReplyBlock(null, text, text7, text2), text5, text6, text12);
 		if (!AIConfigHandler.TryCallAuxiliaryActionPostprocess(text8, text9, 5000, 0f, out var content, out var error))
 		{
 			Logger.Log("Logic", "[" + logPrefix + "] 调用失败: " + error);
@@ -14288,8 +14353,7 @@ public class MyBehavior : CampaignBehaviorBase
 		string text3 = BuildPostprocessRuleText(list);
 		string text4 = BuildPostprocessRuleText(AIConfigHandler.ActionPostprocessMoodRules);
 		string text5 = AIConfigHandler.BuildActionPostprocessSystemPrompt(text3, text4, text9);
-		string text6 = actionPostprocessUserPromptTemplate.Replace("{history}", text2)
-			.Replace("{reply}", AIConfigHandler.BuildActionPostprocessLatestReplyBlock(null, text, text9, text2));
+		string text6 = AIConfigHandler.BuildActionPostprocessUserPrompt(actionPostprocessUserPromptTemplate, text3, text9, text2, AIConfigHandler.BuildActionPostprocessLatestReplyBlock(null, text, text9, text2));
 		if (!AIConfigHandler.TryCallAuxiliaryActionPostprocess(text5, text6, 5000, 0f, out var content, out var error))
 		{
 			Logger.Log("Logic", "[KingdomServicePostprocess] 调用失败: " + error);
@@ -14341,12 +14405,11 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		catch
 		{
-			text7 = "（无）";
+			text7 = "赤身裸体";
 		}
 		string text6 = AIConfigHandler.BuildActionPostprocessSystemPrompt(text3, text4, text11, text5, text7);
 		text6 = text6.Replace("请仔细分辨物品名称、物品序号和数量", "请仔细分辨物品名称和数量；决斗赌注物品标签必须填写物品清单中的完整物品名称，禁止填写序号，禁止填写物品ID");
-		string text8 = actionPostprocessUserPromptTemplate.Replace("{history}", text2)
-			.Replace("{reply}", AIConfigHandler.BuildActionPostprocessLatestReplyBlock(null, text, text11, text2));
+		string text8 = AIConfigHandler.BuildActionPostprocessUserPrompt(actionPostprocessUserPromptTemplate, text3, text11, text2, AIConfigHandler.BuildActionPostprocessLatestReplyBlock(null, text, text11, text2), text5, text7);
 		if (!AIConfigHandler.TryCallAuxiliaryActionPostprocess(text6, text8, 5000, 0f, out var content, out var error))
 		{
 			Logger.Log("Logic", "[DuelPostprocess] 调用失败: " + error);

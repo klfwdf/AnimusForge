@@ -148,7 +148,8 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 		List<InquiryElement> list = new List<InquiryElement>
 		{
 			new InquiryElement("trust_query", "信任度查询", null, isEnabled: true, ""),
-			new InquiryElement("weekly_reports", "查看周报", null, isEnabled: true, "")
+			new InquiryElement("weekly_reports", "查看周报", null, isEnabled: true, ""),
+			new InquiryElement("troop_inspection", "检阅士兵", null, isEnabled: true, "")
 		};
 		MultiSelectionInquiryData data = new MultiSelectionInquiryData("你现在想做什么？", "请选择终端功能：", list, isExitShown: true, 1, 1, "确定", "关闭", delegate(List<InquiryElement> selected)
 		{
@@ -165,6 +166,11 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 			else if (string.Equals(text, "weekly_reports", StringComparison.Ordinal))
 			{
 				OpenWeeklyReportBrowser();
+			}
+			else if (string.Equals(text, "troop_inspection", StringComparison.Ordinal))
+			{
+				CloseTerminal();
+				TroopInspectionBehavior.OpenInspectionFromTerminal();
 			}
 			else
 			{
@@ -416,6 +422,8 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 			return "马商";
 		case RewardSystemBehavior.SettlementMerchantKind.Goods:
 			return "杂货商";
+		case RewardSystemBehavior.SettlementMerchantKind.Blacksmith:
+			return "铁匠";
 		default:
 			return kind.ToString();
 		}

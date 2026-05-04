@@ -480,6 +480,34 @@ public static class AIConfigHandler
 		return Regex.Replace(text.Trim(), "(\\r?\\n){3,}", Environment.NewLine + Environment.NewLine);
 	}
 
+	public static string BuildActionPostprocessUserPrompt(string userPromptTemplate, string tagRules, string npcName, string historyText, string latestReplyBlock, string sharedItemList = null, string playerItemList = null, string debtHint = null, string marriagePlayerCandidates = null, string marriageTargetCandidates = null, string marriageFactHint = null, string runtimeContext = null)
+	{
+		string text = userPromptTemplate ?? "";
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return "";
+		}
+		sharedItemList = NormalizeActionPostprocessNameReferences(sharedItemList, npcName);
+		playerItemList = NormalizeActionPostprocessNameReferences(playerItemList, npcName);
+		debtHint = NormalizeActionPostprocessNameReferences(debtHint, npcName);
+		marriagePlayerCandidates = NormalizeActionPostprocessNameReferences(marriagePlayerCandidates, npcName);
+		marriageTargetCandidates = NormalizeActionPostprocessNameReferences(marriageTargetCandidates, npcName);
+		marriageFactHint = NormalizeActionPostprocessNameReferences(marriageFactHint, npcName);
+		runtimeContext = NormalizeActionPostprocessNameReferences(runtimeContext, npcName);
+		text = ReplaceActionPostprocessOptionalSection(text, "玩家可见装备：", "player_item_list", playerItemList);
+		text = ReplaceActionPostprocessOptionalSection(text, "{npc_name}的物品清单：", "shared_item_list", sharedItemList);
+		text = ReplaceActionPostprocessOptionalSection(text, "玩家家族可婚配未婚成员（事实清单）：", "marriage_player_candidates", marriagePlayerCandidates);
+		text = ReplaceActionPostprocessOptionalSection(text, "对方家族可婚配未婚成员（事实清单）：", "marriage_target_candidates", marriageTargetCandidates);
+		text = ReplaceActionPostprocessOptionalSection(text, "当前可直接成立的正规婚配组合与现有婚姻（事实清单）：", "marriage_fact_hint", marriageFactHint);
+		text = ReplaceActionPostprocessOptionalSection(text, "债务提示：", "debt_hint", debtHint);
+		text = ReplaceActionPostprocessOptionalSection(text, "运行时补充事实：", "runtime_context", runtimeContext);
+		text = text.Replace("{tag_rules}", string.IsNullOrWhiteSpace(tagRules) ? "（无）" : tagRules.Trim())
+			.Replace("{history}", string.IsNullOrWhiteSpace(historyText) ? "（无）" : historyText.Trim())
+			.Replace("{reply}", string.IsNullOrWhiteSpace(latestReplyBlock) ? "玩家: （无）\nNPC: （无）" : latestReplyBlock.Trim())
+			.Replace("{npc_name}", "NPC");
+		return Regex.Replace(text.Trim(), "(\\r?\\n){3,}", Environment.NewLine + Environment.NewLine);
+	}
+
 	public static string BuildActionPostprocessLatestReplyBlock(string playerText, string npcReplyText, string npcName, string historyText = null)
 	{
 		string text = NormalizeActionPostprocessDialogueText(playerText);
@@ -1032,6 +1060,18 @@ public static class AIConfigHandler
 		try
 		{
 			return ResolveConversationTargetHero() != null;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static bool IsNobleDeferenceRuntimeEligible(bool hasAnyHero)
+	{
+		try
+		{
+			return !hasAnyHero && (Clan.PlayerClan?.Tier ?? Hero.MainHero?.Clan?.Tier ?? 0) > 2;
 		}
 		catch
 		{
@@ -1696,6 +1736,39 @@ public static class AIConfigHandler
 		return ActionPostprocessEnabled && TryGetActionPostprocessConfig(out var _, out var _, out var _);
 	}
 
+	private static bool TryGetAuxiliarySimpleDialogueConfig(out string apiUrl, out string apiKey, out string modelName)
+	{
+		apiUrl = "";
+		apiKey = "";
+		modelName = "";
+		try
+		{
+			DuelSettings settings = DuelSettings.GetSettings();
+			if (settings == null)
+			{
+				return false;
+			}
+			apiUrl = DuelSettings.GetEffectiveApiUrl(settings.AuxiliaryApiUrl ?? "");
+			apiKey = (settings.AuxiliaryApiKey ?? "").Trim();
+			modelName = settings.GetEffectiveAuxiliaryModelName();
+			bool flag = !string.IsNullOrWhiteSpace(apiUrl) && !string.IsNullOrWhiteSpace(apiKey) && !string.IsNullOrWhiteSpace(modelName);
+			if (!flag)
+			{
+				LogAuxiliaryRouterTokenTrace("auxiliary_simple_dialogue_config_invalid", null, "[AUXILIARY SIMPLE DIALOGUE CONFIG]\nurl=" + (string.IsNullOrWhiteSpace(apiUrl) ? "(empty)" : apiUrl) + "\nmodel=" + (string.IsNullOrWhiteSpace(modelName) ? "(empty)" : modelName) + "\napiKey=" + (string.IsNullOrWhiteSpace(apiKey) ? "(empty)" : "(present)") + "\nreason=missing_required_field", 0);
+			}
+			return flag;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	public static bool CanUseAuxiliarySimpleDialogue()
+	{
+		return TryGetAuxiliarySimpleDialogueConfig(out var _, out var _, out var _);
+	}
+
 	private static object[] BuildAuxiliaryRouterMessages(string prompt)
 	{
 		return new object[2]
@@ -1728,6 +1801,33 @@ public static class AIConfigHandler
 				content = NormalizeAuxiliaryPlayerReferences(userPrompt ?? "")
 			}
 		};
+	}
+
+	private static object[] NormalizeAuxiliaryChatMessages(IEnumerable<object> messages)
+	{
+		try
+		{
+			JArray jArray = JArray.FromObject(messages ?? Array.Empty<object>());
+			List<object> list = new List<object>();
+			foreach (JToken item in jArray)
+			{
+				string role = (item?["role"]?.ToString() ?? "").Trim();
+				string content = NormalizeAuxiliaryPlayerReferences(item?["content"]?.ToString() ?? "");
+				if (!string.IsNullOrWhiteSpace(role) || !string.IsNullOrWhiteSpace(content))
+				{
+					list.Add(new
+					{
+						role,
+						content
+					});
+				}
+			}
+			return list.ToArray();
+		}
+		catch
+		{
+			return (messages ?? Array.Empty<object>()).ToArray();
+		}
 	}
 
 	private static string NormalizeAuxiliaryPlayerReferences(string text)
@@ -1898,6 +1998,49 @@ public static class AIConfigHandler
 		{
 			error = BuildAuxiliaryRouterExceptionText(ex);
 			LogAuxiliaryRouterTokenTrace("action_postprocess_exception", array, "[ACTION POSTPROCESS EXCEPTION]\nerror=" + error + "\nstack=\n" + (ex?.StackTrace ?? ""), 0);
+			return false;
+		}
+	}
+
+	public static bool TryCallAuxiliarySimpleDialogue(IEnumerable<object> messages, int maxTokens, float temperature, out string content, out string error)
+	{
+		content = "";
+		error = "";
+		if (!TryGetAuxiliarySimpleDialogueConfig(out var apiUrl, out var apiKey, out var modelName))
+		{
+			error = "auxiliary_simple_dialogue_config_invalid";
+			return false;
+		}
+		object[] array = NormalizeAuxiliaryChatMessages(messages);
+		try
+		{
+			string jsonBody = BuildAuxiliaryRouterRequestJsonForExternal(apiUrl, modelName, array, Math.Max(16, maxTokens), temperature, out var controlMode);
+			using HttpRequestMessage httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, apiUrl);
+			httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
+			httpRequestMessage.Content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
+			HttpResponseMessage result = DuelSettings.GlobalClient.SendAsync(httpRequestMessage).GetAwaiter().GetResult();
+			string text = result.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+			if (!result.IsSuccessStatusCode)
+			{
+				error = "http_" + (int)result.StatusCode;
+				LogAuxiliaryRouterTokenTrace("auxiliary_simple_dialogue_http_error", array, "[AUXILIARY SIMPLE DIALOGUE HTTP]\nurl=" + apiUrl + "\nmodel=" + modelName + "\ncontrol_mode=" + controlMode + "\nstatus=" + (int)result.StatusCode + " " + (result.ReasonPhrase ?? "") + "\nresponse_body=\n" + (text ?? ""), 0);
+				return false;
+			}
+			JObject jObject = JObject.Parse(text);
+			content = (jObject["choices"]?[0]?["message"]?["content"]?.ToString() ?? "").Trim();
+			if (string.IsNullOrWhiteSpace(content))
+			{
+				error = "empty_content";
+				LogAuxiliaryRouterTokenTrace("auxiliary_simple_dialogue_empty_content", array, "[AUXILIARY SIMPLE DIALOGUE HTTP]\nurl=" + apiUrl + "\nmodel=" + modelName + "\ncontrol_mode=" + controlMode + "\nstatus=" + (int)result.StatusCode + " " + (result.ReasonPhrase ?? "") + "\nresponse_body=\n" + (text ?? ""), 0);
+				return false;
+			}
+			LogAuxiliaryRouterTokenTrace("auxiliary_simple_dialogue_http", array, "[AUXILIARY SIMPLE DIALOGUE HTTP]\nurl=" + apiUrl + "\nmodel=" + modelName + "\ncontrol_mode=" + controlMode + "\nai_response=\n" + content + "\nraw_response=\n" + (text ?? ""), Logger.EstimateTokens(content));
+			return true;
+		}
+		catch (Exception ex)
+		{
+			error = BuildAuxiliaryRouterExceptionText(ex);
+			LogAuxiliaryRouterTokenTrace("auxiliary_simple_dialogue_exception", array, "[AUXILIARY SIMPLE DIALOGUE EXCEPTION]\nerror=" + error + "\nstack=\n" + (ex?.StackTrace ?? ""), 0);
 			return false;
 		}
 	}
@@ -2099,14 +2242,10 @@ public static class AIConfigHandler
 
 	private static string BuildAuxiliaryGuardrailRoutingPrompt(string userText, string secondaryText, string runtimeGuardrailContext, List<GuardrailAuxiliaryTopic> topics, int topN)
 	{
+		string text = NormalizeSemanticText(secondaryText);
+		string text2 = NormalizeSemanticText(userText);
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.AppendLine("你是一个对话检索工具，请分析如下对话，判断和什么话题有关。");
-		stringBuilder.AppendLine();
-		stringBuilder.AppendLine("当前玩家输入：");
-		stringBuilder.AppendLine(string.IsNullOrWhiteSpace(userText) ? "（无）" : NormalizeSemanticText(userText));
-		stringBuilder.AppendLine();
-		stringBuilder.AppendLine("场景互动历史（往上3轮对话）：");
-		stringBuilder.AppendLine(BuildAuxiliaryGuardrailHistoryBlock(runtimeGuardrailContext, secondaryText));
 		for (int i = 0; i < topics.Count; i++)
 		{
 			GuardrailAuxiliaryTopic guardrailAuxiliaryTopic = topics[i];
@@ -2115,7 +2254,14 @@ public static class AIConfigHandler
 				stringBuilder.AppendLine(guardrailAuxiliaryTopic.Number + "：" + guardrailAuxiliaryTopic.Label);
 			}
 		}
-		stringBuilder.AppendLine("请选择最相似的话题，你最多输出" + Math.Max(1, topN) + "个话题，如果你认为对话内容和已有话题毫不相干，可以输出0，(格式：数字,数字,,,,,,)不要输出其他任何内容。");
+		stringBuilder.AppendLine();
+		stringBuilder.AppendLine("场景互动历史（往上3轮对话）：");
+		stringBuilder.AppendLine(BuildAuxiliaryGuardrailHistoryBlock(runtimeGuardrailContext, secondaryText));
+		stringBuilder.AppendLine();
+		stringBuilder.AppendLine("*最新NPC与玩家对话*：");
+		stringBuilder.Append("NPC: ").AppendLine(string.IsNullOrWhiteSpace(text) ? "（无）" : text);
+		stringBuilder.Append("玩家: ").AppendLine(string.IsNullOrWhiteSpace(text2) ? "（无）" : text2);
+		stringBuilder.AppendLine("请选择最相似的几个话题，你最多输出" + Math.Max(1, topN) + "个话题，如果你认为对话内容和已有话题毫不相干，可以只输出0来节省token，(格式：数字,数字,,,,,,)不要输出其他任何内容，话题以*最新NPC与玩家对话*为优先，场景对话历史做辅助");
 		return stringBuilder.ToString().Trim();
 	}
 
@@ -3578,6 +3724,10 @@ public static class AIConfigHandler
 					continue;
 				}
 				string text = (guardrailRuleHit.RuleId ?? "").Trim();
+				if (string.Equals(text, "noble_deference", StringComparison.OrdinalIgnoreCase) && !IsNobleDeferenceRuntimeEligible(hasAnyHero))
+				{
+					continue;
+				}
 				string value = (guardrailRuleHit.Instruction ?? "").Trim();
 				if (!hasAnyHero && dictionary != null)
 				{
@@ -3884,7 +4034,13 @@ public static class AIConfigHandler
 			Hero hero = targetHero ?? ResolveConversationTargetHero();
 			CharacterObject characterObject = targetCharacter ?? ResolveConversationTargetCharacter();
 			string text = ApplyPlayerDisplayNameToGuardrailText(_guardrail?.Reward?.Instruction ?? "");
-			return ApplyRuntimeTemplate(text, BuildRewardRuntimeTokens(hero, characterObject));
+			string text2 = ApplyRuntimeTemplate(text, BuildRewardRuntimeTokens(hero, characterObject));
+			string text3 = RewardSystemBehavior.Instance?.BuildNotableMarketRewardInstruction(hero) ?? "";
+			if (!string.IsNullOrWhiteSpace(text3))
+			{
+				text2 = (text2.TrimEnd() + "\n" + text3.Trim()).Trim();
+			}
+			return text2;
 		}
 		catch
 		{

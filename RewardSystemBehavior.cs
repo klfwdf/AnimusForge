@@ -26,6 +26,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 	{
 		None,
 		Weapon,
+		Blacksmith,
 		Armor,
 		Horse,
 		Goods
@@ -4441,6 +4442,11 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		return hero?.Gold ?? 0;
 	}
 
+	public int GetRewardPostprocessGoldForHero(Hero hero)
+	{
+		return GetHeroGold(hero);
+	}
+
 	private static bool TryResolveHeroMapOrigin(Hero hero, out Vec2 origin)
 	{
 		origin = Vec2.Invalid;
@@ -5304,8 +5310,10 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		switch (character.Occupation)
 		{
 		case Occupation.Weaponsmith:
-		case Occupation.Blacksmith:
 			kind = SettlementMerchantKind.Weapon;
+			return true;
+		case Occupation.Blacksmith:
+			kind = SettlementMerchantKind.Blacksmith;
 			return true;
 		case Occupation.Armorer:
 			kind = SettlementMerchantKind.Armor;
@@ -5325,10 +5333,11 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 	{
 		return kind switch
 		{
-			SettlementMerchantKind.Weapon => "武器商人", 
-			SettlementMerchantKind.Armor => "盔甲商人", 
-			SettlementMerchantKind.Horse => "马匹贩子", 
-			SettlementMerchantKind.Goods => "杂货商人", 
+			SettlementMerchantKind.Weapon => "武器商人",
+			SettlementMerchantKind.Blacksmith => "铁匠",
+			SettlementMerchantKind.Armor => "盔甲商人",
+			SettlementMerchantKind.Horse => "马匹贩子",
+			SettlementMerchantKind.Goods => "杂货商人",
 			_ => "商贩", 
 		};
 	}
@@ -5337,10 +5346,11 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 	{
 		return kind switch
 		{
-			SettlementMerchantKind.Weapon => "武器市场", 
-			SettlementMerchantKind.Armor => "盔甲市场", 
-			SettlementMerchantKind.Horse => "马匹市场", 
-			SettlementMerchantKind.Goods => "杂货市场", 
+			SettlementMerchantKind.Weapon => "武器市场",
+			SettlementMerchantKind.Blacksmith => "铁匠铺",
+			SettlementMerchantKind.Armor => "盔甲市场",
+			SettlementMerchantKind.Horse => "马匹市场",
+			SettlementMerchantKind.Goods => "杂货市场",
 			_ => "城镇市场", 
 		};
 	}
@@ -5349,10 +5359,11 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 	{
 		return kind switch
 		{
-			SettlementMerchantKind.Weapon => "弓、弩、箭、弩矢、投掷武器和盾牌都归入你的武器市场。", 
-			SettlementMerchantKind.Armor => "头盔、身甲、臂甲、腿甲、披风等护具都归入你的盔甲市场。", 
-			SettlementMerchantKind.Horse => "马匹与马具都归入你的马匹市场。", 
-			SettlementMerchantKind.Goods => "粮食、贸易品和一般杂货都归入你的杂货市场。", 
+			SettlementMerchantKind.Weapon => "弓、弩、箭、弩矢、投掷武器和盾牌都归入你的武器市场。",
+			SettlementMerchantKind.Blacksmith => "近战武器、投掷武器和盾牌都归入你的铁匠铺。",
+			SettlementMerchantKind.Armor => "头盔、身甲、臂甲、腿甲、披风等护具都归入你的盔甲市场。",
+			SettlementMerchantKind.Horse => "马匹与马具都归入你的马匹市场。",
+			SettlementMerchantKind.Goods => "粮食、贸易品和一般杂货都归入你的杂货市场。",
 			_ => "", 
 		};
 	}
@@ -5365,6 +5376,16 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 		switch (kind)
 		{
+		case SettlementMerchantKind.Blacksmith:
+		{
+			ItemObject.ItemTypeEnum type3 = item.Type;
+			ItemObject.ItemTypeEnum itemTypeEnum3 = type3;
+			if ((uint)(itemTypeEnum3 - 2) <= 8u || itemTypeEnum3 == ItemObject.ItemTypeEnum.Shield)
+			{
+				return true;
+			}
+			return false;
+		}
 		case SettlementMerchantKind.Weapon:
 		{
 			ItemObject.ItemTypeEnum type2 = item.Type;
@@ -5413,6 +5434,16 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			stringBuilder.AppendLine(settlementMerchantSpecialHint);
 		}
 		return stringBuilder.ToString().Trim();
+	}
+
+	public string BuildNotableMarketRewardInstruction(Hero hero)
+	{
+		if (hero == null || !hero.IsNotable)
+		{
+			return "";
+		}
+		string text = hero.Name?.ToString() ?? "该名人";
+		return "【名人交易补充】" + text + "是定居点名人，若本轮涉及买卖、赊账或物品转移，只能依据系统给出的真实财富、库存、可见装备和债务事实判断；没有系统事实确认玩家已付款或交货时，不要把玩家口头声称当成已经发生。";
 	}
 
 	public string BuildSettlementMerchantInventorySummaryForAI(CharacterObject character, Settlement settlement = null, int maxItems = 200, bool includeGuidePrice = true)

@@ -945,7 +945,7 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior, IAgentStateDeci
 		}
 		if (_deploymentSkipEarliestTime < 0f)
 		{
-			_deploymentSkipEarliestTime = num + 0.6f;
+			_deploymentSkipEarliestTime = num + 0.05f;
 		}
 		if (num < _deploymentSkipEarliestTime)
 		{
@@ -969,19 +969,30 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior, IAgentStateDeci
 		{
 			return;
 		}
-		FindMainAndTargetAgents();
-		if (_mainAgent == null || !_mainAgent.IsActive() || _targetAgent == null || !_targetAgent.IsActive())
-		{
-			return;
-		}
 		try
 		{
+			base.Mission.SetMissionMode(MissionMode.Battle, atStart: false);
+			bool flag2 = false;
+			try
+			{
+				flag2 = base.Mission.Mode == MissionMode.Battle;
+			}
+			catch
+			{
+				flag2 = false;
+			}
+			if (flag2)
+			{
+				_deploymentSkipApplied = true;
+				Logger.Log("MeetingBattle", $"Meeting mission deployment skipped via Mission.SetMissionMode(Battle). t={num:0.00}s");
+				return;
+			}
 			DeploymentHandler missionBehavior = base.Mission.GetMissionBehavior<DeploymentHandler>();
 			if (missionBehavior != null)
 			{
 				missionBehavior.FinishDeployment();
 				_deploymentSkipApplied = true;
-				Logger.Log("MeetingBattle", $"Meeting mission deployment auto-ready triggered via DeploymentHandler.FinishDeployment(). t={num:0.00}s");
+				Logger.Log("MeetingBattle", $"Meeting mission deployment fallback-triggered via DeploymentHandler.FinishDeployment(). t={num:0.00}s");
 			}
 		}
 		catch (Exception ex)
@@ -2390,6 +2401,10 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior, IAgentStateDeci
 	{
 		base.OnScoreHit(affectedAgent, affectorAgent, attackerWeapon, isBlocked, isSiegeEngineHit, in blow, in collisionData, damagedHp, hitDistance, shotDifficulty);
 		if (MeetingBattleRuntime.IsCombatEscalated || damagedHp <= 0f || affectorAgent == null || affectedAgent == null)
+		{
+			return;
+		}
+		if (!affectedAgent.IsHuman)
 		{
 			return;
 		}

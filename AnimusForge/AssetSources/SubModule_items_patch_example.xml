@@ -1,0 +1,11 @@
+<Xmls>
+  <XmlNode>
+    <XmlName id="Items" path="animusforge_scene_gold_items" />
+    <IncludedGameTypes>
+      <GameType value="Campaign" />
+      <GameType value="CampaignStoryMode" />
+      <GameType value="CustomGame" />
+      <GameType value="EditorGame" />
+    </IncludedGameTypes>
+  </XmlNode>
+</Xmls>

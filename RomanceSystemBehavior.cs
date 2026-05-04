@@ -2949,8 +2949,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		string text5 = BuildMarriagePostprocessTargetCandidatesBlock(speaker);
 		string text6 = BuildMarriagePostprocessFactHintBlock(speaker);
 		string text7 = AIConfigHandler.BuildActionPostprocessSystemPrompt(text2, text3, speaker?.Name?.ToString() ?? "NPC", null, null, null, text4, text5, text6);
-		string text8 = actionPostprocessUserPromptTemplate.Replace("{history}", "（无）")
-			.Replace("{reply}", text);
+		string text8 = AIConfigHandler.BuildActionPostprocessUserPrompt(actionPostprocessUserPromptTemplate, text2, speaker?.Name?.ToString() ?? "NPC", "（无）", text, null, null, null, text4, text5, text6);
 		if (!AIConfigHandler.TryCallAuxiliaryActionPostprocess(text7, text8, 5000, 0f, out var content, out var error))
 		{
 			Logger.Log("Romance", "[MarriagePostprocess] 调用失败: " + error);
