@@ -14,6 +14,7 @@ using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Roster;
 using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.CampaignSystem.Settlements.Locations;
+using TaleWorlds.CampaignSystem.Settlements.Workshops;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
@@ -22,6 +23,8 @@ namespace AnimusForge;
 
 public class RewardSystemBehavior : CampaignBehaviorBase
 {
+	private const string NotableMarketPromptPrefix = "market@";
+
 	public enum SettlementMerchantKind
 	{
 		None,
@@ -4444,6 +4447,11 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 
 	public int GetRewardPostprocessGoldForHero(Hero hero)
 	{
+		Settlement settlement = ResolveNotableMarketSettlement(hero);
+		if (IsNotableMarketHero(hero, settlement))
+		{
+			return Math.Max(0, settlement?.SettlementComponent?.Gold ?? 0);
+		}
 		return GetHeroGold(hero);
 	}
 
@@ -5415,6 +5423,431 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private static Settlement ResolveNotableMarketSettlement(Hero hero, Settlement settlement = null)
+	{
+		if (hero == null)
+		{
+			return null;
+		}
+		settlement = settlement ?? Settlement.CurrentSettlement;
+		if (settlement != null && settlement.IsTown)
+		{
+			return settlement;
+		}
+		if (hero.CurrentSettlement != null && hero.CurrentSettlement.IsTown)
+		{
+			return hero.CurrentSettlement;
+		}
+		return null;
+	}
+
+	private static bool IsNotableInSettlement(Hero hero, Settlement settlement)
+	{
+		if (hero == null || settlement == null)
+		{
+			return false;
+		}
+		try
+		{
+			if (settlement.Notables != null && settlement.Notables.Contains(hero))
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		return hero.CurrentSettlement == settlement;
+	}
+
+	private static bool IsNotableMarketHero(Hero hero, Settlement settlement = null)
+	{
+		settlement = ResolveNotableMarketSettlement(hero, settlement);
+		return hero != null && (hero.IsArtisan || hero.IsMerchant) && settlement != null && settlement.IsTown && settlement.ItemRoster != null && IsNotableInSettlement(hero, settlement);
+	}
+
+	private static string BuildNotableMarketPromptStringId(EquipmentElement equipmentElement)
+	{
+		string text = BuildSettlementMerchantInventoryKey(equipmentElement);
+		return string.IsNullOrWhiteSpace(text) ? "" : (NotableMarketPromptPrefix + text);
+	}
+
+	private static bool TryParseNotableMarketPromptStringId(string promptStringId, out string settlementPromptStringId)
+	{
+		settlementPromptStringId = "";
+		if (string.IsNullOrWhiteSpace(promptStringId))
+		{
+			return false;
+		}
+		string text = promptStringId.Trim();
+		if (!text.StartsWith(NotableMarketPromptPrefix, StringComparison.OrdinalIgnoreCase))
+		{
+			return false;
+		}
+		settlementPromptStringId = text.Substring(NotableMarketPromptPrefix.Length).Trim();
+		return TryParseSettlementMerchantPromptStringId(settlementPromptStringId, out var itemId, out var _unused) && !string.IsNullOrWhiteSpace(itemId);
+	}
+
+	private static string NormalizeNotableTitleText(Hero hero)
+	{
+		if (hero == null)
+		{
+			return "";
+		}
+		StringBuilder stringBuilder = new StringBuilder();
+		try
+		{
+			stringBuilder.Append(hero.CharacterObject?.OriginalCharacter?.StringId ?? "").Append(' ');
+			stringBuilder.Append(hero.CharacterObject?.OriginalCharacter?.Name?.ToString() ?? "").Append(' ');
+		}
+		catch
+		{
+		}
+		try
+		{
+			stringBuilder.Append(hero.CharacterObject?.StringId ?? "").Append(' ');
+			stringBuilder.Append(hero.CharacterObject?.Name?.ToString() ?? "").Append(' ');
+		}
+		catch
+		{
+		}
+		try
+		{
+			stringBuilder.Append(hero.Name?.ToString() ?? "");
+		}
+		catch
+		{
+		}
+		return stringBuilder.ToString().ToLowerInvariant();
+	}
+
+	private static bool NotableTitleContainsAny(string titleText, params string[] tokens)
+	{
+		if (string.IsNullOrWhiteSpace(titleText) || tokens == null)
+		{
+			return false;
+		}
+		foreach (string token in tokens)
+		{
+			if (!string.IsNullOrWhiteSpace(token) && titleText.IndexOf(token, StringComparison.OrdinalIgnoreCase) >= 0)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private static HashSet<ItemCategory> CreateItemCategorySet(params ItemCategory[] categories)
+	{
+		HashSet<ItemCategory> hashSet = new HashSet<ItemCategory>();
+		if (categories == null)
+		{
+			return hashSet;
+		}
+		foreach (ItemCategory category in categories)
+		{
+			if (category != null)
+			{
+				hashSet.Add(category);
+			}
+		}
+		return hashSet;
+	}
+
+	private static bool ItemCategoryIsAny(ItemObject item, params ItemCategory[] categories)
+	{
+		return item != null && CreateItemCategorySet(categories).Contains(item.ItemCategory);
+	}
+
+	private static bool IsSettlementWeaponLikeItem(ItemObject item)
+	{
+		if (item == null)
+		{
+			return false;
+		}
+		ItemObject.ItemTypeEnum type = item.Type;
+		return (uint)(type - 2) <= 10u || (uint)(type - 18) <= 2u;
+	}
+
+	private static bool IsSettlementArmorLikeItem(ItemObject item)
+	{
+		if (item == null)
+		{
+			return false;
+		}
+		ItemObject.ItemTypeEnum type = item.Type;
+		return (uint)(type - 14) <= 3u || (uint)(type - 23) <= 1u;
+	}
+
+	private static bool IsHorseNotableMarketItem(ItemObject item)
+	{
+		return item != null && (item.HasHorseComponent || ItemCategoryIsAny(item, DefaultItemCategories.Horse, DefaultItemCategories.WarHorse, DefaultItemCategories.NobleHorse, DefaultItemCategories.PackAnimal));
+	}
+
+	private static bool IsRegularMerchantNotableMarketItem(ItemObject item)
+	{
+		if (item == null || IsSettlementWeaponLikeItem(item) || IsSettlementArmorLikeItem(item) || item.Type == ItemObject.ItemTypeEnum.HorseHarness)
+		{
+			return false;
+		}
+		return item.Type == ItemObject.ItemTypeEnum.Goods || item.Type == ItemObject.ItemTypeEnum.Animal || IsHorseNotableMarketItem(item);
+	}
+
+	private static HashSet<ItemCategory> BuildWorkshopOutputCategorySet(WorkshopType workshopType)
+	{
+		HashSet<ItemCategory> hashSet = new HashSet<ItemCategory>();
+		if (workshopType?.Productions == null)
+		{
+			return hashSet;
+		}
+		foreach (WorkshopType.Production production in workshopType.Productions)
+		{
+			if (production.Outputs == null)
+			{
+				continue;
+			}
+			foreach (ValueTuple<ItemCategory, int> output in production.Outputs)
+			{
+				if (output.Item1 != null)
+				{
+					hashSet.Add(output.Item1);
+				}
+			}
+		}
+		return hashSet;
+	}
+
+	private static HashSet<ItemCategory> BuildOwnedVisibleWorkshopOutputCategorySet(Hero hero, Settlement settlement)
+	{
+		HashSet<ItemCategory> hashSet = new HashSet<ItemCategory>();
+		try
+		{
+			if (hero?.OwnedWorkshops == null)
+			{
+				return hashSet;
+			}
+			foreach (Workshop workshop in hero.OwnedWorkshops)
+			{
+				WorkshopType workshopType = workshop?.WorkshopType;
+				if (workshopType == null || workshopType.IsHidden || (settlement != null && workshop.Settlement != settlement))
+				{
+					continue;
+				}
+				foreach (ItemCategory category in BuildWorkshopOutputCategorySet(workshopType))
+				{
+					hashSet.Add(category);
+				}
+			}
+		}
+		catch
+		{
+		}
+		return hashSet;
+	}
+
+	private static HashSet<ItemCategory> BuildHiddenArtisanOutputCategorySet()
+	{
+		try
+		{
+			HashSet<ItemCategory> hashSet = BuildWorkshopOutputCategorySet(WorkshopType.Find("artisans"));
+			if (hashSet.Count > 0)
+			{
+				return hashSet;
+			}
+		}
+		catch
+		{
+		}
+		return CreateItemCategorySet(DefaultItemCategories.Meat, DefaultItemCategories.Hides, DefaultItemCategories.Wine, DefaultItemCategories.Tools, DefaultItemCategories.Oil, DefaultItemCategories.Garment, DefaultItemCategories.LightArmor, DefaultItemCategories.MediumArmor, DefaultItemCategories.HeavyArmor, DefaultItemCategories.UltraArmor, DefaultItemCategories.MeleeWeapons1, DefaultItemCategories.MeleeWeapons2, DefaultItemCategories.MeleeWeapons3, DefaultItemCategories.MeleeWeapons4, DefaultItemCategories.MeleeWeapons5, DefaultItemCategories.RangedWeapons1, DefaultItemCategories.RangedWeapons2, DefaultItemCategories.RangedWeapons3, DefaultItemCategories.RangedWeapons4, DefaultItemCategories.RangedWeapons5, DefaultItemCategories.Arrows, DefaultItemCategories.Shield1, DefaultItemCategories.Shield2, DefaultItemCategories.Shield3, DefaultItemCategories.Shield4, DefaultItemCategories.Shield5, DefaultItemCategories.HorseEquipment, DefaultItemCategories.HorseEquipment2, DefaultItemCategories.HorseEquipment3, DefaultItemCategories.HorseEquipment4, DefaultItemCategories.HorseEquipment5);
+	}
+
+	private static bool HasSettlementNotableMarketItem(Settlement settlement, Func<ItemObject, bool> predicate)
+	{
+		if (settlement?.ItemRoster == null || predicate == null)
+		{
+			return false;
+		}
+		ItemRoster itemRoster = settlement.ItemRoster;
+		for (int i = 0; i < itemRoster.Count; i++)
+		{
+			ItemRosterElement elementCopyAtIndex = itemRoster.GetElementCopyAtIndex(i);
+			ItemObject item = elementCopyAtIndex.EquipmentElement.Item;
+			if (item != null && elementCopyAtIndex.Amount > 0 && predicate(item))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private static bool MatchesMerchantNotableMarketItem(Hero hero, ItemObject item, Settlement settlement)
+	{
+		string titleText = NormalizeNotableTitleText(hero);
+		if (NotableTitleContainsAny(titleText, "vintner", "wineseller"))
+		{
+			return ItemCategoryIsAny(item, DefaultItemCategories.Wine);
+		}
+		if (NotableTitleContainsAny(titleText, "saltpanner"))
+		{
+			return ItemCategoryIsAny(item, DefaultItemCategories.Salt);
+		}
+		if (NotableTitleContainsAny(titleText, "dateseller"))
+		{
+			return ItemCategoryIsAny(item, DefaultItemCategories.DateFruit);
+		}
+		if (NotableTitleContainsAny(titleText, "horsetrader"))
+		{
+			return IsHorseNotableMarketItem(item);
+		}
+		if (NotableTitleContainsAny(titleText, "woolseller", "wooltrader"))
+		{
+			return ItemCategoryIsAny(item, DefaultItemCategories.Wool);
+		}
+		if (NotableTitleContainsAny(titleText, "dyer", "mercer"))
+		{
+			return ItemCategoryIsAny(item, DefaultItemCategories.Velvet, DefaultItemCategories.Linen, DefaultItemCategories.Cloth, DefaultItemCategories.Garment, DefaultItemCategories.Felt);
+		}
+		if (NotableTitleContainsAny(titleText, "silkseller", "silkvendor"))
+		{
+			return ItemCategoryIsAny(item, DefaultItemCategories.Velvet);
+		}
+		if (NotableTitleContainsAny(titleText, "minter", "coppermonger"))
+		{
+			bool hasPreciousStock = HasSettlementNotableMarketItem(settlement, x => ItemCategoryIsAny(x, DefaultItemCategories.Silver, DefaultItemCategories.Jewelry));
+			return hasPreciousStock ? ItemCategoryIsAny(item, DefaultItemCategories.Silver, DefaultItemCategories.Jewelry) : ItemCategoryIsAny(item, DefaultItemCategories.Iron);
+		}
+		if (NotableTitleContainsAny(titleText, "furtrader"))
+		{
+			return ItemCategoryIsAny(item, DefaultItemCategories.Fur);
+		}
+		if (NotableTitleContainsAny(titleText, "mariner"))
+		{
+			return ItemCategoryIsAny(item, DefaultItemCategories.Fish);
+		}
+		if (NotableTitleContainsAny(titleText, "incensemonger", "incensetrader", "spicetrader", "appraiser", "benefactor", "heiress"))
+		{
+			return ItemCategoryIsAny(item, DefaultItemCategories.Jewelry, DefaultItemCategories.Velvet, DefaultItemCategories.Oil, DefaultItemCategories.Silver, DefaultItemCategories.Fur);
+		}
+		return IsRegularMerchantNotableMarketItem(item);
+	}
+
+	private static HashSet<ItemCategory> BuildArtisanTitleOutputCategorySet(Hero hero)
+	{
+		string titleText = NormalizeNotableTitleText(hero);
+		if (NotableTitleContainsAny(titleText, "brewer", "酿酒", "啤酒"))
+		{
+			return CreateItemCategorySet(DefaultItemCategories.Beer);
+		}
+		if (NotableTitleContainsAny(titleText, "carpenter", "cooper", "wheeler", "turner", "木匠", "桶匠", "箍桶", "车轮", "轮匠", "旋木", "车床"))
+		{
+			return CreateItemCategorySet(DefaultItemCategories.Wood, DefaultItemCategories.Planks, DefaultItemCategories.Tools);
+		}
+		if (NotableTitleContainsAny(titleText, "chandler", "蜡烛", "皂"))
+		{
+			return CreateItemCategorySet(DefaultItemCategories.Oil);
+		}
+		if (NotableTitleContainsAny(titleText, "dyer", "weaver", "织布", "染工", "染织"))
+		{
+			return CreateItemCategorySet(DefaultItemCategories.Cloth, DefaultItemCategories.Linen, DefaultItemCategories.Velvet, DefaultItemCategories.Garment, DefaultItemCategories.Felt);
+		}
+		if (NotableTitleContainsAny(titleText, "miller", "磨坊", "磨工"))
+		{
+			return CreateItemCategorySet(DefaultItemCategories.Grain);
+		}
+		if (NotableTitleContainsAny(titleText, "smith", "铁匠"))
+		{
+			return CreateItemCategorySet(DefaultItemCategories.Tools, DefaultItemCategories.MeleeWeapons1, DefaultItemCategories.MeleeWeapons2, DefaultItemCategories.MeleeWeapons3, DefaultItemCategories.MeleeWeapons4, DefaultItemCategories.MeleeWeapons5, DefaultItemCategories.RangedWeapons1, DefaultItemCategories.RangedWeapons2, DefaultItemCategories.RangedWeapons3, DefaultItemCategories.RangedWeapons4, DefaultItemCategories.RangedWeapons5, DefaultItemCategories.Arrows, DefaultItemCategories.Shield1, DefaultItemCategories.Shield2, DefaultItemCategories.Shield3, DefaultItemCategories.Shield4, DefaultItemCategories.Shield5, DefaultItemCategories.LightArmor, DefaultItemCategories.MediumArmor, DefaultItemCategories.HeavyArmor, DefaultItemCategories.UltraArmor, DefaultItemCategories.HorseEquipment, DefaultItemCategories.HorseEquipment2, DefaultItemCategories.HorseEquipment3, DefaultItemCategories.HorseEquipment4, DefaultItemCategories.HorseEquipment5);
+		}
+		if (NotableTitleContainsAny(titleText, "tanner", "制革", "皮革"))
+		{
+			return CreateItemCategorySet(DefaultItemCategories.Leather);
+		}
+		return new HashSet<ItemCategory>();
+	}
+
+	private static bool MatchesArtisanNotableMarketItem(Hero hero, ItemObject item, Settlement settlement)
+	{
+		if (item == null)
+		{
+			return false;
+		}
+		HashSet<ItemCategory> visibleWorkshopOutputs = BuildOwnedVisibleWorkshopOutputCategorySet(hero, settlement);
+		if (visibleWorkshopOutputs.Count > 0)
+		{
+			return visibleWorkshopOutputs.Contains(item.ItemCategory);
+		}
+		HashSet<ItemCategory> titleOutputs = BuildArtisanTitleOutputCategorySet(hero);
+		if (titleOutputs.Count > 0)
+		{
+			return titleOutputs.Contains(item.ItemCategory);
+		}
+		return BuildHiddenArtisanOutputCategorySet().Contains(item.ItemCategory);
+	}
+
+	private static bool MatchesNotableMarketInventory(Hero hero, ItemObject item, Settlement settlement)
+	{
+		if (hero == null || item == null)
+		{
+			return false;
+		}
+		if (hero.IsArtisan)
+		{
+			return MatchesArtisanNotableMarketItem(hero, item, settlement);
+		}
+		if (hero.IsMerchant)
+		{
+			return MatchesMerchantNotableMarketItem(hero, item, settlement);
+		}
+		return false;
+	}
+
+	private List<RewardItemInfo> BuildNotableMarketItems(Hero hero, Settlement settlement = null, int maxItems = 0)
+	{
+		List<RewardItemInfo> list = new List<RewardItemInfo>();
+		settlement = ResolveNotableMarketSettlement(hero, settlement);
+		if (!IsNotableMarketHero(hero, settlement))
+		{
+			return list;
+		}
+		Dictionary<string, RewardItemInfo> dictionary = new Dictionary<string, RewardItemInfo>(StringComparer.OrdinalIgnoreCase);
+		ItemRoster itemRoster = settlement.ItemRoster;
+		for (int i = 0; i < itemRoster.Count; i++)
+		{
+			ItemRosterElement elementCopyAtIndex = itemRoster.GetElementCopyAtIndex(i);
+			EquipmentElement equipmentElement = elementCopyAtIndex.EquipmentElement;
+			ItemObject item = equipmentElement.Item;
+			if (item == null || elementCopyAtIndex.Amount <= 0 || !MatchesNotableMarketInventory(hero, item, settlement))
+			{
+				continue;
+			}
+			string text = BuildNotableMarketPromptStringId(equipmentElement);
+			if (string.IsNullOrWhiteSpace(text))
+			{
+				continue;
+			}
+			if (!dictionary.TryGetValue(text, out var value))
+			{
+				value = (dictionary[text] = new RewardItemInfo
+				{
+					Item = item,
+					StringId = item.StringId ?? "",
+					PromptStringId = text,
+					ModifierStringId = equipmentElement.ItemModifier?.StringId ?? "",
+					Name = "[城镇市场] " + BuildSettlementMerchantDisplayName(equipmentElement),
+					Count = 0,
+					EquipmentElement = equipmentElement
+				});
+			}
+			value.Count += elementCopyAtIndex.Amount;
+		}
+		IEnumerable<RewardItemInfo> enumerable = dictionary.Values.OrderByDescending((RewardItemInfo x) => x.Count).ThenBy((RewardItemInfo x) => x.Name, StringComparer.Ordinal);
+		if (maxItems > 0)
+		{
+			enumerable = enumerable.Take(maxItems);
+		}
+		return enumerable.ToList();
+	}
+
 	public string BuildSettlementMerchantRewardInstruction(CharacterObject character)
 	{
 		if (!TryGetSettlementMerchantKind(character, out var kind))
@@ -5438,12 +5871,19 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 
 	public string BuildNotableMarketRewardInstruction(Hero hero)
 	{
-		if (hero == null || !hero.IsNotable)
+		Settlement settlement = ResolveNotableMarketSettlement(hero);
+		if (!IsNotableMarketHero(hero, settlement))
 		{
 			return "";
 		}
-		string text = hero.Name?.ToString() ?? "该名人";
-		return "【名人交易补充】" + text + "是定居点名人，若本轮涉及买卖、赊账或物品转移，只能依据系统给出的真实财富、库存、可见装备和债务事实判断；没有系统事实确认玩家已付款或交货时，不要把玩家口头声称当成已经发生。";
+		string text = settlement?.Name?.ToString() ?? "当前城镇";
+		string text2 = hero.IsArtisan ? "工匠要人" : "商人要人";
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.AppendLine("【要人市场补充】你是" + text + "的" + text2 + "，商铺清单中的 [城镇市场] 条目来自当前城镇市场总库存，不是你的私人财物。");
+		stringBuilder.AppendLine("后处理清单中内部 token 以 market@ 开头的条目，成交时扣城镇市场库存；普通物品条目仍扣你的个人库存或装备。");
+		stringBuilder.AppendLine("如果你的称号或工坊有强专精，你只能从商铺清单里出售符合该专精的货物；专精无货时你什么都不卖，请不要虚构任何物品。");
+		stringBuilder.AppendLine("金币交易代表城镇市场现金，优先从当前城镇金库扣除；债务、信任和事实仍记在你这个要人名下。");
+		return stringBuilder.ToString().Trim();
 	}
 
 	public string BuildSettlementMerchantInventorySummaryForAI(CharacterObject character, Settlement settlement = null, int maxItems = 200, bool includeGuidePrice = true)
@@ -5922,6 +6362,9 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 
 	public List<RewardItemInfo> BuildHeroRewardPostprocessItems(Hero hero, int maxItems = 0)
 	{
+		List<RewardItemInfo> marketItems = BuildNotableMarketItems(hero)
+			.Where((RewardItemInfo x) => x != null && x.Item != null && x.Count > 0)
+			.ToList();
 		List<RewardItemInfo> list = GetHeroInventoryItems(hero)
 			.Where((RewardItemInfo x) => x != null && x.Item != null && x.Count > 0)
 			.OrderByDescending((RewardItemInfo x) => x.Count)
@@ -5936,7 +6379,8 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			})
 			.OrderBy((RewardItemInfo x) => x.Name, StringComparer.Ordinal)
 			.ToList();
-		List<RewardItemInfo> list3 = new List<RewardItemInfo>(list.Count + list2.Count);
+		List<RewardItemInfo> list3 = new List<RewardItemInfo>(marketItems.Count + list.Count + list2.Count);
+		list3.AddRange(marketItems);
 		list3.AddRange(list);
 		list3.AddRange(list2);
 		if (maxItems > 0)
@@ -5991,7 +6435,10 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 
 	public string BuildInventorySummaryForAI(Hero hero, int maxItems = 200, bool includeGuidePrice = true, bool includePrivateBattleEquipment = false, int maxPrivateEquipmentItems = 32)
 	{
-		int heroGold = GetHeroGold(hero);
+		Settlement notableMarketSettlement = ResolveNotableMarketSettlement(hero);
+		bool isNotableMarketHero = IsNotableMarketHero(hero, notableMarketSettlement);
+		int heroGold = isNotableMarketHero ? GetRewardPostprocessGoldForHero(hero) : GetHeroGold(hero);
+		List<RewardItemInfo> notableMarketItems = isNotableMarketHero ? BuildNotableMarketItems(hero, notableMarketSettlement) : new List<RewardItemInfo>();
 		List<RewardItemInfo> heroInventoryItems = GetHeroInventoryItems(hero);
 		List<RewardItemInfo> heroBattleEquipmentItems = GetHeroBattleEquipmentItems(hero);
 		string text = hero?.Name?.ToString() ?? "该NPC";
@@ -6000,12 +6447,47 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		stringBuilder.Append("第纳尔: ").Append(heroGold).AppendLine();
 		if (includeGuidePrice)
 		{
-			stringBuilder.AppendLine("【价格说明】每个物品后面的 guidePrice 为指导单价（第纳尔/当前单位；箭矢、弩矢、标枪、飞刀等远程弹药按袋计）。");
+			stringBuilder.AppendLine(isNotableMarketHero ? "【价格说明】市场物品后面的 guidePrice 为当前城镇市场即时指导单价；个人物品仍按目标附近价格估算（第纳尔/当前单位；箭矢、弩矢、标枪、飞刀等远程弹药按袋计）。" : "【价格说明】每个物品后面的 guidePrice 为指导单价（第纳尔/当前单位；箭矢、弩矢、标枪、飞刀等远程弹药按袋计）。");
 		}
 		int num = 0;
+		if (isNotableMarketHero)
+		{
+			stringBuilder.AppendLine("【要人市场说明】以下市场库存来自当前城镇市场总库存，不是私人财物；成交时扣城镇库存。");
+			stringBuilder.AppendLine("库存物品：");
+			if (notableMarketItems != null && notableMarketItems.Count > 0)
+			{
+				foreach (RewardItemInfo marketItem in notableMarketItems)
+				{
+					stringBuilder.Append(marketItem.Name)
+						.Append(" | ");
+					AppendItemTypeField(stringBuilder, marketItem.Item);
+					stringBuilder.Append(" | ")
+						.Append(marketItem.Count)
+						.Append(GetItemQuantityUnit(marketItem.Item));
+					if (!string.IsNullOrWhiteSpace(marketItem.PromptStringId))
+					{
+						stringBuilder.Append(" | token=").Append(marketItem.PromptStringId);
+					}
+					if (includeGuidePrice && TryGetSettlementBuyPrice(notableMarketSettlement, marketItem.EquipmentElement, out var marketPrice))
+					{
+						stringBuilder.Append(" | guidePrice=").Append(Math.Max(1, marketPrice));
+					}
+					stringBuilder.AppendLine();
+					num++;
+					if (num >= maxItems)
+					{
+						break;
+					}
+				}
+			}
+			if (notableMarketItems == null || notableMarketItems.Count == 0)
+			{
+				stringBuilder.AppendLine("（你什么都不卖，请不要虚构任何物品。）");
+			}
+		}
 		if (heroInventoryItems != null && heroInventoryItems.Count > 0)
 		{
-			stringBuilder.AppendLine("库存物品：");
+			stringBuilder.AppendLine(isNotableMarketHero ? "个人库存物品：" : "库存物品：");
 			foreach (RewardItemInfo item in heroInventoryItems.OrderByDescending((RewardItemInfo i) => i.Count))
 			{
 				stringBuilder.Append(item.Name)
@@ -7427,17 +7909,17 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		try
 		{
 			Regex regex = new Regex("\\[ACTION:GIVE_GOLD:(\\d+)\\]", RegexOptions.IgnoreCase);
-			Regex regex2 = new Regex("\\[ACTION:GIVE_ITEM:([a-zA-Z0-9_]+):(\\d+)\\]", RegexOptions.IgnoreCase);
+			Regex regex2 = new Regex("\\[ACTION:GIVE_ITEM:([a-zA-Z0-9_@\\-]+):(\\d+)\\]", RegexOptions.IgnoreCase);
 			Regex regex3 = new Regex("\\[ACTION:DEBT_GOLD:(\\d+)\\]", RegexOptions.IgnoreCase);
 			Regex regex4 = new Regex("\\[ACTION:DEBT_ADD:(\\d+)\\]", RegexOptions.IgnoreCase);
-			Regex regex5 = new Regex("\\[ACTION:DEBT_ITEM:([a-zA-Z0-9_]+):(\\d+)\\]", RegexOptions.IgnoreCase);
+			Regex regex5 = new Regex("\\[ACTION:DEBT_ITEM:([a-zA-Z0-9_@\\-]+):(\\d+)\\]", RegexOptions.IgnoreCase);
 			Regex regex6 = new Regex("\\[ACTION:DEBT_(?:DUE_)?DAYS:(\\d+)\\]", RegexOptions.IgnoreCase);
 			Regex regex7 = new Regex("\\[ACTION:DEBT_DUE_ABS_DAY:(\\d+)\\]", RegexOptions.IgnoreCase);
 			Regex regex8 = new Regex("\\[ACTION:DEBT_DUE_DATE:(\\d+):([^\\]:]+):(\\d+)\\]", RegexOptions.IgnoreCase);
 			Regex regex9 = new Regex("\\[ACTION:DEBT_DUE_NONE\\]", RegexOptions.IgnoreCase);
 			Regex regex10 = new Regex("\\[ACTION:DEBT_OVERDUE_PRESET:(\\d+):(\\d+)\\]", RegexOptions.IgnoreCase);
 			Regex regex11 = new Regex("\\[ACTION:DEBT_PAY_GOLD:([a-zA-Z0-9_\\-]+):(\\d+)\\]", RegexOptions.IgnoreCase);
-			Regex regex12 = new Regex("\\[ACTION:DEBT_PAY_ITEM:([a-zA-Z0-9_\\-]+):([a-zA-Z0-9_]+):(\\d+)\\]", RegexOptions.IgnoreCase);
+			Regex regex12 = new Regex("\\[ACTION:DEBT_PAY_ITEM:([a-zA-Z0-9_\\-]+):([a-zA-Z0-9_@\\-]+):(\\d+)\\]", RegexOptions.IgnoreCase);
 			Regex regex13 = new Regex("\\[ACTION:DEBT_PAY_ITEM_GOLD:([a-zA-Z0-9_\\-]+):(\\d+)\\]", RegexOptions.IgnoreCase);
 			Regex regex14 = new Regex("\\[ACTION:DEBT_ITEM_UNAVAILABLE:([a-zA-Z0-9_\\-]+)\\]", RegexOptions.IgnoreCase);
 			Regex regex15 = new Regex("\\[ACTION:DEBT_ITEM_PENALTY:([a-zA-Z0-9_\\-]+):(\\d+):(\\d+)\\]", RegexOptions.IgnoreCase);
@@ -7585,21 +8067,27 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			bool anyKingdomServiceApplied = false;
 			bool anySettlementTransferApplied = false;
 			bool anyHeroJoinPlayerPartyApplied = false;
+			Settlement notableMarketSettlement = ResolveNotableMarketSettlement(giver);
+			bool giverUsesNotableMarket = IsNotableMarketHero(giver, notableMarketSettlement);
 			responseText = regex.Replace(responseText, delegate(Match m)
 			{
 				if (int.TryParse(m.Groups[1].Value, out var result8))
 				{
 					Logger.Log("Logic", $"[Reward] GIVE_GOLD tag 捕获: giver={giver?.Name} receiver={receiver?.Name} amount={result8}");
-					int num4 = TransferGold(giver, receiver, result8);
+					int num4 = giverUsesNotableMarket ? TransferGoldFromSettlement(notableMarketSettlement, receiver, result8, giverName) : TransferGold(giver, receiver, result8);
 					if (num4 > 0)
 					{
-						giverFacts.Add($"你已经将 {num4} 第纳尔交给 {receiverName}。并进入了{receiverName}的库存");
-						receiverFacts.Add($"你从 {giverName} 收到了 {num4} 第纳尔。");
+						giverFacts.Add(giverUsesNotableMarket ? $"你已经代表城镇市场将 {num4} 第纳尔交给 {receiverName}。并进入了{receiverName}的库存" : $"你已经将 {num4} 第纳尔交给 {receiverName}。并进入了{receiverName}的库存");
+						receiverFacts.Add(giverUsesNotableMarket ? $"你从 {giverName} 代表的城镇市场收到了 {num4} 第纳尔。" : $"你从 {giverName} 收到了 {num4} 第纳尔。");
 						if (giver != Hero.MainHero && receiver == Hero.MainHero)
 						{
 							anyActualGiveToPlayer = true;
 							ApplyAutoTrustGainFromHeroGiftValue(giver, num4, giverFacts, receiverFacts, giverName);
 						}
+					}
+					else if (giverUsesNotableMarket)
+					{
+						giverFacts.Add($"你试图代表城镇市场交付 {result8} 第纳尔，但当前城镇市场现钱不足，本轮未实际支付。");
 					}
 				}
 				return string.Empty;
@@ -7611,35 +8099,39 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				{
 					Logger.Log("Logic", $"[Reward] GIVE_ITEM tag 捕获: giver={giver?.Name} receiver={receiver?.Name} itemId={value4} amount={result8}");
 					string itemName;
-					int num4 = TransferItemById(giver, receiver, value4, result8, out itemName);
+					string settlementPromptStringId = "";
+					bool isNotableMarketItem = giverUsesNotableMarket && TryParseNotableMarketPromptStringId(value4, out settlementPromptStringId);
+					string itemIdForFacts = isNotableMarketItem ? settlementPromptStringId : value4;
+					int num4 = isNotableMarketItem ? TransferItemFromSettlement(notableMarketSettlement, receiver, settlementPromptStringId, result8, giverName, out itemName) : TransferItemById(giver, receiver, value4, result8, out itemName);
 					if (num4 > 0)
 					{
 						string text3 = (string.IsNullOrEmpty(itemName) ? value4 : itemName);
 						string text4 = text3;
-						ItemObject itemObject3 = ResolveItemById(value4);
-						string text5 = BuildItemValueFactSuffixForExternal(giver ?? receiver, itemObject3, num4);
-						giverFacts.Add($"你已经将 {FormatItemAmount(num4, itemObject3, text4)} 交给 {receiverName}{text5}。并进入了{receiverName}的库存");
-						receiverFacts.Add($"你从 {giverName} 收到了 {FormatItemAmount(num4, itemObject3, text4)}{text5}。");
+						ItemObject itemObject3 = ResolveItemById(itemIdForFacts.Split('@')[0]);
+						string text5 = isNotableMarketItem ? BuildSettlementItemValueFactSuffixForExternal(notableMarketSettlement, itemObject3, num4) : BuildItemValueFactSuffixForExternal(giver ?? receiver, itemObject3, num4);
+						giverFacts.Add(isNotableMarketItem ? $"你已经代表城镇市场将 {FormatItemAmount(num4, itemObject3, text4)} 交给 {receiverName}{text5}。并进入了{receiverName}的库存" : $"你已经将 {FormatItemAmount(num4, itemObject3, text4)} 交给 {receiverName}{text5}。并进入了{receiverName}的库存");
+						receiverFacts.Add(isNotableMarketItem ? $"你从 {giverName} 代表的城镇市场收到了 {FormatItemAmount(num4, itemObject3, text4)}{text5}。" : $"你从 {giverName} 收到了 {FormatItemAmount(num4, itemObject3, text4)}{text5}。");
 						if (num4 < result8)
 						{
-							string text6 = BuildItemValueFactSuffixForExternal(giver ?? receiver, itemObject3, result8);
+							string text6 = isNotableMarketItem ? BuildSettlementItemValueFactSuffixForExternal(notableMarketSettlement, itemObject3, result8) : BuildItemValueFactSuffixForExternal(giver ?? receiver, itemObject3, result8);
 							giverFacts.Add($"你本轮原计划交付 {FormatItemAmount(result8, itemObject3, text4)}{text6}，但实际仅交付 {FormatItemAmount(num4, itemObject3, text4)}{text5}（库存不足）。");
 							receiverFacts.Add($"{giverName} 原计划交付 {FormatItemAmount(result8, itemObject3, text4)}{text6}，实际仅交付 {FormatItemAmount(num4, itemObject3, text4)}{text5}。");
 						}
 						if (giver != Hero.MainHero && receiver == Hero.MainHero)
 						{
 							anyActualGiveToPlayer = true;
-							ApplyAutoTrustGainFromHeroGiftValue(giver, GetItemTrustValueForHeroGift(giver ?? receiver, itemObject3, num4), giverFacts, receiverFacts, giverName);
+							int itemTrustValue = isNotableMarketItem ? GetItemTrustValueForMerchantGift(notableMarketSettlement, itemObject3, num4) : GetItemTrustValueForHeroGift(giver ?? receiver, itemObject3, num4);
+							ApplyAutoTrustGainFromHeroGiftValue(giver, itemTrustValue, giverFacts, receiverFacts, giverName);
 						}
 					}
 					else
 					{
-						string text5 = ResolveItemById(value4)?.Name?.ToString();
+						string text5 = ResolveItemById(itemIdForFacts.Split('@')[0])?.Name?.ToString();
 						string text6 = (string.IsNullOrWhiteSpace(text5) ? "该物品" : text5);
-						ItemObject itemObject2 = ResolveItemById(value4);
-						string text7 = BuildItemValueFactSuffixForExternal(giver ?? receiver, itemObject2, result8);
-						giverFacts.Add($"你尝试交付 {FormatItemAmount(result8, itemObject2, text6)}{text7}，但库存不足，本轮未实际交付。");
-						receiverFacts.Add($"{giverName} 试图交付 {FormatItemAmount(result8, itemObject2, text6)}{text7}，但其库存不足，本轮未实际交付。");
+						ItemObject itemObject2 = ResolveItemById(itemIdForFacts.Split('@')[0]);
+						string text7 = isNotableMarketItem ? BuildSettlementItemValueFactSuffixForExternal(notableMarketSettlement, itemObject2, result8) : BuildItemValueFactSuffixForExternal(giver ?? receiver, itemObject2, result8);
+						giverFacts.Add(isNotableMarketItem ? $"你尝试代表城镇市场交付 {FormatItemAmount(result8, itemObject2, text6)}{text7}，但当前城镇市场库存不足，本轮未实际交付。" : $"你尝试交付 {FormatItemAmount(result8, itemObject2, text6)}{text7}，但库存不足，本轮未实际交付。");
+						receiverFacts.Add(isNotableMarketItem ? $"{giverName} 试图代表城镇市场交付 {FormatItemAmount(result8, itemObject2, text6)}{text7}，但市场库存不足，本轮未实际交付。" : $"{giverName} 试图交付 {FormatItemAmount(result8, itemObject2, text6)}{text7}，但其库存不足，本轮未实际交付。");
 					}
 				}
 				return string.Empty;
@@ -7785,6 +8277,10 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			responseText = regex5.Replace(responseText, delegate(Match m)
 			{
 				string itemId = m.Groups[1].Value;
+				if (TryParseNotableMarketPromptStringId(itemId, out var settlementPromptStringId))
+				{
+					itemId = settlementPromptStringId.Split('@')[0];
+				}
 				if (int.TryParse(m.Groups[2].Value, out var result8))
 				{
 					Logger.Log("Logic", $"[Reward] DEBT_ITEM tag 捕获: giver={giver?.Name} receiver={receiver?.Name} itemId={itemId} amount={result8} hasGiveTag={hasGiveTag}");
