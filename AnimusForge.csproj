@@ -334,4 +334,12 @@
   <Target Name="ValidateExternalReferences" BeforeTargets="ResolveReferences">
     <Error Condition="!Exists('%(_RequiredRef.Identity)')" Text="Missing required dependency: %(_RequiredRef.Identity)" />
   </Target>
+  <Target Name="CopyModuleXmlsToBannerlordModule" AfterTargets="Build">
+    <PropertyGroup>
+      <AnimusForgeModuleDir>$(BannerlordRoot)\Modules\AnimusForge</AnimusForgeModuleDir>
+    </PropertyGroup>
+    <MakeDir Directories="$(AnimusForgeModuleDir)\ModuleData" />
+    <Copy SourceFiles="AnimusForge\SubModule.xml" DestinationFiles="$(AnimusForgeModuleDir)\SubModule.xml" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="AnimusForge\ModuleData\animusforge_scene_gold_items.xml" DestinationFiles="$(AnimusForgeModuleDir)\ModuleData\animusforge_scene_gold_items.xml" SkipUnchangedFiles="true" />
+  </Target>
 </Project>

@@ -2404,7 +2404,7 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior, IAgentStateDeci
 		{
 			return;
 		}
-		if (!affectedAgent.IsHuman)
+		if (!IsRelevantMeetingEscalationVictim(affectedAgent))
 		{
 			return;
 		}
@@ -2519,6 +2519,32 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior, IAgentStateDeci
 			string reason = (flag ? "player_dealt_damage" : "combat_damage_detected");
 			MeetingBattleRuntime.RequestCombatEscalation(reason);
 			MeetingBattleRuntime.UnlockDiplomaticSideEffects(reason);
+		}
+	}
+
+	private bool IsRelevantMeetingEscalationVictim(Agent affectedAgent)
+	{
+		if (affectedAgent == null || !affectedAgent.IsActive())
+		{
+			return false;
+		}
+		if (affectedAgent.IsHuman)
+		{
+			return true;
+		}
+		try
+		{
+			Agent targetMount = _targetAgent?.MountAgent;
+			if (targetMount == null || affectedAgent != targetMount)
+			{
+				return false;
+			}
+			Agent riderAgent = affectedAgent.RiderAgent;
+			return riderAgent != null && riderAgent == _targetAgent;
+		}
+		catch
+		{
+			return false;
 		}
 	}
 

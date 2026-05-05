@@ -2077,18 +2077,24 @@ public static class AIConfigHandler
 		return list;
 	}
 
-	private static string BuildAuxiliaryGuardrailHistoryBlock(string runtimeGuardrailContext, string secondaryText)
+	private static string BuildAuxiliaryGuardrailHistoryBlock(string runtimeGuardrailContext, string secondaryText, string latestPlayerText, out string latestNpcText)
 	{
+		latestNpcText = "";
 		List<string> list = new List<string>();
 		try
 		{
 			AppendAuxiliaryDialogueHistoryLines(list, GetAuxiliarySceneDialogueHistoryContext());
 			AppendAuxiliaryDialogueHistoryLines(list, runtimeGuardrailContext);
 			string text3 = NormalizeSemanticText(secondaryText);
-			if (!string.IsNullOrWhiteSpace(text3) && HasAuxiliaryConversationHistory(list) && !ContainsAuxiliaryHistoryUtterance(list, text3))
+			if (!string.IsNullOrWhiteSpace(text3))
 			{
-				list.Add("上一句NPC发言：" + text3);
+				latestNpcText = text3;
 			}
+			if (string.IsNullOrWhiteSpace(latestNpcText))
+			{
+				latestNpcText = ExtractLatestAuxiliaryNpcUtterance(list, latestPlayerText);
+			}
+			TrimAuxiliaryLatestDialogueLines(list, latestNpcText, latestPlayerText);
 		}
 		catch
 		{
@@ -2103,6 +2109,115 @@ public static class AIConfigHandler
 			list = list.Skip(list.Count - num).ToList();
 		}
 		return string.Join("\n", list);
+	}
+
+	private static string ExtractLatestAuxiliaryNpcUtterance(List<string> lines, string latestPlayerText)
+	{
+		try
+		{
+			string text = NormalizeSemanticText(latestPlayerText);
+			if (lines == null || lines.Count <= 0)
+			{
+				return "";
+			}
+			for (int i = lines.Count - 1; i >= 0; i--)
+			{
+				string text2 = NormalizeSemanticText(lines[i]);
+				if (string.IsNullOrWhiteSpace(text2) || IsAuxiliaryPlayerHistoryLine(text2))
+				{
+					continue;
+				}
+				string text3 = ExtractAuxiliaryHistoryUtterance(text2);
+				if (!string.IsNullOrWhiteSpace(text) && string.Equals(text3, text, StringComparison.Ordinal))
+				{
+					continue;
+				}
+				return text3;
+			}
+		}
+		catch
+		{
+		}
+		return "";
+	}
+
+	private static void TrimAuxiliaryLatestDialogueLines(List<string> lines, string latestNpcText, string latestPlayerText)
+	{
+		try
+		{
+			if (lines == null || lines.Count <= 0)
+			{
+				return;
+			}
+			string text = NormalizeSemanticText(latestNpcText);
+			string text2 = NormalizeSemanticText(latestPlayerText);
+			int num = 0;
+			for (int i = lines.Count - 1; i >= 0 && num < 2; i--)
+			{
+				string line = lines[i];
+				bool flag = !string.IsNullOrWhiteSpace(text) && IsAuxiliaryHistoryUtteranceMatch(line, text);
+				bool flag2 = !string.IsNullOrWhiteSpace(text2) && IsAuxiliaryHistoryUtteranceMatch(line, text2);
+				if (flag || flag2)
+				{
+					lines.RemoveAt(i);
+					num++;
+				}
+			}
+		}
+		catch
+		{
+		}
+	}
+
+	private static bool IsAuxiliaryHistoryUtteranceMatch(string line, string utterance)
+	{
+		string text = NormalizeSemanticText(utterance);
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return false;
+		}
+		string text2 = NormalizeSemanticText(line);
+		if (string.IsNullOrWhiteSpace(text2))
+		{
+			return false;
+		}
+		if (string.Equals(text2, text, StringComparison.Ordinal))
+		{
+			return true;
+		}
+		return string.Equals(ExtractAuxiliaryHistoryUtterance(text2), text, StringComparison.Ordinal);
+	}
+
+	private static string ExtractAuxiliaryHistoryUtterance(string line)
+	{
+		string text = NormalizeSemanticText(line);
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return "";
+		}
+		string value = "上一句NPC发言：";
+		if (text.StartsWith(value, StringComparison.Ordinal))
+		{
+			return NormalizeSemanticText(text.Substring(value.Length));
+		}
+		int num = text.IndexOfAny(new char[2] { ':', '：' });
+		if (num >= 0 && num + 1 < text.Length)
+		{
+			return NormalizeSemanticText(text.Substring(num + 1));
+		}
+		return text;
+	}
+
+	private static bool IsAuxiliaryPlayerHistoryLine(string line)
+	{
+		string text = NormalizeSemanticText(line);
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return false;
+		}
+		int num = text.IndexOfAny(new char[2] { ':', '：' });
+		string text2 = ((num >= 0) ? text.Substring(0, num).Trim() : text);
+		return text2.Equals("玩家", StringComparison.OrdinalIgnoreCase) || text2.Equals("你", StringComparison.OrdinalIgnoreCase) || (text2.Contains("对") && text2.EndsWith("说", StringComparison.Ordinal));
 	}
 
 	private static void AppendAuxiliaryDialogueHistoryLines(List<string> lines, string block)
@@ -2242,10 +2357,12 @@ public static class AIConfigHandler
 
 	private static string BuildAuxiliaryGuardrailRoutingPrompt(string userText, string secondaryText, string runtimeGuardrailContext, List<GuardrailAuxiliaryTopic> topics, int topN)
 	{
-		string text = NormalizeSemanticText(secondaryText);
-		string text2 = NormalizeSemanticText(userText);
+		string text = NormalizeSemanticText(userText);
+		string latestNpcText;
+		string historyBlock = BuildAuxiliaryGuardrailHistoryBlock(runtimeGuardrailContext, secondaryText, userText, out latestNpcText);
+		string text2 = NormalizeSemanticText(latestNpcText);
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.AppendLine("你是一个对话检索工具，请分析如下对话，判断和什么话题有关。");
+		stringBuilder.AppendLine("你是一个对话检索工具，请分析最新NPC与玩家对话与场景互动历史，判断和什么话题有关。");
 		for (int i = 0; i < topics.Count; i++)
 		{
 			GuardrailAuxiliaryTopic guardrailAuxiliaryTopic = topics[i];
@@ -2256,11 +2373,11 @@ public static class AIConfigHandler
 		}
 		stringBuilder.AppendLine();
 		stringBuilder.AppendLine("场景互动历史（往上3轮对话）：");
-		stringBuilder.AppendLine(BuildAuxiliaryGuardrailHistoryBlock(runtimeGuardrailContext, secondaryText));
+		stringBuilder.AppendLine(historyBlock);
 		stringBuilder.AppendLine();
 		stringBuilder.AppendLine("*最新NPC与玩家对话*：");
-		stringBuilder.Append("NPC: ").AppendLine(string.IsNullOrWhiteSpace(text) ? "（无）" : text);
-		stringBuilder.Append("玩家: ").AppendLine(string.IsNullOrWhiteSpace(text2) ? "（无）" : text2);
+		stringBuilder.Append("NPC: ").AppendLine(string.IsNullOrWhiteSpace(text2) ? "（无）" : text2);
+		stringBuilder.Append("玩家: ").AppendLine(string.IsNullOrWhiteSpace(text) ? "（无）" : text);
 		stringBuilder.AppendLine("请选择最相似的几个话题，你最多输出" + Math.Max(1, topN) + "个话题，如果你认为对话内容和已有话题毫不相干，可以只输出0来节省token，(格式：数字,数字,,,,,,)不要输出其他任何内容，话题以*最新NPC与玩家对话*为优先，场景对话历史做辅助");
 		return stringBuilder.ToString().Trim();
 	}

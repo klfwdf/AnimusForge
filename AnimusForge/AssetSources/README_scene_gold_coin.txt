@@ -2,6 +2,9 @@ Scene taunt gold drops now try the custom item id first:
 
   animusforge_denar_coin_item
 
+The live ModuleData version currently uses the native mesh ui_intentory_coin_a with the native
+bo_sling_ammo collision body, so it does not require an external asset package.
+
 If that item exists, the mod uses MissionWeapon + SpawnWeaponWithNewEntity(WithPhysics) so the coins
 scatter using Bannerlord's native dropped-item physics.
 

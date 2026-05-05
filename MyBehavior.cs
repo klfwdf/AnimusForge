@@ -76,6 +76,7 @@ public class MyBehavior : CampaignBehaviorBase
 	private enum UniversalApiRoute
 	{
 		Main,
+		Auxiliary,
 		EventAndRebellion
 	}
 
@@ -9518,7 +9519,8 @@ public class MyBehavior : CampaignBehaviorBase
 			string sys = "你是《骑马与砍杀2：霸主》NPC的人设生成器。你只输出严格 JSON，不要输出任何额外文字。JSON 仅包含两个字段：personality 和 background。personality 大约 300 个中文字符；background 大约 300 个中文字符。内容必须符合提供的事实，不要杜撰与事实冲突的家族关系或身份；若事实中提供了势力/效忠信息，必须保持一致，禁止声称效忠于其他统治者或属于其他势力。";
 			string facts = BuildHeroFactsForPersonaGeneration(hero);
 			string user = "请基于以下信息生成该 NPC 的【个性】与【历史背景】。\n" + facts;
-			string resp = await CallUniversalApi(sys, user);
+			ApiCallResult apiCallResult = await CallUniversalApiDetailed(sys, user, route: UniversalApiRoute.Auxiliary);
+			string resp = apiCallResult.Success ? (apiCallResult.Content ?? "") : ("错误: " + (apiCallResult.ErrorMessage ?? "未知错误"));
 			if (!string.IsNullOrWhiteSpace(resp) && !resp.StartsWith("错误") && TryParsePersonaJson(resp, out var genP, out var genB))
 			{
 				genP = TrimToMaxChars(genP, 380);
@@ -10568,8 +10570,6 @@ public class MyBehavior : CampaignBehaviorBase
 			stringBuilder.AppendLine("ATT 只能用于部队序号，ATP 只能用于俘虏序号；数量不得超过当前数量。若本轮尚未明确成交，后处理就不应生成这些标签。");
 			stringBuilder.AppendLine("日薪表示每名士兵每天需要支付多少第纳尔；雇佣价与购买价表示当前谈判指导单价。");
 			stringBuilder.AppendLine("当前与你交易的人：" + text);
-			AppendPartyTransferPromptSection(stringBuilder, "【玩家当前可转移部队】：", list.Where((PartyTransferPromptEntry x) => x.Section == PartyTransferEntrySection.PlayerTroops), isPrisoner: false, showPromptIndex: false);
-			AppendPartyTransferPromptSection(stringBuilder, "【玩家当前可转移俘虏】：", list.Where((PartyTransferPromptEntry x) => x.Section == PartyTransferEntrySection.PlayerPrisoners), isPrisoner: true, showPromptIndex: false);
 			if (partyTransferRecruitMaxTier > 0)
 			{
 				AppendPartyTransferPromptSection(stringBuilder, "【你当前可转移部队】：", list5, isPrisoner: false, showPromptIndex: true);
@@ -13557,6 +13557,31 @@ public class MyBehavior : CampaignBehaviorBase
 		return !string.IsNullOrWhiteSpace(effectiveApiUrl) && !string.IsNullOrWhiteSpace(apiKey) && !string.IsNullOrWhiteSpace(modelName);
 	}
 
+	private static bool TryGetAuxiliaryDedicatedApiConfig(DuelSettings settings, out string effectiveApiUrl, out string apiKey, out string modelName, out bool hasAnyField)
+	{
+		effectiveApiUrl = "";
+		apiKey = "";
+		modelName = "";
+		hasAnyField = false;
+		if (settings == null)
+		{
+			return false;
+		}
+		string text = (settings.AuxiliaryApiUrl ?? "").Trim();
+		string text2 = (settings.AuxiliaryApiKey ?? "").Trim();
+		string text3 = settings.GetEffectiveAuxiliaryModelName();
+		string text4 = settings.GetAuxiliarySelectedModelOption();
+		hasAnyField = !string.IsNullOrWhiteSpace(text) || !string.IsNullOrWhiteSpace(text2) || !string.IsNullOrWhiteSpace((settings.AuxiliaryModelName ?? "").Trim()) || !string.IsNullOrWhiteSpace(text4);
+		if (!hasAnyField)
+		{
+			return false;
+		}
+		effectiveApiUrl = DuelSettings.GetEffectiveApiUrl(text);
+		apiKey = text2;
+		modelName = text3;
+		return !string.IsNullOrWhiteSpace(effectiveApiUrl) && !string.IsNullOrWhiteSpace(apiKey) && !string.IsNullOrWhiteSpace(modelName);
+	}
+
 	private static bool TryResolveUniversalApiConfig(DuelSettings settings, UniversalApiRoute route, out string effectiveApiUrl, out string apiKey, out string modelName, out string resolvedRoute, out string errorMessage)
 	{
 		effectiveApiUrl = "";
@@ -13564,10 +13589,20 @@ public class MyBehavior : CampaignBehaviorBase
 		modelName = "";
 		resolvedRoute = "main";
 		errorMessage = "请检查 MCM 设置。";
+		bool hasAuxiliaryDedicatedFields = false;
 		bool hasEventAndRebellionDedicatedFields = false;
 		if (settings == null)
 		{
 			return false;
+		}
+		if (route == UniversalApiRoute.Auxiliary)
+		{
+			if (TryGetAuxiliaryDedicatedApiConfig(settings, out effectiveApiUrl, out apiKey, out modelName, out hasAuxiliaryDedicatedFields))
+			{
+				resolvedRoute = "auxiliary_dedicated";
+				errorMessage = "";
+				return true;
+			}
 		}
 		if (route == UniversalApiRoute.EventAndRebellion)
 		{
@@ -13580,7 +13615,7 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		if (TryGetPrimaryUniversalApiConfig(settings, out effectiveApiUrl, out apiKey, out modelName))
 		{
-			resolvedRoute = ((route == UniversalApiRoute.EventAndRebellion) ? (hasEventAndRebellionDedicatedFields ? "event_rebellion_partial_fallback_main" : "event_rebellion_fallback_main") : "main");
+			resolvedRoute = ((route == UniversalApiRoute.Auxiliary) ? (hasAuxiliaryDedicatedFields ? "auxiliary_partial_fallback_main" : "auxiliary_fallback_main") : ((route == UniversalApiRoute.EventAndRebellion) ? (hasEventAndRebellionDedicatedFields ? "event_rebellion_partial_fallback_main" : "event_rebellion_fallback_main") : "main"));
 			errorMessage = "";
 			return true;
 		}

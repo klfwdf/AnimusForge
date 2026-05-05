@@ -1826,17 +1826,37 @@ public class SceneTauntMissionBehavior : MissionBehavior
 
 	private const float SceneGoldPickupDistanceSquared = 4f;
 
-	private const int SceneGoldMaxVisualCoins = 12;
+	private const int SceneGoldMaxVisualCoins = 1000;
 
 	private const float SceneGoldSimulatedGravity = 9.8f;
 
-	private const float SceneGoldGroundOffset = 0.018f;
+	private const float SceneGoldGroundOffset = 0.035f;
 
 	private const string SceneGoldCustomItemId = "animusforge_denar_coin_item";
 
 	private const string SceneGoldFallbackNativeItemId = "sling_leadammo";
 
 	private const string SceneGoldCustomVisualPrefab = "animusforge_denar_coin";
+
+	private const string SceneGoldPrimarySoundEvent = "event:/ui/notification/coins_positive";
+
+	private const string SceneGoldFallbackSoundEvent = "event:/ui/multiplayer/coin_add";
+
+	private const float SceneGoldNativeCoinVisualScale = 1.4f;
+
+	private const float SceneGoldBurstSpawnHeight = 1.08f;
+
+	private const float SceneGoldBurstSpawnRadius = 0.16f;
+
+	private const float SceneGoldBurstHorizontalVelocityMin = 3.2f;
+
+	private const float SceneGoldBurstHorizontalVelocityMax = 6.2f;
+
+	private const float SceneGoldBurstVerticalVelocityMin = 1.6f;
+
+	private const float SceneGoldBurstVerticalVelocityMax = 3.4f;
+
+	private static readonly uint SceneGoldTintColor = new Color(1f, 0.72f, 0.08f, 1f).ToUnsignedInteger();
 
 	private sealed class SceneGoldDrop
 	{
@@ -1873,6 +1893,8 @@ public class SceneTauntMissionBehavior : MissionBehavior
 
 		public Vec3 AngularVelocity;
 
+		public bool UsesNativeCoinScale;
+
 		public bool Settled;
 	}
 
@@ -1893,6 +1915,8 @@ public class SceneTauntMissionBehavior : MissionBehavior
 	private readonly HashSet<int> _penalizedArmedKnockdownAgentIndices = new HashSet<int>();
 
 	private readonly HashSet<int> _sceneGoldDropAgentIndices = new HashSet<int>();
+
+	private readonly HashSet<int> _sceneGoldEligibleAgentIndices = new HashSet<int>();
 
 	private readonly List<SceneGoldDrop> _sceneGoldDrops = new List<SceneGoldDrop>();
 
@@ -2490,13 +2514,17 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			}
 			TryQueuePendingPlayerBattleDeathOutcome(affectedAgent, affectorAgent, agentState);
 			TryApplyNativeAlleyNpcKnockdownConsequences(affectedAgent, affectorAgent, agentState);
+			bool canTrySceneGoldDrop = affectedAgent != null && affectedAgent.IsHuman && (_conflictActive || IsSceneGoldEligibleDropAgent(affectedAgent));
+			if (canTrySceneGoldDrop)
+			{
+				LogSceneGoldDiag($"OnAgentRemoved before gold spawn. affected={(affectedAgent?.Name ?? "null")} idx={affectedAgent?.Index ?? -1} state={agentState} affector={(affectorAgent?.Name ?? "null")} conflict={_conflictActive} armed={_armedConflict} eligible={IsSceneGoldEligibleDropAgent(affectedAgent)}");
+				TrySpawnSceneGoldDropForKnockdown(affectedAgent, agentState);
+				LogSceneGoldDiag($"OnAgentRemoved after gold spawn. affected={(affectedAgent?.Name ?? "null")} idx={affectedAgent?.Index ?? -1} drops={_sceneGoldDrops.Count}");
+			}
 			if (!_conflictActive || affectedAgent == null || !affectedAgent.IsHuman)
 			{
 				return;
 			}
-			LogSceneGoldDiag($"OnAgentRemoved before gold spawn. affected={(affectedAgent?.Name ?? "null")} idx={affectedAgent?.Index ?? -1} state={agentState} affector={(affectorAgent?.Name ?? "null")} conflict={_conflictActive} armed={_armedConflict}");
-			TrySpawnSceneGoldDropForKnockdown(affectedAgent, agentState);
-			LogSceneGoldDiag($"OnAgentRemoved after gold spawn. affected={(affectedAgent?.Name ?? "null")} idx={affectedAgent?.Index ?? -1} drops={_sceneGoldDrops.Count}");
 			TryApplyArmedNpcKnockdownConsequences(affectedAgent, affectorAgent, agentState);
 			CharacterObject characterObject = affectedAgent.Character as CharacterObject;
 			Hero hero = characterObject?.HeroObject;
@@ -2527,8 +2555,9 @@ public class SceneTauntMissionBehavior : MissionBehavior
 	{
 		try
 		{
-			LogSceneGoldDiag($"spawn_enter affected={(affectedAgent?.Name ?? "null")} idx={affectedAgent?.Index ?? -1} state={agentState} conflict={_conflictActive}");
-			if (!_conflictActive || affectedAgent == null || affectedAgent.IsMainAgent || !affectedAgent.IsHuman)
+			bool canSpawnForConflict = _conflictActive || IsSceneGoldEligibleDropAgent(affectedAgent);
+			LogSceneGoldDiag($"spawn_enter affected={(affectedAgent?.Name ?? "null")} idx={affectedAgent?.Index ?? -1} state={agentState} conflict={_conflictActive} eligible={IsSceneGoldEligibleDropAgent(affectedAgent)}");
+			if (!canSpawnForConflict || affectedAgent == null || affectedAgent.IsMainAgent || !affectedAgent.IsHuman)
 			{
 				LogSceneGoldDiag("spawn_skip basic_guard");
 				return;
@@ -2658,10 +2687,12 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			if (customCoinItem != null)
 			{
 				LogSceneGoldDiag($"create_item_path_begin item={customCoinItem.StringId}");
-				List<SceneGoldCoinSim> nativePhysicsCoins = TryCreateSceneGoldItemDrops(origin, visualGoldAmount, customCoinItem);
+				Vec3 burstOrigin = origin;
+				burstOrigin.z += SceneGoldBurstSpawnHeight;
+				List<SceneGoldCoinSim> nativePhysicsCoins = TryCreateSceneGoldItemDrops(burstOrigin, visualGoldAmount, customCoinItem);
 				if (nativePhysicsCoins != null && nativePhysicsCoins.Count > 0)
 				{
-					usesNativeItemPhysics = true;
+					usesNativeItemPhysics = false;
 					LogSceneGoldDiag($"create_item_path_done count={nativePhysicsCoins.Count}");
 					return nativePhysicsCoins;
 				}
@@ -2707,6 +2738,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 					Frame = frame,
 					Velocity = new Vec3((float)Math.Cos(angle) * burstSpeed, (float)Math.Sin(angle) * burstSpeed, 1.25f, -1f),
 					AngularVelocity = new Vec3(5.5f + i * 0.17f, 3.8f + i * 0.11f, 6.2f + i * 0.13f, -1f),
+					UsesNativeCoinScale = false,
 					Settled = false
 				});
 				LogSceneGoldDiag($"coin[{i}] sim_add_done count={simulatedCoins.Count}");
@@ -2768,16 +2800,21 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			return null;
 		}
 		int coinCount = Math.Min(Math.Max(1, visualGoldAmount), SceneGoldMaxVisualCoins);
-		float spawnRadius = Math.Min(0.28f, 0.05f + (float)Math.Sqrt(coinCount) * 0.025f);
 		List<SceneGoldCoinSim> coins = new List<SceneGoldCoinSim>(coinCount);
 		for (int i = 0; i < coinCount; i++)
 		{
-			float angle = (float)(Math.PI * 2.0 * i / Math.Max(1, coinCount));
-			float offsetRadius = spawnRadius * (float)Math.Sqrt((i + 0.5f) / Math.Max(1, coinCount));
+			float angle = (float)(Math.PI * 2.0 * SceneGoldScatterUnit(i, 17));
+			float offsetRadius = SceneGoldBurstSpawnRadius * (float)Math.Sqrt(SceneGoldScatterUnit(i, 31));
+			bool usesNativeCoinScale = coinItem.StringId == SceneGoldCustomItemId;
 			MatrixFrame frame = MatrixFrame.Identity;
-			frame.origin = new Vec3(origin.x + (float)Math.Cos(angle) * offsetRadius * 0.30f, origin.y + (float)Math.Sin(angle) * offsetRadius * 0.30f, origin.z + 0.80f + (i % 4) * 0.02f, -1f);
-			frame.rotation.RotateAboutSide(0.35f);
+			frame.origin = new Vec3(origin.x + (float)Math.Cos(angle) * offsetRadius, origin.y + (float)Math.Sin(angle) * offsetRadius, origin.z + (SceneGoldScatterUnit(i, 43) - 0.5f) * 0.18f, -1f);
+			frame.rotation.RotateAboutSide(0.35f + SceneGoldScatterUnit(i, 53) * 1.7f);
 			frame.rotation.RotateAboutUp(angle);
+			frame.rotation.RotateAboutForward(SceneGoldScatterUnit(i, 59) * (float)Math.PI);
+			if (usesNativeCoinScale)
+			{
+				frame.rotation.ApplyScaleLocal(SceneGoldNativeCoinVisualScale);
+			}
 			try
 			{
 				MissionWeapon missionWeapon = new MissionWeapon(coinItem, null, null, 1);
@@ -2789,22 +2826,20 @@ public class SceneTauntMissionBehavior : MissionBehavior
 					continue;
 				}
 				gameEntity.Name = "animusforge_scene_denar_coin_item";
-				SpawnedItemEntity spawnedItem = gameEntity.GetFirstScriptOfType<SpawnedItemEntity>();
-				if (spawnedItem == null)
-				{
-					LogSceneGoldDiag($"item_coin[{i}] spawned_item_missing_script");
-				}
-				else
-				{
-					Vec3 impulse = new Vec3((float)Math.Cos(angle) * 0.10f, (float)Math.Sin(angle) * 0.10f, 0.18f + (i % 3) * 0.02f, -1f);
-					spawnedItem.ApplyImpulseSynched(Vec3.Zero, impulse);
-					LogSceneGoldDiag($"item_coin[{i}] impulse_applied impulse={FormatSceneGoldVec(impulse)}");
-				}
+				TryTintSceneGoldEntity(gameEntity);
+				TryPrepareSceneGoldEntityForManualBurst(gameEntity);
+				TryPlaySceneGoldCoinSound(frame.origin, $"drop_coin_{i}");
+				float horizontalVelocity = SceneGoldBurstHorizontalVelocityMin + (SceneGoldBurstHorizontalVelocityMax - SceneGoldBurstHorizontalVelocityMin) * SceneGoldScatterUnit(i, 89);
+				float verticalVelocity = SceneGoldBurstVerticalVelocityMin + (SceneGoldBurstVerticalVelocityMax - SceneGoldBurstVerticalVelocityMin) * SceneGoldScatterUnit(i, 97);
+				Vec3 velocity = new Vec3((float)Math.Cos(angle) * horizontalVelocity, (float)Math.Sin(angle) * horizontalVelocity, verticalVelocity, -1f);
 				coins.Add(new SceneGoldCoinSim
 				{
 					Entity = gameEntity,
 					Frame = frame,
-					Settled = true
+					Velocity = velocity,
+					AngularVelocity = new Vec3(9f + SceneGoldScatterUnit(i, 101) * 9f, 8f + SceneGoldScatterUnit(i, 103) * 10f, 10f + SceneGoldScatterUnit(i, 107) * 12f, -1f),
+					UsesNativeCoinScale = usesNativeCoinScale,
+					Settled = false
 				});
 			}
 			catch (Exception ex)
@@ -2813,6 +2848,95 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			}
 		}
 		return coins.Count > 0 ? coins : null;
+	}
+
+	private static float SceneGoldScatterUnit(int index, int salt)
+	{
+		unchecked
+		{
+			uint hash = (uint)(index + 1) * 747796405u + (uint)(salt + 37) * 2891336453u;
+			hash ^= hash >> 16;
+			hash *= 2246822519u;
+			hash ^= hash >> 13;
+			hash *= 3266489917u;
+			hash ^= hash >> 16;
+			return (hash & 0xFFFFu) / 65535f;
+		}
+	}
+
+	private static void TryPlaySceneGoldCoinSound(Vec3 position, string reason)
+	{
+		try
+		{
+			if (SoundEvent.PlaySound2D(SceneGoldPrimarySoundEvent))
+			{
+				return;
+			}
+			if (!SoundEvent.PlaySound2D(SceneGoldFallbackSoundEvent))
+			{
+				LogSceneGoldDiag($"sound_failed reason={reason} pos={FormatSceneGoldVec(position)} primary={SceneGoldPrimarySoundEvent} fallback={SceneGoldFallbackSoundEvent}");
+			}
+		}
+		catch (Exception ex)
+		{
+			LogSceneGoldDiag($"sound_exception reason={reason} message={ex.Message}");
+		}
+	}
+
+	private static void TryTintSceneGoldEntity(GameEntity entity)
+	{
+		try
+		{
+			if (entity == null)
+			{
+				return;
+			}
+			entity.SetVectorArgument(1f, 0.72f, 0.08f, 1f);
+			for (int i = 0; i < 8; i++)
+			{
+				MetaMesh metaMesh = entity.GetMetaMesh(i);
+				if (metaMesh == null)
+				{
+					continue;
+				}
+				metaMesh.SetFactor1(SceneGoldTintColor);
+				metaMesh.SetFactor2(SceneGoldTintColor);
+				metaMesh.SetGlossMultiplier(1.8f);
+			}
+		}
+		catch (Exception ex)
+		{
+			LogSceneGoldDiag($"tint_exception message={ex.Message}");
+		}
+	}
+
+	private static void TryPrepareSceneGoldEntityForManualBurst(GameEntity entity)
+	{
+		try
+		{
+			if (entity == null)
+			{
+				return;
+			}
+			entity.SetPhysicsState(false, setChildren: true);
+			entity.SetMobility(GameEntity.Mobility.Stationary);
+		}
+		catch (Exception ex)
+		{
+			LogSceneGoldDiag($"manual_burst_prepare_exception message={ex.Message}");
+		}
+	}
+
+	private static void SetSceneGoldCoinRestingFrame(ref MatrixFrame frame, int coinIndex, bool usesNativeCoinScale)
+	{
+		Vec3 origin = frame.origin;
+		frame = MatrixFrame.Identity;
+		frame.origin = origin;
+		frame.rotation.RotateAboutUp((float)(Math.PI * 2.0 * SceneGoldScatterUnit(coinIndex, 131)));
+		if (usesNativeCoinScale)
+		{
+			frame.rotation.ApplyScaleLocal(SceneGoldNativeCoinVisualScale);
+		}
 	}
 
 	private void TryMaintainSceneGoldCoinMotion(float dt)
@@ -2840,9 +2964,9 @@ public class SceneTauntMissionBehavior : MissionBehavior
 				{
 					continue;
 				}
-				foreach (SceneGoldCoinSim coin in drop.SimulatedCoins)
+				for (int coinIndex = 0; coinIndex < drop.SimulatedCoins.Count; coinIndex++)
 				{
-					int coinIndex = drop.SimulatedCoins.IndexOf(coin);
+					SceneGoldCoinSim coin = drop.SimulatedCoins[coinIndex];
 					if (coin == null || coin.Settled || coin.Entity == null)
 					{
 						continue;
@@ -2883,6 +3007,15 @@ public class SceneTauntMissionBehavior : MissionBehavior
 					frame.rotation.RotateAboutSide(coin.AngularVelocity.x * tick);
 					frame.rotation.RotateAboutForward(coin.AngularVelocity.y * tick);
 					frame.rotation.RotateAboutUp(coin.AngularVelocity.z * tick);
+					float horizontalSpeedSquared = coin.Velocity.x * coin.Velocity.x + coin.Velocity.y * coin.Velocity.y;
+					bool shouldSettle = frame.origin.z <= groundZ + 0.001f && horizontalSpeedSquared < 0.0008f && Math.Abs(coin.Velocity.z) < 0.02f;
+					if (shouldSettle)
+					{
+						coin.Velocity = Vec3.Zero;
+						coin.AngularVelocity = Vec3.Zero;
+						SetSceneGoldCoinRestingFrame(ref frame, coinIndex, coin.UsesNativeCoinScale);
+						coin.Settled = true;
+					}
 					coin.Frame = frame;
 					if (shouldLogTick && (coinIndex < 5 || coinIndex % 20 == 0))
 					{
@@ -2892,11 +3025,6 @@ public class SceneTauntMissionBehavior : MissionBehavior
 					if (shouldLogTick && (coinIndex < 5 || coinIndex % 20 == 0))
 					{
 						LogSceneGoldDiag($"motion_set_frame_done tickIndex={_sceneGoldMotionDiagTicks} dropAgent={drop.AgentIndex} coin={coinIndex}");
-					}
-					float horizontalSpeedSquared = coin.Velocity.x * coin.Velocity.x + coin.Velocity.y * coin.Velocity.y;
-					if (frame.origin.z <= groundZ + 0.001f && horizontalSpeedSquared < 0.0008f && Math.Abs(coin.Velocity.z) < 0.02f)
-					{
-						coin.Settled = true;
 					}
 				}
 			}
@@ -2937,7 +3065,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 				{
 					continue;
 				}
-				float distanceSquared = drop.Position.AsVec2.DistanceSquared(playerPosition);
+				float distanceSquared = GetSceneGoldDropDistanceSquared(drop, playerPosition);
 				if (distanceSquared <= SceneGoldPickupDistanceSquared && distanceSquared < nearestDistanceSquared)
 				{
 					nearestDrop = drop;
@@ -2949,6 +3077,10 @@ public class SceneTauntMissionBehavior : MissionBehavior
 				return;
 			}
 			int pickedGold = TryCollectSceneGoldDrop(nearestDrop);
+			if (pickedGold > 0)
+			{
+				TryPlaySceneGoldCoinSound(nearestDrop.Position, "pickup");
+			}
 			RemoveSceneGoldDrop(nearestDrop, removeEntity: true);
 			if (pickedGold > 0)
 			{
@@ -2960,6 +3092,32 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		{
 			Logger.Log("SceneTaunt", "Handling scene gold pickup failed: " + ex.Message);
 		}
+	}
+
+	private static float GetSceneGoldDropDistanceSquared(SceneGoldDrop drop, Vec2 playerPosition)
+	{
+		if (drop == null)
+		{
+			return float.MaxValue;
+		}
+		float nearestDistanceSquared = drop.Position.AsVec2.DistanceSquared(playerPosition);
+		if (drop.SimulatedCoins == null)
+		{
+			return nearestDistanceSquared;
+		}
+		foreach (SceneGoldCoinSim coin in drop.SimulatedCoins)
+		{
+			if (coin == null)
+			{
+				continue;
+			}
+			float distanceSquared = coin.Frame.origin.AsVec2.DistanceSquared(playerPosition);
+			if (distanceSquared < nearestDistanceSquared)
+			{
+				nearestDistanceSquared = distanceSquared;
+			}
+		}
+		return nearestDistanceSquared;
 	}
 
 	private int TryCollectSceneGoldDrop(SceneGoldDrop drop)
@@ -3137,6 +3295,37 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		}
 	}
 
+	private void RegisterSceneGoldEligibleAgent(Agent agent, string reason)
+	{
+		try
+		{
+			if (agent == null || agent.IsMainAgent || !agent.IsHuman)
+			{
+				return;
+			}
+			if (_sceneGoldEligibleAgentIndices.Add(agent.Index))
+			{
+				LogSceneGoldDiag($"eligible_add idx={agent.Index} name={agent.Name} reason={reason}");
+			}
+		}
+		catch (Exception ex)
+		{
+			LogSceneGoldDiag($"eligible_add_exception reason={reason} message={ex.Message}");
+		}
+	}
+
+	private bool IsSceneGoldEligibleDropAgent(Agent agent)
+	{
+		try
+		{
+			return agent != null && _sceneGoldEligibleAgentIndices.Contains(agent.Index);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
 	private static void LogSceneGoldDiag(string message)
 	{
 		try
@@ -3232,6 +3421,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		}
 		_sceneGoldDrops.Clear();
 		_sceneGoldDropAgentIndices.Clear();
+		_sceneGoldEligibleAgentIndices.Clear();
 		_sceneGoldSettlementShareByAgentIndex.Clear();
 		_sceneGoldShareSnapshotCaptured = false;
 		_sceneGoldShareSnapshotSettlementId = "";
@@ -3350,7 +3540,8 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			bool flag2 = SceneTauntBehavior.IsSoldierSceneTauntTarget(targetCharacter);
 			bool flag3 = SceneTauntBehavior.IsSceneLordTauntTarget(targetHero);
 			bool flag4 = IsSettlementCriminalConflictTarget(targetHero, targetCharacter);
-			if (flag4)
+			bool flag5 = flag4 && CanUseNativeCriminalConflict(agent);
+			if (flag5)
 			{
 				return TryStartNativeCriminalConflict(agent, fromVerbalTaunt ? "scene_taunt_verbal_criminal_conflict" : "scene_taunt_physical_criminal_conflict");
 			}
@@ -3388,29 +3579,31 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			foreach (Agent item3 in list2)
 			{
 				_opponentAgentIndices.Add(item3.Index);
+				RegisterSceneGoldEligibleAgent(item3, "start_conflict_opponent");
 			}
 			foreach (Agent item4 in list3)
 			{
 				_guardAgentIndices.Add(item4.Index);
+				RegisterSceneGoldEligibleAgent(item4, "start_conflict_guard");
 			}
 			_fightHandler.StartCustomFight(list, list2, dropWeapons: false, isItemUseDisabled: false, OnConflictFinished, float.Epsilon);
 			ApplyBaseConsequences(targetCharacter, (flag || flag2 || flag3) ? SceneTauntInitialArmedCrimeAmount : 5f);
-			bool flag5 = SceneTauntBehavior.HasArmedCarryoverForCurrentSettlement() && _armedCarryoverHandledInThisMission;
+			bool flag6 = SceneTauntBehavior.HasArmedCarryoverForCurrentSettlement() && _armedCarryoverHandledInThisMission;
 			if (flag3)
 			{
 				ApplyLordSceneFightConsequences(targetHero);
 			}
 			if (flag3)
 			{
-				EscalateToArmedConflict("taunted_lord_scene", flag5);
+				EscalateToArmedConflict("taunted_lord_scene", flag6);
 			}
 			else if (flag2)
 			{
-				EscalateToArmedConflict("taunted_soldier", flag5);
+				EscalateToArmedConflict("taunted_soldier", flag6);
 			}
 			else if (flag)
 			{
-				EscalateToArmedConflict("player_already_wielding", flag5);
+				EscalateToArmedConflict("player_already_wielding", flag6);
 			}
 			else
 			{
@@ -3449,11 +3642,12 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			}
 			CharacterObject characterObject = targetAgent.Character as CharacterObject;
 			Hero hero = characterObject?.HeroObject;
+			bool useNativeCriminalConflict = IsSettlementCriminalConflictTarget(hero, characterObject) && CanUseNativeCriminalConflict(targetAgent);
 			if (!IsEligiblePhysicalAttackTarget(hero, characterObject))
 			{
 				return false;
 			}
-			if (IsSettlementCriminalConflictTarget(hero, characterObject))
+			if (useNativeCriminalConflict)
 			{
 				if (ShouldSuppressDuplicateNativeCriminalConflict(targetAgent))
 				{
@@ -3489,7 +3683,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			{
 				return false;
 			}
-			if (IsSettlementCriminalConflictTarget(hero, characterObject))
+			if (useNativeCriminalConflict)
 			{
 				Logger.Log("SceneTaunt", $"Physical attack redirected to native criminal conflict. Reason={reason}, Target={targetAgent.Name}, UsedWeapon={playerUsedWeapon}");
 				return true;
@@ -3688,7 +3882,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		{
 			text = "玩家";
 		}
-		return "[AFEF NPC行为补充] "+text + "一拳打到了你的身上，你也开始拿拳头反击。";
+		return "[AFEF NPC行为补充] "+text + "一拳打到了你的身上，你也开始拿拳头殴打玩家。";
 	}
 
 	private static string BuildDirectArmedImmediateReactionFactText(Agent targetAgent)
@@ -4218,16 +4412,6 @@ public class SceneTauntMissionBehavior : MissionBehavior
 	{
 		try
 		{
-			if (Settlement.CurrentSettlement != null)
-			{
-				return true;
-			}
-		}
-		catch
-		{
-		}
-		try
-		{
 			if (MeetingBattleRuntime.IsMeetingActive || LordEncounterBehavior.IsEncounterMeetingMissionActive)
 			{
 				return true;
@@ -4238,7 +4422,24 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		}
 		try
 		{
-			return CampaignMission.Current?.Location != null;
+			Settlement currentSettlement = Settlement.CurrentSettlement;
+			if (currentSettlement == null || currentSettlement.IsHideout)
+			{
+				return false;
+			}
+			string text = (CampaignMission.Current?.Location?.StringId ?? "").Trim().ToLowerInvariant();
+			switch (text)
+			{
+			case "center":
+			case "village_center":
+			case "tavern":
+			case "lordshall":
+			case "arena":
+			case "alley":
+				return true;
+			default:
+				return false;
+			}
 		}
 		catch
 		{
@@ -4394,6 +4595,18 @@ public class SceneTauntMissionBehavior : MissionBehavior
 	private static bool IsEligiblePhysicalAttackTarget(Hero targetHero, CharacterObject targetCharacter)
 	{
 		return IsAuthorityPhysicalAttackTarget(targetHero, targetCharacter) || IsSettlementCriminalConflictTarget(targetHero, targetCharacter) || SceneTauntBehavior.IsSceneNotableTauntTarget(targetHero) || SceneTauntBehavior.IsEligibleSceneTauntCharacter(targetCharacter);
+	}
+
+	private static bool CanUseNativeCriminalConflict(Agent targetAgent)
+	{
+		try
+		{
+			return targetAgent?.GetComponent<CampaignAgentComponent>()?.AgentNavigator?.MemberOfAlley != null && Mission.Current != null;
+		}
+		catch
+		{
+			return false;
+		}
 	}
 
 	private static bool IsAuthorityPhysicalAttackTarget(Hero targetHero, CharacterObject targetCharacter)
@@ -4813,10 +5026,12 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			foreach (Agent item2 in list2)
 			{
 				_opponentAgentIndices.Add(item2.Index);
+				RegisterSceneGoldEligibleAgent(item2, "carryover_opponent");
 			}
 			foreach (Agent guardAgent in guardAgents)
 			{
 				_guardAgentIndices.Add(guardAgent.Index);
+				RegisterSceneGoldEligibleAgent(guardAgent, "carryover_guard");
 			}
 			_fightHandler.StartCustomFight(list, list2, dropWeapons: false, isItemUseDisabled: false, OnConflictFinished, float.Epsilon);
 			foreach (Agent agent in EnumerateConflictAgents(includeGuards: true))
@@ -5651,6 +5866,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			else
 			{
 				_opponentAgentIndices.Add(agent.Index);
+				RegisterSceneGoldEligibleAgent(agent, "add_to_opponent_side");
 			}
 		}
 		catch (Exception ex)
