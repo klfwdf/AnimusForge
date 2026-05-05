@@ -133,7 +133,7 @@ if "%BEHIND_COUNT%"=="0" (
     if "%AHEAD_COUNT%"=="0" (
         echo [SUCCESS] Already up to date.
     ) else (
-        echo [INFO] Nothing to pull. Local %BRANCH% has %AHEAD_COUNT% unpushed commit(s).
+        echo [INFO] Nothing to pull. Local %BRANCH% has %AHEAD_COUNT% unpushed commit^(s^).
     )
     pause
     exit /b 0
