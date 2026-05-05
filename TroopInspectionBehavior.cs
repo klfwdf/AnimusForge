@@ -480,6 +480,18 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 
 	private bool _enemyAgentWarningLogged;
 
+	private float _continuousRefreshTimer;
+
+	private const float RefreshInterval = 0.12f;
+
+	private const float RefreshRadius = 30f;
+
+	private const bool RefreshAllPlayerAgents = true;
+
+	private bool _conversationStateLogged;
+
+	private bool _firstRefreshLogged;
+
 	private float _nextBattleEndDisableRetryTime = 1f;
 
 	private MissionMode _lastMissionMode;
@@ -519,6 +531,7 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 		RetryBattleEndDisableIfNeeded();
 		DetectDeploymentEnd();
 		TryLogAgentCounts();
+		ContinuousAgentRefresh(dt);
 		if (!_inspectionMessageShown && _deploymentEndDetected && base.Mission != null && base.Mission.CurrentTime > 2f)
 		{
 			_inspectionMessageShown = true;
@@ -674,6 +687,135 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 		catch (Exception ex)
 		{
 			Log("agent_count_log failed: " + ex.GetType().Name + ": " + ex.Message);
+		}
+	}
+
+	private void ContinuousAgentRefresh(float dt)
+	{
+		_continuousRefreshTimer += dt;
+		if (_continuousRefreshTimer < RefreshInterval)
+		{
+			return;
+		}
+		_continuousRefreshTimer = 0f;
+		try
+		{
+			bool isInConversation = Campaign.Current?.ConversationManager != null && Campaign.Current.ConversationManager.IsConversationInProgress && Campaign.Current.ConversationManager.OneToOneConversationAgent != null;
+			if (isInConversation && !_conversationStateLogged)
+			{
+				_conversationStateLogged = true;
+				Log("conversation_state_changed in_conversation=true");
+			}
+			if (!isInConversation)
+			{
+				_conversationStateLogged = false;
+			}
+			Agent mainAgent = base.Mission?.MainAgent;
+			Team playerTeam = base.Mission?.PlayerTeam;
+			if (mainAgent == null || playerTeam == null)
+			{
+				return;
+			}
+			Vec3 mainPos = mainAgent.Position;
+			int refreshed = 0;
+			foreach (Agent agent in base.Mission.Agents)
+			{
+				if (agent == null || !agent.IsHuman || !agent.IsActive())
+				{
+					continue;
+				}
+				if (agent == mainAgent)
+				{
+					continue;
+				}
+				if (agent.Team != playerTeam)
+				{
+					continue;
+				}
+				if (!RefreshAllPlayerAgents && agent.Position.Distance(mainPos) > RefreshRadius)
+				{
+					continue;
+				}
+				RefreshSingleAgent(agent);
+				refreshed++;
+			}
+			if (!_firstRefreshLogged)
+			{
+				_firstRefreshLogged = true;
+				Log($"continuous_refresh_started agents_refreshed={refreshed} interval={RefreshInterval} radius={RefreshRadius} refresh_all={RefreshAllPlayerAgents}");
+			}
+		}
+		catch (Exception ex)
+		{
+			Log("continuous_refresh error: " + ex.GetType().Name + ": " + ex.Message);
+		}
+	}
+
+	private void RefreshSingleAgent(Agent agent)
+	{
+		if (agent == null || !agent.IsActive())
+		{
+			return;
+		}
+		try
+		{
+			agent.DisableScriptedMovement();
+		}
+		catch
+		{
+		}
+		try
+		{
+			agent.ClearTargetFrame();
+		}
+		catch
+		{
+		}
+		try
+		{
+			agent.SetIsAIPaused(isPaused: false);
+		}
+		catch
+		{
+		}
+		TrySetAgentController(agent, "AI");
+		try
+		{
+			Agent mountAgent = agent.MountAgent;
+			if (mountAgent != null && mountAgent.IsActive())
+			{
+				mountAgent.DisableScriptedMovement();
+				mountAgent.ClearTargetFrame();
+				mountAgent.SetIsAIPaused(isPaused: false);
+				TrySetAgentController(mountAgent, "AI");
+			}
+		}
+		catch
+		{
+		}
+	}
+
+	private static void TrySetAgentController(Agent agent, string controllerType)
+	{
+		try
+		{
+			if (agent == null || string.IsNullOrWhiteSpace(controllerType))
+			{
+				return;
+			}
+			PropertyInfo propertyInfo = agent.GetType().GetProperty("Controller") ?? agent.GetType().GetProperty("ControllerType");
+			if (propertyInfo == null || !propertyInfo.CanWrite)
+			{
+				return;
+			}
+			object value = Enum.Parse(propertyInfo.PropertyType, controllerType, ignoreCase: true);
+			if (value != null)
+			{
+				propertyInfo.SetValue(agent, value);
+			}
+		}
+		catch
+		{
 		}
 	}
 
