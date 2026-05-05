@@ -41,6 +41,16 @@ public class SceneTauntBehavior : CampaignBehaviorBase
 
 	private string _pendingTemporaryDungeonWarEnemyFactionId = "";
 
+	private bool _pendingDeferredLordSceneDiplomacy;
+
+	private string _pendingDeferredLordSceneTargetHeroId = "";
+
+	private string _pendingDeferredLordSceneTargetFactionId = "";
+
+	private string _pendingDeferredLordSceneSettlementId = "";
+
+	private string _pendingDeferredLordSceneReason = "";
+
 	private bool _armedSettlementCarryoverActive;
 
 	private string _armedSettlementCarryoverSettlementId = "";
@@ -82,6 +92,8 @@ public class SceneTauntBehavior : CampaignBehaviorBase
 	private Dictionary<string, int> _criminalTrustRewardTenthBySettlementStorage = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
 
 	private bool _isCommittingDeferredCrime;
+
+	private bool _isCommittingDeferredLordSceneDiplomacy;
 
 	private bool _pendingForcedPlayerExecution;
 
@@ -130,6 +142,22 @@ public class SceneTauntBehavior : CampaignBehaviorBase
 		if (_pendingTemporaryDungeonWarEnemyFactionId == null)
 		{
 			_pendingTemporaryDungeonWarEnemyFactionId = "";
+		}
+		if (_pendingDeferredLordSceneTargetHeroId == null)
+		{
+			_pendingDeferredLordSceneTargetHeroId = "";
+		}
+		if (_pendingDeferredLordSceneTargetFactionId == null)
+		{
+			_pendingDeferredLordSceneTargetFactionId = "";
+		}
+		if (_pendingDeferredLordSceneSettlementId == null)
+		{
+			_pendingDeferredLordSceneSettlementId = "";
+		}
+		if (_pendingDeferredLordSceneReason == null)
+		{
+			_pendingDeferredLordSceneReason = "";
 		}
 		if (_pendingDeferredCrimeByFaction == null)
 		{
@@ -191,6 +219,11 @@ public class SceneTauntBehavior : CampaignBehaviorBase
 		dataStore.SyncData("_sceneTauntPendingTempWarPeace_v1", ref _pendingTemporaryDungeonWarPeace);
 		dataStore.SyncData("_sceneTauntPendingTempWarPlayerFactionId_v1", ref _pendingTemporaryDungeonWarPlayerFactionId);
 		dataStore.SyncData("_sceneTauntPendingTempWarEnemyFactionId_v1", ref _pendingTemporaryDungeonWarEnemyFactionId);
+		dataStore.SyncData("_sceneTauntPendingDeferredLordSceneDiplomacy_v1", ref _pendingDeferredLordSceneDiplomacy);
+		dataStore.SyncData("_sceneTauntPendingDeferredLordSceneTargetHeroId_v1", ref _pendingDeferredLordSceneTargetHeroId);
+		dataStore.SyncData("_sceneTauntPendingDeferredLordSceneTargetFactionId_v1", ref _pendingDeferredLordSceneTargetFactionId);
+		dataStore.SyncData("_sceneTauntPendingDeferredLordSceneSettlementId_v1", ref _pendingDeferredLordSceneSettlementId);
+		dataStore.SyncData("_sceneTauntPendingDeferredLordSceneReason_v1", ref _pendingDeferredLordSceneReason);
 		dataStore.SyncData("_sceneTauntDeferredCrimeByFaction_v1", ref _pendingDeferredCrimeByFactionStorage);
 		dataStore.SyncData("_sceneTauntCrimeRefillReserveByFaction_v1", ref _crimeRefillReserveByFactionStorage);
 		dataStore.SyncData("_sceneTauntLastObservedNativeCrimeByFaction_v1", ref _lastObservedNativeCrimeByFactionStorage);
@@ -244,6 +277,10 @@ public class SceneTauntBehavior : CampaignBehaviorBase
 			}
 			_pendingTemporaryDungeonWarPlayerFactionId = (_pendingTemporaryDungeonWarPlayerFactionId ?? "").Trim();
 			_pendingTemporaryDungeonWarEnemyFactionId = (_pendingTemporaryDungeonWarEnemyFactionId ?? "").Trim();
+			_pendingDeferredLordSceneTargetHeroId = (_pendingDeferredLordSceneTargetHeroId ?? "").Trim();
+			_pendingDeferredLordSceneTargetFactionId = (_pendingDeferredLordSceneTargetFactionId ?? "").Trim();
+			_pendingDeferredLordSceneSettlementId = (_pendingDeferredLordSceneSettlementId ?? "").Trim();
+			_pendingDeferredLordSceneReason = (_pendingDeferredLordSceneReason ?? "").Trim();
 			_armedSettlementCarryoverSettlementId = (_armedSettlementCarryoverSettlementId ?? "").Trim();
 			_armedSettlementCarryoverSource = (_armedSettlementCarryoverSource ?? "").Trim();
 			_armedCarryoverLastAlertSettlementId = (_armedCarryoverLastAlertSettlementId ?? "").Trim();
@@ -296,6 +333,7 @@ public class SceneTauntBehavior : CampaignBehaviorBase
 		TryForcePendingLocalDungeonCaptivityMenuIfReady();
 		TryClearExpiredArmedSettlementCarryover();
 		TryCommitDeferredCrimeWhenBackOnWorldMap();
+		TryCommitDeferredLordSceneDiplomacyWhenBackOnWorldMap();
 		TryCommitPendingSceneNotableBattleDeaths();
 	}
 
@@ -304,12 +342,14 @@ public class SceneTauntBehavior : CampaignBehaviorBase
 		TryCommitPendingMainHeroBattleDeath();
 		TryCommitPendingForcedPlayerExecution();
 		TryCommitDeferredCrimeWhenBackOnWorldMap();
+		TryCommitDeferredLordSceneDiplomacyWhenBackOnWorldMap();
 	}
 
 	private void OnDailyTick()
 	{
 		TryCommitPendingMainHeroBattleDeath();
 		TryCommitDeferredCrimeWhenBackOnWorldMap();
+		TryCommitDeferredLordSceneDiplomacyWhenBackOnWorldMap();
 	}
 
 	private void OnHeroPrisonerTaken(PartyBase capturer, Hero prisoner)
@@ -347,6 +387,7 @@ public class SceneTauntBehavior : CampaignBehaviorBase
 		{
 			_pendingDeferredCrimeByFaction?.Clear();
 			_crimeRefillReserveByFaction?.Clear();
+			ClearPendingDeferredLordSceneDiplomacy("main_character_died");
 			ClearPendingMainHeroBattleDeath("main_character_died");
 			Logger.Log("SceneTaunt", $"Cleared scene-taunt crime tracking after main hero death. Detail={detail}");
 		}
@@ -835,6 +876,43 @@ public class SceneTauntBehavior : CampaignBehaviorBase
 		finally
 		{
 			_isCommittingDeferredCrime = false;
+		}
+	}
+
+	private void TryCommitDeferredLordSceneDiplomacyWhenBackOnWorldMap()
+	{
+		if (_isCommittingDeferredLordSceneDiplomacy || !_pendingDeferredLordSceneDiplomacy || !IsReadyToCommitDeferredCrime())
+		{
+			return;
+		}
+		_isCommittingDeferredLordSceneDiplomacy = true;
+		try
+		{
+			Hero targetHero = ResolveHeroById(_pendingDeferredLordSceneTargetHeroId);
+			IFaction targetFaction = ResolveFactionById(_pendingDeferredLordSceneTargetFactionId);
+			if (targetHero == null && targetFaction != null)
+			{
+				targetHero = targetFaction.Leader;
+			}
+			if (targetHero == null && targetFaction == null)
+			{
+				Logger.Log("SceneTaunt", "Deferred lord scene diplomacy dropped because target hero/faction could not be resolved.");
+				ClearPendingDeferredLordSceneDiplomacy("missing_target");
+				return;
+			}
+			PartyBase defenderParty = ResolveDeferredLordSceneDefenderParty(targetHero, targetFaction);
+			string reason = string.IsNullOrWhiteSpace(_pendingDeferredLordSceneReason) ? "scene_taunt_lord_scene_deferred" : _pendingDeferredLordSceneReason;
+			bool applied = LordEncounterBehavior.ApplyHostileEscalationDiplomaticConsequences(defenderParty, targetHero, reason, "SceneTaunt");
+			Logger.Log("SceneTaunt", $"Committed deferred lord scene diplomacy after leaving settlement. Applied={applied}, TargetHero={targetHero?.Name}, TargetFaction={targetFaction?.Name}, Defender={defenderParty?.Name}, Reason={reason}");
+			ClearPendingDeferredLordSceneDiplomacy("committed");
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SceneTaunt", "Committing deferred lord scene diplomacy failed: " + ex.Message);
+		}
+		finally
+		{
+			_isCommittingDeferredLordSceneDiplomacy = false;
 		}
 	}
 
@@ -1346,6 +1424,112 @@ public class SceneTauntBehavior : CampaignBehaviorBase
 		{
 			return null;
 		}
+	}
+
+	private static Settlement ResolveSettlementById(string settlementId)
+	{
+		string text = (settlementId ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return null;
+		}
+		try
+		{
+			return Campaign.Current?.Settlements?.FirstOrDefault((Settlement x) => x != null && string.Equals((x.StringId ?? "").Trim(), text, StringComparison.OrdinalIgnoreCase));
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private PartyBase ResolveDeferredLordSceneDefenderParty(Hero targetHero, IFaction targetFaction)
+	{
+		try
+		{
+			PartyBase partyBase = targetHero?.PartyBelongedTo?.Party;
+			if (partyBase != null)
+			{
+				return partyBase;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			Settlement settlement = ResolveSettlementById(_pendingDeferredLordSceneSettlementId);
+			PartyBase partyBase2 = settlement?.Party;
+			IFaction faction = partyBase2?.MapFaction ?? settlement?.MapFaction;
+			if (partyBase2 != null && (targetFaction == null || faction == null || faction == targetFaction))
+			{
+				return partyBase2;
+			}
+		}
+		catch
+		{
+		}
+		return null;
+	}
+
+	private void QueueDeferredLordSceneDiplomacy(Hero targetHero, string reason)
+	{
+		try
+		{
+			IFaction faction = null;
+			try
+			{
+				faction = targetHero?.PartyBelongedTo?.Party?.MapFaction ?? targetHero?.MapFaction;
+			}
+			catch
+			{
+				faction = targetHero?.MapFaction;
+			}
+			if (targetHero == null && faction == null)
+			{
+				return;
+			}
+			string text = (faction?.StringId ?? "").Trim();
+			string text2 = (targetHero?.StringId ?? "").Trim();
+			if (_pendingDeferredLordSceneDiplomacy && string.Equals(_pendingDeferredLordSceneTargetFactionId, text, StringComparison.OrdinalIgnoreCase))
+			{
+				if (string.IsNullOrWhiteSpace(_pendingDeferredLordSceneTargetHeroId) && !string.IsNullOrWhiteSpace(text2))
+				{
+					_pendingDeferredLordSceneTargetHeroId = text2;
+				}
+				Logger.Log("SceneTaunt", $"Deferred lord scene diplomacy already queued. TargetHero={targetHero?.Name}, TargetFaction={faction?.Name}, Reason={reason ?? "N/A"}");
+				return;
+			}
+			_pendingDeferredLordSceneDiplomacy = true;
+			_pendingDeferredLordSceneTargetHeroId = text2;
+			_pendingDeferredLordSceneTargetFactionId = text;
+			_pendingDeferredLordSceneSettlementId = GetActiveSettlementIdSafe();
+			_pendingDeferredLordSceneReason = string.IsNullOrWhiteSpace(reason) ? "scene_taunt_lord_scene_deferred" : reason.Trim();
+			Logger.Log("SceneTaunt", $"Queued deferred lord scene diplomacy until world map. TargetHero={targetHero?.Name}, TargetFaction={faction?.Name}, SettlementId={_pendingDeferredLordSceneSettlementId}, Reason={_pendingDeferredLordSceneReason}");
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SceneTaunt", "Queueing deferred lord scene diplomacy failed: " + ex.Message);
+		}
+	}
+
+	internal static void QueueDeferredLordSceneDiplomacyForExternal(Hero targetHero, string reason)
+	{
+		Instance?.QueueDeferredLordSceneDiplomacy(targetHero, reason);
+	}
+
+	private void ClearPendingDeferredLordSceneDiplomacy(string reason)
+	{
+		if (!_pendingDeferredLordSceneDiplomacy && string.IsNullOrWhiteSpace(_pendingDeferredLordSceneTargetHeroId) && string.IsNullOrWhiteSpace(_pendingDeferredLordSceneTargetFactionId))
+		{
+			return;
+		}
+		_pendingDeferredLordSceneDiplomacy = false;
+		_pendingDeferredLordSceneTargetHeroId = "";
+		_pendingDeferredLordSceneTargetFactionId = "";
+		_pendingDeferredLordSceneSettlementId = "";
+		_pendingDeferredLordSceneReason = "";
+		Logger.Log("SceneTaunt", "Cleared deferred lord scene diplomacy. Reason=" + (reason ?? "N/A"));
 	}
 
 	private static void MarkPendingTemporaryDungeonWarPeace(IFaction playerFaction, IFaction enemyFaction, string reason)
@@ -2579,14 +2763,28 @@ public class SceneTauntMissionBehavior : MissionBehavior
 				return;
 			}
 			Hero heroObject = characterObject.HeroObject;
+			if (IsCurrentSceneGoldLordHall() && !SceneTauntBehavior.IsSceneLordTauntTarget(heroObject))
+			{
+				LogSceneGoldDiag($"spawn_skip lordhall_non_lord idx={affectedAgent.Index} hero={(heroObject?.StringId ?? "null")} character={characterObject.StringId}");
+				return;
+			}
 			Settlement currentSettlement = Settlement.CurrentSettlement;
 			int fixedSettlementGold = 0;
 			int visualGoldAmount = 0;
 			bool isHeroDrop = heroObject != null;
 			if (isHeroDrop)
 			{
-				visualGoldAmount = GetHeroSceneGoldPickupAmount(heroObject);
-				LogSceneGoldDiag($"spawn_amount hero hero={(heroObject?.StringId ?? "null")} heroGold={heroObject?.Gold ?? -1} visual={visualGoldAmount}");
+				int heroGoldAmount = GetHeroSceneGoldPickupAmount(heroObject);
+				if (heroGoldAmount > 0)
+				{
+					visualGoldAmount = heroGoldAmount;
+				}
+				else
+				{
+					fixedSettlementGold = GetHeroSceneGoldSettlementFallbackAmount(currentSettlement);
+					visualGoldAmount = fixedSettlementGold;
+				}
+				LogSceneGoldDiag($"spawn_amount hero hero={(heroObject?.StringId ?? "null")} heroGold={heroObject?.Gold ?? -1} settlementGold={currentSettlement?.SettlementComponent?.Gold ?? -1} fixedSettlementFallback={fixedSettlementGold} visual={visualGoldAmount}");
 				if (visualGoldAmount <= 0)
 				{
 					LogSceneGoldDiag("spawn_skip hero_amount_zero");
@@ -3131,19 +3329,45 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			if (drop.IsHeroDrop)
 			{
 				Hero sourceHero = drop.SourceHero;
-				int amount = GetHeroSceneGoldPickupAmount(sourceHero);
-				if (sourceHero == null || amount <= 0)
+				if (sourceHero == null)
 				{
 					return 0;
 				}
-				amount = Math.Min(amount, Math.Max(0, sourceHero.Gold));
+				int amount = GetHeroSceneGoldPickupAmount(sourceHero);
+				if (amount <= 0)
+				{
+					amount = Math.Max(0, drop.FixedSettlementGold);
+				}
 				if (amount <= 0)
 				{
 					return 0;
 				}
-				sourceHero.ChangeHeroGold(-amount);
-				Hero.MainHero.ChangeHeroGold(amount);
-				return amount;
+				int heroGold = Math.Max(0, sourceHero.Gold);
+				int heroPaidGold = Math.Min(amount, heroGold);
+				int settlementPaidGold = 0;
+				if (heroPaidGold > 0)
+				{
+					sourceHero.ChangeHeroGold(-heroPaidGold);
+				}
+				int remainingGold = amount - heroPaidGold;
+				if (remainingGold > 0)
+				{
+					Settlement settlement = drop.SourceSettlement ?? Settlement.CurrentSettlement;
+					int availableSettlementGold = Math.Max(0, settlement?.SettlementComponent?.Gold ?? 0);
+					settlementPaidGold = Math.Min(remainingGold, availableSettlementGold);
+					if (settlementPaidGold > 0)
+					{
+						settlement.SettlementComponent.ChangeGold(-settlementPaidGold);
+					}
+				}
+				int pickedGold = heroPaidGold + settlementPaidGold;
+				if (pickedGold <= 0)
+				{
+					return 0;
+				}
+				Hero.MainHero.ChangeHeroGold(pickedGold);
+				LogSceneGoldDiag($"collect_hero amount={pickedGold} heroPaid={heroPaidGold} settlementPaid={settlementPaidGold} hero={sourceHero.StringId}");
+				return pickedGold;
 			}
 			Settlement settlement = drop.SourceSettlement ?? Settlement.CurrentSettlement;
 			int availableGold = Math.Max(0, settlement?.SettlementComponent?.Gold ?? 0);
@@ -3168,6 +3392,31 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		try
 		{
 			return Math.Max(0, (int)Math.Floor((double)Math.Max(0, sourceHero?.Gold ?? 0) * 0.3));
+		}
+		catch
+		{
+			return 0;
+		}
+	}
+
+	private static bool IsCurrentSceneGoldLordHall()
+	{
+		try
+		{
+			string text = (CampaignMission.Current?.Location?.StringId ?? "").Trim();
+			return string.Equals(text, "lordshall", StringComparison.OrdinalIgnoreCase) || string.Equals(text, "lords_hall", StringComparison.OrdinalIgnoreCase);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static int GetHeroSceneGoldSettlementFallbackAmount(Settlement settlement)
+	{
+		try
+		{
+			return Math.Max(0, (int)Math.Floor((double)Math.Max(0, settlement?.SettlementComponent?.Gold ?? 0) * 0.3));
 		}
 		catch
 		{
@@ -5597,24 +5846,11 @@ public class SceneTauntMissionBehavior : MissionBehavior
 	{
 		try
 		{
-			PartyBase partyBase = null;
-			try
-			{
-				partyBase = targetHero?.PartyBelongedTo?.Party;
-			}
-			catch
-			{
-				partyBase = null;
-			}
-			if (partyBase == null)
-			{
-				partyBase = Settlement.CurrentSettlement?.Party;
-			}
-			LordEncounterBehavior.ApplyHostileEscalationDiplomaticConsequences(partyBase, targetHero, "scene_taunt_lord_scene", "SceneTaunt");
+			SceneTauntBehavior.QueueDeferredLordSceneDiplomacyForExternal(targetHero, "scene_taunt_lord_scene");
 		}
 		catch (Exception ex)
 		{
-			Logger.Log("SceneTaunt", "Applying lord scene fight consequences failed: " + ex.Message);
+			Logger.Log("SceneTaunt", "Queueing lord scene fight consequences failed: " + ex.Message);
 		}
 	}
 
