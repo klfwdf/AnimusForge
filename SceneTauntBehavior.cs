@@ -3352,22 +3352,22 @@ public class SceneTauntMissionBehavior : MissionBehavior
 				int remainingGold = amount - heroPaidGold;
 				if (remainingGold > 0)
 				{
-					Settlement settlement = drop.SourceSettlement ?? Settlement.CurrentSettlement;
-					int availableSettlementGold = Math.Max(0, settlement?.SettlementComponent?.Gold ?? 0);
+					Settlement heroSettlement = drop.SourceSettlement ?? Settlement.CurrentSettlement;
+					int availableSettlementGold = Math.Max(0, heroSettlement?.SettlementComponent?.Gold ?? 0);
 					settlementPaidGold = Math.Min(remainingGold, availableSettlementGold);
 					if (settlementPaidGold > 0)
 					{
-						settlement.SettlementComponent.ChangeGold(-settlementPaidGold);
+						heroSettlement.SettlementComponent.ChangeGold(-settlementPaidGold);
 					}
 				}
-				int pickedGold = heroPaidGold + settlementPaidGold;
-				if (pickedGold <= 0)
+				int heroPickedGold = heroPaidGold + settlementPaidGold;
+				if (heroPickedGold <= 0)
 				{
 					return 0;
 				}
-				Hero.MainHero.ChangeHeroGold(pickedGold);
-				LogSceneGoldDiag($"collect_hero amount={pickedGold} heroPaid={heroPaidGold} settlementPaid={settlementPaidGold} hero={sourceHero.StringId}");
-				return pickedGold;
+				Hero.MainHero.ChangeHeroGold(heroPickedGold);
+				LogSceneGoldDiag($"collect_hero amount={heroPickedGold} heroPaid={heroPaidGold} settlementPaid={settlementPaidGold} hero={sourceHero.StringId}");
+				return heroPickedGold;
 			}
 			Settlement settlement = drop.SourceSettlement ?? Settlement.CurrentSettlement;
 			int availableGold = Math.Max(0, settlement?.SettlementComponent?.Gold ?? 0);

@@ -110,13 +110,38 @@ if "%DRY_RUN%"=="1" (
     echo   git rm -r --cached --ignore-unmatch -- "%GIT_EXCLUDE_PATH%"
     echo   git add -A
     echo   if changes exist: git commit -m "%COMMIT_MSG_SAFE%"
-    echo   if no changes   : git commit --allow-empty -m "%COMMIT_MSG_SAFE%"
+    echo   if no changes   : skip commit
     echo   git push -u origin "%BRANCH%"
     echo.
     echo [SUCCESS] Dry-run completed.
     pause
     exit /b 0
 )
+
+echo [Preflight] Checking origin/%BRANCH% connectivity...
+git ls-remote --exit-code origin "refs/heads/%BRANCH%" >nul
+if errorlevel 1 (
+    echo [ERROR] Cannot reach origin/%BRANCH%. No commit was created.
+    echo Check network / GitHub access / credentials, then retry.
+    pause
+    exit /b 1
+)
+
+git fetch origin "%BRANCH%" >nul
+if errorlevel 1 (
+    echo [ERROR] Failed to refresh origin/%BRANCH%. No commit was created.
+    pause
+    exit /b 1
+)
+
+git merge-base --is-ancestor "origin/%BRANCH%" HEAD
+if errorlevel 1 (
+    echo [ERROR] origin/%BRANCH% has commits that are not in local %BRANCH%.
+    echo Pull/rebase first, then retry. No commit was created.
+    pause
+    exit /b 1
+)
+echo.
 
 echo [1/3] Staging changes...
 git rm -r --cached --ignore-unmatch -- "%GIT_EXCLUDE_PATH%" >nul 2>nul
@@ -144,13 +169,15 @@ if errorlevel 1 (
         exit /b 1
     )
 ) else (
-    echo [INFO] No file changes detected, creating empty commit...
-    git commit --allow-empty -m "%COMMIT_MSG_SAFE%"
-    if errorlevel 1 (
-        echo [ERROR] git commit --allow-empty failed.
-        pause
-        exit /b 1
-    )
+    echo [INFO] No file changes detected, skipping commit.
+)
+
+for /f "delims=" %%A in ('git rev-list --count "origin/%BRANCH%..HEAD"') do set "AHEAD_COUNT=%%A"
+if not defined AHEAD_COUNT set "AHEAD_COUNT=0"
+if "%AHEAD_COUNT%"=="0" (
+    echo [SUCCESS] Nothing to push. origin/%BRANCH% is already up to date.
+    pause
+    exit /b 0
 )
 
 echo [3/3] Pushing to origin/%BRANCH%...
