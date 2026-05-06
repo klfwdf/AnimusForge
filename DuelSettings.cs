@@ -189,7 +189,7 @@ public class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyGroup("3. 场景喊话")]
 	public int BubbleFontSize { get; set; } = 14;
 
-	[SettingPropertyBool("允许玩家直接攻击和平场景NPC", Order = 5, RequireRestart = false, HintText = "开启后，玩家直接攻击和平场景 NPC 可以造成伤害并触发打架。关闭后，玩家在和平状态下无法对 NPC 造成伤害，也不能靠直接攻击开打；但对话中的吵架/挑衅仍然可以触发冲突升级。")]
+	[SettingPropertyBool("允许玩家直接攻击触发场景冲突", Order = 5, RequireRestart = false, HintText = "开启后，玩家直接攻击和平场景 NPC 可以触发本模组的场景冲突。关闭后，本模组不再把直接攻击转成场景冲突，伤害结算完全交回原版；对话中的吵架/挑衅仍然可以触发冲突升级。")]
 	[SettingPropertyGroup("3. 场景喊话")]
 	public bool EnablePeaceSceneConflict { get; set; } = true;
 

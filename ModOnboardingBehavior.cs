@@ -1952,7 +1952,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		try
 		{
 			_welcomeInProgress = true;
-			string text = "是否允许玩家直接攻击和平场景 NPC？\n\n开启后，玩家直接攻击城镇、领主会面等和平场景内的 NPC 可以造成伤害并触发打架。\n\n关闭后，玩家在和平状态下无法对 NPC 造成伤害，也不能靠直接攻击开打；但对话中的吵架/挑衅仍然可以触发冲突升级。\n\n这个选择会同步写入 MCM，之后可在“场景喊话”中随时修改。";
+			string text = "是否允许玩家直接攻击触发场景冲突？\n\n开启后，玩家直接攻击城镇、领主会面等和平场景内的 NPC 可以触发本模组的场景冲突。\n\n关闭后，本模组不会再把直接攻击转成场景冲突，伤害结算完全交回原版；对话中的吵架/挑衅仍然可以触发冲突升级。\n\n这个选择会同步写入 MCM，之后可在“场景喊话”中随时修改。";
 			InformationManager.ShowInquiry(new InquiryData("AnimusForge - 场景冲突", text, isAffirmativeOptionShown: true, isNegativeOptionShown: true, "开启", "关闭", delegate
 			{
 				_welcomeInProgress = false;
@@ -1991,7 +1991,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			}
 			settings.EnablePeaceSceneConflict = enabled;
 			TryPersistMcmSettings(settings);
-			InformationManager.DisplayMessage(new InformationMessage(enabled ? "已允许玩家直接攻击和平场景 NPC。" : "已禁止玩家直接攻击和平场景 NPC；对话吵架仍可升级冲突。"));
+			InformationManager.DisplayMessage(new InformationMessage(enabled ? "已允许玩家直接攻击触发场景冲突。" : "已关闭直接攻击触发场景冲突；伤害结算回到原版逻辑。"));
 		}
 		catch (Exception ex)
 		{

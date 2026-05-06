@@ -4675,125 +4675,6 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		}
 	}
 
-	internal static bool ShouldSuppressPeaceScenePlayerDamageExternal(Agent victimAgent, Agent attackerAgent)
-	{
-		try
-		{
-			if (SceneTauntBehavior.IsPeaceSceneConflictEnabled())
-			{
-				return false;
-			}
-			if (victimAgent == null || attackerAgent == null || !victimAgent.IsHuman || victimAgent.IsMainAgent)
-			{
-				return false;
-			}
-			Agent mainAgent = Agent.Main;
-			if (mainAgent == null || !mainAgent.IsActive())
-			{
-				mainAgent = victimAgent.Mission?.MainAgent ?? attackerAgent.Mission?.MainAgent;
-			}
-			if (mainAgent == null || !mainAgent.IsActive())
-			{
-				return false;
-			}
-			bool flag = attackerAgent == mainAgent;
-			if (!flag)
-			{
-				try
-				{
-					flag = mainAgent.MountAgent != null && attackerAgent == mainAgent.MountAgent;
-				}
-				catch
-				{
-					flag = false;
-				}
-			}
-			if (!flag)
-			{
-				return false;
-			}
-			if (!IsPeaceSceneDamageGuardContext())
-			{
-				return false;
-			}
-			try
-			{
-				if (DuelBehavior.IsFormalDuelActive)
-				{
-					return false;
-				}
-			}
-			catch
-			{
-			}
-			try
-			{
-				if (MeetingBattleRuntime.IsCombatEscalated)
-				{
-					return false;
-				}
-			}
-			catch
-			{
-			}
-			Mission mission = victimAgent.Mission ?? attackerAgent.Mission ?? Mission.Current;
-			try
-			{
-				if (mission?.GetMissionBehavior<MissionFightHandler>()?.IsThereActiveFight() ?? false)
-				{
-					return false;
-				}
-			}
-			catch
-			{
-			}
-			return true;
-		}
-		catch
-		{
-			return false;
-		}
-	}
-
-	private static bool IsPeaceSceneDamageGuardContext()
-	{
-		try
-		{
-			if (MeetingBattleRuntime.IsMeetingActive || LordEncounterBehavior.IsEncounterMeetingMissionActive)
-			{
-				return true;
-			}
-		}
-		catch
-		{
-		}
-		try
-		{
-			Settlement currentSettlement = Settlement.CurrentSettlement;
-			if (currentSettlement == null || currentSettlement.IsHideout)
-			{
-				return false;
-			}
-			string text = (CampaignMission.Current?.Location?.StringId ?? "").Trim().ToLowerInvariant();
-			switch (text)
-			{
-			case "center":
-			case "village_center":
-			case "tavern":
-			case "lordshall":
-			case "arena":
-			case "alley":
-				return true;
-			default:
-				return false;
-			}
-		}
-		catch
-		{
-			return false;
-		}
-	}
-
 	internal static bool ShouldDelayNativeFightAutoEndLongExternal(Mission mission)
 	{
 		try
@@ -7758,11 +7639,6 @@ public static class SceneTauntMissionDifficultyPatch
 	{
 		try
 		{
-			if (SceneTauntMissionBehavior.ShouldSuppressPeaceScenePlayerDamageExternal(victimAgent, attackerAgent))
-			{
-				__result = 0f;
-				return;
-			}
 			if (SceneTauntMissionBehavior.ShouldUseFullCombatDamageExternal(victimAgent, attackerAgent))
 			{
 				__result = 1f;
