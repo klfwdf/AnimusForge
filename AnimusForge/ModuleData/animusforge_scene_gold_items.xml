@@ -40,4 +40,44 @@
       Stealth="true"
       ForceAttachOffHandPrimaryItemBone="true" />
   </Item>
+  <Item
+    id="animusforge_denar_ingot_item"
+    name="{=AnimusForgeDenarIngot}Denar Ingot"
+    is_merchandise="false"
+    body_name="bo_sling_ammo"
+    holster_body_name="bo_axe_short"
+    flying_mesh="fine_steel"
+    mesh="fine_steel"
+    holster_mesh="fine_steel"
+    holster_mesh_with_weapon="fine_steel"
+    value="1000"
+    weight="0.5"
+    appearance="1"
+    Type="SlingStones"
+    item_holsters="throwing_stone:throwing_stone_2">
+    <ItemComponent>
+      <Weapon
+        weapon_class="SlingStone"
+        stack_amount="1"
+        physics_material="missile"
+        accuracy="45"
+        thrust_speed="0"
+        speed_rating="0"
+        missile_speed="10"
+        weapon_length="10"
+        thrust_damage="9"
+        thrust_damage_type="Blunt"
+        item_usage=""
+        passby_sound_code="">
+        <WeaponFlags
+          AmmoBreaksOnBounceBack="true"
+          AttachAmmoToVisual="true"
+          Consumable="true"
+          UseHandAsThrowBase="true" />
+      </Weapon>
+    </ItemComponent>
+    <Flags
+      Stealth="true"
+      ForceAttachOffHandPrimaryItemBone="true" />
+  </Item>
 </Items>

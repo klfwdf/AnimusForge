@@ -2012,11 +2012,17 @@ public class SceneTauntMissionBehavior : MissionBehavior
 
 	private const int SceneGoldMaxVisualCoins = 1000;
 
+	private const int SceneGoldCoinDenarValue = 10;
+
+	private const int SceneGoldIngotDenarValue = 1000;
+
 	private const float SceneGoldSimulatedGravity = 9.8f;
 
 	private const float SceneGoldGroundOffset = 0.035f;
 
 	private const string SceneGoldCustomItemId = "animusforge_denar_coin_item";
+
+	private const string SceneGoldCustomIngotItemId = "animusforge_denar_ingot_item";
 
 	private const string SceneGoldFallbackNativeItemId = "sling_leadammo";
 
@@ -2027,6 +2033,8 @@ public class SceneTauntMissionBehavior : MissionBehavior
 	private const string SceneGoldFallbackSoundEvent = "event:/ui/multiplayer/coin_add";
 
 	private const float SceneGoldNativeCoinVisualScale = 1.4f;
+
+	private const float SceneGoldNativeIngotVisualScale = 1.15f;
 
 	private const float SceneGoldBurstSpawnHeight = 1.08f;
 
@@ -2079,7 +2087,20 @@ public class SceneTauntMissionBehavior : MissionBehavior
 
 		public bool UsesNativeCoinScale;
 
+		public bool UsesNativeIngotScale;
+
 		public bool Settled;
+	}
+
+	private sealed class SceneGoldVisualPiece
+	{
+		public ItemObject Item;
+
+		public int DenarValue;
+
+		public bool UsesNativeCoinScale;
+
+		public bool UsesNativeIngotScale;
 	}
 
 	private MissionFightHandler _fightHandler;
@@ -2809,6 +2830,11 @@ public class SceneTauntMissionBehavior : MissionBehavior
 				visualGoldAmount = fixedSettlementGold;
 				LogSceneGoldDiag($"spawn_amount settlement fixed={fixedSettlementGold} visual={visualGoldAmount}");
 			}
+			if (visualGoldAmount <= 0)
+			{
+				LogSceneGoldDiag("spawn_skip amount_zero");
+				return;
+			}
 			LogSceneGoldDiag($"spawn_entities_begin visual={visualGoldAmount} pos={FormatSceneGoldVec(affectedAgent.Position)}");
 			bool usesNativeItemPhysics = false;
 			List<SceneGoldCoinSim> simulatedCoins = TryCreateSceneGoldEntities(affectedAgent.Position, visualGoldAmount, out usesNativeItemPhysics);
@@ -2881,13 +2907,13 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		}
 		try
 		{
-			ItemObject customCoinItem = TryGetSceneGoldCoinItemObject();
-			if (customCoinItem != null)
+			List<SceneGoldVisualPiece> visualPieces = BuildSceneGoldVisualPieces(visualGoldAmount);
+			if (visualPieces != null && visualPieces.Count > 0)
 			{
-				LogSceneGoldDiag($"create_item_path_begin item={customCoinItem.StringId}");
+				LogSceneGoldDiag($"create_item_path_begin pieces={visualPieces.Count} visual={visualGoldAmount}");
 				Vec3 burstOrigin = origin;
 				burstOrigin.z += SceneGoldBurstSpawnHeight;
-				List<SceneGoldCoinSim> nativePhysicsCoins = TryCreateSceneGoldItemDrops(burstOrigin, visualGoldAmount, customCoinItem);
+				List<SceneGoldCoinSim> nativePhysicsCoins = TryCreateSceneGoldItemDrops(burstOrigin, visualPieces);
 				if (nativePhysicsCoins != null && nativePhysicsCoins.Count > 0)
 				{
 					usesNativeItemPhysics = false;
@@ -2898,7 +2924,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			}
 			else
 			{
-				LogSceneGoldDiag($"create_item_missing ids={SceneGoldCustomItemId},{SceneGoldFallbackNativeItemId}");
+				LogSceneGoldDiag($"create_item_missing ids={SceneGoldCustomItemId},{SceneGoldCustomIngotItemId},{SceneGoldFallbackNativeItemId}");
 			}
 			int coinCount = Math.Min(Math.Max(1, visualGoldAmount), SceneGoldMaxVisualCoins);
 			LogSceneGoldDiag($"create_loop_begin coinCount={coinCount} max={SceneGoldMaxVisualCoins} visualRequested={visualGoldAmount} capped={visualGoldAmount > SceneGoldMaxVisualCoins}");
@@ -2937,6 +2963,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 					Velocity = new Vec3((float)Math.Cos(angle) * burstSpeed, (float)Math.Sin(angle) * burstSpeed, 1.25f, -1f),
 					AngularVelocity = new Vec3(5.5f + i * 0.17f, 3.8f + i * 0.11f, 6.2f + i * 0.13f, -1f),
 					UsesNativeCoinScale = false,
+					UsesNativeIngotScale = false,
 					Settled = false
 				});
 				LogSceneGoldDiag($"coin[{i}] sim_add_done count={simulatedCoins.Count}");
@@ -2990,40 +3017,106 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		}
 	}
 
-	private List<SceneGoldCoinSim> TryCreateSceneGoldItemDrops(Vec3 origin, int visualGoldAmount, ItemObject coinItem)
+	private static List<SceneGoldVisualPiece> BuildSceneGoldVisualPieces(int goldAmount)
+	{
+		try
+		{
+			if (goldAmount <= 0)
+			{
+				return null;
+			}
+			var objectManager = Game.Current?.ObjectManager;
+			ItemObject ingotItem = objectManager?.GetObject<ItemObject>(SceneGoldCustomIngotItemId);
+			ItemObject coinItem = objectManager?.GetObject<ItemObject>(SceneGoldCustomItemId) ?? objectManager?.GetObject<ItemObject>(SceneGoldFallbackNativeItemId);
+			if (ingotItem == null && coinItem == null)
+			{
+				return null;
+			}
+			List<SceneGoldVisualPiece> pieces = new List<SceneGoldVisualPiece>();
+			int remainingGold = goldAmount;
+			if (ingotItem != null)
+			{
+				int ingotCount = Math.Min(remainingGold / SceneGoldIngotDenarValue, SceneGoldMaxVisualCoins);
+				for (int i = 0; i < ingotCount; i++)
+				{
+					pieces.Add(new SceneGoldVisualPiece
+					{
+						Item = ingotItem,
+						DenarValue = SceneGoldIngotDenarValue,
+						UsesNativeCoinScale = false,
+						UsesNativeIngotScale = true
+					});
+				}
+				remainingGold -= ingotCount * SceneGoldIngotDenarValue;
+			}
+			if (remainingGold > 0 && coinItem != null && pieces.Count < SceneGoldMaxVisualCoins)
+			{
+				int coinCount = Math.Max(1, (remainingGold + SceneGoldCoinDenarValue - 1) / SceneGoldCoinDenarValue);
+				coinCount = Math.Min(coinCount, SceneGoldMaxVisualCoins - pieces.Count);
+				for (int i = 0; i < coinCount; i++)
+				{
+					pieces.Add(new SceneGoldVisualPiece
+					{
+						Item = coinItem,
+						DenarValue = SceneGoldCoinDenarValue,
+						UsesNativeCoinScale = coinItem.StringId == SceneGoldCustomItemId,
+						UsesNativeIngotScale = false
+					});
+				}
+			}
+			LogSceneGoldDiag($"visual_pieces amount={goldAmount} count={pieces.Count} ingotItem={(ingotItem?.StringId ?? "null")} coinItem={(coinItem?.StringId ?? "null")}");
+			return pieces.Count > 0 ? pieces : null;
+		}
+		catch (Exception ex)
+		{
+			LogSceneGoldDiag($"visual_pieces_exception amount={goldAmount} message={ex.Message}");
+			return null;
+		}
+	}
+
+	private List<SceneGoldCoinSim> TryCreateSceneGoldItemDrops(Vec3 origin, List<SceneGoldVisualPiece> visualPieces)
 	{
 		Mission mission = base.Mission;
-		if (mission == null || coinItem == null)
+		if (mission == null || visualPieces == null || visualPieces.Count == 0)
 		{
 			return null;
 		}
-		int coinCount = Math.Min(Math.Max(1, visualGoldAmount), SceneGoldMaxVisualCoins);
+		int coinCount = Math.Min(visualPieces.Count, SceneGoldMaxVisualCoins);
 		List<SceneGoldCoinSim> coins = new List<SceneGoldCoinSim>(coinCount);
 		for (int i = 0; i < coinCount; i++)
 		{
+			SceneGoldVisualPiece piece = visualPieces[i];
+			ItemObject coinItem = piece?.Item;
+			if (coinItem == null)
+			{
+				continue;
+			}
 			float angle = (float)(Math.PI * 2.0 * SceneGoldScatterUnit(i, 17));
 			float offsetRadius = SceneGoldBurstSpawnRadius * (float)Math.Sqrt(SceneGoldScatterUnit(i, 31));
-			bool usesNativeCoinScale = coinItem.StringId == SceneGoldCustomItemId;
 			MatrixFrame frame = MatrixFrame.Identity;
 			frame.origin = new Vec3(origin.x + (float)Math.Cos(angle) * offsetRadius, origin.y + (float)Math.Sin(angle) * offsetRadius, origin.z + (SceneGoldScatterUnit(i, 43) - 0.5f) * 0.18f, -1f);
 			frame.rotation.RotateAboutSide(0.35f + SceneGoldScatterUnit(i, 53) * 1.7f);
 			frame.rotation.RotateAboutUp(angle);
 			frame.rotation.RotateAboutForward(SceneGoldScatterUnit(i, 59) * (float)Math.PI);
-			if (usesNativeCoinScale)
+			if (piece.UsesNativeCoinScale)
 			{
 				frame.rotation.ApplyScaleLocal(SceneGoldNativeCoinVisualScale);
+			}
+			if (piece.UsesNativeIngotScale)
+			{
+				frame.rotation.ApplyScaleLocal(SceneGoldNativeIngotVisualScale);
 			}
 			try
 			{
 				MissionWeapon missionWeapon = new MissionWeapon(coinItem, null, null, 1);
-				LogSceneGoldDiag($"item_coin[{i}] spawn_begin item={coinItem.StringId} pos={FormatSceneGoldVec(frame.origin)}");
+				LogSceneGoldDiag($"item_coin[{i}] spawn_begin item={coinItem.StringId} value={piece.DenarValue} pos={FormatSceneGoldVec(frame.origin)}");
 				GameEntity gameEntity = mission.SpawnWeaponWithNewEntity(ref missionWeapon, Mission.WeaponSpawnFlags.WithPhysics | Mission.WeaponSpawnFlags.CannotBePickedUp, frame);
 				if (gameEntity == null)
 				{
 					LogSceneGoldDiag($"item_coin[{i}] spawn_null");
 					continue;
 				}
-				gameEntity.Name = "animusforge_scene_denar_coin_item";
+				gameEntity.Name = piece.UsesNativeIngotScale ? "animusforge_scene_denar_ingot_item" : "animusforge_scene_denar_coin_item";
 				TryTintSceneGoldEntity(gameEntity);
 				TryPrepareSceneGoldEntityForManualBurst(gameEntity);
 				TryPlaySceneGoldCoinSound(frame.origin, $"drop_coin_{i}");
@@ -3036,7 +3129,8 @@ public class SceneTauntMissionBehavior : MissionBehavior
 					Frame = frame,
 					Velocity = velocity,
 					AngularVelocity = new Vec3(9f + SceneGoldScatterUnit(i, 101) * 9f, 8f + SceneGoldScatterUnit(i, 103) * 10f, 10f + SceneGoldScatterUnit(i, 107) * 12f, -1f),
-					UsesNativeCoinScale = usesNativeCoinScale,
+					UsesNativeCoinScale = piece.UsesNativeCoinScale,
+					UsesNativeIngotScale = piece.UsesNativeIngotScale,
 					Settled = false
 				});
 			}
@@ -3125,7 +3219,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		}
 	}
 
-	private static void SetSceneGoldCoinRestingFrame(ref MatrixFrame frame, int coinIndex, bool usesNativeCoinScale)
+	private static void SetSceneGoldCoinRestingFrame(ref MatrixFrame frame, int coinIndex, bool usesNativeCoinScale, bool usesNativeIngotScale)
 	{
 		Vec3 origin = frame.origin;
 		frame = MatrixFrame.Identity;
@@ -3134,6 +3228,10 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		if (usesNativeCoinScale)
 		{
 			frame.rotation.ApplyScaleLocal(SceneGoldNativeCoinVisualScale);
+		}
+		if (usesNativeIngotScale)
+		{
+			frame.rotation.ApplyScaleLocal(SceneGoldNativeIngotVisualScale);
 		}
 	}
 
@@ -3211,7 +3309,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 					{
 						coin.Velocity = Vec3.Zero;
 						coin.AngularVelocity = Vec3.Zero;
-						SetSceneGoldCoinRestingFrame(ref frame, coinIndex, coin.UsesNativeCoinScale);
+						SetSceneGoldCoinRestingFrame(ref frame, coinIndex, coin.UsesNativeCoinScale, coin.UsesNativeIngotScale);
 						coin.Settled = true;
 					}
 					coin.Frame = frame;

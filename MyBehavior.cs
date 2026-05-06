@@ -59,6 +59,12 @@ public class MyBehavior : CampaignBehaviorBase
 		RetryProgress
 	}
 
+	private enum WeeklyReportOutputMode
+	{
+		FullReport,
+		TitleShortTagsOnly
+	}
+
 	private enum SaveAndExitStage
 	{
 		None,
@@ -394,6 +400,8 @@ public class MyBehavior : CampaignBehaviorBase
 		public int CreatedDay;
 
 		public string TagText;
+
+		public bool HasFullReport;
 	}
 
 	public sealed class WeeklyReportBrowserCountryData
@@ -426,6 +434,10 @@ public class MyBehavior : CampaignBehaviorBase
 		public string KingdomId;
 
 		public string SettlementId;
+
+		public string ActorHeroId;
+
+		public string ActorKingdomId;
 
 		public bool IncludeInWorld;
 
@@ -628,6 +640,12 @@ public class MyBehavior : CampaignBehaviorBase
 		public string Summary;
 
 		public List<EventMaterialReference> Materials = new List<EventMaterialReference>();
+
+		public List<EventMaterialReference> PromptMaterials = new List<EventMaterialReference>();
+
+		public WeeklyReportOutputMode OutputMode = WeeklyReportOutputMode.FullReport;
+
+		public bool IncludePreviousReportInPrompt = true;
 	}
 
 	private sealed class WeeklyReportPromptProfile
@@ -676,12 +694,16 @@ public class MyBehavior : CampaignBehaviorBase
 
 		public int EndDay;
 
+		public WeeklyReportOutputMode OutputMode = WeeklyReportOutputMode.FullReport;
+
 		public List<WeeklyEventMaterialPreviewGroup> Groups = new List<WeeklyEventMaterialPreviewGroup>();
 	}
 
 	private sealed class WeeklyReportBatchBlockResult
 	{
 		public string ReportId;
+
+		public string Mode;
 
 		public string Kind;
 
@@ -2649,7 +2671,7 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				text = text + " 发起掠夺的一方领袖是" + GetHeroDisplayName(hero) + "。";
 			}
-			RecordEventSourceMaterial("raid_completed", "掠夺结果 - " + settlementDisplayName + "村庄", text, "raid_completed:" + GetSettlementId(settlement) + ":" + winnerSide, GetKingdomId(settlement?.MapFaction), GetSettlementId(settlement), includeInWorld: false, includeInKingdom: true);
+			RecordEventSourceMaterial("raid_completed", "掠夺结果 - " + settlementDisplayName + "村庄", text, "raid_completed:" + GetSettlementId(settlement) + ":" + winnerSide, GetKingdomId(settlement?.MapFaction), GetSettlementId(settlement), includeInWorld: false, includeInKingdom: true, GetHeroId(hero), GetKingdomId(hero?.MapFaction));
 		}
 		catch (Exception ex)
 		{
@@ -5161,7 +5183,7 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private void RecordEventSourceMaterial(string materialKind, string label, string snapshotText, string stableKey, string kingdomId, string settlementId, bool includeInWorld, bool includeInKingdom)
+	private void RecordEventSourceMaterial(string materialKind, string label, string snapshotText, string stableKey, string kingdomId, string settlementId, bool includeInWorld, bool includeInKingdom, string actorHeroId = "", string actorKingdomId = "")
 	{
 		string text = (snapshotText ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
 		if (string.IsNullOrWhiteSpace(text))
@@ -5182,6 +5204,8 @@ public class MyBehavior : CampaignBehaviorBase
 			eventSourceMaterialEntry.MaterialKind = (materialKind ?? "").Trim();
 			eventSourceMaterialEntry.KingdomId = (kingdomId ?? "").Trim();
 			eventSourceMaterialEntry.SettlementId = (settlementId ?? "").Trim();
+			eventSourceMaterialEntry.ActorHeroId = (actorHeroId ?? "").Trim();
+			eventSourceMaterialEntry.ActorKingdomId = (actorKingdomId ?? "").Trim();
 			eventSourceMaterialEntry.IncludeInWorld = eventSourceMaterialEntry.IncludeInWorld || includeInWorld;
 			eventSourceMaterialEntry.IncludeInKingdom = eventSourceMaterialEntry.IncludeInKingdom || includeInKingdom;
 			return;
@@ -5197,6 +5221,8 @@ public class MyBehavior : CampaignBehaviorBase
 			StableKey = text2,
 			KingdomId = (kingdomId ?? "").Trim(),
 			SettlementId = (settlementId ?? "").Trim(),
+			ActorHeroId = (actorHeroId ?? "").Trim(),
+			ActorKingdomId = (actorKingdomId ?? "").Trim(),
 			IncludeInWorld = includeInWorld,
 			IncludeInKingdom = includeInKingdom
 		});
@@ -16616,6 +16642,8 @@ public class MyBehavior : CampaignBehaviorBase
 				StableKey = NormalizeNpcActionStableKey(item.StableKey, text),
 				KingdomId = (item.KingdomId ?? "").Trim(),
 				SettlementId = (item.SettlementId ?? "").Trim(),
+				ActorHeroId = (item.ActorHeroId ?? "").Trim(),
+				ActorKingdomId = (item.ActorKingdomId ?? "").Trim(),
 				IncludeInWorld = item.IncludeInWorld,
 				IncludeInKingdom = item.IncludeInKingdom
 			});
@@ -17419,7 +17447,7 @@ public class MyBehavior : CampaignBehaviorBase
 		int currentGameDayIndexSafe = GetCurrentGameDayIndexSafe();
 		int num = Math.Max(0, currentGameDayIndexSafe - currentGameDayIndexSafe % 7);
 		int num2 = Math.Max(1, currentGameDayIndexSafe / 7 + 1);
-		int num3 = (groups != null) ? groups.Sum((WeeklyEventMaterialPreviewGroup x) => (x?.Materials?.Count).GetValueOrDefault()) : 0;
+		int num3 = (groups != null) ? groups.Sum((WeeklyEventMaterialPreviewGroup x) => (x?.PromptMaterials?.Count).GetValueOrDefault()) : 0;
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.AppendLine("这里展示“如果现在生成本周事件”，系统会拿去喂给事件生成器的素材池。");
 		stringBuilder.AppendLine("当前按世界事件与各王国事件分组展示。");
@@ -17440,8 +17468,11 @@ public class MyBehavior : CampaignBehaviorBase
 			return "无效分组";
 		}
 		string text = string.IsNullOrWhiteSpace(group.Summary) ? "" : BuildDevSummaryPreview(group.Summary, 44);
-		string text2 = ((group.Materials != null) ? group.Materials.Count : 0) + " 条素材";
-		return (group.Title ?? "未命名分组") + " [" + text2 + "]" + (string.IsNullOrWhiteSpace(text) ? "" : (" " + text));
+		int count = (group.Materials != null) ? group.Materials.Count : 0;
+		int count2 = (group.PromptMaterials != null) ? group.PromptMaterials.Count : 0;
+		string text2 = count + " / " + count2 + " 条素材";
+		string text3 = string.Equals((group.OutputMode).ToString(), WeeklyReportOutputMode.TitleShortTagsOnly.ToString(), StringComparison.OrdinalIgnoreCase) ? "短" : "全";
+		return (group.Title ?? "未命名分组") + " [" + text3 + " | " + text2 + "]" + (string.IsNullOrWhiteSpace(text) ? "" : (" " + text));
 	}
 
 	private List<WeeklyEventMaterialPreviewGroup> BuildWeeklyEventMaterialPreviewGroups()
@@ -17467,6 +17498,937 @@ public class MyBehavior : CampaignBehaviorBase
 		foreach (WeeklyEventMaterialPreviewGroup item2 in list)
 		{
 			ApplyWeeklyPromptMaterialAggregation(item2);
+		}
+		List<string> list2 = GetKingdomIdsByPlayerProximity(list.Where((WeeklyEventMaterialPreviewGroup x) => string.Equals((x.GroupKind ?? "").Trim(), "kingdom", StringComparison.OrdinalIgnoreCase)).Select((WeeklyEventMaterialPreviewGroup x) => x.KingdomId)).Where((string x) => !string.IsNullOrWhiteSpace(x)).Select((string x) => x.Trim()).Distinct(StringComparer.OrdinalIgnoreCase).Take(3).ToList();
+		if (list2.Count == 0)
+		{
+			list2 = list.Where((WeeklyEventMaterialPreviewGroup x) => string.Equals((x.GroupKind ?? "").Trim(), "kingdom", StringComparison.OrdinalIgnoreCase)).Select((WeeklyEventMaterialPreviewGroup x) => (x.KingdomId ?? "").Trim()).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).Take(3).ToList();
+		}
+		HashSet<string> hashSet = new HashSet<string>((list2 ?? new List<string>()).Where((string x) => !string.IsNullOrWhiteSpace(x)).Select((string x) => x.Trim()), StringComparer.OrdinalIgnoreCase);
+		foreach (WeeklyEventMaterialPreviewGroup item2 in list)
+		{
+			bool flag = string.Equals((item2?.GroupKind ?? "").Trim(), "kingdom", StringComparison.OrdinalIgnoreCase);
+			bool flag2 = flag && !hashSet.Contains((item2?.KingdomId ?? "").Trim());
+			PrepareWeeklyPromptMaterialsForGroup(item2, flag2);
+		}
+		return list;
+	}
+
+	private static void PrepareWeeklyPromptMaterialsForGroup(WeeklyEventMaterialPreviewGroup group, bool shortOnly)
+	{
+		if (group == null)
+		{
+			return;
+		}
+		group.OutputMode = shortOnly ? WeeklyReportOutputMode.TitleShortTagsOnly : WeeklyReportOutputMode.FullReport;
+		group.IncludePreviousReportInPrompt = !shortOnly;
+		group.PromptMaterials = shortOnly ? BuildWeeklyPromptMaterialsShort(group) : BuildWeeklyPromptMaterialsFull(group);
+		if (group.PromptMaterials == null)
+		{
+			group.PromptMaterials = new List<EventMaterialReference>();
+		}
+	}
+
+	private static List<EventMaterialReference> BuildWeeklyPromptMaterialsFull(WeeklyEventMaterialPreviewGroup group)
+	{
+		return OrderWeeklyPreviewMaterials(group?.Materials).Where((EventMaterialReference x) => x != null).Select(CloneEventMaterialReference).ToList();
+	}
+
+	private static List<EventMaterialReference> BuildWeeklyPromptMaterialsShort(WeeklyEventMaterialPreviewGroup group)
+	{
+		List<EventMaterialReference> list = new List<EventMaterialReference>();
+		List<EventMaterialReference> list2 = OrderWeeklyPreviewMaterials(group?.Materials).Where((EventMaterialReference x) => x != null).ToList();
+		List<EventMaterialReference> settlementStatsMaterials = list2.Where(IsWeeklyPromptSettlementStatsMaterial).ToList();
+		List<EventMaterialReference> villageRaidMaterials = list2.Where(IsWeeklyPromptVillageRaidMaterial).ToList();
+		bool flag = false;
+		bool flag2 = false;
+		foreach (EventMaterialReference item in list2)
+		{
+			if (IsWeeklyPromptOpeningSummaryMaterial(item))
+			{
+				continue;
+			}
+			if (IsWeeklyPromptSettlementStatsMaterial(item))
+			{
+				if (!flag)
+				{
+					EventMaterialReference eventMaterialReference2 = BuildWeeklyPromptShortSettlementStatsMaterial(settlementStatsMaterials, group);
+					if (eventMaterialReference2 != null)
+					{
+						list.Add(eventMaterialReference2);
+					}
+					flag = true;
+				}
+				continue;
+			}
+			if (IsWeeklyPromptVillageRaidMaterial(item))
+			{
+				if (!flag2)
+				{
+					EventMaterialReference eventMaterialReference3 = BuildWeeklyPromptShortVillageRaidMaterial(villageRaidMaterials, group);
+					if (eventMaterialReference3 != null)
+					{
+						list.Add(eventMaterialReference3);
+					}
+					flag2 = true;
+				}
+				continue;
+			}
+			EventMaterialReference eventMaterialReference = BuildWeeklyPromptShortMaterial(item, group);
+			if (eventMaterialReference != null)
+			{
+				list.Add(eventMaterialReference);
+			}
+		}
+		return OrderWeeklyPreviewMaterials(list).ToList();
+	}
+
+	private static bool IsWeeklyPromptOpeningSummaryMaterial(EventMaterialReference material)
+	{
+		if (material == null)
+		{
+			return false;
+		}
+		string text = (material.MaterialType ?? "").Trim();
+		return string.Equals(text, "world_opening_summary", StringComparison.OrdinalIgnoreCase) || string.Equals(text, "kingdom_opening_summary", StringComparison.OrdinalIgnoreCase);
+	}
+
+	private static EventMaterialReference BuildWeeklyPromptShortMaterial(EventMaterialReference item, WeeklyEventMaterialPreviewGroup group)
+	{
+		if (IsWeeklyPromptMovementAggregateMaterial(item))
+		{
+			return BuildWeeklyPromptShortMovementMaterial(item);
+		}
+		if (IsWeeklyPromptCaptivityAggregateMaterial(item))
+		{
+			return BuildWeeklyPromptShortCaptivityMaterial(item, group);
+		}
+		if (IsWeeklyPromptReleaseAggregateMaterial(item))
+		{
+			return BuildWeeklyPromptShortReleaseMaterial(item, group);
+		}
+		if (IsWeeklyPromptClanChangeAggregateMaterial(item))
+		{
+			return BuildWeeklyPromptShortClanChangeMaterial(item);
+		}
+		if (IsWeeklyPromptArmyAggregateMaterial(item))
+		{
+			return BuildWeeklyPromptShortArmyMaterial(item);
+		}
+		if (IsWeeklyPromptSiegeAggregateMaterial(item))
+		{
+			return BuildWeeklyPromptShortSiegeMaterial(item);
+		}
+		return CloneEventMaterialReference(item);
+	}
+
+	private static bool IsWeeklyPromptSettlementStatsMaterial(EventMaterialReference material)
+	{
+		if (material == null)
+		{
+			return false;
+		}
+		string text = (material.MaterialType ?? "").Trim();
+		string text2 = (material.ActionStableKey ?? "").Trim();
+		string text3 = (material.Label ?? "").Trim();
+		return string.Equals(text, "raw_text", StringComparison.OrdinalIgnoreCase) && (text2.StartsWith("settlement_stats:", StringComparison.OrdinalIgnoreCase) || text3.StartsWith("定居点状态变化", StringComparison.OrdinalIgnoreCase));
+	}
+
+	private static bool IsWeeklyPromptVillageRaidMaterial(EventMaterialReference material)
+	{
+		if (material == null)
+		{
+			return false;
+		}
+		string text = (material.MaterialType ?? "").Trim();
+		string text2 = (material.ActionStableKey ?? "").Trim();
+		string text3 = (material.Label ?? "").Trim();
+		return string.Equals(text, "raw_text", StringComparison.OrdinalIgnoreCase) && (text2.StartsWith("village_raid_started:", StringComparison.OrdinalIgnoreCase) || text2.StartsWith("raid_completed:", StringComparison.OrdinalIgnoreCase) || text3.StartsWith("掠夺开始", StringComparison.OrdinalIgnoreCase) || text3.StartsWith("掠夺结果", StringComparison.OrdinalIgnoreCase));
+	}
+
+	private static bool DoesEventSourceMaterialRelateToKingdom(EventSourceMaterialEntry item, Kingdom kingdom)
+	{
+		if (item == null || kingdom == null)
+		{
+			return false;
+		}
+		string text = (kingdom.StringId ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return false;
+		}
+		if (string.Equals((item.KingdomId ?? "").Trim(), text, StringComparison.OrdinalIgnoreCase))
+		{
+			return true;
+		}
+		string text2 = (item.MaterialKind ?? "").Trim();
+		return string.Equals(text2, "raid_completed", StringComparison.OrdinalIgnoreCase) && string.Equals((item.ActorKingdomId ?? "").Trim(), text, StringComparison.OrdinalIgnoreCase);
+	}
+
+	private static bool IsWeeklyPromptSiegeAggregateMaterial(EventMaterialReference material)
+	{
+		if (material == null)
+		{
+			return false;
+		}
+		string text = (material.MaterialType ?? "").Trim();
+		string text2 = (material.ActionKind ?? "").Trim();
+		return string.Equals(text, "prompt_agg_siege", StringComparison.OrdinalIgnoreCase) || string.Equals(text2, "prompt_aggregate:siege", StringComparison.OrdinalIgnoreCase) || string.Equals((material.Label ?? "").Trim(), "围城与守城", StringComparison.OrdinalIgnoreCase);
+	}
+
+	private static bool IsWeeklyPromptArmyAggregateMaterial(EventMaterialReference material)
+	{
+		if (material == null)
+		{
+			return false;
+		}
+		string text = (material.MaterialType ?? "").Trim();
+		string text2 = (material.ActionKind ?? "").Trim();
+		return string.Equals(text, "prompt_agg_army", StringComparison.OrdinalIgnoreCase) || string.Equals(text2, "prompt_aggregate:army", StringComparison.OrdinalIgnoreCase) || string.Equals((material.Label ?? "").Trim(), "军团行动", StringComparison.OrdinalIgnoreCase);
+	}
+
+	private static bool IsWeeklyPromptClanChangeAggregateMaterial(EventMaterialReference material)
+	{
+		if (material == null)
+		{
+			return false;
+		}
+		string text = (material.MaterialType ?? "").Trim();
+		string text2 = (material.ActionKind ?? "").Trim();
+		return string.Equals(text, "prompt_agg_strategic_shift", StringComparison.OrdinalIgnoreCase) || string.Equals(text2, "prompt_aggregate:strategic_shift", StringComparison.OrdinalIgnoreCase) || string.Equals((material.Label ?? "").Trim(), "家族与王国归属", StringComparison.OrdinalIgnoreCase);
+	}
+
+	private static bool IsWeeklyPromptCaptivityAggregateMaterial(EventMaterialReference material)
+	{
+		if (material == null)
+		{
+			return false;
+		}
+		string text = (material.MaterialType ?? "").Trim();
+		string text2 = (material.ActionKind ?? "").Trim();
+		return string.Equals(text, "prompt_agg_captivity", StringComparison.OrdinalIgnoreCase) || string.Equals(text2, "prompt_aggregate:captivity", StringComparison.OrdinalIgnoreCase) || string.Equals((material.Label ?? "").Trim(), "人物被俘", StringComparison.OrdinalIgnoreCase);
+	}
+
+	private static bool IsWeeklyPromptReleaseAggregateMaterial(EventMaterialReference material)
+	{
+		if (material == null)
+		{
+			return false;
+		}
+		string text = (material.MaterialType ?? "").Trim();
+		string text2 = (material.ActionKind ?? "").Trim();
+		return string.Equals(text, "prompt_agg_release", StringComparison.OrdinalIgnoreCase) || string.Equals(text2, "prompt_aggregate:release", StringComparison.OrdinalIgnoreCase) || string.Equals((material.Label ?? "").Trim(), "人物获释", StringComparison.OrdinalIgnoreCase);
+	}
+
+	private static EventMaterialReference BuildWeeklyPromptShortCaptivityMaterial(EventMaterialReference source, WeeklyEventMaterialPreviewGroup group)
+	{
+		if (source == null)
+		{
+			return null;
+		}
+		string text = (group?.KingdomId ?? "").Trim();
+		int num = 0;
+		int num2 = 0;
+		int num3 = 0;
+		HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		foreach (string item in source.SourceStableKeys ?? new List<string>())
+		{
+			string captorHeroId;
+			string prisonerHeroId;
+			if (!TryParseWeeklyPromptPrisonerPair(item, out captorHeroId, out prisonerHeroId))
+			{
+				continue;
+			}
+			string text2 = (captorHeroId ?? "").Trim() + "->" + (prisonerHeroId ?? "").Trim();
+			if (string.IsNullOrWhiteSpace(text2) || !hashSet.Add(text2))
+			{
+				continue;
+			}
+			num++;
+			string text3 = ResolveHeroKingdomIdForPrompt(captorHeroId);
+			string text4 = ResolveHeroKingdomIdForPrompt(prisonerHeroId);
+			if (!string.IsNullOrWhiteSpace(text) && string.Equals(text3, text, StringComparison.OrdinalIgnoreCase))
+			{
+				num2++;
+			}
+			if (!string.IsNullOrWhiteSpace(text) && string.Equals(text4, text, StringComparison.OrdinalIgnoreCase))
+			{
+				num3++;
+			}
+		}
+		if (num <= 0)
+		{
+			num = Math.Max(0, source.SourceMaterialCount);
+		}
+		if (num <= 0)
+		{
+			num = Regex.Matches(source.SnapshotText ?? "", "被.+?俘虏", RegexOptions.IgnoreCase).Count;
+		}
+		if (num <= 0)
+		{
+			num = 1;
+		}
+		string text5 = "[人物被俘]\n- 人物被俘事件共：" + num + "条";
+		if (!string.IsNullOrWhiteSpace(text))
+		{
+			text5 += "；俘虏敌人：" + num2 + "人；己方被俘：" + num3 + "人";
+		}
+		text5 += "。";
+		EventMaterialReference eventMaterialReference = CloneEventMaterialReference(source);
+		eventMaterialReference.MaterialType = "prompt_short_captivity";
+		eventMaterialReference.Label = "人物被俘";
+		eventMaterialReference.SnapshotText = text5;
+		eventMaterialReference.ActionKind = "prompt_short:captivity";
+		return eventMaterialReference;
+	}
+
+	private static EventMaterialReference BuildWeeklyPromptShortReleaseMaterial(EventMaterialReference source, WeeklyEventMaterialPreviewGroup group)
+	{
+		if (source == null)
+		{
+			return null;
+		}
+		string text = (group?.KingdomId ?? "").Trim();
+		int num = 0;
+		int num2 = 0;
+		int num3 = 0;
+		HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		foreach (string item in source.SourceStableKeys ?? new List<string>())
+		{
+			string captorHeroId;
+			string prisonerHeroId;
+			if (!TryParseWeeklyPromptPrisonerPair(item, out captorHeroId, out prisonerHeroId))
+			{
+				continue;
+			}
+			string text2 = (captorHeroId ?? "").Trim() + "->" + (prisonerHeroId ?? "").Trim();
+			if (string.IsNullOrWhiteSpace(text2) || !hashSet.Add(text2))
+			{
+				continue;
+			}
+			num++;
+			string text3 = ResolveHeroKingdomIdForPrompt(captorHeroId);
+			string text4 = ResolveHeroKingdomIdForPrompt(prisonerHeroId);
+			if (!string.IsNullOrWhiteSpace(text) && string.Equals(text3, text, StringComparison.OrdinalIgnoreCase) && !string.Equals(text4, text, StringComparison.OrdinalIgnoreCase))
+			{
+				num2++;
+			}
+			if (!string.IsNullOrWhiteSpace(text) && string.Equals(text4, text, StringComparison.OrdinalIgnoreCase))
+			{
+				num3++;
+			}
+		}
+		if (num <= 0)
+		{
+			num = Math.Max(0, source.SourceMaterialCount);
+		}
+		if (num <= 0)
+		{
+			num = Regex.Matches(source.SnapshotText ?? "", "释放|获释|结束囚禁", RegexOptions.IgnoreCase).Count;
+		}
+		if (num <= 0)
+		{
+			num = 1;
+		}
+		string text5 = "[人物获释]\n- 人物获释事件共：" + num + "条";
+		if (!string.IsNullOrWhiteSpace(text))
+		{
+			text5 += "；释放敌方领主：" + num2 + "人；己方领主获释：" + num3 + "人";
+		}
+		text5 += "。";
+		EventMaterialReference eventMaterialReference = CloneEventMaterialReference(source);
+		eventMaterialReference.MaterialType = "prompt_short_release";
+		eventMaterialReference.Label = "人物获释";
+		eventMaterialReference.SnapshotText = text5;
+		eventMaterialReference.ActionKind = "prompt_short:release";
+		return eventMaterialReference;
+	}
+
+	private static EventMaterialReference BuildWeeklyPromptShortClanChangeMaterial(EventMaterialReference source)
+	{
+		if (source == null)
+		{
+			return null;
+		}
+		List<string> list = new List<string>();
+		foreach (string item in source.SourceStableKeys ?? new List<string>())
+		{
+			WeeklyPromptClanChangeParseResult weeklyPromptClanChangeParseResult = ParseWeeklyPromptClanChangeDetail(item);
+			if (weeklyPromptClanChangeParseResult == null)
+			{
+				continue;
+			}
+			string[] array = (item ?? "").Trim().Split(new char[1] { ':' }, StringSplitOptions.None);
+			if (array.Length < 4)
+			{
+				continue;
+			}
+			string text = ResolveClanDisplay((array[1] ?? "").Trim());
+			string text2 = ResolveKingdomDisplay(weeklyPromptClanChangeParseResult.newKingdomId);
+			if (string.IsNullOrWhiteSpace(text) || string.IsNullOrWhiteSpace(text2))
+			{
+				continue;
+			}
+			AddUniqueId(list, text + "加入" + text2);
+		}
+		string text3;
+		if (list.Count > 0)
+		{
+			text3 = "[家族与王国归属]\n- 家族归属变更：" + string.Join("；", list.Take(6)) + "。";
+		}
+		else
+		{
+			int num = Math.Max(1, Math.Max(0, source.SourceMaterialCount));
+			text3 = "[家族与王国归属]\n- 家族归属变更事件共：" + num + "条。";
+		}
+		EventMaterialReference eventMaterialReference = CloneEventMaterialReference(source);
+		eventMaterialReference.MaterialType = "prompt_short_strategic_shift";
+		eventMaterialReference.Label = "家族与王国归属";
+		eventMaterialReference.SnapshotText = text3;
+		eventMaterialReference.ActionKind = "prompt_short:strategic_shift";
+		return eventMaterialReference;
+	}
+
+	private static EventMaterialReference BuildWeeklyPromptShortSettlementStatsMaterial(List<EventMaterialReference> source, WeeklyEventMaterialPreviewGroup group)
+	{
+		List<EventMaterialReference> list = (source ?? new List<EventMaterialReference>()).Where((EventMaterialReference x) => x != null).ToList();
+		if (list.Count == 0)
+		{
+			return null;
+		}
+		HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		Dictionary<string, HashSet<string>> dictionary = new Dictionary<string, HashSet<string>>(StringComparer.OrdinalIgnoreCase);
+		foreach (EventMaterialReference item in list)
+		{
+			string text = ResolveWeeklyPromptSettlementStatsKey(item);
+			if (string.IsNullOrWhiteSpace(text))
+			{
+				text = "settlement_stats_" + hashSet.Count;
+			}
+			hashSet.Add(text);
+			foreach (Match item2 in Regex.Matches(item.SnapshotText ?? "", "(繁荣|忠诚度|治安|粮食|民兵|驻军)(上升|下降)", RegexOptions.IgnoreCase))
+			{
+				string text2 = NormalizeWeeklyPromptSettlementStatsLabel(item2.Groups[1]?.Value);
+				string text3 = (item2.Groups[2]?.Value ?? "").Trim();
+				if (string.IsNullOrWhiteSpace(text2) || string.IsNullOrWhiteSpace(text3))
+				{
+					continue;
+				}
+				string text4 = text2 + text3;
+				if (!dictionary.TryGetValue(text4, out var value))
+				{
+					value = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+					dictionary[text4] = value;
+				}
+				value.Add(text);
+			}
+		}
+		List<string> list2 = new List<string>();
+		list2.Add("波动据点：" + Math.Max(hashSet.Count, list.Count) + "处");
+		foreach (string item3 in GetWeeklyPromptSettlementStatsOrder())
+		{
+			if (dictionary.TryGetValue(item3, out var value2) && value2.Count > 0)
+			{
+				list2.Add(item3 + "：" + value2.Count + "处");
+			}
+		}
+		EventMaterialReference eventMaterialReference = CloneEventMaterialReference(list[0]);
+		eventMaterialReference.MaterialType = "prompt_short_settlement_stats";
+		eventMaterialReference.Label = "定居点状态";
+		eventMaterialReference.SnapshotText = "[定居点状态]\n- " + string.Join("；", list2) + "。";
+		eventMaterialReference.KingdomId = (group?.KingdomId ?? eventMaterialReference.KingdomId ?? "").Trim();
+		eventMaterialReference.ActionKind = "prompt_short:settlement_stats";
+		eventMaterialReference.SourceMaterialCount = list.Count;
+		eventMaterialReference.ActionDay = list.Min((EventMaterialReference x) => x?.ActionDay ?? int.MaxValue);
+		eventMaterialReference.ActionSequence = list.Min((EventMaterialReference x) => x?.ActionSequence ?? int.MaxValue);
+		foreach (EventMaterialReference item4 in list.Skip(1))
+		{
+			AppendMaterialReferenceIds(item4, eventMaterialReference);
+		}
+		return eventMaterialReference;
+	}
+
+	private static EventMaterialReference BuildWeeklyPromptShortVillageRaidMaterial(List<EventMaterialReference> source, WeeklyEventMaterialPreviewGroup group)
+	{
+		List<EventMaterialReference> list = (source ?? new List<EventMaterialReference>()).Where((EventMaterialReference x) => x != null).ToList();
+		if (list.Count == 0)
+		{
+			return null;
+		}
+		string text = (group?.KingdomId ?? "").Trim();
+		int num = 0;
+		int num2 = 0;
+		int num3 = 0;
+		int num4 = 0;
+		HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		foreach (EventMaterialReference item in list)
+		{
+			string text2 = (item.ActionStableKey ?? "").Trim();
+			if (!text2.StartsWith("raid_completed:", StringComparison.OrdinalIgnoreCase))
+			{
+				continue;
+			}
+			string text3 = ResolveWeeklyPromptVillageRaidKey(item);
+			if (string.IsNullOrWhiteSpace(text3))
+			{
+				text3 = text2;
+			}
+			string text4 = ResolveWeeklyPromptVillageRaidOutcome(item);
+			if (string.IsNullOrWhiteSpace(text4))
+			{
+				continue;
+			}
+			bool flag = !string.IsNullOrWhiteSpace(text) && string.Equals((item.KingdomId ?? "").Trim(), text, StringComparison.OrdinalIgnoreCase);
+			bool flag2 = !string.IsNullOrWhiteSpace(text) && string.Equals((item.ActorKingdomId ?? "").Trim(), text, StringComparison.OrdinalIgnoreCase);
+			if (flag && string.Equals(text4, "success", StringComparison.OrdinalIgnoreCase) && hashSet.Add("victim_success:" + text3))
+			{
+				num++;
+			}
+			if (flag2 && hashSet.Add("attacker_" + text4 + ":" + text3))
+			{
+				switch (text4)
+				{
+				case "success":
+					num2++;
+					break;
+				case "defended":
+					num3++;
+					break;
+				case "aborted":
+					num4++;
+					break;
+				}
+			}
+		}
+		if (num == 0 && num2 == 0 && num3 == 0 && num4 == 0)
+		{
+			return null;
+		}
+		EventMaterialReference eventMaterialReference = CloneEventMaterialReference(list[0]);
+		eventMaterialReference.MaterialType = "prompt_short_village_raid";
+		eventMaterialReference.Label = "村庄掠夺";
+		eventMaterialReference.SnapshotText = "[村庄掠夺]\n- 我方被掠夺成功：" + num + "处；我方掠夺成功：" + num2 + "处；我方掠夺被击退：" + num3 + "处；我方掠夺中止：" + num4 + "处。";
+		eventMaterialReference.KingdomId = text;
+		eventMaterialReference.ActionKind = "prompt_short:village_raid";
+		eventMaterialReference.SourceMaterialCount = list.Count;
+		eventMaterialReference.ActionDay = list.Min((EventMaterialReference x) => x?.ActionDay ?? int.MaxValue);
+		eventMaterialReference.ActionSequence = list.Min((EventMaterialReference x) => x?.ActionSequence ?? int.MaxValue);
+		foreach (EventMaterialReference item2 in list.Skip(1))
+		{
+			AppendMaterialReferenceIds(item2, eventMaterialReference);
+		}
+		return eventMaterialReference;
+	}
+
+	private static string ResolveWeeklyPromptVillageRaidKey(EventMaterialReference material)
+	{
+		string text = (material?.SettlementId ?? "").Trim();
+		if (!string.IsNullOrWhiteSpace(text))
+		{
+			return text;
+		}
+		string text2 = (material?.ActionStableKey ?? "").Trim();
+		string[] array = text2.Split(new char[1] { ':' }, StringSplitOptions.None);
+		if (array.Length >= 2)
+		{
+			return (array[1] ?? "").Trim();
+		}
+		return text2;
+	}
+
+	private static string ResolveWeeklyPromptVillageRaidOutcome(EventMaterialReference material)
+	{
+		string text = (material?.SnapshotText ?? "").Trim();
+		if (text.IndexOf("掠夺成功", StringComparison.OrdinalIgnoreCase) >= 0)
+		{
+			return "success";
+		}
+		if (text.IndexOf("掠夺被击退", StringComparison.OrdinalIgnoreCase) >= 0)
+		{
+			return "defended";
+		}
+		if (text.IndexOf("掠夺中止", StringComparison.OrdinalIgnoreCase) >= 0)
+		{
+			return "aborted";
+		}
+		string text2 = (material?.ActionStableKey ?? "").Trim();
+		if (text2.EndsWith(":Attacker", StringComparison.OrdinalIgnoreCase))
+		{
+			return "success";
+		}
+		if (text2.EndsWith(":Defender", StringComparison.OrdinalIgnoreCase))
+		{
+			return "defended";
+		}
+		return "";
+	}
+
+	private static string ResolveWeeklyPromptSettlementStatsKey(EventMaterialReference material)
+	{
+		string text = (material?.SettlementId ?? "").Trim();
+		if (!string.IsNullOrWhiteSpace(text))
+		{
+			return text;
+		}
+		string text2 = (material?.ActionStableKey ?? "").Trim();
+		if (text2.StartsWith("settlement_stats:", StringComparison.OrdinalIgnoreCase))
+		{
+			string[] array = text2.Split(new char[1] { ':' }, StringSplitOptions.None);
+			if (array.Length >= 2)
+			{
+				return (array[1] ?? "").Trim();
+			}
+		}
+		string text3 = (material?.SnapshotText ?? "").Trim();
+		int num = text3.IndexOf("本周出现定居点状态波动", StringComparison.OrdinalIgnoreCase);
+		if (num > 0)
+		{
+			return text3.Substring(0, num).Trim();
+		}
+		return "";
+	}
+
+	private static string NormalizeWeeklyPromptSettlementStatsLabel(string label)
+	{
+		switch ((label ?? "").Trim())
+		{
+		case "忠诚度":
+			return "忠诚";
+		default:
+			return (label ?? "").Trim();
+		}
+	}
+
+	private static List<string> GetWeeklyPromptSettlementStatsOrder()
+	{
+		return new List<string>
+		{
+			"繁荣上升",
+			"繁荣下降",
+			"粮食上升",
+			"粮食下降",
+			"忠诚上升",
+			"忠诚下降",
+			"治安上升",
+			"治安下降",
+			"民兵上升",
+			"民兵下降",
+			"驻军上升",
+			"驻军下降"
+		};
+	}
+
+	private static EventMaterialReference BuildWeeklyPromptShortSiegeMaterial(EventMaterialReference source)
+	{
+		if (source == null)
+		{
+			return null;
+		}
+		List<string> list = new List<string>();
+		List<string> list2 = new List<string>();
+		foreach (string item in SplitWeeklyPromptShortArmyLines(source.SnapshotText))
+		{
+			string text = (item ?? "").Trim();
+			if (string.IsNullOrWhiteSpace(text))
+			{
+				continue;
+			}
+			if (text.IndexOf("加入围城的行动", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("离开围城的行动", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("围城结束后的攻方行动", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("围城结束后的守方行动", StringComparison.OrdinalIgnoreCase) >= 0)
+			{
+				continue;
+			}
+			if (text.IndexOf("参与围攻的行动", StringComparison.OrdinalIgnoreCase) >= 0)
+			{
+				string text2 = ExtractWeeklyPromptShortSiegeTarget(text, "对", "发起了围攻");
+				if (!string.IsNullOrWhiteSpace(text2))
+				{
+					AddUniqueId(list, "围攻" + text2);
+				}
+				continue;
+			}
+			if (text.IndexOf("参与守城的行动", StringComparison.OrdinalIgnoreCase) >= 0)
+			{
+				string text3 = ExtractWeeklyPromptShortSiegeTarget(text, "加入了", "的守城");
+				if (!string.IsNullOrWhiteSpace(text3))
+				{
+					AddUniqueId(list, "守城" + text3);
+				}
+				continue;
+			}
+			if (text.IndexOf("围城结果事件", StringComparison.OrdinalIgnoreCase) >= 0)
+			{
+				string text4 = ExtractWeeklyPromptShortSiegeTarget(text, "围绕", "进行了围城行动");
+				string text5 = ExtractWeeklyPromptShortSiegeResult(text);
+				if (!string.IsNullOrWhiteSpace(text4) || !string.IsNullOrWhiteSpace(text5))
+				{
+					AddUniqueId(list2, (string.IsNullOrWhiteSpace(text4) ? "目标据点" : text4) + (string.IsNullOrWhiteSpace(text5) ? "" : ("：" + text5)));
+				}
+			}
+		}
+		if (list.Count == 0 && list2.Count == 0)
+		{
+			return null;
+		}
+		List<string> list3 = new List<string>();
+		if (list.Count > 0)
+		{
+			list3.Add("开始：" + string.Join("、", list.Take(6)));
+		}
+		if (list2.Count > 0)
+		{
+			list3.Add("结果：" + string.Join("；", list2.Take(6)));
+		}
+		EventMaterialReference eventMaterialReference = CloneEventMaterialReference(source);
+		eventMaterialReference.MaterialType = "prompt_short_siege";
+		eventMaterialReference.Label = "围城与守城";
+		eventMaterialReference.SnapshotText = "[围城与守城]\n- " + string.Join("；", list3) + "。";
+		eventMaterialReference.ActionKind = "prompt_short:siege";
+		return eventMaterialReference;
+	}
+
+	private static string ExtractWeeklyPromptShortSiegeTarget(string line, string beforeMarker, string afterMarker)
+	{
+		if (string.IsNullOrWhiteSpace(line) || string.IsNullOrWhiteSpace(beforeMarker) || string.IsNullOrWhiteSpace(afterMarker))
+		{
+			return "";
+		}
+		string text = ExtractWeeklyPromptShortLineBody(line);
+		int num2 = text.IndexOf(afterMarker, StringComparison.OrdinalIgnoreCase);
+		if (num2 < 0)
+		{
+			return "";
+		}
+		string text2 = text.Substring(0, num2);
+		int num3 = text2.LastIndexOf(beforeMarker, StringComparison.OrdinalIgnoreCase);
+		if (num3 >= 0)
+		{
+			text2 = text2.Substring(num3 + beforeMarker.Length);
+		}
+		return text2.Trim(' ', '。', '，', ',', ';', '；');
+	}
+
+	private static string ExtractWeeklyPromptShortSiegeResult(string line)
+	{
+		string text = ExtractWeeklyPromptShortLineBody(line);
+		int num = text.IndexOf("结果为", StringComparison.OrdinalIgnoreCase);
+		if (num < 0)
+		{
+			return "";
+		}
+		return text.Substring(num + "结果为".Length).Trim(' ', '。', '，', ',', ';', '；');
+	}
+
+	private static string ExtractWeeklyPromptShortLineBody(string line)
+	{
+		string text = (line ?? "").Trim();
+		if (text.StartsWith("- ", StringComparison.OrdinalIgnoreCase))
+		{
+			text = text.Substring(2).Trim();
+		}
+		int num = text.IndexOf('：');
+		if (num >= 0 && num + 1 < text.Length)
+		{
+			text = text.Substring(num + 1).Trim();
+		}
+		return text;
+	}
+
+	private static EventMaterialReference BuildWeeklyPromptShortArmyMaterial(EventMaterialReference source)
+	{
+		if (source == null)
+		{
+			return null;
+		}
+		List<string> list = new List<string>();
+		List<string> list2 = new List<string>();
+		foreach (string item in SplitWeeklyPromptShortArmyLines(source.SnapshotText))
+		{
+			string text = (item ?? "").Trim();
+			if (string.IsNullOrWhiteSpace(text))
+			{
+				continue;
+			}
+			string actor = ExtractWeeklyPromptShortArmyActor(text, "组建了新的军团");
+			if (string.IsNullOrWhiteSpace(actor))
+			{
+				actor = ExtractWeeklyPromptShortArmyActor(text, "开始集结军团");
+			}
+			if (!string.IsNullOrWhiteSpace(actor))
+			{
+				AddUniqueId(list, actor);
+				continue;
+			}
+			actor = ExtractWeeklyPromptShortArmyActor(text, "解散了军团");
+			if (string.IsNullOrWhiteSpace(actor))
+			{
+				actor = ExtractWeeklyPromptShortArmyActor(text, "解散了他的军团");
+			}
+			if (!string.IsNullOrWhiteSpace(actor))
+			{
+				AddUniqueId(list2, actor);
+			}
+		}
+		string text2;
+		if (list.Count > 0 || list2.Count > 0)
+		{
+			List<string> list3 = new List<string>();
+			if (list.Count > 0)
+			{
+				list3.Add("集结/组建：" + string.Join("、", list.Take(8)));
+			}
+			if (list2.Count > 0)
+			{
+				list3.Add("解散：" + string.Join("、", list2.Take(8)));
+			}
+			text2 = "[军团行动]\n- " + string.Join("；", list3) + "。";
+		}
+		else
+		{
+			int num = Math.Max(1, Math.Max(0, source.SourceMaterialCount));
+			text2 = "[军团行动]\n- 军团行动事件共：" + num + "条；加入/离开已略。";
+		}
+		EventMaterialReference eventMaterialReference = CloneEventMaterialReference(source);
+		eventMaterialReference.MaterialType = "prompt_short_army";
+		eventMaterialReference.Label = "军团行动";
+		eventMaterialReference.SnapshotText = text2;
+		eventMaterialReference.ActionKind = "prompt_short:army";
+		return eventMaterialReference;
+	}
+
+	private static IEnumerable<string> SplitWeeklyPromptShortArmyLines(string text)
+	{
+		foreach (string item in (text ?? "").Split(new char[2] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries))
+		{
+			yield return item;
+		}
+	}
+
+	private static string ExtractWeeklyPromptShortArmyActor(string line, string marker)
+	{
+		if (string.IsNullOrWhiteSpace(line) || string.IsNullOrWhiteSpace(marker))
+		{
+			return "";
+		}
+		string text = (line ?? "").Trim();
+		if (text.StartsWith("- ", StringComparison.OrdinalIgnoreCase))
+		{
+			text = text.Substring(2).Trim();
+		}
+		int num = text.IndexOf('：');
+		if (num >= 0 && num + 1 < text.Length)
+		{
+			text = text.Substring(num + 1).Trim();
+		}
+		int num2 = text.IndexOf(marker, StringComparison.OrdinalIgnoreCase);
+		if (num2 < 0)
+		{
+			return "";
+		}
+		text = text.Substring(0, num2).Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return "";
+		}
+		int num3 = text.LastIndexOf("家族的", StringComparison.OrdinalIgnoreCase);
+		if (num3 >= 0)
+		{
+			text = text.Substring(num3 + "家族的".Length).Trim();
+		}
+		int num4 = text.LastIndexOf("所属的", StringComparison.OrdinalIgnoreCase);
+		if (num4 >= 0)
+		{
+			text = text.Substring(num4 + "所属的".Length).Trim();
+		}
+		int num5 = text.IndexOf('(');
+		if (num5 > 0)
+		{
+			text = text.Substring(0, num5).Trim();
+		}
+		return text.Trim(' ', '。', '，', ',', ';', '；');
+	}
+
+	private static string ResolveHeroKingdomIdForPrompt(string heroId)
+	{
+		Hero heroById = FindHeroById(heroId);
+		return (heroById?.MapFaction?.StringId ?? heroById?.Clan?.Kingdom?.StringId ?? "").Trim();
+	}
+
+	private static bool IsWeeklyPromptMovementAggregateMaterial(EventMaterialReference material)
+	{
+		if (material == null)
+		{
+			return false;
+		}
+		string text = (material.MaterialType ?? "").Trim();
+		string text2 = (material.ActionKind ?? "").Trim();
+		return string.Equals(text, "prompt_agg_movement", StringComparison.OrdinalIgnoreCase) || string.Equals(text2, "prompt_aggregate:movement", StringComparison.OrdinalIgnoreCase) || string.Equals((material.Label ?? "").Trim(), "行军与袭扰", StringComparison.OrdinalIgnoreCase);
+	}
+
+	private static EventMaterialReference BuildWeeklyPromptShortMovementMaterial(EventMaterialReference source)
+	{
+		if (source == null)
+		{
+			return null;
+		}
+		string text = (source.SnapshotText ?? source.Label ?? "").Trim();
+		int num = Math.Max(0, source.SourceMaterialCount);
+		if (num <= 0)
+		{
+			num = Regex.Matches(text, "事件=近期行军动向", RegexOptions.IgnoreCase).Count;
+		}
+		if (num <= 0)
+		{
+			num = 1;
+		}
+		List<string> list = ExtractWeeklyPromptShortMovementLocations(text).Take(5).ToList();
+		List<string> list2 = new List<string>();
+		AddWeeklyPromptShortMovementAction(list2, text, "守备", "守备");
+		AddWeeklyPromptShortMovementAction(list2, text, "保卫", "守备");
+		AddWeeklyPromptShortMovementAction(list2, text, "袭扰", "袭扰");
+		AddWeeklyPromptShortMovementAction(list2, text, "劫掠", "袭扰");
+		AddWeeklyPromptShortMovementAction(list2, text, "掠夺", "袭扰");
+		AddWeeklyPromptShortMovementAction(list2, text, "围攻", "围攻");
+		AddWeeklyPromptShortMovementAction(list2, text, "强攻", "围攻");
+		if (text.IndexOf("一带行动", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("前往", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("行军", StringComparison.OrdinalIgnoreCase) >= 0)
+		{
+			AddUniqueId(list2, "普通行军");
+		}
+		if (list2.Count == 0)
+		{
+			list2.Add("普通行军");
+		}
+		string text2 = (list.Count > 0) ? string.Join("、", list) : "未列明";
+		string text3 = "[行军与袭扰]\n- 近期行军动向事件共：" + num + "条；地点：" + text2 + "；主要行动：" + string.Join("、", list2) + "。";
+		EventMaterialReference eventMaterialReference = CloneEventMaterialReference(source);
+		eventMaterialReference.MaterialType = "prompt_short_movement";
+		eventMaterialReference.Label = "行军与袭扰";
+		eventMaterialReference.SnapshotText = text3;
+		eventMaterialReference.ActionKind = "prompt_short:movement";
+		return eventMaterialReference;
+	}
+
+	private static void AddWeeklyPromptShortMovementAction(List<string> actions, string text, string needle, string label)
+	{
+		if (actions == null || string.IsNullOrWhiteSpace(label) || string.IsNullOrWhiteSpace(needle))
+		{
+			return;
+		}
+		if ((text ?? "").IndexOf(needle, StringComparison.OrdinalIgnoreCase) >= 0)
+		{
+			AddUniqueId(actions, label);
+		}
+	}
+
+	private static List<string> ExtractWeeklyPromptShortMovementLocations(string text)
+	{
+		List<string> list = new List<string>();
+		foreach (Match item in Regex.Matches(text ?? "", "涉及地点=(?<value>[^|\\r\\n]+)", RegexOptions.IgnoreCase))
+		{
+			string value = item.Groups["value"]?.Value ?? "";
+			foreach (string item2 in value.Split(new char[4] { '、', '，', ',', ';' }, StringSplitOptions.RemoveEmptyEntries))
+			{
+				AddUniqueId(list, item2.Trim());
+			}
 		}
 		return list;
 	}
@@ -17515,6 +18477,155 @@ public class MyBehavior : CampaignBehaviorBase
 			}
 		}
 		group.Materials = OrderWeeklyPreviewMaterials(list2.Concat(list4).ToList()).ToList();
+	}
+
+	private static List<EventMaterialReference> BuildWeeklyPromptMaterialsFromAggregatedBuckets(WeeklyEventMaterialPreviewGroup group, List<EventMaterialReference> source, bool includeRawFallback)
+	{
+		return OrderWeeklyPreviewMaterials((source ?? new List<EventMaterialReference>()).Where((EventMaterialReference x) => x != null).Select(CloneEventMaterialReference).ToList()).ToList();
+	}
+
+	private static string ResolveShortPromptRawMaterialKey(EventMaterialReference material)
+	{
+		if (material == null)
+		{
+			return "raw_text";
+		}
+		string text = (material.MaterialType ?? "").Trim().ToLowerInvariant();
+		if (string.Equals(text, "raw_text", StringComparison.OrdinalIgnoreCase))
+		{
+			string text2 = (material.Label ?? "").Trim();
+			if (!string.IsNullOrWhiteSpace(text2))
+			{
+				return "raw_text:" + text2.ToLowerInvariant();
+			}
+			string text3 = (material.KingdomId ?? "").Trim();
+			if (!string.IsNullOrWhiteSpace(text3))
+			{
+				return "raw_text:kingdom:" + text3.ToLowerInvariant();
+			}
+			string text4 = (material.SettlementId ?? "").Trim();
+			if (!string.IsNullOrWhiteSpace(text4))
+			{
+				return "raw_text:settlement:" + text4.ToLowerInvariant();
+			}
+			return "raw_text";
+		}
+		return text;
+	}
+
+	private static string BuildWeeklyPromptAggregateShortSnippet(string text, int maxLen)
+	{
+		string text2 = (text ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
+		while (text2.Contains("  "))
+		{
+			text2 = text2.Replace("  ", " ");
+		}
+		if (string.IsNullOrWhiteSpace(text2))
+		{
+			return "";
+		}
+		if (text2.Length <= maxLen)
+		{
+			return text2;
+		}
+		return text2.Substring(0, Math.Max(0, maxLen)).TrimEnd();
+	}
+
+	private static EventMaterialReference BuildWeeklyPromptAggregateShortCategoryMaterial(WeeklyEventMaterialPreviewGroup group, string category, List<EventMaterialReference> materials)
+	{
+		List<EventMaterialReference> list = (materials ?? new List<EventMaterialReference>()).Where((EventMaterialReference x) => x != null).ToList();
+		if (list.Count == 0)
+		{
+			return null;
+		}
+		Dictionary<string, List<EventMaterialReference>> dictionary = new Dictionary<string, List<EventMaterialReference>>(StringComparer.OrdinalIgnoreCase);
+		foreach (EventMaterialReference item in list)
+		{
+			string text = BuildWeeklyPromptAggregateEventKey(item);
+			if (!dictionary.TryGetValue(text, out var value))
+			{
+				value = new List<EventMaterialReference>();
+				dictionary[text] = value;
+			}
+			value.Add(item);
+		}
+		List<List<EventMaterialReference>> list2 = dictionary.Values.Where((List<EventMaterialReference> x) => x != null && x.Count > 0).OrderBy((List<EventMaterialReference> x) => x.Min((EventMaterialReference y) => y?.ActionDay ?? int.MaxValue)).ThenBy((List<EventMaterialReference> x) => x.Min((EventMaterialReference y) => y?.ActionSequence ?? int.MaxValue)).ToList();
+		List<string> list3 = new List<string>();
+		foreach (List<EventMaterialReference> item2 in list2.Take(3))
+		{
+			EventMaterialReference eventMaterialReference2 = item2.FirstOrDefault((EventMaterialReference y) => y != null);
+			string text3 = BuildWeeklyPromptAggregateShortSnippet((eventMaterialReference2?.SnapshotText ?? eventMaterialReference2?.Label ?? category ?? ""), 72);
+			if (!string.IsNullOrWhiteSpace(text3))
+			{
+				list3.Add(text3);
+			}
+		}
+		string text2 = GetWeeklyPromptAggregateCategoryLabel(category);
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.Append("[").Append(text2).Append("]");
+		stringBuilder.Append("数量=").Append(list.Count);
+		stringBuilder.Append("|事件=").Append(list2.Count);
+		if (list3.Count > 0)
+		{
+			stringBuilder.Append("|例=").Append(string.Join("；", list3));
+		}
+		EventMaterialReference eventMaterialReference = new EventMaterialReference
+		{
+			MaterialType = "prompt_short_" + (category ?? "").Trim().ToLowerInvariant(),
+			Label = text2,
+			SnapshotText = stringBuilder.ToString().Trim(),
+			KingdomId = (group?.KingdomId ?? "").Trim(),
+			ActionKind = "prompt_aggregate_short:" + (category ?? "").Trim().ToLowerInvariant(),
+			SourceMaterialCount = list.Count,
+			ActionDay = list.Min((EventMaterialReference x) => x?.ActionDay ?? int.MaxValue),
+			ActionSequence = list.Min((EventMaterialReference x) => x?.ActionSequence ?? int.MaxValue)
+		};
+		foreach (EventMaterialReference item3 in list)
+		{
+			AppendMaterialReferenceIds(item3, eventMaterialReference);
+		}
+		return eventMaterialReference;
+	}
+
+	private static EventMaterialReference BuildWeeklyPromptAggregateShortRawMaterial(WeeklyEventMaterialPreviewGroup group, string rawKey, List<EventMaterialReference> materials)
+	{
+		List<EventMaterialReference> list = (materials ?? new List<EventMaterialReference>()).Where((EventMaterialReference x) => x != null).ToList();
+		if (list.Count == 0)
+		{
+			return null;
+		}
+		List<string> list2 = new List<string>();
+		foreach (EventMaterialReference item in list.Take(3))
+		{
+			string text = BuildWeeklyPromptAggregateShortSnippet(!string.IsNullOrWhiteSpace(item.SnapshotText) ? item.SnapshotText : item.Label, 72);
+			if (!string.IsNullOrWhiteSpace(text))
+			{
+				list2.Add(text);
+			}
+		}
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.Append("[").Append(BuildWeeklyPromptAggregateShortSnippet(rawKey, 32)).Append("]");
+		stringBuilder.Append("数量=").Append(list.Count);
+		if (list2.Count > 0)
+		{
+			stringBuilder.Append("|例=").Append(string.Join("；", list2));
+		}
+		EventMaterialReference eventMaterialReference = new EventMaterialReference
+		{
+			MaterialType = "prompt_short_raw",
+			Label = BuildWeeklyPromptAggregateShortSnippet(rawKey, 48),
+			SnapshotText = stringBuilder.ToString().Trim(),
+			KingdomId = (group?.KingdomId ?? "").Trim(),
+			ActionKind = "prompt_aggregate_short:raw",
+			SourceMaterialCount = list.Count,
+			ActionDay = list.Min((EventMaterialReference x) => x?.ActionDay ?? int.MaxValue),
+			ActionSequence = list.Min((EventMaterialReference x) => x?.ActionSequence ?? int.MaxValue)
+		};
+		foreach (EventMaterialReference item2 in list)
+		{
+			AppendMaterialReferenceIds(item2, eventMaterialReference);
+		}
+		return eventMaterialReference;
 	}
 
 	private static EventMaterialReference CloneEventMaterialReference(EventMaterialReference material)
@@ -19715,18 +20826,33 @@ public class MyBehavior : CampaignBehaviorBase
 				WeekIndex = weekIndex,
 				StartDay = startDay,
 				EndDay = endDay,
+				OutputMode = WeeklyReportOutputMode.FullReport,
 				Groups = new List<WeeklyEventMaterialPreviewGroup> { weeklyEventMaterialPreviewGroup }
 			});
 		}
 		int weeklyReportBatchSize = Math.Max(1, GetWeeklyReportBatchSize());
-		for (int i = 0; i < list3.Count; i += weeklyReportBatchSize)
+		List<WeeklyEventMaterialPreviewGroup> list4 = list3.Where((WeeklyEventMaterialPreviewGroup x) => (x?.OutputMode ?? WeeklyReportOutputMode.FullReport) != WeeklyReportOutputMode.TitleShortTagsOnly).ToList();
+		List<WeeklyEventMaterialPreviewGroup> list5 = list3.Where((WeeklyEventMaterialPreviewGroup x) => (x?.OutputMode ?? WeeklyReportOutputMode.FullReport) == WeeklyReportOutputMode.TitleShortTagsOnly).ToList();
+		for (int i = 0; i < list4.Count; i += weeklyReportBatchSize)
 		{
 			list.Add(new WeeklyReportBatchRequest
 			{
 				WeekIndex = weekIndex,
 				StartDay = startDay,
 				EndDay = endDay,
-				Groups = list3.Skip(i).Take(weeklyReportBatchSize).ToList()
+				OutputMode = WeeklyReportOutputMode.FullReport,
+				Groups = list4.Skip(i).Take(weeklyReportBatchSize).ToList()
+			});
+		}
+		for (int j = 0; j < list5.Count; j += weeklyReportBatchSize)
+		{
+			list.Add(new WeeklyReportBatchRequest
+			{
+				WeekIndex = weekIndex,
+				StartDay = startDay,
+				EndDay = endDay,
+				OutputMode = WeeklyReportOutputMode.TitleShortTagsOnly,
+				Groups = list5.Skip(j).Take(weeklyReportBatchSize).ToList()
 			});
 		}
 		return list;
@@ -19744,7 +20870,8 @@ public class MyBehavior : CampaignBehaviorBase
 	private static string BuildWeeklyReportBatchDisplayLabel(WeeklyReportBatchRequest batch)
 	{
 		List<string> list = (batch?.Groups ?? new List<WeeklyEventMaterialPreviewGroup>()).Select(BuildWeeklyReportGroupDisplayLabel).Where((string x) => !string.IsNullOrWhiteSpace(x)).ToList();
-		return (list.Count == 0) ? "未命名周报批次" : ("批次：" + string.Join(" | ", list));
+		string text = ((batch?.OutputMode ?? WeeklyReportOutputMode.FullReport) == WeeklyReportOutputMode.TitleShortTagsOnly) ? "短" : "全";
+		return (list.Count == 0) ? ("未命名周报批次[" + text + "]") : ("批次[" + text + "]：" + string.Join(" | ", list));
 	}
 
 	private static List<WeeklyEventMaterialPreviewGroup> BuildRemainingWeeklyReportGroupsForRetry(List<WeeklyReportBatchRequest> batches, int batchIndex, IEnumerable<WeeklyEventMaterialPreviewGroup> currentBatchRemainingGroups)
@@ -19858,6 +20985,40 @@ public class MyBehavior : CampaignBehaviorBase
 			}
 		}
 		return string.Join("\n", list).Trim();
+	}
+
+	private static bool TryValidateWeeklyReportTagText(string rawTagText, out string normalizedTagText, out string stabilityTag, out string failureReason)
+	{
+		normalizedTagText = "";
+		stabilityTag = "";
+		failureReason = "";
+		string text = NormalizeWeeklyReportTagText(rawTagText);
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			failureReason = "缺少 [TAGS]。";
+			return false;
+		}
+		List<string> list = text.Split(new char[1] { '\n' }, StringSplitOptions.RemoveEmptyEntries).Select((string x) => (x ?? "").Trim()).Where((string x) => !string.IsNullOrWhiteSpace(x)).ToList();
+		List<string> list2 = list.Where((string x) => x.StartsWith("STAB_", StringComparison.OrdinalIgnoreCase)).ToList();
+		if (list2.Count != 1)
+		{
+			failureReason = (list2.Count == 0) ? "缺少稳定度标签。" : "稳定度标签数量不正确。";
+			return false;
+		}
+		string text2 = (list2[0] ?? "").Trim().ToUpperInvariant();
+		if (text2 != "STAB_FLAT" && GetWeeklyReportStabilityDeltaForTag(text2) == 0)
+		{
+			failureReason = "稳定度标签不合法。";
+			return false;
+		}
+		if (list.Count != 1)
+		{
+			failureReason = "TAGS 里只能输出一个稳定度标签。";
+			return false;
+		}
+		normalizedTagText = text2;
+		stabilityTag = text2;
+		return true;
 	}
 
 	private static int GetWeeklyReportStabilityDeltaForTag(string tag)
@@ -20077,10 +21238,11 @@ public class MyBehavior : CampaignBehaviorBase
 				EventId = (x.EventId ?? "").Trim(),
 				WeekIndex = Math.Max(0, x.WeekIndex),
 				Title = text3,
-				BodyText = (string.IsNullOrWhiteSpace(x.Summary) ? "\u5f53\u524d\u8fd9\u671f\u5468\u62a5\u8fd8\u6ca1\u6709\u6b63\u6587\u3002" : x.Summary.Trim()),
+				BodyText = !string.IsNullOrWhiteSpace(x.Summary) ? x.Summary.Trim() : (!string.IsNullOrWhiteSpace(x.ShortSummary) ? x.ShortSummary.Trim() : "\u5f53\u524d\u8fd9\u671f\u5468\u62a5\u8fd8\u6ca1\u6709\u6b63\u6587\u3002"),
 				CreatedDate = (!string.IsNullOrWhiteSpace(x.CreatedDate) ? x.CreatedDate.Trim() : ("\u7b2c " + Math.Max(0, x.CreatedDay) + " \u65e5")),
 				CreatedDay = Math.Max(0, x.CreatedDay),
-				TagText = (x.TagText ?? "").Trim()
+				TagText = (x.TagText ?? "").Trim(),
+				HasFullReport = !string.IsNullOrWhiteSpace(x.Summary)
 			};
 		}).ToList();
 	}
@@ -20097,6 +21259,111 @@ public class MyBehavior : CampaignBehaviorBase
 			text = "\u738b\u56fd";
 		}
 		return text + "\u7b2c" + Math.Max(0, weekIndex) + "\u5468\u5468\u62a5";
+	}
+
+	private EventRecordEntry FindWeeklyReportRecordById(string eventId)
+	{
+		string text = (eventId ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return null;
+		}
+		return (_eventRecordEntries ?? new List<EventRecordEntry>()).FirstOrDefault((EventRecordEntry x) => x != null && string.Equals((x.EventId ?? "").Trim(), text, StringComparison.OrdinalIgnoreCase));
+	}
+
+	private static List<EventMaterialReference> CloneWeeklyReportMaterials(List<EventMaterialReference> materials)
+	{
+		return OrderWeeklyPreviewMaterials(materials).Where((EventMaterialReference x) => x != null).Select(CloneEventMaterialReference).ToList();
+	}
+
+	private static WeeklyEventMaterialPreviewGroup BuildWeeklyReportRecordPreviewGroup(EventRecordEntry entry)
+	{
+		if (entry == null)
+		{
+			return null;
+		}
+		return new WeeklyEventMaterialPreviewGroup
+		{
+			GroupKind = (entry.EventKind ?? "").Trim(),
+			KingdomId = (entry.ScopeKingdomId ?? "").Trim(),
+			Title = (entry.Title ?? "").Trim(),
+			Summary = (entry.ShortSummary ?? "").Trim(),
+			Materials = CloneWeeklyReportMaterials(entry.Materials),
+			PromptMaterials = CloneWeeklyReportMaterials(entry.Materials),
+			OutputMode = WeeklyReportOutputMode.FullReport,
+			IncludePreviousReportInPrompt = true
+		};
+	}
+
+	public async Task<bool> GenerateWeeklyReportFullByEventIdAsync(string eventId)
+	{
+		EventRecordEntry eventRecordEntry = FindWeeklyReportRecordById(eventId);
+		if (eventRecordEntry == null)
+		{
+			ShowWeeklyFullOnDemandFailurePopup("未找到该期周报记录。");
+			return false;
+		}
+		if (!string.IsNullOrWhiteSpace(eventRecordEntry.Summary))
+		{
+			return true;
+		}
+		WeeklyEventMaterialPreviewGroup weeklyEventMaterialPreviewGroup = BuildWeeklyReportRecordPreviewGroup(eventRecordEntry);
+		if (weeklyEventMaterialPreviewGroup == null || (weeklyEventMaterialPreviewGroup.Materials?.Count ?? 0) == 0)
+		{
+			ShowWeeklyFullOnDemandFailurePopup("该期周报没有可用的完整素材。");
+			return false;
+		}
+		int num = Math.Max(1, eventRecordEntry.WeekIndex);
+		string text = BuildWeeklyReportFullOnDemandSystemPrompt(weeklyEventMaterialPreviewGroup);
+		string text2 = BuildWeeklyReportFullOnDemandUserPrompt(weeklyEventMaterialPreviewGroup, num);
+		string text3 = BuildWeeklyReportPromptPreviewText(weeklyEventMaterialPreviewGroup, text, text2);
+		ShowWeeklyFullOnDemandProgressPopup(eventRecordEntry);
+		try
+		{
+			ApiCallResult apiCallResult = await CallUniversalApiDetailed(text, text2, logToEventLogs: true, eventLogSource: "EventWeeklyReport", route: UniversalApiRoute.EventAndRebellion);
+			if (!apiCallResult.Success)
+			{
+				ShowWeeklyFullOnDemandFailurePopup("完整周报生成失败：" + (apiCallResult.ErrorMessage ?? "未知错误"));
+				return false;
+			}
+			if (!TryParseWeeklyFullOnDemandReportResponse(apiCallResult.Content, out var title, out var shortSummary, out var report))
+			{
+				ShowWeeklyFullOnDemandFailurePopup("完整周报返回内容无法解析。");
+				return false;
+			}
+			eventRecordEntry.Title = title;
+			eventRecordEntry.ShortSummary = BuildFallbackWeeklyReportShortSummary(shortSummary);
+			eventRecordEntry.Summary = (report ?? "").Trim();
+			eventRecordEntry.PromptText = text3;
+			eventRecordEntry.Materials = CloneWeeklyReportMaterials(eventRecordEntry.Materials);
+			_eventRecordEntries = SanitizeEventRecordEntries(_eventRecordEntries);
+			InformationManager.HideInquiry();
+			InformationManager.DisplayMessage(new InformationMessage("完整周报已生成。"));
+			return true;
+		}
+		catch (Exception ex)
+		{
+			ShowWeeklyFullOnDemandFailurePopup("完整周报生成失败：" + ex.Message);
+			return false;
+		}
+	}
+
+	private static void ShowWeeklyFullOnDemandProgressPopup(EventRecordEntry entry)
+	{
+		string text = (entry?.Title ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			text = BuildWeeklyReportBrowserDefaultTitle(entry?.EventKind, entry?.ScopeKingdomId, entry?.WeekIndex ?? 0);
+		}
+		InformationManager.ShowInquiry(new InquiryData("正在生成完整周报", "正在使用该期保存的完整素材补写完整周报正文。\n\n周报：" + text + "\n\n请稍候，生成完成或失败前此窗口不会关闭。", isAffirmativeOptionShown: false, isNegativeOptionShown: false, "", "", null, null), pauseGameActiveState: true);
+	}
+
+	private static void ShowWeeklyFullOnDemandFailurePopup(string message)
+	{
+		InformationManager.HideInquiry();
+		InformationManager.ShowInquiry(new InquiryData("完整周报生成失败", string.IsNullOrWhiteSpace(message) ? "完整周报生成失败。" : message.Trim(), isAffirmativeOptionShown: true, isNegativeOptionShown: false, "返回", "", delegate
+		{
+		}, null), pauseGameActiveState: true);
 	}
 
 	private List<string> SelectWeeklyShortReportKingdomIds(string npcKingdomId, bool excludeNpcKingdom)
@@ -20165,6 +21432,10 @@ public class MyBehavior : CampaignBehaviorBase
 			return "";
 		}
 		string text = (entry.Summary ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			text = (entry.ShortSummary ?? "").Trim();
+		}
 		if (string.IsNullOrWhiteSpace(text))
 		{
 			return "";
@@ -20458,7 +21729,7 @@ public class MyBehavior : CampaignBehaviorBase
 	private async Task<WeeklyReportBatchRequestResult> GenerateWeeklyReportBatchWithRetriesAsync(WeeklyReportBatchRequest batch, int maxAttempts)
 	{
 		WeeklyReportBatchRequestResult weeklyReportBatchRequestResult = new WeeklyReportBatchRequestResult();
-		string text = BuildWeeklyBatchReportSystemPrompt();
+		string text = BuildWeeklyBatchReportSystemPrompt(batch);
 		string text2 = BuildWeeklyBatchReportUserPrompt(batch);
 		string text3 = BuildWeeklyBatchPromptPreviewText(batch, text, text2);
 		string text4 = BuildWeeklyReportBatchDisplayLabel(batch);
@@ -20998,8 +22269,9 @@ public class MyBehavior : CampaignBehaviorBase
 	{
 		WeeklyReportPromptProfile weeklyReportPromptProfile = GetWeeklyReportPromptProfile();
 		bool flag = string.Equals((group?.GroupKind ?? "").Trim(), "world", StringComparison.OrdinalIgnoreCase);
+		bool flag2 = (group?.OutputMode ?? WeeklyReportOutputMode.FullReport) == WeeklyReportOutputMode.TitleShortTagsOnly;
 		string text = flag ? "世界周报" : "王国周报";
-		string text2 = string.Equals((group?.GroupKind ?? "").Trim(), "world", StringComparison.OrdinalIgnoreCase) ? "你的任务是根据本周素材，写出一篇宏观的大陆周报，总结这一周整个卡拉迪亚发生了什么。" : "你的任务是根据本周素材，写出一篇聚焦单个王国的周报，总结这一周这个王国发生了什么。";
+		string text2 = flag ? "你的任务是根据本周素材，写出一篇宏观的大陆周报，总结这一周整个卡拉迪亚发生了什么。" : "你的任务是根据本周素材，写出一篇聚焦单个王国的周报，总结这一周这个王国发生了什么。";
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.AppendLine("你是一名负责整理卡拉迪亚时局的史官。");
 		stringBuilder.AppendLine("你不是在自由编造故事，而是在根据给定素材生成一篇流利、可信、克制的周报。");
@@ -21012,34 +22284,97 @@ public class MyBehavior : CampaignBehaviorBase
 		stringBuilder.AppendLine("4. 文风应像编年史、政局纪要或贵族周报，清楚、流利、克制，不要写成小说对白。");
 		stringBuilder.AppendLine("5. 不要使用系统术语、字段名、StableKey、素材标签或开发者说明。");
 		stringBuilder.AppendLine("5.5 军事胜利通常提升稳定度，军事失利通常降低稳定度（仅在素材支持时）。");
-		stringBuilder.AppendLine("6. 标题要简洁，正文要完整，短摘要要适合后续注入 NPC prompt。");
+		if (flag2)
+		{
+			stringBuilder.AppendLine("6. 这是压缩模式，只允许输出标题、短摘要和标签，不允许输出正文。");
+			stringBuilder.AppendLine("7. 短摘要要适合后续注入 NPC prompt，尽量保留最关键的事实锚点。");
+		}
+		else
+		{
+			stringBuilder.AppendLine("6. 标题要简洁，正文要完整，短摘要要适合后续注入 NPC prompt。");
+		}
 		stringBuilder.AppendLine(" ");
 		stringBuilder.AppendLine("篇幅要求：");
 		stringBuilder.AppendLine($"- 当前档位：{weeklyReportPromptProfile.Label}");
-		stringBuilder.AppendLine($"- 正文必须控制在 {weeklyReportPromptProfile.MinWords} 到 {weeklyReportPromptProfile.MaxWords} 字之间。");
+		if (!flag2)
+		{
+			stringBuilder.AppendLine($"- 正文必须控制在 {weeklyReportPromptProfile.MinWords} 到 {weeklyReportPromptProfile.MaxWords} 字之间。");
+		}
 		stringBuilder.AppendLine("- SHORT 短摘要必须控制在 20 到 140 字之间，且尽量写成一段紧凑事实摘要。");
 		stringBuilder.AppendLine("- 素材少时靠近下限，素材多时靠近上限。");
 		stringBuilder.AppendLine(" ");
 		stringBuilder.AppendLine("输出格式：");
 		stringBuilder.AppendLine("[TITLE]周报标题");
 		stringBuilder.AppendLine("[SHORT]20-140字短摘要");
-		stringBuilder.AppendLine("[REPORT]周报正文");
+		if (!flag2)
+		{
+			stringBuilder.AppendLine("[REPORT]周报正文");
+		}
 		stringBuilder.AppendLine("[TAGS]");
-		stringBuilder.AppendLine(flag ? "STA+0" : "STAB_FLAT");
-		stringBuilder.AppendLine("WAR+0");
-		stringBuilder.AppendLine("TRE+0");
+		stringBuilder.AppendLine("STAB_FLAT");
 		stringBuilder.AppendLine(" ");
 		stringBuilder.AppendLine("如果素材不足以支持重大变化，也要如实写出本周局势概况，不要硬造戏剧化转折。");
-		if (flag)
+		if (flag2)
 		{
-			stringBuilder.AppendLine("TAGS 目前只是接口占位层，不要求改变任何游戏数值，但必须输出稳定、简短、可解析的标签文本。");
+			stringBuilder.AppendLine("TAGS 里必须且只能有一个稳定度评级标签，格式必须是 STAB_DOWN_4、STAB_DOWN_3、STAB_DOWN_2、STAB_DOWN_1、STAB_FLAT、STAB_UP_1、STAB_UP_2、STAB_UP_3、STAB_UP_4 中的一个。");
+			stringBuilder.AppendLine("不要输出任何额外标签、解释、前缀或后缀。");
 		}
 		else
 		{
-			stringBuilder.AppendLine("对于王国周报，你必须在 [TAGS] 中追加且只能追加一个稳定度评级标签：STAB_DOWN_4、STAB_DOWN_3、STAB_DOWN_2、STAB_DOWN_1、STAB_FLAT、STAB_UP_1、STAB_UP_2、STAB_UP_3、STAB_UP_4。");
-			stringBuilder.AppendLine("不要在标题、短摘要或正文中解释这个标签，也不要解释其后果。");
+			stringBuilder.AppendLine("对于王国周报，你必须在 [TAGS] 中输出且只能输出一个稳定度评级标签：STAB_DOWN_4、STAB_DOWN_3、STAB_DOWN_2、STAB_DOWN_1、STAB_FLAT、STAB_UP_1、STAB_UP_2、STAB_UP_3、STAB_UP_4。");
+			stringBuilder.AppendLine("不要在标题、短摘要或正文中解释这个标签，也不要输出其他标签。");
 		}
-		stringBuilder.AppendLine("不要输出除 [TITLE]、[SHORT]、[REPORT]、[TAGS] 之外的其他字段。");
+		stringBuilder.AppendLine(flag2 ? "不要输出除 [TITLE]、[SHORT]、[TAGS] 之外的其他字段。" : "不要输出除 [TITLE]、[SHORT]、[REPORT]、[TAGS] 之外的其他字段。");
+		return stringBuilder.ToString().TrimEnd();
+	}
+
+	private static string BuildWeeklyReportFullOnDemandSystemPrompt(WeeklyEventMaterialPreviewGroup group)
+	{
+		WeeklyReportPromptProfile weeklyReportPromptProfile = GetWeeklyReportPromptProfile();
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.AppendLine("你是一名负责整理卡拉迪亚时局的史官。");
+		stringBuilder.AppendLine("你的任务是根据已保存的完整素材，为一条历史短周报补写完整正文。");
+		stringBuilder.AppendLine("这次补写只用于档案馆展示，不参与当前稳定度结算。");
+		stringBuilder.AppendLine(" ");
+		stringBuilder.AppendLine("写作要求：");
+		stringBuilder.AppendLine("1. 只根据本次提供的该期保存完整素材生成，不要引用当前游戏周或新近发生的任何素材。");
+		stringBuilder.AppendLine("1.1 不要编造素材中没有明确支持的核心事实。");
+		stringBuilder.AppendLine("2. 标题和短摘要可以优化，但不要改变事件性质。");
+		stringBuilder.AppendLine("3. 正文要像编年史、政局纪要或贵族周报，清楚、流利、克制。");
+		stringBuilder.AppendLine("4. 不要使用系统术语、字段名、StableKey、素材标签或开发者说明。");
+		stringBuilder.AppendLine(" ");
+		stringBuilder.AppendLine("篇幅要求：");
+		stringBuilder.AppendLine($"- 当前档位：{weeklyReportPromptProfile.Label}");
+		stringBuilder.AppendLine($"- 正文必须控制在 {weeklyReportPromptProfile.MinWords} 到 {weeklyReportPromptProfile.MaxWords} 字之间。");
+		stringBuilder.AppendLine("- SHORT 短摘要必须控制在 20 到 140 字之间。");
+		stringBuilder.AppendLine(" ");
+		stringBuilder.AppendLine("输出格式：");
+		stringBuilder.AppendLine("[TITLE]周报标题");
+		stringBuilder.AppendLine("[SHORT]20-140字短摘要");
+		stringBuilder.AppendLine("[REPORT]周报正文");
+		stringBuilder.AppendLine(" ");
+		stringBuilder.AppendLine("严禁输出 [TAGS]，严禁输出任何稳定度标签。");
+		stringBuilder.AppendLine("不要输出除 [TITLE]、[SHORT]、[REPORT] 之外的其他字段。");
+		return stringBuilder.ToString().TrimEnd();
+	}
+
+	private string BuildWeeklyReportFullOnDemandUserPrompt(WeeklyEventMaterialPreviewGroup group, int weekIndex)
+	{
+		WeeklyReportPromptProfile weeklyReportPromptProfile = GetWeeklyReportPromptProfile();
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.AppendLine("【历史周报完整正文补写任务】");
+		stringBuilder.AppendLine("当前要补写的是：" + (string.Equals((group?.GroupKind ?? "").Trim(), "world", StringComparison.OrdinalIgnoreCase) ? "世界周报" : "王国周报"));
+		stringBuilder.AppendLine("当前周数：第 " + weekIndex + " 周");
+		if (!string.IsNullOrWhiteSpace(group?.KingdomId))
+		{
+			stringBuilder.AppendLine("指定王国：" + ResolveKingdomDisplay(group.KingdomId));
+		}
+		stringBuilder.AppendLine("篇幅档位：" + weeklyReportPromptProfile.Label);
+		stringBuilder.AppendLine(" ");
+		stringBuilder.AppendLine("【该期保存的完整素材】");
+		stringBuilder.AppendLine(BuildWeeklyReportMaterialLines(group));
+		stringBuilder.AppendLine();
+		stringBuilder.AppendLine("请只使用上面的该期保存素材输出 [TITLE]、[SHORT]、[REPORT]。不要输出 [TAGS] 或任何稳定度标签。");
 		return stringBuilder.ToString().TrimEnd();
 	}
 
@@ -21060,9 +22395,11 @@ public class MyBehavior : CampaignBehaviorBase
 	private string BuildWeeklyReportUserPrompt(WeeklyEventMaterialPreviewGroup group, int weekIndex, int startDay, int endDay)
 	{
 		WeeklyReportPromptProfile weeklyReportPromptProfile = GetWeeklyReportPromptProfile();
+		bool flag = (group?.OutputMode ?? WeeklyReportOutputMode.FullReport) == WeeklyReportOutputMode.TitleShortTagsOnly;
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.AppendLine("【周报生成任务】");
 		stringBuilder.AppendLine("当前要生成的是：" + (string.Equals((group?.GroupKind ?? "").Trim(), "world", StringComparison.OrdinalIgnoreCase) ? "世界周报" : "王国周报"));
+		stringBuilder.AppendLine("输出模式：" + (flag ? "title_short_tags_only" : "full_report"));
 		stringBuilder.AppendLine("当前周数：第 " + weekIndex + " 周");
 		stringBuilder.AppendLine("本周取材区间：第 " + Math.Max(0, startDay) + " 日 到 第 " + Math.Max(startDay, endDay) + " 日");
 		if (!string.IsNullOrWhiteSpace(group?.KingdomId))
@@ -21085,13 +22422,23 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		stringBuilder.AppendLine("篇幅档位：" + weeklyReportPromptProfile.Label);
 		stringBuilder.AppendLine(" ");
-		stringBuilder.AppendLine("【上一周周报】");
-		stringBuilder.AppendLine(GetPreviousWeeklyReportText(group, weekIndex));
-		stringBuilder.AppendLine();
+		if (!flag && (group?.IncludePreviousReportInPrompt ?? true))
+		{
+			stringBuilder.AppendLine("【上一周周报】");
+			stringBuilder.AppendLine(GetPreviousWeeklyReportText(group, weekIndex));
+			stringBuilder.AppendLine();
+		}
 		stringBuilder.AppendLine("【本周素材】");
-		stringBuilder.AppendLine(BuildWeeklyReportMaterialLines(group));
+		stringBuilder.AppendLine(BuildWeeklyReportPromptMaterialLines(group));
 		stringBuilder.AppendLine();
-		stringBuilder.AppendLine("请将这些素材融合成一篇流利的周报，既不要逐条照抄，也不要漏掉本周显著的大事。");
+		if (flag)
+		{
+			stringBuilder.AppendLine("请只输出标题、短摘要和标签，不要输出正文。");
+		}
+		else
+		{
+			stringBuilder.AppendLine("请将这些素材融合成一篇流利的周报，既不要逐条照抄，也不要漏掉本周显著的大事。");
+		}
 		return stringBuilder.ToString().TrimEnd();
 	}
 
@@ -21100,16 +22447,30 @@ public class MyBehavior : CampaignBehaviorBase
 		string text = (group?.GroupKind ?? "").Trim();
 		string text2 = (group?.KingdomId ?? "").Trim();
 		EventRecordEntry eventRecordEntry = SanitizeEventRecordEntries(_eventRecordEntries).FirstOrDefault((EventRecordEntry x) => x != null && x.WeekIndex == currentWeekIndex - 1 && string.Equals((x.EventKind ?? "").Trim(), text, StringComparison.OrdinalIgnoreCase) && string.Equals((x.ScopeKingdomId ?? "").Trim(), text2, StringComparison.OrdinalIgnoreCase));
-		if (eventRecordEntry == null || string.IsNullOrWhiteSpace(eventRecordEntry.Summary))
+		if (eventRecordEntry == null)
 		{
 			return "无";
 		}
-		return (eventRecordEntry.Title ?? "").Trim() + "\n" + eventRecordEntry.Summary.Trim();
+		string text3 = (eventRecordEntry.Summary ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text3))
+		{
+			text3 = (eventRecordEntry.ShortSummary ?? "").Trim();
+		}
+		if (string.IsNullOrWhiteSpace(text3))
+		{
+			return "无";
+		}
+		return (eventRecordEntry.Title ?? "").Trim() + "\n" + text3;
 	}
 
 	private static string BuildWeeklyReportMaterialLines(WeeklyEventMaterialPreviewGroup group)
 	{
-		List<EventMaterialReference> list = OrderWeeklyPreviewMaterials(group?.Materials).ToList();
+		return BuildWeeklyReportMaterialLines(group?.Materials);
+	}
+
+	private static string BuildWeeklyReportMaterialLines(List<EventMaterialReference> materials)
+	{
+		List<EventMaterialReference> list = OrderWeeklyPreviewMaterials(materials).ToList();
 		if (list.Count == 0)
 		{
 			return "无可用素材。";
@@ -21159,6 +22520,7 @@ public class MyBehavior : CampaignBehaviorBase
 		StringBuilder stringBuilder = new StringBuilder();
 		AppendDevNpcActionField(stringBuilder, "生成对象", string.Equals((group?.GroupKind ?? "").Trim(), "world", StringComparison.OrdinalIgnoreCase) ? "世界周报" : "王国周报");
 		AppendDevNpcActionField(stringBuilder, "关联王国", ResolveKingdomDisplay(group?.KingdomId));
+		AppendDevNpcActionField(stringBuilder, "输出模式", ((group?.OutputMode ?? WeeklyReportOutputMode.FullReport) == WeeklyReportOutputMode.TitleShortTagsOnly) ? "title_short_tags_only" : "full_report");
 		AppendDevNpcActionField(stringBuilder, "篇幅档位", GetWeeklyReportPromptProfile().Label);
 		AppendDevNpcActionField(stringBuilder, "MaxTokens", WeeklyReportRequestMaxTokens.ToString());
 		stringBuilder.AppendLine();
@@ -21170,43 +22532,69 @@ public class MyBehavior : CampaignBehaviorBase
 		return stringBuilder.ToString().TrimEnd();
 	}
 
-	private static string BuildWeeklyBatchReportSystemPrompt()
+	private static string BuildWeeklyBatchReportSystemPrompt(WeeklyReportBatchRequest batch)
 	{
 		WeeklyReportPromptProfile weeklyReportPromptProfile = GetWeeklyReportPromptProfile();
+		bool flag = (batch?.OutputMode ?? WeeklyReportOutputMode.FullReport) == WeeklyReportOutputMode.TitleShortTagsOnly;
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.AppendLine("你是一名负责整理卡拉迪亚时局的史官。");
 		stringBuilder.AppendLine("你会一次收到多个周报目标，每个目标要么是世界周报，要么是单个王国周报。");
+		stringBuilder.AppendLine("本请求的 batch_mode 固定为 " + (flag ? "title_short_tags_only" : "full_report") + "，只处理这种模式的 block。");
 		stringBuilder.AppendLine("你必须严格按输入 block 分别生成，不得漏块，不得串写，不得合并不同 report_id。");
 		stringBuilder.AppendLine(" ");
 		stringBuilder.AppendLine("写作要求：");
-		stringBuilder.AppendLine("1. 每个 block 只根据该 block 提供的上一周周报、稳定度说明和本周素材生成。");
+		if (flag)
+		{
+			stringBuilder.AppendLine("1. 每个 block 只根据该 block 提供的稳定度说明和压缩素材生成标题、短摘要和标签；本模式不会提供上一周周报。");
+		}
+		else
+		{
+			stringBuilder.AppendLine("1. 每个 block 只根据该 block 提供的上一周周报、稳定度说明和本周素材生成完整周报。");
+		}
 		stringBuilder.AppendLine("2. 跨国事件只能从当前 block 的视角组织，不得把别国素材误写为本国主体。");
 		stringBuilder.AppendLine("3. 不要编造输入素材中没有明确支持的核心事实。");
 		stringBuilder.AppendLine("4. 文风应像编年史、政局纪要或贵族周报，清楚、流利、克制。");
 		stringBuilder.AppendLine("5. 不要使用系统术语、字段名、StableKey、素材标签或开发者说明。");
+		if (flag)
+		{
+			stringBuilder.AppendLine("6. 本请求只做短周报，短摘要要紧凑保留事实锚点，严禁扩写成正文。");
+		}
 		stringBuilder.AppendLine(" ");
 		stringBuilder.AppendLine("篇幅要求：");
 		stringBuilder.AppendLine($"- 当前档位：{weeklyReportPromptProfile.Label}");
-		stringBuilder.AppendLine($"- 每个 block 的正文必须控制在 {weeklyReportPromptProfile.MinWords} 到 {weeklyReportPromptProfile.MaxWords} 字之间。");
-		stringBuilder.AppendLine("- 每个 block 的 short 必须控制在 20 到 140 字之间。");
+		if (!flag)
+		{
+			stringBuilder.AppendLine($"- 每个 block 的正文必须控制在 {weeklyReportPromptProfile.MinWords} 到 {weeklyReportPromptProfile.MaxWords} 字之间。");
+		}
+		stringBuilder.AppendLine("- 每个 block 的 SHORT 必须控制在 20 到 140 字之间。");
 		stringBuilder.AppendLine(" ");
 		stringBuilder.AppendLine("输出要求：");
 		stringBuilder.AppendLine("1. 必须按输入顺序输出全部 block。");
 		stringBuilder.AppendLine("2. 每个 block 都必须使用以下格式：");
 		stringBuilder.AppendLine("[REPORT_BLOCK_BEGIN]");
 		stringBuilder.AppendLine("report_id=原样返回输入中的 report_id");
+		stringBuilder.AppendLine("mode=" + (flag ? "title_short_tags_only" : "full_report"));
 		stringBuilder.AppendLine("kind=world 或 kingdom");
 		stringBuilder.AppendLine("kingdom_id=如果 kind=kingdom 则原样返回输入中的 kingdom_id；如果 kind=world 则留空");
 		stringBuilder.AppendLine("[TITLE]标题");
 		stringBuilder.AppendLine("[SHORT]短摘要");
-		stringBuilder.AppendLine("[REPORT]正文");
+		if (!flag)
+		{
+			stringBuilder.AppendLine("[REPORT]正文");
+		}
 		stringBuilder.AppendLine("[TAGS]");
 		stringBuilder.AppendLine("标签文本");
 		stringBuilder.AppendLine("[REPORT_BLOCK_END]");
-		stringBuilder.AppendLine("3. world block 与 kingdom block 都必须输出 [TITLE] [SHORT] [REPORT] [TAGS]。");
-		stringBuilder.AppendLine("4. kingdom block 的 [TAGS] 中必须且只能包含一个稳定度评级标签：STAB_DOWN_4、STAB_DOWN_3、STAB_DOWN_2、STAB_DOWN_1、STAB_FLAT、STAB_UP_1、STAB_UP_2、STAB_UP_3、STAB_UP_4。通常这些行动更影响稳定度，比如结婚，外交，内政，还有忠诚度，繁荣的，粮食变化等，战争除外");
-		stringBuilder.AppendLine("5. world block 的 [TAGS] 保持简短可解析即可。");
-		stringBuilder.AppendLine("6. 不要输出 [REPORT_BLOCK_BEGIN]/[REPORT_BLOCK_END] 之外的额外说明。");
+		if (flag)
+		{
+			stringBuilder.AppendLine("3. 每个 block 只允许输出 [TITLE] [SHORT] [TAGS]，严禁输出 [REPORT]。");
+		}
+		else
+		{
+			stringBuilder.AppendLine("3. 每个 block 必须输出 [TITLE] [SHORT] [REPORT] [TAGS]。");
+		}
+		stringBuilder.AppendLine("4. world block 与 kingdom block 的 [TAGS] 中都必须且只能包含一个稳定度评级标签：STAB_DOWN_4、STAB_DOWN_3、STAB_DOWN_2、STAB_DOWN_1、STAB_FLAT、STAB_UP_1、STAB_UP_2、STAB_UP_3、STAB_UP_4。");
+		stringBuilder.AppendLine("5. 不要输出 [REPORT_BLOCK_BEGIN]/[REPORT_BLOCK_END] 之外的额外说明。");
 		return stringBuilder.ToString().TrimEnd();
 	}
 
@@ -21215,6 +22603,7 @@ public class MyBehavior : CampaignBehaviorBase
 		StringBuilder stringBuilder = new StringBuilder();
 		List<WeeklyEventMaterialPreviewGroup> list = (batch?.Groups ?? new List<WeeklyEventMaterialPreviewGroup>()).Where((WeeklyEventMaterialPreviewGroup x) => x != null).ToList();
 		stringBuilder.AppendLine("[BATCH]");
+		stringBuilder.AppendLine("batch_mode=" + (((batch?.OutputMode ?? WeeklyReportOutputMode.FullReport) == WeeklyReportOutputMode.TitleShortTagsOnly) ? "title_short_tags_only" : "full_report"));
 		stringBuilder.AppendLine("week_index=" + ((batch != null) ? batch.WeekIndex : 0));
 		stringBuilder.AppendLine("day_range=" + ((batch != null) ? batch.StartDay : 0) + "-" + ((batch != null) ? batch.EndDay : 0));
 		stringBuilder.AppendLine("block_count=" + list.Count);
@@ -21229,9 +22618,11 @@ public class MyBehavior : CampaignBehaviorBase
 	private string BuildWeeklyBatchPromptInputBlock(WeeklyEventMaterialPreviewGroup group, int weekIndex)
 	{
 		bool flag = string.Equals((group?.GroupKind ?? "").Trim(), "world", StringComparison.OrdinalIgnoreCase);
+		bool flag2 = (group?.OutputMode ?? WeeklyReportOutputMode.FullReport) == WeeklyReportOutputMode.TitleShortTagsOnly;
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.AppendLine(flag ? "[WORLD_BLOCK]" : "[KINGDOM_BLOCK]");
 		stringBuilder.AppendLine("report_id=" + BuildWeeklyReportGroupReportId(group));
+		stringBuilder.AppendLine("mode=" + (flag2 ? "title_short_tags_only" : "full_report"));
 		stringBuilder.AppendLine("kind=" + (flag ? "world" : "kingdom"));
 		if (!flag)
 		{
@@ -21244,11 +22635,20 @@ public class MyBehavior : CampaignBehaviorBase
 			}
 		}
 		stringBuilder.AppendLine("title_hint=" + BuildDefaultWeeklyReportTitle(group, weekIndex));
-		stringBuilder.AppendLine("previous_report=");
-		stringBuilder.AppendLine(GetPreviousWeeklyReportText(group, weekIndex));
+		if (!flag2)
+		{
+			stringBuilder.AppendLine("previous_report=");
+			stringBuilder.AppendLine(GetPreviousWeeklyReportText(group, weekIndex));
+		}
 		stringBuilder.AppendLine("materials=");
-		stringBuilder.AppendLine(BuildWeeklyReportMaterialLines(group));
+		stringBuilder.AppendLine(BuildWeeklyReportPromptMaterialLines(group));
 		return stringBuilder.ToString().TrimEnd();
+	}
+
+	private static string BuildWeeklyReportPromptMaterialLines(WeeklyEventMaterialPreviewGroup group)
+	{
+		List<EventMaterialReference> list = (group?.PromptMaterials != null && group.PromptMaterials.Count > 0) ? group.PromptMaterials : group?.Materials;
+		return BuildWeeklyReportMaterialLines(list);
 	}
 
 	private static string BuildWeeklyBatchPromptPreviewText(WeeklyReportBatchRequest batch, string systemPrompt, string userPrompt)
@@ -21258,7 +22658,9 @@ public class MyBehavior : CampaignBehaviorBase
 		AppendDevNpcActionField(stringBuilder, "批次周数", ((batch != null) ? batch.WeekIndex : 0).ToString());
 		AppendDevNpcActionField(stringBuilder, "取材区间", ((batch != null) ? batch.StartDay : 0) + "-" + ((batch != null) ? batch.EndDay : 0));
 		AppendDevNpcActionField(stringBuilder, "批次块数", list.Count.ToString());
+		AppendDevNpcActionField(stringBuilder, "批次模式", ((batch?.OutputMode ?? WeeklyReportOutputMode.FullReport) == WeeklyReportOutputMode.TitleShortTagsOnly) ? "title_short_tags_only" : "full_report");
 		AppendDevNpcActionField(stringBuilder, "批次对象", string.Join(" | ", list.Select(BuildWeeklyReportGroupReportId).Where((string x) => !string.IsNullOrWhiteSpace(x))));
+		AppendDevNpcActionField(stringBuilder, "输出模式", string.Join(" | ", list.Select((WeeklyEventMaterialPreviewGroup x) => ((x?.OutputMode ?? WeeklyReportOutputMode.FullReport) == WeeklyReportOutputMode.TitleShortTagsOnly) ? "title_short_tags_only" : "full_report")));
 		AppendDevNpcActionField(stringBuilder, "MaxTokens", WeeklyReportRequestMaxTokens.ToString());
 		stringBuilder.AppendLine();
 		stringBuilder.AppendLine("【System Prompt】");
@@ -21328,6 +22730,7 @@ public class MyBehavior : CampaignBehaviorBase
 			return false;
 		}
 		block.ReportId = ExtractWeeklyBatchHeaderValue(text, "report_id");
+		block.Mode = ExtractWeeklyBatchHeaderValue(text, "mode");
 		block.Kind = ExtractWeeklyBatchHeaderValue(text, "kind");
 		block.KingdomId = ExtractWeeklyBatchHeaderValue(text, "kingdom_id");
 		if (string.IsNullOrWhiteSpace(block.ReportId))
@@ -21340,6 +22743,21 @@ public class MyBehavior : CampaignBehaviorBase
 			block.FailureReason = "report_id 未在输入批次中找到：" + block.ReportId;
 			return false;
 		}
+		bool flag = value.OutputMode == WeeklyReportOutputMode.TitleShortTagsOnly;
+		if (!string.IsNullOrWhiteSpace(block.Mode))
+		{
+			string text2 = (block.Mode ?? "").Trim().ToLowerInvariant();
+			if (flag && !string.Equals(text2, "title_short_tags_only", StringComparison.OrdinalIgnoreCase))
+			{
+				block.FailureReason = "mode 与输入批次不一致。";
+				return false;
+			}
+			if (!flag && !string.Equals(text2, "full_report", StringComparison.OrdinalIgnoreCase))
+			{
+				block.FailureReason = "mode 与输入批次不一致。";
+				return false;
+			}
+		}
 		if (string.Equals((block.Kind ?? "").Trim(), "kingdom", StringComparison.OrdinalIgnoreCase))
 		{
 			string text2 = (value.KingdomId ?? "").Trim();
@@ -21350,6 +22768,7 @@ public class MyBehavior : CampaignBehaviorBase
 			}
 		}
 		string text3 = Regex.Replace(text, "^report_id=.*?$", "", RegexOptions.Multiline | RegexOptions.IgnoreCase).Trim();
+		text3 = Regex.Replace(text3, "^mode=.*?$", "", RegexOptions.Multiline | RegexOptions.IgnoreCase).Trim();
 		text3 = Regex.Replace(text3, "^kind=.*?$", "", RegexOptions.Multiline | RegexOptions.IgnoreCase).Trim();
 		text3 = Regex.Replace(text3, "^kingdom_id=.*?$", "", RegexOptions.Multiline | RegexOptions.IgnoreCase).Trim();
 		if (!TryParseWeeklyReportResponse(text3, value, (batch != null) ? batch.WeekIndex : 0, out var title, out var shortSummary, out var report, out var tagText))
@@ -21381,14 +22800,19 @@ public class MyBehavior : CampaignBehaviorBase
 		shortSummary = "";
 		report = "";
 		tagText = "";
+		bool flag = (group?.OutputMode ?? WeeklyReportOutputMode.FullReport) == WeeklyReportOutputMode.TitleShortTagsOnly;
 		string text = (rawResponse ?? "").Replace("\r", "").Trim();
 		if (string.IsNullOrWhiteSpace(text))
 		{
 			return false;
 		}
+		if (flag && text.IndexOf("[REPORT]", StringComparison.OrdinalIgnoreCase) >= 0)
+		{
+			return false;
+		}
 		Match match = Regex.Match(text, "\\[TITLE\\](?<title>[\\s\\S]*?)(?=\\[SHORT\\]|\\[REPORT\\]|\\[TAGS\\]|$)", RegexOptions.IgnoreCase);
-		Match match2 = Regex.Match(text, "\\[SHORT\\](?<short>[\\s\\S]*?)(?=\\[REPORT\\]|\\[TAGS\\]|$)", RegexOptions.IgnoreCase);
-		Match match3 = Regex.Match(text, "\\[REPORT\\](?<report>[\\s\\S]*?)(?=\\[TAGS\\]|$)", RegexOptions.IgnoreCase);
+		Match match2 = flag ? Regex.Match(text, "\\[SHORT\\](?<short>[\\s\\S]*?)(?=\\[TAGS\\]|$)", RegexOptions.IgnoreCase) : Regex.Match(text, "\\[SHORT\\](?<short>[\\s\\S]*?)(?=\\[REPORT\\]|\\[TAGS\\]|$)", RegexOptions.IgnoreCase);
+		Match match3 = flag ? null : Regex.Match(text, "\\[REPORT\\](?<report>[\\s\\S]*?)(?=\\[TAGS\\]|$)", RegexOptions.IgnoreCase);
 		Match match4 = Regex.Match(text, "\\[TAGS\\](?<tags>[\\s\\S]*)$", RegexOptions.IgnoreCase);
 		if (match.Success)
 		{
@@ -21400,25 +22824,68 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		if (match4.Success)
 		{
-			tagText = NormalizeWeeklyReportTagText(match4.Groups["tags"]?.Value ?? "");
+			if (!TryValidateWeeklyReportTagText(match4.Groups["tags"]?.Value ?? "", out tagText, out var _, out _))
+			{
+				return false;
+			}
+		}
+		if (!flag && match3 != null && match3.Success)
+		{
+			report = (match3.Groups["report"]?.Value ?? "").Trim();
+		}
+		if (string.IsNullOrWhiteSpace(title) || string.IsNullOrWhiteSpace(shortSummary) || string.IsNullOrWhiteSpace(tagText))
+		{
+			return false;
+		}
+		if (flag)
+		{
+			report = "";
+		}
+		else if (string.IsNullOrWhiteSpace(report))
+		{
+			return false;
+		}
+		if (string.IsNullOrWhiteSpace(shortSummary))
+		{
+			shortSummary = BuildFallbackWeeklyReportShortSummary(flag ? text : report);
+		}
+		return true;
+	}
+
+	private static bool TryParseWeeklyFullOnDemandReportResponse(string rawResponse, out string title, out string shortSummary, out string report)
+	{
+		title = "";
+		shortSummary = "";
+		report = "";
+		string text = (rawResponse ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return false;
+		}
+		Match match = Regex.Match(text, "\\[TITLE\\](?<title>[\\s\\S]*?)(?=\\[SHORT\\]|\\[REPORT\\]|\\[TAGS\\]|$)", RegexOptions.IgnoreCase);
+		Match match2 = Regex.Match(text, "\\[SHORT\\](?<short>[\\s\\S]*?)(?=\\[REPORT\\]|\\[TAGS\\]|$)", RegexOptions.IgnoreCase);
+		Match match3 = Regex.Match(text, "\\[REPORT\\](?<report>[\\s\\S]*?)(?=\\[TAGS\\]|$)", RegexOptions.IgnoreCase);
+		if (match.Success)
+		{
+			title = (match.Groups["title"]?.Value ?? "").Trim();
+		}
+		if (match2.Success)
+		{
+			shortSummary = BuildFallbackWeeklyReportShortSummary(match2.Groups["short"]?.Value ?? "");
 		}
 		if (match3.Success)
 		{
 			report = (match3.Groups["report"]?.Value ?? "").Trim();
 		}
-		if (string.IsNullOrWhiteSpace(report))
+		if (string.IsNullOrWhiteSpace(title) || string.IsNullOrWhiteSpace(report))
 		{
-			report = text;
+			return false;
 		}
 		if (string.IsNullOrWhiteSpace(shortSummary))
 		{
 			shortSummary = BuildFallbackWeeklyReportShortSummary(report);
 		}
-		if (string.IsNullOrWhiteSpace(title))
-		{
-			title = BuildDefaultWeeklyReportTitle(group, weekIndex);
-		}
-		return !string.IsNullOrWhiteSpace(report);
+		return true;
 	}
 
 	private static string BuildDefaultWeeklyReportTitle(WeeklyEventMaterialPreviewGroup group, int weekIndex)
@@ -21684,7 +23151,7 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		foreach (EventSourceMaterialEntry item in SanitizeEventSourceMaterials(_eventSourceMaterials))
 		{
-			if (item != null && item.IncludeInKingdom && item.Day >= startDay && item.Day <= endDay && string.Equals((item.KingdomId ?? "").Trim(), (kingdom?.StringId ?? "").Trim(), StringComparison.OrdinalIgnoreCase))
+			if (item != null && item.IncludeInKingdom && item.Day >= startDay && item.Day <= endDay && DoesEventSourceMaterialRelateToKingdom(item, kingdom))
 			{
 				TryAddPreviewSourceMaterial(weeklyEventMaterialPreviewGroup.Materials, item);
 			}
@@ -21979,6 +23446,8 @@ public class MyBehavior : CampaignBehaviorBase
 			SnapshotText = (entry.SnapshotText ?? "").Trim(),
 			KingdomId = (entry.KingdomId ?? "").Trim(),
 			SettlementId = (entry.SettlementId ?? "").Trim(),
+			ActorHeroId = (entry.ActorHeroId ?? "").Trim(),
+			ActorKingdomId = (entry.ActorKingdomId ?? "").Trim(),
 			SourceStableKeys = new List<string>(),
 			SourceActionKinds = new List<string>(),
 			SourceMaterialCount = 1,
@@ -22356,7 +23825,7 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private void OpenDevWeeklyBatchPromptDetail(WeeklyReportBatchRequest batch)
 	{
-		string text = BuildWeeklyBatchReportSystemPrompt();
+		string text = BuildWeeklyBatchReportSystemPrompt(batch);
 		string text2 = BuildWeeklyBatchReportUserPrompt(batch);
 		string text3 = BuildWeeklyBatchPromptPreviewText(batch, text, text2);
 		DevWeeklyReportBatchPreviewEntry latestWeeklyReportBatchDevPreview = FindLatestWeeklyReportBatchDevPreview(batch);

@@ -128,11 +128,16 @@
                                                         <AutoHideRichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Center" HorizontalAlignment="Left" Brush="Popup.Title.Text" Brush.FontSize="28" Text="@TitleText" />
                                                       </Children>
                                                     </Widget>
-                                                    <Widget WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="170" VerticalAlignment="Top" HorizontalAlignment="Right" MarginTop="4">
+                                                    <ListPanel WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="170" VerticalAlignment="Top" HorizontalAlignment="Right" MarginTop="4" LayoutImp.LayoutMethod="VerticalTopToBottom">
                                                       <Children>
                                                         <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" Brush="Popup.Description.Text" Brush.FontSize="18" Brush.TextHorizontalAlignment="Right" AlphaFactor="0.7" Text="@DateText" />
+                                                        <ButtonWidget IsVisible="@ShowViewFullReport" DoNotPassEventsToChildren="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="34" MarginTop="12" Brush="Popup.Done.Button" Command.Click="ExecuteViewFullReport" UpdateChildrenStates="true">
+                                                          <Children>
+                                                            <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="18" VerticalAlignment="Center" MarginLeft="10" MarginRight="10" Brush="Popup.Button.Text" Text="查看完整周报" />
+                                                          </Children>
+                                                        </ButtonWidget>
                                                       </Children>
-                                                    </Widget>
+                                                    </ListPanel>
                                                   </Children>
                                                 </Widget>
                                               </Children>

@@ -256,6 +256,8 @@ public class ShoutBehavior : CampaignBehaviorBase
 		public int RequiredConversationEpoch;
 
 		public string AfterSpeechInfoMessage;
+
+		public TaskCompletionSource<bool> CompletionSource;
 	}
 
 	private sealed class SceneSummonPromptTarget
@@ -629,7 +631,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 			}
 			if (!HotkeyInputGuard.IsTextInputFocused() && Input.IsKeyPressed(key))
 			{
-				if (_parent._isProcessingShout)
+				if (_parent._isProcessingShout || _parent._isWaitingForScenePostprocessGate)
 				{
 					InformationManager.DisplayMessage(new InformationMessage("正在处理中...", new Color(1f, 1f, 0f)));
 				}
@@ -662,6 +664,14 @@ public class ShoutBehavior : CampaignBehaviorBase
 	}
 
 	private bool _isProcessingShout = false;
+
+	private readonly object _scenePostprocessGateLock = new object();
+
+	private int _pendingScenePostprocessActionCount = 0;
+
+	private TaskCompletionSource<bool> _scenePostprocessIdleTcs = null;
+
+	private bool _isWaitingForScenePostprocessGate = false;
 
 	private readonly object _historyLock = new object();
 
@@ -11291,16 +11301,105 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		return text10;
 	}
 
-	private void QueueDeferredScenePostprocessActions(NpcDataPacket currentSpeaker, List<NpcDataPacket> allNpcData, Hero speakingHero, CharacterObject npcCharacter, string privateRecentWindowSection, string scenePublicHistorySection, string playerText, string replyText, bool duelRuleInjected, bool rewardRuleInjected, bool loanRuleInjected, bool kingdomServiceRuleInjected, bool lordsHallRuleInjected, bool meetingReleaseRuleInjected, bool vanillaIssueRuleInjected, bool heroJoinPartyRuleInjected, bool sceneMechanismRuleInjected, bool partyTransferRuleInjected, bool settlementTransferRuleInjected, List<RewardSystemBehavior.DuelStakeOption> duelStakeOptions, List<PostprocessRuleEntry> kingdomServiceRules, List<PostprocessRuleEntry> sceneMechanismRules, int conversationEpoch, List<SceneSummonPromptTarget> sceneSummonTargets, List<SceneGuidePromptTarget> sceneGuideTargets)
+	private void RegisterScenePostprocessGateTask(Task task)
+	{
+		if (task == null || task.IsCompleted)
+		{
+			return;
+		}
+		lock (_scenePostprocessGateLock)
+		{
+			if (_pendingScenePostprocessActionCount <= 0 || _scenePostprocessIdleTcs == null || _scenePostprocessIdleTcs.Task.IsCompleted)
+			{
+				_pendingScenePostprocessActionCount = 0;
+				_scenePostprocessIdleTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+			}
+			_pendingScenePostprocessActionCount++;
+		}
+		task.ContinueWith(delegate(Task completedTask)
+		{
+			try
+			{
+				if (completedTask != null && completedTask.IsFaulted)
+				{
+					Logger.Log("ShoutBehavior", "[ERROR] Scene postprocess gate task faulted: " + (completedTask.Exception?.GetBaseException()?.Message ?? "unknown"));
+				}
+			}
+			catch
+			{
+			}
+			TaskCompletionSource<bool> taskCompletionSource = null;
+			lock (_scenePostprocessGateLock)
+			{
+				_pendingScenePostprocessActionCount--;
+				if (_pendingScenePostprocessActionCount <= 0)
+				{
+					_pendingScenePostprocessActionCount = 0;
+					taskCompletionSource = _scenePostprocessIdleTcs;
+					_scenePostprocessIdleTcs = null;
+				}
+			}
+			taskCompletionSource?.TrySetResult(true);
+		}, TaskScheduler.Default);
+	}
+
+	private Task GetScenePostprocessGateTask()
+	{
+		lock (_scenePostprocessGateLock)
+		{
+			if (_pendingScenePostprocessActionCount > 0 && _scenePostprocessIdleTcs != null)
+			{
+				return _scenePostprocessIdleTcs.Task;
+			}
+		}
+		return Task.CompletedTask;
+	}
+
+	private async Task WaitForScenePostprocessGateAsync(string reason)
+	{
+		Task task = GetScenePostprocessGateTask();
+		if (task == null || task.IsCompleted)
+		{
+			return;
+		}
+		bool restoreProcessingFlag = _isProcessingShout;
+		_isWaitingForScenePostprocessGate = true;
+		if (restoreProcessingFlag)
+		{
+			_isProcessingShout = false;
+		}
+		try
+		{
+			Logger.Log("ShoutBehavior", "[ScenePostprocessGate] waiting reason=" + (reason ?? ""));
+			InformationManager.DisplayMessage(new InformationMessage("正在等待上一轮NPC行为处理完成...", new Color(1f, 0.95f, 0.25f)));
+			await task;
+			Logger.Log("ShoutBehavior", "[ScenePostprocessGate] wait_done reason=" + (reason ?? ""));
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("ShoutBehavior", "[ERROR] ScenePostprocessGate wait failed: " + ex.Message);
+		}
+		finally
+		{
+			if (restoreProcessingFlag)
+			{
+				_isProcessingShout = true;
+			}
+			_isWaitingForScenePostprocessGate = false;
+		}
+	}
+
+	private Task QueueDeferredScenePostprocessActions(NpcDataPacket currentSpeaker, List<NpcDataPacket> allNpcData, Hero speakingHero, CharacterObject npcCharacter, string privateRecentWindowSection, string scenePublicHistorySection, string playerText, string replyText, bool duelRuleInjected, bool rewardRuleInjected, bool loanRuleInjected, bool kingdomServiceRuleInjected, bool lordsHallRuleInjected, bool meetingReleaseRuleInjected, bool vanillaIssueRuleInjected, bool heroJoinPartyRuleInjected, bool sceneMechanismRuleInjected, bool partyTransferRuleInjected, bool settlementTransferRuleInjected, List<RewardSystemBehavior.DuelStakeOption> duelStakeOptions, List<PostprocessRuleEntry> kingdomServiceRules, List<PostprocessRuleEntry> sceneMechanismRules, int conversationEpoch, List<SceneSummonPromptTarget> sceneSummonTargets, List<SceneGuidePromptTarget> sceneGuideTargets)
 	{
 		if (currentSpeaker == null || string.IsNullOrWhiteSpace(replyText))
 		{
-			return;
+			return Task.CompletedTask;
 		}
 		if (!duelRuleInjected && !rewardRuleInjected && !loanRuleInjected && !kingdomServiceRuleInjected && !lordsHallRuleInjected && !meetingReleaseRuleInjected && !vanillaIssueRuleInjected && !heroJoinPartyRuleInjected && !sceneMechanismRuleInjected && !partyTransferRuleInjected && !settlementTransferRuleInjected)
 		{
-			return;
+			return Task.CompletedTask;
 		}
+		TaskCompletionSource<bool> postprocessCompletion = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
 		NpcDataPacket speakerSnapshot = CloneNpcDataPacket(currentSpeaker);
 		List<NpcDataPacket> contextSnapshot = CloneNpcDataSnapshot(allNpcData);
 		List<SceneSummonPromptTarget> summonSnapshot = CloneSceneSummonPromptTargets(sceneSummonTargets);
@@ -11348,6 +11447,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			Logger.Log("ShoutBehavior", "[KingdomServicePostprocess] runtime_target hero=" + runtimeTargetHeroId + " character=" + runtimeTargetCharacterId + " troop=" + runtimeTargetTroopId + " kingdom=" + runtimeTargetKingdomId + " agentIndex=" + runtimeTargetAgentIndex);
 			Logger.Log("ShoutBehavior", "[KingdomServicePostprocess] precomputed_rules=" + ((kingdomServiceRules == null || kingdomServiceRules.Count == 0) ? "（无）" : string.Join(",", kingdomServiceRules.Select((PostprocessRuleEntry x) => x?.Tag ?? "").Where((string x) => !string.IsNullOrWhiteSpace(x)))));
 		}
+		Task task = postprocessCompletion.Task;
+		RegisterScenePostprocessGateTask(task);
 		_ = Task.Run(delegate
 		{
 			try
@@ -11363,6 +11464,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				Logger.Log("ShoutBehavior", "[DeferredPostprocess] npc=" + (speakingHero?.StringId ?? currentSpeaker?.Name ?? "unknown") + " raw=" + ((text ?? "").Replace("\r", "\\r").Replace("\n", "\\n")) + " tags=" + ((text2 ?? "").Replace("\r", "\\r").Replace("\n", "\\n")));
 				if (string.IsNullOrWhiteSpace(text2))
 				{
+					postprocessCompletion.TrySetResult(true);
 					return;
 				}
 				string deferredTags = text2;
@@ -11375,19 +11477,28 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 						{
 							if (!TryExecuteDeferredSceneFollowTagsDirectly(speakerSnapshot, text3))
 							{
-								EnqueueSpeechLineWithOptions(speakerSnapshot, text3, contextSnapshot, commitHistory: false, suppressStare: true, allowPlayerDirectedActions: true, requiredConversationEpoch: 0, summonSnapshot, guideSnapshot, null);
+								TaskCompletionSource<bool> speechCompletion = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+								speechCompletion.Task.ContinueWith(delegate
+								{
+									postprocessCompletion.TrySetResult(true);
+								}, TaskScheduler.Default);
+								EnqueueSpeechLineWithOptions(speakerSnapshot, text3, contextSnapshot, commitHistory: false, suppressStare: true, allowPlayerDirectedActions: true, requiredConversationEpoch: 0, summonSnapshot, guideSnapshot, null, speechCompletion);
+								return;
 							}
 						}
+						postprocessCompletion.TrySetResult(true);
 					}
 					catch (Exception ex2)
 					{
 						Logger.Log("ShoutBehavior", "[ERROR] DeferredPostprocess dispatch: " + ex2.Message);
+						postprocessCompletion.TrySetResult(true);
 					}
 				});
 			}
 			catch (Exception ex)
 			{
 				Logger.Log("ShoutBehavior", "[ERROR] QueueDeferredScenePostprocessActions: " + ex.Message);
+				postprocessCompletion.TrySetResult(true);
 			}
 			finally
 			{
@@ -11399,6 +11510,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				AIConfigHandler.SetGuardrailRuntimeTargetAgentIndex(-1);
 			}
 		});
+		return task;
 	}
 
 	private void RecordShoutShownResources()
@@ -11507,6 +11619,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			ResumeGame();
 			return;
 		}
+		await WaitForScenePostprocessGateAsync("before_player_shout_pipeline");
 		try
 		{
 			_lastShoutDuelLiteralHit = ContainsLiteralKeywordHit(shoutText, AIConfigHandler.DuelTriggerKeywords);
@@ -12628,7 +12741,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					EnqueueSpeechLineWithOptions(currentSpeaker, cleaned, allNpcData, commitHistory: false, suppressStare: false, allowPlayerDirectedActions: true, conversationEpoch, sceneSummonTargets, sceneGuideTargets, flag11 ? "正在处理NPC行为............" : null);
 					if (flag11)
 					{
-						QueueDeferredScenePostprocessActions(currentSpeaker, allNpcData, speakingHero, npcCharacter, scenePrivateRecentWindowSection, scenePublicHistorySection, playerText, cleaned, duelRuleInjected, rewardRuleInjected, loanRuleInjected, kingdomServiceRuleInjected, lordsHallRuleInjected, meetingReleaseRuleInjected, vanillaIssueRuleInjected, heroJoinPartyRuleInjected, sceneMechanismRuleInjected, partyTransferRuleInjected, settlementTransferRuleInjected, duelStakeOptions, kingdomServicePostprocessRules, sceneMechanismPostprocessRules, conversationEpoch, sceneSummonTargets, sceneGuideTargets);
+						_ = QueueDeferredScenePostprocessActions(currentSpeaker, allNpcData, speakingHero, npcCharacter, scenePrivateRecentWindowSection, scenePublicHistorySection, playerText, cleaned, duelRuleInjected, rewardRuleInjected, loanRuleInjected, kingdomServiceRuleInjected, lordsHallRuleInjected, meetingReleaseRuleInjected, vanillaIssueRuleInjected, heroJoinPartyRuleInjected, sceneMechanismRuleInjected, partyTransferRuleInjected, settlementTransferRuleInjected, duelStakeOptions, kingdomServicePostprocessRules, sceneMechanismPostprocessRules, conversationEpoch, sceneSummonTargets, sceneGuideTargets);
 					}
 				}
 				else
@@ -12750,15 +12863,17 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		EnqueueSpeechLineWithOptions(npc, content, allNpcData, !skipHistory, suppressStare, allowPlayerDirectedActions: true, requiredConversationEpoch: 0, sceneSummonTargets, sceneGuideTargets, null);
 	}
 
-	private void EnqueueSpeechLineWithOptions(NpcDataPacket npc, string content, List<NpcDataPacket> allNpcData, bool commitHistory, bool suppressStare, bool allowPlayerDirectedActions, int requiredConversationEpoch, List<SceneSummonPromptTarget> sceneSummonTargets = null, List<SceneGuidePromptTarget> sceneGuideTargets = null, string afterSpeechInfoMessage = null)
+	private void EnqueueSpeechLineWithOptions(NpcDataPacket npc, string content, List<NpcDataPacket> allNpcData, bool commitHistory, bool suppressStare, bool allowPlayerDirectedActions, int requiredConversationEpoch, List<SceneSummonPromptTarget> sceneSummonTargets = null, List<SceneGuidePromptTarget> sceneGuideTargets = null, string afterSpeechInfoMessage = null, TaskCompletionSource<bool> completionSource = null)
 	{
 		if (npc == null || string.IsNullOrWhiteSpace(content))
 		{
+			completionSource?.TrySetResult(false);
 			return;
 		}
 		Agent agent = Mission.Current?.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == npc.AgentIndex);
 		if (!CanAgentParticipateInSceneSpeech(agent))
 		{
+			completionSource?.TrySetResult(false);
 			return;
 		}
 		NpcDataPacket value = CloneNpcDataPacket(npc);
@@ -12784,7 +12899,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				SuppressStare = suppressStare,
 				AllowPlayerDirectedActions = allowPlayerDirectedActions,
 				RequiredConversationEpoch = requiredConversationEpoch,
-				AfterSpeechInfoMessage = afterSpeechInfoMessage
+				AfterSpeechInfoMessage = afterSpeechInfoMessage,
+				CompletionSource = completionSource
 			});
 			if (_speechWorkerRunning)
 			{
@@ -12829,6 +12945,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				bool allowPlayerDirectedActions = item.AllowPlayerDirectedActions;
 				int requiredConversationEpoch = item.RequiredConversationEpoch;
 				string afterSpeechInfoMessage = item.AfterSpeechInfoMessage;
+				TaskCompletionSource<bool> completionSource = item.CompletionSource;
 				_mainThreadActions.Enqueue(delegate
 				{
 					try
@@ -13118,6 +13235,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					catch (Exception ex)
 					{
 						Logger.Log("ShoutBehavior", "[ERROR] RunSpeechQueueWorker mainThread: " + ex.Message);
+					}
+					finally
+					{
+						completionSource?.TrySetResult(true);
 					}
 				});
 				await Task.Delay(2000);
@@ -17290,7 +17411,6 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 				list.Add(CreateChatMessage("user", "【" + GetStrictScenePlayerDisplayName() + "对你说】" + text));
 			}
 		}
-		Logger.RecordMessageDump("strict_scene_npc=" + npcAgentIndex, list, "strict_scene");
 		Logger.Log("ShoutStrict", "npc=" + npcAgentIndex + " messages=" + list.Count + " historyCap=" + maxHistoryMessages);
 		return list;
 	}
