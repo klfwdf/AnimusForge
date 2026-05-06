@@ -76,24 +76,14 @@ if "%DRY_RUN%"=="1" (
     git -c core.quotepath=false status --short
     echo.
     echo [Preview] Would run:
-    echo   verify working tree is clean
     echo   git ls-remote --exit-code origin "refs/heads/%BRANCH%"
     echo   git fetch origin "%BRANCH%"
-    echo   if behind only: git merge --ff-only "origin/%BRANCH%"
-    echo   if diverged   : stop for manual rebase/merge
+    echo   if clean and behind only: git merge --ff-only "origin/%BRANCH%"
+    echo   if dirty or diverged    : git rebase --autostash "origin/%BRANCH%"
     echo.
     echo [SUCCESS] Dry-run completed.
     pause
     exit /b 0
-)
-
-if "%HAS_CHANGES%"=="1" (
-    echo [ERROR] Working tree has uncommitted changes. Pull was not started.
-    echo Commit or stash your changes first.
-    echo.
-    git -c core.quotepath=false status --short
-    pause
-    exit /b 1
 )
 
 echo [Preflight] Checking origin/%BRANCH% connectivity...
@@ -123,10 +113,20 @@ echo Local behind: %BEHIND_COUNT%
 echo.
 
 if not "%AHEAD_COUNT%"=="0" if not "%BEHIND_COUNT%"=="0" (
-    echo [ERROR] Local and origin/%BRANCH% have diverged.
-    echo Rebase or merge manually, then retry.
+    echo [INFO] Local and origin/%BRANCH% have diverged. Rebasing local commit^(s^) with autostash...
+    git rebase --autostash "origin/%BRANCH%"
+    if errorlevel 1 (
+        echo [ERROR] git rebase failed. Resolve conflicts, then run:
+        echo   git rebase --continue
+        echo or abort with:
+        echo   git rebase --abort
+        echo After resolving, rerun this script.
+        pause
+        exit /b 1
+    )
+    echo [SUCCESS] Pull/rebase completed.
     pause
-    exit /b 1
+    exit /b 0
 )
 
 if "%BEHIND_COUNT%"=="0" (
@@ -139,12 +139,26 @@ if "%BEHIND_COUNT%"=="0" (
     exit /b 0
 )
 
-echo [2/2] Fast-forwarding local %BRANCH%...
-git merge --ff-only "origin/%BRANCH%"
-if errorlevel 1 (
-    echo [ERROR] Fast-forward pull failed.
-    pause
-    exit /b 1
+if "%HAS_CHANGES%"=="1" (
+    echo [2/2] Rebasing with autostash because working tree has local changes...
+    git rebase --autostash "origin/%BRANCH%"
+    if errorlevel 1 (
+        echo [ERROR] git rebase failed. Resolve conflicts, then run:
+        echo   git rebase --continue
+        echo or abort with:
+        echo   git rebase --abort
+        echo After resolving, rerun this script.
+        pause
+        exit /b 1
+    )
+) else (
+    echo [2/2] Fast-forwarding local %BRANCH%...
+    git merge --ff-only "origin/%BRANCH%"
+    if errorlevel 1 (
+        echo [ERROR] Fast-forward pull failed.
+        pause
+        exit /b 1
+    )
 )
 
 echo [SUCCESS] Pull completed.
