@@ -173,6 +173,14 @@ public class SubModule : MBSubModuleBase
 			{
 				Logger.LogTrace("SubModule", ">>> McmDropdownRuntimeRefresh init failed: " + ex18a.Message);
 			}
+			try
+			{
+				TroopInspectionBehavior.RegisterHarmonyPatches(harmony);
+			}
+			catch (Exception ex18b)
+			{
+				Logger.LogTrace("SubModule", ">>> TroopInspection patches init failed: " + ex18b.Message);
+			}
 			Logger.LogTrace("SubModule", ">>> Harmony patches applied.");
 		}
 		catch (Exception ex18)
