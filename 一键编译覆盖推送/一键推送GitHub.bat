@@ -111,6 +111,7 @@ if "%DRY_RUN%"=="1" (
     echo   git add -A
     echo   if changes exist: git commit -m "%COMMIT_MSG_SAFE%"
     echo   if no changes   : skip commit
+    echo   if origin/%BRANCH% is ahead: git rebase "origin/%BRANCH%"
     echo   git push -u origin "%BRANCH%"
     echo.
     echo [SUCCESS] Dry-run completed.
@@ -134,16 +135,9 @@ if errorlevel 1 (
     exit /b 1
 )
 
-git merge-base --is-ancestor "origin/%BRANCH%" HEAD
-if errorlevel 1 (
-    echo [ERROR] origin/%BRANCH% has commits that are not in local %BRANCH%.
-    echo Pull/rebase first, then retry. No commit was created.
-    pause
-    exit /b 1
-)
 echo.
 
-echo [1/3] Staging changes...
+echo [1/4] Staging changes...
 git rm -r --cached --ignore-unmatch -- "%GIT_EXCLUDE_PATH%" >nul 2>nul
 if errorlevel 1 (
     echo [ERROR] Failed to exclude Git path:
@@ -159,7 +153,7 @@ if errorlevel 1 (
     exit /b 1
 )
 
-echo [2/3] Creating commit...
+echo [2/4] Creating commit...
 git diff --cached --quiet
 if errorlevel 1 (
     git commit -m "%COMMIT_MSG_SAFE%"
@@ -172,6 +166,24 @@ if errorlevel 1 (
     echo [INFO] No file changes detected, skipping commit.
 )
 
+echo [3/4] Syncing with origin/%BRANCH%...
+git merge-base --is-ancestor "origin/%BRANCH%" HEAD
+if errorlevel 1 (
+    echo [INFO] origin/%BRANCH% has new commit^(s^). Rebasing local work...
+    git rebase "origin/%BRANCH%"
+    if errorlevel 1 (
+        echo [ERROR] git rebase failed. Resolve conflicts, then run:
+        echo   git rebase --continue
+        echo or abort with:
+        echo   git rebase --abort
+        echo After resolving, rerun this script.
+        pause
+        exit /b 1
+    )
+) else (
+    echo [INFO] Local branch already contains origin/%BRANCH%.
+)
+
 for /f "delims=" %%A in ('git rev-list --count "origin/%BRANCH%..HEAD"') do set "AHEAD_COUNT=%%A"
 if not defined AHEAD_COUNT set "AHEAD_COUNT=0"
 if "%AHEAD_COUNT%"=="0" (
@@ -180,7 +192,7 @@ if "%AHEAD_COUNT%"=="0" (
     exit /b 0
 )
 
-echo [3/3] Pushing to origin/%BRANCH%...
+echo [4/4] Pushing to origin/%BRANCH%...
 git push -u origin "%BRANCH%"
 if errorlevel 1 (
     echo [ERROR] git push failed.
