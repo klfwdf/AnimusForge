@@ -5968,7 +5968,7 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			return "请遵循以下规则参与互动：\n" + text2;
 		}
-		return text + "\n请遵循以下规则参与互动：\n" + text2;
+		return "请遵循以下规则参与互动：\n" + text2 + "\n" + text;
 	}
 
 	private const string SceneHistorySessionMarkerPrefix = "[AF_SCENE_SESSION:";
@@ -13353,7 +13353,7 @@ public class MyBehavior : CampaignBehaviorBase
 				}
 				foreach (string line in item.Lines)
 				{
-					if (!string.IsNullOrWhiteSpace(line) && !IsActiveSceneSessionHistoryLine(line) && !IsLoreInjectionHistoryLine(line))
+					if (!string.IsNullOrWhiteSpace(line) && !IsActiveSceneSessionHistoryLine(line) && !IsSystemFactLine(line) && !IsLoreInjectionHistoryLine(line))
 					{
 						list2.Add(new HistoryLineEntry
 						{

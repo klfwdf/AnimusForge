@@ -3073,7 +3073,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 		{
 			return "请遵循以下规则参与互动：\n" + text2;
 		}
-		return text + "\n请遵循以下规则参与互动：\n" + text2;
+		return "请遵循以下规则参与互动：\n" + text2 + "\n" + text;
 	}
 
 	private static bool ShouldHideSceneReputationForPrompt(NpcDataPacket npc, Hero hero)
@@ -4703,14 +4703,22 @@ private static void SplitSceneNpcRoleIntroSections(string fullIntro, bool isHero
 
 	private static string StripStageDirectionsForPassiveShout(string text)
 	{
+		if (IsDetailedSceneSpeechPromptEnabled())
+		{
+			return ((text ?? "").Replace("\r", "")).Trim();
+		}
 		string text2 = (text ?? "").Replace("\r", "");
 		if (string.IsNullOrWhiteSpace(text2))
 		{
 			return "";
 		}
-		text2 = Regex.Replace(text2, "\\（[^）\\n]{0,120}\\）", "");
-		text2 = Regex.Replace(text2, "\\([^\\)\\n]{0,120}\\)", "");
-		text2 = Regex.Replace(text2, "\\*[^\\*\\n]{0,120}\\*", "");
+		text2 = Regex.Replace(text2, "\\（.*?\\）", "", RegexOptions.Singleline);
+		text2 = Regex.Replace(text2, "\\(.*?\\)", "", RegexOptions.Singleline);
+		if (!ShouldPreserveSceneAsteriskActions())
+		{
+			text2 = Regex.Replace(text2, "\\*\\*.*?\\*\\*", "", RegexOptions.Singleline);
+			text2 = Regex.Replace(text2, "\\*.*?\\*", "", RegexOptions.Singleline);
+		}
 		text2 = Regex.Replace(text2, "[ \\t]{2,}", " ");
 		text2 = text2.Trim();
 		text2 = text2.TrimStart('，', '。', '、', '；', '：', ',', ';', ':');
@@ -4771,6 +4779,43 @@ private static void SplitSceneNpcRoleIntroSections(string fullIntro, bool isHero
 		text2 = Regex.Replace(text2, "\\[RELAY\\s*:[^\\]\\r\\n]+\\]", "", RegexOptions.IgnoreCase);
 		text2 = Regex.Replace(text2, "[ \\t]{2,}", " ");
 		return text2.Trim(' ', '\t', '\r', '\n', '[', ']', ':');
+	}
+
+	private static string PrepareSceneHistorySpeechText(string text)
+	{
+		string text2 = StripLeakedPromptContentForShout(text);
+		text2 = StripActionTagsForSceneSpeech(text2);
+		text2 = Regex.Replace(text2, "\\[(?:ACTION:)?MOOD:[^\\]\\r\\n]*\\]?", "", RegexOptions.IgnoreCase);
+		text2 = Regex.Replace(text2, "(?:^|\\s)(?:ACTION:)?MOOD:[A-Z_]+\\]?(?=$|\\s)", " ", RegexOptions.IgnoreCase);
+		text2 = Regex.Replace(text2, "\\[(?:NO_CONTINUE|END)\\]", "", RegexOptions.IgnoreCase);
+		text2 = StripAutoGroupRelaySignal(text2);
+		text2 = StripAutoGroupStopSignal(text2);
+		text2 = Regex.Replace(text2, "[ \\t]{2,}", " ");
+		return text2.Trim(' ', '\t', '\r', '\n', '[', ']', ':');
+	}
+
+	private static bool IsDetailedSceneSpeechPromptEnabled()
+	{
+		try
+		{
+			return DuelSettings.GetSettings()?.UseDetailedSceneSpeechPrompt == true;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static bool ShouldPreserveSceneAsteriskActions()
+	{
+		try
+		{
+			return DuelSettings.GetSettings()?.PreserveSceneAsteriskActions == true;
+		}
+		catch
+		{
+			return false;
+		}
 	}
 
 	private static bool ContainsAutoGroupEndSignal(string text)
@@ -5160,18 +5205,65 @@ private static string BuildSceneSingleNpcTaskSystemBlock(string npcName, bool ha
 {
 	StringBuilder stringBuilder = new StringBuilder();
 	stringBuilder.AppendLine(BuildSingleNpcSceneReplyInstruction(npcName, hasMultiplePresentNpcs));
-	stringBuilder.Append(BuildReplyLengthInstruction(maxTokens));
+	stringBuilder.Append(BuildReplyLengthInstruction(minTokens, maxTokens));
 	if (hasMultiplePresentNpcs)
 	{
 		stringBuilder.AppendLine();
-		stringBuilder.Append("(这是一场多人聊天，你可以在你说的话的最末尾（千万不要写在语言文本中间）输出 [RELAY:接力编号]，指定下一个发言的人，尽量让没在【当前场景公共对话与互动】说过话的人发言)");
+		stringBuilder.Append("(这是一场多人聊天，你可以在你实际要说的话的最末尾（千万不要写在语言文本中间）输出 [RELAY:接力编号]，指定下一个发言的人，尽量让没在【当前场景公共对话与互动】说过话的人发言)");
 	}
 	return stringBuilder.ToString().Trim();
 }
 
-private static string BuildReplyLengthInstruction(int maxTokens)
+private static string BuildReplyLengthInstruction(int minTokens, int maxTokens)
 {
-	return $"(回复长度要求：本轮回复最多{Math.Max(1, maxTokens)}字（MCM中的设置），请根据情况适当写出必要的字数)";
+	int num = Math.Max(1, minTokens);
+	int num2 = Math.Max(num, maxTokens);
+	string text = (num == num2) ? $"你实际要说的话，此处约{num2}字。" : $"你实际要说的话，此处不得少于{num}字，最多{num2}字。";
+	if (num == num2)
+	{
+		return "你的回复格式必须严格按照以下执行，其中内心思考要用()括起来，动作要用**括起来：\n（你的内心思考内容,不少于200字）\n*你的动作内容*\n" + text;
+	}
+	return "你的回复格式必须严格按照以下执行，其中内心思考要用()括起来，动作要用**括起来：\n（你的内心思考内容，不少于200字）\n*你的动作内容*\n" + text;
+}
+
+private static bool TryExtractReplyFormatInstruction(ref string prompt, out string instruction)
+{
+	instruction = "";
+	string text = (prompt ?? "").Replace("\r", "");
+	if (string.IsNullOrWhiteSpace(text))
+	{
+		prompt = "";
+		return false;
+	}
+	string[] array = text.Split('\n');
+	for (int i = 0; i <= array.Length - 4; i++)
+	{
+		if (!string.Equals(array[i].Trim(), "你的回复格式必须严格按照以下执行，其中内心思考要用()括起来，动作要用**括起来：", StringComparison.Ordinal))
+		{
+			continue;
+		}
+		if (!array[i + 1].Trim().StartsWith("（你的内心思考内容", StringComparison.Ordinal) || !string.Equals(array[i + 2].Trim(), "*你的动作内容*", StringComparison.Ordinal) || !array[i + 3].Trim().StartsWith("你实际要说的话，此处", StringComparison.Ordinal))
+		{
+			continue;
+		}
+		List<string> list = array.ToList();
+		instruction = string.Join("\n", list.GetRange(i, 4)).Trim();
+		list.RemoveRange(i, 4);
+		prompt = string.Join("\n", list).Trim();
+		return true;
+	}
+	prompt = text.Trim();
+	return false;
+}
+
+private static void GetSceneReplyLengthLimits(DuelSettings settings, out int minTokens, out int maxTokens)
+{
+	minTokens = Math.Max(1, settings?.ShoutMinTokens ?? 1);
+	maxTokens = Math.Max(1, settings?.ShoutMaxTokens ?? minTokens);
+	if (maxTokens < minTokens)
+	{
+		maxTokens = minTokens;
+	}
 }
 
 private static string NormalizeScenePlayerHistoryLine(string text, string targetNpcName = "", bool useNpcNameAddress = false)
@@ -7857,7 +7949,6 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			}
 			string text2 = StripNpcNamePrefixSafely((text ?? "").Replace("\r", "").Trim(), 30);
 			text2 = StripLeakedPromptContentForShout(text2);
-			text2 = StripStageDirectionsForPassiveShout(text2);
 			text2 = StripActionTagsForSceneSpeech(text2);
 			return text2.Trim();
 		}
@@ -7899,12 +7990,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				string passiveKingdomIdOverride = TryGetKingdomIdOverrideFromAgent(passiveAgent);
 				MyBehavior.ShoutPromptContext ctx = MyBehavior.BuildShoutPromptContextForExternal(hero, inputActionText, fullExtra, cultureId, hasAnyHero: data.IsHero, targetCharacter: passiveCharacter, kingdomIdOverride: passiveKingdomIdOverride, targetAgentIndex: data.AgentIndex, usePrefetchedLoreContext: !string.IsNullOrWhiteSpace(loreContext), prefetchedLoreContext: loreContext);
 				DuelSettings settings = DuelSettings.GetSettings();
-				int maxTokens = Math.Max(40, settings.ShoutMaxTokens);
-				int minTokens = maxTokens / 2;
-				if (minTokens < 5)
-				{
-					minTokens = 5;
-				}
+				GetSceneReplyLengthLimits(settings, out var minTokens, out var maxTokens);
 				StringBuilder sysPrompt = new StringBuilder();
 				string npcName = GetSceneNpcHistoryNameForPrompt(data);
 				sysPrompt.AppendLine("【在场人物列表】：");
@@ -9347,7 +9433,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		if (isGive)
 		{
 			string text6 = (num > 0L) ? ("（合计总值约 " + num + " 第纳尔）") : "";
-			return text + "已经将 " + string.Join("、", list) + text6 + " 交给 " + text2 + "。";
+			return text + "已经将 " + string.Join("、", list) + text6 + " 交给 " + text2 + "。如果你正在和"+text+"交易，并核对好了数量和价值，那么你现在可以将商量好的物品，第纳尔或人交给"+text+"";
 		}
 		return text + "给 " + text2 + " 看了看 总值为 " + num + " 第纳尔的各类财物：" + string.Join("、", list) + "，但暂未交付给你，不过证明了他有这些东西，如果你正在和他交易，请问他索要，如果不是交易，就无需索要";
 	}
@@ -9412,9 +9498,9 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 		if (hasMultiplePresentNpcs)
 		{
-			return "请只以" + text + "的身份以口语自然发言，并结合【当前场景公共对话与互动】中其他人刚才说过的话来回应，不要各说各的。只输出你要说的话，不要输出动作描写、心理活动或旁白，尽量口语化，可以有点文艺，也尽量以自己的观点为基础，不要附和别人。";
+			return "请只以" + text + "的身份回复，并结合role=user中其他人刚才说过的话来回应，不要各说各的。说话要像个真人";
 		}
-		return text + "现在正在与" + text2 + "单独交谈。请只以" + text + "的身份以口语自然回应" + text2 + "。只输出你要说的话，不要输出动作描写、心理活动或旁白，尽量口语化，可以有点文艺。";
+		return text + "现在正在与" + text2 + "单独交谈。请只以" + text + "的身份回应" + text2 + "。说话要像个真人";
 	}
 
 	private static bool HasInjectedRuleBlockForPostprocess(string instructions, string ruleId)
@@ -12030,12 +12116,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					}
 					scenePatienceInstruction = MyBehavior.GetScenePatienceInstructionForExternal();
 				}
-				int maxTokens = Math.Max(40, settings.ShoutMaxTokens);
-				int minTokens = maxTokens / 2;
-				if (minTokens < 5)
-				{
-					minTokens = 5;
-				}
+				GetSceneReplyLengthLimits(settings, out var minTokens, out var maxTokens);
 				sysPrompt.AppendLine("【群体对话规则】");
 				string playerNameForPrompt = GetPlayerDisplayNameForShout();
 				if (string.IsNullOrWhiteSpace(playerNameForPrompt))
@@ -12055,7 +12136,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					playerNameForTask = "玩家";
 				}
 				string taskPreamble = "你是【在场人物列表】中的NPC角色,可能是多个人。你们的唯一任务是：根据下方提供的角色信息、场景信息和对话历史，以NPC身份直接回复" + playerNameForTask + "的对话。";
-				string taskLength = BuildReplyLengthInstruction(maxTokens);
+				string taskLength = BuildReplyLengthInstruction(minTokens, maxTokens);
 				string systemRuleBlock = BuildSceneSystemRuleBlock(ruleExtrasSection, sceneMechanismPromptSection);
 				string layeredPrompt = BuildSceneCompositeUserBlock("", roleTopIntro, taskPreamble, taskLength);
 				layeredPrompt = AppendPlayerCustomPromptRuleToSystemPrompt(layeredPrompt);
@@ -12251,9 +12332,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					if (fallbackNpc != null)
 					{
 						c = StripNpcNamePrefixSafely((fullText ?? "").Trim(), 20);
-						c = Regex.Replace(c, "\\（.*?\\）", "");
-						c = Regex.Replace(c, "\\(.*?\\)", "");
-						c = Regex.Replace(c, "\\*.*?\\*", "");
+						if (!IsDetailedSceneSpeechPromptEnabled())
+						{
+							c = StripStageDirectionsForPassiveShout(c);
+						}
 						c = (c ?? "").Trim();
 						if (!string.IsNullOrWhiteSpace(c))
 						{
@@ -12388,8 +12470,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			await EnsurePersonaForCandidatesAsync(speakableCandidates, resolvedHeroes);
 			HoldSceneConversationParticipants(speakableCandidates);
 			DuelSettings settings = DuelSettings.GetSettings();
-			int maxTokens = Math.Max(40, settings.ShoutMaxTokens);
-			int minTokens = Math.Max(5, maxTokens / 2);
+			GetSceneReplyLengthLimits(settings, out var minTokens, out var maxTokens);
 			string lastSpeakerOutputText = "";
 			List<SceneSummonPromptTarget> sceneSummonTargets = BuildSceneSummonPromptTargets(speakableCandidates, resolvedHeroes);
 			int sceneGuideFirstPromptId = ((sceneSummonTargets != null && sceneSummonTargets.Count > 0) ? sceneSummonTargets.Max((SceneSummonPromptTarget x) => x?.PromptId ?? 0) : 0) + 1;
@@ -12540,6 +12621,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				bool sceneMechanismRuleInjected = false;
 				bool partyTransferRuleInjected = false;
 				bool settlementTransferRuleInjected = false;
+				string historyFullText = "";
 				List<RewardSystemBehavior.DuelStakeOption> duelStakeOptions = null;
 				List<PostprocessRuleEntry> kingdomServicePostprocessRules = null;
 				List<PostprocessRuleEntry> sceneMechanismPostprocessRules = null;
@@ -12695,13 +12777,15 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 						});
 						break;
 					}
-					cleaned = StripNpcNamePrefixSafely((output ?? "").Replace("\r", "").Trim(), 30);
-					cleaned = StripLeakedPromptContentForShout(cleaned);
+					historyFullText = StripNpcNamePrefixSafely((output ?? "").Replace("\r", "").Trim(), 30);
+					historyFullText = StripLeakedPromptContentForShout(historyFullText);
+					cleaned = historyFullText;
 					cleaned = StripStageDirectionsForPassiveShout(cleaned);
 				}
 				else
 				{
-					cleaned = await GenerateGroupConversationTurnLineAsync(currentSpeaker, speakableCandidates, resolvedHeroes, precomputedContexts, playerText, extraFact, commonCandidatesList.ToString(), sceneMechanismPromptSectionBase, patienceStatusLines, multiNpcScene, minTokens, maxTokens);
+					historyFullText = await GenerateGroupConversationTurnLineAsync(currentSpeaker, speakableCandidates, resolvedHeroes, precomputedContexts, playerText, extraFact, commonCandidatesList.ToString(), sceneMechanismPromptSectionBase, patienceStatusLines, multiNpcScene, minTokens, maxTokens);
+					cleaned = historyFullText;
 					if (!IsSceneConversationEpochCurrent(conversationEpoch))
 					{
 						return;
@@ -12730,7 +12814,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				if (!string.IsNullOrWhiteSpace(cleaned))
 				{
 					lastSpeakerOutputText = cleaned;
-					string historyText = SanitizeSceneSpeechText(cleaned);
+					string historyText = PrepareSceneHistorySpeechText(string.IsNullOrWhiteSpace(historyFullText) ? cleaned : historyFullText);
 					if (!string.IsNullOrWhiteSpace(historyText))
 					{
 						RecordResponseForAllNearbySafe(allNpcData, currentSpeaker.AgentIndex, currentSpeaker.Name, historyText);
@@ -13100,6 +13184,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 						{
 						}
 						content = StripLeakedPromptContentForShout(content);
+						string historyFullContent = content;
 						content = StripStageDirectionsForPassiveShout(content);
 						if (!allowPlayerDirectedActions)
 						{
@@ -13142,6 +13227,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 									return;
 								}
 								string historyText = SanitizeSceneSpeechText(content);
+								string fullHistoryText = PrepareSceneHistorySpeechText(historyFullContent);
 								RefreshSceneSummonConversationForSpeaker((agent != null) ? agent.Index : matchedNpc.AgentIndex);
 								bool flag4 = IsAgentHostileToMainAgent(agent);
 								SceneSpeechPlaybackInfo sceneSpeechPlaybackInfo = ShowNpcSpeechOutput(matchedNpc, agent, historyText, allowTts: true, attachTtsToSceneAgent: true);
@@ -13190,10 +13276,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 									HoldSceneConversationParticipants(allNpcData);
 									AddAgentToStareList(agent, interruptCurrentUse: false);
 								}
-								if (commitHistory && !string.IsNullOrWhiteSpace(historyText))
+								if (commitHistory && !string.IsNullOrWhiteSpace(fullHistoryText))
 								{
-									RecordResponseForAllNearbySafe(allNpcData, matchedNpc.AgentIndex, matchedNpc.Name, historyText);
-									PersistNpcSpeechToNamedHeroes(matchedNpc.AgentIndex, matchedNpc.Name, historyText, allNpcData);
+									RecordResponseForAllNearbySafe(allNpcData, matchedNpc.AgentIndex, matchedNpc.Name, fullHistoryText);
+									PersistNpcSpeechToNamedHeroes(matchedNpc.AgentIndex, matchedNpc.Name, fullHistoryText, allNpcData);
 								}
 								if (flagSceneTaunt2 && !IsMeetingSceneConversationReleaseSensitive())
 								{
@@ -17243,12 +17329,23 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 	private static string BuildStrictSceneMessagesSystemPrompt(string systemPrompt)
 	{
 		string text = (systemPrompt ?? "").Trim();
-		string value = "【messages说明】在下面的对话消息里，assistant 只代表你自己过去说过的话；user 既可能是玩家直接对你说的话，也可能是你在场时听见的别人发言、系统事实或补充上下文。带有【你听见】、【场景事实】、【当前触发】等前缀的 user 消息只是你当前可见的输入，不代表这些话都是玩家在直接对你发问。";
+		string value = "【messages说明】在下面的对话消息里，assistant 只代表你自己过去说过的话；user 既可能是玩家直接对你说的话，也可能是你在场时听见的别人发言、系统事实或补充上下文。";
+		TryExtractReplyFormatInstruction(ref text, out var instruction);
+		string text2 = string.IsNullOrWhiteSpace(instruction) ? value : (value + "\n" + instruction);
 		if (string.IsNullOrWhiteSpace(text))
 		{
-			return value;
+			return text2;
 		}
-		return text + "\n" + value;
+		string text3 = (DuelSettings.GetSettings()?.PlayerCustomPromptRule ?? "").Replace("\r", "").Trim();
+		if (!string.IsNullOrWhiteSpace(text3))
+		{
+			string text4 = "请遵循以下规则参与互动：\n" + text3;
+			if (text.StartsWith(text4, StringComparison.Ordinal))
+			{
+				return text4 + "\n" + text2 + text.Substring(text4.Length);
+			}
+		}
+		return text2 + "\n" + text;
 	}
 	private List<ConversationMessage> GetNpcConversationHistorySnapshot(int npcAgentIndex)
 	{
@@ -20131,8 +20228,7 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 		allNpcData = list;
 		await EnsurePersonaForCandidatesAsync(new List<NpcDataPacket> { targetNpc }, resolvedHeroes ?? new Dictionary<int, Hero>());
 		DuelSettings settings = DuelSettings.GetSettings();
-		int maxTokens = Math.Max(28, settings.ShoutMaxTokens / 2);
-		int minTokens = Math.Max(10, maxTokens / 2);
+		GetSceneReplyLengthLimits(settings, out var minTokens, out var maxTokens);
 		Agent npcAgent = Mission.Current?.Agents?.FirstOrDefault(a => a != null && a.Index == targetNpc.AgentIndex);
 		if (!CanAgentParticipateInSceneSpeech(npcAgent))
 		{
@@ -20179,7 +20275,7 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 		string roleTopIntro = BuildSceneSystemTopPromptIntroForSingle(targetNpc, contextHero, new List<NpcDataPacket> { targetNpc }, partyTransferTopicSelected: partyTransferTopicSelected);
 		string roleRuntimeContext = BuildCompactSceneUserRuntimeContextForShortReply(targetNpc, contextHero, new List<NpcDataPacket> { targetNpc }, partyTransferTopicSelected: partyTransferTopicSelected);
 		string layeredPrompt = AppendPlayerCustomPromptRuleToSystemPrompt(roleTopIntro);
-		List<object> messages = BuildStrictSceneMessagesForNpc(targetNpc.AgentIndex, layeredPrompt, new string[3] { privateRecentWindowSection, persistedWithoutRecentWindow, BuildSceneCompositeUserBlock("", roleRuntimeContext, text) }, new string[1] { "请只根据你当前可见的场景消息、你自己的身份、处境和性格，回复一段发言，控制在32-64字之间，只输出你嘴里说出的话，不要描述你的行为和思考。" });
+		List<object> messages = BuildStrictSceneMessagesForNpc(targetNpc.AgentIndex, layeredPrompt, new string[3] { privateRecentWindowSection, persistedWithoutRecentWindow, BuildSceneCompositeUserBlock("", roleRuntimeContext, text) }, new string[1] { "请只根据你当前可见的场景消息、你自己的身份、处境和性格，回复一段发言，" + BuildReplyLengthInstruction(minTokens, maxTokens) + "，只输出你嘴里说出的话，不要描述你的行为和思考。" });
 		if (!AIConfigHandler.TryCallAuxiliarySimpleDialogue(messages, maxTokens, 0.35f, out var text2, out var error))
 		{
 			Logger.Log("ShoutBehavior", "[ImmediateSceneReaction] auxiliary_simple_dialogue failed: " + error);
@@ -20193,13 +20289,17 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 		text3 = Regex.Replace(text3, "\\[(?:ACTION:[^\\]]*|ASS:[^\\]]*|GUI:[^\\]]*|FOL|STP)\\]", "", RegexOptions.IgnoreCase).Trim();
 		text3 = StripNpcNamePrefixSafely(text3, 30);
 		text3 = StripLeakedPromptContentForShout(text3);
+		string fullHistoryText = PrepareSceneHistorySpeechText(text3);
 		text3 = StripStageDirectionsForPassiveShout(text3);
 		if (string.IsNullOrWhiteSpace(text3))
 		{
 			return;
 		}
-		RecordResponseForAllNearbySafe(allNpcData, targetNpc.AgentIndex, targetNpc.Name, text3);
-		PersistNpcSpeechToNamedHeroes(targetNpc.AgentIndex, targetNpc.Name, text3, allNpcData);
+		if (!string.IsNullOrWhiteSpace(fullHistoryText))
+		{
+			RecordResponseForAllNearbySafe(allNpcData, targetNpc.AgentIndex, targetNpc.Name, fullHistoryText);
+			PersistNpcSpeechToNamedHeroes(targetNpc.AgentIndex, targetNpc.Name, fullHistoryText, allNpcData);
+		}
 		EnqueueSpeechLine(targetNpc, text3, allNpcData, skipHistory: true, suppressStare: suppressStare);
 	}
 

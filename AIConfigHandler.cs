@@ -2524,10 +2524,16 @@ public static class AIConfigHandler
 			List<int> list2 = ParseAuxiliaryGuardrailTopicNumbers(content);
 			if (list2.Count <= 0)
 			{
-				Logger.Log("GuardrailSemantic", "auxiliary_router failed reason=parse_empty raw=" + JsonConvert.ToString(content ?? ""));
-				LogAuxiliaryRouterTokenTrace("auxiliary_router_parse_empty", BuildAuxiliaryRouterMessages(text2), "[AUXILIARY ROUTER PARSE]" + "\n" + "url=" + apiUrl + "\n" + "model=" + modelName + "\n" + "reason=parse_empty" + "\n" + "ai_response=" + "\n" + (content ?? ""), 0);
-				snapshot = null;
-				return false;
+				foreach (GuardrailRuleEval value in snapshot.Rules.Values)
+				{
+					if (value != null)
+					{
+						value.RejectReason = "auxiliary_api_no_topic";
+					}
+				}
+				Logger.Log("GuardrailSemantic", "auxiliary_router no_topic raw=" + JsonConvert.ToString(content ?? ""));
+				LogAuxiliaryRouterTokenTrace("auxiliary_router_no_topic", BuildAuxiliaryRouterMessages(text2), "[AUXILIARY ROUTER PARSE]" + "\n" + "url=" + apiUrl + "\n" + "model=" + modelName + "\n" + "reason=no_topic" + "\n" + "ai_response=" + "\n" + (content ?? ""), 0);
+				return true;
 			}
 			HashSet<string> hashSet2 = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 			List<string> list3 = new List<string>();
