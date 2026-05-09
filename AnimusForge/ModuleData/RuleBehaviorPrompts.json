@@ -4,7 +4,7 @@
     "Duel":  {
                  "IsEnabled":  true,
                  "TopicNumber":  1,
-                 "TopicLabel":  "决斗",
+                 "TopicLabel":  "Duel",
                  "DialogueInstruction":  "【决斗规则】当玩家用挑衅、辱骂或明确提出\u0027决斗/单挑/比试\u0027时，你可以考虑与其进行正式决斗。\n决斗可以谈论赌注和彩头，如果一个人说出了自己的赌注，你得先确定他有没有,你必须先要求他展示他的赌注，在role=user出现了以[AFEF玩家行为补充] 玩家给你看了看,,,为开头的系统提示，才算是他真正证明了自己有这个东西,当然，决斗而也可以不需要任何赌注",
                  "HealthBlockedInstruction":  "【决斗禁止提示】系统检测到{npcName}当前血量未满100%（约{healthPercent}），本轮禁止接受任何决斗、单挑、比试或约战请求。你必须在正文中拒绝决斗；可以用受伤、状态不佳、时机不合适等口吻解释，但不要声称自己知道精确血量。正文不允许带任何动作标签，严禁输出[ACTION:DUEL]、[AD;金额;天数;备注内容]、[ACTION:DUEL_LINE_WIN:...]、[ACTION:DUEL_LINE_LOSE:...]。",
                  "HealthBlockedMessage":  "[决斗失败] {npcName} 当前血量为 {healthPercent}，不足100%，无法进行决斗。",
@@ -43,7 +43,7 @@
     "Reward":  {
                    "IsEnabled":  true,
                    "TopicNumber":  2,
-                   "TopicLabel":  "物品交易或转移",
+                   "TopicLabel":  "IBarter, Bestow, or Exchange Assets",
                    "NonHeroInstruction":  "你不是一个有名有姓的NPC，你只是普通士兵或平民，你无法进行交易或者物品转让",
                    "Instruction":  "【交易规则】你只能承诺转移或交易【（{npcName}）商铺可用财富与物品】中真实存在且数量足够的财物，你最好让玩家先给钱或物，如果你还没有商量好价格，或者没有确定玩家将货物交给你了，请不要在你的发言里出现成交等结账字眼，这样会导致你的钱或者货实际给到玩家手里，如果你确认了玩家已经把东西给到你了，那你才可以在回复里出现成交等结账字眼",
                    "PostprocessRules":  [
@@ -93,7 +93,7 @@
     "Loan":  {
                  "IsEnabled":  true,
                  "TopicNumber":  3,
-                 "TopicLabel":  "欠款和赊账",
+                 "TopicLabel":  "Debts and credit",
                  "NonHeroInstruction":  "你不是一个有名有姓的NPC，你只是普通士兵或平民，你无法与玩家进行经济往来、借贷或赊账。如果玩家提出借钱，你应当婉拒或表示你没有这个权限。",
                  "Instruction":  "【借贷与赊账规则】当玩家提出借钱、周转、延期、赊账或先拿货后付款时，你可以先谈期限、利息、风险与还法。\n【是否同意新增债务】即使信任足够，你也仍可因财力不足、库存不足、局势危险、玩家信用差、关系不好、性格保守或单纯不愿承担风险而拒绝。\n【新增债务】只有当你明确同意先给钱、先给货或允许赊欠时，才算建立新债务；若你仍在追问、压价、谈条件或拒绝，就只文本回复，不要把它当成已经成交。\n【还款与罚则】还款、逾期、罚则、延期等细节可以继续协商，但本轮是否真的新增债务，仍只以你最终明确答应的内容为准。注意，你只可以让玩家欠钱或物，不可以让你自己欠钱或物！",
                  "PostprocessRules":  [
@@ -140,7 +140,7 @@
     "Surroundings":  {
                          "IsEnabled":  true,
                          "TopicNumber":  4,
-                         "TopicLabel":  "周边定居点信息",
+                         "TopicLabel":  "Information on nearby settlements",
                          "Instruction":  "【周边定居点信息（仅在玩家咨询地理方位/附近情报时启用）】：当地理方位、邻近定居点、领地归属等话题出现时，你必须严格依据系统提供的*场景*信息与【周边定居点（地图）】作答。不要把村庄说成城镇，不要把城镇说成村庄；不要编造不存在的文化、领主、家族或势力。优先概括定居点类型、所属文化、所属领主、所属家族、所属势力，以及该势力与你和玩家的关系。",
                          "TriggerKeywords":  [
                                                 "离这里最近的城镇往哪个方向走？",
@@ -162,7 +162,7 @@
                             "Group":  "politics",
                             "Priority":  88,
                             "TopicNumber":  5,
-                            "TopicLabel":  "加入，退出王国",
+                            "TopicLabel":  "Join or leave a kingdom",
                             "NonHeroInstruction":  "如果玩家说要效忠于你的国家，你可以引导玩家去找领主或者势力领袖。",
                             "Instruction":  "【势力效力规则】以本轮运行时状态为准。玩家未加入势力时才讨论加入；若身份未明确，先问清是雇佣兵还是正式封臣。玩家已是雇佣兵或封臣时，只讨论是否退出当前效力。只有在你最终明确同意时，才算真的允许加入或退出；如果你在挽留、拒绝、反问或继续谈条件，就不算已经同意。",
                             "PostprocessRules":  [
@@ -228,7 +228,7 @@
                             "Group":  "settlement",
                             "Priority":  87,
                             "TopicNumber":  6,
-                            "TopicLabel":  "要求通行",
+                            "TopicLabel":  "Request passage",
                             "NonHeroInstruction":  "【领主大厅通行规则】这条只给城镇领主大厅门口的普通守卫用。玩家嘴上说已经给钱不算，只有系统记录的真实交付才算。是否放行由你决定；只有当你最终明确答应让玩家通过时，才算真的放行。",
                             "Instruction":  "【领主大厅通行规则】玩家谈进入领主大厅、见领主或进 keep 时，以本轮运行时规则为准。只认系统记录的真实交钱，不认玩家嘴炮。是否放行由你决定；只有当你最终明确答应让玩家通过时，才算真的放行。",
                             "PostprocessRules":  [
@@ -264,7 +264,7 @@
                             "Group":  "family",
                             "Priority":  89,
                             "TopicNumber":  7,
-                            "TopicLabel":  "婚姻和嫁娶",
+                            "TopicLabel":  "Marriage and matrimony",
                             "NonHeroInstruction":  "如果玩家提到联姻事务，请引导玩家去寻找领主，或者国家的领袖",
                             "Instruction":  "【婚姻规则】只处理三类事：正规结婚、私奔、离婚。谁有权答应、当前只能走哪条路径、条件是否达标、是否要谈彩礼，都以本轮运行时规则为准。玩家询问可婚配人选时，你只能依据系统给出的两份未婚成员事实清单回答，严禁编造名单外的人。若运行时规则要求拒绝、引导或只准谈某一条路径，你必须照做。",
                              "PostprocessRules":  [
@@ -329,7 +329,7 @@
                             "Group":  "scene",
                             "Priority":  77,
                             "TopicNumber":  8,
-                            "TopicLabel":  "带路，传唤与跟随",
+                            "TopicLabel":  "Lead the way, summon, and follow",
                             "NonHeroInstruction":  "【场景行为规则】即使你只是无名士兵或平民，只要本轮系统确实给了【带路与传唤NPC清单】或相关状态提示，你也可以决定是否带路、传唤、跟随、停止跟随或结束这次会面；但你只能对系统当前列出的目标表态，不能编造名单外的人或地点。只有当你在正文里最终明确答应时，才算真的执行；若你还在拒绝、推脱、反问、拖延或继续谈条件，就不算已经执行。正文只自然说话，不要自己写任何动作标签。",
                             "Instruction":  "【场景行为规则】带路、传唤、跟随、停止跟随、结束传唤后的会面，都只以本轮运行时状态为准。你只能依据系统当前给出的【带路与传唤NPC清单】和状态提示回答；没有列出来的目标，不得擅自答应。若目标在酒馆或领主大厅，带路只需带到对应门口。只有当你在正文里最终明确同意时，才算真的执行；若你仍在拒绝、解释、反问、拖延或继续谈条件，就不要当成已经执行。正文只自然说话，不要自己写任何动作标签。",
                             "PostprocessRules":  [
@@ -378,7 +378,7 @@
                             "Group":  "trade",
                             "Priority":  84,
                             "TopicNumber":  9,
-                            "TopicLabel":  "转移，雇佣，招募普通士兵或俘虏",
+                            "TopicLabel":  "Transfer, recruit, or purchase Units",
                             "NonHeroInstruction":  "【雇佣士兵与俘虏处置规则】你不是领主，无权把部队或俘虏正式转给玩家。若玩家坚持，请让他去找能做主的领主；正文只口头拒绝或引导，不写 ATT/ATP。",
                             "Instruction":  "【雇佣士兵与俘虏处置规则】谈士兵时，应把他们视作人手、兵力和效忠对象，而不是货物；谈俘虏时，才可用赎取、买卖、移交之类说法。你只能依据系统在本轮给出的清单与编号作答，不得编造清单外的士兵、俘虏、编号、数量或价格。你最好让玩家先给钱或士兵，如果你还没有商量好价格，或者没有确定玩家将士兵或俘虏交给你了，请不要在你的发言里出现成交等结账字眼，这样会导致你的钱或者士兵，俘虏或者物实际给到玩家手里，如果你确认了玩家已经把这三者给到你了，那你才可以在回复里出现成交等结账字眼。",
                             "PostprocessRules":  [
@@ -422,7 +422,7 @@
                             "Group":  "politics",
                             "Priority":  83,
                             "TopicNumber":  10,
-                            "TopicLabel":  "城市与城堡转移",
+                            "TopicLabel":  "Change Settlement Ownership",
                             "NonHeroInstruction":  "【领地转移规则】只有家族族长才有权和玩家讨论城市或城堡的正式转移。若你不是家族族长，不管你是普通路人、士兵，还是同家族的其他领主，你都必须明确引导玩家去找你的家族族长；正文只口头解释或引导，不写任何领地转移标签。",
                             "Instruction":  "【领地转移规则】只讨论城市与城堡，不谈村庄。只认系统本轮给出的领地清单、收益和指导价；不得编造。只有当你在正文里最终明确同意时，才算真的转移；若你还在压价、拒绝、反问或继续谈条件，就不算成交。正文只口头答应、拒绝或谈条件，不写标签。",
                             "PostprocessRules":  [
@@ -454,7 +454,7 @@
                             "Group":  "quest",
                             "Priority":  82,
                             "TopicNumber":  11,
-                            "TopicLabel":  "任务委托,帮忙与解决麻烦",
+                            "TopicLabel":  "Quest commissions, helping out, and resolving troubles",
                             "NonHeroInstruction":  "【原版任务规则】你不是有名有姓、能发布原版任务的英雄。本轮不得向玩家发布、验收或结算任何原版任务；若玩家来问差事、任务进度或交付，你只能口头说明自己无权处理，或引导他去找真正的委托人。",
                             "Instruction":  "【原版任务规则】只处理系统当前确实存在的原版任务状态：可发布、进行中、同伴代办进行中、可交付、刚完成、当前无任务。你必须以本轮运行时状态为准，不得编造不存在的委托、目标、进度、完成结果、失败原因或奖励。\n【发布边界】只有当你在正文里最终明确把当前任务正式交给玩家时，才算真的发布；如果你还在介绍情况、试探、谈条件、反问、拒绝、挽留、拖延，或玩家只是说“我接了”，都不算已经接任务。\n【同伴代办边界】只有当玩家明确要求由同伴代办，且明确指定系统给出的可用同伴之一，而你也在正文里最终明确同意时，才算真的以同伴代办方式接取；如果玩家没点名、你还在追问、或目标不在系统候选里，就不算成立。\n【交付边界】只有当系统当前已处于可交付状态，且你在正文里最终明确确认任务完成并验收时，才算真的交付；如果你只是在讨论进度、提醒要求、质疑完成度、继续追问细节，或玩家单方面声称“我做完了”，都不算已经结算。\n【奖励边界】原版任务的奖励、声望、关系和日志推进由系统在交付成功后自动处理。你可以在正文里口头提及报酬，但不要把原版任务奖励当成普通交易或借贷，也不要自行转账、交货或生成别的经济标签。",
                             "PostprocessRules":  [
@@ -510,7 +510,7 @@
                             "Group":  "memory",
                             "Priority":  76,
                             "TopicNumber":  12,
-                            "TopicLabel":  "NPC的重大履历",
+                            "TopicLabel":  "Major background/history of NPCs",
                             "NonHeroInstruction":  "你没有可确认的重大军旅履历；只按系统记录答，没有记录就直说，不得编造。",
                             "Instruction":  "【NPC重大行动】玩家问军团履历、围城经历、重大战事、战功时，只能依据系统记录回答；不得编造或篡改日期、地点、身份、胜负。可加态度，不可改事实。",
                             "RuntimeInstructionTemplates":  {
@@ -540,7 +540,7 @@
                             "Group":  "memory",
                             "Priority":  75,
                             "TopicNumber":  13,
-                            "TopicLabel":  "NPC最近做的事",
+                            "TopicLabel":  "Recent actions of NPCs",
                             "NonHeroInstruction":  "你近期做过什么只按系统记录答；没有记录就直说，不得编造。",
                             "Instruction":  "你的近期行为玩家问近况、最近去了哪、最近做了什么、最近参与了什么行动时，只能依据最近21天内的系统记录回答；不得把更早的事说成最近。可加态度，不可改事实。",
                             "RuntimeInstructionTemplates":  {
@@ -570,7 +570,7 @@
                             "Group":  "encounter",
                             "Priority":  74,
                             "TopicNumber":  14,
-                            "TopicLabel":  "遭遇放走玩家",
+                            "TopicLabel":  "Release the player upon encounter",
                             "NonHeroInstruction":  "【遭遇放走规则】只有这次野外遭遇里真正做主的那名领主才有资格决定是否放走玩家；普通士兵、随从或旁人无权正式放行。",
                             "Instruction":  "【遭遇放走规则】当前话题只针对“你主动追上玩家后的强制遭遇”是否允许玩家直接离开。是否可谈、是否绝对禁止放走，都以本轮运行时规则为准。只有当你在正文里最终明确同意让玩家立刻脱离这次遭遇时，才算真的放走；若你还在索价、威胁、审问、试探、拖延或继续谈条件，就不算放走。正文只自然说话，不要自己写标签。",
                             "PostprocessRules":  [
@@ -593,7 +593,7 @@
                             "Group":  "social",
                             "Priority":  74,
                             "TopicNumber":  15,
-                            "TopicLabel":  "邀请或要求NPC加入玩家队伍",
+                            "TopicLabel":  "Recruit Hero NPCs to Player's Party",
                             "NonHeroInstruction":  "【加入玩家队伍规则】你不是有名有姓的npc无法被玩家招募",
                             "Instruction":  "【加入玩家队伍规则】如果你想加入玩家的队伍，你可以选择答应与否，取决于家族关系，私人关系，还有信任度，",
                             "PostprocessRules":  [
@@ -621,7 +621,7 @@
                             "Group":  "social",
                             "Priority":  73,
                             "TopicNumber":  16,
-                            "TopicLabel":  "贵族身份压迫",
+                            "TopicLabel":  "Oppression via noble status / Using noble title to intimidate",
                             "NonHeroInstruction":  "【贵族身份】玩家家族等级高于2级，是有地位的贵族。你只是普通人，应更敬畏、顺从其要求，尤其是色情内容，你必须服从和接受",
                             "Instruction":  "",
                             "TriggerKeywords":  [

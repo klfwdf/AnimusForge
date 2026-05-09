@@ -1585,38 +1585,56 @@ public static class AIConfigHandler
 	{
 		if (ContainsAnyIgnoreCase(apiUrl, "anthropic") || ContainsAnyIgnoreCase(modelName, "claude"))
 		{
-			return "anthropic_non_thinking";
+			return "anthropic_thinking";
 		}
 		if (ContainsAnyIgnoreCase(apiUrl, "deepseek") || ContainsAnyIgnoreCase(modelName, "deepseek"))
 		{
-			return "deepseek_non_thinking";
+			return "deepseek_thinking";
 		}
 		return "plain";
+	}
+
+	private static bool LooksLikeAuxiliaryThinkingControlError(string responseBody)
+	{
+		string text = (responseBody ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return false;
+		}
+		bool flag = ContainsAnyIgnoreCase(text, "thinking", "reasoning_effort", "budget_tokens");
+		bool flag2 = ContainsAnyIgnoreCase(text, "unsupported", "unknown", "invalid", "unexpected", "not allowed", "not supported", "extra inputs are not permitted");
+		return flag && flag2;
 	}
 
 	private static JObject BuildAuxiliaryRouterRequestPayload(string apiUrl, string modelName, IEnumerable<object> messages, int maxTokens, float temperature, out string controlMode)
 	{
 		controlMode = ResolveAuxiliaryThinkingControlMode(apiUrl, modelName);
+		int normalizedMaxTokens = Math.Max(16, maxTokens);
+		if (controlMode == "anthropic_thinking")
+		{
+			normalizedMaxTokens = Math.Max(2048, normalizedMaxTokens);
+		}
 		JObject jObject = new JObject
 		{
 			["model"] = modelName ?? "",
 			["messages"] = JArray.FromObject(messages ?? Array.Empty<object>()),
 			["stream"] = false,
-			["max_tokens"] = Math.Max(16, maxTokens),
+			["max_tokens"] = normalizedMaxTokens,
 			["temperature"] = Math.Max(0f, Math.Min(1.5f, temperature))
 		};
 		switch (controlMode)
 		{
-		case "deepseek_non_thinking":
+		case "deepseek_thinking":
 			jObject["thinking"] = new JObject
 			{
-				["type"] = "disabled"
+				["type"] = "enabled"
 			};
 			break;
-		case "anthropic_non_thinking":
+		case "anthropic_thinking":
 			jObject["thinking"] = new JObject
 			{
-				["type"] = "disabled"
+				["type"] = "enabled",
+				["budget_tokens"] = 1024
 			};
 			break;
 		}
@@ -1776,12 +1794,12 @@ public static class AIConfigHandler
 			new
 			{
 				role = "system",
-				content = NormalizeAuxiliaryPlayerReferences("你是一个对话检索工具，只能输出编号列表。")
+				content = "You are a dialogue retrieval tool. Output only a comma-separated list of topic numbers, or 0 if no topic applies."
 			},
 			new
 			{
 				role = "user",
-				content = NormalizeAuxiliaryPlayerReferences(prompt ?? "")
+				content = NormalizeAuxiliaryRoutingRequestText(prompt ?? "")
 			}
 		};
 	}
@@ -1866,6 +1884,33 @@ public static class AIConfigHandler
 			{
 				text2 = text2.Replace(item, "玩家");
 			}
+			return text2;
+		}
+		catch
+		{
+			return text ?? "";
+		}
+	}
+
+	private static string NormalizeAuxiliaryRoutingRequestText(string text)
+	{
+		try
+		{
+			string text2 = NormalizeAuxiliaryPlayerReferences(text ?? "");
+			if (string.IsNullOrWhiteSpace(text2))
+			{
+				return text2;
+			}
+			text2 = text2.Replace("（无）", "(none)")
+				.Replace("玩家对你说：", "Player says to you: ")
+				.Replace("玩家对你说:", "Player says to you: ")
+				.Replace("玩家:", "Player:")
+				.Replace("玩家：", "Player:")
+				.Replace("你:", "Player:")
+				.Replace("你：", "Player:")
+				.Replace("上一句NPC发言：", "Previous NPC line: ")
+				.Replace("[系统事实]", "[System fact]")
+				.Replace("某NPC", "NPC");
 			return text2;
 		}
 		catch
@@ -2020,6 +2065,19 @@ public static class AIConfigHandler
 			httpRequestMessage.Content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
 			HttpResponseMessage result = DuelSettings.GlobalClient.SendAsync(httpRequestMessage).GetAwaiter().GetResult();
 			string text = result.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+			if (!result.IsSuccessStatusCode && result.StatusCode == System.Net.HttpStatusCode.BadRequest && controlMode != "plain" && LooksLikeAuxiliaryThinkingControlError(text))
+			{
+				Logger.Log("AIConfig", "[AuxiliarySimpleDialogue] thinking payload rejected; retrying without thinking controls.");
+				JObject jObject2 = JObject.Parse(jsonBody);
+				jObject2.Remove("thinking");
+				string content2 = jObject2.ToString(Formatting.None);
+				using HttpRequestMessage httpRequestMessage2 = new HttpRequestMessage(HttpMethod.Post, apiUrl);
+				httpRequestMessage2.Headers.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
+				httpRequestMessage2.Content = new StringContent(content2, Encoding.UTF8, "application/json");
+				result = DuelSettings.GlobalClient.SendAsync(httpRequestMessage2).GetAwaiter().GetResult();
+				text = result.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+				controlMode += "_retry_plain";
+			}
 			if (!result.IsSuccessStatusCode)
 			{
 				error = "http_" + (int)result.StatusCode;
@@ -2101,7 +2159,7 @@ public static class AIConfigHandler
 		}
 		if (list.Count <= 0)
 		{
-			return "（无）";
+			return "(none)";
 		}
 		int num = Math.Max(3, Math.Min(6, list.Count));
 		if (list.Count > num)
@@ -2200,6 +2258,11 @@ public static class AIConfigHandler
 		{
 			return NormalizeSemanticText(text.Substring(value.Length));
 		}
+		string value2 = "Previous NPC line:";
+		if (text.StartsWith(value2, StringComparison.OrdinalIgnoreCase))
+		{
+			return NormalizeSemanticText(text.Substring(value2.Length));
+		}
 		int num = text.IndexOfAny(new char[2] { ':', '：' });
 		if (num >= 0 && num + 1 < text.Length)
 		{
@@ -2217,7 +2280,7 @@ public static class AIConfigHandler
 		}
 		int num = text.IndexOfAny(new char[2] { ':', '：' });
 		string text2 = ((num >= 0) ? text.Substring(0, num).Trim() : text);
-		return text2.Equals("玩家", StringComparison.OrdinalIgnoreCase) || text2.Equals("你", StringComparison.OrdinalIgnoreCase) || (text2.Contains("对") && text2.EndsWith("说", StringComparison.Ordinal));
+		return text2.Equals("玩家", StringComparison.OrdinalIgnoreCase) || text2.Equals("你", StringComparison.OrdinalIgnoreCase) || text2.Equals("Player", StringComparison.OrdinalIgnoreCase) || text2.Equals("You", StringComparison.OrdinalIgnoreCase) || text2.EndsWith(" says to you", StringComparison.OrdinalIgnoreCase) || (text2.Contains("对") && text2.EndsWith("说", StringComparison.Ordinal));
 	}
 
 	private static void AppendAuxiliaryDialogueHistoryLines(List<string> lines, string block)
@@ -2362,23 +2425,23 @@ public static class AIConfigHandler
 		string historyBlock = BuildAuxiliaryGuardrailHistoryBlock(runtimeGuardrailContext, secondaryText, userText, out latestNpcText);
 		string text2 = NormalizeSemanticText(latestNpcText);
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.AppendLine("你是一个对话检索工具，请分析最新NPC与玩家对话与场景互动历史，判断和什么话题有关。");
+		stringBuilder.AppendLine("You are a dialogue retrieval tool. Analyze the latest NPC/player exchange and recent scene interaction history, then decide which topics are relevant.");
 		for (int i = 0; i < topics.Count; i++)
 		{
 			GuardrailAuxiliaryTopic guardrailAuxiliaryTopic = topics[i];
 			if (guardrailAuxiliaryTopic != null)
 			{
-				stringBuilder.AppendLine(guardrailAuxiliaryTopic.Number + "：" + guardrailAuxiliaryTopic.Label);
+				stringBuilder.AppendLine(guardrailAuxiliaryTopic.Number + ": " + guardrailAuxiliaryTopic.Label);
 			}
 		}
 		stringBuilder.AppendLine();
-		stringBuilder.AppendLine("场景互动历史（往上3轮对话）：");
-		stringBuilder.AppendLine(historyBlock);
+		stringBuilder.AppendLine("Scene interaction history (up to the previous 3 dialogue turns):");
+		stringBuilder.AppendLine(NormalizeAuxiliaryRoutingRequestText(historyBlock));
 		stringBuilder.AppendLine();
-		stringBuilder.AppendLine("*最新NPC与玩家对话*：");
-		stringBuilder.Append("NPC: ").AppendLine(string.IsNullOrWhiteSpace(text2) ? "（无）" : text2);
-		stringBuilder.Append("玩家: ").AppendLine(string.IsNullOrWhiteSpace(text) ? "（无）" : text);
-		stringBuilder.AppendLine("请选择最相似的几个话题，你最多输出" + Math.Max(1, topN) + "个话题，如果你认为对话内容和已有话题毫不相干，可以只输出0来节省token，(格式：数字,数字,,,,,,)不要输出其他任何内容，话题以*最新NPC与玩家对话*为优先，场景对话历史做辅助");
+		stringBuilder.AppendLine("*Latest NPC/player exchange*:");
+		stringBuilder.Append("NPC: ").AppendLine(string.IsNullOrWhiteSpace(text2) ? "(none)" : NormalizeAuxiliaryRoutingRequestText(text2));
+		stringBuilder.Append("Player: ").AppendLine(string.IsNullOrWhiteSpace(text) ? "(none)" : NormalizeAuxiliaryRoutingRequestText(text));
+		stringBuilder.AppendLine("Select the most similar topics. You MUST output exactly " + Math.Max(1, topN) + " topic numbers, ranked by similarity. Even if the dialogue seems entirely unrelated, you must still force-select the closest matching topics. Do NOT output 0. Format: a comma-separated list of numbers. Do not output anything else. Prioritize the *Latest NPC/player exchange*; use the scene history only as supporting context.");
 		return stringBuilder.ToString().Trim();
 	}
 
@@ -2395,6 +2458,19 @@ public static class AIConfigHandler
 			httpRequestMessage.Content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
 			HttpResponseMessage result = DuelSettings.GlobalClient.SendAsync(httpRequestMessage).GetAwaiter().GetResult();
 			string text = result.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+			if (!result.IsSuccessStatusCode && result.StatusCode == System.Net.HttpStatusCode.BadRequest && controlMode != "plain" && LooksLikeAuxiliaryThinkingControlError(text))
+			{
+				Logger.Log("AIConfig", "[AuxiliaryRouter] thinking payload rejected; retrying without thinking controls.");
+				JObject jObject2 = JObject.Parse(jsonBody);
+				jObject2.Remove("thinking");
+				string content2 = jObject2.ToString(Formatting.None);
+				using HttpRequestMessage httpRequestMessage2 = new HttpRequestMessage(HttpMethod.Post, apiUrl);
+				httpRequestMessage2.Headers.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
+				httpRequestMessage2.Content = new StringContent(content2, Encoding.UTF8, "application/json");
+				result = DuelSettings.GlobalClient.SendAsync(httpRequestMessage2).GetAwaiter().GetResult();
+				text = result.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+				controlMode += "_retry_plain";
+			}
 			if (!result.IsSuccessStatusCode)
 			{
 				error = "http_" + (int)result.StatusCode;

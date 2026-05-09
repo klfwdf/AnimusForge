@@ -4440,7 +4440,7 @@ private static void SplitSceneNpcRoleIntroSections(string fullIntro, bool isHero
 		{
 			return false;
 		}
-		if (text2.Length > 300)
+		if (!text.Equals("assistant", StringComparison.OrdinalIgnoreCase) && text2.Length > 300)
 		{
 			text2 = text2.Substring(0, 300) + "…";
 		}
@@ -10013,7 +10013,35 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		return int.MaxValue;
 	}
 
-	private static void AppendCompactPartyTransferPostprocessSectionForScene(StringBuilder sb, string header, IEnumerable<MyBehavior.PartyTransferPromptEntry> entries)
+	private static int GetScenePartyTransferTroopTier(MyBehavior.PartyTransferPromptEntry entry)
+	{
+		return Math.Max(0, entry?.Character?.Tier ?? 0);
+	}
+
+	private static string BuildCompactPartyTransferEntryTextForScene(MyBehavior.PartyTransferPromptEntry entry, bool isPrisoner)
+	{
+		if (entry == null)
+		{
+			return "";
+		}
+		string text = (entry.DisplayName ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return "";
+		}
+		int num = Math.Max(0, entry.Count);
+		if (num <= 0)
+		{
+			return "";
+		}
+		if (isPrisoner && entry.IsHero)
+		{
+			return text + "x1";
+		}
+		return text + "x" + num;
+	}
+
+	private static void AppendCompactPartyTransferPostprocessSectionForScene(StringBuilder sb, string header, IEnumerable<MyBehavior.PartyTransferPromptEntry> entries, bool isPrisoner)
 	{
 		if (sb == null)
 		{
@@ -10026,14 +10054,54 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			sb.AppendLine("（无）");
 			return;
 		}
-		sb.AppendLine(string.Join("、", list.Select((MyBehavior.PartyTransferPromptEntry x) => (x.DisplayName ?? "").Trim()).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase)));
+		if (isPrisoner)
+		{
+			foreach (IGrouping<string, MyBehavior.PartyTransferPromptEntry> item in
+				from x in list
+				let groupName = x.IsHero ? "贵族/英雄俘虏" : ("T" + GetScenePartyTransferTroopTier(x) + " " + MyBehavior.GetPartyTransferTroopTypeLabelForExternal(x.Character))
+				group x by groupName into g
+				orderby g.Any((MyBehavior.PartyTransferPromptEntry x) => x.IsHero) descending, g.Max(GetScenePartyTransferTroopTier) descending, g.Key
+				select g)
+			{
+				string text = string.Join("、",
+					from x in item
+					orderby x.DisplayName
+					select BuildCompactPartyTransferEntryTextForScene(x, isPrisoner: true) into x
+					where !string.IsNullOrWhiteSpace(x)
+					select x);
+				if (!string.IsNullOrWhiteSpace(text))
+				{
+					sb.AppendLine(item.Key + "：" + text);
+				}
+			}
+			return;
+		}
+		foreach (IGrouping<string, MyBehavior.PartyTransferPromptEntry> item2 in
+			from x in list
+			let tier = GetScenePartyTransferTroopTier(x)
+			let type = MyBehavior.GetPartyTransferTroopTypeLabelForExternal(x.Character)
+			group x by "T" + tier + " " + type into g
+			orderby g.Max(GetScenePartyTransferTroopTier) descending, g.Key
+			select g)
+		{
+			string text2 = string.Join("、",
+				from x in item2
+				orderby x.DisplayName
+				select BuildCompactPartyTransferEntryTextForScene(x, isPrisoner: false) into x
+				where !string.IsNullOrWhiteSpace(x)
+				select x);
+			if (!string.IsNullOrWhiteSpace(text2))
+			{
+				sb.AppendLine(item2.Key + "：" + text2);
+			}
+		}
 	}
 
 	private static string BuildPartyTransferNpcPostprocessListForScene(List<MyBehavior.PartyTransferPromptEntry> troopOptions, List<MyBehavior.PartyTransferPromptEntry> prisonerOptions, int recruitMaxTier)
 	{
 		StringBuilder stringBuilder = new StringBuilder();
-		AppendCompactPartyTransferPostprocessSectionForScene(stringBuilder, "【你当前可转移部队】：", troopOptions);
-		AppendCompactPartyTransferPostprocessSectionForScene(stringBuilder, "【你当前可转移俘虏】：", prisonerOptions);
+		AppendCompactPartyTransferPostprocessSectionForScene(stringBuilder, "【你当前可转移部队】：", troopOptions, isPrisoner: false);
+		AppendCompactPartyTransferPostprocessSectionForScene(stringBuilder, "【你当前可转移俘虏】：", prisonerOptions, isPrisoner: true);
 		return stringBuilder.ToString().TrimEnd();
 	}
 
@@ -17431,7 +17499,7 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 		{
 			return false;
 		}
-		if (text2.Length > 320)
+		if (!text.Equals("assistant", StringComparison.OrdinalIgnoreCase) && text2.Length > 320)
 		{
 			text2 = text2.Substring(0, 320) + "…";
 		}
