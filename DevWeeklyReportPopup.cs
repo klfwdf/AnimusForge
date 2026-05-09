@@ -1,5 +1,6 @@
 using System;
 using TaleWorlds.Engine.GauntletUI;
+using TaleWorlds.Core;
 using TaleWorlds.InputSystem;
 using TaleWorlds.Library;
 using TaleWorlds.ScreenSystem;
@@ -19,6 +20,8 @@ public sealed class DevWeeklyReportPopup
 	private readonly Action _onClose;
 
 	private bool _isClosed;
+
+	private bool _pauseRequestRegistered;
 
 	private DevWeeklyReportPopup(ScreenBase screen, string titleText, string subtitleText, string bodyText, Action onClose, string closeText)
 	{
@@ -67,6 +70,7 @@ public sealed class DevWeeklyReportPopup
 		_screen.AddLayer(_layer);
 		_layer.IsFocusLayer = true;
 		ScreenManager.TrySetFocus(_layer);
+		RegisterPauseRequest();
 	}
 
 	private void HandleCloseRequested()
@@ -101,10 +105,49 @@ public sealed class DevWeeklyReportPopup
 				Logger.Log("DevWeeklyReportPopup", "[WARN] Failed to remove popup layer: " + ex.Message);
 			}
 		}
+		UnregisterPauseRequest();
 		_dataSource?.OnFinalize();
 		if (ReferenceEquals(_activePopup, this))
 		{
 			_activePopup = null;
 		}
+	}
+
+	private void RegisterPauseRequest()
+	{
+		if (_pauseRequestRegistered)
+		{
+			return;
+		}
+		try
+		{
+			GameStateManager gameStateManager = Game.Current?.GameStateManager;
+			if (gameStateManager != null)
+			{
+				gameStateManager.RegisterActiveStateDisableRequest(this);
+				_pauseRequestRegistered = true;
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("DevWeeklyReportPopup", "[WARN] Failed to register pause request: " + ex.Message);
+		}
+	}
+
+	private void UnregisterPauseRequest()
+	{
+		if (!_pauseRequestRegistered)
+		{
+			return;
+		}
+		try
+		{
+			Game.Current?.GameStateManager?.UnregisterActiveStateDisableRequest(this);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("DevWeeklyReportPopup", "[WARN] Failed to unregister pause request: " + ex.Message);
+		}
+		_pauseRequestRegistered = false;
 	}
 }

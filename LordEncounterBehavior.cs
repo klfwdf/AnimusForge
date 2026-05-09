@@ -63,6 +63,10 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 
 	private static bool _meetingPlayerReleaseAuthorized;
 
+	private const float PlayerMeetingMinimumHealthRatio = 0.21f;
+
+	private static string _lastLowHealthMeetingBlockedHeroId;
+
 	private static bool _pendingReturnToEncounterMenuAfterUnauthorizedMeetingExit;
 
 	private static bool _suspendEncounterRedirectDuringResultResolution;
@@ -2826,6 +2830,42 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		return true;
 	}
 
+	private static bool IsMainHeroHealthTooLowForMeeting()
+	{
+		Hero mainHero = Hero.MainHero;
+		return mainHero != null && mainHero.MaxHitPoints > 0 && (float)mainHero.HitPoints / mainHero.MaxHitPoints < PlayerMeetingMinimumHealthRatio;
+	}
+
+	private static string GetLowHealthMeetingBlockedMessage(Hero target)
+	{
+		string text = target?.Name?.ToString();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			text = "该NPC";
+		}
+		return "你的健康状况不允许你与" + text + "会面";
+	}
+
+	private static void DisplayLowHealthMeetingBlockedMessageOnce(Hero target, string message)
+	{
+		string text = target?.StringId;
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			text = target?.Name?.ToString() ?? "__unknown__";
+		}
+		if (string.Equals(_lastLowHealthMeetingBlockedHeroId, text, StringComparison.OrdinalIgnoreCase))
+		{
+			return;
+		}
+		_lastLowHealthMeetingBlockedHeroId = text;
+		InformationManager.DisplayMessage(new InformationMessage(message, Colors.Yellow));
+	}
+
+	private static void ClearLowHealthMeetingBlockedMessageState()
+	{
+		_lastLowHealthMeetingBlockedHeroId = null;
+	}
+
 	private void AddGameMenus(CampaignGameStarter starter)
 	{
 		starter.AddGameMenu("AnimusForge_lord_encounter", "{MENU_BODY_TEXT}", delegate(MenuCallbackArgs args)
@@ -2872,6 +2912,17 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 				args.IsEnabled = false;
 				args.Tooltip = new TextObject("无法识别当前遭遇领主，请先离开后重新接触。");
 			}
+			else if (IsMainHeroHealthTooLowForMeeting())
+			{
+				args.IsEnabled = false;
+				string text = GetLowHealthMeetingBlockedMessage(hero);
+				args.Tooltip = new TextObject(text);
+				DisplayLowHealthMeetingBlockedMessageOnce(hero, text);
+			}
+			else
+			{
+				ClearLowHealthMeetingBlockedMessageState();
+			}
 			return true;
 		}, delegate(MenuCallbackArgs args)
 		{
@@ -2880,6 +2931,11 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			{
 				Logger.Log("LordEncounter", "Meet option clicked but target hero is null after refresh.");
 				InformationManager.DisplayMessage(new InformationMessage("当前未识别到遭遇领主，请先离开并重新接触。", Colors.Yellow));
+				return;
+			}
+			if (IsMainHeroHealthTooLowForMeeting())
+			{
+				InformationManager.DisplayMessage(new InformationMessage(GetLowHealthMeetingBlockedMessage(hero), Colors.Yellow));
 				return;
 			}
 			IsOpeningConversation = true;

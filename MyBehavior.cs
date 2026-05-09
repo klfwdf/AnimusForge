@@ -21,6 +21,7 @@ using TaleWorlds.CampaignSystem.Actions;
 using TaleWorlds.CampaignSystem.CharacterDevelopment;
 using TaleWorlds.CampaignSystem.Encounters;
 using TaleWorlds.CampaignSystem.Extensions;
+using TaleWorlds.CampaignSystem.GameState;
 using TaleWorlds.CampaignSystem.GameMenus;
 using TaleWorlds.CampaignSystem.LogEntries;
 using TaleWorlds.CampaignSystem.MapEvents;
@@ -829,6 +830,17 @@ public class MyBehavior : CampaignBehaviorBase
 		public int? RetryAfterSeconds;
 	}
 
+	private sealed class PendingWeeklyReportPopupRequest
+	{
+		public string TitleText;
+
+		public string SubtitleText;
+
+		public string BodyText;
+
+		public string CloseText;
+	}
+
 	private sealed class WeekZeroShortSummaryRequest
 	{
 		public string EventId;
@@ -1184,6 +1196,14 @@ public class MyBehavior : CampaignBehaviorBase
 	private readonly List<PendingAutomaticKingdomRebellionContext> _queuedAutomaticKingdomRebellions = new List<PendingAutomaticKingdomRebellionContext>();
 
 	private int _pendingAutoWeeklyReportWeek;
+
+	private readonly Queue<PendingWeeklyReportPopupRequest> _pendingNearestWeeklyReportPopupRequests = new Queue<PendingWeeklyReportPopupRequest>();
+
+	private readonly object _pendingNearestWeeklyReportPopupLock = new object();
+
+	private bool _nearestWeeklyReportPopupActive;
+
+	private long _nearestWeeklyReportPopupRetryAfterUtcTicks;
 
 	private readonly object _weekZeroShortSummaryQueueLock = new object();
 
@@ -6683,6 +6703,7 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			ProcessPendingWeeklyReportManualRetryResult();
 			ProcessWeeklyReportUiResume();
+			TryShowQueuedWeeklyReportPopup();
 			int num = 0;
 			try
 			{
@@ -7389,7 +7410,7 @@ public class MyBehavior : CampaignBehaviorBase
 			if (e != null && e.IsTalkAvailable != null)
 			{
 				Hero heroToTalkTo = e.HeroToTalkTo;
-				if (heroToTalkTo != null && !heroToTalkTo.IsPlayerCompanion && (heroToTalkTo.IsLord || heroToTalkTo.IsNotable))
+				if (ShouldDisableSettlementOverlayQuickTalk(heroToTalkTo))
 				{
 					e.IsTalkAvailable(arg1: false, new TextObject("该交谈选项已被模组禁用，请使用造访进入场景后再互动。"));
 				}
@@ -7398,6 +7419,11 @@ public class MyBehavior : CampaignBehaviorBase
 		catch
 		{
 		}
+	}
+
+	private static bool ShouldDisableSettlementOverlayQuickTalk(Hero heroToTalkTo)
+	{
+		return heroToTalkTo != null && !heroToTalkTo.IsPlayerCompanion;
 	}
 
 	private void OnMissionStarted(IMission mission)
@@ -24058,6 +24084,106 @@ public class MyBehavior : CampaignBehaviorBase
 		return (list[0] ?? "").Trim();
 	}
 
+	private static bool CanShowWeeklyReportPopupOnMap()
+	{
+		try
+		{
+			return Mission.Current == null && Game.Current?.GameStateManager?.ActiveState is MapState;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private void QueueOrShowNearestWeeklyReportPopup(string titleText, string subtitleText, string bodyText, string closeText)
+	{
+		PendingWeeklyReportPopupRequest request = new PendingWeeklyReportPopupRequest
+		{
+			TitleText = titleText ?? "",
+			SubtitleText = subtitleText ?? "",
+			BodyText = bodyText ?? "",
+			CloseText = closeText ?? ""
+		};
+		bool showNow = false;
+		lock (_pendingNearestWeeklyReportPopupLock)
+		{
+			if (!_nearestWeeklyReportPopupActive && _pendingNearestWeeklyReportPopupRequests.Count == 0 && CanShowWeeklyReportPopupOnMap())
+			{
+				_nearestWeeklyReportPopupActive = true;
+				showNow = true;
+			}
+			else
+			{
+				_pendingNearestWeeklyReportPopupRequests.Enqueue(request);
+			}
+		}
+		if (!showNow)
+		{
+			return;
+		}
+		if (!ShowNearestWeeklyReportPopup(request))
+		{
+			lock (_pendingNearestWeeklyReportPopupLock)
+			{
+				_nearestWeeklyReportPopupActive = false;
+				_nearestWeeklyReportPopupRetryAfterUtcTicks = DateTime.UtcNow.AddSeconds(2.0).Ticks;
+				_pendingNearestWeeklyReportPopupRequests.Enqueue(request);
+			}
+		}
+	}
+
+	private void TryShowQueuedWeeklyReportPopup()
+	{
+		PendingWeeklyReportPopupRequest request = null;
+		lock (_pendingNearestWeeklyReportPopupLock)
+		{
+			if (_nearestWeeklyReportPopupActive || _pendingNearestWeeklyReportPopupRequests.Count == 0)
+			{
+				return;
+			}
+			if (_nearestWeeklyReportPopupRetryAfterUtcTicks > DateTime.UtcNow.Ticks)
+			{
+				return;
+			}
+			if (!CanShowWeeklyReportPopupOnMap())
+			{
+				return;
+			}
+			request = _pendingNearestWeeklyReportPopupRequests.Dequeue();
+			_nearestWeeklyReportPopupActive = true;
+		}
+		if (!ShowNearestWeeklyReportPopup(request))
+		{
+			lock (_pendingNearestWeeklyReportPopupLock)
+			{
+				_nearestWeeklyReportPopupActive = false;
+				_nearestWeeklyReportPopupRetryAfterUtcTicks = DateTime.UtcNow.AddSeconds(2.0).Ticks;
+				if (request != null)
+				{
+					_pendingNearestWeeklyReportPopupRequests.Enqueue(request);
+				}
+			}
+		}
+	}
+
+	private bool ShowNearestWeeklyReportPopup(PendingWeeklyReportPopupRequest request)
+	{
+		if (request == null)
+		{
+			return false;
+		}
+		return DevWeeklyReportPopup.Show(request.TitleText, request.SubtitleText, request.BodyText, delegate
+		{
+			lock (_pendingNearestWeeklyReportPopupLock)
+			{
+				_nearestWeeklyReportPopupActive = false;
+				_nearestWeeklyReportPopupRetryAfterUtcTicks = 0L;
+			}
+			TryShowQueuedWeeklyReportPopup();
+		}, request.CloseText);
+	}
+
 	private void TryNotifyNearestKingdomWeeklyReportGenerated(WeeklyEventMaterialPreviewGroup group, int weekIndex, IEnumerable<string> candidateKingdomIds, string title, string report, ref bool notified)
 	{
 		if (notified || group == null)
@@ -24091,7 +24217,7 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		string text5 = (report ?? "").Replace("\r", "\n").Trim();
 		string text6 = text3 + " · " + BuildWeeklyEpicWeekLabel(weekIndex);
-		DevWeeklyReportPopup.Show(text4, text6, text5, null, "我知道了");
+		QueueOrShowNearestWeeklyReportPopup(text4, text6, text5, "我知道了");
 	}
 
 	private async Task<WeeklyReportGenerationResult> GenerateWeeklyReportsBatchedAsyncInternal(List<WeeklyEventMaterialPreviewGroup> list, int weekIndex, int startDay, int endDay, string displayLabel, bool openViewerWhenDone, bool queueBlockingPopupOnFatalFailure, bool isAutoGeneration, IEnumerable<string> popupCandidateKingdomIdsOverride = null)
