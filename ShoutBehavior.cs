@@ -482,6 +482,21 @@ public class ShoutBehavior : CampaignBehaviorBase
 		public Vec3? OriginalPosition;
 	}
 
+	private sealed class SceneGhostWalkState
+	{
+		public Vec3 LastPosition;
+
+		public Vec3 LastTarget;
+
+		public float LastDistanceSquared;
+
+		public float LastProgressMissionTime;
+
+		public float LastCheckMissionTime;
+
+		public float LastStepMissionTime;
+	}
+
 	private enum SceneSummonStage
 	{
 		PendingLaunch,
@@ -572,6 +587,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 			_parent.UpdateActiveSceneSummonRequests();
 			_parent.UpdateActiveSceneGuideRequests();
 			_parent.UpdateActiveSceneReturnJobs();
+			_parent.UpdateSceneCommandGhostMovement();
 			if (_parent._interactionGraceTimer > 0f)
 			{
 				_parent._interactionGraceTimer -= dt;
@@ -808,6 +824,22 @@ public class ShoutBehavior : CampaignBehaviorBase
 
 	private const float SCENE_SUMMON_DELAY_SECONDS = 2.25f;
 
+	private const float SCENE_GHOST_STUCK_CHECK_INTERVAL = 0.45f;
+
+	private const float SCENE_GHOST_STUCK_SECONDS = 1.8f;
+
+	private const float SCENE_GHOST_MIN_PROGRESS_DISTANCE_SQ = 0.0225f;
+
+	private const float SCENE_GHOST_TARGET_CHANGE_DISTANCE_SQ = 2.25f;
+
+	private const float SCENE_GHOST_MIN_TARGET_DISTANCE_SQ = 9f;
+
+	private const float SCENE_GHOST_STEP_COOLDOWN = 0.55f;
+
+	private const float SCENE_GHOST_STEP_DISTANCE = 1.35f;
+
+	private const float SCENE_GHOST_MAX_STEP_DISTANCE = 2.75f;
+
 	private ConcurrentQueue<Action> _mainThreadActions = new ConcurrentQueue<Action>();
 
 	private float _tickTimer = 0f;
@@ -905,6 +937,8 @@ public class ShoutBehavior : CampaignBehaviorBase
 	private readonly Dictionary<int, PendingSceneAutonomyRestoreAfterSpeech> _pendingSceneAutonomyRestoresAfterSpeech = new Dictionary<int, PendingSceneAutonomyRestoreAfterSpeech>();
 
 	private readonly Dictionary<int, SceneFollowReturnState> _sceneFollowReturnStates = new Dictionary<int, SceneFollowReturnState>();
+
+	private readonly Dictionary<int, SceneGhostWalkState> _sceneGhostWalkStates = new Dictionary<int, SceneGhostWalkState>();
 
 	private int _nextSceneSummonBatchId = 1;
 
@@ -5218,12 +5252,32 @@ private static string BuildReplyLengthInstruction(int minTokens, int maxTokens)
 {
 	int num = Math.Max(1, minTokens);
 	int num2 = Math.Max(num, maxTokens);
+	int num3 = GetShoutThoughtMinTokens();
 	string text = (num == num2) ? $"你实际要说的话，此处约{num2}字。" : $"你实际要说的话，此处不得少于{num}字，最多{num2}字。";
 	if (num == num2)
 	{
-		return "你的回复格式必须严格按照以下执行，其中内心思考要用()括起来，动作要用**括起来：\n（你的内心思考内容,不少于200字）\n*你的动作内容*\n" + text;
+		return $"你的回复格式必须严格按照以下执行，其中内心思考要用()括起来，动作要用**括起来：\n（你的内心思考内容，不少于{num3}字）\n*你的动作内容*\n" + text;
 	}
-	return "你的回复格式必须严格按照以下执行，其中内心思考要用()括起来，动作要用**括起来：\n（你的内心思考内容，不少于200字）\n*你的动作内容*\n" + text;
+	return $"你的回复格式必须严格按照以下执行，其中内心思考要用()括起来，动作要用**括起来：\n（你的内心思考内容，不少于{num3}字）\n*你的动作内容*\n" + text;
+}
+
+private static string BuildSimpleDialogueReplyLengthInstruction(int minTokens, int maxTokens)
+{
+	int num = Math.Max(1, minTokens);
+	int num2 = Math.Max(num, maxTokens);
+	return (num == num2) ? $"你实际要说的话，此处约{num2}字。" : $"你实际要说的话，此处不得少于{num}字，最多{num2}字。";
+}
+
+private static int GetShoutThoughtMinTokens()
+{
+	try
+	{
+		return Math.Max(40, DuelSettings.GetSettings()?.ShoutThoughtMinTokens ?? 200);
+	}
+	catch
+	{
+		return 200;
+	}
 }
 
 private static bool TryExtractReplyFormatInstruction(ref string prompt, out string instruction)
@@ -5328,6 +5382,63 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 		privateRecentWindowSection = privateSb.ToString().Trim();
 		persistedWithoutRecentWindow = othersSb.ToString().Trim();
+	}
+
+	private static string TrimPrivateRecentWindowForActionPostprocess(string privateRecentWindowSection, int maxTurns = 5)
+	{
+		string text = (privateRecentWindowSection ?? "").Replace("\r", "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return "";
+		}
+		string[] array = text.Split('\n');
+		int num = Math.Max(1, maxTurns);
+		int num2 = 0;
+		int num3 = 0;
+		for (int i = array.Length - 1; i >= 0; i--)
+		{
+			string text2 = (array[i] ?? "").Trim();
+			if (IsActionPostprocessPlayerTurnLine(text2))
+			{
+				num2++;
+				if (num2 >= num)
+				{
+					num3 = i;
+					break;
+				}
+			}
+		}
+		if (num2 < num)
+		{
+			num3 = 0;
+		}
+		List<string> list = new List<string>();
+		string text3 = array.Length > 0 ? (array[0] ?? "").Trim() : "";
+		if (IsPrivateRecentWindowHeader(text3) && num3 > 0)
+		{
+			list.Add(text3);
+		}
+		for (int j = num3; j < array.Length; j++)
+		{
+			string text4 = (array[j] ?? "").Trim();
+			if (!string.IsNullOrWhiteSpace(text4) && (list.Count == 0 || !string.Equals(list[list.Count - 1], text4, StringComparison.Ordinal)))
+			{
+				list.Add(text4);
+			}
+		}
+		return string.Join("\n", list).Trim();
+	}
+
+	private static bool IsActionPostprocessPlayerTurnLine(string line)
+	{
+		string text = (line ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text) || text.StartsWith("【", StringComparison.Ordinal) || text.StartsWith("——", StringComparison.Ordinal))
+		{
+			return false;
+		}
+		int num = text.IndexOfAny(new char[2] { ':', '：' });
+		string text2 = (num >= 0) ? text.Substring(0, num).Trim() : text;
+		return text2.Equals("玩家", StringComparison.OrdinalIgnoreCase) || text2.Equals("你", StringComparison.OrdinalIgnoreCase) || text2.EndsWith("对你说", StringComparison.Ordinal) || text2.EndsWith("对NPC说", StringComparison.Ordinal);
 	}
 
 	private static string BuildSceneFirstMeetingNpcFactSection(Hero hero)
@@ -8817,8 +8928,14 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					}
 					else if (flag && currentSettlement != null)
 					{
-						GiveGoldAction.ApplyBetweenCharacters(Hero.MainHero, null, num2, disableNotification: true);
-						currentSettlement.SettlementComponent?.ChangeGold(num2);
+						if (RewardSystemBehavior.Instance != null)
+						{
+							RewardSystemBehavior.Instance.TransferGoldToSettlement(currentSettlement, Hero.MainHero, num2);
+						}
+						else
+						{
+							GiveGoldAction.ApplyBetweenCharacters(Hero.MainHero, null, num2, disableNotification: true);
+						}
 						RewardSystemBehavior.Instance?.RecordPlayerPrepaidTransferForMerchant(currentSettlement, settlementMerchantKind, num2, null, 0);
 						RewardSystemBehavior.Instance?.AppendSettlementMerchantNpcFact(currentSettlement, settlementMerchantKind, $"你已经收下了玩家交来的 {num2} 第纳尔。", characterObject?.Name?.ToString());
 					}
@@ -10150,11 +10267,12 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 	}
 
-	private static string BuildSettlementTransferPostprocessListForScene(List<MyBehavior.SettlementTransferPromptEntry> npcOptions, List<MyBehavior.SettlementTransferPromptEntry> playerOptions)
+	private static string BuildSettlementTransferPostprocessListForScene(List<MyBehavior.SettlementTransferPromptEntry> npcOptions)
 	{
 		StringBuilder stringBuilder = new StringBuilder();
 		AppendCompactSettlementTransferPostprocessSectionForScene(stringBuilder, "【你家族当前可转移的城市和城堡】：", npcOptions);
-		AppendCompactSettlementTransferPostprocessSectionForScene(stringBuilder, "【玩家家族当前可转移的城市和城堡】：", playerOptions);
+		stringBuilder.AppendLine("【玩家家族当前可转移的城市和城堡】：");
+		stringBuilder.AppendLine("（仅能通过玩家手动选择并交付；后处理不得生成 TO_NPC 标签）");
 		return stringBuilder.ToString().TrimEnd();
 	}
 
@@ -10291,7 +10409,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		return string.Join("\n", list.Concat(new string[1] { text }).Where((string x) => !string.IsNullOrWhiteSpace(x))).Trim();
 	}
 
-	private static string NormalizeSettlementTransferPostprocessTagsForScene(string raw, List<MyBehavior.SettlementTransferPromptEntry> npcOptions, List<MyBehavior.SettlementTransferPromptEntry> playerOptions)
+	private static string NormalizeSettlementTransferPostprocessTagsForScene(string raw, List<MyBehavior.SettlementTransferPromptEntry> npcOptions)
 	{
 		List<string> list = new List<string>();
 		HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -10315,7 +10433,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			}
 			string text3 = (match.Groups[1].Value ?? "").Trim().ToUpperInvariant();
 			string text4 = (match.Groups[2].Value ?? "").Trim();
-			MyBehavior.SettlementTransferPromptEntry settlementTransferPromptEntry = FindSettlementTransferEntryByTokenForScene((text3 == "TO_PLAYER") ? npcOptions : playerOptions, text4);
+			if (text3 != "TO_PLAYER")
+			{
+				continue;
+			}
+			MyBehavior.SettlementTransferPromptEntry settlementTransferPromptEntry = FindSettlementTransferEntryByTokenForScene(npcOptions, text4);
 			string text5 = (settlementTransferPromptEntry?.SettlementId ?? "").Trim();
 			if (string.IsNullOrWhiteSpace(text5))
 			{
@@ -11000,7 +11122,6 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		List<MyBehavior.PartyTransferPromptEntry> partyTransferTroopOptions = null;
 		List<MyBehavior.PartyTransferPromptEntry> partyTransferPrisonerOptions = null;
 		List<MyBehavior.SettlementTransferPromptEntry> settlementTransferNpcOptions = null;
-		List<MyBehavior.SettlementTransferPromptEntry> settlementTransferPlayerOptions = null;
 		if (rewardRuleInjected || loanRuleInjected)
 		{
 			if (RewardSystemBehavior.Instance != null)
@@ -11024,7 +11145,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					else if (targetCharacter != null)
 					{
 						rewardOptions = RewardSystemBehavior.Instance.BuildSettlementMerchantPostprocessItems(targetCharacter);
-						int num = Settlement.CurrentSettlement?.SettlementComponent?.Gold ?? 0;
+						int num = RewardSystemBehavior.Instance.GetSettlementMarketTradeGold(Settlement.CurrentSettlement);
 						text5 = BuildRewardPostprocessItemListForScene(rewardOptions, num);
 						text7 = NormalizePlayerNameForScenePostprocess(RewardSystemBehavior.Instance.BuildSettlementMerchantDebtHintForAI(targetCharacter), text20);
 					}
@@ -11078,11 +11199,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					List<MyBehavior.SettlementTransferPromptEntry> list2 = MyBehavior.BuildSettlementTransferPromptEntriesForExternal(targetHero, targetCharacter);
 					List<MyBehavior.SettlementTransferPromptEntry> allowedNpcSettlementTransferEntriesForPlayer = (RewardSystemBehavior.Instance != null) ? RewardSystemBehavior.Instance.GetAllowedNpcSettlementTransferEntriesForPlayer(targetHero, targetCharacter) : list2.Where((MyBehavior.SettlementTransferPromptEntry x) => x != null && x.Section == MyBehavior.SettlementTransferEntrySection.NpcFiefs).ToList();
 					settlementTransferNpcOptions = BuildDisplayIndexedSettlementTransferEntriesForScene(allowedNpcSettlementTransferEntriesForPlayer);
-					settlementTransferPlayerOptions = BuildDisplayIndexedSettlementTransferEntriesForScene(list2.Where((MyBehavior.SettlementTransferPromptEntry x) => x != null && x.Section == MyBehavior.SettlementTransferEntrySection.PlayerFiefs));
 					if (settlementTransferTrustForPostprocess >= 60)
 					{
-						runtimeContext = AppendPostprocessContextBlockForScene(runtimeContext, BuildSettlementTransferPostprocessListForScene(settlementTransferNpcOptions, settlementTransferPlayerOptions));
-						runtimeContext = AppendPostprocessContextBlockForScene(runtimeContext, (settlementTransferTrustForPostprocess < 80) ? "【领地转移硬约束】：综合信任未到80时，NPC给玩家的目标只能来自当前清单里那座最差的城市或城堡；玩家转给NPC仍只认当前清单；若本轮尚未明确成交，就不要生成这些标签。" : "【领地转移硬约束】：只允许 [ACTION:SETTLEMENT_TRANSFER:TO_PLAYER:目标] 和 [ACTION:SETTLEMENT_TRANSFER:TO_NPC:目标]；目标只能来自当前清单的编号、名称或ID；村庄不单独转移；若本轮尚未明确成交，就不要生成这些标签。");
+						runtimeContext = AppendPostprocessContextBlockForScene(runtimeContext, BuildSettlementTransferPostprocessListForScene(settlementTransferNpcOptions));
+						runtimeContext = AppendPostprocessContextBlockForScene(runtimeContext, (settlementTransferTrustForPostprocess < 80) ? "【领地转移硬约束】：综合信任未到80时，NPC给玩家的目标只能来自当前清单里那座最差的城市或城堡；只允许 [ACTION:SETTLEMENT_TRANSFER:TO_PLAYER:目标]；玩家转给NPC必须走玩家手动交付流程，绝不生成 TO_NPC 标签；若本轮尚未明确成交，就不要生成这些标签。" : "【领地转移硬约束】：只允许 [ACTION:SETTLEMENT_TRANSFER:TO_PLAYER:目标]；目标只能来自当前清单的编号、名称或ID；村庄不单独转移；玩家转给NPC必须走玩家手动交付流程，绝不生成 TO_NPC 标签；若本轮尚未明确成交，就不要生成这些标签。");
 					}
 					else
 					{
@@ -11097,7 +11217,6 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			catch
 			{
 				settlementTransferNpcOptions = null;
-				settlementTransferPlayerOptions = null;
 			}
 		}
 		if (sceneMechanismRuleInjected)
@@ -11120,7 +11239,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		string text16 = heroJoinPartyRuleInjected ? NormalizeHeroJoinPartyPostprocessTagsForScene(content, heroJoinPartyRules) : "";
 		string text17 = sceneMechanismRuleInjected ? NormalizeSceneMechanismPostprocessTagsForScene(content, mechanismRules, sceneSummonTargets, sceneGuideTargets) : "";
 		string text18 = partyTransferRuleInjected ? NormalizePartyTransferPostprocessTagsForScene(content, partyTransferTroopOptions, partyTransferPrisonerOptions) : "";
-		string text19 = settlementTransferRuleInjected ? NormalizeSettlementTransferPostprocessTagsForScene(content, settlementTransferNpcOptions, settlementTransferPlayerOptions) : "";
+		string text19 = settlementTransferRuleInjected ? NormalizeSettlementTransferPostprocessTagsForScene(content, settlementTransferNpcOptions) : "";
 		string text21 = MergeNormalizedPostprocessBlocksForScene(text10, text11, text12, text13, text14, text15, text16, text17, text18, text19);
 		if (string.IsNullOrWhiteSpace(text21))
 		{
@@ -11189,7 +11308,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				else if (targetCharacter != null)
 				{
 					list = RewardSystemBehavior.Instance.BuildSettlementMerchantPostprocessItems(targetCharacter);
-					int num = Settlement.CurrentSettlement?.SettlementComponent?.Gold ?? 0;
+					int num = RewardSystemBehavior.Instance.GetSettlementMarketTradeGold(Settlement.CurrentSettlement);
 					text5 = BuildRewardPostprocessItemListForScene(list, num);
 					text12 = NormalizePlayerNameForScenePostprocess(RewardSystemBehavior.Instance.BuildSettlementMerchantDebtHintForAI(targetCharacter), text7);
 				}
@@ -11563,7 +11682,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			Tag = x.Tag,
 			Description = x.Description
 		}).ToList();
-		string historyForPostprocess = BuildSceneCompositeUserBlock("", privateRecentWindowSection, scenePublicHistorySection);
+		string privateRecentWindowForPostprocess = TrimPrivateRecentWindowForActionPostprocess(privateRecentWindowSection, 5);
+		string historyForPostprocess = BuildSceneCompositeUserBlock("", privateRecentWindowForPostprocess, scenePublicHistorySection);
 		if (string.IsNullOrWhiteSpace(historyForPostprocess))
 		{
 			historyForPostprocess = playerText;
@@ -12893,7 +13013,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					EnqueueSpeechLineWithOptions(currentSpeaker, cleaned, allNpcData, commitHistory: false, suppressStare: false, allowPlayerDirectedActions: true, conversationEpoch, sceneSummonTargets, sceneGuideTargets, flag11 ? "正在处理NPC行为............" : null);
 					if (flag11)
 					{
-						_ = QueueDeferredScenePostprocessActions(currentSpeaker, allNpcData, speakingHero, npcCharacter, scenePrivateRecentWindowSection, scenePublicHistorySection, playerText, cleaned, duelRuleInjected, rewardRuleInjected, loanRuleInjected, kingdomServiceRuleInjected, lordsHallRuleInjected, meetingReleaseRuleInjected, vanillaIssueRuleInjected, heroJoinPartyRuleInjected, sceneMechanismRuleInjected, partyTransferRuleInjected, settlementTransferRuleInjected, duelStakeOptions, kingdomServicePostprocessRules, sceneMechanismPostprocessRules, conversationEpoch, sceneSummonTargets, sceneGuideTargets);
+						string replyForPostprocess = string.IsNullOrWhiteSpace(historyText) ? cleaned : historyText;
+						_ = QueueDeferredScenePostprocessActions(currentSpeaker, allNpcData, speakingHero, npcCharacter, scenePrivateRecentWindowSection, scenePublicHistorySection, playerText, replyForPostprocess, duelRuleInjected, rewardRuleInjected, loanRuleInjected, kingdomServiceRuleInjected, lordsHallRuleInjected, meetingReleaseRuleInjected, vanillaIssueRuleInjected, heroJoinPartyRuleInjected, sceneMechanismRuleInjected, partyTransferRuleInjected, settlementTransferRuleInjected, duelStakeOptions, kingdomServicePostprocessRules, sceneMechanismPostprocessRules, conversationEpoch, sceneSummonTargets, sceneGuideTargets);
 					}
 				}
 				else
@@ -14672,7 +14793,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		string roleRuntimeContext = BuildCompactSceneUserRuntimeContextForShortReply(targetNpc, contextHero, new List<NpcDataPacket> { targetNpc }, partyTransferTopicSelected: partyTransferTopicSelected);
 		string layeredPrompt = AppendPlayerCustomPromptRuleToSystemPrompt(roleTopIntro);
 		string extraFactUserBlock = string.IsNullOrWhiteSpace(extraFactLine) ? "" : ("【AFEF玩家行为补充】\n" + extraFactLine.Trim());
-		List<object> messages = BuildStrictSceneMessagesForNpc(targetNpc.AgentIndex, layeredPrompt, new string[4] { privateRecentWindowSection, persistedWithoutRecentWindow, roleRuntimeContext, BuildSceneCompositeUserBlock("", text, extraFactUserBlock) }, new string[1] { singleReplyUserContent });
+		List<object> messages = BuildStrictSceneMessagesForNpc(targetNpc.AgentIndex, layeredPrompt, new string[4] { privateRecentWindowSection, persistedWithoutRecentWindow, roleRuntimeContext, BuildSceneCompositeUserBlock("", text, extraFactUserBlock) }, new string[1] { singleReplyUserContent }, suppressReplyFormatInstruction: true);
 		if (!AIConfigHandler.TryCallAuxiliarySimpleDialogue(messages, 80, 0.35f, out var text2, out var error))
 		{
 			Logger.Log("ShoutBehavior", "[CompactSceneReaction] auxiliary_simple_dialogue failed: " + error);
@@ -15255,6 +15376,327 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			{
 				WorldPosition origin = targetWorldFrame.Origin;
 				agent.SetScriptedPosition(ref origin, addHumanLikeDelay: false, doNotRun ? Agent.AIScriptedFrameFlags.DoNotRun : Agent.AIScriptedFrameFlags.NeverSlowDown);
+			}
+			catch
+			{
+			}
+			return true;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private void UpdateSceneCommandGhostMovement()
+	{
+		if (Mission.Current == null || Mission.Current.Scene == null || Agent.Main == null || !Agent.Main.IsActive())
+		{
+			_sceneGhostWalkStates.Clear();
+			return;
+		}
+		Dictionary<int, Vec3> targets = BuildSceneGhostMovementTargets();
+		if (targets.Count == 0)
+		{
+			_sceneGhostWalkStates.Clear();
+			return;
+		}
+		HashSet<int> activeAgentIndices = new HashSet<int>();
+		foreach (KeyValuePair<int, Vec3> target in targets)
+		{
+			activeAgentIndices.Add(target.Key);
+			Agent agent = Mission.Current.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == target.Key);
+			ApplySceneGhostMovementIfStuck(agent, target.Value);
+		}
+		foreach (int agentIndex in _sceneGhostWalkStates.Keys.Where((int x) => !activeAgentIndices.Contains(x)).ToList())
+		{
+			_sceneGhostWalkStates.Remove(agentIndex);
+		}
+	}
+
+	private Dictionary<int, Vec3> BuildSceneGhostMovementTargets()
+	{
+		Dictionary<int, Vec3> targets = new Dictionary<int, Vec3>();
+		Mission mission = Mission.Current;
+		Agent main = Agent.Main;
+		if (mission == null || main == null || !main.IsActive())
+		{
+			return targets;
+		}
+		foreach (Agent agent in mission.Agents ?? Enumerable.Empty<Agent>())
+		{
+			if (CanAgentUseSceneGhostMovement(agent) && IsAgentFollowingPlayerBySceneCommand(agent))
+			{
+				TryAddSceneGhostMovementTarget(targets, agent, main.Position);
+			}
+		}
+		foreach (ActiveSceneGuideRequest request in _activeSceneGuideRequests)
+		{
+			if (request == null || request.ArrivalTriggered)
+			{
+				continue;
+			}
+			Agent agent2 = mission.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == request.GuideAgentIndex);
+			if (CanAgentUseSceneGhostMovement(agent2) && TryGetSceneGuideGhostTarget(request, out var targetPosition))
+			{
+				TryAddSceneGhostMovementTarget(targets, agent2, targetPosition);
+			}
+		}
+		foreach (ActiveSceneSummonRequest request2 in _activeSceneSummonRequests)
+		{
+			TryCollectSceneSummonGhostMovementTarget(targets, request2);
+		}
+		foreach (SceneSummonConversationSession session in _activeSceneSummonConversationSessions)
+		{
+			TryCollectSceneSummonConversationGhostMovementTargets(targets, session);
+		}
+		foreach (SceneReturnJob job in _activeSceneReturnJobs)
+		{
+			TryCollectSceneReturnGhostMovementTarget(targets, job);
+		}
+		return targets;
+	}
+
+	private bool CanAgentUseSceneGhostMovement(Agent agent)
+	{
+		return CanAgentParticipateInSceneSpeech(agent) && agent != Agent.Main && !IsAgentHostileToMainAgent(agent);
+	}
+
+	private void TryAddSceneGhostMovementTarget(Dictionary<int, Vec3> targets, Agent agent, Vec3 targetPosition)
+	{
+		if (targets == null || !CanAgentUseSceneGhostMovement(agent))
+		{
+			return;
+		}
+		if (targetPosition.LengthSquared < 0.0001f)
+		{
+			return;
+		}
+		if (!targets.TryGetValue(agent.Index, out var oldTarget) || agent.Position.DistanceSquared(targetPosition) < agent.Position.DistanceSquared(oldTarget))
+		{
+			targets[agent.Index] = targetPosition;
+		}
+	}
+
+	private bool TryGetSceneGuideGhostTarget(ActiveSceneGuideRequest request, out Vec3 targetPosition)
+	{
+		targetPosition = Vec3.Zero;
+		Location currentLocation = CampaignMission.Current?.Location;
+		if (request == null || currentLocation == null || request.TargetSourceLocation == null)
+		{
+			return false;
+		}
+		if (request.TargetSourceLocation == currentLocation)
+		{
+			Agent agent = ResolveAgentForLocationCharacter(request.TargetLocationCharacter);
+			if (!CanAgentParticipateInSceneSpeech(agent))
+			{
+				return false;
+			}
+			targetPosition = agent.Position;
+			return true;
+		}
+		Passage passage = request.TargetDoorPassage;
+		if (passage == null)
+		{
+			List<Location> sceneLocationPath = FindSceneLocationPath(currentLocation, request.TargetSourceLocation);
+			if (sceneLocationPath == null || sceneLocationPath.Count < 2)
+			{
+				return false;
+			}
+			passage = FindCurrentScenePassageToLocation(sceneLocationPath[1]);
+		}
+		if (passage == null)
+		{
+			return false;
+		}
+		targetPosition = GetPassageWaitingPosition(passage);
+		return true;
+	}
+
+	private void TryCollectSceneSummonGhostMovementTarget(Dictionary<int, Vec3> targets, ActiveSceneSummonRequest request)
+	{
+		if (targets == null || request == null || CampaignMission.Current?.Location != request.CurrentLocation)
+		{
+			return;
+		}
+		Agent speakerAgent = Mission.Current?.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == request.SpeakerAgentIndex);
+		switch (request.Stage)
+		{
+		case SceneSummonStage.MessengerToTarget:
+		{
+			Agent targetAgent = ResolveAgentForLocationCharacter(request.TargetLocationCharacter);
+			if (CanAgentParticipateInSceneSpeech(targetAgent))
+			{
+				TryAddSceneGhostMovementTarget(targets, speakerAgent, targetAgent.Position);
+			}
+			break;
+		}
+		case SceneSummonStage.MessengerToDoor:
+		{
+			Passage passage = request.MessengerDoorPassage ?? FindCurrentScenePassageToLocation(request.PassageHopLocation);
+			if (passage != null)
+			{
+				TryAddSceneGhostMovementTarget(targets, speakerAgent, GetPassageWaitingPosition(passage));
+			}
+			break;
+		}
+		case SceneSummonStage.TargetToPlayer:
+		{
+			Agent targetAgent2 = ResolveAgentForLocationCharacter(request.TargetLocationCharacter);
+			if (Agent.Main != null && Agent.Main.IsActive())
+			{
+				TryAddSceneGhostMovementTarget(targets, targetAgent2, Agent.Main.Position);
+			}
+			break;
+		}
+		}
+	}
+
+	private void TryCollectSceneSummonConversationGhostMovementTargets(Dictionary<int, Vec3> targets, SceneSummonConversationSession session)
+	{
+		if (targets == null || session == null || Agent.Main == null || !Agent.Main.IsActive())
+		{
+			return;
+		}
+		Vec3 targetPosition = Agent.Main.Position;
+		if (session.KeepSpeakerNearby)
+		{
+			TryAddSceneGhostMovementTarget(targets, ResolveAgentForLocationCharacter(session.SpeakerLocationCharacter), targetPosition);
+		}
+		for (int i = 0; i < session.Participants.Count; i++)
+		{
+			TryAddSceneGhostMovementTarget(targets, ResolveAgentForLocationCharacter(session.Participants[i]?.LocationCharacter), targetPosition);
+		}
+	}
+
+	private void TryCollectSceneReturnGhostMovementTarget(Dictionary<int, Vec3> targets, SceneReturnJob job)
+	{
+		Location currentLocation = CampaignMission.Current?.Location;
+		if (targets == null || job == null || currentLocation == null || job.CurrentLocation != currentLocation)
+		{
+			return;
+		}
+		Agent agent = ResolveAgentForLocationCharacter(job.LocationCharacter);
+		if (!CanAgentUseSceneGhostMovement(agent))
+		{
+			return;
+		}
+		Location originalLocation = job.OriginalLocation ?? currentLocation;
+		if (originalLocation == currentLocation)
+		{
+			if (job.OriginalPosition.HasValue)
+			{
+				TryAddSceneGhostMovementTarget(targets, agent, job.OriginalPosition.Value);
+			}
+			return;
+		}
+		List<Location> sceneLocationPath = FindSceneLocationPath(currentLocation, originalLocation);
+		if (sceneLocationPath == null || sceneLocationPath.Count < 2)
+		{
+			return;
+		}
+		Passage passage = job.ExitPassage ?? FindCurrentScenePassageToLocation(sceneLocationPath[1]);
+		if (passage != null)
+		{
+			TryAddSceneGhostMovementTarget(targets, agent, GetPassageWaitingPosition(passage));
+		}
+	}
+
+	private void ApplySceneGhostMovementIfStuck(Agent agent, Vec3 targetPosition)
+	{
+		if (!CanAgentUseSceneGhostMovement(agent) || Mission.Current == null || Mission.Current.Scene == null)
+		{
+			return;
+		}
+		float currentTime = Mission.Current.CurrentTime;
+		float distanceSquared = agent.Position.DistanceSquared(targetPosition);
+		if (distanceSquared < SCENE_GHOST_MIN_TARGET_DISTANCE_SQ)
+		{
+			_sceneGhostWalkStates.Remove(agent.Index);
+			return;
+		}
+		if (!_sceneGhostWalkStates.TryGetValue(agent.Index, out var state) || state == null)
+		{
+			_sceneGhostWalkStates[agent.Index] = new SceneGhostWalkState
+			{
+				LastPosition = agent.Position,
+				LastTarget = targetPosition,
+				LastDistanceSquared = distanceSquared,
+				LastProgressMissionTime = currentTime,
+				LastCheckMissionTime = currentTime,
+				LastStepMissionTime = -1000f
+			};
+			return;
+		}
+		if (state.LastTarget.DistanceSquared(targetPosition) > SCENE_GHOST_TARGET_CHANGE_DISTANCE_SQ)
+		{
+			state.LastPosition = agent.Position;
+			state.LastTarget = targetPosition;
+			state.LastDistanceSquared = distanceSquared;
+			state.LastProgressMissionTime = currentTime;
+			state.LastCheckMissionTime = currentTime;
+			return;
+		}
+		if (currentTime - state.LastCheckMissionTime < SCENE_GHOST_STUCK_CHECK_INTERVAL)
+		{
+			return;
+		}
+		float movedSquared = agent.Position.DistanceSquared(state.LastPosition);
+		bool madeProgress = movedSquared >= SCENE_GHOST_MIN_PROGRESS_DISTANCE_SQ || distanceSquared < state.LastDistanceSquared - SCENE_GHOST_MIN_PROGRESS_DISTANCE_SQ;
+		state.LastCheckMissionTime = currentTime;
+		if (madeProgress)
+		{
+			state.LastPosition = agent.Position;
+			state.LastDistanceSquared = distanceSquared;
+			state.LastProgressMissionTime = currentTime;
+			return;
+		}
+		if (currentTime - state.LastProgressMissionTime < SCENE_GHOST_STUCK_SECONDS || currentTime - state.LastStepMissionTime < SCENE_GHOST_STEP_COOLDOWN)
+		{
+			return;
+		}
+		if (TrySceneGhostStep(agent, targetPosition))
+		{
+			state.LastStepMissionTime = currentTime;
+			state.LastPosition = agent.Position;
+			state.LastDistanceSquared = agent.Position.DistanceSquared(targetPosition);
+			state.LastProgressMissionTime = currentTime;
+			try
+			{
+				Logger.Log("SceneGhostMove", "step agent=" + agent.Index + " name=" + (agent.Name ?? "") + " target=" + FormatSceneSummonPosition(targetPosition));
+			}
+			catch
+			{
+			}
+		}
+	}
+
+	private bool TrySceneGhostStep(Agent agent, Vec3 targetPosition)
+	{
+		if (!CanAgentUseSceneGhostMovement(agent) || Mission.Current?.Scene == null)
+		{
+			return false;
+		}
+		try
+		{
+			Vec2 vec = targetPosition.AsVec2 - agent.Position.AsVec2;
+			float length = vec.Normalize();
+			if (length <= 0.05f)
+			{
+				return false;
+			}
+			float stepDistance = Math.Min(SCENE_GHOST_MAX_STEP_DISTANCE, Math.Max(SCENE_GHOST_STEP_DISTANCE, length * 0.2f));
+			if (stepDistance > length)
+			{
+				stepDistance = length;
+			}
+			Vec3 position = agent.Position + vec.ToVec3() * stepDistance;
+			position.z = Mission.Current.Scene.GetGroundHeightAtPosition(position, BodyFlags.CommonCollisionExcludeFlags);
+			agent.TeleportToPosition(position);
+			try
+			{
+				agent.SetLookToPointOfInterest(targetPosition);
 			}
 			catch
 			{
@@ -17394,11 +17836,15 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 		};
 	}
 
-	private static string BuildStrictSceneMessagesSystemPrompt(string systemPrompt)
+	private static string BuildStrictSceneMessagesSystemPrompt(string systemPrompt, bool suppressReplyFormatInstruction = false)
 	{
 		string text = (systemPrompt ?? "").Trim();
-		string value = "【messages说明】在下面的对话消息里，assistant 只代表你自己过去说过的话；user 既可能是玩家直接对你说的话，也可能是你在场时听见的别人发言、系统事实或补充上下文。";
+		string value = "【messages说明】在下面的对话消息里，assistant 只代表你自己过去说过的话；#2 role=user表示当前系统事实，从#3 role=user开始就是NPC和玩家的互动历史.";
 		TryExtractReplyFormatInstruction(ref text, out var instruction);
+		if (suppressReplyFormatInstruction)
+		{
+			instruction = "";
+		}
 		string text2 = string.IsNullOrWhiteSpace(instruction) ? value : (value + "\n" + instruction);
 		if (string.IsNullOrWhiteSpace(text))
 		{
@@ -17546,11 +17992,11 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 		return true;
 	}
 
-	private List<object> BuildStrictSceneMessagesForNpc(int npcAgentIndex, string systemPrompt, IEnumerable<string> prefixUserSections, IEnumerable<string> suffixUserSections = null, bool currentInputAlreadyRecorded = true, string currentPlayerInput = null, int maxHistoryMessages = 18)
+	private List<object> BuildStrictSceneMessagesForNpc(int npcAgentIndex, string systemPrompt, IEnumerable<string> prefixUserSections, IEnumerable<string> suffixUserSections = null, bool currentInputAlreadyRecorded = true, string currentPlayerInput = null, int maxHistoryMessages = 18, bool suppressReplyFormatInstruction = false)
 	{
 		List<object> list = new List<object>
 		{
-			CreateChatMessage("system", BuildStrictSceneMessagesSystemPrompt(systemPrompt))
+			CreateChatMessage("system", BuildStrictSceneMessagesSystemPrompt(systemPrompt, suppressReplyFormatInstruction))
 		};
 		AppendStrictSceneUserSections(list, prefixUserSections);
 		List<ConversationMessage> npcConversationHistorySnapshot = GetNpcConversationHistorySnapshot(npcAgentIndex);
@@ -20343,7 +20789,7 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 		string roleTopIntro = BuildSceneSystemTopPromptIntroForSingle(targetNpc, contextHero, new List<NpcDataPacket> { targetNpc }, partyTransferTopicSelected: partyTransferTopicSelected);
 		string roleRuntimeContext = BuildCompactSceneUserRuntimeContextForShortReply(targetNpc, contextHero, new List<NpcDataPacket> { targetNpc }, partyTransferTopicSelected: partyTransferTopicSelected);
 		string layeredPrompt = AppendPlayerCustomPromptRuleToSystemPrompt(roleTopIntro);
-		List<object> messages = BuildStrictSceneMessagesForNpc(targetNpc.AgentIndex, layeredPrompt, new string[3] { privateRecentWindowSection, persistedWithoutRecentWindow, BuildSceneCompositeUserBlock("", roleRuntimeContext, text) }, new string[1] { "请只根据你当前可见的场景消息、你自己的身份、处境和性格，回复一段发言，" + BuildReplyLengthInstruction(minTokens, maxTokens) + "，只输出你嘴里说出的话，不要描述你的行为和思考。" });
+		List<object> messages = BuildStrictSceneMessagesForNpc(targetNpc.AgentIndex, layeredPrompt, new string[3] { privateRecentWindowSection, persistedWithoutRecentWindow, BuildSceneCompositeUserBlock("", roleRuntimeContext, text) }, new string[1] { "请只根据你当前可见的场景消息、你自己的身份、处境和性格，回复一段发言，" + BuildSimpleDialogueReplyLengthInstruction(minTokens, maxTokens) + "，只输出你嘴里说出的话，不要描述你的行为和思考。" }, suppressReplyFormatInstruction: true);
 		if (!AIConfigHandler.TryCallAuxiliarySimpleDialogue(messages, maxTokens, 0.35f, out var text2, out var error))
 		{
 			Logger.Log("ShoutBehavior", "[ImmediateSceneReaction] auxiliary_simple_dialogue failed: " + error);

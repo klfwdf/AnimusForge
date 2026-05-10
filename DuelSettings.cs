@@ -189,11 +189,15 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyGroup("3. 场景喊话")]
 	public int ShoutMaxTokens { get; set; } = 40;
 
-	[SettingPropertyInteger("气泡字体大小", 10, 40, "0", Order = 5, RequireRestart = false, HintText = "设置场景喊话气泡中文字的字体大小")]
+	[SettingPropertyInteger("内心思考最小字数", 40, 2000, "0", Order = 5, RequireRestart = false, HintText = "场景喊话回复格式中，括号内心思考部分的最小字数。最低 40，默认 200。")]
+	[SettingPropertyGroup("3. 场景喊话")]
+	public int ShoutThoughtMinTokens { get; set; } = 200;
+
+	[SettingPropertyInteger("气泡字体大小", 10, 40, "0", Order = 6, RequireRestart = false, HintText = "设置场景喊话气泡中文字的字体大小")]
 	[SettingPropertyGroup("3. 场景喊话")]
 	public int BubbleFontSize { get; set; } = 14;
 
-	[SettingPropertyBool("允许玩家直接攻击触发场景冲突", Order = 6, RequireRestart = false, HintText = "开启后，玩家直接攻击和平场景 NPC 可以触发本模组的场景冲突。关闭后，本模组不再把直接攻击转成场景冲突，伤害结算完全交回原版；对话中的吵架/挑衅仍然可以触发冲突升级。")]
+	[SettingPropertyBool("允许玩家直接攻击触发场景冲突", Order = 7, RequireRestart = false, HintText = "开启后，玩家直接攻击和平场景 NPC 可以触发本模组的场景冲突。关闭后，本模组不再把直接攻击转成场景冲突，伤害结算完全交回原版；对话中的吵架/挑衅仍然可以触发冲突升级。")]
 	[SettingPropertyGroup("3. 场景喊话")]
 	public bool EnablePeaceSceneConflict { get; set; } = true;
 

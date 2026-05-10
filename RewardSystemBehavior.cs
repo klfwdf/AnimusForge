@@ -3428,12 +3428,8 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 					statusText = "执行失败：未知领地转移方向 " + directionToken + "。";
 					return false;
 				}
-				if (Clan.PlayerClan == null || settlement.OwnerClan != Clan.PlayerClan)
-				{
-					statusText = $"执行失败：{settlement.Name} 不属于玩家家族，不能转给 {giver.Name}。";
-					return false;
-				}
-				hero = giver;
+				statusText = "执行失败：玩家领地转给NPC必须通过手动交付定居点界面确认，AI文本标签无权执行。";
+				return false;
 			}
 			if (hero?.Clan == null)
 			{
@@ -4450,9 +4446,67 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		Settlement settlement = ResolveNotableMarketSettlement(hero);
 		if (IsNotableMarketHero(hero, settlement))
 		{
-			return Math.Max(0, settlement?.SettlementComponent?.Gold ?? 0);
+			return GetSettlementMarketTradeGold(settlement);
 		}
 		return GetHeroGold(hero);
+	}
+
+	public int GetSettlementMarketTradeGold(Settlement settlement = null)
+	{
+		SettlementComponent settlementMarketComponent = ResolveSettlementMarketComponent(settlement);
+		return Math.Max(0, settlementMarketComponent?.Gold ?? 0);
+	}
+
+	private static Settlement ResolveSettlementMarketSettlement(Settlement settlement = null)
+	{
+		try
+		{
+			if (settlement != null && settlement.IsTown)
+			{
+				return settlement;
+			}
+			settlement = Settlement.CurrentSettlement;
+			if (settlement != null && settlement.IsTown)
+			{
+				return settlement;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			settlement = PlayerEncounter.EncounterSettlement;
+			if (settlement != null && settlement.IsTown)
+			{
+				return settlement;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			settlement = MobileParty.MainParty?.CurrentSettlement;
+			if (settlement != null && settlement.IsTown)
+			{
+				return settlement;
+			}
+		}
+		catch
+		{
+		}
+		return null;
+	}
+
+	private static SettlementComponent ResolveSettlementMarketComponent(Settlement settlement = null)
+	{
+		Settlement settlement2 = ResolveSettlementMarketSettlement(settlement);
+		if (settlement2 == null)
+		{
+			return null;
+		}
+		return (SettlementComponent)settlement2.Town ?? settlement2.SettlementComponent;
 	}
 
 	private static bool TryResolveHeroMapOrigin(Hero hero, out Vec2 origin)
@@ -5928,7 +5982,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			}
 		}
 		StringBuilder stringBuilder = new StringBuilder();
-		int value2 = settlement.SettlementComponent?.Gold ?? 0;
+		int value2 = GetSettlementMarketTradeGold(settlement);
 		stringBuilder.Append("第纳尔: ").Append(value2).AppendLine();
 		if (includeGuidePrice)
 		{
@@ -8955,7 +9009,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			return 0;
 		}
-		SettlementComponent settlementComponent = settlement.SettlementComponent;
+		SettlementComponent settlementComponent = ResolveSettlementMarketComponent(settlement);
 		if (settlementComponent == null)
 		{
 			return 0;
@@ -8987,7 +9041,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			return 0;
 		}
 		GiveGoldAction.ApplyBetweenCharacters(giver, null, num, disableNotification: true);
-		settlement.SettlementComponent?.ChangeGold(num);
+		ResolveSettlementMarketComponent(settlement)?.ChangeGold(num);
 		return num;
 	}
 

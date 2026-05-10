@@ -501,11 +501,51 @@ public static class AIConfigHandler
 		text = ReplaceActionPostprocessOptionalSection(text, "当前可直接成立的正规婚配组合与现有婚姻（事实清单）：", "marriage_fact_hint", marriageFactHint);
 		text = ReplaceActionPostprocessOptionalSection(text, "债务提示：", "debt_hint", debtHint);
 		text = ReplaceActionPostprocessOptionalSection(text, "运行时补充事实：", "runtime_context", runtimeContext);
+		string newValue = PrepareActionPostprocessHistoryText(historyText);
 		text = text.Replace("{tag_rules}", string.IsNullOrWhiteSpace(tagRules) ? "（无）" : tagRules.Trim())
-			.Replace("{history}", string.IsNullOrWhiteSpace(historyText) ? "（无）" : historyText.Trim())
+			.Replace("{history}", string.IsNullOrWhiteSpace(newValue) ? "（无）" : newValue)
 			.Replace("{reply}", string.IsNullOrWhiteSpace(latestReplyBlock) ? "玩家: （无）\nNPC: （无）" : latestReplyBlock.Trim())
 			.Replace("{npc_name}", "NPC");
 		return Regex.Replace(text.Trim(), "(\\r?\\n){3,}", Environment.NewLine + Environment.NewLine);
+	}
+
+	public static string PrepareActionPostprocessHistoryText(string historyText)
+	{
+		string text = (historyText ?? "").Replace("\r\n", "\n").Replace('\r', '\n').Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return "";
+		}
+		StringBuilder stringBuilder = new StringBuilder(text.Length);
+		string[] array = text.Split('\n');
+		for (int i = 0; i < array.Length; i++)
+		{
+			string text2 = StripActionPostprocessHistoryInnerThoughts(array[i]);
+			if (!string.IsNullOrWhiteSpace(text2))
+			{
+				stringBuilder.AppendLine(text2);
+			}
+		}
+		return Regex.Replace(stringBuilder.ToString().Trim(), "[ \\t]{2,}", " ");
+	}
+
+	private static string StripActionPostprocessHistoryInnerThoughts(string line)
+	{
+		string text = (line ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return "";
+		}
+		if (text.StartsWith("【", StringComparison.Ordinal) && text.EndsWith("】", StringComparison.Ordinal))
+		{
+			return text;
+		}
+		text = Regex.Replace(text, "（[^（）]*）", "", RegexOptions.CultureInvariant);
+		text = Regex.Replace(text, "\\([^()]*\\)", "", RegexOptions.CultureInvariant);
+		text = Regex.Replace(text, "[ \\t]{2,}", " ", RegexOptions.CultureInvariant);
+		text = text.Trim();
+		text = text.TrimStart('，', '。', '、', '；', '：', ',', ';', ':');
+		return text.Trim();
 	}
 
 	public static string BuildActionPostprocessLatestReplyBlock(string playerText, string npcReplyText, string npcName, string historyText = null)
@@ -1606,9 +1646,9 @@ public static class AIConfigHandler
 		return flag && flag2;
 	}
 
-	private static JObject BuildAuxiliaryRouterRequestPayload(string apiUrl, string modelName, IEnumerable<object> messages, int maxTokens, float temperature, out string controlMode)
+	private static JObject BuildAuxiliaryRouterRequestPayload(string apiUrl, string modelName, IEnumerable<object> messages, int maxTokens, float temperature, out string controlMode, bool disableThinkingControls = false)
 	{
-		controlMode = ResolveAuxiliaryThinkingControlMode(apiUrl, modelName);
+		controlMode = disableThinkingControls ? "plain" : ResolveAuxiliaryThinkingControlMode(apiUrl, modelName);
 		int normalizedMaxTokens = Math.Max(16, maxTokens);
 		if (controlMode == "anthropic_thinking")
 		{
@@ -1622,6 +1662,15 @@ public static class AIConfigHandler
 			["max_tokens"] = normalizedMaxTokens,
 			["temperature"] = Math.Max(0f, Math.Min(1.5f, temperature))
 		};
+		if (disableThinkingControls && (ContainsAnyIgnoreCase(apiUrl, "deepseek") || ContainsAnyIgnoreCase(modelName, "deepseek")))
+		{
+			jObject["thinking"] = new JObject
+			{
+				["type"] = "disabled"
+			};
+			controlMode = "deepseek_disabled";
+			return jObject;
+		}
 		switch (controlMode)
 		{
 		case "deepseek_thinking":
@@ -1641,9 +1690,9 @@ public static class AIConfigHandler
 		return jObject;
 	}
 
-	public static string BuildAuxiliaryRouterRequestJsonForExternal(string apiUrl, string modelName, IEnumerable<object> messages, int maxTokens, float temperature, out string controlMode)
+	public static string BuildAuxiliaryRouterRequestJsonForExternal(string apiUrl, string modelName, IEnumerable<object> messages, int maxTokens, float temperature, out string controlMode, bool disableThinkingControls = false)
 	{
-		return BuildAuxiliaryRouterRequestPayload(apiUrl, modelName, messages, maxTokens, temperature, out controlMode).ToString(Formatting.None);
+		return BuildAuxiliaryRouterRequestPayload(apiUrl, modelName, messages, maxTokens, temperature, out controlMode, disableThinkingControls).ToString(Formatting.None);
 	}
 
 	private static bool TryGetAuxiliaryRuleRoutingConfig(out string apiUrl, out string apiKey, out string modelName)
@@ -2059,7 +2108,7 @@ public static class AIConfigHandler
 		object[] array = NormalizeAuxiliaryChatMessages(messages);
 		try
 		{
-			string jsonBody = BuildAuxiliaryRouterRequestJsonForExternal(apiUrl, modelName, array, Math.Max(16, maxTokens), temperature, out var controlMode);
+			string jsonBody = BuildAuxiliaryRouterRequestJsonForExternal(apiUrl, modelName, array, Math.Max(16, maxTokens), temperature, out var controlMode, disableThinkingControls: true);
 			using HttpRequestMessage httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, apiUrl);
 			httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
 			httpRequestMessage.Content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
@@ -2166,7 +2215,46 @@ public static class AIConfigHandler
 		{
 			list = list.Skip(list.Count - num).ToList();
 		}
-		return string.Join("\n", list);
+		return StripAuxiliaryHistoryInnerThoughts(string.Join("\n", list));
+	}
+
+	private static string StripAuxiliaryHistoryInnerThoughts(string historyBlock)
+	{
+		string text = (historyBlock ?? "").Replace("\r\n", "\n").Replace('\r', '\n').Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return "";
+		}
+		StringBuilder stringBuilder = new StringBuilder(text.Length);
+		string[] array = text.Split('\n');
+		for (int i = 0; i < array.Length; i++)
+		{
+			string text2 = StripAuxiliaryHistoryInnerThoughtsFromLine(array[i]);
+			if (!string.IsNullOrWhiteSpace(text2))
+			{
+				stringBuilder.AppendLine(text2);
+			}
+		}
+		return Regex.Replace(stringBuilder.ToString().Trim(), "[ \\t]{2,}", " ");
+	}
+
+	private static string StripAuxiliaryHistoryInnerThoughtsFromLine(string line)
+	{
+		string text = (line ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return "";
+		}
+		const string value = "\u0001AF_NONE_ASCII\u0001";
+		const string value2 = "\u0001AF_NONE_CN\u0001";
+		text = text.Replace("(none)", value).Replace("（无）", value2);
+		text = Regex.Replace(text, "（[^（）]*）", "", RegexOptions.CultureInvariant);
+		text = Regex.Replace(text, "\\([^()]*\\)", "", RegexOptions.CultureInvariant);
+		text = Regex.Replace(text, "[ \\t]{2,}", " ", RegexOptions.CultureInvariant);
+		text = text.Replace(value, "(none)").Replace(value2, "（无）");
+		text = text.Trim();
+		text = text.TrimStart('，', '。', '、', '；', '：', ',', ';', ':');
+		return text.Trim();
 	}
 
 	private static string ExtractLatestAuxiliaryNpcUtterance(List<string> lines, string latestPlayerText)
@@ -2423,7 +2511,8 @@ public static class AIConfigHandler
 		string text = NormalizeSemanticText(userText);
 		string latestNpcText;
 		string historyBlock = BuildAuxiliaryGuardrailHistoryBlock(runtimeGuardrailContext, secondaryText, userText, out latestNpcText);
-		string text2 = NormalizeSemanticText(latestNpcText);
+		string text2 = StripAuxiliaryHistoryInnerThoughtsFromLine(NormalizeSemanticText(latestNpcText));
+		string text5 = StripAuxiliaryHistoryInnerThoughtsFromLine(text);
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.AppendLine("You are a dialogue retrieval tool. Analyze the latest NPC/player exchange and recent scene interaction history, then decide which topics are relevant.");
 		for (int i = 0; i < topics.Count; i++)
@@ -2440,9 +2529,48 @@ public static class AIConfigHandler
 		stringBuilder.AppendLine();
 		stringBuilder.AppendLine("*Latest NPC/player exchange*:");
 		stringBuilder.Append("NPC: ").AppendLine(string.IsNullOrWhiteSpace(text2) ? "(none)" : NormalizeAuxiliaryRoutingRequestText(text2));
-		stringBuilder.Append("Player: ").AppendLine(string.IsNullOrWhiteSpace(text) ? "(none)" : NormalizeAuxiliaryRoutingRequestText(text));
+		stringBuilder.Append("Player: ").AppendLine(string.IsNullOrWhiteSpace(text5) ? "(none)" : NormalizeAuxiliaryRoutingRequestText(text5));
 		stringBuilder.AppendLine("Select the most similar topics. You MUST output exactly " + Math.Max(1, topN) + " topic numbers, ranked by similarity. Even if the dialogue seems entirely unrelated, you must still force-select the closest matching topics. Do NOT output 0. Format: a comma-separated list of numbers. Do not output anything else. Prioritize the *Latest NPC/player exchange*; use the scene history only as supporting context.");
-		return stringBuilder.ToString().Trim();
+		return SanitizeAuxiliaryRoutingPromptDialogueSections(stringBuilder.ToString()).Trim();
+	}
+
+	private static string SanitizeAuxiliaryRoutingPromptDialogueSections(string prompt)
+	{
+		string text = (prompt ?? "").Replace("\r\n", "\n").Replace('\r', '\n');
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return "";
+		}
+		string[] array = text.Split('\n');
+		bool flag = false;
+		bool flag2 = false;
+		for (int i = 0; i < array.Length; i++)
+		{
+			string text2 = (array[i] ?? "").Trim();
+			if (text2.StartsWith("Scene interaction history ", StringComparison.Ordinal))
+			{
+				flag = true;
+				flag2 = false;
+				continue;
+			}
+			if (text2.Equals("*Latest NPC/player exchange*:", StringComparison.Ordinal))
+			{
+				flag = false;
+				flag2 = true;
+				continue;
+			}
+			if (text2.StartsWith("Select the most similar topics.", StringComparison.Ordinal))
+			{
+				flag = false;
+				flag2 = false;
+				continue;
+			}
+			if ((flag || flag2) && !string.IsNullOrWhiteSpace(text2))
+			{
+				array[i] = StripAuxiliaryHistoryInnerThoughtsFromLine(array[i]);
+			}
+		}
+		return string.Join("\n", array).Trim();
 	}
 
 	private static bool TryCallAuxiliaryRuleRouterApi(string apiUrl, string apiKey, string modelName, string prompt, out string content, out string error)

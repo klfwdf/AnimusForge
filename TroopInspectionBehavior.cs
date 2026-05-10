@@ -555,6 +555,10 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 
 	private const float PrisonerPoseActionSpeed = 0f;
 
+	private string _lastMissionEndedLogState = "";
+
+	private float _nextMissionEndedLogTime;
+
 	public TroopInspectionMissionLogic(string dummyPartyStringId)
 	{
 		_dummyPartyStringId = dummyPartyStringId;
@@ -622,7 +626,15 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 
 	public override bool MissionEnded(ref MissionResult missionResult)
 	{
-		Log($"mission_ended_check mission_result={missionResult?.ToString() ?? "null"} battle_end_disabled={_battleEndDisabled} deployment_detected={_deploymentEndDetected}");
+		string missionResultText = missionResult?.ToString() ?? "null";
+		string state = missionResultText + "|" + _battleEndDisabled + "|" + _deploymentEndDetected;
+		float currentTime = base.Mission?.CurrentTime ?? 0f;
+		if (!string.Equals(_lastMissionEndedLogState, state, StringComparison.Ordinal) || currentTime >= _nextMissionEndedLogTime)
+		{
+			_lastMissionEndedLogState = state;
+			_nextMissionEndedLogTime = currentTime + 5f;
+			Log($"mission_ended_check mission_result={missionResultText} battle_end_disabled={_battleEndDisabled} deployment_detected={_deploymentEndDetected}");
+		}
 		return false;
 	}
 
