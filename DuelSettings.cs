@@ -18,7 +18,7 @@ using TaleWorlds.Library;
 
 namespace AnimusForge;
 
-public class DuelSettings : AttributeGlobalSettings<DuelSettings>
+public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 {
 	private static DuelSettings _fallbackSettings;
 

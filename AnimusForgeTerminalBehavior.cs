@@ -47,6 +47,7 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 
 	public void OnEngineTick()
 	{
+		MilitaryExerciseBehavior.OnEngineTick();
 		InputKey configuredTerminalKey = GetConfiguredTerminalKey();
 		bool flag = false;
 		try
@@ -149,7 +150,8 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 		{
 			new InquiryElement("trust_query", "信任度查询", null, isEnabled: true, ""),
 			new InquiryElement("weekly_reports", "查看周报", null, isEnabled: true, ""),
-			new InquiryElement("troop_inspection", "检阅士兵", null, isEnabled: true, "")
+			new InquiryElement("troop_inspection", "检阅士兵", null, isEnabled: true, ""),
+			new InquiryElement("military_exercise", "军事演习", null, isEnabled: true, "")
 		};
 		MultiSelectionInquiryData data = new MultiSelectionInquiryData("你现在想做什么？", "请选择终端功能：", list, isExitShown: true, 1, 1, "确定", "关闭", delegate(List<InquiryElement> selected)
 		{
@@ -171,6 +173,11 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 			{
 				CloseTerminal();
 				TroopInspectionBehavior.OpenInspectionFromTerminal();
+			}
+			else if (string.Equals(text, "military_exercise", StringComparison.Ordinal))
+			{
+				CloseTerminal();
+				MilitaryExerciseBehavior.OpenExerciseFromTerminal();
 			}
 			else
 			{

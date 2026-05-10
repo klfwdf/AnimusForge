@@ -181,6 +181,14 @@ public class SubModule : MBSubModuleBase
 			{
 				Logger.LogTrace("SubModule", ">>> TroopInspection patches init failed: " + ex18b.Message);
 			}
+			try
+			{
+				MilitaryExerciseBehavior.RegisterHarmonyPatches(harmony);
+			}
+			catch (Exception ex18c)
+			{
+				Logger.LogTrace("SubModule", ">>> MilitaryExercise patches init failed: " + ex18c.Message);
+			}
 			Logger.LogTrace("SubModule", ">>> Harmony patches applied.");
 		}
 		catch (Exception ex18)
