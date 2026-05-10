@@ -31,7 +31,7 @@ public partial class DuelSettings
 {
 	[SettingPropertyFloatingInteger("军事演习死亡率强度", 0f, 1f, "#0%", Order = 0, RequireRestart = false, HintText = "仅用于军事演习。0% = 所有人类单位倒地只伤不死；50% = 使用原版死亡率；100% = 原版允许死亡的目标倒地时必死。")]
 	[SettingPropertyGroup("11. 军事演习")]
-	public float MilitaryExerciseDeathRate { get; set; } = 0.5f;
+	public float MilitaryExerciseDeathRate { get; set; } = 0.02f;
 
 	[SettingPropertyBool("玩家可战死", Order = 1, RequireRestart = false, HintText = "仅用于军事演习。开启：玩家本人按军事演习死亡率强度可能战死。关闭：玩家本人倒地后必定只伤不死。")]
 	[SettingPropertyGroup("11. 军事演习")]
