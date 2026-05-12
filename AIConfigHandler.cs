@@ -285,6 +285,8 @@ public static class AIConfigHandler
 
 	public static bool RewardEnabled => _guardrail?.Reward?.IsEnabled == true;
 
+	public const string CompanionTradeBlockedInstruction = "【交易规则】不允许与同伴交易。";
+
 	public static string RewardInstruction => BuildRewardInstructionForExternal();
 
 	public static List<PostprocessRuleEntry> RewardPostprocessRules => _guardrail?.Reward?.PostprocessRules ?? new List<PostprocessRuleEntry>();
@@ -292,6 +294,18 @@ public static class AIConfigHandler
 	public static List<string> RewardTriggerKeywords => _guardrail?.Reward?.TriggerKeywords ?? new List<string>();
 
 	public static Dictionary<string, string> RewardRuntimeInstructionTemplates => _guardrail?.Reward?.RuntimeInstructionTemplates ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+	public static bool IsPlayerCompanionTradeTarget(Hero targetHero)
+	{
+		try
+		{
+			return targetHero != null && targetHero.IsPlayerCompanion;
+		}
+		catch
+		{
+			return false;
+		}
+	}
 
 	public static bool LoanEnabled => _guardrail?.Loan?.IsEnabled == true;
 
@@ -1897,6 +1911,33 @@ public static class AIConfigHandler
 		}
 	}
 
+	private static object[] CopyAuxiliaryChatMessagesPreservingNames(IEnumerable<object> messages)
+	{
+		try
+		{
+			JArray jArray = JArray.FromObject(messages ?? Array.Empty<object>());
+			List<object> list = new List<object>();
+			foreach (JToken item in jArray)
+			{
+				string role = (item?["role"]?.ToString() ?? "").Trim();
+				string content = item?["content"]?.ToString() ?? "";
+				if (!string.IsNullOrWhiteSpace(role) || !string.IsNullOrWhiteSpace(content))
+				{
+					list.Add(new
+					{
+						role,
+						content
+					});
+				}
+			}
+			return list.ToArray();
+		}
+		catch
+		{
+			return (messages ?? Array.Empty<object>()).ToArray();
+		}
+	}
+
 	private static string NormalizeAuxiliaryPlayerReferences(string text)
 	{
 		try
@@ -2105,7 +2146,8 @@ public static class AIConfigHandler
 			error = "auxiliary_simple_dialogue_config_invalid";
 			return false;
 		}
-		object[] array = NormalizeAuxiliaryChatMessages(messages);
+		object[] array = CopyAuxiliaryChatMessagesPreservingNames(messages);
+		Logger.RecordMessageDump("auxiliary_simple_dialogue_request", array, "auxiliary_simple_dialogue_request");
 		try
 		{
 			string jsonBody = BuildAuxiliaryRouterRequestJsonForExternal(apiUrl, modelName, array, Math.Max(16, maxTokens), temperature, out var controlMode, disableThinkingControls: true);
@@ -2580,7 +2622,7 @@ public static class AIConfigHandler
 		object[] array = BuildAuxiliaryRouterMessages(prompt);
 		try
 		{
-			string jsonBody = BuildAuxiliaryRouterRequestJsonForExternal(apiUrl, modelName, array, 1000, 0f, out var controlMode);
+			string jsonBody = BuildAuxiliaryRouterRequestJsonForExternal(apiUrl, modelName, array, 5000, 0f, out var controlMode);
 			using HttpRequestMessage httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, apiUrl);
 			httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
 			httpRequestMessage.Content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
@@ -4065,6 +4107,10 @@ public static class AIConfigHandler
 						value = text2;
 					}
 				}
+				if (hasAnyHero && string.Equals(text, "reward", StringComparison.OrdinalIgnoreCase) && IsPlayerCompanionTradeTarget(ResolveConversationTargetHero()))
+				{
+					value = CompanionTradeBlockedInstruction;
+				}
 				if (hasAnyHero && string.Equals(text, "kingdom_service", StringComparison.OrdinalIgnoreCase))
 				{
 					string runtimeKingdomServiceInstruction = BuildRuntimeKingdomServiceInstruction();
@@ -4360,6 +4406,10 @@ public static class AIConfigHandler
 		{
 			Hero hero = targetHero ?? ResolveConversationTargetHero();
 			CharacterObject characterObject = targetCharacter ?? ResolveConversationTargetCharacter();
+			if (IsPlayerCompanionTradeTarget(hero))
+			{
+				return CompanionTradeBlockedInstruction;
+			}
 			string text = ApplyPlayerDisplayNameToGuardrailText(_guardrail?.Reward?.Instruction ?? "");
 			string text2 = ApplyRuntimeTemplate(text, BuildRewardRuntimeTokens(hero, characterObject));
 			string text3 = RewardSystemBehavior.Instance?.BuildNotableMarketRewardInstruction(hero) ?? "";
@@ -4438,6 +4488,10 @@ public static class AIConfigHandler
 		{
 			Hero hero = targetHero ?? ResolveConversationTargetHero();
 			CharacterObject characterObject = targetCharacter ?? ResolveConversationTargetCharacter();
+			if (IsPlayerCompanionTradeTarget(hero))
+			{
+				return CompanionTradeBlockedInstruction;
+			}
 			int num = 6;
 			try
 			{

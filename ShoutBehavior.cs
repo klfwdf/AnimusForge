@@ -681,6 +681,14 @@ public class ShoutBehavior : CampaignBehaviorBase
 
 	private bool _isProcessingShout = false;
 
+	private const float ImmediateSceneReactionCooldownSeconds = 6f;
+
+	private readonly object _immediateSceneReactionGateLock = new object();
+
+	private readonly Dictionary<int, float> _immediateSceneReactionLastStartedMissionTime = new Dictionary<int, float>();
+
+	private readonly HashSet<int> _immediateSceneReactionInFlightAgentIndices = new HashSet<int>();
+
 	private readonly object _scenePostprocessGateLock = new object();
 
 	private int _pendingScenePostprocessActionCount = 0;
@@ -768,7 +776,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 
 	private const float PASSIVE_INTERACTION_GRACE = 0.75f;
 
-	private const float ACTIVE_INTERACTION_IDLE_TIMEOUT = 15f;
+	private const float ACTIVE_INTERACTION_IDLE_TIMEOUT = 45f;
 
 	private const float ACTIVE_INTERACTION_GROUP_IDLE_TIMEOUT = 300f;
 
@@ -782,7 +790,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 
 	private const float SCENE_GUIDE_TARGET_REACHED_DISTANCE_SQ = 36f;
 
-	private const float SCENE_GUIDE_PLAYER_LOST_TIMEOUT = 15f;
+	private const float SCENE_GUIDE_PLAYER_LOST_TIMEOUT = 45f;
 
 	private const float SCENE_GUIDE_RETURN_EXTRA_DELAY_SECONDS = ACTIVE_INTERACTION_IDLE_TIMEOUT;
 
@@ -833,6 +841,8 @@ public class ShoutBehavior : CampaignBehaviorBase
 	private const float SCENE_GHOST_TARGET_CHANGE_DISTANCE_SQ = 2.25f;
 
 	private const float SCENE_GHOST_MIN_TARGET_DISTANCE_SQ = 9f;
+
+	private const float SCENE_GHOST_PLAYER_TELEPORT_DISABLE_DISTANCE_SQ = 100f;
 
 	private const float SCENE_GHOST_STEP_COOLDOWN = 0.55f;
 
@@ -4660,7 +4670,7 @@ private static void SplitSceneNpcRoleIntroSections(string fullIntro, bool isHero
 		{
 			return true;
 		}
-		if (text.StartsWith("这是一场多人聊天", StringComparison.Ordinal) || text.StartsWith("其他人也要说话", StringComparison.Ordinal) || text.StartsWith("如果你觉得下一位还必须接话", StringComparison.Ordinal) || text.StartsWith("若你觉得在你这句之后", StringComparison.Ordinal) || text.StartsWith("如果你觉得这句之后还值得继续聊下去", StringComparison.Ordinal))
+		if (text.StartsWith("[RELAY:接力编号]", StringComparison.Ordinal) || text.StartsWith("这是一场多人聊天", StringComparison.Ordinal) || text.StartsWith("其他人也要说话", StringComparison.Ordinal) || text.StartsWith("如果你觉得下一位还必须接话", StringComparison.Ordinal) || text.StartsWith("若你觉得在你这句之后", StringComparison.Ordinal) || text.StartsWith("如果你觉得这句之后还值得继续聊下去", StringComparison.Ordinal))
 		{
 			return true;
 		}
@@ -4674,13 +4684,14 @@ private static void SplitSceneNpcRoleIntroSections(string fullIntro, bool isHero
 		{
 			return "";
 		}
-		string[] array = new string[11]
+		string[] array = new string[12]
 		{
 			"这是一场多人聊天",
 			"其他人也要说话",
 			"如果你觉得下一位还必须接话",
 			"若你觉得在你这句之后",
 			"如果你觉得这句之后还值得继续聊下去",
+			"[RELAY:接力编号]",
 			"接力编号必须从【在场人物列表】",
 			"id 必须从【在场人物列表】",
 			"你不能选你自己",
@@ -4795,6 +4806,21 @@ private static void SplitSceneNpcRoleIntroSections(string fullIntro, bool isHero
 			}
 		}
 		return false;
+	}
+
+	private static string StripDeferredSceneMoodTags(string text)
+	{
+		List<string> list = new List<string>();
+		HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		foreach (Match item in Regex.Matches(text ?? "", "\\[(?:ACTION:[^\\]]*|A:H_J_P_P|AD;[^\\]]*|ADP[:;][^\\]]*|ASS:[^\\]]*|GUI:[^\\]]*|ATT:[^\\]]*|ATP:[^\\]]*|FOL|STP|END)\\]", RegexOptions.IgnoreCase))
+		{
+			string text2 = (item?.Value ?? "").Trim();
+			if (!string.IsNullOrWhiteSpace(text2) && !text2.StartsWith("[ACTION:MOOD:", StringComparison.OrdinalIgnoreCase) && hashSet.Add(text2))
+			{
+				list.Add(text2);
+			}
+		}
+		return string.Join(" ", list).Trim();
 	}
 
 	private static string StripNpcNamePrefixSafely(string text, int maxPrefixLength = 30)
@@ -5239,7 +5265,7 @@ private static string BuildSceneSingleNpcTaskSystemBlock(string npcName, bool ha
 {
 	StringBuilder stringBuilder = new StringBuilder();
 	stringBuilder.AppendLine(BuildSingleNpcSceneReplyInstruction(npcName, hasMultiplePresentNpcs));
-	stringBuilder.Append(BuildReplyLengthInstruction(minTokens, maxTokens));
+	stringBuilder.Append(BuildReplyLengthInstruction(minTokens, maxTokens, hasMultiplePresentNpcs));
 	if (hasMultiplePresentNpcs)
 	{
 		stringBuilder.AppendLine();
@@ -5248,17 +5274,18 @@ private static string BuildSceneSingleNpcTaskSystemBlock(string npcName, bool ha
 	return stringBuilder.ToString().Trim();
 }
 
-private static string BuildReplyLengthInstruction(int minTokens, int maxTokens)
+private static string BuildReplyLengthInstruction(int minTokens, int maxTokens, bool includeRelayPromptLine = false)
 {
 	int num = Math.Max(1, minTokens);
 	int num2 = Math.Max(num, maxTokens);
 	int num3 = GetShoutThoughtMinTokens();
 	string text = (num == num2) ? $"你实际要说的话，此处约{num2}字。" : $"你实际要说的话，此处不得少于{num}字，最多{num2}字。";
+	string relayPromptLine = includeRelayPromptLine ? "\n[RELAY:接力编号](注意！接力编号必须写【在场人物列表】中的数字！)" : "";
 	if (num == num2)
 	{
-		return $"你的回复格式必须严格按照以下执行，其中内心思考要用()括起来，动作要用**括起来：\n（你的内心思考内容，不少于{num3}字）\n*你的动作内容*\n" + text;
+		return $"你的回复格式必须严格按照以下执行，其中内心思考要用()括起来，动作要用**括起来：\n（你的内心思考内容，不少于{num3}字）\n*你的动作内容*\n" + text + relayPromptLine;
 	}
-	return $"你的回复格式必须严格按照以下执行，其中内心思考要用()括起来，动作要用**括起来：\n（你的内心思考内容，不少于{num3}字）\n*你的动作内容*\n" + text;
+	return $"你的回复格式必须严格按照以下执行，其中内心思考要用()括起来，动作要用**括起来：\n（你的内心思考内容，不少于{num3}字）\n*你的动作内容*\n" + text + relayPromptLine;
 }
 
 private static string BuildSimpleDialogueReplyLengthInstruction(int minTokens, int maxTokens)
@@ -5300,9 +5327,10 @@ private static bool TryExtractReplyFormatInstruction(ref string prompt, out stri
 		{
 			continue;
 		}
+		int instructionLineCount = (i + 4 < array.Length && array[i + 4].Trim().StartsWith("[RELAY:接力编号]", StringComparison.Ordinal)) ? 5 : 4;
 		List<string> list = array.ToList();
-		instruction = string.Join("\n", list.GetRange(i, 4)).Trim();
-		list.RemoveRange(i, 4);
+		instruction = string.Join("\n", list.GetRange(i, instructionLineCount)).Trim();
+		list.RemoveRange(i, instructionLineCount);
 		prompt = string.Join("\n", list).Trim();
 		return true;
 	}
@@ -5787,6 +5815,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		_passiveCooldowns.Clear();
 		_activeInteractionSessions.Clear();
 		_pendingInteractionTimeoutArms.Clear();
+		lock (_immediateSceneReactionGateLock)
+		{
+			_immediateSceneReactionLastStartedMissionTime.Clear();
+			_immediateSceneReactionInFlightAgentIndices.Clear();
+		}
 		lock (_speechQueueLock)
 		{
 			_speechQueue.Clear();
@@ -8441,11 +8474,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 	{
 		string text = primaryDataPacket?.Name ?? "附近的人";
 		string titleText = "与 " + text + " 交流";
-		string text2 = (string.IsNullOrWhiteSpace(preface) ? "输入你想说的话：" : (preface + "\n请输入你想说的话："));
-		InformationManager.ShowTextInquiry(new TextInquiryData(titleText, text2, isAffirmativeOptionShown: true, isNegativeOptionShown: true, "发送", "取消", delegate(string input)
+		string text2 = string.IsNullOrWhiteSpace(preface) ? "" : preface;
+		DevTextEditorHelper.ShowTextInput(titleText, text2, "请输入你想说的话：", "", delegate(string input)
 		{
 			OnShoutConfirmedWithContext(input, extraFact, primaryDataPacket?.AgentIndex);
-		}, OnShoutCancelled), pauseGameActiveState: true);
+		}, OnShoutCancelled, "发送", "取消");
 	}
 
 	private static bool IsShoutTradeShowMode(ShoutChatMode mode)
@@ -8815,11 +8848,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 		string text2 = (IsShoutTroopTransferMode(_shoutTradeMode) ? ("你准备将以下部队转入对方麾下：\n" + stringBuilder.ToString()) : (IsShoutPrisonerTransferMode(_shoutTradeMode) ? ("你准备将以下俘虏交给对方：\n" + stringBuilder.ToString()) : (IsShoutSettlementTransferMode(_shoutTradeMode) ? ("你准备将以下城市或城堡转给对方家族：\n" + stringBuilder.ToString()) : ((IsShoutTradeGiveMode(_shoutTradeMode) ? "你准备给予对方以下物品：\n" : "你准备向对方展示以下物品：\n") + stringBuilder.ToString()))));
 		string titleText = "与 " + text + " 交流";
-		InformationManager.ShowTextInquiry(new TextInquiryData(titleText, text2 + "\n请输入你想说的话：", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "发送", "取消", OnShoutTradeChatConfirmed, delegate
+		DevTextEditorHelper.ShowTextInput(titleText, text2, "请输入你想说的话：", "", OnShoutTradeChatConfirmed, delegate
 		{
 			ResetShoutTradeState();
 			OnShoutCancelled();
-		}), pauseGameActiveState: true);
+		}, "发送", "取消");
 	}
 
 	private void OnShoutTradeChatConfirmed(string input)
@@ -9552,7 +9585,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			string text6 = (num > 0L) ? ("（合计总值约 " + num + " 第纳尔）") : "";
 			return text + "已经将 " + string.Join("、", list) + text6 + " 交给 " + text2 + "。如果你正在和"+text+"交易，并核对好了数量和价值，那么你现在可以将商量好的物品，第纳尔或人交给"+text+"";
 		}
-		return text + "给 " + text2 + " 看了看 总值为 " + num + " 第纳尔的各类财物：" + string.Join("、", list) + "，但暂未交付给你，不过证明了他有这些东西，如果你正在和他交易，请问他索要，如果不是交易，就无需索要";
+		return text + "给 " + text2 + " 看了看 总值为 " + num + " 第纳尔的各类财物：" + string.Join("、", list) + "，但暂未交付给你，不过证明了他有这些东西，如果你正在和他交易，请问他索要，尽量不要先把东西交给他，如果不是交易，就无需索要";
 	}
 
 	private long EstimateShoutPendingShowTotalValue()
@@ -10267,12 +10300,12 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 	}
 
-	private static string BuildSettlementTransferPostprocessListForScene(List<MyBehavior.SettlementTransferPromptEntry> npcOptions)
+	private static string BuildSettlementTransferPostprocessListForScene(List<MyBehavior.SettlementTransferPromptEntry> npcOptions, List<MyBehavior.SettlementTransferPromptEntry> playerOptions)
 	{
 		StringBuilder stringBuilder = new StringBuilder();
 		AppendCompactSettlementTransferPostprocessSectionForScene(stringBuilder, "【你家族当前可转移的城市和城堡】：", npcOptions);
-		stringBuilder.AppendLine("【玩家家族当前可转移的城市和城堡】：");
-		stringBuilder.AppendLine("（仅能通过玩家手动选择并交付；后处理不得生成 TO_NPC 标签）");
+		AppendCompactSettlementTransferPostprocessSectionForScene(stringBuilder, "【玩家家族当前可转移的城市和城堡（仅供手动交付参考）：】", playerOptions);
+		stringBuilder.AppendLine("玩家家族清单只用于理解玩家手动交付语境；后处理不得生成 TO_NPC 标签。");
 		return stringBuilder.ToString().TrimEnd();
 	}
 
@@ -11089,8 +11122,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			return (text + "\n" + AIConfigHandler.ActionPostprocessFallbackMoodTag).Trim();
 		}
+		bool companionRewardBlocked = rewardRuleInjected && AIConfigHandler.IsPlayerCompanionTradeTarget(targetHero);
+		bool transactionPostprocessEnabled = (rewardRuleInjected && !companionRewardBlocked) || loanRuleInjected;
 		List<PostprocessRuleEntry> duelRules = duelRuleInjected ? AIConfigHandler.DuelPostprocessRules : null;
-		List<PostprocessRuleEntry> transactionRules = (rewardRuleInjected || loanRuleInjected) ? MergePostprocessRulesForScene(rewardRuleInjected ? AIConfigHandler.RewardPostprocessRules : null, loanRuleInjected ? AIConfigHandler.LoanPostprocessRules : null) : null;
+		List<PostprocessRuleEntry> transactionRules = transactionPostprocessEnabled ? MergePostprocessRulesForScene((rewardRuleInjected && !companionRewardBlocked) ? AIConfigHandler.RewardPostprocessRules : null, loanRuleInjected ? AIConfigHandler.LoanPostprocessRules : null) : null;
 		List<PostprocessRuleEntry> kingdomRules = null;
 		if (kingdomServiceRuleInjected)
 		{
@@ -11122,7 +11157,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		List<MyBehavior.PartyTransferPromptEntry> partyTransferTroopOptions = null;
 		List<MyBehavior.PartyTransferPromptEntry> partyTransferPrisonerOptions = null;
 		List<MyBehavior.SettlementTransferPromptEntry> settlementTransferNpcOptions = null;
-		if (rewardRuleInjected || loanRuleInjected)
+		List<MyBehavior.SettlementTransferPromptEntry> settlementTransferPlayerOptions = null;
+		if (transactionPostprocessEnabled)
 		{
 			if (RewardSystemBehavior.Instance != null)
 			{
@@ -11199,9 +11235,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					List<MyBehavior.SettlementTransferPromptEntry> list2 = MyBehavior.BuildSettlementTransferPromptEntriesForExternal(targetHero, targetCharacter);
 					List<MyBehavior.SettlementTransferPromptEntry> allowedNpcSettlementTransferEntriesForPlayer = (RewardSystemBehavior.Instance != null) ? RewardSystemBehavior.Instance.GetAllowedNpcSettlementTransferEntriesForPlayer(targetHero, targetCharacter) : list2.Where((MyBehavior.SettlementTransferPromptEntry x) => x != null && x.Section == MyBehavior.SettlementTransferEntrySection.NpcFiefs).ToList();
 					settlementTransferNpcOptions = BuildDisplayIndexedSettlementTransferEntriesForScene(allowedNpcSettlementTransferEntriesForPlayer);
+					settlementTransferPlayerOptions = BuildDisplayIndexedSettlementTransferEntriesForScene(list2.Where((MyBehavior.SettlementTransferPromptEntry x) => x != null && x.Section == MyBehavior.SettlementTransferEntrySection.PlayerFiefs));
 					if (settlementTransferTrustForPostprocess >= 60)
 					{
-						runtimeContext = AppendPostprocessContextBlockForScene(runtimeContext, BuildSettlementTransferPostprocessListForScene(settlementTransferNpcOptions));
+						runtimeContext = AppendPostprocessContextBlockForScene(runtimeContext, BuildSettlementTransferPostprocessListForScene(settlementTransferNpcOptions, settlementTransferPlayerOptions));
 						runtimeContext = AppendPostprocessContextBlockForScene(runtimeContext, (settlementTransferTrustForPostprocess < 80) ? "【领地转移硬约束】：综合信任未到80时，NPC给玩家的目标只能来自当前清单里那座最差的城市或城堡；只允许 [ACTION:SETTLEMENT_TRANSFER:TO_PLAYER:目标]；玩家转给NPC必须走玩家手动交付流程，绝不生成 TO_NPC 标签；若本轮尚未明确成交，就不要生成这些标签。" : "【领地转移硬约束】：只允许 [ACTION:SETTLEMENT_TRANSFER:TO_PLAYER:目标]；目标只能来自当前清单的编号、名称或ID；村庄不单独转移；玩家转给NPC必须走玩家手动交付流程，绝不生成 TO_NPC 标签；若本轮尚未明确成交，就不要生成这些标签。");
 					}
 					else
@@ -11214,10 +11251,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					runtimeContext = AppendPostprocessContextBlockForScene(runtimeContext, "【领地转移硬约束】：你不是家族族长，本轮绝不可以生成任何 [ACTION:SETTLEMENT_TRANSFER:...] 标签。");
 				}
 			}
-			catch
-			{
-				settlementTransferNpcOptions = null;
-			}
+				catch
+				{
+					settlementTransferNpcOptions = null;
+					settlementTransferPlayerOptions = null;
+				}
 		}
 		if (sceneMechanismRuleInjected)
 		{
@@ -11231,7 +11269,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			return (text + "\n" + AIConfigHandler.ActionPostprocessFallbackMoodTag).Trim();
 		}
 		string text10 = duelRuleInjected ? NormalizeDuelPostprocessTagsForScene(content, duelStakeOptions, targetHero) : "";
-		string text11 = (rewardRuleInjected || loanRuleInjected) ? NormalizeRewardPostprocessTagsForScene(content, rewardOptions) : "";
+		string text11 = transactionPostprocessEnabled ? NormalizeRewardPostprocessTagsForScene(content, rewardOptions) : "";
 		string text12 = kingdomServiceRuleInjected ? NormalizeKingdomServicePostprocessTagsForScene(content, kingdomRules) : "";
 		string text13 = lordsHallRuleInjected ? NormalizeLordsHallAccessPostprocessTagsForScene(content, lordsHallRules) : "";
 		string text14 = meetingReleaseRuleInjected ? NormalizeEncounterReleasePostprocessTagsForScene(content, meetingReleaseRules) : "";
@@ -11253,6 +11291,14 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 	private static string TryRunSceneTransactionActionPostprocess(Hero targetHero, CharacterObject targetCharacter, string historyText, string replyText, List<PostprocessRuleEntry> rules, string logPrefix)
 	{
 		string text = StripRewardActionTagsForScene(replyText);
+		if (string.Equals(logPrefix, "RewardPostprocess", StringComparison.OrdinalIgnoreCase) && AIConfigHandler.IsPlayerCompanionTradeTarget(targetHero))
+		{
+			if (Regex.Matches(text ?? "", "\\[ACTION:MOOD:[^\\]]+\\]", RegexOptions.IgnoreCase).Count <= 0 && !string.IsNullOrWhiteSpace(AIConfigHandler.ActionPostprocessFallbackMoodTag))
+			{
+				text = (text + "\n" + AIConfigHandler.ActionPostprocessFallbackMoodTag).Trim();
+			}
+			return text.Trim();
+		}
 		if (targetHero == null && targetCharacter == null)
 		{
 			return text.Trim();
@@ -11628,6 +11674,41 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		return Task.CompletedTask;
 	}
 
+	private bool TryApplyDeferredSceneMoodTag(NpcDataPacket speaker, string tags)
+	{
+		try
+		{
+			MatchCollection matchCollection = Regex.Matches(tags ?? "", "\\[ACTION:MOOD:[^\\]\\r\\n]*\\]", RegexOptions.IgnoreCase);
+			if (matchCollection == null || matchCollection.Count <= 0)
+			{
+				return false;
+			}
+			string text = (matchCollection[matchCollection.Count - 1]?.Value ?? "").Trim();
+			if (string.IsNullOrWhiteSpace(text))
+			{
+				return false;
+			}
+			string text2 = text;
+			Hero hero = ResolveHeroFromAgentIndex(speaker?.AgentIndex ?? (-1));
+			if (hero != null)
+			{
+				MyBehavior.ApplyPostprocessMoodFromSceneHeroResponseExternal(hero, ref text2);
+				Logger.Log("ShoutBehavior", "[DeferredPostprocess] mood_applied hero=" + (hero.StringId ?? "") + " mood=" + text);
+			}
+			else
+			{
+				MyBehavior.ApplyPostprocessMoodFromSceneUnnamedResponseExternal(speaker?.UnnamedKey, speaker?.Name, ref text2);
+				Logger.Log("ShoutBehavior", "[DeferredPostprocess] mood_applied unnamed=" + (speaker?.UnnamedKey ?? speaker?.Name ?? "") + " mood=" + text);
+			}
+			return true;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("ShoutBehavior", "[WARN] DeferredPostprocess mood apply failed: " + ex.Message);
+			return false;
+		}
+	}
+
 	private async Task WaitForScenePostprocessGateAsync(string reason)
 	{
 		Task task = GetScenePostprocessGateTask();
@@ -11747,6 +11828,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					try
 					{
 						string text3 = ExtractDeferredSceneActionTags(deferredTags);
+						if (TryApplyDeferredSceneMoodTag(speakerSnapshot, text3))
+						{
+							text3 = StripDeferredSceneMoodTags(text3);
+						}
 						if (HasNonMoodDeferredSceneActionTag(text3))
 						{
 							if (!TryExecuteDeferredSceneFollowTagsDirectly(speakerSnapshot, text3))
@@ -12324,7 +12409,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					playerNameForTask = "玩家";
 				}
 				string taskPreamble = "你是【在场人物列表】中的NPC角色,可能是多个人。你们的唯一任务是：根据下方提供的角色信息、场景信息和对话历史，以NPC身份直接回复" + playerNameForTask + "的对话。";
-				string taskLength = BuildReplyLengthInstruction(minTokens, maxTokens);
+				string taskLength = BuildReplyLengthInstruction(minTokens, maxTokens, includeRelayPromptLine: true);
 				string systemRuleBlock = BuildSceneSystemRuleBlock(ruleExtrasSection, sceneMechanismPromptSection);
 				string layeredPrompt = BuildSceneCompositeUserBlock("", roleTopIntro, taskPreamble, taskLength);
 				layeredPrompt = AppendPlayerCustomPromptRuleToSystemPrompt(layeredPrompt);
@@ -13595,7 +13680,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				Hero hero = ResolveHeroFromAgentIndex(nearbyDatum.AgentIndex);
 				if (hero != null)
 				{
-					MyBehavior.AppendExternalDialogueHistory(hero, null, null, extraFact);
+					MyBehavior.AppendExternalSceneDialogueHistory(hero, null, null, extraFact, _sceneHistorySessionId);
 				}
 			}
 		}
@@ -15063,6 +15148,99 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 	}
 
+	private bool TryDetachSceneSummonConversationAgentForRelay(Agent agent, out Location originalLocation, out Vec3? originalPosition)
+	{
+		originalLocation = CampaignMission.Current?.Location;
+		originalPosition = (agent != null && agent.IsActive()) ? new Vec3?(agent.Position) : null;
+		if (!CanAgentParticipateInSceneSpeech(agent))
+		{
+			return false;
+		}
+		SceneSummonConversationSession session = TryGetSceneSummonConversationSessionForAgentIndex(agent.Index);
+		if (session == null)
+		{
+			return false;
+		}
+		LocationComplex locationComplex = LocationComplex.Current;
+		LocationCharacter relayLocationCharacter = locationComplex?.FindCharacter(agent);
+		if (relayLocationCharacter == null)
+		{
+			return false;
+		}
+		ClearSceneSummonConversationInteractionTimers(session);
+		bool detached = false;
+		for (int num = session.Participants.Count - 1; num >= 0; num--)
+		{
+			SceneSummonConversationParticipant participant = session.Participants[num];
+			if (participant == null || participant.LocationCharacter == null)
+			{
+				continue;
+			}
+			Agent participantAgent = ResolveAgentForLocationCharacter(participant.LocationCharacter);
+			if (participant.LocationCharacter != relayLocationCharacter && (participantAgent == null || participantAgent.Index != agent.Index))
+			{
+				continue;
+			}
+			originalLocation = participant.OriginalLocation ?? originalLocation;
+			originalPosition = participant.OriginalPosition ?? originalPosition;
+			session.Participants.RemoveAt(num);
+			detached = true;
+		}
+		if (!detached && session.SpeakerLocationCharacter == relayLocationCharacter)
+		{
+			originalLocation = session.OriginalSpeakerLocation ?? originalLocation;
+			originalPosition = session.OriginalSpeakerPosition ?? originalPosition;
+			session.SpeakerAgentIndex = -1;
+			session.SpeakerLocationCharacter = null;
+			session.KeepSpeakerNearby = false;
+			detached = true;
+		}
+		if (!detached)
+		{
+			RefreshSceneSummonConversationInteractions(session);
+			return false;
+		}
+		CancelSceneSummonBatch(session.BatchId);
+		CancelSceneReturnJob(relayLocationCharacter);
+		_pendingSceneSummonReturnsAfterSpeech.Remove(agent.Index);
+		_pendingSceneFollowCommands.Remove(agent.Index);
+		_pendingInteractionTimeoutArms.Remove(agent.Index);
+		_activeInteractionSessions.Remove(agent.Index);
+		_sceneFollowReturnStates.Remove(agent.Index);
+		StopSceneSummonFollowPlayer(agent, restoreDailyBehaviors: false);
+		RemoveSceneMovementSuppressionAgents(new int[1] { agent.Index });
+		ReleaseSceneConversationAttention(new List<int> { agent.Index }, fullyRestoreAutonomy: true);
+		if (session.SpeakerLocationCharacter == null && session.Participants.Count == 0)
+		{
+			_activeSceneSummonConversationSessions.Remove(session);
+		}
+		else if (session.Participants.Count == 0 && session.SpeakerLocationCharacter != null)
+		{
+			Agent oldSpeaker = ResolveAgentForLocationCharacter(session.SpeakerLocationCharacter);
+			if (CanAgentParticipateInSceneSpeech(oldSpeaker) && oldSpeaker.Index != agent.Index)
+			{
+				StopSceneSummonFollowPlayer(oldSpeaker);
+				_sceneFollowReturnStates.Remove(oldSpeaker.Index);
+				QueueSceneReturnJob(session.SpeakerName, session.SpeakerLocationCharacter, session.OriginalSpeakerLocation, session.OriginalSpeakerPosition);
+				_pendingInteractionTimeoutArms.Remove(oldSpeaker.Index);
+				_activeInteractionSessions.Remove(oldSpeaker.Index);
+			}
+			_activeSceneSummonConversationSessions.Remove(session);
+		}
+		else
+		{
+			RefreshSceneSummonConversationInteractions(session);
+		}
+		try
+		{
+			Logger.Log("SceneSummon", "relay_detached agent=" + agent.Index + " name=" + (agent.Name ?? "") + " originalLoc=" + (originalLocation?.StringId ?? "") + " originalPos=" + (originalPosition.HasValue ? FormatSceneSummonPosition(originalPosition.Value) : ""));
+		}
+		catch
+		{
+		}
+		return true;
+	}
+
 	private void BeginSceneSummonConversationReturn(SceneSummonConversationSession session)
 	{
 		if (session == null || CampaignMission.Current?.Location == null)
@@ -15174,11 +15352,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			return;
 		}
-		foreach (SceneReturnJob item in _activeSceneReturnJobs.Where((SceneReturnJob x) => x != null && x.LocationCharacter == locationCharacter).ToList())
-		{
-			CleanupSceneReturnDoorProxyAgent(item);
-		}
-		_activeSceneReturnJobs.RemoveAll((SceneReturnJob x) => x == null || x.LocationCharacter == locationCharacter);
+		CancelSceneReturnJob(locationCharacter);
 		_activeSceneReturnJobs.Add(new SceneReturnJob
 		{
 			DisplayName = displayName,
@@ -15188,6 +15362,19 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			OriginalPosition = originalPosition,
 			ExitPassage = null
 		});
+	}
+
+	private void CancelSceneReturnJob(LocationCharacter locationCharacter)
+	{
+		if (locationCharacter == null)
+		{
+			return;
+		}
+		foreach (SceneReturnJob item in _activeSceneReturnJobs.Where((SceneReturnJob x) => x != null && x.LocationCharacter == locationCharacter).ToList())
+		{
+			CleanupSceneReturnDoorProxyAgent(item);
+		}
+		_activeSceneReturnJobs.RemoveAll((SceneReturnJob x) => x == null || x.LocationCharacter == locationCharacter);
 	}
 
 	private void PrepareAgentForSceneSummonMovement(Agent agent)
@@ -15462,6 +15649,12 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		return CanAgentParticipateInSceneSpeech(agent) && agent != Agent.Main && !IsAgentHostileToMainAgent(agent);
 	}
 
+	private static bool IsSceneGhostTeleportDisabledNearPlayer(Agent agent)
+	{
+		Agent main = Agent.Main;
+		return agent != null && main != null && main.IsActive() && agent.Position.AsVec2.DistanceSquared(main.Position.AsVec2) <= SCENE_GHOST_PLAYER_TELEPORT_DISABLE_DISTANCE_SQ;
+	}
+
 	private void TryAddSceneGhostMovementTarget(Dictionary<int, Vec3> targets, Agent agent, Vec3 targetPosition)
 	{
 		if (targets == null || !CanAgentUseSceneGhostMovement(agent))
@@ -15609,6 +15802,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			return;
 		}
+		if (IsSceneGhostTeleportDisabledNearPlayer(agent))
+		{
+			_sceneGhostWalkStates.Remove(agent.Index);
+			return;
+		}
 		float currentTime = Mission.Current.CurrentTime;
 		float distanceSquared = agent.Position.DistanceSquared(targetPosition);
 		if (distanceSquared < SCENE_GHOST_MIN_TARGET_DISTANCE_SQ)
@@ -15674,7 +15872,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 
 	private bool TrySceneGhostStep(Agent agent, Vec3 targetPosition)
 	{
-		if (!CanAgentUseSceneGhostMovement(agent) || Mission.Current?.Scene == null)
+		if (!CanAgentUseSceneGhostMovement(agent) || IsSceneGhostTeleportDisabledNearPlayer(agent) || Mission.Current?.Scene == null)
 		{
 			return false;
 		}
@@ -15984,11 +16182,20 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			_pendingSceneFollowCommands.Remove(agent.Index);
 			StopSceneSummonFollowPlayer(agent, restoreDailyBehaviors: false);
 		}
-		SceneSummonConversationSession sceneSummonConversationSession = TryGetSceneSummonConversationSessionForAgentIndex(npc.AgentIndex);
-		if (sceneSummonConversationSession != null)
+		if (TryDetachSceneSummonConversationAgentForRelay(agent, out var relayOriginalLocation, out var relayOriginalPosition))
 		{
-			BeginSceneSummonConversationReturn(sceneSummonConversationSession);
+			originalSpeakerLocation = relayOriginalLocation ?? originalSpeakerLocation;
+			originalSpeakerPosition = relayOriginalPosition ?? originalSpeakerPosition;
 		}
+		else
+		{
+			SceneSummonConversationSession sceneSummonConversationSession = TryGetSceneSummonConversationSessionForAgentIndex(npc.AgentIndex);
+			if (sceneSummonConversationSession != null)
+			{
+				BeginSceneSummonConversationReturn(sceneSummonConversationSession);
+			}
+		}
+		CancelSceneReturnJob(locationCharacter);
 		foreach (ActiveSceneSummonRequest item in _activeSceneSummonRequests.Where((ActiveSceneSummonRequest x) => x == null || x.SpeakerAgentIndex == npc.AgentIndex).ToList())
 		{
 			CleanupSceneSummonDoorProxyAgent(item);
@@ -16171,6 +16378,27 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 	}
 
+	private static bool TryStartEscortBehavior(Agent ownerAgent, Agent targetAgent, EscortAgentBehavior.OnTargetReachedDelegate onTargetReached = null)
+	{
+		try
+		{
+			AgentNavigator agentNavigator = ownerAgent?.GetComponent<CampaignAgentComponent>()?.AgentNavigator;
+			InterruptingBehaviorGroup behaviorGroup = agentNavigator?.GetBehaviorGroup<InterruptingBehaviorGroup>();
+			if (behaviorGroup == null || ownerAgent == null || Agent.Main == null || !Agent.Main.IsActive() || targetAgent == null || !targetAgent.IsActive())
+			{
+				return false;
+			}
+			EscortAgentBehavior escortAgentBehavior = behaviorGroup.GetBehavior<EscortAgentBehavior>() ?? behaviorGroup.AddBehavior<EscortAgentBehavior>();
+			behaviorGroup.SetScriptedBehavior<EscortAgentBehavior>();
+			escortAgentBehavior.Initialize(Agent.Main, targetAgent, onTargetReached);
+			return true;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
 	private static bool TryStartEscortBehavior(Agent ownerAgent, Vec3 targetPosition, EscortAgentBehavior.OnTargetReachedDelegate onTargetReached = null)
 	{
 		try
@@ -16260,11 +16488,12 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				{
 					return false;
 				}
-				Vec3 targetPosition = agent.Position;
-				bool started = TryStartEscortBehavior(guideAgent, targetPosition, BuildSceneGuideArrivalCallback(request, reachedDoor: false));
+				// 带路必须绑定实时目标 Agent，严禁改回 Vec3 targetPosition。
+				// 原版 EscortAgentBehavior 对固定坐标目标不会稳定执行带路，容易只记录死坐标或直接停止。
+				bool started = TryStartEscortBehavior(guideAgent, agent, BuildSceneGuideArrivalCallback(request, reachedDoor: false));
 				try
 				{
-					Logger.Log("SceneGuide", "escort_started_same_scene_position guide=" + (request.GuideName ?? "") + " target=" + (request.TargetName ?? "") + " ok=" + started + " pos=" + FormatSceneSummonPosition(targetPosition));
+					Logger.Log("SceneGuide", "escort_started_same_scene_position guide=" + (request.GuideName ?? "") + " target=" + (request.TargetName ?? "") + " ok=" + started + " pos=" + FormatSceneSummonPosition(agent.Position));
 				}
 				catch
 				{
@@ -16285,20 +16514,20 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			Agent agent2 = EnsureSceneGuideDoorProxyAgent(request, currentScenePassageToLocation, guideAgent);
 			if (agent2 != null && agent2.IsActive())
 			{
-				EscortAgentBehavior.AddEscortAgentBehavior(guideAgent, agent2, BuildSceneGuideArrivalCallback(request, reachedDoor: true));
+				bool started2 = TryStartEscortBehavior(guideAgent, agent2, BuildSceneGuideArrivalCallback(request, reachedDoor: true));
 				try
 				{
-					Logger.Log("SceneGuide", "escort_started_door_proxy guide=" + (request.GuideName ?? "") + " target=" + (request.TargetName ?? ""));
+					Logger.Log("SceneGuide", "escort_started_door_proxy guide=" + (request.GuideName ?? "") + " target=" + (request.TargetName ?? "") + " ok=" + started2);
 				}
 				catch
 				{
 				}
-				return true;
+				return started2;
 			}
-			bool flag = TryStartEscortBehavior(guideAgent, currentScenePassageToLocation, BuildSceneGuideArrivalCallback(request, reachedDoor: true));
+			bool flag = NavigateAgentToScenePassage(guideAgent, currentScenePassageToLocation);
 			try
 			{
-				Logger.Log("SceneGuide", "escort_started_passage guide=" + (request.GuideName ?? "") + " target=" + (request.TargetName ?? "") + " ok=" + flag);
+				Logger.Log("SceneGuide", "guide_started_passage_navigation guide=" + (request.GuideName ?? "") + " target=" + (request.TargetName ?? "") + " ok=" + flag);
 			}
 			catch
 			{
@@ -18223,12 +18452,66 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 		}
 	}
 
+	private bool TryBeginImmediateSceneReactionGeneration(int targetAgentIndex, out string suppressReason)
+	{
+		suppressReason = "";
+		if (targetAgentIndex < 0)
+		{
+			suppressReason = "invalid_agent";
+			return false;
+		}
+		float currentTime = 0f;
+		try
+		{
+			currentTime = Mission.Current?.CurrentTime ?? 0f;
+		}
+		catch
+		{
+			currentTime = 0f;
+		}
+		lock (_immediateSceneReactionGateLock)
+		{
+			if (_immediateSceneReactionInFlightAgentIndices.Contains(targetAgentIndex))
+			{
+				suppressReason = "in_flight";
+				return false;
+			}
+			if (_immediateSceneReactionLastStartedMissionTime.TryGetValue(targetAgentIndex, out var lastStarted) && currentTime - lastStarted < ImmediateSceneReactionCooldownSeconds)
+			{
+				suppressReason = $"cooldown elapsed={Math.Max(0f, currentTime - lastStarted):0.###}s";
+				return false;
+			}
+			_immediateSceneReactionInFlightAgentIndices.Add(targetAgentIndex);
+			_immediateSceneReactionLastStartedMissionTime[targetAgentIndex] = currentTime;
+			return true;
+		}
+	}
+
+	private void FinishImmediateSceneReactionGeneration(int targetAgentIndex)
+	{
+		if (targetAgentIndex < 0)
+		{
+			return;
+		}
+		try
+		{
+			lock (_immediateSceneReactionGateLock)
+			{
+				_immediateSceneReactionInFlightAgentIndices.Remove(targetAgentIndex);
+			}
+		}
+		catch
+		{
+		}
+	}
+
 	private void TriggerImmediateSceneBehaviorReaction(string factText, int targetAgentIndex, bool persistHeroPrivateHistory, bool suppressStare, float postSpeechLeaveSeconds = -1f, bool skipSceneFactRecord = false, bool returnSceneSummonOnTimeout = false)
 	{
 		if (string.IsNullOrWhiteSpace(factText) || targetAgentIndex < 0 || Mission.Current == null)
 		{
 			return;
 		}
+		bool immediateSceneReactionGateEntered = false;
 		try
 		{
 			List<Agent> nearbyNPCAgents = ShoutUtils.GetNearbyNPCAgents();
@@ -18250,6 +18533,12 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 			{
 				return;
 			}
+			if (!TryBeginImmediateSceneReactionGeneration(targetAgentIndex, out var suppressReason))
+			{
+				Logger.Log("ShoutBehavior", $"[ImmediateSceneReaction] skipped targetAgentIndex={targetAgentIndex} reason={suppressReason}");
+				return;
+			}
+			immediateSceneReactionGateEntered = true;
 			if (IsAgentHostileToMainAgent(agent))
 			{
 				_activeInteractionSessions.Remove(targetAgentIndex);
@@ -18294,10 +18583,19 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 				{
 					Logger.Log("ShoutBehavior", "[ERROR] TriggerImmediateSceneBehaviorReaction background failed: " + ex2.Message);
 				}
+				finally
+				{
+					FinishImmediateSceneReactionGeneration(npcDataPacket.AgentIndex);
+				}
 			});
+			immediateSceneReactionGateEntered = false;
 		}
 		catch (Exception ex)
 		{
+			if (immediateSceneReactionGateEntered)
+			{
+				FinishImmediateSceneReactionGeneration(targetAgentIndex);
+			}
 			Logger.Log("ShoutBehavior", "[ERROR] TriggerImmediateSceneBehaviorReaction failed: " + ex.Message);
 		}
 	}

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
@@ -1998,6 +1999,12 @@ public class SceneTauntMissionBehavior : MissionBehavior
 
 	private const float ArmedBystanderReactionRadiusMeters = 20f;
 
+	private const double SceneTauntPerfStageThresholdMs = 4.0;
+
+	private const double SceneTauntPerfHeavyStageThresholdMs = 10.0;
+
+	private const double SceneTauntPerfTickThresholdMs = 12.0;
+
 	private const string FallbackSoldierWeaponId = "iron_spatha_sword_t2";
 
 	private const float SceneTauntCrimeCapBeforeWar = 59f;
@@ -2007,6 +2014,16 @@ public class SceneTauntMissionBehavior : MissionBehavior
 	private const float SceneTauntPerKnockdownCrimeAmount = 20f;
 
 	private const int SceneTauntPerKnockdownTrustPenalty = 20;
+
+	private const int OwnedSettlementPassiveAttackLoyaltyPenalty = 20;
+
+	private const float OwnedSettlementPassiveAttackReactionCooldownSeconds = 4f;
+
+	private const float OwnedSettlementPassiveHandsUpPoseRefreshInterval = 0.35f;
+
+	private const float OwnedSettlementPassiveHandsUpPoseStartProgress = 0.35f;
+
+	private const float OwnedSettlementPassiveHandsUpPoseActionSpeed = 0f;
 
 	private const float SceneGoldPickupDistanceSquared = 4f;
 
@@ -2119,6 +2136,30 @@ public class SceneTauntMissionBehavior : MissionBehavior
 
 	private readonly HashSet<int> _penalizedArmedKnockdownAgentIndices = new HashSet<int>();
 
+	private readonly HashSet<int> _ownedSettlementPassiveVictimAgentIndices = new HashSet<int>();
+
+	private readonly HashSet<int> _ownedSettlementPassiveDamagedAgentIndices = new HashSet<int>();
+
+	private readonly HashSet<int> _ownedSettlementPassiveKnockdownAgentIndices = new HashSet<int>();
+
+	private readonly Dictionary<int, float> _ownedSettlementPassiveReactionTimes = new Dictionary<int, float>();
+
+	private readonly HashSet<int> _ownedSettlementPassiveHandsUpPoseAppliedAgentIndices = new HashSet<int>();
+
+	private float _ownedSettlementPassiveHandsUpPoseRefreshTimer;
+
+	private bool _ownedSettlementPassiveHandsUpActionMissingLogged;
+
+	private bool _ownedSettlementPassiveHandsUpActionRejectedLogged;
+
+	private readonly Dictionary<int, Team> _ownedSettlementPassiveOriginalTeams = new Dictionary<int, Team>();
+
+	private Team _ownedSettlementPassivePlayerTeam;
+
+	private Team _ownedSettlementPassiveEnemyTeam;
+
+	private Team _ownedSettlementPassiveOriginalMainTeam;
+
 	private readonly HashSet<int> _sceneGoldDropAgentIndices = new HashSet<int>();
 
 	private readonly HashSet<int> _sceneGoldEligibleAgentIndices = new HashSet<int>();
@@ -2215,6 +2256,116 @@ public class SceneTauntMissionBehavior : MissionBehavior
 
 	public override MissionBehaviorType BehaviorType => MissionBehaviorType.Other;
 
+	private static long StartPerfTimer()
+	{
+		try
+		{
+			return Stopwatch.GetTimestamp();
+		}
+		catch
+		{
+			return 0L;
+		}
+	}
+
+	private static double GetElapsedPerfMs(long startTimestamp)
+	{
+		try
+		{
+			if (startTimestamp <= 0L)
+			{
+				return 0.0;
+			}
+			return (Stopwatch.GetTimestamp() - startTimestamp) * 1000.0 / Stopwatch.Frequency;
+		}
+		catch
+		{
+			return 0.0;
+		}
+	}
+
+	private void LogPerfPoint(string stage, string details = null)
+	{
+		try
+		{
+			Logger.Log("SceneTauntPerf", $"{stage} {BuildPerfContext()}{FormatPerfDetails(details)}");
+		}
+		catch
+		{
+		}
+	}
+
+	private void LogPerfElapsed(string stage, long startTimestamp, string details = null, double thresholdMs = SceneTauntPerfStageThresholdMs)
+	{
+		try
+		{
+			double elapsedPerfMs = GetElapsedPerfMs(startTimestamp);
+			if (elapsedPerfMs < thresholdMs)
+			{
+				return;
+			}
+			Logger.Log("SceneTauntPerf", $"{stage} elapsedMs={elapsedPerfMs:0.###} {BuildPerfContext()}{FormatPerfDetails(details)}");
+		}
+		catch
+		{
+		}
+	}
+
+	private string BuildPerfContext()
+	{
+		int totalAgents = 0;
+		int activeHumanAgents = 0;
+		try
+		{
+			if (Mission.Current?.Agents != null)
+			{
+				foreach (Agent agent in Mission.Current.Agents)
+				{
+					totalAgents++;
+					if (agent != null && agent.IsHuman && agent.IsActive())
+					{
+						activeHumanAgents++;
+					}
+				}
+			}
+		}
+		catch
+		{
+		}
+		string text = "";
+		string text2 = "";
+		float num = -1f;
+		try
+		{
+			num = Mission.Current?.CurrentTime ?? -1f;
+		}
+		catch
+		{
+		}
+		try
+		{
+			text = (CampaignMission.Current?.Location?.StringId ?? "").Trim().ToLowerInvariant();
+		}
+		catch
+		{
+			text = "";
+		}
+		try
+		{
+			text2 = Settlement.CurrentSettlement?.StringId ?? "";
+		}
+		catch
+		{
+			text2 = "";
+		}
+		return $"t={num:0.###} loc={text} settlement={text2} agents={totalAgents} activeHumans={activeHumanAgents} conflict={_conflictActive} armed={_armedConflict} player={_playerAgentIndices.Count} opponents={_opponentAgentIndices.Count} guards={_guardAgentIndices.Count} blockedWield={_blockedAiWeaponAgentIndices.Count} armedWatchers={_armedBystanderWatcherIndices.Count} passiveVictims={_ownedSettlementPassiveVictimAgentIndices.Count} goldDrops={_sceneGoldDrops.Count}";
+	}
+
+	private static string FormatPerfDetails(string details)
+	{
+		return string.IsNullOrWhiteSpace(details) ? "" : (" " + details.Trim());
+	}
+
 	internal bool IsConflictActive => _conflictActive;
 
 	internal bool ShouldSuppressNativeMissionConversation()
@@ -2263,20 +2414,38 @@ public class SceneTauntMissionBehavior : MissionBehavior
 
 	public override void OnMissionTick(float dt)
 	{
+		long tickStart = StartPerfTimer();
+		long sectionStart = StartPerfTimer();
 		TryActivateSettlementArmedCarryover();
+		LogPerfElapsed("tick.TryActivateSettlementArmedCarryover", sectionStart, $"dt={dt:0.####}");
+		sectionStart = StartPerfTimer();
+		TryMaintainOwnedSettlementPassiveAttackVictims(dt);
+		LogPerfElapsed("tick.TryMaintainOwnedSettlementPassiveAttackVictims", sectionStart, $"dt={dt:0.####}");
 		TryResolveCompletedUnarmedConflictBeforeEscalation();
 		TryCommitPendingImmediateUnarmedFightEnd();
+		sectionStart = StartPerfTimer();
 		TryMaintainSceneGoldCoinMotion(dt);
+		LogPerfElapsed("tick.TryMaintainSceneGoldCoinMotion", sectionStart, $"dt={dt:0.####}");
+		sectionStart = StartPerfTimer();
 		TryHandleSceneGoldPickupInput();
+		LogPerfElapsed("tick.TryHandleSceneGoldPickupInput", sectionStart, $"dt={dt:0.####}");
 		TryCommitPendingPlayerUnarmedPrep();
 		TryCommitPendingPlayerRearmAfterArmedConflictEnd();
 		TryCommitPendingActiveUnarmedTargetFlee();
 		TryForceActiveUnarmedTargetFleeFallback();
+		sectionStart = StartPerfTimer();
 		TryMaintainRecentlyNeutralizedFleeingCivilians();
+		LogPerfElapsed("tick.TryMaintainRecentlyNeutralizedFleeingCivilians", sectionStart, $"dt={dt:0.####}");
+		sectionStart = StartPerfTimer();
 		TryMaintainHostileUnarmedOpponentsFleeing();
+		LogPerfElapsed("tick.TryMaintainHostileUnarmedOpponentsFleeing", sectionStart, $"dt={dt:0.####}");
 		TryMaintainMainAgentArmedPresence();
+		sectionStart = StartPerfTimer();
 		TryMaintainArmedBystanderReactions();
+		LogPerfElapsed("tick.TryMaintainArmedBystanderReactions", sectionStart, $"dt={dt:0.####}");
+		sectionStart = StartPerfTimer();
 		TryAppendNearbyArmedEscalationBehaviorFacts();
+		LogPerfElapsed("tick.TryAppendNearbyArmedEscalationBehaviorFacts", sectionStart, $"dt={dt:0.####}");
 		if (IsPlayerInteractionInputSuppressed())
 		{
 			_sceneAttackReleaseSuppressed = false;
@@ -2315,6 +2484,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			EscalateToArmedConflict("player_drew_weapon");
 		}
 		UpdateMainAgentAttackReleaseTracking();
+		LogPerfElapsed("tick.total", tickStart, $"dt={dt:0.####}", SceneTauntPerfTickThresholdMs);
 	}
 
 	private void UpdateMainAgentAttackReleaseTracking()
@@ -2433,6 +2603,15 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			Logger.Log("SceneTaunt", $"[AttackTiming] facing_attack_scan time={Mission.Current?.CurrentTime:0.###} location={(CampaignMission.Current?.Location?.StringId ?? "").Trim().ToLowerInvariant()} settlement={Settlement.CurrentSettlement?.StringId} nearbyCount={(nearbyNPCAgents != null ? nearbyNPCAgents.Count : 0)} target={(facingAgent?.Name?.ToString() ?? "null")} targetIndex={(facingAgent != null ? facingAgent.Index : -1)}");
 			if (facingAgent == null || !facingAgent.IsActive())
 			{
+				return;
+			}
+			// In town/village peace scenes, player attacks only deal real damage after the target
+			// has been moved onto a hostile team. Ordinary owned-settlement NPCs use the passive
+			// preparation path here; criminal/alley NPCs must fall through to the original conflict
+			// path below, because that path performs its own native/custom team conversion.
+			if (IsOwnedSettlementPassiveAttackScene() && IsValidOwnedSettlementPassiveAttackTarget(facingAgent))
+			{
+				PrepareOwnedSettlementPassiveAttackTargetForDamage(facingAgent, "player_attack_release_targeting");
 				return;
 			}
 			TryStartConflictFromPhysicalAttack(facingAgent, IsAgentUsingRealWeapon(Agent.Main), "player_attack_release_targeting");
@@ -2644,6 +2823,574 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		}
 	}
 
+	private bool IsOwnedSettlementPassiveAttackScene()
+	{
+		try
+		{
+			Settlement settlement = GetCurrentSettlementForOwnedSettlementPassiveAttack();
+			return settlement != null && Clan.PlayerClan != null && settlement.OwnerClan == Clan.PlayerClan;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static Settlement GetCurrentSettlementForOwnedSettlementPassiveAttack()
+	{
+		try
+		{
+			return Settlement.CurrentSettlement ?? MobileParty.MainParty?.CurrentSettlement;
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static Settlement ResolveLoyaltySettlementForOwnedSettlementPassiveAttack(Settlement settlement)
+	{
+		try
+		{
+			if (settlement == null)
+			{
+				return null;
+			}
+			if (settlement.Town != null)
+			{
+				return settlement;
+			}
+			if (settlement.IsVillage && settlement.Village?.Bound?.Town != null)
+			{
+				return settlement.Village.Bound;
+			}
+		}
+		catch
+		{
+		}
+		return null;
+	}
+
+	private bool IsValidOwnedSettlementPassiveAttackTarget(Agent targetAgent)
+	{
+		if (targetAgent == null || targetAgent == Agent.Main || !targetAgent.IsHuman || !targetAgent.IsActive())
+		{
+			return false;
+		}
+		CharacterObject characterObject = targetAgent.Character as CharacterObject;
+		// Every damageable town/village target needs a hostile-team conversion first. This passive
+		// branch handles ordinary NPCs; gangsters/bandits are excluded so the existing criminal
+		// conflict flow can do the required team conversion and preserve its normal consequences.
+		return !IsSettlementCriminalConflictTarget(characterObject?.HeroObject, characterObject);
+	}
+
+	private void PrimeOwnedSettlementPassiveAttackTarget(Agent targetAgent, string reason)
+	{
+		try
+		{
+			if (!IsOwnedSettlementPassiveAttackScene() || !IsValidOwnedSettlementPassiveAttackTarget(targetAgent))
+			{
+				return;
+			}
+			_ownedSettlementPassiveVictimAgentIndices.Add(targetAgent.Index);
+			RegisterSceneGoldEligibleAgent(targetAgent, "owned_settlement_passive_attack_target");
+			Logger.Log("SceneTaunt", $"Owned settlement passive attack target tracked. Reason={reason}, Target={targetAgent.Name}, AgentIndex={targetAgent.Index}, Settlement={GetCurrentSettlementForOwnedSettlementPassiveAttack()?.StringId}");
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SceneTaunt", "Priming owned settlement passive attack target failed: " + ex.Message);
+		}
+	}
+
+	private void PrepareOwnedSettlementPassiveAttackTargetForDamage(Agent targetAgent, string reason)
+	{
+		try
+		{
+			if (!IsOwnedSettlementPassiveAttackScene() || !IsValidOwnedSettlementPassiveAttackTarget(targetAgent))
+			{
+				return;
+			}
+			PrimeOwnedSettlementPassiveAttackTarget(targetAgent, reason);
+			TryForceAgentMortal(targetAgent);
+			EnsureOwnedSettlementPassiveAttackHostility(targetAgent, reason);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SceneTaunt", "Preparing owned settlement passive attack target failed: " + ex.Message);
+		}
+	}
+
+	private void EnsureOwnedSettlementPassiveAttackHostility(Agent targetAgent, string reason)
+	{
+		try
+		{
+			Mission current = Mission.Current;
+			Agent main = Agent.Main;
+			if (current == null || main == null || !main.IsActive() || targetAgent == null || !targetAgent.IsActive())
+			{
+				return;
+			}
+			if (_ownedSettlementPassiveOriginalMainTeam == null)
+			{
+				_ownedSettlementPassiveOriginalMainTeam = main.Team;
+			}
+			if (!_ownedSettlementPassiveOriginalTeams.ContainsKey(targetAgent.Index))
+			{
+				_ownedSettlementPassiveOriginalTeams[targetAgent.Index] = targetAgent.Team;
+			}
+			if (_ownedSettlementPassivePlayerTeam == null)
+			{
+				_ownedSettlementPassivePlayerTeam = main.Team ?? current.PlayerTeam;
+				if (_ownedSettlementPassivePlayerTeam == null)
+				{
+					uint color = Hero.MainHero?.MapFaction?.Color ?? 4278190335u;
+					uint color2 = Hero.MainHero?.MapFaction?.Color2 ?? 4278190208u;
+					Banner banner = Hero.MainHero?.Clan?.Banner;
+					_ownedSettlementPassivePlayerTeam = current.Teams.Add(BattleSideEnum.Attacker, color, color2, banner, isPlayerGeneral: true, isPlayerSergeant: false);
+				}
+			}
+			if (_ownedSettlementPassiveEnemyTeam == null)
+			{
+				uint color3 = targetAgent.Team?.Color ?? 4294901760u;
+				uint color4 = targetAgent.Team?.Color2 ?? 4286578688u;
+				_ownedSettlementPassiveEnemyTeam = current.Teams.Add(BattleSideEnum.Defender, color3, color4, null, isPlayerGeneral: false, isPlayerSergeant: true);
+			}
+			if (_ownedSettlementPassivePlayerTeam == null || _ownedSettlementPassiveEnemyTeam == null || _ownedSettlementPassivePlayerTeam == _ownedSettlementPassiveEnemyTeam)
+			{
+				return;
+			}
+			try
+			{
+				current.PlayerTeam = _ownedSettlementPassivePlayerTeam;
+			}
+			catch
+			{
+			}
+			if (main.Team != _ownedSettlementPassivePlayerTeam)
+			{
+				main.SetTeam(_ownedSettlementPassivePlayerTeam, sync: true);
+			}
+			try
+			{
+				Agent mountAgent = main.MountAgent;
+				if (mountAgent != null && mountAgent.IsActive() && mountAgent.Team != _ownedSettlementPassivePlayerTeam)
+				{
+					mountAgent.SetTeam(_ownedSettlementPassivePlayerTeam, sync: true);
+				}
+			}
+			catch
+			{
+			}
+			if (targetAgent.Team != _ownedSettlementPassiveEnemyTeam)
+			{
+				targetAgent.SetTeam(_ownedSettlementPassiveEnemyTeam, sync: true);
+			}
+			try
+			{
+				Agent mountAgent2 = targetAgent.MountAgent;
+				if (mountAgent2 != null && mountAgent2.IsActive() && mountAgent2.Team != _ownedSettlementPassiveEnemyTeam)
+				{
+					mountAgent2.SetTeam(_ownedSettlementPassiveEnemyTeam, sync: true);
+				}
+			}
+			catch
+			{
+			}
+			_ownedSettlementPassivePlayerTeam.SetIsEnemyOf(_ownedSettlementPassiveEnemyTeam, isEnemyOf: true);
+			_ownedSettlementPassiveEnemyTeam.SetIsEnemyOf(_ownedSettlementPassivePlayerTeam, isEnemyOf: true);
+			TryApplyOwnedSettlementPassiveHandsUpPose(targetAgent);
+			try
+			{
+				if (targetAgent.IsAIControlled)
+				{
+					targetAgent.ResetEnemyCaches();
+					targetAgent.InvalidateTargetAgent();
+					targetAgent.InvalidateAIWeaponSelections();
+				}
+				if (main.IsAIControlled)
+				{
+					main.ResetEnemyCaches();
+					main.InvalidateTargetAgent();
+					main.InvalidateAIWeaponSelections();
+				}
+			}
+			catch
+			{
+			}
+			Logger.Log("SceneTaunt", $"Owned settlement passive attack hostility prepared. Reason={reason}, Target={targetAgent.Name}, TargetIndex={targetAgent.Index}");
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SceneTaunt", "Preparing owned settlement passive attack hostility failed: " + ex.Message);
+		}
+	}
+
+	private bool TryPrimeOwnedSettlementPassiveAttackOnHit(Agent targetAgent, string reason)
+	{
+		if (!IsOwnedSettlementPassiveAttackScene() || !IsValidOwnedSettlementPassiveAttackTarget(targetAgent))
+		{
+			return false;
+		}
+		PrepareOwnedSettlementPassiveAttackTargetForDamage(targetAgent, reason);
+		return true;
+	}
+
+	private bool TryHandleOwnedSettlementPassiveAttackDamage(Agent targetAgent, float damagedHp, string reason)
+	{
+		try
+		{
+			if (damagedHp <= 0f || !IsOwnedSettlementPassiveAttackScene() || !IsValidOwnedSettlementPassiveAttackTarget(targetAgent))
+			{
+				return false;
+			}
+			PrepareOwnedSettlementPassiveAttackTargetForDamage(targetAgent, reason);
+			Settlement settlement = GetCurrentSettlementForOwnedSettlementPassiveAttack();
+			bool firstDamage = _ownedSettlementPassiveDamagedAgentIndices.Add(targetAgent.Index);
+			if (firstDamage)
+			{
+				ApplyOwnedSettlementPassiveAttackLoyaltyPenalty(settlement, OwnedSettlementPassiveAttackLoyaltyPenalty, "owned_settlement_npc_first_damage", targetAgent);
+				TryTriggerOwnedSettlementPassiveAttackReaction(targetAgent, knockedDown: false);
+			}
+			TryHoldOwnedSettlementPassiveVictimInHandsUpPose(targetAgent);
+			return true;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SceneTaunt", "Handling owned settlement passive attack damage failed: " + ex.Message);
+			return false;
+		}
+	}
+
+	private void TryHandleOwnedSettlementPassiveAttackKnockdown(Agent affectedAgent, Agent affectorAgent, AgentState agentState)
+	{
+		try
+		{
+			if ((agentState != AgentState.Unconscious && agentState != AgentState.Killed) || affectorAgent != Agent.Main || !IsOwnedSettlementPassiveAttackScene() || affectedAgent == null || !affectedAgent.IsHuman || affectedAgent == Agent.Main)
+			{
+				return;
+			}
+			if (!_ownedSettlementPassiveVictimAgentIndices.Contains(affectedAgent.Index) && !_ownedSettlementPassiveDamagedAgentIndices.Contains(affectedAgent.Index))
+			{
+				return;
+			}
+			Settlement settlement = GetCurrentSettlementForOwnedSettlementPassiveAttack();
+			bool firstDamage = _ownedSettlementPassiveDamagedAgentIndices.Add(affectedAgent.Index);
+			if (firstDamage)
+			{
+				ApplyOwnedSettlementPassiveAttackLoyaltyPenalty(settlement, OwnedSettlementPassiveAttackLoyaltyPenalty, "owned_settlement_npc_first_damage_before_knockdown", affectedAgent);
+			}
+			bool firstKnockdown = _ownedSettlementPassiveKnockdownAgentIndices.Add(affectedAgent.Index);
+			if (firstKnockdown)
+			{
+				ApplyOwnedSettlementPassiveAttackLoyaltyPenalty(settlement, OwnedSettlementPassiveAttackLoyaltyPenalty, "owned_settlement_npc_knockdown", affectedAgent);
+				TryQueueOwnedSettlementPassiveNotableBattleDeath(affectedAgent, affectorAgent, agentState);
+			}
+			Logger.Log("SceneTaunt", $"Owned settlement passive attack knockdown handled. Target={affectedAgent.Name}, AgentIndex={affectedAgent.Index}, State={agentState}, Settlement={settlement?.StringId}");
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SceneTaunt", "Handling owned settlement passive attack knockdown failed: " + ex.Message);
+		}
+	}
+
+	private void ApplyOwnedSettlementPassiveAttackLoyaltyPenalty(Settlement currentSettlement, int penalty, string reason, Agent targetAgent)
+	{
+		try
+		{
+			Settlement loyaltySettlement = ResolveLoyaltySettlementForOwnedSettlementPassiveAttack(currentSettlement);
+			if (loyaltySettlement?.Town == null || penalty <= 0)
+			{
+				return;
+			}
+			float loyalty = loyaltySettlement.Town.Loyalty;
+			float num = MBMath.ClampFloat(loyalty - penalty, 0f, 100f);
+			loyaltySettlement.Town.Loyalty = num;
+			float num2 = MathF.Max(0f, loyalty - num);
+			string text = targetAgent?.Name?.ToString() ?? "NPC";
+			InformationManager.DisplayMessage(new InformationMessage($"{loyaltySettlement.Name} 忠诚度 -{num2:0.#}：你在自己的定居点内伤害了 {text}。", new Color(1f, 0.45f, 0.2f)));
+			Logger.Log("SceneTaunt", $"Owned settlement passive attack loyalty penalty. CurrentSettlement={currentSettlement?.StringId}, LoyaltySettlement={loyaltySettlement.StringId}, Target={text}, Reason={reason}, Loyalty={loyalty:0.##}->{num:0.##}, Requested={penalty}, Applied={num2:0.##}");
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SceneTaunt", "Applying owned settlement passive attack loyalty penalty failed: " + ex.Message);
+		}
+	}
+
+	private void TryQueueOwnedSettlementPassiveNotableBattleDeath(Agent affectedAgent, Agent affectorAgent, AgentState agentState)
+	{
+		try
+		{
+			if (agentState != AgentState.Killed && agentState != AgentState.Unconscious)
+			{
+				return;
+			}
+			CharacterObject characterObject = affectedAgent?.Character as CharacterObject;
+			Hero hero = characterObject?.HeroObject;
+			if (!SceneTauntBehavior.IsSceneNotableTauntTarget(hero) || !_sceneNotableDeferredBattleDeathCandidates.Contains(hero))
+			{
+				return;
+			}
+			Hero hero2 = (affectorAgent?.Character as CharacterObject)?.HeroObject;
+			if (hero2 == null && affectorAgent == Agent.Main)
+			{
+				hero2 = Hero.MainHero;
+			}
+			SceneTauntBehavior.MarkPendingSceneNotableBattleDeathForExternal(hero, hero2, agentState == AgentState.Killed ? "owned_settlement_passive_location_kill" : "owned_settlement_passive_unconscious_deathmark");
+			_sceneNotableDeferredBattleDeathCandidates.Remove(hero);
+			_sceneNotableRecentHitNonLethal.Remove(hero);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SceneTaunt", "Queueing owned settlement notable battle death failed: " + ex.Message);
+		}
+	}
+
+	private void TryTriggerOwnedSettlementPassiveAttackReaction(Agent targetAgent, bool knockedDown)
+	{
+		try
+		{
+			if (!IsValidOwnedSettlementPassiveAttackTarget(targetAgent))
+			{
+				return;
+			}
+			float num = Mission.Current?.CurrentTime ?? 0f;
+			if (!knockedDown && _ownedSettlementPassiveReactionTimes.TryGetValue(targetAgent.Index, out var value) && num - value < OwnedSettlementPassiveAttackReactionCooldownSeconds)
+			{
+				return;
+			}
+			_ownedSettlementPassiveReactionTimes[targetAgent.Index] = num;
+			string text = MyBehavior.BuildPlayerPublicDisplayNameForExternal();
+			if (string.IsNullOrWhiteSpace(text))
+			{
+				text = "玩家";
+			}
+			string factText = knockedDown ? ("[AFEF NPC行为补充] " + text + "在自己的定居点内把你击倒了。这里属于" + text + "的家族，" + text + "是此地领主/主人；你已经被领主打倒，正在原地抱头，不会反击。你必须把" + text + "当作你的领主大人来回应，只能恐惧、服从、求饶、认错，说出类似“领主大人饶命”“求您宽恕我”的话。不要强硬回嘴、威胁、挑衅、摆贵族架子、宣称对方不敢动你、指责对方会遭报应，也不要用民族或国家立场顶嘴。不要生成犯罪值相关内容。") : ("[AFEF NPC行为补充] " + text + "在自己的定居点内直接打伤了你。这里属于" + text + "的家族，" + text + "是此地领主/主人；你被领主惩戒后正在原地抱头，不会反击。你必须把" + text + "当作你的领主大人来回应，只能恐惧、服从、求饶、认错，说出类似“领主大人饶命”“求您宽恕我”的话。不要强硬回嘴、威胁、挑衅、摆贵族架子、宣称对方不敢动你、指责对方会遭报应，也不要用民族或国家立场顶嘴。不要生成犯罪值相关内容。");
+			ShoutBehavior.TriggerImmediateSceneBehaviorReactionForExternal(factText, targetAgent.Index, persistHeroPrivateHistory: true, suppressStare: true);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SceneTaunt", "Triggering owned settlement passive attack reaction failed: " + ex.Message);
+		}
+	}
+
+	private void TryMaintainOwnedSettlementPassiveAttackVictims(float dt)
+	{
+		try
+		{
+			if (_ownedSettlementPassiveVictimAgentIndices.Count == 0 || Mission.Current == null)
+			{
+				return;
+			}
+			List<int> list = null;
+			foreach (int item in _ownedSettlementPassiveVictimAgentIndices)
+			{
+				Agent agent = Mission.Current.Agents?.FirstOrDefault(a => a != null && a.Index == item);
+				if (!IsValidOwnedSettlementPassiveAttackTarget(agent))
+				{
+					if (list == null)
+					{
+						list = new List<int>();
+					}
+					list.Add(item);
+					continue;
+				}
+				EnsureOwnedSettlementPassiveAttackHostility(agent, "owned_settlement_passive_maintain");
+				if (ShouldRefreshOwnedSettlementPassiveHandsUpPose(dt) || _ownedSettlementPassiveDamagedAgentIndices.Contains(item))
+				{
+					TryHoldOwnedSettlementPassiveVictimInHandsUpPose(agent);
+				}
+			}
+			if (list == null)
+			{
+				return;
+			}
+			foreach (int item2 in list)
+			{
+				_ownedSettlementPassiveVictimAgentIndices.Remove(item2);
+				_ownedSettlementPassiveReactionTimes.Remove(item2);
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SceneTaunt", "Maintaining owned settlement passive attack victims failed: " + ex.Message);
+		}
+	}
+
+	private bool ShouldRefreshOwnedSettlementPassiveHandsUpPose(float dt)
+	{
+		_ownedSettlementPassiveHandsUpPoseRefreshTimer -= dt;
+		if (_ownedSettlementPassiveHandsUpPoseRefreshTimer > 0f)
+		{
+			return false;
+		}
+		_ownedSettlementPassiveHandsUpPoseRefreshTimer = OwnedSettlementPassiveHandsUpPoseRefreshInterval;
+		return true;
+	}
+
+	private void TryHoldOwnedSettlementPassiveVictimInHandsUpPose(Agent agent)
+	{
+		try
+		{
+			if (agent == null || !agent.IsActive())
+			{
+				return;
+			}
+			try
+			{
+				agent.SetLookAgent(null);
+				agent.DisableScriptedMovement();
+				agent.SetMaximumSpeedLimit(0f, isMultiplier: false);
+			}
+			catch
+			{
+			}
+			TryDisableOwnedSettlementPassiveScriptedBehavior(agent);
+			TryApplyOwnedSettlementPassiveHandsUpPose(agent);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SceneTaunt", "Holding owned settlement passive victim in hands-up pose failed: " + ex.Message);
+		}
+	}
+
+	private void TryDisableOwnedSettlementPassiveScriptedBehavior(Agent agent)
+	{
+		try
+		{
+			CampaignAgentComponent component = agent?.GetComponent<CampaignAgentComponent>();
+			AgentNavigator agentNavigator = component?.AgentNavigator ?? component?.CreateAgentNavigator();
+			AlarmedBehaviorGroup behaviorGroup = agentNavigator?.GetBehaviorGroup<AlarmedBehaviorGroup>();
+			behaviorGroup?.DisableScriptedBehavior();
+		}
+		catch
+		{
+		}
+	}
+
+	private void TryApplyOwnedSettlementPassiveHandsUpPose(Agent agent)
+	{
+		if (agent == null || !agent.IsActive())
+		{
+			return;
+		}
+		try
+		{
+			agent.TryToSheathWeaponInHand(Agent.HandIndex.OffHand, Agent.WeaponWieldActionType.Instant);
+			agent.TryToSheathWeaponInHand(Agent.HandIndex.MainHand, Agent.WeaponWieldActionType.Instant);
+		}
+		catch
+		{
+		}
+		try
+		{
+			agent.SetCrouchMode(false);
+		}
+		catch
+		{
+		}
+		try
+		{
+			ActionIndexCache action = ActionIndexCache.act_scared_idle_1;
+			if (!MBActionSet.CheckActionAnimationClipExists(agent.ActionSet, action))
+			{
+				if (!_ownedSettlementPassiveHandsUpActionMissingLogged)
+				{
+					_ownedSettlementPassiveHandsUpActionMissingLogged = true;
+					Logger.Log("SceneTaunt", "owned_settlement_passive_hands_up_action_missing action=act_scared_idle_1");
+				}
+				return;
+			}
+			int channelNo = 0;
+			if (agent.GetCurrentAction(channelNo) == action && _ownedSettlementPassiveHandsUpPoseAppliedAgentIndices.Contains(agent.Index))
+			{
+				try
+				{
+					agent.SetCurrentActionProgress(channelNo, OwnedSettlementPassiveHandsUpPoseStartProgress);
+				}
+				catch
+				{
+				}
+				return;
+			}
+			AnimFlags poseFlags = AnimFlags.anf_disable_alternative_randomization | AnimFlags.anf_disable_auto_increment_progress | AnimFlags.anf_enforce_all;
+			bool actionSet = agent.SetActionChannel(channelNo, action, true, poseFlags, 0f, OwnedSettlementPassiveHandsUpPoseActionSpeed, -0.2f, 0.4f, OwnedSettlementPassiveHandsUpPoseStartProgress, false, -0.2f, 0, true);
+			if (actionSet)
+			{
+				try
+				{
+					agent.SetCurrentActionProgress(channelNo, OwnedSettlementPassiveHandsUpPoseStartProgress);
+				}
+				catch
+				{
+				}
+				_ownedSettlementPassiveHandsUpPoseAppliedAgentIndices.Add(agent.Index);
+				return;
+			}
+			if (!_ownedSettlementPassiveHandsUpActionRejectedLogged)
+			{
+				_ownedSettlementPassiveHandsUpActionRejectedLogged = true;
+				Logger.Log("SceneTaunt", "owned_settlement_passive_hands_up_action_rejected action=act_scared_idle_1");
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SceneTaunt", "Applying owned settlement passive hands-up pose failed: " + ex.Message);
+		}
+	}
+
+	private void RestoreOwnedSettlementPassiveAttackTeams()
+	{
+		try
+		{
+			if (_ownedSettlementPassivePlayerTeam != null && _ownedSettlementPassiveEnemyTeam != null)
+			{
+				try
+				{
+					_ownedSettlementPassivePlayerTeam.SetIsEnemyOf(_ownedSettlementPassiveEnemyTeam, isEnemyOf: false);
+				}
+				catch
+				{
+				}
+				try
+				{
+					_ownedSettlementPassiveEnemyTeam.SetIsEnemyOf(_ownedSettlementPassivePlayerTeam, isEnemyOf: false);
+				}
+				catch
+				{
+				}
+			}
+			foreach (KeyValuePair<int, Team> item in _ownedSettlementPassiveOriginalTeams.ToList())
+			{
+				try
+				{
+					Agent agent = Mission.Current?.Agents?.FirstOrDefault(a => a != null && a.Index == item.Key);
+					if (agent != null && agent.IsActive() && item.Value != null && agent.Team != item.Value)
+					{
+						agent.SetTeam(item.Value, sync: true);
+					}
+				}
+				catch
+				{
+				}
+			}
+			try
+			{
+				Agent main = Agent.Main;
+				if (main != null && main.IsActive() && _ownedSettlementPassiveOriginalMainTeam != null && main.Team != _ownedSettlementPassiveOriginalMainTeam)
+				{
+					main.SetTeam(_ownedSettlementPassiveOriginalMainTeam, sync: true);
+				}
+			}
+			catch
+			{
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SceneTaunt", "Restoring owned settlement passive attack teams failed: " + ex.Message);
+		}
+	}
+
 	public override void OnAgentHit(Agent affectedAgent, Agent affectorAgent, in MissionWeapon attackerWeapon, in Blow blow, in AttackCollisionData attackCollisionData)
 	{
 		if (affectedAgent != null && affectedAgent.IsHuman && affectedAgent != Agent.Main)
@@ -2655,6 +3402,10 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			return;
 		}
 		Logger.Log("SceneTaunt", $"[AttackTiming] on_agent_hit time={Mission.Current?.CurrentTime:0.###} location={(CampaignMission.Current?.Location?.StringId ?? "").Trim().ToLowerInvariant()} settlement={Settlement.CurrentSettlement?.StringId} target={affectedAgent.Name} targetIndex={affectedAgent.Index} weapon={IsMissionWeaponRealWeapon(attackerWeapon)} conflict={_conflictActive} armed={_armedConflict}");
+		if (TryPrimeOwnedSettlementPassiveAttackOnHit(affectedAgent, "player_physical_hit"))
+		{
+			return;
+		}
 		if (!SceneTauntBehavior.IsPeaceSceneConflictEnabled() && !_conflictActive)
 		{
 			return;
@@ -2679,7 +3430,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 	public override void OnScoreHit(Agent affectedAgent, Agent affectorAgent, WeaponComponentData attackerWeapon, bool isBlocked, bool isSiegeEngineHit, in Blow blow, in AttackCollisionData collisionData, float damagedHp, float hitDistance, float shotDifficulty)
 	{
 		base.OnScoreHit(affectedAgent, affectorAgent, attackerWeapon, isBlocked, isSiegeEngineHit, in blow, in collisionData, damagedHp, hitDistance, shotDifficulty);
-		RememberSceneNotableHitLethality(affectedAgent, attackerWeapon, in blow, damagedHp);
+		RememberSceneNotableHitLethality(affectedAgent, affectorAgent, attackerWeapon, in blow, damagedHp);
 		if (affectedAgent != null && affectedAgent.IsHuman && affectedAgent != Agent.Main && damagedHp > 0f)
 		{
 			ShoutBehavior.InterruptAgentSpeechForCombatExternal(affectedAgent.Index, affectorAgent == Agent.Main ? "scene_taunt_score_hit" : "scene_score_hit_any_source");
@@ -2689,6 +3440,10 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			return;
 		}
 		Logger.Log("SceneTaunt", $"[AttackTiming] on_score_hit time={Mission.Current?.CurrentTime:0.###} location={(CampaignMission.Current?.Location?.StringId ?? "").Trim().ToLowerInvariant()} settlement={Settlement.CurrentSettlement?.StringId} target={affectedAgent.Name} targetIndex={affectedAgent.Index} weapon={IsWeaponComponentRealWeapon(attackerWeapon)} damage={damagedHp:0.##} blocked={isBlocked} conflict={_conflictActive} armed={_armedConflict}");
+		if (TryHandleOwnedSettlementPassiveAttackDamage(affectedAgent, damagedHp, "player_physical_score_hit"))
+		{
+			return;
+		}
 		if (!SceneTauntBehavior.IsPeaceSceneConflictEnabled() && !_conflictActive)
 		{
 			return;
@@ -2717,6 +3472,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			{
 				ShoutBehavior.CancelAgentSpeechForRemovalExternal(affectedAgent.Index, "scene_taunt_agent_removed_" + agentState);
 			}
+			TryHandleOwnedSettlementPassiveAttackKnockdown(affectedAgent, affectorAgent, agentState);
 			TryQueuePendingPlayerBattleDeathOutcome(affectedAgent, affectorAgent, agentState);
 			TryApplyNativeAlleyNpcKnockdownConsequences(affectedAgent, affectorAgent, agentState);
 			bool canTrySceneGoldDrop = affectedAgent != null && affectedAgent.IsHuman && (_conflictActive || IsSceneGoldEligibleDropAgent(affectedAgent));
@@ -3869,6 +4625,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 	{
 		try
 		{
+			long totalStart = StartPerfTimer();
 			if (!SceneTauntBehavior.IsPeaceSceneConflictEnabled() && !fromVerbalTaunt)
 			{
 				return false;
@@ -3892,9 +4649,12 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			{
 				return TryStartNativeCriminalConflict(agent, fromVerbalTaunt ? "scene_taunt_verbal_criminal_conflict" : "scene_taunt_physical_criminal_conflict");
 			}
+			LogPerfPoint("startConflict.start", $"target={agent.Name} targetIndex={agent.Index} key={targetKey ?? ""} fromVerbal={fromVerbalTaunt} playerUsedWeapon={flag} soldier={flag2} lord={flag3} criminal={flag4}");
+			long sectionStart = StartPerfTimer();
 			List<Agent> list = CollectPlayerSideAgents();
 			List<Agent> list2 = CollectOpponentSideAgents(agent);
 			List<Agent> list3 = flag4 ? new List<Agent>() : CollectGuardAgents(list, list2);
+			LogPerfElapsed("startConflict.collectSides", sectionStart, $"player={list.Count} opponents={list2.Count} guards={list3.Count}");
 			if (flag)
 			{
 				foreach (Agent item in list3)
@@ -3933,8 +4693,12 @@ public class SceneTauntMissionBehavior : MissionBehavior
 				_guardAgentIndices.Add(item4.Index);
 				RegisterSceneGoldEligibleAgent(item4, "start_conflict_guard");
 			}
+			sectionStart = StartPerfTimer();
 			_fightHandler.StartCustomFight(list, list2, dropWeapons: false, isItemUseDisabled: false, OnConflictFinished, float.Epsilon);
+			LogPerfElapsed("startConflict.StartCustomFight", sectionStart, $"player={list.Count} opponents={list2.Count}", SceneTauntPerfHeavyStageThresholdMs);
+			sectionStart = StartPerfTimer();
 			ApplyBaseConsequences(targetCharacter, (flag || flag2 || flag3) ? SceneTauntInitialArmedCrimeAmount : 5f);
+			LogPerfElapsed("startConflict.ApplyBaseConsequences", sectionStart);
 			bool flag6 = SceneTauntBehavior.HasArmedCarryoverForCurrentSettlement() && _armedCarryoverHandledInThisMission;
 			if (flag3)
 			{
@@ -3964,6 +4728,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 					TryAppendPlayerBehaviorFactForOpenedBrawl(targetHero, targetCharacter, targetAgentIndex);
 				}
 			}
+			LogPerfPoint("startConflict.end", $"target={agent.Name} targetIndex={agent.Index} elapsedMs={GetElapsedPerfMs(totalStart):0.###}");
 			return true;
 		}
 		catch (Exception ex)
@@ -3978,6 +4743,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 	{
 		try
 		{
+			long totalStart = StartPerfTimer();
 			if (!SceneTauntBehavior.IsPeaceSceneConflictEnabled())
 			{
 				return false;
@@ -3999,8 +4765,11 @@ public class SceneTauntMissionBehavior : MissionBehavior
 				if (ShouldSuppressDuplicateNativeCriminalConflict(targetAgent))
 				{
 					Logger.Log("SceneTaunt", $"Skipped duplicate native criminal conflict redirect. Reason={reason}, Target={targetAgent.Name}, AgentIndex={targetAgent.Index}");
+					LogPerfElapsed("physicalAttack.duplicateNativeSuppress", totalStart, $"reason={reason ?? "N/A"} target={targetAgent.Name} targetIndex={targetAgent.Index}");
 					return true;
 				}
+				LogPerfPoint("physicalAttack.native.start", $"reason={reason ?? "N/A"} target={targetAgent.Name} targetIndex={targetAgent.Index} playerUsedWeapon={playerUsedWeapon}");
+				long sectionStart = StartPerfTimer();
 				try
 				{
 					Campaign.Current?.ConversationManager?.EndConversation();
@@ -4008,14 +4777,19 @@ public class SceneTauntMissionBehavior : MissionBehavior
 				catch
 				{
 				}
+				LogPerfElapsed("physicalAttack.native.EndConversation", sectionStart);
+				sectionStart = StartPerfTimer();
 				bool startedNativeCriminalConflict = TryStartNativeCriminalConflict(targetAgent, reason + "_native_alley");
+				LogPerfElapsed("physicalAttack.native.TryStartNativeCriminalConflict", sectionStart, $"started={startedNativeCriminalConflict}", SceneTauntPerfHeavyStageThresholdMs);
 				if (startedNativeCriminalConflict)
 				{
 					RememberNativeCriminalConflictTarget(targetAgent);
 					Logger.Log("SceneTaunt", $"Physical attack bypassed custom scene conflict and redirected to native criminal conflict. Reason={reason}, Target={targetAgent.Name}, UsedWeapon={playerUsedWeapon}");
 				}
+				LogPerfPoint("physicalAttack.native.end", $"reason={reason ?? "N/A"} target={targetAgent.Name} targetIndex={targetAgent.Index} started={startedNativeCriminalConflict} elapsedMs={GetElapsedPerfMs(totalStart):0.###}");
 				return startedNativeCriminalConflict;
 			}
+			long customSectionStart = StartPerfTimer();
 			try
 			{
 				Campaign.Current?.ConversationManager?.EndConversation();
@@ -4023,8 +4797,11 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			catch
 			{
 			}
+			LogPerfElapsed("physicalAttack.custom.EndConversation", customSectionStart);
 			string sceneTauntTargetKey = SceneTauntBehavior.BuildSceneTauntTargetKey(hero, characterObject, targetAgent.Index);
+			customSectionStart = StartPerfTimer();
 			bool flag = TryStartConflict(hero, characterObject, targetAgent.Index, sceneTauntTargetKey, fromVerbalTaunt: false, playerUsedWeaponOverride: playerUsedWeapon);
+			LogPerfElapsed("physicalAttack.custom.TryStartConflict", customSectionStart, $"started={flag}", SceneTauntPerfHeavyStageThresholdMs);
 			Logger.Log("SceneTaunt", $"[AttackTiming] try_start_conflict_result time={Mission.Current?.CurrentTime:0.###} reason={reason} target={(targetAgent?.Name?.ToString() ?? "null")} started={flag} conflict={_conflictActive} armed={_armedConflict}");
 			if (!flag)
 			{
@@ -4041,6 +4818,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 				EscalateToArmedConflict(flag2 ? "player_attacked_authority_in_peace_scene" : "player_started_scene_fight_with_weapon");
 			}
 			Logger.Log("SceneTaunt", $"Physical attack triggered scene conflict. Reason={reason}, Target={targetAgent.Name}, UsedWeapon={playerUsedWeapon}, AuthorityTarget={flag2}");
+			LogPerfPoint("physicalAttack.custom.end", $"reason={reason ?? "N/A"} target={targetAgent.Name} targetIndex={targetAgent.Index} started={flag} elapsedMs={GetElapsedPerfMs(totalStart):0.###}");
 			return true;
 		}
 		catch (Exception ex)
@@ -5218,8 +5996,10 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			return;
 		}
 		_lastArmedCarryoverAttemptAtMissionTime = currentTime;
+		long totalStart = StartPerfTimer();
 		List<Agent> list = CollectPlayerSideAgents();
 		List<Agent> list2 = CollectAuthorityCarryoverOpponentAgents(list, out var guardAgents);
+		LogPerfElapsed("carryover.collectSides", totalStart, $"player={list.Count} opponents={list2.Count} guards={guardAgents.Count}");
 		if (list2.Count == 0)
 		{
 			if (!_armedCarryoverNoAuthoritySceneNotified && !SceneTauntBehavior.HasShownCarryoverNoAuthorityAlertForCurrentLocationExternal())
@@ -5230,11 +6010,13 @@ public class SceneTauntMissionBehavior : MissionBehavior
 				_armedCarryoverHandledInThisMission = true;
 				SceneTauntBehavior.MarkCarryoverNoAuthorityAlertShownForCurrentLocationExternal();
 				Logger.Log("SceneTaunt", $"Armed carryover reached scene without authority opponents. Settlement={Settlement.CurrentSettlement?.Name}, Source={SceneTauntBehavior.GetArmedCarryoverSourceForCurrentSettlement()}");
+				LogPerfPoint("carryover.noAuthority", $"elapsedMs={GetElapsedPerfMs(totalStart):0.###}");
 			}
 			return;
 		}
 		try
 		{
+			LogPerfPoint("carryover.start", $"player={list.Count} opponents={list2.Count} guards={guardAgents.Count}");
 			_conflictActive = true;
 			_armedConflict = true;
 			_armedConflictOccurredThisConflict = true;
@@ -5261,13 +6043,18 @@ public class SceneTauntMissionBehavior : MissionBehavior
 				_guardAgentIndices.Add(guardAgent.Index);
 				RegisterSceneGoldEligibleAgent(guardAgent, "carryover_guard");
 			}
+			long sectionStart = StartPerfTimer();
 			_fightHandler.StartCustomFight(list, list2, dropWeapons: false, isItemUseDisabled: false, OnConflictFinished, float.Epsilon);
+			LogPerfElapsed("carryover.StartCustomFight", sectionStart, $"player={list.Count} opponents={list2.Count}", SceneTauntPerfHeavyStageThresholdMs);
+			sectionStart = StartPerfTimer();
+			int conflictAgents = 0;
 			foreach (Agent agent in EnumerateConflictAgents(includeGuards: true))
 			{
 				if (agent == null || !agent.IsActive())
 				{
 					continue;
 				}
+				conflictAgents++;
 				TryRestoreWeaponsAfterUnarmedConflict(agent);
 				TryAlarmAgent(agent);
 				if (agent != Agent.Main)
@@ -5275,12 +6062,18 @@ public class SceneTauntMissionBehavior : MissionBehavior
 					TryArmAgent(agent);
 				}
 			}
+			LogPerfElapsed("carryover.armConflictAgents", sectionStart, $"processed={conflictAgents}");
+			sectionStart = StartPerfTimer();
 			ForceAllNonPlayerSceneAgentsMortal();
+			LogPerfElapsed("carryover.forceAllMortal", sectionStart, null, SceneTauntPerfHeavyStageThresholdMs);
+			sectionStart = StartPerfTimer();
 			AlarmNearbyBystanders();
+			LogPerfElapsed("carryover.alarmNearbyBystanders", sectionStart, null, SceneTauntPerfHeavyStageThresholdMs);
 			_armedCarryoverSceneInitialized = true;
 			_armedCarryoverHandledInThisMission = true;
 			InformationManager.DisplayMessage(new InformationMessage("你的持械冲突已经蔓延到这个场景，守卫和武装平民立刻开始围堵你。", new Color(1f, 0.35f, 0.2f)));
 			Logger.Log("SceneTaunt", $"Activated armed settlement carryover in scene. Settlement={Settlement.CurrentSettlement?.Name}, Opponents={list2.Count}, Guards={guardAgents.Count}, Source={SceneTauntBehavior.GetArmedCarryoverSourceForCurrentSettlement()}");
+			LogPerfPoint("carryover.end", $"elapsedMs={GetElapsedPerfMs(totalStart):0.###}");
 		}
 		catch (Exception ex)
 		{
@@ -5839,6 +6632,8 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		{
 			return;
 		}
+		long totalStart = StartPerfTimer();
+		LogPerfPoint("escalate.start", $"reason={reason ?? "N/A"} suppressAnnouncement={suppressAnnouncement}");
 		ClearMissionFightHandlerPendingFinishTimer();
 		_armedConflict = true;
 		_armedConflictOccurredThisConflict = true;
@@ -5846,37 +6641,58 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		_armedCarryoverHandledInThisMission = true;
 		SceneTauntBehavior.MarkArmedCarryoverForCurrentSettlement(reason);
 		_blockedAiWeaponAgentIndices.Clear();
+		long sectionStart = StartPerfTimer();
+		int guardAdds = 0;
 		foreach (int guardAgentIndex in _guardAgentIndices.ToList())
 		{
 			Agent agent = Mission.Current?.Agents?.FirstOrDefault((Agent x) => x != null && x.Index == guardAgentIndex);
 			if (agent != null && agent.IsActive())
 			{
 				AddAgentToFightSide(agent, isPlayerSide: false);
+				guardAdds++;
 			}
 		}
+		LogPerfElapsed("escalate.addGuards", sectionStart, $"guardAdds={guardAdds} guardIndexCount={_guardAgentIndices.Count}");
+		sectionStart = StartPerfTimer();
+		int conflictAgents = 0;
 		foreach (Agent agent2 in EnumerateConflictAgents(includeGuards: true))
 		{
 			if (agent2 == null || !agent2.IsActive())
 			{
 				continue;
 			}
+			conflictAgents++;
 			TryRestoreWeaponsAfterUnarmedConflict(agent2);
 			TryAlarmAgent(agent2);
 			TryArmAgent(agent2);
 		}
+		LogPerfElapsed("escalate.armConflictAgents", sectionStart, $"processed={conflictAgents}");
+		sectionStart = StartPerfTimer();
 		TryConvertUnarmedCivilianOpponentsToFleeingBystanders();
+		LogPerfElapsed("escalate.convertUnarmedOpponents", sectionStart);
+		sectionStart = StartPerfTimer();
 		QueuePendingActiveUnarmedTargetFleeIfNeeded();
+		LogPerfElapsed("escalate.queueActiveTargetFlee", sectionStart);
+		sectionStart = StartPerfTimer();
 		ForceAllNonPlayerSceneAgentsMortal();
+		LogPerfElapsed("escalate.forceAllMortal", sectionStart, null, SceneTauntPerfHeavyStageThresholdMs);
+		sectionStart = StartPerfTimer();
 		EnsureCrimeRatingAtLeast(SceneTauntInitialArmedCrimeAmount);
+		LogPerfElapsed("escalate.ensureCrime", sectionStart);
+		sectionStart = StartPerfTimer();
 		AlarmNearbyBystanders();
+		LogPerfElapsed("escalate.alarmNearbyBystanders", sectionStart, null, SceneTauntPerfHeavyStageThresholdMs);
+		sectionStart = StartPerfTimer();
 		TryAppendPlayerBehaviorFactForArmedEscalation(reason);
 		TryAppendGuardBehaviorFactsForArmedEscalation();
+		LogPerfElapsed("escalate.appendBehaviorFacts", sectionStart);
 		_openedAsUnarmedBrawl = false;
 		if (!suppressAnnouncement)
 		{
 			InformationManager.DisplayMessage(new InformationMessage("持械冲突爆发，守卫开始敌视你和你的同伴。", new Color(1f, 0.35f, 0.2f)));
 		}
 		Logger.Log("SceneTaunt", $"Escalated scene conflict to armed combat. Reason={reason}, Target={_activeTargetName}, Guards={_guardAgentIndices.Count}");
+		LogPerfPoint("escalate.end", $"reason={reason ?? "N/A"} elapsedMs={GetElapsedPerfMs(totalStart):0.###}");
 	}
 
 	private void TryConvertUnarmedCivilianOpponentsToFleeingBystanders()
@@ -6026,14 +6842,20 @@ public class SceneTauntMissionBehavior : MissionBehavior
 	{
 		try
 		{
+			long startTimestamp = StartPerfTimer();
+			int scanned = 0;
+			int eligible = 0;
 			foreach (Agent agent in Mission.Current.Agents)
 			{
+				scanned++;
 				if (agent == null || !agent.IsHuman || !agent.IsActive() || _playerAgentIndices.Contains(agent.Index))
 				{
 					continue;
 				}
+				eligible++;
 				TryForceAgentMortal(agent);
 			}
+			LogPerfElapsed("forceAllMortal.inner", startTimestamp, $"scanned={scanned} eligible={eligible}", SceneTauntPerfHeavyStageThresholdMs);
 		}
 		catch (Exception ex)
 		{
@@ -6109,20 +6931,24 @@ public class SceneTauntMissionBehavior : MissionBehavior
 
 	private IEnumerable<Agent> EnumerateConflictAgents(bool includeGuards)
 	{
+		long startTimestamp = StartPerfTimer();
 		HashSet<int> hashSet = new HashSet<int>(_playerAgentIndices);
 		hashSet.UnionWith(_opponentAgentIndices);
 		if (includeGuards)
 		{
 			hashSet.UnionWith(_guardAgentIndices);
 		}
+		List<Agent> list = new List<Agent>();
 		foreach (int item in hashSet)
 		{
 			Agent agent = Mission.Current?.Agents?.FirstOrDefault((Agent x) => x != null && x.Index == item);
 			if (agent != null)
 			{
-				yield return agent;
+				list.Add(agent);
 			}
 		}
+		LogPerfElapsed("enumerateConflictAgents", startTimestamp, $"includeGuards={includeGuards} indexCount={hashSet.Count} resolved={list.Count}");
+		return list;
 	}
 
 	private void ApplyBaseConsequences(CharacterObject targetCharacter, float crimeRatingAmount)
@@ -6344,24 +7170,37 @@ public class SceneTauntMissionBehavior : MissionBehavior
 
 	private void AlarmNearbyBystanders()
 	{
+		long startTimestamp = StartPerfTimer();
 		HashSet<int> hashSet = new HashSet<int>(_playerAgentIndices);
 		hashSet.UnionWith(_opponentAgentIndices);
 		hashSet.UnionWith(_guardAgentIndices);
 		Agent main = Agent.Main;
+		int scanned = 0;
+		int inRadius = 0;
+		int joined = 0;
+		int fled = 0;
 		try
 		{
 			foreach (Agent agent in Mission.Current.Agents)
 			{
+				scanned++;
 				if (agent == null || !agent.IsHuman || !agent.IsActive() || hashSet.Contains(agent.Index) || !IsAgentWithinArmedBystanderReactionRadius(agent, main))
 				{
 					continue;
 				}
+				inRadius++;
 				TryAlarmAgent(agent);
 				if (!TryJoinArmedBystanderToConflict(agent))
 				{
 					TryForceUnarmedBystanderToFlee(agent);
+					fled++;
+				}
+				else
+				{
+					joined++;
 				}
 			}
+			LogPerfElapsed("alarmNearbyBystanders.inner", startTimestamp, $"scanned={scanned} inRadius={inRadius} joined={joined} fled={fled}", SceneTauntPerfHeavyStageThresholdMs);
 		}
 		catch
 		{
@@ -6381,22 +7220,35 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			{
 				return;
 			}
+			long startTimestamp = StartPerfTimer();
 			_lastArmedBystanderReactionRefreshAtMissionTime = currentTime;
 			HashSet<int> hashSet = new HashSet<int>(_playerAgentIndices);
 			hashSet.UnionWith(_opponentAgentIndices);
 			hashSet.UnionWith(_guardAgentIndices);
 			Agent main = Agent.Main;
+			int scanned = 0;
+			int inRadius = 0;
+			int joined = 0;
+			int fled = 0;
 			foreach (Agent agent in Mission.Current.Agents)
 			{
+				scanned++;
 				if (agent == null || !agent.IsHuman || !agent.IsActive() || hashSet.Contains(agent.Index) || !IsAgentWithinArmedBystanderReactionRadius(agent, main))
 				{
 					continue;
 				}
+				inRadius++;
 				if (!TryJoinArmedBystanderToConflict(agent))
 				{
 					TryForceUnarmedBystanderToFlee(agent);
+					fled++;
+				}
+				else
+				{
+					joined++;
 				}
 			}
+			LogPerfElapsed("maintainArmedBystanders.inner", startTimestamp, $"scanned={scanned} inRadius={inRadius} joined={joined} fled={fled}", SceneTauntPerfHeavyStageThresholdMs);
 		}
 		catch (Exception ex)
 		{
@@ -7142,6 +7994,15 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		_guardAgentIndices.Clear();
 		_blockedAiWeaponAgentIndices.Clear();
 		_penalizedArmedKnockdownAgentIndices.Clear();
+		RestoreOwnedSettlementPassiveAttackTeams();
+		_ownedSettlementPassiveVictimAgentIndices.Clear();
+		_ownedSettlementPassiveDamagedAgentIndices.Clear();
+		_ownedSettlementPassiveKnockdownAgentIndices.Clear();
+		_ownedSettlementPassiveReactionTimes.Clear();
+		_ownedSettlementPassiveOriginalTeams.Clear();
+		_ownedSettlementPassivePlayerTeam = null;
+		_ownedSettlementPassiveEnemyTeam = null;
+		_ownedSettlementPassiveOriginalMainTeam = null;
 		if (!preserveArmedDefeatState)
 		{
 			_pendingPlayerBattleDeathAfterMission = false;
@@ -7153,11 +8014,12 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		}
 	}
 
-	private void RememberSceneNotableHitLethality(Agent affectedAgent, WeaponComponentData attackerWeapon, in Blow blow, float damagedHp)
+	private void RememberSceneNotableHitLethality(Agent affectedAgent, Agent affectorAgent, WeaponComponentData attackerWeapon, in Blow blow, float damagedHp)
 	{
 		try
 		{
-			if (!_conflictActive || damagedHp <= 0f || affectedAgent == null || !affectedAgent.IsHuman)
+			bool ownedSettlementPassivePlayerHit = IsOwnedSettlementPassiveAttackScene() && affectorAgent == Agent.Main && IsValidOwnedSettlementPassiveAttackTarget(affectedAgent);
+			if ((!_conflictActive && !ownedSettlementPassivePlayerHit) || damagedHp <= 0f || affectedAgent == null || !affectedAgent.IsHuman)
 			{
 				return;
 			}
@@ -7188,7 +8050,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 	{
 		try
 		{
-			return hero != null && _conflictActive && _sceneNotableRecentHitNonLethal.TryGetValue(hero, out bool flag) && flag;
+			return hero != null && (_conflictActive || IsOwnedSettlementPassiveAttackScene()) && _sceneNotableRecentHitNonLethal.TryGetValue(hero, out bool flag) && flag;
 		}
 		catch
 		{
@@ -7200,7 +8062,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 	{
 		try
 		{
-			return hero != null && _conflictActive && _sceneNotableDeferredBattleDeathCandidates.Contains(hero);
+			return hero != null && (_conflictActive || IsOwnedSettlementPassiveAttackScene()) && _sceneNotableDeferredBattleDeathCandidates.Contains(hero);
 		}
 		catch
 		{

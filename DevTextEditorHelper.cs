@@ -6,6 +6,11 @@ namespace AnimusForge;
 
 public static class DevTextEditorHelper
 {
+	public static void ShowTextInput(string titleText, string subtitleText, string inputHintText, string initialText, Action<string> onConfirm, Action onCancel, string confirmText = "确定", string cancelText = "取消")
+	{
+		ShowLongTextEditor(titleText, subtitleText, inputHintText, initialText, onConfirm, onCancel, confirmText, cancelText);
+	}
+
 	public static void ShowLongTextEditor(string titleText, string subtitleText, string inputHintText, string initialText, Action<string> onSave, Action onCancel, string saveText = "保存", string cancelText = "返回")
 	{
 		if (DevHistoryEditPopup.Show(titleText, subtitleText, initialText, initialText, onSave, onCancel, inputHintText, saveText, cancelText))

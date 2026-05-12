@@ -10522,6 +10522,7 @@ public class MyBehavior : CampaignBehaviorBase
 			}
 			List<SettlementTransferPromptEntry> list = BuildSettlementTransferPromptEntriesInternal(hero, targetCharacter);
 			List<SettlementTransferPromptEntry> list2 = BuildDisplayIndexedSettlementTransferEntries(((RewardSystemBehavior.Instance != null) ? RewardSystemBehavior.Instance.GetAllowedNpcSettlementTransferEntriesForPlayer(hero, targetCharacter) : list.Where((SettlementTransferPromptEntry x) => x.Section == SettlementTransferEntrySection.NpcFiefs)));
+			List<SettlementTransferPromptEntry> list3 = BuildDisplayIndexedSettlementTransferEntries(list.Where((SettlementTransferPromptEntry x) => x.Section == SettlementTransferEntrySection.PlayerFiefs));
 			StringBuilder stringBuilder = new StringBuilder();
 			string text2 = RewardSystemBehavior.Instance?.BuildSettlementTransferPromptGuidanceForAI(hero, targetCharacter);
 			if (!string.IsNullOrWhiteSpace(text2))
@@ -10537,6 +10538,7 @@ public class MyBehavior : CampaignBehaviorBase
 			stringBuilder.AppendLine("玩家家族的城市或城堡只能通过玩家手动选择并交付给你；你可以口头接受或拒绝，但不得生成把玩家领地转给NPC的标签。");
 			stringBuilder.AppendLine("当前与你谈判的人：" + text);
 			AppendSettlementTransferPromptSection(stringBuilder, "【你家族当前可转移的城市和城堡】：", list2, showPromptIndex: true);
+			AppendSettlementTransferPromptSection(stringBuilder, "【玩家家族当前可转移的城市和城堡（仅供手动交付参考）】：", list3, showPromptIndex: true);
 			return stringBuilder.ToString().Trim();
 		}
 		catch
@@ -11281,7 +11283,9 @@ public class MyBehavior : CampaignBehaviorBase
 			}
 			foreach (string line in record.Lines)
 			{
-				if (string.Equals((line ?? "").Trim(), text, StringComparison.Ordinal))
+				string text2 = (line ?? "").Trim();
+				TryStripSceneSessionHistoryMarker(text2, out text2, out var _);
+				if (string.Equals(text2, text, StringComparison.Ordinal))
 				{
 					return true;
 				}
@@ -11384,24 +11388,25 @@ public class MyBehavior : CampaignBehaviorBase
 				string text3 = extraFact.Trim();
 				if (text3.StartsWith("[AFEF玩家行为补充]", StringComparison.Ordinal) || text3.StartsWith("[AFEF NPC行为补充]", StringComparison.Ordinal))
 				{
-					dialogueDay.Lines.Add(text3);
+					dialogueDay.Lines.Add((sceneSessionId >= 0) ? TagSceneSessionHistoryLine(text3, sceneSessionId) : text3);
 				}
 				else
 				{
-					dialogueDay.Lines.Add("[AFEF玩家行为补充] " + text3);
+					string text4 = "[AFEF玩家行为补充] " + text3;
+					dialogueDay.Lines.Add((sceneSessionId >= 0) ? TagSceneSessionHistoryLine(text4, sceneSessionId) : text4);
 				}
 			}
 			if (!string.IsNullOrWhiteSpace(aiText))
 			{
-				string text4 = aiText.Trim();
-				if (text4.StartsWith("[场景喊话]", StringComparison.Ordinal))
+				string text5 = aiText.Trim();
+				if (text5.StartsWith("[场景喊话]", StringComparison.Ordinal))
 				{
-					dialogueDay.Lines.Add((sceneSessionId >= 0) ? TagSceneSessionHistoryLine(text4, sceneSessionId) : text4);
+					dialogueDay.Lines.Add((sceneSessionId >= 0) ? TagSceneSessionHistoryLine(text5, sceneSessionId) : text5);
 				}
 				else
 				{
-					string text5 = text + ": " + text4;
-					dialogueDay.Lines.Add((sceneSessionId >= 0) ? TagSceneSessionHistoryLine(text5, sceneSessionId) : text5);
+					string text6 = text + ": " + text5;
+					dialogueDay.Lines.Add((sceneSessionId >= 0) ? TagSceneSessionHistoryLine(text6, sceneSessionId) : text6);
 				}
 			}
 			if (!string.IsNullOrWhiteSpace(aiText))
@@ -12871,12 +12876,14 @@ public class MyBehavior : CampaignBehaviorBase
 	private static bool IsSystemFactLine(string line)
 	{
 		string text = (line ?? "").TrimStart();
+		TryStripSceneSessionHistoryMarker(text, out text, out var _);
 		return text.StartsWith("[AFEF玩家行为补充]", StringComparison.Ordinal) || text.StartsWith("[AFEF NPC行为补充]", StringComparison.Ordinal);
 	}
 
 	private static bool IsSingleUseNpcFactLine(string line)
 	{
 		string text = (line ?? "").Trim();
+		TryStripSceneSessionHistoryMarker(text, out text, out var _);
 		if (!text.StartsWith("[AFEF NPC行为补充]", StringComparison.Ordinal))
 		{
 			return false;
@@ -13588,7 +13595,7 @@ public class MyBehavior : CampaignBehaviorBase
 				}
 				foreach (string line in item.Lines)
 				{
-					if (!string.IsNullOrWhiteSpace(line) && !IsActiveSceneSessionHistoryLine(line) && !IsSystemFactLine(line) && !IsLoreInjectionHistoryLine(line))
+					if (!string.IsNullOrWhiteSpace(line) && !IsActiveSceneSessionHistoryLine(line) && !IsLoreInjectionHistoryLine(line))
 					{
 						list2.Add(new HistoryLineEntry
 						{
@@ -14518,6 +14525,14 @@ public class MyBehavior : CampaignBehaviorBase
 	private string TryRunTransactionActionPostprocess(Hero targetHero, CharacterObject targetCharacter, string extraFact, string replyText, List<PostprocessRuleEntry> rules, string logPrefix)
 	{
 		string text = StripRewardActionTags(replyText);
+		if (string.Equals(logPrefix, "RewardPostprocess", StringComparison.OrdinalIgnoreCase) && AIConfigHandler.IsPlayerCompanionTradeTarget(targetHero))
+		{
+			if (Regex.Matches(text ?? "", "\\[ACTION:MOOD:[^\\]]+\\]", RegexOptions.IgnoreCase).Count <= 0 && !string.IsNullOrWhiteSpace(AIConfigHandler.ActionPostprocessFallbackMoodTag))
+			{
+				text = (text + "\n" + AIConfigHandler.ActionPostprocessFallbackMoodTag).Trim();
+			}
+			return text.Trim();
+		}
 		if ((targetHero == null && targetCharacter == null) || !AIConfigHandler.CanUseAuxiliaryActionPostprocess())
 		{
 			if (Regex.Matches(text ?? "", "\\[ACTION:MOOD:[^\\]]+\\]", RegexOptions.IgnoreCase).Count <= 0 && !string.IsNullOrWhiteSpace(AIConfigHandler.ActionPostprocessFallbackMoodTag))
@@ -15528,6 +15543,35 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private bool ApplyPatiencePostprocessMoodOverrideInternal(string key, int maxPatience, PatienceMood mood, out int before, out int after, out int delta)
+	{
+		before = 0;
+		after = 0;
+		delta = 0;
+		if (string.IsNullOrWhiteSpace(key) || maxPatience <= 0 || mood == PatienceMood.Neutral)
+		{
+			return false;
+		}
+		float nowCampaignDay = GetNowCampaignDay();
+		lock (_patienceLock)
+		{
+			PatienceState orCreateStateUnsafe = GetOrCreateStateUnsafe(key, maxPatience, nowCampaignDay);
+			RecoverPatienceUnsafe(orCreateStateUnsafe, maxPatience, nowCampaignDay);
+			before = (int)Math.Round(orCreateStateUnsafe.Value);
+			int neutralBaseNoInterestRounds = Math.Max(0, orCreateStateUnsafe.NoInterestRounds - 1);
+			int neutralNoInterestRounds = neutralBaseNoInterestRounds;
+			int neutralDelta = ComputePatienceDelta(PatienceMood.Neutral, ref neutralNoInterestRounds);
+			int moodNoInterestRounds = neutralBaseNoInterestRounds;
+			int moodDelta = ComputePatienceDelta(mood, ref moodNoInterestRounds);
+			delta = moodDelta - neutralDelta;
+			orCreateStateUnsafe.Value = ClampFloat(orCreateStateUnsafe.Value + (float)delta, 0f, maxPatience);
+			orCreateStateUnsafe.NoInterestRounds = moodNoInterestRounds;
+			orCreateStateUnsafe.LastDay = nowCampaignDay;
+			after = (int)Math.Round(orCreateStateUnsafe.Value);
+			return before > 0 && after <= 0;
+		}
+	}
+
 	private static string BuildExhaustedReply(string npcName, int relation, int refusalCount = 1)
 	{
 		string text = (string.IsNullOrWhiteSpace(npcName) ? "我" : npcName);
@@ -15732,6 +15776,133 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private void ApplyPatiencePostprocessMoodOverrideFromHeroResponse(Hero targetHero, ref string aiResponse, bool directConversation)
+	{
+		if (targetHero == null)
+		{
+			string text = aiResponse ?? "";
+			ExtractMoodAndStripTag(ref text);
+			aiResponse = text;
+			return;
+		}
+		PatienceSnapshot heroPatienceSnapshot = GetHeroPatienceSnapshot(targetHero);
+		PatienceMood patienceMood = ExtractMoodAndStripTag(ref aiResponse);
+		if (patienceMood == PatienceMood.Neutral)
+		{
+			return;
+		}
+		int before;
+		int after;
+		int delta;
+		bool flag = ApplyPatiencePostprocessMoodOverrideInternal(heroPatienceSnapshot.Key, heroPatienceSnapshot.Max, patienceMood, out before, out after, out delta);
+		int relation = heroPatienceSnapshot.Relation;
+		int privateLove = heroPatienceSnapshot.PrivateLove;
+		int num = ComputeNativeRelationDelta(patienceMood, relation);
+		int num2 = ComputePrivateLoveDelta(patienceMood);
+		int num3 = relation;
+		if (num != 0)
+		{
+			try
+			{
+				if (Hero.MainHero != null)
+				{
+					ChangeRelationAction.ApplyRelationChangeBetweenHeroes(Hero.MainHero, targetHero, num);
+					num3 = GetRelationWithPlayerSafe(targetHero);
+				}
+			}
+			catch (Exception ex)
+			{
+				Logger.Log("Patience", "[WARN] apply postprocess relation delta failed: " + ex.Message);
+			}
+		}
+		if (num2 != 0)
+		{
+			RomanceSystemBehavior.Instance?.AdjustPrivateLove(targetHero, num2, "mood_tag_postprocess");
+		}
+		int num4 = RomanceSystemBehavior.Instance?.GetPrivateLove(targetHero) ?? privateLove;
+		try
+		{
+			Logger.Log("Patience", $"hero={targetHero.StringId} postprocessMood={patienceMood} value={before}->{after}/{heroPatienceSnapshot.Max} delta={delta} relation={relation}->{num3} delta={num} privateLove={privateLove}->{num4} deltaLove={num2}");
+			Logger.Obs("Patience", "hero_postprocess_mood_update", new Dictionary<string, object>
+			{
+				["heroId"] = targetHero.StringId ?? "",
+				["mood"] = patienceMood.ToString(),
+				["patienceBefore"] = before,
+				["patienceAfter"] = after,
+				["patienceMax"] = heroPatienceSnapshot.Max,
+				["patienceDelta"] = delta,
+				["relationBefore"] = relation,
+				["relationAfter"] = num3,
+				["relationDelta"] = num,
+				["privateLoveBefore"] = privateLove,
+				["privateLoveAfter"] = num4,
+				["privateLoveDelta"] = num2,
+				["directConversation"] = directConversation
+			});
+			Logger.Metric("patience.hero_postprocess_mood_update");
+		}
+		catch
+		{
+		}
+		if (!flag)
+		{
+			return;
+		}
+		try
+		{
+			Logger.Log("Patience", "hero=" + targetHero.StringId + " reached_zero=true postprocess_mood_override=" + (directConversation ? "direct" : "scene"));
+		}
+		catch
+		{
+		}
+	}
+
+	private void ApplyPatiencePostprocessMoodOverrideFromUnnamedResponse(string unnamedKey, string npcName, ref string aiResponse)
+	{
+		PatienceSnapshot unnamedPatienceSnapshot = GetUnnamedPatienceSnapshot(unnamedKey, npcName);
+		PatienceMood patienceMood = ExtractMoodAndStripTag(ref aiResponse);
+		if (patienceMood == PatienceMood.Neutral)
+		{
+			return;
+		}
+		if (string.IsNullOrWhiteSpace(unnamedPatienceSnapshot.Key))
+		{
+			return;
+		}
+		int before;
+		int after;
+		int delta;
+		bool flag = ApplyPatiencePostprocessMoodOverrideInternal(unnamedPatienceSnapshot.Key, unnamedPatienceSnapshot.Max, patienceMood, out before, out after, out delta);
+		try
+		{
+			Logger.Log("Patience", $"unnamed={unnamedPatienceSnapshot.Key} postprocessMood={patienceMood} value={before}->{after}/{unnamedPatienceSnapshot.Max} delta={delta}");
+			Logger.Obs("Patience", "unnamed_postprocess_mood_update", new Dictionary<string, object>
+			{
+				["key"] = unnamedPatienceSnapshot.Key ?? "",
+				["mood"] = patienceMood.ToString(),
+				["patienceBefore"] = before,
+				["patienceAfter"] = after,
+				["patienceMax"] = unnamedPatienceSnapshot.Max,
+				["patienceDelta"] = delta
+			});
+			Logger.Metric("patience.unnamed_postprocess_mood_update");
+		}
+		catch
+		{
+		}
+		if (!flag)
+		{
+			return;
+		}
+		try
+		{
+			Logger.Log("Patience", "unnamed=" + unnamedPatienceSnapshot.Key + " reached_zero=true postprocess_mood_override=scene");
+		}
+		catch
+		{
+		}
+	}
+
 	private bool TryGetHeroSceneStatus(Hero hero, out string statusLine, out bool canSpeak)
 	{
 		statusLine = "";
@@ -15925,6 +16096,28 @@ public class MyBehavior : CampaignBehaviorBase
 		try
 		{
 			(Campaign.Current?.GetCampaignBehavior<MyBehavior>())?.ApplyPatienceFromUnnamedResponse(unnamedKey, npcName, ref aiResponse);
+		}
+		catch
+		{
+		}
+	}
+
+	public static void ApplyPostprocessMoodFromSceneHeroResponseExternal(Hero targetHero, ref string aiResponse)
+	{
+		try
+		{
+			(Campaign.Current?.GetCampaignBehavior<MyBehavior>())?.ApplyPatiencePostprocessMoodOverrideFromHeroResponse(targetHero, ref aiResponse, directConversation: false);
+		}
+		catch
+		{
+		}
+	}
+
+	public static void ApplyPostprocessMoodFromSceneUnnamedResponseExternal(string unnamedKey, string npcName, ref string aiResponse)
+	{
+		try
+		{
+			(Campaign.Current?.GetCampaignBehavior<MyBehavior>())?.ApplyPatiencePostprocessMoodOverrideFromUnnamedResponse(unnamedKey, npcName, ref aiResponse);
 		}
 		catch
 		{

@@ -24,6 +24,8 @@ namespace AnimusForge;
 public class RewardSystemBehavior : CampaignBehaviorBase
 {
 	private const string NotableMarketPromptPrefix = "market@";
+	private const int NotableMarketInventoryPromptMaxItems = 40;
+	private const int NotableMarketPostprocessMaxItems = 80;
 
 	public enum SettlementMerchantKind
 	{
@@ -5788,31 +5790,31 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 	private static HashSet<ItemCategory> BuildArtisanTitleOutputCategorySet(Hero hero)
 	{
 		string titleText = NormalizeNotableTitleText(hero);
-		if (NotableTitleContainsAny(titleText, "brewer", "酿酒", "啤酒"))
+		if (NotableTitleContainsAny(titleText, "brewer", "酿酒", "酿酒工", "啤酒", "啤酒工"))
 		{
 			return CreateItemCategorySet(DefaultItemCategories.Beer);
 		}
-		if (NotableTitleContainsAny(titleText, "carpenter", "cooper", "wheeler", "turner", "木匠", "桶匠", "箍桶", "车轮", "轮匠", "旋木", "车床"))
+		if (NotableTitleContainsAny(titleText, "carpenter", "cooper", "wheeler", "turner", "木匠", "木工", "桶匠", "箍桶", "车轮", "轮匠", "旋木", "车床", "车匠"))
 		{
 			return CreateItemCategorySet(DefaultItemCategories.Wood, DefaultItemCategories.Planks, DefaultItemCategories.Tools);
 		}
-		if (NotableTitleContainsAny(titleText, "chandler", "蜡烛", "皂"))
+		if (NotableTitleContainsAny(titleText, "chandler", "蜡烛", "蜡烛匠", "皂", "油烛"))
 		{
 			return CreateItemCategorySet(DefaultItemCategories.Oil);
 		}
-		if (NotableTitleContainsAny(titleText, "dyer", "weaver", "织布", "染工", "染织"))
+		if (NotableTitleContainsAny(titleText, "dyer", "weaver", "织布", "织布工", "纺织", "染工", "染匠", "染织"))
 		{
 			return CreateItemCategorySet(DefaultItemCategories.Cloth, DefaultItemCategories.Linen, DefaultItemCategories.Velvet, DefaultItemCategories.Garment, DefaultItemCategories.Felt);
 		}
-		if (NotableTitleContainsAny(titleText, "miller", "磨坊", "磨工"))
+		if (NotableTitleContainsAny(titleText, "miller", "磨坊", "磨坊主", "磨工"))
 		{
 			return CreateItemCategorySet(DefaultItemCategories.Grain);
 		}
-		if (NotableTitleContainsAny(titleText, "smith", "铁匠"))
+		if (NotableTitleContainsAny(titleText, "smith", "铁匠", "锻工", "锻造"))
 		{
 			return CreateItemCategorySet(DefaultItemCategories.Tools, DefaultItemCategories.MeleeWeapons1, DefaultItemCategories.MeleeWeapons2, DefaultItemCategories.MeleeWeapons3, DefaultItemCategories.MeleeWeapons4, DefaultItemCategories.MeleeWeapons5, DefaultItemCategories.RangedWeapons1, DefaultItemCategories.RangedWeapons2, DefaultItemCategories.RangedWeapons3, DefaultItemCategories.RangedWeapons4, DefaultItemCategories.RangedWeapons5, DefaultItemCategories.Arrows, DefaultItemCategories.Shield1, DefaultItemCategories.Shield2, DefaultItemCategories.Shield3, DefaultItemCategories.Shield4, DefaultItemCategories.Shield5, DefaultItemCategories.LightArmor, DefaultItemCategories.MediumArmor, DefaultItemCategories.HeavyArmor, DefaultItemCategories.UltraArmor, DefaultItemCategories.HorseEquipment, DefaultItemCategories.HorseEquipment2, DefaultItemCategories.HorseEquipment3, DefaultItemCategories.HorseEquipment4, DefaultItemCategories.HorseEquipment5);
 		}
-		if (NotableTitleContainsAny(titleText, "tanner", "制革", "皮革"))
+		if (NotableTitleContainsAny(titleText, "tanner", "鞣皮", "鞣皮匠", "揉皮", "揉皮匠", "制革", "制革匠", "皮革", "皮匠"))
 		{
 			return CreateItemCategorySet(DefaultItemCategories.Leather);
 		}
@@ -5895,6 +5897,10 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			value.Count += elementCopyAtIndex.Amount;
 		}
 		IEnumerable<RewardItemInfo> enumerable = dictionary.Values.OrderByDescending((RewardItemInfo x) => x.Count).ThenBy((RewardItemInfo x) => x.Name, StringComparer.Ordinal);
+		if (maxItems <= 0)
+		{
+			maxItems = NotableMarketPostprocessMaxItems;
+		}
 		if (maxItems > 0)
 		{
 			enumerable = enumerable.Take(maxItems);
@@ -6492,7 +6498,8 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		Settlement notableMarketSettlement = ResolveNotableMarketSettlement(hero);
 		bool isNotableMarketHero = IsNotableMarketHero(hero, notableMarketSettlement);
 		int heroGold = isNotableMarketHero ? GetRewardPostprocessGoldForHero(hero) : GetHeroGold(hero);
-		List<RewardItemInfo> notableMarketItems = isNotableMarketHero ? BuildNotableMarketItems(hero, notableMarketSettlement) : new List<RewardItemInfo>();
+		int notableMarketPromptMaxItems = Math.Min(Math.Max(1, maxItems), NotableMarketInventoryPromptMaxItems);
+		List<RewardItemInfo> notableMarketItems = isNotableMarketHero ? BuildNotableMarketItems(hero, notableMarketSettlement, notableMarketPromptMaxItems) : new List<RewardItemInfo>();
 		List<RewardItemInfo> heroInventoryItems = GetHeroInventoryItems(hero);
 		List<RewardItemInfo> heroBattleEquipmentItems = GetHeroBattleEquipmentItems(hero);
 		string text = hero?.Name?.ToString() ?? "该NPC";
@@ -7952,11 +7959,29 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		return result;
 	}
 
+	private static string StripHeroTradeActionTags(string text)
+	{
+		string text2 = text ?? "";
+		text2 = Regex.Replace(text2, "\\[ACTION:GIVE_GOLD:[^\\]]*\\]", string.Empty, RegexOptions.IgnoreCase);
+		text2 = Regex.Replace(text2, "\\[ACTION:GIVE_ITEM:[^\\]]*\\]", string.Empty, RegexOptions.IgnoreCase);
+		text2 = Regex.Replace(text2, "\\[ACTION:DEBT[^\\]]*\\]", string.Empty, RegexOptions.IgnoreCase);
+		text2 = Regex.Replace(text2, "\\[ACTION:TRADE_TRUST:[^\\]]*\\]", string.Empty, RegexOptions.IgnoreCase);
+		text2 = Regex.Replace(text2, "\\[AD;[^\\]]*\\]", string.Empty, RegexOptions.IgnoreCase);
+		text2 = Regex.Replace(text2, "\\[ADP[:;][^\\]]*\\]", string.Empty, RegexOptions.IgnoreCase);
+		return text2.Trim();
+	}
+
 	public void ApplyRewardTags(Hero giver, Hero receiver, ref string responseText)
 	{
 		SetLastGeneratedNpcFactLines(null);
 		if (giver == null || receiver == null || string.IsNullOrEmpty(responseText))
 		{
+			return;
+		}
+		if (AIConfigHandler.IsPlayerCompanionTradeTarget(giver))
+		{
+			responseText = StripHeroTradeActionTags(responseText);
+			Logger.Log("Logic", "[Reward] 已拦截同伴交易标签：目标是玩家同伴，禁止交易。");
 			return;
 		}
 		Stopwatch stopwatch = Stopwatch.StartNew();
