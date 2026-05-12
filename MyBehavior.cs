@@ -3069,25 +3069,11 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			return "";
 		}
-		string text = "";
-		try
+		string text = GetKingdomDecisionTitle(decision);
+		string text2 = GetKingdomDecisionOutcomeTitle(chosenOutcome);
+		if (IsTrivialKingdomDecisionOutcomeTitle(text2))
 		{
-			text = chosenOutcome.GetDecisionTitle()?.ToString() ?? "";
-		}
-		catch
-		{
-			text = "";
-		}
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			try
-			{
-				text = chosenOutcome.GetDecisionDescription()?.ToString() ?? "";
-			}
-			catch
-			{
-				text = "";
-			}
+			text2 = "";
 		}
 		List<string> list = new List<string>();
 		foreach (Supporter supporter in chosenOutcome.SupporterList ?? new List<Supporter>())
@@ -3102,7 +3088,72 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			return "";
 		}
-		return GetKingdomDisplayName(decision.Kingdom, "该王国") + "的决议“" + (string.IsNullOrWhiteSpace(text) ? "本次决议结果" : text.Trim()) + "”最终得到这些支持者表态：" + string.Join("；", list) + "。";
+		string text3 = string.IsNullOrWhiteSpace(text) ? "本次决议" : text.Trim();
+		string text4 = string.IsNullOrWhiteSpace(text2) ? "" : "，最终结果为“" + text2.Trim() + "”";
+		return GetKingdomDisplayName(decision.Kingdom, "该王国") + "的“" + text3 + "”决议" + text4 + "，得到这些支持者表态：" + string.Join("；", list) + "。";
+	}
+
+	private static string GetKingdomDecisionTitle(KingdomDecision decision)
+	{
+		string text = "";
+		try
+		{
+			text = decision?.GetGeneralTitle()?.ToString() ?? "";
+		}
+		catch
+		{
+			text = "";
+		}
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			try
+			{
+				text = decision?.GetSupportTitle()?.ToString() ?? "";
+			}
+			catch
+			{
+				text = "";
+			}
+		}
+		return (text ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
+	}
+
+	private static string GetKingdomDecisionOutcomeTitle(DecisionOutcome chosenOutcome)
+	{
+		string text = "";
+		try
+		{
+			text = chosenOutcome?.GetDecisionTitle()?.ToString() ?? "";
+		}
+		catch
+		{
+			text = "";
+		}
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			try
+			{
+				text = chosenOutcome?.GetDecisionDescription()?.ToString() ?? "";
+			}
+			catch
+			{
+				text = "";
+			}
+		}
+		return (text ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
+	}
+
+	private static bool IsTrivialKingdomDecisionOutcomeTitle(string text)
+	{
+		string text2 = (text ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text2))
+		{
+			return true;
+		}
+		return string.Equals(text2, "是", StringComparison.OrdinalIgnoreCase)
+			|| string.Equals(text2, "否", StringComparison.OrdinalIgnoreCase)
+			|| string.Equals(text2, "yes", StringComparison.OrdinalIgnoreCase)
+			|| string.Equals(text2, "no", StringComparison.OrdinalIgnoreCase);
 	}
 
 	private static string GetSupportWeightLabel(Supporter.SupportWeights supportWeight)
