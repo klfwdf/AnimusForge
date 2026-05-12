@@ -1,0 +1,97 @@
+﻿{
+  "Id": "rule_阿兰塔斯",
+  "Keywords": [
+    "阿兰塔斯",
+    "罗瓦尔",
+    "铁矿",
+    "伊博半岛"
+  ],
+  "RagShortTexts": [
+    "阿兰塔斯村庄位于伊博半岛，以铁矿资源为经济支柱。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "阿兰塔斯是罗瓦尔附近的一座村庄，坐落于多山的伊博半岛中央。这里土壤贫瘠、气候寒冷，但丰富的铁矿资源支撑起了本地的经济。村里的矿工终年在矿山里挖掘铁矿石，供给瓦兰迪亚各地的锻造厂。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "阿兰塔斯的铁矿石在瓦兰迪亚是出了名的好。伊博半岛中央那地方，又冷又荒，种什么都不如挖矿来钱。罗瓦尔那么多锻造厂，全指着阿兰塔斯的矿坑供料。你要是见着一个阿兰塔斯的矿工，他那双手肯定全是铁锈和茧子。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "阿兰塔斯的铁矿生意稳得很。伊博半岛上那些矿坑挖了好多年了，矿脉是真的厚，品质也不赖。罗瓦尔的铁匠铺子用的全是阿兰塔斯产的矿石，打出来的剑和盔甲又硬又韧。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "blacksmith"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "我打铁这么多年，阿兰塔斯的矿石是最好使的料之一。含铁量高，杂质少，入炉一烧就出好铁。罗瓦尔那边打造的刀剑，什么诺德人的斧头、斯特吉亚的矛，好多料子都是从阿兰塔斯矿坑里刨出来的。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "阿兰塔斯",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "罗瓦尔",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

@@ -4,6 +4,9 @@
     "罗多克谷地",
     "瓦南沿海谷地"
   ],
+  "RagShortTexts": [
+    "罗多克谷地是瓦兰迪亚的经济政治文化中心"
+  ],
   "SemanticPrototypes": [],
   "Variants": [
     {
@@ -14,6 +17,7 @@
         "KingdomIds": null,
         "SettlementIds": null,
         "Roles": null,
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": {

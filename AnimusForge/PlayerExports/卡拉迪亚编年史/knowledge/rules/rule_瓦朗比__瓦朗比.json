@@ -1,0 +1,96 @@
+﻿{
+  "Id": "rule_瓦朗比",
+  "Keywords": [
+    "瓦朗比",
+    "特朗河",
+    "马",
+    "沼泽"
+  ],
+  "RagShortTexts": [
+    "瓦朗比的马耐力好蹄子硬，是瓦兰迪亚军队马源。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "瓦朗比是德拉庞堡附近的一座村庄，坐瞰着特朗河河口。当地地主在河畔沼泽地开垦出的围场里饲养马匹，这些在河边长大的马耐力好、蹄子硬，是瓦兰迪亚军队的重要马源之一。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "瓦朗比的马是在沼泽地里跑大的，蹄子比别处的马结实得多。特朗河河口的围场，水草肥美，马儿从小就踩在湿地上，蹄子又硬又不容易烂。德拉庞堡的骑兵和信使用的马，不少就是从瓦朗比拉来的。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "瓦朗比的马不算名贵，但胜在皮实耐用。河口的沼泽围场养出来的马，什么路都能跑，不挑饲料也不容易生病。德拉庞那边的捕鲸人有时候也会来买一匹，骑到海岸边再用马拉鲸尸。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "瓦朗比的围场在特朗河河口，一望无际的沼泽地，马儿在上面跑得欢实。看着那些马在浅水里踩出一串串水花，你就知道什么叫自由。当地的马主人说，这些马腿上有劲，跑一天都不带喘的。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "瓦朗比",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "德拉庞堡",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

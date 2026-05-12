@@ -1,0 +1,96 @@
+﻿{
+  "Id": "rule_梅罗克",
+  "Keywords": [
+    "梅罗克",
+    "渔村",
+    "比斯坎海岸"
+  ],
+  "RagShortTexts": [
+    "梅罗克渔民擅捕金枪鱼沙丁鱼，腌制沙丁鱼闻名。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "梅罗克是加伦管辖下的一座小渔村，俯瞰着比斯坎海岸的一处平静海湾。村民们常出海捕鱼，近海有鲻鱼和鲈鱼，往南边的岛屿附近则能捕到金枪鱼和沙丁鱼。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "梅罗克是个不起眼的小渔村，但加伦那边鱼市上最好的金枪鱼很多都来自这里。梅罗克的渔民胆子大，敢到南边岛屿附近去追大鱼，那地方浪急风大，不是谁都能去的。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "梅罗克的沙丁鱼腌得特别好，价钱也公道。加伦的集市上，梅罗克来的鱼从来不愁卖。那个小海湾是个天然良港，渔船进出方便，风浪也打不进来。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "seafarer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "梅罗克的小海湾是个好锚地，不大，但避风。当地的渔民知道哪片礁石底下藏着鲈鱼群，哪条洋流能把金枪鱼带过来。想在比斯坎海岸弄到好鱼，找梅罗克人就对了。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "梅罗克",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "加伦",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

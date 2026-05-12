@@ -1,0 +1,94 @@
+﻿{
+  "Id": "rule_卡琉斯",
+  "Keywords": [
+    "卡琉斯",
+    "语言"
+  ],
+  "RagShortTexts": [
+    "卡琉斯村庄多雾湿润，村民口音独特难懂"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "卡琉斯是卡琉斯堡附近的一座村庄，坐落于瓦尔切格湾南边多雾的沿海平原上。当地村民们讲一种混合了瓦兰迪亚、斯特吉亚和巴旦尼亚成分的语言，在低地种植亚麻是他们的主要生计。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "卡琉斯那村子说话的口音怪得很，瓦兰迪亚语里夹着斯特吉亚的卷舌和巴旦尼亚的尾音，刚开始听都听不习惯。那地方在瓦尔切格湾边上，雾多，地湿，种亚麻倒是合适。卡琉斯堡的守备队就驻扎在上面，防着北边和东边的动静。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "卡琉斯那地方几国交界，村民们的口音听一遍忘不了。不过他们种的亚麻挺好，瓦尔切格湾附近多雾湿润，麻长得高。就是路不好走，进去一趟得翻好几个雾蒙蒙的山脊。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "我在卡琉斯歇过脚，发现当地人说话我有一半听不懂。一个老农告诉我，他爷爷是斯特吉亚人，奶奶是巴旦尼亚人，他娘是瓦兰迪亚人，家里说话本来就乱炖似的。那地方雾大，早上起来连对面的房子都看不清。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "卡琉斯",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "卡琉斯堡",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

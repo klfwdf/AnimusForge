@@ -4,6 +4,9 @@
     "罗瓦尔山地",
     "瓦北山地"
   ],
+  "RagShortTexts": [
+    "罗瓦尔山地陆路通道奥曼法德走廊，易守难攻。"
+  ],
   "SemanticPrototypes": [],
   "Variants": [
     {
@@ -14,6 +17,7 @@
         "KingdomIds": null,
         "SettlementIds": null,
         "Roles": null,
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": {

@@ -23,6 +23,8 @@ namespace AnimusForge;
 
 public class RewardSystemBehavior : CampaignBehaviorBase
 {
+	private const int RewardQuickInfoDurationMs = 5000;
+
 	private const string NotableMarketPromptPrefix = "market@";
 	private const int NotableMarketInventoryPromptMaxItems = 40;
 	private const int NotableMarketPostprocessMaxItems = 80;
@@ -303,6 +305,40 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 	private List<string> _lastGeneratedNpcFactLines = new List<string>();
 
 	public static RewardSystemBehavior Instance { get; private set; }
+
+	private static void ShowRewardQuickInfo(string message, Hero npcHero)
+	{
+		AnimusForgeQuickInfo.ShowForDuration(message, RewardQuickInfoDurationMs, npcHero?.CharacterObject);
+	}
+
+	private static void ShowRewardQuickInfo(string message, BasicCharacterObject npcCharacter)
+	{
+		AnimusForgeQuickInfo.ShowForDuration(message, RewardQuickInfoDurationMs, npcCharacter);
+	}
+
+	private static void ShowRewardMessage(string message, Color color, Hero npcHero)
+	{
+		InformationManager.DisplayMessage(new InformationMessage(message, color));
+		ShowRewardQuickInfo(message, npcHero);
+	}
+
+	private static void ShowRewardMessage(string message, Color color, BasicCharacterObject npcCharacter)
+	{
+		InformationManager.DisplayMessage(new InformationMessage(message, color));
+		ShowRewardQuickInfo(message, npcCharacter);
+	}
+
+	private static void ShowRewardMessage(string message, Hero npcHero)
+	{
+		InformationManager.DisplayMessage(new InformationMessage(message));
+		ShowRewardQuickInfo(message, npcHero);
+	}
+
+	private static void ShowRewardMessage(string message, BasicCharacterObject npcCharacter)
+	{
+		InformationManager.DisplayMessage(new InformationMessage(message));
+		ShowRewardQuickInfo(message, npcCharacter);
+	}
 
 	public RewardSystemBehavior()
 	{
@@ -1438,10 +1474,12 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		string text2 = FormatTrustUnits(appliedUnits);
 		giverFacts?.Add($"你因累计向玩家实际交付的价值达到阈值，对玩家的个人信任提升了 {text2}{text}。");
 		receiverFacts?.Add($"{giverName} 因累计向你实际交付的价值达到阈值，对你的个人信任提升了 {text2}{text}。");
-		InformationManager.DisplayMessage(new InformationMessage($"【信任变化】{giverName} 因累计向你实际交付的价值，对你的个人信任 +{text2}" + ((num2 > 0) ? $"，公共信任 +{num2}" : ""), Color.FromUint(4278242559u)));
+		string message = $"【信任变化】{giverName} 因累计向你实际交付的价值，对你的个人信任 +{text2}" + ((num2 > 0) ? $"，公共信任 +{num2}" : "");
+		InformationManager.DisplayMessage(new InformationMessage(message, Color.FromUint(4278242559u)));
+		ShowRewardQuickInfo(message, giver);
 	}
 
-	private void ApplyAutoTrustGainFromMerchantGiftValue(Settlement settlement, SettlementMerchantKind kind, int addedValue, List<string> merchantFacts, List<string> playerFacts, string giverName)
+	private void ApplyAutoTrustGainFromMerchantGiftValue(Settlement settlement, SettlementMerchantKind kind, int addedValue, List<string> merchantFacts, List<string> playerFacts, string giverName, BasicCharacterObject giverCharacter = null)
 	{
 		if (settlement == null || kind == SettlementMerchantKind.None || addedValue <= 0)
 		{
@@ -1458,7 +1496,8 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		string text2 = FormatTrustUnits(appliedUnits);
 		merchantFacts?.Add($"你因累计向玩家实际交付的价值达到阈值，对玩家的市场信任提升了 {text2}{text}。");
 		playerFacts?.Add($"{giverName} 代表的{settlementMerchantDebtLabel}因累计向你实际交付的价值达到阈值，对你的市场信任提升了 {text2}{text}。");
-		InformationManager.DisplayMessage(new InformationMessage($"【市场信任变化】{settlementMerchantDebtLabel} 对你的市场信任 +{text2}" + ((num2 > 0) ? $"，公共信任 +{num2}" : ""), Color.FromUint(4278242559u)));
+		string message = $"【市场信任变化】{settlementMerchantDebtLabel} 对你的市场信任 +{text2}" + ((num2 > 0) ? $"，公共信任 +{num2}" : "");
+		ShowRewardMessage(message, Color.FromUint(4278242559u), giverCharacter);
 	}
 
 	private static int TruncateDivisionTowardsZero(int dividend, int divisor, out int remainder)
@@ -1616,7 +1655,9 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			string text = FormatTrustUnits(appliedUnits);
 			string text2 = hero.Name?.ToString() ?? "任务发布人";
 			Logger.Log("Trust", $"quest={quest.StringId} giver={hero.StringId} completed=success personalGain={text} publicGain={num}");
-			InformationManager.DisplayMessage(new InformationMessage($"【信任变化】完成{text2}交付的任务，个人信任 +{text}" + ((num > 0) ? $"，公共信任 +{num}" : ""), Color.FromUint(4278242559u)));
+			string message = $"【信任变化】完成{text2}交付的任务，个人信任 +{text}" + ((num > 0) ? $"，公共信任 +{num}" : "");
+			InformationManager.DisplayMessage(new InformationMessage(message, Color.FromUint(4278242559u)));
+			ShowRewardQuickInfo(message, hero);
 		}
 		catch (Exception ex)
 		{
@@ -8153,7 +8194,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				if (int.TryParse(m.Groups[1].Value, out var result8))
 				{
 					Logger.Log("Logic", $"[Reward] GIVE_GOLD tag 捕获: giver={giver?.Name} receiver={receiver?.Name} amount={result8}");
-					int num4 = giverUsesNotableMarket ? TransferGoldFromSettlement(notableMarketSettlement, receiver, result8, giverName) : TransferGold(giver, receiver, result8);
+					int num4 = giverUsesNotableMarket ? TransferGoldFromSettlement(notableMarketSettlement, receiver, result8, giverName, giver?.CharacterObject) : TransferGold(giver, receiver, result8);
 					if (num4 > 0)
 					{
 						giverFacts.Add(giverUsesNotableMarket ? $"你已经代表城镇市场将 {num4} 第纳尔交给 {receiverName}。并进入了{receiverName}的库存" : $"你已经将 {num4} 第纳尔交给 {receiverName}。并进入了{receiverName}的库存");
@@ -8181,7 +8222,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 					string settlementPromptStringId = "";
 					bool isNotableMarketItem = giverUsesNotableMarket && TryParseNotableMarketPromptStringId(value4, out settlementPromptStringId);
 					string itemIdForFacts = isNotableMarketItem ? settlementPromptStringId : value4;
-					int num4 = isNotableMarketItem ? TransferItemFromSettlement(notableMarketSettlement, receiver, settlementPromptStringId, result8, giverName, out itemName) : TransferItemById(giver, receiver, value4, result8, out itemName);
+					int num4 = isNotableMarketItem ? TransferItemFromSettlement(notableMarketSettlement, receiver, settlementPromptStringId, result8, giverName, out itemName, giver?.CharacterObject) : TransferItemById(giver, receiver, value4, result8, out itemName);
 					if (num4 > 0)
 					{
 						string text3 = (string.IsNullOrEmpty(itemName) ? value4 : itemName);
@@ -8256,7 +8297,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 						string text7 = (string.IsNullOrWhiteSpace(text4) ? "" : ("（" + text4 + "）"));
 						string text8 = (string.IsNullOrWhiteSpace(text5) ? "" : ("[ID:" + text5 + "] "));
 						string text9 = string.IsNullOrWhiteSpace(text3) ? "" : (" 备注：" + text3);
-						InformationManager.DisplayMessage(new InformationMessage($"【欠款记录】{text8}你欠 {giverName} {result8} 第纳尔{text7}{text9}", Color.FromUint(4294936576u)));
+						ShowRewardMessage($"【欠款记录】{text8}你欠 {giverName} {result8} 第纳尔{text7}{text9}", Color.FromUint(4294936576u), giver);
 					}
 				}
 				return string.Empty;
@@ -8284,10 +8325,10 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 						giverFacts.Add($"你确认债务ID {value4} 已解除。{statusText}");
 						receiverFacts.Add($"你的债务ID {value4} 已解除。{statusText}");
 						bool flag3 = statusText.IndexOf("已按协商解除", StringComparison.OrdinalIgnoreCase) >= 0;
-						InformationManager.DisplayMessage(new InformationMessage((flag3 ? "【债务解除】" : "【债务解除失败】") + statusText, flag3 ? Color.FromUint(4278255360u) : Color.FromUint(4294923605u)));
+						ShowRewardMessage((flag3 ? "【债务解除】" : "【债务解除失败】") + statusText, flag3 ? Color.FromUint(4278255360u) : Color.FromUint(4294923605u), giver);
 						if (flag2)
 						{
-							InformationManager.DisplayMessage(new InformationMessage("【欠款已清】你对 " + giverName + " 的全部欠款已还清！", Color.FromUint(4278255360u)));
+							ShowRewardMessage("【欠款已清】你对 " + giverName + " 的全部欠款已还清！", Color.FromUint(4278255360u), giver);
 						}
 					}
 				}
@@ -8313,11 +8354,11 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 						{
 							string text5 = (string.IsNullOrWhiteSpace(text3) ? "" : ("（" + text3 + "）"));
 							string text6 = (string.IsNullOrWhiteSpace(text4) ? "" : ("[ID:" + text4 + "] "));
-							InformationManager.DisplayMessage(new InformationMessage($"【欠款记录】{text6}你欠 {giverName} {result8} 第纳尔{text5}", Color.FromUint(4294936576u)));
+							ShowRewardMessage($"【欠款记录】{text6}你欠 {giverName} {result8} 第纳尔{text5}", Color.FromUint(4294936576u), giver);
 						}
 						else
 						{
-							InformationManager.DisplayMessage(new InformationMessage("【欠款已清】你对 " + giverName + " 的金币欠款已还清！", Color.FromUint(4278255360u)));
+							ShowRewardMessage("【欠款已清】你对 " + giverName + " 的金币欠款已还清！", Color.FromUint(4278255360u), giver);
 						}
 					}
 				}
@@ -8343,11 +8384,11 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 						{
 							string text5 = (string.IsNullOrWhiteSpace(text3) ? "" : ("（" + text3 + "）"));
 							string text6 = (string.IsNullOrWhiteSpace(text4) ? "" : ("[ID:" + text4 + "] "));
-							InformationManager.DisplayMessage(new InformationMessage($"【欠款记录】{text6}你欠 {giverName} {result8} 第纳尔{text5}", Color.FromUint(4294936576u)));
+							ShowRewardMessage($"【欠款记录】{text6}你欠 {giverName} {result8} 第纳尔{text5}", Color.FromUint(4294936576u), giver);
 						}
 						else
 						{
-							InformationManager.DisplayMessage(new InformationMessage("【欠款已清】你对 " + giverName + " 的金币欠款已还清！", Color.FromUint(4278255360u)));
+							ShowRewardMessage("【欠款已清】你对 " + giverName + " 的金币欠款已还清！", Color.FromUint(4278255360u), giver);
 						}
 					}
 				}
@@ -8376,7 +8417,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 						receiverFacts.Add($"你欠 {giverName} {itemId} x{result8}（债务ID:{text4}）。{text3}");
 						string text5 = (string.IsNullOrWhiteSpace(text3) ? "" : ("（" + text3 + "）"));
 						string text6 = (string.IsNullOrWhiteSpace(text4) ? "" : ("[ID:" + text4 + "] "));
-						InformationManager.DisplayMessage(new InformationMessage($"【欠款记录】{text6}你欠 {giverName} {itemId} x{result8}{text5}", Color.FromUint(4294936576u)));
+						ShowRewardMessage($"【欠款记录】{text6}你欠 {giverName} {itemId} x{result8}{text5}", Color.FromUint(4294936576u), giver);
 					}
 				}
 				return string.Empty;
@@ -8401,11 +8442,11 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 						receiverFacts.Add($"你已偿还金币债务ID {value4} 共 {result8}。{statusText}");
 						if (flag2)
 						{
-							InformationManager.DisplayMessage(new InformationMessage("【欠款已清】你对 " + giverName + " 的全部欠款已还清！", Color.FromUint(4278255360u)));
+							ShowRewardMessage("【欠款已清】你对 " + giverName + " 的全部欠款已还清！", Color.FromUint(4278255360u), giver);
 						}
 						else
 						{
-							InformationManager.DisplayMessage(new InformationMessage($"【还款确认】已偿还金币债务ID {value4}：{result8}", Color.FromUint(4278242559u)));
+							ShowRewardMessage($"【还款确认】已偿还金币债务ID {value4}：{result8}", Color.FromUint(4278242559u), giver);
 						}
 					}
 				}
@@ -8432,11 +8473,11 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 						receiverFacts.Add($"你已偿还物品债务ID {value4}：{value5} x{result8}。{statusText}");
 						if (flag2)
 						{
-							InformationManager.DisplayMessage(new InformationMessage("【欠款已清】你对 " + giverName + " 的全部欠款已还清！", Color.FromUint(4278255360u)));
+							ShowRewardMessage("【欠款已清】你对 " + giverName + " 的全部欠款已还清！", Color.FromUint(4278255360u), giver);
 						}
 						else
 						{
-							InformationManager.DisplayMessage(new InformationMessage($"【还款确认】已偿还物品债务ID {value4}：{value5} x{result8}", Color.FromUint(4278242559u)));
+							ShowRewardMessage($"【还款确认】已偿还物品债务ID {value4}：{value5} x{result8}", Color.FromUint(4278242559u), giver);
 						}
 					}
 				}
@@ -8462,11 +8503,11 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 						receiverFacts.Add($"你已对物品债务ID {value4} 支付金币赔偿：{result8}。{statusText}");
 						if (flag2)
 						{
-							InformationManager.DisplayMessage(new InformationMessage("【欠款已清】你对 " + giverName + " 的全部欠款已还清！", Color.FromUint(4278255360u)));
+							ShowRewardMessage("【欠款已清】你对 " + giverName + " 的全部欠款已还清！", Color.FromUint(4278255360u), giver);
 						}
 						else
 						{
-							InformationManager.DisplayMessage(new InformationMessage($"【赔偿确认】已按协商支付物品债务ID {value4} 的金币赔偿：{result8}", Color.FromUint(4278242559u)));
+							ShowRewardMessage($"【赔偿确认】已按协商支付物品债务ID {value4} 的金币赔偿：{result8}", Color.FromUint(4278242559u), giver);
 						}
 					}
 				}
@@ -8535,11 +8576,11 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 						}
 						else if (flag2)
 						{
-							InformationManager.DisplayMessage(new InformationMessage("【欠款已清】你对 " + giverName + " 的全部欠款已还清！", Color.FromUint(4278255360u)));
+							ShowRewardMessage("【欠款已清】你对 " + giverName + " 的全部欠款已还清！", Color.FromUint(4278255360u), giver);
 						}
 						else
 						{
-							InformationManager.DisplayMessage(new InformationMessage($"【还款确认】已偿还债务ID {value4}：{result8}", Color.FromUint(4278242559u)));
+							ShowRewardMessage($"【还款确认】已偿还债务ID {value4}：{result8}", Color.FromUint(4278242559u), giver);
 						}
 					}
 				}
@@ -8829,12 +8870,12 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			if (int.TryParse(m.Groups[1].Value, out var result7))
 			{
-				int num = TransferGoldFromSettlement(currentSettlement, receiver, result7, giverName);
+				int num = TransferGoldFromSettlement(currentSettlement, receiver, result7, giverName, giverCharacter);
 				if (num > 0)
 				{
 					merchantFacts.Add($"你已经将 {num} 第纳尔交给玩家。并进入了玩家的的库存");
 					playerFacts.Add($"你从 {giverName} 收到了 {num} 第纳尔。");
-					ApplyAutoTrustGainFromMerchantGiftValue(currentSettlement, kind, num, merchantFacts, playerFacts, giverName);
+					ApplyAutoTrustGainFromMerchantGiftValue(currentSettlement, kind, num, merchantFacts, playerFacts, giverName, giverCharacter);
 				}
 				else
 				{
@@ -8849,7 +8890,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			if (int.TryParse(m.Groups[2].Value, out var result))
 			{
 				string itemName;
-				int num = TransferItemFromSettlement(currentSettlement, receiver, value, result, giverName, out itemName);
+				int num = TransferItemFromSettlement(currentSettlement, receiver, value, result, giverName, out itemName, giverCharacter);
 				string text = ((!string.IsNullOrWhiteSpace(itemName)) ? itemName : ResolveSettlementMerchantDisplayNameFromPromptStringId(value));
 				ItemObject itemObject = ResolveItemById(value.Split('@')[0]);
 				if (num > 0)
@@ -8857,7 +8898,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 					string text2 = BuildSettlementItemValueFactSuffixForExternal(currentSettlement, itemObject, num);
 					merchantFacts.Add($"你已经将 {FormatItemAmount(num, itemObject, text)} 交给玩家{text2}。并进入了玩家的的库存");
 					playerFacts.Add($"你从 {giverName} 收到了 {FormatItemAmount(num, itemObject, text)}{text2}。");
-					ApplyAutoTrustGainFromMerchantGiftValue(currentSettlement, kind, GetItemTrustValueForMerchantGift(currentSettlement, itemObject, num), merchantFacts, playerFacts, giverName);
+					ApplyAutoTrustGainFromMerchantGiftValue(currentSettlement, kind, GetItemTrustValueForMerchantGift(currentSettlement, itemObject, num), merchantFacts, playerFacts, giverName, giverCharacter);
 					if (num < result)
 					{
 						string text3 = BuildSettlementItemValueFactSuffixForExternal(currentSettlement, itemObject, result);
@@ -8910,10 +8951,10 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 					merchantFacts.Add(statusText);
 					playerFacts.Add(statusText);
 					bool flag2 = statusText.IndexOf("已按协商解除", StringComparison.OrdinalIgnoreCase) >= 0;
-					InformationManager.DisplayMessage(new InformationMessage((flag2 ? "【市场债务解除】" : "【市场债务解除失败】") + statusText, flag2 ? Color.FromUint(4278255360u) : Color.FromUint(4294923605u)));
+					ShowRewardMessage((flag2 ? "【市场债务解除】" : "【市场债务解除失败】") + statusText, flag2 ? Color.FromUint(4278255360u) : Color.FromUint(4294923605u), giverCharacter);
 					if (flag)
 					{
-						InformationManager.DisplayMessage(new InformationMessage("【市场欠款】当前市场债务已全部结清。", Color.FromUint(4278255360u)));
+						ShowRewardMessage("【市场欠款】当前市场债务已全部结清。", Color.FromUint(4278255360u), giverCharacter);
 					}
 				}
 			}
@@ -8960,7 +9001,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				{
 					merchantFacts.Add(statusText);
 					playerFacts.Add(statusText);
-					InformationManager.DisplayMessage(new InformationMessage((flag ? "【市场欠款】" : "【市场还款失败】") + statusText, flag ? Color.FromUint(4278255360u) : Color.FromUint(4294923605u)));
+					ShowRewardMessage((flag ? "【市场欠款】" : "【市场还款失败】") + statusText, flag ? Color.FromUint(4278255360u) : Color.FromUint(4294923605u), giverCharacter);
 				}
 			}
 			return string.Empty;
@@ -8975,7 +9016,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				{
 					merchantFacts.Add(statusText);
 					playerFacts.Add(statusText);
-					InformationManager.DisplayMessage(new InformationMessage((flag ? "【市场欠款】" : "【市场还款失败】") + statusText, flag ? Color.FromUint(4278255360u) : Color.FromUint(4294923605u)));
+					ShowRewardMessage((flag ? "【市场欠款】" : "【市场还款失败】") + statusText, flag ? Color.FromUint(4278255360u) : Color.FromUint(4294923605u), giverCharacter);
 				}
 			}
 			return string.Empty;
@@ -9018,17 +9059,17 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		if (receiver == Hero.MainHero)
 		{
 			string arg = giver?.Name?.ToString() ?? "某人";
-			InformationManager.DisplayMessage(new InformationMessage($"{arg} 给了你 {num} 第纳尔。"));
+			ShowRewardMessage($"{arg} 给了你 {num} 第纳尔。", giver);
 		}
 		else if (giver == Hero.MainHero)
 		{
 			string arg2 = receiver?.Name?.ToString() ?? "某人";
-			InformationManager.DisplayMessage(new InformationMessage($"你给了 {arg2} {num} 第纳尔。"));
+			ShowRewardMessage($"你给了 {arg2} {num} 第纳尔。", receiver);
 		}
 		return num;
 	}
 
-	internal int TransferGoldFromSettlement(Settlement settlement, Hero receiver, int amount, string giverName = null)
+	internal int TransferGoldFromSettlement(Settlement settlement, Hero receiver, int amount, string giverName = null, BasicCharacterObject giverCharacter = null)
 	{
 		if (settlement == null || receiver == null || amount <= 0)
 		{
@@ -9050,6 +9091,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			string arg = ((!string.IsNullOrWhiteSpace(giverName)) ? giverName : (settlement.Name?.ToString() ?? "这座城镇的商人"));
 			InformationManager.DisplayMessage(new InformationMessage($"{arg} 给了你 {num} 第纳尔。"));
+			AnimusForgeQuickInfo.ShowForDuration($"{arg} 给了你 {num} 第纳尔。", RewardQuickInfoDurationMs, giverCharacter);
 		}
 		return num;
 	}
@@ -9244,18 +9286,18 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			string arg = giver?.Name?.ToString() ?? "某人";
 			string arg2 = itemName ?? itemStringId;
-			InformationManager.DisplayMessage(new InformationMessage($"{arg} 给了你 {FormatItemAmount(num2, itemObject, arg2)}。"));
+			ShowRewardMessage($"{arg} 给了你 {FormatItemAmount(num2, itemObject, arg2)}。", giver);
 		}
 		else if (giver == Hero.MainHero)
 		{
 			string arg3 = receiver?.Name?.ToString() ?? "某人";
 			string arg4 = itemName ?? itemStringId;
-			InformationManager.DisplayMessage(new InformationMessage($"你给了 {arg3} {FormatItemAmount(num2, itemObject, arg4)}。"));
+			ShowRewardMessage($"你给了 {arg3} {FormatItemAmount(num2, itemObject, arg4)}。", receiver);
 		}
 		return num2;
 	}
 
-	internal int TransferItemFromSettlement(Settlement settlement, Hero receiver, string itemStringId, int amount, string giverName, out string itemName)
+	internal int TransferItemFromSettlement(Settlement settlement, Hero receiver, string itemStringId, int amount, string giverName, out string itemName, BasicCharacterObject giverCharacter = null)
 	{
 		itemName = null;
 		if (settlement == null || receiver == null || string.IsNullOrWhiteSpace(itemStringId) || amount <= 0)
@@ -9327,6 +9369,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			string arg = ((!string.IsNullOrWhiteSpace(giverName)) ? giverName : (settlement.Name?.ToString() ?? "这座城镇的商人"));
 			InformationManager.DisplayMessage(new InformationMessage($"{arg} 给了你 {FormatItemAmount(num2, equipmentElement.Item, itemName)}。"));
+			AnimusForgeQuickInfo.ShowForDuration($"{arg} 给了你 {FormatItemAmount(num2, equipmentElement.Item, itemName)}。", RewardQuickInfoDurationMs, giverCharacter);
 		}
 		return num2;
 	}

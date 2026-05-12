@@ -5,6 +5,9 @@
     "南瓦兰迪亚",
     "自由之地"
   ],
+  "RagShortTexts": [
+    "罗多克是瓦兰迪亚的南部土地。"
+  ],
   "SemanticPrototypes": [],
   "Variants": [
     {
@@ -15,6 +18,7 @@
         "KingdomIds": null,
         "SettlementIds": null,
         "Roles": null,
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": null

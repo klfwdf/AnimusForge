@@ -4,6 +4,9 @@
     "斯瓦迪亚丘陵",
     "瓦中丘陵"
   ],
+  "RagShortTexts": [
+    "斯瓦迪亚丘陵包含哪些据点？"
+  ],
   "SemanticPrototypes": [],
   "Variants": [
     {
@@ -14,6 +17,7 @@
         "KingdomIds": null,
         "SettlementIds": null,
         "Roles": null,
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": {

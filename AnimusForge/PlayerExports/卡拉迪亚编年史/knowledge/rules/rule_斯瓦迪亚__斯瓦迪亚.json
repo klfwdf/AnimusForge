@@ -4,6 +4,9 @@
     "斯瓦迪亚",
     "北瓦兰迪亚"
   ],
+  "RagShortTexts": [
+    "瓦兰迪亚鹰派男爵的封地多在斯瓦迪亚。"
+  ],
   "SemanticPrototypes": [],
   "Variants": [
     {
@@ -23,6 +26,7 @@
           "lord",
           "notable"
         ],
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": null

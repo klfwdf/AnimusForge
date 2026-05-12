@@ -5,12 +5,15 @@
     "金币",
     "钱"
   ],
+  "RagShortTexts": [
+    "第纳尔是卡拉迪亚大陆唯一流通的货币。"
+  ],
   "SemanticPrototypes": [],
   "Variants": [
     {
       "Priority": 0,
       "When": null,
-      "Content": "你只知道第纳尔是一种货币，用来衡量贫富的标准"
+      "Content": "你只知道第纳尔是一种货币，用来衡量贫富的标准，平民一辈子也挣不到1000第纳尔，商人们通常有好几万，领主们有好几十万到好几百万"
     },
     {
       "Priority": 0,
@@ -20,6 +23,7 @@
         "KingdomIds": null,
         "SettlementIds": null,
         "Roles": null,
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": {
@@ -36,6 +40,7 @@
         "KingdomIds": null,
         "SettlementIds": null,
         "Roles": null,
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": {

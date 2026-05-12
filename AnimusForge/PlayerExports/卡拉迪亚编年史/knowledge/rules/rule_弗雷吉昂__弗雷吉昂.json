@@ -1,0 +1,93 @@
+﻿{
+  "Id": "rule_弗雷吉昂",
+  "Keywords": [
+    "弗雷吉昂"
+  ],
+  "RagShortTexts": [
+    "弗雷吉昂位于帕拉汶德北部平原，是气候分界点。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "弗雷吉昂是奥克斯·霍尔附近的一座村庄，坐落于帕拉汶德北部的平原上。从这里开始，瓦兰迪亚南方的暖流让位于北境的寒气。当地村民在沼泽和草地里种植亚麻，亚麻布是他们的主要产出。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "弗雷吉昂是南来北往的人都能感觉到气候分界的地方。往南走，海风还是暖的；往北走，风就变凉了。这里的亚麻长得不错，沼泽地和低地草场最适合这作物。弗雷吉昂的亚麻布耐穿，北边那些斯特吉亚的波耶有时候也会派人来买。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "弗雷吉昂的亚麻布结实，价格也实在。当地的沼泽地种出来的亚麻，纤维长，织出来的布比南方那些薄料子耐穿得多。往北边跑商路的人，都愿意在这儿进一批货。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "我路过弗雷吉昂的时候正是秋天，沼泽地里的亚麻割了一茬又一茬，空气里凉飕飕的。从这儿往北，你能明显感觉到温度往下掉。当地人说，弗雷吉昂就是瓦兰迪亚暖风能吹到的最后一站了。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "弗雷吉昂",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "奥克斯·霍尔",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

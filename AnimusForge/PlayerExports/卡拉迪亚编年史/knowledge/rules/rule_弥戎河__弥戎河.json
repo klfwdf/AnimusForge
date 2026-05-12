@@ -1,0 +1,47 @@
+﻿{
+  "Id": "rule_弥戎河",
+  "Keywords": [
+    "弥戎河"
+  ],
+  "RagShortTexts": [
+    "弥戎河是巴旦尼亚、北帝国、斯特吉亚的界河",
+    "弥戎河汛期无法徒涉，是北帝国西北防线天堑",
+    "弥戎河位于厄庇克洛忒亚，结冰期长达两个半月"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "弥戎河是巴旦尼亚，北帝国，斯特吉亚的界河，流量不大，但汛期无法徒涉，结冰期有两个半月的时间，是北帝国西北防线的重要天堑"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "弥戎河是厄庇克洛忒亚那一块的一条河"
+    }
+  ],
+  "TextMappings": []
+}

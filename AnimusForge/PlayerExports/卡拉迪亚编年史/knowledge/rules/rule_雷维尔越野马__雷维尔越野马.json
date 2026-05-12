@@ -3,6 +3,9 @@
   "Keywords": [
     "雷维尔越野马"
   ],
+  "RagShortTexts": [
+    "雷维尔越野马是斯特吉亚的优良军马"
+  ],
   "SemanticPrototypes": [],
   "Variants": [
     {
@@ -13,6 +16,7 @@
         "KingdomIds": null,
         "SettlementIds": null,
         "Roles": null,
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": null

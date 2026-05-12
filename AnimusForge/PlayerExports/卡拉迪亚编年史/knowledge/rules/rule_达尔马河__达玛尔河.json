@@ -4,9 +4,7 @@
     "达玛尔河"
   ],
   "RagShortTexts": [
-    "达玛尔河是诺德维格与库塞特的界河。",
-    "诺德维格和库塞特之间的界河是什么？",
-    "达玛尔河划分了诺德维格和库塞特。"
+    "达玛尔河阿塞莱"
   ],
   "SemanticPrototypes": [],
   "Variants": [
@@ -23,7 +21,7 @@
         "IsClanLeader": null,
         "SkillMin": null
       },
-      "Content": "达玛尔河是诺德维格和库塞特的界河"
+      "Content": "达玛尔河是阿塞莱的母亲河"
     }
   ],
   "TextMappings": []

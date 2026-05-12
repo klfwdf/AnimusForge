@@ -1,0 +1,94 @@
+﻿{
+  "Id": "rule_塔利维尔",
+  "Keywords": [
+    "塔利维尔",
+    "特朗河谷"
+  ],
+  "RagShortTexts": [
+    "塔利维尔橄榄油味道温和，瓦兰迪亚贵族喜爱。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "塔利维尔是塔利维尔堡附近的一座村庄，坐落在瓦兰迪亚腹地的特朗河谷中段。这里的村民们利用谷地温暖的气候，在山坡上种植橄榄，橄榄油是他们的主要产出。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "塔利维尔在特朗河谷里面，四面都是山，风刮不进来，冬天也不怎么冷。山坡上的橄榄树长了几十年了，榨出来的油黄澄澄的，味道温和。塔利维尔堡的守军吃腻了北边运来的牛油，一到收橄榄的季节就下山来换油。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "塔利维尔的橄榄油有一种特别的温和味道，特朗河谷的好水土养出来的。瓦兰迪亚腹地的贵族们喜欢这种不冲鼻子的油，做菜拌沙拉都好。塔利维尔堡虽然不大，但山下的村子倒是富得很。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "塔利维尔窝在特朗河谷里，外面刮大风里面也听不见。山坡上一排一排的橄榄树，绿压压的。我在那儿的时候正赶上收橄榄，全村人都在树下忙活，孩子们把掉地上的果子捡起来，谁也不闲着。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "塔利维尔",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "塔利维尔堡",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

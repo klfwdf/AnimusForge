@@ -371,7 +371,7 @@ public static class TroopInspectionBehavior
 
 	private static void Display(string message)
 	{
-		InformationManager.DisplayMessage(new InformationMessage(message));
+		AnimusForgeQuickInfo.Show(message);
 	}
 
 	private static void SetPrivateField<T>(object target, string fieldName, T value)
@@ -607,7 +607,7 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 		if (!_inspectionMessageShown && _deploymentEndDetected && base.Mission != null && base.Mission.CurrentTime > 2f)
 		{
 			_inspectionMessageShown = true;
-			InformationManager.DisplayMessage(new InformationMessage("检阅模式：可自由指挥部队进行检阅。按TAB撤退结束检阅。", Colors.Green));
+			AnimusForgeQuickInfo.Show("检阅模式：可自由指挥部队进行检阅。按TAB撤退结束检阅。");
 			Log("inspection_message_shown");
 		}
 	}
@@ -757,7 +757,7 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 		if (prisonRoster == null)
 		{
 			Logger.LogEvent("TroopInspection", "spawn_prisoners skipped: PrisonRoster null");
-			InformationManager.DisplayMessage(new InformationMessage("阅兵：无法访问囚犯名册。", Colors.Red));
+			AnimusForgeQuickInfo.Show("阅兵：无法访问囚犯名册。");
 			return;
 		}
 		int totalCount = 0;
@@ -782,7 +782,7 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 		if (totalCount <= 0)
 		{
 			Logger.LogEvent("TroopInspection", "spawn_prisoners skipped: no prisoners at all");
-			InformationManager.DisplayMessage(new InformationMessage("阅兵：没有囚犯可参加阅兵。", Colors.Yellow));
+			AnimusForgeQuickInfo.Show("阅兵：没有囚犯可参加阅兵。");
 			return;
 		}
 		Team playerTeam = base.Mission.PlayerTeam;
@@ -890,15 +890,15 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 			{
 				msg += spawnedRegulars + " 名士兵俘虏（7号俘虏编队）";
 			}
-			InformationManager.DisplayMessage(new InformationMessage(msg, Colors.Green));
+			AnimusForgeQuickInfo.Show(msg);
 		}
 		else if (totalErrors > 0)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("阅兵：囚犯生成失败(" + totalErrors + "/" + totalCount + ") 错误: " + lastError, Colors.Red));
+			AnimusForgeQuickInfo.Show("阅兵：囚犯生成失败(" + totalErrors + "/" + totalCount + ") 错误: " + lastError);
 		}
 		else
 		{
-			InformationManager.DisplayMessage(new InformationMessage("阅兵：囚犯生成失败(" + totalCount + "名尝试，0名成功)。", Colors.Red));
+			AnimusForgeQuickInfo.Show("阅兵：囚犯生成失败(" + totalCount + "名尝试，0名成功)。");
 		}
 	}
 

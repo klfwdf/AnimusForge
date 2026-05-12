@@ -5855,7 +5855,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			{
 				text = "K";
 			}
-			InformationManager.DisplayMessage(new InformationMessage("按（" + text + "）与NPC交流", new Color(0.95f, 0.85f, 0.2f)));
+			AnimusForgeQuickInfo.Show("靠近NPC按" + text + "键交流");
 		}
 		catch
 		{
@@ -12221,7 +12221,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				{
 					_mainThreadActions.Enqueue(delegate
 					{
-						InformationManager.DisplayMessage(new InformationMessage("周围的人明显不想继续聊下去。", new Color(1f, 0.8f, 0.3f)));
+						AnimusForgeQuickInfo.Show("周围的人明显不想继续聊下去。");
 					});
 					return;
 				}
@@ -12736,7 +12736,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			{
 				_mainThreadActions.Enqueue(delegate
 				{
-					InformationManager.DisplayMessage(new InformationMessage("周围的人明显不想继续聊下去。", new Color(1f, 0.8f, 0.3f)));
+					AnimusForgeQuickInfo.Show("周围的人明显不想继续聊下去。");
 				});
 				return;
 			}
@@ -15083,6 +15083,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			return;
 		}
 		ClearSceneSummonConversationInteractionTimers(sceneSummonConversationSession);
+		bool wasSpeaker = IsSceneSummonConversationSpeaker(sceneSummonConversationSession, agent);
 		bool flag = false;
 		for (int num = sceneSummonConversationSession.Participants.Count - 1; num >= 0; num--)
 		{
@@ -15093,6 +15094,13 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				flag = true;
 			}
 		}
+		if (wasSpeaker)
+		{
+			sceneSummonConversationSession.SpeakerAgentIndex = -1;
+			sceneSummonConversationSession.SpeakerLocationCharacter = null;
+			sceneSummonConversationSession.KeepSpeakerNearby = false;
+			flag = true;
+		}
 		if (!flag)
 		{
 			return;
@@ -15101,7 +15109,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		if (sceneSummonConversationSession.Participants.Count == 0)
 		{
 			_activeSceneSummonConversationSessions.Remove(sceneSummonConversationSession);
-			if (CanAgentParticipateInSceneSpeech(agent2) && agent2 != agent)
+			if (!wasSpeaker && CanAgentParticipateInSceneSpeech(agent2) && agent2 != agent)
 			{
 				StopSceneSummonFollowPlayer(agent2);
 				_sceneFollowReturnStates.Remove(agent2.Index);
@@ -15115,6 +15123,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 		else
 		{
+			CancelSceneSummonBatch(sceneSummonConversationSession.BatchId);
 			RefreshSceneSummonConversationInteractions(sceneSummonConversationSession);
 		}
 		_pendingInteractionTimeoutArms.Remove(agent.Index);
@@ -15375,6 +15384,39 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			CleanupSceneReturnDoorProxyAgent(item);
 		}
 		_activeSceneReturnJobs.RemoveAll((SceneReturnJob x) => x == null || x.LocationCharacter == locationCharacter);
+	}
+
+	private void CancelSceneTemporaryCommandStateForFollow(Agent agent)
+	{
+		if (!CanAgentParticipateInSceneSpeech(agent))
+		{
+			return;
+		}
+		LocationCharacter locationCharacter = null;
+		try
+		{
+			locationCharacter = LocationComplex.Current?.FindCharacter(agent);
+		}
+		catch
+		{
+			locationCharacter = null;
+		}
+		if (locationCharacter != null)
+		{
+			CancelSceneReturnJob(locationCharacter);
+		}
+		CancelSceneGuideActionForAgent(agent.Index);
+		RemoveAgentFromSceneSummonConversationForFollow(agent);
+		CancelSceneSummonActionForAgent(agent.Index, locationCharacter);
+		lock (_ttsBubbleSyncLock)
+		{
+			_pendingSceneGuideLaunchQueues.Remove(agent.Index);
+		}
+		_pendingSceneGuideReturnsAfterSpeech.Remove(agent.Index);
+		_pendingSceneAutonomyRestoresAfterSpeech.Remove(agent.Index);
+		_pendingInteractionTimeoutArms.Remove(agent.Index);
+		_activeInteractionSessions.Remove(agent.Index);
+		RemoveSceneMovementSuppressionAgents(new int[1] { agent.Index });
 	}
 
 	private void PrepareAgentForSceneSummonMovement(Agent agent)
@@ -16196,16 +16238,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			}
 		}
 		CancelSceneReturnJob(locationCharacter);
-		foreach (ActiveSceneSummonRequest item in _activeSceneSummonRequests.Where((ActiveSceneSummonRequest x) => x == null || x.SpeakerAgentIndex == npc.AgentIndex).ToList())
-		{
-			CleanupSceneSummonDoorProxyAgent(item);
-		}
-		_activeSceneSummonRequests.RemoveAll((ActiveSceneSummonRequest x) => x == null || x.SpeakerAgentIndex == npc.AgentIndex);
-		List<int> list = _activeSceneSummonBatches.Values.Where((SceneSummonBatchState x) => x != null && x.SpeakerAgentIndex == npc.AgentIndex).Select((SceneSummonBatchState x) => x.BatchId).ToList();
-		foreach (int item in list)
-		{
-			CancelSceneSummonBatch(item);
-		}
+		CancelSceneGuideActionForAgent(npc.AgentIndex);
+		CancelSceneSummonActionForAgent(npc.AgentIndex, locationCharacter);
 		SceneSummonBatchState sceneSummonBatchState = new SceneSummonBatchState
 		{
 			BatchId = _nextSceneSummonBatchId++,
@@ -16300,7 +16334,22 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			_pendingSceneFollowCommands.Remove(agent.Index);
 			StopSceneSummonFollowPlayer(agent, restoreDailyBehaviors: false);
 		}
+		if (TryDetachSceneSummonConversationAgentForRelay(agent, out var relayOriginalLocation, out var relayOriginalPosition))
+		{
+			originalGuideLocation = relayOriginalLocation ?? originalGuideLocation;
+			originalGuidePosition = relayOriginalPosition ?? originalGuidePosition;
+		}
+		else
+		{
+			SceneSummonConversationSession sceneSummonConversationSession = TryGetSceneSummonConversationSessionForAgentIndex(npc.AgentIndex);
+			if (sceneSummonConversationSession != null)
+			{
+				BeginSceneSummonConversationReturn(sceneSummonConversationSession);
+			}
+		}
+		CancelSceneReturnJob(locationCharacter);
 		CancelSceneGuideActionForAgent(npc.AgentIndex);
+		CancelSceneSummonActionForAgent(npc.AgentIndex, locationCharacter);
 		preparedRequest = new ActiveSceneGuideRequest
 		{
 			GuideAgentIndex = npc.AgentIndex,
@@ -16341,6 +16390,28 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 		_pendingSceneGuideReturnsAfterSpeech.Remove(guideAgentIndex);
 		ReleaseSceneGuideArrivalHold(guideAgentIndex, restoreAutonomy: true);
+	}
+
+	private void CancelSceneSummonActionForAgent(int agentIndex, LocationCharacter locationCharacter = null)
+	{
+		if (agentIndex < 0)
+		{
+			return;
+		}
+		foreach (ActiveSceneSummonRequest item in _activeSceneSummonRequests.Where((ActiveSceneSummonRequest x) => x == null || x.SpeakerAgentIndex == agentIndex || (locationCharacter != null && x.TargetLocationCharacter == locationCharacter)).ToList())
+		{
+			CleanupSceneSummonDoorProxyAgent(item);
+		}
+		_activeSceneSummonRequests.RemoveAll((ActiveSceneSummonRequest x) => x == null || x.SpeakerAgentIndex == agentIndex || (locationCharacter != null && x.TargetLocationCharacter == locationCharacter));
+		foreach (int item2 in _activeSceneSummonBatches.Values.Where((SceneSummonBatchState x) => x != null && x.SpeakerAgentIndex == agentIndex).Select((SceneSummonBatchState x) => x.BatchId).ToList())
+		{
+			CancelSceneSummonBatch(item2);
+		}
+		lock (_ttsBubbleSyncLock)
+		{
+			_pendingSceneSummonLaunchQueues.Remove(agentIndex);
+		}
+		_pendingSceneSummonReturnsAfterSpeech.Remove(agentIndex);
 	}
 
 	private static EscortAgentBehavior GetSceneGuideEscortBehavior(Agent agent)
@@ -17119,7 +17190,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		request.Stage = request.PendingLaunchStage;
 		if (!string.IsNullOrWhiteSpace(request.LaunchAnnouncement))
 		{
-			InformationManager.DisplayMessage(new InformationMessage(request.LaunchAnnouncement, new Color(1f, 0.85f, 0.35f)));
+			AnimusForgeQuickInfo.Show(request.LaunchAnnouncement, request.SpeakerLocationCharacter?.Character);
 		}
 		LogSceneSummonState("pending_launch_begin", request, ResolveAgentForLocationCharacter(request.SpeakerLocationCharacter), ResolveAgentForLocationCharacter(request.TargetLocationCharacter), "launchStage=" + request.PendingLaunchStage, force: true);
 		return false;
@@ -17358,7 +17429,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			return false;
 		}
 		content = SceneFollowStartTagRegex.Replace(content, "").Trim();
-		return CanAgentParticipateInSceneSpeech(agent) && agent != Agent.Main && !IsAgentFollowingPlayerBySceneCommand(agent);
+		return CanAgentParticipateInSceneSpeech(agent) && agent != Agent.Main;
 	}
 
 	private bool TryConsumeSceneFollowStopTag(NpcDataPacket npc, Agent agent, ref string content)
@@ -17664,6 +17735,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 		try
 		{
+			CancelSceneTemporaryCommandStateForFollow(agent);
 			_pendingSceneAutonomyRestoresAfterSpeech.Remove(agent.Index);
 			_pendingSceneSummonReturnsAfterSpeech.Remove(agent.Index);
 			_pendingSceneGuideReturnsAfterSpeech.Remove(agent.Index);
@@ -17975,7 +18047,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			TryRecordSceneSummonBatchCompletionFact(request);
 			LogSceneSummonState("target_to_player_arrived_pair", request, agent2, agent, null, force: true);
 			string text = BuildSceneSummonArrivedDisplayNames(request.BatchId, request.TargetName);
-			InformationManager.DisplayMessage(new InformationMessage(request.SpeakerName + " 带着" + text + "过来了。", new Color(0.75f, 1f, 0.75f)));
+			AnimusForgeQuickInfo.Show(request.SpeakerName + " 带着" + text + "过来了。", request.SpeakerLocationCharacter?.Character);
 		}
 		else
 		{
@@ -17984,7 +18056,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			TryRecordSceneSummonBatchCompletionFact(request);
 			LogSceneSummonState("target_to_player_arrived_single", request, agent2, agent, null, force: true);
 			string text2 = BuildSceneSummonArrivedDisplayNames(request.BatchId, request.TargetName);
-			InformationManager.DisplayMessage(new InformationMessage(text2 + " 被叫过来了。", new Color(0.75f, 1f, 0.75f)));
+			AnimusForgeQuickInfo.Show(text2 + " 被叫过来了。", request.TargetLocationCharacter?.Character);
 		}
 		return true;
 	}

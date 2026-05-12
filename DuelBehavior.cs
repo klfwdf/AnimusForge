@@ -226,7 +226,7 @@ public class DuelBehavior : CampaignBehaviorBase
 				_localPostDuelFreezeActive = false;
 				_localDuelResultRecorded = false;
 				agent2.SetWatchState(Agent.WatchState.Alarmed);
-				InformationManager.DisplayMessage(new InformationMessage("双方就位！5秒后开始决斗！(无敌保护中)", Color.FromUint(4294901760u)));
+				AnimusForgeQuickInfo.Show("双方就位！5秒后开始决斗！(无敌保护中)", _targetHero?.CharacterObject);
 				Logger.Log("ArenaDuel", $"[Spawn] 已在竞技场生成双方 Agent。Player={mainHero.Name}, Enemy={_targetHero.Name}");
 			}
 			catch (Exception ex)
@@ -296,7 +296,7 @@ public class DuelBehavior : CampaignBehaviorBase
 					}
 					(base.Mission?.MainAgent ?? Agent.Main)?.SetMortalityState(Agent.MortalityState.Mortal);
 					agent?.SetMortalityState(Agent.MortalityState.Mortal);
-					InformationManager.DisplayMessage(new InformationMessage("决斗开始！", Color.FromUint(4294901760u)));
+					AnimusForgeQuickInfo.Show("决斗开始！", _targetHero?.CharacterObject);
 				}
 			}
 			if (_localPostDuelFreezeActive)
@@ -330,7 +330,7 @@ public class DuelBehavior : CampaignBehaviorBase
 				try
 				{
 					Logger.Log("ArenaDuel", "[Input] 用户按下了 TAB 键，请求退出。");
-					InformationManager.DisplayMessage(new InformationMessage("正在退出竞技场...", Color.FromUint(4294901760u)));
+					AnimusForgeQuickInfo.Show("正在退出竞技场...");
 					_arenaMissionLeaveRequested = true;
 					if (Instance != null)
 					{
@@ -490,7 +490,7 @@ public class DuelBehavior : CampaignBehaviorBase
 				string text = ApplyDuelStakeSettlementAndBuildResultText(_targetHero, flag);
 				string text2 = (flag ? "【决斗结果】你赢了！" : "【决斗结果】你输了！");
 				Color color = (flag ? Color.FromUint(4281257073u) : Color.FromUint(4293348412u));
-				InformationManager.DisplayMessage(new InformationMessage(text2 + text + " 10秒后退出竞技场...", color));
+				AnimusForgeQuickInfo.Show(text2 + text + " 10秒后退出竞技场...", _targetHero?.CharacterObject);
 			}
 		}
 	}
@@ -1593,7 +1593,7 @@ public class DuelBehavior : CampaignBehaviorBase
 				{
 				}
 			}
-			InformationManager.DisplayMessage(new InformationMessage("已接受决斗。请你手动结束对话；结束后将进入 10 秒准备期，然后正式开战（准备期双方无法互相伤害）。", Color.FromUint(4281637083u)));
+			AnimusForgeQuickInfo.Show("已接受决斗。请你手动结束对话；结束后将进入 10 秒准备期，然后正式开战（准备期双方无法互相伤害）。", target?.CharacterObject);
 		}
 		else
 		{
@@ -1667,7 +1667,7 @@ public class DuelBehavior : CampaignBehaviorBase
 				float healthThreshold = DuelSettings.GetHealthThreshold();
 				string arg = Mission.Current?.SceneName ?? "Unknown";
 				string information = $"【决斗开始】当前场景: {arg}。规则：任一方生命值低于 {healthThreshold:P0} 判定为战败。";
-				InformationManager.DisplayMessage(new InformationMessage(information, Color.FromUint(4294901760u)));
+				AnimusForgeQuickInfo.Show(information, _targetHero?.CharacterObject);
 			}
 			if (main.State == AgentState.Unconscious)
 			{
@@ -2230,7 +2230,7 @@ public class DuelBehavior : CampaignBehaviorBase
 			if (_lastDuelRiskWarnUtcTicks == 0L || ticks - _lastDuelRiskWarnUtcTicks >= TimeSpan.FromSeconds(10.0).Ticks)
 			{
 				_lastDuelRiskWarnUtcTicks = ticks;
-				InformationManager.DisplayMessage(new InformationMessage("【警告!决斗具有较大风险，你有可能在决斗中死亡】", Color.FromUint(4294936576u)));
+				AnimusForgeQuickInfo.Show("【警告!决斗具有较大风险，你有可能在决斗中死亡】");
 			}
 		}
 		catch
@@ -2408,7 +2408,7 @@ public class DuelBehavior : CampaignBehaviorBase
 					_meetingPreFightActive = true;
 					_meetingPreFightEndTime = current.CurrentTime + 10f;
 					RefreshMeetingDuelParticipantLocks(Agent.Main, agent, preFight: true);
-					InformationManager.DisplayMessage(new InformationMessage("双方就位！10秒后正式开战（此期间无法互相伤害）", Color.FromUint(4281637083u)));
+					AnimusForgeQuickInfo.Show("双方就位！10秒后正式开战（此期间无法互相伤害）", target?.CharacterObject);
 				}
 				else
 				{
@@ -2425,7 +2425,7 @@ public class DuelBehavior : CampaignBehaviorBase
 			if (flag)
 			{
 				string information = $"【竞技场决斗已开始】当前场景: {text2}。规则：任一方生命值低于 {DuelSettings.GetHealthThreshold():P0} 判定为战败。";
-				InformationManager.DisplayMessage(new InformationMessage(information, Color.FromUint(4281637083u)));
+				AnimusForgeQuickInfo.Show(information, _targetHero?.CharacterObject);
 			}
 			Logger.Log("DuelBehavior", $"决斗已启动/初始化! 目标: {_targetHero.Name}, 场景: {text2}, 模式已切换为 Duel");
 		}
@@ -2639,7 +2639,7 @@ public class DuelBehavior : CampaignBehaviorBase
 		string text2 = (flag ? "【决斗结果】你赢了！" : "【决斗结果】你输了！");
 		Color color = (flag ? Color.FromUint(4281257073u) : Color.FromUint(4293348412u));
 		string text3 = (_currentDuelIsArena ? " 10秒后退出竞技场..." : "");
-		InformationManager.DisplayMessage(new InformationMessage(text2 + text + text3, color));
+		AnimusForgeQuickInfo.Show(text2 + text + text3, _targetHero?.CharacterObject);
 	}
 
 	private void RestoreState()
@@ -2759,7 +2759,7 @@ public class DuelBehavior : CampaignBehaviorBase
 	{
 		_isDuelActive = false;
 		Logger.Log("DuelBehavior", "决斗流程彻底结束 (FinishDuel)。");
-		InformationManager.DisplayMessage(new InformationMessage("决斗已结束。", Color.FromUint(4294155282u)));
+		AnimusForgeQuickInfo.Show("决斗已结束。");
 	}
 
 	private void EnsureDeathBehaviorsPresent()

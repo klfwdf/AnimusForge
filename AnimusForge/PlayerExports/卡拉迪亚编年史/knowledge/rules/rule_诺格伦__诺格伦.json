@@ -1,0 +1,95 @@
+﻿{
+  "Id": "rule_诺格伦",
+  "Keywords": [
+    "诺格伦",
+    "比斯坎丘陵",
+    "牧羊"
+  ],
+  "RagShortTexts": [
+    "诺格伦羊毛是加伦最好的，羊肉带有海风清香。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "诺格伦是加伦附近的一座村庄，坐落在比斯坎丘陵的一处斜坡上。这里的村民在沿海树林和高山峭壁之间的牧场上放牧绵羊，羊毛和羊肉是他们的主要生计。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "诺格伦的羊毛在加伦一带是最好的。那里的绵羊在山坡上的草场和海边的树林之间放养，毛又厚又软。冬天海风刮起来的时候，穿一件诺格伦羊毛织的斗篷，比什么盔甲都暖和。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "诺格伦的羊肉也不错，山上的草带着海风的味道，羊肉吃起来有一股清香。每年剪羊毛的季节，加伦的商人都会跑去诺格伦收羊毛，去晚了就没了。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "我在诺格伦的牧场借宿过一晚。那地方在比斯坎丘陵的斜坡上，一边是海，一边是山，风里带着咸味。牧羊人给了我一大碗羊肉汤，喝完了我睡得像死了一样。那地方没啥值钱的东西，但日子过得踏实。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "诺格伦",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "加伦",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

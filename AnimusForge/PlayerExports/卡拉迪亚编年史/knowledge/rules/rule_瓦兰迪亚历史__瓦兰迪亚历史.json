@@ -5,6 +5,9 @@
     "瓦兰史",
     "西境过往"
   ],
+  "RagShortTexts": [
+    "瓦兰迪亚人是西部群岛雇佣兵，如何来到卡拉迪亚大陆？"
+  ],
   "SemanticPrototypes": [],
   "Variants": [
     {
@@ -15,6 +18,7 @@
         "KingdomIds": null,
         "SettlementIds": null,
         "Roles": null,
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": null
@@ -31,6 +35,7 @@
         "KingdomIds": null,
         "SettlementIds": null,
         "Roles": null,
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": null
@@ -49,6 +54,7 @@
         "Roles": [
           "lord"
         ],
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": null
@@ -63,6 +69,7 @@
         "KingdomIds": null,
         "SettlementIds": null,
         "Roles": null,
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": {

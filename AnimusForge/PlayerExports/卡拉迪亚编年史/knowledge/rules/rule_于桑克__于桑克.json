@@ -1,0 +1,95 @@
+﻿{
+  "Id": "rule_于桑克",
+  "Keywords": [
+    "于桑克",
+    "沙拉斯湾",
+    "橄榄"
+  ],
+  "RagShortTexts": [
+    "于桑克村位于沙拉斯湾小海湾，遍布橄榄园。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "于桑克是于桑克堡附近的一座村庄，坐落于汇入沙拉斯湾的一片小海湾旁。这片温暖的南方土地非常适合种植橄榄树，山坡上到处都是橄榄园。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "于桑克那村子藏在沙拉斯湾的一个小海湾边上，安静得很。那里的气候跟沙拉斯一带一样暖和，种满了橄榄树。于桑克堡的守军吃的油，多半就是山下这个村子供的。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "于桑克的橄榄油产量不大，但品质好。小海湾那边风浪不大，气候稳，橄榄树长得自在。沙拉斯湾一带的商人偶尔会绕道过去收油，价钱比大产区稍贵一点，但油香。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "于桑克那个小海湾是个歇脚的好地方。海湾不大，水清得很，沙滩边上一排橄榄树，树荫底下坐着能听见海浪轻轻拍岸。城堡就在上面不远，守军有时候会下来跟村民们买油买酒。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "于桑克",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "于桑克堡",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

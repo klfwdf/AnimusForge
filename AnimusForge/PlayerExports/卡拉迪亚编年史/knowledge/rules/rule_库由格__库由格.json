@@ -1,0 +1,340 @@
+﻿{
+  "Id": "rule_库由格",
+  "Keywords": [
+    "库由格",
+    "奥通加德"
+  ],
+  "RagShortTexts": [
+    "库由格趁库吉特元气大伤夺取奥通加德。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "库由格是阿契特家族的前任族长，突剌格的父亲。他这一生大起大落——作为曾经的长子部落后裔，他带着族人在西迁中试图另立汗国，却没能守住；转而趁库吉特部落在潘德拉克战役中元气大伤，夺了他们的奥通加德。最终他死在了一场失败的联姻里，被斯特吉亚人一把火烧了城堡。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "库由格是个有野心的人，但运气实在不算好。阿契特部族在我们库赛特人里是老资格——当年在东方草原上他们才是长子部落，兀儿浑乃特不过是后来居上。库由格不甘心屈居人下，带着部众在西边搞了个小汗国，结果没守住，被踢了回来。后来潘德拉克会战的时候，库吉特人为了赚帝国的第纳尔跑去给帝国当佣兵，结果男人几乎全交代在了战场上。库由格就趁着这个机会占了奥通加德。说实话，这事儿办得不怎么地道——库吉特人好歹也是可汗的臣属，趁人家男丁打光了去抢地，这吃相确实难看了点。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "库由格这个人，我跟他打过交道。他有草原首领的胆魄，但也有没落贵族的那股酸劲儿——总觉得自己是长子部落的后人，兀儿浑可汗的家族不过是篡了他们的位。他带着阿契特部族西迁，在瓦尔诺瓦波尔建了个小汗国，想证明自己也能称汗。可汗国没撑多久就垮了。后来潘德拉克那场大战，蒙楚格大汗根本没有参战，是库吉特人自己贪图帝国的黄金，去给帝国当了雇佣兵。结果他们被打残了，库由格就趁机夺了奥通加德。从一个汗国的失败者变成抢死人地盘的投机者——这就是库由格的一生。不过话说回来，他最后死在斯特吉亚人的阴谋里，也算是遭了报应。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "warrior"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "库由格老族长，说他什么好呢。他带我们从瓦尔诺瓦波尔南下夺了奥通加德，那一仗打得确实漂亮。但后来他跟斯特吉亚人联姻，想把边境稳下来，结果把自己和长子都搭进去了。他这辈子最大的本事就是趁别人病要别人命——库吉特人给帝国当完雇佣兵回来，家里就剩女人和老人了，他就是这么把奥通加德吞了的。可他没想到，政治联姻也能变成催命符。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "库由格老族长在奥通加德的时候，库吉特人恨他恨得咬牙。他们是给帝国当佣兵才把男人打光的，结果回家一看，老窝被阿契特人占了。不过阿契特部族的人倒是觉得他挺有本事——至少他抢到了。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": [
+          "clan_achit"
+        ],
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "库由格老族长是我们阿契特人的魂。他不甘心我们被兀儿浑乃特压着，带着我们一路西行，在瓦尔诺瓦波尔建起了自己的汗国。虽然汗国没能守住，但他没有灰心。潘德拉克会战的时候，库吉特人自己跑去给帝国卖命，结果男人全死在了战场上。库由格老族长抓住了这个机会，带着我们夺下了奥通加德，让我们有了安身之地。他最后死在斯特吉亚人的阴谋里，这仇我们到现在还没报完。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": [
+          "clan_achit"
+        ],
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "库由格是我们阿契特家族的脊梁。在兀儿浑乃特崛起之后，我们原本身为长子部落的地位一落千丈。是他站出来说，我们阿契特人不该屈居人下。他在瓦尔诺瓦波尔立汗国，虽然没守住，但那段时间我们至少是自己的主人。后来他带着我们南下，趁着库吉特人为帝国卖命而实力大损的机会拿下了奥通加德。外人说他是趁火打劫，可草原上的规矩从来都是弱肉强食——库吉特人自己选错了雇主，怪得了谁？"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": [
+          "clan_achit"
+        ],
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "warrior"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "库由格老族长带着我们从北边的瓦尔诺瓦波尔一路南下，打下奥通加德的时候我就在他身后。他骑在马上喊话的样子我现在还记得。他对我们说，阿契特人哪怕没了汗国的名号，骨头也不会弯。库吉特人给帝国当佣兵，男人都死在了潘德拉克，这是他们自己的选择。我们趁机拿下奥通加德，是天赐的机会。他这辈子不服任何人——不服兀儿浑可汗的子孙，不服那些跟着兀儿浑崛起的新贵部落，也不服那些看不起我们的斯特吉亚人。他死得不值，但他是站着死的。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": [
+          "clan_kujit"
+        ],
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "库由格？那个趁人之危的贼。我们库吉特的男人在潘德拉克战场上为帝国的第纳尔流干了血，他倒好，趁着我们家里只剩下女人和老人，带着阿契特人把奥通加德抢走了。我们是被帝国雇佣的，是为黄金而战的勇士，不是被可汗遗弃的弃子。他趁我们最虚弱的时候从背后捅刀子，也好意思自称长子部落后裔？他最后被斯特吉亚女人烧死在床上，这就是腾格里的报应。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": [
+          "clan_kujit"
+        ],
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "库由格是我们库吉特人心头的一根刺。在草原上，趁对方男丁在外征战身亡而夺人领地，是最不齿的行径。阿契特人自诩为长子部落的正统，可干出来的事连草原上的盗马贼都不如。我们库吉特人受帝国雇佣去潘德拉克打仗，是为了第纳尔，也是为了在汗国内部争一份荣耀。可我们付出了几乎全部男人的代价，回来却发现奥通加德插上了阿契特的旗。蒙楚格大汗没有参战，也就没有为我们做主。库由格就是看准了这一点才敢下手。他最后死在斯特吉亚人的火里，这份屈辱才算是有了个了结。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": [
+          "clan_kujit"
+        ],
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "warrior"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "库由格死的时候我们在巴尔塔罕喝酒庆贺。不是我们库吉特人心狠，是他先做绝的。潘德拉克会战，我们库吉特的男人收了帝国的黄金，冲得比谁都猛，回来的人不到十分之一。那时候他就带着阿契特人来了，不是来帮忙照顾寡妇和孤儿的，是来抢房子和牧场的。听说后来他被斯特吉亚女人放火烧死在床上，我爷爷说了句：腾格里在上面看着呢，不是不报，时候未到。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "阿契特家的老族长库由格，是个投机了一辈子最后死于非命的人。他趁库吉特人在潘德拉克给帝国当佣兵被打残了，夺了人家的地。转头又想跟我们斯特吉亚人联姻换和平。结果呢？联姻变成了火葬。他儿子突剌格现在还在找西加，但这仇说到底，是库由格自己赌输了。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "库由格死在库洛夫家的西加手里，但说实话，他死之前干过的事也不怎么光彩。抢库吉特人的奥通加德，那是趁人之危；建小汗国又守不住，那是志大才疏。朗瓦德大公愿意跟他联姻已经给足面子了，偏偏他运气差到极点——碰上了西加。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "库由格是草原上典型的投机者。他带着部族从东方来，建了个小汗国没守住。后来潘德拉克会战的时候，我们帝国雇佣了库吉特人当打手，结果他们几乎全灭。库由格就趁着这个机会抢了库吉特人的奥通加德。他的发家史就是一连串的赌博——有赢有输。最后他赌了最大的一把：用儿子的婚事跟斯特吉亚人换和平。结果这把赌输了，连命都搭进去了。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer",
+          "mercenary"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "草原上对库由格的评价两边倒。阿契特部族的人说他是个有骨气的首领，不甘心被兀儿浑可汗的子孙压着，自己闯出了一片天。库吉特人提起他就啐口水，说他们给帝国当佣兵，男人都死在了潘德拉克，库由格却趁他们家里没人抢了地盘，不是好汉。至于斯特吉亚人——他们知道库由格怎么死的，但谁也不会说自己人不对。不管怎么说，库由格这辈子够精彩：从长子部落的继承人混成小汗国的失败者，又从失败者混成奥通加德的主人，最后死在了自己儿子婚房的大火里。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 150
+        }
+      },
+      "Content": "库由格的生平和决策反映了库赛特汗国内部部落政治的复杂性。阿契特部族作为曾经的长子部落，在西迁过程中被兀儿浑乃特部超越，这种地位落差成为了库由格政治野心的驱动力。他在瓦尔诺瓦波尔短暂立国的失败表明其缺乏持久的政权建设能力。而他对库吉特家族领地的夺取，则利用了潘德拉克战役后的特殊时机：彼时蒙楚格大汗并未亲自参战，而库吉特部落作为帝国的雇佣兵损失惨重，才给了他趁虚而入的机会。库吉特家族本非库赛特原生部落，是被征服后加入的，因此阿契特对库吉特的蚕食在草原道义上既有争议又不乏先例。库由格最终死于联姻失败，标志着他赌徒式政治生涯的终结。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "库由格",
+      "Kind": "bound_hero_name",
+      "TargetId": "__bound_hero__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "阿契特",
+      "Kind": "bound_clan_name",
+      "TargetId": "__bound_clan__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "奥通加德",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "库吉特",
+      "Kind": "bound_clan_name",
+      "TargetId": "__bound_clan__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

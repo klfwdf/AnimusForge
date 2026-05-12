@@ -1,0 +1,96 @@
+﻿{
+  "Id": "rule_部尔纳",
+  "Keywords": [
+    "部尔纳",
+    "杰屈朗",
+    "猪",
+    "橡子"
+  ],
+  "RagShortTexts": [
+    "橡果喂养的部尔纳猪肉质特点。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "部尔纳是杰屈朗附近的一座村庄，地处纳尔谷，正好坐落于比斯坎山脚下。当地村民和瓦兰迪亚中部许多地方的居民一样，专门利用当地橡树落下的丰富橡果来养猪。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "部尔纳的猪和别处不太一样——纳尔谷的橡树多，秋天橡果铺一地，猪在林子里放养，吃的全是橡果。杰屈朗那边的宴会上，烤猪肉要是标注了部尔纳产的，价格翻一番。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "部尔纳的熏肉在杰屈朗集市上一直好卖。橡果喂出来的猪，肉紧实，肥膘少。纳尔谷出口的猪肉比别处的好吃，懂行的一尝就知道是橡树林里养出来的。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "在部尔纳过夜的时候，我吃了顿这辈子最香的炖猪肉。当地人说秘诀是让猪在林子里吃橡果，肉里自然带着股清香。他们还给我装了一小袋熏肉干，在路上嚼了好几天。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "部尔纳",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "杰屈朗",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

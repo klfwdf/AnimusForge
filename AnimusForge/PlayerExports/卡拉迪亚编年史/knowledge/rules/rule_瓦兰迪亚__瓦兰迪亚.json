@@ -6,6 +6,9 @@
     "西境王国",
     "佣兵王国"
   ],
+  "RagShortTexts": [
+    "瓦兰迪亚是卡拉迪亚最富裕易守难攻的国家。"
+  ],
   "SemanticPrototypes": [],
   "Variants": [
     {
@@ -16,6 +19,7 @@
         "KingdomIds": null,
         "SettlementIds": null,
         "Roles": null,
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": null
@@ -32,6 +36,7 @@
         ],
         "SettlementIds": null,
         "Roles": null,
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": null
@@ -48,6 +53,7 @@
         "Roles": [
           "lord"
         ],
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": {
@@ -68,6 +74,7 @@
           "notable",
           "wanderer"
         ],
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": {
@@ -86,6 +93,7 @@
         "KingdomIds": null,
         "SettlementIds": null,
         "Roles": null,
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": null
@@ -100,6 +108,7 @@
         "KingdomIds": null,
         "SettlementIds": null,
         "Roles": [],
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": {

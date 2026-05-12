@@ -3,6 +3,9 @@
   "Keywords": [
     "格林托尔矮种马"
   ],
+  "RagShortTexts": [
+    "格林托尔矮种马性能差劲，续航短体力差"
+  ],
   "SemanticPrototypes": [],
   "Variants": [
     {
@@ -13,6 +16,7 @@
         "KingdomIds": null,
         "SettlementIds": null,
         "Roles": null,
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": null

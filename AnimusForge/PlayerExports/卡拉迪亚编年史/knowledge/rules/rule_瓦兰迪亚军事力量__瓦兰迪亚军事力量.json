@@ -6,6 +6,11 @@
     "瓦兰迪亚强",
     "瓦兰迪亚弱"
   ],
+  "RagShortTexts": [
+    "瓦兰迪亚军事力量强劲，依赖骑兵与弩手。",
+    "瓦兰迪亚方旗骑士骑竞技马，冲阵能力强。",
+    "帝国人认为瓦兰迪亚军事力量恐怖，但帝国更强。"
+  ],
   "SemanticPrototypes": [],
   "Variants": [
     {
@@ -16,6 +21,7 @@
         "KingdomIds": null,
         "SettlementIds": null,
         "Roles": null,
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": {
@@ -39,6 +45,7 @@
           "villager",
           "notable"
         ],
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": null
@@ -60,6 +67,7 @@
           "villager",
           "notable"
         ],
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": null
@@ -80,6 +88,7 @@
           "townsfolk",
           "notable"
         ],
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": null
@@ -101,6 +110,7 @@
           "commoner",
           "notable"
         ],
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": null
@@ -124,6 +134,7 @@
           "townsfolk",
           "commoner"
         ],
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": null
@@ -143,6 +154,7 @@
           "townsfolk",
           "commoner"
         ],
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": null
@@ -161,6 +173,7 @@
         "Roles": [
           "soldier"
         ],
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": null
@@ -182,6 +195,7 @@
         "Roles": [
           "soldier"
         ],
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": null
@@ -196,6 +210,7 @@
         "KingdomIds": null,
         "SettlementIds": null,
         "Roles": null,
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": null
@@ -217,6 +232,7 @@
         "Roles": [
           "soldier"
         ],
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": null

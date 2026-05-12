@@ -1,0 +1,94 @@
+﻿{
+  "Id": "rule_韦雷克桑",
+  "Keywords": [
+    "韦雷克桑",
+    "奥克斯湖"
+  ],
+  "RagShortTexts": [
+    "韦雷克桑村庄利用奥克斯湖水种植小麦，供应城堡。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "韦雷克桑是韦雷克桑堡附近的一座村庄，位于奥克斯湖的湖边。当地村民在湖边平坦的草原上种植小麦，利用湖水灌溉，出产的粮食供应给城堡和周边地区。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "韦雷克桑在奥克斯湖边上，湖边的地平整，水源也方便，种小麦再合适不过。韦雷克桑堡的守军吃粮不愁，山下村子打的麦子直接送上去。这地方安稳，离巴旦尼亚远，种地的人不用提心吊胆。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "韦雷克桑的小麦产量稳，奥克斯湖的水不怕旱。一季一季都是好收成，除了供给城堡，多余的还往奥克斯·霍尔那边运。湖边的黑土越种越肥，这村子是瓦兰迪亚少数不愁吃的地方之一。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "韦雷克桑靠着奥克斯湖，风景不错。早上湖面起雾，白蒙蒙一片，麦田沿着湖边铺开，绿得晃眼。村民用湖水浇地，水车吱吱呀呀转个不停。那地方安静，鸟叫比人声还多。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "韦雷克桑",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "韦雷克桑堡",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

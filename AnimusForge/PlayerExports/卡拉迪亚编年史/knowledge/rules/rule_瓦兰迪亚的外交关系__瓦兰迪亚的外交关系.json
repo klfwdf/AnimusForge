@@ -6,6 +6,11 @@
     "瓦兰的外交",
     "瓦兰的地位"
   ],
+  "RagShortTexts": [
+    "瓦兰迪亚与巴旦尼亚有领土争端，欲吞并乌卡利昂高原。",
+    "北帝国彭同对瓦兰迪亚不友好，但不会开战。",
+    "瓦兰迪亚欲重启吞并西帝国计划，可能与南帝国结盟。"
+  ],
   "SemanticPrototypes": [],
   "Variants": [
     {
@@ -19,6 +24,7 @@
         ],
         "SettlementIds": null,
         "Roles": null,
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": null
@@ -39,6 +45,7 @@
           "lord",
           "notable"
         ],
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": null
@@ -60,6 +67,7 @@
           "lord",
           "notable"
         ],
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": null
@@ -80,6 +88,7 @@
           "lord",
           "notable"
         ],
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": null
@@ -100,6 +109,7 @@
           "lord",
           "notable"
         ],
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": null
@@ -114,6 +124,7 @@
         "KingdomIds": null,
         "SettlementIds": null,
         "Roles": null,
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": {
@@ -130,6 +141,7 @@
         "KingdomIds": null,
         "SettlementIds": null,
         "Roles": null,
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": null

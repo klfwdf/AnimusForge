@@ -1,0 +1,96 @@
+﻿{
+  "Id": "rule_埃蒂尔菲德",
+  "Keywords": [
+    "埃蒂尔菲德",
+    "萨哥特",
+    "小麦",
+    "巴旦尼亚边界"
+  ],
+  "RagShortTexts": [
+    "埃蒂尔菲德位于巴旦尼亚边界，靠近萨哥特，种植小麦。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "埃蒂尔菲德是萨哥特附近的一座村庄，位于巴旦尼亚边界的一个低矮山嘴附近。埃蒂尔河从乌卡利翁地块山崖上的泉水中喷涌而出，流过村庄。当地村民种植小麦，主要卖给驻扎在附近的军队。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "埃蒂尔菲德在边境线上，对面就是巴旦尼亚人的地盘。这村子不富，但位置重要——埃蒂尔河的水从山崖上涌出来，浇灌着两岸的麦田。萨哥特那边驻扎的军队，军粮里的小麦有一半是这儿供的。哪天要是这边丢了，守军的饭碗就砸了一半。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "埃蒂尔菲德的小麦粉卖给驻军，价钱稳定，不愁销路。边境上那些堡垒里的兵天天操练，吃得多，埃蒂尔菲德的麦子磨出来的面粉刚好填他们的肚皮。不过这地方离巴旦尼亚太近，万一打起来就不好说了。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "我到埃蒂尔菲德的时候，先看到的是那条埃蒂尔河——水从山崖上的泉眼里喷出来，白花花的，凉得刺骨。村子旁边就是边境线，麦田一直铺到山脚下，再往前就是巴旦尼亚人的地盘了。村民们种麦子卖给驻军，日子过得紧巴，但还算太平。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "埃蒂尔菲德",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "萨哥特",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

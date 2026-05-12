@@ -1,0 +1,94 @@
+﻿{
+  "Id": "rule_奥尔斯热",
+  "Keywords": [
+    "奥尔斯热",
+    "奥尔萨"
+  ],
+  "RagShortTexts": [
+    "奥尔斯热马匹与战士奥尔萨的传说。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "奥尔斯热是奥斯蒂港附近的一座村庄。传说中战士奥尔萨就是在此地登陆，并将长矛插在海滩上。如今这里以马匹闻名，马儿们在点缀着报春花和水仙花的岩石海岸斜坡上吃草。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "奥尔斯热的马有灵性。传说战士奥尔萨在这儿登陆的时候，把长矛往海滩上一插，长矛就变成了一匹马。那当然是扯淡，但这儿的马确实好——岩石海岸上长出来的草带着咸味儿，马吃了筋骨壮，耐力也好。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "奥尔斯热出好马，虽然比不上竞技马那么名贵，但胜在结实耐用。它们在海边的斜坡上长大，蹄子硬，不挑饲料。奥斯蒂港的海商偶尔也会来买几匹，装船运到北方去卖。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "我路过奥尔斯热的时候，正赶上春天，岩石海岸斜坡上开满了报春花和水仙花。马儿在花丛里吃草，好看得像画一样。当地人还指着海滩上一块石头，说那就是奥尔萨当年插矛的地方。谁知道是真是假。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "奥尔斯热",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "奥斯蒂港",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

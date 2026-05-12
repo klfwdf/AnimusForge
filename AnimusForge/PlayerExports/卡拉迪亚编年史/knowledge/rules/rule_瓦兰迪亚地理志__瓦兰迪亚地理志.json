@@ -6,6 +6,9 @@
     "瓦兰迪亚地形",
     "西海岸地形"
   ],
+  "RagShortTexts": [
+    "瓦兰迪亚地理分区：罗瓦尔山地、斯瓦迪亚丘陵、罗多克谷地。"
+  ],
   "SemanticPrototypes": [],
   "Variants": [
     {
@@ -16,6 +19,7 @@
         "KingdomIds": null,
         "SettlementIds": null,
         "Roles": null,
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": {
@@ -32,6 +36,7 @@
         "KingdomIds": null,
         "SettlementIds": null,
         "Roles": null,
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": null

@@ -1,0 +1,96 @@
+﻿{
+  "Id": "rule_德里亚特",
+  "Keywords": [
+    "德里亚特",
+    "瓦尔切格湾",
+    "毛皮",
+    "海豹"
+  ],
+  "RagShortTexts": [
+    "德里亚特村庄位于瓦尔切格湾，产出毛皮油脂。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "德里亚特是卡琉斯堡附近的一座村庄，位于瓦尔切格湾与埃博半岛的山脊之间。当地村民在山上捕获河狸与水貂，有时也会在海湾水域捉海豹，毛皮和油脂是他们的主要产出来源。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "德里亚特那村子靠山又靠海，山上抓河狸水貂，海里捉海豹，活得挺花样。瓦尔切格湾那一带的海豹皮挺值钱，又厚又滑，做斗篷防水。卡琉斯堡的守军冬天穿的皮袄，有些料子就是从德里亚特收来的。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "德里亚特的海豹皮在瓦尔切格湾一带算是一绝。还有水貂皮，毛色好，适合做贵妇人的围脖。不过那地方路不好走，在山脊和海湾之间，进去一趟得费不少功夫。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "德里亚特的猎户过得是真野。山上抓貂和河狸，下到海湾里追海豹，一年到头就靠陷阱和渔叉吃饭。我在村里见过他们晾海豹皮，老远就能闻见咸腥味。那里的海豹油点灯特别好，烟少、火亮。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "德里亚特",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "卡琉斯堡",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

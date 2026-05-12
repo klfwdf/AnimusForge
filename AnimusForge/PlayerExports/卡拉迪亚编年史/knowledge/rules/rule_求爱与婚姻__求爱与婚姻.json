@@ -5,6 +5,9 @@
     "结婚",
     "谈恋爱"
   ],
+  "RagShortTexts": [
+    "卡拉迪亚婚姻多由家庭安排"
+  ],
   "SemanticPrototypes": [],
   "Variants": [
     {
@@ -15,6 +18,7 @@
         "KingdomIds": null,
         "SettlementIds": null,
         "Roles": null,
+        "IdentityIds": null,
         "IsFemale": null,
         "IsClanLeader": null,
         "SkillMin": null

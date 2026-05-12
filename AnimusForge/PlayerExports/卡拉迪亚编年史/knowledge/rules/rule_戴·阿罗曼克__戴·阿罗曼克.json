@@ -1,0 +1,246 @@
+﻿{
+  "Id": "rule_戴·阿罗曼克",
+  "Keywords": [
+    "戴·阿罗曼克",
+    "阿罗曼克",
+    "茜尔文",
+    "私掠船"
+  ],
+  "RagShortTexts": [
+    "戴·阿罗曼克家族祖先私掠船俘虏沃提俄斯皇帝"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "戴·阿罗曼克家族是瓦兰迪亚杰屈朗的统治家族，现任族长是女男爵卡拉蒂尔德。他们的家族名源自杰屈朗附近一个盛产橄榄的村庄阿罗曼克——这在瓦兰迪亚贵族中并不罕见，许多古老家族都以最初的封地命名。不过戴·阿罗曼克家族最津津乐道的，是他们获得头衔的传奇方式：据说当年沃提俄斯皇帝被他们祖先的一艘私掠船俘虏，为了脱身不得不钦赐了爵位。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "戴·阿罗曼克家那帮人，每次喝酒都要吹一遍他们家头衔是怎么来的。说是什么沃提俄斯皇帝被他们祖先的私掠船给逮了，为了活命才封的爵。是真是假谁也说不清，但茜尔文——就是女男爵那个能打的女儿——每次讲这个故事的时候都会补一句，说皇帝肯定是因为发现了他们家血统高贵才心甘情愿封的。听听，这脸皮，真是杰屈朗一绝。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "戴·阿罗曼克这个家族名，一听就知道是从他们祖上那几棵橄榄树起家的。阿罗曼克就是杰屈朗旁边一个产橄榄的村子，他们家用村子当族名，跟德泰尔王的祖先用梅罗克当族名一个路数。但说实话，戴·阿罗曼克家比梅罗克家有戏剧性多了——他们是靠绑架帝国皇帝换来的头衔，整个瓦兰迪亚找不出第二家。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "戴·阿罗曼克家族的女男爵人还不错，就是他们家那个茜尔文小姐太能打了。说到他们家的头衔，集市上的老人都能给你讲一遍——他们祖上是海盗出身，劫了帝国皇帝，皇帝为了保命封了他们爵位。茜尔文小姐每次都说皇帝是看中了她家血统高贵才封的，可我们私下都觉得，皇帝那是怕再被扔回海里去。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "我在杰屈朗待过一阵子，戴·阿罗曼克家的管家请我护送一船橄榄油去北方。酒桌上听他们家老仆人讲，当年他们祖上驾着私掠船在珀拉斯海上劫了沃提俄斯皇帝的座船。皇帝被绑到杰屈朗悬崖上的城堡里，叫天天不应，最后签了封爵的文书才脱身。茜尔文每次讲这段历史都非要加一句“他发现了我们血统的高贵”——这姑娘真有意思。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "戴·阿罗曼克？瓦兰迪亚杰屈朗那家蛮族。他们家头衔的来源是帝国的耻辱——当年沃提俄斯皇帝被一群打着葡萄藤旗的海盗绑架，为了活命被迫给了他们爵位。那些蛮子现在还好意思吹嘘，说什么他们血统高贵。要我说，沃提俄斯皇帝怕死，但封出去的文书确实有效，这就叫历史的笑话。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "戴·阿罗曼克家那些蛮子，每次在边境谈判的时候都喜欢提他们祖上俘虏过帝国皇帝的事。他们以为这是炫耀，但在帝国这边看来，他们不过是一群靠绑架起家的暴发户。不过如今帝国分裂了，他们杰屈朗那片橄榄园确实富庶，跟他们打交道时我们也不得不忍着恶心。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "戴·阿罗曼克家族的爵位来源在帝国官方档案中确有记载。老皇帝沃提俄斯在统治末期的一次珀拉斯海巡行中被瓦兰迪亚私掠船俘虏，其赎金之一便是册封劫持者为帝国认可的世袭贵族。这一事件被帝国史学家视为帝国权威衰落的起点之一。戴·阿罗曼克家族后来将这段历史包装为“皇帝认可的高贵血统”，显然是典型的胜利者粉饰。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "瓦兰迪亚有个叫戴·阿罗曼克的家族，头衔居然是靠绑架帝国皇帝换来的。这在我们阿塞莱人看来简直不可思议。我们的苏丹可不会因为被绑架就随便封爵。不过话说回来，这个家族现在管着杰屈朗的橄榄生意，跟我们阿塞莱的油商也常有往来，生意上倒挺讲信用的。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer",
+          "mercenary"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "戴·阿罗曼克家是瓦兰迪亚最对我胃口的贵族——不像那些整天把谱系挂嘴边的老顽固，他们家祖上自己就是海盗。劫了帝国皇帝换来的爵位，这事放在哪个酒馆讲，大家都得敬一碗酒。不过现在他们家是女男爵当家，规矩多了，可骨子里那股不管不顾的劲儿还在——你去看看女男爵的女儿茜尔文就知道了。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 150
+        }
+      },
+      "Content": "戴·阿罗曼克家族是最能体现瓦兰迪亚封建体系的兴起与帝国衰落之间关系的案例。其家族名采用封地加“戴”前缀的格式，与德泰尔王的先祖家族戴·梅罗克同构，表明他们最初都是帝国册封的底层贵族，随“铁臂”奥斯里克反叛才获得土地和实权。而其头衔来源——私掠船俘虏帝国皇帝——则是一段带有浓厚瓦兰迪亚特征的历史传奇，反映了珀拉斯海上海盗势力对大陆政治的直接影响。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "戴·阿罗曼克",
+      "Kind": "bound_clan_name",
+      "TargetId": "__bound_clan__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "杰屈朗",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "卡拉蒂尔德",
+      "Kind": "bound_hero_name",
+      "TargetId": "__bound_hero__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "茜尔文",
+      "Kind": "bound_hero_name",
+      "TargetId": "__bound_hero__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

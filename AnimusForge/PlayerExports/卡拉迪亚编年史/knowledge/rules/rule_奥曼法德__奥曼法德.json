@@ -1,0 +1,93 @@
+﻿{
+  "Id": "rule_奥曼法德",
+  "Keywords": [
+    "奥曼法德"
+  ],
+  "RagShortTexts": [
+    "奥曼法德是瓦兰迪亚边境村庄，奥曼特尔山隘口通往巴旦尼亚。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "奥曼法德是奥曼法德堡附近的一座村庄，坐落在通往巴旦尼亚土地的隘口——奥曼特尔山脚下。这里雨水丰沛，山坡上的小麦和大麦长势良好。但村民们始终警惕着守卫隘口的城堡传来的号角声，那意味着巴旦尼亚掠袭者来袭。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "奥曼法德是瓦兰迪亚的边境门户。奥曼特尔山的隘口一过就是巴旦尼亚人的地盘，麦田就铺在山脚下，好好的庄稼等着收，但要命的是随时可能有巴旦尼亚掠袭者从林子里冲出来。城堡的号角一响，田里的人就得扔下镰刀抓武器。在那儿种地，不光要力气，还得有胆。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "奥曼法德的小麦产量不低，雨水足，山坡上的土也肥。但那儿离巴旦尼亚太近了，掠袭者是常事。每年收成之前，当地人都得做好一半麦子被烧的准备。奥曼法德堡的守军虽然尽力，但隘口太宽，哪儿都防不住。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "我在奥曼法德借宿过一晚，半夜听见城堡上的号角响了，全村人都爬起来往山上跑。结果是虚惊一场——只是一队路过的瓦兰迪亚巡逻兵。但村里人说，他们这辈子已经跑习惯了，宁可信其有，不可信其无。巴旦尼亚人真的来过，不止一次。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "奥曼法德",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "奥曼法德堡",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

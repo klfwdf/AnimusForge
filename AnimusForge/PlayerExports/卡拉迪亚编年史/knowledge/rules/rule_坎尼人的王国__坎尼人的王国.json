@@ -1,0 +1,168 @@
+﻿{
+  "Id": "rule_坎尼人的王国",
+  "Keywords": [
+    "坎尼人的王国",
+    "坎族城邦",
+    "古亚兹"
+  ],
+  "RagShortTexts": [
+    "阿塞莱人如何导致坎尼人的王国消亡？"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "坎尼人的王国是珀拉斯海沿岸最古老的海洋政权，早在阿塞莱人到来之前就已存在。它并非统一的帝国，而是由一系列商业城邦组成的航海联盟，其中古亚兹是最强大的城邦。如今的阿塞莱土地上，坎尼人的王国早已消亡，其城邦要么被摧毁，要么被阿塞莱人接手。就像帝国覆盖了帕拉人的文明一样，阿塞莱人覆盖了坎尼人的文明。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "坎尼人的王国？那是在我们阿塞莱人到来之前的事了。古亚兹曾经是他们的共和城邦，管着西海和珀拉斯海的贸易。后来我们阿塞莱人来了，他们的城邦一个接一个地倒了下去。有些被打下来了，有些被商人的第纳尔买下来了。现在古亚兹还在，但统治它的是巴努·胡勒延家族，不是坎尼人的元老。他们的王国早就没了。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "我们阿塞莱人很少提坎尼人的王国，就像帝国人不爱提帕拉人一样。但事实就是，我们脚下这片土地，曾经飘着坎尼人的葡萄藤旗。他们的城邦联盟控制着珀拉斯海贸易，直到我们的祖先带着沙漠的弯刀和商人的算盘来到这里。他们消失了，我们留下了。历史就是这样写的。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "古亚兹的港口还在用坎尼人的老码头。几百年了，石头都磨平了，但底下的地基还是坎尼人打的。我们阿塞莱商人最会做生意，但说实话，珀拉斯海上的贸易路线，最早是坎尼人跑出来的。他们没了，我们接手了。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "坎尼人的王国，就像我们帝国境内的帕拉联邦一样，是被文明吞没的野蛮人——或者说，是被后来的蛮族吞没的早期文明。帝国吞了帕拉人，阿塞莱人吞了坎尼人。区别在于，我们帝国至少给帕拉人留下了公民权和元老院的席位。坎尼人呢？什么都没了。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "坎尼人的王国代表了珀拉斯海沿岸最早的海洋商业文明。它以古亚兹为核心城邦，形成了一套松散的商业共和体制。但和阿塞莱人的关系，正如帕拉人和帝国的关系一样——更早的原住民被后来崛起的扩张势力所覆盖。阿塞莱人通过军事征服和经济渗透逐步瓦解了坎尼联盟，其城邦被接管，人口被同化。如今坎尼人的王国只剩下古亚兹等老港口的残存地名，以及被阿塞莱航海术吸收的部分技术遗产。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "seafarer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "坎尼人的城邦时代，是珀拉斯海最自由的时候。他们不用给谁交税，只管在城邦之间的航线上跑。后来阿塞莱人来了，坎尼人的旗一面一面地降下来，阿塞莱的新月旗一面一面地升上去。老水手说，珀拉斯海没变，变的是岸上的人。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 150
+        }
+      },
+      "Content": "坎尼人的王国是卡拉迪亚海洋文明中被后来者完全覆盖的典型。它与阿塞莱人的关系，和帕拉人与帝国的关系平行——一个更早的原住民海洋文明，被一个后来的扩张势力所吞没。坎尼联盟以古亚兹为中心，曾主导珀拉斯海的贸易。但阿塞莱人通过军事征服和商业渗透逐步瓦解了这一联盟，将坎尼人的城邦纳入自己的统治体系。如今坎尼人已不再作为一个独立民族存在，其文化仅以技术遗产和地名的形式残存。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "坎尼人的王国",
+      "Kind": "bound_kingdom_name",
+      "TargetId": "__bound_kingdom__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "古亚兹",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

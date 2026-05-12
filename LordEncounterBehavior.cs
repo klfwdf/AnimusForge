@@ -1188,7 +1188,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 				ClearPendingReturnToEncounterMenuAfterUnauthorizedMeetingExit("custom_encounter_menu_opened");
 				try
 				{
-					InformationManager.DisplayMessage(new InformationMessage("对方并没有同意放你离开。", Colors.Yellow));
+					AnimusForgeQuickInfo.Show("对方并没有同意放你离开。", _targetHero?.CharacterObject);
 				}
 				catch
 				{
@@ -2587,7 +2587,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			{
 				try
 				{
-					InformationManager.DisplayMessage(new InformationMessage("战后结算上下文未就绪，请稍后重试。", Colors.Yellow));
+					AnimusForgeQuickInfo.Show("战后结算上下文未就绪，请稍后重试。", target?.CharacterObject);
 				}
 				catch
 				{
@@ -2635,7 +2635,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		{
 			try
 			{
-				InformationManager.DisplayMessage(new InformationMessage("进入战后结算失败，请稍后重试。", Colors.Yellow));
+				AnimusForgeQuickInfo.Show("进入战后结算失败，请稍后重试。", target?.CharacterObject);
 			}
 			catch
 			{
@@ -2930,12 +2930,12 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			if (hero == null)
 			{
 				Logger.Log("LordEncounter", "Meet option clicked but target hero is null after refresh.");
-				InformationManager.DisplayMessage(new InformationMessage("当前未识别到遭遇领主，请先离开并重新接触。", Colors.Yellow));
+				AnimusForgeQuickInfo.Show("当前未识别到遭遇领主，请先离开并重新接触。");
 				return;
 			}
 			if (IsMainHeroHealthTooLowForMeeting())
 			{
-				InformationManager.DisplayMessage(new InformationMessage(GetLowHealthMeetingBlockedMessage(hero), Colors.Yellow));
+				AnimusForgeQuickInfo.Show(GetLowHealthMeetingBlockedMessage(hero), hero.CharacterObject);
 				return;
 			}
 			IsOpeningConversation = true;
@@ -2973,7 +2973,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			if (hero == null)
 			{
 				Logger.Log("LordEncounter", "Native dialogue option clicked but target hero is null after refresh.");
-				InformationManager.DisplayMessage(new InformationMessage("当前未识别到遭遇领主，请先离开并重新接触。", Colors.Yellow));
+				AnimusForgeQuickInfo.Show("当前未识别到遭遇领主，请先离开并重新接触。");
 				return;
 			}
 			OpenNativeEncounterConversation(hero);
@@ -3636,7 +3636,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			ClearPendingReturnToEncounterMenuAfterUnauthorizedMeetingExit("meeting_release_player");
 			try
 			{
-				InformationManager.DisplayMessage(new InformationMessage("对方同意放你离开。你现在可以按TAB自行退出场景。", new Color(0.4f, 1f, 0.4f)));
+				AnimusForgeQuickInfo.Show("对方同意放你离开。你现在可以按TAB自行退出场景。", _targetHero?.CharacterObject);
 			}
 			catch
 			{

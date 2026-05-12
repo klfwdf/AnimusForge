@@ -1,0 +1,95 @@
+﻿{
+  "Id": "rule_韦桑村",
+  "Keywords": [
+    "韦桑村",
+    "橄榄",
+    "埃皮尔山"
+  ],
+  "RagShortTexts": [
+    "韦桑村位于沙拉斯附近，埃皮尔山溪水滋养橄榄树。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "韦桑村是沙拉斯附近的一座村庄，位于从埃皮尔山丘流下来的小溪旁。这片温暖的土地很适合橄榄树的生长，山坡上到处都是橄榄园。沙拉斯港的商船常把这里的橄榄油运往海外。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "韦桑村的橄榄树喝着埃皮尔山上流下来的溪水长大，果子水分足，榨出来的油带着股清甜。沙拉斯港口的商船经常把韦桑村的橄榄油装船，运到北边和东边去卖。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "韦桑村的橄榄油在沙拉斯卖得好。埃皮尔山上下来的溪水清得很，浇出来的橄榄树结的果子又大又圆。当地的油商每年秋天都守在村里，等着收新油。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "韦桑村有一条从山上淌下来的小溪，水凉丝丝的，我经过的时候在那儿洗了把脸。溪边一排橄榄树，树荫底下坐着挺舒服。村里人用溪水泡橄榄，说是能去涩味。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "韦桑村",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "沙拉斯",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}
