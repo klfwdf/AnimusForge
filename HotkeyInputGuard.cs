@@ -13,6 +13,10 @@ internal static class HotkeyInputGuard
 		{
 			return true;
 		}
+		if (ShoutTextInputPopup.IsOpen)
+		{
+			return true;
+		}
 		try
 		{
 			if (InformationManager.IsAnyInquiryActive())

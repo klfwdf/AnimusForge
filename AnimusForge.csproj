@@ -339,7 +339,9 @@
       <AnimusForgeModuleDir>$(BannerlordRoot)\Modules\AnimusForge</AnimusForgeModuleDir>
     </PropertyGroup>
     <MakeDir Directories="$(AnimusForgeModuleDir)\ModuleData" />
+    <MakeDir Directories="$(AnimusForgeModuleDir)\GUI\Prefabs" />
     <Copy SourceFiles="AnimusForge\SubModule.xml" DestinationFiles="$(AnimusForgeModuleDir)\SubModule.xml" SkipUnchangedFiles="true" />
     <Copy SourceFiles="AnimusForge\ModuleData\animusforge_scene_gold_items.xml" DestinationFiles="$(AnimusForgeModuleDir)\ModuleData\animusforge_scene_gold_items.xml" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="AnimusForge\GUI\Prefabs\ShoutTextInputPopup.xml" DestinationFiles="$(AnimusForgeModuleDir)\GUI\Prefabs\ShoutTextInputPopup.xml" SkipUnchangedFiles="true" />
   </Target>
 </Project>

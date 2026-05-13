@@ -74,6 +74,8 @@ public class DevMultilineEditableTextWidget : BrushWidget
 
 	private bool _mouseSelecting;
 
+	private bool _autoFocusApplied;
+
 	private float _lineHeightScaled = 28f;
 
 	private float _lineHeightUnscaled = 28f;
@@ -91,6 +93,12 @@ public class DevMultilineEditableTextWidget : BrushWidget
 
 	[Editor(false)]
 	public bool IsObfuscationEnabled { get; set; }
+
+	[Editor(false)]
+	public bool AutoFocus { get; set; }
+
+	[Editor(false)]
+	public bool SubmitOnEnter { get; set; }
 
 	[Editor(false)]
 	public int EditorFontSize
@@ -274,6 +282,13 @@ public class DevMultilineEditableTextWidget : BrushWidget
 	protected override void OnLateUpdate(float dt)
 	{
 		base.OnLateUpdate(dt);
+		if (AutoFocus && !_autoFocusApplied && EventManager != null)
+		{
+			EventManager.FocusedWidget = this;
+			_hasCaretFocus = true;
+			_caretWidget.IsVisible = true;
+			_autoFocusApplied = true;
+		}
 		if (_layoutDirty)
 		{
 			RebuildVisualLines();
@@ -581,6 +596,12 @@ public class DevMultilineEditableTextWidget : BrushWidget
 		}
 		if (Input.IsKeyPressed(InputKey.Enter) || Input.IsKeyPressed(InputKey.NumpadEnter))
 		{
+			if (SubmitOnEnter && !IsShiftDown())
+			{
+				EventFired("TextEntered");
+				ClearRepeatAction();
+				return true;
+			}
 			ReplaceSelection("\n");
 			ClearRepeatAction();
 			return true;

@@ -95,6 +95,15 @@ public class SubModule : MBSubModuleBase
 			}
 			try
 			{
+				PatchClassProcessor shoutTextInputFocusPatch = harmony.CreateClassProcessor(typeof(ShoutTextInputFocusChangePatch));
+				shoutTextInputFocusPatch.Patch();
+			}
+			catch (Exception ex8a)
+			{
+				Logger.LogTrace("SubModule", ">>> ShoutTextInputFocusChangePatch failed: " + ex8a.Message);
+			}
+			try
+			{
 				Patch_ConversationManager_OpenMapConversation.ManualPatch(harmony);
 			}
 			catch (Exception ex9)
@@ -175,6 +184,14 @@ public class SubModule : MBSubModuleBase
 			}
 			try
 			{
+				EncyclopediaHeroPersonaPatch.EnsurePatched(harmony);
+			}
+			catch (Exception ex18aa)
+			{
+				Logger.LogTrace("SubModule", ">>> EncyclopediaHeroPersonaPatch init failed: " + ex18aa.Message);
+			}
+			try
+			{
 				TroopInspectionBehavior.RegisterHarmonyPatches(harmony);
 			}
 			catch (Exception ex18b)
@@ -227,9 +244,12 @@ public class SubModule : MBSubModuleBase
 
 	protected override void OnApplicationTick(float dt)
 	{
+		ShoutTextInputPopup.CloseForSystemInterruptionIfNeeded();
+		ShoutTextInputPopup.KeepMissionPausedIfOpen();
 		ProcessPendingInitialApiGuideNotice();
 		BannerlordExceptionSentinel.OnApplicationTick();
 		McmDropdownRuntimeRefresh.OnApplicationTick();
+		EncyclopediaHeroPersonaPatch.OnApplicationTick();
 		ModOnboardingBehavior.Instance?.OnEngineTick();
 		MyBehavior.Instance?.OnEngineTick();
 		DuelBehavior.Instance?.OnEngineTick();

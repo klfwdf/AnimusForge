@@ -619,6 +619,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 			}
 			if (_parent._wasGameWindowFocused && !flag2)
 			{
+				ShoutTextInputPopup.CancelActiveForSystemMenu();
 				try
 				{
 					_parent.HandleEscapePressedForAudioSafety("FOCUS_LOST");
@@ -630,6 +631,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 			_parent._wasGameWindowFocused = flag2;
 			if (Input.IsKeyPressed(InputKey.Escape))
 			{
+				ShoutTextInputPopup.CancelActiveForEscapeMenu();
 				try
 				{
 					_parent.HandleEscapePressedForAudioSafety();
@@ -645,6 +647,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 			catch
 			{
 			}
+			ShoutTextInputPopup.KeepMissionPausedIfOpen();
 			if (!HotkeyInputGuard.IsTextInputFocused() && Input.IsKeyPressed(key))
 			{
 				if (_parent._isProcessingShout || _parent._isWaitingForScenePostprocessGate)
@@ -8429,7 +8432,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			new InquiryElement("give_prisoners", "给予俘虏并交流", null, isEnabled: true, ""),
 			new InquiryElement("give_settlements", "转移定居点并交流", null, isEnabled: true, "")
 		};
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("与 " + text + " 交流", "当前目标：" + text + "\n请选择交流方式：", inquiryElements, isExitShown: true, 1, 1, "确定", "取消", delegate(List<InquiryElement> selected)
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(text, "当前目标：" + text + "\n请选择交流方式：", inquiryElements, isExitShown: true, 1, 1, "确定", "取消", delegate(List<InquiryElement> selected)
 		{
 			if (selected == null || selected.Count == 0)
 			{
@@ -8473,12 +8476,19 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 	private void OpenShoutTextInput(NpcDataPacket primaryDataPacket, string preface, string extraFact)
 	{
 		string text = primaryDataPacket?.Name ?? "附近的人";
-		string titleText = "与 " + text + " 交流";
+		string titleText = text;
 		string text2 = string.IsNullOrWhiteSpace(preface) ? "" : preface;
-		DevTextEditorHelper.ShowTextInput(titleText, text2, "请输入你想说的话：", "", delegate(string input)
+		PauseGame();
+		if (!ShoutTextInputPopup.Show(titleText, text2, "请输入你想说的话：", "", delegate(string input)
 		{
 			OnShoutConfirmedWithContext(input, extraFact, primaryDataPacket?.AgentIndex);
-		}, OnShoutCancelled, "发送", "取消");
+		}, OnShoutCancelled))
+		{
+			InformationManager.ShowTextInquiry(new TextInquiryData(titleText, (string.IsNullOrWhiteSpace(text2) ? "" : (text2 + "\n")) + "请输入你想说的话：", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "发送", "取消", delegate(string input)
+			{
+				OnShoutConfirmedWithContext(input, extraFact, primaryDataPacket?.AgentIndex);
+			}, OnShoutCancelled), pauseGameActiveState: true);
+		}
 	}
 
 	private static bool IsShoutTradeShowMode(ShoutChatMode mode)
@@ -8847,12 +8857,20 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			}
 		}
 		string text2 = (IsShoutTroopTransferMode(_shoutTradeMode) ? ("你准备将以下部队转入对方麾下：\n" + stringBuilder.ToString()) : (IsShoutPrisonerTransferMode(_shoutTradeMode) ? ("你准备将以下俘虏交给对方：\n" + stringBuilder.ToString()) : (IsShoutSettlementTransferMode(_shoutTradeMode) ? ("你准备将以下城市或城堡转给对方家族：\n" + stringBuilder.ToString()) : ((IsShoutTradeGiveMode(_shoutTradeMode) ? "你准备给予对方以下物品：\n" : "你准备向对方展示以下物品：\n") + stringBuilder.ToString()))));
-		string titleText = "与 " + text + " 交流";
-		DevTextEditorHelper.ShowTextInput(titleText, text2, "请输入你想说的话：", "", OnShoutTradeChatConfirmed, delegate
+		string titleText = text;
+		PauseGame();
+		if (!ShoutTextInputPopup.Show(titleText, text2, "请输入你想说的话：", "", OnShoutTradeChatConfirmed, delegate
 		{
 			ResetShoutTradeState();
 			OnShoutCancelled();
-		}, "发送", "取消");
+		}))
+		{
+			InformationManager.ShowTextInquiry(new TextInquiryData(titleText, text2 + "\n请输入你想说的话：", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "发送", "取消", OnShoutTradeChatConfirmed, delegate
+			{
+				ResetShoutTradeState();
+				OnShoutCancelled();
+			}), pauseGameActiveState: true);
+		}
 	}
 
 	private void OnShoutTradeChatConfirmed(string input)
