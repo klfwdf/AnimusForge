@@ -36,6 +36,8 @@ public static class TroopInspectionBehavior
 
 	private static bool _cleanupDone;
 
+	private static Mission _activeInspectionMission;
+
 	public static void RegisterHarmonyPatches(Harmony harmony)
 	{
 		if (harmony == null)
@@ -45,6 +47,7 @@ public static class TroopInspectionBehavior
 		TryPatchClass(harmony, typeof(TroopInspectionDeathRatePatch));
 		TryPatchClass(harmony, typeof(TroopInspectionMeleeDamagePatch));
 		TryPatchClass(harmony, typeof(TroopInspectionOrderOfBattlePatch));
+		ReinforcementSystemCompatibility.EnsurePatched(harmony);
 	}
 
 	private static void TryPatchClass(Harmony harmony, Type patchType)
@@ -70,6 +73,7 @@ public static class TroopInspectionBehavior
 		}
 		_isOpening = true;
 		_cleanupDone = false;
+		_activeInspectionMission = null;
 		try
 		{
 			if (!CanOpenFromCurrentState(out MobileParty mainParty, out string blockedReason))
@@ -96,6 +100,7 @@ public static class TroopInspectionBehavior
 				Log("precheck blocked: existing encounter or player map event");
 				return;
 			}
+			ReinforcementSystemCompatibility.EnsurePatched();
 			PrepareRuntime(mainParty);
 			MissionInitializerRecord rec = BuildMissionInitializerRecord(mainParty);
 			Log($"open_battle scene={rec.SceneName} terrain={rec.TerrainType}");
@@ -105,6 +110,7 @@ public static class TroopInspectionBehavior
 			{
 				throw new InvalidOperationException("CampaignMission.OpenBattleMission returned non-Mission.");
 			}
+			_activeInspectionMission = mission;
 			PlayerEncounter.StartAttackMission();
 			MapEvent.PlayerMapEvent?.BeginWait();
 			Log($"mission_behaviors deployment_handler={HasMissionBehavior(mission, "BattleDeploymentHandler")} deployment_controller={mission.GetMissionBehavior<BattleDeploymentMissionController>() != null} battle_end_logic={mission.GetMissionBehavior<BattleEndLogic>() != null} mode={mission.Mode}");
@@ -130,6 +136,26 @@ public static class TroopInspectionBehavior
 		return !string.IsNullOrEmpty(dummyPartyStringId) && string.Equals(dummyPartyStringId, _dummyPartyStringId, StringComparison.Ordinal);
 	}
 
+	internal static bool ShouldSuppressReinforcementSystem(Mission mission)
+	{
+		if (mission == null)
+		{
+			return false;
+		}
+		if (_isOpening || object.ReferenceEquals(mission, _activeInspectionMission))
+		{
+			return true;
+		}
+		try
+		{
+			return mission.GetMissionBehavior<TroopInspectionMissionLogic>() != null;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
 	internal static void CleanupRuntime(string reason)
 	{
 		if (_cleanupDone)
@@ -139,6 +165,7 @@ public static class TroopInspectionBehavior
 		}
 		_cleanupDone = true;
 		Log("cleanup begin reason=" + reason);
+		_activeInspectionMission = null;
 		MapEvent mapEvent = _mapEvent;
 		MobileParty dummyParty = _dummyParty;
 		string dummyId = _dummyPartyStringId;
@@ -484,6 +511,113 @@ public static class TroopInspectionBehavior
 			MobileParty.InitializeMobilePartyAroundPosition(TroopRoster.CreateDummyTroopRoster(), TroopRoster.CreateDummyTroopRoster(), _position, 0f, 0f, !_position.IsOnLand);
 			MobileParty.SetMoveModeHold();
 		}
+	}
+}
+
+internal static class ReinforcementSystemCompatibility
+{
+	private const string HarmonyId = "com.AnimusForge.spy.reinforcement_guard";
+
+	private static readonly object PatchLock = new object();
+
+	private static Harmony _harmony;
+
+	private static bool _patched;
+
+	private static bool _missingLogged;
+
+	internal static void EnsurePatched(Harmony harmony = null)
+	{
+		if (_patched)
+		{
+			return;
+		}
+		lock (PatchLock)
+		{
+			if (_patched)
+			{
+				return;
+			}
+			if (harmony != null)
+			{
+				_harmony = harmony;
+			}
+			try
+			{
+				Type targetType = FindReinforcementMainType();
+				if (targetType == null)
+				{
+					LogMissingOnce("Reinforcement_System.Main not loaded");
+					return;
+				}
+				MethodInfo target = AccessTools.Method(targetType, "OnMissionBehaviorInitialize", new Type[] { typeof(Mission) });
+				MethodInfo prefix = AccessTools.Method(typeof(ReinforcementSystemCompatibility), nameof(OnMissionBehaviorInitializePrefix));
+				if (target == null || prefix == null)
+				{
+					LogMissingOnce("Reinforcement_System.Main.OnMissionBehaviorInitialize not found");
+					return;
+				}
+				Harmony activeHarmony = _harmony ?? new Harmony(HarmonyId);
+				activeHarmony.Patch(target, prefix: new HarmonyMethod(prefix));
+				_harmony = activeHarmony;
+				_patched = true;
+				Log("reinforcement_system_guard_patched");
+			}
+			catch (Exception ex)
+			{
+				Log("reinforcement_system_guard_patch_failed " + ex.GetType().Name + ": " + ex.Message);
+			}
+		}
+	}
+
+	private static bool OnMissionBehaviorInitializePrefix(Mission mission)
+	{
+		if (!TroopInspectionBehavior.ShouldSuppressReinforcementSystem(mission))
+		{
+			return true;
+		}
+		Log("reinforcement_system_skipped_for_inspection mission=" + (mission != null));
+		return false;
+	}
+
+	private static Type FindReinforcementMainType()
+	{
+		Type type = AccessTools.TypeByName("Reinforcement_System.Main");
+		if (type != null)
+		{
+			return type;
+		}
+		foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
+		{
+			try
+			{
+				type = assembly.GetType("Reinforcement_System.Main", throwOnError: false);
+				if (type != null)
+				{
+					return type;
+				}
+			}
+			catch
+			{
+			}
+		}
+		return null;
+	}
+
+	private static void LogMissingOnce(string message)
+	{
+		if (_missingLogged)
+		{
+			return;
+		}
+		_missingLogged = true;
+		Log("reinforcement_system_guard_not_active " + message);
+	}
+
+	private static void Log(string message)
+	{
+		Logger.Log("TroopInspection", "[TroopInspection] " + message);
+		Logger.LogEvent("TroopInspection", "reinforcement_guard " + message);
 	}
 }
 
