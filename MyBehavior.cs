@@ -1165,6 +1165,8 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private WeeklyReportRetryContext _pendingWeeklyReportManualRetryContext;
 
+	private Action _devPersonaReturnAction;
+
 	private long _weeklyReportUiResumeAfterUtcTicks;
 
 	private bool _weeklyReportReopenAfterApiConfig;
@@ -12297,6 +12299,40 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		catch
 		{
+		}
+	}
+
+	public static bool IsDevDataManagementEnabledForExternal()
+	{
+		try
+		{
+			return DuelSettings.GetSettings()?.EnableDevEditHistory ?? false;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	public static void OpenHeroPersonaEditorForExternal(Hero hero)
+	{
+		try
+		{
+			if (!IsDevDataManagementEnabledForExternal())
+			{
+				InformationManager.DisplayMessage(new InformationMessage("开发者数据管理未开启（请在 MCM 中启用）。"));
+				return;
+			}
+			MyBehavior myBehavior = Campaign.Current?.GetCampaignBehavior<MyBehavior>();
+			if (myBehavior == null || hero == null)
+			{
+				return;
+			}
+			myBehavior.OpenDevPersonaMenuFromExternal(hero);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("EncyclopediaPersona", "[WARN] 打开 Hero 个性背景编辑失败: " + ex.Message);
 		}
 	}
 
@@ -25377,7 +25413,7 @@ public class MyBehavior : CampaignBehaviorBase
 				OpenDevDebtMenu(devEditingHero);
 				break;
 			case "edit_persona":
-				OpenDevPersonaMenu(devEditingHero);
+				OpenDevPersonaMenuFromTown(devEditingHero);
 				break;
 			case "view_actions":
 				OpenDevNpcActionMenu(devEditingHero, recentOnly: true, 0);
@@ -25844,6 +25880,30 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private void OpenDevPersonaMenu(Hero npc)
 	{
+		OpenDevPersonaMenuInternal(npc);
+	}
+
+	private void OpenDevPersonaMenuFromTown(Hero npc)
+	{
+		_devPersonaReturnAction = null;
+		OpenDevPersonaMenuInternal(npc);
+	}
+
+	private void OpenDevPersonaMenuFromExternal(Hero npc)
+	{
+		if (npc == null)
+		{
+			return;
+		}
+		_devPersonaReturnAction = delegate
+		{
+			EncyclopediaHeroPersonaPatch.QueueRefreshForHero(npc.StringId);
+		};
+		OpenDevPersonaMenuInternal(npc);
+	}
+
+	private void OpenDevPersonaMenuInternal(Hero npc)
+	{
 		if (npc != null)
 		{
 			_devEditingHero = npc;
@@ -25866,10 +25926,28 @@ public class MyBehavior : CampaignBehaviorBase
 			list.Add(new InquiryElement("back", "返回", null));
 			MultiSelectionInquiryData data = new MultiSelectionInquiryData("编辑个性/历史背景 - " + text, stringBuilder.ToString(), list, isExitShown: true, 0, 1, "执行", "返回", OnDevPersonaMenuSelected, delegate
 			{
-				ShowDevEditInquiry(npc);
+				ReturnFromDevPersonaMenu(npc);
 			});
 			MBInformationManager.ShowMultiSelectionInquiry(data);
 		}
+	}
+
+	private void ReturnFromDevPersonaMenu(Hero npc)
+	{
+		Action devPersonaReturnAction = _devPersonaReturnAction;
+		_devPersonaReturnAction = null;
+		if (devPersonaReturnAction != null)
+		{
+			try
+			{
+				devPersonaReturnAction();
+			}
+			catch
+			{
+			}
+			return;
+		}
+		ShowDevEditInquiry(npc);
 	}
 
 	private void OnDevPersonaMenuSelected(List<InquiryElement> selected)
@@ -25881,7 +25959,7 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		if (selected == null || selected.Count == 0)
 		{
-			ShowDevEditInquiry(devEditingHero);
+			ReturnFromDevPersonaMenu(devEditingHero);
 			return;
 		}
 		switch (selected[0].Identifier as string)
@@ -25901,7 +25979,7 @@ public class MyBehavior : CampaignBehaviorBase
 			OpenDevPersonaMenu(devEditingHero);
 			break;
 		default:
-			ShowDevEditInquiry(devEditingHero);
+			ReturnFromDevPersonaMenu(devEditingHero);
 			break;
 		}
 	}
