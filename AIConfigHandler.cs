@@ -1637,15 +1637,8 @@ public static class AIConfigHandler
 
 	private static string ResolveAuxiliaryThinkingControlMode(string apiUrl, string modelName)
 	{
-		if (ContainsAnyIgnoreCase(apiUrl, "anthropic") || ContainsAnyIgnoreCase(modelName, "claude"))
-		{
-			return "anthropic_thinking";
-		}
-		if (ContainsAnyIgnoreCase(apiUrl, "deepseek") || ContainsAnyIgnoreCase(modelName, "deepseek"))
-		{
-			return "deepseek_thinking";
-		}
-		return "plain";
+		string format = DuelSettings.ResolveThinkingControlFormat(apiUrl, modelName);
+		return format == "plain" ? "plain" : format + "_thinking";
 	}
 
 	private static bool LooksLikeAuxiliaryThinkingControlError(string responseBody)
@@ -1655,16 +1648,16 @@ public static class AIConfigHandler
 		{
 			return false;
 		}
-		bool flag = ContainsAnyIgnoreCase(text, "thinking", "reasoning_effort", "budget_tokens");
+		bool flag = ContainsAnyIgnoreCase(text, "thinking", "reasoning_effort", "output_config", "budget_tokens");
 		bool flag2 = ContainsAnyIgnoreCase(text, "unsupported", "unknown", "invalid", "unexpected", "not allowed", "not supported", "extra inputs are not permitted");
 		return flag && flag2;
 	}
 
 	private static JObject BuildAuxiliaryRouterRequestPayload(string apiUrl, string modelName, IEnumerable<object> messages, int maxTokens, float temperature, out string controlMode, bool disableThinkingControls = false)
 	{
-		controlMode = disableThinkingControls ? "plain" : ResolveAuxiliaryThinkingControlMode(apiUrl, modelName);
+		controlMode = ResolveAuxiliaryThinkingControlMode(apiUrl, modelName);
 		int normalizedMaxTokens = Math.Max(16, maxTokens);
-		if (controlMode == "anthropic_thinking")
+		if (!disableThinkingControls && controlMode == "anthropic_thinking")
 		{
 			normalizedMaxTokens = Math.Max(2048, normalizedMaxTokens);
 		}
@@ -1674,33 +1667,12 @@ public static class AIConfigHandler
 			["messages"] = JArray.FromObject(messages ?? Array.Empty<object>()),
 			["stream"] = false,
 			["max_tokens"] = normalizedMaxTokens,
-			["temperature"] = Math.Max(0f, Math.Min(1.5f, temperature))
+			["temperature"] = DuelSettings.ClampApiTemperature(DuelSettings.GetSettings()?.GetAuxiliaryApiTemperature() ?? temperature)
 		};
-		if (disableThinkingControls && (ContainsAnyIgnoreCase(apiUrl, "deepseek") || ContainsAnyIgnoreCase(modelName, "deepseek")))
-		{
-			jObject["thinking"] = new JObject
-			{
-				["type"] = "disabled"
-			};
-			controlMode = "deepseek_disabled";
-			return jObject;
-		}
-		switch (controlMode)
-		{
-		case "deepseek_thinking":
-			jObject["thinking"] = new JObject
-			{
-				["type"] = "enabled"
-			};
-			break;
-		case "anthropic_thinking":
-			jObject["thinking"] = new JObject
-			{
-				["type"] = "enabled",
-				["budget_tokens"] = 1024
-			};
-			break;
-		}
+		DuelSettings settings = DuelSettings.GetSettings();
+		bool thinkingEnabled = !disableThinkingControls && (settings?.AuxiliaryApiThinkingEnabled ?? true);
+		string effort = settings?.GetAuxiliaryApiReasoningEffort() ?? DuelSettings.ReasoningEffortHigh;
+		DuelSettings.ApplyThinkingControls(jObject, apiUrl, modelName, thinkingEnabled, effort, out controlMode);
 		return jObject;
 	}
 
@@ -1815,6 +1787,45 @@ public static class AIConfigHandler
 	public static bool CanUseAuxiliaryActionPostprocess()
 	{
 		return ActionPostprocessEnabled && TryGetActionPostprocessConfig(out var _, out var _, out var _);
+	}
+
+	private static void ResolveActionPostprocessApiSettings(string apiUrl, string apiKey, string modelName, float fallbackTemperature, out bool thinkingEnabled, out string effort, out float temperature)
+	{
+		thinkingEnabled = true;
+		effort = DuelSettings.ReasoningEffortHigh;
+		temperature = DuelSettings.ClampApiTemperature(fallbackTemperature);
+		try
+		{
+			DuelSettings settings = DuelSettings.GetSettings();
+			if (settings == null)
+			{
+				return;
+			}
+			string dedicatedUrl = DuelSettings.GetEffectiveApiUrl((settings.ActionPostprocessApiUrl ?? "").Trim());
+			string dedicatedKey = (settings.ActionPostprocessApiKey ?? "").Trim();
+			string dedicatedModel = settings.GetEffectiveActionPostprocessModelName();
+			bool usesDedicated = !string.IsNullOrWhiteSpace(dedicatedUrl)
+				&& !string.IsNullOrWhiteSpace(dedicatedKey)
+				&& !string.IsNullOrWhiteSpace(dedicatedModel)
+				&& string.Equals(dedicatedUrl, apiUrl ?? "", StringComparison.OrdinalIgnoreCase)
+				&& string.Equals(dedicatedKey, apiKey ?? "", StringComparison.Ordinal)
+				&& string.Equals(dedicatedModel, modelName ?? "", StringComparison.OrdinalIgnoreCase);
+			if (usesDedicated)
+			{
+				thinkingEnabled = settings.ActionPostprocessApiThinkingEnabled;
+				effort = settings.GetActionPostprocessApiReasoningEffort();
+				temperature = settings.GetActionPostprocessApiTemperature();
+			}
+			else
+			{
+				thinkingEnabled = settings.MainApiThinkingEnabled;
+				effort = settings.GetMainApiReasoningEffort();
+				temperature = settings.GetMainApiTemperature();
+			}
+		}
+		catch
+		{
+		}
 	}
 
 	private static bool TryGetAuxiliarySimpleDialogueConfig(out string apiUrl, out string apiKey, out string modelName)
@@ -2068,13 +2079,13 @@ public static class AIConfigHandler
 		}
 	}
 
-	private static void LogAuxiliaryRouterTokenTrace(string mode, IEnumerable<object> messages, string outputContent, int outputTokens = -1)
+	private static void LogAuxiliaryRouterTokenTrace(string mode, IEnumerable<object> messages, string outputContent, int outputTokens = -1, string requestBody = null)
 	{
 		try
 		{
 			int num = Logger.EstimateTokensFromMessages(messages);
 			int num2 = ((outputTokens >= 0) ? outputTokens : Logger.EstimateTokens(outputContent));
-			Logger.RecordTokenStats(num, num2, messages, outputContent, mode);
+			Logger.RecordTokenStats(num, num2, messages, outputContent, mode, requestBody);
 		}
 		catch
 		{
@@ -2096,26 +2107,45 @@ public static class AIConfigHandler
 			return false;
 		}
 		object[] array = BuildAuxiliaryChatMessages(systemPrompt, userPrompt);
+		string requestBodyForTokenStats = "";
 		try
 		{
-			var value = new
+			JObject payload = new JObject
 			{
-				model = modelName,
-				messages = array,
-				stream = false,
-				max_tokens = Math.Max(16, maxTokens),
-				temperature = Math.Max(0f, Math.Min(1.5f, temperature))
+				["model"] = modelName,
+				["messages"] = JArray.FromObject(array),
+				["stream"] = false,
+				["max_tokens"] = Math.Max(16, maxTokens),
+				["temperature"] = DuelSettings.ClampApiTemperature(temperature)
 			};
-			string jsonBody = JsonConvert.SerializeObject(value);
+			ResolveActionPostprocessApiSettings(apiUrl, apiKey, modelName, temperature, out var thinkingEnabled, out var effort, out var effectiveTemperature);
+			payload["temperature"] = effectiveTemperature;
+			DuelSettings.ApplyThinkingControls(payload, apiUrl, modelName, thinkingEnabled, effort, out var controlMode);
+			string jsonBody = payload.ToString(Formatting.None);
+			requestBodyForTokenStats = jsonBody;
 			using HttpRequestMessage httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, apiUrl);
 			httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
 			httpRequestMessage.Content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
 			HttpResponseMessage result = DuelSettings.GlobalClient.SendAsync(httpRequestMessage).GetAwaiter().GetResult();
 			string text = result.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+			if (!result.IsSuccessStatusCode && result.StatusCode == System.Net.HttpStatusCode.BadRequest && controlMode != "plain" && LooksLikeAuxiliaryThinkingControlError(text))
+			{
+				Logger.Log("AIConfig", "[ActionPostprocess] thinking payload rejected; retrying without thinking controls.");
+				JObject retryPayload = JObject.Parse(jsonBody);
+				DuelSettings.RemoveThinkingControls(retryPayload);
+				string retryBody = retryPayload.ToString(Formatting.None);
+				requestBodyForTokenStats = retryBody;
+				using HttpRequestMessage httpRequestMessage2 = new HttpRequestMessage(HttpMethod.Post, apiUrl);
+				httpRequestMessage2.Headers.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
+				httpRequestMessage2.Content = new StringContent(retryBody, Encoding.UTF8, "application/json");
+				result = DuelSettings.GlobalClient.SendAsync(httpRequestMessage2).GetAwaiter().GetResult();
+				text = result.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+				controlMode += "_retry_plain";
+			}
 			if (!result.IsSuccessStatusCode)
 			{
 				error = "http_" + (int)result.StatusCode;
-				LogAuxiliaryRouterTokenTrace("action_postprocess_http_error", array, "[ACTION POSTPROCESS HTTP]\nurl=" + apiUrl + "\nmodel=" + modelName + "\nstatus=" + (int)result.StatusCode + " " + (result.ReasonPhrase ?? "") + "\nresponse_body=\n" + (text ?? ""), 0);
+				LogAuxiliaryRouterTokenTrace("action_postprocess_http_error", array, "[ACTION POSTPROCESS HTTP]\nurl=" + apiUrl + "\nmodel=" + modelName + "\ncontrol_mode=" + controlMode + "\nstatus=" + (int)result.StatusCode + " " + (result.ReasonPhrase ?? "") + "\nresponse_body=\n" + (text ?? ""), 0, requestBodyForTokenStats);
 				return false;
 			}
 			JObject jObject = JObject.Parse(text);
@@ -2123,16 +2153,16 @@ public static class AIConfigHandler
 			if (string.IsNullOrWhiteSpace(content))
 			{
 				error = "empty_content";
-				LogAuxiliaryRouterTokenTrace("action_postprocess_empty_content", array, "[ACTION POSTPROCESS HTTP]\nurl=" + apiUrl + "\nmodel=" + modelName + "\nstatus=" + (int)result.StatusCode + " " + (result.ReasonPhrase ?? "") + "\nresponse_body=\n" + (text ?? ""), 0);
+				LogAuxiliaryRouterTokenTrace("action_postprocess_empty_content", array, "[ACTION POSTPROCESS HTTP]\nurl=" + apiUrl + "\nmodel=" + modelName + "\ncontrol_mode=" + controlMode + "\nstatus=" + (int)result.StatusCode + " " + (result.ReasonPhrase ?? "") + "\nresponse_body=\n" + (text ?? ""), 0, requestBodyForTokenStats);
 				return false;
 			}
-			LogAuxiliaryRouterTokenTrace("action_postprocess_http", array, "[ACTION POSTPROCESS HTTP]\nurl=" + apiUrl + "\nmodel=" + modelName + "\nai_response=\n" + content + "\nraw_response=\n" + (text ?? ""), Logger.EstimateTokens(content));
+			LogAuxiliaryRouterTokenTrace("action_postprocess_http", array, "[ACTION POSTPROCESS HTTP]\nurl=" + apiUrl + "\nmodel=" + modelName + "\ncontrol_mode=" + controlMode + "\nai_response=\n" + content + "\nraw_response=\n" + (text ?? ""), Logger.EstimateTokens(content), requestBodyForTokenStats);
 			return true;
 		}
 		catch (Exception ex)
 		{
 			error = BuildAuxiliaryRouterExceptionText(ex);
-			LogAuxiliaryRouterTokenTrace("action_postprocess_exception", array, "[ACTION POSTPROCESS EXCEPTION]\nerror=" + error + "\nstack=\n" + (ex?.StackTrace ?? ""), 0);
+			LogAuxiliaryRouterTokenTrace("action_postprocess_exception", array, "[ACTION POSTPROCESS EXCEPTION]\nerror=" + error + "\nstack=\n" + (ex?.StackTrace ?? ""), 0, requestBodyForTokenStats);
 			return false;
 		}
 	}
@@ -2148,9 +2178,11 @@ public static class AIConfigHandler
 		}
 		object[] array = CopyAuxiliaryChatMessagesPreservingNames(messages);
 		Logger.RecordMessageDump("auxiliary_simple_dialogue_request", array, "auxiliary_simple_dialogue_request");
+		string requestBodyForTokenStats = "";
 		try
 		{
-			string jsonBody = BuildAuxiliaryRouterRequestJsonForExternal(apiUrl, modelName, array, Math.Max(16, maxTokens), temperature, out var controlMode, disableThinkingControls: true);
+			string jsonBody = BuildAuxiliaryRouterRequestJsonForExternal(apiUrl, modelName, array, Math.Max(16, maxTokens), temperature, out var controlMode);
+			requestBodyForTokenStats = jsonBody;
 			using HttpRequestMessage httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, apiUrl);
 			httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
 			httpRequestMessage.Content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
@@ -2160,8 +2192,9 @@ public static class AIConfigHandler
 			{
 				Logger.Log("AIConfig", "[AuxiliarySimpleDialogue] thinking payload rejected; retrying without thinking controls.");
 				JObject jObject2 = JObject.Parse(jsonBody);
-				jObject2.Remove("thinking");
+				DuelSettings.RemoveThinkingControls(jObject2);
 				string content2 = jObject2.ToString(Formatting.None);
+				requestBodyForTokenStats = content2;
 				using HttpRequestMessage httpRequestMessage2 = new HttpRequestMessage(HttpMethod.Post, apiUrl);
 				httpRequestMessage2.Headers.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
 				httpRequestMessage2.Content = new StringContent(content2, Encoding.UTF8, "application/json");
@@ -2172,7 +2205,7 @@ public static class AIConfigHandler
 			if (!result.IsSuccessStatusCode)
 			{
 				error = "http_" + (int)result.StatusCode;
-				LogAuxiliaryRouterTokenTrace("auxiliary_simple_dialogue_http_error", array, "[AUXILIARY SIMPLE DIALOGUE HTTP]\nurl=" + apiUrl + "\nmodel=" + modelName + "\ncontrol_mode=" + controlMode + "\nstatus=" + (int)result.StatusCode + " " + (result.ReasonPhrase ?? "") + "\nresponse_body=\n" + (text ?? ""), 0);
+				LogAuxiliaryRouterTokenTrace("auxiliary_simple_dialogue_http_error", array, "[AUXILIARY SIMPLE DIALOGUE HTTP]\nurl=" + apiUrl + "\nmodel=" + modelName + "\ncontrol_mode=" + controlMode + "\nstatus=" + (int)result.StatusCode + " " + (result.ReasonPhrase ?? "") + "\nresponse_body=\n" + (text ?? ""), 0, requestBodyForTokenStats);
 				return false;
 			}
 			JObject jObject = JObject.Parse(text);
@@ -2180,16 +2213,16 @@ public static class AIConfigHandler
 			if (string.IsNullOrWhiteSpace(content))
 			{
 				error = "empty_content";
-				LogAuxiliaryRouterTokenTrace("auxiliary_simple_dialogue_empty_content", array, "[AUXILIARY SIMPLE DIALOGUE HTTP]\nurl=" + apiUrl + "\nmodel=" + modelName + "\ncontrol_mode=" + controlMode + "\nstatus=" + (int)result.StatusCode + " " + (result.ReasonPhrase ?? "") + "\nresponse_body=\n" + (text ?? ""), 0);
+				LogAuxiliaryRouterTokenTrace("auxiliary_simple_dialogue_empty_content", array, "[AUXILIARY SIMPLE DIALOGUE HTTP]\nurl=" + apiUrl + "\nmodel=" + modelName + "\ncontrol_mode=" + controlMode + "\nstatus=" + (int)result.StatusCode + " " + (result.ReasonPhrase ?? "") + "\nresponse_body=\n" + (text ?? ""), 0, requestBodyForTokenStats);
 				return false;
 			}
-			LogAuxiliaryRouterTokenTrace("auxiliary_simple_dialogue_http", array, "[AUXILIARY SIMPLE DIALOGUE HTTP]\nurl=" + apiUrl + "\nmodel=" + modelName + "\ncontrol_mode=" + controlMode + "\nai_response=\n" + content + "\nraw_response=\n" + (text ?? ""), Logger.EstimateTokens(content));
+			LogAuxiliaryRouterTokenTrace("auxiliary_simple_dialogue_http", array, "[AUXILIARY SIMPLE DIALOGUE HTTP]\nurl=" + apiUrl + "\nmodel=" + modelName + "\ncontrol_mode=" + controlMode + "\nai_response=\n" + content + "\nraw_response=\n" + (text ?? ""), Logger.EstimateTokens(content), requestBodyForTokenStats);
 			return true;
 		}
 		catch (Exception ex)
 		{
 			error = BuildAuxiliaryRouterExceptionText(ex);
-			LogAuxiliaryRouterTokenTrace("auxiliary_simple_dialogue_exception", array, "[AUXILIARY SIMPLE DIALOGUE EXCEPTION]\nerror=" + error + "\nstack=\n" + (ex?.StackTrace ?? ""), 0);
+			LogAuxiliaryRouterTokenTrace("auxiliary_simple_dialogue_exception", array, "[AUXILIARY SIMPLE DIALOGUE EXCEPTION]\nerror=" + error + "\nstack=\n" + (ex?.StackTrace ?? ""), 0, requestBodyForTokenStats);
 			return false;
 		}
 	}
@@ -2620,9 +2653,11 @@ public static class AIConfigHandler
 		content = "";
 		error = "";
 		object[] array = BuildAuxiliaryRouterMessages(prompt);
+		string requestBodyForTokenStats = "";
 		try
 		{
 			string jsonBody = BuildAuxiliaryRouterRequestJsonForExternal(apiUrl, modelName, array, 5000, 0f, out var controlMode);
+			requestBodyForTokenStats = jsonBody;
 			using HttpRequestMessage httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, apiUrl);
 			httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
 			httpRequestMessage.Content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
@@ -2632,8 +2667,9 @@ public static class AIConfigHandler
 			{
 				Logger.Log("AIConfig", "[AuxiliaryRouter] thinking payload rejected; retrying without thinking controls.");
 				JObject jObject2 = JObject.Parse(jsonBody);
-				jObject2.Remove("thinking");
+				DuelSettings.RemoveThinkingControls(jObject2);
 				string content2 = jObject2.ToString(Formatting.None);
+				requestBodyForTokenStats = content2;
 				using HttpRequestMessage httpRequestMessage2 = new HttpRequestMessage(HttpMethod.Post, apiUrl);
 				httpRequestMessage2.Headers.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
 				httpRequestMessage2.Content = new StringContent(content2, Encoding.UTF8, "application/json");
@@ -2644,7 +2680,7 @@ public static class AIConfigHandler
 			if (!result.IsSuccessStatusCode)
 			{
 				error = "http_" + (int)result.StatusCode;
-				LogAuxiliaryRouterTokenTrace("auxiliary_router_http_error", array, "[AUXILIARY ROUTER HTTP]" + "\n" + "url=" + apiUrl + "\n" + "model=" + modelName + "\n" + "control_mode=" + controlMode + "\n" + "status=" + (int)result.StatusCode + " " + (result.ReasonPhrase ?? "") + "\n" + "response_body=" + "\n" + (text ?? ""), 0);
+				LogAuxiliaryRouterTokenTrace("auxiliary_router_http_error", array, "[AUXILIARY ROUTER HTTP]" + "\n" + "url=" + apiUrl + "\n" + "model=" + modelName + "\n" + "control_mode=" + controlMode + "\n" + "status=" + (int)result.StatusCode + " " + (result.ReasonPhrase ?? "") + "\n" + "response_body=" + "\n" + (text ?? ""), 0, requestBodyForTokenStats);
 				return false;
 			}
 			JObject jObject = JObject.Parse(text);
@@ -2652,16 +2688,16 @@ public static class AIConfigHandler
 			if (string.IsNullOrWhiteSpace(content))
 			{
 				error = "empty_content";
-				LogAuxiliaryRouterTokenTrace("auxiliary_router_empty_content", array, "[AUXILIARY ROUTER HTTP]" + "\n" + "url=" + apiUrl + "\n" + "model=" + modelName + "\n" + "control_mode=" + controlMode + "\n" + "status=" + (int)result.StatusCode + " " + (result.ReasonPhrase ?? "") + "\n" + "response_body=" + "\n" + (text ?? ""), 0);
+				LogAuxiliaryRouterTokenTrace("auxiliary_router_empty_content", array, "[AUXILIARY ROUTER HTTP]" + "\n" + "url=" + apiUrl + "\n" + "model=" + modelName + "\n" + "control_mode=" + controlMode + "\n" + "status=" + (int)result.StatusCode + " " + (result.ReasonPhrase ?? "") + "\n" + "response_body=" + "\n" + (text ?? ""), 0, requestBodyForTokenStats);
 				return false;
 			}
-			LogAuxiliaryRouterTokenTrace("auxiliary_router_http", array, "[AUXILIARY ROUTER HTTP]" + "\n" + "url=" + apiUrl + "\n" + "model=" + modelName + "\n" + "control_mode=" + controlMode + "\n" + "status=" + (int)result.StatusCode + " " + (result.ReasonPhrase ?? "") + "\n" + "ai_response=" + "\n" + content + "\n" + "raw_response=" + "\n" + (text ?? ""), Logger.EstimateTokens(content));
+			LogAuxiliaryRouterTokenTrace("auxiliary_router_http", array, "[AUXILIARY ROUTER HTTP]" + "\n" + "url=" + apiUrl + "\n" + "model=" + modelName + "\n" + "control_mode=" + controlMode + "\n" + "status=" + (int)result.StatusCode + " " + (result.ReasonPhrase ?? "") + "\n" + "ai_response=" + "\n" + content + "\n" + "raw_response=" + "\n" + (text ?? ""), Logger.EstimateTokens(content), requestBodyForTokenStats);
 			return true;
 		}
 		catch (Exception ex)
 		{
 			error = BuildAuxiliaryRouterExceptionText(ex);
-			LogAuxiliaryRouterTokenTrace("auxiliary_router_exception", array, "[AUXILIARY ROUTER EXCEPTION]" + "\n" + "url=" + apiUrl + "\n" + "model=" + modelName + "\n" + "error=" + error + "\n" + "stack=" + "\n" + (ex?.StackTrace ?? ""), 0);
+			LogAuxiliaryRouterTokenTrace("auxiliary_router_exception", array, "[AUXILIARY ROUTER EXCEPTION]" + "\n" + "url=" + apiUrl + "\n" + "model=" + modelName + "\n" + "error=" + error + "\n" + "stack=" + "\n" + (ex?.StackTrace ?? ""), 0, requestBodyForTokenStats);
 			return false;
 		}
 	}

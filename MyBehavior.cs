@@ -1239,6 +1239,8 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private HashSet<string> _npcPersonaAutoGenInFlight = new HashSet<string>();
 
+	private readonly Dictionary<string, long> _npcPersonaAutoGenRetryAfterUtcTicks = new Dictionary<string, long>(StringComparer.OrdinalIgnoreCase);
+
 	private HashSet<string> _recentlyDefeatedByPlayer = new HashSet<string>();
 
 	private HashSet<string> _recentlyReleasedPrisoners = new HashSet<string>();
@@ -1418,19 +1420,18 @@ public class MyBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			if (mapEvent == null || !mapEvent.IsPlayerMapEvent || !mapEvent.HasWinner || mapEvent.WinningSide != mapEvent.PlayerSide)
+			if (mapEvent != null && mapEvent.IsPlayerMapEvent && mapEvent.HasWinner && mapEvent.WinningSide == mapEvent.PlayerSide)
 			{
-				return;
-			}
-			MapEventSide mapEventSide = ((mapEvent.PlayerSide == BattleSideEnum.Attacker) ? mapEvent.DefenderSide : mapEvent.AttackerSide);
-			foreach (MapEventParty party in mapEventSide.Parties)
-			{
-				Hero hero = party.Party?.LeaderHero;
-				if (hero != null && hero != Hero.MainHero && hero.IsLord)
+				MapEventSide mapEventSide = ((mapEvent.PlayerSide == BattleSideEnum.Attacker) ? mapEvent.DefenderSide : mapEvent.AttackerSide);
+				foreach (MapEventParty party in mapEventSide.Parties)
 				{
-					_recentlyDefeatedByPlayer.Add(hero.StringId);
-					Logger.Log("BattleStatus", $"原版战斗结束：玩家击败了 {hero.Name}");
-					AppendExternalDialogueHistory(hero, null, null, $"你在一场战斗中被 {Hero.MainHero.Name} 击败了。");
+					Hero hero = party.Party?.LeaderHero;
+					if (hero != null && hero != Hero.MainHero && hero.IsLord)
+					{
+						_recentlyDefeatedByPlayer.Add(hero.StringId);
+						Logger.Log("BattleStatus", $"原版战斗结束：玩家击败了 {hero.Name}");
+						AppendExternalDialogueHistory(hero, null, null, $"你在一场战斗中被 {Hero.MainHero.Name} 击败了。");
+					}
 				}
 			}
 		}
@@ -2959,7 +2960,7 @@ public class MyBehavior : CampaignBehaviorBase
 		case ChangeOwnerOfSettlementAction.ChangeOwnerOfSettlementDetail.BySiege:
 			return "围城";
 		case ChangeOwnerOfSettlementAction.ChangeOwnerOfSettlementDetail.ByBarter:
-			return "易物";
+			return "交易/买卖移交（非攻城）";
 		case ChangeOwnerOfSettlementAction.ChangeOwnerOfSettlementDetail.ByLeaveFaction:
 			return "脱离王国";
 		case ChangeOwnerOfSettlementAction.ChangeOwnerOfSettlementDetail.ByKingDecision:
@@ -5398,6 +5399,10 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				facts.TargetClanId = clanId;
 			}
+			if (string.IsNullOrWhiteSpace(facts.TargetKingdomId))
+			{
+				facts.TargetKingdomId = GetKingdomId(clan.Kingdom);
+			}
 			AddUniqueId(facts.RelatedClanIds, clanId);
 			AddUniqueId(facts.RelatedKingdomIds, GetKingdomId(clan.Kingdom));
 		}
@@ -6170,6 +6175,80 @@ public class MyBehavior : CampaignBehaviorBase
 		return stringBuilder.ToString();
 	}
 
+	private static string BuildMapEventStableKey(MapEvent mapEvent, string locationLabel)
+	{
+		if (mapEvent == null)
+		{
+			return "";
+		}
+		List<string> list = new List<string>
+		{
+			GetCurrentGameDayIndexSafe().ToString(),
+			NormalizeWeeklyPromptKeyPart(locationLabel),
+			GetHeroId(mapEvent.AttackerSide?.LeaderParty?.LeaderHero),
+			GetHeroId(mapEvent.DefenderSide?.LeaderParty?.LeaderHero),
+			BuildMapEventCommittedTroopText(mapEvent.AttackerSide),
+			BuildMapEventCommittedTroopText(mapEvent.DefenderSide),
+			BuildMapEventCasualtyText(mapEvent.AttackerSide),
+			BuildMapEventCasualtyText(mapEvent.DefenderSide)
+		};
+		string text = string.Join("~", list.Select(NormalizeWeeklyPromptKeyPart)).Trim('~');
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			text = NormalizeWeeklyPromptKeyPart(mapEvent.StringId ?? locationLabel);
+		}
+		return "mapevent:" + text;
+	}
+
+	private static string NormalizeWeeklyPromptKeyPart(string value)
+	{
+		string text = (value ?? "").Trim().ToLowerInvariant();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return "";
+		}
+		return Regex.Replace(text, "[\\s:|]+", "_");
+	}
+
+	private static void ApplyMapEventOppositeSideFacts(NpcActionFacts facts, MapEventSide oppositeSide)
+	{
+		if (facts == null || oppositeSide == null)
+		{
+			return;
+		}
+		AddRelatedFactionFacts(facts, oppositeSide.MapFaction);
+		Hero leaderHero = oppositeSide.LeaderParty?.LeaderHero;
+		if (leaderHero != null)
+		{
+			if (string.IsNullOrWhiteSpace(facts.TargetHeroId))
+			{
+				facts.TargetHeroId = GetHeroId(leaderHero);
+			}
+			if (string.IsNullOrWhiteSpace(facts.TargetClanId))
+			{
+				facts.TargetClanId = GetClanId(leaderHero.Clan);
+			}
+			if (string.IsNullOrWhiteSpace(facts.TargetKingdomId))
+			{
+				facts.TargetKingdomId = GetKingdomId(leaderHero.MapFaction);
+			}
+			AddUniqueId(facts.RelatedHeroIds, facts.TargetHeroId);
+			AddUniqueId(facts.RelatedClanIds, facts.TargetClanId);
+			AddUniqueId(facts.RelatedKingdomIds, facts.TargetKingdomId);
+		}
+		foreach (MapEventParty party in oppositeSide.Parties ?? Enumerable.Empty<MapEventParty>())
+		{
+			Hero hero = party?.Party?.LeaderHero;
+			if (hero == null)
+			{
+				continue;
+			}
+			AddUniqueId(facts.RelatedHeroIds, GetHeroId(hero));
+			AddUniqueId(facts.RelatedClanIds, GetClanId(hero.Clan));
+			AddUniqueId(facts.RelatedKingdomIds, GetKingdomId(hero.MapFaction));
+		}
+	}
+
 	private static string BuildPlayerAddressedInput(Hero hero, string playerText)
 	{
 		string text = (playerText ?? "").Trim();
@@ -6397,14 +6476,50 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
+		if (IsBanditOrMonsterMapEvent(mapEvent))
+		{
+			return;
+		}
 		int mapEventTroopCount = GetMapEventTroopCount(mapEvent);
 		bool flag = mapEvent.IsSiegeAssault || mapEvent.IsSiegeOutside || mapEvent.IsSallyOut || mapEvent.IsRaid || mapEventTroopCount >= 120 || CountTrackedLordParties(mapEvent.AttackerSide) + CountTrackedLordParties(mapEvent.DefenderSide) >= 2;
 		string mapEventLocationLabel = GetMapEventLocationLabel(mapEvent);
-		TrackNpcActionsFromMapEventSide(mapEvent, mapEvent.AttackerSide, mapEvent.WinningSide == BattleSideEnum.Attacker, flag, mapEventLocationLabel);
-		TrackNpcActionsFromMapEventSide(mapEvent, mapEvent.DefenderSide, mapEvent.WinningSide == BattleSideEnum.Defender, flag, mapEventLocationLabel);
+		string mapEventStableKey = BuildMapEventStableKey(mapEvent, mapEventLocationLabel);
+		TrackNpcActionsFromMapEventSide(mapEvent, mapEvent.AttackerSide, mapEvent.WinningSide == mapEvent.AttackerSide?.MissionSide, flag, mapEventLocationLabel, mapEventStableKey);
+		TrackNpcActionsFromMapEventSide(mapEvent, mapEvent.DefenderSide, mapEvent.WinningSide == mapEvent.DefenderSide?.MissionSide, flag, mapEventLocationLabel, mapEventStableKey);
 	}
 
-	private void TrackNpcActionsFromMapEventSide(MapEvent mapEvent, MapEventSide side, bool won, bool isMajor, string locationLabel)
+	private static bool IsBanditOrMonsterMapEvent(MapEvent mapEvent)
+	{
+		return IsBanditOrMonsterMapEventSide(mapEvent?.AttackerSide) || IsBanditOrMonsterMapEventSide(mapEvent?.DefenderSide);
+	}
+
+	private static bool IsBanditOrMonsterMapEventSide(MapEventSide side)
+	{
+		if (side == null)
+		{
+			return false;
+		}
+		try
+		{
+			if (side.MapFaction?.IsBanditFaction == true || side.LeaderParty?.MapFaction?.IsBanditFaction == true)
+			{
+				return true;
+			}
+			foreach (MapEventParty party in side.Parties ?? Enumerable.Empty<MapEventParty>())
+			{
+				if (party?.Party?.MapFaction?.IsBanditFaction == true || party?.Party?.MobileParty?.MapFaction?.IsBanditFaction == true || party?.Party?.Owner?.MapFaction?.IsBanditFaction == true)
+				{
+					return true;
+				}
+			}
+		}
+		catch
+		{
+		}
+		return false;
+	}
+
+	private void TrackNpcActionsFromMapEventSide(MapEvent mapEvent, MapEventSide side, bool won, bool isMajor, string locationLabel, string mapEventStableKey)
 	{
 		if (mapEvent == null || side?.Parties == null)
 		{
@@ -6418,12 +6533,12 @@ public class MyBehavior : CampaignBehaviorBase
 				continue;
 			}
 			string text = BuildMapEventNarrative(mapEvent, side, leaderHero, won, locationLabel);
-			string text2 = "mapevent:" + (mapEvent.StringId ?? locationLabel) + ":" + won + ":" + (leaderHero.StringId ?? "");
+			string text2 = (string.IsNullOrWhiteSpace(mapEventStableKey) ? BuildMapEventStableKey(mapEvent, locationLabel) : mapEventStableKey) + ":side:" + side.MissionSide + ":hero:" + (leaderHero.StringId ?? "");
 			NpcActionFacts npcActionFacts = CreateNpcActionFacts("map_event", leaderHero);
 			npcActionFacts.LocationText = locationLabel;
 			npcActionFacts.Won = won;
 			ApplySettlementFacts(npcActionFacts, mapEvent.MapEventSettlement, locationText: locationLabel);
-			AddRelatedFactionFacts(npcActionFacts, side.OtherSide?.MapFaction);
+			ApplyMapEventOppositeSideFacts(npcActionFacts, side.OtherSide);
 			if (isMajor)
 			{
 				RecordNpcMajorAction(leaderHero, text, text2, npcActionFacts);
@@ -6436,8 +6551,8 @@ public class MyBehavior : CampaignBehaviorBase
 				npcActionFacts2.LocationText = locationLabel;
 				npcActionFacts2.Won = won;
 				ApplySettlementFacts(npcActionFacts2, mapEvent.MapEventSettlement, locationText: locationLabel);
-				AddRelatedFactionFacts(npcActionFacts2, side.OtherSide?.MapFaction);
-				RecordNpcRecentAction(leaderHero, text3, "mapevent_aftermath:" + (mapEvent.StringId ?? locationLabel) + ":" + won + ":" + (leaderHero.StringId ?? ""), facts: npcActionFacts2);
+				ApplyMapEventOppositeSideFacts(npcActionFacts2, side.OtherSide);
+				RecordNpcRecentAction(leaderHero, text3, "mapevent_aftermath:" + (string.IsNullOrWhiteSpace(mapEventStableKey) ? BuildMapEventStableKey(mapEvent, locationLabel) : mapEventStableKey).Substring("mapevent:".Length) + ":side:" + side.MissionSide + ":hero:" + (leaderHero.StringId ?? ""), facts: npcActionFacts2);
 			}
 		}
 	}
@@ -7800,7 +7915,19 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		lock (_npcPersonaAutoGenLock)
 		{
-			return _npcPersonaAutoGenInFlight.Contains(text);
+			if (_npcPersonaAutoGenInFlight.Contains(text))
+			{
+				return true;
+			}
+			if (_npcPersonaAutoGenRetryAfterUtcTicks.TryGetValue(text, out var value))
+			{
+				if (DateTime.UtcNow.Ticks < value)
+				{
+					return true;
+				}
+				_npcPersonaAutoGenRetryAfterUtcTicks.Remove(text);
+			}
+			return false;
 		}
 	}
 
@@ -9784,6 +9911,19 @@ public class MyBehavior : CampaignBehaviorBase
 			return false;
 		}
 		string text2 = text.Trim();
+		if (text2.StartsWith("```", StringComparison.Ordinal))
+		{
+			int num3 = text2.IndexOf('\n');
+			if (num3 >= 0)
+			{
+				text2 = text2.Substring(num3 + 1).Trim();
+			}
+			int num4 = text2.LastIndexOf("```", StringComparison.Ordinal);
+			if (num4 >= 0)
+			{
+				text2 = text2.Substring(0, num4).Trim();
+			}
+		}
 		int num = text2.IndexOf('{');
 		int num2 = text2.LastIndexOf('}');
 		if (num >= 0 && num2 > num)
@@ -9793,7 +9933,7 @@ public class MyBehavior : CampaignBehaviorBase
 		try
 		{
 			JObject jObject = JObject.Parse(text2);
-			personality = (jObject["personality"] ?? jObject["Personality"])?.ToString() ?? "";
+			personality = (jObject["personality"] ?? jObject["Personality"] ?? jObject["profile"] ?? jObject["Profile"] ?? jObject["description"] ?? jObject["Description"])?.ToString() ?? "";
 			background = (jObject["background"] ?? jObject["Background"])?.ToString() ?? "";
 			return true;
 		}
@@ -9827,8 +9967,17 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				return;
 			}
+			if (_npcPersonaAutoGenRetryAfterUtcTicks.TryGetValue(id, out var value))
+			{
+				if (DateTime.UtcNow.Ticks < value)
+				{
+					return;
+				}
+				_npcPersonaAutoGenRetryAfterUtcTicks.Remove(id);
+			}
 			_npcPersonaAutoGenInFlight.Add(id);
 		}
+		bool flag = false;
 		try
 		{
 			string sys = "你是《骑马与砍杀2：霸主》NPC的人设生成器。你只输出严格 JSON，不要输出任何额外文字。JSON 仅包含两个字段：personality 和 background。personality 大约 300 个中文字符；background 大约 300 个中文字符。内容必须符合提供的事实，不要杜撰与事实冲突的家族关系或身份；若事实中提供了势力/效忠信息，必须保持一致，禁止声称效忠于其他统治者或属于其他势力。";
@@ -9840,11 +9989,24 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				genP = TrimToMaxChars(genP, 380);
 				genB = TrimToMaxChars(genB, 380);
+				if (string.IsNullOrWhiteSpace(genP) && !string.IsNullOrWhiteSpace(genB))
+				{
+					genP = genB;
+				}
+				else if (string.IsNullOrWhiteSpace(genB) && !string.IsNullOrWhiteSpace(genP))
+				{
+					genB = genP;
+				}
 				GetNpcPersonaStrings(hero, out var curP, out var curB);
 				NpcPersonaProfile prof = GetNpcPersonaProfile(hero, createIfMissing: true) ?? new NpcPersonaProfile();
 				prof.Personality = (string.IsNullOrWhiteSpace(curP) ? genP : curP.Trim());
 				prof.Background = (string.IsNullOrWhiteSpace(curB) ? genB : curB.Trim());
 				SaveNpcPersonaProfile(hero, prof);
+				flag = !string.IsNullOrWhiteSpace(prof.Personality) || !string.IsNullOrWhiteSpace(prof.Background);
+			}
+			if (!flag)
+			{
+				Logger.Log("NpcPersona", "[WARN] AutoGen did not save profile for " + id + ": " + TrimToMaxChars(resp, 180));
 			}
 		}
 		catch (Exception ex)
@@ -9857,6 +10019,14 @@ public class MyBehavior : CampaignBehaviorBase
 			lock (_npcPersonaAutoGenLock)
 			{
 				_npcPersonaAutoGenInFlight.Remove(id);
+				if (flag)
+				{
+					_npcPersonaAutoGenRetryAfterUtcTicks.Remove(id);
+				}
+				else
+				{
+					_npcPersonaAutoGenRetryAfterUtcTicks[id] = DateTime.UtcNow.AddMinutes(5.0).Ticks;
+				}
 			}
 		}
 	}
@@ -13977,6 +14147,127 @@ public class MyBehavior : CampaignBehaviorBase
 		return false;
 	}
 
+	private static string TrimUniversalApiRawForLog(string text, int maxChars = 3000)
+	{
+		text = (text ?? "").Replace("\r\n", "\n").Replace('\r', '\n').Trim();
+		if (text.Length <= maxChars)
+		{
+			return text;
+		}
+		return text.Substring(0, maxChars) + "...";
+	}
+
+	private static bool LooksLikeUniversalThinkingControlError(string responseBody)
+	{
+		string text = (responseBody ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return false;
+		}
+		bool hasThinkingField = ContainsAnyIgnoreCase(text, "thinking", "reasoning_effort", "output_config", "budget_tokens");
+		bool hasUnsupportedSignal = ContainsAnyIgnoreCase(text, "unsupported", "unknown", "invalid", "unexpected", "not allowed", "not supported", "extra inputs are not permitted");
+		return hasThinkingField && hasUnsupportedSignal;
+	}
+
+	private static void ResolveUniversalThinkingSettings(DuelSettings settings, string resolvedRoute, out bool thinkingEnabled, out string effort)
+	{
+		thinkingEnabled = true;
+		effort = DuelSettings.ReasoningEffortHigh;
+		if (settings == null)
+		{
+			return;
+		}
+		string route = (resolvedRoute ?? "").Trim();
+		if (route.StartsWith("event_rebellion_dedicated", StringComparison.OrdinalIgnoreCase))
+		{
+			thinkingEnabled = settings.EventAndRebellionApiThinkingEnabled;
+			effort = settings.GetEventAndRebellionApiReasoningEffort();
+			return;
+		}
+		if (route.StartsWith("auxiliary_dedicated", StringComparison.OrdinalIgnoreCase))
+		{
+			thinkingEnabled = settings.AuxiliaryApiThinkingEnabled;
+			effort = settings.GetAuxiliaryApiReasoningEffort();
+			return;
+		}
+		thinkingEnabled = settings.MainApiThinkingEnabled;
+		effort = settings.GetMainApiReasoningEffort();
+	}
+
+	private static float ResolveUniversalApiTemperature(DuelSettings settings, string resolvedRoute)
+	{
+		if (settings == null)
+		{
+			return 0.8f;
+		}
+		string route = (resolvedRoute ?? "").Trim();
+		if (route.StartsWith("event_rebellion_dedicated", StringComparison.OrdinalIgnoreCase))
+		{
+			return settings.GetEventAndRebellionApiTemperature();
+		}
+		if (route.StartsWith("auxiliary_dedicated", StringComparison.OrdinalIgnoreCase))
+		{
+			return settings.GetAuxiliaryApiTemperature();
+		}
+		return settings.GetMainApiTemperature();
+	}
+
+	private static string ExtractUniversalGeminiCandidateText(JToken candidate)
+	{
+		try
+		{
+			if (candidate == null)
+			{
+				return "";
+			}
+			StringBuilder stringBuilder = new StringBuilder();
+			JToken parts = candidate.SelectToken("content.parts") ?? candidate.SelectToken("delta.content.parts");
+			if (parts is JArray jArray)
+			{
+				foreach (JToken item in jArray)
+				{
+					string text = item?["text"]?.ToString() ?? "";
+					if (!string.IsNullOrEmpty(text))
+					{
+						stringBuilder.Append(text);
+					}
+				}
+			}
+			string directText = candidate.SelectToken("content.parts[0].text")?.ToString()
+				?? candidate.SelectToken("delta.content.parts[0].text")?.ToString()
+				?? candidate.SelectToken("output")?.ToString();
+			if (stringBuilder.Length == 0 && !string.IsNullOrEmpty(directText))
+			{
+				stringBuilder.Append(directText);
+			}
+			return stringBuilder.ToString();
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	private static string ExtractUniversalStreamDelta(JObject json)
+	{
+		if (json == null)
+		{
+			return "";
+		}
+		string delta = json["choices"]?[0]?["delta"]?["content"]?.ToString();
+		if (string.IsNullOrEmpty(delta))
+		{
+			delta = json.SelectToken("delta.content")?.ToString()
+				?? json.SelectToken("content")?.ToString()
+				?? json.SelectToken("text")?.ToString();
+		}
+		if (!string.IsNullOrEmpty(delta))
+		{
+			return delta;
+		}
+		return ExtractUniversalGeminiCandidateText(json.SelectToken("candidates[0]"));
+	}
+
 	private async Task<ApiCallResult> CallUniversalApiDetailed(string sys, string user, bool logToEventLogs = false, string eventLogSource = "EventWeeklyReport", UniversalApiRoute route = UniversalApiRoute.Main)
 	{
 		ApiCallResult apiCallResult = new ApiCallResult();
@@ -13999,27 +14290,31 @@ public class MyBehavior : CampaignBehaviorBase
 				apiCallResult.ErrorMessage = errorMessage;
 				return apiCallResult;
 			}
-			var body = new
+			JObject body = new JObject
 			{
-				model = modelName,
-				messages = new[]
+				["model"] = modelName,
+				["messages"] = new JArray
 				{
-					new
+					new JObject
 					{
-						role = "system",
-						content = sys
+						["role"] = "system",
+						["content"] = sys
 					},
-					new
+					new JObject
 					{
-						role = "user",
-						content = user
+						["role"] = "user",
+						["content"] = user
 					}
 				},
-				max_tokens = 5000,
-				stream = true,
-				temperature = 0.8
+				["max_tokens"] = 5000,
+				["stream"] = true,
+				["temperature"] = ResolveUniversalApiTemperature(settings, resolvedRoute)
 			};
-			string jsonBody = JsonConvert.SerializeObject(body);
+			ResolveUniversalThinkingSettings(settings, resolvedRoute, out var thinkingEnabled, out var effort);
+			DuelSettings.ApplyThinkingControls(body, effectiveApiUrl, modelName, thinkingEnabled, effort, out var thinkingMode);
+			string jsonBody = body.ToString(Formatting.None);
+			string requestBodyForTokenStats = jsonBody;
+			JArray tokenStatsMessages = body["messages"] as JArray;
 			StringBuilder httpLog = new StringBuilder();
 			httpLog.AppendLine("[HTTP] 请求发送到:");
 			httpLog.AppendLine("  Url: " + effectiveApiUrl);
@@ -14030,7 +14325,7 @@ public class MyBehavior : CampaignBehaviorBase
 			}
 			httpLog.AppendLine("  Route: " + resolvedRoute);
 			httpLog.AppendLine("  Model: " + modelName);
-			httpLog.AppendLine("  MaxTokens: 5000, Stream: true, Temperature: 0.8");
+			httpLog.AppendLine("  MaxTokens: 5000, Stream: true, Temperature: " + ((float)body["temperature"]).ToString("0.00") + ", Thinking: " + thinkingMode);
 			httpLog.AppendLine("  SystemPrompt:");
 			httpLog.AppendLine(sys);
 			httpLog.AppendLine("  UserInput:");
@@ -14049,14 +14344,34 @@ public class MyBehavior : CampaignBehaviorBase
 					if (!response.IsSuccessStatusCode)
 					{
 						string text = await response.Content.ReadAsStringAsync();
-						apiCallResult.StatusCode = (int)response.StatusCode;
-						apiCallResult.ResponseBody = text ?? "";
-						apiCallResult.RetryAfterSeconds = TryGetRetryAfterSeconds(response);
-						apiCallResult.IsQuotaLimit = response.StatusCode == (HttpStatusCode)429 && IsQuotaLimitResponseBody(text);
-						apiCallResult.IsRequestsPerMinuteLimit = response.StatusCode == (HttpStatusCode)429 && !apiCallResult.IsQuotaLimit && (IsRequestsPerMinuteLimitResponseBody(text) || HasRequestsPerMinuteRateLimitHeaders(response));
-						apiCallResult.IsRateLimit = response.StatusCode == (HttpStatusCode)429 || apiCallResult.IsRequestsPerMinuteLimit || (!apiCallResult.IsQuotaLimit && IsGenericRateLimitResponseBody(text));
-						apiCallResult.ErrorMessage = BuildApiCallFailureMessage(response.StatusCode, text, apiCallResult.RetryAfterSeconds, apiCallResult.IsRateLimit, apiCallResult.IsRequestsPerMinuteLimit, apiCallResult.IsQuotaLimit);
-						return apiCallResult;
+						if (response.StatusCode == HttpStatusCode.BadRequest && thinkingMode != "plain" && LooksLikeUniversalThinkingControlError(text))
+						{
+							apiLog("[HTTP] 思维链参数被接口拒绝，改用无思维链控制参数重试。");
+							response.Dispose();
+							JObject retryBody = JObject.Parse(jsonBody);
+							DuelSettings.RemoveThinkingControls(retryBody);
+							string retryJsonBody = retryBody.ToString(Formatting.None);
+							requestBodyForTokenStats = retryJsonBody;
+							using HttpRequestMessage retryRequest = new HttpRequestMessage(HttpMethod.Post, effectiveApiUrl);
+							retryRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
+							retryRequest.Content = (HttpContent)new StringContent(retryJsonBody, Encoding.UTF8, "application/json");
+							response = await DuelSettings.GlobalClient.SendAsync(retryRequest, (HttpCompletionOption)1);
+							thinkingMode += "_retry_plain";
+							apiLog("[HTTP] 重试响应状态: " + (int)response.StatusCode + " " + response.ReasonPhrase);
+							text = response.IsSuccessStatusCode ? "" : await response.Content.ReadAsStringAsync();
+						}
+						if (!response.IsSuccessStatusCode)
+						{
+							apiCallResult.StatusCode = (int)response.StatusCode;
+							apiCallResult.ResponseBody = text ?? "";
+							apiCallResult.RetryAfterSeconds = TryGetRetryAfterSeconds(response);
+							apiCallResult.IsQuotaLimit = response.StatusCode == (HttpStatusCode)429 && IsQuotaLimitResponseBody(text);
+							apiCallResult.IsRequestsPerMinuteLimit = response.StatusCode == (HttpStatusCode)429 && !apiCallResult.IsQuotaLimit && (IsRequestsPerMinuteLimitResponseBody(text) || HasRequestsPerMinuteRateLimitHeaders(response));
+							apiCallResult.IsRateLimit = response.StatusCode == (HttpStatusCode)429 || apiCallResult.IsRequestsPerMinuteLimit || (!apiCallResult.IsQuotaLimit && IsGenericRateLimitResponseBody(text));
+							apiCallResult.ErrorMessage = BuildApiCallFailureMessage(response.StatusCode, text, apiCallResult.RetryAfterSeconds, apiCallResult.IsRateLimit, apiCallResult.IsRequestsPerMinuteLimit, apiCallResult.IsQuotaLimit);
+							Logger.RecordTokenStats(Logger.EstimateTokensFromMessages(tokenStatsMessages), 0, tokenStatsMessages, "[UNIVERSAL API HTTP ERROR]\nroute=" + resolvedRoute + "\nmodel=" + modelName + "\nstatus=" + (int)response.StatusCode + " " + (response.ReasonPhrase ?? "") + "\nresponse_body=\n" + (text ?? ""), "universal_api_http_error", requestBodyForTokenStats);
+							return apiCallResult;
+						}
 					}
 					using Stream stream = await response.Content.ReadAsStreamAsync();
 					if (stream == null)
@@ -14067,6 +14382,7 @@ public class MyBehavior : CampaignBehaviorBase
 					}
 					using StreamReader reader = new StreamReader(stream);
 					StringBuilder fullContent = new StringBuilder();
+					StringBuilder rawStreamSample = new StringBuilder();
 					while (true)
 					{
 						string text;
@@ -14077,23 +14393,37 @@ public class MyBehavior : CampaignBehaviorBase
 						}
 						if (!string.IsNullOrWhiteSpace(line) && !(line == "data: [DONE]") && line.StartsWith("data: "))
 						{
+							if (rawStreamSample.Length < 3000)
+							{
+								rawStreamSample.AppendLine(line);
+							}
 							try
 							{
-								JObject json = JObject.Parse(line.Substring(6));
-								string delta = json["choices"]?[0]?["delta"]?["content"]?.ToString() ?? "";
+								string data = line.Substring(6).Trim();
+								JObject json = JObject.Parse(data);
+								string delta = ExtractUniversalStreamDelta(json);
 								fullContent.Append(delta);
+								if (string.IsNullOrEmpty(delta) && fullContent.Length == 0)
+								{
+									apiLog("[HTTP] 流片段未解析出正文，原始片段=\n" + TrimUniversalApiRawForLog(data));
+								}
 							}
 							catch (Exception ex)
 							{
 								Exception parseEx = ex;
-								apiLog("[HTTP] 流解析异常: " + parseEx.ToString());
+								apiLog("[HTTP] 流解析异常: " + parseEx + "\n原始行=\n" + TrimUniversalApiRawForLog(line));
 							}
 						}
 					}
 					string raw = fullContent.ToString();
-					apiLog("[HTTP] 流式原始内容=\n" + raw);
+					apiLog("[HTTP] 流式解析内容=\n" + raw);
+					if (string.IsNullOrWhiteSpace(raw))
+					{
+						apiLog("[HTTP] 流式解析为空，原始响应片段样本=\n" + TrimUniversalApiRawForLog(rawStreamSample.ToString()));
+					}
 					apiCallResult.Success = true;
 					apiCallResult.Content = CleanAIResponse(raw);
+					Logger.RecordTokenStats(Logger.EstimateTokensFromMessages(tokenStatsMessages), Logger.EstimateTokens(apiCallResult.Content), tokenStatsMessages, "[UNIVERSAL API HTTP]\nroute=" + resolvedRoute + "\nmodel=" + modelName + "\ncontrol_mode=" + thinkingMode + "\nai_response=\n" + (apiCallResult.Content ?? "") + "\nraw_response_sample=\n" + TrimUniversalApiRawForLog(rawStreamSample.ToString()), "universal_api", requestBodyForTokenStats);
 					return apiCallResult;
 				}
 				finally
@@ -14181,6 +14511,8 @@ public class MyBehavior : CampaignBehaviorBase
 				stringBuilder.Append(duelStakeOption.Name ?? "未知物品")
 					.Append(" x")
 					.Append(System.Math.Max(1, duelStakeOption.Count))
+					.Append(" | guidePrice=")
+					.Append(System.Math.Max(1, duelStakeOption.GuidePrice))
 					.AppendLine();
 			}
 		}
@@ -14192,6 +14524,8 @@ public class MyBehavior : CampaignBehaviorBase
 				stringBuilder.Append(duelStakeOption2.Name ?? "未知物品")
 					.Append(" x")
 					.Append(System.Math.Max(1, duelStakeOption2.Count))
+					.Append(" | guidePrice=")
+					.Append(System.Math.Max(1, duelStakeOption2.GuidePrice))
 					.AppendLine();
 			}
 		}
@@ -14333,6 +14667,8 @@ public class MyBehavior : CampaignBehaviorBase
 					.Append(string.IsNullOrWhiteSpace(item.PromptStringId) || string.Equals(item.PromptStringId, item.StringId, StringComparison.OrdinalIgnoreCase) ? "" : (" | id=" + item.PromptStringId))
 					.Append(" x")
 					.Append(Math.Max(1, item.Count))
+					.Append(" | guidePrice=")
+					.Append(Math.Max(1, item.GuidePrice))
 					.AppendLine();
 			}
 		}
@@ -14344,6 +14680,8 @@ public class MyBehavior : CampaignBehaviorBase
 				stringBuilder.Append(item2.Name ?? item2.PromptStringId ?? item2.StringId ?? "未知物品")
 					.Append(" x")
 					.Append(Math.Max(1, item2.Count))
+					.Append(" | guidePrice=")
+					.Append(Math.Max(1, item2.GuidePrice))
 					.AppendLine();
 			}
 		}
@@ -17114,6 +17452,8 @@ public class MyBehavior : CampaignBehaviorBase
 						PreviousSettlementOwnerHeroId = (material.PreviousSettlementOwnerHeroId ?? "").Trim(),
 						PreviousSettlementOwnerClanId = (material.PreviousSettlementOwnerClanId ?? "").Trim(),
 						PreviousSettlementOwnerKingdomId = (material.PreviousSettlementOwnerKingdomId ?? "").Trim(),
+						LocationText = (material.LocationText ?? "").Trim(),
+						Won = material.Won,
 						RelatedHeroIds = new List<string>((material.RelatedHeroIds ?? new List<string>()).Where((string x) => !string.IsNullOrWhiteSpace(x)).Select((string x) => x.Trim())),
 						RelatedClanIds = new List<string>((material.RelatedClanIds ?? new List<string>()).Where((string x) => !string.IsNullOrWhiteSpace(x)).Select((string x) => x.Trim())),
 						RelatedKingdomIds = new List<string>((material.RelatedKingdomIds ?? new List<string>()).Where((string x) => !string.IsNullOrWhiteSpace(x)).Select((string x) => x.Trim())),
@@ -18134,6 +18474,10 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			return BuildWeeklyPromptShortSiegeMaterial(item);
 		}
+		if (IsWeeklyPromptBattleAggregateMaterial(item))
+		{
+			return BuildWeeklyPromptShortBattleMaterial(item, group);
+		}
 		return CloneEventMaterialReference(item);
 	}
 
@@ -18233,6 +18577,17 @@ public class MyBehavior : CampaignBehaviorBase
 		string text = (material.MaterialType ?? "").Trim();
 		string text2 = (material.ActionKind ?? "").Trim();
 		return string.Equals(text, "prompt_agg_release", StringComparison.OrdinalIgnoreCase) || string.Equals(text2, "prompt_aggregate:release", StringComparison.OrdinalIgnoreCase) || string.Equals((material.Label ?? "").Trim(), "人物获释", StringComparison.OrdinalIgnoreCase);
+	}
+
+	private static bool IsWeeklyPromptBattleAggregateMaterial(EventMaterialReference material)
+	{
+		if (material == null)
+		{
+			return false;
+		}
+		string text = (material.MaterialType ?? "").Trim();
+		string text2 = (material.ActionKind ?? "").Trim();
+		return string.Equals(text, "prompt_agg_battle", StringComparison.OrdinalIgnoreCase) || string.Equals(text2, "prompt_aggregate:battle", StringComparison.OrdinalIgnoreCase) || string.Equals((material.Label ?? "").Trim(), "战场交锋", StringComparison.OrdinalIgnoreCase);
 	}
 
 	private static EventMaterialReference BuildWeeklyPromptShortCaptivityMaterial(EventMaterialReference source, WeeklyEventMaterialPreviewGroup group)
@@ -18733,6 +19088,133 @@ public class MyBehavior : CampaignBehaviorBase
 		return text.Substring(num + "结果为".Length).Trim(' ', '。', '，', ',', ';', '；');
 	}
 
+	private static EventMaterialReference BuildWeeklyPromptShortBattleMaterial(EventMaterialReference source, WeeklyEventMaterialPreviewGroup group)
+	{
+		if (source == null)
+		{
+			return null;
+		}
+		string kingdomName = ResolveKingdomDisplay(group?.KingdomId);
+		int winCount = 0;
+		int lossCount = 0;
+		int ownDied = 0;
+		int ownWounded = 0;
+		int enemyDied = 0;
+		int enemyWounded = 0;
+		foreach (string line in SplitWeeklyPromptShortArmyLines(source.SnapshotText))
+		{
+			string text = (line ?? "").Trim();
+			if (string.IsNullOrWhiteSpace(text) || text.IndexOf("事件=战场交锋", StringComparison.OrdinalIgnoreCase) < 0)
+			{
+				continue;
+			}
+			bool flag = WeeklyPromptBattleLineSideContainsKingdom(text, "胜方", kingdomName);
+			bool flag2 = WeeklyPromptBattleLineSideContainsKingdom(text, "败方", kingdomName);
+			if (!flag && !flag2)
+			{
+				continue;
+			}
+			if (flag)
+			{
+				winCount++;
+			}
+			if (flag2)
+			{
+				lossCount++;
+			}
+			if (TryParseWeeklyPromptShortBattleCasualty(text, flag ? "胜方" : "败方", out var ownKilled, out var ownInjured))
+			{
+				ownDied += ownKilled;
+				ownWounded += ownInjured;
+			}
+			if (TryParseWeeklyPromptShortBattleCasualty(text, flag ? "败方" : "胜方", out var enemyKilled, out var enemyInjured))
+			{
+				enemyDied += enemyKilled;
+				enemyWounded += enemyInjured;
+			}
+		}
+		if (winCount == 0 && lossCount == 0)
+		{
+			return null;
+		}
+		string text2 = "[战场交锋]\n- 本周战场交锋：胜利" + winCount + "场，失败" + lossCount + "场；己方伤亡" + (ownDied + ownWounded) + "人（阵亡" + ownDied + "、负伤" + ownWounded + "）；造成敌方杀伤" + (enemyDied + enemyWounded) + "人（阵亡" + enemyDied + "、负伤" + enemyWounded + "）。";
+		EventMaterialReference eventMaterialReference = CloneEventMaterialReference(source);
+		eventMaterialReference.MaterialType = "prompt_short_battle";
+		eventMaterialReference.Label = "战场交锋";
+		eventMaterialReference.SnapshotText = text2;
+		eventMaterialReference.ActionKind = "prompt_short:battle";
+		eventMaterialReference.KingdomId = (group?.KingdomId ?? eventMaterialReference.KingdomId ?? "").Trim();
+		return eventMaterialReference;
+	}
+
+	private static bool WeeklyPromptBattleLineSideContainsKingdom(string line, string sideLabel, string kingdomName)
+	{
+		string text = (kingdomName ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(line) || string.IsNullOrWhiteSpace(sideLabel) || string.IsNullOrWhiteSpace(text))
+		{
+			return false;
+		}
+		string text2 = ExtractWeeklyPromptBattlePipeField(line, sideLabel);
+		return text2.IndexOf(text, StringComparison.OrdinalIgnoreCase) >= 0;
+	}
+
+	private static bool TryParseWeeklyPromptShortBattleCasualty(string line, string sideLabel, out int died, out int wounded)
+	{
+		died = 0;
+		wounded = 0;
+		string text = ExtractWeeklyPromptBattlePipeField(line, "伤亡");
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return false;
+		}
+		string text2 = (sideLabel ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text2))
+		{
+			return false;
+		}
+		Match match = Regex.Match(text, Regex.Escape(text2) + "(?<value>[^；|]*)", RegexOptions.IgnoreCase);
+		if (!match.Success)
+		{
+			return false;
+		}
+		string value = match.Groups["value"]?.Value ?? "";
+		Match match2 = Regex.Match(value, "阵亡(?<died>\\d+)、负伤(?<wounded>\\d+)", RegexOptions.IgnoreCase);
+		if (!match2.Success)
+		{
+			return false;
+		}
+		int.TryParse(match2.Groups["died"]?.Value ?? "0", out died);
+		int.TryParse(match2.Groups["wounded"]?.Value ?? "0", out wounded);
+		return true;
+	}
+
+	private static string ExtractWeeklyPromptBattlePipeField(string line, string fieldName)
+	{
+		string text = (line ?? "").Trim();
+		string text2 = (fieldName ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text) || string.IsNullOrWhiteSpace(text2))
+		{
+			return "";
+		}
+		foreach (string item in text.Split(new char[1] { '|' }, StringSplitOptions.RemoveEmptyEntries))
+		{
+			string text3 = item.Trim().TrimStart('-', ' ');
+			if (text3.StartsWith(text2 + "=", StringComparison.OrdinalIgnoreCase))
+			{
+				return text3.Substring(text2.Length + 1).Trim();
+			}
+			if (text3.StartsWith(text2 + "：", StringComparison.OrdinalIgnoreCase))
+			{
+				return text3.Substring(text2.Length + 1).Trim();
+			}
+			if (text3.StartsWith(text2 + ":", StringComparison.OrdinalIgnoreCase))
+			{
+				return text3.Substring(text2.Length + 1).Trim();
+			}
+		}
+		return "";
+	}
+
 	private static string ExtractWeeklyPromptShortLineBody(string line)
 	{
 		string text = (line ?? "").Trim();
@@ -19171,6 +19653,8 @@ public class MyBehavior : CampaignBehaviorBase
 			PreviousSettlementOwnerHeroId = (material.PreviousSettlementOwnerHeroId ?? "").Trim(),
 			PreviousSettlementOwnerClanId = (material.PreviousSettlementOwnerClanId ?? "").Trim(),
 			PreviousSettlementOwnerKingdomId = (material.PreviousSettlementOwnerKingdomId ?? "").Trim(),
+			LocationText = (material.LocationText ?? "").Trim(),
+			Won = material.Won,
 			RelatedHeroIds = new List<string>((material.RelatedHeroIds ?? new List<string>()).Where((string x) => !string.IsNullOrWhiteSpace(x)).Select((string x) => x.Trim())),
 			RelatedClanIds = new List<string>((material.RelatedClanIds ?? new List<string>()).Where((string x) => !string.IsNullOrWhiteSpace(x)).Select((string x) => x.Trim())),
 			RelatedKingdomIds = new List<string>((material.RelatedKingdomIds ?? new List<string>()).Where((string x) => !string.IsNullOrWhiteSpace(x)).Select((string x) => x.Trim())),
@@ -19261,6 +19745,11 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private static string BuildWeeklyPromptAggregateEventKey(EventMaterialReference material)
 	{
+		string text3 = BuildWeeklyPromptBattleEventKey(material);
+		if (!string.IsNullOrWhiteSpace(text3))
+		{
+			return text3;
+		}
 		string text = NormalizeWeeklyPromptAggregateStableKey(material?.ActionStableKey);
 		if (!string.IsNullOrWhiteSpace(text))
 		{
@@ -19270,12 +19759,65 @@ public class MyBehavior : CampaignBehaviorBase
 		return text.Trim();
 	}
 
+	private static string BuildWeeklyPromptBattleEventKey(EventMaterialReference material)
+	{
+		if (material == null)
+		{
+			return "";
+		}
+		string text = (material.ActionKind ?? "").Trim();
+		if (!string.Equals(text, "map_event", StringComparison.OrdinalIgnoreCase) && !string.Equals(text, "map_event_aftermath", StringComparison.OrdinalIgnoreCase))
+		{
+			return "";
+		}
+		string text2 = (material.ActionStableKey ?? "").Trim();
+		if (text2.IndexOf(":side:", StringComparison.OrdinalIgnoreCase) >= 0)
+		{
+			text2 = NormalizeWeeklyPromptAggregateStableKey(text2);
+			if (!string.IsNullOrWhiteSpace(text2) && text2.StartsWith("mapevent:", StringComparison.OrdinalIgnoreCase) && text2.Length > "mapevent:".Length)
+			{
+				return text2;
+			}
+		}
+		List<string> list = new List<string>();
+		AddUniqueId(list, (material.ActorKingdomId ?? "").Trim());
+		AddUniqueId(list, (material.TargetKingdomId ?? "").Trim());
+		list.Sort(StringComparer.OrdinalIgnoreCase);
+		List<string> list2 = new List<string>
+		{
+			ExtractWeeklyPromptBattleTroopText(material.SnapshotText, ownSide: true),
+			ExtractWeeklyPromptBattleTroopText(material.SnapshotText, ownSide: false)
+		};
+		list2 = list2.Where((string x) => !string.IsNullOrWhiteSpace(x)).Select(NormalizeWeeklyPromptKeyPart).OrderBy((string x) => x, StringComparer.OrdinalIgnoreCase).ToList();
+		List<string> list3 = new List<string>
+		{
+			ExtractWeeklyPromptBattleMarkedText(material.SnapshotText, "我方死伤"),
+			ExtractWeeklyPromptBattleMarkedText(material.SnapshotText, "敌方死伤")
+		};
+		list3 = list3.Where((string x) => !string.IsNullOrWhiteSpace(x)).Select(NormalizeWeeklyPromptKeyPart).OrderBy((string x) => x, StringComparer.OrdinalIgnoreCase).ToList();
+		string text3 = string.Join("~", new string[5]
+		{
+			(material.ActionDay ?? -1).ToString(),
+			NormalizeWeeklyPromptKeyPart(material.LocationText),
+			NormalizeWeeklyPromptKeyPart(string.Join("_", list)),
+			string.Join("_", list2),
+			string.Join("_", list3)
+		});
+		text3 = text3.Trim('~', '_');
+		return string.IsNullOrWhiteSpace(text3) ? "" : ("battle:" + text3);
+	}
+
 	private static string NormalizeWeeklyPromptAggregateStableKey(string stableKey)
 	{
 		string text = (stableKey ?? "").Trim().ToLowerInvariant();
 		if (string.IsNullOrWhiteSpace(text))
 		{
 			return "";
+		}
+		string text2 = NormalizeWeeklyPromptMapEventStableKey(text);
+		if (!string.IsNullOrWhiteSpace(text2))
+		{
+			return text2;
 		}
 		string[] array = new string[8] { ":captor", ":prisoner", ":gain", ":loss", ":capture", ":chooser", ":killer", ":clan" };
 		foreach (string value in array)
@@ -19290,6 +19832,39 @@ public class MyBehavior : CampaignBehaviorBase
 			return text.Substring(0, text.Length - ":proposer".Length);
 		}
 		return text;
+	}
+
+	private static string NormalizeWeeklyPromptMapEventStableKey(string stableKey)
+	{
+		string text = (stableKey ?? "").Trim().ToLowerInvariant();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return "";
+		}
+		string text2 = "";
+		if (text.StartsWith("mapevent_aftermath:", StringComparison.OrdinalIgnoreCase))
+		{
+			text2 = text.Substring("mapevent_aftermath:".Length);
+		}
+		else if (text.StartsWith("mapevent:", StringComparison.OrdinalIgnoreCase))
+		{
+			text2 = text.Substring("mapevent:".Length);
+		}
+		if (string.IsNullOrWhiteSpace(text2))
+		{
+			return "";
+		}
+		int num = text2.IndexOf(":side:", StringComparison.OrdinalIgnoreCase);
+		if (num > 0)
+		{
+			return "mapevent:" + text2.Substring(0, num).Trim();
+		}
+		string[] array = text2.Split(new char[1] { ':' }, StringSplitOptions.None);
+		if (array.Length <= 0 || string.IsNullOrWhiteSpace(array[0]))
+		{
+			return "";
+		}
+		return "mapevent:" + array[0].Trim();
 	}
 
 	private EventMaterialReference BuildWeeklyPromptAggregateCategoryMaterial(WeeklyEventMaterialPreviewGroup group, string category, Dictionary<string, List<EventMaterialReference>> eventBuckets)
@@ -19410,28 +19985,306 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			return "";
 		}
-		EventMaterialReference eventMaterialReference = list.FirstOrDefault((EventMaterialReference x) => string.Equals((x.ActionKind ?? "").Trim(), "map_event", StringComparison.OrdinalIgnoreCase)) ?? list[0];
-		string text = BuildWeeklyPromptAggregateActorAffiliationText(eventMaterialReference);
-		if (string.IsNullOrWhiteSpace(text))
+		List<EventMaterialReference> list2 = list.Where((EventMaterialReference x) => string.Equals((x.ActionKind ?? "").Trim(), "map_event", StringComparison.OrdinalIgnoreCase)).ToList();
+		if (list2.Count == 0)
 		{
-			text = "某支部队";
+			list2 = list;
 		}
+		EventMaterialReference eventMaterialReference = list2.FirstOrDefault((EventMaterialReference x) => GetWeeklyPromptBattleMaterialWon(x) == true) ?? list2.FirstOrDefault() ?? list[0];
 		string text2 = BuildWeeklyPromptAggregateBattleLocationText(eventMaterialReference);
-		string text3 = BuildWeeklyPromptAggregateBattleOutcomeText(eventMaterialReference);
-		string text4;
+		List<EventMaterialReference> winners = list2.Where((EventMaterialReference x) => GetWeeklyPromptBattleMaterialWon(x) == true).ToList();
+		List<EventMaterialReference> losers = list2.Where((EventMaterialReference x) => GetWeeklyPromptBattleMaterialWon(x) == false).ToList();
+		List<string> fields = new List<string>();
+		fields.Add("事件=战场交锋");
 		if (!string.IsNullOrWhiteSpace(text2))
 		{
-			text4 = text + "近期在" + text2 + "与敌军交战";
+			fields.Add("地点=" + text2);
 		}
-		else
+		if (winners.Count > 0 || losers.Count > 0)
 		{
-			text4 = text + "近期与敌军交战";
+			fields.Add("结果=" + BuildWeeklyPromptBattleOutcomeField(winners, losers));
 		}
+		string text3 = BuildWeeklyPromptBattleSideField("胜方", winners, losers);
 		if (!string.IsNullOrWhiteSpace(text3))
 		{
-			text4 = text4 + "，" + text3;
+			fields.Add(text3);
 		}
-		return "事件=战场交锋：" + text4 + "。";
+		string text4 = BuildWeeklyPromptBattleSideField("败方", losers, winners);
+		if (!string.IsNullOrWhiteSpace(text4))
+		{
+			fields.Add(text4);
+		}
+		string text5 = BuildWeeklyPromptBattleTroopField(winners, losers);
+		if (!string.IsNullOrWhiteSpace(text5))
+		{
+			fields.Add(text5);
+		}
+		string text6 = BuildWeeklyPromptBattleCasualtyField(winners, losers);
+		if (!string.IsNullOrWhiteSpace(text6))
+		{
+			fields.Add(text6);
+		}
+		return string.Join("|", fields);
+	}
+
+	private static bool? GetWeeklyPromptBattleMaterialWon(EventMaterialReference material)
+	{
+		if (material == null)
+		{
+			return null;
+		}
+		string text = (material.SnapshotText ?? "").Trim();
+		if (!string.IsNullOrWhiteSpace(text))
+		{
+			if (text.IndexOf("败给了", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("失利", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("遭遇了失利", StringComparison.OrdinalIgnoreCase) >= 0)
+			{
+				return false;
+			}
+			if (text.IndexOf("击败了", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("获胜", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("击退了", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("得手", StringComparison.OrdinalIgnoreCase) >= 0)
+			{
+				return true;
+			}
+		}
+		return material.Won;
+	}
+
+	private static string BuildWeeklyPromptBattleOutcomeField(List<EventMaterialReference> winners, List<EventMaterialReference> losers)
+	{
+		string text = BuildWeeklyPromptBattleSideShortName(winners, losers);
+		string text2 = BuildWeeklyPromptBattleSideShortName(losers, winners);
+		if (!string.IsNullOrWhiteSpace(text) && !string.IsNullOrWhiteSpace(text2))
+		{
+			return text + "击败" + text2;
+		}
+		if (!string.IsNullOrWhiteSpace(text))
+		{
+			return text + "取得胜利";
+		}
+		if (!string.IsNullOrWhiteSpace(text2))
+		{
+			return text2 + "遭遇失利";
+		}
+		return "胜负已分";
+	}
+
+	private static string BuildWeeklyPromptBattleSideShortName(List<EventMaterialReference> ownMaterials, List<EventMaterialReference> oppositeMaterials)
+	{
+		List<string> list = BuildWeeklyPromptBattleSideKingdomNames(ownMaterials, oppositeMaterials);
+		if (list.Count > 0)
+		{
+			return string.Join("、", list.Take(2));
+		}
+		List<string> list2 = BuildWeeklyPromptBattleSideClanNames(ownMaterials, oppositeMaterials);
+		if (list2.Count > 0)
+		{
+			return string.Join("、", list2.Take(2));
+		}
+		List<string> list3 = BuildWeeklyPromptBattleSideHeroNames(ownMaterials, oppositeMaterials);
+		return (list3.Count > 0) ? string.Join("、", list3.Take(2)) : "";
+	}
+
+	private static string BuildWeeklyPromptBattleSideField(string label, List<EventMaterialReference> ownMaterials, List<EventMaterialReference> oppositeMaterials)
+	{
+		List<string> list = new List<string>();
+		List<string> list2 = BuildWeeklyPromptBattleSideKingdomNames(ownMaterials, oppositeMaterials);
+		if (list2.Count > 0)
+		{
+			list.Add("王国=" + string.Join("、", list2));
+		}
+		List<string> list3 = BuildWeeklyPromptBattleSideClanNames(ownMaterials, oppositeMaterials);
+		if (list3.Count > 0)
+		{
+			list.Add("家族=" + string.Join("、", list3));
+		}
+		List<string> list4 = BuildWeeklyPromptBattleSideHeroNames(ownMaterials, oppositeMaterials);
+		if (list4.Count > 0)
+		{
+			list.Add("人物=" + string.Join("、", list4.Take(8)));
+		}
+		if (list.Count == 0)
+		{
+			return "";
+		}
+		return label + "：" + string.Join("；", list);
+	}
+
+	private static List<string> BuildWeeklyPromptBattleSideKingdomNames(List<EventMaterialReference> ownMaterials, List<EventMaterialReference> oppositeMaterials)
+	{
+		List<string> list = ResolveKingdomNames(CollectMaterialIds(ownMaterials, (EventMaterialReference x) => new string[1] { x.ActorKingdomId }, null));
+		if (list.Count > 0)
+		{
+			return list;
+		}
+		return ResolveKingdomNames(CollectMaterialIds(oppositeMaterials, (EventMaterialReference x) => new string[1] { x.TargetKingdomId }, null));
+	}
+
+	private static List<string> BuildWeeklyPromptBattleSideClanNames(List<EventMaterialReference> ownMaterials, List<EventMaterialReference> oppositeMaterials)
+	{
+		List<string> list = ResolveClanNames(CollectMaterialIds(ownMaterials, (EventMaterialReference x) => new string[1] { x.ActorClanId }, null));
+		if (list.Count > 0)
+		{
+			return list;
+		}
+		return ResolveClanNames(CollectMaterialIds(oppositeMaterials, (EventMaterialReference x) => new string[1] { x.TargetClanId }, null));
+	}
+
+	private static List<string> BuildWeeklyPromptBattleSideHeroNames(List<EventMaterialReference> ownMaterials, List<EventMaterialReference> oppositeMaterials)
+	{
+		List<string> list = new List<string>();
+		foreach (string item in ResolveHeroNames(CollectMaterialIds(ownMaterials, (EventMaterialReference x) => new string[1] { x.ActorHeroId }, null)))
+		{
+			AddUniqueId(list, item);
+		}
+		foreach (string item2 in ExtractWeeklyPromptBattleHeroNames(ownMaterials, "我方领主"))
+		{
+			AddUniqueId(list, item2);
+		}
+		if (list.Count > 0)
+		{
+			return list;
+		}
+		foreach (string item3 in ResolveHeroNames(CollectMaterialIds(oppositeMaterials, (EventMaterialReference x) => new string[1] { x.TargetHeroId }, null)).Concat(ExtractWeeklyPromptBattleHeroNames(oppositeMaterials, "敌方领主")))
+		{
+			AddUniqueId(list, item3);
+		}
+		return list;
+	}
+
+	private static IEnumerable<string> ExtractWeeklyPromptBattleHeroNames(List<EventMaterialReference> materials, string marker)
+	{
+		List<string> list = new List<string>();
+		foreach (EventMaterialReference item in materials ?? new List<EventMaterialReference>())
+		{
+			string text = ExtractWeeklyPromptBattleMarkedText(item?.SnapshotText, marker);
+			if (string.IsNullOrWhiteSpace(text))
+			{
+				continue;
+			}
+			foreach (string item2 in text.Split(new char[5] { '、', ',', '，', ';', '；' }, StringSplitOptions.RemoveEmptyEntries))
+			{
+				string text2 = item2.Trim();
+				if (!string.IsNullOrWhiteSpace(text2))
+				{
+					AddUniqueId(list, text2);
+				}
+			}
+		}
+		return list;
+	}
+
+	private static string BuildWeeklyPromptBattleTroopField(List<EventMaterialReference> winners, List<EventMaterialReference> losers)
+	{
+		string text = ExtractWeeklyPromptBattleTroopText(winners, ownSide: true);
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			text = ExtractWeeklyPromptBattleTroopText(losers, ownSide: false);
+		}
+		string text2 = ExtractWeeklyPromptBattleTroopText(losers, ownSide: true);
+		if (string.IsNullOrWhiteSpace(text2))
+		{
+			text2 = ExtractWeeklyPromptBattleTroopText(winners, ownSide: false);
+		}
+		if (string.IsNullOrWhiteSpace(text) && string.IsNullOrWhiteSpace(text2))
+		{
+			return "";
+		}
+		return "战前投入兵力=胜方" + (string.IsNullOrWhiteSpace(text) ? "不详" : text) + "；败方" + (string.IsNullOrWhiteSpace(text2) ? "不详" : text2);
+	}
+
+	private static string BuildWeeklyPromptBattleCasualtyField(List<EventMaterialReference> winners, List<EventMaterialReference> losers)
+	{
+		string text = ExtractWeeklyPromptBattleCasualtyText(winners, ownSide: true);
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			text = ExtractWeeklyPromptBattleCasualtyText(losers, ownSide: false);
+		}
+		string text2 = ExtractWeeklyPromptBattleCasualtyText(losers, ownSide: true);
+		if (string.IsNullOrWhiteSpace(text2))
+		{
+			text2 = ExtractWeeklyPromptBattleCasualtyText(winners, ownSide: false);
+		}
+		if (string.IsNullOrWhiteSpace(text) && string.IsNullOrWhiteSpace(text2))
+		{
+			return "";
+		}
+		return "伤亡=胜方" + (string.IsNullOrWhiteSpace(text) ? "不详" : text) + "；败方" + (string.IsNullOrWhiteSpace(text2) ? "不详" : text2);
+	}
+
+	private static string ExtractWeeklyPromptBattleTroopText(List<EventMaterialReference> materials, bool ownSide)
+	{
+		foreach (EventMaterialReference item in materials ?? new List<EventMaterialReference>())
+		{
+			string text = ExtractWeeklyPromptBattleTroopText(item?.SnapshotText, ownSide);
+			if (!string.IsNullOrWhiteSpace(text))
+			{
+				return text.Trim();
+			}
+		}
+		return "";
+	}
+
+	private static string ExtractWeeklyPromptBattleTroopText(string text, bool ownSide)
+	{
+		string text2 = (text ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text2))
+		{
+			return "";
+		}
+		Match match = Regex.Match(text2, "战前投入兵力：我方(?<own>[^；。]+)；敌方(?<enemy>[^。；]+)", RegexOptions.IgnoreCase);
+		if (!match.Success)
+		{
+			return "";
+		}
+		string value = ownSide ? (match.Groups["own"]?.Value ?? "") : (match.Groups["enemy"]?.Value ?? "");
+		return (value ?? "").Trim();
+	}
+
+	private static string ExtractWeeklyPromptBattleCasualtyText(List<EventMaterialReference> materials, bool ownSide)
+	{
+		string marker = ownSide ? "我方死伤" : "敌方死伤";
+		foreach (EventMaterialReference item in materials ?? new List<EventMaterialReference>())
+		{
+			string text = ExtractWeeklyPromptBattleMarkedText(item?.SnapshotText, marker);
+			if (!string.IsNullOrWhiteSpace(text))
+			{
+				return text.Trim();
+			}
+		}
+		return "";
+	}
+
+	private static string ExtractWeeklyPromptBattleMarkedText(string text, string marker)
+	{
+		string text2 = (text ?? "").Trim();
+		string text3 = (marker ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text2) || string.IsNullOrWhiteSpace(text3))
+		{
+			return "";
+		}
+		int num = text2.IndexOf(text3, StringComparison.OrdinalIgnoreCase);
+		if (num < 0)
+		{
+			return "";
+		}
+		num += text3.Length;
+		while (num < text2.Length && (text2[num] == '：' || text2[num] == ':' || text2[num] == ' '))
+		{
+			num++;
+		}
+		int num2 = text2.Length;
+		foreach (char value in new char[4] { '。', '；', ';', '\n' })
+		{
+			int num3 = text2.IndexOf(value, num);
+			if (num3 >= num && num3 < num2)
+			{
+				num2 = num3;
+			}
+		}
+		if (num2 <= num)
+		{
+			return "";
+		}
+		return text2.Substring(num, num2 - num).Trim();
 	}
 
 	private string BuildWeeklyPromptAggregateGenericLine(List<EventMaterialReference> materials)
@@ -20301,7 +21154,32 @@ public class MyBehavior : CampaignBehaviorBase
 		AppendWeeklyPromptAggregateField(list, "失去者王国", ResolveKingdomNames(list6));
 		List<string> list7 = materials.Select((EventMaterialReference x) => ParseWeeklyPromptSettlementChangeDetail(x?.ActionStableKey)).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
 		AppendWeeklyPromptAggregateField(list, "方式", list7);
+		List<string> list8 = BuildWeeklyPromptSettlementOwnerChangeNatureLabels(list7);
+		AppendWeeklyPromptAggregateField(list, "事实约束", list8);
 		return string.Join("|", list);
+	}
+
+	private static List<string> BuildWeeklyPromptSettlementOwnerChangeNatureLabels(List<string> detailLabels)
+	{
+		List<string> list = new List<string>();
+		foreach (string item in detailLabels ?? new List<string>())
+		{
+			string text = (item ?? "").Trim();
+			if (string.IsNullOrWhiteSpace(text))
+			{
+				continue;
+			}
+			if (text.IndexOf("交易", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("买卖", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("易物", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("非攻城", StringComparison.OrdinalIgnoreCase) >= 0)
+			{
+				AddUniqueId(list, "这是交易/买卖导致的和平移交，不是攻城夺取");
+				continue;
+			}
+			if (text.IndexOf("围城", StringComparison.OrdinalIgnoreCase) >= 0)
+			{
+				AddUniqueId(list, "这是围城或攻城导致的军事易主");
+			}
+		}
+		return list;
 	}
 
 	private string BuildWeeklyPromptAggregateClanChangeLine(List<EventMaterialReference> materials)
@@ -21093,7 +21971,7 @@ public class MyBehavior : CampaignBehaviorBase
 		case "BySiege":
 			return "围城";
 		case "ByBarter":
-			return "易物";
+			return "交易/买卖移交（非攻城）";
 		case "ByLeaveFaction":
 			return "脱离王国";
 		case "ByKingDecision":
@@ -22798,6 +23676,7 @@ public class MyBehavior : CampaignBehaviorBase
 		stringBuilder.AppendLine("3. 如果素材偏零碎，应提炼成局势观察；如果素材很多，应归纳成若干主线。");
 		stringBuilder.AppendLine("4. 文风应像编年史、政局纪要或贵族周报，清楚、流利、克制，不要写成小说对白。");
 		stringBuilder.AppendLine("5. 不要使用系统术语、字段名、StableKey、素材标签或开发者说明。");
+		stringBuilder.AppendLine("5.1 定居点易主必须遵循素材中的方式：若素材写明交易/买卖移交或非攻城，不得写成攻陷、攻下、夺城或围城胜利。");
 		stringBuilder.AppendLine("5.5 军事胜利通常提升稳定度，军事失利通常降低稳定度（仅在素材支持时）。");
 		if (flag2)
 		{
@@ -22857,6 +23736,7 @@ public class MyBehavior : CampaignBehaviorBase
 		stringBuilder.AppendLine("2. 标题和短摘要可以优化，但不要改变事件性质。");
 		stringBuilder.AppendLine("3. 正文要像编年史、政局纪要或贵族周报，清楚、流利、克制。");
 		stringBuilder.AppendLine("4. 不要使用系统术语、字段名、StableKey、素材标签或开发者说明。");
+		stringBuilder.AppendLine("4.1 定居点易主必须遵循素材中的方式：若素材写明交易/买卖移交或非攻城，不得写成攻陷、攻下、夺城或围城胜利。");
 		stringBuilder.AppendLine(" ");
 		stringBuilder.AppendLine("篇幅要求：");
 		stringBuilder.AppendLine($"- 当前档位：{weeklyReportPromptProfile.Label}");
@@ -23070,6 +23950,7 @@ public class MyBehavior : CampaignBehaviorBase
 		stringBuilder.AppendLine("3. 不要编造输入素材中没有明确支持的核心事实。");
 		stringBuilder.AppendLine("4. 文风应像编年史、政局纪要或贵族周报，清楚、流利、克制。");
 		stringBuilder.AppendLine("5. 不要使用系统术语、字段名、StableKey、素材标签或开发者说明。");
+		stringBuilder.AppendLine("5.1 定居点易主必须遵循素材中的方式：若素材写明交易/买卖移交或非攻城，不得写成攻陷、攻下、夺城或围城胜利。");
 		if (flag)
 		{
 			stringBuilder.AppendLine("6. 本请求只做短周报，短摘要要紧凑保留事实锚点，严禁扩写成正文。");
@@ -23567,6 +24448,8 @@ public class MyBehavior : CampaignBehaviorBase
 				PreviousSettlementOwnerHeroId = (x.PreviousSettlementOwnerHeroId ?? "").Trim(),
 				PreviousSettlementOwnerClanId = (x.PreviousSettlementOwnerClanId ?? "").Trim(),
 				PreviousSettlementOwnerKingdomId = (x.PreviousSettlementOwnerKingdomId ?? "").Trim(),
+				LocationText = (x.LocationText ?? "").Trim(),
+				Won = x.Won,
 				RelatedHeroIds = new List<string>((x.RelatedHeroIds ?? new List<string>()).Where((string y) => !string.IsNullOrWhiteSpace(y)).Select((string y) => y.Trim())),
 				RelatedClanIds = new List<string>((x.RelatedClanIds ?? new List<string>()).Where((string y) => !string.IsNullOrWhiteSpace(y)).Select((string y) => y.Trim())),
 				RelatedKingdomIds = new List<string>((x.RelatedKingdomIds ?? new List<string>()).Where((string y) => !string.IsNullOrWhiteSpace(y)).Select((string y) => y.Trim())),

@@ -554,7 +554,7 @@ public static class Logger
 		}
 	}
 
-	public static void RecordTokenStats(int inputTokens, int outputTokens, IEnumerable<object> messages = null, string outputContent = null, string mode = null)
+	public static void RecordTokenStats(int inputTokens, int outputTokens, IEnumerable<object> messages = null, string outputContent = null, string mode = null, string requestBody = null)
 	{
 		try
 		{
@@ -575,12 +575,18 @@ public static class Logger
 			string text2 = (string.IsNullOrWhiteSpace(currentTraceId) ? "" : (" trace=" + currentTraceId));
 			string text3 = (string.IsNullOrWhiteSpace(mode) ? "" : (" mode=" + mode.Trim()));
 			string value = $"[{text}] in={inputTokens} out={outputTokens}{text2}{text3}";
+			string value4 = NormalizeTokenContent(requestBody);
 			string value2 = BuildMessagesDump(messages);
 			string value3 = NormalizeTokenContent(outputContent);
 			lock (_fileLock)
 			{
 				StringBuilder stringBuilder = new StringBuilder();
 				stringBuilder.AppendLine(value);
+				if (!string.IsNullOrWhiteSpace(value4))
+				{
+					stringBuilder.AppendLine("REQUEST_BODY:");
+					stringBuilder.AppendLine(value4);
+				}
 				if (!string.IsNullOrWhiteSpace(value2))
 				{
 					stringBuilder.AppendLine("INPUT:");

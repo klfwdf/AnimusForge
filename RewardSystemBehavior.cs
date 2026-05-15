@@ -53,6 +53,8 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 
 		public int Count { get; set; }
 
+		public int GuidePrice { get; set; }
+
 		public EquipmentElement EquipmentElement { get; set; }
 
 		public bool IsPrivateEquipment { get; set; }
@@ -4653,6 +4655,40 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		return price > 0;
 	}
 
+	private static int ApplyItemModifierPriceMultiplier(int unitPrice, EquipmentElement equipmentElement)
+	{
+		int num = Math.Max(1, unitPrice);
+		try
+		{
+			ItemModifier itemModifier = equipmentElement.ItemModifier;
+			if (itemModifier != null)
+			{
+				num = Math.Max(1, (int)Math.Round((float)num * itemModifier.PriceMultiplier, MidpointRounding.AwayFromZero));
+			}
+		}
+		catch
+		{
+		}
+		return num;
+	}
+
+	private int GetGuidePriceForRewardItem(Hero hero, ItemObject item, EquipmentElement equipmentElement)
+	{
+		try
+		{
+			if (item == null)
+			{
+				return 0;
+			}
+			ItemGuidePriceInfo guidePriceForItemNearHero = GetGuidePriceForItemNearHero(hero ?? Hero.MainHero, item);
+			return ApplyItemModifierPriceMultiplier(Math.Max(1, guidePriceForItemNearHero.UnitPrice), equipmentElement);
+		}
+		catch
+		{
+			return Math.Max(1, item?.Value ?? 1);
+		}
+	}
+
 	private static bool MatchesItemLookupToken(EquipmentElement equipmentElement, string itemToken)
 	{
 		ItemObject item = equipmentElement.Item;
@@ -5932,6 +5968,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 					ModifierStringId = equipmentElement.ItemModifier?.StringId ?? "",
 					Name = "[城镇市场] " + BuildSettlementMerchantDisplayName(equipmentElement),
 					Count = 0,
+					GuidePrice = TryGetSettlementBuyPrice(settlement, equipmentElement, out var notableMarketPrice) ? Math.Max(1, notableMarketPrice) : GetGuidePriceForRewardItem(hero, item, equipmentElement),
 					EquipmentElement = equipmentElement
 				});
 			}
@@ -6022,6 +6059,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 						ModifierStringId = (equipmentElement.ItemModifier?.StringId ?? ""),
 						Name = BuildSettlementMerchantDisplayName(equipmentElement),
 						Count = 0,
+						GuidePrice = TryGetSettlementBuyPrice(settlement, equipmentElement, out var merchantInventoryPrice) ? Math.Max(1, merchantInventoryPrice) : Math.Max(1, item.Value),
 						EquipmentElement = equipmentElement
 					});
 				}
@@ -6091,6 +6129,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 							StringId = item.StringId,
 							Name = (equipmentElement.GetModifiedItemName()?.ToString() ?? item.Name?.ToString() ?? item.StringId),
 							Count = amount,
+							GuidePrice = GetGuidePriceForRewardItem(hero, item, equipmentElement),
 							EquipmentElement = equipmentElement
 						});
 					}
@@ -6164,6 +6203,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 					StringId = item.StringId,
 					Name = (equipmentElement.GetModifiedItemName()?.ToString() ?? item.Name?.ToString() ?? item.StringId),
 					Count = 1,
+					GuidePrice = GetGuidePriceForRewardItem(hero, item, equipmentElement),
 					EquipmentElement = equipmentElement,
 					IsPrivateEquipment = !useCivilianEquipment
 				});
@@ -6214,6 +6254,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 					StringId = item.StringId,
 					Name = itemName,
 					Count = 1,
+					GuidePrice = Math.Max(1, item.Value),
 					EquipmentElement = equipmentElement
 				});
 			}
@@ -6448,6 +6489,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 					ModifierStringId = equipmentElement.ItemModifier?.StringId ?? "",
 					Name = BuildSettlementMerchantDisplayName(equipmentElement),
 					Count = 0,
+					GuidePrice = TryGetSettlementBuyPrice(settlement, equipmentElement, out var merchantPostprocessPrice) ? Math.Max(1, merchantPostprocessPrice) : Math.Max(1, item.Value),
 					EquipmentElement = equipmentElement
 				});
 			}
@@ -6524,6 +6566,8 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				.Append(GetItemPromptTypeLabel(item.Item))
 				.Append(" | x")
 				.Append(Math.Max(1, item.Count))
+				.Append(" | inventoryUnitValue=")
+				.Append(Math.Max(1, GetVisibleEquipmentActualUnitValue(item)))
 				.AppendLine();
 			num++;
 			if (num >= Math.Max(1, maxItems))

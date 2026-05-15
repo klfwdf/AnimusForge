@@ -6,9 +6,17 @@
 
 场景内 NPC 命令移动必须以 `Agent` 为目标节点，不要以坐标点作为主目标节点。
 
-原因很直接：坐标点看起来能触发移动命令，但在村庄、城市、城堡这类复杂 scene 中，坐标很容易和导航网格、门、楼层、室内外、刷出点、代理 NPC、原版日程 AI 脱节。结果就是“命令发出去了”，但 NPC 实际移动不到、移动错、移动后无法继续会话，或后续机制找不到正确对象。
+原因很直接：在村庄、城市、城堡这类复杂 scene 中，直接把坐标当目标节点时，NPC 往往根本不会实际移动。表面上移动命令已经触发，但 Agent 没有可靠的场景目标对象可追踪，结果就是站在原地，后续也无法稳定判断“是否到达”“该由谁继续会话”“谁要返回原岗位”。
 
-正确做法是围绕 `Agent` / `AgentIndex` / `LocationCharacter` 建模，把坐标只当作临时路径点、站位或距离判断，不当作机制身份。
+正确做法是围绕 `Agent` / `AgentIndex` / `LocationCharacter` 建模，把坐标只当作临时路径点、站位或距离判断，不当作机制身份。如果确实需要“走到某个坐标”的效果，应创建一个隐藏/隐形的代理 `Agent` 放在目标位置，让 NPC 以这个代理 `Agent` 为目标节点；也就是说，用隐形 Agent 承载坐标，而不是让移动机制直接追裸坐标。
+
+## 名词解释
+
+- `Agent`：当前 mission 场景里真实存在、能被 AI 控制的实体。玩家、NPC、士兵、临时代理都可以是 Agent。场景内移动命令应尽量追踪 Agent。
+- `AgentIndex`：当前 mission 中某个 Agent 的运行时编号。它不是永久 ID，只在当前场景/当前 mission 内有效。用它做状态机 key，可以在后续 tick、TTS 结束、抵达、取消、返回时找回同一个场景实体。
+- `LocationCharacter`：城镇/村庄/城堡 location 系统里的“这个地点中的角色槽位/角色记录”。它比 Agent 更偏向场景刷人和地点安排，可以用来重新解析当前场景里的 Agent，或处理跨 location 的传唤、门口代理和返回岗位。
+
+简单理解：`LocationCharacter` 更像“这个场景地点里应该存在的某个人”，`Agent` 是“他当前在场景里生成出来的实体”，`AgentIndex` 是“这个实体当前这局 mission 的编号”。
 
 ## 参考话题
 
@@ -84,6 +92,8 @@
 
    不可以用坐标替代目标身份。
 
+   如果需求本质上是“移动到某个固定点”，也要把这个固定点包装成隐藏/隐形 `Agent` 或门口 proxy agent，再让行动 NPC 面向这个 Agent 执行移动。坐标是 proxy 的出生/摆放依据，不是命令目标。
+
 5. 状态机绑定 AgentIndex。
    guide、summon、follow、return、arrival speech、cancel 都要以 `AgentIndex` 为 key。不要用坐标作为 session key。
 
@@ -92,6 +102,17 @@
 
 7. 会话恢复也按 Agent。
    传唤后的会面、结束会面 `[END]`、返回岗位，都要能通过 `TryGetSceneSummonConversationSessionForAgentIndex(...)` 找回当前会话对象。
+
+8. 场景出口、门、Passage 不要直接当最终目标节点。
+   门和场景出口更像交互/切换/通道对象，不是稳定的 NPC 目标实体。直接把门当目标，可能出现 NPC 站住不动、卡在交互点、触发错误的场景切换意图、抵达判断不稳定，或后续没有可恢复的会话对象。
+
+   如果目标是“带玩家到门口”或“去某个出口附近”，做法应是：
+   - 找到门/Passage 附近一个可用等待点。
+   - 在等待点创建隐藏/隐形 proxy Agent，或复用已有门口 proxy agent。
+   - 让行动 NPC 以 proxy Agent 为目标节点移动。
+   - 抵达、台词、返回和清理都按行动 NPC 的 `AgentIndex` 与 proxy Agent 状态机处理。
+
+   门/Passage 可以用来计算 proxy 的位置和跨 location 路径，但不要直接作为 movement target 的身份。
 
 ## 新增场景命令清单
 
@@ -105,6 +126,7 @@
 - 标签格式是否被 `SceneSummonActionTagRegex`、`SceneGuideActionTagRegex`、`SceneFollowStartTagRegex`、`SceneFollowStopTagRegex` 或新增正则识别。
 - 触发函数是否拿到当前说话 NPC 的 `Agent` 和 `AgentIndex`。
 - 目标是否从清单解析到 `Agent` / `LocationCharacter`，而不是解析成裸坐标。
+- 如果目标是门、出口或 Passage，是否创建了门口 proxy Agent，而不是直接把门/坐标当目标。
 - 取消、返回、抵达、TTS 后续动作是否仍能按 `AgentIndex` 找回任务。
 - 日志是否包含 agent、target agent、location character、阶段名，而不是只有坐标。
 
@@ -117,13 +139,25 @@ LLM 输出 [ACTION:SCENE_MOVE_TO:123.4,56.7,8.9]
 C# 直接让当前 NPC 移动到这个坐标。
 ```
 
-这会让机制失去目标身份，后续无法可靠判断“他是在带玩家找谁”“传唤的是谁”“该由谁说抵达台词”“谁要返回原岗位”。
+这在当前场景机制里会表现为移动命令看似触发，但 NPC 实际不移动；同时机制也会失去目标身份，后续无法可靠判断“他是在带玩家找谁”“传唤的是谁”“该由谁说抵达台词”“谁要返回原岗位”。
 
 应当这样设计：
 
 ```text
 LLM 输出 [ACTION:SCENE_GUIDE:铁匠]
 C# 从【带路与传唤NPC清单】解析“铁匠” -> LocationCharacter/Agent -> 当前场景目标或门口代理 -> 执行带路状态机。
+```
+
+如果目标只是一个固定位置，应当这样设计：
+
+```text
+C# 在目标坐标创建隐藏/隐形 proxy Agent -> 当前 NPC 以 proxy Agent 为目标节点移动 -> 到达后按 proxy Agent / 发起 NPC 的 AgentIndex 继续状态机 -> 清理 proxy Agent。
+```
+
+如果目标是门口或场景出口，应当这样设计：
+
+```text
+C# 从门/Passage 找到附近等待点 -> 创建隐藏/隐形门口 proxy Agent -> 当前 NPC 以 proxy Agent 为目标节点移动 -> 到达后播放/触发门口逻辑 -> 按 AgentIndex 返回或清理 proxy。
 ```
 
 ## 给 Codex 的调用方式

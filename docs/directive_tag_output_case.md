@@ -52,11 +52,34 @@ AnimusForge 的主对话不是单层提示词，而是三段式链路：
 - 场景喊话链路：`ShoutBehavior.cs`
 - 直接对话链路：`MyBehavior.cs`
 
+## 提示词文本归属
+
+所有发送给 LLM 的规则文本、标签说明、运行边界、禁止条件和示例，都必须优先写在 `AnimusForge/ModuleData/RuleBehaviorPrompts.json`。
+
+目的：
+
+- 方便开发者直接改提示词，不需要翻 C#。
+- 让前处理、主链路、后处理能从同一个话题配置读取规则。
+- 避免同一机制的提示词散落在多个 C# 文件里，导致主链路和后处理版本不一致。
+- 方便把成功案例迁移到 MCM、外部配置或后续工具链。
+
+C# 代码只负责：
+
+- 读取配置。
+- 注入配置。
+- 组装运行时事实。
+- 过滤当前不允许输出的标签。
+- 解析标签并执行游戏机制。
+
+除非是纯运行时事实、日志、错误提示或不可配置的安全兜底，不要在 C# 里硬编码新的 LLM 提示词正文。若必须临时硬编码，应在注释中说明原因，并优先安排回迁到 `RuleBehaviorPrompts.json`。
+
 ## 新增标签机制清单
 
 新增一个 LLM 标签机制时，至少逐项检查：
 
 - 在 `RuleBehaviorPrompts.json` 里有独立规则项，`IsEnabled`、`TopicLabel`、`Instruction` 或 `DialogueInstruction` 明确。
+- 新机制必须分配新的连续 `TopicNumber`。如果当前最新机制是 `16 Oppression via noble status / Using noble title to intimidate`，下一个新机制就应使用 `17`，不要复用旧编号，也不要留空跳号，除非明确是在整理废弃机制。
+- 所有发给 LLM 的固定提示词文本都在 `RuleBehaviorPrompts.json`，C# 不硬编码机制正文规则。
 - 前处理能选中该规则项；必要时补 `TriggerKeywords`、语义种子或运行时 gate。
 - 主链路规则只教 NPC 如何表态，不要求正文直接输出最终动作标签，除非这是旧机制兼容路径。
 - 同一个规则项里有 `PostprocessRules`，并且标签描述写明“何时输出”和“何时禁止输出”。

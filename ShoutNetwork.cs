@@ -49,7 +49,13 @@ public static class ShoutNetwork
 
 	private static string BuildTokenStatsOutputContent(string finalContent, string reasoningContent = null)
 	{
-		return ApplyPlayerDynamicNameToMainText(finalContent ?? "").Trim();
+		string content = ApplyPlayerDynamicNameToMainText(finalContent ?? "").Trim();
+		string reasoning = (reasoningContent ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(reasoning))
+		{
+			return content;
+		}
+		return "[REASONING]\n" + reasoning + "\n[CONTENT]\n" + content;
 	}
 
 	private static string BuildApiErrorDetail(string responseBody)
@@ -64,6 +70,150 @@ public static class ShoutNetwork
 			text = text.Substring(0, 320) + "...";
 		}
 		return " " + text;
+	}
+
+	private static string TrimForApiLog(string text, int maxChars = 2000)
+	{
+		text = (text ?? "").Replace("\r\n", "\n").Replace('\r', '\n').Trim();
+		if (text.Length <= maxChars)
+		{
+			return text;
+		}
+		return text.Substring(0, maxChars) + "...";
+	}
+
+	private static void LogPrimaryRawResponse(string phase, string body)
+	{
+		try
+		{
+			Logger.Log("ShoutNetwork", "[PrimaryChatRaw][" + phase + "] " + TrimForApiLog(body));
+		}
+		catch
+		{
+		}
+	}
+
+	private const string EmptyResponseRetryMarker = "[AF_EMPTY_RESPONSE_RETRY]";
+
+	private static bool HasEmptyResponseRetryMarker(List<object> messages)
+	{
+		try
+		{
+			foreach (object message in messages ?? new List<object>())
+			{
+				if (TryReadMessage(message, out var _, out var content) && (content ?? "").IndexOf(EmptyResponseRetryMarker, StringComparison.Ordinal) >= 0)
+				{
+					return true;
+				}
+			}
+		}
+		catch
+		{
+		}
+		return false;
+	}
+
+	private static List<object> BuildEmptyResponseRetryMessages(List<object> messages)
+	{
+		List<object> list = new List<object>(messages ?? new List<object>());
+		list.Add(new
+		{
+			role = "user",
+			content = EmptyResponseRetryMarker + " 上一次模型响应为空白。请严格按既有角色、格式和字数要求，直接输出NPC本轮回复；禁止只输出空白、换行或无内容。"
+		});
+		return list;
+	}
+
+	private static string ExtractTextFromGeminiCandidateParts(JToken candidate)
+	{
+		try
+		{
+			if (candidate == null)
+			{
+				return "";
+			}
+			StringBuilder stringBuilder = new StringBuilder();
+			JToken parts = candidate.SelectToken("content.parts") ?? candidate.SelectToken("delta.content.parts");
+			if (parts is JArray jArray)
+			{
+				foreach (JToken item in jArray)
+				{
+					string text = item?["text"]?.ToString() ?? "";
+					if (!string.IsNullOrEmpty(text))
+					{
+						stringBuilder.Append(text);
+					}
+				}
+			}
+			string directText = candidate.SelectToken("content.parts[0].text")?.ToString()
+				?? candidate.SelectToken("delta.content.parts[0].text")?.ToString()
+				?? candidate.SelectToken("output")?.ToString();
+			if (stringBuilder.Length == 0 && !string.IsNullOrEmpty(directText))
+			{
+				stringBuilder.Append(directText);
+			}
+			return stringBuilder.ToString();
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	private static string ExtractPrimaryResponseText(JObject responseJson)
+	{
+		if (responseJson == null)
+		{
+			return "";
+		}
+		string content = ((string)responseJson.SelectToken("choices[0].message.content"))
+			?? ((string)responseJson.SelectToken("choices[0].text"))
+			?? ((string)responseJson.SelectToken("content"))
+			?? ((string)responseJson.SelectToken("text"));
+		if (!string.IsNullOrWhiteSpace(content))
+		{
+			return content;
+		}
+		return ExtractTextFromGeminiCandidateParts(responseJson.SelectToken("candidates[0]"));
+	}
+
+	private static string ExtractPrimaryReasoningText(JObject responseJson)
+	{
+		if (responseJson == null)
+		{
+			return "";
+		}
+		return ((string)responseJson.SelectToken("choices[0].message.reasoning_content"))
+			?? ((string)responseJson.SelectToken("choices[0].message.reasoning"))
+			?? ((string)responseJson.SelectToken("reasoning_content"))
+			?? ((string)responseJson.SelectToken("reasoning"))
+			?? "";
+	}
+
+	private static string ExtractPrimaryStreamDelta(JObject chunk)
+	{
+		if (chunk == null)
+		{
+			return "";
+		}
+		string delta = (string)chunk.SelectToken("choices[0].delta.content");
+		if (delta == null)
+		{
+			delta = (string)chunk.SelectToken("delta.content");
+		}
+		if (delta == null)
+		{
+			delta = (string)chunk.SelectToken("content");
+		}
+		if (delta == null)
+		{
+			delta = (string)chunk.SelectToken("text");
+		}
+		if (!string.IsNullOrEmpty(delta))
+		{
+			return delta;
+		}
+		return ExtractTextFromGeminiCandidateParts(chunk.SelectToken("candidates[0]"));
 	}
 
 	private static bool ContainsAnyIgnoreCase(string text, params string[] patterns)
@@ -84,24 +234,11 @@ public static class ShoutNetwork
 		return false;
 	}
 
-	private static bool TryApplyDeepSeekThinkingControls(JObject payload, string apiUrl, string modelName, out string thinkingMode)
+	private static bool TryApplyPrimaryThinkingControls(JObject payload, DuelSettings settings, string apiUrl, string modelName, out string thinkingMode)
 	{
-		thinkingMode = "plain";
-		if (payload == null)
-		{
-			return false;
-		}
-		if (!ContainsAnyIgnoreCase(apiUrl, "deepseek") && !ContainsAnyIgnoreCase(modelName, "deepseek"))
-		{
-			return false;
-		}
-		payload["thinking"] = new JObject
-		{
-			["type"] = "disabled"
-		};
-		payload.Remove("reasoning_effort");
-		thinkingMode = "deepseek_disabled";
-		return true;
+		bool thinkingEnabled = settings?.MainApiThinkingEnabled ?? true;
+		string effort = settings?.GetMainApiReasoningEffort() ?? DuelSettings.ReasoningEffortHigh;
+		return DuelSettings.ApplyThinkingControls(payload, apiUrl, modelName, thinkingEnabled, effort, out thinkingMode);
 	}
 
 	private static bool LooksLikeThinkingControlError(string responseBody)
@@ -111,7 +248,7 @@ public static class ShoutNetwork
 		{
 			return false;
 		}
-		bool flag = ContainsAnyIgnoreCase(text, "thinking", "reasoning_effort");
+		bool flag = ContainsAnyIgnoreCase(text, "thinking", "reasoning_effort", "output_config");
 		bool flag2 = ContainsAnyIgnoreCase(text, "unsupported", "unknown", "invalid", "unexpected", "not allowed", "not supported", "extra inputs are not permitted");
 		return flag && flag2;
 	}
@@ -142,12 +279,13 @@ public static class ShoutNetwork
 		return !string.IsNullOrWhiteSpace(modelName);
 	}
 
-	private static JObject BuildPrimaryChatPayload(List<object> messages, string apiUrl, string modelName, bool stream, out string thinkingMode)
+	private static JObject BuildPrimaryChatPayload(List<object> messages, DuelSettings settings, string apiUrl, string modelName, bool stream, out string thinkingMode)
 	{
 		JObject jObject = new JObject
 		{
 			["model"] = modelName ?? "",
-			["max_tokens"] = HardcodedMaxTokens
+			["max_tokens"] = HardcodedMaxTokens,
+			["temperature"] = settings?.GetMainApiTemperature() ?? 0.8f
 		};
 		if (stream)
 		{
@@ -164,7 +302,7 @@ public static class ShoutNetwork
 			});
 		}
 		jObject["messages"] = jArray;
-		TryApplyDeepSeekThinkingControls(jObject, apiUrl, modelName, out thinkingMode);
+		TryApplyPrimaryThinkingControls(jObject, settings, apiUrl, modelName, out thinkingMode);
 		return jObject;
 	}
 
@@ -394,8 +532,9 @@ public static class ShoutNetwork
 				return "（错误：未配置模型名称）";
 			}
 			string effectiveApiUrl = DuelSettings.GetEffectiveApiUrl(settings.ApiUrl);
-			JObject payload = BuildPrimaryChatPayload(messages, effectiveApiUrl, effectiveModelName, stream: false, out var thinkingMode);
+			JObject payload = BuildPrimaryChatPayload(messages, settings, effectiveApiUrl, effectiveModelName, stream: false, out var thinkingMode);
 			string jsonBody = payload.ToString(Formatting.None);
+			string requestBodyForTokenStats = jsonBody;
 			HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, effectiveApiUrl);
 			try
 			{
@@ -403,30 +542,38 @@ public static class ShoutNetwork
 				request.Content = (HttpContent)new StringContent(jsonBody, Encoding.UTF8, "application/json");
 				HttpResponseMessage response = await DuelSettings.GlobalClient.SendAsync(request);
 				string str = await response.Content.ReadAsStringAsync();
+				LogPrimaryRawResponse("non_stream_status_" + (int)response.StatusCode, str);
 				if (!response.IsSuccessStatusCode && response.StatusCode == System.Net.HttpStatusCode.BadRequest && thinkingMode != "plain" && LooksLikeThinkingControlError(str))
 				{
-					Logger.Log("ShoutNetwork", "[PrimaryChat] DeepSeek thinking payload rejected; retrying without thinking controls.");
+					Logger.Log("ShoutNetwork", "[PrimaryChat] thinking payload rejected; retrying without thinking controls.");
 					response.Dispose();
-					JObject payload2 = BuildPrimaryChatPayload(messages, effectiveApiUrl, effectiveModelName, stream: false, out var _);
-					payload2.Remove("thinking");
-					payload2.Remove("reasoning_effort");
+					JObject payload2 = BuildPrimaryChatPayload(messages, settings, effectiveApiUrl, effectiveModelName, stream: false, out var _);
+					DuelSettings.RemoveThinkingControls(payload2);
 					string jsonBody2 = payload2.ToString(Formatting.None);
+					requestBodyForTokenStats = jsonBody2;
 					using HttpRequestMessage httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, effectiveApiUrl);
 					httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", settings.ApiKey);
 					httpRequestMessage.Content = (HttpContent)new StringContent(jsonBody2, Encoding.UTF8, "application/json");
 					response = await DuelSettings.GlobalClient.SendAsync(httpRequestMessage);
 					str = await response.Content.ReadAsStringAsync();
-					thinkingMode = "deepseek_retry_plain";
+					LogPrimaryRawResponse("non_stream_retry_status_" + (int)response.StatusCode, str);
+					thinkingMode = "thinking_retry_plain";
 				}
 				if (response.IsSuccessStatusCode)
 				{
 					try
 					{
 						JObject responseJson = JObject.Parse(str);
-						string content = ((string)responseJson.SelectToken("choices[0].message.content")) ?? ((string)responseJson.SelectToken("content")) ?? ((string)responseJson.SelectToken("text"));
-						string reasoning = "";
+						string content = ExtractPrimaryResponseText(responseJson);
+						string reasoning = ExtractPrimaryReasoningText(responseJson);
 						if (string.IsNullOrWhiteSpace(content))
 						{
+							LogPrimaryRawResponse("non_stream_empty_content", str);
+							if (!HasEmptyResponseRetryMarker(messages))
+							{
+								Logger.Log("ShoutNetwork", "[PrimaryChat] empty content; retrying once with explicit non-empty instruction.");
+								return await CallApiWithMessages(BuildEmptyResponseRetryMessages(messages), maxTokens, recordTokenStats);
+							}
 							content = "（没说话）";
 						}
 						content = ApplyPlayerDynamicNameToMainText(content);
@@ -444,12 +591,13 @@ public static class ShoutNetwork
 						if (recordTokenStats)
 						{
 							string outputContent = BuildTokenStatsOutputContent(content, reasoning);
-							Logger.RecordTokenStats(inputTokens, Logger.EstimateTokens(outputContent), messages, outputContent, "non_stream");
+							Logger.RecordTokenStats(inputTokens, Logger.EstimateTokens(outputContent), messages, outputContent, "non_stream", requestBodyForTokenStats);
 						}
 						return content.Trim();
 					}
 					catch
 					{
+						LogPrimaryRawResponse("non_stream_parse_error", str);
 						sw.Stop();
 						Logger.Obs("Network", "parse_error", new Dictionary<string, object>
 						{
@@ -504,6 +652,7 @@ public static class ShoutNetwork
 		int chunkCount = 0;
 		int msgCount = messages?.Count ?? 0;
 		int inputTokens = Logger.EstimateTokensFromMessages(messages);
+		string requestBodyForTokenStats = "";
 		Logger.Obs("Network", "request_start", new Dictionary<string, object>
 		{
 			["mode"] = "stream",
@@ -542,24 +691,9 @@ public static class ShoutNetwork
 				return;
 			}
 			string effectiveApiUrl = DuelSettings.GetEffectiveApiUrl(settings.ApiUrl);
-			JObject payload = new JObject
-			{
-				["model"] = effectiveModelName,
-				["max_tokens"] = HardcodedMaxTokens,
-				["stream"] = true
-			};
-			JArray messagesArray = new JArray();
-			foreach (object msg in messages)
-			{
-				dynamic dict = msg;
-				messagesArray.Add(new JObject
-				{
-					["role"] = dict.role,
-					["content"] = dict.content
-				});
-			}
-			payload["messages"] = messagesArray;
+			JObject payload = BuildPrimaryChatPayload(messages, settings, effectiveApiUrl, effectiveModelName, stream: true, out var thinkingMode);
 			string jsonBody = payload.ToString(Formatting.None);
+			requestBodyForTokenStats = jsonBody;
 			bool streamSucceeded = false;
 			Exception lastStreamException = null;
 			for (int attempt = 1; attempt <= 2; attempt++)
@@ -580,6 +714,18 @@ public static class ShoutNetwork
 						if (!response.IsSuccessStatusCode)
 						{
 							string errBody = await response.Content.ReadAsStringAsync();
+							LogPrimaryRawResponse("stream_status_" + (int)response.StatusCode, errBody);
+							if (response.StatusCode == System.Net.HttpStatusCode.BadRequest && thinkingMode != "plain" && LooksLikeThinkingControlError(errBody) && attempt < 2)
+							{
+								Logger.Log("ShoutNetwork", "[PrimaryChat] stream thinking payload rejected; retrying without thinking controls.");
+								response.Dispose();
+								JObject retryPayload = BuildPrimaryChatPayload(messages, settings, effectiveApiUrl, effectiveModelName, stream: true, out var _);
+								DuelSettings.RemoveThinkingControls(retryPayload);
+								jsonBody = retryPayload.ToString(Formatting.None);
+								requestBodyForTokenStats = jsonBody;
+								thinkingMode += "_retry_plain";
+								continue;
+							}
 							sw.Stop();
 							Logger.Obs("Network", "request_complete", new Dictionary<string, object>
 							{
@@ -587,6 +733,7 @@ public static class ShoutNetwork
 								["ok"] = false,
 								["status"] = (int)response.StatusCode,
 								["attempt"] = attempt,
+								["thinkingMode"] = thinkingMode,
 								["latencyMs"] = Math.Round(sw.Elapsed.TotalMilliseconds, 2)
 							});
 							Logger.Metric("network.stream", ok: false, sw.Elapsed.TotalMilliseconds);
@@ -629,19 +776,7 @@ public static class ShoutNetwork
 								{
 									fullReasoning.Append(reasoningDelta);
 								}
-								string delta = (string)chunk.SelectToken("choices[0].delta.content");
-								if (delta == null)
-								{
-									delta = (string)chunk.SelectToken("delta.content");
-								}
-								if (delta == null)
-								{
-									delta = (string)chunk.SelectToken("content");
-								}
-								if (delta == null)
-								{
-									delta = (string)chunk.SelectToken("text");
-								}
+								string delta = ExtractPrimaryStreamDelta(chunk);
 								if (!string.IsNullOrEmpty(delta))
 								{
 									string text2 = outputFilter.Push(delta);
@@ -667,9 +802,14 @@ public static class ShoutNetwork
 										}
 									}
 								}
+								else if (chunkCount == 0 && fullText.Length == 0)
+								{
+									LogPrimaryRawResponse("stream_unparsed_chunk", data);
+								}
 							}
 							catch
 							{
+								LogPrimaryRawResponse("stream_chunk_parse_error", data);
 							}
 						}
 					}
@@ -717,7 +857,7 @@ public static class ShoutNetwork
 						["resultLen"] = fallback.Length
 					});
 					Logger.Metric("network.stream", ok: true, sw.Elapsed.TotalMilliseconds);
-					Logger.RecordTokenStats(inputTokens, Logger.EstimateTokens(fallback), messages, BuildTokenStatsOutputContent(fallback), "stream_fallback");
+					Logger.RecordTokenStats(inputTokens, Logger.EstimateTokens(fallback), messages, BuildTokenStatsOutputContent(fallback), "stream_fallback", requestBodyForTokenStats);
 					onComplete?.Invoke(fallback.Trim());
 					return;
 				}
@@ -742,7 +882,7 @@ public static class ShoutNetwork
 					});
 					Logger.Metric("network.stream", ok: true, sw.Elapsed.TotalMilliseconds);
 					string outputContent3 = BuildTokenStatsOutputContent(fullText.ToString(), fullReasoning.ToString());
-					Logger.RecordTokenStats(inputTokens, Logger.EstimateTokens(outputContent3), messages, outputContent3, "stream_partial");
+					Logger.RecordTokenStats(inputTokens, Logger.EstimateTokens(outputContent3), messages, outputContent3, "stream_partial", requestBodyForTokenStats);
 					onComplete?.Invoke(ApplyPlayerDynamicNameToMainText(fullText.ToString()).Trim());
 					return;
 				}
@@ -766,6 +906,17 @@ public static class ShoutNetwork
 			finalText = ApplyPlayerDynamicNameToMainText(finalText);
 			if (string.IsNullOrWhiteSpace(finalText))
 			{
+				LogPrimaryRawResponse("stream_empty_final", "chunkCount=" + chunkCount + "; no parsed text from response");
+				if (!HasEmptyResponseRetryMarker(messages))
+				{
+					Logger.Log("ShoutNetwork", "[PrimaryChat] empty stream final; retrying once with explicit non-empty instruction.");
+					string retry = await CallApiWithMessages(BuildEmptyResponseRetryMessages(messages), maxTokens, recordTokenStats: false);
+					if (!string.IsNullOrWhiteSpace(retry) && !retry.StartsWith("（错误") && !retry.StartsWith("（程序错误") && !retry.StartsWith("（API请求失败"))
+					{
+						onComplete?.Invoke(retry.Trim());
+						return;
+					}
+				}
 				finalText = "（没说话）";
 			}
 			sw.Stop();
@@ -781,7 +932,7 @@ public static class ShoutNetwork
 			});
 			Logger.Metric("network.stream", ok: true, sw.Elapsed.TotalMilliseconds);
 			string outputContent2 = BuildTokenStatsOutputContent(finalText, fullReasoning.ToString());
-			Logger.RecordTokenStats(inputTokens, Logger.EstimateTokens(outputContent2), messages, outputContent2, "stream");
+			Logger.RecordTokenStats(inputTokens, Logger.EstimateTokens(outputContent2), messages, outputContent2, "stream", requestBodyForTokenStats);
 			onComplete?.Invoke(finalText);
 		}
 		catch (OperationCanceledException)
@@ -795,7 +946,7 @@ public static class ShoutNetwork
 			});
 			Logger.Metric("network.stream", ok: true, sw.Elapsed.TotalMilliseconds);
 			string outputContent4 = BuildTokenStatsOutputContent(fullText.ToString(), fullReasoning.ToString());
-			Logger.RecordTokenStats(inputTokens, Logger.EstimateTokens(outputContent4), messages, outputContent4, "stream_cancelled");
+			Logger.RecordTokenStats(inputTokens, Logger.EstimateTokens(outputContent4), messages, outputContent4, "stream_cancelled", requestBodyForTokenStats);
 			onComplete?.Invoke(ApplyPlayerDynamicNameToMainText(fullText.ToString()).Trim());
 		}
 		catch (Exception ex3)
@@ -816,7 +967,7 @@ public static class ShoutNetwork
 				});
 				Logger.Metric("network.stream", ok: true, sw.Elapsed.TotalMilliseconds);
 				string outputContent5 = BuildTokenStatsOutputContent(partial, fullReasoning.ToString());
-				Logger.RecordTokenStats(inputTokens, Logger.EstimateTokens(outputContent5), messages, outputContent5, "stream_exception_partial");
+				Logger.RecordTokenStats(inputTokens, Logger.EstimateTokens(outputContent5), messages, outputContent5, "stream_exception_partial", requestBodyForTokenStats);
 				onComplete?.Invoke(partial);
 			}
 			else

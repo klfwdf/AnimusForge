@@ -4613,6 +4613,18 @@ private static void SplitSceneNpcRoleIntroSections(string fullIntro, bool isHero
 		{
 			return true;
 		}
+		if (text.StartsWith("你的回复格式必须严格按照以下执行", StringComparison.Ordinal))
+		{
+			return true;
+		}
+		if (text.StartsWith("（你的内心思考内容", StringComparison.Ordinal))
+		{
+			return true;
+		}
+		if (string.Equals(text, "*你的动作内容*", StringComparison.Ordinal))
+		{
+			return true;
+		}
 		if (text.StartsWith("【附加规则", StringComparison.Ordinal))
 		{
 			return true;
@@ -5284,11 +5296,11 @@ private static string BuildReplyLengthInstruction(int minTokens, int maxTokens, 
 	int num3 = GetShoutThoughtMinTokens();
 	string text = (num == num2) ? $"你实际要说的话，此处约{num2}字。" : $"你实际要说的话，此处不得少于{num}字，最多{num2}字。";
 	string relayPromptLine = includeRelayPromptLine ? "\n[RELAY:接力编号](注意！接力编号必须写【在场人物列表】中的数字！)" : "";
-	if (num == num2)
+	if (IsShoutInnerThoughtPromptDisabled())
 	{
-		return $"你的回复格式必须严格按照以下执行，其中内心思考要用()括起来，动作要用**括起来：\n（你的内心思考内容，不少于{num3}字）\n*你的动作内容*\n" + text + relayPromptLine;
+		return "你的回复格式必须严格按照以下执行，动作要用**括起来：\n*你的动作内容*\n" + text + relayPromptLine;
 	}
-	return $"你的回复格式必须严格按照以下执行，其中内心思考要用()括起来，动作要用**括起来：\n（你的内心思考内容，不少于{num3}字）\n*你的动作内容*\n" + text + relayPromptLine;
+	return $"你的回复格式必须严格按照以下执行，其中内心思考要用()括起来，动作要用**括起来：\n（你的内心思考内容，不少于{num3}字，重点是思考#4 role=user及往后的对话历史）\n*你的动作内容*\n" + text + relayPromptLine;
 }
 
 private static string BuildSimpleDialogueReplyLengthInstruction(int minTokens, int maxTokens)
@@ -5307,6 +5319,18 @@ private static int GetShoutThoughtMinTokens()
 	catch
 	{
 		return 200;
+	}
+}
+
+private static bool IsShoutInnerThoughtPromptDisabled()
+{
+	try
+	{
+		return DuelSettings.GetSettings()?.DisableShoutInnerThoughtPrompt == true;
+	}
+	catch
+	{
+		return false;
 	}
 }
 
@@ -5331,6 +5355,23 @@ private static bool TryExtractReplyFormatInstruction(ref string prompt, out stri
 			continue;
 		}
 		int instructionLineCount = (i + 4 < array.Length && array[i + 4].Trim().StartsWith("[RELAY:接力编号]", StringComparison.Ordinal)) ? 5 : 4;
+		List<string> list = array.ToList();
+		instruction = string.Join("\n", list.GetRange(i, instructionLineCount)).Trim();
+		list.RemoveRange(i, instructionLineCount);
+		prompt = string.Join("\n", list).Trim();
+		return true;
+	}
+	for (int i = 0; i <= array.Length - 3; i++)
+	{
+		if (!string.Equals(array[i].Trim(), "你的回复格式必须严格按照以下执行，动作要用**括起来：", StringComparison.Ordinal))
+		{
+			continue;
+		}
+		if (!string.Equals(array[i + 1].Trim(), "*你的动作内容*", StringComparison.Ordinal) || !array[i + 2].Trim().StartsWith("你实际要说的话，此处", StringComparison.Ordinal))
+		{
+			continue;
+		}
+		int instructionLineCount = (i + 3 < array.Length && array[i + 3].Trim().StartsWith("[RELAY:接力编号]", StringComparison.Ordinal)) ? 4 : 3;
 		List<string> list = array.ToList();
 		instruction = string.Join("\n", list.GetRange(i, instructionLineCount)).Trim();
 		list.RemoveRange(i, instructionLineCount);
@@ -9771,6 +9812,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				stringBuilder.Append(duelStakeOption.Name ?? duelStakeOption.ItemId ?? "未知物品")
 					.Append(" x")
 					.Append(Math.Max(1, duelStakeOption.Count))
+					.Append(" | guidePrice=")
+					.Append(Math.Max(1, duelStakeOption.GuidePrice))
 					.AppendLine();
 			}
 		}
@@ -9782,6 +9825,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				stringBuilder.Append(duelStakeOption2.Name ?? duelStakeOption2.ItemId ?? "未知物品")
 					.Append(" x")
 					.Append(Math.Max(1, duelStakeOption2.Count))
+					.Append(" | guidePrice=")
+					.Append(Math.Max(1, duelStakeOption2.GuidePrice))
 					.AppendLine();
 			}
 		}
@@ -9936,6 +9981,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					.Append(string.IsNullOrWhiteSpace(item.PromptStringId) || string.Equals(item.PromptStringId, item.StringId, StringComparison.OrdinalIgnoreCase) ? "" : (" | id=" + item.PromptStringId))
 					.Append(" x")
 					.Append(Math.Max(1, item.Count))
+					.Append(" | guidePrice=")
+					.Append(Math.Max(1, item.GuidePrice))
 					.AppendLine();
 			}
 		}
@@ -9947,6 +9994,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				stringBuilder.Append(item2.Name ?? item2.PromptStringId ?? item2.StringId ?? "未知物品")
 					.Append(" x")
 					.Append(Math.Max(1, item2.Count))
+					.Append(" | guidePrice=")
+					.Append(Math.Max(1, item2.GuidePrice))
 					.AppendLine();
 			}
 		}
@@ -13965,7 +14014,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 						bool flag = string.IsNullOrWhiteSpace(text) || hashSet.Add(text);
 						if (flag)
 						{
-							bool flag2 = !MyBehavior.TryGetNpcPersonaGenerationStatusForExternal(hero, out var needsGeneration, out _) || needsGeneration;
+							bool flag2 = !MyBehavior.TryGetNpcPersonaGenerationStatusForExternal(hero, out var needsGeneration, out var inFlightOrCoolingDown) || (needsGeneration && !inFlightOrCoolingDown);
 							if (flag2)
 							{
 								InformationManager.DisplayMessage(new InformationMessage(MyBehavior.BuildNpcPersonaGenerationHintForExternal(hero), new Color(1f, 0.85f, 0.3f)));

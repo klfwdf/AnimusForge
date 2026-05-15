@@ -851,10 +851,6 @@ public class DuelSettings : AttributeGlobalSettings<DuelSettings>
 				return false;
 			}
 			string text2 = (result.Host ?? "").Trim().ToLowerInvariant();
-			if (text2 == "api.deepseek.com")
-			{
-				return true;
-			}
 			if (text2 == "ark.cn-beijing.volces.com")
 			{
 				string text3 = (result.AbsolutePath ?? "").Trim();
