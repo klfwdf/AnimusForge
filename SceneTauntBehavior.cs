@@ -1999,6 +1999,16 @@ public class SceneTauntMissionBehavior : MissionBehavior
 
 	private const float ArmedBystanderReactionRadiusMeters = 20f;
 
+	private const int ArmedConflictReactionMaxCount = 4;
+
+	private const int ArmedConflictOpeningReactionMaxCount = 2;
+
+	private const float ArmedConflictReactionIntervalSeconds = 12f;
+
+	private const float ArmedConflictGuardReactionChance = 0.15f;
+
+	private const float ArmedConflictBystanderReactionChance = 0.12f;
+
 	private const double SceneTauntPerfStageThresholdMs = 4.0;
 
 	private const double SceneTauntPerfHeavyStageThresholdMs = 10.0;
@@ -2133,6 +2143,10 @@ public class SceneTauntMissionBehavior : MissionBehavior
 	private readonly HashSet<int> _armedBystanderWatcherIndices = new HashSet<int>();
 
 	private readonly HashSet<int> _armedEscalationBehaviorFactRolledAgentIndices = new HashSet<int>();
+
+	private int _armedConflictReactionCount;
+
+	private float _lastArmedConflictReactionMissionTime = -1f;
 
 	private readonly HashSet<int> _penalizedArmedKnockdownAgentIndices = new HashSet<int>();
 
@@ -4666,6 +4680,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			_armedConflict = false;
 			_armedConflictOccurredThisConflict = false;
 			_armedDefeatOutcomeHandled = false;
+			ResetArmedConflictReactionBudget();
 			_baseConsequencesApplied = false;
 			_appliedCrimeRatingAmount = 0f;
 			_activeTargetKey = (targetKey ?? "").Trim();
@@ -5269,6 +5284,10 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		{
 			return;
 		}
+		if (!CanTryArmedConflictReactionNow())
+		{
+			return;
+		}
 		foreach (int item in _guardAgentIndices)
 		{
 			Agent agent = Mission.Current?.Agents?.FirstOrDefault(a => a != null && a.Index == item && a.IsActive());
@@ -5276,9 +5295,9 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			{
 				continue;
 			}
-			if (MBRandom.RandomFloat <= 0.3334f)
+			if (MBRandom.RandomFloat <= ArmedConflictGuardReactionChance && TryTriggerBudgetedArmedConflictReaction(factText, item))
 			{
-				ShoutBehavior.TriggerImmediateSceneBehaviorReactionForExternal(factText, item, persistHeroPrivateHistory: true, suppressStare: true);
+				return;
 			}
 		}
 		HashSet<int> hashSet = new HashSet<int>(_playerAgentIndices);
@@ -5301,11 +5320,57 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			{
 				continue;
 			}
-			if (MBRandom.RandomFloat <= 0.5f)
+			if (MBRandom.RandomFloat <= ArmedConflictBystanderReactionChance && TryTriggerBudgetedArmedConflictReaction(factText, agent2.Index))
 			{
-				ShoutBehavior.TriggerImmediateSceneBehaviorReactionForExternal(factText, agent2.Index, persistHeroPrivateHistory: true, suppressStare: true);
+				return;
 			}
 		}
+	}
+
+	private void ResetArmedConflictReactionBudget()
+	{
+		_armedConflictReactionCount = 0;
+		_lastArmedConflictReactionMissionTime = -1f;
+	}
+
+	private bool CanTryArmedConflictReactionNow()
+	{
+		if (!_conflictActive || !_armedConflict || Mission.Current == null)
+		{
+			return false;
+		}
+		if (_armedConflictReactionCount >= ArmedConflictReactionMaxCount)
+		{
+			return false;
+		}
+		if (_armedConflictReactionCount < ArmedConflictOpeningReactionMaxCount)
+		{
+			return true;
+		}
+		return _lastArmedConflictReactionMissionTime < 0f || Mission.Current.CurrentTime - _lastArmedConflictReactionMissionTime >= ArmedConflictReactionIntervalSeconds;
+	}
+
+	private bool TryTriggerBudgetedArmedConflictReaction(string factText, int targetAgentIndex)
+	{
+		if (string.IsNullOrWhiteSpace(factText) || targetAgentIndex < 0 || !_conflictActive || !_armedConflict || Mission.Current == null)
+		{
+			return false;
+		}
+		float currentTime = Mission.Current.CurrentTime;
+		if (_armedConflictReactionCount >= ArmedConflictReactionMaxCount)
+		{
+			return false;
+		}
+		bool openingBudgetAvailable = _armedConflictReactionCount < ArmedConflictOpeningReactionMaxCount;
+		if (!openingBudgetAvailable && _lastArmedConflictReactionMissionTime >= 0f && currentTime - _lastArmedConflictReactionMissionTime < ArmedConflictReactionIntervalSeconds)
+		{
+			return false;
+		}
+		ShoutBehavior.TriggerImmediateSceneBehaviorReactionForExternal(factText, targetAgentIndex, persistHeroPrivateHistory: true, suppressStare: true);
+		_armedConflictReactionCount++;
+		_lastArmedConflictReactionMissionTime = currentTime;
+		Logger.Log("SceneTaunt", $"Armed conflict reaction triggered. AgentIndex={targetAgentIndex}, Count={_armedConflictReactionCount}/{ArmedConflictReactionMaxCount}, Opening={openingBudgetAvailable}");
+		return true;
 	}
 
 	internal bool ShouldBlockAgentWeaponWield(Agent agent)
@@ -6021,6 +6086,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			_armedConflict = true;
 			_armedConflictOccurredThisConflict = true;
 			_armedDefeatOutcomeHandled = false;
+			ResetArmedConflictReactionBudget();
 			_baseConsequencesApplied = true;
 			_appliedCrimeRatingAmount = SceneTauntInitialArmedCrimeAmount;
 			_activeTargetKey = "armed_settlement_carryover";
@@ -7965,6 +8031,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 	{
 		ReleaseAllArmedBystanderWatchers();
 		_armedEscalationBehaviorFactRolledAgentIndices.Clear();
+		ResetArmedConflictReactionBudget();
 		RestoreAllCachedWeapons();
 		_conflictActive = false;
 		_armedConflict = false;

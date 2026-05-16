@@ -4,7 +4,12 @@
       <Children>
         <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="980" SuggestedHeight="500" HorizontalAlignment="Center" VerticalAlignment="Center" DoNotPassEventsToChildren="false">
           <Children>
-            <AutoHideRichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Top" MarginLeft="20" MarginRight="20" Brush="Popup.Title.Text" Brush.TextHorizontalAlignment="Center" Text="@TitleText" />
+            <ButtonWidget IsVisible="@IsTitleLinkEnabled" DoNotPassEventsToChildren="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="62" VerticalAlignment="Top" MarginLeft="20" MarginRight="20" Command.Click="ExecuteOpenTitleLink" UpdateChildrenStates="true" HoveredCursorState="RightClickLink">
+              <Children>
+                <ShoutTitleLinkTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Center" Brush="Popup.Title.Text" Brush.TextHorizontalAlignment="Center" Text="@TitleLinkText" DoNotAcceptEvents="true" />
+              </Children>
+            </ButtonWidget>
+            <AutoHideRichTextWidget IsVisible="@IsTitlePlainTextVisible" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Top" MarginLeft="20" MarginRight="20" Brush="Popup.Title.Text" Brush.TextHorizontalAlignment="Center" Text="@TitlePlainText" />
             <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Top" MarginTop="74" MarginLeft="26" MarginRight="26" Brush="Popup.Description.Text" Brush.FontSize="18" Brush.TextHorizontalAlignment="Left" Text="@SubtitleText" />
             <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="330" VerticalAlignment="Top" MarginTop="132" MarginLeft="20" MarginRight="20" DoNotPassEventsToChildren="false">
               <Children>

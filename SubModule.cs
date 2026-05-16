@@ -244,9 +244,11 @@ public class SubModule : MBSubModuleBase
 
 	protected override void OnApplicationTick(float dt)
 	{
+		ShoutTextInputPopup.ProcessDeferredCloseIfNeeded();
 		ShoutTextInputPopup.CloseForSystemInterruptionIfNeeded();
 		ShoutTextInputPopup.KeepMissionPausedIfOpen();
 		ProcessPendingInitialApiGuideNotice();
+		Logger.OnApplicationTick();
 		BannerlordExceptionSentinel.OnApplicationTick();
 		McmDropdownRuntimeRefresh.OnApplicationTick();
 		EncyclopediaHeroPersonaPatch.OnApplicationTick();

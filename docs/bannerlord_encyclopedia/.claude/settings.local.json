@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(python \"F:\\\\my mod\\\\animusforge-1.3.x\\\\docs\\\\vanilla_text_export\\\\reorg.py\")",
+      "PowerShell(Move-Item *)"
+    ]
+  }
+}

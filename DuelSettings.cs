@@ -102,6 +102,8 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 
 	private Dropdown<string> _shoutInputUiBackgroundDropdown = BuildShoutInputUiBackgroundDropdown(ShoutInputUiBackgroundBlack);
 
+	private Dropdown<string> _logCleanupIntervalDropdown = BuildLogCleanupIntervalDropdown(LogCleanupEvery30Minutes);
+
 	private Dropdown<string> _mainApiReasoningEffortDropdown = BuildReasoningEffortDropdown(ReasoningEffortHigh);
 
 	private Dropdown<string> _auxiliaryApiReasoningEffortDropdown = BuildReasoningEffortDropdown(ReasoningEffortHigh);
@@ -121,6 +123,18 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	public const string ShoutInputUiBackgroundWhite = "白色透明";
 
 	public const string ShoutInputUiBackgroundPink = "粉色透明";
+
+	public const string LogCleanupOff = "关闭";
+
+	public const string LogCleanupOnStartup = "每次启动";
+
+	public const string LogCleanupEvery30Minutes = "每30分钟";
+
+	public const string LogCleanupEveryHour = "每1小时";
+
+	public const string LogCleanupEvery6Hours = "每6小时";
+
+	public const string LogCleanupEveryDay = "每天";
 
 	public const string ReasoningEffortLow = "low";
 
@@ -377,6 +391,27 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyBool("【日志】写入 Event_Logs.txt", Order = 6, RequireRestart = false, HintText = "事件系统周报生成日志开关。关闭后不再写入 Event_Logs.txt。")]
 	[SettingPropertyGroup("4. 开发者选项")]
 	public bool EnableEventLogs { get; set; } = true;
+
+	[SettingPropertyDropdown("【日志】定时清理所有日志", Order = 7, RequireRestart = false, HintText = "按真实时间定时清空 AnimusForge/Logs 下的所有当前日志文件。会保留文件本身与 UTF-8 BOM。默认每30分钟。")]
+	[SettingPropertyGroup("4. 开发者选项")]
+	public Dropdown<string> LogCleanupIntervalDropdown
+	{
+		get
+		{
+			_logCleanupIntervalDropdown = NormalizeLogCleanupIntervalDropdown(_logCleanupIntervalDropdown);
+			return _logCleanupIntervalDropdown;
+		}
+		set
+		{
+			_logCleanupIntervalDropdown = NormalizeLogCleanupIntervalDropdown(value);
+		}
+	}
+
+	public string GetLogCleanupIntervalSelection()
+	{
+		_logCleanupIntervalDropdown = NormalizeLogCleanupIntervalDropdown(_logCleanupIntervalDropdown);
+		return ReadLogCleanupIntervalSelection(_logCleanupIntervalDropdown);
+	}
 
 	[SettingPropertyInteger("知识返回上限", 1, 12, "0", Order = 0, RequireRestart = false, HintText = "控制每次对话最多向 AI 提供多少条相关知识。系统会自动推导召回和精排数量；若实际高相关知识不足，不会为了凑数硬塞。默认 4。")]
 	[SettingPropertyGroup("5. 知识检索（返回）")]
@@ -1410,6 +1445,80 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 			selectedIndex = 0;
 		}
 		return options[selectedIndex];
+	}
+
+	private static List<string> BuildLogCleanupIntervalOptions()
+	{
+		return new List<string>
+		{
+			LogCleanupOff,
+			LogCleanupOnStartup,
+			LogCleanupEvery30Minutes,
+			LogCleanupEveryHour,
+			LogCleanupEvery6Hours,
+			LogCleanupEveryDay
+		};
+	}
+
+	private static Dropdown<string> BuildLogCleanupIntervalDropdown(string selectedValue)
+	{
+		List<string> options = BuildLogCleanupIntervalOptions();
+		string selected = NormalizeLogCleanupIntervalSelection(selectedValue);
+		int selectedIndex = options.FindIndex((string x) => string.Equals(x, selected, StringComparison.OrdinalIgnoreCase));
+		if (selectedIndex < 0)
+		{
+			selectedIndex = 0;
+		}
+		return new Dropdown<string>(options, selectedIndex);
+	}
+
+	private static Dropdown<string> NormalizeLogCleanupIntervalDropdown(Dropdown<string> dropdown)
+	{
+		List<string> options = BuildLogCleanupIntervalOptions();
+		int selectedIndex = dropdown?.SelectedIndex ?? 0;
+		if (selectedIndex < 0 || selectedIndex >= options.Count)
+		{
+			selectedIndex = 0;
+		}
+		return new Dropdown<string>(options, selectedIndex);
+	}
+
+	private static string ReadLogCleanupIntervalSelection(Dropdown<string> dropdown)
+	{
+		Dropdown<string> normalizedDropdown = NormalizeLogCleanupIntervalDropdown(dropdown);
+		List<string> options = BuildLogCleanupIntervalOptions();
+		int selectedIndex = normalizedDropdown.SelectedIndex;
+		if (selectedIndex < 0 || selectedIndex >= options.Count)
+		{
+			selectedIndex = 0;
+		}
+		return options[selectedIndex];
+	}
+
+	public static string NormalizeLogCleanupIntervalSelection(string value)
+	{
+		string text = (value ?? "").Trim();
+		if (string.Equals(text, LogCleanupOnStartup, StringComparison.OrdinalIgnoreCase))
+		{
+			return LogCleanupOnStartup;
+		}
+		if (string.Equals(text, LogCleanupEvery30Minutes, StringComparison.OrdinalIgnoreCase))
+		{
+			return LogCleanupEvery30Minutes;
+		}
+		if (string.Equals(text, LogCleanupEveryHour, StringComparison.OrdinalIgnoreCase))
+		{
+			return LogCleanupEveryHour;
+		}
+		if (string.Equals(text, LogCleanupEvery6Hours, StringComparison.OrdinalIgnoreCase))
+		{
+			return LogCleanupEvery6Hours;
+		}
+		if (string.Equals(text, LogCleanupEveryDay, StringComparison.OrdinalIgnoreCase))
+		{
+			return LogCleanupEveryDay;
+		}
+		return LogCleanupOff;
 	}
 
 	private static List<string> BuildReasoningEffortOptions()

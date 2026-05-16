@@ -9,7 +9,13 @@ public sealed class ShoutTextInputPopupVM : ViewModel
 
 	private readonly Action _onCancel;
 
+	private readonly Action _onTitleLink;
+
 	private string _titleText;
+
+	private string _titleLinkText;
+
+	private string _titlePlainText;
 
 	private string _subtitleText;
 
@@ -18,6 +24,8 @@ public sealed class ShoutTextInputPopupVM : ViewModel
 	private string _inputText;
 
 	private Color _inputBackgroundColor;
+
+	private bool _isTitleLinkEnabled;
 
 	[DataSourceProperty]
 	public string TitleText
@@ -29,6 +37,35 @@ public sealed class ShoutTextInputPopupVM : ViewModel
 			{
 				_titleText = value;
 				OnPropertyChangedWithValue(value, "TitleText");
+				RefreshTitleDisplayText();
+			}
+		}
+	}
+
+	[DataSourceProperty]
+	public string TitleLinkText
+	{
+		get => _titleLinkText;
+		private set
+		{
+			if (value != _titleLinkText)
+			{
+				_titleLinkText = value;
+				OnPropertyChangedWithValue(value, "TitleLinkText");
+			}
+		}
+	}
+
+	[DataSourceProperty]
+	public string TitlePlainText
+	{
+		get => _titlePlainText;
+		private set
+		{
+			if (value != _titlePlainText)
+			{
+				_titlePlainText = value;
+				OnPropertyChangedWithValue(value, "TitlePlainText");
 			}
 		}
 	}
@@ -89,15 +126,44 @@ public sealed class ShoutTextInputPopupVM : ViewModel
 		}
 	}
 
-	public ShoutTextInputPopupVM(string titleText, string subtitleText, string inputHintText, string initialText, Action<string> onSubmit, Action onCancel)
+	[DataSourceProperty]
+	public bool IsTitleLinkEnabled
+	{
+		get => _isTitleLinkEnabled;
+		set
+		{
+			if (value != _isTitleLinkEnabled)
+			{
+				_isTitleLinkEnabled = value;
+				OnPropertyChangedWithValue(value, "IsTitleLinkEnabled");
+				OnPropertyChangedWithValue(IsTitlePlainTextVisible, "IsTitlePlainTextVisible");
+				RefreshTitleDisplayText();
+			}
+		}
+	}
+
+	[DataSourceProperty]
+	public bool IsTitlePlainTextVisible => !IsTitleLinkEnabled;
+
+	public ShoutTextInputPopupVM(string titleText, string subtitleText, string inputHintText, string initialText, Action<string> onSubmit, Action onCancel, Action onTitleLink = null)
 	{
 		_onSubmit = onSubmit;
 		_onCancel = onCancel;
+		_onTitleLink = onTitleLink;
 		TitleText = titleText ?? "";
 		SubtitleText = subtitleText ?? "";
 		InputHintText = inputHintText ?? "";
 		InputText = initialText ?? "";
 		InputBackgroundColor = ResolveInputBackgroundColor();
+		IsTitleLinkEnabled = _onTitleLink != null;
+		RefreshTitleDisplayText();
+	}
+
+	private void RefreshTitleDisplayText()
+	{
+		string titleText = TitleText ?? "";
+		TitleLinkText = IsTitleLinkEnabled ? titleText : "";
+		TitlePlainText = IsTitleLinkEnabled ? "" : titleText;
 	}
 
 	private static Color ResolveInputBackgroundColor()
@@ -137,6 +203,11 @@ public sealed class ShoutTextInputPopupVM : ViewModel
 	public void ExecuteCancel()
 	{
 		_onCancel?.Invoke();
+	}
+
+	public void ExecuteOpenTitleLink()
+	{
+		_onTitleLink?.Invoke();
 	}
 
 	public void StartTyping()

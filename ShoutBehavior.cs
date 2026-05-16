@@ -648,6 +648,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 			{
 			}
 			ShoutTextInputPopup.KeepMissionPausedIfOpen();
+			_parent.ClearStaleShoutProcessingIfNeeded();
 			if (!HotkeyInputGuard.IsTextInputFocused() && Input.IsKeyPressed(key))
 			{
 				if (_parent._isProcessingShout || _parent._isWaitingForScenePostprocessGate)
@@ -656,8 +657,17 @@ public class ShoutBehavior : CampaignBehaviorBase
 				}
 				else if (ShoutUtils.IsInValidScene())
 				{
-					_parent._isProcessingShout = true;
-					_parent.TriggerShout();
+					_parent.BeginShoutProcessing("hotkey");
+					try
+					{
+						_parent.TriggerShout();
+					}
+					catch (Exception ex)
+					{
+						Logger.Log("ShoutBehavior", "[ERROR] TriggerShout failed: " + ex.Message);
+						_parent.ResumeGame();
+						InformationManager.DisplayMessage(new InformationMessage("[场景喊话] 打开喊话界面失败，已重置状态。", new Color(1f, 0.3f, 0.3f)));
+					}
 				}
 			}
 		}
@@ -684,7 +694,78 @@ public class ShoutBehavior : CampaignBehaviorBase
 
 	private bool _isProcessingShout = false;
 
-	private const float ImmediateSceneReactionCooldownSeconds = 6f;
+	private float _shoutProcessingStartedAt = -1f;
+
+	private const float ShoutProcessingFailsafeSeconds = 180f;
+
+	private const int ScenePostprocessGateWaitTimeoutMilliseconds = 180000;
+
+	private const float ImmediateSceneReactionCooldownSeconds = 20f;
+
+	private static float GetApplicationTimeSafe()
+	{
+		try
+		{
+			return Time.ApplicationTime;
+		}
+		catch
+		{
+			return (float)Environment.TickCount / 1000f;
+		}
+	}
+
+	private void BeginShoutProcessing(string reason)
+	{
+		_isProcessingShout = true;
+		_shoutProcessingStartedAt = GetApplicationTimeSafe();
+		Logger.Log("ShoutBehavior", "[Processing] begin reason=" + (reason ?? ""));
+	}
+
+	private void EndShoutProcessing(string reason)
+	{
+		if (_isProcessingShout || _shoutProcessingStartedAt >= 0f)
+		{
+			Logger.Log("ShoutBehavior", "[Processing] end reason=" + (reason ?? "") + " elapsed=" + GetShoutProcessingElapsedSeconds().ToString("0.###"));
+		}
+		_isProcessingShout = false;
+		_shoutProcessingStartedAt = -1f;
+	}
+
+	private float GetShoutProcessingElapsedSeconds()
+	{
+		if (_shoutProcessingStartedAt < 0f)
+		{
+			return 0f;
+		}
+		return Math.Max(0f, GetApplicationTimeSafe() - _shoutProcessingStartedAt);
+	}
+
+	private bool IsMissionPausedByShoutUi()
+	{
+		try
+		{
+			return Mission.Current != null && Mission.Current.Scene != null && Mission.Current.Scene.TimeSpeed <= 0.001f;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private void ClearStaleShoutProcessingIfNeeded()
+	{
+		if (!_isProcessingShout || _shoutProcessingStartedAt < 0f || ShoutTextInputPopup.IsOpen || IsMissionPausedByShoutUi())
+		{
+			return;
+		}
+		float elapsed = GetShoutProcessingElapsedSeconds();
+		if (elapsed < ShoutProcessingFailsafeSeconds)
+		{
+			return;
+		}
+		Logger.Log("ShoutBehavior", "[WARN] stale shout processing flag cleared elapsed=" + elapsed.ToString("0.###"));
+		EndShoutProcessing("failsafe_timeout");
+	}
 
 	private readonly object _immediateSceneReactionGateLock = new object();
 
@@ -2976,6 +3057,10 @@ public class ShoutBehavior : CampaignBehaviorBase
 			{
 				stringBuilder.Append("，你").Append(reputation);
 			}
+			if (IsHeroInPlayerMainPartyForPrompt(hero))
+			{
+				stringBuilder.Append("，你在玩家的队伍中");
+			}
 			stringBuilder.Append("。");
 		}
 		else
@@ -3106,6 +3191,19 @@ public class ShoutBehavior : CampaignBehaviorBase
 			stringBuilder.Append(inventorySummary);
 		}
 		return stringBuilder.ToString().Trim();
+	}
+
+	private static bool IsHeroInPlayerMainPartyForPrompt(Hero hero)
+	{
+		try
+		{
+			MobileParty mainParty = MobileParty.MainParty;
+			return hero != null && hero != Hero.MainHero && mainParty != null && hero.PartyBelongedTo == mainParty;
+		}
+		catch
+		{
+			return false;
+		}
 	}
 
 	private static string AppendPlayerCustomPromptRuleToSystemPrompt(string systemPrompt)
@@ -3553,6 +3651,7 @@ private static void SplitSceneNpcRoleIntroSections(string fullIntro, bool isHero
 		}
 		string culture = "未知文化";
 		string age = "未知";
+		string genderText = playerHero.IsFemale ? "女性" : "男性";
 		string equipment = "未知";
 		string equipmentValueInline = "";
 		string identitySentence = BuildPlayerSceneIdentitySentenceForPrompt(playerHero);
@@ -3641,6 +3740,7 @@ private static void SplitSceneNpcRoleIntroSections(string fullIntro, bool isHero
 				.Append("的")
 				.Append(isClanLeader ? "族长" : "成员")
 				.Append("。从面貌上来看，是一个")
+				.Append(genderText)
 				.Append(age)
 				.Append("，穿着")
 				.Append(equipment)
@@ -3651,6 +3751,7 @@ private static void SplitSceneNpcRoleIntroSections(string fullIntro, bool isHero
 			stringBuilder.Append("你面前站着一个")
 				.Append(culture)
 				.Append("，他看起来是个普通人，总之不是贵族，从他的面貌上来看，是一个")
+				.Append(genderText)
 				.Append(age)
 				.Append("，穿着")
 				.Append(equipment)
@@ -8443,6 +8544,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 	{
 		if (!ModOnboardingBehavior.EnsureSetupReady())
 		{
+			EndShoutProcessing("setup_not_ready");
 			return;
 		}
 		PauseGame();
@@ -8523,12 +8625,56 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		if (!ShoutTextInputPopup.Show(titleText, text2, "请输入你想说的话：", "", delegate(string input)
 		{
 			OnShoutConfirmedWithContext(input, extraFact, primaryDataPacket?.AgentIndex);
-		}, OnShoutCancelled))
+		}, OnShoutCancelled, BuildShoutTargetEncyclopediaAction(primaryDataPacket)))
 		{
 			InformationManager.ShowTextInquiry(new TextInquiryData(titleText, (string.IsNullOrWhiteSpace(text2) ? "" : (text2 + "\n")) + "请输入你想说的话：", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "发送", "取消", delegate(string input)
 			{
 				OnShoutConfirmedWithContext(input, extraFact, primaryDataPacket?.AgentIndex);
 			}, OnShoutCancelled), pauseGameActiveState: true);
+		}
+	}
+
+	private Action BuildShoutTargetEncyclopediaAction(NpcDataPacket targetNpc)
+	{
+		Hero hero = null;
+		try
+		{
+			if (targetNpc != null && targetNpc.IsHero)
+			{
+				hero = ResolveHeroFromAgentIndex(targetNpc.AgentIndex);
+			}
+		}
+		catch
+		{
+			hero = null;
+		}
+		if (hero == null)
+		{
+			return null;
+		}
+		return delegate
+		{
+			OpenHeroEncyclopediaFromShoutInput(hero);
+		};
+	}
+
+	private static void OpenHeroEncyclopediaFromShoutInput(Hero hero)
+	{
+		if (hero == null)
+		{
+			return;
+		}
+		try
+		{
+			string link = hero.EncyclopediaLink;
+			if (!string.IsNullOrWhiteSpace(link))
+			{
+				Campaign.Current?.EncyclopediaManager?.GoToLink(link);
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("ShoutBehavior", "[WARN] Failed to open shout target encyclopedia: " + ex.Message);
 		}
 	}
 
@@ -8904,7 +9050,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			ResetShoutTradeState();
 			OnShoutCancelled();
-		}))
+		}, BuildShoutTargetEncyclopediaAction(_shoutTradeTargetNpc)))
 		{
 			InformationManager.ShowTextInquiry(new TextInquiryData(titleText, text2 + "\n请输入你想说的话：", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "发送", "取消", OnShoutTradeChatConfirmed, delegate
 			{
@@ -11741,6 +11887,23 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		return Task.CompletedTask;
 	}
 
+	private void ForceClearScenePostprocessGate(string reason)
+	{
+		TaskCompletionSource<bool> taskCompletionSource = null;
+		lock (_scenePostprocessGateLock)
+		{
+			if (_pendingScenePostprocessActionCount <= 0 && _scenePostprocessIdleTcs == null)
+			{
+				return;
+			}
+			Logger.Log("ShoutBehavior", "[WARN] ScenePostprocessGate force_clear reason=" + (reason ?? "") + " pending=" + _pendingScenePostprocessActionCount);
+			_pendingScenePostprocessActionCount = 0;
+			taskCompletionSource = _scenePostprocessIdleTcs;
+			_scenePostprocessIdleTcs = null;
+		}
+		taskCompletionSource?.TrySetResult(true);
+	}
+
 	private bool TryApplyDeferredSceneMoodTag(NpcDataPacket speaker, string tags)
 	{
 		try
@@ -11793,8 +11956,17 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			Logger.Log("ShoutBehavior", "[ScenePostprocessGate] waiting reason=" + (reason ?? ""));
 			InformationManager.DisplayMessage(new InformationMessage("正在等待上一轮NPC行为处理完成...", new Color(1f, 0.95f, 0.25f)));
-			await task;
-			Logger.Log("ShoutBehavior", "[ScenePostprocessGate] wait_done reason=" + (reason ?? ""));
+			Task completedTask = await Task.WhenAny(task, Task.Delay(ScenePostprocessGateWaitTimeoutMilliseconds));
+			if (completedTask == task)
+			{
+				await task;
+				Logger.Log("ShoutBehavior", "[ScenePostprocessGate] wait_done reason=" + (reason ?? ""));
+			}
+			else
+			{
+				ForceClearScenePostprocessGate("wait_timeout:" + (reason ?? ""));
+				InformationManager.DisplayMessage(new InformationMessage("[场景喊话] 上一轮NPC行为处理超时，已自动重置。", new Color(1f, 0.8f, 0.2f)));
+			}
 		}
 		catch (Exception ex)
 		{
@@ -20415,6 +20587,7 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 		}
 		float currentTime = Mission.Current.CurrentTime;
 		List<int> list = null;
+		HashSet<int> outOfRangeReleaseAgentIndices = null;
 		foreach (KeyValuePair<int, SceneInteractionSession> activeInteractionSession in _activeInteractionSessions)
 		{
 			SceneInteractionSession value = activeInteractionSession.Value;
@@ -20459,7 +20632,16 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 			}
 			if (!IsPlayerWithinActiveInteractionRange(agent))
 			{
-				value.LastActivityTime = currentTime;
+				if (list == null)
+				{
+					list = new List<int>();
+				}
+				list.Add(activeInteractionSession.Key);
+				if (outOfRangeReleaseAgentIndices == null)
+				{
+					outOfRangeReleaseAgentIndices = new HashSet<int>();
+				}
+				outOfRangeReleaseAgentIndices.Add(activeInteractionSession.Key);
 				continue;
 			}
 			if (currentTime - value.LastActivityTime >= num)
@@ -20476,6 +20658,11 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 			return;
 		}
 		HashSet<int> hashSet = new HashSet<int>();
+		List<int> groupedTimeoutCandidateIndices = list;
+		if (outOfRangeReleaseAgentIndices != null && outOfRangeReleaseAgentIndices.Count > 0)
+		{
+			groupedTimeoutCandidateIndices = list.Where(agentIndex => !outOfRangeReleaseAgentIndices.Contains(agentIndex)).ToList();
+		}
 		foreach (int item in list)
 		{
 			if (!hashSet.Add(item))
@@ -20484,21 +20671,28 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 			}
 			if (_activeInteractionSessions.TryGetValue(item, out var value2))
 			{
-				List<SceneInteractionSession> groupedTimeoutSessions = BuildGroupedExpiredInteractionSessions(value2, list);
-				if (groupedTimeoutSessions != null && groupedTimeoutSessions.Count > 1)
+				if (outOfRangeReleaseAgentIndices != null && outOfRangeReleaseAgentIndices.Contains(item))
 				{
-					foreach (SceneInteractionSession groupedTimeoutSession in groupedTimeoutSessions)
-					{
-						if (groupedTimeoutSession != null && groupedTimeoutSession.TargetAgentIndex >= 0)
-						{
-							hashSet.Add(groupedTimeoutSession.TargetAgentIndex);
-						}
-					}
-					ExpireGroupedActiveInteractions(groupedTimeoutSessions);
+					ExpireActiveInteractionSilently(value2, deferSceneSummonReturn: false);
 				}
 				else
 				{
-					ExpireActiveInteraction(value2);
+					List<SceneInteractionSession> groupedTimeoutSessions = BuildGroupedExpiredInteractionSessions(value2, groupedTimeoutCandidateIndices);
+					if (groupedTimeoutSessions != null && groupedTimeoutSessions.Count > 1)
+					{
+						foreach (SceneInteractionSession groupedTimeoutSession in groupedTimeoutSessions)
+						{
+							if (groupedTimeoutSession != null && groupedTimeoutSession.TargetAgentIndex >= 0)
+							{
+								hashSet.Add(groupedTimeoutSession.TargetAgentIndex);
+							}
+						}
+						ExpireGroupedActiveInteractions(groupedTimeoutSessions);
+					}
+					else
+					{
+						ExpireActiveInteraction(value2);
+					}
 				}
 			}
 			if (_activeInteractionSessions.TryGetValue(item, out var value3) && (value3 == null || ReferenceEquals(value3, value2) || value3.InteractionToken == value2?.InteractionToken))
@@ -21484,7 +21678,7 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 			Mission.Current.Scene.TimeSpeed = 1f;
 		}
 		ResumeTtsAfterShoutUi();
-		_isProcessingShout = false;
+		EndShoutProcessing("resume_game");
 	}
 
 	private void OnShoutCancelled()

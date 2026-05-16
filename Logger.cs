@@ -131,6 +131,16 @@ public static class Logger
 
 	private const int MetricsFlushIntervalSeconds = 180;
 
+	private const int LogCleanupCheckIntervalSeconds = 5;
+
+	private static string _lastLogCleanupSelection;
+
+	private static DateTime _nextLogCleanupUtc;
+
+	private static DateTime _nextLogCleanupCheckUtc;
+
+	private static bool _startupLogCleanupDone;
+
 	public static string CurrentTraceId => _traceState.Value?.TraceId ?? "";
 
 	public static string CurrentChannel => _traceState.Value?.Channel ?? "";
@@ -811,6 +821,133 @@ public static class Logger
 		}
 		catch
 		{
+		}
+	}
+
+	public static void OnApplicationTick()
+	{
+		try
+		{
+			DateTime utcNow = DateTime.UtcNow;
+			if (utcNow < _nextLogCleanupCheckUtc)
+			{
+				return;
+			}
+			_nextLogCleanupCheckUtc = utcNow.AddSeconds(LogCleanupCheckIntervalSeconds);
+			DuelSettings settings = TryGetSettings();
+			if (settings == null)
+			{
+				return;
+			}
+			string selection = DuelSettings.NormalizeLogCleanupIntervalSelection(settings.GetLogCleanupIntervalSelection());
+			if (!string.Equals(selection, _lastLogCleanupSelection, StringComparison.Ordinal))
+			{
+				_lastLogCleanupSelection = selection;
+				_nextLogCleanupUtc = DateTime.MinValue;
+				if (!string.Equals(selection, DuelSettings.LogCleanupOnStartup, StringComparison.Ordinal))
+				{
+					_startupLogCleanupDone = false;
+				}
+			}
+			if (string.Equals(selection, DuelSettings.LogCleanupOff, StringComparison.Ordinal))
+			{
+				return;
+			}
+			if (string.Equals(selection, DuelSettings.LogCleanupOnStartup, StringComparison.Ordinal))
+			{
+				if (_startupLogCleanupDone)
+				{
+					return;
+				}
+				_startupLogCleanupDone = true;
+				ClearAllLogFiles("startup");
+				return;
+			}
+			TimeSpan interval = ResolveLogCleanupInterval(selection);
+			if (interval <= TimeSpan.Zero)
+			{
+				return;
+			}
+			if (_nextLogCleanupUtc == DateTime.MinValue)
+			{
+				_nextLogCleanupUtc = utcNow.Add(interval);
+				return;
+			}
+			if (utcNow < _nextLogCleanupUtc)
+			{
+				return;
+			}
+			ClearAllLogFiles(selection);
+			_nextLogCleanupUtc = utcNow.Add(interval);
+		}
+		catch
+		{
+		}
+	}
+
+	private static TimeSpan ResolveLogCleanupInterval(string selection)
+	{
+		string text = DuelSettings.NormalizeLogCleanupIntervalSelection(selection);
+		if (string.Equals(text, DuelSettings.LogCleanupEvery30Minutes, StringComparison.Ordinal))
+		{
+			return TimeSpan.FromMinutes(30.0);
+		}
+		if (string.Equals(text, DuelSettings.LogCleanupEveryHour, StringComparison.Ordinal))
+		{
+			return TimeSpan.FromHours(1.0);
+		}
+		if (string.Equals(text, DuelSettings.LogCleanupEvery6Hours, StringComparison.Ordinal))
+		{
+			return TimeSpan.FromHours(6.0);
+		}
+		if (string.Equals(text, DuelSettings.LogCleanupEveryDay, StringComparison.Ordinal))
+		{
+			return TimeSpan.FromDays(1.0);
+		}
+		return TimeSpan.Zero;
+	}
+
+	private static void ClearAllLogFiles(string reason)
+	{
+		try
+		{
+			string[] paths = new string[]
+			{
+				_modLogPath,
+				_gameTracePath,
+				_obsLogPath,
+				_hitRatePath,
+				_tokenStatsPath,
+				_eventLogsPath
+			};
+			string marker = $"\n====== AnimusForge logs cleared {DateTime.Now:yyyy-MM-dd HH:mm:ss} reason={reason ?? ""} ======\n";
+			lock (_fileLock)
+			{
+				foreach (string path in paths)
+				{
+					if (string.IsNullOrWhiteSpace(path))
+					{
+						continue;
+					}
+					string directoryName = System.IO.Path.GetDirectoryName(path);
+					if (!string.IsNullOrWhiteSpace(directoryName) && !Directory.Exists(directoryName))
+					{
+						Directory.CreateDirectory(directoryName);
+					}
+					File.WriteAllBytes(path, _utf8WithBom.GetPreamble());
+					AppendUtf8(path, marker);
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			try
+			{
+				Debug.Print("[Logger Cleanup Error] " + ex.Message);
+			}
+			catch
+			{
+			}
 		}
 	}
 

@@ -1669,8 +1669,13 @@ public static class AIConfigHandler
 			["max_tokens"] = normalizedMaxTokens,
 			["temperature"] = DuelSettings.ClampApiTemperature(DuelSettings.GetSettings()?.GetAuxiliaryApiTemperature() ?? temperature)
 		};
+		if (disableThinkingControls)
+		{
+			controlMode = "plain";
+			return jObject;
+		}
 		DuelSettings settings = DuelSettings.GetSettings();
-		bool thinkingEnabled = !disableThinkingControls && (settings?.AuxiliaryApiThinkingEnabled ?? true);
+		bool thinkingEnabled = settings?.AuxiliaryApiThinkingEnabled ?? true;
 		string effort = settings?.GetAuxiliaryApiReasoningEffort() ?? DuelSettings.ReasoningEffortHigh;
 		DuelSettings.ApplyThinkingControls(jObject, apiUrl, modelName, thinkingEnabled, effort, out controlMode);
 		return jObject;
@@ -1679,6 +1684,17 @@ public static class AIConfigHandler
 	public static string BuildAuxiliaryRouterRequestJsonForExternal(string apiUrl, string modelName, IEnumerable<object> messages, int maxTokens, float temperature, out string controlMode, bool disableThinkingControls = false)
 	{
 		return BuildAuxiliaryRouterRequestPayload(apiUrl, modelName, messages, maxTokens, temperature, out controlMode, disableThinkingControls).ToString(Formatting.None);
+	}
+
+	private static string BuildAuxiliarySimpleDialogueRequestJson(string apiUrl, string modelName, IEnumerable<object> messages, int maxTokens, float temperature, out string controlMode)
+	{
+		int requestMaxTokens = Math.Max(Math.Max(16, maxTokens), maxTokens + 512);
+		JObject payload = BuildAuxiliaryRouterRequestPayload(apiUrl, modelName, messages, requestMaxTokens, temperature, out controlMode, disableThinkingControls: true);
+		if (DuelSettings.ApplyThinkingControls(payload, apiUrl, modelName, thinkingEnabled: false, DuelSettings.ReasoningEffortHigh, out var disabledThinkingMode))
+		{
+			controlMode = disabledThinkingMode;
+		}
+		return payload.ToString(Formatting.None);
 	}
 
 	private static bool TryGetAuxiliaryRuleRoutingConfig(out string apiUrl, out string apiKey, out string modelName)
@@ -2181,7 +2197,7 @@ public static class AIConfigHandler
 		string requestBodyForTokenStats = "";
 		try
 		{
-			string jsonBody = BuildAuxiliaryRouterRequestJsonForExternal(apiUrl, modelName, array, Math.Max(16, maxTokens), temperature, out var controlMode);
+			string jsonBody = BuildAuxiliarySimpleDialogueRequestJson(apiUrl, modelName, array, Math.Max(16, maxTokens), temperature, out var controlMode);
 			requestBodyForTokenStats = jsonBody;
 			using HttpRequestMessage httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, apiUrl);
 			httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);

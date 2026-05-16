@@ -9869,6 +9869,56 @@ public class MyBehavior : CampaignBehaviorBase
 		};
 	}
 
+	private static int GetCurrentHourOfDaySafeForPrompt()
+	{
+		try
+		{
+			int getHourOfDay = CampaignTime.Now.GetHourOfDay;
+			int hoursInDay = CampaignTime.HoursInDay;
+			if (hoursInDay > 0)
+			{
+				getHourOfDay %= hoursInDay;
+				if (getHourOfDay < 0)
+				{
+					getHourOfDay += hoursInDay;
+				}
+			}
+			return Math.Max(0, Math.Min(23, getHourOfDay));
+		}
+		catch
+		{
+			try
+			{
+				return Math.Max(0, Math.Min(23, (int)Math.Floor(CampaignTime.Now.CurrentHourInDay)));
+			}
+			catch
+			{
+				return 0;
+			}
+		}
+	}
+
+	private static string GetTimeOfDayTextZhForPrompt(int hourOfDay)
+	{
+		if (hourOfDay >= 5 && hourOfDay <= 10)
+		{
+			return "早晨";
+		}
+		if (hourOfDay >= 11 && hourOfDay <= 13)
+		{
+			return "中午";
+		}
+		if (hourOfDay >= 14 && hourOfDay <= 17)
+		{
+			return "下午";
+		}
+		if (hourOfDay >= 18 && hourOfDay <= 22)
+		{
+			return "晚上";
+		}
+		return "深夜";
+	}
+
 	private string BuildCurrentDateFactForPrompt()
 	{
 		try
@@ -9894,7 +9944,9 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				text = $"{num2}年{seasonTextZhForPrompt}第{num4}天";
 			}
-			return $"当前游戏日期：{text}（绝对天数第 {num} 天；{num2}年{seasonTextZhForPrompt}第{num4}天）";
+			int currentHourOfDaySafeForPrompt = GetCurrentHourOfDaySafeForPrompt();
+			string timeOfDayTextZhForPrompt = GetTimeOfDayTextZhForPrompt(currentHourOfDaySafeForPrompt);
+			return $"当前游戏日期：{text}{currentHourOfDaySafeForPrompt}时，{timeOfDayTextZhForPrompt}（绝对天数第 {num} 天；{num2}年{seasonTextZhForPrompt}第{num4}天；当日第 {currentHourOfDaySafeForPrompt} 时）";
 		}
 		catch
 		{

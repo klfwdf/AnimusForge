@@ -1,6 +1,9 @@
 using System;
+using System.Collections;
 using System.Diagnostics;
+using System.Reflection;
 using System.Runtime.InteropServices;
+using SandBox.View.Map;
 using TaleWorlds.Core;
 using TaleWorlds.Engine.GauntletUI;
 using TaleWorlds.InputSystem;
@@ -12,23 +15,40 @@ namespace AnimusForge;
 
 public sealed class ShoutTextInputPopup
 {
+	private enum PendingCloseAction
+	{
+		None,
+		Submit,
+		Cancel
+	}
+
 	private static ShoutTextInputPopup _activePopup;
 
 	private static readonly uint _currentProcessId = (uint)Process.GetCurrentProcess().Id;
 
+	private static readonly FieldInfo _screenLayersField = typeof(ScreenBase).GetField("_layers", BindingFlags.Instance | BindingFlags.NonPublic);
+
 	private const double FocusGuardGraceSeconds = 0.35;
 
+	private const double RestoreInputGuardGraceSeconds = 0.35;
+
 	private const int VirtualKeyEscape = 0x1B;
+
+	private const string EncyclopediaLayerName = "EncyclopediaBar";
 
 	private readonly ScreenBase _screen;
 
 	private readonly GauntletLayer _layer;
+
+	private GauntletMovieIdentifier _movieIdentifier;
 
 	private readonly ShoutTextInputPopupVM _dataSource;
 
 	private readonly Action<string> _onSubmit;
 
 	private readonly Action _onCancel;
+
+	private readonly Action _onTitleLink;
 
 	private readonly long _openedUtcTicks;
 
@@ -38,19 +58,32 @@ public sealed class ShoutTextInputPopup
 
 	private bool _rawEscapeWasDown;
 
+	private bool _allowTemporaryScreenSwitch;
+
+	private bool _isHiddenForTemporaryScreenSwitch;
+
+	private bool _temporaryScreenSwitchObserved;
+
+	private long _restoredFromTemporarySwitchUtcTicks;
+
+	private PendingCloseAction _pendingCloseAction;
+
+	private string _pendingSubmitText;
+
 	public static bool IsOpen => _activePopup != null && !_activePopup._isClosed;
 
-	private ShoutTextInputPopup(ScreenBase screen, string titleText, string subtitleText, string inputHintText, string initialText, Action<string> onSubmit, Action onCancel)
+	private ShoutTextInputPopup(ScreenBase screen, string titleText, string subtitleText, string inputHintText, string initialText, Action<string> onSubmit, Action onCancel, Action onTitleLink)
 	{
 		_screen = screen;
 		_onSubmit = onSubmit;
 		_onCancel = onCancel;
+		_onTitleLink = onTitleLink;
 		_openedUtcTicks = DateTime.UtcNow.Ticks;
-		_dataSource = new ShoutTextInputPopupVM(titleText, subtitleText, inputHintText, initialText, HandleSubmitRequested, HandleCancelRequested);
+		_dataSource = new ShoutTextInputPopupVM(titleText, subtitleText, inputHintText, initialText, HandleSubmitRequested, HandleCancelRequested, onTitleLink != null ? HandleTitleLinkRequested : (Action)null);
 		_layer = new GauntletLayer("ShoutTextInputPopup", 1000, false);
 	}
 
-	public static bool Show(string titleText, string subtitleText, string inputHintText, string initialText, Action<string> onSubmit, Action onCancel)
+	public static bool Show(string titleText, string subtitleText, string inputHintText, string initialText, Action<string> onSubmit, Action onCancel, Action onTitleLink = null)
 	{
 		ScreenBase topScreen = ScreenManager.TopScreen;
 		if (topScreen == null)
@@ -60,7 +93,7 @@ public sealed class ShoutTextInputPopup
 		try
 		{
 			_activePopup?.Close(silent: true);
-			ShoutTextInputPopup popup = new ShoutTextInputPopup(topScreen, titleText, subtitleText, inputHintText, initialText, onSubmit, onCancel);
+			ShoutTextInputPopup popup = new ShoutTextInputPopup(topScreen, titleText, subtitleText, inputHintText, initialText, onSubmit, onCancel, onTitleLink);
 			popup.Open();
 			_activePopup = popup;
 			return true;
@@ -88,6 +121,16 @@ public sealed class ShoutTextInputPopup
 		}
 		popup.HandleCancelRequested();
 		return true;
+	}
+
+	public static void ProcessDeferredCloseIfNeeded()
+	{
+		ShoutTextInputPopup popup = _activePopup;
+		if (popup == null || popup._isClosed)
+		{
+			return;
+		}
+		popup.ProcessPendingCloseAction();
 	}
 
 	public static void CloseForSystemInterruptionIfNeeded()
@@ -173,7 +216,15 @@ public sealed class ShoutTextInputPopup
 
 	private bool ShouldCancelForEscapeKey()
 	{
-		if (_isClosed)
+		if (_isClosed || _pendingCloseAction != PendingCloseAction.None)
+		{
+			return false;
+		}
+		if (_allowTemporaryScreenSwitch)
+		{
+			return false;
+		}
+		if (IsInRestoreInputGuardGrace())
 		{
 			return false;
 		}
@@ -210,6 +261,22 @@ public sealed class ShoutTextInputPopup
 		}
 	}
 
+	private bool IsInRestoreInputGuardGrace()
+	{
+		if (_restoredFromTemporarySwitchUtcTicks <= 0L)
+		{
+			return false;
+		}
+		try
+		{
+			return (DateTime.UtcNow - new DateTime(_restoredFromTemporarySwitchUtcTicks, DateTimeKind.Utc)).TotalSeconds < RestoreInputGuardGraceSeconds;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
 	private static bool IsRawEscapeDown()
 	{
 		if (!IsGameWindowFocused())
@@ -221,7 +288,7 @@ public sealed class ShoutTextInputPopup
 
 	private bool ShouldCancelForSystemInterruption()
 	{
-		if (_isClosed)
+		if (_isClosed || _pendingCloseAction != PendingCloseAction.None)
 		{
 			return false;
 		}
@@ -231,7 +298,31 @@ public sealed class ShoutTextInputPopup
 		}
 		try
 		{
-			if (!ReferenceEquals(ScreenManager.TopScreen, _screen))
+			ScreenBase topScreen = ScreenManager.TopScreen;
+			if (_allowTemporaryScreenSwitch)
+			{
+				if (IsEncyclopediaOpenForTemporarySwitch(topScreen))
+				{
+					_temporaryScreenSwitchObserved = true;
+					if (!_isHiddenForTemporaryScreenSwitch)
+					{
+						HidePopupForTemporaryScreenSwitch();
+					}
+					return false;
+				}
+				if (!ReferenceEquals(topScreen, _screen))
+				{
+					_temporaryScreenSwitchObserved = true;
+					return false;
+				}
+				if (_temporaryScreenSwitchObserved)
+				{
+					_allowTemporaryScreenSwitch = false;
+					RestorePopupAfterTemporaryScreenSwitch();
+				}
+				return false;
+			}
+			if (!ReferenceEquals(topScreen, _screen))
 			{
 				return true;
 			}
@@ -257,6 +348,138 @@ public sealed class ShoutTextInputPopup
 		return false;
 	}
 
+	private bool IsWaitingBehindTemporaryScreen()
+	{
+		try
+		{
+			return _allowTemporaryScreenSwitch && !ReferenceEquals(ScreenManager.TopScreen, _screen);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private bool IsEncyclopediaOpenForTemporarySwitch(ScreenBase topScreen)
+	{
+		return IsMapEncyclopediaOpen(topScreen) || HasLayerNamed(topScreen, EncyclopediaLayerName) || HasLayerNamed(_screen, EncyclopediaLayerName);
+	}
+
+	private static bool IsMapEncyclopediaOpen(ScreenBase screen)
+	{
+		try
+		{
+			MapScreen mapScreen = screen as MapScreen;
+			return mapScreen?.EncyclopediaScreenManager?.IsEncyclopediaOpen == true;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static bool HasLayerNamed(ScreenBase screen, string layerName)
+	{
+		if (screen == null || string.IsNullOrEmpty(layerName))
+		{
+			return false;
+		}
+		try
+		{
+			if (_screenLayersField?.GetValue(screen) is not IEnumerable layers)
+			{
+				return false;
+			}
+			foreach (object item in layers)
+			{
+				if (item is ScreenLayer layer && string.Equals(layer.Name, layerName, StringComparison.Ordinal))
+				{
+					return true;
+				}
+			}
+		}
+		catch
+		{
+		}
+		return false;
+	}
+
+	private void RestorePopupFocus()
+	{
+		try
+		{
+			_layer.IsFocusLayer = true;
+			ScreenManager.TrySetFocus(_layer);
+		}
+		catch
+		{
+		}
+	}
+
+	private void HidePopupForTemporaryScreenSwitch()
+	{
+		if (_isHiddenForTemporaryScreenSwitch)
+		{
+			return;
+		}
+		_isHiddenForTemporaryScreenSwitch = true;
+		_temporaryScreenSwitchObserved = false;
+		try
+		{
+			_movieIdentifier?.Movie?.RootWidget?.Hide();
+		}
+		catch
+		{
+		}
+		try
+		{
+			_layer.TwoDimensionView.SetEnable(false);
+			_layer.TwoDimensionView.Clear();
+		}
+		catch
+		{
+		}
+		try
+		{
+			_layer.InputRestrictions.ResetInputRestrictions();
+		}
+		catch
+		{
+		}
+		try
+		{
+			_layer.IsFocusLayer = false;
+			ScreenManager.TryLoseFocus(_layer);
+		}
+		catch
+		{
+		}
+	}
+
+	private void RestorePopupAfterTemporaryScreenSwitch()
+	{
+		try
+		{
+			_layer.TwoDimensionView.SetEnable(true);
+			_movieIdentifier?.Movie?.RootWidget?.Show();
+		}
+		catch
+		{
+		}
+		try
+		{
+			_layer.InputRestrictions.SetInputRestrictions(true, InputUsageMask.All);
+		}
+		catch
+		{
+		}
+		_isHiddenForTemporaryScreenSwitch = false;
+		_temporaryScreenSwitchObserved = false;
+		_restoredFromTemporarySwitchUtcTicks = DateTime.UtcNow.Ticks;
+		_rawEscapeWasDown = IsRawEscapeDown();
+		RestorePopupFocus();
+	}
+
 	private static void PauseCurrentMission()
 	{
 		try
@@ -274,7 +497,7 @@ public sealed class ShoutTextInputPopup
 	private void Open()
 	{
 		PauseCurrentMission();
-		_layer.LoadMovie("ShoutTextInputPopup", _dataSource);
+		_movieIdentifier = _layer.LoadMovie("ShoutTextInputPopup", _dataSource);
 		_layer.InputRestrictions.SetInputRestrictions(true, InputUsageMask.All);
 		try
 		{
@@ -292,14 +515,63 @@ public sealed class ShoutTextInputPopup
 
 	private void HandleSubmitRequested(string inputText)
 	{
-		Close(silent: true);
-		_onSubmit?.Invoke(inputText ?? "");
+		RequestDeferredClose(PendingCloseAction.Submit, inputText ?? "");
 	}
 
 	private void HandleCancelRequested()
 	{
+		RequestDeferredClose(PendingCloseAction.Cancel, null);
+	}
+
+	private void HandleTitleLinkRequested()
+	{
+		if (_isClosed || _onTitleLink == null)
+		{
+			return;
+		}
+		_allowTemporaryScreenSwitch = true;
+		HidePopupForTemporaryScreenSwitch();
+		try
+		{
+			_onTitleLink.Invoke();
+		}
+		catch (Exception ex)
+		{
+			_allowTemporaryScreenSwitch = false;
+			RestorePopupAfterTemporaryScreenSwitch();
+			Logger.Log("ShoutTextInputPopup", "[WARN] Failed to open title link: " + ex.Message);
+		}
+	}
+
+	private void RequestDeferredClose(PendingCloseAction closeAction, string submitText)
+	{
+		if (_isClosed || _pendingCloseAction != PendingCloseAction.None)
+		{
+			return;
+		}
+		_pendingCloseAction = closeAction;
+		_pendingSubmitText = submitText;
+	}
+
+	private void ProcessPendingCloseAction()
+	{
+		if (_isClosed || _pendingCloseAction == PendingCloseAction.None)
+		{
+			return;
+		}
+		PendingCloseAction closeAction = _pendingCloseAction;
+		string submitText = _pendingSubmitText ?? "";
+		_pendingCloseAction = PendingCloseAction.None;
+		_pendingSubmitText = null;
 		Close(silent: true);
-		_onCancel?.Invoke();
+		if (closeAction == PendingCloseAction.Submit)
+		{
+			_onSubmit?.Invoke(submitText);
+		}
+		else if (closeAction == PendingCloseAction.Cancel)
+		{
+			_onCancel?.Invoke();
+		}
 	}
 
 	private void Close(bool silent)
