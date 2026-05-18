@@ -13,6 +13,7 @@ using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Actions;
 using TaleWorlds.CampaignSystem.Encounters;
 using TaleWorlds.CampaignSystem.GameMenus;
+using TaleWorlds.CampaignSystem.MapEvents;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.CampaignSystem.Settlements.Locations;
@@ -2842,12 +2843,102 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		try
 		{
 			Settlement settlement = GetCurrentSettlementForOwnedSettlementPassiveAttack();
-			return settlement != null && Clan.PlayerClan != null && settlement.OwnerClan == Clan.PlayerClan;
+			if (settlement == null || Clan.PlayerClan == null || settlement.OwnerClan != Clan.PlayerClan)
+			{
+				return false;
+			}
+			if (IsOwnedSettlementPassiveAttackActive())
+			{
+				return true;
+			}
+			return IsOwnedSettlementPassiveAttackPeaceLocationScene(settlement);
 		}
 		catch
 		{
 			return false;
 		}
+	}
+
+	private bool IsOwnedSettlementPassiveAttackActive()
+	{
+		return _ownedSettlementPassiveVictimAgentIndices.Count > 0
+			|| _ownedSettlementPassiveDamagedAgentIndices.Count > 0
+			|| _ownedSettlementPassiveKnockdownAgentIndices.Count > 0
+			|| _ownedSettlementPassivePlayerTeam != null
+			|| _ownedSettlementPassiveEnemyTeam != null;
+	}
+
+	private bool IsOwnedSettlementPassiveAttackPeaceLocationScene(Settlement settlement)
+	{
+		try
+		{
+			Mission mission = Mission.Current;
+			if (mission == null || settlement == null)
+			{
+				return false;
+			}
+			if (IsCampaignBattleContextForOwnedSettlementPassiveAttack(mission, settlement))
+			{
+				return false;
+			}
+			if (PlayerEncounter.LocationEncounter == null || CampaignMission.Current?.Location == null)
+			{
+				return false;
+			}
+			Settlement encounterSettlement = PlayerEncounter.LocationEncounter.Settlement;
+			if (encounterSettlement != null && encounterSettlement != settlement)
+			{
+				return false;
+			}
+			string locationId = (CampaignMission.Current.Location.StringId ?? "").Trim().ToLowerInvariant();
+			if (locationId == "arena" || locationId == "training_field")
+			{
+				return false;
+			}
+			return true;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private bool IsCampaignBattleContextForOwnedSettlementPassiveAttack(Mission mission, Settlement settlement)
+	{
+		try
+		{
+			if (PlayerEncounter.Battle != null || PlayerEncounter.EncounteredBattle != null || MapEvent.PlayerMapEvent != null)
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			CampaignSiegeStateHandler siegeStateHandler = mission?.GetMissionBehavior<CampaignSiegeStateHandler>();
+			if (siegeStateHandler != null)
+			{
+				return true;
+			}
+			if (mission != null && (mission.MissionTeamAIType == Mission.MissionTeamAITypeEnum.Siege || mission.MissionTeamAIType == Mission.MissionTeamAITypeEnum.SallyOut || mission.MissionTeamAIType == Mission.MissionTeamAITypeEnum.FieldBattle))
+			{
+				return true;
+			}
+			if (mission != null && (mission.Mode == MissionMode.Deployment || mission.Mode == MissionMode.Stealth || mission.Mode == MissionMode.Duel))
+			{
+				return true;
+			}
+			if (settlement?.IsUnderSiege ?? false)
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		return false;
 	}
 
 	private static Settlement GetCurrentSettlementForOwnedSettlementPassiveAttack()

@@ -10083,6 +10083,257 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
+	public static async Task GeneratePromotedNonHeroCompanionProfileForExternalAsync(Hero hero, string personalName, string originalFullName, string originalTroopName, string originalTroopId, string cultureName, string sceneLabel, string joinEventFact, string dialogueHistory, string equipmentSummary)
+	{
+		try
+		{
+			MyBehavior inst = Campaign.Current?.GetCampaignBehavior<MyBehavior>();
+			if (inst != null && hero != null)
+			{
+				await inst.GeneratePromotedNonHeroCompanionProfileAsync(hero, personalName, originalFullName, originalTroopName, originalTroopId, cultureName, sceneLabel, joinEventFact, dialogueHistory, equipmentSummary);
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("NpcPersona", "[WARN] Promoted companion profile generation failed: " + ex.Message);
+		}
+	}
+
+	private async Task GeneratePromotedNonHeroCompanionProfileAsync(Hero hero, string personalName, string originalFullName, string originalTroopName, string originalTroopId, string cultureName, string sceneLabel, string joinEventFact, string dialogueHistory, string equipmentSummary)
+	{
+		if (hero == null)
+		{
+			return;
+		}
+		string heroId = (hero.StringId ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(heroId))
+		{
+			return;
+		}
+		string name = string.IsNullOrWhiteSpace(personalName) ? (hero.Name?.ToString() ?? "新同伴") : personalName.Trim();
+		string fullName = string.IsNullOrWhiteSpace(originalFullName) ? name : originalFullName.Trim();
+		string troopName = string.IsNullOrWhiteSpace(originalTroopName) ? "非英雄NPC" : originalTroopName.Trim();
+		string troopId = (originalTroopId ?? "").Trim();
+		string culture = string.IsNullOrWhiteSpace(cultureName) ? "未知文化" : cultureName.Trim();
+		string scene = string.IsNullOrWhiteSpace(sceneLabel) ? "当前场景" : sceneLabel.Trim();
+		string joinFact = string.IsNullOrWhiteSpace(joinEventFact) ? (name + "同意追随玩家并加入玩家队伍。") : joinEventFact.Trim();
+		string history = string.IsNullOrWhiteSpace(dialogueHistory) ? "（无可用加入前对话历史）" : dialogueHistory.Trim();
+		string equipment = string.IsNullOrWhiteSpace(equipmentSummary) ? "（无装备）" : equipmentSummary.Trim();
+		bool personaSaved = false;
+		try
+		{
+			string sys = "你是《骑马与砍杀2：霸主》NPC的人设生成器。你只输出严格 JSON，不要输出任何额外文字。JSON 仅包含两个字段：personality 和 background。personality 大约 300 个中文字符；background 大约 300 个中文字符。内容必须符合提供的事实，不要杜撰与事实冲突的家族关系、身份或势力。";
+			StringBuilder userSb = new StringBuilder();
+			userSb.AppendLine("请基于以下信息生成该 NPC 升格为玩家同伴后的【个性】与【历史背景】。");
+			userSb.AppendLine("写作风格沿用首次见到 Hero NPC 的人设格式：具体、可用于后续对话，不要写成系统说明。");
+			userSb.AppendLine("背景必须解释他/她为何愿意追随玩家，并吸收加入前对话中的关系、承诺、冲突、交易或共同经历；如果历史里没有相关内容，明确写成谨慎而合理的动机，不要凭空创造重大事件。");
+			userSb.AppendLine("个人名: " + name);
+			userSb.AppendLine("原完整称呼: " + fullName);
+			userSb.AppendLine("原兵种/职业: " + troopName + (string.IsNullOrWhiteSpace(troopId) ? "" : (" (StringId=" + troopId + ")")));
+			userSb.AppendLine("文化: " + culture);
+			userSb.AppendLine("当前场景: " + scene);
+			userSb.AppendLine("加入事件: " + joinFact);
+			userSb.AppendLine("加入前该 NPC 与玩家的全部可用对话历史:");
+			userSb.AppendLine(history);
+			ApiCallResult apiCallResult = await CallUniversalApiDetailed(sys, userSb.ToString().Trim(), route: UniversalApiRoute.Auxiliary);
+			string resp = apiCallResult.Success ? (apiCallResult.Content ?? "") : "";
+			if (!string.IsNullOrWhiteSpace(resp) && TryParsePersonaJson(resp, out var genP, out var genB))
+			{
+				genP = TrimToMaxChars(genP, 420);
+				genB = TrimToMaxChars(genB, 520);
+				if (string.IsNullOrWhiteSpace(genP) && !string.IsNullOrWhiteSpace(genB))
+				{
+					genP = genB;
+				}
+				if (string.IsNullOrWhiteSpace(genB) && !string.IsNullOrWhiteSpace(genP))
+				{
+					genB = genP;
+				}
+				NpcPersonaProfile prof = GetNpcPersonaProfile(hero, createIfMissing: true) ?? new NpcPersonaProfile();
+				prof.Personality = genP.Trim();
+				prof.Background = genB.Trim();
+				SaveNpcPersonaProfile(hero, prof);
+				personaSaved = !string.IsNullOrWhiteSpace(prof.Personality) || !string.IsNullOrWhiteSpace(prof.Background);
+				Logger.Log("NpcPersona", "Promoted companion persona generated hero=" + heroId + " name=" + name);
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("NpcPersona", "[WARN] Promoted companion persona generation error hero=" + heroId + ": " + ex.Message);
+		}
+		if (!personaSaved)
+		{
+			NpcPersonaProfile prof = GetNpcPersonaProfile(hero, createIfMissing: true) ?? new NpcPersonaProfile();
+			if (string.IsNullOrWhiteSpace(prof.Personality))
+			{
+				prof.Personality = TrimToMaxChars(name + "曾是" + troopName + "，保留着原本职业养成的警觉、纪律和生存本能；面对玩家时，他会把加入前的承诺与利害放在心里，既愿意服从队伍安排，也会在危险或失信时变得谨慎。", 420);
+			}
+			if (string.IsNullOrWhiteSpace(prof.Background))
+			{
+				prof.Background = TrimToMaxChars(joinFact + "他原本以“" + fullName + "”的身份在" + scene + "活动，加入后只以个人名“" + name + "”示人。此前对话中可用的经历会成为他追随玩家的理由：" + TrimToMaxChars(history, 240), 520);
+			}
+			SaveNpcPersonaProfile(hero, prof);
+		}
+		await GeneratePromotedNonHeroCompanionSkillsAsync(hero, name, troopName, culture, equipment);
+	}
+
+	private async Task GeneratePromotedNonHeroCompanionSkillsAsync(Hero hero, string personalName, string originalTroopName, string cultureName, string equipmentSummary)
+	{
+		if (hero == null)
+		{
+			return;
+		}
+		try
+		{
+			GetNpcPersonaStrings(hero, out var personality, out var background);
+			string sys = "你是《骑马与砍杀2：霸主》的同伴技能生成器。你只输出严格 JSON，不要输出任何额外文字。JSON 格式为 {\"skills\":{\"OneHanded\":数值,...}}。只使用给出的技能ID，数值为 0 到 330 的整数。";
+			StringBuilder userSb = new StringBuilder();
+			userSb.AppendLine("请根据原兵种、装备、文化与人设摘要，为这个刚升格的 Hero 同伴生成合理技能。不要过强；士兵应主要强化其实际武器、骑术/跑动和少量战术/领导。");
+			userSb.AppendLine("可用技能ID: OneHanded, TwoHanded, Polearm, Bow, Crossbow, Throwing, Riding, Athletics, Crafting, Scouting, Tactics, Roguery, Charm, Leadership, Trade, Steward, Medicine, Engineering");
+			userSb.AppendLine("个人名: " + personalName);
+			userSb.AppendLine("原兵种: " + originalTroopName);
+			userSb.AppendLine("文化: " + cultureName);
+			userSb.AppendLine("装备: " + equipmentSummary);
+			userSb.AppendLine("当前基础技能(来自原兵种模板，生成失败时保留这些值): " + BuildPromotedHeroSkillSummary(hero));
+			userSb.AppendLine("人设摘要: " + TrimToMaxChars((personality + " " + background).Trim(), 700));
+			ApiCallResult apiCallResult = await CallUniversalApiDetailed(sys, userSb.ToString().Trim(), route: UniversalApiRoute.Auxiliary);
+			string resp = apiCallResult.Success ? (apiCallResult.Content ?? "") : "";
+			if (!TryApplyPromotedHeroSkillJson(hero, resp))
+			{
+				Logger.Log("NpcPersona", "Promoted companion skill generation fallback hero=" + (hero.StringId ?? "") + ": keeping template skills.");
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("NpcPersona", "[WARN] Promoted companion skill generation error hero=" + (hero.StringId ?? "") + ": " + ex.Message);
+		}
+	}
+
+	private static SkillObject[] GetPromotedCompanionSkillObjects()
+	{
+		return new SkillObject[18]
+		{
+			DefaultSkills.OneHanded,
+			DefaultSkills.TwoHanded,
+			DefaultSkills.Polearm,
+			DefaultSkills.Bow,
+			DefaultSkills.Crossbow,
+			DefaultSkills.Throwing,
+			DefaultSkills.Riding,
+			DefaultSkills.Athletics,
+			DefaultSkills.Crafting,
+			DefaultSkills.Scouting,
+			DefaultSkills.Tactics,
+			DefaultSkills.Roguery,
+			DefaultSkills.Charm,
+			DefaultSkills.Leadership,
+			DefaultSkills.Trade,
+			DefaultSkills.Steward,
+			DefaultSkills.Medicine,
+			DefaultSkills.Engineering
+		};
+	}
+
+	private static string BuildPromotedHeroSkillSummary(Hero hero)
+	{
+		if (hero == null)
+		{
+			return "（无）";
+		}
+		List<string> list = new List<string>();
+		foreach (SkillObject skill in GetPromotedCompanionSkillObjects())
+		{
+			if (skill != null)
+			{
+				list.Add(skill.StringId + "=" + hero.GetSkillValue(skill));
+			}
+		}
+		return list.Count == 0 ? "（无）" : string.Join(", ", list);
+	}
+
+	private static bool TryApplyPromotedHeroSkillJson(Hero hero, string raw)
+	{
+		if (hero == null || string.IsNullOrWhiteSpace(raw))
+		{
+			return false;
+		}
+		try
+		{
+			string text = raw.Trim();
+			if (text.StartsWith("```", StringComparison.Ordinal))
+			{
+				int firstLine = text.IndexOf('\n');
+				if (firstLine >= 0)
+				{
+					text = text.Substring(firstLine + 1).Trim();
+				}
+				int fence = text.LastIndexOf("```", StringComparison.Ordinal);
+				if (fence >= 0)
+				{
+					text = text.Substring(0, fence).Trim();
+				}
+			}
+			int start = text.IndexOf('{');
+			int end = text.LastIndexOf('}');
+			if (start >= 0 && end > start)
+			{
+				text = text.Substring(start, end - start + 1);
+			}
+			JObject root = JObject.Parse(text);
+			JObject skillsObj = root["skills"] as JObject ?? root["Skills"] as JObject ?? root;
+			Dictionary<string, SkillObject> skillMap = BuildPromotedSkillMap();
+			int applied = 0;
+			foreach (JProperty prop in skillsObj.Properties())
+			{
+				string key = NormalizePromotedSkillKey(prop.Name);
+				if (!skillMap.TryGetValue(key, out var skill) || skill == null)
+				{
+					continue;
+				}
+				if (!int.TryParse(prop.Value?.ToString() ?? "", out var value))
+				{
+					continue;
+				}
+				value = Math.Max(0, Math.Min(330, value));
+				hero.SetSkillValue(skill, value);
+				applied++;
+			}
+			if (applied > 0)
+			{
+				Logger.Log("NpcPersona", "Promoted companion skills applied hero=" + (hero.StringId ?? "") + " count=" + applied);
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		return false;
+	}
+
+	private static Dictionary<string, SkillObject> BuildPromotedSkillMap()
+	{
+		Dictionary<string, SkillObject> map = new Dictionary<string, SkillObject>(StringComparer.OrdinalIgnoreCase);
+		foreach (SkillObject skill in GetPromotedCompanionSkillObjects())
+		{
+			if (skill == null)
+			{
+				continue;
+			}
+			map[NormalizePromotedSkillKey(skill.StringId)] = skill;
+			map[NormalizePromotedSkillKey(skill.Name?.ToString())] = skill;
+		}
+		map["smithing"] = DefaultSkills.Crafting;
+		map["crafting"] = DefaultSkills.Crafting;
+		return map;
+	}
+
+	private static string NormalizePromotedSkillKey(string key)
+	{
+		string text = (key ?? "").Trim().ToLowerInvariant();
+		text = Regex.Replace(text, "[^a-z0-9]", "");
+		return text;
+	}
+
 	private static string BuildPlayerClanUnmarriedCandidatesForPrompt(Hero playerHero, Hero targetHero, int maxEntries = 12)
 	{
 		try

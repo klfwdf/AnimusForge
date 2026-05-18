@@ -7,6 +7,8 @@ using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Actions;
+using TaleWorlds.CampaignSystem.CampaignBehaviors;
+using TaleWorlds.CampaignSystem.CharacterDevelopment;
 using TaleWorlds.CampaignSystem.ComponentInterfaces;
 using TaleWorlds.CampaignSystem.Encounters;
 using TaleWorlds.CampaignSystem.MapEvents;
@@ -17,6 +19,7 @@ using TaleWorlds.CampaignSystem.Settlements.Locations;
 using TaleWorlds.CampaignSystem.Settlements.Workshops;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
+using TaleWorlds.Localization;
 using TaleWorlds.MountAndBlade;
 
 namespace AnimusForge;
@@ -349,6 +352,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 
 	public override void RegisterEvents()
 	{
+		CampaignEvents.OnGameLoadFinishedEvent.AddNonSerializedListener(this, OnGameLoadFinished);
 		CampaignEvents.DailyTickEvent.AddNonSerializedListener(this, OnDailyTick);
 		CampaignEvents.MapEventEnded.AddNonSerializedListener(this, OnMapEventEnded);
 		CampaignEvents.OnPlayerPartyKnockedOrKilledTroopEvent.AddNonSerializedListener(this, OnPlayerPartyKnockedOrKilledTroop);
@@ -510,6 +514,39 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			_publicTrustProgressCarryStorage = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
 			_merchantFacts = new Dictionary<string, MerchantFactRecord>(StringComparer.OrdinalIgnoreCase);
 			_merchantFactStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+		}
+	}
+
+	private void OnGameLoadFinished()
+	{
+		CleanupPlayerCompanionLordCacheDuplicates("game_load_finished");
+	}
+
+	private static void CleanupPlayerCompanionLordCacheDuplicates(string reason)
+	{
+		try
+		{
+			Clan playerClan = Clan.PlayerClan;
+			if (playerClan == null || playerClan.Companions == null)
+			{
+				return;
+			}
+			List<Hero> duplicates = playerClan.Companions
+				.Where((Hero hero) => hero != null && hero.IsPlayerCompanion && hero.IsWanderer && (playerClan.AliveLords?.Contains(hero) == true || playerClan.DeadLords?.Contains(hero) == true))
+				.Distinct()
+				.ToList();
+			foreach (Hero hero in duplicates)
+			{
+				hero.Clan = null;
+			}
+			if (duplicates.Count > 0)
+			{
+				Logger.Log("RewardSystemBehavior", "[NonHeroJoin] companion_lord_cache_cleanup reason=" + (reason ?? "") + " count=" + duplicates.Count + " heroes=" + string.Join(",", duplicates.Select((Hero h) => h?.StringId ?? "").Where((string x) => !string.IsNullOrWhiteSpace(x))));
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("RewardSystemBehavior", "[NonHeroJoin] companion_lord_cache_cleanup_failed reason=" + (reason ?? "") + " error=" + ex.Message);
 		}
 	}
 
@@ -3069,6 +3106,758 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			statusText = "执行失败（异常）：" + ex.Message;
 			return false;
+		}
+	}
+
+	public bool TryApplyNonHeroJoinPlayerPartyTagForExternal(CharacterObject joiningCharacter, int targetAgentIndex, ref string responseText, out List<string> generatedFacts, out List<string> notifications)
+	{
+		return TryApplyNonHeroJoinPlayerPartyTagForExternal(joiningCharacter, targetAgentIndex, "", "", ref responseText, out generatedFacts, out notifications);
+	}
+
+	public bool TryApplyNonHeroJoinPlayerPartyTagForExternal(CharacterObject joiningCharacter, int targetAgentIndex, string promptGivenName, string promptDisplayName, ref string responseText, out List<string> generatedFacts, out List<string> notifications)
+	{
+		generatedFacts = new List<string>();
+		notifications = new List<string>();
+		if (joiningCharacter == null || string.IsNullOrEmpty(responseText))
+		{
+			return false;
+		}
+		Regex regex = new Regex("\\[A:H_J_P_P\\]", RegexOptions.IgnoreCase);
+		if (!regex.IsMatch(responseText))
+		{
+			return false;
+		}
+		string latestReplyWithoutTag = regex.Replace(responseText, string.Empty).Trim();
+		string statusText;
+		Hero promotedHero;
+		bool flag = TryApplyNonHeroJoinPlayerPartyForExternal(joiningCharacter, targetAgentIndex, promptGivenName, promptDisplayName, latestReplyWithoutTag, out statusText, out promotedHero);
+		responseText = latestReplyWithoutTag;
+		if (!string.IsNullOrWhiteSpace(statusText))
+		{
+			string text = (flag ? "【加入队伍】" : "【加入队伍失败】") + statusText;
+			string factName = promotedHero?.Name?.ToString() ?? ResolveNonHeroFullDisplayName(joiningCharacter, promptDisplayName, promptGivenName, targetAgentIndex);
+			generatedFacts.Add("[AFEF NPC行为补充] " + (string.IsNullOrWhiteSpace(factName) ? "NPC" : factName) + ": " + statusText);
+			notifications.Add(text);
+		}
+		return true;
+	}
+
+	public bool TryApplyNonHeroJoinPlayerPartyForExternal(CharacterObject joiningCharacter, int targetAgentIndex, out string statusText)
+	{
+		Hero promotedHero;
+		return TryApplyNonHeroJoinPlayerPartyForExternal(joiningCharacter, targetAgentIndex, "", "", "", out statusText, out promotedHero);
+	}
+
+	public bool TryApplyNonHeroJoinPlayerPartyForExternal(CharacterObject joiningCharacter, int targetAgentIndex, string promptGivenName, string promptDisplayName, string latestReply, out string statusText, out Hero promotedHero)
+	{
+		statusText = "";
+		promotedHero = null;
+		try
+		{
+			if (joiningCharacter == null)
+			{
+				statusText = "执行失败：缺少要加入队伍的非英雄NPC。";
+				return false;
+			}
+			if (joiningCharacter.IsHero)
+			{
+				statusText = "执行失败：目标是英雄，应走英雄入队链路。";
+				return false;
+			}
+			if (MobileParty.MainParty == null || Hero.MainHero == null || Clan.PlayerClan == null)
+			{
+				statusText = "执行失败：玩家队伍或玩家家族不可用。";
+				return false;
+			}
+			int count;
+			bool fromTavernMercenaryPool;
+			if (TryResolveTavernMercenaryPoolJoinCount(joiningCharacter, targetAgentIndex, out count, out fromTavernMercenaryPool) && fromTavernMercenaryPool)
+			{
+				count = Math.Max(1, count);
+				MobileParty.MainParty.MemberRoster.AddToCounts(joiningCharacter, count, false, 0, 0, true, -1);
+				CampaignEventDispatcher.Instance.OnUnitRecruited(joiningCharacter, count);
+				RemoveJoinedNonHeroLocationCharacters(joiningCharacter, targetAgentIndex, removeAllMatchingTavernMercenaries: true);
+				RemoveJoinedLiveAgent(targetAgentIndex);
+				string name = joiningCharacter.Name?.ToString() ?? "该NPC";
+				statusText = $"执行成功：酒馆中 {count} 名{name} 已全部作为普通士兵加入玩家队伍。";
+				return true;
+			}
+			return TryPromoteNonHeroToCompanion(joiningCharacter, targetAgentIndex, promptGivenName, promptDisplayName, latestReply, out statusText, out promotedHero);
+		}
+		catch (Exception ex)
+		{
+			statusText = "执行失败（异常）：" + ex.Message;
+			return false;
+		}
+	}
+
+	private static bool TryResolveTavernMercenaryPoolJoinCount(CharacterObject joiningCharacter, int targetAgentIndex, out int count, out bool fromTavernMercenaryPool)
+	{
+		count = 1;
+		fromTavernMercenaryPool = false;
+		if (joiningCharacter == null || !IsTavernMercenaryLike(joiningCharacter) || !IsCurrentJoinTargetInTavern(joiningCharacter, targetAgentIndex))
+		{
+			return false;
+		}
+		Settlement settlement = Settlement.CurrentSettlement ?? PlayerEncounter.EncounterSettlement ?? MobileParty.MainParty?.CurrentSettlement;
+		if (settlement == null || !settlement.IsTown)
+		{
+			return false;
+		}
+		try
+		{
+			RecruitmentCampaignBehavior recruitmentCampaignBehavior = Campaign.Current?.GetCampaignBehavior<RecruitmentCampaignBehavior>();
+			RecruitmentCampaignBehavior.TownMercenaryData mercenaryData = recruitmentCampaignBehavior?.GetMercenaryData(settlement.Town);
+			if (mercenaryData != null && mercenaryData.TroopType == joiningCharacter && mercenaryData.Number > 0)
+			{
+				count = mercenaryData.Number;
+				mercenaryData.ChangeMercenaryCount(-count);
+				fromTavernMercenaryPool = true;
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		return false;
+	}
+
+	private static bool TryPromoteNonHeroToCompanion(CharacterObject joiningCharacter, int targetAgentIndex, string promptGivenName, string promptDisplayName, string latestReply, out string statusText, out Hero promotedHero)
+	{
+		statusText = "";
+		promotedHero = null;
+		Agent agent = ResolveAgentForIndex(targetAgentIndex);
+		if (agent == null || !agent.IsActive())
+		{
+			statusText = "执行失败：找不到当前说话 NPC 的 live Agent，无法复制外观与装备，已取消升格。";
+			return false;
+		}
+		CharacterObject template = agent.Character as CharacterObject;
+		if (template == null)
+		{
+			template = joiningCharacter;
+		}
+		if (template == null || template.IsHero)
+		{
+			statusText = "执行失败：当前 Agent 不是可升格的非英雄兵种模板。";
+			return false;
+		}
+		if (!TryCaptureAgentBodyProperties(agent, out var bodyProperties, out var bodyError))
+		{
+			statusText = "执行失败：复制当前 NPC 外观失败（" + bodyError + "），已取消升格。";
+			return false;
+		}
+		if (!TryCaptureAgentEquipment(agent, out var capturedEquipment, out var equipmentError))
+		{
+			statusText = "执行失败：复制当前 NPC 装备失败（" + equipmentError + "），已取消升格。";
+			return false;
+		}
+		string originalFullName = ResolveNonHeroFullDisplayName(template, promptDisplayName, promptGivenName, targetAgentIndex);
+		string originalTroopName = template.Name?.ToString() ?? joiningCharacter.Name?.ToString() ?? "非英雄NPC";
+		string personalName = ResolveNonHeroPersonalName(promptGivenName, originalFullName, originalTroopName);
+		if (string.IsNullOrWhiteSpace(personalName))
+		{
+			statusText = "执行失败：无法确定升格 Hero 的个人名，已取消升格。";
+			return false;
+		}
+		Settlement bornSettlement = Settlement.CurrentSettlement ?? PlayerEncounter.EncounterSettlement ?? MobileParty.MainParty?.CurrentSettlement;
+		int age = ResolvePromotedHeroAge(bodyProperties, template);
+		Hero hero = HeroCreator.CreateSpecialHero(template, bornSettlement, null, null, age);
+		TextObject heroName = new TextObject(personalName);
+		hero.SetName(heroName, heroName);
+		hero.StaticBodyProperties = bodyProperties.StaticProperties;
+		hero.Weight = ClampBodyShape01(bodyProperties.DynamicProperties.Weight);
+		hero.Build = ClampBodyShape01(bodyProperties.DynamicProperties.Build);
+		hero.SetNewOccupation(Occupation.Wanderer);
+		ApplyTemplateSkillsToHero(hero, template);
+		ApplyPromotedCompanionRandomTraits(hero, template);
+		CopyCapturedEquipmentToHero(hero, capturedEquipment);
+		AddCompanionAction.Apply(Clan.PlayerClan, hero);
+		CleanupPlayerCompanionLordCacheDuplicates("after_nonhero_promotion");
+		AddHeroToPartyAction.Apply(hero, MobileParty.MainParty, showNotification: true);
+		bool sceneFollowStarted = ShoutBehavior.TryForceSceneFollowPlayerForExternal(targetAgentIndex, transient: true, reason: "nonhero_join_party_promotion");
+		RemoveJoinedNonHeroLocationCharacters(template, targetAgentIndex, removeAllMatchingTavernMercenaries: false);
+		string cultureName = template.Culture?.Name?.ToString() ?? template.Culture?.StringId ?? "";
+		string sceneLabel = BuildCurrentSceneLabelForPrompt();
+		List<string> dialogueHistory = ShoutBehavior.GetAuxiliarySceneDialogueHistoryLinesForExternal(targetAgentIndex, 40) ?? new List<string>();
+		string cleanLatestReply = StripNonHeroJoinTag(latestReply);
+		if (!string.IsNullOrWhiteSpace(cleanLatestReply))
+		{
+			dialogueHistory.Add((string.IsNullOrWhiteSpace(originalFullName) ? "NPC" : originalFullName) + ": " + cleanLatestReply);
+		}
+		string joinFact = $"{hero.Name} 原为{originalTroopName}，在 {sceneLabel} 同意追随玩家并加入玩家队伍。";
+		MyBehavior.AppendExternalDialogueHistory(hero, null, null, "[AFEF NPC行为补充] " + joinFact);
+		AppendPromotedHeroPriorHistory(hero, dialogueHistory);
+		string equipmentSummary = BuildEquipmentSummaryForPrompt(capturedEquipment);
+		_ = MyBehavior.GeneratePromotedNonHeroCompanionProfileForExternalAsync(hero, personalName, originalFullName, originalTroopName, template.StringId ?? "", cultureName, sceneLabel, joinFact, BuildDialogueHistoryForPrompt(dialogueHistory), equipmentSummary);
+		promotedHero = hero;
+		statusText = $"执行成功：{originalFullName} 已升格为 Hero 同伴“{hero.Name}”，并加入玩家队伍{(sceneFollowStarted ? "，当前场景中已开始跟随玩家" : "")}。";
+		return true;
+	}
+
+	private static bool IsTavernMercenaryLike(CharacterObject character)
+	{
+		if (character == null)
+		{
+			return false;
+		}
+		return character.Occupation == Occupation.Mercenary || character.Occupation == Occupation.CaravanGuard || character.Occupation == Occupation.Gangster;
+	}
+
+	private static bool IsCurrentJoinTargetInTavern(CharacterObject character, int targetAgentIndex)
+	{
+		try
+		{
+			if (CampaignMission.Current?.Location?.StringId == "tavern")
+			{
+				return true;
+			}
+			LocationCharacter locationCharacter = ResolveLocationCharacterForAgentIndex(targetAgentIndex) ?? LocationComplex.Current?.GetFirstLocationCharacterOfCharacter(character);
+			Location location = (locationCharacter == null) ? null : LocationComplex.Current?.GetLocationOfCharacter(locationCharacter);
+			return string.Equals(location?.StringId, "tavern", StringComparison.OrdinalIgnoreCase);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static Agent ResolveAgentForIndex(int targetAgentIndex)
+	{
+		try
+		{
+			if (targetAgentIndex < 0 || Mission.Current == null)
+			{
+				return null;
+			}
+			return Mission.Current.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == targetAgentIndex);
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static bool TryCaptureAgentBodyProperties(Agent agent, out BodyProperties bodyProperties, out string error)
+	{
+		bodyProperties = default(BodyProperties);
+		error = "";
+		try
+		{
+			if (agent == null || !agent.IsActive())
+			{
+				error = "Agent 不存在或已失效";
+				return false;
+			}
+			bodyProperties = agent.BodyPropertiesValue;
+			if (bodyProperties.StaticProperties.Equals(default(StaticBodyProperties)) && bodyProperties.DynamicProperties.Age <= 0f)
+			{
+				error = "Agent BodyProperties 为空";
+				return false;
+			}
+			return true;
+		}
+		catch (Exception ex)
+		{
+			error = ex.Message;
+			return false;
+		}
+	}
+
+	private static bool TryCaptureAgentEquipment(Agent agent, out Equipment equipment, out string error)
+	{
+		equipment = null;
+		error = "";
+		try
+		{
+			if (agent == null || !agent.IsActive())
+			{
+				error = "Agent 不存在或已失效";
+				return false;
+			}
+			equipment = agent.SpawnEquipment?.Clone(false);
+			if (equipment == null)
+			{
+				error = "SpawnEquipment 为空";
+				return false;
+			}
+			try
+			{
+				for (int i = 0; i < 12; i++)
+				{
+					EquipmentIndex index = (EquipmentIndex)i;
+					MissionWeapon missionWeapon = agent.Equipment[index];
+					if (missionWeapon.Item != null)
+					{
+						equipment[index] = new EquipmentElement(missionWeapon.Item, missionWeapon.ItemModifier, null, false);
+					}
+				}
+			}
+			catch
+			{
+			}
+			if (equipment.IsEmpty())
+			{
+				error = "当前装备为空";
+				return false;
+			}
+			return true;
+		}
+		catch (Exception ex)
+		{
+			error = ex.Message;
+			equipment = null;
+			return false;
+		}
+	}
+
+	private static void CopyCapturedEquipmentToHero(Hero hero, Equipment capturedEquipment)
+	{
+		if (hero == null || capturedEquipment == null)
+		{
+			return;
+		}
+		CopyEquipmentSlots(hero.BattleEquipment, capturedEquipment);
+		CopyEquipmentSlots(hero.CivilianEquipment, capturedEquipment);
+		CopyEquipmentSlots(hero.StealthEquipment, capturedEquipment);
+	}
+
+	private static void ApplyPromotedCompanionRandomTraits(Hero hero, CharacterObject template)
+	{
+		if (hero == null)
+		{
+			return;
+		}
+		try
+		{
+			List<TraitObject> personalityTraits = new List<TraitObject>
+			{
+				DefaultTraits.Mercy,
+				DefaultTraits.Valor,
+				DefaultTraits.Honor,
+				DefaultTraits.Generosity,
+				DefaultTraits.Calculating
+			}.Where((TraitObject trait) => trait != null).ToList();
+			if (personalityTraits.Count <= 0)
+			{
+				return;
+			}
+			foreach (TraitObject trait in personalityTraits)
+			{
+				int templateLevel = 0;
+				try
+				{
+					templateLevel = template?.GetTraitLevel(trait) ?? 0;
+				}
+				catch
+				{
+					templateLevel = 0;
+				}
+				hero.SetTraitLevel(trait, MBMath.ClampInt(templateLevel, trait.MinValue, trait.MaxValue));
+			}
+			int currentNonZeroCount = personalityTraits.Count((TraitObject trait) => hero.GetTraitLevel(trait) != 0);
+			float roll = MBRandom.RandomFloat;
+			int targetNonZeroCount = (roll < 0.2f) ? 1 : ((roll < 0.85f) ? 2 : 3);
+			List<TraitObject> candidates = personalityTraits.Where((TraitObject trait) => hero.GetTraitLevel(trait) == 0).ToList();
+			while (currentNonZeroCount < targetNonZeroCount && candidates.Count > 0)
+			{
+				int index = MBRandom.RandomInt(candidates.Count);
+				TraitObject trait = candidates[index];
+				candidates.RemoveAt(index);
+				int magnitude = (MBRandom.RandomFloat < 0.85f) ? 1 : 2;
+				int signedLevel = (MBRandom.RandomFloat < 0.5f) ? (-magnitude) : magnitude;
+				signedLevel = MBMath.ClampInt(signedLevel, trait.MinValue, trait.MaxValue);
+				if (signedLevel == 0)
+				{
+					signedLevel = trait.MaxValue > 0 ? 1 : ((trait.MinValue < 0) ? (-1) : 0);
+				}
+				if (signedLevel == 0)
+				{
+					continue;
+				}
+				hero.SetTraitLevel(trait, signedLevel);
+				currentNonZeroCount++;
+			}
+			Logger.Log("RewardSystemBehavior", "[NonHeroJoin] promoted_traits hero=" + (hero.StringId ?? "") + " " + BuildPromotedCompanionTraitSummary(hero, personalityTraits));
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("RewardSystemBehavior", "[NonHeroJoin] promoted_traits_failed hero=" + (hero.StringId ?? "null") + " error=" + ex.Message);
+		}
+	}
+
+	private static string BuildPromotedCompanionTraitSummary(Hero hero, IEnumerable<TraitObject> traits)
+	{
+		if (hero == null || traits == null)
+		{
+			return "";
+		}
+		List<string> parts = new List<string>();
+		foreach (TraitObject trait in traits)
+		{
+			if (trait == null)
+			{
+				continue;
+			}
+			try
+			{
+				parts.Add((trait.StringId ?? "trait") + "=" + hero.GetTraitLevel(trait));
+			}
+			catch
+			{
+			}
+		}
+		return string.Join(",", parts);
+	}
+
+	private static void CopyEquipmentSlots(Equipment target, Equipment source)
+	{
+		if (target == null || source == null)
+		{
+			return;
+		}
+		for (int i = 0; i < 12; i++)
+		{
+			target[i] = new EquipmentElement(source[i].Item, source[i].ItemModifier, null, false);
+		}
+	}
+
+	private static string ResolveNonHeroFullDisplayName(CharacterObject joiningCharacter, string promptDisplayName, string promptGivenName, int targetAgentIndex)
+	{
+		string text = (promptDisplayName ?? "").Trim();
+		string troopName = (joiningCharacter?.Name?.ToString() ?? "").Trim();
+		string given = (promptGivenName ?? "").Trim();
+		if (!string.IsNullOrWhiteSpace(text) && !string.Equals(text, given, StringComparison.OrdinalIgnoreCase))
+		{
+			if (!string.IsNullOrWhiteSpace(troopName) && !text.Contains(troopName) && !string.IsNullOrWhiteSpace(given))
+			{
+				return troopName + given;
+			}
+			return text;
+		}
+		if (!string.IsNullOrWhiteSpace(troopName) && !string.IsNullOrWhiteSpace(given))
+		{
+			return troopName + given;
+		}
+		try
+		{
+			string agentName = ResolveAgentForIndex(targetAgentIndex)?.Name;
+			if (!string.IsNullOrWhiteSpace(agentName))
+			{
+				return agentName.Trim();
+			}
+		}
+		catch
+		{
+		}
+		return string.IsNullOrWhiteSpace(troopName) ? given : troopName;
+	}
+
+	private static string ResolveNonHeroPersonalName(string promptGivenName, string fullDisplayName, string originalTroopName)
+	{
+		string given = SanitizeHeroPersonalName(promptGivenName);
+		if (!string.IsNullOrWhiteSpace(given))
+		{
+			return given;
+		}
+		string full = (fullDisplayName ?? "").Trim();
+		string troop = (originalTroopName ?? "").Trim();
+		if (!string.IsNullOrWhiteSpace(full) && !string.IsNullOrWhiteSpace(troop))
+		{
+			string candidate = RemoveNamePrefix(full, troop);
+			candidate = SanitizeHeroPersonalName(candidate);
+			if (!string.IsNullOrWhiteSpace(candidate) && !string.Equals(candidate, full, StringComparison.OrdinalIgnoreCase))
+			{
+				return candidate;
+			}
+		}
+		if (!string.IsNullOrWhiteSpace(full))
+		{
+			string[] parts = Regex.Split(full, "\\s+").Where((string x) => !string.IsNullOrWhiteSpace(x)).ToArray();
+			if (parts.Length > 1)
+			{
+				return SanitizeHeroPersonalName(parts[parts.Length - 1]);
+			}
+			string compact = SanitizeHeroPersonalName(full);
+			if (compact.Length > 3)
+			{
+				return compact.Substring(compact.Length - Math.Min(3, compact.Length));
+			}
+			return compact;
+		}
+		return "";
+	}
+
+	private static string RemoveNamePrefix(string fullDisplayName, string prefix)
+	{
+		string full = (fullDisplayName ?? "").Trim();
+		string pref = (prefix ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(full) || string.IsNullOrWhiteSpace(pref))
+		{
+			return full;
+		}
+		if (full.StartsWith(pref, StringComparison.OrdinalIgnoreCase))
+		{
+			return full.Substring(pref.Length).Trim();
+		}
+		string compactFull = Regex.Replace(full, "\\s+", "");
+		string compactPrefix = Regex.Replace(pref, "\\s+", "");
+		if (compactFull.StartsWith(compactPrefix, StringComparison.OrdinalIgnoreCase))
+		{
+			return compactFull.Substring(compactPrefix.Length).Trim();
+		}
+		int index = full.IndexOf(pref, StringComparison.OrdinalIgnoreCase);
+		if (index >= 0)
+		{
+			return full.Remove(index, pref.Length).Trim();
+		}
+		return full;
+	}
+
+	private static string SanitizeHeroPersonalName(string name)
+	{
+		string text = (name ?? "").Replace("\r", "").Replace("\n", " ").Trim();
+		text = Regex.Replace(text, "^[\\s:：,，;；\\-—_《》“”\"'\\[\\]【】（）()]+|[\\s:：,，;；\\-—_《》“”\"'\\[\\]【】（）()]+$", "");
+		return text.Trim();
+	}
+
+	private static float ClampBodyShape01(float value)
+	{
+		if (float.IsNaN(value) || float.IsInfinity(value))
+		{
+			return 0.5f;
+		}
+		return Math.Max(0f, Math.Min(1f, value));
+	}
+
+	private static int ResolvePromotedHeroAge(BodyProperties bodyProperties, CharacterObject template)
+	{
+		float age = bodyProperties.DynamicProperties.Age;
+		if (age < 16f || age > 80f)
+		{
+			age = template?.Age ?? 25f;
+		}
+		if (age < 18f)
+		{
+			age = 18f;
+		}
+		if (age > 70f)
+		{
+			age = 70f;
+		}
+		return Math.Max(18, (int)Math.Round(age));
+	}
+
+	private static SkillObject[] GetCompanionSkillObjects()
+	{
+		return new SkillObject[18]
+		{
+			DefaultSkills.OneHanded,
+			DefaultSkills.TwoHanded,
+			DefaultSkills.Polearm,
+			DefaultSkills.Bow,
+			DefaultSkills.Crossbow,
+			DefaultSkills.Throwing,
+			DefaultSkills.Riding,
+			DefaultSkills.Athletics,
+			DefaultSkills.Crafting,
+			DefaultSkills.Scouting,
+			DefaultSkills.Tactics,
+			DefaultSkills.Roguery,
+			DefaultSkills.Charm,
+			DefaultSkills.Leadership,
+			DefaultSkills.Trade,
+			DefaultSkills.Steward,
+			DefaultSkills.Medicine,
+			DefaultSkills.Engineering
+		};
+	}
+
+	private static void ApplyTemplateSkillsToHero(Hero hero, CharacterObject template)
+	{
+		if (hero == null || template == null)
+		{
+			return;
+		}
+		try
+		{
+			foreach (SkillObject skill in GetCompanionSkillObjects())
+			{
+				if (skill != null)
+				{
+					hero.SetSkillValue(skill, Math.Max(0, template.GetSkillValue(skill)));
+				}
+			}
+		}
+		catch
+		{
+		}
+	}
+
+	private static string StripNonHeroJoinTag(string text)
+	{
+		return Regex.Replace((text ?? "").Replace("\r", ""), "\\[A:H_J_P_P\\]", "", RegexOptions.IgnoreCase).Trim();
+	}
+
+	private static string BuildCurrentSceneLabelForPrompt()
+	{
+		try
+		{
+			string settlement = Settlement.CurrentSettlement?.Name?.ToString() ?? PlayerEncounter.EncounterSettlement?.Name?.ToString() ?? "";
+			string location = CampaignMission.Current?.Location?.Name?.ToString() ?? CampaignMission.Current?.Location?.StringId ?? "";
+			string scene = Mission.Current?.SceneName ?? "";
+			List<string> parts = new List<string>();
+			if (!string.IsNullOrWhiteSpace(settlement))
+			{
+				parts.Add(settlement);
+			}
+			if (!string.IsNullOrWhiteSpace(location))
+			{
+				parts.Add(location);
+			}
+			if (!string.IsNullOrWhiteSpace(scene))
+			{
+				parts.Add(scene);
+			}
+			return parts.Count == 0 ? "当前场景" : string.Join(" / ", parts);
+		}
+		catch
+		{
+			return "当前场景";
+		}
+	}
+
+	private static string BuildDialogueHistoryForPrompt(List<string> dialogueHistory)
+	{
+		if (dialogueHistory == null || dialogueHistory.Count == 0)
+		{
+			return "（无可用加入前对话历史）";
+		}
+		StringBuilder stringBuilder = new StringBuilder();
+		foreach (string line in dialogueHistory)
+		{
+			string text = (line ?? "").Replace("\r", "").Trim();
+			if (!string.IsNullOrWhiteSpace(text))
+			{
+				stringBuilder.AppendLine(text);
+			}
+		}
+		string result = stringBuilder.ToString().Trim();
+		if (result.Length > 6000)
+		{
+			result = result.Substring(result.Length - 6000).Trim();
+		}
+		return string.IsNullOrWhiteSpace(result) ? "（无可用加入前对话历史）" : result;
+	}
+
+	private static void AppendPromotedHeroPriorHistory(Hero hero, List<string> dialogueHistory)
+	{
+		if (hero == null || dialogueHistory == null || dialogueHistory.Count == 0)
+		{
+			return;
+		}
+		foreach (string line in dialogueHistory.Where((string x) => !string.IsNullOrWhiteSpace(x)).Take(40))
+		{
+			MyBehavior.AppendExternalDialogueHistory(hero, null, null, "[加入前对话] " + line.Trim());
+		}
+	}
+
+	private static string BuildEquipmentSummaryForPrompt(Equipment equipment)
+	{
+		if (equipment == null)
+		{
+			return "（无装备）";
+		}
+		List<string> list = new List<string>();
+		for (int i = 0; i < 12; i++)
+		{
+			EquipmentIndex index = (EquipmentIndex)i;
+			EquipmentElement element = equipment[index];
+			if (element.Item != null)
+			{
+				string itemName = element.GetModifiedItemName()?.ToString() ?? element.Item.Name?.ToString() ?? element.Item.StringId;
+				list.Add(index + "=" + itemName);
+			}
+		}
+		return list.Count == 0 ? "（无装备）" : string.Join(", ", list);
+	}
+
+	private static int CountMatchingTavernLocationCharacters(CharacterObject character)
+	{
+		try
+		{
+			LocationComplex locationComplex = LocationComplex.Current;
+			if (locationComplex == null || character == null)
+			{
+				return 0;
+			}
+			return locationComplex.GetListOfCharacters().Count((LocationCharacter x) => x != null && x.Character == character && string.Equals(locationComplex.GetLocationOfCharacter(x)?.StringId, "tavern", StringComparison.OrdinalIgnoreCase));
+		}
+		catch
+		{
+			return 0;
+		}
+	}
+
+	private static LocationCharacter ResolveLocationCharacterForAgentIndex(int targetAgentIndex)
+	{
+		try
+		{
+			if (targetAgentIndex < 0 || Mission.Current == null || LocationComplex.Current == null)
+			{
+				return null;
+			}
+			Agent agent = ResolveAgentForIndex(targetAgentIndex);
+			return (agent == null) ? null : LocationComplex.Current.FindCharacter(agent);
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static void RemoveJoinedLiveAgent(int targetAgentIndex)
+	{
+		try
+		{
+			Agent agent = ResolveAgentForIndex(targetAgentIndex);
+			if (agent != null && agent.IsActive())
+			{
+				agent.FadeOut(true, true);
+				agent.AgentVisuals?.SetVisible(false);
+			}
+		}
+		catch
+		{
+		}
+	}
+
+	private static void RemoveJoinedNonHeroLocationCharacters(CharacterObject joiningCharacter, int targetAgentIndex, bool removeAllMatchingTavernMercenaries)
+	{
+		try
+		{
+			LocationComplex locationComplex = LocationComplex.Current;
+			if (locationComplex == null || joiningCharacter == null)
+			{
+				return;
+			}
+			if (removeAllMatchingTavernMercenaries)
+			{
+				List<LocationCharacter> list = locationComplex.GetListOfCharacters().Where((LocationCharacter x) => x != null && x.Character == joiningCharacter && string.Equals(locationComplex.GetLocationOfCharacter(x)?.StringId, "tavern", StringComparison.OrdinalIgnoreCase)).ToList();
+				foreach (LocationCharacter item in list)
+				{
+					locationComplex.RemoveCharacterIfExists(item);
+				}
+				return;
+			}
+			LocationCharacter locationCharacter = ResolveLocationCharacterForAgentIndex(targetAgentIndex) ?? locationComplex.GetFirstLocationCharacterOfCharacter(joiningCharacter);
+			if (locationCharacter != null)
+			{
+				locationComplex.RemoveCharacterIfExists(locationCharacter);
+			}
+		}
+		catch
+		{
 		}
 	}
 

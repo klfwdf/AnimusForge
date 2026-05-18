@@ -617,8 +617,10 @@ public class ShoutBehavior : CampaignBehaviorBase
 			{
 				flag2 = true;
 			}
-			if (_parent._wasGameWindowFocused && !flag2)
+			bool wasGameWindowFocused = _parent._wasGameWindowFocused;
+			if (wasGameWindowFocused && !flag2)
 			{
+				_parent.ArmShoutHotkeyFocusDebounce("focus_lost");
 				ShoutTextInputPopup.CancelActiveForSystemMenu();
 				try
 				{
@@ -627,6 +629,10 @@ public class ShoutBehavior : CampaignBehaviorBase
 				catch
 				{
 				}
+			}
+			else if (!wasGameWindowFocused && flag2)
+			{
+				_parent.ArmShoutHotkeyFocusDebounce("focus_gained");
 			}
 			_parent._wasGameWindowFocused = flag2;
 			if (Input.IsKeyPressed(InputKey.Escape))
@@ -651,9 +657,13 @@ public class ShoutBehavior : CampaignBehaviorBase
 			_parent.ClearStaleShoutProcessingIfNeeded();
 			if (!HotkeyInputGuard.IsTextInputFocused() && Input.IsKeyPressed(key))
 			{
-				if (_parent._isProcessingShout || _parent._isWaitingForScenePostprocessGate)
+				if (_parent.ShouldSuppressShoutHotkeyAfterFocusChange())
 				{
-					InformationManager.DisplayMessage(new InformationMessage("正在处理中...", new Color(1f, 1f, 0f)));
+					Logger.Log("ShoutBehavior", "[Hotkey] ignored during focus debounce");
+				}
+				else if (_parent._isProcessingShout || _parent._isWaitingForScenePostprocessGate)
+				{
+					_parent.TryShowShoutProcessingBusyMessage();
 				}
 				else if (ShoutUtils.IsInValidScene())
 				{
@@ -702,6 +712,14 @@ public class ShoutBehavior : CampaignBehaviorBase
 
 	private const float ImmediateSceneReactionCooldownSeconds = 20f;
 
+	private const int ShoutHotkeyFocusDebounceMilliseconds = 1200;
+
+	private const int ShoutProcessingBusyMessageCooldownMilliseconds = 1500;
+
+	private long _suppressShoutHotkeyUntilUtcTicks = 0L;
+
+	private long _lastShoutProcessingBusyMessageUtcTicks = 0L;
+
 	private static float GetApplicationTimeSafe()
 	{
 		try
@@ -738,6 +756,50 @@ public class ShoutBehavior : CampaignBehaviorBase
 			return 0f;
 		}
 		return Math.Max(0f, GetApplicationTimeSafe() - _shoutProcessingStartedAt);
+	}
+
+	private void ArmShoutHotkeyFocusDebounce(string reason)
+	{
+		try
+		{
+			long ticks = DateTime.UtcNow.AddMilliseconds(ShoutHotkeyFocusDebounceMilliseconds).Ticks;
+			Interlocked.Exchange(ref _suppressShoutHotkeyUntilUtcTicks, ticks);
+			Logger.Log("ShoutBehavior", "[Hotkey] focus debounce armed reason=" + (reason ?? "") + " ms=" + ShoutHotkeyFocusDebounceMilliseconds);
+		}
+		catch
+		{
+		}
+	}
+
+	private bool ShouldSuppressShoutHotkeyAfterFocusChange()
+	{
+		try
+		{
+			long ticks = Interlocked.Read(ref _suppressShoutHotkeyUntilUtcTicks);
+			return ticks > 0L && DateTime.UtcNow.Ticks < ticks;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private void TryShowShoutProcessingBusyMessage()
+	{
+		try
+		{
+			long ticks = DateTime.UtcNow.Ticks;
+			long num = Interlocked.Read(ref _lastShoutProcessingBusyMessageUtcTicks);
+			if (num > 0L && ticks - num < TimeSpan.FromMilliseconds(ShoutProcessingBusyMessageCooldownMilliseconds).Ticks)
+			{
+				return;
+			}
+			Interlocked.Exchange(ref _lastShoutProcessingBusyMessageUtcTicks, ticks);
+		}
+		catch
+		{
+		}
+		InformationManager.DisplayMessage(new InformationMessage("正在处理中...", new Color(1f, 1f, 0f)));
 	}
 
 	private bool IsMissionPausedByShoutUi()
@@ -1032,6 +1094,8 @@ public class ShoutBehavior : CampaignBehaviorBase
 
 	private readonly Dictionary<int, SceneFollowReturnState> _sceneFollowReturnStates = new Dictionary<int, SceneFollowReturnState>();
 
+	private readonly HashSet<int> _transientSceneFollowAgentIndices = new HashSet<int>();
+
 	private readonly Dictionary<int, SceneGhostWalkState> _sceneGhostWalkStates = new Dictionary<int, SceneGhostWalkState>();
 
 	private int _nextSceneSummonBatchId = 1;
@@ -1198,6 +1262,17 @@ public class ShoutBehavior : CampaignBehaviorBase
 		try
 		{
 			CurrentInstance?.HandleCriticalUiTransitionForLipSyncSafety(string.IsNullOrWhiteSpace(reason) ? "UI_TRANSITION" : reason);
+		}
+		catch
+		{
+		}
+	}
+
+	internal static void NotifyGameWindowFocusChanged(bool focusGained)
+	{
+		try
+		{
+			CurrentInstance?.ArmShoutHotkeyFocusDebounce(focusGained ? "focus_gained_event" : "focus_lost_event");
 		}
 		catch
 		{
@@ -3059,7 +3134,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 			}
 			if (IsHeroInPlayerMainPartyForPrompt(hero))
 			{
-				stringBuilder.Append("，你在玩家的队伍中");
+				stringBuilder.Append("，你在玩家的队伍中；如果玩家再次要求你加入队伍，你不能再次答应加入，只能说明你已经跟随玩家");
 			}
 			stringBuilder.Append("。");
 		}
@@ -3204,6 +3279,11 @@ public class ShoutBehavior : CampaignBehaviorBase
 		{
 			return false;
 		}
+	}
+
+	private static bool ShouldSuppressHeroJoinPartyPostprocessForScene(Hero hero)
+	{
+		return IsHeroInPlayerMainPartyForPrompt(hero);
 	}
 
 	private static string AppendPlayerCustomPromptRuleToSystemPrompt(string systemPrompt)
@@ -4888,7 +4968,7 @@ private static void SplitSceneNpcRoleIntroSections(string fullIntro, bool isHero
 
 	private static string StripActionTagsForSceneSpeech(string text)
 	{
-		return Regex.Replace((text ?? "").Replace("\r", ""), "\\[(?:ACTION:[^\\]]*|AD;[^\\]]*|ADP[:;][^\\]]*|ASS:[^\\]]*|GUI:[^\\]]*|ATT:[^\\]]*|ATP:[^\\]]*|FOL|STP)\\]", "", RegexOptions.IgnoreCase).Trim();
+		return Regex.Replace((text ?? "").Replace("\r", ""), "\\[(?:ACTION:[^\\]]*|A:H_J_P_P|AD;[^\\]]*|ADP[:;][^\\]]*|ASS:[^\\]]*|GUI:[^\\]]*|ATT:[^\\]]*|ATP:[^\\]]*|FOL|STP)\\]", "", RegexOptions.IgnoreCase).Trim();
 	}
 
 	private static string ExtractDeferredSceneActionTags(string text)
@@ -5784,6 +5864,26 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 							MyBehavior.ApplyPatienceFromSceneUnnamedResponseExternal(speakerData.UnnamedKey, speakerData.Name, ref aiResponse);
 							if (agent != null && agent.Character is CharacterObject characterObject2 && RewardSystemBehavior.Instance != null)
 							{
+								if (RewardSystemBehavior.Instance.TryApplyNonHeroJoinPlayerPartyTagForExternal(characterObject2, speakerData.AgentIndex, speakerData.PromptGivenName, speakerData.PromptDisplayName, ref aiResponse, out var generatedFacts3, out var notifications3))
+								{
+									if (generatedFacts3 != null)
+									{
+										foreach (string generatedFact3 in generatedFacts3)
+										{
+											RecordSystemFactForNearbySafe(allNpcData, generatedFact3);
+										}
+									}
+									if (notifications3 != null)
+									{
+										foreach (string notification3 in notifications3)
+										{
+											if (!string.IsNullOrWhiteSpace(notification3))
+											{
+												InformationManager.DisplayMessage(new InformationMessage(notification3, notification3.IndexOf("失败", StringComparison.OrdinalIgnoreCase) >= 0 ? new Color(1f, 0.45f, 0.25f) : new Color(0.4f, 1f, 0.4f)));
+											}
+										}
+									}
+								}
 								RewardSystemBehavior.Instance.ApplyMerchantRewardTags(characterObject2, Hero.MainHero, ref aiResponse);
 								List<string> list = RewardSystemBehavior.Instance.ConsumeLastGeneratedNpcFactLines();
 								if (list != null)
@@ -5960,6 +6060,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		_passiveCooldowns.Clear();
 		_activeInteractionSessions.Clear();
 		_pendingInteractionTimeoutArms.Clear();
+		_transientSceneFollowAgentIndices.Clear();
 		lock (_immediateSceneReactionGateLock)
 		{
 			_immediateSceneReactionLastStartedMissionTime.Clear();
@@ -11337,6 +11438,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 		bool companionRewardBlocked = rewardRuleInjected && AIConfigHandler.IsPlayerCompanionTradeTarget(targetHero);
 		bool transactionPostprocessEnabled = (rewardRuleInjected && !companionRewardBlocked) || loanRuleInjected;
+		bool heroJoinPartyPostprocessBlocked = heroJoinPartyRuleInjected && ShouldSuppressHeroJoinPartyPostprocessForScene(targetHero);
 		List<PostprocessRuleEntry> duelRules = duelRuleInjected ? AIConfigHandler.DuelPostprocessRules : null;
 		List<PostprocessRuleEntry> transactionRules = transactionPostprocessEnabled ? MergePostprocessRulesForScene((rewardRuleInjected && !companionRewardBlocked) ? AIConfigHandler.RewardPostprocessRules : null, loanRuleInjected ? AIConfigHandler.LoanPostprocessRules : null) : null;
 		List<PostprocessRuleEntry> kingdomRules = null;
@@ -11347,7 +11449,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		List<PostprocessRuleEntry> lordsHallRules = lordsHallRuleInjected ? (AIConfigHandler.BuildRuntimeLordsHallAccessPostprocessRules() ?? new List<PostprocessRuleEntry>()) : null;
 		List<PostprocessRuleEntry> meetingReleaseRules = meetingReleaseRuleInjected ? LordEncounterBehavior.BuildMeetingPlayerReleasePostprocessRulesForExternal(targetHero ?? targetCharacter?.HeroObject) : null;
 		List<PostprocessRuleEntry> vanillaIssueRules = vanillaIssueRuleInjected ? (VanillaIssueOfferBridge.BuildRuntimePostprocessRulesForExternal(targetHero) ?? new List<PostprocessRuleEntry>()) : null;
-		List<PostprocessRuleEntry> heroJoinPartyRules = heroJoinPartyRuleInjected ? (AIConfigHandler.GetGuardrailRulePostprocessRules("hero_join_party") ?? new List<PostprocessRuleEntry>()) : null;
+		List<PostprocessRuleEntry> heroJoinPartyRules = (heroJoinPartyRuleInjected && !heroJoinPartyPostprocessBlocked) ? (AIConfigHandler.GetGuardrailRulePostprocessRules("hero_join_party") ?? new List<PostprocessRuleEntry>()) : null;
 		List<PostprocessRuleEntry> mechanismRules = sceneMechanismRuleInjected ? (sceneMechanismRules ?? new List<PostprocessRuleEntry>()) : null;
 		List<PostprocessRuleEntry> partyTransferRules = partyTransferRuleInjected ? (AIConfigHandler.GetGuardrailRulePostprocessRules("party_transfer") ?? new List<PostprocessRuleEntry>()) : null;
 		int settlementTransferTrustForPostprocess = RewardSystemBehavior.Instance?.GetSettlementTransferTalkTrust(targetHero ?? targetCharacter?.HeroObject) ?? 0;
@@ -11487,7 +11589,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		string text13 = lordsHallRuleInjected ? NormalizeLordsHallAccessPostprocessTagsForScene(content, lordsHallRules) : "";
 		string text14 = meetingReleaseRuleInjected ? NormalizeEncounterReleasePostprocessTagsForScene(content, meetingReleaseRules) : "";
 		string text15 = vanillaIssueRuleInjected ? NormalizeVanillaIssuePostprocessTagsForScene(content, vanillaIssueRules) : "";
-		string text16 = heroJoinPartyRuleInjected ? NormalizeHeroJoinPartyPostprocessTagsForScene(content, heroJoinPartyRules) : "";
+		string text16 = (heroJoinPartyRuleInjected && !heroJoinPartyPostprocessBlocked) ? NormalizeHeroJoinPartyPostprocessTagsForScene(content, heroJoinPartyRules) : "";
 		string text17 = sceneMechanismRuleInjected ? NormalizeSceneMechanismPostprocessTagsForScene(content, mechanismRules, sceneSummonTargets, sceneGuideTargets) : "";
 		string text18 = partyTransferRuleInjected ? NormalizePartyTransferPostprocessTagsForScene(content, partyTransferTroopOptions, partyTransferPrisonerOptions) : "";
 		string text19 = settlementTransferRuleInjected ? NormalizeSettlementTransferPostprocessTagsForScene(content, settlementTransferNpcOptions) : "";
@@ -13213,6 +13315,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					meetingReleaseRuleInjected = HasInjectedRuleBlockForPostprocess(combinedRuleInspectionBlock, "encounter_release_player");
 					vanillaIssueRuleInjected = HasInjectedRuleBlockForPostprocess(combinedRuleInspectionBlock, "vanilla_issue");
 					heroJoinPartyRuleInjected = HasInjectedRuleBlockForPostprocess(combinedRuleInspectionBlock, "hero_join_party");
+					if (heroJoinPartyRuleInjected && ShouldSuppressHeroJoinPartyPostprocessForScene(speakingHero))
+					{
+						heroJoinPartyRuleInjected = false;
+					}
 					sceneMechanismRuleInjected = HasInjectedRuleBlockForPostprocess(combinedRuleInspectionBlock, "scene_mechanism_actions");
 					partyTransferRuleInjected = HasInjectedRuleBlockForPostprocess(combinedRuleInspectionBlock, "party_transfer");
 					settlementTransferRuleInjected = HasInjectedRuleBlockForPostprocess(combinedRuleInspectionBlock, "settlement_transfer");
@@ -13653,6 +13759,26 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 								MyBehavior.ApplyPatienceFromSceneUnnamedResponseExternal(matchedNpc.UnnamedKey, matchedNpc.Name, ref content);
 								if (allowPlayerDirectedActions && agent != null && agent.Character is CharacterObject characterObject2 && RewardSystemBehavior.Instance != null)
 								{
+									if (RewardSystemBehavior.Instance.TryApplyNonHeroJoinPlayerPartyTagForExternal(characterObject2, matchedNpc.AgentIndex, matchedNpc.PromptGivenName, matchedNpc.PromptDisplayName, ref content, out var generatedFacts3, out var notifications3))
+									{
+										if (generatedFacts3 != null)
+										{
+											foreach (string generatedFact3 in generatedFacts3)
+											{
+												RecordSystemFactForNearbySafe(allNpcData, generatedFact3);
+											}
+										}
+										if (notifications3 != null)
+										{
+											foreach (string notification3 in notifications3)
+											{
+												if (!string.IsNullOrWhiteSpace(notification3))
+												{
+													InformationManager.DisplayMessage(new InformationMessage(notification3, notification3.IndexOf("失败", StringComparison.OrdinalIgnoreCase) >= 0 ? new Color(1f, 0.45f, 0.25f) : new Color(0.4f, 1f, 0.4f)));
+												}
+											}
+										}
+									}
 									RewardSystemBehavior.Instance.ApplyMerchantRewardTags(characterObject2, Hero.MainHero, ref content);
 									List<string> list = RewardSystemBehavior.Instance.ConsumeLastGeneratedNpcFactLines();
 									if (list != null)
@@ -17652,6 +17778,54 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		return true;
 	}
 
+	public static bool TryForceSceneFollowPlayerForExternal(int targetAgentIndex, bool transient = true, string reason = null)
+	{
+		try
+		{
+			return CurrentInstance?.TryForceSceneFollowPlayerInternal(targetAgentIndex, transient, reason) == true;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SceneFollow", "external_force_start_failed agent=" + targetAgentIndex + " reason=" + (reason ?? "") + " error=" + ex.Message);
+			return false;
+		}
+	}
+
+	private bool TryForceSceneFollowPlayerInternal(int targetAgentIndex, bool transient, string reason)
+	{
+		if (targetAgentIndex < 0 || Mission.Current == null)
+		{
+			return false;
+		}
+		Agent agent = Mission.Current.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == targetAgentIndex);
+		if (!CanAgentParticipateInSceneSpeech(agent) || agent == Agent.Main)
+		{
+			Logger.Log("SceneFollow", "external_force_start_skip agent=" + targetAgentIndex + " reason=" + (reason ?? "") + " cause=agent_unavailable");
+			return false;
+		}
+		string content = "[ACTION:SCENE_FOLLOW_PLAYER]";
+		NpcDataPacket npc = new NpcDataPacket
+		{
+			AgentIndex = agent.Index,
+			Name = agent.Name ?? "NPC",
+			IsHero = (agent.Character as CharacterObject)?.IsHero == true
+		};
+		if (!TryConsumeSceneFollowStartTag(npc, agent, ref content))
+		{
+			Logger.Log("SceneFollow", "external_force_start_noop agent=" + agent.Index + " reason=" + (reason ?? "") + " following=" + IsAgentFollowingPlayerBySceneCommand(agent));
+			return false;
+		}
+		if (transient)
+		{
+			_transientSceneFollowAgentIndices.Add(agent.Index);
+		}
+		RememberSceneFollowReturnState(agent, overwriteExisting: true);
+		RemoveAgentFromSceneSummonConversationForFollow(agent);
+		StartSceneSummonFollowPlayer(agent);
+		Logger.Log("SceneFollow", "external_force_start_executed agent=" + agent.Index + " name=" + (agent.Name ?? "") + " transient=" + transient + " reason=" + (reason ?? ""));
+		return true;
+	}
+
 	private bool ShouldReturnOnlySceneSummonSpeaker(SceneSummonConversationSession session, Agent agent)
 	{
 		return session != null && agent != null && IsSceneSummonConversationSpeaker(session, agent) && session.Participants.Count > 0;
@@ -17993,11 +18167,12 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			}
 			ReleaseAgentFromSceneConversationLocks(agent);
 			RememberSceneFollowReturnState(agent, overwriteExisting: false);
-			bool persisted = TrySetSceneFollowPersistence(agent, isFollowing: true);
+			bool transient = _transientSceneFollowAgentIndices.Contains(agent.Index);
+			bool persisted = transient ? false : TrySetSceneFollowPersistence(agent, isFollowing: true);
 			_activeInteractionSessions.Remove(agent.Index);
 			_pendingInteractionTimeoutArms.Remove(agent.Index);
 			bool behaviorEnabled = TryEnableVanillaSceneFollowBehavior(agent, Agent.Main);
-			Logger.Log("SceneFollow", "start agent=" + agent.Index + " name=" + (agent.Name ?? "") + " persisted=" + persisted + " behaviorEnabled=" + behaviorEnabled);
+			Logger.Log("SceneFollow", "start agent=" + agent.Index + " name=" + (agent.Name ?? "") + " transient=" + transient + " persisted=" + persisted + " behaviorEnabled=" + behaviorEnabled);
 		}
 		catch
 		{
@@ -18012,9 +18187,14 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 		try
 		{
+			bool wasTransient = _transientSceneFollowAgentIndices.Remove(agent.Index);
+			if (wasTransient)
+			{
+				_sceneFollowReturnStates.Remove(agent.Index);
+			}
 			bool persisted = TrySetSceneFollowPersistence(agent, isFollowing: false);
 			TryDisableVanillaSceneFollowBehavior(agent, restoreDailyBehaviors);
-			Logger.Log("SceneFollow", "stop agent=" + agent.Index + " name=" + (agent.Name ?? "") + " persisted=" + persisted + " restoreDaily=" + restoreDailyBehaviors);
+			Logger.Log("SceneFollow", "stop agent=" + agent.Index + " name=" + (agent.Name ?? "") + " transient=" + wasTransient + " persisted=" + persisted + " restoreDaily=" + restoreDailyBehaviors);
 		}
 		catch
 		{
@@ -18224,6 +18404,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			if (!CanAgentParticipateInSceneSpeech(agent) || agent == Agent.Main)
 			{
 				return false;
+			}
+			if (_transientSceneFollowAgentIndices.Contains(agent.Index))
+			{
+				return true;
 			}
 			LocationEncounter locationEncounter = PlayerEncounter.LocationEncounter;
 			LocationComplex locationComplex = LocationComplex.Current;

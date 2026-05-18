@@ -65,3 +65,23 @@
 - 后处理标签应从【带路与传唤NPC清单】选人物，再由 C# 解析到当前场景 Agent 或 location/proxy。
 
 如果用户说“调用场景 Agent 移动案例”“参考带路传唤跟随案例”“不要用坐标节点，要用 agent 节点”，默认就是指 `docs/scene_agent_command_movement_case.md`。
+
+## 场景伤害上下文防误触案例
+
+当任务涉及以下内容时，先阅读并套用 `docs/scene_damage_context_guard_case.md`：
+
+- 修改或新增 `OnAgentHit`、`OnScoreHit`、`OnAgentRemoved`。
+- 修改伤害倍率、伤害归零、伤害放大、死亡压制、死亡延迟、昏迷转死亡。
+- 修改场景内 `Agent.SetTeam`、`Team.SetIsEnemyOf`、`Mission.PlayerTeam` 或 `MissionFightHandler` 队伍缓存。
+- 增加和平场景攻击、挑衅、吵架升级、NPC 反击、犯罪、忠诚度、安全度、关系惩罚。
+- 处理“关闭后回归原版逻辑”、藏身点/竞技场/攻城守城/训练场伤害异常。
+- 任何未来可能影响场景伤害、击倒、死亡或战斗敌对关系的新逻辑。
+
+该案例的核心经验：
+
+- 不能只凭 `Settlement.CurrentSettlement`、`MobileParty.MainParty.CurrentSettlement` 或 `settlement.OwnerClan == Clan.PlayerClan` 判断和平场景。
+- 和平定居点机制必须使用 allowlist，并排除 `PlayerEncounter.Battle`、`MapEvent.PlayerMapEvent`、`CampaignSiegeStateHandler`、`Siege/SallyOut/FieldBattle`、`Deployment/Stealth/Duel`、竞技场、训练场和正在被围攻的定居点。
+- “关闭后回归原版”应当退出本模组处理，而不是把伤害改成 0。
+- 队伍敌对转换、忠诚度惩罚、死亡延迟等副作用只能在严格命中的机制场景内初始化；后续维护可以依赖已初始化状态。
+
+如果用户说“调用场景伤害案例”“按伤害上下文防误触检查”“兼容攻城/竞技场/藏身点/原版战斗”“回归原版伤害逻辑”，默认就是指 `docs/scene_damage_context_guard_case.md`。
