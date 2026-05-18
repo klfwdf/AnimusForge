@@ -196,6 +196,7 @@ public static class TroopInspectionBehavior
 			TryPatchClass(harmony, typeof(TroopInspectionDeathRatePatch));
 			TryPatchClass(harmony, typeof(TroopInspectionMeleeDamagePatch));
 			TryPatchClass(harmony, typeof(TroopInspectionOrderOfBattlePatch));
+			TryPatchClass(harmony, typeof(TroopInspectionFormationIsolationPatch));
 			ReinforcementSystemCompatibility.EnsurePatched(harmony);
 		}
 	}
@@ -2556,9 +2557,27 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 
 	private int _lordFormationClassForceLogCount;
 
+	private int _prisonerDeployPairDiagLogCount;
+
+	private float _nextPrisonerDeployPairDiagTime;
+
+	private int _formationIsolationLogCount;
+
+	private int _prisonerFormationRecalcLogCount;
+
+	private const int PrisonerDeployPairDiagLogLimit = 3;
+
+	private const int FormationIsolationLogLimit = 3;
+
+	private const int PrisonerFormationRecalcLogLimit = 3;
+
 	private const FormationClass RegularPrisonerFormationClass = (FormationClass)6;
 
 	private const FormationClass LordPrisonerFormationClass = (FormationClass)7;
+
+	private const FormationClass LordPrisonerSpawnFormationClass = FormationClass.Ranged;
+
+	private const FormationClass LordPrisonerRuntimeClass = FormationClass.Cavalry;
 
 	private static readonly PropertyInfo FormationRepresentativeClassProperty = typeof(Formation).GetProperty("RepresentativeClass", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 
@@ -2663,6 +2682,9 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 		if (_prisonersSpawned && !_deploymentEndDetected)
 		{
 			ForceLordPrisonerFormationClass("deployment_tick");
+			EnsurePrisonerFormationsIsolated("deployment_tick");
+			TryRecalculateLordPrisonerFormationWidth("deployment_tick", onlyIfAnomalous: true);
+			TryLogPrisonerDeployPairDiag();
 		}
 		TryLogAgentCounts();
 		RefreshPrisonerPoses(dt);
@@ -2889,6 +2911,7 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 		{
 			playerTeam.GetFormation(RegularPrisonerFormationClass);
 		}
+		EnsurePrisonerFormationsIsolated("before_spawn");
 		int num8 = 0;
 		int num9 = 0;
 		int num10 = 0;
@@ -2909,20 +2932,28 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 				try
 				{
 					PrisonerAgentOrigin prisonerAgentOrigin = new PrisonerAgentOrigin(character2);
-					Agent val2 = ((MissionBehavior)this).Mission.SpawnTroop((IAgentOriginBase)(object)prisonerAgentOrigin, true, true, false, false, num2, num11, false, false, true, (Vec3?)null, (Vec2?)null, (string)null, (ItemObject)null, LordPrisonerFormationClass, false);
+					Agent val2 = ((MissionBehavior)this).Mission.SpawnTroop((IAgentOriginBase)(object)prisonerAgentOrigin, true, true, false, false, num2, num11, false, false, true, (Vec3?)null, (Vec2?)null, (string)null, (ItemObject)null, LordPrisonerSpawnFormationClass, false);
 					if (val2 != null)
 					{
-						val2.SetIsAIPaused(true);
-						val2.DisableScriptedMovement();
+						Formation spawnFormation = val2.Formation;
+						Formation finalFormation = playerTeam.GetFormation(LordPrisonerFormationClass);
+						if (finalFormation != null && val2.Formation != finalFormation)
+						{
+							val2.Formation = finalFormation;
+							val2.TryAttachToFormation();
+						}
 						_prisonerIsLordMap[val2] = true;
 						ApplyPrisonerPose(val2, isLord: true, afterDeployment: false);
 						Formation formation = val2.Formation;
-						Log("spawn_prisoner_hero ok troop=" + (((MBObjectBase)character2).StringId ?? "null") + " team=" + ((val2.Team != null) ? ((object)val2.Team.Side).ToString() : "null") + " formation=" + ((formation != null) ? ((object)formation.FormationIndex).ToString() : "null") + " pos=" + val2.Position);
+						if (num8 == 0)
+						{
+							Log("spawn_prisoner_hero first_ok troop=" + (((MBObjectBase)character2).StringId ?? "null") + " team=" + ((val2.Team != null) ? ((object)val2.Team.Side).ToString() : "null") + " spawn_class=" + LordPrisonerSpawnFormationClass + " spawn_formation=" + ((spawnFormation != null) ? ((object)spawnFormation.FormationIndex).ToString() : "null") + " final_formation=" + ((formation != null) ? ((object)formation.FormationIndex).ToString() : "null") + " pos=" + val2.Position);
+						}
 						num8++;
 					}
 					else
 					{
-						Log($"spawn_prisoner_hero returned null troop={((MBObjectBase)character2).StringId} formation={(object)LordPrisonerFormationClass}");
+						Log($"spawn_prisoner_hero returned null troop={((MBObjectBase)character2).StringId} spawn_class={(object)LordPrisonerSpawnFormationClass} final_formation={(object)LordPrisonerFormationClass}");
 					}
 					num11++;
 				}
@@ -2951,8 +2982,6 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 					Agent val2 = ((MissionBehavior)this).Mission.SpawnTroop((IAgentOriginBase)(object)prisonerAgentOrigin, true, true, false, false, num4, num13, false, false, true, (Vec3?)null, (Vec2?)null, (string)null, (ItemObject)null, RegularPrisonerFormationClass, false);
 					if (val2 != null)
 					{
-						val2.SetIsAIPaused(true);
-						val2.DisableScriptedMovement();
 						_prisonerIsLordMap[val2] = false;
 						ApplyPrisonerPose(val2, isLord: false, afterDeployment: false);
 						num9++;
@@ -2975,6 +3004,14 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 		if (num8 > 0)
 		{
 			ForceLordPrisonerFormationClass("after_spawn");
+		}
+		if (num8 + num9 > 0)
+		{
+			EnsurePrisonerFormationsIsolated("after_spawn");
+		}
+		if (num8 > 0)
+		{
+			TryRecalculateLordPrisonerFormationWidth("after_spawn", onlyIfAnomalous: false);
 		}
 		if (num8 + num9 > 0)
 		{
@@ -3022,18 +3059,18 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 			{
 				oldLogicalClassNeedsUpdate = FormationLogicalClassNeedsUpdateField.GetValue(formation);
 			}
-			bool needsCorrection = oldRepresentativeClass != FormationClass.Cavalry || (oldLogicalClass is FormationClass && (FormationClass)oldLogicalClass != FormationClass.Cavalry) || (oldLogicalClassNeedsUpdate is bool && (bool)oldLogicalClassNeedsUpdate);
+			bool needsCorrection = oldRepresentativeClass != LordPrisonerRuntimeClass || (oldLogicalClass is FormationClass && (FormationClass)oldLogicalClass != LordPrisonerRuntimeClass) || (oldLogicalClassNeedsUpdate is bool && (bool)oldLogicalClassNeedsUpdate);
 			if (!needsCorrection)
 			{
 				return;
 			}
 			if (FormationRepresentativeClassProperty != null)
 			{
-				FormationRepresentativeClassProperty.SetValue(formation, FormationClass.Cavalry, null);
+				FormationRepresentativeClassProperty.SetValue(formation, LordPrisonerRuntimeClass, null);
 			}
 			if (FormationLogicalClassField != null)
 			{
-				FormationLogicalClassField.SetValue(formation, FormationClass.Cavalry);
+				FormationLogicalClassField.SetValue(formation, LordPrisonerRuntimeClass);
 			}
 			if (FormationLogicalClassNeedsUpdateField != null)
 			{
@@ -3042,7 +3079,7 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 			if (_lordFormationClassForceLogCount < 1)
 			{
 				_lordFormationClassForceLogCount++;
-				Log("force_lord_prisoner_formation_class reason=" + reason + " old_rep=" + oldRepresentativeClass + " new_rep=" + FormationClass.Cavalry + " old_logical=" + (oldLogicalClass ?? "null") + " old_needs_update=" + (oldLogicalClassNeedsUpdate ?? "null"));
+				Log("force_lord_prisoner_formation_class reason=" + reason + " old_rep=" + oldRepresentativeClass + " new_rep=" + LordPrisonerRuntimeClass + " old_logical=" + (oldLogicalClass ?? "null") + " old_needs_update=" + (oldLogicalClassNeedsUpdate ?? "null"));
 			}
 		}
 		catch (Exception ex)
@@ -3053,6 +3090,382 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 				Log("force_lord_prisoner_formation_class failed reason=" + reason + " " + ex.GetType().Name + ": " + ex.Message);
 			}
 		}
+	}
+
+	private void EnsurePrisonerFormationsIsolated(string reason)
+	{
+		try
+		{
+			Mission mission = ((MissionBehavior)this).Mission;
+			Team playerTeam = (mission != null) ? mission.PlayerTeam : null;
+			if (mission == null || playerTeam == null)
+			{
+				return;
+			}
+			Formation regularFormation = playerTeam.GetFormation(RegularPrisonerFormationClass);
+			Formation lordFormation = playerTeam.GetFormation(LordPrisonerFormationClass);
+			if (regularFormation == null && lordFormation == null)
+			{
+				return;
+			}
+			int normalMovedOut = 0;
+			int regularPrisonersMoved = 0;
+			int lordPrisonersMoved = 0;
+			int noTarget = 0;
+			int errors = 0;
+			foreach (Agent item in (List<Agent>)(object)mission.Agents)
+			{
+				try
+				{
+					if (item == null || !item.IsHuman || !item.IsActive() || item.IsMainAgent || item.Team != playerTeam)
+					{
+						continue;
+					}
+					Formation formation = item.Formation;
+					bool isInRegularFormation = regularFormation != null && formation == regularFormation;
+					bool isInLordFormation = lordFormation != null && formation == lordFormation;
+					bool isInspectionPrisoner = TryGetPrisonerIsLord(item, out var isLord);
+					if (isInspectionPrisoner)
+					{
+						Formation targetFormation = isLord ? lordFormation : regularFormation;
+						if (targetFormation != null && formation != targetFormation && TryMoveAgentToFormation(item, targetFormation))
+						{
+							if (isLord)
+							{
+								lordPrisonersMoved++;
+							}
+							else
+							{
+								regularPrisonersMoved++;
+							}
+						}
+					}
+					else if (isInRegularFormation || isInLordFormation)
+					{
+						Formation targetFormation2 = ResolveNormalTroopFormation(playerTeam, item, formation);
+						if (targetFormation2 != null && TryMoveAgentToFormation(item, targetFormation2))
+						{
+							normalMovedOut++;
+						}
+						else
+						{
+							noTarget++;
+						}
+					}
+				}
+				catch (Exception ex)
+				{
+					errors++;
+					if (_formationIsolationLogCount < FormationIsolationLogLimit)
+					{
+						Log("formation_isolate_agent_failed reason=" + reason + " error=" + ex.GetType().Name + ": " + ex.Message);
+					}
+				}
+			}
+			if ((normalMovedOut > 0 || regularPrisonersMoved > 0 || lordPrisonersMoved > 0 || noTarget > 0 || errors > 0) && _formationIsolationLogCount < FormationIsolationLogLimit)
+			{
+				_formationIsolationLogCount++;
+				Log("formation_isolate result reason=" + reason + " normal_moved_out=" + normalMovedOut + " regular_prisoners_moved=" + regularPrisonersMoved + " lord_prisoners_moved=" + lordPrisonersMoved + " no_target=" + noTarget + " errors=" + errors + " f6=" + ((regularFormation != null) ? regularFormation.CountOfUnits.ToString() : "null") + " f7=" + ((lordFormation != null) ? lordFormation.CountOfUnits.ToString() : "null"));
+			}
+		}
+		catch (Exception ex2)
+		{
+			if (_formationIsolationLogCount < FormationIsolationLogLimit)
+			{
+				_formationIsolationLogCount++;
+				Log("formation_isolate failed reason=" + reason + " " + ex2.GetType().Name + ": " + ex2.Message);
+			}
+		}
+	}
+
+	internal static Formation ResolveNormalTroopFormation(Team playerTeam, Agent agent, Formation currentFormation)
+	{
+		if (playerTeam == null)
+		{
+			return null;
+		}
+		try
+		{
+			CharacterObject characterObject = (agent != null) ? (agent.Character as CharacterObject) : null;
+			if (characterObject != null && !IsReservedPrisonerFormationClass(characterObject.DefaultFormationClass))
+			{
+				Formation formation = playerTeam.GetFormation(characterObject.DefaultFormationClass);
+				if (formation != null && formation != currentFormation)
+				{
+					return formation;
+				}
+			}
+		}
+		catch
+		{
+		}
+		for (int i = 0; i < 6; i++)
+		{
+			try
+			{
+				Formation formation2 = playerTeam.GetFormation((FormationClass)i);
+				if (formation2 != null && formation2 != currentFormation && formation2.CountOfUnits > 0)
+				{
+					return formation2;
+				}
+			}
+			catch
+			{
+			}
+		}
+		for (int j = 0; j < 6; j++)
+		{
+			try
+			{
+				Formation formation3 = playerTeam.GetFormation((FormationClass)j);
+				if (formation3 != null && formation3 != currentFormation)
+				{
+					return formation3;
+				}
+			}
+			catch
+			{
+			}
+		}
+		return null;
+	}
+
+	internal static bool IsReservedPrisonerFormationClass(FormationClass formationClass)
+	{
+		return (int)formationClass == (int)RegularPrisonerFormationClass || (int)formationClass == (int)LordPrisonerFormationClass;
+	}
+
+	internal static bool TryMoveAgentToFormation(Agent agent, Formation targetFormation)
+	{
+		if (agent == null || targetFormation == null || agent.Formation == targetFormation)
+		{
+			return false;
+		}
+		agent.Formation = targetFormation;
+		agent.TryAttachToFormation();
+		return agent.Formation == targetFormation;
+	}
+
+	internal static bool TryResolveInspectionPrisoner(Agent agent, out bool isLord)
+	{
+		isLord = false;
+		if (agent == null)
+		{
+			return false;
+		}
+		try
+		{
+			Mission current = Mission.Current;
+			TroopInspectionMissionLogic troopInspectionMissionLogic = (current != null) ? current.GetMissionBehavior<TroopInspectionMissionLogic>() : null;
+			if (troopInspectionMissionLogic != null && troopInspectionMissionLogic.TryGetPrisonerIsLord(agent, out isLord))
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			BasicCharacterObject obj = (agent.Origin as PrisonerAgentOrigin)?.Troop;
+			CharacterObject val = (CharacterObject)(object)((obj is CharacterObject) ? obj : null);
+			if (val == null)
+			{
+				return false;
+			}
+			isLord = ((BasicCharacterObject)val).IsHero;
+			return true;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private void TryRecalculateLordPrisonerFormationWidth(string reason, bool onlyIfAnomalous)
+	{
+		try
+		{
+			Mission mission = ((MissionBehavior)this).Mission;
+			Team playerTeam = (mission != null) ? mission.PlayerTeam : null;
+			if (mission == null || playerTeam == null)
+			{
+				return;
+			}
+			Formation formation = playerTeam.GetFormation(LordPrisonerFormationClass);
+			if (formation == null)
+			{
+				return;
+			}
+			int countOfUnits = formation.CountOfUnits;
+			if (countOfUnits <= 0)
+			{
+				return;
+			}
+			float oldWidth = formation.Width;
+			float unitDiameter = formation.UnitDiameter;
+			if (unitDiameter <= 0.01f)
+			{
+				unitDiameter = Math.Max(0.76f, formation.Depth);
+			}
+			float targetWidth = unitDiameter * (float)Math.Max(1, countOfUnits * 2 - 1);
+			if (targetWidth <= 0.01f)
+			{
+				return;
+			}
+			if (onlyIfAnomalous && oldWidth <= targetWidth * 1.35f + 0.5f)
+			{
+				return;
+			}
+			FormOrder order = FormOrder.FormOrderCustom(targetWidth);
+			formation.SetFormOrder(order, updateDesiredFileCount: true);
+			formation.ResetArrangementOrderTickTimer();
+			formation.SetHasPendingUnitPositions(true);
+			try
+			{
+				foreach (Agent item in (List<Agent>)(object)mission.Agents)
+				{
+					if (item != null && item.IsHuman && item.IsActive() && item.Formation == formation)
+					{
+						item.SetShouldCatchUpWithFormation(true);
+						item.UpdateFormationOrders();
+					}
+				}
+			}
+			catch
+			{
+			}
+			if (_prisonerFormationRecalcLogCount < PrisonerFormationRecalcLogLimit)
+			{
+				_prisonerFormationRecalcLogCount++;
+				Log("prisoner_form_recalc reason=" + reason + " formation=8 count=" + countOfUnits + " unit_diameter=" + FormatFloat(unitDiameter) + " old_width=" + FormatFloat(oldWidth) + " target_width=" + FormatFloat(targetWidth) + " new_width=" + FormatFloat(formation.Width) + " order=" + FormatVec2(formation.OrderPosition) + " current=" + FormatVec2(formation.CurrentPosition));
+			}
+		}
+		catch (Exception ex)
+		{
+			if (_prisonerFormationRecalcLogCount < PrisonerFormationRecalcLogLimit)
+			{
+				_prisonerFormationRecalcLogCount++;
+				Log("prisoner_form_recalc failed reason=" + reason + " " + ex.GetType().Name + ": " + ex.Message);
+			}
+		}
+	}
+
+	private void TryLogPrisonerDeployPairDiag()
+	{
+		if (_prisonerDeployPairDiagLogCount >= PrisonerDeployPairDiagLogLimit)
+		{
+			return;
+		}
+		Mission mission = ((MissionBehavior)this).Mission;
+		if (mission == null || mission.PlayerTeam == null || mission.CurrentTime < _nextPrisonerDeployPairDiagTime)
+		{
+			return;
+		}
+		try
+		{
+			Formation regularFormation = mission.PlayerTeam.GetFormation(RegularPrisonerFormationClass);
+			Formation lordFormation = mission.PlayerTeam.GetFormation(LordPrisonerFormationClass);
+			CountSelectedPrisoners(out var selectedRegularPrisoners, out var selectedLordPrisoners);
+			string orderDelta = "null";
+			string avgDelta = "null";
+			if (regularFormation != null && lordFormation != null)
+			{
+				orderDelta = FormatVec2(new Vec2(lordFormation.OrderPosition.X - regularFormation.OrderPosition.X, lordFormation.OrderPosition.Y - regularFormation.OrderPosition.Y));
+				Vec2 regularAverage = CalculateFormationAveragePosition(regularFormation, out var regularActiveCount);
+				Vec2 lordAverage = CalculateFormationAveragePosition(lordFormation, out var lordActiveCount);
+				if (regularActiveCount > 0 && lordActiveCount > 0)
+				{
+					avgDelta = FormatVec2(new Vec2(lordAverage.X - regularAverage.X, lordAverage.Y - regularAverage.Y));
+				}
+			}
+			_prisonerDeployPairDiagLogCount++;
+			_nextPrisonerDeployPairDiagTime = mission.CurrentTime + 0.75f;
+			Log("prisoner_deploy_pair_diag sample=" + _prisonerDeployPairDiagLogCount + " selected_regular_prisoners=" + selectedRegularPrisoners + " selected_lord_prisoners=" + selectedLordPrisoners + " " + BuildFormationDeployDiag("f6", regularFormation) + " " + BuildFormationDeployDiag("f7", lordFormation) + " delta_order_7_minus_6=" + orderDelta + " delta_avg_7_minus_6=" + avgDelta);
+		}
+		catch (Exception ex)
+		{
+			_prisonerDeployPairDiagLogCount = PrisonerDeployPairDiagLogLimit;
+			Log("prisoner_deploy_pair_diag failed: " + ex.GetType().Name + ": " + ex.Message);
+		}
+	}
+
+	private string BuildFormationDeployDiag(string label, Formation formation)
+	{
+		if (formation == null)
+		{
+			return label + "=null";
+		}
+		Vec2 averagePosition = CalculateFormationAveragePosition(formation, out var activeAgentCount);
+		object logicalField = null;
+		if (FormationLogicalClassField != null)
+		{
+			logicalField = FormationLogicalClassField.GetValue(formation);
+		}
+		return label + ": count=" + formation.CountOfUnits + " active=" + activeAgentCount + " rep=" + formation.RepresentativeClass + " logical=" + formation.LogicalClass + " logical_field=" + (logicalField ?? "null") + " physical=" + formation.PhysicalClass + " query_main=" + ((formation.QuerySystem != null) ? ((object)formation.QuerySystem.MainClass).ToString() : "null") + " order=" + FormatVec2(formation.OrderPosition) + " current=" + FormatVec2(formation.CurrentPosition) + " avg=" + ((activeAgentCount > 0) ? FormatVec2(averagePosition) : "null") + " cached_avg=" + FormatVec2(formation.CachedAveragePosition) + " width=" + FormatFloat(formation.Width) + " depth=" + FormatFloat(formation.Depth);
+	}
+
+	private Vec2 CalculateFormationAveragePosition(Formation formation, out int activeAgentCount)
+	{
+		activeAgentCount = 0;
+		float x = 0f;
+		float y = 0f;
+		Mission mission = ((MissionBehavior)this).Mission;
+		if (formation == null || mission == null)
+		{
+			return Vec2.Zero;
+		}
+		foreach (Agent item in (List<Agent>)(object)mission.Agents)
+		{
+			if (item != null && item.Formation == formation && item.IsHuman && item.IsActive())
+			{
+				Vec3 position = item.Position;
+				x += position.X;
+				y += position.Y;
+				activeAgentCount++;
+			}
+		}
+		if (activeAgentCount <= 0)
+		{
+			return Vec2.Zero;
+		}
+		return new Vec2(x / (float)activeAgentCount, y / (float)activeAgentCount);
+	}
+
+	private void CountSelectedPrisoners(out int regularPrisoners, out int lordPrisoners)
+	{
+		regularPrisoners = 0;
+		lordPrisoners = 0;
+		if (_inspectionPrisonerRoster == null)
+		{
+			return;
+		}
+		foreach (TroopRosterElement item in SnapshotRoster(_inspectionPrisonerRoster))
+		{
+			CharacterObject character = item.Character;
+			if (character == null)
+			{
+				continue;
+			}
+			if (((BasicCharacterObject)character).IsHero)
+			{
+				lordPrisoners += Math.Max(0, item.Number);
+			}
+			else
+			{
+				regularPrisoners += Math.Max(0, item.Number);
+			}
+		}
+	}
+
+	private static string FormatVec2(Vec2 position)
+	{
+		return $"{position.X:0.00},{position.Y:0.00}";
+	}
+
+	private static string FormatFloat(float value)
+	{
+		return $"{value:0.00}";
 	}
 
 	private static TroopRoster CloneRoster(TroopRoster sourceRoster)
@@ -3351,22 +3764,22 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 			return;
 		}
 		CachePrisonerActions();
-		try
-		{
-			agent.SetIsAIPaused(true);
-		}
-		catch
-		{
-		}
-		try
-		{
-			agent.DisableScriptedMovement();
-		}
-		catch
-		{
-		}
 		if (afterDeployment)
 		{
+			try
+			{
+				agent.SetIsAIPaused(true);
+			}
+			catch
+			{
+			}
+			try
+			{
+				agent.DisableScriptedMovement();
+			}
+			catch
+			{
+			}
 			try
 			{
 				agent.SetMaximumSpeedLimit(0f, false);
@@ -3374,6 +3787,17 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 			catch
 			{
 			}
+		}
+		else
+		{
+			try
+			{
+				agent.SetIsAIPaused(false);
+			}
+			catch
+			{
+			}
+			TrySetAgentController(agent, "AI");
 		}
 		try
 		{
@@ -3749,6 +4173,117 @@ public static class TroopInspectionMeleeDamagePatch
 }
 
 [HarmonyPatch]
+public static class TroopInspectionFormationIsolationPatch
+{
+	private const int RegularPrisonerFormationIndex = 6;
+
+	private const int LordPrisonerFormationIndex = 7;
+
+	private static bool IsTroopInspectionRuntime()
+	{
+		try
+		{
+			Mission current = Mission.Current;
+			return ((current != null) ? current.GetMissionBehavior<TroopInspectionMissionLogic>() : null) != null;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static bool IsReservedFormation(Formation formation)
+	{
+		if (formation == null)
+		{
+			return false;
+		}
+		int index = formation.Index;
+		return index == 6 || index == 7;
+	}
+
+	private static Formation ResolveAllowedFormation(Agent agent, Formation requestedFormation)
+	{
+		if (agent == null || requestedFormation == null || !IsReservedFormation(requestedFormation))
+		{
+			return requestedFormation;
+		}
+		Team team = requestedFormation.Team;
+		if (team == null)
+		{
+			return null;
+		}
+		if (TroopInspectionMissionLogic.TryResolveInspectionPrisoner(agent, out var isLord))
+		{
+			int expectedIndex = isLord ? 7 : 6;
+			if (requestedFormation.Index == expectedIndex)
+			{
+				return requestedFormation;
+			}
+			try
+			{
+				return team.GetFormation((FormationClass)expectedIndex);
+			}
+			catch
+			{
+				return requestedFormation;
+			}
+		}
+		Formation formation = TroopInspectionMissionLogic.ResolveNormalTroopFormation(team, agent, requestedFormation);
+		return formation;
+	}
+
+	[HarmonyPatch(typeof(Agent), "set_Formation")]
+	[HarmonyPrefix]
+	private static void AgentSetFormationPrefix(Agent __instance, ref Formation value)
+	{
+		if (!IsTroopInspectionRuntime() || !IsReservedFormation(value))
+		{
+			return;
+		}
+		Formation formation = ResolveAllowedFormation(__instance, value);
+		if (formation != null && formation != value)
+		{
+			value = formation;
+		}
+		else if (formation == null)
+		{
+			value = null;
+		}
+	}
+
+	[HarmonyPatch(typeof(Formation), "AddUnit")]
+	[HarmonyPrefix]
+	private static bool FormationAddUnitPrefix(Formation __instance, Agent unit)
+	{
+		if (!IsTroopInspectionRuntime() || !IsReservedFormation(__instance) || unit == null)
+		{
+			return true;
+		}
+		Formation formation = ResolveAllowedFormation(unit, __instance);
+		if (formation == __instance)
+		{
+			return true;
+		}
+		if (formation != null)
+		{
+			TroopInspectionMissionLogic.TryMoveAgentToFormation(unit, formation);
+		}
+		else
+		{
+			try
+			{
+				unit.Formation = null;
+			}
+			catch
+			{
+			}
+		}
+		return false;
+	}
+}
+
+[HarmonyPatch]
 public static class TroopInspectionOrderOfBattlePatch
 {
 	private const int RegularPrisonerFormationIndex = 6;
@@ -3756,6 +4291,8 @@ public static class TroopInspectionOrderOfBattlePatch
 	private const int LordPrisonerFormationIndex = 7;
 
 	private static readonly FieldInfo AllFormationsField = AccessTools.Field(typeof(OrderOfBattleVM), "_allFormations");
+
+	private static readonly FieldInfo ClassBelongedFormationItemField = AccessTools.Field(typeof(OrderOfBattleFormationClassVM), "BelongedFormationItem");
 
 	[HarmonyPatch(typeof(OrderOfBattleFormationItemVM), "RefreshFormation", new Type[]
 	{
@@ -3769,12 +4306,54 @@ public static class TroopInspectionOrderOfBattlePatch
 		if (IsTroopInspectionRuntime() && formation != null)
 		{
 			int index = formation.Index;
-			if ((uint)(index - 6) <= 1u)
+			if (index == 6)
 			{
-				overriddenClass = (DeploymentFormationClass)3;
+				overriddenClass = DeploymentFormationClass.Infantry;
+				mustExist = true;
+			}
+			else if (index == 7)
+			{
+				overriddenClass = DeploymentFormationClass.Cavalry;
 				mustExist = true;
 			}
 		}
+	}
+
+	[HarmonyPatch(typeof(OrderOfBattleFormationItemVM), "RefreshFormation", new Type[]
+	{
+		typeof(Formation),
+		typeof(DeploymentFormationClass),
+		typeof(bool)
+	})]
+	[HarmonyPostfix]
+	private static void RefreshFormationPostfix(OrderOfBattleFormationItemVM __instance)
+	{
+		if (IsTroopInspectionRuntime())
+		{
+			LockPrisonerFormationItem(__instance);
+		}
+	}
+
+	[HarmonyPatch(typeof(OrderOfBattleFormationClassVM), "UpdateWeightAdjustable")]
+	[HarmonyPostfix]
+	private static void UpdateWeightAdjustablePostfix(OrderOfBattleFormationClassVM __instance)
+	{
+		if (IsTroopInspectionRuntime() && IsPrisonerFormationClass(__instance))
+		{
+			LockPrisonerFormationClass(__instance);
+		}
+	}
+
+	[HarmonyPatch(typeof(OrderOfBattleFormationClassVM), "OnWeightAdjusted")]
+	[HarmonyPrefix]
+	private static bool OnWeightAdjustedPrefix(OrderOfBattleFormationClassVM __instance)
+	{
+		if (!IsTroopInspectionRuntime() || !IsPrisonerFormationClass(__instance))
+		{
+			return true;
+		}
+		LockPrisonerFormationClass(__instance);
+		return false;
 	}
 
 	[HarmonyPatch(typeof(OrderOfBattleVM), "EnsureAllFormationTypesAreSet")]
@@ -3805,8 +4384,8 @@ public static class TroopInspectionOrderOfBattlePatch
 		{
 			if (AllFormationsField?.GetValue(__instance) is List<OrderOfBattleFormationItemVM> allFormations)
 			{
-				RefreshPrisonerFormationItem(allFormations, 6, (DeploymentFormationClass)3);
-				RefreshPrisonerFormationItem(allFormations, 7, (DeploymentFormationClass)3);
+				RefreshPrisonerFormationItem(allFormations, 6, DeploymentFormationClass.Infantry);
+				RefreshPrisonerFormationItem(allFormations, 7, DeploymentFormationClass.Cavalry);
 			}
 		}
 		catch
@@ -3829,8 +4408,82 @@ public static class TroopInspectionOrderOfBattlePatch
 					val.RefreshFormation(val2, deploymentClass, true);
 					val.OnSizeChanged();
 				}
+				LockPrisonerFormationItem(val);
 				break;
 			}
+		}
+	}
+
+	private static bool IsPrisonerFormationItem(OrderOfBattleFormationItemVM item)
+	{
+		Formation formation = ((item != null) ? item.Formation : null);
+		if (formation == null)
+		{
+			return false;
+		}
+		int index = formation.Index;
+		return index == 6 || index == 7;
+	}
+
+	private static bool IsPrisonerFormationClass(OrderOfBattleFormationClassVM formationClass)
+	{
+		return IsPrisonerFormationItem(TryGetBelongedFormationItem(formationClass));
+	}
+
+	private static OrderOfBattleFormationItemVM TryGetBelongedFormationItem(OrderOfBattleFormationClassVM formationClass)
+	{
+		try
+		{
+			return ClassBelongedFormationItemField?.GetValue(formationClass) as OrderOfBattleFormationItemVM;
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static void LockPrisonerFormationItem(OrderOfBattleFormationItemVM item)
+	{
+		if (!IsPrisonerFormationItem(item))
+		{
+			return;
+		}
+		try
+		{
+			if (item.Classes != null)
+			{
+				foreach (OrderOfBattleFormationClassVM item2 in item.Classes)
+				{
+					LockPrisonerFormationClass(item2);
+				}
+			}
+		}
+		catch
+		{
+		}
+	}
+
+	private static void LockPrisonerFormationClass(OrderOfBattleFormationClassVM formationClass)
+	{
+		if (formationClass == null)
+		{
+			return;
+		}
+		try
+		{
+			formationClass.SetWeightAdjustmentLock(true);
+		}
+		catch
+		{
+		}
+		try
+		{
+			formationClass.IsAdjustable = false;
+			formationClass.IsLocked = true;
+			formationClass.UpdateTroopCountText();
+		}
+		catch
+		{
 		}
 	}
 
