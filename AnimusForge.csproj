@@ -12,11 +12,13 @@
   </PropertyGroup>
   <PropertyGroup>
     <DepsDir Condition="'$(DepsDir)' == ''">..\_deps_261550_managed</DepsDir>
+    <BannerlordRoot Condition="'$(BannerlordRoot)' == '' and '$(BANNERLORD_ROOT)' != ''">$(BANNERLORD_ROOT)</BannerlordRoot>
     <BannerlordRoot Condition="'$(BannerlordRoot)' == ''">F:\SteamLibrary\steamapps\common\Mount &amp; Blade II Bannerlord</BannerlordRoot>
     <AnimusForgeBinDir Condition="'$(AnimusForgeBinDir)' == ''">$(BannerlordRoot)\Modules\AnimusForge\bin\Win64_Shipping_Client</AnimusForgeBinDir>
     <BannerlordBinDir Condition="'$(BannerlordBinDir)' == ''">$(BannerlordRoot)\bin\Win64_Shipping_Client</BannerlordBinDir>
     <NativeBinDir Condition="'$(NativeBinDir)' == ''">$(BannerlordRoot)\Modules\Native\bin\Win64_Shipping_Client</NativeBinDir>
     <SandBoxBinDir Condition="'$(SandBoxBinDir)' == ''">$(BannerlordRoot)\Modules\SandBox\bin\Win64_Shipping_Client</SandBoxBinDir>
+    <WorkshopContentDir Condition="'$(WorkshopContentDir)' == '' and '$(WORKSHOP_CONTENT_DIR)' != ''">$(WORKSHOP_CONTENT_DIR)</WorkshopContentDir>
     <WorkshopContentDir Condition="'$(WorkshopContentDir)' == ''">F:\SteamLibrary\steamapps\workshop\content\261550</WorkshopContentDir>
     <WorkshopHarmonyPath Condition="'$(WorkshopHarmonyPath)' == ''">$(WorkshopContentDir)\2859188632\bin\Win64_Shipping_Client\Bannerlord.Harmony.dll</WorkshopHarmonyPath>
     <WorkshopMBOptionPath Condition="'$(WorkshopMBOptionPath)' == ''">$(WorkshopContentDir)\2859238197\bin\Win64_Shipping_Client\Bannerlord.MBOptionScreen.v1.3.6.dll</WorkshopMBOptionPath>

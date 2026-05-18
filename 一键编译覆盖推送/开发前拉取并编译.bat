@@ -9,7 +9,16 @@ set "SCRIPT_DIR=%~dp0"
 for %%I in ("%SCRIPT_DIR%..") do set "PROJECT_ROOT=%%~fI"
 cd /d "%PROJECT_ROOT%"
 
+set "PATH_SCRIPT=%SCRIPT_DIR%resolve_bannerlord_paths.ps1"
+set "CONFIG=Debug"
 set "DRY_RUN=0"
+set "BANNERLORD_ROOT="
+set "WORKSHOP_CONTENT_DIR="
+
+for /f "usebackq tokens=1,* delims==" %%A in (`powershell -NoProfile -ExecutionPolicy Bypass -File "%PATH_SCRIPT%"`) do (
+    if /I "%%A"=="BANNERLORD_ROOT" set "BANNERLORD_ROOT=%%B"
+    if /I "%%A"=="WORKSHOP_CONTENT_DIR" set "WORKSHOP_CONTENT_DIR=%%B"
+)
 
 :parse_args
 if "%~1"=="" goto args_done
@@ -26,9 +35,24 @@ exit /b 1
 
 :args_done
 
+echo [AnimusForge] Pre-work Pull + Build started...
+echo Repo      : "%PROJECT_ROOT%"
+echo Bannerlord: "%BANNERLORD_ROOT%"
+if defined WORKSHOP_CONTENT_DIR echo Workshop  : "%WORKSHOP_CONTENT_DIR%"
+echo Config    : "%CONFIG%"
+if "%DRY_RUN%"=="1" echo Mode      : DRY RUN
+echo.
+
 where git >nul 2>nul
 if errorlevel 1 (
     echo [ERROR] git not found in PATH.
+    pause
+    exit /b 1
+)
+
+where dotnet >nul 2>nul
+if errorlevel 1 (
+    echo [ERROR] dotnet SDK not found in PATH.
     pause
     exit /b 1
 )
@@ -61,15 +85,16 @@ if not defined ORIGIN_URL (
     exit /b 1
 )
 
-echo [Git] One-click pull started...
-echo Repo   : "%PROJECT_ROOT%"
+if not exist "%BANNERLORD_ROOT%" (
+    echo [ERROR] Bannerlord root not found:
+    echo "%BANNERLORD_ROOT%"
+    pause
+    exit /b 1
+)
+
 echo Branch : "%BRANCH%"
 echo Origin : "%ORIGIN_URL%"
-if "%DRY_RUN%"=="1" echo Mode   : DRY RUN (no fetch / no pull)
 echo.
-
-set "HAS_CHANGES=0"
-for /f "delims=" %%S in ('git status --porcelain') do set "HAS_CHANGES=1"
 
 if "%DRY_RUN%"=="1" (
     echo [Preview] Current changed files:
@@ -78,15 +103,19 @@ if "%DRY_RUN%"=="1" (
     echo [Preview] Would run:
     echo   git ls-remote --exit-code origin "refs/heads/%BRANCH%"
     echo   git fetch origin "%BRANCH%"
-    echo   if clean and behind only: git merge --ff-only "origin/%BRANCH%"
-    echo   if dirty or diverged    : git rebase --autostash "origin/%BRANCH%"
+    echo   if origin/%BRANCH% has new commit^(s^): git rebase --autostash "origin/%BRANCH%"
+    if defined WORKSHOP_CONTENT_DIR (
+        echo   dotnet build "%PROJECT_ROOT%\AnimusForge.csproj" -c %CONFIG% /p:BannerlordRoot="%BANNERLORD_ROOT%" /p:WorkshopContentDir="%WORKSHOP_CONTENT_DIR%"
+    ) else (
+        echo   dotnet build "%PROJECT_ROOT%\AnimusForge.csproj" -c %CONFIG% /p:BannerlordRoot="%BANNERLORD_ROOT%"
+    )
     echo.
-    echo [SUCCESS] Dry-run completed.
+    echo [SUCCESS] Dry-run completed. No build, deploy, commit, or push was run.
     pause
     exit /b 0
 )
 
-echo [Preflight] Checking origin/%BRANCH% connectivity...
+echo [1/2] Pulling latest origin/%BRANCH%...
 git ls-remote --exit-code origin "refs/heads/%BRANCH%" >nul
 if errorlevel 1 (
     echo [ERROR] Cannot reach origin/%BRANCH%.
@@ -95,7 +124,6 @@ if errorlevel 1 (
     exit /b 1
 )
 
-echo [1/2] Fetching origin/%BRANCH%...
 git fetch origin "%BRANCH%"
 if errorlevel 1 (
     echo [ERROR] git fetch failed.
@@ -112,35 +140,8 @@ echo Local ahead : %AHEAD_COUNT%
 echo Local behind: %BEHIND_COUNT%
 echo.
 
-if not "%AHEAD_COUNT%"=="0" if not "%BEHIND_COUNT%"=="0" (
-    echo [INFO] Local and origin/%BRANCH% have diverged. Rebasing local commit^(s^) with autostash...
-    git rebase --autostash "origin/%BRANCH%"
-    if errorlevel 1 (
-        echo [ERROR] git rebase failed. Resolve conflicts, then run:
-        echo   git rebase --continue
-        echo or abort with:
-        echo   git rebase --abort
-        echo After resolving, rerun this script.
-        pause
-        exit /b 1
-    )
-    echo [SUCCESS] Pull/rebase completed.
-    pause
-    exit /b 0
-)
-
-if "%BEHIND_COUNT%"=="0" (
-    if "%AHEAD_COUNT%"=="0" (
-        echo [SUCCESS] Already up to date.
-    ) else (
-        echo [INFO] Nothing to pull. Local %BRANCH% has %AHEAD_COUNT% unpushed commit^(s^).
-    )
-    pause
-    exit /b 0
-)
-
-if "%HAS_CHANGES%"=="1" (
-    echo [2/2] Rebasing with autostash because working tree has local changes...
+if not "%BEHIND_COUNT%"=="0" (
+    echo [INFO] Rebasing local work on origin/%BRANCH% with autostash...
     git rebase --autostash "origin/%BRANCH%"
     if errorlevel 1 (
         echo [ERROR] git rebase failed. Resolve conflicts, then run:
@@ -152,15 +153,24 @@ if "%HAS_CHANGES%"=="1" (
         exit /b 1
     )
 ) else (
-    echo [2/2] Fast-forwarding local %BRANCH%...
-    git merge --ff-only "origin/%BRANCH%"
-    if errorlevel 1 (
-        echo [ERROR] Fast-forward pull failed.
-        pause
-        exit /b 1
-    )
+    echo [INFO] No remote commits to pull.
 )
 
-echo [SUCCESS] Pull completed.
+echo.
+echo [2/2] Building project...
+if defined WORKSHOP_CONTENT_DIR (
+    dotnet build "%PROJECT_ROOT%\AnimusForge.csproj" -c %CONFIG% /p:BannerlordRoot="%BANNERLORD_ROOT%" /p:WorkshopContentDir="%WORKSHOP_CONTENT_DIR%"
+) else (
+    dotnet build "%PROJECT_ROOT%\AnimusForge.csproj" -c %CONFIG% /p:BannerlordRoot="%BANNERLORD_ROOT%"
+)
+set "ERR=%ERRORLEVEL%"
+if not "%ERR%"=="0" (
+    echo.
+    echo [FAILED] Build failed. ExitCode=%ERR%
+    pause
+    exit /b %ERR%
+)
+
+echo [SUCCESS] Pre-work Pull + Build completed. No deploy, commit, or push was run.
 pause
 exit /b 0

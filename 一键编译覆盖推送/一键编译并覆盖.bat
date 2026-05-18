@@ -5,11 +5,18 @@ set "SCRIPT_DIR=%~dp0"
 for %%I in ("%SCRIPT_DIR%..") do set "PROJECT_ROOT=%%~fI"
 cd /d "%SCRIPT_DIR%"
 set "DEPLOY_SCRIPT=%SCRIPT_DIR%deploy_module.ps1"
+set "PATH_SCRIPT=%SCRIPT_DIR%resolve_bannerlord_paths.ps1"
 
-set "BANNERLORD_ROOT=F:\SteamLibrary\steamapps\common\Mount & Blade II Bannerlord"
 set "CONFIG=Debug"
+set "BANNERLORD_ROOT="
+set "WORKSHOP_CONTENT_DIR="
 set "STEAM_EXE="
 set "STEAM_GAME_ID=261550"
+
+for /f "usebackq tokens=1,* delims==" %%A in (`powershell -NoProfile -ExecutionPolicy Bypass -File "%PATH_SCRIPT%"`) do (
+    if /I "%%A"=="BANNERLORD_ROOT" set "BANNERLORD_ROOT=%%B"
+    if /I "%%A"=="WORKSHOP_CONTENT_DIR" set "WORKSHOP_CONTENT_DIR=%%B"
+)
 
 set "SRC_DEBUG=%PROJECT_ROOT%\bin\Debug\net472\AnimusForge.dll"
 set "SRC_RELEASE=%PROJECT_ROOT%\bin\Release\net472\AnimusForge.dll"
@@ -19,6 +26,7 @@ echo [AnimusForge] Build + Deploy + Launch started...
 echo Script Dir : "%SCRIPT_DIR%"
 echo Project Dir: "%PROJECT_ROOT%"
 echo Bannerlord : "%BANNERLORD_ROOT%"
+if defined WORKSHOP_CONTENT_DIR echo Workshop  : "%WORKSHOP_CONTENT_DIR%"
 echo Config     : "%CONFIG%"
 echo.
 
@@ -37,7 +45,11 @@ if not exist "%BANNERLORD_ROOT%" (
 )
 
 echo [1/3] Build...
-dotnet build "%PROJECT_ROOT%\AnimusForge.csproj" -c %CONFIG% /p:BannerlordRoot="%BANNERLORD_ROOT%"
+if defined WORKSHOP_CONTENT_DIR (
+    dotnet build "%PROJECT_ROOT%\AnimusForge.csproj" -c %CONFIG% /p:BannerlordRoot="%BANNERLORD_ROOT%" /p:WorkshopContentDir="%WORKSHOP_CONTENT_DIR%"
+) else (
+    dotnet build "%PROJECT_ROOT%\AnimusForge.csproj" -c %CONFIG% /p:BannerlordRoot="%BANNERLORD_ROOT%"
+)
 set "ERR=%ERRORLEVEL%"
 if not "%ERR%"=="0" (
     echo.
