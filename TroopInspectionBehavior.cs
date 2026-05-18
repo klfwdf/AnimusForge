@@ -1264,7 +1264,7 @@ public static class TroopInspectionBehavior
 		//IL_010b: Unknown result type (might be due to invalid IL or missing references)
 		IMapScene mapSceneWrapper = Campaign.Current.MapSceneWrapper;
 		CampaignVec2 position = mainParty.Position;
-		MapPatchData mapPatchAtPosition = mapSceneWrapper.GetMapPatchAtPosition(ref position);
+		MapPatchData mapPatchAtPosition = mapSceneWrapper.GetMapPatchAtPosition(in position);
 		string battleSceneForMapPatch = Campaign.Current.Models.SceneModel.GetBattleSceneForMapPatch(mapPatchAtPosition, false);
 		if (string.IsNullOrWhiteSpace(battleSceneForMapPatch))
 		{
@@ -3451,7 +3451,7 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 		int num = 0;
 		try
 		{
-			if (!MBActionSet.CheckActionAnimationClipExists(agent.ActionSet, ref val))
+			if (!MBActionSet.CheckActionAnimationClipExists(agent.ActionSet, in val))
 			{
 				if (isLord && !_lordPrisonerActionMissingLogged)
 				{
@@ -3471,7 +3471,7 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 					return;
 				}
 				AnimFlags val2 = (AnimFlags)143881404416L;
-				if (agent.SetActionChannel(num, ref val, true, val2, 0f, 0f, -0.2f, 0.4f, 0.35f, false, -0.2f, 0, true))
+				if (agent.SetActionChannel(num, in val, true, val2, 0f, 0f, -0.2f, 0.4f, 0.35f, false, -0.2f, 0, true))
 				{
 					try
 					{
