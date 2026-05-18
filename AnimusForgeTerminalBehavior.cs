@@ -48,6 +48,7 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 	public void OnEngineTick()
 	{
 		MilitaryExerciseBehavior.OnEngineTick();
+		TroopInspectionBehavior.OnEngineTick();
 		InputKey configuredTerminalKey = GetConfiguredTerminalKey();
 		bool flag = false;
 		try
