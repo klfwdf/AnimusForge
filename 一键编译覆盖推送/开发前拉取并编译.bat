@@ -166,9 +166,11 @@ if defined WORKSHOP_CONTENT_DIR (
 set "ERR=%ERRORLEVEL%"
 if not "%ERR%"=="0" (
     echo.
-    echo [FAILED] Build failed. ExitCode=%ERR%
+    echo [WARNING] Pull completed, but build failed. ExitCode=%ERR%
+    echo [WARNING] This usually means the local Bannerlord/mod dependency setup is incomplete.
+    echo [WARNING] The pull/rebase step was already successful, so this script will not fail the pull.
     pause
-    exit /b %ERR%
+    exit /b 0
 )
 
 echo [SUCCESS] Pre-work Pull + Build completed. No deploy, commit, or push was run.

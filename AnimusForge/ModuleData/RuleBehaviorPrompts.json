@@ -384,7 +384,7 @@
                             "PostprocessRules":  [
                                                      {
                                                          "Tag":  "[ATT:士兵名称:数量]",
-                                                         "Description":  "如果NPC在<latest_reply>里明确同意让【你当前可转移部队】中的某种士兵转入玩家麾下，就输出这个；这里填写士兵名称和数量"
+                                                         "Description":  "如果NPC在<latest_reply>里明确同意让自己的部队中的某种士兵转入玩家麾下，就输出这个；这里填写士兵名称和数量"
                                                      },
                                                      {
                                                          "Tag":  "[ATP:俘虏名称:数量]",

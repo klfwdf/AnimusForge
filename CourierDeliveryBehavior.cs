@@ -1042,7 +1042,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			string extraFact = session.DeliveryFactText ?? "";
 			List<string> preprocessRuleHits = MyBehavior.RunCourierRulePreprocessForExternal(recipient, session.LetterText, extraFact, recipient.CharacterObject, targetAgentIndex: -1);
 			MyBehavior.ShoutPromptContext ctx = MyBehavior.BuildShoutPromptContextForExternal(recipient, session.LetterText, extraFact, recipient.Culture?.StringId ?? "neutral", hasAnyHero: true, targetCharacter: recipient.CharacterObject, targetAgentIndex: -1);
-			string extras = RemoveInjectedRuleBlock(ctx?.Extras ?? "", "scene_mechanism_actions");
+			string extras = FilterCourierInjectedRuleBlocks(ctx?.Extras ?? "", preprocessRuleHits, new[] { "scene_mechanism_actions" });
 			List<object> messages = BuildCourierReplyMessages(recipient, session, extras);
 			ShoutNetwork.RecordPrimaryRequestBodyForTokenStats(messages, MainReplyMaxTokens, "courier_reply_preflight");
 			string output = await ShoutNetwork.CallApiWithMessages(messages, MainReplyMaxTokens);
@@ -1066,17 +1066,17 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 				Log("npc no reply session=" + session.Id);
 				return;
 			}
-			bool duelInjected = ctx != null && ctx.UseDuelContext || ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "duel") || HasPreprocessRuleHit(preprocessRuleHits, "duel");
-			bool rewardInjected = ctx != null && ctx.UseRewardContext || ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "reward") || HasPreprocessRuleHit(preprocessRuleHits, "reward");
-			bool loanInjected = ctx != null && ctx.IsLoanContext || ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "loan") || HasPreprocessRuleHit(preprocessRuleHits, "loan");
-			bool lordsHallInjected = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "lords_hall_access") || HasPreprocessRuleHit(preprocessRuleHits, "lords_hall_access");
-			bool meetingReleaseInjected = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "encounter_release_player") || HasPreprocessRuleHit(preprocessRuleHits, "encounter_release_player");
-			bool vanillaIssueInjected = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "vanilla_issue") || HasPreprocessRuleHit(preprocessRuleHits, "vanilla_issue");
-			bool heroJoinPartyInjected = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "hero_join_party") || HasPreprocessRuleHit(preprocessRuleHits, "hero_join_party");
+			bool duelInjected = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "duel");
+			bool rewardInjected = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "reward");
+			bool loanInjected = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "loan");
+			bool lordsHallInjected = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "lords_hall_access");
+			bool meetingReleaseInjected = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "encounter_release_player");
+			bool vanillaIssueInjected = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "vanilla_issue");
+			bool heroJoinPartyInjected = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "hero_join_party");
 			bool sceneMechanismInjected = false;
-			bool partyTransferInjected = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "party_transfer") || HasPreprocessRuleHit(preprocessRuleHits, "party_transfer");
-			bool settlementTransferInjected = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "settlement_transfer") || HasPreprocessRuleHit(preprocessRuleHits, "settlement_transfer");
-			bool kingdomServiceInjected = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "kingdom_service") || HasPreprocessRuleHit(preprocessRuleHits, "kingdom_service");
+			bool partyTransferInjected = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "party_transfer");
+			bool settlementTransferInjected = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "settlement_transfer");
+			bool kingdomServiceInjected = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "kingdom_service");
 			string historyText = MyBehavior.BuildHistoryContextForExternal(recipient, 20, session.LetterText, extraFact);
 			string postprocessed = ShoutBehavior.RunCourierActionPostprocessForExternal(recipient, recipient.CharacterObject, recipient.Name?.ToString() ?? "NPC", session.LetterText, historyText, reply, duelInjected, rewardInjected, loanInjected, kingdomServiceInjected, lordsHallInjected, meetingReleaseInjected, vanillaIssueInjected, heroJoinPartyInjected, sceneMechanismInjected, partyTransferInjected, settlementTransferInjected);
 			session.ReplyText = reply;
@@ -2699,6 +2699,61 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			return false;
 		}
 		return hits.Any(x => string.Equals((x ?? "").Trim(), value, StringComparison.OrdinalIgnoreCase));
+	}
+
+	private static string FilterCourierInjectedRuleBlocks(string text, List<string> allowedRuleIds, IEnumerable<string> excludedRuleIds)
+	{
+		string value = text ?? "";
+		if (string.IsNullOrWhiteSpace(value))
+		{
+			return "";
+		}
+		HashSet<string> allowed = new HashSet<string>((allowedRuleIds ?? new List<string>()).Where(x => !string.IsNullOrWhiteSpace(x)).Select(x => x.Trim()), StringComparer.OrdinalIgnoreCase);
+		HashSet<string> excluded = new HashSet<string>((excludedRuleIds ?? Enumerable.Empty<string>()).Where(x => !string.IsNullOrWhiteSpace(x)).Select(x => x.Trim()), StringComparer.OrdinalIgnoreCase);
+		StringBuilder builder = new StringBuilder();
+		bool keepCurrentRuleBlock = true;
+		bool keptAnyRuleBlock = false;
+		foreach (string rawLine in value.Replace("\r", "").Split('\n'))
+		{
+			string line = rawLine ?? "";
+			string ruleId = TryExtractInjectedRuleBlockId(line);
+			if (!string.IsNullOrWhiteSpace(ruleId))
+			{
+				keepCurrentRuleBlock = allowed.Contains(ruleId) && !excluded.Contains(ruleId);
+				if (keepCurrentRuleBlock)
+				{
+					keptAnyRuleBlock = true;
+					builder.AppendLine(line);
+				}
+				continue;
+			}
+			if (keepCurrentRuleBlock)
+			{
+				builder.AppendLine(line);
+			}
+		}
+		string result = builder.ToString().Trim();
+		if (!keptAnyRuleBlock)
+		{
+			result = Regex.Replace(result, "(?m)^【说明】你不必提到附加规则内的内容，除非有人问起。\\s*$", "").Trim();
+		}
+		return result;
+	}
+
+	private static string TryExtractInjectedRuleBlockId(string line)
+	{
+		string value = (line ?? "").Trim();
+		const string prefix = "【附加规则:";
+		if (!value.StartsWith(prefix, StringComparison.Ordinal))
+		{
+			return "";
+		}
+		int end = value.IndexOf('】', prefix.Length);
+		if (end <= prefix.Length)
+		{
+			return "";
+		}
+		return value.Substring(prefix.Length, end - prefix.Length).Trim();
 	}
 
 	private static string RemoveInjectedRuleBlock(string text, string ruleId)

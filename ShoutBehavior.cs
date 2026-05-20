@@ -938,7 +938,9 @@ public class ShoutBehavior : CampaignBehaviorBase
 
 	private const float SCENE_GUIDE_PLAYER_LOST_TIMEOUT = 45f;
 
-	private const float SCENE_GUIDE_RETURN_EXTRA_DELAY_SECONDS = ACTIVE_INTERACTION_IDLE_TIMEOUT;
+	// 已实测成功：带路到达后必须等到达台词结束，再短暂停顿后返回。
+	// 严禁改回 ACTIVE_INTERACTION_IDLE_TIMEOUT，严禁复用普通交互超时；会破坏带路到达/说话/返回节奏。
+	private const float SCENE_GUIDE_RETURN_EXTRA_DELAY_SECONDS = 2f;
 
 	private const float SCENE_GUIDE_ARRIVAL_HOLD_FAILSAFE_SECONDS = 90f;
 

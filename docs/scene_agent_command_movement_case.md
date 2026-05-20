@@ -114,6 +114,26 @@
 
    门/Passage 可以用来计算 proxy 的位置和跨 location 路径，但不要直接作为 movement target 的身份。
 
+9. 带路到达后的“说完话再离开”节奏严禁改动。
+   已实测成功的代码是 `ShoutBehavior.cs` 中：
+   - `CompleteSceneGuideArrival(...)` 判定抵达。
+   - `TriggerSceneGuideArrivalAndReturn(...)` 先 `HoldSceneGuideAgentForArrivalSpeech(...)`，再 `ScheduleSceneGuideReturnAfterNextSpeech(...)`，并触发到达台词。
+   - `ScheduleSceneGuideReturnAfterSpeech(...)` 在到达台词实际排入播放后，按台词显示/播放时长加 `SCENE_GUIDE_RETURN_EXTRA_DELAY_SECONDS` 安排返回。
+   - `SCENE_GUIDE_RETURN_EXTRA_DELAY_SECONDS = 2f`。
+
+   这 2 秒是“台词结束后的短暂停顿”，不是普通交互空闲超时。严禁改回 `ACTIVE_INTERACTION_IDLE_TIMEOUT`，严禁复用通用对话/凝视/交互超时来控制带路返回。
+
+   原因：带路抵达后的状态机只需要保证“抵达 -> 说到达台词 -> 短暂停顿 -> 返回原岗位”。如果把返回延迟绑到普通交互超时，或额外叠加通用凝视/硬锁，NPC 会出现不停留、长时间卡住、朝向异常、撞墙或返回节奏错误。
+
+10. 带路到达停留不要再叠加硬目标帧。
+    已验证失败的改法包括：
+    - 在到达后反复 `SetScriptedPosition(...)`。
+    - 在到达后反复 `SetScriptedPositionAndDirection(...)`。
+    - 为了停留强行重写 `AgentNavigator.SetTargetFrame(...)`。
+    - 额外发明一套硬停留状态去覆盖原版寻路。
+
+    这些改法会和原版 `EscortAgentBehavior`、场景导航、障碍物和市场摊位碰撞发生冲突，表现为 NPC 不在目标地点自然停住，而是持续挪步直到撞墙。不要再使用这类方案修带路到达停留问题。
+
 ## 新增场景命令清单
 
 新增或修改场景内 NPC 命令移动时，至少检查：
@@ -128,6 +148,8 @@
 - 目标是否从清单解析到 `Agent` / `LocationCharacter`，而不是解析成裸坐标。
 - 如果目标是门、出口或 Passage，是否创建了门口 proxy Agent，而不是直接把门/坐标当目标。
 - 取消、返回、抵达、TTS 后续动作是否仍能按 `AgentIndex` 找回任务。
+- 带路到达后返回是否仍使用 `SCENE_GUIDE_RETURN_EXTRA_DELAY_SECONDS = 2f`，而不是普通交互超时。
+- 是否没有在到达后新增 `SetScriptedPosition`、`SetScriptedPositionAndDirection` 或 `SetTargetFrame` 硬锁。
 - 日志是否包含 agent、target agent、location character、阶段名，而不是只有坐标。
 
 ## 反例

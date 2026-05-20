@@ -114,6 +114,18 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 
 	public override void RegisterEvents()
 	{
+		CampaignEvents.OnGameLoadFinishedEvent.AddNonSerializedListener(this, OnGameLoadFinished);
+		CampaignEvents.BeforeHeroesMarried.AddNonSerializedListener(this, OnBeforeHeroesMarried);
+	}
+
+	private void OnGameLoadFinished()
+	{
+		NormalizeMarriedPlayerCompanionFamilySlots("game_load_finished");
+	}
+
+	private void OnBeforeHeroesMarried(Hero hero1, Hero hero2, bool showNotification)
+	{
+		NormalizeMarriedPlayerCompanionFamilySlots("before_heroes_married", hero1, hero2);
 	}
 
 	public override void SyncData(IDataStore dataStore)
@@ -802,6 +814,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 				method.Invoke(null, new object[3] { left, right, true });
 				if (left?.Spouse == right && right?.Spouse == left)
 				{
+					NormalizeMarriedPlayerCompanionFamilySlots("marriage_action_success", left, right);
 					return true;
 				}
 				failReason = "MarriageAction 未抛异常，但婚姻未实际建立。";
@@ -820,6 +833,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 				method2.Invoke(null, new object[2] { left, right });
 				if (left?.Spouse == right && right?.Spouse == left)
 				{
+					NormalizeMarriedPlayerCompanionFamilySlots("marriage_action_success", left, right);
 					return true;
 				}
 				failReason = "MarriageAction 未抛异常，但婚姻未实际建立。";
@@ -839,6 +853,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 				Logger.Log("Romance", "[WARN] MarriageAction threw after marriage state changed: " + ex2);
 				Logger.Log("Romance", "[WARN] MarriageAction left(partial-success)=" + DescribeHeroMarriageState(left));
 				Logger.Log("Romance", "[WARN] MarriageAction right(partial-success)=" + DescribeHeroMarriageState(right));
+				NormalizeMarriedPlayerCompanionFamilySlots("marriage_action_partial_success", left, right);
 				TryEmitMarriageFallbackNotifications(left, right);
 				return true;
 			}
@@ -855,6 +870,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 				Logger.Log("Romance", "[WARN] MarriageAction wrapper threw after marriage state changed: " + ex);
 				Logger.Log("Romance", "[WARN] MarriageAction left(partial-success)=" + DescribeHeroMarriageState(left));
 				Logger.Log("Romance", "[WARN] MarriageAction right(partial-success)=" + DescribeHeroMarriageState(right));
+				NormalizeMarriedPlayerCompanionFamilySlots("marriage_action_partial_success", left, right);
 				TryEmitMarriageFallbackNotifications(left, right);
 				return true;
 			}
@@ -1214,6 +1230,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 				{
 					TryEmitMarriageFallbackNotifications(left, right);
 				}
+				NormalizeMarriedPlayerCompanionFamilySlots("force_marriage_success", left, right);
 				return true;
 			}
 			failReason = "强制婚姻执行后婚姻未实际建立。";
@@ -1224,6 +1241,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 			if (left?.Spouse == right && right?.Spouse == left)
 			{
 				Logger.Log("Romance", "[WARN] Force marriage threw after marriage state changed: " + ex);
+				NormalizeMarriedPlayerCompanionFamilySlots("force_marriage_partial_success", left, right);
 				TryEmitMarriageFallbackNotifications(left, right);
 				return true;
 			}
@@ -1591,6 +1609,142 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		catch (Exception ex)
 		{
 			Logger.Log("Romance", "[ERROR] Emit marriage fallback notifications failed: " + ex);
+		}
+	}
+
+	private static int NormalizeMarriedPlayerCompanionFamilySlots(string reason, params Hero[] priorityHeroes)
+	{
+		int num = 0;
+		try
+		{
+			Clan playerClan = Clan.PlayerClan;
+			if (playerClan == null || Hero.MainHero == null)
+			{
+				return 0;
+			}
+			List<Hero> list = new List<Hero>();
+			Action<Hero> addCandidate = delegate(Hero hero)
+			{
+				if (hero != null && !list.Contains(hero))
+				{
+					list.Add(hero);
+				}
+			};
+			if (priorityHeroes != null)
+			{
+				foreach (Hero priorityHero in priorityHeroes)
+				{
+					addCandidate(priorityHero);
+					addCandidate(priorityHero?.Spouse);
+				}
+			}
+			addCandidate(Hero.MainHero.Spouse);
+			try
+			{
+				foreach (Hero companion in playerClan.Companions)
+				{
+					addCandidate(companion);
+				}
+			}
+			catch
+			{
+			}
+			try
+			{
+				foreach (Hero hero in playerClan.Heroes)
+				{
+					addCandidate(hero);
+				}
+			}
+			catch
+			{
+			}
+			foreach (Hero hero2 in list)
+			{
+				if (TryMoveMarriedPlayerCompanionToFamily(hero2, reason))
+				{
+					num++;
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("Romance", "[WARN] Normalize married companion family slots failed reason=" + (reason ?? "") + " error=" + ex.Message);
+		}
+		return num;
+	}
+
+	private static bool ShouldMoveMarriedPlayerCompanionToFamily(Hero hero, Clan playerClan)
+	{
+		if (hero == null || playerClan == null || Hero.MainHero == null || hero == Hero.MainHero)
+		{
+			return false;
+		}
+		Hero spouse = hero.Spouse;
+		if (spouse == null)
+		{
+			return false;
+		}
+		bool flag = spouse == Hero.MainHero || Hero.MainHero.Spouse == hero;
+		bool flag2 = hero.Clan == playerClan && spouse.Clan == playerClan;
+		if (!flag && !flag2)
+		{
+			return false;
+		}
+		bool flag3 = hero.CompanionOf == playerClan || hero.IsPlayerCompanion;
+		bool flag4 = hero.Clan == playerClan && (!hero.IsLord || playerClan.AliveLords?.Contains(hero) != true);
+		return flag3 || flag4;
+	}
+
+	private static bool TryMoveMarriedPlayerCompanionToFamily(Hero hero, string reason)
+	{
+		Clan playerClan = Clan.PlayerClan;
+		if (!ShouldMoveMarriedPlayerCompanionToFamily(hero, playerClan))
+		{
+			return false;
+		}
+		string text = DescribeHeroMarriageState(hero);
+		try
+		{
+			bool flag = false;
+			if (hero.CompanionOf == playerClan)
+			{
+				hero.CompanionOf = null;
+				flag = true;
+			}
+			if (!hero.IsLord)
+			{
+				hero.SetNewOccupation(Occupation.Lord);
+				flag = true;
+			}
+			bool flag2 = playerClan.AliveLords?.Contains(hero) == true;
+			if (hero.Clan != playerClan || !flag2)
+			{
+				if (hero.Clan == playerClan && !flag2)
+				{
+					hero.Clan = null;
+				}
+				hero.Clan = playerClan;
+				flag = true;
+			}
+			try
+			{
+				hero.UpdateHomeSettlement();
+				hero.Spouse?.UpdateHomeSettlement();
+			}
+			catch
+			{
+			}
+			if (flag)
+			{
+				Logger.Log("Romance", "[MarriageCompanionFamilySlot] moved reason=" + (reason ?? "") + " before={" + text + "} after={" + DescribeHeroMarriageState(hero) + "}");
+			}
+			return flag;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("Romance", "[WARN] Move married companion to family failed reason=" + (reason ?? "") + " before={" + text + "} error=" + ex);
+			return false;
 		}
 	}
 
