@@ -2769,7 +2769,7 @@ public static class AIConfigHandler
 		}
 	}
 
-	private static bool TryBuildAuxiliaryGuardrailEvalSnapshot(string userText, string runtimeGuardrailContext, string secondaryText, string cacheKey, out GuardrailEvalSnapshot snapshot)
+	private static bool TryBuildAuxiliaryGuardrailEvalSnapshot(string userText, string runtimeGuardrailContext, string secondaryText, string cacheKey, out GuardrailEvalSnapshot snapshot, HashSet<string> excludedRuleIds = null)
 	{
 		snapshot = null;
 		try
@@ -2797,6 +2797,10 @@ public static class AIConfigHandler
 					continue;
 				}
 				string text = guardrailRulePromptConfig.Id.Trim();
+				if (excludedRuleIds != null && excludedRuleIds.Contains(text))
+				{
+					continue;
+				}
 				snapshot.Rules[text] = new GuardrailRuleEval
 				{
 					RuleTag = text,
@@ -2908,7 +2912,7 @@ public static class AIConfigHandler
 		}
 	}
 
-	private static bool TryGetGuardrailEvalSnapshot(string userText, string secondaryText, out GuardrailEvalSnapshot snapshot)
+	private static bool TryGetGuardrailEvalSnapshot(string userText, string secondaryText, out GuardrailEvalSnapshot snapshot, IEnumerable<string> excludedRuleIds = null)
 	{
 		snapshot = null;
 		List<GuardrailIntentInput> list = new List<GuardrailIntentInput>();
@@ -2916,7 +2920,9 @@ public static class AIConfigHandler
 		try
 		{
 			string runtimeGuardrailContext = GetRuntimeGuardrailContext();
-			string text = BuildGuardrailEvalKey(userText, runtimeGuardrailContext + (UseAuxiliaryRuleApiRetrieval ? ("\n" + GetAuxiliarySceneDialogueHistoryContext()) : ""), secondaryText) + (UseAuxiliaryRuleApiRetrieval ? "|aux" : "|rag");
+			HashSet<string> excluded = BuildExcludedRuleIdSet(excludedRuleIds);
+			string excludeKey = excluded.Count == 0 ? "" : ("|exclude:" + string.Join(",", excluded.OrderBy(x => x, StringComparer.OrdinalIgnoreCase)));
+			string text = BuildGuardrailEvalKey(userText, runtimeGuardrailContext + (UseAuxiliaryRuleApiRetrieval ? ("\n" + GetAuxiliarySceneDialogueHistoryContext()) : ""), secondaryText) + (UseAuxiliaryRuleApiRetrieval ? "|aux" : "|rag") + excludeKey;
 			lock (_guardrailSemanticLock)
 			{
 				if (_lastGuardrailEval != null && string.Equals(_lastGuardrailEval.Key, text, StringComparison.Ordinal))
@@ -2925,7 +2931,7 @@ public static class AIConfigHandler
 					return snapshot != null && snapshot.Rules != null && snapshot.Rules.Count > 0;
 				}
 			}
-			if (UseAuxiliaryRuleApiRetrieval && TryBuildAuxiliaryGuardrailEvalSnapshot(userText, runtimeGuardrailContext, secondaryText, text, out snapshot))
+			if (UseAuxiliaryRuleApiRetrieval && TryBuildAuxiliaryGuardrailEvalSnapshot(userText, runtimeGuardrailContext, secondaryText, text, out snapshot, excluded))
 			{
 				lock (_guardrailSemanticLock)
 				{
@@ -2985,6 +2991,10 @@ public static class AIConfigHandler
 					continue;
 				}
 				string id = guardrailRulePromptConfig.Id;
+				if (excluded.Contains(id))
+				{
+					continue;
+				}
 				string ruleInstruction = guardrailRulePromptConfig.Instruction ?? "";
 				List<string> list5 = BuildRuleSemanticSeeds(id, ruleInstruction, guardrailRulePromptConfig.TriggerKeywords);
 				float num = 0f;
@@ -3078,6 +3088,10 @@ public static class AIConfigHandler
 						continue;
 					}
 					string id2 = guardrailRulePromptConfig2.Id;
+					if (excluded.Contains(id2))
+					{
+						continue;
+					}
 					guardrailEvalSnapshot.Rules.TryGetValue(id2, out var value);
 					List<string> list6 = BuildRuleSemanticSeeds(id2, guardrailRulePromptConfig2.Instruction ?? "", guardrailRulePromptConfig2.TriggerKeywords);
 					float num7 = 0f;
@@ -3600,6 +3614,11 @@ public static class AIConfigHandler
 
 	public static List<GuardrailRuleHit> GetGuardrailSemanticRuleHits(string input, string secondaryInput, int maxCount = 0, bool includeBuiltInRules = false)
 	{
+		return GetGuardrailSemanticRuleHits(input, secondaryInput, maxCount, includeBuiltInRules, null);
+	}
+
+	public static List<GuardrailRuleHit> GetGuardrailSemanticRuleHits(string input, string secondaryInput, int maxCount, bool includeBuiltInRules, IEnumerable<string> excludedRuleIds)
+	{
 		List<GuardrailRuleHit> list = new List<GuardrailRuleHit>();
 		try
 		{
@@ -3609,7 +3628,8 @@ public static class AIConfigHandler
 			{
 				return list;
 			}
-			if (!TryGetGuardrailEvalSnapshot(text, secondaryInput, out var snapshot) || snapshot?.Rules == null || snapshot.Rules.Count <= 0)
+			HashSet<string> excluded = BuildExcludedRuleIdSet(excludedRuleIds);
+			if (!TryGetGuardrailEvalSnapshot(text, secondaryInput, out var snapshot, excluded) || snapshot?.Rules == null || snapshot.Rules.Count <= 0)
 			{
 				return list;
 			}
@@ -3618,7 +3638,7 @@ public static class AIConfigHandler
 			{
 				string text2 = (rule.Key ?? "").Trim().ToLowerInvariant();
 				GuardrailRuleEval value = rule.Value;
-				if (!string.IsNullOrWhiteSpace(text2) && value != null && value.Hit && (includeBuiltInRules || !IsBuiltInRuleTag(text2)))
+				if (!string.IsNullOrWhiteSpace(text2) && !excluded.Contains(text2) && value != null && value.Hit && (includeBuiltInRules || !IsBuiltInRuleTag(text2)))
 				{
 					dictionary.TryGetValue(text2, out var value2);
 					string text3 = value2?.Instruction ?? "";
@@ -3648,6 +3668,26 @@ public static class AIConfigHandler
 		{
 		}
 		return list;
+	}
+
+	private static HashSet<string> BuildExcludedRuleIdSet(IEnumerable<string> excludedRuleIds)
+	{
+		HashSet<string> set = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		try
+		{
+			foreach (string id in excludedRuleIds ?? Enumerable.Empty<string>())
+			{
+				string text = (id ?? "").Trim();
+				if (!string.IsNullOrWhiteSpace(text))
+				{
+					set.Add(text);
+				}
+			}
+		}
+		catch
+		{
+		}
+		return set;
 	}
 
 	private static bool TryLexicalRuleKeywordHit(string input, string secondaryInput, List<string> triggerKeywords, out string matchedKeyword)

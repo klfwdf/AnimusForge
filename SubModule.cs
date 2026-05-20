@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using HarmonyLib;
 using TaleWorlds.CampaignSystem;
+using TaleWorlds.CampaignSystem.ComponentInterfaces;
+using TaleWorlds.CampaignSystem.GameComponents;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
@@ -206,6 +208,14 @@ public class SubModule : MBSubModuleBase
 			{
 				Logger.LogTrace("SubModule", ">>> MilitaryExercise patches init failed: " + ex18c.Message);
 			}
+			try
+			{
+				CourierDeliveryBehavior.RegisterHarmonyPatches(harmony);
+			}
+			catch (Exception ex18d)
+			{
+				Logger.LogTrace("SubModule", ">>> CourierDelivery patches init failed: " + ex18d.Message);
+			}
 			Logger.LogTrace("SubModule", ">>> Harmony patches applied.");
 		}
 		catch (Exception ex18)
@@ -228,9 +238,12 @@ public class SubModule : MBSubModuleBase
 	{
 		if (starterObject is CampaignGameStarter campaignGameStarter)
 		{
+			RegisterCourierFoodConsumptionModel(campaignGameStarter);
+			RegisterCourierMobilePartyAiModel(campaignGameStarter);
 			campaignGameStarter.AddBehavior(new ModOnboardingBehavior());
 			campaignGameStarter.AddBehavior(new MyBehavior());
 			campaignGameStarter.AddBehavior(new ShoutBehavior());
+			campaignGameStarter.AddBehavior(new CourierDeliveryBehavior());
 			campaignGameStarter.AddBehavior(new DuelBehavior());
 			campaignGameStarter.AddBehavior(new RewardSystemBehavior());
 			campaignGameStarter.AddBehavior(new AnimusForgeTerminalBehavior());
@@ -254,8 +267,61 @@ public class SubModule : MBSubModuleBase
 		EncyclopediaHeroPersonaPatch.OnApplicationTick();
 		ModOnboardingBehavior.Instance?.OnEngineTick();
 		MyBehavior.Instance?.OnEngineTick();
+		CourierDeliveryBehavior.Instance?.OnEngineTick();
 		DuelBehavior.Instance?.OnEngineTick();
 		AnimusForgeTerminalBehavior.Instance?.OnEngineTick();
+	}
+
+	private static void RegisterCourierFoodConsumptionModel(CampaignGameStarter campaignGameStarter)
+	{
+		if (campaignGameStarter == null)
+		{
+			return;
+		}
+		try
+		{
+			MobilePartyFoodConsumptionModel inner = null;
+			foreach (GameModel model in campaignGameStarter.Models)
+			{
+				if (model is MobilePartyFoodConsumptionModel foodModel && !(foodModel is CourierFoodConsumptionModel))
+				{
+					inner = foodModel;
+				}
+			}
+			inner ??= new DefaultMobilePartyFoodConsumptionModel();
+			campaignGameStarter.AddModel<MobilePartyFoodConsumptionModel>(new CourierFoodConsumptionModel(inner));
+			Logger.LogTrace("SubModule", ">>> Courier food consumption model registered.");
+		}
+		catch (Exception ex)
+		{
+			Logger.LogTrace("SubModule", ">>> Courier food consumption model registration failed: " + ex);
+		}
+	}
+
+	private static void RegisterCourierMobilePartyAiModel(CampaignGameStarter campaignGameStarter)
+	{
+		if (campaignGameStarter == null)
+		{
+			return;
+		}
+		try
+		{
+			MobilePartyAIModel inner = null;
+			foreach (GameModel model in campaignGameStarter.Models)
+			{
+				if (model is MobilePartyAIModel aiModel && !(aiModel is CourierMobilePartyAIModel))
+				{
+					inner = aiModel;
+				}
+			}
+			inner ??= new DefaultMobilePartyAIModel();
+			campaignGameStarter.AddModel<MobilePartyAIModel>(new CourierMobilePartyAIModel(inner));
+			Logger.LogTrace("SubModule", ">>> Courier mobile party AI model registered.");
+		}
+		catch (Exception ex)
+		{
+			Logger.LogTrace("SubModule", ">>> Courier mobile party AI model registration failed: " + ex);
+		}
 	}
 
 	private void MarkPendingInitialApiGuideNotice()

@@ -1,0 +1,64 @@
+using TaleWorlds.CampaignSystem;
+using TaleWorlds.CampaignSystem.ComponentInterfaces;
+using TaleWorlds.CampaignSystem.GameComponents;
+using TaleWorlds.CampaignSystem.Party;
+using TaleWorlds.Library;
+
+namespace AnimusForge;
+
+public sealed class CourierMobilePartyAIModel : MobilePartyAIModel
+{
+	private readonly MobilePartyAIModel _inner;
+
+	public CourierMobilePartyAIModel(MobilePartyAIModel inner)
+	{
+		_inner = inner ?? new DefaultMobilePartyAIModel();
+	}
+
+	public override float AiCheckInterval => _inner.AiCheckInterval;
+	public override float FleeToNearbyPartyRadius => _inner.FleeToNearbyPartyRadius;
+	public override float FleeToNearbySettlementRadius => _inner.FleeToNearbySettlementRadius;
+	public override float HideoutPatrolDistanceAsDays => _inner.HideoutPatrolDistanceAsDays;
+	public override float FortificationPatrolDistanceAsDays => _inner.FortificationPatrolDistanceAsDays;
+	public override float VillagePatrolDistanceAsDays => _inner.VillagePatrolDistanceAsDays;
+	public override float SettlementDefendingNearbyPartyCheckRadius => _inner.SettlementDefendingNearbyPartyCheckRadius;
+	public override float SettlementDefendingWaitingPositionRadius => _inner.SettlementDefendingWaitingPositionRadius;
+	public override float NeededFoodsInDaysThresholdForSiege => _inner.NeededFoodsInDaysThresholdForSiege;
+	public override float NeededFoodsInDaysThresholdForRaid => _inner.NeededFoodsInDaysThresholdForRaid;
+
+	public override bool ShouldConsiderAvoiding(MobileParty party, MobileParty targetParty)
+	{
+		return _inner.ShouldConsiderAvoiding(party, targetParty);
+	}
+
+	public override bool ShouldConsiderAttacking(MobileParty party, MobileParty targetParty)
+	{
+		if (CourierDeliveryBehavior.IsCourierParty(party))
+		{
+			return false;
+		}
+		return _inner.ShouldConsiderAttacking(party, targetParty);
+	}
+
+	public override float GetPatrolRadius(MobileParty mobileParty, CampaignVec2 patrolPoint)
+	{
+		return _inner.GetPatrolRadius(mobileParty, patrolPoint);
+	}
+
+	public override bool ShouldPartyCheckInitiativeBehavior(MobileParty mobileParty)
+	{
+		return _inner.ShouldPartyCheckInitiativeBehavior(mobileParty);
+	}
+
+	public override void GetBestInitiativeBehavior(MobileParty mobileParty, out AiBehavior bestInitiativeBehavior, out MobileParty bestInitiativeTargetParty, out float bestInitiativeBehaviorScore, out Vec2 averageEnemyVec)
+	{
+		_inner.GetBestInitiativeBehavior(mobileParty, out bestInitiativeBehavior, out bestInitiativeTargetParty, out bestInitiativeBehaviorScore, out averageEnemyVec);
+		if (CourierDeliveryBehavior.IsCourierParty(mobileParty) && bestInitiativeBehavior == AiBehavior.EngageParty)
+		{
+			bestInitiativeBehavior = AiBehavior.None;
+			bestInitiativeTargetParty = null;
+			bestInitiativeBehaviorScore = 0f;
+			Logger.Log("CourierDelivery", "initiative attack suppressed party=" + (mobileParty?.StringId ?? ""));
+		}
+	}
+}

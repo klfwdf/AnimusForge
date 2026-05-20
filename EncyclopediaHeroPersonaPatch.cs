@@ -7,6 +7,7 @@ using HarmonyLib;
 using SandBox.GauntletUI.Encyclopedia;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.ViewModelCollection.Encyclopedia.Pages;
+using TaleWorlds.Core;
 using TaleWorlds.GauntletUI;
 using TaleWorlds.GauntletUI.BaseTypes;
 using TaleWorlds.GauntletUI.Data;
@@ -21,6 +22,7 @@ namespace AnimusForge;
 public static class EncyclopediaHeroPersonaPatch
 {
 	private const string EditButtonId = "AnimusForgeHeroPersonaEditButton";
+	private const string CourierButtonId = "AnimusForgeHeroCourierButton";
 
 	private static readonly object SyncRoot = new object();
 	private static readonly HashSet<string> GenerationRequests = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -100,7 +102,7 @@ public static class EncyclopediaHeroPersonaPatch
 
 	public static bool EncyclopediaDataOnTickPrefix()
 	{
-		return !DevHistoryEditPopup.IsOpen;
+		return !DevHistoryEditPopup.IsOpen && !CourierDeliveryBehavior.IsCourierInputOpen;
 	}
 
 	public static void QueueRefreshForHero(string heroId)
@@ -148,7 +150,7 @@ public static class EncyclopediaHeroPersonaPatch
 				return;
 			}
 			Widget root = __result?.RootWidget;
-			EnsureEditButton(root);
+			EnsureHeroButtons(root);
 			TrackGeneratedRoot(root, vm);
 			UpdateGeneratedRoot(root, updateText: false);
 		}
@@ -163,7 +165,7 @@ public static class EncyclopediaHeroPersonaPatch
 		try
 		{
 			Widget root = __result?.Root;
-			EnsureEditButton(root);
+			EnsureHeroButtons(root);
 			TrackGeneratedRoot(root);
 			UpdateGeneratedRoot(root, updateText: false);
 		}
@@ -177,7 +179,7 @@ public static class EncyclopediaHeroPersonaPatch
 	{
 		try
 		{
-			EnsureEditButton(__instance);
+			EnsureHeroButtons(__instance);
 			TrackGeneratedRoot(__instance);
 		}
 		catch (Exception ex)
@@ -190,7 +192,7 @@ public static class EncyclopediaHeroPersonaPatch
 	{
 		try
 		{
-			EnsureEditButton(__instance);
+			EnsureHeroButtons(__instance);
 			TrackGeneratedRoot(__instance);
 			UpdateGeneratedRoot(__instance, updateText: false);
 		}
@@ -332,6 +334,13 @@ public static class EncyclopediaHeroPersonaPatch
 			button.IsVisible = shouldShow;
 			LogFirstButtonState(hero, vm, shouldShow);
 		}
+		ButtonWidget courierButton = GetCourierButton(root);
+		if (courierButton != null)
+		{
+			bool shouldShowCourier = ShouldShowCourierButton(hero, vm);
+			courierButton.IsVisible = shouldShowCourier;
+			courierButton.IsEnabled = shouldShowCourier && !CourierDeliveryBehavior.HasActiveCourierForHeroForExternal(hero);
+		}
 	}
 
 	private static void LogFirstButtonState(Hero hero, EncyclopediaHeroPageVM vm, bool visible)
@@ -408,6 +417,11 @@ public static class EncyclopediaHeroPersonaPatch
 	private static bool ShouldShowEditButton(Hero hero, EncyclopediaHeroPageVM vm)
 	{
 		return MyBehavior.IsDevDataManagementEnabledForExternal() && ShouldOverride(hero, vm);
+	}
+
+	private static bool ShouldShowCourierButton(Hero hero, EncyclopediaHeroPageVM vm)
+	{
+		return CourierDeliveryBehavior.ShouldShowCourierButtonForExternal(hero, vm?.IsInformationHidden ?? true);
 	}
 
 	private static string BuildPersonaInformationText(string personality, string background)
@@ -541,6 +555,76 @@ public static class EncyclopediaHeroPersonaPatch
 		}
 	}
 
+	private static void EnsureHeroButtons(object root)
+	{
+		EnsureEditButton(root);
+		EnsureCourierButton(root);
+	}
+
+	private static void EnsureCourierButton(object root)
+	{
+		Widget parent = GetEditButtonParent(root);
+		if (parent == null || GetCourierButton(root) != null)
+		{
+			return;
+		}
+		ButtonWidget button = new ButtonWidget(parent.Context)
+		{
+			Id = CourierButtonId,
+			WidthSizePolicy = SizePolicy.Fixed,
+			HeightSizePolicy = SizePolicy.Fixed,
+			SuggestedWidth = 180f,
+			SuggestedHeight = 38f,
+			HorizontalAlignment = HorizontalAlignment.Right,
+			VerticalAlignment = VerticalAlignment.Top,
+			MarginTop = 8f,
+			MarginRight = 44f,
+			MarginBottom = 8f,
+			Brush = parent.Context.GetBrush("Popup.Done.Button.NineGrid") ?? parent.Context.GetBrush("ButtonBrush2"),
+			IsEnabled = true,
+			DoNotAcceptEvents = false,
+			DoNotPassEventsToChildren = true,
+			IsVisible = false
+		};
+		button.ClickEventHandlers.Add(delegate
+		{
+			Hero hero = ResolveHero(GetDataSource(root));
+			if (hero == null)
+			{
+				return;
+			}
+			if (CourierDeliveryBehavior.HasActiveCourierForHeroForExternal(hero))
+			{
+				InformationManager.DisplayMessage(new InformationMessage("已经有一支信使队正在处理发往此人的信件。"));
+				return;
+			}
+			CourierDeliveryBehavior.OpenCourierFlowForExternal(hero);
+		});
+		TextWidget textWidget = new TextWidget(parent.Context)
+		{
+			WidthSizePolicy = SizePolicy.StretchToParent,
+			HeightSizePolicy = SizePolicy.StretchToParent,
+			Text = "信使与邮递",
+			Brush = parent.Context.GetBrush("Popup.Button.Text") ?? parent.Context.GetBrush("Encyclopedia.SubPage.Info.Text"),
+			DoNotAcceptEvents = true
+		};
+		if (textWidget.Brush != null)
+		{
+			textWidget.Brush.FontSize = 18;
+			textWidget.Brush.TextHorizontalAlignment = TextHorizontalAlignment.Center;
+			textWidget.Brush.TextVerticalAlignment = TextVerticalAlignment.Center;
+		}
+		button.AddChild(textWidget);
+		if (ReferenceEquals(parent, GetRightSideContentList(root)))
+		{
+			parent.AddChildAtIndex(button, GetEditButton(root) != null ? 1 : 0);
+		}
+		else
+		{
+			parent.AddChild(button);
+		}
+	}
+
 	private static void LogButtonCreateProbe(object root, Widget parent)
 	{
 		if (_loggedButtonCreateProbe || root == null)
@@ -558,6 +642,12 @@ public static class EncyclopediaHeroPersonaPatch
 	{
 		Widget widget = root as Widget;
 		return widget?.FindChild(EditButtonId, includeAllChildren: true) as ButtonWidget;
+	}
+
+	private static ButtonWidget GetCourierButton(object root)
+	{
+		Widget widget = root as Widget;
+		return widget?.FindChild(CourierButtonId, includeAllChildren: true) as ButtonWidget;
 	}
 
 	private static Widget GetEditButtonParent(object root)

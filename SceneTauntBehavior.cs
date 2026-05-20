@@ -2847,6 +2847,10 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			{
 				return false;
 			}
+			if (!SceneTauntBehavior.IsPeaceSceneConflictEnabled())
+			{
+				return false;
+			}
 			if (IsOwnedSettlementPassiveAttackActive())
 			{
 				return true;
@@ -3282,6 +3286,14 @@ public class SceneTauntMissionBehavior : MissionBehavior
 	{
 		try
 		{
+			if (!SceneTauntBehavior.IsPeaceSceneConflictEnabled())
+			{
+				if (IsOwnedSettlementPassiveAttackActive())
+				{
+					ClearOwnedSettlementPassiveAttackState("peace_scene_conflict_disabled");
+				}
+				return;
+			}
 			if (_ownedSettlementPassiveVictimAgentIndices.Count == 0 || Mission.Current == null)
 			{
 				return;
@@ -3440,6 +3452,31 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		catch (Exception ex)
 		{
 			Logger.Log("SceneTaunt", "Applying owned settlement passive hands-up pose failed: " + ex.Message);
+		}
+	}
+
+	private void ClearOwnedSettlementPassiveAttackState(string reason)
+	{
+		try
+		{
+			bool hadState = IsOwnedSettlementPassiveAttackActive();
+			RestoreOwnedSettlementPassiveAttackTeams();
+			_ownedSettlementPassiveVictimAgentIndices.Clear();
+			_ownedSettlementPassiveDamagedAgentIndices.Clear();
+			_ownedSettlementPassiveKnockdownAgentIndices.Clear();
+			_ownedSettlementPassiveReactionTimes.Clear();
+			_ownedSettlementPassiveOriginalTeams.Clear();
+			_ownedSettlementPassivePlayerTeam = null;
+			_ownedSettlementPassiveEnemyTeam = null;
+			_ownedSettlementPassiveOriginalMainTeam = null;
+			if (hadState)
+			{
+				Logger.Log("SceneTaunt", $"Owned settlement passive attack state cleared. Reason={reason}");
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SceneTaunt", "Clearing owned settlement passive attack state failed: " + ex.Message);
 		}
 	}
 
@@ -8152,15 +8189,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		_guardAgentIndices.Clear();
 		_blockedAiWeaponAgentIndices.Clear();
 		_penalizedArmedKnockdownAgentIndices.Clear();
-		RestoreOwnedSettlementPassiveAttackTeams();
-		_ownedSettlementPassiveVictimAgentIndices.Clear();
-		_ownedSettlementPassiveDamagedAgentIndices.Clear();
-		_ownedSettlementPassiveKnockdownAgentIndices.Clear();
-		_ownedSettlementPassiveReactionTimes.Clear();
-		_ownedSettlementPassiveOriginalTeams.Clear();
-		_ownedSettlementPassivePlayerTeam = null;
-		_ownedSettlementPassiveEnemyTeam = null;
-		_ownedSettlementPassiveOriginalMainTeam = null;
+		ClearOwnedSettlementPassiveAttackState("clear_runtime_state");
 		if (!preserveArmedDefeatState)
 		{
 			_pendingPlayerBattleDeathAfterMission = false;

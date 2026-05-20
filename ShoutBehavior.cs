@@ -9970,6 +9970,174 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		return text.IndexOf("【附加规则:" + text2 + "】", StringComparison.OrdinalIgnoreCase) >= 0;
 	}
 
+	public static bool HasInjectedRuleBlockForExternal(string instructions, string ruleId)
+	{
+		return HasInjectedRuleBlockForPostprocess(instructions, ruleId);
+	}
+
+	public static string RunCourierActionPostprocessForExternal(Hero targetHero, CharacterObject targetCharacter, string npcName, string playerText, string historyText, string replyText, bool duelRuleInjected, bool rewardRuleInjected, bool loanRuleInjected, bool kingdomServiceRuleInjected, bool lordsHallRuleInjected, bool meetingReleaseRuleInjected, bool vanillaIssueRuleInjected, bool heroJoinPartyRuleInjected, bool sceneMechanismRuleInjected, bool partyTransferRuleInjected, bool settlementTransferRuleInjected)
+	{
+		string text = StripActionTagsForSceneSpeech(replyText ?? "");
+		try
+		{
+			if (!AIConfigHandler.CanUseAuxiliaryActionPostprocess())
+			{
+				if (Regex.Matches(text ?? "", "\\[ACTION:MOOD:[^\\]]+\\]", RegexOptions.IgnoreCase).Count <= 0 && !string.IsNullOrWhiteSpace(AIConfigHandler.ActionPostprocessFallbackMoodTag))
+				{
+					text = (text + "\n" + AIConfigHandler.ActionPostprocessFallbackMoodTag).Trim();
+				}
+				return text.Trim();
+			}
+			string actionPostprocessSystemPrompt = AIConfigHandler.ActionPostprocessSystemPrompt;
+			string actionPostprocessUserPromptTemplate = AIConfigHandler.ActionPostprocessUserPromptTemplate;
+			if (string.IsNullOrWhiteSpace(actionPostprocessSystemPrompt) || string.IsNullOrWhiteSpace(actionPostprocessUserPromptTemplate))
+			{
+				return (text + "\n" + AIConfigHandler.ActionPostprocessFallbackMoodTag).Trim();
+			}
+			bool companionRewardBlocked = rewardRuleInjected && AIConfigHandler.IsPlayerCompanionTradeTarget(targetHero);
+			bool transactionPostprocessEnabled = (rewardRuleInjected && !companionRewardBlocked) || loanRuleInjected;
+			bool heroJoinPartyPostprocessBlocked = heroJoinPartyRuleInjected && ShouldSuppressHeroJoinPartyPostprocessForScene(targetHero);
+			List<PostprocessRuleEntry> duelRules = duelRuleInjected ? AIConfigHandler.DuelPostprocessRules : null;
+			List<PostprocessRuleEntry> transactionRules = transactionPostprocessEnabled ? MergePostprocessRulesForScene((rewardRuleInjected && !companionRewardBlocked) ? AIConfigHandler.RewardPostprocessRules : null, loanRuleInjected ? AIConfigHandler.LoanPostprocessRules : null) : null;
+			List<PostprocessRuleEntry> kingdomRules = kingdomServiceRuleInjected ? (AIConfigHandler.BuildRuntimeKingdomServicePostprocessRules() ?? new List<PostprocessRuleEntry>()) : null;
+			List<PostprocessRuleEntry> lordsHallRules = lordsHallRuleInjected ? (AIConfigHandler.BuildRuntimeLordsHallAccessPostprocessRules() ?? new List<PostprocessRuleEntry>()) : null;
+			List<PostprocessRuleEntry> meetingReleaseRules = meetingReleaseRuleInjected ? LordEncounterBehavior.BuildMeetingPlayerReleasePostprocessRulesForExternal(targetHero ?? targetCharacter?.HeroObject) : null;
+			List<PostprocessRuleEntry> vanillaIssueRules = vanillaIssueRuleInjected ? (VanillaIssueOfferBridge.BuildRuntimePostprocessRulesForExternal(targetHero) ?? new List<PostprocessRuleEntry>()) : null;
+			List<PostprocessRuleEntry> heroJoinPartyRules = (heroJoinPartyRuleInjected && !heroJoinPartyPostprocessBlocked) ? (AIConfigHandler.GetGuardrailRulePostprocessRules("hero_join_party") ?? new List<PostprocessRuleEntry>()) : null;
+			List<PostprocessRuleEntry> mechanismRules = sceneMechanismRuleInjected ? (AIConfigHandler.GetGuardrailRulePostprocessRules("scene_mechanism_actions") ?? new List<PostprocessRuleEntry>()) : null;
+			List<PostprocessRuleEntry> partyTransferRules = partyTransferRuleInjected ? (AIConfigHandler.GetGuardrailRulePostprocessRules("party_transfer") ?? new List<PostprocessRuleEntry>()) : null;
+			int settlementTransferTrustForPostprocess = RewardSystemBehavior.Instance?.GetSettlementTransferTalkTrust(targetHero ?? targetCharacter?.HeroObject) ?? 0;
+			bool canUseSettlementTransferPostprocessRules = MyBehavior.IsSettlementTransferLeaderEligibleForExternal(targetHero, targetCharacter) && settlementTransferTrustForPostprocess >= 60;
+			List<PostprocessRuleEntry> settlementTransferRules = (settlementTransferRuleInjected && canUseSettlementTransferPostprocessRules) ? (AIConfigHandler.GetGuardrailRulePostprocessRules("settlement_transfer") ?? new List<PostprocessRuleEntry>()) : null;
+			List<PostprocessRuleEntry> mergedRules = MergePostprocessRulesForScene(duelRules, transactionRules, kingdomRules, lordsHallRules, meetingReleaseRules, vanillaIssueRules, heroJoinPartyRules, mechanismRules, partyTransferRules, settlementTransferRules);
+			Logger.Log("CourierDelivery", "[UnifiedPostprocess] requested duel=" + duelRuleInjected + " reward=" + rewardRuleInjected + " loan=" + loanRuleInjected + " kingdom=" + kingdomServiceRuleInjected + " lordsHall=" + lordsHallRuleInjected + " meetingRelease=" + meetingReleaseRuleInjected + " vanillaIssue=" + vanillaIssueRuleInjected + " heroJoin=" + heroJoinPartyRuleInjected + " sceneMechanism=" + sceneMechanismRuleInjected + " partyTransfer=" + partyTransferRuleInjected + " settlementTransfer=" + settlementTransferRuleInjected + " mergedRules=" + ((mergedRules == null || mergedRules.Count == 0) ? "（无，仍执行心情后处理）" : string.Join(",", mergedRules.Select((PostprocessRuleEntry x) => x?.Tag ?? "").Where((string x) => !string.IsNullOrWhiteSpace(x)))));
+			string displayName = string.IsNullOrWhiteSpace(npcName) ? (targetHero?.Name?.ToString() ?? targetCharacter?.Name?.ToString() ?? "NPC") : npcName.Trim();
+			string normalizedHistory = NormalizePlayerNameForScenePostprocess(string.IsNullOrWhiteSpace(historyText) ? "（无）" : historyText.Trim(), displayName);
+			string tagRules = BuildPostprocessRuleTextForScene(mergedRules);
+			string moodRules = BuildPostprocessRuleTextForScene(AIConfigHandler.ActionPostprocessMoodRules);
+			string sharedItemList = "（无）";
+			string playerItemList = "（无）";
+			string debtHint = "（无）";
+			string runtimeContext = "（无）";
+			List<RewardSystemBehavior.RewardItemInfo> rewardOptions = null;
+			List<MyBehavior.PartyTransferPromptEntry> partyTransferTroopOptions = null;
+			List<MyBehavior.PartyTransferPromptEntry> partyTransferPrisonerOptions = null;
+			List<MyBehavior.SettlementTransferPromptEntry> settlementTransferNpcOptions = null;
+			if (transactionPostprocessEnabled && RewardSystemBehavior.Instance != null)
+			{
+				try
+				{
+					playerItemList = RewardSystemBehavior.Instance.BuildVisibleEquipmentPostprocessListForAI(Hero.MainHero);
+				}
+				catch
+				{
+					playerItemList = "赤身裸体";
+				}
+				try
+				{
+					if (targetHero != null)
+					{
+						rewardOptions = RewardSystemBehavior.Instance.BuildHeroRewardPostprocessItems(targetHero);
+						sharedItemList = BuildRewardPostprocessItemListForScene(rewardOptions, RewardSystemBehavior.Instance.GetRewardPostprocessGoldForHero(targetHero));
+						debtHint = NormalizePlayerNameForScenePostprocess(RewardSystemBehavior.Instance.BuildDebtHintForAI(targetHero), displayName);
+					}
+				}
+				catch
+				{
+					sharedItemList = "（无）";
+					debtHint = "（无）";
+					rewardOptions = null;
+				}
+			}
+			else if (duelRuleInjected)
+			{
+				sharedItemList = BuildDuelPostprocessItemListForScene(null);
+				try
+				{
+					if (RewardSystemBehavior.Instance != null && Hero.MainHero != null)
+					{
+						playerItemList = RewardSystemBehavior.Instance.BuildVisibleEquipmentPostprocessListForAI(Hero.MainHero);
+					}
+				}
+				catch
+				{
+					playerItemList = "赤身裸体";
+				}
+			}
+			if (partyTransferRuleInjected)
+			{
+				try
+				{
+					List<MyBehavior.PartyTransferPromptEntry> list = MyBehavior.BuildPartyTransferPromptEntriesForExternal(targetHero, targetCharacter, -1);
+					int recruitMaxTier = ResolvePartyTransferRecruitMaxTierForScene(targetHero, targetCharacter);
+					partyTransferTroopOptions = (recruitMaxTier > 0) ? list.Where((MyBehavior.PartyTransferPromptEntry x) => x != null && x.Section == MyBehavior.PartyTransferEntrySection.NpcTroops && Math.Max(0, x.Character?.Tier ?? 0) > 0 && Math.Max(0, x.Character?.Tier ?? 0) <= recruitMaxTier).ToList() : new List<MyBehavior.PartyTransferPromptEntry>();
+					partyTransferPrisonerOptions = list.Where((MyBehavior.PartyTransferPromptEntry x) => x != null && x.Section == MyBehavior.PartyTransferEntrySection.NpcPrisoners).ToList();
+					runtimeContext = AppendPostprocessContextBlockForScene(runtimeContext, BuildPartyTransferNpcPostprocessListForScene(partyTransferTroopOptions, partyTransferPrisonerOptions, recruitMaxTier));
+					runtimeContext = AppendPostprocessContextBlockForScene(runtimeContext, "【信使人手转移硬约束】：ATT/ATP 只填写名称和数量；名称必须来自当前清单；数量不得超过当前数量；若本轮尚未明确成交，就不要生成这些标签。信使回到玩家处后才会实际转移。");
+				}
+				catch
+				{
+					partyTransferTroopOptions = null;
+					partyTransferPrisonerOptions = null;
+				}
+			}
+			if (settlementTransferRuleInjected)
+			{
+				try
+				{
+					if (MyBehavior.IsSettlementTransferLeaderEligibleForExternal(targetHero, targetCharacter))
+					{
+						List<MyBehavior.SettlementTransferPromptEntry> allowedNpcSettlementTransferEntriesForPlayer = (RewardSystemBehavior.Instance != null) ? RewardSystemBehavior.Instance.GetAllowedNpcSettlementTransferEntriesForPlayer(targetHero, targetCharacter) : MyBehavior.BuildSettlementTransferPromptEntriesForExternal(targetHero, targetCharacter).Where((MyBehavior.SettlementTransferPromptEntry x) => x != null && x.Section == MyBehavior.SettlementTransferEntrySection.NpcFiefs).ToList();
+						settlementTransferNpcOptions = BuildDisplayIndexedSettlementTransferEntriesForScene(allowedNpcSettlementTransferEntriesForPlayer);
+						if (settlementTransferTrustForPostprocess >= 60)
+						{
+							runtimeContext = AppendPostprocessContextBlockForScene(runtimeContext, BuildSettlementTransferPostprocessListForScene(settlementTransferNpcOptions, new List<MyBehavior.SettlementTransferPromptEntry>()));
+							runtimeContext = AppendPostprocessContextBlockForScene(runtimeContext, "【信使领地转移硬约束】：只允许 [ACTION:SETTLEMENT_TRANSFER:TO_PLAYER:目标]；目标只能来自当前清单；玩家转给NPC已由信使交付流程处理，后处理绝不生成 TO_NPC 标签；若本轮尚未明确成交，就不要生成这些标签。信使回到玩家处后才会实际转移给玩家。");
+						}
+						else
+						{
+							runtimeContext = AppendPostprocessContextBlockForScene(runtimeContext, "【领地转移硬约束】：综合信任低于60时，本轮绝不可以生成任何 [ACTION:SETTLEMENT_TRANSFER:...] 标签。");
+						}
+					}
+				}
+				catch
+				{
+					settlementTransferNpcOptions = null;
+				}
+			}
+			string systemPrompt = AIConfigHandler.BuildActionPostprocessSystemPrompt(tagRules, moodRules, displayName, sharedItemList, playerItemList, debtHint);
+			string userPrompt = BuildSceneActionPostprocessUserPrompt(actionPostprocessUserPromptTemplate, tagRules, displayName, normalizedHistory, AIConfigHandler.BuildActionPostprocessLatestReplyBlock(playerText, text, displayName, normalizedHistory), sharedItemList, playerItemList, debtHint, null, null, null, runtimeContext);
+			if (!AIConfigHandler.TryCallAuxiliaryActionPostprocess(systemPrompt, userPrompt, 5000, 0f, out var content, out var error))
+			{
+				Logger.Log("CourierDelivery", "[UnifiedPostprocess] 调用失败: " + error);
+				return (text + "\n" + AIConfigHandler.ActionPostprocessFallbackMoodTag).Trim();
+			}
+			string duelTags = duelRuleInjected ? NormalizeDuelPostprocessTagsForScene(content, null, targetHero) : "";
+			string rewardTags = transactionPostprocessEnabled ? NormalizeRewardPostprocessTagsForScene(content, rewardOptions) : "";
+			string kingdomTags = kingdomServiceRuleInjected ? NormalizeKingdomServicePostprocessTagsForScene(content, kingdomRules) : "";
+			string lordsHallTags = lordsHallRuleInjected ? NormalizeLordsHallAccessPostprocessTagsForScene(content, lordsHallRules) : "";
+			string meetingReleaseTags = meetingReleaseRuleInjected ? NormalizeEncounterReleasePostprocessTagsForScene(content, meetingReleaseRules) : "";
+			string vanillaIssueTags = vanillaIssueRuleInjected ? NormalizeVanillaIssuePostprocessTagsForScene(content, vanillaIssueRules) : "";
+			string heroJoinTags = (heroJoinPartyRuleInjected && !heroJoinPartyPostprocessBlocked) ? NormalizeHeroJoinPartyPostprocessTagsForScene(content, heroJoinPartyRules) : "";
+			string sceneMechanismTags = sceneMechanismRuleInjected ? NormalizeSceneMechanismPostprocessTagsForScene(content, mechanismRules, new List<SceneSummonPromptTarget>(), new List<SceneGuidePromptTarget>()) : "";
+			string partyTransferTags = partyTransferRuleInjected ? NormalizePartyTransferPostprocessTagsForScene(content, partyTransferTroopOptions, partyTransferPrisonerOptions) : "";
+			string settlementTransferTags = settlementTransferRuleInjected ? NormalizeSettlementTransferPostprocessTagsForScene(content, settlementTransferNpcOptions) : "";
+			string merged = MergeNormalizedPostprocessBlocksForScene(duelTags, rewardTags, kingdomTags, lordsHallTags, meetingReleaseTags, vanillaIssueTags, heroJoinTags, sceneMechanismTags, partyTransferTags, settlementTransferTags);
+			if (string.IsNullOrWhiteSpace(merged))
+			{
+				merged = AIConfigHandler.ActionPostprocessFallbackMoodTag;
+			}
+			string final = (text + "\n" + merged).Trim();
+			Logger.Log("CourierDelivery", "[UnifiedPostprocess] RAW=\n" + content + "\nFINAL=\n" + final + "\n");
+			return final;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("CourierDelivery", "[UnifiedPostprocess] exception: " + ex);
+			return (text + "\n" + AIConfigHandler.ActionPostprocessFallbackMoodTag).Trim();
+		}
+	}
+
 	private static bool CanInjectDuelPostprocessRule(MyBehavior.ShoutPromptContext ctx, Hero targetHero, int targetAgentIndex, out string reason)
 	{
 		reason = "";

@@ -1,0 +1,2776 @@
+using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using HarmonyLib;
+using Helpers;
+using Newtonsoft.Json;
+using SandBox;
+using TaleWorlds.CampaignSystem;
+using TaleWorlds.CampaignSystem.Actions;
+using TaleWorlds.CampaignSystem.GameComponents;
+using TaleWorlds.CampaignSystem.Party;
+using TaleWorlds.CampaignSystem.Party.PartyComponents;
+using TaleWorlds.CampaignSystem.Roster;
+using TaleWorlds.CampaignSystem.Settlements;
+using TaleWorlds.Core;
+using TaleWorlds.Library;
+using TaleWorlds.Localization;
+using TaleWorlds.ObjectSystem;
+
+namespace AnimusForge;
+
+public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
+{
+	private const string LogSource = "CourierDelivery";
+	private const string SessionStorageKey = "_af_courier_sessions_v1";
+	private const float MobilePartyArrivalDistance = 3.5f;
+	private const float SenderArrivalDistanceSquared = 9f;
+	private const float SettlementArrivalDistanceSquared = 1.44f;
+	private const int MainReplyMaxTokens = 5000;
+	private const double RouteRefreshSeconds = 2.0;
+	private const double CampaignTickThrottleSeconds = 0.75;
+	private const string CourierPartyPrefix = "af_courier_";
+
+	private enum CourierStage
+	{
+		Outbound,
+		WaitingRecipient,
+		GeneratingReply,
+		Returning,
+		WaitingSender,
+		Completed,
+		Destroyed
+	}
+
+	private enum CourierPayloadMode
+	{
+		Normal,
+		Give,
+		Show,
+		GiveTroops,
+		GivePrisoners,
+		GiveSettlements
+	}
+
+	private sealed class CourierSession
+	{
+		public string Id;
+		public string RecipientHeroId;
+		public string RecipientName;
+		public string CourierPartyId;
+		public string Stage = CourierStage.Outbound.ToString();
+		public string PayloadMode = CourierPayloadMode.Normal.ToString();
+		public string LetterText;
+		public string DeliveryFactText;
+		public string ReplyText;
+		public string ReplyPostprocessedText;
+		public string LastRouteKey;
+		public string SafeSettlementId;
+		public string RecipientWaitReason;
+		public bool DeliveryApplied;
+		public bool ReplyGenerated;
+		public bool ReplyGenerationStarted;
+		public bool ReplyPopupShown;
+		public bool PostprocessConsumed;
+		public int EscrowGold;
+		public List<CourierCargoEntry> Entries = new List<CourierCargoEntry>();
+		public List<CourierCargoEntry> CrewEntries = new List<CourierCargoEntry>();
+	}
+
+	private sealed class CourierCargoEntry
+	{
+		public string Kind;
+		public string Id;
+		public string Name;
+		public int Amount;
+		public bool IsHero;
+		public bool Delivered;
+	}
+
+	private sealed class PendingCourierFlow
+	{
+		public Hero Recipient;
+		public TroopRoster CrewRoster;
+		public CourierPayloadMode Mode;
+		public List<CourierCargoEntry> CrewEntries = new List<CourierCargoEntry>();
+		public List<CourierTradeOption> TradeOptions = new List<CourierTradeOption>();
+		public List<CourierCargoEntry> SelectedEntries = new List<CourierCargoEntry>();
+		public int PendingAmountIndex;
+	}
+
+	private sealed class CourierTradeOption
+	{
+		public string Kind;
+		public string Id;
+		public string Name;
+		public int AvailableAmount;
+		public ItemObject Item;
+		public MyBehavior.PartyTransferPromptEntry PartyEntry;
+		public MyBehavior.SettlementTransferPromptEntry SettlementEntry;
+	}
+
+	private static readonly ConcurrentQueue<Action> MainThreadActions = new ConcurrentQueue<Action>();
+	private static bool _letterInputOpen;
+
+	private readonly Dictionary<string, CourierSession> _sessions = new Dictionary<string, CourierSession>(StringComparer.OrdinalIgnoreCase);
+	private readonly object _sessionLock = new object();
+	private PendingCourierFlow _pendingFlow;
+	private long _lastCampaignTickUtcTicks;
+
+	public static CourierDeliveryBehavior Instance { get; private set; }
+
+	public override void RegisterEvents()
+	{
+		Instance = this;
+		CampaignEvents.TickEvent.AddNonSerializedListener(this, OnCampaignTick);
+		CampaignEvents.MobilePartyDestroyed.AddNonSerializedListener(this, OnMobilePartyDestroyed);
+		CampaignEvents.OnGameLoadFinishedEvent.AddNonSerializedListener(this, OnGameLoadFinished);
+	}
+
+	public override void SyncData(IDataStore dataStore)
+	{
+		Dictionary<string, string> storage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+		if (dataStore.IsSaving)
+		{
+			lock (_sessionLock)
+			{
+				foreach (KeyValuePair<string, CourierSession> pair in _sessions)
+				{
+					if (pair.Value == null)
+					{
+						continue;
+					}
+					storage[pair.Key] = JsonConvert.SerializeObject(pair.Value);
+				}
+			}
+		}
+		dataStore.SyncData(SessionStorageKey, ref storage);
+		if (dataStore.IsLoading)
+		{
+			lock (_sessionLock)
+			{
+				_sessions.Clear();
+				foreach (KeyValuePair<string, string> pair in storage ?? new Dictionary<string, string>())
+				{
+					try
+					{
+						CourierSession session = JsonConvert.DeserializeObject<CourierSession>(pair.Value ?? "");
+						if (session == null || string.IsNullOrWhiteSpace(session.Id))
+						{
+							continue;
+						}
+						NormalizeSession(session);
+						ResetReplyGenerationAfterLoad(session, "sync_load");
+						_sessions[session.Id] = session;
+					}
+					catch (Exception ex)
+					{
+						Log("load session failed key=" + pair.Key + " error=" + ex.Message);
+					}
+				}
+			}
+		}
+	}
+
+	public void OnEngineTick()
+	{
+		while (MainThreadActions.TryDequeue(out var action))
+		{
+			try
+			{
+				action?.Invoke();
+			}
+			catch (Exception ex)
+			{
+				Log("main action failed: " + ex);
+			}
+		}
+	}
+
+	public static bool IsCourierInputOpen => _letterInputOpen;
+
+	public static void RegisterHarmonyPatches(Harmony harmony)
+	{
+		try
+		{
+			Harmony activeHarmony = harmony ?? new Harmony("AnimusForge.courier.delivery");
+			MethodInfoAccess.PatchDefaultEncounterModel(activeHarmony);
+			Log("harmony patches registered");
+		}
+		catch (Exception ex)
+		{
+			Log("harmony register failed: " + ex);
+		}
+	}
+
+	public static bool IsCourierParty(MobileParty party)
+	{
+		try
+		{
+			if (party == null || Instance == null)
+			{
+				return false;
+			}
+			string partyId = (party.StringId ?? "").Trim();
+			if (string.IsNullOrWhiteSpace(partyId))
+			{
+				return false;
+			}
+			lock (Instance._sessionLock)
+			{
+				return Instance._sessions.Values.Any(x => x != null && string.Equals((x.CourierPartyId ?? "").Trim(), partyId, StringComparison.OrdinalIgnoreCase) && !IsTerminalStage(x));
+			}
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	public static bool ShouldShowCourierButtonForExternal(Hero hero, bool informationHidden)
+	{
+		try
+		{
+			if (hero == null || hero == Hero.MainHero || hero.CharacterObject?.IsHero != true || informationHidden)
+			{
+				return false;
+			}
+			if (hero.IsDead || !hero.IsKnownToPlayer)
+			{
+				return false;
+			}
+			if (IsHeroInPlayerPartyForCourier(hero))
+			{
+				return false;
+			}
+			return true;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static bool IsHeroInPlayerPartyForCourier(Hero hero)
+	{
+		try
+		{
+			if (hero == null)
+			{
+				return false;
+			}
+			if (hero == Hero.MainHero || hero.IsHumanPlayerCharacter)
+			{
+				return true;
+			}
+			MobileParty mainParty = MobileParty.MainParty;
+			if (mainParty == null)
+			{
+				return false;
+			}
+			if (hero.PartyBelongedTo == mainParty || hero.PartyBelongedToAsPrisoner == mainParty.Party)
+			{
+				return true;
+			}
+			CharacterObject character = hero.CharacterObject;
+			return CountRosterCharacter(mainParty.MemberRoster, character) > 0 || CountRosterCharacter(mainParty.PrisonRoster, character) > 0;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	public static bool HasActiveCourierForHeroForExternal(Hero hero)
+	{
+		try
+		{
+			return Instance != null && Instance.HasActiveCourierForHero(hero);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	public static void OpenCourierFlowForExternal(Hero recipient)
+	{
+		try
+		{
+			Instance?.OpenCourierFlow(recipient);
+		}
+		catch (Exception ex)
+		{
+			Log("open courier flow failed: " + ex);
+			InformationManager.DisplayMessage(new InformationMessage("信使与邮递打开失败：" + ex.Message, Colors.Red));
+		}
+	}
+
+	private void OnGameLoadFinished()
+	{
+		try
+		{
+			lock (_sessionLock)
+			{
+				foreach (CourierSession session in _sessions.Values)
+				{
+					NormalizeSession(session);
+					ResetReplyGenerationAfterLoad(session, "game_load_finished");
+					ApplyCourierAiOverrides(ResolveCourierParty(session), "load_restore");
+				}
+			}
+			Log("game_load_finished active=" + GetActiveSessionCount());
+		}
+		catch (Exception ex)
+		{
+			Log("game_load_finished failed: " + ex);
+		}
+	}
+
+	private void OpenCourierFlow(Hero recipient)
+	{
+		if (!ModOnboardingBehavior.EnsureSetupReady())
+		{
+			return;
+		}
+		if (IsHeroInPlayerPartyForCourier(recipient))
+		{
+			InformationManager.DisplayMessage(new InformationMessage("该角色正在你的队伍中，不能通过信使写信。", Colors.Yellow));
+			return;
+		}
+		if (!ShouldShowCourierButtonForExternal(recipient, informationHidden: false))
+		{
+			InformationManager.DisplayMessage(new InformationMessage("你尚未掌握此人的信息，不能寄信。", Colors.Yellow));
+			return;
+		}
+		if (HasActiveCourierForHero(recipient))
+		{
+			InformationManager.DisplayMessage(new InformationMessage("已经有一支信使队正在处理发往此人的信件。", Colors.Yellow));
+			return;
+		}
+		MobileParty mainParty = MobileParty.MainParty;
+		if (mainParty?.MemberRoster == null)
+		{
+			InformationManager.DisplayMessage(new InformationMessage("当前找不到玩家部队。", Colors.Red));
+			return;
+		}
+		TroopRoster available = BuildSelectableCrewRoster(mainParty.MemberRoster);
+		if (available.TotalManCount <= 0)
+		{
+			InformationManager.DisplayMessage(new InformationMessage("你当前没有可派出的信使成员。", Colors.Yellow));
+			return;
+		}
+		_pendingFlow = new PendingCourierFlow
+		{
+			Recipient = recipient,
+			CrewRoster = null,
+			Mode = CourierPayloadMode.Normal
+		};
+		Log("open crew selection recipient=" + SafeHeroId(recipient) + " available=" + available.TotalManCount);
+		PartyScreenHelper.OpenScreenWithDummyRoster(
+			available,
+			TroopRoster.CreateDummyTroopRoster(),
+			TroopRoster.CreateDummyTroopRoster(),
+			TroopRoster.CreateDummyTroopRoster(),
+			new TextObject("可选信使成员"),
+			new TextObject("信使部队"),
+			Math.Max(available.TotalManCount, 0),
+			Math.Max(1, available.TotalManCount),
+			new PartyPresentationDoneButtonConditionDelegate(CrewSelectionDoneCondition),
+			new PartyScreenClosedDelegate(OnCrewSelectionClosed),
+			new IsTroopTransferableDelegate(CourierCrewTransferableDelegate));
+	}
+
+	private bool HasActiveCourierForHero(Hero hero)
+	{
+		string heroId = SafeHeroId(hero);
+		if (string.IsNullOrWhiteSpace(heroId))
+		{
+			return false;
+		}
+		lock (_sessionLock)
+		{
+			return _sessions.Values.Any(x => x != null && string.Equals(x.RecipientHeroId ?? "", heroId, StringComparison.OrdinalIgnoreCase) && !IsTerminalStage(x));
+		}
+	}
+
+	private static Tuple<bool, TextObject> CrewSelectionDoneCondition(TroopRoster leftMemberRoster, TroopRoster leftPrisonRoster, TroopRoster rightMemberRoster, TroopRoster rightPrisonRoster, int leftLimitNum, int rightLimitNum)
+	{
+		if (rightMemberRoster == null || rightMemberRoster.TotalManCount <= 0)
+		{
+			return new Tuple<bool, TextObject>(false, new TextObject("信使部队必须至少 1 人。"));
+		}
+		return new Tuple<bool, TextObject>(true, TextObject.GetEmpty());
+	}
+
+	private static bool CourierCrewTransferableDelegate(CharacterObject character, PartyScreenLogic.TroopType type, PartyScreenLogic.PartyRosterSide side, PartyBase leftOwnerParty)
+	{
+		return character != null && !character.IsPlayerCharacter && type == PartyScreenLogic.TroopType.Member;
+	}
+
+	private void OnCrewSelectionClosed(PartyBase leftOwnerParty, TroopRoster leftMemberRoster, TroopRoster leftPrisonRoster, PartyBase rightOwnerParty, TroopRoster rightMemberRoster, TroopRoster rightPrisonRoster, bool fromCancel)
+	{
+		try
+		{
+			if (fromCancel || _pendingFlow == null)
+			{
+				ResetPendingFlow("crew_cancel");
+				return;
+			}
+			TroopRoster selected = BuildSelectionRosterFromUi(rightMemberRoster);
+			if (selected.TotalManCount <= 0)
+			{
+				ResetPendingFlow("crew_empty");
+				InformationManager.DisplayMessage(new InformationMessage("信使部队必须至少 1 人。", Colors.Yellow));
+				return;
+			}
+			_pendingFlow.CrewRoster = selected;
+			_pendingFlow.CrewEntries = BuildCargoEntriesFromRoster(selected, "crew");
+			Log("crew selected recipient=" + SafeHeroId(_pendingFlow.Recipient) + " roster=" + RosterSummary(selected));
+			ShowCourierModeInquiry();
+		}
+		catch (Exception ex)
+		{
+			Log("crew close failed: " + ex);
+			ResetPendingFlow("crew_exception");
+			InformationManager.DisplayMessage(new InformationMessage("信使部队选择失败：" + ex.Message, Colors.Red));
+		}
+	}
+
+	private void ShowCourierModeInquiry()
+	{
+		PendingCourierFlow flow = _pendingFlow;
+		if (flow?.Recipient == null)
+		{
+			ResetPendingFlow("mode_no_flow");
+			return;
+		}
+		string targetName = flow.Recipient.Name?.ToString() ?? "收件人";
+		List<InquiryElement> items = new List<InquiryElement>
+		{
+			new InquiryElement("normal", "单纯写信", null, true, ""),
+			new InquiryElement("give", "发送物品并写信", null, true, ""),
+			new InquiryElement("show", "展示物品并写信", null, true, ""),
+			new InquiryElement("give_troops", "转移部队并写信", null, true, ""),
+			new InquiryElement("give_prisoners", "转移俘虏并写信", null, true, ""),
+			new InquiryElement("give_settlements", "转移定居点并写信", null, true, "")
+		};
+		MBInformationManager.ShowMultiSelectionInquiry(new MultiSelectionInquiryData(
+			"信使与邮递 - " + targetName,
+			"当前收件人：" + targetName + "\n请选择寄送方式：",
+			items,
+			true,
+			1,
+			1,
+			"确定",
+			"取消",
+			selected =>
+			{
+				if (selected == null || selected.Count == 0)
+				{
+					ResetPendingFlow("mode_empty");
+					return;
+				}
+				string id = (selected[0]?.Identifier ?? "").ToString();
+				if (id == "give")
+				{
+					BeginPayloadSelection(CourierPayloadMode.Give);
+				}
+				else if (id == "show")
+				{
+					BeginPayloadSelection(CourierPayloadMode.Show);
+				}
+				else if (id == "give_troops")
+				{
+					BeginPayloadSelection(CourierPayloadMode.GiveTroops);
+				}
+				else if (id == "give_prisoners")
+				{
+					BeginPayloadSelection(CourierPayloadMode.GivePrisoners);
+				}
+				else if (id == "give_settlements")
+				{
+					BeginPayloadSelection(CourierPayloadMode.GiveSettlements);
+				}
+				else
+				{
+					flow.Mode = CourierPayloadMode.Normal;
+					flow.SelectedEntries.Clear();
+					ShowLetterInput();
+				}
+			},
+			_ => ResetPendingFlow("mode_cancel"),
+			"",
+			true), true);
+	}
+
+	private void BeginPayloadSelection(CourierPayloadMode mode)
+	{
+		PendingCourierFlow flow = _pendingFlow;
+		if (flow?.Recipient == null)
+		{
+			ResetPendingFlow("payload_no_flow");
+			return;
+		}
+		flow.Mode = mode;
+		if (mode == CourierPayloadMode.GiveTroops && !MyBehavior.IsPartyTransferLordEligibleForExternal(flow.Recipient, flow.Recipient.CharacterObject))
+		{
+			InformationManager.DisplayMessage(new InformationMessage("只有领主才能谈部队转移。", Colors.Yellow));
+			ResetPendingFlow("payload_troop_ineligible");
+			return;
+		}
+		if (mode == CourierPayloadMode.GivePrisoners && !MyBehavior.IsPartyTransferLordEligibleForExternal(flow.Recipient, flow.Recipient.CharacterObject))
+		{
+			InformationManager.DisplayMessage(new InformationMessage("只有领主才能谈俘虏转移。", Colors.Yellow));
+			ResetPendingFlow("payload_prisoner_ineligible");
+			return;
+		}
+		if (mode == CourierPayloadMode.GiveSettlements && !MyBehavior.IsSettlementTransferLeaderEligibleForExternal(flow.Recipient, flow.Recipient.CharacterObject))
+		{
+			InformationManager.DisplayMessage(new InformationMessage("只有家族族长才能谈领地转移。", Colors.Yellow));
+			ResetPendingFlow("payload_settlement_ineligible");
+			return;
+		}
+		flow.TradeOptions = BuildCourierTradeOptions(flow, mode);
+		flow.SelectedEntries.Clear();
+		flow.PendingAmountIndex = 0;
+		if (flow.TradeOptions.Count == 0)
+		{
+			InformationManager.DisplayMessage(new InformationMessage(BuildEmptyPayloadMessage(mode), Colors.Yellow));
+			ResetPendingFlow("payload_empty");
+			return;
+		}
+		List<InquiryElement> list = new List<InquiryElement>();
+		for (int i = 0; i < flow.TradeOptions.Count; i++)
+		{
+			CourierTradeOption option = flow.TradeOptions[i];
+			string hint = "可用数量: " + Math.Max(0, option.AvailableAmount);
+			if (option.PartyEntry != null)
+			{
+				hint = option.PartyEntry.Section == MyBehavior.PartyTransferEntrySection.PlayerTroops
+					? $"可用数量: {option.AvailableAmount} | 日薪: {option.PartyEntry.WageDenarsPerDay}第纳尔/天 | 雇佣价: {option.PartyEntry.HirePriceDenarsPerUnit}第纳尔/人"
+					: $"可用数量: {option.AvailableAmount} | 购买价: {option.PartyEntry.BuyPriceDenarsPerUnit}第纳尔/人";
+			}
+			else if (option.SettlementEntry != null)
+			{
+				hint = $"每日收益: {Math.Max(0, option.SettlementEntry.DailyIncomeDenars)} 第纳尔 | 一次结清指导价: {Math.Max(0, option.SettlementEntry.GuidePriceDenars)} 第纳尔";
+			}
+			list.Add(new InquiryElement(i, option.Name + " (×" + Math.Max(1, option.AvailableAmount) + ")", null, true, hint));
+		}
+		string targetName = flow.Recipient.Name?.ToString() ?? "收件人";
+		MBInformationManager.ShowMultiSelectionInquiry(new MultiSelectionInquiryData(
+			BuildPayloadTitle(mode, targetName),
+			BuildPayloadDescription(mode, targetName),
+			list,
+			true,
+			1,
+			list.Count,
+			"确定",
+			"取消",
+			OnPayloadResourcesSelected,
+			_ => ResetPendingFlow("payload_cancel"),
+			"",
+			true), true);
+	}
+
+	private void OnPayloadResourcesSelected(List<InquiryElement> selected)
+	{
+		PendingCourierFlow flow = _pendingFlow;
+		if (flow == null || selected == null || selected.Count == 0)
+		{
+			ResetPendingFlow("payload_selected_empty");
+			return;
+		}
+		flow.SelectedEntries.Clear();
+		foreach (InquiryElement element in selected)
+		{
+			int index = -1;
+			try
+			{
+				index = (int)element.Identifier;
+			}
+			catch
+			{
+				index = -1;
+			}
+			if (index < 0 || index >= flow.TradeOptions.Count)
+			{
+				continue;
+			}
+			CourierTradeOption option = flow.TradeOptions[index];
+			flow.SelectedEntries.Add(new CourierCargoEntry
+			{
+				Kind = option.Kind,
+				Id = option.Id,
+				Name = option.Name,
+				Amount = option.SettlementEntry != null ? 1 : 0,
+				IsHero = option.PartyEntry?.IsHero ?? false
+			});
+		}
+		if (flow.SelectedEntries.Count == 0)
+		{
+			ResetPendingFlow("payload_selected_no_entries");
+			return;
+		}
+		if (flow.Mode == CourierPayloadMode.GiveSettlements)
+		{
+			ShowLetterInput();
+			return;
+		}
+		ShowPayloadAmountInquiry();
+	}
+
+	private void ShowPayloadAmountInquiry()
+	{
+		PendingCourierFlow flow = _pendingFlow;
+		if (flow == null)
+		{
+			ResetPendingFlow("amount_no_flow");
+			return;
+		}
+		if (flow.PendingAmountIndex >= flow.SelectedEntries.Count)
+		{
+			ShowLetterInput();
+			return;
+		}
+		CourierCargoEntry entry = flow.SelectedEntries[flow.PendingAmountIndex];
+		CourierTradeOption option = flow.TradeOptions.FirstOrDefault(x => string.Equals(x.Kind, entry.Kind, StringComparison.OrdinalIgnoreCase) && string.Equals(x.Id ?? "", entry.Id ?? "", StringComparison.OrdinalIgnoreCase));
+		int max = Math.Max(0, option?.AvailableAmount ?? 0);
+		if (max <= 0)
+		{
+			flow.PendingAmountIndex++;
+			ShowPayloadAmountInquiry();
+			return;
+		}
+		string title = flow.Mode == CourierPayloadMode.Show ? "展示数量" : (flow.Mode == CourierPayloadMode.Give ? "发送数量" : "转移数量");
+		string text = $"[{flow.PendingAmountIndex + 1}/{flow.SelectedEntries.Count}] {entry.Name} 最多可填 {max}。\n请输入 1 到 {max} 的整数：";
+		InformationManager.ShowTextInquiry(new TextInquiryData(title, text, true, true, "确定", "返回", input =>
+		{
+			if (!int.TryParse(input, out var amount) || amount <= 0 || amount > max)
+			{
+				InformationManager.DisplayMessage(new InformationMessage("请输入合法的数量。", Colors.Yellow));
+				ShowPayloadAmountInquiry();
+				return;
+			}
+			entry.Amount = amount;
+			flow.PendingAmountIndex++;
+			ShowPayloadAmountInquiry();
+		}, () => BeginPayloadSelection(flow.Mode)), true);
+	}
+
+	private void ShowLetterInput()
+	{
+		PendingCourierFlow flow = _pendingFlow;
+		if (flow?.Recipient == null)
+		{
+			ResetPendingFlow("letter_no_flow");
+			return;
+		}
+		string targetName = flow.Recipient.Name?.ToString() ?? "收件人";
+		string summary = BuildPendingPayloadSummary(flow);
+		_letterInputOpen = true;
+		bool opened = ShoutTextInputPopup.Show("写给 " + targetName + " 的信", summary, "请输入信件内容：", "", input =>
+		{
+			_letterInputOpen = false;
+			OnLetterConfirmed(input);
+		}, () =>
+		{
+			_letterInputOpen = false;
+			ResetPendingFlow("letter_cancel");
+		});
+		if (!opened)
+		{
+			InformationManager.ShowTextInquiry(new TextInquiryData("写给 " + targetName + " 的信", summary + "\n请输入信件内容：", true, true, "发送", "取消", input =>
+			{
+				_letterInputOpen = false;
+				OnLetterConfirmed(input);
+			}, () =>
+			{
+				_letterInputOpen = false;
+				ResetPendingFlow("letter_cancel_fallback");
+			}), true);
+		}
+	}
+
+	private void OnLetterConfirmed(string input)
+	{
+		PendingCourierFlow flow = _pendingFlow;
+		if (flow == null || flow.Recipient == null)
+		{
+			ResetPendingFlow("confirm_no_flow");
+			return;
+		}
+		if (string.IsNullOrWhiteSpace(input))
+		{
+			ResetPendingFlow("confirm_empty");
+			return;
+		}
+		try
+		{
+			CourierSession session = CreateCourierSession(flow, input.Trim());
+			if (session == null)
+			{
+				ResetPendingFlow("confirm_create_null");
+				return;
+			}
+			lock (_sessionLock)
+			{
+				_sessions[session.Id] = session;
+			}
+			Log("session created id=" + session.Id + " recipient=" + session.RecipientHeroId + " party=" + session.CourierPartyId + " mode=" + session.PayloadMode + " entries=" + session.Entries.Count);
+			InformationManager.DisplayMessage(new InformationMessage("信使队已出发，正在前往 " + session.RecipientName + "。", Colors.Green));
+			ResetPendingFlow("confirm_done");
+			ProcessSession(session);
+		}
+		catch (Exception ex)
+		{
+			Log("confirm failed: " + ex);
+			InformationManager.DisplayMessage(new InformationMessage("信使出发失败：" + ex.Message, Colors.Red));
+			ResetPendingFlow("confirm_exception");
+		}
+	}
+
+	private CourierSession CreateCourierSession(PendingCourierFlow flow, string letter)
+	{
+		MobileParty mainParty = MobileParty.MainParty;
+		if (mainParty == null || flow?.Recipient == null || flow.CrewRoster == null || flow.CrewRoster.TotalManCount <= 0)
+		{
+			throw new InvalidOperationException("信使队数据不完整。");
+		}
+		string id = NewSessionId();
+		TroopRoster emptyMembers = TroopRoster.CreateDummyTroopRoster();
+		TroopRoster emptyPrisoners = TroopRoster.CreateDummyTroopRoster();
+		float speed = Math.Max(4f, mainParty.Speed) * 4f;
+		TextObject name = new TextObject("AnimusForge 信使队");
+		MobileParty courier = CustomPartyComponent.CreateCustomPartyWithTroopRoster(mainParty.Position, 0.05f, mainParty.CurrentSettlement, name, Clan.PlayerClan, emptyMembers, emptyPrisoners, Hero.MainHero, "", "", speed, false);
+		if (courier == null)
+		{
+			throw new InvalidOperationException("创建信使队失败。");
+		}
+		courier.IsVisible = true;
+		courier.Party.SetCustomName(new TextObject("信使队 - " + (flow.Recipient.Name?.ToString() ?? "收件人")));
+		courier.SetMoveModeHold();
+		ApplyCourierAiOverrides(courier, "create");
+
+		CourierSession session = new CourierSession
+		{
+			Id = id,
+			RecipientHeroId = SafeHeroId(flow.Recipient),
+			RecipientName = flow.Recipient.Name?.ToString() ?? "",
+			CourierPartyId = courier.StringId,
+			Stage = CourierStage.Outbound.ToString(),
+			PayloadMode = flow.Mode.ToString(),
+			LetterText = letter,
+			Entries = CloneEntries(flow.SelectedEntries),
+			CrewEntries = BuildCargoEntriesFromRoster(flow.CrewRoster, "crew")
+		};
+		MoveRosterFromMainParty(flow.CrewRoster, courier, "crew");
+		AssignCourierLeader(courier);
+		PrepareOutgoingPayload(session, courier);
+		session.DeliveryFactText = BuildDeliveryFactText(session, delivered: false);
+		return session;
+	}
+
+	private void PrepareOutgoingPayload(CourierSession session, MobileParty courier)
+	{
+		if (session == null || courier == null)
+		{
+			return;
+		}
+		if (ParsePayloadMode(session.PayloadMode) == CourierPayloadMode.Show)
+		{
+			Log("payload show mode staged session=" + session.Id + " entries=" + session.Entries.Count);
+			return;
+		}
+		foreach (CourierCargoEntry entry in session.Entries ?? new List<CourierCargoEntry>())
+		{
+			if (entry == null || entry.Amount <= 0)
+			{
+				continue;
+			}
+			if (string.Equals(entry.Kind, "gold", StringComparison.OrdinalIgnoreCase))
+			{
+				int amount = Math.Min(Math.Max(0, Hero.MainHero?.Gold ?? 0), entry.Amount);
+				if (amount > 0)
+				{
+					GiveGoldAction.ApplyBetweenCharacters(Hero.MainHero, null, amount, true);
+				}
+				entry.Amount = amount;
+				session.EscrowGold += amount;
+				Log("escrow gold session=" + session.Id + " amount=" + amount);
+			}
+			else if (string.Equals(entry.Kind, "item", StringComparison.OrdinalIgnoreCase))
+			{
+				ItemObject item;
+				int moved = MyBehavior.TransferItemsFromRosterByStringId(MobileParty.MainParty?.ItemRoster, courier.ItemRoster, entry.Id, entry.Amount, out item);
+				entry.Amount = moved;
+				if (item != null)
+				{
+					entry.Name = item.Name?.ToString() ?? entry.Name;
+				}
+				Log("escrow item session=" + session.Id + " item=" + entry.Id + " moved=" + moved);
+			}
+			else if (string.Equals(entry.Kind, "troop", StringComparison.OrdinalIgnoreCase))
+			{
+				MoveCharacterFromMainMembersToParty(entry.Id, entry.Amount, courier, entry.IsHero);
+				Log("escrow troop session=" + session.Id + " troop=" + entry.Id + " amount=" + entry.Amount);
+			}
+			else if (string.Equals(entry.Kind, "prisoner", StringComparison.OrdinalIgnoreCase))
+			{
+				MoveCharacterFromMainPrisonersToParty(entry.Id, entry.Amount, courier, entry.IsHero);
+				Log("escrow prisoner session=" + session.Id + " troop=" + entry.Id + " amount=" + entry.Amount);
+			}
+		}
+	}
+
+	private void OnCampaignTick(float dt)
+	{
+		try
+		{
+			long now = DateTime.UtcNow.Ticks;
+			if (now - _lastCampaignTickUtcTicks < TimeSpan.FromSeconds(CampaignTickThrottleSeconds).Ticks)
+			{
+				return;
+			}
+			_lastCampaignTickUtcTicks = now;
+			List<CourierSession> snapshot;
+			lock (_sessionLock)
+			{
+				snapshot = _sessions.Values.Where(x => x != null && !IsTerminalStage(x)).ToList();
+			}
+			foreach (CourierSession session in snapshot)
+			{
+				ProcessSession(session);
+			}
+		}
+		catch (Exception ex)
+		{
+			Log("campaign tick failed: " + ex);
+		}
+	}
+
+	private void ProcessSession(CourierSession session)
+	{
+		if (session == null || IsTerminalStage(session))
+		{
+			return;
+		}
+		NormalizeSession(session);
+		CourierStage stage = ParseStage(session.Stage);
+		MobileParty courier = ResolveCourierParty(session);
+		if (courier == null || !courier.IsActive)
+		{
+			HandleCourierMissing(session);
+			return;
+		}
+		ApplyCourierAiOverrides(courier, "tick");
+		Hero recipient = ResolveRecipient(session);
+		if (stage == CourierStage.GeneratingReply)
+		{
+			if (session.ReplyGenerated)
+			{
+				session.Stage = CourierStage.Returning.ToString();
+				RouteToSender(session, courier);
+				return;
+			}
+			if (!session.ReplyGenerationStarted)
+			{
+				StartCourierReplyGeneration(session, "resume_or_tick");
+			}
+			MaintainReplyWaitAtRecipient(session, courier, recipient);
+			return;
+		}
+		if ((stage == CourierStage.Outbound || stage == CourierStage.WaitingRecipient) && recipient == null)
+		{
+			RouteToSafeSettlement(session, courier, "recipient_unresolved");
+			return;
+		}
+		if ((stage == CourierStage.Outbound || stage == CourierStage.WaitingRecipient) && recipient != null && recipient.IsDead)
+		{
+			Log("recipient dead before delivery, returning and refunding session=" + session.Id + " recipient=" + SafeHeroId(recipient));
+			session.Stage = CourierStage.Returning.ToString();
+			session.DeliveryApplied = false;
+			session.RecipientWaitReason = "";
+			RouteToSender(session, courier);
+			return;
+		}
+		if (stage == CourierStage.Outbound || stage == CourierStage.WaitingRecipient)
+		{
+			if (HandleRecipientUnavailableStatus(session, courier, recipient))
+			{
+				return;
+			}
+			if (TryGetRecipientTarget(recipient, out var targetParty, out var targetSettlement))
+			{
+				session.Stage = CourierStage.Outbound.ToString();
+				ClearRecipientWaitReasonIfNeeded(session, "target_resolved");
+				if (IsAtRecipient(courier, targetParty, targetSettlement))
+				{
+					DeliverToRecipient(session, courier, recipient);
+					return;
+				}
+				RouteToRecipient(session, courier, targetParty, targetSettlement);
+				return;
+			}
+			session.Stage = CourierStage.WaitingRecipient.ToString();
+			if (!IsBlockingRecipientWaitReason(session.RecipientWaitReason))
+			{
+				SetRecipientWaitReason(session, "unresolved", "target_unresolved");
+			}
+			RouteToSafeSettlement(session, courier, "recipient_wait_respawn");
+			return;
+		}
+		if (stage == CourierStage.Returning || stage == CourierStage.WaitingSender)
+		{
+			MobileParty senderParty = MobileParty.MainParty;
+			if (senderParty == null || !senderParty.IsActive)
+			{
+				session.Stage = CourierStage.WaitingSender.ToString();
+				RouteToSafeSettlement(session, courier, "sender_wait_respawn");
+				return;
+			}
+			session.Stage = CourierStage.Returning.ToString();
+			if (IsAtSender(courier, senderParty))
+			{
+				CompleteReturn(session, courier, recipient);
+				return;
+			}
+			RouteToSender(session, courier);
+		}
+	}
+
+	private void DeliverToRecipient(CourierSession session, MobileParty courier, Hero recipient)
+	{
+		if (session == null || courier == null || recipient == null)
+		{
+			return;
+		}
+		if (!session.DeliveryApplied)
+		{
+			ApplyDeliveryPayload(session, courier, recipient);
+			session.DeliveryApplied = true;
+			session.DeliveryFactText = BuildDeliveryFactText(session, delivered: true);
+			string playerName = MyBehavior.BuildPlayerPublicDisplayNameForExternal();
+			if (string.IsNullOrWhiteSpace(playerName))
+			{
+				playerName = Hero.MainHero?.Name?.ToString() ?? "玩家";
+			}
+			MyBehavior.AppendExternalDialogueHistory(recipient, "【来信】" + playerName + "通过信使写道：" + session.LetterText, null, session.DeliveryFactText);
+			Log("delivered session=" + session.Id + " recipient=" + SafeHeroId(recipient) + " factLen=" + (session.DeliveryFactText ?? "").Length);
+		}
+		if (!session.ReplyGenerated)
+		{
+			StartCourierReplyGeneration(session, "delivered");
+			MaintainReplyWaitAtRecipient(session, courier, recipient);
+			return;
+		}
+		session.Stage = CourierStage.Returning.ToString();
+		RouteToSender(session, courier);
+	}
+
+	private void StartCourierReplyGeneration(CourierSession session, string reason)
+	{
+		if (session == null || session.ReplyGenerated || session.ReplyGenerationStarted)
+		{
+			return;
+		}
+		session.Stage = CourierStage.GeneratingReply.ToString();
+		session.ReplyGenerationStarted = true;
+		Log("reply generation queued session=" + session.Id + " reason=" + (reason ?? ""));
+		_ = Task.Run(() => GenerateNpcReplyAsync(session.Id));
+	}
+
+	private void MaintainReplyWaitAtRecipient(CourierSession session, MobileParty courier, Hero recipient)
+	{
+		if (session == null || courier == null)
+		{
+			return;
+		}
+		if (recipient != null && TryGetRecipientTarget(recipient, out var targetParty, out var targetSettlement) && !IsAtRecipient(courier, targetParty, targetSettlement))
+		{
+			RouteToRecipient(session, courier, targetParty, targetSettlement);
+			return;
+		}
+		string key = BuildReplyWaitRouteKey(courier, recipient);
+		if (ShouldRefreshRoute(session, key, courier, AiBehavior.Hold))
+		{
+			courier.SetMoveModeHold();
+			ApplyCourierAiOverrides(courier, "reply_wait_hold");
+			Log("reply wait hold session=" + session.Id + " key=" + key);
+		}
+	}
+
+	private static string BuildReplyWaitRouteKey(MobileParty courier, Hero recipient)
+	{
+		string recipientId = SafeHeroId(recipient);
+		CampaignVec2 position = courier?.Position ?? MobileParty.MainParty?.Position ?? default;
+		int x = (int)MathF.Round(position.X * 2f);
+		int y = (int)MathF.Round(position.Y * 2f);
+		return "reply_wait:" + recipientId + ":" + x + ":" + y;
+	}
+
+	private async Task GenerateNpcReplyAsync(string sessionId)
+	{
+		CourierSession session = null;
+		try
+		{
+			lock (_sessionLock)
+			{
+				_sessions.TryGetValue(sessionId ?? "", out session);
+			}
+			if (session == null)
+			{
+				return;
+			}
+			if (IsTerminalStage(session))
+			{
+				return;
+			}
+			Hero recipient = ResolveRecipient(session);
+			if (recipient == null || recipient.IsDead)
+			{
+				session.ReplyGenerated = true;
+				session.ReplyGenerationStarted = false;
+				session.Stage = CourierStage.Returning.ToString();
+				return;
+			}
+			Log("llm main start session=" + session.Id + " recipient=" + SafeHeroId(recipient));
+			string extraFact = session.DeliveryFactText ?? "";
+			List<string> preprocessRuleHits = MyBehavior.RunCourierRulePreprocessForExternal(recipient, session.LetterText, extraFact, recipient.CharacterObject, targetAgentIndex: -1);
+			MyBehavior.ShoutPromptContext ctx = MyBehavior.BuildShoutPromptContextForExternal(recipient, session.LetterText, extraFact, recipient.Culture?.StringId ?? "neutral", hasAnyHero: true, targetCharacter: recipient.CharacterObject, targetAgentIndex: -1);
+			string extras = RemoveInjectedRuleBlock(ctx?.Extras ?? "", "scene_mechanism_actions");
+			List<object> messages = BuildCourierReplyMessages(recipient, session, extras);
+			ShoutNetwork.RecordPrimaryRequestBodyForTokenStats(messages, MainReplyMaxTokens, "courier_reply_preflight");
+			string output = await ShoutNetwork.CallApiWithMessages(messages, MainReplyMaxTokens);
+			if (IsTerminalStage(session))
+			{
+				return;
+			}
+			string reply = CleanNpcReply(output);
+			if (LooksLikeApiError(reply))
+			{
+				Log("llm main failed session=" + session.Id + " output=" + reply);
+				reply = "";
+			}
+			if (string.IsNullOrWhiteSpace(reply))
+			{
+				session.ReplyText = "";
+				session.ReplyPostprocessedText = "";
+				session.ReplyGenerated = true;
+				session.ReplyGenerationStarted = false;
+				session.Stage = CourierStage.Returning.ToString();
+				Log("npc no reply session=" + session.Id);
+				return;
+			}
+			bool duelInjected = ctx != null && ctx.UseDuelContext || ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "duel") || HasPreprocessRuleHit(preprocessRuleHits, "duel");
+			bool rewardInjected = ctx != null && ctx.UseRewardContext || ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "reward") || HasPreprocessRuleHit(preprocessRuleHits, "reward");
+			bool loanInjected = ctx != null && ctx.IsLoanContext || ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "loan") || HasPreprocessRuleHit(preprocessRuleHits, "loan");
+			bool lordsHallInjected = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "lords_hall_access") || HasPreprocessRuleHit(preprocessRuleHits, "lords_hall_access");
+			bool meetingReleaseInjected = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "encounter_release_player") || HasPreprocessRuleHit(preprocessRuleHits, "encounter_release_player");
+			bool vanillaIssueInjected = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "vanilla_issue") || HasPreprocessRuleHit(preprocessRuleHits, "vanilla_issue");
+			bool heroJoinPartyInjected = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "hero_join_party") || HasPreprocessRuleHit(preprocessRuleHits, "hero_join_party");
+			bool sceneMechanismInjected = false;
+			bool partyTransferInjected = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "party_transfer") || HasPreprocessRuleHit(preprocessRuleHits, "party_transfer");
+			bool settlementTransferInjected = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "settlement_transfer") || HasPreprocessRuleHit(preprocessRuleHits, "settlement_transfer");
+			bool kingdomServiceInjected = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "kingdom_service") || HasPreprocessRuleHit(preprocessRuleHits, "kingdom_service");
+			string historyText = MyBehavior.BuildHistoryContextForExternal(recipient, 20, session.LetterText, extraFact);
+			string postprocessed = ShoutBehavior.RunCourierActionPostprocessForExternal(recipient, recipient.CharacterObject, recipient.Name?.ToString() ?? "NPC", session.LetterText, historyText, reply, duelInjected, rewardInjected, loanInjected, kingdomServiceInjected, lordsHallInjected, meetingReleaseInjected, vanillaIssueInjected, heroJoinPartyInjected, sceneMechanismInjected, partyTransferInjected, settlementTransferInjected);
+			session.ReplyText = reply;
+			session.ReplyPostprocessedText = string.IsNullOrWhiteSpace(postprocessed) ? reply : postprocessed;
+			session.ReplyGenerated = true;
+			session.ReplyGenerationStarted = false;
+			session.Stage = CourierStage.Returning.ToString();
+			MyBehavior.AppendExternalDialogueHistory(recipient, null, "【回信】" + StripCourierActionTags(reply), "[AFEF NPC行为补充] " + (recipient.Name?.ToString() ?? "NPC") + "已通过信使写下回信，信使正在把回信带给玩家。");
+			Log("llm main done session=" + session.Id + " replyLen=" + reply.Length + " postLen=" + (session.ReplyPostprocessedText ?? "").Length + " preprocessHits=" + ((preprocessRuleHits == null || preprocessRuleHits.Count == 0) ? "(none)" : string.Join(",", preprocessRuleHits)) + " duel=" + duelInjected + " reward=" + rewardInjected + " loan=" + loanInjected + " kingdom=" + kingdomServiceInjected + " lordsHall=" + lordsHallInjected + " meetingRelease=" + meetingReleaseInjected + " vanillaIssue=" + vanillaIssueInjected + " heroJoin=" + heroJoinPartyInjected + " sceneMechanism=" + sceneMechanismInjected + " partyTransfer=" + partyTransferInjected + " settlementTransfer=" + settlementTransferInjected);
+		}
+		catch (Exception ex)
+		{
+			Log("generate reply failed session=" + sessionId + " error=" + ex);
+			if (session != null && !IsTerminalStage(session))
+			{
+				session.ReplyGenerated = true;
+				session.ReplyGenerationStarted = false;
+				session.Stage = CourierStage.Returning.ToString();
+			}
+		}
+	}
+
+	private void CompleteReturn(CourierSession session, MobileParty courier, Hero recipient)
+	{
+		if (session == null || courier == null)
+		{
+			return;
+		}
+		Log("return arrived session=" + session.Id + " deliveryApplied=" + session.DeliveryApplied + " replyGenerated=" + session.ReplyGenerated + " postConsumed=" + session.PostprocessConsumed);
+		if (session.DeliveryApplied && !session.PostprocessConsumed && !string.IsNullOrWhiteSpace(session.ReplyPostprocessedText) && recipient != null)
+		{
+			string text = session.ReplyPostprocessedText;
+			try
+			{
+				RewardSystemBehavior.Instance?.ApplyRewardTags(recipient, Hero.MainHero, ref text);
+			}
+			catch (Exception ex)
+			{
+				Log("apply reward tags failed session=" + session.Id + " error=" + ex.Message);
+			}
+			try
+			{
+				VanillaIssueOfferBridge.ApplyIssueOfferTags(recipient, ref text);
+			}
+			catch (Exception ex)
+			{
+				Log("apply vanilla issue tags failed session=" + session.Id + " error=" + ex.Message);
+			}
+			try
+			{
+				RomanceSystemBehavior.Instance?.ApplyMarriageTags(recipient, Hero.MainHero, ref text);
+			}
+			catch (Exception ex)
+			{
+				Log("apply marriage tags failed session=" + session.Id + " error=" + ex.Message);
+			}
+			try
+			{
+				if (MyBehavior.TryApplyPartyTransferTagsForExternal(recipient, recipient.CharacterObject, -1, ref text, out var facts, out var notifications))
+				{
+					foreach (string fact in facts ?? new List<string>())
+					{
+						MyBehavior.AppendExternalDialogueHistory(recipient, null, null, fact);
+					}
+					foreach (string note in notifications ?? new List<string>())
+					{
+						InformationManager.DisplayMessage(new InformationMessage(note, Colors.Green));
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				Log("apply party transfer tags failed session=" + session.Id + " error=" + ex.Message);
+			}
+			session.ReplyPostprocessedText = text;
+			session.PostprocessConsumed = true;
+			Log("postprocess consumed session=" + session.Id + " remainingLen=" + (text ?? "").Length);
+		}
+		ReturnCourierContentsToPlayer(session, courier);
+		if (session.DeliveryApplied && !session.ReplyPopupShown && !string.IsNullOrWhiteSpace(session.ReplyText))
+		{
+			session.ReplyPopupShown = true;
+			string reply = StripCourierActionTags(session.ReplyPostprocessedText ?? session.ReplyText);
+			MainThreadActions.Enqueue(() =>
+			{
+				InformationManager.ShowInquiry(new InquiryData("信使带回了回信", (recipient?.Name?.ToString() ?? session.RecipientName ?? "NPC") + "写道：\n\n" + reply, true, false, "知道了", "", null, null), true);
+			});
+		}
+		else if (!session.DeliveryApplied)
+		{
+			InformationManager.DisplayMessage(new InformationMessage("信使队已返回，未交付的信件与物资已退还。", Colors.Yellow));
+		}
+		else
+		{
+			InformationManager.DisplayMessage(new InformationMessage("信使队已返回并解散。", Colors.Green));
+		}
+		CompleteAndDestroyCourier(session, courier);
+	}
+
+	private void ApplyDeliveryPayload(CourierSession session, MobileParty courier, Hero recipient)
+	{
+		CourierPayloadMode mode = ParsePayloadMode(session.PayloadMode);
+		if (mode == CourierPayloadMode.Show)
+		{
+			int shownGold = 0;
+			Dictionary<string, int> shownItems = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+			foreach (CourierCargoEntry entry in session.Entries ?? new List<CourierCargoEntry>())
+			{
+				if (entry == null || entry.Amount <= 0)
+				{
+					continue;
+				}
+				if (string.Equals(entry.Kind, "show_gold", StringComparison.OrdinalIgnoreCase))
+				{
+					shownGold += entry.Amount;
+				}
+				else if (string.Equals(entry.Kind, "show_item", StringComparison.OrdinalIgnoreCase))
+				{
+					shownItems[entry.Id ?? ""] = (shownItems.TryGetValue(entry.Id ?? "", out var old) ? old : 0) + entry.Amount;
+				}
+				entry.Delivered = true;
+			}
+			MyBehavior.RecordShownResourcesForExternal(recipient, BuildCourierShownTargetKey(recipient), shownGold, shownItems);
+			return;
+		}
+		PartyBase targetParty = ResolveRecipientPartyBase(recipient);
+		foreach (CourierCargoEntry entry in session.Entries ?? new List<CourierCargoEntry>())
+		{
+			if (entry == null || entry.Delivered || entry.Amount <= 0)
+			{
+				continue;
+			}
+			if (string.Equals(entry.Kind, "gold", StringComparison.OrdinalIgnoreCase))
+			{
+				int amount = Math.Min(Math.Max(0, session.EscrowGold), entry.Amount);
+				if (amount > 0)
+				{
+					GiveGoldAction.ApplyBetweenCharacters(null, recipient, amount, true);
+					session.EscrowGold -= amount;
+					entry.Amount = amount;
+					entry.Delivered = true;
+					try
+					{
+						RewardSystemBehavior.Instance?.RecordPlayerPrepaidTransfer(recipient, amount, null, 0);
+					}
+					catch
+					{
+					}
+				}
+			}
+			else if (string.Equals(entry.Kind, "item", StringComparison.OrdinalIgnoreCase))
+			{
+				ItemObject item;
+				ItemRoster targetRoster = ResolveRecipientItemRoster(recipient);
+				int moved = MyBehavior.TransferItemsFromRosterByStringId(courier.ItemRoster, targetRoster, entry.Id, entry.Amount, out item);
+				entry.Amount = moved;
+				entry.Delivered = moved > 0;
+				if (item != null)
+				{
+					entry.Name = item.Name?.ToString() ?? entry.Name;
+				}
+				try
+				{
+					if (moved > 0)
+					{
+						RewardSystemBehavior.Instance?.RecordPlayerPrepaidTransfer(recipient, 0, entry.Id, moved);
+					}
+				}
+				catch
+				{
+				}
+			}
+			else if (string.Equals(entry.Kind, "troop", StringComparison.OrdinalIgnoreCase))
+			{
+				int moved = MoveCharacterBetweenMemberRosters(courier.Party, targetParty, entry.Id, entry.Amount, entry.IsHero);
+				entry.Amount = moved;
+				entry.Delivered = moved > 0;
+			}
+			else if (string.Equals(entry.Kind, "prisoner", StringComparison.OrdinalIgnoreCase))
+			{
+				int moved = MoveCharacterBetweenPrisonRosters(courier.Party, targetParty, entry.Id, entry.Amount, entry.IsHero);
+				entry.Amount = moved;
+				entry.Delivered = moved > 0;
+			}
+			else if (string.Equals(entry.Kind, "settlement", StringComparison.OrdinalIgnoreCase))
+			{
+				Settlement settlement = Settlement.Find(entry.Id);
+				string status = null;
+				bool ok = RewardSystemBehavior.Instance != null && RewardSystemBehavior.Instance.TryApplyPlayerSettlementTransferForExternal(recipient, settlement, out status);
+				entry.Delivered = ok;
+				entry.Amount = ok ? 1 : 0;
+				if (!ok && !string.IsNullOrWhiteSpace(status))
+				{
+					Log("settlement transfer failed session=" + session.Id + " settlement=" + entry.Id + " status=" + status);
+				}
+			}
+		}
+	}
+
+	private void ReturnCourierContentsToPlayer(CourierSession session, MobileParty courier)
+	{
+		PartyBase playerParty = MobileParty.MainParty?.Party ?? PartyBase.MainParty;
+		if (playerParty == null || courier == null)
+		{
+			return;
+		}
+		MoveWholeMemberRoster(courier.Party, playerParty);
+		MoveWholePrisonRoster(courier.Party, playerParty);
+		MoveWholeItemRoster(courier.ItemRoster, MobileParty.MainParty?.ItemRoster);
+		if (!session.DeliveryApplied && session.EscrowGold > 0)
+		{
+			GiveGoldAction.ApplyBetweenCharacters(null, Hero.MainHero, session.EscrowGold, true);
+			Log("refunded escrow gold session=" + session.Id + " amount=" + session.EscrowGold);
+			session.EscrowGold = 0;
+		}
+	}
+
+	private void OnMobilePartyDestroyed(MobileParty destroyedParty, PartyBase destroyerParty)
+	{
+		try
+		{
+			if (destroyedParty == null)
+			{
+				return;
+			}
+			CourierSession session = null;
+			lock (_sessionLock)
+			{
+				session = _sessions.Values.FirstOrDefault(x => x != null && string.Equals((x.CourierPartyId ?? "").Trim(), destroyedParty.StringId ?? "", StringComparison.OrdinalIgnoreCase) && !IsTerminalStage(x));
+			}
+			if (session == null)
+			{
+				return;
+			}
+			Hero recipient = ResolveRecipient(session);
+			string destroyerName = destroyerParty?.Name?.ToString() ?? "未知势力";
+			Log("destroyed session=" + session.Id + " party=" + destroyedParty.StringId + " destroyer=" + destroyerName + " deliveryApplied=" + session.DeliveryApplied);
+			DisplayCourierDestroyedStatus(session, "歼灭者：" + destroyerName);
+			TryMoveHeroLossesToDestroyer(session, destroyerParty);
+			string fact = "[AFEF玩家行为补充] " + (MyBehavior.BuildPlayerPublicDisplayNameForExternal() ?? "玩家") + "通过信使寄出的信使队在途中被" + destroyerName + "歼灭。";
+			if (!session.DeliveryApplied)
+			{
+				fact += "这封信和随信寄出的物品、金钱、部队或俘虏未能送达；定居点转移没有发生。";
+			}
+			else
+			{
+				fact += "该信使队已完成交付，但未能把回信或剩余人员安全带回玩家处。";
+			}
+			MyBehavior.AppendExternalDialogueHistory(recipient, null, null, fact);
+			session.Stage = CourierStage.Destroyed.ToString();
+			lock (_sessionLock)
+			{
+				_sessions.Remove(session.Id);
+			}
+		}
+		catch (Exception ex)
+		{
+			Log("destroy handler failed: " + ex);
+		}
+	}
+
+	private void TryMoveHeroLossesToDestroyer(CourierSession session, PartyBase destroyerParty)
+	{
+		if (session == null || destroyerParty == null)
+		{
+			return;
+		}
+		foreach (CourierCargoEntry entry in (session.CrewEntries ?? new List<CourierCargoEntry>()).Concat(session.Entries ?? new List<CourierCargoEntry>()))
+		{
+			if (entry == null || !entry.IsHero)
+			{
+				continue;
+			}
+			if (!string.Equals(entry.Kind, "crew", StringComparison.OrdinalIgnoreCase) && entry.Delivered)
+			{
+				continue;
+			}
+			CharacterObject character = ResolveCharacter(entry.Id);
+			Hero hero = character?.HeroObject;
+			if (hero == null || hero.IsDead || hero.IsHumanPlayerCharacter)
+			{
+				continue;
+			}
+			try
+			{
+				if (!hero.IsPrisoner || hero.PartyBelongedToAsPrisoner == null)
+				{
+					TakePrisonerAction.Apply(destroyerParty, hero);
+					Log("hero loss captured session=" + session.Id + " hero=" + hero.StringId + " destroyer=" + destroyerParty.Name);
+				}
+			}
+			catch (Exception ex)
+			{
+				Log("hero loss capture failed session=" + session.Id + " hero=" + (hero.StringId ?? "") + " error=" + ex.Message);
+			}
+		}
+	}
+
+	private void CompleteAndDestroyCourier(CourierSession session, MobileParty courier)
+	{
+		if (session == null)
+		{
+			return;
+		}
+		session.Stage = CourierStage.Completed.ToString();
+		lock (_sessionLock)
+		{
+			_sessions.Remove(session.Id);
+		}
+		try
+		{
+			if (courier != null && courier.IsActive)
+			{
+				DestroyPartyAction.Apply(null, courier);
+			}
+		}
+		catch (Exception ex)
+		{
+			Log("destroy completed courier failed session=" + session.Id + " error=" + ex.Message);
+		}
+		Log("session completed id=" + session.Id);
+	}
+
+	private void HandleCourierMissing(CourierSession session)
+	{
+		if (session == null)
+		{
+			return;
+		}
+		Log("courier missing session=" + session.Id + " party=" + session.CourierPartyId);
+		DisplayCourierDestroyedStatus(session, "信使队伍已从大地图消失。");
+		Hero recipient = ResolveRecipient(session);
+		MyBehavior.AppendExternalDialogueHistory(recipient, null, null, "[AFEF玩家行为补充] 玩家派出的信使队失去踪迹，信件与随信物资未能确认送达。");
+		session.Stage = CourierStage.Destroyed.ToString();
+		lock (_sessionLock)
+		{
+			_sessions.Remove(session.Id);
+		}
+	}
+
+	private static void DisplayCourierDestroyedStatus(CourierSession session, string detail)
+	{
+		try
+		{
+			string recipientName = string.IsNullOrWhiteSpace(session?.RecipientName) ? "" : " 收件人：" + session.RecipientName + "。";
+			string detailText = string.IsNullOrWhiteSpace(detail) ? "" : " " + detail.Trim();
+			InformationManager.DisplayMessage(new InformationMessage("信使部队已被歼灭。" + recipientName + detailText, Colors.Red));
+			Log("status courier_destroyed session=" + (session?.Id ?? "") + " recipient=" + (session?.RecipientHeroId ?? "") + " detail=" + (detail ?? ""));
+		}
+		catch
+		{
+		}
+	}
+
+	private void RouteToRecipient(CourierSession session, MobileParty courier, MobileParty targetParty, Settlement targetSettlement)
+	{
+		if (courier == null)
+		{
+			return;
+		}
+		string key = BuildRecipientRouteKey(targetParty, targetSettlement);
+		AiBehavior expectedBehavior = targetParty != null && targetParty.IsActive ? AiBehavior.GoToPoint : AiBehavior.GoToSettlement;
+		if (ShouldRefreshRoute(session, key, courier, expectedBehavior))
+		{
+			if (targetParty != null && targetParty.IsActive)
+			{
+				courier.SetMoveGoToPoint(targetParty.Position, courier.NavigationCapability);
+			}
+			else if (targetSettlement != null)
+			{
+				courier.SetMoveGoToSettlement(targetSettlement, courier.NavigationCapability, false);
+			}
+			ApplyCourierAiOverrides(courier, "route_recipient");
+			Log("route recipient session=" + session.Id + " key=" + key);
+		}
+	}
+
+	private static string BuildRecipientRouteKey(MobileParty targetParty, Settlement targetSettlement)
+	{
+		if (targetParty != null && targetParty.IsActive)
+		{
+			CampaignVec2 position = targetParty.Position;
+			int x = (int)MathF.Round(position.X * 2f);
+			int y = (int)MathF.Round(position.Y * 2f);
+			return "recipient_party:" + (targetParty.StringId ?? "") + ":" + x + ":" + y;
+		}
+		return "recipient_settlement:" + (targetSettlement?.StringId ?? "");
+	}
+
+	private void RouteToSender(CourierSession session, MobileParty courier)
+	{
+		MobileParty mainParty = MobileParty.MainParty;
+		if (courier == null || mainParty == null)
+		{
+			return;
+		}
+		string key = BuildSenderRouteKey(mainParty);
+		AiBehavior expectedBehavior = mainParty.CurrentSettlement != null ? AiBehavior.GoToSettlement : AiBehavior.GoToPoint;
+		if (ShouldRefreshRoute(session, key, courier, expectedBehavior))
+		{
+			if (mainParty.CurrentSettlement != null)
+			{
+				courier.SetMoveGoToSettlement(mainParty.CurrentSettlement, courier.NavigationCapability, false);
+			}
+			else
+			{
+				courier.SetMoveGoToPoint(mainParty.Position, courier.NavigationCapability);
+			}
+			ApplyCourierAiOverrides(courier, "route_sender");
+			Log("route sender session=" + session.Id + " key=" + key);
+		}
+	}
+
+	private static string BuildSenderRouteKey(MobileParty mainParty)
+	{
+		if (mainParty == null)
+		{
+			return "sender_point:null";
+		}
+		if (mainParty.CurrentSettlement != null)
+		{
+			return "sender_settlement:" + mainParty.CurrentSettlement.StringId;
+		}
+		CampaignVec2 position = mainParty.Position;
+		int x = (int)MathF.Round(position.X * 2f);
+		int y = (int)MathF.Round(position.Y * 2f);
+		return "sender_point:" + x + ":" + y;
+	}
+
+	private void RouteToSafeSettlement(CourierSession session, MobileParty courier, string reason)
+	{
+		if (session == null || courier == null)
+		{
+			return;
+		}
+		Settlement settlement = ResolveSafeSettlement(session, courier);
+		if (settlement == null)
+		{
+			courier.SetMoveModeHold();
+			ApplyCourierAiOverrides(courier, "route_safe_hold");
+			return;
+		}
+		string key = "safe:" + settlement.StringId + ":" + reason;
+		if (ShouldRefreshRoute(session, key, courier, AiBehavior.GoToSettlement))
+		{
+			courier.SetMoveGoToSettlement(settlement, courier.NavigationCapability, false);
+			ApplyCourierAiOverrides(courier, "route_safe");
+			Log("route safe session=" + session.Id + " settlement=" + settlement.StringId + " reason=" + reason);
+		}
+	}
+
+	private Settlement ResolveSafeSettlement(CourierSession session, MobileParty courier)
+	{
+		try
+		{
+			if (!string.IsNullOrWhiteSpace(session.SafeSettlementId))
+			{
+				Settlement existing = Settlement.Find(session.SafeSettlementId);
+				if (existing != null)
+				{
+					return existing;
+				}
+			}
+			CampaignVec2 position = courier?.Position ?? MobileParty.MainParty?.Position ?? CampaignVec2.Invalid;
+			Settlement settlement = Settlement.All?
+				.Where(x => x != null && x.IsFortification && !x.IsHideout)
+				.OrderBy(x => x.GatePosition.DistanceSquared(position))
+				.FirstOrDefault();
+			session.SafeSettlementId = settlement?.StringId ?? "";
+			return settlement;
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private bool HandleRecipientUnavailableStatus(CourierSession session, MobileParty courier, Hero recipient)
+	{
+		if (session == null || courier == null || recipient == null)
+		{
+			return false;
+		}
+		string reason = GetRecipientUnavailableReason(recipient);
+		if (!string.IsNullOrWhiteSpace(reason))
+		{
+			SetRecipientWaitReason(session, reason, "target_" + reason);
+			session.Stage = CourierStage.WaitingRecipient.ToString();
+			RouteToSafeSettlement(session, courier, "recipient_" + reason + "_wait");
+			return true;
+		}
+		return false;
+	}
+
+	private static string GetRecipientUnavailableReason(Hero recipient)
+	{
+		if (recipient == null || recipient.IsDead)
+		{
+			return "";
+		}
+		try
+		{
+			if (recipient.IsFugitive)
+			{
+				return "fugitive";
+			}
+			if (recipient.IsPrisoner || recipient.PartyBelongedToAsPrisoner != null)
+			{
+				return "prisoner";
+			}
+		}
+		catch
+		{
+		}
+		return "";
+	}
+
+	private void SetRecipientWaitReason(CourierSession session, string reason, string source)
+	{
+		if (session == null)
+		{
+			return;
+		}
+		string normalized = (reason ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(normalized))
+		{
+			return;
+		}
+		if (string.Equals(session.RecipientWaitReason ?? "", normalized, StringComparison.OrdinalIgnoreCase))
+		{
+			return;
+		}
+		session.RecipientWaitReason = normalized;
+		Log("recipient unavailable session=" + session.Id + " recipient=" + session.RecipientHeroId + " status=" + normalized + " source=" + (source ?? "") + " action=safe_wait");
+		if (string.Equals(normalized, "fugitive", StringComparison.OrdinalIgnoreCase))
+		{
+			InformationManager.DisplayMessage(new InformationMessage("信使目标正在逃亡，信使正前往最近定居点等待。", Colors.Yellow));
+		}
+		else if (string.Equals(normalized, "prisoner", StringComparison.OrdinalIgnoreCase))
+		{
+			InformationManager.DisplayMessage(new InformationMessage("信使目标处于俘虏状态，信使正前往最近定居点等待。", Colors.Yellow));
+		}
+	}
+
+	private void ClearRecipientWaitReasonIfNeeded(CourierSession session, string source)
+	{
+		if (session == null || string.IsNullOrWhiteSpace(session.RecipientWaitReason))
+		{
+			return;
+		}
+		string previous = session.RecipientWaitReason;
+		session.RecipientWaitReason = "";
+		session.SafeSettlementId = "";
+		session.LastRouteKey = "";
+		if (IsBlockingRecipientWaitReason(previous))
+		{
+			Log("recipient reappeared session=" + session.Id + " recipient=" + session.RecipientHeroId + " previousStatus=" + previous + " source=" + (source ?? "") + " status=resume_route");
+			InformationManager.DisplayMessage(new InformationMessage("信使目标重新出现，信使正在路上。", Colors.Green));
+			return;
+		}
+		Log("recipient wait cleared session=" + session.Id + " previousStatus=" + previous + " source=" + (source ?? ""));
+	}
+
+	private static bool IsBlockingRecipientWaitReason(string reason)
+	{
+		string value = (reason ?? "").Trim();
+		return string.Equals(value, "fugitive", StringComparison.OrdinalIgnoreCase) || string.Equals(value, "prisoner", StringComparison.OrdinalIgnoreCase);
+	}
+
+	private static bool TryGetRecipientTarget(Hero recipient, out MobileParty party, out Settlement settlement)
+	{
+		party = null;
+		settlement = null;
+		if (recipient == null || recipient.IsDead)
+		{
+			return false;
+		}
+		party = recipient.PartyBelongedTo;
+		if (party != null && party.IsActive)
+		{
+			settlement = party.CurrentSettlement;
+			return true;
+		}
+		try
+		{
+			if (recipient.PartyBelongedToAsPrisoner != null)
+			{
+				PartyBase prisonerParty = recipient.PartyBelongedToAsPrisoner;
+				party = prisonerParty.MobileParty;
+				settlement = prisonerParty.Settlement;
+				if ((party != null && party.IsActive) || settlement != null)
+				{
+					return true;
+				}
+			}
+		}
+		catch
+		{
+		}
+		settlement = recipient.CurrentSettlement ?? recipient.StayingInSettlement;
+		return settlement != null;
+	}
+
+	private static bool IsAtRecipient(MobileParty courier, MobileParty targetParty, Settlement settlement)
+	{
+		if (courier == null)
+		{
+			return false;
+		}
+		if (targetParty != null && targetParty.IsActive)
+		{
+			if (courier.CurrentSettlement != null && courier.CurrentSettlement == targetParty.CurrentSettlement)
+			{
+				return true;
+			}
+			float arrivalDistance = GetMobilePartyArrivalDistance();
+			try
+			{
+				float distance = DistanceHelper.FindClosestDistanceFromMobilePartyToMobileParty(courier, targetParty, courier.NavigationCapability);
+				if (distance <= arrivalDistance)
+				{
+					return true;
+				}
+			}
+			catch
+			{
+			}
+			return courier.Position.DistanceSquared(targetParty.Position) <= arrivalDistance * arrivalDistance;
+		}
+		if (settlement != null)
+		{
+			return courier.Position.DistanceSquared(settlement.GatePosition) <= SettlementArrivalDistanceSquared || courier.CurrentSettlement == settlement;
+		}
+		return false;
+	}
+
+	private static float GetMobilePartyArrivalDistance()
+	{
+		try
+		{
+			float encounterRadius = Campaign.Current?.Models?.EncounterModel?.GetEncounterJoiningRadius ?? 0f;
+			if (encounterRadius > 0f)
+			{
+				return MathF.Max(MobilePartyArrivalDistance, encounterRadius * 2.5f);
+			}
+		}
+		catch
+		{
+		}
+		return MobilePartyArrivalDistance;
+	}
+
+	private static bool IsAtSender(MobileParty courier, MobileParty sender)
+	{
+		if (courier == null || sender == null)
+		{
+			return false;
+		}
+		if (sender.CurrentSettlement != null)
+		{
+			return courier.Position.DistanceSquared(sender.CurrentSettlement.GatePosition) <= SettlementArrivalDistanceSquared || courier.CurrentSettlement == sender.CurrentSettlement;
+		}
+		return courier.Position.DistanceSquared(sender.Position) <= SenderArrivalDistanceSquared;
+	}
+
+	private static bool ShouldRefreshRoute(CourierSession session, string routeKey, MobileParty courier = null, params AiBehavior[] expectedDefaultBehaviors)
+	{
+		if (session == null)
+		{
+			return false;
+		}
+		string key = routeKey ?? "";
+		if (!string.Equals(session.LastRouteKey ?? "", key, StringComparison.OrdinalIgnoreCase))
+		{
+			session.LastRouteKey = key;
+			return true;
+		}
+		if (courier != null && expectedDefaultBehaviors != null && expectedDefaultBehaviors.Length > 0 && !expectedDefaultBehaviors.Contains(courier.DefaultBehavior))
+		{
+			Log("route refresh forced session=" + session.Id + " key=" + key + " defaultBehavior=" + courier.DefaultBehavior + " shortTerm=" + courier.ShortTermBehavior);
+			return true;
+		}
+		return false;
+	}
+
+	private static List<object> BuildCourierReplyMessages(Hero recipient, CourierSession session, string extras)
+	{
+		string npcName = recipient?.Name?.ToString() ?? "NPC";
+		string playerName = MyBehavior.BuildPlayerPublicDisplayNameForExternal();
+		if (string.IsNullOrWhiteSpace(playerName))
+		{
+			playerName = Hero.MainHero?.Name?.ToString() ?? "玩家";
+		}
+		string history = MyBehavior.BuildHistoryContextForExternal(recipient, 24, session.LetterText, session.DeliveryFactText);
+		string recentFacts = MyBehavior.BuildRecentNpcFactContextForExternal(recipient, 6);
+		string system = "你正在扮演 Mount & Blade II: Bannerlord 世界中的角色：" + npcName + "。\n"
+			+ "这不是面对面对话。你刚刚通过信使收到" + playerName + "写给你的一封信。\n"
+			+ "请只输出你要写在回信中的正文，不要写旁白、动作描写、系统说明或标签解释。\n"
+			+ "如果你认为没有必要回信，可以完全空回复。\n"
+			+ "如果你在回信中明确同意给玩家物品、部队、俘虏或定居点，仍然按已注入的后处理规则在正文语义中表达，标签由后处理阶段生成。";
+		StringBuilder user = new StringBuilder();
+		user.AppendLine("【信件内容】");
+		user.AppendLine(session.LetterText ?? "");
+		if (!string.IsNullOrWhiteSpace(session.DeliveryFactText))
+		{
+			user.AppendLine();
+			user.AppendLine("【随信送达事实】");
+			user.AppendLine(session.DeliveryFactText);
+		}
+		if (!string.IsNullOrWhiteSpace(history))
+		{
+			user.AppendLine();
+			user.AppendLine(history.Trim());
+		}
+		if (!string.IsNullOrWhiteSpace(recentFacts))
+		{
+			user.AppendLine();
+			user.AppendLine(recentFacts.Trim());
+		}
+		if (!string.IsNullOrWhiteSpace(extras))
+		{
+			user.AppendLine();
+			user.AppendLine("【本轮信件规则与补充】");
+			user.AppendLine(extras.Trim());
+		}
+		user.AppendLine();
+		user.AppendLine("请以" + npcName + "的身份决定是否回信；如果回信，只输出信件正文。");
+		return new List<object>
+		{
+			new { role = "system", content = system },
+			new { role = "user", content = user.ToString().Trim() }
+		};
+	}
+
+	private static string BuildDeliveryFactText(CourierSession session, bool delivered)
+	{
+		if (session == null)
+		{
+			return "";
+		}
+		string playerName = MyBehavior.BuildPlayerPublicDisplayNameForExternal();
+		if (string.IsNullOrWhiteSpace(playerName))
+		{
+			playerName = Hero.MainHero?.Name?.ToString() ?? "玩家";
+		}
+		StringBuilder sb = new StringBuilder();
+		if (delivered)
+		{
+			sb.Append("[AFEF玩家行为补充] ").Append(playerName).Append("通过信使向你寄来一封信。");
+		}
+		else
+		{
+			sb.Append("[AFEF玩家行为补充] ").Append(playerName).Append("已安排信使携带一封信出发。");
+		}
+		foreach (CourierCargoEntry entry in session.Entries ?? new List<CourierCargoEntry>())
+		{
+			if (entry == null || entry.Amount <= 0)
+			{
+				continue;
+			}
+			string verb = delivered ? "通过信使" : "准备通过信使";
+			if (entry.Kind == "gold")
+			{
+				sb.Append("\n[AFEF玩家行为补充] ").Append(playerName).Append(verb).Append("转移了 ").Append(entry.Amount).Append(" 第纳尔。");
+			}
+			else if (entry.Kind == "item")
+			{
+				sb.Append("\n[AFEF玩家行为补充] ").Append(playerName).Append(verb).Append("转移了 ").Append(entry.Amount).Append(" 个 ").Append(entry.Name).Append("。");
+			}
+			else if (entry.Kind == "show_gold")
+			{
+				sb.Append("\n[AFEF玩家行为补充] ").Append(playerName).Append(verb).Append("展示了 ").Append(entry.Amount).Append(" 第纳尔，但没有转移所有权。");
+			}
+			else if (entry.Kind == "show_item")
+			{
+				sb.Append("\n[AFEF玩家行为补充] ").Append(playerName).Append(verb).Append("展示了 ").Append(entry.Amount).Append(" 个 ").Append(entry.Name).Append("，但没有转移所有权。");
+			}
+			else if (entry.Kind == "troop")
+			{
+				sb.Append("\n[AFEF玩家行为补充] ").Append(playerName).Append(verb).Append("转移了 ").Append(entry.Amount).Append(" 名 ").Append(entry.Name).Append("。");
+			}
+			else if (entry.Kind == "prisoner")
+			{
+				sb.Append("\n[AFEF玩家行为补充] ").Append(playerName).Append(verb).Append(entry.IsHero ? "转移了俘虏 " : "转移了俘虏 ").Append(entry.IsHero ? entry.Name : (entry.Amount + " 名 " + entry.Name)).Append("。");
+			}
+			else if (entry.Kind == "settlement")
+			{
+				sb.Append("\n[AFEF玩家行为补充] ").Append(playerName).Append(verb).Append("转移了定居点 ").Append(entry.Name).Append("。");
+			}
+		}
+		return sb.ToString().Trim();
+	}
+
+	private static string BuildPendingPayloadSummary(PendingCourierFlow flow)
+	{
+		if (flow == null)
+		{
+			return "";
+		}
+		StringBuilder sb = new StringBuilder();
+		sb.AppendLine("信使成员：");
+		sb.AppendLine("  " + RosterSummary(flow.CrewRoster));
+		if (flow.Mode == CourierPayloadMode.Normal || flow.SelectedEntries.Count == 0)
+		{
+			sb.AppendLine("随信内容：仅信件。");
+			return sb.ToString().Trim();
+		}
+		sb.AppendLine("随信内容：");
+		foreach (CourierCargoEntry entry in flow.SelectedEntries)
+		{
+			if (entry == null)
+			{
+				continue;
+			}
+			sb.Append("  · ");
+			if (entry.Kind == "gold")
+			{
+				sb.Append("发送 ").Append(entry.Amount).Append(" 第纳尔");
+			}
+			else if (entry.Kind == "show_gold")
+			{
+				sb.Append("展示 ").Append(entry.Amount).Append(" 第纳尔");
+			}
+			else if (entry.Kind == "item")
+			{
+				sb.Append("发送 ").Append(entry.Amount).Append(" 个 ").Append(entry.Name);
+			}
+			else if (entry.Kind == "show_item")
+			{
+				sb.Append("展示 ").Append(entry.Amount).Append(" 个 ").Append(entry.Name);
+			}
+			else if (entry.Kind == "troop")
+			{
+				sb.Append("转移 ").Append(entry.Amount).Append(" 名 ").Append(entry.Name);
+			}
+			else if (entry.Kind == "prisoner")
+			{
+				sb.Append(entry.IsHero ? ("转移俘虏 " + entry.Name) : ("转移 " + entry.Amount + " 名 " + entry.Name + " 俘虏"));
+			}
+			else if (entry.Kind == "settlement")
+			{
+				sb.Append("转移定居点 ").Append(entry.Name);
+			}
+			sb.AppendLine();
+		}
+		return sb.ToString().Trim();
+	}
+
+	private List<CourierTradeOption> BuildCourierTradeOptions(PendingCourierFlow flow, CourierPayloadMode mode)
+	{
+		List<CourierTradeOption> list = new List<CourierTradeOption>();
+		if (flow?.Recipient == null)
+		{
+			return list;
+		}
+		if (mode == CourierPayloadMode.GiveTroops || mode == CourierPayloadMode.GivePrisoners)
+		{
+			List<MyBehavior.PartyTransferPromptEntry> entries = MyBehavior.BuildPartyTransferPromptEntriesForExternal(flow.Recipient, flow.Recipient.CharacterObject, -1);
+			MyBehavior.PartyTransferEntrySection section = mode == CourierPayloadMode.GiveTroops ? MyBehavior.PartyTransferEntrySection.PlayerTroops : MyBehavior.PartyTransferEntrySection.PlayerPrisoners;
+			foreach (MyBehavior.PartyTransferPromptEntry entry in entries.Where(x => x != null && x.Section == section))
+			{
+				int available = Math.Max(0, entry.Count);
+				if (mode == CourierPayloadMode.GiveTroops)
+				{
+					available -= CountRosterCharacter(flow.CrewRoster, entry.Character);
+				}
+				if (available <= 0)
+				{
+					continue;
+				}
+				list.Add(new CourierTradeOption
+				{
+					Kind = mode == CourierPayloadMode.GiveTroops ? "troop" : "prisoner",
+					Id = entry.Character?.StringId ?? "",
+					Name = entry.DisplayName,
+					AvailableAmount = available,
+					PartyEntry = entry
+				});
+			}
+			return list;
+		}
+		if (mode == CourierPayloadMode.GiveSettlements)
+		{
+			foreach (MyBehavior.SettlementTransferPromptEntry entry in MyBehavior.BuildSettlementTransferPromptEntriesForExternal(flow.Recipient, flow.Recipient.CharacterObject).Where(x => x != null && x.Section == MyBehavior.SettlementTransferEntrySection.PlayerFiefs && x.Settlement != null && x.Settlement.IsFortification))
+			{
+				list.Add(new CourierTradeOption
+				{
+					Kind = "settlement",
+					Id = entry.SettlementId,
+					Name = entry.DisplayName,
+					AvailableAmount = 1,
+					SettlementEntry = entry
+				});
+			}
+			return list;
+		}
+		MobileParty mainParty = MobileParty.MainParty;
+		if (mainParty == null)
+		{
+			return list;
+		}
+		string shownKey = BuildCourierShownTargetKey(flow.Recipient);
+		int gold = Math.Max(0, Hero.MainHero?.Gold ?? 0);
+		if (mode == CourierPayloadMode.Show)
+		{
+			gold = MyBehavior.GetRemainingShowableGoldForExternal(flow.Recipient, shownKey, gold);
+		}
+		if (gold > 0)
+		{
+			list.Add(new CourierTradeOption
+			{
+				Kind = mode == CourierPayloadMode.Show ? "show_gold" : "gold",
+				Id = "gold",
+				Name = "第纳尔",
+				AvailableAmount = gold
+			});
+		}
+		ItemRoster itemRoster = mainParty.ItemRoster;
+		if (itemRoster == null)
+		{
+			return list;
+		}
+		Dictionary<string, CourierTradeOption> byItem = new Dictionary<string, CourierTradeOption>(StringComparer.OrdinalIgnoreCase);
+		for (int i = 0; i < itemRoster.Count; i++)
+		{
+			ItemRosterElement element = itemRoster.GetElementCopyAtIndex(i);
+			ItemObject item = element.EquipmentElement.Item;
+			string id = (item?.StringId ?? "").Trim();
+			if (item == null || string.IsNullOrWhiteSpace(id) || element.Amount <= 0)
+			{
+				continue;
+			}
+			if (!byItem.TryGetValue(id, out var option))
+			{
+				option = new CourierTradeOption
+				{
+					Kind = mode == CourierPayloadMode.Show ? "show_item" : "item",
+					Id = id,
+					Name = item.Name?.ToString() ?? id,
+					AvailableAmount = 0,
+					Item = item
+				};
+				byItem[id] = option;
+			}
+			option.AvailableAmount += element.Amount;
+		}
+		foreach (CourierTradeOption option in byItem.Values)
+		{
+			int available = option.AvailableAmount;
+			if (mode == CourierPayloadMode.Show)
+			{
+				available = MyBehavior.GetRemainingShowableItemCountForExternal(flow.Recipient, shownKey, option.Id, available);
+			}
+			if (available > 0)
+			{
+				option.AvailableAmount = available;
+				list.Add(option);
+			}
+		}
+		return list;
+	}
+
+	private static string BuildEmptyPayloadMessage(CourierPayloadMode mode)
+	{
+		if (mode == CourierPayloadMode.GiveTroops)
+		{
+			return "你当前没有可转移给对方的部队。";
+		}
+		if (mode == CourierPayloadMode.GivePrisoners)
+		{
+			return "你当前没有可转移给对方的俘虏。";
+		}
+		if (mode == CourierPayloadMode.GiveSettlements)
+		{
+			return "你当前没有可转移给对方的城市或城堡。";
+		}
+		return "你没有可用的物品或第纳尔。";
+	}
+
+	private static string BuildPayloadTitle(CourierPayloadMode mode, string targetName)
+	{
+		string prefix = mode == CourierPayloadMode.Give ? "发送物品并写信" : mode == CourierPayloadMode.Show ? "展示物品并写信" : mode == CourierPayloadMode.GiveTroops ? "转移部队并写信" : mode == CourierPayloadMode.GivePrisoners ? "转移俘虏并写信" : "转移定居点并写信";
+		return prefix + " - " + targetName;
+	}
+
+	private static string BuildPayloadDescription(CourierPayloadMode mode, string targetName)
+	{
+		if (mode == CourierPayloadMode.GiveTroops)
+		{
+			return "当前收件人：" + targetName + "\n选择要随信转入对方麾下的部队（可多选）：";
+		}
+		if (mode == CourierPayloadMode.GivePrisoners)
+		{
+			return "当前收件人：" + targetName + "\n选择要随信交给对方的俘虏（可多选）：";
+		}
+		if (mode == CourierPayloadMode.GiveSettlements)
+		{
+			return "当前收件人：" + targetName + "\n选择要随信转给对方家族的城市或城堡（可多选）：";
+		}
+		return "当前收件人：" + targetName + "\n选择要" + (mode == CourierPayloadMode.Show ? "展示" : "发送") + "的物品或第纳尔（可多选）：";
+	}
+
+	private static TroopRoster BuildSelectableCrewRoster(TroopRoster source)
+	{
+		TroopRoster roster = TroopRoster.CreateDummyTroopRoster();
+		if (source == null)
+		{
+			return roster;
+		}
+		foreach (TroopRosterElement item in SnapshotRoster(source))
+		{
+			CharacterObject character = item.Character;
+			if (character == null || character.IsPlayerCharacter || item.Number <= 0)
+			{
+				continue;
+			}
+			roster.AddToCounts(character, item.Number, false, item.WoundedNumber, item.Xp, true, -1);
+		}
+		return roster;
+	}
+
+	private static TroopRoster BuildSelectionRosterFromUi(TroopRoster source)
+	{
+		TroopRoster roster = TroopRoster.CreateDummyTroopRoster();
+		if (source == null)
+		{
+			return roster;
+		}
+		foreach (TroopRosterElement item in SnapshotRoster(source))
+		{
+			if (item.Character == null || item.Number <= 0 || item.Character.IsPlayerCharacter)
+			{
+				continue;
+			}
+			roster.AddToCounts(item.Character, item.Number, false, item.WoundedNumber, item.Xp, true, -1);
+		}
+		return roster;
+	}
+
+	private static List<TroopRosterElement> SnapshotRoster(TroopRoster roster)
+	{
+		List<TroopRosterElement> list = new List<TroopRosterElement>();
+		if (roster == null)
+		{
+			return list;
+		}
+		foreach (TroopRosterElement item in roster.GetTroopRoster())
+		{
+			list.Add(item);
+		}
+		return list;
+	}
+
+	private static List<CourierCargoEntry> BuildCargoEntriesFromRoster(TroopRoster roster, string kind)
+	{
+		List<CourierCargoEntry> list = new List<CourierCargoEntry>();
+		foreach (TroopRosterElement item in SnapshotRoster(roster))
+		{
+			CharacterObject character = item.Character;
+			if (character == null || item.Number <= 0)
+			{
+				continue;
+			}
+			list.Add(new CourierCargoEntry
+			{
+				Kind = kind,
+				Id = character.StringId ?? "",
+				Name = character.Name?.ToString() ?? character.StringId ?? "",
+				Amount = item.Number,
+				IsHero = character.IsHero
+			});
+		}
+		return list;
+	}
+
+	private static void MoveRosterFromMainParty(TroopRoster selectedRoster, MobileParty targetParty, string label)
+	{
+		foreach (TroopRosterElement item in SnapshotRoster(selectedRoster))
+		{
+			CharacterObject character = item.Character;
+			if (character == null || character.IsPlayerCharacter || item.Number <= 0)
+			{
+				continue;
+			}
+			if (character.IsHero)
+			{
+				AddHeroToPartyAction.Apply(character.HeroObject, targetParty, false);
+				continue;
+			}
+			MoveRegularMember(MobileParty.MainParty?.Party, targetParty?.Party, character, item.Number, item.WoundedNumber, item.Xp);
+		}
+	}
+
+	private static void MoveCharacterFromMainMembersToParty(string characterId, int amount, MobileParty targetParty, bool isHero)
+	{
+		CharacterObject character = ResolveCharacter(characterId);
+		if (character == null || targetParty == null || amount <= 0)
+		{
+			return;
+		}
+		if (isHero || character.IsHero)
+		{
+			AddHeroToPartyAction.Apply(character.HeroObject, targetParty, false);
+			return;
+		}
+		MoveRegularMember(MobileParty.MainParty?.Party, targetParty.Party, character, amount, -1, -1);
+	}
+
+	private static void MoveCharacterFromMainPrisonersToParty(string characterId, int amount, MobileParty targetParty, bool isHero)
+	{
+		CharacterObject character = ResolveCharacter(characterId);
+		if (character == null || targetParty == null || amount <= 0)
+		{
+			return;
+		}
+		if (isHero || character.IsHero)
+		{
+			try
+			{
+				TransferPrisonerAction.Apply(character, MobileParty.MainParty?.Party, targetParty.Party);
+			}
+			catch
+			{
+			}
+			return;
+		}
+		MoveRegularPrisoner(MobileParty.MainParty?.Party, targetParty.Party, character, amount);
+	}
+
+	private static int MoveCharacterBetweenMemberRosters(PartyBase source, PartyBase target, string characterId, int amount, bool isHero)
+	{
+		CharacterObject character = ResolveCharacter(characterId);
+		if (character == null || source == null || target == null || amount <= 0)
+		{
+			return 0;
+		}
+		if (isHero || character.IsHero)
+		{
+			try
+			{
+				AddHeroToPartyAction.Apply(character.HeroObject, target.MobileParty, false);
+				return 1;
+			}
+			catch
+			{
+				return 0;
+			}
+		}
+		return MoveRegularMember(source, target, character, amount, -1, -1);
+	}
+
+	private static int MoveCharacterBetweenPrisonRosters(PartyBase source, PartyBase target, string characterId, int amount, bool isHero)
+	{
+		CharacterObject character = ResolveCharacter(characterId);
+		if (character == null || source == null || target == null || amount <= 0)
+		{
+			return 0;
+		}
+		if (isHero || character.IsHero)
+		{
+			try
+			{
+				TransferPrisonerAction.Apply(character, source, target);
+				return 1;
+			}
+			catch
+			{
+				return 0;
+			}
+		}
+		return MoveRegularPrisoner(source, target, character, amount);
+	}
+
+	private static int MoveRegularMember(PartyBase source, PartyBase target, CharacterObject character, int amount, int woundedOverride, int xpOverride)
+	{
+		TroopRoster sourceRoster = source?.MemberRoster;
+		TroopRoster targetRoster = target?.MemberRoster;
+		if (sourceRoster == null || targetRoster == null || character == null || amount <= 0)
+		{
+			return 0;
+		}
+		int index = sourceRoster.FindIndexOfTroop(character);
+		if (index < 0)
+		{
+			return 0;
+		}
+		TroopRosterElement sourceElement = sourceRoster.GetElementCopyAtIndex(index);
+		int moved = Math.Min(amount, Math.Max(0, sourceElement.Number));
+		if (moved <= 0)
+		{
+			return 0;
+		}
+		int wounded = woundedOverride >= 0 ? Math.Min(woundedOverride, moved) : CalculateProportional(sourceElement.WoundedNumber, sourceElement.Number, moved);
+		int xp = xpOverride >= 0 ? Math.Min(xpOverride, sourceElement.Xp) : CalculateProportional(sourceElement.Xp, sourceElement.Number, moved);
+		sourceRoster.AddToCounts(character, -moved, false, -wounded, -xp, true, -1);
+		targetRoster.AddToCounts(character, moved, false, wounded, xp, true, -1);
+		return moved;
+	}
+
+	private static int MoveRegularPrisoner(PartyBase source, PartyBase target, CharacterObject character, int amount)
+	{
+		TroopRoster sourceRoster = source?.PrisonRoster;
+		if (sourceRoster == null || target == null || character == null || amount <= 0)
+		{
+			return 0;
+		}
+		int index = sourceRoster.FindIndexOfTroop(character);
+		if (index < 0)
+		{
+			return 0;
+		}
+		TroopRosterElement sourceElement = sourceRoster.GetElementCopyAtIndex(index);
+		int moved = Math.Min(amount, Math.Max(0, sourceElement.Number));
+		if (moved <= 0)
+		{
+			return 0;
+		}
+		int xp = CalculateProportional(sourceElement.Xp, sourceElement.Number, moved);
+		sourceRoster.AddToCounts(character, -moved, false, 0, -xp, true, -1);
+		target.AddPrisoner(character, moved);
+		if (xp > 0)
+		{
+			target.PrisonRoster?.AddXpToTroop(character, xp);
+		}
+		return moved;
+	}
+
+	private static void MoveWholeMemberRoster(PartyBase source, PartyBase target)
+	{
+		foreach (TroopRosterElement item in SnapshotRoster(source?.MemberRoster))
+		{
+			CharacterObject character = item.Character;
+			if (character == null || item.Number <= 0)
+			{
+				continue;
+			}
+			if (character.IsHero)
+			{
+				try
+				{
+					AddHeroToPartyAction.Apply(character.HeroObject, target.MobileParty, false);
+				}
+				catch
+				{
+				}
+			}
+			else
+			{
+				MoveRegularMember(source, target, character, item.Number, item.WoundedNumber, item.Xp);
+			}
+		}
+	}
+
+	private static void MoveWholePrisonRoster(PartyBase source, PartyBase target)
+	{
+		foreach (TroopRosterElement item in SnapshotRoster(source?.PrisonRoster))
+		{
+			CharacterObject character = item.Character;
+			if (character == null || item.Number <= 0)
+			{
+				continue;
+			}
+			if (character.IsHero)
+			{
+				try
+				{
+					TransferPrisonerAction.Apply(character, source, target);
+				}
+				catch
+				{
+				}
+			}
+			else
+			{
+				MoveRegularPrisoner(source, target, character, item.Number);
+			}
+		}
+	}
+
+	private static void MoveWholeItemRoster(ItemRoster source, ItemRoster target)
+	{
+		if (source == null || target == null)
+		{
+			return;
+		}
+		for (int i = source.Count - 1; i >= 0; i--)
+		{
+			ItemRosterElement element = source.GetElementCopyAtIndex(i);
+			if (element.Amount <= 0 || element.EquipmentElement.Item == null)
+			{
+				continue;
+			}
+			source.AddToCounts(element.EquipmentElement, -element.Amount);
+			target.AddToCounts(element.EquipmentElement, element.Amount);
+		}
+	}
+
+	private static int CalculateProportional(int totalValue, int totalCount, int movedCount)
+	{
+		if (totalValue <= 0 || totalCount <= 0 || movedCount <= 0)
+		{
+			return 0;
+		}
+		if (movedCount >= totalCount)
+		{
+			return totalValue;
+		}
+		return Math.Max(0, Math.Min(totalValue, (int)Math.Round((double)totalValue * movedCount / totalCount, MidpointRounding.AwayFromZero)));
+	}
+
+	private static CharacterObject ResolveCharacter(string characterId)
+	{
+		string id = (characterId ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(id))
+		{
+			return null;
+		}
+		try
+		{
+			return MBObjectManager.Instance?.GetObject<CharacterObject>(id) ?? Game.Current?.ObjectManager?.GetObjectTypeList<CharacterObject>()?.FirstOrDefault(x => x != null && string.Equals(x.StringId ?? "", id, StringComparison.OrdinalIgnoreCase));
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static ItemObject ResolveItem(string itemId)
+	{
+		string id = (itemId ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(id))
+		{
+			return null;
+		}
+		try
+		{
+			return Game.Current?.ObjectManager?.GetObject<ItemObject>(id);
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static PartyBase ResolveRecipientPartyBase(Hero recipient)
+	{
+		if (recipient?.PartyBelongedTo?.Party != null)
+		{
+			return recipient.PartyBelongedTo.Party;
+		}
+		if (recipient?.PartyBelongedToAsPrisoner != null)
+		{
+			return recipient.PartyBelongedToAsPrisoner;
+		}
+		if (recipient?.Clan?.Leader?.PartyBelongedTo?.Party != null)
+		{
+			return recipient.Clan.Leader.PartyBelongedTo.Party;
+		}
+		if (recipient?.CurrentSettlement?.Town?.GarrisonParty?.Party != null)
+		{
+			return recipient.CurrentSettlement.Town.GarrisonParty.Party;
+		}
+		return recipient?.CurrentSettlement?.Party;
+	}
+
+	private static ItemRoster ResolveRecipientItemRoster(Hero recipient)
+	{
+		if (recipient?.PartyBelongedTo?.ItemRoster != null)
+		{
+			return recipient.PartyBelongedTo.ItemRoster;
+		}
+		if (recipient?.CurrentSettlement?.ItemRoster != null)
+		{
+			return recipient.CurrentSettlement.ItemRoster;
+		}
+		return recipient?.Clan?.Leader?.PartyBelongedTo?.ItemRoster;
+	}
+
+	private static int CountRosterCharacter(TroopRoster roster, CharacterObject character)
+	{
+		if (roster == null || character == null)
+		{
+			return 0;
+		}
+		int index = roster.FindIndexOfTroop(character);
+		return index < 0 ? 0 : Math.Max(0, roster.GetElementCopyAtIndex(index).Number);
+	}
+
+	private static void ApplyCourierAiOverrides(MobileParty courier, string reason)
+	{
+		try
+		{
+			if (courier == null)
+			{
+				return;
+			}
+			if (courier.Ai != null)
+			{
+				if (courier.Ai.DoNotMakeNewDecisions)
+				{
+					courier.Ai.SetDoNotMakeNewDecisions(false);
+					Log("ai decisions restored party=" + (courier.StringId ?? "") + " reason=" + (reason ?? ""));
+				}
+			}
+			ApplyCourierFoodOverrides(courier, reason);
+		}
+		catch (Exception ex)
+		{
+			Log("ai override failed party=" + (courier?.StringId ?? "") + " reason=" + (reason ?? "") + " error=" + ex.Message);
+		}
+	}
+
+	private static void ApplyCourierFoodOverrides(MobileParty courier, string reason)
+	{
+		try
+		{
+			PartyBase party = courier?.Party;
+			if (party == null || party.RemainingFoodPercentage >= 0)
+			{
+				return;
+			}
+			int oldValue = party.RemainingFoodPercentage;
+			party.RemainingFoodPercentage = 100;
+			party.OnConsumedFood();
+			Log("food override applied party=" + (courier.StringId ?? "") + " reason=" + (reason ?? "") + " oldRemaining=" + oldValue + " newRemaining=100");
+		}
+		catch (Exception ex)
+		{
+			Log("food override failed party=" + (courier?.StringId ?? "") + " reason=" + (reason ?? "") + " error=" + ex.Message);
+		}
+	}
+
+	private static void AssignCourierLeader(MobileParty courier)
+	{
+		try
+		{
+			Hero leader = SnapshotRoster(courier?.MemberRoster).Select(x => x.Character?.HeroObject).FirstOrDefault(x => x != null && !x.IsHumanPlayerCharacter && !x.IsDead);
+			if (leader != null)
+			{
+				courier.PartyComponent?.ChangePartyLeader(leader);
+				courier.Party.SetCustomOwner(leader);
+			}
+		}
+		catch (Exception ex)
+		{
+			Log("assign leader failed: " + ex.Message);
+		}
+	}
+
+	private static string BuildCourierShownTargetKey(Hero hero)
+	{
+		return "courier:" + (hero?.StringId ?? "").Trim().ToLowerInvariant();
+	}
+
+	private MobileParty ResolveCourierParty(CourierSession session)
+	{
+		string id = (session?.CourierPartyId ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(id))
+		{
+			return null;
+		}
+		try
+		{
+			return MobileParty.All?.FirstOrDefault(x => x != null && string.Equals((x.StringId ?? "").Trim(), id, StringComparison.OrdinalIgnoreCase));
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private Hero ResolveRecipient(CourierSession session)
+	{
+		string id = (session?.RecipientHeroId ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(id))
+		{
+			return null;
+		}
+		try
+		{
+			return Hero.Find(id) ?? Hero.FindFirst(x => x != null && string.Equals((x.StringId ?? "").Trim(), id, StringComparison.OrdinalIgnoreCase));
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static CourierStage ParseStage(string value)
+	{
+		if (Enum.TryParse(value ?? "", true, out CourierStage stage))
+		{
+			return stage;
+		}
+		return CourierStage.Outbound;
+	}
+
+	private static CourierPayloadMode ParsePayloadMode(string value)
+	{
+		if (Enum.TryParse(value ?? "", true, out CourierPayloadMode mode))
+		{
+			return mode;
+		}
+		return CourierPayloadMode.Normal;
+	}
+
+	private static bool IsTerminalStage(CourierSession session)
+	{
+		CourierStage stage = ParseStage(session?.Stage);
+		return stage == CourierStage.Completed || stage == CourierStage.Destroyed;
+	}
+
+	private static void NormalizeSession(CourierSession session)
+	{
+		if (session == null)
+		{
+			return;
+		}
+		session.Id = (session.Id ?? "").Trim();
+		session.RecipientHeroId = (session.RecipientHeroId ?? "").Trim();
+		session.CourierPartyId = (session.CourierPartyId ?? "").Trim();
+		session.Stage = ParseStage(session.Stage).ToString();
+		session.PayloadMode = ParsePayloadMode(session.PayloadMode).ToString();
+		session.Entries = session.Entries ?? new List<CourierCargoEntry>();
+		session.CrewEntries = session.CrewEntries ?? new List<CourierCargoEntry>();
+	}
+
+	private static void ResetReplyGenerationAfterLoad(CourierSession session, string reason)
+	{
+		if (session == null || session.ReplyGenerated || ParseStage(session.Stage) != CourierStage.GeneratingReply)
+		{
+			return;
+		}
+		if (session.ReplyGenerationStarted)
+		{
+			Log("reply generation restart armed session=" + session.Id + " reason=" + (reason ?? ""));
+		}
+		session.ReplyGenerationStarted = false;
+	}
+
+	private static List<CourierCargoEntry> CloneEntries(List<CourierCargoEntry> entries)
+	{
+		return (entries ?? new List<CourierCargoEntry>()).Where(x => x != null).Select(x => new CourierCargoEntry
+		{
+			Kind = x.Kind,
+			Id = x.Id,
+			Name = x.Name,
+			Amount = x.Amount,
+			IsHero = x.IsHero,
+			Delivered = x.Delivered
+		}).ToList();
+	}
+
+	private void ResetPendingFlow(string reason)
+	{
+		Log("reset pending reason=" + reason);
+		_pendingFlow = null;
+		_letterInputOpen = false;
+	}
+
+	private int GetActiveSessionCount()
+	{
+		lock (_sessionLock)
+		{
+			return _sessions.Values.Count(x => x != null && !IsTerminalStage(x));
+		}
+	}
+
+	private static string NewSessionId()
+	{
+		return CourierPartyPrefix + DateTime.UtcNow.Ticks + "_" + MBRandom.RandomInt(1000000);
+	}
+
+	private static string SafeHeroId(Hero hero)
+	{
+		return (hero?.StringId ?? "").Trim();
+	}
+
+	private static string RosterSummary(TroopRoster roster)
+	{
+		if (roster == null || roster.TotalManCount <= 0)
+		{
+			return "无";
+		}
+		List<string> parts = new List<string>();
+		foreach (TroopRosterElement item in SnapshotRoster(roster))
+		{
+			if (item.Character == null || item.Number <= 0)
+			{
+				continue;
+			}
+			parts.Add((item.Character.Name?.ToString() ?? item.Character.StringId ?? "未知") + "×" + item.Number);
+		}
+		return parts.Count == 0 ? "无" : string.Join("，", parts);
+	}
+
+	private static string CleanNpcReply(string text)
+	{
+		string value = (text ?? "").Trim();
+		value = Regex.Replace(value, "<think>.*?</think>", "", RegexOptions.Singleline | RegexOptions.IgnoreCase).Trim();
+		value = Regex.Replace(value, "^(NPC|回复|回信)[:：]\\s*", "", RegexOptions.IgnoreCase).Trim();
+		if (value == "（没说话）" || value == "无" || value == "无回信")
+		{
+			return "";
+		}
+		return value;
+	}
+
+	private static bool LooksLikeApiError(string text)
+	{
+		string value = (text ?? "").Trim();
+		return value.StartsWith("（错误", StringComparison.Ordinal) || value.StartsWith("（程序错误", StringComparison.Ordinal) || value.StartsWith("（API请求失败", StringComparison.Ordinal);
+	}
+
+	private static bool HasPreprocessRuleHit(List<string> hits, string ruleId)
+	{
+		string value = (ruleId ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(value) || hits == null || hits.Count == 0)
+		{
+			return false;
+		}
+		return hits.Any(x => string.Equals((x ?? "").Trim(), value, StringComparison.OrdinalIgnoreCase));
+	}
+
+	private static string RemoveInjectedRuleBlock(string text, string ruleId)
+	{
+		string value = text ?? "";
+		string id = Regex.Escape((ruleId ?? "").Trim());
+		if (string.IsNullOrWhiteSpace(id) || string.IsNullOrWhiteSpace(value))
+		{
+			return value;
+		}
+		string pattern = "(?ms)^【附加规则:" + id + "】.*?(?=^【附加规则:|\\z)";
+		return Regex.Replace(value, pattern, "").Trim();
+	}
+
+	private static string StripCourierActionTags(string text)
+	{
+		string value = text ?? "";
+		value = Regex.Replace(value, "\\[ACTION:[^\\]]+\\]", "", RegexOptions.IgnoreCase);
+		value = Regex.Replace(value, "\\[AD;[^\\]]+\\]", "", RegexOptions.IgnoreCase);
+		value = Regex.Replace(value, "\\[ADP[:;][^\\]]+\\]", "", RegexOptions.IgnoreCase);
+		value = Regex.Replace(value, "\\[ATT[:;][^\\]]+\\]", "", RegexOptions.IgnoreCase);
+		value = Regex.Replace(value, "\\[ATP[:;][^\\]]+\\]", "", RegexOptions.IgnoreCase);
+		value = Regex.Replace(value, "\\[A:H_J_P_P\\]", "", RegexOptions.IgnoreCase);
+		value = Regex.Replace(value, "\\[(?:FOL|STP|END)\\]", "", RegexOptions.IgnoreCase);
+		return value.Trim();
+	}
+
+	private static void Log(string message)
+	{
+		try
+		{
+			Logger.Log(LogSource, message ?? "");
+		}
+		catch
+		{
+		}
+	}
+
+	private static class MethodInfoAccess
+	{
+		public static void PatchDefaultEncounterModel(Harmony harmony)
+		{
+			var method = AccessTools.Method(typeof(DefaultEncounterModel), nameof(DefaultEncounterModel.IsEncounterExemptFromHostileActions));
+			if (method != null)
+			{
+				harmony.Patch(method, prefix: new HarmonyMethod(typeof(CourierDeliveryBehavior), nameof(DefaultEncounterModelIsEncounterExemptPrefix)));
+			}
+		}
+	}
+
+	public static bool DefaultEncounterModelIsEncounterExemptPrefix(PartyBase side1, PartyBase side2, ref bool __result)
+	{
+		try
+		{
+			MobileParty courier = side1?.MobileParty != null && IsCourierParty(side1.MobileParty) ? side1.MobileParty : (side2?.MobileParty != null && IsCourierParty(side2.MobileParty) ? side2.MobileParty : null);
+			if (courier == null)
+			{
+				return true;
+			}
+			PartyBase other = courier == side1?.MobileParty ? side2 : side1;
+			IFaction otherFaction = other?.MapFaction;
+			bool otherIsBandit = otherFaction?.IsBanditFaction ?? false;
+			if (otherIsBandit)
+			{
+				return true;
+			}
+			__result = true;
+			return false;
+		}
+		catch
+		{
+			return true;
+		}
+	}
+}

@@ -405,6 +405,42 @@ public static class ShoutNetwork
 		}
 	}
 
+	public static void RecordPrimaryRequestBodyForTokenStats(List<object> messages, int maxTokens, string mode)
+	{
+		try
+		{
+			List<object> normalizedMessages = ApplyPlayerDisplayNameToOutgoingMessages(messages);
+			int inputTokens = Logger.EstimateTokensFromMessages(normalizedMessages);
+			DuelSettings settings = DuelSettings.GetSettings();
+			if (settings == null || string.IsNullOrEmpty(settings.ApiKey))
+			{
+				Logger.RecordTokenStats(inputTokens, 0, normalizedMessages, "[PRIMARY REQUEST NOT SENT]\nreason=missing_api_key", mode, null);
+				return;
+			}
+			if (!TryResolvePrimaryModelByDropdownState(settings, out var effectiveModelName, out var selectedOption, out var manualSelected))
+			{
+				string output = "[PRIMARY REQUEST NOT SENT]\nreason=missing_model_name\nselectedOption=" + (selectedOption ?? "") + "\nmanualSelected=" + manualSelected;
+				Logger.RecordTokenStats(inputTokens, 0, normalizedMessages, output, mode, null);
+				return;
+			}
+			string effectiveApiUrl = DuelSettings.GetEffectiveApiUrl(settings.ApiUrl);
+			JObject payload = BuildPrimaryChatPayload(normalizedMessages, settings, effectiveApiUrl, effectiveModelName, stream: false, out var thinkingMode);
+			string requestBody = payload.ToString(Formatting.None);
+			string pending = "[PRIMARY REQUEST PENDING]\nmode=" + (mode ?? "") + "\nmaxTokens=" + Math.Max(16, maxTokens) + "\nactualMaxTokens=" + HardcodedMaxTokens + "\nthinkingMode=" + (thinkingMode ?? "");
+			Logger.RecordTokenStats(inputTokens, 0, normalizedMessages, pending, mode, requestBody);
+		}
+		catch (Exception ex)
+		{
+			try
+			{
+				Logger.Log("ShoutNetwork", "[PrimaryChat] request body token prelog failed: " + ex.Message);
+			}
+			catch
+			{
+			}
+		}
+	}
+
 	private static string ApplyPlayerDynamicNameToMainText(string text)
 	{
 		try

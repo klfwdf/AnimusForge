@@ -1083,7 +1083,13 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private const int MaxMajorNpcActionEntriesPerHero = 160;
 
-	private const int WeeklyReportRequestMaxTokens = 5000;
+	private const int UniversalApiDefaultMaxTokens = 5000;
+
+	private const int EventAndRebellionApiDefaultMaxTokens = 8000;
+
+	private const int EventAndRebellionApiMinMaxTokens = 512;
+
+	private const int EventAndRebellionApiMaxMaxTokens = 64000;
 
 	private const int KingdomStabilityMinValue = 0;
 
@@ -2318,6 +2324,7 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			text = text.Replace("  ", " ");
 		}
+		text = NeutralizeWeeklyReportScenarioName(text);
 		if (string.IsNullOrWhiteSpace(text))
 		{
 			return BuildFallbackWeeklyReportShortSummary(fallbackSource);
@@ -2351,7 +2358,7 @@ public class MyBehavior : CampaignBehaviorBase
 		stringBuilder.AppendLine("[SHORT] 你的短周报");
 		stringBuilder.AppendLine();
 		stringBuilder.AppendLine("起始概况：");
-		stringBuilder.AppendLine((summary ?? "").Trim());
+		stringBuilder.AppendLine(NeutralizeWeeklyReportScenarioName(summary));
 		return stringBuilder.ToString().TrimEnd();
 	}
 
@@ -4183,10 +4190,10 @@ public class MyBehavior : CampaignBehaviorBase
 	private static string BuildRebelKingdomNamingSystemPrompt()
 	{
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.AppendLine("你是一名负责为卡拉迪亚叛乱政权命名的史官。");
+		stringBuilder.AppendLine("你是一名负责为当前剧本世界中的叛乱政权命名的史官。");
 		stringBuilder.AppendLine("你的任务是根据给定素材，为一个刚刚脱离旧国家的新国家生成国家名称与百科简介。");
 		stringBuilder.AppendLine("命名要求：");
-		stringBuilder.AppendLine("1. 名称必须符合卡拉迪亚中世纪风格，不要使用现代政治术语。");
+		stringBuilder.AppendLine("1. 名称必须符合当前剧本的中世纪风格，不要使用现代政治术语。");
 		stringBuilder.AppendLine("2. 尽量以原王国名称为基础生成名称，尽量不要使用地名和家族名，可根据叛乱的原因命名，但原王国如果是帝国，那么不可使用帝国后缀，以及称帝");
 		stringBuilder.AppendLine("3. 正式名要自然、庄重、可作为百科词条标题；简称要更短，适合显示。");
 		stringBuilder.AppendLine("4. 不要与现有王国重名。");
@@ -12971,6 +12978,68 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
+	public static List<string> RunCourierRulePreprocessForExternal(Hero targetHero, string input, string extraFact, CharacterObject targetCharacter = null, string kingdomIdOverride = null, int targetAgentIndex = -1)
+	{
+		List<string> result = new List<string>();
+		try
+		{
+			MyBehavior myBehavior = Campaign.Current?.GetCampaignBehavior<MyBehavior>();
+			if (myBehavior == null || string.IsNullOrWhiteSpace(input))
+			{
+				return result;
+			}
+			return myBehavior.RunCourierRulePreprocessInternal(targetHero, input, extraFact, targetCharacter, kingdomIdOverride, targetAgentIndex);
+		}
+		catch (Exception ex)
+		{
+			try
+			{
+				Logger.Log("CourierDelivery", "[Preprocess] failed: " + ex.Message);
+			}
+			catch
+			{
+			}
+			return result;
+		}
+	}
+
+	private List<string> RunCourierRulePreprocessInternal(Hero targetHero, string input, string extraFact, CharacterObject targetCharacter, string kingdomIdOverride, int targetAgentIndex)
+	{
+		List<string> result = new List<string>();
+		string targetKingdomId = ResolveTargetKingdomIdForRules(targetHero, targetCharacter, kingdomIdOverride);
+		AIConfigHandler.SetGuardrailRuntimeTargetKingdom(targetKingdomId);
+		AIConfigHandler.SetGuardrailRuntimeTargetHero(targetHero?.StringId ?? targetCharacter?.HeroObject?.StringId ?? "");
+		AIConfigHandler.SetGuardrailRuntimeTargetCharacter(targetCharacter?.StringId ?? "");
+		AIConfigHandler.SetGuardrailRuntimeTargetTroop(targetCharacter?.StringId ?? "");
+		AIConfigHandler.SetGuardrailRuntimeTargetUnnamedRank((targetHero == null && targetCharacter != null) ? (targetCharacter.IsSoldier ? "soldier" : "commoner") : "");
+		AIConfigHandler.SetGuardrailRuntimeTargetAgentIndex(targetAgentIndex);
+		try
+		{
+			AIConfigHandler.SetGuardrailSemanticContext(BuildGuardrailSemanticContext(targetHero, extraFact));
+			string npcLastUtterance = GetLatestNpcDialogueUtterance(targetHero, targetCharacter, targetAgentIndex);
+			List<GuardrailRuleHit> hits = AIConfigHandler.GetGuardrailSemanticRuleHits(input, npcLastUtterance, AIConfigHandler.GuardrailRuleReturnCap, includeBuiltInRules: true, new[] { "scene_mechanism_actions" });
+			result = (hits ?? new List<GuardrailRuleHit>())
+				.Where(x => x != null && !string.IsNullOrWhiteSpace(x.RuleId))
+				.OrderByDescending(x => x.Priority)
+				.ThenByDescending(x => x.Score)
+				.Select(x => x.RuleId.Trim().ToLowerInvariant())
+				.Distinct(StringComparer.OrdinalIgnoreCase)
+				.ToList();
+			Logger.Log("CourierDelivery", "[Preprocess] targetHero=" + (targetHero?.StringId ?? "null") + " targetCharacter=" + (targetCharacter?.StringId ?? "null") + " npcRecall=" + (string.IsNullOrWhiteSpace(npcLastUtterance) ? "off" : "on") + " hits=" + (result.Count == 0 ? "(none)" : string.Join(",", result)));
+			return result;
+		}
+		finally
+		{
+			AIConfigHandler.SetGuardrailRuntimeTargetKingdom("");
+			AIConfigHandler.SetGuardrailRuntimeTargetHero("");
+			AIConfigHandler.SetGuardrailRuntimeTargetCharacter("");
+			AIConfigHandler.SetGuardrailRuntimeTargetTroop("");
+			AIConfigHandler.SetGuardrailRuntimeTargetUnnamedRank("");
+			AIConfigHandler.SetGuardrailRuntimeTargetAgentIndex(-1);
+			AIConfigHandler.SetGuardrailSemanticContext("");
+		}
+	}
+
 	// Primary runtime chat path: scene shout / non-native conversation UI.
 	private ShoutPromptContext BuildShoutPromptContextForExternalInternal(Hero targetHero, string input, string extraFact, string cultureIdOverride, bool hasAnyHero = true, CharacterObject targetCharacter = null, string kingdomIdOverride = null, int targetAgentIndex = -1, bool suppressDynamicRuleAndLore = false, bool usePrefetchedLoreContext = false, string prefetchedLoreContext = null)
 	{
@@ -14481,7 +14550,7 @@ public class MyBehavior : CampaignBehaviorBase
 			return;
 		}
 		string route = (resolvedRoute ?? "").Trim();
-		if (route.StartsWith("event_rebellion_dedicated", StringComparison.OrdinalIgnoreCase))
+		if (route.StartsWith("event_rebellion", StringComparison.OrdinalIgnoreCase))
 		{
 			thinkingEnabled = settings.EventAndRebellionApiThinkingEnabled;
 			effort = settings.GetEventAndRebellionApiReasoningEffort();
@@ -14513,6 +14582,17 @@ public class MyBehavior : CampaignBehaviorBase
 			return settings.GetAuxiliaryApiTemperature();
 		}
 		return settings.GetMainApiTemperature();
+	}
+
+	private static int ResolveUniversalMaxTokens(DuelSettings settings, string resolvedRoute)
+	{
+		string route = (resolvedRoute ?? "").Trim();
+		if (route.StartsWith("event_rebellion", StringComparison.OrdinalIgnoreCase))
+		{
+			int configured = (settings?.EventAndRebellionApiMaxTokens).GetValueOrDefault(EventAndRebellionApiDefaultMaxTokens);
+			return ClampInt(configured, EventAndRebellionApiMinMaxTokens, EventAndRebellionApiMaxMaxTokens);
+		}
+		return UniversalApiDefaultMaxTokens;
 	}
 
 	private static string ExtractUniversalGeminiCandidateText(JToken candidate)
@@ -14593,6 +14673,7 @@ public class MyBehavior : CampaignBehaviorBase
 				apiCallResult.ErrorMessage = errorMessage;
 				return apiCallResult;
 			}
+			int maxTokens = ResolveUniversalMaxTokens(settings, resolvedRoute);
 			JObject body = new JObject
 			{
 				["model"] = modelName,
@@ -14609,7 +14690,7 @@ public class MyBehavior : CampaignBehaviorBase
 						["content"] = user
 					}
 				},
-				["max_tokens"] = 5000,
+				["max_tokens"] = maxTokens,
 				["stream"] = true,
 				["temperature"] = ResolveUniversalApiTemperature(settings, resolvedRoute)
 			};
@@ -14618,6 +14699,7 @@ public class MyBehavior : CampaignBehaviorBase
 			string jsonBody = body.ToString(Formatting.None);
 			string requestBodyForTokenStats = jsonBody;
 			JArray tokenStatsMessages = body["messages"] as JArray;
+			bool skipTokenStatsLog = logToEventLogs && string.Equals((eventLogSource ?? "").Trim(), "EventWeeklyReport", StringComparison.OrdinalIgnoreCase);
 			StringBuilder httpLog = new StringBuilder();
 			httpLog.AppendLine("[HTTP] 请求发送到:");
 			httpLog.AppendLine("  Url: " + effectiveApiUrl);
@@ -14628,7 +14710,7 @@ public class MyBehavior : CampaignBehaviorBase
 			}
 			httpLog.AppendLine("  Route: " + resolvedRoute);
 			httpLog.AppendLine("  Model: " + modelName);
-			httpLog.AppendLine("  MaxTokens: 5000, Stream: true, Temperature: " + ((float)body["temperature"]).ToString("0.00") + ", Thinking: " + thinkingMode);
+			httpLog.AppendLine("  MaxTokens: " + maxTokens + ", Stream: true, Temperature: " + ((float)body["temperature"]).ToString("0.00") + ", Thinking: " + thinkingMode);
 			httpLog.AppendLine("  SystemPrompt:");
 			httpLog.AppendLine(sys);
 			httpLog.AppendLine("  UserInput:");
@@ -14672,7 +14754,10 @@ public class MyBehavior : CampaignBehaviorBase
 							apiCallResult.IsRequestsPerMinuteLimit = response.StatusCode == (HttpStatusCode)429 && !apiCallResult.IsQuotaLimit && (IsRequestsPerMinuteLimitResponseBody(text) || HasRequestsPerMinuteRateLimitHeaders(response));
 							apiCallResult.IsRateLimit = response.StatusCode == (HttpStatusCode)429 || apiCallResult.IsRequestsPerMinuteLimit || (!apiCallResult.IsQuotaLimit && IsGenericRateLimitResponseBody(text));
 							apiCallResult.ErrorMessage = BuildApiCallFailureMessage(response.StatusCode, text, apiCallResult.RetryAfterSeconds, apiCallResult.IsRateLimit, apiCallResult.IsRequestsPerMinuteLimit, apiCallResult.IsQuotaLimit);
-							Logger.RecordTokenStats(Logger.EstimateTokensFromMessages(tokenStatsMessages), 0, tokenStatsMessages, "[UNIVERSAL API HTTP ERROR]\nroute=" + resolvedRoute + "\nmodel=" + modelName + "\nstatus=" + (int)response.StatusCode + " " + (response.ReasonPhrase ?? "") + "\nresponse_body=\n" + (text ?? ""), "universal_api_http_error", requestBodyForTokenStats);
+							if (!skipTokenStatsLog)
+							{
+								Logger.RecordTokenStats(Logger.EstimateTokensFromMessages(tokenStatsMessages), 0, tokenStatsMessages, "[UNIVERSAL API HTTP ERROR]\nroute=" + resolvedRoute + "\nmodel=" + modelName + "\nstatus=" + (int)response.StatusCode + " " + (response.ReasonPhrase ?? "") + "\nresponse_body=\n" + (text ?? ""), "universal_api_http_error", requestBodyForTokenStats);
+							}
 							return apiCallResult;
 						}
 					}
@@ -14726,7 +14811,10 @@ public class MyBehavior : CampaignBehaviorBase
 					}
 					apiCallResult.Success = true;
 					apiCallResult.Content = CleanAIResponse(raw);
-					Logger.RecordTokenStats(Logger.EstimateTokensFromMessages(tokenStatsMessages), Logger.EstimateTokens(apiCallResult.Content), tokenStatsMessages, "[UNIVERSAL API HTTP]\nroute=" + resolvedRoute + "\nmodel=" + modelName + "\ncontrol_mode=" + thinkingMode + "\nai_response=\n" + (apiCallResult.Content ?? "") + "\nraw_response_sample=\n" + TrimUniversalApiRawForLog(rawStreamSample.ToString()), "universal_api", requestBodyForTokenStats);
+					if (!skipTokenStatsLog)
+					{
+						Logger.RecordTokenStats(Logger.EstimateTokensFromMessages(tokenStatsMessages), Logger.EstimateTokens(apiCallResult.Content), tokenStatsMessages, "[UNIVERSAL API HTTP]\nroute=" + resolvedRoute + "\nmodel=" + modelName + "\ncontrol_mode=" + thinkingMode + "\nai_response=\n" + (apiCallResult.Content ?? "") + "\nraw_response_sample=\n" + TrimUniversalApiRawForLog(rawStreamSample.ToString()), "universal_api", requestBodyForTokenStats);
+					}
 					return apiCallResult;
 				}
 				finally
@@ -17706,17 +17794,18 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				continue;
 			}
+			bool flag = text.StartsWith("weekly_report:", StringComparison.OrdinalIgnoreCase);
 			EventRecordEntry eventRecordEntry = new EventRecordEntry
 			{
 				EventId = text,
 				WeekIndex = Math.Max(0, item.WeekIndex),
 				EventKind = (item.EventKind ?? "").Trim(),
 				ScopeKingdomId = (item.ScopeKingdomId ?? "").Trim(),
-				Title = text2,
+				Title = flag ? NeutralizeWeeklyReportScenarioName(text2) : text2,
 				ShortSummary = BuildFallbackWeeklyReportShortSummary(item.ShortSummary),
-				Summary = (item.Summary ?? "").Trim(),
+				Summary = flag ? NeutralizeWeeklyReportScenarioName(item.Summary) : (item.Summary ?? "").Trim(),
 				TagText = NormalizeWeeklyReportTagText(item.TagText),
-				PromptText = (item.PromptText ?? "").Trim(),
+				PromptText = flag ? NeutralizeWeeklyReportScenarioName(item.PromptText) : (item.PromptText ?? "").Trim(),
 				CreatedDay = Math.Max(0, item.CreatedDay),
 				CreatedDate = (item.CreatedDate ?? "").Trim(),
 				Materials = new List<EventMaterialReference>()
@@ -17736,8 +17825,8 @@ public class MyBehavior : CampaignBehaviorBase
 					eventRecordEntry.Materials.Add(new EventMaterialReference
 					{
 						MaterialType = (material.MaterialType ?? "").Trim(),
-						Label = (material.Label ?? "").Trim(),
-						SnapshotText = (material.SnapshotText ?? "").Trim(),
+						Label = flag ? NeutralizeWeeklyReportScenarioName(material.Label) : (material.Label ?? "").Trim(),
+						SnapshotText = flag ? NeutralizeWeeklyReportScenarioName(material.SnapshotText) : (material.SnapshotText ?? "").Trim(),
 						HeroId = (material.HeroId ?? "").Trim(),
 						KingdomId = (material.KingdomId ?? "").Trim(),
 						SettlementId = (material.SettlementId ?? "").Trim(),
@@ -20327,6 +20416,11 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			fields.Add(text6);
 		}
+		string text7 = BuildWeeklyPromptBattleStandoutField(winners, losers);
+		if (!string.IsNullOrWhiteSpace(text7))
+		{
+			fields.Add(text7);
+		}
 		return string.Join("|", fields);
 	}
 
@@ -20409,6 +20503,214 @@ public class MyBehavior : CampaignBehaviorBase
 			return "";
 		}
 		return label + "：" + string.Join("；", list);
+	}
+
+	private static string BuildWeeklyPromptBattleStandoutField(List<EventMaterialReference> winners, List<EventMaterialReference> losers)
+	{
+		List<string> list = new List<string>();
+		AppendWeeklyPromptBattleStandouts(list, "胜方", winners);
+		AppendWeeklyPromptBattleStandouts(list, "败方", losers);
+		if (list.Count == 0)
+		{
+			string text = BuildWeeklyPromptBattleFallbackStandoutText("胜方", winners, losers);
+			if (!string.IsNullOrWhiteSpace(text))
+			{
+				AddUniqueId(list, "胜方：" + text);
+			}
+			text = BuildWeeklyPromptBattleFallbackStandoutText("败方", losers, winners);
+			if (!string.IsNullOrWhiteSpace(text))
+			{
+				AddUniqueId(list, "败方：" + text);
+			}
+		}
+		return (list.Count > 0) ? ("亮眼表现=" + string.Join("；", list)) : "";
+	}
+
+	private static void AppendWeeklyPromptBattleStandouts(List<string> output, string sideLabel, List<EventMaterialReference> materials)
+	{
+		if (output == null)
+		{
+			return;
+		}
+		foreach (string item in ExtractWeeklyPromptBattleStandoutTexts(materials, sideLabel))
+		{
+			AddUniqueId(output, sideLabel + "：" + item);
+		}
+	}
+
+	private static IEnumerable<string> ExtractWeeklyPromptBattleStandoutTexts(List<EventMaterialReference> materials, string sideLabel)
+	{
+		List<string> list = new List<string>();
+		foreach (EventMaterialReference item in materials ?? new List<EventMaterialReference>())
+		{
+			string text = ExtractWeeklyPromptBattleStandoutText(item?.SnapshotText, sideLabel);
+			if (!string.IsNullOrWhiteSpace(text))
+			{
+				AddUniqueId(list, text);
+			}
+		}
+		return list;
+	}
+
+	private static string ExtractWeeklyPromptBattleStandoutText(string text, string sideLabel)
+	{
+		string text2 = (text ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
+		if (string.IsNullOrWhiteSpace(text2))
+		{
+			return "";
+		}
+		int num = text2.IndexOf(" ：", StringComparison.Ordinal);
+		int markerLength = 2;
+		if (num < 0)
+		{
+			num = text2.IndexOf(" :", StringComparison.Ordinal);
+		}
+		if (num < 0)
+		{
+			return "";
+		}
+		num += markerLength;
+		while (num < text2.Length && text2[num] == ' ')
+		{
+			num++;
+		}
+		int num2 = text2.IndexOf('；', num);
+		if (num2 < 0)
+		{
+			num2 = text2.IndexOf(';', num);
+		}
+		if (num2 < 0)
+		{
+			num2 = text2.Length;
+		}
+		if (num2 <= num)
+		{
+			return "";
+		}
+		string text3 = text2.Substring(num, num2 - num).Trim(' ', '。', '；', ';');
+		if (string.IsNullOrWhiteSpace(text3))
+		{
+			return "";
+		}
+		text3 = Regex.Replace(text3, "\\s+", " ").Trim();
+		if (!string.IsNullOrWhiteSpace(sideLabel))
+		{
+			text3 = text3.Replace("我方", sideLabel.Trim());
+		}
+		return text3;
+	}
+
+	private static string BuildWeeklyPromptBattleFallbackStandoutText(string sideLabel, List<EventMaterialReference> ownMaterials, List<EventMaterialReference> oppositeMaterials)
+	{
+		List<EventMaterialReference> list = (ownMaterials ?? new List<EventMaterialReference>()).Where((EventMaterialReference x) => x != null).ToList();
+		if (list.Count == 0)
+		{
+			return "";
+		}
+		string text = BuildWeeklyPromptBattleStandoutActorText(list, oppositeMaterials, sideLabel);
+		string text2 = BuildWeeklyPromptBattleSideTroopText(list, oppositeMaterials);
+		string text3 = BuildWeeklyPromptBattleOppositeTroopText(list, oppositeMaterials);
+		string text4 = BuildWeeklyPromptBattleSideCasualtyText(list, oppositeMaterials);
+		string text5 = BuildWeeklyPromptBattleOppositeCasualtyText(list, oppositeMaterials);
+		bool flag = TryParseWeeklyPromptBattleCasualtyTotal(text4, out var ownCasualtyTotal);
+		bool flag2 = TryParseWeeklyPromptBattleCasualtyTotal(text5, out var oppositeCasualtyTotal);
+		bool flag3 = TryParseWeeklyPromptBattleTroopTotal(text2, out var ownTroops);
+		bool flag4 = TryParseWeeklyPromptBattleTroopTotal(text3, out var oppositeTroops);
+		List<string> list2 = new List<string>();
+		if (flag3 && flag4 && ownTroops > 0 && oppositeTroops > 0)
+		{
+			list2.Add("投入兵力" + ownTroops + "人对" + oppositeTroops + "人");
+		}
+		else if (flag3 && ownTroops > 0)
+		{
+			list2.Add("投入兵力" + ownTroops + "人");
+		}
+		if (flag && flag2)
+		{
+			if (string.Equals((sideLabel ?? "").Trim(), "胜方", StringComparison.OrdinalIgnoreCase))
+			{
+				if (ownCasualtyTotal <= 0 && oppositeCasualtyTotal > 0)
+				{
+					list2.Add("未承受可确认伤亡，造成败方" + oppositeCasualtyTotal + "人伤亡");
+				}
+				else
+				{
+					list2.Add("以" + ownCasualtyTotal + "人损失造成败方" + oppositeCasualtyTotal + "人伤亡");
+				}
+			}
+			else if (oppositeCasualtyTotal > 0)
+			{
+				list2.Add("虽遭失利，仍造成胜方" + oppositeCasualtyTotal + "人伤亡");
+			}
+		}
+		if (list2.Count == 0)
+		{
+			return "";
+		}
+		return text + string.Join("，", list2);
+	}
+
+	private static string BuildWeeklyPromptBattleStandoutActorText(List<EventMaterialReference> ownMaterials, List<EventMaterialReference> oppositeMaterials, string fallbackLabel)
+	{
+		List<string> list = BuildWeeklyPromptBattleSideHeroNames(ownMaterials, oppositeMaterials);
+		string text = list.FirstOrDefault((string x) => !string.IsNullOrWhiteSpace(x) && x.IndexOf("（统帅）", StringComparison.OrdinalIgnoreCase) >= 0);
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			text = list.FirstOrDefault((string x) => !string.IsNullOrWhiteSpace(x));
+		}
+		if (!string.IsNullOrWhiteSpace(text))
+		{
+			return text.Trim() + "部队";
+		}
+		text = BuildWeeklyPromptBattleSideShortName(ownMaterials, oppositeMaterials);
+		if (!string.IsNullOrWhiteSpace(text))
+		{
+			return text.Trim() + "部队";
+		}
+		return string.IsNullOrWhiteSpace(fallbackLabel) ? "该方部队" : (fallbackLabel.Trim() + "部队");
+	}
+
+	private static string BuildWeeklyPromptBattleSideTroopText(List<EventMaterialReference> ownMaterials, List<EventMaterialReference> oppositeMaterials)
+	{
+		string text = ExtractWeeklyPromptBattleTroopText(ownMaterials, ownSide: true);
+		return string.IsNullOrWhiteSpace(text) ? ExtractWeeklyPromptBattleTroopText(oppositeMaterials, ownSide: false) : text;
+	}
+
+	private static string BuildWeeklyPromptBattleOppositeTroopText(List<EventMaterialReference> ownMaterials, List<EventMaterialReference> oppositeMaterials)
+	{
+		string text = ExtractWeeklyPromptBattleTroopText(oppositeMaterials, ownSide: true);
+		return string.IsNullOrWhiteSpace(text) ? ExtractWeeklyPromptBattleTroopText(ownMaterials, ownSide: false) : text;
+	}
+
+	private static string BuildWeeklyPromptBattleSideCasualtyText(List<EventMaterialReference> ownMaterials, List<EventMaterialReference> oppositeMaterials)
+	{
+		string text = ExtractWeeklyPromptBattleCasualtyText(ownMaterials, ownSide: true);
+		return string.IsNullOrWhiteSpace(text) ? ExtractWeeklyPromptBattleCasualtyText(oppositeMaterials, ownSide: false) : text;
+	}
+
+	private static string BuildWeeklyPromptBattleOppositeCasualtyText(List<EventMaterialReference> ownMaterials, List<EventMaterialReference> oppositeMaterials)
+	{
+		string text = ExtractWeeklyPromptBattleCasualtyText(oppositeMaterials, ownSide: true);
+		return string.IsNullOrWhiteSpace(text) ? ExtractWeeklyPromptBattleCasualtyText(ownMaterials, ownSide: false) : text;
+	}
+
+	private static bool TryParseWeeklyPromptBattleTroopTotal(string text, out int total)
+	{
+		total = 0;
+		Match match = Regex.Match(text ?? "", "(?<value>\\d+)\\s*人", RegexOptions.IgnoreCase);
+		return match.Success && int.TryParse(match.Groups["value"]?.Value ?? "", out total);
+	}
+
+	private static bool TryParseWeeklyPromptBattleCasualtyTotal(string text, out int total)
+	{
+		total = 0;
+		Match match = Regex.Match(text ?? "", "阵亡\\s*(?<dead>\\d+)\\s*[、,，]\\s*负伤\\s*(?<wounded>\\d+)", RegexOptions.IgnoreCase);
+		if (!match.Success || !int.TryParse(match.Groups["dead"]?.Value ?? "", out var dead) || !int.TryParse(match.Groups["wounded"]?.Value ?? "", out var wounded))
+		{
+			return false;
+		}
+		total = Math.Max(0, dead) + Math.Max(0, wounded);
+		return true;
 	}
 
 	private static List<string> BuildWeeklyPromptBattleSideKingdomNames(List<EventMaterialReference> ownMaterials, List<EventMaterialReference> oppositeMaterials)
@@ -22446,6 +22748,18 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private static int GetEventAndRebellionApiMaxTokens()
+	{
+		try
+		{
+			return ResolveUniversalMaxTokens(DuelSettings.GetSettings(), "event_rebellion");
+		}
+		catch
+		{
+			return EventAndRebellionApiDefaultMaxTokens;
+		}
+	}
+
 	private static int GetWeeklyReportRequestIntervalMs()
 	{
 		int weeklyReportRequestsPerMinute = GetWeeklyReportRequestsPerMinute();
@@ -22768,7 +23082,7 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private static string BuildFallbackWeeklyReportShortSummary(string report)
 	{
-		string text = (report ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
+		string text = NeutralizeWeeklyReportScenarioName(report).Replace("\r", " ").Replace("\n", " ").Trim();
 		while (text.Contains("  "))
 		{
 			text = text.Replace("  ", " ");
@@ -22786,6 +23100,23 @@ public class MyBehavior : CampaignBehaviorBase
 		if (num >= 40)
 		{
 			text2 = text2.Substring(0, num).TrimEnd();
+		}
+		return text2.Trim();
+	}
+
+	private static string NeutralizeWeeklyReportScenarioName(string text)
+	{
+		string text2 = (text ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text2))
+		{
+			return "";
+		}
+		text2 = text2.Replace("卡拉迪亚大陆", "大陆");
+		text2 = text2.Replace("卡拉迪亚", "大陆");
+		text2 = Regex.Replace(text2, "\\bCalradia\\b", "大陆", RegexOptions.IgnoreCase);
+		while (text2.Contains("大陆大陆"))
+		{
+			text2 = text2.Replace("大陆大陆", "大陆");
 		}
 		return text2.Trim();
 	}
@@ -23967,9 +24298,9 @@ public class MyBehavior : CampaignBehaviorBase
 		bool flag = string.Equals((group?.GroupKind ?? "").Trim(), "world", StringComparison.OrdinalIgnoreCase);
 		bool flag2 = (group?.OutputMode ?? WeeklyReportOutputMode.FullReport) == WeeklyReportOutputMode.TitleShortTagsOnly;
 		string text = flag ? "世界周报" : "王国周报";
-		string text2 = flag ? "你的任务是根据本周素材，写出一篇宏观的大陆周报，总结这一周整个卡拉迪亚发生了什么。" : "你的任务是根据本周素材，写出一篇聚焦单个王国的周报，总结这一周这个王国发生了什么。";
+		string text2 = flag ? "你的任务是根据本周素材，写出一篇宏观的大陆周报，总结这一周整个剧本世界发生了什么。" : "你的任务是根据本周素材，写出一篇聚焦单个王国的周报，总结这一周这个王国发生了什么。";
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.AppendLine("你是一名负责整理卡拉迪亚时局的史官。");
+		stringBuilder.AppendLine("你是一名负责整理当前剧本世界时局的史官。");
 		stringBuilder.AppendLine("你不是在自由编造故事，而是在根据给定素材生成一篇流利、可信、克制的周报。");
 		stringBuilder.AppendLine(text2);
 		stringBuilder.AppendLine(" ");
@@ -23980,6 +24311,7 @@ public class MyBehavior : CampaignBehaviorBase
 		stringBuilder.AppendLine("4. 文风应像编年史、政局纪要或贵族周报，清楚、流利、克制，不要写成小说对白。");
 		stringBuilder.AppendLine("5. 不要使用系统术语、字段名、StableKey、素材标签或开发者说明。");
 		stringBuilder.AppendLine("5.1 定居点易主必须遵循素材中的方式：若素材写明交易/买卖移交或非攻城，不得写成攻陷、攻下、夺城或围城胜利。");
+		stringBuilder.AppendLine("5.2 不要使用原版默认大陆名；若需要指代大范围地理，只写“大陆”“世界”或具体王国、城镇名称。");
 		stringBuilder.AppendLine("5.5 军事胜利通常提升稳定度，军事失利通常降低稳定度（仅在素材支持时）。");
 		if (flag2)
 		{
@@ -24029,7 +24361,7 @@ public class MyBehavior : CampaignBehaviorBase
 	{
 		WeeklyReportPromptProfile weeklyReportPromptProfile = GetWeeklyReportPromptProfile();
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.AppendLine("你是一名负责整理卡拉迪亚时局的史官。");
+		stringBuilder.AppendLine("你是一名负责整理当前剧本世界时局的史官。");
 		stringBuilder.AppendLine("你的任务是根据已保存的完整素材，为一条历史短周报补写完整正文。");
 		stringBuilder.AppendLine("这次补写只用于档案馆展示，不参与当前稳定度结算。");
 		stringBuilder.AppendLine(" ");
@@ -24040,6 +24372,7 @@ public class MyBehavior : CampaignBehaviorBase
 		stringBuilder.AppendLine("3. 正文要像编年史、政局纪要或贵族周报，清楚、流利、克制。");
 		stringBuilder.AppendLine("4. 不要使用系统术语、字段名、StableKey、素材标签或开发者说明。");
 		stringBuilder.AppendLine("4.1 定居点易主必须遵循素材中的方式：若素材写明交易/买卖移交或非攻城，不得写成攻陷、攻下、夺城或围城胜利。");
+		stringBuilder.AppendLine("4.2 不要使用原版默认大陆名；若需要指代大范围地理，只写“大陆”“世界”或具体王国、城镇名称。");
 		stringBuilder.AppendLine(" ");
 		stringBuilder.AppendLine("篇幅要求：");
 		stringBuilder.AppendLine($"- 当前档位：{weeklyReportPromptProfile.Label}");
@@ -24158,7 +24491,7 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			return "无";
 		}
-		return (eventRecordEntry.Title ?? "").Trim() + "\n" + text3;
+		return NeutralizeWeeklyReportScenarioName((eventRecordEntry.Title ?? "").Trim() + "\n" + text3);
 	}
 
 	private static string BuildWeeklyReportMaterialLines(WeeklyEventMaterialPreviewGroup group)
@@ -24199,18 +24532,18 @@ public class MyBehavior : CampaignBehaviorBase
 		string text = (material.MaterialType ?? "").Trim().ToLowerInvariant();
 		if (text == "world_opening_summary")
 		{
-			return "世界开局概要：" + (material.SnapshotText ?? "").Trim();
+			return "世界开局概要：" + NeutralizeWeeklyReportScenarioName(material.SnapshotText);
 		}
 		if (text == "kingdom_opening_summary")
 		{
-			return ResolveKingdomDisplay(material.KingdomId) + "的开局概要：" + (material.SnapshotText ?? "").Trim();
+			return ResolveKingdomDisplay(material.KingdomId) + "的开局概要：" + NeutralizeWeeklyReportScenarioName(material.SnapshotText);
 		}
-		string text2 = (material.SnapshotText ?? "").Trim();
+		string text2 = NeutralizeWeeklyReportScenarioName(material.SnapshotText);
 		if (!string.IsNullOrWhiteSpace(text2))
 		{
 			return text2;
 		}
-		return (material.Label ?? "").Trim();
+		return NeutralizeWeeklyReportScenarioName(material.Label);
 	}
 
 	private static string BuildWeeklyReportPromptPreviewText(WeeklyEventMaterialPreviewGroup group, string systemPrompt, string userPrompt)
@@ -24220,7 +24553,7 @@ public class MyBehavior : CampaignBehaviorBase
 		AppendDevNpcActionField(stringBuilder, "关联王国", ResolveKingdomDisplay(group?.KingdomId));
 		AppendDevNpcActionField(stringBuilder, "输出模式", ((group?.OutputMode ?? WeeklyReportOutputMode.FullReport) == WeeklyReportOutputMode.TitleShortTagsOnly) ? "title_short_tags_only" : "full_report");
 		AppendDevNpcActionField(stringBuilder, "篇幅档位", GetWeeklyReportPromptProfile().Label);
-		AppendDevNpcActionField(stringBuilder, "MaxTokens", WeeklyReportRequestMaxTokens.ToString());
+		AppendDevNpcActionField(stringBuilder, "MaxTokens", GetEventAndRebellionApiMaxTokens().ToString());
 		stringBuilder.AppendLine();
 		stringBuilder.AppendLine("【System Prompt】");
 		stringBuilder.AppendLine(systemPrompt ?? "");
@@ -24235,7 +24568,7 @@ public class MyBehavior : CampaignBehaviorBase
 		WeeklyReportPromptProfile weeklyReportPromptProfile = GetWeeklyReportPromptProfile();
 		bool flag = (batch?.OutputMode ?? WeeklyReportOutputMode.FullReport) == WeeklyReportOutputMode.TitleShortTagsOnly;
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.AppendLine("你是一名负责整理卡拉迪亚时局的史官。");
+		stringBuilder.AppendLine("你是一名负责整理当前剧本世界时局的史官。");
 		stringBuilder.AppendLine("你会一次收到多个周报目标，每个目标要么是世界周报，要么是单个王国周报。");
 		stringBuilder.AppendLine("本请求的 batch_mode 固定为 " + (flag ? "title_short_tags_only" : "full_report") + "，只处理这种模式的 block。");
 		stringBuilder.AppendLine("你必须严格按输入 block 分别生成，不得漏块，不得串写，不得合并不同 report_id。");
@@ -24251,9 +24584,10 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		stringBuilder.AppendLine("2. 跨国事件只能从当前 block 的视角组织，不得把别国素材误写为本国主体。");
 		stringBuilder.AppendLine("3. 不要编造输入素材中没有明确支持的核心事实。");
-		stringBuilder.AppendLine("4. 文风应像编年史、政局纪要或贵族周报，清楚、流利、克制。");
+		stringBuilder.AppendLine("4. 文风应像编年史、政局纪要或贵族周报，清楚、流利、华丽，有史诗感,以及极其高的文学素养和辞藻，不需要详细，但是需要将不同种类的素材结合起来描写，只写一段即可,不要把不同的方面分开");
 		stringBuilder.AppendLine("5. 不要使用系统术语、字段名、StableKey、素材标签或开发者说明。");
 		stringBuilder.AppendLine("5.1 定居点易主必须遵循素材中的方式：若素材写明交易/买卖移交或非攻城，不得写成攻陷、攻下、夺城或围城胜利。");
+		stringBuilder.AppendLine("5.2 不要使用原版默认大陆名；若需要指代大范围地理，只写“大陆”“世界”或具体王国、城镇名称。");
 		if (flag)
 		{
 			stringBuilder.AppendLine("6. 本请求只做短周报，短摘要要紧凑保留事实锚点，严禁扩写成正文。");
@@ -24360,7 +24694,7 @@ public class MyBehavior : CampaignBehaviorBase
 		AppendDevNpcActionField(stringBuilder, "批次模式", ((batch?.OutputMode ?? WeeklyReportOutputMode.FullReport) == WeeklyReportOutputMode.TitleShortTagsOnly) ? "title_short_tags_only" : "full_report");
 		AppendDevNpcActionField(stringBuilder, "批次对象", string.Join(" | ", list.Select(BuildWeeklyReportGroupReportId).Where((string x) => !string.IsNullOrWhiteSpace(x))));
 		AppendDevNpcActionField(stringBuilder, "输出模式", string.Join(" | ", list.Select((WeeklyEventMaterialPreviewGroup x) => ((x?.OutputMode ?? WeeklyReportOutputMode.FullReport) == WeeklyReportOutputMode.TitleShortTagsOnly) ? "title_short_tags_only" : "full_report")));
-		AppendDevNpcActionField(stringBuilder, "MaxTokens", WeeklyReportRequestMaxTokens.ToString());
+		AppendDevNpcActionField(stringBuilder, "MaxTokens", GetEventAndRebellionApiMaxTokens().ToString());
 		stringBuilder.AppendLine();
 		stringBuilder.AppendLine("【System Prompt】");
 		stringBuilder.AppendLine(systemPrompt ?? "");
@@ -24548,6 +24882,9 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			shortSummary = BuildFallbackWeeklyReportShortSummary(flag ? text : report);
 		}
+		title = NeutralizeWeeklyReportScenarioName(title);
+		shortSummary = BuildFallbackWeeklyReportShortSummary(shortSummary);
+		report = NeutralizeWeeklyReportScenarioName(report);
 		return true;
 	}
 
@@ -24584,6 +24921,9 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			shortSummary = BuildFallbackWeeklyReportShortSummary(report);
 		}
+		title = NeutralizeWeeklyReportScenarioName(title);
+		shortSummary = BuildFallbackWeeklyReportShortSummary(shortSummary);
+		report = NeutralizeWeeklyReportScenarioName(report);
 		return true;
 	}
 
@@ -24712,15 +25052,15 @@ public class MyBehavior : CampaignBehaviorBase
 		eventRecordEntry.EventKind = text;
 		eventRecordEntry.ScopeKingdomId = text2;
 		eventRecordEntry.WeekIndex = weekIndex;
-		eventRecordEntry.Title = (title ?? "").Trim();
+		eventRecordEntry.Title = NeutralizeWeeklyReportScenarioName(title);
 		eventRecordEntry.ShortSummary = BuildFallbackWeeklyReportShortSummary(shortSummary);
-		eventRecordEntry.Summary = (report ?? "").Trim();
+		eventRecordEntry.Summary = NeutralizeWeeklyReportScenarioName(report);
 		if (string.IsNullOrWhiteSpace(eventRecordEntry.ShortSummary))
 		{
 			eventRecordEntry.ShortSummary = BuildFallbackWeeklyReportShortSummary(eventRecordEntry.Summary);
 		}
 		eventRecordEntry.TagText = NormalizeWeeklyReportTagText(tagText);
-		eventRecordEntry.PromptText = (promptText ?? "").Trim();
+		eventRecordEntry.PromptText = NeutralizeWeeklyReportScenarioName(promptText);
 		eventRecordEntry.CreatedDay = GetCurrentGameDayIndexSafe();
 		eventRecordEntry.CreatedDate = GetCurrentGameDateTextSafe();
 		eventRecordEntry.Materials = OrderWeeklyPreviewMaterials(group?.Materials).Select(delegate(EventMaterialReference x)
@@ -25449,7 +25789,7 @@ public class MyBehavior : CampaignBehaviorBase
 		stringBuilder.AppendLine("分组数量：" + ((groups != null) ? groups.Count : 0));
 		stringBuilder.AppendLine("篇幅档位：" + GetWeeklyReportPromptProfile().Label);
 		stringBuilder.AppendLine("每分钟生成上限：" + GetWeeklyReportRequestsPerMinute());
-		stringBuilder.AppendLine("MaxTokens：" + WeeklyReportRequestMaxTokens);
+		stringBuilder.AppendLine("MaxTokens：" + GetEventAndRebellionApiMaxTokens());
 		return stringBuilder.ToString().TrimEnd();
 	}
 
@@ -25507,7 +25847,7 @@ public class MyBehavior : CampaignBehaviorBase
 		stringBuilder.AppendLine("批次上限：" + GetWeeklyReportBatchSize());
 		stringBuilder.AppendLine("篇幅档位：" + GetWeeklyReportPromptProfile().Label);
 		stringBuilder.AppendLine("每分钟生成上限：" + GetWeeklyReportRequestsPerMinute());
-		stringBuilder.AppendLine("MaxTokens：" + WeeklyReportRequestMaxTokens);
+		stringBuilder.AppendLine("MaxTokens：" + GetEventAndRebellionApiMaxTokens());
 		return stringBuilder.ToString().TrimEnd();
 	}
 
@@ -25565,7 +25905,7 @@ public class MyBehavior : CampaignBehaviorBase
 		int num3 = BuildWeeklyReportBatchRequests(list, num2, num, currentGameDayIndexSafe).Count;
 		List<string> list2 = GetKingdomIdsByPlayerProximity(list.Where((WeeklyEventMaterialPreviewGroup x) => string.Equals((x.GroupKind ?? "").Trim(), "kingdom", StringComparison.OrdinalIgnoreCase)).Select((WeeklyEventMaterialPreviewGroup x) => x.KingdomId));
 		string text = ((list2.Count > 0) ? string.Join(" -> ", list2.Select(ResolveKingdomDisplay).Where((string x) => !string.IsNullOrWhiteSpace(x))) : "无");
-		InformationManager.ShowInquiry(new InquiryData("生成本周周报草案", "即将按当前周素材生成开发态周报草案。\n\n- 生成对象：世界周报 + 各王国周报\n- 生成结果：写入事件编辑中的事件记录\n- NPC 会常驻读取近期三个王国短周报；命中特定规则时读取完整周报\n- 生成优先级：最近王国 > 世界事件 > 其他王国按距离依次生成\n\n本次预计请求数：" + num + "\n篇幅档位：" + GetWeeklyReportPromptProfile().Label + "\n每分钟生成上限：" + GetWeeklyReportRequestsPerMinute() + "\n按距离排序的王国：" + text + "\nMaxTokens：" + WeeklyReportRequestMaxTokens + "\n\n是否开始？", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "开始生成", "取消", delegate
+		InformationManager.ShowInquiry(new InquiryData("生成本周周报草案", "即将按当前周素材生成开发态周报草案。\n\n- 生成对象：世界周报 + 各王国周报\n- 生成结果：写入事件编辑中的事件记录\n- NPC 会常驻读取近期三个王国短周报；命中特定规则时读取完整周报\n- 生成优先级：最近王国 > 世界事件 > 其他王国按距离依次生成\n\n本次预计请求数：" + num + "\n篇幅档位：" + GetWeeklyReportPromptProfile().Label + "\n每分钟生成上限：" + GetWeeklyReportRequestsPerMinute() + "\n按距离排序的王国：" + text + "\nMaxTokens：" + GetEventAndRebellionApiMaxTokens() + "\n\n是否开始？", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "开始生成", "取消", delegate
 		{
 			_ = GenerateDevWeeklyReportsAsync();
 		}, delegate
@@ -25585,7 +25925,7 @@ public class MyBehavior : CampaignBehaviorBase
 		int batchCount = BuildWeeklyReportBatchRequests(list, weekIndex, startDay, currentGameDayIndexSafe).Count;
 		List<string> list2 = GetKingdomIdsByPlayerProximity(list.Where((WeeklyEventMaterialPreviewGroup x) => string.Equals((x.GroupKind ?? "").Trim(), "kingdom", StringComparison.OrdinalIgnoreCase)).Select((WeeklyEventMaterialPreviewGroup x) => x.KingdomId));
 		string text = ((list2.Count > 0) ? string.Join(" -> ", list2.Select(ResolveKingdomDisplay).Where((string x) => !string.IsNullOrWhiteSpace(x))) : "无");
-		string message = "即将按当前周素材生成开发态周报草案。\n\n- 生成对象：世界周报 + 各王国周报\n- 生成结果：写入事件编辑中的事件记录\n- NPC 会常驻读取近期三个王国短周报；命中特定规则时读取完整周报\n- 生成优先级：最近王国 > 世界事件 > 其他王国按距离依次生成\n\n本次预计请求数：" + batchCount + "\n篇幅档位：" + GetWeeklyReportPromptProfile().Label + "\n每分钟生成上限：" + GetWeeklyReportRequestsPerMinute() + "\n按距离排序的王国：" + text + "\nMaxTokens：" + WeeklyReportRequestMaxTokens + "\n\n是否开始？";
+		string message = "即将按当前周素材生成开发态周报草案。\n\n- 生成对象：世界周报 + 各王国周报\n- 生成结果：写入事件编辑中的事件记录\n- NPC 会常驻读取近期三个王国短周报；命中特定规则时读取完整周报\n- 生成优先级：最近王国 > 世界事件 > 其他王国按距离依次生成\n\n本次预计请求数：" + batchCount + "\n篇幅档位：" + GetWeeklyReportPromptProfile().Label + "\n每分钟生成上限：" + GetWeeklyReportRequestsPerMinute() + "\n按距离排序的王国：" + text + "\nMaxTokens：" + GetEventAndRebellionApiMaxTokens() + "\n\n是否开始？";
 		InformationManager.ShowInquiry(new InquiryData("生成本周周报草案", message, isAffirmativeOptionShown: true, isNegativeOptionShown: true, "开始生成", "取消", delegate
 		{
 			_ = GenerateDevWeeklyReportsAsync();

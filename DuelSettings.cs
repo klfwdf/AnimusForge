@@ -104,7 +104,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 
 	private Dropdown<string> _logCleanupIntervalDropdown = BuildLogCleanupIntervalDropdown(LogCleanupEvery30Minutes);
 
-	private Dropdown<string> _mainApiReasoningEffortDropdown = BuildReasoningEffortDropdown(ReasoningEffortHigh);
+	private Dropdown<string> _mainApiReasoningEffortDropdown = BuildReasoningEffortDropdown(ReasoningEffortMax);
 
 	private Dropdown<string> _auxiliaryApiReasoningEffortDropdown = BuildReasoningEffortDropdown(ReasoningEffortHigh);
 
@@ -219,7 +219,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyGroup("1. AI 核心配置/1. 主API（正文生成）", GroupOrder = -300)]
 	public bool MainApiThinkingEnabled { get; set; } = true;
 
-	public string MainApiReasoningEffort { get; set; } = ReasoningEffortHigh;
+	public string MainApiReasoningEffort { get; set; } = ReasoningEffortMax;
 
 	[SettingPropertyDropdown("思维链强度", Order = 7, RequireRestart = false, HintText = "支持 low/medium/high/xhigh/max；兼容映射：low、medium 会按 high 发送，xhigh 会按 max 发送。")]
 	[SettingPropertyGroup("1. AI 核心配置/1. 主API（正文生成）", GroupOrder = -300)]
@@ -619,9 +619,9 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyGroup("1. AI 核心配置/4. 事件与王国叛乱API（周报生成与叛乱命名）", GroupOrder = -270)]
 	public Action TestEventAndRebellionConnection { get; set; }
 
-	[SettingPropertyBool("开启思维链", Order = 6, RequireRestart = false, HintText = "开启后，对 OpenAI 兼容思考接口写入 thinking.type=enabled，并写入 reasoning_effort；Anthropic/Claude 接口写入 thinking.type=enabled 与 output_config.effort。关闭后写入 thinking.type=disabled。")]
+	[SettingPropertyBool("开启思维链", Order = 6, RequireRestart = false, HintText = "默认关闭。事件周报与王国叛乱命名是严格格式任务，建议只在确认接口会把最终答案稳定写入 content 时开启。开启后，对 OpenAI 兼容思考接口写入 thinking.type=enabled，并写入 reasoning_effort；Anthropic/Claude 接口写入 thinking.type=enabled 与 output_config.effort。关闭后写入 thinking.type=disabled。")]
 	[SettingPropertyGroup("1. AI 核心配置/4. 事件与王国叛乱API（周报生成与叛乱命名）", GroupOrder = -270)]
-	public bool EventAndRebellionApiThinkingEnabled { get; set; } = true;
+	public bool EventAndRebellionApiThinkingEnabled { get; set; } = false;
 
 	public string EventAndRebellionApiReasoningEffort { get; set; } = ReasoningEffortHigh;
 
@@ -645,6 +645,10 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyFloatingInteger("温度", 0f, 2f, "0.00", Order = 8, RequireRestart = false, HintText = "控制事件周报与王国叛乱命名的随机性。0 更稳定，2 更发散。默认 0.80。")]
 	[SettingPropertyGroup("1. AI 核心配置/4. 事件与王国叛乱API（周报生成与叛乱命名）", GroupOrder = -270)]
 	public float EventAndRebellionApiTemperature { get; set; } = 0.8f;
+
+	[SettingPropertyInteger("最大输出Tokens", 512, 64000, "0", Order = 9, RequireRestart = false, HintText = "事件周报与王国叛乱建国命名调用的 max_tokens。默认 8000；如果接口不支持过高上限，可能会被接口拒绝。")]
+	[SettingPropertyGroup("1. AI 核心配置/4. 事件与王国叛乱API（周报生成与叛乱命名）", GroupOrder = -270)]
+	public int EventAndRebellionApiMaxTokens { get; set; } = 8000;
 
 	[SettingPropertyBool("启用TTS语音", Order = 0, RequireRestart = false, HintText = "总开关。关闭后，NPC 不再播放 TTS 语音，并回退到纯文本气泡显示。")]
 	[SettingPropertyGroup("7. 火山引擎 TTS（专用）")]
