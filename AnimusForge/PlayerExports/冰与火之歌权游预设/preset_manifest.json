@@ -1,0 +1,22 @@
+{
+  "TargetDir": "D:\\steam\\steamapps\\common\\Mount & Blade II Bannerlord\\Modules\\AnimusForge\\PlayerExports\\冰与火之歌权游预设",
+  "GeneratedAt": "2026-05-04T00:00:00.0000000+08:00",
+  "KnowledgeRuleFiles": 220,
+  "WorldSections": 6,
+  "CultureRules": 17,
+  "KingdomRuleSections": 11,
+  "EventRuleSections": 12,
+  "PersonalityTemplates": 3,
+  "PersonalityNamedCharacters": 23,
+  "NewSubTopics": 120,
+  "NewReligions": 5,
+  "NewItemsEvents": 15,
+  "NewHouses": 9,
+  "NewCharacters": 10,
+  "NewSettlements": 18,
+  "NewMilitaryUnits": 5,
+  "NewCreatures": 4,
+  "NewSocialConcepts": 4,
+  "NewItems": 5,
+  "NewGeography": 8
+}

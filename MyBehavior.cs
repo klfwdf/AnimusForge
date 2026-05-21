@@ -1275,6 +1275,10 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private const int RelationPenaltyOnAnnoyed = -2;
 
+	private const int RoyalDomainConversationJoyLoyaltyDelta = 2;
+
+	private const int RoyalDomainConversationDelightedLoyaltyDelta = 4;
+
 	private static readonly string[] PatienceLevelTexts = new string[10] { "枯竭", "烦躁", "不耐", "冷淡", "一般", "尚可", "愿听", "投入", "热络", "兴致高" };
 
 	private static readonly string[] RelationLevelTexts = new string[10] { "死敌", "敌对", "厌恶", "疏离", "冷漠", "中立", "熟络", "友好", "亲近", "至交" };
@@ -2125,7 +2129,6 @@ public class MyBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			ApplyRulingClanSettlementLoyaltyAdjustmentForLowClanCountKingdom(town);
 			TrackTownWeeklyMaterialChanges(town);
 		}
 		catch (Exception ex)
@@ -3687,6 +3690,33 @@ public class MyBehavior : CampaignBehaviorBase
 		float maximumLoyaltyInSettlement = Campaign.Current?.Models?.SettlementLoyaltyModel?.MaximumLoyaltyInSettlement ?? 100;
 		town.Loyalty = MBMath.ClampFloat(town.Loyalty + (float)lowClanCountRoyalDomainLoyaltyAdjustment, 0f, maximumLoyaltyInSettlement);
 		SyncTownRebelliousStateFromCurrentLoyalty(town);
+	}
+
+	public static int GetKingdomStabilityRoyalDomainLoyaltyAdjustmentForTown(Town town)
+	{
+		try
+		{
+			if (town?.Settlement == null || !town.Settlement.IsFortification)
+			{
+				return 0;
+			}
+			Clan ownerClan = town.Settlement.OwnerClan;
+			Kingdom kingdom = ownerClan?.Kingdom;
+			if (ownerClan == null || kingdom == null || kingdom.IsEliminated || ownerClan != kingdom.RulingClan)
+			{
+				return 0;
+			}
+			int activeClanCount = CountActiveKingdomClansForLowClanCountRule(kingdom);
+			if (activeClanCount > 7)
+			{
+				return 0;
+			}
+			return GetLowClanCountRoyalDomainLoyaltyAdjustment(Instance?.GetKingdomStabilityValue(kingdom) ?? KingdomStabilityDefaultValue, activeClanCount);
+		}
+		catch
+		{
+			return 0;
+		}
 	}
 
 	private static float GetKingdomRebellionWeeklyChance(int stabilityValue)
@@ -16335,6 +16365,77 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private static int ComputeRoyalDomainConversationLoyaltyDelta(PatienceMood mood)
+	{
+		switch (mood)
+		{
+		case PatienceMood.Delighted:
+			return RoyalDomainConversationDelightedLoyaltyDelta;
+		case PatienceMood.Joy:
+			return RoyalDomainConversationJoyLoyaltyDelta;
+		default:
+			return 0;
+		}
+	}
+
+	private static Settlement GetCurrentRoyalDomainConversationSettlement()
+	{
+		Settlement settlement = Settlement.CurrentSettlement ?? MobileParty.MainParty?.CurrentSettlement;
+		if (settlement?.Town == null || settlement.OwnerClan != Clan.PlayerClan)
+		{
+			return null;
+		}
+		return settlement;
+	}
+
+	private static bool CanApplyRoyalDomainConversationLoyaltyForHero(Hero targetHero)
+	{
+		if (targetHero == null)
+		{
+			return true;
+		}
+		return targetHero != Hero.MainHero && !targetHero.IsPlayerCompanion && !targetHero.IsPrisoner;
+	}
+
+	private static void ApplyRoyalDomainConversationLoyaltyFromMood(PatienceMood mood, Hero targetHero, string unnamedKey, string npcName, bool directConversation)
+	{
+		int num = ComputeRoyalDomainConversationLoyaltyDelta(mood);
+		if (num == 0 || !CanApplyRoyalDomainConversationLoyaltyForHero(targetHero))
+		{
+			return;
+		}
+		Settlement currentRoyalDomainConversationSettlement = GetCurrentRoyalDomainConversationSettlement();
+		Town town = currentRoyalDomainConversationSettlement?.Town;
+		if (town == null)
+		{
+			return;
+		}
+		try
+		{
+			float loyalty = town.Loyalty;
+			float maximumLoyaltyInSettlement = Campaign.Current?.Models?.SettlementLoyaltyModel?.MaximumLoyaltyInSettlement ?? 100f;
+			town.Loyalty = MBMath.ClampFloat(town.Loyalty + (float)num, 0f, maximumLoyaltyInSettlement);
+			SyncTownRebelliousStateFromCurrentLoyalty(town);
+			string text = targetHero?.StringId ?? unnamedKey ?? npcName ?? "";
+			Logger.Log("Patience", $"royal_domain_conversation_loyalty settlement={currentRoyalDomainConversationSettlement.StringId} npc={text} mood={mood} loyalty={loyalty:0.##}->{town.Loyalty:0.##} delta={num}");
+			Logger.Obs("Patience", "royal_domain_conversation_loyalty", new Dictionary<string, object>
+			{
+				["settlementId"] = currentRoyalDomainConversationSettlement.StringId ?? "",
+				["npcId"] = text,
+				["mood"] = mood.ToString(),
+				["loyaltyBefore"] = loyalty,
+				["loyaltyAfter"] = town.Loyalty,
+				["loyaltyDelta"] = num,
+				["directConversation"] = directConversation
+			});
+			Logger.Metric("patience.royal_domain_conversation_loyalty");
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("Patience", "[WARN] apply royal domain conversation loyalty failed: " + ex.Message);
+		}
+	}
+
 	private bool ApplyPatienceDeltaInternal(string key, int maxPatience, PatienceMood mood, out int before, out int after)
 	{
 		before = 0;
@@ -16607,6 +16708,7 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
+		ApplyRoyalDomainConversationLoyaltyFromMood(patienceMood, targetHero, null, targetHero.Name?.ToString(), directConversation);
 		int before;
 		int after;
 		int delta;
@@ -16681,6 +16783,7 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
+		ApplyRoyalDomainConversationLoyaltyFromMood(patienceMood, null, unnamedKey, npcName, directConversation: false);
 		if (string.IsNullOrWhiteSpace(unnamedPatienceSnapshot.Key))
 		{
 			return;
@@ -24626,7 +24729,7 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			stringBuilder.AppendLine("3. 每个 block 必须输出 [TITLE] [SHORT] [REPORT] [TAGS]。");
 		}
-		stringBuilder.AppendLine("4. world block 与 kingdom block 的 [TAGS] 中都必须且只能包含一个稳定度评级标签：STAB_DOWN_4、STAB_DOWN_3、STAB_DOWN_2、STAB_DOWN_1、STAB_FLAT、STAB_UP_1、STAB_UP_2、STAB_UP_3、STAB_UP_4。");
+		stringBuilder.AppendLine("4. world block 与 kingdom block 的 [TAGS] 中都必须且只能包含一个稳定度评级标签：STAB_DOWN_4、STAB_DOWN_3、STAB_DOWN_2、STAB_DOWN_1、STAB_FLAT、STAB_UP_1、STAB_UP_2、STAB_UP_3、STAB_UP_4，不要太苛刻，问题不大就少给down");
 		stringBuilder.AppendLine("5. 不要输出 [REPORT_BLOCK_BEGIN]/[REPORT_BLOCK_END] 之外的额外说明。");
 		return stringBuilder.ToString().TrimEnd();
 	}

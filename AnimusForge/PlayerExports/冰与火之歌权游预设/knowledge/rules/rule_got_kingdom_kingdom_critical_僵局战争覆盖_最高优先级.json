@@ -1,0 +1,38 @@
+{
+  "Id": "rule_got_kingdom_kingdom_critical_僵局战争覆盖_最高优先级",
+  "Keywords": [
+    "战争",
+    "外交",
+    "宣战",
+    "停战",
+    "王国声明",
+    "铁王座",
+    "五王之战",
+    "盟约",
+    "僵局战争"
+  ],
+  "SemanticPrototypes": [
+    "统治者如何发表战争声明",
+    "王国如何根据利益与信仰决策",
+    "中世纪外交辞令"
+  ],
+  "Variants": [
+    {
+      "Priority": 65,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "【权游王国外交/战争声明规则：CRITICAL 僵局战争覆盖（最高优先级）】\n**触发条件**\r\n- 持续战争（依状态）+ 连续 21+ 天无重大事件：\r\n  - 双方总兵力 ≥200 的战斗\r\n  - 任何围城\r\n\r\n**强制行动**\r\n- 若僵局：统治者必须主动提出现状和平（无让步/获利）\r\n- 若对方提出现状和平：必须主动接受\r\n\r\n**覆盖范围**\r\n- 此规则优先於所有其他动机丶个性与好战倾向\r\n- 忽略：个性丶野心丶实力平衡丶边境等\r\n\r\n禁止提及死伤人数的数字和直接展示战争疲劳，必须以侧面方式体现。\r\n\r\n---"
+    }
+  ],
+  "TextMappings": []
+}

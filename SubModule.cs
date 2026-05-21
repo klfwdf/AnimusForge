@@ -240,6 +240,7 @@ public class SubModule : MBSubModuleBase
 		{
 			RegisterCourierFoodConsumptionModel(campaignGameStarter);
 			RegisterCourierMobilePartyAiModel(campaignGameStarter);
+			RegisterAnimusForgeSettlementLoyaltyModel(campaignGameStarter);
 			campaignGameStarter.AddBehavior(new ModOnboardingBehavior());
 			campaignGameStarter.AddBehavior(new MyBehavior());
 			campaignGameStarter.AddBehavior(new ShoutBehavior());
@@ -252,6 +253,32 @@ public class SubModule : MBSubModuleBase
 			campaignGameStarter.AddBehavior(new LordEncounterBehavior());
 			campaignGameStarter.AddBehavior(new SceneTauntBehavior());
 			campaignGameStarter.AddBehavior(new VanillaIssuePromptBehavior());
+		}
+	}
+
+	private static void RegisterAnimusForgeSettlementLoyaltyModel(CampaignGameStarter campaignGameStarter)
+	{
+		if (campaignGameStarter == null)
+		{
+			return;
+		}
+		try
+		{
+			SettlementLoyaltyModel inner = null;
+			foreach (GameModel model in campaignGameStarter.Models)
+			{
+				if (model is SettlementLoyaltyModel loyaltyModel && !(loyaltyModel is AnimusForgeSettlementLoyaltyModel))
+				{
+					inner = loyaltyModel;
+				}
+			}
+			inner ??= new DefaultSettlementLoyaltyModel();
+			campaignGameStarter.AddModel<SettlementLoyaltyModel>(new AnimusForgeSettlementLoyaltyModel(inner));
+			Logger.LogTrace("SubModule", ">>> AnimusForge settlement loyalty model registered.");
+		}
+		catch (Exception ex)
+		{
+			Logger.LogTrace("SubModule", ">>> AnimusForge settlement loyalty model registration failed: " + ex);
 		}
 	}
 
