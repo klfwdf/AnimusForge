@@ -18733,7 +18733,7 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 	private static string BuildStrictSceneMessagesSystemPrompt(string systemPrompt, bool suppressReplyFormatInstruction = false)
 	{
 		string text = (systemPrompt ?? "").Trim();
-		string value = "【messages说明】在下面的对话消息里，assistant 只代表你自己过去说过的话；#2 role=user表示当前系统事实，从#3 role=user开始就是NPC和玩家的互动历史.";
+		string value = "【messages说明】在下面的对话消息里，assistant 只代表你自己过去说过的话；#2 role=user表示当前系统事实，你必须严格遵守所有附加规则";
 		TryExtractReplyFormatInstruction(ref text, out var instruction);
 		if (suppressReplyFormatInstruction)
 		{

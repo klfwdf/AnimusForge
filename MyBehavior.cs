@@ -5707,6 +5707,10 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				continue;
 			}
+			if (!keepOnlyRecentWindow && ShouldSuppressNpcMajorAction(item.ActionKind, item.StableKey, text))
+			{
+				continue;
+			}
 			list.Add(new NpcActionEntry
 			{
 				Day = Math.Max(0, item.Day),
@@ -5741,8 +5745,34 @@ public class MyBehavior : CampaignBehaviorBase
 		return list.OrderBy((NpcActionEntry x) => x.Day).ThenBy((NpcActionEntry x) => (x.Sequence > 0) ? x.Sequence : int.MaxValue).ThenBy((NpcActionEntry x) => x.Order).ThenBy((NpcActionEntry x) => x.GameDate ?? "", StringComparer.Ordinal).ToList();
 	}
 
+	private static bool ShouldSuppressNpcMajorAction(string actionKind, string stableKey, string text)
+	{
+		string text2 = (actionKind ?? "").Trim().ToLowerInvariant();
+		switch (text2)
+		{
+		case "prisoner_taken_captor":
+		case "prisoner_taken_prisoner":
+		case "prisoner_released_captor":
+		case "prisoner_released_prisoner":
+		case "army_create":
+		case "army_join":
+			return true;
+		}
+		string text3 = (stableKey ?? "").Trim().ToLowerInvariant();
+		if (text3.StartsWith("prisoner_taken:", StringComparison.OrdinalIgnoreCase) || text3.StartsWith("prisoner_released:", StringComparison.OrdinalIgnoreCase) || text3.StartsWith("army_create:", StringComparison.OrdinalIgnoreCase) || text3.StartsWith("army_join:", StringComparison.OrdinalIgnoreCase))
+		{
+			return true;
+		}
+		string text4 = (text ?? "").Trim();
+		return (text4.IndexOf("俘虏了", StringComparison.OrdinalIgnoreCase) >= 0 || text4.IndexOf("被", StringComparison.OrdinalIgnoreCase) >= 0 && text4.IndexOf("俘虏", StringComparison.OrdinalIgnoreCase) >= 0 || text4.IndexOf("获释", StringComparison.OrdinalIgnoreCase) >= 0 || text4.IndexOf("成功逃脱", StringComparison.OrdinalIgnoreCase) >= 0 || text4.IndexOf("不再是你的囚犯", StringComparison.OrdinalIgnoreCase) >= 0 || text4.IndexOf("组建并统领了", StringComparison.OrdinalIgnoreCase) >= 0 || text4.IndexOf("加入了", StringComparison.OrdinalIgnoreCase) >= 0 && text4.IndexOf("军团", StringComparison.OrdinalIgnoreCase) >= 0);
+	}
+
 	private void RecordNpcMajorAction(Hero hero, string text, string stableKey, NpcActionFacts facts = null)
 	{
+		if (ShouldSuppressNpcMajorAction(facts?.ActionKind, stableKey, text))
+		{
+			return;
+		}
 		RecordNpcActionInternal(_npcMajorActions, hero, text, stableKey, keepOnlyRecentWindow: false, dedupeAcrossWindow: false, MaxMajorNpcActionEntriesPerHero, facts, isMajor: true);
 	}
 
@@ -7296,8 +7326,12 @@ public class MyBehavior : CampaignBehaviorBase
 					{
 						try
 						{
-							string value2 = JsonConvert.SerializeObject(npcMajorAction.Value);
-							_npcMajorActionStorage[npcMajorAction.Key] = value2;
+							List<NpcActionEntry> list2 = SanitizeNpcActionEntries(npcMajorAction.Value, keepOnlyRecentWindow: false);
+							if (list2.Count > 0)
+							{
+								string value2 = JsonConvert.SerializeObject(list2);
+								_npcMajorActionStorage[npcMajorAction.Key] = value2;
+							}
 						}
 						catch (Exception ex2)
 						{
@@ -16417,6 +16451,7 @@ public class MyBehavior : CampaignBehaviorBase
 			town.Loyalty = MBMath.ClampFloat(town.Loyalty + (float)num, 0f, maximumLoyaltyInSettlement);
 			SyncTownRebelliousStateFromCurrentLoyalty(town);
 			string text = targetHero?.StringId ?? unnamedKey ?? npcName ?? "";
+			AnimusForgeQuickInfo.Show(currentRoyalDomainConversationSettlement.Name.ToString() + " 忠诚度 +" + num);
 			Logger.Log("Patience", $"royal_domain_conversation_loyalty settlement={currentRoyalDomainConversationSettlement.StringId} npc={text} mood={mood} loyalty={loyalty:0.##}->{town.Loyalty:0.##} delta={num}");
 			Logger.Obs("Patience", "royal_domain_conversation_loyalty", new Dictionary<string, object>
 			{
@@ -24412,7 +24447,7 @@ public class MyBehavior : CampaignBehaviorBase
 		stringBuilder.AppendLine("2. 不要编造素材中没有明确支持的核心事实，不要把别国内容误写进本国周报。");
 		stringBuilder.AppendLine("3. 如果素材偏零碎，应提炼成局势观察；如果素材很多，应归纳成若干主线。");
 		stringBuilder.AppendLine("4. 文风应像编年史、政局纪要或贵族周报，清楚、流利、克制，不要写成小说对白。");
-		stringBuilder.AppendLine("5. 不要使用系统术语、字段名、StableKey、素材标签或开发者说明。");
+		stringBuilder.AppendLine("5. 不要使用系统术语、字段名、StableKey、素材标签或开发者说明。不要用数字描述变化，多用形容词描述变化");
 		stringBuilder.AppendLine("5.1 定居点易主必须遵循素材中的方式：若素材写明交易/买卖移交或非攻城，不得写成攻陷、攻下、夺城或围城胜利。");
 		stringBuilder.AppendLine("5.2 不要使用原版默认大陆名；若需要指代大范围地理，只写“大陆”“世界”或具体王国、城镇名称。");
 		stringBuilder.AppendLine("5.5 军事胜利通常提升稳定度，军事失利通常降低稳定度（仅在素材支持时）。");
@@ -24473,7 +24508,7 @@ public class MyBehavior : CampaignBehaviorBase
 		stringBuilder.AppendLine("1.1 不要编造素材中没有明确支持的核心事实。");
 		stringBuilder.AppendLine("2. 标题和短摘要可以优化，但不要改变事件性质。");
 		stringBuilder.AppendLine("3. 正文要像编年史、政局纪要或贵族周报，清楚、流利、克制。");
-		stringBuilder.AppendLine("4. 不要使用系统术语、字段名、StableKey、素材标签或开发者说明。");
+		stringBuilder.AppendLine("4. 不要使用系统术语、字段名、StableKey、素材标签或开发者说明。不要用数字描述变化，多用形容词描述变化");
 		stringBuilder.AppendLine("4.1 定居点易主必须遵循素材中的方式：若素材写明交易/买卖移交或非攻城，不得写成攻陷、攻下、夺城或围城胜利。");
 		stringBuilder.AppendLine("4.2 不要使用原版默认大陆名；若需要指代大范围地理，只写“大陆”“世界”或具体王国、城镇名称。");
 		stringBuilder.AppendLine(" ");
@@ -24688,7 +24723,7 @@ public class MyBehavior : CampaignBehaviorBase
 		stringBuilder.AppendLine("2. 跨国事件只能从当前 block 的视角组织，不得把别国素材误写为本国主体。");
 		stringBuilder.AppendLine("3. 不要编造输入素材中没有明确支持的核心事实。");
 		stringBuilder.AppendLine("4. 文风应像编年史、政局纪要或贵族周报，清楚、流利、华丽，有史诗感,以及极其高的文学素养和辞藻，不需要详细，但是需要将不同种类的素材结合起来描写，只写一段即可,不要把不同的方面分开");
-		stringBuilder.AppendLine("5. 不要使用系统术语、字段名、StableKey、素材标签或开发者说明。");
+		stringBuilder.AppendLine("5. 不要使用系统术语、字段名、StableKey、素材标签或开发者说明。不要用数字描述变化，多用形容词描述变化");
 		stringBuilder.AppendLine("5.1 定居点易主必须遵循素材中的方式：若素材写明交易/买卖移交或非攻城，不得写成攻陷、攻下、夺城或围城胜利。");
 		stringBuilder.AppendLine("5.2 不要使用原版默认大陆名；若需要指代大范围地理，只写“大陆”“世界”或具体王国、城镇名称。");
 		if (flag)

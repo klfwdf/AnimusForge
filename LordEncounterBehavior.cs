@@ -3458,9 +3458,9 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		{
 			int encounterReleaseVanillaSafePassageQuote = TryGetEncounterReleaseVanillaSafePassageQuote(resolvedTarget);
 			string text2 = (encounterReleaseVanillaSafePassageQuote > 0) ? $"按原版谈判口径，这次“安全放行并约定五天内不主动攻击”的参考估值约为 {encounterReleaseVanillaSafePassageQuote} 第纳尔，你可以把它当作软参考来谈价、索赔或换物，但不必机械照搬这个数字。" : "";
-			return $"【遭遇放走规则】当前是你在野外主动追上{text}的强制遭遇，{text}本来不可以直接离开。现在你这边可参考的关系是：家族关系={clanRelation}，私人关系={privateRelation}，平均值={averageRelation}；而{text}与{kingName}的关系={kingRelation}。由于平均值更高，本轮你可以和{text}讨论“放走”的条件，也可以要求赔偿、立誓、交人、交钱或别的交换。{text2}但只有当你在正文里最终明确同意让{text}立刻离开这次遭遇时，才算真的放走；如果你还在威胁、索价、审问、拖延、试探或继续谈条件，就不算放走。正文只自然说话，不要自己写标签。";
+			return $"【遭遇放走规则】本轮可以谈是否放{text}离开；可要求赔偿、立誓、交人、交钱或别的交换。{text2}只有你最终明确同意让{text}立刻离开，才算真的放走；还在谈条件就不算。";
 		}
-		return $"【遭遇放走规则】当前是你在野外主动追上{text}的强制遭遇，{text}本来不可以直接离开。现在你这边可参考的关系是：家族关系={clanRelation}，私人关系={privateRelation}，平均值={averageRelation}；而{text}与{kingName}的关系={kingRelation}。由于平均值没有高于这层王权关系，本轮你绝对不可以放{text}离开；可以威胁、审问、索价、逼迫、要求投降或提出别的条件，但最终不得同意让{text}直接脱离这次遭遇。正文只自然说话，不要自己写标签。";
+		return $"【遭遇放走规则】你绝不可以放{text}走,他是你的势力的敌人，你必须在回复末尾输出标签[ACTION:MEETING_TAUNT_BATTLE]让你的部队攻击他";
 	}
 
 	internal static List<PostprocessRuleEntry> BuildMeetingPlayerReleasePostprocessRulesForExternal(Hero target)

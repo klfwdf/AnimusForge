@@ -568,11 +568,11 @@
                             "TopicNumber":  14,
                             "TopicLabel":  "Release the player upon encounter",
                             "NonHeroInstruction":  "【遭遇放走规则】只有这次野外遭遇里真正做主的那名领主才有资格决定是否放走玩家；普通士兵、随从或旁人无权正式放行。",
-                            "Instruction":  "【遭遇放走规则】当前话题只针对“你主动追上玩家后的强制遭遇”是否允许玩家直接离开。是否可谈、是否绝对禁止放走，都以本轮运行时规则为准。只有当你在正文里最终明确同意让玩家立刻脱离这次遭遇时，才算真的放走；若你还在索价、威胁、审问、试探、拖延或继续谈条件，就不算放走。正文只自然说话，不要自己写标签。",
+                            "Instruction":  "【遭遇放走规则】是否可谈、是否禁止放走，都以本轮运行时规则为准；只有NPC最终明确同意玩家立刻离开，才算真的放走。",
                             "PostprocessRules":  [
                                                      {
                                                          "Tag":  "[ACTION:LET_PLAYER_GO]",
-                                                         "Description":  "如果NPC在<latest_reply>里明确同意让玩家从这次被你追上的强制遭遇中立刻离开，就输出这个；若NPC还在谈条件、警告、威胁、索价、拖延，或没有明确放行，就不要输出"
+                                                         "Description":  "如果NPC在<latest_reply>里明确同意让玩家立刻离开当前遭遇，就输出这个；没有明确放行就不要输出"
                                                      }
                                                  ],
                             "TriggerKeywords":  [
