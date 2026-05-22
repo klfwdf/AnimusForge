@@ -1,11 +1,9 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using System.Runtime.CompilerServices;
-using HarmonyLib;
 using Helpers;
-using SandBox.GameComponents;
+using HarmonyLib;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Actions;
 using TaleWorlds.CampaignSystem.Encounters;
@@ -21,12 +19,11 @@ using TaleWorlds.Library;
 using TaleWorlds.Localization;
 using TaleWorlds.MountAndBlade;
 using TaleWorlds.MountAndBlade.ViewModelCollection.OrderOfBattle;
-using TaleWorlds.ObjectSystem;
 using TaleWorlds.SaveSystem;
 
 namespace AnimusForge;
 
-public static class TroopInspectionBehavior
+public static partial class TroopInspectionBehavior
 {
 	private sealed class TroopInspectionRuntime
 	{
@@ -34,19 +31,15 @@ public static class TroopInspectionBehavior
 
 		public TroopRoster InspectionPrisonerRoster { get; set; }
 
-		public TroopRoster HoldingRoster { get; set; }
+		public TroopRoster NotSelectedMemberRoster { get; set; }
 
-		public TroopRoster HoldingPrisonerRoster { get; set; }
+		public TroopRoster NotSelectedPrisonerRoster { get; set; }
+
+		public MobileParty HoldingDummyParty { get; set; }
 
 		public string InspectionSummary { get; set; }
 
-		public string HoldingSummary { get; set; }
-
-		public int PlayerOriginalHitPoints { get; set; }
-
-		public bool PlayerOriginalWasWounded { get; set; }
-
-		public MobileParty HoldingDummyParty { get; set; }
+		public string NotSelectedSummary { get; set; }
 	}
 
 	private sealed class PendingSelection
@@ -68,94 +61,25 @@ public static class TroopInspectionBehavior
 
 		public int DeadHeroesSkipped;
 
+		public int HeroLikeSkipped;
+
 		public int Errors;
 
 		public int TotalMen => RegularMen + Heroes;
 
 		public override string ToString()
 		{
-			return $"regular={RegularMen},heroes={Heroes},total={TotalMen},wounded={RegularWounded},xp={RegularXp},dead_heroes_skipped={DeadHeroesSkipped},errors={Errors}";
+			return $"regular={RegularMen},heroes={Heroes},total={TotalMen},wounded={RegularWounded},xp={RegularXp},dead_heroes_skipped={DeadHeroesSkipped},hero_like_skipped={HeroLikeSkipped},errors={Errors}";
 		}
 	}
 
-	private struct RosterTotals
-	{
-		public int Number;
 
-		public int Wounded;
-
-		public int Xp;
-
-		public override string ToString()
-		{
-			return $"number={Number},wounded={Wounded},xp={Xp}";
-		}
-	}
-
-	private sealed class TroopInspectionDummyPartyComponent : PartyComponent
-	{
-		private readonly CampaignVec2 _position;
-
-		private readonly TextObject _name;
-
-		private readonly Hero _owner;
-
-		private readonly Clan _clan;
-
-		public override Hero PartyOwner => _owner;
-
-		public override TextObject Name => _name;
-
-		public override Settlement HomeSettlement => null;
-
-		public override bool AvoidHostileActions => true;
-
-		public TroopInspectionDummyPartyComponent(CampaignVec2 position, TextObject name, Hero owner, Clan clan)
-		{
-			//IL_0007: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0008: Unknown result type (might be due to invalid IL or missing references)
-			_position = position;
-			_name = name;
-			_owner = owner;
-			_clan = clan;
-		}
-
-		public override Banner GetDefaultComponentBanner()
-		{
-			Clan clan = _clan;
-			if (clan == null)
-			{
-				return null;
-			}
-			return clan.Banner;
-		}
-
-		protected override void OnInitialize()
-		{
-			//IL_0022: Unknown result type (might be due to invalid IL or missing references)
-			((PartyComponent)this).MobileParty.ActualClan = _clan;
-			((PartyComponent)this).MobileParty.InitializeMobilePartyAroundPosition(TroopRoster.CreateDummyTroopRoster(), TroopRoster.CreateDummyTroopRoster(), _position, 0f, 0f, !_position.IsOnLand);
-			((PartyComponent)this).MobileParty.SetMoveModeHold();
-		}
-	}
-
-	public sealed class TroopInspectionSaveableTypeDefiner : SaveableTypeDefiner
-	{
-		public TroopInspectionSaveableTypeDefiner()
-			: base(711060)
-		{
-		}
-
-		protected override void DefineClassTypes()
-		{
-			AddClassDefinition(typeof(TroopInspectionDummyPartyComponent), 1);
-		}
-	}
 	private const string LogPrefix = "TroopInspection";
+
+	private static readonly bool VerboseInspectionLogs = false;
 
 	private const string DummyPartyPrefix = "animusforge_troop_inspection_dummy_";
 
-	private const string HoldingDummyPartyPrefix = "animusforge_troop_inspection_holding_";
 
 	private const string SelectionPoolDummyPartyPrefix = "animusforge_troop_inspection_selection_pool_";
 
@@ -165,40 +89,48 @@ public static class TroopInspectionBehavior
 
 	private static MobileParty _dummyParty;
 
-	private static MobileParty _holdingDummyParty;
-
-	private static MobileParty _selectionPoolDummyParty;
-
 	private static MapEvent _mapEvent;
 
 	private static string _dummyPartyStringId;
 
-	private static string _holdingDummyPartyStringId;
-
-	private static string _selectionPoolDummyPartyStringId;
-
 	private static bool _isOpening;
-
-	private static bool _cleanupDone;
-
-	private static Mission _activeInspectionMission;
 
 	private static bool _queuedOpenInspection;
 
 	private static float _queuedOpenInspectionAt;
 
+	private static bool _cleanupDone;
+
+	private static Mission _activeInspectionMission;
+
 	private static string _inspectionLogPath;
+
+	private static bool _playerStateCaptured;
+
+	private static int _playerOriginalHitPoints;
+
+	private static bool _playerOriginalWasWounded;
+
+	private static readonly FieldInfo TroopRosterTotalRegularsField = typeof(TroopRoster).GetField("_totalRegulars", BindingFlags.Instance | BindingFlags.NonPublic);
+
+	private static readonly FieldInfo TroopRosterTotalWoundedRegularsField = typeof(TroopRoster).GetField("_totalWoundedRegulars", BindingFlags.Instance | BindingFlags.NonPublic);
+
+	private static readonly FieldInfo TroopRosterTotalHeroesField = typeof(TroopRoster).GetField("_totalHeroes", BindingFlags.Instance | BindingFlags.NonPublic);
+
+	private static readonly FieldInfo TroopRosterTotalWoundedHeroesField = typeof(TroopRoster).GetField("_totalWoundedHeroes", BindingFlags.Instance | BindingFlags.NonPublic);
+
 
 	public static void RegisterHarmonyPatches(Harmony harmony)
 	{
-		if (harmony != null)
+		if (harmony == null)
 		{
-			TryPatchClass(harmony, typeof(TroopInspectionDeathRatePatch));
-			TryPatchClass(harmony, typeof(TroopInspectionMeleeDamagePatch));
-			TryPatchClass(harmony, typeof(TroopInspectionOrderOfBattlePatch));
-			TryPatchClass(harmony, typeof(TroopInspectionFormationIsolationPatch));
-			ReinforcementSystemCompatibility.EnsurePatched(harmony);
+			return;
 		}
+		TryPatchClass(harmony, typeof(TroopInspectionDeathRatePatch));
+		TryPatchClass(harmony, typeof(TroopInspectionMeleeDamagePatch));
+		TryPatchClass(harmony, typeof(TroopInspectionFormationIsolationPatch));
+		TryPatchClass(harmony, typeof(TroopInspectionOrderOfBattlePatch));
+		ReinforcementSystemCompatibility.EnsurePatched(harmony);
 	}
 
 	private static void TryPatchClass(Harmony harmony, Type patchType)
@@ -213,61 +145,6 @@ public static class TroopInspectionBehavior
 		}
 	}
 
-	public static void OpenInspectionFromTerminal()
-	{
-		Log("terminal_open");
-		if (_isOpening)
-		{
-			Display("检阅正在准备中。");
-			Log("precheck blocked: already opening " + BuildOpenStateSummary(MobileParty.MainParty));
-			return;
-		}
-		TryCleanupStaleInspectionStateBeforeOpen("terminal_open_stale_cleanup");
-		_isOpening = true;
-		_cleanupDone = false;
-		_activeInspectionMission = null;
-		_runtime = null;
-		try
-		{
-			if (!CanOpenFromCurrentState(out var mainParty, out var blockedReason))
-			{
-				Display(blockedReason);
-				Log("precheck blocked: " + blockedReason + " " + BuildOpenStateSummary(mainParty));
-				ResetPendingSelection("precheck_blocked");
-				return;
-			}
-			int num = CountHealthyNonPlayerTroops(PartyBase.MainParty.MemberRoster);
-			Log($"precheck wounded={Hero.MainHero.IsWounded} healthy_non_player={num} {BuildOpenStateSummary(mainParty)}");
-			if (Hero.MainHero.IsWounded)
-			{
-				Display("你受伤了，无法检阅部队。");
-				ResetPendingSelection("player_wounded");
-			}
-			else if (num <= 0)
-			{
-				Display("没有可检阅的健康士兵。");
-				ResetPendingSelection("no_healthy_troops");
-			}
-			else if (PlayerEncounter.Current != null || MapEvent.PlayerMapEvent != null || mainParty.MapEvent != null)
-			{
-				Display("当前遭遇状态无法检阅部队。");
-				Log("precheck blocked: existing encounter or player map event " + BuildOpenStateSummary(mainParty));
-				ResetPendingSelection("existing_encounter");
-			}
-			else
-			{
-				ReinforcementSystemCompatibility.EnsurePatched();
-				OpenInspectionTeamSelection(mainParty);
-			}
-		}
-		catch (Exception ex)
-		{
-			Log("open failed: " + ex.GetType().Name + ": " + ex.Message + "\n" + ex.StackTrace);
-			ResetPendingSelection("open_exception");
-			Display("打开检阅士兵失败。");
-		}
-	}
-
 	public static void OnEngineTick()
 	{
 		if (!_queuedOpenInspection)
@@ -279,42 +156,95 @@ public static class TroopInspectionBehavior
 			if (_runtime == null)
 			{
 				_queuedOpenInspection = false;
+				return;
 			}
-			else if (!((float)Environment.TickCount / 1000f < _queuedOpenInspectionAt) && !IsPartyScreenStillActive() && Mission.Current == null)
+			if ((float)Environment.TickCount / 1000f < _queuedOpenInspectionAt || IsPartyScreenStillActive() || Mission.Current != null)
 			{
-				_queuedOpenInspection = false;
-				_isOpening = true;
-				if (!CanOpenFromCurrentState(out var mainParty, out var blockedReason))
-				{
-					Display(blockedReason);
-					CleanupRuntime("queued_open_blocked");
-					_isOpening = false;
-				}
-				else
-				{
-					OpenInspectionMissionAfterSelection(mainParty);
-					_isOpening = false;
-					Display("士兵检阅开始。");
-				}
+				return;
 			}
+			_queuedOpenInspection = false;
+			_isOpening = true;
+			EnsureMainHeroReadyForInspection("queued_open");
+			if (!CanOpenFromCurrentState(out MobileParty mainParty, out string blockedReason))
+			{
+				Display(blockedReason);
+				CleanupRuntime("queued_open_blocked");
+				return;
+			}
+			OpenInspectionMissionAfterSelection(mainParty);
+			Display("士兵检阅开始。");
 		}
 		catch (Exception ex)
 		{
 			Log("queued inspection_open failed: " + ex.GetType().Name + ": " + ex.Message + "\n" + ex.StackTrace);
 			CleanupRuntime("queued_open_failed");
+			Display("打开检阅士兵失败。");
+		}
+		finally
+		{
 			_isOpening = false;
-			_queuedOpenInspection = false;
+		}
+	}
+
+	public static void OpenInspectionFromTerminal()
+	{
+		Log("terminal_open");
+		if (_isOpening)
+		{
+			Display("检阅正在准备中。");
+			Log("precheck blocked: already opening");
+			return;
+		}
+		TryCleanupStaleInspectionStateBeforeOpen("terminal_open_stale_cleanup");
+		EnsureMainHeroReadyForInspection("terminal_open");
+		_isOpening = true;
+		_cleanupDone = false;
+		_activeInspectionMission = null;
+		_runtime = null;
+		try
+		{
+			if (!CanOpenFromCurrentState(out MobileParty mainParty, out string blockedReason))
+			{
+				Display(blockedReason);
+				Log("precheck blocked: " + blockedReason);
+				ResetPendingSelection("precheck_blocked");
+				return;
+			}
+			int healthyInspectableTroops = CountHealthyNonPlayerTroops(PartyBase.MainParty.MemberRoster);
+			Log($"precheck {BuildMainHeroInspectionStateSummary()} healthy_non_player={healthyInspectableTroops} mission_current={Mission.Current != null} player_encounter={PlayerEncounter.Current != null} player_mapevent={MapEvent.PlayerMapEvent != null}");
+			if (Hero.MainHero.IsWounded)
+			{
+				Display("你受伤了，无法检阅部队。");
+				ResetPendingSelection("player_wounded");
+				return;
+			}
+			if (healthyInspectableTroops <= 0)
+			{
+				Display("没有可检阅的健康士兵。");
+				ResetPendingSelection("no_healthy_troops");
+				return;
+			}
+			if (PlayerEncounter.Current != null || MapEvent.PlayerMapEvent != null || mainParty.MapEvent != null)
+			{
+				Display("当前遭遇状态无法检阅部队。");
+				Log("precheck blocked: existing encounter or player map event");
+				ResetPendingSelection("existing_encounter");
+				return;
+			}
+			ReinforcementSystemCompatibility.EnsurePatched();
+			OpenInspectionTeamSelection(mainParty);
+		}
+		catch (Exception ex)
+		{
+			Log("open failed: " + ex.GetType().Name + ": " + ex.Message + "\n" + ex.StackTrace);
+			ResetPendingSelection("open_failed");
 			Display("打开检阅士兵失败。");
 		}
 	}
 
 	internal static bool IsCurrentInspectionRuntime(string dummyPartyStringId)
 	{
-		if (!string.IsNullOrEmpty(dummyPartyStringId))
-		{
-			return string.Equals(dummyPartyStringId, _dummyPartyStringId, StringComparison.Ordinal);
-		}
-		return false;
+		return !string.IsNullOrEmpty(dummyPartyStringId) && string.Equals(dummyPartyStringId, _dummyPartyStringId, StringComparison.Ordinal);
 	}
 
 	internal static bool ShouldSuppressReinforcementSystem(Mission mission)
@@ -323,7 +253,7 @@ public static class TroopInspectionBehavior
 		{
 			return false;
 		}
-		if (_isOpening || mission == _activeInspectionMission)
+		if (_isOpening || object.ReferenceEquals(mission, _activeInspectionMission))
 		{
 			return true;
 		}
@@ -341,40 +271,41 @@ public static class TroopInspectionBehavior
 	{
 		bool alreadyDone = _cleanupDone;
 		_cleanupDone = true;
-		Log("cleanup begin reason=" + reason + " already_done=" + alreadyDone + " " + BuildOpenStateSummary(MobileParty.MainParty));
-		MobileParty holdingDummyParty = _holdingDummyParty;
-		MobileParty dummyParty = _dummyParty;
-		string dummyPartyStringId = _dummyPartyStringId;
+		Log("cleanup begin reason=" + reason + " already_done=" + alreadyDone);
+		_activeInspectionMission = null;
+		TroopInspectionRuntime runtime = _runtime;
 		MapEvent mapEvent = ResolveInspectionMapEvent();
+		MobileParty dummyParty = _dummyParty;
+		string dummyId = _dummyPartyStringId;
+		MobileParty holdingParty = runtime?.HoldingDummyParty;
 		try
 		{
-			RestoreAndDestroyHoldingDummyParty(holdingDummyParty, "inspection_holding_cleanup");
-			CleanupOrphanHoldingDummyParties(holdingDummyParty, "inspection_holding_orphan_cleanup");
+			RestoreAndDestroyHoldingDummyParty(holdingParty, "inspection_holding_cleanup");
+			CleanupOrphanHoldingDummyParties(holdingParty, "inspection_holding_orphan_cleanup");
 		}
 		catch (Exception ex)
 		{
 			Log("cleanup holding_party failed: " + ex.GetType().Name + ": " + ex.Message);
 		}
-		DestroySelectionPoolDummyParty("cleanup_runtime");
 		CleanupOrphanSelectionPoolDummyParties("cleanup_selection_pool_orphan");
-		DestroyInspectionDummyParty(dummyParty, dummyPartyStringId, "inspection_dummy_cleanup");
-		CleanupOrphanInspectionDummyParties(dummyParty, "inspection_dummy_orphan_cleanup");
-		CleanupMapEventAndPlayerEncounter(mapEvent, reason);
-		_activeInspectionMission = null;
-		_pendingSelection = null;
-		_queuedOpenInspection = false;
-		_isOpening = false;
-		_runtime = null;
-		_holdingDummyParty = null;
-		_holdingDummyPartyStringId = null;
-		_selectionPoolDummyParty = null;
-		_selectionPoolDummyPartyStringId = null;
+		_mapEvent = null;
 		_dummyParty = null;
 		_dummyPartyStringId = null;
-		_mapEvent = null;
-		Log("cleanup end reason=" + reason + " " + BuildOpenStateSummary(MobileParty.MainParty));
+		if (runtime != null)
+		{
+			runtime.HoldingDummyParty = null;
+		}
+		_pendingSelection = null;
+		_queuedOpenInspection = false;
+		_runtime = null;
+		CleanupMapEventAndPlayerEncounter(mapEvent, reason);
+		DestroyInspectionDummyParty(dummyParty, dummyId, "inspection_dummy_cleanup");
+		CleanupOrphanInspectionDummyParties(dummyParty, "inspection_dummy_orphan_cleanup");
+		RestoreMainHeroAfterInspection(reason);
+		Log("cleanup end reason=" + reason);
 	}
 
+	
 
 	private static void TryCleanupStaleInspectionStateBeforeOpen(string reason)
 	{
@@ -384,136 +315,24 @@ public static class TroopInspectionBehavior
 			{
 				return;
 			}
-			MapEvent playerEncounterMapEvent = null;
+			MapEvent encounterMapEvent = null;
 			if (PlayerEncounter.Current != null)
 			{
-				playerEncounterMapEvent = GetPrivateField<MapEvent>(PlayerEncounter.Current, "_mapEvent");
+				encounterMapEvent = GetPrivateField<MapEvent>(PlayerEncounter.Current, "_mapEvent");
 			}
-			bool hasStaleState = _runtime != null || _pendingSelection != null || _queuedOpenInspection || _isOpening || _activeInspectionMission != null || _dummyParty != null || _holdingDummyParty != null || _selectionPoolDummyParty != null || _mapEvent != null;
-			bool hasInspectionEncounter = IsInspectionMapEvent(playerEncounterMapEvent) || IsInspectionMapEvent(MapEvent.PlayerMapEvent) || IsInspectionMapEvent(MobileParty.MainParty?.MapEvent);
+			bool hasStaleState = _runtime != null || _pendingSelection != null || _queuedOpenInspection || _isOpening || _activeInspectionMission != null || _dummyParty != null || _mapEvent != null;
+			bool hasInspectionEncounter = IsInspectionMapEvent(encounterMapEvent) || IsInspectionMapEvent(MapEvent.PlayerMapEvent) || IsInspectionMapEvent(MobileParty.MainParty?.MapEvent);
 			bool hasInspectionDummy = HasActiveInspectionDummyParty();
-			bool hasEmptyStaleEncounter = _cleanupDone && PlayerEncounter.Current != null && playerEncounterMapEvent == null && MapEvent.PlayerMapEvent == null && MobileParty.MainParty?.MapEvent == null;
+			bool hasEmptyStaleEncounter = _cleanupDone && PlayerEncounter.Current != null && encounterMapEvent == null && MapEvent.PlayerMapEvent == null && MobileParty.MainParty?.MapEvent == null;
 			if (hasStaleState || hasInspectionEncounter || hasInspectionDummy || hasEmptyStaleEncounter)
 			{
-				Log("stale cleanup before open reason=" + reason + " stale_state=" + hasStaleState + " inspection_encounter=" + hasInspectionEncounter + " inspection_dummy=" + hasInspectionDummy + " empty_stale_encounter=" + hasEmptyStaleEncounter + " " + BuildOpenStateSummary(MobileParty.MainParty));
-				if (_mapEvent == null)
-				{
-					_mapEvent = ResolveInspectionMapEvent();
-				}
+				Log("stale cleanup before open reason=" + reason + " stale_state=" + hasStaleState + " inspection_encounter=" + hasInspectionEncounter + " inspection_dummy=" + hasInspectionDummy + " empty_stale_encounter=" + hasEmptyStaleEncounter);
 				CleanupRuntime(reason);
 			}
 		}
 		catch (Exception ex)
 		{
 			Log("stale cleanup before open failed: " + ex.GetType().Name + ": " + ex.Message);
-		}
-	}
-
-	private static void RestoreAndDestroyHoldingDummyParty(MobileParty holdingDummyParty, string label)
-	{
-		if (holdingDummyParty == null)
-		{
-			return;
-		}
-		MoveAllMembersBackToMainParty(holdingDummyParty, label);
-		MoveAllPrisonersBackToMainParty(holdingDummyParty, label + "_prisoners");
-		DestroyHoldingDummyParty(holdingDummyParty, label);
-	}
-
-	private static void CleanupOrphanHoldingDummyParties(MobileParty exceptParty, string label)
-	{
-		try
-		{
-			List<MobileParty> parties = new List<MobileParty>();
-			foreach (MobileParty party in MobileParty.All)
-			{
-				if (party != null && !object.ReferenceEquals(party, exceptParty) && party.IsActive && IsInspectionHoldingDummyParty(party))
-				{
-					parties.Add(party);
-				}
-			}
-			foreach (MobileParty party2 in parties)
-			{
-				RestoreAndDestroyHoldingDummyParty(party2, label);
-			}
-		}
-		catch (Exception ex)
-		{
-			Log("cleanup orphan holding failed: " + ex.GetType().Name + ": " + ex.Message);
-		}
-	}
-
-	private static void CleanupOrphanSelectionPoolDummyParties(string label)
-	{
-		try
-		{
-			List<MobileParty> parties = new List<MobileParty>();
-			foreach (MobileParty party in MobileParty.All)
-			{
-				if (party != null && party.IsActive && IsInspectionSelectionPoolDummyParty(party))
-				{
-					parties.Add(party);
-				}
-			}
-			foreach (MobileParty party2 in parties)
-			{
-				ClearRosterDirect(party2.MemberRoster);
-				ClearRosterDirect(party2.PrisonRoster);
-				DestroyPartyAction.Apply((PartyBase)null, party2);
-				Log("selection_pool_orphan_destroyed label=" + label + " id=" + (((MBObjectBase)party2).StringId ?? "null"));
-			}
-		}
-		catch (Exception ex)
-		{
-			Log("cleanup orphan selection_pool failed: " + ex.GetType().Name + ": " + ex.Message);
-		}
-	}
-
-	private static void DestroyInspectionDummyParty(MobileParty dummyParty, string expectedStringId, string label)
-	{
-		try
-		{
-			if (dummyParty == null)
-			{
-				return;
-			}
-			string id = ((MBObjectBase)dummyParty).StringId ?? "";
-			if (dummyParty.IsActive && id.StartsWith("animusforge_troop_inspection_dummy_", StringComparison.Ordinal) && (string.IsNullOrEmpty(expectedStringId) || string.Equals(id, expectedStringId, StringComparison.Ordinal) || id.StartsWith("animusforge_troop_inspection_dummy_", StringComparison.Ordinal)))
-			{
-				DestroyPartyAction.Apply((PartyBase)null, dummyParty);
-				Log("cleanup dummy_party_destroyed label=" + label + " id=" + id);
-			}
-			else
-			{
-				Log("cleanup dummy_party_destroy_skipped label=" + label + " active=" + dummyParty.IsActive + " id=" + id);
-			}
-		}
-		catch (Exception ex)
-		{
-			Log("cleanup dummy_party failed: " + ex.GetType().Name + ": " + ex.Message);
-		}
-	}
-
-	private static void CleanupOrphanInspectionDummyParties(MobileParty exceptParty, string label)
-	{
-		try
-		{
-			List<MobileParty> parties = new List<MobileParty>();
-			foreach (MobileParty party in MobileParty.All)
-			{
-				if (party != null && !object.ReferenceEquals(party, exceptParty) && party.IsActive && IsInspectionDummyParty(party))
-				{
-					parties.Add(party);
-				}
-			}
-			foreach (MobileParty party2 in parties)
-			{
-				DestroyInspectionDummyParty(party2, null, label);
-			}
-		}
-		catch (Exception ex)
-		{
-			Log("cleanup orphan dummy failed: " + ex.GetType().Name + ": " + ex.Message);
 		}
 	}
 
@@ -566,16 +385,12 @@ public static class TroopInspectionBehavior
 		{
 			if (mapEvent != null)
 			{
-				Log("cleanup mapevent reason=" + reason + " " + MapEventRuntimeSummary(mapEvent));
+				Log($"cleanup_mapevent reason={reason} state={mapEvent.State} battle_state={mapEvent.BattleState} finalized={mapEvent.IsFinalized} has_winner={mapEvent.HasWinner}");
 				if (!mapEvent.IsFinalized)
 				{
 					mapEvent.ResetBattleState();
 					mapEvent.FinalizeEvent();
 					Log("cleanup map_event_finalized reason=" + reason);
-				}
-				else
-				{
-					Log("cleanup map_event_already_finalized reason=" + reason);
 				}
 			}
 		}
@@ -596,15 +411,55 @@ public static class TroopInspectionBehavior
 					ClearPlayerEncounterProperty();
 					Log("cleanup player_encounter_context_cleared reason=" + reason + " empty_stale=" + clearEmptyStaleEncounter);
 				}
-				else
-				{
-					Log("cleanup player_encounter_skipped reason=" + reason + " current=" + MapEventRuntimeSummary(currentEncounterMapEvent) + " ours=" + MapEventRuntimeSummary(mapEvent));
-				}
 			}
 		}
-		catch (Exception ex2)
+		catch (Exception ex)
 		{
-			Log("cleanup player_encounter failed: " + ex2.GetType().Name + ": " + ex2.Message);
+			Log("cleanup player_encounter failed: " + ex.GetType().Name + ": " + ex.Message);
+		}
+	}
+
+	private static void DestroyInspectionDummyParty(MobileParty dummyParty, string expectedStringId, string label)
+	{
+		try
+		{
+			if (dummyParty == null)
+			{
+				return;
+			}
+			string id = dummyParty.StringId ?? "";
+			if (dummyParty.IsActive && id.StartsWith(DummyPartyPrefix, StringComparison.Ordinal) && (string.IsNullOrEmpty(expectedStringId) || string.Equals(id, expectedStringId, StringComparison.Ordinal)))
+			{
+				DestroyPartyAction.Apply(null, dummyParty);
+				Log("cleanup dummy_party_destroyed label=" + label + " id=" + id);
+			}
+		}
+		catch (Exception ex)
+		{
+			Log("cleanup dummy_party failed: " + ex.GetType().Name + ": " + ex.Message);
+		}
+	}
+
+	private static void CleanupOrphanInspectionDummyParties(MobileParty exceptParty, string label)
+	{
+		try
+		{
+			List<MobileParty> parties = new List<MobileParty>();
+			foreach (MobileParty party in MobileParty.All)
+			{
+				if (party != null && !object.ReferenceEquals(party, exceptParty) && party.IsActive && IsInspectionDummyParty(party))
+				{
+					parties.Add(party);
+				}
+			}
+			foreach (MobileParty party in parties)
+			{
+				DestroyInspectionDummyParty(party, null, label);
+			}
+		}
+		catch (Exception ex)
+		{
+			Log("cleanup orphan dummy failed: " + ex.GetType().Name + ": " + ex.Message);
 		}
 	}
 
@@ -614,7 +469,7 @@ public static class TroopInspectionBehavior
 		{
 			foreach (MobileParty party in MobileParty.All)
 			{
-				if (party != null && party.IsActive && IsAnyInspectionDummyParty(party))
+				if (party != null && party.IsActive && (IsInspectionDummyParty(party) || IsInspectionHoldingDummyParty(party) || IsInspectionSelectionPoolDummyParty(party)))
 				{
 					return true;
 				}
@@ -657,7 +512,7 @@ public static class TroopInspectionBehavior
 			foreach (MapEventParty party in side.Parties)
 			{
 				MobileParty mobileParty = party?.Party?.MobileParty;
-				if (IsAnyInspectionDummyParty(mobileParty))
+				if (IsInspectionDummyParty(mobileParty))
 				{
 					return true;
 				}
@@ -669,32 +524,11 @@ public static class TroopInspectionBehavior
 		return false;
 	}
 
-	private static bool IsAnyInspectionDummyParty(MobileParty party)
-	{
-		return IsInspectionDummyParty(party) || IsInspectionHoldingDummyParty(party) || IsInspectionSelectionPoolDummyParty(party);
-	}
-
 	private static bool IsInspectionDummyParty(MobileParty party)
-	{
-		return PartyIdStartsWith(party, "animusforge_troop_inspection_dummy_");
-	}
-
-	private static bool IsInspectionHoldingDummyParty(MobileParty party)
-	{
-		return PartyIdStartsWith(party, "animusforge_troop_inspection_holding_");
-	}
-
-	private static bool IsInspectionSelectionPoolDummyParty(MobileParty party)
-	{
-		return PartyIdStartsWith(party, "animusforge_troop_inspection_selection_pool_");
-	}
-
-	private static bool PartyIdStartsWith(MobileParty party, string prefix)
 	{
 		try
 		{
-			string id = ((MBObjectBase)party)?.StringId ?? "";
-			return id.StartsWith(prefix, StringComparison.Ordinal);
+			return ((party != null) ? party.StringId : null)?.StartsWith(DummyPartyPrefix, StringComparison.Ordinal) == true;
 		}
 		catch
 		{
@@ -702,76 +536,16 @@ public static class TroopInspectionBehavior
 		}
 	}
 
-	private static string BuildOpenStateSummary(MobileParty mainParty)
-	{
-		try
-		{
-			MapEvent encounterMapEvent = null;
-			if (PlayerEncounter.Current != null)
-			{
-				encounterMapEvent = GetPrivateField<MapEvent>(PlayerEncounter.Current, "_mapEvent");
-			}
-			return "mission_current=" + (Mission.Current != null)
-				+ ",party_screen=" + IsPartyScreenStillActive()
-				+ ",player_encounter=" + (PlayerEncounter.Current != null)
-				+ ",encounter_map={" + MapEventRuntimeSummary(encounterMapEvent) + "}"
-				+ ",player_mapevent={" + MapEventRuntimeSummary(MapEvent.PlayerMapEvent) + "}"
-				+ ",main_mapevent={" + MapEventRuntimeSummary(mainParty?.MapEvent) + "}"
-				+ ",is_opening=" + _isOpening
-				+ ",queued=" + _queuedOpenInspection
-				+ ",active_mission=" + (_activeInspectionMission != null)
-				+ ",cleanup_done=" + _cleanupDone
-				+ ",runtime=" + (_runtime != null)
-				+ ",pending_selection=" + (_pendingSelection != null)
-				+ ",dummy={" + PartyRuntimeSummary(_dummyParty) + "}"
-				+ ",holding={" + PartyRuntimeSummary(_holdingDummyParty) + "}"
-				+ ",selection_pool={" + PartyRuntimeSummary(_selectionPoolDummyParty) + "}";
-		}
-		catch (Exception ex)
-		{
-			return "state_summary_error=" + ex.GetType().Name + ":" + ex.Message;
-		}
-	}
 
-	private static string PartyRuntimeSummary(MobileParty party)
+	private static bool IsInspectionSelectionPoolDummyParty(MobileParty party)
 	{
-		if (party == null)
-		{
-			return "null";
-		}
 		try
 		{
-			return "id=" + (((MBObjectBase)party).StringId ?? "null")
-				+ ",active=" + party.IsActive
-				+ ",visible=" + party.IsVisible
-				+ ",has_mapevent=" + (party.MapEvent != null)
-				+ ",members=" + ((party.MemberRoster != null) ? party.MemberRoster.TotalManCount : -1)
-				+ ",prisoners=" + ((party.PrisonRoster != null) ? party.PrisonRoster.TotalManCount : -1);
+			return party?.StringId?.StartsWith(SelectionPoolDummyPartyPrefix, StringComparison.Ordinal) == true;
 		}
-		catch (Exception ex)
+		catch
 		{
-			return "error=" + ex.GetType().Name + ":" + ex.Message;
-		}
-	}
-
-	private static string MapEventRuntimeSummary(MapEvent mapEvent)
-	{
-		if (mapEvent == null)
-		{
-			return "null";
-		}
-		try
-		{
-			return "state=" + mapEvent.State
-				+ ",battle_state=" + mapEvent.BattleState
-				+ ",finalized=" + mapEvent.IsFinalized
-				+ ",has_winner=" + mapEvent.HasWinner
-				+ ",is_player_mapevent=" + object.ReferenceEquals(MapEvent.PlayerMapEvent, mapEvent)
-				+ ",is_inspection=" + IsInspectionMapEvent(mapEvent);
-		}
-		catch (Exception ex)
-		{
-			return "error=" + ex.GetType().Name + ":" + ex.Message;
+			return false;
 		}
 	}
 
@@ -813,212 +587,89 @@ public static class TroopInspectionBehavior
 
 	private static int CountHealthyNonPlayerTroops(TroopRoster roster)
 	{
-		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
-		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
-		int num = 0;
+		int count = 0;
 		if (roster == null)
 		{
 			return 0;
 		}
-		foreach (TroopRosterElement item in (List<TroopRosterElement>)(object)roster.GetTroopRoster())
+		foreach (TroopRosterElement item in roster.GetTroopRoster())
 		{
-			TroopRosterElement current = item;
-			CharacterObject character = current.Character;
-			if (character != null && !((BasicCharacterObject)character).IsPlayerCharacter)
+			CharacterObject character = item.Character;
+			if (character == null || character.IsPlayerCharacter)
 			{
-				num += Math.Max(0, current.Number - current.WoundedNumber);
+				continue;
 			}
+			count += Math.Max(0, item.Number - item.WoundedNumber);
 		}
-		return num;
+		return count;
 	}
+
 
 	private static void OpenInspectionTeamSelection(MobileParty mainParty)
 	{
-		//IL_0098: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_010e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_011a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0126: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0130: Expected O, but got Unknown
-		//IL_0130: Expected O, but got Unknown
-		//IL_0130: Expected O, but got Unknown
-		//IL_0130: Expected O, but got Unknown
-		//IL_0130: Expected O, but got Unknown
-		TroopRoster val = BuildSelectableRoster(mainParty.MemberRoster);
-		MobileParty mainParty2 = MobileParty.MainParty;
-		object obj = ((mainParty2 != null) ? mainParty2.PrisonRoster : null);
-		if (obj == null)
+		PrepareMainPartyRosterStateForInspection("before_selection");
+		TroopRoster selectableMembers = BuildSelectableRoster(mainParty.MemberRoster);
+		TroopRoster selectablePrisoners = BuildSelectablePrisonerRoster(MobileParty.MainParty?.PrisonRoster ?? PartyBase.MainParty?.PrisonRoster);
+		TroopRoster inspectionMembers = TroopRoster.CreateDummyTroopRoster();
+		AddPlayerToInspectionRoster(inspectionMembers);
+		TroopRoster inspectionPrisoners = TroopRoster.CreateDummyTroopRoster();
+		_pendingSelection = new PendingSelection
 		{
-			PartyBase mainParty3 = PartyBase.MainParty;
-			obj = ((mainParty3 != null) ? mainParty3.PrisonRoster : null);
-		}
-		TroopRoster val2 = BuildSelectablePrisonerRoster((TroopRoster)obj);
-		TroopRoster val3 = TroopRoster.CreateDummyTroopRoster();
-		TroopRoster rightPrisonerRoster = TroopRoster.CreateDummyTroopRoster();
-		AddPlayerToInspectionRoster(val3);
-		MobileParty val4 = CreateInspectionSelectionPoolDummyParty(mainParty, val, val2);
-		PendingSelection obj2 = new PendingSelection
-		{
-			PlayerOriginalHitPoints = GetMainHeroHitPoints()
+			PlayerOriginalHitPoints = Hero.MainHero?.HitPoints ?? 0,
+			PlayerOriginalWasWounded = Hero.MainHero?.IsWounded ?? false
 		};
-		Hero mainHero = Hero.MainHero;
-		obj2.PlayerOriginalWasWounded = mainHero != null && mainHero.IsWounded;
-		_pendingSelection = obj2;
-		TroopRoster memberRoster = val4.MemberRoster;
-		TroopRoster prisonRoster = val4.PrisonRoster;
-		TextObject val5 = new TextObject("可选成员 / 未参加检阅");
-		TextObject val6 = new TextObject("检阅队（玩家固定属于此队）");
-		int leftMemberLimit = Math.Max(val.TotalManCount, 0);
-		int leftPrisonerLimit = Math.Max(val2.TotalManCount, 0);
-		PartyBase party = mainParty.Party;
-		int rightMemberLimit = Math.Max((party != null) ? party.PartySizeLimit : (val.TotalManCount + 1), val.TotalManCount + 1);
-		PartyBase mainParty4 = PartyBase.MainParty;
-		OpenInspectionSelectionScreen(val4, memberRoster, prisonRoster, val3, rightPrisonerRoster, val5, val6, leftMemberLimit, leftPrisonerLimit, rightMemberLimit, Math.Max((mainParty4 != null) ? mainParty4.PrisonerSizeLimit : val2.TotalManCount, val2.TotalManCount), new PartyPresentationDoneButtonConditionDelegate(InspectionTeamDoneCondition), new PartyScreenClosedDelegate(OnInspectionTeamScreenClosed), new IsTroopTransferableDelegate(TroopInspectionTroopTransferableDelegate));
-		object arg = val4.MemberRoster.TotalManCount;
-		object arg2 = val4.PrisonRoster.TotalManCount;
-		MobileParty mainParty5 = MobileParty.MainParty;
-		int? obj3;
-		if (mainParty5 == null)
-		{
-			obj3 = null;
-		}
-		else
-		{
-			TroopRoster prisonRoster2 = mainParty5.PrisonRoster;
-			obj3 = ((prisonRoster2 != null) ? new int?(prisonRoster2.TotalManCount) : ((int?)null));
-		}
-		int? num = obj3;
-		int num2;
-		if (!num.HasValue)
-		{
-			PartyBase mainParty6 = PartyBase.MainParty;
-			int? obj4;
-			if (mainParty6 == null)
-			{
-				obj4 = null;
-			}
-			else
-			{
-				TroopRoster prisonRoster3 = mainParty6.PrisonRoster;
-				obj4 = ((prisonRoster3 != null) ? new int?(prisonRoster3.TotalManCount) : ((int?)null));
-			}
-			num2 = obj4 ?? (-1);
-		}
-		else
-		{
-			num2 = num.GetValueOrDefault();
-		}
-		Log($"selection_screen_open left_members={arg} left_prisoners={arg2} source_prisoners={num2}");
+		TextObject leftName = new TextObject("可选成员 / 未参加检阅");
+		TextObject rightName = new TextObject("检阅队（玩家固定属于此队）");
+		int leftMemberLimit = Math.Max(selectableMembers.TotalManCount, 0);
+		int leftPrisonerLimit = Math.Max(selectablePrisoners.TotalManCount, 0);
+		int rightMemberLimit = Math.Max(mainParty.Party?.PartySizeLimit ?? (selectableMembers.TotalManCount + 1), selectableMembers.TotalManCount + 1);
+		int rightPrisonerLimit = Math.Max(PartyBase.MainParty?.PrisonerSizeLimit ?? selectablePrisoners.TotalManCount, selectablePrisoners.TotalManCount);
+		OpenInspectionSelectionScreen(null, selectableMembers, selectablePrisoners, inspectionMembers, inspectionPrisoners, leftName, rightName, leftMemberLimit, leftPrisonerLimit, rightMemberLimit, rightPrisonerLimit, InspectionTeamDoneCondition, OnInspectionTeamScreenClosed, TroopInspectionTroopTransferableDelegate);
+		Log($"selection_screen_open helper=dummy_roster left_members={selectableMembers.TotalManCount} left_prisoners={selectablePrisoners.TotalManCount} source_prisoners={(PartyBase.MainParty?.PrisonRoster?.TotalManCount ?? -1)}");
 	}
 
 	private static void OpenInspectionSelectionScreen(MobileParty leftOwnerParty, TroopRoster leftMemberRoster, TroopRoster leftPrisonerRoster, TroopRoster rightMemberRoster, TroopRoster rightPrisonerRoster, TextObject leftPartyName, TextObject rightPartyName, int leftMemberLimit, int leftPrisonerLimit, int rightMemberLimit, int rightPrisonerLimit, PartyPresentationDoneButtonConditionDelegate doneButtonCondition, PartyScreenClosedDelegate onPartyScreenClosed, IsTroopTransferableDelegate isTroopTransferable)
 	{
-		//IL_0000: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0006: Expected O, but got Unknown
-		//IL_0008: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0177: Unknown result type (might be due to invalid IL or missing references)
-		//IL_017f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0187: Unknown result type (might be due to invalid IL or missing references)
-		//IL_018f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0194: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0195: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0197: Unknown result type (might be due to invalid IL or missing references)
-		//IL_011a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_011f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0125: Expected O, but got Unknown
-		PartyScreenLogic val = new PartyScreenLogic();
-		PartyScreenLogicInitializationData val2 = new PartyScreenLogicInitializationData
+		PartyScreenLogic logic = new PartyScreenLogic();
+		PartyScreenLogicInitializationData data = new PartyScreenLogicInitializationData
 		{
-			LeftOwnerParty = ((leftOwnerParty != null) ? leftOwnerParty.Party : null)
+			LeftOwnerParty = leftOwnerParty?.Party,
+			RightOwnerParty = MobileParty.MainParty?.Party,
+			LeftMemberRoster = leftMemberRoster ?? TroopRoster.CreateDummyTroopRoster(),
+			LeftPrisonerRoster = leftPrisonerRoster ?? TroopRoster.CreateDummyTroopRoster(),
+			RightMemberRoster = rightMemberRoster ?? TroopRoster.CreateDummyTroopRoster(),
+			RightPrisonerRoster = rightPrisonerRoster ?? TroopRoster.CreateDummyTroopRoster(),
+			LeftLeaderHero = leftOwnerParty?.LeaderHero,
+			RightLeaderHero = PartyBase.MainParty?.LeaderHero,
+			LeftPartyMembersSizeLimit = Math.Max(0, leftMemberLimit),
+			LeftPartyPrisonersSizeLimit = Math.Max(0, leftPrisonerLimit),
+			RightPartyMembersSizeLimit = Math.Max(1, rightMemberLimit),
+			RightPartyPrisonersSizeLimit = Math.Max(0, rightPrisonerLimit),
+			LeftPartyName = leftPartyName,
+			RightPartyName = rightPartyName,
+			TroopTransferableDelegate = isTroopTransferable,
+			CanTalkToTroopDelegate = null,
+			PartyPresentationDoneButtonDelegate = InspectionSelectionDoneHandler,
+			PartyPresentationDoneButtonConditionDelegate = doneButtonCondition,
+			PartyPresentationCancelButtonActivateDelegate = null,
+			PartyPresentationCancelButtonDelegate = null,
+			PartyScreenClosedDelegate = onPartyScreenClosed,
+			IsDismissMode = true,
+			IsTroopUpgradesDisabled = true,
+			Header = null,
+			TransferHealthiesGetWoundedsFirst = true,
+			ShowProgressBar = false,
+			MemberTransferState = PartyScreenLogic.TransferState.Transferable,
+			PrisonerTransferState = PartyScreenLogic.TransferState.Transferable,
+			AccompanyingTransferState = PartyScreenLogic.TransferState.Transferable,
+			PartyScreenMode = PartyScreenHelper.PartyScreenMode.Normal
 		};
-		MobileParty mainParty = MobileParty.MainParty;
-		val2.RightOwnerParty = ((mainParty != null) ? mainParty.Party : null);
-		val2.LeftMemberRoster = leftMemberRoster ?? TroopRoster.CreateDummyTroopRoster();
-		val2.LeftPrisonerRoster = leftPrisonerRoster ?? TroopRoster.CreateDummyTroopRoster();
-		val2.RightMemberRoster = rightMemberRoster ?? TroopRoster.CreateDummyTroopRoster();
-		val2.RightPrisonerRoster = rightPrisonerRoster ?? TroopRoster.CreateDummyTroopRoster();
-		val2.LeftLeaderHero = ((leftOwnerParty != null) ? leftOwnerParty.LeaderHero : null);
-		PartyBase mainParty2 = PartyBase.MainParty;
-		val2.RightLeaderHero = ((mainParty2 != null) ? mainParty2.LeaderHero : null);
-		val2.LeftPartyMembersSizeLimit = Math.Max(0, leftMemberLimit);
-		val2.LeftPartyPrisonersSizeLimit = Math.Max(0, leftPrisonerLimit);
-		val2.RightPartyMembersSizeLimit = Math.Max(1, rightMemberLimit);
-		val2.RightPartyPrisonersSizeLimit = Math.Max(0, rightPrisonerLimit);
-		val2.LeftPartyName = leftPartyName;
-		val2.RightPartyName = rightPartyName;
-		val2.TroopTransferableDelegate = isTroopTransferable;
-		val2.CanTalkToTroopDelegate = null;
-		val2.PartyPresentationDoneButtonDelegate = InspectionSelectionDoneHandler;
-		val2.PartyPresentationDoneButtonConditionDelegate = doneButtonCondition;
-		val2.PartyPresentationCancelButtonActivateDelegate = null;
-		val2.PartyPresentationCancelButtonDelegate = null;
-		val2.PartyScreenClosedDelegate = onPartyScreenClosed;
-		val2.IsDismissMode = false;
-		val2.IsTroopUpgradesDisabled = true;
-		val2.Header = null;
-		val2.TransferHealthiesGetWoundedsFirst = true;
-		val2.ShowProgressBar = false;
-		val2.MemberTransferState = PartyScreenLogic.TransferState.Transferable;
-		val2.PrisonerTransferState = PartyScreenLogic.TransferState.Transferable;
-		val2.AccompanyingTransferState = PartyScreenLogic.TransferState.Transferable;
-		val2.PartyScreenMode = PartyScreenHelper.PartyScreenMode.Normal;
-		PartyScreenLogicInitializationData val4 = val2;
-		val.Initialize(val4);
-		PartyState val5 = Game.Current.GameStateManager.CreateState<PartyState>();
-		val5.PartyScreenLogic = val;
-		val5.IsDonating = false;
-		val5.PartyScreenMode = PartyScreenHelper.PartyScreenMode.Normal;
-		Game.Current.GameStateManager.PushState((GameState)(object)val5, 0);
-	}
-
-	private static MobileParty CreateInspectionSelectionPoolDummyParty(MobileParty mainParty, TroopRoster members, TroopRoster prisoners)
-	{
-		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
-		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0069: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0070: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0084: Expected O, but got Unknown
-		DestroySelectionPoolDummyParty("recreate_selection_pool");
-		CampaignVec2 position = mainParty.Position;
-		Vec2 val = ResolveEncounterDirection(mainParty);
-		CampaignVec2 position2 = position + val * 0.2f;
-		_selectionPoolDummyPartyStringId = "animusforge_troop_inspection_selection_pool_" + DateTime.UtcNow.Ticks + "_" + MBRandom.RandomInt(1000000);
-		_selectionPoolDummyParty = MobileParty.CreateParty(_selectionPoolDummyPartyStringId, new TroopInspectionDummyPartyComponent(position2, new TextObject("可选成员 / 未参加检阅"), Hero.MainHero, Clan.PlayerClan));
-		if (_selectionPoolDummyParty == null)
-		{
-			throw new InvalidOperationException("Failed to create inspection selection pool dummy party.");
-		}
-		_selectionPoolDummyParty.IsVisible = false;
-		_selectionPoolDummyParty.SetMoveModeHold();
-		CopyRosterInto(members, _selectionPoolDummyParty.MemberRoster);
-		CopyRosterInto(prisoners, _selectionPoolDummyParty.PrisonRoster);
-		return _selectionPoolDummyParty;
-	}
-
-	private static void CopyRosterInto(TroopRoster sourceRoster, TroopRoster targetRoster)
-	{
-		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
-		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
-		if (sourceRoster == null || targetRoster == null)
-		{
-			return;
-		}
-		foreach (TroopRosterElement item in SnapshotRoster(sourceRoster))
-		{
-			TroopRosterElement current = item;
-			if (current.Character != null && current.Number > 0)
-			{
-				targetRoster.Add(current);
-			}
-		}
+		logic.Initialize(data);
+		PartyState state = Game.Current.GameStateManager.CreateState<PartyState>();
+		state.PartyScreenLogic = logic;
+		state.IsDonating = false;
+		state.PartyScreenMode = PartyScreenHelper.PartyScreenMode.Normal;
+		Game.Current.GameStateManager.PushState((GameState)(object)state, 0);
 	}
 
 	private static bool InspectionSelectionDoneHandler(TroopRoster leftMemberRoster, TroopRoster leftPrisonRoster, TroopRoster rightMemberRoster, TroopRoster rightPrisonRoster, FlattenedTroopRoster takenPrisonerRoster, FlattenedTroopRoster releasedPrisonerRoster, bool isForced, PartyBase leftParty = null, PartyBase rightParty = null)
@@ -1028,7 +679,7 @@ public static class TroopInspectionBehavior
 
 	private static Tuple<bool, TextObject> InspectionTeamDoneCondition(TroopRoster leftMemberRoster, TroopRoster leftPrisonRoster, TroopRoster rightMemberRoster, TroopRoster rightPrisonRoster, int leftLimitNum, int rightLimitNum)
 	{
-		return new Tuple<bool, TextObject>(item1: true, TextObject.GetEmpty());
+		return new Tuple<bool, TextObject>(true, TextObject.GetEmpty());
 	}
 
 	private static void OnInspectionTeamScreenClosed(PartyBase leftOwnerParty, TroopRoster leftMemberRoster, TroopRoster leftPrisonRoster, PartyBase rightOwnerParty, TroopRoster rightMemberRoster, TroopRoster rightPrisonRoster, bool fromCancel)
@@ -1046,31 +697,28 @@ public static class TroopInspectionBehavior
 				ResetPendingSelection("inspection_pending_missing");
 				return;
 			}
-			TroopRoster val = BuildSelectionRosterFromUi(rightMemberRoster);
-			TroopRoster sourceRoster = BuildPrisonerSelectionRosterFromUi(rightPrisonRoster);
-			AddPlayerToInspectionRoster(val);
-			TroopRoster sourceRoster2 = BuildSelectionRosterFromUi(leftMemberRoster);
-			TroopRoster sourceRoster3 = BuildPrisonerSelectionRosterFromUi(leftPrisonRoster);
-			DestroySelectionPoolDummyParty("selection_done");
+			TroopRoster inspectionMembers = BuildSelectionRosterFromUi(rightMemberRoster);
+			AddPlayerToInspectionRoster(inspectionMembers);
+			TroopRoster inspectionPrisoners = BuildPrisonerSelectionRosterFromUi(rightPrisonRoster);
+			TroopRoster holdingMembers = BuildSelectionRosterFromUi(leftMemberRoster);
+			TroopRoster holdingPrisoners = BuildPrisonerSelectionRosterFromUi(leftPrisonRoster);
 			_runtime = new TroopInspectionRuntime
 			{
-				InspectionRoster = CloneRoster(val),
-				InspectionPrisonerRoster = CloneRoster(sourceRoster),
-				HoldingRoster = CloneRoster(sourceRoster2),
-				HoldingPrisonerRoster = CloneRoster(sourceRoster3),
-				PlayerOriginalHitPoints = _pendingSelection.PlayerOriginalHitPoints,
-				PlayerOriginalWasWounded = _pendingSelection.PlayerOriginalWasWounded
+				InspectionRoster = CloneRoster(inspectionMembers),
+				InspectionPrisonerRoster = CloneRoster(inspectionPrisoners),
+				NotSelectedMemberRoster = CloneRoster(holdingMembers),
+				NotSelectedPrisonerRoster = CloneRoster(holdingPrisoners)
 			};
 			_runtime.InspectionSummary = RosterSummary(_runtime.InspectionRoster) + ", prisoners=" + RosterSummary(_runtime.InspectionPrisonerRoster);
-			_runtime.HoldingSummary = RosterSummary(_runtime.HoldingRoster) + ", prisoners=" + RosterSummary(_runtime.HoldingPrisonerRoster);
-			Log("selection_done inspection=" + _runtime.InspectionSummary + " holding=" + _runtime.HoldingSummary);
+			_runtime.NotSelectedSummary = RosterSummary(_runtime.NotSelectedMemberRoster) + ", prisoners=" + RosterSummary(_runtime.NotSelectedPrisonerRoster);
+			Log("selection_done inspection=" + _runtime.InspectionSummary + " not_selected=" + _runtime.NotSelectedSummary + " ui_left_members=" + RosterSummary(leftMemberRoster) + " ui_right_members=" + RosterSummary(rightMemberRoster) + " ui_left_prisoners=" + RosterSummary(leftPrisonRoster) + " ui_right_prisoners=" + RosterSummary(rightPrisonRoster));
 			try
 			{
-				PrepareHoldingDummyAndSplitRoster(_runtime);
+				PrepareSelectionRuntimeWithMainPartySplit(_runtime);
 			}
 			catch (Exception ex)
 			{
-				Log("split failed: " + ex.GetType().Name + ": " + ex.Message);
+				Log("runtime_prepare failed: " + ex.GetType().Name + ": " + ex.Message);
 				CleanupSplitRuntime("split_failed");
 				ResetPendingSelection("split_failed");
 				_runtime = null;
@@ -1081,451 +729,260 @@ public static class TroopInspectionBehavior
 			_isOpening = false;
 			QueueOpenInspectionMission();
 		}
-		catch (Exception ex2)
+		catch (Exception ex)
 		{
-			Log("inspection_team_screen failed: " + ex2.GetType().Name + ": " + ex2.Message);
+			Log("inspection_team_screen failed: " + ex.GetType().Name + ": " + ex.Message);
 			ResetPendingSelection("inspection_exception");
 			Display("选择失败。");
 		}
 	}
 
-	private static void PrepareHoldingDummyAndSplitRoster(TroopInspectionRuntime runtime)
-	{
-		if (runtime == null)
-		{
-			throw new InvalidOperationException("Runtime is null.");
-		}
-		MobileParty mainParty = MobileParty.MainParty;
-		if (mainParty == null || PartyBase.MainParty == null)
-		{
-			throw new InvalidOperationException("MainParty is null.");
-		}
-		runtime.PlayerOriginalHitPoints = GetMainHeroHitPoints();
-		Hero mainHero = Hero.MainHero;
-		runtime.PlayerOriginalWasWounded = mainHero != null && mainHero.IsWounded;
-		Dictionary<CharacterObject, RosterTotals> beforeMemberTotals = BuildRosterTotals(mainParty.MemberRoster);
-		PartyBase mainParty2 = PartyBase.MainParty;
-		Dictionary<CharacterObject, RosterTotals> beforePrisonerTotals = BuildRosterTotals((mainParty2 != null) ? mainParty2.PrisonRoster : null);
-		TroopRoster memberRoster = mainParty.MemberRoster;
-		int beforeMainMen = ((memberRoster != null) ? memberRoster.TotalManCount : 0);
-		PartyBase mainParty3 = PartyBase.MainParty;
-		int? obj;
-		if (mainParty3 == null)
-		{
-			obj = null;
-		}
-		else
-		{
-			TroopRoster prisonRoster = mainParty3.PrisonRoster;
-			obj = ((prisonRoster != null) ? new int?(prisonRoster.TotalManCount) : ((int?)null));
-		}
-		int? num = obj;
-		int valueOrDefault = num.GetValueOrDefault();
-		CreateInspectionHoldingDummyParty(mainParty);
-		runtime.HoldingDummyParty = _holdingDummyParty;
-		MoveRosterFromMainParty(runtime.HoldingRoster, _holdingDummyParty, "inspection_holding");
-		MovePrisonerRosterFromMainParty(runtime.HoldingPrisonerRoster, _holdingDummyParty, "inspection_holding_prisoners");
-		ValidateSplit(runtime, beforeMemberTotals, beforePrisonerTotals, beforeMainMen, valueOrDefault);
-		string text = RosterSummary(mainParty.MemberRoster);
-		PartyBase mainParty4 = PartyBase.MainParty;
-		runtime.InspectionSummary = text + ", prisoners=" + RosterSummary((mainParty4 != null) ? mainParty4.PrisonRoster : null);
-		MobileParty holdingDummyParty = _holdingDummyParty;
-		string text2 = RosterSummary((holdingDummyParty != null) ? holdingDummyParty.MemberRoster : null);
-		MobileParty holdingDummyParty2 = _holdingDummyParty;
-		runtime.HoldingSummary = text2 + ", prisoners=" + RosterSummary((holdingDummyParty2 != null) ? holdingDummyParty2.PrisonRoster : null);
-		Log("split_ok inspection=" + runtime.InspectionSummary + " holding=" + runtime.HoldingSummary);
-	}
-
-	private static void CreateInspectionHoldingDummyParty(MobileParty mainParty)
-	{
-		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
-		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0044: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0058: Unknown result type (might be due to invalid IL or missing references)
-		//IL_009b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b6: Expected O, but got Unknown
-		//IL_00fb: Unknown result type (might be due to invalid IL or missing references)
-		CampaignVec2 position = mainParty.Position;
-		Vec2 val = ResolveEncounterDirection(mainParty);
-		Vec2 val2 = default(Vec2);
-		val2 = new Vec2(0f - val.Y, val.X);
-		if (val2.LengthSquared <= 0.0001f)
-		{
-			val2 = new Vec2(0f, 1f);
-		}
-		CampaignVec2 position2 = position + val2.Normalized() * 0.4f;
-		_holdingDummyPartyStringId = "animusforge_troop_inspection_holding_" + DateTime.UtcNow.Ticks + "_" + MBRandom.RandomInt(1000000);
-		_holdingDummyParty = MobileParty.CreateParty(_holdingDummyPartyStringId, new TroopInspectionDummyPartyComponent(position2, new TextObject("AnimusForge Troop Inspection Holding"), Hero.MainHero, Clan.PlayerClan));
-		if (_holdingDummyParty == null)
-		{
-			throw new InvalidOperationException("Failed to create inspection holding dummy party.");
-		}
-		_holdingDummyParty.IsVisible = false;
-		_holdingDummyParty.SetMoveModeHold();
-		Log($"holding_dummy_create id={((MBObjectBase)_holdingDummyParty).StringId} pos={FormatCampaignVec2(_holdingDummyParty.Position)} members={_holdingDummyParty.Party.NumberOfHealthyMembers}");
-	}
 
 	private static void OpenInspectionMissionAfterSelection(MobileParty mainParty)
 	{
-		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
-		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0012: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a5: Unknown result type (might be due to invalid IL or missing references)
+		EnsureMainHeroReadyForInspection("open_mission");
 		PrepareRuntime(mainParty);
-		MissionInitializerRecord val = BuildMissionInitializerRecord(mainParty);
-		Log($"open_battle scene={val.SceneName} terrain={val.TerrainType}");
-		IMission obj = CampaignMission.OpenBattleMission(val);
-		Mission val2 = (Mission)(object)((obj is Mission) ? obj : null);
-		if (val2 == null)
+		MissionInitializerRecord rec = BuildMissionInitializerRecord(mainParty);
+		Log($"open_battle scene={rec.SceneName} terrain={rec.TerrainType}");
+		IMission openedMission = CampaignMission.OpenBattleMission(rec);
+		Mission mission = openedMission as Mission;
+		if (mission == null)
 		{
 			throw new InvalidOperationException("CampaignMission.OpenBattleMission returned non-Mission.");
 		}
-		_activeInspectionMission = val2;
+		_activeInspectionMission = mission;
 		PlayerEncounter.StartAttackMission();
-		MapEvent playerMapEvent = MapEvent.PlayerMapEvent;
-		if (playerMapEvent != null)
-		{
-			playerMapEvent.BeginWait();
-		}
-		Log(string.Format("mission_behaviors deployment_handler={0} deployment_controller={1} battle_end_logic={2} mode={3}", HasMissionBehavior(val2, "BattleDeploymentHandler"), val2.GetMissionBehavior<BattleDeploymentMissionController>() != null, val2.GetMissionBehavior<BattleEndLogic>() != null, val2.Mode));
-		TroopInspectionMissionLogic troopInspectionMissionLogic = new TroopInspectionMissionLogic(_dummyPartyStringId, (_runtime != null) ? _runtime.InspectionPrisonerRoster : null);
-		val2.AddMissionBehavior((MissionBehavior)(object)troopInspectionMissionLogic);
-		troopInspectionMissionLogic.TryDisableBattleEndLogic("after_open_manual");
+		MapEvent.PlayerMapEvent?.BeginWait();
+		LogMissionSourceDiag("after_open_battle");
+		Log($"mission_behaviors deployment_handler={HasMissionBehavior(mission, "BattleDeploymentHandler")} deployment_controller={mission.GetMissionBehavior<BattleDeploymentMissionController>() != null} battle_end_logic={mission.GetMissionBehavior<BattleEndLogic>() != null} mode={mission.Mode}");
+		TroopInspectionMissionLogic logic = new TroopInspectionMissionLogic(_dummyPartyStringId, _runtime?.InspectionPrisonerRoster);
+		mission.AddMissionBehavior(logic);
+		logic.TryDisableBattleEndLogic("after_open_manual");
 		Log("logic_added success");
 	}
 
-	private static void PrepareRuntime(MobileParty mainParty)
-	{
-		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
-		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0013: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
-		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0061: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0068: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007c: Expected O, but got Unknown
-		//IL_00c1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_016e: Unknown result type (might be due to invalid IL or missing references)
-		CampaignVec2 position = mainParty.Position;
-		Vec2 val = ResolveEncounterDirection(mainParty);
-		CampaignVec2 position2 = position - val * 0.4f;
-		_dummyPartyStringId = "animusforge_troop_inspection_dummy_" + DateTime.UtcNow.Ticks + "_" + MBRandom.RandomInt(1000000);
-		_dummyParty = MobileParty.CreateParty(_dummyPartyStringId, new TroopInspectionDummyPartyComponent(position2, new TextObject("AnimusForge Troop Inspection Dummy"), Hero.MainHero, Clan.PlayerClan));
-		if (_dummyParty == null)
-		{
-			throw new InvalidOperationException("Failed to create dummy party.");
-		}
-		_dummyParty.IsVisible = false;
-		_dummyParty.SetMoveModeHold();
-		Log($"dummy_party_create id={((MBObjectBase)_dummyParty).StringId} pos={FormatCampaignVec2(_dummyParty.Position)} members={_dummyParty.Party.NumberOfHealthyMembers}");
-		FieldBattleEventComponent obj = FieldBattleEventComponent.CreateFieldBattleEvent(PartyBase.MainParty, _dummyParty.Party);
-		_mapEvent = ((obj != null) ? ((MapEventComponent)obj).MapEvent : null);
-		if (_mapEvent == null)
-		{
-			throw new InvalidOperationException("Failed to create field battle MapEvent.");
-		}
-		_mapEvent.ResetBattleState();
-		int num = _mapEvent.AttackerSide.RecalculateMemberCountOfSide();
-		int num2 = _mapEvent.DefenderSide.RecalculateMemberCountOfSide();
-		Log($"mapevent_create attacker_side_count={num} defender_side_count={num2} player_side={_mapEvent.PlayerSide} is_player_mapevent={_mapEvent.IsPlayerMapEvent}");
-		PlayerEncounter.Start();
-		PlayerEncounter.Current.SetupFields(PartyBase.MainParty, _dummyParty.Party);
-		SetPrivateField<MapEvent>(PlayerEncounter.Current, "_mapEvent", _mapEvent);
-		Log($"player_encounter_context battle={PlayerEncounter.Battle != null} is_mapevent={PlayerEncounter.Battle == _mapEvent} player_mapevent={MapEvent.PlayerMapEvent == _mapEvent}");
-	}
 
-	private static MissionInitializerRecord BuildMissionInitializerRecord(MobileParty mainParty)
-	{
-		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0019: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0057: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0061: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0064: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006a: Expected I4, but got Unknown
-		//IL_00d3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00dd: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00f4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00f5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00fa: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0101: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0106: Unknown result type (might be due to invalid IL or missing references)
-		//IL_010b: Unknown result type (might be due to invalid IL or missing references)
-		IMapScene mapSceneWrapper = Campaign.Current.MapSceneWrapper;
-		CampaignVec2 position = mainParty.Position;
-		MapPatchData mapPatchAtPosition = mapSceneWrapper.GetMapPatchAtPosition(in position);
-		string battleSceneForMapPatch = Campaign.Current.Models.SceneModel.GetBattleSceneForMapPatch(mapPatchAtPosition, false);
-		if (string.IsNullOrWhiteSpace(battleSceneForMapPatch))
-		{
-			throw new InvalidOperationException("Battle scene is empty.");
-		}
-		MissionInitializerRecord result = new MissionInitializerRecord(battleSceneForMapPatch);
-		TerrainType faceTerrainType = Campaign.Current.MapSceneWrapper.GetFaceTerrainType(mainParty.CurrentNavigationFace);
-		result.TerrainType = (int)faceTerrainType;
-		result.DamageToFriendsMultiplier = Campaign.Current.Models.DifficultyModel.GetPlayerTroopsReceivedDamageMultiplier();
-		result.DamageFromPlayerToFriendsMultiplier = Campaign.Current.Models.DifficultyModel.GetPlayerTroopsReceivedDamageMultiplier();
-		result.NeedsRandomTerrain = false;
-		result.PlayingInCampaignMode = true;
-		result.RandomTerrainSeed = MBRandom.RandomInt(10000);
-		result.AtmosphereOnCampaign = Campaign.Current.Models.MapWeatherModel.GetAtmosphereModel(mainParty.Position);
-		result.SceneHasMapPatch = true;
-		result.DecalAtlasGroup = 2;
-		result.PatchCoordinates = mapPatchAtPosition.normalizedCoordinates;
-		result.PatchEncounterDir = ResolvePatchEncounterDirection();
-		return result;
-	}
 
-	private static Vec2 ResolvePatchEncounterDirection()
+
+	private static void RebuildTroopRosterCachedTotals(TroopRoster roster, string label, bool throwOnFailure = false)
 	{
-		//IL_0097: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0062: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0067: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0074: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0085: Unknown result type (might be due to invalid IL or missing references)
-		//IL_008a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_009d: Unknown result type (might be due to invalid IL or missing references)
+		if (roster == null)
+		{
+			return;
+		}
 		try
 		{
-			MapEvent mapEvent = _mapEvent;
-			object obj;
-			if (mapEvent == null)
+			if (TroopRosterTotalRegularsField == null || TroopRosterTotalWoundedRegularsField == null || TroopRosterTotalHeroesField == null || TroopRosterTotalWoundedHeroesField == null)
 			{
-				obj = null;
-			}
-			else
-			{
-				MapEventSide attackerSide = mapEvent.AttackerSide;
-				obj = ((attackerSide != null) ? attackerSide.LeaderParty : null);
-			}
-			if (obj != null)
-			{
-				MapEventSide defenderSide = _mapEvent.DefenderSide;
-				if (((defenderSide != null) ? defenderSide.LeaderParty : null) != null)
+				if (throwOnFailure)
 				{
-					CampaignVec2 position = _mapEvent.AttackerSide.LeaderParty.Position;
-					Vec2 val = position.ToVec2();
-					position = _mapEvent.DefenderSide.LeaderParty.Position;
-					Vec2 val2 = val - position.ToVec2();
-					if (val2.LengthSquared > 0.0001f)
+					throw new InvalidOperationException("TroopRoster cache fields are unavailable.");
+				}
+				Log("roster_cache_repair_unavailable label=" + label);
+				return;
+			}
+			int totalRegulars = 0;
+			int totalWoundedRegulars = 0;
+			int totalHeroes = 0;
+			int totalWoundedHeroes = 0;
+			foreach (TroopRosterElement item in SnapshotRoster(roster))
+			{
+				CharacterObject character = item.Character;
+				if (character == null || item.Number <= 0)
+				{
+					continue;
+				}
+				if (character.IsHero)
+				{
+					totalHeroes++;
+					if (Math.Max(0, item.WoundedNumber) > 0 || (character.HeroObject != null && character.HeroObject.IsWounded))
 					{
-						return val2.Normalized();
+						totalWoundedHeroes++;
 					}
+					continue;
 				}
+				totalRegulars += Math.Max(0, item.Number);
+				totalWoundedRegulars += Math.Max(0, item.WoundedNumber);
+			}
+			int beforeRegulars = GetIntFieldValue(TroopRosterTotalRegularsField, roster);
+			int beforeWoundedRegulars = GetIntFieldValue(TroopRosterTotalWoundedRegularsField, roster);
+			int beforeHeroes = GetIntFieldValue(TroopRosterTotalHeroesField, roster);
+			int beforeWoundedHeroes = GetIntFieldValue(TroopRosterTotalWoundedHeroesField, roster);
+			if (beforeRegulars == totalRegulars && beforeWoundedRegulars == totalWoundedRegulars && beforeHeroes == totalHeroes && beforeWoundedHeroes == totalWoundedHeroes)
+			{
+				return;
+			}
+			TroopRosterTotalRegularsField.SetValue(roster, totalRegulars);
+			TroopRosterTotalWoundedRegularsField.SetValue(roster, totalWoundedRegulars);
+			TroopRosterTotalHeroesField.SetValue(roster, totalHeroes);
+			TroopRosterTotalWoundedHeroesField.SetValue(roster, totalWoundedHeroes);
+			try
+			{
+				roster.UpdateVersion();
+			}
+			catch
+			{
+			}
+			Log("roster_cache_repaired label=" + label + " before_regular=" + beforeRegulars + " before_heroes=" + beforeHeroes + " before_wounded_regular=" + beforeWoundedRegulars + " before_wounded_heroes=" + beforeWoundedHeroes + " after_regular=" + totalRegulars + " after_heroes=" + totalHeroes + " after_wounded_regular=" + totalWoundedRegulars + " after_wounded_heroes=" + totalWoundedHeroes + " before_total=" + (beforeRegulars + beforeHeroes) + " after_total=" + (totalRegulars + totalHeroes));
+		}
+		catch (Exception ex)
+		{
+			Log("roster_cache_repair_failed label=" + label + " " + ex.GetType().Name + ": " + ex.Message);
+			if (throwOnFailure)
+			{
+				throw;
 			}
 		}
-		catch
-		{
-		}
-		return ResolveEncounterDirection(MobileParty.MainParty);
 	}
 
-	private static Vec2 ResolveEncounterDirection(MobileParty mainParty)
+	private static void PrepareMainPartyRosterStateForInspection(string reason)
 	{
-		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0003: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0038: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0021: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0026: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003e: Unknown result type (might be due to invalid IL or missing references)
+		EnsureMainHeroReadyForInspection(reason);
+		RebuildTroopRosterCachedTotals(MobileParty.MainParty?.MemberRoster, reason + "_main_pre", throwOnFailure: true);
+		RebuildTroopRosterCachedTotals(PartyBase.MainParty?.PrisonRoster, reason + "_prisoners_pre", throwOnFailure: true);
+		NormalizeMainPartyHeroRosterForInspection(reason);
+		RepairMainPartyHeroBelongedToForInspection(reason);
+		RebuildTroopRosterCachedTotals(MobileParty.MainParty?.MemberRoster, reason + "_main_post", throwOnFailure: true);
+		RebuildTroopRosterCachedTotals(PartyBase.MainParty?.PrisonRoster, reason + "_prisoners_post", throwOnFailure: true);
+		ValidateMainPartyHeroRosterReadyForInspection(reason);
+	}
+
+	private static int GetIntFieldValue(FieldInfo field, object target)
+	{
 		try
 		{
-			Vec2 val = ((mainParty != null) ? mainParty.Bearing : Vec2.Zero);
-			if (val.LengthSquared > 0.0001f)
-			{
-				return val.Normalized();
-			}
+			object value = field?.GetValue(target);
+			return value is int result ? result : 0;
 		}
 		catch
 		{
+			return 0;
 		}
-		return new Vec2(1f, 0f);
 	}
 
-	private static void MoveRosterFromMainParty(TroopRoster selectedRoster, MobileParty targetParty, string label)
+	private static void NormalizeMainPartyHeroRosterForInspection(string reason)
 	{
-		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0057: Unknown result type (might be due to invalid IL or missing references)
-		if (selectedRoster == null || targetParty == null)
+		try
 		{
-			return;
-		}
-		MoveRosterResult moveRosterResult = new MoveRosterResult();
-		foreach (TroopRosterElement item in SnapshotRoster(selectedRoster))
-		{
-			TroopRosterElement current = item;
-			CharacterObject character = current.Character;
-			if (character != null && current.Number > 0 && !((BasicCharacterObject)character).IsPlayerCharacter)
+			TroopRoster roster = MobileParty.MainParty?.MemberRoster ?? PartyBase.MainParty?.MemberRoster;
+			if (roster == null)
 			{
-				if (((BasicCharacterObject)character).IsHero)
+				return;
+			}
+			foreach (TroopRosterElement item in SnapshotRoster(roster))
+			{
+				CharacterObject character = item.Character;
+				if (character == null || !character.IsHero || character.IsPlayerCharacter || item.Number <= 0)
 				{
-					MoveHeroToParty(character.HeroObject, targetParty, label, moveRosterResult);
+					continue;
 				}
-				else
+				Hero hero = character.HeroObject;
+				string partyId = hero?.PartyBelongedTo?.StringId ?? "null";
+				if (item.Number > 1)
 				{
-					MoveRegularTroopToParty(current, targetParty, label, moveRosterResult);
+					int removeNumber = item.Number - 1;
+					int removeWounded = Math.Min(removeNumber, Math.Max(0, item.WoundedNumber));
+					int removeXp = CalculateRosterXpToMove(item, removeNumber);
+					roster.AddToCounts(character, -removeNumber, false, -removeWounded, -removeXp, true, -1);
+					Log("hero_roster_normalized reason=" + reason + " troop=" + SafeCharacterId(character) + " before_number=" + item.Number + " after_number=1 before_wounded=" + item.WoundedNumber + " removed_wounded=" + removeWounded + " party=" + partyId);
+				}
+				if (hero != null && hero.PartyBelongedTo != MobileParty.MainParty)
+				{
+					Log("hero_party_mismatch_diag reason=" + reason + " troop=" + SafeCharacterId(character) + " party=" + partyId + " main=" + (MobileParty.MainParty?.StringId ?? "null"));
 				}
 			}
+			RebuildTroopRosterCachedTotals(roster, "hero_normalize_" + reason, throwOnFailure: true);
 		}
-		Log($"move_roster_result label={label} {moveRosterResult}");
+		catch (Exception ex)
+		{
+			Log("hero_roster_normalize_failed reason=" + reason + " " + ex.GetType().Name + ": " + ex.Message);
+			throw;
+		}
 	}
 
-	private static void MovePrisonerRosterFromMainParty(TroopRoster selectedRoster, MobileParty targetParty, string label)
+	private static void RepairMainPartyHeroBelongedToForInspection(string reason)
 	{
-		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
-		if (selectedRoster == null || targetParty == null)
+		try
 		{
-			return;
-		}
-		MoveRosterResult moveRosterResult = new MoveRosterResult();
-		foreach (TroopRosterElement item in SnapshotRoster(selectedRoster))
-		{
-			TroopRosterElement current = item;
-			if (current.Character != null && current.Number > 0)
+			MobileParty mainParty = MobileParty.MainParty;
+			TroopRoster roster = mainParty?.MemberRoster ?? PartyBase.MainParty?.MemberRoster;
+			if (mainParty == null || roster == null)
 			{
-				MovePrisonerToParty(current, targetParty, label, moveRosterResult);
+				return;
+			}
+			foreach (TroopRosterElement item in SnapshotRoster(roster))
+			{
+				CharacterObject character = item.Character;
+				Hero hero = character?.HeroObject;
+				if (character == null || !character.IsHero || hero == null || item.Number <= 0)
+				{
+					continue;
+				}
+				MobileParty beforeParty = hero.PartyBelongedTo;
+				if (beforeParty != null)
+				{
+					continue;
+				}
+				SetPrivateField(hero, "_partyBelongedTo", mainParty);
+				if (hero.PartyBelongedTo != mainParty)
+				{
+					throw new InvalidOperationException("Failed to rebind hero to MainParty. troop=" + SafeCharacterId(character) + " party=" + (hero.PartyBelongedTo?.StringId ?? "null"));
+				}
+				Log("hero_party_repaired reason=" + reason + " troop=" + SafeCharacterId(character) + " from=null to=" + (hero.PartyBelongedTo?.StringId ?? "null"));
 			}
 		}
-		Log($"move_prisoner_roster_result label={label} {moveRosterResult}");
-	}
-
-	private static void MovePrisonerToParty(TroopRosterElement item, MobileParty targetParty, string label, MoveRosterResult result)
-	{
-		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0062: Unknown result type (might be due to invalid IL or missing references)
-		//IL_009a: Unknown result type (might be due to invalid IL or missing references)
-		PartyBase mainParty = PartyBase.MainParty;
-		TroopRoster obj = ((mainParty != null) ? mainParty.PrisonRoster : null);
-		TroopRoster val = ((targetParty != null) ? targetParty.PrisonRoster : null);
-		CharacterObject character = item.Character;
-		if (obj == null || val == null || character == null)
+		catch (Exception ex)
 		{
-			throw new InvalidOperationException("Invalid prison roster while moving prisoner.");
-		}
-		int num = obj.FindIndexOfTroop(character);
-		if (num < 0)
-		{
-			throw new InvalidOperationException("Source prisoner not found in MainParty: " + SafeCharacterId(character));
-		}
-		TroopRosterElement freshRosterElementCopy = GetFreshRosterElementCopy(obj, num);
-		int num2 = Math.Max(0, item.Number);
-		int num3 = Math.Min(num2, Math.Min(Math.Max(0, item.WoundedNumber), Math.Max(0, freshRosterElementCopy.WoundedNumber)));
-		int num4 = CalculateRosterXpToMove(freshRosterElementCopy, num2);
-		if (freshRosterElementCopy.Number < num2)
-		{
-			throw new InvalidOperationException($"Not enough source prisoners for {SafeCharacterId(character)}. have={freshRosterElementCopy.Number} need={num2}");
-		}
-		if (freshRosterElementCopy.Xp < num4)
-		{
-			throw new InvalidOperationException($"Not enough source prisoner XP for {SafeCharacterId(character)}. have={freshRosterElementCopy.Xp} need={num4}");
-		}
-		obj.AddToCounts(character, -num2, false, -num3, -num4, true, -1);
-		val.AddToCounts(character, num2, false, num3, num4, true, -1);
-		if (((BasicCharacterObject)character).IsHero)
-		{
-			result.Heroes += num2;
-			return;
-		}
-		result.RegularMen += num2;
-		result.RegularWounded += num3;
-		result.RegularXp += num4;
-	}
-
-	private static void MoveHeroToParty(Hero hero, MobileParty targetParty, string label, MoveRosterResult result)
-	{
-		if (hero != null && targetParty != null && !hero.IsHumanPlayerCharacter)
-		{
-			AddHeroToPartyAction.Apply(hero, targetParty, false);
-			result.Heroes++;
+			Log("hero_party_repair_failed reason=" + reason + " " + ex.GetType().Name + ": " + ex.Message);
+			throw;
 		}
 	}
 
-	private static void MoveRegularTroopToParty(TroopRosterElement item, MobileParty targetParty, string label, MoveRosterResult result)
+	private static void ValidateMainPartyHeroRosterReadyForInspection(string reason)
 	{
-		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0062: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0075: Unknown result type (might be due to invalid IL or missing references)
 		MobileParty mainParty = MobileParty.MainParty;
-		TroopRoster obj = ((mainParty != null) ? mainParty.MemberRoster : null);
-		TroopRoster val = ((targetParty != null) ? targetParty.MemberRoster : null);
-		CharacterObject character = item.Character;
-		if (obj == null || val == null || character == null)
+		TroopRoster roster = mainParty?.MemberRoster ?? PartyBase.MainParty?.MemberRoster;
+		if (mainParty == null || roster == null)
 		{
-			throw new InvalidOperationException("Invalid roster while moving regular troop.");
+			throw new InvalidOperationException("MainParty roster is unavailable before inspection. reason=" + reason);
 		}
-		int num = obj.FindIndexOfTroop(character);
-		if (num < 0)
+		foreach (TroopRosterElement item in SnapshotRoster(roster))
 		{
-			throw new InvalidOperationException("Source troop not found in MainParty: " + SafeCharacterId(character));
+			CharacterObject character = item.Character;
+			Hero hero = character?.HeroObject;
+			if (character == null || !character.IsHero || hero == null || item.Number <= 0)
+			{
+				continue;
+			}
+			if (item.Number != 1)
+			{
+				throw new InvalidOperationException("Hero stack is invalid before inspection. reason=" + reason + " troop=" + SafeCharacterId(character) + " number=" + item.Number);
+			}
+			if (!character.IsPlayerCharacter && !hero.IsDead && hero.PartyBelongedTo != mainParty)
+			{
+				throw new InvalidOperationException("Hero party mismatch before inspection. reason=" + reason + " troop=" + SafeCharacterId(character) + " party=" + (hero.PartyBelongedTo?.StringId ?? "null") + " main=" + (mainParty.StringId ?? "null"));
+			}
 		}
-		TroopRosterElement elementCopyAtIndex = obj.GetElementCopyAtIndex(num);
-		int num2 = Math.Max(0, item.Number);
-		int num3 = 0;
-		int num4 = CalculateRosterXpToMove(elementCopyAtIndex, num2);
-		if (elementCopyAtIndex.Number < num2)
-		{
-			throw new InvalidOperationException($"Not enough source troops for {SafeCharacterId(character)}. have={elementCopyAtIndex.Number} need={num2}");
-		}
-		if (elementCopyAtIndex.Xp < num4)
-		{
-			throw new InvalidOperationException($"Not enough source XP for {SafeCharacterId(character)}. have={elementCopyAtIndex.Xp} need={num4}");
-		}
-		obj.AddToCounts(character, -num2, false, -num3, -num4, true, -1);
-		val.AddToCounts(character, num2, false, num3, num4, true, -1);
-		result.RegularMen += num2;
-		result.RegularWounded += num3;
-		result.RegularXp += num4;
 	}
+
 
 	private static int CalculateRosterXpToMove(TroopRosterElement sourceElement, int numberToMove)
 	{
 		try
 		{
-			int num = Math.Max(0, sourceElement.Number);
-			int num2 = Math.Max(0, sourceElement.Xp);
+			int number = Math.Max(0, sourceElement.Number);
+			int xp = Math.Max(0, sourceElement.Xp);
 			numberToMove = Math.Max(0, numberToMove);
-			if (num <= 0 || num2 <= 0 || numberToMove <= 0)
+			if (number <= 0 || xp <= 0 || numberToMove <= 0)
 			{
 				return 0;
 			}
-			if (numberToMove >= num)
+			if (numberToMove >= number)
 			{
-				return num2;
+				return xp;
 			}
-			int num3 = (int)Math.Round((double)num2 * (double)numberToMove / (double)num, MidpointRounding.AwayFromZero);
-			if (num3 < 0)
-			{
-				return 0;
-			}
-			if (num3 > num2)
-			{
-				return num2;
-			}
-			return num3;
+			int result = (int)Math.Round((double)xp * numberToMove / number, MidpointRounding.AwayFromZero);
+			return Math.Max(0, Math.Min(xp, result));
 		}
 		catch
 		{
@@ -1535,384 +992,160 @@ public static class TroopInspectionBehavior
 
 	private static MoveRosterResult MoveAllMembersBackToMainParty(MobileParty sourceParty, string label)
 	{
-		//IL_0056: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005c: Unknown result type (might be due to invalid IL or missing references)
 		MobileParty mainParty = MobileParty.MainParty;
-		MoveRosterResult moveRosterResult = new MoveRosterResult();
+		MoveRosterResult result = new MoveRosterResult();
 		if (sourceParty == null || mainParty == null || sourceParty.MemberRoster == null)
 		{
 			Log($"cleanup_return_skipped label={label} source_null={sourceParty == null} main_null={mainParty == null}");
-			return moveRosterResult;
+			return result;
 		}
 		foreach (TroopRosterElement item in SnapshotRoster(sourceParty.MemberRoster))
 		{
-			TroopRosterElement current = item;
 			try
 			{
-				CharacterObject character = current.Character;
-				if (character == null || current.Number <= 0)
+				CharacterObject character = item.Character;
+				if (character == null || item.Number <= 0)
 				{
 					continue;
 				}
-				if (((BasicCharacterObject)character).IsHero)
+				if (character.IsHero)
 				{
-					Hero heroObject = character.HeroObject;
-					if (heroObject != null && heroObject.IsDead)
+					if (character.HeroObject != null && character.HeroObject.IsDead)
 					{
-						moveRosterResult.DeadHeroesSkipped++;
+						result.DeadHeroesSkipped++;
 					}
-					else if (!((BasicCharacterObject)character).IsPlayerCharacter)
+					else if (!character.IsPlayerCharacter && character.HeroObject != null)
 					{
-						AddHeroToPartyAction.Apply(character.HeroObject, mainParty, false);
-						moveRosterResult.Heroes++;
+						Hero hero = character.HeroObject;
+						MobileParty beforeParty = hero.PartyBelongedTo;
+						if (beforeParty == sourceParty)
+						{
+							AddHeroToPartyAction.Apply(hero, mainParty, false);
+							result.Heroes++;
+							Log("cleanup_return_hero label=" + label + " troop=" + SafeCharacterId(character) + " mode=action from=" + (beforeParty?.StringId ?? "null") + " to=" + (hero.PartyBelongedTo?.StringId ?? "null") + " source_number=" + item.Number);
+						}
+						else
+						{
+							result.HeroLikeSkipped += Math.Max(1, item.Number);
+							Log("cleanup_return_hero_skipped label=" + label + " troop=" + SafeCharacterId(character) + " reason=party_mismatch party=" + (beforeParty?.StringId ?? "null") + " source=" + (sourceParty.StringId ?? "null") + " source_number=" + item.Number);
+						}
 					}
+					continue;
 				}
-				else
-				{
-					int num = Math.Max(0, current.Number);
-					int num2 = Math.Max(0, current.WoundedNumber);
-					int num3 = Math.Max(0, current.Xp);
-					sourceParty.MemberRoster.AddToCounts(character, -num, false, -num2, -num3, true, -1);
-					mainParty.MemberRoster.AddToCounts(character, num, false, num2, num3, true, -1);
-					moveRosterResult.RegularMen += num;
-					moveRosterResult.RegularWounded += num2;
-					moveRosterResult.RegularXp += num3;
-				}
+				int number = Math.Max(0, item.Number);
+				int wounded = Math.Max(0, item.WoundedNumber);
+				int xp = Math.Max(0, item.Xp);
+				sourceParty.MemberRoster.AddToCounts(character, -number, false, -wounded, -xp, true, -1);
+				mainParty.MemberRoster.AddToCounts(character, number, false, wounded, xp, true, -1);
+				result.RegularMen += number;
+				result.RegularWounded += wounded;
+				result.RegularXp += xp;
 			}
 			catch (Exception ex)
 			{
-				moveRosterResult.Errors++;
+				result.Errors++;
 				Log("cleanup_return_element_failed label=" + label + " error=" + ex.GetType().Name + ": " + ex.Message);
 			}
 		}
-		Log($"cleanup_return_summary label={label} {moveRosterResult}");
-		return moveRosterResult;
+		RebuildTroopRosterCachedTotals(sourceParty.MemberRoster, "cleanup_return_source_" + label);
+		RebuildTroopRosterCachedTotals(mainParty.MemberRoster, "cleanup_return_main_" + label);
+		Log($"cleanup_return_summary label={label} {result}");
+		return result;
 	}
 
 	private static MoveRosterResult MoveAllPrisonersBackToMainParty(MobileParty sourceParty, string label)
 	{
-		//IL_0064: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0069: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006b: Unknown result type (might be due to invalid IL or missing references)
-		PartyBase mainParty = PartyBase.MainParty;
-		TroopRoster val = ((mainParty != null) ? mainParty.PrisonRoster : null);
-		MoveRosterResult moveRosterResult = new MoveRosterResult();
-		if (sourceParty == null || val == null || sourceParty.PrisonRoster == null)
+		TroopRoster mainRoster = PartyBase.MainParty?.PrisonRoster;
+		MoveRosterResult result = new MoveRosterResult();
+		if (sourceParty == null || mainRoster == null || sourceParty.PrisonRoster == null)
 		{
-			Log($"cleanup_prisoner_return_skipped label={label} source_null={sourceParty == null} main_prison_null={val == null}");
-			return moveRosterResult;
+			Log($"cleanup_prisoner_return_skipped label={label} source_null={sourceParty == null} main_prison_null={mainRoster == null}");
+			return result;
 		}
-		TroopRoster prisonRoster = sourceParty.PrisonRoster;
-		foreach (TroopRosterElement item in SnapshotRoster(prisonRoster))
+		foreach (TroopRosterElement item in SnapshotRoster(sourceParty.PrisonRoster))
 		{
-			TroopRosterElement current = item;
 			try
 			{
-				CharacterObject character = current.Character;
-				if (character != null && current.Number > 0)
+				CharacterObject character = item.Character;
+				if (character == null || item.Number <= 0)
 				{
-					int num = Math.Max(0, current.Number);
-					int num2 = Math.Max(0, current.WoundedNumber);
-					int num3 = Math.Max(0, current.Xp);
-					prisonRoster.AddToCounts(character, -num, false, -num2, -num3, true, -1);
-					val.AddToCounts(character, num, false, num2, num3, true, -1);
-					if (((BasicCharacterObject)character).IsHero)
-					{
-						moveRosterResult.Heroes += num;
-						continue;
-					}
-					moveRosterResult.RegularMen += num;
-					moveRosterResult.RegularWounded += num2;
-					moveRosterResult.RegularXp += num3;
+					continue;
+				}
+				int number = Math.Max(0, item.Number);
+				int wounded = Math.Max(0, item.WoundedNumber);
+				int xp = Math.Max(0, item.Xp);
+				sourceParty.PrisonRoster.AddToCounts(character, -number, false, -wounded, -xp, true, -1);
+				mainRoster.AddToCounts(character, number, false, wounded, xp, true, -1);
+				if (character.IsHero)
+				{
+					result.Heroes += number;
+				}
+				else
+				{
+					result.RegularMen += number;
+					result.RegularWounded += wounded;
+					result.RegularXp += xp;
 				}
 			}
 			catch (Exception ex)
 			{
-				moveRosterResult.Errors++;
+				result.Errors++;
 				Log("cleanup_prisoner_return_element_failed label=" + label + " error=" + ex.GetType().Name + ": " + ex.Message);
 			}
 		}
-		Log($"cleanup_prisoner_return_summary label={label} {moveRosterResult}");
-		return moveRosterResult;
+		RebuildTroopRosterCachedTotals(sourceParty.PrisonRoster, "cleanup_prisoner_return_source_" + label);
+		RebuildTroopRosterCachedTotals(mainRoster, "cleanup_prisoner_return_main_" + label);
+		Log($"cleanup_prisoner_return_summary label={label} {result}");
+		return result;
 	}
 
-	private static void DestroyHoldingDummyParty(MobileParty party, string label)
+
+	private static void CleanupOrphanSelectionPoolDummyParties(string label)
 	{
 		try
 		{
-			if (party != null)
+			List<MobileParty> parties = new List<MobileParty>();
+			foreach (MobileParty party in MobileParty.All)
 			{
-				string text = ((MBObjectBase)party).StringId ?? "";
-				if (party.IsActive && text.StartsWith("animusforge_troop_inspection_holding_", StringComparison.Ordinal))
+				if (party != null && party.IsActive && IsInspectionSelectionPoolDummyParty(party))
 				{
-					DestroyPartyAction.Apply((PartyBase)null, party);
-					Log("holding_dummy_destroyed label=" + label + " id=" + text);
+					parties.Add(party);
 				}
+			}
+			foreach (MobileParty party in parties)
+			{
+				ClearRosterDirect(party.MemberRoster);
+				ClearRosterDirect(party.PrisonRoster);
+				DestroyPartyAction.Apply((PartyBase)null, party);
+				Log("selection_pool_orphan_destroyed label=" + label + " id=" + (party.StringId ?? "null"));
 			}
 		}
 		catch (Exception ex)
 		{
-			Log("holding_dummy_destroy_failed label=" + label + " error=" + ex.GetType().Name + ": " + ex.Message);
+			Log("cleanup orphan selection_pool failed: " + ex.GetType().Name + ": " + ex.Message);
 		}
 	}
 
 	private static void CleanupSplitRuntime(string reason)
 	{
-		DestroySelectionPoolDummyParty(reason + "_selection_pool");
-		MobileParty holdingDummyParty = _holdingDummyParty;
-		MoveAllMembersBackToMainParty(holdingDummyParty, reason);
-		MoveAllPrisonersBackToMainParty(holdingDummyParty, reason + "_prisoners");
-		DestroyHoldingDummyParty(holdingDummyParty, reason);
-		_holdingDummyParty = null;
-		_holdingDummyPartyStringId = null;
-		if (_runtime != null)
-		{
-			_runtime.HoldingDummyParty = null;
-		}
-	}
-
-	private static void ValidateSplit(TroopInspectionRuntime runtime, Dictionary<CharacterObject, RosterTotals> beforeMemberTotals, Dictionary<CharacterObject, RosterTotals> beforePrisonerTotals, int beforeMainMen, int beforePrisoners)
-	{
-		MobileParty mainParty = MobileParty.MainParty;
-		if (mainParty == null)
-		{
-			throw new InvalidOperationException("MainParty missing after split.");
-		}
-		object obj = CharacterObject.PlayerCharacter;
-		if (obj == null)
-		{
-			Hero mainHero = Hero.MainHero;
-			obj = ((mainHero != null) ? mainHero.CharacterObject : null);
-		}
-		CharacterObject val = (CharacterObject)obj;
-		if (val != null && !mainParty.MemberRoster.Contains(val))
-		{
-			throw new InvalidOperationException("Player is not in MainParty after split.");
-		}
-		TroopRoster memberRoster = mainParty.MemberRoster;
-		int num = ((memberRoster != null) ? memberRoster.TotalManCount : 0);
-		int? obj2;
-		if (runtime == null)
-		{
-			obj2 = null;
-		}
-		else
-		{
-			MobileParty holdingDummyParty = runtime.HoldingDummyParty;
-			if (holdingDummyParty == null)
-			{
-				obj2 = null;
-			}
-			else
-			{
-				TroopRoster memberRoster2 = holdingDummyParty.MemberRoster;
-				obj2 = ((memberRoster2 != null) ? new int?(memberRoster2.TotalManCount) : ((int?)null));
-			}
-		}
-		int? num2 = obj2;
-		int num3 = num + num2.GetValueOrDefault();
-		if (num3 != beforeMainMen)
-		{
-			throw new InvalidOperationException($"Total member count mismatch after split. before={beforeMainMen} after={num3}");
-		}
-		PartyBase mainParty2 = PartyBase.MainParty;
-		int? obj3;
-		if (mainParty2 == null)
-		{
-			obj3 = null;
-		}
-		else
-		{
-			TroopRoster prisonRoster = mainParty2.PrisonRoster;
-			obj3 = ((prisonRoster != null) ? new int?(prisonRoster.TotalManCount) : ((int?)null));
-		}
-		num2 = obj3;
-		int valueOrDefault = num2.GetValueOrDefault();
-		int? obj4;
-		if (runtime == null)
-		{
-			obj4 = null;
-		}
-		else
-		{
-			MobileParty holdingDummyParty2 = runtime.HoldingDummyParty;
-			if (holdingDummyParty2 == null)
-			{
-				obj4 = null;
-			}
-			else
-			{
-				TroopRoster prisonRoster2 = holdingDummyParty2.PrisonRoster;
-				obj4 = ((prisonRoster2 != null) ? new int?(prisonRoster2.TotalManCount) : ((int?)null));
-			}
-		}
-		num2 = obj4;
-		int num4 = valueOrDefault + num2.GetValueOrDefault();
-		if (num4 != beforePrisoners)
-		{
-			throw new InvalidOperationException($"Total prisoner count mismatch after split. before={beforePrisoners} after={num4}");
-		}
-		TroopRoster[] obj5 = new TroopRoster[2]
-		{
-			mainParty.MemberRoster,
-			default(TroopRoster)
-		};
-		object obj6;
-		if (runtime == null)
-		{
-			obj6 = null;
-		}
-		else
-		{
-			MobileParty holdingDummyParty3 = runtime.HoldingDummyParty;
-			obj6 = ((holdingDummyParty3 != null) ? holdingDummyParty3.MemberRoster : null);
-		}
-		obj5[1] = (TroopRoster)obj6;
-		ValidateRosterTotals("members", beforeMemberTotals, BuildCombinedRosterTotals((TroopRoster[])(object)obj5));
-		TroopRoster[] array = new TroopRoster[2];
-		PartyBase mainParty3 = PartyBase.MainParty;
-		array[0] = ((mainParty3 != null) ? mainParty3.PrisonRoster : null);
-		object obj7;
-		if (runtime == null)
-		{
-			obj7 = null;
-		}
-		else
-		{
-			MobileParty holdingDummyParty4 = runtime.HoldingDummyParty;
-			obj7 = ((holdingDummyParty4 != null) ? holdingDummyParty4.PrisonRoster : null);
-		}
-		array[1] = (TroopRoster)obj7;
-		ValidateRosterTotals("prisoners", beforePrisonerTotals, BuildCombinedRosterTotals((TroopRoster[])(object)array));
-		object[] obj8 = new object[6]
-		{
-			num3,
-			num4,
-			RosterSummary(mainParty.MemberRoster),
-			null,
-			null,
-			null
-		};
-		PartyBase mainParty4 = PartyBase.MainParty;
-		obj8[3] = RosterSummary((mainParty4 != null) ? mainParty4.PrisonRoster : null);
-		object roster;
-		if (runtime == null)
-		{
-			roster = null;
-		}
-		else
-		{
-			MobileParty holdingDummyParty5 = runtime.HoldingDummyParty;
-			roster = ((holdingDummyParty5 != null) ? holdingDummyParty5.MemberRoster : null);
-		}
-		obj8[4] = RosterSummary((TroopRoster)roster);
-		object roster2;
-		if (runtime == null)
-		{
-			roster2 = null;
-		}
-		else
-		{
-			MobileParty holdingDummyParty6 = runtime.HoldingDummyParty;
-			roster2 = ((holdingDummyParty6 != null) ? holdingDummyParty6.PrisonRoster : null);
-		}
-		obj8[5] = RosterSummary((TroopRoster)roster2);
-		Log(string.Format("split_validate_ok members={0} prisoners={1} main={2} main_prisoners={3} holding={4} holding_prisoners={5}", obj8));
-	}
-
-	private static void ValidateRosterTotals(string label, Dictionary<CharacterObject, RosterTotals> beforeTotals, Dictionary<CharacterObject, RosterTotals> afterTotals)
-	{
-		beforeTotals = beforeTotals ?? new Dictionary<CharacterObject, RosterTotals>();
-		afterTotals = afterTotals ?? new Dictionary<CharacterObject, RosterTotals>();
-		foreach (KeyValuePair<CharacterObject, RosterTotals> beforeTotal in beforeTotals)
-		{
-			if (!afterTotals.TryGetValue(beforeTotal.Key, out var value))
-			{
-				throw new InvalidOperationException(label + " character missing after split: " + SafeCharacterId(beforeTotal.Key));
-			}
-			RosterTotals value2 = beforeTotal.Value;
-			CharacterObject key = beforeTotal.Key;
-			bool num;
-			if (key == null || !((BasicCharacterObject)key).IsHero)
-			{
-				if (value2.Number == value.Number && value2.Wounded == value.Wounded)
-				{
-					num = value2.Xp == value.Xp;
-					goto IL_00c5;
-				}
-			}
-			else if (value2.Number == value.Number)
-			{
-				num = value2.Wounded == value.Wounded;
-				goto IL_00c5;
-			}
-			goto IL_00c7;
-			IL_00c5:
-			if (num)
-			{
-				continue;
-			}
-			goto IL_00c7;
-			IL_00c7:
-			throw new InvalidOperationException($"{label} roster totals mismatch for {SafeCharacterId(beforeTotal.Key)}. before={value2} after={value}");
-		}
-		foreach (KeyValuePair<CharacterObject, RosterTotals> afterTotal in afterTotals)
-		{
-			if (!beforeTotals.ContainsKey(afterTotal.Key))
-			{
-				throw new InvalidOperationException(label + " unexpected character after split: " + SafeCharacterId(afterTotal.Key));
-			}
-			if (afterTotal.Key != null && ((BasicCharacterObject)afterTotal.Key).IsHero && afterTotal.Value.Number != 1)
-			{
-				throw new InvalidOperationException(label + " hero duplicated after split: " + SafeCharacterId(afterTotal.Key));
-			}
-		}
-	}
-
-	private static void DestroySelectionPoolDummyParty(string label)
-	{
-		try
-		{
-			MobileParty selectionPoolDummyParty = _selectionPoolDummyParty;
-			_selectionPoolDummyParty = null;
-			_selectionPoolDummyPartyStringId = null;
-			if (selectionPoolDummyParty != null)
-			{
-				string text = ((MBObjectBase)selectionPoolDummyParty).StringId ?? "";
-				if (selectionPoolDummyParty.IsActive && text.StartsWith("animusforge_troop_inspection_selection_pool_", StringComparison.Ordinal))
-				{
-					ClearRosterDirect(selectionPoolDummyParty.MemberRoster);
-					ClearRosterDirect(selectionPoolDummyParty.PrisonRoster);
-					DestroyPartyAction.Apply((PartyBase)null, selectionPoolDummyParty);
-					Log("selection_pool_destroyed label=" + label + " id=" + text);
-				}
-			}
-		}
-		catch (Exception ex)
-		{
-			Log("selection_pool_destroy_failed label=" + label + " error=" + ex.GetType().Name + ": " + ex.Message);
-		}
+		CleanupOrphanSelectionPoolDummyParties(reason + "_selection_pool_orphan");
+		CleanupOrphanHoldingDummyParties(null, reason + "_legacy_holding_orphan");
 	}
 
 	private static void ClearRosterDirect(TroopRoster roster)
 	{
-		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0019: Unknown result type (might be due to invalid IL or missing references)
-		//IL_001a: Unknown result type (might be due to invalid IL or missing references)
 		if (roster == null)
 		{
 			return;
 		}
 		foreach (TroopRosterElement item in SnapshotRoster(roster))
 		{
-			TroopRosterElement current = item;
 			try
 			{
-				CharacterObject character = current.Character;
-				if (character != null && current.Number > 0)
+				CharacterObject character = item.Character;
+				if (character != null && item.Number > 0)
 				{
-					roster.AddToCounts(character, -Math.Max(0, current.Number), false, -Math.Max(0, current.WoundedNumber), -Math.Max(0, current.Xp), true, -1);
+					roster.AddToCounts(character, -Math.Max(0, item.Number), false, -Math.Max(0, item.WoundedNumber), -Math.Max(0, item.Xp), true, -1);
 				}
 			}
 			catch
@@ -1921,57 +1154,8 @@ public static class TroopInspectionBehavior
 		}
 	}
 
-	private static Dictionary<CharacterObject, RosterTotals> BuildCombinedRosterTotals(params TroopRoster[] rosters)
+	internal static List<TroopRosterElement> SnapshotRoster(TroopRoster roster)
 	{
-		Dictionary<CharacterObject, RosterTotals> dictionary = new Dictionary<CharacterObject, RosterTotals>();
-		if (rosters == null)
-		{
-			return dictionary;
-		}
-		foreach (TroopRoster roster in rosters)
-		{
-			MergeRosterTotals(dictionary, roster);
-		}
-		return dictionary;
-	}
-
-	private static Dictionary<CharacterObject, RosterTotals> BuildRosterTotals(TroopRoster roster)
-	{
-		Dictionary<CharacterObject, RosterTotals> dictionary = new Dictionary<CharacterObject, RosterTotals>();
-		MergeRosterTotals(dictionary, roster);
-		return dictionary;
-	}
-
-	private static void MergeRosterTotals(Dictionary<CharacterObject, RosterTotals> totals, TroopRoster roster)
-	{
-		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0012: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0013: Unknown result type (might be due to invalid IL or missing references)
-		if (totals == null || roster == null)
-		{
-			return;
-		}
-		for (int i = 0; i < roster.Count; i++)
-		{
-			TroopRosterElement freshRosterElementCopy = GetFreshRosterElementCopy(roster, i);
-			CharacterObject character = freshRosterElementCopy.Character;
-			if (character != null && freshRosterElementCopy.Number > 0)
-			{
-				totals.TryGetValue(character, out var value);
-				value.Number += Math.Max(0, freshRosterElementCopy.Number);
-				value.Wounded += Math.Max(0, freshRosterElementCopy.WoundedNumber);
-				value.Xp += Math.Max(0, freshRosterElementCopy.Xp);
-				totals[character] = value;
-			}
-		}
-	}
-
-	private static List<TroopRosterElement> SnapshotRoster(TroopRoster roster)
-	{
-		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
 		List<TroopRosterElement> list = new List<TroopRosterElement>();
 		if (roster == null)
 		{
@@ -1979,209 +1163,165 @@ public static class TroopInspectionBehavior
 		}
 		for (int i = 0; i < roster.Count; i++)
 		{
-			TroopRosterElement freshRosterElementCopy = GetFreshRosterElementCopy(roster, i);
-			if (freshRosterElementCopy.Character != null && freshRosterElementCopy.Number > 0)
+			TroopRosterElement element = GetFreshRosterElementCopy(roster, i);
+			if (element.Character != null && element.Number > 0)
 			{
-				list.Add(freshRosterElementCopy);
+				list.Add(element);
 			}
 		}
 		return list;
 	}
 
-	private static TroopRosterElement GetFreshRosterElementCopy(TroopRoster roster, int index)
+	internal static TroopRosterElement GetFreshRosterElementCopy(TroopRoster roster, int index)
 	{
-		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
-		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
-		TroopRosterElement elementCopyAtIndex = roster.GetElementCopyAtIndex(index);
+		TroopRosterElement element = roster.GetElementCopyAtIndex(index);
 		try
 		{
-			elementCopyAtIndex.Xp = roster.GetElementXp(index);
+			element.Xp = roster.GetElementXp(index);
 		}
 		catch
 		{
 		}
-		return elementCopyAtIndex;
+		return element;
 	}
 
 	private static bool TroopInspectionTroopTransferableDelegate(CharacterObject character, PartyScreenLogic.TroopType type, PartyScreenLogic.PartyRosterSide side, PartyBase leftOwnerParty)
 	{
-		if (character != null && !((BasicCharacterObject)character).IsPlayerCharacter)
-		{
-			return !character.IsNotTransferableInPartyScreen;
-		}
-		return false;
+		return character != null && !character.IsPlayerCharacter && !character.IsNotTransferableInPartyScreen;
 	}
 
 	private static TroopRoster BuildSelectableRoster(TroopRoster sourceRoster)
 	{
-		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0021: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0059: Unknown result type (might be due to invalid IL or missing references)
-		TroopRoster val = TroopRoster.CreateDummyTroopRoster();
+		TroopRoster roster = TroopRoster.CreateDummyTroopRoster();
 		if (sourceRoster == null)
 		{
-			return val;
+			return roster;
 		}
-		foreach (TroopRosterElement item in (List<TroopRosterElement>)(object)sourceRoster.GetTroopRoster())
+		foreach (TroopRosterElement item in sourceRoster.GetTroopRoster())
 		{
-			TroopRosterElement current = item;
-			CharacterObject character = current.Character;
-			if (character != null && !((BasicCharacterObject)character).IsPlayerCharacter && current.Number > 0)
+			CharacterObject character = item.Character;
+			if (character == null || character.IsPlayerCharacter || item.Number <= 0)
 			{
-				int num = Math.Max(0, current.Number - current.WoundedNumber);
-				if (num > 0)
-				{
-					int num2 = CalculateRosterXpToMove(current, num);
-					val.AddToCounts(character, num, false, 0, num2, true, -1);
-				}
+				continue;
+			}
+			int healthy = character.IsHero ? ((character.HeroObject != null && !character.HeroObject.IsDead && !character.HeroObject.IsWounded) ? 1 : 0) : Math.Max(0, item.Number - item.WoundedNumber);
+			if (healthy > 0)
+			{
+				roster.AddToCounts(character, healthy, false, 0, CalculateRosterXpToMove(item, healthy), true, -1);
 			}
 		}
-		return val;
+		return roster;
 	}
 
 	private static TroopRoster BuildSelectablePrisonerRoster(TroopRoster sourceRoster)
 	{
-		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
-		TroopRoster val = TroopRoster.CreateDummyTroopRoster();
+		TroopRoster roster = TroopRoster.CreateDummyTroopRoster();
 		if (sourceRoster == null)
 		{
-			return val;
+			return roster;
 		}
 		for (int i = 0; i < sourceRoster.Count; i++)
 		{
-			TroopRosterElement freshRosterElementCopy = GetFreshRosterElementCopy(sourceRoster, i);
-			CharacterObject character = freshRosterElementCopy.Character;
-			if (character != null && freshRosterElementCopy.Number > 0)
+			TroopRosterElement item = GetFreshRosterElementCopy(sourceRoster, i);
+			if (item.Character != null && item.Number > 0)
 			{
-				val.AddToCounts(character, freshRosterElementCopy.Number, false, Math.Max(0, freshRosterElementCopy.WoundedNumber), Math.Max(0, freshRosterElementCopy.Xp), true, -1);
+				int number = item.Character.IsHero ? 1 : Math.Max(0, item.Number);
+				int wounded = item.Character.IsHero ? 0 : Math.Max(0, item.WoundedNumber);
+				roster.AddToCounts(item.Character, number, false, wounded, Math.Max(0, item.Xp), true, -1);
 			}
 		}
-		return val;
+		return roster;
 	}
 
 	private static TroopRoster BuildSelectionRosterFromUi(TroopRoster sourceRoster)
 	{
-		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0021: Unknown result type (might be due to invalid IL or missing references)
-		TroopRoster val = TroopRoster.CreateDummyTroopRoster();
+		TroopRoster roster = TroopRoster.CreateDummyTroopRoster();
 		if (sourceRoster == null)
 		{
-			return val;
+			return roster;
 		}
-		foreach (TroopRosterElement item in (List<TroopRosterElement>)(object)sourceRoster.GetTroopRoster())
+		foreach (TroopRosterElement item in sourceRoster.GetTroopRoster())
 		{
-			TroopRosterElement current = item;
-			CharacterObject character = current.Character;
-			if (character != null && !((BasicCharacterObject)character).IsPlayerCharacter && current.Number > 0)
+			CharacterObject character = item.Character;
+			if (character == null || character.IsPlayerCharacter || item.Number <= 0)
 			{
-				int num = Math.Max(0, current.Number - current.WoundedNumber);
-				if (num > 0)
-				{
-					val.AddToCounts(character, num, false, 0, 0, true, -1);
-				}
+				continue;
+			}
+			int healthy = character.IsHero ? 1 : Math.Max(0, item.Number - item.WoundedNumber);
+			if (healthy > 0)
+			{
+				roster.AddToCounts(character, healthy, false, 0, 0, true, -1);
 			}
 		}
-		return val;
+		return roster;
 	}
 
 	private static TroopRoster BuildPrisonerSelectionRosterFromUi(TroopRoster sourceRoster)
 	{
-		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
-		TroopRoster val = TroopRoster.CreateDummyTroopRoster();
+		TroopRoster roster = TroopRoster.CreateDummyTroopRoster();
 		if (sourceRoster == null)
 		{
-			return val;
+			return roster;
 		}
 		for (int i = 0; i < sourceRoster.Count; i++)
 		{
-			TroopRosterElement freshRosterElementCopy = GetFreshRosterElementCopy(sourceRoster, i);
-			CharacterObject character = freshRosterElementCopy.Character;
-			if (character != null && freshRosterElementCopy.Number > 0)
+			TroopRosterElement item = GetFreshRosterElementCopy(sourceRoster, i);
+			if (item.Character != null && item.Number > 0)
 			{
-				int num = Math.Max(0, freshRosterElementCopy.Number);
-				int num2 = Math.Min(num, Math.Max(0, freshRosterElementCopy.WoundedNumber));
-				val.AddToCounts(character, num, false, num2, 0, true, -1);
+				int number = item.Character.IsHero ? 1 : Math.Max(0, item.Number);
+				int wounded = item.Character.IsHero ? 0 : Math.Min(number, Math.Max(0, item.WoundedNumber));
+				roster.AddToCounts(item.Character, number, false, wounded, 0, true, -1);
 			}
 		}
-		return val;
+		return roster;
 	}
 
-	private static TroopRoster CloneRoster(TroopRoster sourceRoster)
+	internal static TroopRoster CloneRoster(TroopRoster sourceRoster)
 	{
-		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0021: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0034: Unknown result type (might be due to invalid IL or missing references)
-		TroopRoster val = TroopRoster.CreateDummyTroopRoster();
+		TroopRoster roster = TroopRoster.CreateDummyTroopRoster();
 		if (sourceRoster == null)
 		{
-			return val;
+			return roster;
 		}
-		foreach (TroopRosterElement item in (List<TroopRosterElement>)(object)sourceRoster.GetTroopRoster())
+		foreach (TroopRosterElement item in SnapshotRoster(sourceRoster))
 		{
-			TroopRosterElement current = item;
-			if (current.Character != null && current.Number > 0)
+			if (item.Character != null && item.Number > 0)
 			{
-				val.Add(current);
+				roster.Add(item);
 			}
 		}
-		return val;
+		return roster;
 	}
 
 	private static void AddPlayerToInspectionRoster(TroopRoster inspectionRoster)
 	{
-		//IL_0066: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0080: Unknown result type (might be due to invalid IL or missing references)
 		if (inspectionRoster == null)
 		{
 			return;
 		}
-		object obj = CharacterObject.PlayerCharacter;
-		if (obj == null)
-		{
-			Hero mainHero = Hero.MainHero;
-			obj = ((mainHero != null) ? mainHero.CharacterObject : null);
-		}
-		CharacterObject val = (CharacterObject)obj;
-		if (val == null || inspectionRoster.Contains(val))
+		CharacterObject playerCharacter = CharacterObject.PlayerCharacter ?? Hero.MainHero?.CharacterObject;
+		if (playerCharacter == null || inspectionRoster.Contains(playerCharacter))
 		{
 			return;
 		}
-		MobileParty mainParty = MobileParty.MainParty;
-		object obj2 = ((mainParty != null) ? mainParty.MemberRoster : null);
-		if (obj2 == null)
+		TroopRoster mainRoster = MobileParty.MainParty?.MemberRoster ?? PartyBase.MainParty?.MemberRoster;
+		if (mainRoster != null)
 		{
-			PartyBase mainParty2 = PartyBase.MainParty;
-			obj2 = ((mainParty2 != null) ? mainParty2.MemberRoster : null);
-		}
-		TroopRoster val2 = (TroopRoster)obj2;
-		if (val2 != null)
-		{
-			foreach (TroopRosterElement item in (List<TroopRosterElement>)(object)val2.GetTroopRoster())
+			foreach (TroopRosterElement item in mainRoster.GetTroopRoster())
 			{
-				TroopRosterElement current = item;
-				if (current.Character == val && current.Number > 0)
+				if (item.Character == playerCharacter && item.Number > 0)
 				{
-					inspectionRoster.Add(current);
+					inspectionRoster.Add(item);
 					return;
 				}
 			}
 		}
-		inspectionRoster.AddToCounts(val, 1, false, 0, 0, true, -1);
+		inspectionRoster.AddToCounts(playerCharacter, 1, insertAtFront: false, woundedCount: 0, xpChange: 0, removeDepleted: true, index: -1);
 	}
 
 	private static void ResetPendingSelection(string reason)
 	{
-		DestroySelectionPoolDummyParty(reason);
+		CleanupOrphanSelectionPoolDummyParties(reason + "_selection_pool_orphan");
 		_pendingSelection = null;
 		_isOpening = false;
 		_queuedOpenInspection = false;
@@ -2197,22 +1337,8 @@ public static class TroopInspectionBehavior
 	{
 		try
 		{
-			Game current = Game.Current;
-			object obj;
-			if (current == null)
-			{
-				obj = null;
-			}
-			else
-			{
-				GameStateManager gameStateManager = current.GameStateManager;
-				obj = ((gameStateManager == null) ? null : ((object)gameStateManager.ActiveState)?.GetType().Name);
-			}
-			if (obj == null)
-			{
-				obj = "";
-			}
-			return ((string)obj).IndexOf("PartyState", StringComparison.OrdinalIgnoreCase) >= 0;
+			string activeStateName = Game.Current?.GameStateManager?.ActiveState?.GetType().Name ?? "";
+			return activeStateName.IndexOf("PartyState", StringComparison.OrdinalIgnoreCase) >= 0;
 		}
 		catch
 		{
@@ -2220,58 +1346,156 @@ public static class TroopInspectionBehavior
 		}
 	}
 
-	private static int GetMainHeroHitPoints()
+	private static string RosterSummary(TroopRoster roster)
 	{
 		try
 		{
-			Hero mainHero = Hero.MainHero;
-			return (mainHero != null) ? mainHero.HitPoints : 0;
+			if (roster == null)
+			{
+				return "null";
+			}
+			int heroes = 0;
+			int regular = 0;
+			int wounded = 0;
+			List<string> samples = VerboseInspectionLogs ? new List<string>() : null;
+			for (int i = 0; i < roster.Count; i++)
+			{
+				TroopRosterElement item = GetFreshRosterElementCopy(roster, i);
+				if (item.Character == null || item.Number <= 0)
+				{
+					continue;
+				}
+				wounded += Math.Max(0, item.WoundedNumber);
+				if (item.Character.IsHero)
+				{
+					heroes += Math.Max(0, item.Number);
+				}
+				else
+				{
+					regular += Math.Max(0, item.Number);
+				}
+				if (samples != null && samples.Count < 8)
+				{
+					Hero hero = item.Character.HeroObject;
+					samples.Add(SafeCharacterId(item.Character) + ":n=" + item.Number + ",w=" + item.WoundedNumber + ",hero=" + item.Character.IsHero + ",alive=" + (hero?.IsAlive.ToString() ?? "null") + ",dead=" + (hero?.IsDead.ToString() ?? "null") + ",wounded=" + (hero?.IsWounded.ToString() ?? "null"));
+				}
+			}
+			string summary = "entries=" + roster.Count + ",total=" + roster.TotalManCount + ",regular=" + regular + ",heroes=" + heroes + ",wounded=" + wounded;
+			if (samples != null)
+			{
+				summary += ",samples=[" + string.Join(";", samples) + "]";
+			}
+			return summary;
 		}
-		catch
+		catch (Exception ex)
 		{
-			return 0;
+			return "error=" + ex.GetType().Name;
 		}
 	}
 
-	private static string RosterSummary(TroopRoster roster)
-	{
-		//IL_001f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0026: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
-		if (roster == null)
-		{
-			return "null";
-		}
-		int num = 0;
-		int num2 = 0;
-		int num3 = 0;
-		foreach (TroopRosterElement item in (List<TroopRosterElement>)(object)roster.GetTroopRoster())
-		{
-			TroopRosterElement current = item;
-			if (current.Character != null && current.Number > 0)
-			{
-				num++;
-				if (((BasicCharacterObject)current.Character).IsHero)
-				{
-					num2 += current.Number;
-				}
-				num3 += Math.Max(0, current.WoundedNumber);
-			}
-		}
-		return $"men={roster.TotalManCount}, elements={num}, heroes={num2}, wounded={num3}";
-	}
 
 	private static string SafeCharacterId(CharacterObject character)
 	{
 		try
 		{
-			return ((character != null) ? ((MBObjectBase)character).StringId : null) ?? ((character == null) ? null : ((object)((BasicCharacterObject)character).Name)?.ToString()) ?? "null";
+			return character?.StringId ?? character?.Name?.ToString() ?? "null";
 		}
 		catch
 		{
 			return "unknown";
 		}
+	}
+
+	private static void PrepareRuntime(MobileParty mainParty)
+	{
+		CampaignVec2 mainPosition = mainParty.Position;
+		Vec2 direction = ResolveEncounterDirection(mainParty);
+		CampaignVec2 dummyPosition = mainPosition - direction * 0.4f;
+		_dummyPartyStringId = DummyPartyPrefix + DateTime.UtcNow.Ticks + "_" + MBRandom.RandomInt(1000000);
+		_dummyParty = MobileParty.CreateParty(_dummyPartyStringId, new TroopInspectionDummyPartyComponent(dummyPosition, new TextObject("AnimusForge Troop Inspection Dummy"), Hero.MainHero, Clan.PlayerClan));
+		if (_dummyParty == null)
+		{
+			throw new InvalidOperationException("Failed to create dummy party.");
+		}
+		_dummyParty.IsVisible = false;
+		_dummyParty.SetMoveModeHold();
+		Log($"dummy_party_create id={_dummyParty.StringId} pos={FormatCampaignVec2(_dummyParty.Position)} members={_dummyParty.Party.NumberOfHealthyMembers}");
+		LogMissionSourceDiag("before_mapevent_create");
+		FieldBattleEventComponent component = FieldBattleEventComponent.CreateFieldBattleEvent(PartyBase.MainParty, _dummyParty.Party);
+		_mapEvent = component?.MapEvent;
+		if (_mapEvent == null)
+		{
+			throw new InvalidOperationException("Failed to create field battle MapEvent.");
+		}
+		_mapEvent.ResetBattleState();
+		int attackerCount = _mapEvent.AttackerSide.RecalculateMemberCountOfSide();
+		int defenderCount = _mapEvent.DefenderSide.RecalculateMemberCountOfSide();
+		Log($"mapevent_create attacker_side_count={attackerCount} defender_side_count={defenderCount} player_side={_mapEvent.PlayerSide} is_player_mapevent={_mapEvent.IsPlayerMapEvent}");
+		LogMissionSourceDiag("after_mapevent_create");
+		PlayerEncounter.Start();
+		PlayerEncounter.Current.SetupFields(PartyBase.MainParty, _dummyParty.Party);
+		SetPrivateField<MapEvent>(PlayerEncounter.Current, "_mapEvent", _mapEvent);
+		Log($"player_encounter_context battle={PlayerEncounter.Battle != null} is_mapevent={PlayerEncounter.Battle == _mapEvent} player_mapevent={MapEvent.PlayerMapEvent == _mapEvent}");
+	}
+
+	private static MissionInitializerRecord BuildMissionInitializerRecord(MobileParty mainParty)
+	{
+		IMapScene mapSceneWrapper = Campaign.Current.MapSceneWrapper;
+		MapPatchData patch = mapSceneWrapper.GetMapPatchAtPosition(mainParty.Position);
+		string scene = Campaign.Current.Models.SceneModel.GetBattleSceneForMapPatch(patch, false);
+		if (string.IsNullOrWhiteSpace(scene))
+		{
+			throw new InvalidOperationException("Battle scene is empty.");
+		}
+		MissionInitializerRecord rec = new MissionInitializerRecord(scene);
+		TerrainType terrainType = Campaign.Current.MapSceneWrapper.GetFaceTerrainType(mainParty.CurrentNavigationFace);
+		rec.TerrainType = (int)terrainType;
+		rec.DamageToFriendsMultiplier = Campaign.Current.Models.DifficultyModel.GetPlayerTroopsReceivedDamageMultiplier();
+		rec.DamageFromPlayerToFriendsMultiplier = Campaign.Current.Models.DifficultyModel.GetPlayerTroopsReceivedDamageMultiplier();
+		rec.NeedsRandomTerrain = false;
+		rec.PlayingInCampaignMode = true;
+		rec.RandomTerrainSeed = MBRandom.RandomInt(10000);
+		rec.AtmosphereOnCampaign = Campaign.Current.Models.MapWeatherModel.GetAtmosphereModel(mainParty.Position);
+		rec.SceneHasMapPatch = true;
+		rec.DecalAtlasGroup = 2;
+		rec.PatchCoordinates = patch.normalizedCoordinates;
+		rec.PatchEncounterDir = ResolvePatchEncounterDirection();
+		return rec;
+	}
+
+	private static Vec2 ResolvePatchEncounterDirection()
+	{
+		try
+		{
+			if (_mapEvent?.AttackerSide?.LeaderParty != null && _mapEvent.DefenderSide?.LeaderParty != null)
+			{
+				Vec2 v = _mapEvent.AttackerSide.LeaderParty.Position.ToVec2() - _mapEvent.DefenderSide.LeaderParty.Position.ToVec2();
+				if (v.LengthSquared > 0.0001f)
+				{
+					return v.Normalized();
+				}
+			}
+		}
+		catch
+		{
+		}
+		return ResolveEncounterDirection(MobileParty.MainParty);
+	}
+
+	private static Vec2 ResolveEncounterDirection(MobileParty mainParty)
+	{
+		try
+		{
+			Vec2 bearing = mainParty?.Bearing ?? Vec2.Zero;
+			if (bearing.LengthSquared > 0.0001f)
+			{
+				return bearing.Normalized();
+			}
+		}
+		catch
+		{
+		}
+		return new Vec2(1f, 0f);
 	}
 
 	private static bool IsOwnDummyParty(MobileParty party, string expectedStringId)
@@ -2280,11 +1504,204 @@ public static class TroopInspectionBehavior
 		{
 			return false;
 		}
-		if (string.Equals(((MBObjectBase)party).StringId, expectedStringId, StringComparison.Ordinal))
+		return string.Equals(party.StringId, expectedStringId, StringComparison.Ordinal) && party.StringId.StartsWith(DummyPartyPrefix, StringComparison.Ordinal);
+	}
+
+	
+
+	private static void CaptureMainHeroStateIfNeeded()
+	{
+		try
 		{
-			return ((MBObjectBase)party).StringId.StartsWith("animusforge_troop_inspection_dummy_", StringComparison.Ordinal);
+			if (_playerStateCaptured)
+			{
+				return;
+			}
+			Hero mainHero = Hero.MainHero;
+			if (mainHero == null)
+			{
+				return;
+			}
+			_playerOriginalHitPoints = mainHero.HitPoints;
+			_playerOriginalWasWounded = mainHero.IsWounded;
+			_playerStateCaptured = true;
 		}
-		return false;
+		catch
+		{
+		}
+	}
+
+	private static void EnsureMainHeroReadyForInspection(string reason)
+	{
+		try
+		{
+			Hero mainHero = Hero.MainHero;
+			CharacterObject playerCharacter = CharacterObject.PlayerCharacter ?? mainHero?.CharacterObject;
+			if (mainHero == null || playerCharacter == null)
+			{
+				return;
+			}
+			CaptureMainHeroStateIfNeeded();
+			int beforeHp = mainHero.HitPoints;
+			bool beforeWounded = mainHero.IsWounded;
+			bool beforeDead = mainHero.IsDead;
+			int beforeRosterWounded = GetMainPartyPlayerWoundedNumber(playerCharacter);
+			bool hpRestored = false;
+			if (!beforeDead && beforeWounded && _playerStateCaptured && !_playerOriginalWasWounded)
+			{
+				mainHero.HitPoints = GetHealthyHitPointsFor(mainHero, _playerOriginalHitPoints);
+				hpRestored = mainHero.HitPoints != beforeHp;
+			}
+			bool rosterFixed = false;
+			if (!mainHero.IsDead && !mainHero.IsWounded && beforeRosterWounded > 0)
+			{
+				rosterFixed = TrySetMainPartyPlayerWoundedNumber(playerCharacter, 0);
+			}
+			if (hpRestored || rosterFixed || beforeWounded || beforeRosterWounded > 0)
+			{
+				Log($"player_ready_check reason={reason} before_hp={beforeHp} after_hp={mainHero.HitPoints} before_wounded={beforeWounded} after_wounded={mainHero.IsWounded} dead={beforeDead} before_roster_wounded={beforeRosterWounded} after_roster_wounded={GetMainPartyPlayerWoundedNumber(playerCharacter)} hp_restored={hpRestored} roster_fixed={rosterFixed}");
+			}
+		}
+		catch (Exception ex)
+		{
+			Log("player_ready_check failed reason=" + reason + " " + ex.GetType().Name + ": " + ex.Message);
+		}
+	}
+
+	private static void RestoreMainHeroAfterInspection(string reason)
+	{
+		try
+		{
+			Hero mainHero = Hero.MainHero;
+			CharacterObject playerCharacter = CharacterObject.PlayerCharacter ?? mainHero?.CharacterObject;
+			if (mainHero == null || playerCharacter == null)
+			{
+				return;
+			}
+			int beforeHp = mainHero.HitPoints;
+			bool beforeWounded = mainHero.IsWounded;
+			bool beforeDead = mainHero.IsDead;
+			int beforeRosterWounded = GetMainPartyPlayerWoundedNumber(playerCharacter);
+			bool hpRestored = false;
+			if (_playerStateCaptured && !_playerOriginalWasWounded && !beforeDead)
+			{
+				int targetHp = GetHealthyHitPointsFor(mainHero, _playerOriginalHitPoints);
+				if (mainHero.HitPoints < targetHp || mainHero.IsWounded)
+				{
+					mainHero.HitPoints = targetHp;
+					hpRestored = true;
+				}
+			}
+			bool rosterFixed = false;
+			if (!mainHero.IsDead && !mainHero.IsWounded && beforeRosterWounded > 0)
+			{
+				rosterFixed = TrySetMainPartyPlayerWoundedNumber(playerCharacter, 0);
+			}
+			Log($"player_health_restore reason={reason} captured={_playerStateCaptured} original_hp={_playerOriginalHitPoints} original_wounded={_playerOriginalWasWounded} before_hp={beforeHp} after_hp={mainHero.HitPoints} before_wounded={beforeWounded} after_wounded={mainHero.IsWounded} dead={beforeDead} before_roster_wounded={beforeRosterWounded} after_roster_wounded={GetMainPartyPlayerWoundedNumber(playerCharacter)} hp_restored={hpRestored} roster_fixed={rosterFixed}");
+		}
+		catch (Exception ex)
+		{
+			Log("player_health_restore failed reason=" + reason + " " + ex.GetType().Name + ": " + ex.Message);
+		}
+		finally
+		{
+			_playerStateCaptured = false;
+			_playerOriginalHitPoints = 0;
+			_playerOriginalWasWounded = false;
+		}
+	}
+
+	private static int GetHealthyHitPointsFor(Hero hero, int preferredHitPoints)
+	{
+		try
+		{
+			int maxHitPoints = Math.Max(1, hero.MaxHitPoints);
+			int minHealthyHitPoints = Math.Max(1, hero.WoundedHealthLimit + 1);
+			int target = preferredHitPoints > 0 ? preferredHitPoints : minHealthyHitPoints;
+			if (target < minHealthyHitPoints)
+			{
+				target = minHealthyHitPoints;
+			}
+			if (target > maxHitPoints)
+			{
+				target = maxHitPoints;
+			}
+			return Math.Max(1, target);
+		}
+		catch
+		{
+			return Math.Max(1, preferredHitPoints);
+		}
+	}
+
+	private static int GetMainPartyPlayerWoundedNumber(CharacterObject playerCharacter)
+	{
+		try
+		{
+			TroopRoster memberRoster = MobileParty.MainParty?.MemberRoster ?? PartyBase.MainParty?.MemberRoster;
+			if (memberRoster == null || playerCharacter == null)
+			{
+				return -1;
+			}
+			int index = memberRoster.FindIndexOfTroop(playerCharacter);
+			if (index < 0)
+			{
+				return -1;
+			}
+			return memberRoster.GetElementWoundedNumber(index);
+		}
+		catch
+		{
+			return -1;
+		}
+	}
+
+	private static bool TrySetMainPartyPlayerWoundedNumber(CharacterObject playerCharacter, int woundedNumber)
+	{
+		try
+		{
+			TroopRoster memberRoster = MobileParty.MainParty?.MemberRoster ?? PartyBase.MainParty?.MemberRoster;
+			if (memberRoster == null || playerCharacter == null)
+			{
+				return false;
+			}
+			int index = memberRoster.FindIndexOfTroop(playerCharacter);
+			if (index < 0)
+			{
+				return false;
+			}
+			int currentWounded = memberRoster.GetElementWoundedNumber(index);
+			int targetWounded = Math.Max(0, Math.Min(memberRoster.GetElementNumber(index), woundedNumber));
+			if (currentWounded == targetWounded)
+			{
+				return false;
+			}
+			memberRoster.AddToCounts(playerCharacter, 0, false, targetWounded - currentWounded, 0, true, index);
+			return true;
+		}
+		catch (Exception ex)
+		{
+			Log("player_roster_wounded_fix failed: " + ex.GetType().Name + ": " + ex.Message);
+			return false;
+		}
+	}
+
+	private static string BuildMainHeroInspectionStateSummary()
+	{
+		try
+		{
+			Hero mainHero = Hero.MainHero;
+			CharacterObject playerCharacter = CharacterObject.PlayerCharacter ?? mainHero?.CharacterObject;
+			if (mainHero == null)
+			{
+				return "player_state=null";
+			}
+			return $"player_state=hp:{mainHero.HitPoints}/{mainHero.MaxHitPoints},wounded:{mainHero.IsWounded},dead:{mainHero.IsDead},wounded_limit:{mainHero.WoundedHealthLimit},roster_wounded:{GetMainPartyPlayerWoundedNumber(playerCharacter)}";
+		}
+		catch (Exception ex)
+		{
+			return "player_state_error=" + ex.GetType().Name + ":" + ex.Message;
+		}
 	}
 
 	private static string FormatCampaignVec2(CampaignVec2 position)
@@ -2312,16 +1729,16 @@ public static class TroopInspectionBehavior
 	{
 		try
 		{
-			FieldInfo fieldInfo = target?.GetType().GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic);
-			if (fieldInfo != null)
+			var field = target?.GetType().GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic);
+			if (field != null)
 			{
-				return (T)fieldInfo.GetValue(target);
+				return (T)field.GetValue(target);
 			}
 		}
 		catch
 		{
 		}
-		return default(T);
+		return default;
 	}
 
 	private static void ClearPlayerEncounterProperty()
@@ -2346,17 +1763,18 @@ public static class TroopInspectionBehavior
 		}
 		try
 		{
-			Type type = Type.GetType("TaleWorlds.MountAndBlade." + typeName + ", TaleWorlds.MountAndBlade");
-			if (type == null)
+			Type handlerType = Type.GetType("TaleWorlds.MountAndBlade." + typeName + ", TaleWorlds.MountAndBlade");
+			if (handlerType == null)
 			{
 				return false;
 			}
-			MethodInfo method = typeof(Mission).GetMethod("GetMissionBehavior", Type.EmptyTypes);
-			if (method == null)
+			var getMethod = typeof(Mission).GetMethod("GetMissionBehavior", Type.EmptyTypes);
+			if (getMethod == null)
 			{
 				return false;
 			}
-			return method.MakeGenericMethod(type).Invoke(mission, null) != null;
+			var generic = getMethod.MakeGenericMethod(handlerType);
+			return generic.Invoke(mission, null) != null;
 		}
 		catch
 		{
@@ -2368,6 +1786,10 @@ public static class TroopInspectionBehavior
 	{
 		try
 		{
+			if (!ShouldWriteInspectionLog(message))
+			{
+				return;
+			}
 			string path = GetInspectionLogPath();
 			File.AppendAllText(path, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + " [TroopInspection] " + message + Environment.NewLine);
 		}
@@ -2375,12 +1797,70 @@ public static class TroopInspectionBehavior
 		{
 			try
 			{
-				Logger.Log("TroopInspection", "[TroopInspection] " + message);
+				Logger.Log(LogPrefix, "[TroopInspection] " + message);
 			}
 			catch
 			{
 			}
 		}
+	}
+
+	private static bool ShouldWriteInspectionLog(string message)
+	{
+		if (VerboseInspectionLogs)
+		{
+			return true;
+		}
+		if (string.IsNullOrWhiteSpace(message))
+		{
+			return false;
+		}
+		if (message.IndexOf("failed", StringComparison.OrdinalIgnoreCase) >= 0 ||
+			message.IndexOf("exception", StringComparison.OrdinalIgnoreCase) >= 0 ||
+			message.IndexOf("error", StringComparison.OrdinalIgnoreCase) >= 0 ||
+			message.IndexOf("blocked", StringComparison.OrdinalIgnoreCase) >= 0)
+		{
+			return true;
+		}
+		if (message.StartsWith("terminal_open", StringComparison.Ordinal) ||
+			message.StartsWith("precheck ", StringComparison.Ordinal) ||
+			message.StartsWith("selection_screen_open", StringComparison.Ordinal) ||
+			message.StartsWith("selection_done", StringComparison.Ordinal) ||
+			message.StartsWith("split_validate_ok", StringComparison.Ordinal) ||
+			message.StartsWith("split_validate_fail", StringComparison.Ordinal) ||
+			message.StartsWith("runtime_ready", StringComparison.Ordinal) ||
+			message.StartsWith("mapevent_create", StringComparison.Ordinal) ||
+			message.StartsWith("mission_behaviors", StringComparison.Ordinal) ||
+			message.StartsWith("logic_added", StringComparison.Ordinal) ||
+			message.StartsWith("spawn_wait_diag", StringComparison.Ordinal) ||
+			message.StartsWith("spawn_prisoners_direct", StringComparison.Ordinal) ||
+			message.StartsWith("spawn_prisoners_begin", StringComparison.Ordinal) ||
+			message.StartsWith("spawn_prisoners result", StringComparison.Ordinal) ||
+			message.StartsWith("deployment_bypassed_for_prisoners", StringComparison.Ordinal) ||
+			message.StartsWith("deployment_ended", StringComparison.Ordinal) ||
+			message.StartsWith("mission_ended_check", StringComparison.Ordinal) ||
+			message.StartsWith("cleanup begin", StringComparison.Ordinal) ||
+			message.StartsWith("cleanup end", StringComparison.Ordinal) ||
+			message.StartsWith("cleanup_return_summary", StringComparison.Ordinal) ||
+			message.StartsWith("cleanup_prisoner_return_summary", StringComparison.Ordinal) ||
+			message.StartsWith("player_health_restore", StringComparison.Ordinal))
+		{
+			return true;
+		}
+		if (message.StartsWith("death_rate_diag", StringComparison.Ordinal))
+		{
+			return true;
+		}
+		if (message.StartsWith("prisoner_origin_diag", StringComparison.Ordinal))
+		{
+			return message.IndexOf("set_killed_end", StringComparison.Ordinal) >= 0 ||
+				message.IndexOf("set_wounded_end", StringComparison.Ordinal) >= 0;
+		}
+		if (message.StartsWith("ready_troops_filter", StringComparison.Ordinal))
+		{
+			return message.IndexOf("dropped=0", StringComparison.Ordinal) < 0;
+		}
+		return false;
 	}
 
 	private static string GetInspectionLogPath()
@@ -2404,7 +1884,538 @@ public static class TroopInspectionBehavior
 		return _inspectionLogPath;
 	}
 
+	private sealed class TroopInspectionDummyPartyComponent : PartyComponent
+	{
+		private readonly CampaignVec2 _position;
+
+		private readonly TextObject _name;
+
+		private readonly Hero _owner;
+
+		private readonly Clan _clan;
+
+		public TroopInspectionDummyPartyComponent(CampaignVec2 position, TextObject name, Hero owner, Clan clan)
+		{
+			_position = position;
+			_name = name;
+			_owner = owner;
+			_clan = clan;
+		}
+
+		public override Hero PartyOwner => _owner;
+
+		public override TextObject Name => _name;
+
+		public override Settlement HomeSettlement => null;
+
+		public override bool AvoidHostileActions => true;
+
+		public override Banner GetDefaultComponentBanner()
+		{
+			return _clan?.Banner;
+		}
+
+		protected override void OnInitialize()
+		{
+			MobileParty.ActualClan = _clan;
+			MobileParty.InitializeMobilePartyAroundPosition(TroopRoster.CreateDummyTroopRoster(), TroopRoster.CreateDummyTroopRoster(), _position, 0f, 0f, !_position.IsOnLand);
+			MobileParty.SetMoveModeHold();
+		}
+	}
+	public sealed class TroopInspectionSaveableTypeDefiner : SaveableTypeDefiner
+	{
+		public TroopInspectionSaveableTypeDefiner()
+			: base(711060)
+		{
+		}
+
+		protected override void DefineClassTypes()
+		{
+			AddClassDefinition(typeof(TroopInspectionDummyPartyComponent), 1);
+		}
+	}
+
+
+	// Runtime roster split and cleanup helpers.
+private const string HoldingDummyPartyPrefix = "animusforge_troop_inspection_holding_";
+
+	// Cleanup helpers for the temporary holding party used while MainParty is split
+	// down to the current inspection selection.
+	private static bool IsInspectionHoldingDummyParty(MobileParty party)
+	{
+		try
+		{
+			return party?.StringId?.StartsWith(HoldingDummyPartyPrefix, StringComparison.Ordinal) == true;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static void RestoreAndDestroyHoldingDummyParty(MobileParty holdingDummyParty, string label)
+	{
+		if (holdingDummyParty == null)
+		{
+			return;
+		}
+		MoveAllMembersBackToMainParty(holdingDummyParty, label);
+		MoveAllPrisonersBackToMainParty(holdingDummyParty, label + "_prisoners");
+		DestroyHoldingDummyParty(holdingDummyParty, label);
+	}
+
+	private static void DestroyHoldingDummyParty(MobileParty party, string label)
+	{
+		try
+		{
+			if (party == null)
+			{
+				return;
+			}
+			string id = party.StringId ?? "";
+			if (party.IsActive && id.StartsWith(HoldingDummyPartyPrefix, StringComparison.Ordinal))
+			{
+				DestroyPartyAction.Apply((PartyBase)null, party);
+				Log("holding_dummy_destroyed label=" + label + " id=" + id);
+			}
+		}
+		catch (Exception ex)
+		{
+			Log("holding_dummy_destroy_failed label=" + label + " error=" + ex.GetType().Name + ": " + ex.Message);
+		}
+	}
+
+	private static void CleanupOrphanHoldingDummyParties(MobileParty exceptParty, string label)
+	{
+		try
+		{
+			List<MobileParty> parties = new List<MobileParty>();
+			foreach (MobileParty party in MobileParty.All)
+			{
+				if (party != null && !object.ReferenceEquals(party, exceptParty) && party.IsActive && IsInspectionHoldingDummyParty(party))
+				{
+					parties.Add(party);
+				}
+			}
+			foreach (MobileParty party in parties)
+			{
+				RestoreAndDestroyHoldingDummyParty(party, label);
+			}
+		}
+		catch (Exception ex)
+		{
+			Log("cleanup orphan holding failed: " + ex.GetType().Name + ": " + ex.Message);
+		}
+	}
+
+	private struct RosterTotals
+	{
+		public int Number;
+
+		public int Wounded;
+
+		public int Xp;
+
+		public override string ToString()
+		{
+			return "number=" + Number + ",wounded=" + Wounded + ",xp=" + Xp;
+		}
+	}
+
+	private static void PrepareSelectionRuntimeWithMainPartySplit(TroopInspectionRuntime runtime)
+	{
+		if (runtime == null)
+		{
+			throw new InvalidOperationException("Runtime is null.");
+		}
+		MobileParty mainParty = MobileParty.MainParty;
+		if (mainParty == null || PartyBase.MainParty == null)
+		{
+			throw new InvalidOperationException("MainParty is null.");
+		}
+
+		PrepareMainPartyRosterStateForInspection("prepare_runtime_snapshot");
+
+		Dictionary<CharacterObject, RosterTotals> beforeMembers = BuildRosterTotals(mainParty.MemberRoster);
+		Dictionary<CharacterObject, RosterTotals> beforePrisoners = BuildRosterTotals(PartyBase.MainParty?.PrisonRoster);
+		int beforeMemberCount = mainParty.MemberRoster?.TotalManCount ?? 0;
+		int beforePrisonerCount = PartyBase.MainParty?.PrisonRoster?.TotalManCount ?? 0;
+
+		CreateInspectionHoldingDummyParty(runtime, mainParty);
+		MoveMemberRosterFromMainParty(runtime.NotSelectedMemberRoster, runtime.HoldingDummyParty, "inspection_holding");
+		MovePrisonerRosterFromMainParty(runtime.NotSelectedPrisonerRoster, runtime.HoldingDummyParty, "inspection_holding_prisoners");
+
+		RebuildTroopRosterCachedTotals(mainParty.MemberRoster, "prepare_runtime_main_after_split", throwOnFailure: true);
+		RebuildTroopRosterCachedTotals(runtime.HoldingDummyParty?.MemberRoster, "prepare_runtime_holding_after_split", throwOnFailure: true);
+		RebuildTroopRosterCachedTotals(PartyBase.MainParty?.PrisonRoster, "prepare_runtime_prisoners_after_split", throwOnFailure: true);
+		RebuildTroopRosterCachedTotals(runtime.HoldingDummyParty?.PrisonRoster, "prepare_runtime_holding_prisoners_after_split", throwOnFailure: true);
+
+		ValidateInspectionSplit(runtime, beforeMembers, beforePrisoners, beforeMemberCount, beforePrisonerCount);
+		runtime.InspectionSummary = RosterSummary(runtime.InspectionRoster) + ", prisoners=" + RosterSummary(runtime.InspectionPrisonerRoster);
+		runtime.NotSelectedSummary = RosterSummary(runtime.NotSelectedMemberRoster) + ", prisoners=" + RosterSummary(runtime.NotSelectedPrisonerRoster);
+		Log("runtime_ready mainparty_split=true inspection=" + runtime.InspectionSummary
+			+ " ui_not_selected=" + runtime.NotSelectedSummary
+			+ " main_members=" + RosterSummary(mainParty.MemberRoster)
+			+ " main_prisoners=" + RosterSummary(PartyBase.MainParty?.PrisonRoster)
+			+ " holding_members=" + RosterSummary(runtime.HoldingDummyParty?.MemberRoster)
+			+ " holding_prisoners=" + RosterSummary(runtime.HoldingDummyParty?.PrisonRoster));
+	}
+
+	private static void CreateInspectionHoldingDummyParty(TroopInspectionRuntime runtime, MobileParty mainParty)
+	{
+		CleanupOrphanHoldingDummyParties(null, "pre_split_holding_orphan");
+		CampaignVec2 mainPosition = mainParty.Position;
+		Vec2 direction = ResolveEncounterDirection(mainParty);
+		Vec2 holdingOffset = new Vec2(-direction.Y, direction.X);
+		if (holdingOffset.LengthSquared <= 0.0001f)
+		{
+			holdingOffset = new Vec2(0f, 1f);
+		}
+		CampaignVec2 holdingPosition = mainPosition + holdingOffset.Normalized() * 0.4f;
+		string holdingId = HoldingDummyPartyPrefix + DateTime.UtcNow.Ticks + "_" + MBRandom.RandomInt(1000000);
+		runtime.HoldingDummyParty = MobileParty.CreateParty(holdingId, new TroopInspectionDummyPartyComponent(holdingPosition, new TextObject("AnimusForge Troop Inspection Holding"), Hero.MainHero, Clan.PlayerClan));
+		if (runtime.HoldingDummyParty == null)
+		{
+			throw new InvalidOperationException("Failed to create inspection holding dummy party.");
+		}
+		runtime.HoldingDummyParty.IsVisible = false;
+		runtime.HoldingDummyParty.SetMoveModeHold();
+		Log("holding_dummy_create id=" + runtime.HoldingDummyParty.StringId + " pos=" + FormatCampaignVec2(runtime.HoldingDummyParty.Position) + " members=" + runtime.HoldingDummyParty.Party.NumberOfHealthyMembers);
+	}
+
+	private static void MoveMemberRosterFromMainParty(TroopRoster selectedRoster, MobileParty targetParty, string label)
+	{
+		if (selectedRoster == null || targetParty == null)
+		{
+			return;
+		}
+		MoveRosterResult result = new MoveRosterResult();
+		foreach (TroopRosterElement item in SnapshotRoster(selectedRoster))
+		{
+			try
+			{
+				CharacterObject character = item.Character;
+				if (character == null || item.Number <= 0 || character.IsPlayerCharacter)
+				{
+					continue;
+				}
+				if (character.IsHero)
+				{
+					MoveHeroMemberToParty(character.HeroObject, targetParty, label, result);
+					continue;
+				}
+				MoveRegularMemberToParty(item, targetParty, result);
+			}
+			catch (Exception ex)
+			{
+				result.Errors++;
+				Log("move_member_element_failed label=" + label + " error=" + ex.GetType().Name + ": " + ex.Message);
+			}
+		}
+		Log("move_member_roster_result label=" + label + " " + result);
+	}
+
+	private static void MoveHeroMemberToParty(Hero hero, MobileParty targetParty, string label, MoveRosterResult result)
+	{
+		if (hero == null || targetParty == null || hero.IsHumanPlayerCharacter)
+		{
+			return;
+		}
+		if (hero.IsDead)
+		{
+			result.DeadHeroesSkipped++;
+			return;
+		}
+		MobileParty mainParty = MobileParty.MainParty;
+		MobileParty beforeParty = hero.PartyBelongedTo;
+		if (beforeParty != mainParty)
+		{
+			throw new InvalidOperationException("Hero party mismatch before inspection split. troop=" + SafeCharacterId(hero.CharacterObject) + " party=" + (beforeParty?.StringId ?? "null") + " main=" + (mainParty?.StringId ?? "null"));
+		}
+		AddHeroToPartyAction.Apply(hero, targetParty, showNotification: false);
+		result.Heroes++;
+		Log("move_member_hero_result label=" + label + " troop=" + SafeCharacterId(hero.CharacterObject) + " from=" + (beforeParty?.StringId ?? "null") + " to=" + (hero.PartyBelongedTo?.StringId ?? "null") + " target=" + (targetParty.StringId ?? "null"));
+	}
+
+	private static void MoveRegularMemberToParty(TroopRosterElement selectedElement, MobileParty targetParty, MoveRosterResult result)
+	{
+		TroopRoster mainRoster = MobileParty.MainParty?.MemberRoster;
+		TroopRoster targetRoster = targetParty?.MemberRoster;
+		CharacterObject character = selectedElement.Character;
+		if (mainRoster == null || targetRoster == null || character == null)
+		{
+			throw new InvalidOperationException("Invalid roster while moving regular inspection member.");
+		}
+		int sourceIndex = mainRoster.FindIndexOfTroop(character);
+		if (sourceIndex < 0)
+		{
+			throw new InvalidOperationException("Source member not found in MainParty: " + SafeCharacterId(character));
+		}
+		TroopRosterElement sourceElement = GetFreshRosterElementCopy(mainRoster, sourceIndex);
+		int number = Math.Max(0, selectedElement.Number);
+		int healthyAvailable = Math.Max(0, sourceElement.Number - sourceElement.WoundedNumber);
+		if (healthyAvailable < number)
+		{
+			throw new InvalidOperationException("Not enough healthy source members for " + SafeCharacterId(character) + ". have=" + healthyAvailable + " need=" + number);
+		}
+		int xp = CalculateRosterXpToMove(sourceElement, number);
+		mainRoster.AddToCounts(character, -number, insertAtFront: false, woundedCount: 0, xpChange: -xp, removeDepleted: true, index: -1);
+		targetRoster.AddToCounts(character, number, insertAtFront: false, woundedCount: 0, xpChange: xp, removeDepleted: true, index: -1);
+		result.RegularMen += number;
+		result.RegularXp += xp;
+	}
+
+	private static void MovePrisonerRosterFromMainParty(TroopRoster selectedRoster, MobileParty targetParty, string label)
+	{
+		if (selectedRoster == null || targetParty == null)
+		{
+			return;
+		}
+		TroopRoster mainRoster = PartyBase.MainParty?.PrisonRoster;
+		TroopRoster targetRoster = targetParty.PrisonRoster;
+		MoveRosterResult result = new MoveRosterResult();
+		foreach (TroopRosterElement item in SnapshotRoster(selectedRoster))
+		{
+			try
+			{
+				CharacterObject character = item.Character;
+				if (mainRoster == null || targetRoster == null || character == null || item.Number <= 0)
+				{
+					continue;
+				}
+				int sourceIndex = mainRoster.FindIndexOfTroop(character);
+				if (sourceIndex < 0)
+				{
+					throw new InvalidOperationException("Source prisoner not found in MainParty: " + SafeCharacterId(character));
+				}
+				TroopRosterElement sourceElement = GetFreshRosterElementCopy(mainRoster, sourceIndex);
+				int number = Math.Max(0, item.Number);
+				int wounded = Math.Min(number, Math.Max(0, item.WoundedNumber));
+				int xp = Math.Min(Math.Max(0, item.Xp), Math.Max(0, sourceElement.Xp));
+				if (sourceElement.Number < number)
+				{
+					throw new InvalidOperationException("Not enough source prisoners for " + SafeCharacterId(character) + ". have=" + sourceElement.Number + " need=" + number);
+				}
+				mainRoster.AddToCounts(character, -number, insertAtFront: false, woundedCount: -wounded, xpChange: -xp, removeDepleted: true, index: -1);
+				targetRoster.AddToCounts(character, number, insertAtFront: false, woundedCount: wounded, xpChange: xp, removeDepleted: true, index: -1);
+				if (character.IsHero)
+				{
+					result.Heroes += number;
+				}
+				else
+				{
+					result.RegularMen += number;
+					result.RegularWounded += wounded;
+					result.RegularXp += xp;
+				}
+			}
+			catch (Exception ex)
+			{
+				result.Errors++;
+				Log("move_prisoner_element_failed label=" + label + " error=" + ex.GetType().Name + ": " + ex.Message);
+			}
+		}
+		Log("move_prisoner_roster_result label=" + label + " " + result);
+	}
+
+	private static void ValidateInspectionSplit(TroopInspectionRuntime runtime, Dictionary<CharacterObject, RosterTotals> beforeMembers, Dictionary<CharacterObject, RosterTotals> beforePrisoners, int beforeMemberCount, int beforePrisonerCount)
+	{
+		MobileParty mainParty = MobileParty.MainParty;
+		if (mainParty == null)
+		{
+			throw new InvalidOperationException("MainParty missing after inspection split.");
+		}
+		CharacterObject playerCharacter = CharacterObject.PlayerCharacter ?? Hero.MainHero?.CharacterObject;
+		if (playerCharacter != null && !mainParty.MemberRoster.Contains(playerCharacter))
+		{
+			throw new InvalidOperationException("Player is not in MainParty after inspection split.");
+		}
+		int afterMemberCount = (mainParty.MemberRoster?.TotalManCount ?? 0) + (runtime.HoldingDummyParty?.MemberRoster?.TotalManCount ?? 0);
+		int afterPrisonerCount = (PartyBase.MainParty?.PrisonRoster?.TotalManCount ?? 0) + (runtime.HoldingDummyParty?.PrisonRoster?.TotalManCount ?? 0);
+		if (afterMemberCount != beforeMemberCount)
+		{
+			throw new InvalidOperationException("Total member count mismatch after inspection split. before=" + beforeMemberCount + " after=" + afterMemberCount);
+		}
+		if (afterPrisonerCount != beforePrisonerCount)
+		{
+			throw new InvalidOperationException("Total prisoner count mismatch after inspection split. before=" + beforePrisonerCount + " after=" + afterPrisonerCount);
+		}
+		ValidateRosterTotals("members", beforeMembers, BuildCombinedRosterTotals(mainParty.MemberRoster, runtime.HoldingDummyParty?.MemberRoster));
+		ValidateRosterTotals("prisoners", beforePrisoners, BuildCombinedRosterTotals(PartyBase.MainParty?.PrisonRoster, runtime.HoldingDummyParty?.PrisonRoster));
+		ValidateMainRosterMatchesInspectionSelection(runtime);
+		Log("split_validate_ok members=" + afterMemberCount
+			+ " prisoners=" + afterPrisonerCount
+			+ " main=" + RosterSummary(mainParty.MemberRoster)
+			+ " main_prisoners=" + RosterSummary(PartyBase.MainParty?.PrisonRoster)
+			+ " holding=" + RosterSummary(runtime.HoldingDummyParty?.MemberRoster)
+			+ " holding_prisoners=" + RosterSummary(runtime.HoldingDummyParty?.PrisonRoster));
+	}
+
+	private static void ValidateRosterTotals(string label, Dictionary<CharacterObject, RosterTotals> before, Dictionary<CharacterObject, RosterTotals> after)
+	{
+		before = before ?? new Dictionary<CharacterObject, RosterTotals>();
+		after = after ?? new Dictionary<CharacterObject, RosterTotals>();
+		foreach (KeyValuePair<CharacterObject, RosterTotals> pair in before)
+		{
+			if (!after.TryGetValue(pair.Key, out RosterTotals afterTotals))
+			{
+				throw new InvalidOperationException("Character missing after inspection split " + label + ": " + SafeCharacterId(pair.Key));
+			}
+			RosterTotals beforeTotals = pair.Value;
+			bool totalsMatch = pair.Key?.IsHero == true
+				? beforeTotals.Number == afterTotals.Number && beforeTotals.Wounded == afterTotals.Wounded
+				: beforeTotals.Number == afterTotals.Number && beforeTotals.Wounded == afterTotals.Wounded && beforeTotals.Xp == afterTotals.Xp;
+			if (!totalsMatch)
+			{
+				throw new InvalidOperationException("Roster totals mismatch after inspection split " + label + " for " + SafeCharacterId(pair.Key) + ". before=" + beforeTotals + " after=" + afterTotals);
+			}
+		}
+		foreach (KeyValuePair<CharacterObject, RosterTotals> pair in after)
+		{
+			if (!before.ContainsKey(pair.Key))
+			{
+				throw new InvalidOperationException("Unexpected character after inspection split " + label + ": " + SafeCharacterId(pair.Key));
+			}
+			if (pair.Key != null && pair.Key.IsHero && pair.Value.Number != 1)
+			{
+				throw new InvalidOperationException("Hero duplicated after inspection split " + label + ": " + SafeCharacterId(pair.Key));
+			}
+		}
+	}
+
+	private static void ValidateMainRosterMatchesInspectionSelection(TroopInspectionRuntime runtime)
+	{
+		Dictionary<CharacterObject, int> expectedMembers = BuildRosterCounts(runtime.InspectionRoster, healthyOnly: true);
+		Dictionary<CharacterObject, int> actualMembers = BuildRosterCounts(MobileParty.MainParty?.MemberRoster, healthyOnly: true);
+		ValidateExpectedCounts("main_members", expectedMembers, actualMembers, allowExtraPlayerOnly: true);
+		Dictionary<CharacterObject, int> expectedPrisoners = BuildRosterCounts(runtime.InspectionPrisonerRoster, healthyOnly: false);
+		Dictionary<CharacterObject, int> actualPrisoners = BuildRosterCounts(PartyBase.MainParty?.PrisonRoster, healthyOnly: false);
+		ValidateExpectedCounts("main_prisoners", expectedPrisoners, actualPrisoners, allowExtraPlayerOnly: false);
+	}
+
+	private static void ValidateExpectedCounts(string label, Dictionary<CharacterObject, int> expected, Dictionary<CharacterObject, int> actual, bool allowExtraPlayerOnly)
+	{
+		expected = expected ?? new Dictionary<CharacterObject, int>();
+		actual = actual ?? new Dictionary<CharacterObject, int>();
+		foreach (KeyValuePair<CharacterObject, int> pair in expected)
+		{
+			actual.TryGetValue(pair.Key, out int actualCount);
+			if (actualCount != pair.Value)
+			{
+				throw new InvalidOperationException("Inspection split count mismatch " + label + " troop=" + SafeCharacterId(pair.Key) + " expected=" + pair.Value + " actual=" + actualCount);
+			}
+		}
+		foreach (KeyValuePair<CharacterObject, int> pair in actual)
+		{
+			if (pair.Value <= 0)
+			{
+				continue;
+			}
+			if (allowExtraPlayerOnly && pair.Key != null && pair.Key.IsPlayerCharacter)
+			{
+				continue;
+			}
+			if (!expected.ContainsKey(pair.Key))
+			{
+				throw new InvalidOperationException("Inspection split unexpected " + label + " troop=" + SafeCharacterId(pair.Key) + " count=" + pair.Value);
+			}
+		}
+	}
+
+	private static Dictionary<CharacterObject, int> BuildRosterCounts(TroopRoster roster, bool healthyOnly)
+	{
+		Dictionary<CharacterObject, int> result = new Dictionary<CharacterObject, int>();
+		if (roster == null)
+		{
+			return result;
+		}
+		foreach (TroopRosterElement item in SnapshotRoster(roster))
+		{
+			CharacterObject character = item.Character;
+			if (character == null || item.Number <= 0)
+			{
+				continue;
+			}
+			int count = healthyOnly && !character.IsHero ? Math.Max(0, item.Number - item.WoundedNumber) : Math.Max(0, item.Number);
+			if (character.IsHero && healthyOnly && (character.HeroObject?.IsDead == true || character.HeroObject?.IsWounded == true))
+			{
+				count = 0;
+			}
+			if (count <= 0)
+			{
+				continue;
+			}
+			result.TryGetValue(character, out int existing);
+			result[character] = existing + count;
+		}
+		return result;
+	}
+
+	private static Dictionary<CharacterObject, RosterTotals> BuildCombinedRosterTotals(params TroopRoster[] rosters)
+	{
+		Dictionary<CharacterObject, RosterTotals> result = new Dictionary<CharacterObject, RosterTotals>();
+		if (rosters == null)
+		{
+			return result;
+		}
+		foreach (TroopRoster roster in rosters)
+		{
+			MergeRosterTotals(result, roster);
+		}
+		return result;
+	}
+
+	private static Dictionary<CharacterObject, RosterTotals> BuildRosterTotals(TroopRoster roster)
+	{
+		Dictionary<CharacterObject, RosterTotals> result = new Dictionary<CharacterObject, RosterTotals>();
+		MergeRosterTotals(result, roster);
+		return result;
+	}
+
+	private static void MergeRosterTotals(Dictionary<CharacterObject, RosterTotals> totals, TroopRoster roster)
+	{
+		if (totals == null || roster == null)
+		{
+			return;
+		}
+		foreach (TroopRosterElement item in SnapshotRoster(roster))
+		{
+			CharacterObject character = item.Character;
+			if (character == null || item.Number <= 0)
+			{
+				continue;
+			}
+			totals.TryGetValue(character, out RosterTotals existing);
+			existing.Number += Math.Max(0, item.Number);
+			existing.Wounded += Math.Max(0, item.WoundedNumber);
+			existing.Xp += Math.Max(0, item.Xp);
+			totals[character] = existing;
+		}
+	}
+
+	internal static void LogMissionSourceDiag(string source)
+	{
+		try
+		{
+			Log("mission_source_diag source=" + source
+				+ " runtime_inspection=" + RosterSummary(_runtime?.InspectionRoster)
+				+ " runtime_prisoners=" + RosterSummary(_runtime?.InspectionPrisonerRoster)
+				+ " main_members=" + RosterSummary(MobileParty.MainParty?.MemberRoster)
+				+ " main_prisoners=" + RosterSummary(PartyBase.MainParty?.PrisonRoster)
+				+ " holding_members=" + RosterSummary(_runtime?.HoldingDummyParty?.MemberRoster)
+				+ " holding_prisoners=" + RosterSummary(_runtime?.HoldingDummyParty?.PrisonRoster)
+				+ " dummy_members=" + RosterSummary(_dummyParty?.MemberRoster)
+				+ " dummy_prisoners=" + RosterSummary(_dummyParty?.PrisonRoster));
+		}
+		catch (Exception ex)
+		{
+			Log("mission_source_diag failed source=" + source + " " + ex.GetType().Name + ": " + ex.Message);
+		}
+	}
+
 }
+
+
 
 internal static class ReinforcementSystemCompatibility
 {
@@ -2436,22 +2447,22 @@ internal static class ReinforcementSystemCompatibility
 			}
 			try
 			{
-				Type type = FindReinforcementMainType();
-				if (type == null)
+				Type targetType = FindReinforcementMainType();
+				if (targetType == null)
 				{
 					LogMissingOnce("Reinforcement_System.Main not loaded");
 					return;
 				}
-				MethodInfo methodInfo = AccessTools.Method(type, "OnMissionBehaviorInitialize", new Type[1] { typeof(Mission) });
-				MethodInfo methodInfo2 = AccessTools.Method(typeof(ReinforcementSystemCompatibility), "OnMissionBehaviorInitializePrefix");
-				if (methodInfo == null || methodInfo2 == null)
+				MethodInfo target = AccessTools.Method(targetType, "OnMissionBehaviorInitialize", new Type[] { typeof(Mission) });
+				MethodInfo prefix = AccessTools.Method(typeof(ReinforcementSystemCompatibility), nameof(OnMissionBehaviorInitializePrefix));
+				if (target == null || prefix == null)
 				{
 					LogMissingOnce("Reinforcement_System.Main.OnMissionBehaviorInitialize not found");
 					return;
 				}
-				Harmony obj = _harmony ?? new Harmony("com.AnimusForge.spy.reinforcement_guard");
-				obj.Patch(methodInfo, new HarmonyMethod(methodInfo2));
-				_harmony = obj;
+				Harmony activeHarmony = _harmony ?? new Harmony(HarmonyId);
+				activeHarmony.Patch(target, prefix: new HarmonyMethod(prefix));
+				_harmony = activeHarmony;
 				_patched = true;
 				Log("reinforcement_system_guard_patched");
 			}
@@ -2479,8 +2490,7 @@ internal static class ReinforcementSystemCompatibility
 		{
 			return type;
 		}
-		Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
-		foreach (Assembly assembly in assemblies)
+		foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
 		{
 			try
 			{
@@ -2499,11 +2509,12 @@ internal static class ReinforcementSystemCompatibility
 
 	private static void LogMissingOnce(string message)
 	{
-		if (!_missingLogged)
+		if (_missingLogged)
 		{
-			_missingLogged = true;
-			Log("reinforcement_system_guard_not_active " + message);
+			return;
 		}
+		_missingLogged = true;
+		Log("reinforcement_system_guard_not_active " + message);
 	}
 
 	private static void Log(string message)
@@ -2555,36 +2566,6 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 
 	private float _prisonerSpawnTimer = 1f;
 
-	private int _lordFormationClassForceLogCount;
-
-	private int _prisonerDeployPairDiagLogCount;
-
-	private float _nextPrisonerDeployPairDiagTime;
-
-	private int _formationIsolationLogCount;
-
-	private int _prisonerFormationRecalcLogCount;
-
-	private const int PrisonerDeployPairDiagLogLimit = 3;
-
-	private const int FormationIsolationLogLimit = 3;
-
-	private const int PrisonerFormationRecalcLogLimit = 3;
-
-	private const FormationClass RegularPrisonerFormationClass = (FormationClass)6;
-
-	private const FormationClass LordPrisonerFormationClass = (FormationClass)7;
-
-	private const FormationClass LordPrisonerSpawnFormationClass = FormationClass.Ranged;
-
-	private const FormationClass LordPrisonerRuntimeClass = FormationClass.Cavalry;
-
-	private static readonly PropertyInfo FormationRepresentativeClassProperty = typeof(Formation).GetProperty("RepresentativeClass", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-
-	private static readonly FieldInfo FormationLogicalClassField = typeof(Formation).GetField("_logicalClass", BindingFlags.Instance | BindingFlags.NonPublic);
-
-	private static readonly FieldInfo FormationLogicalClassNeedsUpdateField = typeof(Formation).GetField("_logicalClassNeedsUpdate", BindingFlags.Instance | BindingFlags.NonPublic);
-
 	private readonly Dictionary<Agent, bool> _prisonerIsLordMap = new Dictionary<Agent, bool>();
 
 	private readonly HashSet<Agent> _civilianPrisonerActionSetApplied = new HashSet<Agent>();
@@ -2617,6 +2598,42 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 
 	private float _nextMissionEndedLogTime;
 
+	private const FormationClass RegularPrisonerFormationClass = (FormationClass)6;
+
+	private const FormationClass LordPrisonerFormationClass = (FormationClass)7;
+
+	private const FormationClass LordPrisonerRuntimeClass = FormationClass.Cavalry;
+
+	private static readonly PropertyInfo FormationRepresentativeClassProperty = typeof(Formation).GetProperty("RepresentativeClass", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+
+	private static readonly FieldInfo FormationLogicalClassField = typeof(Formation).GetField("_logicalClass", BindingFlags.Instance | BindingFlags.NonPublic);
+
+	private static readonly FieldInfo FormationLogicalClassNeedsUpdateField = typeof(Formation).GetField("_logicalClassNeedsUpdate", BindingFlags.Instance | BindingFlags.NonPublic);
+
+	private int _lordFormationClassForceLogCount;
+
+	private int _prisonerDeployPairDiagLogCount;
+
+	private float _nextPrisonerDeployPairDiagTime;
+
+	private int _formationIsolationLogCount;
+
+	private int _prisonerFormationRecalcLogCount;
+
+	private int _prisonerSpawnWaitLogCount;
+
+	private int _agentRemovedDiagLogCount;
+
+	private const int PrisonerDeployPairDiagLogLimit = 6;
+
+	private const int FormationIsolationLogLimit = 3;
+
+	private const int PrisonerFormationRecalcLogLimit = 3;
+
+	private const int PrisonerSpawnWaitDiagLimit = 6;
+
+	private const int AgentRemovedDiagLogLimit = 40;
+
 	public TroopInspectionMissionLogic(string dummyPartyStringId)
 		: this(dummyPartyStringId, null)
 	{
@@ -2625,44 +2642,30 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 	public TroopInspectionMissionLogic(string dummyPartyStringId, TroopRoster inspectionPrisonerRoster)
 	{
 		_dummyPartyStringId = dummyPartyStringId;
-		_inspectionPrisonerRoster = (inspectionPrisonerRoster != null) ? CloneRoster(inspectionPrisonerRoster) : null;
+		_inspectionPrisonerRoster = inspectionPrisonerRoster != null ? TroopInspectionBehavior.CloneRoster(inspectionPrisonerRoster) : null;
 	}
 
 	public override void OnBehaviorInitialize()
 	{
-		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0037: Invalid comparison between Unknown and I4
-		//IL_004f: Unknown result type (might be due to invalid IL or missing references)
 		base.OnBehaviorInitialize();
 		CacheBattleEndLogic();
 		TryDisableBattleEndLogic("OnBehaviorInitialize");
-		Mission mission = ((MissionBehavior)this).Mission;
-		_lastMissionMode = (MissionMode)((mission != null) ? ((int)mission.Mode) : 0);
-		_deploymentWasActive = (int)_lastMissionMode == 6;
+		_lastMissionMode = base.Mission?.Mode ?? MissionMode.StartUp;
+		_deploymentWasActive = _lastMissionMode == MissionMode.Deployment;
 		Log($"init deployment_active={_deploymentWasActive} mode={_lastMissionMode} battle_end_logic_cached={_battleEndLogic != null}");
-		object arg = TroopInspectionBehavior.HasMissionBehavior(((MissionBehavior)this).Mission, "BattleDeploymentHandler");
-		Mission mission2 = ((MissionBehavior)this).Mission;
-		Log($"mission_behaviors deployment_handler={arg} deployment_controller={((mission2 != null) ? mission2.GetMissionBehavior<BattleDeploymentMissionController>() : null) != null} battle_end_logic={_battleEndLogic != null}");
+		Log($"mission_behaviors deployment_handler={TroopInspectionBehavior.HasMissionBehavior(base.Mission, "BattleDeploymentHandler")} deployment_controller={base.Mission?.GetMissionBehavior<BattleDeploymentMissionController>() != null} battle_end_logic={_battleEndLogic != null}");
 	}
 
 	public override void AfterStart()
 	{
-		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003f: Invalid comparison between Unknown and I4
-		//IL_0057: Unknown result type (might be due to invalid IL or missing references)
 		base.AfterStart();
 		if (_battleEndLogic == null)
 		{
 			CacheBattleEndLogic();
 		}
 		TryDisableBattleEndLogic("AfterStart");
-		Mission mission = ((MissionBehavior)this).Mission;
-		_lastMissionMode = (MissionMode)((mission != null) ? ((int)mission.Mode) : 0);
-		_deploymentWasActive = (int)_lastMissionMode == 6;
+		_lastMissionMode = base.Mission?.Mode ?? MissionMode.StartUp;
+		_deploymentWasActive = _lastMissionMode == MissionMode.Deployment;
 		Log($"after_start deployment_active={_deploymentWasActive} mode={_lastMissionMode} battle_end_disabled={_battleEndDisabled}");
 	}
 
@@ -2670,13 +2673,30 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 	{
 		base.OnMissionTick(dt);
 		RetryBattleEndDisableIfNeeded();
-		DetectDeploymentEnd();
-		if (!_prisonersSpawned)
+		bool hasPrisonersToSpawn = HasPrisonersToSpawn();
+		if (!_prisonersSpawned && hasPrisonersToSpawn && !_deploymentWasActive && _prisonerSpawnWaitLogCount < PrisonerSpawnWaitDiagLimit)
+		{
+			_prisonerSpawnWaitLogCount++;
+			Log("spawn_wait_diag sample=" + _prisonerSpawnWaitLogCount + " reason=deployment_not_active mode=" + (base.Mission?.Mode.ToString() ?? "null") + " last_mode=" + _lastMissionMode + " timer=" + _prisonerSpawnTimer + " roster=" + PrisonerRosterDiag(GetPrisonerRosterForSpawn()) + " main_roster=" + PrisonerRosterDiag(PartyBase.MainParty?.PrisonRoster));
+		}
+		if (!_prisonersSpawned && hasPrisonersToSpawn)
 		{
 			_prisonerSpawnTimer -= dt;
 			if (_prisonerSpawnTimer <= 0f)
 			{
-				SpawnPrisoners();
+				if (_deploymentWasActive || IsDeploymentCurrentlyActive())
+				{
+					SpawnPrisoners();
+				}
+				else if (CanSpawnPrisonersNow())
+				{
+					Log("spawn_prisoners_direct reason=deployment_not_active mode=" + (base.Mission?.Mode.ToString() ?? "null") + " last_mode=" + _lastMissionMode + " current_time=" + (base.Mission?.CurrentTime.ToString("0.00") ?? "null") + " roster=" + PrisonerRosterDiag(GetPrisonerRosterForSpawn()));
+					SpawnPrisoners();
+					if (_prisonersSpawned)
+					{
+						MarkDeploymentBypassedAfterDirectPrisonerSpawn();
+					}
+				}
 			}
 		}
 		if (_prisonersSpawned && !_deploymentEndDetected)
@@ -2686,15 +2706,52 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 			TryRecalculateLordPrisonerFormationWidth("deployment_tick", onlyIfAnomalous: true);
 			TryLogPrisonerDeployPairDiag();
 		}
+		DetectDeploymentEnd();
 		TryLogAgentCounts();
 		RefreshPrisonerPoses(dt);
 		ContinuousAgentRefresh(dt);
-		if (!_inspectionMessageShown && _deploymentEndDetected && ((MissionBehavior)this).Mission != null && ((MissionBehavior)this).Mission.CurrentTime > 2f)
+		if (!_inspectionMessageShown && _deploymentEndDetected && base.Mission != null && base.Mission.CurrentTime > 2f)
 		{
 			_inspectionMessageShown = true;
 			AnimusForgeQuickInfo.Show("检阅模式：可自由指挥部队进行检阅。按TAB撤退结束检阅。");
 			Log("inspection_message_shown");
 		}
+	}
+
+	private TroopRoster GetPrisonerRosterForSpawn()
+	{
+		return _inspectionPrisonerRoster ?? PartyBase.MainParty?.PrisonRoster;
+	}
+
+	private bool HasPrisonersToSpawn()
+	{
+		TroopRoster roster = GetPrisonerRosterForSpawn();
+		return roster != null && roster.TotalManCount > 0;
+	}
+
+	private bool IsDeploymentCurrentlyActive()
+	{
+		return base.Mission != null && base.Mission.Mode == MissionMode.Deployment;
+	}
+
+	private bool CanSpawnPrisonersNow()
+	{
+		return base.Mission != null && base.Mission.PlayerTeam != null;
+	}
+
+	private void MarkDeploymentBypassedAfterDirectPrisonerSpawn()
+	{
+		if (_deploymentEndDetected)
+		{
+			return;
+		}
+		_deploymentEndDetected = true;
+		ForceLordPrisonerFormationClass("direct_spawn_no_deployment");
+		EnsurePrisonerFormationsIsolated("direct_spawn_no_deployment");
+		TryRecalculateLordPrisonerFormationWidth("direct_spawn_no_deployment", onlyIfAnomalous: true);
+		FreezePrisoners();
+		Log("deployment_bypassed_for_prisoners reason=direct_spawn_no_vanilla_deployment mode=" + (base.Mission?.Mode.ToString() ?? "null") + " current_time=" + (base.Mission?.CurrentTime.ToString("0.00") ?? "null"));
+		TryDisableBattleEndLogic("direct_spawn_no_deployment");
 	}
 
 	public override void OnRemoveBehavior()
@@ -2709,17 +2766,22 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 		base.OnEndMission();
 	}
 
+	public override void OnAgentRemoved(Agent affectedAgent, Agent affectorAgent, AgentState agentState, KillingBlow killingBlow)
+	{
+		base.OnAgentRemoved(affectedAgent, affectorAgent, agentState, killingBlow);
+		LogAgentRemovedDiag(affectedAgent, affectorAgent, agentState);
+	}
+
 	public override bool MissionEnded(ref MissionResult missionResult)
 	{
-		string text = ((object)missionResult)?.ToString() ?? "null";
-		string text2 = text + "|" + _battleEndDisabled + "|" + _deploymentEndDetected;
-		Mission mission = ((MissionBehavior)this).Mission;
-		float num = ((mission != null) ? mission.CurrentTime : 0f);
-		if (!string.Equals(_lastMissionEndedLogState, text2, StringComparison.Ordinal) || num >= _nextMissionEndedLogTime)
+		string missionResultText = missionResult?.ToString() ?? "null";
+		string state = missionResultText + "|" + _battleEndDisabled + "|" + _deploymentEndDetected;
+		float currentTime = base.Mission?.CurrentTime ?? 0f;
+		if (!string.Equals(_lastMissionEndedLogState, state, StringComparison.Ordinal) || currentTime >= _nextMissionEndedLogTime)
 		{
-			_lastMissionEndedLogState = text2;
-			_nextMissionEndedLogTime = num + 5f;
-			Log($"mission_ended_check mission_result={text} battle_end_disabled={_battleEndDisabled} deployment_detected={_deploymentEndDetected}");
+			_lastMissionEndedLogState = state;
+			_nextMissionEndedLogTime = currentTime + 5f;
+			Log($"mission_ended_check mission_result={missionResultText} battle_end_disabled={_battleEndDisabled} deployment_detected={_deploymentEndDetected}");
 		}
 		return false;
 	}
@@ -2728,7 +2790,7 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 	{
 		try
 		{
-			if (((MissionBehavior)this).Mission == null)
+			if (base.Mission == null)
 			{
 				Log("battle_end_disable skipped source=" + source + " mission=null");
 				return;
@@ -2756,8 +2818,7 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 	{
 		try
 		{
-			Mission mission = ((MissionBehavior)this).Mission;
-			_battleEndLogic = ((mission != null) ? mission.GetMissionBehavior<BattleEndLogic>() : null);
+			_battleEndLogic = base.Mission?.GetMissionBehavior<BattleEndLogic>();
 		}
 		catch (Exception ex)
 		{
@@ -2767,39 +2828,28 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 
 	private void RetryBattleEndDisableIfNeeded()
 	{
-		if (!_battleEndDisabled && ((MissionBehavior)this).Mission != null && !(((MissionBehavior)this).Mission.CurrentTime < _nextBattleEndDisableRetryTime))
+		if (_battleEndDisabled || base.Mission == null || base.Mission.CurrentTime < _nextBattleEndDisableRetryTime)
 		{
-			_nextBattleEndDisableRetryTime = ((MissionBehavior)this).Mission.CurrentTime + 1f;
-			TryDisableBattleEndLogic("retry_tick");
+			return;
 		}
+		_nextBattleEndDisableRetryTime = base.Mission.CurrentTime + 1f;
+		TryDisableBattleEndLogic("retry_tick");
 	}
 
 	private void DetectDeploymentEnd()
 	{
-		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
-		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_001f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0037: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0076: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0078: Invalid comparison between Unknown and I4
-		//IL_0080: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0081: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0051: Invalid comparison between Unknown and I4
-		if (_deploymentEndDetected || ((MissionBehavior)this).Mission == null)
+		if (_deploymentEndDetected || base.Mission == null)
 		{
 			return;
 		}
 		try
 		{
-			MissionMode mode = ((MissionBehavior)this).Mission.Mode;
-			if (_lastMissionMode != mode)
+			MissionMode currentMode = base.Mission.Mode;
+			if (_lastMissionMode != currentMode)
 			{
-				Log($"mission_mode_changed {_lastMissionMode} -> {mode}");
+				Log($"mission_mode_changed {_lastMissionMode} -> {currentMode}");
 			}
-			if (_deploymentWasActive && (int)mode != 6)
+			if (_deploymentWasActive && currentMode != MissionMode.Deployment)
 			{
 				_deploymentEndDetected = true;
 				ForceLordPrisonerFormationClass("deployment_end");
@@ -2807,8 +2857,8 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 				Log("deployment_ended detection");
 				TryDisableBattleEndLogic("deployment_ended");
 			}
-			_deploymentWasActive = (int)mode == 6;
-			_lastMissionMode = mode;
+			_deploymentWasActive = currentMode == MissionMode.Deployment;
+			_lastMissionMode = currentMode;
 		}
 		catch (Exception ex)
 		{
@@ -2820,19 +2870,21 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 	{
 		try
 		{
-			if (((MissionBehavior)this).Mission == null)
+			if (base.Mission == null)
 			{
 				return;
 			}
-			foreach (Agent item in (List<Agent>)(object)((MissionBehavior)this).Mission.Agents)
+			foreach (Agent agent in base.Mission.Agents)
 			{
-				if (item != null && item.IsActive() && item.Origin is PrisonerAgentOrigin)
+				if (agent == null || !agent.IsActive() || !(agent.Origin is PrisonerAgentOrigin))
 				{
-					item.Formation = null;
-					if (_prisonerIsLordMap.TryGetValue(item, out var value))
-					{
-						ApplyPrisonerPose(item, value, afterDeployment: true);
-					}
+					continue;
+				}
+				agent.Formation = null;
+				bool isLord;
+				if (_prisonerIsLordMap.TryGetValue(agent, out isLord))
+				{
+					ApplyPrisonerPose(agent, isLord, afterDeployment: true);
 				}
 			}
 			Log("freeze_prisoners done");
@@ -2845,200 +2897,229 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 
 	private void SpawnPrisoners()
 	{
-		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003c: Unknown result type (might be due to invalid IL or missing references)
-		if (_prisonersSpawned || ((MissionBehavior)this).Mission == null)
+		if (_prisonersSpawned || base.Mission == null)
 		{
 			return;
 		}
-		_prisonersSpawned = true;
-		TroopRoster val = _inspectionPrisonerRoster;
-		string text = "selection_snapshot";
-		if (val == null)
+		TroopRoster prisonRoster = GetPrisonerRosterForSpawn();
+		string prisonerSource = _inspectionPrisonerRoster != null ? "selection_snapshot" : "main_party_fallback";
+		Log("spawn_prisoners_begin source=" + prisonerSource + " mode=" + (base.Mission?.Mode.ToString() ?? "null") + " deployment_was=" + _deploymentWasActive + " deployment_end=" + _deploymentEndDetected + " roster=" + PrisonerRosterDiag(prisonRoster) + " main_roster=" + PrisonerRosterDiag(PartyBase.MainParty?.PrisonRoster));
+		if (prisonRoster == null)
 		{
-			PartyBase mainParty = PartyBase.MainParty;
-			val = ((mainParty != null) ? mainParty.PrisonRoster : null);
-			text = "main_party_fallback";
-		}
-		if (val == null)
-		{
-			Log("spawn_prisoners skipped: PrisonRoster null");
+			Log("spawn_prisoners skipped: PrisonRoster null source=" + prisonerSource + " main_party=" + (PartyBase.MainParty != null));
+			Logger.LogEvent("TroopInspection", "spawn_prisoners skipped: PrisonRoster null");
 			AnimusForgeQuickInfo.Show("阅兵：无法访问囚犯名册。");
 			return;
 		}
-		int num = 0;
-		int num2 = 0;
-		int num3 = 0;
-		int num4 = 0;
-		int num5 = 0;
-		foreach (TroopRosterElement item in SnapshotRoster(val))
+		int totalCount = 0;
+		int heroCount = 0;
+		int regularCount = 0;
+		foreach (TroopRosterElement item in TroopInspectionBehavior.SnapshotRoster(prisonRoster))
 		{
-			TroopRosterElement current = item;
-			CharacterObject character = current.Character;
-			if (character == null)
+			if (item.Character == null)
 			{
 				continue;
 			}
-			int num6 = Math.Max(0, current.Number);
-			int num7 = Math.Min(num6, Math.Max(0, current.WoundedNumber));
-			num += num6;
-			if (((BasicCharacterObject)character).IsHero)
+			totalCount += item.Number;
+			if (item.Character.IsHero)
 			{
-				num2 += num6;
-				continue;
+				heroCount += item.Number;
 			}
-			num3 += num6;
-			num5 += num7;
-			num4 += num6;
+			else
+			{
+				regularCount += item.Number;
+			}
 		}
-		if (num <= 0)
+		if (totalCount <= 0)
 		{
-			Log("spawn_prisoners skipped: no selected prisoners source=" + text);
+			Log("spawn_prisoners skipped: no selected prisoners source=" + prisonerSource + " roster=" + PrisonerRosterDiag(prisonRoster) + " main_roster=" + PrisonerRosterDiag(PartyBase.MainParty?.PrisonRoster));
+			Logger.LogEvent("TroopInspection", "spawn_prisoners skipped: no prisoners at all");
+			AnimusForgeQuickInfo.Show("阅兵：没有囚犯可参加阅兵。");
 			return;
 		}
-		Team playerTeam = ((MissionBehavior)this).Mission.PlayerTeam;
+		Team playerTeam = base.Mission.PlayerTeam;
 		if (playerTeam == null)
 		{
-			Log("spawn_prisoners skipped: PlayerTeam null");
+			Log("spawn_prisoners skipped: PlayerTeam null source=" + prisonerSource + " roster=" + PrisonerRosterDiag(prisonRoster));
+			Logger.LogEvent("TroopInspection", "spawn_prisoners skipped: PlayerTeam null");
 			return;
 		}
-		if (num2 > 0)
+		_prisonersSpawned = true;
+		if (heroCount > 0)
 		{
 			playerTeam.GetFormation(LordPrisonerFormationClass);
 		}
-		if (num4 > 0)
+		if (regularCount > 0)
 		{
 			playerTeam.GetFormation(RegularPrisonerFormationClass);
 		}
 		EnsurePrisonerFormationsIsolated("before_spawn");
-		int num8 = 0;
-		int num9 = 0;
-		int num10 = 0;
-		int num11 = 0;
-		int num13 = 0;
-		string text2 = "";
-		foreach (TroopRosterElement item2 in SnapshotRoster(val))
+		int spawnedHeroes = 0;
+		int spawnedRegulars = 0;
+		int totalErrors = 0;
+		string lastError = "";
+		int heroIdx = 0;
+		foreach (TroopRosterElement item in TroopInspectionBehavior.SnapshotRoster(prisonRoster))
 		{
-			TroopRosterElement current2 = item2;
-			CharacterObject character2 = current2.Character;
-			if (character2 == null || !((BasicCharacterObject)character2).IsHero)
+			CharacterObject character = item.Character;
+			if (character == null || !character.IsHero)
 			{
 				continue;
 			}
-			int num12 = Math.Max(0, current2.Number);
-			for (int i = 0; i < num12; i++)
+			for (int i = 0; i < item.Number; i++)
 			{
 				try
 				{
-					PrisonerAgentOrigin prisonerAgentOrigin = new PrisonerAgentOrigin(character2);
-					Agent val2 = ((MissionBehavior)this).Mission.SpawnTroop((IAgentOriginBase)(object)prisonerAgentOrigin, true, true, false, false, num2, num11, false, false, true, (Vec3?)null, (Vec2?)null, (string)null, (ItemObject)null, LordPrisonerSpawnFormationClass, false);
-					if (val2 != null)
+					PrisonerAgentOrigin origin = new PrisonerAgentOrigin(character);
+					Agent agent = base.Mission.SpawnTroop(origin, isPlayerSide: true, hasFormation: true, spawnWithHorse: false, isReinforcement: false, formationTroopCount: heroCount, formationTroopIndex: heroIdx, isAlarmed: false, wieldInitialWeapons: false, forceDismounted: true, null, null, null, null, LordPrisonerFormationClass, false);
+					if (agent != null)
 					{
-						Formation spawnFormation = val2.Formation;
-						Formation finalFormation = playerTeam.GetFormation(LordPrisonerFormationClass);
-						if (finalFormation != null && val2.Formation != finalFormation)
-						{
-							val2.Formation = finalFormation;
-							val2.TryAttachToFormation();
-						}
-						_prisonerIsLordMap[val2] = true;
-						ApplyPrisonerPose(val2, isLord: true, afterDeployment: false);
-						Formation formation = val2.Formation;
-						if (num8 == 0)
-						{
-							Log("spawn_prisoner_hero first_ok troop=" + (((MBObjectBase)character2).StringId ?? "null") + " team=" + ((val2.Team != null) ? ((object)val2.Team.Side).ToString() : "null") + " spawn_class=" + LordPrisonerSpawnFormationClass + " spawn_formation=" + ((spawnFormation != null) ? ((object)spawnFormation.FormationIndex).ToString() : "null") + " final_formation=" + ((formation != null) ? ((object)formation.FormationIndex).ToString() : "null") + " pos=" + val2.Position);
-						}
-						num8++;
+						agent.SetIsAIPaused(isPaused: true);
+						agent.DisableScriptedMovement();
+						_prisonerIsLordMap[agent] = true;
+						ApplyPrisonerPose(agent, isLord: true, afterDeployment: false);
+						Logger.LogEvent("TroopInspection", $"spawn_prisoner_hero ok troop={character.StringId} team={agent.Team?.Side.ToString() ?? "null"} formation={agent.Formation?.FormationIndex.ToString() ?? "null"} pos={agent.Position}");
+						spawnedHeroes++;
 					}
 					else
 					{
-						Log($"spawn_prisoner_hero returned null troop={((MBObjectBase)character2).StringId} spawn_class={(object)LordPrisonerSpawnFormationClass} final_formation={(object)LordPrisonerFormationClass}");
+						Logger.LogEvent("TroopInspection", $"spawn_prisoner_hero returned null troop={character.StringId} formation={LordPrisonerFormationClass}");
 					}
-					num11++;
+					heroIdx++;
 				}
 				catch (Exception ex)
 				{
-					num10++;
-					text2 = ex.GetType().Name + ": " + ex.Message;
-					Log("spawn_prisoner_hero failed: " + text2);
+					totalErrors++;
+					lastError = ex.GetType().Name + ": " + ex.Message;
+					Logger.LogEvent("TroopInspection", "spawn_prisoner_hero failed: " + lastError);
 				}
 			}
 		}
-		foreach (TroopRosterElement item2 in SnapshotRoster(val))
+		int regIdx = 0;
+		foreach (TroopRosterElement item in TroopInspectionBehavior.SnapshotRoster(prisonRoster))
 		{
-			TroopRosterElement current2 = item2;
-			CharacterObject character2 = current2.Character;
-			if (character2 == null || ((BasicCharacterObject)character2).IsHero)
+			CharacterObject character = item.Character;
+			if (character == null || character.IsHero)
 			{
 				continue;
 			}
-			int num12 = Math.Max(0, current2.Number);
-			for (int j = 0; j < num12; j++)
+			for (int i = 0; i < item.Number; i++)
 			{
 				try
 				{
-					PrisonerAgentOrigin prisonerAgentOrigin = new PrisonerAgentOrigin(character2);
-					Agent val2 = ((MissionBehavior)this).Mission.SpawnTroop((IAgentOriginBase)(object)prisonerAgentOrigin, true, true, false, false, num4, num13, false, false, true, (Vec3?)null, (Vec2?)null, (string)null, (ItemObject)null, RegularPrisonerFormationClass, false);
-					if (val2 != null)
+					PrisonerAgentOrigin origin = new PrisonerAgentOrigin(character);
+					Agent agent = base.Mission.SpawnTroop(origin, isPlayerSide: true, hasFormation: true, spawnWithHorse: false, isReinforcement: false, formationTroopCount: regularCount, formationTroopIndex: regIdx, isAlarmed: false, wieldInitialWeapons: false, forceDismounted: true, null, null, null, null, RegularPrisonerFormationClass, false);
+					if (agent != null)
 					{
-						_prisonerIsLordMap[val2] = false;
-						ApplyPrisonerPose(val2, isLord: false, afterDeployment: false);
-						num9++;
+						agent.SetIsAIPaused(isPaused: true);
+						agent.DisableScriptedMovement();
+						_prisonerIsLordMap[agent] = false;
+						ApplyPrisonerPose(agent, isLord: false, afterDeployment: false);
+						Logger.LogEvent("TroopInspection", $"spawn_prisoner_regular ok troop={character.StringId} team={agent.Team?.Side.ToString() ?? "null"} formation={agent.Formation?.FormationIndex.ToString() ?? "null"} pos={agent.Position}");
+						spawnedRegulars++;
 					}
 					else
 					{
-						Log($"spawn_prisoner_regular returned null troop={((MBObjectBase)character2).StringId} formation={(object)RegularPrisonerFormationClass}");
+						Logger.LogEvent("TroopInspection", $"spawn_prisoner_regular returned null troop={character.StringId} formation={RegularPrisonerFormationClass}");
 					}
-					num13++;
+					regIdx++;
 				}
 				catch (Exception ex)
 				{
-					num10++;
-					text2 = ex.GetType().Name + ": " + ex.Message;
-					Log("spawn_prisoner_regular failed: " + text2);
+					totalErrors++;
+					lastError = ex.GetType().Name + ": " + ex.Message;
+					Logger.LogEvent("TroopInspection", "spawn_prisoner_regular failed: " + lastError);
 				}
 			}
 		}
-		Log("spawn_prisoners result: source=" + text + " during_deployment=" + (!_deploymentEndDetected) + " selected=" + num + " selected_heroes=" + num2 + " spawned_heroes=" + num8 + " selected_regulars=" + num3 + " included_wounded_regulars=" + num5 + " spawnable_regulars=" + num4 + " spawned_regulars=" + num9 + " errors=" + num10);
-		if (num8 > 0)
+		int spawned = spawnedHeroes + spawnedRegulars;
+		Log("spawn_prisoners result: source=" + prisonerSource + " total=" + totalCount + " heroes=" + heroCount + " spawned_heroes=" + spawnedHeroes + " regulars=" + regularCount + " spawned_regulars=" + spawnedRegulars + " errors=" + totalErrors + " roster_after=" + PrisonerRosterDiag(prisonRoster) + " main_roster_after=" + PrisonerRosterDiag(PartyBase.MainParty?.PrisonRoster));
+		Logger.LogEvent("TroopInspection", "spawn_prisoners result: total=" + totalCount + " heroes=" + heroCount + " spawned_heroes=" + spawnedHeroes + " regulars=" + regularCount + " spawned_regulars=" + spawnedRegulars + " errors=" + totalErrors);
+		if (spawnedHeroes > 0)
 		{
 			ForceLordPrisonerFormationClass("after_spawn");
+			TryRecalculateLordPrisonerFormationWidth("after_spawn", onlyIfAnomalous: false);
 		}
-		if (num8 + num9 > 0)
+		if (spawned > 0)
 		{
 			EnsurePrisonerFormationsIsolated("after_spawn");
 		}
-		if (num8 > 0)
+		if (spawned > 0)
 		{
-			TryRecalculateLordPrisonerFormationWidth("after_spawn", onlyIfAnomalous: false);
-		}
-		if (num8 + num9 > 0)
-		{
-			string text3 = "阅兵：";
-			if (num8 > 0)
+			string msg = "阅兵：";
+			if (spawnedHeroes > 0)
 			{
-				text3 = text3 + num8 + " 名领主俘虏、";
+				msg += spawnedHeroes + " 名领主俘虏（8号领主编队），";
 			}
-			if (num9 > 0)
+			if (spawnedRegulars > 0)
 			{
-				text3 = text3 + num9 + " 名士兵俘虏";
+				msg += spawnedRegulars + " 名士兵俘虏（7号俘虏编队）";
 			}
-			text3 += "参加检阅。";
-			AnimusForgeQuickInfo.Show(text3);
+			AnimusForgeQuickInfo.Show(msg);
 		}
-		else if (!string.IsNullOrWhiteSpace(text2))
+		else if (totalErrors > 0)
 		{
-			AnimusForgeQuickInfo.Show("阅兵：囚犯生成失败，错误: " + text2);
+			AnimusForgeQuickInfo.Show("阅兵：囚犯生成失败(" + totalErrors + "/" + totalCount + ") 错误: " + lastError);
+		}
+		else
+		{
+			AnimusForgeQuickInfo.Show("阅兵：囚犯生成失败(" + totalCount + "名尝试，0名成功)。");
 		}
 	}
 
+
+
+
+
+	private static string PrisonerRosterDiag(TroopRoster roster)
+	{
+		try
+		{
+			if (roster == null)
+			{
+				return "null";
+			}
+			int total = 0;
+			int heroes = 0;
+			int regular = 0;
+			int wounded = 0;
+			List<string> samples = new List<string>();
+			for (int i = 0; i < roster.Count; i++)
+			{
+				TroopRosterElement element = roster.GetElementCopyAtIndex(i);
+				CharacterObject character = element.Character;
+				if (character == null || element.Number <= 0)
+				{
+					continue;
+				}
+				total += Math.Max(0, element.Number);
+				wounded += Math.Max(0, element.WoundedNumber);
+				if (character.IsHero)
+				{
+					heroes += Math.Max(0, element.Number);
+				}
+				else
+				{
+					regular += Math.Max(0, element.Number);
+				}
+				if (samples.Count < 5)
+				{
+					Hero hero = character.HeroObject;
+					samples.Add(character.StringId + ":n=" + element.Number + ",w=" + element.WoundedNumber + ",hero=" + character.IsHero + ",alive=" + ((hero != null) ? hero.IsAlive.ToString() : "null") + ",dead=" + ((hero != null) ? hero.IsDead.ToString() : "null"));
+				}
+			}
+			return "count=" + roster.Count + ",total=" + total + ",heroes=" + heroes + ",regular=" + regular + ",wounded=" + wounded + ",samples=[" + string.Join(";", samples) + "]";
+		}
+		catch (Exception ex)
+		{
+			return "error=" + ex.GetType().Name + ":" + ex.Message;
+		}
+	}
 	private void ForceLordPrisonerFormationClass(string reason)
 	{
 		try
 		{
-			Mission mission = ((MissionBehavior)this).Mission;
-			Team playerTeam = (mission != null) ? mission.PlayerTeam : null;
+			Team playerTeam = base.Mission?.PlayerTeam;
 			if (playerTeam == null)
 			{
 				return;
@@ -3049,33 +3130,16 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 				return;
 			}
 			FormationClass oldRepresentativeClass = formation.RepresentativeClass;
-			object oldLogicalClass = null;
-			object oldLogicalClassNeedsUpdate = null;
-			if (FormationLogicalClassField != null)
-			{
-				oldLogicalClass = FormationLogicalClassField.GetValue(formation);
-			}
-			if (FormationLogicalClassNeedsUpdateField != null)
-			{
-				oldLogicalClassNeedsUpdate = FormationLogicalClassNeedsUpdateField.GetValue(formation);
-			}
+			object oldLogicalClass = FormationLogicalClassField?.GetValue(formation);
+			object oldLogicalClassNeedsUpdate = FormationLogicalClassNeedsUpdateField?.GetValue(formation);
 			bool needsCorrection = oldRepresentativeClass != LordPrisonerRuntimeClass || (oldLogicalClass is FormationClass && (FormationClass)oldLogicalClass != LordPrisonerRuntimeClass) || (oldLogicalClassNeedsUpdate is bool && (bool)oldLogicalClassNeedsUpdate);
 			if (!needsCorrection)
 			{
 				return;
 			}
-			if (FormationRepresentativeClassProperty != null)
-			{
-				FormationRepresentativeClassProperty.SetValue(formation, LordPrisonerRuntimeClass, null);
-			}
-			if (FormationLogicalClassField != null)
-			{
-				FormationLogicalClassField.SetValue(formation, LordPrisonerRuntimeClass);
-			}
-			if (FormationLogicalClassNeedsUpdateField != null)
-			{
-				FormationLogicalClassNeedsUpdateField.SetValue(formation, false);
-			}
+			FormationRepresentativeClassProperty?.SetValue(formation, LordPrisonerRuntimeClass, null);
+			FormationLogicalClassField?.SetValue(formation, LordPrisonerRuntimeClass);
+			FormationLogicalClassNeedsUpdateField?.SetValue(formation, false);
 			if (_lordFormationClassForceLogCount < 1)
 			{
 				_lordFormationClassForceLogCount++;
@@ -3096,84 +3160,54 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 	{
 		try
 		{
-			Mission mission = ((MissionBehavior)this).Mission;
-			Team playerTeam = (mission != null) ? mission.PlayerTeam : null;
+			Mission mission = base.Mission;
+			Team playerTeam = mission?.PlayerTeam;
 			if (mission == null || playerTeam == null)
 			{
 				return;
 			}
 			Formation regularFormation = playerTeam.GetFormation(RegularPrisonerFormationClass);
 			Formation lordFormation = playerTeam.GetFormation(LordPrisonerFormationClass);
-			if (regularFormation == null && lordFormation == null)
-			{
-				return;
-			}
 			int normalMovedOut = 0;
 			int regularPrisonersMoved = 0;
 			int lordPrisonersMoved = 0;
-			int noTarget = 0;
-			int errors = 0;
-			foreach (Agent item in (List<Agent>)(object)mission.Agents)
+			foreach (Agent agent in mission.Agents)
 			{
-				try
+				if (agent == null || !agent.IsHuman || !agent.IsActive() || agent.IsMainAgent || agent.Team != playerTeam)
 				{
-					if (item == null || !item.IsHuman || !item.IsActive() || item.IsMainAgent || item.Team != playerTeam)
+					continue;
+				}
+				Formation formation = agent.Formation;
+				bool inReserved = (regularFormation != null && formation == regularFormation) || (lordFormation != null && formation == lordFormation);
+				if (TryGetPrisonerIsLord(agent, out bool isLord))
+				{
+					Formation target = isLord ? lordFormation : regularFormation;
+					if (target != null && formation != target && TryMoveAgentToFormation(agent, target))
 					{
-						continue;
-					}
-					Formation formation = item.Formation;
-					bool isInRegularFormation = regularFormation != null && formation == regularFormation;
-					bool isInLordFormation = lordFormation != null && formation == lordFormation;
-					bool isInspectionPrisoner = TryGetPrisonerIsLord(item, out var isLord);
-					if (isInspectionPrisoner)
-					{
-						Formation targetFormation = isLord ? lordFormation : regularFormation;
-						if (targetFormation != null && formation != targetFormation && TryMoveAgentToFormation(item, targetFormation))
-						{
-							if (isLord)
-							{
-								lordPrisonersMoved++;
-							}
-							else
-							{
-								regularPrisonersMoved++;
-							}
-						}
-					}
-					else if (isInRegularFormation || isInLordFormation)
-					{
-						Formation targetFormation2 = ResolveNormalTroopFormation(playerTeam, item, formation);
-						if (targetFormation2 != null && TryMoveAgentToFormation(item, targetFormation2))
-						{
-							normalMovedOut++;
-						}
-						else
-						{
-							noTarget++;
-						}
+						if (isLord) lordPrisonersMoved++; else regularPrisonersMoved++;
 					}
 				}
-				catch (Exception ex)
+				else if (inReserved)
 				{
-					errors++;
-					if (_formationIsolationLogCount < FormationIsolationLogLimit)
+					Formation target = ResolveNormalTroopFormation(playerTeam, agent, formation);
+					if (target != null && TryMoveAgentToFormation(agent, target))
 					{
-						Log("formation_isolate_agent_failed reason=" + reason + " error=" + ex.GetType().Name + ": " + ex.Message);
+						normalMovedOut++;
 					}
 				}
 			}
-			if ((normalMovedOut > 0 || regularPrisonersMoved > 0 || lordPrisonersMoved > 0 || noTarget > 0 || errors > 0) && _formationIsolationLogCount < FormationIsolationLogLimit)
+			if ((normalMovedOut > 0 || regularPrisonersMoved > 0 || lordPrisonersMoved > 0) && _formationIsolationLogCount < FormationIsolationLogLimit)
 			{
 				_formationIsolationLogCount++;
-				Log("formation_isolate result reason=" + reason + " normal_moved_out=" + normalMovedOut + " regular_prisoners_moved=" + regularPrisonersMoved + " lord_prisoners_moved=" + lordPrisonersMoved + " no_target=" + noTarget + " errors=" + errors + " f6=" + ((regularFormation != null) ? regularFormation.CountOfUnits.ToString() : "null") + " f7=" + ((lordFormation != null) ? lordFormation.CountOfUnits.ToString() : "null"));
+				Log("formation_isolate result reason=" + reason + " normal_moved_out=" + normalMovedOut + " regular_prisoners_moved=" + regularPrisonersMoved + " lord_prisoners_moved=" + lordPrisonersMoved);
 			}
 		}
-		catch (Exception ex2)
+		catch (Exception ex)
 		{
 			if (_formationIsolationLogCount < FormationIsolationLogLimit)
 			{
 				_formationIsolationLogCount++;
-				Log("formation_isolate failed reason=" + reason + " " + ex2.GetType().Name + ": " + ex2.Message);
+				Log("formation_isolate failed reason=" + reason + " " + ex.GetType().Name + ": " + ex.Message);
 			}
 		}
 	}
@@ -3186,10 +3220,10 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 		}
 		try
 		{
-			CharacterObject characterObject = (agent != null) ? (agent.Character as CharacterObject) : null;
-			if (characterObject != null && !IsReservedPrisonerFormationClass(characterObject.DefaultFormationClass))
+			CharacterObject character = agent?.Character as CharacterObject;
+			if (character != null && !IsReservedPrisonerFormationClass(character.DefaultFormationClass))
 			{
-				Formation formation = playerTeam.GetFormation(characterObject.DefaultFormationClass);
+				Formation formation = playerTeam.GetFormation(character.DefaultFormationClass);
 				if (formation != null && formation != currentFormation)
 				{
 					return formation;
@@ -3203,24 +3237,10 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 		{
 			try
 			{
-				Formation formation2 = playerTeam.GetFormation((FormationClass)i);
-				if (formation2 != null && formation2 != currentFormation && formation2.CountOfUnits > 0)
+				Formation formation = playerTeam.GetFormation((FormationClass)i);
+				if (formation != null && formation != currentFormation)
 				{
-					return formation2;
-				}
-			}
-			catch
-			{
-			}
-		}
-		for (int j = 0; j < 6; j++)
-		{
-			try
-			{
-				Formation formation3 = playerTeam.GetFormation((FormationClass)j);
-				if (formation3 != null && formation3 != currentFormation)
-				{
-					return formation3;
+					return formation;
 				}
 			}
 			catch
@@ -3232,7 +3252,7 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 
 	internal static bool IsReservedPrisonerFormationClass(FormationClass formationClass)
 	{
-		return (int)formationClass == (int)RegularPrisonerFormationClass || (int)formationClass == (int)LordPrisonerFormationClass;
+		return (int)formationClass == 6 || (int)formationClass == 7;
 	}
 
 	internal static bool TryMoveAgentToFormation(Agent agent, Formation targetFormation)
@@ -3255,9 +3275,8 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 		}
 		try
 		{
-			Mission current = Mission.Current;
-			TroopInspectionMissionLogic troopInspectionMissionLogic = (current != null) ? current.GetMissionBehavior<TroopInspectionMissionLogic>() : null;
-			if (troopInspectionMissionLogic != null && troopInspectionMissionLogic.TryGetPrisonerIsLord(agent, out isLord))
+			TroopInspectionMissionLogic logic = Mission.Current?.GetMissionBehavior<TroopInspectionMissionLogic>();
+			if (logic != null && logic.TryGetPrisonerIsLord(agent, out isLord))
 			{
 				return true;
 			}
@@ -3267,13 +3286,12 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 		}
 		try
 		{
-			BasicCharacterObject obj = (agent.Origin as PrisonerAgentOrigin)?.Troop;
-			CharacterObject val = (CharacterObject)(object)((obj is CharacterObject) ? obj : null);
-			if (val == null)
+			CharacterObject character = (agent.Origin as PrisonerAgentOrigin)?.Troop as CharacterObject;
+			if (character == null)
 			{
 				return false;
 			}
-			isLord = ((BasicCharacterObject)val).IsHero;
+			isLord = character.IsHero;
 			return true;
 		}
 		catch
@@ -3286,19 +3304,8 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 	{
 		try
 		{
-			Mission mission = ((MissionBehavior)this).Mission;
-			Team playerTeam = (mission != null) ? mission.PlayerTeam : null;
-			if (mission == null || playerTeam == null)
-			{
-				return;
-			}
-			Formation formation = playerTeam.GetFormation(LordPrisonerFormationClass);
-			if (formation == null)
-			{
-				return;
-			}
-			int countOfUnits = formation.CountOfUnits;
-			if (countOfUnits <= 0)
+			Formation formation = base.Mission?.PlayerTeam?.GetFormation(LordPrisonerFormationClass);
+			if (formation == null || formation.CountOfUnits <= 0)
 			{
 				return;
 			}
@@ -3306,39 +3313,20 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 			float unitDiameter = formation.UnitDiameter;
 			if (unitDiameter <= 0.01f)
 			{
-				unitDiameter = Math.Max(0.76f, formation.Depth);
-			}
-			float targetWidth = unitDiameter * (float)Math.Max(1, countOfUnits * 2 - 1);
-			if (targetWidth <= 0.01f)
-			{
 				return;
 			}
+			float targetWidth = unitDiameter * (float)Math.Max(1, formation.CountOfUnits * 2 - 1);
 			if (onlyIfAnomalous && oldWidth <= targetWidth * 1.35f + 0.5f)
 			{
 				return;
 			}
-			FormOrder order = FormOrder.FormOrderCustom(targetWidth);
-			formation.SetFormOrder(order, updateDesiredFileCount: true);
+			formation.SetFormOrder(FormOrder.FormOrderCustom(targetWidth), updateDesiredFileCount: true);
 			formation.ResetArrangementOrderTickTimer();
 			formation.SetHasPendingUnitPositions(true);
-			try
-			{
-				foreach (Agent item in (List<Agent>)(object)mission.Agents)
-				{
-					if (item != null && item.IsHuman && item.IsActive() && item.Formation == formation)
-					{
-						item.SetShouldCatchUpWithFormation(true);
-						item.UpdateFormationOrders();
-					}
-				}
-			}
-			catch
-			{
-			}
 			if (_prisonerFormationRecalcLogCount < PrisonerFormationRecalcLogLimit)
 			{
 				_prisonerFormationRecalcLogCount++;
-				Log("prisoner_form_recalc reason=" + reason + " formation=8 count=" + countOfUnits + " unit_diameter=" + FormatFloat(unitDiameter) + " old_width=" + FormatFloat(oldWidth) + " target_width=" + FormatFloat(targetWidth) + " new_width=" + FormatFloat(formation.Width) + " order=" + FormatVec2(formation.OrderPosition) + " current=" + FormatVec2(formation.CurrentPosition));
+				Log("prisoner_form_recalc reason=" + reason + " formation=8 count=" + formation.CountOfUnits + " old_width=" + oldWidth + " target_width=" + targetWidth + " new_width=" + formation.Width);
 			}
 		}
 		catch (Exception ex)
@@ -3351,13 +3339,14 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 		}
 	}
 
+
 	private void TryLogPrisonerDeployPairDiag()
 	{
 		if (_prisonerDeployPairDiagLogCount >= PrisonerDeployPairDiagLogLimit)
 		{
 			return;
 		}
-		Mission mission = ((MissionBehavior)this).Mission;
+		Mission mission = base.Mission;
 		if (mission == null || mission.PlayerTeam == null || mission.CurrentTime < _nextPrisonerDeployPairDiagTime)
 		{
 			return;
@@ -3366,14 +3355,14 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 		{
 			Formation regularFormation = mission.PlayerTeam.GetFormation(RegularPrisonerFormationClass);
 			Formation lordFormation = mission.PlayerTeam.GetFormation(LordPrisonerFormationClass);
-			CountSelectedPrisoners(out var selectedRegularPrisoners, out var selectedLordPrisoners);
+			CountSelectedPrisoners(out int selectedRegularPrisoners, out int selectedLordPrisoners);
 			string orderDelta = "null";
 			string avgDelta = "null";
 			if (regularFormation != null && lordFormation != null)
 			{
 				orderDelta = FormatVec2(new Vec2(lordFormation.OrderPosition.X - regularFormation.OrderPosition.X, lordFormation.OrderPosition.Y - regularFormation.OrderPosition.Y));
-				Vec2 regularAverage = CalculateFormationAveragePosition(regularFormation, out var regularActiveCount);
-				Vec2 lordAverage = CalculateFormationAveragePosition(lordFormation, out var lordActiveCount);
+				Vec2 regularAverage = CalculateFormationAveragePosition(regularFormation, out int regularActiveCount);
+				Vec2 lordAverage = CalculateFormationAveragePosition(lordFormation, out int lordActiveCount);
 				if (regularActiveCount > 0 && lordActiveCount > 0)
 				{
 					avgDelta = FormatVec2(new Vec2(lordAverage.X - regularAverage.X, lordAverage.Y - regularAverage.Y));
@@ -3381,7 +3370,14 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 			}
 			_prisonerDeployPairDiagLogCount++;
 			_nextPrisonerDeployPairDiagTime = mission.CurrentTime + 0.75f;
-			Log("prisoner_deploy_pair_diag sample=" + _prisonerDeployPairDiagLogCount + " selected_regular_prisoners=" + selectedRegularPrisoners + " selected_lord_prisoners=" + selectedLordPrisoners + " " + BuildFormationDeployDiag("f6", regularFormation) + " " + BuildFormationDeployDiag("f7", lordFormation) + " delta_order_7_minus_6=" + orderDelta + " delta_avg_7_minus_6=" + avgDelta);
+			Log("prisoner_deploy_pair_diag sample=" + _prisonerDeployPairDiagLogCount
+				+ " selected_regular_prisoners=" + selectedRegularPrisoners
+				+ " selected_lord_prisoners=" + selectedLordPrisoners
+				+ " source=" + (_inspectionPrisonerRoster != null ? "selection_snapshot" : "main_party_fallback")
+				+ " " + BuildFormationDeployDiag("f6", regularFormation)
+				+ " " + BuildFormationDeployDiag("f7", lordFormation)
+				+ " delta_order_7_minus_6=" + orderDelta
+				+ " delta_avg_7_minus_6=" + avgDelta);
 		}
 		catch (Exception ex)
 		{
@@ -3396,13 +3392,25 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 		{
 			return label + "=null";
 		}
-		Vec2 averagePosition = CalculateFormationAveragePosition(formation, out var activeAgentCount);
+		Vec2 averagePosition = CalculateFormationAveragePosition(formation, out int activeAgentCount);
 		object logicalField = null;
 		if (FormationLogicalClassField != null)
 		{
 			logicalField = FormationLogicalClassField.GetValue(formation);
 		}
-		return label + ": count=" + formation.CountOfUnits + " active=" + activeAgentCount + " rep=" + formation.RepresentativeClass + " logical=" + formation.LogicalClass + " logical_field=" + (logicalField ?? "null") + " physical=" + formation.PhysicalClass + " query_main=" + ((formation.QuerySystem != null) ? ((object)formation.QuerySystem.MainClass).ToString() : "null") + " order=" + FormatVec2(formation.OrderPosition) + " current=" + FormatVec2(formation.CurrentPosition) + " avg=" + ((activeAgentCount > 0) ? FormatVec2(averagePosition) : "null") + " cached_avg=" + FormatVec2(formation.CachedAveragePosition) + " width=" + FormatFloat(formation.Width) + " depth=" + FormatFloat(formation.Depth);
+		return label + ": count=" + formation.CountOfUnits
+			+ " active=" + activeAgentCount
+			+ " rep=" + formation.RepresentativeClass
+			+ " logical=" + formation.LogicalClass
+			+ " logical_field=" + (logicalField ?? "null")
+			+ " physical=" + formation.PhysicalClass
+			+ " query_main=" + (formation.QuerySystem != null ? formation.QuerySystem.MainClass.ToString() : "null")
+			+ " order=" + FormatVec2(formation.OrderPosition)
+			+ " current=" + FormatVec2(formation.CurrentPosition)
+			+ " avg=" + (activeAgentCount > 0 ? FormatVec2(averagePosition) : "null")
+			+ " cached_avg=" + FormatVec2(formation.CachedAveragePosition)
+			+ " width=" + FormatFloat(formation.Width)
+			+ " depth=" + FormatFloat(formation.Depth);
 	}
 
 	private Vec2 CalculateFormationAveragePosition(Formation formation, out int activeAgentCount)
@@ -3410,16 +3418,16 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 		activeAgentCount = 0;
 		float x = 0f;
 		float y = 0f;
-		Mission mission = ((MissionBehavior)this).Mission;
+		Mission mission = base.Mission;
 		if (formation == null || mission == null)
 		{
 			return Vec2.Zero;
 		}
-		foreach (Agent item in (List<Agent>)(object)mission.Agents)
+		foreach (Agent agent in mission.Agents)
 		{
-			if (item != null && item.Formation == formation && item.IsHuman && item.IsActive())
+			if (agent != null && agent.Formation == formation && agent.IsHuman && agent.IsActive())
 			{
-				Vec3 position = item.Position;
+				Vec3 position = agent.Position;
 				x += position.X;
 				y += position.Y;
 				activeAgentCount++;
@@ -3429,25 +3437,26 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 		{
 			return Vec2.Zero;
 		}
-		return new Vec2(x / (float)activeAgentCount, y / (float)activeAgentCount);
+		return new Vec2(x / activeAgentCount, y / activeAgentCount);
 	}
 
 	private void CountSelectedPrisoners(out int regularPrisoners, out int lordPrisoners)
 	{
 		regularPrisoners = 0;
 		lordPrisoners = 0;
-		if (_inspectionPrisonerRoster == null)
+		TroopRoster roster = _inspectionPrisonerRoster ?? PartyBase.MainParty?.PrisonRoster;
+		if (roster == null)
 		{
 			return;
 		}
-		foreach (TroopRosterElement item in SnapshotRoster(_inspectionPrisonerRoster))
+		foreach (TroopRosterElement item in TroopInspectionBehavior.SnapshotRoster(roster))
 		{
 			CharacterObject character = item.Character;
 			if (character == null)
 			{
 				continue;
 			}
-			if (((BasicCharacterObject)character).IsHero)
+			if (character.IsHero)
 			{
 				lordPrisoners += Math.Max(0, item.Number);
 			}
@@ -3465,117 +3474,191 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 
 	private static string FormatFloat(float value)
 	{
-		return $"{value:0.00}";
+		return value.ToString("0.00");
 	}
 
-	private static TroopRoster CloneRoster(TroopRoster sourceRoster)
+	private void LogAgentRemovedDiag(Agent affectedAgent, Agent affectorAgent, AgentState agentState)
 	{
-		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
-		TroopRoster val = TroopRoster.CreateDummyTroopRoster();
-		if (sourceRoster == null)
+		try
 		{
-			return val;
-		}
-		foreach (TroopRosterElement item in SnapshotRoster(sourceRoster))
-		{
-			TroopRosterElement current = item;
-			if (current.Character != null && current.Number > 0)
+			if (_agentRemovedDiagLogCount >= AgentRemovedDiagLogLimit || affectedAgent == null || !affectedAgent.IsHuman)
 			{
-				val.Add(current);
+				return;
+			}
+			bool isPrisoner = TryResolveInspectionPrisoner(affectedAgent, out bool isLordPrisoner);
+			CharacterObject character = affectedAgent.Character as CharacterObject;
+			bool isHero = character?.IsHero ?? false;
+			bool isPlayer = affectedAgent.IsMainAgent || (character?.IsPlayerCharacter ?? false);
+			Team playerTeam = base.Mission?.PlayerTeam;
+			bool isPlayerTeam = playerTeam != null && affectedAgent.Team == playerTeam;
+			if (!isPrisoner && !isHero && !isPlayer && !isPlayerTeam)
+			{
+				return;
+			}
+			_agentRemovedDiagLogCount++;
+			Log("agent_removed_diag sample=" + _agentRemovedDiagLogCount
+				+ " victim=" + SafeAgentCharacterId(affectedAgent)
+				+ " victim_origin=" + SafeAgentOriginType(affectedAgent)
+				+ " victim_team=" + SafeAgentTeamSide(affectedAgent)
+				+ " formation=" + SafeAgentFormationIndex(affectedAgent)
+				+ " agent_state=" + agentState
+				+ " active=" + SafeAgentActive(affectedAgent)
+				+ " hp=" + SafeAgentHealth(affectedAgent)
+				+ " prisoner=" + isPrisoner
+				+ " is_lord_prisoner=" + isLordPrisoner
+				+ " hero=" + isHero
+				+ " player=" + isPlayer
+				+ " player_team=" + isPlayerTeam
+				+ " hero_state=" + SafeHeroState(character?.HeroObject)
+				+ " affector=" + SafeAgentCharacterId(affectorAgent)
+				+ " affector_origin=" + SafeAgentOriginType(affectorAgent)
+				+ " affector_main=" + ((affectorAgent != null) ? affectorAgent.IsMainAgent.ToString() : "null"));
+		}
+		catch (Exception ex)
+		{
+			if (_agentRemovedDiagLogCount < AgentRemovedDiagLogLimit)
+			{
+				_agentRemovedDiagLogCount++;
+				Log("agent_removed_diag_failed sample=" + _agentRemovedDiagLogCount + " " + ex.GetType().Name + ": " + ex.Message);
 			}
 		}
-		return val;
 	}
 
-	private static List<TroopRosterElement> SnapshotRoster(TroopRoster roster)
+	private static string SafeAgentCharacterId(Agent agent)
 	{
-		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
-		List<TroopRosterElement> list = new List<TroopRosterElement>();
-		if (roster == null)
+		try
 		{
-			return list;
+			CharacterObject character = agent?.Character as CharacterObject;
+			return character?.StringId ?? character?.Name?.ToString() ?? "null";
 		}
-		for (int i = 0; i < roster.Count; i++)
+		catch
 		{
-			TroopRosterElement elementCopyAtIndex = roster.GetElementCopyAtIndex(i);
-			try
-			{
-				elementCopyAtIndex.Xp = roster.GetElementXp(i);
-			}
-			catch
-			{
-			}
-			if (elementCopyAtIndex.Character != null && elementCopyAtIndex.Number > 0)
-			{
-				list.Add(elementCopyAtIndex);
-			}
+			return "unknown";
 		}
-		return list;
+	}
+
+	private static string SafeAgentOriginType(Agent agent)
+	{
+		try
+		{
+			return agent?.Origin?.GetType().Name ?? "null";
+		}
+		catch
+		{
+			return "unknown";
+		}
+	}
+
+	private static string SafeAgentTeamSide(Agent agent)
+	{
+		try
+		{
+			return agent?.Team?.Side.ToString() ?? "null";
+		}
+		catch
+		{
+			return "unknown";
+		}
+	}
+
+	private static string SafeAgentFormationIndex(Agent agent)
+	{
+		try
+		{
+			return agent?.Formation?.FormationIndex.ToString() ?? "null";
+		}
+		catch
+		{
+			return "unknown";
+		}
+	}
+
+	private static string SafeAgentActive(Agent agent)
+	{
+		try
+		{
+			return agent?.IsActive().ToString() ?? "null";
+		}
+		catch
+		{
+			return "unknown";
+		}
+	}
+
+	private static string SafeAgentHealth(Agent agent)
+	{
+		try
+		{
+			return agent != null ? agent.Health.ToString("0.##") : "null";
+		}
+		catch
+		{
+			return "unknown";
+		}
+	}
+
+	private static string SafeHeroState(Hero hero)
+	{
+		try
+		{
+			if (hero == null)
+			{
+				return "null";
+			}
+			return "alive=" + hero.IsAlive + ",dead=" + hero.IsDead + ",wounded=" + hero.IsWounded + ",hp=" + hero.HitPoints + "/" + hero.MaxHitPoints + ",wounded_limit=" + hero.WoundedHealthLimit;
+		}
+		catch (Exception ex)
+		{
+			return "error=" + ex.GetType().Name;
+		}
 	}
 
 	private void TryLogAgentCounts()
 	{
-		//IL_003f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0038: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0044: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0045: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00f6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ff: Unknown result type (might be due to invalid IL or missing references)
-		//IL_009d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ad: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b2: Unknown result type (might be due to invalid IL or missing references)
-		if (((MissionBehavior)this).Mission == null || (!_deploymentEndDetected && ((MissionBehavior)this).Mission.CurrentTime < 3f))
+		if (base.Mission == null || (!_deploymentEndDetected && base.Mission.CurrentTime < 3f))
 		{
 			return;
 		}
 		try
 		{
-			Team playerTeam = ((MissionBehavior)this).Mission.PlayerTeam;
-			BattleSideEnum val = ((playerTeam != null) ? playerTeam.Side : PartyBase.MainParty.Side);
-			BattleSideEnum oppositeSide = TaleWorlds.Core.Extensions.GetOppositeSide(val);
-			int num = 0;
-			int num2 = 0;
-			int num3 = 0;
-			foreach (Agent item in (List<Agent>)(object)((MissionBehavior)this).Mission.Agents)
+			BattleSideEnum playerSide = base.Mission.PlayerTeam?.Side ?? PartyBase.MainParty.Side;
+			BattleSideEnum enemySide = playerSide.GetOppositeSide();
+			int playerAgents = 0;
+			int enemyAgents = 0;
+			int neutralAgents = 0;
+			foreach (Agent agent in base.Mission.Agents)
 			{
-				if (item != null && item.IsHuman && item.IsActive())
+				if (agent == null || !agent.IsHuman || !agent.IsActive())
 				{
-					Team team = item.Team;
-					if (team == null)
-					{
-						num3++;
-					}
-					else if (team.Side == val)
-					{
-						num++;
-					}
-					else if (team.Side == oppositeSide)
-					{
-						num2++;
-					}
-					else
-					{
-						num3++;
-					}
+					continue;
+				}
+				Team team = agent.Team;
+				if (team == null)
+				{
+					neutralAgents++;
+				}
+				else if (team.Side == playerSide)
+				{
+					playerAgents++;
+				}
+				else if (team.Side == enemySide)
+				{
+					enemyAgents++;
+				}
+				else
+				{
+					neutralAgents++;
 				}
 			}
 			if (!_agentCountsLogged)
 			{
 				_agentCountsLogged = true;
-				Log($"agent_counts player_side={val} enemy_side={oppositeSide} player_agents={num} enemy_agents={num2} neutral_agents={num3}");
+				Log($"agent_counts player_side={playerSide} enemy_side={enemySide} player_agents={playerAgents} enemy_agents={enemyAgents} neutral_agents={neutralAgents}");
 			}
-			if (!_enemyAgentWarningLogged && num2 > 0)
+			if (!_enemyAgentWarningLogged && enemyAgents > 0)
 			{
 				_enemyAgentWarningLogged = true;
-				Log($"enemy_agents_detected count={num2}");
+				Log($"enemy_agents_detected count={enemyAgents}");
 			}
 		}
 		catch (Exception ex)
@@ -3586,56 +3669,61 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 
 	private void ContinuousAgentRefresh(float dt)
 	{
-		//IL_00b7: Unknown result type (might be due to invalid IL or missing references)
 		_continuousRefreshTimer += dt;
-		if (_continuousRefreshTimer < 0.12f)
+		if (_continuousRefreshTimer < RefreshInterval)
 		{
 			return;
 		}
 		_continuousRefreshTimer = 0f;
 		try
 		{
-			Campaign current = Campaign.Current;
-			int num;
-			if (((current != null) ? current.ConversationManager : null) != null && Campaign.Current.ConversationManager.IsConversationInProgress)
+			bool isInConversation = Campaign.Current?.ConversationManager != null && Campaign.Current.ConversationManager.IsConversationInProgress && Campaign.Current.ConversationManager.OneToOneConversationAgent != null;
+			if (isInConversation && !_conversationStateLogged)
 			{
-				num = ((Campaign.Current.ConversationManager.OneToOneConversationAgent != null) ? 1 : 0);
-				if (num != 0 && !_conversationStateLogged)
-				{
-					_conversationStateLogged = true;
-					Log("conversation_state_changed in_conversation=true");
-				}
+				_conversationStateLogged = true;
+				Log("conversation_state_changed in_conversation=true");
 			}
-			else
-			{
-				num = 0;
-			}
-			if (num == 0)
+			if (!isInConversation)
 			{
 				_conversationStateLogged = false;
 			}
-			Mission mission = ((MissionBehavior)this).Mission;
-			Agent val = ((mission != null) ? mission.MainAgent : null);
-			Mission mission2 = ((MissionBehavior)this).Mission;
-			Team val2 = ((mission2 != null) ? mission2.PlayerTeam : null);
-			if (val == null || val2 == null)
+			Agent mainAgent = base.Mission?.MainAgent;
+			Team playerTeam = base.Mission?.PlayerTeam;
+			if (mainAgent == null || playerTeam == null)
 			{
 				return;
 			}
-			_ = val.Position;
-			int num2 = 0;
-			foreach (Agent item in (List<Agent>)(object)((MissionBehavior)this).Mission.Agents)
+			Vec3 mainPos = mainAgent.Position;
+			int refreshed = 0;
+			foreach (Agent agent in base.Mission.Agents)
 			{
-				if (item != null && item.IsHuman && item.IsActive() && item != val && item.Team == val2 && !(item.Origin is PrisonerAgentOrigin))
+				if (agent == null || !agent.IsHuman || !agent.IsActive())
 				{
-					RefreshSingleAgent(item);
-					num2++;
+					continue;
 				}
+				if (agent == mainAgent)
+				{
+					continue;
+				}
+				if (agent.Team != playerTeam)
+				{
+					continue;
+				}
+				if (agent.Origin is PrisonerAgentOrigin)
+				{
+					continue;
+				}
+				if (!RefreshAllPlayerAgents && agent.Position.Distance(mainPos) > RefreshRadius)
+				{
+					continue;
+				}
+				RefreshSingleAgent(agent);
+				refreshed++;
 			}
 			if (!_firstRefreshLogged)
 			{
 				_firstRefreshLogged = true;
-				Log($"continuous_refresh_started agents_refreshed={num2} interval={0.12f} radius={30f} refresh_all={true}");
+				Log($"continuous_refresh_started agents_refreshed={refreshed} interval={RefreshInterval} radius={RefreshRadius} refresh_all={RefreshAllPlayerAgents}");
 			}
 		}
 		catch (Exception ex)
@@ -3666,7 +3754,7 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 		}
 		try
 		{
-			agent.SetIsAIPaused(false);
+			agent.SetIsAIPaused(isPaused: false);
 		}
 		catch
 		{
@@ -3679,7 +3767,7 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 			{
 				mountAgent.DisableScriptedMovement();
 				mountAgent.ClearTargetFrame();
-				mountAgent.SetIsAIPaused(false);
+				mountAgent.SetIsAIPaused(isPaused: false);
 				TrySetAgentController(mountAgent, "AI");
 			}
 		}
@@ -3695,18 +3783,23 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 		{
 			return;
 		}
-		_prisonerPoseRefreshTimer = 0.35f;
+		_prisonerPoseRefreshTimer = PrisonerPoseRefreshInterval;
 		try
 		{
-			if (((MissionBehavior)this).Mission == null)
+			if (base.Mission == null)
 			{
 				return;
 			}
-			foreach (Agent item in (List<Agent>)(object)((MissionBehavior)this).Mission.Agents)
+			foreach (Agent agent in base.Mission.Agents)
 			{
-				if (item != null && item.IsActive() && item.Origin is PrisonerAgentOrigin && TryGetPrisonerIsLord(item, out var isLord))
+				if (agent == null || !agent.IsActive() || !(agent.Origin is PrisonerAgentOrigin))
 				{
-					ApplyPrisonerPose(item, isLord, _deploymentEndDetected);
+					continue;
+				}
+				bool isLord;
+				if (TryGetPrisonerIsLord(agent, out isLord))
+				{
+					ApplyPrisonerPose(agent, isLord, _deploymentEndDetected);
 				}
 			}
 		}
@@ -3727,59 +3820,52 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 		{
 			return true;
 		}
-		BasicCharacterObject obj = (agent.Origin as PrisonerAgentOrigin)?.Troop;
-		CharacterObject val = (CharacterObject)(object)((obj is CharacterObject) ? obj : null);
-		if (val == null)
+		PrisonerAgentOrigin origin = agent.Origin as PrisonerAgentOrigin;
+		CharacterObject character = origin?.Troop as CharacterObject;
+		if (character == null)
 		{
 			return false;
 		}
-		isLord = ((BasicCharacterObject)val).IsHero;
+		isLord = character.IsHero;
 		_prisonerIsLordMap[agent] = isLord;
 		return true;
 	}
 
 	private void CachePrisonerActions()
 	{
-		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
-		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0021: Unknown result type (might be due to invalid IL or missing references)
-		if (!_prisonerActionsCached)
+		if (_prisonerActionsCached)
 		{
-			_prisonerActionsCached = true;
-			_lordPrisonerAction = ActionIndexCache.act_scared_idle_1;
-			_soldierPrisonerAction = ActionIndexCache.act_scared_idle_1;
-			Log("prisoner_actions_cached lord=act_scared_idle_1 soldier=act_scared_idle_1 static_speed=0 progress=0.35");
+			return;
 		}
+		_prisonerActionsCached = true;
+		_lordPrisonerAction = ActionIndexCache.act_scared_idle_1;
+		_soldierPrisonerAction = ActionIndexCache.act_scared_idle_1;
+		Log("prisoner_actions_cached lord=act_scared_idle_1 soldier=act_scared_idle_1 static_speed=0 progress=0.35");
 	}
 
 	private void ApplyPrisonerPose(Agent agent, bool isLord, bool afterDeployment)
 	{
-		//IL_0040: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0045: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0047: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004d: Unknown result type (might be due to invalid IL or missing references)
 		if (agent == null || !agent.IsActive())
 		{
 			return;
 		}
 		CachePrisonerActions();
+		try
+		{
+			agent.SetIsAIPaused(isPaused: true);
+		}
+		catch
+		{
+		}
+		try
+		{
+			agent.DisableScriptedMovement();
+		}
+		catch
+		{
+		}
 		if (afterDeployment)
 		{
-			try
-			{
-				agent.SetIsAIPaused(true);
-			}
-			catch
-			{
-			}
-			try
-			{
-				agent.DisableScriptedMovement();
-			}
-			catch
-			{
-			}
 			try
 			{
 				agent.SetMaximumSpeedLimit(0f, false);
@@ -3788,21 +3874,10 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 			{
 			}
 		}
-		else
-		{
-			try
-			{
-				agent.SetIsAIPaused(false);
-			}
-			catch
-			{
-			}
-			TrySetAgentController(agent, "AI");
-		}
 		try
 		{
 			AgentFlag agentFlags = agent.GetAgentFlags();
-			agent.SetAgentFlags((agentFlags & ~AgentFlag.CanGetAlarmed));
+			agent.SetAgentFlags(agentFlags & ~AgentFlag.CanGetAlarmed);
 		}
 		catch
 		{
@@ -3815,11 +3890,16 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 		catch
 		{
 		}
-		if (afterDeployment && !IsPrisonerPoseTemporarilySuppressed(agent))
+		if (!afterDeployment)
 		{
-			TrySetCivilianPrisonerActionSet(agent);
-			TrySetPrisonerAction(agent, isLord);
+			return;
 		}
+		if (IsPrisonerPoseTemporarilySuppressed(agent))
+		{
+			return;
+		}
+		TrySetCivilianPrisonerActionSet(agent);
+		TrySetPrisonerAction(agent, isLord);
 	}
 
 	private static void StripPrisonerWeapons(Agent agent)
@@ -3836,7 +3916,7 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 		catch
 		{
 		}
-		for (int i = 0; i < 5; i++)
+		for (int i = (int)EquipmentIndex.WeaponItemBeginSlot; i < (int)EquipmentIndex.NumAllWeaponSlots; i++)
 		{
 			try
 			{
@@ -3858,85 +3938,77 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 
 	private void TrySetPrisonerAction(Agent agent, bool isLord)
 	{
-		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
-		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0080: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0085: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00af: Unknown result type (might be due to invalid IL or missing references)
 		if (agent == null || !agent.IsActive())
 		{
 			return;
 		}
-		ActionIndexCache val = (isLord ? _lordPrisonerAction : _soldierPrisonerAction);
-		string text = "act_scared_idle_1";
-		int num = 0;
+		ActionIndexCache action = isLord ? _lordPrisonerAction : _soldierPrisonerAction;
+		string actionName = "act_scared_idle_1";
+		int channelNo = 0;
 		try
 		{
-			if (!MBActionSet.CheckActionAnimationClipExists(agent.ActionSet, in val))
+			if (!MBActionSet.CheckActionAnimationClipExists(agent.ActionSet, action))
 			{
 				if (isLord && !_lordPrisonerActionMissingLogged)
 				{
 					_lordPrisonerActionMissingLogged = true;
-					Log("prisoner_action_missing action=" + text);
+					Log("prisoner_action_missing action=" + actionName);
 				}
 				if (!isLord && !_soldierPrisonerActionMissingLogged)
 				{
 					_soldierPrisonerActionMissingLogged = true;
-					Log("prisoner_action_missing action=" + text);
+					Log("prisoner_action_missing action=" + actionName);
 				}
+				return;
 			}
-			else
+			ActionIndexCache currentAction = agent.GetCurrentAction(channelNo);
+			if (currentAction == action && _prisonerPoseApplied.Contains(agent))
 			{
-				if (agent.GetCurrentAction(num) == val && _prisonerPoseApplied.Contains(agent))
+				return;
+			}
+			AnimFlags poseFlags = AnimFlags.anf_disable_alternative_randomization | AnimFlags.anf_disable_auto_increment_progress | AnimFlags.anf_enforce_all;
+			bool actionSet = agent.SetActionChannel(channelNo, action, true, poseFlags, 0f, PrisonerPoseActionSpeed, -0.2f, 0.4f, PrisonerPoseStartProgress, false, -0.2f, 0, true);
+			if (actionSet)
+			{
+				try
 				{
-					return;
+					agent.SetCurrentActionProgress(channelNo, PrisonerPoseStartProgress);
 				}
-				AnimFlags val2 = (AnimFlags)143881404416L;
-				if (agent.SetActionChannel(num, in val, true, val2, 0f, 0f, -0.2f, 0.4f, 0.35f, false, -0.2f, 0, true))
+				catch
 				{
-					try
-					{
-						agent.SetCurrentActionProgress(num, 0.35f);
-					}
-					catch
-					{
-					}
-					_prisonerPoseApplied.Add(agent);
 				}
-				else if (!_prisonerActionSetRejectedLogged)
-				{
-					_prisonerActionSetRejectedLogged = true;
-					Log("set_prisoner_action rejected action=" + text);
-				}
+				_prisonerPoseApplied.Add(agent);
+			}
+			else if (!_prisonerActionSetRejectedLogged)
+			{
+				_prisonerActionSetRejectedLogged = true;
+				Log("set_prisoner_action rejected action=" + actionName);
 			}
 		}
 		catch (Exception ex)
 		{
-			Log("set_prisoner_action failed action=" + text + " " + ex.GetType().Name + ": " + ex.Message);
+			Log("set_prisoner_action failed action=" + actionName + " " + ex.GetType().Name + ": " + ex.Message);
 		}
 	}
 
 	private void TrySetCivilianPrisonerActionSet(Agent agent)
 	{
-		//IL_0041: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0051: Unknown result type (might be due to invalid IL or missing references)
 		try
 		{
-			if (agent != null && agent.IsActive() && !_civilianPrisonerActionSetApplied.Contains(agent))
+			if (agent == null || !agent.IsActive() || _civilianPrisonerActionSetApplied.Contains(agent))
 			{
-				Monster monster = agent.Monster;
-				if (monster != null)
-				{
-					string text = (agent.IsFemale ? "as_human_female_villager" : "as_human_villager");
-					AnimationSystemData val = MonsterExtensions.FillAnimationSystemData(monster, MBActionSet.GetActionSet(text), 1f, false);
-					agent.SetActionSet(ref val);
-					_civilianPrisonerActionSetApplied.Add(agent);
-				}
+				return;
 			}
+			Monster monster = agent.Monster;
+			if (monster == null)
+			{
+				return;
+			}
+			string actionSetCode = agent.IsFemale ? "as_human_female_villager" : "as_human_villager";
+			AnimationSystemData animationSystemData = monster.FillAnimationSystemData(MBActionSet.GetActionSet(actionSetCode), 1f, false);
+			agent.SetActionSet(ref animationSystemData);
+			_civilianPrisonerActionSetApplied.Add(agent);
+			Log("set_civilian_prisoner_action_set action_set=" + actionSetCode);
 		}
 		catch (Exception ex)
 		{
@@ -3948,15 +4020,16 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 	{
 		try
 		{
-			if (agent == null || ((MissionBehavior)this).Mission == null)
+			if (agent == null || base.Mission == null)
 			{
 				return false;
 			}
-			if (!_prisonerPoseSuppressedUntil.TryGetValue(agent, out var value))
+			float suppressUntil;
+			if (!_prisonerPoseSuppressedUntil.TryGetValue(agent, out suppressUntil))
 			{
 				return false;
 			}
-			return ((MissionBehavior)this).Mission.CurrentTime < value;
+			return base.Mission.CurrentTime < suppressUntil;
 		}
 		catch
 		{
@@ -3966,14 +4039,15 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 
 	public override void OnAgentHit(Agent affectedAgent, Agent affectorAgent, in MissionWeapon attackerWeapon, in Blow blow, in AttackCollisionData attackCollisionData)
 	{
-		base.OnAgentHit(affectedAgent, affectorAgent, attackerWeapon, blow, attackCollisionData);
+		base.OnAgentHit(affectedAgent, affectorAgent, in attackerWeapon, in blow, in attackCollisionData);
 		try
 		{
-			if (affectedAgent != null && ((MissionBehavior)this).Mission != null && affectedAgent.Origin is PrisonerAgentOrigin)
+			if (affectedAgent == null || base.Mission == null || !(affectedAgent.Origin is PrisonerAgentOrigin))
 			{
-				_prisonerPoseSuppressedUntil[affectedAgent] = ((MissionBehavior)this).Mission.CurrentTime + 0.9f;
-				_prisonerPoseApplied.Remove(affectedAgent);
+				return;
 			}
+			_prisonerPoseSuppressedUntil[affectedAgent] = base.Mission.CurrentTime + 0.9f;
+			_prisonerPoseApplied.Remove(affectedAgent);
 		}
 		catch
 		{
@@ -3988,14 +4062,15 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 			{
 				return;
 			}
-			PropertyInfo propertyInfo = ((object)agent).GetType().GetProperty("Controller") ?? ((object)agent).GetType().GetProperty("ControllerType");
-			if (!(propertyInfo == null) && propertyInfo.CanWrite)
+			PropertyInfo propertyInfo = agent.GetType().GetProperty("Controller") ?? agent.GetType().GetProperty("ControllerType");
+			if (propertyInfo == null || !propertyInfo.CanWrite)
 			{
-				object obj = Enum.Parse(propertyInfo.PropertyType, controllerType, ignoreCase: true);
-				if (obj != null)
-				{
-					propertyInfo.SetValue(agent, obj);
-				}
+				return;
+			}
+			object value = Enum.Parse(propertyInfo.PropertyType, controllerType, ignoreCase: true);
+			if (value != null)
+			{
+				propertyInfo.SetValue(agent, value);
 			}
 		}
 		catch
@@ -4005,40 +4080,43 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 
 	private void RequestCleanup(string reason)
 	{
-		if (!_cleanupRequested)
+		if (_cleanupRequested)
 		{
-			_cleanupRequested = true;
-			try
-			{
-				object arg = _battleEndDisabled;
-				Mission mission = ((MissionBehavior)this).Mission;
-				Log(string.Format("request_cleanup reason={0} battle_end_disabled={1} mission_result={2}", reason, arg, ((mission == null) ? null : ((object)mission.MissionResult)?.ToString()) ?? "null"));
-			}
-			catch
-			{
-			}
-			if (TroopInspectionBehavior.IsCurrentInspectionRuntime(_dummyPartyStringId))
-			{
-				TroopInspectionBehavior.CleanupRuntime(reason);
-			}
-			_prisonerIsLordMap.Clear();
-			_civilianPrisonerActionSetApplied.Clear();
-			_prisonerPoseSuppressedUntil.Clear();
-			_prisonerPoseApplied.Clear();
+			return;
 		}
+		_cleanupRequested = true;
+		try
+		{
+			Log($"request_cleanup reason={reason} battle_end_disabled={_battleEndDisabled} mission_result={base.Mission?.MissionResult?.ToString() ?? "null"}");
+		}
+		catch
+		{
+		}
+		if (TroopInspectionBehavior.IsCurrentInspectionRuntime(_dummyPartyStringId))
+		{
+			TroopInspectionBehavior.CleanupRuntime(reason);
+		}
+		_prisonerIsLordMap.Clear();
+		_civilianPrisonerActionSetApplied.Clear();
+		_prisonerPoseSuppressedUntil.Clear();
+		_prisonerPoseApplied.Clear();
 	}
 
 	private static void Log(string message)
 	{
-		TroopInspectionBehavior.Log(message);
+		Logger.Log("TroopInspection", "[TroopInspection] " + message);
 	}
 }
 
 public class PrisonerAgentOrigin : IAgentOriginBase
 {
-	private static readonly uint PrisonerFactionColor;
+	private static readonly uint PrisonerFactionColor = new Color(1f, 0f, 0f).ToUnsignedInteger();
 
-	private static readonly uint PrisonerFactionColor2;
+	private static readonly uint PrisonerFactionColor2 = new Color(0.6f, 0f, 0f).ToUnsignedInteger();
+
+	private const int OriginCasualtyDiagLogLimit = 40;
+
+	private static int _originCasualtyDiagLogCount;
 
 	private readonly CharacterObject _troop;
 
@@ -4054,7 +4132,7 @@ public class PrisonerAgentOrigin : IAgentOriginBase
 
 	private bool _hasSpear;
 
-	public BasicCharacterObject Troop => (BasicCharacterObject)(object)_troop;
+	public BasicCharacterObject Troop => _troop;
 
 	bool IAgentOriginBase.HasThrownWeapon => _hasThrownWeapon;
 
@@ -4070,36 +4148,59 @@ public class PrisonerAgentOrigin : IAgentOriginBase
 
 	public uint FactionColor2 => PrisonerFactionColor2;
 
-	public IBattleCombatant BattleCombatant => (IBattleCombatant)(object)PartyBase.MainParty;
+	public IBattleCombatant BattleCombatant => PartyBase.MainParty;
 
 	public int UniqueSeed => MBRandom.RandomInt(1000000);
 
-	public int Seed => CharacterHelper.GetDefaultFaceSeed((BasicCharacterObject)(object)_troop, 0);
+	public int Seed => CharacterHelper.GetDefaultFaceSeed(_troop, 0);
 
 	public Banner Banner => _banner;
 
 	public PrisonerAgentOrigin(CharacterObject troop)
 	{
 		_troop = troop;
-		Clan playerClan = Clan.PlayerClan;
-		_banner = ((playerClan != null) ? playerClan.Banner : null);
-		AgentOriginUtilities.GetDefaultTroopTraits((BasicCharacterObject)(object)_troop, out _hasThrownWeapon, out _hasSpear, out _hasShield, out _hasHeavyArmor);
+		_banner = Clan.PlayerClan?.Banner;
+		AgentOriginUtilities.GetDefaultTroopTraits(_troop, out _hasThrownWeapon, out _hasSpear, out _hasShield, out _hasHeavyArmor);
 	}
 
 	public void SetWounded()
 	{
-		if (!_isRemoved)
+		LogOriginCasualty("set_wounded_begin", "removed=" + _isRemoved + " " + BuildOriginTroopState(_troop));
+		if (_isRemoved)
 		{
-			_isRemoved = true;
+			LogOriginCasualty("set_wounded_skip_removed", BuildOriginTroopState(_troop));
+			return;
 		}
+		_isRemoved = true;
+		if (_troop.IsHero)
+		{
+			_troop.HeroObject.MakeWounded();
+		}
+		else
+		{
+			PartyBase.MainParty.PrisonRoster.WoundTroop(_troop, 1, default(UniqueTroopDescriptor));
+		}
+		LogOriginCasualty("set_wounded_end", BuildOriginTroopState(_troop));
 	}
 
 	public void SetKilled()
 	{
-		if (!_isRemoved)
+		LogOriginCasualty("set_killed_begin", "removed=" + _isRemoved + " " + BuildOriginTroopState(_troop));
+		if (_isRemoved)
 		{
-			_isRemoved = true;
+			LogOriginCasualty("set_killed_skip_removed", BuildOriginTroopState(_troop));
+			return;
 		}
+		_isRemoved = true;
+		if (_troop.IsHero)
+		{
+			KillCharacterAction.ApplyByBattle(_troop.HeroObject, null, showNotification: true);
+		}
+		else
+		{
+			PartyBase.MainParty.PrisonRoster.AddToCounts(_troop, -1, false, 0, 0, true, -1);
+		}
+		LogOriginCasualty("set_killed_end", BuildOriginTroopState(_troop));
 	}
 
 	public void SetRouted(bool isOrderRetreat)
@@ -4108,6 +4209,86 @@ public class PrisonerAgentOrigin : IAgentOriginBase
 
 	public void OnAgentRemoved(float agentHealth)
 	{
+		LogOriginCasualty("origin_on_agent_removed_begin", "agent_health=" + agentHealth + " " + BuildOriginTroopState(_troop));
+		if (_troop.IsHero && !_troop.HeroObject.IsDead)
+		{
+			_troop.HeroObject.HitPoints = MathF.Max(1, MathF.Round(agentHealth));
+		}
+		LogOriginCasualty("origin_on_agent_removed_end", "agent_health=" + agentHealth + " " + BuildOriginTroopState(_troop));
+	}
+
+	private static void LogOriginCasualty(string tag, string detail)
+	{
+		try
+		{
+			if (_originCasualtyDiagLogCount >= OriginCasualtyDiagLogLimit)
+			{
+				return;
+			}
+			_originCasualtyDiagLogCount++;
+			TroopInspectionBehavior.Log("prisoner_origin_diag sample=" + _originCasualtyDiagLogCount + " tag=" + tag + " " + detail);
+		}
+		catch
+		{
+		}
+	}
+
+	private static string BuildOriginTroopState(CharacterObject troop)
+	{
+		try
+		{
+			if (troop == null)
+			{
+				return "troop=null";
+			}
+			Hero hero = troop.HeroObject;
+			return "troop=" + troop.StringId + ",hero=" + troop.IsHero + ",hero_state=" + BuildOriginHeroState(hero) + ",roster_state=" + BuildPrisonRosterState(troop);
+		}
+		catch (Exception ex)
+		{
+			return "troop_state_error=" + ex.GetType().Name + ":" + ex.Message;
+		}
+	}
+
+	private static string BuildOriginHeroState(Hero hero)
+	{
+		try
+		{
+			if (hero == null)
+			{
+				return "null";
+			}
+			return "alive=" + hero.IsAlive + ",dead=" + hero.IsDead + ",wounded=" + hero.IsWounded + ",hp=" + hero.HitPoints + "/" + hero.MaxHitPoints + ",wounded_limit=" + hero.WoundedHealthLimit;
+		}
+		catch (Exception ex)
+		{
+			return "error=" + ex.GetType().Name;
+		}
+	}
+
+	private static string BuildPrisonRosterState(CharacterObject troop)
+	{
+		try
+		{
+			TroopRoster roster = PartyBase.MainParty?.PrisonRoster;
+			if (roster == null || troop == null)
+			{
+				return "null";
+			}
+			for (int i = 0; i < roster.Count; i++)
+			{
+				TroopRosterElement element = roster.GetElementCopyAtIndex(i);
+				if (element.Character == troop)
+				{
+					return "n=" + element.Number + ",w=" + element.WoundedNumber;
+				}
+			}
+			return "missing";
+		}
+		catch (Exception ex)
+		{
+			return "error=" + ex.GetType().Name;
+		}
 	}
 
 	void IAgentOriginBase.OnScoreHit(BasicCharacterObject victim, BasicCharacterObject formationCaptain, int damage, bool isFatal, bool isTeamKill, WeaponComponentData attackerWeapon)
@@ -4121,35 +4302,152 @@ public class PrisonerAgentOrigin : IAgentOriginBase
 
 	TroopTraitsMask IAgentOriginBase.GetTraitsMask()
 	{
-		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-		return AgentOriginUtilities.GetDefaultTraitsMask((IAgentOriginBase)(object)this);
-	}
-
-	static PrisonerAgentOrigin()
-	{
-		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0019: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003f: Unknown result type (might be due to invalid IL or missing references)
-		Color val = new Color(1f, 0f, 0f, 1f);
-		PrisonerFactionColor = val.ToUnsignedInteger();
-		val = new Color(0.6f, 0f, 0f, 1f);
-		PrisonerFactionColor2 = val.ToUnsignedInteger();
+		return AgentOriginUtilities.GetDefaultTraitsMask(this);
 	}
 }
 
-[HarmonyPatch(typeof(SandboxAgentDecideKilledOrUnconsciousModel), "GetAgentStateProbability")]
+[HarmonyPatch(typeof(SandBox.GameComponents.SandboxAgentDecideKilledOrUnconsciousModel), "GetAgentStateProbability")]
 public static class TroopInspectionDeathRatePatch
 {
+	private const float InspectionDeathRatePercent = 100f;
+
+	private const int DeathRateDiagLogLimit = 24;
+
+	private static int _deathRateDiagLogCount;
+
 	public static void Postfix(Agent affectorAgent, Agent effectedAgent, DamageTypes damageType, ref float __result)
 	{
-		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0022: Invalid comparison between Unknown and I4
-		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
-		Mission current = Mission.Current;
-		if (((current != null) ? current.GetMissionBehavior<TroopInspectionMissionLogic>() : null) != null && effectedAgent != null && effectedAgent.IsHuman && ((int)damageType == 1 || (int)damageType == 0))
+		try
 		{
-			__result = 1f;
+			if (Mission.Current?.GetMissionBehavior<TroopInspectionMissionLogic>() == null)
+			{
+				return;
+			}
+			if (effectedAgent == null || !effectedAgent.IsHuman)
+			{
+				return;
+			}
+			float vanilla = __result;
+			if (IsMainPlayerAgent(effectedAgent))
+			{
+				__result = 0f;
+				LogDeathRateSample(affectorAgent, effectedAgent, damageType, vanilla, __result, "main_player_protected");
+				return;
+			}
+			float slider = InspectionDeathRatePercent / 100f;
+			if (float.IsNaN(slider) || float.IsInfinity(slider))
+			{
+				slider = 0.5f;
+			}
+			slider = MBMath.ClampFloat(slider, 0f, 1f);
+			if (slider <= 0.5f)
+			{
+				__result = vanilla * (slider / 0.5f);
+			}
+			else
+			{
+				__result = vanilla + (1f - vanilla) * ((slider - 0.5f) / 0.5f);
+			}
+			__result = MBMath.ClampFloat(__result, 0f, 1f);
+			LogDeathRateSample(affectorAgent, effectedAgent, damageType, vanilla, __result, "inspection_death_rate_max");
+		}
+		catch (Exception ex)
+		{
+			if (_deathRateDiagLogCount < DeathRateDiagLogLimit)
+			{
+				_deathRateDiagLogCount++;
+				TroopInspectionBehavior.Log("death_rate_diag_failed sample=" + _deathRateDiagLogCount + " " + ex.GetType().Name + ": " + ex.Message);
+			}
+		}
+	}
+
+	private static bool IsMainPlayerAgent(Agent agent)
+	{
+		try
+		{
+			if (agent == null)
+			{
+				return false;
+			}
+			if (agent.IsMainAgent)
+			{
+				return true;
+			}
+			CharacterObject character = agent.Character as CharacterObject;
+			return character != null && character.IsPlayerCharacter;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static void LogDeathRateSample(Agent affectorAgent, Agent effectedAgent, DamageTypes damageType, float vanilla, float adjusted, string reason)
+	{
+		if (_deathRateDiagLogCount >= DeathRateDiagLogLimit)
+		{
+			return;
+		}
+		bool isPrisoner = TroopInspectionMissionLogic.TryResolveInspectionPrisoner(effectedAgent, out bool isLord);
+		CharacterObject victimCharacter = effectedAgent?.Character as CharacterObject;
+		CharacterObject affectorCharacter = affectorAgent?.Character as CharacterObject;
+		_deathRateDiagLogCount++;
+		TroopInspectionBehavior.Log("death_rate_diag sample=" + _deathRateDiagLogCount
+			+ " victim=" + SafeAgentCharacterId(effectedAgent)
+			+ " victim_origin=" + SafeAgentOriginType(effectedAgent)
+			+ " victim_hero=" + (victimCharacter?.IsHero.ToString() ?? "null")
+			+ " victim_player=" + (((effectedAgent != null && effectedAgent.IsMainAgent) || (victimCharacter?.IsPlayerCharacter ?? false)).ToString())
+			+ " victim_hero_state=" + SafeHeroState(victimCharacter?.HeroObject)
+			+ " prisoner=" + isPrisoner
+			+ " is_lord=" + isLord
+			+ " damage_type=" + damageType
+			+ " vanilla=" + vanilla
+			+ " adjusted=" + adjusted
+			+ " reason=" + reason
+			+ " affector=" + SafeAgentCharacterId(affectorAgent)
+			+ " affector_origin=" + SafeAgentOriginType(affectorAgent)
+			+ " affector_hero=" + (affectorCharacter?.IsHero.ToString() ?? "null")
+			+ " affector_main=" + ((affectorAgent != null) ? affectorAgent.IsMainAgent.ToString() : "null"));
+	}
+
+	private static string SafeAgentOriginType(Agent agent)
+	{
+		try
+		{
+			return agent?.Origin?.GetType().Name ?? "null";
+		}
+		catch
+		{
+			return "unknown";
+		}
+	}
+
+	private static string SafeHeroState(Hero hero)
+	{
+		try
+		{
+			if (hero == null)
+			{
+				return "null";
+			}
+			return "alive=" + hero.IsAlive + ",dead=" + hero.IsDead + ",wounded=" + hero.IsWounded + ",hp=" + hero.HitPoints + "/" + hero.MaxHitPoints + ",wounded_limit=" + hero.WoundedHealthLimit;
+		}
+		catch (Exception ex)
+		{
+			return "error=" + ex.GetType().Name;
+		}
+	}
+
+	private static string SafeAgentCharacterId(Agent agent)
+	{
+		try
+		{
+			CharacterObject character = agent?.Character as CharacterObject;
+			return character?.StringId ?? character?.Name?.ToString() ?? "null";
+		}
+		catch
+		{
+			return "unknown";
 		}
 	}
 }
@@ -4157,34 +4455,56 @@ public static class TroopInspectionDeathRatePatch
 [HarmonyPatch(typeof(Mission), "CancelsDamageAndBlocksAttackBecauseOfNonEnemyCase")]
 public static class TroopInspectionMeleeDamagePatch
 {
+	private const int DamageCancelDiagLogLimit = 24;
+
+	private static int _damageCancelDiagLogCount;
+
 	public static bool Prefix(Mission __instance, Agent attacker, Agent victim, ref bool __result)
 	{
-		if (attacker == null || victim == null || !attacker.IsMainAgent || !victim.IsHuman || !attacker.IsFriendOf(victim))
+		if (attacker == null || victim == null)
 		{
 			return true;
 		}
-		if (((__instance != null) ? __instance.GetMissionBehavior<TroopInspectionMissionLogic>() : null) == null)
+		if (__instance?.GetMissionBehavior<TroopInspectionMissionLogic>() == null)
+		{
+			return true;
+		}
+		bool willOverride = attacker.IsHuman && victim.IsHuman && attacker.IsFriendOf(victim);
+		if (_damageCancelDiagLogCount < DamageCancelDiagLogLimit && TroopInspectionMissionLogic.TryResolveInspectionPrisoner(victim, out bool isLord))
+		{
+			_damageCancelDiagLogCount++;
+			TroopInspectionBehavior.Log("damage_cancel_diag sample=" + _damageCancelDiagLogCount + " victim=" + SafeAgentCharacterId(victim) + " is_lord=" + isLord + " attacker=" + SafeAgentCharacterId(attacker) + " attacker_human=" + attacker.IsHuman + " attacker_main=" + attacker.IsMainAgent + " victim_human=" + victim.IsHuman + " attacker_friend=" + attacker.IsFriendOf(victim) + " override=" + willOverride);
+		}
+		if (!willOverride)
 		{
 			return true;
 		}
 		__result = false;
 		return false;
 	}
+
+	private static string SafeAgentCharacterId(Agent agent)
+	{
+		try
+		{
+			CharacterObject character = agent?.Character as CharacterObject;
+			return character?.StringId ?? character?.Name?.ToString() ?? "null";
+		}
+		catch
+		{
+			return "unknown";
+		}
+	}
 }
 
 [HarmonyPatch]
 public static class TroopInspectionFormationIsolationPatch
 {
-	private const int RegularPrisonerFormationIndex = 6;
-
-	private const int LordPrisonerFormationIndex = 7;
-
 	private static bool IsTroopInspectionRuntime()
 	{
 		try
 		{
-			Mission current = Mission.Current;
-			return ((current != null) ? current.GetMissionBehavior<TroopInspectionMissionLogic>() : null) != null;
+			return Mission.Current?.GetMissionBehavior<TroopInspectionMissionLogic>() != null;
 		}
 		catch
 		{
@@ -4198,8 +4518,7 @@ public static class TroopInspectionFormationIsolationPatch
 		{
 			return false;
 		}
-		int index = formation.Index;
-		return index == 6 || index == 7;
+		return formation.Index == 6 || formation.Index == 7;
 	}
 
 	private static Formation ResolveAllowedFormation(Agent agent, Formation requestedFormation)
@@ -4213,7 +4532,7 @@ public static class TroopInspectionFormationIsolationPatch
 		{
 			return null;
 		}
-		if (TroopInspectionMissionLogic.TryResolveInspectionPrisoner(agent, out var isLord))
+		if (TroopInspectionMissionLogic.TryResolveInspectionPrisoner(agent, out bool isLord))
 		{
 			int expectedIndex = isLord ? 7 : 6;
 			if (requestedFormation.Index == expectedIndex)
@@ -4229,8 +4548,7 @@ public static class TroopInspectionFormationIsolationPatch
 				return requestedFormation;
 			}
 		}
-		Formation formation = TroopInspectionMissionLogic.ResolveNormalTroopFormation(team, agent, requestedFormation);
-		return formation;
+		return TroopInspectionMissionLogic.ResolveNormalTroopFormation(team, agent, requestedFormation);
 	}
 
 	[HarmonyPatch(typeof(Agent), "set_Formation")]
@@ -4242,14 +4560,7 @@ public static class TroopInspectionFormationIsolationPatch
 			return;
 		}
 		Formation formation = ResolveAllowedFormation(__instance, value);
-		if (formation != null && formation != value)
-		{
-			value = formation;
-		}
-		else if (formation == null)
-		{
-			value = null;
-		}
+		value = formation;
 	}
 
 	[HarmonyPatch(typeof(Formation), "AddUnit")]
@@ -4286,45 +4597,31 @@ public static class TroopInspectionFormationIsolationPatch
 [HarmonyPatch]
 public static class TroopInspectionOrderOfBattlePatch
 {
-	private const int RegularPrisonerFormationIndex = 6;
-
-	private const int LordPrisonerFormationIndex = 7;
-
 	private static readonly FieldInfo AllFormationsField = AccessTools.Field(typeof(OrderOfBattleVM), "_allFormations");
 
 	private static readonly FieldInfo ClassBelongedFormationItemField = AccessTools.Field(typeof(OrderOfBattleFormationClassVM), "BelongedFormationItem");
 
-	[HarmonyPatch(typeof(OrderOfBattleFormationItemVM), "RefreshFormation", new Type[]
-	{
-		typeof(Formation),
-		typeof(DeploymentFormationClass),
-		typeof(bool)
-	})]
+	[HarmonyPatch(typeof(OrderOfBattleFormationItemVM), nameof(OrderOfBattleFormationItemVM.RefreshFormation), new Type[] { typeof(Formation), typeof(DeploymentFormationClass), typeof(bool) })]
 	[HarmonyPrefix]
 	private static void RefreshFormationPrefix(Formation formation, ref DeploymentFormationClass overriddenClass, ref bool mustExist)
 	{
-		if (IsTroopInspectionRuntime() && formation != null)
+		if (!IsTroopInspectionRuntime() || formation == null)
 		{
-			int index = formation.Index;
-			if (index == 6)
-			{
-				overriddenClass = DeploymentFormationClass.Infantry;
-				mustExist = true;
-			}
-			else if (index == 7)
-			{
-				overriddenClass = DeploymentFormationClass.Cavalry;
-				mustExist = true;
-			}
+			return;
+		}
+		if (formation.Index == 6)
+		{
+			overriddenClass = DeploymentFormationClass.Infantry;
+			mustExist = true;
+		}
+		else if (formation.Index == 7)
+		{
+			overriddenClass = DeploymentFormationClass.Cavalry;
+			mustExist = true;
 		}
 	}
 
-	[HarmonyPatch(typeof(OrderOfBattleFormationItemVM), "RefreshFormation", new Type[]
-	{
-		typeof(Formation),
-		typeof(DeploymentFormationClass),
-		typeof(bool)
-	})]
+	[HarmonyPatch(typeof(OrderOfBattleFormationItemVM), nameof(OrderOfBattleFormationItemVM.RefreshFormation), new Type[] { typeof(Formation), typeof(DeploymentFormationClass), typeof(bool) })]
 	[HarmonyPostfix]
 	private static void RefreshFormationPostfix(OrderOfBattleFormationItemVM __instance)
 	{
@@ -4360,19 +4657,15 @@ public static class TroopInspectionOrderOfBattlePatch
 	[HarmonyPrefix]
 	private static bool EnsureAllFormationTypesAreSetPrefix(OrderOfBattleFormationItemVM f)
 	{
-		if (!IsTroopInspectionRuntime() || ((f != null) ? f.Formation : null) == null)
+		if (!IsTroopInspectionRuntime() || f?.Formation == null)
 		{
 			return true;
 		}
 		int index = f.Formation.Index;
-		if (index != 7)
-		{
-			return index != 6;
-		}
-		return false;
+		return index != 6 && index != 7;
 	}
 
-	[HarmonyPatch(typeof(OrderOfBattleVM), "Tick")]
+	[HarmonyPatch(typeof(OrderOfBattleVM), nameof(OrderOfBattleVM.Tick))]
 	[HarmonyPostfix]
 	private static void TickPostfix(OrderOfBattleVM __instance)
 	{
@@ -4382,11 +4675,13 @@ public static class TroopInspectionOrderOfBattlePatch
 		}
 		try
 		{
-			if (AllFormationsField?.GetValue(__instance) is List<OrderOfBattleFormationItemVM> allFormations)
+			List<OrderOfBattleFormationItemVM> allFormations = AllFormationsField?.GetValue(__instance) as List<OrderOfBattleFormationItemVM>;
+			if (allFormations == null)
 			{
-				RefreshPrisonerFormationItem(allFormations, 6, DeploymentFormationClass.Infantry);
-				RefreshPrisonerFormationItem(allFormations, 7, DeploymentFormationClass.Cavalry);
+				return;
 			}
+			RefreshPrisonerFormationItem(allFormations, 6, DeploymentFormationClass.Infantry);
+			RefreshPrisonerFormationItem(allFormations, 7, DeploymentFormationClass.Cavalry);
 		}
 		catch
 		{
@@ -4395,34 +4690,29 @@ public static class TroopInspectionOrderOfBattlePatch
 
 	private static void RefreshPrisonerFormationItem(List<OrderOfBattleFormationItemVM> allFormations, int formationIndex, DeploymentFormationClass deploymentClass)
 	{
-		//IL_004c: Unknown result type (might be due to invalid IL or missing references)
 		for (int i = 0; i < allFormations.Count; i++)
 		{
-			OrderOfBattleFormationItemVM val = allFormations[i];
-			Formation val2 = ((val != null) ? val.Formation : null);
-			if (val2 != null && val2.Index == formationIndex)
+			OrderOfBattleFormationItemVM item = allFormations[i];
+			Formation formation = item?.Formation;
+			if (formation == null || formation.Index != formationIndex)
 			{
-				int countOfUnits = val2.CountOfUnits;
-				if (countOfUnits > 0 && (val.OrderOfBattleFormationClassInt == 0 || val.TroopCount != countOfUnits || !val.IsSelectable))
-				{
-					val.RefreshFormation(val2, deploymentClass, true);
-					val.OnSizeChanged();
-				}
-				LockPrisonerFormationItem(val);
-				break;
+				continue;
 			}
+			int actualCount = formation.CountOfUnits;
+			if (actualCount > 0 && (item.OrderOfBattleFormationClassInt == 0 || item.TroopCount != actualCount || !item.IsSelectable))
+			{
+				item.RefreshFormation(formation, deploymentClass, mustExist: true);
+				item.OnSizeChanged();
+			}
+			LockPrisonerFormationItem(item);
+			return;
 		}
 	}
 
 	private static bool IsPrisonerFormationItem(OrderOfBattleFormationItemVM item)
 	{
-		Formation formation = ((item != null) ? item.Formation : null);
-		if (formation == null)
-		{
-			return false;
-		}
-		int index = formation.Index;
-		return index == 6 || index == 7;
+		Formation formation = item?.Formation;
+		return formation != null && (formation.Index == 6 || formation.Index == 7);
 	}
 
 	private static bool IsPrisonerFormationClass(OrderOfBattleFormationClassVM formationClass)
@@ -4452,9 +4742,9 @@ public static class TroopInspectionOrderOfBattlePatch
 		{
 			if (item.Classes != null)
 			{
-				foreach (OrderOfBattleFormationClassVM item2 in item.Classes)
+				foreach (OrderOfBattleFormationClassVM formationClass in item.Classes)
 				{
-					LockPrisonerFormationClass(item2);
+					LockPrisonerFormationClass(formationClass);
 				}
 			}
 		}
@@ -4491,8 +4781,7 @@ public static class TroopInspectionOrderOfBattlePatch
 	{
 		try
 		{
-			Mission current = Mission.Current;
-			return ((current != null) ? current.GetMissionBehavior<TroopInspectionMissionLogic>() : null) != null;
+			return Mission.Current?.GetMissionBehavior<TroopInspectionMissionLogic>() != null;
 		}
 		catch
 		{
@@ -4500,3 +4789,4 @@ public static class TroopInspectionOrderOfBattlePatch
 		}
 	}
 }
+
