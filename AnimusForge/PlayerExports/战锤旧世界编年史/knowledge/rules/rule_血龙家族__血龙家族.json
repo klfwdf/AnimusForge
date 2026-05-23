@@ -1,0 +1,213 @@
+{
+  "Id": "rule_血龙家族__血龙家族",
+  "Keywords": [
+    "血龙家族",
+    "极致武艺",
+    "血龙家族血骑士",
+    "荣誉决斗",
+    "吸血鬼剑客",
+    "武术血脉",
+    "血龙",
+    "剑术大师",
+    "武痴吸血鬼",
+    "决斗者",
+    "战士血脉",
+    "荣誉之血"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "血龙家族是吸血鬼血脉中以极致武艺著称的一支，其成员将剑术修炼到超越凡人的境界。他们追求荣誉决斗，与通常吸血鬼的阴谋诡计不同，血龙更愿意在正面交锋中证明自己的实力。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "血龙家族——他们不是我们中最聪明的，但绝对是最锋利的！血龙的血脉传承自初代始祖艾波拉什，这位疯狂的血族至高领主发誓要用手中的剑斩下巨龙之首，并以此淬炼自己的武艺进入神之领域。每个血龙后裔都继承了对武艺的偏执：他们不断寻找更强的对手，与混沌冠军决斗，与矮人铁锤勇士比武，甚至试图挑战旧世界的传说级巨兽。一个血龙吸血鬼可以独自屠灭一整队帝国剑士，然后再优雅地向幸存的队长伸出染血的手套提出一对一挑战。他们不屑于用毒药、背叛或暗杀——那不是武者的方式。但讽刺的是，他们的「荣誉」只适用于战斗本身，至于战前吸干一个村庄的血来补充体力，在他们看来无非是「必要的准备」。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "血龙家族吸血鬼是你能遇到的最危险的单体近战敌人之一。一个血龙可以轻松击溃一整支精锐步兵，而如果血龙家族结伴出击，即使最坚固的阵线也会像羊皮纸一样被撕裂。但他们有个可被利用的弱点：对荣誉决斗的痴迷。如果你敢于接受他们的挑战，他们往往会暂时放过你的军队。这给了你重新部署或施放决定性魔法的机会——当然也意味着必须有人愿意做那个「光荣的牺牲者」。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "血龙家族的始祖艾波拉什是最初接受纳迦什血杯的十二位吸血鬼始祖之一。与其他血族不同，艾波拉什将永生全部投入到了对完美武艺的追求中——他认为只要在剑术上超越了包括巨龙在内的所有生物，血液的诅咒自然会被突破。血龙家族在吸血鬼战争期间曾作为冯·卡斯坦因家族的精锐突击力量参战，但两族关系本质上更接近「互相利用」而非忠诚盟约。血龙骑士的黑暗铠甲通常为深红色，象征「永远流淌的龙血」，其上刻有决斗誓言的符文字。每位血龙都随身携带一卷羊皮纸记录自己战胜过的最强对手——这份「荣誉之卷」对他们来说比灵魂还重要。血龙吸血鬼的初拥仪式不是被动接受血吻，而是主动吸干始祖的血——这意味着每一个血龙都必须是能战胜自己「父亲」的战士。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "血龙家族的故事里全是男人和剑——但在瓦兰·血焰的故事中，有一只被称为「猩红女王」的女血龙，据说她的剑法与她生前的爱人一样精湛。她杀了他之后继承了他的剑和他的血脉。吸血鬼的浪漫总是如此血腥而扭曲。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我们曾与一个血龙交手——准确地说，我曾目送族中最强的三名战士前去迎战，然后亲眼目睹他们在十息之内被斩成碎片。那个吸血鬼甚至没有使用魔法，纯粹的剑术就把我们的荣耀碾成了尘埃。此后我族再未挑战过血龙。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我在布雷顿尼的废墟古堡中遇过一个血龙。他独自坐在荒废大厅的王座上，周围散落着几十具挑战者的骸骨。我以为他会杀我，但他只看了一眼我腰间的破剑就失去了兴趣——说我的装备「侮辱了他的眼睛」。我从没因为被鄙视而如此感激过。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "血龙是军火商梦寐以求的顶级客户——但他们几乎从不在市场中交易。他们要么从被杀死的对手那里拿走武器，要么命令某个倒霉的人类铁匠专程上门服务。有传言称，某位血龙曾为了一把帝国大师级佩剑而屠杀了剑的前主人及其全部守卫。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "血龙家族是追求极致武艺的吸血鬼血脉，痴迷剑术与荣誉决斗",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "血龙家族的家族背景与政治地位"
+  ]
+}

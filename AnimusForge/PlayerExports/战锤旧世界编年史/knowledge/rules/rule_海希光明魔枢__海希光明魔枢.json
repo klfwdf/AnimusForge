@@ -1,0 +1,210 @@
+{
+  "Id": "rule_海希光明魔枢__海希光明魔枢",
+  "Keywords": [
+    "海希光明魔枢",
+    "光明法师",
+    "透镜阵列",
+    "海希光明魔法战车",
+    "光矛",
+    "净化之光",
+    "光明魔乘",
+    "海希聚焦镜",
+    "神圣光束"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "海希光明魔枢是光明学院最强大的魔法战争机器——一辆由光明法师驾驭的装甲战车，车顶装载着一组经过魔法附着的巨大透镜阵列，可以聚焦海希之风形成毁灭性的纯净光束，将敌军或混沌生物直接焚化为灰烬。它是帝国少数能够将魔法转化为定向武器的装置之一，也是任何不死生物和恶魔的终极噩梦。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "海希光明魔枢是帝国魔法与工程学结合的圣物——每当我们看到它那辆白色漆金战车在州军队伍后缓慢移动时，每一个帝国士兵内心都会升起一种无需理由的平静，因为我们知道这辆车意味着神灵在注视着我们——至少是他们在通过海希透镜的折射在注视着我们。光明魔枢的核心技术是七块按照特定几何关系布局的魔法水晶透镜——这些透镜并非普通的玻璃，而是由光明学院的大法师在阿尔道夫的光明圣地中花费数年培养出来的单晶，在物理上就是完美的晶体结构——没有任何瑕疵或气泡。当经过魔法激活时，透镜阵列能够收集周围环境中的海希之风并将其压缩成一根极细的光矛，从魔枢顶端的一颗被称为「光明之星」的钻石顶端射出。这束光的温度在理论上是无穷的，因为不被物理热能定律约束——它是海希的纯粹能量形态，所以它烧的不是血肉而是混沌：一支不死军团被光明之矛击穿时，骷髅不会烧焦而是会直接升华成气体消散，因为支撑他们存在的黑暗系魔法在瞬间被海希净化殆尽。但光明魔枢的使用也有着严苛的限制：它只能由经过特定训练的光明法师独自操作，且每发射一次后透镜阵列需要冷却至少一刻钟——因为如果连续使用，透镜会从微观层面开始被纯净的海希反噬腐蚀。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "海希光明魔枢在帝国军队的战术组合中扮演着「精确打击」的角色，与常规火炮的覆盖式轰击形成互补。它的光矛射程超过任何已有的火炮——甚至超过精灵的长弓——但它的射击频率极低，并且必须依赖目标上空有足够的自然光线——浓雾或黑夜环境下光明魔枢的效能会降低三分之二。最佳的使用方法是将光明魔枢定位在战线后方的制高点上，由侦察单位或天堂法师指示目标，然后用光矛优先摧毁敌方的巨型单位或指挥官——一个兽人战将在战斗开始后突然被一道光柱从肩膀切成两半，会对整支兽人部落造成远超常规炮击的精神打击。但要特别注意对抗使用暗影或死亡魔法的敌方施法者：他们会将光明魔枢视为必须首回合消灭的头等威胁，因为一个经验丰富的海希法师站在透镜阵列后面对任何黑暗系魔法师而言，就相当于一头老鹰在田鼠的巢穴上空盘旋。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "海希光明魔枢的技术原理涉及帝国高等魔法科学中最为艰深的物学交叉领域——光学魔法工程学。七块海希水晶透镜的排列并非随意选择，而是遵循由光明学院第二任大法师卡斯帕·希默尔在帝国历2388年发表的《光和风》一书中阐明的「七重累积光路定律」——这一数学理论描述了光线在海希压缩场中的非线性折射规律，是帝国唯一一部既有高等数学证明又有魔法实验验证的学术著作。魔枢战车的底盘由努恩兵工厂负责制造——采用的是与蒸汽坦克类似但更轻量化的钢铁构架，以确保在不妨碍魔法发射器运转的情况下承受后坐力。光明魔枢的后坐力不来自实弹武器，而是在光矛发射瞬间海希之风被急剧抽取导致的魔法真空——这种真空会产生一股反向魔法脉冲，足以震晕未经保护的凡人。据光明学院档案记录，在帝国历2492年的阿尔道夫防御战中，当时仅有的三台光明魔枢在一天之内累计发射十八次光矛，消灭了两头亡灵龙、一名吸血鬼伯爵和大量无法计数的骷髅战士，而三台魔枢中的两台在战后因为透镜过劳性裂纹而永久退役。光明学院目前维持着共七台光明魔枢的现役编制，其中两台部署在希尔瓦尼亚前线，一台在阿尔道夫驻防，其余四台根据来自帝国军事总部的调令巡回部署。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "光明魔枢在我们贵族女性中引发了一种奇特的情感吸引。帝国社会往往被钢铁、火炮和骑士的血液和铁锈所定义——男人的暴力美学——但光明魔枢承载了某种不同的力量：它灼热但纯净，毁灭但不玷污。来自光明学院的大法师通常是所有法师中在社会意义上最被接受的——因为他的魔法属性是「光」，而这个概念在西格玛信仰中本身就与神意相连。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "让家族墓园或领地被授予一台光明魔枢的驻防权是极其稀罕的荣誉。光明学院的魔枢分配权由学院长亲自决定——这意味着你不仅要争取军事总部的许可，还要赢得学院长大法师的信任。拥有魔枢驻防的家族领地受到不死生物天然威慑的同时——吸血鬼和亡灵法师会主动绕开光明魔枢的巡逻范围——这使得边境领地的安全成本大幅降低。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我在希尔瓦尼亚边境执行护送任务时跟着一辆光明魔枢干过一次活——那是我这辈子做过的最安全的活儿。原来被吸血鬼不断盯上的商队发现自己旁跟着一辆光明魔枢之后，一路上连蝙蝠的影子都见不到。那个操作魔枢的光明法师几乎不说话——我猜海希之风烤焦了他的社交能力——但他让我们所有人都活着走出了那片被诅咒的土地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "光明魔枢的光学组件碾磨与抛光业务由帝国唯一一家获得光明学院授权的光学工坊——阿尔道夫「极锐之光」工坊——独家承担。每一块适配光明魔枢的海希透镜都需经过至少七个月的晶体生长和之后为期两个月的精密光学研磨，研磨时的误差精度以万分之一个头发丝的直径来计算。这一产业的定价完全不公开——因为拥有透镜制造能力的工坊只有一家。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "海希透镜阵列——七块按特定几何关系排列的魔法水晶透镜，是光明魔枢的核心聚焦装置",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "海希光明魔枢光明法师透镜阵列"
+  ]
+}

@@ -1,0 +1,213 @@
+{
+  "Id": "rule_巴托尼亚风土__巴托尼亚风土",
+  "Keywords": [
+    "巴托尼亚风土",
+    "巴托尼亚社会",
+    "巴托尼亚农奴",
+    "庄园",
+    "骑士生活",
+    "巴托尼亚比武大会",
+    "女神节日",
+    "巴托尼亚美食",
+    "庄园经济",
+    "贵族礼仪",
+    "乡村习俗",
+    "巴托尼亚阶级"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "巴托尼亚社会是一个被骑士道信仰凝结为一体的等级金字塔——顶端是少数圣杯骑士与王室贵族，中层是拥有封地的各级骑士领主，底层则是构成了王国人口九成的农奴。尽管等级森严，但湖之女神信仰为所有阶层提供了共同的精神纽带：从国王到农奴，每个人都在女神的目光下度过一生。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "巴托尼亚的生活是由钟声、马嘶、铁砧和祈祷组成的节奏。清晨，庄园钟楼敲响晨祷钟，农奴们从草垫上起身开始一天的劳作——女人挤奶、男人下地、孩子在庄园作坊中当学徒。你可以在任何一座巴托尼亚村庄中闻到麦酒发酵的酸香和柴火烧灼的烟火气——相比帝国城镇那股煤炭与油墨的臭味，我们更愿意称之为生活的气息。贵族们的生活则围绕着比武场和圣杯教堂展开：骑士在晨间进行马上长枪训练，正午在圣杯修道院中做简短祈祷，下午参与本地庄园的司法裁断——一个巴托尼亚男爵除了是一个战士之外还是法官、税务官和半个传教士。节日是巴托尼亚社会最鲜活的部分：仲夏的女神庆典上，每个村庄都会挑出最美丽的女童扮演湖之女神从池塘中升起，骑士们则以不装枪尖的长矛进行表演性质的马背比武，输者要送一整桶阿奎坦红酒给赢家。但请别被这些田园牧歌蒙蔽了双眼——对于农奴而言，巴托尼亚社会也意味着沉重的赋税：他们要将收成的九成交给领主，自己只能在营养不良中祈祷冬天不要太漫长。骑士道的美丽光环在庄园账簿里显得格外脆弱。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "治理巴托尼亚的领地不止是军事和外交——你要理解你的人民。农奴们虽然无权拒绝你的任何命令，但他们的忍耐是有极限的：历史上的农奴起义从来不是因为赋税沉重——巴托尼亚农奴世世代代都在交重税——而是因为领主打破了不成文的约定。这个约定很简单：领主保护农奴免受外敌侵害，农奴供养领主。一旦领主没有履行保护义务——比如在绿皮入侵时躲在自己的城堡里不敢出来——农奴的忠诚就会在一天之内蒸发。贵族阶层内部也有一套精细的礼仪体系：你不能在另一个贵族的庄园里擅自狩猎、你不能在国王未经举杯前饮酒、你不能在比武场上用带毒的武器——这些看似繁琐的规矩实际上控制着贵族之间潜在的暴力冲突。比武大会是巴托尼亚社会最重要的非战争事件：它不仅是贵族的娱乐更是一场全面的人格展示——你在比武场上的武艺证明你的战斗价值、你对贵妇人的举止证明你的教养、你对待败者的风度证明你的骑士精神，任何在这些场合暴露缺陷的骑士都会在日后的联姻谈判和封地分配中处于劣势。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "巴托尼亚的社会结构在旧世界诸国中具有独特的双重性：表层的骑士道意识形态与深层的经济现实之间存在巨大的张力。从正面看，骑士文化为巴托尼亚社会提供了意义体系——每一个阶层都在这套体系中找到了自己的位置：农奴在女神的经济秩序中是被庇护者、骑士是被选中者、圣杯骑士是圣洁者。但社会学分析揭示出底层的运转逻辑完全围绕着庄园经济：一个典型的巴托尼亚庄园由领主的城堡或庄园宅邸、农奴的村庄、公共犁田、牧场和森林组成。农奴向领主缴纳的赋税形式极其多样化——不仅有收成比例还有劳动义务、实物贡赋以及各种名目的附带费用——比如使用领主磨粉机的磨粉税、结婚时的婚姻许可费、继承去世父亲土地时的继承税。巴托尼亚贵族的消费文化也与帝国不同：帝国贵族炫耀的是金钱，巴托尼亚贵族炫耀的是慷慨。一个著名的巴托尼亚俗语是'一个吝啬的贵族比一个吃人的绿皮更可鄙'，这句话背后是复杂的经济学。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "巴托尼亚贵族女性的日常生活是一张被荣誉、义务和无止境的庄园管理编织成的锦缎。我的早晨从为男爵遗孀们主持晨祷开始，接着审阅管家呈交的庄园账本——我能在六十秒内发现去年同期的鸡蛋产量与今年之间的偏差是否意味着某个村庄藏匿了额外的母鸡。巴托尼亚贵族男性的社交世界中充满了比武、狩猎和对贵妇人的抒情追逐，而女人们的社交世界运行在另一套频率上：我们在圣杯修女的避静会上交换家族情报，在贵妇们的下午茶时以刺绣花样为掩护讨论联姻的前景。巴托尼亚的女贵族们掌握着一项男人永远学不会的技能：通过帮助别人的孩子来投资自己孩子的未来——我们为周边贵族家族的女儿们提供侍女教育和姻缘引荐，而这些恩情会在二十年后她们成为其它公爵夫人时以意想不到的方式得到回报。男人的权力靠荣耀来维系，女人的权力靠记忆。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "巴托尼亚的贵族家庭中的日常生活是一场持续的荣誉表演——你在自己城堡中的行为标准与你站在国王面前时的标准完全一致。我们家族的宴会厅在任何一天的中午都供应招待上门借宿的流浪骑士和途经此地的朝圣者，这不是财力炫耀，而是家族荣誉体系的日常运转——一个拒绝接待客人的巴托尼亚贵族家族会在流言传播的三个月内失去领地中所有流浪骑士的尊重。我们家族的儿童从三岁起在餐桌上与来访客人一同学习礼仪——他们通过观察大人如何夸奖侍从、如何在敬酒时提及对方先辈的荣耀、如何在被挑战某一历史细节时不失风度地转移话题来学习一切贵族政治的社交内核。巴托尼亚人的血缘不是家庭的私产，是行省的公共资产——你孩子们的出生、受封、结婚和死亡每一桩都是半公开的事件，邻领主会派出代表参加就像讨论税收分配一样认真。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "巴托尼亚的农奴村庄在流浪者眼里有一种被时间遗忘了的凝固感。我在卡卡松公爵领深处发现过一个地图上没有标记的村庄——那里的农奴说着一口与三百里外其他地方都不同的古老巴托尼亚方言，他们的石砌小教堂中供奉着一尊脸部已被苔藓磨平的女性神像，他们称之为'老妈妈'——没有人能说出那是湖之女神还是什么更古老的本地精灵。巴托尼亚底层生活的美妙之处不在于物质而在于一种已经被制度化的简单：农奴们只需要在每年二月跟着管家的哨声下地、在八月把麦子装车运到领主谷仓、在十月的女神庆典上喝到一年的第一口新酒。但这种简单也有它黑暗的代价——连续几代人在封闭的村庄中通婚使得大脑发育迟滞的儿童比例高得不正常。巴托尼亚贵族们歌颂庄园世界的诗意，但他们从未蹲下来观察过被这份诗意压在三代赋税重担下的农奴脚踝。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "巴托尼亚的消费市场对商人而言是一块被贵族品味深度塑造的特殊商业生态。巴托尼亚骑士在宴会上消耗的牛肉数量是帝国同等级贵族的三倍——不是因为牛肉便宜，而是因为在巴托尼亚贵族文化中，宴席的肉量直接等同于主人的慷慨程度，而慷慨程度直接等同于骑士道的荣誉值。我们商会在巴托尼亚北方高地区域垄断了盐的进口——骑士城堡中储藏的腌肉需要大量矿盐，而鲍尔德洛和吉索鲁克斯的本地矿盐产量不足，只能依靠从帝国盐矿经灰色山脉隘口运入。巴托尼亚的奢侈品市场也极为特别——帝国贵族会为提利尔的天鹅绒和精灵的艺术品掏钱，但巴托尼亚贵族最热爱的'奢侈品'是纯种的巴托尼亚战马幼驹、精工锻造的马上长枪、和圣杯修女会认证的圣湖之水装在银瓶中的朝圣纪念品。在巴托尼亚卖奢侈品不是卖商品——是卖骑士对荣誉的渴望。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "比武大会文化——巴托尼亚骑士社会的核心社交与竞技仪式",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "巴托尼亚的社会习俗与文化传统"
+  ]
+}

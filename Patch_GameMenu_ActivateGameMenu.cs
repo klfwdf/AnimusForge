@@ -58,7 +58,7 @@ public static class Patch_GameMenu_ActivateGameMenu
 			}
 			else
 			{
-				if (PlayerEncounter.Current == null || PlayerEncounter.CampaignBattleResult != null || LordEncounterRedirectGuard.IsSuppressed())
+				if (PlayerEncounter.Current == null || PlayerEncounterCompat.HasCampaignBattleResult() || LordEncounterRedirectGuard.IsSuppressed())
 				{
 					return;
 				}
@@ -69,7 +69,7 @@ public static class Patch_GameMenu_ActivateGameMenu
 					{
 						return;
 					}
-					MapEvent mapEvent = PlayerEncounter.Battle ?? PlayerEncounter.EncounteredBattle;
+					MapEvent mapEvent = PlayerEncounterCompat.GetBattleOrEncounteredBattleSafe();
 					if (mapEvent != null && (mapEvent.HasWinner || mapEvent.IsFinalized))
 					{
 						return;

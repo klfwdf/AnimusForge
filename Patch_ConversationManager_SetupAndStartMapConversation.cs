@@ -76,11 +76,11 @@ public static class Patch_ConversationManager_SetupAndStartMapConversation
 			{
 				return true;
 			}
-			if (PlayerEncounter.CampaignBattleResult != null)
+			if (PlayerEncounterCompat.HasCampaignBattleResult())
 			{
 				return true;
 			}
-			if (PlayerEncounter.Battle != null || PlayerEncounter.EncounteredBattle != null)
+			if (PlayerEncounterCompat.HasBattleOrEncounteredBattle())
 			{
 				return true;
 			}

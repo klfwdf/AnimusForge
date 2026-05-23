@@ -1,0 +1,213 @@
+{
+  "Id": "rule_野林游侠__野林游侠",
+  "Keywords": [
+    "野林游侠",
+    "长柄大剑",
+    "野林游侠变异猎杀",
+    "危险区域",
+    "森林守护",
+    "游侠战士",
+    "巨剑猎手",
+    "变异杀手",
+    "黑暗森林巡逻",
+    "树精猎手",
+    "荒野巡游",
+    "勇敢者"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "野林游侠是木精灵中最勇猛的战士，他们独自巡逻在艾索洛伦最危险的区域，手持长柄大剑猎杀森林中被混沌腐化的变异生物，以铁腕手段维护森林的纯净。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "野林游侠并非被放逐者——他们是自愿选择走进黑暗的勇士。我们理解他们的使命：不是所有人都能在阳光下战斗，有些敌人藏在阴影最深处。游侠们在「阴影林地」中巡逻，那里的树木被混沌能量污染，生长出扭曲的枝干。他们的大剑上刻着古代符文，每一剑斩下时，符文都会发出刺眼的光芒，将混沌腐化化为灰烬。说实话，即便是我们自己也对游侠们敬而远之，因为长期与黑暗搏斗……会改变一个人。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "野林游侠是你军中的精锐猎杀小队。他们不适合正面列阵作战，而是应当部署在侧翼或密林中，专门寻找高价值目标——混沌巨兽、敌方法师、重型单位。游侠们的大剑对大型目标有额外杀伤力。务必保护他们免受骑兵冲锋。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "根据《游侠守则》中记载的历史，第一位野林游侠是远古英雄「暗影行者」菲瑞恩。他在第二次混沌入侵后发现，混沌能量已渗透到艾索洛伦的某些区域，常规手段无法根除。于是，他打造了第一把符文巨剑「暮光裁决」，并建立游侠团的传统。游侠团的仪式规定，每位新成员必须在阴影林地中独自生存七天七夜，猎杀至少一只被完全腐化的生物。据统计，约有三成的新兵无法通过这项考验。游侠团的总部设在「荆棘之环」——一棵被雷击过的枯死橡树内部。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "很少有女性选择游侠之路，但那些选择了的人都被铭记为传奇。她们更加独立、坚韧，用行动证明勇气不分性别。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "如果你的氏族中有年轻人自愿加入游侠团，请尊重他们的选择——尽管这意味着他们可能永远不再回来。每个氏族每年都应向游侠团献上武器和补给的供奉，这是维护森林安宁的代价。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "你在深林中遇到了一位野林游侠。他的眼睛中闪烁着某种非人的光芒，剑刃上沾满黑色的血。他没有说话，只是点点头，然后消失在树影之间。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "野林游侠在木精灵社会中的地位既受尊敬又被疏远。他们承担了最肮脏的工作，保护了森林的安全，却因此被普通人视为不祥之兆。他们的牺牲从不被公开歌颂，但每个木精灵心中都明白：没有游侠，就没有安全的艾索洛伦。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "野林游侠——木精灵中独行巡逻危险区域的巨剑猎手。",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "野林游侠长柄大剑野林游侠变异猎杀"
+  ]
+}

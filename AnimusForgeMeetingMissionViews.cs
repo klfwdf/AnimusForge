@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SandBox.View.Missions;
 using SandBox.ViewModelCollection;
@@ -32,7 +33,7 @@ public class AnimusForgeMeetingMissionViews
 			(MissionView)new MissionCampaignView(),
 			ViewCreator.CreateMissionSingleplayerEscapeMenu(CampaignOptions.IsIronmanMode),
 			ViewCreator.CreateMissionAgentLabelUIHandler(mission),
-			ViewCreator.CreateMissionBattleScoreUIHandler(mission, (ScoreboardBaseVM)new SPScoreboardVM((BattleSimulation)null)),
+			ViewCreator.CreateMissionBattleScoreUIHandler(mission, AnimusForgeMeetingMissionViewHelpers.CreateScoreboardVm()),
 			ViewCreator.CreateOptionsUIHandler(),
 			ViewCreator.CreateMissionMainAgentEquipDropView(mission),
 			ViewCreator.CreateMissionOrderUIHandler(),
@@ -56,5 +57,27 @@ public class AnimusForgeMeetingMissionViews
 			ViewCreator.CreateMissionOrderOfBattleUIHandler(mission, (OrderOfBattleVM)new SPOrderOfBattleVM())
 		};
 		return list.ToArray();
+	}
+
+}
+
+internal static class AnimusForgeMeetingMissionViewHelpers
+{
+	internal static ScoreboardBaseVM CreateScoreboardVm()
+	{
+		Type type = typeof(SPScoreboardVM);
+		foreach (System.Reflection.ConstructorInfo constructor in type.GetConstructors())
+		{
+			System.Reflection.ParameterInfo[] parameters = constructor.GetParameters();
+			if (parameters.Length == 2)
+			{
+				return (ScoreboardBaseVM)constructor.Invoke(new object[] { null, null });
+			}
+			if (parameters.Length == 1)
+			{
+				return (ScoreboardBaseVM)constructor.Invoke(new object[] { null });
+			}
+		}
+		throw new MissingMethodException(type.FullName, ".ctor");
 	}
 }

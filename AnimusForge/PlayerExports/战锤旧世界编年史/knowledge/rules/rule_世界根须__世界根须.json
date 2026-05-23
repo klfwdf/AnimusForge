@@ -1,0 +1,208 @@
+{
+  "Id": "rule_世界根须__世界根须",
+  "Keywords": [
+    "世界根须",
+    "地下魔网",
+    "森林通道",
+    "精灵传送",
+    "远古根系",
+    "木精灵机动",
+    "艾索洛伦动脉"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "世界根须是一张隐藏在大地深处、连接旧世界所有古老森林的魔法根系网络。木精灵能够通过这些地下通道在相隔千里的林区之间瞬间传送军队，使得那些以为摧毁了精灵前哨就高枕无忧的敌人往往在数月后发现一整支精灵大军已从自家的后院林地里涌出。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "世界根须是艾索洛伦的动脉与神经，是我们与这颗星球真正融为一体的证明。当愚蠢的外族以为我们木精灵被围困在孤立的小片森林中坐以待毙时，我们的军队早已通过世界根须穿梭于洛伦、阿金多尔、灰色山脉的古老林地之间。这不是魔法，这是比魔法更古老的东西——是世界在人类、矮人甚至精灵诞生之前就已经编织好的深层连接。我们的歌咏者可以在世界根须中'听'到远方的森林传来的回声，我们的军队可以在任何一棵超过千岁的古树之下找到根须入口。世界根须是艾索洛伦无敌的真正原因：你烧毁一千棵树木，但无法烧断大地深处的根。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "世界根须的存在使得木精灵成为一个在战略层面上几乎无法被封锁的敌人。任何针对森林的围城战都毫无意义——补给、援军和撤退路线都可以通过根须在任何时间点进行。从军事角度分析，唯一能限制根须使用的方法是：其一，破坏根须入口的锚点古树——这需要识别哪些特定树木是入口节点，且通常有重兵守卫；其二，使用符文学或魔法干扰阻断根须中的灵流传输。矮人符文铁匠曾成功使用禁制符文封锁了小片区域的根须通道，但该方法需要提前精确知道根须走向，在大规模作战中并不实用。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "世界根须的存在已被证实，但其运作机制在帝国学术界仍然是一个有争议的课题。主导理论——由米登海姆大学自然哲学系的格奥尔格·冯·克拉姆巴赫教授在帝国历2103年提出——认为世界根须是远古时代由古圣（The Old Ones）植入这颗星球的地质-魔法复合网络，原本用于稳定行星地形与调节全球气候。随着古圣的消失和混沌入侵，这一网络的大部分已经休眠，但艾索洛伦所在的部分因精灵持续的森林仪式而保持了活性。根须通道内的时间流速极不稳定，根据进入者的报告，有时穿越千里只需片刻，有时则需要数日——这与根须中死灵能量与生命魔法的季节性消长密切相关。最详尽的关于世界根须的著作是《林间深渊》，由一位叛逃的木精灵歌者薇瑟兰·叶之歌在帝国历2450年所著，但此书在被西格玛教会禁毁前仅印刷了七册，现存世仅三册。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我在精灵宾客的身份下曾请求体验一次世界根须穿梭。那种感觉无法用语言描述——不像行走或飞行，而更像是你被大地吞下然后从另一个地方吐出来。在通道中你能感觉到无数细微的震动，精灵歌者告诉我那是远方森林中发生的每一件事传来的悸动：一棵树倒下、一只鹿死去、一场林火被扑灭。当我从洛伦的根须入口跨出，灰色的山脉已在我身后，不过几分钟。我问精灵，他们是否能用这网络监视整个世界？那歌者笑了笑说：'世界太小了，我们并不想监视全部。'"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我们的家族史中有一段记录来自曾祖父时代——他曾在灰色山脉中发现了一个未被木精灵标记为禁地的根须入口。他为是否利用这个发现与木精灵进行交涉纠结了十年——是否可以用'保守入口位置'换取森林和平？最终他选择了沉默，把那份地图锁在了家族地窖的最深处。他说：'世界根须是木精灵最后的隐私，如果你拿走它，他们就不再有任何理由对你手下留情。'这话我一直记在心中。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "在边境亲王领的东部荒野，有一个人类村落建在一片古老橡树林旁边。村里有个传说：月圆之夜，如果你把耳朵贴在那棵最老的橡树根上，能听到从艾索洛伦传来的低语。我试过一次——极度的安静中，我确实听到了什么，但那不是低语，而是脚步声。成千上万的脚步声，从大地的深处慢慢地、巨大地、不可阻挡地向前移动。第二天我就离开了那个村子，此后再也不在古老林地附近长时间停留。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "作为一个货运商人，我对世界根须的最大感受是极度的商业嫉妒。你想啊——木精灵可以瞬间将一车货物从洛伦送到灰色山脉，而我们得花三个月时间跋涉危险的商路，还要付给佣兵和车队的成本。我曾尝试与木精灵进行贸易谈判，提议用人类商品换取根须使用权——他们差一点把我赶出森林。那歌咏者说：'世界根须不是商路，是血脉。不要把你们的贪念注入我们母亲的血液。'谈判虽然失败了，但我理解那种感受。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "连接旧世界所有古老森林的地下魔法根系网络",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "世界根须地下魔网森林通道"
+  ]
+}

@@ -1,0 +1,209 @@
+{
+  "Id": "rule_铁锤勇士__铁锤勇士",
+  "Keywords": [
+    "铁锤勇士",
+    "矮人领主卫队",
+    "符文战锤",
+    "绝对忠诚",
+    "贴身护卫",
+    "王座守护",
+    "符文重锤",
+    "矮人亲卫"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "铁锤勇士是每位矮人领主的贴身卫队——他们手持双手巨型符文战锤，每一柄都是数代矮人符文铁匠的杰作，锤头上燃烧着矮人先祖的怒火。他们发誓用生命守护自己的领主，千百年来从没有一个铁锤勇士背弃过这个誓言。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "铁锤勇士！一个矮人领主如果没有一队铁锤勇士站在身后，他就不算真正的领主。你以为那些长须长者围坐在王座厅里是在聊天气吗？他们在数每个领主的铁锤勇士有多少人。符文战锤——不是那些人类铁匠铺里打出来的玩具，是真家伙，是熔炼了几百年的符文，每一击砸下去符文亮起的瞬间，就是祖灵们挥下的一击。你见过铁锤勇士围成一个保护圈吗？十二柄战锤同时砸地的声音能震裂三十尺外的石头。他们发誓守护领主到死，而矮人从不违背誓言——有个故事在卡拉克·卡德林流传了很久：一位铁锤勇士在领主阵亡后继续守护他的尸体整整七年，在地下岩洞里等着有人来收殓，靠吃苔藓和舔岩石上的水珠活下来的。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "铁锤勇士在战场上定位极其明确：他们不是用来冲锋陷阵的，是用来确保指挥官活到战役结束的。将铁锤勇士部署在远离领主的位置是一个战略性错误——他们的价值不在于独立的杀戮效率，而在于近身保护的质量。一队铁锤勇士在领主身边形成的保护弧能让任何试图'斩首'的敌方精锐骑兵吃到沉重的反击：符文战锤对骑兵有特别的杀伤力，锤击对马腿和骑手的全覆盖装甲都能造成毁灭性伤害。关键禁忌：不要命令铁锤勇士离开领主去追杀残敌，这是对他们誓言的侮辱，也是对你自己指挥安全的威胁。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "铁锤勇士制度的确立可追溯至矮人'复仇时代'（公元前1500年至公元前500年），由矮人至高王莫格里姆·红须在惨烈的绿皮战争中正式设立。符文战锤的锻造工艺属于矮人符文锻造学的最高级别分支——'马拉卡扎克'（战锤符文学），一柄标准铁锤勇士战锤需经三道独立符文工序：锤头刻'祖灵之怒'符文（赋予锤击远超物理质量的冲击力）、锤柄刻'不折之誓'符文（使木柄在承受数千次全力锤击后仍不碎裂）、握把处刻'血脉锁定'符文（使战锤在持有者死亡后自行熄灭符文光芒，以防落入敌人之手）。历史上最著名的铁锤勇士个体为'沉默者'巴洛克·坚砧——公元1103年，他在黑火隘口战役中以一人之力守护重伤至高王的躯体长达三个时辰，击毙三名绿皮战争头领和十七名黑兽人，其战锤'祖语者'至今仍陈列在永恒之峰的至高王大殿中。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "矮人社会中女性不参与铁锤勇士编制——这是我作为边境女领主唯一不那么羡慕矮人的地方。但他们对领主的忠诚概念是值得研究的：铁锤勇士发誓的不是对个人，而是对'领主之职'本身。这意味着即使领主犯错、堕落、甚至发疯，铁锤勇士也会至死守护这个头衔的持有者。这种誓言机制既令人敬畏，也令人不寒而栗。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "铁锤勇士的人选从来不是从训练场里挑的——是从家族仇恨簿里选的。矮人领主的护卫队通常由他的近亲组成，因为只有血亲才会把复仇与守护当成同一件事。我家曾有一位先祖担任至高王的铁锤勇士长，他守护了四位至高王的驾崩，每一位都是在他铁锤的保护圈里咽下最后一口气——这在矮人文化中是最高的荣耀。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "在黑火隘口的佣兵营地里有个退下来的老铁锤勇士，一只眼睛已经瞎了，但他每天还在磨他的战锤，战锤柄被他的手磨出了深深的凹槽。他说他还在等——等他的老领主从先祖大厅里回来召唤他。大家觉得他疯了，但佣兵营地里没人敢嘲笑他，因为都见过他试锤：一锤子把铁砧砸进地里一尺深。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "符文武器的地下市场一直是帝国情报机构的重点关注对象——一柄矮人铁锤勇士的真品符文战锤在黑市上的价格超过了一座男爵城堡的岁入。不过矮人对这类交易的惩罚极其严厉：曾有巴托尼亚的军械商人收购过一批战死矮人的符文战锤，三个月后他的家族商会一夜之间被一笔抹除——不是用刀剑，是用一份长达八千字的'赔偿条款'让他破产到连下葬的钱都拿不出来。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "符文战锤：矮人符文铁匠锻造的巨型双手战锤，每一柄都刻有多重矮人符文，锤击力远超物理法则的极限。",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "铁锤勇士是每位矮人领主的贴身卫队——他们手持双手巨型符文战锤"
+  ]
+}

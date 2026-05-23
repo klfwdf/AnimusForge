@@ -1,0 +1,671 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using TaleWorlds.Core;
+using TaleWorlds.DotNet;
+using TaleWorlds.Engine;
+using TaleWorlds.Library;
+
+namespace TaleWorlds.MountAndBlade;
+
+public class StrategicArea : MissionObject, IDetachment
+{
+	private class StrategicAreaMutableTuple
+	{
+		public int RangedHitReceivedCount;
+
+		public int RangedHitScoredCount;
+
+		public StrategicAreaMutableTuple(int rangedHitReceivedCount, int rangedHitScoredCount)
+		{
+			RangedHitReceivedCount = rangedHitReceivedCount;
+			RangedHitScoredCount = rangedHitScoredCount;
+		}
+	}
+
+	private enum ShimmyDirection
+	{
+		Center,
+		Left,
+		Forward,
+		Right,
+		Back,
+		NumDirections
+	}
+
+	private List<Agent> _agents;
+
+	[EditableScriptComponentVariable(true, "")]
+	private float _width;
+
+	private int _unitSpacing;
+
+	private int _capacity;
+
+	private MBList<Formation> _userFormations;
+
+	private Dictionary<Formation, Formation> _simulationFormations;
+
+	[EditableScriptComponentVariable(true, "")]
+	private BattleSideEnum _side;
+
+	[EditableScriptComponentVariable(true, "")]
+	private float _depth = 1f;
+
+	[EditableScriptComponentVariable(true, "")]
+	private float _distanceToCheck = 10f;
+
+	[EditableScriptComponentVariable(true, "")]
+	private bool _ignoreHeight = true;
+
+	[EditableScriptComponentVariable(true, "")]
+	private bool _disableShimmy;
+
+	private List<DestructableComponent> _nearbyDestructibleObjects = new List<DestructableComponent>();
+
+	private bool _isActive;
+
+	private float _lastShimmyTime;
+
+	private float _lastShootTime;
+
+	private ShimmyDirection _shimmyDirection;
+
+	private bool _doesFrameNeedUpdate = true;
+
+	private readonly StrategicAreaMutableTuple[] _strategicAreaSidesScoreTally = new StrategicAreaMutableTuple[5];
+
+	private Mat3 _cachedGlobalScaledRotation;
+
+	private WorldFrame _cachedGlobalWorldFrame;
+
+	private Vec3 _shimmyLocalPosition;
+
+	private bool _isEvaluated;
+
+	private float _cachedDetachmentWeight;
+
+	public bool IsLoose => true;
+
+	public MBReadOnlyList<Formation> UserFormations => _userFormations;
+
+	public float DistanceToCheck => _distanceToCheck;
+
+	public bool IgnoreHeight => _ignoreHeight;
+
+	public bool IsActive
+	{
+		get
+		{
+			return _isActive;
+		}
+		set
+		{
+			if (value == _isActive)
+			{
+				return;
+			}
+			List<Team> list = Mission.Current.Teams.Where((Team t) => IsUsableBy(t.Side)).ToList();
+			_isActive = value;
+			foreach (Team item in list)
+			{
+				if (item.TeamAI != null)
+				{
+					if (_isActive)
+					{
+						item.TeamAI.AddStrategicArea(this);
+					}
+					else
+					{
+						item.TeamAI.RemoveStrategicArea(this);
+					}
+				}
+			}
+		}
+	}
+
+	protected internal override void OnInit()
+	{
+		base.OnInit();
+		_agents = new List<Agent>();
+		_userFormations = new MBList<Formation>();
+		_unitSpacing = ArrangementOrder.GetUnitSpacingOf(ArrangementOrder.ArrangementOrderEnum.Line);
+		_capacity = CalculateCapacity();
+		_simulationFormations = new Dictionary<Formation, Formation>();
+		_isActive = true;
+		for (int i = 0; i < 5; i++)
+		{
+			_strategicAreaSidesScoreTally[i] = new StrategicAreaMutableTuple(0, 0);
+		}
+	}
+
+	private int CalculateCapacity()
+	{
+		return TaleWorlds.Library.MathF.Max(1, TaleWorlds.Library.MathF.Ceiling(TaleWorlds.Library.MathF.Max(1f, _width) * TaleWorlds.Library.MathF.Max(1f, _depth)));
+	}
+
+	public Vec3 GetGroundPosition()
+	{
+		CacheGlobalWorldFrame();
+		return _cachedGlobalWorldFrame.Origin.GetGroundVec3();
+	}
+
+	public void DetermineAssociatedDestructibleComponents(IEnumerable<DestructableComponent> destructibleComponents)
+	{
+		_nearbyDestructibleObjects = new List<DestructableComponent>();
+		foreach (DestructableComponent destructibleComponent in destructibleComponents)
+		{
+			destructibleComponent.GameEntity.GetGlobalFrame();
+			destructibleComponent.GameEntity.GetPhysicsMinMax(includeChildren: true, out var bbmin, out var bbmax, returnLocal: false);
+			if (((bbmax + bbmin) * 0.5f).DistanceSquared(base.GameEntity.GlobalPosition) <= 9f)
+			{
+				_nearbyDestructibleObjects.Add(destructibleComponent);
+			}
+		}
+		foreach (DestructableComponent nearbyDestructibleObject in _nearbyDestructibleObjects)
+		{
+			nearbyDestructibleObject.OnDestroyed += OnCoveringDestructibleObjectDestroyed;
+		}
+	}
+
+	public void OnParentGameEntityVisibilityChanged(bool isVisible)
+	{
+		IsActive = isVisible;
+	}
+
+	private void OnCoveringDestructibleObjectDestroyed(DestructableComponent destroyedComponent, Agent destroyerAgent, in MissionWeapon weapon, ScriptComponentBehavior attackerScriptComponentBehavior, int inflictedDamage)
+	{
+		IsActive = false;
+	}
+
+	protected override void OnRemoved(int removeReason)
+	{
+		base.OnRemoved(removeReason);
+		foreach (DestructableComponent nearbyDestructibleObject in _nearbyDestructibleObjects)
+		{
+			nearbyDestructibleObject.OnDestroyed -= OnCoveringDestructibleObjectDestroyed;
+		}
+	}
+
+	public void InitializeAutogenerated(float width, int capacity, BattleSideEnum side)
+	{
+		_width = width;
+		_capacity = capacity;
+		_side = side;
+	}
+
+	public void AddAgent(Agent agent, int slotIndex = -1, Agent.AIScriptedFrameFlags customFlags = Agent.AIScriptedFrameFlags.None)
+	{
+		_agents.Add(agent);
+		if (_capacity == 1)
+		{
+			CacheGlobalWorldFrame();
+		}
+		agent.SetPreciseRangedAimingEnabled(set: true);
+	}
+
+	public void AddAgentAtSlotIndex(Agent agent, int slotIndex = -1)
+	{
+		AddAgent(agent, slotIndex);
+		agent.Formation?.DetachUnit(agent, isLoose: true);
+		agent.Detachment = this;
+		agent.SetDetachmentWeight(1f);
+	}
+
+	void IDetachment.FormationStartUsing(Formation formation)
+	{
+		_userFormations.Add(formation);
+	}
+
+	void IDetachment.FormationStopUsing(Formation formation)
+	{
+		_userFormations.Remove(formation);
+	}
+
+	public bool IsUsedByFormation(Formation formation)
+	{
+		return _userFormations.Contains(formation);
+	}
+
+	Agent IDetachment.GetMovingAgentAtSlotIndex(int slotIndex)
+	{
+		return null;
+	}
+
+	void IDetachment.GetSlotIndexWeightTuples(List<(int, float)> slotIndexWeightTuples)
+	{
+		for (int i = _agents.Count; i < _capacity; i++)
+		{
+			slotIndexWeightTuples.Add((i, CalculateWeight(_capacity, i)));
+		}
+	}
+
+	bool IDetachment.IsSlotAtIndexAvailableForAgent(int slotIndex, Agent agent)
+	{
+		if (agent.CanBeAssignedForScriptedMovement() && slotIndex < _capacity && slotIndex >= _agents.Count && IsAgentEligible(agent))
+		{
+			return !IsAgentOnInconvenientNavmesh(agent);
+		}
+		return false;
+	}
+
+	private bool IsAgentOnInconvenientNavmesh(Agent agent)
+	{
+		if (Mission.Current.MissionTeamAIType != Mission.MissionTeamAITypeEnum.Siege)
+		{
+			return false;
+		}
+		int currentNavigationFaceId = agent.GetCurrentNavigationFaceId();
+		if (agent.Team.TeamAI is TeamAISiegeComponent teamAISiegeComponent)
+		{
+			if (teamAISiegeComponent is TeamAISiegeAttacker && currentNavigationFaceId % 10 == 1)
+			{
+				return true;
+			}
+			if (teamAISiegeComponent is TeamAISiegeDefender && currentNavigationFaceId % 10 != 1)
+			{
+				return true;
+			}
+			foreach (int difficultNavmeshID in teamAISiegeComponent.DifficultNavmeshIDs)
+			{
+				if (currentNavigationFaceId == difficultNavmeshID)
+				{
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	public bool IsAgentEligible(Agent agent)
+	{
+		return agent.IsRangedCached;
+	}
+
+	void IDetachment.UnmarkDetachment()
+	{
+	}
+
+	bool IDetachment.IsDetachmentRecentlyEvaluated()
+	{
+		return false;
+	}
+
+	void IDetachment.MarkSlotAtIndex(int slotIndex)
+	{
+		Debug.FailedAssert("This should never have been called because this detachment does not seek to replace moving agents.", "C:\\BuildAgent\\work\\mb3\\Source\\Bannerlord\\TaleWorlds.MountAndBlade\\AI\\StrategicArea.cs", "MarkSlotAtIndex", 330);
+	}
+
+	bool IDetachment.IsAgentUsingOrInterested(Agent agent)
+	{
+		return _agents.Contains(agent);
+	}
+
+	void IDetachment.OnFormationLeave(Formation formation)
+	{
+		for (int num = _agents.Count - 1; num >= 0; num--)
+		{
+			Agent agent = _agents[num];
+			if (agent.Formation == formation && !agent.IsPlayerControlled)
+			{
+				((IDetachment)this).RemoveAgent(agent);
+				formation.AttachUnit(agent);
+			}
+		}
+	}
+
+	public bool IsStandingPointAvailableForAgent(Agent agent)
+	{
+		return _agents.Count < _capacity;
+	}
+
+	private void CacheGlobalWorldFrame()
+	{
+		WeakGameEntity gameEntity = base.GameEntity;
+		MatrixFrame globalFrame = gameEntity.GetGlobalFrame();
+		if (!globalFrame.rotation.NearlyEquals(in _cachedGlobalScaledRotation) || !globalFrame.origin.AsVec2.NearlyEquals(_cachedGlobalWorldFrame.Origin.AsVec2))
+		{
+			_cachedGlobalScaledRotation = globalFrame.rotation;
+			_cachedGlobalWorldFrame = new WorldFrame(globalFrame.rotation, new WorldPosition(gameEntity.Scene, globalFrame.origin));
+			_cachedGlobalWorldFrame.Rotation.OrthonormalizeAccordingToForwardAndKeepUpAsZAxis();
+		}
+	}
+
+	private WorldFrame GetShimmiedGlobalWorldFrameMT()
+	{
+		CacheGlobalWorldFrame();
+		if (_shimmyLocalPosition.IsNonZero)
+		{
+			WorldPosition origin = _cachedGlobalWorldFrame.Origin;
+			origin.SetVec2(_cachedGlobalWorldFrame.ToGroundMatrixFrameMT().TransformToParent(in _shimmyLocalPosition).AsVec2);
+			return new WorldFrame(_cachedGlobalWorldFrame.Rotation, origin);
+		}
+		return _cachedGlobalWorldFrame;
+	}
+
+	public List<float> GetTemplateCostsOfAgent(Agent candidate, List<float> oldValue)
+	{
+		WorldPosition worldPosition = candidate.GetWorldPosition();
+		CacheGlobalWorldFrame();
+		float num = (candidate.Mission.Scene.DoesPathExistBetweenPositions(worldPosition, _cachedGlobalWorldFrame.Origin) ? worldPosition.GetNavMeshVec3().DistanceSquared(_cachedGlobalWorldFrame.Origin.GetNavMeshVec3()) : float.MaxValue);
+		num *= MissionGameModels.Current.AgentStatCalculateModel.GetDetachmentCostMultiplierOfAgent(candidate, this);
+		List<float> list = oldValue ?? new List<float>(_capacity);
+		list.Clear();
+		for (int i = 0; i < _capacity; i++)
+		{
+			list.Add(num);
+		}
+		return list;
+	}
+
+	float IDetachment.GetExactCostOfAgentAtSlot(Agent candidate, int slotIndex)
+	{
+		Debug.FailedAssert("This should never have been called because this detachment does not seek to replace moving agents.", "C:\\BuildAgent\\work\\mb3\\Source\\Bannerlord\\TaleWorlds.MountAndBlade\\AI\\StrategicArea.cs", "GetExactCostOfAgentAtSlot", 408);
+		return 0f;
+	}
+
+	public float GetTemplateWeightOfAgent(Agent candidate)
+	{
+		WorldPosition worldPosition = candidate.GetWorldPosition();
+		CacheGlobalWorldFrame();
+		WorldPosition origin = _cachedGlobalWorldFrame.Origin;
+		if (!candidate.Mission.Scene.DoesPathExistBetweenPositions(worldPosition, origin))
+		{
+			return float.MaxValue;
+		}
+		return worldPosition.GetNavMeshVec3().DistanceSquared(origin.GetNavMeshVec3());
+	}
+
+	public float? GetWeightOfAgentAtNextSlot(List<Agent> newAgents, out Agent match)
+	{
+		float? weightOfNextSlot = GetWeightOfNextSlot(newAgents[0].Team.Side);
+		if (_agents.Count < _capacity)
+		{
+			Vec3 position = base.GameEntity.GlobalPosition;
+			match = TaleWorlds.Core.Extensions.MinBy(newAgents, (Agent a) => a.Position.DistanceSquared(position));
+			return weightOfNextSlot;
+		}
+		match = null;
+		return null;
+	}
+
+	public float? GetWeightOfAgentAtNextSlot(List<(Agent, float)> agentTemplateScores, out Agent match)
+	{
+		float? weight = GetWeightOfNextSlot(agentTemplateScores[0].Item1.Team.Side);
+		if (_agents.Count < _capacity)
+		{
+			IEnumerable<(Agent, float)> source = agentTemplateScores.Where(delegate((Agent, float) a)
+			{
+				var (agent, _) = a;
+				return !agent.IsDetachedFromFormation || agent.DetachmentWeight < weight * 0.4f;
+			});
+			if (source.Any())
+			{
+				match = TaleWorlds.Core.Extensions.MinBy(source, ((Agent, float) a) => a.Item2).Item1;
+				return weight;
+			}
+		}
+		match = null;
+		return null;
+	}
+
+	public float? GetWeightOfAgentAtOccupiedSlot(Agent detachedAgent, List<Agent> newAgents, out Agent match)
+	{
+		float weightOfOccupiedSlot = GetWeightOfOccupiedSlot(detachedAgent);
+		Vec3 position = base.GameEntity.GlobalPosition;
+		match = TaleWorlds.Core.Extensions.MinBy(newAgents, (Agent a) => a.Position.DistanceSquared(position));
+		return weightOfOccupiedSlot * 0.5f;
+	}
+
+	public void RemoveAgent(Agent agent)
+	{
+		_agents.Remove(agent);
+		agent.SetPreciseRangedAimingEnabled(set: false);
+	}
+
+	public int GetNumberOfUsableSlots()
+	{
+		return _capacity;
+	}
+
+	private Formation GetSimulationFormation(Formation formation)
+	{
+		if (!_simulationFormations.ContainsKey(formation))
+		{
+			_simulationFormations[formation] = new Formation(null, -1);
+		}
+		return _simulationFormations[formation];
+	}
+
+	protected internal override bool OnCheckForProblems()
+	{
+		bool result = base.OnCheckForProblems();
+		if (base.GameEntity.IsVisibleIncludeParents() && CalculateCapacity() == 1)
+		{
+			MatrixFrame globalFrame = base.GameEntity.GetGlobalFrame();
+			if (new WorldFrame(globalFrame.rotation, new WorldPosition(base.Scene, globalFrame.origin)).Origin.GetNavMesh() == UIntPtr.Zero)
+			{
+				uint upgradeLevelMaskCumulative = (uint)base.GameEntity.GetUpgradeLevelMaskCumulative();
+				int upgradeLevelCount = base.Scene.GetUpgradeLevelCount();
+				string text = "";
+				for (int i = 0; i < upgradeLevelCount; i++)
+				{
+					if ((upgradeLevelMaskCumulative & (1 << i)) != 0L)
+					{
+						text = text + base.Scene.GetUpgradeLevelNameOfIndex(i) + ",";
+					}
+				}
+				MBEditor.AddEntityWarning(base.GameEntity, "Strategic archer position at position at X=" + globalFrame.origin.X + " Y=" + globalFrame.origin.Y + " Z=" + globalFrame.origin.Z + "doesn't yield a viable frame. It may be in the air, underground or off the navmesh, please check. Scene: " + base.Scene.GetName() + "Upgrade Mask: " + upgradeLevelMaskCumulative + ", Upgrade Level Names: " + text);
+				result = true;
+			}
+		}
+		return result;
+	}
+
+	public WorldFrame? GetAgentFrame(Agent agent)
+	{
+		if (_capacity > 1)
+		{
+			int unitIndex = _agents.IndexOf(agent);
+			Formation formation = agent.Formation;
+			Formation simulationFormation = GetSimulationFormation(formation);
+			CacheGlobalWorldFrame();
+			formation.GetUnitPositionWithIndexAccordingToNewOrder(simulationFormation, unitIndex, in _cachedGlobalWorldFrame.Origin, _cachedGlobalWorldFrame.Rotation.f.AsVec2.Normalized(), _width, _unitSpacing, _agents.Count, out var unitPosition, out var _);
+			if (unitPosition.HasValue)
+			{
+				return new WorldFrame(_cachedGlobalWorldFrame.Rotation, unitPosition.Value);
+			}
+			return agent.GetWorldFrame();
+		}
+		float totalMissionTime = MBCommon.GetTotalMissionTime();
+		ShimmyDirection shimmyDirection = _shimmyDirection;
+		int num = 0;
+		StrategicAreaMutableTuple[] strategicAreaSidesScoreTally = _strategicAreaSidesScoreTally;
+		for (int i = 0; i < strategicAreaSidesScoreTally.Length; i++)
+		{
+			if (strategicAreaSidesScoreTally[i] != null)
+			{
+				num++;
+			}
+		}
+		bool num2 = num > 1;
+		if (num2 && _lastShootTime < agent.LastRangedAttackTime)
+		{
+			_lastShootTime = agent.LastRangedAttackTime;
+			StrategicAreaMutableTuple strategicAreaMutableTuple = _strategicAreaSidesScoreTally[(int)_shimmyDirection];
+			if (strategicAreaMutableTuple != null)
+			{
+				strategicAreaMutableTuple.RangedHitScoredCount++;
+			}
+			else
+			{
+				_strategicAreaSidesScoreTally[(int)_shimmyDirection] = new StrategicAreaMutableTuple(0, 1);
+			}
+		}
+		bool flag = false;
+		if (num2 && _lastShimmyTime < agent.LastRangedHitTime)
+		{
+			StrategicAreaMutableTuple strategicAreaMutableTuple2 = _strategicAreaSidesScoreTally[(int)_shimmyDirection];
+			if (strategicAreaMutableTuple2 != null)
+			{
+				strategicAreaMutableTuple2.RangedHitReceivedCount++;
+			}
+			else
+			{
+				_strategicAreaSidesScoreTally[(int)_shimmyDirection] = new StrategicAreaMutableTuple(1, 0);
+			}
+			flag = true;
+		}
+		bool flag2 = false;
+		if (num2 && !flag && totalMissionTime - TaleWorlds.Library.MathF.Max(agent.LastRangedAttackTime, _lastShimmyTime) > 8f)
+		{
+			StrategicAreaMutableTuple strategicAreaMutableTuple3 = _strategicAreaSidesScoreTally[(int)_shimmyDirection];
+			if (strategicAreaMutableTuple3 != null)
+			{
+				strategicAreaMutableTuple3.RangedHitScoredCount--;
+			}
+			else
+			{
+				_strategicAreaSidesScoreTally[(int)_shimmyDirection] = new StrategicAreaMutableTuple(0, -1);
+			}
+			flag2 = true;
+		}
+		if (flag || flag2)
+		{
+			int num3 = int.MinValue;
+			int num4 = 0;
+			for (int j = 0; j < 5; j++)
+			{
+				if (j != (int)_shimmyDirection && _strategicAreaSidesScoreTally[j] != null)
+				{
+					int num5 = _strategicAreaSidesScoreTally[j].RangedHitScoredCount - _strategicAreaSidesScoreTally[j].RangedHitReceivedCount;
+					if (num5 > num3)
+					{
+						num3 = num5;
+						num4 = 1;
+					}
+					else if (num5 == num3)
+					{
+						num4++;
+					}
+				}
+			}
+			int num6 = MBRandom.RandomInt(num4 - 1);
+			for (int k = 0; k < 5; k++)
+			{
+				if (k != (int)_shimmyDirection && _strategicAreaSidesScoreTally[k] != null && _strategicAreaSidesScoreTally[k].RangedHitScoredCount - _strategicAreaSidesScoreTally[k].RangedHitReceivedCount == num3 && --num6 < 0)
+				{
+					shimmyDirection = (ShimmyDirection)k;
+				}
+			}
+			_doesFrameNeedUpdate = true;
+		}
+		if (!_disableShimmy && _doesFrameNeedUpdate)
+		{
+			CacheGlobalWorldFrame();
+			Vec2 vec = _cachedGlobalWorldFrame.Rotation.f.AsVec2.Normalized();
+			Vec2 vec2 = shimmyDirection switch
+			{
+				ShimmyDirection.Center => Vec2.Zero, 
+				ShimmyDirection.Left => vec.RightVec(), 
+				ShimmyDirection.Forward => vec, 
+				ShimmyDirection.Right => vec.LeftVec(), 
+				ShimmyDirection.Back => -vec, 
+				_ => Vec2.Zero, 
+			};
+			int num7 = 8;
+			bool flag3 = false;
+			_cachedGlobalWorldFrame.Origin.GetGroundZMT();
+			WorldPosition origin = _cachedGlobalWorldFrame.Origin;
+			while (num7-- > 0)
+			{
+				origin.SetVec2(origin.AsVec2 + (0.6f + 0.05f * (float)num7) * vec2);
+				if (origin.GetNavMeshMT() != UIntPtr.Zero && TaleWorlds.Library.MathF.Abs(_cachedGlobalWorldFrame.Origin.GetGroundZMT() - origin.GetGroundZMT()) <= agent.Monster.BodyCapsuleRadius * 1.2f && !Mission.Current.IsPositionOnAnyBlockerNavMeshFace(origin.GetGroundVec3MT()))
+				{
+					flag3 = true;
+					break;
+				}
+				origin = _cachedGlobalWorldFrame.Origin;
+			}
+			_doesFrameNeedUpdate = false;
+			if (!flag3)
+			{
+				_strategicAreaSidesScoreTally[(int)shimmyDirection] = null;
+			}
+			else
+			{
+				_shimmyDirection = shimmyDirection;
+				_lastShimmyTime = totalMissionTime;
+				_shimmyLocalPosition = _cachedGlobalWorldFrame.ToGroundMatrixFrameMT().TransformToLocal(origin.GetGroundVec3MT());
+			}
+		}
+		return GetShimmiedGlobalWorldFrameMT();
+	}
+
+	private static float CalculateWeight(int capacity, int index)
+	{
+		return (float)(capacity - index) * 1f / (float)capacity * 0.5f;
+	}
+
+	public float? GetWeightOfNextSlot(BattleSideEnum side)
+	{
+		if (_agents.Count < _capacity)
+		{
+			return CalculateWeight(_capacity, _agents.Count);
+		}
+		return null;
+	}
+
+	public float GetWeightOfOccupiedSlot(Agent agent)
+	{
+		return CalculateWeight(_capacity, _agents.IndexOf(agent));
+	}
+
+	public bool IsUsableBy(BattleSideEnum side)
+	{
+		if (_side == side)
+		{
+			return true;
+		}
+		if (_side == BattleSideEnum.None)
+		{
+			return true;
+		}
+		return false;
+	}
+
+	float IDetachment.GetDetachmentWeight(BattleSideEnum side)
+	{
+		if (_agents.Count < _capacity)
+		{
+			return (float)(_capacity - _agents.Count) * 1f / (float)_capacity;
+		}
+		return float.MinValue;
+	}
+
+	void IDetachment.ResetEvaluation()
+	{
+		_isEvaluated = false;
+	}
+
+	bool IDetachment.IsEvaluated()
+	{
+		return _isEvaluated;
+	}
+
+	void IDetachment.SetAsEvaluated()
+	{
+		_isEvaluated = true;
+	}
+
+	float IDetachment.GetDetachmentWeightFromCache()
+	{
+		return _cachedDetachmentWeight;
+	}
+
+	float IDetachment.ComputeAndCacheDetachmentWeight(BattleSideEnum side)
+	{
+		_cachedDetachmentWeight = ((IDetachment)this).GetDetachmentWeight(side);
+		return _cachedDetachmentWeight;
+	}
+}

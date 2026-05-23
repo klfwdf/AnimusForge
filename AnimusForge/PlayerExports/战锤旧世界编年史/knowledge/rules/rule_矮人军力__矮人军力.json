@@ -1,0 +1,215 @@
+{
+  "Id": "rule_矮人军力__矮人军力",
+  "Keywords": [
+    "矮人军力",
+    "矮人军力铁锤勇士",
+    "碎铁者",
+    "矮人军力风琴炮",
+    "矮人军力雷霆空艇",
+    "矮人军力符文",
+    "矮人军队",
+    "矮人战争机器",
+    "矮人军力工程师公会",
+    "符文武器",
+    "长须战士",
+    "屠夫",
+    "矮人炮兵",
+    "矮人步兵"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "矮人军队是旧世界最坚韧、技术最先进、也最昂贵的武装力量。他们的核心是铁锤勇士——身披精钢板甲、手持战锤或斧头的重步兵，能够在战场上形成一堵不可撼动的铁墙。在技术装备方面，矮人拥有风琴炮、火焰炮和连发弩等令任何敌人胆寒的战争机器，雷霆空艇更是独一无二的空中武器平台。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "听听风琴炮的轰鸣——那是工程师公会数千年智慧的怒吼！人类的火药武器跟我们的比不过是玩具，精灵的弓箭在我们眼中只是优雅而无用的装饰。铁锤勇士组成的盾墙，一千年以来没有任何敌人能够从正面突破它——绿皮不能，鼠人不能，混沌的恶魔也不能。碎铁者是最令人敬畏的战士——他们已将姓名从氏族谱系中抹去，唯一的出路就是在战斗中与一百个敌人同归于尽。我们的雷霆空艇更让矮人拥有了天空。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "矮人军队的核心战术逻辑是静态防御加超距火力。在防守隘口或城塞时，矮人几乎是不可战胜的——他们的重步兵可以在狭窄空间内形成无敌的盾墙，身后的风琴炮和弩手则用密集火力收割进攻者。但矮人军队的弱点同样明显：他们移动缓慢，难以执行复杂的战场机动，且极其依赖补给线——矮人的战争机器和精锐步兵都需要后方锻造工场的持续支持。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "矮人军事体系建立在三个完全独立的军事传统上：氏族战士、工程师公会武器和符文加持。氏族战士是矮人军队的基础——铁锤勇士是至高王或卡拉克王的私人卫队；长须战士是经验最丰富的老兵，他们的存在本身就能稳定年轻战士的阵线；矿工配备炸药和镐，可从地下出其不意地发起攻击。碎铁者是独特的军事阶层——他们因某种不可弥补的耻辱而选择成为屠夫，不穿盔甲、手持双斧、以最壮烈的方式寻死。工程师公会武器包括：风琴炮（四管旋转炮）、火焰炮（喷射灼热金属蒸汽）、炸药投掷器（精确的攻城投石机）和陀螺直升机与雷霆空艇（蒸汽驱动的飞行器）。符文武器是矮人独有技术——符文铁匠将远古符文捶打进武器和盔甲中，赋予它们超自然属性——一把符文战斧可能携带燃烧、破甲和永不磨损三个符文，价值超过一个人类男爵领。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "矮人军队中几乎没有女性身影——这并非因为矮人妇女软弱，恰恰相反，氏族中的女性掌握着比任何战场都更沉重的责任。每一位被派往前线的铁锤勇士背后都有一位在锻炉旁等待的妻子或母亲。当氏族议会决定出兵时，矮人妇女负责清点阵亡名单、管理中心阵亡抚恤金、以及在长老会议上质疑过度消耗氏族人力——她们的声音往往比战斧更有效。生育是矮人种族延续的最后希望，而我族的生育周期以世纪为单位：将一半适龄男性投入一场可能无人生还的远征，对于家族的存续意味着永远不可挽回的损失。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "作为氏族之长，调用矮人军队是一个我必须反复权衡的决定。至高王的征召令不是请求而是命令——但我送去远征的每一位战士都是我的血亲。每次签署出兵花名册时，我面前的羽管笔重如陨铁。如果我的氏族为远征提供了最大份额的兵力而胜利后被排除在战利品分配的最末位——那将是新的仇恨条目，而且会直接指向其他矮人家族而非外敌。矮人内部的家族政治从来不是附属品——它是决定每场战争出兵规模的最核心变量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "与一支矮人远征军同行的经历会让你重新理解纪律这个词。他们每天的行军距离精确到步数——在中午之前必须抵达预定的水源——营地在日落前必须用石头和木桩完成加固。如果你胆敢在他们检查你的武器时把一支未擦干净的火枪递过去，那沉默中的轻蔑比任何人类的咒骂都更难以招架。但他们也是旧世界最安全的旅伴——一支矮人军队控制的十英里半径内不会有任何绿皮部落敢于靠近。代价是你必须接受他们的时间观念。矮人的快速意味着三个月，矮人的稍等意味着吃完这顿饭——他们的一顿饭可能持续到午夜。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "矮人军备采购合同是我商会最重要的订单——也是最让我失眠的。他们不签书面合同。一次口头承诺，一块刻在石板上的符文印记——你必须按时交付一千套精钢板甲襟片，每一片都必须能抵挡标准兽人砍刀的三次全力挥砍测试。逾期未交意味着你的名字进入仇恨之书——而一旦进入那本书，你就再也别想从任何一个矮人城塞获得订单。但如果你按时按质完成——下次绿潮来临时，矮人会在你的商队途经隘口时免费派一个分队的碎铁者护送。这就是他们的生意之道：不是买卖，是荣誉。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "铁锤勇士——至高王或卡拉克王的私人卫队，手持双手符文战锤",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "矮人军队是旧世界最坚韧、技术最先进、也最昂贵的武装力量"
+  ]
+}

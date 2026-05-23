@@ -691,6 +691,34 @@ public static class MilitaryExercisePlayerEncounterEndCleanupPatch
 [HarmonyPatch(typeof(PlayerEncounter), "GetBattleRewards")]
 public static class MilitaryExerciseBattleRewardsZeroPatch
 {
+#if BANNERLORD_1_4_OR_GREATER
+	public static bool Prefix(
+		out ExplainedNumber renownChange,
+		out ExplainedNumber influenceChange,
+		out ExplainedNumber moraleChange,
+		out float playerEarnedLootRate,
+		out Figurehead playerEarnedFigurehead)
+	{
+		renownChange = default;
+		influenceChange = default;
+		moraleChange = default;
+		playerEarnedLootRate = 0f;
+		playerEarnedFigurehead = null;
+		try
+		{
+			if (!MilitaryExerciseBehavior.ShouldZeroBattleRewardsForExercise("PlayerEncounter.GetBattleRewards"))
+			{
+				return true;
+			}
+			return false;
+		}
+		catch (Exception ex)
+		{
+			MilitaryExerciseBehavior.LogPatchException("battle_rewards_zero_prefix", ex);
+			return true;
+		}
+	}
+#else
 	public static bool Prefix(
 		out float renownChange,
 		out float influenceChange,
@@ -725,6 +753,7 @@ public static class MilitaryExerciseBattleRewardsZeroPatch
 			return true;
 		}
 	}
+#endif
 }
 
 [HarmonyPatch(typeof(MapEvent), "ApplyRenownAndInfluenceChanges")]
@@ -1233,7 +1262,11 @@ public static class MilitaryExerciseBehavior
 			PatchHarmonyClass(harmony, typeof(MilitaryExercisePlayerEncounterDefeatCleanupPatch));
 			PatchHarmonyClass(harmony, typeof(MilitaryExercisePlayerEncounterEndCleanupPatch));
 			PatchHarmonyClass(harmony, typeof(MilitaryExerciseBattleRewardsZeroPatch));
+#if !BANNERLORD_1_4_OR_GREATER
 			PatchHarmonyClass(harmony, typeof(MilitaryExerciseRenownInfluenceSkipPatch));
+#else
+			Log("harmony_patch_skipped type=MilitaryExerciseRenownInfluenceSkipPatch reason=MapEvent.ApplyRenownAndInfluenceChanges missing on Bannerlord 1.4");
+#endif
 			_harmonyPatched = true;
 		}
 		catch (Exception ex)
@@ -1256,7 +1289,6 @@ public static class MilitaryExerciseBehavior
 		catch (Exception ex)
 		{
 			Log("harmony_patch_class_failed type=" + patchType?.Name + " " + ex.GetType().Name + ": " + ex.Message);
-			throw;
 		}
 	}
 
@@ -1643,6 +1675,7 @@ public static class MilitaryExerciseBehavior
 		MoveRosterFromMainParty(runtime.HoldingRoster, runtime.HoldingDummyParty, "holding");
 		AssignExercisePartyLeader(runtime.OpponentDummyParty, "opponent", runtime);
 		AssignExercisePartyLeader(runtime.HoldingDummyParty, "holding", runtime);
+		RepairHeroDuplicatesAfterSplit(runtime);
 		ValidateSplit(runtime, beforeTotals, beforeMainMen);
 		runtime.FirstTeamSummary = RosterSummary(mainParty.MemberRoster);
 		runtime.OpponentSummary = RosterSummary(runtime.OpponentDummyParty?.MemberRoster);
@@ -1870,8 +1903,190 @@ public static class MilitaryExerciseBehavior
 		{
 			return;
 		}
+		MobileParty sourceParty = MobileParty.MainParty;
+		CharacterObject character = hero.CharacterObject;
+		int sourceBefore = GetRosterCount(sourceParty?.MemberRoster, character);
+		int targetBefore = GetRosterCount(targetParty.MemberRoster, character);
 		AddHeroToPartyAction.Apply(hero, targetParty, showNotification: false);
+		RepairSourceHeroRosterAfterMove(sourceParty, targetParty, character, sourceBefore, targetBefore, label);
 		result.Heroes++;
+	}
+
+	private static void MoveHeroBetweenParties(Hero hero, MobileParty sourceParty, MobileParty targetParty, string label, MoveRosterResult result)
+	{
+		if (hero == null || sourceParty == null || targetParty == null || hero.IsHumanPlayerCharacter)
+		{
+			return;
+		}
+		CharacterObject character = hero.CharacterObject;
+		int sourceBefore = GetRosterCount(sourceParty.MemberRoster, character);
+		int targetBefore = GetRosterCount(targetParty.MemberRoster, character);
+		if (ReferenceEquals(targetParty, MobileParty.MainParty) && targetBefore > 0)
+		{
+			if (sourceBefore > 0)
+			{
+				RemoveOneHeroFromRoster(sourceParty.MemberRoster, character, label + "_target_already_has_hero");
+			}
+			Log($"hero_move_dedup label={label} hero={SafeCharacterId(character)} sourceBefore={sourceBefore} targetBefore={targetBefore}");
+			result.Heroes++;
+			return;
+		}
+		AddHeroToPartyAction.Apply(hero, targetParty, showNotification: false);
+		RepairSourceHeroRosterAfterMove(sourceParty, targetParty, character, sourceBefore, targetBefore, label);
+		result.Heroes++;
+	}
+
+	private static void RepairSourceHeroRosterAfterMove(MobileParty sourceParty, MobileParty targetParty, CharacterObject character, int sourceBefore, int targetBefore, string label)
+	{
+		if (character == null || sourceParty?.MemberRoster == null || targetParty?.MemberRoster == null || sourceBefore <= 0)
+		{
+			return;
+		}
+		int sourceAfter = GetRosterCount(sourceParty.MemberRoster, character);
+		int targetAfter = GetRosterCount(targetParty.MemberRoster, character);
+		if (targetAfter <= targetBefore)
+		{
+			throw new InvalidOperationException($"Hero move did not add target roster entry: {SafeCharacterId(character)} label={label} targetBefore={targetBefore} targetAfter={targetAfter}");
+		}
+		if (sourceAfter >= sourceBefore)
+		{
+			RemoveOneHeroFromRoster(sourceParty.MemberRoster, character, label);
+			Log($"hero_move_source_repaired label={label} hero={SafeCharacterId(character)} sourceBefore={sourceBefore} sourceAfter={sourceAfter} targetBefore={targetBefore} targetAfter={targetAfter}");
+		}
+	}
+
+	private static int GetRosterCount(TroopRoster roster, CharacterObject character)
+	{
+		if (roster == null || character == null)
+		{
+			return 0;
+		}
+		int index = roster.FindIndexOfTroop(character);
+		if (index < 0)
+		{
+			return 0;
+		}
+		return Math.Max(0, roster.GetElementCopyAtIndex(index).Number);
+	}
+
+	private static void RemoveOneHeroFromRoster(TroopRoster roster, CharacterObject character, string label)
+	{
+		if (roster == null || character == null)
+		{
+			return;
+		}
+		int index = roster.FindIndexOfTroop(character);
+		if (index < 0)
+		{
+			return;
+		}
+		TroopRosterElement element = roster.GetElementCopyAtIndex(index);
+		if (element.Number <= 0)
+		{
+			return;
+		}
+		int woundedToRemove = element.WoundedNumber > 0 ? -1 : 0;
+		roster.AddToCounts(character, -1, insertAtFront: false, woundedCount: woundedToRemove, xpChange: 0, removeDepleted: true, index: -1);
+		Log($"hero_roster_remove_one label={label} hero={SafeCharacterId(character)} woundedDelta={woundedToRemove}");
+	}
+
+	private static void RepairHeroDuplicatesAfterSplit(MilitaryExerciseRuntime runtime)
+	{
+		MobileParty mainParty = MobileParty.MainParty;
+		if (runtime == null || mainParty?.MemberRoster == null)
+		{
+			return;
+		}
+		RepairHeroDuplicatesAcrossRosters(
+			"military_exercise_split",
+			mainParty.MemberRoster,
+			runtime.OpponentDummyParty?.MemberRoster,
+			runtime.HoldingDummyParty?.MemberRoster,
+			CharacterObject.PlayerCharacter ?? Hero.MainHero?.CharacterObject,
+			delegate(CharacterObject character)
+			{
+				if (RosterContains(runtime.OpponentRoster, character))
+				{
+					return runtime.OpponentDummyParty?.MemberRoster;
+				}
+				if (RosterContains(runtime.HoldingRoster, character))
+				{
+					return runtime.HoldingDummyParty?.MemberRoster;
+				}
+				return mainParty.MemberRoster;
+			});
+	}
+
+	private static void RepairHeroDuplicatesAcrossRosters(string label, TroopRoster mainRoster, TroopRoster opponentRoster, TroopRoster holdingRoster, CharacterObject playerCharacter, Func<CharacterObject, TroopRoster> chooseKeepRoster)
+	{
+		HashSet<CharacterObject> heroes = CollectHeroCharacters(mainRoster, opponentRoster, holdingRoster);
+		foreach (CharacterObject heroCharacter in heroes)
+		{
+			if (heroCharacter == null || heroCharacter == playerCharacter)
+			{
+				continue;
+			}
+			int total = GetRosterCount(mainRoster, heroCharacter) + GetRosterCount(opponentRoster, heroCharacter) + GetRosterCount(holdingRoster, heroCharacter);
+			if (total <= 1)
+			{
+				continue;
+			}
+			TroopRoster keepRoster = chooseKeepRoster?.Invoke(heroCharacter) ?? mainRoster;
+			if (keepRoster == null)
+			{
+				keepRoster = mainRoster;
+			}
+			RemoveHeroDuplicatesFromRoster(mainRoster, keepRoster, heroCharacter, label + "_main");
+			RemoveHeroDuplicatesFromRoster(opponentRoster, keepRoster, heroCharacter, label + "_opponent");
+			RemoveHeroDuplicatesFromRoster(holdingRoster, keepRoster, heroCharacter, label + "_holding");
+			while (GetRosterCount(keepRoster, heroCharacter) > 1)
+			{
+				RemoveOneHeroFromRoster(keepRoster, heroCharacter, label + "_keep_extra");
+			}
+			Log($"hero_duplicate_repaired label={label} hero={SafeCharacterId(heroCharacter)} beforeTotal={total} keep={(ReferenceEquals(keepRoster, mainRoster) ? "main" : ReferenceEquals(keepRoster, opponentRoster) ? "opponent" : "holding")}");
+		}
+	}
+
+	private static void RemoveHeroDuplicatesFromRoster(TroopRoster roster, TroopRoster keepRoster, CharacterObject heroCharacter, string label)
+	{
+		if (roster == null || ReferenceEquals(roster, keepRoster))
+		{
+			return;
+		}
+		while (GetRosterCount(roster, heroCharacter) > 0)
+		{
+			RemoveOneHeroFromRoster(roster, heroCharacter, label);
+		}
+	}
+
+	private static HashSet<CharacterObject> CollectHeroCharacters(params TroopRoster[] rosters)
+	{
+		HashSet<CharacterObject> result = new HashSet<CharacterObject>();
+		if (rosters == null)
+		{
+			return result;
+		}
+		foreach (TroopRoster roster in rosters)
+		{
+			if (roster == null)
+			{
+				continue;
+			}
+			foreach (TroopRosterElement item in SnapshotRoster(roster))
+			{
+				CharacterObject character = item.Character;
+				if (character != null && character.IsHero && item.Number > 0)
+				{
+					result.Add(character);
+				}
+			}
+		}
+		return result;
+	}
+
+	private static bool RosterContains(TroopRoster roster, CharacterObject character)
+	{
+		return GetRosterCount(roster, character) > 0;
 	}
 
 	private static void MoveRegularTroopToParty(TroopRosterElement item, MobileParty targetParty, string label, MoveRosterResult result)
@@ -2394,8 +2609,7 @@ public static class MilitaryExerciseBehavior
 					}
 					else if (!character.IsPlayerCharacter)
 					{
-						AddHeroToPartyAction.Apply(character.HeroObject, mainParty, showNotification: false);
-						result.Heroes++;
+						MoveHeroBetweenParties(character.HeroObject, sourceParty, mainParty, label, result);
 					}
 					continue;
 				}
@@ -2746,6 +2960,10 @@ public static class MilitaryExerciseBehavior
 				continue;
 			}
 			int healthyNumber = Math.Max(0, item.Number - item.WoundedNumber);
+			if (character.IsHero && healthyNumber > 1)
+			{
+				healthyNumber = 1;
+			}
 			if (healthyNumber <= 0)
 			{
 				continue;
@@ -2771,6 +2989,10 @@ public static class MilitaryExerciseBehavior
 				continue;
 			}
 			int healthyNumber = Math.Max(0, item.Number - item.WoundedNumber);
+			if (character.IsHero && healthyNumber > 1)
+			{
+				healthyNumber = 1;
+			}
 			if (healthyNumber <= 0)
 			{
 				continue;

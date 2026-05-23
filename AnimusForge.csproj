@@ -9,9 +9,16 @@
     <LangVersion>12.0</LangVersion>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <NoWarn>$(NoWarn);MSB3277</NoWarn>
+    <BannerlordApi Condition="'$(BannerlordApi)' == ''">1.4</BannerlordApi>
+    <AssemblySearchPaths>{HintPathFromItem};{CandidateAssemblyFiles};{TargetFrameworkDirectory};{RawFileName}</AssemblySearchPaths>
+  </PropertyGroup>
+  <PropertyGroup Condition="$([System.String]::Copy('$(BannerlordApi)').StartsWith('1.4'))">
+    <DefineConstants>$(DefineConstants);BANNERLORD_1_4_OR_GREATER</DefineConstants>
   </PropertyGroup>
   <PropertyGroup>
     <DepsDir Condition="'$(DepsDir)' == ''">..\_deps_261550_managed</DepsDir>
+    <VersionedDepsDir Condition="'$(VersionedDepsDir)' == '' and ! $([System.String]::Copy('$(BannerlordApi)').StartsWith('1.4')) and Exists('$(MSBuildProjectDirectory)\_deps_auto\TaleWorlds.CampaignSystem.dll')">$(MSBuildProjectDirectory)\_deps_auto</VersionedDepsDir>
+    <VersionedDepsDir Condition="'$(VersionedDepsDir)' == '' and ! $([System.String]::Copy('$(BannerlordApi)').StartsWith('1.4')) and Exists('$(DepsDir)\TaleWorlds.CampaignSystem.dll')">$(DepsDir)</VersionedDepsDir>
     <BannerlordRoot Condition="'$(BannerlordRoot)' == '' and '$(BANNERLORD_ROOT)' != ''">$(BANNERLORD_ROOT)</BannerlordRoot>
     <BannerlordRoot Condition="'$(BannerlordRoot)' == ''">F:\SteamLibrary\steamapps\common\Mount &amp; Blade II Bannerlord</BannerlordRoot>
     <AnimusForgeBinDir Condition="'$(AnimusForgeBinDir)' == ''">$(BannerlordRoot)\Modules\AnimusForge\bin\Win64_Shipping_Client</AnimusForgeBinDir>
@@ -20,38 +27,65 @@
     <SandBoxBinDir Condition="'$(SandBoxBinDir)' == ''">$(BannerlordRoot)\Modules\SandBox\bin\Win64_Shipping_Client</SandBoxBinDir>
     <WorkshopContentDir Condition="'$(WorkshopContentDir)' == '' and '$(WORKSHOP_CONTENT_DIR)' != ''">$(WORKSHOP_CONTENT_DIR)</WorkshopContentDir>
     <WorkshopContentDir Condition="'$(WorkshopContentDir)' == ''">F:\SteamLibrary\steamapps\workshop\content\261550</WorkshopContentDir>
-    <WorkshopHarmonyPath Condition="'$(WorkshopHarmonyPath)' == ''">$(WorkshopContentDir)\2859188632\bin\Win64_Shipping_Client\Bannerlord.Harmony.dll</WorkshopHarmonyPath>
-    <WorkshopMBOptionPath Condition="'$(WorkshopMBOptionPath)' == ''">$(WorkshopContentDir)\2859238197\bin\Win64_Shipping_Client\Bannerlord.MBOptionScreen.v1.3.6.dll</WorkshopMBOptionPath>
+    <HarmonyPath Condition="'$(HarmonyPath)' == '' and Exists('$(BannerlordRoot)\Modules\Bannerlord.Harmony\bin\Win64_Shipping_Client\Bannerlord.Harmony.dll')">$(BannerlordRoot)\Modules\Bannerlord.Harmony\bin\Win64_Shipping_Client\Bannerlord.Harmony.dll</HarmonyPath>
+    <HarmonyPath Condition="'$(HarmonyPath)' == '' and Exists('$(WorkshopContentDir)\2859188632\bin\Win64_Shipping_Client\Bannerlord.Harmony.dll')">$(WorkshopContentDir)\2859188632\bin\Win64_Shipping_Client\Bannerlord.Harmony.dll</HarmonyPath>
+    <HarmonyPath Condition="'$(HarmonyPath)' == ''">$(BannerlordRoot)\Modules\Bannerlord.Harmony\bin\Win64_Shipping_Client\Bannerlord.Harmony.dll</HarmonyPath>
+    <UIExtenderExPath Condition="'$(UIExtenderExPath)' == '' and Exists('$(BannerlordRoot)\Modules\Bannerlord.UIExtenderEx\bin\Win64_Shipping_Client\Bannerlord.UIExtenderEx.dll')">$(BannerlordRoot)\Modules\Bannerlord.UIExtenderEx\bin\Win64_Shipping_Client\Bannerlord.UIExtenderEx.dll</UIExtenderExPath>
+    <UIExtenderExPath Condition="'$(UIExtenderExPath)' == '' and Exists('$(WorkshopContentDir)\2859222409\bin\Win64_Shipping_Client\Bannerlord.UIExtenderEx.dll')">$(WorkshopContentDir)\2859222409\bin\Win64_Shipping_Client\Bannerlord.UIExtenderEx.dll</UIExtenderExPath>
+    <UIExtenderExPath Condition="'$(UIExtenderExPath)' == ''">$(BannerlordRoot)\Modules\Bannerlord.UIExtenderEx\bin\Win64_Shipping_Client\Bannerlord.UIExtenderEx.dll</UIExtenderExPath>
+    <MBOptionScreenPath Condition="'$(MBOptionScreenPath)' == '' and Exists('$(BannerlordRoot)\Modules\Bannerlord.MBOptionScreen\bin\Win64_Shipping_Client\Bannerlord.MBOptionScreen.v1.4.0.dll')">$(BannerlordRoot)\Modules\Bannerlord.MBOptionScreen\bin\Win64_Shipping_Client\Bannerlord.MBOptionScreen.v1.4.0.dll</MBOptionScreenPath>
+    <MBOptionScreenPath Condition="'$(MBOptionScreenPath)' == '' and Exists('$(WorkshopContentDir)\2859238197\bin\Win64_Shipping_Client\Bannerlord.MBOptionScreen.v1.4.1.dll')">$(WorkshopContentDir)\2859238197\bin\Win64_Shipping_Client\Bannerlord.MBOptionScreen.v1.4.1.dll</MBOptionScreenPath>
+    <MBOptionScreenPath Condition="'$(MBOptionScreenPath)' == '' and Exists('$(WorkshopContentDir)\2859238197\bin\Win64_Shipping_Client\Bannerlord.MBOptionScreen.v1.3.6.dll')">$(WorkshopContentDir)\2859238197\bin\Win64_Shipping_Client\Bannerlord.MBOptionScreen.v1.3.6.dll</MBOptionScreenPath>
+    <MBOptionScreenPath Condition="'$(MBOptionScreenPath)' == ''">$(BannerlordRoot)\Modules\Bannerlord.MBOptionScreen\bin\Win64_Shipping_Client\Bannerlord.MBOptionScreen.v1.4.0.dll</MBOptionScreenPath>
+    <Mcmv5Path Condition="'$(Mcmv5Path)' == '' and Exists('$(BannerlordRoot)\Modules\Bannerlord.MBOptionScreen\bin\Win64_Shipping_Client\MCMv5.dll')">$(BannerlordRoot)\Modules\Bannerlord.MBOptionScreen\bin\Win64_Shipping_Client\MCMv5.dll</Mcmv5Path>
     <Mcmv5Path Condition="'$(Mcmv5Path)' == '' and Exists('$(WorkshopContentDir)\2859238197\bin\Win64_Shipping_Client\MCMv5.dll')">$(WorkshopContentDir)\2859238197\bin\Win64_Shipping_Client\MCMv5.dll</Mcmv5Path>
     <Mcmv5Path Condition="'$(Mcmv5Path)' == '' and Exists('$(BannerlordRoot)\Modules\DistinguishedServiceRedux\bin\Win64_Shipping_Client\MCMv5.dll')">$(BannerlordRoot)\Modules\DistinguishedServiceRedux\bin\Win64_Shipping_Client\MCMv5.dll</Mcmv5Path>
     <Mcmv5Path Condition="'$(Mcmv5Path)' == ''">$(BannerlordRoot)\Modules\MCMv5\bin\Win64_Shipping_Client\MCMv5.dll</Mcmv5Path>
+    <TaleWorldsCampaignSystemPath Condition="'$(TaleWorldsCampaignSystemPath)' == '' and Exists('$(VersionedDepsDir)\TaleWorlds.CampaignSystem.dll')">$(VersionedDepsDir)\TaleWorlds.CampaignSystem.dll</TaleWorldsCampaignSystemPath>
+    <TaleWorldsCampaignSystemPath Condition="'$(TaleWorldsCampaignSystemPath)' == ''">$(BannerlordBinDir)\TaleWorlds.CampaignSystem.dll</TaleWorldsCampaignSystemPath>
+    <TaleWorldsMountAndBladePath Condition="'$(TaleWorldsMountAndBladePath)' == '' and Exists('$(VersionedDepsDir)\TaleWorlds.MountAndBlade.dll')">$(VersionedDepsDir)\TaleWorlds.MountAndBlade.dll</TaleWorldsMountAndBladePath>
+    <TaleWorldsMountAndBladePath Condition="'$(TaleWorldsMountAndBladePath)' == ''">$(BannerlordBinDir)\TaleWorlds.MountAndBlade.dll</TaleWorldsMountAndBladePath>
+    <TaleWorldsCorePath Condition="'$(TaleWorldsCorePath)' == '' and Exists('$(VersionedDepsDir)\TaleWorlds.Core.dll')">$(VersionedDepsDir)\TaleWorlds.Core.dll</TaleWorldsCorePath>
+    <TaleWorldsCorePath Condition="'$(TaleWorldsCorePath)' == ''">$(BannerlordBinDir)\TaleWorlds.Core.dll</TaleWorldsCorePath>
+    <TaleWorldsLibraryPath Condition="'$(TaleWorldsLibraryPath)' == '' and Exists('$(VersionedDepsDir)\TaleWorlds.Library.dll')">$(VersionedDepsDir)\TaleWorlds.Library.dll</TaleWorldsLibraryPath>
+    <TaleWorldsLibraryPath Condition="'$(TaleWorldsLibraryPath)' == ''">$(BannerlordBinDir)\TaleWorlds.Library.dll</TaleWorldsLibraryPath>
+    <TaleWorldsGauntletUiPath Condition="'$(TaleWorldsGauntletUiPath)' == '' and Exists('$(VersionedDepsDir)\TaleWorlds.GauntletUI.dll')">$(VersionedDepsDir)\TaleWorlds.GauntletUI.dll</TaleWorldsGauntletUiPath>
+    <TaleWorldsGauntletUiPath Condition="'$(TaleWorldsGauntletUiPath)' == ''">$(BannerlordBinDir)\TaleWorlds.GauntletUI.dll</TaleWorldsGauntletUiPath>
+    <TaleWorldsMountAndBladeViewPath Condition="'$(TaleWorldsMountAndBladeViewPath)' == '' and Exists('$(VersionedDepsDir)\TaleWorlds.MountAndBlade.View.dll')">$(VersionedDepsDir)\TaleWorlds.MountAndBlade.View.dll</TaleWorldsMountAndBladeViewPath>
+    <TaleWorldsMountAndBladeViewPath Condition="'$(TaleWorldsMountAndBladeViewPath)' == ''">$(NativeBinDir)\TaleWorlds.MountAndBlade.View.dll</TaleWorldsMountAndBladeViewPath>
   </PropertyGroup>
   <ItemGroup />
   <ItemGroup>
     <Compile Remove="原版游戏本体代码\**\*.cs" />
+    <Compile Remove="原版游戏本体代码*\**\*.cs" />
     <Compile Remove="阅兵\**\*.cs" />
+    <Compile Remove="111\**\*.cs" />
     <EmbeddedResource Remove="原版游戏本体代码\**\*" />
+    <EmbeddedResource Remove="原版游戏本体代码*\**\*" />
     <EmbeddedResource Remove="阅兵\**\*" />
+    <EmbeddedResource Remove="111\**\*" />
     <None Remove="原版游戏本体代码\**\*" />
+    <None Remove="原版游戏本体代码*\**\*" />
     <None Remove="阅兵\**\*" />
+    <None Remove="111\**\*" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Core" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="TaleWorlds.CampaignSystem">
-      <HintPath>$(BannerlordBinDir)\TaleWorlds.CampaignSystem.dll</HintPath>
+      <HintPath>$(TaleWorldsCampaignSystemPath)</HintPath>
     </Reference>
     <Reference Include="TaleWorlds.MountAndBlade">
-      <HintPath>$(BannerlordBinDir)\TaleWorlds.MountAndBlade.dll</HintPath>
+      <HintPath>$(TaleWorldsMountAndBladePath)</HintPath>
     </Reference>
     <Reference Include="TaleWorlds.Core">
-      <HintPath>$(BannerlordBinDir)\TaleWorlds.Core.dll</HintPath>
+      <HintPath>$(TaleWorldsCorePath)</HintPath>
     </Reference>
     <Reference Include="TaleWorlds.Library">
-      <HintPath>$(BannerlordBinDir)\TaleWorlds.Library.dll</HintPath>
+      <HintPath>$(TaleWorldsLibraryPath)</HintPath>
     </Reference>
     <Reference Include="TaleWorlds.MountAndBlade.View">
-      <HintPath>$(NativeBinDir)\TaleWorlds.MountAndBlade.View.dll</HintPath>
+      <HintPath>$(TaleWorldsMountAndBladeViewPath)</HintPath>
     </Reference>
     <Reference Include="TaleWorlds.Engine.GauntletUI">
       <HintPath>$(BannerlordBinDir)\TaleWorlds.Engine.GauntletUI.dll</HintPath>
@@ -63,7 +97,7 @@
       <HintPath>$(AnimusForgeBinDir)\0Harmony.dll</HintPath>
     </Reference>
     <Reference Include="TaleWorlds.GauntletUI">
-      <HintPath>$(BannerlordBinDir)\TaleWorlds.GauntletUI.dll</HintPath>
+      <HintPath>$(TaleWorldsGauntletUiPath)</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>$(BannerlordBinDir)\Newtonsoft.Json.dll</HintPath>
@@ -111,10 +145,13 @@
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Bannerlord.Harmony">
-      <HintPath>$(WorkshopHarmonyPath)</HintPath>
+      <HintPath>$(HarmonyPath)</HintPath>
     </Reference>
-    <Reference Include="Bannerlord.MBOptionScreen.v1.3.6">
-      <HintPath>$(WorkshopMBOptionPath)</HintPath>
+    <Reference Include="Bannerlord.UIExtenderEx">
+      <HintPath>$(UIExtenderExPath)</HintPath>
+    </Reference>
+    <Reference Include="Bannerlord.MBOptionScreen">
+      <HintPath>$(MBOptionScreenPath)</HintPath>
     </Reference>
     <Reference Include="SandBox">
       <HintPath>$(SandBoxBinDir)\SandBox.dll</HintPath>
@@ -284,8 +321,9 @@
     <_RequiredRef Include="$(SandBoxBinDir)\SandBox.View.dll" />
     <_RequiredRef Include="$(SandBoxBinDir)\SandBox.ViewModelCollection.dll" />
     <_RequiredRef Include="$(BannerlordBinDir)\TaleWorlds.MountAndBlade.ViewModelCollection.dll" />
-    <_RequiredRef Include="$(WorkshopHarmonyPath)" />
-    <_RequiredRef Include="$(WorkshopMBOptionPath)" />
+    <_RequiredRef Include="$(HarmonyPath)" />
+    <_RequiredRef Include="$(UIExtenderExPath)" />
+    <_RequiredRef Include="$(MBOptionScreenPath)" />
     <_RequiredRef Include="$(SandBoxBinDir)\SandBox.dll" />
     <_RequiredRef Include="$(SandBoxBinDir)\SandBox.GauntletUI.dll" />
     <_RequiredRef Include="$(SandBoxBinDir)\SandBox.GauntletUI.AutoGenerated.0.dll" />

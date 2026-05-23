@@ -1,0 +1,213 @@
+{
+  "Id": "rule_吸血鬼外交__吸血鬼外交",
+  "Keywords": [
+    "吸血鬼外交",
+    "亡灵外交",
+    "暗夜渗透",
+    "血仆网络",
+    "新娘策略",
+    "斯卡文暗约",
+    "混沌利用",
+    "吸血鬼谍报",
+    "死人盟约",
+    "幽灵顾问",
+    "血誓",
+    "暗黑互惠"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "帝国与希尔瓦尼亚之间不存在真正的外交关系——双方在名义上处于永无止境的战争状态。然而吸血鬼擅长渗透，他们派出具有魅惑能力的密使潜入人类宫廷，用永生和权力的承诺腐化贵族，在暗中编织看不见的暗夜网络。帝国境内的每个城市都可能有吸血鬼的影子潜伏在权力的阴影之中。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我们与帝国的'外交'从来不是在谈判桌上进行的，而是在密室、枕边和暗巷中实现的。每一个帝国选帝侯的宫廷里都有我们的眼睛——有时是一位置身暗处的顾问，有时是某位贵族寡妇的新丈夫，有时甚至是一整支家族血脉暗中侍奉着我们。人类是如此容易被腐蚀，永生的诱惑、权力的许诺、或仅仅是对死亡的恐惧就足以打开最坚固的城堡大门。此外，我们与其他暗黑势力也存在微妙的交往：混沌部落偶尔可以被引导指向我们的敌人，斯卡文鼠人的地下网络提供了特殊的交易渠道。但永远警惕纳迦什的仆从——那些亡灵法师和巫妖王残余对我们的敌意不亚于对任何活人。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "吸血鬼的外交本质上是情报战。没有哪个吸血鬼伯爵会派使者公开递交宣战诏书——他在递交之前可能已经让你的城防指挥官成了他的血仆。防御这种渗透需要建立严密的贵族审查制度，定期对宫廷人员实施魔法检测，并禁止任何未经审查的异乡顾问接近决策层。对外，吸血鬼可能与你达成临时的同盟——他们的承诺不可信，但也不尽然毫无价值，只要你握有足够强大的反制手段。当一只吸血鬼对你微笑的时候，检查他手中是否有你孩子的头发。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "吸血鬼外交的历史档案中记载了许多经典的'暗夜渗透'范式。其中最著名的模式包括：'新娘策略'——派遣女性吸血鬼与目标贵族联姻，进而控制该家族；'债主策略'——通过解救某位濒临毁灭的贵族并要求血誓作为回报；'幽灵顾问'——以已故圣贤或其化身的身份'显灵'向领主提供只有几百年阅历才能积累的精准建议。对帝国选帝侯制度的研究表明，至少有四位选帝侯在关键时刻做出的错误决策可以追溯到已知的吸血鬼渗透事件。吸血鬼与混沌势力之间的关系是纯粹功利性的——他们鄙视混沌对肉体的扭曲但也认识到混沌入侵能创造权力真空。希尔瓦尼亚在与斯卡文鼠人的交往中维持着一种奇特的'暗黑互惠'：鼠人提供地下情报和信息通道，而吸血鬼提供魔法知识——但双方都清楚这份协议随时可能被撕毁。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "吸血鬼在渗透帝国贵族社交圈时最常用的手段之一是通过女性渠道——因为他们知道人类男性贵族在面对女性吸血鬼时天然地降低了警惕。拉赫米亚的女吸血鬼们是这项艺术的大师，她们以亡国贵族的远亲、来自异国的神秘遗孀或以慈善为名的修道院赞助人的身份渗入贵族社交圈。我作为摄政遗孀曾被一位自称来自提利尔贵族家族的优雅夫人拜访过三次，她在第三次拜访时无意间透露了她已经'四十七岁'——而她那看起来不超过三十岁的外貌在我心中触发了警报。我随后发现她所声称的提利尔家族在传说中的大火中已断嗣三代。女性吸血鬼渗透之所以成功是因为人类贵族女性大部分被排除在正式的军事和情报机构之外，她们缺乏对被渗透的直觉和防御训练——而这正是我一直在试图弥补的空白。我把我的领地中每一座贵族庄园的管家夫人们训练成了第一道防线：她们被教导在接待任何自称来自远方的贵族女性访客时，首先在茶话会上故意提及一个微妙的历史错误，然后观察对方的反应。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "吸血鬼的外交渗透对家族来说是一场持续的生存测试——每一个进入我们家族领地的外来者都可能是一只伪装成人的狼。我们家族的三道防线是这样的：第一道，所有申请进入城堡担任任何职务的外来者都必须在一间墙壁上挂满西格玛圣符的等候室中静坐至少半小时才被接见——真正的吸血鬼会在这种环境中表现出微不可查的焦躁；第二道，城堡中的所有仆人都被要求在家族小教堂中每月参加一次由战斗祭司主持的圣水仪式——被血仆化的仆人会在圣水接触皮肤时出现灼烧反应；第三道，也是最隐秘的一道，我们家族保留着半打从希尔瓦尼亚方向被我们的祖先在三次战争中救出的难民后裔家族，他们几代人在我们领地上担任普通的庄园农奴，但他们保留着一种来自祖辈的几乎动物性的对吸血鬼在场感的直觉——每当有可疑的外来者进入领地，我们总是先从这些老农奴的家庭中收集他们在夜间是否感到异常寒冷的反馈。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "吸血鬼在雇佣兵市场上的存在比任何人愿意公开承认的都要深入。我不是说他们直接雇佣我们——那很少发生，因为他们不需要拿钱买命的人——而是说许多雇佣兵团的指挥官都在不同程度上与希尔瓦尼亚维持着一条不能言明的信息渠道。我在奥斯特马克服役时我们的雇佣兵团曾经接到过一个无法拒绝的赏金——一整箱纯度极高的金币——任务是'连续三天不要巡逻沼泽东面那条小路'。没有人明说这笔钱来自哪里，但所有人都知道那条路的方向通向希尔瓦尼亚。吸血鬼的外交中有一部分是针对雇佣兵的下层渗透——他们不需要腐蚀将军，只需要用足够多的金子让某个关键的巡逻队在某个关键的夜晚短暂消失。我拒绝过这种任务两次，第三次时我直接开了小差——不是因为道德忽然觉悟，而是因为我的经验告诉我，接受吸血鬼的三次暗中帮助后你就欠下了某种不会被写在任何纸上但会在某天被他们亲口要求兑付的债务。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "吸血鬼外交的经济维度是我们商会这类机构最难以公开讨论的话题。在帝国正式法律中，与希尔瓦尼亚的任何贸易都被定性为叛国。但在现实中，三大主要暗黑贸易流都通过极为隐蔽的渠道与希尔瓦尼亚存在交换关系：未经许可的魔法材料、被帝国禁止的禁忌文献以及从矮人矿山中走私的有色金属。吸血鬼不需要金币——他们在漫长的生命中积累了无法想象的贵金属储备——他们需要的是活人世界中生产但无法在希尔瓦尼亚本土制造的物资。而交易这些物资的帝国商人从吸血鬼手中获得的高溢价完全来自帝国法律制造的稀缺性垄断——如果这些贸易合法化，商人赚的差价将直接缩水八成。所以帝国与希尔瓦尼亚之间不存在正式外交，但存在一种由帝国法律反向激励的、更为隐蔽的、由地下商业驱动的非正式外交通道。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "新娘策略——女性吸血鬼通过与目标贵族联姻控制家族的血脉渗透手段",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "吸血鬼的对外关系与盟友体系"
+  ]
+}

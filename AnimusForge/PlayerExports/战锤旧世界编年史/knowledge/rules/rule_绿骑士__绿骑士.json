@@ -1,0 +1,210 @@
+{
+  "Id": "rule_绿骑士__绿骑士",
+  "Keywords": [
+    "绿骑士",
+    "巴托尼亚守护灵",
+    "幽绿骑士",
+    "吉勒斯化身",
+    "不死守护者",
+    "森林迷雾",
+    "幽灵骑士",
+    "翠绿之影",
+    "永恒护卫"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "绿骑士是巴托尼亚最永恒的超自然守护者——一个身着翡翠绿色全身铠甲、驾驭同样通体绿色幽灵战马的沉静骑士，从巴托尼亚最深层的古老森林中驾出，永远在王国最危急的时刻现身。没有人知道他从何而来或归于何处，但每一个巴托尼亚人都会告诉你：当绿骑士出现时，要么胜利已经在我们手中，要么我们已经见到了巴托尼亚历史上最深重的危机。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "绿骑士——光是说出这个名字我们就下意识地摸一下额前向女神忏悔。他是巴托尼亚最深沉的两个秘密之一：一个是湖之女神的真名——无人知晓——另一个是绿骑士的真实身份——无人敢问。但我们每一个人都知道，不管你信还是不信：他就是吉勒斯·勒·布列塔尼本人——我们的开国国王——不是死了，不是在圣湖中沉没了，而是被女神转化成了巴托尼亚永恒的守护者。绿骑士只有在巴托尼亚面临亡国级危机时才会从古老森林的绿雾中驾出：当他出现时，成片成片的老橡树会散成绿雾为他让路，马蹄踏过的泥土上会在身后长出翠绿色的苔藓，他手中的绿影之剑的剑锋从不反射阳光而是吞噬周围的光线使得剑身看起来像是把空间从白光中切掉了一个不透光的洞。他从不说话——从来没有人听见绿骑士发出任何声音——他也从不与任何巴托尼亚人并肩作战，他单独冲向敌军最密集的中心然后从视野中消失，在他消失的位置敌军阵线会留下一道被绿色雾气切开的裂缝。最令人心碎的是绿骑士会在战斗中挑战任何他认为是傲慢的巴托尼亚骑士——如果他在绿骑士面前败下，他不会被杀而是会被迫接受一个彻底的羞辱：他必须徒步走到最近的圣湖跪下来面对湖水承认自己配不上骑士的名号。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "绿骑士的战场出现对巴托尼亚军事指挥官来说既是终极恩赐也是终极考验。恩赐在于：没有人——没有任何战术或装备——能对抗绿骑士。他被数以百万计的幽绿骑士叙说成不可被杀死——不是比喻，是一切尝试杀死他的骑士全部自己的首级被取下，而他的身体多次被长枪和巨剑击穿后仍无碍地继续战斗。绿骑士在战线上的单一出现可以从心理上瓦解整支敌军——任何信仰非女神的敌人只看到幽灵就会失去阵型。但考验在于：绿骑士不受任何人的指挥，他到战场上不是来执行你的作战计划的，他是来执行女神对你的裁决的。如果绿骑士认为这场战争在道德上无足轻重而你配不上他的帮助，他会从你的营地中穿过，找到你的骑士中最傲慢的几个并一一击败他们然后消失——你不仅没有得到援军，还在战前失去了最重要的几名骑士。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "绿骑士现象在比较宗教学和民俗学中占据了旧世界超人实体研究的一个特殊席位。学术界对绿骑士的本质拥有至少三个彼此竞争的学说：其一，也是最正统的教会学说——绿骑士是吉勒斯·勒·布列塔尼在饮用圣杯后的超度形态，他的灵魂没有被死亡提走而是与巴托尼亚的国土本身发生了永久绑定，这在神学中被称为国土守护者现象；其二，帝国学者群体中流行的残存显圣理论——绿骑士不是吉勒斯本人，而是湖之女神的魔法制造出来的一个独立神圣构造体，被赋予了吉勒斯的部分记忆和性格特征来服务于女神的意志，这解释为什么绿骑士从不说话——他不是一个完整的灵魂；其三，最不受欢迎但在学术界坚持不散的精灵起源假说——暗示绿骑士是艾塞尔·洛伦精灵在巴托尼亚开国前安置的一个守护精魄，湖之女神崇拜随后吸收了这一精魄并将它与吉勒斯的传说融合。绿骑士的显圣记录非常稀少——自巴托尼亚编年史以来的约十五个世纪中，经教会记录确认的绿骑士显圣不到四十次，其中最知名的是巴托尼亚历979年与入侵的阿哈戈斯兽人可汗的对决、帝国历2299年大混沌战争前巴托尼亚骑士道的总动员显圣、以及帝国历约2420年对抗红公爵的最终决战的显圣。绿骑士每次显圣后在传说记录中的位点都会在原地留下一片直径约十六至二十四英尺的长期绿色苔藓环——这种苔藓在植物学上被分类为翠神苔，其化学成分含有独特的荧光素，在暗夜中会微弱地发绿光。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "绿骑士在我们巴托尼亚贵族女性中常常在深夜故事中扮演着一种奇特的安慰角色。他不是丈夫或情人——那太荒谬了，他是幽灵——但他是一种保护理念的化身：意味着即使在一个世界里所有男人都死光了或被证明是懦夫后，仍有一个永远不会失败的男人在巴托尼亚的森林中守护着我们。年迈的祖母们在夜晚会对着绿骑士可能出现的方向点上一盏灯作为默默的请愿。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "绿骑士在巴托尼亚家族谱系上的深远意义超越了一切血缘上的追溯——因为如果绿骑士真的是吉勒斯，那么在某种超验的意义上，所有巴托尼亚骑士家族与他的关系是平等的：都是他的追随者的后代，但不是他的直系后代。这使得绿骑士的存在成为贵族谱系学中的一个不可回答的问题：没有任何家族能声称为绿骑士的直系继承人。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "绿骑士是我听过的最让人无法信任的传说——直到我亲自见到过一次。那是在熙熙丛林边上和穆西隆的亡灵作战时，夜晚大雾浓到看不见对面的帐篷，然后雾被绿色取代了，接着不到十几息之后有个骑马的绿色影子从雾中径直冲向了敌军防线，我所说的敌军防线这个时刻已经没了。我不是巴托尼亚人所以我不跪，但我确实之后一整天都握不住剑——不是吓的，是某种更深的不安。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "绿骑士的商业影响极低但象征影响极高——在任何巴托尼亚集市上都不会有人兜售绿骑士小雕像或绿骑士纪念章，因为这被视为亵渎。但绿骑士传说本身支撑着巴托尼亚乡间的小型朝圣经济：那些声称绿骑士在某片森林中现过身的村庄会吸引长途朝圣的农奴，而他们在前往朝圣的路上会在当地购买食物和宿处。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "吉勒斯化身——最被普遍接受的正统学说认为绿骑士是开国国王吉勒斯的超度形态",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "从巴托尼亚最深层的古老森林中驾出"
+  ]
+}

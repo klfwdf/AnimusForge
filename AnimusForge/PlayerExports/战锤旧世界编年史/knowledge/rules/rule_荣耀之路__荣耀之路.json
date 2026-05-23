@@ -1,0 +1,213 @@
+{
+  "Id": "rule_荣耀之路__荣耀之路",
+  "Keywords": [
+    "荣耀之路",
+    "混沌勇士追求",
+    "神明注视",
+    "升格之途",
+    "邪神考验",
+    "一生征途",
+    "勇士之道",
+    "混沌之迹",
+    "升魔之路",
+    "黑暗荣耀",
+    "冠军之路",
+    "恶魔晋升"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "荣耀之路是每一位混沌勇士毕生追求的征途——从普通战士一步一步积累战功与变异恩赐，最终获得邪神的升格，成为恶魔亲王或神选冠军，这是一条用鲜血和献祭铺就的终极道路。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "chaos_culture"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "荣耀之路没有回头路。从你将第一个敌人的头颅献给邪神的那一刻起，你的灵魂就已被标记。我们在每一次战斗中证明自己，每一滴溅在脸上的鲜血都增加你在神灵眼中的重量。这条路分为数个阶段：先从掠夺者做起，然后晋升为混沌勇士，再成为神选者，最后——如果你足够幸运和强韧——成为混沌领主或更高级的形态。许多人在半路上失败了——他们的身体无法承受恩赐的重量，灵魂被撕裂。但那些走完全程的，他们就不再是凡人了。你明白吗？这条路就是我们的生命。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "荣耀之路是你的战略主线。每一次战斗胜利都会累积混沌恩赐点数——用这些点数解锁你的军队的变异、魔法和增幅能力。重要的是专注于一位邪神的青睐，因为在四位神祇之间分心会导致他们都对你失去兴趣。选择一位神祇并专精其特定路径：恐虐奖励近战杀戮；纳垢奖励坚韧和持久；色孽奖励速度和技巧；奸奇奖励魔法和诡计。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "根据北方部落萨满传承的口述史诗《荣耀之书》，荣耀之路的概念最早由第一位升魔者「血裔」莫卡提出——他在一万三千年前成功走完了整条荣耀之路并成为恐虐座下第一位凡人恶魔亲王。荣耀之路的正式阶段划分如下：第一步「血誓」——首次在战斗中杀人并献祭；第二步「烙印」——邪神颁赐第一个变异恩赐；第三步「神选」——被某一邪神正式承认为子民；第四步「冠冕」——成为混沌领主；第五步「升魔」——获得恶魔亲王之身。据统计，约百分之九十八的混沌勇士死于前三步。历史上最快完成全部五步的纪录是「血风」卡拉纳克——仅用了七年，但他在升魔后仅三天就被另一混沌领主所杀，证明荣耀之路从不停歇。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我的荣耀之路上充满了质疑的眼光，但我用敌人的头颅回应了每一个怀疑。身为女性走这条路更艰难，但邪神看重的是战果，而非性别。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "作为部族首领，你族的荣耀之路由你引领。年轻战士视你为榜样，你的每一步前进都在为全族铺路。鼓励你的族人各自走出自己的荣耀之路，但记住——太多勇士为了争夺荣耀而自相残杀，这在混沌中是常态而不是例外。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "你遇到了一位走在荣耀之路上的混沌勇士。他的铠甲上已布满怪异的印记，但眼神依旧锐利而饥饿。他告诉你他在这场「伟大游戏」中已走了多远，语气中没有自豪，只有更深的饥渴。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "荣耀之路是北方社会运转的唯一驱动力。从最底层的掠夺者到最高级的混沌领主，每个人都在攀登这条阶梯。没有荣耀，你在北方就如同一具行走的尸体。这条路没有终点——即便是恶魔亲王也在继续寻求更高层次的力量。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "荣耀之路——混沌勇士毕生追求的征途，从凡人到恶魔亲王的登神长阶。",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "荣耀之路混沌勇士追求神明注视"
+  ]
+}

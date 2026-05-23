@@ -1,0 +1,209 @@
+{
+  "Id": "rule_混沌印记__混沌印记",
+  "Keywords": [
+    "混沌印记",
+    "邪神标记",
+    "恐虐印记",
+    "纳垢印记",
+    "辛烈治印记",
+    "色孽印记",
+    "专属赐福",
+    "神祇烙印"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "混沌印记是黑暗诸神烙印在他们最忠诚战士灵魂上的专属标记——每位邪神的印记都带来截然不同的力量：恐虐印记赋予狂怒与武力，纳垢印记赐予不朽的腐朽之躯，辛烈治印记打开命运之眼，色孽印记赋予超自然的优雅与速度。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "chaos_culture"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "混沌印记——这是你将自己完全献身于一位特定邪神的誓言。不是那些弱者的泛泛祈祷，而是你割开自己的胸膛，让邪神亲手在你心脏上烙下印记！恐虐的印记让你在战场上进入永恒的嗜血狂怒，你的斧刃饮血越多越锋利；纳垢的印记让你不再感受疼痛，你的身躯肿胀成一座移动的瘟疫花园，肠子里流出的不是血而是能杀光一整个村庄的剧毒胆汁；辛烈治的印记让你预见敌人在三息之后的剑招，但代价是你永远无法信任自己的记忆——因为它每天都会变化；色孽的印记让你快得凡眼不可捕捉，每一次杀戮都如一场舞蹈，但如果你无法维持美丽，色孽会收回印记并在你的梦中折磨你到疯狂。选择你的印记——这不只是一个决定，而是你死后灵魂的最终归宿。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "从编制角度看，给部队分配混沌印记的决策直接决定了这支军队的战术性格。恐虐印记的步兵最适合正面突破，但他们会不分青红皂白攻击任何移动目标——包括你的友军——若没有足够多的敌人可供杀戮。纳垢印记的部队推进速度最慢但生存力惊人，适合守住关键地形或担任第二波消耗型攻势。辛烈治印记对射手和价值连城的法师单位最有用，但其效果不稳定，可能在最关键时刻戏剧性地失效。色孽印记是最被低估的印记——让重骑兵拥有不可思议的冲击速度和先手优势，但色孽部队在遇到血腥和污秽场面时会分心。永远不要在同一个战帮中混合恐虐和辛烈治印记：前者需要鲜血，后者需要阴谋，两者互斥产生的内部冲突足以在开战前就摧毁你的军队。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "混沌印记的学术分类由帝国宗教学院的阿尔弗雷德·霍尔纳主教（公元1950-2012）在其争议性著作《邪神印记的体系性比较》中首次提出。霍尔纳将混沌印记划分为四个独立学派：血怒学派（恐虐印记，编号M.A.KH-001至017，涵盖狂暴增强、鲜血饥渴、钢铁皮肤等多个子类）；腐朽学派（纳垢印记，编号M.A.NG-001至012，包括痛觉阻断、腐化灵气、再生复生等）；变幻学派（辛烈治印记，编号M.A.TZ-001至019，包括预言感知、因果扭曲、形态幻化等）；迷醉学派（色孽印记，编号M.A.SL-001至015，包括超凡反应、魅惑灵光、痛苦享受等）。值得特别注意的是，霍尔纳主教于著作出版第二年（公元2014年）被宗教裁判所指控'阅读太多禁书'并处以火刑，但其分类体系仍在帝国魔法学院秘密流传。特殊印记——如混沌统合印记（同时包含四种邪神的符号，存在于传说中的永世神选专属铠甲上）——属最高绝密。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "作为一个研究过北方敌人的女领主，我认为混沌印记是最可怕的不是其带来的力量，而是它创造的那种绝对的归属感。一个被烙上印记的混沌战士不再属于任何家族、任何部落——他只属于他的神。这种'去人性化'的归属感是帝国军队永远无法在士兵中复制的精神武器。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "印记的传承比你以为的要久远得多。我家族藏有一柄刻着纳垢印记的古斧，据记载六个世代前一位先祖接受了'纳垢的拥抱'——自那以后，家族中的男性后裔出生时皮肤上就会有一小块腐烂的绿色胎记。印记不只是刻在你身上，它刻在你的血脉里，刻在你子子孙孙的命运之线中。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "在利爪海沿海的诺斯卡村子里我见过一个辛烈治印记的战士——他坐在篝火旁，盯着火看了整整一个晚上，第二天早上他对酋长说：'明天将有一艘南方人的船撞上礁石，船上的黄金归我。'第二天真的有一艘巴托尼亚商船触礁沉没。他一个人都没杀，一个人都没救，只是站在礁石旁等着黄金漂上来。那个眼神让我明白，辛烈治印记给予的不是智慧——是预谋。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "帝国的认证剑术大师和兵器匠人对混沌印记的力量一直非常感兴趣——尤其是色孽印记带来的速度增强。据说马林堡有个地下竞技场专门让获有印记的混沌俘虏互搏供贵族观赏，门票高达五十枚金克朗一张。当然，这在法律上是被禁止的，谁承认谁就会被西格玛教会从城堡尖顶上扔下去。但你知道马林堡——在那座城市'禁止'这个词的意思是'需要加钱'。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "恐虐印记：血神恐虐的专属烙印，赋予战士无尽狂暴、嗜血强化和钢铁皮肤，但持有者可能无法区分敌我而攻击一切活物。",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "混沌印记邪神标记恐虐印记"
+  ]
+}

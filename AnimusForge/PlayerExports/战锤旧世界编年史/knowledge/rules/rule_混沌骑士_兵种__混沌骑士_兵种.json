@@ -1,0 +1,209 @@
+{
+  "Id": "rule_混沌骑士_兵种__混沌骑士_兵种",
+  "Keywords": [
+    "混沌骑士混沌骑士",
+    "混沌重骑",
+    "变异战马",
+    "钢铁洪流",
+    "毁灭冲锋",
+    "暗黑骑兵",
+    "混沌骑士团",
+    "灾厄铁蹄"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "混沌骑士是地狱般的景象——身披全覆混沌板甲的骑士骑乘着肌肉暴胀、口吐硫磺雾气的变异战马，当他们发起冲锋时，大地震颤如雷鸣，哪怕是帝国最精锐的重甲长矛方阵也会在接触的一瞬间被碾碎。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "chaos_culture"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "看见地平线上那片移动的钢铁反光了吗？那就是我们的骑士团！混沌骑士不是那些南方农夫的可怜骑手——我们的战马在混沌荒原上出生，啃食的是被亚空间浸润的黑草，肌肉里缠绕着变异之力，蹄子踏碎岩石如踩干土。骑手和战马之间不需要缰绳，他们的灵魂在黑暗诸神的注视下已融为一体。冲锋时他们组成楔形阵，枪尖闪烁的是永恒诅咒之火，你听过上千名混沌骑士同时冲锋的声音吗？那是世界末日的前奏，是我们献给诸神最华丽的钢铁圣歌！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "混沌骑士在战役层面的使用需要精密计算——他们的冲锋威力无人能及，但转向半径大，一旦陷入缠斗便失去冲击力。最优部署是布置在重步兵侧后方，等待步兵交战后从侧翼发动决定性的斜向冲穿。要小心帝国的蒸汽坦克和矮人的风琴炮：混沌板甲对穿甲火力仍有脆弱性。此外，混沌骑士的马匹虽然恐怖，但并非不可伤——在奥斯特马克边境，一支基斯里夫翼骑兵以诱敌深入战术将一整队混沌骑士引入沼泽地，马匹陷泥后骑士成了铁棺材里的活靶。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "混沌骑士的制度演化可追溯至混沌时代（约公元前560年至公元后200年），最早期的混沌骑兵仅为北方蛮族在普通战马上作战。真正意义的混沌重骑兵出现在公元约800年的库甘部落征服时期——混沌矮人向北方战帮提供了首批变异战马的鞍具与钢甲。历史上有记载的最著名混沌骑士团包括'红色屠戮者'（全员效忠恐虐，公元1333年血洗奥斯特领全境）、'病瘟铁骑'（效忠纳垢，以马匹散发致命瘟疫闻名，公元2011年在希尔瓦尼亚造成大规模疫死）以及'水晶猎手'（效忠辛烈治，以能穿梭时间残影的冲锋路径闻名，仅在公元2420年的一次帝国魔法学院报告中出现过一次）。马铠上的诅咒符文据考证来源于喀什-阿卡瑞比斯时期的恶魔契约文书，每一件都在混沌矮人的扎尔-纳格朗德熔炉中被地狱火淬炼过。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "作为管辖北方行省的女性领主，混沌骑兵一直是我挥之不去的梦魇。你知道最可怕的是什么吗？不是他们的冲锋，而是他们的纪律。他们不是兽人那样的乌合之众——混沌骑士在沉默中列队，在沉默中冲锋，连战马的嘶鸣都被改造成了低沉的咆哮。我曾派斥候跟踪过一支混沌骑士巡逻队，回报说他们在暴风雪中保持完整楔形阵行军了两天两夜，无一人掉队。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "旧世界南边的帝国人以为骑兵就是骑兵，他们完全不懂混沌骑士的本质。我族有位先祖曾在诺斯卡战帮中担任血骑——混沌骑士的马不是马，是契约兽，每匹战马都曾是一个凡人立下誓约之后被邪神改造出来的东西。一匹变异战马的价值等于一个普通混沌勇士的全部生命历程。所以当你杀掉一个混沌骑士，你不是杀了一个敌人——你毁掉了一份延续数代的血契。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "在塔拉贝克荒原跑商时见过一位混沌骑士独骑冲锋一整个绿皮战猪小子队——十个骑猪的兽人被他一枪串成了肉串，然后他调转马头又冲了一次。那匹马的瞳孔是竖的，嘴唇裂开到耳根，呼出的气结在空气中是绿色的。我当时趴在远处的岩石后面，手里握着匕首，心想这辈子再也不想来北方了。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "混沌骑士的马铠工艺一直让努恩的军械大师嫉妒得牙痒——据说那片黑铁里掺了某种星外矿物，轻得像银却硬过钢。帝国工程学院悬赏过混沌骑兵的完整马铠，出了天价，然而没有一个赏金猎人活着把东西带回来。有个商会的想法是：既然拿不到原件，不如仿造。但他们没考虑到变异战马的体型完全不是普通战马能比的，帝国战马穿上同样的马铠会直接压断脊梁。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "变异战马：混沌荒原上出生并在亚空间能量浸润下变异的重型战马，肌肉密度远超普通马匹，口吐硫磺雾，蹄可碎石。",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "哪怕是帝国最精锐的重甲长矛方阵也会在接触的一瞬间被碾碎"
+  ]
+}

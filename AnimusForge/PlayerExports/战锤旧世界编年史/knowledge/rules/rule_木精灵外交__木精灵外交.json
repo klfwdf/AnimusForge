@@ -1,0 +1,210 @@
+{
+  "Id": "rule_木精灵外交__木精灵外交",
+  "Keywords": [
+    "木精灵外交",
+    "排外",
+    "森林边界",
+    "精灵孤立",
+    "布雷顿尼亚边境",
+    "禁忌森林",
+    "不干涉原则",
+    "临时同盟",
+    "沉默交易"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "木精灵几乎不与外部世界有任何公开的外交关系。他们极度排外，任何未经邀请踏入艾索洛伦的外族人都会被无情射杀。布雷顿尼亚的边境领主们与木精灵维持着一种沉默的互不侵犯默契——只要你不砍树、不越界，就相安无事。偶尔在极其罕见的情况下，木精灵会派出使者对某些外部威胁提出警告或发出合作邀请，但这些事件少之又少。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我们不需要外人的友谊，也不渴望他们的理解。艾索洛伦本身就是我们唯一的屏障和唯一的领域——外界种族在森林脚下如蚊蝇般短暂地出生、纷争、死去，与千年白杨的寿命相比不值一提。布雷顿尼亚那些愚蠢的骑士们至少学会了敬畏我们的边界——他们用'禁忌森林'的故事吓唬自己的孩子——这多少算是一种智慧的萌芽。至于帝国，那些拿着火把和斧头的人类永远是最危险的威胁，我们的斥候在帝国的森林采伐队中留下了足够多的警告——通常以箭矢插在树桩上的方式传达。高等精灵？他们偶尔会派使者来，以那种令人作呕的居高临下姿态吁请我们'回归文明'。让他们回他们的奥苏安去吧。矮人——那些顽固的穴居者至今还在记恨长须之战中我们拒不出兵。很好，让他们记恨，他们的斧头在艾索洛伦的根须面前不堪一击。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "从外交角度，木精灵是一支几乎无法预测的力量。他们不参与任何联盟体系，不接受任何形式的贡金或封臣关系，也基本上不会回应任何外交姿态。然而在极端情况下——通常涉及混沌大举入侵或对森林的严重威胁——木精灵会出人意料地与其他势力展开合作，但这种合作是临时性的、功利性的，且一旦危机解除便会立即终止。布雷顿尼亚与艾索洛伦的边境相对和平主要是由于布雷顿尼亚对森林持尊重态度——这提示了与木精灵共存的关键：尊重森林边界，不进行任何形式的森林资源掠夺。任何在艾索洛伦附近的定居点扩张或资源开采都必然会引发致命回应。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "木精灵的外交模式——或更准确地说，其外交缺失——根植于其文明的根本哲学。阿斯莱不将外界种族视为平等的交涉对象，因为在他们看来，只有能与森林建立精魂联系的存在才具有真正的'人格'。布雷顿尼亚之所以比帝国享有更好的关系，部分原因在于布雷顿尼亚的湖中女神信仰与艾索洛伦的精魂体系存在一些朦胧的深层共鸣——两者可能共享某些古老的宗教源头。历史记录显示，木精灵曾在混沌胜利入侵期间与矮人和人类军队短暂结盟，但这更像是他们对混沌腐化森林的愤怒而非任何形式的战略联盟。高等精灵与木精灵之间的紧张关系主要源于一场微妙的文化争论：乌苏安精灵将阿斯莱视为需要'拯救'的迷途者，而阿斯莱则将乌苏安精灵视为傲慢的干涉者，两者在精灵灵魂本质上是否应该与自然融合这一问题上存在根本性的哲学分歧。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "作为阿莉尔女祭司团的一员，我曾代表艾索洛伦与布雷顿尼亚的湖中女神先知进行过一次秘密会谈——那是极少数由女性主导的跨种族外交事件之一。湖中女神的侍女们和我们一样理解水的语言、月光的力量和森林深处的古老低语，尽管她们的信仰被人类的骑士道和侠义精神层层包裹而变得粗粝，但其内核与我们的精魂崇拜实有同源之处。这次外交接触的结果是一份从未写在羊皮纸上的口头协议：布雷顿尼亚的骑士不得以'屠龙'或'清除林地害虫'为借口进入艾索洛伦，而我们的斥候不会在布雷顿尼亚的收割季节袭扰其边境村落。人类不明白我们为什么不信任文本——因为纸张会腐烂，而水面上的承诺永远流动。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "林地议会的族长们在对外关系上拥有一种独特的外交工具——各家族世代维护的'信任之径'。我的家族柳枝氏在过去三千年中与布雷顿尼亚的三个边境男爵家族保持着断断续续的个人联系，通过特定古树下的留言石传递警告或要求。这种关系每更换一代人类就需要重新'校准'——通常需要新男爵在森林中失踪一队追猎队之后才会学会阅读我们的标记。关键在于，阿斯莱外交的本质是耐心的考验：我们不追求即时的结果，因为人类一代人的'紧急事件'在我们的时间框架中不过是一个季节。当一位布雷顿尼亚男爵焦急地等待我们的答复时，我们可能在评估他的请求是否值得让一棵正在开花的古树被打扰。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "在艾索洛伦边缘的佣兵营地里流传着一条铁律：绝不接受任何涉及'进入森林'的合同，无论酬金多高。我见过一队提利尔雇佣兵接下了某位帝国贵族的委托——去森林里找回他失踪的女儿——结果十二个人只回来一个，而且那个人已经疯了，嘴里不停念叨着'树在看着'。木精灵对待闯入者的方式有一个微妙的等级区分：如果你只是迷路的樵夫，可能会被安全护送出去但失去所有关于森林的记忆；如果你是武装的入侵者，你会在走到足够深之前被一箭射穿喉咙；如果你是伐木队——嗯，没有人找到过伐木队的尸体，但森林边缘多了一些排列整齐的新树苗。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "木精灵的沉默交易体系是旧世界最奇特的地下经济现象之一。在布雷顿尼亚的奎内尔和巴托尼亚边境，存在着所谓'精灵市'——不在任何地图上标注的古树下空地，商贩们将货物放置后离开，次日清晨回来收取等价交换物。从商业角度看，这种贸易模式完全规避了关税、通行费和中间商抽成，使阿斯莱能够以几近零交易成本获取铁矿和盐等森林无法提供的物资，而我们人类手工匠则获得了在公开市场上无法买到的精灵工艺品。但不要以为这是在占便宜——木精灵对价值的理解与我们完全不同：一把精心锻造的矮人钢剑对他们可能只值一袋森林草药的价钱，而一块在人类眼中价值连城的精灵宝石在他们看来不过是'森林丢弃的碎渣'。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "孤立主义——木精灵对外关系的核心原则：非必要不接触外界",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "木精灵的对外关系与盟友体系"
+  ]
+}

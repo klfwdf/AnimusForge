@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Bannerlord.UIExtenderEx;
 using HarmonyLib;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.ComponentInterfaces;
@@ -12,6 +13,10 @@ namespace AnimusForge;
 
 public class SubModule : MBSubModuleBase
 {
+	private UIExtender _uiExtender;
+
+	private static bool _uiExtenderInitialized;
+
 	private bool _pendingInitialApiGuideNotice;
 
 	private bool _initialApiGuideNoticeShown;
@@ -22,6 +27,30 @@ public class SubModule : MBSubModuleBase
 	{
 		base.OnInitialState();
 		MarkPendingInitialApiGuideNotice();
+	}
+
+	protected override void OnSubModuleLoad()
+	{
+		base.OnSubModuleLoad();
+		if (_uiExtenderInitialized)
+		{
+			return;
+		}
+		_uiExtenderInitialized = true;
+		try
+		{
+			_uiExtender = UIExtender.Create("AnimusForge");
+			if (_uiExtender != null)
+			{
+				_uiExtender.Register(typeof(SubModule).Assembly);
+				_uiExtender.Enable();
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.LogTrace("SubModule", ">>> UIExtenderEx init failed: " + ex.Message);
+			_uiExtenderInitialized = false;
+		}
 	}
 
 	protected override void OnBeforeInitialModuleScreenSetAsRoot()
@@ -97,12 +126,28 @@ public class SubModule : MBSubModuleBase
 			}
 			try
 			{
-				PatchClassProcessor shoutTextInputFocusPatch = harmony.CreateClassProcessor(typeof(ShoutTextInputFocusChangePatch));
-				shoutTextInputFocusPatch.Patch();
+				PlayerEncounterPropertySafePatch.EnsurePatched();
 			}
 			catch (Exception ex8a)
 			{
-				Logger.LogTrace("SubModule", ">>> ShoutTextInputFocusChangePatch failed: " + ex8a.Message);
+				Logger.LogTrace("SubModule", ">>> PlayerEncounterPropertySafePatch init failed: " + ex8a.Message);
+			}
+			try
+			{
+				Patch_Conversation_Start_Intercept.ManualPatch(harmony);
+			}
+			catch (Exception ex8b)
+			{
+				Logger.LogTrace("SubModule", ">>> Manual conversation start intercept patch failed: " + ex8b.Message);
+			}
+			try
+			{
+				PatchClassProcessor shoutTextInputFocusPatch = harmony.CreateClassProcessor(typeof(ShoutTextInputFocusChangePatch));
+				shoutTextInputFocusPatch.Patch();
+			}
+			catch (Exception ex8c)
+			{
+				Logger.LogTrace("SubModule", ">>> ShoutTextInputFocusChangePatch failed: " + ex8c.Message);
 			}
 			try
 			{
@@ -232,6 +277,14 @@ public class SubModule : MBSubModuleBase
 		{
 			Logger.LogTrace("SubModule", ">>> TTS engine initialization failed (non-fatal): " + ex19.Message);
 		}
+		try
+		{
+			CompatibilityAudit.RunStartupAudit();
+		}
+		catch (Exception ex20)
+		{
+			Logger.LogCompatibilityAudit("CompatAudit", "Startup compatibility audit failed: " + ex20.Message);
+		}
 	}
 
 	protected override void InitializeGameStarter(Game game, IGameStarter starterObject)
@@ -252,6 +305,7 @@ public class SubModule : MBSubModuleBase
 			campaignGameStarter.AddBehavior(new KnowledgeLibraryBehavior());
 			campaignGameStarter.AddBehavior(new LordEncounterBehavior());
 			campaignGameStarter.AddBehavior(new SceneTauntBehavior());
+			campaignGameStarter.AddBehavior(new VoteDealBehavior());
 			campaignGameStarter.AddBehavior(new VanillaIssuePromptBehavior());
 		}
 	}

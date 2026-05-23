@@ -1,0 +1,211 @@
+{
+  "Id": "rule_赫曦白风__赫曦白风",
+  "Keywords": [
+    "赫曦白风",
+    "光明之风",
+    "海希学院",
+    "净化魔法",
+    "LoreOfLight",
+    "驱魔之光",
+    "心灵治愈",
+    "亡灵克制",
+    "混沌净化",
+    "白风魔法"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "赫曦——白风——是八风中最为纯净也最难驾驭的一支。它是阳光、智慧之光、引导之光、驱散一切虚伪与黑暗的光。赫曦的风充斥着日间世界的每一个角落，被朝阳照亮的石板、正午的麦田、孩子眼中第一次见到真知时的光芒——所有这些都吸纳着赫曦的能量。但一旦太阳落入地平线以下，赫曦便急剧衰减，在地下深处它几乎完全不存在。光明学院——海希学院的法师被称作光之祭司，他们的职责是净化、治疗心灵的创伤以及驱逐混沌与亡灵的侵蚀。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "赫曦白风是所有帝国魔法中使用最少但在关键时刻最为依赖的一支。每一位帝国战斗法师都知道：当你走上战场面对一支亡灵大军时，没有任何红风或蓝风的法术可以替代一名光明法师——因为只有白风的净化之光能够一瞬之间驱散数十具被亡灵巫师拉起的骷髅，而一具被赫曦光芒照过的尸体将无法再被重新拉起。光明学院法师同时也是帝国军队中少数可以驱散混沌印记污染的施法者——混沌战士的邪徽、恶魔留下的污染之地、甚至某些变异者体内的初步异变都可以在赫曦的照射下被清除或至少抑制。但光明法师的致命弱点同样明了：黑夜作战中他们的能力贬值过半，而地下堡垒战——如对抗斯卡文鼠人的隧道防御战——他们几乎沦为无用的随军文员。学院的官方回答是赫曦法师应当随身携带预先充能的圣光水晶——但任何一名真正打过洞窟战的军官都会告诉你，那些水晶在第三次施法后就会碎成沙子，而你离地面还有一百四十尺的黑暗要穿越。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "光明学院法师在军事决策中的角色往往不是最引人注目的——他们不像火焰法师那样能将一整队敌军炸成灰烬，也不像天堂法师那样能改变天气决定一场战役的胜负——但他们在反亡灵和反混沌作战中是不可替代的。如果你的军队需要在希尔瓦尼亚边境长期驻防——那里每一个地下墓穴都潜藏着未被摩尔祭司净化的遗骨——那么你必须在驻军中配属至少两名光明法师和一支白风充能水晶储备。白风水晶的成本很高——品质足够的纯石英需要从矮人手中经由瑞克河运往阿尔道夫，经过光明学院的半年度充能仪式后存入库房——但成本远低于一群被遗忘在荒野中复活为僵尸的阵亡士兵给你带来的政治后果。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "赫曦白风在八风体系中占据着一个特殊的灵能位置——它是最难以掌握但也是最为纯净的风，因为它在本质上是混沌的逆向能量。其他七风的能量流动方式都是从混沌星门出发、在物质世界中寻找对应元素后逐渐衰减消散，但赫曦的运动轨迹是逆向的——它从太阳（宇宙中最纯净的发光体）出发，向下照射物质世界，通过吸收阳光的物体的辐射回流向混沌星门发回一种抵消性的、净化性的能量波。这解释了两个现象：第一，为什么白风在地下完全不可用——没有阳光的反射；第二，为什么混沌恶魔和亡灵对赫曦有天然的恐惧——因为赫曦的净化流在灵能层面反向冲刷了从星门涌出的混沌之流，就像一条河从支流倒灌进主河道。光明学院的高级学者提出过一个至今未被证明但也在理论上未被驳倒的假说：如果有一天世界上的所有光明法师同时释放所有赫曦能量，那么混沌星门将可能暂时关闭——而全世界的魔法也将随之消失。黑暗与光明从来是同一枚硬币的两面。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "赫曦白风在女性施法者群体中展现出了与男性不同的灵能现象——女性光明法师的平均治愈能力（以战场急救成功率衡量）比男性同行高出约两成，而她们在驱魔仪式上的成功率在统计上低于男性——这是帝国军事魔法档案中的未公开数据而非任何官方结论。女性贵族统治者在考虑封地内的魔法防御资源配置时应当注意：光明学院是八所学院中女性入学率最低的之一（低于百分之十五），原因是学院的进阶修习要求学徒在不与外界接触的情况下在密室中连续冥想三个月——这在生理层面对女性的要求与男性不同而学院始终以男性标准设计作息制度。尽管如此，那些成功毕业的女性光明法师在心灵治愈领域的造诣往往超过同等级的男性同行——据一位不愿意公开姓名的海希学院退职大师的说法，这是因为赫曦对心灵创伤的治疗需要施法者本身承受二分之一的痛苦回馈，而女性的情感结构在某些情况下能更好地分散这种反冲。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我们家族领地边界的一座小山顶上保留着一座废弃的白风观测塔——建于三百年前我族的一位始祖为了一位光明法师妻子所建，塔顶以纯石英铺成以便她在月出之前静坐吸纳晨光。在家族秘密档案中保存着这位女性的研究笔记——她在笔记中提出了一个在学院官方文献中从未出现的假说：赫曦的本质不是八风之一而是八风之母。她的推理基于一个简单的古语证据——在精灵最古老的魔法文献中，大地之母艾莎的名字与赫曦的古名称在发音和文字结构上完全一致——这意味着高等精灵可能认为白风不是与其他七风等同的一个分支，而是所有风的起源。她在笔记的后半部分提出了一系列关于使用赫曦来逆向操控其他风的惊人假设——这本笔记在家族档案中被锁在铅板内层中，因为任何学院的正式审查官都会将这种假说判为异端。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "赫曦白风有一点是其他七风永远无法做到的——当你独自一人在旧世界最深的黑夜里被某些你无法命名但能感受到它们存在的不可见之物包围时，一名真正的白风法师即使不释放任何法术，仅仅安静地站在那里，他身体周围会自然渗透出一种极淡的、能够被任何活人灵魂察觉的温暖微光。不是视觉上的光——你不能用它看书——而是你的恐惧会在一个时刻突然降下来半级，就像有人在暴风雪中在你背后安静地生了一堆不完全的火、还没烧旺却已经驱走了你后颈上最早一层霜。我在欧斯特领的一个废弃伐木场中遇到了一位背着赫曦学院标记的流亡法师——他没有告诉我他为什么被逐出学院，但我整晚坐在他身边时梦到的所有噩梦都比以前短了半截。第二天日出时他已经消失，留下一颗放在我身侧的白水晶——现在我还保存着它，在每一个黑夜需要看清某些东西的时候。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "赫曦白风水晶是旧世界魔法商品市场上最为昂贵也最多赝品的魔法物品——纯石英本身并不稀罕，稀罕的是经过光明学院充能仪式注入赫曦能量的白风水晶，它在市场上被称为'光储'。一枚拳头大小的标准光储可以在没有阳光的地下环境中为一名白风法师提供约三次净术法术的额外能量，或在无人操作时持续发出微弱的净化光芒（足以阻止任何低级亡灵靠近其五尺半径）。真品光储的市场价约为同等重量黄金的四倍——原因是学院的充能周期每年只有两次，每次充能仪式只能处理不超过六十枚标准大小的水晶。伪造光储通常以普通石英在日光下暴晒数日后以蜡封包装出售——买家在阳光下打开时会有短暂的亮度错觉，但进入地下后便在数分钟内完全失效。辨别真伪的唯一可靠方法是将水晶浸入一盆完全黑暗中放置二十四小时后的井水中——真品光储的水面上将浮现一层可以被肉眼看见的极细微的白色波纹。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "赫曦白风——光明的八风之一，最纯净也最难掌握，在日光中汲取力量",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "赫曦白风的魔法属性与能量来源"
+  ]
+}

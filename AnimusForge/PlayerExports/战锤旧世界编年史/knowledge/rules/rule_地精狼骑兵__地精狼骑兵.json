@@ -1,0 +1,212 @@
+{
+  "Id": "rule_地精狼骑兵__地精狼骑兵",
+  "Keywords": [
+    "地精狼骑兵",
+    "座狼骑士",
+    "轻骑游走",
+    "放箭骚扰",
+    "狡猾骑兵",
+    "豺狼坐骑",
+    "狼骑兵",
+    "地精轻骑",
+    "游击战术",
+    "迅捷突袭",
+    "恶地斥候"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "地精狼骑兵是绿皮部落中最令人防不胜防的轻骑部队——地精骑在巨大的黑毛座狼背上，以令人发指的敏捷在战场侧翼穿插迂回，一边狂奔一边向敌军倾泻箭雨。座狼本身也是凶残的掠食者，即使骑手被击落，那头巨狼仍然会用爪牙把周围的一切撕成碎片。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "狼骑小子们可好玩了！俺虽然是个大块头兽人不太擅长骑东西——俺的野猪老想甩掉俺——但看那些小地精骑着毛茸茸的大黑狼在战场上跑来跑去真是乐呵。你以为地精们会怕那些比他们还大的狼？怕死了！但狼骑地精用的不是驯服的狼——他们是和狼崽子一起长大的！从狼崽子刚睁眼就睡在一张烂草堆里，喝着同一碗臭水，所以狼把地精当成自己一窝而不是食物。战场上的狼骑兵最擅长干的是啥？不是砍人——是吓人！他们一群狼嚎着从你侧翼冲过来放一波箭然后立刻掉头跑掉，你追过去他们就跑了，你转回头他们又从另一边嗷嗷叫冲过来——能把对面的铁罐头烦到发疯！最绝的是傍晚：太阳快下去的时候地精们的眼睛开始放亮，狼的眼睛也是，这时候他们冲上来，你只能看到一排发光的眼珠子在黑夜里向你呼啸过来！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "地精狼骑兵是一个指挥官必须认真对待的战术变量，其核心军事价值不在于杀伤力而在于战场塑造能力。一支编制充足的狼骑兵中队——通常在三十至六十骑——能够在战场外围持续制造三倍于其实际军力的心理压迫效应。其标准战术模式包括：侧翼贯穿式袭扰（高速横跨战线向行军纵列射箭后立即撤离）、粮食水源骚扰（切敌补给线，污染水源）、以及最致命的假溃退诱敌——先冲锋后佯装溃逃，引诱敌军骑兵脱离阵线进入伏击圈。对抗狼骑兵的核心原则是纪律而非火力：反制轻骑兵不能靠追，而是靠重型弩炮和骑兵预备队的配合——将狼骑兵逼入一个没有空间发挥机动性的地形死角，然后用重骑兵一次性碾压。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "地精狼骑兵中座狼与骑手之间的共生关系是旧世界自然史中最奇特的跨物种联盟。座狼——在帝国动物志中分类为'Canis lupus giganteus badlandis'，即恶地巨灰狼——自出生起便被地精驯兽师从狼穴中取走，幼崽与地精幼崽在同一个窝棚中由同一头母狼哺乳，由此建立起一种被行为学家称为'同巢印记'的深层心理联结。成年座狼的肩高约为四尺五寸，体重可达四百五十磅，冲刺速度约为每小时四十五里——比任何人类骑兵坐骑都要快。狼骑兵使用的典型弓为地精短弓——射程短于人类弓百分之四十——但其战术不同：地精箭矢通常浸渍在一种从腐烂蘑菇中提炼的致炎黏液中，擦伤即可导致伤口迅速化脓。帝国军械局档案记载，帝国历2352年对抗「葛哈格·剥皮者」的Waaagh时，因狼骑兵箭创感染致死的人数约为当场被射杀的三倍——这些轻骑的真正杀伤力不在箭头而在被黑魔法与真菌感染的伤口。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "在我的领地上，狼骑兵造成的伤亡数据有时比兽人大块头还要高。不是因为他们杀的人多——而是他们夜袭时专挑马厩下手，然后咬死所有马匹。一匹训练好的战马价值三十金克朗，而一只座狼不需要一分钱的投入。在这种不对称的消耗战中，我们的骑兵资源被慢慢蠹空，而绿皮的成本几乎为零。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我们家族保留了一副地精狼骑兵的完整骸骨——狼骨与地精骸骨缠在一起，是在北境的一场伏击战中找到的。那匹座狼的脊椎前端有三处箭伤，但肋骨上穿着的箭还在说明这畜生死前至少中了十二箭还咬碎了三个士兵的咽喉。我的祖父把这具骸骨裱在家族兵器库里，作为对我们家族哨兵永远不要低估一件轻装畜生战斗意志的警示。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "有一次在边境亲王领地护送商队，我们被一队约莫四十多的狼骑兵整整追了三天。他们从不上来正面打——只是不停从我们队伍后方跑过去嗷嗷叫和放冷箭，整个商队的骡马吓得日夜不停地骚动。第四天我们到达哨站时，所有人——包括佣兵——都瘫在地上一个手指头也动不了了。而狼骑兵在城外的山头上坐着，拿手指朝我们比划一些我也不知道是什么意思的地精手势。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "想抓活的地精狼骑兵去卖给角斗场是很多奴隶贩子发过的白日梦。他们觉得——小地精加一条狗似的畜生，好抓。结果呢？每次都是一地尸体：不是人的，就是他们自己佣兵的。座狼在笼子里的破坏力比一头成年灰熊还大，而地精骑手在应激反应下会自己咬断自己的舌头然后大笑至死。这项奴隶生意的存活率是全行业最低的。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "地精与巨型座狼的共生骑兵，通过同巢印记建立终身骑乘纽带",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "以令人发指的敏捷在战场侧翼穿插迂回"
+  ]
+}

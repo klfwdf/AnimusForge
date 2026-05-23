@@ -1,0 +1,209 @@
+{
+  "Id": "rule_地脉网道__地脉网道",
+  "Keywords": [
+    "地脉网道",
+    "地下公路",
+    "矮人地道",
+    "卡拉克联络",
+    "远古工程",
+    "残存通道",
+    "地下交通网",
+    "矮人帝国血脉"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "地脉网道曾是矮人帝国最伟大的成就之一——一张贯穿世界边缘山脉地下深处的巨大隧道公路网络，将所有矮人城塞卡拉克连接起来。商队可以在不见天日的安全环境下从最南端的卡拉克·八峰山旅行到最北端的卡拉克·卡德林。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "地脉网道——我们的祖先给我们留下的最宏伟的遗产，也是我们时代最深的伤口。想想看，在黄金时代，一个矮人从永恒之峰出发，在地脉网道的石厅下行走，一路灯火通明，隧道宽阔得可以让三辆满载矿石的大车并行，中途有哨站可以歇息、有符文灯永远亮着、有地底河流的桥拱雕刻着历代的先祖面容，不到一个月就能走到另一座卡拉克。那时候整个矮人帝国就像一只拳头——所有的卡拉克都是握在一起的手指。现在呢？大部分隧道塌了或者被绿皮、斯卡文鼠人占了，我们只能在黑暗中夺回一寸一寸的旧日荣光。但还是有些通道安全可用——尤其是连接永恒之峰和巴拉克·瓦尔的那一段，至今仍被碎铁勇士守卫着，用来运输矿石和战时快速调动援军。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "从军事地理角度，地脉网道是旧世界最具战略价值却也最危险的地形要素。完整的网道可以让矮人军队在山脉南北两端之间实现十倍于地表行军速度的战略调动，这赋予了矮人防御战无与伦比的内线机动优势。但残存的网道同样是一个巨大的脆弱点——已知有至少十二个废弃隧道段被斯卡文鼠人改建为入侵通道，绿皮和混沌矮人也经常试图从地底突破。任何需要在世界边缘山脉区域展开的军事行动都必须考虑网道的存在：如果你与矮人结盟且能获得网道使用权，你的后勤和增援速度将碾压敌军；如果你的敌人控制了网道出入口，那么他们的攻击将来自你脚下的任何方向。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "地脉网道的工程学名为'卡拉克-安科尔交通体系'（Karak-Ankor Transit System），是矮人黄金时代（公元前3000年至公元前1500年）期间由矮人工程师公会主导的、已知世界历史上规模最大的地下基础设施工程。根据矮人博学者巴拉丁·古卷保管者的《网道大典》（编纂于公元前约1200年，现存残本藏于永恒之峰先祖图书馆），完整的网道体系包含约四万二千里的主干隧道和超过十万里的支线巷道，连通了当时所有十二座主要卡拉克和约四十个次要据点。隧道拱顶采用了已失传的'先祖应力拱'技术——在无任何支架的情况下，隧道可通过拱顶的石材精密契石将上方的地压均匀分布至两侧的山体岩基，理论上的地质寿命约十万年。当前网道状态令人扼腕：据永恒之峰工程师公会的保守估测，约百分之七十五的网道已塌毁或被敌对种族占领，仅百分之十五保持在矮人完全控制下，百分之十处于争夺状态。主要残存段包括：永恒之峰-巴拉克·瓦尔主干线（约六千里，目前活跃使用中）、卡拉克·卡德林北段（部分由碎铁勇士把守），以及卡拉克·八峰山废墟段（被认为已被斯卡文鼠人改建为地下巢城的一部分）。试图绘制网道完整地图的外族人——包括帝国工程师、精灵探险家和巴托尼亚制图师——无一例外被矮人拒绝，理由是'隧道的秘密是矮人帝国的最后防线'。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我对地脉网道一直怀着学者般的好奇——矮人的隧道工程学超越了现有任何文明的土木技术。他们如何在地底数千尺深的地方挖掘出持续数千年的、不会坍塌的走廊？我的工程师告诉我可能是某种'拱顶应力分配'技术，但这无法解释那些隧道中不需要任何支架却能经受地震和火山活动仍屹立不倒的段落。矮人的工程秘密就像他们的陨铁一样被严密守护。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我们家族曾负责维护从卡拉克·诺恩到卡拉克·希尔巴之间一段约六十里长的网道——那是我们家族的义务，也是我们的荣耀。每代男丁都要每年一次沿着那六十里隧道的每一寸走一趟，检查是否有裂隙、渗水或其它族人的入侵痕迹。三十年前那次巡逻发现了斯卡文鼠人的新掘道，家族立刻封堵了那段隧道——用黑火药从两端同时爆破，把那整段网道埋了。这是矮人对网道的爱：宁愿亲手毁掉一段，也不能让它落入污秽之手。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "在灰色山脉迷路时无意中发现过一个网道入口——半掩在塌方的山石后面，石门上刻着一个巨大的矮人符文，还在隐约发着光，虽然那入口显然已经废弃了几百年。我往里扔了块石头，过了好一阵才听到落地声——深不见底。一个同行的盗贼提议进去探探，说矮人古道里可能埋着宝贝——我们集体否决了，因为隧道深处传来了一种像是潮湿布料摩擦石头的声音，没人想确认那是什么。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "贸易行会的人都知道地脉网道的商业价值——据说在黄金时代，一支矮人商队通过网道从巴拉克·瓦尔运矿石到永恒之峰只需十二天，而同路线走地表需要三个月。现在你们明白为什么矮人宁愿付双倍价格也要通过网道运货了吗？马林堡有家物流商行曾试图租用一段网道使用权——矮人的回答是'只有矮人血才能在先祖隧道里流汗'。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "卡拉克-安科尔交通体系：地脉网道的正式名称，由矮人黄金时代的工程师公会设计建造，世界历史上最大的地下基础设施。",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "地脉网道地下公路矮人地道"
+  ]
+}

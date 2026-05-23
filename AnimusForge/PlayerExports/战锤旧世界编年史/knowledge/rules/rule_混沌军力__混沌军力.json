@@ -1,0 +1,216 @@
+{
+  "Id": "rule_混沌军力__混沌军力",
+  "Keywords": [
+    "混沌军力",
+    "混沌军力混沌勇士",
+    "混沌骑士",
+    "恶魔",
+    "神选",
+    "混沌神选者",
+    "混沌军力地狱炮",
+    "混沌军力龙魔",
+    "混沌军力混沌畸变体",
+    "混沌军力混沌印记",
+    "混沌军力诸神之眼",
+    "掠夺者",
+    "混沌冠军",
+    "邪神战争",
+    "末世大军"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "混沌的军队是旧世界最令人恐惧的毁灭力量。这支军队的核心是混沌勇士——身披黑铁板甲的北方精锐战士，每一人都曾用敌人的颅骨向邪神献上证明。在他们之上是混沌骑士，骑着由邪神赠礼变异的钢铁战马冲锋陷阵。更可怕的是，混沌军队中常有来自异界的恶魔同行——这些非物质存在的形体本身就是对现实法则的亵渎。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "chaos_culture"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我们的军力是诸神意志在凡间的直接体现。每一名混沌勇士都不是被征召或雇佣的——他是自愿踏上寻求神恩的钢铁之路，用敌人的鲜血书写自己的传奇。我们的混沌骑士不是凡人骑兵，而是被邪神赋予超自然耐力的毁灭先驱，他们的坐骑曾吞噬过恶魔的血肉。神选者是诸神特别眷顾的冠军，他们的盔甲与肉体融合为一，手持的武器中囚禁着愤怒的恶魔之魂。当混沌大军出现在地平线上时，任何凡间的军队都不过是等待收割的庄稼。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "混沌军队的战术优势在于其绝对的不对称性：他们不需要补给线（混沌勇士以战养战），不受士气动摇影响（凡人恐惧对他们而言是甜美赞礼），并且各兵种之间可形成恐怖的协同——蛮族掠夺者先行消耗敌军，混沌勇士方阵正面碾压，混沌骑士侧翼包抄，恶魔军团则负责制造混乱和恐慌。对抗混沌，传统的阵地防御战几乎是自杀，必须利用其缺乏统一指挥和部落间内斗的弱点。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "混沌军力的等级体系严格遵循神恩积累原则：最低层是混沌掠夺者（尚未证明自身的蛮族战士），其上为混沌勇士（获得邪神初步认可的披甲战士），再往上为混沌神选（被某位特定邪神标记的精锐），最高层为混沌冠军和混沌领主（统率战帮的领袖）。每一个层级都对应着不同程度的神恩赐福——这既是力量也是陷阱，因为邪神的赠礼往往伴随着身体的变异：额外的肢体、角质的皮肤、喷吐火焰的能力，或是精神逐渐被邪神意志取代。恶魔军团的加入需要混沌术士通过特定仪式撕裂现实帷幕，而仪式的规模决定了能够召唤的恶魔等级——从低阶的放血鬼到强大的大魔。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "混沌军队对女性统治者的威胁在帝国史书中极少被正面书写——但我们都知道。北境女伯爵之间私下流传的手抄本里记录了比任何军事编年史更可怕的内容：混沌战帮攻破城池后，女性俘虏不会简单被处决。那些具有魔法天赋或贵族血统的女性会被献祭给色孽的愉悦教派，或被强迫饮用混沌变异之血以「测试其灵魂强度」。在诺德领和奥斯特领，每一位女性领主都有一份秘密计划——城堡最深处有一间只有女性守军知道的内室，里面不是金银细软而是被称为「最终安宁」的快速行动方案。这不是怯懦——是拒绝接受被转化为混沌的玩物或行尸走肉的命运。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "混沌军队是我族谱上永远无法抹去的血迹。上一次混沌大入侵——马格努斯皇帝时代的那场——我的家族损失了三分之二的成年男性。那些没有被杀死的——更糟。我的叔祖父和他的两个儿子在战后被发现时已经不再是他们，他们的血肉开始与甲胄融合，眼睛在黑暗中发出微弱的紫色光芒，他们被带往阿尔道夫的猎巫人法庭处理。从那天起，我们家族的遗产继承法增加了一条：任何家族成员一旦出现「北境污染」的迹象，其继承权自动无效，不得举行葬礼仪式以降低混沌之力通过遗体进一步扩散的风险。防御混沌不是抽象的战略——它是我的家族每一代人用自己的血和名字来兑现的永久承诺。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "在诺斯卡边境当过三年雇佣兵的我可以告诉你：你在帝国军事手册上读到的混沌军队的「弱点」在实战中几乎不存在。是的，混沌部落之间确实会内斗——但在你的盾墙正前方一百步处你不会感受到这一点。当你面对一座由纳垢赐福的、你投射的所有箭矢都会被它们腐烂肉体中的脓液中和掉的混沌勇士方阵时，战术分析变得毫无意义。唯一真正有效的混沌对抗方法——我是在失去半个佣兵团之后才学到的——是火焰。不是普通的火，是含光明学院附魔法阵的炼金火焰。如果你没有那个，那就只有帝国的大口径臼炮可以让你在混沌骑士冲到你眼前之前看到他们从马背上倒下。如果你连那个也没有——跑。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "从帝国军工联合会的角度看，混沌军队是旧世界最昂贵的战争对手——不是因为他们的装备昂贵，而是因为对抗他们需要持续百年级别的军事投入。北境长城、基斯里夫的守备军、诺德领的舰队、帝国在北方的所有哨站——这些都是永久性的消耗。我把混沌视为一种经济上的负外部性——它迫使帝国将年收入的近三成投入防御工事和军事物资，这些资本本可以投入帝国的道路扩建、阿尔道夫港口现代化或者新的钢铁高炉。混沌军队不遵守任何经济理性——他们不掠夺你然后撤退，他们来了就试图摧毁一切，这意味着你之前的所有防御投资将被一次性抹平，而后你必须从零开始重建。这种模式是任何长期预算都无法合理规划的灾难。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "神选者——获得邪神多重赐福的混沌精英，旧世界最可怕的重装步兵",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "混沌的军队是旧世界最令人恐惧的毁灭力量"
+  ]
+}

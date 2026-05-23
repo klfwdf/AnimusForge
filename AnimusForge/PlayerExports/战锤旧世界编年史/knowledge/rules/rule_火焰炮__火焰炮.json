@@ -1,0 +1,213 @@
+{
+  "Id": "rule_火焰炮__火焰炮",
+  "Keywords": [
+    "火焰炮",
+    "炼金燃油",
+    "近距离毁灭",
+    "重甲克星",
+    "矮人喷火",
+    "灰烬制造",
+    "炮兵",
+    "矮人火炮",
+    "燃烧",
+    "攻城武器",
+    "火焰",
+    "锻炉炮"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "火焰炮是矮人工程学中最暴烈的一种炮兵武器——它朝目标抛射一颗装满矮人炼金燃油的炮弹，触地后绽裂成一片黏着燃烧的火焰地狱。它是重装步兵方阵最直接的克星：铁甲在它面前不能护佑，只会变成一座个人烤箱。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "火焰炮——那可不是小孩过家家的铁龙手小罐子！这是正儿八经的铜管大炮，炮弹里装着比铁龙罐多得多的拉库尔炼金燃油，一颗炮弹在一队重甲兵中间开花的画面你知道有多解气？轰一声，然后不是普通的爆炸火光——是油！油喷出去泼到哪儿就黏住哪儿继续烧！那些穿着厚铁甲的混沌武士，平日里昂首挺胸觉得自己的黑暗神给的板甲无敌——火焰炮一炸，他们的铁甲就变成锅子，里面的人就是被炖的肉。最狠的是火焰炮的炮弹在爆的时候还会溅起一大片火雾——往不高不低的半空激出一朵蘑菇云，瞬间把周围的空气全烧干，方圆四十尺里不管你穿什么样的铁罐头全都倒在地上打滚。矮人指挥官们喜欢在攻城或者守城门的时候用火焰炮：不用瞄准谁——朝那个方向一炮，保证那片地上一阵子什么都活不成。唯一的问题是炮弹贵得能把长须者都心疼出眼泪来——一颗火焰炮弹的造价等于四十个矮人矿工挖三年陨铁的收入。所以火焰炮每响一声，就意味着矮人把仇记在账上了。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "火焰炮是对密集重装阵型进行区域毁灭的特化炮兵。其核心杀伤机制不是弹丸穿透力——事实上火焰炮弹的药罩极薄——而是拉库尔燃料的两种次生效果：空气燃氧消耗导致的窒息与铁甲热传导导致的不可逃脱的灼烧。在平原战场上对抗火焰炮的最有效手段是部署松散阵型——但这对需要密集防御的重甲步兵是一个两难：你整密集了是炮的好靶子，松开了敌军普通步兵能吃掉你。另外，火焰炮的射程约为普通石弹炮的三分之二——这使得火焰炮手必须比常规炮兵更靠前，为敌军轻骑兵提供了一个切袭的窗口。如果你的对手是矮人且部署了火焰炮，你的首要反制手段是派骑兵绕后优先击毁其弹药车。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "火焰炮的内弹道学与传统石弹/铁弹炮截然不同。火焰炮的炮弹——在矮人军械术语中称为'拉库尔-卡扎杜姆'——是一个由薄铜壳封装的液体燃料密封容器，中央嵌入一条精炼的石墨延迟燃烧引芯，在火炮发射时管底装填的黑火药推进药引燃后抛射弹体，未同时引燃内部燃料（此为关键设计），而在弹体抵达目标上空约十五至二十尺时延迟引芯引燃燃料，高温燃气体压力撕开薄铜壳使燃料以雾化态散布，再在下降过程中被周围空气明火引燃——形成一道无法通过任何已知隔热材料防护的黏着燃烧区。单枚炮弹的有效燃烧半径约为二十尺，温度梯级从落点中心的一千八百度向外逐渐减弱。火焰炮的缺点有三：射程（最大射程约为四百五十尺，仅为帝国巨炮的一成半）、成本（单枚炮弹的拉库尔燃料分量约相当于两个铁龙罐，加上铜壳封装的符文密封工艺，成本极为高昂）、以及弹药安全性（火焰炮弹在高速震动下极其敏感，历史上因弹药车事故引发的炮队自毁事故在矮人军械档案中记录的就有至少十四起，每起均导致炮与炮组的全灭）。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我的领地在对抗绿皮大举入侵时曾幸运地有矮人火焰炮协助守城。站在城墙上往下看，那种火在城墙脚下烧成一条红河的样子——油腻、光亮、缓缓流淌——非常接近我对「死亡之河」的想象。但我也注意到，火焰炮的炮组成员在整个过程中面无笑容，这跟人类的炮兵们炸到对面就欢呼完全不同。后来我才知道：每一发火焰炮弹对矮人来说相当于在账单下画一道红线。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我家族在联合矮人守卫一个隘口时，矮人带了两门火焰炮。他们在隘口底部埋了延时引信，待绿皮前锋冲过隘口后引燃，火舌从后路切断敌军。但引信出了差池烧迟了十二拍——那十二拍里我方的前阵损失了大约七十名剑兵。事后矮人工匠长来给我道歉，他没有说任何花言巧语，在账本上划去了对应该损失的赔金数目——精确到每一个士兵的抚恤金支出。火焰炮是危险工具——矮人从不否认。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我们在巴拉克·瓦尔的城墙上见过两门火焰炮。它们不像帝国的巨炮那样被擦拭得亮堂堂——矮人的炮管是暗绿铜色的，表面刻满了符文，远远看像两截老旧烟囱。但当它们发射时那种声音——不是帝国的「嘭」，而是低沉的「嗡轰」一声，然后空气里所有水分消失，一股热浪从天而降像你鼻子被猛砸了一拳。落地后没多久，整个城墙外头的绿皮方阵变成了一片扭动的火人。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "帝国炮兵工程师联会总想从矮人手里搞到火焰炮的炼金燃油配方。谈判谈了好几回，矮人只回一句话：「你们的火药是火药，我们的油是土产——土不是随你挖的」。人类工程师退而仿制了帝国版的凝固炎弹——把沥青、硫磺和鲸脂在高温下混合，射程只有矮人原版的四成，还经常在炮管里自燃。帝国军械备忘录里最后一次出现仿制火焰炮的记录是帝国历1983年：「试验失败。炮毁。三亡。项目停止」。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "以拉库尔炼金燃油为填充的矮人特种燃烧炮兵，重甲方阵直接克星",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "火焰炮炼金燃油近距离毁灭"
+  ]
+}

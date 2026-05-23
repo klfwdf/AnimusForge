@@ -1,0 +1,211 @@
+{
+  "Id": "rule_湖神女巫__湖神女巫",
+  "Keywords": [
+    "湖神女巫",
+    "湖之女巫",
+    "女神代言人",
+    "湖神女巫生命魔法",
+    "湖神女巫天堂魔法",
+    "废黜王权",
+    "费伊",
+    "圣杯修女",
+    "女巫预言",
+    "神圣仲裁"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "湖神女巫是湖之女神在凡间至高无上的代言人——她不是普通的女巫，而是女神意志的直接化身和传声筒。湖神女巫同时掌握生命魔法和天堂魔法两种精灵高等法术，并且拥有巴托尼亚唯一的法定权力：她可以在公爵议会上公开宣布一位国王已经失去女神的恩宠而废黜他。在全巴托尼亚，没有第二个凡人有这样的权威。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "湖神女巫——我们巴托尼亚人在她面前只能双膝跪地。她不是血肉之躯的凡人，尽管她的身体在技巧上是人类的，但她的灵魂已经被湖之女神完全居住了。湖神女巫的传承方式对外完全保密——我们只知道当前任湖神女巫感到自己的寿命将尽时，她会独自走入圣湖水域并在那里归于女神，然后在一段不确定的时间之后——有时是一周，有时是三年——新的湖神女巫会从同一座湖中走出来，全然长大并且已经拥有全部的记忆和力量。她从不透露她的凡名——如果她有过的话——因为她的名字已经变成湖之女神本身的一个面。她拥有同时驾驭吉兰和阿奇这两种魔法的奇异能力——这在帝国魔法体系的定义中是不可能的，因为帝国人只能学一种风——但湖神女巫不是帝国许可法师，她是女神意志的通道而非学术的毕业者。每当王国面临重大危机——国王的选择、外来入侵、圣杯骑士团的内部分歧——公爵们会聚集在圣杯大教堂并请求湖神女巫出面做出最终的裁决。她的裁决是不可上诉的：如果她说国王应该被废黜，那么所有公爵必须在接下来的日出之前撤回对国王的效忠宣誓——任何不服从的公爵本人会立刻被湖神女巫绝罚并被逐出巴托尼亚社会。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "湖神女巫在巴托尼亚的政治棋局中占据着一个理论上高于一切、实际运作中却极其微妙的地位。从法律上来说，她的权力是无上限的——她可以合法地废黜国王、解散公爵议会、禁止任何骑士发动他所宣称的圣战。但从实际操作中来说，她无法直接指挥军队——湖神女巫没有自己的私人武装，她的权力全部依赖于公爵们自愿地服从她的裁决。这导致了一种精致的政治对称：巴托尼亚国王是最高的世俗军力所有者，但湖神女巫是最高的神权合法性来源，而公爵们站在两者之间——他们需要国王来保护他们的领地免于入侵，也需要湖神女巫来保证国王不会变成一个暴君。在漫长的历史中，湖神女巫与国王之间的冲突极为罕见但每一次都是灾难性的——当湖神女巫公开谴责国王时，巴托尼亚将在几个月内陷入内战的漩涡，因为一半公爵选择忠于女神而另一半选择忠于国王。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "湖神女巫制度的神权和法律基础构成了旧世界政教关系研究中一个独特而激进的案例——即世俗权力被一个明确的神权代理人随时可逆地制衡的制度框架。在法学定义上，湖神女巫拥有「对王权的紧急否决权」——这项权力在巴托尼亚宪法惯例中被明确记载，最早的形式出现在巴托尼亚自吉勒斯一世之后的第一部成文法《巴托尼亚王权法》中，该法第三卷第七章规定：「湖之女神的代言人可作为女神圣意的在世证据，在任何时候质疑国王的统治资格」。然而这部法律中留下了一个从未被彻底处理过的问题：如果湖神女巫自己失去了女神恩宠——但她身为女神代言人的身份使她对这个问题的评定拥有最终解释权——是否存在一种机制来废黜湖神女巫？在法律史上，这个空白被称为「神权代理人递归悖论」并在多个高等级法学研讨会上被反复讨论但从未获得一个能被教会接受的解决方案。湖神女巫在公开记录中使用过的最高调权力行使在巴托尼亚历约十个世纪之前——当时的女巫莫甘娜公开废黜了国王于尔班三世并宣布他的表妹之夫为合法继承人——这次废黜运动在此后的八百年间在官方记录中被称为「莫甘娜的纠错」，其细节却被刻意模糊。目前任湖神女巫——通常只被称为「费伊女巫」——是巴托尼亚近三百年来第五任代言人，据称她目前驻守在圣杯大教堂附近的银湖秘修院中几乎从不出访。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "湖神女巫在巴托尼亚女性心中代表着我们在这个制度中可能拥有的最高的也是唯一不被侵犯的权力形式。整个巴托尼亚的社会结构是男性的——骑士、国王、公爵都是男性——但湖神女巫是女神的代言人且只能是女人，没有男人能够质疑她的判决。这提供了某种精神庇护：如果一位贵族女性遭受了来自男性亲属的严重不公正，她唯一的终极上诉就是向湖神女巫申诉——尽管实际上很少有人真正走到那一步。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "湖神女巫的裁决对任何巴托尼亚家族而言是最不可预测的政治变量。你可以精心策划一个长达一代人的婚姻联盟网络以确保你的后代成为国王，但在加冕仪式上湖神女巫仅仅一句「这个人没有得到女神的认可」就足以让你的全部投资清零。巴托尼亚最狡猾的家族领袖永远不会把所有的砝码都押在国王政治上——他们总会在湖神女巫一侧保留一条隐性的沟通渠道。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "湖神女巫对于我们在巴托尼亚流浪的人来说是传说多于真实的人物。我认识一个老佣兵声称在加冕仪式上见过她——据他说她走过的时候空气本身感到了沉重，仿佛你站在一个即将下暴雨的夏季午后。我不确定我信不信。但我知道整个巴托尼亚最硬气的骑士在提到湖神女巫的名字时都会压低声音——这已经比任何论证都更有说服力了。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "湖神女巫对巴托尼亚经济的影响是间接但深刻的。她有权特赦任何被国王判为叛逆的骑士——如果她行使这项特赦权，意味着本来将被没收并入国库的领地财富仍然保持在原家族手中。从商人角度而言，湖神女巫的废黜令本质上是一纸不可颠覆的资产重分配令——它会触发领地的重新归属和法律上的所有权转移，从而影响整个地区的贸易许可证分配。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "费伊女巫——湖神女巫的最常见头衔，全巴托尼亚唯一合法的女神代言人",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "湖神女巫的神学属性与信仰体系"
+  ]
+}

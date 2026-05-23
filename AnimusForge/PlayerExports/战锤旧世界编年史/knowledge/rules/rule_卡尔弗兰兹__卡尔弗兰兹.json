@@ -1,0 +1,213 @@
+{
+  "Id": "rule_卡尔弗兰兹__卡尔弗兰兹",
+  "Keywords": [
+    "卡尔·弗兰兹",
+    "皇帝",
+    "卡尔皇帝",
+    "瑞克领亲王",
+    "死亡之爪",
+    "盖尔马拉兹",
+    "狮鹫皇帝",
+    "帝国统治者",
+    "弗兰兹家族",
+    "马背皇帝",
+    "选举皇帝",
+    "帝国复兴"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "卡尔·弗兰兹是当今帝国的皇帝，也是瑞克领的选帝侯亲王，被誉为自马格努斯以来最伟大的帝国统治者。他年轻时以出色的剑术和演说天赋闻名，骑乘他的狮鹫坐骑'死亡之爪'亲临战场时的雄姿是帝国军队士气的最高象征，而他手持西格玛神锤盖尔·马拉兹的身影让每一个帝国的敌人都闻风丧胆。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "卡尔·弗兰兹是我们的皇帝，是西格玛在世间的剑与盾。他父亲路易伯德选帝侯在绿皮突袭中阵亡后，年轻的卡尔在二十五岁时继任瑞克领亲王，随后以令人惊讶的政治手腕赢得了帝国选举——他用阿尔道夫的财富说服了犹豫的选帝侯，用在瑞克沃德森林剿灭野兽人部落的军功赢得了米登领的尊重，又以西格玛大主教的公开支持确立了宗教合法性。卡尔皇帝绝不是深宫中宣读法令的傀儡，他骑乘狮鹫死亡之爪亲率瑞克卫队冲锋的场面已经被编成了至少二十首行军曲。他治国的方式兼具务实与远见：他扩建了阿尔道夫大学、增加了炮术学院的经费、恢复了与矮人王国的定期使节往来、重组了帝国谍报网络以搜捕混沌邪教。但他也面临前所未有的挑战——北方混沌势力日益猖獗、希尔瓦尼亚的不死者蠢蠢欲动、选帝侯之间的世仇比任何时候都更难调和。没有人嫉妒他的皇位，因为每个有头脑的人都知道，坐上去的人其实是在用自己的血肉之躯堵住一扇随时可能崩塌的堤坝。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "卡尔·弗兰兹的皇帝之路是一堂生动的帝国政治课。他不是凭借血统继承皇位——是选帝侯们选了他，这意味着他欠着一大笔政治债务。他的当选得益于三个关键因素：第一，瑞克领的财力让他在选举中拥有压倒性的资金优势；第二，他在父亲去世后的三年间以瑞克领亲王的身份发动了一系列成功的边境战役，证明了自己不仅是政治家也是战士；第三，也是最重要的一点，西格玛教会的大主教沃尔克马尔·冯·海因里希公开支持他——沃尔克马尔的支持不仅带来了教会的选票，还给了卡尔使用盖尔·马拉兹的神圣合法性。但获得皇位只是开始：卡尔需要同时扮演战士、外交官、法官和商人。他在帝国议会中善于分化选帝侯之间的联盟，用赏赐安抚忠诚者、用冷落惩罚不合作者。在战场上他亲自持锤上阵，不仅是为了激励士气，更是为了不断提醒所有人——皇帝不仅是政治家，更是帝国最强大的战士。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "卡尔·弗兰兹的统治代表了一种新型的帝国皇权模式——学者们称之为'积极皇权'或'马背上的皇帝'。与许多前任不同，卡尔从不将自己局限于阿尔道夫的宫殿之中。他的统治哲学体现在三个层面：在政治上，他推行了'帝国复兴计划'，通过帝国议会的法律手段逐步削弱选帝侯的独立军事权，要求各行省增加对帝国中央财政的贡献额度，同时以兴建道路、疏浚河道等公共工程作为交换——这些公共工程不仅有经济价值，更增强了皇帝在各行省的直接存在感。在军事上，他改革了瑞克卫队的编制结构，增加了火枪骑兵的比例，并恢复了与矮人工程行会的定期合作以改进帝国炮兵。在外交上，他主动修复了帝国与巴托尼亚的冷战关系——派出使团参加劳恩国王的加冕典礼，并就灰色山脉的边境划定达成了正式协议，这一举措被历史学家认为是化解了潜在的战争危机。然而，卡尔最深远的影响可能在于文化层面：他大力资助帝国历史协会、组织学者编纂了《帝国通鉴》并建立皇家档案馆。他用行动证明，帝国的皇帝可以是学者与战士的结合体——这一理念正在深刻改变帝国的统治文化。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "卡尔·弗兰兹皇帝的统治风格中有一个被男人们忽视的维度——他对帝国贵族女性的态度比任何前任皇帝都更为务实。先皇们通常将女性贵族视为联姻筹码和政治装饰，但卡尔在他的第一次帝国议会宴会上就注意到了我呈递的关于奥斯特马克边境卫生状况的报告——那是一份由修女会和难民收容所提供的详尽统计。他不仅读完了全文，还在休会期间派自己的秘书向我索要了附录中的原始数据，半年后帝国议会上通过的边境防疫拨款的条款中几乎照搬了我报告中建议的三项措施。这不是因为卡尔特别偏爱女性顾问——他偏爱的是能力，而他不像大多数男性选帝侯那样在看到一个女人的名字时自动跳过她的文章转而只向她的父亲或丈夫询问意见。我不知道卡尔是否是一位伟大的皇帝，但我可以肯定地说，在帝国历史上能够做到在读取一名女性提交的报告时忘记她性别的人屈指可数——而他是其中之一。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "弗兰兹家族的崛起是帝国选帝侯家族谱系中最精彩的案例之一——它不是靠幸运的继承，而是靠三代人精心布局的家族战略。卡尔皇帝的祖父——老路易伯德——在世时便预见到瑞克领需要一位能与西格玛教会建立牢固关系的继承人，因此将年幼的卡尔送到沃尔克马尔主教的座下接受神学教育。这一布局在二十年后以沃尔克马尔公开支持卡尔当选皇帝的形式产生了无法估量的政治回报。弗兰兹家族的第二大战略布局是经济上的——他们用瑞克河的航运税收与矮人王国建立了持续性的贸易合作，这种合作产生的稳定现金流是其他选帝侯家族依靠地产收入无法比拟的。弗兰兹家族的光辉看似集中在卡尔本人身上，但任何深入研究过该家族历史的人都会发现，卡尔只是站在了两代前任搭建好的高台上——他个人的才华固然卓越，但其他选帝侯家族之所以败给他不是因为他们没有类似的才华，而是因为他们缺少三代持续经营的家族积累。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我在帝国各地流浪时听过不下三十种关于卡尔·弗兰兹的传说，其中最真实的几种都是在行军帐篷和哨站篝火边流传的——不是官方的加冕叙事，而是老兵们在战役中亲眼见到的死里逃生。其中一个故事来自瑞克卫队的一名退役军士长：他说卡尔在瑞克沃德森林中曾一度被野兽人的伏击围困，在援军抵达前的整整两个时辰里，皇帝本人持锤站在士兵的最前线，并且在箭矢擦过他头盔后对身边的年轻新兵开了一句玩笑说'你刚才的祈祷声比我的狮鹫叫声还响，士兵——再虔诚一点，西格玛也许能在敌人的箭上打滑'。真正让我对卡尔产生敬意的不是官方的叙事——而是在雇佣兵市场上阿尔道夫驻军的军饷拖欠率是帝国最低的，这意味着卡尔至少做到了一件看似小却极不寻常的事：他按时给士兵发饷。一个能让手下吃饱饭的皇帝在旧世界就是一位好皇帝，不管他的王冠和战锤看起来有多华丽。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "卡尔·弗兰兹治下的帝国贸易政策是旧世界近五十年来最具商业理性的政府蓝图。卡尔不是那种只会向商人征重税来填军费的皇帝——他重建了帝国道路体系，让从努恩运往米登海姆的火炮运输时间缩短了三分之一，这是任何一个帝国商会都无法单独实现的基础设施投资。他恢复了帝国铸币的统一标准，有效打击了诺德领和奥斯特领的私铸劣币，让帝国银马克的实际购买力在五年内提升了近两成——对于做跨行省贸易的商人来说，这比任何减税政策都更具价值。当然，卡尔对商人也有冷硬的一面：他在议会中推动的'帝国贸易特许状'制度实际上是对各行省自由商会的间接收编——任何想要获得跨行省贸易授权的大型商会都必须在帝国财政部登记并接受年度审计。这是一种温情脉脉的监管扩张，但至少他比大多数皇帝更清楚商人需要什么来赚钱、以及赚钱之后帝国能通过什么渠道合法地从中抽取属于国库的部分。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "死亡之爪——卡尔皇帝的狮鹫坐骑，战场上帝国士气的最高象征",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "卡尔·弗兰兹皇帝卡尔皇帝"
+  ]
+}

@@ -1,0 +1,1 @@
+﻿SKIP native/non-managed: F:\SteamLibrary\steamapps\common\Mount & Blade II Bannerlord\bin\Win64_Shipping_Client\TaleWorlds.Native.dll :: 使用“1”个参数调用“GetAssemblyName”时发生异常:“未能加载文件或程序集“TaleWorlds.Native.dll”或它的某一个依赖项。该模块应包含一个程序集清单。”

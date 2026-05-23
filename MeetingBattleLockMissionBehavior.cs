@@ -117,11 +117,13 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior, IAgentStateDeci
 
 	private bool _allowTargetFreeMovementAfterFormalDuel;
 
-	private bool _startupLoadingFadeApplied;
-
 	private bool _startupLoadingFadeAborted;
 
+#if !BANNERLORD_1_4_OR_GREATER
+	private bool _startupLoadingFadeApplied;
+
 	private float _startupLoadingFadeElapsed;
+#endif
 
 	private Agent _meetingTargetEscortAgent;
 
@@ -217,9 +219,11 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior, IAgentStateDeci
 		_deploymentSkipApplied = false;
 		_deploymentSkipEarliestTime = -1f;
 		_allowTargetFreeMovementAfterFormalDuel = false;
-		_startupLoadingFadeApplied = false;
 		_startupLoadingFadeAborted = false;
+#if !BANNERLORD_1_4_OR_GREATER
+		_startupLoadingFadeApplied = false;
 		_startupLoadingFadeElapsed = 0f;
+#endif
 		_meetingTargetEscortAgent = null;
 		_meetingPlayerEscortAgent = null;
 		_playerEscortPlacementFinalized = false;
@@ -882,6 +886,13 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior, IAgentStateDeci
 
 	private void TryApplyStartupLoadingFade(float dt)
 	{
+#if BANNERLORD_1_4_OR_GREATER
+		if (!_startupLoadingFadeAborted)
+		{
+			_startupLoadingFadeAborted = true;
+			Logger.Log("MeetingBattle", "Startup loading delay skipped: MissionCameraFadeView not available on Bannerlord 1.4.");
+		}
+#else
 		if (_startupLoadingFadeApplied || _startupLoadingFadeAborted || base.Mission == null)
 		{
 			return;
@@ -926,6 +937,7 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior, IAgentStateDeci
 			_startupLoadingFadeAborted = true;
 			Logger.Log("MeetingBattle", "Startup loading delay skipped: camera fade state never reached White.");
 		}
+#endif
 	}
 
 	private void TrySkipDeploymentPhaseForMeeting()

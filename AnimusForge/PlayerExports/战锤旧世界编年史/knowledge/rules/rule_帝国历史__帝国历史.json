@@ -1,0 +1,213 @@
+{
+  "Id": "rule_帝国历史__帝国历史",
+  "Keywords": [
+    "帝国历史",
+    "帝国由来",
+    "西格玛建国",
+    "马格努斯中兴",
+    "三皇分立",
+    "吸血鬼战争",
+    "混沌大侵攻",
+    "黑暗时代",
+    "黄金时代",
+    "帝国编年",
+    "法沙隘口",
+    "黑火隘口"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "帝国由凡人神皇西格玛于帝国纪年元年建立，他在黑火隘口之战中大败绿皮大军，统一了散布在旧世界中部的诸人族部落。自那以后，帝国经历了多次存亡之秋——两千年的黑暗时代、混沌大侵攻、吸血鬼战争与三皇分立——但卡尔·弗兰兹皇帝的登基让这个古老的国度重新迎来了希望。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我们的历史是用鲜血在羊皮纸上书写的。西格玛并非生而为神——他是乌贝斯瑞克部落的酋长之子，在瑞克多夫击溃了兽人与地精的联盟，将十二个部落从互相残杀的野蛮中拯救出来。帝国历一千年，路德维希皇帝驾崩后爆发了席卷全境的瘟疫与内战，黑暗时代绵延近千年，文明的火种在修道院与矮人要塞中苟延残喘。直到帝国历二千三百年，马格努斯在混沌大侵攻的废墟上重建了帝国，以努恩为中心召集了旧世界最伟大的军队北上迎击混沌永世神选阿萨瓦·库尔。我们的祖先在法沙隘口与混沌大军决战，用钢铁与火药击溃了黑暗诸神的选民。如今卡尔·弗兰兹皇帝在位，帝国再次站在了命运的十字路口，北方的混沌势力蠢蠢欲动，南方的吸血鬼伯爵从不曾真正安息。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "帝国的历史教训告诉我们：每一次内部分裂都会招致外敌入侵。三皇分立时期，当塔拉贝克领、米登领和瑞克领各自拥立皇帝时，吸血鬼伯爵弗拉德·冯·卡斯坦因几乎从希尔瓦尼亚席卷了整个帝国。混沌大侵攻之所以几乎成功，也是因为当时的帝国已经在宗教战争中精疲力竭。智者从历史中学到的是：选帝侯之间的私人恩怨必须在帝国议会中解决，绝不能让内部纷争削弱了边疆的防御。西格玛教会的宗教裁判官们至今仍在猎杀隐藏的混沌信徒与吸血鬼密探，因为他们比任何人都清楚——帝国的敌人在历史上从未正面击败过我们，他们总是在寻找来自内部的背叛。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "帝国的编年史可分为六个主要纪元：西格玛时代见证帝国诞生与初代皇帝的神圣统治；黑暗时代始于帝国历1111年路德维希皇帝驾崩后的瘟疫、饥荒与连绵内战——这段近千年的时期至今仍是帝国史学家最艰涩的研究课题，大量档案毁于战火与鼠疫；救赎时代以马格努斯大帝的崛起为标志，混沌大侵攻之后他重建了努恩城并召集诸选帝侯重建议会；三皇分立时期是帝国政治最混乱的阶段，米登领的狼堡、塔拉贝克领的塔拉贝克海姆与瑞克领的阿尔道夫各自拥立皇帝，这场合法性之争直到马格努斯召集大议会才告终结；黄金时代是帝国科技与军事的巅峰，蒸汽坦克在此时诞生，工程学院与魔法学院分别壮大；最后是当今时代——卡尔·弗兰兹的统治，一位被学者认为是帝国历史上最有能力的皇帝之一，但他面临的威胁比马格努斯时代更为复杂也更难以察觉。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "帝国的历史书籍大多出自修士和男性学者之手，但任何一个在贵族世家中真正掌管过家族档案的女人都知道，这些官史遗漏了太多。我翻阅过我曾祖母的私人日记——她生活在三皇分立末期，在丈夫战死后独自管理奥斯特马克边境的一座城堡长达十七年。官史只会记载那场边境战争的胜负，而日记里写满了如何用一窖腌制冬粮安抚了即将哗变的守军、如何在瘟疫蔓延时命令焚烧整个村庄以阻止扩散、以及每个冬天跪在西格玛神像前祈求让她儿子再多活一年的日夜。帝国的历史不仅是帝王将相的，更是无数在历史的夹缝中独自支撑的女人的——她们没有入选帝国议会，但她们生下了并且教育了那些日后会坐在议会厅中的男人们。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "家族记忆是帝国历史最真实的载体。我们家族的大厅中悬挂着十二面从马格努斯时代保留下来的军旗，每一面都对应一位祖先在保卫帝国边疆的战斗中献身的战役。帝国官方编年史只会记录皇帝的名字和战役的胜负，而不会告诉你第五位先祖是在斯蒂尔领的暴风雪中独自坚守了两天才等来援军的——那份冰封的孤独是我们家族后人的精神遗产，比任何皇冠上的宝石更珍贵。帝国的每个古老家族都有自己的'灰烬档案'——那些在官方记录中被抹去的事件：被教会宣判为异端的家族分支、因谋反被剥夺选侯资格又秘密复权的祖先、以收养为名掩盖的私生子传承。帝国的官方历史是给民众看的，真正的历史藏在各大家族的密室卷宗里，有朝一日这些卷宗汇聚起来，将写出与官史截然不同的故事。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我在帝国各地闯荡这些年听过的历史故事比任何学院里的老学究都多——只不过这些故事不是在图书馆里读来的，是在篝火边、酒馆角落和行军帐篷里听老兵和逃难者口述的。官史说黑暗时代终结于马格努斯大帝的崛起，但诺德领沿海的渔民会告诉你，黑暗从未离开过北海——诺斯卡长船依然在每一个浓雾弥漫的清晨出现在地平线上。官史说吸血鬼战争已结束，但奥斯特领的边民知道，那些在夜晚独自外出后失踪的人再也没回来过，而他们的尸体往往几周后在希尔瓦尼亚的方向被发现，脸上带着诡异的安详。历史的真相不在于胜利者的纪念碑，而在于那些不敢在公开场合被讲述的沉默——你只有和一个老兵喝到第三壶麦酒后，他才会告诉你他在法沙隘口看到的不仅仅是荣耀。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "帝国的历史在商人眼里首先是一部贸易史。西格玛在黑火隘口击败绿皮不仅仅是一场军事胜利——它打通了从瑞克河到世界边缘山脉的贸易走廊，这条走廊至今仍是旧世界最重要的商业动脉。黑暗时代之所以'黑暗'，在商人的账本上体现为瑞克河海盗猖獗、各路关卡由军阀任意设立、一枚阿尔道夫金币在米登海姆只能兑换其面值三分之一的白银——货币体系的崩溃比任何战争都更能反映一个时代的苦难。马格努斯大帝最被低估的功绩不是军事胜利，而是他恢复了帝国统一铸币制度，让努恩银马克重新成为全境通用的硬通货。我商会的前辈们留下的账簿记录了两个世纪的物价波动，从中可以读出每一次战争、每一次瘟疫和每一次政治危机——在黑死病肆虐的那五年，小麦价格在账簿上留下的那个弯曲线条比任何编年史都更精确地描绘出了帝国的绝望。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "黑火隘口——西格玛首次大败绿皮联军的决战之地，帝国历史的起点",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "帝国由凡人神皇西格玛于帝国纪年元年建立"
+  ]
+}

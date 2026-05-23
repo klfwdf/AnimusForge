@@ -7,7 +7,9 @@ param(
     [switch]$UseFirstMatch,
     [switch]$NoBump,
     [switch]$IncludeOnnx,
-    [switch]$IncludeReranker
+    [switch]$IncludeReranker,
+    [switch]$ExcludeOnnx,
+    [switch]$DualClientPackages
 )
 
 $ErrorActionPreference = "Stop"
@@ -76,8 +78,9 @@ function Test-AnimusForgeModuleDir {
         try {
             [xml]$subXml = Get-Content -LiteralPath $subModulePathLocal
             $moduleId = [string]$subXml.Module.Id.value
-            if ($moduleId -ne "AnimusForge") {
-                $missing.Add("SubModule.xml: Module/Id must be AnimusForge")
+            $validModuleIds = @("AnimusForge", "AnimusForge_1_3_x", "AnimusForge_1_4_5")
+            if ($validModuleIds -notcontains $moduleId) {
+                $missing.Add("SubModule.xml: Module/Id must be AnimusForge, AnimusForge_1_3_x, or AnimusForge_1_4_5")
             }
         } catch {
             $missing.Add("SubModule.xml: invalid XML")
@@ -161,115 +164,191 @@ function Resolve-AnimusForgeModuleDir {
     }
 }
 
-$resolvedModule = Resolve-AnimusForgeModuleDir -RequestedPath $ModuleDir -BannerlordRootPath $BannerlordRoot -AllowFirstMatch:$UseFirstMatch
-$ModuleDir = $resolvedModule.Path
-$wasAutoDetected = $resolvedModule.AutoDetected
-$moduleDirFull = [System.IO.Path]::GetFullPath($ModuleDir).TrimEnd('\', '/')
-
-$subModulePath = Join-Path $ModuleDir "SubModule.xml"
-if (-not (Test-Path -LiteralPath $subModulePath)) {
-    throw "SubModule.xml not found: $subModulePath"
-}
-
-[xml]$xml = Get-Content -LiteralPath $subModulePath
-$currentVersion = $xml.Module.Version.value
-if ([string]::IsNullOrWhiteSpace($currentVersion)) {
-    throw "Version node is missing in SubModule.xml"
-}
-$null = Parse-Version -VersionText $currentVersion -Label "Current version"
-
-if ($Version) {
-    $null = Parse-Version -VersionText $Version -Label "Target version"
-    $newVersion = $Version
-} elseif ($NoBump) {
-    $newVersion = $currentVersion
-} else {
-    $newVersion = Get-NextPatchVersion -CurrentVersion $currentVersion
-}
-
-if ($newVersion -ne $currentVersion) {
-    $xml.Module.Version.value = $newVersion
-    $settings = New-Object System.Xml.XmlWriterSettings
-    $settings.Indent = $true
-    $settings.IndentChars = "    "
-    $settings.NewLineChars = "`r`n"
-    $settings.NewLineHandling = [System.Xml.NewLineHandling]::Replace
-    $settings.OmitXmlDeclaration = $true
-
-    $writer = [System.Xml.XmlWriter]::Create($subModulePath, $settings)
-    try {
-        $xml.Save($writer)
-    } finally {
-        $writer.Dispose()
-    }
-}
-
-New-Item -ItemType Directory -Path $OutputDir -Force | Out-Null
-$outputDirFull = [System.IO.Path]::GetFullPath($OutputDir).TrimEnd('\', '/')
-$isOutputInsideModule = $outputDirFull.StartsWith($moduleDirFull + "\", [System.StringComparison]::OrdinalIgnoreCase) -or
-    $outputDirFull.Equals($moduleDirFull, [System.StringComparison]::OrdinalIgnoreCase)
-$onnxDirFull = [System.IO.Path]::GetFullPath((Join-Path $ModuleDir "ONNX")).TrimEnd('\', '/')
-$rerankerDirFull = [System.IO.Path]::GetFullPath((Join-Path $ModuleDir "ONNX\reranker")).TrimEnd('\', '/')
-
-$moduleName = Split-Path -Path $ModuleDir -Leaf
-$versionForName = ($newVersion -replace "[^\w\.\-]", "_")
-$labelForName = ""
-if (-not [string]::IsNullOrWhiteSpace($PackageLabel)) {
-    $labelForName = "_" + ($PackageLabel -replace "[^\w\.\-]", "_")
-}
-$timestamp = Get-Date -Format "yyyyMMdd_HHmmss_fff"
-$zipBaseName = "$moduleName`_$versionForName$labelForName`_$timestamp"
-$zipPath = Join-Path $OutputDir ($zipBaseName + ".zip")
-$suffix = 1
-while (Test-Path -LiteralPath $zipPath) {
-    $zipPath = Join-Path $OutputDir ("{0}_{1}.zip" -f $zipBaseName, $suffix)
-    $suffix += 1
-}
-
 Add-Type -AssemblyName "System.IO.Compression"
 Add-Type -AssemblyName "System.IO.Compression.FileSystem"
 
-$mode = [System.IO.Compression.ZipArchiveMode]::Create
-$compressionLevel = [System.IO.Compression.CompressionLevel]::Optimal
-$zip = [System.IO.Compression.ZipFile]::Open($zipPath, $mode)
+function Get-BannerlordModulesDir {
+    param([Parameter(Mandatory = $true)][string]$BannerlordRootPath)
 
-try {
-    $files = Get-ChildItem -LiteralPath $ModuleDir -Recurse -File -Force | Where-Object {
-        $fullPath = [System.IO.Path]::GetFullPath($_.FullName)
-        $isLogFile = $fullPath -match "[\\/]+Logs[\\/]+"
-        $isOutputFile = $isOutputInsideModule -and (
-            $fullPath.StartsWith($outputDirFull + "\", [System.StringComparison]::OrdinalIgnoreCase) -or
-            $fullPath.Equals($outputDirFull, [System.StringComparison]::OrdinalIgnoreCase)
-        )
-        $isOnnxFile = $fullPath.StartsWith($onnxDirFull + "\", [System.StringComparison]::OrdinalIgnoreCase) -or
-            $fullPath.Equals($onnxDirFull, [System.StringComparison]::OrdinalIgnoreCase)
-        $isRerankerFile = $fullPath.StartsWith($rerankerDirFull + "\", [System.StringComparison]::OrdinalIgnoreCase) -or
-            $fullPath.Equals($rerankerDirFull, [System.StringComparison]::OrdinalIgnoreCase)
-        $excludeOnnxFile = $isOnnxFile -and -not $IncludeOnnx -and (-not $IncludeReranker -or -not $isRerankerFile)
-        -not $isLogFile -and -not $isOutputFile -and -not $excludeOnnxFile
+    $bannerlordRootFull = [System.IO.Path]::GetFullPath($BannerlordRootPath)
+    if (-not (Test-Path -LiteralPath $bannerlordRootFull -PathType Container)) {
+        throw "Bannerlord root not found: $bannerlordRootFull"
+    }
+    $modulesDir = Join-Path $bannerlordRootFull "Modules"
+    if (-not (Test-Path -LiteralPath $modulesDir -PathType Container)) {
+        throw "Bannerlord Modules directory not found: $modulesDir"
+    }
+    return [System.IO.Path]::GetFullPath($modulesDir)
+}
+
+function Write-ZipFromModule {
+    param(
+        [Parameter(Mandatory = $true)][string]$ModulePath,
+        [bool]$AutoDetected = $false,
+        [string]$LabelSuffix = ""
+    )
+
+    $moduleDirFullLocal = [System.IO.Path]::GetFullPath($ModulePath).TrimEnd('\', '/')
+    $subModulePath = Join-Path $moduleDirFullLocal "SubModule.xml"
+    if (-not (Test-Path -LiteralPath $subModulePath)) {
+        throw "SubModule.xml not found: $subModulePath"
     }
 
-    foreach ($file in $files) {
-        $relative = $file.FullName.Substring($ModuleDir.Length).TrimStart('\', '/')
-        $entryName = "$moduleName/$($relative -replace '\\', '/')"
-        [System.IO.Compression.ZipFileExtensions]::CreateEntryFromFile(
-            $zip,
-            $file.FullName,
-            $entryName,
-            $compressionLevel
-        ) | Out-Null
+    [xml]$xml = Get-Content -LiteralPath $subModulePath
+    $currentVersion = $xml.Module.Version.value
+    if ([string]::IsNullOrWhiteSpace($currentVersion)) {
+        throw "Version node is missing in SubModule.xml"
     }
-}
-finally {
-    $zip.Dispose()
+    $null = Parse-Version -VersionText $currentVersion -Label "Current version"
+
+    if ($Version) {
+        $null = Parse-Version -VersionText $Version -Label "Target version"
+        $newVersion = $Version
+    } elseif ($NoBump -or $DualClientPackages) {
+        $newVersion = $currentVersion
+    } else {
+        $newVersion = Get-NextPatchVersion -CurrentVersion $currentVersion
+    }
+
+    if ($newVersion -ne $currentVersion) {
+        $xml.Module.Version.value = $newVersion
+        $settings = New-Object System.Xml.XmlWriterSettings
+        $settings.Indent = $true
+        $settings.IndentChars = "    "
+        $settings.NewLineChars = "`r`n"
+        $settings.NewLineHandling = [System.Xml.NewLineHandling]::Replace
+        $settings.OmitXmlDeclaration = $true
+
+        $writer = [System.Xml.XmlWriter]::Create($subModulePath, $settings)
+        try {
+            $xml.Save($writer)
+        } finally {
+            $writer.Dispose()
+        }
+    }
+
+    New-Item -ItemType Directory -Path $OutputDir -Force | Out-Null
+    $outputDirFull = [System.IO.Path]::GetFullPath($OutputDir).TrimEnd('\', '/')
+    $isOutputInsideModule = $outputDirFull.StartsWith($moduleDirFullLocal + "\", [System.StringComparison]::OrdinalIgnoreCase) -or
+        $outputDirFull.Equals($moduleDirFullLocal, [System.StringComparison]::OrdinalIgnoreCase)
+    $onnxDirFull = [System.IO.Path]::GetFullPath((Join-Path $moduleDirFullLocal "ONNX")).TrimEnd('\', '/')
+    $rerankerDirFull = [System.IO.Path]::GetFullPath((Join-Path $moduleDirFullLocal "ONNX\reranker")).TrimEnd('\', '/')
+
+    $moduleName = Split-Path -Path $moduleDirFullLocal -Leaf
+    $versionForName = ($newVersion -replace "[^\w\.\-]", "_")
+    $forceExcludeOnnx = $ExcludeOnnx -or $DualClientPackages
+    $effectiveIncludeOnnx = $IncludeOnnx -and -not $forceExcludeOnnx
+    $effectiveIncludeReranker = $IncludeReranker -and -not $forceExcludeOnnx
+    $labelForName = ""
+    if (-not [string]::IsNullOrWhiteSpace($PackageLabel)) {
+        $labelForName = "_" + ($PackageLabel -replace "[^\w\.\-]", "_")
+    }
+    if (-not [string]::IsNullOrWhiteSpace($LabelSuffix)) {
+        $labelForName += "_" + ($LabelSuffix -replace "[^\w\.\-]", "_")
+    }
+    $timestamp = Get-Date -Format "yyyyMMdd_HHmmss_fff"
+    $zipBaseName = "$moduleName`_$versionForName$labelForName`_$timestamp"
+    $zipPath = Join-Path $OutputDir ($zipBaseName + ".zip")
+    $suffix = 1
+    while (Test-Path -LiteralPath $zipPath) {
+        $zipPath = Join-Path $OutputDir ("{0}_{1}.zip" -f $zipBaseName, $suffix)
+        $suffix += 1
+    }
+
+    $mode = [System.IO.Compression.ZipArchiveMode]::Create
+    $compressionLevel = [System.IO.Compression.CompressionLevel]::Optimal
+    $zip = [System.IO.Compression.ZipFile]::Open($zipPath, $mode)
+
+    try {
+        $files = Get-ChildItem -LiteralPath $moduleDirFullLocal -Recurse -File -Force | Where-Object {
+            $fullPath = [System.IO.Path]::GetFullPath($_.FullName)
+            $isLogFile = $fullPath -match "[\\/]+Logs[\\/]+"
+            $isOutputFile = $isOutputInsideModule -and (
+                $fullPath.StartsWith($outputDirFull + "\", [System.StringComparison]::OrdinalIgnoreCase) -or
+                $fullPath.Equals($outputDirFull, [System.StringComparison]::OrdinalIgnoreCase)
+            )
+            $isOnnxFile = $fullPath.StartsWith($onnxDirFull + "\", [System.StringComparison]::OrdinalIgnoreCase) -or
+                $fullPath.Equals($onnxDirFull, [System.StringComparison]::OrdinalIgnoreCase)
+            $isRerankerFile = $fullPath.StartsWith($rerankerDirFull + "\", [System.StringComparison]::OrdinalIgnoreCase) -or
+                $fullPath.Equals($rerankerDirFull, [System.StringComparison]::OrdinalIgnoreCase)
+            $excludeOnnxFile = $isOnnxFile -and -not $effectiveIncludeOnnx -and (-not $effectiveIncludeReranker -or -not $isRerankerFile)
+            -not $isLogFile -and -not $isOutputFile -and -not $excludeOnnxFile
+        }
+
+        foreach ($file in $files) {
+            $relative = $file.FullName.Substring($moduleDirFullLocal.Length).TrimStart('\', '/')
+            $entryName = "$moduleName/$($relative -replace '\\', '/')"
+            [System.IO.Compression.ZipFileExtensions]::CreateEntryFromFile(
+                $zip,
+                $file.FullName,
+                $entryName,
+                $compressionLevel
+            ) | Out-Null
+        }
+    }
+    finally {
+        $zip.Dispose()
+    }
+
+    Write-Host "Version      : $currentVersion -> $newVersion"
+    Write-Host "Module Path  : $moduleDirFullLocal"
+    Write-Host "Module Detect: $(if ($AutoDetected) { 'Auto' } else { 'Manual' })"
+    Write-Host "Output ZIP   : $zipPath"
+    if (-not [string]::IsNullOrWhiteSpace($PackageLabel)) {
+        Write-Host "Package Label: $PackageLabel"
+    }
+    Write-Host "Exclude Rule : Logs/**/* (all files under Logs)"
+    Write-Host "ONNX ZIP     : $(if ($forceExcludeOnnx) { 'Excluded by package policy' } elseif ($effectiveIncludeOnnx) { 'Included' } elseif ($effectiveIncludeReranker) { 'Only ONNX/reranker included' } else { 'Excluded by default, pass -IncludeOnnx to include it' })"
+    return $zipPath
 }
 
-Write-Host "Version      : $currentVersion -> $newVersion"
-Write-Host "Module Path  : $ModuleDir"
-Write-Host "Module Detect: $(if ($wasAutoDetected) { 'Auto' } else { 'Manual' })"
-Write-Host "Output ZIP   : $zipPath"
-if (-not [string]::IsNullOrWhiteSpace($PackageLabel)) {
-    Write-Host "Package Label: $PackageLabel"
+function Assert-ZipDoesNotContainOnnx {
+    param([Parameter(Mandatory = $true)][string]$ZipPath)
+
+    $zipFullPath = [System.IO.Path]::GetFullPath($ZipPath)
+    if (-not (Test-Path -LiteralPath $zipFullPath -PathType Leaf)) {
+        throw "Expected package ZIP was not created: $zipFullPath"
+    }
+
+    $archive = [System.IO.Compression.ZipFile]::OpenRead($zipFullPath)
+    try {
+        $onnxEntry = $archive.Entries | Where-Object {
+            $_.FullName -match '(^|/)ONNX(/|$)'
+        } | Select-Object -First 1
+        if ($onnxEntry) {
+            throw "Package must not contain ONNX files: $zipFullPath entry=$($onnxEntry.FullName)"
+        }
+    }
+    finally {
+        $archive.Dispose()
+    }
 }
-Write-Host "Exclude Rule : Logs/**/* (all files under Logs)"
-Write-Host "ONNX ZIP     : $(if ($IncludeOnnx) { 'Included' } elseif ($IncludeReranker) { 'Only ONNX/reranker included' } else { 'Excluded by default, pass -IncludeOnnx to include it' })"
+
+if ($DualClientPackages) {
+    if ([string]::IsNullOrWhiteSpace($BannerlordRoot)) {
+        throw "DualClientPackages requires -BannerlordRoot."
+    }
+    $modulesDir = Get-BannerlordModulesDir -BannerlordRootPath $BannerlordRoot
+    $module13 = Join-Path $modulesDir "AnimusForge_1_3_x"
+    $module14 = Join-Path $modulesDir "AnimusForge_1_4_5"
+    foreach ($modulePath in @($module13, $module14)) {
+        $check = Test-AnimusForgeModuleDir -Path $modulePath
+        if (-not $check.IsValid) {
+            throw ("Dual client module is not valid: {0}`nMissing/Invalid: {1}" -f $modulePath, ($check.Missing -join ", "))
+        }
+    }
+    Write-Host "Packaging dual client modules..."
+    $zip13 = Write-ZipFromModule -ModulePath $module13 -AutoDetected:$false -LabelSuffix "bannerlord_1.3.x"
+    $zip14 = Write-ZipFromModule -ModulePath $module14 -AutoDetected:$false -LabelSuffix "bannerlord_1.4.5"
+    Assert-ZipDoesNotContainOnnx -ZipPath $zip13
+    Assert-ZipDoesNotContainOnnx -ZipPath $zip14
+    Write-Host "Dual Packages:"
+    Write-Host " - $zip13"
+    Write-Host " - $zip14"
+    exit 0
+}
+
+$resolvedModule = Resolve-AnimusForgeModuleDir -RequestedPath $ModuleDir -BannerlordRootPath $BannerlordRoot -AllowFirstMatch:$UseFirstMatch
+$ModuleDir = $resolvedModule.Path
+$wasAutoDetected = $resolvedModule.AutoDetected
+$null = Write-ZipFromModule -ModulePath $ModuleDir -AutoDetected:$wasAutoDetected

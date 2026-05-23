@@ -1,0 +1,17 @@
+{
+  "Id": "rule_卡拉克·艾克斯菲拉兹__卡拉克·艾克斯菲拉兹",
+  "Keywords": ["卡拉克艾克斯菲拉兹_KE", "艾克斯菲拉兹城塞_KE", "红胡子要塞_KE", "艾克斯菲拉兹矿坑_KE", "艾克斯菲拉兹矮人领地_KE", "艾克斯菲拉兹国王_KE"],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":null,"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"卡拉克·艾克斯菲拉兹是灰色山脉深处一座以红胡子氏族命名的矮人城塞，由斯卡夫·红胡子国王统治。此地的矮人以其标志性的赤红胡须闻名，据说这源于当地矿坑中一种特殊红色矿石的粉末长期染红矿工的须发。艾克斯菲拉兹以金矿和铜矿开采著称。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":["sturgia"],"KingdomIds":null,"SettlementIds":null,"Roles":null,"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"卡拉克·艾克斯菲拉兹——红胡子王的家！我们红胡子不是天生的，是几千年来在这座矿山中染出来的。斯卡夫国王的红胡子是所有人中最鲜艳的，据说其中掺着丝缕纯金粉末。艾克斯菲拉兹的矿工不分昼夜在深处敲打岩壁，每一锤下去都可能敲出金币。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord"],"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"卡拉克·艾克斯菲拉兹是灰色山脉矮人中最主要的贵金属产地。铜矿被用于铸造矮人火炮的弹丸和合金配件，金矿则提供矮人城塞联盟货币体系的重要贵金属来源。斯卡夫·红胡子国王财力雄厚，这使其在矮人政治中拥有不成比例的影响力。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord","notable","wanderer"],"IsFemale":null,"IsClanLeader":null,"SkillMin":{"Steward":120}},"Content":"卡拉克·艾克斯菲拉兹的金铜矿复合矿脉具有极高的经济价值。根据矮人地质记录，艾克斯菲拉兹矿脉群包括三条独立金矿脉和两条铜矿脉，矿层厚度与品位在灰色山脉均属最优等级。年黄金产量约四百磅，铜产量约三十吨。城塞的冶金车间采用矮人独有分级熔炼法，能将矿石中的金银杂质分离至万分之五的精度。产品以金条、金币和铜锭形式经帝国商队出口至玛丽恩堡、阿尔道夫和塔拉贝克海姆等主要金融中心。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord"],"IsFemale":true,"IsClanLeader":null,"SkillMin":null},"Content":"在艾克斯菲拉兹，女性矮人负责管理金矿的称量与记账。精度要求极其严苛——一片金叶的重量误差不能超过十分之一格令。城塞的金库里堆积的金条是我们的生命线，容不得任何差错。这份工作让我每天都在数字与天平间度过，但家族的名誉就建立在这一丝不苟之中。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord"],"IsFemale":null,"IsClanLeader":true,"SkillMin":null},"Content":"我们家族管理着艾克斯菲拉兹最东侧的铜矿脉。这条矿脉虽然品位不如主脉，但矿层极为稳定，已经持续开采了四百多年而未见枯竭迹象。斯卡夫国王依赖我们的稳定产出供应城塞的铸铜车间。在矮人城塞中，持续的稳定性有时比间歇的暴利更受尊重。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["wanderer"],"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"艾克斯菲拉兹的矮人全都留着深浅不一的红胡子——从橘红到深赭色。走进他们的麦酒大厅就像是走进了一座红色灌木林。我在矿山口见过矿工换班，他们从黑暗中依次走出，每张脸上的红色粉尘在火把光下闪闪发亮，诡异而壮观。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["notable"],"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"与艾克斯菲拉兹矮人做黄金生意需要铁的神经。黄金价格随旧世界政局波动剧烈——帝国选帝侯换届期间金价往往飙升三成。但矮人不屑于投机，他们出售黄金的价格固定不变。精明的商人会在选帝侯换届前大量囤积艾克斯菲拉兹金条，在帝国市场上赚取价差。"}
+  ],
+  "TextMappings": [{"SourceText":"卡拉克·艾克斯菲拉兹是灰色山脉中以红胡子氏族和贵金属矿闻名遐迩的矮人城塞，由斯卡夫·红胡子国王统治","Kind":null,"TargetId":null,"AgeMin":null,"AgeMax":null,"EmptyValueText":null,"TrueText":null,"FalseText":null}],
+  "RagShortTexts": ["卡拉克艾克斯菲拉兹灰色山脉矮人金铜矿红胡子"]
+}

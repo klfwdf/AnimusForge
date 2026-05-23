@@ -1,0 +1,210 @@
+{
+  "Id": "rule_恶地__恶地",
+  "Keywords": [
+    "恶地",
+    "干旱荒原",
+    "绿皮领地",
+    "南方废土",
+    "血河",
+    "死亡隘口",
+    "龙背山脉",
+    "恶地黑火隘口",
+    "绿皮繁殖场"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "恶地是位于世界边缘山脉以东、紧邻帝国南部边境的一大片干旱荒原。这片贫瘠的土地上几乎没有任何文明秩序——它是绿皮部落在旧世界最大的天然聚集地。无数兽人和地精部落在此游荡、彼此厮杀，偶尔被一位强大的战将统合起来，形成席卷北方的绿潮。对周边人类和矮人来说，恶地是一片永远无法被彻底清剿的危险边疆。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "恶地是我们的地盘！这里干燥炎热，人类和矮墩子嫌这里不好住，但我们绿皮最喜欢——孢子在这里长得特别快！到处都是打架的好地方，每座山头都可能藏着一个部落，每个山谷都有场好仗等着你。最棒的是，这里离帝国的软肚皮和矮墩子的山门都很近——想打仗的时候吹响战号，翻过山就能去他们家里好好闹一场！恶地的夜晚最美，满天的星星下面到处都是篝火和战吼声——这才是真正的自由！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "恶地是旧世界南方前线最不稳定的战略区域。它紧邻帝国的艾维领和矮人的世界边缘山脉南部，这使得任何在恶地形成的绿皮Waaagh！都可以迅速侵入文明领地。恶地本身缺乏值得占领的资源——这正是它始终未被征服的原因——但作为绿皮的繁殖场，它的存在本身就是对周边地区的持续威胁。边境诸侯必须维持高度戒备，定期派兵清剿越界的绿皮部落，否则一旦部落数量积累到临界点，一场毁灭性的Waaagh！几乎不可避免。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "恶地（Badlands）是一片覆盖旧世界东南部的半干旱荒原，面积约相当于帝国全境。它的地质结构以风蚀岩石、干枯河谷和低矮丘陵为主，植被稀疏，不适合传统农业——这就是文明国家从未在此大规模定居的原因。但对于绿皮而言，恶地的环境几乎完美：地下洞穴提供了地精和孢子生长的黑暗潮湿环境，地表开阔的平原使得大规模的部落集结成为可能，邻近周边文明国家的边境线为绿皮提供了持续的劫掠和战斗机会。恶地内部的绿皮政治地理呈碎片化——数以百计的部落控制着各自的领地，边界随战争不断变化。重要的地理标志包括：血河（Blood River）、死亡隘口（Death Pass）和恶地北部的龙背山脉（Dragonback Mountains）。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "恶地对帝国南部边境女性领主来说不是一个远方的概念——它是每个秋天收割季节的具体威胁。南风带来恶地的焦热和尘土，连同混在其中的绿皮孢子的微甜腐臭——这种气味在艾维领南部被称为'绿之呼吸'。每位边境女领主都知道，当这股气味在庄稼成熟的八月开始变得浓烈时，意味着恶地方向的绿皮活动在加剧，今年的秋收可能需要安排在武装收割队的掩护下进行。我的庄园里保留着一套由三代女性先祖改良的'快速收割—快速入仓'流程，可以在接到恶地方向斥候警报后的四十八小时内完成平时需要两周的收割工作。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "作为帝国南部边境贵族家族的族长，我对恶地的态度与帝国宫廷中的官僚完全不同。他们在阿尔道夫的酒会上谈论'南方的边疆局势'，而我们世代身处边疆本身。我的家族领地被一条被称为'绿痕'的地理线穿过——这条线以北的土地可以在正常年份耕作，以南则是在'绿皮耐受区'，只能用于放牧羊群和季节性采矿。家族档案中记录着过去六百年间这条绿痕的摆动——它从不是一条固定线，而是根据恶地绿皮部落的整体数量和活跃程度每年都在南北之间波动。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "穿越恶地的旅行是旧世界最致命的路线之一，但我靠着一套自学的地精行为学勉强活了下来。最关键的一条原则：不要在中午穿越开阔的岩滩——那正是绿皮部落午休和斗殴的时间；他们全天都在打架，但中午因为炎热而变得格外暴燥。最佳穿越时间是凌晨到破晓，那时绿皮在营地中睡觉。另一个致命错误是追逐恶地中的水源——每条河流和泉水都被数个绿皮部落视为领地核心，在那里撞上绿皮的概率是开阔荒原的十倍。宁愿多背负三天的水。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "恶地在帝国矿业地图上被标记为'永久高险区'。但这不能阻止地下矿业公司在恶地边缘的秘密勘探——尤其是在龙背山脉的北麓，据地质报告显示存在高品质的铁矿和铜矿。我所在的公会曾评估过一支全副武装的精锐矿业探险队进入恶地的成本——结论是在第一年采掘季结束之前，安保费用就将超过矿石本身的市场价值。唯一的例外是如果发现金矿脉——黄金的重量价值比让它值得用佣兵空运出去。但目前为止，没有一个勘探团队带回肯定的金矿报告——他们带回来的通常是箭伤和绿皮孢子感染的初期症状。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "恶地——帝国南部边界外的半干旱荒原，绿皮部落最大的天然聚集地",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "恶地的地理位置与战略意义"
+  ]
+}

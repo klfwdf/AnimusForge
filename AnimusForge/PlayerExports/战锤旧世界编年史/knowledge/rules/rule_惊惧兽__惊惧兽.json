@@ -1,0 +1,208 @@
+{
+  "Id": "rule_惊惧兽__惊惧兽",
+  "Keywords": [
+    "惊惧兽",
+    "不死蝙蝠",
+    "巨型飞行兽",
+    "恐怖尖啸",
+    "空中巨兽",
+    "吸血鬼坐骑",
+    "死灵巨翼"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "惊惧兽是一种被死灵魔法复活并改造的巨型蝙蝠怪物，其双翼遮天蔽日，能发出足以撕裂灵魂的恐怖尖啸。这些可怖的飞行巨兽常被最强大的吸血鬼领主用作坐骑，在暗夜天空中猎杀一切活物。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "惊惧兽是我们希瓦尼亚黑夜的王者，是暗夜魔法与野兽骸骨完美融合的杰作。当我们驾驭惊惧兽掠过战场上空时，仅凭尖啸就能让活人的军队溃不成军，那些脆弱的凡人会在极度恐惧中心脏骤停。培育一头惊惧兽需要收集远古巨型蝙蝠的完整骨架，辅以龙血与死灵能量灌注——这绝非凡人所能想象的工艺。在夜空之中，骑乘惊惧兽的吸血鬼领主是绝对的主宰，没有任何飞马骑士或狮鹫能够与我们的巨兽抗衡。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "如果情报显示敌军阵中有惊惧兽，我必须重新规划整个战役。这些飞行怪物能绕过防线直接打击指挥部和后方的炮兵阵地，其尖啸攻击对部队士气的摧毁远超实际杀伤。任何不具备强大防空能力的军队在面对惊惧兽时都处于巨大的劣势。应对策略包括：将火枪手与弩手部署在侧翼高地形成交叉火力，预留至少一队骑兵作为机动防空预备队，并务必保护随军法师——只有魔法能稳定地对这些死灵巨兽造成威胁。帝国文献记载，曾有惊惧兽在米登海姆城外独自消灭了整个炮兵连，导致守军因缺乏火力支援而沦陷。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "惊惧兽并非自然生物，其原型是旧世界冰河时代末期生存于希瓦尼亚高原的巨型穴居蝙蝠——学名为'Chiroptitanus Mortis'——这是一种翼展可达四十肘尺的掠食性翼手目。最古老的惊惧兽记录见于莱弥亚血族图书馆的灰烬古卷，记载尼法拉塔女王麾下的一名亡灵塑形者首次尝试将死灵能量注入远古蝙蝠化石中。真正完善该技术的则是冯·卡斯坦因王朝鼎盛时期的涅克拉克领主协会，他们发现必须将人类处女的血脉与蝙蝠DNA在暗夜仪式中融合，才能创造出具有稳定尖啸能力的成体。这种尖啸并非物理声波，而是一种死灵能量共振，其频率恰好能破坏活体生物神经系统的髓鞘结构——这意味着惊惧兽的尖啸在生理层面上是不可防御的。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "据说骑乘惊惧兽的感觉是这世上最接近于飞翔的体验，但那尖啸声——即便是在城堡深处，当惊惧兽在塔楼外盘旋时，那声音也会钻入骨髓。我的兄长是父亲指定的继承人，他骑乘惊惧兽出战已有三十年，但每一次归来时他的眼神都比之前更加空洞几分。我开始怀疑，驾驭这种来自深渊的生物，付出的代价远比我们愿意承认的要多。那些风中传来的低语，真的只是风声吗？"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "一头训练有素的惊惧兽是一个血族家族最显赫的空中战力标志。我们家族的惊惧兽名为'暗夜撕裂者'，从曾祖父时代起已经在这片领地上空巡弋了两百余年。每年冬至，我们必须为它献上三十头活牛的鲜血以维持其死灵活力，这开销足以让任何一个男爵破产。但回报是巨大的——当我骑着它巡视边境时，方圆百里的强盗和冒险者都会望风而逃。拥有一头惊惧兽意味着你的家族有资格在吸血鬼议会中获得发言权。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "在灰色山脉的佣兵营地里，流传着一个关于惊惧兽的传说：一个莱茵兰德佣兵团曾受雇于某个吸血鬼领地，任务是清剿边境的地精部落。在行军第三天的夜晚，天上升起一轮血月，然后他们听到了那声尖啸——三百人的队伍中有一百二十人当场倒地死亡，没有任何外伤。幸存者说，夜空中的一个巨大黑影掠过后就再也没出现，就好像它只是为了杀戮而杀戮。我本人没亲眼见过惊惧兽，但每次在荒野中过夜时听到蝙蝠的叫声，我都会不自觉地握紧剑柄。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我父亲的一位老主顾是塔拉贝克领的畜牧商人，他曾被迫给一支吸血鬼大军供应活牛——那些牛不是用来吃的，而是用来喂惊惧兽的。他说亲眼见到一头惊惧兽在半个钟头内吸干了十头壮牛，那巨翼展开足有三十肘尺之宽。从那以后他的牧场就装了二十盏长明灯，在夜间彻夜不熄，因为他坚信这些巨兽不喜欢太亮的地方。至于这个说法有没有根据，我是不知道，但他的牧场倒是确实从未遭到过吸血鬼的袭击。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "被死灵魔法复活改造的巨型蝙蝠状飞行怪兽",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "惊惧兽不死蝙蝠巨型飞行兽"
+  ]
+}

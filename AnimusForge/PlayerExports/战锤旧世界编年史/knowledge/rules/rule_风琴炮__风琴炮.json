@@ -1,0 +1,209 @@
+{
+  "Id": "rule_风琴炮__风琴炮",
+  "Keywords": [
+    "风琴炮",
+    "风琴炮多管火炮",
+    "风琴炮矮人炮兵",
+    "近距离火力",
+    "穿甲弹丸",
+    "清场利器",
+    "矮人工程学",
+    "排管射击"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "风琴炮是一种只有矮人工程师才造得出的疯狂武器——它将四根炮管并排组装在一个旋转基座上，点燃引信后四根炮管会在极短时间内依次喷出致命的穿甲弹丸，将任何逼近的敌军队列撕成血肉碎片。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "风琴炮！这才是工程学，不是那些人类炮手老爷们乱七八糟的'装弹-点火-祈祷打中'。四根炮管，一根引信，炮兵长扳下击发杠杆的瞬间——咣！咣！咣！咣！——四声炮响密集到你几乎以为它们是同一瞬间炸开的。我们的炮管是精炼锻钢而非人类的劣质铸铁，所以不会炸膛；我们的弹丸是精心称量的统一规格铅铁合金弹，所以弹道极其精准。在卡拉克·希尔巴的城墙炮位上操作过风琴炮的老炮兵会告诉你：调好俯角，把火力范围覆盖在城墙根到五十尺这个区间——任何试图架梯爬墙的敌人都会被这面铅铁风暴绞成筛子。人类管它叫'风琴炮'是因为炮声听起来像管风琴，这名字不太差，但我更喜欢我们矮人给它取的名字：'格朗尼的扫帚'——因为它能把城墙前面的地面打扫得干干净净。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "风琴炮是近距离防御火力的终极解决方案。它在远距离上几乎毫无作用——散射范围过大导致远距命中率极低，但将距离压缩到两百尺之内，风琴炮就变成了不可逾越的毁灭之墙。最优部署方案：将风琴炮编入城墙炮位序列，与射程更远的加农炮形成火力分层——加农炮打中远距，风琴炮扫近距。在野战环境中，风琴炮应被安置在步兵阵列的正后方，对准敌军可能集结和冲锋的路线进行预瞄。弱点同样致命：装填极其缓慢——一轮齐射之后需要至少四分之一沙漏时才能重新装填所有炮管，在这期间风琴炮完全无力自卫，必须由铁锤勇士或碎铁勇士严密保护。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "风琴炮的设计原理归属于矮人工程学的'齐射压制'分支，其原型可追溯至矮人工程师公会创始人莫格里姆·黑火药（公元前约500年）开发的原始多管火药投射器。现代风琴炮的标准型号为'四管旋转排炮型'（型号编号DWF-OC-4B，由卡拉克·希尔巴皇家兵工厂记录于公元1550年）——由四根锻钢炮管以平行排列安装于一个可旋转铸铁基座上，击发机制采用'火道串联引燃法'：一根引信连接四管分引信，引燃第一管时火药气流通过内部连通器依次点燃其余三管，四管齐射间隔约为六分之一秒。弹药方面，标准弹药为两寸直径铅铁合金球形弹丸，每管装填一枚，有效平射距离三百尺，最大密集杀伤区在五十至一百五十尺区间。历史上最著名的一次风琴炮实战应用为巴拉克·瓦尔攻城战（公元2301年），八门风琴炮在瓦尔港城墙上对一整个绿皮攻城突击波进行持续火力覆盖，据战后不完全统计，八门炮在一个时辰内射杀了超过两千个绿皮。帝国工程学院的结论是：如果帝国能以可接受成本量产风琴炮，那么旧世界所有城墙都将变成无法攻陷的堡垒——然而这一点至今仍是纯粹的幻想。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我曾试图让我的军械师们仿制风琴炮——结果他们做出的东西在试射时炸死了一名军械师。矮人火炮的技术不是人类简单模仿能掌握的。不过我在一次卡拉克·卡德林的访问中仔细观察过矮人炮兵的操作：他们的动作精准如刻印，装填-瞄准-击发的节奏可以精确到心跳。我想帝国若真想拥有可用的多管火炮，要学的不是矮人的图纸——是他们的纪律。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "一门风琴炮的造价，用黄金算，约等于一座中小型人类男爵城堡的全年税收。但我告诉你，值得。只要有足够的决心掏这笔钱，你可以在你的城堡大门上方装两门——从今往后没有任何敌人能穿越城门前的开阔地。但前提是你得和矮人工匠行会搞好关系，让他们愿意把风琴炮列入'对外授售清单'。有门风琴炮就代表你的家族被矮人视作值得认真对待的盟友。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "在围攻黑石堡的战场上见过一次风琴炮的试射——矮人工程师说是'演示给人类盟友看'。他们把靶子设在了两百尺外的一个报废兽人投石机残骸，一门风琴炮一轮齐射后，那个投石机只剩一个轮子还在原地。在场的几个帝国炮兵队长的表情像是见到了鬼。后来有人说矮人的火药配方里掺了别的东西——不是普通的硫磺-硝石-木炭。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "风琴炮的炮管口径是严格标准化的——每一批炮管的膛线都必须精确到微寸以内。这意味着残次品率极高：据努恩军火商的估算，矮人工程师制造一根合格风琴炮管的工时约等于帝国铸造一门完整野战炮的工时。在阿尔道夫的军火市场上，一门二手矮人风琴炮的价格不亚于一幢贵族府邸，但基本上有价无市——矮人极少出售，即使出售也仅卖给持有矮人至高王亲笔许可的买家。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "齐射压制：矮人工程学术语，指以多管火炮在短时间内对特定区域进行饱和式火力投射的战术理念。",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "风琴炮风琴炮多管火炮风琴炮矮人炮兵"
+  ]
+}

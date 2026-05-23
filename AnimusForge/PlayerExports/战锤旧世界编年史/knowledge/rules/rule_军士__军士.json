@@ -1,0 +1,213 @@
+{
+  "Id": "rule_军士__军士",
+  "Keywords": [
+    "军士",
+    "农奴步兵",
+    "巴托尼亚步兵中坚",
+    "简陋护甲",
+    "阵地守护",
+    "长矛农兵",
+    "步兵",
+    "防御阵线",
+    "农兵",
+    "矛墙",
+    "坚守",
+    "廉价步兵"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "军士是巴托尼亚的农奴步兵，装备简陋的长矛和木盾，构成王国军队的防御基石。他们被领主征召而来，负责稳固战线，为骑士的冲锋创造时机。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我们巴托尼亚的军士——这些朴实的农奴们或许没有耀眼盔甲和骏马，但正是他们的血肉之躯筑成了战场上的铁壁。每一个巴托尼亚村庄都要按领主法令提供一定数量的壮丁充当军士。他们在农闲时接受基础的矛术训练，使用祖传的老旧长矛和仅够遮身的木板盾。阵地上，军士们肩并肩、矛如刺猬，用最原始的方阵抵挡兽人的狂猛冲锋和北方掠夺者的突袭。当骑士的号角响起，军士们让开通道，目送骑着高大战马的贵族冲向敌阵——这就是巴托尼亚战争中最古老而荣耀的协作。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "军士是军队的基石而非利刃。他们真正的价值在于韧性而非杀伤力——一支训练有素的军士方阵可以拖住数倍于己的敌军，为骑兵侧翼包抄争取时间。但必须注意，军士的士气依赖于领主是否在场督战，一旦看到骑士溃逃，他们将迅速崩溃。正确的部署是将他们置于中央，两翼以地形或精锐部队保护。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "巴托尼亚的军士制度植根于封建法中的「四十日役」条款——每名农奴家庭每年有义务提供一名成年男子服役四十天，领主负责其口粮与装备。标准军士装备为：一把八尺长矛，一面柳木蒙皮圆盾，一顶铁质锅盖盔，以及一件内衬粗麻的皮甲。训练集中在矛术基础、盾墙排列和服从军号指令，全部训练时间不超过每年三周。作战阵型以「刺猬阵」和「盾墙阵」为主。值得注意的是，巴托尼亚法律严禁军士骑马作战——马匹是骑士阶层的专属，违者将受鞭刑。这一规定确保了军事力量的社会分层不被打破。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "作为女领主，我比男人们更懂得珍惜这些军士的生命。每一个持矛的农奴背后都有一个家庭、一片需要耕种的田地。征召太多人会让来年闹饥荒，征召太少则无法守卫边境。这是最残酷的平衡。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我族的领地虽小，但军士出奇的忠诚。因为他们知道，我族族长世代与农奴同吃同住，从不克扣军粮。别的领主嘲笑我「自降身份」，但打起仗来，我的军士从不临阵退缩。这就是氏族的纽带。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "军士们是战场上最可怜又最可敬的人。他们面容憔悴，铠甲破烂，手里攥着磨得发亮的旧长矛，眼神里混合着恐惧和倔强。我在军营里听过他们唱的歌谣——关于家乡的麦田、等待的妻子和永远回不去的春天。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "军士的装备生意是薄利多销。一把批量生产的长矛、一只柳钉木盾——成本极低但需求巨大。不过领主大多拖欠货款，秋收后才结算。要想从军士装备上赚钱，要么控制成本到极致，要么搭上一位慷慨的公爵。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "军士是巴托尼亚的农奴步兵，装备长矛木盾，负责稳固战线",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "军士农奴步兵巴托尼亚步兵中坚"
+  ]
+}

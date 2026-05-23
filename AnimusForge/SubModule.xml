@@ -1,11 +1,12 @@
 ﻿<Module>
     <Name value="AnimusForge" />
     <Id value="AnimusForge" />
-    <Version value="v0.7.1" />
+    <Version value="v0.7.4" />
     <SingleplayerModule value="true" />
     <MultiplayerModule value="false" />
     <DependedModules>
         <DependedModule Id="Bannerlord.Harmony" />
+        <DependedModule Id="Bannerlord.UIExtenderEx" />
         <DependedModule Id="Native" />
         <DependedModule Id="SandBoxCore" />
         <DependedModule Id="Sandbox" />

@@ -1,0 +1,17 @@
+{
+  "Id": "rule_卡拉克·卡弗卡马兹__卡拉克·卡弗卡马兹",
+  "Keywords": ["卡拉克卡弗卡马兹_KK", "卡弗卡马兹城塞_KK", "花岗眉要塞_KK", "卡弗卡马兹花岗岩_KK", "卡弗卡马兹矮人领地_KK", "卡弗卡马兹国王_KK"],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":null,"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"卡拉克·卡弗卡马兹是灰色山脉西坡一座以花岗岩采石和石雕工艺闻名的小型矮人城塞，由杜拉克·花岗眉国王统治。此地的花岗岩质地致密、颜色均匀，是旧世界公认的最佳建筑与雕刻石材。城塞自身便是一件石雕杰作。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":["sturgia"],"KingdomIds":null,"SettlementIds":null,"Roles":null,"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"卡拉克·卡弗卡马兹——吾族的石雕花园！杜拉克王的眉毛确实像两块花岗岩碎片，坚硬而毫无表情。吾族的石匠能从一块毛胚花岗岩中雕出祖先的完整面容。人类的城堡用石灰岩和砂石块砌成，一场围城战就能震裂；但卡弗卡马兹的花岗岩城墙，地震也奈何不得。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord"],"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"卡拉克·卡弗卡马兹虽规模不大，但其花岗岩石材在军事工程中不可或缺。外城防壁、大型炮台基座和关键要塞塔楼都需使用高质量建筑材料。杜拉克国王的石材出口量不大但利润极高——帝国有钱的选帝侯们愿意为一座用卡弗卡马兹花岗岩建造的家族陵寝付出惊人价格。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord","notable","wanderer"],"IsFemale":null,"IsClanLeader":null,"SkillMin":{"Steward":120}},"Content":"卡拉克·卡弗卡马兹的花岗岩采石业实现了品质驱动的产量管理。采石场年开采量仅约五千立方尺的花岗岩，远低于普通采石场的产量——原因在于卡弗卡马兹只开采质地最优的「核心料」层位，这种石材在帝国建筑市场上每立方尺售价高达普通石材的二十倍。城塞的石雕工坊还承接定制的纪念雕塑、英雄雕像和贵族陵寝石材等高端订单，这类订单的利润率达到了采石毛料利润的五倍。主要买家为帝国宫廷、西格玛大圣殿和各大矮人城塞的纪念性建筑项目。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord"],"IsFemale":true,"IsClanLeader":null,"SkillMin":null},"Content":"卡弗卡马兹的女性矮人是石材质检的终极把关者。我掌握着一套通过敲击石料听音判断内部是否有裂纹的技艺——这是曾祖母传给母亲、母亲传给我的。一块最终交付的石材如果内部有裂纹，在运输途中崩裂，杜拉克国王和整个卡弗卡马兹的名誉就会受损。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord"],"IsFemale":null,"IsClanLeader":true,"SkillMin":null},"Content":"我们家族在卡弗卡马兹经营着最大的单体花岗岩采石场。杜拉克国王称呼我们为「山心的解剖师」，因为我们的技艺在于理解和顺应每一块石料的天然纹路。这种技艺无法言传，只能在学徒过程中花几十年慢慢领悟。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["wanderer"],"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"卡弗卡马兹的城门两侧矗立着两尊高达四十尺的矮人先祖石雕，守护着这座石城。石雕的胡须纹路清晰到能数出每一根发丝。据说这两尊雕像不是在采石场雕刻好再运来的，而是矮人石匠直接在城门两侧的山体上花了三百年时间现场雕刻出来的。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["notable"],"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"卡弗卡马兹的花岗岩贸易是典型的低产量高利润模式。一年只卖几船货，但每条船的价值高得惊人。最大的问题是运输——整块石材极重，必须走水路，经灰色山脉的溪流运到帝国河网。夏季融雪期是唯一的运输窗口，错过就要再等一年。"}
+  ],
+  "TextMappings": [{"SourceText":"卡拉克·卡弗卡马兹是灰色山脉中以花岗岩采石和石雕工艺闻名的小型矮人城塞，由杜拉克·花岗眉国王统治","Kind":null,"TargetId":null,"AgeMin":null,"AgeMax":null,"EmptyValueText":null,"TrueText":null,"FalseText":null}],
+  "RagShortTexts": ["卡拉克卡弗卡马兹灰色山脉矮人石雕花岗岩城塞"]
+}

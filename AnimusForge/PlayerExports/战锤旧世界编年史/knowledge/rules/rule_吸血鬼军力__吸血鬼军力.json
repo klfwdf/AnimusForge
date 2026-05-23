@@ -1,0 +1,216 @@
+{
+  "Id": "rule_吸血鬼军力__吸血鬼军力",
+  "Keywords": [
+    "吸血鬼军力",
+    "亡灵大军",
+    "僵尸",
+    "骷髅",
+    "黑骑士",
+    "吸血鬼军荒坟守卫",
+    "吸血鬼军惊惧兽",
+    "吸血鬼军血骑士",
+    "吸血鬼军嗜血蝠狼",
+    "吸血鬼军聚灵马车",
+    "吸血鬼军亡灵法师",
+    "吸血鬼军暗夜之吻",
+    "不死军团",
+    "纳迦什遗术",
+    "吸血鬼军暗黑魔法"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "吸血鬼的军队与凡人截然不同——他们不征募活人士兵，而是从战场上和墓园中唤醒死者的尸骸组成行尸走肉的大军。骷髅战士组成无穷无尽的战列线，僵尸蹒跚着充当血肉盾牌，而那些最精锐的亡者则会骑乘梦魇战马化为黑骑士冲锋陷阵。据说每一场与吸血鬼的战斗，敌人只会越打越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "亡者大军是我们意志的延伸——它们从不抱怨、从不需要补给、从不在恐惧面前溃退。骷髅军团是最基础的兵器，那些死于希尔瓦尼亚土地上的可怜虫永远无法安息，他们的枯骨是我们脚下铺就的白色地毯。僵尸虽然迟钝但数量无穷无尽，尸体从来都是最廉价的资源。真正体现我们军事艺术的，是黑骑士——那些在生前便是精锐战士的亡魂被我们召唤归来，骑乘着同样亡故的战马，在黑夜中如同一道黑铁的洪流。还有怨灵、墓穴恶鬼和那些被束缚的巨大蝙蝠，它们构成了我们军队的锋利獠牙。记住，亡者大军的真正力量不在个体的战斗力，而在于它们绝对的、永恒的服从。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "对抗亡灵军队需要彻底改变战术思维。传统军队依赖士气——恐惧、侧翼冲击、溃退追击——这些对亡者完全无效。骷髅和僵尸不会感到恐惧，它们会战斗到被物理摧毁或维系它们的魔法被驱散为止。因此应优先消灭敌军中的亡灵法师和吸血鬼指挥官，他们是维系整支军队的灵魂之线。黑骑士是吸血鬼军队中最具威胁的冲击力量，其噩梦战马的蹄声会令凡人战马惊恐失控，须以长枪阵或圣物压制。此外，亡者军队在黑夜中活动最为活跃，任何战役规划都必须将时间因素纳入考量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "亡灵军力的核心在于暗黑魔法——即死灵术——对死亡的操纵。亡灵大军并非简单的复生技艺，而是对莎亚之风的邪恶扭曲。死灵法师以咒语将游离的死亡能量注入尸骸，赋予其不洁的运动能力；维系这些亡者需要持续的魔力供给，一旦施法者被击杀或注意力被击破，被召唤的亡者会迅速崩解。高等亡灵如吸血鬼本尊和怨灵则不同——它们体内蕴含着独立于外源魔法的死亡之力，即使召主陨落也能继续行动。黑骑士的坐骑特意选用死于暴力的战马，因为死于非命的灵魂最容易接受死灵魔法的绑定。最恐怖的是，吸血鬼的军队无需后勤——每一场战斗的死者都会在下一场战斗中作为新的士兵重新站立起来。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "作为一位统治着希尔瓦尼亚边境地区的女伯爵，亡灵军队对我的意义与对男性领主截然不同。我的家族墓地——我祖先的遗骨——不是历史遗迹，而是潜在的敌军兵源。我每年向摩尔教派支付高昂的墓地祝圣费，不是为了宗教虔诚，而是为了确保我的祖父和曾祖母不会被某个路过的亡灵法师唤醒并加入他们的骷髅阵线。在希尔瓦尼亚附近统治的女性贵族必须考虑一件男性极少面对的事情：如果我们战败，不是简单地死亡——是被转化为怨灵或更糟的存在，意识被囚禁在不死的躯壳中服务于击败你的那个人。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我们冯·卡斯坦因家族的军队与凡人的军队完全不同。凡人领主每一代都要重新招募、训练和装备士兵——而我们积累士兵。我的父亲留给我的骷髅军团里有三分之一是他从我的祖父那里继承的，而我的祖父是从更早的冯·卡斯坦因祖先那里继承了它们。每一次对帝国的战争——不论胜负——都会在最后清点中增加我们的兵力，因为战场上躺着的所有死者都会被唤醒。家族内部的军力竞争同样以世纪为单位：一个冯·卡斯坦因子嗣如果能在某次亡灵战争中证明自己的军团比兄弟的军团更有战斗力，他就将在下一次血族议会上获得更多的话语权。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "在希尔瓦尼亚当雇佣兵和在别处完全不同——在这儿你不能靠幸存下来的经验吹嘘。你在希尔瓦尼亚学到的最快的一件事是：亡灵军队不睡觉。他们在夜间行军速度比白昼更快，他们不需要扎营、不需要生火做饭、不需要医疗救护。如果你被一支亡灵巡逻队盯上，你的唯一选择是骑马全速逃离——不是逃到最近的城镇（那里的墓地可能已经空了），而是逃出希尔瓦尼亚边界。我在希尔瓦尼亚接过的唯一工作是护送西格玛教会的骨灰坛运输队——据说那些骨灰是祝圣过的，如果你把它们撒在正在复苏的骷髅身上，它们会像酸液一样烧穿黑暗魔法。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "作为斯提尔领边境贸易公会的主席，亡灵军队对我们商人阶层造成的问题非常独特。首先是路线封锁——亡灵巡逻队不会索要过路费，它们直接杀死你——斯提尔领和希尔瓦尼亚之间最便捷的三条商路在过去的两个世纪里已经被永久废弃。其次是商品贬值——从希尔瓦尼亚流出的任何农产品在帝国其他领地的市场上会被自动折价百分之三十，因为没人能确定那些谷物不是在亡灵施过法的土地上生长的。最令商人头疼的是保险——没有一个理智的帝国商会会为穿越希尔瓦尼亚边境的商队提供货物保险，因此这条贸易线上的每一笔生意都在赌博。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "死灵术——即暗黑魔法，对莎亚之风的邪恶扭曲，操控死亡能量的禁忌法术",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "吸血鬼的军队与凡人截然不同——他们不征募活人士兵"
+  ]
+}

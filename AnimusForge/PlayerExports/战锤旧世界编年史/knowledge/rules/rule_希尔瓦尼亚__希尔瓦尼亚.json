@@ -1,0 +1,213 @@
+{
+  "Id": "rule_希尔瓦尼亚__希尔瓦尼亚",
+  "Keywords": [
+    "希尔瓦尼亚",
+    "死地",
+    "邓肯霍夫",
+    "吸血鬼领地",
+    "黑土效应",
+    "死亡泉眼",
+    "守墓地层",
+    "亡灵沼泽",
+    "冯·卡斯坦因巢穴",
+    "帝国东部",
+    "夜之领域",
+    "诅咒之地"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "希尔瓦尼亚是帝国东部一片阴森晦暗的土地，终年笼罩在灰蒙蒙的天空与不散的雾气之中。这里曾经是凡人的行省，如今却是吸血鬼伯爵们的黑暗领地——亡者在田间行走，活人不过是领主们的血税农奴。邓肯霍夫城堡矗立在这片诅咒之地的中心，那是冯·卡斯坦因家族的千年巢穴，无人敢在黑夜中靠近它的城墙。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "希尔瓦尼亚是我们的家园，是我们用千年时光浇灌的黑暗花园。这里每一块石头、每一座坟茔都浸透了死亡之力，空气中弥漫着从枯树上渗出的恐惧气息。邓肯霍夫不仅仅是城堡——它是整个旧世界夜之力量的圣殿，冯·卡斯坦因家族的先祖灵柩安放在最深的地窖中，那些古老的吸血鬼在静默中等待下一场战争的召唤。希尔瓦尼亚的活人居民是我们最珍贵的财产：他们饲养我们的饥饿、提供我们的仆人、并在死后继续以亡灵之躯为我们服役。不要被这片土地的荒凉外表所蒙蔽——它是一座沉默的军事机器，只要主人一声令下，每一座墓园都会裂开，吐出千百战士。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "希尔瓦尼亚的地理位置具有极大的战略价值。它位于帝国东部，北接奥斯特马克，西连斯特尔兰德和艾维兰德，是帝国东境的天然门户。任何试图进攻或防御希尔瓦尼亚的军事行动都必须面对这片土地的诅咒本身——稀薄的光照、崎岖的地形、遍布的沼泽和无处不在的不安亡灵使得补给和行军异常困难。希尔瓦尼亚本身农业贫瘠，无法供养大规模活人军队，这对于依赖亡灵大军的吸血鬼来说是优势而非劣势。如果要从希尔瓦尼亚出击，邓肯霍夫周边的森林和丘陵提供了极佳的集结隐蔽地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "希尔瓦尼亚的地质与魔法地理学是研究死灵能量如何影响物质世界的绝佳样本。这片土地的土壤中积累了千年来持续不断的死亡能量残余——这在学理上被称为'守墓地层'或'黑土效应'。这种积累使得希尔瓦尼亚的地下水含有微量的暗黑魔法杂质，植物生长扭曲，动物变得畸形或逃逸，而尸体在此地埋葬后不会正常腐烂，而是会逐渐被死亡能量浸透，为日后的复生仪式做好准备。邓肯霍夫选址于希尔瓦尼亚魔力网络的最强节点之上，城堡地基深入地下陵墓群，形成了所谓的'死亡泉眼'——一个持续向四周辐射死灵能量的魔力构造体。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "希尔瓦尼亚的恐怖对于与它接壤的领地上的女性领主而言是一种性别化的军事挑战——不是因为它对女性的威胁更大，而是因为女性领主在帝国的军事分配体制中通常分配到更少的正规军力来应对同样的边境威胁。我在奥斯特马克拥有边境封地的十一年中，帝国议会每年分配给我的防御预算仅仅是对面斯特尔兰德伯爵的三分之二——不是明文歧视，而是'考虑到您的领地人口较少'这一统计口径中隐含的性别逻辑。我用比男性领主更少的兵力应付了希尔瓦尼亚方向的同等级亡灵威胁——我的秘密是拒绝正面防御，转而建立一套由村间信鸽、沼泽瞭望哨和在希尔瓦尼亚方向拥有亲友的情报农奴组成的预警系统，这套系统让我在亡灵巡逻骑兵出现前至少提前三天得到通知，从而将防御从被动抵御转化为主动疏散和预设伏击。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "希尔瓦尼亚对边境家族而言是几代人不可摆脱的地缘宿命。我们家族的领地中有一个村庄自黑暗时代起就位于希尔瓦尼亚方向三小时的步行距离内，这个村庄在家族档案中被称为'哨点五号'——它的原真实村名已经在连续四代人的反复战争和重建中被遗忘了。家族对这个村庄的经营策略不是发展它而是维持它的存在：我们不投资水磨、不修建石砌教堂、不开垦新的耕地——因为每次亡灵战争的周期大约是四十到八十年，每隔两代人这个村庄就会被夷为平地一次，而我们家族每次战后在废墟上重建它的唯一目的是保留一个可以在下一场战争中作为预警缓冲的活人聚集点。与希尔瓦尼亚为邻意味着你的家族必须在经营哲学中内化一种周期性的损失预期，而这种预期在帝国任何其他边境地区都不存在。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我曾经为了一份可观的赏金在希尔瓦尼亚外围的沼泽中独自蹲守了七个晚上，任务是确认邓肯霍夫方向是否有大规模亡灵军队正在集结。七个晚上我靠一块冰冷的腌肉和一壶快发了霉的沼泽水活着，在第四个晚上我看到了远处的天空——在东方的方向——出现了一道我在帝国任何其他地方都从未见过的暗紫色巨大光晕。那道光不像是自然光，它在缓慢地脉动，像是大地本身在呼吸，而那道光的颜色与我见过的任何东西都不一样——它不同于极光，不同于月光，它是在所有已知光谱之外的某种冷颜色，可以直接在视网膜后面触发一种非视觉的恐惧。第七天我回到哨站时交上了我的观察报告——'未见军队集结但观察到非自然现象'——我的雇主没有追问细节，他直接支付了双倍报酬并要求我忘记那道光。我已经很久不做这份差事了，但每次天气阴沉的时候那道紫光还是会像烙在记忆里的烙印一样浮现在我闭眼的黑暗中。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "希尔瓦尼亚周边土地的商业价值是一道无法用正常经济学来计算的黑洞。沿着希尔瓦尼亚边境线的帝国土地在帝国地产税法中被单独标记为'风险地带'，其评估价值自动折减为标准农地的三分之一——不是因为那里的土地不肥沃，而是因为每一个潜在的买家都知道这片土地在任何一年都可能从资产变成负债。我们商会在评估与希尔瓦尼亚接壤地区的投资机会时使用的不仅是一般的风险评估模型，还包括一套由家族三代会计积累下来的'亡灵战争周期表'——这套表格记录了从帝国历两千年到现在的每一次希尔瓦尼亚军事行动的时间、规模和方向，并从中提取出一种极其粗略但勉强可用的周期性规律：希尔瓦尼亚的大规模入侵大约以四十到一百年为一个波动周期，而当前距离上一次大规模入侵已经过去了足够长的时间，下一次波动可能在任何五年窗口中出现。基于此模型的保险溢价是我们不同于任何其他帝国投资者的核心竞争壁垒——我们的竞争对手要么过度恐惧错失机会，要么过度乐观遭受灭顶之灾，而我们在两者之间的灰色地带精确地维持着一种由统计数据支持的警惕。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "邓肯霍夫——冯·卡斯坦因家族的千年巢穴，希尔瓦尼亚的权力核心",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "希尔瓦尼亚死地邓肯霍夫"
+  ]
+}

@@ -1,0 +1,213 @@
+{
+  "Id": "rule_黑色马车__黑色马车",
+  "Keywords": [
+    "黑色马车",
+    "吸血鬼座驾",
+    "黑色马车移动堡垒",
+    "能量解锁",
+    "黑色马车魔法护盾",
+    "午夜战车",
+    "午夜马车",
+    "吸血鬼战车",
+    "黑暗座驾",
+    "死亡马车",
+    "血族座驾",
+    "幽魂战车"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "黑色马车是强大吸血鬼的战地座驾，由幽冥鬼马牵引在战场上横冲直撞。这具移动的黑暗堡垒不仅碾压敌军，还能随着杀戮吸收死亡能量逐步解锁更强的防护与杀伤能力。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "黑色马车——我们血族最华美的死亡工艺品！每一辆黑色马车都是独一无二的定制杰作：从棺材形的主体车厢到精雕的蝙蝠翼饰板，再到辐条上嵌着碎骨的幽灵车轮。当马车在午夜出巡时，四匹无肉的幽冥鬼马拉扯着这具数吨重的黑暗座驾，车轮碾过之处留下冒烟的硫磺车辙。在战斗中，马车每撞碎一个活人，车厢内嵌的吸血符文就会吸收一份灵魂能量——最初只是一辆普通的战车，随着屠杀的累积，它会依次获得魔法屏障、生命汲取光环和最终形态的完全魔法免疫。一辆完全激活的黑色马车，在战场上是比巨龙更难缠的存在。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "黑色马车是最令人头疼的敌方重型单位之一——它必须在战场上「成长」的特性意味着你不能把它留到最后处理。理想策略是在战斗初期集中火力将其摧毁，阻止它吸收足够多的杀伤能量来解锁后续能力。远程攻城武器和破甲型近战单位是对付它的首选。同时要注意，黑色马车的吸血鬼主人通常会将其作为移动指挥中心，击毁马车可能迫使吸血鬼暴露在直接危险中。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "黑色马车并非普通载具——它是亡灵魔法与矮人工艺的复合造物。马车的主体通常使用从古代贵族陵墓中盗出的石棺或铁棺作为核心结构，镶嵌入吸血鬼专属的符文阵。四匹幽冥鬼马是已死去战马灵魂的具象化，通过灵魂锁链与马车相连，除非马车本身被摧毁否则无法停止。马车在吸收灵魂能量后逐级解锁的能力系统被称为「午夜之行进」：第一阶段激活「幽魂屏障」，在车身周围形成半实体雾墙偏转攻击；第二阶段激发「生命虹吸」，以马车为中心辐射即死光环；第三阶段达到「暗夜女王」，车身完全免疫非魔法伤害。全旧世界已知在役的黑色马车不超过十余辆，制造一辆马车需消耗的材料成本折合金克朗约一万至三万，以及至少十二名人类铁匠与符文学者的生命。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "黑色马车在我眼中是吸血鬼最为戏剧化的造物——仿佛他们还不够令人恐惧似的，非要坐在一辆有蝙蝠雕饰的鬼车上炫燿自己的不灭。这种对「风格」的极端执着让我觉得，不论活了多少世纪，吸血鬼骨子里仍然藏着一个渴望被注目的孩子的虚荣。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我们曾在深夜的山道上遭遇过黑色马车——先是听到由远及近的幽冥马蹄声，然后从雾中浮现出那辆比黑夜更黑的座驾。它没有停下来，只是从我们的纵队中间碾过，将两头拉货的马吓得瘫软在地。车上的吸血鬼甚至没有看我们一眼。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "人们说在希尔瓦尼亚的月圆之夜，你能在荒路上看到黑色马车的车灯——两团惨绿色的鬼火。如果你听到了车轮碾过碎石的声音然后一切恢复寂静但并没有看到任何马车经过——恭喜你，那辆黑色马车刚刚从你的灵魂中穿过。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "黑色马车的采购是不可能完成的任务——它的制造需要吸血鬼亲自参与，从活人的肋骨到矮人打造的暗黑符文车轮。不过马车的维修材料可以供货：墓地紫杉木、未经祝福的锻铁、黑曜石碎片。这些材料的利润高，但客户都是些你不想与之讨价还价的存在。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "黑色马车是吸血鬼的移动战斗座驾，由幽冥鬼马牵引碾压敌军",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "黑色马车吸血鬼座驾黑色马车移动堡垒"
+  ]
+}

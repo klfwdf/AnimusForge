@@ -250,9 +250,16 @@ public class DevMultilineEditableTextWidget : BrushWidget
 		}
 	}
 
+#if !BANNERLORD_1_4_OR_GREATER
 	protected override void OnMouseReleased()
 	{
 		base.OnMouseReleased();
+		FinishMouseSelection();
+	}
+#endif
+
+	private void FinishMouseSelection()
+	{
 		if (_mouseSelecting)
 		{
 			_cursorIndex = GetCursorIndexFromMouse();
@@ -282,6 +289,12 @@ public class DevMultilineEditableTextWidget : BrushWidget
 	protected override void OnLateUpdate(float dt)
 	{
 		base.OnLateUpdate(dt);
+#if BANNERLORD_1_4_OR_GREATER
+		if (_mouseSelecting && Input.IsKeyReleased(InputKey.LeftMouseButton))
+		{
+			FinishMouseSelection();
+		}
+#endif
 		if (AutoFocus && !_autoFocusApplied && EventManager != null)
 		{
 			EventManager.FocusedWidget = this;

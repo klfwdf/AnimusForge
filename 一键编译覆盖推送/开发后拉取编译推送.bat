@@ -133,9 +133,11 @@ if "%DRY_RUN%"=="1" (
     echo   git fetch origin "%BRANCH%"
     echo   if origin/%BRANCH% has new commit^(s^): git rebase --autostash "origin/%BRANCH%"
     if defined WORKSHOP_CONTENT_DIR (
-        echo   dotnet build "%PROJECT_ROOT%\AnimusForge.csproj" -c %CONFIG% /p:BannerlordRoot="%BANNERLORD_ROOT%" /p:WorkshopContentDir="%WORKSHOP_CONTENT_DIR%"
+        echo   dotnet build "%PROJECT_ROOT%\AnimusForge.csproj" -c %CONFIG% /p:BannerlordApi=1.3 /p:BannerlordRoot="%BANNERLORD_ROOT%" /p:WorkshopContentDir="%WORKSHOP_CONTENT_DIR%"
+        echo   dotnet build "%PROJECT_ROOT%\AnimusForge.csproj" -c %CONFIG% /p:BannerlordApi=1.4 /p:BannerlordRoot="%BANNERLORD_ROOT%" /p:WorkshopContentDir="%WORKSHOP_CONTENT_DIR%"
     ) else (
-        echo   dotnet build "%PROJECT_ROOT%\AnimusForge.csproj" -c %CONFIG% /p:BannerlordRoot="%BANNERLORD_ROOT%"
+        echo   dotnet build "%PROJECT_ROOT%\AnimusForge.csproj" -c %CONFIG% /p:BannerlordApi=1.3 /p:BannerlordRoot="%BANNERLORD_ROOT%"
+        echo   dotnet build "%PROJECT_ROOT%\AnimusForge.csproj" -c %CONFIG% /p:BannerlordApi=1.4 /p:BannerlordRoot="%BANNERLORD_ROOT%"
     )
     echo   git rm -r --cached --ignore-unmatch -- "%GIT_EXCLUDE_PATH%"
     echo   git add -A
@@ -190,16 +192,31 @@ if not "%BEHIND_COUNT%"=="0" (
 )
 
 echo.
-echo [2/4] Building project...
+echo [2/4] Building project for Bannerlord 1.3.x...
 if defined WORKSHOP_CONTENT_DIR (
-    dotnet build "%PROJECT_ROOT%\AnimusForge.csproj" -c %CONFIG% /p:BannerlordRoot="%BANNERLORD_ROOT%" /p:WorkshopContentDir="%WORKSHOP_CONTENT_DIR%"
+    dotnet build "%PROJECT_ROOT%\AnimusForge.csproj" -c %CONFIG% /p:BannerlordApi=1.3 /p:BannerlordRoot="%BANNERLORD_ROOT%" /p:WorkshopContentDir="%WORKSHOP_CONTENT_DIR%"
 ) else (
-    dotnet build "%PROJECT_ROOT%\AnimusForge.csproj" -c %CONFIG% /p:BannerlordRoot="%BANNERLORD_ROOT%"
+    dotnet build "%PROJECT_ROOT%\AnimusForge.csproj" -c %CONFIG% /p:BannerlordApi=1.3 /p:BannerlordRoot="%BANNERLORD_ROOT%"
 )
 set "ERR=%ERRORLEVEL%"
 if not "%ERR%"=="0" (
     echo.
-    echo [FAILED] Build failed. ExitCode=%ERR%
+    echo [FAILED] 1.3.x build failed. ExitCode=%ERR%
+    pause
+    exit /b %ERR%
+)
+
+echo.
+echo [2/4] Building project for Bannerlord 1.4.5...
+if defined WORKSHOP_CONTENT_DIR (
+    dotnet build "%PROJECT_ROOT%\AnimusForge.csproj" -c %CONFIG% /p:BannerlordApi=1.4 /p:BannerlordRoot="%BANNERLORD_ROOT%" /p:WorkshopContentDir="%WORKSHOP_CONTENT_DIR%"
+) else (
+    dotnet build "%PROJECT_ROOT%\AnimusForge.csproj" -c %CONFIG% /p:BannerlordApi=1.4 /p:BannerlordRoot="%BANNERLORD_ROOT%"
+)
+set "ERR=%ERRORLEVEL%"
+if not "%ERR%"=="0" (
+    echo.
+    echo [FAILED] 1.4.5 build failed. ExitCode=%ERR%
     pause
     exit /b %ERR%
 )

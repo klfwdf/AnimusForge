@@ -23,7 +23,7 @@ public static class Patch_PlayerEncounter_Start
 			}
 			else
 			{
-				if (PlayerEncounter.Current == null || PlayerEncounter.CampaignBattleResult != null || LordEncounterRedirectGuard.IsSuppressed())
+				if (PlayerEncounter.Current == null || PlayerEncounterCompat.HasCampaignBattleResult() || LordEncounterRedirectGuard.IsSuppressed())
 				{
 					return;
 				}
@@ -34,7 +34,7 @@ public static class Patch_PlayerEncounter_Start
 				}
 				try
 				{
-					if (PlayerEncounter.Battle != null || PlayerEncounter.EncounteredBattle != null)
+					if (PlayerEncounterCompat.HasBattleOrEncounteredBattle())
 					{
 						return;
 					}

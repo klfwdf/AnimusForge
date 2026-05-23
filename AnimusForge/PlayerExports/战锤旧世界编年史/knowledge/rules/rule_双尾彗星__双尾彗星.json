@@ -1,0 +1,211 @@
+{
+  "Id": "rule_双尾彗星__双尾彗星",
+  "Keywords": [
+    "双尾彗星",
+    "西格玛之兆",
+    "天启",
+    "预兆",
+    "彗星",
+    "西格玛诞生",
+    "帝国信仰",
+    "混沌预言",
+    "周期回归",
+    "天文异象"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "双尾彗星是旧世界天空中最著名的预兆，帝国教会认为它是西格玛的圣徽——神皇本人诞生的那天有一颗双尾彗星照亮了整个夜空。每当这颗彗星再次出现，智者便争论它预示的是帝国的伟大复兴还是毁灭性的战争。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "双尾彗星是西格玛的神圣签名。先皇诞生时它划破长空，先皇加冕时它再度出现，每一次帝国面临危亡之际它都会回到我们头顶。西格玛教会的大祭司们将天文观测视为最高等级的占卜，彗星的亮度、轨道和出现时机都被仔细记录并与预言文书对照。彗星不只是天上的石头——它是神皇在黄金王座上俯视我们的目光，是他对帝国子民的提醒：他没有遗忘我们，也没有遗忘他建立的帝国。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "双尾彗星的出现总是与重大政治和军事事件巧合——西格玛诞生的那年、帝国击败第一次混沌大入侵的那年、伟大抗击绿潮的那些年份——这让它在统治者的战略推演中占据了近乎神秘的位置。无论是否真的相信天启，任何选帝侯都清楚：当彗星出现时，人民会向教会寻求解释，教会会向皇权施压以采取某种行动，而敌人们——北方的混沌、东境的亡灵、南方的绿皮——同样会看到这颗星并从中读出他们自己的预兆。彗星是政治筹码，是军事动员的信号，是信仰的燃料。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "双尾彗星在矮人天文学中被称为末日之星，在混沌部落中被称为血路，在精灵的天体纪事中被标记为第二纪元大灾变的对应天体事件。所有种族都记录了这颗周期性回归的彗星，每一种文明都赋予它不同的含义。帝国教会内部对彗星的神学含义也存在分歧：西格玛正统派认为它是神皇的存在证明，而更激进的天启派则认为彗星是西格玛将亲自回归的预告。混沌的预言同样提到了双尾彗星——邪神的先知宣称当彗星第三次划过旧世界上空时，永世神选将带领末日大军踏平南方诸国。天文学者计算出的彗星轨道表明，它每一次回归的间隔都在缩短。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "双尾彗星的出现对帝国女性统治者的影响是独特的——不是直接的政治影响，而是通过宗教话语对女性权威的间接侵蚀。西格玛教会中有一派强有力的神学说辞声称彗星是'神皇之怒'，而在彗星出现期间发生的任何自然灾害或边境失利通常被该派别解释为'帝国出现了女性不洁净的统治'的证据。两位历史上最具影响力的女性选帝侯——其中一位正是我家族的远祖——都在彗星出现的年份被迫将部分行政权力临时移交给教会的男性大祭司以避免不必要的神学冲突。这不是法律的要求，而是彗星带来的、被教会主动利用的公众恐慌压力。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "双尾彗星在家族历史中留下的最深刻记录不是关于天象——而是关于商业周期。我的祖辈在家族档案中记录了一个令人不安的规律：在双尾彗星回归前的五年窗口中，帝国与矮人的武器贸易量平均增长三成，而北方省份的土地交易量平均下降两成。不是因为人们真的相信世界末日，而是因为彗星的不确定性本身足以冻结长期投资决策。作为族长，我不能用宗教信仰来解释这些规律，但我必须基于它们做出家族财产分配的决策——在彗星窗口期中保持更高的流动性和更少的长期不动产暴露。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "在帝国偏远村庄的夜间停留中，我多次从年老的村民口中听到一个奇怪的说法：双尾彗星划过天空时，如果你正好睡在露天，第二天早上你的影子会'变长'——不是物理上变长，而是黄昏时分你的影子看起来比平时更深更黑，好像彗星在你的灵魂中加注了某种重量。我当然不相信这种说法。但我确实注意到了另一个现象：彗星回归年份出生的羊羔中有双头羊的比例明显更高。这是简单的生理变异还是某种环境魔法效应——天知道。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "双尾彗星在帝国保险市场上是一个无法被量化的超级变量。玛丽恩堡的劳埃德保险社在制定年度保险费率时会将彗星天文预测作为一个独立的风险加权因子——当彗星被预测在未来五年内可能回归时，所有涉及北方省份的贸易保险的保费自动上浮百分之十五至二十。这不是基于任何可证实的因果关系而是基于历史数据：过去三次彗星回归窗口期内帝国至少爆发了一次大规模战争。精算师称之为'预兆溢价'并精确地计入每一个金克朗的保费计算中。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "双尾彗星——西格玛诞生的天象预兆，帝国信仰的核心符号",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "双尾彗星西格玛之兆天启"
+  ]
+}

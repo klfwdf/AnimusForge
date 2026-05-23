@@ -2,6 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -115,6 +116,12 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 
 	private static readonly ConcurrentQueue<Action> MainThreadActions = new ConcurrentQueue<Action>();
 	private static bool _letterInputOpen;
+	private static Harmony _courierHarmony;
+	private static bool _partyNameplatePatchApplied;
+	private static bool _partyNameplatePatchFailed;
+	private static bool _mapTrackerProviderPatchApplied;
+	private static bool _mapTrackerProviderPatchFailed;
+	private static readonly Dictionary<string, long> LastTrackerEventPulseTicks = new Dictionary<string, long>(StringComparer.OrdinalIgnoreCase);
 
 	private readonly Dictionary<string, CourierSession> _sessions = new Dictionary<string, CourierSession>(StringComparer.OrdinalIgnoreCase);
 	private readonly object _sessionLock = new object();
@@ -198,7 +205,9 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		try
 		{
 			Harmony activeHarmony = harmony ?? new Harmony("AnimusForge.courier.delivery");
+			_courierHarmony = activeHarmony;
 			MethodInfoAccess.PatchDefaultEncounterModel(activeHarmony);
+			MethodInfoAccess.PatchCustomPartyComponentBanner(activeHarmony);
 			Log("harmony patches registered");
 		}
 		catch (Exception ex)
@@ -752,6 +761,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			throw new InvalidOperationException("创建信使队失败。");
 		}
 		courier.IsVisible = true;
+		ApplyCourierMapBannerVisual(courier, "create");
 		courier.Party.SetCustomName(new TextObject("信使队 - " + (flow.Recipient.Name?.ToString() ?? "收件人")));
 		courier.SetMoveModeHold();
 		ApplyCourierAiOverrides(courier, "create");
@@ -837,6 +847,8 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 				return;
 			}
 			_lastCampaignTickUtcTicks = now;
+			TryPatchPartyNameplateForCourierBanner();
+			TryPatchMapTrackerProviderForCourierDiagnostics();
 			List<CourierSession> snapshot;
 			lock (_sessionLock)
 			{
@@ -1076,16 +1088,19 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			bool sceneMechanismInjected = false;
 			bool partyTransferInjected = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "party_transfer");
 			bool settlementTransferInjected = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "settlement_transfer");
+			bool voteDealInjected = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "vote_deal");
 			bool kingdomServiceInjected = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "kingdom_service");
 			string historyText = MyBehavior.BuildHistoryContextForExternal(recipient, 20, session.LetterText, extraFact);
-			string postprocessed = ShoutBehavior.RunCourierActionPostprocessForExternal(recipient, recipient.CharacterObject, recipient.Name?.ToString() ?? "NPC", session.LetterText, historyText, reply, duelInjected, rewardInjected, loanInjected, kingdomServiceInjected, lordsHallInjected, meetingReleaseInjected, vanillaIssueInjected, heroJoinPartyInjected, sceneMechanismInjected, partyTransferInjected, settlementTransferInjected);
+			string postprocessed = ShoutBehavior.RunCourierActionPostprocessForExternal(recipient, recipient.CharacterObject, recipient.Name?.ToString() ?? "NPC", session.LetterText, historyText, reply, duelInjected, rewardInjected, loanInjected, kingdomServiceInjected, lordsHallInjected, meetingReleaseInjected, vanillaIssueInjected, heroJoinPartyInjected, sceneMechanismInjected, partyTransferInjected, settlementTransferInjected, voteDealInjected);
+			string replyPostprocessed = string.IsNullOrWhiteSpace(postprocessed) ? reply : postprocessed;
+			VoteDealBehavior.ProcessVoteDealTagsDispatch(recipient, ref replyPostprocessed);
 			session.ReplyText = reply;
-			session.ReplyPostprocessedText = string.IsNullOrWhiteSpace(postprocessed) ? reply : postprocessed;
+			session.ReplyPostprocessedText = replyPostprocessed;
 			session.ReplyGenerated = true;
 			session.ReplyGenerationStarted = false;
 			session.Stage = CourierStage.Returning.ToString();
 			MyBehavior.AppendExternalDialogueHistory(recipient, null, "【回信】" + StripCourierActionTags(reply), "[AFEF NPC行为补充] " + (recipient.Name?.ToString() ?? "NPC") + "已通过信使写下回信，信使正在把回信带给玩家。");
-			Log("llm main done session=" + session.Id + " replyLen=" + reply.Length + " postLen=" + (session.ReplyPostprocessedText ?? "").Length + " preprocessHits=" + ((preprocessRuleHits == null || preprocessRuleHits.Count == 0) ? "(none)" : string.Join(",", preprocessRuleHits)) + " duel=" + duelInjected + " reward=" + rewardInjected + " loan=" + loanInjected + " kingdom=" + kingdomServiceInjected + " lordsHall=" + lordsHallInjected + " meetingRelease=" + meetingReleaseInjected + " vanillaIssue=" + vanillaIssueInjected + " heroJoin=" + heroJoinPartyInjected + " sceneMechanism=" + sceneMechanismInjected + " partyTransfer=" + partyTransferInjected + " settlementTransfer=" + settlementTransferInjected);
+			Log("llm main done session=" + session.Id + " replyLen=" + reply.Length + " postLen=" + (session.ReplyPostprocessedText ?? "").Length + " preprocessHits=" + ((preprocessRuleHits == null || preprocessRuleHits.Count == 0) ? "(none)" : string.Join(",", preprocessRuleHits)) + " duel=" + duelInjected + " reward=" + rewardInjected + " loan=" + loanInjected + " kingdom=" + kingdomServiceInjected + " lordsHall=" + lordsHallInjected + " meetingRelease=" + meetingReleaseInjected + " vanillaIssue=" + vanillaIssueInjected + " heroJoin=" + heroJoinPartyInjected + " sceneMechanism=" + sceneMechanismInjected + " partyTransfer=" + partyTransferInjected + " settlementTransfer=" + settlementTransferInjected + " voteDeal=" + voteDealInjected);
 		}
 		catch (Exception ex)
 		{
@@ -1326,6 +1341,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 				fact += "该信使队已完成交付，但未能把回信或剩余人员安全带回玩家处。";
 			}
 			MyBehavior.AppendExternalDialogueHistory(recipient, null, null, fact);
+			UntrackCourierMapVisual(destroyedParty, "destroyed");
 			session.Stage = CourierStage.Destroyed.ToString();
 			lock (_sessionLock)
 			{
@@ -1390,6 +1406,11 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		{
 			if (courier != null && courier.IsActive)
 			{
+				UntrackCourierMapVisual(courier, "completed");
+				if (courier.IsCurrentlyUsedByAQuest)
+				{
+					courier.SetPartyUsedByQuest(false);
+				}
 				DestroyPartyAction.Apply(null, courier);
 			}
 		}
@@ -2482,10 +2503,304 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 				}
 			}
 			ApplyCourierFoodOverrides(courier, reason);
+			ApplyCourierMapBannerVisual(courier, reason);
 		}
 		catch (Exception ex)
 		{
 			Log("ai override failed party=" + (courier?.StringId ?? "") + " reason=" + (reason ?? "") + " error=" + ex.Message);
+		}
+	}
+
+	private static void ApplyCourierMapBannerVisual(MobileParty courier, string reason)
+	{
+		try
+		{
+			if (courier == null)
+			{
+				return;
+			}
+			if (Clan.PlayerClan != null)
+			{
+				courier.ActualClan = Clan.PlayerClan;
+			}
+			courier.IsVisible = true;
+			courier.IsInspected = true;
+			EnsureCourierVisualTracked(courier, reason);
+			if (!courier.IsCurrentlyUsedByAQuest)
+			{
+				courier.SetPartyUsedByQuest(true);
+				Log("map tracker quest flag applied party=" + (courier.StringId ?? "") + " reason=" + (reason ?? ""));
+			}
+			else
+			{
+				PulseCourierTrackerQuestEvent(courier, reason);
+			}
+			courier.Party?.SetVisualAsDirty();
+			if (string.Equals(reason ?? "", "create", StringComparison.OrdinalIgnoreCase) || string.Equals(reason ?? "", "load_restore", StringComparison.OrdinalIgnoreCase))
+			{
+				Log("banner visual applied party=" + (courier.StringId ?? "") + " clan=" + (courier.ActualClan?.StringId ?? "null") + " reason=" + (reason ?? ""));
+			}
+		}
+		catch (Exception ex)
+		{
+			Log("banner visual failed party=" + (courier?.StringId ?? "") + " reason=" + (reason ?? "") + " error=" + ex.Message);
+		}
+	}
+
+	private static void EnsureCourierVisualTracked(MobileParty courier, string reason)
+	{
+		try
+		{
+			if (courier == null || !IsCourierParty(courier) || Campaign.Current?.VisualTrackerManager == null)
+			{
+				return;
+			}
+			bool beforeTracked = Campaign.Current.VisualTrackerManager.CheckTracked(courier);
+			LogCourierTrackerSnapshot(courier, reason, "before_register", beforeTracked);
+			if (!beforeTracked)
+			{
+				Campaign.Current.VisualTrackerManager.RegisterObject(courier);
+				Log("map tracker registered party=" + (courier.StringId ?? "") + " reason=" + (reason ?? ""));
+			}
+			LogCourierTrackerSnapshot(courier, reason, "after_register", Campaign.Current.VisualTrackerManager.CheckTracked(courier));
+		}
+		catch (Exception ex)
+		{
+			Log("map tracker register failed party=" + (courier?.StringId ?? "") + " reason=" + (reason ?? "") + " error=" + ex.Message);
+		}
+	}
+
+	private static void PulseCourierTrackerQuestEvent(MobileParty courier, string reason)
+	{
+		try
+		{
+			if (courier == null || !IsCourierParty(courier) || Campaign.Current?.VisualTrackerManager == null || !Campaign.Current.VisualTrackerManager.CheckTracked(courier))
+			{
+				return;
+			}
+			string id = courier.StringId ?? "";
+			long now = DateTime.UtcNow.Ticks;
+			if (LastTrackerEventPulseTicks.TryGetValue(id, out long last) && now - last < TimeSpan.FromSeconds(8).Ticks)
+			{
+				return;
+			}
+			LastTrackerEventPulseTicks[id] = now;
+			courier.SetPartyUsedByQuest(false);
+			courier.SetPartyUsedByQuest(true);
+			Log("map tracker quest event pulsed party=" + id + " reason=" + (reason ?? ""));
+		}
+		catch (Exception ex)
+		{
+			Log("map tracker quest event pulse failed party=" + (courier?.StringId ?? "") + " reason=" + (reason ?? "") + " error=" + ex.Message);
+		}
+	}
+
+	private static void LogCourierTrackerSnapshot(MobileParty courier, string reason, string phase, bool tracked)
+	{
+		try
+		{
+			if (courier == null)
+			{
+				return;
+			}
+			Log("map tracker snapshot phase=" + (phase ?? "") +
+				" party=" + (courier.StringId ?? "") +
+				" reason=" + (reason ?? "") +
+				" tracked=" + tracked +
+				" questUsed=" + courier.IsCurrentlyUsedByAQuest +
+				" leaderNull=" + (courier.LeaderHero == null) +
+				" active=" + courier.IsActive +
+				" visible=" + courier.IsVisible +
+				" inspected=" + courier.IsInspected +
+				" usedByQuest=" + courier.IsCurrentlyUsedByAQuest +
+				" actualClan=" + (courier.ActualClan?.StringId ?? "null") +
+				" mapFaction=" + (courier.MapFaction?.StringId ?? "null") +
+				" component=" + (courier.PartyComponent?.GetType().FullName ?? "null"));
+		}
+		catch (Exception ex)
+		{
+			Log("map tracker snapshot failed party=" + (courier?.StringId ?? "") + " phase=" + (phase ?? "") + " error=" + ex.Message);
+		}
+	}
+
+	private static void UntrackCourierMapVisual(MobileParty courier, string reason)
+	{
+		try
+		{
+			if (courier == null || Campaign.Current?.VisualTrackerManager == null)
+			{
+				return;
+			}
+			if (Campaign.Current.VisualTrackerManager.CheckTracked(courier))
+			{
+				Campaign.Current.VisualTrackerManager.RemoveTrackedObject(courier, true);
+				Log("map tracker unregistered party=" + (courier.StringId ?? "") + " reason=" + (reason ?? ""));
+			}
+		}
+		catch (Exception ex)
+		{
+			Log("map tracker unregister failed party=" + (courier?.StringId ?? "") + " reason=" + (reason ?? "") + " error=" + ex.Message);
+		}
+	}
+
+	private static void TryPatchPartyNameplateForCourierBanner()
+	{
+		if (_partyNameplatePatchApplied || _partyNameplatePatchFailed)
+		{
+			return;
+		}
+		try
+		{
+			Harmony harmony = _courierHarmony ?? new Harmony("AnimusForge.courier.delivery");
+			Type nameplateType = AccessTools.TypeByName("SandBox.ViewModelCollection.Nameplate.PartyNameplateVM");
+			MethodInfo method = nameplateType == null ? null : AccessTools.Method(nameplateType, "RefreshBinding");
+			MethodInfo postfix = AccessTools.Method(typeof(CourierDeliveryBehavior), nameof(PartyNameplateRefreshBindingCourierPostfix));
+			if (method == null || postfix == null)
+			{
+				_partyNameplatePatchFailed = true;
+				Log("party nameplate delayed patch skipped method_missing type=" + (nameplateType == null ? "null" : nameplateType.FullName));
+				return;
+			}
+			harmony.Patch(method, postfix: new HarmonyMethod(postfix));
+			_partyNameplatePatchApplied = true;
+			Log("party nameplate delayed patch applied");
+		}
+		catch (Exception ex)
+		{
+			_partyNameplatePatchFailed = true;
+			Log("party nameplate delayed patch failed: " + ex);
+		}
+	}
+
+	public static void PartyNameplateRefreshBindingCourierPostfix(object __instance)
+	{
+		try
+		{
+			if (__instance == null)
+			{
+				return;
+			}
+			Type type = __instance.GetType();
+			PropertyInfo partyProperty = type.GetProperty("Party", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+			MobileParty party = partyProperty?.GetValue(__instance, null) as MobileParty;
+			if (!IsCourierParty(party))
+			{
+				return;
+			}
+			type.GetProperty("IsArmy", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)?.SetValue(__instance, true, null);
+			type.GetProperty("ShouldShowFullName", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)?.SetValue(__instance, true, null);
+			type.BaseType?.GetProperty("IsVisibleOnMap", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)?.SetValue(__instance, true, null);
+			type.GetProperty("PartyBanner", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)?.SetValue(__instance, CreateCourierBannerImageIdentifier(party), null);
+		}
+		catch
+		{
+		}
+	}
+
+	private static object CreateCourierBannerImageIdentifier(MobileParty party)
+	{
+		try
+		{
+			Banner banner = party?.Banner ?? Clan.PlayerClan?.Banner ?? Hero.MainHero?.Clan?.Banner;
+			if (banner == null)
+			{
+				return null;
+			}
+			Type bannerVmType = AccessTools.TypeByName("TaleWorlds.Core.ViewModelCollection.ImageIdentifiers.BannerImageIdentifierVM");
+			ConstructorInfo ctor = bannerVmType?.GetConstructor(new[] { typeof(Banner), typeof(bool) });
+			return ctor?.Invoke(new object[] { banner, true });
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static void TryPatchMapTrackerProviderForCourierDiagnostics()
+	{
+		if (_mapTrackerProviderPatchApplied || _mapTrackerProviderPatchFailed)
+		{
+			return;
+		}
+		try
+		{
+			Harmony harmony = _courierHarmony ?? new Harmony("AnimusForge.courier.delivery");
+			Type providerType = AccessTools.TypeByName("SandBox.ViewModelCollection.Map.Tracker.MapTrackerProvider");
+			MethodInfo canAdd = providerType == null ? null : AccessTools.Method(providerType, "CanAddMobileParty", new[] { typeof(MobileParty) });
+			MethodInfo addIfEligible = providerType == null ? null : AccessTools.Method(providerType, "AddIfEligible", new[] { typeof(MobileParty) });
+			MethodInfo canAddPostfix = AccessTools.Method(typeof(CourierDeliveryBehavior), nameof(MapTrackerProviderCanAddMobilePartyCourierPostfix));
+			MethodInfo addPostfix = AccessTools.Method(typeof(CourierDeliveryBehavior), nameof(MapTrackerProviderAddIfEligibleCourierPostfix));
+			if (providerType == null || canAdd == null || addIfEligible == null || canAddPostfix == null || addPostfix == null)
+			{
+				_mapTrackerProviderPatchFailed = true;
+				Log("map tracker provider diagnostics patch skipped type=" + (providerType?.FullName ?? "null") + " canAdd=" + (canAdd != null) + " addIfEligible=" + (addIfEligible != null));
+				return;
+			}
+			harmony.Patch(canAdd, postfix: new HarmonyMethod(canAddPostfix));
+			harmony.Patch(addIfEligible, postfix: new HarmonyMethod(addPostfix));
+			_mapTrackerProviderPatchApplied = true;
+			Log("map tracker provider diagnostics patch applied");
+		}
+		catch (Exception ex)
+		{
+			_mapTrackerProviderPatchFailed = true;
+			Log("map tracker provider diagnostics patch failed: " + ex);
+		}
+	}
+
+	public static void MapTrackerProviderCanAddMobilePartyCourierPostfix(MobileParty party, ref bool __result)
+	{
+		try
+		{
+			if (!IsCourierParty(party))
+			{
+				return;
+			}
+			bool tracked = Campaign.Current?.VisualTrackerManager != null && Campaign.Current.VisualTrackerManager.CheckTracked(party);
+			if (tracked && party.IsActive)
+			{
+				__result = true;
+			}
+			Log("map tracker provider CanAddMobileParty courier party=" + (party.StringId ?? "") +
+				" result=" + __result +
+				" tracked=" + tracked +
+				" questUsed=" + party.IsCurrentlyUsedByAQuest +
+				" leaderNull=" + (party.LeaderHero == null) +
+				" active=" + party.IsActive +
+				" forced=" + (tracked && party.IsActive) +
+				" isQuestCondition=" + (party.LeaderHero == null && party.IsCurrentlyUsedByAQuest && tracked));
+		}
+		catch (Exception ex)
+		{
+			Log("map tracker provider CanAddMobileParty log failed: " + ex.Message);
+		}
+	}
+
+	public static void MapTrackerProviderAddIfEligibleCourierPostfix(object __instance, MobileParty party)
+	{
+		try
+		{
+			if (!IsCourierParty(party))
+			{
+				return;
+			}
+			bool hasTracker = false;
+			object container = __instance?.GetType().GetField("_trackerContainer", BindingFlags.Instance | BindingFlags.NonPublic)?.GetValue(__instance);
+			MethodInfo hasTrackerFor = container?.GetType().GetMethod("HasTrackerFor", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+			if (container != null && hasTrackerFor != null)
+			{
+				hasTracker = (bool)hasTrackerFor.Invoke(container, new object[] { party });
+			}
+			bool tracked = Campaign.Current?.VisualTrackerManager != null && Campaign.Current.VisualTrackerManager.CheckTracked(party);
+			Log("map tracker provider AddIfEligible courier party=" + (party.StringId ?? "") +
+				" hasTracker=" + hasTracker +
+				" tracked=" + tracked +
+				" questUsed=" + party.IsCurrentlyUsedByAQuest +
+				" leaderNull=" + (party.LeaderHero == null));
+		}
+		catch (Exception ex)
+		{
+			Log("map tracker provider AddIfEligible log failed: " + ex.Message);
 		}
 	}
 
@@ -2801,6 +3116,33 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			{
 				harmony.Patch(method, prefix: new HarmonyMethod(typeof(CourierDeliveryBehavior), nameof(DefaultEncounterModelIsEncounterExemptPrefix)));
 			}
+		}
+
+		public static void PatchCustomPartyComponentBanner(Harmony harmony)
+		{
+			var method = AccessTools.Method(typeof(CustomPartyComponent), nameof(CustomPartyComponent.GetDefaultComponentBanner));
+			if (method != null)
+			{
+				harmony.Patch(method, prefix: new HarmonyMethod(typeof(CourierDeliveryBehavior), nameof(CustomPartyComponentGetDefaultComponentBannerPrefix)));
+			}
+		}
+	}
+
+	public static bool CustomPartyComponentGetDefaultComponentBannerPrefix(CustomPartyComponent __instance, ref Banner __result)
+	{
+		try
+		{
+			MobileParty party = __instance?.MobileParty;
+			if (!IsCourierParty(party))
+			{
+				return true;
+			}
+			__result = Clan.PlayerClan?.Banner ?? party?.ActualClan?.Banner ?? Hero.MainHero?.Clan?.Banner;
+			return false;
+		}
+		catch
+		{
+			return true;
 		}
 	}
 

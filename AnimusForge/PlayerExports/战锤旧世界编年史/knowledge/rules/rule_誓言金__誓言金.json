@@ -1,0 +1,209 @@
+{
+  "Id": "rule_誓言金__誓言金",
+  "Keywords": [
+    "誓言金",
+    "神圣货币",
+    "矮人锻造材料",
+    "誓言绑定",
+    "符文神器",
+    "达维之金",
+    "誓约金属",
+    "矮人信誉"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "誓言金是矮人社会中独一无二的神圣交易媒介——它不是普通的黄金，每一块誓言金都在铸造时被铭刻上了双方用矮人先祖之名立下的誓约。毁誓言金的人会被所有矮人视为永世仇敌，而完成誓约的誓言金会融入符文神器之中成为永恒的见证。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "誓言金——这不是你口袋里的克朗金币，小人类。誓言金是誓言，是金属化的仇恨、感激或债务。你知道怎样铸一块誓言金吗？你站在先祖熔炉前，手按在《仇恨之书》或《恩惠之书》上，口述你欠对方什么、对方欠你什么——一个符文铁匠站你旁边，把你的每一个字的重量敲进那块金子。完成后，那块金子不只是金子：它闪耀着一种你知道自己的灵魂被绑在里头的微光。如果发誓方违背誓言，那块誓言金会从内到外变成暗沉的铅灰色，无论多远，你都能感应到它的腐化。反之，当誓言被完满履行，那块誓言金就可以被符文铁匠熔入一件真正的符文神器中——使那件武器永远承载你履行了誓言的先祖荣耀。矮人的整个社会、整个商业、整个军事同盟都建立在这块小金属上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "誓言金是矮人外交和军事同盟的核心机制。与矮人结盟时，如果对方没有要求你用誓言金立誓，那说明他们根本没把你的承诺当回事——你还没得到他们的真正信任。一旦你用誓言金立下盟约，这就是不可撤回的承诺：你的军团必须按照誓约中写明的日期和地点出现。同样重要的是，誓言金也是向矮人购买战争物资的唯一高级通货——黄金只能从矮人那里买到普通铁器，要购买符文装备、风琴炮或陨铁制品，只有誓言金作数。这也解释了为什么人类国家在真正危急时往往拿不出矮人需要的支付手段——不是因为缺钱，是因为没有足够的'可兑现的誓言'。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "誓言金体系在矮人学中被称为'卡扎里特货币机制'（Kazalid Monetary Mechanism），其制度起源可追溯至复仇时代早期（约公元前1400年），由至高王戈特雷克·星须在第一次绿皮大战争后创立——初衷是让被战争打散的各氏族之间有一种不可伪造的信誉交换媒介。誓言金的铸造流程分为四个标准步骤：第一步，订约双方在先祖大厅的仇恨之书或恩惠之书旁面对面陈述条款；第二步，符文铁匠开炉熔化黄金并注入'真实之音'符文（这是一种特殊的常驻真言符文，使金属与订约人的灵魂产生永久共振）；第三步，订约双方依次用指血触碰液态金面——金子在凝固时会吸收微量的血中灵魂元素；第四步，冷却后的誓言金由符文铁匠最后敲打三锤定型，并发出一种独特的金属鸣音，此音即为这块誓言金的'真名'。已知历史上最古老的尚存誓言金为'黑岩盟约金'（铸造于公元前1398年，由卡拉克·八峰山和卡拉克·卡德林之间锻造，内容为互不侵犯与贸易优先权），现存于永恒之峰至高王宝库。值得一提的是，阿尔道夫大学的矮人研究所曾于公元2350年对变质誓言金进行了光谱分析——发现其颜色变化并非化学腐蚀，而是晶体层面的一种'灵魂共振频率的改变'，这一发现使人类学院第一次承认'灵魂可能具有物理可测性'。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我一直认为誓言金是矮人文明对旧世界最大的文化贡献——它把一个抽象的概念（诚信）变成了可触摸、可检验的物理实体。你能想象如果一个人类贵族也能用自己的荣誉铸造类似的金子，然后全大陆的人都能看到那块金子的成色随着他的行为改变吗？政治将完全不同。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "誓言金在矮人宗族间的流通非常复杂。我们家族的金库里保存着来自十七个不同家族的誓言金——每一块都代表一份需要被记入《恩惠之书》或《仇恨之书》的双边义务。偿还一块誓言金可能需要几代人的时间。但如果你违约——我的先祖在七百年前因为未能及时派军援助灰胡子氏族而让那块誓言金变成了铅灰色，至今那块灰色的金子还放在氏族大厅的正中央，每个来参观的外族人都会被请过去看一下。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "在永恒之峰的矮人酒馆里听人说过一个关于誓言金的故事：有人类商人试图伪造誓言金，熔了一块普通的金子刻上假的符文，想骗一个矮人老铁匠。矮人接过金子看了一眼，一秒都没用，说'这块金子在撒谎'，然后一锤子把那块假誓言金和人类商人的手一起砸在了桌上。没人知道矮人是怎么辨别的——可能他们能看到我们看不到的东西。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "人类银行家对誓言金体系既着迷又头痛——着迷是因为它创造了绝对安全的信用体系，头痛是因为它完全不兼容人类的金融规则。玛丽恩堡银行联盟曾提案说要创建一套'人类版誓言金'——由西格玛教会做担保人，每块'盟约金'绑定契约条款。结果矮人闻讯后冷笑着说：'你们的教会先保证自己不会被腐化再说。'项目无疾而终。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "卡扎里特货币机制：誓言金体系的矮人学正式名称，由至高王戈特雷克·星须于公元前约1400年创立。",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "誓言金神圣货币矮人锻造材料"
+  ]
+}

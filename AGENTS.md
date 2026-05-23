@@ -9,6 +9,22 @@
 - 不要擅自修改项目的一键编译/覆盖流程；本项目已经有自己的构建和覆盖方式。
 - 不要回滚用户已有改动。
 
+## 双版本输出案例
+
+当任务涉及以下内容时，先阅读并套用 `docs/bannerlord_dual_module_output.md`：
+
+- 修改 `一键编译覆盖推送` 下的一键编译、覆盖、推送或打包脚本。
+- 修改 1.3.x / 1.4.5 双版本构建流程。
+- 调整输出到 Bannerlord `Modules` 目录的模块文件夹。
+- 修改 `SubModule.xml` 的模块 `Id`、`Name` 或 DLL 加载方式。
+
+该案例的核心经验：
+
+- 本项目使用一套源码，同时输出 `AnimusForge_1_3_x` 和 `AnimusForge_1_4_5` 两个完整 mod 文件夹。
+- 两个输出模块的 `SubModule.xml` 必须使用不同 `Id`，但 DLL 文件名都保持 `AnimusForge.dll`。
+- 不要把 1.3.x 和 1.4.5 混放进同一个 `Modules/AnimusForge` 文件夹。
+- 不要覆盖游戏或 TaleWorlds 原版 DLL。
+
 ## 百科按钮注入案例
 
 当任务涉及以下内容时，先阅读并套用 `docs/encyclopedia_button_injection_case.md`：
@@ -85,3 +101,16 @@
 - 队伍敌对转换、忠诚度惩罚、死亡延迟等副作用只能在严格命中的机制场景内初始化；后续维护可以依赖已初始化状态。
 
 如果用户说“调用场景伤害案例”“按伤害上下文防误触检查”“兼容攻城/竞技场/藏身点/原版战斗”“回归原版伤害逻辑”，默认就是指 `docs/scene_damage_context_guard_case.md`。
+
+## Bannerlord 1.3 / 1.4.5 compatibility diff
+
+When a task touches Bannerlord API usage, campaign behaviors, mission behaviors, encounter flow, party/roster logic, settlement models, Gauntlet UI, Harmony patches, dual-version build scripts, deployment, or packaging, first read and apply:
+
+- `docs/bannerlord_1_3_to_1_4_5_compatibility_diff.md`
+
+Core rules:
+
+- One source tree must keep both `BannerlordApi=1.3` and `BannerlordApi=1.4` builds passing.
+- Prefer existing compatibility helpers before adding new `#if BANNERLORD_1_4_OR_GREATER` branches.
+- Use `#if BANNERLORD_1_4_OR_GREATER` only for compile-time API/signature differences.
+- After compatibility-sensitive edits, verify both builds.

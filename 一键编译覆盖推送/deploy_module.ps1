@@ -1,7 +1,10 @@
 param(
     [string]$ProjectRoot = "",
     [string]$BuildDll = "",
-    [string]$BannerlordRoot = ""
+    [string]$BannerlordRoot = "",
+    [switch]$DualClientOutput,
+    [string]$BuildDll13 = "",
+    [string]$BuildDll14 = ""
 )
 
 $ErrorActionPreference = "Stop"
@@ -81,6 +84,41 @@ function Get-TargetModuleDirs {
     }
 
     return $resolved
+}
+
+function Get-BannerlordModulesDir {
+    param([string]$BannerlordRootPath)
+
+    if ([string]::IsNullOrWhiteSpace($BannerlordRootPath)) {
+        $targetDirs = @(Get-TargetModuleDirs -BannerlordRootPath $BannerlordRootPath)
+        if ($targetDirs.Count -eq 0) {
+            throw "No Bannerlord module target found."
+        }
+        return (Split-Path -Path $targetDirs[0] -Parent)
+    }
+
+    $bannerlordRootFull = Get-FullPathSafe -Path $BannerlordRootPath
+    if (-not (Test-Path -LiteralPath $bannerlordRootFull -PathType Container)) {
+        throw "Bannerlord root not found: $bannerlordRootFull"
+    }
+
+    $modulesDir = Join-Path $bannerlordRootFull "Modules"
+    if (-not (Test-Path -LiteralPath $modulesDir -PathType Container)) {
+        throw "Bannerlord Modules directory not found: $modulesDir"
+    }
+
+    return (Get-FullPathSafe -Path $modulesDir)
+}
+
+function Get-DualClientTargetModuleDirs {
+    param([string]$BannerlordRootPath)
+
+    $modulesDir = Get-BannerlordModulesDir -BannerlordRootPath $BannerlordRootPath
+    return @(
+        (Join-Path $modulesDir "AnimusForge"),
+        (Join-Path $modulesDir "AnimusForge_1_3_x"),
+        (Join-Path $modulesDir "AnimusForge_1_4_5")
+    )
 }
 
 function Get-ExistingModuleXmlTargets {
@@ -242,6 +280,147 @@ function Invoke-RobocopySync {
     }
 }
 
+function Invoke-RobocopyModuleSync {
+    param(
+        [Parameter(Mandatory = $true)][string]$SourceDir,
+        [Parameter(Mandatory = $true)][string]$TargetDir
+    )
+
+    New-Item -ItemType Directory -Path $TargetDir -Force | Out-Null
+
+    $arguments = @(
+        $SourceDir,
+        $TargetDir,
+        "/MIR",
+        "/R:1",
+        "/W:1",
+        "/NP",
+        "/NFL",
+        "/NDL",
+        "/NJH",
+        "/NJS",
+        "/XD",
+        "Logs",
+        "Clients",
+        "/XF",
+        "AnimusForge.1.3.x.dll",
+        "AnimusForge.1.3.x.pdb",
+        "AnimusForge.1.4.5.dll",
+        "AnimusForge.1.4.5.pdb"
+    )
+
+    & robocopy @arguments | Out-Null
+    $exitCode = $LASTEXITCODE
+    if ($exitCode -ge 8) {
+        throw "robocopy failed for target '$TargetDir' with exit code $exitCode"
+    }
+}
+
+function Copy-BuildOutputIntoModule {
+    param(
+        [Parameter(Mandatory = $true)][string]$TargetModuleDir,
+        [Parameter(Mandatory = $true)][string]$BuildDllPath
+    )
+
+    $buildDllFull = Get-FullPathSafe -Path $BuildDllPath
+    if (-not (Test-Path -LiteralPath $buildDllFull -PathType Leaf)) {
+        throw "Build DLL not found: $buildDllFull"
+    }
+
+    $moduleBinDir = Join-Path $TargetModuleDir "bin\Win64_Shipping_Client"
+    New-Item -ItemType Directory -Path $moduleBinDir -Force | Out-Null
+
+    $targetDllPath = Join-Path $moduleBinDir "AnimusForge.dll"
+    Copy-Item -LiteralPath $buildDllFull -Destination $targetDllPath -Force
+    Write-Host "Updated DLL : $targetDllPath"
+
+    $buildPdbPath = [System.IO.Path]::ChangeExtension($buildDllFull, ".pdb")
+    if (Test-Path -LiteralPath $buildPdbPath -PathType Leaf) {
+        $targetPdbPath = Join-Path $moduleBinDir "AnimusForge.pdb"
+        Copy-Item -LiteralPath $buildPdbPath -Destination $targetPdbPath -Force
+        Write-Host "Updated PDB : $targetPdbPath"
+    }
+}
+
+function Set-SubModuleIdentity {
+    param(
+        [Parameter(Mandatory = $true)][string]$TargetModuleDir,
+        [Parameter(Mandatory = $true)][string]$ModuleId,
+        [Parameter(Mandatory = $true)][string]$DisplayName
+    )
+
+    $subModulePath = Join-Path $TargetModuleDir "SubModule.xml"
+    if (-not (Test-Path -LiteralPath $subModulePath -PathType Leaf)) {
+        throw "SubModule.xml not found after module sync: $subModulePath"
+    }
+
+    [xml]$xml = Get-Content -LiteralPath $subModulePath
+    $xml.Module.Id.value = $ModuleId
+    $xml.Module.Name.value = $DisplayName
+    if ($xml.Module.SubModules -and $xml.Module.SubModules.SubModule) {
+        foreach ($subModule in @($xml.Module.SubModules.SubModule)) {
+            if ($subModule.Name) {
+                $subModule.Name.value = $DisplayName
+            }
+            if ($subModule.DLLName) {
+                $subModule.DLLName.value = "AnimusForge.dll"
+            }
+        }
+    }
+    if ($xml.Module.Assemblies -and $xml.Module.Assemblies.Assembly) {
+        foreach ($assembly in @($xml.Module.Assemblies.Assembly)) {
+            $assembly.value = "AnimusForge.dll"
+        }
+    }
+
+    $settings = New-Object System.Xml.XmlWriterSettings
+    $settings.Indent = $true
+    $settings.IndentChars = "    "
+    $settings.NewLineChars = "`r`n"
+    $settings.NewLineHandling = [System.Xml.NewLineHandling]::Replace
+    $settings.OmitXmlDeclaration = $true
+
+    $writer = [System.Xml.XmlWriter]::Create($subModulePath, $settings)
+    try {
+        $xml.Save($writer)
+    } finally {
+        $writer.Dispose()
+    }
+
+    Write-Host "Updated XML : $subModulePath ($ModuleId)"
+}
+
+function Deploy-DualClientModule {
+    param(
+        [Parameter(Mandatory = $true)][string]$SourceModuleDir,
+        [Parameter(Mandatory = $true)][string]$BannerlordRootPath,
+        [Parameter(Mandatory = $true)][string]$BuildDll13Path,
+        [Parameter(Mandatory = $true)][string]$BuildDll14Path
+    )
+
+    $modulesDir = Get-BannerlordModulesDir -BannerlordRootPath $BannerlordRootPath
+    $target13 = Join-Path $modulesDir "AnimusForge_1_3_x"
+    $target14 = Join-Path $modulesDir "AnimusForge_1_4_5"
+
+    $clientSpecs = @(
+        [PSCustomObject]@{ Label = "1.3.x"; Target = $target13; BuildDll = $BuildDll13Path; ModuleId = "AnimusForge_1_3_x"; DisplayName = "AnimusForge 1.3.x" },
+        [PSCustomObject]@{ Label = "1.4.5"; Target = $target14; BuildDll = $BuildDll14Path; ModuleId = "AnimusForge_1_4_5"; DisplayName = "AnimusForge 1.4.5" }
+    )
+
+    foreach ($client in $clientSpecs) {
+        $targetFull = Get-FullPathSafe -Path $client.Target
+        Write-Host "Deploying    : $targetFull ($($client.Label))"
+        Invoke-RobocopyModuleSync -SourceDir $SourceModuleDir -TargetDir $targetFull
+        Copy-BuildOutputIntoModule -TargetModuleDir $targetFull -BuildDllPath $client.BuildDll
+        Set-SubModuleIdentity -TargetModuleDir $targetFull -ModuleId $client.ModuleId -DisplayName $client.DisplayName
+        Assert-SameHash -SourceRoot $SourceModuleDir -TargetRoot $targetFull -RelativePath "ModuleData\RuleBehaviorPrompts.json"
+        Assert-SameHash -SourceRoot $targetFull -TargetRoot $targetFull -RelativePath "bin\Win64_Shipping_Client\AnimusForge.dll"
+    }
+
+    Write-Host "Deploy Mode  : dual version module output"
+    Write-Host "Deploy Result: success"
+}
+
 function Assert-SameHash {
     param(
         [Parameter(Mandatory = $true)][string]$SourceRoot,
@@ -277,6 +456,22 @@ $sourceModuleDir = Join-Path $projectRootFull "AnimusForge"
 $sourceModuleDir = Get-FullPathSafe -Path $sourceModuleDir
 
 Test-SourceModuleDir -Path $sourceModuleDir
+
+if ($DualClientOutput) {
+    if ([string]::IsNullOrWhiteSpace($BuildDll13) -or [string]::IsNullOrWhiteSpace($BuildDll14)) {
+        throw "DualClientOutput requires both -BuildDll13 and -BuildDll14."
+    }
+    if ([string]::IsNullOrWhiteSpace($BannerlordRoot)) {
+        throw "DualClientOutput requires -BannerlordRoot."
+    }
+
+    $targetModuleDirsForSync = @(Get-DualClientTargetModuleDirs -BannerlordRootPath $BannerlordRoot)
+    Sync-PlayerExportsBackToSource -SourceModuleDir $sourceModuleDir -TargetModuleDirs $targetModuleDirsForSync
+    Write-Host "Source Module: $sourceModuleDir"
+    Deploy-DualClientModule -SourceModuleDir $sourceModuleDir -BannerlordRootPath $BannerlordRoot -BuildDll13Path $BuildDll13 -BuildDll14Path $BuildDll14
+    exit 0
+}
+
 $targetModuleDirs = @(Get-TargetModuleDirs -BannerlordRootPath $BannerlordRoot)
 Sync-SubModuleXmlBackToSource -SourceModuleDir $sourceModuleDir -TargetModuleDirs $targetModuleDirs
 Sync-PlayerExportsBackToSource -SourceModuleDir $sourceModuleDir -TargetModuleDirs $targetModuleDirs

@@ -1,0 +1,213 @@
+{
+  "Id": "rule_黑焰幽魂__黑焰幽魂",
+  "Keywords": [
+    "黑焰幽魂",
+    "黑焰幽魂幽灵骑士",
+    "穿透城墙",
+    "收割灵魂",
+    "怨灵骑兵",
+    "无视物理阻碍",
+    "幽灵骑兵",
+    "黑焰骑士",
+    "穿透实体",
+    "灵魂收割",
+    "怨灵战马",
+    "虚无骑士"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "黑焰幽魂是由诅咒骑士的灵魂凝聚而成的幽灵骑兵，骑乘燃烧着黑暗火焰的亡魂战马。他们能无视城墙、护甲等一切物理阻碍，直接穿入敌阵收割活人的灵魂。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "黑焰幽魂——我们血族骑兵中最难以捉摸的利刃！他们在生前都是骄傲的骑士，因为背弃誓言、谋杀领主或更古老的诅咒而在死后被永恒的黑色火焰捆绑于现世，无法安息。我们血族的亡灵法师从冥界中将这些怨魂召回，缚以黑暗契约之链，将他们编入骑兵队列。战场上黑焰幽魂不发出一丝声响——没有马蹄声，没有战吼，只有盔甲中透出的幽暗绿光和他们经过时空气骤降的冰寒。最恐怖的是他们冲锋的方式：不需要破门，不需要爬墙，直接穿透城堡石壁出现在守城士兵背后的走廊上，然后收割一排排惊恐的灵魂。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "黑焰幽魂是任何防守战中最难应对的威胁——墙垒、壕沟和城门对他们形同虚设。传统的防线布置在面对能穿透实体墙的敌军时将完全失效。唯一有效的对抗策略是提前部署魔法防护结界，或以同样拥有魔法攻击手段的单位（如战斗法师、受祝武器持有者）进行拦截。他们不受物理规则约束，但魔法能量可以伤害并约束他们。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "黑焰幽魂的生成机制在死灵法术学中被归类为「诅咒灵魂的骑兵形态具象化」。与普通怨灵不同，黑焰幽魂在生前必须具备两个条件：第一，被杀时正在使用暴力手段（通常是战场阵亡或决斗中被杀）；第二，死前心怀可被死灵法师利用的执念（仇恨、未竟誓言、对特定目标的复仇渴望）。他们的「穿透」能力源于其魂体本质——黑焰幽魂并非完全存在于物质位面，而是同时站在物质与灵魂两个位面的边界线上，故可以选择忽略物理实体的障碍。这一能力在使用上有战术限制：穿透堡垒石墙时的速度会减慢到步行的三分之一，且不能携带任何物质物品一同穿透。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "黑焰幽魂让我联想起巴托尼亚传说中那些背弃誓言、最后变成游荡亡灵的不忠骑士。他们的故事是所有贵族家庭的噩梦教材——教导孩子们违背骑士誓言的终极代价。这些幽魂曾经也是活生生的骑士，也许就在某个寒冷夜晚的某个错误决定之后，他们的命运就永久地改变了。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我族的祖传城堡从未被敌军正面攻破过——但黑焰幽魂是例外。族中长者记载，四百年前有一队黑焰幽魂在某个月黑之夜穿透城墙屠杀了城堡中三分之一的人口。此后再无侵袭，但我们在城堡每一面墙上都挂了受祝的符文石，至今不敢摘下。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "深夜独自穿越希尔瓦尼亚的旷野时，如果你看到远处有一团飘浮的绿色火焰在无风的夜里快速移动——那不是鬼火，是黑焰幽魂的巡逻队。不要逃跑，他们会察觉恐惧。趴在地上屏住呼吸，等他们飘过去。运气好的话他们只是路过，并非追猎。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "黑焰幽魂不需要食物、水和装备，所以别想靠卖补给品给他们发财。但用来束缚它们的黑暗契约之链需要特殊的漆黑锻铁——这种铁只能在没有一丝阳光照射过的地下深处开采。经营这种铁的交易意味着你要和地下采掘商打交道的同时也可能与血族的亡灵法师有间接的生意往来。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "黑焰幽魂是由诅咒骑士灵魂凝聚、骑亡魂战马的幽灵骑兵",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "黑焰幽魂黑焰幽魂幽灵骑士穿透城墙"
+  ]
+}

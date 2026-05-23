@@ -1,0 +1,213 @@
+{
+  "Id": "rule_混沌战犬__混沌战犬",
+  "Keywords": [
+    "混沌战犬",
+    "变异猎犬",
+    "追击溃敌",
+    "战场游荡",
+    "巨型猎犬",
+    "混沌先锋",
+    "食肉兽",
+    "战争獒犬",
+    "扭曲猎手",
+    "混沌兽群",
+    "溃散之惧",
+    "铁牙猎犬"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "混沌战犬是经过混沌能量变异的巨大猎犬，体型堪比小马，满口铁牙利齿，以恐怖的嗅觉在战场上追踪和追击溃逃的敌人，是混沌大军最可靠的先驱和追击者。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "chaos_culture"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "混沌战犬是黑暗诸神最简单的赠礼之一。你不需要神庙、不需要仪式——只需要把一窝普通狼犬放在混沌废土边缘养育三代，它们的后代就会出现裂口、额外的眼睛和铁一般坚硬的牙齿。我们放出战犬在主力前面奔跑——它们会嗅到敌人的恐惧，锁定溃逃的目标。在战场上，没有什么比一群混沌战犬的嚎叫更让残兵恐惧的了。它们不挑食，不论是活人还是死人。但我们从不让战犬吃饱——饥饿让它们更饥渴、更高效。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "混沌战犬是你最灵活的骚扰和扫尾单位。由于机动性高且不受队形约束，它们非常适合在战前骚扰敌方前哨、追击溃兵以及清理场上的逃散敌人。它们不是用来正面冲击重步兵阵线的——那只会浪费它们。将它们部署在战场的任何空隙处，让它们像水流一样渗透到敌人后方，攻击弩手、法师和火炮组。在用主力突破敌人阵线后，释放战犬负责清扫残局。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "根据《混沌战争兽类志》的记载，混沌战犬的基准品种是北方灰狼，但经过数代混沌暴露后，其解剖结构发生了根本性改变：下颌骨裂为两瓣，可扩张至超一百二十度的角度，咬合力约为普通狼的三点五倍；胸腔扩大以适应更大的心脏——战犬的心脏重量是正常狼的两倍，这让它们在追逐时的持续奔跑时间翻倍。混沌战犬中最珍贵的品种是「四眼猎犬」——头部生有额外的两只眼睛，据说可以看穿隐身和魔法伪装。最著名的混沌战犬群是「鲜血獒犬团」，它们被恐虐祝福，浑身红光闪烁，咬伤后伤口永不愈合。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我驯养了整整一窝混沌战犬——它们听从我的口哨而非鞭打。女声更尖细，战犬反而更容易分辨我的命令。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "每个部族都应该维持至少一支混沌战犬群。它们的繁殖速度快，食量大但容易满足——战场上的尸体就够了。任命专门的「犬主」负责训练和管理战犬群，这个职位虽然不高但极为关键，因为一支训练不善的战犬群会反过来咬伤自己人。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "远处传来一声嚎叫，然后是更多嚎叫——低沉、嘶哑，完全不像是正常动物发出的声音。你爬上一个小丘往下看，一群混沌战犬正在撕扯一具尸体。它们中的一头抬头朝你的方向嗅了嗅。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "混沌战犬在北方经济中占有独特地位——繁殖和出售驯化的战犬是许多小部落的主要收入来源。它们的皮革虽粗糙但韧性极强，牙齿和爪子可以被制成武器。一只优秀的混沌战犬可卖出十名奴隶的价格。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "混沌战犬——经混沌能量变异的巨型猎犬，用于战场追击和清扫。",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "混沌战犬变异猎犬追击溃敌"
+  ]
+}

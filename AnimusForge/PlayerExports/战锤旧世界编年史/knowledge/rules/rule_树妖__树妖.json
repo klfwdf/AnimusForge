@@ -1,0 +1,208 @@
+{
+  "Id": "rule_树妖__树妖",
+  "Keywords": [
+    "树妖",
+    "森林灵体",
+    "自然之怒",
+    "木质利爪",
+    "林精",
+    "艾索洛伦之女",
+    "愤怒精灵"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "树妖是艾索洛伦最愤怒的森林灵体，她们化身为树形——扭曲的枝条为臂、尖利的木刺为爪——以自然的原始怒火将任何入侵者撕成碎片。传说每一只树妖都曾经是自由生长的树木，当森林受到不可饶恕的伤害时，艾索洛伦的古老意志将它们唤醒为复仇的精灵。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "树妖不是我们的仆人，而是我们的姐妹——艾索洛伦用自己的灵魂碎片催生了这些森林女儿。每一棵树妖体内都流淌着艾索洛伦最原始的愤怒，当侵略者的斧头砍伤树皮，她们的根系就会从沉睡中震动。我们木精灵从不试图驯服树妖，而是以森林守护者的身份加入她们的复仇之舞——我们的歌声调和她们的狂怒，我们的箭矢为她们的冲锋铺路。那头矮人战争引擎曾不可一世地碾碎了大片幼苗，然后树妖们从地底涌出，木质利爪刺入钢铁关节，将整台机器撕成了爆裂的碎片——那是我见过最美丽的暴力。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "树妖在正面作战中是一支不可被低估的力量——她们对物理伤害的承受力极高，木质身躯可以抵御大部分常规箭矢，且不惧恐惧。她们的弱点是火焰——一支装备了燃烧箭的弓箭手部队或火炮的火油弹可以迅速点燃她们干燥的躯体。另一个战术要点是：树妖最容易在古老森林的核心区域被激怒，而在人工砍伐地或石质地形上力量会大幅衰减。因此，避免在浓密林地与木精灵主力交战，而是将其引向开阔地带再逐一解决，是一个费时但有效的策略。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "树妖的诞生机制是艾索洛伦森林生态学中最核心的谜题之一。根据精灵贤者的口述传承，当一棵树龄超过千年的古树承受了足够的痛苦记忆——通常是指伐木、林火或矮人采矿造成的深层创伤——艾索洛伦的集体森林意识'艾索尔之魂'会将其生命力灌注为一颗'荆棘之心'。这颗心在古树死亡的同时破体而出，吸纳周围的残枝败叶在约三日内重塑为一具木质女性人形——即树妖。树妖的寿命理论上与森林同在，但她们一旦离开艾索洛伦的精神覆盖范围超过一年，其形体就会逐渐僵硬石化，这是帝国德鲁伊学者在观察一只被俘获的树妖后得出的结论。历史中最令人心碎的一次树妖觉醒事件发生在帝国历1420年的'百年伐木期'——矮人矿业公司在一百年间砍伐了灰色山脉南麓的大片古老林地，最终引发了一次大规模树妖觉醒事件，超过两百只树妖在三天内席卷了四座矮人要塞，史称'根须战争'。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我曾在一次外交期间触摸过一头正在休眠的树妖——她看起来像一棵枯死的老橡树，但当我将手掌放在树干上时，我感觉到了一种脉搏。那不是心跳，而是某种更深沉的东西，像是大地深处的暗流在缓慢地挤压和舒张。我想到了我们城堡花园里那些被修剪成几何图形的观赏树，突然觉得那是一种多么自大而愚蠢的行为。如果艾索洛伦的每一棵树都有成为树妖的潜力，那我们对自然的每一次修剪不都是在为自己制造未来的敌人吗？"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我们家族领地的南境与一片古老林地毗邻，那里据信有一群树妖在沉睡。祖父的遗嘱中有一条奇怪的条款：永远不得砍伐那片林地的任何一棵树，违者剥夺继承权。父亲一直遵守这条规矩，但从未解释原因。我长大后从家族档案中找到了一份泛黄的契约，上面写着一行用精灵语和古矮人语双语书写的警告：'此林为艾索洛伦之梦的一角，勿惊扰觉醒者。'署名是一个树妖的名号——'梅兰蒂尔之根'。原来我们的家族和平不是建立在实力之上，而是建立在四百年前一位与树妖进行了某种未知交易的祖先之上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我们佣兵团接受了洛伦森林边缘一个村长的雇佣，去清除'骚扰羊群的野兽'。赶到现场后才发现，那根本不是野兽——而是三只树妖，正围着一棵被砍倒的古老橡树发出尖锐的哭嚎声。原来村子的樵夫砍了那棵树当柴烧。我当即撕了合同把定金退回给了村长，带队伍连夜离开了那个村子。三天后我从一个醉酒的过路商人那儿听说，那个村子在一夜之间彻底消失了，地面上只剩下翻动过的泥土和大量的碎木。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "在木质奢侈品市场上，偶尔会出现一块被称为'树妖心木'的珍稀材料——据说是一棵愤怒的树妖被击败后留下的核心木质。它的纹理会在月光下缓慢流动，触摸时你会感到一种持续的温热。我经手过一块，从一个阿拉比商人那儿买来，转手卖给了米登海姆的一位魔杖匠人，利润是购入价的二十倍。但我不再碰这种生意了——交易完成后我连续做了三个月的噩梦，每晚梦见自己在一片燃烧的森林中无法呼吸。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "艾索洛伦森林远古树木被创伤唤醒后的灵体化身",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "树妖森林灵体自然之怒"
+  ]
+}

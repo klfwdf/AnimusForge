@@ -1,0 +1,209 @@
+{
+  "Id": "rule_陨铁__陨铁",
+  "Keywords": [
+    "陨铁",
+    "星铁",
+    "矮人专属",
+    "最硬金属",
+    "符文载体",
+    "天降神铁",
+    "格罗姆里尔",
+    "矮人之钢"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "陨铁是真真正正从星辰上坠落的神圣金属——每一块天然陨铁都是从天空深渊砸向大地的流星残骸。矮人是最早也是唯一掌握陨铁冶炼技术的种族，用它锻造的盔甲轻得几乎不可思议却硬过任何凡世钢铁。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "格罗姆里尔！我们叫它格罗姆里尔——在矮人语里这个词的意思大约是'天空遗落在山中的骨头'。人类管它叫陨铁，这名字太单薄了，根本不像在说世上最伟大的金属。你知道吗，一块从天而降的格罗姆里尔陨石在落地时会发出一种只有符文铁匠才能听到的音调——那是金属在歌唱。陨铁的纯净度决定了它有多硬：最高的'星辰级'格罗姆里尔，我族历史上只发现过三块，其中一块用来给先祖神格伦吉尔锻造了他的神锤。普通人类铁匠连把它烧红的温度都达不到——我们的熔炉使用地底火河的岩浆温度来融化它。陨铁另一个不可思议的特性是，它'记住'符文。你可以在钢上刻符文，但符文会随着时间消退。格罗姆里尔不会——一次刻上，它会把那符文像吸收水分一样吸收进自己的晶体结构里，一万年也不会消退。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "陨铁的战略意义何止于军事——它几乎决定了旧世界军事力量的地缘平衡。矮人卡拉克的防御优势很大程度上归功于碎铁勇士的全陨铁装备，这使得一个矮人守军编队的防御力等于三倍人数的帝国重步兵。但陨铁的致命稀缺性决定了它的使用必须极度精打细算：已知的陨铁矿源不超过六处，且都在矮人王国的绝对控制下。帝国方面曾多次尝试以外交途径获取陨铁，但矮人对陨铁出口的态度犹如人类对子嗣的态度——不卖、不借、不换。唯一的例外是西格玛时代至高王库尔根赠予帝国开国皇帝西格玛的那柄'盖尔·马拉兹'——世上唯一由陨铁锻造的非矮人武器，但这被视为矮人与人类之间万年盟约的古老赠礼，绝非贸易行为。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "格罗姆里尔（陨铁）在矿物学中的正式分类编号为GRM-000（帝国矿业局的《稀有金属目录》，公元2000年版），其定义为'非地球成因的星际坠落金属，具有超出任何已知地表矿物的硬度、韧性和魔法亲和力'。陨铁的内部结构在放大至符文级别（约十万分之一寸）时呈现一种独特的六角星晶格——这种结构在自然界中不应存在，帝国炼金术师协会假说认为它是'星际旅行过程中的极端温度和重力条件下形成的偶然产物'。目前已知的陨铁来源包括：巴拉克·瓦尔陨坑群（公元前约5000年坠落，出产约一千二百石的粗陨铁）、永恒之峰陨石雨（公元前1500年，一次五块陨铁同时坠落——其中一块被当场用于铸造'盖尔·马拉兹'），以及灰山新近发现的浅层陨铁矿脉（公元2388年发现，产量极小但品质直逼星辰级）。陨铁的魔法承载原理被称为'符文吸存效应'——陨铁晶格中的六角星结构天然构成闭合能量回路，任何被刻入的符文都会被晶格'记忆'并持续散发其魔法效应，理论上持续时限为无限。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "陨铁的传说让我想起我的嫁妆——那是一件家族传承了七代人的陨铁胸针。不是武器，只是一个手指大的椭圆形饰物，但它比任何钻石都更明亮且永远不褪色。我的祖母告诉我，这块陨铁是在帝国建立之前就从天而降的。我想说的是，陨铁对矮人而言不仅是战略物资——它是一种宗教、一种艺术、一种比国王更古老的记忆。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "在矮人氏族间，陨铁的归属是刻在仇恨簿上的永久条目。三十年前我的家族和铁拳氏族为了一个陨石坑的优先开采权争吵了二十年——最终由至高王的符文法庭裁定我们共同开采、共享产出，但两家之间直到现在都还不对付。陨铁不只是一块金属：它代表荣耀、代表先祖的赞许、代表你的氏族名在千百年后还会被记住。谁控制了陨铁，谁就掌握了矮人未来的话语权。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "在世界边缘山脉东侧迷路时我亲眼见过一次陨铁坠落——半夜天空被撕裂成一道白痕，然后是足以让你内脏震颤的爆音，方圆几里内的飞禽全部惊飞。第二天早上我根据矮人老兵的指引找到了陨坑，但已经有两个矮人站在那里了，胡子比我整个人都长，蹲在坑边用小锤子轻敲陨石听音。他们看到我立刻用斧头指了指反方向，我就走了。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "努恩金属交易所里专门有一间密室用来挂牌陨铁——挂牌，不是交易。几百年来没有成交过一笔，因为矮人拥有一切陨铁的所有权定义权。有个胆大的帝国矿主曾在灰色山脉发现了一个小型陨铁矿脉，偷偷挖了一个月——结果被矮人巡逻队发现后，他们没用刀剑，而是拿来一本三万年前签订的《灰山矿权协议》原件，泛黄的羊皮纸上赫然写着那整条山脉的陨铁归属为卡拉克·诺恩。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "格罗姆里尔：陨铁的矮人语名称，语义约为'天空遗落在山中的骨头'，是矮人文明中最神圣的物质。",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "陨铁星铁矮人专属"
+  ]
+}

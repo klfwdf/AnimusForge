@@ -1,0 +1,213 @@
+{
+  "Id": "rule_蝎尾狮__蝎尾狮",
+  "Keywords": [
+    "蝎尾狮",
+    "飞行巨兽",
+    "狮身蝠翼",
+    "剧毒蝎尾",
+    "混沌扭曲",
+    "狂暴坐骑",
+    "空中掠食者",
+    "致命毒刺",
+    "暗影飞行兽",
+    "狮蝎混种",
+    "怪物坐骑",
+    "混沌野兽"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "蝎尾狮是由混沌能量扭曲而生的飞行巨兽，拥有雄狮的身躯、巨蝠的翼膜和带有剧毒的蝎尾，在空中盘旋寻找猎物，一旦俯冲便以毒刺和獠牙将目标撕成碎片，是混沌领主们争相驯服的狂暴坐骑。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "chaos_culture"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "驯服一头蝎尾狮是我们能获得的最伟大的个人成就之一。它们栖息在北方的「毒牙山脉」——那些尖峰终年被紫色的雾气笼罩。你需要独自上山，不带武器——蝎尾狮只尊重敢这样做的挑战者。当你站在它面前时，它的尾巴会在你头顶数寸处晃动，毒液一滴滴落在你肩上。你不动，它就不会攻击——然后你要直视它那四对眼睛。如果它接受了你，它会低下头让你触碰它的鬃毛。从那一刻起，你就是它唯一的骑手。如果一个混沌领主骑着一头蝎尾狮飞越战场，就连最勇敢的南方骑士都会心生畏惧。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "蝎尾狮是优秀的飞行坐骑，提供制空权和强大的俯冲攻击。它的毒尾可以一刺击杀敌方低级将领，毒液会在数秒内让伤口溃烂。但蝎尾狮性情暴躁——在战斗中可能会失去控制，转而攻击最近的活物，无论敌我。务必在每次战斗前举行「嗜血仪式」以确保它的攻击目标集中在敌人身上。在攻城战中，利用蝎尾狮翻越城墙攻击敌方炮兵。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "根据《混沌生物志》的分类，蝎尾狮属于「复合型混沌巨兽」——由两种以上不同动物的特征被混沌能量强行融合而成。其毒液成分经帝国炼金师分析，含有至少十七种已知毒素和七种未知化合物，解药尚未研发成功。蝎尾狮的飞行能力并非源自真正的翅膀，而是其翼膜通过混沌能量产生反重力悬浮——这可能解释它们为何能在没有空气升力的高空悬停。历史上最著名的蝎尾狮是「夜毒」——它是恐虐大魔「血角」的坐骑，据记载其体型远超普通蝎尾狮，翼展达四十米，尾巴粗如古树树干，一生中杀死过不下十名试图驯服它的混沌领主。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我的蝎尾狮「暗翼」只对我低头。驯服它的那天，我赤手空拳走上山峰，用眼神告诉它我不是猎物——我是同伴，或者更糟，我是不可轻视的对手。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "为部族中那些最勇猛的勇士提供驯服蝎尾狮的建议，但不要强制任何人——被拒绝的驯服者无一存活。你的部族中若有人成功驯服了一头蝎尾狮，这将是全族的节日，因为这意味着你们的战力跃升了一个层次。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "你正在穿越一片碎骨遍地的山谷，抬头看到几头蝎尾狮在头顶盘旋。它们没有攻击——这意味着它们已经吃饱了。你加快脚步离开这里。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "蝎尾狮在北方部落文化中象征力量和自由。它们只接受最强大的骑手，这种排他性使蝎尾狮骑士成为北方最令人垂涎的军事职位。每头蝎尾狮终其一生只认一位骑手，若骑手死亡，蝎尾狮会吞食其尸体后重返荒野。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "蝎尾狮——狮身蝠翼蝎尾的飞行巨兽，混沌领主的高级坐骑。",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "蝎尾狮飞行巨兽狮身蝠翼"
+  ]
+}
