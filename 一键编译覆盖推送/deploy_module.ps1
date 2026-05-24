@@ -39,51 +39,7 @@ function Test-SourceModuleDir {
 function Get-TargetModuleDirs {
     param([string]$BannerlordRootPath)
 
-    $targets = New-Object System.Collections.Generic.List[string]
-
-    if (-not [string]::IsNullOrWhiteSpace($BannerlordRootPath)) {
-        $bannerlordRootFull = Get-FullPathSafe -Path $BannerlordRootPath
-        if (-not (Test-Path -LiteralPath $bannerlordRootFull -PathType Container)) {
-            throw "Bannerlord root not found: $bannerlordRootFull"
-        }
-
-        $modulesDir = Join-Path $bannerlordRootFull "Modules"
-        if (-not (Test-Path -LiteralPath $modulesDir -PathType Container)) {
-            throw "Bannerlord Modules directory not found: $modulesDir"
-        }
-
-        $targets.Add((Join-Path $modulesDir "AnimusForge"))
-        return @($targets)
-    }
-
-    $candidateRoots = New-Object System.Collections.Generic.List[string]
-    $drives = Get-PSDrive -PSProvider FileSystem | Select-Object -ExpandProperty Root
-    foreach ($rootRaw in $drives) {
-        $root = $rootRaw.TrimEnd('\', '/')
-        $candidateRoots.Add($root + "\SteamLibrary\steamapps\common\Mount & Blade II Bannerlord")
-        $candidateRoots.Add($root + "\Program Files (x86)\Steam\steamapps\common\Mount & Blade II Bannerlord")
-        $candidateRoots.Add($root + "\Program Files\Steam\steamapps\common\Mount & Blade II Bannerlord")
-    }
-
-    foreach ($candidateRoot in ($candidateRoots | Sort-Object -Unique)) {
-        if (-not (Test-Path -LiteralPath $candidateRoot -PathType Container)) {
-            continue
-        }
-
-        $modulesDir = Join-Path $candidateRoot "Modules"
-        if (-not (Test-Path -LiteralPath $modulesDir -PathType Container)) {
-            continue
-        }
-
-        $targets.Add((Join-Path $modulesDir "AnimusForge"))
-    }
-
-    $resolved = @($targets | Sort-Object -Unique)
-    if ($resolved.Count -eq 0) {
-        throw "No Bannerlord install found under common Steam paths."
-    }
-
-    return $resolved
+    throw "Single unversioned deploy is disabled. Use -DualClientOutput so output goes only to AnimusForge_1_3_x and AnimusForge_1_4_5."
 }
 
 function Get-BannerlordModulesDir {
@@ -115,7 +71,6 @@ function Get-DualClientTargetModuleDirs {
 
     $modulesDir = Get-BannerlordModulesDir -BannerlordRootPath $BannerlordRootPath
     return @(
-        (Join-Path $modulesDir "AnimusForge"),
         (Join-Path $modulesDir "AnimusForge_1_3_x"),
         (Join-Path $modulesDir "AnimusForge_1_4_5")
     )
@@ -471,6 +426,8 @@ if ($DualClientOutput) {
     Deploy-DualClientModule -SourceModuleDir $sourceModuleDir -BannerlordRootPath $BannerlordRoot -BuildDll13Path $BuildDll13 -BuildDll14Path $BuildDll14
     exit 0
 }
+
+throw "Single unversioned deploy is disabled. Use -DualClientOutput so output goes only to AnimusForge_1_3_x and AnimusForge_1_4_5."
 
 $targetModuleDirs = @(Get-TargetModuleDirs -BannerlordRootPath $BannerlordRoot)
 Sync-SubModuleXmlBackToSource -SourceModuleDir $sourceModuleDir -TargetModuleDirs $targetModuleDirs

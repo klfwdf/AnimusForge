@@ -377,13 +377,6 @@
     <Error Condition="!Exists('%(_RequiredRef.Identity)')" Text="Missing required dependency: %(_RequiredRef.Identity)" />
   </Target>
   <Target Name="CopyModuleXmlsToBannerlordModule" AfterTargets="Build" Condition="'$(CopyLegacyAnimusForgeModuleData)' == 'true'">
-    <PropertyGroup>
-      <AnimusForgeModuleDir>$(BannerlordRoot)\Modules\AnimusForge</AnimusForgeModuleDir>
-    </PropertyGroup>
-    <MakeDir Directories="$(AnimusForgeModuleDir)\ModuleData" />
-    <MakeDir Directories="$(AnimusForgeModuleDir)\GUI\Prefabs" />
-    <Copy SourceFiles="AnimusForge\SubModule.xml" DestinationFiles="$(AnimusForgeModuleDir)\SubModule.xml" SkipUnchangedFiles="true" />
-    <Copy SourceFiles="AnimusForge\ModuleData\animusforge_scene_gold_items.xml" DestinationFiles="$(AnimusForgeModuleDir)\ModuleData\animusforge_scene_gold_items.xml" SkipUnchangedFiles="true" />
-    <Copy SourceFiles="AnimusForge\GUI\Prefabs\ShoutTextInputPopup.xml" DestinationFiles="$(AnimusForgeModuleDir)\GUI\Prefabs\ShoutTextInputPopup.xml" SkipUnchangedFiles="true" />
+    <Error Text="CopyLegacyAnimusForgeModuleData is disabled because unversioned Modules\AnimusForge output is not allowed. Use the dual-version deploy scripts instead." />
   </Target>
 </Project>
