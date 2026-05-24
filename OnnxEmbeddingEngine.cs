@@ -469,10 +469,7 @@ public sealed class OnnxEmbeddingEngine
 			_initialized = true;
 			try
 			{
-				string basePath = Utilities.GetBasePath();
-				string text = System.IO.Path.Combine(basePath, "Modules", "AnimusForge");
-				string text2 = System.IO.Path.Combine(basePath, "Modules", "AnimusForge");
-				string text3 = (Directory.Exists(text) ? text : text2);
+				string text3 = AnimusForgeModulePaths.GetCurrentModuleRoot();
 				if (!Directory.Exists(text3))
 				{
 					_available = false;

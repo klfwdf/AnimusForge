@@ -553,8 +553,7 @@ public sealed class OnnxCrossEncoderReranker
 			_initialized = true;
 			try
 			{
-				string basePath = Utilities.GetBasePath();
-				string path = System.IO.Path.Combine(basePath, "Modules", "AnimusForge", "ONNX", "reranker");
+				string path = System.IO.Path.Combine(AnimusForgeModulePaths.GetCurrentModuleRoot(), "ONNX", "reranker");
 				if (!Directory.Exists(path))
 				{
 					_available = false;

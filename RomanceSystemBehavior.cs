@@ -2237,19 +2237,9 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 			status = "正规联姻失败：未找到对方家族族长。";
 			return false;
 		}
-		if (speaker == null || speaker != leader)
-		{
-			status = "正规联姻失败：必须由对方家族族长亲自同意。";
-			return false;
-		}
 		int num = Hero.MainHero?.Clan?.Tier ?? 0;
 		int num2 = targetHero.Clan?.Tier ?? 0;
 		int num3 = num - num2;
-		if (num3 <= -3)
-		{
-			status = $"正规联姻失败：家族等级差距过大（玩家={num}，对方={num2}）。";
-			return false;
-		}
 		int clanRelationWithPlayer = GetClanRelationWithPlayer(leader);
 		int effectiveTrust = RewardSystemBehavior.Instance?.GetEffectiveTrust(leader) ?? 0;
 		int num4 = (bridePrice.HasValue && bridePrice.Value > 0) ? bridePrice.Value : 0;
@@ -2260,51 +2250,19 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		{
 			num5 = RewardSystemBehavior.Instance?.GetPlayerPrepaidGoldForExternal(leader) ?? 0;
 		}
-		if (num3 == -1)
-		{
-			if (clanRelationWithPlayer < 20 || effectiveTrust < 20)
-			{
-				status = $"正规联姻失败：门槛不足（家族关系={clanRelationWithPlayer}，族长综合信任={effectiveTrust}；需要 >=20 / >=20）。";
-				return false;
-			}
-		}
-		else if (num3 != -2)
-		{
-			int num6 = ((num3 <= 0) ? 5 : (-5 * num3));
-			if (num6 < -20)
-			{
-				num6 = -20;
-			}
-			if (clanRelationWithPlayer < num6 || effectiveTrust < num6)
-			{
-				status = $"正规联姻失败：门槛不足（当前关系={clanRelationWithPlayer}，信任={effectiveTrust}；需要 >= {num6}）。";
-				return false;
-			}
-			if (flag && num4 > 0 && num5 < num4)
-			{
-				status = $"正规联姻失败：彩礼尚未交足。约定彩礼 {num4:N0}，当前已主动交给族长 {num5:N0}，还差 {Math.Max(0, num4 - num5):N0}。";
-				return false;
-			}
-		}
-		if (flag && num4 > 0 && num5 < num4)
-		{
-			status = $"正规联姻失败：彩礼尚未交足。约定彩礼 {num4:N0}，当前已主动交给族长 {num5:N0}，还差 {Math.Max(0, num4 - num5):N0}。";
-			return false;
-		}
-		if (flag2 && num4 > 0 && (leader?.Gold).GetValueOrDefault() < num4)
-		{
-			status = $"正规联姻失败：族长当前金币不足，无法支付承诺给玩家的彩礼 {num4:N0}。";
-			return false;
-		}
 		if (!TryApplyMarriageAction(playerClanHero, targetHero, out var failReason))
 		{
-			status = "正规联姻失败：执行 MarriageAction 失败，" + failReason;
-			return false;
+			Logger.Log("Romance", "[WARN] MarriageAction failed after LLM tag, fallback to force apply: " + failReason);
+			if (!TryForceApplyMarriageAction(playerClanHero, targetHero, out failReason))
+			{
+				status = "正规联姻失败：执行 MarriageAction 失败，" + failReason;
+				return false;
+			}
 		}
 		int num7 = 0;
 		if (flag && num4 > 0)
 		{
-			num7 = RewardSystemBehavior.Instance?.ConsumePlayerPrepaidGoldForExternal(leader, num4) ?? 0;
+			num7 = RewardSystemBehavior.Instance?.ConsumePlayerPrepaidGoldForExternal(leader, Math.Min(num4, Math.Max(0, num5))) ?? 0;
 		}
 		int num8 = 0;
 		if (flag2 && num4 > 0 && leader != null)
@@ -2354,11 +2312,6 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 			status = "私奔失败：" + reason;
 			return false;
 		}
-		if (speaker == null || speaker != targetHero)
-		{
-			status = "私奔失败：必须由结婚对象本人亲口同意。";
-			return false;
-		}
 		Hero leader = targetHero.Clan?.Leader;
 		int clanRelationWithPlayer = GetClanRelationWithPlayer(leader);
 		int effectiveTrust = RewardSystemBehavior.Instance?.GetEffectiveTrust(leader) ?? 0;
@@ -2395,16 +2348,14 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		{
 			num2 = -20;
 		}
-		if (privateLove < num || npcTrust < num2)
-		{
-			AdjustPrivateLove(targetHero, -3, "elope_rejected");
-			status = $"私奔失败：门槛不足（L={privateLove}/{num}，对象私人信任={npcTrust}/{num2}，对象家族融洽度F={num3}）。";
-			return false;
-		}
 		if (!TryApplyMarriageAction(Hero.MainHero, targetHero, out var failReason))
 		{
-			status = "私奔失败：执行 MarriageAction 失败，" + failReason;
-			return false;
+			Logger.Log("Romance", "[WARN] Elope MarriageAction failed after LLM tag, fallback to force apply: " + failReason);
+			if (!TryForceApplyMarriageAction(Hero.MainHero, targetHero, out failReason))
+			{
+				status = "私奔失败：执行 MarriageAction 失败，" + failReason;
+				return false;
+			}
 		}
 		AdjustPrivateLove(targetHero, 12, "elope_success");
 		RecordElopeMarriageFacts(targetHero);
@@ -2442,48 +2393,23 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 			status = "离婚失败：双方当前并非彼此配偶。";
 			return false;
 		}
-		bool flag = false;
-		if (speaker == playerClanHero || speaker == targetHero)
-		{
-			flag = true;
-		}
-		else if (speaker != null && targetHero.Clan?.Leader == speaker)
-		{
-			flag = true;
-		}
-		if (!flag)
-		{
-			status = "离婚失败：当前说话人无权确认这桩离婚。";
-			return false;
-		}
 		int num = (refundAmount.HasValue && refundAmount.Value > 0) ? refundAmount.Value : 0;
 		if (num > 0 && marriageRecord.BridePriceAmount > 0)
 		{
 			Clan clan = FindClanById(marriageRecord.PayerClanId);
 			Clan clan2 = FindClanById(marriageRecord.ReceiverClanId);
-			if (clan == Clan.PlayerClan || clan2 != Clan.PlayerClan)
-			{
-				status = "离婚失败：自动返还金额只支持NPC向玩家退还先前收取的彩礼。若要由玩家向NPC付款，请使用现有给予选项单独处理。";
-				return false;
-			}
 			Hero hero = clan2?.Leader;
 			Hero hero2 = Hero.MainHero;
-			if (hero == null || hero2 == null)
+			num = Math.Min(num, Math.Max(0, marriageRecord.BridePriceAmount));
+			num = Math.Min(num, Math.Max(0, hero?.Gold ?? 0));
+			if (hero != null && hero2 != null && num > 0 && clan != Clan.PlayerClan && clan2 == Clan.PlayerClan)
 			{
-				status = "离婚失败：未找到彩礼返还的付款方或收款方。";
-				return false;
+				GiveGoldAction.ApplyBetweenCharacters(hero, hero2, num);
 			}
-			if (num > Math.Max(0, marriageRecord.BridePriceAmount))
+			else
 			{
-				status = $"离婚失败：返还金额 {num:N0} 超过原彩礼记录 {marriageRecord.BridePriceAmount:N0}。";
-				return false;
+				num = 0;
 			}
-			if (Math.Max(0, hero.Gold) < num)
-			{
-				status = $"离婚失败：返还方当前金币不足，无法支付 {num:N0} 第纳尔。";
-				return false;
-			}
-			GiveGoldAction.ApplyBetweenCharacters(hero, hero2, num);
 		}
 		try
 		{
@@ -2946,10 +2872,8 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		List<PostprocessRuleEntry> list = new List<PostprocessRuleEntry>();
 		try
 		{
-			MarriageRuntimeFacts marriageRuntimeFacts = BuildMarriageRuntimeFacts(speaker);
-			string marriageRuntimeConstraintState = GetMarriageRuntimeConstraintState(marriageRuntimeFacts);
 			HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-			if (IsMarriageFormalPostprocessReadyState(marriageRuntimeConstraintState) && Clan.PlayerClan != null && speaker?.Clan != null)
+			if (Clan.PlayerClan != null && speaker?.Clan != null)
 			{
 				List<Hero> list2 = GetClanMembersCompat(Clan.PlayerClan).Where(IsFormalMarriageCandidate).ToList();
 				List<Hero> list3 = GetClanMembersCompat(speaker.Clan).Where(IsFormalMarriageCandidate).ToList();
@@ -2973,7 +2897,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 					}
 				}
 			}
-			if (IsMarriageElopePostprocessReadyState(marriageRuntimeConstraintState) && speaker != null && !string.IsNullOrWhiteSpace(speaker.StringId))
+			if (speaker != null && !string.IsNullOrWhiteSpace(speaker.StringId))
 			{
 				string text2 = "[ACTION:MARRIAGE_ELOPE:" + speaker.StringId + "]";
 				if (hashSet.Add(text2))
@@ -3003,7 +2927,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 					bool flag2 = hero2.Clan == Clan.PlayerClan && hero.Clan == speaker?.Clan;
 					bool flag3 = hero == Hero.MainHero && hero2 == speaker;
 					bool flag4 = hero2 == Hero.MainHero && hero == speaker;
-					if ((!flag && !flag2 && !flag3 && !flag4) || !IsMarriageDivorcePostprocessEligible(speaker, flag ? hero : hero2, flag ? hero2 : hero))
+					if (!flag && !flag2 && !flag3 && !flag4)
 					{
 						continue;
 					}
@@ -3028,16 +2952,40 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		return list;
 	}
 
+	public List<PostprocessRuleEntry> BuildRuntimeMarriagePostprocessRulesForExternal(Hero speaker)
+	{
+		return BuildRuntimeMarriagePostprocessRules(speaker);
+	}
+
+	public string BuildMarriagePostprocessPlayerCandidatesBlockForExternal(Hero speaker)
+	{
+		return BuildMarriagePostprocessPlayerCandidatesBlock(speaker);
+	}
+
+	public string BuildMarriagePostprocessTargetCandidatesBlockForExternal(Hero speaker)
+	{
+		return BuildMarriagePostprocessTargetCandidatesBlock(speaker);
+	}
+
+	public string BuildMarriagePostprocessFactHintBlockForExternal(Hero speaker)
+	{
+		return BuildMarriagePostprocessFactHintBlock(speaker);
+	}
+
 	private static string NormalizeMarriagePostprocessTags(string raw, List<PostprocessRuleEntry> rules)
 	{
-		HashSet<string> hashSet = new HashSet<string>((rules ?? new List<PostprocessRuleEntry>()).Select((PostprocessRuleEntry x) => (x?.Tag ?? "").Trim()).Where((string x) => !string.IsNullOrWhiteSpace(x)), StringComparer.OrdinalIgnoreCase);
+		List<string> ruleTags = (rules ?? new List<PostprocessRuleEntry>()).Select((PostprocessRuleEntry x) => (x?.Tag ?? "").Trim()).Where((string x) => !string.IsNullOrWhiteSpace(x)).ToList();
+		HashSet<string> hashSet = new HashSet<string>(ruleTags, StringComparer.OrdinalIgnoreCase);
+		bool allowFormal = ruleTags.Any((string x) => x.IndexOf("[ACTION:MARRIAGE_FORMAL:", StringComparison.OrdinalIgnoreCase) >= 0);
+		bool allowElope = ruleTags.Any((string x) => x.IndexOf("[ACTION:MARRIAGE_ELOPE:", StringComparison.OrdinalIgnoreCase) >= 0);
+		bool allowDivorce = ruleTags.Any((string x) => x.IndexOf("[ACTION:DIVORCE:", StringComparison.OrdinalIgnoreCase) >= 0);
 		List<string> list = new List<string>();
 		HashSet<string> hashSet2 = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 		foreach (Match item in MarriageFormalPairRegex.Matches(raw ?? ""))
 		{
 			string text = (item?.Value ?? "").Trim();
 			string text2 = "[ACTION:MARRIAGE_FORMAL:" + item.Groups[1].Value.Trim() + ":" + item.Groups[2].Value.Trim() + "]";
-			if (!hashSet.Contains(text2) || !hashSet2.Add(text))
+			if ((!allowFormal && !hashSet.Contains(text2)) || !hashSet2.Add(text))
 			{
 				continue;
 			}
@@ -3046,7 +2994,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		foreach (Match item2 in MarriageElopeRegex.Matches(raw ?? ""))
 		{
 			string text3 = (item2?.Value ?? "").Trim();
-			if (!hashSet.Contains(text3) || !hashSet2.Add(text3))
+			if ((!allowElope && !hashSet.Contains(text3)) || !hashSet2.Add(text3))
 			{
 				continue;
 			}
@@ -3056,13 +3004,18 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		{
 			string text4 = (item3?.Value ?? "").Trim();
 			string text5 = "[ACTION:DIVORCE:" + item3.Groups[1].Value.Trim() + ":" + item3.Groups[2].Value.Trim() + "]";
-			if (!hashSet.Contains(text5) || !hashSet2.Add(text4))
+			if ((!allowDivorce && !hashSet.Contains(text5)) || !hashSet2.Add(text4))
 			{
 				continue;
 			}
 			list.Add(text4);
 		}
 		return string.Join("\n", list.Where((string x) => !string.IsNullOrWhiteSpace(x))).Trim();
+	}
+
+	public string NormalizeMarriagePostprocessTagsForExternal(string raw, List<PostprocessRuleEntry> rules)
+	{
+		return NormalizeMarriagePostprocessTags(raw, rules);
 	}
 
 	private string TryRunMarriageActionPostprocess(Hero speaker, string replyText)

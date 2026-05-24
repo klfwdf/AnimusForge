@@ -464,6 +464,8 @@ public class MyBehavior : CampaignBehaviorBase
 	{
 		public string Extras;
 
+		public List<string> PreprocessRuleIds = new List<string>();
+
 		public bool UseDuelContext;
 
 		public bool UseRewardContext;
@@ -11862,7 +11864,7 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			text = "玩家";
 		}
-		return "[AFEF NPC行为补充] 你第一次见到" + text;
+		return "[AFEF NPC行为补充] 你第一次见到" + text +"你不知道他的姓名，背景，来历。";
 	}
 
 	private static bool HasDialogueHistoryLine(List<DialogueDay> records, string targetLine)
@@ -13021,6 +13023,7 @@ public class MyBehavior : CampaignBehaviorBase
 				return new ShoutPromptContext
 				{
 					Extras = "",
+					PreprocessRuleIds = new List<string>(),
 					UseDuelContext = false,
 					UseRewardContext = false,
 					IsLoanContext = false,
@@ -13034,6 +13037,7 @@ public class MyBehavior : CampaignBehaviorBase
 			return new ShoutPromptContext
 			{
 				Extras = "",
+				PreprocessRuleIds = new List<string>(),
 				UseDuelContext = false,
 				UseRewardContext = false,
 				IsLoanContext = false,
@@ -13110,6 +13114,7 @@ public class MyBehavior : CampaignBehaviorBase
 		ShoutPromptContext shoutPromptContext = new ShoutPromptContext
 		{
 			Extras = "",
+			PreprocessRuleIds = new List<string>(),
 			UseDuelContext = false,
 			UseRewardContext = false,
 			IsLoanContext = false,
@@ -13438,6 +13443,46 @@ public class MyBehavior : CampaignBehaviorBase
 		shoutPromptContext.UseRewardContext = flag7;
 		shoutPromptContext.IsLoanContext = flag8;
 		shoutPromptContext.IsQualified = isQualified;
+		HashSet<string> preprocessRuleIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		if (auxiliaryRuleHitIds != null)
+		{
+			foreach (string ruleId in auxiliaryRuleHitIds)
+			{
+				if (!string.IsNullOrWhiteSpace(ruleId))
+				{
+					preprocessRuleIds.Add(ruleId.Trim());
+				}
+			}
+		}
+		if (flag)
+		{
+			preprocessRuleIds.Add("duel");
+		}
+		if (flag3)
+		{
+			preprocessRuleIds.Add("reward");
+		}
+		if (flag4)
+		{
+			preprocessRuleIds.Add("loan");
+		}
+		if (flag5)
+		{
+			preprocessRuleIds.Add("surroundings");
+		}
+		if (flag6)
+		{
+			preprocessRuleIds.Add("kingdom_service");
+		}
+		if (marriageHit)
+		{
+			preprocessRuleIds.Add("marriage");
+		}
+		if (partyTransferHit)
+		{
+			preprocessRuleIds.Add("party_transfer");
+		}
+		shoutPromptContext.PreprocessRuleIds = preprocessRuleIds.ToList();
 		bool extrasHasDuelRule = (shoutPromptContext.Extras?.IndexOf("【附加规则:duel】", StringComparison.OrdinalIgnoreCase)).GetValueOrDefault() >= 0;
 		bool extrasHasRewardRule = (shoutPromptContext.Extras?.IndexOf("【附加规则:reward】", StringComparison.OrdinalIgnoreCase)).GetValueOrDefault() >= 0;
 		bool extrasHasLoanRule = (shoutPromptContext.Extras?.IndexOf("【附加规则:loan】", StringComparison.OrdinalIgnoreCase)).GetValueOrDefault() >= 0;

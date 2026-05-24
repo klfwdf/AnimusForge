@@ -21,7 +21,9 @@
     <VersionedDepsDir Condition="'$(VersionedDepsDir)' == '' and ! $([System.String]::Copy('$(BannerlordApi)').StartsWith('1.4')) and Exists('$(DepsDir)\TaleWorlds.CampaignSystem.dll')">$(DepsDir)</VersionedDepsDir>
     <BannerlordRoot Condition="'$(BannerlordRoot)' == '' and '$(BANNERLORD_ROOT)' != ''">$(BANNERLORD_ROOT)</BannerlordRoot>
     <BannerlordRoot Condition="'$(BannerlordRoot)' == ''">F:\SteamLibrary\steamapps\common\Mount &amp; Blade II Bannerlord</BannerlordRoot>
-    <AnimusForgeBinDir Condition="'$(AnimusForgeBinDir)' == ''">$(BannerlordRoot)\Modules\AnimusForge\bin\Win64_Shipping_Client</AnimusForgeBinDir>
+    <AnimusForgeModuleId Condition="'$(AnimusForgeModuleId)' == '' and $([System.String]::Copy('$(BannerlordApi)').StartsWith('1.4'))">AnimusForge_1_4_5</AnimusForgeModuleId>
+    <AnimusForgeModuleId Condition="'$(AnimusForgeModuleId)' == ''">AnimusForge_1_3_x</AnimusForgeModuleId>
+    <AnimusForgeBinDir Condition="'$(AnimusForgeBinDir)' == ''">$(BannerlordRoot)\Modules\$(AnimusForgeModuleId)\bin\Win64_Shipping_Client</AnimusForgeBinDir>
     <BannerlordBinDir Condition="'$(BannerlordBinDir)' == ''">$(BannerlordRoot)\bin\Win64_Shipping_Client</BannerlordBinDir>
     <NativeBinDir Condition="'$(NativeBinDir)' == ''">$(BannerlordRoot)\Modules\Native\bin\Win64_Shipping_Client</NativeBinDir>
     <SandBoxBinDir Condition="'$(SandBoxBinDir)' == ''">$(BannerlordRoot)\Modules\SandBox\bin\Win64_Shipping_Client</SandBoxBinDir>
@@ -374,7 +376,7 @@
   <Target Name="ValidateExternalReferences" BeforeTargets="ResolveReferences">
     <Error Condition="!Exists('%(_RequiredRef.Identity)')" Text="Missing required dependency: %(_RequiredRef.Identity)" />
   </Target>
-  <Target Name="CopyModuleXmlsToBannerlordModule" AfterTargets="Build">
+  <Target Name="CopyModuleXmlsToBannerlordModule" AfterTargets="Build" Condition="'$(CopyLegacyAnimusForgeModuleData)' == 'true'">
     <PropertyGroup>
       <AnimusForgeModuleDir>$(BannerlordRoot)\Modules\AnimusForge</AnimusForgeModuleDir>
     </PropertyGroup>

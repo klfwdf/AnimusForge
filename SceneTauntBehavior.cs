@@ -1986,6 +1986,8 @@ public class SceneTauntBehavior : CampaignBehaviorBase
 
 public class SceneTauntMissionBehavior : MissionBehavior
 {
+	internal const string WantedSceneExitNotice = "你现在正在被通缉，无法离开当前场景，清越过地图边缘红区离开";
+
 	private static readonly FieldInfo PlayerSideOldTeamDataField = AccessTools.Field(typeof(MissionFightHandler), "_playerSideAgentsOldTeamData");
 
 	private static readonly FieldInfo OpponentSideOldTeamDataField = AccessTools.Field(typeof(MissionFightHandler), "_opponentSideAgentsOldTeamData");
@@ -5552,6 +5554,11 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		return _conflictActive || SceneTauntBehavior.HasArmedCarryoverForCurrentSettlement();
 	}
 
+	internal bool ShouldShowWantedSceneExitNotice()
+	{
+		return (_conflictActive && (_armedConflict || _armedConflictOccurredThisConflict)) || SceneTauntBehavior.HasArmedCarryoverForCurrentSettlement();
+	}
+
 	internal bool ShouldDelayNativeFightAutoEndLong()
 	{
 		return SceneTauntBehavior.HasArmedCarryoverForCurrentSettlement();
@@ -5737,6 +5744,46 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		{
 			return false;
 		}
+	}
+
+	internal static bool ShouldShowWantedSceneExitNoticeExternal(Mission mission)
+	{
+		try
+		{
+			if (mission?.GetMissionBehavior<SceneTauntMissionBehavior>()?.ShouldShowWantedSceneExitNotice() ?? false)
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			return SceneTauntBehavior.HasArmedCarryoverForCurrentSettlement();
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	internal static void ShowBlockedSceneExitNotice(Mission mission)
+	{
+		if (ShouldShowWantedSceneExitNoticeExternal(mission))
+		{
+			AnimusForgeQuickInfo.Show(WantedSceneExitNotice);
+		}
+		else
+		{
+			AnimusForgeQuickInfo.Show("这场冲突还没结束，不能离开场景。");
+		}
+	}
+
+	internal static InquiryData CreateBlockedSceneExitInquiry(Mission mission)
+	{
+		string text = ShouldShowWantedSceneExitNoticeExternal(mission) ? WantedSceneExitNotice : "这场冲突还没结束，不能离开场景。";
+		return new InquiryData("无法离开", text, isAffirmativeOptionShown: false, isNegativeOptionShown: true, "", "确定", null, null);
 	}
 
 	private Agent ResolveTargetAgent(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex)
@@ -8354,7 +8401,7 @@ public class SceneTauntConsequenceMissionLogic : MissionLogic
 		if (missionBehavior != null && missionBehavior.ShouldBlockSceneExit())
 		{
 			canPlayerLeave = false;
-			AnimusForgeQuickInfo.Show("这场冲突还没结束，不能离开场景。");
+			SceneTauntMissionBehavior.ShowBlockedSceneExitNotice(Mission.Current);
 		}
 		return null;
 	}
@@ -8891,6 +8938,12 @@ public static class SceneTauntLeaveMissionBlockPatch
 				harmony.Patch(method3, prefix: new HarmonyMethod(method2));
 				num++;
 			}
+			MethodInfo method4 = AccessTools.Method(typeof(MissionFightHandler), "OnEndMissionRequest");
+			if (method4 != null && method2 != null)
+			{
+				harmony.Patch(method4, prefix: new HarmonyMethod(method2));
+				num++;
+			}
 			_patched = num > 0;
 			if (_patched)
 			{
@@ -8912,7 +8965,7 @@ public static class SceneTauntLeaveMissionBlockPatch
 				return true;
 			}
 			canPlayerLeave = false;
-			__result = new InquiryData("无法离开", "这场冲突还没结束，不能离开场景。", isAffirmativeOptionShown: false, isNegativeOptionShown: true, "", "确定", null, null);
+			__result = SceneTauntMissionBehavior.CreateBlockedSceneExitInquiry(Mission.Current);
 			return false;
 		}
 		catch

@@ -4078,28 +4078,11 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				statusText = "执行失败：目标势力无效（" + kingdomToken + "）。";
 				return false;
 			}
-			Kingdom kingdom3 = giver?.Clan?.Kingdom;
-			if (kingdom3 != null && kingdom3 != kingdom2)
-			{
-				statusText = $"执行失败：{giver.Name} 并非 {kingdom2.Name} 成员，不能代表该势力授予身份。";
-				return false;
-			}
 			if (text == "MERCENARY")
 			{
-				if (giver == null || giver.Clan == null || giver.Clan.Kingdom != kingdom2)
-				{
-					statusText = "执行失败：雇佣兵招募必须由目标势力封臣发起（目标势力=" + kingdom2.StringId + "）。";
-					return false;
-				}
 				if (giver.Clan.IsUnderMercenaryService)
 				{
 					statusText = "执行失败：当前对话对象并非该势力正式封臣，不能签订雇佣兵契约。";
-					return false;
-				}
-				int effectiveTrust = GetEffectiveTrust(giver);
-				if (effectiveTrust < 5)
-				{
-					statusText = $"执行失败：综合信任不足，当前 {effectiveTrust}，至少需要 {5} 才能以雇佣兵身份加入。";
 					return false;
 				}
 				int num = 1;
@@ -4111,19 +4094,9 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				{
 					num = 1;
 				}
-				if (playerClan.Tier < num)
-				{
-					statusText = $"执行失败：玩家家族等级不足，当前 {playerClan.Tier}，至少需要 {num} 才能作为雇佣兵加入。";
-					return false;
-				}
 				if (playerClan.Kingdom != null && !playerClan.IsUnderMercenaryService)
 				{
 					statusText = "执行失败：玩家已是某王国正式封臣，不能再作为雇佣兵加入。";
-					return false;
-				}
-				if (!CanPlayerOfferMercenaryServiceCompat(kingdom2))
-				{
-					statusText = "执行失败：不满足原版雇佣兵加入条件（势力=" + kingdom2.StringId + "）。";
 					return false;
 				}
 				int num2 = 50;
@@ -4141,18 +4114,6 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			}
 			if (text == "VASSAL")
 			{
-				if (kingdom2.Leader == null || giver == null || giver != kingdom2.Leader)
-				{
-					string arg = kingdom2.Leader?.Name?.ToString() ?? "该势力领袖";
-					statusText = $"执行失败：封臣宣誓必须由 {kingdom2.Name} 的势力领袖 {arg} 亲自确认。请前往与其对话。";
-					return false;
-				}
-				int effectiveTrust2 = GetEffectiveTrust(giver);
-				if (effectiveTrust2 < 20)
-				{
-					statusText = $"执行失败：综合信任不足，当前 {effectiveTrust2}，至少需要 {20} 才能成为封臣。";
-					return false;
-				}
 				int num3 = 2;
 				try
 				{
@@ -4162,19 +4123,9 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				{
 					num3 = 2;
 				}
-				if (playerClan.Tier < num3)
-				{
-					statusText = $"执行失败：玩家家族等级不足，当前 {playerClan.Tier}，至少需要 {num3} 才能成为封臣。";
-					return false;
-				}
 				if (playerClan.Kingdom == kingdom2 && !playerClan.IsUnderMercenaryService)
 				{
 					statusText = $"执行跳过：玩家已是 {kingdom2.Name} 的正式封臣。";
-					return false;
-				}
-				if (!CanPlayerOfferVassalageCompat(kingdom2))
-				{
-					statusText = "执行失败：不满足原版封臣加入条件（势力=" + kingdom2.StringId + "）。";
 					return false;
 				}
 				ChangeKingdomAction.ApplyByJoinToKingdom(playerClan, kingdom2);
@@ -4199,11 +4150,6 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			if (giver == null || receiver == null)
 			{
 				statusText = "执行失败：缺少转移双方。";
-				return false;
-			}
-			if (giver.Clan == null || giver.Clan.Leader != giver)
-			{
-				statusText = $"执行失败：{giver.Name} 不是家族族长，无权决定领地转移。";
 				return false;
 			}
 			string text = (directionToken ?? "").Trim().ToUpperInvariant();
@@ -4231,26 +4177,9 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			Hero hero;
 			if (text == "TO_PLAYER")
 			{
-				int settlementTransferTalkTrust = GetSettlementTransferTalkTrust(giver);
-				if (settlementTransferTalkTrust < 60)
-				{
-					statusText = $"执行失败：{giver.Name} 对玩家的综合信任仅 {settlementTransferTalkTrust}，低于 60，当前不允许谈领地转移。";
-					return false;
-				}
 				if (settlement.OwnerClan != giver.Clan)
 				{
 					statusText = $"执行失败：{settlement.Name} 不属于 {giver.Name} 的家族，不能由其转给玩家。";
-					return false;
-				}
-				List<MyBehavior.SettlementTransferPromptEntry> allowedNpcSettlementTransferEntriesForPlayer = GetAllowedNpcSettlementTransferEntriesForPlayer(giver);
-				if (allowedNpcSettlementTransferEntriesForPlayer == null || allowedNpcSettlementTransferEntriesForPlayer.Count == 0)
-				{
-					statusText = $"执行失败：{giver.Name} 当前没有对玩家开放可转移的城市或城堡。";
-					return false;
-				}
-				if (!allowedNpcSettlementTransferEntriesForPlayer.Any((MyBehavior.SettlementTransferPromptEntry x) => x != null && x.Settlement != null && string.Equals((x.Settlement.StringId ?? "").Trim(), (settlement.StringId ?? "").Trim(), StringComparison.OrdinalIgnoreCase)))
-				{
-					statusText = (settlementTransferTalkTrust < 80) ? $"执行失败：综合信任只有 {settlementTransferTalkTrust}，当前最多只允许转移收益最差的一座城市或城堡。{settlement.Name} 不在允许范围内。" : $"执行失败：{settlement.Name} 当前不在允许转移范围内。";
 					return false;
 				}
 				hero = receiver;
@@ -4262,8 +4191,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 					statusText = "执行失败：未知领地转移方向 " + directionToken + "。";
 					return false;
 				}
-				statusText = "执行失败：玩家领地转给NPC必须通过手动交付定居点界面确认，AI文本标签无权执行。";
-				return false;
+				hero = giver;
 			}
 			if (hero?.Clan == null)
 			{
@@ -8850,12 +8778,6 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		SetLastGeneratedNpcFactLines(null);
 		if (giver == null || receiver == null || string.IsNullOrEmpty(responseText))
 		{
-			return;
-		}
-		if (AIConfigHandler.IsPlayerCompanionTradeTarget(giver))
-		{
-			responseText = StripHeroTradeActionTags(responseText);
-			Logger.Log("Logic", "[Reward] 已拦截同伴交易标签：目标是玩家同伴，禁止交易。");
 			return;
 		}
 		Stopwatch stopwatch = Stopwatch.StartNew();

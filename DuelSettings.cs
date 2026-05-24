@@ -1003,12 +1003,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	{
 		try
 		{
-			string basePath = TaleWorlds.Engine.Utilities.GetBasePath();
-			if (string.IsNullOrWhiteSpace(basePath))
-			{
-				return "";
-			}
-			return Path.Combine(basePath, "Modules", "AnimusForge", "Logs", PlayerCustomPromptRuleFileName);
+			return AnimusForgeModulePaths.GetLogFilePath(PlayerCustomPromptRuleFileName);
 		}
 		catch
 		{
@@ -1127,12 +1122,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	{
 		try
 		{
-			string basePath = TaleWorlds.Engine.Utilities.GetBasePath();
-			if (string.IsNullOrWhiteSpace(basePath))
-			{
-				return "";
-			}
-			return Path.Combine(basePath, "Modules", "AnimusForge", "Logs", ModelDropdownCacheFileName);
+			return AnimusForgeModulePaths.GetLogFilePath(ModelDropdownCacheFileName);
 		}
 		catch
 		{
@@ -1196,16 +1186,33 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		AddMany(runtimeOptions);
 		AddMany(ReadDropdownValues(runtimeDropdown));
 		AddMany(cachedOptions);
-		string text = ReadSelectedModelOption(runtimeDropdown);
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			text = NormalizeModelOption(cachedSelectedOption);
-		}
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			text = ResolveSelectedOptionForSnapshot(null, manualModel, fallbackModel, preserveBlankSelection);
-		}
+		string text = ResolveHydratedSelectedModelOption(runtimeDropdown, cachedSelectedOption, manualModel, fallbackModel, preserveBlankSelection);
 		mergedDropdown = BuildDropdownFromOptions(list, text, fallbackModel, preserveBlankSelection, out mergedOptions, out var _);
+	}
+
+	private static string ResolveHydratedSelectedModelOption(Dropdown<string> runtimeDropdown, string cachedSelectedOption, string manualModel, string fallbackModel, bool preserveBlankSelection)
+	{
+		string text = ReadSelectedModelOption(runtimeDropdown);
+		if (!string.IsNullOrWhiteSpace(text))
+		{
+			return text;
+		}
+		string text2 = NormalizeModelOption(manualModel);
+		string text3 = NormalizeModelOption(fallbackModel);
+		string text4 = NormalizeModelOption(cachedSelectedOption);
+		if (!string.IsNullOrWhiteSpace(text2) && !string.Equals(text2, text3, StringComparison.OrdinalIgnoreCase))
+		{
+			return text2;
+		}
+		if (!string.IsNullOrWhiteSpace(text4))
+		{
+			return text4;
+		}
+		if (!string.IsNullOrWhiteSpace(text2))
+		{
+			return text2;
+		}
+		return preserveBlankSelection ? string.Empty : text3;
 	}
 
 	private void TrySyncManualModelWithSelectedOption()

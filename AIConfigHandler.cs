@@ -5719,8 +5719,7 @@ public static class AIConfigHandler
 	{
 		try
 		{
-			string basePath = Utilities.GetBasePath();
-			string path = System.IO.Path.Combine(basePath, "Modules", "AnimusForge", "ModuleData", "AIConfig.json");
+			string path = ResolveModuleDataFilePath("AIConfig.json");
 			if (!File.Exists(path))
 			{
 				Logger.Log("AIConfig", "[错误] 找不到 AIConfig.json");
@@ -5731,8 +5730,8 @@ public static class AIConfigHandler
 				string value = File.ReadAllText(path);
 				_config = JsonConvert.DeserializeObject<AIConfigModel>(value) ?? new AIConfigModel();
 			}
-			string path2 = System.IO.Path.Combine(basePath, "Modules", "AnimusForge", "ModuleData", "RuleBehaviorPrompts.json");
-			string path3 = System.IO.Path.Combine(basePath, "Modules", "AnimusForge", "ModuleData", "ActionPostprocessPrompts.json");
+			string path2 = ResolveModuleDataFilePath("RuleBehaviorPrompts.json");
+			string path3 = ResolveModuleDataFilePath("ActionPostprocessPrompts.json");
 			if (!File.Exists(path2))
 			{
 				Logger.Log("AIConfig", "[错误] 找不到 RuleBehaviorPrompts.json");
@@ -5780,6 +5779,7 @@ public static class AIConfigHandler
 			}
 			string text = (KnowledgeRetrievalFromMcm ? "MCM" : "Guardrail");
 			Logger.Log("AIConfig", string.Format("配置加载成功。触发词(决斗/奖励/借贷/地理)={0}/{1}/{2}/{3}，扩展规则={4}，启用规则总数={5}。规则返回上限={6}。知识检索({7})：{8}（语义优先={9}, returnCap={10}）。后处理模板：{11}。", valueOrDefault, valueOrDefault2, valueOrDefault3, valueOrDefault4, valueOrDefault5, num2, GetGuardrailReturnCapFromMcm(), text, KnowledgeRetrievalEnabled ? "开启" : "关闭", KnowledgeSemanticFirst, KnowledgeSemanticTopK, ActionPostprocessEnabled ? "开启" : "关闭"));
+			Logger.Log("AIConfig", "配置文件路径：AIConfig=" + path + " RuleBehavior=" + path2 + " ActionPostprocess=" + path3);
 		}
 		catch (Exception ex)
 		{
@@ -5788,6 +5788,11 @@ public static class AIConfigHandler
 			_guardrail = new GuardrailConfigModel();
 			_actionPostprocess = new ActionPostprocessConfigModel();
 		}
+	}
+
+	private static string ResolveModuleDataFilePath(string fileName)
+	{
+		return AnimusForgeModulePaths.GetModuleDataFilePath(fileName);
 	}
 
 	public static string GetLoreContext(string inputText, Hero npcHero)

@@ -51,6 +51,9 @@
 - `TryGetSceneSummonConversationSessionForAgentIndex(...)`
 - `CancelSceneGuideActionForAgent(...)`
 - `CancelSceneSummonActionForAgent(...)`
+- `HoldSceneGuideAgentForArrivalSpeech(...)`
+- `ApplySceneGuideArrivalHold(...)`
+- `ReleaseSceneGuideArrivalHold(...)`
 
 ## 适用边界
 
@@ -134,6 +137,76 @@
 
     这些改法会和原版 `EscortAgentBehavior`、场景导航、障碍物和市场摊位碰撞发生冲突，表现为 NPC 不在目标地点自然停住，而是持续挪步直到撞墙。不要再使用这类方案修带路到达停留问题。
 
+11. 带路到达停留必须使用“软停留”。
+    最终实测成功的写法是：到达后每 tick 清掉残留 escort/scripted movement，把原生 target position 设回 NPC 当前脚下，并暂停日常 AI；但绝不写新的 scripted frame。
+
+    正确状态机顺序：
+
+    ```text
+    CompleteSceneGuideArrival
+    -> HoldSceneGuideAgentForArrivalSpeech
+    -> ApplySceneGuideArrivalPlayerMessageLock
+    -> ApplySceneGuideArrivalHold
+    -> ScheduleSceneGuideReturnAfterNextSpeech
+    -> 到达台词实际显示/播放
+    -> ScheduleSceneGuideReturnAfterSpeech
+    -> ReleaseSceneGuideArrivalHold
+    -> QueueSceneReturnJob
+    ```
+
+    `HoldSceneGuideAgentForArrivalSpeech(...)` 必须先 `StopSceneGuideEscort(agent)`，记录 `SceneGuideArrivalHold`，再调用 `ApplySceneGuideArrivalHold(...)`。`UpdateSceneGuideArrivalHolds(...)` 保持每 tick 重放 `ApplySceneGuideArrivalHold(...)`，因为原版日常 AI 或 escort 残留可能在等待 LLM 生成到达台词的几秒内重新推 NPC 走。
+
+    `ApplySceneGuideArrivalHold(...)` 的核心写法：
+
+    ```csharp
+    EscortAgentBehavior.RemoveEscortBehaviorOfAgent(agent);
+    ClearSceneGuideEscortMovement(agent);
+
+    agent.SetLookAgent(null);
+    Vec2 zero = Vec2.Zero;
+    agent.SetMovementDirection(in zero);
+    agent.MovementInputVector = Vec2.Zero;
+    agent.MovementFlags = Agent.MovementControlFlag.None;
+    agent.SetTargetPosition(agent.Position.AsVec2);
+    agent.SetMaximumSpeedLimit(0f, isMultiplier: false);
+
+    // 只暂停日常 AI，不写 SetTargetFrame / SetScriptedPosition。
+    agent.SetIsAIPaused(isPaused: true);
+    ```
+
+    这里的 `SetTargetPosition(agent.Position.AsVec2)` 是原版 `IdleAgentBehavior` 的软停留思路：把 native target position 设到脚下，让残留移动输入归零。它不是 `SetScriptedPosition(...)`，也不是 `AgentNavigator.SetTargetFrame(...)`，不会给 NPC 新增一个会和导航碰撞的硬目标帧。
+
+    严禁把到达停留重新接回通用凝视链路：
+
+    ```text
+    不要调用 AddAgentToStareList(...)。
+    不要调用 FreezeAgentForStare(...)。
+    不要把到达 NPC 加进 _staringAgents。
+    不要把到达锚点写进 _staringAgentAnchors 来驱动停留。
+    不要在到达 hold 期间 SetLookAgent(Agent.Main)。
+    ```
+
+    原因：通用凝视链路会面向玩家，并可能写 `SetScriptedPosition(...)` 或 `SetTargetFrame(...)`。这会导致 NPC 面朝玩家太空步、侧身离开、撞墙或一直朝残留方向走。
+
+    `ReleaseSceneGuideArrivalHold(...)` 释放时必须先清本模组控制，再决定是否恢复原版自主：
+
+    ```csharp
+    _sceneGuideArrivalHolds.Remove(agentIndex);
+    _activeInteractionSessions.Remove(agentIndex);
+    _pendingInteractionTimeoutArms.Remove(agentIndex);
+    _staringAgents.RemoveAll(a => a == null || a.Index == agentIndex);
+    _staringAgentAnchors.Remove(agentIndex);
+
+    ClearSceneGuideArrivalHoldMotion(agent);
+
+    if (restoreAutonomy)
+    {
+        RestoreAgentAutonomy(agent);
+    }
+    ```
+
+    `ClearSceneGuideArrivalHoldMotion(...)` 必须至少做到：`SetLookAgent(null)`、`SetMaximumSpeedLimit(-1f, false)`、`SetIsAIPaused(false)`、`ClearSceneGuideEscortMovement(agent)`。这样返回任务开始前不会带着“盯玩家”“限速 0”“旧 scripted target frame”或旧 escort 状态。
+
 ## 新增场景命令清单
 
 新增或修改场景内 NPC 命令移动时，至少检查：
@@ -150,6 +223,9 @@
 - 取消、返回、抵达、TTS 后续动作是否仍能按 `AgentIndex` 找回任务。
 - 带路到达后返回是否仍使用 `SCENE_GUIDE_RETURN_EXTRA_DELAY_SECONDS = 2f`，而不是普通交互超时。
 - 是否没有在到达后新增 `SetScriptedPosition`、`SetScriptedPositionAndDirection` 或 `SetTargetFrame` 硬锁。
+- 到达 hold 是否每 tick 执行软停留：清 escort、清旧目标、清移动输入、`SetTargetPosition(agent.Position.AsVec2)`、限速 0、`SetIsAIPaused(true)`。
+- 到达 hold 是否没有调用 `AddAgentToStareList(...)` / `FreezeAgentForStare(...)`，没有让 NPC `SetLookAgent(Agent.Main)`。
+- 释放到达 hold 时是否先清 `LookAgent`、速度限制、AI pause、旧目标和旧 scripted movement，再进入返回岗位任务。
 - 日志是否包含 agent、target agent、location character、阶段名，而不是只有坐标。
 
 ## 反例

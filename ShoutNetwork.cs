@@ -507,7 +507,7 @@ public static class ShoutNetwork
 	{
 		try
 		{
-			string text = (Hero.MainHero?.Name?.ToString() ?? "").Trim();
+			string text = (MyBehavior.BuildPlayerPublicDisplayNameForExternal() ?? "").Trim();
 			if (!string.IsNullOrWhiteSpace(text))
 			{
 				return text;
@@ -518,7 +518,7 @@ public static class ShoutNetwork
 		}
 		try
 		{
-			return (MyBehavior.BuildPlayerPublicDisplayNameForExternal() ?? "").Trim();
+			return (Hero.MainHero?.Name?.ToString() ?? "").Trim();
 		}
 		catch
 		{

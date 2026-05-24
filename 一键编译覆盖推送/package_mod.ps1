@@ -118,25 +118,34 @@ function Resolve-AnimusForgeModuleDir {
             throw "Bannerlord root not found: $bannerlordRootFull"
         }
 
-        $preferredPath = Join-Path (Join-Path $bannerlordRootFull "Modules") "AnimusForge"
-        $check = Test-AnimusForgeModuleDir -Path $preferredPath
-        if (-not $check.IsValid) {
-            throw ("BannerlordRoot does not contain a valid AnimusForge module: {0}`nMissing/Invalid: {1}" -f $preferredPath, ($check.Missing -join ", "))
+        $modulesDir = Join-Path $bannerlordRootFull "Modules"
+        $preferredPaths = @(
+            (Join-Path $modulesDir "AnimusForge_1_4_5"),
+            (Join-Path $modulesDir "AnimusForge_1_3_x"),
+            (Join-Path $modulesDir "AnimusForge")
+        )
+        foreach ($preferredPath in $preferredPaths) {
+            $check = Test-AnimusForgeModuleDir -Path $preferredPath
+            if ($check.IsValid) {
+                return [PSCustomObject]@{
+                    Path = [System.IO.Path]::GetFullPath($preferredPath)
+                    AutoDetected = $false
+                }
+            }
         }
 
-        return [PSCustomObject]@{
-            Path = [System.IO.Path]::GetFullPath($preferredPath)
-            AutoDetected = $false
-        }
+        throw ("BannerlordRoot does not contain a valid AnimusForge module: {0}`nChecked: {1}" -f $bannerlordRootFull, ($preferredPaths -join ", "))
     }
 
     $candidatePaths = New-Object System.Collections.Generic.List[string]
     $roots = Get-PSDrive -PSProvider FileSystem | Select-Object -ExpandProperty Root
     foreach ($rootRaw in $roots) {
         $root = $rootRaw.TrimEnd('\', '/')
-        $candidatePaths.Add($root + "\SteamLibrary\steamapps\common\Mount & Blade II Bannerlord\Modules\AnimusForge")
-        $candidatePaths.Add($root + "\Program Files (x86)\Steam\steamapps\common\Mount & Blade II Bannerlord\Modules\AnimusForge")
-        $candidatePaths.Add($root + "\Program Files\Steam\steamapps\common\Mount & Blade II Bannerlord\Modules\AnimusForge")
+        foreach ($moduleId in @("AnimusForge_1_4_5", "AnimusForge_1_3_x", "AnimusForge")) {
+            $candidatePaths.Add($root + "\SteamLibrary\steamapps\common\Mount & Blade II Bannerlord\Modules\$moduleId")
+            $candidatePaths.Add($root + "\Program Files (x86)\Steam\steamapps\common\Mount & Blade II Bannerlord\Modules\$moduleId")
+            $candidatePaths.Add($root + "\Program Files\Steam\steamapps\common\Mount & Blade II Bannerlord\Modules\$moduleId")
+        }
     }
 
     $validCandidates = New-Object System.Collections.Generic.List[string]

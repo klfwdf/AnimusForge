@@ -1,11 +1,13 @@
 #define DEBUG
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using MCM.Abstractions.Base.Global;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -91,6 +93,36 @@ public static class Logger
 		public long Hit;
 	}
 
+	private sealed class TokenStatsWorkItem
+	{
+		public bool IsMessageDump;
+
+		public int InputTokens;
+
+		public int OutputTokens;
+
+		public List<object> Messages;
+
+		public string OutputContent;
+
+		public string Mode;
+
+		public string RequestBody;
+
+		public string Title;
+
+		public string TimeText;
+
+		public string TraceId;
+	}
+
+	private sealed class LogWriteWorkItem
+	{
+		public string Path;
+
+		public string Content;
+	}
+
 	private static string _modLogPath;
 
 	private static string _gameTracePath;
@@ -123,6 +155,10 @@ public static class Logger
 
 	private static readonly Dictionary<string, long> _hitRateActiveQuery;
 
+	private static readonly ConcurrentQueue<TokenStatsWorkItem> _tokenStatsWriteQueue;
+
+	private static readonly ConcurrentQueue<LogWriteWorkItem> _logWriteQueue;
+
 	private static DateTime _metricsWindowStartUtc;
 
 	private static DateTime _nextMetricsFlushUtc;
@@ -143,6 +179,10 @@ public static class Logger
 
 	private static bool _startupLogCleanupDone;
 
+	private static int _tokenStatsWorkerRunning;
+
+	private static int _logWriterRunning;
+
 	public static string CurrentTraceId => _traceState.Value?.TraceId ?? "";
 
 	public static string CurrentChannel => _traceState.Value?.Channel ?? "";
@@ -158,14 +198,15 @@ public static class Logger
 		_hitRate = new Dictionary<string, HitRateBucket>(StringComparer.OrdinalIgnoreCase);
 		_hitRateScopeSeq = new Dictionary<string, long>(StringComparer.Ordinal);
 		_hitRateActiveQuery = new Dictionary<string, long>(StringComparer.Ordinal);
+		_tokenStatsWriteQueue = new ConcurrentQueue<TokenStatsWorkItem>();
+		_logWriteQueue = new ConcurrentQueue<LogWriteWorkItem>();
 		_metricsWindowStartUtc = DateTime.UtcNow;
 		_nextMetricsFlushUtc = DateTime.UtcNow.AddSeconds(180.0);
 		_traceSeed = 0L;
 		_hitRateEventSeed = 0L;
 		try
 		{
-			string basePath = Utilities.GetBasePath();
-			string text = System.IO.Path.Combine(basePath, "Modules", "AnimusForge", "Logs");
+			string text = AnimusForgeModulePaths.GetLogsDirectory();
 			if (!Directory.Exists(text))
 			{
 				Directory.CreateDirectory(text);
@@ -304,10 +345,7 @@ public static class Logger
 			stringBuilder.AppendLine("[回复]");
 			stringBuilder.AppendLine((replyText ?? "").Trim());
 			stringBuilder.AppendLine();
-			lock (_fileLock)
-			{
-				AppendUtf8(_eventLogsPath, stringBuilder.ToString());
-			}
+			EnqueueLogWrite(_eventLogsPath, stringBuilder.ToString());
 		}
 		catch
 		{
@@ -593,36 +631,18 @@ public static class Logger
 			{
 				outputTokens = 0;
 			}
-			string text = DateTime.Now.ToString("HH:mm:ss");
-			string currentTraceId = CurrentTraceId;
-			string text2 = (string.IsNullOrWhiteSpace(currentTraceId) ? "" : (" trace=" + currentTraceId));
-			string text3 = (string.IsNullOrWhiteSpace(mode) ? "" : (" mode=" + mode.Trim()));
-			string value = $"[{text}] in={inputTokens} out={outputTokens}{text2}{text3}";
-			string value4 = NormalizeTokenContent(requestBody);
-			string value2 = BuildMessagesDump(messages);
-			string value3 = NormalizeTokenContent(outputContent);
-			lock (_fileLock)
+			EnqueueTokenStatsWrite(new TokenStatsWorkItem
 			{
-				StringBuilder stringBuilder = new StringBuilder();
-				stringBuilder.AppendLine(value);
-				if (!string.IsNullOrWhiteSpace(value4))
-				{
-					stringBuilder.AppendLine("REQUEST_BODY:");
-					stringBuilder.AppendLine(value4);
-				}
-				if (!string.IsNullOrWhiteSpace(value2))
-				{
-					stringBuilder.AppendLine("INPUT:");
-					stringBuilder.AppendLine(value2);
-				}
-				if (!string.IsNullOrWhiteSpace(value3))
-				{
-					stringBuilder.AppendLine("OUTPUT:");
-					stringBuilder.AppendLine(value3);
-				}
-				stringBuilder.AppendLine("----");
-				AppendUtf8(_tokenStatsPath, stringBuilder.ToString());
-			}
+				IsMessageDump = false,
+				InputTokens = inputTokens,
+				OutputTokens = outputTokens,
+				Messages = CopyMessagesForTokenStats(messages),
+				OutputContent = outputContent,
+				Mode = mode,
+				RequestBody = requestBody,
+				TimeText = DateTime.Now.ToString("HH:mm:ss"),
+				TraceId = CurrentTraceId
+			});
 		}
 		catch
 		{
@@ -637,22 +657,130 @@ public static class Logger
 			{
 				return;
 			}
-			string text = BuildMessagesDump(messages);
-			if (string.IsNullOrWhiteSpace(text))
+			EnqueueTokenStatsWrite(new TokenStatsWorkItem
+			{
+				IsMessageDump = true,
+				Messages = CopyMessagesForTokenStats(messages),
+				Mode = mode,
+				Title = title,
+				TimeText = DateTime.Now.ToString("HH:mm:ss"),
+				TraceId = CurrentTraceId
+			});
+		}
+		catch
+		{
+		}
+	}
+
+	private static List<object> CopyMessagesForTokenStats(IEnumerable<object> messages)
+	{
+		try
+		{
+			return messages == null ? null : new List<object>(messages);
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static void EnqueueTokenStatsWrite(TokenStatsWorkItem item)
+	{
+		if (item == null)
+		{
+			return;
+		}
+		_tokenStatsWriteQueue.Enqueue(item);
+		TryStartTokenStatsWriter();
+	}
+
+	private static void TryStartTokenStatsWriter()
+	{
+		if (Interlocked.CompareExchange(ref _tokenStatsWorkerRunning, 1, 0) != 0)
+		{
+			return;
+		}
+		Task.Run(ProcessTokenStatsWriteQueue);
+	}
+
+	private static void ProcessTokenStatsWriteQueue()
+	{
+		try
+		{
+			while (true)
+			{
+				while (_tokenStatsWriteQueue.TryDequeue(out var item))
+				{
+					WriteTokenStatsWorkItem(item);
+				}
+				Interlocked.Exchange(ref _tokenStatsWorkerRunning, 0);
+				if (_tokenStatsWriteQueue.IsEmpty || Interlocked.CompareExchange(ref _tokenStatsWorkerRunning, 1, 0) != 0)
+				{
+					break;
+				}
+			}
+		}
+		catch
+		{
+			Interlocked.Exchange(ref _tokenStatsWorkerRunning, 0);
+			if (!_tokenStatsWriteQueue.IsEmpty)
+			{
+				TryStartTokenStatsWriter();
+			}
+		}
+	}
+
+	private static void WriteTokenStatsWorkItem(TokenStatsWorkItem item)
+	{
+		try
+		{
+			if (item == null || string.IsNullOrWhiteSpace(_tokenStatsPath) || !IsPathEnabled(_tokenStatsPath))
 			{
 				return;
 			}
-			string text2 = DateTime.Now.ToString("HH:mm:ss");
-			string currentTraceId = CurrentTraceId;
-			string text3 = string.IsNullOrWhiteSpace(currentTraceId) ? "" : (" trace=" + currentTraceId);
-			string text4 = string.IsNullOrWhiteSpace(mode) ? "" : (" mode=" + mode.Trim());
-			string text5 = string.IsNullOrWhiteSpace(title) ? "" : (" title=" + title.Trim());
-			lock (_fileLock)
+			StringBuilder stringBuilder = new StringBuilder();
+			if (item.IsMessageDump)
 			{
-				StringBuilder stringBuilder = new StringBuilder();
-				stringBuilder.AppendLine($"[{text2}] STRICT_MESSAGES{text3}{text4}{text5}");
+				string text = BuildMessagesDump(item.Messages);
+				if (string.IsNullOrWhiteSpace(text))
+				{
+					return;
+				}
+				string traceText = string.IsNullOrWhiteSpace(item.TraceId) ? "" : (" trace=" + item.TraceId);
+				string modeText = string.IsNullOrWhiteSpace(item.Mode) ? "" : (" mode=" + item.Mode.Trim());
+				string titleText = string.IsNullOrWhiteSpace(item.Title) ? "" : (" title=" + item.Title.Trim());
+				stringBuilder.AppendLine($"[{item.TimeText}] STRICT_MESSAGES{traceText}{modeText}{titleText}");
 				stringBuilder.AppendLine(text);
 				stringBuilder.AppendLine("----");
+			}
+			else
+			{
+				string traceText2 = string.IsNullOrWhiteSpace(item.TraceId) ? "" : (" trace=" + item.TraceId);
+				string modeText2 = string.IsNullOrWhiteSpace(item.Mode) ? "" : (" mode=" + item.Mode.Trim());
+				string value = $"[{item.TimeText}] in={item.InputTokens} out={item.OutputTokens}{traceText2}{modeText2}";
+				string requestBodyText = NormalizeTokenContent(item.RequestBody);
+				string messagesText = BuildMessagesDump(item.Messages);
+				string outputText = NormalizeTokenContent(item.OutputContent);
+				stringBuilder.AppendLine(value);
+				if (!string.IsNullOrWhiteSpace(requestBodyText))
+				{
+					stringBuilder.AppendLine("REQUEST_BODY:");
+					stringBuilder.AppendLine(requestBodyText);
+				}
+				if (!string.IsNullOrWhiteSpace(messagesText))
+				{
+					stringBuilder.AppendLine("INPUT:");
+					stringBuilder.AppendLine(messagesText);
+				}
+				if (!string.IsNullOrWhiteSpace(outputText))
+				{
+					stringBuilder.AppendLine("OUTPUT:");
+					stringBuilder.AppendLine(outputText);
+				}
+				stringBuilder.AppendLine("----");
+			}
+			lock (_fileLock)
+			{
 				AppendUtf8(_tokenStatsPath, stringBuilder.ToString());
 			}
 		}
@@ -924,6 +1052,8 @@ public static class Logger
 	{
 		try
 		{
+			DrainQueuedLogWrites();
+			DrainQueuedTokenStatsWrites();
 			string[] paths = new string[]
 			{
 				_modLogPath,
@@ -1040,10 +1170,7 @@ public static class Logger
 			string text = DateTime.Now.ToString("HH:mm:ss");
 			string currentTraceId = CurrentTraceId;
 			string text2 = (string.IsNullOrWhiteSpace(currentTraceId) ? "" : (" [trace=" + currentTraceId + "]"));
-			lock (_fileLock)
-			{
-				AppendUtf8(path, "[" + text + "] [" + source + "]" + text2 + " " + message + "\n");
-			}
+			EnqueueLogWrite(path, "[" + text + "] [" + source + "]" + text2 + " " + message + "\n");
 		}
 		catch
 		{
@@ -1058,9 +1185,102 @@ public static class Logger
 			{
 				return;
 			}
+			EnqueueLogWrite(path, line + "\n");
+		}
+		catch
+		{
+		}
+	}
+
+	private static void EnqueueLogWrite(string path, string content)
+	{
+		if (string.IsNullOrWhiteSpace(path) || content == null)
+		{
+			return;
+		}
+		_logWriteQueue.Enqueue(new LogWriteWorkItem
+		{
+			Path = path,
+			Content = content
+		});
+		TryStartLogWriter();
+	}
+
+	private static void TryStartLogWriter()
+	{
+		if (Interlocked.CompareExchange(ref _logWriterRunning, 1, 0) != 0)
+		{
+			return;
+		}
+		Task.Run(ProcessLogWriteQueue);
+	}
+
+	private static void ProcessLogWriteQueue()
+	{
+		try
+		{
+			while (true)
+			{
+				while (_logWriteQueue.TryDequeue(out var item))
+				{
+					WriteLogWorkItem(item);
+				}
+				Interlocked.Exchange(ref _logWriterRunning, 0);
+				if (_logWriteQueue.IsEmpty || Interlocked.CompareExchange(ref _logWriterRunning, 1, 0) != 0)
+				{
+					break;
+				}
+			}
+		}
+		catch
+		{
+			Interlocked.Exchange(ref _logWriterRunning, 0);
+			if (!_logWriteQueue.IsEmpty)
+			{
+				TryStartLogWriter();
+			}
+		}
+	}
+
+	private static void WriteLogWorkItem(LogWriteWorkItem item)
+	{
+		try
+		{
+			if (item == null || string.IsNullOrWhiteSpace(item.Path) || item.Content == null || !IsPathEnabled(item.Path))
+			{
+				return;
+			}
 			lock (_fileLock)
 			{
-				AppendUtf8(path, line + "\n");
+				AppendUtf8(item.Path, item.Content);
+			}
+		}
+		catch
+		{
+		}
+	}
+
+	private static void DrainQueuedLogWrites()
+	{
+		try
+		{
+			while (_logWriteQueue.TryDequeue(out var item))
+			{
+				WriteLogWorkItem(item);
+			}
+		}
+		catch
+		{
+		}
+	}
+
+	private static void DrainQueuedTokenStatsWrites()
+	{
+		try
+		{
+			while (_tokenStatsWriteQueue.TryDequeue(out var item))
+			{
+				WriteTokenStatsWorkItem(item);
 			}
 		}
 		catch

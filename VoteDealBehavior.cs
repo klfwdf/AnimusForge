@@ -784,16 +784,11 @@ namespace AnimusForge
 		{
 			try
 			{
-				if (!CanUseVoteDealPostprocess(npc))
-				{
-					return "";
-				}
-
 				StringBuilder sb = new StringBuilder();
 				List<VoteDealAgendaEntry> agendas = BuildVoteDealAgendaEntries(npc);
 				if (agendas.Count == 0)
 				{
-					sb.AppendLine("【投票交易后处理清单】当前没有可拉票的活跃议程。若玩家只是在谈未来可能提出的提案，且NPC最终明确同意，才可使用旧兼容格式 [ACTION:VOTE_DEAL:SUPPORT或OPPOSE:权重:备注]；否则禁止输出 VOTE_DEAL。");
+					sb.AppendLine("【投票交易后处理清单】当前没有可拉票的活跃议程；如后处理判断 NPC 已在对话中明确承诺未来投票立场，可使用旧兼容格式 [ACTION:VOTE_DEAL:SUPPORT或OPPOSE:权重:备注]。");
 					return sb.ToString().TrimEnd();
 				}
 
@@ -809,7 +804,6 @@ namespace AnimusForge
 						sb.AppendLine($"- {option.Code}: {option.Title}{sponsorText}{descriptionText}");
 					}
 				}
-				sb.AppendLine("【投票交易后处理硬约束】若玩家或NPC没有把议程与选项说清楚、多个议程或多个选项都可能匹配、NPC只是继续谈条件或拒绝，禁止输出 VOTE_DEAL。若NPC已对同一议程有承诺，禁止改投其他选项。");
 				return sb.ToString().TrimEnd();
 			}
 			catch (Exception ex)
@@ -1512,6 +1506,15 @@ namespace AnimusForge
 			CallVoteMeetingRequested?.Invoke(decision);
 			item.RefreshTimingState();
 		}
+
+		public void ClearSelection()
+		{
+			if (SelectedItem != null)
+			{
+				SelectedItem.IsSelected = false;
+				SelectedItem = null;
+			}
+		}
 	}
 
 	public class KingdomAgendaItemVM : ViewModel
@@ -2109,6 +2112,7 @@ namespace AnimusForge
 					ViewModel.Decision.RefreshWith(decision);
 					ViewModel.Decision.IsActive = true;
 					ViewModel.OnPropertyChanged("Decision");
+					Agenda?.ClearSelection();
 					InformationManager.DisplayMessage(new InformationMessage(
 						$"已召开投票会议：{decision.GetGeneralTitle()}",
 						Color.FromUint(0xFFD166)));

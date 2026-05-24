@@ -1869,16 +1869,7 @@ public static partial class TroopInspectionBehavior
 		{
 			return _inspectionLogPath;
 		}
-		string basePath;
-		try
-		{
-			basePath = TaleWorlds.Engine.Utilities.GetBasePath();
-		}
-		catch
-		{
-			basePath = AppDomain.CurrentDomain.BaseDirectory;
-		}
-		string logDir = Path.Combine(basePath, "Modules", "AnimusForge", "Logs");
+		string logDir = AnimusForgeModulePaths.GetLogsDirectory();
 		Directory.CreateDirectory(logDir);
 		_inspectionLogPath = Path.Combine(logDir, "TroopInspection.log");
 		return _inspectionLogPath;
