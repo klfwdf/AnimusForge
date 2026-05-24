@@ -38,7 +38,6 @@ namespace AnimusForge
 			public string DealId;
 			public string NpcHeroStringId;
 			public string NpcClanStringId;
-			public string Direction;              // "SUPPORT", "OPPOSE", or "OPTION"
 			public string TargetDecisionKey;
 			public string TargetDecisionBasicKey;
 			public string TargetDecisionTitle;
@@ -238,7 +237,6 @@ namespace AnimusForge
 							d.DealId ?? "",
 							d.NpcHeroStringId ?? "",
 							d.NpcClanStringId ?? "",
-							d.Direction ?? "",
 							d.SupportWeightValue.ToString(),
 							d.CreatedDay.ToString("F6"),
 							d.Notes ?? "",
@@ -265,24 +263,28 @@ namespace AnimusForge
 							if (string.IsNullOrEmpty(val)) continue;
 							string[] parts = val.Split(RecordDelimiter);
 							if (parts.Length < 6) continue;
-							_activeDeals.Add(new VoteDealRecord
+							int offset = IsLegacySerializedDirection(parts.Length > 3 ? parts[3] : null) ? 1 : 0;
+							var record = new VoteDealRecord
 							{
 								DealId = parts[0],
 								NpcHeroStringId = parts[1],
 								NpcClanStringId = parts[2],
-								Direction = parts.Length > 3 ? parts[3] ?? "" : "",
-								SupportWeightValue = int.TryParse(parts[4], out int sw) ? sw : 2,
-								CreatedDay = parts.Length > 5 && float.TryParse(parts[5], out float cd) ? cd : 0f,
-								Notes = parts.Length > 6 ? parts[6] ?? "" : "",
-								IsConsumed = parts.Length > 7 && parts[7] == "1",
-								TargetDecisionKey = parts.Length > 8 ? parts[8] ?? "" : "",
-								TargetDecisionBasicKey = parts.Length > 9 ? parts[9] ?? "" : "",
-								TargetDecisionTitle = parts.Length > 10 ? parts[10] ?? "" : "",
-								TargetOptionKey = parts.Length > 11 ? parts[11] ?? "" : "",
-								TargetOptionBasicKey = parts.Length > 12 ? parts[12] ?? "" : "",
-								TargetOptionTitle = parts.Length > 13 ? parts[13] ?? "" : "",
-								TargetOptionSponsorClanId = parts.Length > 14 ? parts[14] ?? "" : ""
-							});
+								SupportWeightValue = int.TryParse(parts[3 + offset], out int sw) ? sw : 2,
+								CreatedDay = parts.Length > 4 + offset && float.TryParse(parts[4 + offset], out float cd) ? cd : 0f,
+								Notes = parts.Length > 5 + offset ? parts[5 + offset] ?? "" : "",
+								IsConsumed = parts.Length > 6 + offset && parts[6 + offset] == "1",
+								TargetDecisionKey = parts.Length > 7 + offset ? parts[7 + offset] ?? "" : "",
+								TargetDecisionBasicKey = parts.Length > 8 + offset ? parts[8 + offset] ?? "" : "",
+								TargetDecisionTitle = parts.Length > 9 + offset ? parts[9 + offset] ?? "" : "",
+								TargetOptionKey = parts.Length > 10 + offset ? parts[10 + offset] ?? "" : "",
+								TargetOptionBasicKey = parts.Length > 11 + offset ? parts[11 + offset] ?? "" : "",
+								TargetOptionTitle = parts.Length > 12 + offset ? parts[12 + offset] ?? "" : "",
+								TargetOptionSponsorClanId = parts.Length > 13 + offset ? parts[13 + offset] ?? "" : ""
+							};
+							if (!string.IsNullOrWhiteSpace(record.TargetDecisionKey))
+							{
+								_activeDeals.Add(record);
+							}
 						}
 					}
 				}
@@ -309,13 +311,13 @@ namespace AnimusForge
 				{
 					Hero npc = Hero.FindFirst(h => h.StringId == deal.NpcHeroStringId);
 					if (npc?.Clan?.Kingdom != decision.Kingdom) continue;
-					if (IsTargetedVoteDeal(deal) && !DoesVoteDealMatchDecision(deal, decision)) continue;
+					if (!DoesVoteDealMatchDecision(deal, decision)) continue;
 
 					deal.IsConsumed = true;
 					processedDeals.Add(deal);
 
-					string completionText = IsTargetedVoteDeal(deal) && !string.IsNullOrWhiteSpace(deal.TargetOptionTitle)
-						? $"投票交易完成：{npc.Name}已按承诺支持「{deal.TargetOptionTitle}」。"
+					string completionText = !string.IsNullOrWhiteSpace(deal.TargetOptionTitle)
+						? $"投票交易完成：{npc.Name}已按承诺投票选择「{deal.TargetOptionTitle}」。"
 						: $"投票交易完成：{npc.Name}已按承诺投票。";
 					AnimusForgeQuickInfo.ShowForDuration(
 						completionText,
@@ -369,67 +371,18 @@ namespace AnimusForge
 				if (string.IsNullOrWhiteSpace(payload)) return "";
 
 				string firstToken = payload.Split(':').FirstOrDefault() ?? "";
-				if (IsVoteDealAgendaCode(firstToken))
+				if (!IsVoteDealAgendaCode(firstToken))
 				{
-					string[] targetParts = payload.Split(new[] { ':' }, 4);
-					if (targetParts.Length < 4)
-					{
-						Logger.Log("VoteDeal", $"Targeted vote deal tag skipped, bad format: {tag}");
-						return "";
-					}
-					return ProcessTargetedVoteDealTag(npc, targetParts[0], targetParts[1], targetParts[2], targetParts[3]);
-				}
-
-				string[] legacyParts = payload.Split(new[] { ':' }, 3);
-				if (legacyParts.Length < 3)
-				{
-					Logger.Log("VoteDeal", $"Legacy vote deal tag skipped, bad format: {tag}");
+					Logger.Log("VoteDeal", $"Vote deal tag skipped — not an agenda code: {tag}");
 					return "";
 				}
-
-				string direction = legacyParts[0].Trim().ToUpperInvariant();
-				string weightStr = legacyParts[1].Trim();
-				string notes = legacyParts[2].Trim();
-
-				if (direction != "SUPPORT" && direction != "OPPOSE") return "";
-
-				Supporter.SupportWeights weight = ParseSupportWeight(weightStr);
-				Clan clan = npc.Clan;
-				Kingdom kingdom = clan?.Kingdom;
-				if (kingdom == null) return "";
-				if (clan.IsUnderMercenaryService) return "";
-
-				// Duplicate detection: same family + same direction + unconsumed deal
-				if (_activeDeals.Any(d => d.NpcClanStringId == clan.StringId
-					&& d.Direction == direction
-					&& !d.IsConsumed))
+				string[] targetParts = payload.Split(new[] { ':' }, 4);
+				if (targetParts.Length < 4)
 				{
-					Logger.Log("VoteDeal", $"Duplicate deal skipped: clan={clan.StringId} direction={direction}");
+					Logger.Log("VoteDeal", $"Vote deal tag skipped, bad format (need A:O:weight:notes): {tag}");
 					return "";
 				}
-
-				var record = new VoteDealRecord
-				{
-					DealId = GenerateDealId(),
-					NpcHeroStringId = npc.StringId,
-					NpcClanStringId = clan.StringId,
-					Direction = direction,
-					SupportWeightValue = (int)weight,
-					CreatedDay = CampaignTime.Now.ElapsedDaysUntilNow,
-					Notes = notes,
-					IsConsumed = false
-				};
-
-				_activeDeals.Add(record);
-
-				string clanName = clan.Name?.ToString() ?? "未知家族";
-				string dirText = (direction == "SUPPORT") ? "支持" : "反对";
-				AnimusForgeQuickInfo.ShowForDuration(
-					$"{clanName}家族 承诺{dirText}玩家立场",
-					6000, npc.CharacterObject);
-
-				Logger.Log("VoteDeal", $"VoteDeal created: id={record.DealId} clan={clanName} direction={direction} weight={weight}");
-				return "";
+				return ProcessTargetedVoteDealTag(npc, targetParts[0], targetParts[1], targetParts[2], targetParts[3]);
 			}
 			catch (Exception ex)
 			{
@@ -466,7 +419,6 @@ namespace AnimusForge
 					DealId = GenerateDealId(),
 					NpcHeroStringId = npc.StringId,
 					NpcClanStringId = clan.StringId,
-					Direction = "OPTION",
 					TargetDecisionKey = agenda.DecisionKey,
 					TargetDecisionBasicKey = agenda.DecisionBasicKey,
 					TargetDecisionTitle = agenda.Title,
@@ -484,7 +436,7 @@ namespace AnimusForge
 
 				string clanName = clan.Name?.ToString() ?? "未知家族";
 				AnimusForgeQuickInfo.ShowForDuration(
-					$"{clanName}家族 承诺在「{agenda.Title}」中支持「{option.Title}」",
+					$"{clanName}家族 承诺在「{agenda.Title}」中投票选择「{option.Title}」",
 					6000, npc.CharacterObject);
 
 				Logger.Log("VoteDeal", $"Targeted vote deal created: id={record.DealId} clan={clanName} agenda={agenda.Code}:{agenda.Title} option={option.Code}:{option.Title} weight={weight}");
@@ -499,11 +451,6 @@ namespace AnimusForge
 
 		// ── AI context builder ─────────────────────────────────────────────
 
-		private static bool IsTargetedVoteDeal(VoteDealRecord deal)
-		{
-			return deal != null && !string.IsNullOrWhiteSpace(deal.TargetDecisionKey);
-		}
-
 		private static bool IsVoteDealAgendaCode(string value)
 		{
 			if (string.IsNullOrWhiteSpace(value)) return false;
@@ -512,6 +459,15 @@ namespace AnimusForge
 				&& (value[0] == 'A' || value[0] == 'a')
 				&& int.TryParse(value.Substring(1), out int index)
 				&& index > 0;
+		}
+
+		private static bool IsLegacySerializedDirection(string value)
+		{
+			if (string.IsNullOrWhiteSpace(value)) return false;
+			string direction = value.Trim();
+			return direction.Equals("SUPPORT", StringComparison.OrdinalIgnoreCase)
+				|| direction.Equals("OPPOSE", StringComparison.OrdinalIgnoreCase)
+				|| direction.Equals("OPTION", StringComparison.OrdinalIgnoreCase);
 		}
 
 		private static bool IsVoteDealOptionCode(string value)
@@ -733,15 +689,8 @@ namespace AnimusForge
 						sb.AppendLine("【你已承诺的投票交易】（务必遵守！不可反悔！）");
 						foreach (var deal in existing)
 						{
-							if (IsTargetedVoteDeal(deal))
-							{
-								sb.Append(" - 议程:").Append(string.IsNullOrWhiteSpace(deal.TargetDecisionTitle) ? "未知议程" : deal.TargetDecisionTitle);
-								sb.Append("，已承诺支持选项:").Append(string.IsNullOrWhiteSpace(deal.TargetOptionTitle) ? "未知选项" : deal.TargetOptionTitle);
-							}
-							else
-							{
-								sb.Append(" - 立场:").Append(deal.Direction == "SUPPORT" ? "支持玩家" : "反对玩家");
-							}
+							sb.Append(" - 议程:").Append(string.IsNullOrWhiteSpace(deal.TargetDecisionTitle) ? "未知议程" : deal.TargetDecisionTitle);
+							sb.Append("，已承诺投票选择:").Append(string.IsNullOrWhiteSpace(deal.TargetOptionTitle) ? "未知选项" : deal.TargetOptionTitle);
 							sb.Append("，权重:").Append((Supporter.SupportWeights)deal.SupportWeightValue);
 							if (!string.IsNullOrEmpty(deal.Notes))
 								sb.Append("，备注:").Append(deal.Notes);
@@ -784,11 +733,16 @@ namespace AnimusForge
 		{
 			try
 			{
+				if (!CanUseVoteDealPostprocess(npc))
+				{
+					return "";
+				}
+
 				StringBuilder sb = new StringBuilder();
 				List<VoteDealAgendaEntry> agendas = BuildVoteDealAgendaEntries(npc);
 				if (agendas.Count == 0)
 				{
-					sb.AppendLine("【投票交易后处理清单】当前没有可拉票的活跃议程；如后处理判断 NPC 已在对话中明确承诺未来投票立场，可使用旧兼容格式 [ACTION:VOTE_DEAL:SUPPORT或OPPOSE:权重:备注]。");
+					sb.AppendLine("【投票交易后处理清单】当前没有可拉票的活跃议程。玩家可能与NPC讨论未来可能提出的提案，但因无法确定具体议程和选项，禁止输出 VOTE_DEAL。");
 					return sb.ToString().TrimEnd();
 				}
 
@@ -804,6 +758,7 @@ namespace AnimusForge
 						sb.AppendLine($"- {option.Code}: {option.Title}{sponsorText}{descriptionText}");
 					}
 				}
+				sb.AppendLine("【投票交易后处理硬约束】若玩家或NPC没有把议程与选项说清楚、多个议程或多个选项都可能匹配、NPC只是继续谈条件或拒绝，禁止输出 VOTE_DEAL。若NPC已对同一议程有承诺，禁止改投其他选项。");
 				return sb.ToString().TrimEnd();
 			}
 			catch (Exception ex)
@@ -972,7 +927,7 @@ namespace AnimusForge
 				if (behavior._activeDeals == null || behavior._activeDeals.Count == 0) return true;
 
 				VoteDealRecord deal = behavior._activeDeals
-					.Where(d => d.NpcClanStringId == clan.StringId && !d.IsConsumed && IsTargetedVoteDeal(d))
+					.Where(d => d.NpcClanStringId == clan.StringId && !d.IsConsumed && !string.IsNullOrWhiteSpace(d.TargetDecisionKey))
 					.FirstOrDefault(d => DoesVoteDealMatchDecision(d, __instance));
 				if (deal != null)
 				{
@@ -981,43 +936,8 @@ namespace AnimusForge
 						: 0f;
 					return false;
 				}
+				return true;
 
-				deal = behavior._activeDeals
-					.FirstOrDefault(d => d.NpcClanStringId == clan.StringId && !d.IsConsumed && !IsTargetedVoteDeal(d));
-				if (deal == null) return true;
-
-				Clan sponsorClan = possibleOutcome?.SponsorClan;
-				if (sponsorClan == null) return true;
-
-				Clan playerClan = Clan.PlayerClan;
-				Clan proposerClan = __instance?.ProposerClan;
-				if (proposerClan == null) return true;
-
-				bool isProposerSide = (sponsorClan == proposerClan);
-
-				float forcedScore;
-				if (deal.Direction == "SUPPORT")
-				{
-					forcedScore = isProposerSide ? GetForcedVoteDealSupportScore(deal.SupportWeightValue) : 0f;
-				}
-				else // OPPOSE
-				{
-					if (sponsorClan == playerClan)
-					{
-						forcedScore = 0f;
-					}
-					else if (isProposerSide)
-					{
-						forcedScore = 0f;
-					}
-					else
-					{
-						forcedScore = GetForcedVoteDealSupportScore(deal.SupportWeightValue);
-					}
-				}
-
-				__result = forcedScore;
-				return false;
 			}
 			catch (Exception ex)
 			{

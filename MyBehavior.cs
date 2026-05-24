@@ -1099,6 +1099,8 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private const int KingdomStabilityDefaultValue = 50;
 
+	private const int PlayerCreatedKingdomInitialStabilityValue = 70;
+
 	private const int RebelKingdomInitialStabilityValue = 50;
 
 	private Dictionary<string, List<DialogueDay>> _dialogueHistory = new Dictionary<string, List<DialogueDay>>();
@@ -1894,6 +1896,10 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				Settlement settlement2 = clan.Settlements?.FirstOrDefault((Settlement x) => x != null && (x.IsTown || x.IsCastle));
 				RecordEventSourceMaterial("kingdom_created", "新王国建立 - " + GetKingdomDisplayName(newKingdom, "新王国"), text2, text + ":material", GetKingdomId(newKingdom), GetSettlementId(settlement2), includeInWorld: true, includeInKingdom: true);
+				if (clan == Clan.PlayerClan)
+				{
+					SetKingdomStabilityValue(newKingdom, PlayerCreatedKingdomInitialStabilityValue);
+				}
 			}
 		}
 		catch (Exception ex)
@@ -3540,17 +3546,14 @@ public class MyBehavior : CampaignBehaviorBase
 			switch (num)
 			{
 			case 0:
-			case 1:
-			case 2:
-			case 3:
 				return 9;
-			case 4:
+			case 1:
 				return 6;
-			case 5:
+			case 2:
 				return 3;
-			case 6:
+			case 3:
 				return 2;
-			case 7:
+			case 4:
 				return 1;
 			default:
 				return 0;
@@ -3559,15 +3562,12 @@ public class MyBehavior : CampaignBehaviorBase
 			switch (num)
 			{
 			case 0:
-			case 1:
-			case 2:
-			case 3:
 				return 6;
-			case 4:
+			case 1:
 				return 4;
-			case 5:
+			case 2:
 				return 2;
-			case 6:
+			case 3:
 				return 1;
 			default:
 				return 0;
@@ -3576,13 +3576,10 @@ public class MyBehavior : CampaignBehaviorBase
 			switch (num)
 			{
 			case 0:
-			case 1:
-			case 2:
-			case 3:
 				return 3;
-			case 4:
+			case 1:
 				return 2;
-			case 5:
+			case 2:
 				return 1;
 			default:
 				return 0;
@@ -3591,13 +3588,10 @@ public class MyBehavior : CampaignBehaviorBase
 			switch (num)
 			{
 			case 0:
-			case 1:
-			case 2:
-			case 3:
 				return -3;
-			case 4:
+			case 1:
 				return -2;
-			case 5:
+			case 2:
 				return -1;
 			default:
 				return 0;
@@ -3606,15 +3600,12 @@ public class MyBehavior : CampaignBehaviorBase
 			switch (num)
 			{
 			case 0:
-			case 1:
-			case 2:
-			case 3:
 				return -6;
-			case 4:
+			case 1:
 				return -4;
-			case 5:
+			case 2:
 				return -2;
-			case 6:
+			case 3:
 				return -1;
 			default:
 				return 0;
@@ -3623,17 +3614,14 @@ public class MyBehavior : CampaignBehaviorBase
 			switch (num)
 			{
 			case 0:
-			case 1:
-			case 2:
-			case 3:
 				return -9;
-			case 4:
+			case 1:
 				return -6;
-			case 5:
+			case 2:
 				return -3;
-			case 6:
+			case 3:
 				return -2;
-			case 7:
+			case 4:
 				return -1;
 			default:
 				return 0;
@@ -3649,7 +3637,8 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			return 0;
 		}
-		return kingdom.Clans.Count((Clan x) => x != null && !x.IsEliminated && !x.IsUnderMercenaryService && !x.IsClanTypeMercenary);
+		Clan rulingClan = kingdom.RulingClan;
+		return kingdom.Clans.Count((Clan x) => x != null && x != rulingClan && !x.IsEliminated && !x.IsUnderMercenaryService && !x.IsClanTypeMercenary);
 	}
 
 	private static void SyncTownRebelliousStateFromCurrentLoyalty(Town town)
@@ -3680,7 +3669,7 @@ public class MyBehavior : CampaignBehaviorBase
 			return;
 		}
 		int num = CountActiveKingdomClansForLowClanCountRule(kingdom);
-		if (num > 7)
+		if (num > 4)
 		{
 			return;
 		}
@@ -3709,7 +3698,7 @@ public class MyBehavior : CampaignBehaviorBase
 				return 0;
 			}
 			int activeClanCount = CountActiveKingdomClansForLowClanCountRule(kingdom);
-			if (activeClanCount > 7)
+			if (activeClanCount > 4)
 			{
 				return 0;
 			}
@@ -4921,6 +4910,7 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			message = message + " 联合响应家族：" + string.Join("、", list) + "。";
 		}
+		TryDiscontinueLandlessKingdom(kingdom, "rebellion_old_kingdom:" + GetClanId(clan), requireKnownModRebelKingdom: false, allowPlayerKingdom: true);
 		if (rebelKingdomNamingResult?.UsedFallback == true)
 		{
 			Logger.Log("KingdomRebellion", "[WARN] Rebel kingdom naming used fallback. clan=" + GetClanId(clan) + " reason=" + (rebelKingdomNamingResult.FailureReason ?? ""));
@@ -4961,7 +4951,7 @@ public class MyBehavior : CampaignBehaviorBase
 		return _kingdomStabilityValues != null && _kingdomStabilityValues.ContainsKey(kingdomId);
 	}
 
-	private bool TryDiscontinueLandlessModRebelKingdom(Kingdom kingdom, string reason)
+	private bool TryDiscontinueLandlessKingdom(Kingdom kingdom, string reason, bool requireKnownModRebelKingdom, bool allowPlayerKingdom)
 	{
 		try
 		{
@@ -4969,7 +4959,7 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				return false;
 			}
-			if (Clan.PlayerClan?.Kingdom == kingdom)
+			if (!allowPlayerKingdom && Clan.PlayerClan?.Kingdom == kingdom)
 			{
 				return false;
 			}
@@ -4977,8 +4967,15 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				return false;
 			}
-			if (!IsKnownOrLegacyModCreatedRebelKingdom(kingdom))
+			if (requireKnownModRebelKingdom && !IsKnownOrLegacyModCreatedRebelKingdom(kingdom))
 			{
+				return false;
+			}
+			bool canBeDiscontinued = true;
+			CampaignEventDispatcher.Instance.CanKingdomBeDiscontinued(kingdom, ref canBeDiscontinued);
+			if (!canBeDiscontinued)
+			{
+				Logger.Log("KingdomRebellion", "[landless_kingdom_discontinue_vetoed] reason=" + (reason ?? "") + " kingdom=" + GetKingdomId(kingdom));
 				return false;
 			}
 			string kingdomId = GetKingdomId(kingdom);
@@ -5001,15 +4998,23 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				DestroyKingdomAction.Apply(kingdom);
 			}
-			CleanupModCreatedRebelKingdomState(kingdomId);
-			Logger.Log("KingdomRebellion", "[landless_mod_rebel_kingdom_discontinued] reason=" + (reason ?? "") + " kingdom=" + kingdomId + " clans=" + clanCount + " settlements=" + settlementCount);
+			if (requireKnownModRebelKingdom)
+			{
+				CleanupModCreatedRebelKingdomState(kingdomId);
+			}
+			Logger.Log("KingdomRebellion", "[landless_kingdom_discontinued] reason=" + (reason ?? "") + " kingdom=" + kingdomId + " clans=" + clanCount + " settlements=" + settlementCount + " requireKnownModRebelKingdom=" + requireKnownModRebelKingdom);
 			return true;
 		}
 		catch (Exception ex)
 		{
-			Logger.Log("KingdomRebellion", "[ERROR] landless_mod_rebel_kingdom_discontinue failed kingdom=" + GetKingdomId(kingdom) + " reason=" + (reason ?? "") + " error=" + ex.Message);
+			Logger.Log("KingdomRebellion", "[ERROR] landless_kingdom_discontinue failed kingdom=" + GetKingdomId(kingdom) + " reason=" + (reason ?? "") + " error=" + ex.Message);
 			return false;
 		}
+	}
+
+	private bool TryDiscontinueLandlessModRebelKingdom(Kingdom kingdom, string reason)
+	{
+		return TryDiscontinueLandlessKingdom(kingdom, reason, requireKnownModRebelKingdom: true, allowPlayerKingdom: false);
 	}
 
 	private void TryDiscontinueLandlessModRebelKingdoms(string reason)
@@ -17568,6 +17573,8 @@ public class MyBehavior : CampaignBehaviorBase
 		float kingdomRebellionWeeklyChance = GetKingdomRebellionWeeklyChance(kingdomStabilityValue);
 		int kingdomStabilityRelationTargetOffset = GetKingdomStabilityRelationTargetOffset(kingdomStabilityValue);
 		int kingdomStabilityWeeklyBalancingDelta = GetKingdomStabilityWeeklyBalancingDelta(kingdomStabilityValue);
+		int lowClanCountRuleClanCount = CountActiveKingdomClansForLowClanCountRule(kingdom);
+		int lowClanCountRoyalDomainLoyaltyAdjustment = GetLowClanCountRoyalDomainLoyaltyAdjustment(kingdomStabilityValue, lowClanCountRuleClanCount);
 		List<KingdomRebellionCandidateInfo> list = EvaluateKingdomRebellionCandidates(kingdom, forceTrigger: false);
 		List<KingdomRebellionCandidateInfo> list2 = list.Where((KingdomRebellionCandidateInfo x) => x != null && x.Eligible).Take(5).ToList();
 		StringBuilder stringBuilder = new StringBuilder();
@@ -17575,6 +17582,7 @@ public class MyBehavior : CampaignBehaviorBase
 		stringBuilder.AppendLine("当前稳定度：" + kingdomStabilityValue + "（" + GetKingdomStabilityTierText(kingdomStabilityValue) + "）");
 		stringBuilder.AppendLine("动态平衡周修正：" + FormatKingdomStabilityRelationOffsetText(kingdomStabilityWeeklyBalancingDelta));
 		stringBuilder.AppendLine("当前非王族关系修正：" + FormatKingdomStabilityRelationOffsetText(kingdomStabilityRelationTargetOffset) + "（作用于国王与本国非王族家族成年成员）");
+		stringBuilder.AppendLine("非王族有效家族数：" + lowClanCountRuleClanCount + "；王室直辖地忠诚日修正：" + FormatKingdomStabilityRelationOffsetText(lowClanCountRoyalDomainLoyaltyAdjustment));
 		stringBuilder.AppendLine("本周叛乱概率：" + FormatKingdomRebellionChance(kingdomRebellionWeeklyChance));
 		stringBuilder.AppendLine("当前国王：" + GetHeroDisplayName(kingdom.Leader));
 		stringBuilder.AppendLine("执政家族：" + GetClanDisplayName(kingdom.RulingClan));

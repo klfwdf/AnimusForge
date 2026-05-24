@@ -19,8 +19,6 @@ public static class Patch_Conversation_Start_Intercept
 			MethodInfo prefix = AccessTools.Method(typeof(Patch_Conversation_Start_Intercept), "Prefix");
 			HashSet<MethodBase> hashSet = new HashSet<MethodBase>();
 			TryAddDeclaredMethod(hashSet, "StartConversation");
-			TryAddDeclaredMethod(hashSet, "SetupAndStartMissionConversation", 3);
-			TryAddDeclaredMethod(hashSet, "BeginConversation", 0);
 			int num = 0;
 			foreach (MethodBase item in hashSet)
 			{
@@ -52,10 +50,9 @@ public static class Patch_Conversation_Start_Intercept
 			{
 				return true;
 			}
-			Logger.LogTrace("Patch_Conversation_Start_Intercept", $"拦截到 {__originalMethod?.Name}，目标领主: {hero.Name}");
+			Logger.LogTrace("Patch_Conversation_Start_Intercept", $"检测到 {__originalMethod?.Name} 原版对话启动，记录目标领主并放行: {hero.Name}");
 			LordEncounterBehavior.SetTarget(hero);
-			LordEncounterBehavior.OpenEncounterMenu(hero);
-			return false;
+			return true;
 		}
 		catch (Exception ex)
 		{
@@ -127,11 +124,6 @@ public static class Patch_Conversation_Start_Intercept
 					return hero;
 				}
 			}
-		}
-		hero = Campaign.Current?.ConversationManager?.OneToOneConversationHero;
-		if (IsValidLord(hero))
-		{
-			return hero;
 		}
 		hero = TryResolveHeroFromObject(instance);
 		if (IsValidLord(hero))
