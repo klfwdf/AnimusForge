@@ -6,10 +6,10 @@
     <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup>
-    <LangVersion>12.0</LangVersion>
+    <LangVersion>10.0</LangVersion>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <NoWarn>$(NoWarn);MSB3277</NoWarn>
-    <BannerlordApi Condition="'$(BannerlordApi)' == ''">1.4</BannerlordApi>
+    <BannerlordApi Condition="'$(BannerlordApi)' == ''">1.3</BannerlordApi>
     <AssemblySearchPaths>{HintPathFromItem};{CandidateAssemblyFiles};{TargetFrameworkDirectory};{RawFileName}</AssemblySearchPaths>
   </PropertyGroup>
   <PropertyGroup Condition="$([System.String]::Copy('$(BannerlordApi)').StartsWith('1.4'))">
