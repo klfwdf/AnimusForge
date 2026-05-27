@@ -3181,6 +3181,11 @@ public class ShoutBehavior : CampaignBehaviorBase
 				{
 					stringBuilder.Append("备注：你暂时不可以转移你的俘虏和士兵。");
 				}
+				string armyRuntimeFact = MyBehavior.BuildHeroArmyRuntimeFactForExternal(hero);
+				if (!string.IsNullOrWhiteSpace(armyRuntimeFact))
+				{
+					stringBuilder.AppendLine().Append(armyRuntimeFact);
+				}
 			}
 			catch
 			{
@@ -3254,6 +3259,12 @@ public class ShoutBehavior : CampaignBehaviorBase
 			stringBuilder.AppendLine();
 			stringBuilder.Append(playerIntroLine);
 		}
+		string playerCommandRelationshipLine = BuildPlayerCommandRelationshipLineForPrompt(npc, hero);
+		if (!string.IsNullOrWhiteSpace(playerCommandRelationshipLine))
+		{
+			stringBuilder.AppendLine();
+			stringBuilder.Append(playerCommandRelationshipLine);
+		}
 		string nearbyPresentNpcLine = BuildNearbyPresentNpcLineForPrompt(npc, presentNpcs);
 		if (!string.IsNullOrWhiteSpace(nearbyPresentNpcLine))
 		{
@@ -3281,6 +3292,176 @@ public class ShoutBehavior : CampaignBehaviorBase
 		{
 			return false;
 		}
+	}
+
+	private static string BuildPlayerCommandRelationshipLineForPrompt(NpcDataPacket npc, Hero hero)
+	{
+		try
+		{
+			if (!TryResolvePlayerCommandRelationshipForPrompt(npc, hero, out var relationship))
+			{
+				return "";
+			}
+			string playerName = (GetPlayerDisplayNameForShout() ?? "").Trim();
+			if (string.IsNullOrWhiteSpace(playerName) || string.Equals(playerName, "玩家", StringComparison.Ordinal))
+			{
+				playerName = (Hero.MainHero?.Name?.ToString() ?? "").Trim();
+			}
+			if (string.IsNullOrWhiteSpace(playerName))
+			{
+				playerName = "玩家";
+			}
+			if (string.Equals(relationship, "exercise_opponent", StringComparison.OrdinalIgnoreCase))
+			{
+				return "【上下级关系】你认得" + playerName + "：你原本来自他的队伍。当前只是军事演习中被临时编入对抗队，你仍知道他是平日里的指挥官和这次演习的组织者；回应时不要把他当陌生人、外人或真正敌军。";
+			}
+			if (string.Equals(relationship, "player_side", StringComparison.OrdinalIgnoreCase))
+			{
+				return "【上下级关系】你认得" + playerName + "：当前战斗中你和他同属己方阵营，你知道他是己方指挥者，不应把他当陌生人、外人或敌人。";
+			}
+			return "【上下级关系】你认得" + playerName + "：他是你当前部队的指挥官和上级。你应以士兵面对长官的口吻回应，不要把他当陌生平民或外人。";
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	private static bool TryResolvePlayerCommandRelationshipForPrompt(NpcDataPacket npc, Hero hero, out string relationship)
+	{
+		relationship = "";
+		try
+		{
+			if (hero != null && IsHeroInPlayerMainPartyForPrompt(hero))
+			{
+				relationship = "direct_command";
+				return true;
+			}
+			Agent agent = null;
+			try
+			{
+				agent = Mission.Current?.Agents?.FirstOrDefault((Agent a) => a != null && npc != null && a.Index == npc.AgentIndex);
+			}
+			catch
+			{
+				agent = null;
+			}
+			if (agent == null || agent.IsMainAgent)
+			{
+				return false;
+			}
+			CharacterObject character = agent.Character as CharacterObject;
+			bool isSoldierLike = character?.IsSoldier == true || string.Equals((npc?.UnnamedRank ?? "").Trim(), "soldier", StringComparison.OrdinalIgnoreCase) || string.Equals((npc?.RoleDesc ?? "").Trim(), "士兵", StringComparison.Ordinal);
+			if (!isSoldierLike && hero?.IsPlayerCompanion != true)
+			{
+				return false;
+			}
+			if (IsInspectionPrisonerAgentForPrompt(agent, character))
+			{
+				return false;
+			}
+			try
+			{
+				if (agent.Origin?.IsUnderPlayersCommand == true)
+				{
+					relationship = "direct_command";
+					return true;
+				}
+			}
+			catch
+			{
+			}
+			PartyBase party = null;
+			try
+			{
+				party = agent.Origin?.BattleCombatant as PartyBase;
+			}
+			catch
+			{
+				party = null;
+			}
+			if (party != null)
+			{
+				if (ReferenceEquals(party, PartyBase.MainParty) || ReferenceEquals(party.MobileParty, MobileParty.MainParty))
+				{
+					relationship = "direct_command";
+					return true;
+				}
+				if (TryResolveMilitaryExerciseCommandRelationshipForPrompt(party, out relationship))
+				{
+					return true;
+				}
+				return false;
+			}
+			Mission mission = Mission.Current;
+			if (mission?.PlayerTeam != null && agent.Team == mission.PlayerTeam)
+			{
+				relationship = "player_side";
+				return true;
+			}
+		}
+		catch
+		{
+			relationship = "";
+		}
+		return false;
+	}
+
+	private static bool TryResolveMilitaryExerciseCommandRelationshipForPrompt(PartyBase party, out string relationship)
+	{
+		relationship = "";
+		try
+		{
+			if (party == null || !MilitaryExerciseBehavior.IsCurrentExerciseRuntime())
+			{
+				return false;
+			}
+			MilitaryExerciseBehavior.MilitaryExerciseRuntime runtime = MilitaryExerciseBehavior.GetCurrentRuntime();
+			if (runtime == null)
+			{
+				return false;
+			}
+			if (ReferenceEquals(party, runtime.OpponentDummyParty?.Party) || ReferenceEquals(party.MobileParty, runtime.OpponentDummyParty))
+			{
+				relationship = "exercise_opponent";
+				return true;
+			}
+			if (ReferenceEquals(party, runtime.HoldingDummyParty?.Party) || ReferenceEquals(party.MobileParty, runtime.HoldingDummyParty))
+			{
+				relationship = "direct_command";
+				return true;
+			}
+		}
+		catch
+		{
+			relationship = "";
+		}
+		return false;
+	}
+
+	private static bool IsInspectionPrisonerAgentForPrompt(Agent agent, CharacterObject character)
+	{
+		try
+		{
+			if (agent?.Origin is PrisonerAgentOrigin)
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (character != null && PartyBase.MainParty?.PrisonRoster?.Contains(character) == true)
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		return false;
 	}
 
 	private static bool ShouldSuppressHeroJoinPartyPostprocessForScene(Hero hero)

@@ -1614,7 +1614,7 @@ public class SceneTauntBehavior : CampaignBehaviorBase
 
 	internal static bool IsSceneLordTauntTarget(Hero targetHero)
 	{
-		return targetHero != null && targetHero.IsLord && !IsMeetingTauntContext(targetHero);
+		return targetHero != null && targetHero.IsLord && !IsPlayerProtectedSceneAttackTarget(targetHero) && !IsMeetingTauntContext(targetHero);
 	}
 
 	internal static bool IsSceneNotableTauntTarget(Hero targetHero)
@@ -1661,6 +1661,27 @@ public class SceneTauntBehavior : CampaignBehaviorBase
 				return true;
 			}
 			return targetCharacter.Age > 0f && targetCharacter.Age < Campaign.Current?.Models?.AgeModel?.HeroComesOfAge;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	internal static bool IsPlayerProtectedSceneAttackTarget(Hero targetHero)
+	{
+		try
+		{
+			if (targetHero == null)
+			{
+				return false;
+			}
+			if (targetHero == Hero.MainHero || targetHero.IsPlayerCompanion)
+			{
+				return true;
+			}
+			Clan playerClan = Clan.PlayerClan ?? Hero.MainHero?.Clan;
+			return playerClan != null && targetHero.Clan == playerClan;
 		}
 		catch
 		{
@@ -2989,6 +3010,10 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			return false;
 		}
 		CharacterObject characterObject = targetAgent.Character as CharacterObject;
+		if (SceneTauntBehavior.IsPlayerProtectedSceneAttackTarget(characterObject?.HeroObject))
+		{
+			return false;
+		}
 		// Every damageable town/village target needs a hostile-team conversion first. This passive
 		// branch handles ordinary NPCs; gangsters/bandits are excluded so the existing criminal
 		// conflict flow can do the required team conversion and preserve its normal consequences.
@@ -3537,6 +3562,10 @@ public class SceneTauntMissionBehavior : MissionBehavior
 
 	public override void OnAgentHit(Agent affectedAgent, Agent affectorAgent, in MissionWeapon attackerWeapon, in Blow blow, in AttackCollisionData attackCollisionData)
 	{
+		if (affectorAgent == Agent.Main && IsPlayerProtectedSceneAttackAgent(affectedAgent))
+		{
+			return;
+		}
 		if (affectedAgent != null && affectedAgent.IsHuman && affectedAgent != Agent.Main)
 		{
 			ShoutBehavior.InterruptAgentSpeechForCombatExternal(affectedAgent.Index, affectorAgent == Agent.Main ? "scene_taunt_agent_hit" : "scene_agent_hit_any_source");
@@ -3574,6 +3603,10 @@ public class SceneTauntMissionBehavior : MissionBehavior
 	public override void OnScoreHit(Agent affectedAgent, Agent affectorAgent, WeaponComponentData attackerWeapon, bool isBlocked, bool isSiegeEngineHit, in Blow blow, in AttackCollisionData collisionData, float damagedHp, float hitDistance, float shotDifficulty)
 	{
 		base.OnScoreHit(affectedAgent, affectorAgent, attackerWeapon, isBlocked, isSiegeEngineHit, in blow, in collisionData, damagedHp, hitDistance, shotDifficulty);
+		if (affectorAgent == Agent.Main && IsPlayerProtectedSceneAttackAgent(affectedAgent))
+		{
+			return;
+		}
 		RememberSceneNotableHitLethality(affectedAgent, affectorAgent, attackerWeapon, in blow, damagedHp);
 		if (affectedAgent != null && affectedAgent.IsHuman && affectedAgent != Agent.Main && damagedHp > 0f)
 		{
@@ -5006,6 +5039,10 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			}
 			CharacterObject characterObject = targetAgent.Character as CharacterObject;
 			Hero hero = characterObject?.HeroObject;
+			if (SceneTauntBehavior.IsPlayerProtectedSceneAttackTarget(hero))
+			{
+				return false;
+			}
 			if (IsAuthorityPhysicalAttackTarget(hero, characterObject))
 			{
 				_activeTargetKey = SceneTauntBehavior.BuildSceneTauntTargetKey(hero, characterObject, targetAgent.Index);
@@ -5514,6 +5551,10 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		{
 			return false;
 		}
+		if ((attackerAgent == Agent.Main || attackerAgent.IsMainAgent) && IsPlayerProtectedSceneAttackAgent(victimAgent))
+		{
+			return false;
+		}
 		bool flag = _playerAgentIndices.Contains(attackerAgent.Index);
 		bool flag2 = _opponentAgentIndices.Contains(attackerAgent.Index);
 		bool flag3 = _playerAgentIndices.Contains(victimAgent.Index);
@@ -5531,6 +5572,18 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			return true;
 		}
 		return flag2 && flag3;
+	}
+
+	private static bool IsPlayerProtectedSceneAttackAgent(Agent agent)
+	{
+		try
+		{
+			return SceneTauntBehavior.IsPlayerProtectedSceneAttackTarget((agent?.Character as CharacterObject)?.HeroObject);
+		}
+		catch
+		{
+			return false;
+		}
 	}
 
 	private bool IsArmedConflictCollateralVictim(Agent victimAgent)
@@ -5840,6 +5893,10 @@ public class SceneTauntMissionBehavior : MissionBehavior
 
 	private static bool IsEligiblePhysicalAttackTarget(Hero targetHero, CharacterObject targetCharacter)
 	{
+		if (SceneTauntBehavior.IsPlayerProtectedSceneAttackTarget(targetHero ?? targetCharacter?.HeroObject))
+		{
+			return false;
+		}
 		return IsAuthorityPhysicalAttackTarget(targetHero, targetCharacter) || IsSettlementCriminalConflictTarget(targetHero, targetCharacter) || SceneTauntBehavior.IsSceneNotableTauntTarget(targetHero) || SceneTauntBehavior.IsEligibleSceneTauntCharacter(targetCharacter);
 	}
 

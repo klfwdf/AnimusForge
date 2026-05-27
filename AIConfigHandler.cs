@@ -1675,7 +1675,7 @@ public static class AIConfigHandler
 			return jObject;
 		}
 		DuelSettings settings = DuelSettings.GetSettings();
-		bool thinkingEnabled = settings?.AuxiliaryApiThinkingEnabled ?? true;
+		bool thinkingEnabled = settings?.AuxiliaryApiThinkingEnabled ?? false;
 		string effort = settings?.GetAuxiliaryApiReasoningEffort() ?? DuelSettings.ReasoningEffortHigh;
 		DuelSettings.ApplyThinkingControls(jObject, apiUrl, modelName, thinkingEnabled, effort, out controlMode);
 		return jObject;
@@ -1808,7 +1808,7 @@ public static class AIConfigHandler
 	private static void ResolveActionPostprocessApiSettings(string apiUrl, string apiKey, string modelName, float fallbackTemperature, out bool thinkingEnabled, out string effort, out float temperature)
 	{
 		thinkingEnabled = true;
-		effort = DuelSettings.ReasoningEffortHigh;
+		effort = DuelSettings.ReasoningEffortMax;
 		temperature = DuelSettings.ClampApiTemperature(fallbackTemperature);
 		try
 		{

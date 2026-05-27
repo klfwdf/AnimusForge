@@ -108,7 +108,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 
 	private Dropdown<string> _auxiliaryApiReasoningEffortDropdown = BuildReasoningEffortDropdown(ReasoningEffortHigh);
 
-	private Dropdown<string> _actionPostprocessApiReasoningEffortDropdown = BuildReasoningEffortDropdown(ReasoningEffortHigh);
+	private Dropdown<string> _actionPostprocessApiReasoningEffortDropdown = BuildReasoningEffortDropdown(ReasoningEffortMax);
 
 	private Dropdown<string> _eventAndRebellionApiReasoningEffortDropdown = BuildReasoningEffortDropdown(ReasoningEffortHigh);
 
@@ -479,7 +479,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 
 	[SettingPropertyBool("开启思维链", Order = 6, RequireRestart = false, HintText = "开启后，对 OpenAI 兼容思考接口写入 thinking.type=enabled，并写入 reasoning_effort；Anthropic/Claude 接口写入 thinking.type=enabled 与 output_config.effort。关闭后写入 thinking.type=disabled。")]
 	[SettingPropertyGroup("1. AI 核心配置/2. 前处理API（规则检索与简易对话链路）", GroupOrder = -290)]
-	public bool AuxiliaryApiThinkingEnabled { get; set; } = true;
+	public bool AuxiliaryApiThinkingEnabled { get; set; } = false;
 
 	public string AuxiliaryApiReasoningEffort { get; set; } = ReasoningEffortHigh;
 
@@ -552,7 +552,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyGroup("1. AI 核心配置/3. 后处理API（动作标签与情绪标签判定）", GroupOrder = -280)]
 	public bool ActionPostprocessApiThinkingEnabled { get; set; } = true;
 
-	public string ActionPostprocessApiReasoningEffort { get; set; } = ReasoningEffortHigh;
+	public string ActionPostprocessApiReasoningEffort { get; set; } = ReasoningEffortMax;
 
 	[SettingPropertyDropdown("思维链强度", Order = 7, RequireRestart = false, HintText = "支持 low/medium/high/xhigh/max；兼容映射：low、medium 会按 high 发送，xhigh 会按 max 发送。")]
 	[SettingPropertyGroup("1. AI 核心配置/3. 后处理API（动作标签与情绪标签判定）", GroupOrder = -280)]

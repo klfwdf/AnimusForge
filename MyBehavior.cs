@@ -12973,6 +12973,182 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private static string BuildHeroArmyRuntimeFactForPrompt(Hero hero)
+	{
+		if (hero == null)
+		{
+			return "";
+		}
+		try
+		{
+			MobileParty party = hero.PartyBelongedTo;
+			if (hero == Hero.MainHero && party == null)
+			{
+				party = MobileParty.MainParty;
+			}
+			Army army = party?.Army;
+			if (army == null)
+			{
+				return "";
+			}
+			MobileParty leaderParty = army.LeaderParty;
+			Hero leaderHero = leaderParty?.LeaderHero ?? army.ArmyOwner;
+			bool isArmyLeader = leaderHero == hero || leaderParty == party;
+			string armyName = GetArmyDisplayName(army);
+			string leaderName = GetHeroDisplayName(leaderHero);
+			int partyCount = 0;
+			int totalMen = 0;
+			try
+			{
+				partyCount = Math.Max(0, army.Parties?.Count ?? 0);
+			}
+			catch
+			{
+				partyCount = 0;
+			}
+			try
+			{
+				totalMen = Math.Max(0, army.TotalManCount);
+			}
+			catch
+			{
+				totalMen = 0;
+			}
+			List<string> heroNames = BuildArmyHeroListForPrompt(army, hero, leaderHero, 18, out int heroCount);
+			StringBuilder stringBuilder = new StringBuilder();
+			stringBuilder.Append("【当前军团事实】");
+			if (isArmyLeader)
+			{
+				stringBuilder.Append("你正在率领").Append(armyName);
+			}
+			else
+			{
+				stringBuilder.Append("你现在属于").Append(leaderName).Append("统率的").Append(armyName);
+			}
+			if (partyCount > 0 || totalMen > 0)
+			{
+				stringBuilder.Append("，当前约有");
+				if (partyCount > 0)
+				{
+					stringBuilder.Append(partyCount).Append("支部队");
+					if (totalMen > 0)
+					{
+						stringBuilder.Append("、");
+					}
+				}
+				if (totalMen > 0)
+				{
+					stringBuilder.Append(totalMen).Append("名士兵");
+				}
+			}
+			if (heroNames.Count > 0)
+			{
+				stringBuilder.Append("。你知道这支军团中的Hero包括：").Append(string.Join("、", heroNames));
+				if (heroCount > heroNames.Count)
+				{
+					stringBuilder.Append("等").Append(heroCount).Append("人");
+				}
+			}
+			stringBuilder.Append("。这是你此刻应当知道的实时事实，不要说自己不清楚是否在军团中。");
+			return stringBuilder.ToString().Replace("\r", " ").Replace("\n", " ").Trim();
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	private static List<string> BuildArmyHeroListForPrompt(Army army, Hero perspectiveHero, Hero leaderHero, int maxCount, out int totalHeroCount)
+	{
+		totalHeroCount = 0;
+		List<Tuple<Hero, string>> heroes = new List<Tuple<Hero, string>>();
+		HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		void addHero(Hero value, string role)
+		{
+			if (value == null)
+			{
+				return;
+			}
+			string key = GetHeroId(value);
+			if (string.IsNullOrWhiteSpace(key))
+			{
+				key = (value.Name?.ToString() ?? "").Trim();
+			}
+			if (string.IsNullOrWhiteSpace(key) || !seen.Add(key))
+			{
+				return;
+			}
+			heroes.Add(Tuple.Create(value, role ?? ""));
+		}
+		try
+		{
+			addHero(leaderHero, "军团统帅");
+			IEnumerable<MobileParty> parties = (army?.Parties != null) ? army.Parties : Enumerable.Empty<MobileParty>();
+			foreach (MobileParty mobileParty in parties)
+			{
+				if (mobileParty == null)
+				{
+					continue;
+				}
+				addHero(mobileParty.LeaderHero, mobileParty == army.LeaderParty ? "军团统帅" : "部队领袖");
+			}
+			foreach (MobileParty mobileParty2 in parties)
+			{
+				TroopRoster roster = mobileParty2?.MemberRoster;
+				if (roster == null)
+				{
+					continue;
+				}
+				for (int i = 0; i < roster.Count; i++)
+				{
+					TroopRosterElement element;
+					try
+					{
+						element = roster.GetElementCopyAtIndex(i);
+					}
+					catch
+					{
+						continue;
+					}
+					CharacterObject character = element.Character;
+					if (character == null || element.Number <= 0 || !character.IsHero)
+					{
+						continue;
+					}
+					addHero(character.HeroObject, "随队Hero");
+				}
+			}
+		}
+		catch
+		{
+		}
+		totalHeroCount = heroes.Count;
+		return heroes
+			.Take(Math.Max(1, maxCount))
+			.Select(delegate(Tuple<Hero, string> item)
+			{
+				Hero value = item.Item1;
+				List<string> tags = new List<string>();
+				if (value == perspectiveHero)
+				{
+					tags.Add("你");
+				}
+				string role = (item.Item2 ?? "").Trim();
+				if (!string.IsNullOrWhiteSpace(role))
+				{
+					tags.Add(role);
+				}
+				string name = GetHeroDisplayName(value);
+				return tags.Count > 0 ? (name + "（" + string.Join("，", tags.Distinct()) + "）") : name;
+			})
+			.ToList();
+	}
+
+	public static string BuildHeroArmyRuntimeFactForExternal(Hero hero)
+	{
+		return BuildHeroArmyRuntimeFactForPrompt(hero);
+	}
+
 	public static string GetClanTierReputationLabelForExternal(int tier)
 	{
 		return GetClanTierReputationLabel(tier);
@@ -13410,6 +13586,11 @@ public class MyBehavior : CampaignBehaviorBase
 		if (!string.IsNullOrWhiteSpace(value))
 		{
 			stringBuilder.AppendLine(value);
+		}
+		string armyRuntimeFact = BuildHeroArmyRuntimeFactForPrompt(targetHero);
+		if (!string.IsNullOrWhiteSpace(armyRuntimeFact))
+		{
+			stringBuilder.AppendLine(armyRuntimeFact);
 		}
 		if (flag5)
 		{
