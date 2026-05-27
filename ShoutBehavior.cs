@@ -10012,9 +10012,42 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		return ruleIds.Any((string x) => string.Equals((x ?? "").Trim(), text, StringComparison.OrdinalIgnoreCase));
 	}
 
+	private static string ResolveCourierRuntimeTargetKingdomId(Hero targetHero, CharacterObject targetCharacter)
+	{
+		try
+		{
+			string text = (targetHero?.Clan?.Kingdom?.StringId ?? targetHero?.MapFaction?.StringId ?? "").Trim();
+			if (!string.IsNullOrWhiteSpace(text))
+			{
+				return text.ToLowerInvariant();
+			}
+			Hero heroObject = targetCharacter?.HeroObject;
+			text = (heroObject?.Clan?.Kingdom?.StringId ?? heroObject?.MapFaction?.StringId ?? "").Trim();
+			if (!string.IsNullOrWhiteSpace(text))
+			{
+				return text.ToLowerInvariant();
+			}
+		}
+		catch
+		{
+		}
+		return "";
+	}
+
 	public static string RunCourierActionPostprocessForExternal(Hero targetHero, CharacterObject targetCharacter, string npcName, string playerText, string historyText, string replyText, bool duelRuleInjected, bool rewardRuleInjected, bool loanRuleInjected, bool kingdomServiceRuleInjected, bool lordsHallRuleInjected, bool meetingReleaseRuleInjected, bool vanillaIssueRuleInjected, bool heroJoinPartyRuleInjected, bool sceneMechanismRuleInjected, bool partyTransferRuleInjected, bool settlementTransferRuleInjected, bool voteDealRuleInjected = false, List<string> preprocessRuleHits = null)
 	{
 		string text = StripActionTagsForSceneSpeech(replyText ?? "");
+		string runtimeTargetKingdomId = ResolveCourierRuntimeTargetKingdomId(targetHero, targetCharacter);
+		string runtimeTargetHeroId = (targetHero?.StringId ?? targetCharacter?.HeroObject?.StringId ?? "").Trim();
+		string runtimeTargetCharacterId = (targetCharacter?.StringId ?? "").Trim();
+		string runtimeTargetTroopId = runtimeTargetCharacterId.ToLowerInvariant();
+		string runtimeTargetUnnamedRank = (targetHero == null && targetCharacter != null) ? (targetCharacter.IsSoldier ? "soldier" : "commoner") : "";
+		AIConfigHandler.SetGuardrailRuntimeTargetKingdom(runtimeTargetKingdomId);
+		AIConfigHandler.SetGuardrailRuntimeTargetHero(runtimeTargetHeroId);
+		AIConfigHandler.SetGuardrailRuntimeTargetCharacter(runtimeTargetCharacterId);
+		AIConfigHandler.SetGuardrailRuntimeTargetTroop(runtimeTargetTroopId);
+		AIConfigHandler.SetGuardrailRuntimeTargetUnnamedRank(runtimeTargetUnnamedRank);
+		AIConfigHandler.SetGuardrailRuntimeTargetAgentIndex(-1);
 		try
 		{
 			duelRuleInjected = duelRuleInjected || HasPreprocessRuleHit(preprocessRuleHits, "duel");
@@ -10184,6 +10217,15 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			Logger.Log("CourierDelivery", "[UnifiedPostprocess] exception: " + ex);
 			return (text + "\n" + AIConfigHandler.ActionPostprocessFallbackMoodTag).Trim();
+		}
+		finally
+		{
+			AIConfigHandler.SetGuardrailRuntimeTargetKingdom("");
+			AIConfigHandler.SetGuardrailRuntimeTargetHero("");
+			AIConfigHandler.SetGuardrailRuntimeTargetCharacter("");
+			AIConfigHandler.SetGuardrailRuntimeTargetTroop("");
+			AIConfigHandler.SetGuardrailRuntimeTargetUnnamedRank("");
+			AIConfigHandler.SetGuardrailRuntimeTargetAgentIndex(-1);
 		}
 	}
 
