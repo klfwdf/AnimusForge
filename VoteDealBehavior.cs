@@ -812,6 +812,17 @@ namespace AnimusForge
 			{
 				Clan clan = npc?.Clan;
 				Kingdom kingdom = clan?.Kingdom;
+
+				string playerName = MyBehavior.BuildPlayerPublicDisplayNameForExternal();
+				if (string.IsNullOrWhiteSpace(playerName))
+				{
+					playerName = "玩家";
+				}
+				var tokens = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+				{
+					["playerName"] = playerName,
+				};
+
 				string stateKey = "";
 				if (kingdom == null)
 				{
@@ -835,12 +846,51 @@ namespace AnimusForge
 					}
 				}
 
-				if (string.IsNullOrWhiteSpace(stateKey))
+				var results = new List<string>();
+
+				if (!string.IsNullOrWhiteSpace(stateKey))
 				{
-					return "";
+					string stateTemplate = AIConfigHandler.ResolveRuleRuntimeText("vote_deal", stateKey, forConstraint: false, tokens);
+					if (!string.IsNullOrWhiteSpace(stateTemplate))
+					{
+						results.Add(stateTemplate);
+					}
+					if (stateKey == "no_kingdom" || stateKey == "mercenary" || stateKey == "no_pending")
+					{
+						return string.Join("\n", results);
+					}
 				}
 
-				return AIConfigHandler.ResolveRuleRuntimeText("vote_deal", stateKey, forConstraint: false, null);
+				if (kingdom != null && !clan.IsUnderMercenaryService)
+				{
+					int trustLevelIndex = 6;
+					try
+					{
+						int trust = RewardSystemBehavior.Instance?.GetEffectiveTrust(npc) ?? 0;
+						trustLevelIndex = RewardSystemBehavior.GetTrustLevelIndex(trust);
+					}
+					catch
+					{
+						trustLevelIndex = 6;
+					}
+
+					string trustTemplate = AIConfigHandler.ResolveRuleRuntimeText("vote_deal", "level_" + trustLevelIndex, forConstraint: false, tokens);
+					if (!string.IsNullOrWhiteSpace(trustTemplate))
+					{
+						results.Add(trustTemplate);
+					}
+
+					if (kingdom.RulingClan?.Leader == npc)
+					{
+						string kingTemplate = AIConfigHandler.ResolveRuleRuntimeText("vote_deal", "is_king", forConstraint: false, tokens);
+						if (!string.IsNullOrWhiteSpace(kingTemplate))
+						{
+							results.Add(kingTemplate);
+						}
+					}
+				}
+
+				return string.Join("\n", results);
 			}
 			catch (Exception ex)
 			{
