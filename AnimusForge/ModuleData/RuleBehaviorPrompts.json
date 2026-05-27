@@ -177,6 +177,10 @@
                                                      {
                                                          "Tag":  "[ACTION:KINGDOM_SERVICE:VASSAL:{targetKingdomId}]",
                                                          "Description":  "如果NPC在<latest_reply>里正式同意玩家以正式封臣身份加入目标王国，就输出这个"
+                                                     },
+                                                     {
+                                                         "Tag":  "[ACTION:KINGDOM_SERVICE:CLAN_JOIN_PLAYER_KINGDOM:{targetClanId}]",
+                                                         "Description":  "仅当玩家当前是自己王国的统治者，且当前说话者是{targetClanId}家族族长，并在<latest_reply>里最终明确同意带领本家族加入玩家王国成为领主时，输出这个。若NPC只是谈条件、犹豫、拒绝、要求报酬、要求封地、要求保证、要求日后再议，或当前说话者不是族长，禁止输出。"
                                                      }
                                                  ],
                             "RuntimeInstructionTemplates":  {
@@ -191,7 +195,13 @@
                                                                 "mercenary_other_kingdom":  "【势力效力规则】玩家当前为 {playerKingdom} 的雇佣兵。若要转投你方，他必须先退出原效力；你现在只能拒绝他的效力",
                                                                 "vassal_target_unknown":  "【势力效力规则】玩家当前是 {playerKingdom} 的正式封臣。本轮只处理是否退出当前效力；只有在你最终明确同意时，才算允许退出。",
                                                                 "vassal_same_kingdom":  "【势力效力规则】玩家当前已是本势力（{playerKingdom}）的正式封臣。如果他不想干了，你可以根据情况选择是否挽留，但是他执意要走，你必须正式同意",
-                                                                "vassal_other_kingdom":  "【势力效力规则】玩家当前是 {playerKingdom} 的正式封臣。若他要为你效力，他就必须解除和 {playerKingdom} 的封臣契约"
+                                                                "vassal_other_kingdom":  "【势力效力规则】玩家当前是 {playerKingdom} 的正式封臣。若他要为你效力，他就必须解除和 {playerKingdom} 的封臣契约",
+                                                                "player_ruler_target_unknown":  "【家族归附规则】你没有可识别的家族身份，不能代表任何家族向 {playerKingdom} 归附。若玩家招揽你或询问家族效忠，请说明必须与目标家族的族长谈。",
+                                                                "player_ruler_target_player_clan":  "【家族归附规则】玩家家族已经是 {playerKingdom} 的执政家族，不能被重复招揽。若玩家提到招揽玩家家族，只需说明他已经是这个王国的统治者。",
+                                                                "player_ruler_target_eliminated":  "【家族归附规则】你的家族 {targetClan} 已经灭亡或不可用，不能再作为领主家族向 {playerKingdom} 归附。",
+                                                                "player_ruler_target_same_kingdom":  "【家族归附规则】你的家族 {targetClan} 已经效力于 {playerKingdom}，不能重复宣誓加入。若玩家询问，只需说明你们已经是其麾下领主。",
+                                                                "player_ruler_target_not_leader":  "【家族归附规则】你属于 {targetClan} 家族，但你不是族长，不能代表整个家族宣誓归附。若玩家招揽你的家族，你必须引导玩家去找家族族长 {targetClanLeader}；不得替族长承诺本家族加入 {playerKingdom}。",
+                                                                "player_ruler_target_ready":  "【家族归附规则】你是 {targetClan} 家族族长，玩家是 {playerKingdom} 的统治者。你可以决定是否带领整个家族加入 {playerKingdom} 并作为领主效力。这不是你个人成为玩家同伴，也不是加入玩家队伍；这是整个家族改变王国归属。是否同意取决于利益、承诺、战争局势、安全、封地、关系、信任和你的性格。只有当你在正文里最终明确答应带领 {targetClan} 家族加入 {playerKingdom} 时，才算同意；若你仍在讨价还价、要求保证、要求报酬、要求封地、拒绝、犹豫、反问或表示以后再谈，就不算同意。正文只自然说话，不要自己写任何动作标签。"
                                                             },
                             "RuntimeConstraintTemplates":  {
                                                                "no_player_clan":  "【运行时硬约束】未找到玩家家族信息。本轮只能解释情况，不能真的批准加入或退出任何势力。",
@@ -207,7 +217,13 @@
                                                                "mercenary_other_kingdom":  "【运行时硬约束】玩家当前是 {playerKingdom} 的雇佣兵，而对话对象属于 {targetKingdom}。在玩家先退出原效力前，不可承诺新的加入流程；本轮最多只讨论是否退出当前效力。",
                                                                "vassal_target_unknown":  "【运行时硬约束】玩家当前是 {playerKingdom} 的正式封臣，但本轮目标势力未知。此时只可维持现状或处理退出当前效力，不讨论新的加入流程。",
                                                                "vassal_same_kingdom":  "【运行时硬约束】玩家当前已是本势力（{playerKingdom}）正式封臣。禁止重复加入本势力；如需变更，只能讨论退出当前效力。",
-                                                               "vassal_other_kingdom":  "【运行时硬约束】玩家当前是 {playerKingdom} 的正式封臣，而对话对象属于 {targetKingdom}。在玩家先退出原势力前，不可讨论新的加入流程；若坚持转投，必须先处理退出当前效力。"
+                                                               "vassal_other_kingdom":  "【运行时硬约束】玩家当前是 {playerKingdom} 的正式封臣，而对话对象属于 {targetKingdom}。在玩家先退出原势力前，不可讨论新的加入流程；若坚持转投，必须先处理退出当前效力。",
+                                                               "player_ruler_target_unknown":  "【家族归附边界】你不能代表任何家族归附。不要承诺家族加入 {playerKingdom}，只能引导玩家去找目标家族族长。",
+                                                               "player_ruler_target_player_clan":  "【家族归附边界】玩家家族已经是 {playerKingdom} 的执政家族。不要重复承诺玩家家族加入，只说明现状。",
+                                                               "player_ruler_target_eliminated":  "【家族归附边界】你的家族 {targetClan} 已经灭亡或不可用。不要承诺家族加入 {playerKingdom}。",
+                                                               "player_ruler_target_same_kingdom":  "【家族归附边界】你的家族 {targetClan} 已经效力于 {playerKingdom}。不要重复宣誓加入，只说明你们已经是其麾下领主。",
+                                                               "player_ruler_target_not_leader":  "【家族归附边界】你不是 {targetClan} 家族族长，不能代表全族归附。只有族长 {targetClanLeader} 可以作出这个决定；你必须引导玩家去找族长。",
+                                                               "player_ruler_target_ready":  "【家族归附边界】你可以同意、拒绝或继续谈条件。只有当你已经决定并明确答应带领 {targetClan} 家族加入 {playerKingdom} 时，才把话说成正式承诺；如果你还需要报酬、封地、保证、时间或更多说服，就明确说还没答应。"
                                                            },
                             "TriggerKeywords":  [
                                                     "我想加入你们的王国。",
@@ -219,7 +235,17 @@
                                                     "替你们打仗，雇佣兵的报酬怎么算？",
                                                     "我要脱离现在的阵营，转投你们麾下。",
                                                     "我不想再为你们卖命了，请解除我的佣兵契约。",
-                                                    "我要退出这个国家，不再为你们效力了。"
+                                                    "我要退出这个国家，不再为你们效力了。",
+                                                    "带你的家族加入我的王国吧。",
+                                                    "你愿意成为我的封臣吗？",
+                                                    "来我的王国做领主吧。",
+                                                    "我希望你的家族效忠我的王国。",
+                                                    "率领你的家族归顺我的王国。",
+                                                    "把你的家族带到我的旗下。",
+                                                    "我以国王的身份邀请你的家族加入。",
+                                                    "脱离你现在的王国，加入我的王国。",
+                                                    "让你的家族成为我王国的领主。",
+                                                    "你的家族愿不愿意向我宣誓效忠？"
                                                 ]
                         },
                         {

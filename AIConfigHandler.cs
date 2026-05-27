@@ -4203,7 +4203,7 @@ public static class AIConfigHandler
 				{
 					value = CompanionTradeBlockedInstruction;
 				}
-				if (hasAnyHero && string.Equals(text, "kingdom_service", StringComparison.OrdinalIgnoreCase))
+				if ((hasAnyHero || IsPlayerKingdomRecruitmentModeActive()) && string.Equals(text, "kingdom_service", StringComparison.OrdinalIgnoreCase))
 				{
 					string runtimeKingdomServiceInstruction = BuildRuntimeKingdomServiceInstruction();
 					if (!string.IsNullOrWhiteSpace(runtimeKingdomServiceInstruction))
@@ -4769,6 +4769,110 @@ public static class AIConfigHandler
 		return "";
 	}
 
+	private static bool IsPlayerKingdomRecruitmentModeActive()
+	{
+		try
+		{
+			Clan playerClan = Clan.PlayerClan;
+			Kingdom kingdom = playerClan?.Kingdom;
+			return playerClan != null && kingdom != null && kingdom.RulingClan == playerClan;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static bool IsPlayerKingdomRecruitmentModeActive(Clan playerClan, Kingdom playerKingdom)
+	{
+		try
+		{
+			return playerClan != null && playerKingdom != null && playerKingdom.RulingClan == playerClan;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static string GetClanDisplayNameForPrompt(Clan clan)
+	{
+		try
+		{
+			string text = clan?.Name?.ToString();
+			if (!string.IsNullOrWhiteSpace(text))
+			{
+				return text.Trim();
+			}
+		}
+		catch
+		{
+		}
+		return clan?.StringId ?? "";
+	}
+
+	private static Clan ResolveConversationTargetClan()
+	{
+		try
+		{
+			Hero hero = ResolveConversationTargetHero();
+			if (hero?.Clan != null)
+			{
+				return hero.Clan;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			Hero heroObject = ResolveConversationTargetCharacter()?.HeroObject;
+			if (heroObject?.Clan != null)
+			{
+				return heroObject.Clan;
+			}
+		}
+		catch
+		{
+		}
+		return null;
+	}
+
+	private static string ResolvePlayerKingdomRecruitmentStateKey(Clan playerClan, Kingdom playerKingdom, Clan targetClan, Hero targetHero)
+	{
+		if (!IsPlayerKingdomRecruitmentModeActive(playerClan, playerKingdom))
+		{
+			return "";
+		}
+		if (targetClan == null)
+		{
+			return "player_ruler_target_unknown";
+		}
+		if (targetClan == playerClan)
+		{
+			return "player_ruler_target_player_clan";
+		}
+		try
+		{
+			if (targetClan.IsEliminated)
+			{
+				return "player_ruler_target_eliminated";
+			}
+		}
+		catch
+		{
+		}
+		if (targetClan.Kingdom == playerKingdom)
+		{
+			return "player_ruler_target_same_kingdom";
+		}
+		if (targetHero == null || targetHero.Clan != targetClan || targetClan.Leader != targetHero)
+		{
+			return "player_ruler_target_not_leader";
+		}
+		return "player_ruler_target_ready";
+	}
+
 	private static Kingdom ResolveConversationTargetKingdom()
 	{
 		try
@@ -4990,6 +5094,15 @@ public static class AIConfigHandler
 			{
 				return "";
 			}
+			if (IsPlayerKingdomRecruitmentModeActive(playerClan, kingdom))
+			{
+				string text2 = ResolvePlayerKingdomRecruitmentStateKey(playerClan, kingdom, ResolveConversationTargetClan(), ResolveConversationTargetHero());
+				if (string.IsNullOrWhiteSpace(text2))
+				{
+					return "";
+				}
+				return ResolveKingdomServiceRuntimeText(text2, forConstraint: false, dictionary);
+			}
 			string text = ResolveKingdomServiceRuntimeStateKey(kingdom, flag, kingdom2, flag2, num, num2, num3, num4, num5, num6);
 			if (string.IsNullOrWhiteSpace(text))
 			{
@@ -5012,6 +5125,51 @@ public static class AIConfigHandler
 			if (playerClan == null)
 			{
 				Logger.Log("AIConfig", "[KingdomServicePostprocessRules] playerClan=null targetKingdomId=" + ((dictionary != null && dictionary.TryGetValue("targetKingdomId", out var value0)) ? (value0 ?? "") : "") + " playerTier=" + num + " mercTier=" + num2 + " vassalTier=" + num3 + " trustCurrent=" + num6 + " trustMerc=" + num4 + " trustVassal=" + num5);
+				return list;
+			}
+			if (IsPlayerKingdomRecruitmentModeActive(playerClan, kingdom))
+			{
+				Clan clan = ResolveConversationTargetClan();
+				Hero hero = ResolveConversationTargetHero();
+				string text4 = ResolvePlayerKingdomRecruitmentStateKey(playerClan, kingdom, clan, hero);
+				if (string.IsNullOrWhiteSpace(text4))
+				{
+					Logger.Log("AIConfig", "[KingdomServicePostprocessRules] player_ruler empty_state playerClan=" + (playerClan?.StringId ?? "") + " playerKingdom=" + (kingdom?.StringId ?? "") + " targetClan=" + (clan?.StringId ?? "") + " targetHero=" + (hero?.StringId ?? ""));
+					return list;
+				}
+				string text5 = "";
+				if (dictionary != null && dictionary.TryGetValue("targetClanId", out var value1))
+				{
+					text5 = (value1 ?? "").Trim();
+				}
+				foreach (PostprocessRuleEntry guardrailRulePostprocessRule2 in GetGuardrailRulePostprocessRules("kingdom_service"))
+				{
+					string text6 = (guardrailRulePostprocessRule2?.Tag ?? "").Trim();
+					string description2 = guardrailRulePostprocessRule2?.Description ?? "";
+					if (string.IsNullOrWhiteSpace(text6))
+					{
+						continue;
+					}
+					if (text6.IndexOf("{targetClanId}", StringComparison.OrdinalIgnoreCase) >= 0)
+					{
+						if (string.IsNullOrWhiteSpace(text5))
+						{
+							continue;
+						}
+						text6 = text6.Replace("{targetClanId}", text5);
+						description2 = description2.Replace("{targetClanId}", text5);
+					}
+					if (!ShouldIncludeKingdomServicePostprocessTag(text4, text6))
+					{
+						continue;
+					}
+					list.Add(new PostprocessRuleEntry
+					{
+						Tag = text6,
+						Description = description2
+					});
+				}
+				Logger.Log("AIConfig", "[KingdomServicePostprocessRules] player_ruler state=" + text4 + " playerClan=" + (playerClan?.StringId ?? "") + " playerKingdom=" + (kingdom?.StringId ?? "") + " targetClan=" + (clan?.StringId ?? "") + " targetHero=" + (hero?.StringId ?? "") + " targetClanIdToken=" + text5 + " rules=" + ((list.Count == 0) ? "（无）" : string.Join(",", list.Select((PostprocessRuleEntry x) => x?.Tag ?? "").Where((string x) => !string.IsNullOrWhiteSpace(x)))));
 				return list;
 			}
 			string text = ResolveRuntimeKingdomServiceStateKeyForPostprocess(kingdom, flag, kingdom2, flag2, num, num2, num3, num4, num5, num6);
@@ -5136,6 +5294,8 @@ public static class AIConfigHandler
 			return text.Equals("[ACTION:KINGDOM_SERVICE:LEAVE:current]", StringComparison.OrdinalIgnoreCase) || text.StartsWith("[ACTION:KINGDOM_SERVICE:VASSAL:", StringComparison.OrdinalIgnoreCase);
 		case "leave_only":
 			return text.Equals("[ACTION:KINGDOM_SERVICE:LEAVE:current]", StringComparison.OrdinalIgnoreCase);
+		case "player_ruler_target_ready":
+			return text.StartsWith("[ACTION:KINGDOM_SERVICE:CLAN_JOIN_PLAYER_KINGDOM:", StringComparison.OrdinalIgnoreCase);
 		default:
 			return false;
 		}
@@ -5217,6 +5377,8 @@ public static class AIConfigHandler
 		isMercenaryService = playerClan?.IsUnderMercenaryService == true;
 		targetKingdom = ResolveConversationTargetKingdom();
 		isSameKingdom = playerKingdom != null && targetKingdom != null && playerKingdom == targetKingdom;
+		Clan clan = ResolveConversationTargetClan();
+		Hero hero = ResolveConversationTargetHero();
 		playerTier = playerClan?.Tier ?? 0;
 		mercTier = 1;
 		vassalTier = 2;
@@ -5239,7 +5401,6 @@ public static class AIConfigHandler
 		{
 			vassalTier = 2;
 		}
-		Hero hero = ResolveConversationTargetHero();
 		if (hero == null)
 		{
 			hero = targetKingdom?.Leader;
@@ -5262,6 +5423,9 @@ public static class AIConfigHandler
 			["playerKingdomId"] = (playerKingdom?.StringId ?? ""),
 			["targetKingdom"] = (targetKingdom?.Name?.ToString() ?? ""),
 			["targetKingdomId"] = (targetKingdom?.StringId ?? ""),
+			["targetClan"] = GetClanDisplayNameForPrompt(clan),
+			["targetClanId"] = (clan?.StringId ?? ""),
+			["targetClanLeader"] = (clan?.Leader?.Name?.ToString() ?? ""),
 			["playerTier"] = playerTier.ToString(),
 			["mercTier"] = mercTier.ToString(),
 			["vassalTier"] = vassalTier.ToString(),
@@ -5499,6 +5663,15 @@ public static class AIConfigHandler
 				return ResolveKingdomServiceRuntimeText("no_player_clan", forConstraint: true, new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase));
 			}
 			Dictionary<string, string> dictionary = BuildKingdomServiceRuntimeTokens(out playerClan, out var kingdom, out var flag, out var kingdom2, out var flag2, out var num, out var num2, out var num3, out var num4, out var num5, out var num6);
+			if (IsPlayerKingdomRecruitmentModeActive(playerClan, kingdom))
+			{
+				string text3 = ResolvePlayerKingdomRecruitmentStateKey(playerClan, kingdom, ResolveConversationTargetClan(), ResolveConversationTargetHero());
+				if (string.IsNullOrWhiteSpace(text3))
+				{
+					return "";
+				}
+				return ResolveKingdomServiceRuntimeText(text3, forConstraint: true, dictionary);
+			}
 			string text2 = ResolveKingdomServiceRuntimeStateKey(kingdom, flag, kingdom2, flag2, num, num2, num3, num4, num5, num6);
 			if (string.IsNullOrWhiteSpace(text2))
 			{

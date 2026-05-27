@@ -3902,6 +3902,73 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		return giver?.Clan?.Kingdom;
 	}
 
+	private static string GetClanDisplayNameForNotification(Clan clan)
+	{
+		try
+		{
+			string text = clan?.Name?.ToString();
+			if (!string.IsNullOrWhiteSpace(text))
+			{
+				return text.Trim();
+			}
+		}
+		catch
+		{
+		}
+		return clan?.StringId ?? "未知家族";
+	}
+
+	private static Clan ResolveClanByTag(string clanToken, Hero giver)
+	{
+		try
+		{
+			string text = (clanToken ?? "").Trim();
+			if (string.IsNullOrWhiteSpace(text))
+			{
+				return null;
+			}
+			if (text.Equals("self", StringComparison.OrdinalIgnoreCase) || text.Equals("npc", StringComparison.OrdinalIgnoreCase) || text.Equals("current", StringComparison.OrdinalIgnoreCase) || text.Equals("auto", StringComparison.OrdinalIgnoreCase))
+			{
+				return giver?.Clan;
+			}
+			MBReadOnlyList<Clan> all = Clan.All;
+			if (all == null)
+			{
+				return null;
+			}
+			for (int i = 0; i < all.Count; i++)
+			{
+				Clan clan = all[i];
+				if (clan != null && string.Equals((clan.StringId ?? "").Trim(), text, StringComparison.OrdinalIgnoreCase))
+				{
+					return clan;
+				}
+			}
+			for (int j = 0; j < all.Count; j++)
+			{
+				Clan clan2 = all[j];
+				if (clan2 == null)
+				{
+					continue;
+				}
+				string text2 = (clan2.Name?.ToString() ?? "").Trim();
+				if (!string.IsNullOrWhiteSpace(text2) && string.Equals(text2, text, StringComparison.OrdinalIgnoreCase))
+				{
+					return clan2;
+				}
+				Hero leader = clan2.Leader;
+				if (leader != null && (string.Equals((leader.StringId ?? "").Trim(), text, StringComparison.OrdinalIgnoreCase) || string.Equals((leader.Name?.ToString() ?? "").Trim(), text, StringComparison.OrdinalIgnoreCase)))
+				{
+					return clan2;
+				}
+			}
+		}
+		catch
+		{
+		}
+		return null;
+	}
+
 	private static bool IsPlayerWarsCompatibleWithKingdom(Kingdom offerKingdom)
 	{
 		try
@@ -4070,6 +4137,67 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				}
 				ChangeKingdomAction.ApplyByLeaveKingdom(playerClan);
 				statusText = $"执行成功：玩家已退出 {kingdom.Name}，不再是其正式封臣。";
+				return true;
+			}
+			if (text == "CLAN_JOIN_PLAYER_KINGDOM")
+			{
+				Kingdom playerKingdom = playerClan.Kingdom;
+				if (playerKingdom == null || playerKingdom.RulingClan != playerClan)
+				{
+					statusText = "执行失败：玩家当前不是自己王国的统治者，不能招揽其他家族作为领主归附。";
+					return false;
+				}
+				Clan targetClan = ResolveClanByTag(kingdomToken, giver);
+				if (targetClan == null)
+				{
+					statusText = "执行失败：目标家族无效（" + kingdomToken + "）。";
+					return false;
+				}
+				string clanDisplayName = GetClanDisplayNameForNotification(targetClan);
+				if (targetClan == playerClan)
+				{
+					statusText = "执行失败：玩家家族已经是本王国执政家族，不能重复招揽。";
+					return false;
+				}
+				if (targetClan.IsEliminated)
+				{
+					statusText = "执行失败：" + clanDisplayName + " 已经灭亡或不可用。";
+					return false;
+				}
+				if (giver == null || giver.Clan != targetClan || targetClan.Leader != giver)
+				{
+					statusText = "执行失败：只有目标家族族长本人才能代表全族加入玩家王国。";
+					return false;
+				}
+				if (targetClan.Kingdom == playerKingdom)
+				{
+					statusText = "执行跳过：" + clanDisplayName + " 已经效力于 " + playerKingdom.Name + "。";
+					return false;
+				}
+				Kingdom oldKingdom = targetClan.Kingdom;
+				if (targetClan.IsUnderMercenaryService)
+				{
+					ChangeKingdomAction.ApplyByLeaveKingdomAsMercenary(targetClan);
+					ChangeKingdomAction.ApplyByJoinToKingdom(targetClan, playerKingdom, default(CampaignTime), showNotification: true);
+					statusText = "执行成功：" + clanDisplayName + " 已结束旧雇佣关系，并作为领主加入 " + playerKingdom.Name + "（ClanId=" + (targetClan.StringId ?? "") + "）。";
+					return true;
+				}
+				if (oldKingdom != null)
+				{
+					if (oldKingdom.IsAtWarWith(playerKingdom))
+					{
+						ChangeKingdomAction.ApplyByLeaveWithRebellionAgainstKingdom(targetClan, showNotification: true);
+					}
+					else
+					{
+						ChangeKingdomAction.ApplyByLeaveKingdom(targetClan, showNotification: true);
+					}
+					ChangeKingdomAction.ApplyByJoinToKingdomByDefection(targetClan, oldKingdom, playerKingdom, default(CampaignTime), showNotification: true);
+					statusText = "执行成功：" + clanDisplayName + " 已脱离 " + oldKingdom.Name + "，并作为领主加入 " + playerKingdom.Name + "（ClanId=" + (targetClan.StringId ?? "") + "）。";
+					return true;
+				}
+				ChangeKingdomAction.ApplyByJoinToKingdom(targetClan, playerKingdom, default(CampaignTime), showNotification: true);
+				statusText = "执行成功：" + clanDisplayName + " 已作为领主加入 " + playerKingdom.Name + "（ClanId=" + (targetClan.StringId ?? "") + "）。";
 				return true;
 			}
 			Kingdom kingdom2 = ResolveKingdomByTag(kingdomToken, giver);
@@ -8799,7 +8927,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			Regex regex14 = new Regex("\\[ACTION:DEBT_ITEM_UNAVAILABLE:([a-zA-Z0-9_\\-]+)\\]", RegexOptions.IgnoreCase);
 			Regex regex15 = new Regex("\\[ACTION:DEBT_ITEM_PENALTY:([a-zA-Z0-9_\\-]+):(\\d+):(\\d+)\\]", RegexOptions.IgnoreCase);
 			Regex regex16 = new Regex("\\[ACTION:DEBT_PAY:([a-zA-Z0-9_\\-]+):(\\d+)\\]", RegexOptions.IgnoreCase);
-			Regex regex17 = new Regex("\\[ACTION:KINGDOM_SERVICE:(MERCENARY|VASSAL|LEAVE):([a-zA-Z0-9_\\-]+)\\]", RegexOptions.IgnoreCase);
+			Regex regex17 = new Regex("\\[ACTION:KINGDOM_SERVICE:(MERCENARY|VASSAL|LEAVE|CLAN_JOIN_PLAYER_KINGDOM):([a-zA-Z0-9_\\-]+)\\]", RegexOptions.IgnoreCase);
 			Regex regex18 = new Regex("\\[ACTION:JOIN_MERCENARY:([a-zA-Z0-9_\\-]+)\\]", RegexOptions.IgnoreCase);
 			Regex regex19 = new Regex("\\[ACTION:JOIN_VASSAL:([a-zA-Z0-9_\\-]+)\\]", RegexOptions.IgnoreCase);
 			Regex regex20 = new Regex("\\[ACTION:KINGDOM_SERVICE:LEAVE\\]", RegexOptions.IgnoreCase);

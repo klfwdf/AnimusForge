@@ -11851,7 +11851,7 @@ public class MyBehavior : CampaignBehaviorBase
 			return "";
 		}
 		List<DialogueDay> list = LoadDialogueHistory(hero);
-		if (HasDialogueHistoryLine(list, text) || HasMeaningfulDirectConversationHistory(list))
+		if (HasDialogueHistoryLine(list, text) || HasMeaningfulDirectConversationHistory(list) || HasMeaningfulConversationHistoryIncludingActiveScene(list))
 		{
 			return "";
 		}
@@ -11914,6 +11914,29 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				string text = (line ?? "").Trim();
 				if (!string.IsNullOrWhiteSpace(text) && !IsActiveSceneSessionHistoryLine(text) && !IsSystemFactLine(text) && !IsLoreInjectionHistoryLine(text))
+				{
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	private static bool HasMeaningfulConversationHistoryIncludingActiveScene(List<DialogueDay> records)
+	{
+		if (records == null || records.Count == 0)
+		{
+			return false;
+		}
+		foreach (DialogueDay record in records)
+		{
+			if (record?.Lines == null)
+			{
+				continue;
+			}
+			foreach (string line in record.Lines)
+			{
+				if (IsMeaningfulConversationLine(line, includeActiveScene: true))
 				{
 					return true;
 				}
@@ -13653,12 +13676,17 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private static bool IsMeaningfulDirectConversationLine(string line)
 	{
+		return IsMeaningfulConversationLine(line, includeActiveScene: true);
+	}
+
+	private static bool IsMeaningfulConversationLine(string line, bool includeActiveScene)
+	{
 		string text = (line ?? "").Trim();
 		if (string.IsNullOrWhiteSpace(text))
 		{
 			return false;
 		}
-		return !IsActiveSceneSessionHistoryLine(text) && !IsSystemFactLine(text) && !IsLoreInjectionHistoryLine(text);
+		return (includeActiveScene || !IsActiveSceneSessionHistoryLine(text)) && !IsSystemFactLine(text) && !IsLoreInjectionHistoryLine(text);
 	}
 
 	private static bool RemoveExpiredSingleUseNpcFactLines(List<DialogueDay> records)

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using TaleWorlds.CampaignSystem;
@@ -20,11 +21,17 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 
 	private const float OpenCooldownSeconds = 0.35f;
 
+	private const float HotkeyBlockLogCooldownSeconds = 5f;
+
+	private static readonly Stopwatch TerminalClock = Stopwatch.StartNew();
+
 	private int _lastTerminalHintDay = -999999;
 
 	private bool _terminalUiActive;
 
 	private float _lastOpenRealTime = -999f;
+
+	private float _lastHotkeyBlockLogRealTime = -999f;
 
 	private bool _wasTerminalKeyDown;
 
@@ -66,21 +73,84 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 		}
 		if (HotkeyInputGuard.IsTextInputFocused())
 		{
+			LogHotkeyBlocked("text_input_or_inquiry", configuredTerminalKey);
 			_wasTerminalKeyDown = true;
 			return;
 		}
-		if (_wasTerminalKeyDown || _terminalUiActive || !IsCampaignMapLikeStateActive())
+		if (_wasTerminalKeyDown || _terminalUiActive)
 		{
 			return;
 		}
+		if (!IsCampaignMapLikeStateActive())
+		{
+			LogHotkeyBlocked("not_campaign_map", configuredTerminalKey);
+			return;
+		}
 		_wasTerminalKeyDown = true;
-		float num = (float)Environment.TickCount / 1000f;
+		float num = GetRealTimeSeconds();
 		if (num - _lastOpenRealTime < OpenCooldownSeconds)
 		{
 			return;
 		}
 		_lastOpenRealTime = num;
 		OpenRootMenu();
+	}
+
+	private float GetRealTimeSeconds()
+	{
+		return (float)TerminalClock.Elapsed.TotalSeconds;
+	}
+
+	private void LogHotkeyBlocked(string reason, InputKey configuredTerminalKey)
+	{
+		try
+		{
+			float realTimeSeconds = GetRealTimeSeconds();
+			if (realTimeSeconds - _lastHotkeyBlockLogRealTime < HotkeyBlockLogCooldownSeconds)
+			{
+				return;
+			}
+			_lastHotkeyBlockLogRealTime = realTimeSeconds;
+			ScreenBase topScreen = ScreenManager.TopScreen;
+			string topScreenName = topScreen?.GetType().FullName ?? "";
+			string activeStateName = Game.Current?.GameStateManager?.ActiveState?.GetType().FullName ?? "";
+			bool conversationInProgress = false;
+			try
+			{
+				conversationInProgress = Campaign.Current?.ConversationManager?.IsConversationInProgress == true;
+			}
+			catch
+			{
+			}
+			bool inquiryActive = false;
+			try
+			{
+				inquiryActive = InformationManager.IsAnyInquiryActive();
+			}
+			catch
+			{
+			}
+			bool focusedOnInput = false;
+			try
+			{
+				focusedOnInput = ScreenManager.FocusedLayer?.IsFocusedOnInput() == true;
+			}
+			catch
+			{
+			}
+			string rawKey = "";
+			try
+			{
+				rawKey = DuelSettings.GetSettings()?.TerminalKey ?? "";
+			}
+			catch
+			{
+			}
+			Logger.Log("Terminal", "[INFO] hotkey blocked reason=" + reason + " configuredKey=" + configuredTerminalKey + " rawKey=\"" + rawKey + "\" topScreen=\"" + topScreenName + "\" activeState=\"" + activeStateName + "\" mission=" + (Mission.Current != null) + " conversation=" + conversationInProgress + " inquiry=" + inquiryActive + " focusedOnInput=" + focusedOnInput);
+		}
+		catch
+		{
+		}
 	}
 
 	private void OnDailyTick()

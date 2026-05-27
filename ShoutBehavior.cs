@@ -10047,7 +10047,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			bool transactionPostprocessEnabled = rewardRuleInjected || loanRuleInjected;
 			List<PostprocessRuleEntry> duelRules = duelRuleInjected ? AIConfigHandler.DuelPostprocessRules : null;
 			List<PostprocessRuleEntry> transactionRules = transactionPostprocessEnabled ? MergePostprocessRulesForScene(rewardRuleInjected ? AIConfigHandler.RewardPostprocessRules : null, loanRuleInjected ? AIConfigHandler.LoanPostprocessRules : null) : null;
-			List<PostprocessRuleEntry> kingdomRules = kingdomServiceRuleInjected ? MergePostprocessRulesForScene(AIConfigHandler.GetGuardrailRulePostprocessRules("kingdom_service"), AIConfigHandler.BuildRuntimeKingdomServicePostprocessRules() ?? new List<PostprocessRuleEntry>()) : null;
+			List<PostprocessRuleEntry> kingdomRules = kingdomServiceRuleInjected ? (AIConfigHandler.BuildRuntimeKingdomServicePostprocessRules() ?? new List<PostprocessRuleEntry>()) : null;
 			List<PostprocessRuleEntry> lordsHallRules = lordsHallRuleInjected ? MergePostprocessRulesForScene(AIConfigHandler.GetGuardrailRulePostprocessRules("lords_hall_access"), AIConfigHandler.BuildRuntimeLordsHallAccessPostprocessRules() ?? new List<PostprocessRuleEntry>()) : null;
 			List<PostprocessRuleEntry> meetingReleaseRules = meetingReleaseRuleInjected ? MergePostprocessRulesForScene(AIConfigHandler.GetGuardrailRulePostprocessRules("meeting_player_release"), LordEncounterBehavior.BuildMeetingPlayerReleasePostprocessRulesForExternal(targetHero ?? targetCharacter?.HeroObject)) : null;
 			List<PostprocessRuleEntry> vanillaIssueRules = vanillaIssueRuleInjected ? MergePostprocessRulesForScene(AIConfigHandler.GetGuardrailRulePostprocessRules("vanilla_issue"), VanillaIssueOfferBridge.BuildRuntimePostprocessRulesForExternal(targetHero) ?? new List<PostprocessRuleEntry>()) : null;
@@ -11708,7 +11708,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		List<PostprocessRuleEntry> kingdomRules = null;
 		if (kingdomServiceRuleInjected)
 		{
-			kingdomRules = MergePostprocessRulesForScene(AIConfigHandler.GetGuardrailRulePostprocessRules("kingdom_service"), kingdomServiceRules, AIConfigHandler.BuildRuntimeKingdomServicePostprocessRules() ?? new List<PostprocessRuleEntry>());
+			kingdomRules = MergePostprocessRulesForScene(kingdomServiceRules, AIConfigHandler.BuildRuntimeKingdomServicePostprocessRules() ?? new List<PostprocessRuleEntry>());
 		}
 		List<PostprocessRuleEntry> lordsHallRules = lordsHallRuleInjected ? MergePostprocessRulesForScene(AIConfigHandler.GetGuardrailRulePostprocessRules("lords_hall_access"), AIConfigHandler.BuildRuntimeLordsHallAccessPostprocessRules() ?? new List<PostprocessRuleEntry>()) : null;
 		List<PostprocessRuleEntry> meetingReleaseRules = meetingReleaseRuleInjected ? LordEncounterBehavior.BuildMeetingPlayerReleasePostprocessRulesForExternal(targetHero ?? targetCharacter?.HeroObject) : null;

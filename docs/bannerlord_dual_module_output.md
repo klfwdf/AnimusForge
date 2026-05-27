@@ -55,7 +55,7 @@ Each ZIP root folder must match its module folder name. The DLL inside each pack
 
 One-click packaging must not include the `ONNX` folder. The package script should fail validation if an ONNX entry appears in either dual-client ZIP.
 
-Dual-client packaging should not bump `SubModule.xml` versions by default. Pass `-Version x.y.z` when a release needs an explicit package version.
+One-click dual-client packaging bumps the patch version by default and writes the same version back to the source `AnimusForge/SubModule.xml` plus both versioned output modules. Pass `-NoBump` to keep the current version, or `-Version x.y.z` when a release needs an explicit package version.
 
 ## Safety Rules
 

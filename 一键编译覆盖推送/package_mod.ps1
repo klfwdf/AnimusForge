@@ -2,6 +2,7 @@ param(
     [string]$ModuleDir = "",
     [string]$BannerlordRoot = "",
     [string]$OutputDir = "$PSScriptRoot\packages",
+    [string]$SourceModuleDir = "",
     [string]$Version,
     [string]$PackageLabel,
     [switch]$UseFirstMatch,
@@ -51,6 +52,63 @@ function Get-NextPatchVersion {
     }
 
     return "$($parts.Prefix)$major.$minor.$patch"
+}
+
+function Get-SubModuleVersion {
+    param([Parameter(Mandatory = $true)][string]$SubModulePath)
+
+    if (-not (Test-Path -LiteralPath $SubModulePath)) {
+        throw "SubModule.xml not found: $SubModulePath"
+    }
+
+    [xml]$xml = Get-Content -LiteralPath $SubModulePath
+    $currentVersion = $xml.Module.Version.value
+    if ([string]::IsNullOrWhiteSpace($currentVersion)) {
+        throw "Version node is missing in SubModule.xml: $SubModulePath"
+    }
+    $null = Parse-Version -VersionText $currentVersion -Label "Current version"
+    return $currentVersion
+}
+
+function Resolve-PackageVersion {
+    param([Parameter(Mandatory = $true)][string]$CurrentVersion)
+
+    if ($Version) {
+        $null = Parse-Version -VersionText $Version -Label "Target version"
+        return $Version
+    }
+    if ($NoBump) {
+        return $CurrentVersion
+    }
+    return Get-NextPatchVersion -CurrentVersion $CurrentVersion
+}
+
+function Set-SubModuleVersion {
+    param(
+        [Parameter(Mandatory = $true)][string]$SubModulePath,
+        [Parameter(Mandatory = $true)][string]$NewVersion
+    )
+
+    [xml]$xml = Get-Content -LiteralPath $SubModulePath
+    $currentVersion = $xml.Module.Version.value
+    if ($currentVersion -eq $NewVersion) {
+        return
+    }
+
+    $xml.Module.Version.value = $NewVersion
+    $settings = New-Object System.Xml.XmlWriterSettings
+    $settings.Indent = $true
+    $settings.IndentChars = "    "
+    $settings.NewLineChars = "`r`n"
+    $settings.NewLineHandling = [System.Xml.NewLineHandling]::Replace
+    $settings.OmitXmlDeclaration = $true
+
+    $writer = [System.Xml.XmlWriter]::Create($SubModulePath, $settings)
+    try {
+        $xml.Save($writer)
+    } finally {
+        $writer.Dispose()
+    }
 }
 
 function Test-AnimusForgeModuleDir {
@@ -194,7 +252,8 @@ function Write-ZipFromModule {
     param(
         [Parameter(Mandatory = $true)][string]$ModulePath,
         [bool]$AutoDetected = $false,
-        [string]$LabelSuffix = ""
+        [string]$LabelSuffix = "",
+        [string]$PackageVersion = ""
     )
 
     $moduleDirFullLocal = [System.IO.Path]::GetFullPath($ModulePath).TrimEnd('\', '/')
@@ -203,38 +262,14 @@ function Write-ZipFromModule {
         throw "SubModule.xml not found: $subModulePath"
     }
 
-    [xml]$xml = Get-Content -LiteralPath $subModulePath
-    $currentVersion = $xml.Module.Version.value
-    if ([string]::IsNullOrWhiteSpace($currentVersion)) {
-        throw "Version node is missing in SubModule.xml"
-    }
-    $null = Parse-Version -VersionText $currentVersion -Label "Current version"
-
-    if ($Version) {
-        $null = Parse-Version -VersionText $Version -Label "Target version"
-        $newVersion = $Version
-    } elseif ($NoBump -or $DualClientPackages) {
-        $newVersion = $currentVersion
+    $currentVersion = Get-SubModuleVersion -SubModulePath $subModulePath
+    if ([string]::IsNullOrWhiteSpace($PackageVersion)) {
+        $newVersion = Resolve-PackageVersion -CurrentVersion $currentVersion
     } else {
-        $newVersion = Get-NextPatchVersion -CurrentVersion $currentVersion
+        $null = Parse-Version -VersionText $PackageVersion -Label "Package version"
+        $newVersion = $PackageVersion
     }
-
-    if ($newVersion -ne $currentVersion) {
-        $xml.Module.Version.value = $newVersion
-        $settings = New-Object System.Xml.XmlWriterSettings
-        $settings.Indent = $true
-        $settings.IndentChars = "    "
-        $settings.NewLineChars = "`r`n"
-        $settings.NewLineHandling = [System.Xml.NewLineHandling]::Replace
-        $settings.OmitXmlDeclaration = $true
-
-        $writer = [System.Xml.XmlWriter]::Create($subModulePath, $settings)
-        try {
-            $xml.Save($writer)
-        } finally {
-            $writer.Dispose()
-        }
-    }
+    Set-SubModuleVersion -SubModulePath $subModulePath -NewVersion $newVersion
 
     New-Item -ItemType Directory -Path $OutputDir -Force | Out-Null
     $outputDirFull = [System.IO.Path]::GetFullPath($OutputDir).TrimEnd('\', '/')
@@ -347,8 +382,24 @@ if ($DualClientPackages) {
         }
     }
     Write-Host "Packaging dual client modules..."
-    $zip13 = Write-ZipFromModule -ModulePath $module13 -AutoDetected:$false -LabelSuffix "bannerlord_1.3.x"
-    $zip14 = Write-ZipFromModule -ModulePath $module14 -AutoDetected:$false -LabelSuffix "bannerlord_1.4.5"
+    $versionSourceModule = $module13
+    if (-not [string]::IsNullOrWhiteSpace($SourceModuleDir)) {
+        $versionSourceModule = [System.IO.Path]::GetFullPath($SourceModuleDir)
+        $check = Test-AnimusForgeModuleDir -Path $versionSourceModule
+        if (-not $check.IsValid) {
+            throw ("SourceModuleDir is not a valid AnimusForge module: {0}`nMissing/Invalid: {1}" -f $versionSourceModule, ($check.Missing -join ", "))
+        }
+    }
+
+    $versionSourceXml = Join-Path $versionSourceModule "SubModule.xml"
+    $sourceVersion = Get-SubModuleVersion -SubModulePath $versionSourceXml
+    $packageVersion = Resolve-PackageVersion -CurrentVersion $sourceVersion
+    Set-SubModuleVersion -SubModulePath $versionSourceXml -NewVersion $packageVersion
+    Write-Host "Package Version Source: $versionSourceXml"
+    Write-Host "Package Version       : $sourceVersion -> $packageVersion"
+
+    $zip13 = Write-ZipFromModule -ModulePath $module13 -AutoDetected:$false -LabelSuffix "bannerlord_1.3.x" -PackageVersion $packageVersion
+    $zip14 = Write-ZipFromModule -ModulePath $module14 -AutoDetected:$false -LabelSuffix "bannerlord_1.4.5" -PackageVersion $packageVersion
     Assert-ZipDoesNotContainOnnx -ZipPath $zip13
     Assert-ZipDoesNotContainOnnx -ZipPath $zip14
     Write-Host "Dual Packages:"
