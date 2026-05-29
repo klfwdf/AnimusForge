@@ -1428,6 +1428,7 @@ public class MyBehavior : CampaignBehaviorBase
 		CampaignEvents.RaidCompletedEvent.AddNonSerializedListener(this, OnRaidCompleted);
 		CampaignEvents.KingdomDestroyedEvent.AddNonSerializedListener(this, OnKingdomDestroyed);
 		CampaignEvents.OnClanDestroyedEvent.AddNonSerializedListener(this, OnClanDestroyed);
+		CampaignEvents.TournamentFinished.AddNonSerializedListener(this, OnTournamentFinished);
 	}
 
 	private void OnMapEventEnded(MapEvent mapEvent)
@@ -2757,6 +2758,192 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private void OnTournamentFinished(CharacterObject winner, MBReadOnlyList<CharacterObject> participants, Town town, ItemObject prize)
+	{
+		try
+		{
+			if (town?.Settlement == null)
+			{
+				return;
+			}
+			Kingdom kingdom = ResolveTournamentHostKingdom(town);
+			string kingdomId = GetKingdomId(kingdom);
+			if (string.IsNullOrWhiteSpace(kingdomId))
+			{
+				return;
+			}
+			string settlementId = GetSettlementId(town.Settlement);
+			string settlementDisplayName = GetSettlementDisplayName(town.Settlement);
+			string kingdomDisplayName = GetKingdomDisplayName(kingdom, "所属王国");
+			string winnerDisplayName = GetTournamentCharacterDisplayName(winner, "一名参赛者");
+			string winnerStatusText = BuildTournamentWinnerStatusText(winner);
+			string prizeDisplayName = GetTournamentPrizeDisplayName(prize);
+			string participantSummary = BuildTournamentParticipantSummary(participants, winner);
+			StringBuilder stringBuilder = new StringBuilder();
+			stringBuilder.Append(settlementDisplayName).Append("完成了一场竞技大会结算，举办地隶属于").Append(kingdomDisplayName).Append("。");
+			stringBuilder.Append(" 冠军是").Append(winnerDisplayName).Append(BuildTournamentCharacterRoleSuffix(winner)).Append("。");
+			if (!string.IsNullOrWhiteSpace(winnerStatusText))
+			{
+				stringBuilder.Append(" ").Append(winnerStatusText);
+			}
+			if (!string.IsNullOrWhiteSpace(prizeDisplayName))
+			{
+				stringBuilder.Append(" 本次大会奖品是").Append(prizeDisplayName).Append("。");
+			}
+			if (!string.IsNullOrWhiteSpace(participantSummary))
+			{
+				stringBuilder.Append(" 可识别的重要参赛者包括：").Append(participantSummary).Append("。");
+			}
+			string stableKey = "tournament_finished:" + settlementId + ":" + GetCurrentGameDayIndexSafe() + ":" + GetTournamentCharacterId(winner) + ":" + ((prize?.StringId ?? "").Trim());
+			RecordEventSourceMaterial("tournament_finished", "竞技大会结算 - " + settlementDisplayName, stringBuilder.ToString(), stableKey, kingdomId, settlementId, includeInWorld: false, includeInKingdom: true, GetTournamentHeroId(winner), GetKingdomId(GetTournamentHero(winner)?.MapFaction));
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("EventMaterial", "[ERROR] OnTournamentFinished: " + ex.Message);
+		}
+	}
+
+	private static Kingdom ResolveTournamentHostKingdom(Town town)
+	{
+		if (town == null)
+		{
+			return null;
+		}
+		return town.Settlement?.MapFaction as Kingdom ?? town.OwnerClan?.Kingdom ?? town.MapFaction as Kingdom;
+	}
+
+	private static Hero GetTournamentHero(CharacterObject character)
+	{
+		try
+		{
+			return character?.HeroObject;
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static string GetTournamentHeroId(CharacterObject character)
+	{
+		return GetHeroId(GetTournamentHero(character));
+	}
+
+	private static string GetTournamentCharacterId(CharacterObject character)
+	{
+		string text = GetTournamentHeroId(character);
+		if (!string.IsNullOrWhiteSpace(text))
+		{
+			return text;
+		}
+		return (character?.StringId ?? "").Trim();
+	}
+
+	private static string GetTournamentCharacterDisplayName(CharacterObject character, string fallback)
+	{
+		Hero tournamentHero = GetTournamentHero(character);
+		if (tournamentHero != null)
+		{
+			return GetHeroDisplayName(tournamentHero);
+		}
+		string text = (character?.Name?.ToString() ?? "").Trim();
+		return string.IsNullOrWhiteSpace(text) ? fallback : text;
+	}
+
+	private static string BuildTournamentWinnerStatusText(CharacterObject winner)
+	{
+		Hero tournamentHero = GetTournamentHero(winner);
+		if (tournamentHero == null)
+		{
+			return "冠军不是有家族档案的英雄，无法识别其家族、所属王国与家族等级。";
+		}
+		Clan clan = tournamentHero.Clan;
+		if (clan == null)
+		{
+			return "冠军没有可识别的家族，无法识别其所属王国与家族等级。";
+		}
+		string clanDisplayName = GetClanDisplayName(clan);
+		Kingdom kingdom = clan.Kingdom ?? tournamentHero.MapFaction as Kingdom;
+		string kingdomDisplayName = GetKingdomDisplayName(kingdom, "无明确所属王国");
+		int num = Math.Max(0, clan.Tier);
+		string clanTierReputationLabel = GetClanTierReputationLabel(num);
+		return "冠军出身于" + clanDisplayName + "家族，所属王国是" + kingdomDisplayName + "，家族等级评价为" + clanTierReputationLabel + "（" + num + " level）。";
+	}
+
+	private static string BuildTournamentCharacterRoleSuffix(CharacterObject character)
+	{
+		Hero tournamentHero = GetTournamentHero(character);
+		if (tournamentHero == Hero.MainHero)
+		{
+			return "（玩家）";
+		}
+		if (tournamentHero != null)
+		{
+			if (tournamentHero.IsFactionLeader)
+			{
+				return "（王国领袖）";
+			}
+			if (tournamentHero.Clan?.Leader == tournamentHero)
+			{
+				return "（家族族长）";
+			}
+			if (tournamentHero.IsLord)
+			{
+				return "（贵族）";
+			}
+			if (tournamentHero.Occupation == Occupation.Wanderer)
+			{
+				return "（流浪者）";
+			}
+			return "（英雄）";
+		}
+		try
+		{
+			if (character != null && character.Occupation == Occupation.ArenaMaster)
+			{
+				return "（竞技场人物）";
+			}
+		}
+		catch
+		{
+		}
+		return "";
+	}
+
+	private static string BuildTournamentParticipantSummary(MBReadOnlyList<CharacterObject> participants, CharacterObject winner)
+	{
+		List<string> list = new List<string>();
+		foreach (CharacterObject participant in participants ?? Enumerable.Empty<CharacterObject>())
+		{
+			Hero tournamentHero = GetTournamentHero(participant);
+			if (tournamentHero == null || tournamentHero == GetTournamentHero(winner))
+			{
+				continue;
+			}
+			string text = GetTournamentCharacterDisplayName(participant, "");
+			if (string.IsNullOrWhiteSpace(text))
+			{
+				continue;
+			}
+			AddUniqueId(list, text + BuildTournamentCharacterRoleSuffix(participant));
+			if (list.Count >= 8)
+			{
+				break;
+			}
+		}
+		return string.Join("、", list);
+	}
+
+	private static string GetTournamentPrizeDisplayName(ItemObject prize)
+	{
+		string text = (prize?.Name?.ToString() ?? "").Trim();
+		if (!string.IsNullOrWhiteSpace(text))
+		{
+			return text;
+		}
+		return (prize?.StringId ?? "").Trim();
+	}
+
 	private static bool ShouldTrackNpcActionHero(Hero hero)
 	{
 		return hero != null && hero != Hero.MainHero && hero.IsLord && !string.IsNullOrWhiteSpace(hero.StringId);
@@ -3314,7 +3501,10 @@ public class MyBehavior : CampaignBehaviorBase
 			_kingdomStabilityValues = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
 		}
 		_kingdomStabilityValues[text] = ClampKingdomStabilityValue(value);
-		ApplyKingdomStabilityRelationAdjustmentsForKingdom(kingdom);
+		if (DuelSettings.IsKingdomStabilityAndRebellionEnabled())
+		{
+			ApplyKingdomStabilityRelationAdjustmentsForKingdom(kingdom);
+		}
 	}
 
 	private static int GetKingdomStabilityRelationTargetOffset(int stabilityValue)
@@ -3466,6 +3656,11 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
+		if (!DuelSettings.IsKingdomStabilityAndRebellionEnabled())
+		{
+			ClearKingdomStabilityRelationAdjustmentsForKingdom(kingdomId);
+			return;
+		}
 		Dictionary<string, int> dictionary = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
 		Hero hero = kingdom?.Leader ?? kingdom?.RulingClan?.Leader;
 		int kingdomStabilityRelationTargetOffset = GetKingdomStabilityRelationTargetOffset(GetKingdomStabilityValue(kingdom));
@@ -3525,8 +3720,59 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private void ClearKingdomStabilityRelationAdjustmentsForKingdom(string kingdomId)
+	{
+		if (_kingdomStabilityRelationAppliedOffsets == null)
+		{
+			return;
+		}
+		string text = (kingdomId ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return;
+		}
+		foreach (string key in _kingdomStabilityRelationAppliedOffsets.Keys.Where((string x) => !string.IsNullOrWhiteSpace(x) && x.StartsWith(text + "|", StringComparison.OrdinalIgnoreCase)).ToList())
+		{
+			if (TryResolveKingdomStabilityRelationOffsetKey(key, out var _, out var sourceHero, out var targetHero))
+			{
+				ApplyKingdomStabilityRelationOffsetToPair(key, sourceHero, targetHero, 0);
+			}
+			_kingdomStabilityRelationAppliedOffsets.Remove(key);
+		}
+		if (_kingdomStabilityRelationOffsetStorage != null)
+		{
+			foreach (string key2 in _kingdomStabilityRelationOffsetStorage.Keys.Where((string x) => !string.IsNullOrWhiteSpace(x) && x.StartsWith(text + "|", StringComparison.OrdinalIgnoreCase)).ToList())
+			{
+				_kingdomStabilityRelationOffsetStorage.Remove(key2);
+			}
+		}
+	}
+
+	private void ClearKingdomStabilityRelationAdjustments()
+	{
+		if (_kingdomStabilityRelationAppliedOffsets == null || _kingdomStabilityRelationAppliedOffsets.Count == 0)
+		{
+			_kingdomStabilityRelationOffsetStorage?.Clear();
+			return;
+		}
+		foreach (string key in _kingdomStabilityRelationAppliedOffsets.Keys.ToList())
+		{
+			if (TryResolveKingdomStabilityRelationOffsetKey(key, out var _, out var sourceHero, out var targetHero))
+			{
+				ApplyKingdomStabilityRelationOffsetToPair(key, sourceHero, targetHero, 0);
+			}
+			_kingdomStabilityRelationAppliedOffsets.Remove(key);
+		}
+		_kingdomStabilityRelationOffsetStorage?.Clear();
+	}
+
 	private void ApplyKingdomStabilityRelationAdjustments()
 	{
+		if (!DuelSettings.IsKingdomStabilityAndRebellionEnabled())
+		{
+			ClearKingdomStabilityRelationAdjustments();
+			return;
+		}
 		if (Kingdom.All == null || Kingdom.All.Count == 0)
 		{
 			return;
@@ -3658,6 +3904,10 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private void ApplyRulingClanSettlementLoyaltyAdjustmentForLowClanCountKingdom(Town town)
 	{
+		if (!DuelSettings.IsKingdomStabilityAndRebellionEnabled())
+		{
+			return;
+		}
 		if (town?.Settlement == null || !town.Settlement.IsFortification)
 		{
 			return;
@@ -3687,6 +3937,10 @@ public class MyBehavior : CampaignBehaviorBase
 	{
 		try
 		{
+			if (!DuelSettings.IsKingdomStabilityAndRebellionEnabled())
+			{
+				return 0;
+			}
 			if (town?.Settlement == null || !town.Settlement.IsFortification)
 			{
 				return 0;
@@ -4755,6 +5009,11 @@ public class MyBehavior : CampaignBehaviorBase
 			kingdomRebellionResolutionResult.Message = "找不到目标王国。";
 			return kingdomRebellionResolutionResult;
 		}
+		if (!DuelSettings.IsKingdomStabilityAndRebellionEnabled())
+		{
+			kingdomRebellionResolutionResult.Message = "王国稳定度与叛乱功能已在 MCM 中关闭，跳过叛乱判定。";
+			return kingdomRebellionResolutionResult;
+		}
 		int kingdomStabilityValue = GetKingdomStabilityValue(kingdom);
 		kingdomRebellionResolutionResult.StabilityValue = kingdomStabilityValue;
 		kingdomRebellionResolutionResult.StabilityTierText = GetKingdomStabilityTierText(kingdomStabilityValue);
@@ -5104,6 +5363,13 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
+		if (!DuelSettings.IsKingdomStabilityAndRebellionEnabled())
+		{
+			CancelPendingAutomaticKingdomRebellions("disabled_by_mcm");
+			_lastProcessedKingdomRebellionWeek = Math.Max(_lastProcessedKingdomRebellionWeek, weekIndex);
+			Logger.Log("KingdomRebellion", "[SKIP] 王国稳定度与叛乱功能已在 MCM 中关闭，跳过 week=" + weekIndex + " 的自动叛乱判定。");
+			return;
+		}
 		try
 		{
 			foreach (Kingdom devEditableKingdom in GetDevEditableKingdoms())
@@ -5142,6 +5408,10 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private void QueueAutomaticKingdomRebellion(KingdomRebellionResolutionResult result)
 	{
+		if (!DuelSettings.IsKingdomStabilityAndRebellionEnabled())
+		{
+			return;
+		}
 		if (result?.Kingdom == null || result.SelectedClan == null)
 		{
 			return;
@@ -5162,8 +5432,24 @@ public class MyBehavior : CampaignBehaviorBase
 		_queuedAutomaticKingdomRebellions.Add(item);
 	}
 
+	private void CancelPendingAutomaticKingdomRebellions(string reason)
+	{
+		_queuedAutomaticKingdomRebellions?.Clear();
+		_pendingAutomaticKingdomRebellionReady = false;
+		_pendingAutomaticKingdomRebellionContext = null;
+		_automaticKingdomRebellionInProgress = false;
+		_automaticKingdomRebellionFlowActive = false;
+		Logger.Log("KingdomRebellion", "[CANCEL] Pending automatic rebellions cleared. reason=" + (reason ?? ""));
+	}
+
 	private void TryStartNextAutomaticKingdomRebellionAsync()
 	{
+		if (!DuelSettings.IsKingdomStabilityAndRebellionEnabled())
+		{
+			CancelPendingAutomaticKingdomRebellions("disabled_before_start");
+			TryStartDeferredAutoWeeklyReports();
+			return;
+		}
 		if (_automaticKingdomRebellionInProgress || _pendingAutomaticKingdomRebellionReady)
 		{
 			return;
@@ -5207,6 +5493,12 @@ public class MyBehavior : CampaignBehaviorBase
 		_pendingAutomaticKingdomRebellionReady = false;
 		_pendingAutomaticKingdomRebellionContext = null;
 		_automaticKingdomRebellionInProgress = false;
+		if (!DuelSettings.IsKingdomStabilityAndRebellionEnabled())
+		{
+			CancelPendingAutomaticKingdomRebellions("disabled_before_execute");
+			TryStartDeferredAutoWeeklyReports();
+			return;
+		}
 		if (pendingAutomaticKingdomRebellionContext == null)
 		{
 			return;
@@ -5282,6 +5574,12 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private void ContinueAutomaticKingdomRebellionFlow()
 	{
+		if (!DuelSettings.IsKingdomStabilityAndRebellionEnabled())
+		{
+			CancelPendingAutomaticKingdomRebellions("disabled_before_continue");
+			TryStartDeferredAutoWeeklyReports();
+			return;
+		}
 		if (_queuedAutomaticKingdomRebellions.Count > 0)
 		{
 			TryStartNextAutomaticKingdomRebellionAsync();
@@ -8736,6 +9034,12 @@ public class MyBehavior : CampaignBehaviorBase
 		_pendingDevForcedKingdomRebellionReady = false;
 		_pendingDevForcedKingdomRebellionContext = null;
 		_devForcedKingdomRebellionInProgress = false;
+		if (!DuelSettings.IsKingdomStabilityAndRebellionEnabled())
+		{
+			InformationManager.HideInquiry();
+			InformationManager.DisplayMessage(new InformationMessage("王国稳定度与叛乱功能已在 MCM 中关闭，已取消本次强制叛乱。"));
+			return;
+		}
 		if (pendingDevForcedKingdomRebellionContext == null)
 		{
 			return;
@@ -8788,6 +9092,11 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private void StartDevForcedKingdomRebellionAsync(Kingdom kingdom, Clan clan, int weekIndex, int relationToKing, int townCount, int castleCount, List<Clan> followerClans)
 	{
+		if (!DuelSettings.IsKingdomStabilityAndRebellionEnabled())
+		{
+			InformationManager.DisplayMessage(new InformationMessage("王国稳定度与叛乱功能已在 MCM 中关闭，不能启动强制叛乱。"));
+			return;
+		}
 		if (_devForcedKingdomRebellionInProgress)
 		{
 			InformationManager.DisplayMessage(new InformationMessage("当前已有一条强制叛乱任务正在后台运行，请稍候。"));
@@ -13149,6 +13458,59 @@ public class MyBehavior : CampaignBehaviorBase
 		return BuildHeroArmyRuntimeFactForPrompt(hero);
 	}
 
+	public static string BuildPlayerCrimeRatingPromptLineForExternal(IFaction perspectiveFaction)
+	{
+		try
+		{
+			if (perspectiveFaction == null)
+			{
+				return "";
+			}
+			float crimeRating = SceneTauntBehavior.GetEffectiveCrimeRatingForExternal(perspectiveFaction);
+			if (crimeRating <= 0f)
+			{
+				return "";
+			}
+			float maxCrimeRating = 100f;
+			try
+			{
+				maxCrimeRating = Campaign.Current?.Models?.CrimeModel?.GetMaxCrimeRating() ?? 100f;
+			}
+			catch
+			{
+				maxCrimeRating = 100f;
+			}
+			if (maxCrimeRating <= 0f)
+			{
+				maxCrimeRating = 100f;
+			}
+			string factionName = (perspectiveFaction.Name?.ToString() ?? "").Trim();
+			if (string.IsNullOrWhiteSpace(factionName))
+			{
+				return "";
+			}
+			string[] idioms =
+			{
+				"违法乱纪",
+				"作奸犯科",
+				"为非作歹",
+				"胡作非为",
+				"无法无天",
+				"劣迹昭著",
+				"罪恶昭彰",
+				"罪大恶极",
+				"恶贯满盈",
+				"罪不容诛"
+			};
+			int level = Math.Max(1, Math.Min(idioms.Length, (int)Math.Ceiling(crimeRating / maxCrimeRating * idioms.Length)));
+			return "此人在" + factionName + "的犯罪恶名被评为" + idioms[level - 1] + "。";
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
 	public static string GetClanTierReputationLabelForExternal(int tier)
 	{
 		return GetClanTierReputationLabel(tier);
@@ -15949,6 +16311,10 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				return 0;
 			}
+			if (RomanceSystemBehavior.TryGetPrivateLoveAsPlayerRelation(hero, out var relation))
+			{
+				return relation;
+			}
 			return hero.GetRelation(Hero.MainHero);
 		}
 		catch
@@ -16896,7 +17262,14 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				if (Hero.MainHero != null && targetHero != null)
 				{
-					ChangeRelationAction.ApplyRelationChangeBetweenHeroes(Hero.MainHero, targetHero, num);
+					if (RomanceSystemBehavior.TryGetPrivateLoveAsPlayerRelation(targetHero, out var _))
+					{
+						RomanceSystemBehavior.Instance?.AdjustPrivateLove(targetHero, num, "mood_tag_relation_delta");
+					}
+					else
+					{
+						ChangeRelationAction.ApplyRelationChangeBetweenHeroes(Hero.MainHero, targetHero, num);
+					}
 					num3 = GetRelationWithPlayerSafe(targetHero);
 				}
 			}
@@ -17018,7 +17391,14 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				if (Hero.MainHero != null)
 				{
-					ChangeRelationAction.ApplyRelationChangeBetweenHeroes(Hero.MainHero, targetHero, num);
+					if (RomanceSystemBehavior.TryGetPrivateLoveAsPlayerRelation(targetHero, out var _))
+					{
+						RomanceSystemBehavior.Instance?.AdjustPrivateLove(targetHero, num, "mood_tag_postprocess_relation_delta");
+					}
+					else
+					{
+						ChangeRelationAction.ApplyRelationChangeBetweenHeroes(Hero.MainHero, targetHero, num);
+					}
 					num3 = GetRelationWithPlayerSafe(targetHero);
 				}
 			}
@@ -19191,6 +19571,10 @@ public class MyBehavior : CampaignBehaviorBase
 		bool flag2 = false;
 		foreach (EventMaterialReference item in list2)
 		{
+			if (IsWeeklyPromptTournamentMaterial(item))
+			{
+				continue;
+			}
 			if (IsWeeklyPromptOpeningSummaryMaterial(item))
 			{
 				continue;
@@ -19228,6 +19612,18 @@ public class MyBehavior : CampaignBehaviorBase
 			}
 		}
 		return OrderWeeklyPreviewMaterials(list).ToList();
+	}
+
+	private static bool IsWeeklyPromptTournamentMaterial(EventMaterialReference material)
+	{
+		if (material == null)
+		{
+			return false;
+		}
+		string text = (material.MaterialType ?? "").Trim();
+		string text2 = (material.ActionStableKey ?? "").Trim();
+		string text3 = (material.Label ?? "").Trim();
+		return string.Equals(text, "raw_text", StringComparison.OrdinalIgnoreCase) && (text2.StartsWith("tournament_finished:", StringComparison.OrdinalIgnoreCase) || text3.StartsWith("竞技大会结算", StringComparison.OrdinalIgnoreCase));
 	}
 
 	private static bool IsWeeklyPromptOpeningSummaryMaterial(EventMaterialReference material)
@@ -25394,6 +25790,10 @@ public class MyBehavior : CampaignBehaviorBase
 		if (_weeklyReportAppliedStabilityDeltas == null)
 		{
 			_weeklyReportAppliedStabilityDeltas = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+		}
+		if (!DuelSettings.IsKingdomStabilityAndRebellionEnabled())
+		{
+			return;
 		}
 		string text = (eventId ?? "").Trim();
 		if (string.IsNullOrWhiteSpace(text))

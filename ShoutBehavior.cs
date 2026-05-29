@@ -659,7 +659,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 			{
 				if (_parent.ShouldSuppressShoutHotkeyAfterFocusChange())
 				{
-					Logger.Log("ShoutBehavior", "[Hotkey] ignored during focus debounce");
+					Logger.LogVerbose("ShoutBehavior", "hotkey_focus_debounce_ignored", () => "[Hotkey] ignored during focus debounce", 1.0);
 				}
 				else if (_parent._isProcessingShout || _parent._isWaitingForScenePostprocessGate)
 				{
@@ -764,7 +764,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 		{
 			long ticks = DateTime.UtcNow.AddMilliseconds(ShoutHotkeyFocusDebounceMilliseconds).Ticks;
 			Interlocked.Exchange(ref _suppressShoutHotkeyUntilUtcTicks, ticks);
-			Logger.Log("ShoutBehavior", "[Hotkey] focus debounce armed reason=" + (reason ?? "") + " ms=" + ShoutHotkeyFocusDebounceMilliseconds);
+			Logger.LogVerbose("ShoutBehavior", "hotkey_focus_debounce_armed:" + (reason ?? ""), () => "[Hotkey] focus debounce armed reason=" + (reason ?? "") + " ms=" + ShoutHotkeyFocusDebounceMilliseconds, 1.0);
 		}
 		catch
 		{
@@ -1131,7 +1131,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 			{
 			}
 			string suffix = string.IsNullOrWhiteSpace(extra) ? string.Empty : ", " + extra;
-			Logger.Log("LipSyncProbe", $"stage={stage}, agentIndex={agentIndex}, thread={managedThreadId}, scene={sceneName}{suffix}");
+			Logger.LogVerbose("LipSyncProbe", "probe:" + (stage ?? "") + ":" + agentIndex, () => $"stage={stage}, agentIndex={agentIndex}, thread={managedThreadId}, scene={sceneName}{suffix}", 2.0);
 		}
 		catch
 		{
@@ -1924,6 +1924,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 		if (flag2)
 		{
 			string text4 = "";
+			string text5 = SanitizeSceneSpeechTextForTts(text);
 			try
 			{
 				if (npc != null && npc.IsHero)
@@ -1942,14 +1943,17 @@ public class ShoutBehavior : CampaignBehaviorBase
 				{
 					text4 = VoiceMapper.ResolveVoiceIdForNonHero(npc.IsFemale, npc.Age, npc.AgentIndex);
 				}
-				flag = TtsEngine.Instance.SpeakAsync(text, -1, -1f, num2, text4);
+				if (!string.IsNullOrWhiteSpace(text5))
+				{
+					flag = TtsEngine.Instance.SpeakAsync(text5, -1, -1f, num2, text4);
+				}
 			}
 			catch
 			{
 			}
 			sceneSpeechPlaybackInfo.TtsAccepted = flag;
 			sceneSpeechPlaybackInfo.WaitForPlaybackFinished = flag && num2 >= 0;
-			LogTtsReport("ShowNpcSpeechOutput.SpeakAttempt", num, $"effectiveAgentIndex={num2};speakAccepted={flag};voiceId={text4};lipSyncSafe={flag3};lipSyncReason={text3}");
+			LogTtsReport("ShowNpcSpeechOutput.SpeakAttempt", num, $"effectiveAgentIndex={num2};speakAccepted={flag};voiceId={text4};lipSyncSafe={flag3};lipSyncReason={text3};ttsLen={(text5 ?? string.Empty).Length};uiLen={(text ?? string.Empty).Length}");
 		}
 		if (flag && num2 >= 0 && CanAgentParticipateInSceneSpeech(liveAgent))
 		{
@@ -1985,6 +1989,11 @@ public class ShoutBehavior : CampaignBehaviorBase
 		try
 		{
 			string text4 = "";
+			string text5 = SanitizeSceneSpeechTextForTts(text);
+			if (string.IsNullOrWhiteSpace(text5))
+			{
+				return sceneSpeechPlaybackInfo;
+			}
 			if (npc != null && npc.IsHero)
 			{
 				Hero hero2 = ResolveHeroFromAgentIndex(npc.AgentIndex);
@@ -2001,8 +2010,8 @@ public class ShoutBehavior : CampaignBehaviorBase
 			{
 				text4 = VoiceMapper.ResolveVoiceIdForNonHero(npc.IsFemale, npc.Age, npc.AgentIndex);
 			}
-			TtsEngine.Instance.SpeakAsync(text, -1, -1f, num2, text4);
-			LogTtsReport("ShowNpcSpeechOutput.DetachedSpeakFallback", num, $"effectiveAgentIndex={num2};voiceId={text4}");
+			TtsEngine.Instance.SpeakAsync(text5, -1, -1f, num2, text4);
+			LogTtsReport("ShowNpcSpeechOutput.DetachedSpeakFallback", num, $"effectiveAgentIndex={num2};voiceId={text4};ttsLen={(text5 ?? string.Empty).Length};uiLen={(text ?? string.Empty).Length}");
 		}
 		catch
 		{
@@ -3253,7 +3262,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 			stringBuilder.AppendLine();
 			stringBuilder.Append(settlementRulerPresenceLine);
 		}
-		string playerIntroLine = BuildScenePlayerIntroForPrompt(hero, includeTradePricing);
+		string playerIntroLine = BuildScenePlayerIntroForPrompt(hero, npc, includeTradePricing);
 		if (!string.IsNullOrWhiteSpace(playerIntroLine))
 		{
 			stringBuilder.AppendLine();
@@ -3907,6 +3916,11 @@ private static void SplitSceneNpcRoleIntroSections(string fullIntro, bool isHero
 
 	private static string BuildScenePlayerIntroForPrompt(Hero observerHero, bool includeTradePricing = false)
 	{
+		return BuildScenePlayerIntroForPrompt(observerHero, null, includeTradePricing);
+	}
+
+	private static string BuildScenePlayerIntroForPrompt(Hero observerHero, NpcDataPacket observerNpc, bool includeTradePricing = false)
+	{
 		Hero playerHero = Hero.MainHero;
 		if (playerHero == null)
 		{
@@ -4034,6 +4048,11 @@ private static void SplitSceneNpcRoleIntroSections(string fullIntro, bool isHero
 		{
 			stringBuilder.Append(identitySentence);
 		}
+		string crimeRatingLine = MyBehavior.BuildPlayerCrimeRatingPromptLineForExternal(ResolveNpcPerspectiveFactionForPlayerCrimePrompt(observerHero, observerNpc));
+		if (!string.IsNullOrWhiteSpace(crimeRatingLine))
+		{
+			stringBuilder.Append(crimeRatingLine);
+		}
 		try
 		{
 			string playerTroopsLine = BuildHeroPartyTroopsLineForPrompt(playerHero, secondPerson: false);
@@ -4051,6 +4070,28 @@ private static void SplitSceneNpcRoleIntroSections(string fullIntro, bool isHero
 		{
 		}
 		return stringBuilder.ToString().Trim();
+	}
+
+	private static IFaction ResolveNpcPerspectiveFactionForPlayerCrimePrompt(Hero observerHero, NpcDataPacket observerNpc)
+	{
+		try
+		{
+			if (observerHero != null)
+			{
+				return observerHero.Clan?.Kingdom ?? observerHero.MapFaction;
+			}
+			if (observerNpc == null)
+			{
+				return null;
+			}
+			Agent agent = Mission.Current?.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == observerNpc.AgentIndex);
+			PartyBase party = agent?.Origin?.BattleCombatant as PartyBase;
+			return party?.MapFaction;
+		}
+		catch
+		{
+			return null;
+		}
 	}
 
 	private static string BuildPlayerCompanionPartyRoleLabelForPrompt(Hero companionHero)
@@ -5242,6 +5283,76 @@ private static void SplitSceneNpcRoleIntroSections(string fullIntro, bool isHero
 		text2 = Regex.Replace(text2, "\\[RELAY\\s*:[^\\]\\r\\n]+\\]", "", RegexOptions.IgnoreCase);
 		text2 = Regex.Replace(text2, "[ \\t]{2,}", " ");
 		return text2.Trim(' ', '\t', '\r', '\n', '[', ']', ':');
+	}
+
+	private static string SanitizeSceneSpeechTextForTts(string text)
+	{
+		string text2 = ExtractContentSectionForTts((text ?? "").Replace("\r", ""));
+		text2 = StripLeakedPromptContentForShout(text2);
+		text2 = StripActionTagsForSceneSpeech(text2);
+		text2 = Regex.Replace(text2, "<think\\b[^>]*>.*?</think>", "", RegexOptions.IgnoreCase | RegexOptions.Singleline);
+		text2 = Regex.Replace(text2, "\\[REASONING\\].*?(?=\\[CONTENT\\]|$)", "", RegexOptions.IgnoreCase | RegexOptions.Singleline);
+		text2 = Regex.Replace(text2, "\\[(?:ACTION:)?MOOD:[^\\]\\r\\n]*\\]?", "", RegexOptions.IgnoreCase);
+		text2 = Regex.Replace(text2, "(?:^|\\s)(?:ACTION:)?MOOD:[A-Z_]+\\]?(?=$|\\s)", " ", RegexOptions.IgnoreCase);
+		text2 = Regex.Replace(text2, "\\[(?:NO_CONTINUE|END)\\]", "", RegexOptions.IgnoreCase);
+		text2 = Regex.Replace(text2, "\\[RELAY\\s*:[^\\]\\r\\n]+\\]", "", RegexOptions.IgnoreCase);
+		text2 = Regex.Replace(text2, "\\（.*?\\）", "", RegexOptions.Singleline);
+		text2 = Regex.Replace(text2, "\\(.*?\\)", "", RegexOptions.Singleline);
+		text2 = Regex.Replace(text2, "\\*\\*.*?\\*\\*", "", RegexOptions.Singleline);
+		text2 = Regex.Replace(text2, "\\*.*?\\*", "", RegexOptions.Singleline);
+		text2 = Regex.Replace(text2, "(^|\\n)\\s*【[^】\\r\\n]{1,40}】", "$1");
+		text2 = StripTtsNarrationLines(text2);
+		text2 = Regex.Replace(text2, "[ \\t]{2,}", " ");
+		text2 = Regex.Replace(text2, "\\n{3,}", "\n\n");
+		text2 = text2.Trim(' ', '\t', '\r', '\n', '[', ']', ':', '：', '，', '。', ',', ';', '；');
+		return text2.Trim();
+	}
+
+	private static string ExtractContentSectionForTts(string text)
+	{
+		string text2 = (text ?? "").Replace("\r", "");
+		if (string.IsNullOrWhiteSpace(text2))
+		{
+			return "";
+		}
+		int num = text2.LastIndexOf("[CONTENT]", StringComparison.OrdinalIgnoreCase);
+		if (num >= 0)
+		{
+			text2 = text2.Substring(num + "[CONTENT]".Length);
+		}
+		return text2.Trim();
+	}
+
+	private static string StripTtsNarrationLines(string text)
+	{
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return "";
+		}
+		string[] array = text.Replace("\r", "").Split('\n');
+		StringBuilder stringBuilder = new StringBuilder(text.Length);
+		for (int i = 0; i < array.Length; i++)
+		{
+			string text2 = (array[i] ?? "").Trim();
+			if (string.IsNullOrWhiteSpace(text2))
+			{
+				continue;
+			}
+			if (Regex.IsMatch(text2, "^(?:OUTPUT|INPUT|REQUEST_BODY|raw_response|reasoning_content|\\[?REASONING\\]?|\\[?CONTENT\\]?)[：:]", RegexOptions.IgnoreCase))
+			{
+				continue;
+			}
+			if (Regex.IsMatch(text2, "^(?:内心|心声|心想|思考|动作|神态|表情|旁白|叙述|舞台指示|场景描写|心理活动)\\s*[：:]"))
+			{
+				continue;
+			}
+			if (stringBuilder.Length > 0)
+			{
+				stringBuilder.Append('\n');
+			}
+			stringBuilder.Append(text2);
+		}
+		return stringBuilder.ToString().Trim();
 	}
 
 	private static string PrepareSceneHistorySpeechText(string text)
@@ -19269,7 +19380,7 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 				list.Add(CreateChatMessage("user", "【" + GetStrictScenePlayerDisplayName() + "对你说】" + text));
 			}
 		}
-		Logger.Log("ShoutStrict", "npc=" + npcAgentIndex + " messages=" + list.Count + " historyCap=" + maxHistoryMessages);
+		Logger.LogVerbose("ShoutStrict", "strict_messages:" + npcAgentIndex, () => "npc=" + npcAgentIndex + " messages=" + list.Count + " historyCap=" + maxHistoryMessages, 2.0);
 		return list;
 	}
 
@@ -19857,7 +19968,7 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 			string sceneName = (Mission.Current?.SceneName ?? "").Trim();
 			string pendingArmAt = hasPendingArm ? pendingArm.ArmAtMissionTime.ToString("F2") : "-";
 			string extraSuffix = string.IsNullOrWhiteSpace(extra) ? string.Empty : ", " + extra;
-			Logger.Log("TTSReport", $"[{stage}] agentIndex={agentIndex}, name={agentName}, active={active}, hostile={hostile}, speaking={speaking}, hasSe={hasSe}, hasWav={hasWav}, hasXml={hasXml}, hasInteraction={hasInteraction}, interactionToken={interactionToken}, timeoutArmed={timeoutArmed}, hasPendingArm={hasPendingArm}, pendingArmAt={pendingArmAt}, pendingBubble={hasPendingBubble}, pendingBubbleCount={pendingBubbleCount}, pendingDuration={hasPendingDuration}, pendingDurationCount={pendingDurationCount}, pendingSpeechToken={hasPendingSpeechToken}, pendingSpeechTokenCount={pendingSpeechTokenCount}, missionTime={missionTime:F2}, scene={sceneName}{extraSuffix}");
+			Logger.LogVerbose("TTSReport", "tts_report:" + (stage ?? "") + ":" + agentIndex, () => $"[{stage}] agentIndex={agentIndex}, name={agentName}, active={active}, hostile={hostile}, speaking={speaking}, hasSe={hasSe}, hasWav={hasWav}, hasXml={hasXml}, hasInteraction={hasInteraction}, interactionToken={interactionToken}, timeoutArmed={timeoutArmed}, hasPendingArm={hasPendingArm}, pendingArmAt={pendingArmAt}, pendingBubble={hasPendingBubble}, pendingBubbleCount={pendingBubbleCount}, pendingDuration={hasPendingDuration}, pendingDurationCount={pendingDurationCount}, pendingSpeechToken={hasPendingSpeechToken}, pendingSpeechTokenCount={pendingSpeechTokenCount}, missionTime={missionTime:F2}, scene={sceneName}{extraSuffix}", 2.0);
 		}
 		catch (Exception ex)
 		{

@@ -3107,7 +3107,14 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			}
 			if (hero != null)
 			{
-				ChangeRelationAction.ApplyPlayerRelation(hero, -10);
+				if (RomanceSystemBehavior.TryGetPrivateLoveAsPlayerRelation(hero, out var _))
+				{
+					RomanceSystemBehavior.Instance?.AdjustPrivateLove(hero, -10, "meeting_hostile_escalation_relation_delta");
+				}
+				else
+				{
+					ChangeRelationAction.ApplyPlayerRelation(hero, -10);
+				}
 				flag = true;
 				Logger.Log(logChannel, $"Immediate escalation: relation penalty applied to {hero.Name}.");
 			}
@@ -3331,6 +3338,10 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			if (hero == null || Hero.MainHero == null)
 			{
 				return 0;
+			}
+			if (RomanceSystemBehavior.TryGetPrivateLoveAsPlayerRelation(hero, out var relation))
+			{
+				return relation;
 			}
 			return hero.GetRelation(Hero.MainHero);
 		}

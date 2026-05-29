@@ -121,6 +121,8 @@ public static class Logger
 		public string Path;
 
 		public string Content;
+
+		public bool IsVerbose;
 	}
 
 	private static string _modLogPath;
@@ -147,6 +149,8 @@ public static class Logger
 
 	private static readonly object _hitRateLock;
 
+	private static readonly object _verboseLogThrottleLock;
+
 	private static readonly UTF8Encoding _utf8WithBom;
 
 	private static readonly Dictionary<string, HitRateBucket> _hitRate;
@@ -154,6 +158,8 @@ public static class Logger
 	private static readonly Dictionary<string, long> _hitRateScopeSeq;
 
 	private static readonly Dictionary<string, long> _hitRateActiveQuery;
+
+	private static readonly Dictionary<string, long> _verboseLogNextAllowedTicks;
 
 	private static readonly ConcurrentQueue<TokenStatsWorkItem> _tokenStatsWriteQueue;
 
@@ -167,9 +173,23 @@ public static class Logger
 
 	private static long _hitRateEventSeed;
 
+	private static long _droppedVerboseLogCount;
+
+	private static long _droppedNormalLogCount;
+
+	private static long _lastDroppedLogSummaryUtcTicks;
+
 	private const int MetricsFlushIntervalSeconds = 180;
 
 	private const int LogCleanupCheckIntervalSeconds = 5;
+
+	private const int MaxLogWriteQueueItems = 4096;
+
+	private const int HardMaxLogWriteQueueItems = 8192;
+
+	private const int LogBatchFlushItemCount = 256;
+
+	private const int DroppedLogSummaryIntervalSeconds = 10;
 
 	private static string _lastLogCleanupSelection;
 
@@ -183,9 +203,32 @@ public static class Logger
 
 	private static int _logWriterRunning;
 
+	private static int _logWriteQueueCount;
+
 	public static string CurrentTraceId => _traceState.Value?.TraceId ?? "";
 
 	public static string CurrentChannel => _traceState.Value?.Channel ?? "";
+
+	public static bool IsModLogicEnabled => IsPathEnabled(_modLogPath);
+
+	public static bool IsVerboseModLogicEnabled
+	{
+		get
+		{
+			try
+			{
+				if (!IsModLogicEnabled)
+				{
+					return false;
+				}
+				return TryGetSettings()?.EnableVerboseModLogicLog == true;
+			}
+			catch
+			{
+				return false;
+			}
+		}
+	}
 
 	static Logger()
 	{
@@ -194,10 +237,12 @@ public static class Logger
 		_metricsLock = new object();
 		_metrics = new Dictionary<string, MetricBucket>(StringComparer.Ordinal);
 		_hitRateLock = new object();
+		_verboseLogThrottleLock = new object();
 		_utf8WithBom = new UTF8Encoding(encoderShouldEmitUTF8Identifier: true);
 		_hitRate = new Dictionary<string, HitRateBucket>(StringComparer.OrdinalIgnoreCase);
 		_hitRateScopeSeq = new Dictionary<string, long>(StringComparer.Ordinal);
 		_hitRateActiveQuery = new Dictionary<string, long>(StringComparer.Ordinal);
+		_verboseLogNextAllowedTicks = new Dictionary<string, long>(StringComparer.Ordinal);
 		_tokenStatsWriteQueue = new ConcurrentQueue<TokenStatsWorkItem>();
 		_logWriteQueue = new ConcurrentQueue<LogWriteWorkItem>();
 		_metricsWindowStartUtc = DateTime.UtcNow;
@@ -301,7 +346,50 @@ public static class Logger
 
 	public static void Log(string source, string message)
 	{
+		if (ShouldRouteModLogicLogToVerbose(source, message))
+		{
+			if (!IsVerboseModLogicEnabled)
+			{
+				return;
+			}
+			WriteHumanLine(_modLogPath, source, message, isVerbose: true);
+			return;
+		}
 		WriteHumanLine(_modLogPath, source, message);
+	}
+
+	public static void LogLazy(string source, Func<string> messageFactory)
+	{
+		try
+		{
+			if (!IsModLogicEnabled)
+			{
+				return;
+			}
+			WriteHumanLine(_modLogPath, source, messageFactory?.Invoke() ?? "");
+		}
+		catch
+		{
+		}
+	}
+
+	public static void LogVerbose(string source, string key, Func<string> messageFactory, double minIntervalSeconds = 0.0)
+	{
+		try
+		{
+			if (!IsVerboseModLogicEnabled)
+			{
+				return;
+			}
+			if (!CanWriteVerboseLog(source, key, minIntervalSeconds))
+			{
+				return;
+			}
+			WriteHumanLine(_modLogPath, source, messageFactory?.Invoke() ?? "", isVerbose: true);
+		}
+		catch
+		{
+		}
 	}
 
 	public static void LogTrace(string source, string message)
@@ -1159,7 +1247,109 @@ public static class Logger
 		}
 	}
 
-	private static void WriteHumanLine(string path, string source, string message)
+	private static bool CanWriteVerboseLog(string source, string key, double minIntervalSeconds)
+	{
+		try
+		{
+			if (minIntervalSeconds <= 0.0)
+			{
+				return true;
+			}
+			string throttleKey = ((source ?? "").Trim() + "|" + (key ?? "").Trim()).Trim('|');
+			if (string.IsNullOrWhiteSpace(throttleKey))
+			{
+				throttleKey = "__verbose__";
+			}
+			long now = DateTime.UtcNow.Ticks;
+			long next = now + TimeSpan.FromSeconds(Math.Max(0.1, minIntervalSeconds)).Ticks;
+			lock (_verboseLogThrottleLock)
+			{
+				if (_verboseLogNextAllowedTicks.TryGetValue(throttleKey, out long allowed) && now < allowed)
+				{
+					return false;
+				}
+				if (_verboseLogNextAllowedTicks.Count > 512)
+				{
+					_verboseLogNextAllowedTicks.Clear();
+				}
+				_verboseLogNextAllowedTicks[throttleKey] = next;
+			}
+			return true;
+		}
+		catch
+		{
+			return true;
+		}
+	}
+
+	private static bool ShouldRouteModLogicLogToVerbose(string source, string message)
+	{
+		try
+		{
+			string text = (source ?? "").Trim();
+			string msg = (message ?? "").TrimStart();
+			if (string.IsNullOrWhiteSpace(text))
+			{
+				return false;
+			}
+			if (string.Equals(text, "SceneTauntPerf", StringComparison.Ordinal)
+				|| string.Equals(text, "SceneGoldDiag", StringComparison.Ordinal)
+				|| string.Equals(text, "TTSReport", StringComparison.Ordinal)
+				|| string.Equals(text, "LipSyncProbe", StringComparison.Ordinal)
+				|| string.Equals(text, "ShoutStrict", StringComparison.Ordinal))
+			{
+				return true;
+			}
+			if (string.Equals(text, "LoreMatch", StringComparison.Ordinal))
+			{
+				return true;
+			}
+			if (string.Equals(text, "GuardrailSemantic", StringComparison.Ordinal))
+			{
+				return !LooksLikeWarningOrError(msg);
+			}
+			if (string.Equals(text, "DialogueHistory", StringComparison.Ordinal))
+			{
+				return msg.StartsWith("candidate_pool", StringComparison.OrdinalIgnoreCase)
+					|| msg.StartsWith("context ", StringComparison.OrdinalIgnoreCase)
+					|| msg.StartsWith("semantic_accept", StringComparison.OrdinalIgnoreCase);
+			}
+			if (string.Equals(text, "Logic", StringComparison.Ordinal))
+			{
+				return msg.StartsWith("[SemanticTrigger-Shout]", StringComparison.Ordinal)
+					|| msg.StartsWith("[RuleInjectionDebug]", StringComparison.Ordinal)
+					|| msg.StartsWith("[Context]", StringComparison.Ordinal);
+			}
+			if (string.Equals(text, "ShoutBehavior", StringComparison.Ordinal))
+			{
+				return msg.StartsWith("[Hotkey]", StringComparison.Ordinal);
+			}
+		}
+		catch
+		{
+		}
+		return false;
+	}
+
+	private static bool LooksLikeWarningOrError(string message)
+	{
+		try
+		{
+			string text = message ?? "";
+			return text.IndexOf("ERROR", StringComparison.OrdinalIgnoreCase) >= 0
+				|| text.IndexOf("WARN", StringComparison.OrdinalIgnoreCase) >= 0
+				|| text.Contains("错误")
+				|| text.Contains("失败")
+				|| text.IndexOf("failed", StringComparison.OrdinalIgnoreCase) >= 0
+				|| text.IndexOf("exception", StringComparison.OrdinalIgnoreCase) >= 0;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static void WriteHumanLine(string path, string source, string message, bool isVerbose = false)
 	{
 		try
 		{
@@ -1170,7 +1360,7 @@ public static class Logger
 			string text = DateTime.Now.ToString("HH:mm:ss");
 			string currentTraceId = CurrentTraceId;
 			string text2 = (string.IsNullOrWhiteSpace(currentTraceId) ? "" : (" [trace=" + currentTraceId + "]"));
-			EnqueueLogWrite(path, "[" + text + "] [" + source + "]" + text2 + " " + message + "\n");
+			EnqueueLogWrite(path, "[" + text + "] [" + source + "]" + text2 + " " + message + "\n", isVerbose);
 		}
 		catch
 		{
@@ -1192,18 +1382,76 @@ public static class Logger
 		}
 	}
 
-	private static void EnqueueLogWrite(string path, string content)
+	private static void EnqueueLogWrite(string path, string content, bool isVerbose = false, bool bypassBackpressure = false)
 	{
 		if (string.IsNullOrWhiteSpace(path) || content == null)
 		{
 			return;
 		}
+		if (!bypassBackpressure)
+		{
+			int queued = Volatile.Read(ref _logWriteQueueCount);
+			if (queued >= MaxLogWriteQueueItems && isVerbose)
+			{
+				Interlocked.Increment(ref _droppedVerboseLogCount);
+				TryEnqueueDroppedLogSummary();
+				return;
+			}
+			if (queued >= HardMaxLogWriteQueueItems)
+			{
+				if (isVerbose)
+				{
+					Interlocked.Increment(ref _droppedVerboseLogCount);
+				}
+				else
+				{
+					Interlocked.Increment(ref _droppedNormalLogCount);
+				}
+				TryEnqueueDroppedLogSummary();
+				return;
+			}
+		}
+		Interlocked.Increment(ref _logWriteQueueCount);
 		_logWriteQueue.Enqueue(new LogWriteWorkItem
 		{
 			Path = path,
-			Content = content
+			Content = content,
+			IsVerbose = isVerbose
 		});
 		TryStartLogWriter();
+	}
+
+	private static void TryEnqueueDroppedLogSummary()
+	{
+		try
+		{
+			if (!IsModLogicEnabled)
+			{
+				return;
+			}
+			long now = DateTime.UtcNow.Ticks;
+			long last = Interlocked.Read(ref _lastDroppedLogSummaryUtcTicks);
+			if (now - last < TimeSpan.FromSeconds(DroppedLogSummaryIntervalSeconds).Ticks)
+			{
+				return;
+			}
+			if (Interlocked.CompareExchange(ref _lastDroppedLogSummaryUtcTicks, now, last) != last)
+			{
+				return;
+			}
+			long verbose = Interlocked.Exchange(ref _droppedVerboseLogCount, 0L);
+			long normal = Interlocked.Exchange(ref _droppedNormalLogCount, 0L);
+			if (verbose <= 0 && normal <= 0)
+			{
+				return;
+			}
+			string text = DateTime.Now.ToString("HH:mm:ss");
+			string line = $"[{text}] [Logger] dropped verbose={verbose} normal={normal} queued={Volatile.Read(ref _logWriteQueueCount)}\n";
+			EnqueueLogWrite(_modLogPath, line, isVerbose: false, bypassBackpressure: true);
+		}
+		catch
+		{
+		}
 	}
 
 	private static void TryStartLogWriter()
@@ -1221,10 +1469,20 @@ public static class Logger
 		{
 			while (true)
 			{
+				Dictionary<string, StringBuilder> batches = new Dictionary<string, StringBuilder>(StringComparer.OrdinalIgnoreCase);
+				int batchCount = 0;
 				while (_logWriteQueue.TryDequeue(out var item))
 				{
-					WriteLogWorkItem(item);
+					Interlocked.Decrement(ref _logWriteQueueCount);
+					AppendLogWorkItemToBatch(item, batches, ref batchCount);
+					if (batchCount >= LogBatchFlushItemCount)
+					{
+						FlushLogBatches(batches);
+						batches.Clear();
+						batchCount = 0;
+					}
 				}
+				FlushLogBatches(batches);
 				Interlocked.Exchange(ref _logWriterRunning, 0);
 				if (_logWriteQueue.IsEmpty || Interlocked.CompareExchange(ref _logWriterRunning, 1, 0) != 0)
 				{
@@ -1239,6 +1497,51 @@ public static class Logger
 			{
 				TryStartLogWriter();
 			}
+		}
+	}
+
+	private static void AppendLogWorkItemToBatch(LogWriteWorkItem item, Dictionary<string, StringBuilder> batches, ref int batchCount)
+	{
+		try
+		{
+			if (item == null || string.IsNullOrWhiteSpace(item.Path) || item.Content == null || !IsPathEnabled(item.Path) || batches == null)
+			{
+				return;
+			}
+			if (!batches.TryGetValue(item.Path, out var stringBuilder) || stringBuilder == null)
+			{
+				stringBuilder = new StringBuilder();
+				batches[item.Path] = stringBuilder;
+			}
+			stringBuilder.Append(item.Content);
+			batchCount++;
+		}
+		catch
+		{
+		}
+	}
+
+	private static void FlushLogBatches(Dictionary<string, StringBuilder> batches)
+	{
+		try
+		{
+			if (batches == null || batches.Count == 0)
+			{
+				return;
+			}
+			lock (_fileLock)
+			{
+				foreach (KeyValuePair<string, StringBuilder> item in batches)
+				{
+					if (!string.IsNullOrWhiteSpace(item.Key) && item.Value != null && item.Value.Length > 0 && IsPathEnabled(item.Key))
+					{
+						AppendUtf8(item.Key, item.Value.ToString());
+					}
+				}
+			}
+		}
+		catch
+		{
 		}
 	}
 
@@ -1266,6 +1569,7 @@ public static class Logger
 		{
 			while (_logWriteQueue.TryDequeue(out var item))
 			{
+				Interlocked.Decrement(ref _logWriteQueueCount);
 				WriteLogWorkItem(item);
 			}
 		}

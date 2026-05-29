@@ -1012,7 +1012,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		{
 			courier.SetMoveModeHold();
 			ApplyCourierAiOverrides(courier, "reply_wait_hold");
-			Log("reply wait hold session=" + session.Id + " key=" + key);
+			LogVerbose("reply_wait_hold:" + session.Id, "reply wait hold session=" + session.Id + " key=" + key, 5.0);
 		}
 	}
 
@@ -1471,7 +1471,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 				courier.SetMoveGoToSettlement(targetSettlement, courier.NavigationCapability, false);
 			}
 			ApplyCourierAiOverrides(courier, "route_recipient");
-			Log("route recipient session=" + session.Id + " key=" + key);
+			LogVerbose("route_recipient:" + session.Id, "route recipient session=" + session.Id + " key=" + key, 5.0);
 		}
 	}
 
@@ -1507,7 +1507,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 				courier.SetMoveGoToPoint(mainParty.Position, courier.NavigationCapability);
 			}
 			ApplyCourierAiOverrides(courier, "route_sender");
-			Log("route sender session=" + session.Id + " key=" + key);
+			LogVerbose("route_sender:" + session.Id, "route sender session=" + session.Id + " key=" + key, 5.0);
 		}
 	}
 
@@ -1545,7 +1545,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		{
 			courier.SetMoveGoToSettlement(settlement, courier.NavigationCapability, false);
 			ApplyCourierAiOverrides(courier, "route_safe");
-			Log("route safe session=" + session.Id + " settlement=" + settlement.StringId + " reason=" + reason);
+			LogVerbose("route_safe:" + session.Id, "route safe session=" + session.Id + " settlement=" + settlement.StringId + " reason=" + reason, 5.0);
 		}
 	}
 
@@ -1777,7 +1777,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		}
 		if (courier != null && expectedDefaultBehaviors != null && expectedDefaultBehaviors.Length > 0 && !expectedDefaultBehaviors.Contains(courier.DefaultBehavior))
 		{
-			Log("route refresh forced session=" + session.Id + " key=" + key + " defaultBehavior=" + courier.DefaultBehavior + " shortTerm=" + courier.ShortTermBehavior);
+			LogVerbose("route_refresh_forced:" + session.Id, "route refresh forced session=" + session.Id + " key=" + key + " defaultBehavior=" + courier.DefaultBehavior + " shortTerm=" + courier.ShortTermBehavior, 5.0);
 			return true;
 		}
 		return false;
@@ -2499,7 +2499,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 				if (courier.Ai.DoNotMakeNewDecisions)
 				{
 					courier.Ai.SetDoNotMakeNewDecisions(false);
-					Log("ai decisions restored party=" + (courier.StringId ?? "") + " reason=" + (reason ?? ""));
+					LogVerbose("ai_restore:" + (courier.StringId ?? ""), "ai decisions restored party=" + (courier.StringId ?? "") + " reason=" + (reason ?? ""), 10.0);
 				}
 			}
 			ApplyCourierFoodOverrides(courier, reason);
@@ -2529,7 +2529,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			if (!courier.IsCurrentlyUsedByAQuest)
 			{
 				courier.SetPartyUsedByQuest(true);
-				Log("map tracker quest flag applied party=" + (courier.StringId ?? "") + " reason=" + (reason ?? ""));
+				LogVerbose("tracker_quest_flag:" + (courier.StringId ?? ""), "map tracker quest flag applied party=" + (courier.StringId ?? "") + " reason=" + (reason ?? ""), 10.0);
 			}
 			else
 			{
@@ -2587,7 +2587,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			LastTrackerEventPulseTicks[id] = now;
 			courier.SetPartyUsedByQuest(false);
 			courier.SetPartyUsedByQuest(true);
-			Log("map tracker quest event pulsed party=" + id + " reason=" + (reason ?? ""));
+			LogVerbose("tracker_pulse:" + id, "map tracker quest event pulsed party=" + id + " reason=" + (reason ?? ""), 10.0);
 		}
 		catch (Exception ex)
 		{
@@ -2603,7 +2603,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			{
 				return;
 			}
-			Log("map tracker snapshot phase=" + (phase ?? "") +
+			LogVerbose("tracker_snapshot:" + (courier.StringId ?? "") + ":" + (phase ?? ""), "map tracker snapshot phase=" + (phase ?? "") +
 				" party=" + (courier.StringId ?? "") +
 				" reason=" + (reason ?? "") +
 				" tracked=" + tracked +
@@ -2615,7 +2615,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 				" usedByQuest=" + courier.IsCurrentlyUsedByAQuest +
 				" actualClan=" + (courier.ActualClan?.StringId ?? "null") +
 				" mapFaction=" + (courier.MapFaction?.StringId ?? "null") +
-				" component=" + (courier.PartyComponent?.GetType().FullName ?? "null"));
+				" component=" + (courier.PartyComponent?.GetType().FullName ?? "null"), 10.0);
 		}
 		catch (Exception ex)
 		{
@@ -2761,14 +2761,14 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			{
 				__result = true;
 			}
-			Log("map tracker provider CanAddMobileParty courier party=" + (party.StringId ?? "") +
+			LogVerbose("tracker_provider_can_add:" + (party.StringId ?? ""), "map tracker provider CanAddMobileParty courier party=" + (party.StringId ?? "") +
 				" result=" + __result +
 				" tracked=" + tracked +
 				" questUsed=" + party.IsCurrentlyUsedByAQuest +
 				" leaderNull=" + (party.LeaderHero == null) +
 				" active=" + party.IsActive +
 				" forced=" + (tracked && party.IsActive) +
-				" isQuestCondition=" + (party.LeaderHero == null && party.IsCurrentlyUsedByAQuest && tracked));
+				" isQuestCondition=" + (party.LeaderHero == null && party.IsCurrentlyUsedByAQuest && tracked), 10.0);
 		}
 		catch (Exception ex)
 		{
@@ -2792,11 +2792,11 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 				hasTracker = (bool)hasTrackerFor.Invoke(container, new object[] { party });
 			}
 			bool tracked = Campaign.Current?.VisualTrackerManager != null && Campaign.Current.VisualTrackerManager.CheckTracked(party);
-			Log("map tracker provider AddIfEligible courier party=" + (party.StringId ?? "") +
+			LogVerbose("tracker_provider_add:" + (party.StringId ?? ""), "map tracker provider AddIfEligible courier party=" + (party.StringId ?? "") +
 				" hasTracker=" + hasTracker +
 				" tracked=" + tracked +
 				" questUsed=" + party.IsCurrentlyUsedByAQuest +
-				" leaderNull=" + (party.LeaderHero == null));
+				" leaderNull=" + (party.LeaderHero == null), 10.0);
 		}
 		catch (Exception ex)
 		{
@@ -2816,7 +2816,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			int oldValue = party.RemainingFoodPercentage;
 			party.RemainingFoodPercentage = 100;
 			party.OnConsumedFood();
-			Log("food override applied party=" + (courier.StringId ?? "") + " reason=" + (reason ?? "") + " oldRemaining=" + oldValue + " newRemaining=100");
+			LogVerbose("food_override:" + (courier.StringId ?? ""), "food override applied party=" + (courier.StringId ?? "") + " reason=" + (reason ?? "") + " oldRemaining=" + oldValue + " newRemaining=100", 30.0);
 		}
 		catch (Exception ex)
 		{
@@ -3101,6 +3101,17 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		try
 		{
 			Logger.Log(LogSource, message ?? "");
+		}
+		catch
+		{
+		}
+	}
+
+	private static void LogVerbose(string key, string message, double minIntervalSeconds = 0.0)
+	{
+		try
+		{
+			Logger.LogVerbose(LogSource, key, () => message ?? "", minIntervalSeconds);
 		}
 		catch
 		{

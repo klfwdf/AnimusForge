@@ -2997,7 +2997,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 	{
 		Hero hero = targetHero ?? targetCharacter?.HeroObject;
 		int settlementTransferTalkTrust = GetSettlementTransferTalkTrust(hero);
-		int num = (int)MathF.Round(hero?.GetRelationWithPlayer() ?? 0f);
+		int num = RomanceSystemBehavior.TryGetPrivateLoveAsPlayerRelation(hero, out var relation) ? relation : (int)MathF.Round(hero?.GetRelationWithPlayer() ?? 0f);
 		if (settlementTransferTalkTrust < 60)
 		{
 			return $"【领地转移限制】综合信任{settlementTransferTalkTrust}<60。本轮必须直接拒绝任何城市或城堡转移；不要谈价，不要松口，不要输出任何领地转移标签。";
@@ -3062,6 +3062,61 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private static Clan FindReplacementRulingClanForRecruitment(Kingdom kingdom, Clan removedClan)
+	{
+		if (kingdom == null || kingdom.IsEliminated || kingdom.Clans == null)
+		{
+			return null;
+		}
+		try
+		{
+			Clan clan = kingdom.Clans.FirstOrDefault((Clan c) => c != null && c != removedClan && !c.IsEliminated && !c.IsUnderMercenaryService && Campaign.Current?.Models?.DiplomacyModel?.IsClanEligibleToBecomeRuler(c) == true);
+			if (clan != null)
+			{
+				return clan;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			return kingdom.Clans.FirstOrDefault((Clan c) => c != null && c != removedClan && !c.IsEliminated && !c.IsUnderMercenaryService);
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static void RepairRulingClanAfterLeaderRecruitment(Kingdom kingdom, Clan removedClan, List<string> transitionNotes)
+	{
+		try
+		{
+			if (kingdom == null || kingdom.IsEliminated || removedClan == null || kingdom.RulingClan != removedClan)
+			{
+				return;
+			}
+			string kingdomName = kingdom.Name?.ToString() ?? "旧王国";
+			Clan replacementClan = FindReplacementRulingClanForRecruitment(kingdom, removedClan);
+			if (replacementClan != null)
+			{
+				ChangeRulingClanAction.Apply(kingdom, replacementClan);
+				transitionNotes?.Add($"{kingdomName} 已由 {GetClanDisplayNameForNotification(replacementClan)} 接任执政家族");
+			}
+			else
+			{
+				DestroyKingdomAction.Apply(kingdom);
+				transitionNotes?.Add($"{kingdomName} 已无可用执政家族，已按原版逻辑解散王国");
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("Logic", "[Reward] 修复旧王国执政家族失败: " + ex.Message);
+			transitionNotes?.Add("旧王国执政家族修复失败：" + ex.Message);
+		}
+	}
+
 	public bool TryApplyHeroJoinPlayerPartyForExternal(Hero joiningHero, out string statusText)
 	{
 		statusText = "";
@@ -3087,8 +3142,41 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				statusText = $"执行跳过：{joiningHero.Name} 已经在玩家队伍中。";
 				return false;
 			}
+			List<string> transitionNotes = new List<string>();
+			// Capture the original clan before AddCompanionAction changes Hero.Clan through CompanionOf.
+			Clan originalClan = joiningHero.Clan;
+			Kingdom originalKingdom = originalClan?.Kingdom;
 			Settlement currentSettlement = joiningHero.CurrentSettlement;
-			if (currentSettlement != null)
+			Town governorTown = joiningHero.GovernorOf;
+			if (governorTown != null)
+			{
+				string governorTownName = governorTown.Name?.ToString() ?? "原定居点";
+				ChangeGovernorAction.RemoveGovernorOf(joiningHero);
+				transitionNotes.Add("已解除其在 " + governorTownName + " 的总督职位");
+			}
+			if (originalClan != null && originalClan != Clan.PlayerClan && originalClan.Leader == joiningHero && !originalClan.IsEliminated)
+			{
+				string originalClanName = GetClanDisplayNameForNotification(originalClan);
+				Dictionary<Hero, int> heirApparents = originalClan.GetHeirApparents();
+				if (heirApparents != null && heirApparents.Count > 0)
+				{
+					ChangeClanLeaderAction.ApplyWithoutSelectedNewLeader(originalClan);
+					Hero newLeader = originalClan.Leader;
+					if (newLeader == null || newLeader == joiningHero)
+					{
+						statusText = "执行失败：" + originalClanName + " 的族长继承未完成，已阻止将现任族长直接拉入队伍。";
+						return false;
+					}
+					transitionNotes.Add(originalClanName + " 已由 " + newLeader.Name + " 接任族长");
+				}
+				else
+				{
+					DestroyClanAction.ApplyByClanLeaderDeath(originalClan);
+					transitionNotes.Add(originalClanName + " 无可用继承人，已按原版族长死亡逻辑销毁原家族");
+					RepairRulingClanAfterLeaderRecruitment(originalKingdom, originalClan, transitionNotes);
+				}
+			}
+			if (currentSettlement != null && joiningHero.CurrentSettlement != null)
 			{
 				LeaveSettlementAction.ApplyForCharacterOnly(joiningHero);
 			}
@@ -3099,7 +3187,8 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				LocationComplex.Current.RemoveCharacterIfExists(joiningHero);
 			}
 			PlayerEncounter.LocationEncounter?.RemoveAccompanyingCharacter(joiningHero);
-			statusText = $"执行成功：{joiningHero.Name} 已加入玩家队伍。";
+			string transitionSummary = transitionNotes.Count > 0 ? "（" + string.Join("；", transitionNotes) + "）" : "";
+			statusText = $"执行成功：{joiningHero.Name} 已加入玩家队伍{transitionSummary}。";
 			return true;
 		}
 		catch (Exception ex)
@@ -4184,7 +4273,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				}
 				if (oldKingdom != null)
 				{
-					if (oldKingdom.IsAtWarWith(playerKingdom))
+					if (oldKingdom.IsAtWarWith(playerKingdom) && DuelSettings.IsKingdomStabilityAndRebellionEnabled())
 					{
 						ChangeKingdomAction.ApplyByLeaveWithRebellionAgainstKingdom(targetClan, showNotification: true);
 					}
@@ -4574,6 +4663,22 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 		try
 		{
+			if (RomanceSystemBehavior.TryGetPrivateLoveAsPlayerRelation(npc, out var privateRelation))
+			{
+				RomanceSystemBehavior.Instance?.AdjustPrivateLove(npc, delta, (reason ?? "relation_change") + "_private_relation_redirect");
+				int privateRelation2 = RomanceSystemBehavior.Instance?.GetPrivateLove(npc) ?? privateRelation;
+				Logger.Log("Trust", $"npc={npc.StringId} relation_reason={reason} relation_private_redirect={privateRelation}->{privateRelation2} delta={delta}");
+				Logger.Obs("Relation", "change_private_redirect", new Dictionary<string, object>
+				{
+					["npcId"] = npc.StringId ?? "",
+					["reason"] = reason ?? "",
+					["before"] = privateRelation,
+					["after"] = privateRelation2,
+					["delta"] = delta
+				});
+				Logger.Metric("relation.change_private_redirect");
+				return;
+			}
 			int relation = npc.GetRelation(Hero.MainHero);
 			ChangeRelationAction.ApplyRelationChangeBetweenHeroes(Hero.MainHero, npc, delta);
 			int relation2 = npc.GetRelation(Hero.MainHero);

@@ -2326,7 +2326,11 @@ public class SceneTauntMissionBehavior : MissionBehavior
 	{
 		try
 		{
-			Logger.Log("SceneTauntPerf", $"{stage} {BuildPerfContext()}{FormatPerfDetails(details)}");
+			if (!Logger.IsVerboseModLogicEnabled)
+			{
+				return;
+			}
+			Logger.LogVerbose("SceneTauntPerf", "perf_point:" + (stage ?? ""), () => $"{stage} {BuildPerfContext()}{FormatPerfDetails(details)}", 2.0);
 		}
 		catch
 		{
@@ -2342,7 +2346,11 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			{
 				return;
 			}
-			Logger.Log("SceneTauntPerf", $"{stage} elapsedMs={elapsedPerfMs:0.###} {BuildPerfContext()}{FormatPerfDetails(details)}");
+			if (!Logger.IsVerboseModLogicEnabled)
+			{
+				return;
+			}
+			Logger.LogVerbose("SceneTauntPerf", "perf_elapsed:" + (stage ?? ""), () => $"{stage} elapsedMs={elapsedPerfMs:0.###} {BuildPerfContext()}{FormatPerfDetails(details)}", 2.0);
 		}
 		catch
 		{
@@ -2495,7 +2503,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		}
 		if (!IsPlayerInteractionInputSuppressed() && ShouldTriggerPlayerAttackRelease())
 		{
-			Logger.Log("SceneTaunt", $"[AttackTiming] release_triggered time={Mission.Current?.CurrentTime:0.###} location={(CampaignMission.Current?.Location?.StringId ?? "").Trim().ToLowerInvariant()} settlement={Settlement.CurrentSettlement?.StringId} weapon={IsAgentUsingRealWeapon(Agent.Main)} conflict={_conflictActive} armed={_armedConflict}");
+			Logger.LogVerbose("SceneTaunt", "attack_timing_release", () => $"[AttackTiming] release_triggered time={Mission.Current?.CurrentTime:0.###} location={(CampaignMission.Current?.Location?.StringId ?? "").Trim().ToLowerInvariant()} settlement={Settlement.CurrentSettlement?.StringId} weapon={IsAgentUsingRealWeapon(Agent.Main)} conflict={_conflictActive} armed={_armedConflict}", 1.0);
 			if (!_sceneAttackReleaseSuppressed)
 			{
 				if (!_conflictActive)
@@ -2638,7 +2646,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			}
 			List<Agent> nearbyNPCAgents = ShoutUtils.GetNearbyNPCAgents();
 			Agent facingAgent = FindFacingCriminalAttackTarget(nearbyNPCAgents) ?? FindFacingPhysicalAttackTarget() ?? FindClosestEligiblePhysicalAttackTarget();
-			Logger.Log("SceneTaunt", $"[AttackTiming] facing_attack_scan time={Mission.Current?.CurrentTime:0.###} location={(CampaignMission.Current?.Location?.StringId ?? "").Trim().ToLowerInvariant()} settlement={Settlement.CurrentSettlement?.StringId} nearbyCount={(nearbyNPCAgents != null ? nearbyNPCAgents.Count : 0)} target={(facingAgent?.Name?.ToString() ?? "null")} targetIndex={(facingAgent != null ? facingAgent.Index : -1)}");
+			Logger.LogVerbose("SceneTaunt", "attack_timing_facing_scan", () => $"[AttackTiming] facing_attack_scan time={Mission.Current?.CurrentTime:0.###} location={(CampaignMission.Current?.Location?.StringId ?? "").Trim().ToLowerInvariant()} settlement={Settlement.CurrentSettlement?.StringId} nearbyCount={(nearbyNPCAgents != null ? nearbyNPCAgents.Count : 0)} target={(facingAgent?.Name?.ToString() ?? "null")} targetIndex={(facingAgent != null ? facingAgent.Index : -1)}", 1.0);
 			if (facingAgent == null || !facingAgent.IsActive())
 			{
 				return;
@@ -3574,7 +3582,8 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		{
 			return;
 		}
-		Logger.Log("SceneTaunt", $"[AttackTiming] on_agent_hit time={Mission.Current?.CurrentTime:0.###} location={(CampaignMission.Current?.Location?.StringId ?? "").Trim().ToLowerInvariant()} settlement={Settlement.CurrentSettlement?.StringId} target={affectedAgent.Name} targetIndex={affectedAgent.Index} weapon={IsMissionWeaponRealWeapon(attackerWeapon)} conflict={_conflictActive} armed={_armedConflict}");
+		bool attackerWeaponIsReal = IsMissionWeaponRealWeapon(attackerWeapon);
+		Logger.LogVerbose("SceneTaunt", "attack_timing_on_agent_hit:" + affectedAgent.Index, () => $"[AttackTiming] on_agent_hit time={Mission.Current?.CurrentTime:0.###} location={(CampaignMission.Current?.Location?.StringId ?? "").Trim().ToLowerInvariant()} settlement={Settlement.CurrentSettlement?.StringId} target={affectedAgent.Name} targetIndex={affectedAgent.Index} weapon={attackerWeaponIsReal} conflict={_conflictActive} armed={_armedConflict}", 1.0);
 		if (TryPrimeOwnedSettlementPassiveAttackOnHit(affectedAgent, "player_physical_hit"))
 		{
 			return;
@@ -3616,7 +3625,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		{
 			return;
 		}
-		Logger.Log("SceneTaunt", $"[AttackTiming] on_score_hit time={Mission.Current?.CurrentTime:0.###} location={(CampaignMission.Current?.Location?.StringId ?? "").Trim().ToLowerInvariant()} settlement={Settlement.CurrentSettlement?.StringId} target={affectedAgent.Name} targetIndex={affectedAgent.Index} weapon={IsWeaponComponentRealWeapon(attackerWeapon)} damage={damagedHp:0.##} blocked={isBlocked} conflict={_conflictActive} armed={_armedConflict}");
+		Logger.LogVerbose("SceneTaunt", "attack_timing_on_score_hit:" + affectedAgent.Index, () => $"[AttackTiming] on_score_hit time={Mission.Current?.CurrentTime:0.###} location={(CampaignMission.Current?.Location?.StringId ?? "").Trim().ToLowerInvariant()} settlement={Settlement.CurrentSettlement?.StringId} target={affectedAgent.Name} targetIndex={affectedAgent.Index} weapon={IsWeaponComponentRealWeapon(attackerWeapon)} damage={damagedHp:0.##} blocked={isBlocked} conflict={_conflictActive} armed={_armedConflict}", 1.0);
 		if (TryHandleOwnedSettlementPassiveAttackDamage(affectedAgent, damagedHp, "player_physical_score_hit"))
 		{
 			return;
@@ -4610,7 +4619,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 	{
 		try
 		{
-			Logger.Log("SceneGoldDiag", message);
+			Logger.LogVerbose("SceneGoldDiag", "scene_gold_diag:" + (message ?? ""), () => message ?? "", 2.0);
 		}
 		catch
 		{
@@ -4926,7 +4935,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			{
 				return false;
 			}
-			Logger.Log("SceneTaunt", $"[AttackTiming] try_start_conflict_from_physical_attack time={Mission.Current?.CurrentTime:0.###} location={(CampaignMission.Current?.Location?.StringId ?? "").Trim().ToLowerInvariant()} settlement={Settlement.CurrentSettlement?.StringId} reason={reason} target={(targetAgent?.Name?.ToString() ?? "null")} targetIndex={(targetAgent != null ? targetAgent.Index : -1)} playerUsedWeapon={playerUsedWeapon} conflict={_conflictActive} armed={_armedConflict}");
+			Logger.LogVerbose("SceneTaunt", "attack_timing_try_start:" + (targetAgent?.Index ?? -1), () => $"[AttackTiming] try_start_conflict_from_physical_attack time={Mission.Current?.CurrentTime:0.###} location={(CampaignMission.Current?.Location?.StringId ?? "").Trim().ToLowerInvariant()} settlement={Settlement.CurrentSettlement?.StringId} reason={reason} target={(targetAgent?.Name?.ToString() ?? "null")} targetIndex={(targetAgent != null ? targetAgent.Index : -1)} playerUsedWeapon={playerUsedWeapon} conflict={_conflictActive} armed={_armedConflict}", 1.0);
 			if (_conflictActive || targetAgent == null || !targetAgent.IsHuman || !targetAgent.IsActive())
 			{
 				return false;
@@ -4980,7 +4989,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			customSectionStart = StartPerfTimer();
 			bool flag = TryStartConflict(hero, characterObject, targetAgent.Index, sceneTauntTargetKey, fromVerbalTaunt: false, playerUsedWeaponOverride: playerUsedWeapon);
 			LogPerfElapsed("physicalAttack.custom.TryStartConflict", customSectionStart, $"started={flag}", SceneTauntPerfHeavyStageThresholdMs);
-			Logger.Log("SceneTaunt", $"[AttackTiming] try_start_conflict_result time={Mission.Current?.CurrentTime:0.###} reason={reason} target={(targetAgent?.Name?.ToString() ?? "null")} started={flag} conflict={_conflictActive} armed={_armedConflict}");
+			Logger.LogVerbose("SceneTaunt", "attack_timing_result:" + (targetAgent?.Index ?? -1), () => $"[AttackTiming] try_start_conflict_result time={Mission.Current?.CurrentTime:0.###} reason={reason} target={(targetAgent?.Name?.ToString() ?? "null")} started={flag} conflict={_conflictActive} armed={_armedConflict}", 1.0);
 			if (!flag)
 			{
 				return false;
@@ -5204,7 +5213,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		{
 			text2 = "武器";
 		}
-		return "[AFEF NPC行为补充] ，" + text + "一刀看向了你，而你现在也拔出了" + text2 + "与" + text + "肉搏。";
+		return "[AFEF NPC行为补充] ，" + text + "一刀看向了你，而你现在也拔出了" + text2 + "与" + text + "厮杀了起来。";
 	}
 
 	private static string TryGetActiveWeaponDisplayName(Agent agent)

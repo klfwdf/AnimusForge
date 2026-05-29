@@ -69,7 +69,7 @@ public sealed class CourierMobilePartyAIModel : MobilePartyAIModel
 			bestInitiativeBehavior = AiBehavior.None;
 			bestInitiativeTargetParty = null;
 			bestInitiativeBehaviorScore = 0f;
-			Logger.Log("CourierDelivery", "initiative attack suppressed party=" + (mobileParty?.StringId ?? ""));
+			Logger.LogVerbose("CourierDelivery", "initiative_attack_suppressed:" + (mobileParty?.StringId ?? ""), () => "initiative attack suppressed party=" + (mobileParty?.StringId ?? ""), 10.0);
 		}
 	}
 }

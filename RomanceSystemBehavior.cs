@@ -596,6 +596,62 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		return "hero:" + text;
 	}
 
+	public static bool IsPlayerCompanionOrFamily(Hero hero)
+	{
+		try
+		{
+			Hero mainHero = Hero.MainHero;
+			Clan playerClan = Clan.PlayerClan ?? mainHero?.Clan;
+			if (hero == null || mainHero == null || hero == mainHero)
+			{
+				return false;
+			}
+			if (hero.IsPlayerCompanion || (playerClan != null && hero.CompanionOf == playerClan))
+			{
+				return true;
+			}
+			if (playerClan != null && hero.Clan == playerClan)
+			{
+				return true;
+			}
+			if (hero.Spouse == mainHero || mainHero.Spouse == hero || hero.Father == mainHero || hero.Mother == mainHero || mainHero.Father == hero || mainHero.Mother == hero)
+			{
+				return true;
+			}
+			if ((hero.Father != null && hero.Father == mainHero.Father) || (hero.Mother != null && hero.Mother == mainHero.Mother))
+			{
+				return true;
+			}
+			if (hero.Children != null && hero.Children.Contains(mainHero))
+			{
+				return true;
+			}
+			return mainHero.Children != null && mainHero.Children.Contains(hero);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	public static bool TryGetPrivateLoveAsPlayerRelation(Hero hero, out int relation)
+	{
+		relation = 0;
+		if (!IsPlayerCompanionOrFamily(hero))
+		{
+			return false;
+		}
+		try
+		{
+			relation = Instance?.GetPrivateLove(hero) ?? 0;
+		}
+		catch
+		{
+			relation = 0;
+		}
+		return true;
+	}
+
 	public static string GetPrivateLoveLevelText(int value)
 	{
 		return LoveLevelTexts[ToLoveLevelIndex(value) - 1];
@@ -698,6 +754,14 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 			if (left == null || right == null)
 			{
 				return 0;
+			}
+			if (left == Hero.MainHero && TryGetPrivateLoveAsPlayerRelation(right, out var rightRelation))
+			{
+				return rightRelation;
+			}
+			if (right == Hero.MainHero && TryGetPrivateLoveAsPlayerRelation(left, out var leftRelation))
+			{
+				return leftRelation;
 			}
 			return left.GetRelation(right);
 		}
@@ -2363,7 +2427,14 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		{
 			try
 			{
-				ChangeRelationAction.ApplyRelationChangeBetweenHeroes(Hero.MainHero, leader, -25);
+				if (TryGetPrivateLoveAsPlayerRelation(leader, out var _))
+				{
+					Instance?.AdjustPrivateLove(leader, -25, "elope_leader_relation_delta");
+				}
+				else
+				{
+					ChangeRelationAction.ApplyRelationChangeBetweenHeroes(Hero.MainHero, leader, -25);
+				}
 			}
 			catch
 			{

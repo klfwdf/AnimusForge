@@ -5150,6 +5150,10 @@ public static class AIConfigHandler
 					{
 						continue;
 					}
+					if (!IsPlayerRulerKingdomServicePostprocessTag(text6))
+					{
+						continue;
+					}
 					if (text6.IndexOf("{targetClanId}", StringComparison.OrdinalIgnoreCase) >= 0)
 					{
 						if (string.IsNullOrWhiteSpace(text5))
@@ -5158,10 +5162,6 @@ public static class AIConfigHandler
 						}
 						text6 = text6.Replace("{targetClanId}", text5);
 						description2 = description2.Replace("{targetClanId}", text5);
-					}
-					if (!ShouldIncludeKingdomServicePostprocessTag(text4, text6))
-					{
-						continue;
 					}
 					list.Add(new PostprocessRuleEntry
 					{
@@ -5191,6 +5191,10 @@ public static class AIConfigHandler
 				{
 					continue;
 				}
+				if (!IsPlayerJoinKingdomServicePostprocessTag(text3))
+				{
+					continue;
+				}
 				if (text3.IndexOf("{targetKingdomId}", StringComparison.OrdinalIgnoreCase) >= 0)
 				{
 					if (string.IsNullOrWhiteSpace(text2))
@@ -5199,10 +5203,6 @@ public static class AIConfigHandler
 					}
 					text3 = text3.Replace("{targetKingdomId}", text2);
 					description = description.Replace("{targetKingdomId}", text2);
-				}
-				if (!ShouldIncludeKingdomServicePostprocessTag(text, text3))
-				{
-					continue;
 				}
 				list.Add(new PostprocessRuleEntry
 				{
@@ -5216,6 +5216,24 @@ public static class AIConfigHandler
 		{
 		}
 		return list;
+	}
+
+	private static bool IsPlayerRulerKingdomServicePostprocessTag(string tag)
+	{
+		string text = (tag ?? "").Trim();
+		return text.StartsWith("[ACTION:KINGDOM_SERVICE:CLAN_JOIN_PLAYER_KINGDOM:", StringComparison.OrdinalIgnoreCase);
+	}
+
+	private static bool IsPlayerJoinKingdomServicePostprocessTag(string tag)
+	{
+		string text = (tag ?? "").Trim();
+		if (text.StartsWith("[ACTION:KINGDOM_SERVICE:CLAN_JOIN_PLAYER_KINGDOM:", StringComparison.OrdinalIgnoreCase))
+		{
+			return false;
+		}
+		return text.StartsWith("[ACTION:KINGDOM_SERVICE:MERCENARY:", StringComparison.OrdinalIgnoreCase)
+			|| text.StartsWith("[ACTION:KINGDOM_SERVICE:VASSAL:", StringComparison.OrdinalIgnoreCase)
+			|| text.Equals("[ACTION:KINGDOM_SERVICE:LEAVE:current]", StringComparison.OrdinalIgnoreCase);
 	}
 
 	public static List<PostprocessRuleEntry> BuildRuntimeLordsHallAccessPostprocessRules()
