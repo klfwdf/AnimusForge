@@ -37,9 +37,24 @@ public static partial class TroopInspectionBehavior
 
 		public MobileParty HoldingDummyParty { get; set; }
 
+		public MainPartyRoleSnapshot RoleSnapshot { get; set; }
+
 		public string InspectionSummary { get; set; }
 
 		public string NotSelectedSummary { get; set; }
+	}
+
+	private sealed class MainPartyRoleSnapshot
+	{
+		public Hero Scout { get; set; }
+
+		public Hero Engineer { get; set; }
+
+		public Hero Quartermaster { get; set; }
+
+		public Hero Surgeon { get; set; }
+
+		public bool Restored { get; set; }
 	}
 
 	private sealed class PendingSelection
@@ -287,6 +302,7 @@ public static partial class TroopInspectionBehavior
 		{
 			Log("cleanup holding_party failed: " + ex.GetType().Name + ": " + ex.Message);
 		}
+		RestoreMainPartyRolesFromSnapshot(runtime, reason);
 		CleanupOrphanSelectionPoolDummyParties("cleanup_selection_pool_orphan");
 		_mapEvent = null;
 		_dummyParty = null;
@@ -1099,6 +1115,164 @@ public static partial class TroopInspectionBehavior
 		return result;
 	}
 
+	private static MainPartyRoleSnapshot CaptureMainPartyRoleSnapshot(string reason)
+	{
+		MainPartyRoleSnapshot snapshot = new MainPartyRoleSnapshot();
+		try
+		{
+			MobileParty mainParty = MobileParty.MainParty;
+			if (mainParty == null)
+			{
+				Log("role_snapshot reason=" + reason + " skipped=main_party_null");
+				return snapshot;
+			}
+			snapshot.Scout = mainParty.GetRoleHolder(PartyRole.Scout);
+			snapshot.Engineer = mainParty.GetRoleHolder(PartyRole.Engineer);
+			snapshot.Quartermaster = mainParty.GetRoleHolder(PartyRole.Quartermaster);
+			snapshot.Surgeon = mainParty.GetRoleHolder(PartyRole.Surgeon);
+			Log("role_snapshot reason=" + reason
+				+ " scout=" + SafeHeroId(snapshot.Scout)
+				+ " engineer=" + SafeHeroId(snapshot.Engineer)
+				+ " quartermaster=" + SafeHeroId(snapshot.Quartermaster)
+				+ " surgeon=" + SafeHeroId(snapshot.Surgeon));
+		}
+		catch (Exception ex)
+		{
+			Log("role_snapshot failed reason=" + reason + " " + ex.GetType().Name + ": " + ex.Message);
+		}
+		return snapshot;
+	}
+
+	private static void RestoreMainPartyRolesFromSnapshot(TroopInspectionRuntime runtime, string reason)
+	{
+		MainPartyRoleSnapshot snapshot = runtime?.RoleSnapshot;
+		if (snapshot == null || snapshot.Restored)
+		{
+			return;
+		}
+		snapshot.Restored = true;
+		try
+		{
+			MobileParty mainParty = MobileParty.MainParty;
+			if (mainParty == null)
+			{
+				Log("role_restore reason=" + reason + " skipped=main_party_null");
+				return;
+			}
+			List<string> changes = new List<string>();
+			RestoreMainPartyRole(mainParty, PartyRole.Scout, snapshot.Scout, changes);
+			RestoreMainPartyRole(mainParty, PartyRole.Engineer, snapshot.Engineer, changes);
+			RestoreMainPartyRole(mainParty, PartyRole.Quartermaster, snapshot.Quartermaster, changes);
+			RestoreMainPartyRole(mainParty, PartyRole.Surgeon, snapshot.Surgeon, changes);
+			if (changes.Count > 0)
+			{
+				Log("role_restore reason=" + reason + " " + string.Join(" ", changes));
+			}
+		}
+		catch (Exception ex)
+		{
+			Log("role_restore failed reason=" + reason + " " + ex.GetType().Name + ": " + ex.Message);
+		}
+	}
+
+	private static void RestoreMainPartyRole(MobileParty mainParty, PartyRole role, Hero originalHolder, List<string> changes)
+	{
+		string roleName = GetPartyRoleLogName(role);
+		Hero currentHolder = mainParty.GetRoleHolder(role);
+		if (originalHolder == null)
+		{
+			if (currentHolder != null)
+			{
+				SetMainPartyRole(mainParty, role, null);
+				changes.Add(roleName + "=cleared_from:" + SafeHeroId(currentHolder));
+			}
+			return;
+		}
+		if (!CanRestoreMainPartyRoleHero(mainParty, originalHolder, out string skipReason))
+		{
+			changes.Add(roleName + "=skipped:" + skipReason + ":" + SafeHeroId(originalHolder));
+			return;
+		}
+		if (currentHolder == originalHolder)
+		{
+			return;
+		}
+		SetMainPartyRole(mainParty, role, originalHolder);
+		changes.Add(roleName + "=restored:" + SafeHeroId(originalHolder));
+	}
+
+	private static bool CanRestoreMainPartyRoleHero(MobileParty mainParty, Hero hero, out string reason)
+	{
+		if (hero == null)
+		{
+			reason = "null";
+			return false;
+		}
+		if (hero.IsDead)
+		{
+			reason = "dead";
+			return false;
+		}
+		if (hero.IsPrisoner)
+		{
+			reason = "prisoner";
+			return false;
+		}
+		if (hero.PartyBelongedTo != mainParty)
+		{
+			reason = "party_" + (hero.PartyBelongedTo?.StringId ?? "null");
+			return false;
+		}
+		if (mainParty.MemberRoster == null || !mainParty.MemberRoster.Contains(hero.CharacterObject))
+		{
+			reason = "not_in_main_roster";
+			return false;
+		}
+		reason = null;
+		return true;
+	}
+
+	private static void SetMainPartyRole(MobileParty mainParty, PartyRole role, Hero hero)
+	{
+		switch (role)
+		{
+			case PartyRole.Scout:
+				mainParty.SetPartyScout(hero);
+				break;
+			case PartyRole.Engineer:
+				mainParty.SetPartyEngineer(hero);
+				break;
+			case PartyRole.Quartermaster:
+				mainParty.SetPartyQuartermaster(hero);
+				break;
+			case PartyRole.Surgeon:
+				mainParty.SetPartySurgeon(hero);
+				break;
+		}
+	}
+
+	private static string GetPartyRoleLogName(PartyRole role)
+	{
+		switch (role)
+		{
+			case PartyRole.Scout:
+				return "scout";
+			case PartyRole.Engineer:
+				return "engineer";
+			case PartyRole.Quartermaster:
+				return "quartermaster";
+			case PartyRole.Surgeon:
+				return "surgeon";
+			default:
+				return role.ToString().ToLowerInvariant();
+		}
+	}
+
+	private static string SafeHeroId(Hero hero)
+	{
+		return SafeCharacterId(hero?.CharacterObject);
+	}
+
 
 	private static void CleanupOrphanSelectionPoolDummyParties(string label)
 	{
@@ -1130,6 +1304,7 @@ public static partial class TroopInspectionBehavior
 	{
 		CleanupOrphanSelectionPoolDummyParties(reason + "_selection_pool_orphan");
 		CleanupOrphanHoldingDummyParties(null, reason + "_legacy_holding_orphan");
+		RestoreMainPartyRolesFromSnapshot(_runtime, reason);
 	}
 
 	private static void ClearRosterDirect(TroopRoster roster)
@@ -1843,6 +2018,8 @@ public static partial class TroopInspectionBehavior
 			message.StartsWith("cleanup end", StringComparison.Ordinal) ||
 			message.StartsWith("cleanup_return_summary", StringComparison.Ordinal) ||
 			message.StartsWith("cleanup_prisoner_return_summary", StringComparison.Ordinal) ||
+			message.StartsWith("role_snapshot", StringComparison.Ordinal) ||
+			message.StartsWith("role_restore", StringComparison.Ordinal) ||
 			message.StartsWith("player_health_restore", StringComparison.Ordinal))
 		{
 			return true;
@@ -2025,6 +2202,7 @@ private const string HoldingDummyPartyPrefix = "animusforge_troop_inspection_hol
 			throw new InvalidOperationException("MainParty is null.");
 		}
 
+		runtime.RoleSnapshot = CaptureMainPartyRoleSnapshot("before_split");
 		PrepareMainPartyRosterStateForInspection("prepare_runtime_snapshot");
 
 		Dictionary<CharacterObject, RosterTotals> beforeMembers = BuildRosterTotals(mainParty.MemberRoster);
