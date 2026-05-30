@@ -421,20 +421,34 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyGroup("5. 知识检索（返回）")]
 	public int KnowledgeDirectTopN { get; set; } = 4;
 
-	[SettingPropertyInteger("近期对话轮数", 1, 80, "0", Order = 1, RequireRestart = false, HintText = "每轮发送最近 N 轮对话历史到 AI。旧记忆召回仍会按现有机制检索。默认 20。")]
-	[SettingPropertyGroup("5. 知识检索（返回）")]
 	public int RecentDialogueTurns { get; set; } = 20;
 
-	[SettingPropertyInteger("长期记忆返回上限", 1, 12, "0", Order = 2, RequireRestart = false, HintText = "控制每次对话最多向 AI 提供多少条长期记忆命中。系统会自动推导召回和精排数量；若实际高相关记忆不足，不会为了凑数硬塞。默认 4。")]
-	[SettingPropertyGroup("5. 知识检索（返回）")]
 	public int HistoryRecallTopN { get; set; } = 4;
+
+	[SettingPropertyInteger("记忆压缩比例分母", 3, 10, "0", Order = 1, RequireRestart = false, HintText = "日结摘要目标字数为当天有效对话总字数的 1/N，默认 5。AFEF 行不计入总字数且不会被压缩；摘要最少 80 字。")]
+	[SettingPropertyGroup("5. 压缩记忆")]
+	public int MemoryCompressionDenominator { get; set; } = 5;
+
+	[SettingPropertyInteger("记忆总结 RPM", 1, 20, "0", Order = 2, RequireRestart = false, HintText = "跨天后每分钟最多并发总结多少个 NPC/日记忆。默认 3，最高 20。")]
+	[SettingPropertyGroup("5. 压缩记忆")]
+	public int MemorySummaryRequestsPerMinute { get; set; } = 3;
+
+	[SettingPropertyInteger("记忆候选上限", 5, 40, "0", Order = 3, RequireRestart = false, HintText = "进入前处理的压缩记忆候选块数量。默认 20；15-20 通常最合适。超过该数量时使用富标题语义检索。")]
+	[SettingPropertyGroup("5. 压缩记忆")]
+	public int MemoryCandidateLimit { get; set; } = 20;
+
+	[SettingPropertyInteger("最终注入记忆数", 2, 20, "0", Order = 4, RequireRestart = false, HintText = "主链路最终注入的压缩记忆块数量。默认 4；运行时不会超过“记忆候选上限”。")]
+	[SettingPropertyGroup("5. 压缩记忆")]
+	public int MemoryFinalInjectCount { get; set; } = 4;
+
+	[SettingPropertyInteger("前处理模式", 1, 2, "0", Order = 5, RequireRestart = false, HintText = "1=同体模式：规则 Code 与记忆编号放进同一个前处理 JSON 请求；2=并发模式：规则筛选与记忆筛选同时请求，全部成功解析后进入主链路。默认 1。")]
+	[SettingPropertyGroup("5. 压缩记忆")]
+	public int MemoryPreprocessMode { get; set; } = 1;
 
 	[SettingPropertyInteger("规则返回上限", 1, 12, "0", Order = 0, RequireRestart = false, HintText = "控制每次对话最多向 AI 提供多少条附加规则。系统会自动推导召回和精排数量；若实际高相关规则不足，不会为了凑数硬塞。默认 4。")]
 	[SettingPropertyGroup("6. 规则触发（返回）")]
 	public int GuardrailDirectTopN { get; set; } = 4;
 
-	[SettingPropertyBool("规则检索使用辅助API", Order = 1, RequireRestart = false, HintText = "开启后，规则话题筛选将先调用一次辅助API做低成本路由，再进行正文生成；关闭后继续使用传统 RAG 检索。简易场景对话链路会直接使用下方前处理API配置，不受此开关影响。")]
-	[SettingPropertyGroup("6. 规则触发（返回）")]
 	public bool UseAuxiliaryRuleApi { get; set; } = false;
 
 	[SettingPropertyText("辅助API 地址（支持填写 Base URL）", -1, true, "", Order = 0, RequireRestart = false, HintText = "用于规则检索、规则路由与简易场景对话链路的低成本接口地址，例如: https://api.openai.com/v1。填写到 /v1 时会自动补全为 /v1/chat/completions。")]

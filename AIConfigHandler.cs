@@ -105,6 +105,8 @@ public static class AIConfigHandler
 
 		public string Label;
 
+		public string Code;
+
 		public string RuleId;
 	}
 
@@ -419,7 +421,8 @@ public static class AIConfigHandler
 		{
 			try
 			{
-				return DuelSettings.GetSettings()?.UseAuxiliaryRuleApi == true;
+				DuelSettings settings = DuelSettings.GetSettings();
+				return settings != null && (settings.UseAuxiliaryRuleApi || settings.MemoryPreprocessMode == 1 || settings.MemoryPreprocessMode == 2);
 			}
 			catch
 			{
@@ -1235,6 +1238,42 @@ public static class AIConfigHandler
 		return dictionary;
 	}
 
+	private static string NormalizeRuleCode(string code, string id, string label = null)
+	{
+		string text = (code ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			string text2 = (id ?? "").Trim().ToLowerInvariant();
+			text = text2 switch
+			{
+				"duel" => "DUEL",
+				"reward" => "TRADE",
+				"loan" => "DEBT",
+				"surroundings" => "NEARBY",
+				"kingdom_service" => "KINGDOM",
+				"lords_hall_access" => "PASSAGE",
+				"marriage" => "MARRIAGE",
+				"scene_mechanism_actions" => "SCENE_MOVE",
+				"party_transfer" => "PARTY_TRANSFER",
+				"settlement_transfer" => "SETTLEMENT",
+				"vanilla_issue" => "ISSUE",
+				"npc_major_actions" => "NPC_MAJOR",
+				"npc_recent_actions" => "NPC_RECENT",
+				"encounter_release_player" => "MEETING_RELEASE",
+				"hero_join_party" => "HERO_JOIN",
+				"noble_deference" => "NOBLE_PRESSURE",
+				"vote_deal" => "VOTE_DEAL",
+				_ => ""
+			};
+		}
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			text = (label ?? id ?? "RULE").Trim();
+		}
+		text = Regex.Replace(text.ToUpperInvariant(), "[^A-Z0-9_]+", "_").Trim('_');
+		return string.IsNullOrWhiteSpace(text) ? "RULE" : text;
+	}
+
 	private static GuardrailRulePromptConfig BuildLegacyRulePrompt(string id, bool enabled, string instruction, List<string> triggerKeywords, string group, int priority, int topicNumber, string topicLabel)
 	{
 		return new GuardrailRulePromptConfig
@@ -1243,6 +1282,7 @@ public static class AIConfigHandler
 			IsEnabled = enabled,
 			TopicNumber = topicNumber,
 			TopicLabel = (topicLabel ?? "").Trim(),
+			Code = NormalizeRuleCode("", id, topicLabel),
 			Instruction = (instruction ?? ""),
 			TriggerKeywords = NormalizeTriggerKeywordList(triggerKeywords),
 			Group = (group ?? "").Trim(),
@@ -1271,6 +1311,7 @@ public static class AIConfigHandler
 				Priority = src.Priority,
 				TopicNumber = src.TopicNumber,
 				TopicLabel = (src.TopicLabel ?? "").Trim(),
+				Code = NormalizeRuleCode(src.Code, text, src.TopicLabel),
 				Instruction = (src.Instruction ?? ""),
 				NonHeroInstruction = (src.NonHeroInstruction ?? ""),
 				PostprocessRules = ((src.PostprocessRules != null) ? src.PostprocessRules.Where((PostprocessRuleEntry x) => x != null && !string.IsNullOrWhiteSpace((x.Tag ?? "").Trim())).Select((PostprocessRuleEntry x) => new PostprocessRuleEntry
@@ -1324,6 +1365,7 @@ public static class AIConfigHandler
 				if (!string.IsNullOrWhiteSpace(text))
 				{
 					guardrailRulePromptConfig.Id = text;
+					guardrailRulePromptConfig.Code = NormalizeRuleCode(guardrailRulePromptConfig.Code, text, guardrailRulePromptConfig.TopicLabel);
 					map[text] = guardrailRulePromptConfig;
 				}
 			}
@@ -1705,7 +1747,7 @@ public static class AIConfigHandler
 		try
 		{
 			DuelSettings settings = DuelSettings.GetSettings();
-			if (settings == null || !settings.UseAuxiliaryRuleApi)
+			if (settings == null || (!settings.UseAuxiliaryRuleApi && settings.MemoryPreprocessMode != 1 && settings.MemoryPreprocessMode != 2))
 			{
 				return false;
 			}
@@ -2261,12 +2303,14 @@ public static class AIConfigHandler
 			string text = (value?.Id ?? "").Trim();
 			string text2 = (value?.TopicLabel ?? "").Trim();
 			int num = value?.TopicNumber ?? 0;
-			if (num > 0 && !string.IsNullOrWhiteSpace(text) && !string.IsNullOrWhiteSpace(text2) && hashSet.Contains(text) && IsRuleCurrentlyEligibleForRag(text))
+			string text3 = NormalizeRuleCode(value?.Code, text, text2);
+			if (num > 0 && !string.IsNullOrWhiteSpace(text) && !string.IsNullOrWhiteSpace(text2) && !string.IsNullOrWhiteSpace(text3) && hashSet.Contains(text) && IsRuleCurrentlyEligibleForRag(text))
 			{
 				list.Add(new GuardrailAuxiliaryTopic
 				{
 					Number = num,
 					Label = text2,
+					Code = text3,
 					RuleId = text
 				});
 			}
@@ -2611,7 +2655,7 @@ public static class AIConfigHandler
 			GuardrailAuxiliaryTopic guardrailAuxiliaryTopic = topics[i];
 			if (guardrailAuxiliaryTopic != null)
 			{
-				stringBuilder.AppendLine(guardrailAuxiliaryTopic.Number + ": " + guardrailAuxiliaryTopic.Label);
+				stringBuilder.AppendLine(guardrailAuxiliaryTopic.Code + ": " + guardrailAuxiliaryTopic.Label);
 			}
 		}
 		stringBuilder.AppendLine();
@@ -2621,7 +2665,7 @@ public static class AIConfigHandler
 		stringBuilder.AppendLine("*Latest NPC/player exchange*:");
 		stringBuilder.Append("NPC: ").AppendLine(string.IsNullOrWhiteSpace(text2) ? "(none)" : NormalizeAuxiliaryRoutingRequestText(text2));
 		stringBuilder.Append("Player: ").AppendLine(string.IsNullOrWhiteSpace(text5) ? "(none)" : NormalizeAuxiliaryRoutingRequestText(text5));
-		stringBuilder.AppendLine("Select the most similar topics. You MUST output exactly " + Math.Max(1, topN) + " topic numbers, ranked by similarity. Even if the dialogue seems entirely unrelated, you must still force-select the closest matching topics. Do NOT output 0. Format: a comma-separated list of numbers. Do not output anything else. Prioritize the *Latest NPC/player exchange*; use the scene history only as supporting context.");
+		stringBuilder.AppendLine("Select the most similar topics. You MUST output exactly " + Math.Max(1, topN) + " topic codes, ranked by similarity. Even if the dialogue seems entirely unrelated, you must still force-select the closest matching topics. Output strict JSON only: {\"rule_codes\":[\"CODE\"]}. Do not output topic numbers, prose, markdown, or any other key. Prioritize the *Latest NPC/player exchange*; use the scene history only as supporting context.");
 		return SanitizeAuxiliaryRoutingPromptDialogueSections(stringBuilder.ToString()).Trim();
 	}
 
@@ -2718,9 +2762,20 @@ public static class AIConfigHandler
 		}
 	}
 
-	private static List<int> ParseAuxiliaryGuardrailTopicNumbers(string content)
+	private static string StripAuxiliaryJsonCodeFence(string content)
 	{
-		List<int> list = new List<int>();
+		string text = (content ?? "").Trim();
+		if (text.StartsWith("```", StringComparison.Ordinal))
+		{
+			text = Regex.Replace(text, "^```(?:json)?\\s*", "", RegexOptions.IgnoreCase).Trim();
+			text = Regex.Replace(text, "\\s*```$", "", RegexOptions.CultureInvariant).Trim();
+		}
+		return text;
+	}
+
+	private static List<string> ParseAuxiliaryGuardrailRuleCodes(string content, IEnumerable<GuardrailAuxiliaryTopic> topics)
+	{
+		List<string> list = new List<string>();
 		try
 		{
 			string text = (content ?? "").Trim();
@@ -2728,15 +2783,38 @@ public static class AIConfigHandler
 			{
 				return list;
 			}
-			int auxiliaryGuardrailTopicNumberUpperBound = GetAuxiliaryGuardrailTopicNumberUpperBound();
-			HashSet<int> hashSet = new HashSet<int>();
-			foreach (Match item in AuxiliaryGuardrailNumberRegex.Matches(text))
+			Dictionary<string, string> dictionary = (topics ?? Enumerable.Empty<GuardrailAuxiliaryTopic>()).Where((GuardrailAuxiliaryTopic x) => x != null && !string.IsNullOrWhiteSpace(x.Code)).GroupBy((GuardrailAuxiliaryTopic x) => x.Code.Trim(), StringComparer.OrdinalIgnoreCase).ToDictionary((IGrouping<string, GuardrailAuxiliaryTopic> g) => NormalizeRuleCode(g.Key, "", ""), (IGrouping<string, GuardrailAuxiliaryTopic> g) => g.First().RuleId ?? "", StringComparer.OrdinalIgnoreCase);
+			HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+			try
 			{
-				if (item == null || !int.TryParse(item.Value, out var result) || result < 1 || result > auxiliaryGuardrailTopicNumberUpperBound || !hashSet.Add(result))
+				JObject jObject = JObject.Parse(StripAuxiliaryJsonCodeFence(text));
+				JArray jArray = jObject["rule_codes"] as JArray;
+				if (jArray != null)
 				{
-					continue;
+					foreach (JToken item in jArray)
+					{
+						string text2 = NormalizeRuleCode(item?.ToString() ?? "", "", "");
+						if (!string.IsNullOrWhiteSpace(text2) && dictionary.ContainsKey(text2) && hashSet.Add(text2))
+						{
+							list.Add(text2);
+						}
+					}
 				}
-				list.Add(result);
+			}
+			catch
+			{
+			}
+			if (list.Count > 0)
+			{
+				return list;
+			}
+			foreach (Match item2 in Regex.Matches(text, "[A-Z][A-Z0-9_]{1,48}", RegexOptions.CultureInvariant))
+			{
+				string text3 = NormalizeRuleCode(item2?.Value ?? "", "", "");
+				if (!string.IsNullOrWhiteSpace(text3) && dictionary.ContainsKey(text3) && hashSet.Add(text3))
+				{
+					list.Add(text3);
+				}
 			}
 		}
 		catch
@@ -2823,7 +2901,7 @@ public static class AIConfigHandler
 				snapshot = null;
 				return false;
 			}
-			List<int> list2 = ParseAuxiliaryGuardrailTopicNumbers(content);
+			List<string> list2 = ParseAuxiliaryGuardrailRuleCodes(content, list);
 			if (list2.Count <= 0)
 			{
 				foreach (GuardrailRuleEval value in snapshot.Rules.Values)
@@ -2841,7 +2919,7 @@ public static class AIConfigHandler
 			List<string> list3 = new List<string>();
 			for (int j = 0; j < list2.Count; j++)
 			{
-				GuardrailAuxiliaryTopic guardrailAuxiliaryTopic = list.FirstOrDefault((GuardrailAuxiliaryTopic x) => x != null && x.Number == list2[j]);
+				GuardrailAuxiliaryTopic guardrailAuxiliaryTopic = list.FirstOrDefault((GuardrailAuxiliaryTopic x) => x != null && string.Equals(NormalizeRuleCode(x.Code, x.RuleId, x.Label), list2[j], StringComparison.OrdinalIgnoreCase));
 				string text3 = guardrailAuxiliaryTopic?.RuleId ?? "";
 				if (!string.IsNullOrWhiteSpace(text3) && hashSet2.Add(text3))
 				{
@@ -2908,6 +2986,68 @@ public static class AIConfigHandler
 		{
 			Logger.Log("GuardrailSemantic", "auxiliary_router exception=" + ex.Message);
 			snapshot = null;
+			return false;
+		}
+	}
+
+	public static bool TryCallAuxiliaryRuleCodesForExternal(string userText, string secondaryText, string runtimeGuardrailContext, int topN, out List<string> ruleIds, out string error)
+	{
+		ruleIds = new List<string>();
+		error = "";
+		try
+		{
+			if (!TryGetAuxiliaryRuleRoutingConfig(out var apiUrl, out var apiKey, out var modelName))
+			{
+				error = "auxiliary_rule_router_config_invalid";
+				return false;
+			}
+			List<GuardrailRulePromptConfig> allEnabledRulePrompts = GetAllEnabledRulePrompts();
+			if (allEnabledRulePrompts == null || allEnabledRulePrompts.Count <= 0)
+			{
+				error = "no_enabled_rule_topics";
+				return false;
+			}
+			List<GuardrailAuxiliaryTopic> topics = GetEligibleAuxiliaryGuardrailTopics(allEnabledRulePrompts.Select((GuardrailRulePromptConfig x) => x?.Id ?? ""));
+			if (topics.Count <= 0)
+			{
+				error = "no_eligible_rule_topics";
+				return false;
+			}
+			int returnCap = Math.Max(1, topN <= 0 ? GuardrailRuleReturnCap : topN);
+			string prompt = BuildAuxiliaryGuardrailRoutingPrompt(userText, secondaryText, runtimeGuardrailContext, topics, returnCap);
+			if (!TryCallAuxiliaryRuleRouterApi(apiUrl, apiKey, modelName, prompt, out var content, out error))
+			{
+				return false;
+			}
+			List<string> codes = ParseAuxiliaryGuardrailRuleCodes(content, topics);
+			if (codes.Count <= 0)
+			{
+				error = "rule_codes_parse_empty";
+				return false;
+			}
+			foreach (string code in codes)
+			{
+				GuardrailAuxiliaryTopic topic = topics.FirstOrDefault((GuardrailAuxiliaryTopic x) => x != null && string.Equals(NormalizeRuleCode(x.Code, x.RuleId, x.Label), code, StringComparison.OrdinalIgnoreCase));
+				string ruleId = topic?.RuleId ?? "";
+				if (!string.IsNullOrWhiteSpace(ruleId) && !ruleIds.Contains(ruleId, StringComparer.OrdinalIgnoreCase))
+				{
+					ruleIds.Add(ruleId);
+				}
+				if (ruleIds.Count >= returnCap)
+				{
+					break;
+				}
+			}
+			if (ruleIds.Count <= 0)
+			{
+				error = "rule_ids_empty";
+				return false;
+			}
+			return true;
+		}
+		catch (Exception ex)
+		{
+			error = BuildAuxiliaryRouterExceptionText(ex);
 			return false;
 		}
 	}

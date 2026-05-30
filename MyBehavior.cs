@@ -174,6 +174,167 @@ public class MyBehavior : CampaignBehaviorBase
 		public List<string> Lines = new List<string>();
 	}
 
+	private sealed class DailyMemoryLine
+	{
+		public int GameDayIndex;
+
+		public string GameDate = "";
+
+		public int GameHour;
+
+		public string Scene = "";
+
+		public string Speaker = "";
+
+		public string Text = "";
+
+		public bool IsAfef;
+
+		public bool IsLlmDialogue;
+	}
+
+	private sealed class DailyMemoryDraft
+	{
+		public string HeroId = "";
+
+		public string HeroName = "";
+
+		public int GameDayIndex;
+
+		public string GameDate = "";
+
+		public bool HasLlmDialogue;
+
+		public bool QueuedForSummary;
+
+		public int SummaryRetryCount;
+
+		public string LastSummaryError = "";
+
+		public List<DailyMemoryLine> Lines = new List<DailyMemoryLine>();
+	}
+
+	private sealed class CompressedMemoryBlock
+	{
+		public string Id = "";
+
+		public string HeroId = "";
+
+		public string HeroName = "";
+
+		public int GameDayIndex;
+
+		public string GameDate = "";
+
+		public int StartHour;
+
+		public int EndHour;
+
+		public List<string> Scenes = new List<string>();
+
+		public string RichTitle = "";
+
+		public string Summary = "";
+
+		public List<string> AfefLines = new List<string>();
+
+		public long CreatedUtcTicks;
+	}
+
+	private sealed class MemorySummaryJob
+	{
+		public string HeroId = "";
+
+		public string HeroName = "";
+
+		public int GameDayIndex;
+
+		public string GameDate = "";
+
+		public int RetryCount;
+
+		public string LastError = "";
+	}
+
+	private sealed class MemoryRecallCandidate
+	{
+		public int DisplayId;
+
+		public CompressedMemoryBlock Block;
+
+		public double Score;
+	}
+
+	private sealed class MemorySummaryExecutionResult
+	{
+		public MemorySummaryJob Job;
+
+		public CompressedMemoryBlock Block;
+
+		public string Error = "";
+
+		public bool Success => Block != null;
+	}
+
+	private sealed class MajorActionSummaryState
+	{
+		public string HeroId = "";
+
+		public string HeroName = "";
+
+		public string Summary = "";
+
+		public int LastSummarizedDay;
+
+		public int LastSummarizedSequence;
+
+		public long UpdatedUtcTicks;
+
+		public string LastError = "";
+	}
+
+	private sealed class MajorActionSummaryJob
+	{
+		public string HeroId = "";
+
+		public string HeroName = "";
+
+		public int TriggerGameDayIndex;
+
+		public string TriggerGameDate = "";
+
+		public int RetryCount;
+
+		public string LastError = "";
+	}
+
+	private sealed class MajorActionSummaryExecutionResult
+	{
+		public MajorActionSummaryJob Job;
+
+		public MajorActionSummaryState State;
+
+		public string Error = "";
+
+		public bool Success => State != null && !string.IsNullOrWhiteSpace(State.Summary);
+	}
+
+	private sealed class DailySummaryQueueResult
+	{
+		public MemorySummaryExecutionResult MemoryResult;
+
+		public MajorActionSummaryExecutionResult MajorActionResult;
+	}
+
+	private sealed class CompressedMemoryExportBundle
+	{
+		public List<DailyMemoryDraft> DailyDrafts = new List<DailyMemoryDraft>();
+
+		public List<CompressedMemoryBlock> Blocks = new List<CompressedMemoryBlock>();
+
+		public List<MemorySummaryJob> SummaryQueue = new List<MemorySummaryJob>();
+	}
+
 	private class NpcActionEntry
 	{
 		public int Day;
@@ -475,6 +636,7 @@ public class MyBehavior : CampaignBehaviorBase
 		public bool IsQualified;
 	}
 
+#pragma warning disable 0649
 	private sealed class HistoryLineEntry
 	{
 		public int Day;
@@ -485,6 +647,7 @@ public class MyBehavior : CampaignBehaviorBase
 
 		public int Index;
 	}
+#pragma warning restore 0649
 
 	private sealed class ArchiveHit
 	{
@@ -1107,6 +1270,30 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private Dictionary<string, string> _dialogueHistoryStorage = new Dictionary<string, string>();
 
+	private Dictionary<string, List<DailyMemoryDraft>> _dailyMemoryDrafts = new Dictionary<string, List<DailyMemoryDraft>>(StringComparer.OrdinalIgnoreCase);
+
+	private Dictionary<string, string> _dailyMemoryDraftStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+	private Dictionary<string, List<CompressedMemoryBlock>> _compressedMemoryBlocks = new Dictionary<string, List<CompressedMemoryBlock>>(StringComparer.OrdinalIgnoreCase);
+
+	private Dictionary<string, string> _compressedMemoryBlockStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+	private List<MemorySummaryJob> _memorySummaryQueue = new List<MemorySummaryJob>();
+
+	private string _memorySummaryQueueJsonStorage = "";
+
+	private bool _memorySummaryProcessing;
+
+	private bool _memorySummaryFailurePopupActive;
+
+	private Dictionary<string, MajorActionSummaryState> _npcMajorActionSummaries = new Dictionary<string, MajorActionSummaryState>(StringComparer.OrdinalIgnoreCase);
+
+	private Dictionary<string, string> _npcMajorActionSummaryStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+	private List<MajorActionSummaryJob> _npcMajorActionSummaryQueue = new List<MajorActionSummaryJob>();
+
+	private string _npcMajorActionSummaryQueueJsonStorage = "";
+
 	private Dictionary<string, List<NpcActionEntry>> _npcMajorActions = new Dictionary<string, List<NpcActionEntry>>();
 
 	private Dictionary<string, string> _npcMajorActionStorage = new Dictionary<string, string>();
@@ -1389,6 +1576,86 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 		}
 		return 4;
+	}
+
+	private static int GetMemoryCompressionDenominatorFromSettings()
+	{
+		try
+		{
+			DuelSettings settings = DuelSettings.GetSettings();
+			if (settings != null)
+			{
+				return MBMath.ClampInt(settings.MemoryCompressionDenominator, 3, 10);
+			}
+		}
+		catch
+		{
+		}
+		return 5;
+	}
+
+	private static int GetMemorySummaryRequestsPerMinuteFromSettings()
+	{
+		try
+		{
+			DuelSettings settings = DuelSettings.GetSettings();
+			if (settings != null)
+			{
+				return MBMath.ClampInt(settings.MemorySummaryRequestsPerMinute, 1, 20);
+			}
+		}
+		catch
+		{
+		}
+		return 3;
+	}
+
+	private static int GetMemoryCandidateLimitFromSettings()
+	{
+		try
+		{
+			DuelSettings settings = DuelSettings.GetSettings();
+			if (settings != null)
+			{
+				return MBMath.ClampInt(settings.MemoryCandidateLimit, 5, 40);
+			}
+		}
+		catch
+		{
+		}
+		return 20;
+	}
+
+	private static int GetMemoryFinalInjectCountFromSettings()
+	{
+		try
+		{
+			DuelSettings settings = DuelSettings.GetSettings();
+			if (settings != null)
+			{
+				return Math.Min(MBMath.ClampInt(settings.MemoryFinalInjectCount, 2, 20), GetMemoryCandidateLimitFromSettings());
+			}
+		}
+		catch
+		{
+		}
+		return 4;
+	}
+
+	private static int GetMemoryPreprocessModeFromSettings()
+	{
+		try
+		{
+			DuelSettings settings = DuelSettings.GetSettings();
+			if (settings != null && settings.MemoryPreprocessMode == 2)
+			{
+				return 2;
+			}
+		}
+		catch
+		{
+		}
+		return 1;
 	}
 
 	public override void RegisterEvents()
@@ -2146,10 +2413,707 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private static bool IsDialogueOrLetterChainBusyForMemorySummary()
+	{
+		try
+		{
+			if (Campaign.Current?.ConversationManager?.IsConversationInProgress == true)
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		return false;
+	}
+
+	private void TryEnqueueMajorActionSummaryForDraft(DailyMemoryDraft draft, HashSet<string> queuedMajorHeroIds)
+	{
+		try
+		{
+			if (draft == null || !draft.HasLlmDialogue)
+			{
+				return;
+			}
+			string heroId = NormalizeMemoryHeroId(draft.HeroId);
+			if (string.IsNullOrWhiteSpace(heroId) || _npcMajorActions == null || !_npcMajorActions.TryGetValue(heroId, out var actions) || actions == null)
+			{
+				return;
+			}
+			List<NpcActionEntry> sanitizedActions = SanitizeNpcActionEntries(actions, keepOnlyRecentWindow: false);
+			if (sanitizedActions.Count <= 0 || !HasMajorActionsNeedingSummary(heroId, sanitizedActions))
+			{
+				return;
+			}
+			if (_npcMajorActionSummaryQueue == null)
+			{
+				_npcMajorActionSummaryQueue = new List<MajorActionSummaryJob>();
+			}
+			MajorActionSummaryJob existing = _npcMajorActionSummaryQueue.FirstOrDefault((MajorActionSummaryJob x) => x != null && string.Equals(NormalizeMemoryHeroId(x.HeroId), heroId, StringComparison.OrdinalIgnoreCase));
+			if (existing != null)
+			{
+				existing.TriggerGameDayIndex = Math.Max(existing.TriggerGameDayIndex, draft.GameDayIndex);
+				if (string.IsNullOrWhiteSpace(existing.TriggerGameDate))
+				{
+					existing.TriggerGameDate = (draft.GameDate ?? "").Trim();
+				}
+				queuedMajorHeroIds?.Add(heroId);
+				return;
+			}
+			if (queuedMajorHeroIds != null && !queuedMajorHeroIds.Add(heroId))
+			{
+				return;
+			}
+			_npcMajorActionSummaryQueue.Add(new MajorActionSummaryJob
+			{
+				HeroId = heroId,
+				HeroName = (draft.HeroName ?? "").Trim(),
+				TriggerGameDayIndex = draft.GameDayIndex,
+				TriggerGameDate = (draft.GameDate ?? "").Trim()
+			});
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("NpcMajorSummary", "[ERROR] TryEnqueueMajorActionSummaryForDraft failed: " + ex.Message);
+		}
+	}
+
+	private void TrySealPastDailyMemoryDrafts()
+	{
+		try
+		{
+			if (_dailyMemoryDrafts == null || _dailyMemoryDrafts.Count <= 0)
+			{
+				return;
+			}
+			int currentDay = (int)CampaignTime.Now.ToDays;
+			if (_memorySummaryQueue == null)
+			{
+				_memorySummaryQueue = new List<MemorySummaryJob>();
+			}
+			if (_npcMajorActionSummaryQueue == null)
+			{
+				_npcMajorActionSummaryQueue = new List<MajorActionSummaryJob>();
+			}
+			HashSet<string> queued = new HashSet<string>(_memorySummaryQueue.Where((MemorySummaryJob x) => x != null).Select((MemorySummaryJob x) => NormalizeMemoryHeroId(x.HeroId) + "|" + x.GameDayIndex), StringComparer.OrdinalIgnoreCase);
+			HashSet<string> queuedMajor = new HashSet<string>(_npcMajorActionSummaryQueue.Where((MajorActionSummaryJob x) => x != null).Select((MajorActionSummaryJob x) => NormalizeMemoryHeroId(x.HeroId)), StringComparer.OrdinalIgnoreCase);
+			List<string> emptyKeys = new List<string>();
+			foreach (KeyValuePair<string, List<DailyMemoryDraft>> item in _dailyMemoryDrafts.ToList())
+			{
+				List<DailyMemoryDraft> list = item.Value ?? new List<DailyMemoryDraft>();
+				for (int i = list.Count - 1; i >= 0; i--)
+				{
+					DailyMemoryDraft draft = list[i];
+					if (draft == null || draft.GameDayIndex >= currentDay)
+					{
+						continue;
+					}
+					if (!draft.HasLlmDialogue || CountDailyMemorySummarySourceChars(draft) <= 0)
+					{
+						list.RemoveAt(i);
+						continue;
+					}
+					TryEnqueueMajorActionSummaryForDraft(draft, queuedMajor);
+					string text = NormalizeMemoryHeroId(draft.HeroId);
+					string key = text + "|" + draft.GameDayIndex;
+					if (HasCompressedMemoryBlock(text, draft.GameDayIndex))
+					{
+						list.RemoveAt(i);
+						continue;
+					}
+					if (!queued.Contains(key))
+					{
+						_memorySummaryQueue.Add(new MemorySummaryJob
+						{
+							HeroId = text,
+							HeroName = draft.HeroName,
+							GameDayIndex = draft.GameDayIndex,
+							GameDate = draft.GameDate
+						});
+						queued.Add(key);
+					}
+					draft.QueuedForSummary = true;
+				}
+				list = SanitizeDailyMemoryDrafts(list);
+				if (list.Count > 0)
+				{
+					_dailyMemoryDrafts[item.Key] = list;
+				}
+				else
+				{
+					emptyKeys.Add(item.Key);
+				}
+			}
+			foreach (string key2 in emptyKeys)
+			{
+				_dailyMemoryDrafts.Remove(key2);
+			}
+			_memorySummaryQueue = SanitizeMemorySummaryQueue(_memorySummaryQueue);
+			_npcMajorActionSummaryQueue = SanitizeMajorActionSummaryQueue(_npcMajorActionSummaryQueue);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("CompressedMemory", "[ERROR] TrySealPastDailyMemoryDrafts failed: " + ex.Message);
+		}
+	}
+
+	private bool HasCompressedMemoryBlock(string heroId, int dayIndex)
+	{
+		heroId = NormalizeMemoryHeroId(heroId);
+		if (string.IsNullOrWhiteSpace(heroId) || _compressedMemoryBlocks == null)
+		{
+			return false;
+		}
+		return _compressedMemoryBlocks.TryGetValue(heroId, out var value) && value != null && value.Any((CompressedMemoryBlock x) => x != null && x.GameDayIndex == dayIndex);
+	}
+
+	private void TryStartMemorySummaryQueue()
+	{
+		try
+		{
+			bool hasMemoryJobs = _memorySummaryQueue != null && _memorySummaryQueue.Count > 0;
+			bool hasMajorActionJobs = _npcMajorActionSummaryQueue != null && _npcMajorActionSummaryQueue.Count > 0;
+			if (_memorySummaryProcessing || IsDialogueOrLetterChainBusyForMemorySummary() || (!hasMemoryJobs && !hasMajorActionJobs))
+			{
+				return;
+			}
+			_memorySummaryProcessing = true;
+			_ = ProcessMemorySummaryQueueAsync();
+		}
+		catch (Exception ex)
+		{
+			_memorySummaryProcessing = false;
+			Logger.Log("CompressedMemory", "[ERROR] TryStartMemorySummaryQueue failed: " + ex.Message);
+		}
+	}
+
+	private async Task ProcessMemorySummaryQueueAsync()
+	{
+		try
+		{
+			List<MemorySummaryJob> jobs = SanitizeMemorySummaryQueue(_memorySummaryQueue);
+			List<MajorActionSummaryJob> majorJobs = SanitizeMajorActionSummaryQueue(_npcMajorActionSummaryQueue);
+			if (jobs.Count <= 0 && majorJobs.Count <= 0)
+			{
+				return;
+			}
+			int burstSize = GetMemorySummaryRequestsPerMinuteFromSettings();
+			int totalJobCount = jobs.Count + majorJobs.Count;
+			InformationManager.DisplayMessage(new InformationMessage("AnimusForge 开始日结压缩任务，共 " + totalJobCount + " 个；对话记忆 " + jobs.Count + " 个，重大履历 " + majorJobs.Count + " 个；每分钟上限 " + burstSize + "。"));
+			List<object> queueItems = new List<object>();
+			queueItems.AddRange(jobs.Cast<object>());
+			queueItems.AddRange(majorJobs.Cast<object>());
+			List<MemorySummaryExecutionResult> results = new List<MemorySummaryExecutionResult>();
+			List<MajorActionSummaryExecutionResult> majorResults = new List<MajorActionSummaryExecutionResult>();
+			for (int i = 0; i < queueItems.Count; i += burstSize)
+			{
+				List<object> wave = queueItems.Skip(i).Take(burstSize).ToList();
+				List<Task<DailySummaryQueueResult>> tasks = wave.Select(ExecuteDailySummaryQueueItemAsync).ToList();
+				DailySummaryQueueResult[] completed = await Task.WhenAll(tasks);
+				foreach (DailySummaryQueueResult completedResult in completed)
+				{
+					if (completedResult == null)
+					{
+						continue;
+					}
+					if (completedResult.MemoryResult != null)
+					{
+						results.Add(completedResult.MemoryResult);
+					}
+					if (completedResult.MajorActionResult != null)
+					{
+						majorResults.Add(completedResult.MajorActionResult);
+					}
+				}
+				if (i + burstSize < queueItems.Count)
+				{
+					await Task.Delay(60000);
+				}
+			}
+			List<string> failures = new List<string>();
+			foreach (MemorySummaryExecutionResult result in results)
+			{
+				if (result == null || result.Job == null)
+				{
+					continue;
+				}
+				if (result.Success)
+				{
+					ApplyMemorySummarySuccess(result.Job, result.Block);
+				}
+				else
+				{
+					failures.Add((result.Job.HeroName ?? result.Job.HeroId) + " 第" + result.Job.GameDayIndex + "日：" + (result.Error ?? "未知错误"));
+					MarkMemorySummaryFailure(result.Job, result.Error);
+				}
+			}
+			foreach (MajorActionSummaryExecutionResult result2 in majorResults)
+			{
+				if (result2 == null || result2.Job == null)
+				{
+					continue;
+				}
+				if (result2.Success)
+				{
+					ApplyMajorActionSummarySuccess(result2.Job, result2.State);
+				}
+				else
+				{
+					failures.Add((result2.Job.HeroName ?? result2.Job.HeroId) + " 重大履历：" + (result2.Error ?? "未知错误"));
+					MarkMajorActionSummaryFailure(result2.Job, result2.Error);
+				}
+			}
+			_memorySummaryQueue = SanitizeMemorySummaryQueue(_memorySummaryQueue.Where((MemorySummaryJob job) => job != null && !HasCompressedMemoryBlock(job.HeroId, job.GameDayIndex)).ToList());
+			_npcMajorActionSummaryQueue = SanitizeMajorActionSummaryQueue((_npcMajorActionSummaryQueue ?? new List<MajorActionSummaryJob>()).Where((MajorActionSummaryJob job) => job != null && HasMajorActionSummaryJobStillPending(job)).ToList());
+			if (failures.Count > 0)
+			{
+				ShowCompressedMemoryBlockingPopup("日结压缩总结失败", "以下日结压缩任务重试 3 次后仍失败：\n\n" + string.Join("\n", failures.Take(12)) + "\n\n请修复 API 或调低记忆总结 RPM 后重试。");
+			}
+			else if (results.Count > 0 || majorResults.Count > 0)
+			{
+				InformationManager.DisplayMessage(new InformationMessage("AnimusForge 日结压缩完成：对话记忆 " + results.Count((MemorySummaryExecutionResult x) => x != null && x.Success) + " 个，重大履历 " + majorResults.Count((MajorActionSummaryExecutionResult x) => x != null && x.Success) + " 个。"));
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("CompressedMemory", "[ERROR] ProcessMemorySummaryQueueAsync failed: " + ex);
+			ShowCompressedMemoryBlockingPopup("压缩记忆总结异常", ex.Message);
+		}
+		finally
+		{
+			_memorySummaryProcessing = false;
+		}
+	}
+
+	private async Task<DailySummaryQueueResult> ExecuteDailySummaryQueueItemAsync(object item)
+	{
+		DailySummaryQueueResult result = new DailySummaryQueueResult();
+		MemorySummaryJob memoryJob = item as MemorySummaryJob;
+		if (memoryJob != null)
+		{
+			result.MemoryResult = await ExecuteMemorySummaryJobAsync(memoryJob, 3);
+			return result;
+		}
+		MajorActionSummaryJob majorJob = item as MajorActionSummaryJob;
+		if (majorJob != null)
+		{
+			result.MajorActionResult = await ExecuteMajorActionSummaryJobAsync(majorJob, 3);
+			return result;
+		}
+		return result;
+	}
+
+	private DailyMemoryDraft FindMemoryDraft(MemorySummaryJob job)
+	{
+		if (job == null)
+		{
+			return null;
+		}
+		string text = NormalizeMemoryHeroId(job.HeroId);
+		if (string.IsNullOrWhiteSpace(text) || _dailyMemoryDrafts == null || !_dailyMemoryDrafts.TryGetValue(text, out var value) || value == null)
+		{
+			return null;
+		}
+		return value.FirstOrDefault((DailyMemoryDraft x) => x != null && x.GameDayIndex == job.GameDayIndex);
+	}
+
+	private async Task<MemorySummaryExecutionResult> ExecuteMemorySummaryJobAsync(MemorySummaryJob job, int maxAttempts)
+	{
+		MemorySummaryExecutionResult result = new MemorySummaryExecutionResult
+		{
+			Job = job
+		};
+		try
+		{
+			Hero hero = FindHeroById(job?.HeroId);
+			DailyMemoryDraft draft = FindMemoryDraft(job);
+			if (hero == null || draft == null || draft.Lines == null || draft.Lines.Count <= 0)
+			{
+				result.Error = "找不到待总结 NPC 或原始历史。";
+				return result;
+			}
+			for (int i = 1; i <= Math.Max(1, maxAttempts); i++)
+			{
+				ApiCallResult apiCallResult = await CallUniversalApiDetailed(BuildMemorySummarySystemPrompt(draft), BuildMemorySummaryUserPrompt(hero, draft), logToEventLogs: false, eventLogSource: "CompressedMemory", route: UniversalApiRoute.Auxiliary);
+				if (apiCallResult.Success && TryParseMemorySummaryResponse(apiCallResult.Content, hero, draft, out var block, out var error))
+				{
+					result.Block = block;
+					return result;
+				}
+				result.Error = apiCallResult.Success ? "总结 JSON 解析失败：" + (apiCallResult.Content ?? "") : (apiCallResult.ErrorMessage ?? "API请求失败");
+				if (i < maxAttempts)
+				{
+					await Task.Delay(apiCallResult.RetryAfterSeconds.HasValue ? Math.Max(1000, apiCallResult.RetryAfterSeconds.Value * 1000) : 1500);
+				}
+			}
+			return result;
+		}
+		catch (Exception ex)
+		{
+			result.Error = ex.Message;
+			return result;
+		}
+	}
+
+	private async Task<MajorActionSummaryExecutionResult> ExecuteMajorActionSummaryJobAsync(MajorActionSummaryJob job, int maxAttempts)
+	{
+		MajorActionSummaryExecutionResult result = new MajorActionSummaryExecutionResult
+		{
+			Job = job
+		};
+		try
+		{
+			Hero hero = FindHeroById(job?.HeroId);
+			string heroId = NormalizeMemoryHeroId(job?.HeroId);
+			if (hero == null || string.IsNullOrWhiteSpace(heroId) || _npcMajorActions == null || !_npcMajorActions.TryGetValue(heroId, out var rawActions) || rawActions == null)
+			{
+				result.Error = "找不到待总结 NPC 或重大履历。";
+				return result;
+			}
+			List<NpcActionEntry> allActions = SanitizeNpcActionEntries(rawActions, keepOnlyRecentWindow: false);
+			if (allActions.Count <= 0)
+			{
+				result.Error = "该 NPC 没有可总结的重大履历。";
+				return result;
+			}
+			MajorActionSummaryState existingState = GetMajorActionSummaryState(heroId);
+			bool hasExistingSummary = existingState != null && !string.IsNullOrWhiteSpace(existingState.Summary);
+			List<NpcActionEntry> sourceActions = hasExistingSummary ? allActions.Where((NpcActionEntry x) => IsNpcActionAfterSummaryCursor(x, existingState)).ToList() : allActions;
+			if (sourceActions.Count <= 0)
+			{
+				if (hasExistingSummary)
+				{
+					result.State = existingState;
+					return result;
+				}
+				result.Error = "没有新增重大履历需要总结。";
+				return result;
+			}
+			int targetChars = GetMajorActionSummaryTargetChars(existingState, hero, sourceActions);
+			for (int i = 1; i <= Math.Max(1, maxAttempts); i++)
+			{
+				ApiCallResult apiCallResult = await CallUniversalApiDetailed(BuildMajorActionSummarySystemPrompt(targetChars), BuildMajorActionSummaryUserPrompt(hero, existingState, sourceActions, targetChars), logToEventLogs: false, eventLogSource: "NpcMajorSummary", route: UniversalApiRoute.Auxiliary);
+				if (apiCallResult.Success && TryParseMajorActionSummaryResponse(apiCallResult.Content, hero, job, allActions, out var state, out var error))
+				{
+					result.State = state;
+					return result;
+				}
+				result.Error = apiCallResult.Success ? "重大履历总结 JSON 解析失败：" + (apiCallResult.Content ?? "") : (apiCallResult.ErrorMessage ?? "API请求失败");
+				if (i < maxAttempts)
+				{
+					await Task.Delay(apiCallResult.RetryAfterSeconds.HasValue ? Math.Max(1000, apiCallResult.RetryAfterSeconds.Value * 1000) : 1500);
+				}
+			}
+			return result;
+		}
+		catch (Exception ex)
+		{
+			result.Error = ex.Message;
+			return result;
+		}
+	}
+
+	private static string BuildMajorActionSummarySystemPrompt(int targetChars)
+	{
+		int clampedTarget = MBMath.ClampInt(targetChars, 180, 700);
+		return "你是 AnimusForge 的 NPC 重大履历压缩器。你必须只输出严格 JSON：{\"summary_content\":\"重大履历滚动摘要\"}。"
+			+ "你要把已有摘要与新增重大履历融合成一段新的时间线摘要，而不是只总结新增内容。"
+			+ "summary_content 目标长度约 " + clampedTarget + " 个中文字符，最少 180 字，最多 700 字。"
+			+ "必须保留关键日期；不要写无日期的笼统履历。优先保留日期、地点、行动类型、胜负、涉及人物、家族、王国、定居点归属变化。"
+			+ "不得编造、不得改写胜负、地点、人物关系或势力归属；信息不足时就按原文有限事实表达。";
+	}
+
+	private string BuildMajorActionSummaryUserPrompt(Hero hero, MajorActionSummaryState existingState, List<NpcActionEntry> sourceActions, int targetChars)
+	{
+		StringBuilder stringBuilder = new StringBuilder();
+		string heroName = (hero?.Name?.ToString() ?? existingState?.HeroName ?? "NPC").Trim();
+		if (string.IsNullOrWhiteSpace(heroName))
+		{
+			heroName = "NPC";
+		}
+		stringBuilder.AppendLine("NPC：" + heroName);
+		stringBuilder.AppendLine("目标字数：" + MBMath.ClampInt(targetChars, 180, 700) + " 个中文字符");
+		stringBuilder.AppendLine();
+		stringBuilder.AppendLine("已有重大履历摘要：");
+		if (existingState != null && !string.IsNullOrWhiteSpace(existingState.Summary))
+		{
+			stringBuilder.AppendLine(existingState.Summary.Trim());
+		}
+		else
+		{
+			stringBuilder.AppendLine("无。这是第一版重大履历摘要，请根据下面所有重大履历生成。");
+		}
+		stringBuilder.AppendLine();
+		stringBuilder.AppendLine("新增重大履历原文：");
+		foreach (NpcActionEntry entry in sourceActions ?? new List<NpcActionEntry>())
+		{
+			string text = BuildMajorActionSummarySourceLine(hero, entry);
+			if (!string.IsNullOrWhiteSpace(text))
+			{
+				stringBuilder.AppendLine("- " + text);
+			}
+		}
+		stringBuilder.AppendLine();
+		stringBuilder.AppendLine("请输出融合后的新摘要，必须保留日期并按时间线组织。");
+		return stringBuilder.ToString().Trim();
+	}
+
+	private static bool TryParseMajorActionSummaryResponse(string content, Hero hero, MajorActionSummaryJob job, List<NpcActionEntry> allActions, out MajorActionSummaryState state, out string error)
+	{
+		state = null;
+		error = "";
+		try
+		{
+			JObject jObject = JObject.Parse(StripJsonCodeFence(content));
+			string summary = (jObject["summary_content"]?.ToString() ?? jObject["summary"]?.ToString() ?? jObject["content"]?.ToString() ?? "").Trim();
+			if (string.IsNullOrWhiteSpace(summary))
+			{
+				error = "summary_content 为空。";
+				return false;
+			}
+			GetMajorActionMaxCursor(allActions, out var day, out var sequence);
+			string heroId = NormalizeMemoryHeroId(job?.HeroId ?? hero?.StringId);
+			state = new MajorActionSummaryState
+			{
+				HeroId = heroId,
+				HeroName = hero?.Name?.ToString() ?? job?.HeroName ?? "NPC",
+				Summary = summary,
+				LastSummarizedDay = day,
+				LastSummarizedSequence = sequence,
+				UpdatedUtcTicks = DateTime.UtcNow.Ticks,
+				LastError = ""
+			};
+			return true;
+		}
+		catch (Exception ex)
+		{
+			error = ex.Message;
+			return false;
+		}
+	}
+
+	private void ApplyMajorActionSummarySuccess(MajorActionSummaryJob job, MajorActionSummaryState state)
+	{
+		if (job == null || state == null || string.IsNullOrWhiteSpace(state.Summary))
+		{
+			return;
+		}
+		string heroId = NormalizeMemoryHeroId(job.HeroId);
+		if (string.IsNullOrWhiteSpace(heroId))
+		{
+			return;
+		}
+		if (_npcMajorActionSummaries == null)
+		{
+			_npcMajorActionSummaries = new Dictionary<string, MajorActionSummaryState>(StringComparer.OrdinalIgnoreCase);
+		}
+		state.HeroId = heroId;
+		if (string.IsNullOrWhiteSpace(state.HeroName))
+		{
+			state.HeroName = (job.HeroName ?? "").Trim();
+		}
+		_npcMajorActionSummaries[heroId] = SanitizeMajorActionSummaryState(state);
+		if (_npcMajorActionSummaryQueue != null)
+		{
+			_npcMajorActionSummaryQueue.RemoveAll((MajorActionSummaryJob x) => x != null && string.Equals(NormalizeMemoryHeroId(x.HeroId), heroId, StringComparison.OrdinalIgnoreCase));
+		}
+		Logger.Log("NpcMajorSummary", "summary_success hero=" + heroId + " day=" + state.LastSummarizedDay + " sequence=" + state.LastSummarizedSequence);
+	}
+
+	private void MarkMajorActionSummaryFailure(MajorActionSummaryJob job, string error)
+	{
+		if (job == null)
+		{
+			return;
+		}
+		string heroId = NormalizeMemoryHeroId(job.HeroId);
+		if (_npcMajorActionSummaryQueue != null)
+		{
+			foreach (MajorActionSummaryJob item in _npcMajorActionSummaryQueue)
+			{
+				if (item != null && string.Equals(NormalizeMemoryHeroId(item.HeroId), heroId, StringComparison.OrdinalIgnoreCase))
+				{
+					item.RetryCount = 3;
+					item.LastError = (error ?? "").Trim();
+				}
+			}
+		}
+		if (!string.IsNullOrWhiteSpace(heroId))
+		{
+			MajorActionSummaryState state = GetMajorActionSummaryState(heroId) ?? new MajorActionSummaryState
+			{
+				HeroId = heroId,
+				HeroName = (job.HeroName ?? "").Trim()
+			};
+			state.LastError = (error ?? "").Trim();
+			if (_npcMajorActionSummaries == null)
+			{
+				_npcMajorActionSummaries = new Dictionary<string, MajorActionSummaryState>(StringComparer.OrdinalIgnoreCase);
+			}
+			_npcMajorActionSummaries[heroId] = SanitizeMajorActionSummaryState(state);
+		}
+	}
+
+	private static string BuildMemorySummarySystemPrompt(DailyMemoryDraft draft)
+	{
+		int denominator = GetMemoryCompressionDenominatorFromSettings();
+		int targetChars = Math.Max(80, CountDailyMemorySummarySourceChars(draft) / Math.Max(1, denominator));
+		return "你是 AnimusForge 的日结记忆压缩器。你必须只输出严格 JSON：{\"rich_title\":\"约20字富标题，不含日期时间\",\"summary_content\":\"摘要正文\"}。"
+			+ "rich_title 必须便于语义检索，不得包含日期、时间、序号或场景前缀。"
+			+ "身份记录规则：玩家在对话中说“我是X”“我叫X”“我的名字是X”“别人叫我X”等姓名、身份、头衔、阵营、来历时，只能记录为玩家自称、声称或宣称，必须保留玩家公开称呼与自称行为。"
+			+ "不得把玩家自称改写成客观事实；例如不得写“佐洛斯来到大厅”，应写“这名帝国青年自称佐洛斯后来到大厅”。"
+			+ "rich_title 如涉及这类姓名或身份，也必须写“自称X/声称X/宣称X”，不能只写 X。"
+			+ "summary_content 必须保留关键动机、承诺、冲突、关系变化、交易/任务/情绪走向；目标长度约 " + targetChars + " 个中文字符，最少 80 字。"
+			+ "AFEF 行只作为事实参考，不要改写进 AFEF 区；调用方会原样保存。";
+	}
+
+	private static string BuildMemorySummaryUserPrompt(Hero hero, DailyMemoryDraft draft)
+	{
+		StringBuilder stringBuilder = new StringBuilder();
+		string text = string.IsNullOrWhiteSpace(draft.GameDate) ? ("第" + draft.GameDayIndex + "日") : draft.GameDate.Trim();
+		List<DailyMemoryLine> normalLines = (draft.Lines ?? new List<DailyMemoryLine>()).Where((DailyMemoryLine x) => x != null && !x.IsAfef).ToList();
+		List<DailyMemoryLine> afefLines = (draft.Lines ?? new List<DailyMemoryLine>()).Where((DailyMemoryLine x) => x != null && x.IsAfef).ToList();
+		int startHour = normalLines.Concat(afefLines).Select((DailyMemoryLine x) => MBMath.ClampInt(x.GameHour, 0, 23)).DefaultIfEmpty(0).Min();
+		int endHour = normalLines.Concat(afefLines).Select((DailyMemoryLine x) => MBMath.ClampInt(x.GameHour, 0, 23)).DefaultIfEmpty(0).Max();
+		List<string> scenes = normalLines.Concat(afefLines).Select((DailyMemoryLine x) => (x.Scene ?? "").Trim()).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+		stringBuilder.AppendLine("标题元数据（由游戏决定，不要改写进 rich_title）：");
+		stringBuilder.AppendLine("日期：" + text);
+		stringBuilder.AppendLine("时间：" + FormatMemoryHourRange(startHour, endHour));
+		stringBuilder.AppendLine("NPC：" + (hero?.Name?.ToString() ?? draft.HeroName ?? "NPC"));
+		stringBuilder.AppendLine();
+		stringBuilder.AppendLine("内容：");
+		stringBuilder.AppendLine("当前场景：" + (scenes.Count > 0 ? string.Join(" / ", scenes) : "未知场景"));
+		stringBuilder.AppendLine("当前日期与时间：" + text + " " + FormatMemoryHourRange(startHour, endHour));
+		string playerDisplayName = BuildPlayerPublicDisplayNameForPrompt();
+		if (string.IsNullOrWhiteSpace(playerDisplayName))
+		{
+			playerDisplayName = "玩家";
+		}
+		stringBuilder.AppendLine("身份记录说明：本请求中的玩家公开称呼是“" + playerDisplayName + "”，这是游戏系统给 NPC 可见的称呼；如果对话中玩家自称某人，那么一定要把“" + playerDisplayName + "”，自称某人的整个行为记录下来，例如“帝国青年自称恩佐斯”");
+		stringBuilder.AppendLine("今日所有对话历史：");
+		foreach (DailyMemoryLine line in normalLines)
+		{
+			string text2 = BuildDailyMemoryLineForPrompt(line);
+			if (!string.IsNullOrWhiteSpace(text2))
+			{
+				stringBuilder.AppendLine(text2);
+			}
+		}
+		if (afefLines.Count > 0)
+		{
+			stringBuilder.AppendLine();
+			stringBuilder.AppendLine("AFEF事实行（只作理解，不要压缩或改写）：");
+			foreach (DailyMemoryLine line2 in afefLines)
+			{
+				string text3 = BuildDailyMemoryLineForPrompt(line2);
+				if (!string.IsNullOrWhiteSpace(text3))
+				{
+					stringBuilder.AppendLine(text3);
+				}
+			}
+		}
+		return stringBuilder.ToString().Trim();
+	}
+
+	private static bool TryParseMemorySummaryResponse(string content, Hero hero, DailyMemoryDraft draft, out CompressedMemoryBlock block, out string error)
+	{
+		block = null;
+		error = "";
+		try
+		{
+			JObject jObject = JObject.Parse(StripJsonCodeFence(content));
+			string title = StripMemoryTitleDateTime(jObject["rich_title"]?.ToString() ?? jObject["title"]?.ToString() ?? "");
+			string summary = (jObject["summary_content"]?.ToString() ?? jObject["content"]?.ToString() ?? "").Trim();
+			if (string.IsNullOrWhiteSpace(title) || string.IsNullOrWhiteSpace(summary))
+			{
+				error = "rich_title 或 summary_content 为空。";
+				return false;
+			}
+			List<DailyMemoryLine> allLines = draft.Lines ?? new List<DailyMemoryLine>();
+			List<DailyMemoryLine> ordered = allLines.Where((DailyMemoryLine x) => x != null).OrderBy((DailyMemoryLine x) => x.GameHour).ToList();
+			int startHour = ordered.Select((DailyMemoryLine x) => MBMath.ClampInt(x.GameHour, 0, 23)).DefaultIfEmpty(0).Min();
+			int endHour = ordered.Select((DailyMemoryLine x) => MBMath.ClampInt(x.GameHour, 0, 23)).DefaultIfEmpty(0).Max();
+			List<string> scenes = ordered.Select((DailyMemoryLine x) => (x.Scene ?? "").Trim()).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).Take(16).ToList();
+			List<string> afefLines = ordered.Where((DailyMemoryLine x) => x.IsAfef).Select(BuildDailyMemoryLineForPrompt).Where((string x) => !string.IsNullOrWhiteSpace(x)).ToList();
+			string heroId = NormalizeMemoryHeroId(draft.HeroId);
+			block = new CompressedMemoryBlock
+			{
+				Id = BuildCompressedMemoryBlockId(heroId, draft.GameDayIndex),
+				HeroId = heroId,
+				HeroName = hero?.Name?.ToString() ?? draft.HeroName ?? "NPC",
+				GameDayIndex = draft.GameDayIndex,
+				GameDate = draft.GameDate ?? "",
+				StartHour = startHour,
+				EndHour = endHour,
+				Scenes = scenes,
+				RichTitle = title,
+				Summary = summary,
+				AfefLines = afefLines,
+				CreatedUtcTicks = DateTime.UtcNow.Ticks
+			};
+			return true;
+		}
+		catch (Exception ex)
+		{
+			error = ex.Message;
+			return false;
+		}
+	}
+
+	private void ApplyMemorySummarySuccess(MemorySummaryJob job, CompressedMemoryBlock block)
+	{
+		if (job == null || block == null)
+		{
+			return;
+		}
+		Hero hero = FindHeroById(job.HeroId);
+		if (hero == null)
+		{
+			return;
+		}
+		List<CompressedMemoryBlock> blocks = LoadCompressedMemoryBlocks(hero);
+		blocks.RemoveAll((CompressedMemoryBlock x) => x != null && x.GameDayIndex == job.GameDayIndex);
+		blocks.Add(block);
+		SaveCompressedMemoryBlocks(hero, blocks);
+		List<DailyMemoryDraft> drafts = LoadDailyMemoryDrafts(hero);
+		drafts.RemoveAll((DailyMemoryDraft x) => x != null && x.GameDayIndex == job.GameDayIndex);
+		SaveDailyMemoryDrafts(hero, drafts);
+		if (_memorySummaryQueue != null)
+		{
+			_memorySummaryQueue.RemoveAll((MemorySummaryJob x) => x != null && string.Equals(NormalizeMemoryHeroId(x.HeroId), NormalizeMemoryHeroId(job.HeroId), StringComparison.OrdinalIgnoreCase) && x.GameDayIndex == job.GameDayIndex);
+		}
+		Logger.Log("CompressedMemory", "summary_success hero=" + (job.HeroId ?? "") + " day=" + job.GameDayIndex + " title=" + (block.RichTitle ?? ""));
+	}
+
+	private void MarkMemorySummaryFailure(MemorySummaryJob job, string error)
+	{
+		if (job == null || _memorySummaryQueue == null)
+		{
+			return;
+		}
+		foreach (MemorySummaryJob item in _memorySummaryQueue)
+		{
+			if (item != null && string.Equals(NormalizeMemoryHeroId(item.HeroId), NormalizeMemoryHeroId(job.HeroId), StringComparison.OrdinalIgnoreCase) && item.GameDayIndex == job.GameDayIndex)
+			{
+				item.RetryCount = 3;
+				item.LastError = (error ?? "").Trim();
+			}
+		}
+		DailyMemoryDraft draft = FindMemoryDraft(job);
+		if (draft != null)
+		{
+			draft.SummaryRetryCount = 3;
+			draft.LastSummaryError = (error ?? "").Trim();
+		}
+	}
+
 	private void OnDailyTick()
 	{
 		try
 		{
+			TrySealPastDailyMemoryDrafts();
+			TryStartMemorySummaryQueue();
 			TryDiscontinueLandlessModRebelKingdoms("daily_tick");
 			EnsureWeekZeroOpeningSummaryEvents();
 			ApplyKingdomStabilityRelationAdjustments();
@@ -7061,6 +8025,20 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			return "";
 		}
+		if (!recentOnly)
+		{
+			MajorActionSummaryState state = GetMajorActionSummaryState(npcActionHeroKey);
+			if (state != null && !string.IsNullOrWhiteSpace(state.Summary))
+			{
+				string summary = state.Summary.Trim();
+				if (HasMajorActionsNeedingSummary(npcActionHeroKey, list))
+				{
+					summary += "\n（另有新的重大履历正在整理，暂不可引用未整理细节。）";
+				}
+				return summary;
+			}
+			return "重大履历正在整理，暂不可引用细节。";
+		}
 		StringBuilder stringBuilder = new StringBuilder();
 		int num = int.MinValue;
 		string text = null;
@@ -7416,6 +8394,8 @@ public class MyBehavior : CampaignBehaviorBase
 			ProcessPendingWeeklyReportManualRetryResult();
 			ProcessWeeklyReportUiResume();
 			TryShowQueuedWeeklyReportPopup();
+			TrySealPastDailyMemoryDrafts();
+			TryStartMemorySummaryQueue();
 			int num = 0;
 			try
 			{
@@ -7459,6 +8439,46 @@ public class MyBehavior : CampaignBehaviorBase
 		if (_dialogueHistoryStorage == null)
 		{
 			_dialogueHistoryStorage = new Dictionary<string, string>();
+		}
+		if (_dailyMemoryDrafts == null)
+		{
+			_dailyMemoryDrafts = new Dictionary<string, List<DailyMemoryDraft>>(StringComparer.OrdinalIgnoreCase);
+		}
+		if (_dailyMemoryDraftStorage == null)
+		{
+			_dailyMemoryDraftStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+		}
+		if (_compressedMemoryBlocks == null)
+		{
+			_compressedMemoryBlocks = new Dictionary<string, List<CompressedMemoryBlock>>(StringComparer.OrdinalIgnoreCase);
+		}
+		if (_compressedMemoryBlockStorage == null)
+		{
+			_compressedMemoryBlockStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+		}
+		if (_memorySummaryQueue == null)
+		{
+			_memorySummaryQueue = new List<MemorySummaryJob>();
+		}
+		if (_memorySummaryQueueJsonStorage == null)
+		{
+			_memorySummaryQueueJsonStorage = "";
+		}
+		if (_npcMajorActionSummaries == null)
+		{
+			_npcMajorActionSummaries = new Dictionary<string, MajorActionSummaryState>(StringComparer.OrdinalIgnoreCase);
+		}
+		if (_npcMajorActionSummaryStorage == null)
+		{
+			_npcMajorActionSummaryStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+		}
+		if (_npcMajorActionSummaryQueue == null)
+		{
+			_npcMajorActionSummaryQueue = new List<MajorActionSummaryJob>();
+		}
+		if (_npcMajorActionSummaryQueueJsonStorage == null)
+		{
+			_npcMajorActionSummaryQueueJsonStorage = "";
 		}
 		if (_npcMajorActions == null)
 		{
@@ -7624,6 +8644,81 @@ public class MyBehavior : CampaignBehaviorBase
 				}
 				Dictionary<string, string> dictionary2 = CampaignSaveChunkHelper.FlattenStringDictionary(_dialogueHistoryStorage);
 				dataStore.SyncData("_dialogueHistory_v2", ref dictionary2);
+				_dailyMemoryDraftStorage.Clear();
+				foreach (KeyValuePair<string, List<DailyMemoryDraft>> itemMemoryDraft in _dailyMemoryDrafts)
+				{
+					if (!string.IsNullOrWhiteSpace(itemMemoryDraft.Key) && itemMemoryDraft.Value != null && itemMemoryDraft.Value.Count > 0)
+					{
+						try
+						{
+							_dailyMemoryDraftStorage[itemMemoryDraft.Key] = JsonConvert.SerializeObject(SanitizeDailyMemoryDrafts(itemMemoryDraft.Value));
+						}
+						catch (Exception ex)
+						{
+							Logger.Log("CompressedMemory", "[ERROR] Serialize daily memory drafts for " + itemMemoryDraft.Key + ": " + ex.Message);
+						}
+					}
+				}
+				Dictionary<string, string> dictionaryMemoryDrafts = CampaignSaveChunkHelper.FlattenStringDictionary(_dailyMemoryDraftStorage);
+				dataStore.SyncData("_af_dailyMemoryDrafts_v1", ref dictionaryMemoryDrafts);
+				_compressedMemoryBlockStorage.Clear();
+				foreach (KeyValuePair<string, List<CompressedMemoryBlock>> itemMemoryBlock in _compressedMemoryBlocks)
+				{
+					if (!string.IsNullOrWhiteSpace(itemMemoryBlock.Key) && itemMemoryBlock.Value != null && itemMemoryBlock.Value.Count > 0)
+					{
+						try
+						{
+							_compressedMemoryBlockStorage[itemMemoryBlock.Key] = JsonConvert.SerializeObject(SanitizeCompressedMemoryBlocks(itemMemoryBlock.Value));
+						}
+						catch (Exception ex)
+						{
+							Logger.Log("CompressedMemory", "[ERROR] Serialize memory blocks for " + itemMemoryBlock.Key + ": " + ex.Message);
+						}
+					}
+				}
+				Dictionary<string, string> dictionaryMemoryBlocks = CampaignSaveChunkHelper.FlattenStringDictionary(_compressedMemoryBlockStorage);
+				dataStore.SyncData("_af_compressedMemoryBlocks_v1", ref dictionaryMemoryBlocks);
+				try
+				{
+					_memorySummaryQueueJsonStorage = JsonConvert.SerializeObject(SanitizeMemorySummaryQueue(_memorySummaryQueue));
+				}
+				catch (Exception ex)
+				{
+					_memorySummaryQueueJsonStorage = "[]";
+					Logger.Log("CompressedMemory", "[ERROR] Serialize memory summary queue failed: " + ex.Message);
+				}
+				CampaignSaveChunkHelper.SaveChunkedString(dataStore, "_af_memorySummaryQueue_v1", _memorySummaryQueueJsonStorage ?? "[]", "CompressedMemory");
+				_npcMajorActionSummaryStorage.Clear();
+				foreach (KeyValuePair<string, MajorActionSummaryState> majorSummary in _npcMajorActionSummaries)
+				{
+					if (!string.IsNullOrWhiteSpace(majorSummary.Key) && majorSummary.Value != null && (!string.IsNullOrWhiteSpace(majorSummary.Value.Summary) || !string.IsNullOrWhiteSpace(majorSummary.Value.LastError)))
+					{
+						try
+						{
+							MajorActionSummaryState state = SanitizeMajorActionSummaryState(majorSummary.Value);
+							if (state != null && !string.IsNullOrWhiteSpace(state.HeroId) && (!string.IsNullOrWhiteSpace(state.Summary) || !string.IsNullOrWhiteSpace(state.LastError)))
+							{
+								_npcMajorActionSummaryStorage[state.HeroId] = JsonConvert.SerializeObject(state);
+							}
+						}
+						catch (Exception ex)
+						{
+							Logger.Log("NpcMajorSummary", "[ERROR] Serialize major action summary for " + majorSummary.Key + ": " + ex.Message);
+						}
+					}
+				}
+				Dictionary<string, string> dictionaryMajorActionSummaries = CampaignSaveChunkHelper.FlattenStringDictionary(_npcMajorActionSummaryStorage);
+				dataStore.SyncData("_af_npcMajorActionSummaries_v1", ref dictionaryMajorActionSummaries);
+				try
+				{
+					_npcMajorActionSummaryQueueJsonStorage = JsonConvert.SerializeObject(SanitizeMajorActionSummaryQueue(_npcMajorActionSummaryQueue));
+				}
+				catch (Exception ex)
+				{
+					_npcMajorActionSummaryQueueJsonStorage = "[]";
+					Logger.Log("NpcMajorSummary", "[ERROR] Serialize major action summary queue failed: " + ex.Message);
+				}
+				CampaignSaveChunkHelper.SaveChunkedString(dataStore, "_af_npcMajorActionSummaryQueue_v1", _npcMajorActionSummaryQueueJsonStorage ?? "[]", "NpcMajorSummary");
 				_npcMajorActionStorage.Clear();
 				foreach (KeyValuePair<string, List<NpcActionEntry>> npcMajorAction in _npcMajorActions)
 				{
@@ -7852,6 +8947,109 @@ public class MyBehavior : CampaignBehaviorBase
 						Logger.Log("DialogueHistory", "[ERROR] Deserialize history for " + item2.Key + ": " + ex3.Message);
 					}
 				}
+			}
+			_dailyMemoryDrafts.Clear();
+			_dailyMemoryDraftStorage.Clear();
+			Dictionary<string, string> dictionaryMemoryDraftsLoad = new Dictionary<string, string>();
+			dataStore.SyncData("_af_dailyMemoryDrafts_v1", ref dictionaryMemoryDraftsLoad);
+			_dailyMemoryDraftStorage = CampaignSaveChunkHelper.RestoreStringDictionary(dictionaryMemoryDraftsLoad, "CompressedMemory");
+			if (_dailyMemoryDraftStorage != null)
+			{
+				foreach (KeyValuePair<string, string> memoryDraftEntry in _dailyMemoryDraftStorage)
+				{
+					if (string.IsNullOrWhiteSpace(memoryDraftEntry.Key) || string.IsNullOrWhiteSpace(memoryDraftEntry.Value))
+					{
+						continue;
+					}
+					try
+					{
+						List<DailyMemoryDraft> listMemoryDrafts = JsonConvert.DeserializeObject<List<DailyMemoryDraft>>(memoryDraftEntry.Value) ?? new List<DailyMemoryDraft>();
+						listMemoryDrafts = SanitizeDailyMemoryDrafts(listMemoryDrafts);
+						if (listMemoryDrafts.Count > 0)
+						{
+							_dailyMemoryDrafts[NormalizeMemoryHeroId(memoryDraftEntry.Key)] = listMemoryDrafts;
+						}
+					}
+					catch (Exception ex)
+					{
+						Logger.Log("CompressedMemory", "[ERROR] Deserialize daily memory drafts for " + memoryDraftEntry.Key + ": " + ex.Message);
+					}
+				}
+			}
+			_compressedMemoryBlocks.Clear();
+			_compressedMemoryBlockStorage.Clear();
+			Dictionary<string, string> dictionaryMemoryBlocksLoad = new Dictionary<string, string>();
+			dataStore.SyncData("_af_compressedMemoryBlocks_v1", ref dictionaryMemoryBlocksLoad);
+			_compressedMemoryBlockStorage = CampaignSaveChunkHelper.RestoreStringDictionary(dictionaryMemoryBlocksLoad, "CompressedMemory");
+			if (_compressedMemoryBlockStorage != null)
+			{
+				foreach (KeyValuePair<string, string> memoryBlockEntry in _compressedMemoryBlockStorage)
+				{
+					if (string.IsNullOrWhiteSpace(memoryBlockEntry.Key) || string.IsNullOrWhiteSpace(memoryBlockEntry.Value))
+					{
+						continue;
+					}
+					try
+					{
+						List<CompressedMemoryBlock> listMemoryBlocks = JsonConvert.DeserializeObject<List<CompressedMemoryBlock>>(memoryBlockEntry.Value) ?? new List<CompressedMemoryBlock>();
+						listMemoryBlocks = SanitizeCompressedMemoryBlocks(listMemoryBlocks);
+						if (listMemoryBlocks.Count > 0)
+						{
+							_compressedMemoryBlocks[NormalizeMemoryHeroId(memoryBlockEntry.Key)] = listMemoryBlocks;
+						}
+					}
+					catch (Exception ex)
+					{
+						Logger.Log("CompressedMemory", "[ERROR] Deserialize memory blocks for " + memoryBlockEntry.Key + ": " + ex.Message);
+					}
+				}
+			}
+			_memorySummaryQueueJsonStorage = CampaignSaveChunkHelper.LoadChunkedString(dataStore, "_af_memorySummaryQueue_v1", "CompressedMemory") ?? "";
+			try
+			{
+				_memorySummaryQueue = SanitizeMemorySummaryQueue(JsonConvert.DeserializeObject<List<MemorySummaryJob>>(_memorySummaryQueueJsonStorage) ?? new List<MemorySummaryJob>());
+			}
+			catch (Exception ex)
+			{
+				Logger.Log("CompressedMemory", "[ERROR] Deserialize memory summary queue failed: " + ex.Message);
+				_memorySummaryQueue = new List<MemorySummaryJob>();
+			}
+			_npcMajorActionSummaries.Clear();
+			_npcMajorActionSummaryStorage.Clear();
+			Dictionary<string, string> dictionaryMajorActionSummariesLoad = new Dictionary<string, string>();
+			dataStore.SyncData("_af_npcMajorActionSummaries_v1", ref dictionaryMajorActionSummariesLoad);
+			_npcMajorActionSummaryStorage = CampaignSaveChunkHelper.RestoreStringDictionary(dictionaryMajorActionSummariesLoad, "NpcMajorSummary");
+			if (_npcMajorActionSummaryStorage != null)
+			{
+				foreach (KeyValuePair<string, string> summaryEntry in _npcMajorActionSummaryStorage)
+				{
+					if (string.IsNullOrWhiteSpace(summaryEntry.Key) || string.IsNullOrWhiteSpace(summaryEntry.Value))
+					{
+						continue;
+					}
+					try
+					{
+						MajorActionSummaryState state = SanitizeMajorActionSummaryState(JsonConvert.DeserializeObject<MajorActionSummaryState>(summaryEntry.Value));
+						if (state != null && !string.IsNullOrWhiteSpace(state.HeroId) && (!string.IsNullOrWhiteSpace(state.Summary) || !string.IsNullOrWhiteSpace(state.LastError)))
+						{
+							_npcMajorActionSummaries[state.HeroId] = state;
+						}
+					}
+					catch (Exception ex)
+					{
+						Logger.Log("NpcMajorSummary", "[ERROR] Deserialize major action summary for " + summaryEntry.Key + ": " + ex.Message);
+					}
+				}
+			}
+			_npcMajorActionSummaryQueueJsonStorage = CampaignSaveChunkHelper.LoadChunkedString(dataStore, "_af_npcMajorActionSummaryQueue_v1", "NpcMajorSummary") ?? "";
+			try
+			{
+				_npcMajorActionSummaryQueue = SanitizeMajorActionSummaryQueue(JsonConvert.DeserializeObject<List<MajorActionSummaryJob>>(_npcMajorActionSummaryQueueJsonStorage) ?? new List<MajorActionSummaryJob>());
+			}
+			catch (Exception ex)
+			{
+				Logger.Log("NpcMajorSummary", "[ERROR] Deserialize major action summary queue failed: " + ex.Message);
+				_npcMajorActionSummaryQueue = new List<MajorActionSummaryJob>();
 			}
 			_npcMajorActions.Clear();
 			_npcMajorActionStorage.Clear();
@@ -8090,6 +9288,12 @@ public class MyBehavior : CampaignBehaviorBase
 			_shownRecordStorage = new Dictionary<string, string>();
 			_dialogueHistory = new Dictionary<string, List<DialogueDay>>();
 			_dialogueHistoryStorage = new Dictionary<string, string>();
+			_dailyMemoryDrafts = new Dictionary<string, List<DailyMemoryDraft>>(StringComparer.OrdinalIgnoreCase);
+			_dailyMemoryDraftStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+			_compressedMemoryBlocks = new Dictionary<string, List<CompressedMemoryBlock>>(StringComparer.OrdinalIgnoreCase);
+			_compressedMemoryBlockStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+			_memorySummaryQueue = new List<MemorySummaryJob>();
+			_memorySummaryQueueJsonStorage = "";
 			_npcMajorActions = new Dictionary<string, List<NpcActionEntry>>();
 			_npcMajorActionStorage = new Dictionary<string, string>();
 			_npcRecentActions = new Dictionary<string, List<NpcActionEntry>>();
@@ -12105,6 +13309,460 @@ public class MyBehavior : CampaignBehaviorBase
 		return (targetKey ?? "").Trim().ToLowerInvariant();
 	}
 
+	private static string NormalizeMemoryHeroId(string heroId)
+	{
+		return (heroId ?? "").Trim().ToLowerInvariant();
+	}
+
+	private static string GetMemoryHeroId(Hero hero)
+	{
+		return NormalizeMemoryHeroId(hero?.StringId);
+	}
+
+	private static bool IsHeroNpcEligibleForCompressedMemory(Hero hero)
+	{
+		return hero != null && !string.IsNullOrWhiteSpace(hero.StringId) && (Hero.MainHero == null || !object.ReferenceEquals(hero, Hero.MainHero));
+	}
+
+	private static List<DailyMemoryDraft> SanitizeDailyMemoryDrafts(IEnumerable<DailyMemoryDraft> drafts)
+	{
+		List<DailyMemoryDraft> list = new List<DailyMemoryDraft>();
+		HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		foreach (DailyMemoryDraft draft in drafts ?? Enumerable.Empty<DailyMemoryDraft>())
+		{
+			if (draft == null)
+			{
+				continue;
+			}
+			string text = NormalizeMemoryHeroId(draft.HeroId);
+			if (string.IsNullOrWhiteSpace(text) || draft.GameDayIndex < 0)
+			{
+				continue;
+			}
+			string key = text + "|" + draft.GameDayIndex;
+			if (!seen.Add(key))
+			{
+				continue;
+			}
+			draft.HeroId = text;
+			draft.HeroName = (draft.HeroName ?? "").Trim();
+			draft.GameDate = (draft.GameDate ?? "").Trim();
+			draft.LastSummaryError = (draft.LastSummaryError ?? "").Trim();
+			draft.Lines = (draft.Lines ?? new List<DailyMemoryLine>()).Where((DailyMemoryLine x) => x != null && !string.IsNullOrWhiteSpace((x.Text ?? "").Trim())).Select(delegate(DailyMemoryLine x)
+			{
+				x.GameDayIndex = draft.GameDayIndex;
+				x.GameDate = string.IsNullOrWhiteSpace(x.GameDate) ? draft.GameDate : x.GameDate.Trim();
+				x.GameHour = MBMath.ClampInt(x.GameHour, 0, 23);
+				x.Scene = (x.Scene ?? "").Trim();
+				x.Speaker = (x.Speaker ?? "").Trim();
+				x.Text = (x.Text ?? "").Trim();
+				return x;
+			}).ToList();
+			draft.HasLlmDialogue = draft.HasLlmDialogue || draft.Lines.Any((DailyMemoryLine x) => x != null && x.IsLlmDialogue && !x.IsAfef);
+			if (draft.Lines.Count > 0)
+			{
+				list.Add(draft);
+			}
+		}
+		return list.OrderBy((DailyMemoryDraft x) => x.GameDayIndex).ToList();
+	}
+
+	private static List<CompressedMemoryBlock> SanitizeCompressedMemoryBlocks(IEnumerable<CompressedMemoryBlock> blocks)
+	{
+		List<CompressedMemoryBlock> list = new List<CompressedMemoryBlock>();
+		HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		foreach (CompressedMemoryBlock block in blocks ?? Enumerable.Empty<CompressedMemoryBlock>())
+		{
+			if (block == null)
+			{
+				continue;
+			}
+			block.HeroId = NormalizeMemoryHeroId(block.HeroId);
+			if (string.IsNullOrWhiteSpace(block.HeroId) || block.GameDayIndex < 0)
+			{
+				continue;
+			}
+			if (string.IsNullOrWhiteSpace(block.Id))
+			{
+				block.Id = BuildCompressedMemoryBlockId(block.HeroId, block.GameDayIndex);
+			}
+			if (!seen.Add(block.Id))
+			{
+				continue;
+			}
+			block.HeroName = (block.HeroName ?? "").Trim();
+			block.GameDate = (block.GameDate ?? "").Trim();
+			block.StartHour = MBMath.ClampInt(block.StartHour, 0, 23);
+			block.EndHour = MBMath.ClampInt(block.EndHour, 0, 23);
+			block.Scenes = (block.Scenes ?? new List<string>()).Select((string x) => (x ?? "").Trim()).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).Take(16).ToList();
+			block.RichTitle = StripMemoryTitleDateTime((block.RichTitle ?? "").Trim());
+			block.Summary = (block.Summary ?? "").Trim();
+			block.AfefLines = (block.AfefLines ?? new List<string>()).Select((string x) => (x ?? "").Trim()).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.Ordinal).Take(80).ToList();
+			if (!string.IsNullOrWhiteSpace(block.RichTitle) || !string.IsNullOrWhiteSpace(block.Summary) || block.AfefLines.Count > 0)
+			{
+				list.Add(block);
+			}
+		}
+		return list.OrderBy((CompressedMemoryBlock x) => x.GameDayIndex).ThenBy((CompressedMemoryBlock x) => x.StartHour).ToList();
+	}
+
+	private static List<MemorySummaryJob> SanitizeMemorySummaryQueue(IEnumerable<MemorySummaryJob> jobs)
+	{
+		List<MemorySummaryJob> list = new List<MemorySummaryJob>();
+		HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		foreach (MemorySummaryJob job in jobs ?? Enumerable.Empty<MemorySummaryJob>())
+		{
+			if (job == null)
+			{
+				continue;
+			}
+			job.HeroId = NormalizeMemoryHeroId(job.HeroId);
+			if (string.IsNullOrWhiteSpace(job.HeroId) || job.GameDayIndex < 0)
+			{
+				continue;
+			}
+			string key = job.HeroId + "|" + job.GameDayIndex;
+			if (!seen.Add(key))
+			{
+				continue;
+			}
+			job.HeroName = (job.HeroName ?? "").Trim();
+			job.GameDate = (job.GameDate ?? "").Trim();
+			job.LastError = (job.LastError ?? "").Trim();
+			job.RetryCount = MBMath.ClampInt(job.RetryCount, 0, 3);
+			list.Add(job);
+		}
+		return list.OrderBy((MemorySummaryJob x) => x.GameDayIndex).ThenBy((MemorySummaryJob x) => x.HeroName).ToList();
+	}
+
+	private static MajorActionSummaryState SanitizeMajorActionSummaryState(MajorActionSummaryState state)
+	{
+		if (state == null)
+		{
+			return null;
+		}
+		state.HeroId = NormalizeMemoryHeroId(state.HeroId);
+		state.HeroName = (state.HeroName ?? "").Trim();
+		state.Summary = (state.Summary ?? "").Replace("\r", "").Trim();
+		state.LastError = (state.LastError ?? "").Trim();
+		state.LastSummarizedDay = Math.Max(0, state.LastSummarizedDay);
+		state.LastSummarizedSequence = Math.Max(0, state.LastSummarizedSequence);
+		return state;
+	}
+
+	private static List<MajorActionSummaryJob> SanitizeMajorActionSummaryQueue(IEnumerable<MajorActionSummaryJob> jobs)
+	{
+		List<MajorActionSummaryJob> list = new List<MajorActionSummaryJob>();
+		HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		foreach (MajorActionSummaryJob job in jobs ?? Enumerable.Empty<MajorActionSummaryJob>())
+		{
+			if (job == null)
+			{
+				continue;
+			}
+			job.HeroId = NormalizeMemoryHeroId(job.HeroId);
+			if (string.IsNullOrWhiteSpace(job.HeroId))
+			{
+				continue;
+			}
+			if (!seen.Add(job.HeroId))
+			{
+				continue;
+			}
+			job.HeroName = (job.HeroName ?? "").Trim();
+			job.TriggerGameDate = (job.TriggerGameDate ?? "").Trim();
+			job.TriggerGameDayIndex = Math.Max(0, job.TriggerGameDayIndex);
+			job.LastError = (job.LastError ?? "").Trim();
+			job.RetryCount = MBMath.ClampInt(job.RetryCount, 0, 3);
+			list.Add(job);
+		}
+		return list.OrderBy((MajorActionSummaryJob x) => x.TriggerGameDayIndex).ThenBy((MajorActionSummaryJob x) => x.HeroName).ToList();
+	}
+
+	private MajorActionSummaryState GetMajorActionSummaryState(string heroId)
+	{
+		heroId = NormalizeMemoryHeroId(heroId);
+		if (string.IsNullOrWhiteSpace(heroId) || _npcMajorActionSummaries == null)
+		{
+			return null;
+		}
+		if (_npcMajorActionSummaries.TryGetValue(heroId, out var value))
+		{
+			return SanitizeMajorActionSummaryState(value);
+		}
+		return null;
+	}
+
+	private static void GetMajorActionMaxCursor(IEnumerable<NpcActionEntry> actions, out int day, out int sequence)
+	{
+		day = 0;
+		sequence = 0;
+		foreach (NpcActionEntry action in actions ?? Enumerable.Empty<NpcActionEntry>())
+		{
+			if (action == null)
+			{
+				continue;
+			}
+			int actionDay = Math.Max(0, action.Day);
+			int actionSequence = Math.Max(0, action.Sequence);
+			if (actionDay > day || (actionDay == day && actionSequence > sequence))
+			{
+				day = actionDay;
+				sequence = actionSequence;
+			}
+		}
+	}
+
+	private static bool IsNpcActionAfterSummaryCursor(NpcActionEntry action, MajorActionSummaryState state)
+	{
+		if (action == null)
+		{
+			return false;
+		}
+		if (state == null || string.IsNullOrWhiteSpace(state.Summary))
+		{
+			return true;
+		}
+		int day = Math.Max(0, action.Day);
+		int sequence = Math.Max(0, action.Sequence);
+		return day > state.LastSummarizedDay || (day == state.LastSummarizedDay && sequence > state.LastSummarizedSequence);
+	}
+
+	private bool HasMajorActionsNeedingSummary(string heroId, List<NpcActionEntry> actions)
+	{
+		if (actions == null || actions.Count <= 0)
+		{
+			return false;
+		}
+		MajorActionSummaryState state = GetMajorActionSummaryState(heroId);
+		if (state == null || string.IsNullOrWhiteSpace(state.Summary))
+		{
+			return true;
+		}
+		GetMajorActionMaxCursor(actions, out var day, out var sequence);
+		return day > state.LastSummarizedDay || (day == state.LastSummarizedDay && sequence > state.LastSummarizedSequence);
+	}
+
+	private bool HasMajorActionSummaryJobStillPending(MajorActionSummaryJob job)
+	{
+		try
+		{
+			string heroId = NormalizeMemoryHeroId(job?.HeroId);
+			if (string.IsNullOrWhiteSpace(heroId) || _npcMajorActions == null || !_npcMajorActions.TryGetValue(heroId, out var actions) || actions == null)
+			{
+				return false;
+			}
+			return HasMajorActionsNeedingSummary(heroId, SanitizeNpcActionEntries(actions, keepOnlyRecentWindow: false));
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static string BuildMajorActionSummarySourceLine(Hero hero, NpcActionEntry entry)
+	{
+		if (entry == null)
+		{
+			return "";
+		}
+		string date = !string.IsNullOrWhiteSpace(entry.GameDate) ? entry.GameDate.Trim() : ("第 " + entry.Day + " 日");
+		string text = RenderNpcActionPromptText(hero, entry.Text) + BuildNpcActionMetadataNarrativeSuffix(entry);
+		return (date + "｜" + text).Trim();
+	}
+
+	private static int GetMajorActionSummaryTargetChars(MajorActionSummaryState state, Hero hero, List<NpcActionEntry> sourceActions)
+	{
+		int chars = 0;
+		if (state != null && !string.IsNullOrWhiteSpace(state.Summary))
+		{
+			chars += state.Summary.Trim().Length;
+		}
+		foreach (NpcActionEntry entry in sourceActions ?? new List<NpcActionEntry>())
+		{
+			chars += BuildMajorActionSummarySourceLine(hero, entry).Length;
+		}
+		if (chars <= 0)
+		{
+			return 350;
+		}
+		return MBMath.ClampInt(chars / 8, 180, 700);
+	}
+
+	private static string BuildCompressedMemoryBlockId(string heroId, int dayIndex)
+	{
+		return NormalizeMemoryHeroId(heroId) + ":" + dayIndex.ToString();
+	}
+
+	private List<DailyMemoryDraft> LoadDailyMemoryDrafts(Hero hero)
+	{
+		string text = GetMemoryHeroId(hero);
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return new List<DailyMemoryDraft>();
+		}
+		if (_dailyMemoryDrafts == null)
+		{
+			_dailyMemoryDrafts = new Dictionary<string, List<DailyMemoryDraft>>(StringComparer.OrdinalIgnoreCase);
+		}
+		if (_dailyMemoryDrafts.TryGetValue(text, out var value) && value != null)
+		{
+			return value;
+		}
+		return new List<DailyMemoryDraft>();
+	}
+
+	private void SaveDailyMemoryDrafts(Hero hero, List<DailyMemoryDraft> drafts)
+	{
+		string text = GetMemoryHeroId(hero);
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return;
+		}
+		if (_dailyMemoryDrafts == null)
+		{
+			_dailyMemoryDrafts = new Dictionary<string, List<DailyMemoryDraft>>(StringComparer.OrdinalIgnoreCase);
+		}
+		List<DailyMemoryDraft> list = SanitizeDailyMemoryDrafts(drafts);
+		if (list.Count > 0)
+		{
+			_dailyMemoryDrafts[text] = list;
+		}
+		else
+		{
+			_dailyMemoryDrafts.Remove(text);
+		}
+	}
+
+	private List<CompressedMemoryBlock> LoadCompressedMemoryBlocks(Hero hero)
+	{
+		string text = GetMemoryHeroId(hero);
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return new List<CompressedMemoryBlock>();
+		}
+		if (_compressedMemoryBlocks == null)
+		{
+			_compressedMemoryBlocks = new Dictionary<string, List<CompressedMemoryBlock>>(StringComparer.OrdinalIgnoreCase);
+		}
+		if (_compressedMemoryBlocks.TryGetValue(text, out var value) && value != null)
+		{
+			return value;
+		}
+		return new List<CompressedMemoryBlock>();
+	}
+
+	private void SaveCompressedMemoryBlocks(Hero hero, List<CompressedMemoryBlock> blocks)
+	{
+		string text = GetMemoryHeroId(hero);
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return;
+		}
+		if (_compressedMemoryBlocks == null)
+		{
+			_compressedMemoryBlocks = new Dictionary<string, List<CompressedMemoryBlock>>(StringComparer.OrdinalIgnoreCase);
+		}
+		List<CompressedMemoryBlock> list = SanitizeCompressedMemoryBlocks(blocks);
+		if (list.Count > 0)
+		{
+			_compressedMemoryBlocks[text] = list;
+		}
+		else
+		{
+			_compressedMemoryBlocks.Remove(text);
+		}
+	}
+
+	private static string ResolveCurrentMemorySceneLabel()
+	{
+		try
+		{
+			string text = (ShoutUtils.GetCurrentSceneDescription() ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
+			if (!string.IsNullOrWhiteSpace(text))
+			{
+				return text;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			string text2 = (Settlement.CurrentSettlement?.Name?.ToString() ?? "").Trim();
+			if (!string.IsNullOrWhiteSpace(text2))
+			{
+				return text2;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			string text3 = (MobileParty.MainParty?.CurrentSettlement?.Name?.ToString() ?? "").Trim();
+			if (!string.IsNullOrWhiteSpace(text3))
+			{
+				return text3;
+			}
+		}
+		catch
+		{
+		}
+		return "大地图或未知场景";
+	}
+
+	private void AppendDailyMemoryLine(Hero hero, string speaker, string text, bool isAfef, bool isLlmDialogue)
+	{
+		if (!IsHeroNpcEligibleForCompressedMemory(hero))
+		{
+			return;
+		}
+		string text2 = (text ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text2))
+		{
+			return;
+		}
+		int dayIndex = (int)CampaignTime.Now.ToDays;
+		string gameDate = CampaignTime.Now.ToString();
+		int hour = GetCurrentHourOfDaySafeForPrompt();
+		string heroId = GetMemoryHeroId(hero);
+		List<DailyMemoryDraft> list = LoadDailyMemoryDrafts(hero);
+		DailyMemoryDraft dailyMemoryDraft = list.FirstOrDefault((DailyMemoryDraft x) => x != null && x.GameDayIndex == dayIndex);
+		if (dailyMemoryDraft == null)
+		{
+			dailyMemoryDraft = new DailyMemoryDraft
+			{
+				HeroId = heroId,
+				HeroName = hero.Name?.ToString() ?? "NPC",
+				GameDayIndex = dayIndex,
+				GameDate = gameDate
+			};
+			list.Add(dailyMemoryDraft);
+		}
+		if (dailyMemoryDraft.Lines == null)
+		{
+			dailyMemoryDraft.Lines = new List<DailyMemoryLine>();
+		}
+		DailyMemoryLine dailyMemoryLine = new DailyMemoryLine
+		{
+			GameDayIndex = dayIndex,
+			GameDate = gameDate,
+			GameHour = hour,
+			Scene = ResolveCurrentMemorySceneLabel(),
+			Speaker = (speaker ?? "").Trim(),
+			Text = text2,
+			IsAfef = isAfef,
+			IsLlmDialogue = isLlmDialogue && !isAfef
+		};
+		dailyMemoryDraft.Lines.Add(dailyMemoryLine);
+		if (dailyMemoryLine.IsLlmDialogue)
+		{
+			dailyMemoryDraft.HasLlmDialogue = true;
+		}
+		SaveDailyMemoryDrafts(hero, list);
+	}
+
 	private List<DialogueDay> LoadDialogueHistory(Hero hero)
 	{
 		if (hero == null)
@@ -12300,6 +13958,33 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		try
 		{
+			string npcNameForMemory = (hero.Name?.ToString() ?? "NPC").Trim();
+			if (string.IsNullOrWhiteSpace(npcNameForMemory))
+			{
+				npcNameForMemory = "NPC";
+			}
+			if (!string.IsNullOrWhiteSpace(playerText))
+			{
+				AppendDailyMemoryLine(hero, BuildPlayerPublicDisplayNameForPrompt(), BuildPlayerAddressedInput(hero, playerText), isAfef: false, isLlmDialogue: true);
+			}
+			if (!string.IsNullOrWhiteSpace(extraFact))
+			{
+				string memoryFact = extraFact.Trim();
+				if (!memoryFact.StartsWith("[AFEF玩家行为补充]", StringComparison.Ordinal) && !memoryFact.StartsWith("[AFEF NPC行为补充]", StringComparison.Ordinal))
+				{
+					memoryFact = "[AFEF玩家行为补充] " + memoryFact;
+				}
+				AppendDailyMemoryLine(hero, "AFEF", memoryFact, isAfef: true, isLlmDialogue: false);
+			}
+			if (!string.IsNullOrWhiteSpace(aiText))
+			{
+				string memoryAiText = aiText.Trim();
+				if (!memoryAiText.StartsWith("[场景喊话]", StringComparison.Ordinal))
+				{
+					memoryAiText = npcNameForMemory + ": " + memoryAiText;
+				}
+				AppendDailyMemoryLine(hero, npcNameForMemory, memoryAiText, isAfef: false, isLlmDialogue: true);
+			}
 			List<DialogueDay> list = LoadDialogueHistory(hero);
 			int dayIndex = (int)CampaignTime.Now.ToDays;
 			string gameDate = CampaignTime.Now.ToString();
@@ -14884,6 +16569,501 @@ public class MyBehavior : CampaignBehaviorBase
 		return list;
 	}
 
+	private static string StripMemoryTitleDateTime(string title)
+	{
+		string text = (title ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return "";
+		}
+		text = Regex.Replace(text, "^\\s*[\\[【(（]?[\\d\\-/:：年月日\\s时点春夏秋冬第]+[\\]】)）]?\\s*", "", RegexOptions.CultureInvariant).Trim();
+		text = Regex.Replace(text, "\\s+", " ").Trim();
+		if (text.Length > 36)
+		{
+			text = text.Substring(0, 36).Trim();
+		}
+		return text;
+	}
+
+	private static string StripJsonCodeFence(string content)
+	{
+		string text = (content ?? "").Trim();
+		if (text.StartsWith("```", StringComparison.Ordinal))
+		{
+			text = Regex.Replace(text, "^```(?:json)?\\s*", "", RegexOptions.IgnoreCase).Trim();
+			text = Regex.Replace(text, "\\s*```$", "", RegexOptions.CultureInvariant).Trim();
+		}
+		return text;
+	}
+
+	private static string FormatMemoryHourRange(int startHour, int endHour)
+	{
+		startHour = MBMath.ClampInt(startHour, 0, 23);
+		endHour = MBMath.ClampInt(endHour, 0, 23);
+		if (startHour == endHour)
+		{
+			return startHour + "时";
+		}
+		return startHour + "-" + endHour + "时";
+	}
+
+	private static string BuildDailyMemoryLineForPrompt(DailyMemoryLine line)
+	{
+		if (line == null || string.IsNullOrWhiteSpace(line.Text))
+		{
+			return "";
+		}
+		string text = (string.IsNullOrWhiteSpace(line.GameDate) ? ("第" + line.GameDayIndex + "日") : line.GameDate.Trim());
+		string text2 = string.IsNullOrWhiteSpace(line.Scene) ? "未知场景" : line.Scene.Trim();
+		string text3 = string.IsNullOrWhiteSpace(line.Speaker) ? (line.IsAfef ? "AFEF" : "对话") : line.Speaker.Trim();
+		return "[" + text + " " + MBMath.ClampInt(line.GameHour, 0, 23) + "时｜" + text2 + "｜" + text3 + "] " + line.Text.Trim();
+	}
+
+	private static int CountDailyMemorySummarySourceChars(DailyMemoryDraft draft)
+	{
+		if (draft?.Lines == null)
+		{
+			return 0;
+		}
+		return draft.Lines.Where((DailyMemoryLine x) => x != null && !x.IsAfef && !string.IsNullOrWhiteSpace(x.Text)).Sum((DailyMemoryLine x) => x.Text.Trim().Length);
+	}
+
+	private static string BuildMemoryRecallQueryText(Hero hero, string currentInput, string secondaryInput, IEnumerable<DailyMemoryDraft> drafts)
+	{
+		StringBuilder stringBuilder = new StringBuilder();
+		string text = (currentInput ?? "").Trim();
+		if (!string.IsNullOrWhiteSpace(text))
+		{
+			stringBuilder.AppendLine(text);
+		}
+		string text2 = (secondaryInput ?? "").Trim();
+		if (!string.IsNullOrWhiteSpace(text2))
+		{
+			stringBuilder.AppendLine(text2);
+		}
+		string text3 = ResolveCurrentMemorySceneLabel();
+		if (!string.IsNullOrWhiteSpace(text3))
+		{
+			stringBuilder.AppendLine(text3);
+		}
+		try
+		{
+			DailyMemoryDraft dailyMemoryDraft = (drafts ?? Enumerable.Empty<DailyMemoryDraft>()).OrderByDescending((DailyMemoryDraft x) => x.GameDayIndex).FirstOrDefault((DailyMemoryDraft x) => x?.Lines != null && x.Lines.Count > 0);
+			if (dailyMemoryDraft?.Lines != null)
+			{
+				foreach (DailyMemoryLine item in dailyMemoryDraft.Lines.Where((DailyMemoryLine x) => x != null && !x.IsAfef && !string.IsNullOrWhiteSpace(x.Text)).Reverse().Take(6).Reverse())
+				{
+					stringBuilder.AppendLine(item.Text);
+				}
+			}
+		}
+		catch
+		{
+		}
+		string text4 = stringBuilder.ToString().Trim();
+		if (text4.Length > 1200)
+		{
+			text4 = text4.Substring(text4.Length - 1200);
+		}
+		return text4;
+	}
+
+	private bool TryBuildMemoryRecallCandidates(Hero hero, List<CompressedMemoryBlock> blocks, string currentInput, string secondaryInput, List<DailyMemoryDraft> drafts, int candidateLimit, out List<MemoryRecallCandidate> candidates, out string error)
+	{
+		candidates = new List<MemoryRecallCandidate>();
+		error = "";
+		List<CompressedMemoryBlock> list = (blocks ?? new List<CompressedMemoryBlock>()).Where((CompressedMemoryBlock x) => x != null && (!string.IsNullOrWhiteSpace(x.RichTitle) || !string.IsNullOrWhiteSpace(x.Summary))).ToList();
+		if (list.Count <= 0 || candidateLimit <= 0)
+		{
+			return true;
+		}
+		if (list.Count <= candidateLimit)
+		{
+			candidates = list.Select((CompressedMemoryBlock x) => new MemoryRecallCandidate
+			{
+				Block = x,
+				Score = 1.0
+			}).OrderBy((MemoryRecallCandidate x) => x.Block.GameDayIndex).ThenBy((MemoryRecallCandidate x) => x.Block.StartHour).ToList();
+			AssignMemoryCandidateDisplayIds(candidates);
+			return true;
+		}
+		try
+		{
+			OnnxEmbeddingEngine instance = OnnxEmbeddingEngine.Instance;
+			string text = BuildMemoryRecallQueryText(hero, currentInput, secondaryInput, drafts);
+			if (instance == null || !instance.IsAvailable || string.IsNullOrWhiteSpace(text) || !instance.TryGetEmbedding(text, out var vector) || vector == null || vector.Length == 0)
+			{
+				error = "本地 ONNX embedding 不可用，无法对超过候选上限的压缩记忆执行富标题 RAG。";
+				ShowCompressedMemoryBlockingPopup("压缩记忆召回被阻塞", error + "\n\n请修复 embedding 模型或降低记忆块数量后重试。系统不会静默改用日期或全文兜底。");
+				return false;
+			}
+			List<MemoryRecallCandidate> list2 = new List<MemoryRecallCandidate>();
+			foreach (CompressedMemoryBlock block in list)
+			{
+				string text2 = (block.RichTitle ?? "").Trim();
+				if (string.IsNullOrWhiteSpace(text2))
+				{
+					continue;
+				}
+				if (!instance.TryGetEmbedding(text2, out var vector2) || vector2 == null || vector2.Length == 0)
+				{
+					continue;
+				}
+				int num = Math.Min(vector.Length, vector2.Length);
+				double num2 = 0.0;
+				for (int i = 0; i < num; i++)
+				{
+					num2 += (double)vector[i] * (double)vector2[i];
+				}
+				list2.Add(new MemoryRecallCandidate
+				{
+					Block = block,
+					Score = num2
+				});
+			}
+			if (list2.Count <= 0)
+			{
+				error = "压缩记忆富标题 embedding 全部失败。";
+				ShowCompressedMemoryBlockingPopup("压缩记忆召回被阻塞", error + "\n\n请修复 embedding 模型后重试。");
+				return false;
+			}
+			candidates = list2.OrderByDescending((MemoryRecallCandidate x) => x.Score).ThenByDescending((MemoryRecallCandidate x) => x.Block.GameDayIndex).Take(candidateLimit).OrderBy((MemoryRecallCandidate x) => x.Block.GameDayIndex).ThenBy((MemoryRecallCandidate x) => x.Block.StartHour).ToList();
+			AssignMemoryCandidateDisplayIds(candidates);
+			return true;
+		}
+		catch (Exception ex)
+		{
+			error = ex.Message;
+			ShowCompressedMemoryBlockingPopup("压缩记忆召回异常", error);
+			return false;
+		}
+	}
+
+	private static void AssignMemoryCandidateDisplayIds(List<MemoryRecallCandidate> candidates)
+	{
+		if (candidates == null)
+		{
+			return;
+		}
+		for (int i = 0; i < candidates.Count; i++)
+		{
+			if (candidates[i] != null)
+			{
+				candidates[i].DisplayId = i + 1;
+			}
+		}
+	}
+
+	private bool TrySelectMemoryIdsWithPreprocess(List<MemoryRecallCandidate> candidates, int finalCount, string currentInput, string secondaryInput, out List<int> selectedIds, out string error)
+	{
+		selectedIds = new List<int>();
+		error = "";
+		List<MemoryRecallCandidate> list = (candidates ?? new List<MemoryRecallCandidate>()).Where((MemoryRecallCandidate x) => x?.Block != null && x.DisplayId > 0).ToList();
+		if (list.Count <= 0 || finalCount <= 0)
+		{
+			return true;
+		}
+		if (list.Count <= finalCount)
+		{
+			selectedIds = list.Select((MemoryRecallCandidate x) => x.DisplayId).ToList();
+			return true;
+		}
+		string system = "You are an AnimusForge preprocessing router. Select compressed memory blocks relevant to the latest player/NPC exchange. Return strict JSON only.";
+		StringBuilder user = new StringBuilder();
+		int mode = GetMemoryPreprocessModeFromSettings();
+		user.AppendLine(mode == 2 ? "Mode: parallel memory selector request." : "Mode: unified preprocessing body. Include both keys even if rule_codes is empty.");
+		user.AppendLine("Output JSON schema: {\"rule_codes\":[],\"memory_ids\":[1,2]}");
+		user.AppendLine("Select exactly " + Math.Max(1, finalCount) + " memory_ids from the candidate list. If uncertain, choose the closest by semantic relevance. Do not select more than " + Math.Max(1, finalCount) + ".");
+		user.AppendLine();
+		user.AppendLine("Latest player input:");
+		user.AppendLine(string.IsNullOrWhiteSpace(currentInput) ? "(none)" : currentInput.Trim());
+		user.AppendLine("Latest NPC/context input:");
+		user.AppendLine(string.IsNullOrWhiteSpace(secondaryInput) ? "(none)" : secondaryInput.Trim());
+		user.AppendLine("Current scene:");
+		user.AppendLine(ResolveCurrentMemorySceneLabel());
+		user.AppendLine();
+		user.AppendLine("Memory candidates, numbered by date from far to near:");
+		foreach (MemoryRecallCandidate item in list)
+		{
+			CompressedMemoryBlock block = item.Block;
+			string text = block.GameDate;
+			if (string.IsNullOrWhiteSpace(text))
+			{
+				text = "第" + block.GameDayIndex + "日";
+			}
+			user.AppendLine(item.DisplayId + "# " + text + " " + FormatMemoryHourRange(block.StartHour, block.EndHour) + " | " + (block.RichTitle ?? "").Trim());
+		}
+		object[] messages = new object[2]
+		{
+			new
+			{
+				role = "system",
+				content = system
+			},
+			new
+			{
+				role = "user",
+				content = user.ToString().Trim()
+			}
+		};
+		string content = "";
+		if (mode == 2)
+		{
+			string memoryError = "";
+			string ruleError = "";
+			bool memoryOk = false;
+			bool ruleOk = false;
+			Task memoryTask = Task.Run(delegate
+			{
+				memoryOk = AIConfigHandler.TryCallAuxiliarySimpleDialogue(messages, 800, 0f, out content, out memoryError);
+			});
+			Task ruleTask = Task.Run(delegate
+			{
+				ruleOk = AIConfigHandler.TryCallAuxiliaryRuleCodesForExternal(currentInput, secondaryInput, ResolveCurrentMemorySceneLabel(), AIConfigHandler.GuardrailRuleReturnCap, out var _, out ruleError);
+			});
+			try
+			{
+				Task.WaitAll(memoryTask, ruleTask);
+			}
+			catch (Exception ex)
+			{
+				error = ex.Message;
+				ShowCompressedMemoryBlockingPopup("压缩记忆前处理失败", "并发前处理请求异常：" + error);
+				return false;
+			}
+			if (!memoryOk || !ruleOk)
+			{
+				error = "memory=" + (memoryOk ? "ok" : memoryError) + "; rule=" + (ruleOk ? "ok" : ruleError);
+				ShowCompressedMemoryBlockingPopup("压缩记忆前处理失败", "并发前处理没有全部成功：" + error + "\n\n请修复前处理 API 后重试。");
+				return false;
+			}
+		}
+		else if (!AIConfigHandler.TryCallAuxiliarySimpleDialogue(messages, 800, 0f, out content, out error))
+		{
+			ShowCompressedMemoryBlockingPopup("压缩记忆前处理失败", "记忆筛选请求失败：" + (error ?? "未知错误") + "\n\n请修复前处理 API 后重试。");
+			return false;
+		}
+		selectedIds = ParseMemoryPreprocessIds(content, list.Select((MemoryRecallCandidate x) => x.DisplayId), finalCount);
+		if (selectedIds.Count <= 0)
+		{
+			error = "memory_ids 解析为空。raw=" + (content ?? "");
+			ShowCompressedMemoryBlockingPopup("压缩记忆前处理失败", error + "\n\n请修复前处理提示词或 API 输出后重试。");
+			return false;
+		}
+		if (selectedIds.Count < finalCount)
+		{
+			HashSet<int> selectedSet = new HashSet<int>(selectedIds);
+			List<int> fill = list.OrderByDescending((MemoryRecallCandidate x) => x.Score).ThenByDescending((MemoryRecallCandidate x) => x.Block.GameDayIndex).Select((MemoryRecallCandidate x) => x.DisplayId).Where((int x) => !selectedSet.Contains(x)).Take(finalCount - selectedIds.Count).ToList();
+			selectedIds.AddRange(fill);
+		}
+		if (selectedIds.Count > finalCount)
+		{
+			selectedIds = selectedIds.Take(finalCount).ToList();
+		}
+		return true;
+	}
+
+	private static List<int> ParseMemoryPreprocessIds(string content, IEnumerable<int> allowedIds, int finalCount)
+	{
+		HashSet<int> allowed = new HashSet<int>(allowedIds ?? Enumerable.Empty<int>());
+		HashSet<int> seen = new HashSet<int>();
+		List<int> list = new List<int>();
+		string text = StripJsonCodeFence(content);
+		try
+		{
+			JObject jObject = JObject.Parse(text);
+			JArray jArray = jObject["memory_ids"] as JArray;
+			if (jArray != null)
+			{
+				foreach (JToken item in jArray)
+				{
+					if (int.TryParse((item?.ToString() ?? "").Trim().TrimStart('#'), out var result) && allowed.Contains(result) && seen.Add(result))
+					{
+						list.Add(result);
+						if (list.Count >= finalCount)
+						{
+							return list;
+						}
+					}
+				}
+			}
+		}
+		catch
+		{
+		}
+		foreach (Match item2 in Regex.Matches(text, "\\d+"))
+		{
+			if (int.TryParse(item2.Value, out var result2) && allowed.Contains(result2) && seen.Add(result2))
+			{
+				list.Add(result2);
+				if (list.Count >= finalCount)
+				{
+					break;
+				}
+			}
+		}
+		return list;
+	}
+
+	private void ShowCompressedMemoryBlockingPopup(string title, string message)
+	{
+		try
+		{
+			Logger.Log("CompressedMemory", "[BLOCK] " + title + " :: " + (message ?? ""));
+			if (_memorySummaryFailurePopupActive)
+			{
+				return;
+			}
+			_memorySummaryFailurePopupActive = true;
+			InformationManager.ShowInquiry(new InquiryData(title, message ?? "", isAffirmativeOptionShown: true, isNegativeOptionShown: false, "知道了", "", delegate
+			{
+				_memorySummaryFailurePopupActive = false;
+			}, null), pauseGameActiveState: true);
+		}
+		catch
+		{
+			_memorySummaryFailurePopupActive = false;
+		}
+	}
+
+	private string BuildUncompressedDailyMemoryContext(Hero hero, int currentDay, bool includeToday)
+	{
+		List<DailyMemoryDraft> list = LoadDailyMemoryDrafts(hero);
+		if (list == null || list.Count <= 0)
+		{
+			return "";
+		}
+		IEnumerable<DailyMemoryDraft> enumerable = includeToday ? list.Where((DailyMemoryDraft x) => x != null && x.GameDayIndex == currentDay) : list.Where((DailyMemoryDraft x) => x != null && x.GameDayIndex < currentDay && x.HasLlmDialogue);
+		StringBuilder stringBuilder = new StringBuilder();
+		foreach (DailyMemoryDraft draft in enumerable.OrderBy((DailyMemoryDraft x) => x.GameDayIndex))
+		{
+			if (draft?.Lines == null || draft.Lines.Count <= 0)
+			{
+				continue;
+			}
+			if (stringBuilder.Length == 0)
+			{
+				stringBuilder.AppendLine(includeToday ? "【今日对话历史（尚未压缩）】" : "【待压缩历史（原始记录，临时注入）】");
+			}
+			string text = string.IsNullOrWhiteSpace(draft.GameDate) ? ("第" + draft.GameDayIndex + "日") : draft.GameDate.Trim();
+			stringBuilder.AppendLine("—— " + text + " ——");
+			foreach (DailyMemoryLine line in draft.Lines)
+			{
+				string text2 = BuildDailyMemoryLineForPrompt(line);
+				if (!string.IsNullOrWhiteSpace(text2))
+				{
+					stringBuilder.AppendLine(text2);
+				}
+			}
+		}
+		return stringBuilder.ToString().TrimEnd();
+	}
+
+	private static bool ShouldSuppressTodayMemoryContextInCurrentRequest()
+	{
+		try
+		{
+			if (Mission.Current == null || Mission.Current.Scene == null)
+			{
+				return false;
+			}
+			try
+			{
+				return ShoutUtils.IsInValidScene();
+			}
+			catch
+			{
+				return true;
+			}
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private string BuildCompressedMemoryContext(Hero hero, string currentInput, string secondaryInput)
+	{
+		List<CompressedMemoryBlock> list = LoadCompressedMemoryBlocks(hero);
+		if (list == null || list.Count <= 0)
+		{
+			return "";
+		}
+		int finalCount = GetMemoryFinalInjectCountFromSettings();
+		int candidateLimit = GetMemoryCandidateLimitFromSettings();
+		List<MemoryRecallCandidate> candidates;
+		if (list.Count <= finalCount)
+		{
+			candidates = list.OrderBy((CompressedMemoryBlock x) => x.GameDayIndex).ThenBy((CompressedMemoryBlock x) => x.StartHour).Select((CompressedMemoryBlock x) => new MemoryRecallCandidate
+			{
+				Block = x,
+				Score = 1.0
+			}).ToList();
+			AssignMemoryCandidateDisplayIds(candidates);
+		}
+		else
+		{
+			List<DailyMemoryDraft> drafts = LoadDailyMemoryDrafts(hero);
+			if (!TryBuildMemoryRecallCandidates(hero, list, currentInput, secondaryInput, drafts, candidateLimit, out candidates, out var error))
+			{
+				Logger.Log("CompressedMemory", "[ERROR] recall failed hero=" + (hero?.StringId ?? "") + " error=" + error);
+				return "";
+			}
+			if (candidates.Count > finalCount)
+			{
+				if (!TrySelectMemoryIdsWithPreprocess(candidates, finalCount, currentInput, secondaryInput, out var selectedIds, out var error2))
+				{
+					Logger.Log("CompressedMemory", "[ERROR] preprocess failed hero=" + (hero?.StringId ?? "") + " error=" + error2);
+					return "";
+				}
+				HashSet<int> selected = new HashSet<int>(selectedIds);
+				candidates = candidates.Where((MemoryRecallCandidate x) => selected.Contains(x.DisplayId)).OrderBy((MemoryRecallCandidate x) => x.Block.GameDayIndex).ThenBy((MemoryRecallCandidate x) => x.Block.StartHour).ToList();
+			}
+		}
+		if (candidates.Count <= 0)
+		{
+			return "";
+		}
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.AppendLine("你想起之前的对话与互动");
+		int num = 1;
+		foreach (MemoryRecallCandidate candidate in candidates.OrderBy((MemoryRecallCandidate x) => x.Block.GameDayIndex).ThenBy((MemoryRecallCandidate x) => x.Block.StartHour))
+		{
+			CompressedMemoryBlock block = candidate.Block;
+			if (block == null)
+			{
+				continue;
+			}
+			string text = string.IsNullOrWhiteSpace(block.GameDate) ? ("第" + block.GameDayIndex + "日") : block.GameDate.Trim();
+			string text2 = StripMemoryTitleDateTime(block.RichTitle);
+			if (string.IsNullOrWhiteSpace(text2))
+			{
+				text2 = "往日对话记忆";
+			}
+			stringBuilder.AppendLine(num + "#标题：" + text + " " + FormatMemoryHourRange(block.StartHour, block.EndHour) + " " + text2);
+			stringBuilder.AppendLine("内容：");
+			stringBuilder.AppendLine((block.Summary ?? "").Trim());
+			stringBuilder.AppendLine("AFEF行为补充：");
+			if (block.AfefLines != null && block.AfefLines.Count > 0)
+			{
+				foreach (string item in block.AfefLines)
+				{
+					if (!string.IsNullOrWhiteSpace(item))
+					{
+						stringBuilder.AppendLine(item.Trim());
+					}
+				}
+			}
+			else
+			{
+				stringBuilder.AppendLine("无");
+			}
+			stringBuilder.AppendLine();
+			num++;
+		}
+		return stringBuilder.ToString().TrimEnd();
+	}
+
 	private string BuildHistoryContext(Hero hero, int maxLines = 0, string currentInput = null, string secondaryInput = null)
 	{
 		if (hero == null)
@@ -14892,194 +17072,35 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		try
 		{
-			int num = ((maxLines <= 0) ? GetRecentDialogueTurnsFromSettings() : ClampRecentDialogueTurns(maxLines));
-			List<DialogueDay> list = LoadDialogueHistory(hero);
-			if (list == null || list.Count == 0)
-			{
-				return "";
-			}
-			int num2 = (int)CampaignTime.Now.ToDays;
-			List<HistoryLineEntry> list2 = new List<HistoryLineEntry>();
-			int num3 = 0;
-			foreach (DialogueDay item in list)
-			{
-				if (item == null || item.Lines == null || (item.GameDayIndex != 0 && item.GameDayIndex > num2))
-				{
-					continue;
-				}
-				foreach (string line in item.Lines)
-				{
-					if (!string.IsNullOrWhiteSpace(line) && !IsActiveSceneSessionHistoryLine(line) && !IsLoreInjectionHistoryLine(line))
-					{
-						list2.Add(new HistoryLineEntry
-						{
-							Day = item.GameDayIndex,
-							Date = item.GameDate,
-							Line = line.Trim(),
-							Index = num3++
-						});
-					}
-				}
-			}
-			if (list2.Count == 0)
-			{
-				return "";
-			}
-			if (!string.IsNullOrWhiteSpace(currentInput))
-			{
-				int num4 = list2.Count - 1;
-				if (num4 >= 0 && IsCurrentInputPlayerLine(list2[num4].Line, currentInput))
-				{
-					list2.RemoveAt(num4);
-				}
-			}
-			if (list2.Count == 0)
-			{
-				return "";
-			}
-			int count = 0;
-			int num5 = 0;
-			bool flag = false;
-			for (int num6 = list2.Count - 1; num6 >= 0; num6--)
-			{
-				if (IsPlayerTurnStartLine(list2[num6].Line))
-				{
-					num5++;
-					if (num5 >= num)
-					{
-						count = num6;
-						flag = true;
-						break;
-					}
-				}
-			}
-			if (!flag)
-			{
-				count = Math.Max(0, list2.Count - num * 3);
-			}
-			List<HistoryLineEntry> list3 = list2.Skip(count).ToList();
-			List<HistoryLineEntry> list4 = list2.Take(count).ToList();
-			List<WeightedRecallQueryInput> list5 = BuildHistoryRecallQueryInputs(list3, currentInput, secondaryInput);
-			int historyReturnCapFromSettings = GetHistoryReturnCapFromSettings();
-			bool onnxUsed = false;
-			string historyMatchMode = "none";
-			int historyRerankPerIntent = 0;
-			int historyRecallPerIntent = 0;
-			List<ArchiveHit> list6 = FindRelevantArchiveHits(list4, list5, historyReturnCapFromSettings, out onnxUsed, out historyMatchMode, out historyRerankPerIntent, out historyRecallPerIntent);
-			int num7 = list5.Sum((WeightedRecallQueryInput x) => x.Text?.Length ?? 0);
-			string text = (hero?.Name?.ToString() ?? "").Trim();
-			List<string> list13 = BuildRenderedHistoryLines(list3, text, addressToYou: true);
-			List<string> list8 = new List<string>();
-			if (list6 != null && list6.Count > 0)
-			{
-				List<HistoryLineEntry> list9 = new List<HistoryLineEntry>();
-				HashSet<int> hashSet = new HashSet<int>();
-				foreach (ArchiveHit item2 in list6)
-				{
-					HistoryLineEntry historyLineEntry = item2?.Entry;
-					if (historyLineEntry != null && hashSet.Add(historyLineEntry.Index))
-					{
-						list9.Add(historyLineEntry);
-					}
-				}
-				list9 = (from e in list9
-					orderby e.Day, e.Index
-					select e).ToList();
-				Dictionary<int, HistoryLineEntry> dictionary = new Dictionary<int, HistoryLineEntry>();
-				for (int num9 = 0; num9 < list4.Count; num9++)
-				{
-					HistoryLineEntry historyLineEntry3 = list4[num9];
-					if (historyLineEntry3 != null)
-					{
-						dictionary[historyLineEntry3.Index] = historyLineEntry3;
-					}
-				}
-				List<HistoryLineEntry> list10 = new List<HistoryLineEntry>();
-				HashSet<int> hashSet2 = new HashSet<int>();
-				for (int num10 = 0; num10 < list9.Count; num10++)
-				{
-					HistoryLineEntry historyLineEntry4 = list9[num10];
-					if (historyLineEntry4 == null)
-					{
-						continue;
-					}
-					int[] array = new int[3]
-					{
-						historyLineEntry4.Index - 1,
-						historyLineEntry4.Index,
-						historyLineEntry4.Index + 1
-					};
-					foreach (int key in array)
-					{
-						if (dictionary.TryGetValue(key, out var value) && value != null && !string.IsNullOrWhiteSpace(value.Line) && hashSet2.Add(value.Index))
-						{
-							list10.Add(value);
-						}
-					}
-				}
-				list10 = (from e in list10
-					orderby e.Day, e.Index
-					select e).ToList();
-				List<string> list11 = new List<string>();
-				int num11 = int.MinValue;
-				string a = null;
-				foreach (HistoryLineEntry item3 in list10)
-				{
-					string text2 = ((!string.IsNullOrWhiteSpace(item3.Date)) ? item3.Date.Trim() : ((item3.Day != 0) ? ("第 " + item3.Day + " 日") : ""));
-					if (!string.IsNullOrWhiteSpace(text2) && (item3.Day != num11 || !string.Equals(a, text2, StringComparison.Ordinal)))
-					{
-						list11.Add("—— " + text2 + " ——");
-						num11 = item3.Day;
-						a = text2;
-					}
-					string text3 = NormalizePlayerHistoryLineForPrompt(item3.Line ?? "", text, addressToYou: true);
-					if (!string.IsNullOrWhiteSpace(text3))
-					{
-						list11.Add(text3);
-					}
-				}
-				list8 = BuildRecallToneLines(list11);
-				list8 = TakeTailByCharBudget(list8, 900);
-			}
+			int currentDay = (int)CampaignTime.Now.ToDays;
 			StringBuilder stringBuilder = new StringBuilder(4096);
-			stringBuilder.AppendLine(" ");
-			if (list13.Count > 0)
+			string compressedMemoryContext = BuildCompressedMemoryContext(hero, currentInput, secondaryInput);
+			if (!string.IsNullOrWhiteSpace(compressedMemoryContext))
 			{
-				if (string.IsNullOrWhiteSpace(text))
-				{
-					text = "该NPC";
-				}
-				stringBuilder.AppendLine($"【{BuildPlayerPublicDisplayNameForPrompt()}与{text}的近期对话】");
-				foreach (string item4 in list13)
-				{
-					stringBuilder.AppendLine(item4);
-				}
+				stringBuilder.AppendLine(compressedMemoryContext);
+				stringBuilder.AppendLine();
 			}
-			if (list8.Count > 0)
+			string pendingRawContext = BuildUncompressedDailyMemoryContext(hero, currentDay, includeToday: false);
+			if (!string.IsNullOrWhiteSpace(pendingRawContext))
 			{
-				stringBuilder.AppendLine("【长期记忆摘要】");
-				stringBuilder.AppendLine("说明：以下条目保留原说话人；“你”指当前NPC。");
-				foreach (string item6 in list8)
+				stringBuilder.AppendLine(pendingRawContext);
+				stringBuilder.AppendLine();
+			}
+			if (!ShouldSuppressTodayMemoryContextInCurrentRequest())
+			{
+				string todayContext = BuildUncompressedDailyMemoryContext(hero, currentDay, includeToday: true);
+				if (!string.IsNullOrWhiteSpace(todayContext))
 				{
-					stringBuilder.AppendLine(item6);
+					stringBuilder.AppendLine(todayContext);
 				}
 			}
 			string text4 = stringBuilder.ToString().TrimEnd();
-			Logger.Log("DialogueHistory", string.Format("context hero={0} totalLines={1} recentLines={2} olderLines={3} archiveHits={4} onnxUsed={5} returnCap={6} matchMode={7} rerankPerIntent={8} recallPerIntent={9} queryCount={10} queryLen={11} npcRecall={12} chars={13}", hero.StringId ?? "", list2.Count, list3.Count, list4.Count, list8?.Count ?? 0, onnxUsed, historyReturnCapFromSettings, historyMatchMode, historyRerankPerIntent, historyRecallPerIntent, list5.Count, num7, string.IsNullOrWhiteSpace(secondaryInput) ? "off" : "on", text4.Length));
+			Logger.Log("DialogueHistory", string.Format("compressed_context hero={0} chars={1} blocks={2} drafts={3}", hero.StringId ?? "", text4.Length, LoadCompressedMemoryBlocks(hero).Count, LoadDailyMemoryDrafts(hero).Count));
 			Logger.Obs("History", "build_context", new Dictionary<string, object>
 			{
 				["heroId"] = hero.StringId ?? "",
-				["totalLines"] = list2.Count,
-				["recentLines"] = list3.Count,
-				["olderLines"] = list4.Count,
-				["archiveHits"] = list8?.Count ?? 0,
-				["onnxUsed"] = onnxUsed,
-				["returnCap"] = historyReturnCapFromSettings,
-				["matchMode"] = historyMatchMode,
-				["rerankPerIntent"] = historyRerankPerIntent,
-				["recallPerIntent"] = historyRecallPerIntent,
-				["queryCount"] = list5.Count,
-				["queryLen"] = num7,
+				["memoryBlocks"] = LoadCompressedMemoryBlocks(hero).Count,
+				["dailyDrafts"] = LoadDailyMemoryDrafts(hero).Count,
 				["npcRecall"] = !string.IsNullOrWhiteSpace(secondaryInput),
 				["chars"] = text4.Length
 			});
@@ -15322,7 +17343,20 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			return "";
 		}
-		string delta = json["choices"]?[0]?["delta"]?["content"]?.ToString();
+		string delta = "";
+		if (json["choices"] is JArray choices)
+		{
+			foreach (JToken choice in choices)
+			{
+				delta = choice?["delta"]?["content"]?.ToString()
+					?? choice?["message"]?["content"]?.ToString()
+					?? choice?["text"]?.ToString();
+				if (!string.IsNullOrEmpty(delta))
+				{
+					return delta;
+				}
+			}
+		}
 		if (string.IsNullOrEmpty(delta))
 		{
 			delta = json.SelectToken("delta.content")?.ToString()
@@ -15334,6 +17368,45 @@ public class MyBehavior : CampaignBehaviorBase
 			return delta;
 		}
 		return ExtractUniversalGeminiCandidateText(json.SelectToken("candidates[0]"));
+	}
+
+	private static bool IsUniversalStreamNonContentChunk(JObject json)
+	{
+		if (json == null)
+		{
+			return true;
+		}
+		if (json["choices"] is JArray choices)
+		{
+			if (choices.Count == 0)
+			{
+				return true;
+			}
+			bool sawReasoning = false;
+			foreach (JToken choice in choices)
+			{
+				string content = choice?["delta"]?["content"]?.ToString()
+					?? choice?["message"]?["content"]?.ToString()
+					?? choice?["text"]?.ToString();
+				if (!string.IsNullOrEmpty(content))
+				{
+					return false;
+				}
+				string reasoning = choice?["delta"]?["reasoning_content"]?.ToString()
+					?? choice?["delta"]?["reasoning"]?.ToString()
+					?? choice?["reasoning_content"]?.ToString();
+				if (!string.IsNullOrEmpty(reasoning))
+				{
+					sawReasoning = true;
+				}
+			}
+			if (sawReasoning)
+			{
+				return true;
+			}
+			return choices.Any((JToken choice) => choice?["finish_reason"] != null || choice?["delta"]?["role"] != null);
+		}
+		return json["usage"] != null;
 	}
 
 	private async Task<ApiCallResult> CallUniversalApiDetailed(string sys, string user, bool logToEventLogs = false, string eventLogSource = "EventWeeklyReport", UniversalApiRoute route = UniversalApiRoute.Main)
@@ -15475,8 +17548,11 @@ public class MyBehavior : CampaignBehaviorBase
 								string data = line.Substring(6).Trim();
 								JObject json = JObject.Parse(data);
 								string delta = ExtractUniversalStreamDelta(json);
-								fullContent.Append(delta);
-								if (string.IsNullOrEmpty(delta) && fullContent.Length == 0)
+								if (!string.IsNullOrEmpty(delta))
+								{
+									fullContent.Append(delta);
+								}
+								else if (fullContent.Length == 0 && !IsUniversalStreamNonContentChunk(json))
 								{
 									apiLog("[HTTP] 流片段未解析出正文，原始片段=\n" + TrimUniversalApiRawForLog(data));
 								}
@@ -17854,10 +19930,10 @@ public class MyBehavior : CampaignBehaviorBase
 	private void OpenDevHeroNpcMenu()
 	{
 		List<InquiryElement> list = new List<InquiryElement>();
-		list.Add(new InquiryElement("edit_hero", "编辑 HeroNPC（历史/赊账/个性背景）…", null));
+		list.Add(new InquiryElement("edit_hero", "编辑 HeroNPC（压缩记忆/赊账/个性背景）…", null));
 		list.Add(new InquiryElement("single_ie", "单个 HeroNPC 导入/导出…", null));
-		list.Add(new InquiryElement("export_hero_all", "全量导出（HeroNPC：历史+赊账+个性背景，选文件夹）", null));
-		list.Add(new InquiryElement("import_hero_all", "全量导入（HeroNPC：历史+赊账+个性背景，选文件夹）", null));
+		list.Add(new InquiryElement("export_hero_all", "全量导出（HeroNPC：压缩记忆+赊账+个性背景，选文件夹）", null));
+		list.Add(new InquiryElement("import_hero_all", "全量导入（HeroNPC：压缩记忆+赊账+个性背景，选文件夹）", null));
 		MultiSelectionInquiryData data = new MultiSelectionInquiryData("HeroNPC 编辑/导入/导出", "选择要执行的操作：", list, isExitShown: true, 0, 1, "进入", "返回", OnDevHeroNpcMenuSelected, delegate
 		{
 		});
@@ -27607,13 +29683,13 @@ public class MyBehavior : CampaignBehaviorBase
 			string text = npc.Name?.ToString() ?? "NPC";
 			StringBuilder stringBuilder = new StringBuilder();
 			stringBuilder.AppendLine("请选择要执行的操作：");
-			stringBuilder.AppendLine(" - 编辑对话历史");
+			stringBuilder.AppendLine(" - 管理压缩记忆");
 			stringBuilder.AppendLine(" - 编辑赊账/欠款");
 			stringBuilder.AppendLine(" - 编辑角色个性/历史背景");
 			stringBuilder.AppendLine(" - 查看行动记录（结构化）");
 			stringBuilder.AppendLine(" - 切换 NPC");
 			List<InquiryElement> list = new List<InquiryElement>();
-			list.Add(new InquiryElement("edit_history", "编辑对话历史", null));
+			list.Add(new InquiryElement("edit_history", "压缩记忆管理", null));
 			list.Add(new InquiryElement("edit_debt", "编辑赊账/欠款", null));
 			list.Add(new InquiryElement("edit_persona", "编辑角色个性/历史背景", null));
 			list.Add(new InquiryElement("view_actions", "查看行动记录（结构化）", null));
@@ -27733,7 +29809,7 @@ public class MyBehavior : CampaignBehaviorBase
 			switch (selected[0].Identifier as string)
 			{
 			case "edit_history":
-				OpenDevHistoryDateSelection(devEditingHero);
+				OpenDevCompressedMemoryMenu(devEditingHero);
 				break;
 			case "edit_debt":
 				OpenDevDebtMenu(devEditingHero);
@@ -28340,6 +30416,183 @@ public class MyBehavior : CampaignBehaviorBase
 			return text;
 		}
 		return text.Substring(0, Math.Max(1, maxLen)) + "...";
+	}
+
+	private void OpenDevCompressedMemoryMenu(Hero npc)
+	{
+		if (npc == null)
+		{
+			return;
+		}
+		_devEditingHero = npc;
+		List<DailyMemoryDraft> drafts = LoadDailyMemoryDrafts(npc);
+		List<CompressedMemoryBlock> blocks = LoadCompressedMemoryBlocks(npc);
+		int queueCount = (_memorySummaryQueue ?? new List<MemorySummaryJob>()).Count((MemorySummaryJob x) => x != null && string.Equals(NormalizeMemoryHeroId(x.HeroId), GetMemoryHeroId(npc), StringComparison.OrdinalIgnoreCase));
+		int rawLineCount = (drafts ?? new List<DailyMemoryDraft>()).Sum((DailyMemoryDraft x) => (x?.Lines?.Count).GetValueOrDefault());
+		string name = npc.Name?.ToString() ?? "NPC";
+		StringBuilder body = new StringBuilder();
+		body.AppendLine("新压缩记忆体系数据：");
+		body.AppendLine("今日/待总结原始历史：" + (drafts?.Count ?? 0) + " 天，" + rawLineCount + " 行");
+		body.AppendLine("压缩记忆块：" + (blocks?.Count ?? 0) + " 块");
+		body.AppendLine("待总结队列：" + queueCount + " 项");
+		body.AppendLine();
+		body.AppendLine("旧 _dialogueHistory_v2 不再参与主链路记忆注入。");
+		List<InquiryElement> list = new List<InquiryElement>
+		{
+			new InquiryElement("raw", "查看今日/待总结原始历史", null),
+			new InquiryElement("blocks", "查看压缩记忆块", null),
+			new InquiryElement("queue", "查看待总结队列", null),
+			new InquiryElement("clear", "清空该NPC新记忆数据", null),
+			new InquiryElement("process", "手动触发总结队列", null),
+			new InquiryElement("back", "返回", null)
+		};
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData("压缩记忆管理 - " + name, body.ToString().TrimEnd(), list, isExitShown: true, 0, 1, "执行", "返回", OnDevCompressedMemoryMenuSelected, delegate
+		{
+			ShowDevEditInquiry(npc);
+		});
+		MBInformationManager.ShowMultiSelectionInquiry(data);
+	}
+
+	private void OnDevCompressedMemoryMenuSelected(List<InquiryElement> selected)
+	{
+		Hero npc = _devEditingHero;
+		if (npc == null)
+		{
+			return;
+		}
+		if (selected == null || selected.Count == 0 || selected[0].Identifier == null)
+		{
+			OpenDevCompressedMemoryMenu(npc);
+			return;
+		}
+		switch (selected[0].Identifier as string)
+		{
+		case "raw":
+			ShowDevCompressedMemoryText(npc, "原始历史", BuildDevCompressedMemoryRawText(npc));
+			break;
+		case "blocks":
+			ShowDevCompressedMemoryText(npc, "压缩记忆块", BuildDevCompressedMemoryBlockText(npc));
+			break;
+		case "queue":
+			ShowDevCompressedMemoryText(npc, "待总结队列", BuildDevCompressedMemoryQueueText(npc));
+			break;
+		case "clear":
+			ConfirmDevClearCompressedMemory(npc);
+			break;
+		case "process":
+			TrySealPastDailyMemoryDrafts();
+			TryStartMemorySummaryQueue();
+			InformationManager.DisplayMessage(new InformationMessage("已触发压缩记忆总结队列检查。"));
+			OpenDevCompressedMemoryMenu(npc);
+			break;
+		default:
+			ShowDevEditInquiry(npc);
+			break;
+		}
+	}
+
+	private void ShowDevCompressedMemoryText(Hero npc, string title, string text)
+	{
+		string name = npc?.Name?.ToString() ?? "NPC";
+		InformationManager.ShowInquiry(new InquiryData("压缩记忆管理 - " + title + " - " + name, string.IsNullOrWhiteSpace(text) ? "（无数据）" : text.Trim(), isAffirmativeOptionShown: true, isNegativeOptionShown: false, "返回", "", delegate
+		{
+			OpenDevCompressedMemoryMenu(npc);
+		}, null), pauseGameActiveState: true);
+	}
+
+	private string BuildDevCompressedMemoryRawText(Hero npc)
+	{
+		List<DailyMemoryDraft> drafts = LoadDailyMemoryDrafts(npc);
+		if (drafts == null || drafts.Count <= 0)
+		{
+			return "";
+		}
+		StringBuilder sb = new StringBuilder();
+		foreach (DailyMemoryDraft draft in drafts.OrderBy((DailyMemoryDraft x) => x.GameDayIndex))
+		{
+			string date = string.IsNullOrWhiteSpace(draft.GameDate) ? ("第" + draft.GameDayIndex + "日") : draft.GameDate.Trim();
+			sb.AppendLine("【" + date + "】" + (draft.QueuedForSummary ? "（已入总结队列）" : ""));
+			foreach (DailyMemoryLine line in draft.Lines ?? new List<DailyMemoryLine>())
+			{
+				string rendered = BuildDailyMemoryLineForPrompt(line);
+				if (!string.IsNullOrWhiteSpace(rendered))
+				{
+					sb.AppendLine(rendered);
+				}
+			}
+			sb.AppendLine();
+		}
+		return sb.ToString().TrimEnd();
+	}
+
+	private string BuildDevCompressedMemoryBlockText(Hero npc)
+	{
+		List<CompressedMemoryBlock> blocks = LoadCompressedMemoryBlocks(npc);
+		if (blocks == null || blocks.Count <= 0)
+		{
+			return "";
+		}
+		StringBuilder sb = new StringBuilder();
+		int i = 1;
+		foreach (CompressedMemoryBlock block in blocks.OrderBy((CompressedMemoryBlock x) => x.GameDayIndex).ThenBy((CompressedMemoryBlock x) => x.StartHour))
+		{
+			string date = string.IsNullOrWhiteSpace(block.GameDate) ? ("第" + block.GameDayIndex + "日") : block.GameDate.Trim();
+			sb.AppendLine(i + "# " + date + " " + FormatMemoryHourRange(block.StartHour, block.EndHour) + " " + (block.RichTitle ?? ""));
+			if (block.Scenes != null && block.Scenes.Count > 0)
+			{
+				sb.AppendLine("场景：" + string.Join(" / ", block.Scenes));
+			}
+			sb.AppendLine("内容：" + (block.Summary ?? ""));
+			if (block.AfefLines != null && block.AfefLines.Count > 0)
+			{
+				sb.AppendLine("AFEF：");
+				foreach (string line in block.AfefLines)
+				{
+					sb.AppendLine(line);
+				}
+			}
+			sb.AppendLine();
+			i++;
+		}
+		return sb.ToString().TrimEnd();
+	}
+
+	private string BuildDevCompressedMemoryQueueText(Hero npc)
+	{
+		string heroId = GetMemoryHeroId(npc);
+		List<MemorySummaryJob> jobs = (_memorySummaryQueue ?? new List<MemorySummaryJob>()).Where((MemorySummaryJob x) => x != null && string.Equals(NormalizeMemoryHeroId(x.HeroId), heroId, StringComparison.OrdinalIgnoreCase)).OrderBy((MemorySummaryJob x) => x.GameDayIndex).ToList();
+		if (jobs.Count <= 0)
+		{
+			return "";
+		}
+		StringBuilder sb = new StringBuilder();
+		foreach (MemorySummaryJob job in jobs)
+		{
+			string date = string.IsNullOrWhiteSpace(job.GameDate) ? ("第" + job.GameDayIndex + "日") : job.GameDate.Trim();
+			sb.AppendLine(date + " retry=" + job.RetryCount + " error=" + (job.LastError ?? ""));
+		}
+		return sb.ToString().TrimEnd();
+	}
+
+	private void ConfirmDevClearCompressedMemory(Hero npc)
+	{
+		if (npc == null)
+		{
+			return;
+		}
+		string name = npc.Name?.ToString() ?? "NPC";
+		InformationManager.ShowInquiry(new InquiryData("确认清空压缩记忆", "将删除 " + name + " 的今日历史、待总结队列和压缩记忆块。\n此操作不可撤销，是否继续？", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "确认清空", "取消", delegate
+		{
+			string heroId = GetMemoryHeroId(npc);
+			_dailyMemoryDrafts?.Remove(heroId);
+			_compressedMemoryBlocks?.Remove(heroId);
+			_memorySummaryQueue?.RemoveAll((MemorySummaryJob x) => x != null && string.Equals(NormalizeMemoryHeroId(x.HeroId), heroId, StringComparison.OrdinalIgnoreCase));
+			InformationManager.DisplayMessage(new InformationMessage("已清空该NPC的新压缩记忆数据。"));
+			OpenDevCompressedMemoryMenu(npc);
+		}, delegate
+		{
+			OpenDevCompressedMemoryMenu(npc);
+		}), pauseGameActiveState: true);
 	}
 
 	private void OpenDevHistorySearchInput(Hero npc)
@@ -29429,8 +31682,8 @@ public class MyBehavior : CampaignBehaviorBase
 		List<InquiryElement> list = new List<InquiryElement>();
 		list.Add(new InquiryElement("export_persona", "导出（个性/背景，选择文件夹）", null));
 		list.Add(new InquiryElement("import_persona", "导入（个性/背景，选择文件夹）", null));
-		list.Add(new InquiryElement("export_history", "导出（对话历史，选择文件夹）", null));
-		list.Add(new InquiryElement("import_history", "导入（对话历史，选择文件夹）", null));
+		list.Add(new InquiryElement("export_history", "导出（压缩记忆，选择文件夹）", null));
+		list.Add(new InquiryElement("import_history", "导入（压缩记忆，选择文件夹）", null));
 		list.Add(new InquiryElement("export_debt", "导出（欠款，选择文件夹）", null));
 		list.Add(new InquiryElement("import_debt", "导入（欠款，选择文件夹）", null));
 		list.Add(new InquiryElement("change_hero", "切换NPC", null));
@@ -29477,10 +31730,10 @@ public class MyBehavior : CampaignBehaviorBase
 			OpenFolderPicker(text3 + " - 导入（个性/背景）", isExport: false, ExportImportScope.PersonalityBackground, OpenDevSingleNpcOpsMenu, text2);
 			break;
 		case "export_history":
-			OpenFolderPicker(text3 + " - 导出（对话历史）", isExport: true, ExportImportScope.DialogueHistory, OpenDevSingleNpcOpsMenu, text2);
+			OpenFolderPicker(text3 + " - 导出（压缩记忆）", isExport: true, ExportImportScope.DialogueHistory, OpenDevSingleNpcOpsMenu, text2);
 			break;
 		case "import_history":
-			OpenFolderPicker(text3 + " - 导入（对话历史）", isExport: false, ExportImportScope.DialogueHistory, OpenDevSingleNpcOpsMenu, text2);
+			OpenFolderPicker(text3 + " - 导入（压缩记忆）", isExport: false, ExportImportScope.DialogueHistory, OpenDevSingleNpcOpsMenu, text2);
 			break;
 		case "export_debt":
 			OpenFolderPicker(text3 + " - 导出（欠款）", isExport: true, ExportImportScope.Debt, OpenDevSingleNpcOpsMenu, text2);
@@ -30269,17 +32522,9 @@ public class MyBehavior : CampaignBehaviorBase
 			string path = ResolveExportFolderName(folderName);
 			string text = Path.Combine(playerExportsRootPath, path);
 			Directory.CreateDirectory(text);
-			string text2 = Path.Combine(text, "dialogue_history");
+			string text2 = Path.Combine(text, "compressed_memory");
 			Directory.CreateDirectory(text2);
-			List<DialogueDay> value = null;
-			if (_dialogueHistory != null)
-			{
-				_dialogueHistory.TryGetValue(heroId, out value);
-			}
-			if (value == null)
-			{
-				value = new List<DialogueDay>();
-			}
+			CompressedMemoryExportBundle value = BuildCompressedMemoryExportBundle(heroId);
 			string path2 = Path.Combine(text2, BuildNpcDataFileName(heroId));
 			WriteJson(path2, value);
 			InformationManager.DisplayMessage(new InformationMessage("导出完成：" + text));
@@ -30288,6 +32533,85 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			InformationManager.DisplayMessage(new InformationMessage("导出失败：" + ex.Message));
 		}
+	}
+
+	private CompressedMemoryExportBundle BuildCompressedMemoryExportBundle(string heroId)
+	{
+		string text = NormalizeMemoryHeroId(heroId);
+		CompressedMemoryExportBundle compressedMemoryExportBundle = new CompressedMemoryExportBundle();
+		if (!string.IsNullOrWhiteSpace(text))
+		{
+			if (_dailyMemoryDrafts != null && _dailyMemoryDrafts.TryGetValue(text, out var drafts) && drafts != null)
+			{
+				compressedMemoryExportBundle.DailyDrafts = SanitizeDailyMemoryDrafts(drafts);
+			}
+			if (_compressedMemoryBlocks != null && _compressedMemoryBlocks.TryGetValue(text, out var blocks) && blocks != null)
+			{
+				compressedMemoryExportBundle.Blocks = SanitizeCompressedMemoryBlocks(blocks);
+			}
+			compressedMemoryExportBundle.SummaryQueue = SanitizeMemorySummaryQueue((_memorySummaryQueue ?? new List<MemorySummaryJob>()).Where((MemorySummaryJob x) => x != null && string.Equals(NormalizeMemoryHeroId(x.HeroId), text, StringComparison.OrdinalIgnoreCase)));
+		}
+		return compressedMemoryExportBundle;
+	}
+
+	private bool ApplyCompressedMemoryExportBundle(string heroId, CompressedMemoryExportBundle bundle, bool overwriteExisting)
+	{
+		string text = NormalizeMemoryHeroId(heroId);
+		if (string.IsNullOrWhiteSpace(text) || bundle == null)
+		{
+			return false;
+		}
+		if (_dailyMemoryDrafts == null)
+		{
+			_dailyMemoryDrafts = new Dictionary<string, List<DailyMemoryDraft>>(StringComparer.OrdinalIgnoreCase);
+		}
+		if (_compressedMemoryBlocks == null)
+		{
+			_compressedMemoryBlocks = new Dictionary<string, List<CompressedMemoryBlock>>(StringComparer.OrdinalIgnoreCase);
+		}
+		if (_memorySummaryQueue == null)
+		{
+			_memorySummaryQueue = new List<MemorySummaryJob>();
+		}
+		List<DailyMemoryDraft> drafts = SanitizeDailyMemoryDrafts(bundle.DailyDrafts);
+		List<CompressedMemoryBlock> blocks = SanitizeCompressedMemoryBlocks(bundle.Blocks);
+		List<MemorySummaryJob> queue = SanitizeMemorySummaryQueue(bundle.SummaryQueue);
+		if (overwriteExisting)
+		{
+			_dailyMemoryDrafts.Remove(text);
+			_compressedMemoryBlocks.Remove(text);
+			_memorySummaryQueue.RemoveAll((MemorySummaryJob x) => x != null && string.Equals(NormalizeMemoryHeroId(x.HeroId), text, StringComparison.OrdinalIgnoreCase));
+		}
+		if (drafts.Count > 0 && (overwriteExisting || !_dailyMemoryDrafts.ContainsKey(text)))
+		{
+			foreach (DailyMemoryDraft draft in drafts)
+			{
+				draft.HeroId = text;
+			}
+			_dailyMemoryDrafts[text] = drafts;
+		}
+		if (blocks.Count > 0 && (overwriteExisting || !_compressedMemoryBlocks.ContainsKey(text)))
+		{
+			foreach (CompressedMemoryBlock block in blocks)
+			{
+				block.HeroId = text;
+				if (string.IsNullOrWhiteSpace(block.Id))
+				{
+					block.Id = BuildCompressedMemoryBlockId(text, block.GameDayIndex);
+				}
+			}
+			_compressedMemoryBlocks[text] = blocks;
+		}
+		if (queue.Count > 0 && overwriteExisting)
+		{
+			foreach (MemorySummaryJob job in queue)
+			{
+				job.HeroId = text;
+				_memorySummaryQueue.Add(job);
+			}
+			_memorySummaryQueue = SanitizeMemorySummaryQueue(_memorySummaryQueue);
+		}
+		return true;
 	}
 
 	private void ExportSingleNpcDebtData(string folderName, string heroId)
@@ -30573,13 +32897,13 @@ public class MyBehavior : CampaignBehaviorBase
 					InformationManager.DisplayMessage(new InformationMessage("导入失败：找不到导出目录。"));
 					return;
 				}
-				text2 = Path.Combine(importDir, "dialogue_history");
+				text2 = Path.Combine(importDir, "compressed_memory");
 				if (!Directory.Exists(text2))
 				{
 					try
 					{
 						string fileName = Path.GetFileName(importDir.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar));
-						if (string.Equals(fileName, "dialogue_history", StringComparison.OrdinalIgnoreCase))
+						if (string.Equals(fileName, "compressed_memory", StringComparison.OrdinalIgnoreCase))
 						{
 							text2 = importDir;
 						}
@@ -30590,7 +32914,7 @@ public class MyBehavior : CampaignBehaviorBase
 				}
 				if (!Directory.Exists(text2))
 				{
-					InformationManager.DisplayMessage(new InformationMessage("导入失败：找不到 dialogue_history 目录。"));
+					InformationManager.DisplayMessage(new InformationMessage("导入失败：找不到 compressed_memory 目录。"));
 					return;
 				}
 				text3 = FindNpcJsonByHeroId(text2, heroId);
@@ -30600,16 +32924,13 @@ public class MyBehavior : CampaignBehaviorBase
 				InformationManager.DisplayMessage(new InformationMessage("导入失败：该NPC没有对应的导出文件。"));
 				return;
 			}
-			List<DialogueDay> list = ReadJson<List<DialogueDay>>(text3);
-			if (_dialogueHistory == null)
-			{
-				_dialogueHistory = new Dictionary<string, List<DialogueDay>>();
-			}
-			bool flag = list != null;
+			CompressedMemoryExportBundle bundle = ReadJson<CompressedMemoryExportBundle>(text3);
+			bool flag = bundle != null;
 			bool flag2 = false;
 			try
 			{
-				flag2 = _dialogueHistory.TryGetValue(heroId, out var value) && value != null;
+				string key = NormalizeMemoryHeroId(heroId);
+				flag2 = (_dailyMemoryDrafts != null && _dailyMemoryDrafts.ContainsKey(key)) || (_compressedMemoryBlocks != null && _compressedMemoryBlocks.ContainsKey(key)) || ((_memorySummaryQueue ?? new List<MemorySummaryJob>()).Any((MemorySummaryJob x) => x != null && string.Equals(NormalizeMemoryHeroId(x.HeroId), key, StringComparison.OrdinalIgnoreCase)));
 			}
 			catch
 			{
@@ -30617,23 +32938,17 @@ public class MyBehavior : CampaignBehaviorBase
 			}
 			Action action = delegate
 			{
-				if (list == null)
-				{
-					_dialogueHistory.Remove(heroId);
-				}
-				else
-				{
-					_dialogueHistory[heroId] = list;
-				}
+				ApplyCompressedMemoryExportBundle(heroId, bundle, overwriteExisting: true);
 				InformationManager.DisplayMessage(new InformationMessage("导入完成：" + importDir));
 			};
 			Action onSkipDuplicates = delegate
 			{
-				InformationManager.DisplayMessage(new InformationMessage("已跳过重复条目：" + heroId));
+				ApplyCompressedMemoryExportBundle(heroId, bundle, overwriteExisting: false);
+				InformationManager.DisplayMessage(new InformationMessage("导入完成（已跳过重复）：" + heroId));
 			};
 			if (flag && flag2)
 			{
-				ShowDuplicateImportInquiry("检测到重复 - 对话历史", "检测到该 NPC 已存在对话历史：" + heroId + "\n请选择处理方式：", action, onSkipDuplicates, delegate
+				ShowDuplicateImportInquiry("检测到重复 - 压缩记忆", "检测到该 NPC 已存在压缩记忆数据：" + heroId + "\n请选择处理方式：", action, onSkipDuplicates, delegate
 				{
 				});
 			}
@@ -30671,19 +32986,35 @@ public class MyBehavior : CampaignBehaviorBase
 					}
 				}
 			}
-			string text3 = Path.Combine(text, "dialogue_history");
+			string text3 = Path.Combine(text, "compressed_memory");
 			Directory.CreateDirectory(text3);
 			ClearJsonFiles(text3);
-			if (_dialogueHistory != null)
+			HashSet<string> memoryHeroIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+			if (_dailyMemoryDrafts != null)
 			{
-				foreach (KeyValuePair<string, List<DialogueDay>> item in _dialogueHistory)
+				foreach (string key in _dailyMemoryDrafts.Keys)
 				{
-					if (!string.IsNullOrEmpty(item.Key) && item.Value != null)
-					{
-						string path3 = Path.Combine(text3, BuildNpcDataFileName(item.Key));
-						WriteJson(path3, item.Value);
-					}
+					memoryHeroIds.Add(NormalizeMemoryHeroId(key));
 				}
+			}
+			if (_compressedMemoryBlocks != null)
+			{
+				foreach (string key2 in _compressedMemoryBlocks.Keys)
+				{
+					memoryHeroIds.Add(NormalizeMemoryHeroId(key2));
+				}
+			}
+			foreach (MemorySummaryJob job in _memorySummaryQueue ?? new List<MemorySummaryJob>())
+			{
+				if (job != null)
+				{
+					memoryHeroIds.Add(NormalizeMemoryHeroId(job.HeroId));
+				}
+			}
+			foreach (string memoryHeroId in memoryHeroIds.Where((string x) => !string.IsNullOrWhiteSpace(x)))
+			{
+				string path3 = Path.Combine(text3, BuildNpcDataFileName(memoryHeroId));
+				WriteJson(path3, BuildCompressedMemoryExportBundle(memoryHeroId));
 			}
 			string text4 = Path.Combine(text, "debt");
 			Directory.CreateDirectory(text4);
@@ -30725,7 +33056,7 @@ public class MyBehavior : CampaignBehaviorBase
 				return;
 			}
 			Dictionary<string, NpcPersonaProfile> pbNew = null;
-			Dictionary<string, List<DialogueDay>> dhNew = null;
+			Dictionary<string, CompressedMemoryExportBundle> dhNew = null;
 			Dictionary<string, RewardSystemBehavior.DebtExportEntry> debtNew = null;
 			int num = 0;
 			int num2 = 0;
@@ -30763,33 +33094,31 @@ public class MyBehavior : CampaignBehaviorBase
 					}
 				}
 			}
-			string path2 = Path.Combine(importDir, "dialogue_history");
+			string path2 = Path.Combine(importDir, "compressed_memory");
 			if (Directory.Exists(path2))
 			{
 				string[] files2 = Directory.GetFiles(path2, "*.json");
-				dhNew = new Dictionary<string, List<DialogueDay>>();
+				dhNew = new Dictionary<string, CompressedMemoryExportBundle>(StringComparer.OrdinalIgnoreCase);
 				string[] array2 = files2;
 				foreach (string text3 in array2)
 				{
 					string text4 = TryParseHeroIdFromNpcFileName(text3);
 					if (!string.IsNullOrEmpty(text4))
 					{
-						List<DialogueDay> list = ReadJson<List<DialogueDay>>(text3);
-						if (list != null)
+						CompressedMemoryExportBundle bundle = ReadJson<CompressedMemoryExportBundle>(text3);
+						if (bundle != null)
 						{
-							dhNew[text4] = list;
+							dhNew[NormalizeMemoryHeroId(text4)] = bundle;
 						}
 					}
 				}
 				num4 = dhNew.Count;
-				if (_dialogueHistory != null)
+				foreach (string key2 in dhNew.Keys)
 				{
-					foreach (string key2 in dhNew.Keys)
+					string memoryKey = NormalizeMemoryHeroId(key2);
+					if (!string.IsNullOrEmpty(memoryKey) && ((_dailyMemoryDrafts != null && _dailyMemoryDrafts.ContainsKey(memoryKey)) || (_compressedMemoryBlocks != null && _compressedMemoryBlocks.ContainsKey(memoryKey)) || ((_memorySummaryQueue ?? new List<MemorySummaryJob>()).Any((MemorySummaryJob x) => x != null && string.Equals(NormalizeMemoryHeroId(x.HeroId), memoryKey, StringComparison.OrdinalIgnoreCase)))))
 					{
-						if (!string.IsNullOrEmpty(key2) && _dialogueHistory.ContainsKey(key2))
-						{
-							num3++;
-						}
+						num3++;
 					}
 				}
 			}
@@ -30851,16 +33180,11 @@ public class MyBehavior : CampaignBehaviorBase
 					}
 					if (dhNew != null)
 					{
-						if (_dialogueHistory == null)
-						{
-							_dialogueHistory = new Dictionary<string, List<DialogueDay>>();
-						}
-						foreach (KeyValuePair<string, List<DialogueDay>> item2 in dhNew)
+						foreach (KeyValuePair<string, CompressedMemoryExportBundle> item2 in dhNew)
 						{
 							if (!string.IsNullOrEmpty(item2.Key) && item2.Value != null)
 							{
-								_dialogueHistory.Remove(item2.Key);
-								_dialogueHistory[item2.Key] = item2.Value;
+								ApplyCompressedMemoryExportBundle(item2.Key, item2.Value, overwriteExisting: true);
 							}
 						}
 					}
@@ -30904,15 +33228,11 @@ public class MyBehavior : CampaignBehaviorBase
 					}
 					if (dhNew != null)
 					{
-						if (_dialogueHistory == null)
+						foreach (KeyValuePair<string, CompressedMemoryExportBundle> item5 in dhNew)
 						{
-							_dialogueHistory = new Dictionary<string, List<DialogueDay>>();
-						}
-						foreach (KeyValuePair<string, List<DialogueDay>> item5 in dhNew)
-						{
-							if (!string.IsNullOrEmpty(item5.Key) && item5.Value != null && !_dialogueHistory.ContainsKey(item5.Key))
+							if (!string.IsNullOrEmpty(item5.Key) && item5.Value != null)
 							{
-								_dialogueHistory[item5.Key] = item5.Value;
+								ApplyCompressedMemoryExportBundle(item5.Key, item5.Value, overwriteExisting: false);
 							}
 						}
 					}
@@ -30933,7 +33253,7 @@ public class MyBehavior : CampaignBehaviorBase
 			};
 			if (flag)
 			{
-				string text7 = "导入数据与当前游戏存在重复。\n个性/背景：" + num + "/" + num2 + "\n对话历史：" + num3 + "/" + num4 + "\n欠款：" + num5 + "/" + num6 + "\n请选择处理方式：";
+				string text7 = "导入数据与当前游戏存在重复。\n个性/背景：" + num + "/" + num2 + "\n压缩记忆：" + num3 + "/" + num4 + "\n欠款：" + num5 + "/" + num6 + "\n请选择处理方式：";
 				ShowDuplicateImportInquiry("检测到重复 - HeroNPC 全量导入", text7, action, onSkipDuplicates, delegate
 				{
 				});
@@ -31089,19 +33409,35 @@ public class MyBehavior : CampaignBehaviorBase
 			string path = ResolveExportFolderName(folderName);
 			string text = Path.Combine(playerExportsRootPath, path);
 			Directory.CreateDirectory(text);
-			string text2 = Path.Combine(text, "dialogue_history");
+			string text2 = Path.Combine(text, "compressed_memory");
 			Directory.CreateDirectory(text2);
 			ClearJsonFiles(text2);
-			if (_dialogueHistory != null)
+			HashSet<string> heroIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+			if (_dailyMemoryDrafts != null)
 			{
-				foreach (KeyValuePair<string, List<DialogueDay>> item in _dialogueHistory)
+				foreach (string key in _dailyMemoryDrafts.Keys)
 				{
-					if (!string.IsNullOrEmpty(item.Key) && item.Value != null)
-					{
-						string path2 = Path.Combine(text2, BuildNpcDataFileName(item.Key));
-						WriteJson(path2, item.Value);
-					}
+					heroIds.Add(NormalizeMemoryHeroId(key));
 				}
+			}
+			if (_compressedMemoryBlocks != null)
+			{
+				foreach (string key2 in _compressedMemoryBlocks.Keys)
+				{
+					heroIds.Add(NormalizeMemoryHeroId(key2));
+				}
+			}
+			foreach (MemorySummaryJob job in _memorySummaryQueue ?? new List<MemorySummaryJob>())
+			{
+				if (job != null)
+				{
+					heroIds.Add(NormalizeMemoryHeroId(job.HeroId));
+				}
+			}
+			foreach (string heroId in heroIds.Where((string x) => !string.IsNullOrWhiteSpace(x)))
+			{
+				string path2 = Path.Combine(text2, BuildNpcDataFileName(heroId));
+				WriteJson(path2, BuildCompressedMemoryExportBundle(heroId));
 			}
 			InformationManager.DisplayMessage(new InformationMessage("导出完成：" + text));
 		}
@@ -32591,24 +34927,24 @@ public class MyBehavior : CampaignBehaviorBase
 				InformationManager.DisplayMessage(new InformationMessage("导入失败：找不到导出目录。"));
 				return;
 			}
-			string path = Path.Combine(importDir, "dialogue_history");
+			string path = Path.Combine(importDir, "compressed_memory");
 			if (!Directory.Exists(path))
 			{
-				InformationManager.DisplayMessage(new InformationMessage("导入失败：找不到 dialogue_history 目录。"));
+				InformationManager.DisplayMessage(new InformationMessage("导入失败：找不到 compressed_memory 目录。"));
 				return;
 			}
 			string[] files = Directory.GetFiles(path, "*.json");
-			Dictionary<string, List<DialogueDay>> dict = new Dictionary<string, List<DialogueDay>>();
+			Dictionary<string, CompressedMemoryExportBundle> dict = new Dictionary<string, CompressedMemoryExportBundle>(StringComparer.OrdinalIgnoreCase);
 			string[] array = files;
 			foreach (string text in array)
 			{
 				string text2 = TryParseHeroIdFromNpcFileName(text);
 				if (!string.IsNullOrEmpty(text2))
 				{
-					List<DialogueDay> list = ReadJson<List<DialogueDay>>(text);
-					if (list != null)
+					CompressedMemoryExportBundle bundle = ReadJson<CompressedMemoryExportBundle>(text);
+					if (bundle != null)
 					{
-						dict[text2] = list;
+						dict[NormalizeMemoryHeroId(text2)] = bundle;
 					}
 				}
 			}
@@ -32616,14 +34952,12 @@ public class MyBehavior : CampaignBehaviorBase
 			int count = dict.Count;
 			try
 			{
-				if (_dialogueHistory != null)
+				foreach (string key in dict.Keys)
 				{
-					foreach (string key in dict.Keys)
+					string text3 = NormalizeMemoryHeroId(key);
+					if (!string.IsNullOrWhiteSpace(text3) && ((_dailyMemoryDrafts != null && _dailyMemoryDrafts.ContainsKey(text3)) || (_compressedMemoryBlocks != null && _compressedMemoryBlocks.ContainsKey(text3)) || ((_memorySummaryQueue ?? new List<MemorySummaryJob>()).Any((MemorySummaryJob x) => x != null && string.Equals(NormalizeMemoryHeroId(x.HeroId), text3, StringComparison.OrdinalIgnoreCase)))))
 					{
-						if (!string.IsNullOrEmpty(key) && _dialogueHistory.ContainsKey(key))
-						{
-							num++;
-						}
+						num++;
 					}
 				}
 			}
@@ -32633,38 +34967,29 @@ public class MyBehavior : CampaignBehaviorBase
 			}
 			Action action = delegate
 			{
-				if (_dialogueHistory == null)
-				{
-					_dialogueHistory = new Dictionary<string, List<DialogueDay>>();
-				}
-				foreach (KeyValuePair<string, List<DialogueDay>> item in dict)
+				foreach (KeyValuePair<string, CompressedMemoryExportBundle> item in dict)
 				{
 					if (!string.IsNullOrEmpty(item.Key) && item.Value != null)
 					{
-						_dialogueHistory.Remove(item.Key);
-						_dialogueHistory[item.Key] = item.Value;
+						ApplyCompressedMemoryExportBundle(item.Key, item.Value, overwriteExisting: true);
 					}
 				}
 				InformationManager.DisplayMessage(new InformationMessage("导入完成：" + importDir));
 			};
 			Action onSkipDuplicates = delegate
 			{
-				if (_dialogueHistory == null)
+				foreach (KeyValuePair<string, CompressedMemoryExportBundle> item2 in dict)
 				{
-					_dialogueHistory = new Dictionary<string, List<DialogueDay>>();
-				}
-				foreach (KeyValuePair<string, List<DialogueDay>> item2 in dict)
-				{
-					if (!string.IsNullOrEmpty(item2.Key) && item2.Value != null && !_dialogueHistory.ContainsKey(item2.Key))
+					if (!string.IsNullOrEmpty(item2.Key) && item2.Value != null)
 					{
-						_dialogueHistory[item2.Key] = item2.Value;
+						ApplyCompressedMemoryExportBundle(item2.Key, item2.Value, overwriteExisting: false);
 					}
 				}
 				InformationManager.DisplayMessage(new InformationMessage("导入完成（已跳过重复）：" + importDir));
 			};
 			if (num > 0)
 			{
-				ShowDuplicateImportInquiry("检测到重复 - 对话历史", "导入数据与当前游戏存在重复 HeroId。\n重复：" + num + " / 总计：" + count + "\n请选择处理方式：", action, onSkipDuplicates, delegate
+				ShowDuplicateImportInquiry("检测到重复 - 压缩记忆", "导入数据与当前游戏存在重复 HeroId。\n重复：" + num + " / 总计：" + count + "\n请选择处理方式：", action, onSkipDuplicates, delegate
 				{
 				});
 			}

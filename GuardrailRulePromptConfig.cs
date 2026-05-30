@@ -17,6 +17,8 @@ public class GuardrailRulePromptConfig
 
 	public string TopicLabel { get; set; } = "";
 
+	public string Code { get; set; } = "";
+
 	public string Instruction { get; set; } = "";
 
 	public string NonHeroInstruction { get; set; } = "";
