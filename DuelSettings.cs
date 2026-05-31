@@ -372,31 +372,35 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyGroup("4. 开发者选项")]
 	public bool EnableDevEditHistory { get; set; } = false;
 
-	[SettingPropertyBool("【日志】写入 Mod_Logic.txt", Order = 2, RequireRestart = false, HintText = "总逻辑日志开关。关闭后不再写入 Mod_Logic.txt。")]
+	[SettingPropertyBool("新成年人物自动生成个性与背景", Order = 2, RequireRestart = false, HintText = "开启后，当英雄子女成年时，自动使用前处理API为其生成个性与历史背景。已有个性或背景不会被覆盖。")]
+	[SettingPropertyGroup("4. 开发者选项")]
+	public bool EnableAdultHeroPersonaAutoGeneration { get; set; } = true;
+
+	[SettingPropertyBool("【日志】写入 Mod_Logic.txt", Order = 3, RequireRestart = false, HintText = "总逻辑日志开关。关闭后不再写入 Mod_Logic.txt。")]
 	[SettingPropertyGroup("4. 开发者选项")]
 	public bool EnableModLogicLog { get; set; } = false;
 
-	[SettingPropertyBool("【日志】写入详细调试日志", Order = 3, RequireRestart = false, HintText = "只在排查问题时开启。开启后会写入更细的 Mod_Logic 诊断日志；大型剧本大地图可能产生较多日志。")]
+	[SettingPropertyBool("【日志】写入详细调试日志", Order = 4, RequireRestart = false, HintText = "只在排查问题时开启。开启后会写入更细的 Mod_Logic 诊断日志；大型剧本大地图可能产生较多日志。")]
 	[SettingPropertyGroup("4. 开发者选项")]
 	public bool EnableVerboseModLogicLog { get; set; } = false;
 
-	[SettingPropertyBool("【日志】写入 Observability.jsonl", Order = 4, RequireRestart = false, HintText = "结构化观测日志开关。关闭后不再写入 Observability.jsonl。")]
+	[SettingPropertyBool("【日志】写入 Observability.jsonl", Order = 5, RequireRestart = false, HintText = "结构化观测日志开关。关闭后不再写入 Observability.jsonl。")]
 	[SettingPropertyGroup("4. 开发者选项")]
 	public bool EnableObservabilityLog { get; set; } = false;
 
-	[SettingPropertyBool("【日志】写入 HitRate_Stats.txt", Order = 5, RequireRestart = false, HintText = "命中率统计日志开关。关闭后不再写入 HitRate_Stats.txt。")]
+	[SettingPropertyBool("【日志】写入 HitRate_Stats.txt", Order = 6, RequireRestart = false, HintText = "命中率统计日志开关。关闭后不再写入 HitRate_Stats.txt。")]
 	[SettingPropertyGroup("4. 开发者选项")]
 	public bool EnableHitRateStatsLog { get; set; } = false;
 
-	[SettingPropertyBool("【日志】写入 Token_Stats.txt", Order = 6, RequireRestart = false, HintText = "Token 统计日志开关。关闭后不再写入 Token_Stats.txt。")]
+	[SettingPropertyBool("【日志】写入 Token_Stats.txt", Order = 7, RequireRestart = false, HintText = "Token 统计日志开关。关闭后不再写入 Token_Stats.txt。")]
 	[SettingPropertyGroup("4. 开发者选项")]
 	public bool EnableTokenStatsLog { get; set; } = true;
 
-	[SettingPropertyBool("【日志】写入 Event_Logs.txt", Order = 7, RequireRestart = false, HintText = "事件系统周报生成日志开关。关闭后不再写入 Event_Logs.txt。")]
+	[SettingPropertyBool("【日志】写入 Event_Logs.txt", Order = 8, RequireRestart = false, HintText = "事件系统周报生成日志开关。关闭后不再写入 Event_Logs.txt。")]
 	[SettingPropertyGroup("4. 开发者选项")]
 	public bool EnableEventLogs { get; set; } = true;
 
-	[SettingPropertyDropdown("【日志】定时清理所有日志", Order = 8, RequireRestart = false, HintText = "按真实时间定时清空 AnimusForge/Logs 下的所有当前日志文件。会保留文件本身与 UTF-8 BOM。默认每1小时。")]
+	[SettingPropertyDropdown("【日志】定时清理所有日志", Order = 9, RequireRestart = false, HintText = "按真实时间定时清空 AnimusForge/Logs 下的所有当前日志文件。会保留文件本身与 UTF-8 BOM。默认每1小时。")]
 	[SettingPropertyGroup("4. 开发者选项")]
 	public Dropdown<string> LogCleanupIntervalDropdown
 	{

@@ -29,6 +29,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		Welcome,
 		AuxiliaryChoice,
 		PostprocessChoice,
+		EventRebellionChoice,
 		BaseUrlValidation,
 		BaseUrlValidationFailure,
 		ApiValidation,
@@ -41,7 +42,8 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 	{
 		Primary,
 		Auxiliary,
-		ActionPostprocess
+		ActionPostprocess,
+		EventAndRebellion
 	}
 
 	private const string SetupDoneKey = "_AnimusForge_setup_done_v1";
@@ -286,6 +288,11 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		return _currentApiSetupTarget == ApiSetupTarget.ActionPostprocess;
 	}
 
+	private bool IsEventAndRebellionApiSetupTarget()
+	{
+		return _currentApiSetupTarget == ApiSetupTarget.EventAndRebellion;
+	}
+
 	private string CurrentApiDisplayName()
 	{
 		if (IsAuxiliaryApiSetupTarget())
@@ -295,6 +302,10 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		if (IsActionPostprocessApiSetupTarget())
 		{
 			return "后处理API";
+		}
+		if (IsEventAndRebellionApiSetupTarget())
+		{
+			return "事件/叛乱API";
 		}
 		return "主API";
 	}
@@ -309,6 +320,10 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		{
 			return "后处理API Base URL";
 		}
+		if (IsEventAndRebellionApiSetupTarget())
+		{
+			return "事件/叛乱API Base URL";
+		}
 		return "主API Base URL";
 	}
 
@@ -322,6 +337,10 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		{
 			return "后处理API Key";
 		}
+		if (IsEventAndRebellionApiSetupTarget())
+		{
+			return "事件/叛乱API Key";
+		}
 		return "主API Key";
 	}
 
@@ -334,6 +353,10 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		if (IsActionPostprocessApiSetupTarget())
 		{
 			return "后处理模型名称";
+		}
+		if (IsEventAndRebellionApiSetupTarget())
+		{
+			return "事件/叛乱模型名称";
 		}
 		return "主模型名称";
 	}
@@ -400,6 +423,10 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		{
 			return settings.ActionPostprocessApiUrl ?? "";
 		}
+		if (target == ApiSetupTarget.EventAndRebellion)
+		{
+			return settings.EventAndRebellionApiUrl ?? "";
+		}
 		return settings.ApiUrl ?? "";
 	}
 
@@ -417,6 +444,10 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		{
 			return settings.ActionPostprocessApiKey ?? "";
 		}
+		if (target == ApiSetupTarget.EventAndRebellion)
+		{
+			return settings.EventAndRebellionApiKey ?? "";
+		}
 		return settings.ApiKey ?? "";
 	}
 
@@ -433,6 +464,10 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		if (target == ApiSetupTarget.ActionPostprocess)
 		{
 			return settings.ActionPostprocessModelName ?? "";
+		}
+		if (target == ApiSetupTarget.EventAndRebellion)
+		{
+			return settings.GetEffectiveEventAndRebellionModelName() ?? "";
 		}
 		return settings.ModelName ?? "";
 	}
@@ -462,6 +497,10 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		{
 			settings.ActionPostprocessApiUrl = value ?? "";
 		}
+		else if (target == ApiSetupTarget.EventAndRebellion)
+		{
+			settings.EventAndRebellionApiUrl = value ?? "";
+		}
 		else
 		{
 			settings.ApiUrl = value ?? "";
@@ -481,6 +520,10 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		else if (target == ApiSetupTarget.ActionPostprocess)
 		{
 			settings.ActionPostprocessApiKey = value ?? "";
+		}
+		else if (target == ApiSetupTarget.EventAndRebellion)
+		{
+			settings.EventAndRebellionApiKey = value ?? "";
 		}
 		else
 		{
@@ -504,6 +547,11 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			settings.ActionPostprocessModelName = value ?? "";
 			settings.ForceActionPostprocessModelDropdownToManual();
 		}
+		else if (target == ApiSetupTarget.EventAndRebellion)
+		{
+			settings.EventAndRebellionModelName = value ?? "";
+			settings.ForceEventAndRebellionModelDropdownToManual();
+		}
 		else
 		{
 			settings.ModelName = value ?? "";
@@ -522,6 +570,10 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			else if (IsActionPostprocessApiSetupTarget())
 			{
 				ShowActionPostprocessApiRepairPopup();
+			}
+			else if (IsEventAndRebellionApiSetupTarget())
+			{
+				ShowEventAndRebellionApiRepairPopup();
 			}
 			else
 			{
@@ -559,7 +611,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			_pendingUnexpectedResumeStage = OnboardingUiStage.None;
 			return;
 		}
-		if (_activeOnboardingStage != OnboardingUiStage.Welcome && _activeOnboardingStage != OnboardingUiStage.AuxiliaryChoice && _activeOnboardingStage != OnboardingUiStage.PostprocessChoice && _activeOnboardingStage != OnboardingUiStage.BaseUrlValidation && _activeOnboardingStage != OnboardingUiStage.BaseUrlValidationFailure && _activeOnboardingStage != OnboardingUiStage.ApiValidation && _activeOnboardingStage != OnboardingUiStage.ModelFetch && _activeOnboardingStage != OnboardingUiStage.ModelSelect && _activeOnboardingStage != OnboardingUiStage.Import)
+		if (_activeOnboardingStage != OnboardingUiStage.Welcome && _activeOnboardingStage != OnboardingUiStage.AuxiliaryChoice && _activeOnboardingStage != OnboardingUiStage.PostprocessChoice && _activeOnboardingStage != OnboardingUiStage.EventRebellionChoice && _activeOnboardingStage != OnboardingUiStage.BaseUrlValidation && _activeOnboardingStage != OnboardingUiStage.BaseUrlValidationFailure && _activeOnboardingStage != OnboardingUiStage.ApiValidation && _activeOnboardingStage != OnboardingUiStage.ModelFetch && _activeOnboardingStage != OnboardingUiStage.ModelSelect && _activeOnboardingStage != OnboardingUiStage.Import)
 		{
 			_pendingUnexpectedResumeStage = OnboardingUiStage.None;
 			return;
@@ -589,6 +641,9 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			break;
 		case OnboardingUiStage.PostprocessChoice:
 			ShowActionPostprocessApiSetupPopup(ignoreSuppress: true, allowWhenSetupDone: true);
+			break;
+		case OnboardingUiStage.EventRebellionChoice:
+			ShowEventAndRebellionApiRepairPopup();
 			break;
 		case OnboardingUiStage.BaseUrlValidation:
 			if (_baseUrlValidationInProgress)
@@ -827,6 +882,17 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		return true;
 	}
 
+	public static bool OpenEventAndRebellionApiRepairFlow()
+	{
+		ModOnboardingBehavior modOnboardingBehavior = Instance ?? Campaign.Current?.GetCampaignBehavior<ModOnboardingBehavior>();
+		if (modOnboardingBehavior == null)
+		{
+			return false;
+		}
+		modOnboardingBehavior.ShowEventAndRebellionApiRepairPopup();
+		return true;
+	}
+
 	private void ShowWelcomePopup(bool fromGate)
 	{
 		ShowWelcomePopup(fromGate, ignoreSuppress: false);
@@ -939,6 +1005,43 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 				{
 					SetApiRepairFlowActive(active: false);
 				}
+			}), pauseGameActiveState: true);
+		}
+		catch
+		{
+			_welcomeInProgress = false;
+		}
+	}
+
+	private void ShowEventAndRebellionApiRepairPopup()
+	{
+		try
+		{
+			SetApiSetupTarget(ApiSetupTarget.EventAndRebellion);
+			SetApiRepairFlowActive(active: true);
+			if (_welcomeInProgress || _apiValidationInProgress || _baseUrlValidationInProgress || _modelFetchInProgress)
+			{
+				return;
+			}
+			_activeOnboardingStage = OnboardingUiStage.EventRebellionChoice;
+			_welcomeInProgress = true;
+			DuelSettings settings = DuelSettings.GetSettings();
+			bool hasExistingConfig = HasCompleteApiConfigForTarget(settings, ApiSetupTarget.EventAndRebellion);
+			string text = hasExistingConfig
+				? "事件/叛乱API当前不可用。你可以直接测试 MCM 中的现有配置，也可以重新填写事件/叛乱API信息。\n\n这个接口用于周报生成与叛乱建国命名；叛乱命名失败后不会再使用本地国名兜底。"
+				: "事件/叛乱API当前不可用。请重新填写事件/叛乱API的 Base URL、API Key、模型名称，或检查当前网络环境。\n\n这个接口用于周报生成与叛乱建国命名；叛乱命名失败后不会再使用本地国名兜底。";
+			if (!string.IsNullOrWhiteSpace(_lastApiValidationFailureHint))
+			{
+				text = text + "\n\n排查建议：" + _lastApiValidationFailureHint;
+			}
+			InformationManager.ShowInquiry(new InquiryData("调整事件/叛乱API信息", text, isAffirmativeOptionShown: true, isNegativeOptionShown: true, "填写事件/叛乱API", "测试现有配置", delegate
+			{
+				_welcomeInProgress = false;
+				OpenApiBaseUrlInput();
+			}, delegate
+			{
+				_welcomeInProgress = false;
+				BeginValidateMcmApiAndContinue();
 			}), pauseGameActiveState: true);
 		}
 		catch

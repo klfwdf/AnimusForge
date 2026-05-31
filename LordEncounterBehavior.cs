@@ -3425,16 +3425,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			{
 				return false;
 			}
-			bool flag = false;
-			try
-			{
-				flag = MeetingBattleRuntime.IsMeetingActive || _encounterMeetingMissionActive || Campaign.Current?.CurrentConversationContext == ConversationContext.PartyEncounter;
-			}
-			catch
-			{
-				flag = false;
-			}
-			if (!flag || !IsHostileEncounterInitiatedByOpponent())
+			if (!IsMeetingReleaseRuntimeSceneActive() || !IsHostileEncounterInitiatedByOpponent())
 			{
 				return false;
 			}
@@ -3454,11 +3445,37 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		}
 	}
 
-	internal static string BuildMeetingPlayerReleaseRuntimeInstructionForExternal(Hero target)
+	private static bool IsMeetingReleaseRuntimeSceneActive()
+	{
+		try
+		{
+			return MeetingBattleRuntime.IsMeetingActive || _encounterMeetingMissionActive || Campaign.Current?.CurrentConversationContext == ConversationContext.PartyEncounter;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static string BuildMeetingPlayerReleaseNonEligibleRuntimeInstruction(Hero target)
+	{
+		string text = MyBehavior.BuildPlayerPublicDisplayNameForExternal();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			text = "玩家";
+		}
+		if (IsMeetingReleaseRuntimeSceneActive())
+		{
+			return $"【遭遇放走规则】当前不是敌对方拦截玩家的放走场景；普通通行、告别或结束谈话不算放走{text}。";
+		}
+		return $"【遭遇放走规则】本轮无敌对遭遇放走机制；普通通行、告别或结束谈话不算放走{text}。";
+	}
+
+	internal static string BuildMeetingPlayerReleaseRuntimeInstructionForExternal(Hero target, bool includeNonEligibleFallback = false)
 	{
 		if (!TryGetMeetingReleaseContext(target, out var resolvedTarget, out var clanRelation, out var privateRelation, out var averageRelation, out var kingRelation, out var kingName, out var negotiable))
 		{
-			return "";
+			return includeNonEligibleFallback ? BuildMeetingPlayerReleaseNonEligibleRuntimeInstruction(target) : "";
 		}
 		string text = MyBehavior.BuildPlayerPublicDisplayNameForExternal();
 		if (string.IsNullOrWhiteSpace(text))

@@ -33,6 +33,47 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior, IAgentStateDeci
 		internal PartyBase EnemyParty;
 	}
 
+	private sealed class FormalDuelSpectatorSnapshot
+	{
+		internal int AgentIndex;
+
+		internal int MountAgentIndex = -1;
+
+		internal string AgentName = "";
+
+		internal string HeroId = "";
+
+		internal Team OriginalTeam;
+
+		internal Team OriginalMountTeam;
+
+		internal Formation OriginalFormation;
+
+		internal Agent.MortalityState OriginalMortalityState;
+
+		internal bool HasOriginalMortalityState;
+
+		internal object OriginalController;
+
+		internal bool HasOriginalController;
+
+		internal object OriginalMountController;
+
+		internal bool HasOriginalMountController;
+
+		internal Agent.MortalityState OriginalMountMortalityState;
+
+		internal bool HasOriginalMountMortalityState;
+
+		internal float LastSafeHealth;
+
+		internal float LastSafeMountHealth;
+
+		internal bool TeamMigrated;
+
+		internal bool MountTeamMigrated;
+	}
+
 	private const float StartupLoadingBlackTimeSeconds = 4f;
 
 	private const float StartupLoadingFadeOutSeconds = 0.08f;
@@ -40,6 +81,12 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior, IAgentStateDeci
 	private const float StartupLoadingFadeInSeconds = 0.22f;
 
 	private const float StartupLoadingFadeRetryTimeoutSeconds = 6f;
+
+	private const string FormalDuelIsolationLogSource = "MeetingDuelIsolation";
+
+	private static int _formalDuelIsolationSessionSequence;
+
+	private static readonly FieldInfo AgentTargetFrameChangedField = typeof(Agent).GetField("_checkIfTargetFrameIsChanged", BindingFlags.Instance | BindingFlags.NonPublic);
 
 	private readonly Hero _targetHero;
 
@@ -108,6 +155,28 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior, IAgentStateDeci
 	private Formation _formalDuelTargetFormation;
 
 	private float _formalDuelOrderRefreshTimer;
+
+	private readonly Dictionary<int, FormalDuelSpectatorSnapshot> _formalDuelSpectatorSnapshots = new Dictionary<int, FormalDuelSpectatorSnapshot>();
+
+	private bool _formalDuelIsolationStarted;
+
+	private string _formalDuelIsolationSessionId = "";
+
+	private float _formalDuelIsolationStatusLogTimer;
+
+	private bool _formalDuelBattleEndGuardActive;
+
+	private bool _formalDuelBattleEndOriginalCaptured;
+
+	private bool _formalDuelBattleEndOriginalCanCheck;
+
+	private MissionBehavior _formalDuelBattleEndLogic;
+
+	private FieldInfo _formalDuelBattleEndCanCheckField;
+
+	private bool _formalDuelSpectatorMigrationAllowed;
+
+	private bool _formalDuelAttackTargetForced;
 
 	private bool _wasFormalDuelActiveLastTick;
 
@@ -179,6 +248,17 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior, IAgentStateDeci
 		}
 	}
 
+	internal static void RestoreFormalDuelIsolationForCurrentMeeting(string reason)
+	{
+		try
+		{
+			_currentInstance?.RestoreFormalDuelIsolation(reason ?? "external_restore_request");
+		}
+		catch
+		{
+		}
+	}
+
 	public override void AfterStart()
 	{
 		base.AfterStart();
@@ -215,6 +295,17 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior, IAgentStateDeci
 		_formalDuelPlayerFormation = null;
 		_formalDuelTargetFormation = null;
 		_formalDuelOrderRefreshTimer = 0f;
+		_formalDuelSpectatorSnapshots.Clear();
+		_formalDuelIsolationStarted = false;
+		_formalDuelIsolationSessionId = "";
+		_formalDuelIsolationStatusLogTimer = 0f;
+		_formalDuelBattleEndGuardActive = false;
+		_formalDuelBattleEndOriginalCaptured = false;
+		_formalDuelBattleEndOriginalCanCheck = true;
+		_formalDuelBattleEndLogic = null;
+		_formalDuelBattleEndCanCheckField = null;
+		_formalDuelSpectatorMigrationAllowed = false;
+		_formalDuelAttackTargetForced = false;
 		_wasFormalDuelActiveLastTick = false;
 		_deploymentSkipApplied = false;
 		_deploymentSkipEarliestTime = -1f;
@@ -260,6 +351,7 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior, IAgentStateDeci
 
 	public override void OnRemoveBehavior()
 	{
+		RestoreFormalDuelIsolation("behavior_remove");
 		if (_currentInstance == this)
 		{
 			_currentInstance = null;
@@ -314,6 +406,7 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior, IAgentStateDeci
 
 	protected override void OnEndMission()
 	{
+		RestoreFormalDuelIsolation("on_end_mission");
 		try
 		{
 			LordEncounterBehavior.SetEncounterMeetingMissionActive(active: false);
@@ -393,6 +486,7 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior, IAgentStateDeci
 		}
 		if (_wasFormalDuelActiveLastTick && !flag2)
 		{
+			RestoreFormalDuelIsolation("formal_duel_end_tick");
 			_formalDuelCombatReleaseApplied = false;
 			_allowTargetFreeMovementAfterFormalDuel = true;
 			Logger.Log("MeetingBattle", "Formal duel ended: target duelist skipped by meeting lock.");
@@ -1187,87 +1281,1311 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior, IAgentStateDeci
 		{
 			_formalDuelCombatReleaseApplied = false;
 		}
+		MaintainFormalDuelSpectatorIsolation(agent, targetAgent, agent2, agent3, flag);
+	}
+
+	private void MaintainFormalDuelSpectatorIsolation(Agent main, Agent target, Agent mainMount, Agent targetMount, bool preFight)
+	{
+		if (base.Mission == null)
+		{
+			return;
+		}
+		if (!_formalDuelIsolationStarted)
+		{
+			BeginFormalDuelIsolation(main, target);
+		}
+		if (main == null || !main.IsActive() || target == null || !target.IsActive())
+		{
+			LogDuelIsolation("[WARN] Isolation tick skipped because duel participant is missing. main=" + FormatAgent(main) + ", target=" + FormatAgent(target));
+			return;
+		}
+		Team targetTeam = null;
 		try
 		{
-			foreach (Agent agent4 in base.Mission.Agents)
+			targetTeam = target.Team;
+		}
+		catch
+		{
+			targetTeam = null;
+		}
+		if (_formalDuelSpectatorMigrationAllowed && !IsUsableTeam(targetTeam))
+		{
+			_formalDuelSpectatorMigrationAllowed = false;
+			LogDuelIsolation("[WARN] Spectator team migration disabled because target team is unavailable. targetTeam=" + FormatTeam(targetTeam));
+		}
+		int skippedParticipants = 0;
+		int skippedNonHuman = 0;
+		int skippedInactive = 0;
+		int skippedNoTeam = 0;
+		int newSnapshots = 0;
+		int reFrozen = 0;
+		int migrated = 0;
+		int mountsHandled = 0;
+		try
+		{
+			foreach (Agent agent in base.Mission.Agents)
 			{
-				if (agent4 == null || !agent4.IsActive())
+				if (agent == null || !agent.IsActive())
 				{
+					skippedInactive++;
 					continue;
 				}
-				bool flag2 = false;
+				if (!agent.IsHuman)
+				{
+					skippedNonHuman++;
+					continue;
+				}
+				if (IsFormalDuelParticipantOrMount(agent, main, target, mainMount, targetMount))
+				{
+					skippedParticipants++;
+					continue;
+				}
+				Team originalTeam = null;
 				try
 				{
-					flag2 = agent4.IsMainAgent;
+					originalTeam = agent.Team;
 				}
 				catch
 				{
-					flag2 = false;
+					originalTeam = null;
 				}
-				bool flag3 = agent4 == agent || agent4 == agent2 || agent4 == targetAgent || agent4 == agent3 || flag2;
-				if (!flag3)
+				if (!IsUsableTeam(originalTeam))
+				{
+					skippedNoTeam++;
+				}
+				FormalDuelSpectatorSnapshot snapshot = EnsureFormalDuelSpectatorSnapshot(agent, out var created);
+				if (created)
+				{
+					newSnapshots++;
+				}
+				if (_formalDuelSpectatorMigrationAllowed && IsUsableTeam(targetTeam) && agent.Team != targetTeam)
 				{
 					try
 					{
-						Agent riderAgent = agent4.RiderAgent;
-						if (riderAgent != null && (riderAgent == agent || riderAgent == targetAgent || riderAgent.IsMainAgent))
-						{
-							flag3 = true;
-						}
+						agent.SetTeam(targetTeam, sync: true);
+						snapshot.TeamMigrated = true;
+						migrated++;
 					}
-					catch
+					catch (Exception ex)
 					{
+						LogDuelIsolation("[ERROR] Spectator SetTeam failed. agent=" + FormatAgent(agent) + ", originalTeam=" + FormatTeam(snapshot.OriginalTeam) + ", targetTeam=" + FormatTeam(targetTeam) + ", error=" + ex.Message);
 					}
 				}
-				if (flag3)
+				if (FreezeFormalDuelSpectatorAgent(agent, snapshot, "isolation_tick", logNormal: created))
 				{
-					continue;
-				}
-				try
-				{
-					if (agent4.IsAIControlled)
-					{
-						agent4.SetIsAIPaused(isPaused: true);
-						agent4.DisableScriptedMovement();
-						agent4.ClearTargetFrame();
-					}
-				}
-				catch
-				{
+					reFrozen++;
 				}
 				try
 				{
-					Agent mountAgent = agent4.MountAgent;
-					if (mountAgent == null || !mountAgent.IsActive())
+					Agent mountAgent = agent.MountAgent;
+					if (mountAgent != null && mountAgent.IsActive() && !IsFormalDuelParticipantOrMount(mountAgent, main, target, mainMount, targetMount))
 					{
-						continue;
-					}
-					bool flag4 = mountAgent == agent || mountAgent == agent2 || mountAgent == targetAgent || mountAgent == agent3;
-					if (!flag4)
-					{
-						try
+						mountsHandled++;
+						if (_formalDuelSpectatorMigrationAllowed && IsUsableTeam(targetTeam) && mountAgent.Team != targetTeam)
 						{
-							Agent riderAgent2 = mountAgent.RiderAgent;
-							if (riderAgent2 != null && (riderAgent2 == agent || riderAgent2 == targetAgent || riderAgent2.IsMainAgent))
+							try
 							{
-								flag4 = true;
+								mountAgent.SetTeam(targetTeam, sync: true);
+								snapshot.MountTeamMigrated = true;
+								migrated++;
+							}
+							catch (Exception ex2)
+							{
+								LogDuelIsolation("[ERROR] Spectator mount SetTeam failed. rider=" + FormatAgent(agent) + ", mount=" + FormatAgent(mountAgent) + ", originalMountTeam=" + FormatTeam(snapshot.OriginalMountTeam) + ", targetTeam=" + FormatTeam(targetTeam) + ", error=" + ex2.Message);
 							}
 						}
-						catch
-						{
-						}
-					}
-					if (!flag4)
-					{
-						mountAgent.SetIsAIPaused(isPaused: true);
-						mountAgent.DisableScriptedMovement();
-						mountAgent.ClearTargetFrame();
+						FreezeFormalDuelSpectatorMount(mountAgent, snapshot, "isolation_tick", logNormal: created);
 					}
 				}
 				catch
 				{
 				}
 			}
+		}
+		catch (Exception ex3)
+		{
+			LogDuelIsolation("[ERROR] Spectator isolation loop failed: " + ex3);
+		}
+		if (newSnapshots > 0 || migrated > 0)
+		{
+			LogDuelIsolation($"Isolation summary. preFight={preFight}, snapshots={_formalDuelSpectatorSnapshots.Count}, newSnapshots={newSnapshots}, migrated={migrated}, reFrozen={reFrozen}, mounts={mountsHandled}, skippedParticipants={skippedParticipants}, skippedNonHuman={skippedNonHuman}, skippedInactive={skippedInactive}, skippedNoTeam={skippedNoTeam}, playerTeamActiveHumans={CountActiveHumanAgentsOnTeam(base.Mission.PlayerTeam)}, targetTeamActiveHumans={CountActiveHumanAgentsOnTeam(targetTeam)}, migrationAllowed={_formalDuelSpectatorMigrationAllowed}, battleEndGuardActive={_formalDuelBattleEndGuardActive}");
+		}
+		EnsureFormalDuelTargetAttacksMain(main, target, preFight);
+		LogFormalDuelIsolationStatus(main, target, targetTeam);
+	}
+
+	private void BeginFormalDuelIsolation(Agent main, Agent target)
+	{
+		_formalDuelIsolationStarted = true;
+		_formalDuelIsolationSessionId = DateTime.UtcNow.ToString("yyyyMMddHHmmssfff") + "-" + (++_formalDuelIsolationSessionSequence).ToString();
+		_formalDuelIsolationStatusLogTimer = 0f;
+		LogDuelIsolation("Formal duel isolation starting. main=" + FormatAgent(main) + ", target=" + FormatAgent(target) + ", mainTeam=" + FormatTeam(main?.Team) + ", targetTeam=" + FormatTeam(target?.Team) + ", teamCounts=" + BuildTeamActiveHumanCounts());
+		_formalDuelSpectatorMigrationAllowed = TryDisableBattleEndLogicForFormalDuel();
+		if (!_formalDuelSpectatorMigrationAllowed)
+		{
+			LogDuelIsolation("[WARN] BattleEndLogic guard is not active. Spectator SetTeam migration is disabled; only AI freeze will be applied to avoid false battle defeat.");
+		}
+		else
+		{
+			LogDuelIsolation("BattleEndLogic guard disabled before spectator SetTeam migration.");
+		}
+	}
+
+	private bool TryDisableBattleEndLogicForFormalDuel()
+	{
+		try
+		{
+			_formalDuelBattleEndLogic = FindBattleEndLogicBehavior();
+			if (_formalDuelBattleEndLogic == null)
+			{
+				LogDuelIsolation("[WARN] BattleEndLogic behavior not found.");
+				return false;
+			}
+			Type type = _formalDuelBattleEndLogic.GetType();
+			_formalDuelBattleEndCanCheckField = type.GetField("_canCheckForEndCondition", BindingFlags.Instance | BindingFlags.NonPublic);
+			_formalDuelBattleEndOriginalCaptured = false;
+			if (_formalDuelBattleEndCanCheckField != null)
+			{
+				try
+				{
+					object value = _formalDuelBattleEndCanCheckField.GetValue(_formalDuelBattleEndLogic);
+					if (value is bool flag)
+					{
+						_formalDuelBattleEndOriginalCanCheck = flag;
+						_formalDuelBattleEndOriginalCaptured = true;
+					}
+				}
+				catch (Exception ex)
+				{
+					LogDuelIsolation("[WARN] Failed reading BattleEndLogic _canCheckForEndCondition: " + ex.Message);
+				}
+			}
+			MethodInfo method = type.GetMethod("ChangeCanCheckForEndCondition", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, null, new Type[1] { typeof(bool) }, null);
+			if (method == null)
+			{
+				LogDuelIsolation("[WARN] BattleEndLogic.ChangeCanCheckForEndCondition(bool) not found. type=" + type.FullName);
+				return false;
+			}
+			method.Invoke(_formalDuelBattleEndLogic, new object[1] { false });
+			_formalDuelBattleEndGuardActive = true;
+			bool after = ReadBattleEndCanCheckValue(defaultValue: false);
+			LogDuelIsolation($"BattleEndLogic guard disabled. type={type.FullName}, originalCaptured={_formalDuelBattleEndOriginalCaptured}, originalValue={_formalDuelBattleEndOriginalCanCheck}, afterValue={after}");
+			return true;
+		}
+		catch (Exception ex2)
+		{
+			_formalDuelBattleEndGuardActive = false;
+			LogDuelIsolation("[WARN] Failed to disable BattleEndLogic end-condition guard: " + ex2.Message);
+			return false;
+		}
+	}
+
+	private MissionBehavior FindBattleEndLogicBehavior()
+	{
+		try
+		{
+			if (base.Mission == null)
+			{
+				return null;
+			}
+			foreach (MissionBehavior missionBehavior in base.Mission.MissionBehaviors)
+			{
+				if (missionBehavior == null)
+				{
+					continue;
+				}
+				Type type = missionBehavior.GetType();
+				if (type != null && (string.Equals(type.Name, "BattleEndLogic", StringComparison.Ordinal) || type.GetMethod("ChangeCanCheckForEndCondition", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, null, new Type[1] { typeof(bool) }, null) != null))
+				{
+					return missionBehavior;
+				}
+			}
+		}
+		catch
+		{
+		}
+		return null;
+	}
+
+	private FormalDuelSpectatorSnapshot EnsureFormalDuelSpectatorSnapshot(Agent agent, out bool created)
+	{
+		created = false;
+		if (agent == null)
+		{
+			return null;
+		}
+		if (_formalDuelSpectatorSnapshots.TryGetValue(agent.Index, out var snapshot))
+		{
+			return snapshot;
+		}
+		created = true;
+		snapshot = new FormalDuelSpectatorSnapshot
+		{
+			AgentIndex = agent.Index,
+			AgentName = SafeAgentName(agent),
+			HeroId = SafeAgentHeroId(agent),
+			OriginalTeam = SafeAgentTeam(agent),
+			OriginalFormation = SafeAgentFormation(agent),
+			LastSafeHealth = SafeAgentHealth(agent)
+		};
+		try
+		{
+			snapshot.OriginalMortalityState = agent.CurrentMortalityState;
+			snapshot.HasOriginalMortalityState = true;
+		}
+		catch
+		{
+			snapshot.HasOriginalMortalityState = false;
+		}
+		snapshot.OriginalController = TryGetAgentControllerValue(agent, out snapshot.HasOriginalController);
+		try
+		{
+			Agent mountAgent = agent.MountAgent;
+			if (mountAgent != null && mountAgent.IsActive())
+			{
+				snapshot.MountAgentIndex = mountAgent.Index;
+				snapshot.OriginalMountTeam = SafeAgentTeam(mountAgent);
+				snapshot.LastSafeMountHealth = SafeAgentHealth(mountAgent);
+				snapshot.OriginalMountController = TryGetAgentControllerValue(mountAgent, out snapshot.HasOriginalMountController);
+				try
+				{
+					snapshot.OriginalMountMortalityState = mountAgent.CurrentMortalityState;
+					snapshot.HasOriginalMountMortalityState = true;
+				}
+				catch
+				{
+					snapshot.HasOriginalMountMortalityState = false;
+				}
+			}
+		}
+		catch
+		{
+		}
+		_formalDuelSpectatorSnapshots[agent.Index] = snapshot;
+		LogDuelIsolation("Spectator snapshot captured. agent=" + FormatAgent(agent) + ", isHero=" + !string.IsNullOrEmpty(snapshot.HeroId) + ", heroId=" + snapshot.HeroId + ", originalTeam=" + FormatTeam(snapshot.OriginalTeam) + ", originalFormation=" + FormatFormation(snapshot.OriginalFormation) + ", mortalityCaptured=" + snapshot.HasOriginalMortalityState + ", originalMortality=" + FormatAgentMortality(snapshot.HasOriginalMortalityState, snapshot.OriginalMortalityState) + ", controllerCaptured=" + snapshot.HasOriginalController + ", originalController=" + FormatAgentControllerValue(snapshot.OriginalController) + ", hasMount=" + (snapshot.MountAgentIndex >= 0) + ", mountOriginalTeam=" + FormatTeam(snapshot.OriginalMountTeam) + ", mountOriginalMortality=" + FormatAgentMortality(snapshot.HasOriginalMountMortalityState, snapshot.OriginalMountMortalityState) + ", mountOriginalController=" + FormatAgentControllerValue(snapshot.OriginalMountController));
+		return snapshot;
+	}
+
+	private bool FreezeFormalDuelSpectatorAgent(Agent agent, FormalDuelSpectatorSnapshot snapshot, string reason, bool logNormal)
+	{
+		if (agent == null || !agent.IsActive())
+		{
+			return false;
+		}
+		bool targetFrameWasSet = TryReadAgentTargetFrameChanged(agent, out var hasTargetFrame) && hasTargetFrame;
+		bool wasPaused = false;
+		try
+		{
+			wasPaused = agent.IsPaused;
+		}
+		catch
+		{
+			wasPaused = false;
+		}
+		bool teamDrift = snapshot != null && snapshot.TeamMigrated && _formalDuelSpectatorMigrationAllowed && agent.Team != _targetAgent?.Team;
+		bool controllerSuppressed = false;
+		bool aiPausedApplied = false;
+		bool scriptedMovementDisabled = false;
+		bool targetCacheCleared = false;
+		bool weaponSheathAttempted = false;
+		bool positionLocked = false;
+		bool mortalityApplied = false;
+		try
+		{
+			TrySetAgentController(agent, "None");
+			controllerSuppressed = true;
+			agent.SetIsAIPaused(isPaused: true);
+			aiPausedApplied = true;
+			agent.DisableScriptedMovement();
+			scriptedMovementDisabled = true;
+			agent.ClearTargetFrame();
+			agent.ResetEnemyCaches();
+			agent.InvalidateTargetAgent();
+			agent.InvalidateAIWeaponSelections();
+			targetCacheCleared = true;
+			agent.SetWatchState(Agent.WatchState.Patrolling);
+			TrySheathWeapons(agent);
+			weaponSheathAttempted = true;
+			TryLockAgentToCurrentPosition(agent, recaptureMeetingAnchor: true, preserveFacing: true);
+			positionLocked = true;
+			agent.ClearTargetFrame();
+			agent.SetMortalityState(Agent.MortalityState.Invulnerable);
+			mortalityApplied = true;
+			if (snapshot != null && agent.Health > 0f)
+			{
+				snapshot.LastSafeHealth = Math.Max(snapshot.LastSafeHealth, agent.Health);
+			}
+			if (logNormal || targetFrameWasSet || teamDrift || !wasPaused)
+			{
+				LogDuelIsolation($"Spectator frozen. reason={reason}, agent={FormatAgent(agent)}, team={FormatTeam(agent.Team)}, originalTeam={FormatTeam(snapshot?.OriginalTeam)}, teamMigrated={snapshot?.TeamMigrated}, teamDrift={teamDrift}, wasPaused={wasPaused}, aiPauseApplied={aiPausedApplied}, aiPaused={SafeAgentPaused(agent)}, controller={FormatAgentController(agent)}, controllerSuppressed={controllerSuppressed}, mortality={FormatAgentMortality(agent)}, mortalityApplied={mortalityApplied}, scriptedMovementDisabled={scriptedMovementDisabled}, targetFrameWasSet={targetFrameWasSet}, targetCacheCleared={targetCacheCleared}, weaponSheathAttempted={weaponSheathAttempted}, positionLocked={positionLocked}, health={SafeHealthText(agent)}");
+			}
+			return true;
+		}
+		catch (Exception ex)
+		{
+			LogDuelIsolation("[ERROR] Spectator freeze failed. reason=" + reason + ", agent=" + FormatAgent(agent) + ", originalTeam=" + FormatTeam(snapshot?.OriginalTeam) + ", error=" + ex.Message);
+			return false;
+		}
+	}
+
+	private void FreezeFormalDuelSpectatorMount(Agent mountAgent, FormalDuelSpectatorSnapshot snapshot, string reason, bool logNormal)
+	{
+		if (mountAgent == null || !mountAgent.IsActive())
+		{
+			return;
+		}
+		try
+		{
+			bool targetFrameWasSet = TryReadAgentTargetFrameChanged(mountAgent, out var hasTargetFrame) && hasTargetFrame;
+			bool wasPaused = SafeAgentPaused(mountAgent);
+			bool controllerSuppressed = false;
+			bool aiPausedApplied = false;
+			bool scriptedMovementDisabled = false;
+			bool targetCacheCleared = false;
+			bool mortalityApplied = false;
+			TrySetAgentController(mountAgent, "None");
+			controllerSuppressed = true;
+			mountAgent.SetIsAIPaused(isPaused: true);
+			aiPausedApplied = true;
+			mountAgent.DisableScriptedMovement();
+			scriptedMovementDisabled = true;
+			mountAgent.ClearTargetFrame();
+			mountAgent.ResetEnemyCaches();
+			mountAgent.InvalidateTargetAgent();
+			targetCacheCleared = true;
+			mountAgent.SetMortalityState(Agent.MortalityState.Invulnerable);
+			mortalityApplied = true;
+			if (snapshot != null && mountAgent.Health > 0f)
+			{
+				snapshot.LastSafeMountHealth = Math.Max(snapshot.LastSafeMountHealth, mountAgent.Health);
+			}
+			if (logNormal || targetFrameWasSet)
+			{
+				LogDuelIsolation($"Spectator mount frozen. reason={reason}, mount={FormatAgent(mountAgent)}, team={FormatTeam(mountAgent.Team)}, originalTeam={FormatTeam(snapshot?.OriginalMountTeam)}, teamMigrated={snapshot?.MountTeamMigrated}, wasPaused={wasPaused}, aiPauseApplied={aiPausedApplied}, aiPaused={SafeAgentPaused(mountAgent)}, controller={FormatAgentController(mountAgent)}, controllerSuppressed={controllerSuppressed}, mortality={FormatAgentMortality(mountAgent)}, mortalityApplied={mortalityApplied}, scriptedMovementDisabled={scriptedMovementDisabled}, targetFrameWasSet={targetFrameWasSet}, targetCacheCleared={targetCacheCleared}, health={SafeHealthText(mountAgent)}");
+			}
+		}
+		catch (Exception ex)
+		{
+			LogDuelIsolation("[ERROR] Spectator mount freeze failed. reason=" + reason + ", mount=" + FormatAgent(mountAgent) + ", originalTeam=" + FormatTeam(snapshot?.OriginalMountTeam) + ", error=" + ex.Message);
+		}
+	}
+
+	private void EnsureFormalDuelTargetAttacksMain(Agent main, Agent target, bool preFight)
+	{
+		if (main == null || target == null || !main.IsActive() || !target.IsActive())
+		{
+			return;
+		}
+		if (preFight)
+		{
+			return;
+		}
+		try
+		{
+			Team mainTeam = SafeAgentTeam(main);
+			Team targetTeam = SafeAgentTeam(target);
+			if (IsUsableTeam(mainTeam) && IsUsableTeam(targetTeam) && mainTeam != targetTeam && !AreTeamsHostileSafely(mainTeam, targetTeam))
+			{
+				TrySetEnemyRelation(mainTeam, targetTeam, isEnemy: true);
+				LogDuelIsolation("Formal duel target attack relation repaired. mainTeam=" + FormatTeam(mainTeam) + ", targetTeam=" + FormatTeam(targetTeam));
+			}
+			Agent currentTarget = SafeGetTargetAgent(target);
+			bool needsApply = !_formalDuelAttackTargetForced || currentTarget != main;
+			if (!needsApply)
+			{
+				Logger.LogVerbose(FormalDuelIsolationLogSource, "target_attack:" + _formalDuelIsolationSessionId, () => BuildDuelIsolationPrefix() + " Target attack lock healthy. target=" + FormatAgent(target) + ", targetAgent=" + FormatAgent(SafeGetTargetAgent(target)) + ", distance=" + SafeDistanceText(main, target), 1.0);
+				return;
+			}
+			TrySetAgentController(target, "AI");
+			target.SetIsAIPaused(isPaused: false);
+			target.DisableScriptedMovement();
+			target.SetLookAgent(null);
+			target.ResetEnemyCaches();
+			target.InvalidateTargetAgent();
+			target.InvalidateAIWeaponSelections();
+			bool automaticTargetSelectionSet = TrySetAutomaticTargetSelection(target, enabled: false);
+			bool combatTargetSet = TrySetCombatTargetAgent(target, main);
+			target.SetWatchState(Agent.WatchState.Alarmed);
+			try
+			{
+				target.WieldInitialWeapons(Agent.WeaponWieldActionType.InstantAfterPickUp, Equipment.InitialWeaponEquipPreference.MeleeForMainHand);
+			}
+			catch
+			{
+			}
+			_formalDuelAttackTargetForced = automaticTargetSelectionSet || combatTargetSet;
+			LogDuelIsolation("Formal duel target attack lock applied. target=" + FormatAgent(target) + ", previousTarget=" + FormatAgent(currentTarget) + ", newTarget=" + FormatAgent(SafeGetTargetAgent(target)) + ", mainTeam=" + FormatTeam(mainTeam) + ", targetTeam=" + FormatTeam(targetTeam) + ", teamsHostile=" + AreTeamsHostileSafely(mainTeam, targetTeam) + ", autoTargetSelection=false, autoTargetSelectionSet=" + automaticTargetSelectionSet + ", combatTargetSet=" + combatTargetSet + ", distance=" + SafeDistanceText(main, target));
+		}
+		catch (Exception ex)
+		{
+			LogDuelIsolation("[WARN] Target attack lock failed: " + ex.Message);
+		}
+	}
+
+	private void LogFormalDuelIsolationStatus(Agent main, Agent target, Team targetTeam)
+	{
+		float currentTime = 0f;
+		try
+		{
+			currentTime = base.Mission?.CurrentTime ?? 0f;
+		}
+		catch
+		{
+		}
+		if (currentTime < _formalDuelIsolationStatusLogTimer)
+		{
+			return;
+		}
+		_formalDuelIsolationStatusLogTimer = currentTime + 1f;
+		Logger.LogVerbose(FormalDuelIsolationLogSource, "status:" + _formalDuelIsolationSessionId, () => BuildDuelIsolationPrefix() + $" Status. mainActive={IsAgentActiveSafe(main)}, targetActive={IsAgentActiveSafe(target)}, mainHp={SafeHealthText(main)}, targetHp={SafeHealthText(target)}, targetCurrentTarget={FormatAgent(SafeGetTargetAgent(target))}, targetAttackForced={_formalDuelAttackTargetForced}, distance={SafeDistanceText(main, target)}, playerTeamActiveHumans={CountActiveHumanAgentsOnTeam(base.Mission?.PlayerTeam)}, targetTeamActiveHumans={CountActiveHumanAgentsOnTeam(targetTeam)}, frozenSpectators={CountFrozenFormalDuelSpectators()}, snapshots={_formalDuelSpectatorSnapshots.Count}, migrationAllowed={_formalDuelSpectatorMigrationAllowed}, battleEndGuardActive={_formalDuelBattleEndGuardActive}", 0.9);
+	}
+
+	private void RestoreFormalDuelIsolation(string reason)
+	{
+		if (!_formalDuelIsolationStarted && _formalDuelSpectatorSnapshots.Count == 0 && !_formalDuelBattleEndGuardActive && !_formalDuelAttackTargetForced)
+		{
+			return;
+		}
+		LogDuelIsolation("Restore begin. reason=" + (reason ?? "unknown") + ", snapshots=" + _formalDuelSpectatorSnapshots.Count + ", battleEndGuardActive=" + _formalDuelBattleEndGuardActive + ", migrationAllowed=" + _formalDuelSpectatorMigrationAllowed);
+		foreach (FormalDuelSpectatorSnapshot snapshot in _formalDuelSpectatorSnapshots.Values.ToList())
+		{
+			RestoreFormalDuelSpectatorSnapshot(snapshot, reason ?? "restore");
+		}
+		_formalDuelSpectatorSnapshots.Clear();
+		RestoreFormalDuelTargetAttackLock(reason ?? "restore");
+		RestoreBattleEndLogicAfterFormalDuel(reason ?? "restore");
+		int playerActive = CountActiveHumanAgentsOnTeam(base.Mission?.PlayerTeam);
+		LogDuelIsolation("Restore complete. reason=" + (reason ?? "unknown") + ", playerTeamActiveHumans=" + playerActive + ", teamCounts=" + BuildTeamActiveHumanCounts());
+		_formalDuelIsolationStarted = false;
+		_formalDuelIsolationSessionId = "";
+		_formalDuelIsolationStatusLogTimer = 0f;
+		_formalDuelSpectatorMigrationAllowed = false;
+		_formalDuelAttackTargetForced = false;
+	}
+
+	private void RestoreFormalDuelTargetAttackLock(string reason)
+	{
+		if (!_formalDuelAttackTargetForced)
+		{
+			return;
+		}
+		Agent target = _targetAgent;
+		if (target == null || !IsAgentActiveSafe(target))
+		{
+			FindMainAndTargetAgents();
+			target = _targetAgent;
+		}
+		if (target == null || !IsAgentActiveSafe(target))
+		{
+			LogDuelIsolation("[WARN] Target attack lock restore skipped; target agent not found. reason=" + reason);
+			_formalDuelAttackTargetForced = false;
+			return;
+		}
+		try
+		{
+			Agent before = SafeGetTargetAgent(target);
+			TrySetAutomaticTargetSelection(target, enabled: true);
+			TrySetCombatTargetAgent(target, null);
+			target.SetLookAgent(null);
+			target.InvalidateTargetAgent();
+			target.InvalidateAIWeaponSelections();
+			LogDuelIsolation("Target attack lock restored. reason=" + reason + ", target=" + FormatAgent(target) + ", previousTarget=" + FormatAgent(before) + ", currentTarget=" + FormatAgent(SafeGetTargetAgent(target)) + ", autoTargetSelection=true");
+		}
+		catch (Exception ex)
+		{
+			LogDuelIsolation("[WARN] Target attack lock restore failed. reason=" + reason + ", target=" + FormatAgent(target) + ", error=" + ex.Message);
+		}
+		finally
+		{
+			_formalDuelAttackTargetForced = false;
+		}
+	}
+
+	private void RestoreFormalDuelSpectatorSnapshot(FormalDuelSpectatorSnapshot snapshot, string reason)
+	{
+		if (snapshot == null)
+		{
+			return;
+		}
+		Agent agent = FindAgentByIndex(snapshot.AgentIndex);
+		if (agent == null)
+		{
+			LogDuelIsolation("[WARN] Spectator restore skipped; agent not found. reason=" + reason + ", agentIndex=" + snapshot.AgentIndex + ", name=" + snapshot.AgentName + ", originalTeam=" + FormatTeam(snapshot.OriginalTeam));
+			return;
+		}
+		try
+		{
+			if (snapshot.OriginalTeam != null && agent.Team != snapshot.OriginalTeam)
+			{
+				agent.SetTeam(snapshot.OriginalTeam, sync: true);
+			}
+			if (snapshot.OriginalFormation != null)
+			{
+				try
+				{
+					agent.Formation = snapshot.OriginalFormation;
+				}
+				catch
+				{
+				}
+			}
+			if (snapshot.HasOriginalController)
+			{
+				TrySetAgentControllerValue(agent, snapshot.OriginalController);
+			}
+			else if (agent.IsAIControlled)
+			{
+				TrySetAgentController(agent, "AI");
+			}
+			agent.SetIsAIPaused(isPaused: false);
+			agent.DisableScriptedMovement();
+			agent.ClearTargetFrame();
+			agent.ResetEnemyCaches();
+			agent.InvalidateTargetAgent();
+			agent.InvalidateAIWeaponSelections();
+			if (snapshot.HasOriginalMortalityState)
+			{
+				agent.SetMortalityState(snapshot.OriginalMortalityState);
+			}
+			if (agent.Health > 0f && snapshot.LastSafeHealth > 0f && agent.Health < snapshot.LastSafeHealth)
+			{
+				agent.Health = Math.Min(agent.HealthLimit, snapshot.LastSafeHealth);
+			}
+			RestoreFormalDuelSpectatorMount(snapshot, reason);
+			LogDuelIsolation("Spectator restored. reason=" + reason + ", agent=" + FormatAgent(agent) + ", restoredTeam=" + FormatTeam(agent.Team) + ", originalTeam=" + FormatTeam(snapshot.OriginalTeam) + ", restoredFormation=" + FormatFormation(SafeAgentFormation(agent)) + ", originalFormation=" + FormatFormation(snapshot.OriginalFormation) + ", mortalityRestored=" + snapshot.HasOriginalMortalityState + ", controllerRestored=" + snapshot.HasOriginalController + ", health=" + SafeHealthText(agent));
+		}
+		catch (Exception ex)
+		{
+			LogDuelIsolation("[ERROR] Spectator restore failed. reason=" + reason + ", agent=" + FormatAgent(agent) + ", originalTeam=" + FormatTeam(snapshot.OriginalTeam) + ", error=" + ex);
+		}
+	}
+
+	private void RestoreFormalDuelSpectatorMount(FormalDuelSpectatorSnapshot snapshot, string reason)
+	{
+		Agent mountAgent = FindAgentByIndex(snapshot.MountAgentIndex);
+		if (mountAgent == null)
+		{
+			return;
+		}
+		try
+		{
+			if (snapshot.OriginalMountTeam != null && mountAgent.Team != snapshot.OriginalMountTeam)
+			{
+				mountAgent.SetTeam(snapshot.OriginalMountTeam, sync: true);
+			}
+			if (snapshot.HasOriginalMountController)
+			{
+				TrySetAgentControllerValue(mountAgent, snapshot.OriginalMountController);
+			}
+			else if (mountAgent.IsAIControlled)
+			{
+				TrySetAgentController(mountAgent, "AI");
+			}
+			mountAgent.SetIsAIPaused(isPaused: false);
+			mountAgent.DisableScriptedMovement();
+			mountAgent.ClearTargetFrame();
+			mountAgent.ResetEnemyCaches();
+			mountAgent.InvalidateTargetAgent();
+			if (snapshot.HasOriginalMountMortalityState)
+			{
+				mountAgent.SetMortalityState(snapshot.OriginalMountMortalityState);
+			}
+			if (mountAgent.Health > 0f && snapshot.LastSafeMountHealth > 0f && mountAgent.Health < snapshot.LastSafeMountHealth)
+			{
+				mountAgent.Health = Math.Min(mountAgent.HealthLimit, snapshot.LastSafeMountHealth);
+			}
+			LogDuelIsolation("Spectator mount restored. reason=" + reason + ", mount=" + FormatAgent(mountAgent) + ", restoredTeam=" + FormatTeam(mountAgent.Team) + ", originalTeam=" + FormatTeam(snapshot.OriginalMountTeam) + ", mortalityRestored=" + snapshot.HasOriginalMountMortalityState + ", controllerRestored=" + snapshot.HasOriginalMountController + ", health=" + SafeHealthText(mountAgent));
+		}
+		catch (Exception ex)
+		{
+			LogDuelIsolation("[ERROR] Spectator mount restore failed. reason=" + reason + ", mountIndex=" + snapshot.MountAgentIndex + ", originalTeam=" + FormatTeam(snapshot.OriginalMountTeam) + ", error=" + ex);
+		}
+	}
+
+	private void RestoreBattleEndLogicAfterFormalDuel(string reason)
+	{
+		if (!_formalDuelBattleEndGuardActive && _formalDuelBattleEndLogic == null)
+		{
+			return;
+		}
+		try
+		{
+			MissionBehavior behavior = _formalDuelBattleEndLogic ?? FindBattleEndLogicBehavior();
+			if (behavior == null)
+			{
+				LogDuelIsolation("[WARN] BattleEndLogic restore skipped; behavior not found. reason=" + reason);
+				return;
+			}
+			Type type = behavior.GetType();
+			MethodInfo method = type.GetMethod("ChangeCanCheckForEndCondition", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, null, new Type[1] { typeof(bool) }, null);
+			if (method == null)
+			{
+				LogDuelIsolation("[WARN] BattleEndLogic restore skipped; ChangeCanCheckForEndCondition missing. reason=" + reason + ", type=" + type.FullName);
+				return;
+			}
+			bool restoreValue = _formalDuelBattleEndOriginalCaptured ? _formalDuelBattleEndOriginalCanCheck : true;
+			bool before = ReadBattleEndCanCheckValue(defaultValue: false);
+			method.Invoke(behavior, new object[1] { restoreValue });
+			bool after = ReadBattleEndCanCheckValue(defaultValue: restoreValue);
+			LogDuelIsolation($"BattleEndLogic guard restored. reason={reason}, originalCaptured={_formalDuelBattleEndOriginalCaptured}, restoreValue={restoreValue}, before={before}, after={after}");
+		}
+		catch (Exception ex)
+		{
+			LogDuelIsolation("[ERROR] BattleEndLogic restore failed. reason=" + reason + ", error=" + ex);
+		}
+		finally
+		{
+			_formalDuelBattleEndGuardActive = false;
+			_formalDuelBattleEndOriginalCaptured = false;
+			_formalDuelBattleEndOriginalCanCheck = true;
+			_formalDuelBattleEndLogic = null;
+			_formalDuelBattleEndCanCheckField = null;
+		}
+	}
+
+	private bool TryHandleFormalDuelSpectatorDamage(Agent affectedAgent, Agent affectorAgent, float damagedHp, string reason, string weaponText)
+	{
+		if (!_formalDuelIsolationStarted || _formalDuelSpectatorSnapshots.Count == 0)
+		{
+			return false;
+		}
+		FormalDuelSpectatorSnapshot victimSnapshot = FindFormalDuelSpectatorSnapshotForAgent(affectedAgent);
+		FormalDuelSpectatorSnapshot attackerSnapshot = FindFormalDuelSpectatorSnapshotForAgent(affectorAgent);
+		if (victimSnapshot == null && attackerSnapshot == null)
+		{
+			return false;
+		}
+		LogDuelIsolation($"Spectator hit intercepted. reason={reason}, attacker={FormatAgent(affectorAgent)}, attackerTeam={FormatTeam(affectorAgent?.Team)}, attackerIsSpectator={attackerSnapshot != null}, victim={FormatAgent(affectedAgent)}, victimTeam={FormatTeam(affectedAgent?.Team)}, victimIsSpectator={victimSnapshot != null}, damage={damagedHp:0.##}, weapon={weaponText}");
+		if (victimSnapshot != null)
+		{
+			RestoreAgentHealthFromSnapshot(affectedAgent, victimSnapshot, damagedHp, "spectator_victim_hit");
+			FreezeFormalDuelSpectatorAgentOrMount(affectedAgent, victimSnapshot, "spectator_victim_hit");
+		}
+		if (attackerSnapshot != null)
+		{
+			FreezeFormalDuelSpectatorAgentOrMount(affectorAgent, attackerSnapshot, "spectator_attacker_hit");
+			if (affectedAgent != null && affectedAgent.IsActive() && damagedHp > 0f)
+			{
+				try
+				{
+					affectedAgent.Health = Math.Min(affectedAgent.HealthLimit, affectedAgent.Health + damagedHp);
+					LogDuelIsolation("Restored damage caused by spectator attacker. victim=" + FormatAgent(affectedAgent) + ", restoredHp=" + SafeHealthText(affectedAgent) + ", damage=" + damagedHp.ToString("0.##"));
+				}
+				catch (Exception ex)
+				{
+					LogDuelIsolation("[WARN] Failed restoring damage from spectator attacker. victim=" + FormatAgent(affectedAgent) + ", error=" + ex.Message);
+				}
+			}
+		}
+		return true;
+	}
+
+	private void RestoreAgentHealthFromSnapshot(Agent agent, FormalDuelSpectatorSnapshot snapshot, float damagedHp, string reason)
+	{
+		if (agent == null || snapshot == null || !agent.IsActive())
+		{
+			return;
+		}
+		try
+		{
+			float safeHealth = (agent.Index == snapshot.MountAgentIndex) ? snapshot.LastSafeMountHealth : snapshot.LastSafeHealth;
+			if (safeHealth <= 0f)
+			{
+				safeHealth = agent.Health + Math.Max(0f, damagedHp);
+			}
+			if (agent.Health < safeHealth)
+			{
+				agent.Health = Math.Min(agent.HealthLimit, safeHealth);
+			}
+			LogDuelIsolation("Spectator health restored. reason=" + reason + ", agent=" + FormatAgent(agent) + ", health=" + SafeHealthText(agent) + ", safeHealth=" + safeHealth.ToString("0.##") + ", damage=" + damagedHp.ToString("0.##"));
+		}
+		catch (Exception ex)
+		{
+			LogDuelIsolation("[WARN] Spectator health restore failed. reason=" + reason + ", agent=" + FormatAgent(agent) + ", error=" + ex.Message);
+		}
+	}
+
+	private void FreezeFormalDuelSpectatorAgentOrMount(Agent agent, FormalDuelSpectatorSnapshot snapshot, string reason)
+	{
+		if (agent == null || snapshot == null)
+		{
+			return;
+		}
+		if (agent.Index == snapshot.MountAgentIndex)
+		{
+			FreezeFormalDuelSpectatorMount(agent, snapshot, reason, logNormal: true);
+			return;
+		}
+		FreezeFormalDuelSpectatorAgent(agent, snapshot, reason, logNormal: true);
+	}
+
+	private FormalDuelSpectatorSnapshot FindFormalDuelSpectatorSnapshotForAgent(Agent agent)
+	{
+		if (agent == null)
+		{
+			return null;
+		}
+		if (_formalDuelSpectatorSnapshots.TryGetValue(agent.Index, out var snapshot))
+		{
+			return snapshot;
+		}
+		foreach (FormalDuelSpectatorSnapshot value in _formalDuelSpectatorSnapshots.Values)
+		{
+			if (value != null && value.MountAgentIndex == agent.Index)
+			{
+				return value;
+			}
+		}
+		return null;
+	}
+
+	private bool IsFormalDuelParticipantOrMount(Agent agent, Agent main, Agent target, Agent mainMount, Agent targetMount)
+	{
+		if (agent == null)
+		{
+			return false;
+		}
+		if (agent == main || agent == target || agent == mainMount || agent == targetMount)
+		{
+			return true;
+		}
+		try
+		{
+			if (agent.IsMainAgent)
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			Agent riderAgent = agent.RiderAgent;
+			return riderAgent != null && (riderAgent == main || riderAgent == target || riderAgent.IsMainAgent);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private Agent FindAgentByIndex(int index)
+	{
+		if (index < 0 || base.Mission == null)
+		{
+			return null;
+		}
+		try
+		{
+			foreach (Agent agent in base.Mission.Agents)
+			{
+				if (agent != null && agent.Index == index)
+				{
+					return agent;
+				}
+			}
+		}
+		catch
+		{
+		}
+		return null;
+	}
+
+	private int CountFrozenFormalDuelSpectators()
+	{
+		int num = 0;
+		foreach (FormalDuelSpectatorSnapshot snapshot in _formalDuelSpectatorSnapshots.Values)
+		{
+			Agent agent = FindAgentByIndex(snapshot.AgentIndex);
+			if (agent == null || !agent.IsActive())
+			{
+				continue;
+			}
+			try
+			{
+				if (agent.IsPaused)
+				{
+					num++;
+				}
+			}
+			catch
+			{
+			}
+		}
+		return num;
+	}
+
+	private int CountActiveHumanAgentsOnTeam(Team team)
+	{
+		if (team == null || base.Mission == null)
+		{
+			return 0;
+		}
+		int num = 0;
+		try
+		{
+			foreach (Agent agent in base.Mission.Agents)
+			{
+				if (agent != null && agent.IsHuman && agent.IsActive() && agent.Team == team)
+				{
+					num++;
+				}
+			}
+		}
+		catch
+		{
+		}
+		return num;
+	}
+
+	private string BuildTeamActiveHumanCounts()
+	{
+		if (base.Mission == null)
+		{
+			return "(no mission)";
+		}
+		try
+		{
+			List<string> list = new List<string>();
+			foreach (Team team in base.Mission.Teams)
+			{
+				if (team != null)
+				{
+					list.Add(FormatTeam(team) + ":humans=" + CountActiveHumanAgentsOnTeam(team));
+				}
+			}
+			return string.Join("; ", list);
+		}
+		catch
+		{
+			return "(team counts failed)";
+		}
+	}
+
+	private bool ReadBattleEndCanCheckValue(bool defaultValue)
+	{
+		try
+		{
+			if (_formalDuelBattleEndCanCheckField != null && _formalDuelBattleEndLogic != null)
+			{
+				object value = _formalDuelBattleEndCanCheckField.GetValue(_formalDuelBattleEndLogic);
+				if (value is bool result)
+				{
+					return result;
+				}
+			}
+		}
+		catch
+		{
+		}
+		return defaultValue;
+	}
+
+	private object TryGetAgentControllerValue(Agent agent, out bool hasValue)
+	{
+		hasValue = false;
+		if (agent == null)
+		{
+			return null;
+		}
+		try
+		{
+			PropertyInfo propertyInfo = agent.GetType().GetProperty("Controller") ?? agent.GetType().GetProperty("ControllerType");
+			if (propertyInfo != null && propertyInfo.CanRead)
+			{
+				object value = propertyInfo.GetValue(agent, null);
+				hasValue = value != null;
+				return value;
+			}
+		}
+		catch
+		{
+		}
+		return null;
+	}
+
+	private void TrySetAgentControllerValue(Agent agent, object value)
+	{
+		if (agent == null || value == null)
+		{
+			return;
+		}
+		try
+		{
+			PropertyInfo propertyInfo = agent.GetType().GetProperty("Controller") ?? agent.GetType().GetProperty("ControllerType");
+			if (propertyInfo != null && propertyInfo.CanWrite && propertyInfo.PropertyType.IsInstanceOfType(value))
+			{
+				propertyInfo.SetValue(agent, value, null);
+			}
+		}
+		catch
+		{
+		}
+	}
+
+	private bool TryReadAgentTargetFrameChanged(Agent agent, out bool hasTargetFrame)
+	{
+		hasTargetFrame = false;
+		if (agent == null || AgentTargetFrameChangedField == null)
+		{
+			return false;
+		}
+		try
+		{
+			object value = AgentTargetFrameChangedField.GetValue(agent);
+			if (value is bool flag)
+			{
+				hasTargetFrame = flag;
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		return false;
+	}
+
+	private Agent SafeGetTargetAgent(Agent agent)
+	{
+		if (agent == null)
+		{
+			return null;
+		}
+		try
+		{
+			MethodInfo method = agent.GetType().GetMethod("GetTargetAgent", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, null, Type.EmptyTypes, null);
+			return method?.Invoke(agent, null) as Agent;
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private bool TrySetCombatTargetAgent(Agent agent, Agent target)
+	{
+		if (agent == null)
+		{
+			return false;
+		}
+		try
+		{
+			MethodInfo method = agent.GetType().GetMethod("SetTargetAgent", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, null, new Type[1] { typeof(Agent) }, null);
+			if (method == null)
+			{
+				LogDuelIsolation("[WARN] Agent.SetTargetAgent(Agent) not found; target attack lock cannot force target agent directly.");
+				return false;
+			}
+			method.Invoke(agent, new object[1] { target });
+			return true;
+		}
+		catch (Exception ex)
+		{
+			LogDuelIsolation("[WARN] Agent.SetTargetAgent failed. agent=" + FormatAgent(agent) + ", target=" + FormatAgent(target) + ", error=" + ex.Message);
+			return false;
+		}
+	}
+
+	private bool TrySetAutomaticTargetSelection(Agent agent, bool enabled)
+	{
+		if (agent == null)
+		{
+			return false;
+		}
+		try
+		{
+			MethodInfo method = agent.GetType().GetMethod("SetAutomaticTargetSelection", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, null, new Type[1] { typeof(bool) }, null);
+			if (method == null)
+			{
+				return false;
+			}
+			method.Invoke(agent, new object[1] { enabled });
+			return true;
+		}
+		catch (Exception ex)
+		{
+			LogDuelIsolation("[WARN] Agent.SetAutomaticTargetSelection(" + enabled + ") failed. agent=" + FormatAgent(agent) + ", error=" + ex.Message);
+			return false;
+		}
+	}
+
+	private Team SafeAgentTeam(Agent agent)
+	{
+		try
+		{
+			return agent?.Team;
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private Formation SafeAgentFormation(Agent agent)
+	{
+		try
+		{
+			return agent?.Formation;
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private float SafeAgentHealth(Agent agent)
+	{
+		try
+		{
+			return agent?.Health ?? 0f;
+		}
+		catch
+		{
+			return 0f;
+		}
+	}
+
+	private string SafeAgentName(Agent agent)
+	{
+		try
+		{
+			return agent?.Name?.ToString() ?? "";
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	private string SafeAgentHeroId(Agent agent)
+	{
+		try
+		{
+			return ((agent?.Character as CharacterObject)?.HeroObject?.StringId ?? "").Trim();
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	private bool IsAgentActiveSafe(Agent agent)
+	{
+		try
+		{
+			return agent != null && agent.IsActive();
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private bool SafeAgentPaused(Agent agent)
+	{
+		try
+		{
+			return agent != null && agent.IsPaused;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private string FormatAgentController(Agent agent)
+	{
+		bool hasValue;
+		object value = TryGetAgentControllerValue(agent, out hasValue);
+		return hasValue ? FormatAgentControllerValue(value) : "unknown";
+	}
+
+	private string FormatAgentControllerValue(object value)
+	{
+		try
+		{
+			return value?.ToString() ?? "null";
+		}
+		catch
+		{
+			return "unknown";
+		}
+	}
+
+	private string FormatAgentMortality(Agent agent)
+	{
+		try
+		{
+			return agent == null ? "null" : agent.CurrentMortalityState.ToString();
+		}
+		catch
+		{
+			return "unknown";
+		}
+	}
+
+	private string FormatAgentMortality(bool hasValue, Agent.MortalityState value)
+	{
+		if (!hasValue)
+		{
+			return "unknown";
+		}
+		try
+		{
+			return value.ToString();
+		}
+		catch
+		{
+			return "unknown";
+		}
+	}
+
+	private string SafeHealthText(Agent agent)
+	{
+		try
+		{
+			if (agent == null)
+			{
+				return "null";
+			}
+			return agent.Health.ToString("0.##") + "/" + agent.HealthLimit.ToString("0.##");
+		}
+		catch
+		{
+			return "unknown";
+		}
+	}
+
+	private string SafeDistanceText(Agent first, Agent second)
+	{
+		try
+		{
+			if (first == null || second == null)
+			{
+				return "unknown";
+			}
+			return first.Position.Distance(second.Position).ToString("0.##");
+		}
+		catch
+		{
+			return "unknown";
+		}
+	}
+
+	private string FormatAgent(Agent agent)
+	{
+		if (agent == null)
+		{
+			return "null";
+		}
+		return SafeAgentName(agent) + "#" + agent.Index + "[team=" + FormatTeam(SafeAgentTeam(agent)) + ",active=" + IsAgentActiveSafe(agent) + ",heroId=" + SafeAgentHeroId(agent) + "]";
+	}
+
+	private string FormatTeam(Team team)
+	{
+		if (team == null)
+		{
+			return "null";
+		}
+		try
+		{
+			int num = -1;
+			try
+			{
+				num = base.Mission?.Teams?.IndexOf(team) ?? -1;
+			}
+			catch
+			{
+				num = -1;
+			}
+			return "team#" + num + "/side=" + team.Side + "/valid=" + IsUsableTeam(team);
+		}
+		catch
+		{
+			return "team(?)";
+		}
+	}
+
+	private string FormatFormation(Formation formation)
+	{
+		if (formation == null)
+		{
+			return "null";
+		}
+		try
+		{
+			return "formation#" + formation.Index + "/team=" + FormatTeam(formation.Team) + "/count=" + formation.CountOfUnits;
+		}
+		catch
+		{
+			return "formation(?)";
+		}
+	}
+
+	private string FormatVec(Vec3 value)
+	{
+		try
+		{
+			return "(" + value.x.ToString("0.##") + "," + value.y.ToString("0.##") + "," + value.z.ToString("0.##") + ")";
+		}
+		catch
+		{
+			return "(?)";
+		}
+	}
+
+	private string FormatMissionWeapon(in MissionWeapon weapon)
+	{
+		try
+		{
+			WeaponComponentData currentUsageItem = weapon.CurrentUsageItem;
+			if (currentUsageItem == null)
+			{
+				return "none";
+			}
+			return currentUsageItem.WeaponClass.ToString();
+		}
+		catch
+		{
+			return "unknown";
+		}
+	}
+
+	private string FormatWeaponComponent(WeaponComponentData weapon)
+	{
+		try
+		{
+			return weapon == null ? "none" : weapon.WeaponClass.ToString();
+		}
+		catch
+		{
+			return "unknown";
+		}
+	}
+
+	private string BuildDuelIsolationPrefix()
+	{
+		string scene = "";
+		string mode = "";
+		float time = 0f;
+		try
+		{
+			scene = base.Mission?.SceneName ?? "";
+			mode = base.Mission?.Mode.ToString() ?? "";
+			time = base.Mission?.CurrentTime ?? 0f;
+		}
+		catch
+		{
+		}
+		return "[duelSessionId=" + (_formalDuelIsolationSessionId ?? "") + ", missionTime=" + time.ToString("0.###") + ", scene=" + scene + ", missionMode=" + mode + ", targetHero=" + (_targetHero?.StringId ?? "") + ", mainAgentIndex=" + (_mainAgent?.Index.ToString() ?? "null") + ", targetAgentIndex=" + (_targetAgent?.Index.ToString() ?? "null") + "] ";
+	}
+
+	private void LogDuelIsolation(string message)
+	{
+		try
+		{
+			Logger.Log(FormalDuelIsolationLogSource, BuildDuelIsolationPrefix() + (message ?? ""));
 		}
 		catch
 		{
@@ -1367,24 +2685,6 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior, IAgentStateDeci
 			return;
 		}
 		_formalDuelOrderRefreshTimer = num + 0.5f;
-		try
-		{
-			target.ClearTargetFrame();
-		}
-		catch
-		{
-		}
-		try
-		{
-			Agent mountAgent = target.MountAgent;
-			if (mountAgent != null && mountAgent.IsActive())
-			{
-				mountAgent.ClearTargetFrame();
-			}
-		}
-		catch
-		{
-		}
 		try
 		{
 			(_formalDuelPlayerFormation ?? main.Formation)?.SetMovementOrder(MovementOrder.MovementOrderStop);
@@ -2337,6 +3637,10 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior, IAgentStateDeci
 	public override void OnAgentHit(Agent affectedAgent, Agent affectorAgent, in MissionWeapon attackerWeapon, in Blow blow, in AttackCollisionData attackCollisionData)
 	{
 		base.OnAgentHit(affectedAgent, affectorAgent, in attackerWeapon, in blow, in attackCollisionData);
+		if (TryHandleFormalDuelSpectatorDamage(affectedAgent, affectorAgent, blow.InflictedDamage, "on_agent_hit", FormatMissionWeapon(in attackerWeapon)))
+		{
+			return;
+		}
 		TryCapturePreEscalationFatalHitContext(affectedAgent, affectorAgent, in attackerWeapon, in blow);
 	}
 
@@ -2412,6 +3716,10 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior, IAgentStateDeci
 	public override void OnScoreHit(Agent affectedAgent, Agent affectorAgent, WeaponComponentData attackerWeapon, bool isBlocked, bool isSiegeEngineHit, in Blow blow, in AttackCollisionData collisionData, float damagedHp, float hitDistance, float shotDifficulty)
 	{
 		base.OnScoreHit(affectedAgent, affectorAgent, attackerWeapon, isBlocked, isSiegeEngineHit, in blow, in collisionData, damagedHp, hitDistance, shotDifficulty);
+		if (TryHandleFormalDuelSpectatorDamage(affectedAgent, affectorAgent, damagedHp, "on_score_hit", FormatWeaponComponent(attackerWeapon)))
+		{
+			return;
+		}
 		if (MeetingBattleRuntime.IsCombatEscalated || damagedHp <= 0f || affectorAgent == null || affectedAgent == null)
 		{
 			return;

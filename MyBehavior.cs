@@ -1114,11 +1114,19 @@ public class MyBehavior : CampaignBehaviorBase
 
 		public string EncyclopediaText;
 
-		public bool UsedFallback;
+		public bool Success;
 
 		public string FailureReason;
 
 		public int AttemptsUsed;
+
+		public bool IsRateLimit;
+
+		public bool IsRequestsPerMinuteLimit;
+
+		public bool IsQuotaLimit;
+
+		public int? RetryAfterSeconds;
 	}
 
 	private sealed class PendingDevForcedKingdomRebellionContext
@@ -1391,6 +1399,14 @@ public class MyBehavior : CampaignBehaviorBase
 	private bool _automaticKingdomRebellionFlowActive;
 
 	private bool _automaticKingdomRebellionInProgress;
+
+	private PendingAutomaticKingdomRebellionContext _blockedAutomaticKingdomRebellionContext;
+
+	private PendingDevForcedKingdomRebellionContext _blockedDevForcedKingdomRebellionContext;
+
+	private bool _kingdomRebellionReopenAfterApiConfig;
+
+	private long _kingdomRebellionReopenAfterApiConfigUtcTicks;
 
 	private bool _pendingAutomaticKingdomRebellionReady;
 
@@ -1689,6 +1705,7 @@ public class MyBehavior : CampaignBehaviorBase
 		CampaignEvents.OnSettlementOwnerChangedEvent.AddNonSerializedListener(this, OnSettlementOwnerChanged);
 		CampaignEvents.HeroKilledEvent.AddNonSerializedListener(this, OnHeroKilled);
 		CampaignEvents.OnGivenBirthEvent.AddNonSerializedListener(this, OnGivenBirth);
+		CampaignEvents.HeroComesOfAgeEvent.AddNonSerializedListener(this, OnHeroComesOfAge);
 		CampaignEvents.OnClanLeaderChangedEvent.AddNonSerializedListener(this, OnClanLeaderChanged);
 		CampaignEvents.OnSiegeAftermathAppliedEvent.AddNonSerializedListener(this, OnSiegeAftermathApplied);
 		CampaignEvents.VillageBeingRaided.AddNonSerializedListener(this, OnVillageBeingRaided);
@@ -1696,6 +1713,48 @@ public class MyBehavior : CampaignBehaviorBase
 		CampaignEvents.KingdomDestroyedEvent.AddNonSerializedListener(this, OnKingdomDestroyed);
 		CampaignEvents.OnClanDestroyedEvent.AddNonSerializedListener(this, OnClanDestroyed);
 		CampaignEvents.TournamentFinished.AddNonSerializedListener(this, OnTournamentFinished);
+	}
+
+	private void OnHeroComesOfAge(Hero hero)
+	{
+		try
+		{
+			if (!ShouldAutoGeneratePersonaForAdultHero(hero))
+			{
+				return;
+			}
+			Logger.Log("NpcPersona", "Adult hero persona auto-generation queued hero=" + (hero.StringId ?? "") + " name=" + (hero.Name?.ToString() ?? ""));
+			_ = EnsureNpcPersonaGeneratedAsync(hero);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("NpcPersona", "[WARN] Adult hero persona auto-generation queue failed: " + ex.Message);
+		}
+	}
+
+	private bool ShouldAutoGeneratePersonaForAdultHero(Hero hero)
+	{
+		if (hero == null || hero == Hero.MainHero || string.IsNullOrWhiteSpace(hero.StringId))
+		{
+			return false;
+		}
+		DuelSettings settings = DuelSettings.GetSettings();
+		if (settings != null && !settings.EnableAdultHeroPersonaAutoGeneration)
+		{
+			return false;
+		}
+		try
+		{
+			if (!hero.IsAlive || hero.IsChild)
+			{
+				return false;
+			}
+		}
+		catch
+		{
+			return false;
+		}
+		return NeedsNpcPersonaGeneration(hero) && !IsNpcPersonaGenerationInFlight(hero);
 	}
 
 	private void OnMapEventEnded(MapEvent mapEvent)
@@ -4982,52 +5041,6 @@ public class MyBehavior : CampaignBehaviorBase
 		return GetClanDisplayName(clan) + "家族当前掌握的核心封地包括：" + text + "。";
 	}
 
-	private static string BuildRebelKingdomFallbackFormalName(Clan clan)
-	{
-		Settlement settlement = clan?.Settlements?.FirstOrDefault((Settlement x) => x != null && x.IsTown) ?? clan?.Settlements?.FirstOrDefault((Settlement x) => x != null && x.IsCastle);
-		string text = (settlement?.Name?.ToString() ?? "").Trim();
-		if (!string.IsNullOrWhiteSpace(text))
-		{
-			return text + "自由邦";
-		}
-		string clanDisplayName = GetClanDisplayName(clan);
-		if (!string.IsNullOrWhiteSpace(clanDisplayName) && clanDisplayName != "某个")
-		{
-			return clanDisplayName + "新邦";
-		}
-		return "新兴自由邦";
-	}
-
-	private static string BuildRebelKingdomFallbackShortName(string formalName, Clan clan)
-	{
-		string text = (formalName ?? "").Trim();
-		if (!string.IsNullOrWhiteSpace(text) && text.Length <= 10)
-		{
-			return text;
-		}
-		Settlement settlement = clan?.Settlements?.FirstOrDefault((Settlement x) => x != null && x.IsTown) ?? clan?.Settlements?.FirstOrDefault((Settlement x) => x != null && x.IsCastle);
-		string text2 = (settlement?.Name?.ToString() ?? "").Trim();
-		if (!string.IsNullOrWhiteSpace(text2))
-		{
-			return text2;
-		}
-		string clanDisplayName = GetClanDisplayName(clan);
-		if (!string.IsNullOrWhiteSpace(clanDisplayName) && clanDisplayName != "某个")
-		{
-			return clanDisplayName;
-		}
-		return "新邦";
-	}
-
-	private static string BuildRebelKingdomFallbackLoreText(Clan clan, Kingdom oldKingdom, string formalName, int weekIndex)
-	{
-		string clanDisplayName = GetClanDisplayName(clan);
-		string heroDisplayName = GetHeroDisplayName(clan?.Leader);
-		string kingdomDisplayName = GetKingdomDisplayName(oldKingdom, "原王国");
-		string text = string.IsNullOrWhiteSpace(formalName) ? "这一新生政权" : formalName.Trim();
-		return text + "建立于第" + Math.Max(0, weekIndex) + "周，由" + heroDisplayName + "统领的" + clanDisplayName + "家族在脱离" + kingdomDisplayName + "后组建，宣称要以自身控制的封地为核心重整地方秩序。";
-	}
-
 	private static string NormalizeRebelPromptSourceText(string text, int maxLength = 1200)
 	{
 		string text2 = (text ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
@@ -5544,11 +5557,10 @@ public class MyBehavior : CampaignBehaviorBase
 		return stringBuilder.ToString().TrimEnd();
 	}
 
-	private void BuildRebelKingdomNamingRequest(Clan clan, Kingdom oldKingdom, int weekIndex, IEnumerable<Clan> followerClans, out string systemPrompt, out string userPrompt, out RebelKingdomNamingResult fallbackResult)
+	private void BuildRebelKingdomNamingRequest(Clan clan, Kingdom oldKingdom, int weekIndex, IEnumerable<Clan> followerClans, out string systemPrompt, out string userPrompt)
 	{
 		systemPrompt = BuildRebelKingdomNamingSystemPrompt();
 		userPrompt = BuildRebelKingdomNamingUserPrompt(clan, oldKingdom, weekIndex, followerClans);
-		fallbackResult = BuildFallbackStaticRebelKingdomNamingResult(clan, oldKingdom, weekIndex, "");
 	}
 
 	private static bool TryParseRebelKingdomNamingResponse(string rawResponse, out string formalName, out string shortName, out string encyclopediaText)
@@ -5579,38 +5591,25 @@ public class MyBehavior : CampaignBehaviorBase
 		return !string.IsNullOrWhiteSpace(formalName) && !string.IsNullOrWhiteSpace(shortName) && !string.IsNullOrWhiteSpace(encyclopediaText);
 	}
 
-	private static RebelKingdomNamingResult BuildFallbackStaticRebelKingdomNamingResult(Clan clan, Kingdom oldKingdom, int weekIndex, string failureReason)
+	private const int RebelKingdomNamingTimeoutMs = 60000;
+
+	private const int RebelKingdomNamingMaxAttempts = 3;
+
+	private static RebelKingdomNamingResult BuildFailedRebelKingdomNamingResult(string failureReason, int attemptsUsed = 0)
 	{
-		string text = BuildRebelKingdomFallbackFormalName(clan);
-		if (IsDuplicateKingdomName(text))
-		{
-			text = text + "（新）";
-		}
-		string text2 = BuildRebelKingdomFallbackShortName(text, clan);
-		string text3 = BuildRebelKingdomFallbackLoreText(clan, oldKingdom, text, weekIndex);
 		return new RebelKingdomNamingResult
 		{
-			FormalName = text,
-			ShortName = text2,
-			EncyclopediaText = text3,
-			UsedFallback = true,
+			Success = false,
 			FailureReason = (failureReason ?? "").Trim(),
-			AttemptsUsed = 0
+			AttemptsUsed = Math.Max(0, attemptsUsed)
 		};
 	}
 
-	private const int RebelKingdomNamingTimeoutMs = 60000;
-
-	private RebelKingdomNamingResult GenerateRebelKingdomNamingFromPrompts(string systemPrompt, string userPrompt, RebelKingdomNamingResult fallbackResult, string logTarget, int maxAttempts = 1)
+	private RebelKingdomNamingResult GenerateRebelKingdomNamingFromPrompts(string systemPrompt, string userPrompt, string logTarget, int maxAttempts = RebelKingdomNamingMaxAttempts)
 	{
-		RebelKingdomNamingResult rebelKingdomNamingResult = fallbackResult ?? new RebelKingdomNamingResult
-		{
-			FormalName = "新兴自由邦",
-			ShortName = "新邦",
-			EncyclopediaText = "这一新生政权在地方割据与内乱中形成。",
-			UsedFallback = true
-		};
-		for (int i = 1; i <= Math.Max(1, maxAttempts); i++)
+		int numAttempts = Math.Max(1, maxAttempts);
+		RebelKingdomNamingResult rebelKingdomNamingResult = BuildFailedRebelKingdomNamingResult("", 0);
+		for (int i = 1; i <= numAttempts; i++)
 		{
 			ApiCallResult apiCallResult = null;
 			try
@@ -5636,8 +5635,13 @@ public class MyBehavior : CampaignBehaviorBase
 					ErrorMessage = ex.Message
 				};
 			}
+			rebelKingdomNamingResult.AttemptsUsed = i;
+			rebelKingdomNamingResult.IsRateLimit = apiCallResult?.IsRateLimit ?? false;
+			rebelKingdomNamingResult.IsRequestsPerMinuteLimit = apiCallResult?.IsRequestsPerMinuteLimit ?? false;
+			rebelKingdomNamingResult.IsQuotaLimit = apiCallResult?.IsQuotaLimit ?? false;
+			rebelKingdomNamingResult.RetryAfterSeconds = apiCallResult?.RetryAfterSeconds;
 			string text = apiCallResult?.Success == true ? (apiCallResult.Content ?? "") : ("错误: " + (apiCallResult?.ErrorMessage ?? "未知错误"));
-			Logger.LogEventPromptExchange((logTarget ?? "叛乱建国命名") + " [尝试 " + i + "/" + maxAttempts + "]", "【System Prompt】\n" + (systemPrompt ?? "") + "\n\n【User Prompt】\n" + (userPrompt ?? ""), text);
+			Logger.LogEventPromptExchange((logTarget ?? "叛乱建国命名") + " [尝试 " + i + "/" + numAttempts + "]", "【System Prompt】\n" + (systemPrompt ?? "") + "\n\n【User Prompt】\n" + (userPrompt ?? ""), text);
 			if (apiCallResult?.Success == true && TryParseRebelKingdomNamingResponse(apiCallResult.Content, out var formalName, out var shortName, out var encyclopediaText))
 			{
 				formalName = NormalizeRebelKingdomNameToken(formalName, 24);
@@ -5650,23 +5654,19 @@ public class MyBehavior : CampaignBehaviorBase
 						FormalName = formalName,
 						ShortName = shortName,
 						EncyclopediaText = encyclopediaText,
-						UsedFallback = false,
+						Success = true,
 						AttemptsUsed = i
 					};
 				}
-				rebelKingdomNamingResult = fallbackResult ?? rebelKingdomNamingResult;
-				rebelKingdomNamingResult.UsedFallback = true;
-				rebelKingdomNamingResult.FailureReason = "模型返回的国名无效或与现有王国重名。";
+				rebelKingdomNamingResult.FailureReason = "模型返回的国名为空、无效或与现有王国重名。";
 			}
 			else
 			{
-				rebelKingdomNamingResult = fallbackResult ?? rebelKingdomNamingResult;
-				rebelKingdomNamingResult.UsedFallback = true;
 				rebelKingdomNamingResult.FailureReason = (apiCallResult?.Success == true) ? "模型返回无法按 [NAME]/[SHORT]/[LORE] 解析。" : (apiCallResult?.ErrorMessage ?? "命名请求失败。");
 			}
-			rebelKingdomNamingResult.AttemptsUsed = i;
-			if (i < maxAttempts)
+			if (i < numAttempts)
 			{
+				Logger.Log("KingdomRebellion", "[WARN] Rebel kingdom naming attempt failed; retrying. target=" + (logTarget ?? "") + " attempt=" + i + "/" + numAttempts + " reason=" + (rebelKingdomNamingResult.FailureReason ?? ""));
 				int num = 1200;
 				if (apiCallResult?.IsRateLimit == true)
 				{
@@ -5682,19 +5682,14 @@ public class MyBehavior : CampaignBehaviorBase
 		return rebelKingdomNamingResult;
 	}
 
-	private RebelKingdomNamingResult BuildFallbackRebelKingdomNamingResult(Clan clan, Kingdom oldKingdom, int weekIndex, string failureReason = "")
-	{
-		return BuildFallbackStaticRebelKingdomNamingResult(clan, oldKingdom, weekIndex, failureReason);
-	}
-
-	private RebelKingdomNamingResult GenerateRebelKingdomNaming(Clan clan, Kingdom oldKingdom, int weekIndex, IEnumerable<Clan> followerClans = null, int maxAttempts = 1)
+	private RebelKingdomNamingResult GenerateRebelKingdomNaming(Clan clan, Kingdom oldKingdom, int weekIndex, IEnumerable<Clan> followerClans = null, int maxAttempts = RebelKingdomNamingMaxAttempts)
 	{
 		if (clan == null)
 		{
-			return BuildFallbackRebelKingdomNamingResult(clan, oldKingdom, weekIndex, "主导家族为空，无法请求命名。");
+			return BuildFailedRebelKingdomNamingResult("主导家族为空，无法请求命名。");
 		}
-		BuildRebelKingdomNamingRequest(clan, oldKingdom, weekIndex, followerClans, out var systemPrompt, out var userPrompt, out var fallbackResult);
-		return GenerateRebelKingdomNamingFromPrompts(systemPrompt, userPrompt, fallbackResult, "叛乱建国命名 - " + GetClanId(clan), maxAttempts);
+		BuildRebelKingdomNamingRequest(clan, oldKingdom, weekIndex, followerClans, out var systemPrompt, out var userPrompt);
+		return GenerateRebelKingdomNamingFromPrompts(systemPrompt, userPrompt, "叛乱建国命名 - " + GetClanId(clan), maxAttempts);
 	}
 
 	private bool TryValidateClanForKingdomRebellion(Clan clan, Kingdom kingdom, bool forceTrigger, out string note, out int relationToKing, out int townCount, out int castleCount)
@@ -6058,25 +6053,84 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private static bool IsRebelKingdomNamingSuccess(RebelKingdomNamingResult namingResult)
+	{
+		return namingResult != null && namingResult.Success && !string.IsNullOrWhiteSpace(namingResult.FormalName) && !string.IsNullOrWhiteSpace(namingResult.ShortName) && !string.IsNullOrWhiteSpace(namingResult.EncyclopediaText);
+	}
+
+	private static string BuildRebelKingdomNamingFailureExecutionMessage(RebelKingdomNamingResult namingResult)
+	{
+		int attempts = Math.Max(0, namingResult?.AttemptsUsed ?? 0);
+		string text = attempts > 0 ? ("叛乱建国命名已连续自动重试 " + attempts + "/" + RebelKingdomNamingMaxAttempts + " 次仍失败，已中止本次建国。") : "叛乱建国命名未能完成，已中止本次建国。";
+		string failureReason = (namingResult?.FailureReason ?? "").Trim();
+		if (!string.IsNullOrWhiteSpace(failureReason))
+		{
+			text += " 最后一次失败原因：" + failureReason;
+		}
+		return text + " 请重新填写事件/叛乱API信息后再试。";
+	}
+
+	private static void AppendRebelKingdomNamingResultLines(StringBuilder stringBuilder, RebelKingdomNamingResult namingResult)
+	{
+		if (stringBuilder == null)
+		{
+			return;
+		}
+		stringBuilder.AppendLine("命名结果：");
+		if (IsRebelKingdomNamingSuccess(namingResult))
+		{
+			stringBuilder.AppendLine("- 正式名：" + ((namingResult.FormalName ?? "").Trim()));
+			stringBuilder.AppendLine("- 简称：" + ((namingResult.ShortName ?? "").Trim()));
+			stringBuilder.AppendLine("- 来源：LLM");
+			if (!string.IsNullOrWhiteSpace(namingResult.EncyclopediaText))
+			{
+				stringBuilder.AppendLine("- 百科简介：" + namingResult.EncyclopediaText.Trim());
+			}
+			return;
+		}
+		stringBuilder.AppendLine("- 状态：失败");
+		stringBuilder.AppendLine("- 自动重试次数：" + Math.Max(namingResult?.AttemptsUsed ?? 0, 0) + "/" + RebelKingdomNamingMaxAttempts);
+		if (namingResult?.IsRequestsPerMinuteLimit == true)
+		{
+			stringBuilder.AppendLine("- 限流判断：疑似 RPM 超限");
+		}
+		else if (namingResult?.IsQuotaLimit == true)
+		{
+			stringBuilder.AppendLine("- 限流判断：疑似额度/余额不足");
+		}
+		else if (namingResult?.IsRateLimit == true)
+		{
+			stringBuilder.AppendLine("- 限流判断：接口限流");
+		}
+		if (namingResult?.RetryAfterSeconds != null)
+		{
+			stringBuilder.AppendLine("- 接口建议等待：" + namingResult.RetryAfterSeconds.Value + " 秒");
+		}
+		if (!string.IsNullOrWhiteSpace(namingResult?.FailureReason))
+		{
+			stringBuilder.AppendLine("- 最后一次失败原因：" + namingResult.FailureReason.Trim());
+		}
+	}
+
 	private bool TryExecuteKingdomRebellionWithNaming(Clan clan, Kingdom kingdom, int weekIndex, bool forceTrigger, int relationToKing, int townCount, int castleCount, RebelKingdomNamingResult rebelKingdomNamingResult, List<Clan> followerClans, out string message)
 	{
 		message = "";
 		string kingdomDisplayName = GetKingdomDisplayName(kingdom, "该王国");
 		string clanDisplayName = GetClanDisplayName(clan);
+		if (!IsRebelKingdomNamingSuccess(rebelKingdomNamingResult))
+		{
+			message = BuildRebelKingdomNamingFailureExecutionMessage(rebelKingdomNamingResult);
+			Logger.Log("KingdomRebellion", "[ERROR] Rebel kingdom creation blocked because naming failed. clan=" + GetClanId(clan) + " attempts=" + (rebelKingdomNamingResult?.AttemptsUsed ?? 0) + " reason=" + (rebelKingdomNamingResult?.FailureReason ?? ""));
+			return false;
+		}
 		string text = NormalizeRebelKingdomNameToken(rebelKingdomNamingResult?.FormalName ?? "", 24);
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			text = BuildRebelKingdomFallbackFormalName(clan);
-		}
 		string text2 = NormalizeRebelKingdomNameToken(rebelKingdomNamingResult?.ShortName ?? "", 14);
-		if (string.IsNullOrWhiteSpace(text2))
-		{
-			text2 = BuildRebelKingdomFallbackShortName(text, clan);
-		}
 		string text3 = NormalizeRebelKingdomLoreText(rebelKingdomNamingResult?.EncyclopediaText ?? "");
-		if (string.IsNullOrWhiteSpace(text3))
+		if (string.IsNullOrWhiteSpace(text) || string.IsNullOrWhiteSpace(text2) || string.IsNullOrWhiteSpace(text3) || IsDuplicateKingdomName(text))
 		{
-			text3 = BuildRebelKingdomFallbackLoreText(clan, kingdom, text, weekIndex);
+			message = "叛乱建国命名结果无效或与现有王国重名，已中止建国。请重新填写事件/叛乱API信息后再试。";
+			Logger.Log("KingdomRebellion", "[ERROR] Rebel kingdom creation blocked by invalid naming result. clan=" + GetClanId(clan) + " formal=" + text + " short=" + text2);
+			return false;
 		}
 		ClanVisualSnapshot clanVisualSnapshot = CaptureClanVisualSnapshot(clan);
 		ChangeKingdomAction.ApplyByLeaveWithRebellionAgainstKingdom(clan, showNotification: true);
@@ -6134,11 +6188,7 @@ public class MyBehavior : CampaignBehaviorBase
 			message = message + " 联合响应家族：" + string.Join("、", list) + "。";
 		}
 		TryDiscontinueLandlessKingdom(kingdom, "rebellion_old_kingdom:" + GetClanId(clan), requireKnownModRebelKingdom: false, allowPlayerKingdom: true);
-		if (rebelKingdomNamingResult?.UsedFallback == true)
-		{
-			Logger.Log("KingdomRebellion", "[WARN] Rebel kingdom naming used fallback. clan=" + GetClanId(clan) + " reason=" + (rebelKingdomNamingResult.FailureReason ?? ""));
-		}
-		Logger.Log("KingdomRebellion", "[EXECUTE] week=" + weekIndex + " kingdom=" + GetKingdomId(kingdom) + " clan=" + GetClanId(clan) + " forced=" + forceTrigger + " relation=" + relationToKing + " towns=" + townCount + " castles=" + castleCount + " newKingdomName=" + text + " fallback=" + ((rebelKingdomNamingResult?.UsedFallback ?? false) ? "1" : "0") + " followerCount=" + list.Count + " followers=" + string.Join("|", list) + " bgColor=0x" + rebelFactionColorChoice.BackgroundColor.ToString("X8") + " iconColor=0x" + rebelFactionColorChoice.IconColor.ToString("X8"));
+		Logger.Log("KingdomRebellion", "[EXECUTE] week=" + weekIndex + " kingdom=" + GetKingdomId(kingdom) + " clan=" + GetClanId(clan) + " forced=" + forceTrigger + " relation=" + relationToKing + " towns=" + townCount + " castles=" + castleCount + " newKingdomName=" + text + " namingAttempts=" + (rebelKingdomNamingResult?.AttemptsUsed ?? 0) + " followerCount=" + list.Count + " followers=" + string.Join("|", list) + " bgColor=0x" + rebelFactionColorChoice.BackgroundColor.ToString("X8") + " iconColor=0x" + rebelFactionColorChoice.IconColor.ToString("X8"));
 		return true;
 	}
 
@@ -6433,14 +6483,14 @@ public class MyBehavior : CampaignBehaviorBase
 			ShowAutomaticKingdomRebellionCompletionPopup(pendingAutomaticKingdomRebellionContext, kingdom, clan, list, success: false, "本周自动叛乱已命中，但目标王国或家族状态已变化，无法继续执行。");
 			return;
 		}
-		BuildRebelKingdomNamingRequest(clan, kingdom, pendingAutomaticKingdomRebellionContext.WeekIndex, list, out var systemPrompt, out var userPrompt, out var fallbackResult);
+		BuildRebelKingdomNamingRequest(clan, kingdom, pendingAutomaticKingdomRebellionContext.WeekIndex, list, out var systemPrompt, out var userPrompt);
 		_automaticKingdomRebellionInProgress = true;
 		_pendingAutomaticKingdomRebellionReady = false;
 		_pendingAutomaticKingdomRebellionContext = null;
 		InformationManager.ShowInquiry(new InquiryData("正在生成叛乱建国命名", "系统正在为本周自动叛乱生成新王国的名称与百科简介。\n\n这一步完成前不会继续本轮自动叛乱与周报流程。\n请稍候，结果完成后会自动弹出。", isAffirmativeOptionShown: false, isNegativeOptionShown: false, "", "", null, null), pauseGameActiveState: true);
 		Task.Run(delegate
 		{
-			RebelKingdomNamingResult namingResult = GenerateRebelKingdomNamingFromPrompts(systemPrompt, userPrompt, fallbackResult, "自动叛乱建国命名 - " + GetClanId(clan), 1);
+			RebelKingdomNamingResult namingResult = GenerateRebelKingdomNamingFromPrompts(systemPrompt, userPrompt, "自动叛乱建国命名 - " + GetClanId(clan), RebelKingdomNamingMaxAttempts);
 			pendingAutomaticKingdomRebellionContext.NamingResult = namingResult;
 			_pendingAutomaticKingdomRebellionContext = pendingAutomaticKingdomRebellionContext;
 			_pendingAutomaticKingdomRebellionReady = true;
@@ -6479,6 +6529,11 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		else
 		{
+			if (!IsRebelKingdomNamingSuccess(pendingAutomaticKingdomRebellionContext.NamingResult))
+			{
+				ShowAutomaticKingdomRebellionNamingFailurePopup(pendingAutomaticKingdomRebellionContext, kingdom, clan, list, afterApiRepair: false);
+				return;
+			}
 			success = TryExecuteKingdomRebellionWithNaming(clan, kingdom, pendingAutomaticKingdomRebellionContext.WeekIndex, forceTrigger: false, pendingAutomaticKingdomRebellionContext.RelationToKing, pendingAutomaticKingdomRebellionContext.TownCount, pendingAutomaticKingdomRebellionContext.CastleCount, pendingAutomaticKingdomRebellionContext.NamingResult, list, out executionMessage);
 		}
 		ShowAutomaticKingdomRebellionCompletionPopup(pendingAutomaticKingdomRebellionContext, kingdom, clan, list, success, executionMessage);
@@ -6502,18 +6557,7 @@ public class MyBehavior : CampaignBehaviorBase
 		if (context?.NamingResult != null)
 		{
 			stringBuilder.AppendLine();
-			stringBuilder.AppendLine("命名结果：");
-			stringBuilder.AppendLine("- 正式名：" + ((context.NamingResult.FormalName ?? "").Trim()));
-			stringBuilder.AppendLine("- 简称：" + ((context.NamingResult.ShortName ?? "").Trim()));
-			stringBuilder.AppendLine("- 来源：" + (context.NamingResult.UsedFallback ? "本地兜底" : "LLM"));
-			if (!string.IsNullOrWhiteSpace(context.NamingResult.EncyclopediaText))
-			{
-				stringBuilder.AppendLine("- 百科简介：" + context.NamingResult.EncyclopediaText.Trim());
-			}
-			if (!string.IsNullOrWhiteSpace(context.NamingResult.FailureReason))
-			{
-				stringBuilder.AppendLine("- 命名说明：" + context.NamingResult.FailureReason.Trim());
-			}
+			AppendRebelKingdomNamingResultLines(stringBuilder, context.NamingResult);
 		}
 		if (followerClans != null && followerClans.Count > 0)
 		{
@@ -6534,6 +6578,92 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			ContinueAutomaticKingdomRebellionFlow();
 		}, null), pauseGameActiveState: true);
+	}
+
+	private void ShowAutomaticKingdomRebellionNamingFailurePopup(PendingAutomaticKingdomRebellionContext context, Kingdom kingdom, Clan clan, List<Clan> followerClans, bool afterApiRepair)
+	{
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.AppendLine("本周自动叛乱已命中，但叛乱建国命名没有成功。系统不会使用本地国名继续建国。");
+		stringBuilder.AppendLine();
+		if (kingdom != null)
+		{
+			stringBuilder.AppendLine("王国：" + GetKingdomDisplayName(kingdom, "某王国"));
+		}
+		if (clan != null)
+		{
+			stringBuilder.AppendLine("主导家族：" + GetClanDisplayName(clan));
+		}
+		if (followerClans != null && followerClans.Count > 0)
+		{
+			stringBuilder.AppendLine("联合响应家族：" + string.Join("、", followerClans.Select(GetClanDisplayName)));
+		}
+		stringBuilder.AppendLine();
+		AppendRebelKingdomNamingResultLines(stringBuilder, context?.NamingResult);
+		stringBuilder.AppendLine();
+		stringBuilder.AppendLine(afterApiRepair ? "API 配置流程已返回。请重新生成叛乱建国命名，或跳过本次自动叛乱。" : "请先重新填写事件/叛乱API信息。修正后可回到这里重新生成命名。");
+		InformationManager.HideInquiry();
+		InformationManager.ShowInquiry(new InquiryData(afterApiRepair ? "重试叛乱建国命名" : "叛乱建国命名失败", stringBuilder.ToString().TrimEnd(), isAffirmativeOptionShown: true, isNegativeOptionShown: true, afterApiRepair ? "重新生成命名" : "调整API信息", "跳过本次", delegate
+		{
+			if (afterApiRepair)
+			{
+				RetryAutomaticKingdomRebellionNamingAsync(context);
+			}
+			else
+			{
+				_blockedAutomaticKingdomRebellionContext = context;
+				_blockedDevForcedKingdomRebellionContext = null;
+				OpenKingdomRebellionApiRepairFlow();
+			}
+		}, delegate
+		{
+			if (ReferenceEquals(_blockedAutomaticKingdomRebellionContext, context))
+			{
+				_blockedAutomaticKingdomRebellionContext = null;
+			}
+			_kingdomRebellionReopenAfterApiConfig = false;
+			ContinueAutomaticKingdomRebellionFlow();
+		}), pauseGameActiveState: true);
+	}
+
+	private void RetryAutomaticKingdomRebellionNamingAsync(PendingAutomaticKingdomRebellionContext context)
+	{
+		_blockedAutomaticKingdomRebellionContext = null;
+		_kingdomRebellionReopenAfterApiConfig = false;
+		if (context == null)
+		{
+			ContinueAutomaticKingdomRebellionFlow();
+			return;
+		}
+		if (!DuelSettings.IsKingdomStabilityAndRebellionEnabled())
+		{
+			CancelPendingAutomaticKingdomRebellions("disabled_before_rebellion_naming_retry");
+			TryStartDeferredAutoWeeklyReports();
+			return;
+		}
+		if (_automaticKingdomRebellionInProgress || _pendingAutomaticKingdomRebellionReady)
+		{
+			return;
+		}
+		Kingdom kingdom = FindKingdomById(context.KingdomId);
+		Clan clan = FindClanById(context.ClanId);
+		List<Clan> list = (context.FollowerClanIds ?? new List<string>()).Select(FindClanById).Where((Clan x) => x != null && x != clan).ToList();
+		if (kingdom == null || clan == null)
+		{
+			ShowAutomaticKingdomRebellionCompletionPopup(context, kingdom, clan, list, success: false, "叛乱命名重试前目标王国或家族状态已变化，无法继续执行。");
+			return;
+		}
+		BuildRebelKingdomNamingRequest(clan, kingdom, context.WeekIndex, list, out var systemPrompt, out var userPrompt);
+		_automaticKingdomRebellionInProgress = true;
+		_pendingAutomaticKingdomRebellionReady = false;
+		_pendingAutomaticKingdomRebellionContext = null;
+		InformationManager.ShowInquiry(new InquiryData("正在重新生成叛乱建国命名", "系统正在按修正后的事件/叛乱API配置重新请求新王国名称与百科简介。\n\n这一步完成前不会继续本轮自动叛乱与周报流程。", isAffirmativeOptionShown: false, isNegativeOptionShown: false, "", "", null, null), pauseGameActiveState: true);
+		Task.Run(delegate
+		{
+			RebelKingdomNamingResult namingResult = GenerateRebelKingdomNamingFromPrompts(systemPrompt, userPrompt, "自动叛乱建国命名重试 - " + GetClanId(clan), RebelKingdomNamingMaxAttempts);
+			context.NamingResult = namingResult;
+			_pendingAutomaticKingdomRebellionContext = context;
+			_pendingAutomaticKingdomRebellionReady = true;
+		});
 	}
 
 	private void ContinueAutomaticKingdomRebellionFlow()
@@ -9564,6 +9694,252 @@ public class MyBehavior : CampaignBehaviorBase
 		return s.Substring(0, maxChars).Trim();
 	}
 
+	private static string NormalizePersonaPromptSourceText(string text, int maxLength = 1200)
+	{
+		string text2 = (text ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
+		while (text2.Contains("  "))
+		{
+			text2 = text2.Replace("  ", " ");
+		}
+		if (string.IsNullOrWhiteSpace(text2))
+		{
+			return "";
+		}
+		if (maxLength > 0 && text2.Length > maxLength)
+		{
+			text2 = text2.Substring(0, maxLength).TrimEnd();
+		}
+		return text2.Trim();
+	}
+
+	private static string GetHeroEncyclopediaBackgroundForPersonaPrompt(Hero hero, int maxLength = 1000)
+	{
+		if (hero == null)
+		{
+			return "";
+		}
+		string text = "";
+		try
+		{
+			if (!TextObject.IsNullOrEmpty(hero.EncyclopediaText))
+			{
+				text = hero.EncyclopediaText.ToString();
+			}
+		}
+		catch
+		{
+			text = "";
+		}
+		text = NormalizePersonaPromptSourceText(text, maxLength);
+		if (!string.IsNullOrWhiteSpace(text))
+		{
+			return text;
+		}
+		try
+		{
+			text = NormalizePersonaPromptSourceText(Hero.SetHeroEncyclopediaTextAndLinks(hero)?.ToString() ?? "", maxLength);
+			if (!string.Equals(text, "Placeholder text", StringComparison.OrdinalIgnoreCase))
+			{
+				return text;
+			}
+		}
+		catch
+		{
+		}
+		return "";
+	}
+
+	private static string GetClanEncyclopediaBackgroundForPersonaPrompt(Clan clan, int maxLength = 1000)
+	{
+		if (clan == null)
+		{
+			return "";
+		}
+		try
+		{
+			return NormalizePersonaPromptSourceText(clan.EncyclopediaText?.ToString() ?? "", maxLength);
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	private static Kingdom ResolveKingdomForPersonaPrompt(Hero hero)
+	{
+		if (hero == null)
+		{
+			return null;
+		}
+		try
+		{
+			if (hero.Clan?.Kingdom != null)
+			{
+				return hero.Clan.Kingdom;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			return hero.MapFaction as Kingdom;
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static string GetKingdomEncyclopediaBackgroundForPersonaPrompt(Kingdom kingdom, int maxLength = 1200)
+	{
+		if (kingdom == null)
+		{
+			return "";
+		}
+		try
+		{
+			return NormalizePersonaPromptSourceText(kingdom.EncyclopediaText?.ToString() ?? "", maxLength);
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	private static string BuildHeroBasicBackgroundForPersonaPrompt(Hero hero)
+	{
+		if (hero == null)
+		{
+			return "";
+		}
+		List<string> list = new List<string>();
+		string heroDisplayName = GetHeroDisplayName(hero);
+		if (!string.IsNullOrWhiteSpace(heroDisplayName))
+		{
+			list.Add("姓名=" + heroDisplayName);
+		}
+		try
+		{
+			list.Add("身份=" + BuildHeroIdentityTitleForPrompt(hero));
+		}
+		catch
+		{
+		}
+		try
+		{
+			string heroCultureNameForPrompt = GetHeroCultureNameForPrompt(hero);
+			if (!string.IsNullOrWhiteSpace(heroCultureNameForPrompt))
+			{
+				list.Add("文化=" + heroCultureNameForPrompt);
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (hero.Clan != null)
+			{
+				list.Add("家族=" + GetClanDisplayName(hero.Clan));
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (hero.Clan?.Kingdom != null)
+			{
+				list.Add("势力=" + GetKingdomDisplayName(hero.Clan.Kingdom, "某个势力"));
+			}
+		}
+		catch
+		{
+		}
+		return string.Join("；", list);
+	}
+
+	private static string BuildClanOverviewForPersonaPrompt(Clan clan)
+	{
+		if (clan == null)
+		{
+			return "无家族";
+		}
+		List<string> list = new List<string>();
+		list.Add("家族名=" + GetClanDisplayName(clan));
+		try
+		{
+			list.Add("家族等级=" + Math.Max(0, clan.Tier));
+		}
+		catch
+		{
+		}
+		try
+		{
+			Hero leader = clan.Leader;
+			if (leader != null)
+			{
+				list.Add("族长=" + GetHeroDisplayName(leader));
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (clan.Kingdom != null)
+			{
+				string text = GetKingdomDisplayName(clan.Kingdom, "某个势力");
+				if (clan.IsUnderMercenaryService)
+				{
+					text += "（佣兵服务）";
+				}
+				list.Add("所属势力=" + text);
+			}
+			else
+			{
+				list.Add("所属势力=无（独立）");
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			Settlement settlement = clan.HomeSettlement ?? clan.InitialHomeSettlement;
+			if (settlement != null)
+			{
+				list.Add("家族根据地=" + GetSettlementDisplayName(settlement));
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			List<string> list2 = clan.Settlements?.Where((Settlement x) => x != null && (x.IsTown || x.IsCastle)).Select(GetSettlementDisplayName).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).Take(6).ToList() ?? new List<string>();
+			if (list2.Count > 0)
+			{
+				list.Add("主要封地=" + string.Join("、", list2));
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (clan.IsEliminated)
+			{
+				list.Add("状态=已灭亡或不可用");
+			}
+		}
+		catch
+		{
+		}
+		return string.Join("；", list);
+	}
+
 	private string BuildHeroFactsForPersonaGeneration(Hero hero)
 	{
 		if (hero == null)
@@ -9724,6 +10100,70 @@ public class MyBehavior : CampaignBehaviorBase
 			if (list2.Count > 0)
 			{
 				stringBuilder.AppendLine("家族成员: " + string.Join(" | ", list2));
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			string heroEncyclopediaBackground = GetHeroEncyclopediaBackgroundForPersonaPrompt(hero, 1200);
+			stringBuilder.AppendLine("人物百科背景: " + (string.IsNullOrWhiteSpace(heroEncyclopediaBackground) ? "无可用人物百科背景" : heroEncyclopediaBackground));
+		}
+		catch
+		{
+		}
+		try
+		{
+			string clanOverviewBackground = BuildClanOverviewForPersonaPrompt(hero.Clan);
+			if (!string.IsNullOrWhiteSpace(clanOverviewBackground))
+			{
+				stringBuilder.AppendLine("家族背景: " + clanOverviewBackground);
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			string clanEncyclopediaBackground = GetClanEncyclopediaBackgroundForPersonaPrompt(hero.Clan, 1200);
+			stringBuilder.AppendLine("所在家族百科背景: " + (string.IsNullOrWhiteSpace(clanEncyclopediaBackground) ? "无可用家族百科背景" : clanEncyclopediaBackground));
+		}
+		catch
+		{
+		}
+		try
+		{
+			Kingdom personaKingdom = ResolveKingdomForPersonaPrompt(hero);
+			string kingdomEncyclopediaBackground = GetKingdomEncyclopediaBackgroundForPersonaPrompt(personaKingdom, 1400);
+			if (personaKingdom != null)
+			{
+				string kingdomName = GetKingdomDisplayName(personaKingdom, "某个王国");
+				stringBuilder.AppendLine("王国百科背景: " + kingdomName + "：" + (string.IsNullOrWhiteSpace(kingdomEncyclopediaBackground) ? "无可用王国百科背景" : kingdomEncyclopediaBackground));
+			}
+			else
+			{
+				stringBuilder.AppendLine("王国百科背景: 无可用王国百科背景");
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			Hero clanLeader = hero.Clan?.Leader;
+			if (clanLeader != null)
+			{
+				string leaderBackground = GetHeroEncyclopediaBackgroundForPersonaPrompt(clanLeader, 1200);
+				if (string.IsNullOrWhiteSpace(leaderBackground))
+				{
+					leaderBackground = BuildHeroBasicBackgroundForPersonaPrompt(clanLeader);
+				}
+				stringBuilder.AppendLine("家族族长背景: " + GetHeroDisplayName(clanLeader) + "：" + (string.IsNullOrWhiteSpace(leaderBackground) ? "无可用族长背景" : leaderBackground));
+			}
+			else
+			{
+				stringBuilder.AppendLine("家族族长背景: 无可用族长背景");
 			}
 		}
 		catch
@@ -9960,6 +10400,7 @@ public class MyBehavior : CampaignBehaviorBase
 			ProcessMissingOnnxGateUiResume();
 			ProcessPendingWeeklyReportManualRetryResult();
 			ProcessWeeklyReportUiResume();
+			ProcessKingdomRebellionApiRepairResume();
 			ProcessPendingDevForcedKingdomRebellionResult();
 			ProcessPendingAutomaticKingdomRebellionResult();
 			TryStartDeferredAutoWeeklyReports();
@@ -10228,6 +10669,46 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private void OpenKingdomRebellionApiRepairFlow()
+	{
+		_kingdomRebellionReopenAfterApiConfig = true;
+		_kingdomRebellionReopenAfterApiConfigUtcTicks = DateTime.UtcNow.Ticks + TimeSpan.FromMilliseconds(300.0).Ticks;
+		if (!ModOnboardingBehavior.OpenEventAndRebellionApiRepairFlow())
+		{
+			InformationManager.DisplayMessage(new InformationMessage("未找到 API 配置引导，请先检查 MCM 中的事件/叛乱API Base URL、API Key 与模型名。"));
+		}
+	}
+
+	private void ProcessKingdomRebellionApiRepairResume()
+	{
+		if (!_kingdomRebellionReopenAfterApiConfig)
+		{
+			return;
+		}
+		if (InformationManager.IsAnyInquiryActive() || DateTime.UtcNow.Ticks < _kingdomRebellionReopenAfterApiConfigUtcTicks)
+		{
+			return;
+		}
+		_kingdomRebellionReopenAfterApiConfig = false;
+		if (_blockedAutomaticKingdomRebellionContext != null)
+		{
+			PendingAutomaticKingdomRebellionContext context = _blockedAutomaticKingdomRebellionContext;
+			Kingdom kingdom = FindKingdomById(context.KingdomId);
+			Clan clan = FindClanById(context.ClanId);
+			List<Clan> followerClans = (context.FollowerClanIds ?? new List<string>()).Select(FindClanById).Where((Clan x) => x != null && x != clan).ToList();
+			ShowAutomaticKingdomRebellionNamingFailurePopup(context, kingdom, clan, followerClans, afterApiRepair: true);
+			return;
+		}
+		if (_blockedDevForcedKingdomRebellionContext != null)
+		{
+			PendingDevForcedKingdomRebellionContext context2 = _blockedDevForcedKingdomRebellionContext;
+			Kingdom kingdom2 = FindKingdomById(context2.KingdomId);
+			Clan clan2 = FindClanById(context2.ClanId);
+			List<Clan> followerClans2 = (context2.FollowerClanIds ?? new List<string>()).Select(FindClanById).Where((Clan x) => x != null && x != clan2).ToList();
+			ShowDevForcedKingdomRebellionNamingFailurePopup(context2, kingdom2, clan2, followerClans2, afterApiRepair: true);
+		}
+	}
+
 	private void ProcessPendingDevForcedKingdomRebellionResult()
 	{
 		if (!_pendingDevForcedKingdomRebellionReady)
@@ -10260,23 +10741,17 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		else
 		{
+			if (!IsRebelKingdomNamingSuccess(pendingDevForcedKingdomRebellionContext.NamingResult))
+			{
+				ShowDevForcedKingdomRebellionNamingFailurePopup(pendingDevForcedKingdomRebellionContext, kingdom, clan, list, afterApiRepair: false);
+				return;
+			}
 			flag = TryExecuteKingdomRebellionWithNaming(clan, kingdom, pendingDevForcedKingdomRebellionContext.WeekIndex, forceTrigger: true, pendingDevForcedKingdomRebellionContext.RelationToKing, pendingDevForcedKingdomRebellionContext.TownCount, pendingDevForcedKingdomRebellionContext.CastleCount, pendingDevForcedKingdomRebellionContext.NamingResult, list, out text);
 		}
 		StringBuilder stringBuilder = new StringBuilder();
 		if (pendingDevForcedKingdomRebellionContext.NamingResult != null)
 		{
-			stringBuilder.AppendLine("命名结果：");
-			stringBuilder.AppendLine("- 正式名：" + ((pendingDevForcedKingdomRebellionContext.NamingResult.FormalName ?? "").Trim()));
-			stringBuilder.AppendLine("- 简称：" + ((pendingDevForcedKingdomRebellionContext.NamingResult.ShortName ?? "").Trim()));
-			stringBuilder.AppendLine("- 来源：" + (pendingDevForcedKingdomRebellionContext.NamingResult.UsedFallback ? "本地兜底" : "LLM"));
-			if (!string.IsNullOrWhiteSpace(pendingDevForcedKingdomRebellionContext.NamingResult.EncyclopediaText))
-			{
-				stringBuilder.AppendLine("- 百科简介：" + pendingDevForcedKingdomRebellionContext.NamingResult.EncyclopediaText.Trim());
-			}
-			if (!string.IsNullOrWhiteSpace(pendingDevForcedKingdomRebellionContext.NamingResult.FailureReason))
-			{
-				stringBuilder.AppendLine("- 命名说明：" + pendingDevForcedKingdomRebellionContext.NamingResult.FailureReason.Trim());
-			}
+			AppendRebelKingdomNamingResultLines(stringBuilder, pendingDevForcedKingdomRebellionContext.NamingResult);
 			stringBuilder.AppendLine();
 		}
 		if (list.Count > 0)
@@ -10292,6 +10767,72 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			OpenDevKingdomStabilityDetailMenu(kingdom ?? FindKingdomById(pendingDevForcedKingdomRebellionContext.KingdomId));
 		}, null));
+	}
+
+	private void ShowDevForcedKingdomRebellionNamingFailurePopup(PendingDevForcedKingdomRebellionContext context, Kingdom kingdom, Clan clan, List<Clan> followerClans, bool afterApiRepair)
+	{
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.AppendLine("强制叛乱已准备执行，但叛乱建国命名没有成功。系统不会使用本地国名继续建国。");
+		stringBuilder.AppendLine();
+		if (kingdom != null)
+		{
+			stringBuilder.AppendLine("王国：" + GetKingdomDisplayName(kingdom, "某王国"));
+		}
+		if (clan != null)
+		{
+			stringBuilder.AppendLine("主导家族：" + GetClanDisplayName(clan));
+		}
+		if (followerClans != null && followerClans.Count > 0)
+		{
+			stringBuilder.AppendLine("联合响应家族：" + string.Join("、", followerClans.Select(GetClanDisplayName)));
+		}
+		stringBuilder.AppendLine();
+		AppendRebelKingdomNamingResultLines(stringBuilder, context?.NamingResult);
+		stringBuilder.AppendLine();
+		stringBuilder.AppendLine(afterApiRepair ? "API 配置流程已返回。请重新生成叛乱建国命名，或返回王国稳定度详情。" : "请先重新填写事件/叛乱API信息。修正后可回到这里重新生成命名。");
+		InformationManager.HideInquiry();
+		InformationManager.ShowInquiry(new InquiryData(afterApiRepair ? "重试叛乱建国命名" : "叛乱建国命名失败", stringBuilder.ToString().TrimEnd(), isAffirmativeOptionShown: true, isNegativeOptionShown: true, afterApiRepair ? "重新生成命名" : "调整API信息", "返回详情", delegate
+		{
+			if (afterApiRepair)
+			{
+				RetryBlockedDevForcedKingdomRebellionNaming();
+			}
+			else
+			{
+				_blockedDevForcedKingdomRebellionContext = context;
+				_blockedAutomaticKingdomRebellionContext = null;
+				OpenKingdomRebellionApiRepairFlow();
+			}
+		}, delegate
+		{
+			if (ReferenceEquals(_blockedDevForcedKingdomRebellionContext, context))
+			{
+				_blockedDevForcedKingdomRebellionContext = null;
+			}
+			_kingdomRebellionReopenAfterApiConfig = false;
+			OpenDevKingdomStabilityDetailMenu(kingdom ?? FindKingdomById(context?.KingdomId));
+		}), pauseGameActiveState: true);
+	}
+
+	private void RetryBlockedDevForcedKingdomRebellionNaming()
+	{
+		PendingDevForcedKingdomRebellionContext context = _blockedDevForcedKingdomRebellionContext;
+		_blockedDevForcedKingdomRebellionContext = null;
+		_kingdomRebellionReopenAfterApiConfig = false;
+		if (context == null)
+		{
+			return;
+		}
+		Kingdom kingdom = FindKingdomById(context.KingdomId);
+		Clan clan = FindClanById(context.ClanId);
+		List<Clan> list = (context.FollowerClanIds ?? new List<string>()).Select(FindClanById).Where((Clan x) => x != null && x != clan).ToList();
+		if (kingdom == null || clan == null)
+		{
+			InformationManager.DisplayMessage(new InformationMessage("叛乱命名重试前目标王国或家族状态已变化，无法继续执行。"));
+			OpenDevKingdomStabilityDetailMenu(kingdom);
+			return;
+		}
+		StartDevForcedKingdomRebellionAsync(kingdom, clan, context.WeekIndex, context.RelationToKing, context.TownCount, context.CastleCount, list);
 	}
 
 	private void StartDevForcedKingdomRebellionAsync(Kingdom kingdom, Clan clan, int weekIndex, int relationToKing, int townCount, int castleCount, List<Clan> followerClans)
@@ -10312,14 +10853,14 @@ public class MyBehavior : CampaignBehaviorBase
 			return;
 		}
 		List<Clan> list = followerClans?.Where((Clan x) => x != null && x != clan).GroupBy((Clan x) => GetClanId(x), StringComparer.OrdinalIgnoreCase).Select((IGrouping<string, Clan> x) => x.First()).ToList() ?? new List<Clan>();
-		BuildRebelKingdomNamingRequest(clan, kingdom, weekIndex, list, out var systemPrompt, out var userPrompt, out var fallbackResult);
+		BuildRebelKingdomNamingRequest(clan, kingdom, weekIndex, list, out var systemPrompt, out var userPrompt);
 		_devForcedKingdomRebellionInProgress = true;
 		_pendingDevForcedKingdomRebellionReady = false;
 		_pendingDevForcedKingdomRebellionContext = null;
 		InformationManager.ShowInquiry(new InquiryData("正在生成叛乱建国命名", "系统正在后台请求 LLM 为这次叛乱生成新王国的名称与百科简介。\n\n这一步完成后，才会真正执行家族反出与建国。\n请稍候，结果完成后会自动弹出。", isAffirmativeOptionShown: false, isNegativeOptionShown: false, "", "", null, null), pauseGameActiveState: true);
 		Task.Run(delegate
 		{
-			RebelKingdomNamingResult namingResult = GenerateRebelKingdomNamingFromPrompts(systemPrompt, userPrompt, fallbackResult, "叛乱建国命名 - " + GetClanId(clan), 1);
+			RebelKingdomNamingResult namingResult = GenerateRebelKingdomNamingFromPrompts(systemPrompt, userPrompt, "叛乱建国命名 - " + GetClanId(clan), RebelKingdomNamingMaxAttempts);
 			_pendingDevForcedKingdomRebellionContext = new PendingDevForcedKingdomRebellionContext
 			{
 				KingdomId = GetKingdomId(kingdom),
@@ -11625,7 +12166,7 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			string sys = "你是《骑马与砍杀2：霸主》NPC的人设生成器。你只输出严格 JSON，不要输出任何额外文字。JSON 仅包含两个字段：personality 和 background。personality 大约 300 个中文字符；background 大约 300 个中文字符。内容必须符合提供的事实，不要杜撰与事实冲突的家族关系或身份；若事实中提供了势力/效忠信息，必须保持一致，禁止声称效忠于其他统治者或属于其他势力。";
 			string facts = BuildHeroFactsForPersonaGeneration(hero);
-			string user = "请基于以下信息生成该 NPC 的【个性】与【历史背景】。\n" + facts;
+			string user = "请基于以下信息生成该 NPC 的【个性】与【历史背景】。必须综合“人物百科背景”“家族背景”“所在家族百科背景”“王国百科背景”“家族族长背景”；这些素材是事实来源，不要复制成百科原文。\n" + facts;
 			ApiCallResult apiCallResult = await CallUniversalApiDetailed(sys, user, route: UniversalApiRoute.Auxiliary);
 			string resp = apiCallResult.Success ? (apiCallResult.Content ?? "") : ("错误: " + (apiCallResult.ErrorMessage ?? "未知错误"));
 			if (!string.IsNullOrWhiteSpace(resp) && !resp.StartsWith("错误") && TryParsePersonaJson(resp, out var genP, out var genB))
@@ -11724,6 +12265,8 @@ public class MyBehavior : CampaignBehaviorBase
 			userSb.AppendLine("文化: " + culture);
 			userSb.AppendLine("当前场景: " + scene);
 			userSb.AppendLine("加入事件: " + joinFact);
+			userSb.AppendLine("升格后人物与家族事实（必须综合人物百科背景、家族背景、所在家族百科背景、王国百科背景、家族族长背景；不要复制成百科原文）:");
+			userSb.AppendLine(BuildHeroFactsForPersonaGeneration(hero));
 			userSb.AppendLine("加入前该 NPC 与玩家的全部可用对话历史:");
 			userSb.AppendLine(history);
 			ApiCallResult apiCallResult = await CallUniversalApiDetailed(sys, userSb.ToString().Trim(), route: UniversalApiRoute.Auxiliary);
@@ -14439,6 +14982,7 @@ public class MyBehavior : CampaignBehaviorBase
 		string text = "";
 		string text2 = "";
 		string encounterReleaseInstruction = "";
+		bool encounterReleaseRuleSelected = false;
 		int num = AIConfigHandler.GuardrailRuleReturnCap;
 		string targetKingdomId = ResolveTargetKingdomIdForRules(targetHero, targetCharacter, kingdomIdOverride);
 		AIConfigHandler.SetGuardrailRuntimeTargetKingdom(targetKingdomId);
@@ -14451,6 +14995,7 @@ public class MyBehavior : CampaignBehaviorBase
 		try
 		{
 			text = AIConfigHandler.BuildMatchedExtraRuleInstructions(input, npcLastUtterance, AIConfigHandler.GuardrailRuleReturnCap, hasAnyHero);
+			encounterReleaseRuleSelected = !string.IsNullOrWhiteSpace(text) && text.IndexOf("【附加规则:encounter_release_player】", StringComparison.OrdinalIgnoreCase) >= 0;
 			if (!string.IsNullOrWhiteSpace(text) && text.IndexOf("【附加规则:party_transfer】", StringComparison.OrdinalIgnoreCase) >= 0)
 			{
 				string partyTransferRuntimeInstructionForExternal = BuildPartyTransferRuntimeInstructionForExternal(targetHero, targetCharacter, targetAgentIndex);
@@ -14469,7 +15014,7 @@ public class MyBehavior : CampaignBehaviorBase
 			}
 			// Always keep this rule present for the lords-hall gate guard, regardless of semantic hits.
 			text2 = (AIConfigHandler.BuildRuntimeLordsHallAccessInstructionForExternal() ?? "").Trim();
-			encounterReleaseInstruction = (LordEncounterBehavior.BuildMeetingPlayerReleaseRuntimeInstructionForExternal(targetHero ?? targetCharacter?.HeroObject) ?? "").Trim();
+			encounterReleaseInstruction = (LordEncounterBehavior.BuildMeetingPlayerReleaseRuntimeInstructionForExternal(targetHero ?? targetCharacter?.HeroObject, encounterReleaseRuleSelected) ?? "").Trim();
 		}
 		finally
 		{
@@ -14485,17 +15030,22 @@ public class MyBehavior : CampaignBehaviorBase
 			string text4 = "【附加规则:lords_hall_access】" + Environment.NewLine + text2;
 			text = string.IsNullOrWhiteSpace(text) ? text4 : (text.TrimEnd() + Environment.NewLine + text4);
 		}
-		if (!string.IsNullOrWhiteSpace(encounterReleaseInstruction))
+		bool hasEncounterReleaseRuleBlock = !string.IsNullOrWhiteSpace(text) && text.IndexOf("【附加规则:encounter_release_player】", StringComparison.OrdinalIgnoreCase) >= 0;
+		if (hasEncounterReleaseRuleBlock)
 		{
-			if (!string.IsNullOrWhiteSpace(text) && text.IndexOf("【附加规则:encounter_release_player】", StringComparison.OrdinalIgnoreCase) >= 0)
+			if (!string.IsNullOrWhiteSpace(encounterReleaseInstruction))
 			{
 				text = ReplaceSingleRuleBlockBody(text, "encounter_release_player", encounterReleaseInstruction);
 			}
 			else
 			{
-				string text5 = "【附加规则:encounter_release_player】" + Environment.NewLine + encounterReleaseInstruction;
-				text = string.IsNullOrWhiteSpace(text) ? text5 : (text.TrimEnd() + Environment.NewLine + text5);
+				text = RemoveSingleRuleBlock(text, "encounter_release_player");
 			}
+		}
+		else if (!string.IsNullOrWhiteSpace(encounterReleaseInstruction))
+		{
+			string text5 = "【附加规则:encounter_release_player】" + Environment.NewLine + encounterReleaseInstruction;
+			text = string.IsNullOrWhiteSpace(text) ? text5 : (text.TrimEnd() + Environment.NewLine + text5);
 		}
 		string nobleDeferenceInstruction = BuildNobleDeferenceRuntimeInstruction(hasAnyHero);
 		if (!string.IsNullOrWhiteSpace(nobleDeferenceInstruction) && (string.IsNullOrWhiteSpace(text) || text.IndexOf("【附加规则:noble_deference】", StringComparison.OrdinalIgnoreCase) < 0))
@@ -14563,6 +15113,34 @@ public class MyBehavior : CampaignBehaviorBase
 			stringBuilder.Append(text7);
 		}
 		return stringBuilder.ToString().Trim();
+	}
+
+	private static string RemoveSingleRuleBlock(string text, string ruleId)
+	{
+		string text2 = (text ?? "").Trim();
+		string text3 = (ruleId ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text2) || string.IsNullOrWhiteSpace(text3))
+		{
+			return text2;
+		}
+		string value = "【附加规则:" + text3 + "】";
+		int num = text2.IndexOf(value, StringComparison.OrdinalIgnoreCase);
+		if (num < 0)
+		{
+			return text2;
+		}
+		int num2 = text2.IndexOf("【附加规则:", num + value.Length, StringComparison.Ordinal);
+		string text4 = text2.Substring(0, num).TrimEnd();
+		string text5 = ((num2 >= 0) ? text2.Substring(num2).TrimStart() : "");
+		if (string.IsNullOrWhiteSpace(text4))
+		{
+			return text5.Trim();
+		}
+		if (string.IsNullOrWhiteSpace(text5))
+		{
+			return text4.Trim();
+		}
+		return (text4 + Environment.NewLine + text5).Trim();
 	}
 
 	private static bool IsSceneFollowingAgentForRules(int targetAgentIndex)
@@ -29357,7 +29935,8 @@ public class MyBehavior : CampaignBehaviorBase
 		List<InquiryElement> list = new List<InquiryElement>();
 		list.Add(new InquiryElement("export_all", "导出（全部，选择文件夹）", null));
 		list.Add(new InquiryElement("import_all", "导入（全部，选择文件夹）", null));
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("全部导出/导入", "选择要执行的操作：", list, isExitShown: true, 0, 1, "进入", "返回", OnDevAllDataMenuSelected, delegate
+		list.Add(new InquiryElement("clear_all", "清理全部数据（当前存档，不删除导出备份）", null));
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData("全部数据管理", "选择要执行的操作：\n" + BuildAllDataSummaryText(), list, isExitShown: true, 0, 1, "进入", "返回", OnDevAllDataMenuSelected, delegate
 		{
 		});
 		MBInformationManager.ShowMultiSelectionInquiry(data);
@@ -29376,6 +29955,295 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				OpenImportFolderPicker("导入（全部）- 选择文件夹", ExportImportScope.All, OpenDevAllDataMenu);
 			}
+			else if (text == "clear_all")
+			{
+				ConfirmClearAllData();
+			}
+		}
+	}
+
+	private string BuildAllDataSummaryText()
+	{
+		try
+		{
+			StringBuilder stringBuilder = new StringBuilder();
+			stringBuilder.AppendLine("Hero 个性/背景：" + ((_npcPersonaProfiles != null) ? _npcPersonaProfiles.Count : 0) + " 条");
+			stringBuilder.AppendLine("旧对话历史：" + ((_dialogueHistory != null) ? _dialogueHistory.Count : 0) + " 人");
+			stringBuilder.AppendLine("压缩记忆：" + CountCompressedMemoryOwnersForDev() + " 人");
+			stringBuilder.AppendLine("NPC 行动记录：" + CountNpcActionOwnersForDev() + " 人");
+			stringBuilder.AppendLine("赊账/欠款：" + CountDebtOwnersForDev() + " 人");
+			stringBuilder.AppendLine("未命名 NPC：" + CountUnnamedPersonaForDev() + " 条");
+			stringBuilder.AppendLine("Knowledge：" + CountKnowledgeRulesForDev() + " 条");
+			stringBuilder.AppendLine("事件记录：" + ((_eventRecordEntries != null) ? SanitizeEventRecordEntries(_eventRecordEntries).Count : 0) + " 条");
+			stringBuilder.AppendLine("王国稳定度：" + ((_kingdomStabilityValues != null) ? _kingdomStabilityValues.Count : 0) + " 条");
+			stringBuilder.AppendLine("声音映射：" + CountVoiceMappingForDev() + " 个声音");
+			return stringBuilder.ToString().TrimEnd();
+		}
+		catch
+		{
+			return "当前数据统计失败，但仍可执行清理。";
+		}
+	}
+
+	private void ConfirmClearAllData()
+	{
+		string text = "这会清空当前存档中的 AnimusForge 数据，包括：\n" +
+			"HeroNPC 个性/背景、旧对话历史、压缩记忆、赊账/欠款、未命名 NPC 个性、Knowledge、事件记录、王国稳定度、声音映射、耐心状态等。\n\n" +
+			"不会删除 PlayerExports 下已经导出的备份文件，也不会回滚已经真实发生的原版世界状态变化。\n\n" +
+			"此操作不可撤销。建议先执行一次“导出（全部）”。是否继续？";
+		InformationManager.ShowInquiry(new InquiryData("确认清理全部数据", text, isAffirmativeOptionShown: true, isNegativeOptionShown: true, "确认清理", "取消", delegate
+		{
+			ClearAllDataForCurrentSave();
+			InformationManager.DisplayMessage(new InformationMessage("已清理当前存档中的全部 AnimusForge 数据。"));
+			OpenDevAllDataMenu();
+		}, delegate
+		{
+			OpenDevAllDataMenu();
+		}));
+	}
+
+	private void ClearAllDataForCurrentSave()
+	{
+		_shownRecords = new Dictionary<string, HeroShownRecord>();
+		_shownRecordStorage = new Dictionary<string, string>();
+		_dialogueHistory = new Dictionary<string, List<DialogueDay>>();
+		_dialogueHistoryStorage = new Dictionary<string, string>();
+		_dailyMemoryDrafts = new Dictionary<string, List<DailyMemoryDraft>>(StringComparer.OrdinalIgnoreCase);
+		_dailyMemoryDraftStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+		_compressedMemoryBlocks = new Dictionary<string, List<CompressedMemoryBlock>>(StringComparer.OrdinalIgnoreCase);
+		_compressedMemoryBlockStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+		_memorySummaryQueue = new List<MemorySummaryJob>();
+		_memorySummaryQueueJsonStorage = "[]";
+		_memorySummaryProcessing = false;
+		_memorySummaryFailurePopupActive = false;
+		_npcMajorActionSummaries = new Dictionary<string, MajorActionSummaryState>(StringComparer.OrdinalIgnoreCase);
+		_npcMajorActionSummaryStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+		_npcMajorActionSummaryQueue = new List<MajorActionSummaryJob>();
+		_npcMajorActionSummaryQueueJsonStorage = "[]";
+		_npcMajorActions = new Dictionary<string, List<NpcActionEntry>>();
+		_npcMajorActionStorage = new Dictionary<string, string>();
+		_npcRecentActions = new Dictionary<string, List<NpcActionEntry>>();
+		_npcRecentActionStorage = new Dictionary<string, string>();
+		_npcActionGlobalOrderCounter = 0;
+		_npcPersonaProfiles = new Dictionary<string, NpcPersonaProfile>();
+		_npcPersonaProfileStorage = new Dictionary<string, string>();
+		_eventKingdomOpeningSummaries = new Dictionary<string, string>();
+		_eventKingdomOpeningSummaryStorage = new Dictionary<string, string>();
+		_eventWorldOpeningSummary = "";
+		_eventRecordEntries = new List<EventRecordEntry>();
+		_eventRecordJsonStorage = "[]";
+		_eventSourceMaterials = new List<EventSourceMaterialEntry>();
+		_eventSourceMaterialJsonStorage = "[]";
+		_kingdomStabilityValues = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+		_kingdomStabilityStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+		_kingdomStabilityRelationAppliedOffsets = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+		_kingdomStabilityRelationOffsetStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+		_weeklyReportAppliedStabilityDeltas = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+		_weeklyReportAppliedStabilityDeltaStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+		_modCreatedRebelKingdomIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		_modCreatedRebelKingdomIdStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+		_lastAutoGeneratedWeeklyReportWeek = -1;
+		_lastProcessedKingdomRebellionWeek = -1;
+		_weeklyReportGenerationInProgress = false;
+		_weeklyReportUiStage = WeeklyReportUiStage.None;
+		_weeklyReportRetryContext = null;
+		_weeklyReportManualRetryInProgress = false;
+		_weeklyReportManualRetryVersion = 0;
+		_latestWeeklyReportBatchDevPreviews = new List<DevWeeklyReportBatchPreviewEntry>();
+		_pendingWeeklyReportManualRetryResult = false;
+		_pendingWeeklyReportManualRetrySucceeded = false;
+		_pendingWeeklyReportManualRetryMessage = "";
+		_pendingWeeklyReportManualRetryContext = null;
+		_weeklyReportUiResumeAfterUtcTicks = 0L;
+		_weeklyReportReopenAfterApiConfig = false;
+		_weeklyReportReopenAfterApiConfigUtcTicks = 0L;
+		_devForcedKingdomRebellionInProgress = false;
+		_pendingDevForcedKingdomRebellionReady = false;
+		_pendingDevForcedKingdomRebellionContext = null;
+		_automaticKingdomRebellionFlowActive = false;
+		_automaticKingdomRebellionInProgress = false;
+		_blockedAutomaticKingdomRebellionContext = null;
+		_blockedDevForcedKingdomRebellionContext = null;
+		_kingdomRebellionReopenAfterApiConfig = false;
+		_kingdomRebellionReopenAfterApiConfigUtcTicks = 0L;
+		_pendingAutomaticKingdomRebellionReady = false;
+		_pendingAutomaticKingdomRebellionContext = null;
+		_queuedAutomaticKingdomRebellions.Clear();
+		_pendingAutoWeeklyReportWeek = 0;
+		lock (_pendingNearestWeeklyReportPopupLock)
+		{
+			_pendingNearestWeeklyReportPopupRequests.Clear();
+		}
+		_nearestWeeklyReportPopupActive = false;
+		_nearestWeeklyReportPopupRetryAfterUtcTicks = 0L;
+		lock (_weekZeroShortSummaryQueueLock)
+		{
+			_weekZeroShortSummaryGenerationInFlight.Clear();
+			_weekZeroShortSummaryGenerationAttempted.Clear();
+			_weekZeroShortSummaryPendingQueue.Clear();
+		}
+		_weekZeroShortSummaryQueueProcessing = false;
+		_weekZeroShortSummaryLastRequestUtcTicks = 0L;
+		_voiceMappingJsonStorage = "";
+		_voiceMappingExportFolderStorage = "";
+		_unnamedPersonaJsonStorage = "";
+		lock (_patienceLock)
+		{
+			_patienceStates = new Dictionary<string, PatienceState>();
+			_patienceStorage = new Dictionary<string, string>();
+		}
+		RewardSystemBehavior.Instance?.ImportDebtEntries(new Dictionary<string, RewardSystemBehavior.DebtExportEntry>());
+		ClearKnowledgeDataForCurrentSave();
+		ClearVoiceMappingDataForCurrentSave();
+		ClearUnnamedPersonaDataForCurrentSave();
+		Logger.Log("DevDataManagement", "Cleared all current-save AnimusForge data from dev menu.");
+	}
+
+	private void ClearKnowledgeDataForCurrentSave()
+	{
+		try
+		{
+			KnowledgeLibraryBehavior knowledgeLibraryBehavior = KnowledgeLibraryBehavior.Instance ?? Campaign.Current?.GetCampaignBehavior<KnowledgeLibraryBehavior>();
+			knowledgeLibraryBehavior?.ImportRulesJson("{\"Version\":1,\"Rules\":[]}", overwrite: true);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("DevDataManagement", "[WARN] Clear Knowledge failed: " + ex.Message);
+		}
+	}
+
+	private void ClearVoiceMappingDataForCurrentSave()
+	{
+		try
+		{
+			VoiceMapper.ImportMappingJson("{\"male_young\":[],\"male_middle\":[],\"male_old\":[],\"female_young\":[],\"female_middle\":[],\"female_old\":[],\"fallback\":\"\"}", overwriteExisting: true, saveToFile: false);
+			_voiceMappingJsonStorage = VoiceMapper.ExportMappingJson(pretty: false) ?? "";
+		}
+		catch (Exception ex)
+		{
+			_voiceMappingJsonStorage = "";
+			Logger.Log("DevDataManagement", "[WARN] Clear VoiceMapping failed: " + ex.Message);
+		}
+	}
+
+	private void ClearUnnamedPersonaDataForCurrentSave()
+	{
+		try
+		{
+			ShoutUtils.ImportUnnamedPersonaStateJson("", overwriteExisting: true);
+			_unnamedPersonaJsonStorage = ShoutUtils.ExportUnnamedPersonaStateJson(pretty: false) ?? "";
+		}
+		catch (Exception ex)
+		{
+			_unnamedPersonaJsonStorage = "";
+			Logger.Log("DevDataManagement", "[WARN] Clear unnamed persona failed: " + ex.Message);
+		}
+	}
+
+	private int CountCompressedMemoryOwnersForDev()
+	{
+		HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		if (_dailyMemoryDrafts != null)
+		{
+			foreach (KeyValuePair<string, List<DailyMemoryDraft>> item in _dailyMemoryDrafts)
+			{
+				if (!string.IsNullOrWhiteSpace(item.Key) && item.Value != null && item.Value.Count > 0)
+				{
+					hashSet.Add(item.Key);
+				}
+			}
+		}
+		if (_compressedMemoryBlocks != null)
+		{
+			foreach (KeyValuePair<string, List<CompressedMemoryBlock>> item2 in _compressedMemoryBlocks)
+			{
+				if (!string.IsNullOrWhiteSpace(item2.Key) && item2.Value != null && item2.Value.Count > 0)
+				{
+					hashSet.Add(item2.Key);
+				}
+			}
+		}
+		return hashSet.Count;
+	}
+
+	private int CountNpcActionOwnersForDev()
+	{
+		HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		if (_npcMajorActions != null)
+		{
+			foreach (KeyValuePair<string, List<NpcActionEntry>> item in _npcMajorActions)
+			{
+				if (!string.IsNullOrWhiteSpace(item.Key) && item.Value != null && item.Value.Count > 0)
+				{
+					hashSet.Add(item.Key);
+				}
+			}
+		}
+		if (_npcRecentActions != null)
+		{
+			foreach (KeyValuePair<string, List<NpcActionEntry>> item2 in _npcRecentActions)
+			{
+				if (!string.IsNullOrWhiteSpace(item2.Key) && item2.Value != null && item2.Value.Count > 0)
+				{
+					hashSet.Add(item2.Key);
+				}
+			}
+		}
+		return hashSet.Count;
+	}
+
+	private int CountDebtOwnersForDev()
+	{
+		try
+		{
+			return RewardSystemBehavior.Instance?.ExportDebtEntries()?.Count ?? 0;
+		}
+		catch
+		{
+			return 0;
+		}
+	}
+
+	private int CountUnnamedPersonaForDev()
+	{
+		try
+		{
+			string text = ShoutUtils.ExportUnnamedPersonaStateJson(pretty: false);
+			if (string.IsNullOrWhiteSpace(text))
+			{
+				return 0;
+			}
+			JObject jObject = JObject.Parse(text);
+			return (jObject["Profiles"] as JObject)?.Count ?? 0;
+		}
+		catch
+		{
+			return 0;
+		}
+	}
+
+	private int CountKnowledgeRulesForDev()
+	{
+		try
+		{
+			KnowledgeLibraryBehavior knowledgeLibraryBehavior = KnowledgeLibraryBehavior.Instance ?? Campaign.Current?.GetCampaignBehavior<KnowledgeLibraryBehavior>();
+			return knowledgeLibraryBehavior?.GetRuleIdsForDev(100000)?.Count ?? 0;
+		}
+		catch
+		{
+			return 0;
+		}
+	}
+
+	private int CountVoiceMappingForDev()
+	{
+		try
+		{
+			return VoiceMapper.GetTotalVoiceCount();
+		}
+		catch
+		{
+			return 0;
 		}
 	}
 

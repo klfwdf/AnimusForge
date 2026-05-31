@@ -2749,6 +2749,7 @@ public class DuelBehavior : CampaignBehaviorBase
 			{
 			}
 		}
+		MeetingBattleLockMissionBehavior.RestoreFormalDuelIsolationForCurrentMeeting("duel_behavior_restore_state");
 		_preDuelPlayerTeam = null;
 		_preDuelTargetTeam = null;
 		_preDuelPlayerMountTeam = null;
