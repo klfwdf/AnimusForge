@@ -250,43 +250,55 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyGroup("2. 决斗规则")]
 	public float HealthThreshold { get; set; } = 0.35f;
 
-	[SettingPropertyText("喊话按键 (仅限单个大写字母)", -1, true, "", Order = 0, RequireRestart = false)]
+	[SettingPropertyText("喊话按键 (仅限单个大写字母)", -1, true, "", Order = 0, RequireRestart = false, HintText = "场景中按住此键预览并扩大喊话范围，松开后打开说话输入框。默认 T。")]
 	[SettingPropertyGroup("3. 场景喊话")]
 	public string ShoutKey { get; set; } = "T";
 
-	[SettingPropertyText("终端按键 (仅限单个大写字母)", -1, true, "", Order = 1, RequireRestart = false, HintText = "大地图上按此键打开 AnimusForge 终端。默认 U。")]
+	[SettingPropertyText("复杂交流按键 (仅限单个大写字母)", -1, true, "", Order = 1, RequireRestart = false, HintText = "场景中按住此键预览并扩大喊话范围，松开后打开复杂交流菜单。默认 Y。")]
+	[SettingPropertyGroup("3. 场景喊话")]
+	public string ShoutSpecialMenuKey { get; set; } = "Y";
+
+	[SettingPropertyText("终端按键 (仅限单个大写字母)", -1, true, "", Order = 2, RequireRestart = false, HintText = "大地图上按此键打开 AnimusForge 终端。默认 U。")]
 	[SettingPropertyGroup("3. 场景喊话")]
 	public string TerminalKey { get; set; } = "U";
 
-	[SettingPropertyText("倒地金币拾取键 (仅限单个大写字母)", -1, true, "", Order = 2, RequireRestart = false, HintText = "场景挑衅冲突中，NPC 倒地后靠近金币按此键拾取。默认 F。")]
+	[SettingPropertyText("倒地金币拾取键 (仅限单个大写字母)", -1, true, "", Order = 3, RequireRestart = false, HintText = "场景挑衅冲突中，NPC 倒地后靠近金币按此键拾取。默认 F。")]
 	[SettingPropertyGroup("3. 场景喊话")]
 	public string SceneTauntGoldPickupKey { get; set; } = "F";
 
-	[SettingPropertyInteger("喊话回复最小字数", 1, 500, "0", Order = 3, RequireRestart = false, HintText = "场景喊话回复的最小字数。")]
+	[SettingPropertyFloatingInteger("喊话起始范围(米)", 1f, 150f, "0.0", Order = 4, RequireRestart = false, HintText = "按下 T/Y 时使用的基础喊话范围。默认 4 米。")]
+	[SettingPropertyGroup("3. 场景喊话")]
+	public float ShoutInitialRangeMeters { get; set; } = 4f;
+
+	[SettingPropertyFloatingInteger("喊话最大范围(米)", 1f, 150f, "0.0", Order = 5, RequireRestart = false, HintText = "按住 T/Y 时可扩大的最大喊话范围。上限 150 米。范围越大，预览标记越多。")]
+	[SettingPropertyGroup("3. 场景喊话")]
+	public float ShoutMaxRangeMeters { get; set; } = 150f;
+
+	[SettingPropertyInteger("喊话回复最小字数", 1, 500, "0", Order = 6, RequireRestart = false, HintText = "场景喊话回复的最小字数。")]
 	[SettingPropertyGroup("3. 场景喊话")]
 	public int ShoutMinTokens { get; set; } = 20;
 
-	[SettingPropertyInteger("喊话回复最大字数", 1, 500, "0", Order = 4, RequireRestart = false, HintText = "场景喊话回复的最大字数。若小于最小字数，运行时会按最小字数处理。")]
+	[SettingPropertyInteger("喊话回复最大字数", 1, 500, "0", Order = 7, RequireRestart = false, HintText = "场景喊话回复的最大字数。若小于最小字数，运行时会按最小字数处理。")]
 	[SettingPropertyGroup("3. 场景喊话")]
 	public int ShoutMaxTokens { get; set; } = 40;
 
-	[SettingPropertyInteger("内心思考最小字数", 40, 2000, "0", Order = 5, RequireRestart = false, HintText = "场景喊话回复格式中，括号内心思考部分的最小字数。最低 40，默认 200。")]
+	[SettingPropertyInteger("内心思考最小字数", 40, 2000, "0", Order = 8, RequireRestart = false, HintText = "场景喊话回复格式中，括号内心思考部分的最小字数。最低 40，默认 200。")]
 	[SettingPropertyGroup("3. 场景喊话")]
 	public int ShoutThoughtMinTokens { get; set; } = 200;
 
-	[SettingPropertyBool("关闭内心思考", Order = 6, RequireRestart = false, HintText = "开启后，场景喊话请求体中不再要求输出“你的内心思考内容...”，只保留动作与实际发言格式。")]
+	[SettingPropertyBool("关闭内心思考", Order = 9, RequireRestart = false, HintText = "开启后，场景喊话请求体中不再要求输出“你的内心思考内容...”，只保留动作与实际发言格式。")]
 	[SettingPropertyGroup("3. 场景喊话")]
 	public bool DisableShoutInnerThoughtPrompt { get; set; } = true;
 
-	[SettingPropertyInteger("气泡字体大小", 10, 40, "0", Order = 7, RequireRestart = false, HintText = "设置场景喊话气泡中文字的字体大小")]
+	[SettingPropertyInteger("气泡字体大小", 10, 40, "0", Order = 10, RequireRestart = false, HintText = "设置场景喊话气泡中文字的字体大小")]
 	[SettingPropertyGroup("3. 场景喊话")]
 	public int BubbleFontSize { get; set; } = 14;
 
-	[SettingPropertyBool("允许玩家直接攻击触发场景冲突", Order = 8, RequireRestart = false, HintText = "开启后，玩家直接攻击和平场景 NPC 可以触发本模组的场景冲突。关闭后，本模组不再把直接攻击转成场景冲突，伤害结算完全交回原版；对话中的吵架/挑衅仍然可以触发冲突升级。")]
+	[SettingPropertyBool("允许玩家直接攻击触发场景冲突", Order = 11, RequireRestart = false, HintText = "开启后，玩家直接攻击和平场景 NPC 可以触发本模组的场景冲突。关闭后，本模组不再把直接攻击转成场景冲突，伤害结算完全交回原版；对话中的吵架/挑衅仍然可以触发冲突升级。")]
 	[SettingPropertyGroup("3. 场景喊话")]
 	public bool EnablePeaceSceneConflict { get; set; } = true;
 
-	[SettingPropertyDropdown("喊话输入框底色", Order = 9, RequireRestart = false, HintText = "只影响 T 键喊话输入框。默认黑色透明；也可选白色透明或粉色透明。")]
+	[SettingPropertyDropdown("喊话输入框底色", Order = 12, RequireRestart = false, HintText = "只影响喊话输入框。默认黑色透明；也可选白色透明或粉色透明。")]
 	[SettingPropertyGroup("3. 场景喊话")]
 	public Dropdown<string> ShoutInputUiBackgroundDropdown
 	{

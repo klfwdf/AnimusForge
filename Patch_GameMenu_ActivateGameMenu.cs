@@ -19,6 +19,16 @@ public static class Patch_GameMenu_ActivateGameMenu
 			{
 				return;
 			}
+			if (PlayerEncounter.Current != null && PlayerEncounter.LeaveEncounter)
+			{
+				Logger.LogTrace("UI_Intercept", "Native encounter leave is pending; keep native 'encounter' menu so PlayerEncounter.Finish can run.");
+				return;
+			}
+			if (PlayerEncounter.Current != null && PlayerEncounter.PlayerSurrender)
+			{
+				Logger.LogTrace("UI_Intercept", "Native player surrender is pending; keep native 'encounter' menu so surrender result can resolve.");
+				return;
+			}
 			if (LordEncounterBehavior.HasPendingMeetingBattleVictorySettlement())
 			{
 				if (LordEncounterBehavior.IsEncounterRedirectSuspended() || LordEncounterRedirectGuard.IsSuppressed())

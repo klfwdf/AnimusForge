@@ -1953,11 +1953,19 @@ public static class ShoutUtils
 
 	public static List<Agent> GetNearbyNPCAgents()
 	{
+		return GetNearbyNPCAgents(4f, 0.7853982f);
+	}
+
+	public static List<Agent> GetNearbyNPCAgents(float maxDistance, float halfAngleRadians)
+	{
 		List<Agent> list = new List<Agent>();
 		if (Mission.Current == null || Agent.Main == null)
 		{
 			return list;
 		}
+		float num = Math.Max(0.1f, maxDistance);
+		float num2 = Math.Max(0f, Math.Min((float)Math.PI, halfAngleRadians));
+		float num3 = (float)Math.Cos(num2);
 		Vec3 position = Agent.Main.Position;
 		Vec3 lookDirection = Agent.Main.LookDirection;
 		foreach (Agent agent in Mission.Current.Agents)
@@ -1966,12 +1974,12 @@ public static class ShoutUtils
 			{
 				continue;
 			}
-			float num = agent.Position.Distance(position);
-			if (num <= 4f)
+			float num4 = agent.Position.Distance(position);
+			if (num4 <= num)
 			{
 				Vec3 v = agent.Position - position;
 				v.Normalize();
-				if (Vec3.DotProduct(lookDirection, v) > 0.70710677f)
+				if (Vec3.DotProduct(lookDirection, v) > num3)
 				{
 					list.Add(agent);
 				}
@@ -2048,6 +2056,48 @@ public static class ShoutUtils
 			}
 		}
 		return agent ?? agents[0];
+	}
+
+	public static Agent GetMostCenteredAgent(List<Agent> agents)
+	{
+		if (Agent.Main == null || agents == null || agents.Count == 0)
+		{
+			return null;
+		}
+		Vec3 position = Agent.Main.Position;
+		Vec3 lookDirection = Agent.Main.LookDirection;
+		lookDirection.z = 0f;
+		if (lookDirection.LengthSquared <= 1E-05f)
+		{
+			return null;
+		}
+		lookDirection.Normalize();
+		Agent result = null;
+		float bestDot = float.MinValue;
+		float bestDistance = float.MaxValue;
+		foreach (Agent agent in agents)
+		{
+			if (agent == null || agent == Agent.Main || !agent.IsActive() || !agent.IsHuman)
+			{
+				continue;
+			}
+			Vec3 toAgent = agent.Position - position;
+			toAgent.z = 0f;
+			float distance = toAgent.Length;
+			if (distance <= 1E-05f)
+			{
+				continue;
+			}
+			toAgent.Normalize();
+			float dot = Vec3.DotProduct(lookDirection, toAgent);
+			if (dot > bestDot + 1E-05f || (Math.Abs(dot - bestDot) <= 1E-05f && distance < bestDistance))
+			{
+				bestDot = dot;
+				bestDistance = distance;
+				result = agent;
+			}
+		}
+		return result;
 	}
 
 	public static NpcDataPacket ExtractNpcData(Agent agent)

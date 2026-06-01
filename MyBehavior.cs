@@ -188,6 +188,8 @@ public class MyBehavior : CampaignBehaviorBase
 
 		public string Text = "";
 
+		public int SceneSessionId = -1;
+
 		public bool IsAfef;
 
 		public bool IsLlmDialogue;
@@ -1707,6 +1709,8 @@ public class MyBehavior : CampaignBehaviorBase
 		CampaignEvents.OnGivenBirthEvent.AddNonSerializedListener(this, OnGivenBirth);
 		CampaignEvents.HeroComesOfAgeEvent.AddNonSerializedListener(this, OnHeroComesOfAge);
 		CampaignEvents.OnClanLeaderChangedEvent.AddNonSerializedListener(this, OnClanLeaderChanged);
+		CampaignEvents.WarDeclared.AddNonSerializedListener(this, OnWarDeclared);
+		CampaignEvents.MakePeace.AddNonSerializedListener(this, OnMakePeace);
 		CampaignEvents.OnSiegeAftermathAppliedEvent.AddNonSerializedListener(this, OnSiegeAftermathApplied);
 		CampaignEvents.VillageBeingRaided.AddNonSerializedListener(this, OnVillageBeingRaided);
 		CampaignEvents.RaidCompletedEvent.AddNonSerializedListener(this, OnRaidCompleted);
@@ -2460,6 +2464,88 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private void OnWarDeclared(IFaction faction1, IFaction faction2, DeclareWarAction.DeclareWarDetail detail)
+	{
+		try
+		{
+			RecordWarOrPeaceMaterial("war_declared", "宣战", faction1, faction2, detail.ToString());
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("EventMaterial", "[ERROR] OnWarDeclared: " + ex.Message);
+		}
+	}
+
+	private void OnMakePeace(IFaction side1Faction, IFaction side2Faction, MakePeaceAction.MakePeaceDetail detail)
+	{
+		try
+		{
+			RecordWarOrPeaceMaterial("peace_made", "停战议和", side1Faction, side2Faction, detail.ToString());
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("EventMaterial", "[ERROR] OnMakePeace: " + ex.Message);
+		}
+	}
+
+	private void RecordWarOrPeaceMaterial(string materialKind, string actionLabel, IFaction faction1, IFaction faction2, string detailText)
+	{
+		string text = GetFactionDisplayName(faction1, "一方势力");
+		string text2 = GetFactionDisplayName(faction2, "另一方势力");
+		bool flag = string.Equals((materialKind ?? "").Trim(), "war_declared", StringComparison.OrdinalIgnoreCase);
+		string text3 = flag ? (text + "向" + text2 + "宣战，双方进入战争状态。") : (text + "与" + text2 + "停战议和，双方结束战争状态。");
+		if (!string.IsNullOrWhiteSpace(detailText))
+		{
+			text3 += " 原版事件细节：" + detailText.Trim() + "。";
+		}
+		string kingdomId = GetKingdomId(faction1);
+		string kingdomId2 = GetKingdomId(faction2);
+		string text4 = (materialKind ?? "diplomacy").Trim() + ":" + kingdomId + ":" + kingdomId2 + ":" + (detailText ?? "").Trim();
+		RecordEventSourceMaterial(materialKind, actionLabel + " - " + text + " / " + text2, text3, text4 + ":world", kingdomId, "", includeInWorld: true, includeInKingdom: false, "", kingdomId2);
+		if (!string.IsNullOrWhiteSpace(kingdomId))
+		{
+			RecordEventSourceMaterial(materialKind, actionLabel + " - " + text + " / " + text2, text3, text4 + ":side1", kingdomId, "", includeInWorld: false, includeInKingdom: true, "", kingdomId2);
+		}
+		if (!string.IsNullOrWhiteSpace(kingdomId2) && !string.Equals(kingdomId, kingdomId2, StringComparison.OrdinalIgnoreCase))
+		{
+			RecordEventSourceMaterial(materialKind, actionLabel + " - " + text2 + " / " + text, text3, text4 + ":side2", kingdomId2, "", includeInWorld: false, includeInKingdom: true, "", kingdomId);
+		}
+	}
+
+	private void TryRecordMissedStrategicWorldEvents()
+	{
+		try
+		{
+			foreach (Kingdom kingdom in GetDevEditableKingdoms())
+			{
+				if (kingdom == null || !kingdom.IsEliminated)
+				{
+					continue;
+				}
+				string kingdomId = GetKingdomId(kingdom);
+				if (string.IsNullOrWhiteSpace(kingdomId) || HasEventSourceMaterialStableKey("kingdom_destroyed:" + kingdomId))
+				{
+					continue;
+				}
+				RecordKingdomDestroyedMaterial(kingdom, "daily_scan");
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("EventMaterial", "[ERROR] TryRecordMissedStrategicWorldEvents: " + ex.Message);
+		}
+	}
+
+	private bool HasEventSourceMaterialStableKey(string stableKey)
+	{
+		string text = NormalizeNpcActionStableKey(stableKey, "");
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return false;
+		}
+		return SanitizeEventSourceMaterials(_eventSourceMaterials).Any((EventSourceMaterialEntry x) => x != null && string.Equals((x.StableKey ?? "").Trim(), text, StringComparison.OrdinalIgnoreCase));
+	}
+
 	private void OnDailyTickTown(Town town)
 	{
 		try
@@ -2794,7 +2880,7 @@ public class MyBehavior : CampaignBehaviorBase
 			}
 			for (int i = 1; i <= Math.Max(1, maxAttempts); i++)
 			{
-				ApiCallResult apiCallResult = await CallUniversalApiDetailed(BuildMemorySummarySystemPrompt(draft), BuildMemorySummaryUserPrompt(hero, draft), logToEventLogs: false, eventLogSource: "CompressedMemory", route: UniversalApiRoute.Auxiliary);
+				ApiCallResult apiCallResult = await CallUniversalApiDetailed(BuildMemorySummarySystemPrompt(draft), BuildMemorySummaryUserPrompt(hero, draft), logToEventLogs: false, eventLogSource: "CompressedMemory", route: UniversalApiRoute.Auxiliary, streamResponse: false, forceThinkingDisabled: true);
 				if (apiCallResult.Success && TryParseMemorySummaryResponse(apiCallResult.Content, hero, draft, out var block, out var error))
 				{
 					result.Block = block;
@@ -2852,7 +2938,7 @@ public class MyBehavior : CampaignBehaviorBase
 			int targetChars = GetMajorActionSummaryTargetChars(existingState, hero, sourceActions);
 			for (int i = 1; i <= Math.Max(1, maxAttempts); i++)
 			{
-				ApiCallResult apiCallResult = await CallUniversalApiDetailed(BuildMajorActionSummarySystemPrompt(targetChars), BuildMajorActionSummaryUserPrompt(hero, existingState, sourceActions, targetChars), logToEventLogs: false, eventLogSource: "NpcMajorSummary", route: UniversalApiRoute.Auxiliary);
+				ApiCallResult apiCallResult = await CallUniversalApiDetailed(BuildMajorActionSummarySystemPrompt(targetChars), BuildMajorActionSummaryUserPrompt(hero, existingState, sourceActions, targetChars), logToEventLogs: false, eventLogSource: "NpcMajorSummary", route: UniversalApiRoute.Auxiliary, streamResponse: false, forceThinkingDisabled: true);
 				if (apiCallResult.Success && TryParseMajorActionSummaryResponse(apiCallResult.Content, hero, job, allActions, out var state, out var error))
 				{
 					result.State = state;
@@ -3175,6 +3261,7 @@ public class MyBehavior : CampaignBehaviorBase
 			TryStartMemorySummaryQueue();
 			TryDiscontinueLandlessModRebelKingdoms("daily_tick");
 			EnsureWeekZeroOpeningSummaryEvents();
+			TryRecordMissedStrategicWorldEvents();
 			ApplyKingdomStabilityRelationAdjustments();
 			int currentGameDayIndexSafe = GetCurrentGameDayIndexSafe();
 			int num = ((currentGameDayIndexSafe > 0) ? (currentGameDayIndexSafe / 7) : 0);
@@ -3755,14 +3842,75 @@ public class MyBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			string kingdomDisplayName = GetKingdomDisplayName(destroyedKingdom, "某个王国");
-			string text = kingdomDisplayName + "已经覆灭。";
-			RecordEventSourceMaterial("kingdom_destroyed", "王国覆灭 - " + kingdomDisplayName, text, "kingdom_destroyed:" + GetKingdomId(destroyedKingdom), GetKingdomId(destroyedKingdom), "", includeInWorld: true, includeInKingdom: true);
+			RecordKingdomDestroyedMaterial(destroyedKingdom, "event");
 		}
 		catch (Exception ex)
 		{
 			Logger.Log("EventMaterial", "[ERROR] OnKingdomDestroyed: " + ex.Message);
 		}
+	}
+
+	private void RecordKingdomDestroyedMaterial(Kingdom destroyedKingdom, string source)
+	{
+		if (destroyedKingdom == null)
+		{
+			return;
+		}
+		string kingdomId = GetKingdomId(destroyedKingdom);
+		if (string.IsNullOrWhiteSpace(kingdomId))
+		{
+			return;
+		}
+		string kingdomDisplayName = GetKingdomDisplayName(destroyedKingdom, "某个王国");
+		string text = BuildKingdomDestroyedSnapshotText(destroyedKingdom);
+		string stableKey = "kingdom_destroyed:" + kingdomId;
+		RecordEventSourceMaterial("kingdom_destroyed", "王国覆灭 - " + kingdomDisplayName, text, stableKey, kingdomId, "", includeInWorld: true, includeInKingdom: true);
+		Logger.Log("EventMaterial", "[KINGDOM_DESTROYED] source=" + (source ?? "") + " kingdom=" + kingdomId + " name=" + kingdomDisplayName);
+	}
+
+	private static string BuildKingdomDestroyedSnapshotText(Kingdom destroyedKingdom)
+	{
+		string kingdomDisplayName = GetKingdomDisplayName(destroyedKingdom, "某个王国");
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.Append(kingdomDisplayName).Append("已经覆灭。这是世界格局级事件，周报必须记录为该王国政治实体的终结。");
+		Clan rulingClan = destroyedKingdom?.RulingClan;
+		if (rulingClan != null)
+		{
+			stringBuilder.Append(" 覆灭时的执政家族是").Append(GetClanDisplayName(rulingClan)).Append("。");
+			if (rulingClan.Leader != null)
+			{
+				stringBuilder.Append(" 末代统治者是").Append(GetHeroDisplayName(rulingClan.Leader)).Append("。");
+			}
+		}
+		List<string> clans = new List<string>();
+		try
+		{
+			clans = Clan.All.Where((Clan x) => x != null && x.Kingdom == destroyedKingdom).Select(GetClanDisplayName).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).Take(8).ToList();
+		}
+		catch
+		{
+		}
+		if (clans.Count > 0)
+		{
+			stringBuilder.Append(" 仍可识别的相关家族包括：").Append(string.Join("、", clans)).Append("。");
+		}
+		List<string> settlements = new List<string>();
+		try
+		{
+			settlements = Settlement.All.Where((Settlement x) => x != null && x.MapFaction == destroyedKingdom && x.IsFortification).Select(GetSettlementDisplayName).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).Take(8).ToList();
+		}
+		catch
+		{
+		}
+		if (settlements.Count > 0)
+		{
+			stringBuilder.Append(" 覆灭时仍归属该王国的要塞记录包括：").Append(string.Join("、", settlements)).Append("。");
+		}
+		else
+		{
+			stringBuilder.Append(" 覆灭时本模组未再检测到该王国掌控的城镇或城堡。");
+		}
+		return stringBuilder.ToString().Trim();
 	}
 
 	private void OnClanDestroyed(Clan destroyedClan)
@@ -13899,6 +14047,10 @@ public class MyBehavior : CampaignBehaviorBase
 				x.Scene = (x.Scene ?? "").Trim();
 				x.Speaker = (x.Speaker ?? "").Trim();
 				x.Text = (x.Text ?? "").Trim();
+				if (x.SceneSessionId < -1)
+				{
+					x.SceneSessionId = -1;
+				}
 				return x;
 			}).ToList();
 			draft.HasLlmDialogue = draft.HasLlmDialogue || draft.Lines.Any((DailyMemoryLine x) => x != null && x.IsLlmDialogue && !x.IsAfef);
@@ -14255,7 +14407,7 @@ public class MyBehavior : CampaignBehaviorBase
 		return "大地图或未知场景";
 	}
 
-	private void AppendDailyMemoryLine(Hero hero, string speaker, string text, bool isAfef, bool isLlmDialogue)
+	private void AppendDailyMemoryLine(Hero hero, string speaker, string text, bool isAfef, bool isLlmDialogue, int sceneSessionId = -1)
 	{
 		if (!IsHeroNpcEligibleForCompressedMemory(hero))
 		{
@@ -14295,6 +14447,7 @@ public class MyBehavior : CampaignBehaviorBase
 			Scene = ResolveCurrentMemorySceneLabel(),
 			Speaker = (speaker ?? "").Trim(),
 			Text = text2,
+			SceneSessionId = sceneSessionId,
 			IsAfef = isAfef,
 			IsLlmDialogue = isLlmDialogue && !isAfef
 		};
@@ -14508,7 +14661,7 @@ public class MyBehavior : CampaignBehaviorBase
 			}
 			if (!string.IsNullOrWhiteSpace(playerText))
 			{
-				AppendDailyMemoryLine(hero, BuildPlayerPublicDisplayNameForPrompt(), BuildPlayerAddressedInput(hero, playerText), isAfef: false, isLlmDialogue: true);
+				AppendDailyMemoryLine(hero, BuildPlayerPublicDisplayNameForPrompt(), BuildPlayerAddressedInput(hero, playerText), isAfef: false, isLlmDialogue: true, sceneSessionId: sceneSessionId);
 			}
 			if (!string.IsNullOrWhiteSpace(extraFact))
 			{
@@ -14517,7 +14670,7 @@ public class MyBehavior : CampaignBehaviorBase
 				{
 					memoryFact = "[AFEF玩家行为补充] " + memoryFact;
 				}
-				AppendDailyMemoryLine(hero, "AFEF", memoryFact, isAfef: true, isLlmDialogue: false);
+				AppendDailyMemoryLine(hero, "AFEF", memoryFact, isAfef: true, isLlmDialogue: false, sceneSessionId: sceneSessionId);
 			}
 			if (!string.IsNullOrWhiteSpace(aiText))
 			{
@@ -14526,7 +14679,7 @@ public class MyBehavior : CampaignBehaviorBase
 				{
 					memoryAiText = npcNameForMemory + ": " + memoryAiText;
 				}
-				AppendDailyMemoryLine(hero, npcNameForMemory, memoryAiText, isAfef: false, isLlmDialogue: true);
+				AppendDailyMemoryLine(hero, npcNameForMemory, memoryAiText, isAfef: false, isLlmDialogue: true, sceneSessionId: sceneSessionId);
 			}
 			List<DialogueDay> list = LoadDialogueHistory(hero);
 			int dayIndex = (int)CampaignTime.Now.ToDays;
@@ -17185,6 +17338,21 @@ public class MyBehavior : CampaignBehaviorBase
 		return startHour + "-" + endHour + "时";
 	}
 
+	private static string FormatCompressedMemoryAgeSuffix(CompressedMemoryBlock block)
+	{
+		if (block == null)
+		{
+			return "";
+		}
+		int currentDay = GetCurrentGameDayIndexSafe();
+		int daysAgo = currentDay - block.GameDayIndex;
+		if (daysAgo <= 0)
+		{
+			return "（今天）";
+		}
+		return "（" + daysAgo + "天前）";
+	}
+
 	private static string BuildDailyMemoryLineForPrompt(DailyMemoryLine line)
 	{
 		if (line == null || string.IsNullOrWhiteSpace(line.Text))
@@ -17369,7 +17537,7 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				text = "第" + block.GameDayIndex + "日";
 			}
-			user.AppendLine(item.DisplayId + "# " + text + " " + FormatMemoryHourRange(block.StartHour, block.EndHour) + " | " + (block.RichTitle ?? "").Trim());
+			user.AppendLine(item.DisplayId + "# " + text + FormatCompressedMemoryAgeSuffix(block) + " " + FormatMemoryHourRange(block.StartHour, block.EndHour) + " | " + (block.RichTitle ?? "").Trim());
 		}
 		object[] messages = new object[2]
 		{
@@ -17512,10 +17680,12 @@ public class MyBehavior : CampaignBehaviorBase
 			return "";
 		}
 		IEnumerable<DailyMemoryDraft> enumerable = includeToday ? list.Where((DailyMemoryDraft x) => x != null && x.GameDayIndex == currentDay) : list.Where((DailyMemoryDraft x) => x != null && x.GameDayIndex < currentDay && x.HasLlmDialogue);
+		int currentSceneSessionId = includeToday ? GetCurrentSceneSessionIdForDailyMemorySuppression() : -1;
 		StringBuilder stringBuilder = new StringBuilder();
 		foreach (DailyMemoryDraft draft in enumerable.OrderBy((DailyMemoryDraft x) => x.GameDayIndex))
 		{
-			if (draft?.Lines == null || draft.Lines.Count <= 0)
+			List<DailyMemoryLine> lines = (draft?.Lines ?? new List<DailyMemoryLine>()).Where((DailyMemoryLine x) => x != null && (currentSceneSessionId < 0 || x.SceneSessionId != currentSceneSessionId)).ToList();
+			if (lines.Count <= 0)
 			{
 				continue;
 			}
@@ -17525,7 +17695,7 @@ public class MyBehavior : CampaignBehaviorBase
 			}
 			string text = string.IsNullOrWhiteSpace(draft.GameDate) ? ("第" + draft.GameDayIndex + "日") : draft.GameDate.Trim();
 			stringBuilder.AppendLine("—— " + text + " ——");
-			foreach (DailyMemoryLine line in draft.Lines)
+			foreach (DailyMemoryLine line in lines)
 			{
 				string text2 = BuildDailyMemoryLineForPrompt(line);
 				if (!string.IsNullOrWhiteSpace(text2))
@@ -17537,26 +17707,30 @@ public class MyBehavior : CampaignBehaviorBase
 		return stringBuilder.ToString().TrimEnd();
 	}
 
-	private static bool ShouldSuppressTodayMemoryContextInCurrentRequest()
+	private static int GetCurrentSceneSessionIdForDailyMemorySuppression()
 	{
 		try
 		{
 			if (Mission.Current == null || Mission.Current.Scene == null)
 			{
-				return false;
+				return -1;
 			}
 			try
 			{
-				return ShoutUtils.IsInValidScene();
+				if (!ShoutUtils.IsInValidScene())
+				{
+					return -1;
+				}
+				return ShoutBehavior.GetCurrentSceneHistorySessionIdForExternal();
 			}
 			catch
 			{
-				return true;
+				return -1;
 			}
 		}
 		catch
 		{
-			return false;
+			return -1;
 		}
 	}
 
@@ -17581,21 +17755,38 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		else
 		{
+			CompressedMemoryBlock latestBlock = list.OrderByDescending((CompressedMemoryBlock x) => x.GameDayIndex).ThenByDescending((CompressedMemoryBlock x) => x.EndHour).ThenByDescending((CompressedMemoryBlock x) => x.StartHour).ThenByDescending((CompressedMemoryBlock x) => x.CreatedUtcTicks).FirstOrDefault();
+			string latestBlockId = (latestBlock?.Id ?? "").Trim();
+			int selectableFinalCount = Math.Max(0, finalCount - ((latestBlock != null) ? 1 : 0));
+			int selectableCandidateLimit = Math.Max(selectableFinalCount, candidateLimit - ((latestBlock != null) ? 1 : 0));
+			List<CompressedMemoryBlock> selectableBlocks = list.Where((CompressedMemoryBlock x) => x != null && (latestBlock == null || !string.Equals((x.Id ?? "").Trim(), latestBlockId, StringComparison.OrdinalIgnoreCase))).ToList();
+			candidates = new List<MemoryRecallCandidate>();
 			List<DailyMemoryDraft> drafts = LoadDailyMemoryDrafts(hero);
-			if (!TryBuildMemoryRecallCandidates(hero, list, currentInput, secondaryInput, drafts, candidateLimit, out candidates, out var error))
+			if (selectableFinalCount > 0 && selectableBlocks.Count > 0)
 			{
-				Logger.Log("CompressedMemory", "[ERROR] recall failed hero=" + (hero?.StringId ?? "") + " error=" + error);
-				return "";
-			}
-			if (candidates.Count > finalCount)
-			{
-				if (!TrySelectMemoryIdsWithPreprocess(candidates, finalCount, currentInput, secondaryInput, out var selectedIds, out var error2))
+				if (!TryBuildMemoryRecallCandidates(hero, selectableBlocks, currentInput, secondaryInput, drafts, selectableCandidateLimit, out candidates, out var error))
 				{
-					Logger.Log("CompressedMemory", "[ERROR] preprocess failed hero=" + (hero?.StringId ?? "") + " error=" + error2);
+					Logger.Log("CompressedMemory", "[ERROR] recall failed hero=" + (hero?.StringId ?? "") + " error=" + error);
 					return "";
 				}
-				HashSet<int> selected = new HashSet<int>(selectedIds);
-				candidates = candidates.Where((MemoryRecallCandidate x) => selected.Contains(x.DisplayId)).OrderBy((MemoryRecallCandidate x) => x.Block.GameDayIndex).ThenBy((MemoryRecallCandidate x) => x.Block.StartHour).ToList();
+				if (candidates.Count > selectableFinalCount)
+				{
+					if (!TrySelectMemoryIdsWithPreprocess(candidates, selectableFinalCount, currentInput, secondaryInput, out var selectedIds, out var error2))
+					{
+						Logger.Log("CompressedMemory", "[ERROR] preprocess failed hero=" + (hero?.StringId ?? "") + " error=" + error2);
+						return "";
+					}
+					HashSet<int> selected = new HashSet<int>(selectedIds);
+					candidates = candidates.Where((MemoryRecallCandidate x) => selected.Contains(x.DisplayId)).OrderBy((MemoryRecallCandidate x) => x.Block.GameDayIndex).ThenBy((MemoryRecallCandidate x) => x.Block.StartHour).ToList();
+				}
+			}
+			if (latestBlock != null)
+			{
+				candidates.Add(new MemoryRecallCandidate
+				{
+					Block = latestBlock,
+					Score = double.MaxValue
+				});
 			}
 		}
 		if (candidates.Count <= 0)
@@ -17618,7 +17809,7 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				text2 = "往日对话记忆";
 			}
-			stringBuilder.AppendLine(num + "#标题：" + text + " " + FormatMemoryHourRange(block.StartHour, block.EndHour) + " " + text2);
+			stringBuilder.AppendLine(num + "#标题：" + text + FormatCompressedMemoryAgeSuffix(block) + " " + FormatMemoryHourRange(block.StartHour, block.EndHour) + " " + text2);
 			stringBuilder.AppendLine("内容：");
 			stringBuilder.AppendLine((block.Summary ?? "").Trim());
 			stringBuilder.AppendLine("AFEF行为补充：");
@@ -17664,13 +17855,10 @@ public class MyBehavior : CampaignBehaviorBase
 				stringBuilder.AppendLine(pendingRawContext);
 				stringBuilder.AppendLine();
 			}
-			if (!ShouldSuppressTodayMemoryContextInCurrentRequest())
+			string todayContext = BuildUncompressedDailyMemoryContext(hero, currentDay, includeToday: true);
+			if (!string.IsNullOrWhiteSpace(todayContext))
 			{
-				string todayContext = BuildUncompressedDailyMemoryContext(hero, currentDay, includeToday: true);
-				if (!string.IsNullOrWhiteSpace(todayContext))
-				{
-					stringBuilder.AppendLine(todayContext);
-				}
+				stringBuilder.AppendLine(todayContext);
 			}
 			string text4 = stringBuilder.ToString().TrimEnd();
 			Logger.Log("DialogueHistory", string.Format("compressed_context hero={0} chars={1} blocks={2} drafts={3}", hero.StringId ?? "", text4.Length, LoadCompressedMemoryBlocks(hero).Count, LoadDailyMemoryDrafts(hero).Count));
@@ -17987,7 +18175,92 @@ public class MyBehavior : CampaignBehaviorBase
 		return json["usage"] != null;
 	}
 
-	private async Task<ApiCallResult> CallUniversalApiDetailed(string sys, string user, bool logToEventLogs = false, string eventLogSource = "EventWeeklyReport", UniversalApiRoute route = UniversalApiRoute.Main)
+	private static string ExtractUniversalContentTokenText(JToken token)
+	{
+		if (token == null)
+		{
+			return "";
+		}
+		if (token.Type == JTokenType.String)
+		{
+			return token.ToString();
+		}
+		if (token is JArray array)
+		{
+			StringBuilder stringBuilder = new StringBuilder();
+			foreach (JToken item in array)
+			{
+				string text = "";
+				if (item != null)
+				{
+					if (item.Type == JTokenType.String)
+					{
+						text = item.ToString();
+					}
+					else
+					{
+						text = item["text"]?.ToString()
+							?? item["content"]?.ToString()
+							?? item.SelectToken("text.value")?.ToString()
+							?? "";
+					}
+				}
+				if (!string.IsNullOrEmpty(text))
+				{
+					stringBuilder.Append(text);
+				}
+			}
+			return stringBuilder.ToString();
+		}
+		return token.ToString();
+	}
+
+	private static string ExtractUniversalNonStreamContent(JObject json)
+	{
+		if (json == null)
+		{
+			return "";
+		}
+		StringBuilder stringBuilder = new StringBuilder();
+		if (json["choices"] is JArray choices)
+		{
+			foreach (JToken choice in choices)
+			{
+				string text = ExtractUniversalContentTokenText(choice?["message"]?["content"]);
+				if (string.IsNullOrEmpty(text))
+				{
+					text = ExtractUniversalContentTokenText(choice?["content"]);
+				}
+				if (string.IsNullOrEmpty(text))
+				{
+					text = choice?["text"]?.ToString() ?? "";
+				}
+				if (!string.IsNullOrEmpty(text))
+				{
+					stringBuilder.Append(text);
+				}
+			}
+		}
+		if (stringBuilder.Length > 0)
+		{
+			return stringBuilder.ToString();
+		}
+		string directText = ExtractUniversalContentTokenText(json.SelectToken("message.content"));
+		if (string.IsNullOrEmpty(directText))
+		{
+			directText = json.SelectToken("output_text")?.ToString()
+				?? json.SelectToken("content")?.ToString()
+				?? json.SelectToken("text")?.ToString()
+				?? "";
+		}
+		if (!string.IsNullOrEmpty(directText))
+		{
+			return directText;
+		}
+		return ExtractUniversalGeminiCandidateText(json.SelectToken("candidates[0]"));
+	}
+
+	private async Task<ApiCallResult> CallUniversalApiDetailed(string sys, string user, bool logToEventLogs = false, string eventLogSource = "EventWeeklyReport", UniversalApiRoute route = UniversalApiRoute.Main, bool streamResponse = true, bool forceThinkingDisabled = false)
 	{
 		ApiCallResult apiCallResult = new ApiCallResult();
 		Action<string> apiLog = delegate(string message)
@@ -18027,10 +18300,14 @@ public class MyBehavior : CampaignBehaviorBase
 					}
 				},
 				["max_tokens"] = maxTokens,
-				["stream"] = true,
+				["stream"] = streamResponse,
 				["temperature"] = ResolveUniversalApiTemperature(settings, resolvedRoute)
 			};
 			ResolveUniversalThinkingSettings(settings, resolvedRoute, out var thinkingEnabled, out var effort);
+			if (forceThinkingDisabled)
+			{
+				thinkingEnabled = false;
+			}
 			DuelSettings.ApplyThinkingControls(body, effectiveApiUrl, modelName, thinkingEnabled, effort, out var thinkingMode);
 			string jsonBody = body.ToString(Formatting.None);
 			string requestBodyForTokenStats = jsonBody;
@@ -18046,7 +18323,7 @@ public class MyBehavior : CampaignBehaviorBase
 			}
 			httpLog.AppendLine("  Route: " + resolvedRoute);
 			httpLog.AppendLine("  Model: " + modelName);
-			httpLog.AppendLine("  MaxTokens: " + maxTokens + ", Stream: true, Temperature: " + ((float)body["temperature"]).ToString("0.00") + ", Thinking: " + thinkingMode);
+			httpLog.AppendLine("  MaxTokens: " + maxTokens + ", Stream: " + streamResponse + ", Temperature: " + ((float)body["temperature"]).ToString("0.00") + ", Thinking: " + thinkingMode);
 			httpLog.AppendLine("  SystemPrompt:");
 			httpLog.AppendLine(sys);
 			httpLog.AppendLine("  UserInput:");
@@ -18096,6 +18373,31 @@ public class MyBehavior : CampaignBehaviorBase
 							}
 							return apiCallResult;
 						}
+					}
+					if (!streamResponse)
+					{
+						string responseBody = await response.Content.ReadAsStringAsync();
+						string nonStreamRaw = "";
+						try
+						{
+							nonStreamRaw = ExtractUniversalNonStreamContent(JObject.Parse(responseBody));
+						}
+						catch (Exception parseEx)
+						{
+							apiLog("[HTTP] 非流式响应解析异常: " + parseEx + "\n原始响应=\n" + TrimUniversalApiRawForLog(responseBody));
+						}
+						apiLog("[HTTP] 非流式解析内容=\n" + nonStreamRaw);
+						if (string.IsNullOrWhiteSpace(nonStreamRaw))
+						{
+							apiLog("[HTTP] 非流式解析为空，原始响应=\n" + TrimUniversalApiRawForLog(responseBody));
+						}
+						apiCallResult.Success = true;
+						apiCallResult.Content = CleanAIResponse(nonStreamRaw);
+						if (!skipTokenStatsLog)
+						{
+							Logger.RecordTokenStats(Logger.EstimateTokensFromMessages(tokenStatsMessages), Logger.EstimateTokens(apiCallResult.Content), tokenStatsMessages, "[UNIVERSAL API HTTP]\nroute=" + resolvedRoute + "\nmodel=" + modelName + "\ncontrol_mode=" + thinkingMode + "\nai_response=\n" + (apiCallResult.Content ?? "") + "\nraw_response_sample=\n" + TrimUniversalApiRawForLog(responseBody), "universal_api", requestBodyForTokenStats);
+						}
+						return apiCallResult;
 					}
 					using Stream stream = await response.Content.ReadAsStreamAsync();
 					if (stream == null)

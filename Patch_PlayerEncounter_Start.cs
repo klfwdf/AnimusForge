@@ -27,6 +27,16 @@ public static class Patch_PlayerEncounter_Start
 				{
 					return;
 				}
+				if (PlayerEncounter.LeaveEncounter)
+				{
+					Logger.LogTrace("Patch_PlayerEncounter_Start", "Native encounter leave is pending; skip custom encounter menu redirect.");
+					return;
+				}
+				if (PlayerEncounter.PlayerSurrender)
+				{
+					Logger.LogTrace("Patch_PlayerEncounter_Start", "Native player surrender is pending; skip custom encounter menu redirect.");
+					return;
+				}
 				PlayerEncounterState encounterState = PlayerEncounter.Current.EncounterState;
 				if (encounterState != PlayerEncounterState.Begin && encounterState != PlayerEncounterState.Wait)
 				{

@@ -16,5 +16,7 @@ public class ConversationMessage
 
 	public string TargetName { get; set; }
 
+	public float PlayerDistanceMeters { get; set; } = -1f;
+
 	public List<int> VisibleAgentIndices { get; set; } = new List<int>();
 }

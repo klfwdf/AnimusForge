@@ -5238,8 +5238,6 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior, IAgentStateDeci
 		{
 			return false;
 		}
-		List<Agent> list2 = CollectTopTierTeamAgents(team, list.Count);
-		List<Agent> list3 = CollectTopTierTeamAgents(team2, list.Count);
 		Vec3 vec = _targetAgent.Position - _mainAgent.Position;
 		vec.z = 0f;
 		if (vec.LengthSquared < 0.0001f)
@@ -5254,6 +5252,8 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior, IAgentStateDeci
 			vec2 = -vec;
 		}
 		vec2.Normalize();
+		List<Agent> list2 = CollectNearbyMeetingEscortAgents(team, _mainAgent.Position, list.Count);
+		List<Agent> list3 = CollectNearbyMeetingEscortAgents(team2, _targetAgent.Position, list.Count);
 		PartyBase party = null;
 		PartyBase party2 = null;
 		try
@@ -5277,8 +5277,8 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior, IAgentStateDeci
 		if (flag3 || flag4)
 		{
 			TrySpawnFallbackEscortsForBothSides(list.Count, team, team2, _mainAgent.Position, vec, _targetAgent.Position, vec2, list2.Count, list3.Count, flag3, flag4);
-			list2 = CollectTopTierTeamAgents(team, list.Count);
-			list3 = CollectTopTierTeamAgents(team2, list.Count);
+			list2 = CollectNearbyMeetingEscortAgents(team, _mainAgent.Position, list.Count);
+			list3 = CollectNearbyMeetingEscortAgents(team2, _targetAgent.Position, list.Count);
 		}
 		if (list2.Count > 0 || list3.Count > 0)
 		{
@@ -5294,6 +5294,8 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior, IAgentStateDeci
 		{
 			PositionEscortAgents(_targetAgent.Position, vec2, list3, list);
 		}
+		MoveExtraMeetingCircleTroopsAway(team, _mainAgent.Position, vec, list2);
+		MoveExtraMeetingCircleTroopsAway(team2, _targetAgent.Position, vec2, list3);
 		_playerEscortPlacementFinalized = flag5;
 		_targetEscortPlacementFinalized = flag6;
 		if (!flag5 || !flag6)
@@ -5310,6 +5312,123 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior, IAgentStateDeci
 			Logger.Log("MeetingBattle", $"Escort guards placed. PlayerSide={list2.Count}, TargetSide={list3.Count}");
 		}
 		return true;
+	}
+
+	private void MoveExtraMeetingCircleTroopsAway(Team team, Vec3 anchor, Vec3 forward, List<Agent> selectedEscorts)
+	{
+		if (base.Mission == null || team == null)
+		{
+			return;
+		}
+		HashSet<int> keep = BuildMeetingCircleKeepSet(selectedEscorts);
+		Vec3 vec = forward;
+		vec.z = 0f;
+		if (vec.LengthSquared < 0.0001f)
+		{
+			vec = new Vec3(1f);
+		}
+		vec.Normalize();
+		Vec3 vec2 = new Vec3(0f - vec.y, vec.x);
+		if (vec2.LengthSquared < 0.0001f)
+		{
+			vec2 = Vec3.Side;
+		}
+		vec2.Normalize();
+		int num = 0;
+		try
+		{
+			foreach (Agent agent in base.Mission.Agents)
+			{
+				if (!IsExtraMeetingCircleTroop(agent, team, anchor, keep))
+				{
+					continue;
+				}
+				Vec3 position = anchor - vec * (22f + (float)num * 1.8f) + vec2 * (((num % 2 == 0) ? 1f : (-1f)) * (5.5f + (float)(num / 2) * 0.8f));
+				LordEncounterBehavior.ClampPointInsideMissionBoundary(ref position, anchor);
+				PositionSingleAgentLikeEscort(agent, position, vec, configureWeapons: false, rememberPositioned: false);
+				num++;
+			}
+		}
+		catch
+		{
+		}
+		if (num > 0)
+		{
+			Logger.Log("MeetingBattle", $"Moved extra meeting-circle troops away. Team={GetTeamSideKey(team) ?? "unknown"}, Count={num}");
+		}
+	}
+
+	private HashSet<int> BuildMeetingCircleKeepSet(List<Agent> selectedEscorts)
+	{
+		HashSet<int> hashSet = new HashSet<int>();
+		AddAgentAndMountToSet(hashSet, _mainAgent);
+		AddAgentAndMountToSet(hashSet, _targetAgent);
+		if (selectedEscorts != null)
+		{
+			foreach (Agent selectedEscort in selectedEscorts)
+			{
+				AddAgentAndMountToSet(hashSet, selectedEscort);
+			}
+		}
+		return hashSet;
+	}
+
+	private void AddAgentAndMountToSet(HashSet<int> agentIndices, Agent agent)
+	{
+		if (agentIndices == null || agent == null)
+		{
+			return;
+		}
+		try
+		{
+			agentIndices.Add(agent.Index);
+		}
+		catch
+		{
+		}
+		try
+		{
+			Agent mountAgent = agent.MountAgent;
+			if (mountAgent != null && mountAgent.IsActive())
+			{
+				agentIndices.Add(mountAgent.Index);
+			}
+		}
+		catch
+		{
+		}
+	}
+
+	private bool IsExtraMeetingCircleTroop(Agent agent, Team team, Vec3 anchor, HashSet<int> keep)
+	{
+		if (agent == null || !agent.IsActive() || !agent.IsHuman || team == null)
+		{
+			return false;
+		}
+		try
+		{
+			if (keep != null && keep.Contains(agent.Index))
+			{
+				return false;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (agent.Team != team)
+			{
+				return false;
+			}
+		}
+		catch
+		{
+			return false;
+		}
+		Vec3 vec = agent.Position - anchor;
+		vec.z = 0f;
+		return vec.LengthSquared <= 256f;
 	}
 
 	private bool ShouldRequireEscortForSide(Team team, PartyBase primaryParty)
@@ -5775,6 +5894,84 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior, IAgentStateDeci
 		}
 		return list.OrderByDescending(GetAgentEscortPriority).ThenByDescending(GetAgentTier).ThenByDescending(GetAgentLevel).Take(maxCount)
 			.ToList();
+	}
+
+	private List<Agent> CollectNearbyMeetingEscortAgents(Team team, Vec3 anchor, int maxCount)
+	{
+		List<(Agent agent, float distanceSquared, bool isHero)> list = new List<(Agent, float, bool)>();
+		if (team == null || maxCount <= 0 || base.Mission == null)
+		{
+			return new List<Agent>();
+		}
+		try
+		{
+			foreach (Agent agent in base.Mission.Agents)
+			{
+				if (!IsMeetingEscortCandidate(agent, team))
+				{
+					continue;
+				}
+				Vec3 vec = agent.Position - anchor;
+				vec.z = 0f;
+				float lengthSquared = vec.LengthSquared;
+				if (lengthSquared > 256f)
+				{
+					continue;
+				}
+				bool item = false;
+				try
+				{
+					item = agent.Character is CharacterObject characterObject && characterObject.IsHero;
+				}
+				catch
+				{
+					item = false;
+				}
+				list.Add((agent, lengthSquared, item));
+			}
+		}
+		catch
+		{
+		}
+		return (from x in list
+			orderby x.distanceSquared, x.isHero, GetAgentEscortPriority(x.agent) descending, GetAgentTier(x.agent) descending, GetAgentLevel(x.agent) descending
+			select x.agent).Take(maxCount).ToList();
+	}
+
+	private bool IsMeetingEscortCandidate(Agent agent, Team team)
+	{
+		if (agent == null || !agent.IsActive() || !agent.IsHuman || team == null)
+		{
+			return false;
+		}
+		Agent agent2 = null;
+		Agent agent3 = null;
+		try
+		{
+			agent2 = _mainAgent?.MountAgent;
+		}
+		catch
+		{
+		}
+		try
+		{
+			agent3 = _targetAgent?.MountAgent;
+		}
+		catch
+		{
+		}
+		if (agent == _mainAgent || agent == _targetAgent || agent == agent2 || agent == agent3)
+		{
+			return false;
+		}
+		try
+		{
+			return agent.Team == team;
+		}
+		catch
+		{
+			return false;
+		}
 	}
 
 	private int GetAgentEscortPriority(Agent agent)
@@ -6254,8 +6451,7 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior, IAgentStateDeci
 	{
 		return new List<(float, float, bool)>
 		{
-			(-1f, -2.4f, false),
-			(-1f, 2.4f, false)
+			(-1.2f, -2.2f, false)
 		};
 	}
 

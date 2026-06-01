@@ -85,6 +85,26 @@ public class ShoutBehavior : CampaignBehaviorBase
 		public MyBehavior.SettlementTransferPromptEntry SettlementEntry;
 	}
 
+	private sealed class ShoutTargetingContext
+	{
+		public float RangeMeters;
+
+		public float HalfAngleRadians;
+
+		public int PrimaryAgentIndex = -1;
+
+		public List<int> CandidateAgentIndices = new List<int>();
+
+		public Dictionary<int, float> CandidatePlayerDistancesMeters = new Dictionary<int, float>();
+	}
+
+	private struct ShoutPreviewLineSegment
+	{
+		public Vec3 Start;
+
+		public Vec3 End;
+	}
+
 	private sealed class ScenePrepaidTransferRecord
 	{
 		public int Gold;
@@ -139,6 +159,10 @@ public class ShoutBehavior : CampaignBehaviorBase
 		public long InteractionToken;
 
 		public bool ReturnSceneSummonOnTimeout;
+
+		public float InitialPlayerDistanceMeters;
+
+		public float PlayerReleaseRangeMeters;
 	}
 
 	private sealed class PendingInteractionTimeoutArm
@@ -558,6 +582,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 			}
 			if (Campaign.Current != null && Campaign.Current.ConversationManager.IsConversationInProgress)
 			{
+				_parent.CancelShoutHotkeyCharge("conversation");
 				_parent._stareTimer = 0f;
 				_parent._currentStareTarget = null;
 				if (!_parent._ttsPausedByShoutUi)
@@ -603,10 +628,15 @@ public class ShoutBehavior : CampaignBehaviorBase
 				_parent._tickTimer = 0f;
 			}
 			DuelSettings settings = DuelSettings.GetSettings();
-			InputKey key = InputKey.K;
-			if (!string.IsNullOrEmpty(settings.ShoutKey) && Enum.TryParse<InputKey>(settings.ShoutKey.ToUpper(), out var result2))
+			InputKey shoutKey = InputKey.T;
+			InputKey specialMenuKey = InputKey.Y;
+			if (!string.IsNullOrEmpty(settings?.ShoutKey) && Enum.TryParse<InputKey>(settings.ShoutKey.Trim().ToUpperInvariant(), out var result2))
 			{
-				key = result2;
+				shoutKey = result2;
+			}
+			if (!string.IsNullOrEmpty(settings?.ShoutSpecialMenuKey) && Enum.TryParse<InputKey>(settings.ShoutSpecialMenuKey.Trim().ToUpperInvariant(), out var result3))
+			{
+				specialMenuKey = result3;
 			}
 			bool flag2 = true;
 			try
@@ -621,6 +651,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 			if (wasGameWindowFocused && !flag2)
 			{
 				_parent.ArmShoutHotkeyFocusDebounce("focus_lost");
+				_parent.CancelShoutHotkeyCharge("focus_lost");
 				ShoutTextInputPopup.CancelActiveForSystemMenu();
 				try
 				{
@@ -637,6 +668,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 			_parent._wasGameWindowFocused = flag2;
 			if (Input.IsKeyPressed(InputKey.Escape))
 			{
+				_parent.CancelShoutHotkeyCharge("escape");
 				ShoutTextInputPopup.CancelActiveForEscapeMenu();
 				try
 				{
@@ -655,36 +687,21 @@ public class ShoutBehavior : CampaignBehaviorBase
 			}
 			ShoutTextInputPopup.KeepMissionPausedIfOpen();
 			_parent.ClearStaleShoutProcessingIfNeeded();
-			if (!HotkeyInputGuard.IsTextInputFocused() && Input.IsKeyPressed(key))
+			if (HotkeyInputGuard.IsTextInputFocused())
 			{
-				if (_parent.ShouldSuppressShoutHotkeyAfterFocusChange())
-				{
-					Logger.LogVerbose("ShoutBehavior", "hotkey_focus_debounce_ignored", () => "[Hotkey] ignored during focus debounce", 1.0);
-				}
-				else if (_parent._isProcessingShout || _parent._isWaitingForScenePostprocessGate)
-				{
-					_parent.TryShowShoutProcessingBusyMessage();
-				}
-				else if (ShoutUtils.IsInValidScene())
-				{
-					_parent.BeginShoutProcessing("hotkey");
-					try
-					{
-						_parent.TriggerShout();
-					}
-					catch (Exception ex)
-					{
-						Logger.Log("ShoutBehavior", "[ERROR] TriggerShout failed: " + ex.Message);
-						_parent.ResumeGame();
-						InformationManager.DisplayMessage(new InformationMessage("[场景喊话] 打开喊话界面失败，已重置状态。", new Color(1f, 0.3f, 0.3f)));
-					}
-				}
+				_parent.CancelShoutHotkeyCharge("text_input");
+			}
+			else
+			{
+				_parent.UpdateShoutHotkeyCharge(shoutKey, specialMenuKey);
 			}
 		}
 
 		public override void OnRemoveBehavior()
 		{
 			base.OnRemoveBehavior();
+			_parent.ResetSceneShoutRuntimeOnMissionEnd("remove_behavior");
+			_parent.CancelShoutHotkeyCharge("remove_behavior");
 			try
 			{
 				_parent.StopAllLipSyncPlaybackAndCleanup();
@@ -716,9 +733,71 @@ public class ShoutBehavior : CampaignBehaviorBase
 
 	private const int ShoutProcessingBusyMessageCooldownMilliseconds = 1500;
 
+	private const float ShoutChargeSecondsToMax = 4f;
+
+	private const float ShoutHardMaxRangeMeters = 150f;
+
+	private const float ShoutMinRangeMeters = 1f;
+
+	private const float ShoutInitialTotalAngleRadians = 1.5707964f;
+
+	private const float ShoutMaxTotalAngleRadians = 5.2359877f;
+
+	private const float ShoutPreviewArcSegmentLengthMeters = 1.4f;
+
+	private const float ShoutPreviewRadialSegmentLengthMeters = 1.6f;
+
+	private const float ShoutPreviewLineLengthScaleMultiplier = 2.4f;
+
+	private const float ShoutPreviewLineLengthOverlapScale = 1.2f;
+
+	private const float ShoutPreviewLineWidthScale = 1.6f;
+
+	private const float ShoutPreviewLineHeightScale = 0.38f;
+
+	private const int ShoutPreviewMinArcSegments = 36;
+
+	private const int ShoutPreviewMaxArcSegments = 520;
+
+	private const int ShoutPreviewMinRadialSegments = 6;
+
+	private const int ShoutPreviewMaxRadialSegments = 96;
+
+	private const int ShoutPreviewMaxMarkerCount = 760;
+
+	private const int ShoutPreviewMaxMarkerCreatesPerTick = 220;
+
+	private const int ShoutPreviewMarkerRemoveReason = 95;
+
+	private const float ShoutPreviewMarkerGroundOffset = 0.9f;
+
+	private static readonly uint ShoutPreviewMarkerTintColor = new Color(0.08f, 1f, 1f, 1f).ToUnsignedInteger();
+
+	private const string ShoutPreviewMarkerItemId = "animusforge_denar_ingot_item";
+
+	private const string ShoutPreviewSecondaryMarkerItemId = "animusforge_denar_coin_item";
+
+	private const string ShoutPreviewFallbackMarkerItemId = "sling_leadammo";
+
 	private long _suppressShoutHotkeyUntilUtcTicks = 0L;
 
 	private long _lastShoutProcessingBusyMessageUtcTicks = 0L;
+
+	private bool _shoutHotkeyChargeActive = false;
+
+	private bool _shoutHotkeyChargeOpenModeMenu = false;
+
+	private InputKey _shoutHotkeyChargeKey = InputKey.Invalid;
+
+	private float _shoutHotkeyChargeStartedAt = -1f;
+
+	private ShoutTargetingContext _activeShoutTargetingContext = null;
+
+	private readonly List<GameEntity> _shoutPreviewMarkerEntities = new List<GameEntity>();
+
+	private ItemObject _shoutPreviewMarkerItemObject = null;
+
+	private bool _shoutPreviewMarkerCreationFailed = false;
 
 	private static float GetApplicationTimeSafe()
 	{
@@ -729,6 +808,613 @@ public class ShoutBehavior : CampaignBehaviorBase
 		catch
 		{
 			return (float)Environment.TickCount / 1000f;
+		}
+	}
+
+	private void UpdateShoutHotkeyCharge(InputKey shoutKey, InputKey specialMenuKey)
+	{
+		if (_shoutHotkeyChargeActive)
+		{
+			if (_isProcessingShout || _isWaitingForScenePostprocessGate)
+			{
+				CancelShoutHotkeyCharge("processing");
+				return;
+			}
+			if (!ShoutUtils.IsInValidScene())
+			{
+				CancelShoutHotkeyCharge("invalid_scene");
+				return;
+			}
+			if (Input.IsKeyReleased(_shoutHotkeyChargeKey))
+			{
+				ShoutTargetingContext targetingContext = BuildCurrentShoutTargetingContext();
+				bool openModeMenu = _shoutHotkeyChargeOpenModeMenu;
+				CancelShoutHotkeyCharge("released");
+				TryStartShoutFromHotkey(openModeMenu, targetingContext);
+				return;
+			}
+			if (!Input.IsKeyDown(_shoutHotkeyChargeKey))
+			{
+				CancelShoutHotkeyCharge("key_state_lost");
+				return;
+			}
+			DrawShoutRangePreview(BuildCurrentShoutTargetingContext());
+			return;
+		}
+		if (Input.IsKeyPressed(specialMenuKey))
+		{
+			TryBeginShoutHotkeyCharge(specialMenuKey, openModeMenu: true);
+		}
+		else if (Input.IsKeyPressed(shoutKey))
+		{
+			TryBeginShoutHotkeyCharge(shoutKey, openModeMenu: false);
+		}
+	}
+
+	private void TryBeginShoutHotkeyCharge(InputKey key, bool openModeMenu)
+	{
+		if (ShouldSuppressShoutHotkeyAfterFocusChange())
+		{
+			Logger.LogVerbose("ShoutBehavior", "hotkey_focus_debounce_ignored", () => "[Hotkey] ignored during focus debounce", 1.0);
+			return;
+		}
+		if (_isProcessingShout || _isWaitingForScenePostprocessGate)
+		{
+			TryShowShoutProcessingBusyMessage();
+			return;
+		}
+		if (!ShoutUtils.IsInValidScene())
+		{
+			return;
+		}
+		_shoutHotkeyChargeActive = true;
+		_shoutHotkeyChargeOpenModeMenu = openModeMenu;
+		_shoutHotkeyChargeKey = key;
+		_shoutHotkeyChargeStartedAt = GetApplicationTimeSafe();
+		DrawShoutRangePreview(BuildCurrentShoutTargetingContext());
+	}
+
+	private void CancelShoutHotkeyCharge(string reason)
+	{
+		if (_shoutHotkeyChargeActive)
+		{
+			Logger.LogVerbose("ShoutBehavior", "hotkey_charge_cancel:" + (reason ?? ""), () => "[Hotkey] charge cancelled reason=" + (reason ?? ""), 1.0);
+		}
+		_shoutHotkeyChargeActive = false;
+		_shoutHotkeyChargeOpenModeMenu = false;
+		_shoutHotkeyChargeKey = InputKey.Invalid;
+		_shoutHotkeyChargeStartedAt = -1f;
+		ClearShoutRangePreviewEntities();
+	}
+
+	private ShoutTargetingContext BuildCurrentShoutTargetingContext()
+	{
+		float elapsedSeconds = 0f;
+		if (_shoutHotkeyChargeStartedAt >= 0f)
+		{
+			elapsedSeconds = Math.Max(0f, GetApplicationTimeSafe() - _shoutHotkeyChargeStartedAt);
+		}
+		return BuildShoutTargetingContext(elapsedSeconds);
+	}
+
+	private static void GetConfiguredShoutRange(out float initialRange, out float maxRange)
+	{
+		initialRange = 4f;
+		maxRange = ShoutHardMaxRangeMeters;
+		try
+		{
+			DuelSettings settings = DuelSettings.GetSettings();
+			if (settings != null)
+			{
+				initialRange = settings.ShoutInitialRangeMeters;
+				maxRange = settings.ShoutMaxRangeMeters;
+			}
+		}
+		catch
+		{
+			initialRange = 4f;
+			maxRange = ShoutHardMaxRangeMeters;
+		}
+		if (float.IsNaN(initialRange) || float.IsInfinity(initialRange))
+		{
+			initialRange = 4f;
+		}
+		if (float.IsNaN(maxRange) || float.IsInfinity(maxRange))
+		{
+			maxRange = ShoutHardMaxRangeMeters;
+		}
+		initialRange = Math.Max(ShoutMinRangeMeters, Math.Min(ShoutHardMaxRangeMeters, initialRange));
+		maxRange = Math.Max(initialRange, Math.Min(ShoutHardMaxRangeMeters, maxRange));
+	}
+
+	private ShoutTargetingContext BuildShoutTargetingContext(float elapsedSeconds)
+	{
+		GetConfiguredShoutRange(out var initialRange, out var maxRange);
+		float progress = Math.Max(0f, Math.Min(1f, elapsedSeconds / ShoutChargeSecondsToMax));
+		progress *= progress;
+		float range = initialRange + (maxRange - initialRange) * progress;
+		float totalAngle = ShoutInitialTotalAngleRadians + (ShoutMaxTotalAngleRadians - ShoutInitialTotalAngleRadians) * progress;
+		float halfAngle = totalAngle * 0.5f;
+		List<Agent> agents = ShoutUtils.GetNearbyNPCAgents(range, halfAngle) ?? new List<Agent>();
+		Agent primary = ShoutUtils.GetMostCenteredAgent(agents) ?? agents.FirstOrDefault();
+		Dictionary<int, float> candidateDistances = new Dictionary<int, float>();
+		foreach (Agent agent in agents)
+		{
+			if (agent == null)
+			{
+				continue;
+			}
+			if (TryGetPlayerPlanarDistanceMeters(agent, out var distanceMeters))
+			{
+				candidateDistances[agent.Index] = distanceMeters;
+			}
+		}
+		return new ShoutTargetingContext
+		{
+			RangeMeters = range,
+			HalfAngleRadians = halfAngle,
+			PrimaryAgentIndex = primary?.Index ?? (-1),
+			CandidateAgentIndices = agents.Where((Agent agent) => agent != null).Select((Agent agent) => agent.Index).Distinct().ToList(),
+			CandidatePlayerDistancesMeters = candidateDistances
+		};
+	}
+
+	private static bool TryGetPlayerPlanarDistanceMeters(Agent targetAgent, out float distanceMeters)
+	{
+		distanceMeters = 0f;
+		if (targetAgent == null || !targetAgent.IsActive() || Agent.Main == null || !Agent.Main.IsActive())
+		{
+			return false;
+		}
+		try
+		{
+			float distanceSquared = targetAgent.Position.AsVec2.DistanceSquared(Agent.Main.Position.AsVec2);
+			if (float.IsNaN(distanceSquared) || float.IsInfinity(distanceSquared) || distanceSquared < 0f)
+			{
+				return false;
+			}
+			distanceMeters = (float)Math.Sqrt(distanceSquared);
+			return true;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private void DrawShoutRangePreview(ShoutTargetingContext targetingContext)
+	{
+		if (targetingContext == null || Mission.Current?.Scene == null || Agent.Main == null || !Agent.Main.IsActive())
+		{
+			return;
+		}
+		try
+		{
+			Vec2 forward = Agent.Main.LookDirection.AsVec2;
+			if (forward.LengthSquared <= 1E-05f)
+			{
+				return;
+			}
+			forward.Normalize();
+			float forwardAngle = (float)Math.Atan2(forward.y, forward.x);
+			float startAngle = forwardAngle - targetingContext.HalfAngleRadians;
+			float endAngle = forwardAngle + targetingContext.HalfAngleRadians;
+			Vec3 center = GetShoutPreviewGroundPoint(Agent.Main.Position);
+			List<ShoutPreviewLineSegment> previewSegments = BuildShoutPreviewLineSegments(center, targetingContext.RangeMeters, startAngle, endAngle);
+			UpdateShoutPreviewLineEntities(previewSegments);
+		}
+		catch (Exception ex)
+		{
+			Logger.LogVerbose("ShoutBehavior", "hotkey_charge_preview_failed", () => "[Hotkey] range preview failed: " + ex.Message, 2.0);
+		}
+	}
+
+	private static List<ShoutPreviewLineSegment> BuildShoutPreviewLineSegments(Vec3 center, float range, float startAngle, float endAngle)
+	{
+		float totalAngle = Math.Max(0.1f, Math.Abs(endAngle - startAngle));
+		int arcSegments = ClampShoutPreviewSegmentCount((int)Math.Ceiling(range * totalAngle / ShoutPreviewArcSegmentLengthMeters), ShoutPreviewMinArcSegments, ShoutPreviewMaxArcSegments);
+		int radialSegments = ClampShoutPreviewSegmentCount((int)Math.Ceiling(range / ShoutPreviewRadialSegmentLengthMeters), ShoutPreviewMinRadialSegments, ShoutPreviewMaxRadialSegments);
+		List<ShoutPreviewLineSegment> segments = new List<ShoutPreviewLineSegment>(Math.Min(ShoutPreviewMaxMarkerCount, arcSegments + radialSegments * 2));
+		AddShoutPreviewArcSegments(segments, center, range, startAngle, endAngle, arcSegments);
+		AddShoutPreviewBoundarySegments(segments, center, range, startAngle, radialSegments);
+		AddShoutPreviewBoundarySegments(segments, center, range, endAngle, radialSegments);
+		return segments;
+	}
+
+	private static int ClampShoutPreviewSegmentCount(int value, int minValue, int maxValue)
+	{
+		return Math.Max(minValue, Math.Min(maxValue, value));
+	}
+
+	private static void AddShoutPreviewArcSegments(List<ShoutPreviewLineSegment> segments, Vec3 center, float range, float startAngle, float endAngle, int arcSegments)
+	{
+		if (segments == null || arcSegments <= 0 || range <= 0f)
+		{
+			return;
+		}
+		for (int i = 0; i < arcSegments; i++)
+		{
+			if (segments.Count >= ShoutPreviewMaxMarkerCount)
+			{
+				return;
+			}
+			float t = (float)i / arcSegments;
+			float t2 = (float)(i + 1) / arcSegments;
+			segments.Add(new ShoutPreviewLineSegment
+			{
+				Start = GetShoutPreviewArcPoint(center, range, startAngle + (endAngle - startAngle) * t),
+				End = GetShoutPreviewArcPoint(center, range, startAngle + (endAngle - startAngle) * t2)
+			});
+		}
+	}
+
+	private static void AddShoutPreviewBoundarySegments(List<ShoutPreviewLineSegment> segments, Vec3 center, float range, float angle, int radialSegments)
+	{
+		if (segments == null || radialSegments <= 0 || range <= 0f)
+		{
+			return;
+		}
+		for (int i = 0; i < radialSegments; i++)
+		{
+			if (segments.Count >= ShoutPreviewMaxMarkerCount)
+			{
+				return;
+			}
+			float startDistance = range * i / radialSegments;
+			float endDistance = range * (i + 1) / radialSegments;
+			if (endDistance <= 0.05f)
+			{
+				continue;
+			}
+			segments.Add(new ShoutPreviewLineSegment
+			{
+				Start = GetShoutPreviewArcPoint(center, startDistance, angle),
+				End = GetShoutPreviewArcPoint(center, endDistance, angle)
+			});
+		}
+	}
+
+	private static Vec3 GetShoutPreviewArcPoint(Vec3 center, float range, float angle)
+	{
+		Vec3 point = new Vec3(center.x + (float)Math.Cos(angle) * range, center.y + (float)Math.Sin(angle) * range, center.z, -1f);
+		return GetShoutPreviewGroundPoint(point);
+	}
+
+	private static Vec3 GetShoutPreviewGroundPoint(Vec3 point)
+	{
+		try
+		{
+			if (Mission.Current?.Scene != null)
+			{
+				point.z = Mission.Current.Scene.GetGroundHeightAtPosition(point, BodyFlags.CommonCollisionExcludeFlags) + ShoutPreviewMarkerGroundOffset;
+			}
+			else
+			{
+				point.z += ShoutPreviewMarkerGroundOffset;
+			}
+		}
+		catch
+		{
+			point.z += ShoutPreviewMarkerGroundOffset;
+		}
+		return point;
+	}
+
+	private void UpdateShoutPreviewLineEntities(List<ShoutPreviewLineSegment> segments)
+	{
+		if (segments == null || segments.Count == 0)
+		{
+			HideExtraShoutPreviewMarkerEntities(0);
+			return;
+		}
+		int desiredCount = Math.Min(segments.Count, ShoutPreviewMaxMarkerCount);
+		EnsureShoutPreviewMarkerCount(desiredCount, segments[0].Start);
+		int visibleCount = Math.Min(desiredCount, _shoutPreviewMarkerEntities.Count);
+		for (int i = 0; i < visibleCount; i++)
+		{
+			GameEntity entity = _shoutPreviewMarkerEntities[i];
+			if (entity == null)
+			{
+				continue;
+			}
+			try
+			{
+				if (TryBuildShoutPreviewLineFrame(segments[i], out var frame))
+				{
+					entity.SetFrame(ref frame);
+					entity.SetVisibilityExcludeParents(true);
+				}
+				else
+				{
+					entity.SetVisibilityExcludeParents(false);
+				}
+			}
+			catch
+			{
+			}
+		}
+		HideExtraShoutPreviewMarkerEntities(visibleCount);
+	}
+
+	private void EnsureShoutPreviewMarkerCount(int desiredCount, Vec3 spawnPosition)
+	{
+		desiredCount = Math.Min(Math.Max(0, desiredCount), ShoutPreviewMaxMarkerCount);
+		int createdThisTick = 0;
+		while (!_shoutPreviewMarkerCreationFailed && _shoutPreviewMarkerEntities.Count < desiredCount && createdThisTick < ShoutPreviewMaxMarkerCreatesPerTick)
+		{
+			GameEntity entity = TryCreateShoutPreviewMarkerEntity(spawnPosition);
+			if (entity == null)
+			{
+				_shoutPreviewMarkerCreationFailed = true;
+				Logger.LogVerbose("ShoutBehavior", "hotkey_charge_preview_marker_create_failed", () => "[Hotkey] range preview marker creation failed", 2.0);
+				break;
+			}
+			_shoutPreviewMarkerEntities.Add(entity);
+			createdThisTick++;
+		}
+	}
+
+	private static bool TryBuildShoutPreviewLineFrame(ShoutPreviewLineSegment segment, out MatrixFrame frame)
+	{
+		frame = MatrixFrame.Identity;
+		Vec3 delta = new Vec3(segment.End.x - segment.Start.x, segment.End.y - segment.Start.y, segment.End.z - segment.Start.z, -1f);
+		float length = (float)Math.Sqrt(delta.x * delta.x + delta.y * delta.y + delta.z * delta.z);
+		if (float.IsNaN(length) || float.IsInfinity(length) || length < 0.05f)
+		{
+			return false;
+		}
+		Vec3 line = new Vec3(delta.x / length, delta.y / length, delta.z / length, -1f);
+		Vec3 up = new Vec3(0f, 0f, 1f, -1f);
+		Vec3 widthAxis = CrossVec3(up, line);
+		if (!TryNormalizeVec3(ref widthAxis))
+		{
+			widthAxis = new Vec3(-line.y, line.x, 0f, -1f);
+			if (!TryNormalizeVec3(ref widthAxis))
+			{
+				widthAxis = new Vec3(0f, 1f, 0f, -1f);
+			}
+		}
+		Vec3 adjustedUp = CrossVec3(line, widthAxis);
+		if (!TryNormalizeVec3(ref adjustedUp))
+		{
+			adjustedUp = up;
+		}
+		frame.origin = new Vec3((segment.Start.x + segment.End.x) * 0.5f, (segment.Start.y + segment.End.y) * 0.5f, (segment.Start.z + segment.End.z) * 0.5f, -1f);
+		frame.rotation.s = ScaleVec3(line, Math.Max(0.25f, length * ShoutPreviewLineLengthScaleMultiplier + ShoutPreviewLineLengthOverlapScale));
+		frame.rotation.f = ScaleVec3(widthAxis, ShoutPreviewLineWidthScale);
+		frame.rotation.u = ScaleVec3(adjustedUp, ShoutPreviewLineHeightScale);
+		return true;
+	}
+
+	private static Vec3 CrossVec3(Vec3 a, Vec3 b)
+	{
+		return new Vec3(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x, -1f);
+	}
+
+	private static Vec3 ScaleVec3(Vec3 value, float scale)
+	{
+		return new Vec3(value.x * scale, value.y * scale, value.z * scale, -1f);
+	}
+
+	private static bool TryNormalizeVec3(ref Vec3 value)
+	{
+		float lengthSquared = value.x * value.x + value.y * value.y + value.z * value.z;
+		if (float.IsNaN(lengthSquared) || float.IsInfinity(lengthSquared) || lengthSquared <= 1E-06f)
+		{
+			return false;
+		}
+		float invLength = 1f / (float)Math.Sqrt(lengthSquared);
+		value = new Vec3(value.x * invLength, value.y * invLength, value.z * invLength, -1f);
+		return true;
+	}
+
+	private void HideExtraShoutPreviewMarkerEntities(int visibleCount)
+	{
+		for (int i = visibleCount; i < _shoutPreviewMarkerEntities.Count; i++)
+		{
+			try
+			{
+				_shoutPreviewMarkerEntities[i]?.SetVisibilityExcludeParents(false);
+			}
+			catch
+			{
+			}
+		}
+	}
+
+	private GameEntity TryCreateShoutPreviewMarkerEntity(Vec3 spawnPosition)
+	{
+		try
+		{
+			Mission mission = Mission.Current;
+			if (mission?.Scene == null)
+			{
+				return null;
+			}
+			ItemObject markerItem = TryGetShoutPreviewMarkerItemObject();
+			if (markerItem == null)
+			{
+				return null;
+			}
+			MatrixFrame frame = MatrixFrame.Identity;
+			frame.origin = spawnPosition;
+			frame.rotation.ApplyScaleLocal(ShoutPreviewLineWidthScale);
+			MissionWeapon missionWeapon = new MissionWeapon(markerItem, null, null, 1);
+			GameEntity entity = mission.SpawnWeaponWithNewEntity(ref missionWeapon, Mission.WeaponSpawnFlags.WithStaticPhysics | Mission.WeaponSpawnFlags.CannotBePickedUp, frame);
+			if (entity == null)
+			{
+				return null;
+			}
+			entity.Name = "animusforge_shout_range_marker";
+			entity.EntityFlags |= EntityFlags.DontSaveToScene | EntityFlags.PhysicsDisabled;
+			entity.SetMobility(GameEntity.Mobility.Stationary);
+			try
+			{
+				entity.SetPhysicsState(false, setChildren: true);
+			}
+			catch
+			{
+			}
+			TryTintShoutPreviewMarker(entity);
+			entity.SetFrame(ref frame);
+			entity.SetVisibilityExcludeParents(true);
+			return entity;
+		}
+		catch (Exception ex)
+		{
+			Logger.LogVerbose("ShoutBehavior", "hotkey_charge_preview_marker_create_exception", () => "[Hotkey] range preview marker creation exception: " + ex.Message, 2.0);
+			return null;
+		}
+	}
+
+	private ItemObject TryGetShoutPreviewMarkerItemObject()
+	{
+		if (_shoutPreviewMarkerItemObject != null)
+		{
+			return _shoutPreviewMarkerItemObject;
+		}
+		try
+		{
+			var objectManager = Game.Current?.ObjectManager;
+			_shoutPreviewMarkerItemObject = objectManager?.GetObject<ItemObject>(ShoutPreviewMarkerItemId) ?? objectManager?.GetObject<ItemObject>(ShoutPreviewSecondaryMarkerItemId) ?? objectManager?.GetObject<ItemObject>(ShoutPreviewFallbackMarkerItemId);
+			if (_shoutPreviewMarkerItemObject != null)
+			{
+				Logger.LogVerbose("ShoutBehavior", "hotkey_charge_preview_marker_item:" + _shoutPreviewMarkerItemObject.StringId, () => "[Hotkey] range preview marker item=" + _shoutPreviewMarkerItemObject.StringId, 1.0);
+			}
+			return _shoutPreviewMarkerItemObject;
+		}
+		catch (Exception ex)
+		{
+			Logger.LogVerbose("ShoutBehavior", "hotkey_charge_preview_marker_item_lookup_failed", () => "[Hotkey] range preview marker item lookup failed: " + ex.Message, 2.0);
+			return null;
+		}
+	}
+
+	private static void TryTintShoutPreviewMarker(GameEntity entity)
+	{
+		if (entity == null)
+		{
+			return;
+		}
+		try
+		{
+			entity.SetContourColor(ShoutPreviewMarkerTintColor);
+			entity.SetVectorArgument(0.08f, 1f, 1f, 1f);
+			entity.SetColor(ShoutPreviewMarkerTintColor, ShoutPreviewMarkerTintColor, "");
+			for (int i = 0; i < 8; i++)
+			{
+				MetaMesh metaMesh = entity.GetMetaMesh(i);
+				if (metaMesh == null)
+				{
+					continue;
+				}
+				metaMesh.SetFactor1(ShoutPreviewMarkerTintColor);
+				metaMesh.SetFactor2(ShoutPreviewMarkerTintColor);
+				metaMesh.SetGlossMultiplier(6f);
+			}
+		}
+		catch
+		{
+		}
+	}
+
+	private void ClearShoutRangePreviewEntities()
+	{
+		if (_shoutPreviewMarkerEntities.Count == 0)
+		{
+			return;
+		}
+		foreach (GameEntity entity in _shoutPreviewMarkerEntities)
+		{
+			try
+			{
+				entity?.Remove(ShoutPreviewMarkerRemoveReason);
+			}
+			catch
+			{
+			}
+		}
+		_shoutPreviewMarkerEntities.Clear();
+		_shoutPreviewMarkerCreationFailed = false;
+	}
+
+	private List<Agent> GetAgentsForShoutTargetingContext(ShoutTargetingContext targetingContext)
+	{
+		if (targetingContext == null)
+		{
+			return ShoutUtils.GetNearbyNPCAgents() ?? new List<Agent>();
+		}
+		if (targetingContext.CandidateAgentIndices == null || targetingContext.CandidateAgentIndices.Count == 0 || Mission.Current == null)
+		{
+			return new List<Agent>();
+		}
+		HashSet<int> wanted = new HashSet<int>(targetingContext.CandidateAgentIndices);
+		Dictionary<int, Agent> liveAgents = new Dictionary<int, Agent>();
+		foreach (Agent agent in Mission.Current.Agents)
+		{
+			if (agent != null && wanted.Contains(agent.Index) && agent != Agent.Main && agent.IsActive() && agent.IsHuman)
+			{
+				liveAgents[agent.Index] = agent;
+			}
+		}
+		List<Agent> result = new List<Agent>();
+		foreach (int agentIndex in targetingContext.CandidateAgentIndices)
+		{
+			if (liveAgents.TryGetValue(agentIndex, out var agent))
+			{
+				result.Add(agent);
+			}
+		}
+		return result;
+	}
+
+	private static Agent ResolvePrimaryAgentForShoutTargetingContext(ShoutTargetingContext targetingContext, List<Agent> agents)
+	{
+		if (targetingContext != null && targetingContext.PrimaryAgentIndex >= 0 && agents != null)
+		{
+			Agent agent = agents.FirstOrDefault((Agent a) => a != null && a.Index == targetingContext.PrimaryAgentIndex);
+			if (agent != null)
+			{
+				return agent;
+			}
+		}
+		return ShoutUtils.GetMostCenteredAgent(agents ?? new List<Agent>()) ?? agents?.FirstOrDefault();
+	}
+
+	private void TryStartShoutFromHotkey(bool openModeMenu, ShoutTargetingContext targetingContext = null)
+	{
+		if (ShouldSuppressShoutHotkeyAfterFocusChange())
+		{
+			Logger.LogVerbose("ShoutBehavior", "hotkey_focus_debounce_ignored", () => "[Hotkey] ignored during focus debounce", 1.0);
+			return;
+		}
+		if (_isProcessingShout || _isWaitingForScenePostprocessGate)
+		{
+			TryShowShoutProcessingBusyMessage();
+			return;
+		}
+		if (!ShoutUtils.IsInValidScene())
+		{
+			return;
+		}
+		_activeShoutTargetingContext = targetingContext;
+		BeginShoutProcessing(openModeMenu ? "hotkey_special_menu" : "hotkey_shout_input");
+		try
+		{
+			if (openModeMenu)
+			{
+				TriggerShout();
+			}
+			else
+			{
+				TriggerShoutDirectInput();
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("ShoutBehavior", "[ERROR] TriggerShout failed: " + ex.Message);
+			ResumeGame();
+			InformationManager.DisplayMessage(new InformationMessage("[场景喊话] 打开喊话界面失败，已重置状态。", new Color(1f, 0.3f, 0.3f)));
 		}
 	}
 
@@ -745,6 +1431,8 @@ public class ShoutBehavior : CampaignBehaviorBase
 		{
 			Logger.Log("ShoutBehavior", "[Processing] end reason=" + (reason ?? "") + " elapsed=" + GetShoutProcessingElapsedSeconds().ToString("0.###"));
 		}
+		CancelShoutHotkeyCharge("processing_end");
+		_activeShoutTargetingContext = null;
 		_isProcessingShout = false;
 		_shoutProcessingStartedAt = -1f;
 	}
@@ -927,6 +1615,10 @@ public class ShoutBehavior : CampaignBehaviorBase
 	private const float ACTIVE_INTERACTION_GROUP_IDLE_TIMEOUT = 300f;
 
 	private const float ACTIVE_INTERACTION_IDLE_PLAYER_RANGE = 10f;
+
+	private const float ACTIVE_INTERACTION_DISTANT_RELEASE_MIN_EXTRA_RANGE = 15f;
+
+	private const float ACTIVE_INTERACTION_DISTANT_RELEASE_EXTRA_RATIO = 0.5f;
 
 	private const float SCENE_FOLLOW_MAX_IDLE_DISTANCE = 0f;
 
@@ -4956,7 +5648,7 @@ private static void SplitSceneNpcRoleIntroSections(string fullIntro, bool isHero
 				flag = true;
 				text4 = fallbackTargetNpcName;
 			}
-			rendered = NormalizeScenePlayerHistoryLine(text2, text4, flag);
+			rendered = NormalizeScenePlayerHistoryLine(text2, text4, flag, flag ? (-1f) : msg.PlayerDistanceMeters);
 			return true;
 		}
 		case "system":
@@ -5891,10 +6583,10 @@ private static void GetSceneReplyLengthLimits(DuelSettings settings, out int min
 	}
 }
 
-private static string NormalizeScenePlayerHistoryLine(string text, string targetNpcName = "", bool useNpcNameAddress = false)
+private static string NormalizeScenePlayerHistoryLine(string text, string targetNpcName = "", bool useNpcNameAddress = false, float playerDistanceMeters = -1f)
 	{
 		string text2 = (text ?? "").Trim();
-		string text3 = GetPlayerDisplayNameForShout() + (useNpcNameAddress && !string.IsNullOrWhiteSpace(targetNpcName) ? ("对" + targetNpcName + "说") : "对你说");
+		string text3 = useNpcNameAddress && !string.IsNullOrWhiteSpace(targetNpcName) ? (GetPlayerDisplayNameForShout() + "对" + targetNpcName + "说") : FormatScenePlayerDirectSpeechLabel(GetPlayerDisplayNameForShout(), playerDistanceMeters);
 		if (string.IsNullOrWhiteSpace(text2))
 		{
 			return text3 + ":";
@@ -6407,7 +7099,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			{
 				return;
 			}
-			string text = "K";
+			string text = "T";
+			string text2 = "Y";
 			try
 			{
 				DuelSettings settings = DuelSettings.GetSettings();
@@ -6415,12 +7108,17 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				{
 					text = settings.ShoutKey.Trim().ToUpperInvariant();
 				}
+				if (settings != null && !string.IsNullOrWhiteSpace(settings.ShoutSpecialMenuKey))
+				{
+					text2 = settings.ShoutSpecialMenuKey.Trim().ToUpperInvariant();
+				}
 			}
 			catch
 			{
-				text = "K";
+				text = "T";
+				text2 = "Y";
 			}
-			AnimusForgeQuickInfo.Show("靠近NPC按" + text + "键交流");
+			AnimusForgeQuickInfo.Show("按住" + text + "键预览喊话范围，松开后说话；按住" + text2 + "键打开复杂交流");
 		}
 		catch
 		{
@@ -8962,29 +9660,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 
 	public void TriggerShout()
 	{
-		if (!ModOnboardingBehavior.EnsureSetupReady())
+		if (!TryPrepareShoutTarget(out var primaryDataPacket))
 		{
-			EndShoutProcessing("setup_not_ready");
 			return;
 		}
-		PauseGame();
-		List<Agent> nearbyNPCAgents = ShoutUtils.GetNearbyNPCAgents();
-		if (nearbyNPCAgents != null && nearbyNPCAgents.Count > 0)
-		{
-			ActivateMultiSceneMovementSuppression(nearbyNPCAgents.Select((Agent agent) => agent?.Index ?? (-1)));
-		}
-		if (nearbyNPCAgents == null || nearbyNPCAgents.Count == 0)
-		{
-			InformationManager.DisplayMessage(new InformationMessage("你正在自言自语...", new Color(0.6f, 0.6f, 0.6f)));
-			ResumeGame();
-			return;
-		}
-		List<NpcDataPacket> source = (from a in nearbyNPCAgents
-			select ShoutUtils.ExtractNpcData(a) into d
-			where d != null
-			select d).ToList();
-		Agent primaryTarget = ShoutUtils.GetFacingAgent(nearbyNPCAgents) ?? nearbyNPCAgents[0];
-		NpcDataPacket primaryDataPacket = source.FirstOrDefault((NpcDataPacket d) => d.AgentIndex == primaryTarget.Index) ?? source.FirstOrDefault();
 		string text = primaryDataPacket?.Name ?? "附近的人";
 		List<InquiryElement> inquiryElements = new List<InquiryElement>
 		{
@@ -8995,7 +9674,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			new InquiryElement("give_prisoners", "给予俘虏并交流", null, isEnabled: true, ""),
 			new InquiryElement("give_settlements", "转移定居点并交流", null, isEnabled: true, "")
 		};
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData(text, "当前目标：" + text + "\n请选择交流方式：", inquiryElements, isExitShown: true, 1, 1, "确定", "取消", delegate(List<InquiryElement> selected)
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(text, "当前目标：" + text + "\n此菜单用于边交流边给予或展示物品，也可转移部队、俘虏、城市或城堡。\n请选择交流方式：", inquiryElements, isExitShown: true, 1, 1, "确定", "取消", delegate(List<InquiryElement> selected)
 		{
 			if (selected == null || selected.Count == 0)
 			{
@@ -9034,6 +9713,51 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			OnShoutCancelled();
 		}, "", isSeachAvailable: true);
 		MBInformationManager.ShowMultiSelectionInquiry(data, pauseGameActiveState: true);
+	}
+
+	private void TriggerShoutDirectInput()
+	{
+		if (!TryPrepareShoutTarget(out var primaryDataPacket))
+		{
+			return;
+		}
+		OpenShoutTextInput(primaryDataPacket, null, null);
+	}
+
+	private bool TryPrepareShoutTarget(out NpcDataPacket primaryDataPacket)
+	{
+		primaryDataPacket = null;
+		if (!ModOnboardingBehavior.EnsureSetupReady())
+		{
+			EndShoutProcessing("setup_not_ready");
+			return false;
+		}
+		PauseGame();
+		ShoutTargetingContext targetingContext = _activeShoutTargetingContext;
+		List<Agent> nearbyNPCAgents = GetAgentsForShoutTargetingContext(targetingContext);
+		if (nearbyNPCAgents != null && nearbyNPCAgents.Count > 0)
+		{
+			ActivateMultiSceneMovementSuppression(nearbyNPCAgents.Select((Agent agent) => agent?.Index ?? (-1)));
+		}
+		if (nearbyNPCAgents == null || nearbyNPCAgents.Count == 0)
+		{
+			InformationManager.DisplayMessage(new InformationMessage("你正在自言自语...", new Color(0.6f, 0.6f, 0.6f)));
+			ResumeGame();
+			return false;
+		}
+		List<NpcDataPacket> source = (from a in nearbyNPCAgents
+			select ShoutUtils.ExtractNpcData(a) into d
+			where d != null
+			select d).ToList();
+		Agent primaryTarget = ResolvePrimaryAgentForShoutTargetingContext(targetingContext, nearbyNPCAgents) ?? nearbyNPCAgents[0];
+		primaryDataPacket = source.FirstOrDefault((NpcDataPacket d) => d.AgentIndex == primaryTarget.Index) ?? source.FirstOrDefault();
+		if (primaryDataPacket == null)
+		{
+			InformationManager.DisplayMessage(new InformationMessage("[场景喊话] 没有找到可交流的目标。", new Color(1f, 0.5f, 0.3f)));
+			ResumeGame();
+			return false;
+		}
+		return true;
 	}
 
 	private void OpenShoutTextInput(NpcDataPacket primaryDataPacket, string preface, string extraFact)
@@ -12604,6 +13328,27 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		taskCompletionSource?.TrySetResult(true);
 	}
 
+	private void ResetSceneShoutRuntimeOnMissionEnd(string reason)
+	{
+		try
+		{
+			Interlocked.Increment(ref _sceneConversationEpoch);
+			Interlocked.Increment(ref _sceneHistorySessionId);
+			ForceClearScenePostprocessGate("mission_end:" + (reason ?? ""));
+			_isWaitingForScenePostprocessGate = false;
+			EndShoutProcessing("mission_end:" + (reason ?? ""));
+			ClearQueuedSceneSpeech();
+			Action result;
+			while (_mainThreadActions.TryDequeue(out result))
+			{
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("ShoutBehavior", "[WARN] ResetSceneShoutRuntimeOnMissionEnd failed: " + ex.Message);
+		}
+	}
+
 	private bool TryApplyDeferredSceneMoodTag(NpcDataPacket speaker, string tags)
 	{
 		try
@@ -12647,6 +13392,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			return;
 		}
 		bool restoreProcessingFlag = _isProcessingShout;
+		int waitSceneSessionId = Volatile.Read(ref _sceneHistorySessionId);
 		_isWaitingForScenePostprocessGate = true;
 		if (restoreProcessingFlag)
 		{
@@ -12674,7 +13420,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 		finally
 		{
-			if (restoreProcessingFlag)
+			if (restoreProcessingFlag && waitSceneSessionId == Volatile.Read(ref _sceneHistorySessionId))
 			{
 				_isProcessingShout = true;
 			}
@@ -12714,6 +13460,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		string runtimeTargetTroopId = npcCharacter?.StringId ?? "";
 		string runtimeTargetUnnamedRank = (speakingHero == null && npcCharacter != null) ? (npcCharacter.IsSoldier ? "soldier" : "commoner") : "";
 		int runtimeTargetAgentIndex = currentSpeaker?.AgentIndex ?? (-1);
+		int queuedSceneSessionId = Volatile.Read(ref _sceneHistorySessionId);
 		string runtimeTargetKingdomId = "";
 		try
 		{
@@ -12747,6 +13494,12 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			try
 			{
+				if (queuedSceneSessionId != Volatile.Read(ref _sceneHistorySessionId))
+				{
+					Logger.Log("ShoutBehavior", "[DeferredPostprocess] skipped stale task before_call npc=" + (speakingHero?.StringId ?? currentSpeaker?.Name ?? "unknown") + " queuedSession=" + queuedSceneSessionId + " currentSession=" + Volatile.Read(ref _sceneHistorySessionId));
+					postprocessCompletion.TrySetResult(true);
+					return;
+				}
 				AIConfigHandler.SetGuardrailRuntimeTargetKingdom(runtimeTargetKingdomId);
 				AIConfigHandler.SetGuardrailRuntimeTargetHero(runtimeTargetHeroId);
 				AIConfigHandler.SetGuardrailRuntimeTargetCharacter(runtimeTargetCharacterId);
@@ -12754,6 +13507,12 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				AIConfigHandler.SetGuardrailRuntimeTargetUnnamedRank(runtimeTargetUnnamedRank);
 				AIConfigHandler.SetGuardrailRuntimeTargetAgentIndex(runtimeTargetAgentIndex);
 				string text = TryRunSceneUnifiedActionPostprocess(speakingHero, npcCharacter, runtimeTargetAgentIndex, GetSceneNpcHistoryNameForPrompt(currentSpeaker), playerText, historyForPostprocess, replySnapshot, duelRuleInjected, rewardRuleInjected, loanRuleInjected, kingdomServiceRuleInjected, lordsHallRuleInjected, meetingReleaseRuleInjected, vanillaIssueRuleInjected, heroJoinPartyRuleInjected, sceneMechanismRuleInjected, partyTransferRuleInjected, settlementTransferRuleInjected, voteDealRuleInjected, marriageRuleInjected, duelStakeOptions, kingdomServiceRules, sceneMechanismRuleSnapshot, summonSnapshot, guideSnapshot);
+				if (queuedSceneSessionId != Volatile.Read(ref _sceneHistorySessionId))
+				{
+					Logger.Log("ShoutBehavior", "[DeferredPostprocess] skipped stale task after_call npc=" + (speakingHero?.StringId ?? currentSpeaker?.Name ?? "unknown") + " queuedSession=" + queuedSceneSessionId + " currentSession=" + Volatile.Read(ref _sceneHistorySessionId));
+					postprocessCompletion.TrySetResult(true);
+					return;
+				}
 				string text2 = ExtractDeferredSceneActionTags(text);
 				Logger.Log("ShoutBehavior", "[DeferredPostprocess] npc=" + (speakingHero?.StringId ?? currentSpeaker?.Name ?? "unknown") + " raw=" + ((text ?? "").Replace("\r", "\\r").Replace("\n", "\\n")) + " tags=" + ((text2 ?? "").Replace("\r", "\\r").Replace("\n", "\\n")));
 				if (string.IsNullOrWhiteSpace(text2))
@@ -12766,6 +13525,12 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				{
 					try
 					{
+						if (queuedSceneSessionId != Volatile.Read(ref _sceneHistorySessionId))
+						{
+							Logger.Log("ShoutBehavior", "[DeferredPostprocess] skipped stale dispatch npc=" + (speakingHero?.StringId ?? currentSpeaker?.Name ?? "unknown") + " queuedSession=" + queuedSceneSessionId + " currentSession=" + Volatile.Read(ref _sceneHistorySessionId));
+							postprocessCompletion.TrySetResult(true);
+							return;
+						}
 						string text3 = ExtractDeferredSceneActionTags(deferredTags);
 						if (TryApplyDeferredSceneMoodTag(speakerSnapshot, text3))
 						{
@@ -12927,7 +13692,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			_lastShoutDuelLiteralHit = false;
 		}
 		int conversationEpoch = BeginNewPlayerDrivenSceneConversationEpoch();
-		List<Agent> nearbyAgents = ShoutUtils.GetNearbyNPCAgents();
+		ShoutTargetingContext targetingContext = _activeShoutTargetingContext;
+		List<Agent> nearbyAgents = GetAgentsForShoutTargetingContext(targetingContext);
 		if (nearbyAgents.Count > 0)
 		{
 			ActivateMultiSceneMovementSuppression(nearbyAgents.Select((Agent agent) => agent?.Index ?? (-1)));
@@ -12957,6 +13723,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 		if (primaryTarget == null)
 		{
+			primaryTarget = ResolvePrimaryAgentForShoutTargetingContext(targetingContext, nearbyAgents);
+		}
+		if (primaryTarget == null)
+		{
 			List<Agent> namedAgents = new List<Agent>();
 			foreach (Agent agent in nearbyAgents)
 			{
@@ -12967,11 +13737,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			}
 			if (namedAgents.Count > 0)
 			{
-				primaryTarget = ShoutUtils.GetFacingAgent(namedAgents);
+				primaryTarget = ShoutUtils.GetMostCenteredAgent(namedAgents);
 			}
 			else
 			{
-				primaryTarget = ShoutUtils.GetFacingAgent(nearbyAgents);
+				primaryTarget = ShoutUtils.GetMostCenteredAgent(nearbyAgents);
 			}
 		}
 		NpcDataPacket primaryDataPacket = null;
@@ -13017,11 +13787,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		RecordPlayerMessage(shoutText, capturedNpcData, primaryDataPacket?.AgentIndex ?? (-1), primaryDataPacket?.Name ?? "");
 		if ((capturedNpcData?.Count ?? 0) > 1)
 		{
-			RefreshSceneConversationParticipantInteractions(capturedNpcData, ACTIVE_INTERACTION_IDLE_TIMEOUT);
+			RefreshSceneConversationParticipantInteractions(capturedNpcData, ACTIVE_INTERACTION_IDLE_TIMEOUT, targetingContext);
 		}
 		else
 		{
-			TrackPlayerInteraction(primaryDataPacket, capturedNpcData?.Count ?? 0);
+			TrackPlayerInteraction(primaryDataPacket, capturedNpcData?.Count ?? 0, -1f, false, targetingContext);
 		}
 
 		ResumeGame();
@@ -14674,6 +15444,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		TryInjectSceneRevisitFactsBeforePlayerMessage(nearbyData);
 		List<int> visibleAgentIndices = BuildVisibleAgentSnapshot(nearbyData);
 		string text2 = ResolveSceneTargetNameForPrompt(primaryTargetAgentIndex, primaryTargetName, nearbyData);
+		float playerDistanceMeters = GetPlayerDistanceToAgentForScenePrompt(primaryTargetAgentIndex);
 		lock (_historyLock)
 		{
 			_publicConversationHistory.Add(new ConversationMessage
@@ -14684,6 +15455,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				SpeakerAgentIndex = -1,
 				TargetAgentIndex = primaryTargetAgentIndex,
 				TargetName = text2,
+				PlayerDistanceMeters = playerDistanceMeters,
 				VisibleAgentIndices = visibleAgentIndices
 			});
 			if (_publicConversationHistory.Count > 40)
@@ -14705,6 +15477,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					SpeakerAgentIndex = -1,
 					TargetAgentIndex = primaryTargetAgentIndex,
 					TargetName = text2,
+					PlayerDistanceMeters = playerDistanceMeters,
 					VisibleAgentIndices = visibleAgentIndices
 				});
 			}
@@ -19290,6 +20063,46 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 		return string.IsNullOrWhiteSpace(text) ? "玩家" : text;
 	}
 
+	private static string FormatScenePlayerDirectSpeechLabel(string playerName, float playerDistanceMeters)
+	{
+		string text = (playerName ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			text = "玩家";
+		}
+		if (float.IsNaN(playerDistanceMeters) || float.IsInfinity(playerDistanceMeters) || playerDistanceMeters < 0f)
+		{
+			return text + "对你说";
+		}
+		int num = Math.Max(0, (int)Math.Ceiling(playerDistanceMeters));
+		if (playerDistanceMeters > 50f)
+		{
+			return text + "离你" + num + "米对你大声喊道";
+		}
+		if (playerDistanceMeters > 5f)
+		{
+			return text + "离你" + num + "米对你喊道";
+		}
+		return text + "对你说";
+	}
+
+	private static float GetPlayerDistanceToAgentForScenePrompt(int agentIndex)
+	{
+		if (agentIndex < 0 || Mission.Current?.Agents == null)
+		{
+			return -1f;
+		}
+		try
+		{
+			Agent agent = Mission.Current.Agents.FirstOrDefault((Agent a) => a != null && a.Index == agentIndex && a.IsActive());
+			return TryGetPlayerPlanarDistanceMeters(agent, out var distanceMeters) ? distanceMeters : (-1f);
+		}
+		catch
+		{
+			return -1f;
+		}
+	}
+
 	private static bool TryConvertSceneMessageToStrictChatMessage(ConversationMessage msg, int npcAgentIndex, out object chatMessage)
 	{
 		chatMessage = null;
@@ -19328,7 +20141,7 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 			string text5 = GetStrictScenePlayerDisplayName();
 			if (msg.TargetAgentIndex == npcAgentIndex)
 			{
-				chatMessage = CreateChatMessage("user", "【" + text5 + "对你说】" + text2);
+				chatMessage = CreateChatMessage("user", "【" + FormatScenePlayerDirectSpeechLabel(text5, msg.PlayerDistanceMeters) + "】" + text2);
 				return true;
 			}
 			if (msg.TargetAgentIndex >= 0)
@@ -19377,7 +20190,7 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 			string text = (currentPlayerInput ?? "").Trim();
 			if (!string.IsNullOrWhiteSpace(text))
 			{
-				list.Add(CreateChatMessage("user", "【" + GetStrictScenePlayerDisplayName() + "对你说】" + text));
+				list.Add(CreateChatMessage("user", "【" + FormatScenePlayerDirectSpeechLabel(GetStrictScenePlayerDisplayName(), GetPlayerDistanceToAgentForScenePrompt(npcAgentIndex)) + "】" + text));
 			}
 		}
 		Logger.LogVerbose("ShoutStrict", "strict_messages:" + npcAgentIndex, () => "npc=" + npcAgentIndex + " messages=" + list.Count + " historyCap=" + maxHistoryMessages, 2.0);
@@ -20110,7 +20923,7 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 		}
 	}
 
-	private void RefreshSceneConversationParticipantInteractions(List<NpcDataPacket> participants, float timeoutSeconds = -1f)
+	private void RefreshSceneConversationParticipantInteractions(List<NpcDataPacket> participants, float timeoutSeconds = -1f, ShoutTargetingContext shoutTargetingContext = null)
 	{
 		if (participants == null || participants.Count == 0 || Mission.Current == null)
 		{
@@ -20127,7 +20940,7 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 		int num = Math.Max(1, list.Count);
 		foreach (NpcDataPacket item in list)
 		{
-			TrackPlayerInteraction(item, num, timeoutSeconds);
+			TrackPlayerInteraction(item, num, timeoutSeconds, false, shoutTargetingContext);
 		}
 	}
 
@@ -20276,7 +21089,6 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 		}
 		List<int> list2 = null;
 		int num = 0;
-		float num2 = ACTIVE_INTERACTION_IDLE_PLAYER_RANGE * ACTIVE_INTERACTION_IDLE_PLAYER_RANGE;
 		foreach (int item in list)
 		{
 			Agent agent = Mission.Current.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == item);
@@ -20291,6 +21103,9 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 			}
 			try
 			{
+				_activeInteractionSessions.TryGetValue(item, out var interactionSession);
+				float playerRange = ResolveActiveInteractionPlayerRangeMeters(interactionSession);
+				float num2 = playerRange * playerRange;
 				if (agent.Position.AsVec2.DistanceSquared(Agent.Main.Position.AsVec2) > num2)
 				{
 					continue;
@@ -20809,7 +21624,7 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 		return (participantCount > 1) ? ACTIVE_INTERACTION_GROUP_IDLE_TIMEOUT : ACTIVE_INTERACTION_IDLE_TIMEOUT;
 	}
 
-	private void TrackPlayerInteraction(NpcDataPacket primaryTarget, int participantCount = 1, float timeoutSeconds = -1f, bool returnSceneSummonOnTimeout = false)
+	private void TrackPlayerInteraction(NpcDataPacket primaryTarget, int participantCount = 1, float timeoutSeconds = -1f, bool returnSceneSummonOnTimeout = false, ShoutTargetingContext shoutTargetingContext = null)
 	{
 		if (primaryTarget == null || primaryTarget.AgentIndex < 0 || Mission.Current == null)
 		{
@@ -20835,6 +21650,12 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 		{
 			text = "NPC";
 		}
+		float initialPlayerDistanceMeters = 0f;
+		float playerReleaseRangeMeters = ACTIVE_INTERACTION_IDLE_PLAYER_RANGE;
+		if (TryGetSnapshotPlayerDistanceMeters(shoutTargetingContext, primaryTarget.AgentIndex, agent, out initialPlayerDistanceMeters))
+		{
+			playerReleaseRangeMeters = CalculateDistantActiveInteractionReleaseRange(initialPlayerDistanceMeters);
+		}
 		_activeInteractionSessions[primaryTarget.AgentIndex] = new SceneInteractionSession
 		{
 			TargetAgentIndex = primaryTarget.AgentIndex,
@@ -20843,7 +21664,9 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 			TimeoutArmed = false,
 			TimeoutSeconds = ResolveActiveInteractionTimeoutSeconds(participantCount, timeoutSeconds),
 			InteractionToken = DateTime.UtcNow.Ticks,
-			ReturnSceneSummonOnTimeout = returnSceneSummonOnTimeout
+			ReturnSceneSummonOnTimeout = returnSceneSummonOnTimeout,
+			InitialPlayerDistanceMeters = initialPlayerDistanceMeters,
+			PlayerReleaseRangeMeters = playerReleaseRangeMeters
 		};
 		_pendingInteractionTimeoutArms.Remove(primaryTarget.AgentIndex);
 	}
@@ -21380,7 +22203,50 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 		return Math.Max(1f, (float)num * 0.05f);
 	}
 
-	private static bool IsPlayerWithinActiveInteractionRange(Agent targetAgent)
+	private static float ResolveActiveInteractionPlayerRangeMeters(SceneInteractionSession session)
+	{
+		float range = session?.PlayerReleaseRangeMeters ?? 0f;
+		if (float.IsNaN(range) || float.IsInfinity(range) || range < ACTIVE_INTERACTION_IDLE_PLAYER_RANGE)
+		{
+			return ACTIVE_INTERACTION_IDLE_PLAYER_RANGE;
+		}
+		return range;
+	}
+
+	private static float CalculateDistantActiveInteractionReleaseRange(float initialPlayerDistanceMeters)
+	{
+		if (float.IsNaN(initialPlayerDistanceMeters) || float.IsInfinity(initialPlayerDistanceMeters) || initialPlayerDistanceMeters <= ACTIVE_INTERACTION_IDLE_PLAYER_RANGE)
+		{
+			return ACTIVE_INTERACTION_IDLE_PLAYER_RANGE;
+		}
+		float extraRange = Math.Max(ACTIVE_INTERACTION_DISTANT_RELEASE_MIN_EXTRA_RANGE, initialPlayerDistanceMeters * ACTIVE_INTERACTION_DISTANT_RELEASE_EXTRA_RATIO);
+		float releaseRange = initialPlayerDistanceMeters + extraRange;
+		if (float.IsNaN(releaseRange) || float.IsInfinity(releaseRange) || releaseRange < ACTIVE_INTERACTION_IDLE_PLAYER_RANGE)
+		{
+			return ACTIVE_INTERACTION_IDLE_PLAYER_RANGE;
+		}
+		return releaseRange;
+	}
+
+	private static bool TryGetSnapshotPlayerDistanceMeters(ShoutTargetingContext targetingContext, int agentIndex, Agent agent, out float distanceMeters)
+	{
+		distanceMeters = 0f;
+		if (targetingContext == null || agentIndex < 0)
+		{
+			return false;
+		}
+		if (targetingContext.CandidateAgentIndices == null || !targetingContext.CandidateAgentIndices.Contains(agentIndex))
+		{
+			return false;
+		}
+		if (targetingContext.CandidatePlayerDistancesMeters != null && targetingContext.CandidatePlayerDistancesMeters.TryGetValue(agentIndex, out distanceMeters))
+		{
+			return !(float.IsNaN(distanceMeters) || float.IsInfinity(distanceMeters) || distanceMeters < 0f);
+		}
+		return TryGetPlayerPlanarDistanceMeters(agent, out distanceMeters);
+	}
+
+	private static bool IsPlayerWithinActiveInteractionRange(Agent targetAgent, SceneInteractionSession session = null)
 	{
 		if (targetAgent == null || !targetAgent.IsActive() || Agent.Main == null || !Agent.Main.IsActive())
 		{
@@ -21388,7 +22254,8 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 		}
 		try
 		{
-			float num = ACTIVE_INTERACTION_IDLE_PLAYER_RANGE * ACTIVE_INTERACTION_IDLE_PLAYER_RANGE;
+			float playerRange = ResolveActiveInteractionPlayerRangeMeters(session);
+			float num = playerRange * playerRange;
 			return targetAgent.Position.AsVec2.DistanceSquared(Agent.Main.Position.AsVec2) <= num;
 		}
 		catch
@@ -21448,7 +22315,7 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 				_pendingInteractionTimeoutArms.Remove(activeInteractionSession.Key);
 				continue;
 			}
-			if (!IsPlayerWithinActiveInteractionRange(agent))
+			if (!IsPlayerWithinActiveInteractionRange(agent, value))
 			{
 				if (list == null)
 				{

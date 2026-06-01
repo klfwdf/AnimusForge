@@ -1916,6 +1916,22 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			Logger.Log("LordEncounter", $"OpenEncounterMenu ignored because redirect is suspended. Target={target.Name}");
 			return;
 		}
+		try
+		{
+			if (PlayerEncounter.Current != null && PlayerEncounter.LeaveEncounter)
+			{
+				Logger.Log("LordEncounter", $"OpenEncounterMenu ignored because native encounter leave is pending. Target={target.Name}");
+				return;
+			}
+			if (PlayerEncounter.Current != null && PlayerEncounter.PlayerSurrender)
+			{
+				Logger.Log("LordEncounter", $"OpenEncounterMenu ignored because native player surrender is pending. Target={target.Name}");
+				return;
+			}
+		}
+		catch
+		{
+		}
 		SetTarget(target);
 		try
 		{
@@ -2294,6 +2310,14 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		}
 		if (args?.MenuContext?.GameMenu?.StringId == "AnimusForge_lord_encounter")
 		{
+			if (TryResolveNativePlayerSurrenderFromCustomMenu("menu_opened"))
+			{
+				return;
+			}
+			if (TryFinishNativeLeaveEncounterFromCustomMenu("menu_opened"))
+			{
+				return;
+			}
 			if (HasPendingForceNativeDefeatCaptivityMenu())
 			{
 				TryForcePendingDefeatCaptivityMenuIfReady();
@@ -2338,12 +2362,174 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			}
 			return;
 		}
+		if (TryResolveNativePlayerSurrenderFromCustomMenu("campaign_tick"))
+		{
+			return;
+		}
+		if (TryFinishNativeLeaveEncounterFromCustomMenu("campaign_tick"))
+		{
+			return;
+		}
 		if (_targetHero == null)
 		{
 			EnsureEncounterTargetHero("menu_tick_recover");
 		}
 		_cameraLockWasActive = true;
 		FocusMapCameraOnMainParty();
+	}
+
+	private static bool TryResolveNativePlayerSurrenderFromCustomMenu(string reason)
+	{
+		try
+		{
+			if (PlayerEncounter.Current == null || !PlayerEncounter.PlayerSurrender)
+			{
+				return false;
+			}
+		}
+		catch
+		{
+			return false;
+		}
+		try
+		{
+			if (Game.Current?.GameStateManager?.ActiveState is MissionState)
+			{
+				return false;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (HasPendingMeetingBattleVictorySettlement())
+			{
+				return false;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (HasPendingForceNativeDefeatCaptivityMenu())
+			{
+				TryForcePendingDefeatCaptivityMenuIfReady();
+				return IsNativeCaptivityMenuActive();
+			}
+		}
+		catch
+		{
+		}
+		Logger.Log("LordEncounter", "Resolving native player surrender from custom menu. Reason=" + (reason ?? "N/A"));
+		try
+		{
+			PlayerEncounter.LeaveEncounter = false;
+			if (PlayerEncounter.Current != null)
+			{
+				PlayerEncounter.Current.IsPlayerWaiting = false;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			PlayerEncounter.Update();
+			if (IsNativeCaptivityMenuActive())
+			{
+				return true;
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("LordEncounter", "Native player surrender update failed: " + ex.Message);
+		}
+		try
+		{
+			if (TryInvokeNativeDoPlayerDefeat() && IsNativeCaptivityMenuActive())
+			{
+				return true;
+			}
+		}
+		catch (Exception ex2)
+		{
+			Logger.Log("LordEncounter", "Native player surrender DoPlayerDefeat fallback failed: " + ex2.Message);
+		}
+		MarkPendingForceNativeDefeatCaptivityMenu("native_player_surrender_" + (reason ?? "unknown"));
+		TryResolvePendingDefeatCaptivityImmediately("native_player_surrender_" + (reason ?? "unknown"));
+		TryForcePendingDefeatCaptivityMenuIfReady();
+		return IsNativeCaptivityMenuActive();
+	}
+
+	private static bool IsNativeCaptivityMenuActive()
+	{
+		try
+		{
+			string text = Campaign.Current?.CurrentMenuContext?.GameMenu?.StringId;
+			return text == "taken_prisoner" || text == "defeated_and_taken_prisoner";
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static bool TryFinishNativeLeaveEncounterFromCustomMenu(string reason)
+	{
+		try
+		{
+			if (PlayerEncounter.Current == null || !PlayerEncounter.LeaveEncounter)
+			{
+				return false;
+			}
+		}
+		catch
+		{
+			return false;
+		}
+		try
+		{
+			if (Game.Current?.GameStateManager?.ActiveState is MissionState)
+			{
+				return false;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (HasPendingForceNativeDefeatCaptivityMenu())
+			{
+				return false;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (HasPendingMeetingBattleVictorySettlement())
+			{
+				return false;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			Logger.Log("LordEncounter", "Finishing native leave encounter from custom menu. Reason=" + (reason ?? "N/A"));
+			PlayerEncounter.Finish(true);
+			return true;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("LordEncounter", "Failed to finish native leave encounter from custom menu. Reason=" + (reason ?? "N/A") + ", Error=" + ex.Message);
+			return false;
+		}
 	}
 
 	private static void TryClearEncounterRedirectSuspensionWhenBackOnMap()
@@ -2870,6 +3056,14 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 	{
 		starter.AddGameMenu("AnimusForge_lord_encounter", "{MENU_BODY_TEXT}", delegate(MenuCallbackArgs args)
 		{
+			if (TryResolveNativePlayerSurrenderFromCustomMenu("menu_init"))
+			{
+				return;
+			}
+			if (TryFinishNativeLeaveEncounterFromCustomMenu("menu_init"))
+			{
+				return;
+			}
 			Hero hero = EnsureEncounterTargetHero("menu_init");
 			bool flag = HasPendingForceNativeDefeatCaptivityMenu();
 			GameTexts.SetVariable("TARGET_NAME", (hero != null) ? hero.Name : new TextObject("领主"));
