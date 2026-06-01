@@ -400,9 +400,24 @@ namespace AnimusForge
 				Kingdom kingdom = clan?.Kingdom;
 				if (clan == null || kingdom == null) return "";
 				if (clan.IsUnderMercenaryService) return "";
+
+				// Only clan leader can make vote deals
+				if (npc != clan.Leader)
+				{
+					Logger.Log("VoteDeal", $"Non-leader deal rejected: npc={npc.StringId} clan={clan.StringId}");
+					return "";
+				}
+
 				if (!TryResolveVoteDealTarget(npc, agendaCode, optionCode, out VoteDealAgendaEntry agenda, out VoteDealOptionEntry option, out string error))
 				{
 					Logger.Log("VoteDeal", $"Targeted deal skipped: {error}");
+					return "";
+				}
+
+				// Proposer clan cannot be persuaded — agenda would be cancelled
+				if (agenda.Decision.ProposerClan != null && clan.StringId == agenda.Decision.ProposerClan.StringId)
+				{
+					Logger.Log("VoteDeal", $"Proposer clan deal rejected: clan={clan.StringId} agenda={agenda.Title}");
 					return "";
 				}
 
@@ -676,6 +691,14 @@ namespace AnimusForge
 
 				StringBuilder sb = new StringBuilder();
 
+				// Non-leader cannot make vote deals
+				if (clan.Leader != null && npc != clan.Leader)
+				{
+					sb.Append("【投票交易身份限制】你不是家族族长（你的族长是");
+					sb.Append(clan.Leader.Name?.ToString() ?? "未知");
+					sb.AppendLine("），你不能代表家族做出投票承诺。如果有人找你拉票，你必须告知对方去找你的族长商议。你不得输出VOTE_DEAL标签。");
+				}
+
 				// Existing commitments block
 				VoteDealBehavior inst = Instance ?? Campaign.Current?.GetCampaignBehavior<VoteDealBehavior>();
 				if (inst != null && inst._activeDeals != null)
@@ -707,10 +730,12 @@ namespace AnimusForge
 					List<VoteDealAgendaEntry> agendas = BuildVoteDealAgendaEntries(npc);
 					foreach (VoteDealAgendaEntry agenda in agendas)
 					{
+						bool isOwnProposal = agenda.Decision.ProposerClan?.StringId == clan.StringId;
+						string proposerNote = isOwnProposal ? "【你的家族提案，不可交易】" : "";
 						if (agenda.RemainingDays > 0)
-							sb.AppendLine($" - [{agenda.TypeLabel}] {agenda.Title}（提案人: {agenda.ProposerName}，剩余 {agenda.RemainingDays:F1} 天进入投票）");
+							sb.AppendLine($" - [{agenda.TypeLabel}] {agenda.Title}（提案人: {agenda.ProposerName}，剩余 {agenda.RemainingDays:F1} 天进入投票）{proposerNote}");
 						else
-							sb.AppendLine($" - [{agenda.TypeLabel}] {agenda.Title}（提案人: {agenda.ProposerName}，即将进入投票）");
+							sb.AppendLine($" - [{agenda.TypeLabel}] {agenda.Title}（提案人: {agenda.ProposerName}，即将进入投票）{proposerNote}");
 						foreach (VoteDealOptionEntry option in agenda.Options)
 						{
 							string sponsorText = string.IsNullOrWhiteSpace(option.SponsorName) || option.SponsorName == "未知" ? "" : $"，赞助/候选:{option.SponsorName}";
@@ -749,8 +774,10 @@ namespace AnimusForge
 				sb.AppendLine("【投票交易后处理清单】以下 A/O 编号只供后处理输出隐藏标签使用，不得让NPC正文照读。玩家可以用议程名称、城镇/国家/政策名、候选人、家族名、支持/反对等自然说法表达拉票目标；只有能唯一匹配到一个议程和一个选项时，才允许输出 [ACTION:VOTE_DEAL:议程编号:选项编号:权重:备注]。");
 				foreach (VoteDealAgendaEntry agenda in agendas)
 				{
+					bool isOwnProposal = agenda.Decision.ProposerClan?.StringId == (npc?.Clan?.StringId ?? "");
+					string proposerNote = isOwnProposal ? "【你的家族提案，不可交易】 " : "";
 					string timing = agenda.RemainingDays > 0 ? $"剩余 {agenda.RemainingDays:F1} 天" : "即将投票";
-					sb.AppendLine($"{agenda.Code}: [{agenda.TypeLabel}] {agenda.Title}（提案人:{agenda.ProposerName}，{timing}）");
+					sb.AppendLine($"{agenda.Code}: [{agenda.TypeLabel}] {agenda.Title}（提案人:{agenda.ProposerName}，{timing}）{proposerNote}");
 					foreach (VoteDealOptionEntry option in agenda.Options)
 					{
 						string sponsorText = string.IsNullOrWhiteSpace(option.SponsorName) || option.SponsorName == "未知" ? "" : $"；赞助/候选:{option.SponsorName}";
@@ -758,7 +785,7 @@ namespace AnimusForge
 						sb.AppendLine($"- {option.Code}: {option.Title}{sponsorText}{descriptionText}");
 					}
 				}
-				sb.AppendLine("【投票交易后处理硬约束】若玩家或NPC没有把议程与选项说清楚、多个议程或多个选项都可能匹配、NPC只是继续谈条件或拒绝，禁止输出 VOTE_DEAL。若NPC已对同一议程有承诺，禁止改投其他选项。");
+				sb.AppendLine("【投票交易后处理硬约束】若玩家或NPC没有把议程与选项说清楚、多个议程或多个选项都可能匹配、NPC只是继续谈条件或拒绝，禁止输出 VOTE_DEAL。若NPC不是家族族长，禁止输出VOTE_DEAL。若NPC所属氏族是某议程的提案氏族，禁止就该议程输出VOTE_DEAL。若NPC已对同一议程有承诺，禁止改投其他选项。");
 				return sb.ToString().TrimEnd();
 			}
 			catch (Exception ex)
@@ -971,6 +998,9 @@ namespace AnimusForge
 			try
 			{
 				if (clan == null || string.IsNullOrEmpty(clan.StringId)) return true;
+
+				// Safety: proposer clan vote must not be overridden — would cancel the decision
+				if (clan.StringId == __instance.ProposerClan?.StringId) return true;
 
 				VoteDealBehavior behavior = Instance ?? Campaign.Current?.GetCampaignBehavior<VoteDealBehavior>();
 				if (behavior == null) return true;
