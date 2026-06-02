@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Net.Http;
@@ -118,6 +119,8 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 
 	private const string UnsupportedContextExtractionApiWarningMessage = "该站点使用的模型不满足本mod的上下文提取要求，你依然可以继续使用，但使用后产生的任何回复内容不合理问题，不由本mod负责。";
 
+	private const string AfdianSupportUrl = "https://www.ifdian.net/a/1517599431e?utm_source=copylink&utm_medium=link";
+
 	public const string ShoutInputUiBackgroundBlack = "黑色透明";
 
 	public const string ShoutInputUiBackgroundWhite = "白色透明";
@@ -155,6 +158,10 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	public override string FolderName => "AnimusForge";
 
 	public override string FormatType => "json";
+
+	[SettingPropertyButton("支持作者（爱发电）", -1, true, "", Content = "打开爱发电", Order = 0, RequireRestart = false, HintText = "点击后会用系统默认浏览器打开爱发电页面。")]
+	[SettingPropertyGroup("0. 支持作者", GroupOrder = -400)]
+	public Action OpenAfdianSupportLink { get; set; }
 
 	[SettingPropertyText("API 地址（支持填写 Base URL）", -1, true, "", Order = 0, RequireRestart = false, HintText = "请填写你的接口地址，例如: https://api.openai.com/v1 或 https://api.openai.com/v1/chat/completions\n当你填写到 /v1 时，本模组会自动请求 /v1/chat/completions。")]
 	[SettingPropertyGroup("1. AI 核心配置/1. 主API（正文生成）", GroupOrder = -300)]
@@ -436,6 +443,10 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyInteger("知识返回上限", 1, 12, "0", Order = 0, RequireRestart = false, HintText = "控制每次对话最多向 AI 提供多少条相关知识。系统会自动推导召回和精排数量；若实际高相关知识不足，不会为了凑数硬塞。默认 4。")]
 	[SettingPropertyGroup("5. 知识检索（返回）")]
 	public int KnowledgeDirectTopN { get; set; } = 4;
+
+	[SettingPropertyInteger("实体注入上限", 1, 20, "0", Order = 1, RequireRestart = false, HintText = "控制每次对话最多向 AI 注入多少个人物、地点、家族、王国检索结果。默认 6；前处理提示词会要求越新的对话提及越靠前，运行时按该顺序优先裁剪。")]
+	[SettingPropertyGroup("5. 知识检索（返回）")]
+	public int WorldEntityInjectMaxCount { get; set; } = 6;
 
 	public int RecentDialogueTurns { get; set; } = 20;
 
@@ -919,6 +930,24 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		catch (Exception ex)
 		{
 			InformationManager.DisplayMessage(new InformationMessage("[提示词扩展] 打开大文本编辑器失败: " + ex.Message, Color.FromUint(4294901760u)));
+		}
+	}
+
+	private void OpenAfdianSupportPage()
+	{
+		try
+		{
+			Logger.Log("DuelSettings", "用户点击了[支持作者（爱发电）]按钮。");
+			Process.Start(new ProcessStartInfo(AfdianSupportUrl)
+			{
+				UseShellExecute = true
+			});
+			InformationManager.DisplayMessage(new InformationMessage("[系统] 正在打开爱发电页面。", Color.FromUint(4278255360u)));
+		}
+		catch (Exception ex)
+		{
+			InformationManager.DisplayMessage(new InformationMessage("[系统] 打开爱发电页面失败: " + ex.Message, Color.FromUint(4294901760u)));
+			Logger.Log("DuelSettings", "[WARN] 打开爱发电页面失败: " + ex);
 		}
 	}
 
@@ -2274,6 +2303,10 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 
 	public DuelSettings()
 	{
+		OpenAfdianSupportLink = delegate
+		{
+			OpenAfdianSupportPage();
+		};
 		EditPlayerCustomPromptRule = delegate
 		{
 			OpenPlayerCustomPromptRuleEditor();

@@ -1953,10 +1953,10 @@ public static class ShoutUtils
 
 	public static List<Agent> GetNearbyNPCAgents()
 	{
-		return GetNearbyNPCAgents(4f, 0.7853982f);
+		return GetNearbyNPCAgentsLegacy(4f, 0.7853982f);
 	}
 
-	public static List<Agent> GetNearbyNPCAgents(float maxDistance, float halfAngleRadians)
+	private static List<Agent> GetNearbyNPCAgentsLegacy(float maxDistance, float halfAngleRadians)
 	{
 		List<Agent> list = new List<Agent>();
 		if (Mission.Current == null || Agent.Main == null)
@@ -1980,6 +1980,44 @@ public static class ShoutUtils
 				Vec3 v = agent.Position - position;
 				v.Normalize();
 				if (Vec3.DotProduct(lookDirection, v) > num3)
+				{
+					list.Add(agent);
+				}
+			}
+		}
+		return list;
+	}
+
+	public static List<Agent> GetNearbyNPCAgents(float maxDistance, float halfAngleRadians)
+	{
+		List<Agent> list = new List<Agent>();
+		if (Mission.Current == null || Agent.Main == null)
+		{
+			return list;
+		}
+		float num = Math.Max(0.1f, maxDistance);
+		float num2 = Math.Max(0f, Math.Min((float)Math.PI, halfAngleRadians));
+		float num3 = (float)Math.Cos(num2);
+		float num4 = num * num;
+		Vec2 position = Agent.Main.Position.AsVec2;
+		Vec2 lookDirection = Agent.Main.LookDirection.AsVec2;
+		if (lookDirection.LengthSquared <= 1E-05f)
+		{
+			return list;
+		}
+		lookDirection.Normalize();
+		foreach (Agent agent in Mission.Current.Agents)
+		{
+			if (agent == Agent.Main || !agent.IsActive() || !agent.IsHuman)
+			{
+				continue;
+			}
+			Vec2 v = agent.Position.AsVec2 - position;
+			float distanceSquared = v.LengthSquared;
+			if (distanceSquared <= num4 && distanceSquared > 1E-05f)
+			{
+				v.Normalize();
+				if (Vec2.DotProduct(lookDirection, v) >= num3)
 				{
 					list.Add(agent);
 				}

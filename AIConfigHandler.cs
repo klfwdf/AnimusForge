@@ -255,6 +255,16 @@ public static class AIConfigHandler
 
 	private static readonly Regex AuxiliaryGuardrailNumberRegex = new Regex("\\d+", RegexOptions.Compiled);
 
+	private static readonly object _auxiliaryMentionedEntitiesLock = new object();
+
+	private static readonly Dictionary<string, MentionedWorldEntities> _auxiliaryMentionedEntitiesCache = new Dictionary<string, MentionedWorldEntities>(StringComparer.Ordinal);
+
+	private static readonly Queue<string> _auxiliaryMentionedEntitiesCacheOrder = new Queue<string>();
+
+	private static readonly AsyncLocal<MentionedWorldEntities> _auxiliaryMentionedEntitiesLatest = new AsyncLocal<MentionedWorldEntities>();
+
+	private const int AuxiliaryMentionedEntitiesCacheMax = 64;
+
 	public static string GlobalPrompt => ApplyPlayerDisplayNameToGuardrailText(_guardrail?.GlobalPrompt ?? "");
 
 	public static string GlobalGuardrail => ApplyPlayerDisplayNameToGuardrailText(_guardrail?.GlobalGuardrail ?? "");
@@ -2665,7 +2675,7 @@ public static class AIConfigHandler
 		stringBuilder.AppendLine("*Latest NPC/player exchange*:");
 		stringBuilder.Append("NPC: ").AppendLine(string.IsNullOrWhiteSpace(text2) ? "(none)" : NormalizeAuxiliaryRoutingRequestText(text2));
 		stringBuilder.Append("Player: ").AppendLine(string.IsNullOrWhiteSpace(text5) ? "(none)" : NormalizeAuxiliaryRoutingRequestText(text5));
-		stringBuilder.AppendLine("Select the most similar topics. You MUST output exactly " + Math.Max(1, topN) + " topic codes, ranked by similarity. Even if the dialogue seems entirely unrelated, you must still force-select the closest matching topics. Output strict JSON only: {\"rule_codes\":[\"CODE\"]}. Do not output topic numbers, prose, markdown, or any other key. Prioritize the *Latest NPC/player exchange*; use the scene history only as supporting context.");
+		stringBuilder.AppendLine("Select the most similar topics. You MUST output exactly " + Math.Max(1, topN) + " topic codes in rule_codes, ranked by similarity. Even if the dialogue seems entirely unrelated, you must still force-select the closest matching topics. Also extract all named people, places/settlements, clans/families, and kingdoms/countries explicitly mentioned in the *Latest NPC/player exchange* into mentioned_entities. Personal names and titles such as king, queen, lord, lady, noble, notable, headman, gang leader, wanderer, artisan, or ruler must go in heroes, not settlements. Do not extract the current conversation NPC/speaker's own name, role, title, aliases, or the player name merely because they are the current speakers; mentioned_entities should describe third-party entities or entities being explicitly discussed. If a name is ambiguous, put it in the closest bucket; runtime retrieval will search every extracted name across heroes, settlements, clans, and kingdoms. Order every mentioned_entities array by dialogue recency: names from the latest player line first, then latest NPC line, then newer scene history before older scene history. Use the scene history only as supporting context and do not invent names. Output strict JSON only: {\"rule_codes\":[\"CODE\"],\"mentioned_entities\":{\"heroes\":[],\"settlements\":[],\"clans\":[],\"kingdoms\":[]}}. Do not output topic numbers, prose, markdown, or any other key.");
 		return SanitizeAuxiliaryRoutingPromptDialogueSections(stringBuilder.ToString()).Trim();
 	}
 
@@ -2823,6 +2833,292 @@ public static class AIConfigHandler
 		return list;
 	}
 
+	public static void PublishAuxiliaryMentionedEntitiesForExternal(string userText, string secondaryText, string runtimeGuardrailContext, string content)
+	{
+		try
+		{
+			if (!TryParseAuxiliaryMentionedEntities(content, out var entities, out var error) || entities == null || entities.IsEmpty)
+			{
+				if (!string.IsNullOrWhiteSpace(error))
+				{
+					Logger.Log("AuxiliaryEntity", "mentioned_entities skipped parse_error=" + error);
+				}
+				return;
+			}
+			MergeLatestAuxiliaryMentionedEntities(entities);
+			string key = BuildAuxiliaryMentionedEntitiesCacheKey(userText, secondaryText, runtimeGuardrailContext);
+			if (string.IsNullOrWhiteSpace(key))
+			{
+				Logger.Log("AuxiliaryEntity", "mentioned_entities latest_only reason=empty_key " + FormatMentionedEntitiesCounts(entities));
+				return;
+			}
+			lock (_auxiliaryMentionedEntitiesLock)
+			{
+				if (!_auxiliaryMentionedEntitiesCache.TryGetValue(key, out var existing) || existing == null)
+				{
+					existing = new MentionedWorldEntities();
+					_auxiliaryMentionedEntitiesCache[key] = existing;
+					_auxiliaryMentionedEntitiesCacheOrder.Enqueue(key);
+				}
+				existing.Merge(entities);
+				while (_auxiliaryMentionedEntitiesCache.Count > AuxiliaryMentionedEntitiesCacheMax && _auxiliaryMentionedEntitiesCacheOrder.Count > 0)
+				{
+					string oldKey = _auxiliaryMentionedEntitiesCacheOrder.Dequeue();
+					if (!string.Equals(oldKey, key, StringComparison.Ordinal))
+					{
+						_auxiliaryMentionedEntitiesCache.Remove(oldKey);
+					}
+				}
+			}
+			Logger.Log("AuxiliaryEntity", "mentioned_entities published key=" + HashAuxiliaryMentionKey(key) + " " + FormatMentionedEntitiesCounts(entities));
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("AuxiliaryEntity", "mentioned_entities publish exception=" + ex.Message);
+		}
+	}
+
+	public static void ClearLatestAuxiliaryMentionedEntitiesForExternal()
+	{
+		try
+		{
+			_auxiliaryMentionedEntitiesLatest.Value = null;
+		}
+		catch
+		{
+		}
+	}
+
+	public static MentionedWorldEntities GetAuxiliaryMentionedEntitiesForExternal(string userText, string secondaryText, string runtimeGuardrailContext)
+	{
+		try
+		{
+			string key = BuildAuxiliaryMentionedEntitiesCacheKey(userText, secondaryText, runtimeGuardrailContext);
+			if (string.IsNullOrWhiteSpace(key))
+			{
+				return new MentionedWorldEntities();
+			}
+			lock (_auxiliaryMentionedEntitiesLock)
+			{
+				if (_auxiliaryMentionedEntitiesCache.TryGetValue(key, out var entities) && entities != null)
+				{
+					Logger.Log("AuxiliaryEntity", "mentioned_entities get hit key=" + HashAuxiliaryMentionKey(key) + " " + FormatMentionedEntitiesCounts(entities));
+					return entities.Clone();
+				}
+			}
+			Logger.Log("AuxiliaryEntity", "mentioned_entities get miss key=" + HashAuxiliaryMentionKey(key));
+		}
+		catch
+		{
+		}
+		return new MentionedWorldEntities();
+	}
+
+	public static MentionedWorldEntities GetLatestAuxiliaryMentionedEntitiesForExternal()
+	{
+		try
+		{
+			return _auxiliaryMentionedEntitiesLatest.Value?.Clone() ?? new MentionedWorldEntities();
+		}
+		catch
+		{
+			return new MentionedWorldEntities();
+		}
+	}
+
+	private static void MergeLatestAuxiliaryMentionedEntities(MentionedWorldEntities entities)
+	{
+		try
+		{
+			if (entities == null || entities.IsEmpty)
+			{
+				return;
+			}
+			MentionedWorldEntities latest = _auxiliaryMentionedEntitiesLatest.Value;
+			if (latest == null)
+			{
+				latest = new MentionedWorldEntities();
+				_auxiliaryMentionedEntitiesLatest.Value = latest;
+			}
+			latest.Merge(entities);
+		}
+		catch
+		{
+		}
+	}
+
+	private static string FormatMentionedEntitiesCounts(MentionedWorldEntities entities)
+	{
+		if (entities == null)
+		{
+			return "heroes=0 settlements=0 clans=0 kingdoms=0";
+		}
+		return "heroes=" + (entities.Heroes?.Count ?? 0) + " settlements=" + (entities.Settlements?.Count ?? 0) + " clans=" + (entities.Clans?.Count ?? 0) + " kingdoms=" + (entities.Kingdoms?.Count ?? 0);
+	}
+
+	private static string HashAuxiliaryMentionKey(string value)
+	{
+		try
+		{
+			uint hash = 2166136261u;
+			string text = value ?? "";
+			for (int i = 0; i < text.Length; i++)
+			{
+				hash ^= text[i];
+				hash *= 16777619u;
+			}
+			return hash.ToString("x8");
+		}
+		catch
+		{
+			return "00000000";
+		}
+	}
+
+	public static bool TryParseAuxiliaryMentionedEntities(string content, out MentionedWorldEntities entities, out string error)
+	{
+		entities = new MentionedWorldEntities();
+		error = "";
+		try
+		{
+			string text = StripAuxiliaryJsonCodeFence(content);
+			if (string.IsNullOrWhiteSpace(text))
+			{
+				error = "empty_content";
+				return false;
+			}
+			JObject root = JObject.Parse(text);
+			JToken token = GetJsonPropertyIgnoreCase(root, "mentioned_entities", "entities", "mentionedEntities");
+			if (token == null || token.Type == JTokenType.Null)
+			{
+				return false;
+			}
+			JObject obj = token as JObject;
+			if (obj == null)
+			{
+				error = "mentioned_entities_not_object";
+				return false;
+			}
+			FillMentionedEntityList(entities.Heroes, GetJsonPropertyIgnoreCase(obj, "heroes", "persons", "people", "characters", "npcs"));
+			FillMentionedEntityList(entities.Settlements, GetJsonPropertyIgnoreCase(obj, "settlements", "places", "locations", "towns", "castles", "villages"));
+			FillMentionedEntityList(entities.Clans, GetJsonPropertyIgnoreCase(obj, "clans", "families", "houses"));
+			FillMentionedEntityList(entities.Kingdoms, GetJsonPropertyIgnoreCase(obj, "kingdoms", "countries", "nations", "realms", "factions"));
+			return !entities.IsEmpty;
+		}
+		catch (Exception ex)
+		{
+			error = ex.GetType().Name + ":" + ex.Message;
+			entities = new MentionedWorldEntities();
+			return false;
+		}
+	}
+
+	private static string BuildAuxiliaryMentionedEntitiesCacheKey(string userText, string secondaryText, string runtimeGuardrailContext)
+	{
+		string a = NormalizeSemanticText(userText);
+		string b = NormalizeSemanticText(secondaryText);
+		string c = NormalizeSemanticText(runtimeGuardrailContext);
+		if (string.IsNullOrWhiteSpace(a) && string.IsNullOrWhiteSpace(b))
+		{
+			return "";
+		}
+		return TrimAuxiliaryMentionCachePart(a, 500) + "\n--npc--\n" + TrimAuxiliaryMentionCachePart(b, 500) + "\n--ctx--\n" + TrimAuxiliaryMentionCachePart(c, 300);
+	}
+
+	private static string TrimAuxiliaryMentionCachePart(string value, int maxLength)
+	{
+		string text = (value ?? "").Trim();
+		if (text.Length <= maxLength)
+		{
+			return text;
+		}
+		return text.Substring(0, maxLength);
+	}
+
+	private static JToken GetJsonPropertyIgnoreCase(JObject obj, params string[] names)
+	{
+		if (obj == null || names == null)
+		{
+			return null;
+		}
+		foreach (string name in names)
+		{
+			if (string.IsNullOrWhiteSpace(name))
+			{
+				continue;
+			}
+			JProperty prop = obj.Properties().FirstOrDefault((JProperty x) => string.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase));
+			if (prop != null)
+			{
+				return prop.Value;
+			}
+		}
+		return null;
+	}
+
+	private static void FillMentionedEntityList(List<string> target, JToken token)
+	{
+		if (target == null || token == null || token.Type == JTokenType.Null)
+		{
+			return;
+		}
+		if (token is JArray array)
+		{
+			foreach (JToken item in array)
+			{
+				AddMentionedEntityName(target, ExtractMentionedEntityName(item));
+				if (target.Count >= 16)
+				{
+					break;
+				}
+			}
+			return;
+		}
+		AddMentionedEntityName(target, ExtractMentionedEntityName(token));
+	}
+
+	private static string ExtractMentionedEntityName(JToken token)
+	{
+		if (token == null || token.Type == JTokenType.Null)
+		{
+			return "";
+		}
+		if (token is JObject obj)
+		{
+			JToken name = GetJsonPropertyIgnoreCase(obj, "name", "text", "value", "label", "id");
+			return NormalizeMentionedEntityName(name?.ToString() ?? "");
+		}
+		return NormalizeMentionedEntityName(token.ToString());
+	}
+
+	private static void AddMentionedEntityName(List<string> target, string value)
+	{
+		string text = NormalizeMentionedEntityName(value);
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return;
+		}
+		if (!target.Any((string x) => string.Equals((x ?? "").Trim(), text, StringComparison.OrdinalIgnoreCase)))
+		{
+			target.Add(text);
+		}
+	}
+
+	private static string NormalizeMentionedEntityName(string value)
+	{
+		string text = (value ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return "";
+		}
+		text = text.Trim(' ', '\t', '\r', '\n', '"', '\'', '“', '”', '‘', '’', '《', '》', '<', '>', '[', ']', '【', '】', '(', ')', '（', '）');
+		if (text.Length > 80)
+		{
+			text = text.Substring(0, 80).Trim();
+		}
+		return text;
+	}
+
 	private static int GetAuxiliaryGuardrailTopicNumberUpperBound()
 	{
 		try
@@ -2901,6 +3197,7 @@ public static class AIConfigHandler
 				snapshot = null;
 				return false;
 			}
+			PublishAuxiliaryMentionedEntitiesForExternal(userText, secondaryText, runtimeGuardrailContext, content);
 			List<string> list2 = ParseAuxiliaryGuardrailRuleCodes(content, list);
 			if (list2.Count <= 0)
 			{
@@ -3019,6 +3316,7 @@ public static class AIConfigHandler
 			{
 				return false;
 			}
+			PublishAuxiliaryMentionedEntitiesForExternal(userText, secondaryText, runtimeGuardrailContext, content);
 			List<string> codes = ParseAuxiliaryGuardrailRuleCodes(content, topics);
 			if (codes.Count <= 0)
 			{

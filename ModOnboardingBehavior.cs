@@ -2016,11 +2016,11 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			if (importedDatabase)
 			{
 				InformationManager.DisplayMessage(new InformationMessage("首次导入完成：已解锁 AnimusForge 对话/场景喊话。"));
-				InformationManager.DisplayMessage(new InformationMessage("接下来请填写玩家称呼与角色介绍；角色介绍也可以直接跳过。"));
+				InformationManager.DisplayMessage(new InformationMessage("接下来请填写玩家称呼、外貌与背景；这些内容也可以直接跳过。"));
 			}
 			else
 			{
-				InformationManager.DisplayMessage(new InformationMessage("已跳过数据库导入。接下来请填写玩家称呼与角色介绍；角色介绍也可以直接跳过。"));
+				InformationManager.DisplayMessage(new InformationMessage("已跳过数据库导入。接下来请填写玩家称呼、外貌与背景；这些内容也可以直接跳过。"));
 			}
 			knowledgeLibraryBehavior.OpenPlayerPersonaSetup(delegate
 			{
@@ -2357,7 +2357,6 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 				orderby d.LastWriteTimeUtc descending
 				select d.Name).ToList();
 			List<InquiryElement> list2 = new List<InquiryElement>();
-			list2.Add(new InquiryElement("__latest__", "自动选择最新导出（推荐）", null));
 			list2.Add(new InquiryElement("__manual__", "手动输入文件夹名", null));
 			foreach (string item in list)
 			{
@@ -2377,9 +2376,15 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 					string text = selected[0].Identifier as string;
 					if (text == "__manual__")
 					{
-						InformationManager.ShowTextInquiry(new TextInquiryData("手动输入文件夹名", "请输入 PlayerExports 下的文件夹名（留空=最新）：", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "确定", "取消", delegate(string input)
+						InformationManager.ShowTextInquiry(new TextInquiryData("手动输入文件夹名", "请输入 PlayerExports 下的文件夹名：", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "确定", "取消", delegate(string input)
 						{
 							string folderName2 = (input ?? "").Trim();
+							if (string.IsNullOrWhiteSpace(folderName2))
+							{
+								InformationManager.DisplayMessage(new InformationMessage("请输入导入文件夹名，或从列表中选择一个文件夹。"));
+								OpenImportFolderPicker(onReturn);
+								return;
+							}
 							TryImportRequiredSetAndUnlock(folderName2, onReturn);
 						}, delegate
 						{
@@ -2388,8 +2393,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 					}
 					else
 					{
-						string folderName = ((text == "__latest__") ? "" : (text ?? ""));
-						TryImportRequiredSetAndUnlock(folderName, onReturn);
+						TryImportRequiredSetAndUnlock(text ?? "", onReturn);
 					}
 				}
 			}, delegate
@@ -2409,6 +2413,12 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 	{
 		try
 		{
+			if (string.IsNullOrWhiteSpace(folderName))
+			{
+				InformationManager.DisplayMessage(new InformationMessage("请选择要导入的 PlayerExports 文件夹。"));
+				OpenImportFolderPicker(onReturn);
+				return;
+			}
 			string text = ResolveImportFolderPath(folderName);
 			if (string.IsNullOrWhiteSpace(text) || !Directory.Exists(text))
 			{
@@ -2627,32 +2637,13 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		return text.Trim();
 	}
 
-	private static string FindLatestExportFolder(string root)
-	{
-		try
-		{
-			if (!Directory.Exists(root))
-			{
-				return null;
-			}
-			DirectoryInfo directoryInfo = new DirectoryInfo(root);
-			return (from d in directoryInfo.GetDirectories()
-				orderby d.LastWriteTimeUtc descending
-				select d).FirstOrDefault()?.FullName;
-		}
-		catch
-		{
-			return null;
-		}
-	}
-
 	private static string ResolveImportFolderPath(string folderName)
 	{
 		string playerExportsRootPath = GetPlayerExportsRootPath();
 		string text = SanitizeFolderName(folderName);
 		if (string.IsNullOrEmpty(text))
 		{
-			return FindLatestExportFolder(playerExportsRootPath);
+			return null;
 		}
 		return Path.Combine(playerExportsRootPath, text);
 	}

@@ -773,6 +773,8 @@ public class ShoutBehavior : CampaignBehaviorBase
 
 	private static readonly uint ShoutPreviewMarkerTintColor = new Color(0.08f, 1f, 1f, 1f).ToUnsignedInteger();
 
+	private static readonly uint ShoutPreviewAgentHighlightColor = new Color(1f, 0.84f, 0.2f, 1f).ToUnsignedInteger();
+
 	private const string ShoutPreviewMarkerItemId = "animusforge_denar_ingot_item";
 
 	private const string ShoutPreviewSecondaryMarkerItemId = "animusforge_denar_coin_item";
@@ -794,6 +796,8 @@ public class ShoutBehavior : CampaignBehaviorBase
 	private ShoutTargetingContext _activeShoutTargetingContext = null;
 
 	private readonly List<GameEntity> _shoutPreviewMarkerEntities = new List<GameEntity>();
+
+	private readonly HashSet<int> _shoutPreviewHighlightedAgentIndices = new HashSet<int>();
 
 	private ItemObject _shoutPreviewMarkerItemObject = null;
 
@@ -885,6 +889,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 		_shoutHotkeyChargeKey = InputKey.Invalid;
 		_shoutHotkeyChargeStartedAt = -1f;
 		ClearShoutRangePreviewEntities();
+		ClearShoutPreviewAgentHighlights();
 	}
 
 	private ShoutTargetingContext BuildCurrentShoutTargetingContext()
@@ -1002,10 +1007,75 @@ public class ShoutBehavior : CampaignBehaviorBase
 			Vec3 center = GetShoutPreviewGroundPoint(Agent.Main.Position);
 			List<ShoutPreviewLineSegment> previewSegments = BuildShoutPreviewLineSegments(center, targetingContext.RangeMeters, startAngle, endAngle);
 			UpdateShoutPreviewLineEntities(previewSegments);
+			UpdateShoutPreviewAgentHighlights(targetingContext);
 		}
 		catch (Exception ex)
 		{
 			Logger.LogVerbose("ShoutBehavior", "hotkey_charge_preview_failed", () => "[Hotkey] range preview failed: " + ex.Message, 2.0);
+		}
+	}
+
+	private void UpdateShoutPreviewAgentHighlights(ShoutTargetingContext targetingContext)
+	{
+		HashSet<int> desiredAgentIndices = new HashSet<int>();
+		if (targetingContext?.CandidateAgentIndices != null)
+		{
+			foreach (int agentIndex in targetingContext.CandidateAgentIndices)
+			{
+				if (agentIndex >= 0)
+				{
+					desiredAgentIndices.Add(agentIndex);
+				}
+			}
+		}
+		List<int> staleAgentIndices = _shoutPreviewHighlightedAgentIndices.Where(agentIndex => !desiredAgentIndices.Contains(agentIndex)).ToList();
+		foreach (int agentIndex in staleAgentIndices)
+		{
+			TrySetShoutPreviewAgentHighlight(agentIndex, highlighted: false);
+			_shoutPreviewHighlightedAgentIndices.Remove(agentIndex);
+		}
+		foreach (int agentIndex in desiredAgentIndices)
+		{
+			if (TrySetShoutPreviewAgentHighlight(agentIndex, highlighted: true))
+			{
+				_shoutPreviewHighlightedAgentIndices.Add(agentIndex);
+			}
+		}
+	}
+
+	private void ClearShoutPreviewAgentHighlights()
+	{
+		if (_shoutPreviewHighlightedAgentIndices.Count == 0)
+		{
+			return;
+		}
+		List<int> highlightedAgentIndices = _shoutPreviewHighlightedAgentIndices.ToList();
+		_shoutPreviewHighlightedAgentIndices.Clear();
+		foreach (int agentIndex in highlightedAgentIndices)
+		{
+			TrySetShoutPreviewAgentHighlight(agentIndex, highlighted: false);
+		}
+	}
+
+	private static bool TrySetShoutPreviewAgentHighlight(int agentIndex, bool highlighted)
+	{
+		if (agentIndex < 0 || Mission.Current?.Agents == null)
+		{
+			return false;
+		}
+		try
+		{
+			Agent agent = Mission.Current.Agents.FirstOrDefault(a => a != null && a.Index == agentIndex && a.IsActive());
+			if (agent?.AgentVisuals == null)
+			{
+				return false;
+			}
+			agent.AgentVisuals.SetContourColor(highlighted ? ShoutPreviewAgentHighlightColor : (uint?)null);
+			return true;
+		}
+		catch
+		{
+			return false;
 		}
 	}
 
@@ -1398,6 +1468,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 			return;
 		}
 		_activeShoutTargetingContext = targetingContext;
+		LogShoutTargetingContextSnapshot(openModeMenu, targetingContext);
 		BeginShoutProcessing(openModeMenu ? "hotkey_special_menu" : "hotkey_shout_input");
 		try
 		{
@@ -1416,6 +1487,18 @@ public class ShoutBehavior : CampaignBehaviorBase
 			ResumeGame();
 			InformationManager.DisplayMessage(new InformationMessage("[场景喊话] 打开喊话界面失败，已重置状态。", new Color(1f, 0.3f, 0.3f)));
 		}
+	}
+
+	private static void LogShoutTargetingContextSnapshot(bool openModeMenu, ShoutTargetingContext targetingContext)
+	{
+		if (targetingContext == null)
+		{
+			Logger.LogVerbose("ShoutBehavior", "hotkey_targeting_snapshot_null", () => "[Hotkey] targeting snapshot is null mode=" + (openModeMenu ? "special" : "direct"), 1.0);
+			return;
+		}
+		int count = targetingContext.CandidateAgentIndices?.Count ?? 0;
+		float totalAngleDegrees = targetingContext.HalfAngleRadians * 2f * 57.29578f;
+		Logger.LogVerbose("ShoutBehavior", "hotkey_targeting_snapshot", () => "[Hotkey] targeting snapshot mode=" + (openModeMenu ? "special" : "direct") + " range=" + targetingContext.RangeMeters.ToString("0.##") + " angle=" + totalAngleDegrees.ToString("0.#") + " candidates=" + count + " primary=" + targetingContext.PrimaryAgentIndex, 0.5);
 	}
 
 	private void BeginShoutProcessing(string reason)
@@ -6239,6 +6322,10 @@ private static string FormatSceneKnowledgeSection(string text)
 		{
 			FlushCurrentBlock();
 		}
+		if (trimmed.StartsWith("【玩家外貌信息（常驻）】", StringComparison.Ordinal))
+		{
+			FlushCurrentBlock();
+		}
 		if (currentBlock.Length > 0)
 		{
 			currentBlock.AppendLine();
@@ -6268,7 +6355,7 @@ private static void SplitSceneExtraSections(string text, out string miscSection,
 	{
 		string rawLine = lines[i] ?? "";
 		string trimmed = rawLine.Trim();
-		if (!inKnowledgeSection && (string.Equals(trimmed, "参与互动让你的脑海里浮现了这些知识", StringComparison.Ordinal) || trimmed.StartsWith("【以下是关于（", StringComparison.Ordinal)))
+		if (!inKnowledgeSection && (string.Equals(trimmed, "参与互动让你的脑海里浮现了这些知识", StringComparison.Ordinal) || trimmed.StartsWith("【以下是关于（", StringComparison.Ordinal) || trimmed.StartsWith("【玩家外貌信息（常驻）】", StringComparison.Ordinal)))
 		{
 			inRuleSection = false;
 			inKnowledgeSection = true;
@@ -11050,7 +11137,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		return "";
 	}
 
-	public static string RunCourierActionPostprocessForExternal(Hero targetHero, CharacterObject targetCharacter, string npcName, string playerText, string historyText, string replyText, bool duelRuleInjected, bool rewardRuleInjected, bool loanRuleInjected, bool kingdomServiceRuleInjected, bool lordsHallRuleInjected, bool meetingReleaseRuleInjected, bool vanillaIssueRuleInjected, bool heroJoinPartyRuleInjected, bool sceneMechanismRuleInjected, bool partyTransferRuleInjected, bool settlementTransferRuleInjected, bool voteDealRuleInjected = false, List<string> preprocessRuleHits = null)
+	public static string RunCourierActionPostprocessForExternal(Hero targetHero, CharacterObject targetCharacter, string npcName, string playerText, string historyText, string replyText, bool duelRuleInjected, bool rewardRuleInjected, bool loanRuleInjected, bool kingdomServiceRuleInjected, bool lordsHallRuleInjected, bool meetingReleaseRuleInjected, bool vanillaIssueRuleInjected, bool heroJoinPartyRuleInjected, bool sceneMechanismRuleInjected, bool partyTransferRuleInjected, bool settlementTransferRuleInjected, bool voteDealRuleInjected = false, List<string> preprocessRuleHits = null, string entityPostprocessContext = null)
 	{
 		string text = StripActionTagsForSceneSpeech(replyText ?? "");
 		string runtimeTargetKingdomId = ResolveCourierRuntimeTargetKingdomId(targetHero, targetCharacter);
@@ -11201,6 +11288,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				marriageTargetCandidates = RomanceSystemBehavior.Instance.BuildMarriagePostprocessTargetCandidatesBlockForExternal(marriageSpeaker);
 				marriageFactHint = RomanceSystemBehavior.Instance.BuildMarriagePostprocessFactHintBlockForExternal(marriageSpeaker);
 			}
+			runtimeContext = AppendPostprocessContextBlockForScene(runtimeContext, entityPostprocessContext);
 			string systemPrompt = AIConfigHandler.BuildActionPostprocessSystemPrompt(tagRules, moodRules, displayName, sharedItemList, playerItemList, debtHint, marriagePlayerCandidates, marriageTargetCandidates, marriageFactHint);
 			string userPrompt = BuildSceneActionPostprocessUserPrompt(actionPostprocessUserPromptTemplate, tagRules, displayName, normalizedHistory, AIConfigHandler.BuildActionPostprocessLatestReplyBlock(playerText, text, displayName, normalizedHistory), sharedItemList, playerItemList, debtHint, marriagePlayerCandidates, marriageTargetCandidates, marriageFactHint, runtimeContext);
 			if (!AIConfigHandler.TryCallAuxiliaryActionPostprocess(systemPrompt, userPrompt, 5000, 0f, out var content, out var error))
@@ -12739,7 +12827,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		return string.Join("\n", list.Concat(new string[1] { text }).Where((string x) => !string.IsNullOrWhiteSpace(x))).Trim();
 	}
 
-	private static string TryRunSceneUnifiedActionPostprocess(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, string npcName, string playerText, string historyText, string replyText, bool duelRuleInjected, bool rewardRuleInjected, bool loanRuleInjected, bool kingdomServiceRuleInjected, bool lordsHallRuleInjected, bool meetingReleaseRuleInjected, bool vanillaIssueRuleInjected, bool heroJoinPartyRuleInjected, bool sceneMechanismRuleInjected, bool partyTransferRuleInjected, bool settlementTransferRuleInjected, bool voteDealRuleInjected, bool marriageRuleInjected, List<RewardSystemBehavior.DuelStakeOption> duelStakeOptions, List<PostprocessRuleEntry> kingdomServiceRules, List<PostprocessRuleEntry> sceneMechanismRules, List<SceneSummonPromptTarget> sceneSummonTargets, List<SceneGuidePromptTarget> sceneGuideTargets)
+	private static string TryRunSceneUnifiedActionPostprocess(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, string npcName, string playerText, string historyText, string replyText, bool duelRuleInjected, bool rewardRuleInjected, bool loanRuleInjected, bool kingdomServiceRuleInjected, bool lordsHallRuleInjected, bool meetingReleaseRuleInjected, bool vanillaIssueRuleInjected, bool heroJoinPartyRuleInjected, bool sceneMechanismRuleInjected, bool partyTransferRuleInjected, bool settlementTransferRuleInjected, bool voteDealRuleInjected, bool marriageRuleInjected, List<RewardSystemBehavior.DuelStakeOption> duelStakeOptions, List<PostprocessRuleEntry> kingdomServiceRules, List<PostprocessRuleEntry> sceneMechanismRules, List<SceneSummonPromptTarget> sceneSummonTargets, List<SceneGuidePromptTarget> sceneGuideTargets, string entityPostprocessContext = null)
 	{
 		string text = StripActionTagsForSceneSpeech(replyText ?? "");
 		if (sceneMechanismRuleInjected)
@@ -12896,6 +12984,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			marriageTargetCandidates = RomanceSystemBehavior.Instance.BuildMarriagePostprocessTargetCandidatesBlockForExternal(marriageSpeaker);
 			marriageFactHint = RomanceSystemBehavior.Instance.BuildMarriagePostprocessFactHintBlockForExternal(marriageSpeaker);
 		}
+		runtimeContext = AppendPostprocessContextBlockForScene(runtimeContext, entityPostprocessContext);
 		string text8 = AIConfigHandler.BuildActionPostprocessSystemPrompt(text3, text4, text20, text5, text6, text7, marriagePlayerCandidates, marriageTargetCandidates, marriageFactHint);
 		string text9 = BuildSceneActionPostprocessUserPrompt(actionPostprocessUserPromptTemplate, text3, text20, text2, AIConfigHandler.BuildActionPostprocessLatestReplyBlock(playerText, text, text20, text2), text5, text6, text7, marriagePlayerCandidates, marriageTargetCandidates, marriageFactHint, runtimeContext);
 		if (!AIConfigHandler.TryCallAuxiliaryActionPostprocess(text8, text9, 5000, 0f, out var content, out var error))
@@ -13428,7 +13517,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 	}
 
-	private Task QueueDeferredScenePostprocessActions(NpcDataPacket currentSpeaker, List<NpcDataPacket> allNpcData, Hero speakingHero, CharacterObject npcCharacter, string privateRecentWindowSection, string scenePublicHistorySection, string playerText, string replyText, bool duelRuleInjected, bool rewardRuleInjected, bool loanRuleInjected, bool kingdomServiceRuleInjected, bool lordsHallRuleInjected, bool meetingReleaseRuleInjected, bool vanillaIssueRuleInjected, bool heroJoinPartyRuleInjected, bool sceneMechanismRuleInjected, bool partyTransferRuleInjected, bool settlementTransferRuleInjected, bool voteDealRuleInjected, bool marriageRuleInjected, List<RewardSystemBehavior.DuelStakeOption> duelStakeOptions, List<PostprocessRuleEntry> kingdomServiceRules, List<PostprocessRuleEntry> sceneMechanismRules, int conversationEpoch, List<SceneSummonPromptTarget> sceneSummonTargets, List<SceneGuidePromptTarget> sceneGuideTargets)
+	private Task QueueDeferredScenePostprocessActions(NpcDataPacket currentSpeaker, List<NpcDataPacket> allNpcData, Hero speakingHero, CharacterObject npcCharacter, string privateRecentWindowSection, string scenePublicHistorySection, string playerText, string replyText, bool duelRuleInjected, bool rewardRuleInjected, bool loanRuleInjected, bool kingdomServiceRuleInjected, bool lordsHallRuleInjected, bool meetingReleaseRuleInjected, bool vanillaIssueRuleInjected, bool heroJoinPartyRuleInjected, bool sceneMechanismRuleInjected, bool partyTransferRuleInjected, bool settlementTransferRuleInjected, bool voteDealRuleInjected, bool marriageRuleInjected, List<RewardSystemBehavior.DuelStakeOption> duelStakeOptions, List<PostprocessRuleEntry> kingdomServiceRules, List<PostprocessRuleEntry> sceneMechanismRules, int conversationEpoch, List<SceneSummonPromptTarget> sceneSummonTargets, List<SceneGuidePromptTarget> sceneGuideTargets, string entityPostprocessContext = null)
 	{
 		if (currentSpeaker == null || string.IsNullOrWhiteSpace(replyText))
 		{
@@ -13506,7 +13595,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				AIConfigHandler.SetGuardrailRuntimeTargetTroop(runtimeTargetTroopId);
 				AIConfigHandler.SetGuardrailRuntimeTargetUnnamedRank(runtimeTargetUnnamedRank);
 				AIConfigHandler.SetGuardrailRuntimeTargetAgentIndex(runtimeTargetAgentIndex);
-				string text = TryRunSceneUnifiedActionPostprocess(speakingHero, npcCharacter, runtimeTargetAgentIndex, GetSceneNpcHistoryNameForPrompt(currentSpeaker), playerText, historyForPostprocess, replySnapshot, duelRuleInjected, rewardRuleInjected, loanRuleInjected, kingdomServiceRuleInjected, lordsHallRuleInjected, meetingReleaseRuleInjected, vanillaIssueRuleInjected, heroJoinPartyRuleInjected, sceneMechanismRuleInjected, partyTransferRuleInjected, settlementTransferRuleInjected, voteDealRuleInjected, marriageRuleInjected, duelStakeOptions, kingdomServiceRules, sceneMechanismRuleSnapshot, summonSnapshot, guideSnapshot);
+				string text = TryRunSceneUnifiedActionPostprocess(speakingHero, npcCharacter, runtimeTargetAgentIndex, GetSceneNpcHistoryNameForPrompt(currentSpeaker), playerText, historyForPostprocess, replySnapshot, duelRuleInjected, rewardRuleInjected, loanRuleInjected, kingdomServiceRuleInjected, lordsHallRuleInjected, meetingReleaseRuleInjected, vanillaIssueRuleInjected, heroJoinPartyRuleInjected, sceneMechanismRuleInjected, partyTransferRuleInjected, settlementTransferRuleInjected, voteDealRuleInjected, marriageRuleInjected, duelStakeOptions, kingdomServiceRules, sceneMechanismRuleSnapshot, summonSnapshot, guideSnapshot, entityPostprocessContext);
 				if (queuedSceneSessionId != Volatile.Read(ref _sceneHistorySessionId))
 				{
 					Logger.Log("ShoutBehavior", "[DeferredPostprocess] skipped stale task after_call npc=" + (speakingHero?.StringId ?? currentSpeaker?.Name ?? "unknown") + " queuedSession=" + queuedSceneSessionId + " currentSession=" + Volatile.Read(ref _sceneHistorySessionId));
@@ -14609,6 +14698,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				List<PostprocessRuleEntry> kingdomServicePostprocessRules = null;
 				List<PostprocessRuleEntry> sceneMechanismPostprocessRules = null;
 				List<string> postprocessPreprocessHits = new List<string>();
+				string postprocessEntityContext = "";
 				bool endRequested = false;
 				int resolvedRelayTargetAgentIndex = -1;
 				if (firstTurn)
@@ -14633,6 +14723,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					string npcKingdomIdOverride = TryGetKingdomIdOverrideFromAgent(npcAgent);
 					MyBehavior.ShoutPromptContext ctx = MyBehavior.BuildShoutPromptContextForExternal(contextHero, playerText, fullExtra, cultureId, hasAnyHero: currentSpeaker.IsHero, targetCharacter: npcCharacter, kingdomIdOverride: npcKingdomIdOverride, targetAgentIndex: currentSpeaker.AgentIndex, usePrefetchedLoreContext: hasPrecomputed && precomputed != null && precomputed.HasLoreContext, prefetchedLoreContext: precomputed?.LoreContext);
 					postprocessPreprocessHits = ctx?.PreprocessRuleIds ?? new List<string>();
+					postprocessEntityContext = ctx?.EntityPostprocessContext ?? "";
 					StringBuilder local = new StringBuilder();
 					local.Append(commonCandidatesList);
 					string scenePatienceInstruction = "";
@@ -14829,7 +14920,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					if (flag11)
 					{
 						string replyForPostprocess = string.IsNullOrWhiteSpace(historyText) ? cleaned : historyText;
-						_ = QueueDeferredScenePostprocessActions(currentSpeaker, allNpcData, speakingHero, npcCharacter, scenePrivateRecentWindowSection, scenePublicHistorySection, playerText, replyForPostprocess, duelPostprocessSelected, rewardPostprocessSelected, loanPostprocessSelected, kingdomServicePostprocessSelected, lordsHallPostprocessSelected, meetingReleasePostprocessSelected, vanillaIssuePostprocessSelected, heroJoinPartyPostprocessSelected, sceneMechanismPostprocessSelected, partyTransferPostprocessSelected, settlementTransferPostprocessSelected, voteDealPostprocessSelected, marriagePostprocessSelected, duelStakeOptions, kingdomServicePostprocessRules, sceneMechanismPostprocessRules, conversationEpoch, sceneSummonTargets, sceneGuideTargets);
+						_ = QueueDeferredScenePostprocessActions(currentSpeaker, allNpcData, speakingHero, npcCharacter, scenePrivateRecentWindowSection, scenePublicHistorySection, playerText, replyForPostprocess, duelPostprocessSelected, rewardPostprocessSelected, loanPostprocessSelected, kingdomServicePostprocessSelected, lordsHallPostprocessSelected, meetingReleasePostprocessSelected, vanillaIssuePostprocessSelected, heroJoinPartyPostprocessSelected, sceneMechanismPostprocessSelected, partyTransferPostprocessSelected, settlementTransferPostprocessSelected, voteDealPostprocessSelected, marriagePostprocessSelected, duelStakeOptions, kingdomServicePostprocessRules, sceneMechanismPostprocessRules, conversationEpoch, sceneSummonTargets, sceneGuideTargets, postprocessEntityContext);
 					}
 				}
 				else

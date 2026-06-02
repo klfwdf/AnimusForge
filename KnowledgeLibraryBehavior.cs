@@ -128,6 +128,8 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 	{
 		public int Version = 1;
 
+		public string PlayerAppearance = "";
+
 		public List<LoreRule> Rules = new List<LoreRule>();
 	}
 
@@ -586,6 +588,61 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			return s;
 		}
 		return s.Substring(0, maxChars).Trim();
+	}
+
+	private static string NormalizePlayerAppearanceForStorage(string input)
+	{
+		return (input ?? "").Replace("\r\n", "\n").Replace("\r", "\n").Trim();
+	}
+
+	private string GetPlayerAppearanceForPrompt()
+	{
+		try
+		{
+			return NormalizePlayerAppearanceForStorage(_file?.PlayerAppearance);
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	private static string BuildPermanentPlayerAppearanceContext(string npcDisplayName, string appearance)
+	{
+		string text = NormalizePlayerAppearanceForStorage(appearance);
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return "";
+		}
+		string text2 = (npcDisplayName ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text2))
+		{
+			text2 = "该NPC";
+		}
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.AppendLine(" ");
+		stringBuilder.AppendLine("【玩家外貌信息（常驻）】");
+		stringBuilder.AppendLine(text2 + "每次与玩家面对面互动时，都可以直接观察到这些外貌特征；这不是玩家的背景、姓名或来历。");
+		stringBuilder.AppendLine(text);
+		return stringBuilder.ToString().TrimEnd();
+	}
+
+	private static void AppendPermanentPlayerAppearanceContext(StringBuilder sb, string npcDisplayName, string appearance)
+	{
+		if (sb == null)
+		{
+			return;
+		}
+		string text = BuildPermanentPlayerAppearanceContext(npcDisplayName, appearance);
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return;
+		}
+		if (sb.Length > 0)
+		{
+			sb.AppendLine();
+		}
+		sb.AppendLine(text);
 	}
 
 	private static string Hash8(string s)
@@ -2989,6 +3046,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		{
 			_file = new KnowledgeFile();
 		}
+		_file.PlayerAppearance = NormalizePlayerAppearanceForStorage(_file.PlayerAppearance);
 		StripSemanticPrototypes();
 		if (dataStore != null && dataStore.IsSaving)
 		{
@@ -5554,6 +5612,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		{
 			return value;
 		}
+		string playerAppearanceForPrompt = GetPlayerAppearanceForPrompt();
 		int num = 0;
 		try
 		{
@@ -5573,12 +5632,18 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			catch
 			{
 			}
-			return "";
+			string textAppearanceOnly = BuildPermanentPlayerAppearanceContext(text7, playerAppearanceForPrompt);
+			if (allowLoreContextCache)
+			{
+				PutLoreContextCache(key, ruleDataVersion, textAppearanceOnly);
+			}
+			return textAppearanceOnly;
 		}
 		bool flag3 = false;
 		int num2 = 0;
 		int num3 = 0;
 		StringBuilder stringBuilder = new StringBuilder();
+		AppendPermanentPlayerAppearanceContext(stringBuilder, text7, playerAppearanceForPrompt);
 		CandidateRules candidateRules = CollectCandidateRules(text, secondaryInput);
 		int loreInjectLimit = candidateRules?.InjectLimit ?? GetLoreInjectLimit(GetKnowledgeReturnCap());
 		string matchMode = candidateRules?.MatchMode ?? "none";
@@ -5608,7 +5673,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		{
 			num2++;
 		}
-		string text11 = ((num2 > 0) ? stringBuilder.ToString() : "");
+		string text11 = ((num2 > 0 || !string.IsNullOrWhiteSpace(playerAppearanceForPrompt)) ? stringBuilder.ToString() : "");
 		if (num2 == 0)
 		{
 			LogLoreMissOnce(((list == null || list.Count == 0) ? "rule_miss" : "variant_or_content_miss"), text, num, text2, text3, text4, text5);
@@ -5947,6 +6012,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		{
 			return value;
 		}
+		string playerAppearanceForPrompt = GetPlayerAppearanceForPrompt();
 		int num = 0;
 		try
 		{
@@ -5966,12 +6032,18 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			catch
 			{
 			}
-			return "";
+			string textAppearanceOnly = BuildPermanentPlayerAppearanceContext(text7, playerAppearanceForPrompt);
+			if (allowLoreContextCache)
+			{
+				PutLoreContextCache(key, ruleDataVersion, textAppearanceOnly);
+			}
+			return textAppearanceOnly;
 		}
 		bool flag3 = false;
 		int num2 = 0;
 		int num3 = 0;
 		StringBuilder stringBuilder = new StringBuilder();
+		AppendPermanentPlayerAppearanceContext(stringBuilder, text7, playerAppearanceForPrompt);
 		CandidateRules candidateRules = CollectCandidateRules(text, secondaryInput);
 		int loreInjectLimit = candidateRules?.InjectLimit ?? GetLoreInjectLimit(GetKnowledgeReturnCap());
 		string matchMode = candidateRules?.MatchMode ?? "none";
@@ -6001,7 +6073,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		{
 			num2++;
 		}
-		string text11 = ((num2 > 0) ? stringBuilder.ToString() : "");
+		string text11 = ((num2 > 0 || !string.IsNullOrWhiteSpace(playerAppearanceForPrompt)) ? stringBuilder.ToString() : "");
 		if (num2 == 0)
 		{
 			LogLoreMissOnce(((list == null || list.Count == 0) ? "rule_miss" : "variant_or_content_miss"), text, num, text2, text3, text4, text5);
@@ -6370,6 +6442,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			{
 				knowledgeFile.Rules = new List<LoreRule>();
 			}
+			knowledgeFile.PlayerAppearance = NormalizePlayerAppearanceForStorage(knowledgeFile.PlayerAppearance);
 			foreach (LoreRule rule in knowledgeFile.Rules)
 			{
 				if (rule != null && (!TryValidateRagShortTexts(rule, requireAtLeastOne: false, out var _) || !ValidateVariantConditionsUnique(rule, out var _, out var _)))
@@ -6385,12 +6458,17 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			{
 				_file.Rules = new List<LoreRule>();
 			}
+			_file.PlayerAppearance = NormalizePlayerAppearanceForStorage(_file.PlayerAppearance);
 			if (overwrite)
 			{
 				_file = knowledgeFile;
 			}
 			else
 			{
+				if (string.IsNullOrWhiteSpace(_file.PlayerAppearance) && !string.IsNullOrWhiteSpace(knowledgeFile.PlayerAppearance))
+				{
+					_file.PlayerAppearance = knowledgeFile.PlayerAppearance;
+				}
 				foreach (LoreRule r in knowledgeFile.Rules)
 				{
 					if (r != null)
@@ -7142,14 +7220,14 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		bool flag = EnsurePlayerPersonaForcedKeyword(rule, showConflictMessage: false);
 		string playerPersonaForcedKeyword = GetPlayerPersonaForcedKeyword();
 		List<string> playerPersonaOptionalKeywords = GetPlayerPersonaOptionalKeywords(rule);
-		string text = "欢迎游玩Animusforge!你可以在此界面设置您的角色的额外称呼，如果您不需要，可以直接写您的角色介绍\n\n您的角色姓名：" + playerPersonaForcedKeyword + (flag ? "" : "（当前未能写入，因为与其他知识冲突）") + "\n额外称呼：" + ((playerPersonaOptionalKeywords.Count > 0) ? string.Join(" / ", playerPersonaOptionalKeywords) : "（无）");
+		string text = "欢迎游玩Animusforge!你可以在此界面设置您的角色的额外称呼，如果您不需要，可以直接继续填写外貌与背景信息\n\n您的角色姓名：" + playerPersonaForcedKeyword + (flag ? "" : "（当前未能写入，因为与其他知识冲突）") + "\n额外称呼：" + ((playerPersonaOptionalKeywords.Count > 0) ? string.Join(" / ", playerPersonaOptionalKeywords) : "（无）");
 		List<InquiryElement> list = new List<InquiryElement>();
 		list.Add(new InquiryElement("add", "添加额外称呼", null));
 		if (playerPersonaOptionalKeywords.Count > 0)
 		{
 			list.Add(new InquiryElement("remove", "删除额外称呼", null));
 		}
-		list.Add(new InquiryElement("next", "编写角色介绍", null));
+		list.Add(new InquiryElement("next", "编写外貌与背景", null));
 		MultiSelectionInquiryData data = new MultiSelectionInquiryData("玩家称呼设置", text, list, isExitShown: true, 0, 1, "选择", "继续", delegate(List<InquiryElement> selected)
 		{
 			if (selected == null || selected.Count == 0)
@@ -7281,6 +7359,11 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			{
 			};
 		}
+		string textAppearance = TrimPreview(GetPlayerAppearanceForPrompt(), 80);
+		if (string.IsNullOrWhiteSpace(textAppearance))
+		{
+			textAppearance = "（未填写）";
+		}
 		int playerPersonaSimpleVariantIndex = GetPlayerPersonaSimpleVariantIndex(rule);
 		string text = "（未填写）";
 		if (playerPersonaSimpleVariantIndex >= 0 && rule.Variants != null && playerPersonaSimpleVariantIndex < rule.Variants.Count)
@@ -7292,12 +7375,13 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			}
 		}
 		List<int> playerPersonaDetailedVariantIndices = GetPlayerPersonaDetailedVariantIndices(rule);
-		string text2 = "角色介绍可以影响NPC对你的看法，当然你也可以设置不同的角色对你的看法。\n\n简单介绍（通用）：" + text + "\n细化介绍（有条件）：" + playerPersonaDetailedVariantIndices.Count + " 条";
+		string text2 = "玩家信息分为外貌信息和背景信息。\n\n外貌信息（常驻）：" + textAppearance + "\n背景信息（照旧）：" + text + "\n细化背景（有条件）：" + playerPersonaDetailedVariantIndices.Count + " 条";
 		List<InquiryElement> list = new List<InquiryElement>();
-		list.Add(new InquiryElement("simple", "角色介绍", null));
-		list.Add(new InquiryElement("detailed", "不同的人对您的角色的看法", null));
+		list.Add(new InquiryElement("appearance", "外貌信息（常驻）", null));
+		list.Add(new InquiryElement("simple", "背景信息（照旧）", null));
+		list.Add(new InquiryElement("detailed", "不同的人对您的背景看法", null));
 		list.Add(new InquiryElement("done", "完成并开始游戏", null));
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("玩家角色介绍", text2, list, isExitShown: true, 0, 1, "进入", "跳过", delegate(List<InquiryElement> selected)
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData("玩家外貌与背景", text2, list, isExitShown: true, 0, 1, "进入", "跳过", delegate(List<InquiryElement> selected)
 		{
 			if (selected == null || selected.Count == 0)
 			{
@@ -7307,6 +7391,12 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			{
 				switch (selected[0].Identifier as string)
 				{
+				case "appearance":
+					OpenPlayerPersonaAppearanceEditor(delegate
+					{
+						OpenPlayerPersonaIntroSetupMenu(rule, onDone);
+					});
+					break;
 				case "simple":
 					OpenPlayerPersonaSimpleIntroEditor(rule, delegate
 					{
@@ -7332,6 +7422,34 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			onDone();
 		});
 		MBInformationManager.ShowMultiSelectionInquiry(data);
+	}
+
+	private void OpenPlayerPersonaAppearanceEditor(Action onReturn)
+	{
+		if (onReturn == null)
+		{
+			onReturn = delegate
+			{
+			};
+		}
+		if (_file == null)
+		{
+			_file = new KnowledgeFile();
+		}
+		string text = GetPlayerAppearanceForPrompt();
+		DevTextEditorHelper.ShowLongTextEditor("玩家外貌信息（常驻）", "当前外貌信息已载入下方输入框。", "请输入玩家可被NPC直接观察到的外貌特征；留空表示不设置。", text, delegate(string input)
+		{
+			string text2 = NormalizePlayerAppearanceForStorage(input);
+			if (!string.Equals(_file.PlayerAppearance ?? "", text2, StringComparison.Ordinal))
+			{
+				_file.PlayerAppearance = text2;
+				TouchRuleData();
+			}
+			onReturn();
+		}, delegate
+		{
+			onReturn();
+		}, "确定", "返回");
 	}
 
 	private int GetPlayerPersonaSimpleVariantIndex(LoreRule rule)
@@ -7388,7 +7506,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		}
 		int playerPersonaSimpleVariantIndex = GetPlayerPersonaSimpleVariantIndex(rule);
 		string text = ((playerPersonaSimpleVariantIndex >= 0 && playerPersonaSimpleVariantIndex < rule.Variants.Count) ? (rule.Variants[playerPersonaSimpleVariantIndex]?.Content ?? "") : "");
-		DevTextEditorHelper.ShowLongTextEditor("简单的玩家角色介绍", "当前通用介绍已载入下方输入框。", "请输入通用介绍内容；留空表示不设置。", text, delegate(string input)
+		DevTextEditorHelper.ShowLongTextEditor("玩家背景信息（照旧）", "当前通用背景信息已载入下方输入框。", "请输入背景、来历、身份等内容；留空表示不设置。", text, delegate(string input)
 		{
 			string text2 = (input ?? "").Trim();
 			if (string.IsNullOrWhiteSpace(text2))
@@ -7458,7 +7576,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			}
 			list.Add(new InquiryElement(item, $"#{item + 1} {arg}  {text}", null));
 		}
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("细化的玩家角色介绍", "这里编辑的是带条件的介绍。它们写入后的结构，和其他知识提示词完全一样。", list, isExitShown: true, 0, 1, "进入", "返回", delegate(List<InquiryElement> selected)
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData("细化的玩家背景信息", "这里编辑的是带条件的背景信息。它们写入后的结构，和其他知识提示词完全一样。", list, isExitShown: true, 0, 1, "进入", "返回", delegate(List<InquiryElement> selected)
 		{
 			if (selected == null || selected.Count == 0)
 			{
@@ -7601,7 +7719,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 				switch (selected[0].Identifier as string)
 				{
 				case "content":
-					DevTextEditorHelper.ShowLongTextEditor("编辑介绍内容", "当前这条带条件的玩家角色介绍已载入下方输入框。", "可直接编辑整段内容。", v.Content ?? "", delegate(string input)
+					DevTextEditorHelper.ShowLongTextEditor("编辑背景内容", "当前这条带条件的玩家背景信息已载入下方输入框。", "可直接编辑整段内容。", v.Content ?? "", delegate(string input)
 					{
 						v.Content = input ?? "";
 						TouchRuleData();
@@ -7619,7 +7737,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 						loreWhen = NormalizeWhenForStorage(loreWhen);
 						if (loreWhen == null)
 						{
-							InformationManager.DisplayMessage(new InformationMessage("细化介绍至少需要保留一个条件；如果想写通用介绍，请回到上一层使用“简单的玩家角色介绍”。"));
+							InformationManager.DisplayMessage(new InformationMessage("细化背景至少需要保留一个条件；如果想写通用背景，请回到上一层使用“背景信息（照旧）”。"));
 							OpenPlayerPersonaDetailedVariantEditor(rule, idx, onReturn, isNewVariant);
 						}
 						else

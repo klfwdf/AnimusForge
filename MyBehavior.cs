@@ -627,6 +627,8 @@ public class MyBehavior : CampaignBehaviorBase
 	{
 		public string Extras;
 
+		public string EntityPostprocessContext;
+
 		public List<string> PreprocessRuleIds = new List<string>();
 
 		public bool UseDuelContext;
@@ -16096,6 +16098,7 @@ public class MyBehavior : CampaignBehaviorBase
 		ShoutPromptContext shoutPromptContext = new ShoutPromptContext
 		{
 			Extras = "",
+			EntityPostprocessContext = "",
 			PreprocessRuleIds = new List<string>(),
 			UseDuelContext = false,
 			UseRewardContext = false,
@@ -16116,7 +16119,12 @@ public class MyBehavior : CampaignBehaviorBase
 		AIConfigHandler.SetGuardrailRuntimeTargetAgentIndex(targetAgentIndex);
 		try
 		{
-			AIConfigHandler.SetGuardrailSemanticContext(suppressDynamicRuleAndLore ? "" : BuildGuardrailSemanticContext(targetHero, extraFact));
+			if (!suppressDynamicRuleAndLore)
+			{
+				AIConfigHandler.ClearLatestAuxiliaryMentionedEntitiesForExternal();
+			}
+			string guardrailSemanticContext = suppressDynamicRuleAndLore ? "" : BuildGuardrailSemanticContext(targetHero, extraFact);
+			AIConfigHandler.SetGuardrailSemanticContext(guardrailSemanticContext);
 		string text = ((!string.IsNullOrEmpty(cultureIdOverride)) ? cultureIdOverride : (targetHero?.Culture?.StringId ?? "neutral"));
 		int num = _cachedPlayerClanTier;
 		if (num <= 0)
@@ -16419,6 +16427,23 @@ public class MyBehavior : CampaignBehaviorBase
 		if (!string.IsNullOrEmpty(loreContext))
 		{
 			stringBuilder.AppendLine(loreContext);
+		}
+		if (!suppressDynamicRuleAndLore)
+		{
+			MentionedWorldEntities mentionedEntities = AIConfigHandler.GetAuxiliaryMentionedEntitiesForExternal(input, npcLastUtterance, guardrailSemanticContext);
+			mentionedEntities.Merge(AIConfigHandler.GetAuxiliaryMentionedEntitiesForExternal(input, npcLastUtterance, ResolveCurrentMemorySceneLabel()));
+			mentionedEntities.Merge(AIConfigHandler.GetAuxiliaryMentionedEntitiesForExternal(input, extraFact, ResolveCurrentMemorySceneLabel()));
+			mentionedEntities.Merge(AIConfigHandler.GetLatestAuxiliaryMentionedEntitiesForExternal());
+			WorldEntityPromptContext entityPromptContext = WorldEntityRetrievalService.BuildPromptContext(mentionedEntities, BuildPlayerPublicDisplayNameForPrompt());
+			if (entityPromptContext != null && entityPromptContext.HasContent)
+			{
+				if (!string.IsNullOrWhiteSpace(entityPromptContext.MainPromptBlock))
+				{
+					stringBuilder.AppendLine(entityPromptContext.MainPromptBlock);
+				}
+				shoutPromptContext.EntityPostprocessContext = entityPromptContext.PostprocessPromptBlock ?? "";
+				Logger.Log("WorldEntityRetrieval", "entity_context matches=" + entityPromptContext.MatchCount + " mainLen=" + ((entityPromptContext.MainPromptBlock ?? "").Length) + " postLen=" + ((entityPromptContext.PostprocessPromptBlock ?? "").Length));
+			}
 		}
 		bool includeTradePricing = flag7 || flag8 || flag2;
 		bool includeMarriageCandidates = targetHero != null && marriageHit;
@@ -16726,6 +16751,10 @@ public class MyBehavior : CampaignBehaviorBase
 			return true;
 		}
 		if (text.StartsWith("【以下是关于（", StringComparison.Ordinal))
+		{
+			return true;
+		}
+		if (text.StartsWith("【玩家外貌信息（常驻）】", StringComparison.Ordinal))
 		{
 			return true;
 		}
@@ -17517,9 +17546,10 @@ public class MyBehavior : CampaignBehaviorBase
 		string system = "You are an AnimusForge preprocessing router. Select compressed memory blocks relevant to the latest player/NPC exchange. Return strict JSON only.";
 		StringBuilder user = new StringBuilder();
 		int mode = GetMemoryPreprocessModeFromSettings();
-		user.AppendLine(mode == 2 ? "Mode: parallel memory selector request." : "Mode: unified preprocessing body. Include both keys even if rule_codes is empty.");
-		user.AppendLine("Output JSON schema: {\"rule_codes\":[],\"memory_ids\":[1,2]}");
+		user.AppendLine(mode == 2 ? "Mode: parallel memory selector request. memory_ids is the required field for this request." : "Mode: unified preprocessing body. Include rule_codes and memory_ids even if rule_codes is empty.");
+		user.AppendLine("Output JSON schema: {\"rule_codes\":[],\"memory_ids\":[1,2],\"mentioned_entities\":{\"heroes\":[],\"settlements\":[],\"clans\":[],\"kingdoms\":[]}}");
 		user.AppendLine("Select exactly " + Math.Max(1, finalCount) + " memory_ids from the candidate list. If uncertain, choose the closest by semantic relevance. Do not select more than " + Math.Max(1, finalCount) + ".");
+		user.AppendLine("mentioned_entities must contain only named people, settlements/places, clans/families, and kingdoms/countries explicitly mentioned in the latest player input or latest NPC/context input. Personal names and titles such as king, queen, lord, lady, noble, notable, headman, gang leader, wanderer, artisan, or ruler must go in heroes, not settlements. Do not extract the current conversation NPC/speaker's own name, role, title, aliases, or the player name merely because they are the current speakers; mentioned_entities should describe third-party entities or entities being explicitly discussed. If a name is ambiguous, put it in the closest bucket; runtime retrieval will search every extracted name across heroes, settlements, clans, and kingdoms. Order every mentioned_entities array by dialogue recency: names from the latest player input first, then latest NPC/context input. Do not extract names from memory candidate titles unless they are also mentioned in the latest exchange.");
 		user.AppendLine();
 		user.AppendLine("Latest player input:");
 		user.AppendLine(string.IsNullOrWhiteSpace(currentInput) ? "(none)" : currentInput.Trim());
@@ -17583,11 +17613,16 @@ public class MyBehavior : CampaignBehaviorBase
 				ShowCompressedMemoryBlockingPopup("压缩记忆前处理失败", "并发前处理没有全部成功：" + error + "\n\n请修复前处理 API 后重试。");
 				return false;
 			}
+			AIConfigHandler.PublishAuxiliaryMentionedEntitiesForExternal(currentInput, secondaryInput, ResolveCurrentMemorySceneLabel(), content);
 		}
 		else if (!AIConfigHandler.TryCallAuxiliarySimpleDialogue(messages, 800, 0f, out content, out error))
 		{
 			ShowCompressedMemoryBlockingPopup("压缩记忆前处理失败", "记忆筛选请求失败：" + (error ?? "未知错误") + "\n\n请修复前处理 API 后重试。");
 			return false;
+		}
+		else
+		{
+			AIConfigHandler.PublishAuxiliaryMentionedEntitiesForExternal(currentInput, secondaryInput, ResolveCurrentMemorySceneLabel(), content);
 		}
 		selectedIds = ParseMemoryPreprocessIds(content, list.Select((MemoryRecallCandidate x) => x.DisplayId), finalCount);
 		if (selectedIds.Count <= 0)

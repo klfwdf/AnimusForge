@@ -5213,7 +5213,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		{
 			text2 = "武器";
 		}
-		return "[AFEF NPC行为补充] ，" + text + "一刀看向了你，而你现在也拔出了" + text2 + "与" + text + "厮杀了起来。";
+		return "[AFEF NPC行为补充] ，" + text + "一刀砍向了你，而你现在也拔出了" + text2 + "与" + text + "厮杀了起来。";
 	}
 
 	private static string TryGetActiveWeaponDisplayName(Agent agent)
@@ -8549,6 +8549,30 @@ public class SceneTauntConsequenceMissionLogic : MissionLogic
 				return;
 			}
 			IFaction faction = party.MapFaction ?? currentSettlement?.MapFaction;
+			bool flag = missionBehavior.WasLastArmedDefeatCriminalConflict();
+			if (flag && currentSettlement != null && currentSettlement.IsTown)
+			{
+				SceneTauntBehavior.ClearArmedCarryoverForExternal("scene_taunt_defeat_criminal_target_no_captivity");
+				SceneTauntBehavior.ClearPendingLocalDungeonCaptivityForExternal("scene_taunt_defeat_criminal_target_no_captivity");
+				try
+				{
+					Campaign.Current?.GameMenuManager?.SetNextMenu("town");
+				}
+				catch
+				{
+				}
+				missionBehavior.MarkPlayerDefeatOutcomeHandled();
+				try
+				{
+					Mission.Current.NextCheckTimeEndMission = 0f;
+				}
+				catch
+				{
+				}
+				Mission.Current.EndMission();
+				Logger.Log("SceneTaunt", $"Player was defeated by a criminal-target scene conflict and returned without trial or captivity. Settlement={currentSettlement?.Name}, Captor={party.Name}");
+				return;
+			}
 			float effectiveCrimeRatingForExecution = SceneTauntBehavior.GetEffectiveCrimeRatingForExternal(faction);
 			if (effectiveCrimeRatingForExecution >= SceneTauntBehavior.ForcedExecutionCrimeThreshold)
 			{
@@ -8569,29 +8593,6 @@ public class SceneTauntConsequenceMissionLogic : MissionLogic
 				}
 				Mission.Current.EndMission();
 				Logger.Log("SceneTaunt", $"Player was defeated after armed escalation and reached execution threshold. Settlement={currentSettlement?.Name}, Faction={faction?.Name}, EffectiveCrime={effectiveCrimeRatingForExecution:0.##}, Executor={hero?.Name}");
-				return;
-			}
-			bool flag = missionBehavior.WasLastArmedDefeatCriminalConflict();
-			if (flag && currentSettlement != null && currentSettlement.IsTown)
-			{
-				SceneTauntBehavior.ClearArmedCarryoverForExternal("scene_taunt_defeat_criminal_target_flow");
-				try
-				{
-					Campaign.Current?.GameMenuManager?.SetNextMenu("town_inside_criminal");
-				}
-				catch
-				{
-				}
-				missionBehavior.MarkPlayerDefeatOutcomeHandled();
-				try
-				{
-					Mission.Current.NextCheckTimeEndMission = 0f;
-				}
-				catch
-				{
-				}
-				Mission.Current.EndMission();
-				Logger.Log("SceneTaunt", $"Player was defeated after criminal-target armed conflict and redirected to criminal judgment flow. Settlement={currentSettlement?.Name}, Captor={party.Name}");
 				return;
 			}
 			bool flag2 = IsCaptorSameMapFactionAsPlayer(party);
