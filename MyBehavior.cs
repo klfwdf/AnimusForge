@@ -3108,6 +3108,8 @@ public class MyBehavior : CampaignBehaviorBase
 		int targetChars = Math.Max(80, CountDailyMemorySummarySourceChars(draft) / Math.Max(1, denominator));
 		return "你是 AnimusForge 的日结记忆压缩器。你必须只输出严格 JSON：{\"rich_title\":\"约20字富标题，不含日期时间\",\"summary_content\":\"摘要正文\"}。"
 			+ "rich_title 必须便于语义检索，不得包含日期、时间、序号或场景前缀。"
+			+ "summary_content 必须在正文中显式写出游戏日期、时间段、地点/场景；不得只依赖标题元数据、外部字段或对话行前缀。"
+			+ "如果存在多个地点或时间段，按发生顺序概括；如果地点未知，必须写“地点未知”。"
 			+ "身份记录规则：玩家在对话中说“我是X”“我叫X”“我的名字是X”“别人叫我X”等姓名、身份、头衔、阵营、来历时，只能记录为玩家自称、声称或宣称，必须保留玩家公开称呼与自称行为。"
 			+ "不得把玩家自称改写成客观事实；例如不得写“佐洛斯来到大厅”，应写“这名帝国青年自称佐洛斯后来到大厅”。"
 			+ "rich_title 如涉及这类姓名或身份，也必须写“自称X/声称X/宣称X”，不能只写 X。"
@@ -3132,6 +3134,7 @@ public class MyBehavior : CampaignBehaviorBase
 		stringBuilder.AppendLine("内容：");
 		stringBuilder.AppendLine("当前场景：" + (scenes.Count > 0 ? string.Join(" / ", scenes) : "未知场景"));
 		stringBuilder.AppendLine("当前日期与时间：" + text + " " + FormatMemoryHourRange(startHour, endHour));
+		stringBuilder.AppendLine("summary_content 硬性要求：摘要正文必须自己写出“日期：" + text + "；时间：" + FormatMemoryHourRange(startHour, endHour) + "；地点：" + (scenes.Count > 0 ? string.Join(" / ", scenes) : "地点未知") + "”，可用自然句表达，但不得省略日期、时间或地点。rich_title 仍不得包含日期、时间或地点。");
 		string playerDisplayName = BuildPlayerPublicDisplayNameForPrompt();
 		if (string.IsNullOrWhiteSpace(playerDisplayName))
 		{
@@ -17707,26 +17710,27 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private string BuildUncompressedDailyMemoryContext(Hero hero, int currentDay, bool includeToday)
+	private string BuildRecentDialogueMemoryContext(Hero hero, int currentDay)
 	{
 		List<DailyMemoryDraft> list = LoadDailyMemoryDrafts(hero);
 		if (list == null || list.Count <= 0)
 		{
 			return "";
 		}
-		IEnumerable<DailyMemoryDraft> enumerable = includeToday ? list.Where((DailyMemoryDraft x) => x != null && x.GameDayIndex == currentDay) : list.Where((DailyMemoryDraft x) => x != null && x.GameDayIndex < currentDay && x.HasLlmDialogue);
-		int currentSceneSessionId = includeToday ? GetCurrentSceneSessionIdForDailyMemorySuppression() : -1;
+		IEnumerable<DailyMemoryDraft> enumerable = list.Where((DailyMemoryDraft x) => x != null && (x.GameDayIndex == currentDay || (x.GameDayIndex < currentDay && x.HasLlmDialogue)));
+		int currentSceneSessionId = GetCurrentSceneSessionIdForDailyMemorySuppression();
 		StringBuilder stringBuilder = new StringBuilder();
 		foreach (DailyMemoryDraft draft in enumerable.OrderBy((DailyMemoryDraft x) => x.GameDayIndex))
 		{
-			List<DailyMemoryLine> lines = (draft?.Lines ?? new List<DailyMemoryLine>()).Where((DailyMemoryLine x) => x != null && (currentSceneSessionId < 0 || x.SceneSessionId != currentSceneSessionId)).ToList();
+			bool isToday = draft != null && draft.GameDayIndex == currentDay;
+			List<DailyMemoryLine> lines = (draft?.Lines ?? new List<DailyMemoryLine>()).Where((DailyMemoryLine x) => x != null && (!isToday || currentSceneSessionId < 0 || x.SceneSessionId != currentSceneSessionId)).ToList();
 			if (lines.Count <= 0)
 			{
 				continue;
 			}
 			if (stringBuilder.Length == 0)
 			{
-				stringBuilder.AppendLine(includeToday ? "【今日对话历史（尚未压缩）】" : "【待压缩历史（原始记录，临时注入）】");
+				stringBuilder.AppendLine("【最近对话历史】");
 			}
 			string text = string.IsNullOrWhiteSpace(draft.GameDate) ? ("第" + draft.GameDayIndex + "日") : draft.GameDate.Trim();
 			stringBuilder.AppendLine("—— " + text + " ——");
@@ -17878,22 +17882,17 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			int currentDay = (int)CampaignTime.Now.ToDays;
 			StringBuilder stringBuilder = new StringBuilder(4096);
+			string recentDialogueContext = BuildRecentDialogueMemoryContext(hero, currentDay);
+			if (!string.IsNullOrWhiteSpace(recentDialogueContext))
+			{
+				stringBuilder.AppendLine(recentDialogueContext);
+				stringBuilder.AppendLine();
+			}
 			string compressedMemoryContext = BuildCompressedMemoryContext(hero, currentInput, secondaryInput);
 			if (!string.IsNullOrWhiteSpace(compressedMemoryContext))
 			{
 				stringBuilder.AppendLine(compressedMemoryContext);
 				stringBuilder.AppendLine();
-			}
-			string pendingRawContext = BuildUncompressedDailyMemoryContext(hero, currentDay, includeToday: false);
-			if (!string.IsNullOrWhiteSpace(pendingRawContext))
-			{
-				stringBuilder.AppendLine(pendingRawContext);
-				stringBuilder.AppendLine();
-			}
-			string todayContext = BuildUncompressedDailyMemoryContext(hero, currentDay, includeToday: true);
-			if (!string.IsNullOrWhiteSpace(todayContext))
-			{
-				stringBuilder.AppendLine(todayContext);
 			}
 			string text4 = stringBuilder.ToString().TrimEnd();
 			Logger.Log("DialogueHistory", string.Format("compressed_context hero={0} chars={1} blocks={2} drafts={3}", hero.StringId ?? "", text4.Length, LoadCompressedMemoryBlocks(hero).Count, LoadDailyMemoryDrafts(hero).Count));
