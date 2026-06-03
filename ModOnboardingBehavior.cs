@@ -26,7 +26,9 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 	private enum OnboardingUiStage
 	{
 		None,
+		SetupModeChoice,
 		Welcome,
+		QuickPresetApiKey,
 		AuxiliaryChoice,
 		PostprocessChoice,
 		EventRebellionChoice,
@@ -46,7 +48,58 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		EventAndRebellion
 	}
 
+	private enum QuickApiPreset
+	{
+		None,
+		DeepSeekFlash,
+		DeepSeekPro
+	}
+
+	private enum SaveAndExitStage
+	{
+		None,
+		WaitingForCurrentSave,
+		WaitingForRequestedQuickSave
+	}
+
+	private enum ApiValidationFlow
+	{
+		Normal,
+		QuickPresetAll,
+		ExistingConfigAll
+	}
+
+	private sealed class ApiValidationTargetInfo
+	{
+		public ApiSetupTarget Target { get; set; }
+
+		public string DisplayName { get; set; } = "";
+
+		public string ApiUrl { get; set; } = "";
+
+		public string ApiKey { get; set; } = "";
+
+		public string ModelName { get; set; } = "";
+	}
+
+	private sealed class ApiValidationTargetResult
+	{
+		public ApiValidationTargetInfo Target { get; set; }
+
+		public bool Success { get; set; }
+
+		public string Message { get; set; } = "";
+
+		public string FailureHint { get; set; } = "";
+	}
+
 	private const string SetupDoneKey = "_AnimusForge_setup_done_v1";
+
+	private const string DeepSeekApiBaseUrl = "https://api.deepseek.com";
+
+	private const string DeepSeekFlashModelName = "deepseek-v4-flash";
+
+	private const string DeepSeekProModelName = "deepseek-v4-pro";
 
 	private bool _setupDone;
 
@@ -134,6 +187,14 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 
 	private bool _apiRepairFlowActive;
 
+	private QuickApiPreset _selectedQuickApiPreset;
+
+	private bool _quickPresetFlowActive;
+
+	private SaveAndExitStage _saveAndExitStage;
+
+	private ApiValidationFlow _apiValidationFlow;
+
 	private bool _pendingActionPostprocessSetup;
 
 	private long _pendingActionPostprocessSetupAfterUtcTicks;
@@ -153,6 +214,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		CampaignEvents.OnNewGameCreatedEvent.AddNonSerializedListener(this, OnGameStarted);
 		CampaignEvents.OnGameLoadedEvent.AddNonSerializedListener(this, OnGameStarted);
 		CampaignEvents.TickEvent.AddNonSerializedListener(this, OnTick);
+		CampaignEvents.OnSaveOverEvent.AddNonSerializedListener(this, OnSaveOver);
 	}
 
 	public override void SyncData(IDataStore dataStore)
@@ -249,7 +311,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			{
 				_pendingWelcome = false;
 				_welcomeShownThisSession = true;
-				ShowWelcomePopup(fromGate: false);
+				ShowSetupModeChoicePopup(fromGate: false);
 			}
 			if (_setupDone && _pendingActionPostprocessSetup && !_actionPostprocessSetupShownThisSession && DateTime.UtcNow.Ticks >= _pendingActionPostprocessSetupAfterUtcTicks && Campaign.Current != null && Campaign.Current.GameStarted)
 			{
@@ -561,6 +623,11 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 
 	private void ReopenCurrentApiEntry(bool ignoreSuppress = true)
 	{
+		if (_quickPresetFlowActive && !IsAuxiliaryApiSetupTarget() && !IsActionPostprocessApiSetupTarget() && !IsEventAndRebellionApiSetupTarget())
+		{
+			ShowQuickPresetApiKeyInput(_selectedQuickApiPreset);
+			return;
+		}
 		if (_apiRepairFlowActive)
 		{
 			if (IsAuxiliaryApiSetupTarget())
@@ -601,17 +668,22 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			return;
 		}
 		_pendingReturnToWelcome = false;
-		ShowWelcomePopup(fromGate: true, ignoreSuppress: true);
+		ShowSetupModeChoicePopup(fromGate: true, ignoreSuppress: true);
 	}
 
 	private void ProcessUnexpectedOnboardingDismissal()
 	{
+		if (_saveAndExitStage != SaveAndExitStage.None)
+		{
+			_pendingUnexpectedResumeStage = OnboardingUiStage.None;
+			return;
+		}
 		if (_setupDone || _pendingReturnToWelcome || _pendingBaseUrlValidationResult || _pendingApiValidationResult || _pendingModelFetchResult)
 		{
 			_pendingUnexpectedResumeStage = OnboardingUiStage.None;
 			return;
 		}
-		if (_activeOnboardingStage != OnboardingUiStage.Welcome && _activeOnboardingStage != OnboardingUiStage.AuxiliaryChoice && _activeOnboardingStage != OnboardingUiStage.PostprocessChoice && _activeOnboardingStage != OnboardingUiStage.EventRebellionChoice && _activeOnboardingStage != OnboardingUiStage.BaseUrlValidation && _activeOnboardingStage != OnboardingUiStage.BaseUrlValidationFailure && _activeOnboardingStage != OnboardingUiStage.ApiValidation && _activeOnboardingStage != OnboardingUiStage.ModelFetch && _activeOnboardingStage != OnboardingUiStage.ModelSelect && _activeOnboardingStage != OnboardingUiStage.Import)
+		if (_activeOnboardingStage != OnboardingUiStage.SetupModeChoice && _activeOnboardingStage != OnboardingUiStage.Welcome && _activeOnboardingStage != OnboardingUiStage.QuickPresetApiKey && _activeOnboardingStage != OnboardingUiStage.AuxiliaryChoice && _activeOnboardingStage != OnboardingUiStage.PostprocessChoice && _activeOnboardingStage != OnboardingUiStage.EventRebellionChoice && _activeOnboardingStage != OnboardingUiStage.BaseUrlValidation && _activeOnboardingStage != OnboardingUiStage.BaseUrlValidationFailure && _activeOnboardingStage != OnboardingUiStage.ApiValidation && _activeOnboardingStage != OnboardingUiStage.ModelFetch && _activeOnboardingStage != OnboardingUiStage.ModelSelect && _activeOnboardingStage != OnboardingUiStage.Import)
 		{
 			_pendingUnexpectedResumeStage = OnboardingUiStage.None;
 			return;
@@ -636,6 +708,12 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		_welcomeInProgress = false;
 		switch (pendingUnexpectedResumeStage)
 		{
+		case OnboardingUiStage.SetupModeChoice:
+			ShowSetupModeChoicePopup(fromGate: true, ignoreSuppress: true);
+			break;
+		case OnboardingUiStage.QuickPresetApiKey:
+			ShowQuickPresetApiKeyInput(_selectedQuickApiPreset);
+			break;
 		case OnboardingUiStage.AuxiliaryChoice:
 			ShowAuxiliaryApiSetupPopup(ignoreSuppress: true);
 			break;
@@ -760,6 +838,10 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		_pendingApiValidationFailureHint = "";
 		bool apiValidationReturnToModelSelection = _apiValidationReturnToModelSelection;
 		_apiValidationReturnToModelSelection = false;
+		ApiValidationFlow apiValidationFlow = _apiValidationFlow;
+		_apiValidationFlow = ApiValidationFlow.Normal;
+		bool setupMenuValidation = apiValidationFlow == ApiValidationFlow.QuickPresetAll || apiValidationFlow == ApiValidationFlow.ExistingConfigAll;
+		bool quickPresetPrimaryValidation = !setupMenuValidation && _quickPresetFlowActive && !IsAuxiliaryApiSetupTarget() && !IsActionPostprocessApiSetupTarget() && !IsEventAndRebellionApiSetupTarget();
 		_welcomeInProgress = false;
 		_activeOnboardingStage = OnboardingUiStage.None;
 		InformationManager.HideInquiry();
@@ -772,6 +854,20 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			_showApiValidationFailedHint = false;
 			_showModelSelectionValidationFailedHint = false;
 			_lastApiValidationFailureHint = "";
+			if (setupMenuValidation)
+			{
+				_quickPresetFlowActive = false;
+				_selectedQuickApiPreset = QuickApiPreset.None;
+				ShowImportSetupPopup(fromGate: true, ignoreSuppress: true);
+				return;
+			}
+			if (quickPresetPrimaryValidation)
+			{
+				_quickPresetFlowActive = false;
+				_selectedQuickApiPreset = QuickApiPreset.None;
+				ShowImportSetupPopup(fromGate: true, ignoreSuppress: true);
+				return;
+			}
 			if (IsAuxiliaryApiSetupTarget())
 			{
 				DuelSettings settings = DuelSettings.GetSettings();
@@ -804,7 +900,27 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		}
 		else if (_apiRepairFlowActive || !_setupDone)
 		{
-			if (apiValidationReturnToModelSelection)
+			if (setupMenuValidation)
+			{
+				_quickPresetFlowActive = false;
+				_selectedQuickApiPreset = QuickApiPreset.None;
+				_showApiValidationFailedHint = true;
+				_showModelSelectionValidationFailedHint = false;
+				_lastApiValidationFailureHint = pendingApiValidationFailureHint;
+				if (!string.IsNullOrWhiteSpace(pendingApiValidationMessage))
+				{
+					InformationManager.DisplayMessage(new InformationMessage(pendingApiValidationMessage));
+				}
+				ShowSetupModeChoicePopup(fromGate: true, ignoreSuppress: true);
+			}
+			else if (quickPresetPrimaryValidation)
+			{
+				_showApiValidationFailedHint = true;
+				_showModelSelectionValidationFailedHint = false;
+				_lastApiValidationFailureHint = pendingApiValidationFailureHint;
+				ShowQuickPresetApiKeyInput(_selectedQuickApiPreset);
+			}
+			else if (apiValidationReturnToModelSelection)
 			{
 				_showApiValidationFailedHint = false;
 				_showModelSelectionValidationFailedHint = true;
@@ -845,7 +961,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		{
 			return true;
 		}
-		modOnboardingBehavior.ShowWelcomePopup(fromGate: true);
+		modOnboardingBehavior.ShowSetupModeChoicePopup(fromGate: true);
 		return false;
 	}
 
@@ -896,6 +1012,465 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 	private void ShowWelcomePopup(bool fromGate)
 	{
 		ShowWelcomePopup(fromGate, ignoreSuppress: false);
+	}
+
+	private void ShowSetupModeChoicePopup(bool fromGate)
+	{
+		ShowSetupModeChoicePopup(fromGate, ignoreSuppress: false);
+	}
+
+	private void ShowSetupModeChoicePopup(bool fromGate, bool ignoreSuppress)
+	{
+		try
+		{
+			SetApiSetupTarget(ApiSetupTarget.Primary);
+			SetApiRepairFlowActive(active: false);
+			_quickPresetFlowActive = false;
+			_selectedQuickApiPreset = QuickApiPreset.None;
+			if (_setupDone || _welcomeInProgress || _apiValidationInProgress || _baseUrlValidationInProgress || _modelFetchInProgress)
+			{
+				return;
+			}
+			long ticks = DateTime.UtcNow.Ticks;
+			if (!ignoreSuppress && _suppressWelcomeUntilUtcTicks > ticks)
+			{
+				return;
+			}
+			_suppressWelcomeUntilUtcTicks = ticks + TimeSpan.FromMilliseconds(fromGate ? 800 : 200).Ticks;
+			_activeOnboardingStage = OnboardingUiStage.SetupModeChoice;
+			_welcomeInProgress = true;
+			List<InquiryElement> list = new List<InquiryElement>
+			{
+				new InquiryElement("support", "支持作者", null, isEnabled: true, "打开爱发电支持页面。"),
+				new InquiryElement("deepseek_flash", "使用deepseek-flash推荐API组合进行游玩", null, isEnabled: true, "自动填写 DeepSeek Flash 预设，只需输入一次 API Key。"),
+				new InquiryElement("deepseek_pro", "使用deepseek-pro推荐API组合进行游玩", null, isEnabled: true, "自动填写 DeepSeek Pro 预设，只需输入一次 API Key。"),
+				new InquiryElement("custom", "使用完全自定义的API进行游玩", null, isEnabled: true, "进入旧路径，逐项填写 Base URL、API Key 和模型。"),
+				new InquiryElement("existing_config", "使用现有配置进行游玩", null, isEnabled: true, "直接测试当前 MCM 配置；周报和叛乱API未配置完整时会跳过该项。"),
+				new InquiryElement("save_exit", "保存存档并退出", null, isEnabled: true, "保存当前存档后退出到主界面。")
+			};
+			string text = "请选择首次使用的 API 配置方式。\n\n推荐组合会自动写入主API、前处理API、后处理API、周报和叛乱API的 Base URL、模型、思维链和温度；你只需要填写一次 API Key。";
+			MultiSelectionInquiryData data = new MultiSelectionInquiryData("AnimusForge - API 快捷配置", text, list, isExitShown: false, 0, 1, "确定", "关闭", delegate(List<InquiryElement> selected)
+			{
+				_welcomeInProgress = false;
+				string text2 = selected?.FirstOrDefault()?.Identifier as string;
+				if (string.IsNullOrWhiteSpace(text2))
+				{
+					ShowSetupModeChoicePopup(fromGate: true, ignoreSuppress: true);
+				}
+				else if (text2 == "support")
+				{
+					DuelSettings.OpenAfdianSupportPageForExternal();
+					ShowSetupModeChoicePopup(fromGate: true, ignoreSuppress: true);
+				}
+				else if (text2 == "deepseek_flash")
+				{
+					ApplyDeepSeekPresetAndOpenKeyInput(QuickApiPreset.DeepSeekFlash);
+				}
+				else if (text2 == "deepseek_pro")
+				{
+					ApplyDeepSeekPresetAndOpenKeyInput(QuickApiPreset.DeepSeekPro);
+				}
+				else if (text2 == "custom")
+				{
+					ShowWelcomePopup(fromGate: true, ignoreSuppress: true);
+				}
+				else if (text2 == "existing_config")
+				{
+					BeginValidateExistingApiConfigAndContinue();
+				}
+				else if (text2 == "save_exit")
+				{
+					BeginSaveAndExitCurrentGameFromOnboarding();
+				}
+				else
+				{
+					ShowSetupModeChoicePopup(fromGate: true, ignoreSuppress: true);
+				}
+			}, delegate
+			{
+				_welcomeInProgress = false;
+				ShowSetupModeChoicePopup(fromGate: true, ignoreSuppress: true);
+			});
+			MBInformationManager.ShowMultiSelectionInquiry(data);
+		}
+		catch
+		{
+			_welcomeInProgress = false;
+		}
+	}
+
+	private void ApplyDeepSeekPresetAndOpenKeyInput(QuickApiPreset preset)
+	{
+		try
+		{
+			if (!ApplyDeepSeekPresetToMcm(preset, ""))
+			{
+				ShowSetupModeChoicePopup(fromGate: true, ignoreSuppress: true);
+				return;
+			}
+			_selectedQuickApiPreset = preset;
+			_quickPresetFlowActive = true;
+			ShowQuickPresetApiKeyInput(preset);
+		}
+		catch (Exception ex)
+		{
+			InformationManager.DisplayMessage(new InformationMessage("写入 DeepSeek 推荐配置失败：" + ex.Message));
+			ShowSetupModeChoicePopup(fromGate: true, ignoreSuppress: true);
+		}
+	}
+
+	private bool ApplyDeepSeekPresetToMcm(QuickApiPreset preset, string apiKey)
+	{
+		DuelSettings settings = DuelSettings.GetSettings();
+		if (settings == null)
+		{
+			InformationManager.DisplayMessage(new InformationMessage("无法读取 MCM 设置，暂时不能写入 DeepSeek 推荐配置。"));
+			return false;
+		}
+		string key = (apiKey ?? "").Trim();
+		settings.ApiUrl = DeepSeekApiBaseUrl;
+		settings.AuxiliaryApiUrl = DeepSeekApiBaseUrl;
+		settings.ActionPostprocessApiUrl = DeepSeekApiBaseUrl;
+		settings.EventAndRebellionApiUrl = DeepSeekApiBaseUrl;
+		if (!string.IsNullOrWhiteSpace(key))
+		{
+			settings.ApiKey = key;
+			settings.AuxiliaryApiKey = key;
+			settings.ActionPostprocessApiKey = key;
+			settings.EventAndRebellionApiKey = key;
+		}
+		settings.UseAuxiliaryRuleApi = true;
+		settings.MemoryPreprocessMode = 1;
+		if (preset == QuickApiPreset.DeepSeekPro)
+		{
+			SetModelNameForTarget(settings, ApiSetupTarget.Primary, DeepSeekProModelName);
+			SetModelNameForTarget(settings, ApiSetupTarget.Auxiliary, DeepSeekFlashModelName);
+			SetModelNameForTarget(settings, ApiSetupTarget.ActionPostprocess, DeepSeekProModelName);
+			SetModelNameForTarget(settings, ApiSetupTarget.EventAndRebellion, DeepSeekProModelName);
+			settings.MainApiThinkingEnabled = true;
+			settings.SetMainApiReasoningEffortForExternal(DuelSettings.ReasoningEffortMax);
+			settings.MainApiTemperature = 1f;
+			settings.AuxiliaryApiThinkingEnabled = true;
+			settings.SetAuxiliaryApiReasoningEffortForExternal(DuelSettings.ReasoningEffortHigh);
+			settings.AuxiliaryApiTemperature = 0f;
+			settings.ActionPostprocessApiThinkingEnabled = true;
+			settings.SetActionPostprocessApiReasoningEffortForExternal(DuelSettings.ReasoningEffortMax);
+			settings.ActionPostprocessApiTemperature = 0f;
+			settings.EventAndRebellionApiThinkingEnabled = false;
+			settings.SetEventAndRebellionApiReasoningEffortForExternal(DuelSettings.ReasoningEffortHigh);
+			settings.EventAndRebellionApiTemperature = 1.2f;
+		}
+		else
+		{
+			SetModelNameForTarget(settings, ApiSetupTarget.Primary, DeepSeekFlashModelName);
+			SetModelNameForTarget(settings, ApiSetupTarget.Auxiliary, DeepSeekFlashModelName);
+			SetModelNameForTarget(settings, ApiSetupTarget.ActionPostprocess, DeepSeekFlashModelName);
+			SetModelNameForTarget(settings, ApiSetupTarget.EventAndRebellion, DeepSeekFlashModelName);
+			settings.MainApiThinkingEnabled = true;
+			settings.SetMainApiReasoningEffortForExternal(DuelSettings.ReasoningEffortMax);
+			settings.MainApiTemperature = 1f;
+			settings.AuxiliaryApiThinkingEnabled = false;
+			settings.SetAuxiliaryApiReasoningEffortForExternal(DuelSettings.ReasoningEffortHigh);
+			settings.AuxiliaryApiTemperature = 0f;
+			settings.ActionPostprocessApiThinkingEnabled = true;
+			settings.SetActionPostprocessApiReasoningEffortForExternal(DuelSettings.ReasoningEffortMax);
+			settings.ActionPostprocessApiTemperature = 0f;
+			settings.EventAndRebellionApiThinkingEnabled = false;
+			settings.SetEventAndRebellionApiReasoningEffortForExternal(DuelSettings.ReasoningEffortHigh);
+			settings.EventAndRebellionApiTemperature = 1.2f;
+		}
+		TryPersistMcmSettings(settings);
+		return true;
+	}
+
+	private void ShowQuickPresetApiKeyInput(QuickApiPreset preset)
+	{
+		try
+		{
+			if (preset == QuickApiPreset.None)
+			{
+				ShowSetupModeChoicePopup(fromGate: true, ignoreSuppress: true);
+				return;
+			}
+			_selectedQuickApiPreset = preset;
+			_quickPresetFlowActive = true;
+			_activeOnboardingStage = OnboardingUiStage.QuickPresetApiKey;
+			string presetName = preset == QuickApiPreset.DeepSeekPro ? "deepseek-pro" : "deepseek-flash";
+			string text = "已写入 " + presetName + " 推荐 API 组合。\n请输入 DeepSeek API Key；该 Key 会同时写入主API、前处理API、后处理API、周报和叛乱API。";
+			if (_showApiValidationFailedHint)
+			{
+				text = "刚才的主链路测试没有通过，请检查 API Key 或当前网络环境。\n\n" + text;
+				if (!string.IsNullOrWhiteSpace(_lastApiValidationFailureHint))
+				{
+					text = text + "\n\n排查建议：" + _lastApiValidationFailureHint;
+				}
+			}
+			InformationManager.ShowTextInquiry(new TextInquiryData("填写 DeepSeek API Key", text, isAffirmativeOptionShown: true, isNegativeOptionShown: true, "保存并测试四条API", "返回", delegate(string input)
+			{
+				string text2 = (input ?? "").Trim();
+				if (string.IsNullOrWhiteSpace(text2))
+				{
+					InformationManager.DisplayMessage(new InformationMessage("API Key 不能为空。"));
+					ShowQuickPresetApiKeyInput(preset);
+					return;
+				}
+				if (!ApplyDeepSeekPresetToMcm(preset, text2))
+				{
+					ShowSetupModeChoicePopup(fromGate: true, ignoreSuppress: true);
+					return;
+				}
+				SetApiSetupTarget(ApiSetupTarget.Primary);
+				SetApiRepairFlowActive(active: false);
+				_showApiValidationFailedHint = false;
+				_showModelSelectionValidationFailedHint = false;
+				InformationManager.DisplayMessage(new InformationMessage("DeepSeek 推荐配置已写入 MCM，正在测试四条 API。"));
+				BeginValidateQuickPresetApiConfigAndContinue();
+			}, delegate
+			{
+				_quickPresetFlowActive = false;
+				_selectedQuickApiPreset = QuickApiPreset.None;
+				ShowSetupModeChoicePopup(fromGate: true, ignoreSuppress: true);
+			}));
+		}
+		catch (Exception ex)
+		{
+			InformationManager.DisplayMessage(new InformationMessage("打开 DeepSeek API Key 输入框失败：" + ex.Message));
+			ShowSetupModeChoicePopup(fromGate: true, ignoreSuppress: true);
+		}
+	}
+
+	private void BeginValidateQuickPresetApiConfigAndContinue()
+	{
+		BeginValidateApiConfigSetAndContinue(ApiValidationFlow.QuickPresetAll, skipIncompleteEventAndRebellion: false);
+	}
+
+	private void BeginValidateExistingApiConfigAndContinue()
+	{
+		BeginValidateApiConfigSetAndContinue(ApiValidationFlow.ExistingConfigAll, skipIncompleteEventAndRebellion: true);
+	}
+
+	private void BeginValidateApiConfigSetAndContinue(ApiValidationFlow flow, bool skipIncompleteEventAndRebellion)
+	{
+		if (_apiValidationInProgress)
+		{
+			return;
+		}
+		DuelSettings settings = DuelSettings.GetSettings();
+		if (settings == null)
+		{
+			InformationManager.DisplayMessage(new InformationMessage("无法读取 MCM 设置，暂时不能测试 API 组合。"));
+			ShowSetupModeChoicePopup(fromGate: true, ignoreSuppress: true);
+			return;
+		}
+		TryPersistMcmSettings(settings);
+		List<ApiValidationTargetInfo> targets = new List<ApiValidationTargetInfo>();
+		if (!TryAddApiValidationTarget(settings, ApiSetupTarget.Primary, targets, required: true, out var missingPrimary))
+		{
+			ShowApiConfigSetValidationPrecheckFailure(missingPrimary);
+			return;
+		}
+		if (!TryAddApiValidationTarget(settings, ApiSetupTarget.Auxiliary, targets, required: true, out var missingAuxiliary))
+		{
+			ShowApiConfigSetValidationPrecheckFailure(missingAuxiliary);
+			return;
+		}
+		if (!TryAddApiValidationTarget(settings, ApiSetupTarget.ActionPostprocess, targets, required: true, out var missingActionPostprocess))
+		{
+			ShowApiConfigSetValidationPrecheckFailure(missingActionPostprocess);
+			return;
+		}
+		bool eventSkipped = false;
+		if (!TryAddApiValidationTarget(settings, ApiSetupTarget.EventAndRebellion, targets, !skipIncompleteEventAndRebellion, out var missingEventAndRebellion))
+		{
+			if (skipIncompleteEventAndRebellion)
+			{
+				eventSkipped = true;
+			}
+			else
+			{
+				ShowApiConfigSetValidationPrecheckFailure(missingEventAndRebellion);
+				return;
+			}
+		}
+		_apiValidationFlow = flow;
+		_apiValidationReturnToModelSelection = false;
+		_apiValidationInProgress = true;
+		int num = ++_apiValidationVersion;
+		ShowApiValidationProgressPopup();
+		Task.Run(async delegate
+		{
+			bool flag = false;
+			string text = "";
+			string failureHint = "";
+			CancellationTokenSource cancellationTokenSource = null;
+			try
+			{
+				cancellationTokenSource = new CancellationTokenSource();
+				_apiValidationCancellation = cancellationTokenSource;
+				ApiValidationTargetResult[] array = await Task.WhenAll(targets.Select((ApiValidationTargetInfo target) => ValidateApiTargetAsync(target, cancellationTokenSource.Token)));
+				ApiValidationTargetResult apiValidationTargetResult = array.FirstOrDefault((ApiValidationTargetResult x) => x == null || !x.Success);
+				if (apiValidationTargetResult == null)
+				{
+					flag = true;
+					text = BuildApiConfigSetValidationSuccessMessage(flow, array, eventSkipped);
+				}
+				else
+				{
+					failureHint = apiValidationTargetResult.FailureHint ?? "";
+					text = apiValidationTargetResult.Message ?? "API 组合连接测试失败。";
+				}
+			}
+			catch (OperationCanceledException)
+			{
+				failureHint = "你已手动取消本次测试，可以回到首次菜单重新选择配置方式。";
+				text = "API 组合测试已取消。";
+			}
+			catch (Exception ex)
+			{
+				failureHint = "通常是网络异常、证书或代理设置异常，或者某条 API 配置不正确。";
+				text = "API 组合测试异常：" + ex.Message;
+			}
+			finally
+			{
+				if (num == _apiValidationVersion)
+				{
+					if (ReferenceEquals(_apiValidationCancellation, cancellationTokenSource))
+					{
+						_apiValidationCancellation = null;
+					}
+					_apiValidationInProgress = false;
+					_pendingApiValidationSuccess = flag;
+					_pendingApiValidationMessage = text ?? "";
+					_pendingApiValidationFailureHint = failureHint ?? "";
+					_pendingApiValidationResult = true;
+				}
+				cancellationTokenSource?.Dispose();
+			}
+		});
+	}
+
+	private static bool TryAddApiValidationTarget(DuelSettings settings, ApiSetupTarget target, List<ApiValidationTargetInfo> targets, bool required, out string missingMessage)
+	{
+		missingMessage = "";
+		string displayName = GetApiDisplayName(target);
+		string apiUrl = GetApiUrlForTarget(settings, target).Trim();
+		string apiKey = GetApiKeyForTarget(settings, target).Trim();
+		string modelName = GetModelNameForTarget(settings, target).Trim();
+		if (string.IsNullOrWhiteSpace(apiUrl) || string.IsNullOrWhiteSpace(apiKey) || string.IsNullOrWhiteSpace(modelName))
+		{
+			if (required)
+			{
+				missingMessage = displayName + "未配置完整，请检查 Base URL、API Key 和模型名称。";
+				return false;
+			}
+			return false;
+		}
+		targets?.Add(new ApiValidationTargetInfo
+		{
+			Target = target,
+			DisplayName = displayName,
+			ApiUrl = apiUrl,
+			ApiKey = apiKey,
+			ModelName = modelName
+		});
+		return true;
+	}
+
+	private void ShowApiConfigSetValidationPrecheckFailure(string message)
+	{
+		_showApiValidationFailedHint = true;
+		_lastApiValidationFailureHint = message ?? "";
+		InformationManager.DisplayMessage(new InformationMessage(string.IsNullOrWhiteSpace(message) ? "API 配置未填写完整，无法开始组合测试。" : message));
+		ShowSetupModeChoicePopup(fromGate: true, ignoreSuppress: true);
+	}
+
+	private static async Task<ApiValidationTargetResult> ValidateApiTargetAsync(ApiValidationTargetInfo target, CancellationToken cancellationToken)
+	{
+		ApiValidationTargetResult result = new ApiValidationTargetResult
+		{
+			Target = target
+		};
+		if (target == null)
+		{
+			result.Message = "API 组合测试失败：目标配置为空。";
+			result.FailureHint = "请回到首次菜单重新选择配置方式。";
+			return result;
+		}
+		try
+		{
+			string effectiveApiUrl = DuelSettings.GetEffectiveApiUrl(target.ApiUrl);
+			JObject requestPayload = new JObject
+			{
+				["model"] = target.ModelName,
+				["messages"] = new JArray
+				{
+					new JObject
+					{
+						["role"] = "user",
+						["content"] = "请回复“连接成功”。"
+					}
+				},
+				["stream"] = false
+			};
+			ApplyApiValidationRequestControls(requestPayload, target.Target, effectiveApiUrl, target.ModelName);
+			using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, effectiveApiUrl);
+			request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", target.ApiKey);
+			request.Content = new StringContent(requestPayload.ToString(Formatting.None), Encoding.UTF8, "application/json");
+			HttpResponseMessage response = await DuelSettings.GlobalClient.SendAsync(request, cancellationToken);
+			string responseBody = await response.Content.ReadAsStringAsync();
+			if (response.IsSuccessStatusCode)
+			{
+				result.Success = true;
+				result.Message = target.DisplayName + "连接测试成功。";
+				return result;
+			}
+			result.FailureHint = BuildApiValidationFailureHint(response.StatusCode, responseBody);
+			result.Message = target.DisplayName + "连接测试失败。\n" + BuildApiValidationFailureMessage(effectiveApiUrl, target.ModelName, response.StatusCode, responseBody);
+			return result;
+		}
+		catch (OperationCanceledException)
+		{
+			throw;
+		}
+		catch (Exception ex)
+		{
+			result.FailureHint = "通常是网络异常、证书或代理设置异常，或者 " + target.DisplayName + " 的 Base URL 填写不正确。";
+			result.Message = target.DisplayName + "连接测试异常：" + ex.Message;
+			return result;
+		}
+	}
+
+	private static string BuildApiConfigSetValidationSuccessMessage(ApiValidationFlow flow, IEnumerable<ApiValidationTargetResult> results, bool eventSkipped)
+	{
+		string label = flow == ApiValidationFlow.ExistingConfigAll ? "现有配置测试通过" : "API 组合测试通过";
+		string names = string.Join("、", (results ?? Enumerable.Empty<ApiValidationTargetResult>()).Where((ApiValidationTargetResult x) => x?.Target != null).Select((ApiValidationTargetResult x) => x.Target.DisplayName).Where((string x) => !string.IsNullOrWhiteSpace(x)));
+		if (string.IsNullOrWhiteSpace(names))
+		{
+			names = "已配置API";
+		}
+		string text = label + "：" + names + "。";
+		if (eventSkipped)
+		{
+			text += "周报与叛乱API未配置完整，已跳过该项测试。";
+		}
+		return text;
+	}
+
+	private static string GetApiDisplayName(ApiSetupTarget target)
+	{
+		if (target == ApiSetupTarget.Auxiliary)
+		{
+			return "前处理API";
+		}
+		if (target == ApiSetupTarget.ActionPostprocess)
+		{
+			return "后处理API";
+		}
+		if (target == ApiSetupTarget.EventAndRebellion)
+		{
+			return "周报与叛乱API";
+		}
+		return "主API";
 	}
 
 	private void ShowApiRepairPopup()
@@ -1705,10 +2280,59 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private static void ApplyApiValidationRequestControls(JObject payload, ApiSetupTarget target, string apiUrl, string modelName)
+	{
+		if (payload == null)
+		{
+			return;
+		}
+		try
+		{
+			DuelSettings settings = DuelSettings.GetSettings();
+			if (settings == null)
+			{
+				return;
+			}
+			bool thinkingEnabled;
+			string effort;
+			float temperature;
+			if (target == ApiSetupTarget.Auxiliary)
+			{
+				thinkingEnabled = settings.AuxiliaryApiThinkingEnabled;
+				effort = settings.GetAuxiliaryApiReasoningEffort();
+				temperature = settings.GetAuxiliaryApiTemperature();
+			}
+			else if (target == ApiSetupTarget.ActionPostprocess)
+			{
+				thinkingEnabled = settings.ActionPostprocessApiThinkingEnabled;
+				effort = settings.GetActionPostprocessApiReasoningEffort();
+				temperature = settings.GetActionPostprocessApiTemperature();
+			}
+			else if (target == ApiSetupTarget.EventAndRebellion)
+			{
+				thinkingEnabled = settings.EventAndRebellionApiThinkingEnabled;
+				effort = settings.GetEventAndRebellionApiReasoningEffort();
+				temperature = settings.GetEventAndRebellionApiTemperature();
+			}
+			else
+			{
+				thinkingEnabled = settings.MainApiThinkingEnabled;
+				effort = settings.GetMainApiReasoningEffort();
+				temperature = settings.GetMainApiTemperature();
+			}
+			payload["temperature"] = DuelSettings.ClampApiTemperature(temperature);
+			DuelSettings.ApplyThinkingControls(payload, apiUrl, modelName, thinkingEnabled, effort, out var _);
+		}
+		catch
+		{
+		}
+	}
+
 	private void BeginValidateMcmApiAndContinueCore(string apiUrl, string apiKey, string modelName, bool returnToModelSelection)
 	{
 		_apiValidationReturnToModelSelection = returnToModelSelection;
 		_apiValidationInProgress = true;
+		ApiSetupTarget validationTarget = _currentApiSetupTarget;
 		int num = ++_apiValidationVersion;
 		ShowApiValidationProgressPopup();
 		Task.Run(async delegate
@@ -1722,20 +2346,21 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 				cancellationTokenSource = new CancellationTokenSource();
 				_apiValidationCancellation = cancellationTokenSource;
 				string effectiveApiUrl = DuelSettings.GetEffectiveApiUrl(apiUrl);
-				var value = new
+				JObject requestPayload = new JObject
 				{
-					model = modelName,
-					messages = new[]
+					["model"] = modelName,
+					["messages"] = new JArray
 					{
-						new
+						new JObject
 						{
-							role = "user",
-							content = "请回复“连接成功”。"
+							["role"] = "user",
+							["content"] = "请回复“连接成功”。"
 						}
 					},
-					stream = false
+					["stream"] = false
 				};
-				string jsonBody = JsonConvert.SerializeObject(value);
+				ApplyApiValidationRequestControls(requestPayload, validationTarget, effectiveApiUrl, modelName);
+				string jsonBody = requestPayload.ToString(Formatting.None);
 				StringContent content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
 				DuelSettings.GlobalClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
 				HttpResponseMessage httpResponseMessage = await DuelSettings.GlobalClient.PostAsync(effectiveApiUrl, (HttpContent)(object)content, cancellationTokenSource.Token);
@@ -1833,7 +2458,10 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		{
 			_welcomeInProgress = true;
 			_activeOnboardingStage = OnboardingUiStage.ApiValidation;
-			InformationManager.ShowInquiry(new InquiryData("正在测试现有配置", "正在使用 MCM 中的" + CurrentApiDisplayName() + "信息进行连接测试，请稍候……\n\n测试完成后将自动进入下一步。\n如果你的 API 测试始终未成功，你也可以在此界面直接退出存档。", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "退出当前存档", "返回上一界面", ExitCurrentGameFromOnboarding, CancelApiValidationAndReturnToWelcome), pauseGameActiveState: true);
+			string text = (_apiValidationFlow == ApiValidationFlow.QuickPresetAll || _apiValidationFlow == ApiValidationFlow.ExistingConfigAll)
+				? "正在按当前 MCM 配置并发测试 API 组合，请稍候……\n\n测试完成后将自动进入下一步；任意必测 API 不通过都会返回首次菜单。"
+				: "正在使用 MCM 中的" + CurrentApiDisplayName() + "信息进行连接测试，请稍候……\n\n测试完成后将自动进入下一步。\n如果你的 API 测试始终未成功，你也可以在此界面直接退出存档。";
+			InformationManager.ShowInquiry(new InquiryData("正在测试现有配置", text, isAffirmativeOptionShown: true, isNegativeOptionShown: true, "退出当前存档", "返回上一界面", ExitCurrentGameFromOnboarding, CancelApiValidationAndReturnToWelcome), pauseGameActiveState: true);
 		}
 		catch
 		{
@@ -1842,8 +2470,15 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 
 	private void CancelApiValidationAndReturnToWelcome()
 	{
+		bool returnToSetupMenu = _apiValidationFlow == ApiValidationFlow.QuickPresetAll || _apiValidationFlow == ApiValidationFlow.ExistingConfigAll;
 		CancelApiValidationCore();
-		if (_apiValidationReturnToModelSelection)
+		if (returnToSetupMenu)
+		{
+			_quickPresetFlowActive = false;
+			_selectedQuickApiPreset = QuickApiPreset.None;
+			ShowSetupModeChoicePopup(fromGate: true, ignoreSuppress: true);
+		}
+		else if (_apiValidationReturnToModelSelection)
 		{
 			ShowModelSelectionPopup();
 		}
@@ -1859,6 +2494,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		{
 			_apiValidationVersion++;
 			_apiValidationInProgress = false;
+			_apiValidationFlow = ApiValidationFlow.Normal;
 			_welcomeInProgress = false;
 			_activeOnboardingStage = OnboardingUiStage.None;
 			try
@@ -1880,12 +2516,14 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 	{
 		try
 		{
+			_saveAndExitStage = SaveAndExitStage.None;
 			_pendingWelcome = false;
 			_pendingReturnToWelcome = false;
 			_pendingApiValidationResult = false;
 			_pendingApiValidationSuccess = false;
 			_pendingApiValidationMessage = "";
 			_pendingApiValidationFailureHint = "";
+			_apiValidationFlow = ApiValidationFlow.Normal;
 			_pendingBaseUrlValidationResult = false;
 			_pendingBaseUrlValidationSuccess = false;
 			_pendingBaseUrlValidationMessage = "";
@@ -1924,6 +2562,80 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		{
 			InformationManager.DisplayMessage(new InformationMessage("退出当前存档失败：" + ex.Message));
 			ReopenCurrentApiEntry(ignoreSuppress: true);
+		}
+	}
+
+	private void BeginSaveAndExitCurrentGameFromOnboarding()
+	{
+		try
+		{
+			_welcomeInProgress = false;
+			_activeOnboardingStage = OnboardingUiStage.None;
+			_pendingUnexpectedResumeStage = OnboardingUiStage.None;
+			InformationManager.HideInquiry();
+			SaveHandler saveHandler = Campaign.Current?.SaveHandler;
+			if (saveHandler == null)
+			{
+				_saveAndExitStage = SaveAndExitStage.None;
+				InformationManager.DisplayMessage(new InformationMessage("未找到存档保存器，将直接退出当前存档。"));
+				MBGameManager.EndGame();
+				return;
+			}
+			if (saveHandler.IsSaving)
+			{
+				_saveAndExitStage = SaveAndExitStage.WaitingForCurrentSave;
+				InformationManager.DisplayMessage(new InformationMessage("检测到当前已有保存进行中，完成后将再保存一次并自动退出。"));
+				return;
+			}
+			_saveAndExitStage = SaveAndExitStage.WaitingForRequestedQuickSave;
+			saveHandler.QuickSaveCurrentGame();
+			InformationManager.DisplayMessage(new InformationMessage("正在保存当前存档，保存完成后将自动退出。"));
+		}
+		catch (Exception ex)
+		{
+			_saveAndExitStage = SaveAndExitStage.None;
+			InformationManager.DisplayMessage(new InformationMessage("保存并退出失败：" + ex.Message));
+			ShowSetupModeChoicePopup(fromGate: true, ignoreSuppress: true);
+		}
+	}
+
+	private void OnSaveOver(bool isSuccessful, string saveName)
+	{
+		if (_saveAndExitStage == SaveAndExitStage.None)
+		{
+			return;
+		}
+		try
+		{
+			if (_saveAndExitStage == SaveAndExitStage.WaitingForCurrentSave)
+			{
+				SaveHandler saveHandler = Campaign.Current?.SaveHandler;
+				if (saveHandler == null)
+				{
+					_saveAndExitStage = SaveAndExitStage.None;
+					InformationManager.DisplayMessage(new InformationMessage("保存并退出失败：未找到存档保存器。"));
+					ShowSetupModeChoicePopup(fromGate: true, ignoreSuppress: true);
+					return;
+				}
+				_saveAndExitStage = SaveAndExitStage.WaitingForRequestedQuickSave;
+				saveHandler.QuickSaveCurrentGame();
+				InformationManager.DisplayMessage(new InformationMessage("正在保存当前存档，保存完成后将自动退出。"));
+				return;
+			}
+			_saveAndExitStage = SaveAndExitStage.None;
+			if (isSuccessful)
+			{
+				MBGameManager.EndGame();
+				return;
+			}
+			InformationManager.DisplayMessage(new InformationMessage("保存当前存档失败，已取消退出。"));
+			ShowSetupModeChoicePopup(fromGate: true, ignoreSuppress: true);
+		}
+		catch (Exception ex)
+		{
+			_saveAndExitStage = SaveAndExitStage.None;
+			InformationManager.DisplayMessage(new InformationMessage("保存并退出失败：" + ex.Message));
+			ShowSetupModeChoicePopup(fromGate: true, ignoreSuppress: true);
 		}
 	}
 

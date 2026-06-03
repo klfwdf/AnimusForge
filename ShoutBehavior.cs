@@ -5773,7 +5773,7 @@ private static void SplitSceneNpcRoleIntroSections(string fullIntro, bool isHero
 		{
 			return true;
 		}
-		if (text.StartsWith("【近期对话窗口】", StringComparison.Ordinal))
+		if (text.StartsWith("【近期对话窗口】", StringComparison.Ordinal) || text.StartsWith("【最近对话历史】", StringComparison.Ordinal))
 		{
 			return true;
 		}
@@ -6208,7 +6208,7 @@ private static void SplitSceneNpcRoleIntroSections(string fullIntro, bool isHero
 		{
 			return false;
 		}
-		if (text.StartsWith("【近期对话窗口】", StringComparison.Ordinal))
+		if (text.StartsWith("【近期对话窗口】", StringComparison.Ordinal) || text.StartsWith("【最近对话历史】", StringComparison.Ordinal))
 		{
 			return true;
 		}
@@ -13861,10 +13861,13 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			}
 			else
 			{
-				_mainThreadActions.Enqueue(delegate
+				try
 				{
 					PersistExtraFactToNamedHeroes(extraFact, allNpcData);
-				});
+				}
+				catch
+				{
+				}
 			}
 		}
 		RecordPlayerSpeechToMessageFeed(shoutText);
@@ -15575,10 +15578,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 		try
 		{
-			_mainThreadActions.Enqueue(delegate
-			{
-				PersistPlayerMessageToNamedHeroes(text, nearbyData);
-			});
+			PersistPlayerMessageToNamedHeroes(text, nearbyData);
 		}
 		catch
 		{

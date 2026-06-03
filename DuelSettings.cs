@@ -935,6 +935,11 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 
 	private void OpenAfdianSupportPage()
 	{
+		OpenAfdianSupportPageForExternal();
+	}
+
+	public static void OpenAfdianSupportPageForExternal()
+	{
 		try
 		{
 			Logger.Log("DuelSettings", "用户点击了[支持作者（爱发电）]按钮。");
@@ -2038,6 +2043,34 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		EnsureModelDropdownCacheHydrated();
 		_eventAndRebellionApiModelDropdown = BuildDropdownFromOptions(_eventAndRebellionApiModelOptions, ManualDropdownModelName, "", preserveBlankSelection: false, out _eventAndRebellionApiModelOptions, out var _);
 		PersistModelDropdownCacheSnapshot();
+		McmDropdownRuntimeRefresh.RequestRefresh();
+	}
+
+	public void SetMainApiReasoningEffortForExternal(string effort)
+	{
+		MainApiReasoningEffort = NormalizeReasoningEffortSelection(effort);
+		_mainApiReasoningEffortDropdown = BuildReasoningEffortDropdown(MainApiReasoningEffort);
+		McmDropdownRuntimeRefresh.RequestRefresh();
+	}
+
+	public void SetAuxiliaryApiReasoningEffortForExternal(string effort)
+	{
+		AuxiliaryApiReasoningEffort = NormalizeReasoningEffortSelection(effort);
+		_auxiliaryApiReasoningEffortDropdown = BuildReasoningEffortDropdown(AuxiliaryApiReasoningEffort);
+		McmDropdownRuntimeRefresh.RequestRefresh();
+	}
+
+	public void SetActionPostprocessApiReasoningEffortForExternal(string effort)
+	{
+		ActionPostprocessApiReasoningEffort = NormalizeReasoningEffortSelection(effort);
+		_actionPostprocessApiReasoningEffortDropdown = BuildReasoningEffortDropdown(ActionPostprocessApiReasoningEffort);
+		McmDropdownRuntimeRefresh.RequestRefresh();
+	}
+
+	public void SetEventAndRebellionApiReasoningEffortForExternal(string effort)
+	{
+		EventAndRebellionApiReasoningEffort = NormalizeReasoningEffortSelection(effort);
+		_eventAndRebellionApiReasoningEffortDropdown = BuildReasoningEffortDropdown(EventAndRebellionApiReasoningEffort);
 		McmDropdownRuntimeRefresh.RequestRefresh();
 	}
 
