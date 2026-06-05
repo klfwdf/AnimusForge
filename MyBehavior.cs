@@ -3802,6 +3802,44 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
+	internal void RecordAnimusForgeSiegeInterventionForExternal(MobileParty attackerParty, Settlement settlement, SiegeAftermathAction.SiegeAftermath aftermathType, Clan previousSettlementOwner, string trigger, string detail, int soldierCount, int lootItemTotal, int lootStackKinds, int lootValue, int marketGoldLoot, int civilianGoldLoot, int civilianTargetsLooted, int killedCivilianUnits, int killedNotables, bool plunderStarted, bool massacreStarted)
+	{
+		try
+		{
+			Hero leaderHero = attackerParty?.LeaderHero ?? Hero.MainHero;
+			string settlementDisplayName = GetSettlementDisplayName(settlement);
+			string siegeAftermathLabel = GetSiegeAftermathLabel(aftermathType);
+			string previousOwnerText = GetClanDisplayName(previousSettlementOwner);
+			string text = GetHeroDisplayName(leaderHero) + "在攻取" + settlementDisplayName + "后通过 AnimusForge 攻城处置选择了" + siegeAftermathLabel + "。";
+			if (!string.IsNullOrWhiteSpace(trigger))
+			{
+				text += " 触发：" + trigger.Trim() + "。";
+			}
+			if (!string.IsNullOrWhiteSpace(detail))
+			{
+				text += " 细节：" + detail.Trim() + "。";
+			}
+			if (plunderStarted || massacreStarted || lootItemTotal > 0 || marketGoldLoot > 0 || civilianGoldLoot > 0 || killedCivilianUnits > 0 || killedNotables > 0)
+			{
+				text += " 处置统计：入城士兵约" + Math.Max(0, soldierCount) + "人，市场物资" + Math.Max(0, lootItemTotal) + "件/" + Math.Max(0, lootStackKinds) + "类，估值" + Math.Max(0, lootValue) + "，市场金库" + Math.Max(0, marketGoldLoot) + "，民众第纳尔" + Math.Max(0, civilianGoldLoot) + "，被处置民众目标" + Math.Max(0, civilianTargetsLooted) + "，死亡民众" + Math.Max(0, killedCivilianUnits) + "，死亡要人" + Math.Max(0, killedNotables) + "。";
+			}
+			if (!string.IsNullOrWhiteSpace(previousOwnerText))
+			{
+				text += " 该地此前由" + previousOwnerText + "掌控。";
+			}
+			string stableKey = "af_siege_intervention:" + GetSettlementId(settlement) + ":" + aftermathType + ":" + GetHeroId(leaderHero) + ":" + (trigger ?? "").Trim();
+			NpcActionFacts facts = CreateNpcActionFacts("af_siege_intervention", leaderHero);
+			ApplySettlementFacts(facts, settlement, settlement?.OwnerClan?.Leader, previousSettlementOwner?.Leader);
+			RecordNpcMajorAction(leaderHero, text, stableKey, facts);
+			RecordNpcRecentAction(leaderHero, text, stableKey, facts: facts);
+			RecordEventSourceMaterial("af_siege_intervention", "AF攻城处置 - " + settlementDisplayName, text, stableKey, GetKingdomId(attackerParty?.MapFaction ?? settlement?.MapFaction), GetSettlementId(settlement), includeInWorld: settlement?.IsTown == true && (aftermathType != SiegeAftermathAction.SiegeAftermath.ShowMercy || massacreStarted || plunderStarted), includeInKingdom: true);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("EventMaterial", "[ERROR] RecordAnimusForgeSiegeInterventionForExternal: " + ex.Message);
+		}
+	}
+
 	private void OnVillageBeingRaided(Village village)
 	{
 		try
@@ -15511,6 +15549,11 @@ public class MyBehavior : CampaignBehaviorBase
 				AppendRuleBlock(stringBuilder, "surroundings", AIConfigHandler.SurroundingsInstruction);
 			}
 			string text3 = BuildExtraRuleInstructions(input, npcLastUtterance, targetHero, hasAnyHero, targetCharacter, kingdomIdOverride, targetAgentIndex);
+			string siegeInterventionRuntimeInstruction = SiegeAiInterventionBehavior.BuildRuntimePromptForPromptContext(targetHero, targetCharacter, targetAgentIndex);
+			if (!string.IsNullOrWhiteSpace(siegeInterventionRuntimeInstruction))
+			{
+				AppendRuleBlock(stringBuilder, "siege_intervention_aftermath", siegeInterventionRuntimeInstruction);
+			}
 			if (IsPartyTransferLordEligible(targetHero, targetCharacter) && !string.IsNullOrWhiteSpace(text3) && text3.IndexOf("【附加规则:party_transfer】", StringComparison.OrdinalIgnoreCase) >= 0)
 			{
 				bool flag12 = stringBuilder.ToString().IndexOf("【附加规则:reward】", StringComparison.OrdinalIgnoreCase) >= 0;
@@ -16497,11 +16540,16 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			preprocessRuleIds.Add("party_transfer");
 		}
+		if ((shoutPromptContext.Extras?.IndexOf("【附加规则:siege_intervention_aftermath】", StringComparison.OrdinalIgnoreCase)).GetValueOrDefault() >= 0 || SiegeAiInterventionBehavior.ShouldRunSiegeInterventionPostprocessForExternal())
+		{
+			preprocessRuleIds.Add("siege_intervention_aftermath");
+		}
 		shoutPromptContext.PreprocessRuleIds = preprocessRuleIds.ToList();
 		bool extrasHasDuelRule = (shoutPromptContext.Extras?.IndexOf("【附加规则:duel】", StringComparison.OrdinalIgnoreCase)).GetValueOrDefault() >= 0;
 		bool extrasHasRewardRule = (shoutPromptContext.Extras?.IndexOf("【附加规则:reward】", StringComparison.OrdinalIgnoreCase)).GetValueOrDefault() >= 0;
 		bool extrasHasLoanRule = (shoutPromptContext.Extras?.IndexOf("【附加规则:loan】", StringComparison.OrdinalIgnoreCase)).GetValueOrDefault() >= 0;
-		Logger.Log("Logic", $"[RuleInjectionDebug] stage=extras targetHero={(targetHero?.StringId ?? "null")} targetCharacter={(targetCharacter?.StringId ?? "null")} extrasHasDuelRule={extrasHasDuelRule} extrasHasRewardRule={extrasHasRewardRule} extrasHasLoanRule={extrasHasLoanRule} extrasLen={(shoutPromptContext.Extras ?? "").Length} useDuelContext={shoutPromptContext.UseDuelContext} useRewardContext={shoutPromptContext.UseRewardContext} useLoanContext={shoutPromptContext.IsLoanContext}");
+		bool extrasHasSiegeInterventionRule = (shoutPromptContext.Extras?.IndexOf("【附加规则:siege_intervention_aftermath】", StringComparison.OrdinalIgnoreCase)).GetValueOrDefault() >= 0;
+		Logger.Log("Logic", $"[RuleInjectionDebug] stage=extras targetHero={(targetHero?.StringId ?? "null")} targetCharacter={(targetCharacter?.StringId ?? "null")} extrasHasDuelRule={extrasHasDuelRule} extrasHasRewardRule={extrasHasRewardRule} extrasHasLoanRule={extrasHasLoanRule} extrasHasSiegeInterventionRule={extrasHasSiegeInterventionRule} extrasLen={(shoutPromptContext.Extras ?? "").Length} useDuelContext={shoutPromptContext.UseDuelContext} useRewardContext={shoutPromptContext.UseRewardContext} useLoanContext={shoutPromptContext.IsLoanContext}");
 		return shoutPromptContext;
 		}
 		finally
