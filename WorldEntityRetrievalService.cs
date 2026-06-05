@@ -107,6 +107,12 @@ public static class WorldEntityRetrievalService
 
 	private const int MaxInjectedEntitiesHardCap = 20;
 
+	private const int MaxVisiblePartyCandidates = 10;
+
+	private const float VisiblePartyMinRange = 18f;
+
+	private const float VisiblePartyRangeMultiplier = 1.5f;
+
 	private sealed class EntityMatch<T>
 	{
 		public T Value;
@@ -122,41 +128,66 @@ public static class WorldEntityRetrievalService
 		public int MentionPriority;
 	}
 
-	public static WorldEntityPromptContext BuildPromptContext(MentionedWorldEntities mentions, string playerDisplayName)
+	private sealed class VisiblePartyCandidate
+	{
+		public MobileParty Party;
+
+		public string Id;
+
+		public string Name;
+
+		public int Count;
+
+		public string Affiliation;
+
+		public string Direction;
+
+		public float Distance;
+	}
+
+	public static WorldEntityPromptContext BuildPromptContext(MentionedWorldEntities mentions, string playerDisplayName, Hero contextHero = null)
 	{
 		WorldEntityPromptContext result = new WorldEntityPromptContext();
 		try
 		{
-			if (mentions == null || mentions.IsEmpty || Campaign.Current == null)
+			if (Campaign.Current == null)
 			{
 				return result;
 			}
+			List<VisiblePartyCandidate> visibleParties = BuildVisiblePartyCandidates(contextHero);
 			List<string> allMentions = BuildMergedMentionList(mentions);
-			if (allMentions.Count == 0)
+			List<EntityMatch<Hero>> heroes = new List<EntityMatch<Hero>>();
+			List<EntityMatch<Settlement>> settlements = new List<EntityMatch<Settlement>>();
+			List<EntityMatch<Clan>> clans = new List<EntityMatch<Clan>>();
+			List<EntityMatch<Kingdom>> kingdoms = new List<EntityMatch<Kingdom>>();
+			if (allMentions.Count > 0)
 			{
-				return result;
+				Dictionary<string, int> mentionPriority = BuildMentionPriority(allMentions);
+				int maxInjectedEntities = GetMaxInjectedEntitiesFromSettings();
+				List<Hero> heroCandidates = GetHeroCandidates().ToList();
+				List<Settlement> settlementCandidates = GetSettlementCandidates().ToList();
+				List<Clan> clanCandidates = GetClanCandidates().ToList();
+				List<Kingdom> kingdomCandidates = GetKingdomCandidates().ToList();
+				Logger.Log("WorldEntityRetrieval", "mentions total=" + allMentions.Count + " maxInject=" + maxInjectedEntities + " heroes=" + CountList(mentions?.Heroes) + " settlements=" + CountList(mentions?.Settlements) + " clans=" + CountList(mentions?.Clans) + " kingdoms=" + CountList(mentions?.Kingdoms) + " visibleParties=" + visibleParties.Count + " candidates hero=" + heroCandidates.Count + " settlement=" + settlementCandidates.Count + " clan=" + clanCandidates.Count + " kingdom=" + kingdomCandidates.Count + " names=" + FormatMentionsForLog(allMentions));
+				heroes = FindMatches(allMentions, mentionPriority, heroCandidates, GetHeroAliases, (Hero x) => "hero:" + SafeStringId(x?.StringId), (Hero x) => SafeName(x?.Name, x?.StringId ?? "Hero"));
+				settlements = FindMatches(allMentions, mentionPriority, settlementCandidates, GetSettlementAliases, (Settlement x) => "settlement:" + SafeStringId(x?.StringId), (Settlement x) => SafeName(x?.Name, x?.StringId ?? "Settlement"));
+				clans = FindMatches(allMentions, mentionPriority, clanCandidates, GetClanAliases, (Clan x) => "clan:" + SafeStringId(x?.StringId), (Clan x) => SafeName(x?.Name, x?.StringId ?? "Clan"));
+				kingdoms = FindMatches(allMentions, mentionPriority, kingdomCandidates, GetKingdomAliases, (Kingdom x) => "kingdom:" + SafeStringId(x?.StringId), (Kingdom x) => SafeName(x?.Name, x?.StringId ?? "Kingdom"));
+				ApplyGlobalInjectionLimit(maxInjectedEntities, ref heroes, ref settlements, ref clans, ref kingdoms);
 			}
-			Dictionary<string, int> mentionPriority = BuildMentionPriority(allMentions);
-			int maxInjectedEntities = GetMaxInjectedEntitiesFromSettings();
-			List<Hero> heroCandidates = GetHeroCandidates().ToList();
-			List<Settlement> settlementCandidates = GetSettlementCandidates().ToList();
-			List<Clan> clanCandidates = GetClanCandidates().ToList();
-			List<Kingdom> kingdomCandidates = GetKingdomCandidates().ToList();
-			Logger.Log("WorldEntityRetrieval", "mentions total=" + allMentions.Count + " maxInject=" + maxInjectedEntities + " heroes=" + CountList(mentions.Heroes) + " settlements=" + CountList(mentions.Settlements) + " clans=" + CountList(mentions.Clans) + " kingdoms=" + CountList(mentions.Kingdoms) + " candidates hero=" + heroCandidates.Count + " settlement=" + settlementCandidates.Count + " clan=" + clanCandidates.Count + " kingdom=" + kingdomCandidates.Count + " names=" + FormatMentionsForLog(allMentions));
-			List<EntityMatch<Hero>> heroes = FindMatches(allMentions, mentionPriority, heroCandidates, GetHeroAliases, (Hero x) => "hero:" + SafeStringId(x?.StringId), (Hero x) => SafeName(x?.Name, x?.StringId ?? "Hero"));
-			List<EntityMatch<Settlement>> settlements = FindMatches(allMentions, mentionPriority, settlementCandidates, GetSettlementAliases, (Settlement x) => "settlement:" + SafeStringId(x?.StringId), (Settlement x) => SafeName(x?.Name, x?.StringId ?? "Settlement"));
-			List<EntityMatch<Clan>> clans = FindMatches(allMentions, mentionPriority, clanCandidates, GetClanAliases, (Clan x) => "clan:" + SafeStringId(x?.StringId), (Clan x) => SafeName(x?.Name, x?.StringId ?? "Clan"));
-			List<EntityMatch<Kingdom>> kingdoms = FindMatches(allMentions, mentionPriority, kingdomCandidates, GetKingdomAliases, (Kingdom x) => "kingdom:" + SafeStringId(x?.StringId), (Kingdom x) => SafeName(x?.Name, x?.StringId ?? "Kingdom"));
-			ApplyGlobalInjectionLimit(maxInjectedEntities, ref heroes, ref settlements, ref clans, ref kingdoms);
-			int count = heroes.Count + settlements.Count + clans.Count + kingdoms.Count;
+			else if (visibleParties.Count > 0)
+			{
+				Logger.Log("WorldEntityRetrieval", "visible_party_context_only count=" + visibleParties.Count);
+			}
+			int count = heroes.Count + settlements.Count + clans.Count + kingdoms.Count + visibleParties.Count;
 			if (count <= 0)
 			{
 				Logger.Log("WorldEntityRetrieval", "no_match mentions=" + FormatMentionsForLog(allMentions));
 				return result;
 			}
 			result.MatchCount = count;
-			result.MainPromptBlock = BuildMainPromptBlock(playerDisplayName, heroes, settlements, clans, kingdoms);
-			result.PostprocessPromptBlock = BuildPostprocessPromptBlock(heroes, settlements, clans, kingdoms);
+			result.MainPromptBlock = BuildMainPromptBlock(playerDisplayName, heroes, settlements, clans, kingdoms, visibleParties);
+			result.PostprocessPromptBlock = BuildPostprocessPromptBlock(heroes, settlements, clans, kingdoms, visibleParties);
 			return result;
 		}
 		catch (Exception ex)
@@ -617,7 +648,7 @@ public static class WorldEntityRetrievalService
 		}
 	}
 
-	private static string BuildMainPromptBlock(string playerDisplayName, List<EntityMatch<Hero>> heroes, List<EntityMatch<Settlement>> settlements, List<EntityMatch<Clan>> clans, List<EntityMatch<Kingdom>> kingdoms)
+	private static string BuildMainPromptBlock(string playerDisplayName, List<EntityMatch<Hero>> heroes, List<EntityMatch<Settlement>> settlements, List<EntityMatch<Clan>> clans, List<EntityMatch<Kingdom>> kingdoms, List<VisiblePartyCandidate> visibleParties)
 	{
 		string player = string.IsNullOrWhiteSpace(playerDisplayName) ? "玩家" : playerDisplayName.Trim();
 		StringBuilder sb = new StringBuilder();
@@ -626,10 +657,11 @@ public static class WorldEntityRetrievalService
 		AppendSettlementMainFacts(sb, settlements);
 		AppendClanMainFacts(sb, clans);
 		AppendKingdomMainFacts(sb, kingdoms);
+		AppendVisiblePartyFacts(sb, visibleParties);
 		return sb.ToString().Trim();
 	}
 
-	private static string BuildPostprocessPromptBlock(List<EntityMatch<Hero>> heroes, List<EntityMatch<Settlement>> settlements, List<EntityMatch<Clan>> clans, List<EntityMatch<Kingdom>> kingdoms)
+	private static string BuildPostprocessPromptBlock(List<EntityMatch<Hero>> heroes, List<EntityMatch<Settlement>> settlements, List<EntityMatch<Clan>> clans, List<EntityMatch<Kingdom>> kingdoms, List<VisiblePartyCandidate> visibleParties)
 	{
 		StringBuilder sb = new StringBuilder();
 		sb.AppendLine("可能有效的信息：");
@@ -669,7 +701,31 @@ public static class WorldEntityRetrievalService
 				sb.AppendLine((i + 1) + ". 名称：" + SafeName(kingdom?.Name, kingdoms[i].Name) + "；编号：" + kingdoms[i].Id);
 			}
 		}
+		if (visibleParties != null && visibleParties.Count > 0)
+		{
+			sb.AppendLine("【附近可见部队】");
+			for (int i = 0; i < visibleParties.Count; i++)
+			{
+				VisiblePartyCandidate party = visibleParties[i];
+				sb.AppendLine((i + 1) + ". 名称：" + party.Name + "；数量：" + party.Count + "；部队ID：" + party.Id + "；从属：" + party.Affiliation + "；方位：" + party.Direction + "；距离：" + FormatDistance(party.Distance));
+			}
+		}
 		return sb.ToString().Trim();
+	}
+
+	private static void AppendVisiblePartyFacts(StringBuilder sb, List<VisiblePartyCandidate> parties)
+	{
+		if (sb == null || parties == null || parties.Count == 0)
+		{
+			return;
+		}
+		sb.AppendLine();
+		sb.AppendLine("【附近可见部队】");
+		for (int i = 0; i < parties.Count; i++)
+		{
+			VisiblePartyCandidate party = parties[i];
+			sb.AppendLine((i + 1) + ". 名称：" + party.Name + "；数量：" + party.Count + "；部队ID：" + party.Id + "；从属：" + party.Affiliation + "；方位：" + party.Direction + "；距离：" + FormatDistance(party.Distance));
+		}
 	}
 
 	private static void AppendHeroMainFacts(StringBuilder sb, List<EntityMatch<Hero>> matches)
@@ -1338,6 +1394,227 @@ public static class WorldEntityRetrievalService
 		{
 			return "未知";
 		}
+	}
+
+	private static List<VisiblePartyCandidate> BuildVisiblePartyCandidates(Hero contextHero)
+	{
+		Dictionary<string, VisiblePartyCandidate> selected = new Dictionary<string, VisiblePartyCandidate>(StringComparer.OrdinalIgnoreCase);
+		try
+		{
+			List<MobileParty> observers = new List<MobileParty>();
+			AddObserverParty(observers, MobileParty.MainParty);
+			AddObserverParty(observers, contextHero?.PartyBelongedTo);
+			if (observers.Count == 0)
+			{
+				return new List<VisiblePartyCandidate>();
+			}
+			foreach (MobileParty observer in observers)
+			{
+				foreach (MobileParty party in MobileParty.All ?? Enumerable.Empty<MobileParty>())
+				{
+					if (!IsVisiblePartyCandidate(party, observer))
+					{
+						continue;
+					}
+					float distance = GetPartyDistance(observer, party);
+					bool visibleFromPlayerMap = observer == MobileParty.MainParty && IsPartyVisibleToPlayer(party);
+					if (!visibleFromPlayerMap && distance > GetObserverPartyRange(observer))
+					{
+						continue;
+					}
+					string id = SafeStringId(party.StringId);
+					if (string.IsNullOrWhiteSpace(id) || string.Equals(id, "unknown", StringComparison.OrdinalIgnoreCase))
+					{
+						continue;
+					}
+					VisiblePartyCandidate candidate = new VisiblePartyCandidate
+					{
+						Party = party,
+						Id = id,
+						Name = SafeName(party.Name, id),
+						Count = GetPartyMemberCount(party),
+						Affiliation = FormatPartyAffiliation(party),
+						Direction = FormatDirection(observer.Position, party.Position),
+						Distance = distance
+					};
+					if (!selected.TryGetValue(id, out VisiblePartyCandidate existing) || candidate.Distance < existing.Distance)
+					{
+						selected[id] = candidate;
+					}
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			try
+			{
+				Logger.Log("WorldEntityRetrieval", "visible_party_candidates failed: " + ex.Message);
+			}
+			catch
+			{
+			}
+		}
+		return selected.Values.OrderBy((VisiblePartyCandidate x) => x.Distance).ThenBy((VisiblePartyCandidate x) => x.Name, StringComparer.OrdinalIgnoreCase).Take(MaxVisiblePartyCandidates).ToList();
+	}
+
+	private static void AddObserverParty(List<MobileParty> observers, MobileParty party)
+	{
+		if (observers == null || !IsPartyUsableForVisibility(party))
+		{
+			return;
+		}
+		if (!observers.Any((MobileParty x) => x == party))
+		{
+			observers.Add(party);
+		}
+	}
+
+	private static bool IsVisiblePartyCandidate(MobileParty party, MobileParty observer)
+	{
+		try
+		{
+			if (!IsPartyUsableForVisibility(party) || !IsPartyUsableForVisibility(observer) || party == observer || party == MobileParty.MainParty || party.IsMainParty)
+			{
+				return false;
+			}
+			if (party.IsGarrison || party.IsMilitia || party.CurrentSettlement != null)
+			{
+				return false;
+			}
+			if (party.MapEvent != null && !party.MapEvent.IsFinalized)
+			{
+				return false;
+			}
+			return !string.IsNullOrWhiteSpace(party.StringId);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static bool IsPartyUsableForVisibility(MobileParty party)
+	{
+		try
+		{
+			return party != null && party.IsActive && party.Party != null;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static bool IsPartyVisibleToPlayer(MobileParty party)
+	{
+		try
+		{
+			return party?.IsVisible == true;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static float GetObserverPartyRange(MobileParty observer)
+	{
+		try
+		{
+			return Math.Max(VisiblePartyMinRange, (observer?.SeeingRange ?? 0f) * VisiblePartyRangeMultiplier);
+		}
+		catch
+		{
+			return VisiblePartyMinRange;
+		}
+	}
+
+	private static float GetPartyDistance(MobileParty observer, MobileParty party)
+	{
+		try
+		{
+			if (observer == null || party == null)
+			{
+				return float.MaxValue;
+			}
+			return observer.Position.Distance(party.Position);
+		}
+		catch
+		{
+			return float.MaxValue;
+		}
+	}
+
+	private static int GetPartyMemberCount(MobileParty party)
+	{
+		try
+		{
+			return Math.Max(0, party?.MemberRoster?.TotalManCount ?? 0);
+		}
+		catch
+		{
+			return 0;
+		}
+	}
+
+	private static string FormatPartyAffiliation(MobileParty party)
+	{
+		try
+		{
+			List<string> parts = new List<string>();
+			if (party?.HomeSettlement != null)
+			{
+				parts.Add("村庄/据点：" + SafeName(party.HomeSettlement.Name, party.HomeSettlement.StringId));
+			}
+			if (party?.MapFaction != null)
+			{
+				parts.Add("王国/阵营：" + SafeName(party.MapFaction.Name, party.MapFaction.StringId));
+			}
+			Hero owner = party?.LeaderHero ?? party?.Owner;
+			if (owner != null)
+			{
+				parts.Add("要人：" + SafeName(owner.Name, owner.StringId));
+			}
+			return parts.Count == 0 ? "未知" : string.Join("；", parts);
+		}
+		catch
+		{
+			return "未知";
+		}
+	}
+
+	private static string FormatDirection(CampaignVec2 from, CampaignVec2 to)
+	{
+		try
+		{
+			float dx = to.X - from.X;
+			float dy = to.Y - from.Y;
+			if (Math.Abs(dx) < 0.001f && Math.Abs(dy) < 0.001f)
+			{
+				return "当前位置";
+			}
+			double degrees = Math.Atan2(dy, dx) * 180.0 / Math.PI;
+			if (degrees < 0.0)
+			{
+				degrees += 360.0;
+			}
+			string[] directions = { "东", "东北", "北", "西北", "西", "西南", "南", "东南" };
+			int index = ((int)Math.Round(degrees / 45.0)) % directions.Length;
+			return directions[index];
+		}
+		catch
+		{
+			return "未知";
+		}
+	}
+
+	private static string FormatDistance(float distance)
+	{
+		if (float.IsNaN(distance) || float.IsInfinity(distance) || distance >= float.MaxValue * 0.5f)
+		{
+			return "未知";
+		}
+		return distance.ToString("0.0", CultureInfo.InvariantCulture);
 	}
 
 	private static string SafeName(TextObject textObject, string fallback)

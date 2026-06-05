@@ -222,7 +222,8 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 			new InquiryElement("trust_query", "信任度查询", null, isEnabled: true, ""),
 			new InquiryElement("weekly_reports", "查看周报", null, isEnabled: true, ""),
 			new InquiryElement("troop_inspection", "检阅士兵", null, isEnabled: true, ""),
-			new InquiryElement("military_exercise", "军事演习", null, isEnabled: true, "")
+			new InquiryElement("military_exercise", "军事演习", null, isEnabled: true, ""),
+			new InquiryElement("api_onboarding", "重新进行API首次引导", null, isEnabled: true, "只重新选择和测试 API 配置，不进入数据库导入或首次使用流程。")
 		};
 		MultiSelectionInquiryData data = new MultiSelectionInquiryData("你现在想做什么？", "请选择终端功能：", list, isExitShown: true, 1, 1, "确定", "关闭", delegate(List<InquiryElement> selected)
 		{
@@ -249,6 +250,14 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 			{
 				CloseTerminal();
 				MilitaryExerciseBehavior.OpenExerciseFromTerminal();
+			}
+			else if (string.Equals(text, "api_onboarding", StringComparison.Ordinal))
+			{
+				CloseTerminal();
+				if (!ModOnboardingBehavior.OpenApiSetupOnlyFlow())
+				{
+					InformationManager.DisplayMessage(new InformationMessage("无法打开 API 首次引导。"));
+				}
 			}
 			else
 			{

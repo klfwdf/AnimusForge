@@ -44,8 +44,9 @@ public static class Patch_PlayerEncounter_Start
 				}
 				try
 				{
-					if (PlayerEncounterCompat.HasBattleOrEncounteredBattle())
+					if (PlayerEncounterCompat.HasEncounterBattleContext())
 					{
+						Logger.LogTrace("Patch_PlayerEncounter_Start", "Active encounter battle context detected; skip custom encounter menu redirect.");
 						return;
 					}
 				}

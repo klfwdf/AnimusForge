@@ -126,16 +126,19 @@ public static class ShoutUtils
 		string text3 = "";
 		try
 		{
-			PartyBase partyBase = agent.Origin?.BattleCombatant as PartyBase;
-			text2 = partyBase?.MapFaction?.StringId ?? "";
-			text3 = partyBase?.LeaderHero?.StringId ?? "";
+			if (!(agent.Origin is PrisonerAgentOrigin))
+			{
+				PartyBase partyBase = agent.Origin?.BattleCombatant as PartyBase;
+				text2 = partyBase?.MapFaction?.StringId ?? "";
+				text3 = partyBase?.LeaderHero?.StringId ?? "";
+			}
 		}
 		catch
 		{
 			text2 = "";
 			text3 = "";
 		}
-		if (string.IsNullOrWhiteSpace(text2))
+		if (string.IsNullOrWhiteSpace(text2) && !(agent.Origin is PrisonerAgentOrigin))
 		{
 			try
 			{

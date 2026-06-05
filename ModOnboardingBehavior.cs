@@ -191,6 +191,8 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 
 	private bool _quickPresetFlowActive;
 
+	private bool _apiOnlySetupFlowActive;
+
 	private SaveAndExitStage _saveAndExitStage;
 
 	private ApiValidationFlow _apiValidationFlow;
@@ -678,7 +680,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			_pendingUnexpectedResumeStage = OnboardingUiStage.None;
 			return;
 		}
-		if (_setupDone || _pendingReturnToWelcome || _pendingBaseUrlValidationResult || _pendingApiValidationResult || _pendingModelFetchResult)
+		if ((_setupDone && !_apiOnlySetupFlowActive) || _pendingReturnToWelcome || _pendingBaseUrlValidationResult || _pendingApiValidationResult || _pendingModelFetchResult)
 		{
 			_pendingUnexpectedResumeStage = OnboardingUiStage.None;
 			return;
@@ -858,6 +860,11 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			{
 				_quickPresetFlowActive = false;
 				_selectedQuickApiPreset = QuickApiPreset.None;
+				if (_apiOnlySetupFlowActive)
+				{
+					CompleteApiSetupOnlyFlow();
+					return;
+				}
 				ShowImportSetupPopup(fromGate: true, ignoreSuppress: true);
 				return;
 			}
@@ -865,6 +872,11 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			{
 				_quickPresetFlowActive = false;
 				_selectedQuickApiPreset = QuickApiPreset.None;
+				if (_apiOnlySetupFlowActive)
+				{
+					CompleteApiSetupOnlyFlow();
+					return;
+				}
 				ShowImportSetupPopup(fromGate: true, ignoreSuppress: true);
 				return;
 			}
@@ -883,13 +895,18 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			}
 			else if (IsActionPostprocessApiSetupTarget())
 			{
+				if (_apiOnlySetupFlowActive)
+				{
+					CompleteApiSetupOnlyFlow();
+					return;
+				}
 				ShowImportSetupPopup(fromGate: true, ignoreSuppress: true);
 			}
 			else if (IsAuxiliaryApiSetupTarget())
 			{
 				ShowActionPostprocessApiSetupPopup(ignoreSuppress: true);
 			}
-			else if (!_setupDone)
+			else if (!_setupDone || _apiOnlySetupFlowActive)
 			{
 				ShowAuxiliaryApiSetupPopup(ignoreSuppress: true);
 			}
@@ -898,7 +915,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 				ShowImportSetupPopup(fromGate: true, ignoreSuppress: true);
 			}
 		}
-		else if (_apiRepairFlowActive || !_setupDone)
+		else if (_apiRepairFlowActive || !_setupDone || _apiOnlySetupFlowActive)
 		{
 			if (setupMenuValidation)
 			{
@@ -976,6 +993,80 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		return true;
 	}
 
+	public static bool OpenApiSetupOnlyFlow()
+	{
+		ModOnboardingBehavior modOnboardingBehavior = Instance ?? Campaign.Current?.GetCampaignBehavior<ModOnboardingBehavior>();
+		if (modOnboardingBehavior == null)
+		{
+			return false;
+		}
+		return modOnboardingBehavior.OpenApiSetupOnlyFlowCore();
+	}
+
+	private bool OpenApiSetupOnlyFlowCore()
+	{
+		try
+		{
+			if (_welcomeInProgress || _apiValidationInProgress || _baseUrlValidationInProgress || _modelFetchInProgress)
+			{
+				InformationManager.DisplayMessage(new InformationMessage("当前已有 AnimusForge 引导或 API 测试正在进行，请先完成或取消当前流程。"));
+				return false;
+			}
+			_apiOnlySetupFlowActive = true;
+			_pendingWelcome = false;
+			_pendingReturnToWelcome = false;
+			_pendingUnexpectedResumeStage = OnboardingUiStage.None;
+			_showApiValidationFailedHint = false;
+			_showModelSelectionValidationFailedHint = false;
+			_lastApiValidationFailureHint = "";
+			_quickPresetFlowActive = false;
+			_selectedQuickApiPreset = QuickApiPreset.None;
+			SetApiRepairFlowActive(active: false);
+			InformationManager.HideInquiry();
+			ShowSetupModeChoicePopup(fromGate: true, ignoreSuppress: true);
+			return true;
+		}
+		catch (Exception ex)
+		{
+			_apiOnlySetupFlowActive = false;
+			InformationManager.DisplayMessage(new InformationMessage("打开 API 首次引导失败：" + ex.Message));
+			return false;
+		}
+	}
+
+	private void CancelApiSetupOnlyFlow()
+	{
+		_apiOnlySetupFlowActive = false;
+		_quickPresetFlowActive = false;
+		_selectedQuickApiPreset = QuickApiPreset.None;
+		SetApiRepairFlowActive(active: false);
+		_welcomeInProgress = false;
+		_activeOnboardingStage = OnboardingUiStage.None;
+		_pendingUnexpectedResumeStage = OnboardingUiStage.None;
+		_showApiValidationFailedHint = false;
+		_showModelSelectionValidationFailedHint = false;
+		_lastApiValidationFailureHint = "";
+		InformationManager.HideInquiry();
+		InformationManager.DisplayMessage(new InformationMessage("已取消 API 首次引导。"));
+	}
+
+	private void CompleteApiSetupOnlyFlow()
+	{
+		_apiOnlySetupFlowActive = false;
+		_quickPresetFlowActive = false;
+		_selectedQuickApiPreset = QuickApiPreset.None;
+		SetApiRepairFlowActive(active: false);
+		_welcomeInProgress = false;
+		_activeOnboardingStage = OnboardingUiStage.None;
+		_pendingUnexpectedResumeStage = OnboardingUiStage.None;
+		_showApiValidationFailedHint = false;
+		_showModelSelectionValidationFailedHint = false;
+		_lastApiValidationFailureHint = "";
+		TryPersistMcmSettings(DuelSettings.GetSettings());
+		InformationManager.HideInquiry();
+		InformationManager.DisplayMessage(new InformationMessage("API 首次引导已完成：配置已写入 MCM，本次不会进入数据库导入或首次使用流程。"));
+	}
+
 	public static bool OpenAuxiliaryApiRepairFlow()
 	{
 		ModOnboardingBehavior modOnboardingBehavior = Instance ?? Campaign.Current?.GetCampaignBehavior<ModOnboardingBehavior>();
@@ -1027,7 +1118,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			SetApiRepairFlowActive(active: false);
 			_quickPresetFlowActive = false;
 			_selectedQuickApiPreset = QuickApiPreset.None;
-			if (_setupDone || _welcomeInProgress || _apiValidationInProgress || _baseUrlValidationInProgress || _modelFetchInProgress)
+			if ((!_apiOnlySetupFlowActive && _setupDone) || _welcomeInProgress || _apiValidationInProgress || _baseUrlValidationInProgress || _modelFetchInProgress)
 			{
 				return;
 			}
@@ -1045,17 +1136,29 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 				new InquiryElement("deepseek_flash", "使用deepseek-flash推荐API组合进行游玩", null, isEnabled: true, "自动填写 DeepSeek Flash 预设，只需输入一次 API Key。"),
 				new InquiryElement("deepseek_pro", "使用deepseek-pro推荐API组合进行游玩", null, isEnabled: true, "自动填写 DeepSeek Pro 预设，只需输入一次 API Key。"),
 				new InquiryElement("custom", "使用完全自定义的API进行游玩", null, isEnabled: true, "进入旧路径，逐项填写 Base URL、API Key 和模型。"),
-				new InquiryElement("existing_config", "使用现有配置进行游玩", null, isEnabled: true, "直接测试当前 MCM 配置；周报和叛乱API未配置完整时会跳过该项。"),
-				new InquiryElement("save_exit", "保存存档并退出", null, isEnabled: true, "保存当前存档后退出到主界面。")
+				new InquiryElement("existing_config", "使用现有配置进行游玩", null, isEnabled: true, "直接测试当前 MCM 配置；周报和叛乱API未配置完整时会跳过该项。")
 			};
-			string text = "请选择首次使用的 API 配置方式。\n\n推荐组合会自动写入主API、前处理API、后处理API、周报和叛乱API的 Base URL、模型、思维链和温度；你只需要填写一次 API Key。";
+			if (!_apiOnlySetupFlowActive)
+			{
+				list.Add(new InquiryElement("save_exit", "保存存档并退出", null, isEnabled: true, "保存当前存档后退出到主界面。"));
+			}
+			string text = _apiOnlySetupFlowActive
+				? "你正在从 AnimusForge 终端重新配置 API。\n\n本流程只会写入并测试主API、前处理API、后处理API、周报和叛乱API配置；测试通过后会直接返回游戏，不会进入数据库导入或首次使用流程。"
+				: "请选择首次使用的 API 配置方式。\n\n推荐组合会自动写入主API、前处理API、后处理API、周报和叛乱API的 Base URL、模型、思维链和温度；你只需要填写一次 API Key。";
 			MultiSelectionInquiryData data = new MultiSelectionInquiryData("AnimusForge - API 快捷配置", text, list, isExitShown: false, 0, 1, "确定", "关闭", delegate(List<InquiryElement> selected)
 			{
 				_welcomeInProgress = false;
 				string text2 = selected?.FirstOrDefault()?.Identifier as string;
 				if (string.IsNullOrWhiteSpace(text2))
 				{
-					ShowSetupModeChoicePopup(fromGate: true, ignoreSuppress: true);
+					if (_apiOnlySetupFlowActive)
+					{
+						CancelApiSetupOnlyFlow();
+					}
+					else
+					{
+						ShowSetupModeChoicePopup(fromGate: true, ignoreSuppress: true);
+					}
 				}
 				else if (text2 == "support")
 				{
@@ -1089,7 +1192,14 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			}, delegate
 			{
 				_welcomeInProgress = false;
-				ShowSetupModeChoicePopup(fromGate: true, ignoreSuppress: true);
+				if (_apiOnlySetupFlowActive)
+				{
+					CancelApiSetupOnlyFlow();
+				}
+				else
+				{
+					ShowSetupModeChoicePopup(fromGate: true, ignoreSuppress: true);
+				}
 			});
 			MBInformationManager.ShowMultiSelectionInquiry(data);
 		}
@@ -1144,13 +1254,13 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		if (preset == QuickApiPreset.DeepSeekPro)
 		{
 			SetModelNameForTarget(settings, ApiSetupTarget.Primary, DeepSeekProModelName);
-			SetModelNameForTarget(settings, ApiSetupTarget.Auxiliary, DeepSeekFlashModelName);
+			SetModelNameForTarget(settings, ApiSetupTarget.Auxiliary, DeepSeekProModelName);
 			SetModelNameForTarget(settings, ApiSetupTarget.ActionPostprocess, DeepSeekProModelName);
 			SetModelNameForTarget(settings, ApiSetupTarget.EventAndRebellion, DeepSeekProModelName);
 			settings.MainApiThinkingEnabled = true;
 			settings.SetMainApiReasoningEffortForExternal(DuelSettings.ReasoningEffortMax);
 			settings.MainApiTemperature = 1f;
-			settings.AuxiliaryApiThinkingEnabled = true;
+			settings.AuxiliaryApiThinkingEnabled = false;
 			settings.SetAuxiliaryApiReasoningEffortForExternal(DuelSettings.ReasoningEffortHigh);
 			settings.AuxiliaryApiTemperature = 0f;
 			settings.ActionPostprocessApiThinkingEnabled = true;
@@ -1163,7 +1273,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		else
 		{
 			SetModelNameForTarget(settings, ApiSetupTarget.Primary, DeepSeekFlashModelName);
-			SetModelNameForTarget(settings, ApiSetupTarget.Auxiliary, DeepSeekFlashModelName);
+			SetModelNameForTarget(settings, ApiSetupTarget.Auxiliary, DeepSeekProModelName);
 			SetModelNameForTarget(settings, ApiSetupTarget.ActionPostprocess, DeepSeekFlashModelName);
 			SetModelNameForTarget(settings, ApiSetupTarget.EventAndRebellion, DeepSeekFlashModelName);
 			settings.MainApiThinkingEnabled = true;
@@ -1631,7 +1741,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		{
 			SetApiSetupTarget(ApiSetupTarget.Primary);
 			SetApiRepairFlowActive(active: false);
-			if (_setupDone || _welcomeInProgress || _apiValidationInProgress)
+			if ((!_apiOnlySetupFlowActive && _setupDone) || _welcomeInProgress || _apiValidationInProgress)
 			{
 				return;
 			}
@@ -1676,7 +1786,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		{
 			SetApiSetupTarget(ApiSetupTarget.Auxiliary);
 			SetApiRepairFlowActive(active: false);
-			if (_setupDone || _welcomeInProgress || _apiValidationInProgress)
+			if ((!_apiOnlySetupFlowActive && _setupDone) || _welcomeInProgress || _apiValidationInProgress)
 			{
 				return;
 			}
@@ -1727,7 +1837,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		{
 			SetApiSetupTarget(ApiSetupTarget.ActionPostprocess);
 			SetApiRepairFlowActive(active: false);
-			if ((!allowWhenSetupDone && _setupDone) || _welcomeInProgress || _apiValidationInProgress)
+			if ((!allowWhenSetupDone && !_apiOnlySetupFlowActive && _setupDone) || _welcomeInProgress || _apiValidationInProgress)
 			{
 				return;
 			}
@@ -1770,7 +1880,11 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 				}
 				else
 				{
-					if (!_setupDone)
+					if (_apiOnlySetupFlowActive)
+					{
+						CompleteApiSetupOnlyFlow();
+					}
+					else if (!_setupDone)
 					{
 						ShowImportSetupPopup(fromGate: true, ignoreSuppress: true);
 					}

@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/PlayerExportsEditor.App/PlayerExportsEditor.App.csproj" />
+    <Project Path="src/PlayerExportsEditor.Core/PlayerExportsEditor.Core.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/PlayerExportsEditor.SmokeTests/PlayerExportsEditor.SmokeTests.csproj" />
+  </Folder>
+  <Folder Name="/tools/">
+    <Project Path="tools/PlayerExportsEditor.CatalogExporter/PlayerExportsEditor.CatalogExporter.csproj" />
+  </Folder>
+</Solution>

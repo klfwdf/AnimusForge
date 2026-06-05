@@ -79,9 +79,10 @@ public static class Patch_GameMenu_ActivateGameMenu
 					{
 						return;
 					}
-					MapEvent mapEvent = PlayerEncounterCompat.GetBattleOrEncounteredBattleSafe();
-					if (mapEvent != null && (mapEvent.HasWinner || mapEvent.IsFinalized))
+					MapEvent mapEvent = PlayerEncounterCompat.GetCurrentMapEventSafe();
+					if (mapEvent != null)
 					{
+						Logger.LogTrace("UI_Intercept", "Active encounter battle context detected; keep native 'encounter' menu.");
 						return;
 					}
 				}

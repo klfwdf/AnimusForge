@@ -307,6 +307,7 @@ public class SubModule : MBSubModuleBase
 			campaignGameStarter.AddBehavior(new SceneTauntBehavior());
 			campaignGameStarter.AddBehavior(new VoteDealBehavior());
 			campaignGameStarter.AddBehavior(new VanillaIssuePromptBehavior());
+			campaignGameStarter.AddBehavior(new WorldMapPartyCommandBehavior());
 		}
 	}
 

@@ -622,7 +622,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.AppendLine(" ");
 		stringBuilder.AppendLine("【玩家外貌信息（常驻）】");
-		stringBuilder.AppendLine(text2 + "每次与玩家面对面互动时，都可以直接观察到这些外貌特征；这不是玩家的背景、姓名或来历。");
+		stringBuilder.AppendLine(text2 + "与玩家面对面互动时，都可以直接观察到这些外貌特征；");
 		stringBuilder.AppendLine(text);
 		return stringBuilder.ToString().TrimEnd();
 	}

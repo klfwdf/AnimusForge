@@ -361,7 +361,7 @@
             "Group": "scene",
             "Priority": 77,
             "TopicNumber": 8,
-            "TopicLabel": "Lead the way, summon, and follow",
+            "TopicLabel": "Local 3D scene movements (lead, follow). Excludes world map travel and combat/attack actions.",
             "Code": "SCENE_MOVE",
             "NonHeroInstruction": "【场景行为规则】即使你只是无名士兵或平民，只要本轮系统确实给了【带路与传唤NPC清单】或相关状态提示，你也可以决定是否带路、传唤、跟随、停止跟随或结束这次会面；但你只能对系统当前列出的目标表态，不能编造名单外的人或地点。只有当你在正文里最终明确答应时，才算真的执行；若你还在拒绝、推脱、反问、拖延或继续谈条件，就不算已经执行。正文只自然说话，不要自己写任何动作标签。",
             "Instruction": "【场景行为规则】带路、传唤、跟随、停止跟随、结束传唤后的会面，都只以本轮运行时状态为准。你只能依据系统当前给出的【带路与传唤NPC清单】和状态提示回答；没有列出来的目标，不得擅自答应。若目标在酒馆或领主大厅，带路只需带到对应门口。只有当你在正文里最终明确同意时，才算真的执行；若你仍在拒绝、解释、反问、拖延或继续谈条件，就不要当成已经执行。正文只自然说话，不要自己写任何动作标签。",
@@ -411,14 +411,14 @@
             "Group": "trade",
             "Priority": 84,
             "TopicNumber": 9,
-            "TopicLabel": "Transfer, recruit, or purchase Units",
+            "TopicLabel": "Transfer NPC-owned troops or prisoners to player; hire or buy units only",
             "Code": "PARTY_TRANSFER",
             "NonHeroInstruction": "【雇佣士兵与俘虏处置规则】你不是领主，无权把部队或俘虏正式转给玩家。若玩家坚持，请让他去找能做主的领主",
-            "Instruction": "【雇佣士兵与俘虏处置规则】谈士兵时，应把他们视作人手、兵力和效忠对象，而不是货物；谈俘虏时，才可用赎取、买卖、移交之类说法。你只能依据系统在本轮给出的清单与编号作答，不得编造清单外的士兵、俘虏、编号、数量或价格。你最好让玩家先给钱或士兵，如果你还没有商量好价格，或者没有确定玩家将士兵或俘虏交给你了，请不要在你的发言里出现成交等结账字眼，这样会导致你的钱或者士兵，俘虏或者物实际给到玩家手里，如果你确认了玩家已经把这三者给到你了，那你才可以在回复里出现成交等结账字眼。",
+            "Instruction": "【雇佣士兵与俘虏处置规则】谈士兵时，应把他们视作人手、兵力和效忠对象，而不是货物；谈俘虏时，才可用赎取、买卖、移交之类说法。你只能依据系统在本轮给出的清单与编号作答，不得编造清单外的士兵、俘虏、编号、数量或价格。你最好让玩家先给钱或士兵，如果你还没有商量好价格，或者没有确定玩家将士兵或俘虏交给你了，请不要在你的发言里出现成交等结账字眼，这样会导致你的钱或者士兵，俘虏或者物实际给到玩家手里，如果你确认了玩家已经把这三者给到你了，那你才可以在回复里出现成交等结账字眼。\n[Intent boundary] This rule only covers NPC-owned troops or prisoners moving from the NPC to the player. If the player says they will give troops to the NPC, split troops to the NPC, provide soldiers for a new companion party, or asks the NPC to lead a newly formed party, this is not PARTY_TRANSFER; route it to WORLDMAP_ORDER:CREATE_COMPANION_PARTY or later world-map orders. Do not treat player-supplied troops for an NPC party as hiring, buying, ordinary recruitment, or a troop sale from NPC to player.",
             "PostprocessRules": [
                 {
                     "Tag": "[ATT:士兵名称:数量]",
-                    "Description": "如果NPC在<latest_reply>里明确同意让自己的部队中的某种士兵转入玩家麾下，就输出这个；这里填写士兵名称和数量"
+                    "Description": "Output only when the NPC clearly agrees in <latest_reply> to transfer a troop stack currently owned by the NPC into the player's party. Never output when the player is giving, splitting, or promising troops to the NPC, or when the player is creating a companion party for the NPC; that belongs to WORLDMAP_ORDER:CREATE_COMPANION_PARTY."
                 },
                 {
                     "Tag": "[ATP:俘虏名称:数量]",
@@ -485,22 +485,22 @@
             "Group": "quest",
             "Priority": 82,
             "TopicNumber": 11,
-            "TopicLabel": "Quest commissions, helping out, and resolving troubles",
+            "TopicLabel": "Vanilla issue quests only: NPC offers, accepts, tracks, or turns in original-game quests for the player",
             "Code": "ISSUE",
             "NonHeroInstruction": "【原版任务规则】你不是有名有姓、能发布原版任务的英雄。本轮不得向玩家发布、验收或结算任何原版任务；若玩家来问差事、任务进度或交付，你只能口头说明自己无权处理，或引导他去找真正的委托人。",
-            "Instruction": "【原版任务规则】只处理系统当前确实存在的原版任务状态：可发布、进行中、同伴代办进行中、可交付、刚完成、当前无任务。你必须以本轮运行时状态为准，不得编造不存在的委托、目标、进度、完成结果、失败原因或奖励。\n【发布边界】只有当你在正文里最终明确把当前任务正式交给玩家时，才算真的发布；如果你还在介绍情况、试探、谈条件、反问、拒绝、挽留、拖延，或玩家只是说“我接了”，都不算已经接任务。\n【同伴代办边界】只有当玩家明确要求由同伴代办，且明确指定系统给出的可用同伴之一，而你也在正文里最终明确同意时，才算真的以同伴代办方式接取；如果玩家没点名、你还在追问、或目标不在系统候选里，就不算成立。\n【交付边界】只有当系统当前已处于可交付状态，且你在正文里最终明确确认任务完成并验收时，才算真的交付；如果你只是在讨论进度、提醒要求、质疑完成度、继续追问细节，或玩家单方面声称“我做完了”，都不算已经结算。\n【奖励边界】原版任务的奖励、声望、关系和日志推进由系统在交付成功后自动处理。你可以在正文里口头提及报酬，但不要把原版任务奖励当成普通交易或借贷，也不要自行转账、交货或生成别的经济标签。",
+            "Instruction": "【原版任务规则】只处理系统当前确实存在的原版任务状态：可发布、进行中、同伴代办进行中、可交付、刚完成、当前无任务。你必须以本轮运行时状态为准，不得编造不存在的委托、目标、进度、完成结果、失败原因或奖励。\n[Intent boundary] This rule is only for original-game Issue quests assigned by the NPC to the player or turned in by the player. Player orders given to the NPC are not vanilla issues: forming a companion party, receiving player-supplied troops, traveling, patrolling, following, attacking looters/bandits/lords/settlements, solving trouble by command, stopping orders, or leading a detachment must route to WORLDMAP_ORDER or another specific rule, even if the player uses words like task, job, help, errand, handle this, deal with them, or solve this problem.\n【发布边界】只有当你在正文里最终明确把当前任务正式交给玩家时，才算真的发布；如果你还在介绍情况、试探、谈条件、反问、拒绝、挽留、拖延，或玩家只是说“我接了”，都不算已经接任务。\n【同伴代办边界】只有当玩家明确要求由同伴代办，且明确指定系统给出的可用同伴之一，而你也在正文里最终明确同意时，才算真的以同伴代办方式接取；如果玩家没点名、你还在追问、或目标不在系统候选里，就不算成立。\n【交付边界】只有当系统当前已处于可交付状态，且你在正文里最终明确确认任务完成并验收时，才算真的交付；如果你只是在讨论进度、提醒要求、质疑完成度、继续追问细节，或玩家单方面声称“我做完了”，都不算已经结算。\n【奖励边界】原版任务的奖励、声望、关系和日志推进由系统在交付成功后自动处理。你可以在正文里口头提及报酬，但不要把原版任务奖励当成普通交易或借贷，也不要自行转账、交货或生成别的经济标签。",
             "PostprocessRules": [
                 {
                     "Tag": "[ACTION:ISSUE_ACCEPT_SELF]",
-                    "Description": "如果NPC在<latest_reply>里明确同意把任务正式交给玩家本人接取，就输出这个"
+                    "Description": "Output only when the NPC clearly assigns the current original-game Issue quest to the player in <latest_reply>. Never output for a player command ordering the NPC to form a party, receive troops, travel, patrol, follow, attack, or otherwise act on the world map."
                 },
                 {
                     "Tag": "[ACTION:ISSUE_ACCEPT_ALT:COMPANION=HeroId]",
-                    "Description": "如果NPC在<latest_reply>里明确同意由系统当前给出的某位可用同伴代办当前任务，就输出这个；HeroId必须填写系统候选中的那位同伴ID"
+                    "Description": "Output only when the NPC clearly accepts that a named companion candidate will handle the current original-game Issue quest for the player. HeroId must be one of the provided companion candidates. Never output for creating a companion party or commanding a companion party on the world map."
                 },
                 {
                     "Tag": "[ACTION:QUEST_TURN_IN]",
-                    "Description": "如果NPC在<latest_reply>里明确确认当前任务已经完成并正式验收，就输出这个；输出后由系统自动发放原版奖励"
+                    "Description": "Output only when the NPC clearly confirms the current original-game Issue quest is complete and formally turns it in. Do not use this for completion, cancellation, or results of WORLDMAP_ORDER commands."
                 }
             ],
             "RuntimeInstructionTemplates": {
@@ -523,16 +523,16 @@
                 "最近领地里有没有什么麻烦事需要我帮忙？",
                 "我来交任务了，你答应的报酬准备好了吗？",
                 "那个委托的进度差不多了，我来给你汇报一下。",
-                "给我点活儿干，我想赚点第纳尔。",
+                "Do you have an original-game issue quest that you can formally offer me?",
                 "这事我接下了，你放心交给我吧。",
-                "有什么我可以代劳的吗？",
+                "Can I personally accept your current original-game issue quest?",
                 "派我的同伴去帮你解决那个麻烦吧。",
                 "我让阿莱西斯替我去办这件事，你意下如何？",
                 "这差事先交给我的同伴去跑一趟吧。",
                 "你再把任务要求跟我说清楚些，我马上动身。",
                 "事情还没彻底办成，我先来和你说说进展。",
                 "你要我做的事情都完成了，验收一下吧。",
-                "你不是有事找人帮忙吗？说吧，要我做什么。",
+                "Can one of my named companions handle your current issue quest as an alternative solution?",
                 "任务做完了，奖励拿来吧。"
             ]
         },
@@ -635,7 +635,7 @@
             "PostprocessRules": [
                 {
                     "Tag": "[A:H_J_P_P]",
-                    "Description": "如果NPC在<latest_reply>里明确同意由当前说话者本人立即加入玩家队伍，就输出这个。这个标签只代表当前说话者本人入队、成为同伴或随玩家上路；不代表其家族加入玩家王国，不代表成为玩家封臣，也不代表作为领主效力。若<latest_reply>表达的是“我的家族加入你的王国/成为你的封臣/作为领主效力/归附你的王国”，禁止输出这个。若<latest_reply>只是模糊同意“效力于你/加入你/来你麾下”，没有明确当前说话者本人立即加入玩家队伍，禁止输出。若当前说话者已经在玩家队伍中，禁止输出。该标签只指当前说话者：普通非Hero会升格为Hero同伴；酒馆雇佣池NPC会让同类型雇佣兵整组作为普通士兵加入，不创建Hero。"
+                    "Description": "如果NPC在<latest_reply>里明确同意由当前说话者本人立即加入玩家队伍，就输出这个。这个标签只代表当前说话者本人入队、成为同伴或随玩家上路；不代表其家族加入玩家王国，不代表成为玩家封臣，也不代表作为领主效力，也不代表大地图上的独立部队合并命令。若<latest_reply>表达的是“我的家族加入你的王国/成为你的封臣/作为领主效力/归附你的王国”，禁止输出这个。若玩家要求的是“把你的部队并入我的部队/和我的部队合并/率领部队前来与我会合/把你的人都带来会合/并入玩家主队”等独立部队合并或大地图会合命令，禁止输出[A:H_J_P_P]；这类请求只应由大地图指令规则的WORLDMAP_ORDER:MERGE_TO_PLAYER处理。若<latest_reply>只是模糊同意“效力于你/加入你/来你麾下”，没有明确当前说话者本人立即加入玩家队伍，禁止输出。若当前说话者已经在玩家队伍中，禁止输出。该标签只指当前说话者：普通非Hero会升格为Hero同伴；酒馆雇佣池NPC会让同类型雇佣兵整组作为普通士兵加入，不创建Hero。"
                 }
             ],
             "TriggerKeywords": [
@@ -711,6 +711,96 @@
                 "要是你能支持我的议案，我必有重谢。",
                 "投票的时候按我的意思来。",
                 "你们家族在决议里能不能支持我们？"
+            ]
+        },
+        {
+            "Id": "worldmap_party_command",
+            "IsEnabled": true,
+            "Group": "campaign",
+            "Priority": 88,
+            "TopicNumber": 18,
+            "TopicLabel": "Move and attack",
+            "Code": "Commands and Requests",
+            "NonHeroInstruction": "你不是有名有姓、可在大地图上独立行动的英雄或领主，不能接受玩家的大地图行军、巡逻、跟随、攻击、组队或部队合并命令。若玩家提出此类要求，请自然说明你没有独立部队或权限。",
+            "Instruction": "【大地图指令规则】玩家可能要求你执行任何命令或者请求，你可以根据你和玩家的关系，选择接受与否，或者向玩家索要利益来换取你的行动，如果玩家是你的上司那么你最好听话\n当玩家要求你独立或组建一支新的部队时，你无需向玩家索要兵员和物资，因为玩家后续一定会提供给你，你只需思考是否要接受,不要有任何讨价还价",
+            "PostprocessRules": [
+                {
+                    "Tag": "[ACTION:WORLDMAP_ORDER:GO_TO_SETTLEMENT:settlement:{id}:{days}]",
+                    "Description": "仅当NPC在正文中明确同意前往或守备某个定居点时输出。{id}必须来自后处理上下文提供的定居点候选原版ID，禁止根据名称猜ID。{days}为到达后停留天数；玩家未指定时填3。"
+                },
+                {
+                    "Tag": "[ACTION:WORLDMAP_ORDER:PATROL_SETTLEMENT:settlement:{id}:{days}]",
+                    "Description": "仅当NPC明确同意前往某个定居点附近巡逻时输出。{id}必须来自后处理上下文的定居点候选原版ID，禁止猜ID。{days}为抵达附近后巡逻天数；未指定填3。"
+                },
+                {
+                    "Tag": "[ACTION:WORLDMAP_ORDER:FOLLOW:{hero|party}:{id}:{days}]",
+                    "Description": "Only output this when the NPC clearly agrees to follow a world-map target. Use target type hero only for a provided hero candidate. Use target type party only for a provided nearby visible party candidate. {id} must be the raw Hero ID or raw nearby party ID from the context; never guess from a name. {days} is the duration after catching up; use 3 if unspecified."
+                },
+                {
+                    "Tag": "[ACTION:WORLDMAP_ORDER:ATTACK:{hero|party|settlement}:{id}:{days}:{AI|FORCE|REBELLION_FORCE}]",
+                    "Description": "Only output this when the NPC clearly agrees to attack a world-map target. Use hero for a provided hero candidate, party for a provided nearby visible party candidate, and settlement for a provided settlement candidate. {id} must be the raw ID from the matching context list; never guess. Settlement targets automatically mean siege for towns/castles and raid/burn for villages. {days} is the total tracking/execution timeout: default 3 for hero/party, 15 for town/castle siege, 5 for village raid. Use AI for cautious original-game evaluation. Use FORCE only when the player explicitly demands no hesitation or a forced attack. Use REBELLION_FORCE only for hero or settlement targets when the player explicitly orders the player clan to leave its kingdom with fiefs, rebel, then attack that same former kingdom; do not use REBELLION_FORCE for party targets. War/rebellion happens only at the real attack commit point, not when the order is accepted."
+                },
+                {
+                    "Tag": "[ACTION:WORLDMAP_ORDER:MERGE_TO_PLAYER:{days}]",
+                    "Description": "仅当NPC明确同意把自己的独立同伴部队并入玩家主队时输出。{days}为向玩家靠近的期限或到位后处理等待天数；未指定填1。"
+                },
+                {
+                    "Tag": "[ACTION:WORLDMAP_ORDER:CREATE_COMPANION_PARTY]",
+                    "Description": "执行ACTION:WORLDMAP标签时，无论如何都必须先在最开头输入此标签。"
+                },
+                {
+                    "Tag": "[ACTION:WORLDMAP_ORDER:STOP]",
+                    "Description": "仅当NPC明确同意停止当前大地图命令并回归原版AI时输出。玩家说“你可以自由行动了”“不用继续待在那里”“不用再巡逻/跟随/追击了”“取消之前的命令”“回到你自己的安排”等，且NPC正文表示收到、遵命、会自由行动或恢复自行安排，也属于明确同意停止当前大地图命令。STOP会清空该NPC当前命令队列，不应与其他大地图命令同时输出。"
+                }
+            ],
+            "TriggerKeywords": [
+                "Leave the kingdom with our fiefs and attack them.",
+                "Rebel against our kingdom and then attack that lord.",
+                "Take our castles with us, break away, and besiege that town.",
+                "Defect with our lands and raid that village.",
+                "Besiege that town.",
+                "Besiege that castle.",
+                "Attack that settlement.",
+                "Raid that village.",
+                "Burn that village.",
+                "Take your party and lay siege to the city.",
+                "Attack the nearby looters.",
+                "Attack that visible bandit party.",
+                "Follow the caravan northeast of us.",
+                "Strike the villagers north of your party.",
+                "Chase that nearby raider group for one day.",
+                "Form a companion party here; I will give you the troops.",
+                "Create your own party and wait while I split soldiers to you.",
+                "You only need to lead the detachment; I will provide the men.",
+                "Do not go recruit elsewhere; form the party here and take my soldiers.",
+                "Build a companion party first, then attack the nearby looters.",
+                "Take the troops I give you and hunt the visible bandit parties.",
+                "去萨哥特等我一天。",
+                "带你的部队去某个城镇。",
+                "在那个城堡附近巡逻两天。",
+                "跟随某个领主的部队。",
+                "追上并攻击那支部队。",
+                "你去袭击那个领主。",
+                "别管风险，必须追杀他。",
+                "把你的部队并入我的部队。",
+                "你和我的部队合并。",
+                "和我的部队合并。",
+                "率领部队前来与我会合。",
+                "并入我的主队。",
+                "把你的人都带来和我会合。",
+                "你去组建一支同伴部队。",
+                "停止当前大地图命令。",
+                "取消我之前给你的大地图命令。",
+                "解除你当前的行动命令。",
+                "停止执行我之前的行军命令。",
+                "之前让你去那里停留的命令取消。",
+                "你可以自由行动了。",
+                "你不必在那边呆着了。",
+                "不用继续待在那里了。",
+                "不用再巡逻了，恢复自由行动。",
+                "不用再跟随目标了，自己行动吧。",
+                "放弃当前追击，回到你自己的安排。",
+                "先去那里停留一天，然后跟随我。"
             ]
         }
     ],

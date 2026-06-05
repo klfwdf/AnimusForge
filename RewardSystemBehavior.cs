@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -309,6 +309,10 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 
 	private List<string> _lastGeneratedNpcFactLines = new List<string>();
 
+	private static readonly Dictionary<int, Hero> _promotedNonHeroCompanionsByAgentIndex = new Dictionary<int, Hero>();
+
+	private static Mission _promotedNonHeroCompanionMission;
+
 	public static RewardSystemBehavior Instance { get; private set; }
 
 	private static void ShowRewardQuickInfo(string message, Hero npcHero)
@@ -519,7 +523,62 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 
 	private void OnGameLoadFinished()
 	{
+		ClearPromotedNonHeroCompanionCache();
 		CleanupPlayerCompanionLordCacheDuplicates("game_load_finished");
+	}
+
+	private static void ClearPromotedNonHeroCompanionCache()
+	{
+		_promotedNonHeroCompanionsByAgentIndex.Clear();
+		_promotedNonHeroCompanionMission = Mission.Current;
+	}
+
+	private static void EnsurePromotedNonHeroCompanionCacheForCurrentMission()
+	{
+		Mission current = Mission.Current;
+		if (!ReferenceEquals(_promotedNonHeroCompanionMission, current))
+		{
+			_promotedNonHeroCompanionsByAgentIndex.Clear();
+			_promotedNonHeroCompanionMission = current;
+		}
+	}
+
+	private static void RememberPromotedNonHeroCompanion(int targetAgentIndex, Hero promotedHero)
+	{
+		EnsurePromotedNonHeroCompanionCacheForCurrentMission();
+		if (targetAgentIndex >= 0 && promotedHero != null)
+		{
+			_promotedNonHeroCompanionsByAgentIndex[targetAgentIndex] = promotedHero;
+		}
+	}
+
+	private static bool TryGetPromotedNonHeroCompanion(int targetAgentIndex, out Hero promotedHero)
+	{
+		promotedHero = null;
+		EnsurePromotedNonHeroCompanionCacheForCurrentMission();
+		if (targetAgentIndex < 0 || !_promotedNonHeroCompanionsByAgentIndex.TryGetValue(targetAgentIndex, out promotedHero) || promotedHero == null)
+		{
+			return false;
+		}
+		if (promotedHero.IsPlayerCompanion || promotedHero.PartyBelongedTo == MobileParty.MainParty || IsHeroInParty(promotedHero, MobileParty.MainParty))
+		{
+			return true;
+		}
+		_promotedNonHeroCompanionsByAgentIndex.Remove(targetAgentIndex);
+		promotedHero = null;
+		return false;
+	}
+
+	private static bool IsHeroInParty(Hero hero, MobileParty party)
+	{
+		try
+		{
+			return hero?.CharacterObject != null && party?.MemberRoster != null && party.MemberRoster.FindIndexOfTroop(hero.CharacterObject) >= 0;
+		}
+		catch
+		{
+			return false;
+		}
 	}
 
 	private static void CleanupPlayerCompanionLordCacheDuplicates(string reason)
@@ -2120,10 +2179,10 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 		string result = num switch
 		{
-			0 => "春", 
-			1 => "夏", 
-			2 => "秋", 
-			_ => "冬", 
+			0 => "春",
+			1 => "夏",
+			2 => "秋",
+			_ => "冬",
 		};
 		if (1 == 0)
 		{
@@ -3137,7 +3196,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				statusText = "执行失败：玩家家族或玩家队伍不可用。";
 				return false;
 			}
-			if (joiningHero.PartyBelongedTo == MobileParty.MainParty && joiningHero.IsPlayerCompanion)
+			if ((joiningHero.PartyBelongedTo == MobileParty.MainParty || IsHeroInParty(joiningHero, MobileParty.MainParty)) && joiningHero.IsPlayerCompanion)
 			{
 				statusText = $"执行跳过：{joiningHero.Name} 已经在玩家队伍中。";
 				return false;
@@ -3258,6 +3317,13 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				statusText = "执行失败：玩家队伍或玩家家族不可用。";
 				return false;
 			}
+			if (TryGetPromotedNonHeroCompanion(targetAgentIndex, out var existingPromotedHero))
+			{
+				promotedHero = existingPromotedHero;
+				string heroName = existingPromotedHero?.Name?.ToString() ?? ResolveNonHeroFullDisplayName(joiningCharacter, promptDisplayName, promptGivenName, targetAgentIndex);
+				statusText = $"执行跳过：{heroName} 已经由当前场景 NPC 升格为 Hero 同伴，不能重复招募生成新的 Hero。";
+				return false;
+			}
 			int count;
 			bool fromTavernMercenaryPool;
 			if (TryResolveTavernMercenaryPoolJoinCount(joiningCharacter, targetAgentIndex, out count, out fromTavernMercenaryPool) && fromTavernMercenaryPool)
@@ -3364,6 +3430,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		AddCompanionAction.Apply(Clan.PlayerClan, hero);
 		CleanupPlayerCompanionLordCacheDuplicates("after_nonhero_promotion");
 		AddHeroToPartyAction.Apply(hero, MobileParty.MainParty, showNotification: true);
+		RememberPromotedNonHeroCompanion(targetAgentIndex, hero);
 		bool sceneFollowStarted = ShoutBehavior.TryForceSceneFollowPlayerForExternal(targetAgentIndex, transient: true, reason: "nonhero_join_party_promotion");
 		RemoveJoinedNonHeroLocationCharacters(template, targetAgentIndex, removeAllMatchingTavernMercenaries: false);
 		string cultureName = template.Culture?.Name?.ToString() ?? template.Culture?.StringId ?? "";
@@ -6429,7 +6496,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			SettlementMerchantKind.Armor => "盔甲商人",
 			SettlementMerchantKind.Horse => "马匹贩子",
 			SettlementMerchantKind.Goods => "杂货商人",
-			_ => "商贩", 
+			_ => "商贩",
 		};
 	}
 
@@ -6442,7 +6509,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			SettlementMerchantKind.Armor => "盔甲市场",
 			SettlementMerchantKind.Horse => "马匹市场",
 			SettlementMerchantKind.Goods => "杂货市场",
-			_ => "城镇市场", 
+			_ => "城镇市场",
 		};
 	}
 
@@ -6455,7 +6522,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			SettlementMerchantKind.Armor => "头盔、身甲、臂甲、腿甲、披风等护具都归入你的盔甲市场。",
 			SettlementMerchantKind.Horse => "马匹与马具都归入你的马匹市场。",
 			SettlementMerchantKind.Goods => "粮食、贸易品和一般杂货都归入你的杂货市场。",
-			_ => "", 
+			_ => "",
 		};
 	}
 
@@ -7369,7 +7436,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 		Dictionary<string, ItemGuidePriceInfo> dictionary = new Dictionary<string, ItemGuidePriceInfo>(StringComparer.OrdinalIgnoreCase);
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.AppendLine("【玩家可见装备 guidePrice】以下为玩家当前穿戴/携行装备的指导单价（第纳尔/当前单位）：");
+		stringBuilder.AppendLine("以下为玩家当前穿戴的装备和携带的武器：");
 		int num = 0;
 		foreach (RewardItemInfo item in heroVisibleEquipmentItemsForPrompt.OrderByDescending((RewardItemInfo x) => x.Count).ThenBy((RewardItemInfo x) => x.StringId, StringComparer.Ordinal))
 		{
@@ -10304,6 +10371,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		if (!requestedHasModifier && !string.IsNullOrWhiteSpace(requestedItemId))
 		{
 			HashSet<string> variantKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+			bool hasExactRequestedKey = false;
 			for (int i = 0; i < itemRoster.Count; i++)
 			{
 				ItemRosterElement elementCopyAtIndex = itemRoster.GetElementCopyAtIndex(i);
@@ -10315,10 +10383,18 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 					if (!string.IsNullOrWhiteSpace(text))
 					{
 						variantKeys.Add(text);
+						if (string.Equals(text, itemStringId.Trim(), StringComparison.OrdinalIgnoreCase))
+						{
+							hasExactRequestedKey = true;
+						}
 					}
 				}
 			}
-			if (variantKeys.Count > 1)
+			if (!hasExactRequestedKey && variantKeys.Count == 1)
+			{
+				itemStringId = variantKeys.First();
+			}
+			else if (!hasExactRequestedKey && variantKeys.Count > 1)
 			{
 				try
 				{

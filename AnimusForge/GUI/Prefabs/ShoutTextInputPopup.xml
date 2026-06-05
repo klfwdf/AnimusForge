@@ -2,25 +2,47 @@
   <Window>
     <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" DoNotPassEventsToChildren="false">
       <Children>
-        <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="980" SuggestedHeight="500" HorizontalAlignment="Center" VerticalAlignment="Center" DoNotPassEventsToChildren="false">
+        <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="980" SuggestedHeight="460" HorizontalAlignment="Center" VerticalAlignment="Bottom" MarginBottom="24" DoNotPassEventsToChildren="false">
           <Children>
-            <ButtonWidget IsVisible="@IsTitleLinkEnabled" DoNotPassEventsToChildren="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="62" VerticalAlignment="Top" MarginLeft="20" MarginRight="20" Command.Click="ExecuteOpenTitleLink" UpdateChildrenStates="true" HoveredCursorState="RightClickLink">
+            <ButtonWidget IsVisible="@IsTitleLinkEnabled" DoNotPassEventsToChildren="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="42" VerticalAlignment="Top" MarginTop="158" MarginLeft="20" MarginRight="20" Command.Click="ExecuteOpenTitleLink" UpdateChildrenStates="true" HoveredCursorState="RightClickLink">
               <Children>
                 <ShoutTitleLinkTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Center" Brush="Popup.Title.Text" Brush.TextHorizontalAlignment="Center" Text="@TitleLinkText" DoNotAcceptEvents="true" />
               </Children>
             </ButtonWidget>
-            <AutoHideRichTextWidget IsVisible="@IsTitlePlainTextVisible" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Top" MarginLeft="20" MarginRight="20" Brush="Popup.Title.Text" Brush.TextHorizontalAlignment="Center" Text="@TitlePlainText" />
-            <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Top" MarginTop="74" MarginLeft="26" MarginRight="26" Brush="Popup.Description.Text" Brush.FontSize="18" Brush.TextHorizontalAlignment="Left" Text="@SubtitleText" />
-            <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="330" VerticalAlignment="Top" MarginTop="132" MarginLeft="20" MarginRight="20" DoNotPassEventsToChildren="false">
+            <AutoHideRichTextWidget IsVisible="@IsTitlePlainTextVisible" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="42" VerticalAlignment="Top" MarginTop="158" MarginLeft="20" MarginRight="20" Brush="Popup.Title.Text" Brush.TextHorizontalAlignment="Center" Text="@TitlePlainText" />
+            <ScrollablePanel WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="104" VerticalAlignment="Top" MarginTop="48" MarginLeft="26" MarginRight="26" ClipRect="SubtitleClipRect" InnerPanel="SubtitleClipRect\SubtitleInnerPanel" AutoHideScrollBars="true" VerticalScrollbar="..\SubtitleScrollbar\SubtitleScrollbarWidget">
+              <Children>
+                <Widget Id="SubtitleClipRect" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipContents="true">
+                  <Children>
+                    <Widget Id="SubtitleInnerPanel" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren">
+                      <Children>
+                        <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Top" Brush="Popup.Description.Text" Brush.FontSize="18" Brush.TextHorizontalAlignment="Left" Text="@SubtitleText" />
+                      </Children>
+                    </Widget>
+                  </Children>
+                </Widget>
+              </Children>
+            </ScrollablePanel>
+            <Widget Id="SubtitleScrollbar" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1" SuggestedHeight="104" HorizontalAlignment="Right" VerticalAlignment="Top" MarginTop="48" MarginRight="24" DoNotAcceptEvents="true" IsVisible="false">
+              <Children>
+                <ScrollbarWidget Id="SubtitleScrollbarWidget" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="1" AlignmentAxis="Vertical" Handle="SubtitleScrollbarHandle" MaxValue="100" MinValue="0" DoNotAcceptEvents="true" IsVisible="false">
+                  <Children>
+                    <Widget Id="SubtitleScrollbarHandle" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1" SuggestedHeight="1" DoNotAcceptEvents="true" IsVisible="false" />
+                  </Children>
+                </ScrollbarWidget>
+              </Children>
+            </Widget>
+            <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="24" VerticalAlignment="Top" MarginTop="206" MarginLeft="26" MarginRight="26" Brush="Popup.Description.Text" Brush.FontSize="16" Brush.TextHorizontalAlignment="Left" Text="@InputHintText" />
+            <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="222" VerticalAlignment="Top" MarginTop="234" MarginLeft="20" MarginRight="20" DoNotPassEventsToChildren="false">
               <Children>
                 <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="7" MarginRight="7" MarginTop="7" MarginBottom="7" Sprite="BlankWhiteSquare_9" Color="@InputBackgroundColor" AlphaFactor="0.18" DoNotAcceptEvents="true" />
                 <ScrollablePanel WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipRect="EditorClipRect" InnerPanel="EditorClipRect\EditorInnerPanel" MarginLeft="14" MarginRight="14" MarginTop="12" MarginBottom="12" AutoHideScrollBars="true" VerticalScrollbar="..\EditorScrollbar\Scrollbar">
                   <Children>
                     <Widget Id="EditorClipRect" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipContents="true">
                       <Children>
-                        <Widget Id="EditorInnerPanel" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MinHeight="306">
+                        <Widget Id="EditorInnerPanel" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MinHeight="198">
                           <Children>
-                            <DevMultilineEditableTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MinHeight="306" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="8" MarginRight="8" MarginTop="8" MarginBottom="8" Brush="Review.NameInput.Text" Brush.FontSize="12" Brush.FontColor="#FFFFFFFF" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Top" EditorFontSize="18" MaxLength="-1" RealText="@InputText" IsObfuscationEnabled="false" AutoFocus="true" SubmitOnEnter="true" Command.TextEntered="ExecuteSubmit" Command.FocusGained="StartTyping" Command.FocusLost="StopTyping" />
+                            <DevMultilineEditableTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MinHeight="198" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="8" MarginRight="8" MarginTop="8" MarginBottom="8" Brush="Review.NameInput.Text" Brush.FontSize="12" Brush.FontColor="#FFFFFFFF" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Top" EditorFontSize="18" MaxLength="-1" RealText="@InputText" IsObfuscationEnabled="false" AutoFocus="true" SubmitOnEnter="true" Command.TextEntered="ExecuteSubmit" Command.FocusGained="StartTyping" Command.FocusLost="StopTyping" />
                           </Children>
                         </Widget>
                       </Children>

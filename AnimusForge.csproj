@@ -67,14 +67,17 @@
     <Compile Remove="原版游戏本体代码*\**\*.cs" />
     <Compile Remove="阅兵\**\*.cs" />
     <Compile Remove="111\**\*.cs" />
+    <Compile Remove="tools\**\*.cs" />
     <EmbeddedResource Remove="原版游戏本体代码\**\*" />
     <EmbeddedResource Remove="原版游戏本体代码*\**\*" />
     <EmbeddedResource Remove="阅兵\**\*" />
     <EmbeddedResource Remove="111\**\*" />
+    <EmbeddedResource Remove="tools\**\*" />
     <None Remove="原版游戏本体代码\**\*" />
     <None Remove="原版游戏本体代码*\**\*" />
     <None Remove="阅兵\**\*" />
     <None Remove="111\**\*" />
+    <None Remove="tools\**\*" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Core" />
