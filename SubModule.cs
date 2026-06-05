@@ -99,14 +99,6 @@ public class SubModule : MBSubModuleBase
 			}
 			try
 			{
-				SiegeAftermathPatchBootstrap.Apply(harmony);
-			}
-			catch (Exception ex5a)
-			{
-				Logger.LogTrace("SubModule", ">>> Siege aftermath AF intervention patches failed: " + ex5a.Message);
-			}
-			try
-			{
 				PatchClassProcessor patchClassProcessor6 = harmony.CreateClassProcessor(typeof(Patch_Meeting_SuppressDeclareWarAction));
 				patchClassProcessor6.Patch();
 			}
@@ -305,7 +297,6 @@ public class SubModule : MBSubModuleBase
 			campaignGameStarter.AddBehavior(new ModOnboardingBehavior());
 			campaignGameStarter.AddBehavior(new MyBehavior());
 			campaignGameStarter.AddBehavior(new ShoutBehavior());
-			campaignGameStarter.AddBehavior(new SiegeAiInterventionBehavior());
 			campaignGameStarter.AddBehavior(new CourierDeliveryBehavior());
 			campaignGameStarter.AddBehavior(new DuelBehavior());
 			campaignGameStarter.AddBehavior(new RewardSystemBehavior());

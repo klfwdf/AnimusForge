@@ -11,44 +11,30 @@ namespace AnimusForge;
 [HarmonyPatch(typeof(GameMenu), "ActivateGameMenu")]
 public static class Patch_GameMenu_ActivateGameMenu
 {
-	public static bool Prefix(ref string menuId)
+	public static void Prefix(ref string menuId)
 	{
 		try
 		{
-			if (SiegeAiInterventionBehavior.TryHandleDirectMassacreAftermathMenuForExternal(menuId, "GameMenu.ActivateGameMenu:" + menuId))
-			{
-				return false;
-			}
-			if (SiegeAiInterventionBehavior.TryHandleDirectPlunderAftermathMenuForExternal(menuId, "GameMenu.ActivateGameMenu:" + menuId))
-			{
-				return false;
-			}
-			if (SiegeAiInterventionBehavior.ShouldRedirectResolvedAftermathMenuForExternal(menuId))
-			{
-				Logger.LogTrace("UI_Intercept", $"Skipping native siege aftermath menu '{menuId}' after AF resolution and finishing encounter.");
-				SiegeAiInterventionBehavior.TryHandleNativeAftermathMenuInitForExternal("GameMenu.ActivateGameMenu:" + menuId);
-				return false;
-			}
 			if (!(menuId == "encounter"))
 			{
-				return true;
+				return;
 			}
 			if (PlayerEncounter.Current != null && PlayerEncounter.LeaveEncounter)
 			{
 				Logger.LogTrace("UI_Intercept", "Native encounter leave is pending; keep native 'encounter' menu so PlayerEncounter.Finish can run.");
-				return true;
+				return;
 			}
 			if (PlayerEncounter.Current != null && PlayerEncounter.PlayerSurrender)
 			{
 				Logger.LogTrace("UI_Intercept", "Native player surrender is pending; keep native 'encounter' menu so surrender result can resolve.");
-				return true;
+				return;
 			}
 			if (LordEncounterBehavior.HasPendingMeetingBattleVictorySettlement())
 			{
 				if (LordEncounterBehavior.IsEncounterRedirectSuspended() || LordEncounterRedirectGuard.IsSuppressed())
 				{
 					Logger.LogTrace("UI_Intercept", "Pending meeting victory settlement is active, but redirect is suspended/suppressed; keep native 'encounter' menu.");
-					return true;
+					return;
 				}
 				try
 				{
@@ -84,25 +70,25 @@ public static class Patch_GameMenu_ActivateGameMenu
 			{
 				if (PlayerEncounter.Current == null || PlayerEncounterCompat.HasCampaignBattleResult() || LordEncounterRedirectGuard.IsSuppressed())
 				{
-					return true;
+					return;
 				}
 				if (PlayerEncounter.Current != null)
 				{
 					PlayerEncounterState encounterState = PlayerEncounter.Current.EncounterState;
 					if (encounterState != PlayerEncounterState.Begin && encounterState != PlayerEncounterState.Wait)
 					{
-						return true;
+						return;
 					}
 					MapEvent mapEvent = PlayerEncounterCompat.GetBattleOrEncounteredBattleSafe();
 					if (mapEvent != null && (mapEvent.HasWinner || mapEvent.IsFinalized))
 					{
-						return true;
+						return;
 					}
 				}
 				PartyBase encounteredParty = PlayerEncounter.EncounteredParty;
 				if (encounteredParty == null || (encounteredParty.NumberOfAllMembers <= 0 && encounteredParty.NumberOfHealthyMembers <= 0))
 				{
-					return true;
+					return;
 				}
 				Hero leaderHero = encounteredParty.LeaderHero;
 				if (leaderHero != null && leaderHero != Hero.MainHero && leaderHero.IsLord)
@@ -122,6 +108,5 @@ public static class Patch_GameMenu_ActivateGameMenu
 		{
 			Logger.LogTrace("UI_Intercept", "[ERROR] " + ex.ToString());
 		}
-		return true;
 	}
 }
