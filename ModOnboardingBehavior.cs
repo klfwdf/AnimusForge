@@ -1268,7 +1268,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			settings.ActionPostprocessApiTemperature = 0f;
 			settings.EventAndRebellionApiThinkingEnabled = false;
 			settings.SetEventAndRebellionApiReasoningEffortForExternal(DuelSettings.ReasoningEffortHigh);
-			settings.EventAndRebellionApiTemperature = 1.2f;
+			settings.EventAndRebellionApiTemperature = 0.8f;
 		}
 		else
 		{
@@ -1287,7 +1287,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			settings.ActionPostprocessApiTemperature = 0f;
 			settings.EventAndRebellionApiThinkingEnabled = false;
 			settings.SetEventAndRebellionApiReasoningEffortForExternal(DuelSettings.ReasoningEffortHigh);
-			settings.EventAndRebellionApiTemperature = 1.2f;
+			settings.EventAndRebellionApiTemperature = 0.8f;
 		}
 		TryPersistMcmSettings(settings);
 		return true;

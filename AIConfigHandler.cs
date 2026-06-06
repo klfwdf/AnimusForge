@@ -16,6 +16,7 @@ using SandBox.Missions.MissionLogics;
 using SandBox.Objects.Usables;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.ComponentInterfaces;
+using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.CampaignSystem.Settlements.Locations;
 using TaleWorlds.Core;
@@ -650,6 +651,7 @@ public static class AIConfigHandler
 	private static string AppendPersistentActionPostprocessRuntimeContext(string runtimeContext)
 	{
 		string text = (runtimeContext ?? "").Trim();
+		List<string> facts = new List<string>();
 		string playerId = "";
 		try
 		{
@@ -659,20 +661,135 @@ public static class AIConfigHandler
 		{
 			playerId = "";
 		}
-		if (string.IsNullOrWhiteSpace(playerId))
+		if (!string.IsNullOrWhiteSpace(playerId) && text.IndexOf("hero:" + playerId, StringComparison.OrdinalIgnoreCase) < 0)
+		{
+			facts.Add("【固定实体ID】玩家本人固定ID：hero:" + playerId + "。当后处理标签需要指向玩家本人或玩家主队所属英雄时，只能使用此ID；不要猜测玩家ID。");
+		}
+		string locationFact = BuildActionPostprocessPlayerCurrentLocationFact();
+		if (!string.IsNullOrWhiteSpace(locationFact) && text.IndexOf("【玩家当前地点ID】", StringComparison.OrdinalIgnoreCase) < 0)
+		{
+			facts.Add(locationFact);
+		}
+		if (facts.Count == 0)
 		{
 			return text;
 		}
-		string playerFact = "【固定实体ID】玩家本人固定ID：hero:" + playerId + "。当后处理标签需要指向玩家本人或玩家主队所属英雄时，只能使用此ID；不要猜测玩家ID。";
-		if (text.IndexOf("hero:" + playerId, StringComparison.OrdinalIgnoreCase) >= 0)
-		{
-			return text;
-		}
+		string factText = string.Join(Environment.NewLine, facts.Where((string x) => !string.IsNullOrWhiteSpace(x)));
 		if (string.IsNullOrWhiteSpace(text))
 		{
-			return playerFact;
+			return factText.Trim();
 		}
-		return (text + Environment.NewLine + playerFact).Trim();
+		return (text + Environment.NewLine + factText).Trim();
+	}
+
+	private static string BuildActionPostprocessPlayerCurrentLocationFact()
+	{
+		try
+		{
+			Settlement settlement = null;
+			string source = "";
+			try
+			{
+				settlement = Settlement.CurrentSettlement;
+				if (settlement != null)
+				{
+					source = "当前场景定居点";
+				}
+			}
+			catch
+			{
+				settlement = null;
+			}
+			if (settlement == null)
+			{
+				try
+				{
+					settlement = MobileParty.MainParty?.CurrentSettlement;
+					if (settlement != null)
+					{
+						source = "玩家主队所在定居点";
+					}
+				}
+				catch
+				{
+					settlement = null;
+				}
+			}
+			if (settlement == null)
+			{
+				try
+				{
+					settlement = Hero.MainHero?.CurrentSettlement;
+					if (settlement != null)
+					{
+						source = "玩家英雄所在定居点";
+					}
+				}
+				catch
+				{
+					settlement = null;
+				}
+			}
+			if (settlement != null)
+			{
+				string settlementId = (settlement.StringId ?? "").Trim();
+				string settlementName = (settlement.Name?.ToString() ?? settlementId).Trim();
+				string type = settlement.IsTown ? "城镇" : (settlement.IsCastle ? "城堡" : (settlement.IsVillage ? "村庄" : (settlement.IsHideout ? "藏身处" : "定居点")));
+				if (string.IsNullOrWhiteSpace(settlementId))
+				{
+					return "";
+				}
+				StringBuilder sb = new StringBuilder();
+				sb.Append("【玩家当前地点ID】当前定居点：settlement:" + settlementId + "；名称：" + settlementName + "；类型：" + type);
+				if (!string.IsNullOrWhiteSpace(source))
+				{
+					sb.Append("；来源：" + source);
+				}
+				sb.Append("。若玩家在<latest_reply>语境中说“这里”“此地”“本城”“当前地点”“我们所在的地方”，且动作标签需要 settlement 目标，优先使用此 settlement ID。");
+				return sb.ToString();
+			}
+			Settlement nearest = ResolveNearestSettlementToMainPartyForPostprocess(out float distance);
+			if (nearest != null)
+			{
+				string settlementId = (nearest.StringId ?? "").Trim();
+				string settlementName = (nearest.Name?.ToString() ?? settlementId).Trim();
+				if (!string.IsNullOrWhiteSpace(settlementId))
+				{
+					return "【玩家当前地点ID】当前未处于定居点内；最近定居点：settlement:" + settlementId + "；名称：" + settlementName + "；距离：" + distance.ToString("0.0") + "。只有当玩家明确说“附近”“最近的定居点”等语义时才使用最近定居点；不要把它误当作玩家脚下当前地点。";
+				}
+			}
+		}
+		catch
+		{
+		}
+		return "";
+	}
+
+	private static Settlement ResolveNearestSettlementToMainPartyForPostprocess(out float distance)
+	{
+		distance = 0f;
+		try
+		{
+			MobileParty party = MobileParty.MainParty;
+			if (party == null || Settlement.All == null)
+			{
+				return null;
+			}
+			Settlement nearest = Settlement.All
+				.Where((Settlement x) => x != null && !x.IsHideout)
+				.OrderBy((Settlement x) => x.GatePosition.DistanceSquared(party.Position))
+				.FirstOrDefault();
+			if (nearest != null)
+			{
+				distance = nearest.GatePosition.Distance(party.Position);
+			}
+			return nearest;
+		}
+		catch
+		{
+			distance = 0f;
+			return null;
+		}
 	}
 
 	public static string PrepareActionPostprocessHistoryText(string historyText)
@@ -4263,10 +4380,10 @@ public static class AIConfigHandler
 		return list;
 	}
 
-	private static bool TryGetRuleEval(string userText, string secondaryText, string ruleTag, out GuardrailRuleEval eval)
+	private static bool TryGetRuleEval(string userText, string secondaryText, string ruleTag, out GuardrailRuleEval eval, IEnumerable<string> excludedRuleIds = null)
 	{
 		eval = null;
-		if (!TryGetGuardrailEvalSnapshot(userText, secondaryText, out var snapshot) || snapshot == null || snapshot.Rules == null)
+		if (!TryGetGuardrailEvalSnapshot(userText, secondaryText, out var snapshot, excludedRuleIds) || snapshot == null || snapshot.Rules == null)
 		{
 			return false;
 		}
@@ -4295,10 +4412,17 @@ public static class AIConfigHandler
 		return IsGuardrailSemanticHit(input, null, ruleTag, ruleInstruction, triggerKeywords, out matchedKeyword, out score);
 	}
 
-	public static bool IsGuardrailSemanticHit(string input, string secondaryInput, string ruleTag, string ruleInstruction, List<string> triggerKeywords, out string matchedKeyword, out float score)
+	public static bool IsGuardrailSemanticHit(string input, string secondaryInput, string ruleTag, string ruleInstruction, List<string> triggerKeywords, out string matchedKeyword, out float score, IEnumerable<string> excludedRuleIds = null)
 	{
 		matchedKeyword = "";
 		score = 0f;
+		HashSet<string> excluded = BuildExcludedRuleIdSet(excludedRuleIds);
+		string normalizedRuleTag = NormalizeSemanticText(ruleTag);
+		if (!string.IsNullOrWhiteSpace(normalizedRuleTag) && excluded.Contains(normalizedRuleTag))
+		{
+			Logger.Log("GuardrailSemantic", "rule=" + ruleTag + " hit=False mode=blocked_excluded_rule");
+			return false;
+		}
 		if (IsPlayerCompanionOrFamilyExcludedRule(ruleTag) && ShouldExcludePlayerCompanionOrFamilyRulesForConversationTarget())
 		{
 			Logger.Log("GuardrailSemantic", "rule=" + ruleTag + " hit=False mode=blocked_player_companion_or_family_rule");
@@ -4314,7 +4438,7 @@ public static class AIConfigHandler
 		{
 			return false;
 		}
-		if (TryGetRuleEval(text, secondaryInput, ruleTag, out var eval))
+		if (TryGetRuleEval(text, secondaryInput, ruleTag, out var eval, excluded))
 		{
 			matchedKeyword = (string.IsNullOrWhiteSpace(eval.MatchedSeed) ? "semantic_seed" : eval.MatchedSeed);
 			score = eval.AmpScore;
@@ -4658,7 +4782,7 @@ public static class AIConfigHandler
 		}
 	}
 
-	private static bool ShouldStartStickyGuardrailRule(string input, string secondaryInput, GuardrailRuleHit hit, int rank)
+	private static bool ShouldStartStickyGuardrailRule(string input, string secondaryInput, GuardrailRuleHit hit, int rank, IEnumerable<string> excludedRuleIds = null)
 	{
 		if (hit == null)
 		{
@@ -4673,7 +4797,7 @@ public static class AIConfigHandler
 		{
 			return true;
 		}
-		if (TryGetRuleEval(input, secondaryInput, text, out var eval) && eval != null && eval.Hit)
+		if (TryGetRuleEval(input, secondaryInput, text, out var eval, excludedRuleIds) && eval != null && eval.Hit)
 		{
 			if (eval.ForceHit || eval.HighAmpHit || eval.AbsHit)
 			{
@@ -4797,7 +4921,7 @@ public static class AIConfigHandler
 			for (int j = 0; j < list.Count; j++)
 			{
 				GuardrailRuleHit guardrailRuleHit = list[j];
-				if (!ShouldStartStickyGuardrailRule(input, secondaryInput, guardrailRuleHit, j))
+				if (!ShouldStartStickyGuardrailRule(input, secondaryInput, guardrailRuleHit, j, excluded))
 				{
 					continue;
 				}
@@ -4870,7 +4994,7 @@ public static class AIConfigHandler
 		return list;
 	}
 
-	private static string BuildExtraRuleHitDebugDetail(string input, string secondaryInput, GuardrailRuleHit hit)
+	private static string BuildExtraRuleHitDebugDetail(string input, string secondaryInput, GuardrailRuleHit hit, IEnumerable<string> excludedRuleIds = null)
 	{
 		try
 		{
@@ -4880,7 +5004,7 @@ public static class AIConfigHandler
 			}
 			string text = NormalizeSemanticText(input);
 			string text2 = (hit.RuleId ?? "").Trim();
-			if (!string.IsNullOrWhiteSpace(text) && !string.IsNullOrWhiteSpace(text2) && TryGetRuleEval(text, secondaryInput, text2, out var eval) && eval != null)
+			if (!string.IsNullOrWhiteSpace(text) && !string.IsNullOrWhiteSpace(text2) && TryGetRuleEval(text, secondaryInput, text2, out var eval, excludedRuleIds) && eval != null)
 			{
 				string text3 = NormalizeSemanticText(eval.MatchedIntent);
 				if (text3.Length > 48)
@@ -5032,7 +5156,7 @@ public static class AIConfigHandler
 					}
 					try
 					{
-						Logger.Log("GuardrailSemantic", $"extra_rule_hit rule={text} score={guardrailRuleHit.Score:0.000} group={guardrailRuleHit.Group} priority={guardrailRuleHit.Priority} nonHero={!hasAnyHero}{BuildExtraRuleHitDebugDetail(input, secondaryInput, guardrailRuleHit)}");
+						Logger.Log("GuardrailSemantic", $"extra_rule_hit rule={text} score={guardrailRuleHit.Score:0.000} group={guardrailRuleHit.Group} priority={guardrailRuleHit.Priority} nonHero={!hasAnyHero}{BuildExtraRuleHitDebugDetail(input, secondaryInput, guardrailRuleHit, excluded)}");
 					}
 					catch
 					{

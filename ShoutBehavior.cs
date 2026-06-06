@@ -543,18 +543,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 
 		public override void OnMissionTick(float dt)
 		{
-			Action result;
-			while (_parent._mainThreadActions.TryDequeue(out result))
-			{
-				try
-				{
-					result();
-				}
-				catch (Exception ex)
-				{
-					BannerlordExceptionSentinel.ReportObservedException("LipSync.MainThreadAction", ex, "behavior=ShoutMissionBehavior");
-				}
-			}
+			_parent.DrainMainThreadActionsForMissionTick();
 			try
 			{
 				_parent.ProcessDeferredCleanup();
@@ -1501,6 +1490,83 @@ public class ShoutBehavior : CampaignBehaviorBase
 		Logger.LogVerbose("ShoutBehavior", "hotkey_targeting_snapshot", () => "[Hotkey] targeting snapshot mode=" + (openModeMenu ? "special" : "direct") + " range=" + targetingContext.RangeMeters.ToString("0.##") + " angle=" + totalAngleDegrees.ToString("0.#") + " candidates=" + count + " primary=" + targetingContext.PrimaryAgentIndex, 0.5);
 	}
 
+	private void DrainMainThreadActionsForMissionTick()
+	{
+#if BANNERLORD_1_4_OR_GREATER
+		Action action;
+		while (_mainThreadActions.TryDequeue(out action))
+		{
+			ExecuteMainThreadAction(action);
+		}
+#else
+		int pendingAtStart = _mainThreadActions.Count;
+		if (pendingAtStart <= 0)
+		{
+			return;
+		}
+		Stopwatch stopwatch = Stopwatch.StartNew();
+		int processed = 0;
+		int maxActions = Math.Min(SceneMainThreadActionMaxPerTick13, pendingAtStart);
+		while (processed < maxActions && _mainThreadActions.TryDequeue(out var action))
+		{
+			processed++;
+			ExecuteMainThreadAction(action);
+			if (stopwatch.Elapsed.TotalMilliseconds >= SceneMainThreadActionBudgetMs13)
+			{
+				break;
+			}
+		}
+		stopwatch.Stop();
+		int remaining = _mainThreadActions.Count;
+		if (remaining > 0 || stopwatch.Elapsed.TotalMilliseconds >= SceneMainThreadActionSlowMs)
+		{
+			LogMainThreadActionBudget13(pendingAtStart, processed, remaining, stopwatch.Elapsed.TotalMilliseconds);
+		}
+#endif
+	}
+
+	private void ExecuteMainThreadAction(Action action)
+	{
+		if (action == null)
+		{
+			return;
+		}
+		Stopwatch stopwatch = Stopwatch.StartNew();
+		try
+		{
+			action();
+		}
+		catch (Exception ex)
+		{
+			BannerlordExceptionSentinel.ReportObservedException("LipSync.MainThreadAction", ex, "behavior=ShoutMissionBehavior");
+		}
+		finally
+		{
+			stopwatch.Stop();
+			if (stopwatch.Elapsed.TotalMilliseconds >= SceneMainThreadActionSlowMs)
+			{
+				Logger.Log("ShoutBehavior", "[MainThreadActions] slow_action elapsedMs=" + Math.Round(stopwatch.Elapsed.TotalMilliseconds, 2) + " remaining=" + _mainThreadActions.Count);
+			}
+		}
+	}
+
+	private void LogMainThreadActionBudget13(int pendingAtStart, int processed, int remaining, double elapsedMs)
+	{
+		try
+		{
+			long now = DateTime.UtcNow.Ticks;
+			if (remaining > 0 && now < _nextSceneMainThreadActionBudgetLogTicks && elapsedMs < SceneMainThreadActionSlowMs)
+			{
+				return;
+			}
+			_nextSceneMainThreadActionBudgetLogTicks = now + TimeSpan.FromSeconds(1.0).Ticks;
+			Logger.Log("ShoutBehavior", "[MainThreadActions][1.3_budget] pendingAtStart=" + pendingAtStart + " processed=" + processed + " remaining=" + remaining + " elapsedMs=" + Math.Round(elapsedMs, 2));
+		}
+		catch
+		{
+		}
+	}
+
 	private void BeginShoutProcessing(string reason)
 	{
 		_isProcessingShout = true;
@@ -1773,7 +1839,15 @@ public class ShoutBehavior : CampaignBehaviorBase
 
 	private const float SCENE_GHOST_MAX_STEP_DISTANCE = 2.75f;
 
+	private const int SceneMainThreadActionMaxPerTick13 = 2;
+
+	private const double SceneMainThreadActionBudgetMs13 = 6.0;
+
+	private const double SceneMainThreadActionSlowMs = 40.0;
+
 	private ConcurrentQueue<Action> _mainThreadActions = new ConcurrentQueue<Action>();
+
+	private long _nextSceneMainThreadActionBudgetLogTicks;
 
 	private float _tickTimer = 0f;
 
@@ -13723,7 +13797,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				AIConfigHandler.SetGuardrailRuntimeTargetTroop(runtimeTargetTroopId);
 				AIConfigHandler.SetGuardrailRuntimeTargetUnnamedRank(runtimeTargetUnnamedRank);
 				AIConfigHandler.SetGuardrailRuntimeTargetAgentIndex(runtimeTargetAgentIndex);
+				Stopwatch postprocessWatch = Stopwatch.StartNew();
 				string text = TryRunSceneUnifiedActionPostprocess(speakingHero, npcCharacter, runtimeTargetAgentIndex, GetSceneNpcHistoryNameForPrompt(currentSpeaker), playerText, historyForPostprocess, replySnapshot, duelRuleInjected, rewardRuleInjected, loanRuleInjected, kingdomServiceRuleInjected, lordsHallRuleInjected, meetingReleaseRuleInjected, vanillaIssueRuleInjected, heroJoinPartyRuleInjected, sceneMechanismRuleInjected, partyTransferRuleInjected, settlementTransferRuleInjected, voteDealRuleInjected, worldMapPartyCommandRuleInjected, marriageRuleInjected, duelStakeOptions, kingdomServiceRules, sceneMechanismRuleSnapshot, summonSnapshot, guideSnapshot, entityPostprocessContext);
+				postprocessWatch.Stop();
+				Logger.Log("ShoutBehavior", "[DeferredPostprocess] call_done npc=" + (speakingHero?.StringId ?? currentSpeaker?.Name ?? "unknown") + " elapsedMs=" + Math.Round(postprocessWatch.Elapsed.TotalMilliseconds, 2) + " textLen=" + (text?.Length ?? 0));
 				if (queuedSceneSessionId != Volatile.Read(ref _sceneHistorySessionId))
 				{
 					Logger.Log("ShoutBehavior", "[DeferredPostprocess] skipped stale task after_call npc=" + (speakingHero?.StringId ?? currentSpeaker?.Name ?? "unknown") + " queuedSession=" + queuedSceneSessionId + " currentSession=" + Volatile.Read(ref _sceneHistorySessionId));

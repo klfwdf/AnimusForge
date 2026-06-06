@@ -25,7 +25,7 @@
         "PostprocessRules": [
             {
                 "Tag": "[ACTION:DUEL]",
-                "Description": "如果玩家和NPC都同意真剑，武器，比武决斗，输出这个,只有一方同意不算，如果双方只是叫嚣也不算,如果还在讨论彩头和赌注，以及并非单挑而是群战，那么不允许输出这个"
+                "Description": "如果玩家和NPC都同意或现在执行了真剑，武器，比武决斗，输出这个,只有一方同意不算，如果双方只是叫嚣也不算,如果还在讨论彩头和赌注，以及并非单挑而是群战，那么不允许输出这个"
             },
             {
                 "Tag": "[AD;金额;天数;备注内容]",
@@ -172,19 +172,19 @@
             "PostprocessRules": [
                 {
                     "Tag": "[ACTION:KINGDOM_SERVICE:LEAVE:current]",
-                    "Description": "如果NPC在<latest_reply>里正式同意玩家退出当前效力，就输出这个"
+                    "Description": "如果NPC在<latest_reply>里正式同意或现在执行了玩家退出当前效力，就输出这个"
                 },
                 {
                     "Tag": "[ACTION:KINGDOM_SERVICE:MERCENARY:{targetKingdomId}]",
-                    "Description": "如果NPC在<latest_reply>里正式同意玩家以雇佣兵身份加入目标王国，就输出这个"
+                    "Description": "如果NPC在<latest_reply>里正式同意或现在执行了玩家以雇佣兵身份加入目标王国，就输出这个"
                 },
                 {
                     "Tag": "[ACTION:KINGDOM_SERVICE:VASSAL:{targetKingdomId}]",
-                    "Description": "如果NPC在<latest_reply>里正式同意玩家以正式封臣身份加入目标王国，就输出这个"
+                    "Description": "如果NPC在<latest_reply>里正式同意或现在执行了玩家以正式封臣身份加入目标王国，就输出这个"
                 },
                 {
                     "Tag": "[ACTION:KINGDOM_SERVICE:CLAN_JOIN_PLAYER_KINGDOM:{targetClanId}]",
-                    "Description": "NPC在<latest_reply>里最终明确同意带领整个家族加入玩家王国成为领主时，输出这个。这个标签只代表家族归附和王国归属改变，不代表NPC本人加入玩家队伍、成为玩家同伴或跟玩家上路。若<latest_reply>表达的是“我本人加入你的队伍/当你的同伴/跟你走”，禁止输出这个；若<latest_reply>只是模糊同意“效力于你/加入你/来你麾下”，没有明确整个家族加入玩家王国成为领主，禁止输出。若NPC只是谈条件、犹豫、拒绝、要求报酬、要求封地、要求保证、要求日后再议，禁止输出。"
+                    "Description": "NPC在<latest_reply>里最终明确同意或现在执行了带领整个家族加入玩家王国成为领主时，输出这个。这个标签只代表家族归附和王国归属改变，不代表NPC本人加入玩家队伍、成为玩家同伴或跟玩家上路。若<latest_reply>表达的是“我本人加入你的队伍/当你的同伴/跟你走”，禁止输出这个；若<latest_reply>只是模糊同意“效力于你/加入你/来你麾下”，没有明确整个家族加入玩家王国成为领主，禁止输出。若NPC只是谈条件、犹豫、拒绝、要求报酬、要求封地、要求保证、要求日后再议，禁止输出。"
                 }
             ],
             "RuntimeInstructionTemplates": {
@@ -265,7 +265,7 @@
             "PostprocessRules": [
                 {
                     "Tag": "[ACTION:OPEN_LORDS_HALL]",
-                    "Description": "如果NPC在<latest_reply>里明确同意让玩家进入领主大厅，就输出这个"
+                    "Description": "如果NPC在<latest_reply>里明确同意或现在执行了让玩家进入领主大厅，就输出这个"
                 }
             ],
             "RuntimeInstructionTemplates": {
@@ -302,15 +302,15 @@
             "PostprocessRules": [
                 {
                     "Tag": "[ACTION:MARRIAGE_FORMAL:playerClanHeroId:targetHeroId]",
-                    "Description": "如果NPC在<latest_reply>里明确无条件同意某一对系统事实清单中的婚配对象正式成婚，就输出对应标签，若有条件，请勿输出；若同时明确彩礼金额，也可在末尾追加 :金额"
+                    "Description": "如果NPC在<latest_reply>里同意或现在执行了无条件同意某一对系统事实清单中的婚配对象正式成婚，就输出对应标签，若有条件，请勿输出；若同时明确彩礼金额，也可在末尾追加 :金额"
                 },
                 {
                     "Tag": "[ACTION:MARRIAGE_ELOPE:targetHeroId]",
-                    "Description": "如果NPC在<latest_reply>里明确无条件同意与玩家私奔，就输出这个"
+                    "Description": "如果NPC在<latest_reply>里同意或现在执行了无条件同意与玩家私奔，就输出这个"
                 },
                 {
                     "Tag": "[ACTION:DIVORCE:playerClanHeroId:targetHeroId]",
-                    "Description": "如果NPC在<latest_reply>里明确无条件同意系统事实清单中的这一对对象离婚，就输出对应标签。只有当NPC明确同意把钱退还给玩家时，才可在末尾追加 :金额；不要把玩家向NPC还钱写进这个标签"
+                    "Description": "如果NPC在<latest_reply>里同意或现在执行了无条件同意系统事实清单中的这一对对象离婚，就输出对应标签。只有当NPC明确同意把钱退还给玩家时，才可在末尾追加 :金额；不要把玩家向NPC还钱写进这个标签"
                 }
             ],
             "RuntimeInstructionTemplates": {
@@ -368,11 +368,11 @@
             "PostprocessRules": [
                 {
                     "Tag": "[ACTION:SCENE_FOLLOW_PLAYER]",
-                    "Description": "如果NPC在<latest_reply>里明确同意之后跟随玩家，就输出这个，包括跟玩家去某个地点，"
+                    "Description": "如果NPC在<latest_reply>里明确同意或现在执行了跟随玩家，就输出这个，包括跟玩家去某个地点，"
                 },
                 {
                     "Tag": "[ACTION:SCENE_STOP_FOLLOW]",
-                    "Description": "如果NPC在<latest_reply>里明确同意停止跟随玩家，就输出这个"
+                    "Description": "如果NPC在<latest_reply>里明确同意或现在执行了停止跟随玩家，就输出这个"
                 },
                 {
                     "Tag": "[END]",
@@ -380,11 +380,11 @@
                 },
                 {
                     "Tag": "[ACTION:SCENE_SUMMON:人物名称列表]",
-                    "Description": "如果NPC在<latest_reply>里明确同意去把【带路与传唤NPC清单】中的一个或多个人叫来，就输出这个；把人物名称写进标签，若有多人可用逗号分隔"
+                    "Description": "如果NPC在<latest_reply>里明确同意或现在执行了去把【带路与传唤NPC清单】中的一个或多个人叫来，就输出这个；把人物名称写进标签，若有多人可用逗号分隔"
                 },
                 {
                     "Tag": "[ACTION:SCENE_GUIDE:人物名称]",
-                    "Description": "如果NPC在<latest_reply>里明确同意给玩家带路去【带路与传唤NPC清单】中的目标，就输出这个；把【带路与传唤NPC清单】中的NPC写进标签,如果玩家要求带去某个地点，可以看NPC名称后缀的地点，你可以在标签中写入这个NPC的名称，让NPC把玩家带去这个地点"
+                    "Description": "如果NPC在<latest_reply>里明确同意或现在执行了给玩家带路去【带路与传唤NPC清单】中的目标，就输出这个；把【带路与传唤NPC清单】中的NPC写进标签,如果玩家要求带去某个地点，可以看NPC名称后缀的地点，你可以在标签中写入这个NPC的名称，让NPC把玩家带去这个地点"
                 }
             ],
             "TriggerKeywords": [
@@ -422,7 +422,7 @@
                 },
                 {
                     "Tag": "[ATP:俘虏名称:数量]",
-                    "Description": "如果NPC在<latest_reply>里明确同意把【你当前可转移俘虏】中的某种俘虏交给玩家，就输出这个；这里填写俘虏名称和数量"
+                    "Description": "如果NPC在<latest_reply>里明确同意或现在执行了把【你当前可转移俘虏】中的某种俘虏交给玩家，就输出这个；这里填写俘虏名称和数量"
                 }
             ],
             "RuntimeInstructionTemplates": {
@@ -463,7 +463,7 @@
             "PostprocessRules": [
                 {
                     "Tag": "[ACTION:SETTLEMENT_TRANSFER:TO_PLAYER:定居点ID或编号]",
-                    "Description": "此标签仅限于NPC转移领地给玩家，绝不可理解为玩家转移领地给NPC，如果还只是在<latest_reply>讨论价格，并且npc是有条件给予，那么不允许输出此标签。如果NPC明确无条件同意把【你家族当前可转移的城市和城堡】中的某座城市或城堡转给玩家家族，就输出这个；目标只能填写本轮清单中的编号、名称或ID。"
+                    "Description": "此标签仅限于NPC转移领地给玩家，绝不可理解为玩家转移领地给NPC，如果还只是在<latest_reply>讨论价格，并且npc是有条件给予，那么不允许输出此标签。如果NPC明确无条件同意或现在执行了把【你家族当前可转移的城市和城堡】中的某座城市或城堡转给玩家家族，就输出这个；目标只能填写本轮清单中的编号、名称或ID。"
                 }
             ],
             "TriggerKeywords": [
@@ -611,7 +611,7 @@
             "PostprocessRules": [
                 {
                     "Tag": "[ACTION:LET_PLAYER_GO]",
-                    "Description": "如果NPC在<latest_reply>里明确同意让玩家立刻离开当前遭遇，就输出这个；没有明确放行就不要输出"
+                    "Description": "如果NPC在<latest_reply>里明确同意或现在执行了让玩家立刻离开当前遭遇，就输出这个；没有明确放行就不要输出"
                 }
             ],
             "TriggerKeywords": [
@@ -635,7 +635,7 @@
             "PostprocessRules": [
                 {
                     "Tag": "[A:H_J_P_P]",
-                    "Description": "如果NPC在<latest_reply>里明确同意由当前说话者本人立即加入玩家队伍，就输出这个。这个标签只代表当前说话者本人入队、成为同伴或随玩家上路；不代表其家族加入玩家王国，不代表成为玩家封臣，也不代表作为领主效力，也不代表大地图上的独立部队合并命令。若<latest_reply>表达的是“我的家族加入你的王国/成为你的封臣/作为领主效力/归附你的王国”，禁止输出这个。若玩家要求的是“把你的部队并入我的部队/和我的部队合并/率领部队前来与我会合/把你的人都带来会合/并入玩家主队”等独立部队合并或大地图会合命令，禁止输出[A:H_J_P_P]；这类请求只应由大地图指令规则的WORLDMAP_ORDER:MERGE_TO_PLAYER处理。若<latest_reply>只是模糊同意“效力于你/加入你/来你麾下”，没有明确当前说话者本人立即加入玩家队伍，禁止输出。若当前说话者已经在玩家队伍中，禁止输出。该标签只指当前说话者：普通非Hero会升格为Hero同伴；酒馆雇佣池NPC会让同类型雇佣兵整组作为普通士兵加入，不创建Hero。"
+                    "Description": "如果NPC在<latest_reply>里明确同意或现在执行了由当前说话者本人立即加入玩家队伍，就输出这个。这个标签只代表当前说话者本人入队、成为同伴或随玩家上路；不代表其家族加入玩家王国，不代表成为玩家封臣，也不代表作为领主效力，也不代表大地图上的独立部队合并命令。若<latest_reply>表达的是“我的家族加入你的王国/成为你的封臣/作为领主效力/归附你的王国”，禁止输出这个。若玩家要求的是“把你的部队并入我的部队/和我的部队合并/率领部队前来与我会合/把你的人都带来会合/并入玩家主队”等独立部队合并或大地图会合命令，禁止输出[A:H_J_P_P]；这类请求只应由大地图指令规则的WORLDMAP_ORDER:MERGE_TO_PLAYER处理。若<latest_reply>只是模糊同意“效力于你/加入你/来你麾下”，没有明确当前说话者本人立即加入玩家队伍，禁止输出。若当前说话者已经在玩家队伍中，禁止输出。该标签只指当前说话者：普通非Hero会升格为Hero同伴；酒馆雇佣池NPC会让同类型雇佣兵整组作为普通士兵加入，不创建Hero。"
                 }
             ],
             "TriggerKeywords": [
@@ -676,7 +676,7 @@
             "PostprocessRules": [
                 {
                     "Tag": "[ACTION:VOTE_DEAL:议程编号:选项编号:权重:备注]",
-                    "Description": "当你最终明确同意玩家投票交易时，必须使用此精确格式。议程编号和选项编号见后处理清单（如A1:O2=投A1议程的O2选项）。权重可选SLIGHTLY_FAVOR（稍微支持）、STRONGLY_FAVOR（强烈支持）、FULLY_PUSH（全力推动）。备注=中文简要描述承诺。只有在玩家已实际交付承诺的报酬（如有）且最终明确成交时才输出，还在谈条件或拒绝时禁止输出。禁止使用SUPPORT/OPPOSE旧格式。 如果你不是家族族长，禁止输出此标签。如果你所属氏族是某议程的提案氏族，禁止就该议程输出此标签。"
+                    "Description": "当你最终明确同意或现在执行了玩家投票交易时，必须使用此精确格式。议程编号和选项编号见后处理清单（如A1:O2=投A1议程的O2选项）。权重可选SLIGHTLY_FAVOR（稍微支持）、STRONGLY_FAVOR（强烈支持）、FULLY_PUSH（全力推动）。备注=中文简要描述承诺。只有在玩家已实际交付承诺的报酬（如有）且最终明确成交时才输出，还在谈条件或拒绝时禁止输出。禁止使用SUPPORT/OPPOSE旧格式。 如果你不是家族族长，禁止输出此标签。如果你所属氏族是某议程的提案氏族，禁止就该议程输出此标签。"
                 }
             ],
             "RuntimeInstructionTemplates": {
@@ -722,15 +722,15 @@
             "TopicLabel": "Move and attack",
             "Code": "Commands and Requests",
             "NonHeroInstruction": "你不是有名有姓、可在大地图上独立行动的英雄或领主，不能接受玩家的大地图行军、巡逻、跟随、攻击、组队或部队合并命令。若玩家提出此类要求，请自然说明你没有独立部队或权限。",
-            "Instruction": "【大地图指令规则】玩家可能要求你执行任何命令或者请求，你可以根据你和玩家的关系，选择接受与否，或者向玩家索要利益来换取你的行动，如果玩家是你的上司那么你最好听话\n当玩家要求你独立或组建一支新的部队时，你无需向玩家索要兵员和物资，因为玩家后续一定会提供给你，你只需思考是否要接受,不要有任何讨价还价",
+            "Instruction": "【大地图指令规则】玩家可能要求你执行任何命令或者请求，你可以根据你和玩家的关系，选择接受与否，或者向玩家索要利益来换取你的行动，如果玩家是你的上司那么你最好听话",
             "PostprocessRules": [
                 {
                     "Tag": "[ACTION:WORLDMAP_ORDER:GO_TO_SETTLEMENT:settlement:{id}:{days}]",
-                    "Description": "仅当NPC在正文中明确同意前往或守备某个定居点时输出。{id}必须来自后处理上下文提供的定居点候选原版ID，禁止根据名称猜ID。{days}为到达后停留天数；玩家未指定时填3。"
+                    "Description": "仅当NPC在正文中明确同意或现在执行了前往或守备某个定居点时输出。{id}必须来自后处理上下文提供的定居点候选原版ID，禁止根据名称猜ID。{days}为到达后停留天数；玩家未指定时填3。"
                 },
                 {
                     "Tag": "[ACTION:WORLDMAP_ORDER:PATROL_SETTLEMENT:settlement:{id}:{days}]",
-                    "Description": "仅当NPC明确同意前往某个定居点附近巡逻时输出。{id}必须来自后处理上下文的定居点候选原版ID，禁止猜ID。{days}为抵达附近后巡逻天数；未指定填3。"
+                    "Description": "仅当NPC明确同意同意或现在执行了某个定居点附近巡逻h或附近时输出。{id}必须来自后处理上下文的定居点候选原版ID，禁止猜ID。{days}为抵达附近后巡逻天数；未指定填3。"
                 },
                 {
                     "Tag": "[ACTION:WORLDMAP_ORDER:FOLLOW:{hero|party}:{id}:{days}]",
@@ -742,7 +742,7 @@
                 },
                 {
                     "Tag": "[ACTION:WORLDMAP_ORDER:MERGE_TO_PLAYER:{days}]",
-                    "Description": "仅当NPC明确同意把自己的独立同伴部队并入玩家主队时输出。{days}为向玩家靠近的期限或到位后处理等待天数；未指定填1。"
+                    "Description": "仅当NPC明确同意或现在执行了把自己的独立同伴部队并入玩家主队时输出。{days}为向玩家靠近的期限或到位后处理等待天数；未指定填1。"
                 },
                 {
                     "Tag": "[ACTION:WORLDMAP_ORDER:CREATE_COMPANION_PARTY]",
@@ -750,7 +750,7 @@
                 },
                 {
                     "Tag": "[ACTION:WORLDMAP_ORDER:STOP]",
-                    "Description": "仅当NPC明确同意停止当前大地图命令并回归原版AI时输出。玩家说“你可以自由行动了”“不用继续待在那里”“不用再巡逻/跟随/追击了”“取消之前的命令”“回到你自己的安排”等，且NPC正文表示收到、遵命、会自由行动或恢复自行安排，也属于明确同意停止当前大地图命令。STOP会清空该NPC当前命令队列，不应与其他大地图命令同时输出。"
+                    "Description": "仅当NPC明确同意或现在执行了停止当前大地图命令并回归原版AI时输出。玩家说“你可以自由行动了”“不用继续待在那里”“不用再巡逻/跟随/追击了”“取消之前的命令”“回到你自己的安排”等，且NPC正文表示收到、遵命、会自由行动或恢复自行安排，也属于明确同意停止当前大地图命令。STOP会清空该NPC当前命令队列，不应与其他大地图命令同时输出。"
                 }
             ],
             "TriggerKeywords": [

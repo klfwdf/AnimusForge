@@ -6,6 +6,7 @@ using Helpers;
 using Newtonsoft.Json;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Actions;
+using TaleWorlds.CampaignSystem.Map;
 using TaleWorlds.CampaignSystem.MapEvents;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Roster;
@@ -888,6 +889,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			}
 			LockPartyAi(party);
 			SetPartyAiAction.GetActionForVisitingSettlement(party, settlement, MobileParty.NavigationType.Default, isFromPort: false, isTargetingPort: false);
+			SynchronizeArmyObjectiveForCommand(party, command);
 			state.Stage = CommandStage.Traveling.ToString();
 			state.LastIssuedActionKey = "visit:" + settlement.StringId;
 			DisplayCommandMessage(GetHeroName(hero) + "开始前往" + GetSettlementName(settlement) + "，抵达后停留" + Math.Max(1, command.Days) + "天。", CommandMessageTone.Progress);
@@ -904,6 +906,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			}
 			LockPartyAi(party);
 			SetPartyAiAction.GetActionForPatrollingAroundSettlement(party, settlement, MobileParty.NavigationType.Default, isFromPort: false, isTargetingPort: false);
+			SynchronizeArmyObjectiveForCommand(party, command);
 			state.Stage = CommandStage.Traveling.ToString();
 			state.LastIssuedActionKey = "patrol:" + settlement.StringId;
 			DisplayCommandMessage(GetHeroName(hero) + "开始前往" + GetSettlementName(settlement) + "附近，抵达后巡逻" + Math.Max(1, command.Days) + "天。", CommandMessageTone.Progress);
@@ -919,6 +922,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 				return;
 			}
 			LockPartyAi(party);
+			SynchronizeArmyObjectiveForCommand(party, command);
 			SetPartyAiAction.GetActionForEscortingParty(party, targetParty, MobileParty.NavigationType.Default, isFromPort: false, isTargetingPort: false);
 			state.Stage = CommandStage.Traveling.ToString();
 			state.LastIssuedActionKey = "escort:" + command.TargetId;
@@ -935,6 +939,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 				return;
 			}
 			LockPartyAi(party);
+			SynchronizeArmyObjectiveForCommand(party, command);
 			SetPartyAiAction.GetActionForEscortingParty(party, targetParty, MobileParty.NavigationType.Default, isFromPort: false, isTargetingPort: false);
 			state.Stage = CommandStage.Traveling.ToString();
 			state.LastIssuedActionKey = "escort_party:" + command.TargetId;
@@ -952,10 +957,19 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 					AdvanceCommand(hero, party, state, "attack_settlement_invalid");
 					return;
 				}
+				state.TimeoutDay = state.CommandStartDay + Math.Max(1, command.Days);
+				string settlementAttackMode = NormalizeAttackMode(command.Mode);
+				if (CanStartSettlementAttackWithVanillaAi(party, settlement, settlementAttackMode))
+				{
+					SynchronizeArmyObjectiveForCommand(party, command);
+					CommitSettlementAttack(hero, party, settlement, state, settlementAttackMode);
+					Log("start settlement_attack_vanilla hero=" + hero.StringId + " settlement=" + settlement.StringId + " mode=" + settlementAttackMode + " untilDay=" + state.TimeoutDay.ToString("0.00"));
+					return;
+				}
 				LockPartyAi(party);
+				SynchronizeArmyObjectiveForCommand(party, command);
 				MoveTowardSettlementAttackPoint(party, settlement);
 				state.Stage = CommandStage.Tracking.ToString();
-				state.TimeoutDay = state.CommandStartDay + Math.Max(1, command.Days);
 				state.LastIssuedActionKey = "track_settlement_attack:" + settlement.StringId;
 				DisplayCommandMessage(GetHeroName(hero) + "开始向" + GetSettlementName(settlement) + "机动，准备" + (settlement.IsVillage ? "烧掠" : "围攻") + "，时限" + Math.Max(1, command.Days) + "天（" + NormalizeAttackMode(command.Mode) + "）。", CommandMessageTone.Progress);
 				Log("start settlement_attack_track hero=" + hero.StringId + " settlement=" + settlement.StringId + " mode=" + command.Mode + " untilDay=" + state.TimeoutDay.ToString("0.00"));
@@ -989,6 +1003,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 				return;
 			}
 			LockPartyAi(party);
+			SynchronizeArmyObjectiveForCommand(party, command);
 			SetPartyAiAction.GetActionForGoingAroundParty(party, targetParty, MobileParty.NavigationType.Default, isFromPort: false);
 			state.Stage = CommandStage.Tracking.ToString();
 			state.TimeoutDay = state.CommandStartDay + Math.Max(1, command.Days);
@@ -1006,6 +1021,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 				return;
 			}
 			LockPartyAi(party);
+			SynchronizeArmyObjectiveForCommand(party, command);
 			SetPartyAiAction.GetActionForGoingAroundParty(party, targetParty, MobileParty.NavigationType.Default, isFromPort: false);
 			state.Stage = CommandStage.Tracking.ToString();
 			state.TimeoutDay = state.CommandStartDay + Math.Max(1, command.Days);
@@ -1017,6 +1033,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		if (IsKind(command, CommandKind.MergeToPlayer))
 		{
 			LockPartyAi(party);
+			SynchronizeArmyObjectiveForCommand(party, command);
 			SetPartyAiAction.GetActionForEscortingParty(party, MobileParty.MainParty, MobileParty.NavigationType.Default, isFromPort: false, isTargetingPort: false);
 			state.Stage = CommandStage.Traveling.ToString();
 			state.LastIssuedActionKey = "merge_to_player";
@@ -1269,6 +1286,12 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			MaintainCommittedSettlementAttack(hero, party, settlement, state, command);
 			return;
 		}
+		if (CanStartSettlementAttackWithVanillaAi(party, settlement, mode))
+		{
+			SynchronizeArmyObjectiveForCommand(party, command);
+			CommitSettlementAttack(hero, party, settlement, state, mode);
+			return;
+		}
 		if (!IsPartyNearPosition(party, GetSettlementAttackPosition(settlement), EngageCommitDistance))
 		{
 			MaintainSettlementAttackTracking(hero, party, settlement, state, command, "closing_distance");
@@ -1299,6 +1322,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
+		SynchronizeArmyObjectiveForCommand(party, command);
 		string actionKey = "track_settlement_attack:" + settlement.StringId;
 		bool shouldRefresh = !string.Equals(state.LastIssuedActionKey, actionKey, StringComparison.OrdinalIgnoreCase) || party.DefaultBehavior != AiBehavior.GoToPoint || !IsAiDecisionLockActive(party);
 		if (!shouldRefresh)
@@ -1327,7 +1351,8 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		}
 		if (IsPartyCommittedToSettlementAttack(party, settlement))
 		{
-			LockPartyAi(party);
+			SynchronizeArmyObjectiveForCommand(party, command);
+			ReleasePartyAi(party);
 			return;
 		}
 		if (!CanForceCommitSettlementAttack(party, settlement))
@@ -1348,7 +1373,6 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			Log("declare_war_on_settlement_attack_commit attacker=" + SafeFactionId(attackerFaction) + " defender=" + SafeFactionId(defenderFaction) + " settlement=" + settlement.StringId + " mode=" + mode);
 		}
 		LeaveTargetSettlementIfInside(party, settlement);
-		LockPartyAi(party);
 		BeginResultTracking(state, settlement.IsVillage ? "raid" : "siege", "settlement", settlement.StringId, GetSettlementName(settlement), attackerFaction, defenderFaction);
 		if (settlement.IsVillage)
 		{
@@ -1364,6 +1388,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			LogFact(actorHero, GetHeroName(actorHero) + "已经开始围攻" + GetSettlementName(settlement) + "，结果尚未分出。");
 			Log("settlement_attack_commit_siege hero=" + actorHero.StringId + " settlement=" + settlement.StringId + " mode=" + mode);
 		}
+		ReleasePartyAi(party);
 		state.EngageCommitted = true;
 		state.Stage = CommandStage.Engaging.ToString();
 	}
@@ -1383,6 +1408,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
+		SynchronizeArmyObjectiveForCommand(party, command);
 		string actionKey = "track_attack:" + command.TargetId;
 		bool shouldRefresh = !string.Equals(state.LastIssuedActionKey, actionKey, StringComparison.OrdinalIgnoreCase) || !IsPartyTrackingTarget(party, targetParty) || !IsAiDecisionLockActive(party);
 		if (!shouldRefresh)
@@ -1430,6 +1456,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
+		SynchronizeArmyObjectiveForCommand(party, command);
 		string actionKey = "track_party_attack:" + command.TargetId;
 		bool shouldRefresh = !string.Equals(state.LastIssuedActionKey, actionKey, StringComparison.OrdinalIgnoreCase) || !IsPartyTrackingTarget(party, targetParty) || !IsAiDecisionLockActive(party);
 		if (!shouldRefresh)
@@ -1653,6 +1680,15 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		return attackerStrength >= Math.Max(1f, defenderStrength * AiAttackStrengthRatio);
 	}
 
+	private bool CanStartSettlementAttackWithVanillaAi(MobileParty party, Settlement settlement, string mode)
+	{
+		if (!IsPartyAtWarWithSettlement(party, settlement))
+		{
+			return false;
+		}
+		return IsForceAttackMode(mode) ? CanForceCommitSettlementAttack(party, settlement) : CanAiCommitSettlementAttack(party, settlement);
+	}
+
 	private static bool CanForceCommitSettlementAttack(MobileParty party, Settlement settlement)
 	{
 		if (!IsPartyUsable(party) || !IsSupportedAttackSettlement(settlement))
@@ -1678,6 +1714,20 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			return false;
 		}
 		return true;
+	}
+
+	private static bool IsPartyAtWarWithSettlement(MobileParty party, Settlement settlement)
+	{
+		try
+		{
+			IFaction attackerFaction = party?.MapFaction;
+			IFaction defenderFaction = settlement?.MapFaction;
+			return attackerFaction != null && defenderFaction != null && attackerFaction != defenderFaction && FactionManager.IsAtWarAgainstFaction(attackerFaction, defenderFaction);
+		}
+		catch
+		{
+			return false;
+		}
 	}
 
 	private bool TryPreparePlayerClanRebellionForHeroAttack(Hero actorHero, MobileParty party, Hero targetHero, MobileParty targetParty, bool apply, out string reason)
@@ -3139,6 +3189,62 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		catch (Exception ex)
 		{
 			Log("leave army failed: " + ex.Message);
+		}
+	}
+
+	private static void SynchronizeArmyObjectiveForCommand(MobileParty party, PartyCommandEntry command)
+	{
+		try
+		{
+			if (party?.Army == null || party.Army.LeaderParty != party || command == null)
+			{
+				return;
+			}
+			Army army = party.Army;
+			IMapPoint oldObject = army.AiBehaviorObject;
+			Army.ArmyTypes oldType = army.ArmyType;
+			if (IsKind(command, CommandKind.GoToSettlement) || IsKind(command, CommandKind.PatrolSettlement))
+			{
+				Settlement settlement = ResolveSettlementById(command.TargetId);
+				if (settlement != null)
+				{
+					army.ArmyType = Army.ArmyTypes.Defender;
+					army.AiBehaviorObject = settlement;
+				}
+			}
+			else if (IsKind(command, CommandKind.AttackHero) && IsSettlementTarget(command))
+			{
+				Settlement settlement = ResolveSettlementById(command.TargetId);
+				if (settlement != null)
+				{
+					army.ArmyType = settlement.IsVillage ? Army.ArmyTypes.Raider : Army.ArmyTypes.Besieger;
+					army.AiBehaviorObject = settlement;
+				}
+			}
+			else
+			{
+				army.AiBehaviorObject = null;
+			}
+			if (oldType != army.ArmyType || oldObject != army.AiBehaviorObject)
+			{
+				Log("army_object_sync leader=" + (party.StringId ?? "") + " type=" + army.ArmyType + " target=" + DescribeMapPointForLog(army.AiBehaviorObject));
+			}
+		}
+		catch (Exception ex)
+		{
+			Log("army objective sync failed party=" + (party?.StringId ?? "") + " error=" + ex.Message);
+		}
+	}
+
+	private static string DescribeMapPointForLog(IMapPoint mapPoint)
+	{
+		try
+		{
+			return mapPoint?.Name?.ToString() ?? "null";
+		}
+		catch
+		{
+			return "null";
 		}
 	}
 

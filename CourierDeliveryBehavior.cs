@@ -1082,12 +1082,12 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			}
 			Log("llm main start session=" + session.Id + " recipient=" + SafeHeroId(recipient));
 			string extraFact = BuildDeliveryFactText(session, delivered: true);
-			List<string> preprocessRuleHits = MyBehavior.RunCourierRulePreprocessForExternal(recipient, session.LetterText, extraFact, recipient.CharacterObject, targetAgentIndex: -1, excludedRuleIds: CourierExcludedRuleIds);
 			MyBehavior.ShoutPromptContext ctx = MyBehavior.BuildShoutPromptContextForExternal(recipient, session.LetterText, extraFact, recipient.Culture?.StringId ?? "neutral", hasAnyHero: true, targetCharacter: recipient.CharacterObject, targetAgentIndex: -1, excludedRuleIds: CourierExcludedRuleIds);
-			List<string> selectedRuleHits = MergeCourierSelectedRuleIds(preprocessRuleHits, ctx?.PreprocessRuleIds);
+			List<string> selectedRuleHits = MergeCourierSelectedRuleIds(ctx?.PreprocessRuleIds);
 			selectedRuleHits = ExcludeCourierSelectedRuleIds(selectedRuleHits, CourierExcludedRuleIds);
 			string extras = FilterCourierInjectedRuleBlocks(ctx?.Extras ?? "", selectedRuleHits, CourierExcludedRuleIds);
-			List<object> messages = BuildCourierReplyMessages(recipient, session, extras, extraFact);
+			string historyText = MyBehavior.BuildHistoryContextForExternal(recipient, 24, session.LetterText, extraFact);
+			List<object> messages = BuildCourierReplyMessages(recipient, session, extras, extraFact, historyText);
 			ShoutNetwork.RecordPrimaryRequestBodyForTokenStats(messages, MainReplyMaxTokens, "courier_reply_preflight");
 			string output = await ShoutNetwork.CallApiWithMessages(messages, MainReplyMaxTokens);
 			if (IsTerminalStage(session))
@@ -1123,7 +1123,6 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			bool voteDealInjected = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "vote_deal");
 			bool worldMapPartyCommandInjected = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "worldmap_party_command");
 			bool kingdomServiceInjected = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "kingdom_service");
-			string historyText = MyBehavior.BuildHistoryContextForExternal(recipient, 20, session.LetterText, extraFact);
 			string postprocessed = ShoutBehavior.RunCourierActionPostprocessForExternal(recipient, recipient.CharacterObject, recipient.Name?.ToString() ?? "NPC", session.LetterText, historyText, reply, duelInjected, rewardInjected, loanInjected, kingdomServiceInjected, lordsHallInjected, meetingReleaseInjected, vanillaIssueInjected, heroJoinPartyInjected, sceneMechanismInjected, partyTransferInjected, settlementTransferInjected, voteDealInjected, worldMapPartyCommandInjected, selectedRuleHits, ctx?.EntityPostprocessContext);
 			string replyPostprocessed = string.IsNullOrWhiteSpace(postprocessed) ? reply : postprocessed;
 			session.ReplyText = reply;
@@ -2048,7 +2047,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		return false;
 	}
 
-	private static List<object> BuildCourierReplyMessages(Hero recipient, CourierSession session, string extras, string deliveryFactForPrompt = null)
+	private static List<object> BuildCourierReplyMessages(Hero recipient, CourierSession session, string extras, string deliveryFactForPrompt = null, string prebuiltHistory = null)
 	{
 		string npcName = recipient?.Name?.ToString() ?? "NPC";
 		string playerName = MyBehavior.BuildPlayerPublicDisplayNameForExternal();
@@ -2057,16 +2056,23 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			playerName = Hero.MainHero?.Name?.ToString() ?? "玩家";
 		}
 		string deliveryFact = string.IsNullOrWhiteSpace(deliveryFactForPrompt) ? (session?.DeliveryFactText ?? "") : deliveryFactForPrompt;
-		string history = MyBehavior.BuildHistoryContextForExternal(recipient, 24, session.LetterText, deliveryFact);
+		string history = prebuiltHistory ?? MyBehavior.BuildHistoryContextForExternal(recipient, 24, session.LetterText, deliveryFact);
 		string recentFacts = MyBehavior.BuildRecentNpcFactContextForExternal(recipient, 6);
+		string senderIdentity = MyBehavior.BuildPlayerCourierSenderIdentityForExternal();
 		string system = "你正在扮演 Mount & Blade II: Bannerlord 世界中的角色：" + npcName + "。\n"
 			+ "这不是面对面对话。你刚刚通过信使收到" + playerName + "写给你的一封信。\n"
+			+ "你必须根据来信者的公开身份选择合适称呼；如果来信者是君主或统治者，不要降格称为勋爵、领主或普通贵族。\n"
 			+ "请只输出你要写在回信中的正文，不要写旁白、动作描写、系统说明或标签解释。\n"
 			+ "如果你认为没有必要回信，可以完全空回复。\n"
 			+ "如果你在回信中明确同意给玩家物品、部队、俘虏或定居点，仍然按已注入的后处理规则在正文语义中表达，标签由后处理阶段生成。";
 		StringBuilder user = new StringBuilder();
 		user.AppendLine("【信件内容】");
 		user.AppendLine(session.LetterText ?? "");
+		if (!string.IsNullOrWhiteSpace(senderIdentity))
+		{
+			user.AppendLine();
+			user.AppendLine(senderIdentity.Trim());
+		}
 		if (!string.IsNullOrWhiteSpace(deliveryFact))
 		{
 			user.AppendLine();

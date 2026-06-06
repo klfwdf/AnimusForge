@@ -2883,12 +2883,19 @@ public class MyBehavior : CampaignBehaviorBase
 			for (int i = 1; i <= Math.Max(1, maxAttempts); i++)
 			{
 				ApiCallResult apiCallResult = await CallUniversalApiDetailed(BuildMemorySummarySystemPrompt(draft), BuildMemorySummaryUserPrompt(hero, draft), logToEventLogs: false, eventLogSource: "CompressedMemory", route: UniversalApiRoute.Auxiliary, streamResponse: false, forceThinkingDisabled: true);
-				if (apiCallResult.Success && TryParseMemorySummaryResponse(apiCallResult.Content, hero, draft, out var block, out var error))
+				if (apiCallResult.Success)
 				{
-					result.Block = block;
-					return result;
+					if (TryParseMemorySummaryResponse(apiCallResult.Content, hero, draft, out var block, out var error))
+					{
+						result.Block = block;
+						return result;
+					}
+					result.Error = BuildSummaryJsonParseFailureMessage("总结 JSON 解析失败", error, apiCallResult.Content);
 				}
-				result.Error = apiCallResult.Success ? "总结 JSON 解析失败：" + (apiCallResult.Content ?? "") : (apiCallResult.ErrorMessage ?? "API请求失败");
+				else
+				{
+					result.Error = apiCallResult.ErrorMessage ?? "API请求失败";
+				}
 				if (i < maxAttempts)
 				{
 					await Task.Delay(apiCallResult.RetryAfterSeconds.HasValue ? Math.Max(1000, apiCallResult.RetryAfterSeconds.Value * 1000) : 1500);
@@ -2941,12 +2948,19 @@ public class MyBehavior : CampaignBehaviorBase
 			for (int i = 1; i <= Math.Max(1, maxAttempts); i++)
 			{
 				ApiCallResult apiCallResult = await CallUniversalApiDetailed(BuildMajorActionSummarySystemPrompt(targetChars), BuildMajorActionSummaryUserPrompt(hero, existingState, sourceActions, targetChars), logToEventLogs: false, eventLogSource: "NpcMajorSummary", route: UniversalApiRoute.Auxiliary, streamResponse: false, forceThinkingDisabled: true);
-				if (apiCallResult.Success && TryParseMajorActionSummaryResponse(apiCallResult.Content, hero, job, allActions, out var state, out var error))
+				if (apiCallResult.Success)
 				{
-					result.State = state;
-					return result;
+					if (TryParseMajorActionSummaryResponse(apiCallResult.Content, hero, job, allActions, out var state, out var error))
+					{
+						result.State = state;
+						return result;
+					}
+					result.Error = BuildSummaryJsonParseFailureMessage("重大履历总结 JSON 解析失败", error, apiCallResult.Content);
 				}
-				result.Error = apiCallResult.Success ? "重大履历总结 JSON 解析失败：" + (apiCallResult.Content ?? "") : (apiCallResult.ErrorMessage ?? "API请求失败");
+				else
+				{
+					result.Error = apiCallResult.ErrorMessage ?? "API请求失败";
+				}
 				if (i < maxAttempts)
 				{
 					await Task.Delay(apiCallResult.RetryAfterSeconds.HasValue ? Math.Max(1000, apiCallResult.RetryAfterSeconds.Value * 1000) : 1500);
@@ -3012,8 +3026,11 @@ public class MyBehavior : CampaignBehaviorBase
 		error = "";
 		try
 		{
-			JObject jObject = JObject.Parse(StripJsonCodeFence(content));
-			string summary = (jObject["summary_content"]?.ToString() ?? jObject["summary"]?.ToString() ?? jObject["content"]?.ToString() ?? "").Trim();
+			if (!TryParseBestSummaryJsonObject(content, new string[4] { "summary_content", "summaryContent", "summary", "content" }, null, out var jObject, out error))
+			{
+				return false;
+			}
+			string summary = GetJsonStringIgnoreCase(jObject, "summary_content", "summaryContent", "summary", "content").Trim();
 			if (string.IsNullOrWhiteSpace(summary))
 			{
 				error = "summary_content 为空。";
@@ -3172,9 +3189,12 @@ public class MyBehavior : CampaignBehaviorBase
 		error = "";
 		try
 		{
-			JObject jObject = JObject.Parse(StripJsonCodeFence(content));
-			string title = StripMemoryTitleDateTime(jObject["rich_title"]?.ToString() ?? jObject["title"]?.ToString() ?? "");
-			string summary = (jObject["summary_content"]?.ToString() ?? jObject["content"]?.ToString() ?? "").Trim();
+			if (!TryParseBestSummaryJsonObject(content, new string[3] { "rich_title", "richTitle", "title" }, new string[4] { "summary_content", "summaryContent", "summary", "content" }, out var jObject, out error))
+			{
+				return false;
+			}
+			string title = StripMemoryTitleDateTime(GetJsonStringIgnoreCase(jObject, "rich_title", "richTitle", "title"));
+			string summary = GetJsonStringIgnoreCase(jObject, "summary_content", "summaryContent", "summary", "content").Trim();
 			if (string.IsNullOrWhiteSpace(title) || string.IsNullOrWhiteSpace(summary))
 			{
 				error = "rich_title 或 summary_content 为空。";
@@ -10325,6 +10345,82 @@ public class MyBehavior : CampaignBehaviorBase
 		return stringBuilder.ToString().Trim();
 	}
 
+	private static string BuildPromotedNonHeroCompanionFactsForPersonaGeneration(Hero hero, string personalName, string originalFullName, string originalTroopName, string originalTroopId, string cultureName, string sceneLabel, string joinEventFact, string equipmentSummary)
+	{
+		StringBuilder stringBuilder = new StringBuilder();
+		string name = string.IsNullOrWhiteSpace(personalName) ? (hero?.Name?.ToString() ?? "新同伴") : personalName.Trim();
+		string fullName = string.IsNullOrWhiteSpace(originalFullName) ? name : originalFullName.Trim();
+		string troopName = string.IsNullOrWhiteSpace(originalTroopName) ? "非英雄NPC" : originalTroopName.Trim();
+		string troopId = (originalTroopId ?? "").Trim();
+		string culture = string.IsNullOrWhiteSpace(cultureName) ? "未知文化" : cultureName.Trim();
+		string scene = string.IsNullOrWhiteSpace(sceneLabel) ? "当前场景" : sceneLabel.Trim();
+		string joinFact = string.IsNullOrWhiteSpace(joinEventFact) ? (name + "同意追随玩家并加入玩家队伍。") : joinEventFact.Trim();
+		string equipment = string.IsNullOrWhiteSpace(equipmentSummary) ? "（无装备）" : equipmentSummary.Trim();
+		stringBuilder.AppendLine("升格来源: 该角色原本是非 Hero NPC/士兵，现在因为当前加入事件才被创建为玩家同伴 Hero。");
+		stringBuilder.AppendLine("出身约束: 不要把升格后加入玩家队伍、玩家家族或玩家阵营理解为其原生家族、贵族血统、出生背景或旧效忠对象；若没有对话事实支持，背景不得写成其本来就出身于玩家家族/玩家势力。");
+		stringBuilder.AppendLine("个人名: " + name);
+		stringBuilder.AppendLine("原完整称呼: " + fullName);
+		stringBuilder.AppendLine("原兵种/职业: " + troopName + (string.IsNullOrWhiteSpace(troopId) ? "" : (" (StringId=" + troopId + ")")));
+		stringBuilder.AppendLine("原文化: " + culture);
+		stringBuilder.AppendLine("升格场景: " + scene);
+		stringBuilder.AppendLine("加入事件: " + joinFact);
+		stringBuilder.AppendLine("装备: " + equipment);
+		try
+		{
+			if (hero != null)
+			{
+				stringBuilder.AppendLine($"年龄: {hero.Age:F0}");
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (hero != null)
+			{
+				stringBuilder.AppendLine("性别: " + (hero.IsFemale ? "女" : "男"));
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (hero != null)
+			{
+				stringBuilder.AppendLine($"特质: Mercy={hero.GetTraitLevel(DefaultTraits.Mercy)}, Valor={hero.GetTraitLevel(DefaultTraits.Valor)}, Honor={hero.GetTraitLevel(DefaultTraits.Honor)}, Generosity={hero.GetTraitLevel(DefaultTraits.Generosity)}, Calculating={hero.GetTraitLevel(DefaultTraits.Calculating)}");
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (hero != null)
+			{
+				var list = (from x in (from sk in Skills.All
+						select new
+						{
+							Skill = sk,
+							Value = hero.GetSkillValue(sk)
+						} into x
+						orderby x.Value descending, x.Skill.StringId
+						select x).Take(8)
+					where x.Value > 0
+					select x).ToList();
+				if (list.Count > 0)
+				{
+					stringBuilder.AppendLine("技能(最高8项): " + string.Join(", ", list.Select(x => $"{x.Skill.StringId}={x.Value}")));
+				}
+			}
+		}
+		catch
+		{
+		}
+		return stringBuilder.ToString().Trim();
+	}
+
 	private static string GetClanTierReputationLabel(int tier)
 	{
 		int num = Math.Max(0, tier);
@@ -12418,8 +12514,8 @@ public class MyBehavior : CampaignBehaviorBase
 			userSb.AppendLine("文化: " + culture);
 			userSb.AppendLine("当前场景: " + scene);
 			userSb.AppendLine("加入事件: " + joinFact);
-			userSb.AppendLine("升格后人物与家族事实（必须综合人物百科背景、家族背景、所在家族百科背景、王国百科背景、家族族长背景；不要复制成百科原文）:");
-			userSb.AppendLine(BuildHeroFactsForPersonaGeneration(hero));
+			userSb.AppendLine("升格后人物事实（只使用原非 Hero NPC/士兵事实、加入事件和对话历史；不要加入升格后 Hero 的家族或势力信息）:");
+			userSb.AppendLine(BuildPromotedNonHeroCompanionFactsForPersonaGeneration(hero, name, fullName, troopName, troopId, culture, scene, joinFact, equipment));
 			userSb.AppendLine("加入前该 NPC 与玩家的全部可用对话历史:");
 			userSb.AppendLine(history);
 			ApiCallResult apiCallResult = await CallUniversalApiDetailed(sys, userSb.ToString().Trim(), route: UniversalApiRoute.Auxiliary);
@@ -16083,6 +16179,86 @@ public class MyBehavior : CampaignBehaviorBase
 		return BuildHeroIdentityTitleForPrompt(hero);
 	}
 
+	public static string BuildPlayerCourierSenderIdentityForExternal()
+	{
+		try
+		{
+			Hero playerHero = Hero.MainHero;
+			if (playerHero == null)
+			{
+				return "";
+			}
+			string playerDisplayName = (BuildPlayerPublicDisplayNameForPrompt() ?? "").Trim();
+			if (string.IsNullOrWhiteSpace(playerDisplayName))
+			{
+				playerDisplayName = (playerHero.Name?.ToString() ?? "").Trim();
+			}
+			if (string.IsNullOrWhiteSpace(playerDisplayName))
+			{
+				playerDisplayName = "玩家";
+			}
+			int clanTier = 0;
+			string clanName = "无家族";
+			string clanRole = playerHero.IsFemale ? "女性成员" : "男性成员";
+			try
+			{
+				clanTier = playerHero.Clan?.Tier ?? 0;
+				string rawClanName = (playerHero.Clan?.Name?.ToString() ?? "").Trim();
+				if (!string.IsNullOrWhiteSpace(rawClanName))
+				{
+					clanName = rawClanName;
+				}
+				if (!string.IsNullOrWhiteSpace(clanName) && clanName != "无家族" && !clanName.EndsWith("家族", StringComparison.Ordinal))
+				{
+					clanName += "家族";
+				}
+				if (playerHero.Clan?.Leader == playerHero)
+				{
+					clanRole = "族长";
+				}
+			}
+			catch
+			{
+			}
+			GetHeroFactionAndLiegeForPrompt(playerHero, out var factionName, out var liegeName);
+			string identityTitle = BuildHeroIdentityTitleForPrompt(playerHero);
+			string cultureText = GetHeroCultureNameForPrompt(playerHero);
+			if (!string.IsNullOrWhiteSpace(cultureText) && !cultureText.EndsWith("人", StringComparison.Ordinal))
+			{
+				cultureText += "人";
+			}
+			string ageText = BuildAgeBracketLabel(playerHero.Age);
+			StringBuilder stringBuilder = new StringBuilder();
+			stringBuilder.AppendLine("【来信者公开身份】");
+			stringBuilder.AppendLine("来信者公开称呼：" + playerDisplayName);
+			stringBuilder.AppendLine(BuildFactionLineForPrompt("来信者势力：", factionName, liegeName));
+			stringBuilder.AppendLine("来信者身份：" + identityTitle);
+			stringBuilder.AppendLine("来信者家族：" + clanName + $"（{Math.Max(0, clanTier)} level，{clanRole}）");
+			stringBuilder.AppendLine("来信者文化与年纪：" + cultureText + "，" + ageText);
+			try
+			{
+				Kingdom kingdom = playerHero.Clan?.Kingdom;
+				IFaction mapFaction = playerHero.MapFaction;
+				string kingdomName = (kingdom?.Name?.ToString() ?? mapFaction?.Name?.ToString() ?? factionName ?? "").Trim();
+				bool isFactionLeader = playerHero.IsFactionLeader || (kingdom != null && kingdom.Leader == playerHero) || (mapFaction != null && mapFaction.Leader == playerHero);
+				if (isFactionLeader)
+				{
+					string sovereignTitle = playerHero.IsFemale ? "女王/统治者" : "国王/统治者";
+					string scope = string.IsNullOrWhiteSpace(kingdomName) ? "" : (kingdomName + "的");
+					stringBuilder.AppendLine("称呼要求：来信者是" + scope + sovereignTitle + "，正式回信应称其为“" + playerDisplayName + "陛下”或使用君主/统治者级称呼；不要把此人降格称为“勋爵”“领主”或普通贵族。");
+				}
+			}
+			catch
+			{
+			}
+			return stringBuilder.ToString().Trim();
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
 	public static string BuildNpcMajorActionsRuntimeInstructionForExternal(Hero hero)
 	{
 		try
@@ -16375,7 +16551,7 @@ public class MyBehavior : CampaignBehaviorBase
 		float score = 0f;
 		if (!suppressDynamicRuleAndLore && !IsPromptRuleExcluded(excludedRuleIdSet, "duel"))
 		{
-			flag = AIConfigHandler.IsGuardrailSemanticHit(input, npcLastUtterance, "duel", AIConfigHandler.DuelInstruction, duelTriggerKeywords, out matchedKeyword, out score);
+			flag = AIConfigHandler.IsGuardrailSemanticHit(input, npcLastUtterance, "duel", AIConfigHandler.DuelInstruction, duelTriggerKeywords, out matchedKeyword, out score, excludedRuleIdSet);
 		}
 		bool liveDuelSemanticHit = flag;
 		bool flag2 = targetHero != null && flag;
@@ -16385,7 +16561,7 @@ public class MyBehavior : CampaignBehaviorBase
 		float score2 = 0f;
 		if (!suppressDynamicRuleAndLore && AIConfigHandler.RewardEnabled && !IsPromptRuleExcluded(excludedRuleIdSet, "reward"))
 		{
-			flag3 = AIConfigHandler.IsGuardrailSemanticHit(input, npcLastUtterance, "reward", AIConfigHandler.RewardInstruction, rewardTriggerKeywords, out matchedKeyword2, out score2);
+			flag3 = AIConfigHandler.IsGuardrailSemanticHit(input, npcLastUtterance, "reward", AIConfigHandler.RewardInstruction, rewardTriggerKeywords, out matchedKeyword2, out score2, excludedRuleIdSet);
 		}
 		bool liveRewardSemanticHit = flag3;
 		List<string> loanTriggerKeywords = AIConfigHandler.LoanTriggerKeywords;
@@ -16394,7 +16570,7 @@ public class MyBehavior : CampaignBehaviorBase
 		float score3 = 0f;
 		if (!suppressDynamicRuleAndLore && AIConfigHandler.LoanEnabled && !IsPromptRuleExcluded(excludedRuleIdSet, "loan"))
 		{
-			flag4 = AIConfigHandler.IsGuardrailSemanticHit(input, npcLastUtterance, "loan", AIConfigHandler.LoanInstruction, loanTriggerKeywords, out matchedKeyword3, out score3);
+			flag4 = AIConfigHandler.IsGuardrailSemanticHit(input, npcLastUtterance, "loan", AIConfigHandler.LoanInstruction, loanTriggerKeywords, out matchedKeyword3, out score3, excludedRuleIdSet);
 		}
 		bool liveLoanSemanticHit = flag4;
 		List<string> surroundingsTriggerKeywords = AIConfigHandler.SurroundingsTriggerKeywords;
@@ -16403,28 +16579,28 @@ public class MyBehavior : CampaignBehaviorBase
 		float score4 = 0f;
 		if (!suppressDynamicRuleAndLore && AIConfigHandler.SurroundingsEnabled && !IsPromptRuleExcluded(excludedRuleIdSet, "surroundings"))
 		{
-			flag5 = AIConfigHandler.IsGuardrailSemanticHit(input, npcLastUtterance, "surroundings", AIConfigHandler.SurroundingsInstruction, surroundingsTriggerKeywords, out matchedKeyword4, out score4);
+			flag5 = AIConfigHandler.IsGuardrailSemanticHit(input, npcLastUtterance, "surroundings", AIConfigHandler.SurroundingsInstruction, surroundingsTriggerKeywords, out matchedKeyword4, out score4, excludedRuleIdSet);
 		}
 		string guardrailRuleInstruction = AIConfigHandler.GetGuardrailRuleInstruction("kingdom_service");
 		List<string> guardrailRuleKeywords = AIConfigHandler.GetGuardrailRuleKeywords("kingdom_service");
 		string matchedKeyword5 = "";
 		float score5 = 0f;
-		bool flag6 = !suppressDynamicRuleAndLore && !IsPromptRuleExcluded(excludedRuleIdSet, "kingdom_service") && AIConfigHandler.IsGuardrailSemanticHit(input, npcLastUtterance, "kingdom_service", guardrailRuleInstruction, guardrailRuleKeywords, out matchedKeyword5, out score5);
+		bool flag6 = !suppressDynamicRuleAndLore && !IsPromptRuleExcluded(excludedRuleIdSet, "kingdom_service") && AIConfigHandler.IsGuardrailSemanticHit(input, npcLastUtterance, "kingdom_service", guardrailRuleInstruction, guardrailRuleKeywords, out matchedKeyword5, out score5, excludedRuleIdSet);
 		string guardrailMarriageInstruction = AIConfigHandler.GetGuardrailRuleInstruction("marriage");
 		List<string> guardrailMarriageKeywords = AIConfigHandler.GetGuardrailRuleKeywords("marriage");
 		string matchedKeyword6 = "";
 		float score6 = 0f;
-		bool marriageHit = !suppressDynamicRuleAndLore && !IsPromptRuleExcluded(excludedRuleIdSet, "marriage") && AIConfigHandler.IsGuardrailSemanticHit(input, npcLastUtterance, "marriage", guardrailMarriageInstruction, guardrailMarriageKeywords, out matchedKeyword6, out score6);
+		bool marriageHit = !suppressDynamicRuleAndLore && !IsPromptRuleExcluded(excludedRuleIdSet, "marriage") && AIConfigHandler.IsGuardrailSemanticHit(input, npcLastUtterance, "marriage", guardrailMarriageInstruction, guardrailMarriageKeywords, out matchedKeyword6, out score6, excludedRuleIdSet);
 		string guardrailPartyTransferInstruction = AIConfigHandler.GetGuardrailRuleInstruction("party_transfer");
 		List<string> guardrailPartyTransferKeywords = AIConfigHandler.GetGuardrailRuleKeywords("party_transfer");
 		string matchedKeyword7 = "";
 		float score7 = 0f;
-		bool partyTransferHit = !suppressDynamicRuleAndLore && !IsPromptRuleExcluded(excludedRuleIdSet, "party_transfer") && AIConfigHandler.IsGuardrailSemanticHit(input, npcLastUtterance, "party_transfer", guardrailPartyTransferInstruction, guardrailPartyTransferKeywords, out matchedKeyword7, out score7);
+		bool partyTransferHit = !suppressDynamicRuleAndLore && !IsPromptRuleExcluded(excludedRuleIdSet, "party_transfer") && AIConfigHandler.IsGuardrailSemanticHit(input, npcLastUtterance, "party_transfer", guardrailPartyTransferInstruction, guardrailPartyTransferKeywords, out matchedKeyword7, out score7, excludedRuleIdSet);
 		string guardrailWorldMapInstruction = AIConfigHandler.GetGuardrailRuleInstruction("worldmap_party_command");
 		List<string> guardrailWorldMapKeywords = AIConfigHandler.GetGuardrailRuleKeywords("worldmap_party_command");
 		string matchedKeyword8 = "";
 		float score8 = 0f;
-		bool worldMapPartyCommandHit = !suppressDynamicRuleAndLore && !IsPromptRuleExcluded(excludedRuleIdSet, "worldmap_party_command") && AIConfigHandler.IsGuardrailSemanticHit(input, npcLastUtterance, "worldmap_party_command", guardrailWorldMapInstruction, guardrailWorldMapKeywords, out matchedKeyword8, out score8);
+		bool worldMapPartyCommandHit = !suppressDynamicRuleAndLore && !IsPromptRuleExcluded(excludedRuleIdSet, "worldmap_party_command") && AIConfigHandler.IsGuardrailSemanticHit(input, npcLastUtterance, "worldmap_party_command", guardrailWorldMapInstruction, guardrailWorldMapKeywords, out matchedKeyword8, out score8, excludedRuleIdSet);
 		if (!suppressDynamicRuleAndLore && TryConsumeRuleStickyCarry(targetHero, targetCharacter, input, out var carryDuel, out var carryReward, out var carryLoan))
 		{
 			if (!flag && carryDuel && !IsPromptRuleExcluded(excludedRuleIdSet, "duel"))
@@ -17583,13 +17759,289 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private static string StripJsonCodeFence(string content)
 	{
-		string text = (content ?? "").Trim();
+		string text = StripJsonResponseEnvelope(content);
+		string jsonPayload = ExtractFirstJsonPayload(text);
+		return string.IsNullOrWhiteSpace(jsonPayload) ? text : jsonPayload;
+	}
+
+	private static string StripJsonResponseEnvelope(string content)
+	{
+		string text = (content ?? "").Trim('\uFEFF', '\u200B', '\u200C', '\u200D', ' ', '\t', '\r', '\n');
 		if (text.StartsWith("```", StringComparison.Ordinal))
 		{
-			text = Regex.Replace(text, "^```(?:json)?\\s*", "", RegexOptions.IgnoreCase).Trim();
-			text = Regex.Replace(text, "\\s*```$", "", RegexOptions.CultureInvariant).Trim();
+			int firstLineEnd = text.IndexOf('\n');
+			if (firstLineEnd >= 0)
+			{
+				text = text.Substring(firstLineEnd + 1).Trim();
+			}
+			int lastFence = text.LastIndexOf("```", StringComparison.Ordinal);
+			if (lastFence >= 0)
+			{
+				text = text.Substring(0, lastFence).Trim();
+			}
 		}
+		text = Regex.Replace(text, "^(?:json)\\s*(?=[\\r\\n{\\[])", "", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant).Trim();
 		return text;
+	}
+
+	private static string ExtractFirstJsonPayload(string text)
+	{
+		List<string> payloads = ExtractJsonObjectPayloads(text);
+		if (payloads.Count > 0)
+		{
+			return payloads[0];
+		}
+		text = (text ?? "").Trim();
+		if (text.StartsWith("[", StringComparison.Ordinal))
+		{
+			return ExtractBalancedJsonPayload(text, 0, '[', ']');
+		}
+		return "";
+	}
+
+	private static List<string> ExtractJsonObjectPayloads(string text)
+	{
+		List<string> list = new List<string>();
+		text = (text ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return list;
+		}
+		bool inString = false;
+		bool escaped = false;
+		int depth = 0;
+		int start = -1;
+		for (int i = 0; i < text.Length; i++)
+		{
+			char ch = text[i];
+			if (depth == 0)
+			{
+				if (ch == '{')
+				{
+					start = i;
+					depth = 1;
+					inString = false;
+					escaped = false;
+				}
+				continue;
+			}
+			if (inString)
+			{
+				if (escaped)
+				{
+					escaped = false;
+				}
+				else if (ch == '\\')
+				{
+					escaped = true;
+				}
+				else if (ch == '"')
+				{
+					inString = false;
+				}
+				continue;
+			}
+			if (ch == '"')
+			{
+				inString = true;
+				continue;
+			}
+			if (ch == '{')
+			{
+				depth++;
+				continue;
+			}
+			if (ch == '}')
+			{
+				depth--;
+				if (depth == 0)
+				{
+					if (start >= 0)
+					{
+						list.Add(text.Substring(start, i - start + 1).Trim());
+					}
+					start = -1;
+				}
+				if (depth < 0)
+				{
+					depth = 0;
+					start = -1;
+				}
+			}
+		}
+		return list;
+	}
+
+	private static string ExtractBalancedJsonPayload(string text, int start, char open, char close)
+	{
+		text = text ?? "";
+		if (start < 0 || start >= text.Length || text[start] != open)
+		{
+			return "";
+		}
+		bool inString = false;
+		bool escaped = false;
+		int depth = 0;
+		for (int i = start; i < text.Length; i++)
+		{
+			char ch = text[i];
+			if (inString)
+			{
+				if (escaped)
+				{
+					escaped = false;
+				}
+				else if (ch == '\\')
+				{
+					escaped = true;
+				}
+				else if (ch == '"')
+				{
+					inString = false;
+				}
+				continue;
+			}
+			if (ch == '"')
+			{
+				inString = true;
+				continue;
+			}
+			if (ch == open)
+			{
+				depth++;
+				continue;
+			}
+			if (ch == close)
+			{
+				depth--;
+				if (depth == 0)
+				{
+					return text.Substring(start, i - start + 1).Trim();
+				}
+				if (depth < 0)
+				{
+					return "";
+				}
+			}
+		}
+		return "";
+	}
+
+	private static bool TryParseBestSummaryJsonObject(string content, string[] requiredPrimaryKeys, string[] requiredSecondaryKeys, out JObject obj, out string error)
+	{
+		obj = null;
+		error = "";
+		string text = StripJsonResponseEnvelope(content);
+		List<string> candidates = ExtractJsonObjectPayloads(text);
+		if (candidates.Count == 0 && !string.IsNullOrWhiteSpace(text))
+		{
+			candidates.Add(text);
+		}
+		Exception lastParseException = null;
+		int parseFailureCount = 0;
+		int validObjectCount = 0;
+		foreach (string candidate in candidates)
+		{
+			if (string.IsNullOrWhiteSpace(candidate))
+			{
+				continue;
+			}
+			try
+			{
+				JObject parsed = JObject.Parse(candidate);
+				validObjectCount++;
+				if (HasAnyNonWhiteSpaceJsonProperty(parsed, requiredPrimaryKeys) && HasAnyNonWhiteSpaceJsonProperty(parsed, requiredSecondaryKeys))
+				{
+					obj = parsed;
+					return true;
+				}
+			}
+			catch (Exception ex)
+			{
+				lastParseException = ex;
+				parseFailureCount++;
+			}
+		}
+		if (validObjectCount > 0)
+		{
+			error = "未找到包含必需字段的 JSON 对象：" + BuildRequiredJsonFieldDescription(requiredPrimaryKeys, requiredSecondaryKeys) + "。";
+			return false;
+		}
+		if (parseFailureCount > 0)
+		{
+			error = lastParseException?.Message ?? "JSON 解析失败。";
+			return false;
+		}
+		error = "找不到 JSON 对象。";
+		return false;
+	}
+
+	private static string BuildRequiredJsonFieldDescription(string[] primaryKeys, string[] secondaryKeys)
+	{
+		string text = BuildRequiredJsonFieldGroupDescription(primaryKeys);
+		string text2 = BuildRequiredJsonFieldGroupDescription(secondaryKeys);
+		if (string.IsNullOrWhiteSpace(text2))
+		{
+			return text;
+		}
+		return text + " + " + text2;
+	}
+
+	private static string BuildRequiredJsonFieldGroupDescription(string[] keys)
+	{
+		List<string> list = (keys ?? new string[0]).Where((string x) => !string.IsNullOrWhiteSpace(x)).Select((string x) => x.Trim()).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+		return list.Count == 0 ? "（无）" : string.Join("/", list);
+	}
+
+	private static bool HasAnyNonWhiteSpaceJsonProperty(JObject obj, string[] names)
+	{
+		if (names == null || names.Length == 0)
+		{
+			return true;
+		}
+		return !string.IsNullOrWhiteSpace(GetJsonStringIgnoreCase(obj, names));
+	}
+
+	private static string GetJsonStringIgnoreCase(JObject obj, params string[] names)
+	{
+		JToken token = GetJsonPropertyIgnoreCase(obj, names);
+		return token?.ToString() ?? "";
+	}
+
+	private static JToken GetJsonPropertyIgnoreCase(JObject obj, params string[] names)
+	{
+		if (obj == null || names == null)
+		{
+			return null;
+		}
+		foreach (string name in names)
+		{
+			if (string.IsNullOrWhiteSpace(name))
+			{
+				continue;
+			}
+			JProperty prop = obj.Properties().FirstOrDefault((JProperty x) => string.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase));
+			if (prop != null)
+			{
+				return prop.Value;
+			}
+		}
+		return null;
+	}
+
+	private static string BuildSummaryJsonParseFailureMessage(string prefix, string parseError, string content)
+	{
+		string detail = (parseError ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(detail))
+		{
+			detail = "未知解析错误。";
+		}
+		string sample = TrimUniversalApiRawForLog(content ?? "", 1200);
+		if (string.IsNullOrWhiteSpace(sample))
+		{
+			return prefix + "：" + detail;
+		}
+		return prefix + "：" + detail + "\n响应样本：\n" + sample;
 	}
 
 	private static string FormatMemoryHourRange(int startHour, int endHour)
@@ -17822,31 +18274,25 @@ public class MyBehavior : CampaignBehaviorBase
 		if (mode == 2)
 		{
 			string memoryError = "";
-			string ruleError = "";
 			bool memoryOk = false;
-			bool ruleOk = false;
 			Task memoryTask = Task.Run(delegate
 			{
 				memoryOk = AIConfigHandler.TryCallAuxiliarySimpleDialogue(messages, 800, 0f, out content, out memoryError);
 			});
-			Task ruleTask = Task.Run(delegate
-			{
-				ruleOk = AIConfigHandler.TryCallAuxiliaryRuleCodesForExternal(currentInput, secondaryInput, ResolveCurrentMemorySceneLabel(), AIConfigHandler.GuardrailRuleReturnCap, out var _, out ruleError);
-			});
 			try
 			{
-				Task.WaitAll(memoryTask, ruleTask);
+				memoryTask.Wait();
 			}
 			catch (Exception ex)
 			{
 				error = ex.Message;
-				ShowCompressedMemoryBlockingPopup("压缩记忆前处理失败", "并发前处理请求异常：" + error);
+				ShowCompressedMemoryBlockingPopup("压缩记忆前处理失败", "记忆前处理请求异常：" + error);
 				return false;
 			}
-			if (!memoryOk || !ruleOk)
+			if (!memoryOk)
 			{
-				error = "memory=" + (memoryOk ? "ok" : memoryError) + "; rule=" + (ruleOk ? "ok" : ruleError);
-				ShowCompressedMemoryBlockingPopup("压缩记忆前处理失败", "并发前处理没有全部成功：" + error + "\n\n请修复前处理 API 后重试。");
+				error = memoryError;
+				ShowCompressedMemoryBlockingPopup("压缩记忆前处理失败", "记忆前处理没有成功：" + error + "\n\n请修复前处理 API 后重试。");
 				return false;
 			}
 			AIConfigHandler.PublishAuxiliaryMentionedEntitiesForExternal(currentInput, secondaryInput, ResolveCurrentMemorySceneLabel(), content);
