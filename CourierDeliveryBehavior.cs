@@ -471,7 +471,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			new InquiryElement("show", "展示物品并写信", null, true, ""),
 			new InquiryElement("give_troops", "转移部队并写信", null, true, ""),
 			new InquiryElement("give_prisoners", "转移俘虏并写信", null, true, ""),
-			new InquiryElement("give_settlements", "转移定居点并写信", null, true, "")
+			new InquiryElement("give_settlements", "转移固定资产并写信", null, true, "")
 		};
 		MBInformationManager.ShowMultiSelectionInquiry(new MultiSelectionInquiryData(
 			"信使与邮递 - " + targetName,
@@ -545,7 +545,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		}
 		if (mode == CourierPayloadMode.GiveSettlements && !MyBehavior.IsSettlementTransferLeaderEligibleForExternal(flow.Recipient, flow.Recipient.CharacterObject))
 		{
-			InformationManager.DisplayMessage(new InformationMessage("只有家族族长才能谈领地转移。", Colors.Yellow));
+			InformationManager.DisplayMessage(new InformationMessage("当前收件人没有可接收或可谈的固定资产。", Colors.Yellow));
 			ResetPendingFlow("payload_settlement_ineligible");
 			return;
 		}
@@ -571,7 +571,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			}
 			else if (option.SettlementEntry != null)
 			{
-				hint = $"每日收益: {Math.Max(0, option.SettlementEntry.DailyIncomeDenars)} 第纳尔 | 一次结清指导价: {Math.Max(0, option.SettlementEntry.GuidePriceDenars)} 第纳尔";
+				hint = $"类型: {(string.IsNullOrWhiteSpace(option.SettlementEntry.TypeLabel) ? "固定资产" : option.SettlementEntry.TypeLabel)} | 每日收益: {Math.Max(0, option.SettlementEntry.DailyIncomeDenars)} 第纳尔 | 一次结清指导价: {Math.Max(0, option.SettlementEntry.GuidePriceDenars)} 第纳尔";
 			}
 			list.Add(new InquiryElement(i, option.Name + " (×" + Math.Max(1, option.AvailableAmount) + ")", null, true, hint));
 		}
@@ -1540,14 +1540,13 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			}
 			else if (string.Equals(entry.Kind, "settlement", StringComparison.OrdinalIgnoreCase))
 			{
-				Settlement settlement = Settlement.Find(entry.Id);
 				string status = null;
-				bool ok = RewardSystemBehavior.Instance != null && RewardSystemBehavior.Instance.TryApplyPlayerSettlementTransferForExternal(recipient, settlement, out status);
+				bool ok = RewardSystemBehavior.Instance != null && RewardSystemBehavior.Instance.TryApplyPlayerSettlementTransferForExternal(recipient, entry.Id, out status);
 				entry.Delivered = ok;
 				entry.Amount = ok ? 1 : 0;
 				if (!ok && !string.IsNullOrWhiteSpace(status))
 				{
-					Log("settlement transfer failed session=" + session.Id + " settlement=" + entry.Id + " status=" + status);
+					Log("fixed asset transfer failed session=" + session.Id + " asset=" + entry.Id + " status=" + status);
 				}
 			}
 		}
@@ -1596,7 +1595,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			string fact = "[AFEF玩家行为补充] " + (MyBehavior.BuildPlayerPublicDisplayNameForExternal() ?? "玩家") + "通过信使寄出的信使队在途中被" + destroyerName + "歼灭。";
 			if (!session.DeliveryApplied)
 			{
-				fact += "这封信和随信寄出的物品、金钱、部队或俘虏未能送达；定居点转移没有发生。";
+				fact += "这封信和随信寄出的物品、金钱、部队或俘虏未能送达；固定资产转移没有发生。";
 			}
 			else
 			{
@@ -2064,7 +2063,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			+ "你必须根据来信者的公开身份选择合适称呼；如果来信者是君主或统治者，不要降格称为勋爵、领主或普通贵族。\n"
 			+ "请只输出你要写在回信中的正文，不要写旁白、动作描写、系统说明或标签解释。\n"
 			+ "如果你认为没有必要回信，可以完全空回复。\n"
-			+ "如果你在回信中明确同意给玩家物品、部队、俘虏或定居点，仍然按已注入的后处理规则在正文语义中表达，标签由后处理阶段生成。";
+			+ "如果你在回信中明确同意给玩家物品、部队、俘虏或固定资产，仍然按已注入的后处理规则在正文语义中表达，标签由后处理阶段生成。";
 		StringBuilder user = new StringBuilder();
 		user.AppendLine("【信件内容】");
 		user.AppendLine(session.LetterText ?? "");
@@ -2157,7 +2156,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			}
 			else if (entry.Kind == "settlement")
 			{
-				sb.Append("\n[AFEF玩家行为补充] ").Append(playerName).Append(verb).Append("转移了定居点 ").Append(entry.Name).Append("。");
+				sb.Append("\n[AFEF玩家行为补充] ").Append(playerName).Append(verb).Append("转移了固定资产 ").Append(entry.Name).Append("。");
 			}
 		}
 		return sb.ToString().Trim();
@@ -2211,7 +2210,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			}
 			else if (entry.Kind == "settlement")
 			{
-				sb.Append("转移定居点 ").Append(entry.Name);
+				sb.Append("转移固定资产 ").Append(entry.Name);
 			}
 			sb.AppendLine();
 		}
@@ -2253,13 +2252,13 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		}
 		if (mode == CourierPayloadMode.GiveSettlements)
 		{
-			foreach (MyBehavior.SettlementTransferPromptEntry entry in MyBehavior.BuildSettlementTransferPromptEntriesForExternal(flow.Recipient, flow.Recipient.CharacterObject).Where(x => x != null && x.Section == MyBehavior.SettlementTransferEntrySection.PlayerFiefs && x.Settlement != null && x.Settlement.IsFortification))
+			foreach (MyBehavior.SettlementTransferPromptEntry entry in MyBehavior.BuildSettlementTransferPromptEntriesForExternal(flow.Recipient, flow.Recipient.CharacterObject).Where(x => x != null && x.Section == MyBehavior.SettlementTransferEntrySection.PlayerFiefs && MyBehavior.IsSettlementTransferEntryValidForExternal(x)))
 			{
 				list.Add(new CourierTradeOption
 				{
 					Kind = "settlement",
-					Id = entry.SettlementId,
-					Name = entry.DisplayName,
+					Id = MyBehavior.GetSettlementTransferAssetIdForExternal(entry),
+					Name = MyBehavior.GetSettlementTransferAssetDisplayNameForExternal(entry),
 					AvailableAmount = 1,
 					SettlementEntry = entry
 				});
@@ -2344,14 +2343,14 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		}
 		if (mode == CourierPayloadMode.GiveSettlements)
 		{
-			return "你当前没有可转移给对方的城市或城堡。";
+			return "你当前没有可转移给对方的固定资产。";
 		}
 		return "你没有可用的物品或第纳尔。";
 	}
 
 	private static string BuildPayloadTitle(CourierPayloadMode mode, string targetName)
 	{
-		string prefix = mode == CourierPayloadMode.Give ? "发送物品并写信" : mode == CourierPayloadMode.Show ? "展示物品并写信" : mode == CourierPayloadMode.GiveTroops ? "转移部队并写信" : mode == CourierPayloadMode.GivePrisoners ? "转移俘虏并写信" : "转移定居点并写信";
+		string prefix = mode == CourierPayloadMode.Give ? "发送物品并写信" : mode == CourierPayloadMode.Show ? "展示物品并写信" : mode == CourierPayloadMode.GiveTroops ? "转移部队并写信" : mode == CourierPayloadMode.GivePrisoners ? "转移俘虏并写信" : "转移固定资产并写信";
 		return prefix + " - " + targetName;
 	}
 
@@ -2367,7 +2366,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		}
 		if (mode == CourierPayloadMode.GiveSettlements)
 		{
-			return "当前收件人：" + targetName + "\n选择要随信转给对方家族的城市或城堡（可多选）：";
+			return "当前收件人：" + targetName + "\n选择要随信转给对方的固定资产（可多选）：";
 		}
 		return "当前收件人：" + targetName + "\n选择要" + (mode == CourierPayloadMode.Show ? "展示" : "发送") + "的物品或第纳尔（可多选）：";
 	}

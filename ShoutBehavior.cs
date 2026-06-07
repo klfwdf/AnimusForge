@@ -641,7 +641,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 			{
 				_parent.ArmShoutHotkeyFocusDebounce("focus_lost");
 				_parent.CancelShoutHotkeyCharge("focus_lost");
-				ShoutTextInputPopup.CancelActiveForSystemMenu();
+				ShoutTextInputPopup.HandleGameWindowFocusChanged(focusGained: false);
 				try
 				{
 					_parent.HandleEscapePressedForAudioSafety("FOCUS_LOST");
@@ -3032,10 +3032,10 @@ public class ShoutBehavior : CampaignBehaviorBase
 	{
 		if (npc == null)
 		{
-			return "- 名字: 未知 | 身份: 未知身份";
+			return "- 名字: 未知 | 性别: 未知 | 身份: 未知身份";
 		}
 		string text = npc.IsHero ? GetSceneNpcIdentityNameForPrompt(npc) : GetSceneNpcGivenNameForPrompt(npc);
-		string text2 = "- 名字: " + text + " | 身份: " + GetSceneNpcListIdentityForPrompt(npc);
+		string text2 = "- 名字: " + text + " | 性别: " + (npc.IsFemale ? "女" : "男") + " | 身份: " + GetSceneNpcListIdentityForPrompt(npc);
 		if (includeRelayId && npc.AgentIndex >= 0)
 		{
 			text2 = text2 + " | 接力编号: " + npc.AgentIndex;
@@ -4118,7 +4118,8 @@ public class ShoutBehavior : CampaignBehaviorBase
 			stringBuilder.AppendLine();
 			stringBuilder.Append(settlementRulerPresenceLine);
 		}
-		string playerIntroLine = BuildScenePlayerIntroForPrompt(hero, npc, includeTradePricing, partyTransferTopicSelected);
+		bool includePlayerPartyRoster = ShouldIncludePlayerPartyRosterForScenePrompt(partyTransferTopicSelected);
+		string playerIntroLine = BuildScenePlayerIntroForPrompt(hero, npc, includeTradePricing, includePlayerPartyRoster);
 		if (!string.IsNullOrWhiteSpace(playerIntroLine))
 		{
 			stringBuilder.AppendLine();
@@ -4196,6 +4197,51 @@ public class ShoutBehavior : CampaignBehaviorBase
 		{
 			return "";
 		}
+	}
+
+	private static bool ShouldIncludePlayerPartyRosterForScenePrompt(bool partyTransferTopicSelected)
+	{
+		if (partyTransferTopicSelected)
+		{
+			return true;
+		}
+		return !IsSettlementSceneForPlayerPartyRosterSuppression();
+	}
+
+	private static bool IsSettlementSceneForPlayerPartyRosterSuppression()
+	{
+		try
+		{
+			if (LordEncounterBehavior.IsEncounterMeetingMissionActive)
+			{
+				return false;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (Settlement.CurrentSettlement != null)
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			Settlement currentSettlement = MobileParty.MainParty?.CurrentSettlement;
+			if (currentSettlement != null && !currentSettlement.IsHideout)
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		return false;
 	}
 
 	private static string BuildPrisonerContextLineForPrompt(NpcDataPacket npc, Hero hero)
@@ -4981,6 +5027,11 @@ private static void SplitSceneNpcRoleIntroSections(string fullIntro, bool isHero
 		{
 			stringBuilder.Append(identitySentence);
 		}
+		string factionWarLine = BuildPlayerFactionWarLineForPrompt(observerHero, observerNpc);
+		if (!string.IsNullOrWhiteSpace(factionWarLine))
+		{
+			stringBuilder.Append(factionWarLine);
+		}
 		string crimeRatingLine = MyBehavior.BuildPlayerCrimeRatingPromptLineForExternal(ResolveNpcPerspectiveFactionForPlayerCrimePrompt(observerHero, observerNpc));
 		if (!string.IsNullOrWhiteSpace(crimeRatingLine))
 		{
@@ -5027,6 +5078,48 @@ private static void SplitSceneNpcRoleIntroSections(string fullIntro, bool isHero
 		catch
 		{
 			return null;
+		}
+	}
+
+	private static string BuildPlayerFactionWarLineForPrompt(Hero observerHero, NpcDataPacket observerNpc)
+	{
+		try
+		{
+			IFaction npcFaction = ResolveNpcPerspectiveFactionForPlayerCrimePrompt(observerHero, observerNpc);
+			Hero playerHero = Hero.MainHero;
+			IFaction playerFaction = playerHero?.Clan?.Kingdom ?? playerHero?.MapFaction ?? Clan.PlayerClan?.Kingdom ?? Clan.PlayerClan?.MapFaction;
+			if (npcFaction == null || playerFaction == null || !string.Equals(NormalizeFactionRelationLabelForPrompt(npcFaction, playerFaction), "敌对", StringComparison.Ordinal))
+			{
+				return "";
+			}
+			string npcFactionName = BuildFactionNameForPrompt(npcFaction);
+			string playerFactionName = BuildFactionNameForPrompt(playerFaction);
+			if (string.IsNullOrWhiteSpace(npcFactionName) || string.IsNullOrWhiteSpace(playerFactionName))
+			{
+				return "";
+			}
+			return "【当前外交状态】你所属阵营（" + npcFactionName + "）正在与面前此人所属阵营（" + playerFactionName + "）交战；政治立场上他属于敌对阵营，不要把这次会面说成双方没有冲突。";
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	private static string BuildFactionNameForPrompt(IFaction faction)
+	{
+		try
+		{
+			string text = (faction?.Name?.ToString() ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
+			if (!string.IsNullOrWhiteSpace(text))
+			{
+				return text;
+			}
+			return (faction?.StringId ?? "").Trim();
+		}
+		catch
+		{
+			return "";
 		}
 	}
 
@@ -9921,9 +10014,9 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			new InquiryElement("show", "向其展示物品并交流", null, isEnabled: true, ""),
 			new InquiryElement("give_troops", "给予部队并交流", null, isEnabled: true, ""),
 			new InquiryElement("give_prisoners", "给予俘虏并交流", null, isEnabled: true, ""),
-			new InquiryElement("give_settlements", "转移定居点并交流", null, isEnabled: true, "")
+			new InquiryElement("give_settlements", "转移固定资产并交流", null, isEnabled: true, "")
 		};
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData(text, "当前目标：" + text + "\n此菜单用于边交流边给予或展示物品，也可转移部队、俘虏、城市或城堡。\n请选择交流方式：", inquiryElements, isExitShown: true, 1, 1, "确定", "取消", delegate(List<InquiryElement> selected)
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(text, "当前目标：" + text + "\n此菜单用于边交流边给予或展示物品，也可转移部队、俘虏或固定资产。\n请选择交流方式：", inquiryElements, isExitShown: true, 1, 1, "确定", "取消", delegate(List<InquiryElement> selected)
 		{
 			if (selected == null || selected.Count == 0)
 			{
@@ -10133,7 +10226,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			}
 			if (!MyBehavior.IsSettlementTransferLeaderEligibleForExternal(hero2, characterObject2))
 			{
-				InformationManager.DisplayMessage(new InformationMessage("只有家族族长才能谈领地转移。"));
+				InformationManager.DisplayMessage(new InformationMessage("当前目标没有可转移的固定资产。"));
 				ResetShoutTradeState();
 				ResumeGame();
 				return;
@@ -10144,7 +10237,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		_shoutPendingTradeItemIndex = 0;
 		if (_shoutTradeOptions == null || _shoutTradeOptions.Count == 0)
 		{
-			string information = (mode == ShoutChatMode.GiveTroops) ? "你当前没有可转移给对方的部队。" : ((mode == ShoutChatMode.GivePrisoners) ? "你当前没有可转移给对方的俘虏。" : (IsShoutSettlementTransferMode(mode) ? "你当前没有可转移给对方的城市或城堡。" : "你没有可用的物品或第纳尔。"));
+			string information = (mode == ShoutChatMode.GiveTroops) ? "你当前没有可转移给对方的部队。" : ((mode == ShoutChatMode.GivePrisoners) ? "你当前没有可转移给对方的俘虏。" : (IsShoutSettlementTransferMode(mode) ? "你当前没有可转移给对方的固定资产。" : "你没有可用的物品或第纳尔。"));
 			InformationManager.DisplayMessage(new InformationMessage(information));
 			ResumeGame();
 			return;
@@ -10173,8 +10266,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			list.Add(new InquiryElement(i, text2, null, isEnabled: true, text3));
 		}
 		string text = targetNpc?.Name ?? "附近的人";
-		string titleText = ((mode == ShoutChatMode.Give) ? ("给予其物品并交流 - " + text) : ((mode == ShoutChatMode.Show) ? ("向其展示物品并交流 - " + text) : ((mode == ShoutChatMode.GiveTroops) ? ("给予部队并交流 - " + text) : ((mode == ShoutChatMode.GivePrisoners) ? ("给予俘虏并交流 - " + text) : ("转移定居点并交流 - " + text)))));
-		string descriptionText = (IsShoutPartyTransferMode(mode) ? ((mode == ShoutChatMode.GiveTroops) ? ("当前目标：" + text + "\n选择要转入对方麾下的部队（可多选）：") : ("当前目标：" + text + "\n选择要交给对方的俘虏（可多选）：")) : (IsShoutSettlementTransferMode(mode) ? ("当前目标：" + text + "\n选择要转给对方家族的城市或城堡（可多选）：") : ("当前目标：" + text + "\n选择要使用的物品或第纳尔（可多选）：")));
+		string titleText = ((mode == ShoutChatMode.Give) ? ("给予其物品并交流 - " + text) : ((mode == ShoutChatMode.Show) ? ("向其展示物品并交流 - " + text) : ((mode == ShoutChatMode.GiveTroops) ? ("给予部队并交流 - " + text) : ((mode == ShoutChatMode.GivePrisoners) ? ("给予俘虏并交流 - " + text) : ("转移固定资产并交流 - " + text)))));
+		string descriptionText = (IsShoutPartyTransferMode(mode) ? ((mode == ShoutChatMode.GiveTroops) ? ("当前目标：" + text + "\n选择要转入对方麾下的部队（可多选）：") : ("当前目标：" + text + "\n选择要交给对方的俘虏（可多选）：")) : (IsShoutSettlementTransferMode(mode) ? ("当前目标：" + text + "\n选择要转给对方的固定资产（可多选）：") : ("当前目标：" + text + "\n选择要使用的物品或第纳尔（可多选）：")));
 		MultiSelectionInquiryData data = new MultiSelectionInquiryData(titleText, descriptionText, list, isExitShown: true, 1, list.Count, "确定", "取消", OnShoutTradeResourcesSelected, delegate
 		{
 			ResetShoutTradeState();
@@ -10211,12 +10304,12 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 		if (IsShoutSettlementTransferMode(_shoutTradeMode))
 		{
-			List<MyBehavior.SettlementTransferPromptEntry> list3 = MyBehavior.BuildSettlementTransferPromptEntriesForExternal(hero, characterObject).Where((MyBehavior.SettlementTransferPromptEntry x) => x != null && x.Section == MyBehavior.SettlementTransferEntrySection.PlayerFiefs && x.Settlement != null && x.Settlement.IsFortification).ToList();
+			List<MyBehavior.SettlementTransferPromptEntry> list3 = MyBehavior.BuildSettlementTransferPromptEntriesForExternal(hero, characterObject).Where((MyBehavior.SettlementTransferPromptEntry x) => x != null && x.Section == MyBehavior.SettlementTransferEntrySection.PlayerFiefs && MyBehavior.IsSettlementTransferEntryValidForExternal(x)).ToList();
 			foreach (MyBehavior.SettlementTransferPromptEntry item in list3)
 			{
 				list.Add(new ShoutTradeResourceOption
 				{
-					Name = item.DisplayName,
+					Name = MyBehavior.GetSettlementTransferAssetDisplayNameForExternal(item),
 					AvailableAmount = 1,
 					SettlementEntry = item
 				});
@@ -10424,7 +10517,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				}
 				else if (shoutPendingTradeItem.SettlementEntry != null)
 				{
-					stringBuilder.AppendLine($"  · 转移 {(shoutPendingTradeItem.SettlementEntry.TypeLabel ?? "定居点")} {shoutPendingTradeItem.ItemName}");
+					stringBuilder.AppendLine($"  · 转移 {(shoutPendingTradeItem.SettlementEntry.TypeLabel ?? "固定资产")} {shoutPendingTradeItem.ItemName}");
 				}
 				else if (shoutPendingTradeItem.IsGold)
 				{
@@ -10436,7 +10529,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				}
 			}
 		}
-		string text2 = (IsShoutTroopTransferMode(_shoutTradeMode) ? ("你准备将以下部队转入对方麾下：\n" + stringBuilder.ToString()) : (IsShoutPrisonerTransferMode(_shoutTradeMode) ? ("你准备将以下俘虏交给对方：\n" + stringBuilder.ToString()) : (IsShoutSettlementTransferMode(_shoutTradeMode) ? ("你准备将以下城市或城堡转给对方家族：\n" + stringBuilder.ToString()) : ((IsShoutTradeGiveMode(_shoutTradeMode) ? "你准备给予对方以下物品：\n" : "你准备向对方展示以下物品：\n") + stringBuilder.ToString()))));
+		string text2 = (IsShoutTroopTransferMode(_shoutTradeMode) ? ("你准备将以下部队转入对方麾下：\n" + stringBuilder.ToString()) : (IsShoutPrisonerTransferMode(_shoutTradeMode) ? ("你准备将以下俘虏交给对方：\n" + stringBuilder.ToString()) : (IsShoutSettlementTransferMode(_shoutTradeMode) ? ("你准备将以下固定资产转给对方：\n" + stringBuilder.ToString()) : ((IsShoutTradeGiveMode(_shoutTradeMode) ? "你准备给予对方以下物品：\n" : "你准备向对方展示以下物品：\n") + stringBuilder.ToString()))));
 		string titleText = text;
 		PauseGame();
 		if (!ShoutTextInputPopup.Show(titleText, text2, "请输入你想说的话：", "", OnShoutTradeChatConfirmed, delegate
@@ -10519,10 +10612,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			if (shoutPendingTradeItem.SettlementEntry != null)
 			{
 				string statusText = "";
-				bool flag2 = RewardSystemBehavior.Instance != null && RewardSystemBehavior.Instance.TryApplyPlayerSettlementTransferForExternal(hero, shoutPendingTradeItem.SettlementEntry.Settlement, out statusText);
+				bool flag2 = RewardSystemBehavior.Instance != null && RewardSystemBehavior.Instance.TryApplyPlayerSettlementTransferForExternal(hero, shoutPendingTradeItem.SettlementEntry, out statusText);
 				if (flag2)
 				{
-					InformationManager.DisplayMessage(new InformationMessage("已将 " + shoutPendingTradeItem.ItemName + " 转交给 " + GetShoutTradeTargetDisplayName() + " 的家族。", new Color(0.4f, 1f, 0.4f)));
+					InformationManager.DisplayMessage(new InformationMessage("已将 " + shoutPendingTradeItem.ItemName + " 转交给 " + GetShoutTradeTargetDisplayName() + "。", new Color(0.4f, 1f, 0.4f)));
 				}
 				else if (!string.IsNullOrWhiteSpace(statusText))
 				{
@@ -11426,8 +11519,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				{
 					List<MyBehavior.PartyTransferPromptEntry> list = MyBehavior.BuildPartyTransferPromptEntriesForExternal(targetHero, targetCharacter, -1);
 					int recruitMaxTier = ResolvePartyTransferRecruitMaxTierForScene(targetHero, targetCharacter);
-					partyTransferTroopOptions = (recruitMaxTier > 0) ? list.Where((MyBehavior.PartyTransferPromptEntry x) => x != null && x.Section == MyBehavior.PartyTransferEntrySection.NpcTroops && Math.Max(0, x.Character?.Tier ?? 0) > 0 && Math.Max(0, x.Character?.Tier ?? 0) <= recruitMaxTier).ToList() : new List<MyBehavior.PartyTransferPromptEntry>();
-					partyTransferPrisonerOptions = list.Where((MyBehavior.PartyTransferPromptEntry x) => x != null && x.Section == MyBehavior.PartyTransferEntrySection.NpcPrisoners).ToList();
+					IEnumerable<MyBehavior.PartyTransferPromptEntry> troopOptions = (recruitMaxTier > 0) ? list.Where((MyBehavior.PartyTransferPromptEntry x) => x != null && x.Section == MyBehavior.PartyTransferEntrySection.NpcTroops && Math.Max(0, x.Character?.Tier ?? 0) > 0 && Math.Max(0, x.Character?.Tier ?? 0) <= recruitMaxTier) : Enumerable.Empty<MyBehavior.PartyTransferPromptEntry>();
+					IEnumerable<MyBehavior.PartyTransferPromptEntry> volunteerOptions = list.Where((MyBehavior.PartyTransferPromptEntry x) => x != null && x.Section == MyBehavior.PartyTransferEntrySection.NpcVolunteers);
+					partyTransferTroopOptions = BuildDisplayIndexedPartyTransferEntriesForScene(troopOptions.Concat(volunteerOptions));
+					partyTransferPrisonerOptions = BuildDisplayIndexedPartyTransferEntriesForScene(list.Where((MyBehavior.PartyTransferPromptEntry x) => x != null && x.Section == MyBehavior.PartyTransferEntrySection.NpcPrisoners));
 					runtimeContext = AppendPostprocessContextBlockForScene(runtimeContext, BuildPartyTransferNpcPostprocessListForScene(partyTransferTroopOptions, partyTransferPrisonerOptions, recruitMaxTier));
 				}
 				catch
@@ -11441,7 +11536,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				try
 				{
 					List<MyBehavior.SettlementTransferPromptEntry> list2 = MyBehavior.BuildSettlementTransferPromptEntriesForExternal(targetHero, targetCharacter);
-					settlementTransferNpcOptions = BuildDisplayIndexedSettlementTransferEntriesForScene(list2.Where((MyBehavior.SettlementTransferPromptEntry x) => x != null && x.Section == MyBehavior.SettlementTransferEntrySection.NpcFiefs));
+					settlementTransferNpcOptions = BuildDisplayIndexedSettlementTransferEntriesForScene(list2.Where((MyBehavior.SettlementTransferPromptEntry x) => x != null && x.Section == MyBehavior.SettlementTransferEntrySection.NpcFiefs && MyBehavior.IsSettlementTransferEntryValidForExternal(x)));
 					runtimeContext = AppendPostprocessContextBlockForScene(runtimeContext, BuildSettlementTransferPostprocessListForScene(settlementTransferNpcOptions, new List<MyBehavior.SettlementTransferPromptEntry>()));
 				}
 				catch
@@ -11456,7 +11551,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				marriageTargetCandidates = RomanceSystemBehavior.Instance.BuildMarriagePostprocessTargetCandidatesBlockForExternal(marriageSpeaker);
 				marriageFactHint = RomanceSystemBehavior.Instance.BuildMarriagePostprocessFactHintBlockForExternal(marriageSpeaker);
 			}
-			runtimeContext = AppendPostprocessContextBlockForScene(runtimeContext, entityPostprocessContext);
+			if (worldMapPartyCommandRuleInjected)
+			{
+				runtimeContext = AppendPostprocessContextBlockForScene(runtimeContext, entityPostprocessContext);
+			}
 			string systemPrompt = AIConfigHandler.BuildActionPostprocessSystemPrompt(tagRules, moodRules, displayName, sharedItemList, playerItemList, debtHint, marriagePlayerCandidates, marriageTargetCandidates, marriageFactHint);
 			string userPrompt = BuildSceneActionPostprocessUserPrompt(actionPostprocessUserPromptTemplate, tagRules, displayName, normalizedHistory, AIConfigHandler.BuildActionPostprocessLatestReplyBlock(playerText, text, displayName, normalizedHistory), sharedItemList, playerItemList, debtHint, marriagePlayerCandidates, marriageTargetCandidates, marriageFactHint, runtimeContext);
 			if (!AIConfigHandler.TryCallAuxiliaryActionPostprocess(systemPrompt, userPrompt, 5000, 0f, out var content, out var error))
@@ -12014,6 +12112,36 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		return Math.Max(0, entry?.Character?.Tier ?? 0);
 	}
 
+	private static List<MyBehavior.PartyTransferPromptEntry> BuildDisplayIndexedPartyTransferEntriesForScene(IEnumerable<MyBehavior.PartyTransferPromptEntry> entries)
+	{
+		List<MyBehavior.PartyTransferPromptEntry> list = new List<MyBehavior.PartyTransferPromptEntry>();
+		int num = 1;
+		foreach (MyBehavior.PartyTransferPromptEntry entry in entries ?? Enumerable.Empty<MyBehavior.PartyTransferPromptEntry>())
+		{
+			if (entry == null)
+			{
+				continue;
+			}
+			list.Add(new MyBehavior.PartyTransferPromptEntry
+			{
+				PromptIndex = num++,
+				Section = entry.Section,
+				Character = entry.Character,
+				DisplayName = entry.DisplayName,
+				Count = entry.Count,
+				WoundedCount = entry.WoundedCount,
+				WageDenarsPerDay = entry.WageDenarsPerDay,
+				HirePriceDenarsPerUnit = entry.HirePriceDenarsPerUnit,
+				BuyPriceDenarsPerUnit = entry.BuyPriceDenarsPerUnit,
+				IsHero = entry.IsHero,
+				OwnerParty = entry.OwnerParty,
+				VolunteerOwner = entry.VolunteerOwner,
+				VolunteerSlotIndices = entry.VolunteerSlotIndices == null ? null : new List<int>(entry.VolunteerSlotIndices)
+			});
+		}
+		return list;
+	}
+
 	private static string BuildCompactPartyTransferEntryTextForScene(MyBehavior.PartyTransferPromptEntry entry, bool isPrisoner)
 	{
 		if (entry == null)
@@ -12032,9 +12160,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 		if (isPrisoner && entry.IsHero)
 		{
-			return text + "x1";
+			return entry.PromptIndex + ". " + text + "x1";
 		}
-		return text + "x" + num;
+		string text2 = entry.Section == MyBehavior.PartyTransferEntrySection.NpcVolunteers ? "（原版要人募兵）" : "";
+		return entry.PromptIndex + ". " + text + "x" + num + text2;
 	}
 
 	private static void AppendCompactPartyTransferPostprocessSectionForScene(StringBuilder sb, string header, IEnumerable<MyBehavior.PartyTransferPromptEntry> entries, bool isPrisoner)
@@ -12096,7 +12225,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 	private static string BuildPartyTransferNpcPostprocessListForScene(List<MyBehavior.PartyTransferPromptEntry> troopOptions, List<MyBehavior.PartyTransferPromptEntry> prisonerOptions, int recruitMaxTier)
 	{
 		StringBuilder stringBuilder = new StringBuilder();
-		AppendCompactPartyTransferPostprocessSectionForScene(stringBuilder, "【你当前可转移部队】：", troopOptions, isPrisoner: false);
+		AppendCompactPartyTransferPostprocessSectionForScene(stringBuilder, "【你当前可转移或可招募部队】：", troopOptions, isPrisoner: false);
 		AppendCompactPartyTransferPostprocessSectionForScene(stringBuilder, "【你当前可转移俘虏】：", prisonerOptions, isPrisoner: true);
 		return stringBuilder.ToString().TrimEnd();
 	}
@@ -12107,7 +12236,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		int num = 1;
 		foreach (MyBehavior.SettlementTransferPromptEntry entry in entries ?? Enumerable.Empty<MyBehavior.SettlementTransferPromptEntry>())
 		{
-			if (entry == null || entry.Settlement == null)
+			if (!MyBehavior.IsSettlementTransferEntryValidForExternal(entry))
 			{
 				continue;
 			}
@@ -12115,8 +12244,13 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			{
 				PromptIndex = num++,
 				Section = entry.Section,
+				AssetKind = entry.AssetKind,
 				Settlement = entry.Settlement,
+				Workshop = entry.Workshop,
+				CaravanParty = entry.CaravanParty,
+				OwnerHero = entry.OwnerHero,
 				SettlementId = entry.SettlementId,
+				AssetId = entry.AssetId,
 				DisplayName = entry.DisplayName,
 				TypeLabel = entry.TypeLabel,
 				DailyIncomeDenars = entry.DailyIncomeDenars,
@@ -12134,7 +12268,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			return;
 		}
 		sb.AppendLine(header);
-		List<MyBehavior.SettlementTransferPromptEntry> list = (entries ?? Enumerable.Empty<MyBehavior.SettlementTransferPromptEntry>()).Where((MyBehavior.SettlementTransferPromptEntry x) => x != null && x.Settlement != null).ToList();
+		List<MyBehavior.SettlementTransferPromptEntry> list = (entries ?? Enumerable.Empty<MyBehavior.SettlementTransferPromptEntry>()).Where(MyBehavior.IsSettlementTransferEntryValidForExternal).ToList();
 		if (list.Count == 0)
 		{
 			sb.AppendLine("（无）");
@@ -12142,16 +12276,16 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 		foreach (MyBehavior.SettlementTransferPromptEntry item in list)
 		{
-			sb.AppendLine(item.PromptIndex + ". " + (item.DisplayName ?? "未知定居点") + " | ID " + (string.IsNullOrWhiteSpace(item.SettlementId) ? "未知" : item.SettlementId.Trim()) + " | 类型 " + (string.IsNullOrWhiteSpace(item.TypeLabel) ? (item.Settlement.IsTown ? "城市" : "城堡") : item.TypeLabel.Trim()) + " | 每日收益 " + Math.Max(0, item.DailyIncomeDenars) + " 第纳尔 | 一次结清指导价 " + Math.Max(0, item.GuidePriceDenars) + " 第纳尔");
+			sb.AppendLine(item.PromptIndex + ". " + MyBehavior.GetSettlementTransferAssetDisplayNameForExternal(item) + " | ID " + (string.IsNullOrWhiteSpace(MyBehavior.GetSettlementTransferAssetIdForExternal(item)) ? "未知" : MyBehavior.GetSettlementTransferAssetIdForExternal(item)) + " | 类型 " + (string.IsNullOrWhiteSpace(item.TypeLabel) ? "固定资产" : item.TypeLabel.Trim()) + " | 每日收益 " + Math.Max(0, item.DailyIncomeDenars) + " 第纳尔 | 一次结清指导价 " + Math.Max(0, item.GuidePriceDenars) + " 第纳尔");
 		}
 	}
 
 	private static string BuildSettlementTransferPostprocessListForScene(List<MyBehavior.SettlementTransferPromptEntry> npcOptions, List<MyBehavior.SettlementTransferPromptEntry> playerOptions)
 	{
 		StringBuilder stringBuilder = new StringBuilder();
-		AppendCompactSettlementTransferPostprocessSectionForScene(stringBuilder, "【你家族当前可转移的城市和城堡】：", npcOptions);
-		AppendCompactSettlementTransferPostprocessSectionForScene(stringBuilder, "【玩家家族当前可转移的城市和城堡（仅供手动交付参考）：】", playerOptions);
-		stringBuilder.AppendLine("玩家家族清单只用于理解玩家手动交付语境；后处理不得生成 TO_NPC 标签。");
+		AppendCompactSettlementTransferPostprocessSectionForScene(stringBuilder, "【你当前可转移固定资产】：", npcOptions);
+		AppendCompactSettlementTransferPostprocessSectionForScene(stringBuilder, "【玩家当前可手动交付固定资产（仅供手动交付参考）：】", playerOptions);
+		stringBuilder.AppendLine("玩家固定资产清单只用于理解玩家手动交付语境；后处理不得生成 TO_NPC 标签。");
 		return stringBuilder.ToString().TrimEnd();
 	}
 
@@ -12182,6 +12316,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			return settlementTransferPromptEntry;
 		}
+		settlementTransferPromptEntry = options?.FirstOrDefault((MyBehavior.SettlementTransferPromptEntry x) => x != null && string.Equals(MyBehavior.GetSettlementTransferAssetIdForExternal(x), text, StringComparison.OrdinalIgnoreCase));
+		if (settlementTransferPromptEntry != null)
+		{
+			return settlementTransferPromptEntry;
+		}
 		settlementTransferPromptEntry = options?.FirstOrDefault((MyBehavior.SettlementTransferPromptEntry x) => x != null && string.Equals((x.SettlementId ?? "").Trim(), text, StringComparison.OrdinalIgnoreCase));
 		if (settlementTransferPromptEntry != null)
 		{
@@ -12197,7 +12336,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			return list[0];
 		}
-		list = (options ?? new List<MyBehavior.SettlementTransferPromptEntry>()).Where((MyBehavior.SettlementTransferPromptEntry x) => x != null && !string.IsNullOrWhiteSpace(x.SettlementId) && x.SettlementId.IndexOf(text, StringComparison.OrdinalIgnoreCase) >= 0).ToList();
+		list = (options ?? new List<MyBehavior.SettlementTransferPromptEntry>()).Where((MyBehavior.SettlementTransferPromptEntry x) => x != null && !string.IsNullOrWhiteSpace(MyBehavior.GetSettlementTransferAssetIdForExternal(x)) && MyBehavior.GetSettlementTransferAssetIdForExternal(x).IndexOf(text, StringComparison.OrdinalIgnoreCase) >= 0).ToList();
 		if (list.Count == 1)
 		{
 			return list[0];
@@ -12314,7 +12453,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			string text4 = (match.Groups[2].Value ?? "").Trim();
 			List<MyBehavior.SettlementTransferPromptEntry> sourceOptions = string.Equals(text3, "TO_NPC", StringComparison.OrdinalIgnoreCase) ? playerOptions : npcOptions;
 			MyBehavior.SettlementTransferPromptEntry settlementTransferPromptEntry = FindSettlementTransferEntryByTokenForScene(sourceOptions, text4);
-			string text5 = (settlementTransferPromptEntry?.SettlementId ?? "").Trim();
+			string text5 = MyBehavior.GetSettlementTransferAssetIdForExternal(settlementTransferPromptEntry);
 			if (string.IsNullOrWhiteSpace(text5))
 			{
 				text5 = text4;
@@ -13145,8 +13284,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			{
 				List<MyBehavior.PartyTransferPromptEntry> list = MyBehavior.BuildPartyTransferPromptEntriesForExternal(targetHero, targetCharacter, targetAgentIndex);
 				int num2 = ResolvePartyTransferRecruitMaxTierForScene(targetHero, targetCharacter);
-				partyTransferTroopOptions = ((num2 > 0) ? list.Where((MyBehavior.PartyTransferPromptEntry x) => x != null && x.Section == MyBehavior.PartyTransferEntrySection.NpcTroops && Math.Max(0, x.Character?.Tier ?? 0) > 0 && Math.Max(0, x.Character?.Tier ?? 0) <= num2).ToList() : new List<MyBehavior.PartyTransferPromptEntry>());
-				partyTransferPrisonerOptions = list.Where((MyBehavior.PartyTransferPromptEntry x) => x != null && x.Section == MyBehavior.PartyTransferEntrySection.NpcPrisoners).ToList();
+				IEnumerable<MyBehavior.PartyTransferPromptEntry> troopOptions = (num2 > 0) ? list.Where((MyBehavior.PartyTransferPromptEntry x) => x != null && x.Section == MyBehavior.PartyTransferEntrySection.NpcTroops && Math.Max(0, x.Character?.Tier ?? 0) > 0 && Math.Max(0, x.Character?.Tier ?? 0) <= num2) : Enumerable.Empty<MyBehavior.PartyTransferPromptEntry>();
+				IEnumerable<MyBehavior.PartyTransferPromptEntry> volunteerOptions = list.Where((MyBehavior.PartyTransferPromptEntry x) => x != null && x.Section == MyBehavior.PartyTransferEntrySection.NpcVolunteers);
+				partyTransferTroopOptions = BuildDisplayIndexedPartyTransferEntriesForScene(troopOptions.Concat(volunteerOptions));
+				partyTransferPrisonerOptions = BuildDisplayIndexedPartyTransferEntriesForScene(list.Where((MyBehavior.PartyTransferPromptEntry x) => x != null && x.Section == MyBehavior.PartyTransferEntrySection.NpcPrisoners));
 				runtimeContext = AppendPostprocessContextBlockForScene(runtimeContext, BuildPartyTransferNpcPostprocessListForScene(partyTransferTroopOptions, partyTransferPrisonerOptions, num2));
 			}
 			catch
@@ -13160,8 +13301,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			try
 			{
 				List<MyBehavior.SettlementTransferPromptEntry> list2 = MyBehavior.BuildSettlementTransferPromptEntriesForExternal(targetHero, targetCharacter);
-				settlementTransferNpcOptions = BuildDisplayIndexedSettlementTransferEntriesForScene(list2.Where((MyBehavior.SettlementTransferPromptEntry x) => x != null && x.Section == MyBehavior.SettlementTransferEntrySection.NpcFiefs));
-				settlementTransferPlayerOptions = BuildDisplayIndexedSettlementTransferEntriesForScene(list2.Where((MyBehavior.SettlementTransferPromptEntry x) => x != null && x.Section == MyBehavior.SettlementTransferEntrySection.PlayerFiefs));
+				settlementTransferNpcOptions = BuildDisplayIndexedSettlementTransferEntriesForScene(list2.Where((MyBehavior.SettlementTransferPromptEntry x) => x != null && x.Section == MyBehavior.SettlementTransferEntrySection.NpcFiefs && MyBehavior.IsSettlementTransferEntryValidForExternal(x)));
+				settlementTransferPlayerOptions = BuildDisplayIndexedSettlementTransferEntriesForScene(list2.Where((MyBehavior.SettlementTransferPromptEntry x) => x != null && x.Section == MyBehavior.SettlementTransferEntrySection.PlayerFiefs && MyBehavior.IsSettlementTransferEntryValidForExternal(x)));
 				runtimeContext = AppendPostprocessContextBlockForScene(runtimeContext, BuildSettlementTransferPostprocessListForScene(settlementTransferNpcOptions, settlementTransferPlayerOptions));
 			}
 				catch
@@ -13185,7 +13326,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			marriageTargetCandidates = RomanceSystemBehavior.Instance.BuildMarriagePostprocessTargetCandidatesBlockForExternal(marriageSpeaker);
 			marriageFactHint = RomanceSystemBehavior.Instance.BuildMarriagePostprocessFactHintBlockForExternal(marriageSpeaker);
 		}
-		runtimeContext = AppendPostprocessContextBlockForScene(runtimeContext, entityPostprocessContext);
+		if (worldMapPartyCommandRuleInjected)
+		{
+			runtimeContext = AppendPostprocessContextBlockForScene(runtimeContext, entityPostprocessContext);
+		}
 		string text8 = AIConfigHandler.BuildActionPostprocessSystemPrompt(text3, text4, text20, text5, text6, text7, marriagePlayerCandidates, marriageTargetCandidates, marriageFactHint);
 		string text9 = BuildSceneActionPostprocessUserPrompt(actionPostprocessUserPromptTemplate, text3, text20, text2, AIConfigHandler.BuildActionPostprocessLatestReplyBlock(playerText, text, text20, text2), text5, text6, text7, marriagePlayerCandidates, marriageTargetCandidates, marriageFactHint, runtimeContext);
 		if (!AIConfigHandler.TryCallAuxiliaryActionPostprocess(text8, text9, 5000, 0f, out var content, out var error))

@@ -3549,7 +3549,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		{
 			return "你已警告过" + text + "。若还忍不了，就在句末输出[ACTION:MEETING_TAUNT_BATTLE]；这会把当前会面立刻升级为战斗，并按玩家攻击了你方军队来处理后果。";
 		}
-		return "若" + text + "辱骂，贬低或者挑衅你，可在句末输出[ACTION:MEETING_TAUNT_WARN]警告他；若忍无可忍，可直接输出[ACTION:MEETING_TAUNT_BATTLE]。这会把当前会面立刻升级为战斗，并按玩家攻击了你方军队来处理后果，注意，此标签和单挑无关，而是正式的全面战争";
+		return "若" + text + "辱骂，贬低或者挑衅你，可在句末输出[ACTION:MEETING_TAUNT_WARN]警告他；若忍无可忍，可直接输出[ACTION:MEETING_TAUNT_BATTLE],此标签会把当前会面立刻升级为战斗，并按玩家攻击了你方军队来处理后果，注意，此标签和单挑无关，而是正式的全面战争";
 	}
 
 	private static int GetRelationToPlayerSafe(Hero hero)

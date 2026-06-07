@@ -11,6 +11,7 @@ using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Roster;
 using TaleWorlds.Core;
 using TaleWorlds.Engine;
+using TaleWorlds.InputSystem;
 using TaleWorlds.Library;
 using TaleWorlds.Localization;
 using TaleWorlds.MountAndBlade;
@@ -83,6 +84,8 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior, IAgentStateDeci
 	private const float StartupLoadingFadeRetryTimeoutSeconds = 6f;
 
 	private const string FormalDuelIsolationLogSource = "MeetingDuelIsolation";
+
+	private const float MeetingChargeOrderSequenceWindowSeconds = 1.25f;
 
 	private static int _formalDuelIsolationSessionSequence;
 
@@ -187,6 +190,10 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior, IAgentStateDeci
 	private bool _allowTargetFreeMovementAfterFormalDuel;
 
 	private bool _startupLoadingFadeAborted;
+
+	private float _meetingChargeOrderSequenceTimer;
+
+	private bool _meetingChargeOrderInputFailureLogged;
 
 #if !BANNERLORD_1_4_OR_GREATER
 	private bool _startupLoadingFadeApplied;
@@ -311,6 +318,8 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior, IAgentStateDeci
 		_deploymentSkipEarliestTime = -1f;
 		_allowTargetFreeMovementAfterFormalDuel = false;
 		_startupLoadingFadeAborted = false;
+		_meetingChargeOrderSequenceTimer = 0f;
+		_meetingChargeOrderInputFailureLogged = false;
 #if !BANNERLORD_1_4_OR_GREATER
 		_startupLoadingFadeApplied = false;
 		_startupLoadingFadeElapsed = 0f;
@@ -473,6 +482,7 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior, IAgentStateDeci
 				return;
 			}
 		}
+		TryEscalateMeetingOnChargeOrderHotkeys(dt);
 		TryApplyStartupLoadingFade(dt);
 		TrySkipDeploymentPhaseForMeeting();
 		bool flag2 = false;
@@ -582,6 +592,98 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior, IAgentStateDeci
 			PauseAllAIAgentsAndSheathWeapons(sheathWeapons: false);
 			_pauseTickTimer = 0.15f;
 		}
+	}
+
+	private void TryEscalateMeetingOnChargeOrderHotkeys(float dt)
+	{
+		if (_meetingChargeOrderSequenceTimer > 0f)
+		{
+			_meetingChargeOrderSequenceTimer -= Math.Max(0f, dt);
+			if (_meetingChargeOrderSequenceTimer < 0f)
+			{
+				_meetingChargeOrderSequenceTimer = 0f;
+			}
+		}
+		if (!IsMeetingChargeOrderEscalationGateOpen())
+		{
+			if (!MeetingBattleRuntime.IsMeetingActive || MeetingBattleRuntime.IsCombatEscalated)
+			{
+				_meetingChargeOrderSequenceTimer = 0f;
+			}
+			return;
+		}
+		bool f1Pressed;
+		bool f1Down;
+		bool f3Pressed;
+		try
+		{
+			f1Pressed = Input.IsKeyPressed(InputKey.F1);
+			f1Down = Input.IsKeyDown(InputKey.F1);
+			f3Pressed = Input.IsKeyPressed(InputKey.F3);
+			_meetingChargeOrderInputFailureLogged = false;
+		}
+		catch (Exception ex)
+		{
+			if (!_meetingChargeOrderInputFailureLogged)
+			{
+				Logger.Log("MeetingBattle", "Charge order hotkey detection unavailable: " + ex.Message);
+				_meetingChargeOrderInputFailureLogged = true;
+			}
+			return;
+		}
+		if (f1Pressed)
+		{
+			_meetingChargeOrderSequenceTimer = MeetingChargeOrderSequenceWindowSeconds;
+		}
+		if (!f3Pressed || (_meetingChargeOrderSequenceTimer <= 0f && !f1Down))
+		{
+			return;
+		}
+		_meetingChargeOrderSequenceTimer = 0f;
+		string reason = "player_charge_order_f1_f3";
+		try
+		{
+			TryNotifySameFactionAttackWarning(_targetAgent);
+		}
+		catch
+		{
+		}
+		MeetingBattleRuntime.RequestCombatEscalation(reason);
+		MeetingBattleRuntime.UnlockDiplomaticSideEffects(reason);
+		Logger.Log("MeetingBattle", "F1+F3 charge order detected during meeting; requested combat escalation.");
+	}
+
+	private bool IsMeetingChargeOrderEscalationGateOpen()
+	{
+		if (base.Mission == null)
+		{
+			return false;
+		}
+		try
+		{
+			if (base.Mission.MissionEnded)
+			{
+				return false;
+			}
+		}
+		catch
+		{
+		}
+		if (!MeetingBattleRuntime.IsMeetingActive || MeetingBattleRuntime.IsCombatEscalated)
+		{
+			return false;
+		}
+		try
+		{
+			if (HotkeyInputGuard.IsTextInputFocused())
+			{
+				return false;
+			}
+		}
+		catch
+		{
+		}
+		return true;
 	}
 
 	private void EnsureMissionBattleModeForCombat()

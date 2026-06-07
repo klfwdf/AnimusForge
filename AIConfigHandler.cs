@@ -1390,7 +1390,10 @@ public static class AIConfigHandler
 		}
 		try
 		{
-			return ResolveConversationTargetHero() != null;
+			return ResolveConversationTargetHero() != null
+				|| ResolveConversationTargetCharacter() != null
+				|| !string.IsNullOrWhiteSpace(ResolveRuntimeTargetTroopId())
+				|| !string.IsNullOrWhiteSpace(ResolveRuntimeTargetUnnamedRank());
 		}
 		catch
 		{
@@ -2317,6 +2320,7 @@ public static class AIConfigHandler
 			{
 				text2 = text2.Replace(item, "玩家");
 			}
+			text2 = text2.Replace("玩家（玩家）", "玩家").Replace("玩家(玩家)", "玩家");
 			return text2;
 		}
 		catch

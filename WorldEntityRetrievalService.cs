@@ -658,7 +658,27 @@ public static class WorldEntityRetrievalService
 		AppendClanMainFacts(sb, clans);
 		AppendKingdomMainFacts(sb, kingdoms);
 		AppendVisiblePartyFacts(sb, visibleParties);
-		return sb.ToString().Trim();
+		return StripEntityIdsFromMainPromptBlock(sb.ToString()).Trim();
+	}
+
+	private static string StripEntityIdsFromMainPromptBlock(string text)
+	{
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return "";
+		}
+		string result = text;
+		result = Regex.Replace(result, "（\\s*编号[:：][^；）]*(?:；\\s*)?", "（", RegexOptions.IgnoreCase);
+		result = Regex.Replace(result, "；\\s*编号[:：][^；）\\r\\n]*", "", RegexOptions.IgnoreCase);
+		result = Regex.Replace(result, "编号[:：][^；）\\r\\n]*(?:；\\s*)?", "", RegexOptions.IgnoreCase);
+		result = Regex.Replace(result, "；\\s*部队ID[:：][^；）\\r\\n]*", "", RegexOptions.IgnoreCase);
+		result = Regex.Replace(result, "部队ID[:：][^；）\\r\\n]*(?:；\\s*)?", "", RegexOptions.IgnoreCase);
+		result = Regex.Replace(result, "（\\s*；", "（");
+		result = Regex.Replace(result, "；\\s*）", "）");
+		result = Regex.Replace(result, "（\\s*）", "");
+		result = Regex.Replace(result, @"\b(?:hero|settlement|clan|kingdom|party|mobile_party):[A-Za-z0-9_.\-]+\b", "未知", RegexOptions.IgnoreCase);
+		result = Regex.Replace(result, @"(?<![\p{L}\p{N}_])(?:lord|lady|wanderer|companion|town|castle|village|settlement|clan|kingdom|looters|bandits|mountain_bandits|forest_bandits|desert_bandits|sea_raiders|steppe_bandits|villagers|caravan|party|mobile_party)[A-Za-z0-9_\-]*\d[A-Za-z0-9_\-]*(?![\p{L}\p{N}_])", "未知", RegexOptions.IgnoreCase);
+		return result.Trim();
 	}
 
 	private static string BuildPostprocessPromptBlock(List<EntityMatch<Hero>> heroes, List<EntityMatch<Settlement>> settlements, List<EntityMatch<Clan>> clans, List<EntityMatch<Kingdom>> kingdoms, List<VisiblePartyCandidate> visibleParties)

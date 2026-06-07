@@ -13,6 +13,7 @@ using TaleWorlds.CampaignSystem.ComponentInterfaces;
 using TaleWorlds.CampaignSystem.Encounters;
 using TaleWorlds.CampaignSystem.MapEvents;
 using TaleWorlds.CampaignSystem.Party;
+using TaleWorlds.CampaignSystem.Party.PartyComponents;
 using TaleWorlds.CampaignSystem.Roster;
 using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.CampaignSystem.Settlements.Locations;
@@ -3017,7 +3018,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			return num;
 		}
-		num = string.Compare((x?.SettlementId ?? "").Trim(), (y?.SettlementId ?? "").Trim(), StringComparison.OrdinalIgnoreCase);
+		num = string.Compare(MyBehavior.GetSettlementTransferAssetIdForExternal(x), MyBehavior.GetSettlementTransferAssetIdForExternal(y), StringComparison.OrdinalIgnoreCase);
 		if (num != 0)
 		{
 			return num;
@@ -3027,7 +3028,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 
 	private static List<MyBehavior.SettlementTransferPromptEntry> SortSettlementTransferEntries(IEnumerable<MyBehavior.SettlementTransferPromptEntry> entries)
 	{
-		return (entries ?? Enumerable.Empty<MyBehavior.SettlementTransferPromptEntry>()).Where((MyBehavior.SettlementTransferPromptEntry x) => x != null && x.Settlement != null).OrderBy((MyBehavior.SettlementTransferPromptEntry x) => x, Comparer<MyBehavior.SettlementTransferPromptEntry>.Create(CompareSettlementTransferEntries)).ToList();
+		return (entries ?? Enumerable.Empty<MyBehavior.SettlementTransferPromptEntry>()).Where(MyBehavior.IsSettlementTransferEntryValidForExternal).OrderBy((MyBehavior.SettlementTransferPromptEntry x) => x, Comparer<MyBehavior.SettlementTransferPromptEntry>.Create(CompareSettlementTransferEntries)).ToList();
 	}
 
 	public int GetSettlementTransferTalkTrust(Hero npc)
@@ -3059,66 +3060,223 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		int num = RomanceSystemBehavior.TryGetPrivateLoveAsPlayerRelation(hero, out var relation) ? relation : (int)MathF.Round(hero?.GetRelationWithPlayer() ?? 0f);
 		if (settlementTransferTalkTrust < 60)
 		{
-			return $"【领地转移限制】综合信任{settlementTransferTalkTrust}<60。本轮必须直接拒绝任何城市或城堡转移；不要谈价，不要松口，不要输出任何领地转移标签。";
+			return $"【固定资产转移限制】综合信任{settlementTransferTalkTrust}<60。本轮必须直接拒绝任何固定资产转移；不要谈价，不要松口，不要成交。";
 		}
 		if (settlementTransferTalkTrust < 80)
 		{
 			MyBehavior.SettlementTransferPromptEntry settlementTransferPromptEntry = GetAllowedNpcSettlementTransferEntriesForPlayer(targetHero, targetCharacter).FirstOrDefault();
 			string text = settlementTransferPromptEntry?.DisplayName ?? "（无可谈目标）";
-			return $"【领地转移限制】综合信任{settlementTransferTalkTrust}。本轮最多只可谈你名下最差的一座城市或城堡：{text}；其他领地直接拒绝。玩家通常还得拿出真利益，最好走交易；若想不经交易直接白拿，通常只在你与玩家关系达到100时才考虑。当前关系={num}。";
+			return $"【固定资产转移限制】综合信任{settlementTransferTalkTrust}。本轮最多只可谈你名下低价值固定资产：{text}；其他固定资产直接拒绝。玩家通常还得先给出明显利益；若想不经交易直接白拿，通常只在你与玩家关系达到100时才考虑。当前关系={num}。";
 		}
-		return $"【领地转移限制】综合信任{settlementTransferTalkTrust}。本轮可谈正常城市或城堡转移，但玩家通常仍得拿出明显利益，最好走交易；若想不经交易直接白拿，通常只在你与玩家关系达到100时才考虑。当前关系={num}。";
+		return $"【固定资产转移限制】综合信任{settlementTransferTalkTrust}。本轮可谈正常固定资产转移，但玩家通常仍得先给出明显利益；若想不经交易直接白拿，通常只在你与玩家关系达到100时才考虑。当前关系={num}。";
 	}
 
 	public bool TryApplyPlayerSettlementTransferForExternal(Hero receiverHero, Settlement settlement, out string statusText)
 	{
+		MyBehavior.SettlementTransferPromptEntry entry = new MyBehavior.SettlementTransferPromptEntry
+		{
+			Section = MyBehavior.SettlementTransferEntrySection.PlayerFiefs,
+			AssetKind = MyBehavior.SettlementTransferAssetKind.Settlement,
+			Settlement = settlement,
+			SettlementId = (settlement?.StringId ?? "").Trim(),
+			AssetId = (settlement?.StringId ?? "").Trim(),
+			DisplayName = settlement?.Name?.ToString() ?? "未知定居点",
+			TypeLabel = settlement?.IsTown == true ? "城市" : "城堡",
+			OwnerClan = Clan.PlayerClan
+		};
+		return TryApplyPlayerSettlementTransferForExternal(receiverHero, entry, out statusText);
+	}
+
+	public bool TryApplyPlayerSettlementTransferForExternal(Hero receiverHero, string assetToken, out string statusText)
+	{
+		MyBehavior.SettlementTransferPromptEntry entry = MyBehavior.ResolveSettlementTransferEntryForExternal(receiverHero, receiverHero?.CharacterObject, "TO_NPC", assetToken);
+		return TryApplyPlayerSettlementTransferForExternal(receiverHero, entry, out statusText);
+	}
+
+	public bool TryApplyPlayerSettlementTransferForExternal(Hero receiverHero, MyBehavior.SettlementTransferPromptEntry entry, out string statusText)
+	{
+		return TryApplySettlementTransferEntryAction(receiverHero, Hero.MainHero, "TO_NPC", entry, out statusText);
+	}
+
+	private bool TryApplySettlementTransferEntryAction(Hero giver, Hero receiver, string directionToken, MyBehavior.SettlementTransferPromptEntry entry, out string statusText)
+	{
 		statusText = "";
 		try
 		{
-			if (receiverHero == null)
+			if (giver == null || receiver == null)
 			{
-				statusText = "执行失败：缺少目标领主。";
+				statusText = "执行失败：缺少转移双方。";
 				return false;
 			}
-			if (receiverHero.Clan == null || receiverHero.Clan.Leader != receiverHero)
+			if (!MyBehavior.IsSettlementTransferEntryValidForExternal(entry))
 			{
-				statusText = $"执行失败：{receiverHero.Name} 不是家族族长，不能接收领地转移。";
+				statusText = "执行失败：缺少可转移固定资产。";
 				return false;
 			}
-			if (settlement == null)
+			string direction = (directionToken ?? "").Trim().ToUpperInvariant();
+			if (direction != "TO_PLAYER" && direction != "TO_NPC")
 			{
-				statusText = "执行失败：缺少目标定居点。";
+				statusText = "执行失败：未知固定资产转移方向 " + directionToken + "。";
 				return false;
 			}
-			if (!settlement.IsFortification || settlement.Town == null)
+			Hero targetOwner = direction == "TO_PLAYER" ? receiver : giver;
+			string assetName = MyBehavior.GetSettlementTransferAssetDisplayNameForExternal(entry);
+			switch (entry.AssetKind)
 			{
-				statusText = $"执行失败：{settlement.Name} 不是可转移的城市或城堡。";
+			case MyBehavior.SettlementTransferAssetKind.Settlement:
+				return TryApplySettlementFixedAssetTransfer(giver, receiver, targetOwner, direction, entry.Settlement, assetName, out statusText);
+			case MyBehavior.SettlementTransferAssetKind.Workshop:
+				return TryApplyWorkshopFixedAssetTransfer(giver, receiver, targetOwner, direction, entry.Workshop, assetName, out statusText);
+			case MyBehavior.SettlementTransferAssetKind.Caravan:
+				return TryApplyCaravanFixedAssetTransfer(giver, receiver, targetOwner, direction, entry.CaravanParty, assetName, out statusText);
+			default:
+				statusText = "执行失败：未知固定资产类型。";
 				return false;
 			}
-			if (Clan.PlayerClan == null || settlement.OwnerClan != Clan.PlayerClan)
-			{
-				statusText = $"执行失败：{settlement.Name} 当前不属于玩家家族。";
-				return false;
-			}
-			if (settlement.IsUnderSiege || settlement.Party?.MapEvent != null)
-			{
-				statusText = $"执行失败：{settlement.Name} 当前处于战事或围攻状态，不能转移。";
-				return false;
-			}
-			if (settlement.OwnerClan == receiverHero.Clan)
-			{
-				statusText = $"执行跳过：{settlement.Name} 已经属于 {receiverHero.Name} 的家族。";
-				return false;
-			}
-			ChangeOwnerOfSettlementAction.ApplyByBarter(receiverHero, settlement);
-			statusText = $"执行成功：玩家已将 {settlement.Name} 转交给 {receiverHero.Name} 的家族（原版方式：ByBarter）。";
-			return true;
 		}
 		catch (Exception ex)
 		{
 			statusText = "执行失败（异常）：" + ex.Message;
 			return false;
 		}
+	}
+
+	private bool TryApplySettlementFixedAssetTransfer(Hero giver, Hero receiver, Hero targetOwner, string direction, Settlement settlement, string assetName, out string statusText)
+	{
+		statusText = "";
+		if (settlement == null || !settlement.IsFortification || settlement.Town == null)
+		{
+			statusText = $"执行失败：{assetName} 不是可转移的城市或城堡。";
+			return false;
+		}
+		if (settlement.OwnerClan == null)
+		{
+			statusText = $"执行失败：{assetName} 当前没有可识别的合法归属。";
+			return false;
+		}
+		if (settlement.IsUnderSiege || settlement.Party?.MapEvent != null)
+		{
+			statusText = $"执行失败：{assetName} 当前处于战事或围攻状态，不能转移。";
+			return false;
+		}
+		if (direction == "TO_PLAYER")
+		{
+			if (settlement.OwnerClan != giver.Clan)
+			{
+				statusText = $"执行失败：{assetName} 不属于 {giver.Name} 的家族，不能由其转给玩家。";
+				return false;
+			}
+		}
+		else if (Clan.PlayerClan == null || settlement.OwnerClan != Clan.PlayerClan)
+		{
+			statusText = $"执行失败：{assetName} 当前不属于玩家家族。";
+			return false;
+		}
+		if (targetOwner?.Clan == null)
+		{
+			statusText = "执行失败：目标接收方没有合法家族。";
+			return false;
+		}
+		if (settlement.OwnerClan == targetOwner.Clan)
+		{
+			statusText = $"执行跳过：{assetName} 已经属于目标家族。";
+			return false;
+		}
+		ChangeOwnerOfSettlementAction.ApplyByBarter(targetOwner, settlement);
+		statusText = direction == "TO_PLAYER" ? $"执行成功：{assetName} 已转交给玩家家族（未自动扣款）。" : $"执行成功：玩家已将 {assetName} 转交给 {giver.Name} 的家族（未自动扣款）。";
+		return true;
+	}
+
+	private bool TryApplyWorkshopFixedAssetTransfer(Hero giver, Hero receiver, Hero targetOwner, string direction, Workshop workshop, string assetName, out string statusText)
+	{
+		statusText = "";
+		if (workshop == null || workshop.WorkshopType == null)
+		{
+			statusText = $"执行失败：{assetName} 不是可转移工坊。";
+			return false;
+		}
+		Hero oldOwner = workshop.Owner;
+		if (oldOwner == null)
+		{
+			statusText = $"执行失败：{assetName} 当前没有可识别的工坊主人。";
+			return false;
+		}
+		if (direction == "TO_PLAYER")
+		{
+			if (oldOwner != giver)
+			{
+				statusText = $"执行失败：{assetName} 不属于 {giver.Name}，不能由其转给玩家。";
+				return false;
+			}
+		}
+		else if (oldOwner != Hero.MainHero)
+		{
+			statusText = $"执行失败：{assetName} 当前不属于玩家本人。";
+			return false;
+		}
+		if (targetOwner == null)
+		{
+			statusText = "执行失败：缺少工坊接收者。";
+			return false;
+		}
+		if (oldOwner == targetOwner)
+		{
+			statusText = $"执行跳过：{assetName} 已经属于目标人物。";
+			return false;
+		}
+		workshop.ChangeOwnerOfWorkshop(targetOwner, workshop.WorkshopType, workshop.Capital);
+		CampaignEventDispatcher.Instance.OnWorkshopOwnerChanged(workshop, oldOwner);
+		statusText = direction == "TO_PLAYER" ? $"执行成功：{assetName} 已转交给玩家（未自动扣款）。" : $"执行成功：玩家已将 {assetName} 转交给 {giver.Name}（未自动扣款）。";
+		return true;
+	}
+
+	private bool TryApplyCaravanFixedAssetTransfer(Hero giver, Hero receiver, Hero targetOwner, string direction, MobileParty caravanParty, string assetName, out string statusText)
+	{
+		statusText = "";
+		CaravanPartyComponent component = caravanParty?.CaravanPartyComponent;
+		if (caravanParty == null || !caravanParty.IsActive || component == null)
+		{
+			statusText = $"执行失败：{assetName} 不是可转移商队。";
+			return false;
+		}
+		if (caravanParty.MapEvent != null)
+		{
+			statusText = $"执行失败：{assetName} 当前处于事件或战斗中，不能转移。";
+			return false;
+		}
+		Hero oldOwner = component.Owner;
+		if (direction == "TO_PLAYER")
+		{
+			if (oldOwner != giver)
+			{
+				statusText = $"执行失败：{assetName} 不属于 {giver.Name}，不能由其转给玩家。";
+				return false;
+			}
+		}
+		else if (oldOwner != Hero.MainHero)
+		{
+			statusText = $"执行失败：{assetName} 当前不属于玩家本人。";
+			return false;
+		}
+		if (targetOwner == null)
+		{
+			statusText = "执行失败：缺少商队接收者。";
+			return false;
+		}
+		if (oldOwner == targetOwner)
+		{
+			statusText = $"执行跳过：{assetName} 已经属于目标人物。";
+			return false;
+		}
+		Settlement homeSettlement = component.Settlement ?? targetOwner.HomeSettlement ?? Settlement.CurrentSettlement ?? MobileParty.MainParty?.CurrentSettlement;
+		if (homeSettlement == null)
+		{
+			statusText = $"执行失败：{assetName} 缺少可用的商队归属定居点。";
+			return false;
+		}
+		CaravanPartyComponent.TransferCaravanOwnership(caravanParty, targetOwner, homeSettlement);
+		statusText = direction == "TO_PLAYER" ? $"执行成功：{assetName} 已转交给玩家（未自动扣款）。" : $"执行成功：玩家已将 {assetName} 转交给 {giver.Name}（未自动扣款）。";
+		return true;
 	}
 
 	private static Clan FindReplacementRulingClanForRecruitment(Kingdom kingdom, Clan removedClan)
@@ -4437,66 +4595,13 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				return false;
 			}
 			string text = (directionToken ?? "").Trim().ToUpperInvariant();
-			Settlement settlement = MyBehavior.ResolveSettlementTransferSettlementForExternal(giver, null, text, settlementToken);
-			if (settlement == null)
+			MyBehavior.SettlementTransferPromptEntry entry = MyBehavior.ResolveSettlementTransferEntryForExternal(giver, null, text, settlementToken);
+			if (entry == null)
 			{
-				statusText = "执行失败：未找到可转移的目标定居点（" + settlementToken + "）。";
+				statusText = "执行失败：未找到可转移的固定资产（" + settlementToken + "）。";
 				return false;
 			}
-			if (!settlement.IsFortification)
-			{
-				statusText = $"执行失败：{settlement.Name} 不是城市或城堡，不能单独转移。";
-				return false;
-			}
-			if (settlement.Town == null || settlement.OwnerClan == null)
-			{
-				statusText = $"执行失败：{settlement.Name} 当前没有可识别的合法归属。";
-				return false;
-			}
-			if (settlement.IsUnderSiege || settlement.Party?.MapEvent != null)
-			{
-				statusText = $"执行失败：{settlement.Name} 当前处于战事或围攻状态，不能转移。";
-				return false;
-			}
-			Hero hero;
-			if (text == "TO_PLAYER")
-			{
-				if (settlement.OwnerClan != giver.Clan)
-				{
-					statusText = $"执行失败：{settlement.Name} 不属于 {giver.Name} 的家族，不能由其转给玩家。";
-					return false;
-				}
-				hero = receiver;
-			}
-			else
-			{
-				if (text != "TO_NPC")
-				{
-					statusText = "执行失败：未知领地转移方向 " + directionToken + "。";
-					return false;
-				}
-				hero = giver;
-			}
-			if (hero?.Clan == null)
-			{
-				statusText = "执行失败：目标接收方没有合法家族。";
-				return false;
-			}
-			if (settlement.OwnerClan == hero.Clan)
-			{
-				statusText = $"执行跳过：{settlement.Name} 已经属于 {(hero == giver ? giver.Name.ToString() : "玩家")} 的家族。";
-				return false;
-			}
-			ChangeOwnerOfSettlementAction.ApplyByBarter(hero, settlement);
-			if (text == "TO_PLAYER")
-			{
-				statusText = $"执行成功：{settlement.Name} 已转交给玩家家族（原版方式：ByBarter）。";
-			}
-			else
-			{
-				statusText = $"执行成功：玩家已将 {settlement.Name} 转交给 {giver.Name} 的家族（原版方式：ByBarter）。";
-			}
-			return true;
+			return TryApplySettlementTransferEntryAction(giver, receiver, text, entry, out statusText);
 		}
 		catch (Exception ex)
 		{
@@ -5519,16 +5624,31 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		return Math.Max(0, settlementMarketComponent?.Gold ?? 0);
 	}
 
+	private static bool IsSupportedSettlementMarket(Settlement settlement)
+	{
+		return settlement != null && (settlement.IsTown || settlement.IsVillage);
+	}
+
+	private static string GetSettlementMarketTypeLabel(Settlement settlement)
+	{
+		return settlement?.IsVillage == true ? "村庄" : "城镇";
+	}
+
+	private static string GetSettlementMarketItemNamePrefix(Settlement settlement)
+	{
+		return "[" + GetSettlementMarketTypeLabel(settlement) + "市场] ";
+	}
+
 	private static Settlement ResolveSettlementMarketSettlement(Settlement settlement = null)
 	{
 		try
 		{
-			if (settlement != null && settlement.IsTown)
+			if (IsSupportedSettlementMarket(settlement))
 			{
 				return settlement;
 			}
 			settlement = Settlement.CurrentSettlement;
-			if (settlement != null && settlement.IsTown)
+			if (IsSupportedSettlementMarket(settlement))
 			{
 				return settlement;
 			}
@@ -5539,7 +5659,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		try
 		{
 			settlement = PlayerEncounter.EncounterSettlement;
-			if (settlement != null && settlement.IsTown)
+			if (IsSupportedSettlementMarket(settlement))
 			{
 				return settlement;
 			}
@@ -5550,7 +5670,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		try
 		{
 			settlement = MobileParty.MainParty?.CurrentSettlement;
-			if (settlement != null && settlement.IsTown)
+			if (IsSupportedSettlementMarket(settlement))
 			{
 				return settlement;
 			}
@@ -5568,7 +5688,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			return null;
 		}
-		return (SettlementComponent)settlement2.Town ?? settlement2.SettlementComponent;
+		return settlement2.Town != null ? settlement2.Town : settlement2.SettlementComponent;
 	}
 
 	private static bool TryResolveHeroMapOrigin(Hero hero, out Vec2 origin)
@@ -6579,14 +6699,35 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			return null;
 		}
-		settlement = settlement ?? Settlement.CurrentSettlement;
-		if (settlement != null && settlement.IsTown)
+		if (IsSupportedSettlementMarket(settlement) && IsNotableInSettlement(hero, settlement))
 		{
 			return settlement;
 		}
-		if (hero.CurrentSettlement != null && hero.CurrentSettlement.IsTown)
+		Settlement currentSettlement = null;
+		try
 		{
-			return hero.CurrentSettlement;
+			currentSettlement = Settlement.CurrentSettlement;
+		}
+		catch
+		{
+			currentSettlement = null;
+		}
+		if (IsSupportedSettlementMarket(currentSettlement) && IsNotableInSettlement(hero, currentSettlement))
+		{
+			return currentSettlement;
+		}
+		Settlement heroSettlement = null;
+		try
+		{
+			heroSettlement = hero.CurrentSettlement;
+		}
+		catch
+		{
+			heroSettlement = null;
+		}
+		if (IsSupportedSettlementMarket(heroSettlement) && IsNotableInSettlement(hero, heroSettlement))
+		{
+			return heroSettlement;
 		}
 		return null;
 	}
@@ -6607,13 +6748,61 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		catch
 		{
 		}
-		return hero.CurrentSettlement == settlement;
+		try
+		{
+			if (IsSameSettlement(hero.CurrentSettlement, settlement) || IsSameSettlement(hero.HomeSettlement, settlement))
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		return false;
+	}
+
+	private static bool IsSameSettlement(Settlement left, Settlement right)
+	{
+		if (left == null || right == null)
+		{
+			return false;
+		}
+		if (ReferenceEquals(left, right) || left == right)
+		{
+			return true;
+		}
+		string leftId = (left.StringId ?? "").Trim();
+		string rightId = (right.StringId ?? "").Trim();
+		return leftId.Length > 0 && string.Equals(leftId, rightId, StringComparison.OrdinalIgnoreCase);
+	}
+
+	private static bool IsVillageMarketNotable(Hero hero)
+	{
+		if (hero == null)
+		{
+			return false;
+		}
+		try
+		{
+			return hero.IsHeadman
+				|| hero.IsRuralNotable
+				|| hero.Occupation == Occupation.Headman
+				|| hero.Occupation == Occupation.RuralNotable;
+		}
+		catch
+		{
+			return false;
+		}
 	}
 
 	private static bool IsNotableMarketHero(Hero hero, Settlement settlement = null)
 	{
 		settlement = ResolveNotableMarketSettlement(hero, settlement);
-		return hero != null && (hero.IsArtisan || hero.IsMerchant) && settlement != null && settlement.IsTown && settlement.ItemRoster != null && IsNotableInSettlement(hero, settlement);
+		if (hero == null || settlement == null || settlement.ItemRoster == null || !IsNotableInSettlement(hero, settlement))
+		{
+			return false;
+		}
+		return (settlement.IsTown && (hero.IsArtisan || hero.IsMerchant)) || (settlement.IsVillage && IsVillageMarketNotable(hero));
 	}
 
 	private static string BuildNotableMarketPromptStringId(EquipmentElement equipmentElement)
@@ -6940,6 +7129,10 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			return false;
 		}
+		if (settlement != null && settlement.IsVillage && IsVillageMarketNotable(hero))
+		{
+			return true;
+		}
 		if (hero.IsArtisan)
 		{
 			return MatchesArtisanNotableMarketItem(hero, item, settlement);
@@ -6983,7 +7176,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 					StringId = item.StringId ?? "",
 					PromptStringId = text,
 					ModifierStringId = equipmentElement.ItemModifier?.StringId ?? "",
-					Name = "[城镇市场] " + BuildSettlementMerchantDisplayName(equipmentElement),
+					Name = GetSettlementMarketItemNamePrefix(settlement) + BuildSettlementMerchantDisplayName(equipmentElement),
 					Count = 0,
 					GuidePrice = TryGetSettlementBuyPrice(settlement, equipmentElement, out var notableMarketPrice) ? Math.Max(1, notableMarketPrice) : GetGuidePriceForRewardItem(hero, item, equipmentElement),
 					EquipmentElement = equipmentElement
@@ -7031,13 +7224,22 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			return "";
 		}
-		string text = settlement?.Name?.ToString() ?? "当前城镇";
-		string text2 = hero.IsArtisan ? "工匠要人" : "商人要人";
+		string settlementTypeLabel = GetSettlementMarketTypeLabel(settlement);
+		string marketItemPrefix = GetSettlementMarketItemNamePrefix(settlement).Trim();
+		string text = settlement?.Name?.ToString() ?? ("当前" + settlementTypeLabel);
+		string text2 = settlement?.IsVillage == true ? "村庄头人" : (hero.IsArtisan ? "工匠要人" : "商人要人");
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.AppendLine("【要人市场补充】你是" + text + "的" + text2 + "，商铺清单中的 [城镇市场] 条目来自当前城镇市场总库存，不是你的私人财物。");
-		stringBuilder.AppendLine("后处理清单中内部 token 以 market@ 开头的条目，成交时扣城镇市场库存；普通物品条目仍扣你的个人库存或装备。");
-		stringBuilder.AppendLine("如果你的称号或工坊有强专精，你只能从商铺清单里出售符合该专精的货物；专精无货时你什么都不卖，请不要虚构任何物品。");
-		stringBuilder.AppendLine("金币交易代表城镇市场现金，优先从当前城镇金库扣除；债务、信任和事实仍记在你这个要人名下。");
+		stringBuilder.AppendLine("【要人市场补充】你是" + text + "的" + text2 + "，商铺清单中的 " + marketItemPrefix + " 条目来自当前" + settlementTypeLabel + "市场总库存，不是你的私人财物。");
+		stringBuilder.AppendLine("后处理清单中内部 token 以 market@ 开头的条目，成交时扣当前" + settlementTypeLabel + "市场库存；普通物品条目仍扣你的个人库存或装备。");
+		if (settlement?.IsVillage == true)
+		{
+			stringBuilder.AppendLine("作为村庄头人，你可以代表本村市场出售当前村庄市场清单中的全部真实货物；清单无货时你什么都不卖，请不要虚构任何物品。");
+		}
+		else
+		{
+			stringBuilder.AppendLine("如果你的称号或工坊有强专精，你只能从商铺清单里出售符合该专精的货物；专精无货时你什么都不卖，请不要虚构任何物品。");
+		}
+		stringBuilder.AppendLine("金币交易代表" + settlementTypeLabel + "市场现金，优先从当前" + settlementTypeLabel + "金库扣除；债务、信任和事实仍记在你这个要人名下。");
 		return stringBuilder.ToString().Trim();
 	}
 
@@ -7600,6 +7802,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		Settlement notableMarketSettlement = ResolveNotableMarketSettlement(hero);
 		bool isNotableMarketHero = IsNotableMarketHero(hero, notableMarketSettlement);
 		int heroGold = isNotableMarketHero ? GetRewardPostprocessGoldForHero(hero) : GetHeroGold(hero);
+		string notableMarketTypeLabel = GetSettlementMarketTypeLabel(notableMarketSettlement);
 		int notableMarketPromptMaxItems = Math.Min(Math.Max(1, maxItems), NotableMarketInventoryPromptMaxItems);
 		List<RewardItemInfo> notableMarketItems = isNotableMarketHero ? BuildNotableMarketItems(hero, notableMarketSettlement, notableMarketPromptMaxItems) : new List<RewardItemInfo>();
 		List<RewardItemInfo> heroInventoryItems = GetHeroInventoryItems(hero);
@@ -7610,12 +7813,12 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		stringBuilder.Append("第纳尔: ").Append(heroGold).AppendLine();
 		if (includeGuidePrice)
 		{
-			stringBuilder.AppendLine(isNotableMarketHero ? "【价格说明】市场物品后面的 guidePrice 为当前城镇市场即时指导单价；个人物品仍按目标附近价格估算（第纳尔/当前单位；箭矢、弩矢、标枪、飞刀等远程弹药按袋计）。" : "【价格说明】每个物品后面的 guidePrice 为指导单价（第纳尔/当前单位；箭矢、弩矢、标枪、飞刀等远程弹药按袋计）。");
+			stringBuilder.AppendLine(isNotableMarketHero ? ("【价格说明】市场物品后面的 guidePrice 为当前" + notableMarketTypeLabel + "市场即时指导单价；个人物品仍按目标附近价格估算（第纳尔/当前单位；箭矢、弩矢、标枪、飞刀等远程弹药按袋计）。") : "【价格说明】每个物品后面的 guidePrice 为指导单价（第纳尔/当前单位；箭矢、弩矢、标枪、飞刀等远程弹药按袋计）。");
 		}
 		int num = 0;
 		if (isNotableMarketHero)
 		{
-			stringBuilder.AppendLine("【要人市场说明】以下市场库存来自当前城镇市场总库存，不是私人财物；成交时扣城镇库存。");
+			stringBuilder.AppendLine("【要人市场说明】以下市场库存来自当前" + notableMarketTypeLabel + "市场总库存，不是私人财物；成交时扣" + notableMarketTypeLabel + "库存。");
 			stringBuilder.AppendLine("库存物品：");
 			if (notableMarketItems != null && notableMarketItems.Count > 0)
 			{
@@ -9244,6 +9447,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			bool anyHeroJoinPlayerPartyApplied = false;
 			Settlement notableMarketSettlement = ResolveNotableMarketSettlement(giver);
 			bool giverUsesNotableMarket = IsNotableMarketHero(giver, notableMarketSettlement);
+			string notableMarketLabel = GetSettlementMarketTypeLabel(notableMarketSettlement) + "市场";
 			responseText = regex.Replace(responseText, delegate(Match m)
 			{
 				if (int.TryParse(m.Groups[1].Value, out var result8))
@@ -9252,8 +9456,8 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 					int num4 = giverUsesNotableMarket ? TransferGoldFromSettlement(notableMarketSettlement, receiver, result8, giverName, giver?.CharacterObject) : TransferGold(giver, receiver, result8);
 					if (num4 > 0)
 					{
-						giverFacts.Add(giverUsesNotableMarket ? $"你已经代表城镇市场将 {num4} 第纳尔交给 {receiverName}。并进入了{receiverName}的库存" : $"你已经将 {num4} 第纳尔交给 {receiverName}。并进入了{receiverName}的库存");
-						receiverFacts.Add(giverUsesNotableMarket ? $"你从 {giverName} 代表的城镇市场收到了 {num4} 第纳尔。" : $"你从 {giverName} 收到了 {num4} 第纳尔。");
+						giverFacts.Add(giverUsesNotableMarket ? $"你已经代表{notableMarketLabel}将 {num4} 第纳尔交给 {receiverName}。并进入了{receiverName}的库存" : $"你已经将 {num4} 第纳尔交给 {receiverName}。并进入了{receiverName}的库存");
+						receiverFacts.Add(giverUsesNotableMarket ? $"你从 {giverName} 代表的{notableMarketLabel}收到了 {num4} 第纳尔。" : $"你从 {giverName} 收到了 {num4} 第纳尔。");
 						if (giver != Hero.MainHero && receiver == Hero.MainHero)
 						{
 							anyActualGiveToPlayer = true;
@@ -9262,7 +9466,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 					}
 					else if (giverUsesNotableMarket)
 					{
-						giverFacts.Add($"你试图代表城镇市场交付 {result8} 第纳尔，但当前城镇市场现钱不足，本轮未实际支付。");
+						giverFacts.Add($"你试图代表{notableMarketLabel}交付 {result8} 第纳尔，但当前{notableMarketLabel}现钱不足，本轮未实际支付。");
 					}
 				}
 				return string.Empty;
@@ -9284,8 +9488,8 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 						string text4 = text3;
 						ItemObject itemObject3 = ResolveItemById(itemIdForFacts.Split('@')[0]);
 						string text5 = isNotableMarketItem ? BuildSettlementItemValueFactSuffixForExternal(notableMarketSettlement, itemObject3, num4) : BuildItemValueFactSuffixForExternal(giver ?? receiver, itemObject3, num4);
-						giverFacts.Add(isNotableMarketItem ? $"你已经代表城镇市场将 {FormatItemAmount(num4, itemObject3, text4)} 交给 {receiverName}{text5}。并进入了{receiverName}的库存" : $"你已经将 {FormatItemAmount(num4, itemObject3, text4)} 交给 {receiverName}{text5}。并进入了{receiverName}的库存");
-						receiverFacts.Add(isNotableMarketItem ? $"你从 {giverName} 代表的城镇市场收到了 {FormatItemAmount(num4, itemObject3, text4)}{text5}。" : $"你从 {giverName} 收到了 {FormatItemAmount(num4, itemObject3, text4)}{text5}。");
+						giverFacts.Add(isNotableMarketItem ? $"你已经代表{notableMarketLabel}将 {FormatItemAmount(num4, itemObject3, text4)} 交给 {receiverName}{text5}。并进入了{receiverName}的库存" : $"你已经将 {FormatItemAmount(num4, itemObject3, text4)} 交给 {receiverName}{text5}。并进入了{receiverName}的库存");
+						receiverFacts.Add(isNotableMarketItem ? $"你从 {giverName} 代表的{notableMarketLabel}收到了 {FormatItemAmount(num4, itemObject3, text4)}{text5}。" : $"你从 {giverName} 收到了 {FormatItemAmount(num4, itemObject3, text4)}{text5}。");
 						if (num4 < result8)
 						{
 							string text6 = isNotableMarketItem ? BuildSettlementItemValueFactSuffixForExternal(notableMarketSettlement, itemObject3, result8) : BuildItemValueFactSuffixForExternal(giver ?? receiver, itemObject3, result8);
@@ -9305,8 +9509,8 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 						string text6 = (string.IsNullOrWhiteSpace(text5) ? "该物品" : text5);
 						ItemObject itemObject2 = ResolveItemById(itemIdForFacts.Split('@')[0]);
 						string text7 = isNotableMarketItem ? BuildSettlementItemValueFactSuffixForExternal(notableMarketSettlement, itemObject2, result8) : BuildItemValueFactSuffixForExternal(giver ?? receiver, itemObject2, result8);
-						giverFacts.Add(isNotableMarketItem ? $"你尝试代表城镇市场交付 {FormatItemAmount(result8, itemObject2, text6)}{text7}，但当前城镇市场库存不足，本轮未实际交付。" : $"你尝试交付 {FormatItemAmount(result8, itemObject2, text6)}{text7}，但库存不足，本轮未实际交付。");
-						receiverFacts.Add(isNotableMarketItem ? $"{giverName} 试图代表城镇市场交付 {FormatItemAmount(result8, itemObject2, text6)}{text7}，但市场库存不足，本轮未实际交付。" : $"{giverName} 试图交付 {FormatItemAmount(result8, itemObject2, text6)}{text7}，但其库存不足，本轮未实际交付。");
+						giverFacts.Add(isNotableMarketItem ? $"你尝试代表{notableMarketLabel}交付 {FormatItemAmount(result8, itemObject2, text6)}{text7}，但当前{notableMarketLabel}库存不足，本轮未实际交付。" : $"你尝试交付 {FormatItemAmount(result8, itemObject2, text6)}{text7}，但库存不足，本轮未实际交付。");
+						receiverFacts.Add(isNotableMarketItem ? $"{giverName} 试图代表{notableMarketLabel}交付 {FormatItemAmount(result8, itemObject2, text6)}{text7}，但市场库存不足，本轮未实际交付。" : $"{giverName} 试图交付 {FormatItemAmount(result8, itemObject2, text6)}{text7}，但其库存不足，本轮未实际交付。");
 					}
 				}
 				return string.Empty;
@@ -9729,20 +9933,24 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				{
 					string statusText;
 					bool flag2 = TryApplySettlementTransferAction(giver, receiver, directionToken, settlementToken, out statusText);
-					Settlement settlement = MyBehavior.ResolveSettlementTransferSettlementForExternal(giver, null, directionToken, settlementToken);
-					string text3 = settlement?.Name?.ToString() ?? settlementToken;
+					MyBehavior.SettlementTransferPromptEntry entry = MyBehavior.ResolveSettlementTransferEntryForExternal(giver, null, directionToken, settlementToken);
+					string text3 = MyBehavior.GetSettlementTransferAssetDisplayNameForExternal(entry);
+					if (string.IsNullOrWhiteSpace(text3) || text3 == "未知资产")
+					{
+						text3 = settlementToken;
+					}
 					if (flag2)
 					{
 						anySettlementTransferApplied = true;
 						if (string.Equals(directionToken, "TO_PLAYER", StringComparison.OrdinalIgnoreCase))
 						{
-							giverFacts.Add($"你已经将 {text3} 转交给玩家家族。");
+							giverFacts.Add($"你已经将固定资产 {text3} 转交给玩家。");
 							receiverFacts.Add($"你已经从 {giverName} 那里取得了 {text3}。");
 						}
 						else
 						{
-							giverFacts.Add($"玩家已经将 {text3} 转交给你的家族。");
-							receiverFacts.Add($"你已经将 {text3} 转交给了 {giverName} 的家族。");
+							giverFacts.Add($"玩家已经将固定资产 {text3} 转交给你。");
+							receiverFacts.Add($"你已经将 {text3} 转交给了 {giverName}。");
 						}
 					}
 					else if (!string.IsNullOrWhiteSpace(statusText))
@@ -9752,7 +9960,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 					}
 					if (!string.IsNullOrWhiteSpace(statusText))
 					{
-						InformationManager.DisplayMessage(new InformationMessage((flag2 ? "【领地转移】" : "【领地转移失败】") + statusText, flag2 ? Color.FromUint(4278242559u) : Color.FromUint(4294936661u)));
+						InformationManager.DisplayMessage(new InformationMessage((flag2 ? "【固定资产转移】" : "【固定资产转移失败】") + statusText, flag2 ? Color.FromUint(4278242559u) : Color.FromUint(4294936661u)));
 					}
 				}
 				return string.Empty;
@@ -10144,7 +10352,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		receiver.ChangeHeroGold(num);
 		if (receiver == Hero.MainHero)
 		{
-			string arg = ((!string.IsNullOrWhiteSpace(giverName)) ? giverName : (settlement.Name?.ToString() ?? "这座城镇的商人"));
+			string arg = ((!string.IsNullOrWhiteSpace(giverName)) ? giverName : (settlement.Name?.ToString() ?? ("这座" + GetSettlementMarketTypeLabel(settlement) + "的商人")));
 			InformationManager.DisplayMessage(new InformationMessage($"{arg} 给了你 {num} 第纳尔。"));
 			AnimusForgeQuickInfo.ShowForDuration($"{arg} 给了你 {num} 第纳尔。", RewardQuickInfoDurationMs, giverCharacter);
 		}
@@ -10431,7 +10639,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		itemName = BuildSettlementMerchantDisplayName(equipmentElement);
 		if (receiver == Hero.MainHero)
 		{
-			string arg = ((!string.IsNullOrWhiteSpace(giverName)) ? giverName : (settlement.Name?.ToString() ?? "这座城镇的商人"));
+			string arg = ((!string.IsNullOrWhiteSpace(giverName)) ? giverName : (settlement.Name?.ToString() ?? ("这座" + GetSettlementMarketTypeLabel(settlement) + "的商人")));
 			InformationManager.DisplayMessage(new InformationMessage($"{arg} 给了你 {FormatItemAmount(num2, equipmentElement.Item, itemName)}。"));
 			AnimusForgeQuickInfo.ShowForDuration($"{arg} 给了你 {FormatItemAmount(num2, equipmentElement.Item, itemName)}。", RewardQuickInfoDurationMs, giverCharacter);
 		}

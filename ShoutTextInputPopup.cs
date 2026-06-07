@@ -36,6 +36,10 @@ public sealed class ShoutTextInputPopup
 
 	private const string EncyclopediaLayerName = "EncyclopediaBar";
 
+	private const string MissionEscapeMenuLayerName = "MissionEscapeMenu";
+
+	private const string MapEscapeMenuLayerName = "MapEscapeMenu";
+
 	private readonly ScreenBase _screen;
 
 	private readonly GauntletLayer _layer;
@@ -121,6 +125,23 @@ public sealed class ShoutTextInputPopup
 		}
 		popup.HandleCancelRequested();
 		return true;
+	}
+
+	public static void HandleGameWindowFocusChanged(bool focusGained)
+	{
+		ShoutTextInputPopup popup = _activePopup;
+		if (popup == null || popup._isClosed || popup._pendingCloseAction != PendingCloseAction.None)
+		{
+			return;
+		}
+		if (!focusGained)
+		{
+			popup.BeginTemporarySystemInterruption();
+		}
+		else if (popup._allowTemporaryScreenSwitch)
+		{
+			popup._temporaryScreenSwitchObserved = true;
+		}
 	}
 
 	public static void ProcessDeferredCloseIfNeeded()
@@ -294,25 +315,21 @@ public sealed class ShoutTextInputPopup
 		}
 		if (!IsGameWindowFocused())
 		{
-			return true;
+			BeginTemporarySystemInterruption();
+			return false;
 		}
 		try
 		{
 			ScreenBase topScreen = ScreenManager.TopScreen;
 			if (_allowTemporaryScreenSwitch)
 			{
-				if (IsEncyclopediaOpenForTemporarySwitch(topScreen))
+				if (IsTemporaryScreenBlockingRestore(topScreen))
 				{
 					_temporaryScreenSwitchObserved = true;
 					if (!_isHiddenForTemporaryScreenSwitch)
 					{
 						HidePopupForTemporaryScreenSwitch();
 					}
-					return false;
-				}
-				if (!ReferenceEquals(topScreen, _screen))
-				{
-					_temporaryScreenSwitchObserved = true;
 					return false;
 				}
 				if (_temporaryScreenSwitchObserved)
@@ -348,6 +365,17 @@ public sealed class ShoutTextInputPopup
 		return false;
 	}
 
+	private void BeginTemporarySystemInterruption()
+	{
+		if (_isClosed || _pendingCloseAction != PendingCloseAction.None)
+		{
+			return;
+		}
+		_allowTemporaryScreenSwitch = true;
+		HidePopupForTemporaryScreenSwitch();
+		_temporaryScreenSwitchObserved = true;
+	}
+
 	private bool IsWaitingBehindTemporaryScreen()
 	{
 		try
@@ -360,9 +388,23 @@ public sealed class ShoutTextInputPopup
 		}
 	}
 
+	private bool IsTemporaryScreenBlockingRestore(ScreenBase topScreen)
+	{
+		if (!ReferenceEquals(topScreen, _screen))
+		{
+			return true;
+		}
+		return IsEncyclopediaOpenForTemporarySwitch(topScreen) || IsEscapeMenuOpenForTemporarySwitch(topScreen);
+	}
+
 	private bool IsEncyclopediaOpenForTemporarySwitch(ScreenBase topScreen)
 	{
 		return IsMapEncyclopediaOpen(topScreen) || HasLayerNamed(topScreen, EncyclopediaLayerName) || HasLayerNamed(_screen, EncyclopediaLayerName);
+	}
+
+	private bool IsEscapeMenuOpenForTemporarySwitch(ScreenBase topScreen)
+	{
+		return IsMapEscapeMenuOpen(topScreen) || IsMapEscapeMenuOpen(_screen) || HasLayerNamed(topScreen, MissionEscapeMenuLayerName) || HasLayerNamed(_screen, MissionEscapeMenuLayerName) || HasLayerNamed(topScreen, MapEscapeMenuLayerName) || HasLayerNamed(_screen, MapEscapeMenuLayerName);
 	}
 
 	private static bool IsMapEncyclopediaOpen(ScreenBase screen)
@@ -371,6 +413,19 @@ public sealed class ShoutTextInputPopup
 		{
 			MapScreen mapScreen = screen as MapScreen;
 			return mapScreen?.EncyclopediaScreenManager?.IsEncyclopediaOpen == true;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static bool IsMapEscapeMenuOpen(ScreenBase screen)
+	{
+		try
+		{
+			MapScreen mapScreen = screen as MapScreen;
+			return mapScreen?.IsEscapeMenuOpened == true;
 		}
 		catch
 		{

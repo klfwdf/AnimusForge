@@ -47,15 +47,15 @@
         "TopicLabel": "IBarter, Bestow, or Exchange Assets",
         "Code": "TRADE",
         "NonHeroInstruction": "你不是一个有名有姓的NPC，你只是普通士兵或平民，你无法进行交易或者物品转让",
-        "Instruction": "【交易规则】你只能承诺转移或交易【（{npcName}）商铺可用财富与物品】中真实存在且数量足够的财物，你最好让玩家先给钱或物，【交易铁律】：玩家嘴上说“钱给你了/拿去吧”一律视为没给！只有看到以 [AFEF玩家行为补充] 开头的系统消息明确写了交付，你才算真正收到了钱。没看到系统消息前，绝对禁止在动作描写里写“接过了钱/物品”，必须继续开口向玩家索要！",
+        "Instruction": "【交易规则】你只能承诺转移或交易【（{npcName}）商铺可用财富与物品】中真实存在且数量足够的财物，你最好让玩家先给钱或物，严禁瞎编不存在的事物，【交易铁律】：玩家嘴上说“钱给你了/拿去吧”一律视为没给！只有看到以 [AFEF玩家行为补充] 开头的系统消息明确写了交付，你才算真正收到了钱。没看到系统消息前，绝对禁止在动作描写里写“接过了钱/物品”，必须继续开口向玩家索要！",
         "PostprocessRules": [
             {
                 "Tag": "[ACTION:GIVE_GOLD:金额]",
-                "Description": "请分析NPC的回复,判断NPC是否有把第纳尔交给了玩家，如果NPC只是给玩家试用，那么请参考AD标签。"
+                "Description": "请分析NPC的回复,判断NPC是否有把第纳尔交给了玩家，如果NPC只是给玩家试用，那么请参考AD标签，如果NPC说的数量模棱两可，那么自行判断应该给多少钱。"
             },
             {
                 "Tag": "[ACTION:GIVE_ITEM:物品名称:数量]",
-                "Description": "请分析NPC的回复,判断NPC是否有把什么物品交给了玩家，如果NPC只是给玩家试用，那么请参考AD标签"
+                "Description": "请分析NPC的回复,判断NPC是否有把什么物品交给了玩家，如果NPC只是给玩家试用，那么请参考AD标签,物品名称只可以写NPC的物品清单存在的"
             },
             {
                 "Tag": "[AD;金额;天数;备注内容]",
@@ -101,11 +101,11 @@
         "PostprocessRules": [
             {
                 "Tag": "[ACTION:GIVE_GOLD:金额]",
-                "Description": "请分析NPC的回复,判断NPC是否有把第纳尔交给了玩家，如果NPC只是给玩家试用，那么请参考AD标签。"
+                "Description": "请分析NPC的回复,判断NPC是否有把第纳尔交给了玩家，如果NPC只是给玩家试用，那么请参考AD标签，如果NPC说的数量模棱两可，那么自行判断应该给多少钱。。"
             },
             {
                 "Tag": "[ACTION:GIVE_ITEM:物品名称:数量]",
-                "Description": "请分析NPC的回复,判断NPC是否有把什么物品交给了玩家，如果NPC只是给玩家试用，那么请参考AD标签。"
+                "Description": "请分析NPC的回复,判断NPC是否有把什么物品交给了玩家，如果NPC只是给玩家试用，那么请参考AD标签，物品名称只可以写NPC的物品清单存在的"
             },
             {
                 "Tag": "[AD;金额;天数;备注内容]",
@@ -411,18 +411,18 @@
             "Group": "trade",
             "Priority": 84,
             "TopicNumber": 9,
-            "TopicLabel": "Transfer NPC-owned troops or prisoners to player; hire or buy units only",
+            "TopicLabel": "Transfer NPC-owned troops or prisoners to player; notable volunteer recruitment",
             "Code": "PARTY_TRANSFER",
             "NonHeroInstruction": "【雇佣士兵与俘虏处置规则】你不是领主，无权把部队或俘虏正式转给玩家。若玩家坚持，请让他去找能做主的领主",
-            "Instruction": "【雇佣士兵与俘虏处置规则】谈士兵时，应把他们视作人手、兵力和效忠对象，而不是货物；谈俘虏时，才可用赎取、买卖、移交之类说法。你只能依据系统在本轮给出的清单与编号作答，不得编造清单外的士兵、俘虏、编号、数量或价格。你最好让玩家先给钱或士兵，如果你还没有商量好价格，或者没有确定玩家将士兵或俘虏交给你了，请不要在你的发言里出现成交等结账字眼，这样会导致你的钱或者士兵，俘虏或者物实际给到玩家手里，如果你确认了玩家已经把这三者给到你了，那你才可以在回复里出现成交等结账字眼。\n[Intent boundary] This rule only covers NPC-owned troops or prisoners moving from the NPC to the player. If the player says they will give troops to the NPC, split troops to the NPC, provide soldiers for a new companion party, or asks the NPC to lead a newly formed party, this is not PARTY_TRANSFER; route it to WORLDMAP_ORDER:CREATE_COMPANION_PARTY or later world-map orders. Do not treat player-supplied troops for an NPC party as hiring, buying, ordinary recruitment, or a troop sale from NPC to player.",
+            "Instruction": "【雇佣士兵、要人募兵与俘虏处置规则】谈士兵时，应把他们视作人手、兵力和效忠对象，而不是货物；谈俘虏时，才可用赎取、买卖、移交之类说法。你只能依据系统在本轮给出的清单与编号作答，不得编造清单外的士兵、俘虏、编号、数量或价格。若系统清单标明“原版要人募兵”，这些士兵来自你在城镇或村庄的原版待招募槽位；你可以按清单同意玩家招募，成交后槽位会实时减少。你最好让玩家先给钱或士兵，如果你还没有商量好价格，或者没有确定玩家将士兵或俘虏交给你了，请不要在你的发言里出现成交等结账字眼，这样会导致你的钱或者士兵，俘虏或者物实际给到玩家手里，如果你确认了玩家已经把这三者给到你了，那你才可以在回复里出现成交等结账字眼。\n[Intent boundary] This rule covers NPC-owned troops or prisoners moving from the NPC to the player, and original-game notable volunteers recruited from the current notable. If the player says they will give troops to the NPC, split troops to the NPC, provide soldiers for a new companion party, or asks the NPC to lead a newly formed party, this is not PARTY_TRANSFER; route it to WORLDMAP_ORDER:CREATE_COMPANION_PARTY or later world-map orders. Do not treat player-supplied troops for an NPC party as hiring, buying, ordinary recruitment, or a troop sale from NPC to player.",
             "PostprocessRules": [
                 {
-                    "Tag": "[ATT:士兵名称:数量]",
-                    "Description": "Output only when the NPC clearly agrees in <latest_reply> to transfer a troop stack currently owned by the NPC into the player's party. Never output when the player is giving, splitting, or promising troops to the NPC, or when the player is creating a companion party for the NPC; that belongs to WORLDMAP_ORDER:CREATE_COMPANION_PARTY."
+                    "Tag": "[ATT:部队编号:数量]",
+                    "Description": "Output only when the NPC clearly agrees in <latest_reply> to transfer a numbered troop stack currently owned by the NPC into the player's party, or to let the player recruit a numbered original-game notable volunteer stack from the current notable. 部队编号 must be copied from this turn's numbered list, not a troop name. Never output when the player is giving, splitting, or promising troops to the NPC, or when the player is creating a companion party for the NPC; that belongs to WORLDMAP_ORDER:CREATE_COMPANION_PARTY."
                 },
                 {
-                    "Tag": "[ATP:俘虏名称:数量]",
-                    "Description": "如果NPC在<latest_reply>里明确同意或现在执行了把【你当前可转移俘虏】中的某种俘虏交给玩家，就输出这个；这里填写俘虏名称和数量"
+                    "Tag": "[ATP:俘虏编号:数量]",
+                    "Description": "如果NPC在<latest_reply>里明确同意或现在执行了把【你当前可转移俘虏】中的某种俘虏交给玩家，就输出这个；俘虏编号必须复制本轮编号清单，不要填写俘虏名称"
                 }
             ],
             "RuntimeInstructionTemplates": {
@@ -447,7 +447,10 @@
                 "把这些俘虏交给我。",
                 "把你抓的人转给我。",
                 "我给你钱，你让几名士兵改投我麾下。",
-                "我想从你这边收编几个人手，开个价吧。"
+                "我想从你这边收编几个人手，开个价吧。",
+                "我想从你这里招募几个新兵。",
+                "你这里还有能招募的人手吗？",
+                "把你手下可招募的新兵名单给我看看。"
             ]
         },
         {
@@ -456,14 +459,14 @@
             "Group": "politics",
             "Priority": 83,
             "TopicNumber": 10,
-            "TopicLabel": "Change Settlement Ownership",
+            "TopicLabel": "Transfer fixed assets: fiefs, workshops, caravans, and trade convoys",
             "Code": "SETTLEMENT",
-            "NonHeroInstruction": "【领地转移规则】只有家族族长才有权和玩家讨论城市或城堡的正式转移。若你不是家族族长，不管你是普通路人、士兵，还是同家族的其他领主，你都必须明确引导玩家去找你的家族族长；正文只口头解释或引导，不写任何领地转移标签。",
-            "Instruction": "【领地转移规则】只讨论城市与城堡，不谈村庄。只认系统本轮给出的领地清单、收益和指导价；不得编造。只有当你在正文里最终明确同意把你家族的城市或城堡转给玩家时，才算真的转移；若你还在压价、拒绝、反问或继续谈条件，就不算成交。",
+            "NonHeroInstruction": "【固定资产转移规则】如果你没有系统清单中可转移的固定资产，就只能口头拒绝或引导玩家去找真正能做主的人；正文不写任何资产转移标签。",
+            "Instruction": "【固定资产转移规则】固定资产包括城市、城堡、工坊、商队和商船队；村庄不单独转移。只认系统本轮给出的固定资产清单、收益和指导价；不得编造清单外资产。玩家付款不由本规则扣款，玩家可用Y键或已有交易链路先行交付；本规则只负责成交后的产权变更。只有当你在正文里最终明确同意现在把清单中的某项固定资产转给玩家时，才算真的转移；若你还在报价、要求玩家先付款、压价、拒绝、反问或继续谈条件，就不算成交。",
             "PostprocessRules": [
                 {
-                    "Tag": "[ACTION:SETTLEMENT_TRANSFER:TO_PLAYER:定居点ID或编号]",
-                    "Description": "此标签仅限于NPC转移领地给玩家，绝不可理解为玩家转移领地给NPC，如果还只是在<latest_reply>讨论价格，并且npc是有条件给予，那么不允许输出此标签。如果NPC明确无条件同意或现在执行了把【你家族当前可转移的城市和城堡】中的某座城市或城堡转给玩家家族，就输出这个；目标只能填写本轮清单中的编号、名称或ID。"
+                    "Tag": "[ACTION:SETTLEMENT_TRANSFER:TO_PLAYER:固定资产ID或编号]",
+                    "Description": "这是固定资产转移唯一标签，仅限NPC把【你当前可转移固定资产】中的城市、城堡、工坊、商队或商船队转给玩家；绝不可理解为玩家转移资产给NPC。若<latest_reply>还只是在报价、要求玩家先付款、压价、拒绝、反问、继续谈条件或说付款后再转，不允许输出。只有NPC明确同意现在转移，或确认已收到玩家用Y键/交易链路给出的对价并立即过户时，才输出；目标只能填写本轮清单中的编号、名称或ID。"
                 }
             ],
             "TriggerKeywords": [
@@ -471,6 +474,10 @@
                 "把你家族的一座城转给我吧。",
                 "把这座城堡卖给我。",
                 "我想买你家族的一座城市。",
+                "我想买你的工坊。",
+                "把你的商队转给我吧。",
+                "我想收购你的商船队。",
+                "你名下有哪些固定资产可以转让？",
                 "我想把我家族的一座城堡转给你。",
                 "我把这座城交给你，你开个价。",
                 "你的家族名下有哪些城市和城堡能谈转让？",
@@ -726,11 +733,11 @@
             "PostprocessRules": [
                 {
                     "Tag": "[ACTION:WORLDMAP_ORDER:GO_TO_SETTLEMENT:settlement:{id}:{days}]",
-                    "Description": "仅当NPC在正文中明确同意或现在执行了前往或守备某个定居点时输出。{id}必须来自后处理上下文提供的定居点候选原版ID，禁止根据名称猜ID。{days}为到达后停留天数；玩家未指定时填3。"
+                    "Description": "仅当玩家要求且NPC在正文中明确同意或现在执行了前往或守备某个定居点时输出。{id}必须来自后处理上下文提供的定居点候选原版ID，禁止根据名称猜ID。{days}为到达后停留天数；玩家未指定时填3。"
                 },
                 {
                     "Tag": "[ACTION:WORLDMAP_ORDER:PATROL_SETTLEMENT:settlement:{id}:{days}]",
-                    "Description": "仅当NPC明确同意同意或现在执行了某个定居点附近巡逻h或附近时输出。{id}必须来自后处理上下文的定居点候选原版ID，禁止猜ID。{days}为抵达附近后巡逻天数；未指定填3。"
+                    "Description": "仅当玩家要求且NPC明确同意同意或现在执行了某个定居点附近巡逻或在附近游击或者猎杀时输出。{id}必须来自后处理上下文的定居点候选原版ID，禁止猜ID。{days}为抵达附近后巡逻天数；未指定填3。"
                 },
                 {
                     "Tag": "[ACTION:WORLDMAP_ORDER:FOLLOW:{hero|party}:{id}:{days}]",
@@ -742,15 +749,15 @@
                 },
                 {
                     "Tag": "[ACTION:WORLDMAP_ORDER:MERGE_TO_PLAYER:{days}]",
-                    "Description": "仅当NPC明确同意或现在执行了把自己的独立同伴部队并入玩家主队时输出。{days}为向玩家靠近的期限或到位后处理等待天数；未指定填1。"
+                    "Description": "仅当玩家要求且NPC明确同意或现在执行了把自己的独立同伴部队并入玩家主队时输出。{days}为向玩家靠近的期限或到位后处理等待天数；未指定填1。"
                 },
                 {
                     "Tag": "[ACTION:WORLDMAP_ORDER:CREATE_COMPANION_PARTY]",
-                    "Description": "执行ACTION:WORLDMAP标签时，无论如何都必须先在最开头输入此标签。"
+                    "Description": "执行WORLDMAP的标签时，无论如何都必须先在最开头输入此标签。"
                 },
                 {
                     "Tag": "[ACTION:WORLDMAP_ORDER:STOP]",
-                    "Description": "仅当NPC明确同意或现在执行了停止当前大地图命令并回归原版AI时输出。玩家说“你可以自由行动了”“不用继续待在那里”“不用再巡逻/跟随/追击了”“取消之前的命令”“回到你自己的安排”等，且NPC正文表示收到、遵命、会自由行动或恢复自行安排，也属于明确同意停止当前大地图命令。STOP会清空该NPC当前命令队列，不应与其他大地图命令同时输出。"
+                    "Description": "仅当玩家要求且NPC明确同意或现在执行了停止当前大地图命令并回归原版AI时输出。玩家说“你可以自由行动了”“不用继续待在那里”“不用再巡逻/跟随/追击了”“取消之前的命令”“回到你自己的安排”等，且NPC正文表示收到、遵命、会自由行动或恢复自行安排，也属于明确同意停止当前大地图命令。STOP会清空该NPC当前命令队列，不应与其他大地图命令同时输出。"
                 }
             ],
             "TriggerKeywords": [
