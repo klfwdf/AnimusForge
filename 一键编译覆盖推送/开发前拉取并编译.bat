@@ -1,7 +1,7 @@
 @echo off
 setlocal EnableExtensions EnableDelayedExpansion
 
-chcp 65001 >nul
+chcp 936 >nul
 set "LANG=en_US.UTF-8"
 set "LC_ALL=C"
 
