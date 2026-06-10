@@ -7160,6 +7160,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 								MyBehavior.ApplyPatienceFromSceneHeroResponseExternal(characterObject.HeroObject, ref aiResponse);
 								VoteDealBehavior.ProcessVoteDealTagsDispatch(characterObject.HeroObject, ref aiResponse);
 								VoteDealBehavior.ProcessProposeDispatch(characterObject.HeroObject, ref aiResponse);
+								VoteDealBehavior.ProcessProposeDispatch(characterObject.HeroObject, ref aiResponse);
 								WorldMapPartyCommandBehavior.ProcessWorldMapOrderTagsDispatch(characterObject.HeroObject, ref aiResponse);
 								DuelBehavior.TryCacheDuelAfterLinesFromText(characterObject.HeroObject, ref aiResponse);
 								DuelBehavior.TryCacheDuelStakeFromText(characterObject.HeroObject, ref aiResponse);
@@ -12493,7 +12494,6 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		if (string.IsNullOrWhiteSpace(moodTag)) moodTag = AIConfigHandler.ActionPostprocessFallbackMoodTag;
 		return string.Join("\n", list.Concat(new string[1] { moodTag }).Where(x => !string.IsNullOrWhiteSpace(x))).Trim();
 	}
-
 	private static string NormalizeVoteDealPostprocessTagsForScene(string raw, List<PostprocessRuleEntry> rules)
 	{
 		HashSet<string> validTags = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -13342,6 +13342,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		if (voteDealRuleInjected)
 		{
 			runtimeContext = AppendPostprocessContextBlockForScene(runtimeContext, VoteDealBehavior.BuildVoteDealPostprocessContext(targetHero ?? targetCharacter?.HeroObject));
+				runtimeContext = AppendPostprocessContextBlockForScene(runtimeContext, VoteDealBehavior.BuildProposePostprocessContext(targetHero ?? targetCharacter?.HeroObject));
 		}
 		if (marriageRuleInjected && RomanceSystemBehavior.Instance != null)
 		{
@@ -15553,6 +15554,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 								if (allowPlayerDirectedActions)
 								{
 									VoteDealBehavior.ProcessVoteDealTagsDispatch(characterObject.HeroObject, ref content);
+									VoteDealBehavior.ProcessProposeDispatch(characterObject.HeroObject, ref content);
 									VoteDealBehavior.ProcessProposeDispatch(characterObject.HeroObject, ref content);
 									WorldMapPartyCommandBehavior.ProcessWorldMapOrderTagsDispatch(characterObject.HeroObject, ref content);
 									DuelBehavior.TryCacheDuelAfterLinesFromText(characterObject.HeroObject, ref content);
