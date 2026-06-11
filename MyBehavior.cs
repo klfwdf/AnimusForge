@@ -17278,23 +17278,49 @@ public class MyBehavior : CampaignBehaviorBase
 
 	public static void OpenHeroPersonaEditorForExternal(Hero hero)
 	{
+		OpenHeroPersonaEditorForExternal(hero, null);
+	}
+
+	public static void OpenHeroPersonaEditorForExternal(Hero hero, Action onFinished)
+	{
 		try
 		{
 			if (!IsDevDataManagementEnabledForExternal())
 			{
 				InformationManager.DisplayMessage(new InformationMessage("开发者数据管理未开启（请在 MCM 中启用）。"));
+				try
+				{
+					onFinished?.Invoke();
+				}
+				catch
+				{
+				}
 				return;
 			}
 			MyBehavior myBehavior = Campaign.Current?.GetCampaignBehavior<MyBehavior>();
 			if (myBehavior == null || hero == null)
 			{
+				try
+				{
+					onFinished?.Invoke();
+				}
+				catch
+				{
+				}
 				return;
 			}
-			myBehavior.OpenDevPersonaMenuFromExternal(hero);
+			myBehavior.OpenDevPersonaMenuFromExternal(hero, onFinished);
 		}
 		catch (Exception ex)
 		{
 			Logger.Log("EncyclopediaPersona", "[WARN] 打开 Hero 个性背景编辑失败: " + ex.Message);
+			try
+			{
+				onFinished?.Invoke();
+			}
+			catch
+			{
+			}
 		}
 	}
 
@@ -33854,13 +33880,39 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private void OpenDevPersonaMenuFromExternal(Hero npc)
 	{
+		OpenDevPersonaMenuFromExternal(npc, null);
+	}
+
+	private void OpenDevPersonaMenuFromExternal(Hero npc, Action onFinished)
+	{
 		if (npc == null)
 		{
+			try
+			{
+				onFinished?.Invoke();
+			}
+			catch
+			{
+			}
 			return;
 		}
 		_devPersonaReturnAction = delegate
 		{
-			EncyclopediaHeroPersonaPatch.QueueRefreshForHero(npc.StringId);
+			try
+			{
+				EncyclopediaHeroPersonaPatch.QueueRefreshForHero(npc.StringId);
+			}
+			catch
+			{
+			}
+			try
+			{
+				onFinished?.Invoke();
+			}
+			catch (Exception ex)
+			{
+				Logger.Log("EncyclopediaPersona", "[WARN] Hero persona editor finish callback failed: " + ex.Message);
+			}
 		};
 		OpenDevPersonaMenuInternal(npc);
 	}

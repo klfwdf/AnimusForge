@@ -13,6 +13,8 @@ public sealed class AnimusForgeNativeConversationOverlayVM : ViewModel
 
 	private readonly Action _onGiveShow;
 
+	private readonly Action _onEditPersona;
+
 	private string _inputText;
 
 	private string _switchTitle;
@@ -21,9 +23,13 @@ public sealed class AnimusForgeNativeConversationOverlayVM : ViewModel
 
 	private string _giveShowButtonText;
 
+	private string _personaEditButtonText;
+
 	private bool _isCustomAnswerVisible;
 
 	private bool _isInputEnabled;
+
+	private bool _isPersonaEditVisible;
 
 	private float _aiChatboxOffset;
 
@@ -86,6 +92,20 @@ public sealed class AnimusForgeNativeConversationOverlayVM : ViewModel
 	}
 
 	[DataSourceProperty]
+	public string PersonaEditButtonText
+	{
+		get => _personaEditButtonText;
+		private set
+		{
+			if (value != _personaEditButtonText)
+			{
+				_personaEditButtonText = value;
+				OnPropertyChangedWithValue(value, nameof(PersonaEditButtonText));
+			}
+		}
+	}
+
+	[DataSourceProperty]
 	public bool IsCustomAnswerVisible
 	{
 		get => _isCustomAnswerVisible;
@@ -110,6 +130,20 @@ public sealed class AnimusForgeNativeConversationOverlayVM : ViewModel
 			{
 				_isInputEnabled = value;
 				OnPropertyChangedWithValue(value, nameof(IsInputEnabled));
+			}
+		}
+	}
+
+	[DataSourceProperty]
+	public bool IsPersonaEditVisible
+	{
+		get => _isPersonaEditVisible;
+		private set
+		{
+			if (value != _isPersonaEditVisible)
+			{
+				_isPersonaEditVisible = value;
+				OnPropertyChangedWithValue(value, nameof(IsPersonaEditVisible));
 			}
 		}
 	}
@@ -142,12 +176,15 @@ public sealed class AnimusForgeNativeConversationOverlayVM : ViewModel
 		}
 	}
 
-	public AnimusForgeNativeConversationOverlayVM(Action<string> onSubmit, Action onSwitchTalk, Action onShowHistory, Action onGiveShow)
+	public AnimusForgeNativeConversationOverlayVM(Action<string> onSubmit, Action onSwitchTalk, Action onShowHistory, Action onGiveShow, Action onEditPersona)
 	{
 		_onSubmit = onSubmit;
 		_onSwitchTalk = onSwitchTalk;
 		_onShowHistory = onShowHistory;
 		_onGiveShow = onGiveShow;
+		_onEditPersona = onEditPersona;
+		PersonaEditButtonText = "编辑个性与背景";
+		IsPersonaEditVisible = false;
 		InputText = "";
 		AIChatHistoryButtonText = "对话历史";
 		GiveShowButtonText = "给予/展示";
@@ -169,6 +206,11 @@ public sealed class AnimusForgeNativeConversationOverlayVM : ViewModel
 	public void SetBusy(bool isBusy)
 	{
 		IsInputEnabled = !isBusy;
+	}
+
+	public void SetPersonaEditVisible(bool isVisible)
+	{
+		IsPersonaEditVisible = isVisible;
 	}
 
 	public void RequestInputFocus()
@@ -198,6 +240,11 @@ public sealed class AnimusForgeNativeConversationOverlayVM : ViewModel
 	public void ShowGiveShowMenu()
 	{
 		_onGiveShow?.Invoke();
+	}
+
+	public void EditPersona()
+	{
+		_onEditPersona?.Invoke();
 	}
 
 	public void StartTyping()

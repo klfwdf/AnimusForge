@@ -20,6 +20,12 @@
           </Children>
         </ButtonWidget>
 
+        <ButtonWidget DoNotPassEventsToChildren="false" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" Command.Click="EditPersona" IsEnabled="true" IsVisible="@IsPersonaEditVisible" VerticalAlignment="Top" HorizontalAlignment="Right" MarginTop="230" MarginRight="60">
+          <Children>
+            <TextWidget WidthSizePolicy="CoverChildren" DoNotAcceptEvents="true" HeightSizePolicy="Fixed" SuggestedHeight="30" Brush="Conversation.HeaderText" Brush.TextHorizontalAlignment="Right" Text="@PersonaEditButtonText" Brush.FontSize="26" />
+          </Children>
+        </ButtonWidget>
+
         <Widget WidthSizePolicy="Fixed" SuggestedWidth="720" HeightSizePolicy="CoverChildren" HorizontalAlignment="Right" VerticalAlignment="Bottom" MarginRight="200" MarginBottom="47" Sprite="npc_dialogue_panel_9" IsVisible="@IsCustomAnswerVisible" AlphaFactor="0.65" DoNotAcceptEvents="false" DoNotPassEventsToChildren="false">
           <Children>
             <AnimusForgeNativeConversationEditableTextWidget MarginLeft="40" MarginRight="25" MarginTop="20" MarginBottom="20" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MinHeight="24" HorizontalAlignment="Center" VerticalAlignment="Center" Command.TextEntered="ExecuteSubmit" Command.FocusGained="StartTyping" Command.FocusLost="StopTyping" Brush="ConversationItem.Text" RealText="@InputText" PositionYOffset="@AIChatboxOffset" AutoFocus="true" FocusRequestId="@InputFocusVersion" MaxLength="-1" IsEnabled="@IsInputEnabled" />

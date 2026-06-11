@@ -52,7 +52,7 @@ public sealed class AnimusForgeNativeConversationOverlay
 	private AnimusForgeNativeConversationOverlay(ScreenBase screen)
 	{
 		_screen = screen;
-		_dataSource = new AnimusForgeNativeConversationOverlayVM(HandleSubmitRequested, HandleSwitchTalkRequested, HandleShowHistoryRequested, HandleGiveShowRequested);
+		_dataSource = new AnimusForgeNativeConversationOverlayVM(HandleSubmitRequested, HandleSwitchTalkRequested, HandleShowHistoryRequested, HandleGiveShowRequested, HandleEditPersonaRequested);
 		_layer = new GauntletLayer("AnimusForgeNativeConversationOverlay", 350, false);
 	}
 
@@ -126,6 +126,7 @@ public sealed class AnimusForgeNativeConversationOverlay
 		}
 		FlushPendingPostprocessNotice();
 		UpdateWaitingDotsAnimation();
+		_dataSource.SetPersonaEditVisible(ShoutBehavior.CanEditNativeConversationPersonaForExternal());
 		if (!_dataSource.IsCustomAnswerVisible)
 		{
 			NativeConversationAnswerAreaController.SetSuppressed(false);
@@ -201,7 +202,7 @@ public sealed class AnimusForgeNativeConversationOverlay
 		}
 	}
 
-	private static bool IsMouseOverTopRightButtons()
+	private bool IsMouseOverTopRightButtons()
 	{
 		try
 		{
@@ -211,7 +212,8 @@ public sealed class AnimusForgeNativeConversationOverlay
 			{
 				return false;
 			}
-			return mouse.x >= width - 330f && mouse.y >= 60f && mouse.y <= 235f;
+			float bottom = _dataSource?.IsPersonaEditVisible == true ? 285f : 235f;
+			return mouse.x >= width - 330f && mouse.y >= 60f && mouse.y <= bottom;
 		}
 		catch
 		{
@@ -263,6 +265,32 @@ public sealed class AnimusForgeNativeConversationOverlay
 			ShowOverlayRoot();
 			RestoreFocusAfterHistory();
 			Logger.Log("NativeConversationOverlay", "[WARN] Failed to open give/show menu: " + ex.Message);
+		}
+	}
+
+	private void HandleEditPersonaRequested()
+	{
+		if (_isClosed)
+		{
+			return;
+		}
+		try
+		{
+			HideOverlayRoot();
+			_layer.InputRestrictions.ResetInputRestrictions();
+			_layer.IsFocusLayer = false;
+			ScreenManager.TryLoseFocus(_layer);
+			if (!ShoutBehavior.OpenNativeConversationPersonaEditorForExternal(RestoreFocusAfterHistory))
+			{
+				ShowOverlayRoot();
+				RestoreFocusAfterHistory();
+			}
+		}
+		catch (Exception ex)
+		{
+			ShowOverlayRoot();
+			RestoreFocusAfterHistory();
+			Logger.Log("NativeConversationOverlay", "[WARN] Failed to open persona editor: " + ex.Message);
 		}
 	}
 

@@ -221,6 +221,7 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 		{
 			new InquiryElement("trust_query", "信任度查询", null, isEnabled: true, ""),
 			new InquiryElement("weekly_reports", "查看周报", null, isEnabled: true, ""),
+			new InquiryElement("player_persona", "修改玩家外貌与背景", null, isEnabled: true, ""),
 			new InquiryElement("troop_inspection", "检阅士兵", null, isEnabled: true, ""),
 			new InquiryElement("military_exercise", "军事演习", null, isEnabled: true, ""),
 			new InquiryElement("api_onboarding", "重新进行API首次引导", null, isEnabled: true, "只重新选择和测试 API 配置，不进入数据库导入或首次使用流程。")
@@ -240,6 +241,10 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 			else if (string.Equals(text, "weekly_reports", StringComparison.Ordinal))
 			{
 				OpenWeeklyReportBrowser();
+			}
+			else if (string.Equals(text, "player_persona", StringComparison.Ordinal))
+			{
+				OpenPlayerPersonaEditor();
 			}
 			else if (string.Equals(text, "troop_inspection", StringComparison.Ordinal))
 			{
@@ -277,6 +282,29 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 		if (!TerminalWeeklyReportBrowserPopup.Show(terminalWeeklyReportBrowserCountries))
 		{
 			InformationManager.DisplayMessage(new InformationMessage("打开周报浏览器失败。"));
+		}
+	}
+
+	private void OpenPlayerPersonaEditor()
+	{
+		CloseTerminal();
+		try
+		{
+			KnowledgeLibraryBehavior knowledgeLibraryBehavior = KnowledgeLibraryBehavior.Instance ?? Campaign.Current?.GetCampaignBehavior<KnowledgeLibraryBehavior>();
+			if (knowledgeLibraryBehavior == null)
+			{
+				InformationManager.DisplayMessage(new InformationMessage("无法打开玩家外貌与背景编辑器：Knowledge 行为尚未初始化。"));
+				return;
+			}
+			knowledgeLibraryBehavior.OpenPlayerAppearanceAndBackgroundEditor(delegate
+			{
+				InformationManager.DisplayMessage(new InformationMessage("已返回玩家外貌与背景设置。"));
+			});
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("Terminal", "[ERROR] open player persona editor failed: " + ex);
+			InformationManager.DisplayMessage(new InformationMessage("打开玩家外貌与背景编辑器失败。"));
 		}
 	}
 

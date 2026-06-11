@@ -301,11 +301,15 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyGroup("3. 场景喊话")]
 	public int BubbleFontSize { get; set; } = 14;
 
-	[SettingPropertyBool("允许玩家直接攻击触发场景冲突", Order = 11, RequireRestart = false, HintText = "开启后，玩家直接攻击和平场景 NPC 可以触发本模组的场景冲突。关闭后，本模组不再把直接攻击转成场景冲突，伤害结算完全交回原版；对话中的吵架/挑衅仍然可以触发冲突升级。")]
+	[SettingPropertyFloatingInteger("对话超时每字秒数", 0.5f, 3f, "0.0", Order = 11, RequireRestart = false, HintText = "场景对话空闲解散时间按本轮玩家与 NPC 可见发言字数动态延长。默认每个字增加 1 秒。")]
+	[SettingPropertyGroup("3. 场景喊话")]
+	public float SceneConversationTimeoutSecondsPerVisibleCharacter { get; set; } = 1f;
+
+	[SettingPropertyBool("允许玩家直接攻击触发场景冲突", Order = 12, RequireRestart = false, HintText = "开启后，玩家直接攻击和平场景 NPC 可以触发本模组的场景冲突。关闭后，本模组不再把直接攻击转成场景冲突，伤害结算完全交回原版；对话中的吵架/挑衅仍然可以触发冲突升级。")]
 	[SettingPropertyGroup("3. 场景喊话")]
 	public bool EnablePeaceSceneConflict { get; set; } = true;
 
-	[SettingPropertyDropdown("喊话输入框底色", Order = 12, RequireRestart = false, HintText = "只影响喊话输入框。默认黑色透明；也可选白色透明或粉色透明。")]
+	[SettingPropertyDropdown("喊话输入框底色", Order = 13, RequireRestart = false, HintText = "只影响喊话输入框。默认黑色透明；也可选白色透明或粉色透明。")]
 	[SettingPropertyGroup("3. 场景喊话")]
 	public Dropdown<string> ShoutInputUiBackgroundDropdown
 	{

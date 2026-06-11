@@ -7076,6 +7076,25 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		});
 	}
 
+	public void OpenPlayerAppearanceAndBackgroundEditor(Action onReturn)
+	{
+		if (onReturn == null)
+		{
+			onReturn = delegate
+			{
+			};
+		}
+		LoreRule orCreatePlayerPersonaRule = GetOrCreatePlayerPersonaRule();
+		if (orCreatePlayerPersonaRule == null)
+		{
+			InformationManager.DisplayMessage(new InformationMessage("打开玩家外貌与背景编辑器失败：无法创建知识条目。"));
+			onReturn();
+			return;
+		}
+		EnsurePlayerPersonaForcedKeyword(orCreatePlayerPersonaRule, showConflictMessage: true);
+		OpenPlayerPersonaIntroSetupMenu(orCreatePlayerPersonaRule, onReturn);
+	}
+
 	private LoreRule GetOrCreatePlayerPersonaRule()
 	{
 		if (_file == null)
