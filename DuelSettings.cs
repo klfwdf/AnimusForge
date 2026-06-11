@@ -472,6 +472,14 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyGroup("5. 压缩记忆")]
 	public int MemoryPreprocessMode { get; set; } = 1;
 
+	[SettingPropertyInteger("记忆大总结启动块数", 3, 10, "0", Order = 6, RequireRestart = false, HintText = "当某个 Hero NPC 的压缩记忆块达到该数量后，后台生成并滚动更新“过往记忆总览”。默认 5。")]
+	[SettingPropertyGroup("5. 压缩记忆")]
+	public int MemoryOverviewStartBlockCount { get; set; } = 5;
+
+	[SettingPropertyInteger("记忆大总结目标字数", 100, 1000, "0", Order = 7, RequireRestart = false, HintText = "控制“过往记忆总览”的目标中文字符数。默认 200；越短越省 token，越长越保留细节。")]
+	[SettingPropertyGroup("5. 压缩记忆")]
+	public int MemoryOverviewTargetChars { get; set; } = 200;
+
 	[SettingPropertyInteger("规则返回上限", 1, 12, "0", Order = 0, RequireRestart = false, HintText = "控制每次对话最多向 AI 提供多少条附加规则。系统会自动推导召回和精排数量；若实际高相关规则不足，不会为了凑数硬塞。默认 4。")]
 	[SettingPropertyGroup("6. 规则触发（返回）")]
 	public int GuardrailDirectTopN { get; set; } = 4;

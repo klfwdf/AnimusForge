@@ -661,9 +661,9 @@ public static class AIConfigHandler
 		{
 			playerId = "";
 		}
-		if (!string.IsNullOrWhiteSpace(playerId) && text.IndexOf("hero:" + playerId, StringComparison.OrdinalIgnoreCase) < 0)
+		if (!string.IsNullOrWhiteSpace(playerId) && !ContainsExactRuntimeEntityId(text, "hero", playerId))
 		{
-			facts.Add("【固定实体ID】玩家本人固定ID：hero:" + playerId + "。当后处理标签需要指向玩家本人或玩家主队所属英雄时，只能使用此ID；不要猜测玩家ID。");
+			facts.Add("【固定实体ID】玩家本人固定ID：hero:" + playerId + "。当后处理标签需要指向玩家本人或玩家主队所属英雄时，只能使用此ID；WORLDMAP_ORDER跟随玩家时，目标类型用hero，id填写" + playerId + "；不要猜测玩家ID。");
 		}
 		string locationFact = BuildActionPostprocessPlayerCurrentLocationFact();
 		if (!string.IsNullOrWhiteSpace(locationFact) && text.IndexOf("【玩家当前地点ID】", StringComparison.OrdinalIgnoreCase) < 0)
@@ -680,6 +680,16 @@ public static class AIConfigHandler
 			return factText.Trim();
 		}
 		return (text + Environment.NewLine + factText).Trim();
+	}
+
+	private static bool ContainsExactRuntimeEntityId(string text, string type, string id)
+	{
+		if (string.IsNullOrWhiteSpace(text) || string.IsNullOrWhiteSpace(type) || string.IsNullOrWhiteSpace(id))
+		{
+			return false;
+		}
+		string pattern = @"(?<![A-Za-z0-9_.-])" + Regex.Escape(type.Trim() + ":" + id.Trim()) + @"(?![A-Za-z0-9_.-])";
+		return Regex.IsMatch(text, pattern, RegexOptions.IgnoreCase);
 	}
 
 	private static string BuildActionPostprocessPlayerCurrentLocationFact()
@@ -2563,7 +2573,24 @@ public static class AIConfigHandler
 		}
 	}
 
+	public static List<string> GetEnabledGuardrailRuleIdsForExternal()
+	{
+		try
+		{
+			return GetAllEnabledRulePrompts().Select((GuardrailRulePromptConfig x) => (x?.Id ?? "").Trim()).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+		}
+		catch
+		{
+			return new List<string>();
+		}
+	}
+
 	private static List<GuardrailAuxiliaryTopic> GetEligibleAuxiliaryGuardrailTopics(IEnumerable<string> availableRuleIds)
+	{
+		return GetEligibleAuxiliaryGuardrailTopics(availableRuleIds, applyRuntimeEligibility: true);
+	}
+
+	private static List<GuardrailAuxiliaryTopic> GetEligibleAuxiliaryGuardrailTopics(IEnumerable<string> availableRuleIds, bool applyRuntimeEligibility)
 	{
 		HashSet<string> hashSet = new HashSet<string>((availableRuleIds ?? Enumerable.Empty<string>()).Where((string x) => !string.IsNullOrWhiteSpace(x)), StringComparer.OrdinalIgnoreCase);
 		List<GuardrailAuxiliaryTopic> list = new List<GuardrailAuxiliaryTopic>();
@@ -2582,7 +2609,7 @@ public static class AIConfigHandler
 			string text2 = (value?.TopicLabel ?? "").Trim();
 			int num = value?.TopicNumber ?? 0;
 			string text3 = NormalizeRuleCode(value?.Code, text, text2);
-			if (num > 0 && !string.IsNullOrWhiteSpace(text) && !string.IsNullOrWhiteSpace(text2) && !string.IsNullOrWhiteSpace(text3) && hashSet.Contains(text) && IsRuleCurrentlyEligibleForRag(text))
+			if (num > 0 && !string.IsNullOrWhiteSpace(text) && !string.IsNullOrWhiteSpace(text2) && !string.IsNullOrWhiteSpace(text3) && hashSet.Contains(text) && (!applyRuntimeEligibility || IsRuleCurrentlyEligibleForRag(text)))
 			{
 				list.Add(new GuardrailAuxiliaryTopic
 				{
@@ -2952,7 +2979,8 @@ public static class AIConfigHandler
 		try
 		{
 			int num = ResolveConversationTargetAgentIndex();
-			if (num < 0)
+			bool nativeConversationInputOpen = ShoutBehavior.IsNativeConversationInputOpenForExternal();
+			if (num < 0 && !nativeConversationInputOpen)
 			{
 				return "";
 			}
@@ -3547,7 +3575,7 @@ public static class AIConfigHandler
 		}
 	}
 
-	private static bool TryBuildAuxiliaryGuardrailEvalSnapshot(string userText, string runtimeGuardrailContext, string secondaryText, string cacheKey, out GuardrailEvalSnapshot snapshot, HashSet<string> excludedRuleIds = null)
+	private static bool TryBuildAuxiliaryGuardrailEvalSnapshot(string userText, string runtimeGuardrailContext, string secondaryText, string cacheKey, out GuardrailEvalSnapshot snapshot, HashSet<string> excludedRuleIds = null, bool applyRuntimeEligibility = true)
 	{
 		snapshot = null;
 		try
@@ -3588,7 +3616,7 @@ public static class AIConfigHandler
 					RejectReason = "auxiliary_api_miss"
 				};
 			}
-			List<GuardrailAuxiliaryTopic> list = GetEligibleAuxiliaryGuardrailTopics(snapshot.Rules.Keys);
+			List<GuardrailAuxiliaryTopic> list = GetEligibleAuxiliaryGuardrailTopics(snapshot.Rules.Keys, applyRuntimeEligibility);
 			if (list.Count <= 0)
 			{
 				snapshot = null;
@@ -3762,13 +3790,18 @@ public static class AIConfigHandler
 
 	private static bool TryGetGuardrailEvalSnapshot(string userText, string secondaryText, out GuardrailEvalSnapshot snapshot, IEnumerable<string> excludedRuleIds = null)
 	{
+		return TryGetGuardrailEvalSnapshot(userText, secondaryText, out snapshot, excludedRuleIds, applyRuntimeAutoExclusions: true);
+	}
+
+	private static bool TryGetGuardrailEvalSnapshot(string userText, string secondaryText, out GuardrailEvalSnapshot snapshot, IEnumerable<string> excludedRuleIds, bool applyRuntimeAutoExclusions)
+	{
 		snapshot = null;
 		List<GuardrailIntentInput> list = new List<GuardrailIntentInput>();
 		List<string> list2 = new List<string>();
 		try
 		{
 			string runtimeGuardrailContext = GetRuntimeGuardrailContext();
-			HashSet<string> excluded = BuildExcludedRuleIdSet(excludedRuleIds);
+			HashSet<string> excluded = BuildExcludedRuleIdSet(excludedRuleIds, applyRuntimeAutoExclusions);
 			string excludeKey = excluded.Count == 0 ? "" : ("|exclude:" + string.Join(",", excluded.OrderBy(x => x, StringComparer.OrdinalIgnoreCase)));
 			string text = BuildGuardrailEvalKey(userText, runtimeGuardrailContext + (UseAuxiliaryRuleApiRetrieval ? ("\n" + GetAuxiliarySceneDialogueHistoryContext()) : ""), secondaryText) + (UseAuxiliaryRuleApiRetrieval ? "|aux" : "|rag") + excludeKey;
 			lock (_guardrailSemanticLock)
@@ -3779,7 +3812,7 @@ public static class AIConfigHandler
 					return snapshot != null && snapshot.Rules != null && snapshot.Rules.Count > 0;
 				}
 			}
-			if (UseAuxiliaryRuleApiRetrieval && TryBuildAuxiliaryGuardrailEvalSnapshot(userText, runtimeGuardrailContext, secondaryText, text, out snapshot, excluded))
+			if (UseAuxiliaryRuleApiRetrieval && TryBuildAuxiliaryGuardrailEvalSnapshot(userText, runtimeGuardrailContext, secondaryText, text, out snapshot, excluded, applyRuntimeAutoExclusions))
 			{
 				lock (_guardrailSemanticLock)
 				{
@@ -4484,6 +4517,16 @@ public static class AIConfigHandler
 
 	public static List<GuardrailRuleHit> GetGuardrailSemanticRuleHits(string input, string secondaryInput, int maxCount, bool includeBuiltInRules, IEnumerable<string> excludedRuleIds)
 	{
+		return GetGuardrailSemanticRuleHits(input, secondaryInput, maxCount, includeBuiltInRules, excludedRuleIds, applyRuntimeAutoExclusions: true);
+	}
+
+	public static List<GuardrailRuleHit> GetGuardrailSemanticRuleHitsForPreprocess(string input, string secondaryInput, int maxCount, bool includeBuiltInRules, IEnumerable<string> excludedRuleIds)
+	{
+		return GetGuardrailSemanticRuleHits(input, secondaryInput, maxCount, includeBuiltInRules, excludedRuleIds, applyRuntimeAutoExclusions: false);
+	}
+
+	private static List<GuardrailRuleHit> GetGuardrailSemanticRuleHits(string input, string secondaryInput, int maxCount, bool includeBuiltInRules, IEnumerable<string> excludedRuleIds, bool applyRuntimeAutoExclusions)
+	{
 		List<GuardrailRuleHit> list = new List<GuardrailRuleHit>();
 		try
 		{
@@ -4493,8 +4536,8 @@ public static class AIConfigHandler
 			{
 				return list;
 			}
-			HashSet<string> excluded = BuildExcludedRuleIdSet(excludedRuleIds);
-			if (!TryGetGuardrailEvalSnapshot(text, secondaryInput, out var snapshot, excluded) || snapshot?.Rules == null || snapshot.Rules.Count <= 0)
+			HashSet<string> excluded = BuildExcludedRuleIdSet(excludedRuleIds, applyRuntimeAutoExclusions);
+			if (!TryGetGuardrailEvalSnapshot(text, secondaryInput, out var snapshot, excluded, applyRuntimeAutoExclusions) || snapshot?.Rules == null || snapshot.Rules.Count <= 0)
 			{
 				return list;
 			}
@@ -4537,6 +4580,11 @@ public static class AIConfigHandler
 
 	private static HashSet<string> BuildExcludedRuleIdSet(IEnumerable<string> excludedRuleIds)
 	{
+		return BuildExcludedRuleIdSet(excludedRuleIds, applyRuntimeAutoExclusions: true);
+	}
+
+	private static HashSet<string> BuildExcludedRuleIdSet(IEnumerable<string> excludedRuleIds, bool applyRuntimeAutoExclusions)
+	{
 		HashSet<string> set = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 		try
 		{
@@ -4548,7 +4596,7 @@ public static class AIConfigHandler
 					set.Add(text);
 				}
 			}
-			if (ShouldExcludePlayerCompanionOrFamilyRulesForConversationTarget())
+			if (applyRuntimeAutoExclusions && ShouldExcludePlayerCompanionOrFamilyRulesForConversationTarget())
 			{
 				set.Add("reward");
 				set.Add("loan");
@@ -4556,7 +4604,7 @@ public static class AIConfigHandler
 				set.Add("party_transfer");
 				set.Add("settlement_transfer");
 			}
-			if (ShouldExcludeSceneMoveRuleForCurrentMission())
+			if (applyRuntimeAutoExclusions && ShouldExcludeSceneMoveRuleForCurrentMission())
 			{
 				set.Add("scene_mechanism_actions");
 			}
@@ -5105,6 +5153,14 @@ public static class AIConfigHandler
 						value = runtimeKingdomServiceInstruction;
 					}
 				}
+				if (hasAnyHero && string.Equals(text, "hero_join_party", StringComparison.OrdinalIgnoreCase))
+				{
+					string runtimeHeroJoinPartyInstruction = BuildRuntimeHeroJoinPartyInstructionForExternal();
+					if (!string.IsNullOrWhiteSpace(runtimeHeroJoinPartyInstruction))
+					{
+						value = runtimeHeroJoinPartyInstruction;
+					}
+				}
 				if (hasAnyHero && string.Equals(text, "marriage", StringComparison.OrdinalIgnoreCase))
 				{
 					string runtimeMarriageInstruction = RomanceSystemBehavior.Instance?.BuildMarriageRuntimeInstruction(ResolveConversationTargetHero()) ?? "";
@@ -5585,6 +5641,87 @@ public static class AIConfigHandler
 		{
 		}
 		return GetGuardrailRuleInstruction("party_transfer");
+	}
+
+	public static string BuildRuntimeHeroJoinPartyInstructionForExternal(Hero targetHero = null)
+	{
+		try
+		{
+			Hero hero = targetHero ?? ResolveConversationTargetHero();
+			string text = ResolveHeroJoinPartyRuntimeStateKey(hero);
+			if (string.IsNullOrWhiteSpace(text))
+			{
+				return "";
+			}
+			string text2 = ResolveRuleRuntimeText("hero_join_party", text, forConstraint: false, BuildHeroJoinPartyRuntimeTokens(hero));
+			return string.IsNullOrWhiteSpace(text2) ? "" : text2.Trim();
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	private static string ResolveHeroJoinPartyRuntimeStateKey(Hero targetHero)
+	{
+		if (targetHero == null || targetHero == Hero.MainHero)
+		{
+			return "";
+		}
+		try
+		{
+			if (MobileParty.MainParty != null && targetHero.PartyBelongedTo == MobileParty.MainParty)
+			{
+				return "already_in_player_party";
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			Clan playerClan = Clan.PlayerClan ?? Hero.MainHero?.Clan;
+			Kingdom playerKingdom = playerClan?.Kingdom;
+			if (playerKingdom != null && (targetHero.Clan?.Kingdom == playerKingdom || targetHero.MapFaction == playerKingdom))
+			{
+				return "already_in_player_kingdom";
+			}
+		}
+		catch
+		{
+		}
+		return "";
+	}
+
+	private static Dictionary<string, string> BuildHeroJoinPartyRuntimeTokens(Hero targetHero)
+	{
+		string playerName = MyBehavior.BuildPlayerPublicDisplayNameForExternal();
+		if (string.IsNullOrWhiteSpace(playerName))
+		{
+			playerName = "玩家";
+		}
+		string npcName = "";
+		try
+		{
+			npcName = (targetHero?.Name?.ToString() ?? "").Trim();
+		}
+		catch
+		{
+		}
+		string playerKingdomName = "";
+		try
+		{
+			playerKingdomName = ((Clan.PlayerClan ?? Hero.MainHero?.Clan)?.Kingdom?.Name?.ToString() ?? "").Trim();
+		}
+		catch
+		{
+		}
+		return new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+		{
+			["playerName"] = playerName,
+			["npcName"] = string.IsNullOrWhiteSpace(npcName) ? "NPC" : npcName,
+			["playerKingdom"] = playerKingdomName
+		};
 	}
 
 	public static string BuildRuntimeRewardInstructionForExternal(Hero targetHero = null, CharacterObject targetCharacter = null)
@@ -6537,6 +6674,44 @@ public static class AIConfigHandler
 		{
 		}
 		return "";
+	}
+
+	public static bool CanInjectRuleTopicIntoPreprocessForExternal(string ruleId, bool hasAnyHero)
+	{
+		try
+		{
+			string text = (ruleId ?? "").Trim().ToLowerInvariant();
+			if (string.IsNullOrWhiteSpace(text))
+			{
+				return false;
+			}
+			switch (text)
+			{
+			case "kingdom_service":
+				return !string.IsNullOrWhiteSpace(BuildRuntimeKingdomServiceInstruction());
+			case "marriage":
+				return ResolveConversationTargetHero() != null && !string.IsNullOrWhiteSpace(RomanceSystemBehavior.Instance?.BuildMarriageRuntimeInstruction(ResolveConversationTargetHero()));
+			case "vanilla_issue":
+				return ResolveConversationTargetHero() != null
+					|| ResolveConversationTargetCharacter() != null
+					|| !string.IsNullOrWhiteSpace(ResolveRuntimeTargetTroopId())
+					|| !string.IsNullOrWhiteSpace(ResolveRuntimeTargetUnnamedRank());
+			case "npc_major_actions":
+				return !string.IsNullOrWhiteSpace(MyBehavior.BuildNpcMajorActionsRuntimeInstructionForExternal(ResolveConversationTargetHero()));
+			case "npc_recent_actions":
+				return !string.IsNullOrWhiteSpace(MyBehavior.BuildNpcRecentActionsRuntimeInstructionForExternal(ResolveConversationTargetHero()));
+			case "lords_hall_access":
+				return !string.IsNullOrWhiteSpace(BuildRuntimeLordsHallAccessInstructionForExternal());
+			case "noble_deference":
+				return IsNobleDeferenceRuntimeEligible(hasAnyHero);
+			default:
+				return true;
+			}
+		}
+		catch
+		{
+			return false;
+		}
 	}
 
 	private static string BuildRuntimeRuleConstraintHint(string tag)

@@ -27,6 +27,8 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 	private const float PatrolArrivalDistance = 8.0f;
 	private const float PatrolLeashDistance = 24.0f;
 	private const float PartyArrivalDistance = 4.0f;
+	private const float FollowArrivalDistance = 10.0f;
+	private const float FollowLeashDistance = 24.0f;
 	private const float EngageCommitDistance = 6.0f;
 	private const float EngageMaintainDistance = 10.0f;
 	private const float FriendlySupportRadius = 12.0f;
@@ -36,7 +38,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 	private const int DefaultRaidAttackDays = 5;
 	private const string AttackModeAi = "AI";
 	private const string AttackModeForce = "FORCE";
-	private const string AttackModeRebellionForce = "REBELLION_FORCE";
+	private const string LegacyAttackModeRebellionForce = "REBELLION_FORCE";
 
 	private static readonly Regex WorldMapOrderTagRegex = new Regex("\\[ACTION:WORLDMAP_ORDER:[^\\]\\r\\n]*\\]", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
@@ -816,9 +818,9 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		double now = NowDay();
 		if (state.TimeoutDay > 0.0 && now > state.TimeoutDay)
 		{
-			if (TryKeepPatrolCommandAliveAfterTimeout(hero, party, state, command, now))
+			if (TryKeepCommandAliveAfterTimeout(hero, party, state, command, now))
 			{
-				Log("patrol timeout deferred hero=" + (hero?.StringId ?? "") + " index=" + state.CurrentIndex + " untilDay=" + state.TimeoutDay.ToString("0.00"));
+				Log("timeout deferred hero=" + (hero?.StringId ?? "") + " index=" + state.CurrentIndex + " kind=" + (command?.Kind ?? "") + " untilDay=" + state.TimeoutDay.ToString("0.00"));
 			}
 			else
 			{
@@ -1088,6 +1090,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		if (state.ArrivalDay < 0.0 && IsPartyAtSettlement(party, settlement, SettlementArrivalDistance))
 		{
 			state.ArrivalDay = NowDay();
+			state.TimeoutDay = -1.0;
 			state.Stage = CommandStage.Active.ToString();
 			LogFact(hero, GetHeroName(hero) + "已经抵达" + GetSettlementName(settlement) + "并开始停留。");
 		}
@@ -1184,9 +1187,10 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			NotifyCommandStatus(state, actionKey + ":refresh", GetHeroName(hero) + "正在跟随" + GetHeroName(ResolveHeroById(command.TargetId)) + "，若原版AI打断会自动重新下达跟随命令。", CommandMessageTone.Progress);
 			Log("follow_refresh hero=" + (hero?.StringId ?? "") + " target=" + command.TargetId + " " + DescribePartyAi(party));
 		}
-		if (state.ArrivalDay < 0.0 && IsPartyNearParty(party, targetParty, PartyArrivalDistance))
+		if (state.ArrivalDay < 0.0 && IsPartyCloseEnoughToStartFollowing(party, targetParty))
 		{
 			state.ArrivalDay = NowDay();
+			state.TimeoutDay = -1.0;
 			state.Stage = CommandStage.Active.ToString();
 			LogFact(hero, GetHeroName(hero) + "已经追上并开始跟随" + GetHeroName(ResolveHeroById(command.TargetId)) + "。");
 		}
@@ -1219,9 +1223,10 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			NotifyCommandStatus(state, actionKey + ":refresh", GetHeroName(hero) + "正在跟随" + GetPartyName(targetParty) + "，若原版AI打断会自动重新下达跟随命令。", CommandMessageTone.Progress);
 			Log("follow_party_refresh hero=" + (hero?.StringId ?? "") + " targetParty=" + command.TargetId + " " + DescribePartyAi(party));
 		}
-		if (state.ArrivalDay < 0.0 && IsPartyNearParty(party, targetParty, PartyArrivalDistance))
+		if (state.ArrivalDay < 0.0 && IsPartyCloseEnoughToStartFollowing(party, targetParty))
 		{
 			state.ArrivalDay = NowDay();
+			state.TimeoutDay = -1.0;
 			state.Stage = CommandStage.Active.ToString();
 			LogFact(hero, GetHeroName(hero) + "已经追上并开始跟随" + GetPartyName(targetParty) + "。");
 		}
@@ -1280,19 +1285,25 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		}
 		string mode = NormalizeAttackMode(command.Mode);
 		bool force = IsForceAttackMode(mode);
-		if (IsRebellionAttackMode(mode) && !TryPreparePlayerClanRebellionForHeroAttack(hero, party, targetHero, targetParty, apply: true, out string rebellionReason))
+		bool requiresRebellion = RequiresPlayerClanRebellionForPartyAttack(party, targetParty);
+		if (requiresRebellion && !TryPreparePlayerClanRebellionForHeroAttack(hero, party, targetHero, targetParty, apply: false, out string precheckRebellionReason))
 		{
-			TryCompleteCurrentAttackResult(state, CommandResultOutcome.Incomplete, rebellionReason, "rebellion_attack_blocked");
+			TryCompleteCurrentAttackResult(state, CommandResultOutcome.Incomplete, precheckRebellionReason, "rebellion_attack_blocked");
 			return;
 		}
-		if (force && !CanForceCommitAttack(party, targetParty))
+		if (force && !CanForceCommitAttackForMode(party, targetParty, requiresRebellion))
 		{
 			MaintainAttackTracking(hero, party, targetParty, state, command, "force_commit_blocked");
 			return;
 		}
-		if (!force && !CanAiCommitAttack(party, targetParty))
+		if (!force && !CanAiCommitAttackForMode(party, targetParty, requiresRebellion))
 		{
 			MaintainAttackTracking(hero, party, targetParty, state, command, "ai_commit_waiting");
+			return;
+		}
+		if (requiresRebellion && !TryPreparePlayerClanRebellionForHeroAttack(hero, party, targetHero, targetParty, apply: true, out string rebellionReason))
+		{
+			TryCompleteCurrentAttackResult(state, CommandResultOutcome.Incomplete, rebellionReason, "rebellion_attack_blocked");
 			return;
 		}
 		CommitAttack(hero, party, targetHero, targetParty, state, mode);
@@ -1328,14 +1339,25 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		}
 		string mode = NormalizeAttackMode(command.Mode);
 		bool force = IsForceAttackMode(mode);
-		if (force && !CanForceCommitAttack(party, targetParty))
+		bool requiresRebellion = RequiresPlayerClanRebellionForPartyAttack(party, targetParty);
+		if (requiresRebellion && !TryPreparePlayerClanRebellionForPartyAttack(hero, party, targetParty, apply: false, out string precheckRebellionReason))
+		{
+			TryCompleteCurrentAttackResult(state, CommandResultOutcome.Incomplete, precheckRebellionReason, "rebellion_party_attack_blocked");
+			return;
+		}
+		if (force && !CanForceCommitAttackForMode(party, targetParty, requiresRebellion))
 		{
 			MaintainPartyAttackTracking(hero, party, targetParty, state, command, "force_commit_blocked");
 			return;
 		}
-		if (!force && !CanAiCommitAttack(party, targetParty))
+		if (!force && !CanAiCommitAttackForMode(party, targetParty, requiresRebellion))
 		{
 			MaintainPartyAttackTracking(hero, party, targetParty, state, command, "ai_commit_waiting");
+			return;
+		}
+		if (requiresRebellion && !TryPreparePlayerClanRebellionForPartyAttack(hero, party, targetParty, apply: true, out string rebellionReason))
+		{
+			TryCompleteCurrentAttackResult(state, CommandResultOutcome.Incomplete, rebellionReason, "rebellion_party_attack_blocked");
 			return;
 		}
 		CommitPartyAttack(hero, party, targetParty, state, mode);
@@ -1360,12 +1382,8 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			return;
 		}
 		string mode = NormalizeAttackMode(command.Mode);
-		if (!state.EngageCommitted && ArePartyAndSettlementSameFaction(party, settlement) && !IsRebellionAttackMode(mode))
-		{
-			TryCompleteCurrentAttackResult(state, CommandResultOutcome.Incomplete, "目标已经属于同阵营，无法继续攻击。", "attack_settlement_same_faction");
-			return;
-		}
-		if (!state.EngageCommitted && ArePartyAndSettlementSameFaction(party, settlement) && IsRebellionAttackMode(mode) && !TryPreparePlayerClanRebellionForSettlementAttack(hero, party, settlement, apply: false, out string sameFactionRebellionReason))
+		bool requiresRebellion = !state.EngageCommitted && RequiresPlayerClanRebellionForSettlementAttack(party, settlement);
+		if (requiresRebellion && !TryPreparePlayerClanRebellionForSettlementAttack(hero, party, settlement, apply: false, out string sameFactionRebellionReason))
 		{
 			TryCompleteCurrentAttackResult(state, CommandResultOutcome.Incomplete, sameFactionRebellionReason, "rebellion_settlement_attack_blocked");
 			return;
@@ -1375,7 +1393,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			MaintainCommittedSettlementAttack(hero, party, settlement, state, command);
 			return;
 		}
-		if (CanStartSettlementAttackWithVanillaAi(party, settlement, mode))
+		if (!requiresRebellion && CanStartSettlementAttackWithVanillaAi(party, settlement, mode))
 		{
 			SynchronizeArmyObjectiveForCommand(party, command);
 			CommitSettlementAttack(hero, party, settlement, state, mode);
@@ -1386,20 +1404,20 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			MaintainSettlementAttackTracking(hero, party, settlement, state, command, "closing_distance");
 			return;
 		}
-		if (IsRebellionAttackMode(mode) && !TryPreparePlayerClanRebellionForSettlementAttack(hero, party, settlement, apply: true, out string rebellionReason))
-		{
-			TryCompleteCurrentAttackResult(state, CommandResultOutcome.Incomplete, rebellionReason, "rebellion_settlement_attack_blocked");
-			return;
-		}
 		bool force = IsForceAttackMode(mode);
-		if (force && !CanForceCommitSettlementAttack(party, settlement))
+		if (force && !CanForceCommitSettlementAttackForMode(party, settlement, requiresRebellion))
 		{
 			MaintainSettlementAttackTracking(hero, party, settlement, state, command, "force_commit_blocked");
 			return;
 		}
-		if (!force && !CanAiCommitSettlementAttack(party, settlement))
+		if (!force && !CanAiCommitSettlementAttackForMode(party, settlement, requiresRebellion))
 		{
 			MaintainSettlementAttackTracking(hero, party, settlement, state, command, "ai_commit_waiting");
+			return;
+		}
+		if (requiresRebellion && !TryPreparePlayerClanRebellionForSettlementAttack(hero, party, settlement, apply: true, out string rebellionReason))
+		{
+			TryCompleteCurrentAttackResult(state, CommandResultOutcome.Incomplete, rebellionReason, "rebellion_settlement_attack_blocked");
 			return;
 		}
 		CommitSettlementAttack(hero, party, settlement, state, mode);
@@ -1753,6 +1771,21 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		return attackerStrength >= Math.Max(1f, defenderStrength * AiAttackStrengthRatio);
 	}
 
+	private bool CanAiCommitAttackForMode(MobileParty party, MobileParty targetParty, bool allowSameFactionViaRebellion)
+	{
+		if (!allowSameFactionViaRebellion)
+		{
+			return CanAiCommitAttack(party, targetParty);
+		}
+		if (!CanForceCommitAttackForMode(party, targetParty, allowSameFactionViaRebellion))
+		{
+			return false;
+		}
+		float attackerStrength = EstimateAttackStrengthWithNearbyAllies(party, targetParty);
+		float defenderStrength = EstimatePartyStrength(targetParty);
+		return attackerStrength >= Math.Max(1f, defenderStrength * AiAttackStrengthRatio);
+	}
+
 	private static bool CanForceCommitAttack(MobileParty party, MobileParty targetParty)
 	{
 		if (!IsPartyUsable(party) || !IsPartyUsable(targetParty) || party == targetParty)
@@ -1764,9 +1797,33 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		return attackerFaction == null || defenderFaction == null || attackerFaction != defenderFaction;
 	}
 
+	private static bool CanForceCommitAttackForMode(MobileParty party, MobileParty targetParty, bool allowSameFactionViaRebellion)
+	{
+		if (!allowSameFactionViaRebellion)
+		{
+			return CanForceCommitAttack(party, targetParty);
+		}
+		return IsPartyUsable(party) && IsPartyUsable(targetParty) && party != targetParty;
+	}
+
 	private bool CanAiCommitSettlementAttack(MobileParty party, Settlement settlement)
 	{
 		if (!CanForceCommitSettlementAttack(party, settlement))
+		{
+			return false;
+		}
+		float attackerStrength = EstimateAttackStrengthWithNearbyAllies(party, settlement);
+		float defenderStrength = EstimateSettlementDefenseStrength(settlement);
+		return attackerStrength >= Math.Max(1f, defenderStrength * AiAttackStrengthRatio);
+	}
+
+	private bool CanAiCommitSettlementAttackForMode(MobileParty party, Settlement settlement, bool allowSameFactionViaRebellion)
+	{
+		if (!allowSameFactionViaRebellion)
+		{
+			return CanAiCommitSettlementAttack(party, settlement);
+		}
+		if (!CanForceCommitSettlementAttackForMode(party, settlement, allowSameFactionViaRebellion))
 		{
 			return false;
 		}
@@ -1811,6 +1868,37 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		return true;
 	}
 
+	private static bool CanForceCommitSettlementAttackForMode(MobileParty party, Settlement settlement, bool allowSameFactionViaRebellion)
+	{
+		if (!allowSameFactionViaRebellion)
+		{
+			return CanForceCommitSettlementAttack(party, settlement);
+		}
+		if (!IsPartyUsable(party) || !IsSupportedAttackSettlement(settlement))
+		{
+			return false;
+		}
+		IFaction attackerFaction = party.MapFaction;
+		IFaction defenderFaction = settlement.MapFaction;
+		if (attackerFaction == null || defenderFaction == null)
+		{
+			return false;
+		}
+		if (settlement.IsVillage)
+		{
+			if (settlement.IsRaided || settlement.SettlementHitPoints <= 0.001f)
+			{
+				return false;
+			}
+			return !settlement.IsUnderRaid || IsPartyCommittedToSettlementAttack(party, settlement);
+		}
+		if (settlement.IsUnderSiege && !IsPartyCommittedToSettlementAttack(party, settlement) && !IsSameFactionSiege(party, settlement))
+		{
+			return false;
+		}
+		return true;
+	}
+
 	private static bool IsPartyAtWarWithSettlement(MobileParty party, Settlement settlement)
 	{
 		try
@@ -1818,6 +1906,34 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			IFaction attackerFaction = party?.MapFaction;
 			IFaction defenderFaction = settlement?.MapFaction;
 			return attackerFaction != null && defenderFaction != null && attackerFaction != defenderFaction && FactionManager.IsAtWarAgainstFaction(attackerFaction, defenderFaction);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static bool RequiresPlayerClanRebellionForPartyAttack(MobileParty party, MobileParty targetParty)
+	{
+		try
+		{
+			IFaction attackerFaction = party?.MapFaction;
+			IFaction defenderFaction = targetParty?.MapFaction;
+			return attackerFaction != null && defenderFaction != null && attackerFaction == defenderFaction;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static bool RequiresPlayerClanRebellionForSettlementAttack(MobileParty party, Settlement settlement)
+	{
+		try
+		{
+			IFaction attackerFaction = party?.MapFaction;
+			IFaction defenderFaction = settlement?.MapFaction;
+			return attackerFaction != null && defenderFaction != null && attackerFaction == defenderFaction;
 		}
 		catch
 		{
@@ -1849,6 +1965,33 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			return true;
 		}
 		return TryApplyPlayerClanRebellionForWorldMapAttack(actorHero, party, oldKingdom, "攻击" + GetHeroName(targetHero) + "的部队", out reason);
+	}
+
+	private bool TryPreparePlayerClanRebellionForPartyAttack(Hero actorHero, MobileParty party, MobileParty targetParty, bool apply, out string reason)
+	{
+		reason = "";
+		IFaction attackerFaction = party?.MapFaction;
+		IFaction defenderFaction = targetParty?.MapFaction;
+		if (attackerFaction == null || defenderFaction == null || attackerFaction != defenderFaction)
+		{
+			return true;
+		}
+		Clan targetClan = targetParty?.ActualClan ?? targetParty?.LeaderHero?.Clan;
+		if (targetClan == Clan.PlayerClan)
+		{
+			reason = "目标部队属于玩家家族，不能通过叛乱攻击自己的家族部队。";
+			return false;
+		}
+		Kingdom oldKingdom = Clan.PlayerClan?.Kingdom;
+		if (!CanPlayerClanRebelForWorldMapAttack(actorHero, party, oldKingdom, defenderFaction, out reason))
+		{
+			return false;
+		}
+		if (!apply)
+		{
+			return true;
+		}
+		return TryApplyPlayerClanRebellionForWorldMapAttack(actorHero, party, oldKingdom, "攻击" + GetPartyName(targetParty), out reason);
 	}
 
 	private bool TryPreparePlayerClanRebellionForSettlementAttack(Hero actorHero, MobileParty party, Settlement settlement, bool apply, out string reason)
@@ -1956,7 +2099,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 				return false;
 			}
 			LogFact(actorHero, "玩家家族已带领封地脱离" + oldKingdomName + "并发动叛乱，" + GetHeroName(actorHero) + "随后继续执行" + (actionText ?? "攻击目标") + "的命令。");
-			Log("player_clan_rebellion_attack_commit actor=" + (actorHero?.StringId ?? "") + " oldKingdom=" + SafeFactionId(oldKingdom) + " mode=" + AttackModeRebellionForce + " " + DescribePartyAi(party));
+			Log("player_clan_rebellion_attack_commit actor=" + (actorHero?.StringId ?? "") + " oldKingdom=" + SafeFactionId(oldKingdom) + " mode=" + AttackModeForce + " autoRebellion=True " + DescribePartyAi(party));
 			return true;
 		}
 		catch (Exception ex)
@@ -2296,37 +2439,79 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		return actorName + "的大地图命令时限已到，已跳过当前命令。";
 	}
 
-	private static bool TryKeepPatrolCommandAliveAfterTimeout(Hero hero, MobileParty party, PartyCommandQueueState state, PartyCommandEntry command, double now)
+	private static bool TryKeepCommandAliveAfterTimeout(Hero hero, MobileParty party, PartyCommandQueueState state, PartyCommandEntry command, double now)
 	{
-		if (!IsKind(command, CommandKind.PatrolSettlement) || state == null)
+		if (state == null || command == null)
 		{
 			return false;
 		}
 		try
 		{
-			if (state.ArrivalDay >= 0.0)
+			if (state.ArrivalDay >= 0.0 && (IsKind(command, CommandKind.GoToSettlement) || IsKind(command, CommandKind.PatrolSettlement) || IsKind(command, CommandKind.FollowHero) || IsKind(command, CommandKind.FollowParty)))
 			{
 				state.TimeoutDay = -1.0;
-				Log("patrol timeout ignored after arrival hero=" + (hero?.StringId ?? "") + " arrivalDay=" + state.ArrivalDay.ToString("0.00"));
+				Log("travel timeout ignored after arrival hero=" + (hero?.StringId ?? "") + " kind=" + (command.Kind ?? "") + " arrivalDay=" + state.ArrivalDay.ToString("0.00"));
 				return true;
 			}
-			if (IsPartyEngagingAnyTarget(party))
+			if (IsKind(command, CommandKind.GoToSettlement))
 			{
-				state.TimeoutDay = now + 1.0;
-				Log("patrol timeout deferred while engaging hero=" + (hero?.StringId ?? "") + " " + DescribePartyAi(party));
-				return true;
+				Settlement settlement = ResolveSettlementById(command.TargetId);
+				if (settlement != null && IsPartyAtSettlement(party, settlement, SettlementArrivalDistance))
+				{
+					state.TimeoutDay = now + 1.0;
+					Log("go timeout deferred because party is already at target hero=" + (hero?.StringId ?? "") + " settlement=" + settlement.StringId);
+					return true;
+				}
 			}
-			Settlement settlement = ResolveSettlementById(command.TargetId);
-			if (settlement != null && IsPartyNearSettlementForPatrol(party, settlement, PatrolLeashDistance))
+			if (IsKind(command, CommandKind.PatrolSettlement))
 			{
-				state.TimeoutDay = now + 1.0;
-				Log("patrol timeout deferred near area hero=" + (hero?.StringId ?? "") + " settlement=" + settlement.StringId + " distance=" + GetDistanceToSettlementForPatrol(party, settlement).ToString("0.0"));
-				return true;
+				if (IsPartyEngagingAnyTarget(party))
+				{
+					state.TimeoutDay = now + 1.0;
+					Log("patrol timeout deferred while engaging hero=" + (hero?.StringId ?? "") + " " + DescribePartyAi(party));
+					return true;
+				}
+				Settlement settlement = ResolveSettlementById(command.TargetId);
+				if (settlement != null && IsPartyNearSettlementForPatrol(party, settlement, PatrolLeashDistance))
+				{
+					state.TimeoutDay = now + 1.0;
+					Log("patrol timeout deferred near area hero=" + (hero?.StringId ?? "") + " settlement=" + settlement.StringId + " distance=" + GetDistanceToSettlementForPatrol(party, settlement).ToString("0.0"));
+					return true;
+				}
+			}
+			if (IsKind(command, CommandKind.FollowHero))
+			{
+				MobileParty targetParty = ResolveTargetHeroParty(command.TargetId);
+				if (targetParty != null && IsPartyCloseEnoughToStartFollowing(party, targetParty))
+				{
+					state.TimeoutDay = now + 1.0;
+					Log("follow timeout deferred because party is already near target hero=" + (hero?.StringId ?? "") + " target=" + command.TargetId + " distance=" + GetPartyDistance(party, targetParty).ToString("0.0"));
+					return true;
+				}
+			}
+			if (IsKind(command, CommandKind.FollowParty))
+			{
+				MobileParty targetParty = ResolveMobilePartyById(command.TargetId);
+				if (targetParty != null && IsPartyCloseEnoughToStartFollowing(party, targetParty))
+				{
+					state.TimeoutDay = now + 1.0;
+					Log("follow party timeout deferred because party is already near target hero=" + (hero?.StringId ?? "") + " targetParty=" + command.TargetId + " distance=" + GetPartyDistance(party, targetParty).ToString("0.0"));
+					return true;
+				}
+			}
+			if (IsKind(command, CommandKind.MergeToPlayer) && MobileParty.MainParty != null)
+			{
+				if (IsPartyNearParty(party, MobileParty.MainParty, PartyArrivalDistance))
+				{
+					state.TimeoutDay = now + 0.25;
+					Log("merge timeout deferred because party is already near player hero=" + (hero?.StringId ?? "") + " distance=" + GetPartyDistance(party, MobileParty.MainParty).ToString("0.0"));
+					return true;
+				}
 			}
 		}
 		catch (Exception ex)
 		{
-			Log("patrol timeout recovery failed hero=" + (hero?.StringId ?? "") + " error=" + ex.Message);
+			Log("timeout recovery failed hero=" + (hero?.StringId ?? "") + " kind=" + (command?.Kind ?? "") + " error=" + ex.Message);
 		}
 		return false;
 	}
@@ -2883,9 +3068,9 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 	private static string NormalizeAttackMode(string token)
 	{
 		string text = (token ?? "").Trim();
-		if (string.Equals(text, AttackModeRebellionForce, StringComparison.OrdinalIgnoreCase))
+		if (string.Equals(text, LegacyAttackModeRebellionForce, StringComparison.OrdinalIgnoreCase))
 		{
-			return AttackModeRebellionForce;
+			return AttackModeForce;
 		}
 		if (string.Equals(text, AttackModeForce, StringComparison.OrdinalIgnoreCase))
 		{
@@ -2897,12 +3082,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 	private static bool IsForceAttackMode(string mode)
 	{
 		string normalized = NormalizeAttackMode(mode);
-		return string.Equals(normalized, AttackModeForce, StringComparison.OrdinalIgnoreCase) || string.Equals(normalized, AttackModeRebellionForce, StringComparison.OrdinalIgnoreCase);
-	}
-
-	private static bool IsRebellionAttackMode(string mode)
-	{
-		return string.Equals(NormalizeAttackMode(mode), AttackModeRebellionForce, StringComparison.OrdinalIgnoreCase);
+		return string.Equals(normalized, AttackModeForce, StringComparison.OrdinalIgnoreCase);
 	}
 
 	private static bool IsExecutableCommand(PartyCommandEntry command)
@@ -3982,6 +4162,42 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		catch
 		{
 			return false;
+		}
+	}
+
+	private static bool IsPartyCloseEnoughToStartFollowing(MobileParty party, MobileParty targetParty)
+	{
+		try
+		{
+			if (IsPartyNearParty(party, targetParty, FollowArrivalDistance))
+			{
+				return true;
+			}
+			return IsPartyEscortingTarget(party, targetParty) && IsPartyNearParty(party, targetParty, FollowLeashDistance);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static float GetPartyDistance(MobileParty a, MobileParty b)
+	{
+		try
+		{
+			if (a == null || b == null)
+			{
+				return -1f;
+			}
+			if (a.CurrentSettlement != null && a.CurrentSettlement == b.CurrentSettlement)
+			{
+				return 0f;
+			}
+			return a.Position.Distance(b.Position);
+		}
+		catch
+		{
+			return -1f;
 		}
 	}
 

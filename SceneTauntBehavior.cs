@@ -2007,7 +2007,7 @@ public class SceneTauntBehavior : CampaignBehaviorBase
 
 public class SceneTauntMissionBehavior : MissionBehavior
 {
-	internal const string WantedSceneExitNotice = "你现在正在被通缉，无法离开当前场景，清越过地图边缘红区离开";
+	internal const string WantedSceneExitNotice = "你现在正在被通缉，无法离开当前场景！请立刻跑出地图边缘红区，摆脱追击。";
 
 	private static readonly FieldInfo PlayerSideOldTeamDataField = AccessTools.Field(typeof(MissionFightHandler), "_playerSideAgentsOldTeamData");
 

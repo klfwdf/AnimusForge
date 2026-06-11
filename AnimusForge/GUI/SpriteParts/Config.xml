@@ -1,0 +1,19 @@
+<Config>
+  
+	
+	<SpriteCategory Name="ui_achievement">
+        <AlwaysLoad/>
+    </SpriteCategory>
+	
+
+
+	<SpriteCategory Name="ui_account">
+		<AlwaysLoad/>
+	</SpriteCategory>
+	
+	<SpriteCategory Name="ui_subscribe">
+		<AlwaysLoad/>
+	</SpriteCategory>
+	
+
+</Config>

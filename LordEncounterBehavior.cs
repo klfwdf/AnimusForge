@@ -10,6 +10,7 @@ using TaleWorlds.CampaignSystem.BarterSystem.Barterables;
 using TaleWorlds.CampaignSystem.ComponentInterfaces;
 using TaleWorlds.CampaignSystem.Conversation;
 using TaleWorlds.CampaignSystem.Encounters;
+using TaleWorlds.CampaignSystem.GameState;
 using TaleWorlds.CampaignSystem.GameMenus;
 using TaleWorlds.CampaignSystem.Map;
 using TaleWorlds.CampaignSystem.MapEvents;
@@ -110,6 +111,18 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 	private static PartyBase _pendingForceNativeEncounterBattleMenuEncounterParty;
 
 	private static Hero _pendingForceNativeEncounterBattleMenuEncounterLeader;
+
+	private static bool _pendingForceNativeEncounterAttack;
+
+	private static float _pendingForceNativeEncounterAttackAtTime;
+
+	private static float _pendingForceNativeEncounterAttackLastAttemptTime = -1f;
+
+	private static PartyBase _pendingForceNativeEncounterAttackParty;
+
+	private static Hero _pendingForceNativeEncounterAttackHero;
+
+	private static string _pendingForceNativeEncounterAttackReason;
 
 	private static bool _pendingMeetingBattleVictorySettlement;
 
@@ -487,6 +500,10 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 
 	internal static bool IsCustomEncounterMenuDisabledForCurrentEncounter()
 	{
+		if (IsVillageRaidEncounterContext())
+		{
+			return true;
+		}
 		if (!_disableCustomEncounterMenuForCurrentEncounter)
 		{
 			return false;
@@ -621,6 +638,217 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			return false;
 		}
 		return true;
+	}
+
+	internal static bool IsVillageRaidEncounterContext(Hero target = null)
+	{
+		try
+		{
+			if (IsVillageRaidMenu(Campaign.Current?.CurrentMenuContext?.GameMenu?.StringId))
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (IsVillageRaidMapEvent(PlayerEncounterCompat.GetCurrentMapEventSafe()))
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (IsVillageRaidParty(PlayerEncounterCompat.GetEncounteredPartySafe()))
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (IsVillageRaidParty(PlayerEncounter.EncounteredParty))
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (IsVillageRaidMobileParty(PlayerEncounter.EncounteredMobileParty))
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		if (IsVillageRaidHeroParty(target))
+		{
+			return true;
+		}
+		try
+		{
+			if (Campaign.Current?.CurrentConversationContext == ConversationContext.PartyEncounter && IsVillageRaidHeroParty(Hero.OneToOneConversationHero))
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			CharacterObject characterObject = CharacterObject.OneToOneConversationCharacter;
+			if (Campaign.Current?.CurrentConversationContext == ConversationContext.PartyEncounter && IsVillageRaidHeroParty(characterObject?.HeroObject))
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		return false;
+	}
+
+	private static bool IsVillageRaidMenu(string menuId)
+	{
+		return menuId == "raiding_village" || menuId == "raid_occupied" || menuId == "encounter_interrupted_raid_started";
+	}
+
+	private static bool IsVillageRaidMapEvent(MapEvent mapEvent)
+	{
+		try
+		{
+			return mapEvent != null && mapEvent.IsRaid && mapEvent.MapEventSettlement != null && mapEvent.MapEventSettlement.IsVillage;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static bool IsVillageRaidParty(PartyBase party)
+	{
+		if (party == null)
+		{
+			return false;
+		}
+		try
+		{
+			if (IsVillageRaidMapEvent(party.MapEvent))
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (party.IsMobile && IsVillageRaidMobileParty(party.MobileParty))
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (party.IsSettlement && IsActiveVillageRaidSettlement(party.Settlement))
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		return false;
+	}
+
+	private static bool IsVillageRaidMobileParty(MobileParty party)
+	{
+		if (party == null)
+		{
+			return false;
+		}
+		try
+		{
+			if (IsVillageRaidMapEvent(party.MapEvent))
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (IsVillageRaidMapEvent(party.Party?.MapEvent))
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			Settlement targetSettlement = party.TargetSettlement;
+			if (IsActiveVillageRaidSettlement(targetSettlement) && targetSettlement.LastAttackerParty == party)
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			Settlement currentSettlement = party.CurrentSettlement;
+			if (IsActiveVillageRaidSettlement(currentSettlement) && currentSettlement.LastAttackerParty == party)
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		return false;
+	}
+
+	private static bool IsVillageRaidHeroParty(Hero hero)
+	{
+		try
+		{
+			return hero != null && IsVillageRaidMobileParty(hero.PartyBelongedTo);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static bool IsActiveVillageRaidSettlement(Settlement settlement)
+	{
+		try
+		{
+			return settlement != null && settlement.IsVillage && settlement.IsUnderRaid;
+		}
+		catch
+		{
+			return false;
+		}
 	}
 
 	private static void MarkPendingForceNativeDefeatCaptivityMenu(string reason)
@@ -987,6 +1215,339 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		catch (Exception ex)
 		{
 			Logger.Log("LordEncounter", "Force pending meeting victory settlement failed: " + ex.Message);
+		}
+	}
+
+	private static bool HasPendingForceNativeEncounterAttack()
+	{
+		if (!_pendingForceNativeEncounterAttack)
+		{
+			return false;
+		}
+		float num = 0f;
+		try
+		{
+			if (_pendingForceNativeEncounterAttackAtTime > 0f)
+			{
+				num = Time.ApplicationTime - _pendingForceNativeEncounterAttackAtTime;
+			}
+		}
+		catch
+		{
+		}
+		if (num > 20f)
+		{
+			ClearPendingForceNativeEncounterAttack("expired");
+			return false;
+		}
+		return true;
+	}
+
+	private static void MarkPendingForceNativeEncounterAttack(Hero target, PartyBase defenderParty, string reason)
+	{
+		_pendingForceNativeEncounterAttack = true;
+		try
+		{
+			_pendingForceNativeEncounterAttackAtTime = Time.ApplicationTime;
+		}
+		catch
+		{
+			_pendingForceNativeEncounterAttackAtTime = 0f;
+		}
+		_pendingForceNativeEncounterAttackLastAttemptTime = -1f;
+		_pendingForceNativeEncounterAttackHero = target ?? _targetHero;
+		_pendingForceNativeEncounterAttackParty = defenderParty;
+		_pendingForceNativeEncounterAttackReason = reason ?? "native_conversation_taunt_battle";
+		Logger.Log("MeetingTaunt", $"Marked pending native encounter attack. Target={_pendingForceNativeEncounterAttackHero?.Name}, Defender={_pendingForceNativeEncounterAttackParty?.Name}, Reason={_pendingForceNativeEncounterAttackReason}");
+	}
+
+	private static void ClearPendingForceNativeEncounterAttack(string reason)
+	{
+		_pendingForceNativeEncounterAttack = false;
+		_pendingForceNativeEncounterAttackAtTime = 0f;
+		_pendingForceNativeEncounterAttackLastAttemptTime = -1f;
+		_pendingForceNativeEncounterAttackParty = null;
+		_pendingForceNativeEncounterAttackHero = null;
+		_pendingForceNativeEncounterAttackReason = null;
+		Logger.Log("MeetingTaunt", "Cleared pending native encounter attack. Reason=" + (reason ?? "N/A"));
+	}
+
+	private static PartyBase ResolveNativeEncounterAttackDefenderParty(Hero target)
+	{
+		PartyBase partyBase = null;
+		try
+		{
+			partyBase = PlayerEncounter.EncounteredParty;
+		}
+		catch
+		{
+			partyBase = null;
+		}
+		if (partyBase != null)
+		{
+			return partyBase;
+		}
+		try
+		{
+			partyBase = target?.PartyBelongedTo?.Party;
+		}
+		catch
+		{
+			partyBase = null;
+		}
+		if (partyBase != null)
+		{
+			return partyBase;
+		}
+		try
+		{
+			partyBase = _pendingForceNativeEncounterAttackParty;
+		}
+		catch
+		{
+			partyBase = null;
+		}
+		if (partyBase != null)
+		{
+			return partyBase;
+		}
+		try
+		{
+			Hero hero = target ?? _pendingForceNativeEncounterAttackHero ?? _targetHero;
+			if (hero != null)
+			{
+				foreach (MobileParty item in MobileParty.All)
+				{
+					if (item?.Party != null && item.LeaderHero == hero)
+					{
+						return item.Party;
+					}
+				}
+			}
+		}
+		catch
+		{
+		}
+		return null;
+	}
+
+	private static bool TryEnsureEncounterContextForNativeAttack(Hero target, out PartyBase defenderParty)
+	{
+		defenderParty = ResolveNativeEncounterAttackDefenderParty(target);
+		if (defenderParty == null || PartyBase.MainParty == null)
+		{
+			Logger.Log("MeetingTaunt", "Native encounter attack aborted: defender/main party is null.");
+			return false;
+		}
+		try
+		{
+			if (PlayerEncounter.Current == null)
+			{
+				PlayerEncounter.RestartPlayerEncounter(defenderParty, PartyBase.MainParty, forcePlayerOutFromSettlement: false);
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("MeetingTaunt", "RestartPlayerEncounter for native attack failed: " + ex.Message);
+		}
+		try
+		{
+			if (PlayerEncounter.Current == null)
+			{
+				PlayerEncounter.Start();
+				if (PlayerEncounter.Current != null)
+				{
+					PlayerEncounter.Current.SetupFields(PartyBase.MainParty, defenderParty);
+				}
+			}
+		}
+		catch (Exception ex2)
+		{
+			Logger.Log("MeetingTaunt", "Start+SetupFields fallback for native attack failed: " + ex2.Message);
+		}
+		if (PlayerEncounter.Current == null)
+		{
+			Logger.Log("MeetingTaunt", "Native encounter attack aborted: PlayerEncounter.Current is null.");
+			return false;
+		}
+		try
+		{
+			if (TryGetCurrentEncounterBattle() == null)
+			{
+				PlayerEncounter.StartBattle();
+			}
+		}
+		catch (Exception ex3)
+		{
+			Logger.Log("MeetingTaunt", "StartBattle for native attack failed: " + ex3.Message);
+		}
+		if (TryGetCurrentEncounterBattle() == null)
+		{
+			try
+			{
+				StartBattleAction.Apply(PartyBase.MainParty, defenderParty);
+			}
+			catch (Exception ex4)
+			{
+				Logger.Log("MeetingTaunt", "StartBattleAction fallback for native attack failed: " + ex4.Message);
+			}
+		}
+		return TryGetCurrentEncounterBattle() != null;
+	}
+
+	private static MenuCallbackArgs BuildNativeEncounterAttackMenuArgs()
+	{
+		MenuContext menuContext = null;
+		try
+		{
+			menuContext = Campaign.Current?.CurrentMenuContext;
+		}
+		catch
+		{
+			menuContext = null;
+		}
+		if (menuContext == null)
+		{
+			return null;
+		}
+		return new MenuCallbackArgs(menuContext, new TextObject(""));
+	}
+
+	private static bool TryExecuteNativeEncounterAttackNow(Hero target, string reason)
+	{
+		PartyBase defenderParty;
+		if (!TryEnsureEncounterContextForNativeAttack(target, out defenderParty))
+		{
+			return false;
+		}
+		try
+		{
+			SetTarget(target ?? _pendingForceNativeEncounterAttackHero ?? _targetHero);
+		}
+		catch
+		{
+		}
+		try
+		{
+			Campaign.Current.CurrentConversationContext = ConversationContext.PartyEncounter;
+		}
+		catch
+		{
+		}
+		try
+		{
+			PlayerEncounter.LeaveEncounter = false;
+			if (PlayerEncounter.Current != null)
+			{
+				PlayerEncounter.Current.IsPlayerWaiting = false;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			MeetingBattleRuntime.EndMeeting();
+		}
+		catch
+		{
+		}
+		ClearMeetingPlayerReleaseAuthorization("native_encounter_attack");
+		ClearPendingReturnToEncounterMenuAfterUnauthorizedMeetingExit("native_encounter_attack");
+		DisableCustomEncounterMenuForCurrentEncounter("native_conversation_taunt_attack");
+		try
+		{
+			ApplyHostileEscalationDiplomaticConsequences(defenderParty, target ?? _pendingForceNativeEncounterAttackHero ?? _targetHero, reason ?? "native_conversation_taunt_attack", "MeetingTaunt");
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("MeetingTaunt", "Native attack diplomatic consequences failed: " + ex.Message);
+		}
+		try
+		{
+			string text = Campaign.Current?.CurrentMenuContext?.GameMenu?.StringId;
+			if (text != "encounter")
+			{
+				GameMenu.ActivateGameMenu("encounter");
+			}
+		}
+		catch (Exception ex2)
+		{
+			Logger.Log("MeetingTaunt", "Activate encounter menu before native attack failed: " + ex2.Message);
+		}
+		try
+		{
+			MenuCallbackArgs args = BuildNativeEncounterAttackMenuArgs();
+			MenuHelper.EncounterAttackConsequence(args);
+			Logger.Log("MeetingTaunt", $"Native encounter attack consequence executed. Target={(target ?? _pendingForceNativeEncounterAttackHero ?? _targetHero)?.Name}, Defender={defenderParty?.Name}, Reason={reason ?? "N/A"}");
+			return true;
+		}
+		catch (NullReferenceException ex3)
+		{
+			Logger.Log("MeetingTaunt", "Native EncounterAttackConsequence null-ref; falling back to direct mission open. " + ex3.Message);
+			OpenBattleMissionFallbackFromEncounter();
+			return true;
+		}
+	}
+
+	private static void TryForcePendingNativeEncounterAttackIfReady()
+	{
+		if (!HasPendingForceNativeEncounterAttack())
+		{
+			return;
+		}
+		try
+		{
+			if (Campaign.Current?.ConversationManager?.IsConversationInProgress == true)
+			{
+				try
+				{
+					Campaign.Current.ConversationManager.EndConversation();
+				}
+				catch
+				{
+				}
+				return;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (Game.Current?.GameStateManager?.ActiveState is MissionState)
+			{
+				return;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			float applicationTime = Time.ApplicationTime;
+			if (_pendingForceNativeEncounterAttackLastAttemptTime > 0f && applicationTime - _pendingForceNativeEncounterAttackLastAttemptTime < 0.25f)
+			{
+				return;
+			}
+			_pendingForceNativeEncounterAttackLastAttemptTime = applicationTime;
+		}
+		catch
+		{
+			_pendingForceNativeEncounterAttackLastAttemptTime = 0f;
+		}
+		try
+		{
+			Hero hero = _pendingForceNativeEncounterAttackHero ?? _targetHero;
+			string reason = _pendingForceNativeEncounterAttackReason ?? "native_conversation_taunt_attack";
+			if (TryExecuteNativeEncounterAttackNow(hero, reason))
+			{
+				ClearPendingForceNativeEncounterAttack("executed");
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("MeetingTaunt", "Force pending native encounter attack failed: " + ex.Message);
 		}
 	}
 
@@ -1906,6 +2467,11 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
+		if (IsVillageRaidEncounterContext(target))
+		{
+			Logger.Log("LordEncounter", $"OpenEncounterMenu ignored because current encounter is a village raid context. Target={target.Name}");
+			return;
+		}
 		if (IsCustomEncounterMenuDisabledForCurrentEncounter())
 		{
 			Logger.Log("LordEncounter", $"OpenEncounterMenu ignored because custom encounter menu is disabled. Target={target.Name}");
@@ -2335,6 +2901,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		TryClearEncounterRedirectSuspensionWhenBackOnMap();
 		TryForcePendingDefeatCaptivityMenuIfReady();
 		TryForcePendingMeetingBattleVictorySettlementIfReady();
+		TryForcePendingNativeEncounterAttackIfReady();
 		TryForcePendingEncounterBattleMenuIfReady();
 		TryForcePendingReturnToEncounterMenuAfterUnauthorizedMeetingExitIfReady();
 		try
@@ -3456,7 +4023,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		Logger.Log("MeetingTaunt", $"Recorded taunt warning state. Target={hero?.Name}, HeroId={meetingTauntHeroKey}");
 	}
 
-	private static bool IsMeetingTauntApplicable(Hero hero)
+	private static bool IsMeetingPseudoBattleTauntApplicable(Hero hero)
 	{
 		if (hero == null)
 		{
@@ -3489,17 +4056,125 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		return true;
 	}
 
-	private static bool TryEscalateMeetingTauntToBattle(Hero target, string reason)
+	private static Hero ResolveNativeEncounterConversationHero()
 	{
 		try
 		{
-			Hero hero = target ?? EnsureEncounterTargetHero("meeting_taunt_battle");
-			if (!IsMeetingTauntApplicable(hero))
+			if (Hero.OneToOneConversationHero != null)
 			{
-				Logger.Log("MeetingTaunt", "Battle tag ignored because current context is not a valid hero meeting.");
+				return Hero.OneToOneConversationHero;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			CharacterObject characterObject = CharacterObject.OneToOneConversationCharacter;
+			if (characterObject?.HeroObject != null)
+			{
+				return characterObject.HeroObject;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (_targetHero != null)
+			{
+				return _targetHero;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			return PlayerEncounter.EncounteredParty?.LeaderHero;
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static bool IsNativeEncounterConversationTauntApplicable(Hero hero)
+	{
+		if (hero == null)
+		{
+			return false;
+		}
+		try
+		{
+			if (Campaign.Current?.ConversationManager?.IsConversationInProgress != true)
+			{
 				return false;
 			}
-			TryApplyImmediateAttackConsequencesForEncounter(hero, reason ?? "meeting_taunt_battle");
+		}
+		catch
+		{
+			return false;
+		}
+		try
+		{
+			if (Campaign.Current?.CurrentConversationContext != ConversationContext.PartyEncounter)
+			{
+				return false;
+			}
+		}
+		catch
+		{
+			return false;
+		}
+		Hero hero2 = ResolveNativeEncounterConversationHero();
+		if (hero2 != null && hero2 != hero)
+		{
+			return false;
+		}
+		try
+		{
+			if (PlayerEncounter.Current != null || PlayerEncounter.EncounteredParty != null)
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			return hero.PartyBelongedTo?.Party != null && PartyBase.MainParty != null;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static bool IsMeetingTauntApplicable(Hero hero)
+	{
+		return IsMeetingPseudoBattleTauntApplicable(hero) || IsNativeEncounterConversationTauntApplicable(hero);
+	}
+
+	private static bool TryRequestNativeEncounterAttackFromConversation(Hero target, string reason)
+	{
+		try
+		{
+			Hero hero = target ?? ResolveNativeEncounterConversationHero() ?? EnsureEncounterTargetHero("native_conversation_taunt_attack");
+			if (!IsNativeEncounterConversationTauntApplicable(hero))
+			{
+				Logger.Log("MeetingTaunt", "Native attack tag ignored because current context is not a valid encounter conversation.");
+				return false;
+			}
+			PartyBase partyBase = ResolveNativeEncounterAttackDefenderParty(hero);
+			if (partyBase == null)
+			{
+				Logger.Log("MeetingTaunt", "Native attack tag ignored because defender party could not be resolved.");
+				return false;
+			}
+			SetTarget(hero);
+			MarkPendingForceNativeEncounterAttack(hero, partyBase, reason ?? "native_conversation_taunt_battle");
 			try
 			{
 				Campaign.Current?.ConversationManager?.EndConversation();
@@ -3507,8 +4182,48 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			catch
 			{
 			}
-			Logger.Log("MeetingTaunt", $"Battle escalation applied from taunt tag. Target={hero?.Name}, Reason={reason ?? "N/A"}");
 			return true;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("MeetingTaunt", "Request native encounter attack failed: " + ex.Message);
+			return false;
+		}
+	}
+
+	private static bool TryEscalateMeetingTauntToBattle(Hero target, string reason)
+	{
+		try
+		{
+			Hero hero = target ?? ResolveNativeEncounterConversationHero() ?? EnsureEncounterTargetHero("meeting_taunt_battle");
+			if (IsMeetingPseudoBattleTauntApplicable(hero))
+			{
+				TryApplyImmediateAttackConsequencesForEncounter(hero, reason ?? "meeting_taunt_battle");
+				try
+				{
+					Campaign.Current?.ConversationManager?.EndConversation();
+				}
+				catch
+				{
+				}
+				Logger.Log("MeetingTaunt", $"Meeting pseudo-battle escalation applied from taunt tag. Target={hero?.Name}, Reason={reason ?? "N/A"}");
+				return true;
+			}
+			if (IsNativeEncounterConversationTauntApplicable(hero))
+			{
+				bool flag = TryRequestNativeEncounterAttackFromConversation(hero, reason ?? "native_conversation_taunt_battle");
+				if (flag)
+				{
+					Logger.Log("MeetingTaunt", $"Native encounter attack requested from taunt tag. Target={hero?.Name}, Reason={reason ?? "N/A"}");
+				}
+				return flag;
+			}
+			if (!IsMeetingTauntApplicable(hero))
+			{
+				Logger.Log("MeetingTaunt", "Battle tag ignored because current context is not a valid hero meeting or encounter conversation.");
+				return false;
+			}
+			return false;
 		}
 		catch (Exception ex)
 		{

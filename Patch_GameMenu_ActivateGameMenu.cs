@@ -94,6 +94,11 @@ public static class Patch_GameMenu_ActivateGameMenu
 				Hero leaderHero = encounteredParty.LeaderHero;
 				if (leaderHero != null && leaderHero != Hero.MainHero && leaderHero.IsLord)
 				{
+					if (LordEncounterBehavior.IsVillageRaidEncounterContext(leaderHero))
+					{
+						Logger.LogTrace("UI_Intercept", $"Village raid context detected; keep native 'encounter' menu. Target={leaderHero.Name}");
+						return;
+					}
 					Logger.LogTrace("UI_Intercept", $"拦截到 'encounter' 菜单请求，重定向至 'AnimusForge_lord_encounter' (目标: {leaderHero.Name})");
 					LordEncounterBehavior.SetTarget(leaderHero);
 					if (PlayerEncounter.Current != null)

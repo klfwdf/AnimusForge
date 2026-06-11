@@ -1,0 +1,56 @@
+<Prefab>
+  <Window>
+    <Widget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" HorizontalAlignment="Right" SuggestedWidth="1000" MarginLeft="100" MarginRight="10" MarginTop="150" MarginBottom="80">
+      <Children>
+        <Widget Parameter.Title="Message log" WidthSizePolicy="StretchToParent" Sprite="StdAssets\Popup\canvas" SuggestedWidth="290" SuggestedHeight="700" MarginTop="30">
+          <Children>
+            <ButtonWidget DoNotPassEventsToChildren="false" Sprite="Standard.BackButton" HorizontalAlignment="Left" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedHeight="67" SuggestedWidth="87" Command.Click="CloseEx" IsEnabled="true">
+              <Children>
+              </Children>
+            </ButtonWidget>
+            <ButtonWidget DoNotPassEventsToChildren="false" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" HorizontalAlignment="Right" VerticalAlignment="Top" MarginTop="24" MarginRight="36" Command.Click="CloseEx" IsEnabled="true">
+              <Children>
+                <TextWidget WidthSizePolicy="CoverChildren" DoNotAcceptEvents="true" HeightSizePolicy="Fixed" SuggestedHeight="30" Brush="Conversation.HeaderText" Brush.TextHorizontalAlignment="Right" Text="关闭" Brush.FontSize="26" />
+              </Children>
+            </ButtonWidget>
+            <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" PositionYOffset="10" MarginTop="70">
+              <Children>
+                <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" HorizontalAlignment="Left">
+                  <Children>
+                    <ListPanel HeightSizePolicy="CoverChildren" WidthSizePolicy="StretchToParent" PositionXOffset="0" PositionYOffset="0">
+                      <Children>
+                        <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" LayoutImp.LayoutMethod="HorizontalLeftToRight">
+                          <Children>
+                            <ScrollablePanel WidthSizePolicy="CoverChildren" HeightSizePolicy="StretchToParent" AutoHideScrollBars="true" ClipRect="ItemListRect" InnerPanel="ItemListRect\ItemListPanel" MouseScrollAxis="Vertical" VerticalScrollbar="..\ItemListScrollbar2\Scrollbar">
+                              <Children>
+                                <Widget Id="ItemListRect" WidthSizePolicy="CoverChildren" HeightSizePolicy="StretchToParent" ClipContents="true">
+                                  <Children>
+                                    <ListPanel Id="ItemListPanel" DataSource="{Items}" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="VerticalBottomToTop">
+                                      <ItemTemplate>
+                                        <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginTop="6">
+                                          <Children>
+                                            <RichTextWidget WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="200" MarginLeft="0" Brush="Conversation.HeaderText" DoNotAcceptEvents="true" Brush.FontSize="20" Text="@ChatItemTime" />
+                                            <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginLeft="0" Brush="Conversation.HeaderText" Brush.FontSize="20" DoNotAcceptEvents="true" Text="@ChatText" Brush.TextHorizontalAlignment="Left" Brush.FontColor="@FontColor" />
+                                          </Children>
+                                        </ListPanel>
+                                      </ItemTemplate>
+                                    </ListPanel>
+                                  </Children>
+                                </Widget>
+                              </Children>
+                            </ScrollablePanel>
+                            <Standard.VerticalScrollbar Id="ItemListScrollbar2" HeightSizePolicy="StretchToParent" HorizontalAlignment="Right" VerticalAlignment="Bottom" />
+                          </Children>
+                        </ListPanel>
+                      </Children>
+                    </ListPanel>
+                  </Children>
+                </Widget>
+              </Children>
+            </ListPanel>
+          </Children>
+        </Widget>
+      </Children>
+    </Widget>
+  </Window>
+</Prefab>

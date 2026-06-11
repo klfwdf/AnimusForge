@@ -167,6 +167,22 @@ public class SubModule : MBSubModuleBase
 			}
 			try
 			{
+				ConversationVMCapturePatch.EnsurePatched();
+			}
+			catch (Exception ex10a)
+			{
+				Logger.LogTrace("SubModule", ">>> Conversation VM capture patch failed: " + ex10a.Message);
+			}
+			try
+			{
+				NativeConversationAnswerAreaController.EnsurePatched();
+			}
+			catch (Exception ex10b)
+			{
+				Logger.LogTrace("SubModule", ">>> Native conversation answer area patch failed: " + ex10b.Message);
+			}
+			try
+			{
 				PassageUsePointSafePatch.EnsurePatched();
 			}
 			catch (Exception ex11)
@@ -252,6 +268,14 @@ public class SubModule : MBSubModuleBase
 			catch (Exception ex18c)
 			{
 				Logger.LogTrace("SubModule", ">>> MilitaryExercise patches init failed: " + ex18c.Message);
+			}
+			try
+			{
+				DuelBehavior.RegisterHarmonyPatches(harmony);
+			}
+			catch (Exception ex18d0)
+			{
+				Logger.LogTrace("SubModule", ">>> DuelBehavior patches init failed: " + ex18d0.Message);
 			}
 			try
 			{
@@ -342,6 +366,10 @@ public class SubModule : MBSubModuleBase
 		ShoutTextInputPopup.ProcessDeferredCloseIfNeeded();
 		ShoutTextInputPopup.CloseForSystemInterruptionIfNeeded();
 		ShoutTextInputPopup.KeepMissionPausedIfOpen();
+		AnimusForgeConversationHistoryLogPopup.OnApplicationTick();
+		AnimusForgeNativeConversationOverlay.OnApplicationTick();
+		NativeConversationAnswerAreaController.OnApplicationTick();
+		ConversationHelper.Tick();
 		ProcessPendingInitialApiGuideNotice();
 		Logger.OnApplicationTick();
 		BannerlordExceptionSentinel.OnApplicationTick();

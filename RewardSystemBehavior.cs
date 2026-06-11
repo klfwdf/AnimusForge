@@ -11,6 +11,7 @@ using TaleWorlds.CampaignSystem.CampaignBehaviors;
 using TaleWorlds.CampaignSystem.CharacterDevelopment;
 using TaleWorlds.CampaignSystem.ComponentInterfaces;
 using TaleWorlds.CampaignSystem.Encounters;
+using TaleWorlds.CampaignSystem.Election;
 using TaleWorlds.CampaignSystem.MapEvents;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Party.PartyComponents;
@@ -3279,57 +3280,184 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		return true;
 	}
 
-	private static Clan FindReplacementRulingClanForRecruitment(Kingdom kingdom, Clan removedClan)
+	private static List<Clan> FindRulingClanCandidatesForRecruitmentElection(Kingdom kingdom, Clan excludedClan, Hero excludedLeader)
 	{
-		if (kingdom == null || kingdom.IsEliminated || kingdom.Clans == null)
-		{
-			return null;
-		}
+		List<Clan> fallback = new List<Clan>();
+		List<Clan> eligible = new List<Clan>();
 		try
 		{
-			Clan clan = kingdom.Clans.FirstOrDefault((Clan c) => c != null && c != removedClan && !c.IsEliminated && !c.IsUnderMercenaryService && Campaign.Current?.Models?.DiplomacyModel?.IsClanEligibleToBecomeRuler(c) == true);
-			if (clan != null)
+			if (kingdom == null || kingdom.IsEliminated || kingdom.Clans == null)
 			{
-				return clan;
+				return fallback;
+			}
+			foreach (Clan clan in kingdom.Clans)
+			{
+				if (clan == null || clan == excludedClan || clan.IsEliminated || clan.IsUnderMercenaryService || clan.Leader == null || clan.Leader == excludedLeader)
+				{
+					continue;
+				}
+				fallback.Add(clan);
+				try
+				{
+					if (Campaign.Current?.Models?.DiplomacyModel?.IsClanEligibleToBecomeRuler(clan) == true)
+					{
+						eligible.Add(clan);
+					}
+				}
+				catch
+				{
+				}
 			}
 		}
 		catch
 		{
+			return fallback;
 		}
+		List<Clan> source = eligible.Count > 0 ? eligible : fallback;
+		return source.OrderByDescending(GetRulingClanCandidateScoreForRecruitmentElection).ToList();
+	}
+
+	private static float GetRulingClanCandidateScoreForRecruitmentElection(Clan clan)
+	{
+		float result = 0f;
 		try
 		{
-			return kingdom.Clans.FirstOrDefault((Clan c) => c != null && c != removedClan && !c.IsEliminated && !c.IsUnderMercenaryService);
+			result = Campaign.Current?.Models?.DiplomacyModel?.GetClanStrength(clan) ?? 0f;
 		}
 		catch
 		{
-			return null;
+			result = 0f;
 		}
+		try
+		{
+			result += clan?.Influence ?? 0f;
+		}
+		catch
+		{
+		}
+		return result;
 	}
 
-	private static void RepairRulingClanAfterLeaderRecruitment(Kingdom kingdom, Clan removedClan, List<string> transitionNotes)
+	private static string BuildRecruitmentTransitionSummary(List<string> transitionNotes)
 	{
 		try
 		{
-			if (kingdom == null || kingdom.IsEliminated || removedClan == null || kingdom.RulingClan != removedClan)
+			if (transitionNotes == null || transitionNotes.Count == 0)
+			{
+				return "";
+			}
+			List<string> list = transitionNotes.Where((string x) => !string.IsNullOrWhiteSpace(x)).Select((string x) => x.Trim()).ToList();
+			if (list.Count == 0)
+			{
+				return "";
+			}
+			return "（" + string.Join("；", list) + "）";
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	private static void PrepareRulingClanTransitionForDepartingClan(Kingdom kingdom, Clan departingClan, List<string> transitionNotes, out bool destroyKingdomAfterDeparture)
+	{
+		destroyKingdomAfterDeparture = false;
+		try
+		{
+			if (kingdom == null || kingdom.IsEliminated || departingClan == null || kingdom.RulingClan != departingClan)
 			{
 				return;
 			}
 			string kingdomName = kingdom.Name?.ToString() ?? "旧王国";
-			Clan replacementClan = FindReplacementRulingClanForRecruitment(kingdom, removedClan);
-			if (replacementClan != null)
+			List<Clan> candidates = FindRulingClanCandidatesForRecruitmentElection(kingdom, departingClan, null);
+			if (candidates.Count == 0)
 			{
-				ChangeRulingClanAction.Apply(kingdom, replacementClan);
-				transitionNotes?.Add($"{kingdomName} 已由 {GetClanDisplayNameForNotification(replacementClan)} 接任执政家族");
+				destroyKingdomAfterDeparture = true;
+				transitionNotes?.Add($"{kingdomName} 已无可接任执政家族，将在目标家族离开后清理旧王国");
+				return;
+			}
+			Clan temporaryRulingClan = candidates[0];
+			ChangeRulingClanAction.Apply(kingdom, temporaryRulingClan);
+			if (candidates.Count > 1)
+			{
+				KingSelectionKingdomDecision decision = new KingSelectionKingdomDecision(temporaryRulingClan, departingClan)
+				{
+					IsEnforced = true
+				};
+				kingdom.AddDecision(decision, ignoreInfluenceCost: true);
+				transitionNotes?.Add($"{kingdomName} 已由 {GetClanDisplayNameForNotification(temporaryRulingClan)} 临时接任，并触发新统治者选举");
 			}
 			else
 			{
-				DestroyKingdomAction.Apply(kingdom);
-				transitionNotes?.Add($"{kingdomName} 已无可用执政家族，已按原版逻辑解散王国");
+				transitionNotes?.Add($"{kingdomName} 已由 {GetClanDisplayNameForNotification(temporaryRulingClan)} 接任执政家族");
 			}
 		}
 		catch (Exception ex)
 		{
-			Logger.Log("Logic", "[Reward] 修复旧王国执政家族失败: " + ex.Message);
+			Logger.Log("Logic", "[Reward] prepare departing ruling clan transition failed: " + ex.Message);
+			transitionNotes?.Add("旧王国执政家族修复失败：" + ex.Message);
+		}
+	}
+
+	private static void FinalizeRulingClanTransitionForDepartedClan(Kingdom kingdom, bool destroyKingdomAfterDeparture, List<string> transitionNotes)
+	{
+		if (!destroyKingdomAfterDeparture)
+		{
+			return;
+		}
+		try
+		{
+			if (kingdom == null || kingdom.IsEliminated)
+			{
+				return;
+			}
+			string kingdomName = kingdom.Name?.ToString() ?? "旧王国";
+			DestroyKingdomAction.Apply(kingdom);
+			transitionNotes?.Add($"{kingdomName} 已按原版逻辑解散");
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("Logic", "[Reward] finalize departed ruling clan transition failed: " + ex.Message);
+			transitionNotes?.Add("旧王国解散失败：" + ex.Message);
+		}
+	}
+
+	private static void RepairRulingClanAfterLeaderRecruitmentWithElection(Kingdom kingdom, Clan rulingClan, Hero removedLeader, List<string> transitionNotes)
+	{
+		try
+		{
+			if (kingdom == null || kingdom.IsEliminated || rulingClan == null || kingdom.RulingClan != rulingClan || rulingClan.Kingdom != kingdom)
+			{
+				return;
+			}
+			string kingdomName = kingdom.Name?.ToString() ?? "旧王国";
+			List<Clan> candidates = FindRulingClanCandidatesForRecruitmentElection(kingdom, null, removedLeader);
+			if (candidates.Count == 0)
+			{
+				DestroyKingdomAction.Apply(kingdom);
+				transitionNotes?.Add($"{kingdomName} 已无可接任执政家族，已按原版逻辑解散");
+				return;
+			}
+			if (candidates.Count > 1)
+			{
+				KingSelectionKingdomDecision decision = new KingSelectionKingdomDecision(rulingClan)
+				{
+					IsEnforced = true
+				};
+				kingdom.AddDecision(decision, ignoreInfluenceCost: true);
+				transitionNotes?.Add($"{kingdomName} 已因原国王离开触发新统治者选举");
+				return;
+			}
+			Clan onlyCandidate = candidates[0];
+			if (kingdom.RulingClan != onlyCandidate)
+			{
+				ChangeRulingClanAction.Apply(kingdom, onlyCandidate);
+			}
+			transitionNotes?.Add($"{kingdomName} 已由 {GetClanDisplayNameForNotification(onlyCandidate)} 直接接任执政");
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("Logic", "[Reward] repair ruling clan after leader recruitment failed: " + ex.Message);
 			transitionNotes?.Add("旧王国执政家族修复失败：" + ex.Message);
 		}
 	}
@@ -3363,6 +3491,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			// Capture the original clan before AddCompanionAction changes Hero.Clan through CompanionOf.
 			Clan originalClan = joiningHero.Clan;
 			Kingdom originalKingdom = originalClan?.Kingdom;
+			bool originalClanWasRulingClan = originalKingdom != null && originalKingdom.RulingClan == originalClan;
 			Settlement currentSettlement = joiningHero.CurrentSettlement;
 			Town governorTown = joiningHero.GovernorOf;
 			if (governorTown != null)
@@ -3379,6 +3508,10 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				{
 					ChangeClanLeaderAction.ApplyWithoutSelectedNewLeader(originalClan);
 					Hero newLeader = originalClan.Leader;
+					if (originalClanWasRulingClan && newLeader != null && newLeader != joiningHero)
+					{
+						RepairRulingClanAfterLeaderRecruitmentWithElection(originalKingdom, originalClan, joiningHero, transitionNotes);
+					}
 					if (newLeader == null || newLeader == joiningHero)
 					{
 						statusText = "执行失败：" + originalClanName + " 的族长继承未完成，已阻止将现任族长直接拉入队伍。";
@@ -3388,9 +3521,14 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				}
 				else
 				{
+					bool destroyOriginalKingdomAfterClanDestroyed = false;
+					if (originalClanWasRulingClan)
+					{
+						PrepareRulingClanTransitionForDepartingClan(originalKingdom, originalClan, transitionNotes, out destroyOriginalKingdomAfterClanDestroyed);
+					}
 					DestroyClanAction.ApplyByClanLeaderDeath(originalClan);
 					transitionNotes.Add(originalClanName + " 无可用继承人，已按原版族长死亡逻辑销毁原家族");
-					RepairRulingClanAfterLeaderRecruitment(originalKingdom, originalClan, transitionNotes);
+					FinalizeRulingClanTransitionForDepartedClan(originalKingdom, destroyOriginalKingdomAfterClanDestroyed, transitionNotes);
 				}
 			}
 			if (currentSettlement != null && joiningHero.CurrentSettlement != null)
@@ -3404,7 +3542,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				LocationComplex.Current.RemoveCharacterIfExists(joiningHero);
 			}
 			PlayerEncounter.LocationEncounter?.RemoveAccompanyingCharacter(joiningHero);
-			string transitionSummary = transitionNotes.Count > 0 ? "（" + string.Join("；", transitionNotes) + "）" : "";
+			string transitionSummary = BuildRecruitmentTransitionSummary(transitionNotes);
 			statusText = $"执行成功：{joiningHero.Name} 已加入玩家队伍{transitionSummary}。";
 			return true;
 		}
@@ -4489,11 +4627,16 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 					return false;
 				}
 				Kingdom oldKingdom = targetClan.Kingdom;
+				List<string> transitionNotes = new List<string>();
+				bool destroyOldKingdomAfterDeparture = false;
+				PrepareRulingClanTransitionForDepartingClan(oldKingdom, targetClan, transitionNotes, out destroyOldKingdomAfterDeparture);
 				if (targetClan.IsUnderMercenaryService)
 				{
 					ChangeKingdomAction.ApplyByLeaveKingdomAsMercenary(targetClan);
 					ChangeKingdomAction.ApplyByJoinToKingdom(targetClan, playerKingdom, default(CampaignTime), showNotification: true);
-					statusText = "执行成功：" + clanDisplayName + " 已结束旧雇佣关系，并作为领主加入 " + playerKingdom.Name + "（ClanId=" + (targetClan.StringId ?? "") + "）。";
+					FinalizeRulingClanTransitionForDepartedClan(oldKingdom, destroyOldKingdomAfterDeparture, transitionNotes);
+					string transitionSummary = BuildRecruitmentTransitionSummary(transitionNotes);
+					statusText = "执行成功：" + clanDisplayName + " 已结束旧雇佣关系，并作为领主加入 " + playerKingdom.Name + "（ClanId=" + (targetClan.StringId ?? "") + "）" + transitionSummary + "。";
 					return true;
 				}
 				if (oldKingdom != null)
@@ -4507,11 +4650,14 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 						ChangeKingdomAction.ApplyByLeaveKingdom(targetClan, showNotification: true);
 					}
 					ChangeKingdomAction.ApplyByJoinToKingdomByDefection(targetClan, oldKingdom, playerKingdom, default(CampaignTime), showNotification: true);
-					statusText = "执行成功：" + clanDisplayName + " 已脱离 " + oldKingdom.Name + "，并作为领主加入 " + playerKingdom.Name + "（ClanId=" + (targetClan.StringId ?? "") + "）。";
+					FinalizeRulingClanTransitionForDepartedClan(oldKingdom, destroyOldKingdomAfterDeparture, transitionNotes);
+					string transitionSummary = BuildRecruitmentTransitionSummary(transitionNotes);
+					statusText = "执行成功：" + clanDisplayName + " 已脱离 " + oldKingdom.Name + "，并作为领主加入 " + playerKingdom.Name + "（ClanId=" + (targetClan.StringId ?? "") + "）" + transitionSummary + "。";
 					return true;
 				}
 				ChangeKingdomAction.ApplyByJoinToKingdom(targetClan, playerKingdom, default(CampaignTime), showNotification: true);
-				statusText = "执行成功：" + clanDisplayName + " 已作为领主加入 " + playerKingdom.Name + "（ClanId=" + (targetClan.StringId ?? "") + "）。";
+				string independentTransitionSummary = BuildRecruitmentTransitionSummary(transitionNotes);
+				statusText = "执行成功：" + clanDisplayName + " 已作为领主加入 " + playerKingdom.Name + "（ClanId=" + (targetClan.StringId ?? "") + "）" + independentTransitionSummary + "。";
 				return true;
 			}
 			Kingdom kingdom2 = ResolveKingdomByTag(kingdomToken, giver);

@@ -186,7 +186,7 @@ public static class WorldEntityRetrievalService
 				return result;
 			}
 			result.MatchCount = count;
-			result.MainPromptBlock = BuildMainPromptBlock(playerDisplayName, heroes, settlements, clans, kingdoms, visibleParties);
+			result.MainPromptBlock = BuildMainPromptBlock(playerDisplayName, contextHero, heroes, settlements, clans, kingdoms, visibleParties);
 			result.PostprocessPromptBlock = BuildPostprocessPromptBlock(heroes, settlements, clans, kingdoms, visibleParties);
 			return result;
 		}
@@ -648,12 +648,12 @@ public static class WorldEntityRetrievalService
 		}
 	}
 
-	private static string BuildMainPromptBlock(string playerDisplayName, List<EntityMatch<Hero>> heroes, List<EntityMatch<Settlement>> settlements, List<EntityMatch<Clan>> clans, List<EntityMatch<Kingdom>> kingdoms, List<VisiblePartyCandidate> visibleParties)
+	private static string BuildMainPromptBlock(string playerDisplayName, Hero contextHero, List<EntityMatch<Hero>> heroes, List<EntityMatch<Settlement>> settlements, List<EntityMatch<Clan>> clans, List<EntityMatch<Kingdom>> kingdoms, List<VisiblePartyCandidate> visibleParties)
 	{
 		string player = string.IsNullOrWhiteSpace(playerDisplayName) ? "玩家" : playerDisplayName.Trim();
 		StringBuilder sb = new StringBuilder();
 		sb.AppendLine("你和" + player + "交流可能提到了以下信息：");
-		AppendHeroMainFacts(sb, heroes);
+		AppendHeroMainFacts(sb, heroes, contextHero);
 		AppendSettlementMainFacts(sb, settlements);
 		AppendClanMainFacts(sb, clans);
 		AppendKingdomMainFacts(sb, kingdoms);
@@ -685,6 +685,7 @@ public static class WorldEntityRetrievalService
 	{
 		StringBuilder sb = new StringBuilder();
 		sb.AppendLine("可能有效的信息：");
+		AppendPlayerPostprocessFacts(sb);
 		if (heroes != null && heroes.Count > 0)
 		{
 			sb.AppendLine("【人物】");
@@ -733,6 +734,28 @@ public static class WorldEntityRetrievalService
 		return sb.ToString().Trim();
 	}
 
+	private static void AppendPlayerPostprocessFacts(StringBuilder sb)
+	{
+		if (sb == null)
+		{
+			return;
+		}
+		try
+		{
+			Hero player = Hero.MainHero;
+			string id = (player?.StringId ?? "").Trim();
+			if (string.IsNullOrWhiteSpace(id))
+			{
+				return;
+			}
+			sb.AppendLine("【玩家本人】");
+			sb.AppendLine("1. 名称：" + SafeName(player.Name, "玩家") + "；固定ID：hero:" + id + "；用于FOLLOW玩家时目标类型写hero，id填写" + id + "。");
+		}
+		catch
+		{
+		}
+	}
+
 	private static void AppendVisiblePartyFacts(StringBuilder sb, List<VisiblePartyCandidate> parties)
 	{
 		if (sb == null || parties == null || parties.Count == 0)
@@ -748,7 +771,7 @@ public static class WorldEntityRetrievalService
 		}
 	}
 
-	private static void AppendHeroMainFacts(StringBuilder sb, List<EntityMatch<Hero>> matches)
+	private static void AppendHeroMainFacts(StringBuilder sb, List<EntityMatch<Hero>> matches, Hero contextHero)
 	{
 		if (matches == null || matches.Count == 0)
 		{
@@ -761,6 +784,11 @@ public static class WorldEntityRetrievalService
 			Hero hero = matches[i].Value;
 			sb.AppendLine((i + 1) + ". " + SafeName(hero?.Name, matches[i].Name) + "（编号：" + matches[i].Id + "；匹配分：" + FormatScore(matches[i].Score) + "；提及：" + matches[i].Mention + "）");
 			sb.AppendLine("所属家族：" + SafeName(hero?.Clan?.Name, "未知") + "；王国：" + FormatHeroKingdom(hero) + "；家族族长：" + SafeName(hero?.Clan?.Leader?.Name, "未知"));
+			string relationship = FormatHeroRelationshipForMainPrompt(contextHero, hero);
+			if (!string.IsNullOrWhiteSpace(relationship))
+			{
+				sb.AppendLine(relationship);
+			}
 			sb.AppendLine("特质：" + FormatHeroTraits(hero) + "；所有亲人：" + FormatHeroRelatives(hero));
 			sb.AppendLine("现在的位置：" + FormatHeroLocation(hero) + "；目前的状态：" + FormatHeroStatus(hero));
 			sb.AppendLine("年龄(Age)：" + FormatAge(hero) + "；生死状态(IsAlive)：" + FormatBool(hero != null && hero.IsAlive) + "；性别：" + FormatGender(hero) + "；职业/头衔(Occupation/Title)：" + FormatHeroOccupation(hero));
@@ -816,9 +844,139 @@ public static class WorldEntityRetrievalService
 			Kingdom kingdom = matches[i].Value;
 			sb.AppendLine((i + 1) + ". " + SafeName(kingdom?.Name, matches[i].Name) + "（编号：" + matches[i].Id + "；匹配分：" + FormatScore(matches[i].Score) + "；提及：" + matches[i].Mention + "）");
 			sb.AppendLine("国王名称：" + SafeName(kingdom?.Leader?.Name, "未知") + "；王国总兵力：" + FormatFloat(kingdom?.CurrentTotalStrength) + "；国家文化(Culture)：" + SafeName(kingdom?.Culture?.Name, kingdom?.Culture?.StringId ?? "未知"));
+			sb.AppendLine("王国定居点概览：" + FormatKingdomSettlementSummary(kingdom));
 			sb.AppendLine("所有家族与族长：" + FormatKingdomClans(kingdom));
 			sb.AppendLine("王国当前状态：" + FormatKingdomStatus(kingdom));
 		}
+	}
+
+	private static string FormatHeroRelationshipForMainPrompt(Hero contextHero, Hero targetHero)
+	{
+		if (contextHero == null || targetHero == null)
+		{
+			return "";
+		}
+		try
+		{
+			if (contextHero == targetHero)
+			{
+				return "与当前交谈NPC的关系：本人。";
+			}
+			List<string> parts = new List<string>();
+			try
+			{
+				int relation = contextHero.GetRelation(targetHero);
+				parts.Add("原版个人关系值：" + relation.ToString(CultureInfo.InvariantCulture) + "（" + FormatRelationBand(relation) + "）");
+			}
+			catch
+			{
+			}
+			AddKinshipRelationship(parts, contextHero, targetHero);
+			AddPoliticalRelationship(parts, contextHero, targetHero);
+			return parts.Count == 0 ? "" : ("与当前交谈NPC的关系：" + string.Join("；", parts) + "。");
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	private static void AddKinshipRelationship(List<string> parts, Hero contextHero, Hero targetHero)
+	{
+		try
+		{
+			if (contextHero.Spouse == targetHero)
+			{
+				parts.Add("配偶");
+			}
+			if (contextHero.Father == targetHero)
+			{
+				parts.Add("父亲");
+			}
+			if (contextHero.Mother == targetHero)
+			{
+				parts.Add("母亲");
+			}
+			if (targetHero.Father == contextHero || targetHero.Mother == contextHero)
+			{
+				parts.Add(targetHero.IsFemale ? "女儿" : "儿子");
+			}
+			if (contextHero.Siblings != null && contextHero.Siblings.Contains(targetHero))
+			{
+				parts.Add(targetHero.IsFemale ? "姐妹" : "兄弟");
+			}
+		}
+		catch
+		{
+		}
+	}
+
+	private static void AddPoliticalRelationship(List<string> parts, Hero contextHero, Hero targetHero)
+	{
+		try
+		{
+			if (contextHero.Clan != null && contextHero.Clan == targetHero.Clan)
+			{
+				parts.Add("同一家族：" + SafeName(contextHero.Clan.Name, "未知"));
+				if (contextHero.Clan.Leader == targetHero)
+				{
+					parts.Add("对方是当前交谈NPC的家族族长");
+				}
+				else if (contextHero.Clan.Leader == contextHero)
+				{
+					parts.Add("当前交谈NPC是对方的家族族长");
+				}
+			}
+			IFaction contextFaction = contextHero.MapFaction;
+			IFaction targetFaction = targetHero.MapFaction;
+			if (contextFaction != null && targetFaction != null)
+			{
+				if (contextFaction == targetFaction)
+				{
+					parts.Add("同一阵营：" + SafeName(contextFaction.Name, "未知"));
+				}
+				else if (contextFaction.IsAtWarWith(targetFaction))
+				{
+					parts.Add("敌对阵营：" + SafeName(contextFaction.Name, "未知") + " vs " + SafeName(targetFaction.Name, "未知"));
+				}
+				else
+				{
+					parts.Add("不同阵营：" + SafeName(contextFaction.Name, "未知") + " vs " + SafeName(targetFaction.Name, "未知"));
+				}
+			}
+		}
+		catch
+		{
+		}
+	}
+
+	private static string FormatRelationBand(int relation)
+	{
+		if (relation <= -80)
+		{
+			return "死敌";
+		}
+		if (relation <= -40)
+		{
+			return "敌对";
+		}
+		if (relation <= -10)
+		{
+			return "反感";
+		}
+		if (relation < 10)
+		{
+			return "中立";
+		}
+		if (relation < 40)
+		{
+			return "友好";
+		}
+		if (relation < 80)
+		{
+			return "亲近";
+		}
+		return "至交";
 	}
 
 	private static string FormatHeroKingdom(Hero hero)
@@ -1328,6 +1486,40 @@ public static class WorldEntityRetrievalService
 		{
 			List<string> names = (((IEnumerable<Clan>)kingdom?.Clans) ?? Enumerable.Empty<Clan>()).Where((Clan x) => x != null).Select((Clan x) => SafeName(x.Name, x.StringId) + "（族长：" + SafeName(x.Leader?.Name, "未知") + "）").Where((string x) => !string.IsNullOrWhiteSpace(x)).Take(24).ToList();
 			return names.Count == 0 ? "无" : string.Join("、", names);
+		}
+		catch
+		{
+			return "未知";
+		}
+	}
+
+	private static string FormatKingdomSettlementSummary(Kingdom kingdom)
+	{
+		if (kingdom == null)
+		{
+			return "未知";
+		}
+		try
+		{
+			List<Settlement> settlements = ((IEnumerable<Settlement>)Settlement.All ?? Enumerable.Empty<Settlement>())
+				.Where((Settlement x) => x != null && x.MapFaction == kingdom && (x.IsTown || x.IsCastle || x.IsVillage))
+				.OrderBy((Settlement x) => x.IsTown ? 0 : (x.IsCastle ? 1 : 2))
+				.ThenBy((Settlement x) => x.Name?.ToString() ?? "", StringComparer.OrdinalIgnoreCase)
+				.ToList();
+			if (settlements.Count == 0)
+			{
+				return "未发现归属该王国的城镇、城堡或村庄。";
+			}
+			List<string> sampleNames = settlements.Take(5).Select((Settlement x) => SafeName(x.Name, "未知")).Where((string x) => !string.IsNullOrWhiteSpace(x) && x != "未知").Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+			int townCount = settlements.Count((Settlement x) => x.IsTown);
+			int castleCount = settlements.Count((Settlement x) => x.IsCastle);
+			int villageCount = settlements.Count((Settlement x) => x.IsVillage);
+			string sampleText = sampleNames.Count == 0 ? "若干定居点" : string.Join("、", sampleNames);
+			if (settlements.Count > sampleNames.Count)
+			{
+				sampleText += "等";
+			}
+			return "此王国的定居点拥有" + sampleText + "；" + townCount.ToString(CultureInfo.InvariantCulture) + "个城镇，" + castleCount.ToString(CultureInfo.InvariantCulture) + "个城堡，" + villageCount.ToString(CultureInfo.InvariantCulture) + "个村庄。";
 		}
 		catch
 		{

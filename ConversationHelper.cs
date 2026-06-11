@@ -39,6 +39,30 @@ public static class ConversationHelper
 
 	public static bool HasActiveVM => _currentVM != null && (_dialogTextProp != null || _dialogTextField != null);
 
+	public static string GetCurrentDialogText()
+	{
+		object currentVM = _currentVM;
+		if (currentVM == null)
+		{
+			return "";
+		}
+		try
+		{
+			if (_dialogTextProp != null)
+			{
+				return (_dialogTextProp.GetValue(currentVM, null) as string) ?? "";
+			}
+			if (_dialogTextField != null)
+			{
+				return (_dialogTextField.GetValue(currentVM) as string) ?? "";
+			}
+		}
+		catch
+		{
+		}
+		return "";
+	}
+
 	private static object ResolveConversationVm(object vm)
 	{
 		if (vm == null)
