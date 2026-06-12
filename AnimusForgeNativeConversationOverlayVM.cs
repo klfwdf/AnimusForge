@@ -183,7 +183,7 @@ public sealed class AnimusForgeNativeConversationOverlayVM : ViewModel
 		_onShowHistory = onShowHistory;
 		_onGiveShow = onGiveShow;
 		_onEditPersona = onEditPersona;
-		PersonaEditButtonText = "编辑个性与背景";
+		PersonaEditButtonText = "编辑NPC";
 		IsPersonaEditVisible = false;
 		InputText = "";
 		AIChatHistoryButtonText = "对话历史";

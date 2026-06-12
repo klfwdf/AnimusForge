@@ -1,134 +1,191 @@
-# Free Conversation / Scene Shout Alignment
+# 信使 / 自由对话 / 场景喊话三渠道对齐规则
 
-This document records a hard maintenance rule for AnimusForge: free conversation and scene shout must share the same LLM request-body design. UI can be different, but prompt assembly, rule routing, history shape, and postprocess behavior must stay aligned.
+本文档是 AnimusForge 的硬性维护规则：**信使、自由对话、场景喊话三条 LLM 交流渠道，所有同类逻辑必须同步**。UI、触发方式和游戏流程可以不同，但请求体阶段、规则选择、历史结构、记忆注入、事实边界、后处理标签和执行入口必须保持同一套设计。
 
-## Scope
+## 适用范围
 
-- "Free conversation" means the AnimusForge input box opened during vanilla one-to-one conversation.
-- "Scene shout" means the existing scene shout / scene dialogue path driven by `ShoutBehavior`.
-- This document covers the LLM chain only: preprocess, main reply generation, and action postprocess.
-- This document does not require changing scene shout behavior to satisfy free conversation. Free conversation must follow scene shout.
+- 信使：`CourierDeliveryBehavior.cs` 中通过信使送信、收信、给予/展示物资后生成 NPC 回信的链路。
+- 自由对话：原版一对一对话中打开的 AnimusForge 输入框链路。
+- 场景喊话：`ShoutBehavior.cs` 中 T/Y 等场景内喊话、展示、给予、多人回应链路。
+- 本文档覆盖 LLM 链路：前处理、主回复、后处理、历史/记忆写入、动作标签执行。
+- UI 可按渠道不同实现，但 UI 不得引入独立请求体或独立规则语义。
 
-## Core Rule
+## 总原则
 
-Every free-conversation request body must correspond to the same stage in scene shout.
+三渠道必须按阶段一一对应：
 
-- Free-conversation preprocess must match scene-shout preprocess.
-- Free-conversation main reply request must match scene-shout main reply request.
-- Free-conversation action postprocess must match scene-shout action postprocess.
+- 信使前处理、自由对话前处理、场景喊话前处理必须共享同一套话题选择与规则资格判断。
+- 信使主链路、自由对话主链路、场景喊话主链路必须共享同一套记忆、规则、事实、历史结构。
+- 信使后处理、自由对话后处理、场景喊话后处理必须共享同一套标签规则、目标事实、解析器和执行入口。
 
-Do not mix all context types into all three stages. Each stage only receives the context that the corresponding scene-shout stage receives.
+不要把所有上下文塞进所有请求体。每个阶段只接收它对应阶段该接收的内容。新增功能时，应当扩展共享 helper 或共享配置，而不是在某个渠道里手写一份相似提示词。
 
-## Preprocess Alignment
+## 权威来源
 
-Free conversation must use the same topic-selection and rule-eligibility logic as scene shout.
+场景喊话当前是最完整的实时交互实现。除非后续明确抽象出新的统一 helper，否则：
 
-Required:
+- 前处理规则资格以场景喊话的条件系统为准。
+- 主链路 prompt block 结构以场景喊话为准。
+- 后处理标签注入与执行以场景喊话的统一入口为准。
+- 信使和自由对话应适配到这套结构，而不是各自发明请求体。
 
-- Use `MyBehavior.BuildShoutPromptContextForExternal(...)` as the entry point.
-- Use the same current NPC / current scene / target-character conditions as scene shout.
-- Use `BuildPreprocessExcludedRuleIdsForCurrentInteraction(...)` or its current scene-shout equivalent for selective rule injection.
-- Use the same auxiliary dialogue-history entry path as scene shout.
-- If free conversation has no valid scene agent index, it may use a native conversation history adapter, but the rendered text must still use scene-shout history wording.
+如果某功能因玩法原因不适用于某渠道，必须通过同一套 eligibility/exclusion 机制排除，并在代码或文档中说明原因。不能靠删 prompt、写特殊请求体、缩短历史窗口来规避。
 
-Forbidden:
+## 前处理对齐
 
-- Do not add a separate free-conversation preprocess request body.
-- Do not narrow rule eligibility only because the request came from vanilla conversation.
-- Do not bypass scene-shout runtime restrictions for Duel, Scene_Move, summon, follow, give/show, world-map party commands, or other action topics.
+三渠道前处理必须使用同一套话题选择和注入条件。
 
-## Main Reply Alignment
+必须保持：
 
-Free conversation main reply generation must use scene-shout prompt blocks and scene-shout message conversion.
+- 使用 `MyBehavior.BuildShoutPromptContextForExternal(...)` 或其后续统一替代入口。
+- 使用同一套 NPC、Hero、CharacterObject、AgentIndex、Culture、Kingdom、Settlement、场景、部队上下文判断。
+- 使用 `BuildPreprocessExcludedRuleIdsForCurrentInteraction(...)` 或其后续统一替代入口来决定哪些规则能进前处理。
+- 使用同一套 lore/rule 条件过滤，让前处理之前就完成“当前 NPC 和当前场景是否允许注入该规则”的判断。
+- 前处理命中的 `PreprocessRuleIds` 必须原样传给对应主链路和后处理。
 
-Required block order:
+允许的渠道差异：
 
-1. Recent dialogue history section from `SplitPersistedHeroHistorySections(...)`.
-2. Memory overview and memory blocks from `MyBehavior.BuildHistoryContextForExternal(...)`.
-3. Dynamic runtime context built from scene-shout helpers, including NPC identity, present NPC list, trust block, and miscellaneous runtime facts.
-4. Knowledge and selected rule block from `BuildSceneSystemRuleBlock(...)`.
-5. Conversation messages converted through `BuildStrictSceneMessagesForNpc(...)`.
+- 信使没有实时场景 agent 时，可传 `targetAgentIndex = -1`，但仍必须走共享前处理入口。
+- 信使可通过 `CourierExcludedRuleIds` 排除明显不适用的场景机制，例如决斗、领主大厅进门、场景移动等；这些排除必须是显式名单，不能改写请求体。
+- 自由对话没有有效场景 agent 时，可使用原版对话 adapter，但渲染进 LLM 前必须转换成场景喊话同形历史。
 
-Required helpers:
+禁止：
+
+- 禁止新增信使专用、自由对话专用或场景喊话专用的前处理请求体。
+- 禁止只按玩家输入关键词注入规则，绕过 NPC、场景、部队、定居点等资格判断。
+- 禁止把 scene-only、courier-only、native-only 条件写死在 prompt 文案里。
+- 禁止因为某渠道暂时缺上下文，就放宽规则资格。
+
+## 主链路对齐
+
+三渠道主回复请求体必须使用同一类 block 和同一类历史消息结构。
+
+必须同步的内容：
+
+- 最近对话历史。
+- 记忆总览。
+- 压缩记忆块。
+- 当前场景或当前通信上下文。
+- NPC 身份、性格、背景、关系、信任、阵营、角色、部队或定居点上下文。
+- 知识检索结果和规则正文块。
+- AFEF 事实边界说明。
+- 玩家当前输入或来信内容。
+
+自由对话和场景喊话应优先使用：
 
 - `BuildSceneSystemTopPromptIntroForSingle(...)`
 - `BuildSceneUserRuntimeContextForSingle(...)`
 - `BuildSceneSystemRuleBlock(...)`
 - `BuildSceneCompositeUserBlock(...)`
 - `BuildStrictSceneMessagesForNpc(...)`
-- `TryRenderSceneHistoryLine(...)` for any adapted free-conversation history lines
+- `TryRenderSceneHistoryLine(...)`
 
-Forbidden:
+信使可以有信件送达、随信物资、回信等待等专属运行时事实，但这些事实必须进入同一类历史/事实/运行时 block，不得形成另一套主链路语法。
 
-- Do not hardcode native-only text such as "you are in a vanilla conversation box".
-- Do not create headers such as `【原版对话当前台词】` or `【玩家输入】`.
-- Do not create a free-conversation-only message role format.
-- Do not add a second request-body implementation just to support the free-conversation UI.
+禁止：
 
-## Postprocess Alignment
+- 禁止为信使或自由对话写一套独立主链路请求体。
+- 禁止出现 native-only/courier-only 的私有历史格式最终进入 LLM 消息。
+- 禁止让某渠道拥有更短或更长的记忆窗口，除非共享配置明确允许。
+- 禁止主链路直接写动作标签格式；动作标签只属于后处理规则。
 
-Free conversation action postprocess must use the same postprocess path and history shape as scene shout.
+## 后处理对齐
 
-Required:
+三渠道后处理必须共享标签规则、运行时目标事实、解析器和执行入口。
 
-- Use `RunCourierActionPostprocessForExternal(...)` or the current unified scene-shout postprocess entry.
-- Pass the same topic-hit result from preprocess into postprocess.
-- Use the same runtime postprocess rule builders and tag normalizers as scene shout.
-- Build postprocess history from:
-  - `TrimPrivateRecentWindowForActionPostprocess(..., 5)`
-  - `BuildScenePublicHistorySection(...)`
-  - `BuildSceneCompositeUserBlock(...)`
-- Keep postprocess history at the same effective recent-window depth as scene shout unless scene shout itself changes.
+必须保持：
 
-Forbidden:
+- 使用 `ShoutBehavior.RunCourierActionPostprocessForExternal(...)` 或后续统一后处理入口。
+- 使用前处理命中的同一组 rule hits 决定 `{tag_rules}`。
+- `PostprocessRules` 只在对应话题命中且运行时资格成立时注入。
+- 后处理历史必须保留同等有效窗口，至少对齐场景喊话当前策略，例如 `TrimPrivateRecentWindowForActionPostprocess(..., 5)`、`BuildScenePublicHistorySection(...)`、`BuildSceneCompositeUserBlock(...)` 这一类结构。
+- 给予、展示、债务、交易、领地、部队、信使、投票交易、世界地图命令、英雄入队、决斗等标签必须走同一套解析和执行器。
 
-- Do not pass only the current player line and current NPC line.
-- Do not use native-only history labels.
-- Do not write a separate free-conversation postprocess request body.
-- Do not let free conversation use a shorter or richer postprocess context than scene shout for the same stage.
+禁止：
 
-## History And Facts
+- 禁止后处理只传当前玩家一句和 NPC 当前一句。
+- 禁止给某渠道单独缩短后处理历史。
+- 禁止在信使或自由对话中复制一份标签正则。
+- 禁止主链路答应了机制，但后处理没有对应 tag rules 或目标事实。
 
-Free conversation may keep its own temporary session history, but it must be rendered into scene-shout form before entering any LLM request.
+## 历史与记忆对齐
 
-Required:
+三渠道必须写入并读取同一套 AnimusForge 记忆结构。
 
-- Current vanilla NPC text should be recorded as an NPC dialogue turn before the player input is submitted.
-- Player input should be recorded as a player dialogue turn.
-- AFEF behavior facts must keep the same factual boundary as scene shout:
-  - `[AFEF玩家行为补充]`
-  - `[AFEF NPC行为补充]`
-- Claims inside normal dialogue history are not system facts.
-- Only AFEF-prefixed behavior facts can be treated as confirmed actions.
+必须保持：
 
-Forbidden:
+- 都通过 `MyBehavior.AppendExternalDialogueHistory(...)` 或对应统一入口写入历史。
+- 都进入最近对话历史、每日记忆草稿、压缩记忆块、记忆总览。
+- 都能被后续三渠道前处理和主链路读取，由前处理和主链路按同一规则选择使用。
+- 玩家发言使用同一类 `role=user` 场景消息语义。
+- NPC 发言使用同一类 `assistant` 语义。
+- 系统确认事实使用 AFEF 前缀，不得混入普通对话事实。
 
-- Do not treat a normal dialogue sentence like "X gave Y money" as a confirmed transfer.
-- Do not remove `role=user` style scene message conversion from adapted history.
-- Do not use a private native history format in final LLM messages.
+事实边界：
 
-## New Feature Checklist
+- 普通对话中的“我给你钱了”“我把物品交给你了”“我展示给你看了”都是口头陈述，不是事实。
+- 只有 `[AFEF玩家行为补充]` 和 `[AFEF NPC行为补充]` 这类系统事实才是已发生行为。
+- 信使送达、随信物资、回信、给予/展示、失败或丢失，也必须以 AFEF 事实写入。
 
-When adding any new scene-shout feature, check free conversation at the same time.
+非 Hero：
 
-- If a new topic can be selected by scene shout preprocess, confirm free conversation uses the same selection conditions.
-- If a new runtime instruction is injected into scene shout main reply, confirm free conversation receives it through the same helper path.
-- If a new `PostprocessRules` tag is added, confirm free conversation passes the same postprocess flags, runtime target facts, candidate lists, and normalizers.
-- If a feature is scene-only, gate it through the same eligibility/exclusion mechanism instead of adding free-conversation prompt text.
-- If a feature must close the current dialogue window before execution, implement that in the action executor, not by changing the LLM request body.
+- Hero NPC 使用完整 Hero 记忆结构。
+- 野外非 Hero 部队可使用 `af_nonhero:` 记忆 ID 接入同一套历史、每日草稿、压缩记忆块和总览。
+- 定居点、领主大厅、酒馆、街道等场景内普通非 Hero NPC 不应默认进入长期记忆，除非以后另有明确设计并同步三渠道规则。
 
-## Verification
+## 动作执行对齐
 
-Before considering alignment work done:
+三渠道触发同一机制时，最终游戏执行必须一致。
 
-- Search for native-only prompt labels:
-  - `rg "原版对话当前台词|【玩家输入】|原版对话框" ShoutBehavior.cs AIConfigHandler.cs MyBehavior.cs`
-- Build both versions:
-  - `dotnet build AnimusForge.csproj -c Debug /p:BannerlordApi=1.3`
-  - `dotnet build AnimusForge.csproj -c Debug /p:BannerlordApi=1.4`
-- In game, compare logs for the three stages:
-  - preprocess topic hits
-  - main reply request shape
-  - action postprocess history and selected tag rules
+必须保持：
 
-If scene shout and free conversation differ, treat it as a bug unless there is a documented hard gameplay reason.
+- 交易、给予、展示、债务、领地、部队、俘虏、投票交易、世界地图命令等使用同一执行器。
+- 信使由于异步送达，可在送达或回程节点执行动作，但执行结果和 AFEF 事实必须和自由对话、场景喊话一致。
+- 需要关闭当前对话窗口的机制，例如决斗、Scene_Move、跟随、找人、进入场景等，应在动作执行层处理，不应通过改 prompt 解决。
+- 不适用某渠道的机制必须显式 gate，而不是让 LLM 自己猜。
+
+## 新功能检查清单
+
+新增或修改任何交流功能时，必须同时检查三渠道：
+
+- 前处理：三渠道是否调用同一规则选择入口。
+- 前处理：NPC、场景、部队、定居点、关系、身份、是否 Hero、是否野外非 Hero 的条件是否一致。
+- 主链路：三渠道是否拿到同一类身份、记忆、规则、知识、事实、历史。
+- 主链路：是否没有泄露后处理动作标签格式。
+- 后处理：三渠道是否注入同一 `PostprocessRules`。
+- 后处理：三渠道是否传入同一类运行时目标事实和候选清单。
+- 后处理：三渠道是否使用同一解析器和执行器。
+- 历史：三渠道是否写入同一历史结构，并能被其他两渠道读取。
+- 记忆：三渠道是否都能进入每日草稿、压缩记忆块、记忆总览。
+- UI：UI 只负责输入、展示、焦点、按钮，不得改变请求体语义。
+- 日志：三渠道都应能追到前处理命中、主链路请求、后处理标签和执行结果。
+
+## 排查规则
+
+出现以下现象时，默认按三渠道不同步处理：
+
+- 信使知道的事，自由对话或场景喊话不知道。
+- 自由对话能触发的规则，场景喊话或信使不能按同条件触发。
+- 场景喊话后处理有标签，信使或自由对话后处理没有。
+- 同一历史在三个渠道里角色格式不同，例如缺少 `role=user` 或 NPC 发言不按 assistant 语义进入。
+- AFEF 事实只在某一渠道出现。
+- 主链路有物品、债务、领地、部队清单，后处理没有同一运行时清单。
+- 前处理在某渠道提前过滤规则，但另一个渠道没有同样过滤。
+
+## 验证
+
+代码改动后至少执行：
+
+```powershell
+dotnet build AnimusForge.csproj -c Debug /p:BannerlordApi=1.3
+dotnet build AnimusForge.csproj -c Debug /p:BannerlordApi=1.4
+```
+
+日志验证至少比较：
+
+- 信使、自由对话、场景喊话的 preprocess hits。
+- 三渠道主链路 request body 中的历史、记忆、规则、事实结构。
+- 三渠道后处理 `{tag_rules}`、目标事实、输出标签。
+- 机制执行后的 AFEF 事实是否写入同一 NPC 历史。
+
+只要三个渠道的同阶段逻辑不同步，就视为 bug，除非有明确文档说明的玩法例外。

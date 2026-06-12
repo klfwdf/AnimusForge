@@ -126,7 +126,7 @@ public sealed class AnimusForgeNativeConversationOverlay
 		}
 		FlushPendingPostprocessNotice();
 		UpdateWaitingDotsAnimation();
-		_dataSource.SetPersonaEditVisible(ShoutBehavior.CanEditNativeConversationPersonaForExternal());
+		_dataSource.SetPersonaEditVisible(ShoutBehavior.CanEditNativeConversationNpcForExternal());
 		if (!_dataSource.IsCustomAnswerVisible)
 		{
 			NativeConversationAnswerAreaController.SetSuppressed(false);
@@ -280,7 +280,7 @@ public sealed class AnimusForgeNativeConversationOverlay
 			_layer.InputRestrictions.ResetInputRestrictions();
 			_layer.IsFocusLayer = false;
 			ScreenManager.TryLoseFocus(_layer);
-			if (!ShoutBehavior.OpenNativeConversationPersonaEditorForExternal(RestoreFocusAfterHistory))
+			if (!ShoutBehavior.OpenNativeConversationNpcEditorForExternal(RestoreFocusAfterHistory))
 			{
 				ShowOverlayRoot();
 				RestoreFocusAfterHistory();
@@ -290,7 +290,7 @@ public sealed class AnimusForgeNativeConversationOverlay
 		{
 			ShowOverlayRoot();
 			RestoreFocusAfterHistory();
-			Logger.Log("NativeConversationOverlay", "[WARN] Failed to open persona editor: " + ex.Message);
+			Logger.Log("NativeConversationOverlay", "[WARN] Failed to open NPC editor: " + ex.Message);
 		}
 	}
 
@@ -437,6 +437,7 @@ public sealed class AnimusForgeNativeConversationOverlay
 				_dataSource.SetBusy(false);
 				if (_dataSource.IsCustomAnswerVisible)
 				{
+					ShowInputReadyMessage();
 					PlayInputReadySound();
 					FocusInputIfVisible();
 				}
@@ -549,13 +550,41 @@ public sealed class AnimusForgeNativeConversationOverlay
 
 	private static void PlayInputReadySound()
 	{
+		string[] soundEvents =
+		{
+			"event:/ui/notification/quest_update",
+			"event:/ui/notification/quest_start",
+			"event:/ui/notification/relation",
+			"event:/ui/default"
+		};
+		string lastError = null;
+		foreach (string soundEvent in soundEvents)
+		{
+			try
+			{
+				UISoundsHelper.PlayUISound(soundEvent);
+				return;
+			}
+			catch (Exception ex)
+			{
+				lastError = ex.Message;
+			}
+		}
+		if (!string.IsNullOrWhiteSpace(lastError))
+		{
+			Logger.Log("NativeConversationOverlay", "[WARN] Failed to play input ready sound: " + lastError);
+		}
+	}
+
+	private static void ShowInputReadyMessage()
+	{
 		try
 		{
-			UISoundsHelper.PlayUISound("event:/ui/default");
+			InformationManager.DisplayMessage(new InformationMessage("你现在可以回复了！", new Color(0.35f, 1f, 0.35f)));
 		}
 		catch (Exception ex)
 		{
-			Logger.Log("NativeConversationOverlay", "[WARN] Failed to play input ready sound: " + ex.Message);
+			Logger.Log("NativeConversationOverlay", "[WARN] Failed to show input ready message: " + ex.Message);
 		}
 	}
 

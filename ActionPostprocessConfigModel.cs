@@ -14,5 +14,7 @@ public class ActionPostprocessConfigModel
 
 	public string FallbackMoodTag { get; set; } = "[ACTION:MOOD:NEUTRAL]";
 
+	public List<PostprocessRuleEntry> WildernessPostprocessRules { get; set; } = new List<PostprocessRuleEntry>();
+
 	public List<PostprocessRuleEntry> MoodRules { get; set; } = new List<PostprocessRuleEntry>();
 }

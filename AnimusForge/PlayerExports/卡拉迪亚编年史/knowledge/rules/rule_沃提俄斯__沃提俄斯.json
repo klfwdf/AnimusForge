@@ -1,0 +1,88 @@
+﻿{
+  "Id": "rule_沃提俄斯",
+  "Keywords": [
+    "沃提俄斯",
+    "沃提俄斯皇帝"
+  ],
+  "RagShortTexts": [
+    "沃提俄斯皇帝被俘后用贵族头衔赎身开了先例"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "沃提俄斯皇帝？元老院里提这个名字，老家伙们会沉默片刻，然后有人说一句“那个被绑架的皇帝”，语气介于尴尬与不屑之间。但他开了个很坏的头。在那之前，帝国给蛮族军阀册封，那是征服之后的绥靖，是胜利者的恩赐。沃提俄斯开了个口子——被抓了，不给赎金给头衔。那些边境上的军阀们眼睛都看着呢，心想原来绑架皇帝比打仗还管用。这是开了个危险的先例。不过抛开这些成见，他算个平稳的守成之主。没大功，没大过，皇位稳当，税收尚可，他活得不算丢人。他被俘那件事，用一纸文书换了条命，还顺手把阿罗曼克家拴在了帝国体制内。阿罗曼克家后来什么样你们也看到了，温顺、开明、亲帝国。从结果倒推，沃提俄斯可能比我们想象的聪明。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": [
+          "clan_vlandia_3"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "沃提俄斯皇帝是我们家族的恩人。这句话写在家训里，刻在庄园正厅的石板上，一代代传下来。两百年前我们的祖先还是帝国眼中的边陲军阀，手上有兵有船，但没名没分。沃提俄斯皇帝被俘后，我们的祖先没有要赎金，要了头衔。从此卡拉蒂尔德家的祖先不再是被征调时点头、平时被提防的军阀头子，而是真正的帝国贵族。沃提俄斯后来完全可以反悔，回了帝都翻脸不认账，派军团来剿，但他没有。他守了约。这份信用我们念了两百年。有人说我们阿罗曼克家是瓦兰迪亚最不像瓦兰迪亚的家族，因为我们太文明，太温和，太讲规矩。这些规矩的源头，就是沃提俄斯用一纸文书教给我们的——贵族不是靠刀剑抢来的，是被帝国承认的。所以我们家几代人支持国王的仲裁治国，不是投机，是骨子里信秩序。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "阿罗曼克家的贵族头衔是捡来的。他们的祖先当军阀的时候私掠船跑得比谁都快，结果绑架了个皇帝，赎金没要，换了张纸。这张纸挂了两百年，阿罗曼克家就靠着这张纸装文明人。在御前会议上他们总是最讲规矩、最讲温和的那派，动不动就帝国传统。什么帝国传统？他们家跟帝国的唯一传统就是被抓了还讨价还价。不过话说回来，现在阿罗曼克家管着的地盘也算太平，他们的人不喜欢打仗，喜欢搞商业和外交。跟戴·提哈家不一样——北边那个是面上温和心里藏刀，阿罗曼克家是骨子里真软。但软也有软的好处，跟他们谈事情不费脑子，不用防着背后一刀。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "沃提俄斯？这是谁？不认得。哦，帝国那边的老皇帝？两百年前的事谁还记得清。"
+    }
+  ],
+  "TextMappings": []
+}

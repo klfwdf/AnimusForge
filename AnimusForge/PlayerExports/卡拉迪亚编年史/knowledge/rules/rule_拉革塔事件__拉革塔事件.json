@@ -1,0 +1,48 @@
+﻿{
+  "Id": "rule_拉革塔事件",
+  "Keywords": [
+    "拉革塔事件"
+  ],
+  "RagShortTexts": [
+    "拉革塔事件是帝国流放商人谋杀帕拉酋长夺城献礼的不光彩往事"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania",
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "帝国是通过阴谋诡计获取的拉革塔，因此并不光彩。一位流放的帝国商人谋杀了雇佣他的帕拉人酋长，占领城赛并邀请帝国殖民者，最后将此城献给了帝国。尽管元老院对他的行为严加谴责，却依然笑纳了馈赠。如今该地区已彻底卡拉德化，但北方的巴旦尼亚人依旧将此事铭记于心。每当帝国的使节又开始吹嘘条约和协定是神圣不可侵犯的时，巴旦尼亚人就会相互点头，不约而同道：“拉革塔”"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 80
+        }
+      },
+      "Content": "帝国是通过阴谋诡计获取的拉革塔，因此并不光彩。一位流放的帝国商人谋杀了雇佣他的帕拉人酋长，占领城赛并邀请帝国殖民者，最后将此城献给了帝国。尽管元老院对他的行为严加谴责，却依然笑纳了馈赠。如今该地区已彻底卡拉德化，但北方的巴旦尼亚人依旧将此事铭记于心。每当帝国的使节又开始吹嘘条约和协定是神圣不可侵犯的时，巴旦尼亚人就会相互点头，不约而同道：“拉革塔”"
+    }
+  ],
+  "TextMappings": []
+}

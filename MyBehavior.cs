@@ -1451,6 +1451,8 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private Action _devPersonaReturnAction;
 
+	private Action _devNpcEditorReturnAction;
+
 	private long _weeklyReportUiResumeAfterUtcTicks;
 
 	private bool _weeklyReportReopenAfterApiConfig;
@@ -2748,7 +2750,24 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				return;
 			}
-			List<CompressedMemoryBlock> sanitizedBlocks = SanitizeCompressedMemoryBlocks(blocks ?? LoadCompressedMemoryBlocks(hero));
+			TryEnqueueMemoryOverviewForMemoryId(heroId, hero.Name?.ToString() ?? "NPC", blocks ?? LoadCompressedMemoryBlocks(hero));
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("MemoryOverview", "[ERROR] TryEnqueueMemoryOverviewForHero failed: " + ex.Message);
+		}
+	}
+
+	private void TryEnqueueMemoryOverviewForMemoryId(string memoryId, string memoryName, List<CompressedMemoryBlock> blocks = null)
+	{
+		try
+		{
+			string heroId = NormalizeMemoryHeroId(memoryId);
+			if (!IsMemoryEntityEligibleForCompressedMemory(heroId))
+			{
+				return;
+			}
+			List<CompressedMemoryBlock> sanitizedBlocks = SanitizeCompressedMemoryBlocks(blocks ?? LoadCompressedMemoryBlocksById(heroId));
 			if (!HasMemoryOverviewPendingBlocks(heroId, sanitizedBlocks))
 			{
 				return;
@@ -2759,7 +2778,11 @@ public class MyBehavior : CampaignBehaviorBase
 			}
 			MemoryOverviewJob existing = _memoryOverviewQueue.FirstOrDefault((MemoryOverviewJob x) => x != null && string.Equals(NormalizeMemoryHeroId(x.HeroId), heroId, StringComparison.OrdinalIgnoreCase));
 			CompressedMemoryBlock latestBlock = sanitizedBlocks.OrderByDescending((CompressedMemoryBlock x) => x.GameDayIndex).ThenByDescending((CompressedMemoryBlock x) => x.EndHour).FirstOrDefault();
-			string heroName = hero.Name?.ToString() ?? latestBlock?.HeroName ?? "NPC";
+			string heroName = (memoryName ?? latestBlock?.HeroName ?? "NPC").Trim();
+			if (string.IsNullOrWhiteSpace(heroName))
+			{
+				heroName = "NPC";
+			}
 			if (existing != null)
 			{
 				existing.HeroName = string.IsNullOrWhiteSpace(existing.HeroName) ? heroName : existing.HeroName;
@@ -2781,7 +2804,7 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		catch (Exception ex)
 		{
-			Logger.Log("MemoryOverview", "[ERROR] TryEnqueueMemoryOverviewForHero failed: " + ex.Message);
+			Logger.Log("MemoryOverview", "[ERROR] TryEnqueueMemoryOverviewForMemoryId failed: " + ex.Message);
 		}
 	}
 
@@ -2800,12 +2823,8 @@ public class MyBehavior : CampaignBehaviorBase
 				{
 					continue;
 				}
-				Hero hero = FindHeroById(heroId);
-				if (hero == null)
-				{
-					continue;
-				}
-				TryEnqueueMemoryOverviewForHero(hero, item.Value);
+				string heroName = (item.Value ?? new List<CompressedMemoryBlock>()).Select((CompressedMemoryBlock x) => x?.HeroName).FirstOrDefault((string x) => !string.IsNullOrWhiteSpace(x)) ?? "NPC";
+				TryEnqueueMemoryOverviewForMemoryId(heroId, heroName, item.Value);
 			}
 			_memoryOverviewQueue = SanitizeMemoryOverviewQueue(_memoryOverviewQueue);
 		}
@@ -3133,9 +3152,10 @@ public class MyBehavior : CampaignBehaviorBase
 		};
 		try
 		{
-			Hero hero = FindHeroById(job?.HeroId);
+			string memoryId = NormalizeMemoryHeroId(job?.HeroId);
+			Hero hero = FindHeroById(memoryId);
 			DailyMemoryDraft draft = FindMemoryDraft(job);
-			if (hero == null || draft == null || draft.Lines == null || draft.Lines.Count <= 0)
+			if (!IsMemoryEntityEligibleForCompressedMemory(memoryId) || draft == null || draft.Lines == null || draft.Lines.Count <= 0)
 			{
 				result.Error = "找不到待总结 NPC 或原始历史。";
 				return result;
@@ -3243,9 +3263,9 @@ public class MyBehavior : CampaignBehaviorBase
 		};
 		try
 		{
-			Hero hero = FindHeroById(job?.HeroId);
 			string heroId = NormalizeMemoryHeroId(job?.HeroId);
-			if (!IsHeroNpcEligibleForCompressedMemory(hero) || string.IsNullOrWhiteSpace(heroId) || _compressedMemoryBlocks == null || !_compressedMemoryBlocks.TryGetValue(heroId, out var rawBlocks) || rawBlocks == null)
+			Hero hero = FindHeroById(heroId);
+			if (!IsMemoryEntityEligibleForCompressedMemory(heroId) || string.IsNullOrWhiteSpace(heroId) || _compressedMemoryBlocks == null || !_compressedMemoryBlocks.TryGetValue(heroId, out var rawBlocks) || rawBlocks == null)
 			{
 				result.Error = "找不到待总结 NPC 或压缩记忆块。";
 				return result;
@@ -3258,6 +3278,11 @@ public class MyBehavior : CampaignBehaviorBase
 				return result;
 			}
 			MemoryOverviewState existingState = GetMemoryOverviewState(heroId);
+			MemoryOverviewState promptExistingState = existingState ?? new MemoryOverviewState
+			{
+				HeroId = heroId,
+				HeroName = (job?.HeroName ?? "").Trim()
+			};
 			bool hasExistingSummary = existingState != null && !string.IsNullOrWhiteSpace(existingState.Summary);
 			HashSet<string> included = new HashSet<string>(hasExistingSummary ? (existingState.IncludedBlockIds ?? new List<string>()) : new List<string>(), StringComparer.OrdinalIgnoreCase);
 			List<CompressedMemoryBlock> sourceBlocks = hasExistingSummary ? allBlocks.Where((CompressedMemoryBlock block) => !IsMemoryBlockIncludedInOverview(block, included)).ToList() : allBlocks;
@@ -3274,10 +3299,10 @@ public class MyBehavior : CampaignBehaviorBase
 			int targetChars = GetMemoryOverviewTargetCharsFromSettings();
 			for (int i = 1; i <= Math.Max(1, maxAttempts); i++)
 			{
-				ApiCallResult apiCallResult = await CallUniversalApiDetailed(BuildMemoryOverviewSummarySystemPrompt(targetChars), BuildMemoryOverviewSummaryUserPrompt(hero, existingState, sourceBlocks, targetChars), logToEventLogs: false, eventLogSource: "MemoryOverview", route: UniversalApiRoute.Auxiliary, streamResponse: false, forceThinkingDisabled: true);
+				ApiCallResult apiCallResult = await CallUniversalApiDetailed(BuildMemoryOverviewSummarySystemPrompt(targetChars), BuildMemoryOverviewSummaryUserPrompt(hero, promptExistingState, sourceBlocks, targetChars), logToEventLogs: false, eventLogSource: "MemoryOverview", route: UniversalApiRoute.Auxiliary, streamResponse: false, forceThinkingDisabled: true);
 				if (apiCallResult.Success)
 				{
-					if (TryParseMemoryOverviewResponse(apiCallResult.Content, hero, job, existingState, sourceBlocks, out var state, out var error))
+					if (TryParseMemoryOverviewResponse(apiCallResult.Content, hero, job, promptExistingState, sourceBlocks, out var state, out var error))
 					{
 						result.State = state;
 						return result;
@@ -3662,7 +3687,15 @@ public class MyBehavior : CampaignBehaviorBase
 		List<DailyMemoryLine> afefLines = (draft.Lines ?? new List<DailyMemoryLine>()).Where((DailyMemoryLine x) => x != null && x.IsAfef).ToList();
 		int startHour = normalLines.Concat(afefLines).Select((DailyMemoryLine x) => MBMath.ClampInt(x.GameHour, 0, 23)).DefaultIfEmpty(0).Min();
 		int endHour = normalLines.Concat(afefLines).Select((DailyMemoryLine x) => MBMath.ClampInt(x.GameHour, 0, 23)).DefaultIfEmpty(0).Max();
-		List<string> scenes = normalLines.Concat(afefLines).Select((DailyMemoryLine x) => (x.Scene ?? "").Trim()).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+		List<string> scenes = normalLines.Concat(afefLines).Select(ResolveMemoryLineSceneForPrompt).Where((string x) => !string.IsNullOrWhiteSpace(x) && !IsUnknownMemorySceneLabel(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+		if (scenes.Count == 0)
+		{
+			string fallbackScene = ResolveCurrentMemorySceneLabel();
+			if (!IsUnknownMemorySceneLabel(fallbackScene))
+			{
+				scenes.Add(fallbackScene.Trim());
+			}
+		}
 		stringBuilder.AppendLine("标题元数据（由游戏决定，不要改写进 rich_title）：");
 		stringBuilder.AppendLine("日期：" + text);
 		stringBuilder.AppendLine("时间：" + FormatMemoryHourRange(startHour, endHour));
@@ -3757,24 +3790,24 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
-		Hero hero = FindHeroById(job.HeroId);
-		if (hero == null)
+		string memoryId = NormalizeMemoryHeroId(job.HeroId);
+		if (!IsMemoryEntityEligibleForCompressedMemory(memoryId))
 		{
 			return;
 		}
-		List<CompressedMemoryBlock> blocks = LoadCompressedMemoryBlocks(hero);
+		List<CompressedMemoryBlock> blocks = LoadCompressedMemoryBlocksById(memoryId);
 		blocks.RemoveAll((CompressedMemoryBlock x) => x != null && x.GameDayIndex == job.GameDayIndex);
 		blocks.Add(block);
-		SaveCompressedMemoryBlocks(hero, blocks);
-		List<DailyMemoryDraft> drafts = LoadDailyMemoryDrafts(hero);
+		SaveCompressedMemoryBlocksById(memoryId, blocks);
+		List<DailyMemoryDraft> drafts = LoadDailyMemoryDraftsById(memoryId);
 		drafts.RemoveAll((DailyMemoryDraft x) => x != null && x.GameDayIndex == job.GameDayIndex);
-		SaveDailyMemoryDrafts(hero, drafts);
+		SaveDailyMemoryDraftsById(memoryId, drafts);
 		if (_memorySummaryQueue != null)
 		{
-			_memorySummaryQueue.RemoveAll((MemorySummaryJob x) => x != null && string.Equals(NormalizeMemoryHeroId(x.HeroId), NormalizeMemoryHeroId(job.HeroId), StringComparison.OrdinalIgnoreCase) && x.GameDayIndex == job.GameDayIndex);
+			_memorySummaryQueue.RemoveAll((MemorySummaryJob x) => x != null && string.Equals(NormalizeMemoryHeroId(x.HeroId), memoryId, StringComparison.OrdinalIgnoreCase) && x.GameDayIndex == job.GameDayIndex);
 		}
 		Logger.Log("CompressedMemory", "summary_success hero=" + (job.HeroId ?? "") + " day=" + job.GameDayIndex + " title=" + (block.RichTitle ?? ""));
-		TryEnqueueMemoryOverviewForHero(hero, blocks);
+		TryEnqueueMemoryOverviewForMemoryId(memoryId, job.HeroName, blocks);
 	}
 
 	private void MarkMemorySummaryFailure(MemorySummaryJob job, string error)
@@ -6136,16 +6169,12 @@ public class MyBehavior : CampaignBehaviorBase
 	private static string BuildRebelKingdomNamingSystemPrompt()
 	{
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.AppendLine("你是一名负责为当前剧本世界中的叛乱政权命名的史官。");
-		stringBuilder.AppendLine("你的任务是根据给定素材，为一个刚刚脱离旧国家的新国家生成国家名称与百科简介。");
-		stringBuilder.AppendLine("命名要求：");
-		stringBuilder.AppendLine("1. 名称必须符合当前剧本的中世纪风格，不要使用现代政治术语。");
-		stringBuilder.AppendLine("2. 尽量以原王国名称为基础生成名称，尽量不要使用地名和家族名，可根据叛乱的原因命名，但原王国如果是帝国，那么不可使用帝国后缀，以及称帝");
-		stringBuilder.AppendLine("3. 正式名要自然、庄重、可作为百科词条标题；简称要更短，适合显示。");
-		stringBuilder.AppendLine("4. 不要与现有王国重名。");
-		stringBuilder.AppendLine("5. 百科简介应像原版百科文本，简洁、客观、概括其建立背景。");
-		stringBuilder.AppendLine("6. 只输出固定字段，不要解释。");
-		stringBuilder.AppendLine(" ");
+		string text = (DuelSettings.GetSettings()?.KingdomRebellionSystemPrompt ?? "").Replace("\r", "").Trim();
+		if (!string.IsNullOrWhiteSpace(text))
+		{
+			stringBuilder.AppendLine(text);
+			stringBuilder.AppendLine(" ");
+		}
 		stringBuilder.AppendLine("输出格式：");
 		stringBuilder.AppendLine("[NAME]正式国名");
 		stringBuilder.AppendLine("[SHORT]简称");
@@ -8411,13 +8440,18 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private static string BuildPlayerAddressedInput(Hero hero, string playerText)
 	{
+		return BuildPlayerAddressedInputForName(hero?.Name?.ToString(), playerText);
+	}
+
+	private static string BuildPlayerAddressedInputForName(string npcName, string playerText)
+	{
 		string text = (playerText ?? "").Trim();
 		if (string.IsNullOrWhiteSpace(text))
 		{
 			return "";
 		}
 		string text2 = BuildPlayerPublicDisplayNameForPrompt();
-		string text3 = hero?.Name?.ToString()?.Trim();
+		string text3 = (npcName ?? "").Trim();
 		if (string.IsNullOrWhiteSpace(text3))
 		{
 			text3 = "该NPC";
@@ -8440,19 +8474,37 @@ public class MyBehavior : CampaignBehaviorBase
 		return text + "\n" + text2;
 	}
 
-	private static string AppendPlayerCustomPromptRuleToSystemPrompt(string systemPrompt)
+	private static string JoinPromptSections(params string[] sections)
 	{
-		string text = (systemPrompt ?? "").Trim();
-		string text2 = (DuelSettings.GetSettings()?.PlayerCustomPromptRule ?? "").Replace("\r", "").Trim();
-		if (string.IsNullOrWhiteSpace(text2))
+		if (sections == null || sections.Length == 0)
 		{
-			return text;
+			return "";
 		}
+		List<string> list = new List<string>();
+		foreach (string section in sections)
+		{
+			string text = (section ?? "").Trim();
+			if (!string.IsNullOrWhiteSpace(text))
+			{
+				list.Add(text);
+			}
+		}
+		return string.Join("\n", list);
+	}
+
+	private static string BuildPlayerCustomPromptRuleBlock()
+	{
+		string text = (DuelSettings.GetSettings()?.PlayerCustomPromptRule ?? "").Replace("\r", "").Trim();
 		if (string.IsNullOrWhiteSpace(text))
 		{
-			return "请遵循以下规则参与互动：\n" + text2;
+			return "";
 		}
-		return "请遵循以下规则参与互动：\n" + text2 + "\n" + text;
+		return "请遵循以下规则参与互动：\n" + text;
+	}
+
+	private static string AppendPlayerCustomPromptRuleToSystemPrompt(string systemPrompt)
+	{
+		return JoinPromptSections(BuildPlayerCustomPromptRuleBlock(), systemPrompt);
 	}
 
 	private const string SceneHistorySessionMarkerPrefix = "[AF_SCENE_SESSION:";
@@ -13011,6 +13063,22 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private static string AppendNpcPersonaGenerationRequirementsToSystemPrompt(string systemPrompt)
+	{
+		string text = (systemPrompt ?? "").Trim();
+		string text2 = (DuelSettings.GetSettings()?.NpcPersonaGenerationRequirements ?? "").Replace("\r", "").Trim();
+		if (string.IsNullOrWhiteSpace(text2))
+		{
+			return text;
+		}
+		string text3 = "【玩家自定义生成要求】\n" + text2;
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return text3;
+		}
+		return text + "\n\n" + text3;
+	}
+
 	private async Task EnsureNpcPersonaGeneratedAsync(Hero hero)
 	{
 		if (hero == null)
@@ -13049,6 +13117,7 @@ public class MyBehavior : CampaignBehaviorBase
 		try
 		{
 			string sys = "你是《骑马与砍杀2：霸主》NPC的人设生成器。你只输出严格 JSON，不要输出任何额外文字。JSON 仅包含两个字段：personality 和 background。personality 大约 300 个中文字符；background 大约 300 个中文字符。内容必须符合提供的事实，不要杜撰与事实冲突的家族关系或身份；若事实中提供了势力/效忠信息，必须保持一致，禁止声称效忠于其他统治者或属于其他势力。";
+			sys = AppendNpcPersonaGenerationRequirementsToSystemPrompt(sys);
 			string facts = BuildHeroFactsForPersonaGeneration(hero);
 			string user = "请基于以下信息生成该 NPC 的【个性】与【历史背景】。必须综合“人物百科背景”“家族背景”“所在家族百科背景”“王国百科背景”“家族族长背景”；这些素材是事实来源，不要复制成百科原文。\n" + facts;
 			ApiCallResult apiCallResult = await CallUniversalApiDetailed(sys, user, route: UniversalApiRoute.Auxiliary);
@@ -13139,6 +13208,7 @@ public class MyBehavior : CampaignBehaviorBase
 		try
 		{
 			string sys = "你是《骑马与砍杀2：霸主》NPC的人设生成器。你只输出严格 JSON，不要输出任何额外文字。JSON 仅包含两个字段：personality 和 background。personality 大约 300 个中文字符；background 大约 300 个中文字符。内容必须符合提供的事实，不要杜撰与事实冲突的家族关系、身份或势力。";
+			sys = AppendNpcPersonaGenerationRequirementsToSystemPrompt(sys);
 			StringBuilder userSb = new StringBuilder();
 			userSb.AppendLine("请基于以下信息生成该 NPC 升格为玩家同伴后的【个性】与【历史背景】。");
 			userSb.AppendLine("写作风格沿用首次见到 Hero NPC 的人设格式：具体、可用于后续对话，不要写成系统说明。");
@@ -13555,9 +13625,14 @@ public class MyBehavior : CampaignBehaviorBase
 				{
 					return hero.PartyBelongedTo.Party;
 				}
-				if (hero.IsPrisoner && hero.PartyBelongedToAsPrisoner != null)
+				if (hero.IsPrisoner)
 				{
-					return hero.PartyBelongedToAsPrisoner;
+					PartyBase captiveCounterparty = ResolvePartyTransferCounterpartyForCaptiveHero(hero);
+					if (captiveCounterparty != null)
+					{
+						return captiveCounterparty;
+					}
+					return null;
 				}
 				if (hero.Clan?.Leader?.PartyBelongedTo?.Party != null)
 				{
@@ -13619,6 +13694,79 @@ public class MyBehavior : CampaignBehaviorBase
 		catch
 		{
 			return null;
+		}
+	}
+
+	private static PartyBase ResolvePartyTransferCounterpartyForCaptiveHero(Hero captiveHero)
+	{
+		if (captiveHero == null)
+		{
+			return null;
+		}
+		PartyBase party = NormalizePartyTransferCounterparty(captiveHero.PartyBelongedTo?.Party);
+		if (party != null)
+		{
+			return party;
+		}
+		party = NormalizePartyTransferCounterparty(captiveHero.Clan?.Leader?.PartyBelongedTo?.Party);
+		if (party != null)
+		{
+			return party;
+		}
+		try
+		{
+			foreach (Hero clanHero in captiveHero.Clan?.Heroes ?? Enumerable.Empty<Hero>())
+			{
+				if (clanHero == null || clanHero == captiveHero || !clanHero.IsAlive || clanHero.IsPrisoner)
+				{
+					continue;
+				}
+				party = NormalizePartyTransferCounterparty(clanHero.PartyBelongedTo?.Party);
+				if (party != null)
+				{
+					return party;
+				}
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			Settlement home = captiveHero.HomeSettlement;
+			if (home?.Party != null && home.OwnerClan == captiveHero.Clan)
+			{
+				party = NormalizePartyTransferCounterparty(home.Party);
+				if (party != null)
+				{
+					return party;
+				}
+			}
+		}
+		catch
+		{
+		}
+		return null;
+	}
+
+	private static PartyBase NormalizePartyTransferCounterparty(PartyBase party)
+	{
+		if (party == null || IsPlayerMainPartyBase(party))
+		{
+			return null;
+		}
+		return party;
+	}
+
+	private static bool IsPlayerMainPartyBase(PartyBase party)
+	{
+		try
+		{
+			return party != null && (party == PartyBase.MainParty || party.MobileParty == MobileParty.MainParty);
+		}
+		catch
+		{
+			return false;
 		}
 	}
 
@@ -15198,6 +15346,51 @@ public class MyBehavior : CampaignBehaviorBase
 		return NormalizeMemoryHeroId(hero?.StringId);
 	}
 
+	private const string NonHeroMemoryIdPrefix = "af_nonhero:";
+
+	private static bool IsNonHeroMemoryId(string memoryId)
+	{
+		string text = NormalizeMemoryHeroId(memoryId);
+		return text.StartsWith(NonHeroMemoryIdPrefix, StringComparison.OrdinalIgnoreCase) && text.Length > NonHeroMemoryIdPrefix.Length;
+	}
+
+	private static string BuildNonHeroMemoryId(string unnamedKey)
+	{
+		string text = (unnamedKey ?? "").Trim().ToLowerInvariant();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return "";
+		}
+		return NormalizeMemoryHeroId(NonHeroMemoryIdPrefix + text);
+	}
+
+	public static string BuildNonHeroMemoryIdForExternal(string unnamedKey)
+	{
+		return BuildNonHeroMemoryId(unnamedKey);
+	}
+
+	private static bool IsMemoryEntityEligibleForCompressedMemory(string memoryId)
+	{
+		string text = NormalizeMemoryHeroId(memoryId);
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return false;
+		}
+		if (IsNonHeroMemoryId(text))
+		{
+			return true;
+		}
+		try
+		{
+			Hero hero = FindHeroById(text);
+			return IsHeroNpcEligibleForCompressedMemory(hero);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
 	private static bool IsHeroNpcEligibleForCompressedMemory(Hero hero)
 	{
 		return hero != null && !string.IsNullOrWhiteSpace(hero.StringId) && (Hero.MainHero == null || !object.ReferenceEquals(hero, Hero.MainHero));
@@ -15579,7 +15772,12 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private List<DailyMemoryDraft> LoadDailyMemoryDrafts(Hero hero)
 	{
-		string text = GetMemoryHeroId(hero);
+		return LoadDailyMemoryDraftsById(GetMemoryHeroId(hero));
+	}
+
+	private List<DailyMemoryDraft> LoadDailyMemoryDraftsById(string memoryId)
+	{
+		string text = NormalizeMemoryHeroId(memoryId);
 		if (string.IsNullOrWhiteSpace(text))
 		{
 			return new List<DailyMemoryDraft>();
@@ -15597,7 +15795,12 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private void SaveDailyMemoryDrafts(Hero hero, List<DailyMemoryDraft> drafts)
 	{
-		string text = GetMemoryHeroId(hero);
+		SaveDailyMemoryDraftsById(GetMemoryHeroId(hero), drafts);
+	}
+
+	private void SaveDailyMemoryDraftsById(string memoryId, List<DailyMemoryDraft> drafts)
+	{
+		string text = NormalizeMemoryHeroId(memoryId);
 		if (string.IsNullOrWhiteSpace(text))
 		{
 			return;
@@ -15619,7 +15822,12 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private List<CompressedMemoryBlock> LoadCompressedMemoryBlocks(Hero hero)
 	{
-		string text = GetMemoryHeroId(hero);
+		return LoadCompressedMemoryBlocksById(GetMemoryHeroId(hero));
+	}
+
+	private List<CompressedMemoryBlock> LoadCompressedMemoryBlocksById(string memoryId)
+	{
+		string text = NormalizeMemoryHeroId(memoryId);
 		if (string.IsNullOrWhiteSpace(text))
 		{
 			return new List<CompressedMemoryBlock>();
@@ -15637,7 +15845,12 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private void SaveCompressedMemoryBlocks(Hero hero, List<CompressedMemoryBlock> blocks)
 	{
-		string text = GetMemoryHeroId(hero);
+		SaveCompressedMemoryBlocksById(GetMemoryHeroId(hero), blocks);
+	}
+
+	private void SaveCompressedMemoryBlocksById(string memoryId, List<CompressedMemoryBlock> blocks)
+	{
+		string text = NormalizeMemoryHeroId(memoryId);
 		if (string.IsNullOrWhiteSpace(text))
 		{
 			return;
@@ -15662,7 +15875,7 @@ public class MyBehavior : CampaignBehaviorBase
 		try
 		{
 			string text = (ShoutUtils.GetCurrentSceneDescription() ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
-			if (!string.IsNullOrWhiteSpace(text))
+			if (!IsUnknownMemorySceneLabel(text))
 			{
 				return text;
 			}
@@ -15692,12 +15905,69 @@ public class MyBehavior : CampaignBehaviorBase
 		catch
 		{
 		}
+		try
+		{
+			string text4 = BuildCurrentWildernessMemorySceneLabel();
+			if (!string.IsNullOrWhiteSpace(text4))
+			{
+				return text4;
+			}
+		}
+		catch
+		{
+		}
 		return "大地图或未知场景";
+	}
+
+	private static bool IsUnknownMemorySceneLabel(string scene)
+	{
+		string text = (scene ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return true;
+		}
+		return string.Equals(text, "未知场景", StringComparison.Ordinal)
+			|| string.Equals(text, "大地图或未知场景", StringComparison.Ordinal)
+			|| string.Equals(text, "某个地方", StringComparison.Ordinal);
+	}
+
+	private static string BuildCurrentWildernessMemorySceneLabel()
+	{
+		try
+		{
+			MobileParty party = MobileParty.MainParty;
+			if (party == null)
+			{
+				return "";
+			}
+			Settlement settlement = Helpers.SettlementHelper.FindNearestSettlementToMobileParty(party, MobileParty.NavigationType.All, (Settlement x) => x != null && !x.IsHideout);
+			string settlementName = (settlement?.Name?.ToString() ?? "").Trim();
+			if (string.IsNullOrWhiteSpace(settlementName))
+			{
+				return "";
+			}
+			return settlementName + "附近的野外";
+		}
+		catch
+		{
+			return "";
+		}
 	}
 
 	private void AppendDailyMemoryLine(Hero hero, string speaker, string text, bool isAfef, bool isLlmDialogue, int sceneSessionId = -1)
 	{
 		if (!IsHeroNpcEligibleForCompressedMemory(hero))
+		{
+			return;
+		}
+		string heroName = (hero.Name?.ToString() ?? "NPC").Trim();
+		AppendDailyMemoryLineById(GetMemoryHeroId(hero), string.IsNullOrWhiteSpace(heroName) ? "NPC" : heroName, speaker, text, isAfef, isLlmDialogue, sceneSessionId);
+	}
+
+	private void AppendDailyMemoryLineById(string memoryId, string memoryName, string speaker, string text, bool isAfef, bool isLlmDialogue, int sceneSessionId = -1)
+	{
+		string normalizedMemoryId = NormalizeMemoryHeroId(memoryId);
+		if (!IsMemoryEntityEligibleForCompressedMemory(normalizedMemoryId))
 		{
 			return;
 		}
@@ -15709,15 +15979,15 @@ public class MyBehavior : CampaignBehaviorBase
 		int dayIndex = (int)CampaignTime.Now.ToDays;
 		string gameDate = CampaignTime.Now.ToString();
 		int hour = GetCurrentHourOfDaySafeForPrompt();
-		string heroId = GetMemoryHeroId(hero);
-		List<DailyMemoryDraft> list = LoadDailyMemoryDrafts(hero);
+		string heroId = normalizedMemoryId;
+		List<DailyMemoryDraft> list = LoadDailyMemoryDraftsById(heroId);
 		DailyMemoryDraft dailyMemoryDraft = list.FirstOrDefault((DailyMemoryDraft x) => x != null && x.GameDayIndex == dayIndex);
 		if (dailyMemoryDraft == null)
 		{
 			dailyMemoryDraft = new DailyMemoryDraft
 			{
 				HeroId = heroId,
-				HeroName = hero.Name?.ToString() ?? "NPC",
+				HeroName = string.IsNullOrWhiteSpace(memoryName) ? "NPC" : memoryName.Trim(),
 				GameDayIndex = dayIndex,
 				GameDate = gameDate
 			};
@@ -15744,7 +16014,7 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			dailyMemoryDraft.HasLlmDialogue = true;
 		}
-		SaveDailyMemoryDrafts(hero, list);
+		SaveDailyMemoryDraftsById(heroId, list);
 	}
 
 	private List<DialogueDay> LoadDialogueHistory(Hero hero)
@@ -15753,11 +16023,16 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			return new List<DialogueDay>();
 		}
+		return LoadDialogueHistoryById(hero.StringId);
+	}
+
+	private List<DialogueDay> LoadDialogueHistoryById(string memoryId)
+	{
 		if (_dialogueHistory == null)
 		{
 			_dialogueHistory = new Dictionary<string, List<DialogueDay>>();
 		}
-		string stringId = hero.StringId;
+		string stringId = NormalizeMemoryHeroId(memoryId);
 		if (string.IsNullOrEmpty(stringId))
 		{
 			return new List<DialogueDay>();
@@ -15766,7 +16041,7 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			if (RemoveExpiredSingleUseNpcFactLines(value))
 			{
-				SaveDialogueHistory(hero, value);
+				SaveDialogueHistoryById(stringId, value);
 			}
 			return value;
 		}
@@ -15910,11 +16185,19 @@ public class MyBehavior : CampaignBehaviorBase
 	{
 		if (hero != null && records != null)
 		{
+			SaveDialogueHistoryById(hero.StringId, records);
+		}
+	}
+
+	private void SaveDialogueHistoryById(string memoryId, List<DialogueDay> records)
+	{
+		if (records != null)
+		{
 			if (_dialogueHistory == null)
 			{
 				_dialogueHistory = new Dictionary<string, List<DialogueDay>>();
 			}
-			string stringId = hero.StringId;
+			string stringId = NormalizeMemoryHeroId(memoryId);
 			if (!string.IsNullOrEmpty(stringId))
 			{
 				_dialogueHistory[stringId] = records;
@@ -15944,6 +16227,28 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
+	public static void AppendExternalNonHeroDialogueHistory(string nonHeroMemoryId, string npcName, string playerText, string aiText, string extraFact)
+	{
+		try
+		{
+			(Campaign.Current?.GetCampaignBehavior<MyBehavior>())?.AppendDialogueHistoryById(nonHeroMemoryId, npcName, playerText, aiText, extraFact);
+		}
+		catch
+		{
+		}
+	}
+
+	public static void AppendExternalNonHeroSceneDialogueHistory(string nonHeroMemoryId, string npcName, string playerText, string aiText, string extraFact, int sceneSessionId)
+	{
+		try
+		{
+			(Campaign.Current?.GetCampaignBehavior<MyBehavior>())?.AppendDialogueHistoryById(nonHeroMemoryId, npcName, playerText, aiText, extraFact, sceneSessionId);
+		}
+		catch
+		{
+		}
+	}
+
 	private void AppendDialogueHistory(Hero hero, string playerText, string aiText, string extraFact, int sceneSessionId = -1)
 	{
 		if (hero == null || (string.IsNullOrWhiteSpace(playerText) && string.IsNullOrWhiteSpace(aiText) && string.IsNullOrWhiteSpace(extraFact)))
@@ -15957,9 +16262,31 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				npcNameForMemory = "NPC";
 			}
+			AppendDialogueHistoryById(GetMemoryHeroId(hero), npcNameForMemory, playerText, aiText, extraFact, sceneSessionId);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("DialogueHistory", "[错误] 追加失败: " + ex.Message);
+		}
+	}
+
+	private void AppendDialogueHistoryById(string memoryId, string npcNameForMemory, string playerText, string aiText, string extraFact, int sceneSessionId = -1)
+	{
+		string normalizedMemoryId = NormalizeMemoryHeroId(memoryId);
+		if (!IsMemoryEntityEligibleForCompressedMemory(normalizedMemoryId) || (string.IsNullOrWhiteSpace(playerText) && string.IsNullOrWhiteSpace(aiText) && string.IsNullOrWhiteSpace(extraFact)))
+		{
+			return;
+		}
+		try
+		{
+			npcNameForMemory = (npcNameForMemory ?? "NPC").Trim();
+			if (string.IsNullOrWhiteSpace(npcNameForMemory))
+			{
+				npcNameForMemory = "NPC";
+			}
 			if (!string.IsNullOrWhiteSpace(playerText))
 			{
-				AppendDailyMemoryLine(hero, BuildPlayerPublicDisplayNameForPrompt(), BuildPlayerAddressedInput(hero, playerText), isAfef: false, isLlmDialogue: true, sceneSessionId: sceneSessionId);
+				AppendDailyMemoryLineById(normalizedMemoryId, npcNameForMemory, BuildPlayerPublicDisplayNameForPrompt(), BuildPlayerAddressedInputForName(npcNameForMemory, playerText), isAfef: false, isLlmDialogue: true, sceneSessionId: sceneSessionId);
 			}
 			if (!string.IsNullOrWhiteSpace(extraFact))
 			{
@@ -15968,7 +16295,7 @@ public class MyBehavior : CampaignBehaviorBase
 				{
 					memoryFact = "[AFEF玩家行为补充] " + memoryFact;
 				}
-				AppendDailyMemoryLine(hero, "AFEF", memoryFact, isAfef: true, isLlmDialogue: false, sceneSessionId: sceneSessionId);
+				AppendDailyMemoryLineById(normalizedMemoryId, npcNameForMemory, "AFEF", memoryFact, isAfef: true, isLlmDialogue: false, sceneSessionId: sceneSessionId);
 			}
 			if (!string.IsNullOrWhiteSpace(aiText))
 			{
@@ -15977,12 +16304,12 @@ public class MyBehavior : CampaignBehaviorBase
 				{
 					memoryAiText = npcNameForMemory + ": " + memoryAiText;
 				}
-				AppendDailyMemoryLine(hero, npcNameForMemory, memoryAiText, isAfef: false, isLlmDialogue: true, sceneSessionId: sceneSessionId);
+				AppendDailyMemoryLineById(normalizedMemoryId, npcNameForMemory, npcNameForMemory, memoryAiText, isAfef: false, isLlmDialogue: true, sceneSessionId: sceneSessionId);
 			}
-			List<DialogueDay> list = LoadDialogueHistory(hero);
+			List<DialogueDay> list = LoadDialogueHistoryById(normalizedMemoryId);
 			int dayIndex = (int)CampaignTime.Now.ToDays;
 			string gameDate = CampaignTime.Now.ToString();
-			string text = hero.Name?.ToString() ?? "NPC";
+			string text = npcNameForMemory;
 			DialogueDay dialogueDay = list.FirstOrDefault((DialogueDay d) => d.GameDayIndex == dayIndex);
 			if (dialogueDay == null)
 			{
@@ -15995,7 +16322,7 @@ public class MyBehavior : CampaignBehaviorBase
 			}
 			if (!string.IsNullOrWhiteSpace(playerText))
 			{
-				string text2 = BuildPlayerAddressedInput(hero, playerText);
+				string text2 = BuildPlayerAddressedInputForName(npcNameForMemory, playerText);
 				dialogueDay.Lines.Add((sceneSessionId >= 0) ? TagSceneSessionHistoryLine(text2, sceneSessionId) : text2);
 			}
 			if (!string.IsNullOrWhiteSpace(extraFact))
@@ -16062,7 +16389,7 @@ public class MyBehavior : CampaignBehaviorBase
 				}
 				dialogueDay2.Lines.Add(entry.Item3);
 			}
-			SaveDialogueHistory(hero, list3);
+			SaveDialogueHistoryById(normalizedMemoryId, list3);
 		}
 		catch (Exception ex)
 		{
@@ -16160,6 +16487,23 @@ public class MyBehavior : CampaignBehaviorBase
 				return "";
 			}
 			return myBehavior.BuildHistoryContext(hero, maxLines, currentInput, secondaryInput);
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	public static string BuildNonHeroHistoryContextForExternal(string nonHeroMemoryId, string npcName, int maxLines = 20, string currentInput = null, string secondaryInput = null)
+	{
+		try
+		{
+			MyBehavior myBehavior = Campaign.Current?.GetCampaignBehavior<MyBehavior>();
+			if (myBehavior == null)
+			{
+				return "";
+			}
+			return myBehavior.BuildHistoryContextById(nonHeroMemoryId, npcName, maxLines, currentInput, secondaryInput);
 		}
 		catch
 		{
@@ -17314,6 +17658,54 @@ public class MyBehavior : CampaignBehaviorBase
 		catch (Exception ex)
 		{
 			Logger.Log("EncyclopediaPersona", "[WARN] 打开 Hero 个性背景编辑失败: " + ex.Message);
+			try
+			{
+				onFinished?.Invoke();
+			}
+			catch
+			{
+			}
+		}
+	}
+
+	public static void OpenHeroNpcEditorForExternal(Hero hero)
+	{
+		OpenHeroNpcEditorForExternal(hero, null);
+	}
+
+	public static void OpenHeroNpcEditorForExternal(Hero hero, Action onFinished)
+	{
+		try
+		{
+			if (!IsDevDataManagementEnabledForExternal())
+			{
+				InformationManager.DisplayMessage(new InformationMessage("开发者数据管理未开启（请在 MCM 中启用）。"));
+				try
+				{
+					onFinished?.Invoke();
+				}
+				catch
+				{
+				}
+				return;
+			}
+			MyBehavior myBehavior = Campaign.Current?.GetCampaignBehavior<MyBehavior>();
+			if (myBehavior == null || hero == null)
+			{
+				try
+				{
+					onFinished?.Invoke();
+				}
+				catch
+				{
+				}
+				return;
+			}
+			myBehavior.OpenDevNpcEditorFromExternal(hero, onFinished);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("NpcEditor", "[WARN] 打开 HeroNPC 编辑失败: " + ex.Message);
 			try
 			{
 				onFinished?.Invoke();
@@ -19690,9 +20082,33 @@ public class MyBehavior : CampaignBehaviorBase
 			return "";
 		}
 		string text = (string.IsNullOrWhiteSpace(line.GameDate) ? ("第" + line.GameDayIndex + "日") : line.GameDate.Trim());
-		string text2 = string.IsNullOrWhiteSpace(line.Scene) ? "未知场景" : line.Scene.Trim();
+		string text2 = ResolveMemoryLineSceneForPrompt(line);
 		string text3 = string.IsNullOrWhiteSpace(line.Speaker) ? (line.IsAfef ? "AFEF" : "对话") : line.Speaker.Trim();
 		return "[" + text + " " + MBMath.ClampInt(line.GameHour, 0, 23) + "时｜" + text2 + "｜" + text3 + "] " + line.Text.Trim();
+	}
+
+	private static string ResolveMemoryLineSceneForPrompt(DailyMemoryLine line)
+	{
+		string scene = (line?.Scene ?? "").Trim();
+		if (!IsUnknownMemorySceneLabel(scene))
+		{
+			return scene;
+		}
+		try
+		{
+			if (line != null && line.GameDayIndex == GetCurrentGameDayIndexSafe())
+			{
+				string fallback = ResolveCurrentMemorySceneLabel();
+				if (!IsUnknownMemorySceneLabel(fallback))
+				{
+					return fallback.Trim();
+				}
+			}
+		}
+		catch
+		{
+		}
+		return "未知场景";
 	}
 
 	private static int CountDailyMemorySummarySourceChars(DailyMemoryDraft draft)
@@ -20004,7 +20420,12 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private string BuildRecentDialogueMemoryContext(Hero hero, int currentDay)
 	{
-		List<DailyMemoryDraft> list = LoadDailyMemoryDrafts(hero);
+		return BuildRecentDialogueMemoryContextById(GetMemoryHeroId(hero), currentDay);
+	}
+
+	private string BuildRecentDialogueMemoryContextById(string memoryId, int currentDay)
+	{
+		List<DailyMemoryDraft> list = LoadDailyMemoryDraftsById(memoryId);
 		if (list == null || list.Count <= 0)
 		{
 			return "";
@@ -20067,12 +20488,17 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private string BuildMemoryOverviewContext(Hero hero)
 	{
-		if (!IsHeroNpcEligibleForCompressedMemory(hero))
+		return BuildMemoryOverviewContextById(GetMemoryHeroId(hero));
+	}
+
+	private string BuildMemoryOverviewContextById(string memoryId)
+	{
+		string heroId = NormalizeMemoryHeroId(memoryId);
+		if (!IsMemoryEntityEligibleForCompressedMemory(heroId))
 		{
 			return "";
 		}
-		string heroId = GetMemoryHeroId(hero);
-		List<CompressedMemoryBlock> blocks = LoadCompressedMemoryBlocks(hero);
+		List<CompressedMemoryBlock> blocks = LoadCompressedMemoryBlocksById(heroId);
 		MemoryOverviewState state = GetMemoryOverviewState(heroId);
 		if (state != null && !string.IsNullOrWhiteSpace(state.LastError) && blocks != null && blocks.Count >= GetMemoryOverviewStartBlockCountFromSettings() && HasMemoryOverviewPendingBlocks(heroId, blocks))
 		{
@@ -20091,7 +20517,13 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private string BuildCompressedMemoryContext(Hero hero, string currentInput, string secondaryInput)
 	{
-		List<CompressedMemoryBlock> list = LoadCompressedMemoryBlocks(hero);
+		return BuildCompressedMemoryContextById(GetMemoryHeroId(hero), currentInput, secondaryInput);
+	}
+
+	private string BuildCompressedMemoryContextById(string memoryId, string currentInput, string secondaryInput)
+	{
+		string heroId = NormalizeMemoryHeroId(memoryId);
+		List<CompressedMemoryBlock> list = LoadCompressedMemoryBlocksById(heroId);
 		if (list == null || list.Count <= 0)
 		{
 			return "";
@@ -20116,19 +20548,19 @@ public class MyBehavior : CampaignBehaviorBase
 			int selectableCandidateLimit = Math.Max(selectableFinalCount, candidateLimit - ((latestBlock != null) ? 1 : 0));
 			List<CompressedMemoryBlock> selectableBlocks = list.Where((CompressedMemoryBlock x) => x != null && (latestBlock == null || !string.Equals((x.Id ?? "").Trim(), latestBlockId, StringComparison.OrdinalIgnoreCase))).ToList();
 			candidates = new List<MemoryRecallCandidate>();
-			List<DailyMemoryDraft> drafts = LoadDailyMemoryDrafts(hero);
+			List<DailyMemoryDraft> drafts = LoadDailyMemoryDraftsById(heroId);
 			if (selectableFinalCount > 0 && selectableBlocks.Count > 0)
 			{
-				if (!TryBuildMemoryRecallCandidates(hero, selectableBlocks, currentInput, secondaryInput, drafts, selectableCandidateLimit, out candidates, out var error))
+				if (!TryBuildMemoryRecallCandidates(null, selectableBlocks, currentInput, secondaryInput, drafts, selectableCandidateLimit, out candidates, out var error))
 				{
-					Logger.Log("CompressedMemory", "[ERROR] recall failed hero=" + (hero?.StringId ?? "") + " error=" + error);
+					Logger.Log("CompressedMemory", "[ERROR] recall failed hero=" + heroId + " error=" + error);
 					return "";
 				}
 				if (candidates.Count > selectableFinalCount)
 				{
 					if (!TrySelectMemoryIdsWithPreprocess(candidates, selectableFinalCount, currentInput, secondaryInput, out var selectedIds, out var error2))
 					{
-						Logger.Log("CompressedMemory", "[ERROR] preprocess failed hero=" + (hero?.StringId ?? "") + " error=" + error2);
+						Logger.Log("CompressedMemory", "[ERROR] preprocess failed hero=" + heroId + " error=" + error2);
 						return "";
 					}
 					HashSet<int> selected = new HashSet<int>(selectedIds);
@@ -20194,35 +20626,45 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			return "";
 		}
+		return BuildHistoryContextById(GetMemoryHeroId(hero), hero.Name?.ToString() ?? "NPC", maxLines, currentInput, secondaryInput);
+	}
+
+	private string BuildHistoryContextById(string memoryId, string memoryName, int maxLines = 0, string currentInput = null, string secondaryInput = null)
+	{
+		string normalizedMemoryId = NormalizeMemoryHeroId(memoryId);
+		if (!IsMemoryEntityEligibleForCompressedMemory(normalizedMemoryId))
+		{
+			return "";
+		}
 		try
 		{
 			int currentDay = (int)CampaignTime.Now.ToDays;
 			StringBuilder stringBuilder = new StringBuilder(4096);
-			string recentDialogueContext = BuildRecentDialogueMemoryContext(hero, currentDay);
+			string recentDialogueContext = BuildRecentDialogueMemoryContextById(normalizedMemoryId, currentDay);
 			if (!string.IsNullOrWhiteSpace(recentDialogueContext))
 			{
 				stringBuilder.AppendLine(recentDialogueContext);
 				stringBuilder.AppendLine();
 			}
-			string memoryOverviewContext = BuildMemoryOverviewContext(hero);
+			string memoryOverviewContext = BuildMemoryOverviewContextById(normalizedMemoryId);
 			if (!string.IsNullOrWhiteSpace(memoryOverviewContext))
 			{
 				stringBuilder.AppendLine(memoryOverviewContext);
 				stringBuilder.AppendLine();
 			}
-			string compressedMemoryContext = BuildCompressedMemoryContext(hero, currentInput, secondaryInput);
+			string compressedMemoryContext = BuildCompressedMemoryContextById(normalizedMemoryId, currentInput, secondaryInput);
 			if (!string.IsNullOrWhiteSpace(compressedMemoryContext))
 			{
 				stringBuilder.AppendLine(compressedMemoryContext);
 				stringBuilder.AppendLine();
 			}
 			string text4 = stringBuilder.ToString().TrimEnd();
-			Logger.Log("DialogueHistory", string.Format("compressed_context hero={0} chars={1} blocks={2} drafts={3}", hero.StringId ?? "", text4.Length, LoadCompressedMemoryBlocks(hero).Count, LoadDailyMemoryDrafts(hero).Count));
+			Logger.Log("DialogueHistory", string.Format("compressed_context hero={0} chars={1} blocks={2} drafts={3}", normalizedMemoryId, text4.Length, LoadCompressedMemoryBlocksById(normalizedMemoryId).Count, LoadDailyMemoryDraftsById(normalizedMemoryId).Count));
 			Logger.Obs("History", "build_context", new Dictionary<string, object>
 			{
-				["heroId"] = hero.StringId ?? "",
-				["memoryBlocks"] = LoadCompressedMemoryBlocks(hero).Count,
-				["dailyDrafts"] = LoadDailyMemoryDrafts(hero).Count,
+				["heroId"] = normalizedMemoryId,
+				["memoryBlocks"] = LoadCompressedMemoryBlocksById(normalizedMemoryId).Count,
+				["dailyDrafts"] = LoadDailyMemoryDraftsById(normalizedMemoryId).Count,
 				["npcRecall"] = !string.IsNullOrWhiteSpace(secondaryInput),
 				["chars"] = text4.Length
 			});
@@ -30400,6 +30842,30 @@ public class MyBehavior : CampaignBehaviorBase
 		}).ThenBy((WeeklyEventMaterialPreviewGroup x) => x.Title ?? "", StringComparer.OrdinalIgnoreCase).ToList();
 	}
 
+	private static void AppendWeeklyReportWritingRequirements(StringBuilder stringBuilder)
+	{
+		if (stringBuilder == null)
+		{
+			return;
+		}
+		string text = "";
+		try
+		{
+			text = (DuelSettings.GetSettings()?.WeeklyReportWritingRequirements ?? "").Replace("\r", "").Trim();
+		}
+		catch
+		{
+			text = "";
+		}
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return;
+		}
+		stringBuilder.AppendLine(" ");
+		stringBuilder.AppendLine("写作要求：");
+		stringBuilder.AppendLine(text);
+	}
+
 	private static string BuildWeeklyReportSystemPrompt(WeeklyEventMaterialPreviewGroup group)
 	{
 		WeeklyReportPromptProfile weeklyReportPromptProfile = GetWeeklyReportPromptProfile();
@@ -30411,25 +30877,7 @@ public class MyBehavior : CampaignBehaviorBase
 		stringBuilder.AppendLine("你是一名负责整理当前剧本世界时局的史官。");
 		stringBuilder.AppendLine("你不是在自由编造故事，而是在根据给定素材生成一篇流利、可信、克制的周报。");
 		stringBuilder.AppendLine(text2);
-		stringBuilder.AppendLine(" ");
-		stringBuilder.AppendLine("写作要求：");
-		stringBuilder.AppendLine("1. 必须覆盖本周素材中的关键变化，但不必逐条复述；允许将同类信息合并表达。");
-		stringBuilder.AppendLine("2. 不要编造素材中没有明确支持的核心事实，不要把别国内容误写进本国周报。");
-		stringBuilder.AppendLine("3. 如果素材偏零碎，应提炼成局势观察；如果素材很多，应归纳成若干主线。");
-		stringBuilder.AppendLine("4. 文风应像编年史、政局纪要或贵族周报，清楚、流利、克制，不要写成小说对白。");
-		stringBuilder.AppendLine("5. 不要使用系统术语、字段名、StableKey、素材标签或开发者说明。不要用数字描述变化，多用形容词描述变化");
-		stringBuilder.AppendLine("5.1 定居点易主必须遵循素材中的方式：若素材写明交易/买卖移交或非攻城，不得写成攻陷、攻下、夺城或围城胜利。");
-		stringBuilder.AppendLine("5.2 不要使用原版默认大陆名；若需要指代大范围地理，只写“大陆”“世界”或具体王国、城镇名称。");
-		stringBuilder.AppendLine("5.5 军事胜利通常提升稳定度，军事失利通常降低稳定度（仅在素材支持时）。");
-		if (flag2)
-		{
-			stringBuilder.AppendLine("6. 这是压缩模式，只允许输出标题、短摘要和标签，不允许输出正文。");
-			stringBuilder.AppendLine("7. 短摘要要适合后续注入 NPC prompt，尽量保留最关键的事实锚点。");
-		}
-		else
-		{
-			stringBuilder.AppendLine("6. 标题要简洁，正文要完整，短摘要要适合后续注入 NPC prompt。");
-		}
+		AppendWeeklyReportWritingRequirements(stringBuilder);
 		stringBuilder.AppendLine(" ");
 		stringBuilder.AppendLine("篇幅要求：");
 		stringBuilder.AppendLine($"- 当前档位：{weeklyReportPromptProfile.Label}");
@@ -30450,7 +30898,6 @@ public class MyBehavior : CampaignBehaviorBase
 		stringBuilder.AppendLine("[TAGS]");
 		stringBuilder.AppendLine("STAB_FLAT");
 		stringBuilder.AppendLine(" ");
-		stringBuilder.AppendLine("如果素材不足以支持重大变化，也要如实写出本周局势概况，不要硬造戏剧化转折。");
 		if (flag2)
 		{
 			stringBuilder.AppendLine("TAGS 里必须且只能有一个稳定度评级标签，格式必须是 STAB_DOWN_4、STAB_DOWN_3、STAB_DOWN_2、STAB_DOWN_1、STAB_FLAT、STAB_UP_1、STAB_UP_2、STAB_UP_3、STAB_UP_4 中的一个。");
@@ -30472,15 +30919,7 @@ public class MyBehavior : CampaignBehaviorBase
 		stringBuilder.AppendLine("你是一名负责整理当前剧本世界时局的史官。");
 		stringBuilder.AppendLine("你的任务是根据已保存的完整素材，为一条历史短周报补写完整正文。");
 		stringBuilder.AppendLine("这次补写只用于档案馆展示，不参与当前稳定度结算。");
-		stringBuilder.AppendLine(" ");
-		stringBuilder.AppendLine("写作要求：");
-		stringBuilder.AppendLine("1. 只根据本次提供的该期保存完整素材生成，不要引用当前游戏周或新近发生的任何素材。");
-		stringBuilder.AppendLine("1.1 不要编造素材中没有明确支持的核心事实。");
-		stringBuilder.AppendLine("2. 标题和短摘要可以优化，但不要改变事件性质。");
-		stringBuilder.AppendLine("3. 正文要像编年史、政局纪要或贵族周报，清楚、流利、克制。");
-		stringBuilder.AppendLine("4. 不要使用系统术语、字段名、StableKey、素材标签或开发者说明。不要用数字描述变化，多用形容词描述变化");
-		stringBuilder.AppendLine("4.1 定居点易主必须遵循素材中的方式：若素材写明交易/买卖移交或非攻城，不得写成攻陷、攻下、夺城或围城胜利。");
-		stringBuilder.AppendLine("4.2 不要使用原版默认大陆名；若需要指代大范围地理，只写“大陆”“世界”或具体王国、城镇名称。");
+		AppendWeeklyReportWritingRequirements(stringBuilder);
 		stringBuilder.AppendLine(" ");
 		stringBuilder.AppendLine("篇幅要求：");
 		stringBuilder.AppendLine($"- 当前档位：{weeklyReportPromptProfile.Label}");
@@ -30680,26 +31119,7 @@ public class MyBehavior : CampaignBehaviorBase
 		stringBuilder.AppendLine("你会一次收到多个周报目标，每个目标要么是世界周报，要么是单个王国周报。");
 		stringBuilder.AppendLine("本请求的 batch_mode 固定为 " + (flag ? "title_short_tags_only" : "full_report") + "，只处理这种模式的 block。");
 		stringBuilder.AppendLine("你必须严格按输入 block 分别生成，不得漏块，不得串写，不得合并不同 report_id。");
-		stringBuilder.AppendLine(" ");
-		stringBuilder.AppendLine("写作要求：");
-		if (flag)
-		{
-			stringBuilder.AppendLine("1. 每个 block 只根据该 block 提供的稳定度说明和压缩素材生成标题、短摘要和标签；本模式不会提供上一周周报。");
-		}
-		else
-		{
-			stringBuilder.AppendLine("1. 每个 block 只根据该 block 提供的上一周周报、稳定度说明和本周素材生成完整周报。");
-		}
-		stringBuilder.AppendLine("2. 跨国事件只能从当前 block 的视角组织，不得把别国素材误写为本国主体。");
-		stringBuilder.AppendLine("3. 不要编造输入素材中没有明确支持的核心事实。");
-		stringBuilder.AppendLine("4. 文风应像编年史、政局纪要或贵族周报，清楚、流利、华丽，有史诗感,以及极其高的文学素养和辞藻，不需要详细，但是需要将不同种类的素材结合起来描写，只写一段即可,不要把不同的方面分开");
-		stringBuilder.AppendLine("5. 不要使用系统术语、字段名、StableKey、素材标签或开发者说明。不要用数字描述变化，多用形容词描述变化");
-		stringBuilder.AppendLine("5.1 定居点易主必须遵循素材中的方式：若素材写明交易/买卖移交或非攻城，不得写成攻陷、攻下、夺城或围城胜利。");
-		stringBuilder.AppendLine("5.2 不要使用原版默认大陆名；若需要指代大范围地理，只写“大陆”“世界”或具体王国、城镇名称。");
-		if (flag)
-		{
-			stringBuilder.AppendLine("6. 本请求只做短周报，短摘要要紧凑保留事实锚点，严禁扩写成正文。");
-		}
+		AppendWeeklyReportWritingRequirements(stringBuilder);
 		stringBuilder.AppendLine(" ");
 		stringBuilder.AppendLine("篇幅要求：");
 		stringBuilder.AppendLine($"- 当前档位：{weeklyReportPromptProfile.Label}");
@@ -33274,19 +33694,76 @@ public class MyBehavior : CampaignBehaviorBase
 			stringBuilder.AppendLine(" - 编辑赊账/欠款");
 			stringBuilder.AppendLine(" - 编辑角色个性/历史背景");
 			stringBuilder.AppendLine(" - 查看行动记录（结构化）");
-			stringBuilder.AppendLine(" - 切换 NPC");
 			List<InquiryElement> list = new List<InquiryElement>();
 			list.Add(new InquiryElement("edit_history", "压缩记忆管理", null));
 			list.Add(new InquiryElement("edit_debt", "编辑赊账/欠款", null));
 			list.Add(new InquiryElement("edit_persona", "编辑角色个性/历史背景", null));
 			list.Add(new InquiryElement("view_actions", "查看行动记录（结构化）", null));
-			list.Add(new InquiryElement("switch_npc", "切换 NPC", null));
+			if (_devNpcEditorReturnAction == null)
+			{
+				stringBuilder.AppendLine(" - 切换 NPC");
+				list.Add(new InquiryElement("switch_npc", "切换 NPC", null));
+			}
 			MultiSelectionInquiryData data = new MultiSelectionInquiryData("编辑 HeroNPC - " + text, stringBuilder.ToString(), list, isExitShown: true, 0, 1, "进入", "返回", OnDevNpcMainMenuSelected, delegate
 			{
-				OpenDevHeroNpcMenu();
+				ReturnFromDevNpcEditor(npc);
 			});
 			MBInformationManager.ShowMultiSelectionInquiry(data);
 		}
+	}
+
+	private void OpenDevNpcEditorFromExternal(Hero npc, Action onFinished)
+	{
+		if (npc == null)
+		{
+			try
+			{
+				onFinished?.Invoke();
+			}
+			catch
+			{
+			}
+			return;
+		}
+		_devNpcEditorReturnAction = delegate
+		{
+			try
+			{
+				EncyclopediaHeroPersonaPatch.QueueRefreshForHero(npc.StringId);
+			}
+			catch
+			{
+			}
+			try
+			{
+				onFinished?.Invoke();
+			}
+			catch (Exception ex)
+			{
+				Logger.Log("NpcEditor", "[WARN] Hero NPC editor finish callback failed: " + ex.Message);
+			}
+		};
+		_devEditingHero = npc;
+		_devHistorySearchQuery = string.Empty;
+		ShowDevEditInquiry(npc);
+	}
+
+	private void ReturnFromDevNpcEditor(Hero npc)
+	{
+		Action devNpcEditorReturnAction = _devNpcEditorReturnAction;
+		_devNpcEditorReturnAction = null;
+		if (devNpcEditorReturnAction != null)
+		{
+			try
+			{
+				devNpcEditorReturnAction();
+			}
+			catch
+			{
+			}
+			return;
+		}
+		OpenDevHeroNpcMenu();
 	}
 
 	private void OpenDevSetDebtGoldSimple(Hero npc)
@@ -33391,7 +33868,12 @@ public class MyBehavior : CampaignBehaviorBase
 	private void OnDevNpcMainMenuSelected(List<InquiryElement> selected)
 	{
 		Hero devEditingHero = _devEditingHero;
-		if (devEditingHero != null && selected != null && selected.Count != 0)
+		if (devEditingHero == null || selected == null || selected.Count == 0)
+		{
+			ReturnFromDevNpcEditor(devEditingHero);
+			return;
+		}
+		if (devEditingHero != null)
 		{
 			switch (selected[0].Identifier as string)
 			{
@@ -34581,6 +35063,7 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				targetDraft.Lines = new List<DailyMemoryLine>();
 			}
+			List<DailyMemoryLine> previousLines = CloneDevDailyMemoryLines(targetDraft.Lines);
 			targetDraft.Lines.Add(new DailyMemoryLine
 			{
 				GameDayIndex = targetDraft.GameDayIndex,
@@ -34593,7 +35076,7 @@ public class MyBehavior : CampaignBehaviorBase
 				IsAfef = isAfef,
 				IsLlmDialogue = !isAfef
 			});
-			SaveDevDailyMemoryDraftsAfterEdit(npc, drafts, dayIndex, "add_line");
+			SaveDevDailyMemoryDraftsAfterEdit(npc, drafts, dayIndex, "add_line", previousLines);
 			InformationManager.DisplayMessage(new InformationMessage("已新增未压缩记忆行。"));
 			OpenDevDailyMemoryLineList(npc, dayIndex, returnPage, returnQuery);
 		}, delegate
@@ -34636,8 +35119,10 @@ public class MyBehavior : CampaignBehaviorBase
 		InformationManager.ShowInquiry(new InquiryData("确认删除未压缩记忆", BuildDevDailyMemoryDraftSubtitle(draft) + "\n\n将删除该日全部未压缩原始历史，并移除同日待总结队列。\n此操作不可撤销，是否继续？", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "确认删除", "取消", delegate
 		{
 			List<DailyMemoryDraft> drafts = LoadDailyMemoryDrafts(npc);
+			DailyMemoryDraft targetDraft = FindDevDailyMemoryDraft(drafts, dayIndex);
+			List<DailyMemoryLine> previousLines = CloneDevDailyMemoryLines(targetDraft?.Lines);
 			drafts.RemoveAll((DailyMemoryDraft x) => x != null && x.GameDayIndex == dayIndex);
-			SaveDevDailyMemoryDraftsAfterEdit(npc, drafts, dayIndex, "delete_draft");
+			SaveDevDailyMemoryDraftsAfterEdit(npc, drafts, dayIndex, "delete_draft", previousLines);
 			InformationManager.DisplayMessage(new InformationMessage("已删除该日未压缩记忆。"));
 			OpenDevDailyMemoryDraftList(npc, returnPage, returnQuery);
 		}, delegate
@@ -34657,8 +35142,9 @@ public class MyBehavior : CampaignBehaviorBase
 			return;
 		}
 		DailyMemoryLine line = draft.Lines[lineIndex];
+		List<DailyMemoryLine> previousLines = CloneDevDailyMemoryLines(draft.Lines);
 		mutate?.Invoke(draft, line);
-		SaveDevDailyMemoryDraftsAfterEdit(npc, drafts, dayIndex, "edit_line");
+		SaveDevDailyMemoryDraftsAfterEdit(npc, drafts, dayIndex, "edit_line", previousLines);
 		InformationManager.DisplayMessage(new InformationMessage(successMessage ?? "未压缩记忆行已更新。"));
 		if (FindDevDailyMemoryDraft(LoadDailyMemoryDrafts(npc), dayIndex) == null)
 		{
@@ -34683,8 +35169,9 @@ public class MyBehavior : CampaignBehaviorBase
 			OpenDevDailyMemoryDraftList(npc, returnPage, returnQuery);
 			return;
 		}
+		List<DailyMemoryLine> previousLines = CloneDevDailyMemoryLines(draft.Lines);
 		mutate?.Invoke(draft);
-		SaveDevDailyMemoryDraftsAfterEdit(npc, drafts, dayIndex, reason);
+		SaveDevDailyMemoryDraftsAfterEdit(npc, drafts, dayIndex, reason, previousLines);
 		if (!string.IsNullOrWhiteSpace(successMessage))
 		{
 			InformationManager.DisplayMessage(new InformationMessage(successMessage));
@@ -34703,7 +35190,7 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private void SaveDevDailyMemoryDraftsAfterEdit(Hero npc, List<DailyMemoryDraft> drafts, int affectedDayIndex, string reason)
+	private void SaveDevDailyMemoryDraftsAfterEdit(Hero npc, List<DailyMemoryDraft> drafts, int affectedDayIndex, string reason, List<DailyMemoryLine> previousLines = null)
 	{
 		string heroId = GetMemoryHeroId(npc);
 		foreach (DailyMemoryDraft draft in drafts ?? new List<DailyMemoryDraft>())
@@ -34711,11 +35198,231 @@ public class MyBehavior : CampaignBehaviorBase
 			NormalizeDevDailyMemoryDraftForSave(npc, draft);
 		}
 		SaveDailyMemoryDrafts(npc, drafts);
+		if (previousLines != null)
+		{
+			DailyMemoryDraft currentDraft = FindDevDailyMemoryDraft(LoadDailyMemoryDrafts(npc), affectedDayIndex);
+			SyncDialogueHistoryForDailyMemoryDraftEdit(npc, affectedDayIndex, previousLines, CloneDevDailyMemoryLines(currentDraft?.Lines), reason);
+		}
 		if (FindDevDailyMemoryDraft(LoadDailyMemoryDrafts(npc), affectedDayIndex) == null && _memorySummaryQueue != null)
 		{
 			_memorySummaryQueue.RemoveAll((MemorySummaryJob x) => x != null && string.Equals(NormalizeMemoryHeroId(x.HeroId), heroId, StringComparison.OrdinalIgnoreCase) && x.GameDayIndex == affectedDayIndex);
 		}
 		Logger.Log("CompressedMemory", "manual_raw_edit hero=" + heroId + " day=" + affectedDayIndex + " reason=" + (reason ?? ""));
+	}
+
+	private void SyncDialogueHistoryForDailyMemoryDraftEdit(Hero npc, int affectedDayIndex, IEnumerable<DailyMemoryLine> previousLines, IEnumerable<DailyMemoryLine> currentLines, string reason)
+	{
+		if (npc == null || affectedDayIndex < 0 || previousLines == null)
+		{
+			return;
+		}
+		try
+		{
+			List<DailyMemoryLine> oldLines = CloneDevDailyMemoryLines(previousLines);
+			List<DailyMemoryLine> newLines = CloneDevDailyMemoryLines(currentLines);
+			Dictionary<string, int> oldCounts = BuildDailyMemorySyncLineCounts(oldLines);
+			Dictionary<string, int> newCounts = BuildDailyMemorySyncLineCounts(newLines);
+			Dictionary<string, int> removeCounts = BuildDailyMemorySyncCountDelta(oldCounts, newCounts);
+			Dictionary<string, int> addCounts = BuildDailyMemorySyncCountDelta(newCounts, oldCounts);
+			if (removeCounts.Count == 0 && addCounts.Count == 0)
+			{
+				return;
+			}
+			List<DialogueDay> records = LoadDialogueHistory(npc);
+			DialogueDay day = records.FirstOrDefault((DialogueDay x) => x != null && x.GameDayIndex == affectedDayIndex);
+			int removedCount = 0;
+			if (day != null)
+			{
+				removedCount = RemoveDialogueHistoryLinesByCounts(day, removeCounts);
+				if (day.Lines == null || day.Lines.Count == 0)
+				{
+					records.Remove(day);
+					day = null;
+				}
+			}
+			List<string> addedLines = BuildDailyMemorySyncAddedDialogueLines(newLines, addCounts);
+			if (addedLines.Count > 0)
+			{
+				if (day == null)
+				{
+					day = new DialogueDay
+					{
+						GameDayIndex = affectedDayIndex,
+						GameDate = ResolveDailyMemorySyncGameDate(affectedDayIndex, newLines, oldLines)
+					};
+					records.Add(day);
+				}
+				if (day.Lines == null)
+				{
+					day.Lines = new List<string>();
+				}
+				day.Lines.AddRange(addedLines);
+			}
+			if (removedCount > 0 || addedLines.Count > 0)
+			{
+				records = records.Where((DialogueDay x) => x != null && x.Lines != null && x.Lines.Count > 0).OrderBy((DialogueDay x) => x.GameDayIndex).ToList();
+				SaveDialogueHistory(npc, records);
+				ShoutBehavior.ClearNativeConversationSessionHistoryForExternal(npc, npc.CharacterObject, npc.Name?.ToString(), affectedDayIndex);
+				Logger.Log("CompressedMemory", "sync_raw_edit_dialogue_history hero=" + GetMemoryHeroId(npc) + " day=" + affectedDayIndex + " removed=" + removedCount + " added=" + addedLines.Count + " reason=" + (reason ?? ""));
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("CompressedMemory", "[WARN] sync_raw_edit_dialogue_history failed: " + ex.Message);
+		}
+	}
+
+	private static List<DailyMemoryLine> CloneDevDailyMemoryLines(IEnumerable<DailyMemoryLine> lines)
+	{
+		List<DailyMemoryLine> result = new List<DailyMemoryLine>();
+		foreach (DailyMemoryLine line in lines ?? Enumerable.Empty<DailyMemoryLine>())
+		{
+			if (line == null)
+			{
+				continue;
+			}
+			result.Add(new DailyMemoryLine
+			{
+				GameDayIndex = line.GameDayIndex,
+				GameDate = line.GameDate ?? "",
+				GameHour = line.GameHour,
+				Scene = line.Scene ?? "",
+				Speaker = line.Speaker ?? "",
+				Text = line.Text ?? "",
+				SceneSessionId = line.SceneSessionId,
+				IsAfef = line.IsAfef,
+				IsLlmDialogue = line.IsLlmDialogue
+			});
+		}
+		return result;
+	}
+
+	private static Dictionary<string, int> BuildDailyMemorySyncLineCounts(IEnumerable<DailyMemoryLine> lines)
+	{
+		Dictionary<string, int> result = new Dictionary<string, int>(StringComparer.Ordinal);
+		foreach (DailyMemoryLine line in lines ?? Enumerable.Empty<DailyMemoryLine>())
+		{
+			string key = NormalizeDialogueHistoryLineForDailyMemorySync(line?.Text);
+			if (string.IsNullOrWhiteSpace(key))
+			{
+				continue;
+			}
+			if (!result.ContainsKey(key))
+			{
+				result[key] = 0;
+			}
+			result[key]++;
+		}
+		return result;
+	}
+
+	private static Dictionary<string, int> BuildDailyMemorySyncCountDelta(Dictionary<string, int> source, Dictionary<string, int> target)
+	{
+		Dictionary<string, int> result = new Dictionary<string, int>(StringComparer.Ordinal);
+		foreach (KeyValuePair<string, int> item in source ?? new Dictionary<string, int>(StringComparer.Ordinal))
+		{
+			int targetCount = 0;
+			target?.TryGetValue(item.Key, out targetCount);
+			int count = item.Value - targetCount;
+			if (count > 0)
+			{
+				result[item.Key] = count;
+			}
+		}
+		return result;
+	}
+
+	private static int RemoveDialogueHistoryLinesByCounts(DialogueDay day, Dictionary<string, int> removeCounts)
+	{
+		if (day?.Lines == null || removeCounts == null || removeCounts.Count == 0)
+		{
+			return 0;
+		}
+		int removed = 0;
+		for (int i = 0; i < day.Lines.Count; i++)
+		{
+			string key = NormalizeDialogueHistoryLineForDailyMemorySync(day.Lines[i]);
+			if (string.IsNullOrWhiteSpace(key) || !removeCounts.TryGetValue(key, out var remaining) || remaining <= 0)
+			{
+				continue;
+			}
+			day.Lines.RemoveAt(i);
+			i--;
+			removed++;
+			removeCounts[key] = remaining - 1;
+		}
+		return removed;
+	}
+
+	private static List<string> BuildDailyMemorySyncAddedDialogueLines(IEnumerable<DailyMemoryLine> currentLines, Dictionary<string, int> addCounts)
+	{
+		List<string> result = new List<string>();
+		if (addCounts == null || addCounts.Count == 0)
+		{
+			return result;
+		}
+		foreach (DailyMemoryLine line in currentLines ?? Enumerable.Empty<DailyMemoryLine>())
+		{
+			string key = NormalizeDialogueHistoryLineForDailyMemorySync(line?.Text);
+			if (string.IsNullOrWhiteSpace(key) || !addCounts.TryGetValue(key, out var remaining) || remaining <= 0)
+			{
+				continue;
+			}
+			result.Add(BuildDialogueHistoryLineForDailyMemorySync(line));
+			addCounts[key] = remaining - 1;
+		}
+		return result;
+	}
+
+	private static string BuildDialogueHistoryLineForDailyMemorySync(DailyMemoryLine line)
+	{
+		string text = NormalizeDialogueHistoryLineForDailyMemorySync(line?.Text);
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return "";
+		}
+		int sceneSessionId = line?.SceneSessionId ?? -1;
+		return sceneSessionId >= 0 ? TagSceneSessionHistoryLine(text, sceneSessionId) : text;
+	}
+
+	private static string NormalizeDialogueHistoryLineForDailyMemorySync(string line)
+	{
+		string text = (line ?? "").Replace("\r", "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return "";
+		}
+		TryStripSceneSessionHistoryMarker(text, out text, out var _);
+		return (text ?? "").Replace("\r", "").Trim();
+	}
+
+	private static string ResolveDailyMemorySyncGameDate(int dayIndex, IEnumerable<DailyMemoryLine> currentLines, IEnumerable<DailyMemoryLine> previousLines)
+	{
+		foreach (DailyMemoryLine line in currentLines ?? Enumerable.Empty<DailyMemoryLine>())
+		{
+			if (line != null && line.GameDayIndex == dayIndex && !string.IsNullOrWhiteSpace(line.GameDate))
+			{
+				return line.GameDate.Trim();
+			}
+		}
+		foreach (DailyMemoryLine line in previousLines ?? Enumerable.Empty<DailyMemoryLine>())
+		{
+			if (line != null && line.GameDayIndex == dayIndex && !string.IsNullOrWhiteSpace(line.GameDate))
+			{
+				return line.GameDate.Trim();
+			}
+		}
+		try
+		{
+			if ((int)CampaignTime.Now.ToDays == dayIndex)
+			{
+				return CampaignTime.Now.ToString();
+			}
+		}
+		catch
+		{
+		}
+		return "";
 	}
 
 	private static void NormalizeDevDailyMemoryDraftForSave(Hero npc, DailyMemoryDraft draft)
@@ -35629,6 +36336,11 @@ public class MyBehavior : CampaignBehaviorBase
 		InformationManager.ShowInquiry(new InquiryData("确认清空压缩记忆", "将删除 " + name + " 的今日历史、待总结队列、压缩记忆块和记忆大总结。\n此操作不可撤销，是否继续？", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "确认清空", "取消", delegate
 		{
 			string heroId = GetMemoryHeroId(npc);
+			List<DailyMemoryDraft> oldDrafts = SanitizeDailyMemoryDrafts(LoadDailyMemoryDrafts(npc));
+			foreach (DailyMemoryDraft oldDraft in oldDrafts)
+			{
+				SyncDialogueHistoryForDailyMemoryDraftEdit(npc, oldDraft.GameDayIndex, CloneDevDailyMemoryLines(oldDraft.Lines), new List<DailyMemoryLine>(), "clear_compressed_memory");
+			}
 			_dailyMemoryDrafts?.Remove(heroId);
 			_compressedMemoryBlocks?.Remove(heroId);
 			_memorySummaryQueue?.RemoveAll((MemorySummaryJob x) => x != null && string.Equals(NormalizeMemoryHeroId(x.HeroId), heroId, StringComparison.OrdinalIgnoreCase));
@@ -35691,6 +36403,7 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				_dialogueHistory.Remove(text2);
 			}
+			ShoutBehavior.ClearNativeConversationSessionHistoryForExternal(npc, npc.CharacterObject, npc.Name?.ToString());
 			_devHistorySearchQuery = string.Empty;
 			InformationManager.DisplayMessage(new InformationMessage("已删除该NPC的全部对话历史。"));
 			ShowDevEditInquiry(npc);

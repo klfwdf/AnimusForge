@@ -25,7 +25,7 @@
                               <Children>
                                 <Widget Id="ItemListRect" WidthSizePolicy="CoverChildren" HeightSizePolicy="StretchToParent" ClipContents="true">
                                   <Children>
-                                    <ListPanel Id="ItemListPanel" DataSource="{Items}" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="VerticalBottomToTop">
+                                    <ListPanel Id="ItemListPanel" DataSource="{Items}" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="VerticalTopToBottom">
                                       <ItemTemplate>
                                         <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginTop="6">
                                           <Children>

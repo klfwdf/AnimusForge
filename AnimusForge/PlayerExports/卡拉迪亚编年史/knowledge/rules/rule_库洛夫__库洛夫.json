@@ -1,0 +1,123 @@
+﻿{
+  "Id": "rule_库洛夫",
+  "Keywords": [
+    "库洛夫"
+  ],
+  "RagShortTexts": [
+    "库洛夫家族是斯特吉亚古老的波耶世系，不服王公权威"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": [
+          "clan_sturgia_1"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "库洛夫家是我们背上的一根刺。不是最锋利的，但扎得最深。\n\n奥列克的父亲死在潘德拉克，这本可以是斯特吉亚共有的伤口，但库洛夫家偏要把这伤口变成指控——他们说老奥列克亲赴前线，是替该去的人去了，这话说给谁听？我们心里清楚，我们只是不想接。朗瓦德大公每次在御前会议上看见奥列克，都要面对那副不露衷曲的表情，那张脸什么也不说，却好像什么都说了。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": [
+          "clan_sturgia_2"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "我们是库洛夫。森林记得我们的名字，河流也记得。诸神的旨意让树木生长、让河水流淌的那个早晨，我们的祖先就在这片土地上站着，手里握着斧头。\n\n大公？那是波耶们在帝国压境时选出来的战时头领。我们认过这个头衔，但从没把土地也认出去。老奥列克在潘德拉克流干了血，死在箭石之下，那是战士的死法。可那些坐在王座上的人，连亲自上阵的勇气都没有，凭什么让我们付税？"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "库洛夫家是斯特吉亚最古老的镜子，照出每个波耶心里那点不服。他们跟贡达罗夫家的关系就是一个活的范本：别指望王公会替你要公平，也别指望时间能冲淡血仇。\n\n我们多数人不愿步库洛夫的后尘——他们太硬，硬到连御前会议上的座位都坐不暖和。可也没有几个人敢公开站在他们的对立面。毕竟奥列克那番话至今还刻在斯特吉亚的冷风里——伤口如爱抚，税金如箭。谁没这种感觉？"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "库洛夫家？北边林子里那帮老派波耶。他们家那位老奥列克，当年是跟大公一起打潘德拉克的，人死在战场上，听说死得不甘心。现在的奥列克是他儿子，话少，脸冷。他当面跟大公说过一句很出名的话，大意是替你打仗受的伤跟老婆摸你一样轻，交给你的税跟肚子挨箭一样疼。你敢跟大公这样说话？可见库洛夫家就没把大公当回事。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "库洛夫？斯特吉亚那边的老家族，听跑商的人说，他们家在北边的林子里住了不知多少代，谁也管不了。他家现在当家的是个叫奥列克的老头，脾气倔，一辈子不服大公。听说他爹死在战场上，他自己也跟大公当面吵过架，还没掉脑袋。\n\n他们跟大公家有仇，好像是因为他们家一个女儿嫁到草原上去了，后来人死了"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "库洛夫家族是斯特吉亚内部最具制衡实力的地方豪强之一。在分析贡达罗夫政权的稳定性时，库洛夫始终是一个绕不开的关键变量。他们的历史可以追溯至斯特吉亚建国之前，属于那种“先有库洛夫，后有斯特吉亚”的古老世系。这种血统赋予他们在波耶中的特殊地位，也使得他们在制度层面从未真正认可过王公的至高权威。\n\n现任族长奥列克继承了他父亲的不屈与凶猛，但将这份敌意转化得更为老谋深算。他不公开反叛，却以不露衷曲的沉默和不配合的姿态持续消耗着王公的耐心。"
+    }
+  ],
+  "TextMappings": []
+}

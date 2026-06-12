@@ -29,15 +29,57 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 
 	private const string PlayerCustomPromptRuleFileName = "PlayerCustomPromptRule.txt";
 
-	private static readonly object PlayerCustomPromptRuleFileLock = new object();
+	private const string DefaultKingdomRebellionSystemPrompt = "你是一名负责为当前剧本世界中的叛乱政权命名的史官。\n你的任务是根据给定素材，为一个刚刚脱离旧国家的新国家生成国家名称与百科简介。\n命名要求：\n1. 名称必须符合当前剧本的中世纪风格，不要使用现代政治术语。\n2. 尽量以原王国名称为基础生成名称，尽量不要使用地名和家族名，可根据叛乱的原因命名，但原王国如果是帝国，那么不可使用帝国后缀，以及称帝\n3. 正式名要自然、庄重、可作为百科词条标题；简称要更短，适合显示。\n4. 不要与现有王国重名。\n5. 百科简介应像原版百科文本，简洁、客观、概括其建立背景。\n6. 只输出固定字段，不要解释。";
 
-	private static bool _playerCustomPromptRuleFileHydrated;
+	private const string KingdomRebellionSystemPromptFileName = "KingdomRebellionSystemPrompt.txt";
 
-	private static bool _playerCustomPromptRuleFileExists;
+	private const string DefaultWeeklyReportWritingRequirements = "1. 必须覆盖本周或该期素材中的关键变化，但不必逐条复述；允许将同类信息合并表达。\n2. 跨国事件只能从当前周报目标的视角组织，不得把别国素材误写为本国主体。\n3. 不要编造素材中没有明确支持的核心事实。\n4. 如果素材偏零碎，应提炼成局势观察；如果素材很多，应归纳成若干主线。\n5. 文风应像编年史、政局纪要或贵族周报，清楚、流利、华丽，有史诗感，以及极高的文学素养和辞藻；不需要详细，但需要将不同种类的素材融合起来描写，尽量只写一段，不要把不同方面拆成列表。\n6. 不要写成小说对白。\n7. 不要使用系统术语、字段名、StableKey、素材标签或开发者说明。\n8. 不要用数字描述变化，多用形容词描述变化。\n9. 定居点易主必须遵循素材中的方式：若素材写明交易/买卖移交或非攻城，不得写成攻陷、攻下、夺城或围城胜利。\n10. 不要使用原版默认大陆名；若需要指代大范围地理，只写“大陆”“世界”或具体王国、城镇名称。\n11. 军事胜利通常提升稳定度，军事失利通常降低稳定度（仅在素材支持时）。\n12. 标题要简洁，正文要完整，短摘要要适合后续注入 NPC prompt；短摘要要紧凑保留关键事实锚点。\n13. 如果素材不足以支持重大变化，也要如实写出局势概况，不要硬造戏剧化转折。";
 
-	private static long _playerCustomPromptRuleFileLastWriteUtcTicks;
+	private const string WeeklyReportWritingRequirementsFileName = "WeeklyReportWritingRequirements.txt";
 
-	private static string _playerCustomPromptRuleFileCachedText = "";
+	private const string DefaultNpcPersonaGenerationRequirements = "";
+
+	private const string NpcPersonaGenerationRequirementsFileName = "NpcPersonaGenerationRequirements.txt";
+
+	private const string CustomPromptTextStoreFolderName = "CustomPrompts";
+
+	private const string PlayerCustomPromptRuleJsonFileName = "PlayerCustomPromptRule.json";
+
+	private const string KingdomRebellionSystemPromptJsonFileName = "KingdomRebellionSystemPrompt.json";
+
+	private const string WeeklyReportWritingRequirementsJsonFileName = "WeeklyReportWritingRequirements.json";
+
+	private const string NpcPersonaGenerationRequirementsJsonFileName = "NpcPersonaGenerationRequirements.json";
+
+	private const string LegacyCustomPromptTextStoreFileName = "CustomPrompts.json";
+
+	private static readonly object CustomPromptTextStoreFileLock = new object();
+
+	private static bool _customPromptTextStoreFolderHydrated;
+
+	private static long _customPromptTextStoreFolderFingerprint;
+
+	private static CustomPromptTextStoreJson _customPromptTextStoreCached;
+
+	private sealed class CustomPromptTextStoreJson
+	{
+		public int Version { get; set; } = 1;
+
+		public string PlayerCustomPromptRule { get; set; }
+
+		public string KingdomRebellionSystemPrompt { get; set; }
+
+		public string WeeklyReportWritingRequirements { get; set; }
+
+		public string NpcPersonaGenerationRequirements { get; set; }
+	}
+
+	private sealed class CustomPromptTextJson
+	{
+		public int Version { get; set; } = 1;
+
+		public string Text { get; set; }
+	}
 
 	private sealed class ModelListFetchResult
 	{
@@ -103,7 +145,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 
 	private Dropdown<string> _shoutInputUiBackgroundDropdown = BuildShoutInputUiBackgroundDropdown(ShoutInputUiBackgroundBlack);
 
-	private Dropdown<string> _logCleanupIntervalDropdown = BuildLogCleanupIntervalDropdown(LogCleanupEveryHour);
+	private Dropdown<string> _logCleanupIntervalDropdown = BuildLogCleanupIntervalDropdown(LogCleanupEveryDay);
 
 	private Dropdown<string> _mainApiReasoningEffortDropdown = BuildReasoningEffortDropdown(ReasoningEffortMax);
 
@@ -423,7 +465,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyGroup("4. 开发者选项")]
 	public bool EnableEventLogs { get; set; } = true;
 
-	[SettingPropertyDropdown("【日志】定时清理所有日志", Order = 9, RequireRestart = false, HintText = "按真实时间定时清空 AnimusForge/Logs 下的所有当前日志文件。会保留文件本身与 UTF-8 BOM。默认每1小时。")]
+	[SettingPropertyDropdown("【日志】定时清理所有日志", Order = 9, RequireRestart = false, HintText = "按真实时间定时清空 AnimusForge/Logs 下的所有当前日志文件。会保留文件本身与 UTF-8 BOM。默认每天。")]
 	[SettingPropertyGroup("4. 开发者选项")]
 	public Dropdown<string> LogCleanupIntervalDropdown
 	{
@@ -785,11 +827,33 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyGroup("9. 提示词扩展")]
 	public Action EditPlayerCustomPromptRule { get; set; }
 
-	[SettingPropertyBool("保留场景喊话动作/内心描写", Order = 1, RequireRestart = false, HintText = "关闭：仍使用详细动作/内心文案，但输出时过滤动作描写、心理活动。开启：保留动作描写和内心活动。")]
+	public string KingdomRebellionSystemPrompt { get; set; } = LoadKingdomRebellionSystemPromptFromDiskOrDefault();
+
+	[SettingPropertyButton("王国叛乱系统提示词", -1, true, "", Content = "打开编辑器", Order = 1, RequireRestart = false, HintText = "点击这里使用大文本编辑器保存王国叛乱建国命名的完整 system prompt。默认内容为当前内置系统提示词，可按需要删减或改写。")]
+	[SettingPropertyGroup("9. 提示词扩展")]
+	public Action EditKingdomRebellionSystemPrompt { get; set; }
+
+	public string WeeklyReportWritingRequirements { get; set; } = LoadWeeklyReportWritingRequirementsFromDiskOrDefault();
+
+	[SettingPropertyButton("周报写作要求文案", -1, true, "", Content = "打开编辑器", Order = 2, RequireRestart = false, HintText = "点击这里使用大文本编辑器修改周报生成的写作要求。默认文本就是内置写作要求；留空保存后表示不注入写作要求。")]
+	[SettingPropertyGroup("9. 提示词扩展")]
+	public Action EditWeeklyReportWritingRequirements { get; set; }
+
+	public string NpcPersonaGenerationRequirements { get; set; } = LoadNpcPersonaGenerationRequirementsFromDiskOrDefault();
+
+	[SettingPropertyButton("NPC个性背景生成要求文案", -1, true, "", Content = "打开编辑器", Order = 3, RequireRestart = false, HintText = "点击这里使用大文本编辑器保存 NPC 个性与历史背景生成的自定义要求。原始人设生成器提示词不会被覆盖，该文案会作为“玩家自定义生成要求”追加在其下方。")]
+	[SettingPropertyGroup("9. 提示词扩展")]
+	public Action EditNpcPersonaGenerationRequirements { get; set; }
+
+	[SettingPropertyButton("自定义提示词JSON文件夹", -1, true, "", Content = "打开文件夹", Order = 4, RequireRestart = false, HintText = "打开 CustomPrompts 文件夹，可直接编辑四套提示词 JSON。")]
+	[SettingPropertyGroup("9. 提示词扩展")]
+	public Action OpenCustomPromptTextStoreFolderAction { get; set; }
+
+	[SettingPropertyBool("保留场景喊话动作/内心描写", Order = 5, RequireRestart = false, HintText = "关闭：仍使用详细动作/内心文案，但输出时过滤动作描写、心理活动。开启：保留动作描写和内心活动。")]
 	[SettingPropertyGroup("9. 提示词扩展")]
 	public bool UseDetailedSceneSpeechPrompt { get; set; } = false;
 
-	[SettingPropertyBool("保留星号动作描写", Order = 2, RequireRestart = false, HintText = "开启后，即使关闭“保留场景喊话动作/内心描写”，也不会清洗被 **...** 或 *...* 包住的动作内容。")]
+	[SettingPropertyBool("保留星号动作描写", Order = 6, RequireRestart = false, HintText = "开启后，即使关闭“保留场景喊话动作/内心描写”，也不会清洗被 **...** 或 *...* 包住的动作内容。")]
 	[SettingPropertyGroup("9. 提示词扩展")]
 	public bool PreserveSceneAsteriskActions { get; set; } = false;
 
@@ -828,6 +892,9 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		{
 			DuelSettings settings = GlobalSettings<DuelSettings>.Instance;
 			EnsurePlayerCustomPromptRuleLoaded(settings);
+			EnsureKingdomRebellionSystemPromptLoaded(settings);
+			EnsureWeeklyReportWritingRequirementsLoaded(settings);
+			EnsureNpcPersonaGenerationRequirementsLoaded(settings);
 			return settings;
 		}
 		try
@@ -835,6 +902,9 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 			if (BaseSettingsProvider.Instance?.GetSettings("AnimusForge_global_settings") is DuelSettings result)
 			{
 				EnsurePlayerCustomPromptRuleLoaded(result);
+				EnsureKingdomRebellionSystemPromptLoaded(result);
+				EnsureWeeklyReportWritingRequirementsLoaded(result);
+				EnsureNpcPersonaGenerationRequirementsLoaded(result);
 				return result;
 			}
 		}
@@ -853,6 +923,9 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 			_fallbackSettings = new DuelSettings();
 		}
 		EnsurePlayerCustomPromptRuleLoaded(_fallbackSettings);
+		EnsureKingdomRebellionSystemPromptLoaded(_fallbackSettings);
+		EnsureWeeklyReportWritingRequirementsLoaded(_fallbackSettings);
+		EnsureNpcPersonaGenerationRequirementsLoaded(_fallbackSettings);
 		if (!_settingsFallbackWarned)
 		{
 			_settingsFallbackWarned = true;
@@ -945,6 +1018,83 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		}
 	}
 
+	private void OpenKingdomRebellionSystemPromptEditor()
+	{
+		try
+		{
+			string initialText = KingdomRebellionSystemPrompt ?? "";
+			DevTextEditorHelper.ShowLongTextEditor("编辑王国叛乱系统提示词", "这段内容会作为王国叛乱建国命名请求的 system prompt 前半部分。", "", initialText, delegate(string input)
+			{
+				SaveKingdomRebellionSystemPromptFromEditor(input);
+			}, null, "保存", "返回");
+		}
+		catch (Exception ex)
+		{
+			InformationManager.DisplayMessage(new InformationMessage("[提示词扩展] 打开王国叛乱系统提示词编辑器失败: " + ex.Message, Color.FromUint(4294901760u)));
+		}
+	}
+
+	private void OpenWeeklyReportWritingRequirementsEditor()
+	{
+		try
+		{
+			string initialText = WeeklyReportWritingRequirements ?? "";
+			DevTextEditorHelper.ShowLongTextEditor("编辑周报写作要求文案", "这里编辑的是周报 system prompt 里的完整写作要求段。", "默认文本就是代码内置写作要求；可以删改或清空。输出格式、REPORT_BLOCK、TAGS 和稳定度标签仍由内置规则控制。", initialText, delegate(string input)
+			{
+				SaveWeeklyReportWritingRequirementsFromEditor(input);
+			}, null, "保存", "返回");
+		}
+		catch (Exception ex)
+		{
+			InformationManager.DisplayMessage(new InformationMessage("[提示词扩展] 打开周报写作要求编辑器失败: " + ex.Message, Color.FromUint(4294901760u)));
+		}
+	}
+
+	private void OpenNpcPersonaGenerationRequirementsEditor()
+	{
+		try
+		{
+			string initialText = NpcPersonaGenerationRequirements ?? "";
+			DevTextEditorHelper.ShowLongTextEditor("编辑NPC个性背景生成要求", "这段内容会追加在人设生成器原始 system prompt 下方，不会覆盖内置 JSON 格式与事实一致性要求。", "建议只写个性、历史背景的侧重点、文风、长度偏好或禁用写法；留空表示不额外注入。", initialText, delegate(string input)
+			{
+				SaveNpcPersonaGenerationRequirementsFromEditor(input);
+			}, null, "保存", "返回");
+		}
+		catch (Exception ex)
+		{
+			InformationManager.DisplayMessage(new InformationMessage("[提示词扩展] 打开NPC个性背景生成要求编辑器失败: " + ex.Message, Color.FromUint(4294901760u)));
+		}
+	}
+
+	private void OpenCustomPromptTextStoreFolder()
+	{
+		try
+		{
+			if (!TryReadCustomPromptTextStore(out _))
+			{
+				EnsureDefaultCustomPromptTextStoreFiles();
+			}
+			string directory = GetCustomPromptTextStoreDirectory();
+			if (string.IsNullOrWhiteSpace(directory))
+			{
+				throw new InvalidOperationException("无法定位自定义提示词文件夹。");
+			}
+			if (!Directory.Exists(directory))
+			{
+				Directory.CreateDirectory(directory);
+			}
+			Process.Start(new ProcessStartInfo(directory)
+			{
+				UseShellExecute = true
+			});
+			InformationManager.DisplayMessage(new InformationMessage("[提示词扩展] 正在打开自定义提示词 JSON 文件夹。", Color.FromUint(4278255360u)));
+		}
+		catch (Exception ex)
+		{
+			InformationManager.DisplayMessage(new InformationMessage("[提示词扩展] 打开自定义提示词 JSON 文件夹失败: " + ex.Message, Color.FromUint(4294901760u)));
+		}
+	}
+
 	private void OpenAfdianSupportPage()
 	{
 		OpenAfdianSupportPageForExternal();
@@ -995,21 +1145,153 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		}
 	}
 
+	private void SaveKingdomRebellionSystemPromptFromEditor(string input)
+	{
+		string text = NormalizeKingdomRebellionSystemPromptText(input);
+		KingdomRebellionSystemPrompt = text;
+		bool persistedToFile = TryPersistKingdomRebellionSystemPromptFile(text);
+		try
+		{
+			DuelSettings settings = GetSettings();
+			if (settings != null)
+			{
+				settings.KingdomRebellionSystemPrompt = text;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			BaseSettingsProvider.Instance?.SaveSettings(GetSettings() ?? this);
+			InformationManager.DisplayMessage(new InformationMessage(persistedToFile ? "[提示词扩展] 王国叛乱系统提示词已保存。" : "[提示词扩展] 王国叛乱系统提示词已写入本局设置，但本地持久化文件写入失败，请查看日志。", persistedToFile ? Color.FromUint(4282569842u) : Color.FromUint(4294967040u)));
+		}
+		catch (Exception ex)
+		{
+			InformationManager.DisplayMessage(new InformationMessage("[提示词扩展] 保存王国叛乱系统提示词失败，请在 MCM 中再点一次保存: " + ex.Message, Color.FromUint(4294901760u)));
+		}
+	}
+
+	private void SaveWeeklyReportWritingRequirementsFromEditor(string input)
+	{
+		string text = NormalizeWeeklyReportWritingRequirementsText(input);
+		WeeklyReportWritingRequirements = text;
+		bool persistedToFile = TryPersistWeeklyReportWritingRequirementsFile(text);
+		try
+		{
+			DuelSettings settings = GetSettings();
+			if (settings != null)
+			{
+				settings.WeeklyReportWritingRequirements = text;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			BaseSettingsProvider.Instance?.SaveSettings(GetSettings() ?? this);
+			InformationManager.DisplayMessage(new InformationMessage(persistedToFile ? "[提示词扩展] 周报写作要求文案已保存。" : "[提示词扩展] 周报写作要求文案已写入本局设置，但本地持久化文件写入失败，请查看日志。", persistedToFile ? Color.FromUint(4282569842u) : Color.FromUint(4294967040u)));
+		}
+		catch (Exception ex)
+		{
+			InformationManager.DisplayMessage(new InformationMessage("[提示词扩展] 保存周报写作要求失败，请在 MCM 中再点一次保存: " + ex.Message, Color.FromUint(4294901760u)));
+		}
+	}
+
+	private void SaveNpcPersonaGenerationRequirementsFromEditor(string input)
+	{
+		string text = NormalizeNpcPersonaGenerationRequirementsText(input);
+		NpcPersonaGenerationRequirements = text;
+		bool persistedToFile = TryPersistNpcPersonaGenerationRequirementsFile(text);
+		try
+		{
+			DuelSettings settings = GetSettings();
+			if (settings != null)
+			{
+				settings.NpcPersonaGenerationRequirements = text;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			BaseSettingsProvider.Instance?.SaveSettings(GetSettings() ?? this);
+			InformationManager.DisplayMessage(new InformationMessage(persistedToFile ? "[提示词扩展] NPC个性背景生成要求已保存。" : "[提示词扩展] NPC个性背景生成要求已写入本局设置，但本地持久化文件写入失败，请查看日志。", persistedToFile ? Color.FromUint(4282569842u) : Color.FromUint(4294967040u)));
+		}
+		catch (Exception ex)
+		{
+			InformationManager.DisplayMessage(new InformationMessage("[提示词扩展] 保存NPC个性背景生成要求失败，请在 MCM 中再点一次保存: " + ex.Message, Color.FromUint(4294901760u)));
+		}
+	}
+
 	private static void EnsurePlayerCustomPromptRuleLoaded(DuelSettings settings)
 	{
 		if (settings == null)
 		{
 			return;
 		}
-		if (TryReadPlayerCustomPromptRuleFile(out string text) && !string.Equals(settings.PlayerCustomPromptRule ?? "", text, StringComparison.Ordinal))
+		if (TryReadCustomPromptTextStore(out CustomPromptTextStoreJson store) && !string.Equals(settings.PlayerCustomPromptRule ?? "", store.PlayerCustomPromptRule ?? "", StringComparison.Ordinal))
 		{
-			settings.PlayerCustomPromptRule = text;
+			settings.PlayerCustomPromptRule = store.PlayerCustomPromptRule ?? "";
+		}
+	}
+
+	private static void EnsureKingdomRebellionSystemPromptLoaded(DuelSettings settings)
+	{
+		if (settings == null)
+		{
+			return;
+		}
+		if (TryReadCustomPromptTextStore(out CustomPromptTextStoreJson store) && !string.Equals(settings.KingdomRebellionSystemPrompt ?? "", store.KingdomRebellionSystemPrompt ?? "", StringComparison.Ordinal))
+		{
+			settings.KingdomRebellionSystemPrompt = store.KingdomRebellionSystemPrompt ?? "";
+		}
+	}
+
+	private static void EnsureWeeklyReportWritingRequirementsLoaded(DuelSettings settings)
+	{
+		if (settings == null)
+		{
+			return;
+		}
+		if (TryReadCustomPromptTextStore(out CustomPromptTextStoreJson store) && !string.Equals(settings.WeeklyReportWritingRequirements ?? "", store.WeeklyReportWritingRequirements ?? "", StringComparison.Ordinal))
+		{
+			settings.WeeklyReportWritingRequirements = store.WeeklyReportWritingRequirements ?? "";
+		}
+	}
+
+	private static void EnsureNpcPersonaGenerationRequirementsLoaded(DuelSettings settings)
+	{
+		if (settings == null)
+		{
+			return;
+		}
+		if (TryReadCustomPromptTextStore(out CustomPromptTextStoreJson store) && !string.Equals(settings.NpcPersonaGenerationRequirements ?? "", store.NpcPersonaGenerationRequirements ?? "", StringComparison.Ordinal))
+		{
+			settings.NpcPersonaGenerationRequirements = store.NpcPersonaGenerationRequirements ?? "";
 		}
 	}
 
 	private static string LoadPlayerCustomPromptRuleFromDiskOrDefault()
 	{
-		return TryReadPlayerCustomPromptRuleFile(out string text) ? text : DefaultPlayerCustomPromptRule;
+		return TryReadCustomPromptTextStore(out CustomPromptTextStoreJson store) ? (store.PlayerCustomPromptRule ?? "") : DefaultPlayerCustomPromptRule;
+	}
+
+	private static string LoadKingdomRebellionSystemPromptFromDiskOrDefault()
+	{
+		return TryReadCustomPromptTextStore(out CustomPromptTextStoreJson store) ? (store.KingdomRebellionSystemPrompt ?? "") : DefaultKingdomRebellionSystemPrompt;
+	}
+
+	private static string LoadWeeklyReportWritingRequirementsFromDiskOrDefault()
+	{
+		return TryReadCustomPromptTextStore(out CustomPromptTextStoreJson store) ? (store.WeeklyReportWritingRequirements ?? "") : DefaultWeeklyReportWritingRequirements;
+	}
+
+	private static string LoadNpcPersonaGenerationRequirementsFromDiskOrDefault()
+	{
+		return TryReadCustomPromptTextStore(out CustomPromptTextStoreJson store) ? (store.NpcPersonaGenerationRequirements ?? "") : DefaultNpcPersonaGenerationRequirements;
 	}
 
 	private static string NormalizePlayerCustomPromptRuleText(string input)
@@ -1017,82 +1299,384 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		return (input ?? "").Replace("\r\n", "\n").Replace('\r', '\n').Trim();
 	}
 
+	private static string NormalizeKingdomRebellionSystemPromptText(string input)
+	{
+		string text = (input ?? "").Replace("\r\n", "\n").Replace('\r', '\n').Trim();
+		return StripKingdomRebellionOutputFormatBlock(text).Trim();
+	}
+
+	private static string StripKingdomRebellionOutputFormatBlock(string input)
+	{
+		string text = (input ?? "").Replace("\r\n", "\n").Replace('\r', '\n');
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return "";
+		}
+		string[] lines = text.Split('\n');
+		for (int i = 0; i < lines.Length; i++)
+		{
+			string line = (lines[i] ?? "").Trim();
+			if (!string.Equals(line, "输出格式：", StringComparison.Ordinal) && !string.Equals(line, "输出格式:", StringComparison.Ordinal))
+			{
+				continue;
+			}
+			int nameIndex = -1;
+			int shortIndex = -1;
+			int loreIndex = -1;
+			for (int j = i + 1; j < lines.Length; j++)
+			{
+				string line2 = (lines[j] ?? "").Trim();
+				if (line2.Length == 0)
+				{
+					continue;
+				}
+				if (nameIndex < 0 && line2.StartsWith("[NAME]", StringComparison.OrdinalIgnoreCase))
+				{
+					nameIndex = j;
+					continue;
+				}
+				if (nameIndex >= 0 && shortIndex < 0 && line2.StartsWith("[SHORT]", StringComparison.OrdinalIgnoreCase))
+				{
+					shortIndex = j;
+					continue;
+				}
+				if (shortIndex >= 0 && loreIndex < 0 && line2.StartsWith("[LORE]", StringComparison.OrdinalIgnoreCase))
+				{
+					loreIndex = j;
+					break;
+				}
+			}
+			if (nameIndex < 0 || shortIndex < 0 || loreIndex < 0)
+			{
+				continue;
+			}
+			List<string> kept = new List<string>();
+			for (int j = 0; j < lines.Length; j++)
+			{
+				if (j < i || j > loreIndex)
+				{
+					kept.Add(lines[j]);
+				}
+			}
+			return string.Join("\n", kept).Trim();
+		}
+		return text.Trim();
+	}
+
+	private static string NormalizeWeeklyReportWritingRequirementsText(string input)
+	{
+		return (input ?? "").Replace("\r\n", "\n").Replace('\r', '\n').Trim();
+	}
+
+	private static string NormalizeNpcPersonaGenerationRequirementsText(string input)
+	{
+		return (input ?? "").Replace("\r\n", "\n").Replace('\r', '\n').Trim();
+	}
+
 	private static bool TryReadPlayerCustomPromptRuleFile(out string text)
+	{
+		text = "";
+		if (!TryReadCustomPromptTextStore(out CustomPromptTextStoreJson store))
+		{
+			return false;
+		}
+		text = store.PlayerCustomPromptRule ?? "";
+		return true;
+	}
+
+	private static bool TryReadKingdomRebellionSystemPromptFile(out string text)
+	{
+		text = "";
+		if (!TryReadCustomPromptTextStore(out CustomPromptTextStoreJson store))
+		{
+			return false;
+		}
+		text = store.KingdomRebellionSystemPrompt ?? "";
+		return true;
+	}
+
+	private static bool TryReadWeeklyReportWritingRequirementsFile(out string text)
+	{
+		text = "";
+		if (!TryReadCustomPromptTextStore(out CustomPromptTextStoreJson store))
+		{
+			return false;
+		}
+		text = store.WeeklyReportWritingRequirements ?? "";
+		return true;
+	}
+
+	private static bool TryReadNpcPersonaGenerationRequirementsFile(out string text)
+	{
+		text = "";
+		if (!TryReadCustomPromptTextStore(out CustomPromptTextStoreJson store))
+		{
+			return false;
+		}
+		text = store.NpcPersonaGenerationRequirements ?? "";
+		return true;
+	}
+
+	private static bool TryPersistPlayerCustomPromptRuleFile(string text)
+	{
+		return TryPersistCustomPromptTextFile(PlayerCustomPromptRuleJsonFileName, NormalizePlayerCustomPromptRuleText(text));
+	}
+
+	private static bool TryPersistKingdomRebellionSystemPromptFile(string text)
+	{
+		return TryPersistCustomPromptTextFile(KingdomRebellionSystemPromptJsonFileName, NormalizeKingdomRebellionSystemPromptText(text));
+	}
+
+	private static bool TryPersistWeeklyReportWritingRequirementsFile(string text)
+	{
+		return TryPersistCustomPromptTextFile(WeeklyReportWritingRequirementsJsonFileName, NormalizeWeeklyReportWritingRequirementsText(text));
+	}
+
+	private static bool TryPersistNpcPersonaGenerationRequirementsFile(string text)
+	{
+		return TryPersistCustomPromptTextFile(NpcPersonaGenerationRequirementsJsonFileName, NormalizeNpcPersonaGenerationRequirementsText(text));
+	}
+
+	private static CustomPromptTextStoreJson ReadCustomPromptTextStoreOrDefault()
+	{
+		return TryReadCustomPromptTextStore(out CustomPromptTextStoreJson store) ? store : BuildDefaultCustomPromptTextStore();
+	}
+
+	private static CustomPromptTextStoreJson BuildDefaultCustomPromptTextStore()
+	{
+		return NormalizeCustomPromptTextStore(new CustomPromptTextStoreJson
+		{
+			Version = 1,
+			PlayerCustomPromptRule = DefaultPlayerCustomPromptRule,
+			KingdomRebellionSystemPrompt = DefaultKingdomRebellionSystemPrompt,
+			WeeklyReportWritingRequirements = DefaultWeeklyReportWritingRequirements,
+			NpcPersonaGenerationRequirements = DefaultNpcPersonaGenerationRequirements
+		});
+	}
+
+	private static CustomPromptTextStoreJson BuildInitialCustomPromptTextStore()
+	{
+		CustomPromptTextStoreJson store = BuildDefaultCustomPromptTextStore();
+		if (TryReadLegacyPromptText(GetPlayerCustomPromptRulePath(), NormalizePlayerCustomPromptRuleText, out string playerRule))
+		{
+			store.PlayerCustomPromptRule = playerRule;
+		}
+		if (TryReadLegacyPromptText(GetKingdomRebellionSystemPromptPath(), NormalizeKingdomRebellionSystemPromptText, out string rebellionPrompt))
+		{
+			store.KingdomRebellionSystemPrompt = rebellionPrompt;
+		}
+		if (TryReadLegacyPromptText(GetWeeklyReportWritingRequirementsPath(), NormalizeWeeklyReportWritingRequirementsText, out string weeklyRequirements))
+		{
+			store.WeeklyReportWritingRequirements = weeklyRequirements;
+		}
+		if (TryReadLegacyPromptText(GetNpcPersonaGenerationRequirementsPath(), NormalizeNpcPersonaGenerationRequirementsText, out string npcRequirements))
+		{
+			store.NpcPersonaGenerationRequirements = npcRequirements;
+		}
+		if (TryReadLegacyCustomPromptTextStore(out CustomPromptTextStoreJson legacyStore))
+		{
+			store = legacyStore;
+		}
+		return NormalizeCustomPromptTextStore(store);
+	}
+
+	private static bool TryReadLegacyPromptText(string path, Func<string, string> normalize, out string text)
 	{
 		text = "";
 		try
 		{
-			string path = GetPlayerCustomPromptRulePath();
-			if (string.IsNullOrWhiteSpace(path))
+			if (string.IsNullOrWhiteSpace(path) || !File.Exists(path))
 			{
 				return false;
 			}
-			bool exists = File.Exists(path);
-			long lastWriteTicks = 0L;
-			if (exists)
+			string value = File.ReadAllText(path, Encoding.UTF8);
+			text = normalize != null ? normalize(value) : (value ?? "").Trim();
+			return true;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static bool TryReadCustomPromptTextStore(out CustomPromptTextStoreJson store)
+	{
+		store = null;
+		try
+		{
+			string directory = GetCustomPromptTextStoreDirectory();
+			if (string.IsNullOrWhiteSpace(directory))
 			{
-				lastWriteTicks = File.GetLastWriteTimeUtc(path).Ticks;
+				return false;
 			}
-			lock (PlayerCustomPromptRuleFileLock)
+			lock (CustomPromptTextStoreFileLock)
 			{
-				if (_playerCustomPromptRuleFileHydrated && _playerCustomPromptRuleFileLastWriteUtcTicks == lastWriteTicks)
+				long fingerprint = ComputeCustomPromptTextStoreFingerprint(directory);
+				if (_customPromptTextStoreFolderHydrated && _customPromptTextStoreFolderFingerprint == fingerprint && _customPromptTextStoreCached != null)
 				{
-					text = _playerCustomPromptRuleFileCachedText;
-					return _playerCustomPromptRuleFileExists;
+					store = CloneCustomPromptTextStore(_customPromptTextStoreCached);
+					return true;
 				}
-				if (!exists)
+				if (!Directory.Exists(directory))
 				{
-					_playerCustomPromptRuleFileHydrated = true;
-					_playerCustomPromptRuleFileExists = false;
-					_playerCustomPromptRuleFileLastWriteUtcTicks = 0L;
-					_playerCustomPromptRuleFileCachedText = "";
-					return false;
+					Directory.CreateDirectory(directory);
 				}
-				text = NormalizePlayerCustomPromptRuleText(File.ReadAllText(path, Encoding.UTF8));
-				_playerCustomPromptRuleFileHydrated = true;
-				_playerCustomPromptRuleFileExists = true;
-				_playerCustomPromptRuleFileLastWriteUtcTicks = lastWriteTicks;
-				_playerCustomPromptRuleFileCachedText = text;
+				store = BuildInitialCustomPromptTextStore();
+				EnsureCustomPromptTextStoreFilesUnlocked(directory, store);
+				if (TryReadCustomPromptTextJsonFile(GetCustomPromptTextFilePath(directory, PlayerCustomPromptRuleJsonFileName), NormalizePlayerCustomPromptRuleText, out string playerRule))
+				{
+					store.PlayerCustomPromptRule = playerRule;
+				}
+				if (TryReadCustomPromptTextJsonFile(GetCustomPromptTextFilePath(directory, KingdomRebellionSystemPromptJsonFileName), NormalizeKingdomRebellionSystemPromptText, out string rebellionPrompt))
+				{
+					store.KingdomRebellionSystemPrompt = rebellionPrompt;
+				}
+				if (TryReadCustomPromptTextJsonFile(GetCustomPromptTextFilePath(directory, WeeklyReportWritingRequirementsJsonFileName), NormalizeWeeklyReportWritingRequirementsText, out string weeklyRequirements))
+				{
+					store.WeeklyReportWritingRequirements = weeklyRequirements;
+				}
+				if (TryReadCustomPromptTextJsonFile(GetCustomPromptTextFilePath(directory, NpcPersonaGenerationRequirementsJsonFileName), NormalizeNpcPersonaGenerationRequirementsText, out string npcRequirements))
+				{
+					store.NpcPersonaGenerationRequirements = npcRequirements;
+				}
+				store = NormalizeCustomPromptTextStore(store);
+				_customPromptTextStoreFolderHydrated = true;
+				_customPromptTextStoreFolderFingerprint = ComputeCustomPromptTextStoreFingerprint(directory);
+				_customPromptTextStoreCached = CloneCustomPromptTextStore(store);
 				return true;
 			}
 		}
 		catch (Exception ex)
 		{
-			LogPlayerCustomPromptRuleWarning("加载玩家自定义规则文案失败: " + ex.Message);
+			LogPlayerCustomPromptRuleWarning("加载自定义提示词 JSON 文件夹失败: " + ex.Message);
+			store = null;
 			return false;
 		}
 	}
 
-	private static bool TryPersistPlayerCustomPromptRuleFile(string text)
+	private static bool EnsureDefaultCustomPromptTextStoreFiles()
 	{
 		try
 		{
-			string path = GetPlayerCustomPromptRulePath();
-			if (string.IsNullOrWhiteSpace(path))
+			string directory = GetCustomPromptTextStoreDirectory();
+			if (string.IsNullOrWhiteSpace(directory))
 			{
 				return false;
 			}
-			string directoryName = Path.GetDirectoryName(path);
-			if (!string.IsNullOrWhiteSpace(directoryName) && !Directory.Exists(directoryName))
+			lock (CustomPromptTextStoreFileLock)
 			{
-				Directory.CreateDirectory(directoryName);
-			}
-			string normalizedText = NormalizePlayerCustomPromptRuleText(text);
-			lock (PlayerCustomPromptRuleFileLock)
-			{
-				File.WriteAllText(path, normalizedText, Encoding.UTF8);
-				_playerCustomPromptRuleFileHydrated = true;
-				_playerCustomPromptRuleFileExists = true;
-				_playerCustomPromptRuleFileLastWriteUtcTicks = File.GetLastWriteTimeUtc(path).Ticks;
-				_playerCustomPromptRuleFileCachedText = normalizedText;
+				EnsureCustomPromptTextStoreFilesUnlocked(directory, BuildInitialCustomPromptTextStore());
+				_customPromptTextStoreFolderHydrated = false;
+				_customPromptTextStoreFolderFingerprint = 0L;
+				_customPromptTextStoreCached = null;
 			}
 			return true;
 		}
 		catch (Exception ex)
 		{
-			LogPlayerCustomPromptRuleWarning("持久化玩家自定义规则文案失败: " + ex.Message);
+			LogPlayerCustomPromptRuleWarning("初始化自定义提示词 JSON 文件夹失败: " + ex.Message);
 			return false;
 		}
+	}
+
+	private static bool TryPersistCustomPromptTextFile(string fileName, string text)
+	{
+		try
+		{
+			string directory = GetCustomPromptTextStoreDirectory();
+			if (string.IsNullOrWhiteSpace(directory))
+			{
+				return false;
+			}
+			lock (CustomPromptTextStoreFileLock)
+			{
+				if (!Directory.Exists(directory))
+				{
+					Directory.CreateDirectory(directory);
+				}
+				EnsureCustomPromptTextStoreFilesUnlocked(directory, BuildInitialCustomPromptTextStore());
+				WriteCustomPromptTextJsonFileUnlocked(GetCustomPromptTextFilePath(directory, fileName), text);
+				_customPromptTextStoreFolderHydrated = false;
+				_customPromptTextStoreFolderFingerprint = 0L;
+				_customPromptTextStoreCached = null;
+			}
+			return true;
+		}
+		catch (Exception ex)
+		{
+			LogPlayerCustomPromptRuleWarning("持久化自定义提示词 JSON 失败: " + ex.Message);
+			return false;
+		}
+	}
+
+	private static void EnsureCustomPromptTextStoreFilesUnlocked(string directory, CustomPromptTextStoreJson initialStore)
+	{
+		if (string.IsNullOrWhiteSpace(directory))
+		{
+			return;
+		}
+		if (!Directory.Exists(directory))
+		{
+			Directory.CreateDirectory(directory);
+		}
+		CustomPromptTextStoreJson normalized = NormalizeCustomPromptTextStore(initialStore);
+		WriteCustomPromptTextJsonFileIfMissingUnlocked(GetCustomPromptTextFilePath(directory, PlayerCustomPromptRuleJsonFileName), normalized.PlayerCustomPromptRule);
+		WriteCustomPromptTextJsonFileIfMissingUnlocked(GetCustomPromptTextFilePath(directory, KingdomRebellionSystemPromptJsonFileName), normalized.KingdomRebellionSystemPrompt);
+		WriteCustomPromptTextJsonFileIfMissingUnlocked(GetCustomPromptTextFilePath(directory, WeeklyReportWritingRequirementsJsonFileName), normalized.WeeklyReportWritingRequirements);
+		WriteCustomPromptTextJsonFileIfMissingUnlocked(GetCustomPromptTextFilePath(directory, NpcPersonaGenerationRequirementsJsonFileName), normalized.NpcPersonaGenerationRequirements);
+	}
+
+	private static void WriteCustomPromptTextJsonFileIfMissingUnlocked(string path, string text)
+	{
+		if (!File.Exists(path))
+		{
+			WriteCustomPromptTextJsonFileUnlocked(path, text);
+		}
+	}
+
+	private static void WriteCustomPromptTextJsonFileUnlocked(string path, string text)
+	{
+		string directoryName = Path.GetDirectoryName(path);
+		if (!string.IsNullOrWhiteSpace(directoryName) && !Directory.Exists(directoryName))
+		{
+			Directory.CreateDirectory(directoryName);
+		}
+		CustomPromptTextJson jsonModel = new CustomPromptTextJson
+		{
+			Version = 1,
+			Text = text ?? ""
+		};
+		string json = JsonConvert.SerializeObject(jsonModel, Formatting.Indented);
+		File.WriteAllText(path, json, Encoding.UTF8);
+	}
+
+	private static CustomPromptTextStoreJson NormalizeCustomPromptTextStore(CustomPromptTextStoreJson store)
+	{
+		store = store ?? new CustomPromptTextStoreJson();
+		return new CustomPromptTextStoreJson
+		{
+			Version = store.Version <= 0 ? 1 : store.Version,
+			PlayerCustomPromptRule = store.PlayerCustomPromptRule == null ? DefaultPlayerCustomPromptRule : NormalizePlayerCustomPromptRuleText(store.PlayerCustomPromptRule),
+			KingdomRebellionSystemPrompt = store.KingdomRebellionSystemPrompt == null ? DefaultKingdomRebellionSystemPrompt : NormalizeKingdomRebellionSystemPromptText(store.KingdomRebellionSystemPrompt),
+			WeeklyReportWritingRequirements = store.WeeklyReportWritingRequirements == null ? DefaultWeeklyReportWritingRequirements : NormalizeWeeklyReportWritingRequirementsText(store.WeeklyReportWritingRequirements),
+			NpcPersonaGenerationRequirements = store.NpcPersonaGenerationRequirements == null ? DefaultNpcPersonaGenerationRequirements : NormalizeNpcPersonaGenerationRequirementsText(store.NpcPersonaGenerationRequirements)
+		};
+	}
+
+	private static CustomPromptTextStoreJson CloneCustomPromptTextStore(CustomPromptTextStoreJson store)
+	{
+		if (store == null)
+		{
+			return null;
+		}
+		return new CustomPromptTextStoreJson
+		{
+			Version = store.Version,
+			PlayerCustomPromptRule = store.PlayerCustomPromptRule,
+			KingdomRebellionSystemPrompt = store.KingdomRebellionSystemPrompt,
+			WeeklyReportWritingRequirements = store.WeeklyReportWritingRequirements,
+			NpcPersonaGenerationRequirements = store.NpcPersonaGenerationRequirements
+		};
 	}
 
 	private static string GetPlayerCustomPromptRulePath()
@@ -1100,6 +1684,173 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		try
 		{
 			return AnimusForgeModulePaths.GetLogFilePath(PlayerCustomPromptRuleFileName);
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	private static bool TryReadCustomPromptTextJsonFile(string path, Func<string, string> normalize, out string text)
+	{
+		text = "";
+		try
+		{
+			if (string.IsNullOrWhiteSpace(path) || !File.Exists(path))
+			{
+				return false;
+			}
+			string json = File.ReadAllText(path, Encoding.UTF8);
+			CustomPromptTextJson parsed = JsonConvert.DeserializeObject<CustomPromptTextJson>(json);
+			if (parsed == null || parsed.Text == null)
+			{
+				return false;
+			}
+			text = normalize != null ? normalize(parsed.Text) : (parsed.Text ?? "").Replace("\r\n", "\n").Replace('\r', '\n').Trim();
+			return true;
+		}
+		catch (Exception ex)
+		{
+			LogPlayerCustomPromptRuleWarning("读取自定义提示词 JSON 失败: " + path + " - " + ex.Message);
+			return false;
+		}
+	}
+
+	private static bool TryReadLegacyCustomPromptTextStore(out CustomPromptTextStoreJson store)
+	{
+		store = null;
+		try
+		{
+			string path = GetLegacyCustomPromptTextStorePath();
+			if (string.IsNullOrWhiteSpace(path) || !File.Exists(path))
+			{
+				return false;
+			}
+			string json = File.ReadAllText(path, Encoding.UTF8);
+			CustomPromptTextStoreJson parsed = JsonConvert.DeserializeObject<CustomPromptTextStoreJson>(json);
+			if (parsed == null)
+			{
+				return false;
+			}
+			store = NormalizeCustomPromptTextStore(parsed);
+			return true;
+		}
+		catch (Exception ex)
+		{
+			LogPlayerCustomPromptRuleWarning("迁移旧自定义提示词 JSON 失败: " + ex.Message);
+			store = null;
+			return false;
+		}
+	}
+
+	private static long ComputeCustomPromptTextStoreFingerprint(string directory)
+	{
+		try
+		{
+			unchecked
+			{
+				long hash = 17L;
+				string[] fileNames = new string[]
+				{
+					PlayerCustomPromptRuleJsonFileName,
+					KingdomRebellionSystemPromptJsonFileName,
+					WeeklyReportWritingRequirementsJsonFileName,
+					NpcPersonaGenerationRequirementsJsonFileName
+				};
+				for (int i = 0; i < fileNames.Length; i++)
+				{
+					string path = GetCustomPromptTextFilePath(directory, fileNames[i]);
+					if (!File.Exists(path))
+					{
+						hash = hash * 31L;
+						continue;
+					}
+					FileInfo fileInfo = new FileInfo(path);
+					hash = hash * 31L + fileInfo.LastWriteTimeUtc.Ticks;
+					hash = hash * 31L + fileInfo.Length;
+				}
+				return hash;
+			}
+		}
+		catch
+		{
+			return 0L;
+		}
+	}
+
+	private static string GetCustomPromptTextStoreDirectory()
+	{
+		try
+		{
+			string moduleRoot = AnimusForgeModulePaths.GetCurrentModuleRoot();
+			if (!string.IsNullOrWhiteSpace(moduleRoot))
+			{
+				return Path.Combine(moduleRoot, CustomPromptTextStoreFolderName);
+			}
+			return Path.Combine(AnimusForgeModulePaths.GetLogsDirectory(), CustomPromptTextStoreFolderName);
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	private static string GetLegacyCustomPromptTextStorePath()
+	{
+		try
+		{
+			string moduleRoot = AnimusForgeModulePaths.GetCurrentModuleRoot();
+			if (!string.IsNullOrWhiteSpace(moduleRoot))
+			{
+				return Path.Combine(moduleRoot, LegacyCustomPromptTextStoreFileName);
+			}
+			return AnimusForgeModulePaths.GetLogFilePath(LegacyCustomPromptTextStoreFileName);
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	private static string GetCustomPromptTextFilePath(string directory, string fileName)
+	{
+		string safeFileName = Path.GetFileName((fileName ?? "").Trim());
+		if (string.IsNullOrWhiteSpace(safeFileName))
+		{
+			safeFileName = "Prompt.json";
+		}
+		return Path.Combine(directory ?? "", safeFileName);
+	}
+
+	private static string GetKingdomRebellionSystemPromptPath()
+	{
+		try
+		{
+			return AnimusForgeModulePaths.GetLogFilePath(KingdomRebellionSystemPromptFileName);
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	private static string GetWeeklyReportWritingRequirementsPath()
+	{
+		try
+		{
+			return AnimusForgeModulePaths.GetLogFilePath(WeeklyReportWritingRequirementsFileName);
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	private static string GetNpcPersonaGenerationRequirementsPath()
+	{
+		try
+		{
+			return AnimusForgeModulePaths.GetLogFilePath(NpcPersonaGenerationRequirementsFileName);
 		}
 		catch
 		{
@@ -2355,6 +3106,22 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		EditPlayerCustomPromptRule = delegate
 		{
 			OpenPlayerCustomPromptRuleEditor();
+		};
+		EditKingdomRebellionSystemPrompt = delegate
+		{
+			OpenKingdomRebellionSystemPromptEditor();
+		};
+		EditWeeklyReportWritingRequirements = delegate
+		{
+			OpenWeeklyReportWritingRequirementsEditor();
+		};
+		EditNpcPersonaGenerationRequirements = delegate
+		{
+			OpenNpcPersonaGenerationRequirementsEditor();
+		};
+		OpenCustomPromptTextStoreFolderAction = delegate
+		{
+			OpenCustomPromptTextStoreFolder();
 		};
 		TestTtsVolcDedicatedVoice = delegate
 		{

@@ -1,0 +1,153 @@
+﻿{
+  "Id": "rule_库赛特",
+  "Keywords": [
+    "库赛特"
+  ],
+  "RagShortTexts": [
+    "库赛特人视兀儿浑大汗为草原英雄，将部落比作狼群"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "我生在草原上，长在帐篷里。兀儿浑大汗的名字，我爷爷那辈人天天挂在嘴边，说他把我们这些在城墙外捡垃圾的野狗变成了狼。狼有肉吃，有地盘，不用看帝国的脸色。到了蒙楚格可汗这一代，日子还是那样过——赶着羊群，骑着马，打仗的时候跟那颜走。税比以前多了些，可汗说要养兵，要修城，我们不太懂，但给就给了。反正草原上的规矩没变，谁强听谁的。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "兀儿浑大汗是我们家族的荣耀，但他留下的摊子并不好收拾。各部落当年被他用铁律压着，打完仗分完地，暂时服了。他一死，铁律就变成了建议。现在的蒙楚格可汗，我们认——他的血统是兀儿浑的直系，他的作风也够硬。但他面对的情况比他祖先复杂得多。阿契特部表面上尊重可汗旗帜，实际上还在念着当年该由他们领导征服的旧账。喀拉库吉特部干脆连表面功夫都不做，仍然游牧，仍然只听自己那颜的。我们坐在御前会议上，蒙楚格可汗在上面下令，我们领命回去，回到自己部落里怎么执行就是另一回事了。草原上的规矩从来如此：可汗的命令传到第三个帐篷时，已经变成了建议。但有一点我们都认——谁要是想放弃祖先打下来的土地，谁就是叛徒。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": [
+          "clan_khuzait_2"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "蒙楚格可汗没什么对不起我们的。他坐在汗位上，用的是兀儿浑的名义，我们认这个名义。我们库吉特人跟阿契特的账，不用可汗替我们算，我们自己算。潘德拉克那一仗，我们库吉特的男丁几乎打光了，墨速宜那颜回来的时候马背上挂满了空蹬子。阿契特趁我们伤重占了巴尔加德——不是从敌人手里夺的，是从库赛特同胞手里偷的。他们后来恢复了元气，巴尔加德的集市又热闹了，热闹底下埋着我们库吉特人的骨头。我们不恨可汗，可汗管不了阿契特，我们自己来。墨速宜那颜说，阿契特那帮人迟早要付出代价。我们等着那一天。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": [
+          "clan_khuzait_3"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "我们是母狼长子的后代。这句话在草原上说出来，有人笑，有人沉默。笑的人忘了历史，沉默的人记得。兀儿浑大汗打赢了我们没打赢的仗，他当可汗，我们认。但我们认的是可汗，不是兀儿浑乃特家永远坐在那个位子上。突剌格那颜说过，只要可汗守信，我们就守信。这话不是效忠，是条件。我们守信了几十年，巴尔加德是我们自己拿回来的，不是可汗封的。库吉特人恨我们，让他们恨。草原上谁拳头硬谁说了算，这是兀儿浑自己定下的规矩。可汗想管住我们？行，用刀剑说话，别用血缘。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": [
+          "clan_khuzait_1"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "我们是兀儿浑的后代，汗位是我们的，这是草原上用血换来的规矩。蒙楚格可汗是我们的族长，他说的话就是汗庭的命令。当年兀儿浑大汗把那些在城墙外刨垃圾吃的散沙捏成了狼群，分给他们土地，给了他们活路。现在有些部落忘了这份恩情——阿契特部仗着古老，觉得自己该坐汗位。喀拉库吉特部更干脆，连汗令都不听，还在游牧，好像兀儿浑从没打过仗似的。我们不在乎他们怎么想，也不在乎他们恨不恨可汗。可汗说了，只要站在我们祖先打下来的土地上，就得归我们统治。不服的，滚回草原去。我们不追杀，但别忘了，狼群是兀儿浑建的，狼王的位置也是他定的。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": [
+          "karakhuzaits"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "我们是喀拉库吉特，不是可汗的羊。兀儿浑是兀儿浑，蒙楚格是蒙楚格。兀儿浑当年靠刀剑把部落捏在一起，那是因为他有刀剑。蒙楚格坐在汗位上给我们送钱、送奴隶、送封地，这些东西是软的，软的东西买不了我们的命。我们不要城。城是圈羊的栅栏，帐篷才是自由。我们还在走，跟着草走，跟着季风走。可汗的土地是兀儿浑分封的，我们的土地是祖祖辈辈走出来的。可汗说要么归顺要么滚回草原，我们没滚，我们就站在这里，这草场是我们的，不是谁封的。可汗要是想用刀剑说话，我们也听得懂。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "库赛特汗国是东方草原上新兴的征服政权，成型不足两代人。兀儿浑大汗用铁腕统一了各部族，把一批分散的游牧力量捏成了有组织、有纪律的军队，一举攻占了帝国东部行省。从我们的情报看，库赛特的军事实力在骑射领域冠绝大陆，扎甲和偃月刀的量产水平也相当可观。但他们的问题不在军事，在政治——兀儿浑死后，汗庭的凝聚力直线下降。蒙楚格可汗的血统是正统的，但他面对的是草原政治最顽固的离心惯性。喀拉库吉特部至今拒绝定居，仍是纯游牧状态，这是汗庭权威最明显的裂痕。"
+    },
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "库赛特人？东边草原上那些骑马射箭的？听老一辈说他们来得快走得也快，马蹄声一响全村往山上跑，。后来听说他们自己有了可汗，不抢了，改成收税，把帝国的几个省给占了。跑商的说他们的骑兵厉害，骑射的时候人马合一，追你的时候边跑边射。还说他们的兀儿浑大汗已经死了，现在的可汗叫蒙楚格，脾气硬，手下部落不太服他。我听着觉得跟我们这边差不多——国王管不住大贵族，大贵族互相打。他们草原上那个叫什么喀拉库吉特的部落还在游牧，不肯住城里，可汗给什么都不要。这种硬骨头国王也拿他们没办法。"
+    }
+  ],
+  "TextMappings": []
+}

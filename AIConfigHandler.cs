@@ -560,6 +560,8 @@ public static class AIConfigHandler
 
 	public static string ActionPostprocessFallbackMoodTag => (_actionPostprocess?.FallbackMoodTag ?? "[ACTION:MOOD:NEUTRAL]").Trim();
 
+	public static List<PostprocessRuleEntry> WildernessPostprocessRules => _actionPostprocess?.WildernessPostprocessRules ?? new List<PostprocessRuleEntry>();
+
 	public static List<PostprocessRuleEntry> ActionPostprocessMoodRules => _actionPostprocess?.MoodRules ?? new List<PostprocessRuleEntry>();
 
 	private static string NormalizeActionPostprocessOptionalValue(string value)

@@ -1,0 +1,179 @@
+﻿{
+  "Id": "rule_彭同",
+  "Keywords": [
+    "彭同",
+    "彭同·涅雷采斯"
+  ],
+  "RagShortTexts": [
+    "彭同管理萨涅俄帕并稳住了元老院"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "彭同·涅雷采斯是北帝国元老院里最沉默的人。别人发言的时候他坐着，双手交叠在膝盖上，表情不惊不怒。轮到他说话的时候，他站起来，一句话说完就坐下，从不多讲。我们北帝国的老派元老起初不太接纳他——他是前朝太子，身上流着德洛修斯的血，潘德拉克那场灾难的阴影，我们还没从噩梦里醒透。但这么多年下来，他硬是用实际行动让“涅雷采斯”这个姓氏重新变得能听。萨涅俄帕在他手里没出过乱子，元老院吵到不可开交的时候，他几句公道话就能把场子稳下来。卢孔皇帝信任他，我们也慢慢学会尊重。没人会在公开场合翻他父亲的旧账，那是自取其辱。彭同用半辈子的沉默和克制给家族赎了罪，这是他应得的。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "彭同？德洛修斯的儿子，那个前太子。听说他在潘德拉克打得很猛，杀了不少蛮子，差点把他爹救出来。但他爹还是死了，皇位也没了。现在他在北边给卢孔当臣子，管着萨涅俄帕。我妈那边的亲戚以前在涅雷采斯家的庄园里当佃农，说他们家现在的税比以前轻，逢荒年还给减。就冲这个，我说他句公道话——他替他爹还债还了半辈子，够意思了。换了别人早就拉着旗子造反，他没反，安安静静当臣子。这比造反难。他知道他爹把帝国坑惨了，他不说，但他做的事都是补窟窿的事。我觉得帝国有这样的前太子，不算丢人。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "彭同·涅雷采斯是我们南帝国偶尔会在外交信件中提及的名字，语气中性，带着一丝不情愿的尊重。拉盖娅女皇从来不提他，但老臣们记得一些往事。当年德洛修斯在位时，拉盖娅差点嫁给彭同，这桩婚事如果成了，帝国的历史可能会被彻底改写。但因血缘关系，联姻作罢，后来拉盖娅嫁给了阿雷尼科斯。彭同则走上了另一条路。如今他在北边给卢孔当柱子，我们在南边撑着自己的局面，彼此不相往来。但我们私下承认，彭同是涅雷采斯家唯一一个从潘德拉克的烂泥里爬起来洗干净脸的人。他没疯，没死，没投降蛮子，没举旗造反。他选择了一条最慢最闷的路，也是唯一走得通的路。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_w"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "彭同·涅雷采斯。加里俄斯皇帝在酒后偶尔会提这个名字，语气比骂他爹的时候缓和不少。加里俄斯说过一句我们觉得挺公道的话：“彭同那小子在潘德拉克拼过命，差点把他爹从死人堆里拽出来。他爹欠他的，比欠帝国的还多。”但缓和归缓和，涅雷采斯这个姓在我们西边永远洗不白。我们不会因为彭同是个好人就忘了他爹干过什么。西帝国的老兵至今还在传：德洛修斯故意压住伏击情报，想借敌人的箭射死加里俄斯。这个仇加里俄斯记了一辈子，我们跟着记。彭同在北边当他的好元老，我们在西边当我们的兵。井水不犯河水。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "彭同·涅雷采斯是帝国政治中最被低估的稳健派人物。从外部评估，此人具备一个成熟政治家所需的核心素质——自我克制。他放弃了复辟的虚妄野心，选择了在北帝国的制度框架内重建家族影响力，这在帝国历史上极为罕见。他的军事才能已在潘德拉克得到验证，他的政治判断力在卢孔朝的元老院中持续被证明。北帝国东部的稳定在相当程度上依赖于他对萨涅俄帕的控制和运作。如果说他父亲是帝国分裂的推手，那他正在用自己的方式，缓慢而坚定地缝合一些他父亲撕裂的东西。这种赎罪式的政治生涯不算光彩，但值得尊敬。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "clan_empire_north_1"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_1_1"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "彭同是我最得力的元老，也是我最看不懂的人。他从不索求，从不抱怨，从不拉帮结派。他坐在元老院里，像一块石头。每次我提增税或征兵，他提出异议时从不动怒，只是低声陈述几个数字——萨涅俄帕今年的收成、商路的通行量、边境的驻军需求。每次我听完，都觉得他说得对。这就是为什么我让步。不是怕他，而是信他。他不贪，不抢，不争。一个不争的人，你给他什么，他都还给你。我年纪大了，北帝国将来谁撑着？不是那些吵来吵去的元老，是彭同。只是这话我不会当面告诉他，免得他不好意思。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "clan_empire_west_1"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_1_7"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "彭同。他爹想让我死在潘德拉克，他在潘德拉克杀了老奥列克。这两件事扯平了。我不恨彭同，但我不会理他。他骨子里是元老院的人，我是兵营里的人，我们走的不是一条路。他大概也不恨我，但也绝不会来西边投我。他守着萨涅俄帕，像守着他爹的墓碑。他活得太累了。我知道那种累——一辈子都在替一个混蛋收拾烂摊子。我替帝国收拾，他替他爹收拾。我俩算是难兄难弟，只不过他比我沉默，我比他嗓门大。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "clan_empire_south_1"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_1_14"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "彭同在潘德拉克拼过命，没救回他父亲，但救回了他自己的尊严。他在北边守着萨涅俄帕，我在南边守着吕卡隆。彼此不相往来。但有时候夜深人静，我会想，如果当年赢了了，帝国会不会还是现在这个样子。也许不会。也许大分裂不会发生。也许他会站在我身边，而不是坐在北边的元老院里当卢孔的柱子。但我只是想想。有些事情，命运不许，人也没办法。"
+    },
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "彭同？那个死了的帝国皇帝的儿子是吧。我听跑商的人说，他爹把帝国坑惨了，头都被砍了，他倒是没跑，还在北边当大官，守着一座大城。你说他恨不恨他爹？估计恨。换了谁摊上这么个爹都会恨。但他没改姓，也没造反，就在那儿闷头干活。我觉着这人挺能扛的。我们这儿有句老话：好汉不替爹还债。但他还了，还了半辈子。这种人不多了。"
+    }
+  ],
+  "TextMappings": []
+}

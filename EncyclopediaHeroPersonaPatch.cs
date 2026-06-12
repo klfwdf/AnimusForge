@@ -527,14 +527,14 @@ public static class EncyclopediaHeroPersonaPatch
 			Hero hero = ResolveHero(GetDataSource(root));
 			if (hero != null)
 			{
-				MyBehavior.OpenHeroPersonaEditorForExternal(hero);
+				MyBehavior.OpenHeroNpcEditorForExternal(hero);
 			}
 		});
 		TextWidget textWidget = new TextWidget(parent.Context)
 		{
 			WidthSizePolicy = SizePolicy.StretchToParent,
 			HeightSizePolicy = SizePolicy.StretchToParent,
-			Text = "编辑个性与背景",
+			Text = "编辑NPC",
 			Brush = parent.Context.GetBrush("Popup.Button.Text") ?? parent.Context.GetBrush("Encyclopedia.SubPage.Info.Text"),
 			DoNotAcceptEvents = true
 		};

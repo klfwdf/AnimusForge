@@ -1,0 +1,18 @@
+﻿{
+  "Id": "rule_蒂亚尔马",
+  "Keywords": [
+    "蒂亚尔马"
+  ],
+  "RagShortTexts": [
+    "蒂亚尔马产于斯特吉亚，品质优良"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "蒂亚尔马是非常好的马，产于斯特吉亚，是斯特吉亚贵族常用的马"
+    }
+  ],
+  "TextMappings": []
+}
