@@ -325,7 +325,6 @@ namespace AnimusForge
 						5000, npc.CharacterObject);
 				}
 
-				_activeDeals.RemoveAll(d => d.IsConsumed);
 				if (processedDeals.Count > 0)
 					Logger.Log("VoteDeal", $"[DecisionConcluded] Processed {processedDeals.Count} deal(s) for kingdom={decision.Kingdom.StringId}.");
 			}
