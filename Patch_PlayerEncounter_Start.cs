@@ -63,6 +63,7 @@ public static class Patch_PlayerEncounter_Start
 				{
 					return;
 				}
+				ProactiveNpcRequestBehavior.MarkEncounterOpened(leaderHero);
 				Logger.Log("Patch_PlayerEncounter_Start", $"检测到领主遭遇: {leaderHero.Name}，强制重定向到 AnimusForge_lord_encounter");
 				try
 				{

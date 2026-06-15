@@ -328,6 +328,7 @@ public class SubModule : MBSubModuleBase
 			campaignGameStarter.AddBehavior(new RomanceSystemBehavior());
 			campaignGameStarter.AddBehavior(new KnowledgeLibraryBehavior());
 			campaignGameStarter.AddBehavior(new LordEncounterBehavior());
+			campaignGameStarter.AddBehavior(new ProactiveNpcRequestBehavior());
 			campaignGameStarter.AddBehavior(new SceneTauntBehavior());
 			campaignGameStarter.AddBehavior(new VoteDealBehavior());
 			campaignGameStarter.AddBehavior(new VanillaIssuePromptBehavior());
@@ -363,23 +364,82 @@ public class SubModule : MBSubModuleBase
 
 	protected override void OnApplicationTick(float dt)
 	{
-		ShoutTextInputPopup.ProcessDeferredCloseIfNeeded();
-		ShoutTextInputPopup.CloseForSystemInterruptionIfNeeded();
-		ShoutTextInputPopup.KeepMissionPausedIfOpen();
-		AnimusForgeConversationHistoryLogPopup.OnApplicationTick();
-		AnimusForgeNativeConversationOverlay.OnApplicationTick();
-		NativeConversationAnswerAreaController.OnApplicationTick();
-		ConversationHelper.Tick();
-		ProcessPendingInitialApiGuideNotice();
-		Logger.OnApplicationTick();
-		BannerlordExceptionSentinel.OnApplicationTick();
-		McmDropdownRuntimeRefresh.OnApplicationTick();
-		EncyclopediaHeroPersonaPatch.OnApplicationTick();
-		ModOnboardingBehavior.Instance?.OnEngineTick();
-		MyBehavior.Instance?.OnEngineTick();
-		CourierDeliveryBehavior.Instance?.OnEngineTick();
-		DuelBehavior.Instance?.OnEngineTick();
-		AnimusForgeTerminalBehavior.Instance?.OnEngineTick();
+		long perfFrame = PerfProbe.BeginFrame(dt);
+		try
+		{
+			using (PerfProbe.Scope("SubModule.ShoutTextInputPopup.ProcessDeferredCloseIfNeeded"))
+			{
+				ShoutTextInputPopup.ProcessDeferredCloseIfNeeded();
+			}
+			using (PerfProbe.Scope("SubModule.ShoutTextInputPopup.CloseForSystemInterruptionIfNeeded"))
+			{
+				ShoutTextInputPopup.CloseForSystemInterruptionIfNeeded();
+			}
+			using (PerfProbe.Scope("SubModule.ShoutTextInputPopup.KeepMissionPausedIfOpen"))
+			{
+				ShoutTextInputPopup.KeepMissionPausedIfOpen();
+			}
+			using (PerfProbe.Scope("SubModule.AnimusForgeConversationHistoryLogPopup.OnApplicationTick"))
+			{
+				AnimusForgeConversationHistoryLogPopup.OnApplicationTick();
+			}
+			using (PerfProbe.Scope("SubModule.AnimusForgeNativeConversationOverlay.OnApplicationTick"))
+			{
+				AnimusForgeNativeConversationOverlay.OnApplicationTick();
+			}
+			using (PerfProbe.Scope("SubModule.NativeConversationAnswerAreaController.OnApplicationTick"))
+			{
+				NativeConversationAnswerAreaController.OnApplicationTick();
+			}
+			using (PerfProbe.Scope("SubModule.ConversationHelper.Tick"))
+			{
+				ConversationHelper.Tick();
+			}
+			using (PerfProbe.Scope("SubModule.ProcessPendingInitialApiGuideNotice"))
+			{
+				ProcessPendingInitialApiGuideNotice();
+			}
+			using (PerfProbe.Scope("SubModule.Logger.OnApplicationTick"))
+			{
+				Logger.OnApplicationTick();
+			}
+			using (PerfProbe.Scope("SubModule.BannerlordExceptionSentinel.OnApplicationTick"))
+			{
+				BannerlordExceptionSentinel.OnApplicationTick();
+			}
+			using (PerfProbe.Scope("SubModule.McmDropdownRuntimeRefresh.OnApplicationTick"))
+			{
+				McmDropdownRuntimeRefresh.OnApplicationTick();
+			}
+			using (PerfProbe.Scope("SubModule.EncyclopediaHeroPersonaPatch.OnApplicationTick"))
+			{
+				EncyclopediaHeroPersonaPatch.OnApplicationTick();
+			}
+			using (PerfProbe.Scope("SubModule.ModOnboardingBehavior.OnEngineTick"))
+			{
+				ModOnboardingBehavior.Instance?.OnEngineTick();
+			}
+			using (PerfProbe.Scope("SubModule.MyBehavior.OnEngineTick"))
+			{
+				MyBehavior.Instance?.OnEngineTick();
+			}
+			using (PerfProbe.Scope("SubModule.CourierDeliveryBehavior.OnEngineTick"))
+			{
+				CourierDeliveryBehavior.Instance?.OnEngineTick();
+			}
+			using (PerfProbe.Scope("SubModule.DuelBehavior.OnEngineTick"))
+			{
+				DuelBehavior.Instance?.OnEngineTick();
+			}
+			using (PerfProbe.Scope("SubModule.AnimusForgeTerminalBehavior.OnEngineTick"))
+			{
+				AnimusForgeTerminalBehavior.Instance?.OnEngineTick();
+			}
+		}
+		finally
+		{
+			PerfProbe.EndFrame(perfFrame, "SubModule.OnApplicationTick.total");
+		}
 	}
 
 	private static void RegisterCourierFoodConsumptionModel(CampaignGameStarter campaignGameStarter)

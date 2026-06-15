@@ -29,6 +29,17 @@ namespace AnimusForge;
 
 public static class AIConfigHandler
 {
+	private const int ActionPostprocessMaxHistoryAndLatestEntries = 5;
+
+	private sealed class ActionPostprocessHistoryEntry
+	{
+		public int Index;
+
+		public string Text;
+
+		public bool IsRoleMessage;
+	}
+
 	private sealed class GuardrailRuleEval
 	{
 		public string RuleTag;
@@ -642,7 +653,9 @@ public static class AIConfigHandler
 		text = ReplaceActionPostprocessOptionalSection(text, "当前可直接成立的正规婚配组合与现有婚姻（事实清单）：", "marriage_fact_hint", marriageFactHint);
 		text = ReplaceActionPostprocessOptionalSection(text, "债务提示：", "debt_hint", debtHint);
 		text = ReplaceActionPostprocessOptionalSection(text, "运行时补充事实：", "runtime_context", runtimeContext);
-		string newValue = PrepareActionPostprocessHistoryText(historyText);
+		int latestReplyEntries = CountActionPostprocessLatestReplyEntries(latestReplyBlock);
+		int maxHistoryEntries = Math.Max(0, ActionPostprocessMaxHistoryAndLatestEntries - latestReplyEntries);
+		string newValue = PrepareActionPostprocessHistoryText(historyText, maxHistoryEntries, latestReplyBlock);
 		text = text.Replace("{tag_rules}", string.IsNullOrWhiteSpace(tagRules) ? "（无）" : tagRules.Trim())
 			.Replace("{history}", string.IsNullOrWhiteSpace(newValue) ? "（无）" : newValue)
 			.Replace("{reply}", string.IsNullOrWhiteSpace(latestReplyBlock) ? "玩家: （无）\nNPC: （无）" : latestReplyBlock.Trim())
@@ -806,22 +819,362 @@ public static class AIConfigHandler
 
 	public static string PrepareActionPostprocessHistoryText(string historyText)
 	{
+		return PrepareActionPostprocessHistoryText(historyText, ActionPostprocessMaxHistoryAndLatestEntries, null);
+	}
+
+	private static string PrepareActionPostprocessHistoryText(string historyText, int maxEntries, string latestReplyBlock)
+	{
 		string text = (historyText ?? "").Replace("\r\n", "\n").Replace('\r', '\n').Trim();
+		if (string.IsNullOrWhiteSpace(text) || maxEntries <= 0)
+		{
+			return "";
+		}
+		List<ActionPostprocessHistoryEntry> entries = BuildActionPostprocessHistoryEntries(text);
+		if (entries.Count == 0)
+		{
+			return "";
+		}
+		HashSet<string> latestKeys = BuildActionPostprocessLatestReplyEntryKeys(latestReplyBlock);
+		HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		List<ActionPostprocessHistoryEntry> selected = new List<ActionPostprocessHistoryEntry>();
+		SelectActionPostprocessHistoryEntries(entries, selected, seen, latestKeys, maxEntries, roleOnly: true);
+		if (selected.Count < maxEntries)
+		{
+			SelectActionPostprocessHistoryEntries(entries, selected, seen, latestKeys, maxEntries, roleOnly: false);
+		}
+		selected = selected.OrderBy((ActionPostprocessHistoryEntry x) => x.Index).ToList();
+		return Regex.Replace(string.Join("\n", selected.Select((ActionPostprocessHistoryEntry x) => x.Text).Where((string x) => !string.IsNullOrWhiteSpace(x))).Trim(), "[ \\t]{2,}", " ");
+	}
+
+	private static void SelectActionPostprocessHistoryEntries(List<ActionPostprocessHistoryEntry> entries, List<ActionPostprocessHistoryEntry> selected, HashSet<string> seen, HashSet<string> latestKeys, int maxEntries, bool roleOnly)
+	{
+		for (int i = (entries?.Count ?? 0) - 1; i >= 0 && selected.Count < maxEntries; i--)
+		{
+			ActionPostprocessHistoryEntry entry = entries[i];
+			if (entry == null || string.IsNullOrWhiteSpace(entry.Text) || entry.IsRoleMessage != roleOnly)
+			{
+				continue;
+			}
+			string key = BuildActionPostprocessHistoryEntryKey(entry.Text);
+			if (string.IsNullOrWhiteSpace(key) || latestKeys.Contains(key))
+			{
+				continue;
+			}
+			if (seen.Add(key))
+			{
+				selected.Add(entry);
+			}
+		}
+	}
+
+	private static List<ActionPostprocessHistoryEntry> BuildActionPostprocessHistoryEntries(string historyText)
+	{
+		List<ActionPostprocessHistoryEntry> entries = new List<ActionPostprocessHistoryEntry>();
+		string[] array = (historyText ?? "").Split('\n');
+		bool skipRecallBlock = false;
+		string pendingRole = "";
+		StringBuilder pendingRoleContent = null;
+		int nextIndex = 0;
+		for (int i = 0; i < array.Length; i++)
+		{
+			string rawLine = array[i] ?? "";
+			string line = rawLine.Trim();
+			if (TryParseActionPostprocessRoleMarker(line, out var role))
+			{
+				FlushActionPostprocessRoleHistoryEntry(entries, ref nextIndex, pendingRole, pendingRoleContent);
+				pendingRole = role;
+				pendingRoleContent = new StringBuilder();
+				continue;
+			}
+			if (!string.IsNullOrWhiteSpace(pendingRole))
+			{
+				if (pendingRoleContent == null)
+				{
+					pendingRoleContent = new StringBuilder();
+				}
+				pendingRoleContent.AppendLine(rawLine);
+				continue;
+			}
+			if (string.IsNullOrWhiteSpace(line))
+			{
+				continue;
+			}
+			if (IsActionPostprocessRecallBlockStart(line))
+			{
+				skipRecallBlock = true;
+				continue;
+			}
+			if (skipRecallBlock)
+			{
+				if (IsActionPostprocessRecallBlockEnd(line))
+				{
+					skipRecallBlock = false;
+				}
+				else
+				{
+					continue;
+				}
+			}
+			string text = StripActionPostprocessHistoryInnerThoughts(line);
+			if (string.IsNullOrWhiteSpace(text) || ShouldSkipActionPostprocessHistoryLine(text))
+			{
+				continue;
+			}
+			text = NormalizeActionPostprocessHistoryLine(text);
+			if (string.IsNullOrWhiteSpace(text))
+			{
+				continue;
+			}
+			if (IsActionPostprocessHistoryEntryStart(text))
+			{
+				entries.Add(new ActionPostprocessHistoryEntry
+				{
+					Index = nextIndex++,
+					Text = text,
+					IsRoleMessage = false
+				});
+			}
+			else if (entries.Count > 0)
+			{
+				ActionPostprocessHistoryEntry last = entries[entries.Count - 1];
+				last.Text = Regex.Replace((last.Text + " " + text).Trim(), "\\s+", " ");
+			}
+		}
+		FlushActionPostprocessRoleHistoryEntry(entries, ref nextIndex, pendingRole, pendingRoleContent);
+		return entries;
+	}
+
+	private static bool TryParseActionPostprocessRoleMarker(string line, out string role)
+	{
+		role = "";
+		Match match = Regex.Match((line ?? "").Trim(), "^#\\d+\\s+role=([^\\s]+)\\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+		if (!match.Success)
+		{
+			return false;
+		}
+		role = (match.Groups[1].Value ?? "").Trim();
+		return !string.IsNullOrWhiteSpace(role);
+	}
+
+	private static void FlushActionPostprocessRoleHistoryEntry(List<ActionPostprocessHistoryEntry> entries, ref int nextIndex, string role, StringBuilder content)
+	{
+		string text = BuildActionPostprocessRoleHistoryEntry(role, content?.ToString() ?? "");
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return;
+		}
+		entries.Add(new ActionPostprocessHistoryEntry
+		{
+			Index = nextIndex++,
+			Text = text,
+			IsRoleMessage = true
+		});
+	}
+
+	private static string BuildActionPostprocessRoleHistoryEntry(string role, string content)
+	{
+		string text = (content ?? "").Replace("\r\n", "\n").Replace('\r', '\n').Trim();
+		string roleText = (role ?? "").Trim().ToLowerInvariant();
+		if (string.IsNullOrWhiteSpace(text) || text.IndexOf("<latest_reply>", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("REQUEST_BODY:", StringComparison.OrdinalIgnoreCase) >= 0)
+		{
+			return "";
+		}
+		if (roleText == "user")
+		{
+			string playerText = ExtractActionPostprocessPlayerTextFromRoleContent(text);
+			if (string.IsNullOrWhiteSpace(playerText))
+			{
+				return "";
+			}
+			return "玩家: " + playerText;
+		}
+		if (roleText == "assistant")
+		{
+			string npcText = ExtractActionPostprocessAssistantTextFromRoleContent(text);
+			if (string.IsNullOrWhiteSpace(npcText))
+			{
+				return "";
+			}
+			return "NPC: " + npcText;
+		}
+		return "";
+	}
+
+	private static string ExtractActionPostprocessPlayerTextFromRoleContent(string content)
+	{
+		string text = (content ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text) || text.StartsWith("[AFEF", StringComparison.Ordinal) || text.StartsWith("【最近对话历史】", StringComparison.Ordinal) || text.StartsWith("【近期对话窗口】", StringComparison.Ordinal))
+		{
+			return "";
+		}
+		int directLabelEnd = FindLastActionPostprocessDirectSpeechLabelEnd(text);
+		if (directLabelEnd >= 0 && directLabelEnd < text.Length)
+		{
+			text = text.Substring(directLabelEnd).Trim();
+		}
+		else
+		{
+			string latestPlayer = ExtractLatestPlayerUtteranceForActionPostprocess(text);
+			if (!string.IsNullOrWhiteSpace(latestPlayer))
+			{
+				text = latestPlayer;
+			}
+		}
+		text = NormalizeActionPostprocessDialogueText(StripActionPostprocessHistoryInnerThoughts(text));
+		return text.Length > 500 ? (text.Substring(0, 500).TrimEnd() + "…") : text;
+	}
+
+	private static int FindLastActionPostprocessDirectSpeechLabelEnd(string text)
+	{
+		int best = -1;
+		foreach (string token in new string[3] { "对你说】", "对NPC说】", "对玩家说】" })
+		{
+			int index = (text ?? "").LastIndexOf(token, StringComparison.Ordinal);
+			if (index >= 0)
+			{
+				best = Math.Max(best, index + token.Length);
+			}
+		}
+		return best;
+	}
+
+	private static string ExtractActionPostprocessAssistantTextFromRoleContent(string content)
+	{
+		string text = (content ?? "").Replace("\r\n", "\n").Replace('\r', '\n').Trim();
+		if (string.IsNullOrWhiteSpace(text) || text.StartsWith("[ACTION:", StringComparison.OrdinalIgnoreCase))
+		{
+			return "";
+		}
+		int contentIndex = text.LastIndexOf("[CONTENT]", StringComparison.OrdinalIgnoreCase);
+		if (contentIndex >= 0)
+		{
+			text = text.Substring(contentIndex + "[CONTENT]".Length).Trim();
+		}
+		StringBuilder sb = new StringBuilder(text.Length);
+		foreach (string line in text.Split('\n'))
+		{
+			string cleaned = StripActionPostprocessHistoryInnerThoughts(line);
+			if (!string.IsNullOrWhiteSpace(cleaned))
+			{
+				sb.Append(cleaned).Append(' ');
+			}
+		}
+		text = NormalizeActionPostprocessDialogueText(sb.ToString());
+		return text.Length > 500 ? (text.Substring(0, 500).TrimEnd() + "…") : text;
+	}
+
+	private static bool IsActionPostprocessRecallBlockStart(string line)
+	{
+		return (line ?? "").Trim().IndexOf("你想起之前的对话与互动", StringComparison.Ordinal) >= 0;
+	}
+
+	private static bool IsActionPostprocessRecallBlockEnd(string line)
+	{
+		string text = (line ?? "").Trim();
+		return text.StartsWith("【当前场景公共对话与互动】", StringComparison.Ordinal) || text.StartsWith("【最近对话历史】", StringComparison.Ordinal) || text.StartsWith("【近期对话窗口】", StringComparison.Ordinal);
+	}
+
+	private static bool ShouldSkipActionPostprocessHistoryLine(string line)
+	{
+		string text = (line ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text) || text.StartsWith("——", StringComparison.Ordinal))
+		{
+			return true;
+		}
+		if (text.StartsWith("【", StringComparison.Ordinal) && text.EndsWith("】", StringComparison.Ordinal))
+		{
+			return true;
+		}
+		if (text.StartsWith("内容：", StringComparison.Ordinal) || text.StartsWith("日期：", StringComparison.Ordinal) || text.StartsWith("AFEF行为补充：", StringComparison.Ordinal))
+		{
+			return true;
+		}
+		if (text.StartsWith("【场景事实】", StringComparison.Ordinal))
+		{
+			return true;
+		}
+		return Regex.IsMatch(text, "^\\d+#标题[：:]", RegexOptions.CultureInvariant);
+	}
+
+	private static string NormalizeActionPostprocessHistoryLine(string line)
+	{
+		string text = (line ?? "").Trim();
+		text = Regex.Replace(text, "^\\[AF_SCENE_SESSION:\\d+\\]\\s*", "", RegexOptions.CultureInvariant);
+		text = Regex.Replace(text, "^\\[[^\\]\\r\\n]*[｜|][^\\]\\r\\n]*\\]\\s*", "", RegexOptions.CultureInvariant);
+		text = Regex.Replace(text, "^【[^】]*对(?:你|NPC|[^】]+)说】\\s*", "玩家: ", RegexOptions.CultureInvariant);
+		text = Regex.Replace(text, "\\s+", " ", RegexOptions.CultureInvariant).Trim();
+		return text;
+	}
+
+	private static bool IsActionPostprocessHistoryEntryStart(string line)
+	{
+		string text = (line ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return false;
+		}
+		if (text.StartsWith("[AFEF", StringComparison.Ordinal))
+		{
+			return true;
+		}
+		int num = text.IndexOfAny(new char[2] { ':', '：' });
+		if (num <= 0)
+		{
+			return false;
+		}
+		string speaker = text.Substring(0, num).Trim();
+		return speaker.Equals("玩家", StringComparison.OrdinalIgnoreCase) || speaker.Equals("NPC", StringComparison.OrdinalIgnoreCase) || speaker.Equals("你", StringComparison.OrdinalIgnoreCase) || speaker.Contains("对");
+	}
+
+	private static int CountActionPostprocessLatestReplyEntries(string latestReplyBlock)
+	{
+		int count = 0;
+		foreach (string line in (latestReplyBlock ?? "").Replace("\r\n", "\n").Replace('\r', '\n').Split('\n'))
+		{
+			string text = (line ?? "").Trim();
+			int num = text.IndexOfAny(new char[2] { ':', '：' });
+			if (num <= 0 || num + 1 >= text.Length)
+			{
+				continue;
+			}
+			string speaker = text.Substring(0, num).Trim();
+			string body = text.Substring(num + 1).Trim();
+			if (!string.IsNullOrWhiteSpace(body) && body != "（无）" && (speaker.Equals("玩家", StringComparison.OrdinalIgnoreCase) || speaker.Equals("NPC", StringComparison.OrdinalIgnoreCase)))
+			{
+				count++;
+			}
+		}
+		return count;
+	}
+
+	private static HashSet<string> BuildActionPostprocessLatestReplyEntryKeys(string latestReplyBlock)
+	{
+		HashSet<string> keys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		foreach (string line in (latestReplyBlock ?? "").Replace("\r\n", "\n").Replace('\r', '\n').Split('\n'))
+		{
+			string key = BuildActionPostprocessHistoryEntryKey(line);
+			if (!string.IsNullOrWhiteSpace(key))
+			{
+				keys.Add(key);
+			}
+		}
+		return keys;
+	}
+
+	private static string BuildActionPostprocessHistoryEntryKey(string line)
+	{
+		string text = NormalizeActionPostprocessHistoryLine(line);
 		if (string.IsNullOrWhiteSpace(text))
 		{
 			return "";
 		}
-		StringBuilder stringBuilder = new StringBuilder(text.Length);
-		string[] array = text.Split('\n');
-		for (int i = 0; i < array.Length; i++)
+		int num = text.IndexOfAny(new char[2] { ':', '：' });
+		if (num >= 0 && num + 1 < text.Length)
 		{
-			string text2 = StripActionPostprocessHistoryInnerThoughts(array[i]);
-			if (!string.IsNullOrWhiteSpace(text2))
-			{
-				stringBuilder.AppendLine(text2);
-			}
+			text = text.Substring(num + 1).Trim();
 		}
-		return Regex.Replace(stringBuilder.ToString().Trim(), "[ \\t]{2,}", " ");
+		text = Regex.Replace(text, "\\s+", " ", RegexOptions.CultureInvariant).Trim();
+		return text;
 	}
 
 	private static string StripActionPostprocessHistoryInnerThoughts(string line)
@@ -2687,6 +3040,10 @@ public static class AIConfigHandler
 		{
 			return "";
 		}
+		if (IsAuxiliaryAfefFactLine(text))
+		{
+			return text;
+		}
 		if (IsAuxiliaryPlayerHistoryLine(text))
 		{
 			return NormalizeAuxiliaryPlayerRoutingLine(text);
@@ -2773,6 +3130,10 @@ public static class AIConfigHandler
 					continue;
 				}
 				if (IsAuxiliarySceneShoutObserverLine(text2))
+				{
+					continue;
+				}
+				if (IsAuxiliaryAfefFactLine(text2))
 				{
 					continue;
 				}
@@ -3011,15 +3372,48 @@ public static class AIConfigHandler
 		{
 			return false;
 		}
-		if (text.StartsWith("[AFEF玩家行为补充]", StringComparison.Ordinal) || text.StartsWith("[AFEF NPC行为补充]", StringComparison.Ordinal))
+		if (IsAuxiliaryAfefFactLine(text))
 		{
-			return false;
+			return true;
 		}
 		if (text.StartsWith("vanilla_issue:", StringComparison.OrdinalIgnoreCase))
 		{
 			return false;
 		}
 		return true;
+	}
+
+	private static bool IsAuxiliaryAfefFactLine(string line)
+	{
+		string text = (line ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return false;
+		}
+		return text.StartsWith("[AFEF玩家行为补充]", StringComparison.Ordinal) || text.StartsWith("[AFEF NPC行为补充]", StringComparison.Ordinal);
+	}
+
+	private static string AppendAuxiliaryAfefFactToRoutingContext(string context, string afefLine)
+	{
+		string text = NormalizeSemanticText(afefLine);
+		if (!IsAuxiliaryAfefFactLine(text))
+		{
+			return NormalizeGuardrailContextText(context);
+		}
+		string text2 = NormalizeGuardrailContextText(context);
+		if (string.IsNullOrWhiteSpace(text2))
+		{
+			return text;
+		}
+		string[] array = text2.Replace("\r\n", "\n").Replace('\r', '\n').Split(new char[1] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
+		for (int i = 0; i < array.Length; i++)
+		{
+			if (string.Equals((array[i] ?? "").Trim(), text, StringComparison.Ordinal))
+			{
+				return text2;
+			}
+		}
+		return text2.TrimEnd() + "\n" + text;
 	}
 
 	private static bool ContainsAuxiliaryHistoryUtterance(List<string> lines, string utterance)
@@ -3083,10 +3477,13 @@ public static class AIConfigHandler
 	private static string BuildAuxiliaryGuardrailRoutingPrompt(string userText, string secondaryText, string runtimeGuardrailContext, List<GuardrailAuxiliaryTopic> topics, int topN)
 	{
 		string text = NormalizeSemanticText(userText);
+		bool userTextIsAfefFact = IsAuxiliaryAfefFactLine(text);
+		string routingRuntimeContext = userTextIsAfefFact ? AppendAuxiliaryAfefFactToRoutingContext(runtimeGuardrailContext, text) : runtimeGuardrailContext;
+		string routingLatestPlayerText = userTextIsAfefFact ? "" : userText;
 		string latestNpcText;
-		string historyBlock = BuildAuxiliaryGuardrailHistoryBlock(runtimeGuardrailContext, secondaryText, userText, out latestNpcText);
+		string historyBlock = BuildAuxiliaryGuardrailHistoryBlock(routingRuntimeContext, secondaryText, routingLatestPlayerText, out latestNpcText);
 		string text2 = StripAuxiliaryHistoryInnerThoughtsFromLine(NormalizeSemanticText(latestNpcText));
-		string text5 = NormalizeAuxiliaryPlayerRoutingLine(text);
+		string text5 = userTextIsAfefFact ? "" : NormalizeAuxiliaryPlayerRoutingLine(text);
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.AppendLine("You are a dialogue retrieval tool. Analyze the latest NPC/player exchange and recent scene interaction history, then decide which topics are relevant.");
 		for (int i = 0; i < topics.Count; i++)

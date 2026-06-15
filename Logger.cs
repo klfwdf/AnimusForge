@@ -1324,6 +1324,10 @@ public static class Logger
 			{
 				return msg.StartsWith("[Hotkey]", StringComparison.Ordinal);
 			}
+			if (string.Equals(text, "ShoutNetwork", StringComparison.Ordinal))
+			{
+				return msg.StartsWith("[PrimaryChatRaw]", StringComparison.Ordinal);
+			}
 		}
 		catch
 		{

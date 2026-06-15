@@ -13,6 +13,7 @@ using SandBox;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Actions;
 using TaleWorlds.CampaignSystem.GameComponents;
+using TaleWorlds.CampaignSystem.Naval;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Party.PartyComponents;
 using TaleWorlds.CampaignSystem.Roster;
@@ -35,6 +36,10 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 	private const double RouteRefreshSeconds = 2.0;
 	private const double CampaignTickThrottleSeconds = 0.75;
 	private const string CourierPartyPrefix = "af_courier_";
+	private const string TemporaryCourierShipName = "AnimusForge Courier Boat";
+	private const double NavalStuckRefreshHours = 12.0;
+	private const float NavalStuckDistanceSquared = 0.0625f;
+	private const int NavalStuckSafeRouteThreshold = 3;
 	private static readonly string[] CourierExcludedRuleIds = new[] { "duel", "lords_hall_access", "scene_mechanism_actions", "encounter_release_player" };
 
 	private enum CourierStage
@@ -71,6 +76,13 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		public string ReplyText;
 		public string ReplyPostprocessedText;
 		public string LastRouteKey;
+		public string TemporaryShipHullId;
+		public bool TemporaryShipCreated;
+		public string LastProgressRouteKey;
+		public float LastProgressX;
+		public float LastProgressY;
+		public double LastProgressCampaignHours;
+		public int NavalStuckRefreshCount;
 		public string SafeSettlementId;
 		public string RecipientWaitReason;
 		public bool DeliveryApplied;
@@ -92,6 +104,22 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		public int Amount;
 		public bool IsHero;
 		public bool Delivered;
+	}
+
+	private sealed class CourierRoutePlan
+	{
+		public MobileParty.NavigationType NavigationType;
+		public bool RequiresNaval;
+		public bool UsePort;
+		public string Reason;
+
+		public string KeySuffix
+		{
+			get
+			{
+				return ":nav=" + NavigationType + ":port=" + (UsePort ? "1" : "0") + ":sea=" + (RequiresNaval ? "1" : "0") + ":reason=" + (Reason ?? "");
+			}
+		}
 	}
 
 	private sealed class PendingCourierFlow
@@ -124,6 +152,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 	private static bool _mapTrackerProviderPatchApplied;
 	private static bool _mapTrackerProviderPatchFailed;
 	private static readonly Dictionary<string, long> LastTrackerEventPulseTicks = new Dictionary<string, long>(StringComparer.OrdinalIgnoreCase);
+	private static readonly Dictionary<string, long> LastCourierLogicPulseTicks = new Dictionary<string, long>(StringComparer.OrdinalIgnoreCase);
 
 	private readonly Dictionary<string, CourierSession> _sessions = new Dictionary<string, CourierSession>(StringComparer.OrdinalIgnoreCase);
 	private readonly object _sessionLock = new object();
@@ -334,7 +363,9 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 				{
 					NormalizeSession(session);
 					ResetReplyGenerationAfterLoad(session, "game_load_finished");
-					ApplyCourierAiOverrides(ResolveCourierParty(session), "load_restore");
+					MobileParty courier = ResolveCourierParty(session);
+					MarkExistingCourierTemporaryShips(session, courier);
+					ApplyCourierAiOverrides(courier, "load_restore");
 				}
 			}
 			Log("game_load_finished active=" + GetActiveSessionCount());
@@ -845,6 +876,8 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 
 	private void OnCampaignTick(float dt)
 	{
+		using (PerfProbe.Scope("CourierDelivery.OnCampaignTick"))
+		{
 		try
 		{
 			long now = DateTime.UtcNow.Ticks;
@@ -869,6 +902,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		{
 			Log("campaign tick failed: " + ex);
 		}
+		}
 	}
 
 	private void ProcessSession(CourierSession session)
@@ -887,6 +921,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		}
 		ApplyCourierAiOverrides(courier, "tick");
 		Hero recipient = ResolveRecipient(session);
+		LogCourierStatusVerbose("tick:" + session.Id, BuildCourierStatusSnapshot(session, courier, recipient, "tick"), 6.0);
 		if (!session.DeliveryApplied && recipient != null && !recipient.IsDead && !session.ReplyGenerated && !session.ReplyGenerationStarted)
 		{
 			StartCourierReplyGeneration(session, "outbound_preflight");
@@ -920,6 +955,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		}
 		if ((stage == CourierStage.Outbound || stage == CourierStage.WaitingRecipient) && recipient == null)
 		{
+			LogCourierStatusVerbose("target_unresolved:" + session.Id, "target_unresolved session=" + session.Id + " reason=recipient_null " + BuildCourierStatusSnapshot(session, courier, recipient, "target_unresolved"), 5.0);
 			RouteToSafeSettlement(session, courier, "recipient_unresolved");
 			return;
 		}
@@ -943,6 +979,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			{
 				session.Stage = CourierStage.Outbound.ToString();
 				ClearRecipientWaitReasonIfNeeded(session, "target_resolved");
+				LogCourierStatusVerbose("target_resolved:" + session.Id, "target_resolved session=" + session.Id + " " + DescribeRecipientTarget(recipient, targetParty, targetSettlement), 3.0);
 				if (IsAtRecipient(courier, targetParty, targetSettlement))
 				{
 					DeliverToRecipient(session, courier, recipient);
@@ -956,6 +993,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			{
 				SetRecipientWaitReason(session, "unresolved", "target_unresolved");
 			}
+			LogCourierStatusVerbose("target_unresolved:" + session.Id, "target_unresolved session=" + session.Id + " reason=no_party_or_settlement " + DescribeHero(recipient) + " courier=" + DescribeMobileParty(courier), 5.0);
 			RouteToSafeSettlement(session, courier, "recipient_wait_respawn");
 			return;
 		}
@@ -1603,6 +1641,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			}
 			MyBehavior.AppendExternalDialogueHistory(recipient, null, null, fact);
 			UntrackCourierMapVisual(destroyedParty, "destroyed");
+			DestroyCourierTemporaryShips(session, destroyedParty, "destroyed");
 			session.Stage = CourierStage.Destroyed.ToString();
 			EndCourierReplyWaitPause(session, "destroyed");
 			lock (_sessionLock)
@@ -1669,6 +1708,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			if (courier != null && courier.IsActive)
 			{
 				UntrackCourierMapVisual(courier, "completed");
+				DestroyCourierTemporaryShips(session, courier, "completed");
 				if (courier.IsCurrentlyUsedByAQuest)
 				{
 					courier.SetPartyUsedByQuest(false);
@@ -1694,6 +1734,8 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		Hero recipient = ResolveRecipient(session);
 		MyBehavior.AppendExternalDialogueHistory(recipient, null, null, "[AFEF玩家行为补充] 玩家派出的信使队失去踪迹，信件与随信物资未能确认送达。");
 		session.Stage = CourierStage.Destroyed.ToString();
+		session.TemporaryShipCreated = false;
+		session.TemporaryShipHullId = "";
 		EndCourierReplyWaitPause(session, "missing");
 		lock (_sessionLock)
 		{
@@ -1715,79 +1757,439 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private void RouteToRecipient(CourierSession session, MobileParty courier, MobileParty targetParty, Settlement targetSettlement)
+	private static CourierRoutePlan BuildCourierRoutePlan(MobileParty courier, CampaignVec2 targetPosition, Settlement targetSettlement, MobileParty targetParty, bool preferPort)
 	{
-		if (courier == null)
+		bool requiresNaval = ShouldUseNavalRoute(courier, targetPosition, targetSettlement, targetParty, preferPort);
+		bool usePort = targetSettlement != null && targetSettlement.HasPort && (requiresNaval || preferPort || courier?.IsCurrentlyAtSea == true || targetParty?.IsCurrentlyAtSea == true);
+		return new CourierRoutePlan
+		{
+			RequiresNaval = requiresNaval,
+			UsePort = usePort,
+			NavigationType = GetEffectiveCourierNavigationType(courier, requiresNaval),
+			Reason = BuildNavalRouteReason(courier, targetPosition, targetSettlement, targetParty, preferPort, requiresNaval)
+		};
+	}
+
+	private static bool ShouldUseNavalRoute(MobileParty courier, CampaignVec2 targetPosition, Settlement targetSettlement, MobileParty targetParty, bool preferPort)
+	{
+		try
+		{
+			if (courier == null || !IsNavalRuntimeAvailable())
+			{
+				return false;
+			}
+			if (courier.IsCurrentlyAtSea || !courier.Position.IsOnLand || targetParty?.IsCurrentlyAtSea == true || !targetPosition.IsOnLand)
+			{
+				return true;
+			}
+			if (preferPort && targetSettlement?.HasPort == true)
+			{
+				return true;
+			}
+			CampaignVec2 landTarget = targetSettlement?.GatePosition ?? targetPosition;
+			return IsValidCampaignPosition(courier.Position) && IsValidCampaignPosition(landTarget) && !DefaultLandPathExists(courier.Position, landTarget);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static string BuildNavalRouteReason(MobileParty courier, CampaignVec2 targetPosition, Settlement targetSettlement, MobileParty targetParty, bool preferPort, bool requiresNaval)
+	{
+		if (!requiresNaval)
+		{
+			return "land";
+		}
+		if (courier?.IsCurrentlyAtSea == true || courier?.Position.IsOnLand == false)
+		{
+			return "courier_sea";
+		}
+		if (targetParty?.IsCurrentlyAtSea == true || !targetPosition.IsOnLand)
+		{
+			return "target_sea";
+		}
+		if (preferPort && targetSettlement?.HasPort == true)
+		{
+			return "prefer_port";
+		}
+		return "no_land_path";
+	}
+
+	private static MobileParty.NavigationType GetEffectiveCourierNavigationType(MobileParty courier, bool requiresNaval)
+	{
+		if (requiresNaval)
+		{
+			return MobileParty.NavigationType.All;
+		}
+		MobileParty.NavigationType navigationType = courier?.NavigationCapability ?? MobileParty.NavigationType.Default;
+		return navigationType == MobileParty.NavigationType.None ? MobileParty.NavigationType.Default : navigationType;
+	}
+
+	private static bool EnsureCourierNavalReadiness(CourierSession session, MobileParty courier, CourierRoutePlan plan, string reason)
+	{
+		if (session == null || courier == null || plan == null || !plan.RequiresNaval)
+		{
+			return true;
+		}
+		try
+		{
+			if (courier.Ships != null && courier.Ships.Count > 0)
+			{
+				MarkExistingCourierTemporaryShips(session, courier);
+				if (!courier.HasNavalNavigationCapability)
+				{
+					LogCourierStatusVerbose("naval_existing_no_cap:" + session.Id, "naval_existing_no_cap session=" + session.Id + " reason=" + (reason ?? "") + " courier=" + DescribeMobileParty(courier) + " tempShipCreated=" + session.TemporaryShipCreated + " hull=" + (session.TemporaryShipHullId ?? ""), 10.0);
+				}
+				return courier.HasNavalNavigationCapability;
+			}
+			if (!IsNavalRuntimeAvailable() || courier.Party == null)
+			{
+				LogVerbose("naval_unavailable:" + session.Id, "courier naval runtime unavailable session=" + session.Id + " reason=" + (reason ?? ""), 10.0);
+				LogCourierStatusVerbose("naval_unavailable:" + session.Id, "naval_unavailable session=" + session.Id + " reason=" + (reason ?? "") + " runtime=" + IsNavalRuntimeAvailable() + " hasParty=" + (courier.Party != null) + " courier=" + DescribeMobileParty(courier), 10.0);
+				return false;
+			}
+			ShipHull hull = SelectCourierTemporaryShipHull(courier);
+			if (hull == null)
+			{
+				Log("courier temporary ship hull missing session=" + session.Id + " reason=" + (reason ?? ""));
+				LogCourierStatus("temporary_ship_hull_missing session=" + session.Id + " reason=" + (reason ?? "") + " courier=" + DescribeMobileParty(courier));
+				return false;
+			}
+			Ship ship = new Ship(hull);
+			ship.SetName(new TextObject(TemporaryCourierShipName));
+			ship.IsUsedByQuest = true;
+			ship.IsInvulnerable = true;
+			ChangeShipOwnerAction.ApplyByMobilePartyCreation(courier.Party, ship);
+			session.TemporaryShipCreated = true;
+			session.TemporaryShipHullId = hull.StringId ?? "";
+			session.LastRouteKey = "";
+			Log("courier temporary ship created session=" + session.Id + " party=" + (courier.StringId ?? "") + " hull=" + (hull.StringId ?? "") + " reason=" + (reason ?? ""));
+			LogCourierStatus("temporary_ship_created session=" + session.Id + " reason=" + (reason ?? "") + " hull=" + (hull.StringId ?? "") + " capacity=" + hull.TotalCrewCapacity + " speed=" + hull.BaseSpeed + " courier=" + DescribeMobileParty(courier));
+			return courier.HasNavalNavigationCapability || (courier.Ships != null && courier.Ships.Count > 0);
+		}
+		catch (Exception ex)
+		{
+			Log("courier temporary ship create failed session=" + session.Id + " reason=" + (reason ?? "") + " error=" + ex.Message);
+			LogCourierStatus("temporary_ship_create_failed session=" + session.Id + " reason=" + (reason ?? "") + " error=" + ex.Message + " courier=" + DescribeMobileParty(courier));
+			return false;
+		}
+	}
+
+	private static void MarkExistingCourierTemporaryShips(CourierSession session, MobileParty courier)
+	{
+		if (session == null || courier?.Ships == null || !session.TemporaryShipCreated)
 		{
 			return;
 		}
-		string key = BuildRecipientRouteKey(targetParty, targetSettlement);
-		AiBehavior expectedBehavior = targetParty != null && targetParty.IsActive ? AiBehavior.GoToPoint : AiBehavior.GoToSettlement;
-		if (ShouldRefreshRoute(session, key, courier, expectedBehavior))
+		foreach (Ship ship in courier.Ships)
 		{
+			if (IsCourierTemporaryShip(session, ship))
+			{
+				ship.IsUsedByQuest = true;
+				ship.IsInvulnerable = true;
+				ship.SetName(new TextObject(TemporaryCourierShipName));
+			}
+		}
+	}
+
+	private static ShipHull SelectCourierTemporaryShipHull(MobileParty courier)
+	{
+		try
+		{
+			Ship playerShip = MobileParty.MainParty?.Ships?.FirstOrDefault(x => x?.ShipHull != null);
+			if (playerShip?.ShipHull != null)
+			{
+				return playerShip.ShipHull;
+			}
+		}
+		catch
+		{
+		}
+		List<ShipHull> hulls = GetLoadedShipHulls();
+		if (hulls.Count == 0)
+		{
+			return null;
+		}
+		int crewCount = Math.Max(1, courier?.MemberRoster?.TotalManCount ?? 1);
+		ShipHull fitting = hulls
+			.Where(x => x != null && x.TotalCrewCapacity >= crewCount)
+			.OrderBy(x => x.TotalCrewCapacity)
+			.ThenByDescending(x => x.BaseSpeed)
+			.FirstOrDefault();
+		return fitting ?? hulls
+			.Where(x => x != null)
+			.OrderByDescending(x => x.TotalCrewCapacity)
+			.ThenByDescending(x => x.BaseSpeed)
+			.FirstOrDefault();
+	}
+
+	private static List<ShipHull> GetLoadedShipHulls()
+	{
+		Dictionary<string, ShipHull> hulls = new Dictionary<string, ShipHull>(StringComparer.OrdinalIgnoreCase);
+		AddLoadedShipHulls(hulls, MBObjectManager.Instance);
+		AddLoadedShipHulls(hulls, Game.Current?.ObjectManager);
+		return hulls.Values.Where(x => x != null && x.TotalCrewCapacity > 0).ToList();
+	}
+
+	private static void AddLoadedShipHulls(Dictionary<string, ShipHull> hulls, MBObjectManager manager)
+	{
+		if (hulls == null || manager == null)
+		{
+			return;
+		}
+		try
+		{
+			MBReadOnlyList<ShipHull> list = manager.GetObjectTypeList<ShipHull>();
+			if (list == null)
+			{
+				return;
+			}
+			foreach (ShipHull hull in list)
+			{
+				if (hull == null)
+				{
+					continue;
+				}
+				string key = string.IsNullOrWhiteSpace(hull.StringId) ? hull.GetHashCode().ToString() : hull.StringId;
+				hulls[key] = hull;
+			}
+		}
+		catch
+		{
+		}
+	}
+
+	private static bool IsNavalRuntimeAvailable()
+	{
+		try
+		{
+			if (GetLoadedShipHulls().Count == 0 || Settlement.All == null || !Settlement.All.Any(x => x != null && x.HasPort))
+			{
+				return false;
+			}
+			string modelName = Campaign.Current?.Models?.PartyNavigationModel?.GetType()?.FullName ?? "";
+			if (modelName.IndexOf("Naval", StringComparison.OrdinalIgnoreCase) >= 0)
+			{
+				return true;
+			}
+			return MobileParty.All?.Any(x => x != null && x.IsActive && x.HasNavalNavigationCapability) == true;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static bool DefaultLandPathExists(CampaignVec2 fromPoint, CampaignVec2 toPoint)
+	{
+		try
+		{
+			if (!IsValidCampaignPosition(fromPoint) || !IsValidCampaignPosition(toPoint))
+			{
+				return true;
+			}
+			return Campaign.Current?.Models?.MapDistanceModel?.PathExistBetweenPoints(fromPoint, toPoint, MobileParty.NavigationType.Default) != false;
+		}
+		catch
+		{
+			return fromPoint.IsOnLand && toPoint.IsOnLand;
+		}
+	}
+
+	private static bool IsValidCampaignPosition(CampaignVec2 position)
+	{
+		try
+		{
+			return position.IsValid();
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static bool ShouldPreferSafeSettlementPort(MobileParty courier, string reason)
+	{
+		return courier?.IsCurrentlyAtSea == true || courier?.Position.IsOnLand == false || (reason ?? "").IndexOf("naval", StringComparison.OrdinalIgnoreCase) >= 0;
+	}
+
+	private static float GetSafeSettlementDistanceSquared(Settlement settlement, CampaignVec2 position, bool preferPort)
+	{
+		if (settlement == null)
+		{
+			return float.MaxValue;
+		}
+		CampaignVec2 approach = preferPort && settlement.HasPort ? settlement.PortPosition : settlement.GatePosition;
+		return approach.DistanceSquared(position);
+	}
+
+	private static bool ShouldDivertToSafeSettlementAfterNavalStuck(CourierSession session, CourierRoutePlan plan)
+	{
+		return session != null && plan?.RequiresNaval == true && session.NavalStuckRefreshCount >= NavalStuckSafeRouteThreshold;
+	}
+
+	private static void DestroyCourierTemporaryShips(CourierSession session, MobileParty courier, string reason)
+	{
+		try
+		{
+			if (session == null || courier?.Ships == null)
+			{
+				return;
+			}
+			List<Ship> ships = courier.Ships.Where(x => IsCourierTemporaryShip(session, x)).ToList();
+			foreach (Ship ship in ships)
+			{
+				DestroyShipAction.Apply(ship);
+			}
+			if (ships.Count > 0)
+			{
+				Log("courier temporary ships destroyed session=" + session.Id + " count=" + ships.Count + " reason=" + (reason ?? ""));
+			}
+			session.TemporaryShipCreated = false;
+			session.TemporaryShipHullId = "";
+		}
+		catch (Exception ex)
+		{
+			Log("courier temporary ship cleanup failed session=" + (session?.Id ?? "") + " reason=" + (reason ?? "") + " error=" + ex.Message);
+		}
+	}
+
+	private static bool IsCourierTemporaryShip(CourierSession session, Ship ship)
+	{
+		if (ship == null)
+		{
+			return false;
+		}
+		string shipName = ship.Name?.ToString() ?? "";
+		bool nameMatches = string.Equals(shipName, TemporaryCourierShipName, StringComparison.OrdinalIgnoreCase);
+		string hullId = (session?.TemporaryShipHullId ?? "").Trim();
+		bool hullMatches = !string.IsNullOrWhiteSpace(hullId) && string.Equals(ship.ShipHull?.StringId ?? "", hullId, StringComparison.OrdinalIgnoreCase);
+		if (session?.TemporaryShipCreated == true)
+		{
+			return hullMatches || nameMatches || ship.IsUsedByQuest;
+		}
+		return nameMatches && ship.IsUsedByQuest;
+	}
+
+	private void RouteToRecipient(CourierSession session, MobileParty courier, MobileParty targetParty, Settlement targetSettlement)
+	{
+		if (session == null || courier == null)
+		{
+			return;
+		}
+		CourierRoutePlan plan = BuildCourierRoutePlan(courier, targetParty?.Position ?? targetSettlement?.GatePosition ?? courier.Position, targetSettlement, targetParty, false);
+		if (!EnsureCourierNavalReadiness(session, courier, plan, "recipient"))
+		{
+			plan.NavigationType = GetEffectiveCourierNavigationType(courier, false);
+			plan.RequiresNaval = false;
+			plan.UsePort = false;
+		}
+		string key = BuildRecipientRouteKey(targetParty, targetSettlement, plan);
+		AiBehavior expectedBehavior = targetParty != null && targetParty.IsActive ? AiBehavior.GoToPoint : AiBehavior.GoToSettlement;
+		LogCourierStatusVerbose("route_eval_recipient:" + session.Id, "route_eval_recipient session=" + session.Id + " key=" + key + " " + DescribeRoutePlan(plan) + " targetParty=" + DescribeMobileParty(targetParty) + " targetSettlement=" + DescribeSettlement(targetSettlement) + " courier=" + DescribeMobileParty(courier) + " stuckCount=" + session.NavalStuckRefreshCount, 2.0);
+		if (IsCourierRouteTargetMismatched(courier, expectedBehavior, plan, targetParty, targetSettlement, targetParty?.Position ?? CampaignVec2.Invalid))
+		{
+			LogCourierStatusVerbose("route_target_mismatch:" + session.Id + ":recipient", "route_target_mismatch session=" + session.Id + " route=recipient key=" + key + " expectedBehavior=" + expectedBehavior + " " + DescribeRoutePlan(plan) + " targetParty=" + DescribeMobileParty(targetParty) + " targetSettlement=" + DescribeSettlement(targetSettlement) + " courier=" + DescribeMobileParty(courier), 2.0);
+			session.LastRouteKey = "";
+		}
+		if (ShouldRefreshRouteWithProgress(session, key, courier, plan.RequiresNaval, expectedBehavior))
+		{
+			if (ShouldDivertToSafeSettlementAfterNavalStuck(session, plan))
+			{
+				LogCourierStatus("divert_to_safe_after_stuck session=" + session.Id + " route=recipient key=" + key + " " + DescribeRoutePlan(plan) + " targetParty=" + DescribeMobileParty(targetParty) + " targetSettlement=" + DescribeSettlement(targetSettlement) + " courier=" + DescribeMobileParty(courier) + " stuckCount=" + session.NavalStuckRefreshCount);
+				RouteToSafeSettlement(session, courier, "naval_stuck");
+				return;
+			}
 			if (targetParty != null && targetParty.IsActive)
 			{
-				courier.SetMoveGoToPoint(targetParty.Position, courier.NavigationCapability);
+				courier.SetMoveGoToPoint(targetParty.Position, plan.NavigationType);
+				LogCourierStatus("route_recipient_set session=" + session.Id + " command=go_to_party key=" + key + " " + DescribeRoutePlan(plan) + " targetParty=" + DescribeMobileParty(targetParty) + " courier=" + DescribeMobileParty(courier));
 			}
 			else if (targetSettlement != null)
 			{
-				courier.SetMoveGoToSettlement(targetSettlement, courier.NavigationCapability, false);
+				courier.SetMoveGoToSettlement(targetSettlement, plan.NavigationType, plan.UsePort);
+				LogCourierStatus("route_recipient_set session=" + session.Id + " command=go_to_settlement key=" + key + " " + DescribeRoutePlan(plan) + " targetSettlement=" + DescribeSettlement(targetSettlement) + " courier=" + DescribeMobileParty(courier));
 			}
 			ApplyCourierAiOverrides(courier, "route_recipient");
 			LogVerbose("route_recipient:" + session.Id, "route recipient session=" + session.Id + " key=" + key, 5.0);
 		}
 	}
 
-	private static string BuildRecipientRouteKey(MobileParty targetParty, Settlement targetSettlement)
+	private static string BuildRecipientRouteKey(MobileParty targetParty, Settlement targetSettlement, CourierRoutePlan plan)
 	{
+		string suffix = plan?.KeySuffix ?? "";
 		if (targetParty != null && targetParty.IsActive)
 		{
 			CampaignVec2 position = targetParty.Position;
 			int x = (int)MathF.Round(position.X * 2f);
 			int y = (int)MathF.Round(position.Y * 2f);
-			return "recipient_party:" + (targetParty.StringId ?? "") + ":" + x + ":" + y;
+			return "recipient_party:" + (targetParty.StringId ?? "") + ":" + x + ":" + y + ":targetSea=" + (targetParty.IsCurrentlyAtSea ? "1" : "0") + suffix;
 		}
-		return "recipient_settlement:" + (targetSettlement?.StringId ?? "");
+		return "recipient_settlement:" + (targetSettlement?.StringId ?? "") + suffix;
 	}
 
 	private void RouteToSender(CourierSession session, MobileParty courier)
 	{
 		MobileParty mainParty = MobileParty.MainParty;
-		if (courier == null || mainParty == null)
+		if (session == null || courier == null || mainParty == null)
 		{
 			return;
 		}
-		string key = BuildSenderRouteKey(mainParty);
-		AiBehavior expectedBehavior = mainParty.CurrentSettlement != null ? AiBehavior.GoToSettlement : AiBehavior.GoToPoint;
-		if (ShouldRefreshRoute(session, key, courier, expectedBehavior))
+		Settlement targetSettlement = mainParty.CurrentSettlement;
+		CourierRoutePlan plan = BuildCourierRoutePlan(courier, targetSettlement?.GatePosition ?? mainParty.Position, targetSettlement, mainParty, targetSettlement != null && courier.IsCurrentlyAtSea);
+		if (!EnsureCourierNavalReadiness(session, courier, plan, "sender"))
 		{
+			plan.NavigationType = GetEffectiveCourierNavigationType(courier, false);
+			plan.RequiresNaval = false;
+			plan.UsePort = false;
+		}
+		string key = BuildSenderRouteKey(mainParty, plan);
+		AiBehavior expectedBehavior = mainParty.CurrentSettlement != null ? AiBehavior.GoToSettlement : AiBehavior.GoToPoint;
+		LogCourierStatusVerbose("route_eval_sender:" + session.Id, "route_eval_sender session=" + session.Id + " key=" + key + " " + DescribeRoutePlan(plan) + " sender=" + DescribeMobileParty(mainParty) + " courier=" + DescribeMobileParty(courier) + " stuckCount=" + session.NavalStuckRefreshCount, 2.0);
+		if (IsCourierRouteTargetMismatched(courier, expectedBehavior, plan, mainParty, mainParty.CurrentSettlement, mainParty.Position))
+		{
+			LogCourierStatusVerbose("route_target_mismatch:" + session.Id + ":sender", "route_target_mismatch session=" + session.Id + " route=sender key=" + key + " expectedBehavior=" + expectedBehavior + " " + DescribeRoutePlan(plan) + " sender=" + DescribeMobileParty(mainParty) + " courier=" + DescribeMobileParty(courier), 2.0);
+			session.LastRouteKey = "";
+		}
+		if (ShouldRefreshRouteWithProgress(session, key, courier, plan.RequiresNaval, expectedBehavior))
+		{
+			if (ShouldDivertToSafeSettlementAfterNavalStuck(session, plan))
+			{
+				LogCourierStatus("divert_to_safe_after_stuck session=" + session.Id + " route=sender key=" + key + " " + DescribeRoutePlan(plan) + " sender=" + DescribeMobileParty(mainParty) + " courier=" + DescribeMobileParty(courier) + " stuckCount=" + session.NavalStuckRefreshCount);
+				RouteToSafeSettlement(session, courier, "naval_stuck_return");
+				return;
+			}
 			if (mainParty.CurrentSettlement != null)
 			{
-				courier.SetMoveGoToSettlement(mainParty.CurrentSettlement, courier.NavigationCapability, false);
+				courier.SetMoveGoToSettlement(mainParty.CurrentSettlement, plan.NavigationType, plan.UsePort);
+				LogCourierStatus("route_sender_set session=" + session.Id + " command=go_to_settlement key=" + key + " " + DescribeRoutePlan(plan) + " sender=" + DescribeMobileParty(mainParty) + " courier=" + DescribeMobileParty(courier));
 			}
 			else
 			{
-				courier.SetMoveGoToPoint(mainParty.Position, courier.NavigationCapability);
+				courier.SetMoveGoToPoint(mainParty.Position, plan.NavigationType);
+				LogCourierStatus("route_sender_set session=" + session.Id + " command=go_to_party key=" + key + " " + DescribeRoutePlan(plan) + " sender=" + DescribeMobileParty(mainParty) + " courier=" + DescribeMobileParty(courier));
 			}
 			ApplyCourierAiOverrides(courier, "route_sender");
 			LogVerbose("route_sender:" + session.Id, "route sender session=" + session.Id + " key=" + key, 5.0);
 		}
 	}
 
-	private static string BuildSenderRouteKey(MobileParty mainParty)
+	private static string BuildSenderRouteKey(MobileParty mainParty, CourierRoutePlan plan)
 	{
+		string suffix = plan?.KeySuffix ?? "";
 		if (mainParty == null)
 		{
-			return "sender_point:null";
+			return "sender_point:null" + suffix;
 		}
 		if (mainParty.CurrentSettlement != null)
 		{
-			return "sender_settlement:" + mainParty.CurrentSettlement.StringId;
+			return "sender_settlement:" + mainParty.CurrentSettlement.StringId + suffix;
 		}
 		CampaignVec2 position = mainParty.Position;
 		int x = (int)MathF.Round(position.X * 2f);
 		int y = (int)MathF.Round(position.Y * 2f);
-		return "sender_point:" + x + ":" + y;
+		return "sender_point:" + x + ":" + y + ":targetSea=" + (mainParty.IsCurrentlyAtSea ? "1" : "0") + suffix;
 	}
 
 	private void RouteToSafeSettlement(CourierSession session, MobileParty courier, string reason)
@@ -1796,38 +2198,59 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
-		Settlement settlement = ResolveSafeSettlement(session, courier);
+		bool preferPort = ShouldPreferSafeSettlementPort(courier, reason);
+		Settlement settlement = ResolveSafeSettlement(session, courier, preferPort);
 		if (settlement == null)
 		{
 			courier.SetMoveModeHold();
 			ApplyCourierAiOverrides(courier, "route_safe_hold");
+			LogCourierStatusVerbose("route_safe_hold:" + session.Id + ":" + (reason ?? ""), "route_safe_hold session=" + session.Id + " reason=" + (reason ?? "") + " preferPort=" + preferPort + " courier=" + DescribeMobileParty(courier), 5.0);
 			return;
 		}
-		string key = "safe:" + settlement.StringId + ":" + reason;
-		if (ShouldRefreshRoute(session, key, courier, AiBehavior.GoToSettlement))
+		CourierRoutePlan plan = BuildCourierRoutePlan(courier, settlement.GatePosition, settlement, null, preferPort);
+		if (!EnsureCourierNavalReadiness(session, courier, plan, "safe_" + (reason ?? "")))
 		{
-			courier.SetMoveGoToSettlement(settlement, courier.NavigationCapability, false);
+			plan.NavigationType = GetEffectiveCourierNavigationType(courier, false);
+			plan.RequiresNaval = false;
+			plan.UsePort = false;
+		}
+		string key = "safe:" + settlement.StringId + ":" + reason + plan.KeySuffix;
+		LogCourierStatusVerbose("route_eval_safe:" + session.Id + ":" + (reason ?? ""), "route_eval_safe session=" + session.Id + " reason=" + (reason ?? "") + " key=" + key + " preferPort=" + preferPort + " " + DescribeRoutePlan(plan) + " safeSettlement=" + DescribeSettlement(settlement) + " courier=" + DescribeMobileParty(courier) + " stuckCount=" + session.NavalStuckRefreshCount, 2.0);
+		if (IsCourierRouteTargetMismatched(courier, AiBehavior.GoToSettlement, plan, null, settlement, CampaignVec2.Invalid))
+		{
+			LogCourierStatusVerbose("route_target_mismatch:" + session.Id + ":safe", "route_target_mismatch session=" + session.Id + " route=safe reason=" + (reason ?? "") + " key=" + key + " " + DescribeRoutePlan(plan) + " safeSettlement=" + DescribeSettlement(settlement) + " courier=" + DescribeMobileParty(courier), 2.0);
+			session.LastRouteKey = "";
+		}
+		if (ShouldRefreshRouteWithProgress(session, key, courier, plan.RequiresNaval, AiBehavior.GoToSettlement))
+		{
+			courier.SetMoveGoToSettlement(settlement, plan.NavigationType, plan.UsePort);
 			ApplyCourierAiOverrides(courier, "route_safe");
+			LogCourierStatus("route_safe_set session=" + session.Id + " reason=" + (reason ?? "") + " key=" + key + " " + DescribeRoutePlan(plan) + " safeSettlement=" + DescribeSettlement(settlement) + " courier=" + DescribeMobileParty(courier));
 			LogVerbose("route_safe:" + session.Id, "route safe session=" + session.Id + " settlement=" + settlement.StringId + " reason=" + reason, 5.0);
 		}
 	}
 
-	private Settlement ResolveSafeSettlement(CourierSession session, MobileParty courier)
+	private Settlement ResolveSafeSettlement(CourierSession session, MobileParty courier, bool preferPort)
 	{
 		try
 		{
 			if (!string.IsNullOrWhiteSpace(session.SafeSettlementId))
 			{
 				Settlement existing = Settlement.Find(session.SafeSettlementId);
-				if (existing != null)
+				if (existing != null && (!preferPort || existing.HasPort))
 				{
 					return existing;
 				}
 			}
 			CampaignVec2 position = courier?.Position ?? MobileParty.MainParty?.Position ?? CampaignVec2.Invalid;
-			Settlement settlement = Settlement.All?
-				.Where(x => x != null && x.IsFortification && !x.IsHideout)
-				.OrderBy(x => x.GatePosition.DistanceSquared(position))
+			IEnumerable<Settlement> candidates = Settlement.All?
+				.Where(x => x != null && x.IsFortification && !x.IsHideout);
+			if (preferPort && candidates?.Any(x => x.HasPort) == true)
+			{
+				candidates = candidates.Where(x => x.HasPort);
+			}
+			Settlement settlement = candidates?
+				.OrderBy(x => GetSafeSettlementDistanceSquared(x, position, preferPort))
 				.FirstOrDefault();
 			session.SafeSettlementId = settlement?.StringId ?? "";
 			return settlement;
@@ -1847,6 +2270,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		string reason = GetRecipientUnavailableReason(recipient);
 		if (!string.IsNullOrWhiteSpace(reason))
 		{
+			LogCourierStatusVerbose("recipient_unavailable:" + session.Id, "recipient_unavailable session=" + session.Id + " reason=" + reason + " " + DescribeHero(recipient) + " courier=" + DescribeMobileParty(courier), 5.0);
 			SetRecipientWaitReason(session, reason, "target_" + reason);
 			session.Stage = CourierStage.WaitingRecipient.ToString();
 			RouteToSafeSettlement(session, courier, "recipient_" + reason + "_wait");
@@ -1895,6 +2319,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		}
 		session.RecipientWaitReason = normalized;
 		Log("recipient unavailable session=" + session.Id + " recipient=" + session.RecipientHeroId + " status=" + normalized + " source=" + (source ?? "") + " action=safe_wait");
+		LogCourierStatus("recipient_wait_set session=" + session.Id + " recipient=" + session.RecipientHeroId + " status=" + normalized + " source=" + (source ?? "") + " action=safe_wait safeSettlement=" + (session.SafeSettlementId ?? ""));
 		if (string.Equals(normalized, "fugitive", StringComparison.OrdinalIgnoreCase))
 		{
 			InformationManager.DisplayMessage(new InformationMessage("信使目标正在逃亡，信使正前往最近定居点等待。", Colors.Yellow));
@@ -1917,11 +2342,13 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		session.LastRouteKey = "";
 		if (IsBlockingRecipientWaitReason(previous))
 		{
+			LogCourierStatus("recipient_wait_cleared session=" + session.Id + " recipient=" + session.RecipientHeroId + " previousStatus=" + previous + " source=" + (source ?? "") + " status=resume_route");
 			Log("recipient reappeared session=" + session.Id + " recipient=" + session.RecipientHeroId + " previousStatus=" + previous + " source=" + (source ?? "") + " status=resume_route");
 			InformationManager.DisplayMessage(new InformationMessage("信使目标重新出现，信使正在路上。", Colors.Green));
 			return;
 		}
 		Log("recipient wait cleared session=" + session.Id + " previousStatus=" + previous + " source=" + (source ?? ""));
+		LogCourierStatus("recipient_wait_cleared session=" + session.Id + " recipient=" + session.RecipientHeroId + " previousStatus=" + previous + " source=" + (source ?? ""));
 	}
 
 	private static bool IsBlockingRecipientWaitReason(string reason)
@@ -1979,7 +2406,8 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			float arrivalDistance = GetMobilePartyArrivalDistance();
 			try
 			{
-				float distance = DistanceHelper.FindClosestDistanceFromMobilePartyToMobileParty(courier, targetParty, courier.NavigationCapability);
+				MobileParty.NavigationType navigationType = targetParty.IsCurrentlyAtSea || courier.IsCurrentlyAtSea ? MobileParty.NavigationType.All : courier.NavigationCapability;
+				float distance = DistanceHelper.FindClosestDistanceFromMobilePartyToMobileParty(courier, targetParty, navigationType);
 				if (distance <= arrivalDistance)
 				{
 					return true;
@@ -1992,9 +2420,22 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		}
 		if (settlement != null)
 		{
-			return courier.Position.DistanceSquared(settlement.GatePosition) <= SettlementArrivalDistanceSquared || courier.CurrentSettlement == settlement;
+			return IsAtSettlementApproach(courier, settlement) || courier.CurrentSettlement == settlement;
 		}
 		return false;
+	}
+
+	private static bool IsAtSettlementApproach(MobileParty courier, Settlement settlement)
+	{
+		if (courier == null || settlement == null)
+		{
+			return false;
+		}
+		if (courier.Position.DistanceSquared(settlement.GatePosition) <= SettlementArrivalDistanceSquared)
+		{
+			return true;
+		}
+		return settlement.HasPort && courier.Position.DistanceSquared(settlement.PortPosition) <= SettlementArrivalDistanceSquared;
 	}
 
 	private static float GetMobilePartyArrivalDistance()
@@ -2021,12 +2462,65 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		}
 		if (sender.CurrentSettlement != null)
 		{
-			return courier.Position.DistanceSquared(sender.CurrentSettlement.GatePosition) <= SettlementArrivalDistanceSquared || courier.CurrentSettlement == sender.CurrentSettlement;
+			return IsAtSettlementApproach(courier, sender.CurrentSettlement) || courier.CurrentSettlement == sender.CurrentSettlement;
 		}
 		return courier.Position.DistanceSquared(sender.Position) <= SenderArrivalDistanceSquared;
 	}
 
 	private static bool ShouldRefreshRoute(CourierSession session, string routeKey, MobileParty courier = null, params AiBehavior[] expectedDefaultBehaviors)
+	{
+		return ShouldRefreshRouteCore(session, routeKey, courier, false, expectedDefaultBehaviors);
+	}
+
+	private static bool ShouldRefreshRouteWithProgress(CourierSession session, string routeKey, MobileParty courier, bool monitorProgress, params AiBehavior[] expectedDefaultBehaviors)
+	{
+		return ShouldRefreshRouteCore(session, routeKey, courier, monitorProgress, expectedDefaultBehaviors);
+	}
+
+	private static bool IsCourierRouteTargetMismatched(MobileParty courier, AiBehavior expectedBehavior, CourierRoutePlan plan, MobileParty expectedParty, Settlement expectedSettlement, CampaignVec2 expectedPoint)
+	{
+		if (courier == null || plan == null)
+		{
+			return false;
+		}
+		try
+		{
+			if (courier.DefaultBehavior != expectedBehavior)
+			{
+				return true;
+			}
+			if (courier.DesiredAiNavigationType != plan.NavigationType)
+			{
+				return true;
+			}
+			if (expectedBehavior == AiBehavior.GoToSettlement)
+			{
+				return courier.TargetSettlement != expectedSettlement || courier.IsTargetingPort != plan.UsePort;
+			}
+			if (expectedBehavior == AiBehavior.GoToPoint)
+			{
+				if (courier.TargetSettlement != null || courier.TargetParty != null)
+				{
+					return true;
+				}
+				if (expectedParty != null && expectedParty.IsActive)
+				{
+					expectedPoint = expectedParty.Position;
+				}
+				if (IsValidCampaignPosition(expectedPoint) && IsValidCampaignPosition(courier.TargetPosition) && courier.TargetPosition.DistanceSquared(expectedPoint) > 1f)
+				{
+					return true;
+				}
+			}
+		}
+		catch
+		{
+			return false;
+		}
+		return false;
+	}
+
+	private static bool ShouldRefreshRouteCore(CourierSession session, string routeKey, MobileParty courier, bool monitorProgress, params AiBehavior[] expectedDefaultBehaviors)
 	{
 		if (session == null)
 		{
@@ -2036,14 +2530,85 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		if (!string.Equals(session.LastRouteKey ?? "", key, StringComparison.OrdinalIgnoreCase))
 		{
 			session.LastRouteKey = key;
+			ResetCourierRouteProgress(session, key, courier);
+			return true;
+		}
+		if (monitorProgress && IsCourierRouteStuck(session, key, courier))
+		{
 			return true;
 		}
 		if (courier != null && expectedDefaultBehaviors != null && expectedDefaultBehaviors.Length > 0 && !expectedDefaultBehaviors.Contains(courier.DefaultBehavior))
 		{
 			LogVerbose("route_refresh_forced:" + session.Id, "route refresh forced session=" + session.Id + " key=" + key + " defaultBehavior=" + courier.DefaultBehavior + " shortTerm=" + courier.ShortTermBehavior, 5.0);
+			LogCourierStatusVerbose("route_refresh_forced:" + session.Id, "route_refresh_forced session=" + session.Id + " key=" + key + " expected=" + string.Join(",", expectedDefaultBehaviors.Select(x => x.ToString())) + " courier=" + DescribeMobileParty(courier), 5.0);
 			return true;
 		}
 		return false;
+	}
+
+	private static void ResetCourierRouteProgress(CourierSession session, string routeKey, MobileParty courier)
+	{
+		if (session == null)
+		{
+			return;
+		}
+		session.LastProgressRouteKey = routeKey ?? "";
+		if (courier != null)
+		{
+			session.LastProgressX = courier.Position.X;
+			session.LastProgressY = courier.Position.Y;
+		}
+		session.LastProgressCampaignHours = GetCampaignHours();
+		session.NavalStuckRefreshCount = 0;
+	}
+
+	private static bool IsCourierRouteStuck(CourierSession session, string routeKey, MobileParty courier)
+	{
+		if (session == null || courier == null)
+		{
+			return false;
+		}
+		double nowHours = GetCampaignHours();
+		if (nowHours <= 0)
+		{
+			return false;
+		}
+		if (!string.Equals(session.LastProgressRouteKey ?? "", routeKey ?? "", StringComparison.OrdinalIgnoreCase) || session.LastProgressCampaignHours <= 0)
+		{
+			ResetCourierRouteProgress(session, routeKey, courier);
+			return false;
+		}
+		float dx = courier.Position.X - session.LastProgressX;
+		float dy = courier.Position.Y - session.LastProgressY;
+		float distanceSquared = dx * dx + dy * dy;
+		if (distanceSquared > NavalStuckDistanceSquared)
+		{
+			ResetCourierRouteProgress(session, routeKey, courier);
+			return false;
+		}
+		double elapsedHours = nowHours - session.LastProgressCampaignHours;
+		if (elapsedHours < NavalStuckRefreshHours)
+		{
+			return false;
+		}
+		session.LastProgressCampaignHours = nowHours;
+		session.NavalStuckRefreshCount++;
+		session.LastRouteKey = "";
+		LogVerbose("naval_route_stuck:" + session.Id, "naval route stuck session=" + session.Id + " key=" + (routeKey ?? "") + " count=" + session.NavalStuckRefreshCount + " distanceSquared=" + distanceSquared, 1.0);
+		LogCourierStatus("naval_route_stuck session=" + session.Id + " key=" + (routeKey ?? "") + " count=" + session.NavalStuckRefreshCount + " distanceSquared=" + distanceSquared + " elapsedHours=" + elapsedHours + " courier=" + DescribeMobileParty(courier));
+		return true;
+	}
+
+	private static double GetCampaignHours()
+	{
+		try
+		{
+			return CampaignTime.Now.ToHours;
+		}
+		catch
+		{
+			return 0;
+		}
 	}
 
 	private static List<object> BuildCourierReplyMessages(Hero recipient, CourierSession session, string extras, string deliveryFactForPrompt = null, string prebuiltHistory = null)
@@ -2767,10 +3332,11 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			}
 			if (courier.Ai != null)
 			{
-				if (courier.Ai.DoNotMakeNewDecisions)
+				if (!courier.Ai.DoNotMakeNewDecisions)
 				{
-					courier.Ai.SetDoNotMakeNewDecisions(false);
-					LogVerbose("ai_restore:" + (courier.StringId ?? ""), "ai decisions restored party=" + (courier.StringId ?? "") + " reason=" + (reason ?? ""), 10.0);
+					courier.Ai.SetDoNotMakeNewDecisions(true);
+					LogVerbose("ai_lock:" + (courier.StringId ?? ""), "ai decisions locked party=" + (courier.StringId ?? "") + " reason=" + (reason ?? ""), 10.0);
+					LogCourierStatusVerbose("ai_lock:" + (courier.StringId ?? ""), "ai_lock sessionParty=" + (courier.StringId ?? "") + " reason=" + (reason ?? "") + " courier=" + DescribeMobileParty(courier), 10.0);
 				}
 			}
 			ApplyCourierFoodOverrides(courier, reason);
@@ -3186,6 +3752,9 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		session.CourierPartyId = (session.CourierPartyId ?? "").Trim();
 		session.Stage = ParseStage(session.Stage).ToString();
 		session.PayloadMode = ParsePayloadMode(session.PayloadMode).ToString();
+		session.LastRouteKey = session.LastRouteKey ?? "";
+		session.TemporaryShipHullId = (session.TemporaryShipHullId ?? "").Trim();
+		session.LastProgressRouteKey = session.LastProgressRouteKey ?? "";
 		session.Entries = session.Entries ?? new List<CourierCargoEntry>();
 		session.CrewEntries = session.CrewEntries ?? new List<CourierCargoEntry>();
 	}
@@ -3414,6 +3983,329 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		value = Regex.Replace(value, "\\[A:H_J_P_P\\]", "", RegexOptions.IgnoreCase);
 		value = Regex.Replace(value, "\\[(?:FOL|STP|END)\\]", "", RegexOptions.IgnoreCase);
 		return value.Trim();
+	}
+
+	private static string BuildCourierStatusSnapshot(CourierSession session, MobileParty courier, Hero recipient, string phase)
+	{
+		try
+		{
+			return "phase=" + (phase ?? "") +
+				" session=" + (session?.Id ?? "") +
+				" stage=" + (session?.Stage ?? "") +
+				" deliveryApplied=" + (session?.DeliveryApplied == true) +
+				" replyStarted=" + (session?.ReplyGenerationStarted == true) +
+				" replyGenerated=" + (session?.ReplyGenerated == true) +
+				" waitReason=" + (session?.RecipientWaitReason ?? "") +
+				" safeSettlement=" + (session?.SafeSettlementId ?? "") +
+				" lastRoute=" + (session?.LastRouteKey ?? "") +
+				" progressRoute=" + (session?.LastProgressRouteKey ?? "") +
+				" stuckCount=" + (session?.NavalStuckRefreshCount ?? 0) +
+				" tempShipCreated=" + (session?.TemporaryShipCreated == true) +
+				" tempShipHull=" + (session?.TemporaryShipHullId ?? "") +
+				" " + DescribeHero(recipient) +
+				" courier=" + DescribeMobileParty(courier);
+		}
+		catch (Exception ex)
+		{
+			return "phase=" + (phase ?? "") + " session=" + (session?.Id ?? "") + " snapshot_error=" + ex.Message;
+		}
+	}
+
+	private static string DescribeRecipientTarget(Hero recipient, MobileParty targetParty, Settlement targetSettlement)
+	{
+		return "source=" + GetRecipientTargetSource(recipient, targetParty, targetSettlement) +
+			" " + DescribeHero(recipient) +
+			" targetParty=" + DescribeMobileParty(targetParty) +
+			" targetSettlement=" + DescribeSettlement(targetSettlement);
+	}
+
+	private static string GetRecipientTargetSource(Hero recipient, MobileParty targetParty, Settlement targetSettlement)
+	{
+		try
+		{
+			if (recipient == null)
+			{
+				return "none";
+			}
+			if (targetParty != null && recipient.PartyBelongedTo == targetParty)
+			{
+				return "party_belonged_to";
+			}
+			PartyBase prisonerParty = recipient.PartyBelongedToAsPrisoner;
+			if (prisonerParty != null)
+			{
+				if (targetParty != null && prisonerParty.MobileParty == targetParty)
+				{
+					return "prisoner_mobile_party";
+				}
+				if (targetSettlement != null && prisonerParty.Settlement == targetSettlement)
+				{
+					return "prisoner_settlement";
+				}
+			}
+			if (targetSettlement != null && recipient.CurrentSettlement == targetSettlement)
+			{
+				return "current_settlement";
+			}
+			if (targetSettlement != null && recipient.StayingInSettlement == targetSettlement)
+			{
+				return "staying_settlement";
+			}
+		}
+		catch
+		{
+		}
+		return "resolved_fallback";
+	}
+
+	private static string DescribeRoutePlan(CourierRoutePlan plan)
+	{
+		if (plan == null)
+		{
+			return "plan=null";
+		}
+		return "planNav=" + plan.NavigationType +
+			" requiresNaval=" + plan.RequiresNaval +
+			" usePort=" + plan.UsePort +
+			" reason=" + (plan.Reason ?? "");
+	}
+
+	private static string DescribeHero(Hero hero)
+	{
+		if (hero == null)
+		{
+			return "recipient=null";
+		}
+		try
+		{
+			return "recipient=" + SafeHeroId(hero) +
+				" name=" + SafeLogText(hero.Name?.ToString()) +
+				" dead=" + hero.IsDead +
+				" fugitive=" + hero.IsFugitive +
+				" prisoner=" + hero.IsPrisoner +
+				" party=" + PartyIdOnly(hero.PartyBelongedTo) +
+				" prisonerParty=" + DescribePartyBase(hero.PartyBelongedToAsPrisoner) +
+				" currentSettlement=" + SettlementIdOnly(hero.CurrentSettlement) +
+				" stayingSettlement=" + SettlementIdOnly(hero.StayingInSettlement);
+		}
+		catch (Exception ex)
+		{
+			return "recipient=" + SafeHeroId(hero) + " describe_error=" + ex.Message;
+		}
+	}
+
+	private static string DescribeMobileParty(MobileParty party)
+	{
+		if (party == null)
+		{
+			return "null";
+		}
+		try
+		{
+			return (party.StringId ?? "") +
+				"(name=" + SafeLogText(party.Name?.ToString()) +
+				",active=" + party.IsActive +
+				",pos=" + FormatCampaignVec2(party.Position) +
+				",posLand=" + SafeIsOnLand(party.Position) +
+				",sea=" + party.IsCurrentlyAtSea +
+				",current=" + SettlementIdOnly(party.CurrentSettlement) +
+				",default=" + party.DefaultBehavior +
+				",short=" + party.ShortTermBehavior +
+				",nav=" + party.NavigationCapability +
+				",desiredNav=" + party.DesiredAiNavigationType +
+				",isTargetingPort=" + party.IsTargetingPort +
+				",targetSettlement=" + SettlementIdOnly(party.TargetSettlement) +
+				",targetParty=" + PartyIdOnly(party.TargetParty) +
+				",shortTargetSettlement=" + SettlementIdOnly(party.ShortTermTargetSettlement) +
+				",shortTargetParty=" + PartyIdOnly(party.ShortTermTargetParty) +
+				",targetPos=" + FormatCampaignVec2(party.TargetPosition) +
+				",moveTarget=" + FormatCampaignVec2(party.MoveTargetPoint) +
+				",ships=" + SafeShipCount(party) +
+				",landCap=" + SafeHasLandNavigation(party) +
+				",navalCap=" + SafeHasNavalNavigation(party) +
+				",transition=" + party.IsTransitionInProgress +
+				",quest=" + party.IsCurrentlyUsedByAQuest +
+				")";
+		}
+		catch (Exception ex)
+		{
+			return (party.StringId ?? "") + "(describe_error=" + ex.Message + ")";
+		}
+	}
+
+	private static string DescribeSettlement(Settlement settlement)
+	{
+		if (settlement == null)
+		{
+			return "null";
+		}
+		try
+		{
+			return (settlement.StringId ?? "") +
+				"(name=" + SafeLogText(settlement.Name?.ToString()) +
+				",town=" + settlement.IsTown +
+				",castle=" + settlement.IsCastle +
+				",village=" + settlement.IsVillage +
+				",fort=" + settlement.IsFortification +
+				",hasPort=" + settlement.HasPort +
+				",underSiege=" + settlement.IsUnderSiege +
+				",gate=" + FormatCampaignVec2(settlement.GatePosition) +
+				",port=" + (settlement.HasPort ? FormatCampaignVec2(settlement.PortPosition) : "none") +
+				")";
+		}
+		catch (Exception ex)
+		{
+			return (settlement.StringId ?? "") + "(describe_error=" + ex.Message + ")";
+		}
+	}
+
+	private static string DescribePartyBase(PartyBase party)
+	{
+		if (party == null)
+		{
+			return "null";
+		}
+		try
+		{
+			return "(name=" + SafeLogText(party.Name?.ToString()) +
+				",mobile=" + PartyIdOnly(party.MobileParty) +
+				",settlement=" + SettlementIdOnly(party.Settlement) +
+				",isMobile=" + party.IsMobile +
+				",isSettlement=" + party.IsSettlement +
+				")";
+		}
+		catch (Exception ex)
+		{
+			return "(describe_error=" + ex.Message + ")";
+		}
+	}
+
+	private static string PartyIdOnly(MobileParty party)
+	{
+		return party == null ? "null" : (party.StringId ?? "");
+	}
+
+	private static string SettlementIdOnly(Settlement settlement)
+	{
+		return settlement == null ? "null" : (settlement.StringId ?? "");
+	}
+
+	private static string FormatCampaignVec2(CampaignVec2 position)
+	{
+		try
+		{
+			if (!position.IsValid())
+			{
+				return "invalid";
+			}
+		}
+		catch
+		{
+			return "invalid";
+		}
+		return position.X.ToString("0.##") + "," + position.Y.ToString("0.##");
+	}
+
+	private static string SafeIsOnLand(CampaignVec2 position)
+	{
+		try
+		{
+			return position.IsOnLand.ToString();
+		}
+		catch
+		{
+			return "unknown";
+		}
+	}
+
+	private static int SafeShipCount(MobileParty party)
+	{
+		try
+		{
+			return party?.Ships?.Count ?? 0;
+		}
+		catch
+		{
+			return -1;
+		}
+	}
+
+	private static string SafeHasLandNavigation(MobileParty party)
+	{
+		try
+		{
+			return (party?.HasLandNavigationCapability == true).ToString();
+		}
+		catch
+		{
+			return "unknown";
+		}
+	}
+
+	private static string SafeHasNavalNavigation(MobileParty party)
+	{
+		try
+		{
+			return (party?.HasNavalNavigationCapability == true).ToString();
+		}
+		catch
+		{
+			return "unknown";
+		}
+	}
+
+	private static string SafeLogText(string text)
+	{
+		string value = (text ?? "").Replace('\r', ' ').Replace('\n', ' ').Trim();
+		if (value.Length > 80)
+		{
+			value = value.Substring(0, 80);
+		}
+		return value;
+	}
+
+	private static void LogCourierStatus(string message)
+	{
+		try
+		{
+			Logger.Log("Logic", "[CourierStatus] " + (message ?? ""));
+		}
+		catch
+		{
+		}
+	}
+
+	private static void LogCourierStatusVerbose(string key, string message, double minIntervalSeconds = 0.0)
+	{
+		try
+		{
+			if (!Logger.IsModLogicEnabled)
+			{
+				return;
+			}
+			long now = DateTime.UtcNow.Ticks;
+			string throttleKey = (key ?? "").Trim();
+			long minTicks = TimeSpan.FromSeconds(Math.Max(0.0, minIntervalSeconds)).Ticks;
+			lock (LastCourierLogicPulseTicks)
+			{
+				if (!string.IsNullOrWhiteSpace(throttleKey) && minTicks > 0L && LastCourierLogicPulseTicks.TryGetValue(throttleKey, out long last) && now - last < minTicks)
+				{
+					return;
+				}
+				if (LastCourierLogicPulseTicks.Count > 512)
+				{
+					LastCourierLogicPulseTicks.Clear();
+				}
+				if (!string.IsNullOrWhiteSpace(throttleKey))
+				{
+					LastCourierLogicPulseTicks[throttleKey] = now;
+				}
+			}
+			LogCourierStatus(message);
+		}
+		catch
+		{
+		}
 	}
 
 	private static void Log(string message)

@@ -492,6 +492,8 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 
 	private void OnCampaignTick(float dt)
 	{
+		using (PerfProbe.Scope("WorldMapCommand.OnCampaignTick"))
+		{
 		try
 		{
 			ProcessPendingCreateCompanionPartyRequests();
@@ -499,6 +501,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		catch (Exception ex)
 		{
 			Log("pending create party tick failed: " + ex);
+		}
 		}
 	}
 
@@ -539,17 +542,33 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 
 	private void OnMobilePartyDestroyed(MobileParty destroyedParty, PartyBase destroyerParty)
 	{
+		using (PerfProbe.Scope("WorldMapCommand.OnMobilePartyDestroyed"))
+		{
+		PerfProbe.MarkEvent("WorldMapCommand.MobilePartyDestroyed");
 		try
 		{
 			string heroId = destroyedParty?.LeaderHero?.StringId;
 			string partyId = destroyedParty?.StringId;
-			if (!string.IsNullOrWhiteSpace(heroId))
+			PartyCommandQueueState actorState = null;
+			lock (_queueLock)
 			{
-				PartyCommandQueueState actorState = null;
-				lock (_queueLock)
+				if (_queues.Count == 0)
+				{
+					return;
+				}
+				if (!string.IsNullOrWhiteSpace(heroId))
 				{
 					_queues.TryGetValue(heroId, out actorState);
 				}
+			}
+			List<PartyCommandQueueState> activeAttackStates = GetActiveAttackStatesSnapshot();
+			if (actorState == null && activeAttackStates.Count == 0)
+			{
+				return;
+			}
+			bool handled = actorState != null;
+			if (!string.IsNullOrWhiteSpace(heroId))
+			{
 				if (actorState != null && IsCurrentAttackCommand(actorState))
 				{
 					TryCompleteCurrentAttackResult(actorState, CommandResultOutcome.Failure, "执行者部队已被消灭。", "actor_party_destroyed");
@@ -562,7 +581,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 					}
 				}
 			}
-			foreach (PartyCommandQueueState state in GetActiveAttackStatesSnapshot())
+			foreach (PartyCommandQueueState state in activeAttackStates)
 			{
 				if (state == null || string.Equals(state.HeroId, heroId, StringComparison.OrdinalIgnoreCase))
 				{
@@ -585,16 +604,23 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 					TryCompleteCurrentAttackResult(state, actorDestroyedTarget ? CommandResultOutcome.Success : CommandResultOutcome.Incomplete, actorDestroyedTarget ? "目标部队已被击溃。" : "目标部队已经被消灭或解散。", actorDestroyedTarget ? "target_mobile_party_destroyed_by_actor" : "target_mobile_party_destroyed");
 				}
 			}
-			Log("mobile party destroyed hero=" + (heroId ?? "") + " party=" + (partyId ?? ""));
+			if (handled)
+			{
+				Log("mobile party destroyed hero=" + (heroId ?? "") + " party=" + (partyId ?? ""));
+			}
 		}
 		catch (Exception ex)
 		{
 			Log("party destroyed handling failed: " + ex.Message);
 		}
+		}
 	}
 
 	private void OnMapEventEnded(MapEvent mapEvent)
 	{
+		using (PerfProbe.Scope("WorldMapCommand.OnMapEventEnded"))
+		{
+		PerfProbe.MarkEvent("WorldMapCommand.MapEventEnded");
 		try
 		{
 			if (mapEvent == null)
@@ -629,10 +655,14 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		{
 			Log("map event result handling failed: " + ex.Message);
 		}
+		}
 	}
 
 	private void OnHeroPrisonerTaken(PartyBase capturer, Hero prisoner)
 	{
+		using (PerfProbe.Scope("WorldMapCommand.OnHeroPrisonerTaken"))
+		{
+		PerfProbe.MarkEvent("WorldMapCommand.HeroPrisonerTaken");
 		try
 		{
 			string prisonerId = prisoner?.StringId;
@@ -665,6 +695,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		catch (Exception ex)
 		{
 			Log("prisoner result handling failed: " + ex.Message);
+		}
 		}
 	}
 
@@ -1460,7 +1491,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		if (IsPartyCommittedToSettlementAttack(party, settlement))
 		{
 			SynchronizeArmyObjectiveForCommand(party, command);
-			ReleasePartyAi(party);
+			LockPartyAi(party);
 			return;
 		}
 		if (!CanForceCommitSettlementAttack(party, settlement))
@@ -1496,7 +1527,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			LogFact(actorHero, GetHeroName(actorHero) + "已经开始围攻" + GetSettlementName(settlement) + "，结果尚未分出。");
 			Log("settlement_attack_commit_siege hero=" + actorHero.StringId + " settlement=" + settlement.StringId + " mode=" + mode);
 		}
-		ReleasePartyAi(party);
+		LockPartyAi(party);
 		state.EngageCommitted = true;
 		state.Stage = CommandStage.Engaging.ToString();
 	}
@@ -1719,6 +1750,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			Log("declare_war_on_attack_commit attacker=" + SafeFactionId(attackerFaction) + " defender=" + SafeFactionId(defenderFaction) + " mode=" + mode);
 		}
 		SetPartyAiAction.GetActionForEngagingParty(party, targetParty, MobileParty.NavigationType.Default, isFromPort: false);
+		LockPartyAi(party);
 		BeginResultTracking(state, "hero_attack", "hero", targetHero.StringId, GetHeroName(targetHero), attackerFaction, defenderFaction);
 		state.EngageCommitted = true;
 		state.Stage = CommandStage.Engaging.ToString();
@@ -1737,6 +1769,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			Log("declare_war_on_party_attack_commit attacker=" + SafeFactionId(attackerFaction) + " defender=" + SafeFactionId(defenderFaction) + " mode=" + mode);
 		}
 		SetPartyAiAction.GetActionForEngagingParty(party, targetParty, MobileParty.NavigationType.Default, isFromPort: false);
+		LockPartyAi(party);
 		BeginResultTracking(state, "party_attack", "party", targetParty.StringId, GetPartyName(targetParty), attackerFaction, defenderFaction);
 		state.EngageCommitted = true;
 		state.Stage = CommandStage.Engaging.ToString();

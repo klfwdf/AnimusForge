@@ -41,6 +41,10 @@ public sealed class CourierMobilePartyAIModel : MobilePartyAIModel
 		{
 			return false;
 		}
+		if (targetParty == MobileParty.MainParty && ProactiveNpcRequestBehavior.IsProactiveRequestParty(party))
+		{
+			return false;
+		}
 		return _inner.ShouldConsiderAttacking(party, targetParty);
 	}
 
@@ -63,13 +67,23 @@ public sealed class CourierMobilePartyAIModel : MobilePartyAIModel
 
 	public override void GetBestInitiativeBehavior(MobileParty mobileParty, out AiBehavior bestInitiativeBehavior, out MobileParty bestInitiativeTargetParty, out float bestInitiativeBehaviorScore, out Vec2 averageEnemyVec)
 	{
-		_inner.GetBestInitiativeBehavior(mobileParty, out bestInitiativeBehavior, out bestInitiativeTargetParty, out bestInitiativeBehaviorScore, out averageEnemyVec);
-		if (CourierDeliveryBehavior.IsCourierParty(mobileParty) && bestInitiativeBehavior == AiBehavior.EngageParty)
+		using (PerfProbe.Scope("CourierMobilePartyAIModel.GetBestInitiativeBehavior"))
 		{
-			bestInitiativeBehavior = AiBehavior.None;
-			bestInitiativeTargetParty = null;
-			bestInitiativeBehaviorScore = 0f;
-			Logger.LogVerbose("CourierDelivery", "initiative_attack_suppressed:" + (mobileParty?.StringId ?? ""), () => "initiative attack suppressed party=" + (mobileParty?.StringId ?? ""), 10.0);
+			_inner.GetBestInitiativeBehavior(mobileParty, out bestInitiativeBehavior, out bestInitiativeTargetParty, out bestInitiativeBehaviorScore, out averageEnemyVec);
+			if (ProactiveNpcRequestBehavior.IsProactiveRequestParty(mobileParty) && bestInitiativeBehavior == AiBehavior.EngageParty && bestInitiativeTargetParty == MobileParty.MainParty)
+			{
+				bestInitiativeBehavior = AiBehavior.None;
+				bestInitiativeTargetParty = null;
+				bestInitiativeBehaviorScore = 0f;
+				Logger.LogVerbose("ProactiveNpcRequest", "initiative_attack_suppressed:" + (mobileParty?.StringId ?? ""), () => "initiative attack suppressed party=" + (mobileParty?.StringId ?? ""), 10.0);
+			}
+			if (CourierDeliveryBehavior.IsCourierParty(mobileParty) && bestInitiativeBehavior == AiBehavior.EngageParty)
+			{
+				bestInitiativeBehavior = AiBehavior.None;
+				bestInitiativeTargetParty = null;
+				bestInitiativeBehaviorScore = 0f;
+				Logger.LogVerbose("CourierDelivery", "initiative_attack_suppressed:" + (mobileParty?.StringId ?? ""), () => "initiative attack suppressed party=" + (mobileParty?.StringId ?? ""), 10.0);
+			}
 		}
 	}
 }

@@ -94,6 +94,7 @@ public static class ShoutNetwork
 	}
 
 	private const string EmptyResponseRetryMarker = "[AF_EMPTY_RESPONSE_RETRY]";
+	private const string EmptyResponseRetryInstruction = EmptyResponseRetryMarker + " 上一次模型响应为空白。请严格按既有角色、格式和字数要求，直接输出NPC本轮回复；禁止只输出空白、换行或无内容。";
 
 	private static bool HasEmptyResponseRetryMarker(List<object> messages)
 	{
@@ -115,12 +116,33 @@ public static class ShoutNetwork
 
 	private static List<object> BuildEmptyResponseRetryMessages(List<object> messages)
 	{
-		List<object> list = new List<object>(messages ?? new List<object>());
-		list.Add(new
+		List<object> list = new List<object>();
+		bool flag = false;
+		foreach (object message in messages ?? new List<object>())
 		{
-			role = "user",
-			content = EmptyResponseRetryMarker + " 上一次模型响应为空白。请严格按既有角色、格式和字数要求，直接输出NPC本轮回复；禁止只输出空白、换行或无内容。"
-		});
+			if (!flag && TryReadMessage(message, out var role, out var content) && string.Equals((role ?? "").Trim(), "system", StringComparison.OrdinalIgnoreCase))
+			{
+				string text = string.IsNullOrWhiteSpace(content) ? EmptyResponseRetryInstruction : (content.TrimEnd() + "\n\n" + EmptyResponseRetryInstruction);
+				list.Add(new
+				{
+					role = role,
+					content = text
+				});
+				flag = true;
+			}
+			else
+			{
+				list.Add(message);
+			}
+		}
+		if (!flag)
+		{
+			list.Insert(0, new
+			{
+				role = "system",
+				content = EmptyResponseRetryInstruction
+			});
+		}
 		return list;
 	}
 

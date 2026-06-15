@@ -319,6 +319,8 @@ public class SceneTauntBehavior : CampaignBehaviorBase
 
 	private void OnCampaignTick(float dt)
 	{
+		using (PerfProbe.Scope("SceneTaunt.OnCampaignTick"))
+		{
 		if (TryCommitPendingMainHeroBattleDeath())
 		{
 			return;
@@ -337,6 +339,7 @@ public class SceneTauntBehavior : CampaignBehaviorBase
 		TryCommitDeferredCrimeWhenBackOnWorldMap();
 		TryCommitDeferredLordSceneDiplomacyWhenBackOnWorldMap();
 		TryCommitPendingSceneNotableBattleDeaths();
+		}
 	}
 
 	private void OnGameMenuOpened(MenuCallbackArgs args)

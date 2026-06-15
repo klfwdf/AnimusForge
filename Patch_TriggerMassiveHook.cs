@@ -15,60 +15,80 @@ public static class Patch_TriggerMassiveHook
 
 	public static void Postfix(float dt)
 	{
+		using (PerfProbe.Scope("Patch_TriggerMassiveHook.Postfix"))
+		{
 		if (!_initialized && TraceHelper.IsEnabled)
 		{
 			_initialized = true;
 			try
 			{
-				Harmony harmony = new Harmony("my.dynamic.patcher.runtime");
-				DynamicPatcher.DoMassiveHook(harmony);
+				using (PerfProbe.Scope("Patch_TriggerMassiveHook.DynamicPatcher.DoMassiveHook"))
+				{
+					Harmony harmony = new Harmony("my.dynamic.patcher.runtime");
+					DynamicPatcher.DoMassiveHook(harmony);
+				}
 			}
 			catch (Exception ex)
 			{
 				Logger.LogTrace("System", "拦截器异常: " + ex.Message);
 			}
 		}
-		NameMarkerSafePatch.EnsurePatched();
-		MissionScreenSafePatch.EnsurePatched();
-		MissionUiInterruptionPatch.EnsurePatched();
-		CriticalUiLipSyncTeardownPatch.EnsurePatched();
-		EndMissionInternalSafePatch.EnsurePatched();
-		ConversationCameraSafePatch.EnsurePatched();
-		InteractionComponentSafePatch.EnsurePatched();
-		MainAgentControllerSafePatch.EnsurePatched();
-		PassageUsePointSafePatch.EnsurePatched();
-		ConversationManagerSafePatch.EnsurePatched();
-		ProcessSentenceSafePatch.EnsurePatched();
-		ProcessPartnerSentenceSafePatch.EnsurePatched();
-		ContinueConversationSafePatch.EnsurePatched();
-		MeetingTargetWieldBlockPatch.EnsurePatched();
-		SceneTauntWieldBlockPatch.EnsurePatched();
-		MeetingDuelBattleAgentLogicSafePatch.EnsurePatched();
-		LipSyncFacialAnimSuppressPatch.EnsurePatched();
+		using (PerfProbe.Scope("Patch_TriggerMassiveHook.EnsurePatchedGroup"))
+		{
+			NameMarkerSafePatch.EnsurePatched();
+			MissionScreenSafePatch.EnsurePatched();
+			MissionUiInterruptionPatch.EnsurePatched();
+			CriticalUiLipSyncTeardownPatch.EnsurePatched();
+			EndMissionInternalSafePatch.EnsurePatched();
+			ConversationCameraSafePatch.EnsurePatched();
+			InteractionComponentSafePatch.EnsurePatched();
+			MainAgentControllerSafePatch.EnsurePatched();
+			PassageUsePointSafePatch.EnsurePatched();
+			ConversationManagerSafePatch.EnsurePatched();
+			ProcessSentenceSafePatch.EnsurePatched();
+			ProcessPartnerSentenceSafePatch.EnsurePatched();
+			ContinueConversationSafePatch.EnsurePatched();
+			MeetingTargetWieldBlockPatch.EnsurePatched();
+			SceneTauntWieldBlockPatch.EnsurePatched();
+			MeetingDuelBattleAgentLogicSafePatch.EnsurePatched();
+			LipSyncFacialAnimSuppressPatch.EnsurePatched();
+		}
 		try
 		{
-			DuelBehavior.GlobalArenaLeaveTick();
+			using (PerfProbe.Scope("Patch_TriggerMassiveHook.DuelBehavior.GlobalArenaLeaveTick"))
+			{
+				DuelBehavior.GlobalArenaLeaveTick();
+			}
 		}
 		catch
 		{
 		}
 		try
 		{
-			DuelBehavior.GlobalSourceMissionLeaveTick();
+			using (PerfProbe.Scope("Patch_TriggerMassiveHook.DuelBehavior.GlobalSourceMissionLeaveTick"))
+			{
+				DuelBehavior.GlobalSourceMissionLeaveTick();
+			}
 		}
 		catch
 		{
 		}
 		try
 		{
-			DuelBehavior.GlobalDuelStarterTick();
+			using (PerfProbe.Scope("Patch_TriggerMassiveHook.DuelBehavior.GlobalDuelStarterTick"))
+			{
+				DuelBehavior.GlobalDuelStarterTick();
+			}
 		}
 		catch
 		{
 		}
 		try
 		{
-			DuelBehavior.GlobalPendingMainHeroDeathTick();
+			using (PerfProbe.Scope("Patch_TriggerMassiveHook.DuelBehavior.GlobalPendingMainHeroDeathTick"))
+			{
+				DuelBehavior.GlobalPendingMainHeroDeathTick();
+			}
 		}
 		catch
 		{
@@ -77,6 +97,7 @@ public static class Patch_TriggerMassiveHook
 		{
 			_lastF10Time = Time.ApplicationTime;
 			ForceDumpAllAgents();
+		}
 		}
 	}
 

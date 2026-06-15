@@ -27,6 +27,8 @@ public sealed class AnimusForgeNativeConversationOverlay
 
 	private bool _isSubmitting;
 
+	private bool _npcOpeningAutoStarted;
+
 	private int _submitGeneration;
 
 	private bool _waitingDotsActive;
@@ -127,6 +129,7 @@ public sealed class AnimusForgeNativeConversationOverlay
 		FlushPendingPostprocessNotice();
 		UpdateWaitingDotsAnimation();
 		_dataSource.SetPersonaEditVisible(ShoutBehavior.CanEditNativeConversationNpcForExternal());
+		TryStartPendingNpcOpening();
 		if (!_dataSource.IsCustomAnswerVisible)
 		{
 			NativeConversationAnswerAreaController.SetSuppressed(false);
@@ -364,6 +367,100 @@ public sealed class AnimusForgeNativeConversationOverlay
 			return;
 		}
 		_ = SubmitAsync(text);
+	}
+
+	private void TryStartPendingNpcOpening()
+	{
+		if (_isClosed || _isSubmitting || _npcOpeningAutoStarted)
+		{
+			return;
+		}
+		if (!ProactiveNpcRequestBehavior.HasPendingNativeOpeningForCurrentConversation())
+		{
+			return;
+		}
+		_npcOpeningAutoStarted = true;
+		SetInputVisible(true);
+		_ = SubmitNpcInitiatedOpeningAsync();
+	}
+
+	private async Task SubmitNpcInitiatedOpeningAsync()
+	{
+		int generation = ++_submitGeneration;
+		string originalDialogText = ConversationHelper.GetCurrentDialogText();
+		bool receivedVisibleText = false;
+		_isSubmitting = true;
+		ClearPendingPostprocessNotice();
+		_dataSource.SetBusy(true);
+		_dataSource.InputText = "";
+		SetLayerForButtonsOnly();
+		ConversationHelper.BeginStreaming();
+		StartWaitingDotsAnimation(generation);
+		try
+		{
+			string reply = await ShoutBehavior.SubmitNativeConversationNpcInitiatedOpeningForExternalAsync(delegate(string partial)
+			{
+				if (IsSubmitGenerationActive(generation) && !string.IsNullOrWhiteSpace(partial))
+				{
+					receivedVisibleText = true;
+					StopWaitingDotsAnimation(generation);
+					ConversationHelper.UpdateDialogText(partial);
+				}
+			}, originalDialogText, delegate(string npcName)
+			{
+				QueuePostprocessNotice(generation, npcName);
+			});
+			if (_isClosed)
+			{
+				return;
+			}
+			reply = (reply ?? "").Replace("\r", "").Trim();
+			if (IsSubmitGenerationActive(generation) && !string.IsNullOrWhiteSpace(reply))
+			{
+				receivedVisibleText = true;
+				StopWaitingDotsAnimation(generation);
+				ConversationHelper.UpdateDialogText(reply);
+			}
+			else if (IsSubmitGenerationActive(generation) && !receivedVisibleText)
+			{
+				ConversationHelper.UpdateDialogText(originalDialogText ?? "");
+			}
+		}
+		catch (Exception ex)
+		{
+			StopWaitingDotsAnimation(generation);
+			if (IsSubmitGenerationActive(generation) && !receivedVisibleText)
+			{
+				ConversationHelper.UpdateDialogText(originalDialogText ?? "");
+			}
+			Logger.Log("NativeConversationOverlay", "[ERROR] NPC initiated opening failed: " + ex);
+			try
+			{
+				InformationManager.DisplayMessage(new InformationMessage("AnimusForge NPC主动开口失败：" + ex.Message, new Color(1f, 0.35f, 0.25f)));
+			}
+			catch
+			{
+			}
+		}
+		finally
+		{
+			StopWaitingDotsAnimation(generation);
+			if (generation == _submitGeneration)
+			{
+				ConversationHelper.EndStreaming();
+			}
+			_isSubmitting = false;
+			if (!_isClosed && generation == _submitGeneration)
+			{
+				_dataSource.SetBusy(false);
+				if (_dataSource.IsCustomAnswerVisible)
+				{
+					ShowInputReadyMessage();
+					PlayInputReadySound();
+					FocusInputIfVisible();
+				}
+			}
+		}
 	}
 
 	private async Task SubmitAsync(string text)

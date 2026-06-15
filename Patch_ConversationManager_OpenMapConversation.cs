@@ -135,6 +135,7 @@ public static class Patch_ConversationManager_OpenMapConversation
 			if (hero != null && hero != Hero.MainHero && hero.IsLord)
 			{
 				Logger.LogTrace("Conversation_Intercept", $"检测到 OpenMapConversation 原版对话调用，记录目标领主并放行: {hero.Name}");
+				ProactiveNpcRequestBehavior.MarkEncounterOpened(hero);
 				LordEncounterBehavior.SetTarget(hero);
 				LordEncounterBehavior.OpenEncounterMenu(hero);
 				return false;

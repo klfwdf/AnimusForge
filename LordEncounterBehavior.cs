@@ -2898,6 +2898,8 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 
 	private void OnCampaignTick(float dt)
 	{
+		using (PerfProbe.Scope("LordEncounter.OnCampaignTick"))
+		{
 		TryClearEncounterRedirectSuspensionWhenBackOnMap();
 		TryForcePendingDefeatCaptivityMenuIfReady();
 		TryForcePendingMeetingBattleVictorySettlementIfReady();
@@ -2943,6 +2945,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		}
 		_cameraLockWasActive = true;
 		FocusMapCameraOnMainParty();
+		}
 	}
 
 	private static bool TryResolveNativePlayerSurrenderFromCustomMenu(string reason)
@@ -3659,6 +3662,11 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			{
 				args.MenuTitle = new TextObject("战后结算");
 			}
+			else if (ProactiveNpcRequestBehavior.TryBuildMenuText(hero, out var proactiveTitle, out var proactiveBody))
+			{
+				args.MenuTitle = new TextObject(proactiveTitle);
+				bodyText = new TextObject(proactiveBody);
+			}
 			else
 			{
 				args.MenuTitle = new TextObject("遭遇领主");
@@ -3670,7 +3678,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			ApplyLordEncounterMenuBackground(args, hero);
 			FocusMapCameraOnMainParty();
 		});
-		starter.AddGameMenuOption("AnimusForge_lord_encounter", "meet_lord", "与{TARGET_NAME}会面", delegate(MenuCallbackArgs args)
+		starter.AddGameMenuOption("AnimusForge_lord_encounter", "meet_lord", "{MEET_LORD_LABEL}", delegate(MenuCallbackArgs args)
 		{
 			if (HasPendingForceNativeDefeatCaptivityMenu())
 			{
@@ -3683,6 +3691,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			args.optionLeaveType = GameMenuOption.LeaveType.Conversation;
 			Hero hero = EnsureEncounterTargetHero("menu_meet_condition");
 			GameTexts.SetVariable("TARGET_NAME", (hero != null) ? hero.Name : new TextObject("领主"));
+			GameTexts.SetVariable("MEET_LORD_LABEL", ProactiveNpcRequestBehavior.IsActiveRequestHero(hero) ? new TextObject("听听{TARGET_NAME}的请求") : new TextObject("与{TARGET_NAME}会面"));
 			if (hero == null)
 			{
 				args.IsEnabled = false;
@@ -3729,6 +3738,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			IsOpeningConversation = true;
 			try
 			{
+				ProactiveNpcRequestBehavior.MarkSceneConversationOpening(hero);
 				StartMeeting(hero, args);
 			}
 			finally
@@ -3736,7 +3746,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 				IsOpeningConversation = false;
 			}
 		});
-		starter.AddGameMenuOption("AnimusForge_lord_encounter", "native_dialogue_lord", "进入原版对话", delegate(MenuCallbackArgs args)
+		starter.AddGameMenuOption("AnimusForge_lord_encounter", "native_dialogue_lord", "{NATIVE_DIALOGUE_LABEL}", delegate(MenuCallbackArgs args)
 		{
 			if (HasPendingForceNativeDefeatCaptivityMenu())
 			{
@@ -3749,6 +3759,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			args.optionLeaveType = GameMenuOption.LeaveType.Conversation;
 			Hero hero = EnsureEncounterTargetHero("menu_native_dialogue_condition");
 			GameTexts.SetVariable("TARGET_NAME", (hero != null) ? hero.Name : new TextObject("领主"));
+			GameTexts.SetVariable("NATIVE_DIALOGUE_LABEL", ProactiveNpcRequestBehavior.IsActiveRequestHero(hero) ? new TextObject("进入对话并听取请求") : new TextObject("进入原版对话"));
 			if (hero == null)
 			{
 				args.IsEnabled = false;
@@ -3764,6 +3775,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 				AnimusForgeQuickInfo.Show("当前未识别到遭遇领主，请先离开并重新接触。");
 				return;
 			}
+			ProactiveNpcRequestBehavior.MarkNativeConversationOpening(hero);
 			OpenNativeEncounterConversation(hero);
 		});
 		starter.AddGameMenuOption("AnimusForge_lord_encounter", "attack_lord", "{PRIMARY_ACTION_LABEL}", delegate
@@ -3787,6 +3799,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			}
 			else
 			{
+				ProactiveNpcRequestBehavior.CompleteActiveForHero(target, "attack_option");
 				TryApplyImmediateAttackConsequencesForEncounter(target, "menu_attack_option");
 				GameMenu.SwitchToMenu("encounter");
 			}
@@ -3804,6 +3817,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			return !IsHostileEncounterInitiatedByOpponent();
 		}, delegate
 		{
+			ProactiveNpcRequestBehavior.CompleteActiveForHero(EnsureEncounterTargetHero("menu_leave_click"), "leave_option");
 			PlayerEncounter.Finish();
 		}, isLeave: true);
 	}

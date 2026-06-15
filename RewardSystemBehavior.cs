@@ -7898,6 +7898,75 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		return list3;
 	}
 
+	public int GetPartyTradeGoldForExternal(PartyBase party)
+	{
+		try
+		{
+			return Math.Max(0, party?.MobileParty?.PartyTradeGold ?? 0);
+		}
+		catch
+		{
+			return 0;
+		}
+	}
+
+	public List<RewardItemInfo> BuildPartyRewardPostprocessItems(PartyBase party, int maxItems = 0)
+	{
+		Dictionary<string, RewardItemInfo> dictionary = new Dictionary<string, RewardItemInfo>(StringComparer.OrdinalIgnoreCase);
+		try
+		{
+			ItemRoster itemRoster = party?.ItemRoster;
+			if (itemRoster == null)
+			{
+				return new List<RewardItemInfo>();
+			}
+			for (int i = 0; i < itemRoster.Count; i++)
+			{
+				ItemRosterElement elementCopyAtIndex = itemRoster.GetElementCopyAtIndex(i);
+				EquipmentElement equipmentElement = elementCopyAtIndex.EquipmentElement;
+				ItemObject item = equipmentElement.Item;
+				if (item == null || elementCopyAtIndex.Amount <= 0)
+				{
+					continue;
+				}
+				string text = BuildSettlementMerchantInventoryKey(equipmentElement);
+				if (string.IsNullOrWhiteSpace(text))
+				{
+					text = item.StringId ?? "";
+				}
+				if (string.IsNullOrWhiteSpace(text))
+				{
+					continue;
+				}
+				if (!dictionary.TryGetValue(text, out var value))
+				{
+					value = (dictionary[text] = new RewardItemInfo
+					{
+						Item = item,
+						StringId = item.StringId ?? "",
+						PromptStringId = text,
+						ModifierStringId = equipmentElement.ItemModifier?.StringId ?? "",
+						Name = BuildSettlementMerchantDisplayName(equipmentElement),
+						Count = 0,
+						GuidePrice = GetGuidePriceForRewardItem(Hero.MainHero, item, equipmentElement),
+						EquipmentElement = equipmentElement
+					});
+				}
+				value.Count += elementCopyAtIndex.Amount;
+			}
+		}
+		catch
+		{
+			return new List<RewardItemInfo>();
+		}
+		IEnumerable<RewardItemInfo> enumerable = dictionary.Values.OrderByDescending((RewardItemInfo x) => x.Count).ThenBy((RewardItemInfo x) => x.Name, StringComparer.Ordinal);
+		if (maxItems > 0)
+		{
+			enumerable = enumerable.Take(maxItems);
+		}
+		return enumerable.ToList();
+	}
+
 	public string BuildVisibleEquipmentValueSummaryForAI(Hero hero, int maxItems = 8, bool useGuidePrice = false)
 	{
 		if (useGuidePrice)
@@ -10192,6 +10261,85 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 	}
 
+	public void ApplyPartyRewardTags(PartyBase giverParty, Hero receiver, string giverName, BasicCharacterObject giverCharacter, ref string responseText)
+	{
+		SetLastGeneratedNpcFactLines(null);
+		if (giverParty == null || receiver == null || string.IsNullOrEmpty(responseText))
+		{
+			return;
+		}
+		string text = string.IsNullOrWhiteSpace(giverName) ? "对方部队" : giverName.Trim();
+		Regex regex = new Regex("\\[ACTION:GIVE_GOLD:(\\d+)\\]", RegexOptions.IgnoreCase);
+		Regex regex2 = new Regex("\\[ACTION:GIVE_ITEM:([a-zA-Z0-9_@\\-]+):(\\d+)\\]", RegexOptions.IgnoreCase);
+		List<string> npcFacts = new List<string>();
+		List<string> playerFacts = new List<string>();
+		try
+		{
+			responseText = regex.Replace(responseText, delegate(Match m)
+			{
+				if (int.TryParse(m.Groups[1].Value, out var result))
+				{
+					int num = TransferGoldFromParty(giverParty, receiver, result, text, giverCharacter);
+					if (num > 0)
+					{
+						npcFacts.Add($"你已经将 {num} 第纳尔交给玩家，并从你所在部队的资金中扣除。");
+						playerFacts.Add($"你从 {text} 收到了 {num} 第纳尔。");
+					}
+					else
+					{
+						npcFacts.Add($"你试图交付 {result} 第纳尔，但你所在部队当前资金不足，本轮未实际支付。");
+					}
+				}
+				return string.Empty;
+			});
+			responseText = regex2.Replace(responseText, delegate(Match m)
+			{
+				string value = m.Groups[1].Value;
+				if (int.TryParse(m.Groups[2].Value, out var result))
+				{
+					string itemName;
+					int num = TransferItemFromParty(giverParty, receiver, value, result, text, out itemName, giverCharacter);
+					ItemObject itemObject = ResolveItemById((value ?? "").Split('@')[0]);
+					string text2 = string.IsNullOrWhiteSpace(itemName) ? (itemObject?.Name?.ToString() ?? value) : itemName;
+					if (num > 0)
+					{
+						string text3 = BuildItemValueFactSuffixForExternal(Hero.MainHero, itemObject, num);
+						npcFacts.Add($"你已经将 {FormatItemAmount(num, itemObject, text2)} 交给玩家{text3}，并从你所在部队的库存中扣除。");
+						playerFacts.Add($"你从 {text} 收到了 {FormatItemAmount(num, itemObject, text2)}{text3}。");
+						if (num < result)
+						{
+							npcFacts.Add($"你原本打算交付 {FormatItemAmount(result, itemObject, text2)}，但你所在部队库存不足，实际只交付了 {FormatItemAmount(num, itemObject, text2)}。");
+							playerFacts.Add($"{text} 原本打算交付 {FormatItemAmount(result, itemObject, text2)}，但实际只交付了 {FormatItemAmount(num, itemObject, text2)}。");
+						}
+					}
+					else
+					{
+						string text3 = BuildItemValueFactSuffixForExternal(Hero.MainHero, itemObject, result);
+						npcFacts.Add($"你试图交付 {FormatItemAmount(result, itemObject, text2)}{text3}，但你所在部队库存不足，本轮未实际交付。");
+					}
+				}
+				return string.Empty;
+			});
+			responseText = Regex.Replace(responseText ?? "", "\\[ACTION:DEBT[^\\]]*\\]", string.Empty, RegexOptions.IgnoreCase);
+			responseText = Regex.Replace(responseText, "\\[ACTION:TRADE_TRUST:[^\\]]*\\]", string.Empty, RegexOptions.IgnoreCase);
+			responseText = Regex.Replace(responseText, "\\[AD;[^\\]]+\\]", string.Empty, RegexOptions.IgnoreCase);
+			responseText = Regex.Replace(responseText, "\\[ADP[:;][^\\]]+\\]", string.Empty, RegexOptions.IgnoreCase).Trim();
+			if (npcFacts.Count > 0)
+			{
+				SetLastGeneratedNpcFactLines(new string[1] { "[AFEF NPC行为补充] " + text + ": " + string.Join(" ", npcFacts) });
+			}
+			if (playerFacts.Count > 0 && receiver == Hero.MainHero)
+			{
+				MyBehavior.AppendExternalPlayerFact(receiver, string.Join(" ", playerFacts));
+			}
+		}
+		catch (Exception ex)
+		{
+			SetLastGeneratedNpcFactLines(null);
+			Logger.Log("Logic", "[ERROR] ApplyPartyRewardTags 异常: " + ex);
+		}
+	}
+
 	public void ApplyMerchantRewardTags(CharacterObject giverCharacter, Hero receiver, ref string responseText)
 	{
 		SetLastGeneratedNpcFactLines(null);
@@ -10521,6 +10669,44 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		return num;
 	}
 
+	internal int TransferGoldFromParty(PartyBase giverParty, Hero receiver, int amount, string giverName = null, BasicCharacterObject giverCharacter = null)
+	{
+		if (giverParty?.MobileParty == null || receiver == null || amount <= 0)
+		{
+			return 0;
+		}
+		int num = Math.Min(amount, Math.Max(0, giverParty.MobileParty.PartyTradeGold));
+		if (num <= 0)
+		{
+			return 0;
+		}
+		giverParty.MobileParty.PartyTradeGold -= num;
+		receiver.ChangeHeroGold(num);
+		if (receiver == Hero.MainHero)
+		{
+			string arg = string.IsNullOrWhiteSpace(giverName) ? "对方部队" : giverName.Trim();
+			InformationManager.DisplayMessage(new InformationMessage($"{arg} 给了你 {num} 第纳尔。"));
+			AnimusForgeQuickInfo.ShowForDuration($"{arg} 给了你 {num} 第纳尔。", RewardQuickInfoDurationMs, giverCharacter);
+		}
+		return num;
+	}
+
+	internal int TransferGoldToParty(PartyBase receiverParty, Hero giver, int amount)
+	{
+		if (receiverParty?.MobileParty == null || giver == null || amount <= 0)
+		{
+			return 0;
+		}
+		int num = Math.Min(amount, Math.Max(0, giver.Gold));
+		if (num <= 0)
+		{
+			return 0;
+		}
+		GiveGoldAction.ApplyBetweenCharacters(giver, null, num, disableNotification: true);
+		receiverParty.MobileParty.PartyTradeGold += num;
+		return num;
+	}
+
 	private static int MoveMatchingItemsByStringId(ItemRoster sourceRoster, ItemRoster targetRoster, string itemStringId, int amount, out EquipmentElement firstTransferredElement)
 	{
 		firstTransferredElement = EquipmentElement.Invalid;
@@ -10704,6 +10890,60 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			ShowRewardMessage($"你给了 {arg3} {FormatItemAmount(num2, itemObject, arg4)}。", receiver);
 		}
 		return num2;
+	}
+
+	internal int TransferItemFromParty(PartyBase giverParty, Hero receiver, string itemStringId, int amount, string giverName, out string itemName, BasicCharacterObject giverCharacter = null)
+	{
+		itemName = null;
+		if (giverParty == null || receiver == null || string.IsNullOrWhiteSpace(itemStringId) || amount <= 0)
+		{
+			return 0;
+		}
+		ItemRoster itemRoster = giverParty.ItemRoster;
+		ItemRoster itemRoster2 = ((receiver.PartyBelongedTo != null) ? receiver.PartyBelongedTo.ItemRoster : null) ?? MobileParty.MainParty?.ItemRoster;
+		if (itemRoster == null || itemRoster2 == null)
+		{
+			return 0;
+		}
+		int num = MoveMatchingItemsByStringId(itemRoster, itemRoster2, itemStringId, amount, out var equipmentElement);
+		ItemObject itemObject = equipmentElement.Item ?? ResolveItemById((itemStringId ?? "").Split('@')[0]);
+		if (num > 0)
+		{
+			itemName = (equipmentElement.Item != null) ? (equipmentElement.GetModifiedItemName()?.ToString() ?? equipmentElement.Item.Name?.ToString() ?? itemStringId) : (itemObject?.Name?.ToString() ?? itemStringId);
+			if (receiver == Hero.MainHero)
+			{
+				string arg = string.IsNullOrWhiteSpace(giverName) ? "对方部队" : giverName.Trim();
+				InformationManager.DisplayMessage(new InformationMessage($"{arg} 给了你 {FormatItemAmount(num, itemObject, itemName)}。"));
+				AnimusForgeQuickInfo.ShowForDuration($"{arg} 给了你 {FormatItemAmount(num, itemObject, itemName)}。", RewardQuickInfoDurationMs, giverCharacter);
+			}
+		}
+		return num;
+	}
+
+	internal int TransferItemToParty(PartyBase receiverParty, Hero giver, string itemStringId, int amount, out string itemName)
+	{
+		itemName = null;
+		if (receiverParty == null || giver == null || string.IsNullOrWhiteSpace(itemStringId) || amount <= 0)
+		{
+			return 0;
+		}
+		ItemRoster itemRoster = ((giver.PartyBelongedTo != null) ? giver.PartyBelongedTo.ItemRoster : null) ?? MobileParty.MainParty?.ItemRoster;
+		ItemRoster itemRoster2 = receiverParty.ItemRoster;
+		if (itemRoster == null || itemRoster2 == null)
+		{
+			return 0;
+		}
+		int num = MoveMatchingItemsByStringId(itemRoster, itemRoster2, itemStringId, amount, out var equipmentElement);
+		ItemObject itemObject = equipmentElement.Item ?? ResolveItemById((itemStringId ?? "").Split('@')[0]);
+		if (num > 0)
+		{
+			itemName = (equipmentElement.Item != null) ? (equipmentElement.GetModifiedItemName()?.ToString() ?? equipmentElement.Item.Name?.ToString() ?? itemStringId) : (itemObject?.Name?.ToString() ?? itemStringId);
+			if (giver == Hero.MainHero)
+			{
+				ShowRewardMessage($"你给了对方部队 {FormatItemAmount(num, itemObject, itemName)}。", giver);
+			}
+		}
+		return num;
 	}
 
 	internal int TransferItemFromSettlement(Settlement settlement, Hero receiver, string itemStringId, int amount, string giverName, out string itemName, BasicCharacterObject giverCharacter = null)

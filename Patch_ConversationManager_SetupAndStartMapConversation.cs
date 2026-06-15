@@ -128,6 +128,7 @@ public static class Patch_ConversationManager_SetupAndStartMapConversation
 				Logger.LogTrace("Conversation_Intercept", $"SetupAndStartMapConversation 遭遇对象: {hero.Name}, IsLord={hero.IsLord}, IsMainHero={hero == Hero.MainHero}");
 				if (hero != Hero.MainHero && hero.IsLord)
 				{
+					ProactiveNpcRequestBehavior.MarkEncounterOpened(hero);
 					LordEncounterBehavior.SetTarget(hero);
 				}
 			}

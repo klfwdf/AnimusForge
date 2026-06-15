@@ -94,6 +94,7 @@ public static class Patch_GameMenu_ActivateGameMenu
 				Hero leaderHero = encounteredParty.LeaderHero;
 				if (leaderHero != null && leaderHero != Hero.MainHero && leaderHero.IsLord)
 				{
+					ProactiveNpcRequestBehavior.MarkEncounterOpened(leaderHero);
 					if (LordEncounterBehavior.IsVillageRaidEncounterContext(leaderHero))
 					{
 						Logger.LogTrace("UI_Intercept", $"Village raid context detected; keep native 'encounter' menu. Target={leaderHero.Name}");

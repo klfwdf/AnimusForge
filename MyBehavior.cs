@@ -215,6 +215,8 @@ public class MyBehavior : CampaignBehaviorBase
 
 		public int SceneSessionId = -1;
 
+		public int DialogueSessionId = -1;
+
 		public bool IsAfef;
 
 		public bool IsLlmDialogue;
@@ -1359,6 +1361,10 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private bool _memorySummaryFailurePopupActive;
 
+	private int _nativeConversationMemorySessionCounter;
+
+	private int _activeNativeConversationMemorySessionId = -1;
+
 	private Dictionary<string, MemoryOverviewState> _memoryOverviewStates = new Dictionary<string, MemoryOverviewState>(StringComparer.OrdinalIgnoreCase);
 
 	private Dictionary<string, string> _memoryOverviewStateStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
@@ -1374,6 +1380,14 @@ public class MyBehavior : CampaignBehaviorBase
 	private List<MajorActionSummaryJob> _npcMajorActionSummaryQueue = new List<MajorActionSummaryJob>();
 
 	private string _npcMajorActionSummaryQueueJsonStorage = "";
+
+	private const double MemoryMaintenanceCampaignTickThrottleSeconds = 2.0;
+
+	private const double MemoryOverviewCandidateScanThrottleSeconds = 10.0;
+
+	private long _lastMemoryMaintenanceCampaignTickUtcTicks;
+
+	private long _lastMemoryOverviewCandidateScanUtcTicks;
 
 	private Dictionary<string, List<NpcActionEntry>> _npcMajorActions = new Dictionary<string, List<NpcActionEntry>>();
 
@@ -1793,6 +1807,7 @@ public class MyBehavior : CampaignBehaviorBase
 		CampaignEvents.OnGameLoadFinishedEvent.AddNonSerializedListener(this, OnGameLoadFinished);
 		CampaignEvents.OnMissionStartedEvent.AddNonSerializedListener(this, OnMissionStarted);
 		CampaignEvents.OnSaveOverEvent.AddNonSerializedListener(this, OnSaveOver);
+		CampaignEvents.ConversationEnded.AddNonSerializedListener(this, OnMemoryConversationEnded);
 		CampaignEvents.TickEvent.AddNonSerializedListener(this, OnCampaignTick);
 		CampaignEvents.MapEventEnded.AddNonSerializedListener(this, OnMapEventEnded);
 		CampaignEvents.HeroPrisonerTaken.AddNonSerializedListener(this, OnHeroPrisonerTaken);
@@ -2686,6 +2701,66 @@ public class MyBehavior : CampaignBehaviorBase
 		return false;
 	}
 
+	private static bool IsNonSceneNativeConversationActiveForMemory()
+	{
+		try
+		{
+			if (Campaign.Current?.ConversationManager?.IsConversationInProgress != true)
+			{
+				return false;
+			}
+			try
+			{
+				if (Mission.Current != null && Mission.Current.Scene != null && ShoutUtils.IsInValidScene())
+				{
+					return false;
+				}
+			}
+			catch
+			{
+			}
+			return true;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private int GetOrStartActiveNativeConversationMemorySessionId()
+	{
+		if (!IsNonSceneNativeConversationActiveForMemory())
+		{
+			_activeNativeConversationMemorySessionId = -1;
+			return -1;
+		}
+		if (_activeNativeConversationMemorySessionId < 0)
+		{
+			_nativeConversationMemorySessionCounter++;
+			if (_nativeConversationMemorySessionCounter <= 0)
+			{
+				_nativeConversationMemorySessionCounter = 1;
+			}
+			_activeNativeConversationMemorySessionId = _nativeConversationMemorySessionCounter;
+		}
+		return _activeNativeConversationMemorySessionId;
+	}
+
+	private int GetCurrentNativeConversationMemorySessionIdForSuppression()
+	{
+		if (!IsNonSceneNativeConversationActiveForMemory())
+		{
+			_activeNativeConversationMemorySessionId = -1;
+			return -1;
+		}
+		return GetOrStartActiveNativeConversationMemorySessionId();
+	}
+
+	private void OnMemoryConversationEnded(IEnumerable<CharacterObject> characters)
+	{
+		_activeNativeConversationMemorySessionId = -1;
+	}
+
 	private void TryEnqueueMajorActionSummaryForDraft(DailyMemoryDraft draft, HashSet<string> queuedMajorHeroIds)
 	{
 		try
@@ -2810,6 +2885,8 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private void TryEnqueueMemoryOverviewForAllCandidates()
 	{
+		using (PerfProbe.Scope("MyBehavior.TryEnqueueMemoryOverviewForAllCandidates"))
+		{
 		try
 		{
 			if (_compressedMemoryBlocks == null || _compressedMemoryBlocks.Count <= 0)
@@ -2831,6 +2908,7 @@ public class MyBehavior : CampaignBehaviorBase
 		catch (Exception ex)
 		{
 			Logger.Log("MemoryOverview", "[ERROR] TryEnqueueMemoryOverviewForAllCandidates failed: " + ex.Message);
+		}
 		}
 	}
 
@@ -2923,15 +3001,28 @@ public class MyBehavior : CampaignBehaviorBase
 		return _compressedMemoryBlocks.TryGetValue(heroId, out var value) && value != null && value.Any((CompressedMemoryBlock x) => x != null && x.GameDayIndex == dayIndex);
 	}
 
-	private void TryStartMemorySummaryQueue()
+	private void TryStartMemorySummaryQueue(bool forceOverviewCandidateScan = false)
 	{
 		try
 		{
-			TryEnqueueMemoryOverviewForAllCandidates();
+			if (_memorySummaryProcessing || IsDialogueOrLetterChainBusyForMemorySummary())
+			{
+				return;
+			}
 			bool hasMemoryJobs = _memorySummaryQueue != null && _memorySummaryQueue.Count > 0;
 			bool hasMajorActionJobs = _npcMajorActionSummaryQueue != null && _npcMajorActionSummaryQueue.Count > 0;
 			bool hasOverviewJobs = _memoryOverviewQueue != null && _memoryOverviewQueue.Count > 0;
-			if (_memorySummaryProcessing || IsDialogueOrLetterChainBusyForMemorySummary() || (!hasMemoryJobs && !hasMajorActionJobs && !hasOverviewJobs))
+			if (!hasMemoryJobs && !hasMajorActionJobs && !hasOverviewJobs && ShouldScanMemoryOverviewCandidates(forceOverviewCandidateScan))
+			{
+				using (PerfProbe.Scope("MyBehavior.TryStartMemorySummaryQueue.EnqueueMemoryOverviewForAllCandidates"))
+				{
+					TryEnqueueMemoryOverviewForAllCandidates();
+				}
+				hasMemoryJobs = _memorySummaryQueue != null && _memorySummaryQueue.Count > 0;
+				hasMajorActionJobs = _npcMajorActionSummaryQueue != null && _npcMajorActionSummaryQueue.Count > 0;
+				hasOverviewJobs = _memoryOverviewQueue != null && _memoryOverviewQueue.Count > 0;
+			}
+			if (!hasMemoryJobs && !hasMajorActionJobs && !hasOverviewJobs)
 			{
 				return;
 			}
@@ -2943,6 +3034,26 @@ public class MyBehavior : CampaignBehaviorBase
 			_memorySummaryProcessing = false;
 			Logger.Log("CompressedMemory", "[ERROR] TryStartMemorySummaryQueue failed: " + ex.Message);
 		}
+	}
+
+	private bool ShouldScanMemoryOverviewCandidates(bool force)
+	{
+		if (_compressedMemoryBlocks == null || _compressedMemoryBlocks.Count <= 0)
+		{
+			return false;
+		}
+		if (force)
+		{
+			_lastMemoryOverviewCandidateScanUtcTicks = DateTime.UtcNow.Ticks;
+			return true;
+		}
+		long now = DateTime.UtcNow.Ticks;
+		if (now - _lastMemoryOverviewCandidateScanUtcTicks < TimeSpan.FromSeconds(MemoryOverviewCandidateScanThrottleSeconds).Ticks)
+		{
+			return false;
+		}
+		_lastMemoryOverviewCandidateScanUtcTicks = now;
+		return true;
 	}
 
 	private async Task ProcessMemorySummaryQueueAsync()
@@ -3837,7 +3948,7 @@ public class MyBehavior : CampaignBehaviorBase
 		try
 		{
 			TrySealPastDailyMemoryDrafts();
-			TryStartMemorySummaryQueue();
+			TryStartMemorySummaryQueue(forceOverviewCandidateScan: true);
 			TryDiscontinueLandlessModRebelKingdoms("daily_tick");
 			EnsureWeekZeroOpeningSummaryEvents();
 			TryRecordMissedStrategicWorldEvents();
@@ -8922,30 +9033,45 @@ public class MyBehavior : CampaignBehaviorBase
 			if (state != null && !string.IsNullOrWhiteSpace(state.Summary))
 			{
 				string summary = state.Summary.Trim();
-				if (HasMajorActionsNeedingSummary(npcActionHeroKey, list))
+				List<NpcActionEntry> pendingActions = list.Where((NpcActionEntry x) => IsNpcActionAfterSummaryCursor(x, state)).ToList();
+				string pendingRaw = RenderNpcActionEntriesForPrompt(hero, pendingActions);
+				if (!string.IsNullOrWhiteSpace(pendingRaw))
 				{
-					summary += "\n（另有新的重大履历正在整理，暂不可引用未整理细节。）";
+					summary += "\n\n【尚未压缩的新重大履历原始记录】\n" + pendingRaw;
 				}
 				return summary;
 			}
-			return "重大履历正在整理，暂不可引用细节。";
+			return RenderNpcActionEntriesForPrompt(hero, list);
+		}
+		return RenderNpcActionEntriesForPrompt(hero, list);
+	}
+
+	private static string RenderNpcActionEntriesForPrompt(Hero hero, List<NpcActionEntry> entries)
+	{
+		if (entries == null || entries.Count <= 0)
+		{
+			return "";
 		}
 		StringBuilder stringBuilder = new StringBuilder();
 		int num = int.MinValue;
 		string text = null;
-		foreach (NpcActionEntry item in list)
+		foreach (NpcActionEntry item in entries)
 		{
+			if (item == null || string.IsNullOrWhiteSpace(item.Text))
+			{
+				continue;
+			}
 			string text2 = !string.IsNullOrWhiteSpace(item.GameDate) ? item.GameDate.Trim() : ("第 " + item.Day + " 日");
 			if (item.Day != num || !string.Equals(text, text2, StringComparison.Ordinal))
 			{
 				if (stringBuilder.Length > 0)
-			{
-				stringBuilder.AppendLine();
+				{
+					stringBuilder.AppendLine();
+				}
+				stringBuilder.AppendLine("—— " + text2 + " ——");
+				num = item.Day;
+				text = text2;
 			}
-			stringBuilder.AppendLine("—— " + text2 + " ——");
-			num = item.Day;
-			text = text2;
-		}
 			stringBuilder.AppendLine("- " + RenderNpcActionPromptText(hero, item.Text) + BuildNpcActionMetadataNarrativeSuffix(item));
 		}
 		return stringBuilder.ToString().TrimEnd();
@@ -9280,37 +9406,125 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private void OnCampaignTick(float dt)
 	{
+		using (PerfProbe.Scope("MyBehavior.OnCampaignTick"))
+		{
 		try
 		{
-			ProcessPendingWeeklyReportManualRetryResult();
-			ProcessWeeklyReportUiResume();
-			TryPublishUnreadWeeklyReportMapNotifications();
-			TrySealPastDailyMemoryDrafts();
-			TryStartMemorySummaryQueue();
-			int num = 0;
-			try
+			using (PerfProbe.Scope("MyBehavior.OnCampaignTick.ProcessPendingWeeklyReportManualRetryResult"))
 			{
-				num = Clan.PlayerClan?.Tier ?? 0;
+				ProcessPendingWeeklyReportManualRetryResult();
 			}
-			catch
+			using (PerfProbe.Scope("MyBehavior.OnCampaignTick.ProcessWeeklyReportUiResume"))
 			{
+				ProcessWeeklyReportUiResume();
 			}
-			if (num <= 0)
+			using (PerfProbe.Scope("MyBehavior.OnCampaignTick.TryPublishUnreadWeeklyReportMapNotifications"))
 			{
+				TryPublishUnreadWeeklyReportMapNotifications();
+			}
+			using (PerfProbe.Scope("MyBehavior.OnCampaignTick.TryRunCampaignMemoryMaintenance"))
+			{
+				TryRunCampaignMemoryMaintenance();
+			}
+			using (PerfProbe.Scope("MyBehavior.OnCampaignTick.CachePlayerClanTier"))
+			{
+				int num = 0;
 				try
 				{
-					num = (Hero.MainHero?.Clan?.Tier).GetValueOrDefault();
+					num = Clan.PlayerClan?.Tier ?? 0;
 				}
 				catch
 				{
 				}
+				if (num <= 0)
+				{
+					try
+					{
+						num = (Hero.MainHero?.Clan?.Tier).GetValueOrDefault();
+					}
+					catch
+					{
+					}
+				}
+				_cachedPlayerClanTier = num;
+				_cachedPlayerClanTierUtcTicks = DateTime.UtcNow.Ticks;
 			}
-			_cachedPlayerClanTier = num;
-			_cachedPlayerClanTierUtcTicks = DateTime.UtcNow.Ticks;
 		}
 		catch
 		{
 		}
+		}
+	}
+
+	private void TryRunCampaignMemoryMaintenance()
+	{
+		if (_memorySummaryProcessing || IsDialogueOrLetterChainBusyForMemorySummary())
+		{
+			return;
+		}
+		long now = DateTime.UtcNow.Ticks;
+		if (now - _lastMemoryMaintenanceCampaignTickUtcTicks < TimeSpan.FromSeconds(MemoryMaintenanceCampaignTickThrottleSeconds).Ticks)
+		{
+			return;
+		}
+		_lastMemoryMaintenanceCampaignTickUtcTicks = now;
+		int currentDay = 0;
+		try
+		{
+			currentDay = (int)CampaignTime.Now.ToDays;
+		}
+		catch
+		{
+			currentDay = 0;
+		}
+		bool hasPastDrafts = HasPastDailyMemoryDrafts(currentDay);
+		bool hasQueuedWork = (_memorySummaryQueue != null && _memorySummaryQueue.Count > 0) || (_npcMajorActionSummaryQueue != null && _npcMajorActionSummaryQueue.Count > 0) || (_memoryOverviewQueue != null && _memoryOverviewQueue.Count > 0);
+		if (!hasPastDrafts && !hasQueuedWork)
+		{
+			return;
+		}
+		if (hasPastDrafts)
+		{
+			using (PerfProbe.Scope("MyBehavior.TryRunCampaignMemoryMaintenance.TrySealPastDailyMemoryDrafts"))
+			{
+				TrySealPastDailyMemoryDrafts();
+			}
+		}
+		using (PerfProbe.Scope("MyBehavior.TryRunCampaignMemoryMaintenance.TryStartMemorySummaryQueue"))
+		{
+			TryStartMemorySummaryQueue();
+		}
+	}
+
+	private bool HasPastDailyMemoryDrafts(int currentDay)
+	{
+		if (_dailyMemoryDrafts == null || _dailyMemoryDrafts.Count <= 0 || currentDay <= 0)
+		{
+			return false;
+		}
+		try
+		{
+			foreach (KeyValuePair<string, List<DailyMemoryDraft>> item in _dailyMemoryDrafts)
+			{
+				List<DailyMemoryDraft> drafts = item.Value;
+				if (drafts == null || drafts.Count <= 0)
+				{
+					continue;
+				}
+				for (int i = 0; i < drafts.Count; i++)
+				{
+					DailyMemoryDraft draft = drafts[i];
+					if (draft != null && draft.GameDayIndex < currentDay)
+					{
+						return true;
+					}
+				}
+			}
+		}
+		catch
+		{
+		}
+		return false;
 	}
 
 	public override void SyncData(IDataStore dataStore)
@@ -10279,6 +10493,8 @@ public class MyBehavior : CampaignBehaviorBase
 			_compressedMemoryBlockStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 			_memorySummaryQueue = new List<MemorySummaryJob>();
 			_memorySummaryQueueJsonStorage = "";
+			_nativeConversationMemorySessionCounter = 0;
+			_activeNativeConversationMemorySessionId = -1;
 			_memoryOverviewStates = new Dictionary<string, MemoryOverviewState>(StringComparer.OrdinalIgnoreCase);
 			_memoryOverviewStateStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 			_memoryOverviewQueue = new List<MemoryOverviewJob>();
@@ -12750,7 +12966,10 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			text = "NPC";
 		}
-		return "【" + text + "的商铺可用财富与物品】(注意：你不可以转移超出数量的物品，钱，如果你没有那么多，请实话实说)";
+		string title = npcHero != null && npcHero != Hero.MainHero && npcHero.IsLord
+			? text + "携带的所有物资和财富"
+			: text + "的商铺可用财富与物品";
+		return "【" + title + "】(注意：你不可以转移超出数量的物品，钱，如果你没有那么多，请实话实说)";
 	}
 
 	private static string BuildNobleEtiquettePromptForHero(Hero npcHero)
@@ -15432,6 +15651,10 @@ public class MyBehavior : CampaignBehaviorBase
 				{
 					x.SceneSessionId = -1;
 				}
+				if (x.DialogueSessionId < -1)
+				{
+					x.DialogueSessionId = -1;
+				}
 				return x;
 			}).ToList();
 			draft.HasLlmDialogue = draft.HasLlmDialogue || draft.Lines.Any((DailyMemoryLine x) => x != null && x.IsLlmDialogue && !x.IsAfef);
@@ -15980,6 +16203,7 @@ public class MyBehavior : CampaignBehaviorBase
 		string gameDate = CampaignTime.Now.ToString();
 		int hour = GetCurrentHourOfDaySafeForPrompt();
 		string heroId = normalizedMemoryId;
+		int dialogueSessionId = sceneSessionId >= 0 ? -1 : GetOrStartActiveNativeConversationMemorySessionId();
 		List<DailyMemoryDraft> list = LoadDailyMemoryDraftsById(heroId);
 		DailyMemoryDraft dailyMemoryDraft = list.FirstOrDefault((DailyMemoryDraft x) => x != null && x.GameDayIndex == dayIndex);
 		if (dailyMemoryDraft == null)
@@ -16006,6 +16230,7 @@ public class MyBehavior : CampaignBehaviorBase
 			Speaker = (speaker ?? "").Trim(),
 			Text = text2,
 			SceneSessionId = sceneSessionId,
+			DialogueSessionId = dialogueSessionId,
 			IsAfef = isAfef,
 			IsLlmDialogue = isLlmDialogue && !isAfef
 		};
@@ -17151,6 +17376,22 @@ public class MyBehavior : CampaignBehaviorBase
 				if (!string.IsNullOrWhiteSpace(heroJoinPartyRuntimeInstruction))
 				{
 					text = ReplaceSingleRuleBlockBody(text, "hero_join_party", heroJoinPartyRuntimeInstruction);
+				}
+			}
+			if (!string.IsNullOrWhiteSpace(text) && text.IndexOf("【附加规则:npc_major_actions】", StringComparison.OrdinalIgnoreCase) >= 0)
+			{
+				string npcMajorActionsRuntimeInstruction = BuildNpcMajorActionsRuntimeInstruction(targetHero ?? targetCharacter?.HeroObject);
+				if (!string.IsNullOrWhiteSpace(npcMajorActionsRuntimeInstruction))
+				{
+					text = ReplaceSingleRuleBlockBody(text, "npc_major_actions", npcMajorActionsRuntimeInstruction);
+				}
+			}
+			if (!string.IsNullOrWhiteSpace(text) && text.IndexOf("【附加规则:npc_recent_actions】", StringComparison.OrdinalIgnoreCase) >= 0)
+			{
+				string npcRecentActionsRuntimeInstruction = BuildNpcRecentActionsRuntimeInstruction(targetHero ?? targetCharacter?.HeroObject);
+				if (!string.IsNullOrWhiteSpace(npcRecentActionsRuntimeInstruction))
+				{
+					text = ReplaceSingleRuleBlockBody(text, "npc_recent_actions", npcRecentActionsRuntimeInstruction);
 				}
 			}
 			if (!IsPromptRuleExcluded(excludedRuleIdSet, "lords_hall_access"))
@@ -18345,7 +18586,7 @@ public class MyBehavior : CampaignBehaviorBase
 			IsLoanContext = false,
 			IsQualified = true
 		};
-		if (string.IsNullOrWhiteSpace(input))
+		if (string.IsNullOrWhiteSpace(input) && string.IsNullOrWhiteSpace(extraFact))
 		{
 			return shoutPromptContext;
 		}
@@ -18886,7 +19127,9 @@ public class MyBehavior : CampaignBehaviorBase
 		bool extrasHasRewardRule = (shoutPromptContext.Extras?.IndexOf("【附加规则:reward】", StringComparison.OrdinalIgnoreCase)).GetValueOrDefault() >= 0;
 		bool extrasHasLoanRule = (shoutPromptContext.Extras?.IndexOf("【附加规则:loan】", StringComparison.OrdinalIgnoreCase)).GetValueOrDefault() >= 0;
 		bool extrasHasWorldMapRule = (shoutPromptContext.Extras?.IndexOf("【附加规则:worldmap_party_command】", StringComparison.OrdinalIgnoreCase)).GetValueOrDefault() >= 0;
-		Logger.Log("Logic", $"[RuleInjectionDebug] stage=extras targetHero={(targetHero?.StringId ?? "null")} targetCharacter={(targetCharacter?.StringId ?? "null")} extrasHasDuelRule={extrasHasDuelRule} extrasHasRewardRule={extrasHasRewardRule} extrasHasLoanRule={extrasHasLoanRule} extrasHasWorldMapRule={extrasHasWorldMapRule} extrasLen={(shoutPromptContext.Extras ?? "").Length} useDuelContext={shoutPromptContext.UseDuelContext} useRewardContext={shoutPromptContext.UseRewardContext} useLoanContext={shoutPromptContext.IsLoanContext}");
+		bool extrasHasNpcMajorRule = (shoutPromptContext.Extras?.IndexOf("【附加规则:npc_major_actions】", StringComparison.OrdinalIgnoreCase)).GetValueOrDefault() >= 0;
+		bool extrasHasNpcRecentRule = (shoutPromptContext.Extras?.IndexOf("【附加规则:npc_recent_actions】", StringComparison.OrdinalIgnoreCase)).GetValueOrDefault() >= 0;
+		Logger.Log("Logic", $"[RuleInjectionDebug] stage=extras targetHero={(targetHero?.StringId ?? "null")} targetCharacter={(targetCharacter?.StringId ?? "null")} extrasHasDuelRule={extrasHasDuelRule} extrasHasRewardRule={extrasHasRewardRule} extrasHasLoanRule={extrasHasLoanRule} extrasHasWorldMapRule={extrasHasWorldMapRule} extrasHasNpcMajorRule={extrasHasNpcMajorRule} extrasHasNpcRecentRule={extrasHasNpcRecentRule} extrasLen={(shoutPromptContext.Extras ?? "").Length} useDuelContext={shoutPromptContext.UseDuelContext} useRewardContext={shoutPromptContext.UseRewardContext} useLoanContext={shoutPromptContext.IsLoanContext}");
 		return shoutPromptContext;
 		}
 		finally
@@ -20432,11 +20675,12 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		IEnumerable<DailyMemoryDraft> enumerable = list.Where((DailyMemoryDraft x) => x != null && (x.GameDayIndex == currentDay || (x.GameDayIndex < currentDay && x.HasLlmDialogue)));
 		int currentSceneSessionId = GetCurrentSceneSessionIdForDailyMemorySuppression();
+		int currentDialogueSessionId = GetCurrentNativeConversationMemorySessionIdForSuppression();
 		StringBuilder stringBuilder = new StringBuilder();
 		foreach (DailyMemoryDraft draft in enumerable.OrderBy((DailyMemoryDraft x) => x.GameDayIndex))
 		{
 			bool isToday = draft != null && draft.GameDayIndex == currentDay;
-			List<DailyMemoryLine> lines = (draft?.Lines ?? new List<DailyMemoryLine>()).Where((DailyMemoryLine x) => x != null && (!isToday || currentSceneSessionId < 0 || x.SceneSessionId != currentSceneSessionId)).ToList();
+			List<DailyMemoryLine> lines = (draft?.Lines ?? new List<DailyMemoryLine>()).Where((DailyMemoryLine x) => x != null && (!isToday || !IsCurrentActiveMemorySessionLine(x, currentSceneSessionId, currentDialogueSessionId))).ToList();
 			if (lines.Count <= 0)
 			{
 				continue;
@@ -20484,6 +20728,19 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			return -1;
 		}
+	}
+
+	private static bool IsCurrentActiveMemorySessionLine(DailyMemoryLine line, int currentSceneSessionId, int currentDialogueSessionId)
+	{
+		if (line == null)
+		{
+			return false;
+		}
+		if (currentSceneSessionId >= 0 && line.SceneSessionId == currentSceneSessionId)
+		{
+			return true;
+		}
+		return currentDialogueSessionId >= 0 && line.DialogueSessionId == currentDialogueSessionId;
 	}
 
 	private string BuildMemoryOverviewContext(Hero hero)
@@ -33154,6 +33411,8 @@ public class MyBehavior : CampaignBehaviorBase
 		_memorySummaryQueueJsonStorage = "[]";
 		_memorySummaryProcessing = false;
 		_memorySummaryFailurePopupActive = false;
+		_nativeConversationMemorySessionCounter = 0;
+		_activeNativeConversationMemorySessionId = -1;
 		_memoryOverviewStates = new Dictionary<string, MemoryOverviewState>(StringComparer.OrdinalIgnoreCase);
 		_memoryOverviewStateStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 		_memoryOverviewQueue = new List<MemoryOverviewJob>();
@@ -34034,9 +34293,20 @@ public class MyBehavior : CampaignBehaviorBase
 			ShowDevEditInquiry(npc);
 			return;
 		}
+		string text = npc.Name?.ToString() ?? "NPC";
+		string text2 = "行动详情 - " + text;
+		string text3 = BuildDevNpcActionDetailSubtitle(entry);
+		string text4 = BuildDevNpcActionDetailText(entry);
+		if (DevWeeklyReportPopup.Show(text2, text3, text4, delegate
+		{
+			OpenDevNpcActionMenu(npc, recentOnly, page);
+		}, "返回行动列表"))
+		{
+			return;
+		}
 		List<InquiryElement> list = new List<InquiryElement>();
 		list.Add(new InquiryElement("back", "返回行动列表", null));
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("行动详情 - " + (npc.Name?.ToString() ?? "NPC"), BuildDevNpcActionDetailText(entry), list, isExitShown: true, 0, 1, "返回", "关闭", delegate
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(text2, text4, list, isExitShown: true, 0, 1, "返回", "关闭", delegate
 		{
 			OpenDevNpcActionMenu(npc, recentOnly, page);
 		}, delegate
@@ -34044,6 +34314,21 @@ public class MyBehavior : CampaignBehaviorBase
 			OpenDevNpcActionMenu(npc, recentOnly, page);
 		});
 		MBInformationManager.ShowMultiSelectionInquiry(data);
+	}
+
+	private static string BuildDevNpcActionDetailSubtitle(NpcActionEntry entry)
+	{
+		if (entry == null)
+		{
+			return "查看行动记录（结构化）";
+		}
+		string text = !string.IsNullOrWhiteSpace(entry.GameDate) ? entry.GameDate.Trim() : ("第 " + entry.Day + " 日");
+		string text2 = GetDevNpcActionKindDisplay(entry.ActionKind);
+		if (string.IsNullOrWhiteSpace(text2))
+		{
+			return "查看行动记录（结构化） - " + text;
+		}
+		return "查看行动记录（结构化） - " + text + " / " + text2;
 	}
 
 	private static string BuildDevNpcActionDetailText(NpcActionEntry entry)
@@ -34596,7 +34881,7 @@ public class MyBehavior : CampaignBehaviorBase
 			break;
 		case "process":
 			TrySealPastDailyMemoryDrafts();
-			TryStartMemorySummaryQueue();
+			TryStartMemorySummaryQueue(forceOverviewCandidateScan: true);
 			InformationManager.DisplayMessage(new InformationMessage("已触发压缩记忆总结队列检查。"));
 			OpenDevCompressedMemoryMenu(npc);
 			break;
@@ -35073,6 +35358,7 @@ public class MyBehavior : CampaignBehaviorBase
 				Speaker = isAfef ? "AFEF" : "手动",
 				Text = text,
 				SceneSessionId = -1,
+				DialogueSessionId = -1,
 				IsAfef = isAfef,
 				IsLlmDialogue = !isAfef
 			});
@@ -35290,6 +35576,7 @@ public class MyBehavior : CampaignBehaviorBase
 				Speaker = line.Speaker ?? "",
 				Text = line.Text ?? "",
 				SceneSessionId = line.SceneSessionId,
+				DialogueSessionId = line.DialogueSessionId,
 				IsAfef = line.IsAfef,
 				IsLlmDialogue = line.IsLlmDialogue
 			});

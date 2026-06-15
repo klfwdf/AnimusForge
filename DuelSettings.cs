@@ -530,6 +530,42 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyGroup("6. 规则触发（返回）")]
 	public int GuardrailDirectTopN { get; set; } = 4;
 
+	[SettingPropertyBool("启用 NPC 主动接触", Order = 0, RequireRestart = false, HintText = "开启后，有明确需求的 NPC 队伍可以在大地图主动追上玩家并发起对话。")]
+	[SettingPropertyGroup("7. NPC主动接触")]
+	public bool EnableProactiveNpcRequests { get; set; } = false;
+
+	[SettingPropertyBool("测试模式", Order = 1, RequireRestart = false, HintText = "开启后允许 Tier 0 玩家触发，并建议配合高概率、短冷却测试主动接触。")]
+	[SettingPropertyGroup("7. NPC主动接触")]
+	public bool ProactiveNpcRequestTestMode { get; set; } = true;
+
+	[SettingPropertyInteger("最低家族等级", 0, 6, "0", Order = 2, RequireRestart = false, HintText = "测试模式关闭时生效；玩家家族等级低于该值则不会触发 NPC 主动接触。")]
+	[SettingPropertyGroup("7. NPC主动接触")]
+	public int ProactiveNpcRequestMinClanTier { get; set; } = 0;
+
+	[SettingPropertyInteger("每次扫描触发概率", 0, 100, "0", Order = 3, RequireRestart = false, HintText = "每次扫描发现候选 NPC 后的触发概率，默认 80，测试时可拉到 100。")]
+	[SettingPropertyGroup("7. NPC主动接触")]
+	public int ProactiveNpcRequestChancePercent { get; set; } = 80;
+
+	[SettingPropertyInteger("扫描间隔(小时)", 1, 24, "0", Order = 4, RequireRestart = false, HintText = "每隔多少游戏小时扫描一次附近有需求的 NPC 队伍。默认 1 小时。")]
+	[SettingPropertyGroup("7. NPC主动接触")]
+	public int ProactiveNpcRequestScanIntervalHours { get; set; } = 1;
+
+	[SettingPropertyInteger("全局冷却(小时)", 0, 240, "0", Order = 5, RequireRestart = false, HintText = "任意一次主动接触启动后，多少小时内不再启动下一次。测试默认 6 小时。")]
+	[SettingPropertyGroup("7. NPC主动接触")]
+	public int ProactiveNpcRequestGlobalCooldownHours { get; set; } = 6;
+
+	[SettingPropertyInteger("同 NPC 冷却(天)", 0, 60, "0", Order = 6, RequireRestart = false, HintText = "同一 NPC 主动接触玩家后，多少天内不会再次以同类需求来找玩家。测试默认 3 天。")]
+	[SettingPropertyGroup("7. NPC主动接触")]
+	public int ProactiveNpcRequestHeroCooldownDays { get; set; } = 3;
+
+	[SettingPropertyFloatingInteger("候选距离倍率", 0.5f, 5f, "0.0", Order = 7, RequireRestart = false, HintText = "候选 NPC 与玩家的最大距离为玩家视野范围乘以该倍率。默认 1.5。")]
+	[SettingPropertyGroup("7. NPC主动接触")]
+	public float ProactiveNpcRequestDistanceMultiplier { get; set; } = 1.5f;
+
+	[SettingPropertyInteger("缺粮阈值(天)", 0, 15, "0", Order = 8, RequireRestart = false, HintText = "NPC 队伍剩余粮食天数小于等于该值，或已经饥饿时，可以触发缺粮主动接触。默认 3 天。")]
+	[SettingPropertyGroup("7. NPC主动接触")]
+	public int ProactiveNpcRequestFoodDaysThreshold { get; set; } = 3;
+
 	public bool UseAuxiliaryRuleApi { get; set; } = false;
 
 	[SettingPropertyText("辅助API 地址（支持填写 Base URL）", -1, true, "", Order = 0, RequireRestart = false, HintText = "用于规则检索、规则路由与简易场景对话链路的低成本接口地址，例如: https://api.openai.com/v1。填写到 /v1 时会自动补全为 /v1/chat/completions。")]

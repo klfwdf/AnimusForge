@@ -1,0 +1,525 @@
+﻿<!DOCTYPE html><html><head><meta charset="UTF-8"><title>ExceptionSentry Core Log</title><style>body{font-family:Segoe UI,Arial,sans-serif;background:#f8fafc;color:#0f172a;margin:24px}pre{white-space:pre-wrap;background:#fff;border:1px solid #cbd5e1;border-radius:8px;padding:16px}</style></head><body><pre>================================================================
+ExceptionSentry Core Early Exception
+================================================================
+Time: 2026-06-13 13:06:43.851
+Context: ScreenManager.Update
+Type: System.Reflection.TargetInvocationException
+Message: Exception has been thrown by the target of an invocation.
+
+System.Reflection.TargetInvocationException: Exception has been thrown by the target of an invocation. ---&gt; System.NullReferenceException: Object reference not set to an instance of an object.
+   at TaleWorlds.GauntletUI.BaseTypes.BrushWidget.OnConnectedToRoot()
+   at TaleWorlds.GauntletUI.EventManager.OnWidgetConnectedToRoot(Widget widget)
+   at TaleWorlds.GauntletUI.BaseTypes.Widget.set_ParentWidget(Widget value)
+   at TaleWorlds.GauntletUI.PrefabSystem.WidgetTemplate.CreateWidgets_Patch1(WidgetTemplate this, WidgetCreationData widgetCreationData)
+   at TaleWorlds.GauntletUI.PrefabSystem.WidgetTemplate.CreateWidgets_Patch1(WidgetTemplate this, WidgetCreationData widgetCreationData)
+   at TaleWorlds.GauntletUI.PrefabSystem.WidgetTemplate.CreateWidgets_Patch1(WidgetTemplate this, WidgetCreationData widgetCreationData)
+   at TaleWorlds.GauntletUI.PrefabSystem.WidgetTemplate.CreateWidgets_Patch1(WidgetTemplate this, WidgetCreationData widgetCreationData)
+   at TaleWorlds.GauntletUI.PrefabSystem.WidgetTemplate.CreateWidgets_Patch1(WidgetTemplate this, WidgetCreationData widgetCreationData)
+   at TaleWorlds.GauntletUI.PrefabSystem.WidgetTemplate.CreateWidgets_Patch1(WidgetTemplate this, WidgetCreationData widgetCreationData)
+   at TaleWorlds.GauntletUI.PrefabSystem.WidgetTemplate.Instantiate(WidgetCreationData widgetCreationData, Dictionary`2 parameters)
+   at TaleWorlds.GauntletUI.Data.GauntletView.AddItemToList(Int32 index)
+   at TaleWorlds.GauntletUI.Data.GauntletView.RefreshBinding()
+   at TaleWorlds.GauntletUI.Data.GauntletView.RefreshBindingWithChildren()
+   at TaleWorlds.GauntletUI.Data.GauntletView.RefreshBindingWithChildren()
+   at TaleWorlds.GauntletUI.Data.GauntletView.RefreshBindingWithChildren()
+   at TaleWorlds.GauntletUI.Data.GauntletView.RefreshBindingWithChildren()
+   at TaleWorlds.GauntletUI.Data.GauntletView.RefreshBindingWithChildren()
+   at TaleWorlds.GauntletUI.Data.GauntletView.RefreshBindingWithChildren()
+   at TaleWorlds.GauntletUI.Data.GauntletView.RefreshBindingWithChildren()
+   at TaleWorlds.GauntletUI.Data.GauntletView.RefreshBindingWithChildren()
+   at TaleWorlds.GauntletUI.Data.GauntletView.RefreshBindingWithChildren()
+   at TaleWorlds.GauntletUI.Data.GauntletMovie.LoadMovie_Patch1(GauntletMovie this)
+   at TaleWorlds.GauntletUI.Data.GauntletMovie.Load_Patch1(UIContext context, WidgetFactory widgetFactory, String movieName, IViewModel datasource, Boolean doNotUseGeneratedPrefabs, Boolean hotReloadEnabled)
+   at TaleWorlds.Engine.GauntletUI.GauntletLayer.LoadMovieAux(String movieName, ViewModel dataSource)
+   at TaleWorlds.Engine.GauntletUI.GauntletLayer.LoadMovie(GauntletMovieIdentifier identifier)
+   at SandBox.GauntletUI.GauntletInventoryScreen.OnInitialize_Patch1(GauntletInventoryScreen this)
+   at TaleWorlds.ScreenSystem.ScreenBase.HandleInitialize()
+   at TaleWorlds.ScreenSystem.ScreenManager.PushScreen(ScreenBase screen)
+   at TaleWorlds.MountAndBlade.View.Screens.GameStateScreenManager.TaleWorlds.Core.IGameStateManagerListener.OnPushState(GameState gameState, Boolean isTopGameState)
+   at TaleWorlds.Core.GameStateManager.OnPushState(GameState gameState)
+   at TaleWorlds.Core.GameStateManager.DoGameStateJobs()
+   at TaleWorlds.Core.GameStateManager.PushState_Patch1(GameStateManager this, GameState gameState, Int32 level)
+   at TaleWorlds.CampaignSystem.GameMenus.GameMenuOption.RunConsequence(MenuContext menuContext)
+   at TaleWorlds.CampaignSystem.GameMenus.GameMenu.RunMenuOptionConsequence(MenuContext menuContext, Int32 menuItemNumber)
+   --- End of inner exception stack trace ---
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Object[] arguments, Signature sig, Boolean constructor)
+   at System.Reflection.RuntimeMethodInfo.UnsafeInvokeInternal(Object obj, Object[] parameters, Object[] arguments)
+   at System.Reflection.RuntimeMethodInfo.Invoke(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+   at TaleWorlds.Library.Common.InvokeWithLog(MethodInfo methodInfo, Object obj, Object[] args)
+   at TaleWorlds.Library.ViewModel.ExecuteCommand_Patch1(ViewModel this, String commandName, Object[] parameters)
+   at TaleWorlds.GauntletUI.Data.GauntletView.OnCommand(String command, Object[] args)
+   at TaleWorlds.GauntletUI.BaseTypes.Widget.EventFired(String eventName, Object[] args)
+   at TaleWorlds.GauntletUI.BaseTypes.ButtonWidget.HandleClick_Patch1(ButtonWidget this)
+   at TaleWorlds.GauntletUI.BaseTypes.ButtonWidget.OnMouseReleased(Boolean isFromInput)
+   at TaleWorlds.GauntletUI.EventManager.MouseUp(Boolean isFromInput)
+   at TaleWorlds.GauntletUI.UIContext.UpdateInput(InputType handleInputs)
+   at TaleWorlds.ScreenSystem.ScreenManager.Update_Patch1()
+
+</pre></body></html>
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>ExceptionSentry Core Log</title><style>body{font-family:Segoe UI,Arial,sans-serif;background:#f8fafc;color:#0f172a;margin:24px}pre{white-space:pre-wrap;background:#fff;border:1px solid #cbd5e1;border-radius:8px;padding:16px}</style></head><body><pre>================================================================
+ExceptionSentry Core Early Exception
+================================================================
+Time: 2026-06-13 13:09:19.676
+Context: ScreenManager.Update
+Type: System.Reflection.TargetInvocationException
+Message: Exception has been thrown by the target of an invocation.
+
+System.Reflection.TargetInvocationException: Exception has been thrown by the target of an invocation. ---&gt; System.NullReferenceException: Object reference not set to an instance of an object.
+   at TaleWorlds.GauntletUI.BaseTypes.BrushWidget.OnConnectedToRoot()
+   at TaleWorlds.GauntletUI.EventManager.OnWidgetConnectedToRoot(Widget widget)
+   at TaleWorlds.GauntletUI.BaseTypes.Widget.set_ParentWidget(Widget value)
+   at TaleWorlds.GauntletUI.PrefabSystem.WidgetTemplate.CreateWidgets_Patch1(WidgetTemplate this, WidgetCreationData widgetCreationData)
+   at TaleWorlds.GauntletUI.PrefabSystem.WidgetTemplate.CreateWidgets_Patch1(WidgetTemplate this, WidgetCreationData widgetCreationData)
+   at TaleWorlds.GauntletUI.PrefabSystem.WidgetTemplate.CreateWidgets_Patch1(WidgetTemplate this, WidgetCreationData widgetCreationData)
+   at TaleWorlds.GauntletUI.PrefabSystem.WidgetTemplate.CreateWidgets_Patch1(WidgetTemplate this, WidgetCreationData widgetCreationData)
+   at TaleWorlds.GauntletUI.PrefabSystem.WidgetTemplate.CreateWidgets_Patch1(WidgetTemplate this, WidgetCreationData widgetCreationData)
+   at TaleWorlds.GauntletUI.PrefabSystem.WidgetTemplate.CreateWidgets_Patch1(WidgetTemplate this, WidgetCreationData widgetCreationData)
+   at TaleWorlds.GauntletUI.PrefabSystem.WidgetTemplate.CreateWidgets_Patch1(WidgetTemplate this, WidgetCreationData widgetCreationData)
+   at TaleWorlds.GauntletUI.PrefabSystem.WidgetTemplate.Instantiate(WidgetCreationData widgetCreationData, Dictionary`2 parameters)
+   at TaleWorlds.GauntletUI.Data.GauntletView.AddItemToList(Int32 index)
+   at TaleWorlds.GauntletUI.Data.GauntletView.RefreshBinding()
+   at TaleWorlds.GauntletUI.Data.GauntletView.RefreshBindingWithChildren()
+   at TaleWorlds.GauntletUI.Data.GauntletView.RefreshBindingWithChildren()
+   at TaleWorlds.GauntletUI.Data.GauntletView.RefreshBindingWithChildren()
+   at TaleWorlds.GauntletUI.Data.GauntletView.RefreshBindingWithChildren()
+   at TaleWorlds.GauntletUI.Data.GauntletView.RefreshBindingWithChildren()
+   at TaleWorlds.GauntletUI.Data.GauntletView.RefreshBindingWithChildren()
+   at TaleWorlds.GauntletUI.Data.GauntletView.RefreshBindingWithChildren()
+   at TaleWorlds.GauntletUI.Data.GauntletView.RefreshBindingWithChildren()
+   at TaleWorlds.GauntletUI.Data.GauntletView.RefreshBindingWithChildren()
+   at TaleWorlds.GauntletUI.Data.GauntletMovie.LoadMovie_Patch1(GauntletMovie this)
+   at TaleWorlds.GauntletUI.Data.GauntletMovie.Load_Patch1(UIContext context, WidgetFactory widgetFactory, String movieName, IViewModel datasource, Boolean doNotUseGeneratedPrefabs, Boolean hotReloadEnabled)
+   at TaleWorlds.Engine.GauntletUI.GauntletLayer.LoadMovieAux(String movieName, ViewModel dataSource)
+   at TaleWorlds.Engine.GauntletUI.GauntletLayer.LoadMovie(GauntletMovieIdentifier identifier)
+   at SandBox.GauntletUI.GauntletInventoryScreen.OnInitialize_Patch1(GauntletInventoryScreen this)
+   at TaleWorlds.ScreenSystem.ScreenBase.HandleInitialize()
+   at TaleWorlds.ScreenSystem.ScreenManager.PushScreen(ScreenBase screen)
+   at TaleWorlds.MountAndBlade.View.Screens.GameStateScreenManager.TaleWorlds.Core.IGameStateManagerListener.OnPushState(GameState gameState, Boolean isTopGameState)
+   at TaleWorlds.Core.GameStateManager.OnPushState(GameState gameState)
+   at TaleWorlds.Core.GameStateManager.DoGameStateJobs()
+   at TaleWorlds.Core.GameStateManager.PushState_Patch1(GameStateManager this, GameState gameState, Int32 level)
+   at TaleWorlds.CampaignSystem.GameMenus.GameMenuOption.RunConsequence(MenuContext menuContext)
+   at TaleWorlds.CampaignSystem.GameMenus.GameMenu.RunMenuOptionConsequence(MenuContext menuContext, Int32 menuItemNumber)
+   --- End of inner exception stack trace ---
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Object[] arguments, Signature sig, Boolean constructor)
+   at System.Reflection.RuntimeMethodInfo.UnsafeInvokeInternal(Object obj, Object[] parameters, Object[] arguments)
+   at System.Reflection.RuntimeMethodInfo.Invoke(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+   at TaleWorlds.Library.Common.InvokeWithLog(MethodInfo methodInfo, Object obj, Object[] args)
+   at TaleWorlds.Library.ViewModel.ExecuteCommand_Patch1(ViewModel this, String commandName, Object[] parameters)
+   at TaleWorlds.GauntletUI.Data.GauntletView.OnCommand(String command, Object[] args)
+   at TaleWorlds.GauntletUI.BaseTypes.Widget.EventFired(String eventName, Object[] args)
+   at TaleWorlds.GauntletUI.BaseTypes.ButtonWidget.HandleClick_Patch1(ButtonWidget this)
+   at TaleWorlds.GauntletUI.BaseTypes.ButtonWidget.OnMouseReleased(Boolean isFromInput)
+   at TaleWorlds.GauntletUI.EventManager.MouseUp(Boolean isFromInput)
+   at TaleWorlds.GauntletUI.UIContext.UpdateInput(InputType handleInputs)
+   at TaleWorlds.ScreenSystem.ScreenManager.Update_Patch1()
+
+</pre></body></html>
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>ExceptionSentry Core Log</title><style>body{font-family:Segoe UI,Arial,sans-serif;background:#f8fafc;color:#0f172a;margin:24px}pre{white-space:pre-wrap;background:#fff;border:1px solid #cbd5e1;border-radius:8px;padding:16px}</style></head><body><pre>================================================================
+ExceptionSentry Core Early Exception
+================================================================
+Time: 2026-06-13 14:09:16.618
+Context: ScreenManager.Update
+Type: System.Reflection.TargetInvocationException
+Message: Exception has been thrown by the target of an invocation.
+
+System.Reflection.TargetInvocationException: Exception has been thrown by the target of an invocation. ---&gt; System.NullReferenceException: Object reference not set to an instance of an object.
+   at TaleWorlds.GauntletUI.BaseTypes.BrushWidget.OnConnectedToRoot()
+   at TaleWorlds.GauntletUI.EventManager.OnWidgetConnectedToRoot(Widget widget)
+   at TaleWorlds.GauntletUI.BaseTypes.Widget.set_ParentWidget(Widget value)
+   at TaleWorlds.GauntletUI.Data.GauntletMovie.LoadMovie_Patch1(GauntletMovie this)
+   at TaleWorlds.GauntletUI.Data.GauntletMovie.Load_Patch1(UIContext context, WidgetFactory widgetFactory, String movieName, IViewModel datasource, Boolean doNotUseGeneratedPrefabs, Boolean hotReloadEnabled)
+   at TaleWorlds.Engine.GauntletUI.GauntletLayer.LoadMovieAux(String movieName, ViewModel dataSource)
+   at TaleWorlds.Engine.GauntletUI.GauntletLayer.LoadMovie(GauntletMovieIdentifier identifier)
+   at TaleWorlds.Engine.GauntletUI.GauntletLayer.LoadMovie_Patch1(GauntletLayer this, String movieName, ViewModel dataSource)
+   at SandBox.GauntletUI.GauntletInventoryScreen.OnInitialize()
+   at TaleWorlds.ScreenSystem.ScreenBase.HandleInitialize()
+   at TaleWorlds.ScreenSystem.ScreenManager.PushScreen(ScreenBase screen)
+   at TaleWorlds.MountAndBlade.View.Screens.GameStateScreenManager.TaleWorlds.Core.IGameStateManagerListener.OnPushState(GameState gameState, Boolean isTopGameState)
+   at TaleWorlds.Core.GameStateManager.OnPushState(GameState gameState)
+   at TaleWorlds.Core.GameStateManager.DoGameStateJobs()
+   at TaleWorlds.Core.GameStateManager.PushState_Patch1(GameStateManager this, GameState gameState, Int32 level)
+   at TaleWorlds.CampaignSystem.GameMenus.GameMenuOption.RunConsequence(MenuContext menuContext)
+   at TaleWorlds.CampaignSystem.GameMenus.GameMenu.RunMenuOptionConsequence(MenuContext menuContext, Int32 menuItemNumber)
+   --- End of inner exception stack trace ---
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Object[] arguments, Signature sig, Boolean constructor)
+   at System.Reflection.RuntimeMethodInfo.UnsafeInvokeInternal(Object obj, Object[] parameters, Object[] arguments)
+   at System.Reflection.RuntimeMethodInfo.Invoke(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+   at TaleWorlds.Library.Common.InvokeWithLog(MethodInfo methodInfo, Object obj, Object[] args)
+   at TaleWorlds.Library.ViewModel.ExecuteCommand_Patch1(ViewModel this, String commandName, Object[] parameters)
+   at TaleWorlds.GauntletUI.Data.GauntletView.OnCommand(String command, Object[] args)
+   at TaleWorlds.GauntletUI.BaseTypes.Widget.EventFired(String eventName, Object[] args)
+   at TaleWorlds.GauntletUI.BaseTypes.ButtonWidget.HandleClick_Patch1(ButtonWidget this)
+   at TaleWorlds.GauntletUI.BaseTypes.ButtonWidget.OnMouseReleased(Boolean isFromInput)
+   at TaleWorlds.GauntletUI.EventManager.MouseUp(Boolean isFromInput)
+   at TaleWorlds.GauntletUI.UIContext.UpdateInput(InputType handleInputs)
+   at TaleWorlds.ScreenSystem.ScreenManager.Update_Patch1()
+
+</pre></body></html>
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>ExceptionSentry Core Log</title><style>body{font-family:Segoe UI,Arial,sans-serif;background:#f8fafc;color:#0f172a;margin:24px}pre{white-space:pre-wrap;background:#fff;border:1px solid #cbd5e1;border-radius:8px;padding:16px}</style></head><body><pre>================================================================
+ExceptionSentry Core Early Exception
+================================================================
+Time: 2026-06-13 15:23:56.328
+Context: ScreenManager.Update
+Type: System.Reflection.TargetInvocationException
+Message: Exception has been thrown by the target of an invocation.
+
+System.Reflection.TargetInvocationException: Exception has been thrown by the target of an invocation. ---&gt; System.NullReferenceException: Object reference not set to an instance of an object.
+   at TaleWorlds.GauntletUI.BaseTypes.BrushWidget.OnConnectedToRoot()
+   at TaleWorlds.GauntletUI.EventManager.OnWidgetConnectedToRoot(Widget widget)
+   at TaleWorlds.GauntletUI.BaseTypes.Widget.set_ParentWidget(Widget value)
+   at TaleWorlds.GauntletUI.PrefabSystem.WidgetTemplate.CreateWidgets_Patch1(WidgetTemplate this, WidgetCreationData widgetCreationData)
+   at TaleWorlds.GauntletUI.PrefabSystem.WidgetTemplate.CreateWidgets_Patch1(WidgetTemplate this, WidgetCreationData widgetCreationData)
+   at TaleWorlds.GauntletUI.PrefabSystem.WidgetTemplate.CreateWidgets_Patch1(WidgetTemplate this, WidgetCreationData widgetCreationData)
+   at TaleWorlds.GauntletUI.PrefabSystem.WidgetTemplate.CreateWidgets_Patch1(WidgetTemplate this, WidgetCreationData widgetCreationData)
+   at TaleWorlds.GauntletUI.PrefabSystem.WidgetTemplate.CreateWidgets_Patch1(WidgetTemplate this, WidgetCreationData widgetCreationData)
+   at TaleWorlds.GauntletUI.PrefabSystem.WidgetTemplate.Instantiate(WidgetCreationData widgetCreationData, Dictionary`2 parameters)
+   at TaleWorlds.GauntletUI.Data.GauntletView.AddItemToList(Int32 index)
+   at TaleWorlds.GauntletUI.Data.GauntletView.RefreshBinding()
+   at TaleWorlds.GauntletUI.Data.GauntletView.RefreshBindingWithChildren()
+   at TaleWorlds.GauntletUI.Data.GauntletView.RefreshBindingWithChildren()
+   at TaleWorlds.GauntletUI.Data.GauntletView.RefreshBindingWithChildren()
+   at TaleWorlds.GauntletUI.Data.GauntletView.RefreshBindingWithChildren()
+   at TaleWorlds.GauntletUI.Data.GauntletView.RefreshBindingWithChildren()
+   at TaleWorlds.GauntletUI.Data.GauntletView.RefreshBindingWithChildren()
+   at TaleWorlds.GauntletUI.Data.GauntletView.RefreshBindingWithChildren()
+   at TaleWorlds.GauntletUI.Data.GauntletView.RefreshBindingWithChildren()
+   at TaleWorlds.GauntletUI.Data.GauntletView.RefreshBindingWithChildren()
+   at TaleWorlds.GauntletUI.Data.GauntletMovie.LoadMovie_Patch1(GauntletMovie this)
+   at TaleWorlds.GauntletUI.Data.GauntletMovie.Load_Patch1(UIContext context, WidgetFactory widgetFactory, String movieName, IViewModel datasource, Boolean doNotUseGeneratedPrefabs, Boolean hotReloadEnabled)
+   at TaleWorlds.Engine.GauntletUI.GauntletLayer.LoadMovieAux(String movieName, ViewModel dataSource)
+   at TaleWorlds.Engine.GauntletUI.GauntletLayer.LoadMovie(GauntletMovieIdentifier identifier)
+   at TaleWorlds.Engine.GauntletUI.GauntletLayer.LoadMovie_Patch1(GauntletLayer this, String movieName, ViewModel dataSource)
+   at SandBox.GauntletUI.GauntletInventoryScreen.OnInitialize()
+   at TaleWorlds.ScreenSystem.ScreenBase.HandleInitialize()
+   at TaleWorlds.ScreenSystem.ScreenManager.PushScreen(ScreenBase screen)
+   at TaleWorlds.MountAndBlade.View.Screens.GameStateScreenManager.TaleWorlds.Core.IGameStateManagerListener.OnPushState(GameState gameState, Boolean isTopGameState)
+   at TaleWorlds.Core.GameStateManager.OnPushState(GameState gameState)
+   at TaleWorlds.Core.GameStateManager.DoGameStateJobs()
+   at TaleWorlds.Core.GameStateManager.PushState_Patch1(GameStateManager this, GameState gameState, Int32 level)
+   at TaleWorlds.CampaignSystem.GameMenus.GameMenuOption.RunConsequence(MenuContext menuContext)
+   at TaleWorlds.CampaignSystem.GameMenus.GameMenu.RunMenuOptionConsequence(MenuContext menuContext, Int32 menuItemNumber)
+   --- End of inner exception stack trace ---
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Object[] arguments, Signature sig, Boolean constructor)
+   at System.Reflection.RuntimeMethodInfo.UnsafeInvokeInternal(Object obj, Object[] parameters, Object[] arguments)
+   at System.Reflection.RuntimeMethodInfo.Invoke(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+   at TaleWorlds.Library.Common.InvokeWithLog(MethodInfo methodInfo, Object obj, Object[] args)
+   at TaleWorlds.Library.ViewModel.ExecuteCommand_Patch1(ViewModel this, String commandName, Object[] parameters)
+   at TaleWorlds.GauntletUI.Data.GauntletView.OnCommand(String command, Object[] args)
+   at TaleWorlds.GauntletUI.BaseTypes.Widget.EventFired(String eventName, Object[] args)
+   at TaleWorlds.GauntletUI.BaseTypes.ButtonWidget.HandleClick_Patch1(ButtonWidget this)
+   at TaleWorlds.GauntletUI.BaseTypes.ButtonWidget.OnMouseReleased(Boolean isFromInput)
+   at TaleWorlds.GauntletUI.EventManager.MouseUp(Boolean isFromInput)
+   at TaleWorlds.GauntletUI.UIContext.UpdateInput(InputType handleInputs)
+   at TaleWorlds.ScreenSystem.ScreenManager.Update_Patch1()
+
+</pre></body></html>
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>ExceptionSentry Core Log</title><style>body{font-family:Segoe UI,Arial,sans-serif;background:#f8fafc;color:#0f172a;margin:24px}pre{white-space:pre-wrap;background:#fff;border:1px solid #cbd5e1;border-radius:8px;padding:16px}</style></head><body><pre>================================================================
+ExceptionSentry Core Early Exception
+================================================================
+Time: 2026-06-13 15:26:59.669
+Context: GameLoadingState.OnTick
+Type: System.NullReferenceException
+Message: Object reference not set to an instance of an object.
+
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at TaleWorlds.CampaignSystem.Settlements.Workshops.Workshop.AfterLoad()
+   at TaleWorlds.CampaignSystem.Settlements.Town.AfterLoad()
+   at TaleWorlds.ObjectSystem.MBObjectManager.ObjectTypeRecord`1.TaleWorlds.ObjectSystem.MBObjectManager.IObjectTypeRecord.AfterLoad()
+   at TaleWorlds.ObjectSystem.MBObjectManager.AfterLoad()
+   at TaleWorlds.CampaignSystem.Campaign.OnGameLoaded(CampaignGameStarter starter)
+   at TaleWorlds.CampaignSystem.Campaign.DoLoadingForGameType(GameTypeLoadingStates gameTypeLoadingState, GameTypeLoadingStates&amp; nextState)
+   at StoryMode.CampaignStoryMode.DoLoadingForGameType(GameTypeLoadingStates gameTypeLoadingState, GameTypeLoadingStates&amp; nextState)
+   at TaleWorlds.Core.GameType.DoLoadingForGameType()
+   at SandBox.SandBoxGameManager.DoLoadingForGameManager(GameManagerLoadingSteps gameManagerLoadingStep, GameManagerLoadingSteps&amp; nextStep)
+   at TaleWorlds.Core.GameManagerBase.DoLoadingForGameManager()
+   at TaleWorlds.MountAndBlade.GameLoadingState.OnTick_Patch1(GameLoadingState this, Single dt)
+
+</pre></body></html>
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>ExceptionSentry Core Log</title><style>body{font-family:Segoe UI,Arial,sans-serif;background:#f8fafc;color:#0f172a;margin:24px}pre{white-space:pre-wrap;background:#fff;border:1px solid #cbd5e1;border-radius:8px;padding:16px}</style></head><body><pre>================================================================
+ExceptionSentry Core Early Exception
+================================================================
+Time: 2026-06-13 15:26:59.682
+Context: Module.OnApplicationTick
+Type: System.NullReferenceException
+Message: Object reference not set to an instance of an object.
+
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at TaleWorlds.MountAndBlade.GameLoadingState.OnTick_Patch1(GameLoadingState this, Single dt)
+   at TaleWorlds.Core.GameStateManager.OnTick(Single dt)
+   at TaleWorlds.MountAndBlade.Module.OnApplicationTick_Patch3(Module this, Single dt)
+
+</pre></body></html>
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>ExceptionSentry Core Log</title><style>body{font-family:Segoe UI,Arial,sans-serif;background:#f8fafc;color:#0f172a;margin:24px}pre{white-space:pre-wrap;background:#fff;border:1px solid #cbd5e1;border-radius:8px;padding:16px}</style></head><body><pre>================================================================
+ExceptionSentry Core Early Exception
+================================================================
+Time: 2026-06-13 15:29:36.952
+Context: GameLoadingState.OnTick
+Type: System.NullReferenceException
+Message: Object reference not set to an instance of an object.
+
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at TaleWorlds.CampaignSystem.Settlements.Workshops.Workshop.AfterLoad()
+   at TaleWorlds.CampaignSystem.Settlements.Town.AfterLoad()
+   at TaleWorlds.ObjectSystem.MBObjectManager.ObjectTypeRecord`1.TaleWorlds.ObjectSystem.MBObjectManager.IObjectTypeRecord.AfterLoad()
+   at TaleWorlds.ObjectSystem.MBObjectManager.AfterLoad()
+   at TaleWorlds.CampaignSystem.Campaign.OnGameLoaded(CampaignGameStarter starter)
+   at TaleWorlds.CampaignSystem.Campaign.DoLoadingForGameType(GameTypeLoadingStates gameTypeLoadingState, GameTypeLoadingStates&amp; nextState)
+   at StoryMode.CampaignStoryMode.DoLoadingForGameType(GameTypeLoadingStates gameTypeLoadingState, GameTypeLoadingStates&amp; nextState)
+   at TaleWorlds.Core.GameType.DoLoadingForGameType()
+   at SandBox.SandBoxGameManager.DoLoadingForGameManager(GameManagerLoadingSteps gameManagerLoadingStep, GameManagerLoadingSteps&amp; nextStep)
+   at TaleWorlds.Core.GameManagerBase.DoLoadingForGameManager()
+   at TaleWorlds.MountAndBlade.GameLoadingState.OnTick_Patch1(GameLoadingState this, Single dt)
+
+</pre></body></html>
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>ExceptionSentry Core Log</title><style>body{font-family:Segoe UI,Arial,sans-serif;background:#f8fafc;color:#0f172a;margin:24px}pre{white-space:pre-wrap;background:#fff;border:1px solid #cbd5e1;border-radius:8px;padding:16px}</style></head><body><pre>================================================================
+ExceptionSentry Core Early Exception
+================================================================
+Time: 2026-06-13 15:29:36.960
+Context: Module.OnApplicationTick
+Type: System.NullReferenceException
+Message: Object reference not set to an instance of an object.
+
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at TaleWorlds.MountAndBlade.GameLoadingState.OnTick_Patch1(GameLoadingState this, Single dt)
+   at TaleWorlds.Core.GameStateManager.OnTick(Single dt)
+   at TaleWorlds.MountAndBlade.Module.OnApplicationTick_Patch3(Module this, Single dt)
+
+</pre></body></html>
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>ExceptionSentry Core Log</title><style>body{font-family:Segoe UI,Arial,sans-serif;background:#f8fafc;color:#0f172a;margin:24px}pre{white-space:pre-wrap;background:#fff;border:1px solid #cbd5e1;border-radius:8px;padding:16px}</style></head><body><pre>================================================================
+ExceptionSentry Core Early Exception
+================================================================
+Time: 2026-06-13 15:31:41.936
+Context: GameLoadingState.OnTick
+Type: System.NullReferenceException
+Message: Object reference not set to an instance of an object.
+
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at TaleWorlds.CampaignSystem.Settlements.Workshops.Workshop.AfterLoad()
+   at TaleWorlds.CampaignSystem.Settlements.Town.AfterLoad()
+   at TaleWorlds.ObjectSystem.MBObjectManager.ObjectTypeRecord`1.TaleWorlds.ObjectSystem.MBObjectManager.IObjectTypeRecord.AfterLoad()
+   at TaleWorlds.ObjectSystem.MBObjectManager.AfterLoad()
+   at TaleWorlds.CampaignSystem.Campaign.OnGameLoaded(CampaignGameStarter starter)
+   at TaleWorlds.CampaignSystem.Campaign.DoLoadingForGameType(GameTypeLoadingStates gameTypeLoadingState, GameTypeLoadingStates&amp; nextState)
+   at StoryMode.CampaignStoryMode.DoLoadingForGameType(GameTypeLoadingStates gameTypeLoadingState, GameTypeLoadingStates&amp; nextState)
+   at TaleWorlds.Core.GameType.DoLoadingForGameType()
+   at SandBox.SandBoxGameManager.DoLoadingForGameManager(GameManagerLoadingSteps gameManagerLoadingStep, GameManagerLoadingSteps&amp; nextStep)
+   at TaleWorlds.Core.GameManagerBase.DoLoadingForGameManager()
+   at TaleWorlds.MountAndBlade.GameLoadingState.OnTick_Patch1(GameLoadingState this, Single dt)
+
+</pre></body></html>
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>ExceptionSentry Core Log</title><style>body{font-family:Segoe UI,Arial,sans-serif;background:#f8fafc;color:#0f172a;margin:24px}pre{white-space:pre-wrap;background:#fff;border:1px solid #cbd5e1;border-radius:8px;padding:16px}</style></head><body><pre>================================================================
+ExceptionSentry Core Early Exception
+================================================================
+Time: 2026-06-13 15:31:41.945
+Context: Module.OnApplicationTick
+Type: System.NullReferenceException
+Message: Object reference not set to an instance of an object.
+
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at TaleWorlds.MountAndBlade.GameLoadingState.OnTick_Patch1(GameLoadingState this, Single dt)
+   at TaleWorlds.Core.GameStateManager.OnTick(Single dt)
+   at TaleWorlds.MountAndBlade.Module.OnApplicationTick_Patch3(Module this, Single dt)
+
+</pre></body></html>
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>ExceptionSentry Core Log</title><style>body{font-family:Segoe UI,Arial,sans-serif;background:#f8fafc;color:#0f172a;margin:24px}pre{white-space:pre-wrap;background:#fff;border:1px solid #cbd5e1;border-radius:8px;padding:16px}</style></head><body><pre>================================================================
+ExceptionSentry Core Early Exception
+================================================================
+Time: 2026-06-13 15:34:21.609
+Context: ScreenManager.Update
+Type: System.Reflection.TargetInvocationException
+Message: Exception has been thrown by the target of an invocation.
+
+System.Reflection.TargetInvocationException: Exception has been thrown by the target of an invocation. ---&gt; System.NullReferenceException: Object reference not set to an instance of an object.
+   at TaleWorlds.GauntletUI.BaseTypes.BrushWidget.OnConnectedToRoot()
+   at TaleWorlds.GauntletUI.EventManager.OnWidgetConnectedToRoot(Widget widget)
+   at TaleWorlds.GauntletUI.BaseTypes.Widget.set_ParentWidget(Widget value)
+   at TaleWorlds.GauntletUI.PrefabSystem.WidgetTemplate.CreateWidgets_Patch1(WidgetTemplate this, WidgetCreationData widgetCreationData)
+   at TaleWorlds.GauntletUI.PrefabSystem.WidgetTemplate.CreateWidgets_Patch1(WidgetTemplate this, WidgetCreationData widgetCreationData)
+   at TaleWorlds.GauntletUI.PrefabSystem.WidgetTemplate.CreateWidgets_Patch1(WidgetTemplate this, WidgetCreationData widgetCreationData)
+   at TaleWorlds.GauntletUI.PrefabSystem.WidgetTemplate.CreateWidgets_Patch1(WidgetTemplate this, WidgetCreationData widgetCreationData)
+   at TaleWorlds.GauntletUI.PrefabSystem.WidgetTemplate.CreateWidgets_Patch1(WidgetTemplate this, WidgetCreationData widgetCreationData)
+   at TaleWorlds.GauntletUI.PrefabSystem.WidgetTemplate.CreateWidgets_Patch1(WidgetTemplate this, WidgetCreationData widgetCreationData)
+   at TaleWorlds.GauntletUI.PrefabSystem.WidgetTemplate.CreateWidgets_Patch1(WidgetTemplate this, WidgetCreationData widgetCreationData)
+   at TaleWorlds.GauntletUI.PrefabSystem.WidgetTemplate.CreateWidgets_Patch1(WidgetTemplate this, WidgetCreationData widgetCreationData)
+   at TaleWorlds.GauntletUI.PrefabSystem.WidgetTemplate.Instantiate(WidgetCreationData widgetCreationData, Dictionary`2 parameters)
+   at TaleWorlds.GauntletUI.Data.GauntletView.AddItemToList(Int32 index)
+   at TaleWorlds.GauntletUI.Data.GauntletView.RefreshBinding()
+   at TaleWorlds.GauntletUI.Data.GauntletView.RefreshBindingWithChildren()
+   at TaleWorlds.GauntletUI.Data.GauntletView.RefreshBindingWithChildren()
+   at TaleWorlds.GauntletUI.Data.GauntletView.RefreshBindingWithChildren()
+   at TaleWorlds.GauntletUI.Data.GauntletView.RefreshBindingWithChildren()
+   at TaleWorlds.GauntletUI.Data.GauntletView.RefreshBindingWithChildren()
+   at TaleWorlds.GauntletUI.Data.GauntletView.RefreshBindingWithChildren()
+   at TaleWorlds.GauntletUI.Data.GauntletView.RefreshBindingWithChildren()
+   at TaleWorlds.GauntletUI.Data.GauntletView.RefreshBindingWithChildren()
+   at TaleWorlds.GauntletUI.Data.GauntletView.RefreshBindingWithChildren()
+   at TaleWorlds.GauntletUI.Data.GauntletMovie.LoadMovie_Patch1(GauntletMovie this)
+   at TaleWorlds.GauntletUI.Data.GauntletMovie.Load_Patch1(UIContext context, WidgetFactory widgetFactory, String movieName, IViewModel datasource, Boolean doNotUseGeneratedPrefabs, Boolean hotReloadEnabled)
+   at TaleWorlds.Engine.GauntletUI.GauntletLayer.LoadMovieAux(String movieName, ViewModel dataSource)
+   at TaleWorlds.Engine.GauntletUI.GauntletLayer.LoadMovie(GauntletMovieIdentifier identifier)
+   at SandBox.GauntletUI.GauntletInventoryScreen.OnInitialize_Patch1(GauntletInventoryScreen this)
+   at TaleWorlds.ScreenSystem.ScreenBase.HandleInitialize()
+   at TaleWorlds.ScreenSystem.ScreenManager.PushScreen(ScreenBase screen)
+   at TaleWorlds.MountAndBlade.View.Screens.GameStateScreenManager.TaleWorlds.Core.IGameStateManagerListener.OnPushState(GameState gameState, Boolean isTopGameState)
+   at TaleWorlds.Core.GameStateManager.OnPushState(GameState gameState)
+   at TaleWorlds.Core.GameStateManager.DoGameStateJobs()
+   at TaleWorlds.Core.GameStateManager.PushState_Patch1(GameStateManager this, GameState gameState, Int32 level)
+   at TaleWorlds.CampaignSystem.GameMenus.GameMenuOption.RunConsequence(MenuContext menuContext)
+   at TaleWorlds.CampaignSystem.GameMenus.GameMenu.RunMenuOptionConsequence(MenuContext menuContext, Int32 menuItemNumber)
+   --- End of inner exception stack trace ---
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Object[] arguments, Signature sig, Boolean constructor)
+   at System.Reflection.RuntimeMethodInfo.UnsafeInvokeInternal(Object obj, Object[] parameters, Object[] arguments)
+   at System.Reflection.RuntimeMethodInfo.Invoke(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+   at TaleWorlds.Library.Common.InvokeWithLog(MethodInfo methodInfo, Object obj, Object[] args)
+   at TaleWorlds.Library.ViewModel.ExecuteCommand_Patch1(ViewModel this, String commandName, Object[] parameters)
+   at TaleWorlds.GauntletUI.Data.GauntletView.OnCommand(String command, Object[] args)
+   at TaleWorlds.GauntletUI.BaseTypes.Widget.EventFired(String eventName, Object[] args)
+   at TaleWorlds.GauntletUI.BaseTypes.ButtonWidget.HandleClick_Patch1(ButtonWidget this)
+   at TaleWorlds.GauntletUI.BaseTypes.ButtonWidget.OnMouseReleased(Boolean isFromInput)
+   at TaleWorlds.GauntletUI.EventManager.MouseUp(Boolean isFromInput)
+   at TaleWorlds.GauntletUI.UIContext.UpdateInput(InputType handleInputs)
+   at TaleWorlds.ScreenSystem.ScreenManager.Update_Patch1()
+
+</pre></body></html>
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>ExceptionSentry Core Log</title><style>body{font-family:Segoe UI,Arial,sans-serif;background:#f8fafc;color:#0f172a;margin:24px}pre{white-space:pre-wrap;background:#fff;border:1px solid #cbd5e1;border-radius:8px;padding:16px}</style></head><body><pre>================================================================
+ExceptionSentry Core Early Exception
+================================================================
+Time: 2026-06-13 15:40:12.350
+Context: GameLoadingState.OnTick
+Type: System.NullReferenceException
+Message: Object reference not set to an instance of an object.
+
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at TaleWorlds.CampaignSystem.Settlements.Workshops.Workshop.AfterLoad()
+   at TaleWorlds.CampaignSystem.Settlements.Town.AfterLoad()
+   at TaleWorlds.ObjectSystem.MBObjectManager.ObjectTypeRecord`1.TaleWorlds.ObjectSystem.MBObjectManager.IObjectTypeRecord.AfterLoad()
+   at TaleWorlds.ObjectSystem.MBObjectManager.AfterLoad()
+   at TaleWorlds.CampaignSystem.Campaign.OnGameLoaded(CampaignGameStarter starter)
+   at TaleWorlds.CampaignSystem.Campaign.DoLoadingForGameType(GameTypeLoadingStates gameTypeLoadingState, GameTypeLoadingStates&amp; nextState)
+   at StoryMode.CampaignStoryMode.DoLoadingForGameType(GameTypeLoadingStates gameTypeLoadingState, GameTypeLoadingStates&amp; nextState)
+   at TaleWorlds.Core.GameType.DoLoadingForGameType()
+   at SandBox.SandBoxGameManager.DoLoadingForGameManager(GameManagerLoadingSteps gameManagerLoadingStep, GameManagerLoadingSteps&amp; nextStep)
+   at TaleWorlds.Core.GameManagerBase.DoLoadingForGameManager()
+   at TaleWorlds.MountAndBlade.GameLoadingState.OnTick_Patch1(GameLoadingState this, Single dt)
+
+</pre></body></html>
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>ExceptionSentry Core Log</title><style>body{font-family:Segoe UI,Arial,sans-serif;background:#f8fafc;color:#0f172a;margin:24px}pre{white-space:pre-wrap;background:#fff;border:1px solid #cbd5e1;border-radius:8px;padding:16px}</style></head><body><pre>================================================================
+ExceptionSentry Core Early Exception
+================================================================
+Time: 2026-06-13 15:40:12.361
+Context: Module.OnApplicationTick
+Type: System.NullReferenceException
+Message: Object reference not set to an instance of an object.
+
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at TaleWorlds.MountAndBlade.GameLoadingState.OnTick_Patch1(GameLoadingState this, Single dt)
+   at TaleWorlds.Core.GameStateManager.OnTick(Single dt)
+   at TaleWorlds.MountAndBlade.Module.OnApplicationTick_Patch3(Module this, Single dt)
+
+</pre></body></html>
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>ExceptionSentry Core Log</title><style>body{font-family:Segoe UI,Arial,sans-serif;background:#f8fafc;color:#0f172a;margin:24px}pre{white-space:pre-wrap;background:#fff;border:1px solid #cbd5e1;border-radius:8px;padding:16px}</style></head><body><pre>================================================================
+ExceptionSentry Core Early Exception
+================================================================
+Time: 2026-06-13 15:42:19.477
+Context: ScreenManager.Tick
+Type: System.NullReferenceException
+Message: Object reference not set to an instance of an object.
+
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at TaleWorlds.MountAndBlade.GauntletUI.Widgets.Information.TooltipPropertyWidget.SetBattleScope(Boolean battleScope)
+   at TaleWorlds.MountAndBlade.GauntletUI.Widgets.Information.PropertyBasedTooltipWidget.UpdateBattleScopes()
+   at TaleWorlds.GauntletUI.EventManager.Update(Single dt)
+   at TaleWorlds.GauntletUI.UIContext.Update(Single dt)
+   at TaleWorlds.Engine.GauntletUI.GauntletLayer.Tick(Single dt)
+   at TaleWorlds.ScreenSystem.ScreenManager.Tick_Patch2(Single dt)
+
+</pre></body></html>
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>ExceptionSentry Core Log</title><style>body{font-family:Segoe UI,Arial,sans-serif;background:#f8fafc;color:#0f172a;margin:24px}pre{white-space:pre-wrap;background:#fff;border:1px solid #cbd5e1;border-radius:8px;padding:16px}</style></head><body><pre>================================================================
+ExceptionSentry Core Early Exception
+================================================================
+Time: 2026-06-13 15:42:19.494
+Context: ManagedCallbacks.EngineCallbacksGenerated.EngineScreenManager_LateTick
+Type: System.NullReferenceException
+Message: Object reference not set to an instance of an object.
+
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at TaleWorlds.GauntletUI.BaseTypes.BrushWidget.IsBrushUpdateNeeded()
+   at TaleWorlds.GauntletUI.BaseTypes.BrushWidget.OnRender(TwoDimensionContext twoDimensionContext, TwoDimensionDrawContext drawContext)
+   at TaleWorlds.GauntletUI.BaseTypes.RichTextWidget.OnRender(TwoDimensionContext twoDimensionContext, TwoDimensionDrawContext drawContext)
+   at TaleWorlds.GauntletUI.BaseTypes.Widget.Render(TwoDimensionContext twoDimensionContext, TwoDimensionDrawContext drawContext)
+   at TaleWorlds.GauntletUI.BaseTypes.Widget.Render(TwoDimensionContext twoDimensionContext, TwoDimensionDrawContext drawContext)
+   at TaleWorlds.GauntletUI.BaseTypes.Widget.Render(TwoDimensionContext twoDimensionContext, TwoDimensionDrawContext drawContext)
+   at TaleWorlds.GauntletUI.BaseTypes.Widget.Render(TwoDimensionContext twoDimensionContext, TwoDimensionDrawContext drawContext)
+   at TaleWorlds.GauntletUI.BaseTypes.Widget.Render(TwoDimensionContext twoDimensionContext, TwoDimensionDrawContext drawContext)
+   at TaleWorlds.GauntletUI.BaseTypes.Widget.Render(TwoDimensionContext twoDimensionContext, TwoDimensionDrawContext drawContext)
+   at TaleWorlds.GauntletUI.BaseTypes.Widget.Render(TwoDimensionContext twoDimensionContext, TwoDimensionDrawContext drawContext)
+   at TaleWorlds.GauntletUI.BaseTypes.Widget.Render(TwoDimensionContext twoDimensionContext, TwoDimensionDrawContext drawContext)
+   at TaleWorlds.GauntletUI.BaseTypes.Widget.Render(TwoDimensionContext twoDimensionContext, TwoDimensionDrawContext drawContext)
+   at TaleWorlds.GauntletUI.BaseTypes.Widget.Render(TwoDimensionContext twoDimensionContext, TwoDimensionDrawContext drawContext)
+   at TaleWorlds.GauntletUI.BaseTypes.Widget.Render(TwoDimensionContext twoDimensionContext, TwoDimensionDrawContext drawContext)
+   at TaleWorlds.GauntletUI.BaseTypes.Widget.Render(TwoDimensionContext twoDimensionContext, TwoDimensionDrawContext drawContext)
+   at TaleWorlds.GauntletUI.EventManager.Render(TwoDimensionContext twoDimensionContext)
+   at TaleWorlds.Engine.GauntletUI.GauntletLayer.RenderTick(Single dt)
+   at TaleWorlds.ScreenSystem.ScreenManager.LateTick(Single dt)
+   at ManagedCallbacks.EngineCallbacksGenerated.EngineScreenManager_LateTick_Patch3(Single dt)
+
+</pre></body></html>
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>ExceptionSentry Core Log</title><style>body{font-family:Segoe UI,Arial,sans-serif;background:#f8fafc;color:#0f172a;margin:24px}pre{white-space:pre-wrap;background:#fff;border:1px solid #cbd5e1;border-radius:8px;padding:16px}</style></head><body><pre>================================================================
+ExceptionSentry Core Early Exception
+================================================================
+Time: 2026-06-13 15:53:22.191
+Context: ScreenManager.Update
+Type: System.Reflection.TargetInvocationException
+Message: Exception has been thrown by the target of an invocation.
+
+System.Reflection.TargetInvocationException: Exception has been thrown by the target of an invocation. ---&gt; System.NullReferenceException: Object reference not set to an instance of an object.
+   at TaleWorlds.GauntletUI.BaseTypes.BrushWidget.OnConnectedToRoot()
+   at TaleWorlds.GauntletUI.EventManager.OnWidgetConnectedToRoot(Widget widget)
+   at TaleWorlds.GauntletUI.BaseTypes.Widget.set_ParentWidget(Widget value)
+   at TaleWorlds.GauntletUI.PrefabSystem.WidgetTemplate.CreateWidgets_Patch1(WidgetTemplate this, WidgetCreationData widgetCreationData)
+   at TaleWorlds.GauntletUI.PrefabSystem.WidgetTemplate.CreateWidgets_Patch1(WidgetTemplate this, WidgetCreationData widgetCreationData)
+   at TaleWorlds.GauntletUI.PrefabSystem.WidgetTemplate.CreateWidgets_Patch1(WidgetTemplate this, WidgetCreationData widgetCreationData)
+   at TaleWorlds.GauntletUI.PrefabSystem.WidgetTemplate.CreateWidgets_Patch1(WidgetTemplate this, WidgetCreationData widgetCreationData)
+   at TaleWorlds.GauntletUI.PrefabSystem.WidgetTemplate.CreateWidgets_Patch1(WidgetTemplate this, WidgetCreationData widgetCreationData)
+   at TaleWorlds.GauntletUI.PrefabSystem.WidgetTemplate.CreateWidgets_Patch1(WidgetTemplate this, WidgetCreationData widgetCreationData)
+   at TaleWorlds.GauntletUI.PrefabSystem.WidgetTemplate.Instantiate(WidgetCreationData widgetCreationData, Dictionary`2 parameters)
+   at TaleWorlds.GauntletUI.Data.GauntletView.AddItemToList(Int32 index)
+   at TaleWorlds.GauntletUI.Data.GauntletView.RefreshBinding()
+   at TaleWorlds.GauntletUI.Data.GauntletView.RefreshBindingWithChildren()
+   at TaleWorlds.GauntletUI.Data.GauntletView.RefreshBindingWithChildren()
+   at TaleWorlds.GauntletUI.Data.GauntletView.RefreshBindingWithChildren()
+   at TaleWorlds.GauntletUI.Data.GauntletView.RefreshBindingWithChildren()
+   at TaleWorlds.GauntletUI.Data.GauntletView.RefreshBindingWithChildren()
+   at TaleWorlds.GauntletUI.Data.GauntletView.RefreshBindingWithChildren()
+   at TaleWorlds.GauntletUI.Data.GauntletView.RefreshBindingWithChildren()
+   at TaleWorlds.GauntletUI.Data.GauntletView.RefreshBindingWithChildren()
+   at TaleWorlds.GauntletUI.Data.GauntletView.RefreshBindingWithChildren()
+   at TaleWorlds.GauntletUI.Data.GauntletMovie.LoadMovie_Patch1(GauntletMovie this)
+   at TaleWorlds.GauntletUI.Data.GauntletMovie.Load_Patch1(UIContext context, WidgetFactory widgetFactory, String movieName, IViewModel datasource, Boolean doNotUseGeneratedPrefabs, Boolean hotReloadEnabled)
+   at TaleWorlds.Engine.GauntletUI.GauntletLayer.LoadMovieAux(String movieName, ViewModel dataSource)
+   at TaleWorlds.Engine.GauntletUI.GauntletLayer.LoadMovie(GauntletMovieIdentifier identifier)
+   at SandBox.GauntletUI.GauntletInventoryScreen.OnInitialize_Patch1(GauntletInventoryScreen this)
+   at TaleWorlds.ScreenSystem.ScreenBase.HandleInitialize()
+   at TaleWorlds.ScreenSystem.ScreenManager.PushScreen(ScreenBase screen)
+   at TaleWorlds.MountAndBlade.View.Screens.GameStateScreenManager.TaleWorlds.Core.IGameStateManagerListener.OnPushState(GameState gameState, Boolean isTopGameState)
+   at TaleWorlds.Core.GameStateManager.OnPushState(GameState gameState)
+   at TaleWorlds.Core.GameStateManager.DoGameStateJobs()
+   at TaleWorlds.Core.GameStateManager.PushState_Patch1(GameStateManager this, GameState gameState, Int32 level)
+   at TaleWorlds.CampaignSystem.GameMenus.GameMenuOption.RunConsequence(MenuContext menuContext)
+   at TaleWorlds.CampaignSystem.GameMenus.GameMenu.RunMenuOptionConsequence(MenuContext menuContext, Int32 menuItemNumber)
+   --- End of inner exception stack trace ---
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Object[] arguments, Signature sig, Boolean constructor)
+   at System.Reflection.RuntimeMethodInfo.UnsafeInvokeInternal(Object obj, Object[] parameters, Object[] arguments)
+   at System.Reflection.RuntimeMethodInfo.Invoke(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+   at TaleWorlds.Library.Common.InvokeWithLog(MethodInfo methodInfo, Object obj, Object[] args)
+   at TaleWorlds.Library.ViewModel.ExecuteCommand_Patch1(ViewModel this, String commandName, Object[] parameters)
+   at TaleWorlds.GauntletUI.Data.GauntletView.OnCommand(String command, Object[] args)
+   at TaleWorlds.GauntletUI.BaseTypes.Widget.EventFired(String eventName, Object[] args)
+   at TaleWorlds.GauntletUI.BaseTypes.ButtonWidget.HandleClick_Patch1(ButtonWidget this)
+   at TaleWorlds.GauntletUI.BaseTypes.ButtonWidget.OnMouseReleased(Boolean isFromInput)
+   at TaleWorlds.GauntletUI.EventManager.MouseUp(Boolean isFromInput)
+   at TaleWorlds.GauntletUI.UIContext.UpdateInput(InputType handleInputs)
+   at TaleWorlds.ScreenSystem.ScreenManager.Update_Patch1()
+
+</pre></body></html>
