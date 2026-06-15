@@ -114,3 +114,11 @@ Core rules:
 - Prefer existing compatibility helpers before adding new `#if BANNERLORD_1_4_OR_GREATER` branches.
 - Use `#if BANNERLORD_1_4_OR_GREATER` only for compile-time API/signature differences.
 - After compatibility-sensitive edits, verify both builds.
+
+## Local NEW-087 AF/GCCZ Fusion Overlay
+
+- This workspace is the local AF 0.8.7 + GCCZ fused test tree.
+- Keep reusable GCCZ rules and profiles in `AnimusForge.SiegeAftermathIntervention`; AF host files should remain thin guarded adapters.
+- Mirror reusable GCCZ source/rule changes back to `G:\AFMOD\GCCZ` when they are not already represented there.
+- Do not edit `G:\AFMOD\YM0.8.7` directly; it is the requested AF 0.8.7 source staging path but was empty when this workspace was created.
+- Before covering Bannerlord modules, build both `BannerlordApi=1.3` and `BannerlordApi=1.4` or use the repository one-click dual-version scripts.
