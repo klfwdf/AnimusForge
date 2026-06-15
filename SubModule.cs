@@ -99,6 +99,14 @@ public class SubModule : MBSubModuleBase
 			}
 			try
 			{
+				SiegeAftermathPatchBootstrap.Apply(harmony);
+			}
+			catch (Exception ex5a)
+			{
+				Logger.LogTrace("SubModule", ">>> Siege aftermath GCCZ bridge patches failed: " + ex5a.Message);
+			}
+			try
+			{
 				PatchClassProcessor patchClassProcessor6 = harmony.CreateClassProcessor(typeof(Patch_Meeting_SuppressDeclareWarAction));
 				patchClassProcessor6.Patch();
 			}
@@ -330,6 +338,7 @@ public class SubModule : MBSubModuleBase
 			campaignGameStarter.AddBehavior(new LordEncounterBehavior());
 			campaignGameStarter.AddBehavior(new ProactiveNpcRequestBehavior());
 			campaignGameStarter.AddBehavior(new SceneTauntBehavior());
+			campaignGameStarter.AddBehavior(new SiegeAiInterventionBehavior());
 			campaignGameStarter.AddBehavior(new VoteDealBehavior());
 			campaignGameStarter.AddBehavior(new VanillaIssuePromptBehavior());
 			campaignGameStarter.AddBehavior(new WorldMapPartyCommandBehavior());

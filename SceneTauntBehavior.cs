@@ -1365,6 +1365,22 @@ public class SceneTauntBehavior : CampaignBehaviorBase
 		Logger.Log("SceneTaunt", $"Marked pending scene-taunt main hero battle death. Killer={killer?.Name}, Reason={reason ?? "N/A"}");
 	}
 
+	internal static void ClearPendingForcedPlayerExecutionForExternal(string reason)
+	{
+		Instance?.ClearPendingForcedPlayerExecution(reason);
+	}
+
+	internal static void ClearPendingMainHeroBattleDeathForExternal(string reason)
+	{
+		if (Instance != null)
+		{
+			Instance.ClearPendingMainHeroBattleDeath(reason);
+		}
+		_pendingMainHeroBattleDeath = false;
+		_pendingMainHeroBattleDeathKillerHeroId = "";
+		_pendingMainHeroBattleDeathRequestUtcTicks = 0L;
+	}
+
 	private void ClearPendingForcedPlayerExecution(string reason)
 	{
 		_pendingForcedPlayerExecution = false;

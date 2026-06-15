@@ -18385,6 +18385,119 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
+	public void RecordAnimusForgeSiegeInterventionForExternal(
+		MobileParty attackerParty,
+		Settlement settlement,
+		SiegeAftermathAction.SiegeAftermath aftermath,
+		Clan previousOwner,
+		string trigger,
+		string detail,
+		int selectedSoldiers,
+		int lootItemTotal,
+		int lootStackKinds,
+		int lootValue,
+		int marketGoldLoot,
+		int civilianGoldLoot,
+		int civilianTargetsLooted,
+		int killedCivilianUnits,
+		int killedNotables,
+		bool plunderStarted,
+		bool massacreStarted)
+	{
+		try
+		{
+			if (settlement == null)
+			{
+				return;
+			}
+			string settlementName = settlement.Name?.ToString() ?? settlement.StringId ?? "未知定居点";
+			string outcomeLabel = "宽恕/安抚";
+			if (aftermath == SiegeAftermathAction.SiegeAftermath.Pillage)
+			{
+				outcomeLabel = "搜掠";
+			}
+			else if (aftermath == SiegeAftermathAction.SiegeAftermath.Devastate)
+			{
+				outcomeLabel = massacreStarted ? "血洗/毁坏" : "毁坏";
+			}
+			StringBuilder textBuilder = new StringBuilder();
+			textBuilder.Append("攻城后处置：");
+			textBuilder.Append(Hero.MainHero?.Name?.ToString() ?? "玩家");
+			textBuilder.Append("刚攻下 ");
+			textBuilder.Append(settlementName);
+			textBuilder.Append(" 后执行 ");
+			textBuilder.Append(outcomeLabel);
+			textBuilder.Append("。");
+			if (!string.IsNullOrWhiteSpace(trigger))
+			{
+				textBuilder.Append("触发：");
+				textBuilder.Append(trigger.Trim());
+				textBuilder.Append("。");
+			}
+			if (!string.IsNullOrWhiteSpace(detail))
+			{
+				textBuilder.Append("细节：");
+				textBuilder.Append(detail.Trim());
+				textBuilder.Append("。");
+			}
+			textBuilder.Append("参与士兵约 ");
+			textBuilder.Append(Math.Max(0, selectedSoldiers));
+			textBuilder.Append(" 人。");
+			if (plunderStarted || lootItemTotal > 0 || marketGoldLoot > 0 || civilianGoldLoot > 0)
+			{
+				textBuilder.Append("掠获：物品 ");
+				textBuilder.Append(Math.Max(0, lootItemTotal));
+				textBuilder.Append(" 件/");
+				textBuilder.Append(Math.Max(0, lootStackKinds));
+				textBuilder.Append(" 类，估值 ");
+				textBuilder.Append(Math.Max(0, lootValue));
+				textBuilder.Append("，市场金币 ");
+				textBuilder.Append(Math.Max(0, marketGoldLoot));
+				textBuilder.Append("，民众金币 ");
+				textBuilder.Append(Math.Max(0, civilianGoldLoot));
+				textBuilder.Append("，被索取目标 ");
+				textBuilder.Append(Math.Max(0, civilianTargetsLooted));
+				textBuilder.Append(" 人。");
+			}
+			if (massacreStarted || killedCivilianUnits > 0 || killedNotables > 0)
+			{
+				textBuilder.Append("伤亡：平民单位 ");
+				textBuilder.Append(Math.Max(0, killedCivilianUnits));
+				textBuilder.Append("，要人 ");
+				textBuilder.Append(Math.Max(0, killedNotables));
+				textBuilder.Append("。");
+			}
+			Hero actorHero = attackerParty?.LeaderHero ?? Hero.MainHero;
+			Hero currentOwner = settlement.OwnerClan?.Leader;
+			Hero previousOwnerHero = previousOwner?.Leader;
+			NpcActionFacts facts = CreateNpcActionFacts("siege_intervention_aftermath", actorHero);
+			ApplySettlementFacts(facts, settlement, currentOwner, previousOwnerHero, settlementName);
+			ApplyTargetFacts(facts, previousOwnerHero);
+			AddRelatedFactionFacts(facts, settlement.MapFaction);
+			AddRelatedFactionFacts(facts, previousOwner);
+			facts.Won = true;
+			string stableKey = "siege_intervention:" + (settlement.StringId ?? settlementName) + ":" + aftermath;
+			string text = textBuilder.ToString();
+			List<Hero> recipients = new List<Hero>
+			{
+				currentOwner,
+				previousOwnerHero,
+				attackerParty?.LeaderHero
+			};
+			foreach (Hero hero in recipients.Where(ShouldTrackNpcActionHero).GroupBy(h => h.StringId ?? "", StringComparer.OrdinalIgnoreCase).Select(g => g.First()))
+			{
+				RecordNpcMajorAction(hero, text, stableKey, facts);
+				RecordNpcRecentAction(hero, text, stableKey, dedupeAcrossWindow: true, facts);
+			}
+			Logger.Log("AnimusForge", "Recorded GCCZ siege intervention aftermath. Settlement=" + settlementName + ", Outcome=" + outcomeLabel + ", Recipients=" + recipients.Count(ShouldTrackNpcActionHero));
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("AnimusForge", "RecordAnimusForgeSiegeInterventionForExternal failed: " + ex.Message);
+		}
+	}
+
+
 	public static string BuildNpcActionsRuntimeConstraintHintForExternal(Hero hero, bool recentOnly)
 	{
 		try
