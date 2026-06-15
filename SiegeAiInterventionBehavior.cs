@@ -1350,6 +1350,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			_soldierAppeasementApplied,
 			gatherContext,
 			memoryContext,
+			DescribeSharedCivilianReliefPoolForContext(),
 			_plunderStarted,
 			_massacreStarted));
 	}
@@ -1509,15 +1510,25 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			CharacterObject resolvedTargetCharacter = targetCharacter ?? agentCharacter ?? targetHero?.CharacterObject;
 			bool targetIsAlliedSoldier = IsRuntimeAlliedSoldierAgent(targetAgent, resolvedTargetCharacter, targetHero ?? resolvedTargetCharacter?.HeroObject);
 			bool hasSharedReliefPool = HasSharedCivilianReliefPool();
+			bool targetIsCivilian = IsCivilianReliefConversationTarget(targetAgentIndex, resolvedTargetCharacter);
 			SiegeActionRoutingDecision actionRouting = SiegeActionRoutingPolicy.Evaluate(new SiegeActionRoutingFacts(
 				text,
 				HasDestructiveOutcomeLocked(),
 				targetIsAlliedSoldier,
 				hasSharedReliefPool,
 				replyIsDirectPlayerResponse));
+			if (SiegeSharedReliefMercyUpgradePolicy.ShouldUpgradeMercyToRelief(text, hasSharedReliefPool, targetIsAlliedSoldier, targetIsCivilian))
+			{
+				text = MercyTagRegex.Replace(text, SiegePostprocessActionEffectProfile.NormalizedReliefTag);
+				actionRouting = SiegeActionRoutingPolicy.Evaluate(new SiegeActionRoutingFacts(
+					text,
+					HasDestructiveOutcomeLocked(),
+					targetIsAlliedSoldier,
+					hasSharedReliefPool,
+					replyIsDirectPlayerResponse));
+			}
 			bool containsDestructiveTag = actionRouting.ContainsDestructiveAction;
 			bool canApplyMercyTrack = actionRouting.CanApplyMercyTrack;
-			bool targetIsCivilian = IsCivilianReliefConversationTarget(targetAgentIndex, resolvedTargetCharacter);
 			bool canApplySoldierMediatedDestructive = actionRouting.CanApplySoldierMediatedDestructiveAction && targetIsAlliedSoldier;
 			if (destructiveAllowed && actionRouting.ShouldPromptSoldierDestructiveInquiry)
 			{
@@ -3130,7 +3141,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			}
 			if (reliefEffect.HasSettlementDeltas)
 			{
-				AdjustSettlementAfterRelief(settlement, 0, reliefEffect.LoyaltyDelta, 0f);
+				AdjustSettlementAfterRelief(settlement, reliefEffect.PublicTrustDelta, reliefEffect.LoyaltyDelta, reliefEffect.SecurityDelta);
 			}
 			InformationManager.DisplayMessage(new InformationMessage(SiegeSharedReliefPoolFormatter.BuildAppliedEffectMessage(DescribeSharedCivilianReliefPoolForContext()), Color.FromUint(SiegeSharedReliefPoolFormatter.AppliedEffectMessageColor)));
 			Logger.Log("SiegeAiIntervention", "Applied shared civilian relief pool effects. Reason=" + (reason ?? "N/A") + ", NewGold=" + reliefEffect.NewGold + ", NewFood=" + reliefEffect.NewFoodUnits + ", NewMaterialValue=" + reliefEffect.NewMaterialValue + ", PublicTrustDelta=" + reliefEffect.PublicTrustDelta + ", LoyaltyDelta=" + reliefEffect.LoyaltyDelta + ", SecurityDelta=" + reliefEffect.SecurityDelta);

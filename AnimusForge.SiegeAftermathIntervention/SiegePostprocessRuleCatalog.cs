@@ -14,8 +14,8 @@ public static class SiegePostprocessRuleCatalog
 
     private static readonly SiegePostprocessRuleDefinition[] FallbackRules =
     {
-        new SiegePostprocessRuleDefinition("[ACTION:宽恕]", "如果NPC在<latest_reply>里明确接受或传达玩家对普通民众的宽恕、不追究、不杀不抢，就输出这个；若只是害怕、讨价还价、模糊求饶或玩家没有明确给出处置，就不要输出"),
-        new SiegePostprocessRuleDefinition("[ACTION:救济]", "分两种情况输出：A）当前说话者是玩家己方入城士兵时，必须同时有AF共享第纳尔/粮食/物资，并且<latest_reply>明确接受或传达把这些已交付物资分发给民众；B）当前说话者是战败平民/商人/工匠/镇民时，只要<latest_reply>明确接受玩家的言语安抚、保护承诺、军纪约束或安顿民众安排，也可输出本标签。士兵路线没有物资时不要输出救济，应改用宽恕或其他更准确标签"),
+        new SiegePostprocessRuleDefinition("[ACTION:宽恕]", "如果NPC在<latest_reply>里明确接受或传达玩家对普通民众的宽恕、不追究、不杀不抢，就输出这个；若运行时显示已有AF共享物资，且回复正在谈粮食、原料、钱货、供应、商路、工坊、修缮、安置、发放或救济，优先输出救济而不是只输出宽恕；若只是害怕、讨价还价、模糊求饶或玩家没有明确给出处置，就不要输出"),
+        new SiegePostprocessRuleDefinition("[ACTION:救济]", "分两种情况输出：A）当前说话者是玩家己方入城士兵时，必须同时有AF共享第纳尔/粮食/物资，并且<latest_reply>明确接受或传达把这些已交付物资分发给民众；B）当前说话者是战败平民/商人/工匠/镇民/要人时，只要<latest_reply>明确接受玩家的言语安抚、保护承诺、军纪约束、安顿民众安排，或在已有AF共享物资的运行时事实下围绕粮食、原料、钱货、供应、商路、工坊、修缮、安置、发放等民生救助达成接受，也输出本标签。士兵路线没有物资时不要输出救济，应改用宽恕或其他更准确标签"),
         new SiegePostprocessRuleDefinition("[ACTION:宣抚]", "如果NPC在<latest_reply>里明确接受或传达玩家进行安民宣抚、公开演讲安定城心、争取本地人合作，就输出这个；若只是命令己方士兵分发物资或第纳尔，不要输出此标签，改用救济"),
         new SiegePostprocessRuleDefinition("[ACTION:盟誓]", "如果NPC在<latest_reply>里明确接受或传达玩家组织公开盟誓、归心效忠、强力争取民众和要人归附，就输出这个；若只是命令己方士兵分发物资或第纳尔，不要输出此标签，改用救济"),
         new SiegePostprocessRuleDefinition("[ACTION:安兵]", "只有运行时事实显示已经触发士兵不满待安抚，并且当前说话者是玩家己方入城士兵，且<latest_reply>明确接受玩家对士兵的安抚、补偿承诺、军纪解释或日后战利安排时输出；此标签只安抚军心，不触发民众结算"),

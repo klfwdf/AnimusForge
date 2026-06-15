@@ -13024,6 +13024,22 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 	}
 
+	private static void TryRecordSiegeSharedReliefTransferForShoutGive(int targetAgentIndex, int goldAmount, string itemId, int itemAmount, ItemObject item, int unitValue, string source)
+	{
+		try
+		{
+			if (!SiegeAiInterventionBehavior.ShouldCapturePlayerGiveForSharedCivilianReliefForExternal())
+			{
+				return;
+			}
+			SiegeAiInterventionBehavior.RecordSharedCivilianReliefTransferForExternal(targetAgentIndex, goldAmount, itemId, itemAmount, item, unitValue, source);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("ShoutBehavior", "[WARN] Failed to record siege shared relief transfer: " + ex.Message);
+		}
+	}
+
 	private void ApplyShoutGiveTransfer()
 	{
 		if (_shoutPendingTradeItems == null || _shoutPendingTradeItems.Count == 0)
@@ -13118,6 +13134,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 							RecordScenePrepaidTransfer(text, num2);
 						}
 					}
+					if (num2 > 0)
+					{
+						TryRecordSiegeSharedReliefTransferForShoutGive(shoutTradeTargetAgentIndex, num2, null, 0, null, 0, "shout_give_gold");
+					}
 				}
 			}
 			else
@@ -13144,6 +13164,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					if (num3 > 0 && !string.IsNullOrWhiteSpace(itemName))
 					{
 						shoutPendingTradeItem.ItemName = itemName;
+					}
+					if (num3 > 0)
+					{
+						TryRecordSiegeSharedReliefTransferForShoutGive(shoutTradeTargetAgentIndex, 0, text2, num3, shoutPendingTradeItem.Item, shoutPendingTradeItem.InventoryUnitValue, "shout_give_item");
 					}
 					continue;
 				}
@@ -13173,6 +13197,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 						{
 						}
 					}
+					TryRecordSiegeSharedReliefTransferForShoutGive(shoutTradeTargetAgentIndex, 0, text2, num4, itemObject ?? shoutPendingTradeItem.Item, shoutPendingTradeItem.InventoryUnitValue, "shout_give_item");
 				}
 			}
 		}

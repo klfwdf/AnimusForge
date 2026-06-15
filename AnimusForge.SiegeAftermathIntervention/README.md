@@ -49,6 +49,8 @@ Negative-outcome refund UI, memory wording, and returned-gold source constructio
 
 Shared-pool applied-effect UI wording also lives in `SiegeSharedReliefPoolFormatter`; AF keeps only the live pool description and Bannerlord `InformationMessage` display call.
 
+`SiegeSharedReliefMercyUpgradePolicy` owns the dependency-free guard that upgrades a plain 宽恕 tag to 救济 when a civilian/merchant/notable response discusses material relief, supply, raw materials, repairs, trade routes, food, or money while an AF shared relief pool exists.
+
 `SiegeSharedReliefPoolEffectCalculator` and `SiegeSharedReliefPoolEffectDeltas` own dependency-free settlement-effect calculations for newly applied shared relief material. AF keeps the Bannerlord town food-stock mutation and settlement delta application.
 
 
