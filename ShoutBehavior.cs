@@ -10,6 +10,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using AnimusForge.SiegeAftermathIntervention;
 using SandBox;
 using SandBox.Missions.AgentBehaviors;
 using SandBox.Missions.MissionLogics;
@@ -17463,6 +17464,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			string sceneSummonClosureInstruction = BuildSceneSummonClosurePromptInstruction(speakableCandidates);
 			string sceneMechanismPromptSectionBase = BuildSceneMechanismPromptSection(sceneSummonTargets, sceneGuideTargets, sceneSummonClosureInstruction, null);
 			bool multiNpcScene = speakableCandidates.Count > 1;
+			bool siegeRangeAutoReplyEnabled = ShouldUseSiegeInterventionRangeAutoReplies(multiNpcScene);
+			Queue<NpcDataPacket> siegeRangeAutoReplyQueue = null;
+			HashSet<int> siegeRangeSpokenAgentIndices = new HashSet<int>();
+			HashSet<int> siegeRangeAutoReplyAgentIndices = new HashSet<int>();
 			NpcDataPacket currentSpeaker = ((primaryNpc != null) ? speakableCandidates.FirstOrDefault((NpcDataPacket npc) => npc != null && npc.AgentIndex == primaryNpc.AgentIndex) : null) ?? speakableCandidates.FirstOrDefault();
 			bool firstTurn = true;
 			int remainingTurns = multiNpcScene ? AUTO_GROUP_CHAT_MAX_LINES : 1;
@@ -17472,6 +17477,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				{
 					return;
 				}
+				bool currentTurnIsSiegeRangeAutoReply = currentSpeaker.AgentIndex >= 0 && siegeRangeAutoReplyAgentIndices.Contains(currentSpeaker.AgentIndex);
 				HoldSceneConversationParticipants(speakableCandidates);
 				string cleaned = "";
 				Hero speakingHero = null;
@@ -17665,7 +17671,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				}
 				else
 				{
-					historyFullText = await GenerateGroupConversationTurnLineAsync(currentSpeaker, speakableCandidates, resolvedHeroes, precomputedContexts, playerText, extraFact, BuildScenePresentNpcListBlockForPrompt(speakableCandidates, currentSpeaker, resolvedHeroes, includeRelayId: true), sceneSummonTargets, sceneGuideTargets, sceneMechanismPromptSectionBase, patienceStatusLines, multiNpcScene, minTokens, maxTokens);
+					bool allowRelayPromptThisTurn = multiNpcScene && !currentTurnIsSiegeRangeAutoReply;
+					historyFullText = await GenerateGroupConversationTurnLineAsync(currentSpeaker, speakableCandidates, resolvedHeroes, precomputedContexts, playerText, extraFact, BuildScenePresentNpcListBlockForPrompt(speakableCandidates, currentSpeaker, resolvedHeroes, includeRelayId: allowRelayPromptThisTurn), sceneSummonTargets, sceneGuideTargets, sceneMechanismPromptSectionBase, patienceStatusLines, allowRelayPromptThisTurn, minTokens, maxTokens);
 					cleaned = historyFullText;
 					if (!IsSceneConversationEpochCurrent(conversationEpoch))
 					{
@@ -17720,7 +17727,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					bool voteDealPostprocessSelected = voteDealRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "vote_deal");
 					bool worldMapPartyCommandPostprocessSelected = worldMapPartyCommandRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "worldmap_party_command");
 					bool marriagePostprocessSelected = HasPreprocessRuleHit(postprocessPreprocessHits, "marriage");
-					bool siegeInterventionPostprocessSelected = SiegeAiInterventionBehavior.ShouldRunSiegeInterventionPostprocessForExternal();
+					bool siegeInterventionPostprocessSelected = SiegeAiInterventionBehavior.ShouldRunSiegeInterventionPostprocessForExternal() && !currentTurnIsSiegeRangeAutoReply;
 					bool replyIsDirectPlayerResponse = firstTurn;
 					bool flag11 = duelPostprocessSelected || rewardPostprocessSelected || loanPostprocessSelected || kingdomServicePostprocessSelected || lordsHallPostprocessSelected || meetingReleasePostprocessSelected || vanillaIssuePostprocessSelected || heroJoinPartyPostprocessSelected || sceneMechanismPostprocessSelected || partyTransferPostprocessSelected || settlementTransferPostprocessSelected || voteDealPostprocessSelected || worldMapPartyCommandPostprocessSelected || marriagePostprocessSelected || siegeInterventionPostprocessSelected;
 					Logger.Log("ShoutBehavior", "[RuleInjectionDebug] stage=scene_queue npc=" + GetSceneNpcHistoryNameForPrompt(currentSpeaker) + " duelInjected=" + duelRuleInjected + " rewardInjected=" + rewardRuleInjected + " loanInjected=" + loanRuleInjected + " kingdomServiceInjected=" + kingdomServiceRuleInjected + " lordsHallInjected=" + lordsHallRuleInjected + " meetingReleaseInjected=" + meetingReleaseRuleInjected + " vanillaIssueInjected=" + vanillaIssueRuleInjected + " heroJoinPartyInjected=" + heroJoinPartyRuleInjected + " sceneMechanismInjected=" + sceneMechanismRuleInjected + " partyTransferInjected=" + partyTransferRuleInjected + " settlementTransferInjected=" + settlementTransferRuleInjected + " voteDealInjected=" + voteDealRuleInjected + " worldMapInjected=" + worldMapPartyCommandRuleInjected + " marriageSelected=" + marriagePostprocessSelected + " siegeInterventionSelected=" + siegeInterventionPostprocessSelected + " replyIsDirectPlayerResponse=" + replyIsDirectPlayerResponse + " preprocessHits=" + ((postprocessPreprocessHits == null || postprocessPreprocessHits.Count == 0) ? "(none)" : string.Join(",", postprocessPreprocessHits)) + " queueDeferred=" + flag11 + " replyLen=" + cleaned.Length);
@@ -17736,13 +17743,48 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				{
 					lastSpeakerOutputText = "";
 				}
-				resolvedRelayTargetAgentIndex = (!string.IsNullOrWhiteSpace(cleaned) && relayRequested) ? ResolveAutoGroupRelayTargetAgentIndex(relayTargetAgentIndex, currentSpeaker.AgentIndex, speakableCandidates, resolvedHeroes) : (-1);
-				if (!multiNpcScene || endRequested || resolvedRelayTargetAgentIndex < 0)
+				if (currentSpeaker.AgentIndex >= 0)
 				{
-					break;
+					siegeRangeSpokenAgentIndices.Add(currentSpeaker.AgentIndex);
 				}
-				currentSpeaker = speakableCandidates.FirstOrDefault((NpcDataPacket npc) => npc != null && npc.AgentIndex == resolvedRelayTargetAgentIndex);
-				firstTurn = false;
+				resolvedRelayTargetAgentIndex = (!string.IsNullOrWhiteSpace(cleaned) && relayRequested) ? ResolveAutoGroupRelayTargetAgentIndex(relayTargetAgentIndex, currentSpeaker.AgentIndex, speakableCandidates, resolvedHeroes) : (-1);
+				if (multiNpcScene && !endRequested && resolvedRelayTargetAgentIndex >= 0)
+				{
+					currentSpeaker = speakableCandidates.FirstOrDefault((NpcDataPacket npc) => npc != null && npc.AgentIndex == resolvedRelayTargetAgentIndex);
+					firstTurn = false;
+					continue;
+				}
+				NpcDataPacket siegeAutoNextSpeaker = null;
+				if (siegeRangeAutoReplyEnabled && !endRequested)
+				{
+					if (siegeRangeAutoReplyQueue == null)
+					{
+						siegeRangeAutoReplyQueue = new Queue<NpcDataPacket>(BuildSiegeInterventionRangeAutoReplySpeakers(speakableCandidates, siegeRangeSpokenAgentIndices, resolvedHeroes));
+					}
+					while (siegeRangeAutoReplyQueue.Count > 0)
+					{
+						NpcDataPacket candidate = siegeRangeAutoReplyQueue.Dequeue();
+						if (candidate == null || candidate.AgentIndex < 0 || siegeRangeSpokenAgentIndices.Contains(candidate.AgentIndex))
+						{
+							continue;
+						}
+						siegeAutoNextSpeaker = candidate;
+						break;
+					}
+				}
+				if (siegeAutoNextSpeaker != null)
+				{
+					siegeRangeAutoReplyAgentIndices.Add(siegeAutoNextSpeaker.AgentIndex);
+					await DelaySiegeInterventionRangeAutoReplyAsync();
+					if (!IsSceneConversationEpochCurrent(conversationEpoch))
+					{
+						return;
+					}
+					currentSpeaker = siegeAutoNextSpeaker;
+					firstTurn = false;
+					continue;
+				}
+				break;
 			}
 			if (multiNpcScene)
 			{
@@ -23699,7 +23741,7 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 				bool generated = false;
 				try
 				{
-					generated = await GenerateImmediateSceneBehaviorReactionAsync(npcDataPacket, list, dictionary, suppressStare);
+					generated = await GenerateImmediateSceneBehaviorReactionAsync(npcDataPacket, list, dictionary, suppressStare, factText);
 				}
 				catch (Exception ex2)
 				{
@@ -24030,6 +24072,116 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 		{
 		}
 		return AreTeamsHostileSafely(a.Team, b.Team);
+	}
+
+	private static bool ShouldUseSiegeInterventionRangeAutoReplies(bool multiNpcScene)
+	{
+		try
+		{
+			return multiNpcScene
+				&& SiegeAmbientReactionProfile.RangeShoutAutoFollowupSpeakers > 0
+				&& SiegeAiInterventionBehavior.IsOccupationSceneActiveForExternal();
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static List<NpcDataPacket> BuildSiegeInterventionRangeAutoReplySpeakers(List<NpcDataPacket> participants, HashSet<int> excludedAgentIndices, Dictionary<int, Hero> resolvedHeroes)
+	{
+		List<NpcDataPacket> result = new List<NpcDataPacket>();
+		try
+		{
+			if (participants == null || participants.Count == 0 || !SiegeAiInterventionBehavior.IsOccupationSceneActiveForExternal())
+			{
+				return result;
+			}
+			HashSet<int> excluded = excludedAgentIndices ?? new HashSet<int>();
+			int maxCount = Math.Max(0, SiegeAmbientReactionProfile.RangeShoutAutoFollowupSpeakers);
+			if (maxCount == 0)
+			{
+				return result;
+			}
+			int salt = (int)(((Mission.Current?.CurrentTime ?? 0f) * 1000f) % 100000f);
+			List<NpcDataPacket> eligible = participants
+				.Where(npc => IsEligibleSiegeInterventionRangeAutoReplySpeaker(npc, excluded, resolvedHeroes))
+				.GroupBy(npc => npc.AgentIndex)
+				.Select(group => group.First())
+				.OrderBy(npc => BuildSiegeInterventionRangeAutoReplySortKey(npc.AgentIndex, salt))
+				.ToList();
+			List<NpcDataPacket> civilians = eligible.Where(npc => !IsSiegeInterventionRangeAutoReplySoldier(npc)).ToList();
+			List<NpcDataPacket> soldiers = eligible.Where(IsSiegeInterventionRangeAutoReplySoldier).ToList();
+			bool preferCivilian = civilians.Count >= soldiers.Count;
+			while (result.Count < maxCount && (civilians.Count > 0 || soldiers.Count > 0))
+			{
+				List<NpcDataPacket> preferred = preferCivilian ? civilians : soldiers;
+				List<NpcDataPacket> fallback = preferCivilian ? soldiers : civilians;
+				List<NpcDataPacket> source = preferred.Count > 0 ? preferred : fallback;
+				if (source.Count == 0)
+				{
+					break;
+				}
+				NpcDataPacket next = source[0];
+				source.RemoveAt(0);
+				if (next != null && result.All(npc => npc == null || npc.AgentIndex != next.AgentIndex))
+				{
+					result.Add(next);
+				}
+				preferCivilian = !preferCivilian;
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("ShoutBehavior", "[SiegeRangeAutoReply] select failed: " + ex.Message);
+		}
+		return result;
+	}
+
+	private static bool IsEligibleSiegeInterventionRangeAutoReplySpeaker(NpcDataPacket npc, HashSet<int> excludedAgentIndices, Dictionary<int, Hero> resolvedHeroes)
+	{
+		if (npc == null || npc.AgentIndex < 0 || npc.IsHero)
+		{
+			return false;
+		}
+		if (excludedAgentIndices != null && excludedAgentIndices.Contains(npc.AgentIndex))
+		{
+			return false;
+		}
+		Agent agent = Mission.Current?.Agents?.FirstOrDefault(a => a != null && a.Index == npc.AgentIndex);
+		return CanAgentParticipateInSceneSpeech(agent) && CanNpcParticipateInAutoGroupRelay(npc, resolvedHeroes);
+	}
+
+	private static bool IsSiegeInterventionRangeAutoReplySoldier(NpcDataPacket npc)
+	{
+		try
+		{
+			Agent agent = (npc == null || npc.AgentIndex < 0) ? null : Mission.Current?.Agents?.FirstOrDefault(a => a != null && a.Index == npc.AgentIndex);
+			return SiegeAiInterventionBehavior.IsInterventionAlliedSoldierForExternal(agent, requireActive: true);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static int BuildSiegeInterventionRangeAutoReplySortKey(int agentIndex, int salt)
+	{
+		unchecked
+		{
+			int value = agentIndex * 1103515245 + 12345 + salt * 97;
+			value ^= value >> 16;
+			return value & int.MaxValue;
+		}
+	}
+
+	private static async Task DelaySiegeInterventionRangeAutoReplyAsync()
+	{
+		int delayMs = Math.Max(0, (int)(SiegeAmbientReactionProfile.RangeShoutAutoReplySpacingSeconds * 1000f));
+		if (delayMs > 0)
+		{
+			await Task.Delay(delayMs);
+		}
 	}
 
 	private static bool CanNpcParticipateInAutoGroupRelay(NpcDataPacket participant, Dictionary<int, Hero> resolvedHeroes)
@@ -26340,7 +26492,7 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 		_stopStaringTime = Math.Max(_stopStaringTime, Mission.Current.CurrentTime + PLAYER_DRIVEN_MULTI_SCENE_STARE_HOLD_SECONDS);
 	}
 
-	private async Task<bool> GenerateImmediateSceneBehaviorReactionAsync(NpcDataPacket targetNpc, List<NpcDataPacket> allNpcData, Dictionary<int, Hero> resolvedHeroes, bool suppressStare)
+	private async Task<bool> GenerateImmediateSceneBehaviorReactionAsync(NpcDataPacket targetNpc, List<NpcDataPacket> allNpcData, Dictionary<int, Hero> resolvedHeroes, bool suppressStare, string factText = null)
 	{
 		if (targetNpc == null || allNpcData == null || allNpcData.Count == 0)
 		{
@@ -26356,6 +26508,10 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 		targetNpc = npcDataPacket;
 		allNpcData = list;
 		await EnsurePersonaForCandidatesAsync(new List<NpcDataPacket> { targetNpc }, resolvedHeroes ?? new Dictionary<int, Hero>());
+		if (ShouldUseSiegeInterventionLightweightImmediateReaction(factText))
+		{
+			return GenerateSiegeInterventionLightweightImmediateReaction(targetNpc, allNpcData, resolvedHeroes, suppressStare, factText);
+		}
 		DuelSettings settings = DuelSettings.GetSettings();
 		GetSceneReplyLengthLimits(settings, out var minTokens, out var maxTokens);
 		Agent npcAgent = Mission.Current?.Agents?.FirstOrDefault(a => a != null && a.Index == targetNpc.AgentIndex);
@@ -26424,6 +26580,115 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 		}
 		EnqueueSpeechLine(targetNpc, text3, allNpcData, skipHistory: true, suppressStare: suppressStare);
 		return true;
+	}
+
+	private static bool ShouldUseSiegeInterventionLightweightImmediateReaction(string factText)
+	{
+		try
+		{
+			return SiegeAiInterventionBehavior.IsOccupationSceneActiveForExternal()
+				&& SiegeAmbientReactionProfile.IsAmbientReactionFact(factText);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private bool GenerateSiegeInterventionLightweightImmediateReaction(NpcDataPacket targetNpc, List<NpcDataPacket> allNpcData, Dictionary<int, Hero> resolvedHeroes, bool suppressStare, string factText)
+	{
+		try
+		{
+			Agent npcAgent = Mission.Current?.Agents?.FirstOrDefault(a => a != null && a.Index == targetNpc.AgentIndex);
+			if (!CanAgentParticipateInSceneSpeech(npcAgent))
+			{
+				return false;
+			}
+			CharacterObject npcCharacter = npcAgent.Character as CharacterObject;
+			Hero contextHero = null;
+			if (targetNpc.IsHero && resolvedHeroes != null)
+			{
+				resolvedHeroes.TryGetValue(targetNpc.AgentIndex, out contextHero);
+			}
+			if (contextHero == null)
+			{
+				contextHero = npcCharacter?.HeroObject;
+			}
+			bool partyTransferTopicSelected = false;
+			string roleTopIntro = BuildSceneSystemTopPromptIntroForSingle(targetNpc, contextHero, new List<NpcDataPacket> { targetNpc }, partyTransferTopicSelected: partyTransferTopicSelected);
+			string roleRuntimeContext = BuildCompactSceneUserRuntimeContextForShortReply(targetNpc, contextHero, new List<NpcDataPacket> { targetNpc }, partyTransferTopicSelected: partyTransferTopicSelected);
+			string recentHistory = BuildSiegeInterventionLightweightRecentHistory(targetNpc);
+			string systemPrompt = BuildSceneCompositeUserBlock("", roleTopIntro, SiegeAmbientReactionProfile.BuildLightweightSystemInstruction());
+			systemPrompt = AppendPlayerCustomPromptRuleToSystemPrompt(systemPrompt);
+			string userPrompt = SiegeAmbientReactionProfile.BuildLightweightReactionPrompt(factText, recentHistory, roleRuntimeContext);
+			List<object> messages = new List<object>
+			{
+				new
+				{
+					role = "system",
+					content = systemPrompt
+				},
+				new
+				{
+					role = "user",
+					content = userPrompt
+				}
+			};
+			if (!AIConfigHandler.TryCallAuxiliarySimpleDialogue(messages, SiegeAmbientReactionProfile.LightweightOutputMaxTokens, 0.35f, out var text, out var error))
+			{
+				Logger.Log("ShoutBehavior", "[ImmediateSceneReaction] siege_lightweight_simple_dialogue failed: " + error);
+				return false;
+			}
+			string cleaned = (text ?? "").Replace("\r", "").Trim();
+			cleaned = Regex.Replace(cleaned, "\\[(?:ACTION:[^\\]]*|ASS:[^\\]]*|GUI:[^\\]]*|FOL|STP)\\]", "", RegexOptions.IgnoreCase).Trim();
+			cleaned = StripNpcNamePrefixSafely(cleaned, 30);
+			cleaned = StripLeakedPromptContentForShout(cleaned);
+			string fullHistoryText = PrepareSceneHistorySpeechText(cleaned);
+			cleaned = StripStageDirectionsForPassiveShout(cleaned);
+			if (string.IsNullOrWhiteSpace(cleaned))
+			{
+				return false;
+			}
+			if (!string.IsNullOrWhiteSpace(fullHistoryText))
+			{
+				RecordResponseForAllNearbySafe(allNpcData, targetNpc.AgentIndex, targetNpc.Name, fullHistoryText);
+				PersistNpcSpeechToNamedHeroes(targetNpc.AgentIndex, targetNpc.Name, fullHistoryText, allNpcData);
+			}
+			EnqueueSpeechLine(targetNpc, cleaned, allNpcData, skipHistory: true, suppressStare: suppressStare);
+			Logger.Log("ShoutBehavior", "[ImmediateSceneReaction] siege_lightweight_simple_dialogue queued npc=" + (targetNpc.Name ?? "") + " len=" + cleaned.Length);
+			return true;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("ShoutBehavior", "[ImmediateSceneReaction] siege_lightweight_simple_dialogue exception: " + ex.Message);
+			return false;
+		}
+	}
+
+	private string BuildSiegeInterventionLightweightRecentHistory(NpcDataPacket targetNpc)
+	{
+		try
+		{
+			List<string> lines = null;
+			lock (_historyLock)
+			{
+				if (_publicConversationHistory.Count > 0)
+				{
+					lines = BuildVisibleSceneHistoryLines(_publicConversationHistory, targetNpc.AgentIndex, GetSceneNpcHistoryNameForPrompt(targetNpc), useNpcNameAddress: false);
+				}
+			}
+			if (lines == null || lines.Count == 0)
+			{
+				return "";
+			}
+			int limit = Math.Max(1, SiegeAmbientReactionProfile.LightweightRecentHistoryLineLimit);
+			int skip = Math.Max(0, lines.Count - limit);
+			return string.Join("\n", lines.Skip(skip)).Trim();
+		}
+		catch
+		{
+			return "";
+		}
 	}
 
 	private static string BuildPlayerMarriageFactForNpcListLine(Hero npcHero)

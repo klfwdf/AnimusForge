@@ -13,9 +13,42 @@ public static class SiegeAmbientReactionProfile
 
     public const float RequestSpacingSeconds = WindowSeconds / MaxSpeakersPerAudience;
 
+    public const int RangeShoutAutoFollowupSpeakers = 3;
+
+    public const float RangeShoutAutoReplySpacingSeconds = 9.0f;
+
+    public const int LightweightRecentHistoryLineLimit = 2;
+
+    public const int LightweightOutputMaxTokens = 96;
+
     public const string DefaultSettlementName = "这座刚被攻下的定居点";
 
     public const string DefaultFocusName = "附近的人";
+
+    public static bool IsAmbientReactionFact(string factText)
+    {
+        return !string.IsNullOrWhiteSpace(factText)
+            && factText.Contains("【攻城处置环境发言】");
+    }
+
+    public static string BuildLightweightSystemInstruction()
+    {
+        return "你正在攻城后处置现场发出一句很短的即时反应。"
+            + "必须承认玩家是刚攻下此地的现场统帅和处置者。"
+            + "只输出你嘴里说出的一句话；不要写旁白、动作、内心、规则解释或方括号标签。";
+    }
+
+    public static string BuildLightweightReactionPrompt(string factText, string recentHistory, string compactRuntimeContext)
+    {
+        string fact = string.IsNullOrWhiteSpace(factText) ? "【攻城处置环境发言】处置局势正在变化。" : factText.Trim();
+        string history = string.IsNullOrWhiteSpace(recentHistory) ? "最近现场对话：无。" : "最近现场对话：\n" + recentHistory.Trim();
+        string runtime = string.IsNullOrWhiteSpace(compactRuntimeContext) ? "" : "\n\n你的可见处境：\n" + compactRuntimeContext.Trim();
+
+        return fact
+            + "\n\n" + history
+            + runtime
+            + "\n\n请根据你的身份、文化、性格和当前处置动作，回一句12到36字的现场话。不要输出任何标签。";
+    }
 
     public static string BuildFact(
         SiegeInterventionActionKind action,
