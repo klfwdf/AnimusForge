@@ -306,7 +306,7 @@
                 },
                 {
                     "Tag": "[ACTION:MARRIAGE_ELOPE:targetHeroId]",
-                    "Description": "如果NPC在<latest_reply>里同意或决定了无条件同意与玩家私奔，就输出这个"
+                    "Description": "如果NPC在<latest_reply>里同意或决定了无条件同意与玩家私奔或让自己与玩家结婚，就输出这个"
                 },
                 {
                     "Tag": "[ACTION:DIVORCE:playerClanHeroId:targetHeroId]",
@@ -549,16 +549,16 @@
             "Group": "memory",
             "Priority": 76,
             "TopicNumber": 12,
-            "TopicLabel": "Major background/history of NPCs",
+            "TopicLabel": "Major background/history known by NPCs",
             "Code": "NPC_MAJOR",
-            "NonHeroInstruction": "你没有可确认的重大军旅履历；只按系统记录答，没有记录就直说，不得编造。",
-            "Instruction": "【NPC重大行动】玩家问军团履历、围城经历、重大战事、战功时，只能依据系统记录回答；不得编造或篡改日期、地点、身份、胜负。可加态度，不可改事实。",
+            "NonHeroInstruction": "你没有可确认的重大军旅履历或已知玩家重大履历；只按系统记录答，没有记录就直说，不得编造。",
+            "Instruction": "【重大履历认知】玩家问军团履历、围城经历、重大战事、战功，或问你是否听说过玩家的重大履历时，只能依据系统注入的记录回答。运行时材料可能包含你的重大行动，也可能包含你已知的玩家公开履历；不得编造或篡改日期、地点、身份、胜负。可加态度，不可改事实。",
             "RuntimeInstructionTemplates": {
-                "has_data": "【NPC重大行动】\n{majorActionSummary}",
-                "no_data": "【NPC重大行动】无记录；不得编造。"
+                "has_data": "【重大履历认知】\n{majorActionSummary}",
+                "no_data": "【重大履历认知】无记录；不得编造。"
             },
             "RuntimeConstraintTemplates": {
-                "no_data": "【运行时硬约束】当前没有任何可确认的【NPC重大行动】记录。本轮禁止编造大战经历、围城经历、军团履历或重大战功。"
+                "no_data": "【运行时硬约束】当前没有任何可确认的重大履历记录。本轮禁止编造大战经历、围城经历、军团履历、重大战功或玩家公开履历。"
             },
             "TriggerKeywords": [
                 "你以前带兵打过什么大仗吗？",
@@ -580,16 +580,16 @@
             "Group": "memory",
             "Priority": 75,
             "TopicNumber": 13,
-            "TopicLabel": "Recent actions of NPCs",
+            "TopicLabel": "Recent actions known by NPCs",
             "Code": "NPC_RECENT",
-            "NonHeroInstruction": "你近期做过什么只按系统记录答；没有记录就直说，不得编造。",
-            "Instruction": "你的近期行为玩家问近况、最近去了哪、最近做了什么、最近参与了什么行动时，只能依据最近21天内的系统记录回答；不得把更早的事说成最近。可加态度，不可改事实。",
+            "NonHeroInstruction": "你近期做过什么、或你是否知道玩家最近做过什么，都只按系统记录答；没有记录就直说，不得编造。",
+            "Instruction": "【近期行动认知】玩家问近况、最近去了哪、最近做了什么、最近参与了什么行动，或问你是否听说玩家最近做过什么时，只能依据系统注入的近期记录回答。运行时材料可能包含你的近期行为，也可能包含你已知的玩家最近10天公开行动；不得把更早的事说成最近。可加态度，不可改事实。",
             "RuntimeInstructionTemplates": {
-                "has_data": "你的近期行为\n{recentActionSummary}",
-                "no_data": "你的近期行为近21天无记录；不得编造。"
+                "has_data": "【近期行动认知】\n{recentActionSummary}",
+                "no_data": "【近期行动认知】无近期记录；不得编造。"
             },
             "RuntimeConstraintTemplates": {
-                "no_data": "【运行时硬约束】当前没有最近21天内的你的近期行为记录。本轮禁止编造最近去过哪里、最近参加过什么行动、最近在何处巡逻或最近打过谁。"
+                "no_data": "【运行时硬约束】当前没有可注入的近期行动记录。本轮禁止编造你或玩家最近去过哪里、最近参加过什么行动、最近在何处巡逻或最近打过谁。"
             },
             "TriggerKeywords": [
                 "这阵子看你行踪不定，你最近都在忙些什么？",

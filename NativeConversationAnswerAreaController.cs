@@ -85,6 +85,27 @@ public static class NativeConversationAnswerAreaController
 		}
 	}
 
+	public static void ForceRestoreAll()
+	{
+		List<RootState> snapshot;
+		lock (Sync)
+		{
+			_suppressed = false;
+			snapshot = new List<RootState>(Roots);
+		}
+		foreach (RootState root in snapshot)
+		{
+			try
+			{
+				root.ForceRestore();
+			}
+			catch (Exception ex)
+			{
+				Logger.Log("NativeConversationUI", "[WARN] Failed to force-restore native answer area: " + ex.Message);
+			}
+		}
+	}
+
 	public static void OnApplicationTick()
 	{
 		if (_suppressed)
@@ -180,6 +201,12 @@ public static class NativeConversationAnswerAreaController
 			RestoreState();
 		}
 
+		public void ForceRestore()
+		{
+			RestoreState();
+			ReleaseCurrentNativeAnswerInteraction();
+		}
+
 		private void StoreStateIfNeeded()
 		{
 			if (_hasStoredState)
@@ -252,6 +279,102 @@ public static class NativeConversationAnswerAreaController
 			_lastAnswerChildCount = -1;
 			_answerRefreshCountdown = 0;
 			_hasStoredState = false;
+		}
+
+		private void ReleaseCurrentNativeAnswerInteraction()
+		{
+			if (Root == null)
+			{
+				return;
+			}
+			Widget answerListContainer = Root.FindChild("AnswerListContainer", includeAllChildren: true);
+			Widget answerList = Root.FindChild("AnswerList", includeAllChildren: true);
+			Widget continueButton = Root.FindChild("ContinueButton", includeAllChildren: true);
+			ReleaseContainer(answerListContainer, makeVisible: true);
+			ReleaseContainer(answerList, makeVisible: true);
+			ReleaseAnswerDescendants(answerList);
+			if (continueButton != null)
+			{
+				int answerCount = GetChildCountSafe(answerList);
+				if (answerCount <= 0)
+				{
+					ReleaseButtonOrContainer(continueButton, makeVisible: true);
+				}
+				else
+				{
+					continueButton.DoNotAcceptEvents = false;
+				}
+			}
+		}
+
+		private static void ReleaseAnswerDescendants(Widget widget)
+		{
+			if (widget == null)
+			{
+				return;
+			}
+			int count = GetChildCountSafe(widget);
+			for (int i = 0; i < count; i++)
+			{
+				Widget child;
+				try
+				{
+					child = widget.GetChild(i);
+				}
+				catch
+				{
+					continue;
+				}
+				if (child == null)
+				{
+					continue;
+				}
+				if (child is ButtonWidget || IsLikelyAnswerContainer(child))
+				{
+					ReleaseButtonOrContainer(child, makeVisible: true);
+				}
+				ReleaseAnswerDescendants(child);
+			}
+		}
+
+		private static bool IsLikelyAnswerContainer(Widget widget)
+		{
+			if (widget == null || GetChildCountSafe(widget) <= 0)
+			{
+				return false;
+			}
+			string typeName = widget.GetType()?.Name ?? "";
+			if (typeName.IndexOf("Text", StringComparison.OrdinalIgnoreCase) >= 0)
+			{
+				return false;
+			}
+			string id = widget.Id ?? "";
+			return id.IndexOf("Answer", StringComparison.OrdinalIgnoreCase) >= 0
+				|| id.IndexOf("Option", StringComparison.OrdinalIgnoreCase) >= 0
+				|| typeName.IndexOf("Conversation", StringComparison.OrdinalIgnoreCase) >= 0
+				|| typeName.IndexOf("Option", StringComparison.OrdinalIgnoreCase) >= 0
+				|| typeName.IndexOf("List", StringComparison.OrdinalIgnoreCase) >= 0
+				|| typeName.IndexOf("Panel", StringComparison.OrdinalIgnoreCase) >= 0;
+		}
+
+		private static void ReleaseContainer(Widget widget, bool makeVisible)
+		{
+			if (widget == null)
+			{
+				return;
+			}
+			widget.IsEnabled = true;
+			widget.DoNotAcceptEvents = false;
+			if (makeVisible)
+			{
+				widget.IsVisible = true;
+				widget.AlphaFactor = 1f;
+			}
+		}
+
+		private static void ReleaseButtonOrContainer(Widget widget, bool makeVisible)
+		{
+			ReleaseContainer(widget, makeVisible);
 		}
 
 		private static int GetChildCountSafe(Widget widget)

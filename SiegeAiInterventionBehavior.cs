@@ -634,6 +634,29 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			}
 			TroopRoster initialSelections = BuildDefaultInterventionTroopSelection(fullRoster, AutoSummonCount);
 			_selectedInterventionRoster = null;
+#if BANNERLORD_1_4_OR_GREATER
+			args.MenuContext.OpenTroopSelection(
+				fullRoster,
+				initialSelections,
+				null,
+				CanChangeInterventionTroopSelectionStatus,
+				delegate(TroopRoster selectedRoster)
+				{
+					StoreSelectedInterventionRoster(selectedRoster, AutoSummonCount);
+					int selectedCount = _selectedInterventionRoster?.TotalManCount ?? 0;
+					if (selectedCount > 0)
+					{
+						InformationManager.DisplayMessage(new InformationMessage(SiegeInterventionEntryProfile.BuildSelectionConfirmedMessage(selectedCount), Color.FromUint(SiegeInterventionEntryProfile.SelectionConfirmedMessageColor)));
+					}
+					else
+					{
+						InformationManager.DisplayMessage(new InformationMessage(SiegeInterventionEntryProfile.SelectionFallbackMessage, Color.FromUint(SiegeInterventionEntryProfile.SelectionFallbackMessageColor)));
+					}
+					OpenInterventionMissionNow(location, SiegeInterventionEntryProfile.TroopSelectionDoneMissionSource);
+				},
+				AutoSummonCount,
+				0);
+#else
 			args.MenuContext.OpenTroopSelection(
 				fullRoster,
 				initialSelections,
@@ -654,6 +677,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				},
 				AutoSummonCount,
 				0);
+#endif
 			Logger.Log("SiegeAiIntervention", "Opened GameMenu troop selection screen. FullRoster=" + fullRoster.TotalManCount + ", Initial=" + (initialSelections?.TotalManCount ?? 0));
 			return true;
 		}

@@ -23,6 +23,7 @@ public static class EncyclopediaHeroPersonaPatch
 {
 	private const string EditButtonId = "AnimusForgeHeroPersonaEditButton";
 	private const string CourierButtonId = "AnimusForgeHeroCourierButton";
+	private const string PlayerNotorietyMarker = "【玩家知名度】";
 
 	private static readonly object SyncRoot = new object();
 	private static readonly HashSet<string> GenerationRequests = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -378,6 +379,11 @@ public static class EncyclopediaHeroPersonaPatch
 
 	private static void ApplyPersonaText(EncyclopediaHeroPageVM vm, Hero hero, bool triggerGeneration)
 	{
+		if (hero == Hero.MainHero && vm != null)
+		{
+			ApplyPlayerNotorietyText(vm);
+			return;
+		}
 		if (!ShouldOverride(hero, vm))
 		{
 			return;
@@ -399,6 +405,26 @@ public static class EncyclopediaHeroPersonaPatch
 		}
 		vm.InformationText = MyBehavior.BuildNpcPersonaGenerationHintForExternal(hero);
 		RequestGeneration(hero, vm);
+	}
+
+	private static void ApplyPlayerNotorietyText(EncyclopediaHeroPageVM vm)
+	{
+		if (vm == null || vm.IsInformationHidden)
+		{
+			return;
+		}
+		string notorietyText = (PlayerNotorietyBehavior.BuildPlayerNotorietyEncyclopediaTextForExternal() ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(notorietyText))
+		{
+			return;
+		}
+		string baseText = (vm.InformationText ?? "").Trim();
+		int markerIndex = baseText.IndexOf(PlayerNotorietyMarker, StringComparison.Ordinal);
+		if (markerIndex >= 0)
+		{
+			baseText = baseText.Substring(0, markerIndex).Trim();
+		}
+		vm.InformationText = string.IsNullOrWhiteSpace(baseText) ? notorietyText : (baseText + "\n\n" + notorietyText);
 	}
 
 	private static bool ShouldOverride(Hero hero, EncyclopediaHeroPageVM vm)

@@ -573,6 +573,8 @@ public static class AIConfigHandler
 
 	public static List<PostprocessRuleEntry> WildernessPostprocessRules => _actionPostprocess?.WildernessPostprocessRules ?? new List<PostprocessRuleEntry>();
 
+	public static List<PostprocessRuleEntry> RoyalPostprocessRules => _actionPostprocess?.RoyalPostprocessRules ?? new List<PostprocessRuleEntry>();
+
 	public static List<PostprocessRuleEntry> ActionPostprocessMoodRules => _actionPostprocess?.MoodRules ?? new List<PostprocessRuleEntry>();
 
 	private static string NormalizeActionPostprocessOptionalValue(string value)
@@ -618,13 +620,12 @@ public static class AIConfigHandler
 		debtHint = NormalizeActionPostprocessNameReferences(debtHint, npcName);
 		marriagePlayerCandidates = NormalizeActionPostprocessNameReferences(marriagePlayerCandidates, npcName);
 		marriageTargetCandidates = NormalizeActionPostprocessNameReferences(marriageTargetCandidates, npcName);
-		marriageFactHint = NormalizeActionPostprocessNameReferences(marriageFactHint, npcName);
 		text = ReplaceActionPostprocessOptionalSection(text, "{npc_name}的物品清单：", "shared_item_list", sharedItemList);
 		text = ReplaceActionPostprocessOptionalSection(text, "玩家可见装备：", "player_item_list", playerItemList);
 		text = ReplaceActionPostprocessOptionalSection(text, "债务提示：", "debt_hint", debtHint);
 		text = ReplaceActionPostprocessOptionalSection(text, "玩家家族可婚配未婚成员（事实清单）：", "marriage_player_candidates", marriagePlayerCandidates);
 		text = ReplaceActionPostprocessOptionalSection(text, "对方家族可婚配未婚成员（事实清单）：", "marriage_target_candidates", marriageTargetCandidates);
-		text = ReplaceActionPostprocessOptionalSection(text, "当前可直接成立的正规婚配组合与现有婚姻（事实清单）：", "marriage_fact_hint", marriageFactHint);
+		text = ReplaceActionPostprocessOptionalSection(text, "当前可直接成立的正规婚配组合与现有婚姻（事实清单）：", "marriage_fact_hint", null);
 		text = text.Replace("{tag_rules}", string.IsNullOrWhiteSpace(tagRules) ? "（无）" : tagRules.Trim())
 			.Replace("{mood_rules}", string.IsNullOrWhiteSpace(moodRules) ? "（无）" : moodRules.Trim())
 			.Replace("{npc_name}", "NPC");
@@ -643,14 +644,13 @@ public static class AIConfigHandler
 		debtHint = NormalizeActionPostprocessNameReferences(debtHint, npcName);
 		marriagePlayerCandidates = NormalizeActionPostprocessNameReferences(marriagePlayerCandidates, npcName);
 		marriageTargetCandidates = NormalizeActionPostprocessNameReferences(marriageTargetCandidates, npcName);
-		marriageFactHint = NormalizeActionPostprocessNameReferences(marriageFactHint, npcName);
 		runtimeContext = AppendPersistentActionPostprocessRuntimeContext(runtimeContext);
 		runtimeContext = NormalizeActionPostprocessNameReferences(runtimeContext, npcName);
 		text = ReplaceActionPostprocessOptionalSection(text, "玩家可见装备：", "player_item_list", playerItemList);
 		text = ReplaceActionPostprocessOptionalSection(text, "{npc_name}的物品清单：", "shared_item_list", sharedItemList);
 		text = ReplaceActionPostprocessOptionalSection(text, "玩家家族可婚配未婚成员（事实清单）：", "marriage_player_candidates", marriagePlayerCandidates);
 		text = ReplaceActionPostprocessOptionalSection(text, "对方家族可婚配未婚成员（事实清单）：", "marriage_target_candidates", marriageTargetCandidates);
-		text = ReplaceActionPostprocessOptionalSection(text, "当前可直接成立的正规婚配组合与现有婚姻（事实清单）：", "marriage_fact_hint", marriageFactHint);
+		text = ReplaceActionPostprocessOptionalSection(text, "当前可直接成立的正规婚配组合与现有婚姻（事实清单）：", "marriage_fact_hint", null);
 		text = ReplaceActionPostprocessOptionalSection(text, "债务提示：", "debt_hint", debtHint);
 		text = ReplaceActionPostprocessOptionalSection(text, "运行时补充事实：", "runtime_context", runtimeContext);
 		int latestReplyEntries = CountActionPostprocessLatestReplyEntries(latestReplyBlock);
@@ -1768,14 +1768,7 @@ public static class AIConfigHandler
 
 	private static bool IsNobleDeferenceRuntimeEligible(bool hasAnyHero)
 	{
-		try
-		{
-			return !hasAnyHero && (Clan.PlayerClan?.Tier ?? Hero.MainHero?.Clan?.Tier ?? 0) > 2;
-		}
-		catch
-		{
-			return false;
-		}
+		return false;
 	}
 
 	private static List<string> NormalizeStringList(List<string> source, int maxLen = 80)
@@ -2337,10 +2330,23 @@ public static class AIConfigHandler
 		return flag && flag2;
 	}
 
-	private static JObject BuildAuxiliaryRouterRequestPayload(string apiUrl, string modelName, IEnumerable<object> messages, int maxTokens, float temperature, out string controlMode, bool disableThinkingControls = false)
+	private static int ResolveAuxiliaryApiMaxTokens(DuelSettings settings, int fallbackMaxTokens)
 	{
+		try
+		{
+			return settings?.GetAuxiliaryApiMaxTokens() ?? DuelSettings.ClampApiMaxTokens(fallbackMaxTokens, DuelSettings.DefaultGeneralApiMaxTokens);
+		}
+		catch
+		{
+			return DuelSettings.ClampApiMaxTokens(fallbackMaxTokens, DuelSettings.DefaultGeneralApiMaxTokens);
+		}
+	}
+
+	private static JObject BuildAuxiliaryRouterRequestPayload(string apiUrl, string modelName, IEnumerable<object> messages, int maxTokens, float temperature, out string controlMode, bool disableThinkingControls = false, bool useConfiguredMaxTokens = true)
+	{
+		DuelSettings settings = DuelSettings.GetSettings();
 		controlMode = ResolveAuxiliaryThinkingControlMode(apiUrl, modelName);
-		int normalizedMaxTokens = Math.Max(16, maxTokens);
+		int normalizedMaxTokens = Math.Max(16, useConfiguredMaxTokens ? ResolveAuxiliaryApiMaxTokens(settings, maxTokens) : maxTokens);
 		if (!disableThinkingControls && controlMode == "anthropic_thinking")
 		{
 			normalizedMaxTokens = Math.Max(2048, normalizedMaxTokens);
@@ -2351,23 +2357,22 @@ public static class AIConfigHandler
 			["messages"] = JArray.FromObject(messages ?? Array.Empty<object>()),
 			["stream"] = false,
 			["max_tokens"] = normalizedMaxTokens,
-			["temperature"] = DuelSettings.ClampApiTemperature(DuelSettings.GetSettings()?.GetAuxiliaryApiTemperature() ?? temperature)
+			["temperature"] = DuelSettings.ClampApiTemperature(settings?.GetAuxiliaryApiTemperature() ?? temperature)
 		};
 		if (disableThinkingControls)
 		{
 			controlMode = "plain";
 			return jObject;
 		}
-		DuelSettings settings = DuelSettings.GetSettings();
 		bool thinkingEnabled = settings?.AuxiliaryApiThinkingEnabled ?? false;
 		string effort = settings?.GetAuxiliaryApiReasoningEffort() ?? DuelSettings.ReasoningEffortHigh;
 		DuelSettings.ApplyThinkingControls(jObject, apiUrl, modelName, thinkingEnabled, effort, out controlMode);
 		return jObject;
 	}
 
-	public static string BuildAuxiliaryRouterRequestJsonForExternal(string apiUrl, string modelName, IEnumerable<object> messages, int maxTokens, float temperature, out string controlMode, bool disableThinkingControls = false)
+	public static string BuildAuxiliaryRouterRequestJsonForExternal(string apiUrl, string modelName, IEnumerable<object> messages, int maxTokens, float temperature, out string controlMode, bool disableThinkingControls = false, bool useConfiguredMaxTokens = true)
 	{
-		return BuildAuxiliaryRouterRequestPayload(apiUrl, modelName, messages, maxTokens, temperature, out controlMode, disableThinkingControls).ToString(Formatting.None);
+		return BuildAuxiliaryRouterRequestPayload(apiUrl, modelName, messages, maxTokens, temperature, out controlMode, disableThinkingControls, useConfiguredMaxTokens).ToString(Formatting.None);
 	}
 
 	private static string BuildAuxiliarySimpleDialogueRequestJson(string apiUrl, string modelName, IEnumerable<object> messages, int maxTokens, float temperature, out string controlMode)
@@ -2487,6 +2492,32 @@ public static class AIConfigHandler
 	public static bool CanUseAuxiliaryActionPostprocess()
 	{
 		return ActionPostprocessEnabled && TryGetActionPostprocessConfig(out var _, out var _, out var _);
+	}
+
+	private static int ResolveActionPostprocessApiMaxTokens(string apiUrl, string apiKey, string modelName, int fallbackMaxTokens)
+	{
+		try
+		{
+			DuelSettings settings = DuelSettings.GetSettings();
+			if (settings == null)
+			{
+				return DuelSettings.ClampApiMaxTokens(fallbackMaxTokens, DuelSettings.DefaultGeneralApiMaxTokens);
+			}
+			string dedicatedUrl = DuelSettings.GetEffectiveApiUrl((settings.ActionPostprocessApiUrl ?? "").Trim());
+			string dedicatedKey = (settings.ActionPostprocessApiKey ?? "").Trim();
+			string dedicatedModel = settings.GetEffectiveActionPostprocessModelName();
+			bool usesDedicated = !string.IsNullOrWhiteSpace(dedicatedUrl)
+				&& !string.IsNullOrWhiteSpace(dedicatedKey)
+				&& !string.IsNullOrWhiteSpace(dedicatedModel)
+				&& string.Equals(dedicatedUrl, apiUrl ?? "", StringComparison.OrdinalIgnoreCase)
+				&& string.Equals(dedicatedKey, apiKey ?? "", StringComparison.Ordinal)
+				&& string.Equals(dedicatedModel, modelName ?? "", StringComparison.OrdinalIgnoreCase);
+			return usesDedicated ? settings.GetActionPostprocessApiMaxTokens() : settings.GetMainApiMaxTokens();
+		}
+		catch
+		{
+			return DuelSettings.ClampApiMaxTokens(fallbackMaxTokens, DuelSettings.DefaultGeneralApiMaxTokens);
+		}
 	}
 
 	private static void ResolveActionPostprocessApiSettings(string apiUrl, string apiKey, string modelName, float fallbackTemperature, out bool thinkingEnabled, out string effort, out float temperature)
@@ -2811,12 +2842,13 @@ public static class AIConfigHandler
 		string requestBodyForTokenStats = "";
 		try
 		{
+			int actualMaxTokens = ResolveActionPostprocessApiMaxTokens(apiUrl, apiKey, modelName, maxTokens);
 			JObject payload = new JObject
 			{
 				["model"] = modelName,
 				["messages"] = JArray.FromObject(array),
 				["stream"] = false,
-				["max_tokens"] = Math.Max(16, maxTokens),
+				["max_tokens"] = Math.Max(16, actualMaxTokens),
 				["temperature"] = DuelSettings.ClampApiTemperature(temperature)
 			};
 			ResolveActionPostprocessApiSettings(apiUrl, apiKey, modelName, temperature, out var thinkingEnabled, out var effort, out var effectiveTemperature);
@@ -3501,7 +3533,7 @@ public static class AIConfigHandler
 		stringBuilder.AppendLine("*Latest NPC/player exchange*:");
 		stringBuilder.Append("NPC: ").AppendLine(string.IsNullOrWhiteSpace(text2) ? "(none)" : NormalizeAuxiliaryRoutingRequestText(text2));
 		stringBuilder.Append("Player: ").AppendLine(string.IsNullOrWhiteSpace(text5) ? "(none)" : NormalizeAuxiliaryRoutingRequestText(text5));
-		stringBuilder.AppendLine("Select the most similar topics. You MUST output exactly " + Math.Max(1, topN) + " topic codes in rule_codes, ranked by similarity. Even if the dialogue seems entirely unrelated, you must still force-select the closest matching topics. Also extract all named people, places/settlements, clans/families, and kingdoms/countries explicitly mentioned in the *Latest NPC/player exchange* into mentioned_entities. Personal names and titles such as king, queen, lord, lady, noble, notable, headman, gang leader, wanderer, artisan, or ruler must go in heroes, not settlements. Do not extract the current conversation NPC/speaker's own name, role, title, aliases, or the player name merely because they are the current speakers; mentioned_entities should describe third-party entities or entities being explicitly discussed. If a name is ambiguous, put it in the closest bucket; runtime retrieval will search every extracted name across heroes, settlements, clans, and kingdoms. Order every mentioned_entities array by dialogue recency: names from the latest player line first, then latest NPC line, then newer scene history before older scene history. Use the scene history only as supporting context and do not invent names. Output strict JSON only: {\"rule_codes\":[\"CODE\"],\"mentioned_entities\":{\"heroes\":[],\"settlements\":[],\"clans\":[],\"kingdoms\":[]}}. Do not output topic numbers, prose, markdown, or any other key.");
+		stringBuilder.AppendLine("Select the most similar topics. You MUST output exactly " + Math.Max(1, topN) + " topic codes in rule_codes, ranked by similarity. Even if the dialogue seems entirely unrelated, you must still force-select the closest matching topics. Also extract all explicitly mentioned or strongly referred nouns from the *Latest NPC/player exchange* into mentioned_entities. Keep named people in heroes, places/settlements in settlements, clans/families in clans, and kingdoms/countries/factions in kingdoms. Put every other referable noun or noun phrase in terms, including item names, item type names, troop names, troop type names, prisoner names, prisoner type names, asset names, and asset type names. Personal names and titles such as king, queen, lord, lady, noble, notable, headman, gang leader, wanderer, artisan, or ruler must go in heroes, not settlements. Do not extract the current conversation NPC/speaker's own name, role, title, aliases, or the player name merely because they are the current speakers; mentioned_entities should describe third-party entities or things being explicitly discussed. If a name is ambiguous, put it in the closest bucket and also include the raw phrase in terms. Runtime retrieval will search every extracted name across world entities and current lists. Order every mentioned_entities array by dialogue recency: names from the latest player line first, then latest NPC line, then newer scene history before older scene history. Use the scene history only as supporting context and do not invent names. Output strict JSON only: {\"rule_codes\":[\"CODE\"],\"mentioned_entities\":{\"heroes\":[],\"settlements\":[],\"clans\":[],\"kingdoms\":[],\"terms\":[]}}. Do not output topic numbers, prose, markdown, or any other key.");
 		return SanitizeAuxiliaryRoutingPromptDialogueSections(stringBuilder.ToString()).Trim();
 	}
 
@@ -3782,9 +3814,9 @@ public static class AIConfigHandler
 	{
 		if (entities == null)
 		{
-			return "heroes=0 settlements=0 clans=0 kingdoms=0";
+			return "heroes=0 settlements=0 clans=0 kingdoms=0 terms=0";
 		}
-		return "heroes=" + (entities.Heroes?.Count ?? 0) + " settlements=" + (entities.Settlements?.Count ?? 0) + " clans=" + (entities.Clans?.Count ?? 0) + " kingdoms=" + (entities.Kingdoms?.Count ?? 0);
+		return "heroes=" + (entities.Heroes?.Count ?? 0) + " settlements=" + (entities.Settlements?.Count ?? 0) + " clans=" + (entities.Clans?.Count ?? 0) + " kingdoms=" + (entities.Kingdoms?.Count ?? 0) + " terms=" + (entities.Terms?.Count ?? 0);
 	}
 
 	private static string HashAuxiliaryMentionKey(string value)
@@ -3834,6 +3866,11 @@ public static class AIConfigHandler
 			FillMentionedEntityList(entities.Settlements, GetJsonPropertyIgnoreCase(obj, "settlements", "places", "locations", "towns", "castles", "villages"));
 			FillMentionedEntityList(entities.Clans, GetJsonPropertyIgnoreCase(obj, "clans", "families", "houses"));
 			FillMentionedEntityList(entities.Kingdoms, GetJsonPropertyIgnoreCase(obj, "kingdoms", "countries", "nations", "realms", "factions"));
+			FillMentionedEntityList(entities.Terms, GetJsonPropertyIgnoreCase(obj, "terms", "nouns", "keywords", "mentions", "mentioned_terms"));
+			FillMentionedEntityList(entities.Terms, GetJsonPropertyIgnoreCase(obj, "items", "item_names", "item_types", "goods", "equipment", "assets"));
+			FillMentionedEntityList(entities.Terms, GetJsonPropertyIgnoreCase(obj, "troops", "troop_names", "troop_types", "units", "soldiers"));
+			FillMentionedEntityList(entities.Terms, GetJsonPropertyIgnoreCase(obj, "prisoners", "prisoner_names", "prisoner_types", "captives"));
+			FillMentionedEntityList(entities.Terms, GetJsonPropertyIgnoreCase(obj, "asset_names", "asset_types", "fiefs", "workshops", "caravans"));
 			return !entities.IsEmpty;
 		}
 		catch (Exception ex)

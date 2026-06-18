@@ -41,6 +41,10 @@ public sealed class CourierMobilePartyAIModel : MobilePartyAIModel
 		{
 			return false;
 		}
+		if (CourierDeliveryBehavior.IsCourierParty(targetParty) && !CourierDeliveryBehavior.IsBanditOrOutlawParty(party))
+		{
+			return false;
+		}
 		if (targetParty == MobileParty.MainParty && ProactiveNpcRequestBehavior.IsProactiveRequestParty(party))
 		{
 			return false;
@@ -83,6 +87,15 @@ public sealed class CourierMobilePartyAIModel : MobilePartyAIModel
 				bestInitiativeTargetParty = null;
 				bestInitiativeBehaviorScore = 0f;
 				Logger.LogVerbose("CourierDelivery", "initiative_attack_suppressed:" + (mobileParty?.StringId ?? ""), () => "initiative attack suppressed party=" + (mobileParty?.StringId ?? ""), 10.0);
+			}
+			if (bestInitiativeBehavior == AiBehavior.EngageParty && CourierDeliveryBehavior.IsCourierParty(bestInitiativeTargetParty) && !CourierDeliveryBehavior.IsBanditOrOutlawParty(mobileParty))
+			{
+				string partyId = mobileParty?.StringId ?? "";
+				string courierId = bestInitiativeTargetParty?.StringId ?? "";
+				bestInitiativeBehavior = AiBehavior.None;
+				bestInitiativeTargetParty = null;
+				bestInitiativeBehaviorScore = 0f;
+				Logger.LogVerbose("CourierDelivery", "non_bandit_courier_attack_suppressed:" + partyId + ":" + courierId, () => "non-bandit courier attack suppressed party=" + partyId + " courier=" + courierId, 10.0);
 			}
 		}
 	}

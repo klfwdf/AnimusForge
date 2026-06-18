@@ -10814,10 +10814,11 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 		{
 			throw new Exception("API 地址为空。");
 		}
+		int actualMaxTokens = Math.Max(1, Math.Min(Math.Min(RagShortTextGenerationMaxTokens, maxTokens), settings.GetMainApiMaxTokens()));
 		JObject jObject = new JObject
 		{
 			["model"] = settings.ModelName,
-			["max_tokens"] = Math.Max(1, Math.Min(RagShortTextGenerationMaxTokens, maxTokens)),
+			["max_tokens"] = actualMaxTokens,
 			["stream"] = false
 		};
 		if (temperature.HasValue)

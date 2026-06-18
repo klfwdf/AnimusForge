@@ -274,6 +274,18 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		}
 	}
 
+	public static bool IsBanditOrOutlawParty(MobileParty party)
+	{
+		try
+		{
+			return party != null && (party.IsBandit || party.MapFaction?.IsBanditFaction == true || party.ActualClan?.IsBanditFaction == true);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
 	public static bool ShouldShowCourierButtonForExternal(Hero hero, bool informationHidden)
 	{
 		try
@@ -792,7 +804,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		TroopRoster emptyPrisoners = TroopRoster.CreateDummyTroopRoster();
 		float speed = Math.Max(4f, mainParty.Speed) * 4f;
 		TextObject name = new TextObject("AnimusForge 信使队");
-		MobileParty courier = CustomPartyComponent.CreateCustomPartyWithTroopRoster(mainParty.Position, 0.05f, mainParty.CurrentSettlement, name, Clan.PlayerClan, emptyMembers, emptyPrisoners, Hero.MainHero, "", "", speed, false);
+		MobileParty courier = CustomPartyComponent.CreateCustomPartyWithTroopRoster(mainParty.Position, 0.05f, mainParty.CurrentSettlement, name, Clan.PlayerClan, emptyMembers, emptyPrisoners, Hero.MainHero, "", "", speed, true);
 		if (courier == null)
 		{
 			throw new InvalidOperationException("创建信使队失败。");
@@ -818,7 +830,8 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		MoveRosterFromMainParty(flow.CrewRoster, courier, "crew");
 		AssignCourierLeader(courier);
 		PrepareOutgoingPayload(session, courier);
-		session.DeliveryFactText = BuildDeliveryFactText(session, delivered: false);
+		session.DeliveryFactText = BuildDeliveryFactText(session, delivered: false, flow.Recipient);
+		PlayerNotorietyBehavior.NoteCourierSentForExternal(flow.Recipient);
 		return session;
 	}
 
@@ -1026,7 +1039,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		{
 			ApplyDeliveryPayload(session, courier, recipient);
 			session.DeliveryApplied = true;
-			session.DeliveryFactText = BuildDeliveryFactText(session, delivered: true);
+			session.DeliveryFactText = BuildDeliveryFactText(session, delivered: true, recipient);
 			string playerName = MyBehavior.BuildPlayerPublicDisplayNameForExternal();
 			if (string.IsNullOrWhiteSpace(playerName))
 			{
@@ -1119,11 +1132,12 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 				return;
 			}
 			Log("llm main start session=" + session.Id + " recipient=" + SafeHeroId(recipient));
-			string extraFact = BuildDeliveryFactText(session, delivered: true);
+			string extraFact = BuildDeliveryFactText(session, delivered: true, recipient);
 			MyBehavior.ShoutPromptContext ctx = MyBehavior.BuildShoutPromptContextForExternal(recipient, session.LetterText, extraFact, recipient.Culture?.StringId ?? "neutral", hasAnyHero: true, targetCharacter: recipient.CharacterObject, targetAgentIndex: -1, excludedRuleIds: CourierExcludedRuleIds);
 			List<string> selectedRuleHits = MergeCourierSelectedRuleIds(ctx?.PreprocessRuleIds);
 			selectedRuleHits = ExcludeCourierSelectedRuleIds(selectedRuleHits, CourierExcludedRuleIds);
 			string extras = FilterCourierInjectedRuleBlocks(ctx?.Extras ?? "", selectedRuleHits, CourierExcludedRuleIds);
+			extras = AppendCourierPlayerRecentActionsIfSelected(extras, recipient, selectedRuleHits);
 			string historyText = MyBehavior.BuildHistoryContextForExternal(recipient, 24, session.LetterText, extraFact);
 			List<object> messages = BuildCourierReplyMessages(recipient, session, extras, extraFact, historyText);
 			ShoutNetwork.RecordPrimaryRequestBodyForTokenStats(messages, MainReplyMaxTokens, "courier_reply_preflight");
@@ -1285,6 +1299,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		if (!string.IsNullOrWhiteSpace(session.ReplyText))
 		{
 			MyBehavior.AppendExternalDialogueHistory(recipient, null, "【回信】" + StripCourierActionTags(session.ReplyText), "[AFEF NPC行为补充] " + (recipient.Name?.ToString() ?? "NPC") + "已通过信使写下回信，信使正在把回信带给玩家。");
+			PlayerNotorietyBehavior.NoteCourierReplyForExternal(recipient);
 		}
 		Log("postprocess committed at recipient session=" + session.Id + " remainingLen=" + (text ?? "").Length);
 	}
@@ -2614,7 +2629,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 	private static List<object> BuildCourierReplyMessages(Hero recipient, CourierSession session, string extras, string deliveryFactForPrompt = null, string prebuiltHistory = null)
 	{
 		string npcName = recipient?.Name?.ToString() ?? "NPC";
-		string playerName = MyBehavior.BuildPlayerPublicDisplayNameForExternal();
+		string playerName = MyBehavior.BuildPlayerPublicDisplayNameForExternal(recipient);
 		if (string.IsNullOrWhiteSpace(playerName))
 		{
 			playerName = Hero.MainHero?.Name?.ToString() ?? "玩家";
@@ -2622,7 +2637,8 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		string deliveryFact = string.IsNullOrWhiteSpace(deliveryFactForPrompt) ? (session?.DeliveryFactText ?? "") : deliveryFactForPrompt;
 		string history = prebuiltHistory ?? MyBehavior.BuildHistoryContextForExternal(recipient, 24, session.LetterText, deliveryFact);
 		string recentFacts = MyBehavior.BuildRecentNpcFactContextForExternal(recipient, 6);
-		string senderIdentity = MyBehavior.BuildPlayerCourierSenderIdentityForExternal();
+		string senderIdentity = MyBehavior.BuildPlayerCourierSenderIdentityForExternal(recipient);
+		string senderRelationship = MyBehavior.BuildNpcPlayerKinshipPromptLineForExternal(recipient);
 		string system = "你正在扮演 Mount & Blade II: Bannerlord 世界中的角色：" + npcName + "。\n"
 			+ "这不是面对面对话。你刚刚通过信使收到" + playerName + "写给你的一封信。\n"
 			+ "你必须根据来信者的公开身份选择合适称呼；如果来信者是君主或统治者，不要降格称为勋爵、领主或普通贵族。\n"
@@ -2636,6 +2652,12 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		{
 			user.AppendLine();
 			user.AppendLine(senderIdentity.Trim());
+		}
+		if (!string.IsNullOrWhiteSpace(senderRelationship))
+		{
+			user.AppendLine();
+			user.AppendLine("【来信者与你的关系】");
+			user.AppendLine(senderRelationship.Trim());
 		}
 		if (!string.IsNullOrWhiteSpace(deliveryFact))
 		{
@@ -2668,13 +2690,13 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		};
 	}
 
-	private static string BuildDeliveryFactText(CourierSession session, bool delivered)
+	private static string BuildDeliveryFactText(CourierSession session, bool delivered, Hero recipient = null)
 	{
 		if (session == null)
 		{
 			return "";
 		}
-		string playerName = MyBehavior.BuildPlayerPublicDisplayNameForExternal();
+		string playerName = MyBehavior.BuildPlayerPublicDisplayNameForExternal(recipient);
 		if (string.IsNullOrWhiteSpace(playerName))
 		{
 			playerName = Hero.MainHero?.Name?.ToString() ?? "玩家";
@@ -3867,6 +3889,21 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		return hits.Any(x => string.Equals((x ?? "").Trim(), value, StringComparison.OrdinalIgnoreCase));
 	}
 
+	private static string AppendCourierPlayerRecentActionsIfSelected(string extras, Hero recipient, List<string> selectedRuleHits)
+	{
+		if (!HasPreprocessRuleHit(selectedRuleHits, "npc_recent_actions"))
+		{
+			return extras ?? "";
+		}
+		string playerRecent = PlayerNotorietyBehavior.BuildPlayerRecentRuntimeInstructionForExternal(recipient, courier: true);
+		if (string.IsNullOrWhiteSpace(playerRecent))
+		{
+			return extras ?? "";
+		}
+		string block = "【附加规则:npc_recent_actions】" + Environment.NewLine + playerRecent.Trim();
+		return string.IsNullOrWhiteSpace(extras) ? block : (extras.TrimEnd() + Environment.NewLine + block);
+	}
+
 	private static List<string> MergeCourierSelectedRuleIds(params IEnumerable<string>[] sources)
 	{
 		List<string> result = new List<string>();
@@ -4380,10 +4417,11 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			}
 			PartyBase other = courier == side1?.MobileParty ? side2 : side1;
 			IFaction otherFaction = other?.MapFaction;
-			bool otherIsBandit = otherFaction?.IsBanditFaction ?? false;
+			bool otherIsBandit = IsBanditOrOutlawParty(other?.MobileParty) || otherFaction?.IsBanditFaction == true;
 			if (otherIsBandit)
 			{
-				return true;
+				__result = false;
+				return false;
 			}
 			__result = true;
 			return false;

@@ -4668,7 +4668,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			}
 			if (text == "MERCENARY")
 			{
-				if (giver.Clan.IsUnderMercenaryService)
+				if (giver?.Clan == null || giver.Clan.Kingdom != kingdom2 || giver.Clan.IsUnderMercenaryService)
 				{
 					statusText = "执行失败：当前对话对象并非该势力正式封臣，不能签订雇佣兵契约。";
 					return false;
@@ -4681,6 +4681,11 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				catch
 				{
 					num = 1;
+				}
+				if (playerClan.Tier < num)
+				{
+					statusText = "执行失败：玩家家族等级不足，成为雇佣兵至少需要家族等级 " + num + "。";
+					return false;
 				}
 				if (playerClan.Kingdom != null && !playerClan.IsUnderMercenaryService)
 				{
@@ -4702,6 +4707,11 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			}
 			if (text == "VASSAL")
 			{
+				if (giver == null || kingdom2.Leader != giver)
+				{
+					statusText = "执行失败：只有目标王国的国王才能授予正式封臣身份。";
+					return false;
+				}
 				int num3 = 2;
 				try
 				{
@@ -4710,6 +4720,11 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				catch
 				{
 					num3 = 2;
+				}
+				if (playerClan.Tier < num3)
+				{
+					statusText = "执行失败：玩家家族等级不足，成为正式封臣至少需要家族等级 " + num3 + "。";
+					return false;
 				}
 				if (playerClan.Kingdom == kingdom2 && !playerClan.IsUnderMercenaryService)
 				{
@@ -6248,6 +6263,11 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		default:
 			return "物品";
 		}
+	}
+
+	public static string GetItemPromptTypeLabelForExternal(ItemObject item)
+	{
+		return GetItemPromptTypeLabel(item);
 	}
 
 	private static void AppendItemTypeField(StringBuilder stringBuilder, ItemObject item)
@@ -8010,6 +8030,133 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			}
 		}
 		return stringBuilder.Length > 0 ? stringBuilder.ToString().TrimEnd() : "（无）";
+	}
+
+	public string BuildVisibleEquipmentPostprocessListForAI(Hero hero, MentionedWorldEntities mentions, int maxItems = 0)
+	{
+		if (hero == null)
+		{
+			return "（无）";
+		}
+		List<RewardItemInfo> heroVisibleEquipmentItemsForPrompt = GetHeroVisibleEquipmentItemsForPrompt(hero);
+		if (heroVisibleEquipmentItemsForPrompt == null || heroVisibleEquipmentItemsForPrompt.Count <= 0)
+		{
+			return "（无）";
+		}
+		List<RewardItemInfo> orderedItems = heroVisibleEquipmentItemsForPrompt.OrderByDescending((RewardItemInfo x) => x.Count).ThenBy((RewardItemInfo x) => x.StringId, StringComparer.Ordinal).ToList();
+		List<RewardItemInfo> filteredItems = PromptListRetrievalService.FilterRewardItems(orderedItems, mentions, maxItems);
+		StringBuilder stringBuilder = new StringBuilder();
+		foreach (RewardItemInfo item in filteredItems)
+		{
+			if (item == null || item.Item == null)
+			{
+				continue;
+			}
+			stringBuilder.Append(item.Name ?? item.StringId ?? "未知物品")
+				.Append(" | type=")
+				.Append(GetItemPromptTypeLabel(item.Item))
+				.Append(" | x")
+				.Append(Math.Max(1, item.Count))
+				.Append(" | inventoryUnitValue=")
+				.Append(Math.Max(1, GetVisibleEquipmentActualUnitValue(item)))
+				.AppendLine();
+		}
+		return stringBuilder.Length > 0 ? stringBuilder.ToString().TrimEnd() : "（无）";
+	}
+
+	public string BuildFilteredInventorySummaryForAI(Hero hero, MentionedWorldEntities mentions, int maxItems = 0, bool includeGuidePrice = true, bool includePrivateBattleEquipment = false)
+	{
+		if (hero == null)
+		{
+			return "";
+		}
+		try
+		{
+			List<RewardItemInfo> allOptions = BuildHeroRewardPostprocessItems(hero)
+				.Where((RewardItemInfo x) => x != null && x.Item != null && x.Count > 0)
+				.ToList();
+			if (!includePrivateBattleEquipment)
+			{
+				allOptions = allOptions.Where((RewardItemInfo x) => !x.IsPrivateEquipment).ToList();
+			}
+			List<RewardItemInfo> options = PromptListRetrievalService.FilterRewardItems(allOptions, mentions, maxItems);
+			int gold = IsNotableMarketHero(hero, ResolveNotableMarketSettlement(hero)) ? GetRewardPostprocessGoldForHero(hero) : GetHeroGold(hero);
+			return BuildFilteredItemSummaryForAI(options, gold, includeGuidePrice, allOptions, "你");
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	public string BuildFilteredSettlementMerchantInventorySummaryForAI(CharacterObject character, MentionedWorldEntities mentions, int maxItems = 0, Settlement settlement = null, bool includeGuidePrice = true)
+	{
+		try
+		{
+			settlement = settlement ?? Settlement.CurrentSettlement;
+			List<RewardItemInfo> allOptions = BuildSettlementMerchantPostprocessItems(character, settlement)
+				.Where((RewardItemInfo x) => x != null && x.Item != null && x.Count > 0)
+				.ToList();
+			List<RewardItemInfo> options = PromptListRetrievalService.FilterRewardItems(allOptions, mentions, maxItems);
+			int gold = GetSettlementMarketTradeGold(settlement);
+			return BuildFilteredItemSummaryForAI(options, gold, includeGuidePrice, allOptions, "你");
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	private static string BuildFilteredItemSummaryForAI(List<RewardItemInfo> options, int gold, bool includeGuidePrice, List<RewardItemInfo> allOptions = null, string ownerLabel = "你")
+	{
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.Append("第纳尔: ").Append(Math.Max(0, gold)).AppendLine();
+		if (options == null || options.Count == 0)
+		{
+			stringBuilder.AppendLine("（本轮检索清单无可显示物品）");
+			return stringBuilder.ToString().TrimEnd();
+		}
+		List<RewardItemInfo> publicItems = options.Where((RewardItemInfo x) => x != null && !x.IsPrivateEquipment).ToList();
+		List<RewardItemInfo> privateItems = options.Where((RewardItemInfo x) => x != null && x.IsPrivateEquipment).ToList();
+		AppendFilteredItemSummarySection(stringBuilder, "库存物品：", publicItems, includeGuidePrice);
+		AppendFilteredItemSummarySection(stringBuilder, "私人战斗装备：", privateItems, includeGuidePrice);
+		string remainder = PromptListRetrievalService.BuildRemainingRewardItemsSummary(allOptions, options, ownerLabel);
+		if (!string.IsNullOrWhiteSpace(remainder))
+		{
+			stringBuilder.AppendLine(remainder);
+		}
+		return stringBuilder.ToString().TrimEnd();
+	}
+
+	private static void AppendFilteredItemSummarySection(StringBuilder stringBuilder, string header, List<RewardItemInfo> items, bool includeGuidePrice)
+	{
+		if (stringBuilder == null || items == null || items.Count == 0)
+		{
+			return;
+		}
+		stringBuilder.AppendLine(header);
+		foreach (RewardItemInfo item in items)
+		{
+			if (item == null)
+			{
+				continue;
+			}
+			stringBuilder.Append(item.Name ?? item.PromptStringId ?? item.StringId ?? "未知物品")
+				.Append(" | type=")
+				.Append(GetItemPromptTypeLabel(item.Item))
+				.Append(" | ")
+				.Append(Math.Max(1, item.Count))
+				.Append(GetItemQuantityUnit(item.Item));
+			if (!string.IsNullOrWhiteSpace(item.PromptStringId) && !string.Equals(item.PromptStringId, item.StringId, StringComparison.OrdinalIgnoreCase))
+			{
+				stringBuilder.Append(" | token=").Append(item.PromptStringId);
+			}
+			if (includeGuidePrice)
+			{
+				stringBuilder.Append(" | guidePrice=").Append(Math.Max(1, item.GuidePrice));
+			}
+			stringBuilder.AppendLine();
+		}
 	}
 
 	public string BuildInventorySummaryForAI(Hero hero, int maxItems = 200, bool includeGuidePrice = true, bool includePrivateBattleEquipment = false, int maxPrivateEquipmentItems = 32)

@@ -2173,6 +2173,45 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		public bool UsesNativeIngotScale;
 	}
 
+	private sealed class PlayerSceneConflictMajorMaterialDraft
+	{
+		public bool HasAnyAction;
+
+		public int Day = -1;
+
+		public string GameDate = "";
+
+		public string SettlementId = "";
+
+		public string SettlementName = "";
+
+		public string LocationText = "";
+
+		public string ActorCultureId = "";
+
+		public string TargetCultureId = "";
+
+		public string SettlementCultureId = "";
+
+		public int DamageCount;
+
+		public int UnconsciousCount;
+
+		public int KilledCount;
+
+		public float CrimeAmount;
+
+		public bool HadCriminalTarget;
+
+		public bool HadAuthorityTarget;
+
+		public bool HadOwnedSettlementPassiveAttack;
+
+		public readonly HashSet<string> VictimKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+		public readonly List<string> VictimNames = new List<string>();
+	}
+
 	private MissionFightHandler _fightHandler;
 
 	private readonly HashSet<int> _playerAgentIndices = new HashSet<int>();
@@ -2208,6 +2247,12 @@ public class SceneTauntMissionBehavior : MissionBehavior
 	private bool _ownedSettlementPassiveHandsUpActionMissingLogged;
 
 	private bool _ownedSettlementPassiveHandsUpActionRejectedLogged;
+
+	private readonly HashSet<string> _recordedPlayerSceneConflictActionKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+	private int _playerSceneConflictActionSequence;
+
+	private readonly PlayerSceneConflictMajorMaterialDraft _playerSceneConflictMajorMaterialDraft = new PlayerSceneConflictMajorMaterialDraft();
 
 	private readonly Dictionary<int, Team> _ownedSettlementPassiveOriginalTeams = new Dictionary<int, Team>();
 
@@ -3213,6 +3258,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			{
 				ApplyOwnedSettlementPassiveAttackLoyaltyPenalty(settlement, OwnedSettlementPassiveAttackLoyaltyPenalty, "owned_settlement_npc_first_damage", targetAgent);
 				TryTriggerOwnedSettlementPassiveAttackReaction(targetAgent, knockedDown: false);
+				TryRecordPlayerSceneConflictRecentAction(targetAgent, Agent.Main, "damage", reason);
 			}
 			TryHoldOwnedSettlementPassiveVictimInHandsUpPose(targetAgent);
 			return true;
@@ -3247,12 +3293,303 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			{
 				ApplyOwnedSettlementPassiveAttackLoyaltyPenalty(settlement, OwnedSettlementPassiveAttackLoyaltyPenalty, "owned_settlement_npc_knockdown", affectedAgent);
 				TryQueueOwnedSettlementPassiveNotableBattleDeath(affectedAgent, affectorAgent, agentState);
+				TryRecordPlayerSceneConflictRecentAction(affectedAgent, affectorAgent, agentState == AgentState.Killed ? "killed" : "unconscious", "owned_settlement_passive_knockdown");
 			}
 			Logger.Log("SceneTaunt", $"Owned settlement passive attack knockdown handled. Target={affectedAgent.Name}, AgentIndex={affectedAgent.Index}, State={agentState}, Settlement={settlement?.StringId}");
 		}
 		catch (Exception ex)
 		{
 			Logger.Log("SceneTaunt", "Handling owned settlement passive attack knockdown failed: " + ex.Message);
+		}
+	}
+
+	private void TryRecordPlayerSceneConflictRecentAction(Agent victimAgent, Agent affectorAgent, string actionKind, string reason, float crimeAmount = 0f)
+	{
+		try
+		{
+			if (affectorAgent != Agent.Main || victimAgent == null || !victimAgent.IsHuman || victimAgent == Agent.Main)
+			{
+				return;
+			}
+			CharacterObject victimCharacter = victimAgent.Character as CharacterObject;
+			Hero victimHero = victimCharacter?.HeroObject;
+			if (SceneTauntBehavior.IsPlayerProtectedSceneAttackTarget(victimHero) || SceneTauntBehavior.IsChildSceneProtectedTarget(victimCharacter))
+			{
+				return;
+			}
+			string normalizedKind = (actionKind ?? "").Trim().ToLowerInvariant();
+			if (normalizedKind != "damage" && normalizedKind != "unconscious" && normalizedKind != "killed")
+			{
+				return;
+			}
+			int day = GetCurrentGameDayIndexForSceneConflictAction();
+			string targetKey = SceneTauntBehavior.BuildSceneTauntTargetKey(victimHero, victimCharacter, victimAgent.Index);
+			string stableKey = "scene_conflict_player:" + normalizedKind + ":" + day + ":" + targetKey;
+			if (!_recordedPlayerSceneConflictActionKeys.Add(stableKey))
+			{
+				return;
+			}
+			Settlement settlement = Settlement.CurrentSettlement ?? PlayerEncounter.LocationEncounter?.Settlement;
+			string settlementName = settlement?.Name?.ToString();
+			if (string.IsNullOrWhiteSpace(settlementName))
+			{
+				settlementName = "当前定居点";
+			}
+			string locationName = CampaignMission.Current?.Location?.Name?.ToString();
+			if (string.IsNullOrWhiteSpace(locationName))
+			{
+				locationName = CampaignMission.Current?.Location?.StringId;
+			}
+			string locationSuffix = string.IsNullOrWhiteSpace(locationName) ? "" : "的" + locationName.Trim();
+			string victimName = victimAgent.Name?.ToString();
+			if (string.IsNullOrWhiteSpace(victimName))
+			{
+				victimName = victimHero?.Name?.ToString() ?? victimCharacter?.Name?.ToString() ?? "目标";
+			}
+			string verb = normalizedKind == "killed" ? "杀死了" : (normalizedKind == "unconscious" ? "击倒了" : "攻击并打伤了");
+			string text = "你在" + settlementName + locationSuffix + verb + victimName + "。";
+			if (crimeAmount > 0f)
+			{
+				text += "你的犯罪度因此上升约 " + crimeAmount.ToString("0.#") + "。";
+			}
+			bool criminalTarget = IsSettlementCriminalConflictTarget(victimHero, victimCharacter);
+			if (criminalTarget)
+			{
+				text += "对方被当地视为犯罪分子。";
+			}
+			bool authorityTarget = IsAuthorityPhysicalAttackTarget(victimHero, victimCharacter);
+			bool ownedSettlementPassiveAttack = (reason ?? "").IndexOf("owned_settlement", StringComparison.OrdinalIgnoreCase) >= 0;
+			RememberPlayerSceneConflictMajorMaterialCandidate(normalizedKind, victimName, targetKey, day, GetCurrentGameDateTextForSceneConflictAction(day), settlement, locationName, victimHero, victimCharacter, crimeAmount, criminalTarget, authorityTarget, ownedSettlementPassiveAttack);
+			int sequence = ++_playerSceneConflictActionSequence;
+			PlayerNotorietyBehavior.RecordPlayerActionForExternal(
+				text,
+				stableKey,
+				"scene_conflict_" + normalizedKind,
+				isMajor: false,
+				day,
+				GetCurrentGameDateTextForSceneConflictAction(day),
+				sequence,
+				settlement?.StringId ?? "",
+				settlementName,
+				locationName ?? "",
+				Hero.MainHero?.Culture?.StringId ?? "",
+				victimHero?.Culture?.StringId ?? victimCharacter?.Culture?.StringId ?? "",
+				settlement?.Culture?.StringId ?? "",
+				won: null);
+			Logger.Log("SceneTaunt", $"Recorded player scene conflict recent action. Kind={normalizedKind}, Reason={reason}, Victim={victimName}, StableKey={stableKey}");
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SceneTaunt", "Recording player scene conflict recent action failed: " + ex.Message);
+		}
+	}
+
+	private void RememberPlayerSceneConflictMajorMaterialCandidate(string actionKind, string victimName, string victimKey, int day, string gameDate, Settlement settlement, string locationText, Hero victimHero, CharacterObject victimCharacter, float crimeAmount, bool criminalTarget, bool authorityTarget, bool ownedSettlementPassiveAttack)
+	{
+		try
+		{
+			PlayerSceneConflictMajorMaterialDraft draft = _playerSceneConflictMajorMaterialDraft;
+			if (!draft.HasAnyAction)
+			{
+				draft.HasAnyAction = true;
+				draft.Day = day;
+				draft.GameDate = gameDate ?? "";
+				draft.SettlementId = settlement?.StringId ?? "";
+				draft.SettlementName = settlement?.Name?.ToString() ?? "";
+				draft.LocationText = locationText ?? "";
+				draft.ActorCultureId = Hero.MainHero?.Culture?.StringId ?? "";
+				draft.SettlementCultureId = settlement?.Culture?.StringId ?? "";
+			}
+			if (string.IsNullOrWhiteSpace(draft.TargetCultureId))
+			{
+				draft.TargetCultureId = victimHero?.Culture?.StringId ?? victimCharacter?.Culture?.StringId ?? "";
+			}
+			switch ((actionKind ?? "").Trim().ToLowerInvariant())
+			{
+				case "killed":
+					draft.KilledCount++;
+					break;
+				case "unconscious":
+					draft.UnconsciousCount++;
+					break;
+				default:
+					draft.DamageCount++;
+					break;
+			}
+			draft.CrimeAmount += MathF.Max(0f, crimeAmount);
+			draft.HadCriminalTarget |= criminalTarget;
+			draft.HadAuthorityTarget |= authorityTarget;
+			draft.HadOwnedSettlementPassiveAttack |= ownedSettlementPassiveAttack;
+			string key = string.IsNullOrWhiteSpace(victimKey) ? (victimName ?? "") : victimKey;
+			if (!string.IsNullOrWhiteSpace(key) && draft.VictimKeys.Add(key) && !string.IsNullOrWhiteSpace(victimName) && draft.VictimNames.Count < 8)
+			{
+				draft.VictimNames.Add(victimName.Trim());
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SceneTaunt", "Remembering player scene conflict major material failed: " + ex.Message);
+		}
+	}
+
+	private void FlushPlayerSceneConflictMajorMaterial()
+	{
+		try
+		{
+			PlayerSceneConflictMajorMaterialDraft draft = _playerSceneConflictMajorMaterialDraft;
+			if (!draft.HasAnyAction)
+			{
+				return;
+			}
+			string settlementName = string.IsNullOrWhiteSpace(draft.SettlementName) ? "当前定居点" : draft.SettlementName.Trim();
+			string locationSuffix = string.IsNullOrWhiteSpace(draft.LocationText) ? "" : "的" + draft.LocationText.Trim();
+			int victimCount = draft.VictimKeys.Count;
+			string victimSummary = BuildPlayerSceneConflictVictimSummary(draft);
+			string text = "你在" + settlementName + locationSuffix + "卷入和平场景冲突";
+			if (victimCount > 0)
+			{
+				text += "，伤及 " + victimCount + " 名 NPC";
+			}
+			if (!string.IsNullOrWhiteSpace(victimSummary))
+			{
+				text += "（" + victimSummary + "）";
+			}
+			List<string> consequences = new List<string>();
+			if (draft.KilledCount > 0)
+			{
+				consequences.Add("杀死 " + draft.KilledCount + " 人");
+			}
+			if (draft.UnconsciousCount > 0)
+			{
+				consequences.Add("击倒 " + draft.UnconsciousCount + " 人");
+			}
+			if (draft.DamageCount > 0)
+			{
+				consequences.Add("造成 " + draft.DamageCount + " 次伤害");
+			}
+			if (consequences.Count > 0)
+			{
+				text += "，" + string.Join("，", consequences);
+			}
+			if (draft.CrimeAmount > 0f)
+			{
+				text += "，犯罪度累计上升约 " + draft.CrimeAmount.ToString("0.#");
+			}
+			if (draft.HadOwnedSettlementPassiveAttack)
+			{
+				text += "，并在自有定居点内造成忠诚度损失";
+			}
+			if (draft.HadAuthorityTarget)
+			{
+				text += "，目标包含当地权威人物";
+			}
+			if (draft.HadCriminalTarget)
+			{
+				text += "，目标中包含当地犯罪分子";
+			}
+			text += "。";
+			int day = draft.Day >= 0 ? draft.Day : GetCurrentGameDayIndexForSceneConflictAction();
+			int hash = text.GetHashCode() & int.MaxValue;
+			string stableKey = "scene_conflict_player_major:" + day + ":" + (draft.SettlementId ?? "") + ":" + (draft.LocationText ?? "") + ":" + hash;
+			PlayerNotorietyBehavior.RecordPlayerHistoryMaterialForExternal(
+				text,
+				stableKey,
+				"scene_conflict_summary",
+				day,
+				draft.GameDate,
+				draft.ActorCultureId,
+				draft.TargetCultureId,
+				draft.SettlementCultureId);
+			Logger.Log("SceneTaunt", $"Recorded player scene conflict major material. Day={day}, Settlement={draft.SettlementId}, Victims={victimCount}, Damage={draft.DamageCount}, Unconscious={draft.UnconsciousCount}, Killed={draft.KilledCount}, Crime={draft.CrimeAmount:0.##}");
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SceneTaunt", "Flushing player scene conflict major material failed: " + ex.Message);
+		}
+		finally
+		{
+			ResetPlayerSceneConflictMajorMaterialDraft();
+		}
+	}
+
+	private static string BuildPlayerSceneConflictVictimSummary(PlayerSceneConflictMajorMaterialDraft draft)
+	{
+		if (draft?.VictimNames == null || draft.VictimNames.Count == 0)
+		{
+			return "";
+		}
+		int count = Math.Min(3, draft.VictimNames.Count);
+		string text = string.Join("、", draft.VictimNames.Take(count));
+		if (draft.VictimNames.Count > count)
+		{
+			text += "等";
+		}
+		return text;
+	}
+
+	private void ResetPlayerSceneConflictMajorMaterialDraft()
+	{
+		PlayerSceneConflictMajorMaterialDraft draft = _playerSceneConflictMajorMaterialDraft;
+		draft.HasAnyAction = false;
+		draft.Day = -1;
+		draft.GameDate = "";
+		draft.SettlementId = "";
+		draft.SettlementName = "";
+		draft.LocationText = "";
+		draft.ActorCultureId = "";
+		draft.TargetCultureId = "";
+		draft.SettlementCultureId = "";
+		draft.DamageCount = 0;
+		draft.UnconsciousCount = 0;
+		draft.KilledCount = 0;
+		draft.CrimeAmount = 0f;
+		draft.HadCriminalTarget = false;
+		draft.HadAuthorityTarget = false;
+		draft.HadOwnedSettlementPassiveAttack = false;
+		draft.VictimKeys.Clear();
+		draft.VictimNames.Clear();
+	}
+
+	private static int GetCurrentGameDayIndexForSceneConflictAction()
+	{
+		try
+		{
+			return Math.Max(0, (int)Math.Floor(CampaignTime.Now.ToDays));
+		}
+		catch
+		{
+			return 0;
+		}
+	}
+
+	private static string GetCurrentGameDateTextForSceneConflictAction(int day)
+	{
+		try
+		{
+			string text = CampaignTime.Now.ToString();
+			return string.IsNullOrWhiteSpace(text) ? ("第 " + day + " 日") : text.Trim();
+		}
+		catch
+		{
+			return "第 " + day + " 日";
+		}
+	}
+
+	private static float EstimatePlayerSceneConflictStartCrimeAmount(Agent targetAgent, bool playerUsedWeapon)
+	{
+		try
+		{
+			CharacterObject targetCharacter = targetAgent?.Character as CharacterObject;
+			Hero targetHero = targetCharacter?.HeroObject;
+			if (IsSettlementCriminalConflictTarget(targetHero, targetCharacter))
+			{
+				return 0f;
+			}
+			return (playerUsedWeapon || IsAuthorityPhysicalAttackTarget(targetHero, targetCharacter)) ? SceneTauntInitialArmedCrimeAmount : 5f;
+		}
+		catch
+		{
+			return 0f;
 		}
 	}
 
@@ -3655,9 +3992,15 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		}
 		if (!_conflictActive)
 		{
-			TryStartConflictFromPhysicalAttack(affectedAgent, IsWeaponComponentRealWeapon(attackerWeapon), "player_physical_score_hit");
+			bool playerUsedWeapon = IsWeaponComponentRealWeapon(attackerWeapon);
+			float startCrimeAmount = EstimatePlayerSceneConflictStartCrimeAmount(affectedAgent, playerUsedWeapon);
+			if (TryStartConflictFromPhysicalAttack(affectedAgent, playerUsedWeapon, "player_physical_score_hit"))
+			{
+				TryRecordPlayerSceneConflictRecentAction(affectedAgent, affectorAgent, "damage", "player_physical_score_hit_start", startCrimeAmount);
+			}
 			return;
 		}
+		TryRecordPlayerSceneConflictRecentAction(affectedAgent, affectorAgent, "damage", "player_physical_score_hit_existing_conflict");
 		if (!_armedConflict && IsWeaponComponentRealWeapon(attackerWeapon))
 		{
 			EscalateToArmedConflict("player_dealt_weapon_damage");
@@ -4749,6 +5092,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			}
 			CharacterObject characterObject = affectedAgent.Character as CharacterObject;
 			ApplyPerNpcKnockdownConsequences(affectedAgent, characterObject, affectedAgent.Name?.ToString());
+			TryRecordPlayerSceneConflictRecentAction(affectedAgent, affectorAgent, agentState == AgentState.Killed ? "killed" : "unconscious", "native_alley_knockdown");
 			Logger.Log("SceneTaunt", $"Applied native alley criminal knockdown consequences. Victim={affectedAgent.Name}, Affector={affectorAgent?.Name}");
 		}
 		catch (Exception ex)
@@ -4807,6 +5151,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 
 	protected override void OnEndMission()
 	{
+		FlushPlayerSceneConflictMajorMaterial();
 		ClearSceneGoldDrops(removeEntities: true);
 		ClearRuntimeState();
 	}
@@ -7433,6 +7778,8 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			}
 			CharacterObject characterObject = affectedAgent.Character as CharacterObject;
 			ApplyPerNpcKnockdownConsequences(affectedAgent, characterObject, affectedAgent.Name?.ToString());
+			float crimeAmount = IsSettlementCriminalConflictTarget(characterObject?.HeroObject, characterObject) ? 0f : SceneTauntPerKnockdownCrimeAmount;
+			TryRecordPlayerSceneConflictRecentAction(affectedAgent, affectorAgent, agentState == AgentState.Killed ? "killed" : "unconscious", "scene_taunt_armed_knockdown", crimeAmount);
 		}
 		catch (Exception ex)
 		{
@@ -8321,6 +8668,8 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		_guardAgentIndices.Clear();
 		_blockedAiWeaponAgentIndices.Clear();
 		_penalizedArmedKnockdownAgentIndices.Clear();
+		_recordedPlayerSceneConflictActionKeys.Clear();
+		_playerSceneConflictActionSequence = 0;
 		ClearOwnedSettlementPassiveAttackState("clear_runtime_state");
 		if (!preserveArmedDefeatState)
 		{

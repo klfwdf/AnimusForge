@@ -3691,7 +3691,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			args.optionLeaveType = GameMenuOption.LeaveType.Conversation;
 			Hero hero = EnsureEncounterTargetHero("menu_meet_condition");
 			GameTexts.SetVariable("TARGET_NAME", (hero != null) ? hero.Name : new TextObject("领主"));
-			GameTexts.SetVariable("MEET_LORD_LABEL", ProactiveNpcRequestBehavior.IsActiveRequestHero(hero) ? new TextObject("听听{TARGET_NAME}的请求") : new TextObject("与{TARGET_NAME}会面"));
+			GameTexts.SetVariable("MEET_LORD_LABEL", new TextObject("与{TARGET_NAME}会面"));
 			if (hero == null)
 			{
 				args.IsEnabled = false;
@@ -3759,7 +3759,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			args.optionLeaveType = GameMenuOption.LeaveType.Conversation;
 			Hero hero = EnsureEncounterTargetHero("menu_native_dialogue_condition");
 			GameTexts.SetVariable("TARGET_NAME", (hero != null) ? hero.Name : new TextObject("领主"));
-			GameTexts.SetVariable("NATIVE_DIALOGUE_LABEL", ProactiveNpcRequestBehavior.IsActiveRequestHero(hero) ? new TextObject("进入对话并听取请求") : new TextObject("进入原版对话"));
+			GameTexts.SetVariable("NATIVE_DIALOGUE_LABEL", ProactiveNpcRequestBehavior.IsActiveRequestHero(hero) ? new TextObject("进入对话") : new TextObject("进入原版对话"));
 			if (hero == null)
 			{
 				args.IsEnabled = false;
@@ -4593,6 +4593,73 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private static bool IsMissionStateActiveForMeetingRelease()
+	{
+		try
+		{
+			return Mission.Current != null || Game.Current?.GameStateManager?.ActiveState is MissionState;
+		}
+		catch
+		{
+			return Mission.Current != null;
+		}
+	}
+
+	private static bool TryFinishMeetingPlayerReleaseEncounterDirectly(Hero releasedByHero, string reason)
+	{
+		try
+		{
+			if (PlayerEncounter.Current == null)
+			{
+				Logger.Log("MeetingRelease", "Direct release finish skipped because PlayerEncounter.Current is null. Reason=" + (reason ?? "N/A"));
+				return false;
+			}
+			try
+			{
+				PlayerEncounter.CampaignBattleResult = null;
+			}
+			catch
+			{
+			}
+			try
+			{
+				PlayerEncounter.LeaveEncounter = true;
+			}
+			catch
+			{
+			}
+			try
+			{
+				PlayerEncounter.Current.IsPlayerWaiting = false;
+			}
+			catch
+			{
+			}
+			try
+			{
+				PlayerEncounter.Update();
+			}
+			catch
+			{
+			}
+			try
+			{
+				ApplyMeetingPlayerReleaseWorldMapCooldown(releasedByHero, reason ?? "meeting_release_direct_finish");
+			}
+			catch
+			{
+			}
+			PlayerEncounter.Finish(true);
+			Logger.Log("MeetingRelease", "Directly finished player encounter after release. Reason=" + (reason ?? "N/A"));
+			return true;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("MeetingRelease", "Direct release encounter finish failed: " + ex.Message);
+			return false;
+		}
+	}
+
 	internal static bool TryExecuteMeetingPlayerRelease(Hero target, string reason)
 	{
 		try
@@ -4603,6 +4670,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 				return false;
 			}
 			Logger.Log("MeetingRelease", $"Player release triggered. Target={resolvedTarget?.Name}, Reason={reason ?? "N/A"}");
+			bool flag = IsMissionStateActiveForMeetingRelease();
 			try
 			{
 				Campaign.Current?.ConversationManager?.EndConversation();
@@ -4612,9 +4680,20 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			}
 			AuthorizeMeetingPlayerRelease(reason ?? "meeting_release_player");
 			ClearPendingReturnToEncounterMenuAfterUnauthorizedMeetingExit("meeting_release_player");
+			if (flag)
+			{
+				if (!TryEndCurrentMeetingMissionByReflection(reason ?? "meeting_release_player"))
+				{
+					Logger.Log("MeetingRelease", "Release authorized but mission could not be ended automatically; waiting for mission exit. Reason=" + (reason ?? "N/A"));
+				}
+			}
+			else if (TryFinishMeetingPlayerReleaseEncounterDirectly(resolvedTarget, reason ?? "meeting_release_player"))
+			{
+				ClearMeetingPlayerReleaseAuthorization("direct_release_finished");
+			}
 			try
 			{
-				AnimusForgeQuickInfo.Show("对方同意放你离开。你现在可以按TAB自行退出场景。", _targetHero?.CharacterObject);
+				AnimusForgeQuickInfo.Show(flag ? "对方同意放你离开，正在退出当前会面。" : "对方同意放你离开。", _targetHero?.CharacterObject);
 			}
 			catch
 			{

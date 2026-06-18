@@ -1,5 +1,8 @@
 using System;
+using System.Collections;
+using System.Reflection;
 using System.Threading.Tasks;
+using SandBox.View.Map;
 using TaleWorlds.Core;
 using TaleWorlds.Engine.GauntletUI;
 using TaleWorlds.InputSystem;
@@ -12,6 +15,22 @@ namespace AnimusForge;
 public sealed class AnimusForgeNativeConversationOverlay
 {
 	private const int WaitingDotsIntervalMilliseconds = 350;
+
+	private const string EncyclopediaLayerName = "EncyclopediaBar";
+
+	private const string MissionEscapeMenuLayerName = "MissionEscapeMenu";
+
+	private const string MissionOptionsLayerName = "MissionOptions";
+
+	private const string MapEscapeMenuLayerName = "MapEscapeMenu";
+
+	private const string MapCampaignOptionsLayerName = "MapCampaignOptions";
+
+	private const string MapConversationLayerName = "MapConversation";
+
+	private const string MissionConversationLayerName = "MissionConversation";
+
+	private static readonly FieldInfo _screenLayersField = typeof(ScreenBase).GetField("_layers", BindingFlags.Instance | BindingFlags.NonPublic);
 
 	private static AnimusForgeNativeConversationOverlay _activeOverlay;
 
@@ -49,6 +68,12 @@ public sealed class AnimusForgeNativeConversationOverlay
 
 	private int _queuedPostprocessNoticeGeneration = -1;
 
+	private bool _temporarySystemUiActive;
+
+	private bool _isHiddenForTemporarySystemUi;
+
+	private int _postRestoreForceRestoreTicks;
+
 	public static bool IsOpen => _activeOverlay != null && !_activeOverlay._isClosed;
 
 	private AnimusForgeNativeConversationOverlay(ScreenBase screen)
@@ -74,13 +99,24 @@ public sealed class AnimusForgeNativeConversationOverlay
 			}
 			if (_activeOverlay == null || _activeOverlay._isClosed)
 			{
+				if (IsKnownTemporarySystemScreen(topScreen))
+				{
+					return;
+				}
 				Show(topScreen);
+				return;
+			}
+			if (_activeOverlay.TickTemporarySystemUiIfNeeded(topScreen))
+			{
 				return;
 			}
 			if (!ReferenceEquals(_activeOverlay._screen, topScreen))
 			{
 				CloseActive();
-				Show(topScreen);
+				if (!IsKnownTemporarySystemScreen(topScreen))
+				{
+					Show(topScreen);
+				}
 				return;
 			}
 			_activeOverlay.Tick();
@@ -126,14 +162,14 @@ public sealed class AnimusForgeNativeConversationOverlay
 		{
 			return;
 		}
+		ProcessPostRestoreNativeAnswerRestore();
 		FlushPendingPostprocessNotice();
 		UpdateWaitingDotsAnimation();
 		_dataSource.SetPersonaEditVisible(ShoutBehavior.CanEditNativeConversationNpcForExternal());
 		TryStartPendingNpcOpening();
 		if (!_dataSource.IsCustomAnswerVisible)
 		{
-			NativeConversationAnswerAreaController.SetSuppressed(false);
-			UpdateButtonsOnlyInputRestrictions();
+			RestoreNativeConversationInputAfterOrdinaryMode(forceAnswerRestore: false);
 		}
 		else
 		{
@@ -169,9 +205,9 @@ public sealed class AnimusForgeNativeConversationOverlay
 			}
 			else
 			{
-				NativeConversationAnswerAreaController.SetSuppressed(false);
 				ShoutBehavior.CloseNativeConversationInputForExternal();
-				SetLayerForButtonsOnly();
+				_postRestoreForceRestoreTicks = 8;
+				RestoreNativeConversationInputAfterOrdinaryMode(forceAnswerRestore: true);
 			}
 		}
 		catch (Exception ex)
@@ -183,6 +219,236 @@ public sealed class AnimusForgeNativeConversationOverlay
 	private void SetLayerForButtonsOnly()
 	{
 		UpdateButtonsOnlyInputRestrictions();
+	}
+
+	private bool TickTemporarySystemUiIfNeeded(ScreenBase topScreen)
+	{
+		if (_isClosed)
+		{
+			return false;
+		}
+		if (IsTemporarySystemUiBlocking(topScreen))
+		{
+			BeginTemporarySystemUiInterruption();
+			return true;
+		}
+		if (_temporarySystemUiActive)
+		{
+			RestoreOverlayAfterTemporarySystemUi();
+		}
+		return false;
+	}
+
+	private void BeginTemporarySystemUiInterruption()
+	{
+		if (_isClosed)
+		{
+			return;
+		}
+		if (!_temporarySystemUiActive)
+		{
+			Logger.LogTrace("NativeConversationOverlay", "Temporary system UI interruption detected; releasing overlay input and native answer suppression.");
+		}
+		_temporarySystemUiActive = true;
+		HideOverlayForTemporarySystemUi();
+	}
+
+	private bool IsTemporarySystemUiBlocking(ScreenBase topScreen)
+	{
+		if (topScreen == null)
+		{
+			return false;
+		}
+		if (!ReferenceEquals(topScreen, _screen))
+		{
+			return true;
+		}
+		return IsKnownTemporarySystemScreen(topScreen) || IsKnownTemporarySystemScreen(_screen);
+	}
+
+	private static bool IsKnownTemporarySystemScreen(ScreenBase screen)
+	{
+		if (screen == null)
+		{
+			return false;
+		}
+		try
+		{
+			MapScreen mapScreen = screen as MapScreen;
+			if (mapScreen != null && (mapScreen.IsEscapeMenuOpened || mapScreen.IsInCampaignOptions))
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		if (HasLayerNamed(screen, MapEscapeMenuLayerName)
+			|| HasLayerNamed(screen, MapCampaignOptionsLayerName)
+			|| HasLayerNamed(screen, MissionEscapeMenuLayerName)
+			|| HasLayerNamed(screen, MissionOptionsLayerName)
+			|| HasLayerNamed(screen, EncyclopediaLayerName))
+		{
+			return true;
+		}
+		try
+		{
+			string typeName = screen.GetType()?.FullName ?? "";
+			return typeName.IndexOf("Options", StringComparison.OrdinalIgnoreCase) >= 0
+				|| typeName.IndexOf("SaveLoad", StringComparison.OrdinalIgnoreCase) >= 0;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static bool HasLayerNamed(ScreenBase screen, string layerName)
+	{
+		return TryFindLayerNamed(screen, layerName) != null;
+	}
+
+	private static ScreenLayer TryFindLayerNamed(ScreenBase screen, string layerName)
+	{
+		if (screen == null || string.IsNullOrEmpty(layerName))
+		{
+			return null;
+		}
+		try
+		{
+			if (!(_screenLayersField?.GetValue(screen) is IEnumerable layers))
+			{
+				return null;
+			}
+			foreach (object item in layers)
+			{
+				if (item is ScreenLayer layer && string.Equals(layer.Name, layerName, StringComparison.Ordinal))
+				{
+					return layer;
+				}
+			}
+		}
+		catch
+		{
+		}
+		return null;
+	}
+
+	private void HideOverlayForTemporarySystemUi()
+	{
+		if (!_isHiddenForTemporarySystemUi)
+		{
+			_isHiddenForTemporarySystemUi = true;
+			try
+			{
+				_movieIdentifier?.Movie?.RootWidget?.Hide();
+			}
+			catch
+			{
+			}
+			try
+			{
+				_layer.TwoDimensionView.SetEnable(false);
+			}
+			catch
+			{
+			}
+		}
+		try
+		{
+			_layer.InputRestrictions.ResetInputRestrictions();
+			_layer.IsFocusLayer = false;
+			ScreenManager.TryLoseFocus(_layer);
+		}
+		catch
+		{
+		}
+		NativeConversationAnswerAreaController.SetSuppressed(false);
+		NativeConversationAnswerAreaController.ForceRestoreAll();
+	}
+
+	private void RestoreOverlayAfterTemporarySystemUi()
+	{
+		if (_isClosed)
+		{
+			return;
+		}
+		_temporarySystemUiActive = false;
+		_postRestoreForceRestoreTicks = 8;
+		if (_isHiddenForTemporarySystemUi)
+		{
+			try
+			{
+				_layer.TwoDimensionView.SetEnable(true);
+				_movieIdentifier?.Movie?.RootWidget?.Show();
+			}
+			catch
+			{
+			}
+			_isHiddenForTemporarySystemUi = false;
+		}
+		if (_dataSource.IsCustomAnswerVisible)
+		{
+			NativeConversationAnswerAreaController.SetSuppressed(true);
+			ShoutBehavior.OpenNativeConversationInputSilentlyForExternal();
+			if (_isSubmitting)
+			{
+				SetLayerForButtonsOnly();
+			}
+			else
+			{
+				FocusInputIfVisible();
+			}
+		}
+		else
+		{
+			RestoreNativeConversationInputAfterOrdinaryMode(forceAnswerRestore: true);
+		}
+		Logger.LogTrace("NativeConversationOverlay", "Temporary system UI interruption ended; restored overlay state.");
+	}
+
+	private void ProcessPostRestoreNativeAnswerRestore()
+	{
+		if (_postRestoreForceRestoreTicks <= 0)
+		{
+			return;
+		}
+		_postRestoreForceRestoreTicks--;
+		if (!_dataSource.IsCustomAnswerVisible)
+		{
+			RestoreNativeConversationInputAfterOrdinaryMode(forceAnswerRestore: true);
+		}
+	}
+
+	private void RestoreNativeConversationInputAfterOrdinaryMode(bool forceAnswerRestore)
+	{
+		NativeConversationAnswerAreaController.SetSuppressed(false);
+		if (forceAnswerRestore)
+		{
+			NativeConversationAnswerAreaController.ForceRestoreAll();
+		}
+		SetLayerForButtonsOnly();
+		if (!IsMouseOverTopRightButtons())
+		{
+			TryFocusNativeConversationLayer();
+		}
+	}
+
+	private void TryFocusNativeConversationLayer()
+	{
+		try
+		{
+			ScreenLayer nativeLayer = TryFindLayerNamed(_screen, MapConversationLayerName) ?? TryFindLayerNamed(_screen, MissionConversationLayerName);
+			if (nativeLayer == null)
+			{
+				return;
+			}
+			nativeLayer.IsFocusLayer = true;
+			ScreenManager.TrySetFocus(nativeLayer);
+		}
+		catch
+		{
+		}
 	}
 
 	private void UpdateButtonsOnlyInputRestrictions()
@@ -310,7 +576,7 @@ public sealed class AnimusForgeNativeConversationOverlay
 		}
 		else
 		{
-			SetLayerForButtonsOnly();
+			RestoreNativeConversationInputAfterOrdinaryMode(forceAnswerRestore: true);
 		}
 	}
 
@@ -445,10 +711,7 @@ public sealed class AnimusForgeNativeConversationOverlay
 		finally
 		{
 			StopWaitingDotsAnimation(generation);
-			if (generation == _submitGeneration)
-			{
-				ConversationHelper.EndStreaming();
-			}
+			ConversationHelper.EndStreaming();
 			_isSubmitting = false;
 			if (!_isClosed && generation == _submitGeneration)
 			{
@@ -459,6 +722,16 @@ public sealed class AnimusForgeNativeConversationOverlay
 					PlayInputReadySound();
 					FocusInputIfVisible();
 				}
+				else
+				{
+					_postRestoreForceRestoreTicks = 8;
+					RestoreNativeConversationInputAfterOrdinaryMode(forceAnswerRestore: true);
+				}
+			}
+			else if (!_isClosed && !_dataSource.IsCustomAnswerVisible)
+			{
+				_postRestoreForceRestoreTicks = 8;
+				RestoreNativeConversationInputAfterOrdinaryMode(forceAnswerRestore: true);
 			}
 		}
 	}
@@ -524,10 +797,7 @@ public sealed class AnimusForgeNativeConversationOverlay
 		finally
 		{
 			StopWaitingDotsAnimation(generation);
-			if (generation == _submitGeneration)
-			{
-				ConversationHelper.EndStreaming();
-			}
+			ConversationHelper.EndStreaming();
 			_isSubmitting = false;
 			if (!_isClosed && generation == _submitGeneration)
 			{
@@ -538,6 +808,16 @@ public sealed class AnimusForgeNativeConversationOverlay
 					PlayInputReadySound();
 					FocusInputIfVisible();
 				}
+				else
+				{
+					_postRestoreForceRestoreTicks = 8;
+					RestoreNativeConversationInputAfterOrdinaryMode(forceAnswerRestore: true);
+				}
+			}
+			else if (!_isClosed && !_dataSource.IsCustomAnswerVisible)
+			{
+				_postRestoreForceRestoreTicks = 8;
+				RestoreNativeConversationInputAfterOrdinaryMode(forceAnswerRestore: true);
 			}
 		}
 	}
@@ -715,6 +995,7 @@ public sealed class AnimusForgeNativeConversationOverlay
 		{
 			ShoutBehavior.CloseNativeConversationInputForExternal();
 			NativeConversationAnswerAreaController.SetSuppressed(false);
+			NativeConversationAnswerAreaController.ForceRestoreAll();
 			_layer.InputRestrictions.ResetInputRestrictions();
 			_layer.IsFocusLayer = false;
 			ScreenManager.TryLoseFocus(_layer);

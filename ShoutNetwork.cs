@@ -17,7 +17,7 @@ namespace AnimusForge;
 
 public static class ShoutNetwork
 {
-	private const int HardcodedMaxTokens = 5000;
+	private const int DefaultPrimaryMaxTokens = DuelSettings.DefaultGeneralApiMaxTokens;
 
 	private sealed class PlayerReferenceStreamFilter
 	{
@@ -301,12 +301,24 @@ public static class ShoutNetwork
 		return !string.IsNullOrWhiteSpace(modelName);
 	}
 
-	private static JObject BuildPrimaryChatPayload(List<object> messages, DuelSettings settings, string apiUrl, string modelName, bool stream, out string thinkingMode)
+	private static int ResolvePrimaryMaxTokens(DuelSettings settings)
+	{
+		try
+		{
+			return settings?.GetMainApiMaxTokens() ?? DefaultPrimaryMaxTokens;
+		}
+		catch
+		{
+			return DefaultPrimaryMaxTokens;
+		}
+	}
+
+	private static JObject BuildPrimaryChatPayload(List<object> messages, DuelSettings settings, string apiUrl, string modelName, int actualMaxTokens, bool stream, out string thinkingMode)
 	{
 		JObject jObject = new JObject
 		{
 			["model"] = modelName ?? "",
-			["max_tokens"] = HardcodedMaxTokens,
+			["max_tokens"] = Math.Max(16, actualMaxTokens),
 			["temperature"] = settings?.GetMainApiTemperature() ?? 0.8f
 		};
 		if (stream)
@@ -446,9 +458,10 @@ public static class ShoutNetwork
 				return;
 			}
 			string effectiveApiUrl = DuelSettings.GetEffectiveApiUrl(settings.ApiUrl);
-			JObject payload = BuildPrimaryChatPayload(normalizedMessages, settings, effectiveApiUrl, effectiveModelName, stream: false, out var thinkingMode);
+			int actualMaxTokens = ResolvePrimaryMaxTokens(settings);
+			JObject payload = BuildPrimaryChatPayload(normalizedMessages, settings, effectiveApiUrl, effectiveModelName, actualMaxTokens, stream: false, out var thinkingMode);
 			string requestBody = payload.ToString(Formatting.None);
-			string pending = "[PRIMARY REQUEST PENDING]\nmode=" + (mode ?? "") + "\nmaxTokens=" + Math.Max(16, maxTokens) + "\nactualMaxTokens=" + HardcodedMaxTokens + "\nthinkingMode=" + (thinkingMode ?? "");
+			string pending = "[PRIMARY REQUEST PENDING]\nmode=" + (mode ?? "") + "\nmaxTokens=" + Math.Max(16, maxTokens) + "\nactualMaxTokens=" + actualMaxTokens + "\nthinkingMode=" + (thinkingMode ?? "");
 			Logger.RecordTokenStats(inputTokens, 0, normalizedMessages, pending, mode, requestBody);
 		}
 		catch (Exception ex)
@@ -557,7 +570,7 @@ public static class ShoutNetwork
 		Logger.Obs("Network", "request_start", new Dictionary<string, object>
 		{
 			["mode"] = "non_stream",
-			["maxTokens"] = HardcodedMaxTokens,
+			["maxTokens"] = DefaultPrimaryMaxTokens,
 			["messages"] = msgCount
 		});
 		try
@@ -590,7 +603,8 @@ public static class ShoutNetwork
 				return "（错误：未配置模型名称）";
 			}
 			string effectiveApiUrl = DuelSettings.GetEffectiveApiUrl(settings.ApiUrl);
-			JObject payload = BuildPrimaryChatPayload(messages, settings, effectiveApiUrl, effectiveModelName, stream: false, out var thinkingMode);
+			int actualMaxTokens = ResolvePrimaryMaxTokens(settings);
+			JObject payload = BuildPrimaryChatPayload(messages, settings, effectiveApiUrl, effectiveModelName, actualMaxTokens, stream: false, out var thinkingMode);
 			string jsonBody = payload.ToString(Formatting.None);
 			string requestBodyForTokenStats = jsonBody;
 			HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, effectiveApiUrl);
@@ -605,7 +619,7 @@ public static class ShoutNetwork
 				{
 					Logger.Log("ShoutNetwork", "[PrimaryChat] thinking payload rejected; retrying without thinking controls.");
 					response.Dispose();
-					JObject payload2 = BuildPrimaryChatPayload(messages, settings, effectiveApiUrl, effectiveModelName, stream: false, out var _);
+					JObject payload2 = BuildPrimaryChatPayload(messages, settings, effectiveApiUrl, effectiveModelName, actualMaxTokens, stream: false, out var _);
 					DuelSettings.RemoveThinkingControls(payload2);
 					string jsonBody2 = payload2.ToString(Formatting.None);
 					requestBodyForTokenStats = jsonBody2;
@@ -714,7 +728,7 @@ public static class ShoutNetwork
 		Logger.Obs("Network", "request_start", new Dictionary<string, object>
 		{
 			["mode"] = "stream",
-			["maxTokens"] = HardcodedMaxTokens,
+			["maxTokens"] = DefaultPrimaryMaxTokens,
 			["messages"] = msgCount
 		});
 		try
@@ -749,7 +763,8 @@ public static class ShoutNetwork
 				return;
 			}
 			string effectiveApiUrl = DuelSettings.GetEffectiveApiUrl(settings.ApiUrl);
-			JObject payload = BuildPrimaryChatPayload(messages, settings, effectiveApiUrl, effectiveModelName, stream: true, out var thinkingMode);
+			int actualMaxTokens = ResolvePrimaryMaxTokens(settings);
+			JObject payload = BuildPrimaryChatPayload(messages, settings, effectiveApiUrl, effectiveModelName, actualMaxTokens, stream: true, out var thinkingMode);
 			string jsonBody = payload.ToString(Formatting.None);
 			requestBodyForTokenStats = jsonBody;
 			bool streamSucceeded = false;
@@ -777,7 +792,7 @@ public static class ShoutNetwork
 							{
 								Logger.Log("ShoutNetwork", "[PrimaryChat] stream thinking payload rejected; retrying without thinking controls.");
 								response.Dispose();
-								JObject retryPayload = BuildPrimaryChatPayload(messages, settings, effectiveApiUrl, effectiveModelName, stream: true, out var _);
+								JObject retryPayload = BuildPrimaryChatPayload(messages, settings, effectiveApiUrl, effectiveModelName, actualMaxTokens, stream: true, out var _);
 								DuelSettings.RemoveThinkingControls(retryPayload);
 								jsonBody = retryPayload.ToString(Formatting.None);
 								requestBodyForTokenStats = jsonBody;

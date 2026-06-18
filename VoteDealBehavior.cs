@@ -139,6 +139,19 @@ namespace AnimusForge
 					postfix: new HarmonyMethod(typeof(VoteDealBehavior), nameof(Patch_AddDecision_21DayDelay_Postfix)));
 				Logger.Log("VoteDeal", "[Harmony] Kingdom.AddDecision 21-day delay hook applied.");
 
+				MethodInfo needsPlayerResolutionGetter = AccessTools.PropertyGetter(typeof(KingdomDecision), nameof(KingdomDecision.NeedsPlayerResolution));
+				if (needsPlayerResolutionGetter != null)
+				{
+					harmony.Patch(
+						needsPlayerResolutionGetter,
+						postfix: new HarmonyMethod(typeof(VoteDealBehavior), nameof(Patch_KingdomDecision_NeedsPlayerResolution_Postfix)));
+					Logger.Log("VoteDeal", "[Harmony] KingdomDecision.NeedsPlayerResolution agenda auto-resolve patch applied.");
+				}
+				else
+				{
+					Logger.Log("VoteDeal", "[Harmony] KingdomDecision.NeedsPlayerResolution getter not found.");
+				}
+
 				// ── Block ForceDecideDecision when TriggerTime is still future ──
 				Type kingdomMgmtVmType = typeof(KingdomManagementVM);
 				if (kingdomMgmtVmType != null)
@@ -1053,6 +1066,22 @@ namespace AnimusForge
 			}
 		}
 
+		private static void Patch_KingdomDecision_NeedsPlayerResolution_Postfix(
+			KingdomDecision __instance, ref bool __result)
+		{
+			try
+			{
+				if (!__result) return;
+				if (!ShouldLetSuppressedKingdomDecisionAutoResolveWithoutPlayer(__instance)) return;
+
+				__result = false;
+			}
+			catch (Exception ex)
+			{
+				Logger.Log("VoteDeal", $"[AgendaAutoResolve] NeedsPlayerResolution error: {ex.Message}");
+			}
+		}
+
 		private static bool Patch_NewMapNoticeAdded_SuppressKingdomVoteReminder_Prefix(InformationData informationData)
 		{
 			try
@@ -1143,6 +1172,21 @@ namespace AnimusForge
 			catch (Exception ex)
 			{
 				Logger.Log("VoteDeal", $"[ReminderSuppress] Match error: {ex.Message}");
+				return false;
+			}
+		}
+
+		private static bool ShouldLetSuppressedKingdomDecisionAutoResolveWithoutPlayer(KingdomDecision decision)
+		{
+			try
+			{
+				if (decision == null) return false;
+				if (!decision.TriggerTime.IsPast) return false;
+				return ShouldSuppressOriginalKingdomVoteReminder(decision);
+			}
+			catch (Exception ex)
+			{
+				Logger.Log("VoteDeal", $"[AgendaAutoResolve] Match error: {ex.Message}");
 				return false;
 			}
 		}

@@ -263,6 +263,14 @@ public class SubModule : MBSubModuleBase
 			}
 			try
 			{
+				PlayerNotorietyCharacterDeveloperPatch.EnsurePatched(harmony);
+			}
+			catch (Exception ex18ab)
+			{
+				Logger.LogTrace("SubModule", ">>> PlayerNotorietyCharacterDeveloperPatch init failed: " + ex18ab.Message);
+			}
+			try
+			{
 				TroopInspectionBehavior.RegisterHarmonyPatches(harmony);
 			}
 			catch (Exception ex18b)
@@ -332,6 +340,7 @@ public class SubModule : MBSubModuleBase
 			campaignGameStarter.AddBehavior(new CourierDeliveryBehavior());
 			campaignGameStarter.AddBehavior(new DuelBehavior());
 			campaignGameStarter.AddBehavior(new RewardSystemBehavior());
+			campaignGameStarter.AddBehavior(new PlayerNotorietyBehavior());
 			campaignGameStarter.AddBehavior(new AnimusForgeTerminalBehavior());
 			campaignGameStarter.AddBehavior(new RomanceSystemBehavior());
 			campaignGameStarter.AddBehavior(new KnowledgeLibraryBehavior());
