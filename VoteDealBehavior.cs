@@ -133,11 +133,11 @@ namespace AnimusForge
 				}
 				Logger.Log("VoteDeal", $"[Harmony] DetermineSupport: patched {patchedCount} concrete subclass(es), {errorCount} error(s).");
 
-				// ── 21-day delay: extend TriggerTime for player kingdom decisions ──
+				// ── Agenda delay: 21 days for player kingdom, 3 days for other kingdoms ──
 				harmony.Patch(
 					typeof(Kingdom).GetMethod("AddDecision"),
-					postfix: new HarmonyMethod(typeof(VoteDealBehavior), nameof(Patch_AddDecision_21DayDelay_Postfix)));
-				Logger.Log("VoteDeal", "[Harmony] Kingdom.AddDecision 21-day delay hook applied.");
+					postfix: new HarmonyMethod(typeof(VoteDealBehavior), nameof(Patch_AddDecision_Delay_Postfix)));
+				Logger.Log("VoteDeal", "[Harmony] Kingdom.AddDecision delay hook applied (player=21d, others=3d).");
 
 				MethodInfo needsPlayerResolutionGetter = AccessTools.PropertyGetter(typeof(KingdomDecision), nameof(KingdomDecision.NeedsPlayerResolution));
 				if (needsPlayerResolutionGetter != null)
@@ -238,6 +238,13 @@ namespace AnimusForge
 		{
 			try
 			{
+				if (!dataStore.IsSaving)
+				{
+					lock (KingdomAgendaVM._snapshots)
+					{
+						KingdomAgendaVM._snapshots.Clear();
+					}
+				}
 				if (_activeDeals == null) _activeDeals = new List<VoteDealRecord>();
 				if (_serializedDeals == null) _serializedDeals = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
@@ -1047,7 +1054,7 @@ namespace AnimusForge
 
 		// ── Patch: 21-day delay for player kingdom decisions ──
 
-		private static void Patch_AddDecision_21DayDelay_Postfix(KingdomDecision kingdomDecision)
+		private static void Patch_AddDecision_Delay_Postfix(KingdomDecision kingdomDecision)
 		{
 			try
 			{
@@ -1055,14 +1062,20 @@ namespace AnimusForge
 				if (kingdomDecision.TriggerTime.IsPast) return;
 				Kingdom kingdom = kingdomDecision.Kingdom;
 				if (kingdom == null) return;
-				if (kingdom != Clan.PlayerClan?.Kingdom) return;
+				float delayDays = (kingdom == Clan.PlayerClan?.Kingdom) ? 21f : 3f;
 
 				Traverse.Create(kingdomDecision).Property("TriggerTime")
-					.SetValue(CampaignTime.DaysFromNow(21f));
+					.SetValue(CampaignTime.DaysFromNow(delayDays));
+
+				lock (KingdomAgendaVM._snapshots)
+				{
+					KingdomAgendaVM._snapshots.Add(new KingdomAgendaVM.Snapshot
+					{Decision=kingdomDecision,KingdomId=kingdom.StringId,CreatedAt=CampaignTime.Now,DelayDays=delayDays,IsPlayerKingdom=kingdom==Clan.PlayerClan?.Kingdom});
+				}
 			}
 			catch (Exception ex)
 			{
-				Logger.Log("VoteDeal", $"[21DayDelay] Error: {ex.Message}");
+				Logger.Log("VoteDeal", $"[Delay] Error: {ex.Message}");
 			}
 		}
 
@@ -1292,11 +1305,32 @@ namespace AnimusForge
 				                  </Children>
 				                </ListPanel>
 
+						<!-- Kingdom selector bar -->
+						<BrushWidget WidthSizePolicy='StretchToParent' HeightSizePolicy='Fixed' SuggestedHeight='72' MarginLeft='3' MarginRight='0' MarginTop='2' MarginBottom='4' Brush='Clan.Item.Tuple'>
+						  <Children>
+						    <ListPanel WidthSizePolicy='StretchToParent' HeightSizePolicy='StretchToParent' MarginLeft='8' MarginRight='8'>
+						      <Children>
+						        <ButtonWidget IsVisible='@HasPrevKingdom' DoNotPassEventsToChildren='true' WidthSizePolicy='Fixed' HeightSizePolicy='Fixed' SuggestedWidth='32' SuggestedHeight='32' VerticalAlignment='Center' Command.Click='ExecutePrevKingdom' UpdateChildrenStates='true'>
+						          <Children>
+						            <BrushWidget WidthSizePolicy='Fixed' HeightSizePolicy='Fixed' SuggestedWidth='28' SuggestedHeight='28' Brush='ButtonRightBigArrowBrush1' HorizontalAlignment='Center' VerticalAlignment='Center' />
+						          </Children>
+						        </ButtonWidget>
+						        <TextWidget WidthSizePolicy='StretchToParent' HeightSizePolicy='StretchToParent' HorizontalAlignment='Center' VerticalAlignment='Center' Brush='Kingdom.PoliciesItem.Text' Text='@KingdomSelectorName' />
+						        <ButtonWidget IsVisible='@HasNextKingdom' DoNotPassEventsToChildren='true' WidthSizePolicy='Fixed' HeightSizePolicy='Fixed' SuggestedWidth='32' SuggestedHeight='32' VerticalAlignment='Center' Command.Click='ExecuteNextKingdom' UpdateChildrenStates='true'>
+						          <Children>
+						            <BrushWidget WidthSizePolicy='Fixed' HeightSizePolicy='Fixed' SuggestedWidth='28' SuggestedHeight='28' Brush='ButtonLeftBigArrowBrush1' HorizontalAlignment='Center' VerticalAlignment='Center' />
+						          </Children>
+						        </ButtonWidget>
+						      </Children>
+						    </ListPanel>
+						  </Children>
+						</BrushWidget>
+
 				                <Widget WidthSizePolicy='CoverChildren' HeightSizePolicy='StretchToParent'>
 				                  <Children>
 				                    <RichTextWidget WidthSizePolicy='StretchToParent' HeightSizePolicy='CoverChildren' VerticalAlignment='Center' HorizontalAlignment='Center' MarginLeft='24' MarginRight='24' Brush='Popup.Description.Text' Brush.TextHorizontalAlignment='Center' Text='暂无进行中的决议' IsVisible='@!HasItems' DoNotAcceptEvents='true' />
 
-				                    <ScrollablePanel WidthSizePolicy='CoverChildren' HeightSizePolicy='StretchToParent' MarginLeft='3' MarginBottom='10' AutoHideScrollBars='true' ClipRect='AgendaClipRect' InnerPanel='AgendaClipRect\AgendaInnerPanel' VerticalScrollbar='..\AgendaScrollbar\Scrollbar' IsVisible='@HasItems'>
+				                    <ScrollablePanel WidthSizePolicy='CoverChildren' HeightSizePolicy='StretchToParent' MarginLeft='0' MarginBottom='10' AutoHideScrollBars='true' ClipRect='AgendaClipRect' InnerPanel='AgendaClipRect\AgendaInnerPanel' VerticalScrollbar='..\AgendaScrollbar\Scrollbar' IsVisible='@HasItems'>
 				                      <Children>
 				                        <Widget Id='AgendaClipRect' WidthSizePolicy='CoverChildren' HeightSizePolicy='StretchToParent' ClipContents='true'>
 				                          <Children>
@@ -1327,7 +1361,7 @@ namespace AnimusForge
 				                        </Widget>
 				                      </Children>
 				                    </ScrollablePanel>
-				                    <Standard.VerticalScrollbar Id='AgendaScrollbar' WidthSizePolicy='CoverChildren' HeightSizePolicy='StretchToParent' HorizontalAlignment='Right' MarginRight='2' MarginLeft='2' MarginBottom='10' />
+				                    <Standard.VerticalScrollbar Id='AgendaScrollbar' WidthSizePolicy='CoverChildren' HeightSizePolicy='StretchToParent' HorizontalAlignment='Left' MarginRight='2' MarginLeft='2' MarginBottom='10' />
 				                  </Children>
 				                </Widget>
 				              </Children>
@@ -1448,91 +1482,235 @@ namespace AnimusForge
 	}
 
 		public class KingdomAgendaVM : ViewModel
-	{
-		private MBBindingList<KingdomAgendaItemVM> _agendaItems;
-		private bool _hasItems;
-		private KingdomAgendaItemVM _selectedItem;
-		internal Action<KingdomDecision> CallVoteMeetingRequested;
-
-		[DataSourceProperty]
-		public MBBindingList<KingdomAgendaItemVM> AgendaItems
 		{
-			get => _agendaItems;
-			set
+			public sealed class Snapshot
 			{
-				if (_agendaItems != value)
-				{
-					_agendaItems = value;
-					OnPropertyChanged("AgendaItems");
-				}
+				public KingdomDecision Decision;
+				public string KingdomId;
+				public CampaignTime CreatedAt;
+				public float DelayDays;
+				public bool IsPlayerKingdom;
 			}
-		}
 
-		[DataSourceProperty]
-		public bool HasItems
-		{
-			get => _hasItems;
-			set
+			internal static readonly List<Snapshot> _snapshots = new List<Snapshot>();
+			private MBBindingList<KingdomAgendaItemVM> _agendaItems;
+			private bool _hasItems;
+			private KingdomAgendaItemVM _selectedItem;
+			private Kingdom _targetKingdom;
+			private string _currentKingdomName;
+			private bool _isPlayerKingdom;
+			private List<Kingdom> _activeKingdoms;
+			private int _currentKingdomIndex;
+			internal Action<KingdomDecision> CallVoteMeetingRequested;
+
+			[DataSourceProperty]
+			public MBBindingList<KingdomAgendaItemVM> AgendaItems
 			{
-				if (_hasItems != value)
-				{
-					_hasItems = value;
-					OnPropertyChanged("HasItems");
-				}
+				get => _agendaItems;
+				set { if (_agendaItems != value) { _agendaItems = value; OnPropertyChanged("AgendaItems"); } }
 			}
-		}
 
-		[DataSourceProperty]
-		public KingdomAgendaItemVM SelectedItem
-		{
-			get => _selectedItem;
-			set
+			[DataSourceProperty]
+			public bool HasItems
 			{
-				if (_selectedItem != value)
-				{
-					_selectedItem = value;
-					OnPropertyChanged("SelectedItem");
-					OnPropertyChanged("HasSelectedItem");
-				}
+				get => _hasItems;
+				set { if (_hasItems != value) { _hasItems = value; OnPropertyChanged("HasItems"); } }
 			}
-		}
 
-		[DataSourceProperty]
-		public bool HasSelectedItem => SelectedItem != null;
-
-		public KingdomAgendaVM()
-		{
-			AgendaItems = new MBBindingList<KingdomAgendaItemVM>();
-		}
-
-		public void RefreshAgendaItems()
-		{
-			try
+			[DataSourceProperty]
+			public KingdomAgendaItemVM SelectedItem
 			{
-				AgendaItems.Clear();
-				Kingdom kingdom = Clan.PlayerClan?.Kingdom;
-				if (kingdom == null)
+				get => _selectedItem;
+				set { if (_selectedItem != value) { _selectedItem = value; OnPropertyChanged("SelectedItem"); OnPropertyChanged("HasSelectedItem"); } }
+			}
+
+			[DataSourceProperty]
+			public bool HasSelectedItem => SelectedItem != null;
+
+			[DataSourceProperty]
+			public string CurrentKingdomName
+			{
+				get => _currentKingdomName;
+				set { if (_currentKingdomName != value) { _currentKingdomName = value; OnPropertyChanged("CurrentKingdomName"); } }
+			}
+
+			[DataSourceProperty]
+			public bool IsPlayerKingdom
+			{
+				get => _isPlayerKingdom;
+				set { if (_isPlayerKingdom != value) { _isPlayerKingdom = value; OnPropertyChanged("IsPlayerKingdom"); } }
+			}
+
+			[DataSourceProperty]
+			private string _kingdomSelectorName;
+			[DataSourceProperty]
+			public string KingdomSelectorName
+			{
+				get => _kingdomSelectorName;
+				set { if (_kingdomSelectorName != value) { _kingdomSelectorName = value; OnPropertyChanged("KingdomSelectorName"); } }
+			}
+
+			[DataSourceProperty]
+			private bool _hasPrevKingdom;
+			[DataSourceProperty]
+			public bool HasPrevKingdom
+			{
+				get => _hasPrevKingdom;
+				set { if (_hasPrevKingdom != value) { _hasPrevKingdom = value; OnPropertyChanged("HasPrevKingdom"); } }
+			}
+
+			[DataSourceProperty]
+			private bool _hasNextKingdom;
+			[DataSourceProperty]
+			public bool HasNextKingdom
+			{
+				get => _hasNextKingdom;
+				set { if (_hasNextKingdom != value) { _hasNextKingdom = value; OnPropertyChanged("HasNextKingdom"); } }
+			}
+
+			public Kingdom TargetKingdom => _targetKingdom ?? Clan.PlayerClan?.Kingdom;
+
+			public KingdomAgendaVM()
+			{
+				AgendaItems = new MBBindingList<KingdomAgendaItemVM>();
+			}
+
+			public void SetTargetKingdom(Kingdom kingdom)
+			{
+				_targetKingdom = kingdom;
+				Kingdom active = TargetKingdom;
+				CurrentKingdomName = (active?.Name?.ToString() ?? "未知王国") + " 议程";
+				IsPlayerKingdom = active == Clan.PlayerClan?.Kingdom;
+				UpdateKingdomSelector();
+				ClearSelection();
+				RefreshAgendaItems();
+			}
+
+			public void RefreshKingdomList()
+			{
+				_activeKingdoms = new List<Kingdom>();
+				foreach (Kingdom k in Kingdom.All)
+					if (!k.IsEliminated) _activeKingdoms.Add(k);
+				UpdateKingdomSelector();
+			}
+
+			public void SetDefaultKingdom()
+			{
+				Kingdom pk = Clan.PlayerClan?.Kingdom;
+				if (pk != null) { int idx = _activeKingdoms.FindIndex(k => k == pk); if (idx >= 0) _currentKingdomIndex = idx; }
+				SetTargetKingdom(_activeKingdoms.Count > 0 && _currentKingdomIndex < _activeKingdoms.Count ? _activeKingdoms[_currentKingdomIndex] : null);
+			}
+
+			private void UpdateKingdomSelector()
+			{
+				if (_activeKingdoms == null || _activeKingdoms.Count == 0)
 				{
-					HasItems = false;
+					KingdomSelectorName = "无王国"; HasPrevKingdom = false; HasNextKingdom = false;
 					return;
 				}
-
-				foreach (KingdomDecision decision in kingdom.UnresolvedDecisions)
-				{
-					if (decision.ShouldBeCancelled()) continue;
-					KingdomAgendaItemVM item = new KingdomAgendaItemVM(decision);
-					item.Parent = this;
-					AgendaItems.Add(item);
-				}
-
-				HasItems = AgendaItems.Count > 0;
+				HasPrevKingdom = _activeKingdoms.Count > 1; HasNextKingdom = _activeKingdoms.Count > 1;
+				if (_currentKingdomIndex < 0) _currentKingdomIndex = 0;
+				if (_currentKingdomIndex >= _activeKingdoms.Count) _currentKingdomIndex = _activeKingdoms.Count - 1;
+				KingdomSelectorName = _activeKingdoms[_currentKingdomIndex]?.Name?.ToString() ?? "未知";
 			}
-			catch (Exception ex)
+
+			[DataSourceMethod]
+			public void ExecutePrevKingdom()
 			{
-				Logger.Log("VoteDeal", $"[AgendaVM] RefreshAgendaItems error: {ex.Message}");
-				HasItems = false;
+				int count = _activeKingdoms?.Count ?? 0;
+				if (count < 2) return;
+				_currentKingdomIndex = (_currentKingdomIndex - 1 + count) % count;
+				UpdateKingdomSelector();
+				SetTargetKingdom(_activeKingdoms[_currentKingdomIndex]);
 			}
-		}
+
+			[DataSourceMethod]
+			public void ExecuteNextKingdom()
+			{
+				int count = _activeKingdoms?.Count ?? 0;
+				if (count < 2) return;
+				_currentKingdomIndex = (_currentKingdomIndex + 1) % count;
+				UpdateKingdomSelector();
+				SetTargetKingdom(_activeKingdoms[_currentKingdomIndex]);
+			}
+
+			public void RefreshAgendaItems()
+			{
+				try
+				{
+					AgendaItems.Clear();
+					Kingdom kingdom = TargetKingdom;
+					if (kingdom == null) { HasItems = false; return; }
+
+					bool isPlayerKd = kingdom == Clan.PlayerClan?.Kingdom;
+					if (isPlayerKd)
+					{
+						foreach (KingdomDecision decision in kingdom.UnresolvedDecisions)
+						{
+							if (decision.ShouldBeCancelled()) continue;
+							KingdomAgendaItemVM item = new KingdomAgendaItemVM(decision);
+							item.Parent = this;
+							AgendaItems.Add(item);
+						}
+					}
+					else
+					{
+						CleanupSnapshots();
+						HashSet<KingdomDecision> seen = new HashSet<KingdomDecision>();
+
+						// 1. From live UnresolvedDecisions (survives save/load)
+						foreach (KingdomDecision decision in kingdom.UnresolvedDecisions)
+						{
+							if (decision.ShouldBeCancelled()) continue;
+							seen.Add(decision);
+							KingdomAgendaItemVM item = new KingdomAgendaItemVM(decision);
+							item.Parent = this;
+							AgendaItems.Add(item);
+						}
+
+						// 2. From snapshots (captures decisions processed by AI)
+						List<Snapshot> snaps;
+						lock (_snapshots)
+						{
+							snaps = _snapshots
+								.Where(s => s.Decision != null
+									&& !seen.Contains(s.Decision)
+									&& string.Equals(s.KingdomId, kingdom.StringId, StringComparison.OrdinalIgnoreCase))
+								.ToList();
+						}
+						foreach (Snapshot snap in snaps)
+						{
+							KingdomAgendaItemVM item = new KingdomAgendaItemVM(snap.Decision);
+							item.Parent = this;
+							AgendaItems.Add(item);
+						}
+					}
+
+					HasItems = AgendaItems.Count > 0;
+				}
+				catch (Exception ex)
+				{
+					Logger.Log("VoteDeal", $"[AgendaVM] RefreshAgendaItems error: {ex.Message}");
+					HasItems = false;
+				}
+			}
+
+			private static void CleanupSnapshots()
+			{
+				try
+				{
+					lock (_snapshots)
+					{
+						_snapshots.RemoveAll(s =>
+							s.Decision == null
+							|| s.CreatedAt.ElapsedDaysUntilNow > s.DelayDays + 1f);
+					}
+				}
+				catch (Exception ex)
+				{
+					Logger.Log("VoteDeal", $"[Snapshot] Cleanup error: {ex.Message}");
+				}
+			}
 
 		public void SelectItem(KingdomAgendaItemVM item)
 		{
@@ -2108,6 +2286,9 @@ namespace AnimusForge
 
 				KingdomAgendaTabState.Register(vm, ClearAgendaSelection, SelectAgenda);
 
+				Agenda.RefreshKingdomList();
+				Agenda.SetDefaultKingdom();
+
 			}
 
 			public override void OnRefresh()
@@ -2129,6 +2310,8 @@ namespace AnimusForge
 				ViewModel.Army.Show = false;
 				ViewModel.Diplomacy.Show = false;
 
+				Agenda.RefreshKingdomList();
+				Agenda.SetDefaultKingdom();
 				IsAgendaSelected = true;
 				Agenda?.RefreshAgendaItems();
 				Agenda?.RefreshValues();

@@ -153,7 +153,15 @@ namespace AnimusForge
 				}
 
 				if (d == null) return "";
-				kd.AddDecision(d, false);
+			string newTitle = d.GetGeneralTitle()?.ToString();
+			bool isDuplicate = false;
+			foreach (KingdomDecision existing in kd.UnresolvedDecisions)
+			{
+				if (existing != null && existing.GetType() == d.GetType() && existing.GetGeneralTitle()?.ToString() == newTitle)
+				{ isDuplicate = true; break; }
+			}
+			if (isDuplicate) { Logger.Log("ProposeAgenda", "Duplicate: " + type + " " + tgt); return ""; }
+			kd.AddDecision(d, false);
 				string cn = cl.Name?.ToString() ?? "?";
 				AnimusForgeQuickInfo.ShowForDuration(cn + "家族 提出新议程", 6000, npc.CharacterObject);
 				Logger.Log("ProposeAgenda", "OK: " + type + " " + tgt);

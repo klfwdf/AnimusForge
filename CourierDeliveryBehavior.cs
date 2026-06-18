@@ -1173,15 +1173,16 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			bool partyTransferInjected = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "party_transfer");
 			bool settlementTransferInjected = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "settlement_transfer");
 			bool voteDealInjected = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "vote_deal");
+			bool diplomacyInjected = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "diplomacy");
 			bool worldMapPartyCommandInjected = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "worldmap_party_command");
 			bool kingdomServiceInjected = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "kingdom_service");
-			string postprocessed = ShoutBehavior.RunCourierActionPostprocessForExternal(recipient, recipient.CharacterObject, recipient.Name?.ToString() ?? "NPC", session.LetterText, historyText, reply, duelInjected, rewardInjected, loanInjected, kingdomServiceInjected, lordsHallInjected, meetingReleaseInjected, vanillaIssueInjected, heroJoinPartyInjected, sceneMechanismInjected, partyTransferInjected, settlementTransferInjected, voteDealInjected, worldMapPartyCommandInjected, selectedRuleHits, ctx?.EntityPostprocessContext);
+			string postprocessed = ShoutBehavior.RunCourierActionPostprocessForExternal(recipient, recipient.CharacterObject, recipient.Name?.ToString() ?? "NPC", session.LetterText, historyText, reply, duelInjected, rewardInjected, loanInjected, kingdomServiceInjected, lordsHallInjected, meetingReleaseInjected, vanillaIssueInjected, heroJoinPartyInjected, sceneMechanismInjected, partyTransferInjected, settlementTransferInjected, voteDealInjected, diplomacyInjected, worldMapPartyCommandInjected, selectedRuleHits, ctx?.EntityPostprocessContext);
 			string replyPostprocessed = string.IsNullOrWhiteSpace(postprocessed) ? reply : postprocessed;
 			session.ReplyText = reply;
 			session.ReplyPostprocessedText = replyPostprocessed;
 			session.ReplyGenerated = true;
 			session.ReplyGenerationStarted = false;
-			Log("llm main done session=" + session.Id + " replyLen=" + reply.Length + " postLen=" + (session.ReplyPostprocessedText ?? "").Length + " preprocessHits=" + ((selectedRuleHits == null || selectedRuleHits.Count == 0) ? "(none)" : string.Join(",", selectedRuleHits)) + " duel=" + duelInjected + " reward=" + rewardInjected + " loan=" + loanInjected + " kingdom=" + kingdomServiceInjected + " lordsHall=" + lordsHallInjected + " meetingRelease=" + meetingReleaseInjected + " vanillaIssue=" + vanillaIssueInjected + " heroJoin=" + heroJoinPartyInjected + " sceneMechanism=" + sceneMechanismInjected + " partyTransfer=" + partyTransferInjected + " settlementTransfer=" + settlementTransferInjected + " voteDeal=" + voteDealInjected + " worldMap=" + worldMapPartyCommandInjected);
+			Log("llm main done session=" + session.Id + " replyLen=" + reply.Length + " postLen=" + (session.ReplyPostprocessedText ?? "").Length + " preprocessHits=" + ((selectedRuleHits == null || selectedRuleHits.Count == 0) ? "(none)" : string.Join(",", selectedRuleHits)) + " duel=" + duelInjected + " reward=" + rewardInjected + " loan=" + loanInjected + " kingdom=" + kingdomServiceInjected + " lordsHall=" + lordsHallInjected + " meetingRelease=" + meetingReleaseInjected + " vanillaIssue=" + vanillaIssueInjected + " heroJoin=" + heroJoinPartyInjected + " sceneMechanism=" + sceneMechanismInjected + " partyTransfer=" + partyTransferInjected + " settlementTransfer=" + settlementTransferInjected + " voteDeal=" + voteDealInjected + " diplomacy=" + diplomacyInjected + " worldMap=" + worldMapPartyCommandInjected);
 			MainThreadActions.Enqueue(() => ProcessSessionById(sessionId, "reply_generated"));
 		}
 		catch (Exception ex)
@@ -1239,6 +1240,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		try
 		{
 			VoteDealBehavior.ProcessVoteDealTagsDispatch(recipient, ref text);
+			DiplomacyBehavior.ProcessDiplomacyTagsDispatch(recipient, ref text);
 		}
 		catch (Exception ex)
 		{
@@ -1426,6 +1428,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			try
 			{
 				VoteDealBehavior.ProcessVoteDealTagsDispatch(recipient, ref text);
+			DiplomacyBehavior.ProcessDiplomacyTagsDispatch(recipient, ref text);
 			}
 			catch (Exception ex)
 			{

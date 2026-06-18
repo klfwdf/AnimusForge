@@ -339,7 +339,7 @@ public static class AIConfigHandler
 	private static bool IsPlayerCompanionOrFamilyExcludedRule(string ruleId)
 	{
 		string text = (ruleId ?? "").Trim();
-		return string.Equals(text, "reward", StringComparison.OrdinalIgnoreCase) || string.Equals(text, "loan", StringComparison.OrdinalIgnoreCase) || string.Equals(text, "vote_deal", StringComparison.OrdinalIgnoreCase) || string.Equals(text, "party_transfer", StringComparison.OrdinalIgnoreCase) || string.Equals(text, "settlement_transfer", StringComparison.OrdinalIgnoreCase);
+		return string.Equals(text, "reward", StringComparison.OrdinalIgnoreCase) || string.Equals(text, "loan", StringComparison.OrdinalIgnoreCase) || string.Equals(text, "vote_deal", StringComparison.OrdinalIgnoreCase) || string.Equals(text, "diplomacy", StringComparison.OrdinalIgnoreCase) || string.Equals(text, "party_transfer", StringComparison.OrdinalIgnoreCase) || string.Equals(text, "settlement_transfer", StringComparison.OrdinalIgnoreCase);
 	}
 
 	private static bool ShouldExcludePlayerCompanionOrFamilyRulesForConversationTarget()
@@ -1898,6 +1898,7 @@ public static class AIConfigHandler
 				"hero_join_party" => "HERO_JOIN",
 				"noble_deference" => "NOBLE_PRESSURE",
 				"vote_deal" => "VOTE_DEAL",
+				"diplomacy" => "DIPLOMACY",
 				_ => ""
 			};
 		}
@@ -5036,6 +5037,7 @@ public static class AIConfigHandler
 			{
 				set.Add("reward");
 				set.Add("loan");
+				set.Add("diplomacy");
 				set.Add("vote_deal");
 				set.Add("party_transfer");
 				set.Add("settlement_transfer");

@@ -21,6 +21,7 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 	private const string NeedPrisonerOverload = "PrisonerOverload";
 	private const string NeedKingdomMercenaryInvite = "KingdomMercenaryInvite";
 	private const string NeedKingdomVassalInvite = "KingdomVassalInvite";
+	private const string NeedDiplomacy = "Diplomacy";
 	private const string TriggerSourceNeedDriven = "NeedDriven";
 	private const string TriggerSourceNotorietyDriven = "NotorietyDriven";
 	private const int MercenaryInviteMinPlayerClanTier = 1;
@@ -408,6 +409,10 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 				stats.KingdomVassalInvite++;
 				needCandidates.Add(vassalInviteCandidate);
 			}
+			if (TryBuildDiplomacyCandidate(candidate, settings, out ProactiveCandidate diplomacyCandidate))
+			{
+				needCandidates.Add(diplomacyCandidate);
+			}
 			ProactiveCandidate combinedCandidate = BuildCombinedNeedCandidate(needCandidates);
 			if (combinedCandidate != null)
 			{
@@ -732,6 +737,49 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		}
 		candidate = TryBuildNeedCandidate(source, settings, NeedKingdomVassalInvite, urgency);
 		return candidate != null;
+	}
+
+	private bool TryBuildDiplomacyCandidate(ProactiveCandidate source, DuelSettings settings, out ProactiveCandidate candidate)
+	{
+		candidate = null;
+		if (source == null || !IsDiplomacyNeedMet(source, out float urgency))
+			return false;
+		candidate = TryBuildNeedCandidate(source, settings, NeedDiplomacy, urgency);
+		return candidate != null;
+	}
+
+	private static bool IsDiplomacyNeedMet(ProactiveCandidate source, out float urgency)
+	{
+		urgency = 0f;
+		try
+		{
+			Hero hero = source?.Hero;
+			if (hero == null) return false;
+			Kingdom npcKingdom = hero.Clan?.Kingdom;
+			if (npcKingdom == null || hero != npcKingdom.RulingClan?.Leader) return false;
+			Kingdom playerKingdom = Clan.PlayerClan?.Kingdom;
+			if (playerKingdom == null || playerKingdom.IsEliminated) return false;
+			if (Hero.MainHero != playerKingdom.RulingClan?.Leader) return false;
+			if (npcKingdom == playerKingdom) return false;
+			bool atWar = FactionManager.IsAtWarAgainstFaction(npcKingdom, playerKingdom);
+			if (atWar) { urgency = 55f; return true; }
+			bool hasCommonEnemy = false;
+			foreach (Kingdom k in Kingdom.All)
+			{
+				if (!k.IsEliminated && k != npcKingdom && k != playerKingdom
+					&& FactionManager.IsAtWarAgainstFaction(npcKingdom, k)
+					&& FactionManager.IsAtWarAgainstFaction(playerKingdom, k))
+				{ hasCommonEnemy = true; break; }
+			}
+			if (hasCommonEnemy) { urgency = 65f; return true; }
+#if BANNERLORD_1_4_OR_GREATER
+			ITradeAgreementsCampaignBehavior tradeBeh = Campaign.Current.GetCampaignBehavior<ITradeAgreementsCampaignBehavior>();
+			bool hasTrade = tradeBeh != null && tradeBeh.HasTradeAgreement(npcKingdom, playerKingdom);
+			if (!hasTrade) { urgency = 45f; return true; }
+#endif
+			return false;
+		}
+		catch { urgency = 0f; return false; }
 	}
 
 	private static bool IsFoodShortageNeedMet(MobileParty party, int foodDays, DuelSettings settings, out float urgency)
