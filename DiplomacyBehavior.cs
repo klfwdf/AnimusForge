@@ -287,7 +287,7 @@ namespace AnimusForge
 
 			ITradeAgreementsCampaignBehavior tradeBeh = Campaign.Current.GetCampaignBehavior<ITradeAgreementsCampaignBehavior>();
 			if (tradeBeh == null) { Logger.Log("DiplomacyBehavior", "[MakeTrade] No Trade behavior"); return ""; }
-			if (tradeBeh.HasTradeAgreement(playerKingdom, npcKingdom)) { Logger.Log("DiplomacyBehavior", "[MakeTrade] Already trading"); return ""; }
+			if (HasTradeAgreementCompat(tradeBeh, playerKingdom, npcKingdom)) { Logger.Log("DiplomacyBehavior", "[MakeTrade] Already trading"); return ""; }
 
 			CampaignTime duration;
 			if (daysStr.Equals("default", StringComparison.OrdinalIgnoreCase) || string.IsNullOrEmpty(daysStr) || daysStr == "0")
@@ -321,7 +321,7 @@ namespace AnimusForge
 
 			ITradeAgreementsCampaignBehavior tradeBeh = Campaign.Current.GetCampaignBehavior<ITradeAgreementsCampaignBehavior>();
 			if (tradeBeh == null) { Logger.Log("DiplomacyBehavior", "[CancelTrade] No Trade behavior"); return ""; }
-			if (!tradeBeh.HasTradeAgreement(playerKingdom, npcKingdom)) { Logger.Log("DiplomacyBehavior", "[CancelTrade] No trade agreement"); return ""; }
+			if (!HasTradeAgreementCompat(tradeBeh, playerKingdom, npcKingdom)) { Logger.Log("DiplomacyBehavior", "[CancelTrade] No trade agreement"); return ""; }
 
 			MeetingBattleRuntime.UnlockDiplomaticSideEffects("diplomacy_cancel_trade");
 			tradeBeh.EndTradeAgreement(playerKingdom, npcKingdom);
@@ -339,6 +339,19 @@ namespace AnimusForge
 					&& string.Equals(id2, npcKingdom.StringId, StringComparison.OrdinalIgnoreCase))
 				|| (string.Equals(id1, npcKingdom.StringId, StringComparison.OrdinalIgnoreCase)
 					&& string.Equals(id2, playerKingdom.StringId, StringComparison.OrdinalIgnoreCase));
+		}
+
+		private static bool HasTradeAgreementCompat(ITradeAgreementsCampaignBehavior tradeBeh, Kingdom kingdom, Kingdom other)
+		{
+			if (tradeBeh == null || kingdom == null || other == null)
+			{
+				return false;
+			}
+#if BANNERLORD_1_4_OR_GREATER
+			return tradeBeh.HasTradeAgreement(kingdom, other, out var _);
+#else
+			return tradeBeh.HasTradeAgreement(kingdom, other);
+#endif
 		}
 
 		private static int ParseTributeAmount(string amountStr, Kingdom payer, Kingdom receiver)

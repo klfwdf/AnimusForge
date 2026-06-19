@@ -462,7 +462,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 					Logger.Log("RewardSystem", "[ERROR] Serialize debt for " + debt.Key + ": " + ex.Message);
 				}
 			}
-			Dictionary<string, string> dictionary = CampaignSaveChunkHelper.FlattenStringDictionary(_debtStorage);
+			Dictionary<string, string> dictionary = CampaignSaveChunkHelper.FlattenStringDictionary(_debtStorage, "_rewardDebts_v2", "RewardDebt");
 			dataStore.SyncData("_rewardDebts_v2", ref dictionary);
 			_debtStorage = CampaignSaveChunkHelper.RestoreStringDictionary(dictionary, "RewardSystem");
 			_debts.Clear();
@@ -2270,7 +2270,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				}
 			}
 		}
-		Dictionary<string, string> dictionary = dataStore.IsSaving ? CampaignSaveChunkHelper.FlattenStringDictionary(_merchantFactStorage) : new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+		Dictionary<string, string> dictionary = dataStore.IsSaving ? CampaignSaveChunkHelper.FlattenStringDictionary(_merchantFactStorage, "_rewardMerchantFacts_v1", "MerchantFact") : new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 		dataStore.SyncData("_rewardMerchantFacts_v1", ref dictionary);
 		_merchantFactStorage = CampaignSaveChunkHelper.RestoreStringDictionary(dictionary, "RewardSystem");
 		if (dataStore.IsSaving)

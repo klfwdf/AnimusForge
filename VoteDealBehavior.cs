@@ -272,10 +272,12 @@ namespace AnimusForge
 					}
 				}
 
-				dataStore.SyncData("_vdSerializedDeals", ref _serializedDeals);
+				Dictionary<string, string> serializedDealsForSync = dataStore.IsSaving ? CampaignSaveChunkHelper.FlattenStringDictionary(_serializedDeals, "_vdSerializedDeals", "VoteDeal") : _serializedDeals;
+				dataStore.SyncData("_vdSerializedDeals", ref serializedDealsForSync);
 
 				if (dataStore.IsLoading)
 				{
+					_serializedDeals = CampaignSaveChunkHelper.RestoreStringDictionary(serializedDealsForSync, "VoteDeal");
 					_activeDeals.Clear();
 					if (_serializedDeals != null && _serializedDeals.Count > 0)
 					{

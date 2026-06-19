@@ -188,10 +188,12 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 					storage[pair.Key] = JsonConvert.SerializeObject(pair.Value);
 				}
 			}
+			storage = CampaignSaveChunkHelper.FlattenStringDictionary(storage, SessionStorageKey, "CourierDelivery");
 		}
 		dataStore.SyncData(SessionStorageKey, ref storage);
 		if (dataStore.IsLoading)
 		{
+			storage = CampaignSaveChunkHelper.RestoreStringDictionary(storage, "CourierDelivery");
 			lock (_sessionLock)
 			{
 				_sessions.Clear();

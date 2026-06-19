@@ -10140,7 +10140,7 @@ public class MyBehavior : CampaignBehaviorBase
 						Logger.Log("TradeShown", "[ERROR] Serialize shown record for " + shownRecord.Key + ": " + ex.Message);
 					}
 				}
-				Dictionary<string, string> dictionary = CampaignSaveChunkHelper.FlattenStringDictionary(_shownRecordStorage);
+				Dictionary<string, string> dictionary = CampaignSaveChunkHelper.FlattenStringDictionary(_shownRecordStorage, "_shownRecords_v1", "TradeShown");
 				dataStore.SyncData("_shownRecords_v1", ref dictionary);
 				_dialogueHistoryStorage.Clear();
 				foreach (KeyValuePair<string, List<DialogueDay>> item in _dialogueHistory)
@@ -10158,7 +10158,7 @@ public class MyBehavior : CampaignBehaviorBase
 						}
 					}
 				}
-				Dictionary<string, string> dictionary2 = CampaignSaveChunkHelper.FlattenStringDictionary(_dialogueHistoryStorage);
+				Dictionary<string, string> dictionary2 = CampaignSaveChunkHelper.FlattenStringDictionary(_dialogueHistoryStorage, "_dialogueHistory_v2", "DialogueHistory");
 				dataStore.SyncData("_dialogueHistory_v2", ref dictionary2);
 				_dailyMemoryDraftStorage.Clear();
 				foreach (KeyValuePair<string, List<DailyMemoryDraft>> itemMemoryDraft in _dailyMemoryDrafts)
@@ -10175,7 +10175,7 @@ public class MyBehavior : CampaignBehaviorBase
 						}
 					}
 				}
-				Dictionary<string, string> dictionaryMemoryDrafts = CampaignSaveChunkHelper.FlattenStringDictionary(_dailyMemoryDraftStorage);
+				Dictionary<string, string> dictionaryMemoryDrafts = CampaignSaveChunkHelper.FlattenStringDictionary(_dailyMemoryDraftStorage, "_af_dailyMemoryDrafts_v1", "CompressedMemory");
 				dataStore.SyncData("_af_dailyMemoryDrafts_v1", ref dictionaryMemoryDrafts);
 				_compressedMemoryBlockStorage.Clear();
 				foreach (KeyValuePair<string, List<CompressedMemoryBlock>> itemMemoryBlock in _compressedMemoryBlocks)
@@ -10192,7 +10192,7 @@ public class MyBehavior : CampaignBehaviorBase
 						}
 					}
 				}
-				Dictionary<string, string> dictionaryMemoryBlocks = CampaignSaveChunkHelper.FlattenStringDictionary(_compressedMemoryBlockStorage);
+				Dictionary<string, string> dictionaryMemoryBlocks = CampaignSaveChunkHelper.FlattenStringDictionary(_compressedMemoryBlockStorage, "_af_compressedMemoryBlocks_v1", "CompressedMemory");
 				dataStore.SyncData("_af_compressedMemoryBlocks_v1", ref dictionaryMemoryBlocks);
 				try
 				{
@@ -10223,7 +10223,7 @@ public class MyBehavior : CampaignBehaviorBase
 						}
 					}
 				}
-				Dictionary<string, string> dictionaryMemoryOverviewStates = CampaignSaveChunkHelper.FlattenStringDictionary(_memoryOverviewStateStorage);
+				Dictionary<string, string> dictionaryMemoryOverviewStates = CampaignSaveChunkHelper.FlattenStringDictionary(_memoryOverviewStateStorage, "_af_memoryOverviewStates_v1", "MemoryOverview");
 				dataStore.SyncData("_af_memoryOverviewStates_v1", ref dictionaryMemoryOverviewStates);
 				try
 				{
@@ -10254,7 +10254,7 @@ public class MyBehavior : CampaignBehaviorBase
 						}
 					}
 				}
-				Dictionary<string, string> dictionaryMajorActionSummaries = CampaignSaveChunkHelper.FlattenStringDictionary(_npcMajorActionSummaryStorage);
+				Dictionary<string, string> dictionaryMajorActionSummaries = CampaignSaveChunkHelper.FlattenStringDictionary(_npcMajorActionSummaryStorage, "_af_npcMajorActionSummaries_v1", "NpcMajorSummary");
 				dataStore.SyncData("_af_npcMajorActionSummaries_v1", ref dictionaryMajorActionSummaries);
 				try
 				{
@@ -10286,7 +10286,7 @@ public class MyBehavior : CampaignBehaviorBase
 						}
 					}
 				}
-				Dictionary<string, string> dictionary3 = CampaignSaveChunkHelper.FlattenStringDictionary(_npcMajorActionStorage);
+				Dictionary<string, string> dictionary3 = CampaignSaveChunkHelper.FlattenStringDictionary(_npcMajorActionStorage, "_npcMajorActions_v1", "NpcAction");
 				dataStore.SyncData("_npcMajorActions_v1", ref dictionary3);
 				_npcRecentActionStorage.Clear();
 				foreach (KeyValuePair<string, List<NpcActionEntry>> npcRecentAction in _npcRecentActions)
@@ -10304,7 +10304,7 @@ public class MyBehavior : CampaignBehaviorBase
 						}
 					}
 				}
-				Dictionary<string, string> dictionary4 = CampaignSaveChunkHelper.FlattenStringDictionary(_npcRecentActionStorage);
+				Dictionary<string, string> dictionary4 = CampaignSaveChunkHelper.FlattenStringDictionary(_npcRecentActionStorage, "_npcRecentActions_v1", "NpcAction");
 				dataStore.SyncData("_npcRecentActions_v1", ref dictionary4);
 				dataStore.SyncData("_npcActionGlobalOrderCounter_v1", ref _npcActionGlobalOrderCounter);
 				_npcPersonaProfileStorage.Clear();
@@ -10323,7 +10323,7 @@ public class MyBehavior : CampaignBehaviorBase
 						}
 					}
 				}
-				Dictionary<string, string> dictionary5 = CampaignSaveChunkHelper.FlattenStringDictionary(_npcPersonaProfileStorage);
+				Dictionary<string, string> dictionary5 = CampaignSaveChunkHelper.FlattenStringDictionary(_npcPersonaProfileStorage, "_npcPersonaProfiles_v1", "NpcPersona");
 				dataStore.SyncData("_npcPersonaProfiles_v1", ref dictionary5);
 				_eventKingdomOpeningSummaryStorage.Clear();
 				foreach (KeyValuePair<string, string> item2 in _eventKingdomOpeningSummaries)
@@ -10335,7 +10335,7 @@ public class MyBehavior : CampaignBehaviorBase
 						_eventKingdomOpeningSummaryStorage[text] = text2;
 					}
 				}
-				Dictionary<string, string> dictionary6 = CampaignSaveChunkHelper.FlattenStringDictionary(_eventKingdomOpeningSummaryStorage);
+				Dictionary<string, string> dictionary6 = CampaignSaveChunkHelper.FlattenStringDictionary(_eventKingdomOpeningSummaryStorage, "_eventKingdomOpeningSummaries_v1", "EventOpeningSummary");
 				dataStore.SyncData("_eventKingdomOpeningSummaries_v1", ref dictionary6);
 				CampaignSaveChunkHelper.SaveChunkedString(dataStore, "_eventWorldOpeningSummary_v1", _eventWorldOpeningSummary ?? "", "EventOpeningSummary");
 				try
@@ -10371,7 +10371,7 @@ public class MyBehavior : CampaignBehaviorBase
 						_kingdomStabilityStorage[text3] = ClampKingdomStabilityValue(kingdomStabilityValue.Value).ToString();
 					}
 				}
-				Dictionary<string, string> dictionary13 = CampaignSaveChunkHelper.FlattenStringDictionary(_kingdomStabilityStorage);
+				Dictionary<string, string> dictionary13 = CampaignSaveChunkHelper.FlattenStringDictionary(_kingdomStabilityStorage, "_kingdomStability_v1", "KingdomStability");
 				dataStore.SyncData("_kingdomStability_v1", ref dictionary13);
 				_kingdomStabilityRelationOffsetStorage.Clear();
 				foreach (KeyValuePair<string, int> kingdomStabilityRelationAppliedOffset in _kingdomStabilityRelationAppliedOffsets)
@@ -10382,7 +10382,7 @@ public class MyBehavior : CampaignBehaviorBase
 						_kingdomStabilityRelationOffsetStorage[text4] = kingdomStabilityRelationAppliedOffset.Value.ToString();
 					}
 				}
-				Dictionary<string, string> dictionary14b = CampaignSaveChunkHelper.FlattenStringDictionary(_kingdomStabilityRelationOffsetStorage);
+				Dictionary<string, string> dictionary14b = CampaignSaveChunkHelper.FlattenStringDictionary(_kingdomStabilityRelationOffsetStorage, "_kingdomStabilityRelationOffsets_v1", "KingdomStabilityRelation");
 				dataStore.SyncData("_kingdomStabilityRelationOffsets_v1", ref dictionary14b);
 				_weeklyReportAppliedStabilityDeltaStorage.Clear();
 				foreach (KeyValuePair<string, int> weeklyReportAppliedStabilityDelta in _weeklyReportAppliedStabilityDeltas)
@@ -10393,7 +10393,7 @@ public class MyBehavior : CampaignBehaviorBase
 						_weeklyReportAppliedStabilityDeltaStorage[text5] = weeklyReportAppliedStabilityDelta.Value.ToString();
 					}
 				}
-				Dictionary<string, string> dictionary14c = CampaignSaveChunkHelper.FlattenStringDictionary(_weeklyReportAppliedStabilityDeltaStorage);
+				Dictionary<string, string> dictionary14c = CampaignSaveChunkHelper.FlattenStringDictionary(_weeklyReportAppliedStabilityDeltaStorage, "_weeklyReportAppliedStabilityDeltas_v1", "WeeklyReportStability");
 				dataStore.SyncData("_weeklyReportAppliedStabilityDeltas_v1", ref dictionary14c);
 				_modCreatedRebelKingdomIdStorage.Clear();
 				foreach (string rebelKingdomId in _modCreatedRebelKingdomIds ?? new HashSet<string>(StringComparer.OrdinalIgnoreCase))
@@ -10404,7 +10404,7 @@ public class MyBehavior : CampaignBehaviorBase
 						_modCreatedRebelKingdomIdStorage[text6] = "1";
 					}
 				}
-				Dictionary<string, string> dictionary14d = CampaignSaveChunkHelper.FlattenStringDictionary(_modCreatedRebelKingdomIdStorage);
+				Dictionary<string, string> dictionary14d = CampaignSaveChunkHelper.FlattenStringDictionary(_modCreatedRebelKingdomIdStorage, "_modCreatedRebelKingdomIds_v1", "ModCreatedRebelKingdom");
 				dataStore.SyncData("_modCreatedRebelKingdomIds_v1", ref dictionary14d);
 				dataStore.SyncData("_lastAutoGeneratedWeeklyReportWeek_v1", ref _lastAutoGeneratedWeeklyReportWeek);
 				dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKingdomRebellionWeek);
@@ -13730,6 +13730,11 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
+	public static int GetCurrentMemoryGameHourForExternal()
+	{
+		return GetCurrentHourOfDaySafeForPrompt();
+	}
+
 	private static string GetTimeOfDayTextZhForPrompt(int hourOfDay)
 	{
 		if (hourOfDay >= 5 && hourOfDay <= 10)
@@ -16762,6 +16767,11 @@ public class MyBehavior : CampaignBehaviorBase
 		return "大地图或未知场景";
 	}
 
+	public static string ResolveCurrentMemorySceneLabelForExternal()
+	{
+		return ResolveCurrentMemorySceneLabel();
+	}
+
 	private static bool IsUnknownMemorySceneLabel(string scene)
 	{
 		string text = (scene ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
@@ -16920,7 +16930,7 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			return "";
 		}
-		string text = BuildFirstMeetingNpcFactText();
+		string text = BuildFirstMeetingNpcFactText(hero);
 		if (string.IsNullOrWhiteSpace(text))
 		{
 			return "";
@@ -16939,11 +16949,16 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private static string BuildFirstMeetingNpcFactText()
 	{
-		TryBuildPlayerPublicDisplayNameForPrompt(out var displayName, out var isCompleteIdentity);
+		return BuildFirstMeetingNpcFactText(ResolveCurrentPlayerIdentityObserverForPrompt());
+	}
+
+	private static string BuildFirstMeetingNpcFactText(Hero observer)
+	{
+		TryBuildPlayerPublicDisplayNameForPrompt(observer, out var displayName, out var isCompleteIdentity);
 		string text = (displayName ?? "").Trim();
 		if (isCompleteIdentity && !string.Equals(text, "玩家", StringComparison.Ordinal))
 		{
-			return "[AFEF NPC行为补充] 你第一次与玩家（" + text + "）见面。";
+			return "[AFEF NPC行为补充] 你第一次与玩家（" + text + "）当面交谈；你已经知道他的公开身份和已公开履历，但此前没有直接见过他。";
 		}
 		if (!string.IsNullOrWhiteSpace(text) && !string.Equals(text, "玩家", StringComparison.Ordinal))
 		{
@@ -17327,7 +17342,7 @@ public class MyBehavior : CampaignBehaviorBase
 		return string.IsNullOrWhiteSpace(text) ? "" : StripSpeakerPrefixForRecall(text);
 	}
 
-	public static string BuildHistoryContextForExternal(Hero hero, int maxLines = 20, string currentInput = null, string secondaryInput = null)
+	public static string BuildHistoryContextForExternal(Hero hero, int maxLines = 20, string currentInput = null, string secondaryInput = null, bool includeCurrentActiveSceneSession = false)
 	{
 		try
 		{
@@ -17336,7 +17351,7 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				return "";
 			}
-			return myBehavior.BuildHistoryContext(hero, maxLines, currentInput, secondaryInput);
+			return myBehavior.BuildHistoryContext(hero, maxLines, currentInput, secondaryInput, includeCurrentActiveSceneSession);
 		}
 		catch
 		{
@@ -17344,7 +17359,24 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	public static string BuildNonHeroHistoryContextForExternal(string nonHeroMemoryId, string npcName, int maxLines = 20, string currentInput = null, string secondaryInput = null)
+	public static List<ConversationMessage> BuildUncompressedMemoryRoleMessagesForExternal(Hero hero, int targetAgentIndex = -1, bool includeCurrentActiveSceneSession = false)
+	{
+		try
+		{
+			MyBehavior myBehavior = Campaign.Current?.GetCampaignBehavior<MyBehavior>();
+			if (myBehavior == null || hero == null)
+			{
+				return new List<ConversationMessage>();
+			}
+			return myBehavior.BuildUncompressedMemoryRoleMessages(hero, targetAgentIndex, includeCurrentActiveSceneSession) ?? new List<ConversationMessage>();
+		}
+		catch
+		{
+			return new List<ConversationMessage>();
+		}
+	}
+
+	public static string BuildNonHeroHistoryContextForExternal(string nonHeroMemoryId, string npcName, int maxLines = 20, string currentInput = null, string secondaryInput = null, bool includeCurrentActiveSceneSession = false)
 	{
 		try
 		{
@@ -17353,7 +17385,7 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				return "";
 			}
-			return myBehavior.BuildHistoryContextById(nonHeroMemoryId, npcName, maxLines, currentInput, secondaryInput);
+			return myBehavior.BuildHistoryContextById(nonHeroMemoryId, npcName, maxLines, currentInput, secondaryInput, includeCurrentActiveSceneSession);
 		}
 		catch
 		{
@@ -21490,9 +21522,9 @@ public class MyBehavior : CampaignBehaviorBase
 		StringBuilder user = new StringBuilder();
 		int mode = GetMemoryPreprocessModeFromSettings();
 		user.AppendLine(mode == 2 ? "Mode: parallel memory selector request. memory_ids is the required field for this request." : "Mode: unified preprocessing body. Include rule_codes and memory_ids even if rule_codes is empty.");
-		user.AppendLine("Output JSON schema: {\"rule_codes\":[],\"memory_ids\":[1,2],\"mentioned_entities\":{\"heroes\":[],\"settlements\":[],\"clans\":[],\"kingdoms\":[]}}");
+		user.AppendLine("Output JSON schema: {\"rule_codes\":[],\"memory_ids\":[1,2],\"mentioned_entities\":{\"heroes\":[],\"settlements\":[],\"clans\":[],\"kingdoms\":[],\"terms\":[]}}");
 		user.AppendLine("Select exactly " + Math.Max(1, finalCount) + " memory_ids from the candidate list. If uncertain, choose the closest by semantic relevance. Do not select more than " + Math.Max(1, finalCount) + ".");
-		user.AppendLine("mentioned_entities must contain only named people, settlements/places, clans/families, and kingdoms/countries explicitly mentioned in the latest player input or latest NPC/context input. Personal names and titles such as king, queen, lord, lady, noble, notable, headman, gang leader, wanderer, artisan, or ruler must go in heroes, not settlements. Do not extract the current conversation NPC/speaker's own name, role, title, aliases, or the player name merely because they are the current speakers; mentioned_entities should describe third-party entities or entities being explicitly discussed. If a name is ambiguous, put it in the closest bucket; runtime retrieval will search every extracted name across heroes, settlements, clans, and kingdoms. Order every mentioned_entities array by dialogue recency: names from the latest player input first, then latest NPC/context input. Do not extract names from memory candidate titles unless they are also mentioned in the latest exchange.");
+		user.AppendLine("mentioned_entities must contain named people, settlements/places, clans/families, kingdoms/countries, and every other explicitly mentioned referable noun from the latest player input or latest NPC/context input. Put named people in heroes, settlements/places in settlements, clans/families in clans, kingdoms/countries/factions in kingdoms, and all other nouns or noun phrases in terms, including item names, item type names, troop names, troop type names, prisoner names, prisoner type names, asset names, and asset type names. Personal names and titles such as king, queen, lord, lady, noble, notable, headman, gang leader, wanderer, artisan, or ruler must go in heroes, not settlements. Do not extract the current conversation NPC/speaker's own name, role, title, aliases, or the player name merely because they are the current speakers; mentioned_entities should describe third-party entities or things being explicitly discussed. If a name is ambiguous, put it in the closest bucket and also include the raw phrase in terms; runtime retrieval will search every extracted name across world entities and current lists. Order every mentioned_entities array by dialogue recency: names from the latest player input first, then latest NPC/context input. Do not extract names from memory candidate titles unless they are also mentioned in the latest exchange.");
 		user.AppendLine();
 		user.AppendLine("Latest player input:");
 		user.AppendLine(string.IsNullOrWhiteSpace(currentInput) ? "(none)" : currentInput.Trim());
@@ -21644,46 +21676,181 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private string BuildRecentDialogueMemoryContext(Hero hero, int currentDay)
+	private List<ConversationMessage> BuildUncompressedMemoryRoleMessages(Hero hero, int targetAgentIndex = -1, bool includeCurrentActiveSceneSession = false)
 	{
-		return BuildRecentDialogueMemoryContextById(GetMemoryHeroId(hero), currentDay);
+		if (hero == null)
+		{
+			return new List<ConversationMessage>();
+		}
+		string heroName = (hero.Name?.ToString() ?? "NPC").Trim();
+		if (string.IsNullOrWhiteSpace(heroName))
+		{
+			heroName = "NPC";
+		}
+		return BuildUncompressedMemoryRoleMessagesById(GetMemoryHeroId(hero), heroName, targetAgentIndex, includeCurrentActiveSceneSession);
 	}
 
-	private string BuildRecentDialogueMemoryContextById(string memoryId, int currentDay)
+	private List<ConversationMessage> BuildUncompressedMemoryRoleMessagesById(string memoryId, string memoryName, int targetAgentIndex = -1, bool includeCurrentActiveSceneSession = false)
 	{
-		List<DailyMemoryDraft> list = LoadDailyMemoryDraftsById(memoryId);
-		if (list == null || list.Count <= 0)
+		List<ConversationMessage> result = new List<ConversationMessage>();
+		string normalizedMemoryId = NormalizeMemoryHeroId(memoryId);
+		if (!IsMemoryEntityEligibleForCompressedMemory(normalizedMemoryId))
 		{
-			return "";
+			return result;
 		}
-		IEnumerable<DailyMemoryDraft> enumerable = list.Where((DailyMemoryDraft x) => x != null && (x.GameDayIndex == currentDay || (x.GameDayIndex < currentDay && x.HasLlmDialogue)));
-		int currentSceneSessionId = GetCurrentSceneSessionIdForDailyMemorySuppression();
-		int currentDialogueSessionId = GetCurrentNativeConversationMemorySessionIdForSuppression();
-		StringBuilder stringBuilder = new StringBuilder();
-		foreach (DailyMemoryDraft draft in enumerable.OrderBy((DailyMemoryDraft x) => x.GameDayIndex))
+		List<DailyMemoryDraft> drafts = LoadDailyMemoryDraftsById(normalizedMemoryId);
+		if (drafts == null || drafts.Count <= 0)
 		{
-			bool isToday = draft != null && draft.GameDayIndex == currentDay;
-			List<DailyMemoryLine> lines = (draft?.Lines ?? new List<DailyMemoryLine>()).Where((DailyMemoryLine x) => x != null && (!isToday || !IsCurrentActiveMemorySessionLine(x, currentSceneSessionId, currentDialogueSessionId))).ToList();
-			if (lines.Count <= 0)
+			return result;
+		}
+		int currentDay = GetCurrentGameDayIndexSafe();
+		int currentSceneSessionId = includeCurrentActiveSceneSession ? -1 : GetCurrentSceneSessionIdForDailyMemorySuppression();
+		int currentDialogueSessionId = GetCurrentNativeConversationMemorySessionIdForSuppression();
+		string targetName = string.IsNullOrWhiteSpace(memoryName) ? "NPC" : memoryName.Trim();
+		foreach (DailyMemoryDraft draft in drafts.Where((DailyMemoryDraft x) => x != null).OrderBy((DailyMemoryDraft x) => x.GameDayIndex))
+		{
+			bool isToday = draft.GameDayIndex == currentDay;
+			if (!isToday && (!draft.HasLlmDialogue || HasCompressedMemoryBlock(normalizedMemoryId, draft.GameDayIndex)))
 			{
 				continue;
 			}
-			if (stringBuilder.Length == 0)
+			foreach (DailyMemoryLine line in draft.Lines ?? new List<DailyMemoryLine>())
 			{
-				stringBuilder.AppendLine("【最近对话历史】");
-			}
-			string text = string.IsNullOrWhiteSpace(draft.GameDate) ? ("第" + draft.GameDayIndex + "日") : draft.GameDate.Trim();
-			stringBuilder.AppendLine("—— " + text + " ——");
-			foreach (DailyMemoryLine line in lines)
-			{
-				string text2 = BuildDailyMemoryLineForPrompt(line);
-				if (!string.IsNullOrWhiteSpace(text2))
+				if (line == null || string.IsNullOrWhiteSpace(line.Text))
 				{
-					stringBuilder.AppendLine(text2);
+					continue;
+				}
+				if (isToday && IsCurrentActiveMemorySessionLine(line, currentSceneSessionId, currentDialogueSessionId))
+				{
+					continue;
+				}
+				ConversationMessage message = BuildUncompressedMemoryConversationMessage(line, targetName, targetAgentIndex);
+				if (message != null)
+				{
+					result.Add(message);
 				}
 			}
 		}
-		return stringBuilder.ToString().TrimEnd();
+		return result;
+	}
+
+	private static ConversationMessage BuildUncompressedMemoryConversationMessage(DailyMemoryLine line, string memoryName, int targetAgentIndex)
+	{
+		if (line == null || string.IsNullOrWhiteSpace(line.Text))
+		{
+			return null;
+		}
+		string text = (line.Text ?? "").Replace("\r", "").Trim();
+		string speaker = string.IsNullOrWhiteSpace(line.Speaker) ? (line.IsAfef ? "AFEF" : "记录") : line.Speaker.Trim();
+		string npcName = string.IsNullOrWhiteSpace(memoryName) ? "NPC" : memoryName.Trim();
+		string role = "user";
+		int speakerAgentIndex = -1;
+		int targetIndex = targetAgentIndex;
+		if (line.IsAfef)
+		{
+			role = "system";
+			speaker = "AFEF";
+			speakerAgentIndex = -1;
+			targetIndex = -1;
+		}
+		else if (TryParseDailyMemorySceneShoutLine(text, out var heardSpeaker, out var heardContent))
+		{
+			role = "assistant";
+			speaker = string.IsNullOrWhiteSpace(heardSpeaker) ? "某NPC" : heardSpeaker.Trim();
+			text = string.IsNullOrWhiteSpace(heardContent) ? text : heardContent.Trim();
+			speakerAgentIndex = -1;
+			targetIndex = -1;
+		}
+		else if (IsDailyMemoryLineNpcSpeech(line, npcName))
+		{
+			role = "assistant";
+			speaker = npcName;
+			speakerAgentIndex = targetAgentIndex;
+			targetIndex = -1;
+		}
+		else if (!IsDailyMemoryLinePlayerSpeech(line, npcName))
+		{
+			role = "assistant";
+			speakerAgentIndex = -1;
+			targetIndex = -1;
+		}
+		return new ConversationMessage
+		{
+			GameDayIndex = line.GameDayIndex,
+			GameDate = line.GameDate ?? "",
+			GameHour = MBMath.ClampInt(line.GameHour, 0, 23),
+			Scene = ResolveMemoryLineSceneForPrompt(line),
+			Role = role,
+			Content = text,
+			SpeakerName = speaker,
+			SpeakerAgentIndex = speakerAgentIndex,
+			TargetAgentIndex = targetIndex,
+			TargetName = npcName,
+			PlayerDistanceMeters = -1f
+		};
+	}
+
+	private static bool IsDailyMemoryLineNpcSpeech(DailyMemoryLine line, string npcName)
+	{
+		if (line == null)
+		{
+			return false;
+		}
+		string speaker = (line.Speaker ?? "").Trim();
+		string name = (npcName ?? "").Trim();
+		if (!string.IsNullOrWhiteSpace(speaker) && !string.IsNullOrWhiteSpace(name) && string.Equals(speaker, name, StringComparison.OrdinalIgnoreCase))
+		{
+			return true;
+		}
+		string text = (line.Text ?? "").Trim();
+		return !string.IsNullOrWhiteSpace(name) && (text.StartsWith(name + ":", StringComparison.Ordinal) || text.StartsWith(name + "：", StringComparison.Ordinal));
+	}
+
+	private static bool IsDailyMemoryLinePlayerSpeech(DailyMemoryLine line, string npcName)
+	{
+		if (line == null)
+		{
+			return false;
+		}
+		string speaker = (line.Speaker ?? "").Trim();
+		if (IsLikelyPlayerHistorySpeaker(speaker))
+		{
+			return true;
+		}
+		string text = (line.Text ?? "").Trim();
+		string name = (npcName ?? "").Trim();
+		if (!string.IsNullOrWhiteSpace(name) && (text.Contains("对" + name + "说") || text.Contains("对" + name + "喊") || text.Contains("向" + name + "说") || text.Contains("向" + name + "喊")))
+		{
+			return true;
+		}
+		return text.StartsWith("玩家", StringComparison.Ordinal);
+	}
+
+	private static bool TryParseDailyMemorySceneShoutLine(string rawText, out string speaker, out string content)
+	{
+		speaker = "";
+		content = "";
+		string text = (rawText ?? "").Trim();
+		if (!text.StartsWith("[场景喊话]", StringComparison.Ordinal))
+		{
+			return false;
+		}
+		string body = text.Substring("[场景喊话]".Length).Trim();
+		if (string.IsNullOrWhiteSpace(body))
+		{
+			return true;
+		}
+		int delimiter = FindDialogueHistorySpeakerDelimiter(body);
+		if (delimiter > 0)
+		{
+			speaker = body.Substring(0, delimiter).Trim();
+			content = body.Substring(delimiter + 1).Trim();
+		}
+		else
+		{
+			content = body;
+		}
+		return true;
 	}
 
 	private static int GetCurrentSceneSessionIdForDailyMemorySuppression()
@@ -21860,16 +22027,16 @@ public class MyBehavior : CampaignBehaviorBase
 		return stringBuilder.ToString().TrimEnd();
 	}
 
-	private string BuildHistoryContext(Hero hero, int maxLines = 0, string currentInput = null, string secondaryInput = null)
+	private string BuildHistoryContext(Hero hero, int maxLines = 0, string currentInput = null, string secondaryInput = null, bool includeCurrentActiveSceneSession = false)
 	{
 		if (hero == null)
 		{
 			return "";
 		}
-		return BuildHistoryContextById(GetMemoryHeroId(hero), hero.Name?.ToString() ?? "NPC", maxLines, currentInput, secondaryInput);
+		return BuildHistoryContextById(GetMemoryHeroId(hero), hero.Name?.ToString() ?? "NPC", maxLines, currentInput, secondaryInput, includeCurrentActiveSceneSession);
 	}
 
-	private string BuildHistoryContextById(string memoryId, string memoryName, int maxLines = 0, string currentInput = null, string secondaryInput = null)
+	private string BuildHistoryContextById(string memoryId, string memoryName, int maxLines = 0, string currentInput = null, string secondaryInput = null, bool includeCurrentActiveSceneSession = false)
 	{
 		string normalizedMemoryId = NormalizeMemoryHeroId(memoryId);
 		if (!IsMemoryEntityEligibleForCompressedMemory(normalizedMemoryId))
@@ -21878,14 +22045,7 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		try
 		{
-			int currentDay = (int)CampaignTime.Now.ToDays;
 			StringBuilder stringBuilder = new StringBuilder(4096);
-			string recentDialogueContext = BuildRecentDialogueMemoryContextById(normalizedMemoryId, currentDay);
-			if (!string.IsNullOrWhiteSpace(recentDialogueContext))
-			{
-				stringBuilder.AppendLine(recentDialogueContext);
-				stringBuilder.AppendLine();
-			}
 			string memoryOverviewContext = BuildMemoryOverviewContextById(normalizedMemoryId);
 			if (!string.IsNullOrWhiteSpace(memoryOverviewContext))
 			{
@@ -24659,7 +24819,7 @@ public class MyBehavior : CampaignBehaviorBase
 						}
 					}
 				}
-				Dictionary<string, string> dictionary = CampaignSaveChunkHelper.FlattenStringDictionary(_patienceStorage);
+				Dictionary<string, string> dictionary = CampaignSaveChunkHelper.FlattenStringDictionary(_patienceStorage, "_patienceStates_v1", "Patience");
 				dataStore.SyncData("_patienceStates_v1", ref dictionary);
 				return;
 			}

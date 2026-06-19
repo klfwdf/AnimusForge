@@ -6,6 +6,10 @@ public sealed class AnimusForgeDialogueHistoryEntry
 
 	public string GameDate { get; set; } = "";
 
+	public int GameHour { get; set; } = -1;
+
+	public string Scene { get; set; } = "";
+
 	public string Speaker { get; set; } = "";
 
 	public string Text { get; set; } = "";

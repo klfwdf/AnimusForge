@@ -152,12 +152,14 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 					}
 				}
 			}
+			storage = CampaignSaveChunkHelper.FlattenStringDictionary(storage, StorageKey, "WorldMapPartyCommand");
 		}
 		dataStore.SyncData(StorageKey, ref storage);
 		if (!dataStore.IsLoading)
 		{
 			return;
 		}
+		storage = CampaignSaveChunkHelper.RestoreStringDictionary(storage, "WorldMapPartyCommand");
 		lock (_queueLock)
 		{
 			_queues.Clear();

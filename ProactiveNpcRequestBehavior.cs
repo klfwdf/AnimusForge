@@ -5,6 +5,7 @@ using Helpers;
 using Newtonsoft.Json;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Actions;
+using TaleWorlds.CampaignSystem.CampaignBehaviors;
 using TaleWorlds.CampaignSystem.Encounters;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.Core;
@@ -62,14 +63,17 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 				GlobalCooldownUntilHours = _globalCooldownUntilHours,
 				LastScanHour = _lastScanHour
 			});
+			CampaignSaveChunkHelper.LogRawJsonSaveStats(StorageKey, "ProactiveNpcRequest", storageJson, "heroCooldowns=" + (_heroCooldownUntilDays?.Count ?? 0) + " needCooldowns=" + (_needCooldownUntilDays?.Count ?? 0) + " active=" + (_activeSession != null));
+			CampaignSaveChunkHelper.SaveChunkedString(dataStore, StorageKey, storageJson, "ProactiveNpcRequest");
+			return;
 		}
-		dataStore.SyncData(StorageKey, ref storageJson);
 		if (!dataStore.IsLoading)
 		{
 			return;
 		}
 		try
 		{
+			storageJson = CampaignSaveChunkHelper.LoadChunkedString(dataStore, StorageKey, "ProactiveNpcRequest");
 			ProactiveNpcRequestStorage storage = string.IsNullOrWhiteSpace(storageJson) ? null : JsonConvert.DeserializeObject<ProactiveNpcRequestStorage>(storageJson);
 			_activeSession = storage?.ActiveSession;
 			_heroCooldownUntilDays = NormalizeCooldownDictionary(storage?.HeroCooldownUntilDays);
@@ -774,7 +778,7 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 			if (hasCommonEnemy) { urgency = 65f; return true; }
 #if BANNERLORD_1_4_OR_GREATER
 			ITradeAgreementsCampaignBehavior tradeBeh = Campaign.Current.GetCampaignBehavior<ITradeAgreementsCampaignBehavior>();
-			bool hasTrade = tradeBeh != null && tradeBeh.HasTradeAgreement(npcKingdom, playerKingdom);
+			bool hasTrade = tradeBeh != null && tradeBeh.HasTradeAgreement(npcKingdom, playerKingdom, out var _);
 			if (!hasTrade) { urgency = 45f; return true; }
 #endif
 			return false;

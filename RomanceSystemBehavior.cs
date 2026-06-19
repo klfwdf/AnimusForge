@@ -139,7 +139,12 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		{
 			_marriageRecordStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 		}
-		dataStore.SyncData("_romanceMarriageRecords_v1", ref _marriageRecordStorage);
+		Dictionary<string, string> marriageRecordStorageForSync = dataStore.IsSaving ? CampaignSaveChunkHelper.FlattenStringDictionary(_marriageRecordStorage, "_romanceMarriageRecords_v1", "Romance") : _marriageRecordStorage;
+		dataStore.SyncData("_romanceMarriageRecords_v1", ref marriageRecordStorageForSync);
+		if (dataStore.IsLoading)
+		{
+			_marriageRecordStorage = CampaignSaveChunkHelper.RestoreStringDictionary(marriageRecordStorageForSync, "Romance");
+		}
 		if (_privateLove == null)
 		{
 			_privateLove = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);

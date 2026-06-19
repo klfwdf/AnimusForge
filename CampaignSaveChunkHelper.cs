@@ -8,7 +8,8 @@ namespace AnimusForge;
 
 internal static class CampaignSaveChunkHelper
 {
-	private const int StorageChunkMaxBytes = 240;
+	// TaleWorlds string save entries use a signed short data length; keep chunks well below 32767 bytes.
+	private const int StorageChunkMaxBytes = 12000;
 
 	private const int LegacyInlineStorageMaxBytes = 240;
 
@@ -45,6 +46,7 @@ internal static class CampaignSaveChunkHelper
 	{
 		string text = value ?? "";
 		List<string> list = SplitUtf8Chunks(text, StorageChunkMaxBytes);
+		LogChunkedStringSaveStats(key, text, list.Count, loggerTag);
 		int count = list.Count;
 		SafeSyncData(dataStore, key + StringChunkCountSuffix, ref count, loggerTag);
 		for (int i = 0; i < list.Count; i++)
@@ -69,9 +71,15 @@ internal static class CampaignSaveChunkHelper
 
 	public static Dictionary<string, string> FlattenStringDictionary(Dictionary<string, string> source)
 	{
+		return FlattenStringDictionary(source, null, "SaveChunk");
+	}
+
+	public static Dictionary<string, string> FlattenStringDictionary(Dictionary<string, string> source, string saveKey, string loggerTag = "SaveChunk")
+	{
 		Dictionary<string, string> dictionary = CreateCompatibleDictionary(source);
 		if (source == null)
 		{
+			LogDictionarySaveStats(saveKey, source, dictionary, loggerTag);
 			return dictionary;
 		}
 		foreach (KeyValuePair<string, string> item in source)
@@ -93,7 +101,35 @@ internal static class CampaignSaveChunkHelper
 				dictionary[BuildDictionaryChunkKey(text, i)] = list[i] ?? "";
 			}
 		}
+		LogDictionarySaveStats(saveKey, source, dictionary, loggerTag);
 		return dictionary;
+	}
+
+	public static int GetUtf8ByteCountForDiagnostics(string value)
+	{
+		return GetUtf8ByteCount(value);
+	}
+
+	public static void LogRawJsonSaveStats(string saveKey, string source, string json, string detail = null)
+	{
+		try
+		{
+			if (string.IsNullOrWhiteSpace(saveKey) || !Logger.IsModLogicEnabled)
+			{
+				return;
+			}
+			string text = json ?? "";
+			int bytes = GetUtf8ByteCount(text);
+			Logger.Log("SaveSize", "save_size key=" + saveKey
+				+ " kind=json"
+				+ " source=" + NormalizeDiagnosticToken(source)
+				+ " chars=" + text.Length
+				+ " bytes=" + bytes
+				+ (string.IsNullOrWhiteSpace(detail) ? "" : (" " + detail.Trim())));
+		}
+		catch
+		{
+		}
 	}
 
 	public static Dictionary<string, string> RestoreStringDictionary(Dictionary<string, string> stored, string loggerTag = "SaveChunk")
@@ -154,6 +190,125 @@ internal static class CampaignSaveChunkHelper
 			dictionary[item3.Key] = item3.Value;
 		}
 		return dictionary;
+	}
+
+	private static void LogChunkedStringSaveStats(string saveKey, string value, int chunkCount, string loggerTag)
+	{
+		try
+		{
+			if (string.IsNullOrWhiteSpace(saveKey) || !Logger.IsModLogicEnabled)
+			{
+				return;
+			}
+			string text = value ?? "";
+			int bytes = GetUtf8ByteCount(text);
+			int storedEntries = chunkCount + 1 + ((bytes <= LegacyInlineStorageMaxBytes) ? 1 : 0);
+			int storedStringBytes = bytes + GetUtf8ByteCount(saveKey + StringChunkCountSuffix);
+			if (bytes <= LegacyInlineStorageMaxBytes)
+			{
+				storedStringBytes += bytes + GetUtf8ByteCount(saveKey);
+			}
+			for (int i = 0; i < chunkCount; i++)
+			{
+				storedStringBytes += GetUtf8ByteCount(saveKey + StringChunkKeyPrefix + i.ToString(CultureInfo.InvariantCulture));
+			}
+			Logger.Log("SaveSize", "save_size key=" + saveKey
+				+ " kind=chunked_string"
+				+ " source=" + NormalizeDiagnosticToken(loggerTag)
+				+ " chars=" + text.Length
+				+ " bytes=" + bytes
+				+ " chunks=" + chunkCount
+				+ " storedEntries=" + storedEntries
+				+ " approxStoredStringBytes=" + storedStringBytes);
+		}
+		catch
+		{
+		}
+	}
+
+	private static void LogDictionarySaveStats(string saveKey, Dictionary<string, string> raw, Dictionary<string, string> stored, string loggerTag)
+	{
+		try
+		{
+			if (string.IsNullOrWhiteSpace(saveKey) || !Logger.IsModLogicEnabled)
+			{
+				return;
+			}
+			int rawEntries = raw?.Count ?? 0;
+			int storedEntries = stored?.Count ?? 0;
+			int rawKeyBytes = 0;
+			int rawValueBytes = 0;
+			int maxValueBytes = 0;
+			string maxValueKey = "";
+			int chunkedItems = 0;
+			int chunkValueEntries = 0;
+			if (raw != null)
+			{
+				foreach (KeyValuePair<string, string> item in raw)
+				{
+					string key = item.Key ?? "";
+					string value = item.Value ?? "";
+					int keyBytes = GetUtf8ByteCount(key);
+					int valueBytes = GetUtf8ByteCount(value);
+					rawKeyBytes += keyBytes;
+					rawValueBytes += valueBytes;
+					if (valueBytes > maxValueBytes)
+					{
+						maxValueBytes = valueBytes;
+						maxValueKey = key;
+					}
+					if (valueBytes > StorageChunkMaxBytes)
+					{
+						chunkedItems++;
+						chunkValueEntries += Math.Max(1, (valueBytes + StorageChunkMaxBytes - 1) / StorageChunkMaxBytes);
+					}
+				}
+			}
+			int storedStringBytes = 0;
+			if (stored != null)
+			{
+				foreach (KeyValuePair<string, string> item2 in stored)
+				{
+					storedStringBytes += GetUtf8ByteCount(item2.Key ?? "");
+					storedStringBytes += GetUtf8ByteCount(item2.Value ?? "");
+				}
+			}
+			Logger.Log("SaveSize", "save_size key=" + saveKey
+				+ " kind=dictionary"
+				+ " source=" + NormalizeDiagnosticToken(loggerTag)
+				+ " rawEntries=" + rawEntries
+				+ " storedEntries=" + storedEntries
+				+ " rawKeyBytes=" + rawKeyBytes
+				+ " rawValueBytes=" + rawValueBytes
+				+ " chunkedItems=" + chunkedItems
+				+ " chunkValueEntries=" + chunkValueEntries
+				+ " maxValueBytes=" + maxValueBytes
+				+ " maxValueKey=" + QuoteDiagnosticValue(maxValueKey, 96)
+				+ " approxStoredStringBytes=" + storedStringBytes);
+		}
+		catch
+		{
+		}
+	}
+
+	private static string NormalizeDiagnosticToken(string value)
+	{
+		string text = (value ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return "unknown";
+		}
+		return text.Replace(" ", "_").Replace("\r", "_").Replace("\n", "_");
+	}
+
+	private static string QuoteDiagnosticValue(string value, int maxChars)
+	{
+		string text = (value ?? "").Replace("\\", "\\\\").Replace("\"", "\\\"").Replace("\r", " ").Replace("\n", " ").Trim();
+		if (maxChars > 0 && text.Length > maxChars)
+		{
+			text = text.Substring(0, maxChars).Trim();
+		}
+		return "\"" + text + "\"";
 	}
 
 	private static Dictionary<string, string> CreateCompatibleDictionary(Dictionary<string, string> source)

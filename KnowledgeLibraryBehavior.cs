@@ -222,7 +222,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 
 	private const string StorageChunkKeyPrefix = "_knowledge_rules_v1_json_chunk_";
 
-	private const int StorageChunkMaxBytes = 240;
+	private const int StorageChunkMaxBytes = 12000;
 
 	private const int LegacyInlineStorageMaxBytes = 240;
 

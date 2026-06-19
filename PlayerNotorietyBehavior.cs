@@ -61,14 +61,17 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 		if (dataStore.IsSaving)
 		{
 			storageJson = JsonConvert.SerializeObject(NormalizeState(_state));
+			CampaignSaveChunkHelper.LogRawJsonSaveStats(StorageKey, "PlayerNotoriety", storageJson, BuildStorageDiagnostics());
+			CampaignSaveChunkHelper.SaveChunkedString(dataStore, StorageKey, storageJson, "PlayerNotoriety");
+			return;
 		}
-		dataStore.SyncData(StorageKey, ref storageJson);
 		if (!dataStore.IsLoading)
 		{
 			return;
 		}
 		try
 		{
+			storageJson = CampaignSaveChunkHelper.LoadChunkedString(dataStore, StorageKey, "PlayerNotoriety");
 			_state = string.IsNullOrWhiteSpace(storageJson) ? new PlayerNotorietyState() : JsonConvert.DeserializeObject<PlayerNotorietyState>(storageJson) ?? new PlayerNotorietyState();
 			_state = NormalizeState(_state);
 			_activeConversationStates.Clear();
@@ -77,6 +80,30 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 		{
 			_state = new PlayerNotorietyState();
 			Logger.Log("PlayerNotoriety", "load failed: " + ex.Message);
+		}
+	}
+
+	private string BuildStorageDiagnostics()
+	{
+		try
+		{
+			PlayerNotorietyState state = NormalizeState(_state);
+			int recent = state.RecentActions?.Count ?? 0;
+			int materials = state.MajorMaterials?.Count ?? 0;
+			int pending = state.MajorMaterials?.Count(x => x != null && !x.Summarized) ?? 0;
+			int summaryBytes = CampaignSaveChunkHelper.GetUtf8ByteCountForDiagnostics(state.MajorSummary ?? "");
+			int maxMaterialBytes = state.MajorMaterials?.Select(x => CampaignSaveChunkHelper.GetUtf8ByteCountForDiagnostics(x?.Text ?? "")).DefaultIfEmpty(0).Max() ?? 0;
+			return "recentActions=" + recent
+				+ " majorMaterials=" + materials
+				+ " pendingMaterials=" + pending
+				+ " npcKnowledge=" + (state.NpcKnowledge?.Count ?? 0)
+				+ " cultures=" + (state.CultureNotoriety?.Count ?? 0)
+				+ " summaryBytes=" + summaryBytes
+				+ " maxMaterialBytes=" + maxMaterialBytes;
+		}
+		catch
+		{
+			return "";
 		}
 	}
 
