@@ -493,7 +493,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyGroup("4. 开发者选项")]
 	public bool EnableDeepTrace { get; set; } = false;
 
-	[SettingPropertyBool("【开发者】启用数据管理（对话历史/赊账/个性）", Order = 1, RequireRestart = false, HintText = "开启后，城镇主菜单中会出现【开发】数据管理入口，用于查看和修改任意 NPC 的历史对话记录、赊账/欠款，以及个性背景等数据。")]
+	[SettingPropertyBool("【开发者】启用数据管理（对话历史/赊账/个性/玩家履历）", Order = 1, RequireRestart = false, HintText = "开启后，城镇主菜单中会出现【开发】数据管理入口，用于查看和修改任意 NPC 的历史对话记录、赊账/欠款、个性背景等数据；角色(C)中的玩家知名度/履历弹窗也会开放玩家履历编辑。")]
 	[SettingPropertyGroup("4. 开发者选项")]
 	public bool EnableDevEditHistory { get; set; } = false;
 

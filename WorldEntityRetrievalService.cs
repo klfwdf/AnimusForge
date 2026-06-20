@@ -1102,7 +1102,7 @@ public static class WorldEntityRetrievalService
 				sb.AppendLine(relationship);
 			}
 			sb.AppendLine("特质：" + FormatHeroTraits(hero) + "；所有亲人：" + FormatHeroRelatives(hero));
-			sb.AppendLine("现在的位置：" + FormatHeroLocation(hero) + "；目前的状态：" + FormatHeroStatus(hero));
+			sb.AppendLine("现在的位置：" + FormatHeroLocation(hero) + "；目前的状态：" + FormatHeroStatus(hero) + "；是否被俘(IsPrisoner)：" + FormatHeroPrisonerFlag(hero));
 			sb.AppendLine("年龄(Age)：" + FormatAge(hero) + "；生死状态(IsAlive)：" + FormatBool(hero != null && hero.IsAlive) + "；性别：" + FormatGender(hero) + "；职业/头衔(Occupation/Title)：" + FormatHeroOccupation(hero));
 		}
 	}
@@ -1548,6 +1548,27 @@ public static class WorldEntityRetrievalService
 		{
 		}
 		return parts.Count == 0 ? "无特殊状态" : string.Join("；", parts);
+	}
+
+	private static string FormatHeroPrisonerFlag(Hero hero)
+	{
+		if (hero == null)
+		{
+			return "未知";
+		}
+		try
+		{
+			if (!hero.IsPrisoner)
+			{
+				return "false";
+			}
+			string holder = FormatPrisonerHolder(hero);
+			return string.IsNullOrWhiteSpace(holder) ? "true" : ("true" + holder);
+		}
+		catch
+		{
+			return "未知";
+		}
 	}
 
 	private static string FormatMobilePartyMapLocation(MobileParty party)

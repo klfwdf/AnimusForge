@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using TaleWorlds.CampaignSystem;
+using TaleWorlds.CampaignSystem.Actions;
 using TaleWorlds.CampaignSystem.Party;
+using TaleWorlds.CampaignSystem.Roster;
 using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
@@ -43,6 +45,7 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 
 	private PlayerNotorietyState _state = new PlayerNotorietyState();
 	private readonly Dictionary<string, ActiveConversationState> _activeConversationStates = new Dictionary<string, ActiveConversationState>(StringComparer.OrdinalIgnoreCase);
+	private readonly HashSet<string> _soldPrisonerDonationSkipKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 	private bool _summaryProcessing;
 
 	public static PlayerNotorietyBehavior Instance { get; private set; }
@@ -52,6 +55,11 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 		Instance = this;
 		CampaignEvents.DailyTickEvent.AddNonSerializedListener(this, OnDailyTick);
 		CampaignEvents.ConversationEnded.AddNonSerializedListener(this, OnNativeConversationEnded);
+		CampaignEvents.HeroPrisonerReleased.AddNonSerializedListener(this, OnHeroPrisonerReleased);
+		CampaignEvents.OnPrisonerReleasedEvent.AddNonSerializedListener(this, OnPlayerPrisonersReleased);
+		CampaignEvents.OnPrisonerSoldEvent.AddNonSerializedListener(this, OnPlayerPrisonersSold);
+		CampaignEvents.OnMainPartyPrisonerRecruitedEvent.AddNonSerializedListener(this, OnMainPartyPrisonerRecruited);
+		CampaignEvents.OnPrisonerDonatedToSettlementEvent.AddNonSerializedListener(this, OnPlayerPrisonersDonatedToSettlement);
 		Logger.Log("PlayerNotoriety", "registered v1 behavior.");
 	}
 
@@ -459,6 +467,147 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 		LogDebug("record public memory npc=" + (npc?.StringId ?? "") + " cultures=" + string.Join(",", historyMaterial.CultureIds));
 	}
 
+	private void OnHeroPrisonerReleased(Hero prisoner, PartyBase party, IFaction capturerFaction, EndCaptivityDetail detail, bool showNotification)
+	{
+		try
+		{
+			if (prisoner == null)
+			{
+				return;
+			}
+			if (prisoner == Hero.MainHero)
+			{
+				string playerText = BuildMainHeroReleasedText(party, capturerFaction, detail);
+				if (!string.IsNullOrWhiteSpace(playerText))
+				{
+					RecordPlayerRecentActionFromEvent(playerText, "player_captivity_released", GetHeroId(prisoner) + ":" + detail, Hero.MainHero?.Culture?.StringId ?? "", ResolvePlayerCurrentSettlement(), "");
+				}
+				return;
+			}
+			if (!IsPlayerPartyBase(party) || !ShouldRecordPlayerHeroPrisonerRelease(detail))
+			{
+				return;
+			}
+			string verb = BuildPlayerHeroPrisonerReleaseVerb(detail);
+			if (string.IsNullOrWhiteSpace(verb))
+			{
+				return;
+			}
+			string prisonerName = GetHeroDisplayName(prisoner);
+			string text = "你" + verb + prisonerName + "。";
+			RecordPlayerRecentActionFromEvent(text, "hero_prisoner_released", GetHeroId(prisoner) + ":" + detail, prisoner?.Culture?.StringId ?? "", ResolvePlayerCurrentSettlement(), "");
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("PlayerNotoriety", "hero prisoner release recent action failed: " + ex.Message);
+		}
+	}
+
+	private void OnPlayerPrisonersReleased(FlattenedTroopRoster roster)
+	{
+		try
+		{
+			PrisonerRosterSummary summary = BuildFlattenedPrisonerRosterSummary(roster, includeHeroes: false);
+			if (summary.TotalCount <= 0)
+			{
+				return;
+			}
+			string text = "你释放了 " + summary.TotalCount + " 名普通俘虏" + BuildRosterDetailSuffix(summary) + "。";
+			RecordPlayerRecentActionFromEvent(text, "prisoners_released", summary.Signature, summary.PrimaryCultureId, ResolvePlayerCurrentSettlement(), "");
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("PlayerNotoriety", "prisoner release recent action failed: " + ex.Message);
+		}
+	}
+
+	private void OnPlayerPrisonersSold(PartyBase sellerParty, PartyBase buyerParty, TroopRoster prisoners)
+	{
+		try
+		{
+			if (!IsPlayerPartyBase(sellerParty))
+			{
+				return;
+			}
+			PrisonerRosterSummary summary = BuildTroopRosterSummary(prisoners, includeHeroes: true);
+			if (summary.TotalCount <= 0)
+			{
+				return;
+			}
+			Settlement settlement = buyerParty?.Settlement ?? sellerParty?.Settlement ?? ResolvePlayerCurrentSettlement();
+			string buyerName = BuildPartyDisplayName(buyerParty);
+			string targetText = string.IsNullOrWhiteSpace(buyerName) ? "" : ("给" + buyerName);
+			string text = "你" + targetText + "出售了 " + summary.TotalCount + " 名俘虏" + BuildRosterDetailSuffix(summary) + "。";
+			RecordPlayerRecentActionFromEvent(text, "prisoners_sold", BuildPartyScope(buyerParty) + ":" + summary.Signature, summary.PrimaryCultureId, settlement, "");
+			if (buyerParty?.Settlement != null)
+			{
+				_soldPrisonerDonationSkipKeys.Add(BuildPrisonerDonationSkipKey(buyerParty.Settlement, summary.Signature));
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("PlayerNotoriety", "prisoner sold recent action failed: " + ex.Message);
+		}
+	}
+
+	private void OnMainPartyPrisonerRecruited(FlattenedTroopRoster roster)
+	{
+		try
+		{
+			PrisonerRosterSummary summary = BuildFlattenedPrisonerRosterSummary(roster, includeHeroes: true);
+			if (summary.TotalCount <= 0)
+			{
+				return;
+			}
+			string text = "你招募了 " + summary.TotalCount + " 名曾为俘虏的士兵加入队伍" + BuildRosterDetailSuffix(summary) + "。";
+			RecordPlayerRecentActionFromEvent(text, "prisoners_recruited", summary.Signature, summary.PrimaryCultureId, ResolvePlayerCurrentSettlement(), "");
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("PlayerNotoriety", "prisoner recruited recent action failed: " + ex.Message);
+		}
+	}
+
+	private void OnPlayerPrisonersDonatedToSettlement(MobileParty donatingParty, FlattenedTroopRoster donatedPrisoners, Settlement donatedSettlement)
+	{
+		try
+		{
+			if (!IsPlayerMobileParty(donatingParty))
+			{
+				return;
+			}
+			PrisonerRosterSummary summary = BuildFlattenedPrisonerRosterSummary(donatedPrisoners, includeHeroes: true);
+			if (summary.TotalCount <= 0)
+			{
+				return;
+			}
+			string skipKey = BuildPrisonerDonationSkipKey(donatedSettlement, summary.Signature);
+			if (_soldPrisonerDonationSkipKeys.Remove(skipKey))
+			{
+				return;
+			}
+			string settlementName = GetSettlementDisplayName(donatedSettlement);
+			string text = "你向" + settlementName + "移交了 " + summary.TotalCount + " 名俘虏" + BuildRosterDetailSuffix(summary) + "。";
+			RecordPlayerRecentActionFromEvent(text, "prisoners_donated", (donatedSettlement?.StringId ?? "") + ":" + summary.Signature, summary.PrimaryCultureId, donatedSettlement ?? ResolvePlayerCurrentSettlement(), settlementName);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("PlayerNotoriety", "prisoner donated recent action failed: " + ex.Message);
+		}
+	}
+
+	private void RecordPlayerRecentActionFromEvent(string text, string actionKind, string scope, string targetCultureId, Settlement settlement, string locationText)
+	{
+		string normalizedText = NormalizeLine(text);
+		if (string.IsNullOrWhiteSpace(normalizedText))
+		{
+			return;
+		}
+		int day = GetCurrentGameDayIndex();
+		string stableKey = BuildPlayerRecentEventStableKey(actionKind, scope, day);
+		RecordPlayerAction(normalizedText, stableKey, actionKind, isMajor: false, day, GetCurrentGameDateText(), 0, settlement?.StringId ?? "", GetSettlementDisplayName(settlement), locationText ?? "", Hero.MainHero?.Culture?.StringId ?? "", targetCultureId ?? "", settlement?.Culture?.StringId ?? "", null);
+	}
+
 	private void AddHistoryMaterialFromAction(PlayerActionEntry entry)
 	{
 		if (entry == null || string.IsNullOrWhiteSpace(entry.Text))
@@ -513,6 +662,7 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 	{
 		_state = NormalizeState(_state);
 		PruneRecentActions();
+		_soldPrisonerDonationSkipKeys.Clear();
 		FinalizeStaleActiveConversations();
 		TryStartSummaryProcessing();
 	}
@@ -1276,7 +1426,68 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 	private void OpenPlayerNotorietyView()
 	{
 		string text = BuildPlayerNotorietyDisplayText(includeRawMaterials: true);
+		bool canEdit = MyBehavior.IsDevDataManagementEnabledForExternal();
+		if (canEdit)
+		{
+			InformationManager.ShowInquiry(new InquiryData("玩家知名度与履历", text, true, true, "编辑履历", "关闭", OpenPlayerMajorHistoryEditor, null));
+			return;
+		}
 		InformationManager.ShowInquiry(new InquiryData("玩家知名度与履历", text, true, false, "关闭", "", null, null));
+	}
+
+	private void OpenPlayerMajorHistoryEditor()
+	{
+		try
+		{
+			if (!MyBehavior.IsDevDataManagementEnabledForExternal())
+			{
+				InformationManager.DisplayMessage(new InformationMessage("开发者数据管理未开启（请在 MCM 中启用）。"));
+				OpenPlayerNotorietyView();
+				return;
+			}
+			_state = NormalizeState(_state);
+			string initialText = (_state.MajorSummary ?? "").Trim();
+			string subtitle = "这里编辑的是已总结玩家重大履历摘要；未总结素材、近期行动和知名度数值不会被修改。";
+			string hint = "请输入新的玩家履历摘要；留空=清空已总结履历。未总结素材仍会保留，并可在后续总结中重新融合。";
+			DevTextEditorHelper.ShowLongTextEditor("编辑玩家履历", subtitle, hint, initialText, delegate(string input)
+			{
+				ApplyPlayerMajorHistoryEditorInput(input);
+				OpenPlayerNotorietyView();
+			}, delegate
+			{
+				OpenPlayerNotorietyView();
+			}, "保存", "返回");
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("PlayerNotoriety", "open player major history editor failed: " + ex.Message);
+			InformationManager.DisplayMessage(new InformationMessage("打开玩家履历编辑器失败：" + ex.Message));
+		}
+	}
+
+	private void ApplyPlayerMajorHistoryEditorInput(string input)
+	{
+		try
+		{
+			_state = NormalizeState(_state);
+			_state.MajorSummary = NormalizeEditableMajorHistoryText(input);
+			_state.LastSummaryDay = GetCurrentGameDayIndex();
+			_state.SummaryRetryCount = 0;
+			_state.LastSummaryError = "";
+			_state.UpdatedUtcTicks = DateTime.UtcNow.Ticks;
+			InformationManager.DisplayMessage(new InformationMessage(string.IsNullOrWhiteSpace(_state.MajorSummary) ? "已清空玩家履历。" : "玩家履历已更新。"));
+			LogDebug("manual major summary edit chars=" + (_state.MajorSummary?.Length ?? 0));
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("PlayerNotoriety", "apply player major history editor input failed: " + ex.Message);
+			InformationManager.DisplayMessage(new InformationMessage("保存玩家履历失败：" + ex.Message));
+		}
+	}
+
+	private static string NormalizeEditableMajorHistoryText(string input)
+	{
+		return (input ?? "").Replace("\r\n", "\n").Replace('\r', '\n').Trim();
 	}
 
 	private static PlayerNotorietyState NormalizeState(PlayerNotorietyState state)
@@ -1347,6 +1558,251 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 		material.GameDate = (material.GameDate ?? "").Trim();
 		material.CultureIds = NormalizeCultureList(material.CultureIds);
 		return material;
+	}
+
+	private static bool ShouldRecordPlayerHeroPrisonerRelease(EndCaptivityDetail detail)
+	{
+		return detail == EndCaptivityDetail.ReleasedByChoice || detail == EndCaptivityDetail.Ransom || detail == EndCaptivityDetail.ReleasedByCompensation;
+	}
+
+	private static string BuildPlayerHeroPrisonerReleaseVerb(EndCaptivityDetail detail)
+	{
+		switch (detail)
+		{
+		case EndCaptivityDetail.Ransom:
+			return "接受赎金释放了英雄俘虏";
+		case EndCaptivityDetail.ReleasedByCompensation:
+			return "通过补偿协议释放了英雄俘虏";
+		case EndCaptivityDetail.ReleasedByChoice:
+			return "主动释放了英雄俘虏";
+		default:
+			return "";
+		}
+	}
+
+	private static string BuildMainHeroReleasedText(PartyBase party, IFaction capturerFaction, EndCaptivityDetail detail)
+	{
+		string source = BuildPartyDisplayName(party);
+		if (string.IsNullOrWhiteSpace(source))
+		{
+			source = capturerFaction?.Name?.ToString();
+		}
+		string sourceSuffix = string.IsNullOrWhiteSpace(source) ? "" : ("，脱离了" + source.Trim() + "的囚禁");
+		switch (detail)
+		{
+		case EndCaptivityDetail.Ransom:
+			return "你被赎金赎回并结束了俘虏状态" + sourceSuffix + "。";
+		case EndCaptivityDetail.ReleasedAfterPeace:
+			return "你因和平协议获释" + sourceSuffix + "。";
+		case EndCaptivityDetail.ReleasedAfterBattle:
+			return "你在战后获释" + sourceSuffix + "。";
+		case EndCaptivityDetail.ReleasedAfterEscape:
+			return "你成功逃脱囚禁" + sourceSuffix + "。";
+		case EndCaptivityDetail.ReleasedByCompensation:
+			return "你因补偿协议获释" + sourceSuffix + "。";
+		case EndCaptivityDetail.ReleasedByChoice:
+			return "你被释放并结束了俘虏状态" + sourceSuffix + "。";
+		default:
+			return "";
+		}
+	}
+
+	private static PrisonerRosterSummary BuildFlattenedPrisonerRosterSummary(FlattenedTroopRoster roster, bool includeHeroes)
+	{
+		List<PrisonerRosterCountEntry> entries = new List<PrisonerRosterCountEntry>();
+		if (roster != null)
+		{
+			foreach (FlattenedTroopRosterElement element in roster)
+			{
+				AddPrisonerRosterCount(entries, element.Troop, 1, includeHeroes);
+			}
+		}
+		return BuildPrisonerRosterSummary(entries);
+	}
+
+	private static PrisonerRosterSummary BuildTroopRosterSummary(TroopRoster roster, bool includeHeroes)
+	{
+		List<PrisonerRosterCountEntry> entries = new List<PrisonerRosterCountEntry>();
+		if (roster != null)
+		{
+			for (int i = 0; i < roster.Count; i++)
+			{
+				TroopRosterElement element = roster.GetElementCopyAtIndex(i);
+				AddPrisonerRosterCount(entries, element.Character, element.Number, includeHeroes);
+			}
+		}
+		return BuildPrisonerRosterSummary(entries);
+	}
+
+	private static void AddPrisonerRosterCount(List<PrisonerRosterCountEntry> entries, CharacterObject character, int count, bool includeHeroes)
+	{
+		if (entries == null || character == null || count <= 0 || (!includeHeroes && character.IsHero))
+		{
+			return;
+		}
+		string key = (character.StringId ?? character.Name?.ToString() ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(key))
+		{
+			key = character.Name?.ToString() ?? "unknown";
+		}
+		PrisonerRosterCountEntry entry = entries.FirstOrDefault(x => x != null && string.Equals(x.Key, key, StringComparison.OrdinalIgnoreCase));
+		if (entry == null)
+		{
+			entry = new PrisonerRosterCountEntry
+			{
+				Key = key,
+				Character = character
+			};
+			entries.Add(entry);
+		}
+		entry.Count += count;
+	}
+
+	private static PrisonerRosterSummary BuildPrisonerRosterSummary(List<PrisonerRosterCountEntry> entries)
+	{
+		List<PrisonerRosterCountEntry> ordered = (entries ?? new List<PrisonerRosterCountEntry>())
+			.Where(x => x != null && x.Count > 0 && x.Character != null)
+			.OrderByDescending(x => x.Count)
+			.ThenBy(x => GetCharacterDisplayName(x.Character), StringComparer.OrdinalIgnoreCase)
+			.ToList();
+		PrisonerRosterSummary summary = new PrisonerRosterSummary();
+		summary.TotalCount = ordered.Sum(x => Math.Max(0, x.Count));
+		summary.HeroCount = ordered.Where(x => x.Character.IsHero).Sum(x => Math.Max(0, x.Count));
+		summary.RegularCount = Math.Max(0, summary.TotalCount - summary.HeroCount);
+		summary.PrimaryCultureId = ordered.Select(x => x.Character?.Culture?.StringId ?? "").FirstOrDefault(x => !string.IsNullOrWhiteSpace(x)) ?? "";
+		summary.Signature = string.Join("|", ordered.Select(x => (x.Character?.StringId ?? GetCharacterDisplayName(x.Character)) + ":" + x.Count));
+		List<string> parts = ordered.Take(3).Select(x => x.Count + " 名 " + GetCharacterDisplayName(x.Character)).ToList();
+		if (ordered.Count > 3)
+		{
+			parts.Add("等");
+		}
+		summary.DetailText = string.Join("、", parts);
+		return summary;
+	}
+
+	private static string BuildRosterDetailSuffix(PrisonerRosterSummary summary)
+	{
+		if (summary == null || string.IsNullOrWhiteSpace(summary.DetailText))
+		{
+			return "";
+		}
+		return "（" + summary.DetailText.Trim() + "）";
+	}
+
+	private static bool IsPlayerPartyBase(PartyBase party)
+	{
+		try
+		{
+			if (party == null)
+			{
+				return false;
+			}
+			if (party == PartyBase.MainParty)
+			{
+				return true;
+			}
+			if (IsPlayerMobileParty(party.MobileParty))
+			{
+				return true;
+			}
+			return party.LeaderHero == Hero.MainHero || party.Owner == Hero.MainHero;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static bool IsPlayerMobileParty(MobileParty party)
+	{
+		try
+		{
+			return party != null && (party == MobileParty.MainParty || party.IsMainParty || party.LeaderHero == Hero.MainHero);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static Settlement ResolvePlayerCurrentSettlement()
+	{
+		try
+		{
+			return Settlement.CurrentSettlement ?? MobileParty.MainParty?.CurrentSettlement ?? Hero.MainHero?.CurrentSettlement;
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static string BuildPartyDisplayName(PartyBase party)
+	{
+		try
+		{
+			string text = party?.Name?.ToString();
+			if (!string.IsNullOrWhiteSpace(text))
+			{
+				return text.Trim();
+			}
+			text = party?.LeaderHero?.Name?.ToString();
+			if (!string.IsNullOrWhiteSpace(text))
+			{
+				return text.Trim();
+			}
+			text = party?.Settlement?.Name?.ToString();
+			return string.IsNullOrWhiteSpace(text) ? "" : text.Trim();
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	private static string BuildPartyScope(PartyBase party)
+	{
+		try
+		{
+			if (party == null)
+			{
+				return "";
+			}
+			return (party.MobileParty?.StringId ?? party.Settlement?.StringId ?? party.LeaderHero?.StringId ?? BuildPartyDisplayName(party) ?? "").Trim();
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	private static string GetHeroDisplayName(Hero hero)
+	{
+		string text = hero?.Name?.ToString();
+		return string.IsNullOrWhiteSpace(text) ? "未知英雄" : text.Trim();
+	}
+
+	private static string GetCharacterDisplayName(CharacterObject character)
+	{
+		string text = character?.Name?.ToString();
+		return string.IsNullOrWhiteSpace(text) ? ((character?.StringId ?? "未知兵种").Trim()) : text.Trim();
+	}
+
+	private static string GetSettlementDisplayName(Settlement settlement)
+	{
+		string text = settlement?.Name?.ToString();
+		return string.IsNullOrWhiteSpace(text) ? "当前地点" : text.Trim();
+	}
+
+	private static string BuildPrisonerDonationSkipKey(Settlement settlement, string signature)
+	{
+		return GetCurrentGameDayIndex() + ":" + (settlement?.StringId ?? "") + ":" + ((signature ?? "").Trim());
+	}
+
+	private static string BuildPlayerRecentEventStableKey(string actionKind, string scope, int day)
+	{
+		string raw = (actionKind ?? "") + ":" + (scope ?? "");
+		return "player_recent:" + (actionKind ?? "event").Trim() + ":" + day + ":" + GetCurrentGameHour() + ":" + (raw.GetHashCode() & int.MaxValue);
 	}
 
 	private static List<string> BuildCultureIds(params string[] cultureIds)
@@ -1755,6 +2211,23 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 		public int KnownRollChance;
 		public bool KnowsMajorThisSession;
 		public int LineCount;
+	}
+
+	private sealed class PrisonerRosterCountEntry
+	{
+		public string Key = "";
+		public CharacterObject Character;
+		public int Count;
+	}
+
+	private sealed class PrisonerRosterSummary
+	{
+		public int TotalCount;
+		public int HeroCount;
+		public int RegularCount;
+		public string DetailText = "";
+		public string Signature = "";
+		public string PrimaryCultureId = "";
 	}
 
 	private sealed class PlayerActionEntry

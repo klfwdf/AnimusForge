@@ -3500,6 +3500,14 @@ public class SceneTauntMissionBehavior : MissionBehavior
 				draft.ActorCultureId,
 				draft.TargetCultureId,
 				draft.SettlementCultureId);
+			MyBehavior.RecordPlayerSceneConflictWeeklyMaterialForExternal(
+				text,
+				stableKey,
+				day,
+				draft.GameDate,
+				draft.SettlementId,
+				settlementName,
+				draft.LocationText);
 			Logger.Log("SceneTaunt", $"Recorded player scene conflict major material. Day={day}, Settlement={draft.SettlementId}, Victims={victimCount}, Damage={draft.DamageCount}, Unconscious={draft.UnconsciousCount}, Killed={draft.KilledCount}, Crime={draft.CrimeAmount:0.##}");
 		}
 		catch (Exception ex)

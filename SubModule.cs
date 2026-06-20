@@ -142,6 +142,14 @@ public class SubModule : MBSubModuleBase
 			}
 			try
 			{
+				AgentVictoryRetreatNullTeamSafePatch.EnsurePatched();
+			}
+			catch (Exception ex8aa)
+			{
+				Logger.LogTrace("SubModule", ">>> AgentVictoryRetreatNullTeamSafePatch init failed: " + ex8aa.Message);
+			}
+			try
+			{
 				Patch_Conversation_Start_Intercept.ManualPatch(harmony);
 			}
 			catch (Exception ex8b)

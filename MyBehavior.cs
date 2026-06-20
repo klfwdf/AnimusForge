@@ -7968,6 +7968,70 @@ public class MyBehavior : CampaignBehaviorBase
 		_eventSourceMaterials = SanitizeEventSourceMaterials(_eventSourceMaterials);
 	}
 
+	public static void RecordPlayerSceneConflictWeeklyMaterialForExternal(string text, string stableKey, int day, string gameDate, string settlementId, string settlementName, string locationText)
+	{
+		try
+		{
+			(Campaign.Current?.GetCampaignBehavior<MyBehavior>())?.RecordPlayerSceneConflictWeeklyMaterialInternal(text, stableKey, day, gameDate, settlementId, settlementName, locationText);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("EventWeeklyReport", "[PlayerSceneConflict][WARN] record weekly material failed: " + ex.Message);
+		}
+	}
+
+	private void RecordPlayerSceneConflictWeeklyMaterialInternal(string text, string stableKey, int day, string gameDate, string settlementId, string settlementName, string locationText)
+	{
+		string summary = (text ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
+		if (string.IsNullOrWhiteSpace(summary))
+		{
+			return;
+		}
+		Settlement settlement = ResolveSettlementById(settlementId);
+		string resolvedSettlementId = string.IsNullOrWhiteSpace(settlementId) ? GetSettlementId(settlement) : settlementId.Trim();
+		string resolvedSettlementName = string.IsNullOrWhiteSpace(settlementName) ? (settlement?.Name?.ToString() ?? "").Trim() : settlementName.Trim();
+		if (string.IsNullOrWhiteSpace(resolvedSettlementName))
+		{
+			resolvedSettlementName = "当前定居点";
+		}
+		string location = (locationText ?? "").Trim();
+		string kingdomId = GetKingdomId(settlement?.MapFaction);
+		if (string.IsNullOrWhiteSpace(kingdomId))
+		{
+			kingdomId = GetKingdomId(settlement?.OwnerClan?.Kingdom);
+		}
+		if (string.IsNullOrWhiteSpace(kingdomId) && ResolvePlayerFootholdKingdomForWeeklyMemoryMaterial(out var footholdKingdomId, out var footholdSettlementId))
+		{
+			kingdomId = footholdKingdomId;
+			if (string.IsNullOrWhiteSpace(resolvedSettlementId))
+			{
+				resolvedSettlementId = footholdSettlementId;
+			}
+		}
+		if (string.IsNullOrWhiteSpace(kingdomId))
+		{
+			Logger.Log("EventWeeklyReport", "[PlayerSceneConflict][SKIP] kingdom_missing settlement=" + resolvedSettlementId + " text=" + summary);
+			return;
+		}
+		string place = resolvedSettlementName + (string.IsNullOrWhiteSpace(location) ? "" : "的" + location);
+		string snapshot = "玩家和平场景攻击/犯罪素材。地点：" + place + "。履历摘要：" + summary + " 周报约束：这是和平定居点场景内由玩家主动攻击和平单位或触发犯罪造成的事件，不按战场、攻城、竞技场或训练场战斗理解。";
+		string key = "player_peace_scene_crime:" + NormalizeNpcActionStableKey(stableKey, summary);
+		RecordEventSourceMaterial(
+			"player_peace_scene_crime",
+			"玩家和平场景冲突 - " + resolvedSettlementName,
+			snapshot,
+			key,
+			kingdomId,
+			resolvedSettlementId,
+			includeInWorld: false,
+			includeInKingdom: true,
+			actorHeroId: GetHeroId(Hero.MainHero),
+			actorKingdomId: kingdomId,
+			dayOverride: day,
+			gameDateOverride: gameDate);
+		Logger.Log("EventWeeklyReport", "[PlayerSceneConflict] source_material_recorded day=" + day + " kingdom=" + kingdomId + " settlement=" + resolvedSettlementId + " key=" + key);
+	}
+
 	public static void MarkWeeklyMemoryMaterialTriggerForExternal(Hero targetHero, string nonHeroMemoryId, string npcName, string normalizedTagText, int sceneSessionId = -1, int nativeDialogueSessionId = -1, int targetAgentIndex = -1, List<RewardSystemBehavior.RewardItemInfo> rewardOptions = null, List<PartyTransferPromptEntry> partyTransferTroopOptions = null, List<PartyTransferPromptEntry> partyTransferPrisonerOptions = null, List<SettlementTransferPromptEntry> settlementTransferNpcOptions = null, bool suppressImplicitDialogueSession = false)
 	{
 		try
@@ -10012,6 +10076,10 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
+		if (ShouldSkipRoutineBanditDefeatMapEvent(mapEvent))
+		{
+			return;
+		}
 		bool hasBanditSide = IsBanditOrMonsterMapEvent(mapEvent);
 		int mapEventTroopCount = GetMapEventTroopCount(mapEvent);
 		bool isMajor = ShouldRecordMajorBattleAction(mapEventTroopCount);
@@ -10019,6 +10087,91 @@ public class MyBehavior : CampaignBehaviorBase
 		string mapEventStableKey = BuildMapEventStableKey(mapEvent, mapEventLocationLabel);
 		TrackNpcActionsFromMapEventSide(mapEvent, mapEvent.AttackerSide, mapEvent.WinningSide == mapEvent.AttackerSide?.MissionSide, isMajor, mapEventLocationLabel, mapEventStableKey, hasBanditSide);
 		TrackNpcActionsFromMapEventSide(mapEvent, mapEvent.DefenderSide, mapEvent.WinningSide == mapEvent.DefenderSide?.MissionSide, isMajor, mapEventLocationLabel, mapEventStableKey, hasBanditSide);
+	}
+
+	private static bool ShouldSkipRoutineBanditDefeatMapEvent(MapEvent mapEvent)
+	{
+		if (mapEvent == null || !mapEvent.HasWinner)
+		{
+			return false;
+		}
+		if (mapEvent.IsSiegeAssault || mapEvent.IsSiegeOutside || mapEvent.IsSallyOut || mapEvent.IsRaid)
+		{
+			return false;
+		}
+		MapEventSide defeatedSide = GetMapEventDefeatedSide(mapEvent);
+		return IsRoutineBanditMapEventSide(defeatedSide);
+	}
+
+	private static MapEventSide GetMapEventDefeatedSide(MapEvent mapEvent)
+	{
+		if (mapEvent == null)
+		{
+			return null;
+		}
+		if (mapEvent.WinningSide == BattleSideEnum.Attacker)
+		{
+			return mapEvent.DefenderSide;
+		}
+		if (mapEvent.WinningSide == BattleSideEnum.Defender)
+		{
+			return mapEvent.AttackerSide;
+		}
+		return null;
+	}
+
+	private static bool IsRoutineBanditMapEventSide(MapEventSide side)
+	{
+		if (side == null)
+		{
+			return false;
+		}
+		try
+		{
+			if (ShouldMentionBattleHero(side.LeaderParty?.LeaderHero))
+			{
+				return false;
+			}
+			bool hasBanditParty = IsBanditOrOutlawPartyBase(side.LeaderParty) || side.MapFaction?.IsBanditFaction == true;
+			foreach (MapEventParty party in side.Parties ?? Enumerable.Empty<MapEventParty>())
+			{
+				PartyBase partyBase = party?.Party;
+				if (ShouldMentionBattleHero(partyBase?.LeaderHero))
+				{
+					return false;
+				}
+				if (IsBanditOrOutlawPartyBase(partyBase))
+				{
+					hasBanditParty = true;
+				}
+			}
+			return hasBanditParty;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static bool IsBanditOrOutlawPartyBase(PartyBase party)
+	{
+		if (party == null)
+		{
+			return false;
+		}
+		try
+		{
+			MobileParty mobileParty = party.MobileParty;
+			return party.MapFaction?.IsBanditFaction == true
+				|| mobileParty?.IsBandit == true
+				|| mobileParty?.MapFaction?.IsBanditFaction == true
+				|| mobileParty?.ActualClan?.IsBanditFaction == true
+				|| party.Owner?.MapFaction?.IsBanditFaction == true;
+		}
+		catch
+		{
+			return false;
+		}
 	}
 
 	private static bool IsBanditOrMonsterMapEvent(MapEvent mapEvent)
@@ -10284,6 +10437,7 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			text2 = "该人物";
 		}
+		text = RewriteNpcActionSecondPersonPronouns(text, text2);
 		if (text.StartsWith("你", StringComparison.Ordinal))
 		{
 			return text2 + text.Substring(1);
@@ -10293,6 +10447,21 @@ public class MyBehavior : CampaignBehaviorBase
 			return text;
 		}
 		return text2 + "：" + text;
+	}
+
+	private static string RewriteNpcActionSecondPersonPronouns(string rawText, string actorName)
+	{
+		string text = (rawText ?? "").Trim();
+		string name = string.IsNullOrWhiteSpace(actorName) ? "该人物" : actorName.Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return "";
+		}
+		return text
+			.Replace("你们的", name + "一方的")
+			.Replace("你们", name + "一方")
+			.Replace("你的", name + "的")
+			.Replace("你", name);
 	}
 
 	private static string BuildNpcActionMetadataNarrativeSuffix(NpcActionEntry entry)
@@ -14568,6 +14737,67 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private static string GetTimeOfDayTextZhForPrompt(int hourOfDay)
 	{
+		string dayNightText = IsDayTimeForPrompt(hourOfDay) ? "白天" : "夜晚";
+		string detailText = GetTimeOfDayDetailTextZhForPrompt(hourOfDay);
+		if (string.Equals(dayNightText, detailText, StringComparison.Ordinal))
+		{
+			return dayNightText;
+		}
+		return dayNightText + "，" + detailText;
+	}
+
+	private static bool IsDayTimeForPrompt(int hourOfDay)
+	{
+		try
+		{
+			return CampaignTime.Now.IsDayTime;
+		}
+		catch
+		{
+		}
+		try
+		{
+			int hoursInDay = CampaignTime.HoursInDay;
+			if (hoursInDay > 0)
+			{
+				int sunrise = CampaignTime.SunRise % hoursInDay;
+				if (sunrise < 0)
+				{
+					sunrise += hoursInDay;
+				}
+				int sunset = CampaignTime.SunSet % hoursInDay;
+				if (sunset < 0)
+				{
+					sunset += hoursInDay;
+				}
+				int hour = hourOfDay % hoursInDay;
+				if (hour < 0)
+				{
+					hour += hoursInDay;
+				}
+				if (sunrise == sunset)
+				{
+					return true;
+				}
+				if (sunrise < sunset)
+				{
+					return hour >= sunrise && hour < sunset;
+				}
+				return hour >= sunrise || hour < sunset;
+			}
+		}
+		catch
+		{
+		}
+		return hourOfDay >= 5 && hourOfDay <= 17;
+	}
+
+	private static string GetTimeOfDayDetailTextZhForPrompt(int hourOfDay)
+	{
+		if (hourOfDay >= 2 && hourOfDay <= 4)
+		{
+			return "黎明";
+		}
 		if (hourOfDay >= 5 && hourOfDay <= 10)
 		{
 			return "早晨";
@@ -14582,7 +14812,7 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		if (hourOfDay >= 18 && hourOfDay <= 22)
 		{
-			return "晚上";
+			return hourOfDay == 22 ? "夜晚" : "傍晚";
 		}
 		return "深夜";
 	}
@@ -18595,11 +18825,7 @@ public class MyBehavior : CampaignBehaviorBase
 					{
 						if (j >= 0 && j < list3.Count)
 						{
-							string text2 = list3[j];
-							if (text2.Length > 120)
-							{
-								text2 = text2.Substring(0, 120);
-							}
+							string text2 = NormalizeGuardrailSemanticContextLine(list3[j]);
 							list.Add(text2);
 						}
 					}
@@ -18608,11 +18834,7 @@ public class MyBehavior : CampaignBehaviorBase
 			string text3 = (extraFact ?? "").Trim();
 			if (ShouldIncludeGuardrailSemanticContextLine(text3))
 			{
-				if (text3.Length > 180)
-				{
-					text3 = text3.Substring(0, 180);
-				}
-				string text5 = text3.Replace("\r", " ").Replace("\n", " ");
+				string text5 = NormalizeGuardrailSemanticContextLine(text3);
 				if (text5.StartsWith("[AFEF玩家行为补充]", StringComparison.Ordinal) || text5.StartsWith("[AFEF NPC行为补充]", StringComparison.Ordinal))
 				{
 					list.Add(text5);
@@ -18631,17 +18853,32 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				return "";
 			}
-			string text4 = string.Join("\n", list);
-			if (text4.Length > 700)
-			{
-				text4 = text4.Substring(text4.Length - 700);
-			}
-			return text4;
+			return string.Join("\n", list);
 		}
 		catch
 		{
 			return "";
 		}
+	}
+
+	private static string NormalizeGuardrailSemanticContextLine(string line)
+	{
+		string text = (line ?? "").Replace("\r\n", "\n").Replace('\r', '\n').Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return "";
+		}
+		string[] array = text.Split(new char[1] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
+		List<string> list = new List<string>();
+		for (int i = 0; i < array.Length; i++)
+		{
+			string text2 = (array[i] ?? "").Trim();
+			if (!string.IsNullOrWhiteSpace(text2))
+			{
+				list.Add(text2);
+			}
+		}
+		return string.Join(" ", list).Trim();
 	}
 
 	private static bool ShouldIncludeGuardrailSemanticContextLine(string line)
@@ -34380,6 +34617,68 @@ public class MyBehavior : CampaignBehaviorBase
 		return true;
 	}
 
+	private static bool ShouldSuppressWeeklyPreviewAction(NpcActionEntry entry)
+	{
+		if (!IsMapEventNpcAction(entry))
+		{
+			return false;
+		}
+		if (!string.IsNullOrWhiteSpace(entry.SettlementId))
+		{
+			return false;
+		}
+		bool actorIsBandit = IsBanditClanId(entry.ActorClanId) || IsBanditKingdomId(entry.ActorKingdomId);
+		bool targetIsBandit = IsBanditClanId(entry.TargetClanId) || IsBanditKingdomId(entry.TargetKingdomId);
+		if (entry.Won == true && targetIsBandit)
+		{
+			return true;
+		}
+		if (entry.Won == false && actorIsBandit)
+		{
+			return true;
+		}
+		string text = (entry.Text ?? "").Trim();
+		return text.IndexOf("击败了", StringComparison.OrdinalIgnoreCase) >= 0 && ContainsRoutineBanditText(text);
+	}
+
+	private static bool IsMapEventNpcAction(NpcActionEntry entry)
+	{
+		string text = (entry?.ActionKind ?? "").Trim();
+		if (string.Equals(text, "map_event", StringComparison.OrdinalIgnoreCase) || string.Equals(text, "map_event_aftermath", StringComparison.OrdinalIgnoreCase))
+		{
+			return true;
+		}
+		string text2 = (entry?.StableKey ?? "").Trim();
+		return text2.StartsWith("mapevent:", StringComparison.OrdinalIgnoreCase) || text2.StartsWith("mapevent_aftermath:", StringComparison.OrdinalIgnoreCase);
+	}
+
+	private static bool IsBanditClanId(string clanId)
+	{
+		Clan clan = FindClanById(clanId);
+		return clan?.IsBanditFaction == true;
+	}
+
+	private static bool IsBanditKingdomId(string kingdomId)
+	{
+		Kingdom kingdom = FindKingdomById(kingdomId);
+		return kingdom != null && ((IFaction)kingdom).IsBanditFaction;
+	}
+
+	private static bool ContainsRoutineBanditText(string text)
+	{
+		string value = (text ?? "").Trim();
+		return value.IndexOf("强盗", StringComparison.OrdinalIgnoreCase) >= 0
+			|| value.IndexOf("劫匪", StringComparison.OrdinalIgnoreCase) >= 0
+			|| value.IndexOf("土匪", StringComparison.OrdinalIgnoreCase) >= 0
+			|| value.IndexOf("山贼", StringComparison.OrdinalIgnoreCase) >= 0
+			|| value.IndexOf("海寇", StringComparison.OrdinalIgnoreCase) >= 0
+			|| value.IndexOf("响马", StringComparison.OrdinalIgnoreCase) >= 0
+			|| value.IndexOf("looter", StringComparison.OrdinalIgnoreCase) >= 0
+			|| value.IndexOf("bandit", StringComparison.OrdinalIgnoreCase) >= 0
+			|| value.IndexOf("raider", StringComparison.OrdinalIgnoreCase) >= 0
+			|| value.IndexOf("outlaw", StringComparison.OrdinalIgnoreCase) >= 0;
+	}
+
 	private static bool IsPrisonerTakenAction(NpcActionEntry entry)
 	{
 		string text = (entry?.ActionKind ?? "").Trim();
@@ -34468,6 +34767,10 @@ public class MyBehavior : CampaignBehaviorBase
 	private void TryAddPreviewActionMaterial(List<EventMaterialReference> materials, Hero hero, NpcActionEntry entry, bool recentOnly)
 	{
 		if (materials == null || hero == null || entry == null)
+		{
+			return;
+		}
+		if (ShouldSuppressWeeklyPreviewAction(entry))
 		{
 			return;
 		}

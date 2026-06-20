@@ -3019,7 +3019,8 @@ public static class AIConfigHandler
 		try
 		{
 			AppendAuxiliaryDialogueHistoryLines(list, GetAuxiliarySceneDialogueHistoryContext());
-			AppendAuxiliaryDialogueHistoryLines(list, runtimeGuardrailContext);
+			bool flag = HasAuxiliaryHistoryDialogueRecord(list);
+			AppendAuxiliaryDialogueHistoryLines(list, runtimeGuardrailContext, allowNewDialogueRecords: !flag);
 			string text3 = NormalizeSemanticText(secondaryText);
 			if (!string.IsNullOrWhiteSpace(text3) && !IsAuxiliarySceneShoutObserverLine(text3))
 			{
@@ -3338,7 +3339,7 @@ public static class AIConfigHandler
 		return 0;
 	}
 
-	private static void AppendAuxiliaryDialogueHistoryLines(List<string> lines, string block)
+	private static void AppendAuxiliaryDialogueHistoryLines(List<string> lines, string block, bool allowNewDialogueRecords = true)
 	{
 		if (lines == null)
 		{
@@ -3349,14 +3350,92 @@ public static class AIConfigHandler
 		{
 			return;
 		}
-		string[] array = text.Replace("\r\n", "\n").Replace('\r', '\n').Split(new char[1] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
-		for (int i = 0; i < array.Length; i++)
+		List<string> list = SplitAuxiliaryDialogueHistoryRecords(text);
+		for (int i = 0; i < list.Count; i++)
 		{
-			AppendAuxiliaryDialogueHistoryLine(lines, array[i]);
+			AppendAuxiliaryDialogueHistoryLine(lines, list[i], allowNewDialogueRecords);
 		}
 	}
 
-	private static void AppendAuxiliaryDialogueHistoryLine(List<string> lines, string line)
+	private static List<string> SplitAuxiliaryDialogueHistoryRecords(string block)
+	{
+		List<string> list = new List<string>();
+		string text = (block ?? "").Replace("\r\n", "\n").Replace('\r', '\n');
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return list;
+		}
+		string[] array = text.Split(new char[1] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
+		StringBuilder stringBuilder = new StringBuilder();
+		for (int i = 0; i < array.Length; i++)
+		{
+			string text2 = NormalizeSemanticText(array[i]);
+			if (string.IsNullOrWhiteSpace(text2))
+			{
+				continue;
+			}
+			if (stringBuilder.Length <= 0 || IsAuxiliaryDialogueHistoryRecordStart(text2))
+			{
+				if (stringBuilder.Length > 0)
+				{
+					list.Add(stringBuilder.ToString().Trim());
+					stringBuilder.Clear();
+				}
+				stringBuilder.Append(text2);
+			}
+			else
+			{
+				stringBuilder.Append(' ').Append(text2);
+			}
+		}
+		if (stringBuilder.Length > 0)
+		{
+			list.Add(stringBuilder.ToString().Trim());
+		}
+		return list;
+	}
+
+	private static bool IsAuxiliaryDialogueHistoryRecordStart(string line)
+	{
+		string text = NormalizeSemanticText(line);
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return false;
+		}
+		if (IsAuxiliaryAfefFactLine(text) || IsAuxiliarySceneShoutObserverLine(text))
+		{
+			return true;
+		}
+		if (text.StartsWith("上一句NPC发言：", StringComparison.Ordinal) || text.StartsWith("Previous NPC line:", StringComparison.OrdinalIgnoreCase))
+		{
+			return true;
+		}
+		if (text.StartsWith("“", StringComparison.Ordinal) || text.StartsWith("\"", StringComparison.Ordinal) || text.StartsWith("'", StringComparison.Ordinal))
+		{
+			return false;
+		}
+		int num = FindAuxiliaryHistorySpeakerDelimiter(text);
+		if (num <= 0 || num > 96)
+		{
+			return false;
+		}
+		string text2 = GetAuxiliaryHistorySpeakerPrefix(text);
+		if (string.IsNullOrWhiteSpace(text2) || text2.Length > 64)
+		{
+			return false;
+		}
+		if (IsAuxiliaryPlayerHistoryLine(text))
+		{
+			return true;
+		}
+		if (text2.Equals("NPC", StringComparison.OrdinalIgnoreCase) || text2.Equals("Assistant", StringComparison.OrdinalIgnoreCase) || text2.Equals("系统", StringComparison.OrdinalIgnoreCase) || text2.Equals("System", StringComparison.OrdinalIgnoreCase) || text2.Equals("旁白", StringComparison.OrdinalIgnoreCase))
+		{
+			return true;
+		}
+		return text2.IndexOfAny(new char[16] { '。', '！', '？', '；', '，', ',', '.', '!', '?', ';', '“', '”', '"', '\'', '（', '(' }) < 0;
+	}
+
+	private static void AppendAuxiliaryDialogueHistoryLine(List<string> lines, string line, bool allowNewDialogueRecords = true)
 	{
 		if (lines == null)
 		{
@@ -3367,7 +3446,135 @@ public static class AIConfigHandler
 		{
 			return;
 		}
+		int num = FindAuxiliaryDuplicateHistoryLineIndex(lines, text);
+		if (num >= 0)
+		{
+			if (ShouldPreferAuxiliaryHistoryLine(text, lines[num]))
+			{
+				lines[num] = text;
+			}
+			return;
+		}
+		if (!allowNewDialogueRecords && IsAuxiliaryHistoryDialogueRecord(text))
+		{
+			return;
+		}
 		lines.Add(text);
+	}
+
+	private static bool HasAuxiliaryHistoryDialogueRecord(List<string> lines)
+	{
+		if (lines == null || lines.Count <= 0)
+		{
+			return false;
+		}
+		for (int i = 0; i < lines.Count; i++)
+		{
+			if (IsAuxiliaryHistoryDialogueRecord(lines[i]))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private static bool IsAuxiliaryHistoryDialogueRecord(string line)
+	{
+		string text = GetAuxiliaryHistorySpeakerKind(line);
+		return text.Equals("player", StringComparison.Ordinal) || text.Equals("npc", StringComparison.Ordinal);
+	}
+
+	private static int FindAuxiliaryDuplicateHistoryLineIndex(List<string> lines, string line)
+	{
+		if (lines == null || lines.Count <= 0)
+		{
+			return -1;
+		}
+		string text = GetAuxiliaryHistorySpeakerKind(line);
+		string text2 = NormalizeAuxiliaryHistoryUtteranceForDedupe(line);
+		if (string.IsNullOrWhiteSpace(text) || string.IsNullOrWhiteSpace(text2))
+		{
+			return -1;
+		}
+		for (int i = 0; i < lines.Count; i++)
+		{
+			string text3 = NormalizeSemanticText(lines[i]);
+			if (string.IsNullOrWhiteSpace(text3) || !string.Equals(GetAuxiliaryHistorySpeakerKind(text3), text, StringComparison.Ordinal))
+			{
+				continue;
+			}
+			string text4 = NormalizeAuxiliaryHistoryUtteranceForDedupe(text3);
+			if (string.Equals(text4, text2, StringComparison.Ordinal))
+			{
+				return i;
+			}
+		}
+		return -1;
+	}
+
+	private static string GetAuxiliaryHistorySpeakerKind(string line)
+	{
+		string text = NormalizeSemanticText(line);
+		if (string.IsNullOrWhiteSpace(text) || IsAuxiliaryAfefFactLine(text))
+		{
+			return "";
+		}
+		if (IsAuxiliaryPlayerHistoryLine(text))
+		{
+			return "player";
+		}
+		if (text.StartsWith("上一句NPC发言：", StringComparison.Ordinal) || text.StartsWith("Previous NPC line:", StringComparison.OrdinalIgnoreCase))
+		{
+			return "npc";
+		}
+		return FindAuxiliaryHistorySpeakerDelimiter(text) > 0 ? "npc" : "";
+	}
+
+	private static string NormalizeAuxiliaryHistoryUtteranceForDedupe(string line)
+	{
+		string text = NormalizeSemanticText(ExtractAuxiliaryHistoryUtterance(line));
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return "";
+		}
+		return Regex.Replace(text, "[ \\t]{2,}", " ", RegexOptions.CultureInvariant).Trim();
+	}
+
+	private static bool ShouldPreferAuxiliaryHistoryLine(string candidate, string existing)
+	{
+		return GetAuxiliaryHistorySpecificityScore(candidate) > GetAuxiliaryHistorySpecificityScore(existing);
+	}
+
+	private static int GetAuxiliaryHistorySpecificityScore(string line)
+	{
+		string text = NormalizeSemanticText(line);
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return 0;
+		}
+		string text2 = GetAuxiliaryHistorySpeakerPrefix(text);
+		int num = 0;
+		if (!string.IsNullOrWhiteSpace(text2))
+		{
+			num += Math.Min(30, text2.Length);
+		}
+		if (IsAuxiliaryPlayerHistoryLine(text))
+		{
+			num += 20;
+			if (text2.Contains("对") && text2.EndsWith("说", StringComparison.Ordinal))
+			{
+				num += 30;
+			}
+			if (!text2.Equals("Player", StringComparison.OrdinalIgnoreCase) && !text2.Equals("You", StringComparison.OrdinalIgnoreCase) && !text2.EndsWith(" says to you", StringComparison.OrdinalIgnoreCase))
+			{
+				num += 10;
+			}
+		}
+		if (text.StartsWith("AF_SCENE_SESSION", StringComparison.Ordinal) || text.StartsWith("_SCENE_SESSION", StringComparison.Ordinal) || text.StartsWith("SCENE_SESSION", StringComparison.Ordinal))
+		{
+			num += 5;
+		}
+		return num;
 	}
 
 	private static string GetAuxiliarySceneDialogueHistoryContext()

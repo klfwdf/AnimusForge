@@ -4383,11 +4383,6 @@ public class ShoutBehavior : CampaignBehaviorBase
 						stringBuilder.Append("备注：你暂时不可以转移你的俘虏和士兵。");
 					}
 				}
-				string armyRuntimeFact = MyBehavior.BuildHeroArmyRuntimeFactForExternal(hero);
-				if (!string.IsNullOrWhiteSpace(armyRuntimeFact))
-				{
-					stringBuilder.AppendLine().Append(armyRuntimeFact);
-				}
 			}
 			catch
 			{
@@ -6406,6 +6401,31 @@ private static void SplitSceneNpcRoleIntroSections(string fullIntro, bool isHero
 		return false;
 	}
 
+	private static string NormalizeSceneHistoryPromptLineContent(string content)
+	{
+		string text = (content ?? "").Replace("\r\n", "\n").Replace('\r', '\n').Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return "";
+		}
+		string[] array = text.Split('\n');
+		StringBuilder stringBuilder = new StringBuilder(text.Length);
+		for (int i = 0; i < array.Length; i++)
+		{
+			string text2 = (array[i] ?? "").Trim();
+			if (string.IsNullOrWhiteSpace(text2) || IsLeakedPromptLineForShout(text2))
+			{
+				continue;
+			}
+			if (stringBuilder.Length > 0)
+			{
+				stringBuilder.Append(' ');
+			}
+			stringBuilder.Append(text2);
+		}
+		return Regex.Replace(stringBuilder.ToString(), "[ \\t]{2,}", " ").Trim();
+	}
+
 	private static bool TryRenderSceneHistoryLine(ConversationMessage msg, HashSet<string> allowedSpeakers, out string rendered, int viewerAgentIndex = -1, string fallbackTargetNpcName = "", bool useNpcNameAddress = false)
 	{
 		rendered = "";
@@ -6414,7 +6434,7 @@ private static void SplitSceneNpcRoleIntroSections(string fullIntro, bool isHero
 			return false;
 		}
 		string text = (msg.Role ?? "").Trim().ToLowerInvariant();
-		string text2 = (msg.Content ?? "").Replace("\r", "").Trim();
+		string text2 = NormalizeSceneHistoryPromptLineContent(msg.Content);
 		if (string.IsNullOrWhiteSpace(text2))
 		{
 			return false;
@@ -6422,10 +6442,6 @@ private static void SplitSceneNpcRoleIntroSections(string fullIntro, bool isHero
 		if (IsLeakedPromptLineForShout(text2))
 		{
 			return false;
-		}
-		if (!text.Equals("assistant", StringComparison.OrdinalIgnoreCase) && text2.Length > 300)
-		{
-			text2 = text2.Substring(0, 300) + "…";
 		}
 		switch (text)
 		{
@@ -12046,7 +12062,13 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			AppendNativeConversationSessionHistory(targetHero, targetCharacter, npcName, "系统", proactiveFactText, "fact");
 		}
-		string extraFact = BuildSceneCompositeUserBlock("", proactiveFactText, LordEncounterBehavior.BuildMeetingTauntRuntimeInstructionForExternal(targetHero), LordEncounterBehavior.BuildMeetingPlayerReleaseRuntimeInstructionForExternal(targetHero, includeNonEligibleFallback: true));
+		string extraFact = proactiveFactText;
+		string nativeMeetingTauntRuleBlock = "";
+		string nativeMeetingTauntInstruction = (LordEncounterBehavior.BuildMeetingTauntRuntimeInstructionForExternal(targetHero) ?? "").Trim();
+		if (!string.IsNullOrWhiteSpace(nativeMeetingTauntInstruction))
+		{
+			nativeMeetingTauntRuleBlock = "【附加规则:meeting_taunt】" + Environment.NewLine + nativeMeetingTauntInstruction;
+		}
 		Dictionary<int, Hero> nativeResolvedHeroes = new Dictionary<int, Hero>();
 		if (nativeTargetAgentIndex >= 0 && targetHero != null)
 		{
@@ -12115,7 +12137,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		string layeredPrompt = BuildSceneCompositeUserBlock("", roleTopIntro, taskSystemBlock);
 		layeredPrompt = AppendPlayerCustomPromptRuleToSystemPrompt(layeredPrompt);
 		string sceneDynamicUserBlock = BuildSceneCompositeUserBlock("", roleRuntimeContext, nativeNpcListBlock, trustBlock, miscExtrasSection);
-		List<object> messages = BuildStrictSceneMessagesForNpc(nativeTargetAgentIndex, layeredPrompt, new string[4] { privateRecentWindowSection, persistedWithoutRecentWindow, sceneDynamicUserBlock, BuildSceneCompositeUserBlock("", knowledgeExtrasSection, systemRuleBlock) }, null, currentInputAlreadyRecorded: true, currentPlayerInput: null, injectedHistoryMessages: nativeHistoryMessages, includeSceneHistory: true, persistentHistoryMessages: persistentMemoryRoleMessages);
+		List<object> messages = BuildStrictSceneMessagesForNpc(nativeTargetAgentIndex, layeredPrompt, new string[4] { privateRecentWindowSection, persistedWithoutRecentWindow, sceneDynamicUserBlock, BuildSceneCompositeUserBlock("", knowledgeExtrasSection, systemRuleBlock, nativeMeetingTauntRuleBlock) }, null, currentInputAlreadyRecorded: true, currentPlayerInput: null, injectedHistoryMessages: nativeHistoryMessages, includeSceneHistory: true, persistentHistoryMessages: persistentMemoryRoleMessages);
 		Logger.Log("ShoutBehavior", "[NativeConversation] request target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? "unknown") + " agentIndex=" + nativeTargetAgentIndex + " messages=" + messages.Count + " includeSceneSessionMemory=" + includeCurrentSceneSessionInPersistedHistory + " persistedChars=" + (persistedHeroHistory?.Length ?? 0) + " preprocessHits=" + ((postprocessPreprocessHits.Count == 0) ? "(none)" : string.Join(",", postprocessPreprocessHits)));
 		string output = await CallNativeConversationApiAsync(messages, onStreamText).ConfigureAwait(false);
 		if (string.IsNullOrWhiteSpace(output))
@@ -23408,17 +23430,13 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 			return false;
 		}
 		string text = (msg.Role ?? "").Trim();
-		string text2 = (msg.Content ?? "").Replace("\r", "").Trim();
+		string text2 = NormalizeSceneHistoryPromptLineContent(msg.Content);
 		if (string.IsNullOrWhiteSpace(text2) || IsLeakedPromptLineForShout(text2))
 		{
 			return false;
 		}
 		bool isAfefNpcFact = text2.StartsWith("[AFEF NPC行为补充]", StringComparison.Ordinal);
 		bool isAfefPlayerFact = text2.StartsWith("[AFEF玩家行为补充]", StringComparison.Ordinal);
-		if (!text.Equals("assistant", StringComparison.OrdinalIgnoreCase) && !isAfefNpcFact && text2.Length > 320)
-		{
-			text2 = text2.Substring(0, 320) + "…";
-		}
 		if (text.Equals("assistant", StringComparison.OrdinalIgnoreCase))
 		{
 			string text3 = NormalizeStrictSceneAssistantContent(text2, msg.SpeakerName);
