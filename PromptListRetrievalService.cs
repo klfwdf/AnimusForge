@@ -138,7 +138,20 @@ public static class PromptListRetrievalService
 
 	public static List<RewardSystemBehavior.RewardItemInfo> FilterRewardItems(IEnumerable<RewardSystemBehavior.RewardItemInfo> candidates, MentionedWorldEntities mentions, int maxCount = 0)
 	{
-		return SelectCandidates(candidates, mentions, GetRewardItemAliases, maxCount);
+		List<RewardSystemBehavior.RewardItemInfo> list = (candidates ?? Enumerable.Empty<RewardSystemBehavior.RewardItemInfo>()).Where((RewardSystemBehavior.RewardItemInfo x) => x != null).ToList();
+		if (list.Count == 0)
+		{
+			return new List<RewardSystemBehavior.RewardItemInfo>();
+		}
+		List<RewardSystemBehavior.RewardItemInfo> privateItems = list.Where((RewardSystemBehavior.RewardItemInfo x) => x.IsPrivateEquipment).ToList();
+		if (privateItems.Count == 0)
+		{
+			return SelectCandidates(list, mentions, GetRewardItemAliases, maxCount);
+		}
+		List<RewardSystemBehavior.RewardItemInfo> publicItems = list.Where((RewardSystemBehavior.RewardItemInfo x) => !x.IsPrivateEquipment).ToList();
+		List<RewardSystemBehavior.RewardItemInfo> result = SelectCandidates(publicItems, mentions, GetRewardItemAliases, maxCount);
+		result.AddRange(privateItems);
+		return result;
 	}
 
 	public static List<MyBehavior.PartyTransferPromptEntry> FilterPartyTransferEntries(IEnumerable<MyBehavior.PartyTransferPromptEntry> candidates, MentionedWorldEntities mentions, int maxCount = 0, bool isPrisoner = false)

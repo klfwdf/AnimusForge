@@ -30,9 +30,11 @@ public static class EncyclopediaHeroPersonaPatch
 	private static readonly Queue<PendingRefresh> PendingRefreshes = new Queue<PendingRefresh>();
 	private static readonly List<WeakReference> LiveGeneratedRoots = new List<WeakReference>();
 	private static readonly ConditionalWeakTable<object, EncyclopediaHeroPageVM> RootDataSources = new ConditionalWeakTable<object, EncyclopediaHeroPageVM>();
+	private static readonly FieldInfo EventManagerWidgetContainersField = AccessTools.Field(typeof(EventManager), "_widgetContainers");
 	private static bool _patched;
 	private static bool _loggedFirstButtonState;
 	private static bool _loggedButtonCreateProbe;
+	private static bool _loggedStaleRootSkip;
 
 	private sealed class PendingRefresh
 	{
@@ -247,7 +249,7 @@ public static class EncyclopediaHeroPersonaPatch
 			for (int i = LiveGeneratedRoots.Count - 1; i >= 0; i--)
 			{
 				object target = LiveGeneratedRoots[i]?.Target;
-				if (target == null)
+				if (target == null || !IsRootUsableForLiveUpdate(target))
 				{
 					LiveGeneratedRoots.RemoveAt(i);
 				}
@@ -271,7 +273,7 @@ public static class EncyclopediaHeroPersonaPatch
 			for (int i = LiveGeneratedRoots.Count - 1; i >= 0; i--)
 			{
 				object target = LiveGeneratedRoots[i]?.Target;
-				if (target == null)
+				if (target == null || !IsRootUsableForLiveUpdate(target))
 				{
 					LiveGeneratedRoots.RemoveAt(i);
 				}
@@ -332,16 +334,81 @@ public static class EncyclopediaHeroPersonaPatch
 		if (button != null)
 		{
 			bool shouldShow = ShouldShowEditButton(hero, vm);
-			button.IsVisible = shouldShow;
+			SetWidgetVisibleIfChanged(button, shouldShow);
 			LogFirstButtonState(hero, vm, shouldShow);
 		}
 		ButtonWidget courierButton = GetCourierButton(root);
 		if (courierButton != null)
 		{
 			bool shouldShowCourier = ShouldShowCourierButton(hero, vm);
-			courierButton.IsVisible = shouldShowCourier;
-			courierButton.IsEnabled = shouldShowCourier && !CourierDeliveryBehavior.HasActiveCourierForHeroForExternal(hero);
+			SetWidgetVisibleIfChanged(courierButton, shouldShowCourier);
+			SetWidgetEnabledIfChanged(courierButton, shouldShowCourier && !CourierDeliveryBehavior.HasActiveCourierForHeroForExternal(hero));
 		}
+	}
+
+	private static bool IsRootUsableForLiveUpdate(object root)
+	{
+		Widget widget = root as Widget;
+		if (widget == null)
+		{
+			return false;
+		}
+		if (!IsWidgetSafeForStateWrite(widget))
+		{
+			LogStaleRootSkip(widget);
+			return false;
+		}
+		return true;
+	}
+
+	private static bool IsWidgetSafeForStateWrite(Widget widget)
+	{
+		if (widget == null)
+		{
+			return false;
+		}
+		try
+		{
+			UIContext context = widget.Context;
+			EventManager eventManager = context?.EventManager;
+			if (eventManager == null || !widget.ConnectedToRoot)
+			{
+				return false;
+			}
+			return EventManagerWidgetContainersField == null || EventManagerWidgetContainersField.GetValue(eventManager) != null;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static void SetWidgetVisibleIfChanged(Widget widget, bool visible)
+	{
+		if (widget == null || widget.IsVisible == visible || !IsWidgetSafeForStateWrite(widget))
+		{
+			return;
+		}
+		widget.IsVisible = visible;
+	}
+
+	private static void SetWidgetEnabledIfChanged(Widget widget, bool enabled)
+	{
+		if (widget == null || widget.IsEnabled == enabled || !IsWidgetSafeForStateWrite(widget))
+		{
+			return;
+		}
+		widget.IsEnabled = enabled;
+	}
+
+	private static void LogStaleRootSkip(Widget root)
+	{
+		if (_loggedStaleRootSkip || root == null)
+		{
+			return;
+		}
+		_loggedStaleRootSkip = true;
+		Logger.Log("EncyclopediaPersona", "[INFO] Removed stale hero encyclopedia UI root from live refresh cache.");
 	}
 
 	private static void LogFirstButtonState(Hero hero, EncyclopediaHeroPageVM vm, bool visible)

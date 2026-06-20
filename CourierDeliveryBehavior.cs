@@ -102,6 +102,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		public string Id;
 		public string Name;
 		public int Amount;
+		public int GuidePriceDenars;
 		public bool IsHero;
 		public bool Delivered;
 	}
@@ -139,6 +140,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		public string Id;
 		public string Name;
 		public int AvailableAmount;
+		public int GuidePriceDenars;
 		public ItemObject Item;
 		public MyBehavior.PartyTransferPromptEntry PartyEntry;
 		public MyBehavior.SettlementTransferPromptEntry SettlementEntry;
@@ -667,6 +669,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 				Id = option.Id,
 				Name = option.Name,
 				Amount = option.SettlementEntry != null ? 1 : 0,
+				GuidePriceDenars = Math.Max(0, option.GuidePriceDenars),
 				IsHero = option.PartyEntry?.IsHero ?? false
 			});
 		}
@@ -1178,7 +1181,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			bool diplomacyInjected = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "diplomacy");
 			bool worldMapPartyCommandInjected = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "worldmap_party_command");
 			bool kingdomServiceInjected = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "kingdom_service");
-			string postprocessed = ShoutBehavior.RunCourierActionPostprocessForExternal(recipient, recipient.CharacterObject, recipient.Name?.ToString() ?? "NPC", session.LetterText, historyText, reply, duelInjected, rewardInjected, loanInjected, kingdomServiceInjected, lordsHallInjected, meetingReleaseInjected, vanillaIssueInjected, heroJoinPartyInjected, sceneMechanismInjected, partyTransferInjected, settlementTransferInjected, voteDealInjected, diplomacyInjected, worldMapPartyCommandInjected, selectedRuleHits, ctx?.EntityPostprocessContext);
+			string postprocessed = ShoutBehavior.RunCourierActionPostprocessForExternal(recipient, recipient.CharacterObject, recipient.Name?.ToString() ?? "NPC", session.LetterText, historyText, reply, duelInjected, rewardInjected, loanInjected, kingdomServiceInjected, lordsHallInjected, meetingReleaseInjected, vanillaIssueInjected, heroJoinPartyInjected, sceneMechanismInjected, partyTransferInjected, settlementTransferInjected, voteDealInjected, diplomacyInjected, worldMapPartyCommandInjected, selectedRuleHits, ctx?.EntityPostprocessContext, forceLooseWeeklyMemoryMaterialSession: true);
 			string replyPostprocessed = string.IsNullOrWhiteSpace(postprocessed) ? reply : postprocessed;
 			session.ReplyText = reply;
 			session.ReplyPostprocessedText = replyPostprocessed;
@@ -1572,6 +1575,10 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 				if (item != null)
 				{
 					entry.Name = item.Name?.ToString() ?? entry.Name;
+					if (entry.GuidePriceDenars <= 0)
+					{
+						entry.GuidePriceDenars = EstimateCourierItemUnitValue(item);
+					}
 				}
 				try
 				{
@@ -1586,18 +1593,30 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			}
 			else if (string.Equals(entry.Kind, "troop", StringComparison.OrdinalIgnoreCase))
 			{
+				if (entry.GuidePriceDenars <= 0)
+				{
+					entry.GuidePriceDenars = EstimateCourierPartyTransferUnitValue(recipient, entry, isPrisoner: false);
+				}
 				int moved = MoveCharacterBetweenMemberRosters(courier.Party, targetParty, entry.Id, entry.Amount, entry.IsHero);
 				entry.Amount = moved;
 				entry.Delivered = moved > 0;
 			}
 			else if (string.Equals(entry.Kind, "prisoner", StringComparison.OrdinalIgnoreCase))
 			{
+				if (entry.GuidePriceDenars <= 0)
+				{
+					entry.GuidePriceDenars = EstimateCourierPartyTransferUnitValue(recipient, entry, isPrisoner: true);
+				}
 				int moved = MoveCharacterBetweenPrisonRosters(courier.Party, targetParty, entry.Id, entry.Amount, entry.IsHero);
 				entry.Amount = moved;
 				entry.Delivered = moved > 0;
 			}
 			else if (string.Equals(entry.Kind, "settlement", StringComparison.OrdinalIgnoreCase))
 			{
+				if (entry.GuidePriceDenars <= 0)
+				{
+					entry.GuidePriceDenars = EstimateCourierSettlementTransferValue(recipient, entry);
+				}
 				string status = null;
 				bool ok = RewardSystemBehavior.Instance != null && RewardSystemBehavior.Instance.TryApplyPlayerSettlementTransferForExternal(recipient, entry.Id, out status);
 				entry.Delivered = ok;
@@ -2724,11 +2743,11 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			string verb = delivered ? "通过信使" : "准备通过信使";
 			if (entry.Kind == "gold")
 			{
-				sb.Append("\n[AFEF玩家行为补充] ").Append(playerName).Append(verb).Append("转移了 ").Append(entry.Amount).Append(" 第纳尔。");
+				sb.Append("\n[AFEF玩家行为补充] ").Append(playerName).Append(verb).Append("转移了 ").Append(entry.Amount).Append(" 第纳尔").Append(delivered ? BuildCourierCargoValueSuffix(entry) : "").Append("。");
 			}
 			else if (entry.Kind == "item")
 			{
-				sb.Append("\n[AFEF玩家行为补充] ").Append(playerName).Append(verb).Append("转移了 ").Append(entry.Amount).Append(" 个 ").Append(entry.Name).Append("。");
+				sb.Append("\n[AFEF玩家行为补充] ").Append(playerName).Append(verb).Append("转移了 ").Append(entry.Amount).Append(" 个 ").Append(entry.Name).Append(delivered ? BuildCourierCargoValueSuffix(entry) : "").Append("。");
 			}
 			else if (entry.Kind == "show_gold")
 			{
@@ -2740,18 +2759,48 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			}
 			else if (entry.Kind == "troop")
 			{
-				sb.Append("\n[AFEF玩家行为补充] ").Append(playerName).Append(verb).Append("转移了 ").Append(entry.Amount).Append(" 名 ").Append(entry.Name).Append("。");
+				sb.Append("\n[AFEF玩家行为补充] ").Append(playerName).Append(verb).Append("转移了 ").Append(entry.Amount).Append(" 名 ").Append(entry.Name).Append(delivered ? BuildCourierCargoValueSuffix(entry) : "").Append("。");
 			}
 			else if (entry.Kind == "prisoner")
 			{
-				sb.Append("\n[AFEF玩家行为补充] ").Append(playerName).Append(verb).Append(entry.IsHero ? "转移了俘虏 " : "转移了俘虏 ").Append(entry.IsHero ? entry.Name : (entry.Amount + " 名 " + entry.Name)).Append("。");
+				sb.Append("\n[AFEF玩家行为补充] ").Append(playerName).Append(verb).Append(entry.IsHero ? "转移了俘虏 " : "转移了俘虏 ").Append(entry.IsHero ? entry.Name : (entry.Amount + " 名 " + entry.Name)).Append(delivered ? BuildCourierCargoValueSuffix(entry) : "").Append("。");
 			}
 			else if (entry.Kind == "settlement")
 			{
-				sb.Append("\n[AFEF玩家行为补充] ").Append(playerName).Append(verb).Append("转移了固定资产 ").Append(entry.Name).Append("。");
+				sb.Append("\n[AFEF玩家行为补充] ").Append(playerName).Append(verb).Append("转移了固定资产 ").Append(entry.Name).Append(delivered ? BuildCourierCargoValueSuffix(entry) : "").Append("。");
 			}
 		}
 		return sb.ToString().Trim();
+	}
+
+	private static string BuildCourierCargoValueSuffix(CourierCargoEntry entry)
+	{
+		long value = EstimateCourierCargoEntryTotalValue(entry);
+		return value > 0L ? ("（估值约 " + value + " 第纳尔）") : "";
+	}
+
+	private static long EstimateCourierCargoEntryTotalValue(CourierCargoEntry entry)
+	{
+		if (entry == null || entry.Amount <= 0)
+		{
+			return 0L;
+		}
+		string kind = (entry.Kind ?? "").Trim();
+		if (string.Equals(kind, "gold", StringComparison.OrdinalIgnoreCase))
+		{
+			return Math.Max(0, entry.Amount);
+		}
+		int unitValue = Math.Max(0, entry.GuidePriceDenars);
+		if (unitValue <= 0 && string.Equals(kind, "item", StringComparison.OrdinalIgnoreCase))
+		{
+			unitValue = EstimateCourierItemUnitValue(ResolveItem(entry.Id));
+		}
+		if (unitValue <= 0)
+		{
+			return 0L;
+		}
+		int amount = string.Equals(kind, "settlement", StringComparison.OrdinalIgnoreCase) || entry.IsHero ? 1 : Math.Max(1, entry.Amount);
+		return (long)amount * unitValue;
 	}
 
 	private static string BuildPendingPayloadSummary(PendingCourierFlow flow)
@@ -2837,6 +2886,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 					Id = entry.Character?.StringId ?? "",
 					Name = entry.DisplayName,
 					AvailableAmount = available,
+					GuidePriceDenars = mode == CourierPayloadMode.GiveTroops ? Math.Max(1, entry.HirePriceDenarsPerUnit) : Math.Max(1, entry.BuyPriceDenarsPerUnit),
 					PartyEntry = entry
 				});
 			}
@@ -2852,6 +2902,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 					Id = MyBehavior.GetSettlementTransferAssetIdForExternal(entry),
 					Name = MyBehavior.GetSettlementTransferAssetDisplayNameForExternal(entry),
 					AvailableAmount = 1,
+					GuidePriceDenars = Math.Max(0, entry.GuidePriceDenars),
 					SettlementEntry = entry
 				});
 			}
@@ -2875,7 +2926,8 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 				Kind = mode == CourierPayloadMode.Show ? "show_gold" : "gold",
 				Id = "gold",
 				Name = "第纳尔",
-				AvailableAmount = gold
+				AvailableAmount = gold,
+				GuidePriceDenars = 1
 			});
 		}
 		ItemRoster itemRoster = mainParty.ItemRoster;
@@ -2901,6 +2953,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 					Id = id,
 					Name = item.Name?.ToString() ?? id,
 					AvailableAmount = 0,
+					GuidePriceDenars = EstimateCourierItemUnitValue(item),
 					Item = item
 				};
 				byItem[id] = option;
@@ -2921,6 +2974,63 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			}
 		}
 		return list;
+	}
+
+	private static int EstimateCourierItemUnitValue(ItemObject item)
+	{
+		if (item == null)
+		{
+			return 0;
+		}
+		try
+		{
+			long value = RewardSystemBehavior.Instance?.EstimateItemValueForExternal(Hero.MainHero, item, 1) ?? 0L;
+			if (value > 0L)
+			{
+				return (int)Math.Min(int.MaxValue, value);
+			}
+		}
+		catch
+		{
+		}
+		return Math.Max(1, item.Value);
+	}
+
+	private static int EstimateCourierPartyTransferUnitValue(Hero recipient, CourierCargoEntry entry, bool isPrisoner)
+	{
+		try
+		{
+			MyBehavior.PartyTransferEntrySection section = isPrisoner ? MyBehavior.PartyTransferEntrySection.PlayerPrisoners : MyBehavior.PartyTransferEntrySection.PlayerTroops;
+			string id = (entry?.Id ?? "").Trim();
+			string name = (entry?.Name ?? "").Trim();
+			MyBehavior.PartyTransferPromptEntry match = MyBehavior.BuildPartyTransferPromptEntriesForExternal(recipient, recipient?.CharacterObject, -1)
+				.FirstOrDefault(x => x != null && x.Section == section && (string.Equals((x.Character?.StringId ?? "").Trim(), id, StringComparison.OrdinalIgnoreCase) || string.Equals((x.DisplayName ?? "").Trim(), name, StringComparison.OrdinalIgnoreCase)));
+			if (match == null)
+			{
+				return 0;
+			}
+			return isPrisoner ? Math.Max(1, match.BuyPriceDenarsPerUnit) : Math.Max(1, match.HirePriceDenarsPerUnit);
+		}
+		catch
+		{
+			return 0;
+		}
+	}
+
+	private static int EstimateCourierSettlementTransferValue(Hero recipient, CourierCargoEntry entry)
+	{
+		try
+		{
+			string id = (entry?.Id ?? "").Trim();
+			string name = (entry?.Name ?? "").Trim();
+			MyBehavior.SettlementTransferPromptEntry match = MyBehavior.BuildSettlementTransferPromptEntriesForExternal(recipient, recipient?.CharacterObject)
+				.FirstOrDefault(x => x != null && x.Section == MyBehavior.SettlementTransferEntrySection.PlayerFiefs && MyBehavior.IsSettlementTransferEntryValidForExternal(x) && (string.Equals(MyBehavior.GetSettlementTransferAssetIdForExternal(x), id, StringComparison.OrdinalIgnoreCase) || string.Equals((x.DisplayName ?? "").Trim(), name, StringComparison.OrdinalIgnoreCase) || string.Equals(MyBehavior.GetSettlementTransferAssetDisplayNameForExternal(x), name, StringComparison.OrdinalIgnoreCase)));
+			return Math.Max(0, match?.GuidePriceDenars ?? 0);
+		}
+		catch
+		{
+			return 0;
+		}
 	}
 
 	private static string BuildEmptyPayloadMessage(CourierPayloadMode mode)
@@ -3818,6 +3928,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			Id = x.Id,
 			Name = x.Name,
 			Amount = x.Amount,
+			GuidePriceDenars = x.GuidePriceDenars,
 			IsHero = x.IsHero,
 			Delivered = x.Delivered
 		}).ToList();

@@ -241,6 +241,8 @@ public class MyBehavior : CampaignBehaviorBase
 		public string LastSummaryError = "";
 
 		public List<DailyMemoryLine> Lines = new List<DailyMemoryLine>();
+
+		public List<WeeklyMemoryMaterialTrigger> WeeklyMaterialTriggers = new List<WeeklyMemoryMaterialTrigger>();
 	}
 
 	private sealed class CompressedMemoryBlock
@@ -274,6 +276,54 @@ public class MyBehavior : CampaignBehaviorBase
 		public string PlayerPublicityReason = "";
 
 		public long CreatedUtcTicks;
+
+		public List<WeeklyMemoryMaterialTrigger> WeeklyMaterialTriggers = new List<WeeklyMemoryMaterialTrigger>();
+	}
+
+	private sealed class WeeklyMemoryMaterialTrigger
+	{
+		public string MemoryId = "";
+
+		public string NpcName = "";
+
+		public int GameDayIndex;
+
+		public string GameDate = "";
+
+		public int SceneSessionId = -1;
+
+		public int DialogueSessionId = -1;
+
+		public int TargetAgentIndex = -1;
+
+		public string FootholdKingdomId = "";
+
+		public string FootholdSettlementId = "";
+
+		public string NormalizedTagText = "";
+
+		public List<string> Tags = new List<string>();
+
+		public long EstimatedValueDenars;
+
+		public string TriggerReason = "";
+
+		public string StableKey = "";
+
+		public long CreatedUtcTicks;
+	}
+
+	private sealed class WeeklyMemoryMaterialEvaluation
+	{
+		public bool HasMajorTag;
+
+		public long EstimatedValueDenars;
+
+		public string Reason = "";
+
+		public List<string> Tags = new List<string>();
+
+		public bool Eligible => HasMajorTag || EstimatedValueDenars > WeeklyMemoryMaterialValueThresholdDenars;
 	}
 
 	private sealed class MemorySummaryJob
@@ -1345,6 +1395,8 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private const int RebelKingdomInitialStabilityValue = 50;
 
+	private const long WeeklyMemoryMaterialValueThresholdDenars = 20000L;
+
 	private Dictionary<string, List<DialogueDay>> _dialogueHistory = new Dictionary<string, List<DialogueDay>>();
 
 	private Dictionary<string, string> _dialogueHistoryStorage = new Dictionary<string, string>();
@@ -1356,6 +1408,8 @@ public class MyBehavior : CampaignBehaviorBase
 	private Dictionary<string, List<CompressedMemoryBlock>> _compressedMemoryBlocks = new Dictionary<string, List<CompressedMemoryBlock>>(StringComparer.OrdinalIgnoreCase);
 
 	private Dictionary<string, string> _compressedMemoryBlockStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+	private List<WeeklyMemoryMaterialTrigger> _pendingWeeklyMemoryMaterialTriggers = new List<WeeklyMemoryMaterialTrigger>();
 
 	private List<MemorySummaryJob> _memorySummaryQueue = new List<MemorySummaryJob>();
 
@@ -3921,6 +3975,7 @@ public class MyBehavior : CampaignBehaviorBase
 				PlayerPublicity = playerPublicity,
 				PlayerHistoryMaterial = playerHistoryMaterial,
 				PlayerPublicityReason = playerPublicityReason,
+				WeeklyMaterialTriggers = SanitizeWeeklyMemoryMaterialTriggers(draft.WeeklyMaterialTriggers),
 				CreatedUtcTicks = DateTime.UtcNow.Ticks
 			};
 			return true;
@@ -3961,6 +4016,7 @@ public class MyBehavior : CampaignBehaviorBase
 			Settlement settlement = hero?.CurrentSettlement ?? Settlement.CurrentSettlement;
 			PlayerNotorietyBehavior.RecordPublicMemoryForExternal(hero, settlement, block.PlayerHistoryMaterial, block.PlayerPublicity, block.PlayerPublicityReason, block.GameDayIndex, block.GameDate);
 		}
+		RecordWeeklyMemoryMaterialForBlock(block);
 		TryEnqueueMemoryOverviewForMemoryId(memoryId, job.HeroName, blocks);
 	}
 
@@ -7866,7 +7922,7 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private void RecordEventSourceMaterial(string materialKind, string label, string snapshotText, string stableKey, string kingdomId, string settlementId, bool includeInWorld, bool includeInKingdom, string actorHeroId = "", string actorKingdomId = "")
+	private void RecordEventSourceMaterial(string materialKind, string label, string snapshotText, string stableKey, string kingdomId, string settlementId, bool includeInWorld, bool includeInKingdom, string actorHeroId = "", string actorKingdomId = "", int dayOverride = -1, string gameDateOverride = "")
 	{
 		string text = (snapshotText ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
 		if (string.IsNullOrWhiteSpace(text))
@@ -7877,7 +7933,7 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			_eventSourceMaterials = new List<EventSourceMaterialEntry>();
 		}
-		int currentGameDayIndexSafe = GetCurrentGameDayIndexSafe();
+		int currentGameDayIndexSafe = dayOverride >= 0 ? dayOverride : GetCurrentGameDayIndexSafe();
 		string text2 = NormalizeNpcActionStableKey(stableKey, label + ":" + text);
 		EventSourceMaterialEntry eventSourceMaterialEntry = _eventSourceMaterials.FirstOrDefault((EventSourceMaterialEntry x) => x != null && x.Day == currentGameDayIndexSafe && string.Equals((x.StableKey ?? "").Trim(), text2, StringComparison.OrdinalIgnoreCase));
 		if (eventSourceMaterialEntry != null)
@@ -7897,7 +7953,7 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			Day = currentGameDayIndexSafe,
 			Sequence = ++_npcActionGlobalOrderCounter,
-			GameDate = GetCurrentGameDateTextSafe(),
+			GameDate = string.IsNullOrWhiteSpace(gameDateOverride) ? GetCurrentGameDateTextSafe() : gameDateOverride.Trim(),
 			MaterialKind = (materialKind ?? "").Trim(),
 			Label = (label ?? "").Trim(),
 			SnapshotText = text,
@@ -7910,6 +7966,781 @@ public class MyBehavior : CampaignBehaviorBase
 			IncludeInKingdom = includeInKingdom
 		});
 		_eventSourceMaterials = SanitizeEventSourceMaterials(_eventSourceMaterials);
+	}
+
+	public static void MarkWeeklyMemoryMaterialTriggerForExternal(Hero targetHero, string nonHeroMemoryId, string npcName, string normalizedTagText, int sceneSessionId = -1, int nativeDialogueSessionId = -1, int targetAgentIndex = -1, List<RewardSystemBehavior.RewardItemInfo> rewardOptions = null, List<PartyTransferPromptEntry> partyTransferTroopOptions = null, List<PartyTransferPromptEntry> partyTransferPrisonerOptions = null, List<SettlementTransferPromptEntry> settlementTransferNpcOptions = null, bool suppressImplicitDialogueSession = false)
+	{
+		try
+		{
+			(Campaign.Current?.GetCampaignBehavior<MyBehavior>())?.MarkWeeklyMemoryMaterialTriggerInternal(targetHero, nonHeroMemoryId, npcName, normalizedTagText, sceneSessionId, nativeDialogueSessionId, targetAgentIndex, rewardOptions, partyTransferTroopOptions, partyTransferPrisonerOptions, settlementTransferNpcOptions, suppressImplicitDialogueSession);
+		}
+		catch
+		{
+		}
+	}
+
+	private void MarkWeeklyMemoryMaterialTriggerInternal(Hero targetHero, string nonHeroMemoryId, string npcName, string normalizedTagText, int sceneSessionId, int nativeDialogueSessionId, int targetAgentIndex, List<RewardSystemBehavior.RewardItemInfo> rewardOptions, List<PartyTransferPromptEntry> partyTransferTroopOptions, List<PartyTransferPromptEntry> partyTransferPrisonerOptions, List<SettlementTransferPromptEntry> settlementTransferNpcOptions, bool suppressImplicitDialogueSession = false)
+	{
+		string memoryId = !string.IsNullOrWhiteSpace(nonHeroMemoryId) ? NormalizeMemoryHeroId(nonHeroMemoryId) : GetMemoryHeroId(targetHero);
+		if (!IsMemoryEntityEligibleForCompressedMemory(memoryId))
+		{
+			return;
+		}
+		string tagText = NormalizeWeeklyMemoryMaterialTagText(normalizedTagText);
+		List<string> tags = ExtractWeeklyMemoryMaterialTags(tagText);
+		if (tags.Count == 0)
+		{
+			return;
+		}
+		int day = GetCurrentGameDayIndexSafe();
+		string gameDate = GetCurrentGameDateTextSafe();
+		List<DailyMemoryDraft> drafts = LoadDailyMemoryDraftsById(memoryId);
+		DailyMemoryDraft draft = drafts.FirstOrDefault((DailyMemoryDraft x) => x != null && x.GameDayIndex == day);
+		WeeklyMemoryMaterialEvaluation evaluation = EvaluateWeeklyMemoryMaterialTags(targetHero, tags, rewardOptions, partyTransferTroopOptions, partyTransferPrisonerOptions, settlementTransferNpcOptions);
+		TryApplyPlayerTransferredValueToWeeklyMemoryMaterialEvaluation(evaluation, tags, draft, npcName, sceneSessionId, nativeDialogueSessionId);
+		if (evaluation == null || !evaluation.Eligible)
+		{
+			Logger.Log("EventWeeklyReport", "[WeeklyMemoryMaterial][SKIP] tags_not_eligible memory=" + memoryId + " value=" + (evaluation?.EstimatedValueDenars ?? 0L) + " threshold=" + WeeklyMemoryMaterialValueThresholdDenars + " tags=" + string.Join("|", tags));
+			return;
+		}
+		if (!ResolvePlayerFootholdKingdomForWeeklyMemoryMaterial(out var footholdKingdomId, out var footholdSettlementId))
+		{
+			Logger.Log("EventWeeklyReport", "[WeeklyMemoryMaterial][SKIP] foothold_kingdom_missing memory=" + memoryId + " tags=" + string.Join("|", tags));
+			return;
+		}
+		if (!suppressImplicitDialogueSession && sceneSessionId < 0 && nativeDialogueSessionId < 0)
+		{
+			nativeDialogueSessionId = GetOrStartActiveNativeConversationMemorySessionId();
+		}
+		WeeklyMemoryMaterialTrigger trigger = new WeeklyMemoryMaterialTrigger
+		{
+			MemoryId = memoryId,
+			NpcName = string.IsNullOrWhiteSpace(npcName) ? "NPC" : npcName.Trim(),
+			GameDayIndex = day,
+			GameDate = gameDate,
+			SceneSessionId = sceneSessionId,
+			DialogueSessionId = nativeDialogueSessionId,
+			TargetAgentIndex = targetAgentIndex,
+			FootholdKingdomId = footholdKingdomId,
+			FootholdSettlementId = footholdSettlementId,
+			NormalizedTagText = tagText,
+			Tags = evaluation.Tags,
+			EstimatedValueDenars = evaluation.EstimatedValueDenars,
+			TriggerReason = evaluation.Reason,
+			StableKey = BuildWeeklyMemoryMaterialTriggerStableKey(memoryId, day, sceneSessionId, nativeDialogueSessionId, footholdKingdomId, tagText),
+			CreatedUtcTicks = DateTime.UtcNow.Ticks
+		};
+		if (draft != null)
+		{
+			AddWeeklyMemoryMaterialTriggerToDraft(draft, trigger);
+			SaveDailyMemoryDraftsById(memoryId, drafts);
+			Logger.Log("EventWeeklyReport", "[WeeklyMemoryMaterial] trigger_attached memory=" + memoryId + " day=" + day + " kingdom=" + footholdKingdomId + " value=" + evaluation.EstimatedValueDenars + " tags=" + string.Join("|", evaluation.Tags));
+			return;
+		}
+		if (_pendingWeeklyMemoryMaterialTriggers == null)
+		{
+			_pendingWeeklyMemoryMaterialTriggers = new List<WeeklyMemoryMaterialTrigger>();
+		}
+		_pendingWeeklyMemoryMaterialTriggers.RemoveAll((WeeklyMemoryMaterialTrigger x) => x == null || string.Equals((x.StableKey ?? "").Trim(), trigger.StableKey, StringComparison.OrdinalIgnoreCase));
+		_pendingWeeklyMemoryMaterialTriggers.Add(trigger);
+		PrunePendingWeeklyMemoryMaterialTriggers();
+		Logger.Log("EventWeeklyReport", "[WeeklyMemoryMaterial] trigger_pending memory=" + memoryId + " day=" + day + " kingdom=" + footholdKingdomId + " value=" + evaluation.EstimatedValueDenars + " tags=" + string.Join("|", evaluation.Tags));
+	}
+
+	private void AddWeeklyMemoryMaterialTriggerToDraft(DailyMemoryDraft draft, WeeklyMemoryMaterialTrigger trigger)
+	{
+		if (draft == null || trigger == null)
+		{
+			return;
+		}
+		trigger.MemoryId = NormalizeMemoryHeroId(draft.HeroId);
+		trigger.GameDayIndex = draft.GameDayIndex;
+		trigger.GameDate = string.IsNullOrWhiteSpace(trigger.GameDate) ? draft.GameDate : trigger.GameDate;
+		if (draft.WeeklyMaterialTriggers == null)
+		{
+			draft.WeeklyMaterialTriggers = new List<WeeklyMemoryMaterialTrigger>();
+		}
+		string stableKey = (trigger.StableKey ?? "").Trim();
+		if (!string.IsNullOrWhiteSpace(stableKey) && draft.WeeklyMaterialTriggers.Any((WeeklyMemoryMaterialTrigger x) => x != null && string.Equals((x.StableKey ?? "").Trim(), stableKey, StringComparison.OrdinalIgnoreCase)))
+		{
+			return;
+		}
+		draft.WeeklyMaterialTriggers.Add(trigger);
+		draft.WeeklyMaterialTriggers = SanitizeWeeklyMemoryMaterialTriggers(draft.WeeklyMaterialTriggers);
+	}
+
+	private void AttachPendingWeeklyMemoryMaterialTriggers(DailyMemoryDraft draft, DailyMemoryLine line)
+	{
+		if (draft == null || line == null || _pendingWeeklyMemoryMaterialTriggers == null || _pendingWeeklyMemoryMaterialTriggers.Count == 0)
+		{
+			return;
+		}
+		string memoryId = NormalizeMemoryHeroId(draft.HeroId);
+		int day = draft.GameDayIndex;
+		List<WeeklyMemoryMaterialTrigger> matched = new List<WeeklyMemoryMaterialTrigger>();
+		foreach (WeeklyMemoryMaterialTrigger trigger in _pendingWeeklyMemoryMaterialTriggers)
+		{
+			if (trigger == null || !string.Equals(NormalizeMemoryHeroId(trigger.MemoryId), memoryId, StringComparison.OrdinalIgnoreCase) || trigger.GameDayIndex != day)
+			{
+				continue;
+			}
+			bool sceneMatch = trigger.SceneSessionId >= 0 && trigger.SceneSessionId == line.SceneSessionId;
+			bool dialogueMatch = trigger.DialogueSessionId >= 0 && trigger.DialogueSessionId == line.DialogueSessionId;
+			bool looseMatch = trigger.SceneSessionId < 0 && trigger.DialogueSessionId < 0;
+			if (sceneMatch || dialogueMatch || looseMatch)
+			{
+				matched.Add(trigger);
+			}
+		}
+		if (matched.Count == 0)
+		{
+			PrunePendingWeeklyMemoryMaterialTriggers();
+			return;
+		}
+		foreach (WeeklyMemoryMaterialTrigger trigger2 in matched)
+		{
+			AddWeeklyMemoryMaterialTriggerToDraft(draft, trigger2);
+		}
+		HashSet<string> matchedKeys = new HashSet<string>(matched.Select((WeeklyMemoryMaterialTrigger x) => (x?.StableKey ?? "").Trim()).Where((string x) => !string.IsNullOrWhiteSpace(x)), StringComparer.OrdinalIgnoreCase);
+		_pendingWeeklyMemoryMaterialTriggers.RemoveAll((WeeklyMemoryMaterialTrigger x) => x == null || matchedKeys.Contains((x.StableKey ?? "").Trim()));
+		PrunePendingWeeklyMemoryMaterialTriggers();
+	}
+
+	private void PrunePendingWeeklyMemoryMaterialTriggers()
+	{
+		if (_pendingWeeklyMemoryMaterialTriggers == null || _pendingWeeklyMemoryMaterialTriggers.Count == 0)
+		{
+			return;
+		}
+		int minDay = Math.Max(0, GetCurrentGameDayIndexSafe() - 2);
+		_pendingWeeklyMemoryMaterialTriggers = SanitizeWeeklyMemoryMaterialTriggers(_pendingWeeklyMemoryMaterialTriggers).Where((WeeklyMemoryMaterialTrigger x) => x != null && x.GameDayIndex >= minDay).ToList();
+	}
+
+	private void RecordWeeklyMemoryMaterialForBlock(CompressedMemoryBlock block)
+	{
+		List<WeeklyMemoryMaterialTrigger> triggers = SanitizeWeeklyMemoryMaterialTriggers(block?.WeeklyMaterialTriggers);
+		if (block == null || triggers.Count == 0)
+		{
+			return;
+		}
+		foreach (IGrouping<string, WeeklyMemoryMaterialTrigger> group in triggers.GroupBy((WeeklyMemoryMaterialTrigger x) => (x.FootholdKingdomId ?? "").Trim(), StringComparer.OrdinalIgnoreCase))
+		{
+			string kingdomId = (group.Key ?? "").Trim();
+			if (string.IsNullOrWhiteSpace(kingdomId))
+			{
+				continue;
+			}
+			List<WeeklyMemoryMaterialTrigger> groupTriggers = group.ToList();
+			string stableHash = ComputeWeeklyMemoryMaterialHash(string.Join("|", groupTriggers.Select((WeeklyMemoryMaterialTrigger x) => (x.StableKey ?? "").Trim()).Where((string x) => !string.IsNullOrWhiteSpace(x))));
+			string stableKey = "player_dialogue_memory:" + kingdomId + ":" + ((block.Id ?? BuildCompressedMemoryBlockId(block.HeroId, block.GameDayIndex)).Trim()) + ":" + stableHash;
+			string label = "玩家交涉记忆 - " + (string.IsNullOrWhiteSpace(block.HeroName) ? "NPC" : block.HeroName.Trim());
+			string snapshot = BuildWeeklyMemoryMaterialSnapshotText(block, groupTriggers);
+			string settlementId = groupTriggers.Select((WeeklyMemoryMaterialTrigger x) => (x.FootholdSettlementId ?? "").Trim()).FirstOrDefault((string x) => !string.IsNullOrWhiteSpace(x)) ?? "";
+			RecordEventSourceMaterial("player_dialogue_memory", label, snapshot, stableKey, kingdomId, settlementId, includeInWorld: false, includeInKingdom: true, actorHeroId: GetHeroId(Hero.MainHero), actorKingdomId: kingdomId, dayOverride: block.GameDayIndex, gameDateOverride: block.GameDate);
+			Logger.Log("EventWeeklyReport", "[WeeklyMemoryMaterial] source_material_recorded block=" + (block.Id ?? "") + " kingdom=" + kingdomId + " triggers=" + groupTriggers.Count + " value=" + groupTriggers.Sum((WeeklyMemoryMaterialTrigger x) => Math.Max(0L, x.EstimatedValueDenars)));
+		}
+	}
+
+	private static string BuildWeeklyMemoryMaterialSnapshotText(CompressedMemoryBlock block, List<WeeklyMemoryMaterialTrigger> triggers)
+	{
+		StringBuilder sb = new StringBuilder();
+		string npcName = (block?.HeroName ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(npcName))
+		{
+			npcName = triggers?.Select((WeeklyMemoryMaterialTrigger x) => x?.NpcName).FirstOrDefault((string x) => !string.IsNullOrWhiteSpace(x)) ?? "NPC";
+		}
+		sb.Append("玩家与 ").Append(npcName).Append(" 的交流在后处理阶段被识别为本周王国周报素材。");
+		if (!string.IsNullOrWhiteSpace(block?.RichTitle))
+		{
+			sb.Append(" 记忆标题：").Append(block.RichTitle.Trim()).Append("。");
+		}
+		if (!string.IsNullOrWhiteSpace(block?.Summary))
+		{
+			sb.Append(" 记忆摘要：").Append(block.Summary.Trim()).Append("。");
+		}
+		List<string> scenes = (block?.Scenes ?? new List<string>()).Where((string x) => !string.IsNullOrWhiteSpace((x ?? "").Trim())).Select((string x) => x.Trim()).Distinct(StringComparer.OrdinalIgnoreCase).Take(4).ToList();
+		if (scenes.Count > 0)
+		{
+			sb.Append(" 场景：").Append(string.Join("、", scenes)).Append("。");
+		}
+		List<string> labels = (triggers ?? new List<WeeklyMemoryMaterialTrigger>()).SelectMany((WeeklyMemoryMaterialTrigger x) => x?.Tags ?? new List<string>()).Select(BuildWeeklyMemoryMaterialTagLabel).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).Take(20).ToList();
+		if (labels.Count > 0)
+		{
+			sb.Append(" 触发机制：").Append(string.Join("、", labels)).Append("。");
+		}
+		long value = (triggers ?? new List<WeeklyMemoryMaterialTrigger>()).Sum((WeeklyMemoryMaterialTrigger x) => Math.Max(0L, x?.EstimatedValueDenars ?? 0L));
+		if (value > 0L)
+		{
+			sb.Append(" 本轮标签估值合计约 ").Append(value).Append(" 第纳尔。");
+		}
+		List<string> reasons = (triggers ?? new List<WeeklyMemoryMaterialTrigger>()).Select((WeeklyMemoryMaterialTrigger x) => (x?.TriggerReason ?? "").Trim()).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).Take(6).ToList();
+		if (reasons.Count > 0)
+		{
+			sb.Append(" 触发依据：").Append(string.Join("；", reasons)).Append("。");
+		}
+		return sb.ToString().Trim();
+	}
+
+	private static bool ResolvePlayerFootholdKingdomForWeeklyMemoryMaterial(out string kingdomId, out string settlementId)
+	{
+		kingdomId = "";
+		settlementId = "";
+		try
+		{
+			Settlement settlement = Settlement.CurrentSettlement ?? MobileParty.MainParty?.CurrentSettlement;
+			settlementId = GetSettlementId(settlement);
+			kingdomId = GetKingdomId(settlement?.MapFaction);
+			if (string.IsNullOrWhiteSpace(kingdomId))
+			{
+				kingdomId = GetKingdomId(settlement?.OwnerClan?.Kingdom);
+			}
+			if (!string.IsNullOrWhiteSpace(kingdomId))
+			{
+				return true;
+			}
+			List<string> nearest = GetKingdomIdsByPlayerProximity(GetDevEditableKingdoms().Select((Kingdom x) => x?.StringId));
+			kingdomId = nearest.FirstOrDefault((string x) => !string.IsNullOrWhiteSpace(x)) ?? "";
+			return !string.IsNullOrWhiteSpace(kingdomId);
+		}
+		catch
+		{
+			kingdomId = "";
+			settlementId = "";
+			return false;
+		}
+	}
+
+	private static WeeklyMemoryMaterialEvaluation EvaluateWeeklyMemoryMaterialTags(Hero targetHero, List<string> tags, List<RewardSystemBehavior.RewardItemInfo> rewardOptions, List<PartyTransferPromptEntry> partyTransferTroopOptions, List<PartyTransferPromptEntry> partyTransferPrisonerOptions, List<SettlementTransferPromptEntry> settlementTransferNpcOptions)
+	{
+		WeeklyMemoryMaterialEvaluation evaluation = new WeeklyMemoryMaterialEvaluation();
+		evaluation.Tags = NormalizeWeeklyMemoryMaterialTags(tags);
+		List<string> reasons = new List<string>();
+		foreach (string tag in evaluation.Tags)
+		{
+			if (IsWeeklyMemoryMaterialMajorTag(tag))
+			{
+				evaluation.HasMajorTag = true;
+				string label = BuildWeeklyMemoryMaterialTagLabel(tag);
+				if (!string.IsNullOrWhiteSpace(label))
+				{
+					reasons.Add("重大标签：" + label);
+				}
+			}
+			long value = EstimateWeeklyMemoryMaterialTagValue(targetHero, tag, rewardOptions, partyTransferTroopOptions, partyTransferPrisonerOptions, settlementTransferNpcOptions);
+			if (value > 0L)
+			{
+				evaluation.EstimatedValueDenars = AddWeeklyMemoryMaterialValue(evaluation.EstimatedValueDenars, value);
+				reasons.Add(BuildWeeklyMemoryMaterialTagLabel(tag) + "估值 " + value + " 第纳尔");
+			}
+		}
+		if (evaluation.EstimatedValueDenars > WeeklyMemoryMaterialValueThresholdDenars)
+		{
+			reasons.Add("本轮金额/估值合计严格大于 " + WeeklyMemoryMaterialValueThresholdDenars + " 第纳尔");
+		}
+		evaluation.Reason = string.Join("；", reasons.Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase));
+		return evaluation;
+	}
+
+	private static void TryApplyPlayerTransferredValueToWeeklyMemoryMaterialEvaluation(WeeklyMemoryMaterialEvaluation evaluation, List<string> tags, DailyMemoryDraft draft, string npcName, int sceneSessionId, int nativeDialogueSessionId)
+	{
+		if (evaluation == null || evaluation.Eligible || !ShouldAugmentWeeklyMemoryMaterialWithPlayerTransferredValue(tags))
+		{
+			return;
+		}
+		if (!TryEstimatePlayerTransferredValueForWeeklyMemoryMaterial(draft, npcName, sceneSessionId, nativeDialogueSessionId, out var value))
+		{
+			return;
+		}
+		evaluation.EstimatedValueDenars = AddWeeklyMemoryMaterialValue(evaluation.EstimatedValueDenars, value);
+		List<string> reasons = (evaluation.Reason ?? "").Split(new char[1] { '；' }, StringSplitOptions.RemoveEmptyEntries).Select((string x) => x.Trim()).Where((string x) => !string.IsNullOrWhiteSpace(x)).ToList();
+		reasons.Add("玩家转移价值估值 " + value + " 第纳尔");
+		if (evaluation.EstimatedValueDenars > WeeklyMemoryMaterialValueThresholdDenars)
+		{
+			reasons.Add("本轮金额/估值合计严格大于 " + WeeklyMemoryMaterialValueThresholdDenars + " 第纳尔");
+		}
+		evaluation.Reason = string.Join("；", reasons.Distinct(StringComparer.OrdinalIgnoreCase));
+	}
+
+	private static bool ShouldAugmentWeeklyMemoryMaterialWithPlayerTransferredValue(IEnumerable<string> tags)
+	{
+		foreach (string tag in tags ?? Enumerable.Empty<string>())
+		{
+			string text = (tag ?? "").Trim();
+			if (Regex.IsMatch(text, "^\\[ACTION:GIVE_GOLD:\\d+\\]$", RegexOptions.IgnoreCase) ||
+				Regex.IsMatch(text, "^\\[ACTION:GIVE_ITEM:[^\\]\\r\\n:]+:\\d+\\]$", RegexOptions.IgnoreCase) ||
+				Regex.IsMatch(text, "^\\[AD;\\d+;\\d+;[^\\]]*\\]$", RegexOptions.IgnoreCase) ||
+				Regex.IsMatch(text, "^\\[ADP[:;][^\\]\\r\\n:;]+\\]$", RegexOptions.IgnoreCase) ||
+				Regex.IsMatch(text, "^\\[ATT:\\d+:\\d+\\]$", RegexOptions.IgnoreCase) ||
+				Regex.IsMatch(text, "^\\[ATP:\\d+:\\d+\\]$", RegexOptions.IgnoreCase) ||
+				Regex.IsMatch(text, "^\\[ACTION:SETTLEMENT_TRANSFER:TO_PLAYER:[^\\]\\r\\n:]+\\]$", RegexOptions.IgnoreCase))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private static bool TryEstimatePlayerTransferredValueForWeeklyMemoryMaterial(DailyMemoryDraft draft, string npcName, int sceneSessionId, int nativeDialogueSessionId, out long value)
+	{
+		value = 0L;
+		List<DailyMemoryLine> lines = (draft?.Lines ?? new List<DailyMemoryLine>()).Where((DailyMemoryLine x) => x != null && x.IsAfef && !string.IsNullOrWhiteSpace(x.Text)).ToList();
+		if (lines.Count == 0)
+		{
+			return false;
+		}
+		List<DailyMemoryLine> matched = lines.Where((DailyMemoryLine x) => (sceneSessionId >= 0 && x.SceneSessionId == sceneSessionId) || (nativeDialogueSessionId >= 0 && x.DialogueSessionId == nativeDialogueSessionId)).ToList();
+		if (matched.Count > 0)
+		{
+			lines = matched;
+		}
+		else
+		{
+			lines = lines.Skip(Math.Max(0, lines.Count - 12)).ToList();
+		}
+		foreach (DailyMemoryLine line in lines)
+		{
+			long lineValue = EstimatePlayerTransferredValueFromWeeklyMemoryText(line?.Text, npcName);
+			if (lineValue > 0L)
+			{
+				value = AddWeeklyMemoryMaterialValue(value, lineValue);
+			}
+		}
+		return value > 0L;
+	}
+
+	private static long EstimatePlayerTransferredValueFromWeeklyMemoryText(string text, string npcName)
+	{
+		long total = 0L;
+		foreach (string rawPart in Regex.Split(text ?? "", "\\r?\\n"))
+		{
+			string part = (rawPart ?? "").Trim();
+			if (!IsPlayerTransferredValueWeeklyMemoryFact(part, npcName))
+			{
+				continue;
+			}
+			long partValue = ExtractPlayerTransferredValueFromWeeklyMemoryFact(part);
+			if (partValue > 0L)
+			{
+				total = AddWeeklyMemoryMaterialValue(total, partValue);
+			}
+		}
+		return total;
+	}
+
+	private static bool IsPlayerTransferredValueWeeklyMemoryFact(string text, string npcName)
+	{
+		string value = (text ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(value) || !value.StartsWith("[AFEF玩家行为补充]", StringComparison.Ordinal))
+		{
+			return false;
+		}
+		if (value.IndexOf("展示", StringComparison.Ordinal) >= 0 || value.IndexOf("看了看", StringComparison.Ordinal) >= 0 || value.IndexOf("暂未交付", StringComparison.Ordinal) >= 0 || value.IndexOf("没有转移所有权", StringComparison.Ordinal) >= 0 || value.IndexOf("未能确认送达", StringComparison.Ordinal) >= 0 || value.IndexOf("准备通过信使", StringComparison.Ordinal) >= 0)
+		{
+			return false;
+		}
+		if (value.IndexOf("已经将", StringComparison.Ordinal) >= 0 && (value.IndexOf("交给", StringComparison.Ordinal) >= 0 || value.IndexOf("转交给", StringComparison.Ordinal) >= 0))
+		{
+			return true;
+		}
+		if (value.IndexOf("通过信使", StringComparison.Ordinal) >= 0 && value.IndexOf("转移了", StringComparison.Ordinal) >= 0)
+		{
+			return true;
+		}
+		return value.IndexOf("转移了", StringComparison.Ordinal) >= 0 && value.IndexOf("估值约", StringComparison.Ordinal) >= 0;
+	}
+
+	private static long ExtractPlayerTransferredValueFromWeeklyMemoryFact(string text)
+	{
+		long value = 0L;
+		foreach (Match match in Regex.Matches(text ?? "", "(?:合计总值约|总值约|估值约|价值约)\\s*(\\d+)\\s*第纳尔", RegexOptions.IgnoreCase))
+		{
+			if (TryParsePositiveLong(match.Groups[1].Value, out var parsed))
+			{
+				value = Math.Max(value, parsed);
+			}
+		}
+		foreach (Match match in Regex.Matches(text ?? "", "(?:已经将|转移了)\\s*(\\d+)\\s*第纳尔", RegexOptions.IgnoreCase))
+		{
+			if (TryParsePositiveLong(match.Groups[1].Value, out var parsed))
+			{
+				value = Math.Max(value, parsed);
+			}
+		}
+		return value;
+	}
+
+	private static long EstimateWeeklyMemoryMaterialTagValue(Hero targetHero, string tag, List<RewardSystemBehavior.RewardItemInfo> rewardOptions, List<PartyTransferPromptEntry> partyTransferTroopOptions, List<PartyTransferPromptEntry> partyTransferPrisonerOptions, List<SettlementTransferPromptEntry> settlementTransferNpcOptions)
+	{
+		string text = (tag ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return 0L;
+		}
+		Match match = Regex.Match(text, "^\\[ACTION:GIVE_GOLD:(\\d+)\\]$", RegexOptions.IgnoreCase);
+		if (match.Success && TryParsePositiveLong(match.Groups[1].Value, out var gold))
+		{
+			return gold;
+		}
+		match = Regex.Match(text, "^\\[AD;(\\d+);\\d+;[^\\]]*\\]$", RegexOptions.IgnoreCase);
+		if (match.Success && TryParsePositiveLong(match.Groups[1].Value, out var debtGold))
+		{
+			return debtGold;
+		}
+		match = Regex.Match(text, "^\\[ADP[:;]([^\\]\\r\\n:;]+)\\]$", RegexOptions.IgnoreCase);
+		if (match.Success)
+		{
+			string debtId = (match.Groups[1].Value ?? "").Trim();
+			if (TryEstimateDebtValueByIdForWeeklyMemoryMaterial(debtId, out var debtValue))
+			{
+				return debtValue;
+			}
+			Logger.Log("EventWeeklyReport", "[WeeklyMemoryMaterial][WARN] debt_id_value_missing debtId=" + debtId);
+			return 0L;
+		}
+		match = Regex.Match(text, "^\\[ACTION:GIVE_ITEM:([^\\]\\r\\n:]+):(\\d+)\\]$", RegexOptions.IgnoreCase);
+		if (match.Success && int.TryParse(match.Groups[2].Value, out var itemAmount) && itemAmount > 0)
+		{
+			return EstimateRewardItemTagValueForWeeklyMemoryMaterial(targetHero, match.Groups[1].Value, itemAmount, rewardOptions);
+		}
+		match = Regex.Match(text, "^\\[ATT:(\\d+):(\\d+)\\]$", RegexOptions.IgnoreCase);
+		if (match.Success && int.TryParse(match.Groups[1].Value, out var troopIndex) && int.TryParse(match.Groups[2].Value, out var troopAmount))
+		{
+			return EstimatePartyTransferTagValueForWeeklyMemoryMaterial(partyTransferTroopOptions, troopIndex, troopAmount, isPrisoner: false);
+		}
+		match = Regex.Match(text, "^\\[ATP:(\\d+):(\\d+)\\]$", RegexOptions.IgnoreCase);
+		if (match.Success && int.TryParse(match.Groups[1].Value, out var prisonerIndex) && int.TryParse(match.Groups[2].Value, out var prisonerAmount))
+		{
+			return EstimatePartyTransferTagValueForWeeklyMemoryMaterial(partyTransferPrisonerOptions, prisonerIndex, prisonerAmount, isPrisoner: true);
+		}
+		match = Regex.Match(text, "^\\[ACTION:SETTLEMENT_TRANSFER:TO_PLAYER:([^\\]\\r\\n:]+)\\]$", RegexOptions.IgnoreCase);
+		if (match.Success)
+		{
+			SettlementTransferPromptEntry entry = FindSettlementTransferEntryByTokenForWeeklyMemoryMaterial(settlementTransferNpcOptions, match.Groups[1].Value);
+			return Math.Max(0L, entry?.GuidePriceDenars ?? 0);
+		}
+		return 0L;
+	}
+
+	private static long EstimateRewardItemTagValueForWeeklyMemoryMaterial(Hero targetHero, string itemToken, int amount, List<RewardSystemBehavior.RewardItemInfo> rewardOptions)
+	{
+		RewardSystemBehavior.RewardItemInfo item = FindRewardItemByTokenForWeeklyMemoryMaterial(rewardOptions, itemToken);
+		int safeAmount = Math.Max(1, amount);
+		if (item != null)
+		{
+			safeAmount = Math.Min(safeAmount, Math.Max(1, item.Count));
+			return (long)safeAmount * Math.Max(1, item.GuidePrice);
+		}
+		try
+		{
+			string text = (itemToken ?? "").Trim();
+			int at = text.IndexOf('@');
+			if (at > 0)
+			{
+				text = text.Substring(0, at);
+			}
+			return Math.Max(0L, RewardSystemBehavior.Instance?.EstimateItemValueForExternal(targetHero ?? Hero.MainHero, text, safeAmount) ?? 0L);
+		}
+		catch
+		{
+			return 0L;
+		}
+	}
+
+	private static long EstimatePartyTransferTagValueForWeeklyMemoryMaterial(List<PartyTransferPromptEntry> options, int promptIndex, int amount, bool isPrisoner)
+	{
+		if (promptIndex <= 0 || amount <= 0)
+		{
+			return 0L;
+		}
+		PartyTransferPromptEntry entry = FindPartyTransferEntryByPromptIndexForWeeklyMemoryMaterial(options, promptIndex);
+		if (entry == null)
+		{
+			return 0L;
+		}
+		int safeAmount = entry.IsHero ? 1 : Math.Min(Math.Max(1, amount), Math.Max(1, entry.Count));
+		int unitPrice = isPrisoner ? Math.Max(1, entry.BuyPriceDenarsPerUnit) : Math.Max(1, entry.HirePriceDenarsPerUnit);
+		return (long)safeAmount * unitPrice;
+	}
+
+	private static bool TryEstimateDebtValueByIdForWeeklyMemoryMaterial(string debtId, out long value)
+	{
+		value = 0L;
+		string text = (debtId ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text) || RewardSystemBehavior.Instance == null)
+		{
+			return false;
+		}
+		Dictionary<string, RewardSystemBehavior.DebtExportEntry> debts = RewardSystemBehavior.Instance.ExportDebtEntries() ?? new Dictionary<string, RewardSystemBehavior.DebtExportEntry>();
+		foreach (RewardSystemBehavior.DebtExportEntry entry in debts.Values)
+		{
+			foreach (RewardSystemBehavior.DebtLineExportEntry line in entry?.DebtLines ?? new List<RewardSystemBehavior.DebtLineExportEntry>())
+			{
+				if (line == null || !string.Equals((line.DebtId ?? "").Trim(), text, StringComparison.OrdinalIgnoreCase) || line.RemainingAmount <= 0)
+				{
+					continue;
+				}
+				if (line.IsGold)
+				{
+					value = Math.Max(0, line.RemainingAmount);
+					return value > 0L;
+				}
+				int unitPrice = Math.Max(0, line.CompensationUnitPrice);
+				if (unitPrice <= 0)
+				{
+					try
+					{
+						unitPrice = (int)Math.Min(int.MaxValue, Math.Max(0L, RewardSystemBehavior.Instance.EstimateItemValueForExternal(Hero.MainHero, line.ItemId, 1)));
+					}
+					catch
+					{
+						unitPrice = 0;
+					}
+				}
+				value = (long)Math.Max(0, line.RemainingAmount) * Math.Max(1, unitPrice);
+				return value > 0L;
+			}
+		}
+		return false;
+	}
+
+	private static RewardSystemBehavior.RewardItemInfo FindRewardItemByTokenForWeeklyMemoryMaterial(List<RewardSystemBehavior.RewardItemInfo> options, string token)
+	{
+		string text = (token ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text) || options == null || options.Count == 0)
+		{
+			return null;
+		}
+		string baseToken = text;
+		int at = baseToken.IndexOf('@');
+		if (at > 0)
+		{
+			baseToken = baseToken.Substring(0, at);
+		}
+		return options.FirstOrDefault((RewardSystemBehavior.RewardItemInfo x) => x != null && (string.Equals((x.PromptStringId ?? "").Trim(), text, StringComparison.OrdinalIgnoreCase) || string.Equals((x.StringId ?? "").Trim(), text, StringComparison.OrdinalIgnoreCase) || string.Equals((x.StringId ?? "").Trim(), baseToken, StringComparison.OrdinalIgnoreCase) || string.Equals((x.Name ?? "").Trim(), text, StringComparison.OrdinalIgnoreCase))) ??
+			options.FirstOrDefault((RewardSystemBehavior.RewardItemInfo x) => x != null && !string.IsNullOrWhiteSpace(x.Name) && x.Name.IndexOf(text, StringComparison.OrdinalIgnoreCase) >= 0);
+	}
+
+	private static PartyTransferPromptEntry FindPartyTransferEntryByPromptIndexForWeeklyMemoryMaterial(List<PartyTransferPromptEntry> options, int promptIndex)
+	{
+		List<PartyTransferPromptEntry> list = (options ?? new List<PartyTransferPromptEntry>()).Where((PartyTransferPromptEntry x) => x != null).ToList();
+		return list.FirstOrDefault((PartyTransferPromptEntry x) => x.PromptIndex == promptIndex) ?? list.Skip(promptIndex - 1).FirstOrDefault();
+	}
+
+	private static SettlementTransferPromptEntry FindSettlementTransferEntryByTokenForWeeklyMemoryMaterial(List<SettlementTransferPromptEntry> options, string token)
+	{
+		string text = (token ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return null;
+		}
+		List<SettlementTransferPromptEntry> list = (options ?? new List<SettlementTransferPromptEntry>()).Where(IsSettlementTransferEntryValidForExternal).ToList();
+		SettlementTransferPromptEntry entry = list.FirstOrDefault((SettlementTransferPromptEntry x) => string.Equals((x.AssetId ?? "").Trim(), text, StringComparison.OrdinalIgnoreCase) || string.Equals(GetSettlementTransferAssetIdForExternal(x), text, StringComparison.OrdinalIgnoreCase) || string.Equals((x.SettlementId ?? "").Trim(), text, StringComparison.OrdinalIgnoreCase) || string.Equals((x.DisplayName ?? "").Trim(), text, StringComparison.OrdinalIgnoreCase));
+		if (entry != null)
+		{
+			return entry;
+		}
+		if (int.TryParse(text, out var index) && index > 0)
+		{
+			return list.FirstOrDefault((SettlementTransferPromptEntry x) => x.PromptIndex == index) ?? list.Skip(index - 1).FirstOrDefault();
+		}
+		return null;
+	}
+
+	private static bool IsWeeklyMemoryMaterialMajorTag(string tag)
+	{
+		string text = (tag ?? "").Trim();
+		if (string.Equals(text, "[ACTION:DUEL]", StringComparison.OrdinalIgnoreCase))
+		{
+			return true;
+		}
+		if (Regex.IsMatch(text, "^\\[ACTION:KINGDOM_SERVICE:(?:LEAVE(?::current)?|MERCENARY:[^\\]]+|VASSAL:[^\\]]+|CLAN_JOIN_PLAYER_KINGDOM:[^\\]]+)\\]$", RegexOptions.IgnoreCase))
+		{
+			return true;
+		}
+		if (Regex.IsMatch(text, "^\\[ACTION:(?:MARRIAGE_FORMAL|MARRIAGE_ELOPE|DIVORCE):[^\\]]+\\]$", RegexOptions.IgnoreCase))
+		{
+			return true;
+		}
+		if (Regex.IsMatch(text, "^\\[ACTION:VOTE_DEAL:[^\\]]+\\]$", RegexOptions.IgnoreCase) || Regex.IsMatch(text, "^\\[ACTION:PROPOSE:[^\\]]+\\]$", RegexOptions.IgnoreCase))
+		{
+			return true;
+		}
+		return IsWeeklyMemoryMaterialSiegeTag(text);
+	}
+
+	private static bool IsWeeklyMemoryMaterialSiegeTag(string tag)
+	{
+		string text = (tag ?? "").Trim();
+		string[] tags =
+		{
+			"[ACTION:宽恕]",
+			"[ACTION:救济]",
+			"[ACTION:宣抚]",
+			"[ACTION:盟誓]",
+			"[ACTION:安兵]",
+			"[ACTION:召集]",
+			"[ACTION:抢钱]",
+			"[ACTION:搜掠]",
+			"[ACTION:血洗]",
+			"[ACTION:殖民]",
+			"[ACTION:SIEGE_MERCY]",
+			"[ACTION:SIEGE_RELIEF]",
+			"[ACTION:SIEGE_INSPIRE]",
+			"[ACTION:SIEGE_RALLY_OATH]",
+			"[ACTION:SIEGE_APPEASE_SOLDIERS]",
+			"[ACTION:SIEGE_GATHER_CIVILIANS]",
+			"[ACTION:SIEGE_ROBBERY]",
+			"[ACTION:SIEGE_PLUNDER]",
+			"[ACTION:SIEGE_MASSACRE]",
+			"[ACTION:SIEGE_CULTURAL_REPOPULATION]",
+			"[ACTION:SIEGE_PURGE_REPOPULATION]"
+		};
+		return tags.Any((string x) => string.Equals(x, text, StringComparison.OrdinalIgnoreCase));
+	}
+
+	private static string BuildWeeklyMemoryMaterialTagLabel(string tag)
+	{
+		string text = (tag ?? "").Trim();
+		if (string.Equals(text, "[ACTION:DUEL]", StringComparison.OrdinalIgnoreCase))
+		{
+			return "决斗";
+		}
+		if (text.StartsWith("[ACTION:GIVE_GOLD:", StringComparison.OrdinalIgnoreCase))
+		{
+			return "给付金币";
+		}
+		if (text.StartsWith("[ACTION:GIVE_ITEM:", StringComparison.OrdinalIgnoreCase))
+		{
+			return "给付物品";
+		}
+		if (text.StartsWith("[AD;", StringComparison.OrdinalIgnoreCase))
+		{
+			return "新增债务";
+		}
+		if (text.StartsWith("[ADP", StringComparison.OrdinalIgnoreCase))
+		{
+			return "债务清偿";
+		}
+		if (text.StartsWith("[ATT:", StringComparison.OrdinalIgnoreCase))
+		{
+			return "部队转移";
+		}
+		if (text.StartsWith("[ATP:", StringComparison.OrdinalIgnoreCase))
+		{
+			return "俘虏转移";
+		}
+		if (text.StartsWith("[ACTION:SETTLEMENT_TRANSFER:", StringComparison.OrdinalIgnoreCase))
+		{
+			return "固定资产转移";
+		}
+		if (text.StartsWith("[ACTION:KINGDOM_SERVICE:", StringComparison.OrdinalIgnoreCase))
+		{
+			return "王国服役变更";
+		}
+		if (text.StartsWith("[ACTION:MARRIAGE_FORMAL:", StringComparison.OrdinalIgnoreCase))
+		{
+			return "正式婚姻";
+		}
+		if (text.StartsWith("[ACTION:MARRIAGE_ELOPE:", StringComparison.OrdinalIgnoreCase))
+		{
+			return "私奔婚姻";
+		}
+		if (text.StartsWith("[ACTION:DIVORCE:", StringComparison.OrdinalIgnoreCase))
+		{
+			return "离婚";
+		}
+		if (text.StartsWith("[ACTION:VOTE_DEAL:", StringComparison.OrdinalIgnoreCase))
+		{
+			return "投票交易";
+		}
+		if (text.StartsWith("[ACTION:PROPOSE:", StringComparison.OrdinalIgnoreCase))
+		{
+			return "提出议程";
+		}
+		if (IsWeeklyMemoryMaterialSiegeTag(text))
+		{
+			return Regex.Replace(text, "^\\[ACTION:|\\]$", "", RegexOptions.IgnoreCase).Replace("SIEGE_", "攻城处置:");
+		}
+		return "";
+	}
+
+	private static string NormalizeWeeklyMemoryMaterialTagText(string text)
+	{
+		List<string> tags = ExtractWeeklyMemoryMaterialTags(text);
+		return string.Join("\n", tags);
+	}
+
+	private static List<string> ExtractWeeklyMemoryMaterialTags(string text)
+	{
+		List<string> list = new List<string>();
+		HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		foreach (Match match in Regex.Matches(text ?? "", "\\[(?:ACTION:[^\\]\\r\\n]*|AD;[^\\]\\r\\n]*|ADP[:;][^\\]\\r\\n]*|ATT:[^\\]\\r\\n]*|ATP:[^\\]\\r\\n]*)\\]", RegexOptions.IgnoreCase))
+		{
+			string tag = (match?.Value ?? "").Trim();
+			if (!string.IsNullOrWhiteSpace(tag) && !tag.StartsWith("[ACTION:MOOD:", StringComparison.OrdinalIgnoreCase) && seen.Add(tag))
+			{
+				list.Add(tag);
+			}
+		}
+		return list;
+	}
+
+	private static List<string> NormalizeWeeklyMemoryMaterialTags(IEnumerable<string> tags)
+	{
+		List<string> list = new List<string>();
+		HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		foreach (string item in tags ?? Enumerable.Empty<string>())
+		{
+			string tag = (item ?? "").Trim();
+			if (!string.IsNullOrWhiteSpace(tag) && !tag.StartsWith("[ACTION:MOOD:", StringComparison.OrdinalIgnoreCase) && seen.Add(tag))
+			{
+				list.Add(tag);
+			}
+		}
+		return list;
+	}
+
+	private static bool TryParsePositiveLong(string value, out long result)
+	{
+		if (long.TryParse((value ?? "").Trim(), out result) && result > 0L)
+		{
+			return true;
+		}
+		result = 0L;
+		return false;
+	}
+
+	private static long AddWeeklyMemoryMaterialValue(long current, long addition)
+	{
+		if (addition <= 0L)
+		{
+			return current;
+		}
+		if (current > long.MaxValue - addition)
+		{
+			return long.MaxValue;
+		}
+		return current + addition;
+	}
+
+	private static string BuildWeeklyMemoryMaterialTriggerStableKey(string memoryId, int day, int sceneSessionId, int dialogueSessionId, string kingdomId, string tagText)
+	{
+		string source = (memoryId ?? "").Trim() + "|" + day + "|" + sceneSessionId + "|" + dialogueSessionId + "|" + ((kingdomId ?? "").Trim()) + "|" + ((tagText ?? "").Trim());
+		return "weekly_memory_trigger:" + ComputeWeeklyMemoryMaterialHash(source);
+	}
+
+	private static string ComputeWeeklyMemoryMaterialHash(string sourceText)
+	{
+		try
+		{
+			byte[] bytes = Encoding.UTF8.GetBytes(sourceText ?? "");
+			byte[] array = SHA1.Create().ComputeHash(bytes);
+			return string.Concat(array.Select((byte b) => b.ToString("x2")));
+		}
+		catch
+		{
+			return Math.Abs((sourceText ?? "").GetHashCode()).ToString("x");
+		}
 	}
 
 	private void TrackTownWeeklyMaterialChanges(Town town)
@@ -16031,32 +16862,6 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	public static string BuildPlayerToNpcTroopTransferFactForExternal(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, PartyTransferPromptEntry entry, int amount)
-	{
-		string text = ResolvePartyTransferTargetDisplayName(targetHero, targetCharacter, targetAgentIndex);
-		string text2 = BuildPlayerPublicDisplayNameForPrompt();
-		if (string.IsNullOrWhiteSpace(text2))
-		{
-			text2 = "玩家";
-		}
-		return "[AFEF玩家行为补充] " + text2 + "已将" + amount + "名" + entry.DisplayName + "转入" + text + "的麾下。";
-	}
-
-	public static string BuildPlayerToNpcPrisonerTransferFactForExternal(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, PartyTransferPromptEntry entry, int amount)
-	{
-		string text = ResolvePartyTransferTargetDisplayName(targetHero, targetCharacter, targetAgentIndex);
-		string text2 = BuildPlayerPublicDisplayNameForPrompt();
-		if (string.IsNullOrWhiteSpace(text2))
-		{
-			text2 = "玩家";
-		}
-		if (entry?.IsHero ?? false)
-		{
-			return "[AFEF玩家行为补充] " + text2 + "已将俘虏" + entry.DisplayName + "交给" + text + "。";
-		}
-		return "[AFEF玩家行为补充] " + text2 + "已将" + amount + "名" + entry.DisplayName + "俘虏交给" + text + "。";
-	}
-
 	public static int TransferPlayerPartyEntryToCounterpartyForExternal(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, PartyTransferPromptEntry entry, int amount)
 	{
 		if (!IsPartyTransferLordEligible(targetHero, targetCharacter))
@@ -16240,6 +17045,73 @@ public class MyBehavior : CampaignBehaviorBase
 		return hero != null && !string.IsNullOrWhiteSpace(hero.StringId) && (Hero.MainHero == null || !object.ReferenceEquals(hero, Hero.MainHero));
 	}
 
+	private static List<WeeklyMemoryMaterialTrigger> SanitizeWeeklyMemoryMaterialTriggers(IEnumerable<WeeklyMemoryMaterialTrigger> triggers)
+	{
+		List<WeeklyMemoryMaterialTrigger> list = new List<WeeklyMemoryMaterialTrigger>();
+		HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		foreach (WeeklyMemoryMaterialTrigger trigger in triggers ?? Enumerable.Empty<WeeklyMemoryMaterialTrigger>())
+		{
+			if (trigger == null)
+			{
+				continue;
+			}
+			string memoryId = NormalizeMemoryHeroId(trigger.MemoryId);
+			string kingdomId = (trigger.FootholdKingdomId ?? "").Trim();
+			string tagText = NormalizeWeeklyMemoryMaterialTagText(trigger.NormalizedTagText);
+			List<string> tags = NormalizeWeeklyMemoryMaterialTags(trigger.Tags);
+			if (tags.Count == 0)
+			{
+				tags = ExtractWeeklyMemoryMaterialTags(tagText);
+			}
+			if (string.IsNullOrWhiteSpace(tagText))
+			{
+				tagText = string.Join("\n", tags);
+			}
+			if (string.IsNullOrWhiteSpace(memoryId) || string.IsNullOrWhiteSpace(kingdomId) || tags.Count == 0)
+			{
+				continue;
+			}
+			string stableKey = (trigger.StableKey ?? "").Trim();
+			if (string.IsNullOrWhiteSpace(stableKey))
+			{
+				stableKey = BuildWeeklyMemoryMaterialTriggerStableKey(memoryId, trigger.GameDayIndex, trigger.SceneSessionId, trigger.DialogueSessionId, kingdomId, tagText);
+			}
+			if (!seen.Add(stableKey))
+			{
+				continue;
+			}
+			trigger.MemoryId = memoryId;
+			trigger.NpcName = (trigger.NpcName ?? "").Trim();
+			trigger.GameDayIndex = Math.Max(0, trigger.GameDayIndex);
+			trigger.GameDate = (trigger.GameDate ?? "").Trim();
+			if (trigger.SceneSessionId < -1)
+			{
+				trigger.SceneSessionId = -1;
+			}
+			if (trigger.DialogueSessionId < -1)
+			{
+				trigger.DialogueSessionId = -1;
+			}
+			if (trigger.TargetAgentIndex < -1)
+			{
+				trigger.TargetAgentIndex = -1;
+			}
+			trigger.FootholdKingdomId = kingdomId;
+			trigger.FootholdSettlementId = (trigger.FootholdSettlementId ?? "").Trim();
+			trigger.NormalizedTagText = tagText;
+			trigger.Tags = tags;
+			trigger.EstimatedValueDenars = Math.Max(0L, trigger.EstimatedValueDenars);
+			trigger.TriggerReason = (trigger.TriggerReason ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
+			trigger.StableKey = stableKey;
+			if (trigger.CreatedUtcTicks <= 0L)
+			{
+				trigger.CreatedUtcTicks = DateTime.UtcNow.Ticks;
+			}
+			list.Add(trigger);
+		}
+		return list.OrderBy((WeeklyMemoryMaterialTrigger x) => x.GameDayIndex).ThenBy((WeeklyMemoryMaterialTrigger x) => x.CreatedUtcTicks).ToList();
+	}
+
 	private static List<DailyMemoryDraft> SanitizeDailyMemoryDrafts(IEnumerable<DailyMemoryDraft> drafts)
 	{
 		List<DailyMemoryDraft> list = new List<DailyMemoryDraft>();
@@ -16264,6 +17136,19 @@ public class MyBehavior : CampaignBehaviorBase
 			draft.HeroName = (draft.HeroName ?? "").Trim();
 			draft.GameDate = (draft.GameDate ?? "").Trim();
 			draft.LastSummaryError = (draft.LastSummaryError ?? "").Trim();
+			if (draft.WeeklyMaterialTriggers != null)
+			{
+				foreach (WeeklyMemoryMaterialTrigger trigger in draft.WeeklyMaterialTriggers)
+				{
+					if (trigger != null)
+					{
+						trigger.MemoryId = text;
+						trigger.GameDayIndex = draft.GameDayIndex;
+						trigger.GameDate = string.IsNullOrWhiteSpace(trigger.GameDate) ? draft.GameDate : trigger.GameDate;
+					}
+				}
+			}
+			draft.WeeklyMaterialTriggers = SanitizeWeeklyMemoryMaterialTriggers(draft.WeeklyMaterialTriggers);
 			draft.Lines = (draft.Lines ?? new List<DailyMemoryLine>()).Where((DailyMemoryLine x) => x != null && !string.IsNullOrWhiteSpace((x.Text ?? "").Trim())).Select(delegate(DailyMemoryLine x)
 			{
 				x.GameDayIndex = draft.GameDayIndex;
@@ -16322,6 +17207,19 @@ public class MyBehavior : CampaignBehaviorBase
 			block.RichTitle = StripMemoryTitleDateTime((block.RichTitle ?? "").Trim());
 			block.Summary = (block.Summary ?? "").Trim();
 			block.AfefLines = (block.AfefLines ?? new List<string>()).Select((string x) => (x ?? "").Trim()).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.Ordinal).Take(80).ToList();
+			if (block.WeeklyMaterialTriggers != null)
+			{
+				foreach (WeeklyMemoryMaterialTrigger trigger in block.WeeklyMaterialTriggers)
+				{
+					if (trigger != null)
+					{
+						trigger.MemoryId = block.HeroId;
+						trigger.GameDayIndex = block.GameDayIndex;
+						trigger.GameDate = string.IsNullOrWhiteSpace(trigger.GameDate) ? block.GameDate : trigger.GameDate;
+					}
+				}
+			}
+			block.WeeklyMaterialTriggers = SanitizeWeeklyMemoryMaterialTriggers(block.WeeklyMaterialTriggers);
 			if (!string.IsNullOrWhiteSpace(block.RichTitle) || !string.IsNullOrWhiteSpace(block.Summary) || block.AfefLines.Count > 0)
 			{
 				list.Add(block);
@@ -16869,6 +17767,7 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			dailyMemoryDraft.HasLlmDialogue = true;
 		}
+		AttachPendingWeeklyMemoryMaterialTriggers(dailyMemoryDraft, dailyMemoryLine);
 		SaveDailyMemoryDraftsById(heroId, list);
 		if (dailyMemoryLine.IsLlmDialogue)
 		{
@@ -22826,7 +23725,7 @@ public class MyBehavior : CampaignBehaviorBase
 			RewardSystemBehavior.DuelStakeOption duelStakeOption2 = FindDuelStakeOptionByToken(options, token);
 			if (duelStakeOption2 == null || string.IsNullOrWhiteSpace(duelStakeOption2.Name))
 			{
-				return "";
+				return "[ACTION:" + value + ":" + token.Trim() + ":" + result3 + "]";
 			}
 			result3 = System.Math.Min(System.Math.Max(1, result3), System.Math.Max(1, duelStakeOption2.Count));
 			return "[ACTION:" + value + ":" + duelStakeOption2.Name.Trim() + ":" + result3 + "]";
@@ -23051,7 +23950,7 @@ public class MyBehavior : CampaignBehaviorBase
 			logRewardItemTranslation("token", token, rewardItemInfo2, text3);
 			if (string.IsNullOrWhiteSpace(text3))
 			{
-				return "";
+				return "[ACTION:" + value2 + ":" + token.Trim() + ":" + result3 + "]";
 			}
 			result3 = Math.Min(Math.Max(1, result3), Math.Max(1, rewardItemInfo2.Count));
 			return "[ACTION:" + value2 + ":" + text3.Trim() + ":" + result3 + "]";
@@ -23092,7 +23991,7 @@ public class MyBehavior : CampaignBehaviorBase
 			string text3 = rewardItemInfo2?.StringId ?? "";
 			if (string.IsNullOrWhiteSpace(text3))
 			{
-				return "";
+				return "[ACTION:DEBT_PAY_ITEM:" + value2.Trim() + ":" + token.Trim() + ":" + result3 + "]";
 			}
 			result3 = Math.Min(Math.Max(1, result3), Math.Max(1, rewardItemInfo2.Count));
 			return "[ACTION:DEBT_PAY_ITEM:" + value2.Trim() + ":" + text3.Trim() + ":" + result3 + "]";
@@ -23116,7 +24015,7 @@ public class MyBehavior : CampaignBehaviorBase
 				text = text2;
 				continue;
 			}
-			if (!text2.StartsWith("[ACTION:GIVE_GOLD:", StringComparison.OrdinalIgnoreCase) && !text2.StartsWith("[ACTION:GIVE_ITEM:", StringComparison.OrdinalIgnoreCase) && !text2.StartsWith("[AD;", StringComparison.OrdinalIgnoreCase) && !text2.StartsWith("[ADP;", StringComparison.OrdinalIgnoreCase) && !text2.StartsWith("[ADP:", StringComparison.OrdinalIgnoreCase))
+			if (!text2.StartsWith("[ACTION:GIVE_GOLD:", StringComparison.OrdinalIgnoreCase) && !text2.StartsWith("[ACTION:GIVE_ITEM:", StringComparison.OrdinalIgnoreCase) && !text2.StartsWith("[ACTION:DEBT_ITEM:", StringComparison.OrdinalIgnoreCase) && !text2.StartsWith("[ACTION:DEBT_PAY_ITEM:", StringComparison.OrdinalIgnoreCase) && !text2.StartsWith("[AD;", StringComparison.OrdinalIgnoreCase) && !text2.StartsWith("[ADP;", StringComparison.OrdinalIgnoreCase) && !text2.StartsWith("[ADP:", StringComparison.OrdinalIgnoreCase))
 			{
 				continue;
 			}
@@ -23296,6 +24195,14 @@ public class MyBehavior : CampaignBehaviorBase
 		if (string.IsNullOrWhiteSpace(text10))
 		{
 			text10 = AIConfigHandler.ActionPostprocessFallbackMoodTag;
+		}
+		try
+		{
+			MarkWeeklyMemoryMaterialTriggerInternal(targetHero ?? targetCharacter?.HeroObject, "", text7, text10, -1, -1, -1, list, null, null, null);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("EventWeeklyReport", "[WeeklyMemoryMaterial][WARN] direct_transaction_mark_failed npc=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? "") + " error=" + ex.Message);
 		}
 		string text11 = (text + "\n" + text10).Trim();
 		Logger.Log("Logic", "[" + logPrefix + "] RAW=\n" + content + "\nFINAL=\n" + text11 + "\n");
@@ -36157,6 +37064,104 @@ public class MyBehavior : CampaignBehaviorBase
 		return text.Substring(0, Math.Max(1, maxLen)) + "...";
 	}
 
+	private static void ShowDevLargeTextOrInquiry(string title, string subtitle, string body, Action onClose, string closeText = "返回")
+	{
+		string safeBody = string.IsNullOrWhiteSpace(body) ? "（无数据）" : body.Trim();
+		if (DevLargeSelectionPopup.ShowText(title, subtitle, safeBody, onClose, closeText))
+		{
+			return;
+		}
+		InformationManager.ShowInquiry(new InquiryData(title ?? "AnimusForge", BuildDevLargeFallbackDescription(subtitle, safeBody), isAffirmativeOptionShown: true, isNegativeOptionShown: false, closeText ?? "返回", "", onClose, null), pauseGameActiveState: true);
+	}
+
+	private static void ShowDevLargeSelectionOrInquiry(string title, string subtitle, string body, List<DevLargeSelectionPopup.Option> options, Action<string> onSelect, Action onCancel, string affirmativeText = "进入", string cancelText = "返回")
+	{
+		options = options ?? new List<DevLargeSelectionPopup.Option>();
+		string safeBody = string.IsNullOrWhiteSpace(body) ? "请选择要执行的操作。" : body.Trim();
+		if (DevLargeSelectionPopup.Show(title, subtitle, safeBody, options, onSelect, onCancel, cancelText))
+		{
+			return;
+		}
+		if (options.Count == 0)
+		{
+			ShowDevLargeTextOrInquiry(title, subtitle, safeBody, onCancel, cancelText);
+			return;
+		}
+		List<InquiryElement> list = options.Select((DevLargeSelectionPopup.Option x) => new InquiryElement(x.Id, BuildDevLargeFallbackOptionText(x), null)).ToList();
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(title ?? "AnimusForge", BuildDevLargeFallbackDescription(subtitle, safeBody), list, isExitShown: true, 0, 1, affirmativeText ?? "进入", cancelText ?? "返回", delegate(List<InquiryElement> selected)
+		{
+			if (selected == null || selected.Count == 0)
+			{
+				onCancel?.Invoke();
+				return;
+			}
+			onSelect?.Invoke(selected[0].Identifier as string ?? "");
+		}, delegate
+		{
+			onCancel?.Invoke();
+		});
+		MBInformationManager.ShowMultiSelectionInquiry(data);
+	}
+
+	private static void ShowDevLargeConfirmOrInquiry(string title, string subtitle, string body, string confirmText, string cancelText, Action onConfirm, Action onCancel)
+	{
+		List<DevLargeSelectionPopup.Option> options = new List<DevLargeSelectionPopup.Option>
+		{
+			new DevLargeSelectionPopup.Option("__confirm__", confirmText ?? "确认", isDanger: true, isPrimary: true)
+		};
+		ShowDevLargeSelectionOrInquiry(title, subtitle, body, options, delegate(string id)
+		{
+			if (string.Equals(id, "__confirm__", StringComparison.Ordinal))
+			{
+				onConfirm?.Invoke();
+			}
+			else
+			{
+				onCancel?.Invoke();
+			}
+		}, onCancel, confirmText ?? "确认", cancelText ?? "取消");
+	}
+
+	private static string BuildDevLargeFallbackDescription(string subtitle, string body)
+	{
+		string text = (subtitle ?? "").Trim();
+		string text2 = (body ?? "").Trim();
+		if (string.IsNullOrEmpty(text))
+		{
+			return text2;
+		}
+		if (string.IsNullOrEmpty(text2))
+		{
+			return text;
+		}
+		return text + "\n\n" + text2;
+	}
+
+	private static string BuildDevLargeFallbackOptionText(DevLargeSelectionPopup.Option option)
+	{
+		if (option == null)
+		{
+			return "";
+		}
+		string title = (option.TitleText ?? "").Trim();
+		string detail = BuildDevHistoryPreview(option.DetailText, 90);
+		if (string.IsNullOrWhiteSpace(option.DetailText))
+		{
+			return title;
+		}
+		return title + " - " + detail;
+	}
+
+	private static bool TryParseDevSelectionInt(string id, string prefix, out int value)
+	{
+		value = 0;
+		if (string.IsNullOrWhiteSpace(id) || prefix == null || !id.StartsWith(prefix, StringComparison.Ordinal))
+		{
+			return false;
+		}
+		return int.TryParse(id.Substring(prefix.Length), out value);
+	}
+
 	private void OpenDevCompressedMemoryMenu(Hero npc)
 	{
 		if (npc == null)
@@ -36253,10 +37258,10 @@ public class MyBehavior : CampaignBehaviorBase
 	private void ShowDevCompressedMemoryText(Hero npc, string title, string text)
 	{
 		string name = npc?.Name?.ToString() ?? "NPC";
-		InformationManager.ShowInquiry(new InquiryData("压缩记忆管理 - " + title + " - " + name, string.IsNullOrWhiteSpace(text) ? "（无数据）" : text.Trim(), isAffirmativeOptionShown: true, isNegativeOptionShown: false, "返回", "", delegate
+		ShowDevLargeTextOrInquiry("压缩记忆管理 - " + title + " - " + name, "", string.IsNullOrWhiteSpace(text) ? "（无数据）" : text.Trim(), delegate
 		{
 			OpenDevCompressedMemoryMenu(npc);
-		}, null), pauseGameActiveState: true);
+		});
 	}
 
 	private void OpenDevDailyMemoryDraftList(Hero npc, int page, string query)
@@ -36286,27 +37291,26 @@ public class MyBehavior : CampaignBehaviorBase
 			page = pageCount - 1;
 			_devDailyMemoryDraftPage = page;
 		}
-		List<InquiryElement> list = new List<InquiryElement>();
-		list.Add(new InquiryElement("__search__", "搜索未压缩记忆", null));
+		List<DevLargeSelectionPopup.Option> options = new List<DevLargeSelectionPopup.Option>();
+		options.Add(new DevLargeSelectionPopup.Option("__search__", "搜索未压缩记忆", "按日期、场景、说话人、正文或 AFEF 过滤。", isPrimary: true));
 		if (!string.IsNullOrWhiteSpace(q))
 		{
-			list.Add(new InquiryElement("__clear__", "清空搜索", null));
+			options.Add(new DevLargeSelectionPopup.Option("__clear__", "清空搜索", "恢复显示全部未压缩记忆。"));
 		}
 		if (page > 0)
 		{
-			list.Add(new InquiryElement("__prev__", "上一页", null));
+			options.Add(new DevLargeSelectionPopup.Option("__prev__", "上一页", "查看前一页结果。"));
 		}
 		if (page + 1 < pageCount)
 		{
-			list.Add(new InquiryElement("__next__", "下一页", null));
-		}
-		if (filtered.Count > 0)
-		{
-			list.Add(new InquiryElement("__sep__", "----------------", null));
+			options.Add(new DevLargeSelectionPopup.Option("__next__", "下一页", "查看后一页结果。"));
 		}
 		foreach (DailyMemoryDraft draft in filtered.Skip(page * pageSize).Take(pageSize))
 		{
-			list.Add(new InquiryElement(draft.GameDayIndex, BuildDevDailyMemoryDraftListLabel(draft), null));
+			string date = string.IsNullOrWhiteSpace(draft.GameDate) ? ("第" + draft.GameDayIndex + "日") : draft.GameDate.Trim();
+			string detail = BuildDevHistoryPreview((draft.Lines ?? new List<DailyMemoryLine>()).Select((DailyMemoryLine x) => x?.Text).FirstOrDefault((string x) => !string.IsNullOrWhiteSpace(x)), 260);
+			string meta = "行数：" + ((draft.Lines?.Count).GetValueOrDefault()) + "；已入队：" + (draft.QueuedForSummary ? "是" : "否") + (string.IsNullOrWhiteSpace(draft.LastSummaryError) ? "" : "；最近错误：" + BuildDevHistoryPreview(draft.LastSummaryError, 80));
+			options.Add(new DevLargeSelectionPopup.Option("day:" + draft.GameDayIndex, date, detail, meta));
 		}
 		string name = npc.Name?.ToString() ?? "NPC";
 		string descriptionText = "选择一天未压缩原始历史进行编辑。\n原始历史：" + drafts.Count + " 天；当前结果：" + filtered.Count + " 天；第 " + (page + 1) + "/" + pageCount + " 页。";
@@ -36318,15 +37322,14 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			descriptionText += "\n\n没有匹配结果。";
 		}
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("编辑未压缩记忆 - " + name, descriptionText, list, isExitShown: true, 0, 1, "进入", "返回", delegate(List<InquiryElement> selected)
+		ShowDevLargeSelectionOrInquiry("编辑未压缩记忆 - " + name, "未压缩原始历史天数列表", descriptionText, options, delegate(string selectedId)
 		{
-			if (selected == null || selected.Count == 0)
+			if (string.IsNullOrWhiteSpace(selectedId))
 			{
 				OpenDevDailyMemoryDraftList(npc, page, q);
 				return;
 			}
-			string text = selected[0].Identifier as string;
-			switch (text)
+			switch (selectedId)
 			{
 			case "__search__":
 				InformationManager.ShowTextInquiry(new TextInquiryData("搜索未压缩记忆", "输入关键词，可匹配日期、场景、说话人、正文或 AFEF。", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "搜索", "返回", delegate(string input)
@@ -36346,11 +37349,8 @@ public class MyBehavior : CampaignBehaviorBase
 			case "__next__":
 				OpenDevDailyMemoryDraftList(npc, page + 1, q);
 				break;
-			case "__sep__":
-				OpenDevDailyMemoryDraftList(npc, page, q);
-				break;
 			default:
-				if (selected[0].Identifier is int dayIndex)
+				if (TryParseDevSelectionInt(selectedId, "day:", out var dayIndex))
 				{
 					OpenDevDailyMemoryDraftEditor(npc, dayIndex, page, q);
 				}
@@ -36364,7 +37364,6 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			OpenDevCompressedMemoryMenu(npc);
 		});
-		MBInformationManager.ShowMultiSelectionInquiry(data);
 	}
 
 	private void OpenDevDailyMemoryDraftEditor(Hero npc, int dayIndex, int returnPage, string returnQuery)
@@ -36382,22 +37381,22 @@ public class MyBehavior : CampaignBehaviorBase
 			return;
 		}
 		string name = npc.Name?.ToString() ?? "NPC";
-		List<InquiryElement> list = new List<InquiryElement>
+		List<DevLargeSelectionPopup.Option> options = new List<DevLargeSelectionPopup.Option>
 		{
-			new InquiryElement("lines", "编辑原始行", null),
-			new InquiryElement("add_normal", "新增普通记忆行", null),
-			new InquiryElement("add_afef", "新增AFEF行", null),
-			new InquiryElement("delete", "删除该日未压缩记忆", null),
-			new InquiryElement("back", "返回列表", null)
+			new DevLargeSelectionPopup.Option("lines", "编辑原始行", "查看并编辑该日每一条未压缩记忆。", isPrimary: true),
+			new DevLargeSelectionPopup.Option("add_normal", "新增普通记忆行", "新增一条会参与 LLM 对话记忆的原始行。"),
+			new DevLargeSelectionPopup.Option("add_afef", "新增AFEF行", "新增一条 AFEF 机制行，不参与 LLM 对话压缩正文。"),
+			new DevLargeSelectionPopup.Option("delete", "删除该日未压缩记忆", "删除该日全部未压缩原始历史，并移除同日待总结队列。", isDanger: true),
+			new DevLargeSelectionPopup.Option("back", "返回列表")
 		};
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("未压缩记忆 - " + name, BuildDevDailyMemoryDraftEditorDescription(draft), list, isExitShown: true, 0, 1, "进入", "返回", delegate(List<InquiryElement> selected)
+		ShowDevLargeSelectionOrInquiry("未压缩记忆 - " + name, BuildDevDailyMemoryDraftSubtitle(draft), BuildDevDailyMemoryDraftEditorDescription(draft), options, delegate(string selectedId)
 		{
-			if (selected == null || selected.Count == 0)
+			if (string.IsNullOrWhiteSpace(selectedId))
 			{
 				OpenDevDailyMemoryDraftEditor(npc, dayIndex, returnPage, returnQuery);
 				return;
 			}
-			switch (selected[0].Identifier as string)
+			switch (selectedId)
 			{
 			case "lines":
 				OpenDevDailyMemoryLineList(npc, dayIndex, returnPage, returnQuery);
@@ -36422,7 +37421,6 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			OpenDevDailyMemoryDraftList(npc, returnPage, returnQuery);
 		});
-		MBInformationManager.ShowMultiSelectionInquiry(data);
 	}
 
 	private void OpenDevDailyMemoryLineList(Hero npc, int dayIndex, int returnPage, string returnQuery)
@@ -36434,27 +37432,34 @@ public class MyBehavior : CampaignBehaviorBase
 			return;
 		}
 		List<DailyMemoryLine> lines = (draft.Lines ?? new List<DailyMemoryLine>()).Where((DailyMemoryLine x) => x != null).ToList();
-		List<InquiryElement> list = new List<InquiryElement>
+		List<DevLargeSelectionPopup.Option> options = new List<DevLargeSelectionPopup.Option>
 		{
-			new InquiryElement("__add_normal__", "新增普通记忆行", null),
-			new InquiryElement("__add_afef__", "新增AFEF行", null),
-			new InquiryElement("__back__", "返回该日菜单", null)
+			new DevLargeSelectionPopup.Option("__add_normal__", "新增普通记忆行", "新增一条会参与 LLM 对话记忆的原始行。", isPrimary: true),
+			new DevLargeSelectionPopup.Option("__add_afef__", "新增AFEF行", "新增一条 AFEF 机制行。"),
+			new DevLargeSelectionPopup.Option("__back__", "返回该日菜单")
 		};
 		for (int i = 0; i < lines.Count; i++)
 		{
-			list.Add(new InquiryElement(i, (i + 1) + ". " + BuildDevDailyMemoryLineListLabel(lines[i]), null));
+			DailyMemoryLine line = lines[i];
+			string type = line.IsAfef ? "AFEF" : (line.IsLlmDialogue ? "LLM" : "普通");
+			string speaker = string.IsNullOrWhiteSpace(line.Speaker) ? (line.IsAfef ? "AFEF" : "手动") : line.Speaker.Trim();
+			string scene = string.IsNullOrWhiteSpace(line.Scene) ? "未知场景" : BuildDevHistoryPreview(line.Scene, 42);
+			string title = (i + 1) + ". " + MBMath.ClampInt(line.GameHour, 0, 23) + "时 | " + type + " | " + speaker + " | " + scene;
+			string detail = string.IsNullOrWhiteSpace(line.Text) ? "（空）" : BuildDevHistoryPreview(line.Text, 260);
+			options.Add(new DevLargeSelectionPopup.Option("line:" + i, title, detail));
 		}
 		string name = npc?.Name?.ToString() ?? "NPC";
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("编辑未压缩记忆行 - " + name, BuildDevDailyMemoryDraftSubtitle(draft), list, isExitShown: true, 0, 1, "编辑", "返回", delegate(List<InquiryElement> selected)
+		string body = BuildDevDailyMemoryDraftSubtitle(draft) + "\n\n当前共 " + lines.Count + " 行。选择右侧条目进入行详情。";
+		ShowDevLargeSelectionOrInquiry("编辑未压缩记忆行 - " + name, "未压缩原始历史行", body, options, delegate(string selectedId)
 		{
-			if (selected == null || selected.Count == 0)
+			if (string.IsNullOrWhiteSpace(selectedId))
 			{
 				OpenDevDailyMemoryLineList(npc, dayIndex, returnPage, returnQuery);
 				return;
 			}
-			if (selected[0].Identifier is string text)
+			if (!TryParseDevSelectionInt(selectedId, "line:", out var lineIndex))
 			{
-				switch (text)
+				switch (selectedId)
 				{
 				case "__add_normal__":
 					OpenDevAddDailyMemoryLine(npc, dayIndex, isAfef: false, returnPage, returnQuery);
@@ -36467,7 +37472,7 @@ public class MyBehavior : CampaignBehaviorBase
 					return;
 				}
 			}
-			if (selected[0].Identifier is int lineIndex)
+			if (TryParseDevSelectionInt(selectedId, "line:", out lineIndex))
 			{
 				OpenDevDailyMemoryLineEditor(npc, dayIndex, lineIndex, returnPage, returnQuery);
 			}
@@ -36478,8 +37483,7 @@ public class MyBehavior : CampaignBehaviorBase
 		}, delegate
 		{
 			OpenDevDailyMemoryDraftEditor(npc, dayIndex, returnPage, returnQuery);
-		});
-		MBInformationManager.ShowMultiSelectionInquiry(data);
+		}, "编辑", "返回");
 	}
 
 	private void OpenDevDailyMemoryLineEditor(Hero npc, int dayIndex, int lineIndex, int returnPage, string returnQuery)
@@ -36491,26 +37495,27 @@ public class MyBehavior : CampaignBehaviorBase
 			OpenDevDailyMemoryLineList(npc, dayIndex, returnPage, returnQuery);
 			return;
 		}
-		List<InquiryElement> list = new List<InquiryElement>
+		List<DevLargeSelectionPopup.Option> options = new List<DevLargeSelectionPopup.Option>
 		{
-			new InquiryElement("text", "编辑正文", null),
-			new InquiryElement("speaker", "编辑说话人", null),
-			new InquiryElement("scene", "编辑场景", null),
-			new InquiryElement("hour", "编辑小时", null),
-			new InquiryElement("toggle_afef", line.IsAfef ? "改为普通行" : "改为AFEF行", null),
-			new InquiryElement("toggle_llm", line.IsLlmDialogue ? "取消LLM对话标记" : "标记为LLM对话", null),
-			new InquiryElement("delete", "删除该行", null),
-			new InquiryElement("back", "返回行列表", null)
+			new DevLargeSelectionPopup.Option("text", "编辑正文", "打开大文本编辑器修改正文；留空会删除该行。", isPrimary: true),
+			new DevLargeSelectionPopup.Option("speaker", "编辑说话人", "修改该行显示和同步使用的说话人。"),
+			new DevLargeSelectionPopup.Option("scene", "编辑场景", "修改该行所属场景。"),
+			new DevLargeSelectionPopup.Option("hour", "编辑小时", "修改该行游戏时间小时。"),
+			new DevLargeSelectionPopup.Option("toggle_afef", line.IsAfef ? "改为普通行" : "改为AFEF行"),
+			new DevLargeSelectionPopup.Option("toggle_llm", line.IsLlmDialogue ? "取消LLM对话标记" : "标记为LLM对话"),
+			new DevLargeSelectionPopup.Option("delete", "删除该行", "删除后会同步移除对应旧对话历史行。", isDanger: true),
+			new DevLargeSelectionPopup.Option("back", "返回行列表")
 		};
 		string name = npc?.Name?.ToString() ?? "NPC";
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("未压缩记忆行 - " + name, BuildDevDailyMemoryLineDescription(line), list, isExitShown: true, 0, 1, "进入", "返回", delegate(List<InquiryElement> selected)
+		string body = "正文：\n" + (string.IsNullOrWhiteSpace(line.Text) ? "（空）" : line.Text.Trim());
+		ShowDevLargeSelectionOrInquiry("未压缩记忆行 - " + name, BuildDevDailyMemoryLineSubtitle(line), body, options, delegate(string selectedId)
 		{
-			if (selected == null || selected.Count == 0)
+			if (string.IsNullOrWhiteSpace(selectedId))
 			{
 				OpenDevDailyMemoryLineEditor(npc, dayIndex, lineIndex, returnPage, returnQuery);
 				return;
 			}
-			switch (selected[0].Identifier as string)
+			switch (selectedId)
 			{
 			case "text":
 				OpenDevDailyMemoryLineTextEditor(npc, dayIndex, lineIndex, returnPage, returnQuery);
@@ -36544,7 +37549,6 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			OpenDevDailyMemoryLineList(npc, dayIndex, returnPage, returnQuery);
 		});
-		MBInformationManager.ShowMultiSelectionInquiry(data);
 	}
 
 	private void OpenDevDailyMemoryLineTextEditor(Hero npc, int dayIndex, int lineIndex, int returnPage, string returnQuery)
@@ -36738,7 +37742,7 @@ public class MyBehavior : CampaignBehaviorBase
 			OpenDevDailyMemoryLineList(npc, dayIndex, returnPage, returnQuery);
 			return;
 		}
-		InformationManager.ShowInquiry(new InquiryData("确认删除未压缩记忆行", BuildDevDailyMemoryLineDescription(line) + "\n\n此操作不可撤销，是否继续？", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "确认删除", "取消", delegate
+		ShowDevLargeConfirmOrInquiry("确认删除未压缩记忆行", BuildDevDailyMemoryLineSubtitle(line), "正文：\n" + (string.IsNullOrWhiteSpace(line.Text) ? "（空）" : line.Text.Trim()) + "\n\n此操作不可撤销，是否继续？", "确认删除", "取消", delegate
 		{
 			ApplyDevDailyMemoryDraftMutation(npc, dayIndex, delegate(DailyMemoryDraft draft)
 			{
@@ -36750,7 +37754,7 @@ public class MyBehavior : CampaignBehaviorBase
 		}, delegate
 		{
 			OpenDevDailyMemoryLineEditor(npc, dayIndex, lineIndex, returnPage, returnQuery);
-		}), pauseGameActiveState: true);
+		});
 	}
 
 	private void ConfirmDevDeleteDailyMemoryDraft(Hero npc, int dayIndex, int returnPage, string returnQuery)
@@ -36761,7 +37765,7 @@ public class MyBehavior : CampaignBehaviorBase
 			OpenDevDailyMemoryDraftList(npc, returnPage, returnQuery);
 			return;
 		}
-		InformationManager.ShowInquiry(new InquiryData("确认删除未压缩记忆", BuildDevDailyMemoryDraftSubtitle(draft) + "\n\n将删除该日全部未压缩原始历史，并移除同日待总结队列。\n此操作不可撤销，是否继续？", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "确认删除", "取消", delegate
+		ShowDevLargeConfirmOrInquiry("确认删除未压缩记忆", BuildDevDailyMemoryDraftSubtitle(draft), "将删除该日全部未压缩原始历史，并移除同日待总结队列。\n此操作不可撤销，是否继续？", "确认删除", "取消", delegate
 		{
 			List<DailyMemoryDraft> drafts = LoadDailyMemoryDrafts(npc);
 			DailyMemoryDraft targetDraft = FindDevDailyMemoryDraft(drafts, dayIndex);
@@ -36773,7 +37777,7 @@ public class MyBehavior : CampaignBehaviorBase
 		}, delegate
 		{
 			OpenDevDailyMemoryDraftEditor(npc, dayIndex, returnPage, returnQuery);
-		}), pauseGameActiveState: true);
+		});
 	}
 
 	private void ApplyDevDailyMemoryLineMutation(Hero npc, int dayIndex, int lineIndex, int returnPage, string returnQuery, Action<DailyMemoryDraft, DailyMemoryLine> mutate, string successMessage)
@@ -37081,6 +38085,19 @@ public class MyBehavior : CampaignBehaviorBase
 		draft.HeroName = npc?.Name?.ToString() ?? draft.HeroName ?? "";
 		draft.GameDate = (draft.GameDate ?? "").Trim();
 		draft.LastSummaryError = (draft.LastSummaryError ?? "").Trim();
+		if (draft.WeeklyMaterialTriggers != null)
+		{
+			foreach (WeeklyMemoryMaterialTrigger trigger in draft.WeeklyMaterialTriggers)
+			{
+				if (trigger != null)
+				{
+					trigger.MemoryId = draft.HeroId;
+					trigger.GameDayIndex = draft.GameDayIndex;
+					trigger.GameDate = string.IsNullOrWhiteSpace(trigger.GameDate) ? draft.GameDate : trigger.GameDate;
+				}
+			}
+		}
+		draft.WeeklyMaterialTriggers = SanitizeWeeklyMemoryMaterialTriggers(draft.WeeklyMaterialTriggers);
 		if (draft.Lines == null)
 		{
 			draft.Lines = new List<DailyMemoryLine>();
@@ -37160,6 +38177,7 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			sb.AppendLine(BuildDailyMemoryLineForPrompt(line));
 		}
+		sb.AppendLine(BuildDevWeeklyMemoryMaterialTriggerText(draft.WeeklyMaterialTriggers));
 		return sb.ToString();
 	}
 
@@ -37170,7 +38188,7 @@ public class MyBehavior : CampaignBehaviorBase
 			return "（空）";
 		}
 		string date = string.IsNullOrWhiteSpace(draft.GameDate) ? ("第" + draft.GameDayIndex + "日") : draft.GameDate.Trim();
-		string flags = (draft.QueuedForSummary ? " 已入队" : "") + (string.IsNullOrWhiteSpace(draft.LastSummaryError) ? "" : " 有错误");
+		string flags = (draft.QueuedForSummary ? " 已入队" : "") + (string.IsNullOrWhiteSpace(draft.LastSummaryError) ? "" : " 有错误") + (((draft.WeeklyMaterialTriggers?.Count).GetValueOrDefault() > 0) ? (" 周报素材x" + draft.WeeklyMaterialTriggers.Count) : "");
 		return date + " | " + ((draft.Lines?.Count).GetValueOrDefault()) + " 行" + flags + " | " + BuildDevHistoryPreview((draft.Lines ?? new List<DailyMemoryLine>()).Select((DailyMemoryLine x) => x?.Text).FirstOrDefault((string x) => !string.IsNullOrWhiteSpace(x)), 64);
 	}
 
@@ -37181,7 +38199,7 @@ public class MyBehavior : CampaignBehaviorBase
 			return "";
 		}
 		string date = string.IsNullOrWhiteSpace(draft.GameDate) ? ("第" + draft.GameDayIndex + "日") : draft.GameDate.Trim();
-		return "日期：" + date + "\n行数：" + ((draft.Lines?.Count).GetValueOrDefault()) + "\n已入总结队列：" + (draft.QueuedForSummary ? "是" : "否") + "\n最近总结错误：" + (string.IsNullOrWhiteSpace(draft.LastSummaryError) ? "无" : draft.LastSummaryError.Trim());
+		return "日期：" + date + "\n行数：" + ((draft.Lines?.Count).GetValueOrDefault()) + "\n周报素材触发器：" + ((draft.WeeklyMaterialTriggers?.Count).GetValueOrDefault()) + "\n已入总结队列：" + (draft.QueuedForSummary ? "是" : "否") + "\n最近总结错误：" + (string.IsNullOrWhiteSpace(draft.LastSummaryError) ? "无" : draft.LastSummaryError.Trim());
 	}
 
 	private static string BuildDevDailyMemoryDraftEditorDescription(DailyMemoryDraft draft)
@@ -37194,7 +38212,41 @@ public class MyBehavior : CampaignBehaviorBase
 		sb.AppendLine(BuildDevDailyMemoryDraftSubtitle(draft));
 		sb.AppendLine("普通行：" + (draft.Lines ?? new List<DailyMemoryLine>()).Count((DailyMemoryLine x) => x != null && !x.IsAfef));
 		sb.AppendLine("AFEF行：" + (draft.Lines ?? new List<DailyMemoryLine>()).Count((DailyMemoryLine x) => x != null && x.IsAfef));
+		string triggerText = BuildDevWeeklyMemoryMaterialTriggerText(draft.WeeklyMaterialTriggers);
+		if (!string.IsNullOrWhiteSpace(triggerText))
+		{
+			sb.AppendLine("周报素材：");
+			sb.AppendLine(triggerText);
+		}
 		sb.AppendLine("预览：" + BuildDevHistoryPreview((draft.Lines ?? new List<DailyMemoryLine>()).Select((DailyMemoryLine x) => x?.Text).FirstOrDefault((string x) => !string.IsNullOrWhiteSpace(x)), 180));
+		return sb.ToString().TrimEnd();
+	}
+
+	private static string BuildDevWeeklyMemoryMaterialTriggerText(IEnumerable<WeeklyMemoryMaterialTrigger> triggers)
+	{
+		List<WeeklyMemoryMaterialTrigger> list = SanitizeWeeklyMemoryMaterialTriggers(triggers);
+		if (list.Count == 0)
+		{
+			return "";
+		}
+		StringBuilder sb = new StringBuilder();
+		foreach (WeeklyMemoryMaterialTrigger trigger in list.Take(8))
+		{
+			List<string> labels = (trigger.Tags ?? new List<string>()).Select(BuildWeeklyMemoryMaterialTagLabel).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+			sb.Append("- 王国=").Append(trigger.FootholdKingdomId ?? "")
+				.Append(" session=").Append(trigger.SceneSessionId >= 0 ? ("scene:" + trigger.SceneSessionId) : (trigger.DialogueSessionId >= 0 ? ("dialogue:" + trigger.DialogueSessionId) : "none"))
+				.Append(" value=").Append(Math.Max(0L, trigger.EstimatedValueDenars))
+				.Append(" tags=").Append(labels.Count > 0 ? string.Join("、", labels) : string.Join("、", trigger.Tags ?? new List<string>()));
+			if (!string.IsNullOrWhiteSpace(trigger.TriggerReason))
+			{
+				sb.Append(" reason=").Append(trigger.TriggerReason.Trim());
+			}
+			sb.AppendLine();
+		}
+		if (list.Count > 8)
+		{
+			sb.AppendLine("- ...还有 " + (list.Count - 8) + " 条");
+		}
 		return sb.ToString().TrimEnd();
 	}
 
@@ -37733,7 +38785,7 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		string date = string.IsNullOrWhiteSpace(block.GameDate) ? ("第" + block.GameDayIndex + "日") : block.GameDate.Trim();
 		string title = string.IsNullOrWhiteSpace(block.RichTitle) ? "（无标题）" : block.RichTitle.Trim();
-		return "ID：" + GetDevCompressedMemoryBlockId(block) + "\n日期：" + date + " " + FormatMemoryHourRange(block.StartHour, block.EndHour) + "\n标题：" + title;
+		return "ID：" + GetDevCompressedMemoryBlockId(block) + "\n日期：" + date + " " + FormatMemoryHourRange(block.StartHour, block.EndHour) + "\n标题：" + title + "\n周报素材触发器：" + ((block.WeeklyMaterialTriggers?.Count).GetValueOrDefault());
 	}
 
 	private static string BuildDevCompressedMemoryBlockEditorDescription(CompressedMemoryBlock block)
@@ -37750,6 +38802,12 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		sb.AppendLine("正文预览：" + BuildDevHistoryPreview(block.Summary, 220));
 		sb.AppendLine("AFEF：" + (block.AfefLines?.Count ?? 0) + " 行");
+		string triggerText = BuildDevWeeklyMemoryMaterialTriggerText(block.WeeklyMaterialTriggers);
+		if (!string.IsNullOrWhiteSpace(triggerText))
+		{
+			sb.AppendLine("周报素材：");
+			sb.AppendLine(triggerText);
+		}
 		if (block.AfefLines != null && block.AfefLines.Count > 0)
 		{
 			sb.AppendLine("AFEF预览：" + BuildDevHistoryPreview(string.Join(" / ", block.AfefLines.Take(4)), 180));
@@ -37781,7 +38839,7 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			return true;
 		}
-		string haystack = (GetDevCompressedMemoryBlockId(block) + "\n" + (block.HeroName ?? "") + "\n" + (block.GameDate ?? "") + "\n" + (block.RichTitle ?? "") + "\n" + (block.Summary ?? "") + "\n" + string.Join("\n", block.Scenes ?? new List<string>()) + "\n" + string.Join("\n", block.AfefLines ?? new List<string>())).ToLowerInvariant();
+		string haystack = (GetDevCompressedMemoryBlockId(block) + "\n" + (block.HeroName ?? "") + "\n" + (block.GameDate ?? "") + "\n" + (block.RichTitle ?? "") + "\n" + (block.Summary ?? "") + "\n" + string.Join("\n", block.Scenes ?? new List<string>()) + "\n" + string.Join("\n", block.AfefLines ?? new List<string>()) + "\n" + BuildDevWeeklyMemoryMaterialTriggerText(block.WeeklyMaterialTriggers)).ToLowerInvariant();
 		foreach (string term in terms)
 		{
 			string text = (term ?? "").Trim().ToLowerInvariant();
@@ -37872,6 +38930,12 @@ public class MyBehavior : CampaignBehaviorBase
 				{
 					sb.AppendLine(line);
 				}
+			}
+			string triggerText = BuildDevWeeklyMemoryMaterialTriggerText(block.WeeklyMaterialTriggers);
+			if (!string.IsNullOrWhiteSpace(triggerText))
+			{
+				sb.AppendLine("周报素材：");
+				sb.AppendLine(triggerText);
 			}
 			sb.AppendLine();
 			i++;

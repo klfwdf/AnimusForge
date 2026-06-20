@@ -2526,7 +2526,6 @@ public class DuelBehavior : CampaignBehaviorBase
 				Instance._isDuelActive = false;
 				Instance._targetHero = null;
 			}
-			ResetWildernessDuelOpeningState();
 			try
 			{
 				PlayerEncounter current = PlayerEncounter.Current;
@@ -3161,7 +3160,7 @@ public class DuelBehavior : CampaignBehaviorBase
 				{
 					try
 					{
-						num2 = instance.TransferGold(targetHero, Hero.MainHero, num);
+						num2 = instance.TransferGold(targetHero, Hero.MainHero, num, forceComplete: true);
 					}
 					catch
 					{
@@ -3188,7 +3187,7 @@ public class DuelBehavior : CampaignBehaviorBase
 					string itemName = null;
 					try
 					{
-						num4 = instance.TransferItemById(targetHero, Hero.MainHero, item.Key, num3, out itemName);
+						num4 = instance.TransferItemById(targetHero, Hero.MainHero, item.Key, num3, out itemName, forceComplete: true);
 					}
 					catch
 					{
@@ -4296,6 +4295,8 @@ public class DuelBehavior : CampaignBehaviorBase
 						return;
 					}
 					LogWildernessDuelDiagnostic("opening.timeout_before_afterstart", _wildernessDuelActiveDiagnosticId);
+					CleanupWildernessDuelRuntime(_wildernessDuelRuntime, "opening.timeout_before_afterstart");
+					TryReturnToMapAfterIndependentDuel();
 					_arenaMissionActive = false;
 					_arenaMissionLeaveRequested = false;
 					_arenaMissionOpeningGraceUntilUtcTicks = 0L;

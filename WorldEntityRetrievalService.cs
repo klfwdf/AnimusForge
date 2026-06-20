@@ -416,6 +416,35 @@ public static class WorldEntityRetrievalService
 		return best;
 	}
 
+	public static float CalculateFuzzyScoreForExternal(string left, string right)
+	{
+		try
+		{
+			return CalculateFuzzyScore(left, right);
+		}
+		catch
+		{
+			return 0f;
+		}
+	}
+
+	public static float CalculateBestAliasScoreForExternal(string mention, IEnumerable<string> aliases)
+	{
+		try
+		{
+			float best = 0f;
+			foreach (string alias in aliases ?? Enumerable.Empty<string>())
+			{
+				best = Math.Max(best, CalculateFuzzyScore(mention, alias));
+			}
+			return Math.Max(0f, Math.Min(1f, best));
+		}
+		catch
+		{
+			return 0f;
+		}
+	}
+
 	private static float CalculateFuzzyScore(string left, string right)
 	{
 		string a = NormalizeFuzzyText(left);

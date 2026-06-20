@@ -1,0 +1,133 @@
+<Prefab>
+  <Window>
+    <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#000000FF" AlphaFactor="0.72">
+      <Children>
+        <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1540" SuggestedHeight="920" HorizontalAlignment="Center" VerticalAlignment="Center">
+          <Children>
+            <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="StdAssets\Popup\canvas" />
+            <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="StdAssets\Popup\canvas_gradient" AlphaFactor="0.82" IsEnabled="false" />
+            <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" ExtendLeft="20" ExtendTop="20" ExtendRight="20" ExtendBottom="20" AlphaFactor="0.58" IsEnabled="false" />
+            <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="28" MarginRight="28" MarginTop="24" MarginBottom="22">
+              <Children>
+                <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="110" VerticalAlignment="Top" Sprite="General\CharacterCreation\character_creation_background_gradient" AlphaFactor="0.32" Color="#000000FF">
+                  <Children>
+                    <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="28" MarginRight="28" MarginTop="16" MarginBottom="14">
+                      <Children>
+                        <AutoHideRichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Top" Brush="Popup.Title.Text" Brush.FontSize="34" Text="@TitleText" />
+                        <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Bottom" Brush="Popup.Description.Text" Brush.FontSize="20" Text="@SubtitleText" />
+                      </Children>
+                    </Widget>
+                  </Children>
+                </Widget>
+                <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="14" VerticalAlignment="Top" MarginTop="118" Sprite="StdAssets\Popup\divider" />
+
+                <Widget IsVisible="@HasItems" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginTop="148" MarginBottom="82">
+                  <Children>
+                    <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" LayoutImp.LayoutMethod="HorizontalLeftToRight">
+                      <Children>
+                        <Widget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="930" MarginRight="20">
+                          <Children>
+                            <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" ExtendLeft="8" ExtendTop="8" ExtendRight="8" ExtendBottom="8" AlphaFactor="0.36" IsEnabled="false" />
+                            <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="8" MarginRight="8" MarginTop="8" MarginBottom="8" Sprite="BlankWhiteSquare_9" Color="#000000FF" AlphaFactor="0.24" IsEnabled="false" />
+                            <ScrollablePanel WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipRect="BodyClipRect" InnerPanel="BodyClipRect\BodyInnerPanel" MarginLeft="20" MarginRight="24" MarginTop="20" MarginBottom="20" AutoHideScrollBars="true" VerticalScrollbar="..\BodyScrollbar\Scrollbar">
+                              <Children>
+                                <Widget Id="BodyClipRect" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipContents="true">
+                                  <Children>
+                                    <ListPanel Id="BodyInnerPanel" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="VerticalTopToBottom">
+                                      <Children>
+                                        <RichTextWidget IsVisible="@HasBodyText" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginLeft="16" MarginRight="16" MarginTop="14" MarginBottom="14" Brush="Popup.Description.Text" Brush.FontSize="@BodyFontSize" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Top" Text="@BodyText" />
+                                        <RichTextWidget IsVisible="@HasBodyText" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="8" Text="" />
+                                      </Children>
+                                    </ListPanel>
+                                  </Children>
+                                </Widget>
+                              </Children>
+                            </ScrollablePanel>
+                            <Standard.VerticalScrollbar Id="BodyScrollbar" HeightSizePolicy="StretchToParent" HorizontalAlignment="Right" VerticalAlignment="Bottom" MarginTop="20" MarginBottom="20" MarginRight="6" />
+                          </Children>
+                        </Widget>
+
+                        <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent">
+                          <Children>
+                            <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" ExtendLeft="8" ExtendTop="8" ExtendRight="8" ExtendBottom="8" AlphaFactor="0.36" IsEnabled="false" />
+                            <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="8" MarginRight="8" MarginTop="8" MarginBottom="8" Sprite="BlankWhiteSquare_9" Color="#000000FF" AlphaFactor="0.18" IsEnabled="false" />
+                            <ScrollablePanel WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipRect="OptionClipRect" InnerPanel="OptionClipRect\OptionInnerPanel" MarginLeft="18" MarginRight="22" MarginTop="18" MarginBottom="18" AutoHideScrollBars="true" VerticalScrollbar="..\OptionScrollbar\Scrollbar">
+                              <Children>
+                                <Widget Id="OptionClipRect" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipContents="true">
+                                  <Children>
+                                    <ListPanel Id="OptionInnerPanel" DataSource="{Items}" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="VerticalTopToBottom">
+                                      <ItemTemplate>
+                                        <AutoHeightSyncWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="0" PaddingAmount="18" MarginBottom="12">
+                                          <Children>
+                                            <ButtonWidget DoNotPassEventsToChildren="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" Brush="Popup.Done.Button" Command.Click="ExecuteSelect" UpdateChildrenStates="true">
+                                              <Children>
+                                                <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#211A13FF" AlphaFactor="0.88" IsEnabled="false" />
+                                                <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="4" MarginRight="4" MarginTop="4" MarginBottom="4" Sprite="BlankWhiteSquare_9" Color="#4A3D2DFF" AlphaFactor="0.40" IsEnabled="false" />
+                                                <Widget IsVisible="@IsPrimary" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="2" MarginRight="2" MarginTop="2" MarginBottom="2" Sprite="BlankWhiteSquare_9" Color="#75603EFF" AlphaFactor="0.74" IsEnabled="false" />
+                                                <Widget IsVisible="@IsDanger" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="2" MarginRight="2" MarginTop="2" MarginBottom="2" Sprite="BlankWhiteSquare_9" Color="#6C2B24FF" AlphaFactor="0.76" IsEnabled="false" />
+                                                <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="3" VerticalAlignment="Top" MarginLeft="14" MarginRight="14" Sprite="BlankWhiteSquare_9" Color="#B79E72FF" AlphaFactor="0.70" IsEnabled="false" />
+                                                <Widget IsVisible="@IsDanger" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="5" HorizontalAlignment="Left" MarginTop="12" MarginBottom="12" Sprite="BlankWhiteSquare_9" Color="#C65A49FF" AlphaFactor="0.88" IsEnabled="false" />
+                                                <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginLeft="20" MarginRight="20" MarginTop="16" MarginBottom="16" LayoutImp.LayoutMethod="VerticalTopToBottom">
+                                                  <Children>
+                                                    <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" Brush="Popup.Title.Text" Brush.FontSize="23" Brush.TextHorizontalAlignment="Left" Text="@TitleText" DoNotAcceptEvents="true" />
+                                                    <RichTextWidget IsVisible="@ShowDetailText" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginTop="8" Brush="Popup.Description.Text" Brush.FontSize="19" Brush.TextHorizontalAlignment="Left" Text="@DetailText" DoNotAcceptEvents="true" />
+                                                    <RichTextWidget IsVisible="@ShowMetaText" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginTop="8" Brush="Popup.Description.Text" Brush.FontSize="17" Brush.FontColor="#BFB4A2FF" Brush.TextHorizontalAlignment="Left" Text="@MetaText" DoNotAcceptEvents="true" />
+                                                  </Children>
+                                                </ListPanel>
+                                              </Children>
+                                            </ButtonWidget>
+                                          </Children>
+                                        </AutoHeightSyncWidget>
+                                      </ItemTemplate>
+                                    </ListPanel>
+                                  </Children>
+                                </Widget>
+                              </Children>
+                            </ScrollablePanel>
+                            <Standard.VerticalScrollbar Id="OptionScrollbar" HeightSizePolicy="StretchToParent" HorizontalAlignment="Right" VerticalAlignment="Bottom" MarginTop="18" MarginBottom="18" MarginRight="4" />
+                          </Children>
+                        </Widget>
+                      </Children>
+                    </ListPanel>
+                  </Children>
+                </Widget>
+
+                <Widget IsVisible="@ShowTextOnly" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginTop="148" MarginBottom="82">
+                  <Children>
+                    <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" ExtendLeft="8" ExtendTop="8" ExtendRight="8" ExtendBottom="8" AlphaFactor="0.36" IsEnabled="false" />
+                    <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="8" MarginRight="8" MarginTop="8" MarginBottom="8" Sprite="BlankWhiteSquare_9" Color="#000000FF" AlphaFactor="0.22" IsEnabled="false" />
+                    <ScrollablePanel WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipRect="TextClipRect" InnerPanel="TextClipRect\TextInnerPanel" MarginLeft="24" MarginRight="28" MarginTop="22" MarginBottom="22" AutoHideScrollBars="true" VerticalScrollbar="..\TextScrollbar\Scrollbar">
+                      <Children>
+                        <Widget Id="TextClipRect" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipContents="true">
+                          <Children>
+                            <ListPanel Id="TextInnerPanel" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="VerticalTopToBottom">
+                              <Children>
+                                <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginLeft="18" MarginRight="18" MarginTop="16" MarginBottom="16" Brush="Popup.Description.Text" Brush.FontSize="@BodyFontSize" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Top" Text="@EmptyStateText" />
+                                <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="10" Text="" />
+                              </Children>
+                            </ListPanel>
+                          </Children>
+                        </Widget>
+                      </Children>
+                    </ScrollablePanel>
+                    <Standard.VerticalScrollbar Id="TextScrollbar" HeightSizePolicy="StretchToParent" HorizontalAlignment="Right" VerticalAlignment="Bottom" MarginTop="22" MarginBottom="22" MarginRight="6" />
+                  </Children>
+                </Widget>
+
+                <ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="58" HorizontalAlignment="Center" VerticalAlignment="Bottom" LayoutImp.LayoutMethod="HorizontalLeftToRight">
+                  <Children>
+                    <ButtonWidget DoNotPassEventsToChildren="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="230" SuggestedHeight="58" Brush="Popup.Cancel.Button" Command.Click="ExecuteCancel" UpdateChildrenStates="true">
+                      <Children>
+                        <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="22" VerticalAlignment="Center" MarginLeft="30" MarginRight="25" Brush="Popup.Button.Text" Text="@CancelText" />
+                      </Children>
+                    </ButtonWidget>
+                  </Children>
+                </ListPanel>
+              </Children>
+            </Widget>
+          </Children>
+        </Widget>
+      </Children>
+    </Widget>
+  </Window>
+</Prefab>
