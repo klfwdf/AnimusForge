@@ -1,0 +1,121 @@
+﻿{
+  "Id": "rule_绿林兄弟会",
+  "Keywords": [
+    "绿林兄弟会"
+  ],
+  "RagShortTexts": [
+    "绿林兄弟会起源于杰屈朗林子，曾是劫富济贫义军后变质"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "绿林兄弟会？他们是杰屈朗林子里的虱子，捉不完，也捉不死。我们清剿过很多次，每次他们都是化整为零往林子里一钻，找都找不着。等我们收兵回城，第二天就听说又有商队被劫了，手段特别熟练，拦路、要钱、放行，一气呵成。不过虱子也有虱子的用处。我和南边那个男爵争一块橄榄园争了三年，最后怎么解决的？我出了一笔钱给绿林兄弟会，他们连夜把他庄园的磨坊和谷仓全点了。第二天他就签约了。这事在瓦兰迪亚谁没干过？只不过没人公开承认。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": [
+          "brotherhood_of_woods"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "我们是农民，是逃兵，是破产的佃户。百十年前我们的先辈扛着草叉走进杰屈朗的林子，那时候我们是义军——劫富人的货，分穷人的粮，贵族老爷们听见我们的名字就咬牙。那时候我们唱的歌现在还有人唱，但唱的人眼睛里已经没有光了。食物、安全、情报，这三样东西能毁掉任何一支义军。你要吃饭就得有稳定的来源，你不能天天指望劫一辆碰巧路过的贵族马车。你要安全就得让人不敢告密，不敢告密的办法只有两种：要么怕你，要么喜欢你。被喜欢很难，被怕容易。所以我们选了被怕。至于和贵族做交易？那是从什么时候开始的谁也说不清了"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": [
+          "company_of_the_boar"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "绿林兄弟会？那些林子里蹲着的逃兵和农夫？这帮孙子根本不接战，藏在树后面放冷箭，射完就跑，追进去全是绊索和陷阱，我们折了好几个弟兄，连对面十个人影都没看清楚。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "绿林兄弟会？我知道他们。听我爷爷说，他们以前是帮我们这些穷人的，劫富济贫，劫贵族的车，抢回来的粮食分给村里人。那时候谁家断粮了，夜里有人敲门，开门一看地上搁着半袋麦子，就知道是他们来过。后来不行了。他们开始跟贵族做交易，收我们的保护钱，说交了钱林子里的弟兄就不碰你家的东西。开始是自愿交，后来不交就出事。现在他们跟别的土匪没什么两样，就是名号好听点。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "绿林兄弟会？瓦兰迪亚那边的森林强盗。我没亲眼见过，跑商的人说过他们。说他们蹲在杰屈朗那边的林子里，专劫贵族，不抢穷人——这是以前，现在穷人也抢。跑商的人一提起他们就骂，说交了过路费才能平安过去，不交的话货没了人还在，但货没了人就白跑了。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "绿林兄弟会是瓦兰迪亚社会矛盾的活标本。从我的情报看，他们起源于自耕农阶层的破产和封建兼并的矛盾，最初有明确的起义性质。但现在他们已经变成了瓦兰迪亚封建体系外部的一个法外寄生集团——不事生产，以劫掠和勒索为生，同时被某些贵族秘密收买，充当打压对手的雇佣力量。\n\n他们不具备革命性。他们与瓦兰迪亚贵族的关系已经从对抗变成了灰色交易，这种关系使他们失去了最初的正当性，但也使他们获得了生存的韧性。瓦兰迪亚的王权足够软弱，贵族足够分裂，兄弟会就足够长久。哪天瓦兰迪亚统一了，他们的日子就到头了。但现在，他们比任何一个男爵的城堡都更难拔掉。"
+    }
+  ],
+  "TextMappings": []
+}

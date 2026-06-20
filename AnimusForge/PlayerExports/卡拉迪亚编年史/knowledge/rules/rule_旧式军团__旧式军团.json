@@ -1,0 +1,30 @@
+﻿{
+  "Id": "rule_旧式军团",
+  "Keywords": [
+    "旧式军团"
+  ],
+  "RagShortTexts": [
+    "潘德拉克战役后旧式军团仅剩被弃者军团"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "leadership": 100
+        }
+      },
+      "Content": "旧式军团是帝国阿雷尼科斯改革前的军团，由中央负责军饷，没有弩兵和双刃枪兵，后在潘德拉克战役后被废除，只剩被弃者军团一个独苗"
+    }
+  ],
+  "TextMappings": []
+}

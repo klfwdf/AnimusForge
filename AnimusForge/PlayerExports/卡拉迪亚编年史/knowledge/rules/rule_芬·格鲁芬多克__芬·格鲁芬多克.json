@@ -1,0 +1,165 @@
+﻿{
+  "Id": "rule_芬·格鲁芬多克",
+  "Keywords": [
+    "芬·格鲁芬多克"
+  ],
+  "RagShortTexts": [
+    "格鲁芬多克家族靠战功崛起，祖上无血统。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "格鲁芬多克家？就是卡拉多格他们家。以前没听说过这个姓，山上放羊的老头说，他们家祖上谁都不是，就是卡拉多格被收养了才有的这个姓。现在这个姓全巴旦尼亚没人不知道。他们家厅里摆着一排头盖骨碗，都是被卡拉多格砍掉的强者脑袋做的。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "芬·格鲁芬多克这个家族是我们巴旦尼亚贵族圈子里最大的异数，也是最大的现实。他们的发迹不靠血统，不靠联姻，靠一个人的费奥纳冠军和战功。这在巴旦尼亚历史上是前所未有的。卡拉多格用剑把格鲁芬多克这个名字刻进了巴旦尼亚的最高层，把我们这些老氏族的骄傲踩在脚下。我们有些人至今不服，私下里说格鲁芬多克家不过是暴发户，靠砍人上位，连他们的家传宝物都是砍下来的脑袋壳，那东西摆在大厅里，是荣耀还是野蛮，我们说了也不算。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": [
+          "clan_battania_2"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_5_3"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "格鲁芬多克家是我哥哥埃里尔一手提拔上来的，如今坐在我哥哥的王座上。我不说卡拉多格不配，他确实能打，我哥哥把女儿嫁给他，也是看中他的武勇。但要说我对格鲁芬多克这个家族有什么好感，那也没有。他们的厅堂里摆着头盖骨碗，是从战场上收集的强者首级。这些碗有些是巴旦尼亚人的头骨。卡拉多格不介意敌人的族属，他只介意他们够不够强。这点我不喜欢。\n\n再说，卡拉多格杀了我哥，虽然说，他比我哥强百倍，但是我心里依旧很膈应"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_5_10"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "twohanded": 100
+        }
+      },
+      "Content": "我父亲的头盖骨碗里，有几个是我自己砍的。第一个我十一岁，砍的是个俘虏。父亲说砍头要顺着颈骨缝下去，斜着劈，别直砍，直砍卡在骨头里拔不出来。我试了两次就会了。后来在战场上我又试了几次，都会了。外头说我残忍。什么是残忍？杀俘是残忍，杀敌不是。我杀的都是敌人，至少我叫他们敌人的时候他们就是敌人了。\n\n叔叔明瑟说我该学点治理。我说你帮我治理，我帮你砍人，公平。父亲说我的脸有用——别人看我矮矮小小脸圆圆，不会觉得我危险。我觉得这是夸我。门格斯我从来不放在眼里。他在费奥纳第一轮就被淘汰了，连头盖骨都摸不着。梅拉格还小，我给她削木头马。至于家族的荣耀，我是女的，可能轮不到我继位。我不在乎。我要的是别的东西。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": [
+          "clan_battania_1"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "我们是格鲁芬多克。以前没人知道这个名字，现在这个名字全巴旦尼亚都知道。卡拉多格给了我们一切——恐惧、土地、头盖骨碗。那些碗是我们家的族谱。每一个碗都是一个名字，一个被我们打败的强者。明瑟负责治理，门格斯负责吃闲饭，科林负责砍出新的碗。至于梅拉格，她还小，但她总会长大。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": [
+          "clan_battania_1"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_5_1"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "芬·格鲁芬多克是我的姓，我父亲的名字我不知道，也不在乎。头盖骨碗？那是我的习惯。杀一个强者，留下他的头盖骨做成碗，算是我对他的尊重。我的厅里每一只碗我都记得名字，有些是帝国将军的，有些是巴旦尼亚酋长的，还有几个是费奥纳上的对手。我的儿子门格斯是个草包，他连一只碗都拿不回来。我的女儿科林拿回来的碗比她的年龄还多。但她太像我了。我杀人是因为需要，她杀人是因为喜欢。我不确定这是好事。所以我立了明瑟。他知道怎么让格鲁芬多克家不被头盖骨压垮。我死后碗留给他，刀留给科林，王位给明瑟。门格斯自己想办法。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "格鲁芬多克？巴旦尼亚那边的，那个叫卡拉多格的王的姓。我不知道什么格鲁芬多克，但卡拉多格我知道——就是那个带着头盖骨酒碗上战场的疯子。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "芬·格鲁芬多克是巴旦尼亚当前实际掌握王权的家族。有趣的是，他们既不是一个古老世系，也不是一个完全依靠法理继承的权力实体。卡拉多格本人靠费奥纳大赛崛起，被老至高王埃里尔招为女婿，格鲁芬多克这个姓才进入巴旦尼亚的政治序列。从外人角度看，这是一个纯粹的个人武力——联姻——战功三级跳的经典路径。"
+    }
+  ],
+  "TextMappings": []
+}
