@@ -12,6 +12,8 @@ using Bannerlord.UIExtenderEx.Attributes;
 using Bannerlord.UIExtenderEx.Prefabs2;
 using Bannerlord.UIExtenderEx.ViewModels;
 using TaleWorlds.CampaignSystem;
+using TaleWorlds.CampaignSystem.Actions;
+using TaleWorlds.CampaignSystem.CampaignBehaviors;
 using TaleWorlds.CampaignSystem.Election;
 using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.CampaignSystem.MapNotificationTypes;
@@ -77,13 +79,39 @@ namespace AnimusForge
 			public string SponsorClanId;
 		}
 
+		private enum BilateralDiplomacyKind
+		{
+			None = 0,
+			Peace = 1,
+			Alliance = 2,
+			Trade = 3
+		}
+
+		private sealed class BilateralDiplomacyRecord
+		{
+			public string RecordId;
+			public string Kind;
+			public string FirstKingdomId;
+			public string SecondKingdomId;
+			public int TributeFromFirstToSecond;
+			public int TributeDurationDays;
+			public float CreatedDay;
+			public bool CounterpartCreated;
+		}
+
 		private List<VoteDealRecord> _activeDeals = new List<VoteDealRecord>();
 		private Dictionary<string, string> _serializedDeals = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+		private List<BilateralDiplomacyRecord> _bilateralDiplomacyRecords = new List<BilateralDiplomacyRecord>();
+		private Dictionary<string, string> _serializedBilateralDiplomacy = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
 		private const string DealIdPrefix = "VD";
+		private const string BilateralDiplomacyIdPrefix = "BD";
 		private const char RecordDelimiter = '\x01';
 
 		private static bool s_globalPatchesApplied;
+		private static bool s_globalPatchesInProgress;
+		private bool _agendaAutoVoteTickRunning;
+		private readonly HashSet<KingdomDecision> _agendaAutoVoteInProgress = new HashSet<KingdomDecision>();
 
 		// ── Module Initializer ─────────────────────────────────────────────
 
@@ -97,7 +125,8 @@ namespace AnimusForge
 		private static void ApplyGlobalPatchesOnce()
 		{
 			if (s_globalPatchesApplied) return;
-			s_globalPatchesApplied = true;
+			if (s_globalPatchesInProgress) return;
+			s_globalPatchesInProgress = true;
 			try
 			{
 				Harmony harmony = new Harmony("com.AnimusForge.votedeal");
@@ -134,10 +163,44 @@ namespace AnimusForge
 				Logger.Log("VoteDeal", $"[Harmony] DetermineSupport: patched {patchedCount} concrete subclass(es), {errorCount} error(s).");
 
 				// ── Agenda delay: 21 days for player kingdom, 3 days for other kingdoms ──
+				try
+				{
+					MethodInfo addDecisionMethod = typeof(Kingdom).GetMethod("AddDecision");
+					if (addDecisionMethod != null)
+					{
+						harmony.Patch(
+							addDecisionMethod,
+							prefix: new HarmonyMethod(typeof(VoteDealBehavior), nameof(Patch_AddDecision_BilateralDiplomacy_Prefix)));
+					}
+				}
+				catch (Exception ex)
+				{
+					Logger.Log("VoteDeal", $"[BilateralDiplomacy] AddDecision prefix patch failed: {ex.Message}");
+				}
 				harmony.Patch(
 					typeof(Kingdom).GetMethod("AddDecision"),
 					postfix: new HarmonyMethod(typeof(VoteDealBehavior), nameof(Patch_AddDecision_Delay_Postfix)));
 				Logger.Log("VoteDeal", "[Harmony] Kingdom.AddDecision delay hook applied (player=21d, others=3d).");
+
+				PatchBilateralDiplomacyDecision(harmony, typeof(MakePeaceKingdomDecision));
+				PatchBilateralDiplomacyDecision(harmony, typeof(StartAllianceDecision));
+				PatchBilateralDiplomacyDecision(harmony, typeof(TradeAgreementDecision));
+
+				try
+				{
+					MethodInfo shouldBeCancelledMethod = AccessTools.Method(typeof(KingdomDecision), nameof(KingdomDecision.ShouldBeCancelled));
+					if (shouldBeCancelledMethod != null)
+					{
+						harmony.Patch(
+							shouldBeCancelledMethod,
+							prefix: new HarmonyMethod(typeof(VoteDealBehavior), nameof(Patch_BilateralDiplomacy_ShouldBeCancelled_Prefix)));
+						Logger.Log("VoteDeal", "[Harmony] Bilateral diplomacy cancellation guard applied.");
+					}
+				}
+				catch (Exception ex)
+				{
+					Logger.Log("VoteDeal", $"[BilateralDiplomacy] ShouldBeCancelled patch failed: {ex.Message}");
+				}
 
 				MethodInfo needsPlayerResolutionGetter = AccessTools.PropertyGetter(typeof(KingdomDecision), nameof(KingdomDecision.NeedsPlayerResolution));
 				if (needsPlayerResolutionGetter != null)
@@ -192,14 +255,53 @@ namespace AnimusForge
 				}
 
 
+				s_globalPatchesApplied = true;
 			}
 			catch (Exception ex)
 			{
 				Logger.Log("VoteDeal", $"[Harmony Error] {ex.Message}");
 			}
+			finally
+			{
+				s_globalPatchesInProgress = false;
+			}
 		}
 
 		// ── Support weight parsing ────────────────────────────────────────
+
+		private static void PatchBilateralDiplomacyDecision(Harmony harmony, Type decisionType)
+		{
+			try
+			{
+				if (harmony == null || decisionType == null) return;
+				MethodInfo applyMethod = AccessTools.Method(decisionType, nameof(KingdomDecision.ApplyChosenOutcome));
+				if (applyMethod == null)
+				{
+					Logger.Log("VoteDeal", $"[BilateralDiplomacy] ApplyChosenOutcome not found on {decisionType.Name}.");
+					return;
+				}
+				harmony.Patch(
+					applyMethod,
+					prefix: new HarmonyMethod(typeof(VoteDealBehavior), nameof(Patch_BilateralDiplomacy_ApplyChosenOutcome_Prefix)));
+
+				MethodInfo onShowMethod = AccessTools.Method(decisionType, nameof(KingdomDecision.OnShowDecision));
+				if (onShowMethod != null)
+				{
+					harmony.Patch(
+						onShowMethod,
+						prefix: new HarmonyMethod(typeof(VoteDealBehavior), nameof(Patch_BilateralDiplomacy_OnShowDecision_Prefix)));
+				}
+				else
+				{
+					Logger.Log("VoteDeal", $"[BilateralDiplomacy] OnShowDecision not found on {decisionType.Name}.");
+				}
+				Logger.Log("VoteDeal", $"[Harmony] Bilateral diplomacy hooks applied: {decisionType.Name}.");
+			}
+			catch (Exception ex)
+			{
+				Logger.Log("VoteDeal", $"[BilateralDiplomacy] Failed to patch {decisionType?.Name}: {ex.Message}");
+			}
+		}
 
 		private static Supporter.SupportWeights ParseSupportWeight(string weightStr)
 		{
@@ -224,6 +326,14 @@ namespace AnimusForge
 				+ bytes[2].ToString("x2") + bytes[3].ToString("x2");
 		}
 
+		private static string GenerateBilateralDiplomacyId()
+		{
+			byte[] bytes = new byte[4];
+			new Random().NextBytes(bytes);
+			return BilateralDiplomacyIdPrefix + bytes[0].ToString("x2") + bytes[1].ToString("x2")
+				+ bytes[2].ToString("x2") + bytes[3].ToString("x2");
+		}
+
 		// ── CampaignBehavior overrides ─────────────────────────────────────
 
 		public override void RegisterEvents()
@@ -232,6 +342,7 @@ namespace AnimusForge
 			Instance = this;
 			Logger.Log("VoteDeal", "[Lifecycle] RegisterEvents called, Instance set");
 			CampaignEvents.KingdomDecisionConcluded.AddNonSerializedListener(this, OnKingdomDecisionConcluded);
+			CampaignEvents.HourlyTickEvent.AddNonSerializedListener(this, OnHourlyTick);
 		}
 
 		public override void SyncData(IDataStore dataStore)
@@ -247,6 +358,8 @@ namespace AnimusForge
 				}
 				if (_activeDeals == null) _activeDeals = new List<VoteDealRecord>();
 				if (_serializedDeals == null) _serializedDeals = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+				if (_bilateralDiplomacyRecords == null) _bilateralDiplomacyRecords = new List<BilateralDiplomacyRecord>();
+				if (_serializedBilateralDiplomacy == null) _serializedBilateralDiplomacy = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
 				if (dataStore.IsSaving)
 				{
@@ -270,10 +383,29 @@ namespace AnimusForge
 							d.TargetOptionTitle ?? "",
 							d.TargetOptionSponsorClanId ?? "");
 					}
+
+					_serializedBilateralDiplomacy.Clear();
+					CleanupBilateralDiplomacyRecords();
+					for (int i = 0; i < _bilateralDiplomacyRecords.Count; i++)
+					{
+						var d = _bilateralDiplomacyRecords[i];
+						_serializedBilateralDiplomacy["bd_" + i] = string.Join(RecordDelimiter.ToString(),
+							d.RecordId ?? "",
+							d.Kind ?? "",
+							d.FirstKingdomId ?? "",
+							d.SecondKingdomId ?? "",
+							d.TributeFromFirstToSecond.ToString(),
+							d.TributeDurationDays.ToString(),
+							d.CreatedDay.ToString("F6"),
+							d.CounterpartCreated ? "1" : "0");
+					}
 				}
 
 				Dictionary<string, string> serializedDealsForSync = dataStore.IsSaving ? CampaignSaveChunkHelper.FlattenStringDictionary(_serializedDeals, "_vdSerializedDeals", "VoteDeal") : _serializedDeals;
 				dataStore.SyncData("_vdSerializedDeals", ref serializedDealsForSync);
+
+				Dictionary<string, string> serializedBilateralDiplomacyForSync = dataStore.IsSaving ? CampaignSaveChunkHelper.FlattenStringDictionary(_serializedBilateralDiplomacy, "_vdBilateralDiplomacy", "VoteDeal") : _serializedBilateralDiplomacy;
+				dataStore.SyncData("_vdBilateralDiplomacy", ref serializedBilateralDiplomacyForSync);
 
 				if (dataStore.IsLoading)
 				{
@@ -310,6 +442,36 @@ namespace AnimusForge
 							}
 						}
 					}
+
+					_serializedBilateralDiplomacy = CampaignSaveChunkHelper.RestoreStringDictionary(serializedBilateralDiplomacyForSync, "VoteDeal");
+					_bilateralDiplomacyRecords.Clear();
+					if (_serializedBilateralDiplomacy != null && _serializedBilateralDiplomacy.Count > 0)
+					{
+						foreach (string val in _serializedBilateralDiplomacy.Values)
+						{
+							if (string.IsNullOrEmpty(val)) continue;
+							string[] parts = val.Split(RecordDelimiter);
+							if (parts.Length < 7) continue;
+							var record = new BilateralDiplomacyRecord
+							{
+								RecordId = parts[0],
+								Kind = parts[1],
+								FirstKingdomId = parts[2],
+								SecondKingdomId = parts[3],
+								TributeFromFirstToSecond = int.TryParse(parts[4], out int tribute) ? tribute : 0,
+								TributeDurationDays = int.TryParse(parts[5], out int duration) ? duration : 0,
+								CreatedDay = float.TryParse(parts[6], out float createdDay) ? createdDay : 0f,
+								CounterpartCreated = parts.Length > 7 && parts[7] == "1"
+							};
+							if (!string.IsNullOrWhiteSpace(record.Kind)
+								&& !string.IsNullOrWhiteSpace(record.FirstKingdomId)
+								&& !string.IsNullOrWhiteSpace(record.SecondKingdomId))
+							{
+								_bilateralDiplomacyRecords.Add(record);
+							}
+						}
+					}
+					CleanupBilateralDiplomacyRecords();
 				}
 			}
 			catch (Exception ex)
@@ -317,6 +479,8 @@ namespace AnimusForge
 				Logger.Log("VoteDeal", $"[SyncData Error] {ex.Message}");
 				_activeDeals = new List<VoteDealRecord>();
 				_serializedDeals = new Dictionary<string, string>();
+				_bilateralDiplomacyRecords = new List<BilateralDiplomacyRecord>();
+				_serializedBilateralDiplomacy = new Dictionary<string, string>();
 			}
 		}
 
@@ -354,6 +518,810 @@ namespace AnimusForge
 			{
 				Logger.Log("VoteDeal", $"[OnKingdomDecisionConcluded Error] {ex.Message}");
 			}
+		}
+
+		private void OnHourlyTick()
+		{
+			try
+			{
+				RemoveDuplicateBilateralDiplomacyAgendas();
+				AutoStartExpiredAgendaVotes();
+			}
+			catch (Exception ex)
+			{
+				Logger.Log("VoteDeal", $"[AgendaAutoVote] Hourly tick error: {ex.Message}");
+			}
+		}
+
+		private void AutoStartExpiredAgendaVotes()
+		{
+			if (_agendaAutoVoteTickRunning) return;
+			_agendaAutoVoteTickRunning = true;
+			try
+			{
+				List<Kingdom> kingdoms = Kingdom.All?.ToList();
+				if (kingdoms == null || kingdoms.Count == 0) return;
+
+				foreach (Kingdom kingdom in kingdoms)
+				{
+					AutoStartExpiredAgendaVotes(kingdom);
+				}
+			}
+			finally
+			{
+				_agendaAutoVoteTickRunning = false;
+			}
+		}
+
+		private void AutoStartExpiredAgendaVotes(Kingdom kingdom)
+		{
+			if (kingdom?.UnresolvedDecisions == null || kingdom.UnresolvedDecisions.Count == 0) return;
+
+			List<KingdomDecision> decisions = kingdom.UnresolvedDecisions.ToList();
+			foreach (KingdomDecision decision in decisions)
+			{
+				if (decision == null) continue;
+				if (_agendaAutoVoteInProgress.Contains(decision)) continue;
+				if (!kingdom.UnresolvedDecisions.Contains(decision)) continue;
+
+				bool shouldCancel;
+				try
+				{
+					shouldCancel = decision.ShouldBeCancelled();
+				}
+				catch (Exception ex)
+				{
+					Logger.Log("VoteDeal", $"[AgendaAutoVote] ShouldBeCancelled failed for {GetSafeDecisionTitle(decision)}: {ex.Message}");
+					continue;
+				}
+
+				if (shouldCancel)
+				{
+					CancelExpiredAgendaDecision(kingdom, decision);
+					continue;
+				}
+
+				if (!ShouldAutoStartAgendaVote(decision)) continue;
+				StartExpiredAgendaElection(kingdom, decision);
+			}
+		}
+
+		private static bool ShouldAutoStartAgendaVote(KingdomDecision decision)
+		{
+			try
+			{
+				if (decision == null) return false;
+				if (decision.Kingdom == null) return false;
+				if (decision.IsEnforced) return false;
+				if (decision.TriggerTime.IsFuture) return false;
+				return true;
+			}
+			catch (Exception ex)
+			{
+				Logger.Log("VoteDeal", $"[AgendaAutoVote] Match error: {ex.Message}");
+				return false;
+			}
+		}
+
+		private void StartExpiredAgendaElection(Kingdom kingdom, KingdomDecision decision)
+		{
+			if (kingdom == null || decision == null) return;
+			if (_agendaAutoVoteInProgress.Contains(decision)) return;
+
+			_agendaAutoVoteInProgress.Add(decision);
+			try
+			{
+				if (!kingdom.UnresolvedDecisions.Contains(decision)) return;
+				Logger.Log("VoteDeal", $"[AgendaAutoVote] Starting expired agenda vote: kingdom={kingdom.StringId}, decision={GetSafeDecisionTitle(decision)}");
+				new KingdomElection(decision).StartElectionWithoutPlayer();
+			}
+			catch (Exception ex)
+			{
+				Logger.Log("VoteDeal", $"[AgendaAutoVote] Start election failed for {GetSafeDecisionTitle(decision)}: {ex.Message}");
+			}
+			finally
+			{
+				_agendaAutoVoteInProgress.Remove(decision);
+			}
+		}
+
+		private void CancelExpiredAgendaDecision(Kingdom kingdom, KingdomDecision decision)
+		{
+			if (kingdom == null || decision == null) return;
+			try
+			{
+				if (!kingdom.UnresolvedDecisions.Contains(decision)) return;
+				kingdom.RemoveDecision(decision);
+				bool isPlayerInvolved = IsPlayerInvolvedInDecision(decision);
+				CampaignEventDispatcher.Instance.OnKingdomDecisionCancelled(decision, isPlayerInvolved);
+				Logger.Log("VoteDeal", $"[AgendaAutoVote] Removed cancelled agenda: kingdom={kingdom.StringId}, decision={GetSafeDecisionTitle(decision)}");
+			}
+			catch (Exception ex)
+			{
+				Logger.Log("VoteDeal", $"[AgendaAutoVote] Cancel failed for {GetSafeDecisionTitle(decision)}: {ex.Message}");
+			}
+		}
+
+		private static bool IsPlayerInvolvedInDecision(KingdomDecision decision)
+		{
+			try
+			{
+				Clan chooser = decision?.DetermineChooser();
+				if (chooser?.Leader?.IsHumanPlayerCharacter == true) return true;
+				IEnumerable<Supporter> supporters = decision?.DetermineSupporters();
+				return supporters?.Any(s => s != null && s.IsPlayer) == true;
+			}
+			catch (Exception ex)
+			{
+				Logger.Log("VoteDeal", $"[AgendaAutoVote] Player involvement check failed: {ex.Message}");
+				return decision?.IsPlayerParticipant == true;
+			}
+		}
+
+		private static string GetSafeDecisionTitle(KingdomDecision decision)
+		{
+			try
+			{
+				return decision?.GetGeneralTitle()?.ToString() ?? "<null>";
+			}
+			catch
+			{
+				return decision?.GetType().Name ?? "<null>";
+			}
+		}
+
+		private static bool Patch_AddDecision_BilateralDiplomacy_Prefix(Kingdom __instance, KingdomDecision kingdomDecision, bool ignoreInfluenceCost)
+		{
+			try
+			{
+				if (__instance == null || kingdomDecision == null) return true;
+
+				VoteDealBehavior behavior = Instance ?? Campaign.Current?.GetCampaignBehavior<VoteDealBehavior>();
+				if (behavior == null) return true;
+
+				if (behavior.IsDuplicateWhileBilateralDiplomacyPending(kingdomDecision))
+				{
+					Logger.Log("VoteDeal", $"[BilateralDiplomacy] Duplicate pending diplomacy agenda blocked: kingdom={__instance.StringId}, decision={GetSafeDecisionTitle(kingdomDecision)}");
+					return false;
+				}
+
+				if (__instance == Clan.PlayerClan?.Kingdom) return true;
+				if (behavior.FindCounterpartRecordForDecision(kingdomDecision) == null) return true;
+
+				if (!IsBilateralCounterpartDecisionStillHardValid(kingdomDecision))
+				{
+					Logger.Log("VoteDeal", "[BilateralDiplomacy] Counterpart AddDecision skipped because hard validity failed.");
+					return false;
+				}
+
+				MBList<KingdomDecision> unresolved = Traverse.Create(__instance)
+					.Field("_unresolvedDecisions")
+					.GetValue<MBList<KingdomDecision>>();
+				if (unresolved == null) return true;
+
+				if (!ignoreInfluenceCost && kingdomDecision.ProposerClan != null)
+				{
+					int influenceCost = kingdomDecision.GetInfluenceCost(kingdomDecision.ProposerClan);
+					ChangeClanInfluenceAction.Apply(kingdomDecision.ProposerClan, -(float)influenceCost);
+				}
+
+				try
+				{
+					CampaignEventDispatcher.Instance.OnKingdomDecisionAdded(kingdomDecision, false);
+				}
+				catch (Exception eventEx)
+				{
+					Logger.Log("VoteDeal", $"[BilateralDiplomacy] OnKingdomDecisionAdded failed: {eventEx.Message}");
+				}
+
+				if (!unresolved.Contains(kingdomDecision))
+				{
+					unresolved.Add(kingdomDecision);
+				}
+				Logger.Log("VoteDeal", $"[BilateralDiplomacy] Queued foreign counterpart agenda in {__instance.StringId} instead of immediate AI election.");
+				return false;
+			}
+			catch (Exception ex)
+			{
+				Logger.Log("VoteDeal", $"[BilateralDiplomacy] AddDecision prefix error: {ex.Message}");
+				return true;
+			}
+		}
+
+		private static bool Patch_BilateralDiplomacy_ShouldBeCancelled_Prefix(KingdomDecision __instance, ref bool __result)
+		{
+			try
+			{
+				VoteDealBehavior behavior = Instance ?? Campaign.Current?.GetCampaignBehavior<VoteDealBehavior>();
+				if (behavior?.FindCounterpartRecordForDecision(__instance) == null) return true;
+
+				__result = !IsBilateralCounterpartDecisionStillHardValid(__instance);
+				return false;
+			}
+			catch (Exception ex)
+			{
+				Logger.Log("VoteDeal", $"[BilateralDiplomacy] ShouldBeCancelled guard error: {ex.Message}");
+				return true;
+			}
+		}
+
+		private static bool Patch_BilateralDiplomacy_OnShowDecision_Prefix(KingdomDecision __instance, ref bool __result)
+		{
+			try
+			{
+				if (!IsBilateralDiplomacyCounterpartAgenda(__instance)) return true;
+
+				__result = true;
+				Logger.Log("VoteDeal", $"[BilateralDiplomacy] Counterpart OnShowDecision bypassed for auto agenda vote: {GetSafeDecisionTitle(__instance)}");
+				return false;
+			}
+			catch (Exception ex)
+			{
+				Logger.Log("VoteDeal", $"[BilateralDiplomacy] OnShowDecision guard error: {ex.Message}");
+				return true;
+			}
+		}
+
+		private static bool Patch_BilateralDiplomacy_ApplyChosenOutcome_Prefix(KingdomDecision __instance, DecisionOutcome chosenOutcome)
+		{
+			try
+			{
+				if (!TryGetBilateralDiplomacyDecisionDetails(__instance, out BilateralDiplomacyKind kind, out Kingdom source, out Kingdom target, out int tribute, out int duration))
+				{
+					return true;
+				}
+				if (!TryGetBilateralDiplomacyApproval(__instance, chosenOutcome, out bool approved))
+				{
+					return true;
+				}
+
+				VoteDealBehavior behavior = Instance ?? Campaign.Current?.GetCampaignBehavior<VoteDealBehavior>();
+				if (behavior == null) return true;
+
+				return !behavior.HandleBilateralDiplomacyOutcome(__instance, kind, source, target, tribute, duration, approved);
+			}
+			catch (Exception ex)
+			{
+				Logger.Log("VoteDeal", $"[BilateralDiplomacy] ApplyChosenOutcome prefix error: {ex.Message}");
+				return true;
+			}
+		}
+
+		private bool HandleBilateralDiplomacyOutcome(KingdomDecision decision, BilateralDiplomacyKind kind, Kingdom source, Kingdom target, int tribute, int duration, bool approved)
+		{
+			BilateralDiplomacyRecord counterpartRecord = FindCounterpartRecordForDecision(decision);
+			if (counterpartRecord != null)
+			{
+				if (approved)
+				{
+					bool applied = ApplyFinalBilateralDiplomacyEffect(counterpartRecord);
+					_bilateralDiplomacyRecords.Remove(counterpartRecord);
+					if (applied)
+					{
+						DisplayBilateralDiplomacyMessage(
+							$"双向外交议程：{GetKingdomName(counterpartRecord.FirstKingdomId)}与{GetKingdomName(counterpartRecord.SecondKingdomId)}均已批准{GetBilateralDiplomacyKindText(counterpartRecord)}，协议已生效。",
+							0x9BE564);
+					}
+					else
+					{
+						DisplayBilateralDiplomacyMessage(
+							$"双向外交议程失效：{GetKingdomName(counterpartRecord.FirstKingdomId)}与{GetKingdomName(counterpartRecord.SecondKingdomId)}的{GetBilateralDiplomacyKindText(counterpartRecord)}条件已变化，协议未生效。",
+							0xFFD166);
+					}
+				}
+				else
+				{
+					_bilateralDiplomacyRecords.Remove(counterpartRecord);
+					DisplayBilateralDiplomacyMessage(
+						$"双向外交议程：{GetKingdomName(counterpartRecord.SecondKingdomId)}拒绝了{GetKingdomName(counterpartRecord.FirstKingdomId)}的{GetBilateralDiplomacyKindText(counterpartRecord)}提案，外交效果未生效。",
+						0xFF6B6B);
+					Logger.Log("VoteDeal", $"[BilateralDiplomacy] Counterpart rejected: id={counterpartRecord.RecordId} kind={counterpartRecord.Kind}.");
+				}
+				return true;
+			}
+
+			if (!approved)
+			{
+				return true;
+			}
+
+			if (!CanCreateBilateralCounterpart(kind, source, target))
+			{
+				Logger.Log("VoteDeal", $"[BilateralDiplomacy] Cannot create counterpart, original effect blocked. kind={kind} source={source?.StringId} target={target?.StringId}");
+				DisplayBilateralDiplomacyMessage("双向外交议程：无法创建对等复议议程，外交效果未生效。", 0xFFD166);
+				return true;
+			}
+
+			BilateralDiplomacyRecord existing = FindExistingBilateralRecord(kind, source, target);
+			if (existing != null)
+			{
+				Logger.Log("VoteDeal", $"[BilateralDiplomacy] Duplicate first-side approval blocked while pending counterpart exists. id={existing.RecordId}");
+				DisplayBilateralDiplomacyMessage(
+					$"双向外交议程：{GetKingdomName(existing.FirstKingdomId)}与{GetKingdomName(existing.SecondKingdomId)}已有等待复议的{GetBilateralDiplomacyKindText(existing)}提案。",
+					0xFFD166);
+				return true;
+			}
+
+			BilateralDiplomacyRecord record = new BilateralDiplomacyRecord
+			{
+				RecordId = GenerateBilateralDiplomacyId(),
+				Kind = KindToString(kind),
+				FirstKingdomId = source.StringId,
+				SecondKingdomId = target.StringId,
+				TributeFromFirstToSecond = tribute,
+				TributeDurationDays = duration,
+				CreatedDay = CampaignTime.Now.ElapsedDaysUntilNow,
+				CounterpartCreated = false
+			};
+
+			_bilateralDiplomacyRecords.Add(record);
+			if (!CreateBilateralCounterpartDecision(record))
+			{
+				_bilateralDiplomacyRecords.Remove(record);
+				Logger.Log("VoteDeal", $"[BilateralDiplomacy] Counterpart creation failed, original effect blocked. id={record.RecordId}");
+				DisplayBilateralDiplomacyMessage("双向外交议程：对等复议议程创建失败，外交效果未生效。", 0xFFD166);
+				return true;
+			}
+
+			DisplayBilateralDiplomacyMessage(
+				$"双向外交议程：{source.Name}已批准{GetBilateralDiplomacyKindText(record)}提案，已提交给{target.Name}复议。",
+				0xFFD166);
+			Logger.Log("VoteDeal", $"[BilateralDiplomacy] First-side approval recorded: id={record.RecordId} kind={record.Kind} {source.StringId}->{target.StringId}.");
+			return true;
+		}
+
+		private bool CreateBilateralCounterpartDecision(BilateralDiplomacyRecord record)
+		{
+			try
+			{
+				if (record == null) return false;
+				Kingdom first = ResolveKingdom(record.FirstKingdomId);
+				Kingdom second = ResolveKingdom(record.SecondKingdomId);
+				if (first == null || second == null || first == second) return false;
+				Clan technicalProposer = second.RulingClan;
+				if (technicalProposer == null || technicalProposer.Kingdom != second) return false;
+
+				BilateralDiplomacyKind kind = ParseKind(record.Kind);
+				KingdomDecision counterpart;
+				switch (kind)
+				{
+					case BilateralDiplomacyKind.Peace:
+						counterpart = new MakePeaceKingdomDecision(technicalProposer, first, -record.TributeFromFirstToSecond, record.TributeDurationDays, true, true);
+						break;
+					case BilateralDiplomacyKind.Alliance:
+						counterpart = new StartAllianceDecision(technicalProposer, first);
+						break;
+					case BilateralDiplomacyKind.Trade:
+						counterpart = new TradeAgreementDecision(technicalProposer, first);
+						break;
+					default:
+						return false;
+				}
+
+				if (!IsBilateralCounterpartDecisionStillHardValid(counterpart)) return false;
+				record.CounterpartCreated = true;
+				second.AddDecision(counterpart, true);
+				if (second.UnresolvedDecisions == null || !second.UnresolvedDecisions.Contains(counterpart))
+				{
+					record.CounterpartCreated = false;
+					return false;
+				}
+				return true;
+			}
+			catch (Exception ex)
+			{
+				if (record != null) record.CounterpartCreated = false;
+				Logger.Log("VoteDeal", $"[BilateralDiplomacy] Create counterpart error: {ex.Message}");
+				return false;
+			}
+		}
+
+		private bool ApplyFinalBilateralDiplomacyEffect(BilateralDiplomacyRecord record)
+		{
+			try
+			{
+				if (!IsBilateralRecordStillPendingValid(record)) return false;
+				Kingdom first = ResolveKingdom(record.FirstKingdomId);
+				Kingdom second = ResolveKingdom(record.SecondKingdomId);
+				BilateralDiplomacyKind kind = ParseKind(record.Kind);
+				switch (kind)
+				{
+					case BilateralDiplomacyKind.Peace:
+						MeetingBattleRuntime.UnlockDiplomaticSideEffects("bilateral_diplomacy_peace");
+						MakePeaceAction.ApplyByKingdomDecision(first, second, record.TributeFromFirstToSecond, record.TributeDurationDays);
+						return true;
+					case BilateralDiplomacyKind.Alliance:
+					{
+						IAllianceCampaignBehavior allianceBehavior = Campaign.Current.GetCampaignBehavior<IAllianceCampaignBehavior>();
+						if (allianceBehavior == null) return false;
+						MeetingBattleRuntime.UnlockDiplomaticSideEffects("bilateral_diplomacy_alliance");
+						allianceBehavior.StartAlliance(first, second);
+						return true;
+					}
+					case BilateralDiplomacyKind.Trade:
+					{
+						ITradeAgreementsCampaignBehavior tradeBehavior = Campaign.Current.GetCampaignBehavior<ITradeAgreementsCampaignBehavior>();
+						if (tradeBehavior == null) return false;
+						CampaignTime tradeDuration = Campaign.Current.Models.TradeAgreementModel.GetTradeAgreementDurationInYears(first, second);
+						MeetingBattleRuntime.UnlockDiplomaticSideEffects("bilateral_diplomacy_trade");
+						tradeBehavior.MakeTradeAgreement(first, second, tradeDuration);
+						return true;
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				Logger.Log("VoteDeal", $"[BilateralDiplomacy] Apply final effect error: {ex.Message}");
+			}
+			return false;
+		}
+
+		private static bool TryGetBilateralDiplomacyDecisionDetails(KingdomDecision decision, out BilateralDiplomacyKind kind, out Kingdom source, out Kingdom target, out int tribute, out int duration)
+		{
+			kind = BilateralDiplomacyKind.None;
+			source = decision?.Kingdom;
+			target = null;
+			tribute = 0;
+			duration = 0;
+			if (decision == null || source == null) return false;
+
+			if (decision is MakePeaceKingdomDecision peaceDecision)
+			{
+				kind = BilateralDiplomacyKind.Peace;
+				target = peaceDecision.FactionToMakePeaceWith as Kingdom;
+				tribute = peaceDecision.DailyTributeToBePaid;
+				duration = peaceDecision.DailyTributeDurationInDays;
+				return target != null;
+			}
+			if (decision is StartAllianceDecision allianceDecision)
+			{
+				kind = BilateralDiplomacyKind.Alliance;
+				target = allianceDecision.KingdomToStartAllianceWith;
+				return target != null;
+			}
+			if (decision is TradeAgreementDecision tradeDecision)
+			{
+				kind = BilateralDiplomacyKind.Trade;
+				target = tradeDecision.TargetKingdom;
+				return target != null;
+			}
+			return false;
+		}
+
+		private static bool TryGetBilateralDiplomacyApproval(KingdomDecision decision, DecisionOutcome outcome, out bool approved)
+		{
+			approved = false;
+			if (decision == null || outcome == null) return false;
+			string memberName = null;
+			if (decision is MakePeaceKingdomDecision) memberName = "ShouldPeaceBeDeclared";
+			else if (decision is StartAllianceDecision) memberName = "ShouldAllianceBeStarted";
+			else if (decision is TradeAgreementDecision) memberName = "ShouldTradeAgreementStart";
+			if (string.IsNullOrEmpty(memberName)) return false;
+
+			Type outcomeType = outcome.GetType();
+			PropertyInfo property = outcomeType.GetProperty(memberName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+			if (property != null && property.PropertyType == typeof(bool))
+			{
+				approved = (bool)property.GetValue(outcome, null);
+				return true;
+			}
+			FieldInfo field = outcomeType.GetField(memberName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+			if (field != null && field.FieldType == typeof(bool))
+			{
+				approved = (bool)field.GetValue(outcome);
+				return true;
+			}
+			return false;
+		}
+
+		private BilateralDiplomacyRecord FindCounterpartRecordForDecision(KingdomDecision decision)
+		{
+			if (_bilateralDiplomacyRecords == null || decision == null) return null;
+			return _bilateralDiplomacyRecords.FirstOrDefault(r => DoesDecisionMatchCounterpartRecord(r, decision));
+		}
+
+		private BilateralDiplomacyRecord FindExistingBilateralRecord(BilateralDiplomacyKind kind, Kingdom first, Kingdom second)
+		{
+			if (_bilateralDiplomacyRecords == null || first == null || second == null) return null;
+			string firstId = first.StringId;
+			string secondId = second.StringId;
+			return _bilateralDiplomacyRecords.FirstOrDefault(r =>
+				ParseKind(r.Kind) == kind
+				&& ((string.Equals(r.FirstKingdomId, firstId, StringComparison.OrdinalIgnoreCase)
+						&& string.Equals(r.SecondKingdomId, secondId, StringComparison.OrdinalIgnoreCase))
+					|| (string.Equals(r.FirstKingdomId, secondId, StringComparison.OrdinalIgnoreCase)
+						&& string.Equals(r.SecondKingdomId, firstId, StringComparison.OrdinalIgnoreCase))));
+		}
+
+		private bool IsDuplicateWhileBilateralDiplomacyPending(KingdomDecision decision)
+		{
+			try
+			{
+				if (_bilateralDiplomacyRecords == null || _bilateralDiplomacyRecords.Count == 0) return false;
+				if (FindCounterpartRecordForDecision(decision) != null) return false;
+				if (!TryGetBilateralDiplomacyDecisionDetails(decision, out BilateralDiplomacyKind kind, out Kingdom source, out Kingdom target, out int tribute, out int duration))
+				{
+					return false;
+				}
+				return FindExistingBilateralRecord(kind, source, target) != null;
+			}
+			catch (Exception ex)
+			{
+				Logger.Log("VoteDeal", $"[BilateralDiplomacy] Duplicate check error: {ex.Message}");
+				return false;
+			}
+		}
+
+		private void RemoveDuplicateBilateralDiplomacyAgendas()
+		{
+			try
+			{
+				if (_bilateralDiplomacyRecords == null || _bilateralDiplomacyRecords.Count == 0) return;
+				List<Kingdom> kingdoms = Kingdom.All?.ToList();
+				if (kingdoms == null) return;
+
+				foreach (Kingdom kingdom in kingdoms)
+				{
+					if (kingdom?.UnresolvedDecisions == null || kingdom.UnresolvedDecisions.Count == 0) continue;
+					List<KingdomDecision> decisions = kingdom.UnresolvedDecisions.ToList();
+					foreach (KingdomDecision decision in decisions)
+					{
+						if (decision == null) continue;
+						if (!kingdom.UnresolvedDecisions.Contains(decision)) continue;
+						if (!IsDuplicateWhileBilateralDiplomacyPending(decision)) continue;
+
+						kingdom.RemoveDecision(decision);
+						Logger.Log("VoteDeal", $"[BilateralDiplomacy] Removed duplicate pending diplomacy agenda: kingdom={kingdom.StringId}, decision={GetSafeDecisionTitle(decision)}");
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				Logger.Log("VoteDeal", $"[BilateralDiplomacy] Duplicate cleanup error: {ex.Message}");
+			}
+		}
+
+		private static bool DoesDecisionMatchCounterpartRecord(BilateralDiplomacyRecord record, KingdomDecision decision)
+		{
+			if (record == null || !record.CounterpartCreated) return false;
+			if (!TryGetBilateralDiplomacyDecisionDetails(decision, out BilateralDiplomacyKind kind, out Kingdom source, out Kingdom target, out int tribute, out int duration))
+			{
+				return false;
+			}
+			if (ParseKind(record.Kind) != kind) return false;
+			if (!string.Equals(source.StringId, record.SecondKingdomId, StringComparison.OrdinalIgnoreCase)) return false;
+			if (!string.Equals(target.StringId, record.FirstKingdomId, StringComparison.OrdinalIgnoreCase)) return false;
+			if (kind == BilateralDiplomacyKind.Peace)
+			{
+				return tribute == -record.TributeFromFirstToSecond && duration == record.TributeDurationDays;
+			}
+			return true;
+		}
+
+		private static bool CanCreateBilateralCounterpart(BilateralDiplomacyKind kind, Kingdom source, Kingdom target)
+		{
+			if (kind == BilateralDiplomacyKind.None || source == null || target == null || source == target) return false;
+			if (source.IsEliminated || target.IsEliminated) return false;
+			if (target.RulingClan == null) return false;
+			switch (kind)
+			{
+				case BilateralDiplomacyKind.Peace:
+					return FactionManager.IsAtWarAgainstFaction(source, target);
+				case BilateralDiplomacyKind.Alliance:
+				{
+					IAllianceCampaignBehavior allianceBehavior = Campaign.Current.GetCampaignBehavior<IAllianceCampaignBehavior>();
+					if (allianceBehavior == null) return false;
+					if (FactionManager.IsAtWarAgainstFaction(source, target)) return false;
+					if (allianceBehavior.IsAllyWithKingdom(source, target)) return false;
+					return source.AlliedKingdoms.Count < Campaign.Current.Models.AllianceModel.MaxNumberOfAlliances
+						&& target.AlliedKingdoms.Count < Campaign.Current.Models.AllianceModel.MaxNumberOfAlliances;
+				}
+				case BilateralDiplomacyKind.Trade:
+				{
+					ITradeAgreementsCampaignBehavior tradeBehavior = Campaign.Current.GetCampaignBehavior<ITradeAgreementsCampaignBehavior>();
+					if (tradeBehavior == null) return false;
+					if (FactionManager.IsAtWarAgainstFaction(source, target)) return false;
+					return !HasTradeAgreementCompat(tradeBehavior, source, target);
+				}
+			}
+			return false;
+		}
+
+		private static bool IsBilateralCounterpartDecisionStillHardValid(KingdomDecision decision)
+		{
+			if (!TryGetBilateralDiplomacyDecisionDetails(decision, out BilateralDiplomacyKind kind, out Kingdom source, out Kingdom target, out int tribute, out int duration))
+			{
+				return false;
+			}
+			if (source == null || target == null || source == target) return false;
+			if (source.IsEliminated || target.IsEliminated) return false;
+			if (decision.ProposerClan == null || decision.ProposerClan.Kingdom != source) return false;
+			try
+			{
+				if (!decision.IsAllowed()) return false;
+			}
+			catch
+			{
+				return false;
+			}
+
+			switch (kind)
+			{
+				case BilateralDiplomacyKind.Peace:
+					return FactionManager.IsAtWarAgainstFaction(source, target);
+				case BilateralDiplomacyKind.Alliance:
+				{
+					IAllianceCampaignBehavior allianceBehavior = Campaign.Current.GetCampaignBehavior<IAllianceCampaignBehavior>();
+					if (allianceBehavior == null) return false;
+					if (FactionManager.IsAtWarAgainstFaction(source, target)) return false;
+					if (allianceBehavior.IsAllyWithKingdom(source, target)) return false;
+					return source.AlliedKingdoms.Count < Campaign.Current.Models.AllianceModel.MaxNumberOfAlliances
+						&& target.AlliedKingdoms.Count < Campaign.Current.Models.AllianceModel.MaxNumberOfAlliances;
+				}
+				case BilateralDiplomacyKind.Trade:
+				{
+					ITradeAgreementsCampaignBehavior tradeBehavior = Campaign.Current.GetCampaignBehavior<ITradeAgreementsCampaignBehavior>();
+					if (tradeBehavior == null) return false;
+					if (FactionManager.IsAtWarAgainstFaction(source, target)) return false;
+					return !HasTradeAgreementCompat(tradeBehavior, source, target);
+				}
+			}
+			return false;
+		}
+
+		private bool IsBilateralRecordStillPendingValid(BilateralDiplomacyRecord record)
+		{
+			if (record == null) return false;
+			Kingdom first = ResolveKingdom(record.FirstKingdomId);
+			Kingdom second = ResolveKingdom(record.SecondKingdomId);
+			if (first == null || second == null || first == second) return false;
+			if (first.IsEliminated || second.IsEliminated) return false;
+			switch (ParseKind(record.Kind))
+			{
+				case BilateralDiplomacyKind.Peace:
+					return FactionManager.IsAtWarAgainstFaction(first, second);
+				case BilateralDiplomacyKind.Alliance:
+				{
+					IAllianceCampaignBehavior allianceBehavior = Campaign.Current.GetCampaignBehavior<IAllianceCampaignBehavior>();
+					if (allianceBehavior == null) return false;
+					if (FactionManager.IsAtWarAgainstFaction(first, second)) return false;
+					if (allianceBehavior.IsAllyWithKingdom(first, second)) return false;
+					return first.AlliedKingdoms.Count < Campaign.Current.Models.AllianceModel.MaxNumberOfAlliances
+						&& second.AlliedKingdoms.Count < Campaign.Current.Models.AllianceModel.MaxNumberOfAlliances;
+				}
+				case BilateralDiplomacyKind.Trade:
+				{
+					ITradeAgreementsCampaignBehavior tradeBehavior = Campaign.Current.GetCampaignBehavior<ITradeAgreementsCampaignBehavior>();
+					if (tradeBehavior == null) return false;
+					if (FactionManager.IsAtWarAgainstFaction(first, second)) return false;
+					return !HasTradeAgreementCompat(tradeBehavior, first, second);
+				}
+			}
+			return false;
+		}
+
+		private void CleanupBilateralDiplomacyRecords()
+		{
+			try
+			{
+				if (_bilateralDiplomacyRecords == null) return;
+				_bilateralDiplomacyRecords.RemoveAll(r =>
+					r == null
+					|| ParseKind(r.Kind) == BilateralDiplomacyKind.None
+					|| ResolveKingdom(r.FirstKingdomId) == null
+					|| ResolveKingdom(r.SecondKingdomId) == null
+					|| !IsBilateralRecordStillPendingValid(r));
+			}
+			catch (Exception ex)
+			{
+				Logger.Log("VoteDeal", $"[BilateralDiplomacy] Cleanup error: {ex.Message}");
+			}
+		}
+
+		private static Kingdom ResolveKingdom(string kingdomId)
+		{
+			if (string.IsNullOrWhiteSpace(kingdomId)) return null;
+			return Kingdom.All.FirstOrDefault(k => k != null && string.Equals(k.StringId, kingdomId, StringComparison.OrdinalIgnoreCase));
+		}
+
+		private static string KindToString(BilateralDiplomacyKind kind)
+		{
+			switch (kind)
+			{
+				case BilateralDiplomacyKind.Peace: return "Peace";
+				case BilateralDiplomacyKind.Alliance: return "Alliance";
+				case BilateralDiplomacyKind.Trade: return "Trade";
+				default: return "";
+			}
+		}
+
+		private static BilateralDiplomacyKind ParseKind(string kind)
+		{
+			if (string.Equals(kind, "Peace", StringComparison.OrdinalIgnoreCase)) return BilateralDiplomacyKind.Peace;
+			if (string.Equals(kind, "Alliance", StringComparison.OrdinalIgnoreCase)) return BilateralDiplomacyKind.Alliance;
+			if (string.Equals(kind, "Trade", StringComparison.OrdinalIgnoreCase)) return BilateralDiplomacyKind.Trade;
+			return BilateralDiplomacyKind.None;
+		}
+
+		private static string GetKingdomName(string kingdomId)
+		{
+			Kingdom kingdom = ResolveKingdom(kingdomId);
+			return kingdom?.Name?.ToString() ?? kingdomId ?? "未知王国";
+		}
+
+		private static string GetBilateralDiplomacyKindText(BilateralDiplomacyRecord record)
+		{
+			return GetBilateralDiplomacyKindText(ParseKind(record?.Kind));
+		}
+
+		private static string GetBilateralDiplomacyKindText(BilateralDiplomacyKind kind)
+		{
+			switch (kind)
+			{
+				case BilateralDiplomacyKind.Peace: return "和平";
+				case BilateralDiplomacyKind.Alliance: return "同盟";
+				case BilateralDiplomacyKind.Trade: return "贸易协定";
+				default: return "外交";
+			}
+		}
+
+		private static void DisplayBilateralDiplomacyMessage(string text, uint color)
+		{
+			try
+			{
+				if (!string.IsNullOrWhiteSpace(text))
+				{
+					InformationManager.DisplayMessage(new InformationMessage(text, Color.FromUint(color)));
+				}
+			}
+			catch (Exception ex)
+			{
+				Logger.Log("VoteDeal", $"[BilateralDiplomacy] Display message error: {ex.Message}");
+			}
+		}
+
+		private static bool HasTradeAgreementCompat(ITradeAgreementsCampaignBehavior tradeBeh, Kingdom kingdom, Kingdom other)
+		{
+			if (tradeBeh == null || kingdom == null || other == null)
+			{
+				return false;
+			}
+#if BANNERLORD_1_4_OR_GREATER
+			return tradeBeh.HasTradeAgreement(kingdom, other, out var _);
+#else
+			return tradeBeh.HasTradeAgreement(kingdom, other);
+#endif
+		}
+
+		internal static bool IsBilateralDiplomacyCounterpartAgenda(KingdomDecision decision)
+		{
+			try
+			{
+				VoteDealBehavior behavior = Instance ?? Campaign.Current?.GetCampaignBehavior<VoteDealBehavior>();
+				return behavior?.FindCounterpartRecordForDecision(decision) != null;
+			}
+			catch (Exception ex)
+			{
+				Logger.Log("VoteDeal", $"[BilateralDiplomacy] Counterpart agenda check failed: {ex.Message}");
+				return false;
+			}
+		}
+
+		internal static string GetBilateralDiplomacyAgendaTitle(KingdomDecision decision)
+		{
+			if (!IsBilateralDiplomacyCounterpartAgenda(decision)) return null;
+			string title = decision?.GetGeneralTitle()?.ToString() ?? "外交提案";
+			return "对等外交复议：" + title;
+		}
+
+		internal static string GetBilateralDiplomacyAgendaProposerText(KingdomDecision decision)
+		{
+			return IsBilateralDiplomacyCounterpartAgenda(decision) ? "无" : null;
+		}
+
+		internal static string GetBilateralDiplomacyAgendaTypeText(KingdomDecision decision)
+		{
+			return IsBilateralDiplomacyCounterpartAgenda(decision) ? "复议" : null;
 		}
 
 		// ── Tag processing ─────────────────────────────────────────────────
@@ -634,9 +1602,9 @@ namespace AnimusForge
 							Decision = decision,
 							DecisionKey = BuildVoteDealDecisionKey(decision, includeProposer: true),
 							DecisionBasicKey = BuildVoteDealDecisionKey(decision, includeProposer: false),
-							TypeLabel = GetDecisionTypeLabel(decision),
-							Title = CleanVoteDealText(decision.GetGeneralTitle()?.ToString() ?? "未命名提案"),
-							ProposerName = CleanVoteDealText(decision.ProposerClan?.Name?.ToString() ?? "未知"),
+							TypeLabel = VoteDealBehavior.GetBilateralDiplomacyAgendaTypeText(decision) ?? GetDecisionTypeLabel(decision),
+							Title = CleanVoteDealText(VoteDealBehavior.GetBilateralDiplomacyAgendaTitle(decision) ?? decision.GetGeneralTitle()?.ToString() ?? "未命名提案"),
+							ProposerName = CleanVoteDealText(VoteDealBehavior.GetBilateralDiplomacyAgendaProposerText(decision) ?? decision.ProposerClan?.Name?.ToString() ?? "未知"),
 							RemainingDays = decision.TriggerTime.RemainingDaysFromNow
 						};
 
@@ -1026,6 +1994,13 @@ namespace AnimusForge
 			try
 			{
 				if (clan == null || string.IsNullOrEmpty(clan.StringId)) return true;
+
+				if (IsBilateralDiplomacyCounterpartAgenda(__instance)
+					&& string.Equals(clan.StringId, __instance.ProposerClan?.StringId, StringComparison.OrdinalIgnoreCase))
+				{
+					__result = 0f;
+					return false;
+				}
 
 				// Safety: proposer clan vote must not be overridden — would cancel the decision
 				if (clan.StringId == __instance.ProposerClan?.StringId) return true;
@@ -1849,8 +2824,8 @@ namespace AnimusForge
 		public KingdomAgendaItemVM(KingdomDecision decision)
 		{
 			_decision = decision;
-			TitleText = decision.GetGeneralTitle()?.ToString() ?? "未命名提案";
-			DecisionTypeText = GetDecisionTypeLabel(decision);
+			TitleText = VoteDealBehavior.GetBilateralDiplomacyAgendaTitle(decision) ?? decision.GetGeneralTitle()?.ToString() ?? "未命名提案";
+			DecisionTypeText = VoteDealBehavior.GetBilateralDiplomacyAgendaTypeText(decision) ?? GetDecisionTypeLabel(decision);
 			RefreshTimingState();
 		}
 
@@ -1864,9 +2839,10 @@ namespace AnimusForge
 			}
 
 			float remainingDays = _decision.TriggerTime.RemainingDaysFromNow;
+			string proposerText = VoteDealBehavior.GetBilateralDiplomacyAgendaProposerText(_decision) ?? _decision.ProposerClan?.Name?.ToString() ?? "未知";
 			DaysRemainingText = (remainingDays > 0)
-				? $"提案人: {_decision.ProposerClan?.Name?.ToString() ?? "未知"} · 剩余 {remainingDays:F1} 天"
-				: $"提案人: {_decision.ProposerClan?.Name?.ToString() ?? "未知"} · 可以投票";
+				? $"提案人: {proposerText} · 剩余 {remainingDays:F1} 天"
+				: $"提案人: {proposerText} · 可以投票";
 			IsUrgent = remainingDays <= 1f;
 			CanCallVoteMeeting = _decision.Kingdom == Clan.PlayerClan?.Kingdom &&
 				_decision.IsPlayerParticipant &&

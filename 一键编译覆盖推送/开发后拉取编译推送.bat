@@ -10,10 +10,14 @@ for %%I in ("%SCRIPT_DIR%..") do set "PROJECT_ROOT=%%~fI"
 cd /d "%PROJECT_ROOT%"
 
 set "PATH_SCRIPT=%SCRIPT_DIR%resolve_bannerlord_paths.ps1"
+set "BUILD_DEPS_SCRIPT=%SCRIPT_DIR%prepare_build_deps.ps1"
 set "CONFIG=Debug"
 set "DRY_RUN=0"
+set "DUAL_BUILD=0"
 set "COMMIT_MSG="
-set "GIT_EXCLUDE_PATH=AnimusForge/ONNX/reranker"
+set "GIT_EXCLUDE_PATH_1=AnimusForge/ONNX/reranker"
+set "GIT_EXCLUDE_PATH_2=原版游戏本体代码1.3.x"
+set "GIT_EXCLUDE_PATH_3=原版游戏本体代码1.4.5"
 set "BANNERLORD_ROOT="
 set "WORKSHOP_CONTENT_DIR="
 
@@ -27,6 +31,12 @@ if "%~1"=="" goto args_done
 
 if /I "%~1"=="--dry-run" (
     set "DRY_RUN=1"
+    shift
+    goto parse_args
+)
+
+if /I "%~1"=="--dual" (
+    set "DUAL_BUILD=1"
     shift
     goto parse_args
 )
@@ -58,13 +68,22 @@ if "%DRY_RUN%"=="1" if not defined COMMIT_MSG (
 )
 
 set "COMMIT_MSG_SAFE=%COMMIT_MSG:"='%"
+set "BUILD_DEPS_DIR=%PROJECT_ROOT%\bin\%CONFIG%\build_deps"
 
 echo [AnimusForge] Post-work Pull + Build + Push started...
 echo Repo      : "%PROJECT_ROOT%"
 echo Bannerlord: "%BANNERLORD_ROOT%"
 if defined WORKSHOP_CONTENT_DIR echo Workshop  : "%WORKSHOP_CONTENT_DIR%"
 echo Config    : "%CONFIG%"
-echo Exclude   : "%GIT_EXCLUDE_PATH%"
+echo Build deps: "%BUILD_DEPS_DIR%"
+echo Exclude   : "%GIT_EXCLUDE_PATH_1%"
+echo Exclude   : "%GIT_EXCLUDE_PATH_2%"
+echo Exclude   : "%GIT_EXCLUDE_PATH_3%"
+if "%DUAL_BUILD%"=="1" (
+    echo Build API : 1.3 + 1.4
+) else (
+    echo Build API : 1.3
+)
 if "%DRY_RUN%"=="1" echo Mode      : DRY RUN
 echo.
 
@@ -117,9 +136,21 @@ if not exist "%BANNERLORD_ROOT%" (
     exit /b 1
 )
 
+if not exist "%BUILD_DEPS_SCRIPT%" (
+    echo [ERROR] Build dependency preparation script not found:
+    echo "%BUILD_DEPS_SCRIPT%"
+    pause
+    exit /b 1
+)
+
 echo Branch : "%BRANCH%"
 echo Origin : "%ORIGIN_URL%"
 echo.
+
+if not "%DRY_RUN%"=="1" (
+    call :EnsureNoStagedChanges
+    if errorlevel 1 exit /b 1
+)
 
 if "%DRY_RUN%"=="1" (
     echo [Preview] Current changed files:
@@ -132,15 +163,15 @@ if "%DRY_RUN%"=="1" (
     echo   git ls-remote --exit-code origin "refs/heads/%BRANCH%"
     echo   git fetch origin "%BRANCH%"
     echo   if origin/%BRANCH% has new commit^(s^): git rebase --autostash "origin/%BRANCH%"
+    echo   powershell -NoProfile -ExecutionPolicy Bypass -File "%BUILD_DEPS_SCRIPT%" -ProjectRoot "%PROJECT_ROOT%" -BannerlordRoot "%BANNERLORD_ROOT%" -Configuration "%CONFIG%"
     if defined WORKSHOP_CONTENT_DIR (
-        echo   dotnet build "%PROJECT_ROOT%\AnimusForge.csproj" -c %CONFIG% /p:BannerlordApi=1.3 /p:BannerlordRoot="%BANNERLORD_ROOT%" /p:WorkshopContentDir="%WORKSHOP_CONTENT_DIR%"
-        echo   dotnet build "%PROJECT_ROOT%\AnimusForge.csproj" -c %CONFIG% /p:BannerlordApi=1.4 /p:BannerlordRoot="%BANNERLORD_ROOT%" /p:WorkshopContentDir="%WORKSHOP_CONTENT_DIR%"
+        echo   dotnet build "%PROJECT_ROOT%\AnimusForge.csproj" -c %CONFIG% /p:BannerlordApi=1.3 /p:BannerlordRoot="%BANNERLORD_ROOT%" /p:WorkshopContentDir="%WORKSHOP_CONTENT_DIR%" /p:AnimusForgeBinDir="%BUILD_DEPS_DIR%"
+        if "%DUAL_BUILD%"=="1" echo   dotnet build "%PROJECT_ROOT%\AnimusForge.csproj" -c %CONFIG% /p:BannerlordApi=1.4 /p:BannerlordRoot="%BANNERLORD_ROOT%" /p:WorkshopContentDir="%WORKSHOP_CONTENT_DIR%" /p:AnimusForgeBinDir="%BUILD_DEPS_DIR%"
     ) else (
-        echo   dotnet build "%PROJECT_ROOT%\AnimusForge.csproj" -c %CONFIG% /p:BannerlordApi=1.3 /p:BannerlordRoot="%BANNERLORD_ROOT%"
-        echo   dotnet build "%PROJECT_ROOT%\AnimusForge.csproj" -c %CONFIG% /p:BannerlordApi=1.4 /p:BannerlordRoot="%BANNERLORD_ROOT%"
+        echo   dotnet build "%PROJECT_ROOT%\AnimusForge.csproj" -c %CONFIG% /p:BannerlordApi=1.3 /p:BannerlordRoot="%BANNERLORD_ROOT%" /p:AnimusForgeBinDir="%BUILD_DEPS_DIR%"
+        if "%DUAL_BUILD%"=="1" echo   dotnet build "%PROJECT_ROOT%\AnimusForge.csproj" -c %CONFIG% /p:BannerlordApi=1.4 /p:BannerlordRoot="%BANNERLORD_ROOT%" /p:AnimusForgeBinDir="%BUILD_DEPS_DIR%"
     )
-    echo   git rm -r --cached --ignore-unmatch -- "%GIT_EXCLUDE_PATH%"
-    echo   git add -A
+    echo   git add -A -- . ":(exclude)%GIT_EXCLUDE_PATH_1%/**" ":(exclude)%GIT_EXCLUDE_PATH_2%/**" ":(exclude)%GIT_EXCLUDE_PATH_3%/**"
     echo   if changes exist: git commit -m "%COMMIT_MSG_SAFE%"
     echo   verify origin/%BRANCH% did not change after build
     echo   git push -u origin "%BRANCH%"
@@ -192,11 +223,16 @@ if not "%BEHIND_COUNT%"=="0" (
 )
 
 echo.
-echo [2/4] Building project for Bannerlord 1.3.x...
+echo [2/5] Preparing local build dependencies...
+call :PrepareBuildDeps
+if errorlevel 1 exit /b %ERRORLEVEL%
+
+echo.
+echo [3/5] Building project for Bannerlord 1.3.x...
 if defined WORKSHOP_CONTENT_DIR (
-    dotnet build "%PROJECT_ROOT%\AnimusForge.csproj" -c %CONFIG% /p:BannerlordApi=1.3 /p:BannerlordRoot="%BANNERLORD_ROOT%" /p:WorkshopContentDir="%WORKSHOP_CONTENT_DIR%"
+    dotnet build "%PROJECT_ROOT%\AnimusForge.csproj" -c %CONFIG% /p:BannerlordApi=1.3 /p:BannerlordRoot="%BANNERLORD_ROOT%" /p:WorkshopContentDir="%WORKSHOP_CONTENT_DIR%" /p:AnimusForgeBinDir="%BUILD_DEPS_DIR%"
 ) else (
-    dotnet build "%PROJECT_ROOT%\AnimusForge.csproj" -c %CONFIG% /p:BannerlordApi=1.3 /p:BannerlordRoot="%BANNERLORD_ROOT%"
+    dotnet build "%PROJECT_ROOT%\AnimusForge.csproj" -c %CONFIG% /p:BannerlordApi=1.3 /p:BannerlordRoot="%BANNERLORD_ROOT%" /p:AnimusForgeBinDir="%BUILD_DEPS_DIR%"
 )
 set "ERR=%ERRORLEVEL%"
 if not "%ERR%"=="0" (
@@ -206,23 +242,25 @@ if not "%ERR%"=="0" (
     exit /b %ERR%
 )
 
-echo.
-echo [2/4] Building project for Bannerlord 1.4.5...
-if defined WORKSHOP_CONTENT_DIR (
-    dotnet build "%PROJECT_ROOT%\AnimusForge.csproj" -c %CONFIG% /p:BannerlordApi=1.4 /p:BannerlordRoot="%BANNERLORD_ROOT%" /p:WorkshopContentDir="%WORKSHOP_CONTENT_DIR%"
-) else (
-    dotnet build "%PROJECT_ROOT%\AnimusForge.csproj" -c %CONFIG% /p:BannerlordApi=1.4 /p:BannerlordRoot="%BANNERLORD_ROOT%"
-)
-set "ERR=%ERRORLEVEL%"
-if not "%ERR%"=="0" (
+if "%DUAL_BUILD%"=="1" (
     echo.
-    echo [FAILED] 1.4.5 build failed. ExitCode=%ERR%
-    pause
-    exit /b %ERR%
+    echo [3/5] Building project for Bannerlord 1.4.5...
+    if defined WORKSHOP_CONTENT_DIR (
+        dotnet build "%PROJECT_ROOT%\AnimusForge.csproj" -c %CONFIG% /p:BannerlordApi=1.4 /p:BannerlordRoot="%BANNERLORD_ROOT%" /p:WorkshopContentDir="%WORKSHOP_CONTENT_DIR%" /p:AnimusForgeBinDir="%BUILD_DEPS_DIR%"
+    ) else (
+        dotnet build "%PROJECT_ROOT%\AnimusForge.csproj" -c %CONFIG% /p:BannerlordApi=1.4 /p:BannerlordRoot="%BANNERLORD_ROOT%" /p:AnimusForgeBinDir="%BUILD_DEPS_DIR%"
+    )
+    set "ERR=%ERRORLEVEL%"
+    if not "!ERR!"=="0" (
+        echo.
+        echo [FAILED] 1.4.5 build failed. ExitCode=!ERR!
+        pause
+        exit /b !ERR!
+    )
 )
 
 echo.
-echo [3/4] Staging and committing changes...
+echo [4/5] Staging and committing changes...
 
 if not defined COMMIT_MSG (
     set /p "INPUT_MSG=Enter commit note (optional): "
@@ -236,15 +274,15 @@ if not defined COMMIT_MSG (
 
 set "COMMIT_MSG_SAFE=%COMMIT_MSG:"='%"
 
-git rm -r --cached --ignore-unmatch -- "%GIT_EXCLUDE_PATH%" >nul 2>nul
+git rm -r --cached --ignore-unmatch -- "%GIT_EXCLUDE_PATH_1%" >nul 2>nul
 if errorlevel 1 (
     echo [ERROR] Failed to exclude Git path:
-    echo   "%GIT_EXCLUDE_PATH%"
+    echo   "%GIT_EXCLUDE_PATH_1%"
     pause
     exit /b 1
 )
 
-git add -A
+git add -A -- . ":(exclude)%GIT_EXCLUDE_PATH_1%/**" ":(exclude)%GIT_EXCLUDE_PATH_2%/**" ":(exclude)%GIT_EXCLUDE_PATH_3%/**"
 if errorlevel 1 (
     echo [ERROR] git add failed.
     pause
@@ -264,7 +302,7 @@ if errorlevel 1 (
 )
 
 echo.
-echo [4/4] Pushing to origin/%BRANCH%...
+echo [5/5] Pushing to origin/%BRANCH%...
 git fetch origin "%BRANCH%" >nul
 if errorlevel 1 (
     echo [ERROR] Failed to refresh origin/%BRANCH% before push.
@@ -297,4 +335,34 @@ if errorlevel 1 (
 
 echo [SUCCESS] Post-work Pull + Build + Push completed. No deploy was run.
 pause
+exit /b 0
+
+:PrepareBuildDeps
+if defined WORKSHOP_CONTENT_DIR (
+    powershell -NoProfile -ExecutionPolicy Bypass -File "%BUILD_DEPS_SCRIPT%" -ProjectRoot "%PROJECT_ROOT%" -BannerlordRoot "%BANNERLORD_ROOT%" -WorkshopContentDir "%WORKSHOP_CONTENT_DIR%" -Configuration "%CONFIG%"
+) else (
+    powershell -NoProfile -ExecutionPolicy Bypass -File "%BUILD_DEPS_SCRIPT%" -ProjectRoot "%PROJECT_ROOT%" -BannerlordRoot "%BANNERLORD_ROOT%" -Configuration "%CONFIG%"
+)
+set "ERR=%ERRORLEVEL%"
+if not "%ERR%"=="0" (
+    echo [ERROR] Failed to prepare local build dependencies. ExitCode=%ERR%
+    pause
+    exit /b %ERR%
+)
+exit /b 0
+
+:EnsureNoStagedChanges
+git diff --cached --quiet
+set "STAGED_ERR=%ERRORLEVEL%"
+if "%STAGED_ERR%"=="1" (
+    echo [ERROR] There are already staged changes.
+    echo This script stages and commits automatically, so clear stale staged changes first:
+    echo   git restore --staged .
+    pause
+    exit /b 1
+) else if not "%STAGED_ERR%"=="0" (
+    echo [ERROR] git diff --cached failed.
+    pause
+    exit /b 1
+)
 exit /b 0
