@@ -57,27 +57,24 @@
                                   <Children>
                                     <ListPanel Id="OptionInnerPanel" DataSource="{Items}" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="VerticalTopToBottom">
                                       <ItemTemplate>
-                                        <AutoHeightSyncWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="0" PaddingAmount="18" MarginBottom="12">
+                                        <ButtonWidget DoNotPassEventsToChildren="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="86" MarginBottom="8" Brush="Popup.SelectionElement.Tuple" Command.Click="ExecuteSelect" UpdateChildrenStates="true">
                                           <Children>
-                                            <ButtonWidget DoNotPassEventsToChildren="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" Brush="Popup.Done.Button" Command.Click="ExecuteSelect" UpdateChildrenStates="true">
+                                            <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#211A13FF" AlphaFactor="0.86" IsEnabled="false" />
+                                            <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="3" MarginRight="3" MarginTop="3" MarginBottom="3" Sprite="BlankWhiteSquare_9" Color="#4A3D2DFF" AlphaFactor="0.36" IsEnabled="false" />
+                                            <Widget IsVisible="@IsPrimary" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="2" MarginRight="2" MarginTop="2" MarginBottom="2" Sprite="BlankWhiteSquare_9" Color="#75603EFF" AlphaFactor="0.66" IsEnabled="false" />
+                                            <Widget IsVisible="@IsDanger" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="2" MarginRight="2" MarginTop="2" MarginBottom="2" Sprite="BlankWhiteSquare_9" Color="#6C2B24FF" AlphaFactor="0.70" IsEnabled="false" />
+                                            <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="2" VerticalAlignment="Top" MarginLeft="14" MarginRight="14" Sprite="BlankWhiteSquare_9" Color="#B79E72FF" AlphaFactor="0.55" IsEnabled="false" />
+                                            <Widget IsVisible="@IsDanger" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="5" HorizontalAlignment="Left" MarginTop="11" MarginBottom="11" Sprite="BlankWhiteSquare_9" Color="#C65A49FF" AlphaFactor="0.86" IsEnabled="false" />
+                                            <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="18" MarginRight="18" MarginTop="8" MarginBottom="8" ClipContents="true" DoNotAcceptEvents="true">
                                               <Children>
-                                                <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#211A13FF" AlphaFactor="0.88" IsEnabled="false" />
-                                                <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="4" MarginRight="4" MarginTop="4" MarginBottom="4" Sprite="BlankWhiteSquare_9" Color="#4A3D2DFF" AlphaFactor="0.40" IsEnabled="false" />
-                                                <Widget IsVisible="@IsPrimary" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="2" MarginRight="2" MarginTop="2" MarginBottom="2" Sprite="BlankWhiteSquare_9" Color="#75603EFF" AlphaFactor="0.74" IsEnabled="false" />
-                                                <Widget IsVisible="@IsDanger" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="2" MarginRight="2" MarginTop="2" MarginBottom="2" Sprite="BlankWhiteSquare_9" Color="#6C2B24FF" AlphaFactor="0.76" IsEnabled="false" />
-                                                <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="3" VerticalAlignment="Top" MarginLeft="14" MarginRight="14" Sprite="BlankWhiteSquare_9" Color="#B79E72FF" AlphaFactor="0.70" IsEnabled="false" />
-                                                <Widget IsVisible="@IsDanger" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="5" HorizontalAlignment="Left" MarginTop="12" MarginBottom="12" Sprite="BlankWhiteSquare_9" Color="#C65A49FF" AlphaFactor="0.88" IsEnabled="false" />
-                                                <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginLeft="20" MarginRight="20" MarginTop="16" MarginBottom="16" LayoutImp.LayoutMethod="VerticalTopToBottom">
-                                                  <Children>
-                                                    <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" Brush="Popup.Title.Text" Brush.FontSize="23" Brush.TextHorizontalAlignment="Left" Text="@TitleText" DoNotAcceptEvents="true" />
-                                                    <RichTextWidget IsVisible="@ShowDetailText" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginTop="8" Brush="Popup.Description.Text" Brush.FontSize="19" Brush.TextHorizontalAlignment="Left" Text="@DetailText" DoNotAcceptEvents="true" />
-                                                    <RichTextWidget IsVisible="@ShowMetaText" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginTop="8" Brush="Popup.Description.Text" Brush.FontSize="17" Brush.FontColor="#BFB4A2FF" Brush.TextHorizontalAlignment="Left" Text="@MetaText" DoNotAcceptEvents="true" />
-                                                  </Children>
-                                                </ListPanel>
+                                                <RichTextWidget IsVisible="@ShowTitleOnly" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="50" VerticalAlignment="Center" Brush="Popup.Tuple.Text" Brush.FontSize="22" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="@CompactTitleText" DoNotAcceptEvents="true" />
+                                                <RichTextWidget IsVisible="@ShowStackedText" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="28" VerticalAlignment="Top" Brush="Popup.Tuple.Text" Brush.FontSize="22" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" Text="@CompactTitleText" DoNotAcceptEvents="true" />
+                                                <RichTextWidget IsVisible="@ShowDetailText" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="22" VerticalAlignment="Top" MarginTop="31" Brush="Popup.Description.Text" Brush.FontSize="17" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" Text="@CompactDetailText" DoNotAcceptEvents="true" />
+                                                <RichTextWidget IsVisible="@ShowMetaText" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="20" VerticalAlignment="Bottom" Brush="Popup.Description.Text" Brush.FontSize="15" Brush.FontColor="#BFB4A2FF" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" Text="@CompactMetaText" DoNotAcceptEvents="true" />
                                               </Children>
-                                            </ButtonWidget>
+                                            </Widget>
                                           </Children>
-                                        </AutoHeightSyncWidget>
+                                        </ButtonWidget>
                                       </ItemTemplate>
                                     </ListPanel>
                                   </Children>

@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -24,6 +25,7 @@ public static class EncyclopediaHeroPersonaPatch
 	private const string EditButtonId = "AnimusForgeHeroPersonaEditButton";
 	private const string CourierButtonId = "AnimusForgeHeroCourierButton";
 	private const string PlayerNotorietyMarker = "【玩家知名度】";
+	private const int UpdateBrushesContainerIndex = 5;
 
 	private static readonly object SyncRoot = new object();
 	private static readonly HashSet<string> GenerationRequests = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -35,6 +37,8 @@ public static class EncyclopediaHeroPersonaPatch
 	private static bool _loggedFirstButtonState;
 	private static bool _loggedButtonCreateProbe;
 	private static bool _loggedStaleRootSkip;
+	private static bool _loggedLiveRootUpdateFailure;
+	private static bool _loggedUnsafeStateWriteSkip;
 
 	private sealed class PendingRefresh
 	{
@@ -261,7 +265,10 @@ public static class EncyclopediaHeroPersonaPatch
 		}
 		foreach (object root in roots)
 		{
-			UpdateGeneratedRoot(root, updateText: true);
+			if (!TryUpdateGeneratedRoot(root, updateText: true))
+			{
+				RemoveTrackedRoot(root);
+			}
 		}
 	}
 
@@ -285,11 +292,22 @@ public static class EncyclopediaHeroPersonaPatch
 		}
 		foreach (object root in roots)
 		{
-			EncyclopediaHeroPageVM vm = GetDataSource(root);
-			Hero hero = ResolveHero(vm);
-			if (string.IsNullOrWhiteSpace(heroId) || string.Equals(hero?.StringId ?? "", heroId, StringComparison.OrdinalIgnoreCase))
+			try
 			{
-				UpdateGeneratedRoot(root, updateText: true);
+				EncyclopediaHeroPageVM vm = GetDataSource(root);
+				Hero hero = ResolveHero(vm);
+				if (string.IsNullOrWhiteSpace(heroId) || string.Equals(hero?.StringId ?? "", heroId, StringComparison.OrdinalIgnoreCase))
+				{
+					if (!TryUpdateGeneratedRoot(root, updateText: true))
+					{
+						RemoveTrackedRoot(root);
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				LogLiveRootUpdateFailure(ex);
+				RemoveTrackedRoot(root);
 			}
 		}
 	}
@@ -318,11 +336,24 @@ public static class EncyclopediaHeroPersonaPatch
 		}
 	}
 
-	private static void UpdateGeneratedRoot(object root, bool updateText)
+	private static bool TryUpdateGeneratedRoot(object root, bool updateText)
+	{
+		try
+		{
+			return UpdateGeneratedRoot(root, updateText);
+		}
+		catch (Exception ex)
+		{
+			LogLiveRootUpdateFailure(ex);
+			return false;
+		}
+	}
+
+	private static bool UpdateGeneratedRoot(object root, bool updateText)
 	{
 		if (root == null)
 		{
-			return;
+			return true;
 		}
 		EncyclopediaHeroPageVM vm = GetDataSource(root);
 		Hero hero = ResolveHero(vm);
@@ -331,19 +362,21 @@ public static class EncyclopediaHeroPersonaPatch
 			ApplyPersonaText(vm, hero, triggerGeneration: false);
 		}
 		ButtonWidget button = GetEditButton(root);
+		bool stateWriteSucceeded = true;
 		if (button != null)
 		{
 			bool shouldShow = ShouldShowEditButton(hero, vm);
-			SetWidgetVisibleIfChanged(button, shouldShow);
+			stateWriteSucceeded &= SetWidgetVisibleIfChanged(button, shouldShow);
 			LogFirstButtonState(hero, vm, shouldShow);
 		}
 		ButtonWidget courierButton = GetCourierButton(root);
 		if (courierButton != null)
 		{
 			bool shouldShowCourier = ShouldShowCourierButton(hero, vm);
-			SetWidgetVisibleIfChanged(courierButton, shouldShowCourier);
-			SetWidgetEnabledIfChanged(courierButton, shouldShowCourier && !CourierDeliveryBehavior.HasActiveCourierForHeroForExternal(hero));
+			stateWriteSucceeded &= SetWidgetVisibleIfChanged(courierButton, shouldShowCourier);
+			stateWriteSucceeded &= SetWidgetEnabledIfChanged(courierButton, shouldShowCourier && !CourierDeliveryBehavior.HasActiveCourierForHeroForExternal(hero));
 		}
+		return stateWriteSucceeded;
 	}
 
 	private static bool IsRootUsableForLiveUpdate(object root)
@@ -371,11 +404,11 @@ public static class EncyclopediaHeroPersonaPatch
 		{
 			UIContext context = widget.Context;
 			EventManager eventManager = context?.EventManager;
-			if (eventManager == null || !widget.ConnectedToRoot)
+			if (eventManager == null || !widget.ConnectedToRoot || !IsAnchoredToEventRoot(widget, eventManager))
 			{
 				return false;
 			}
-			return EventManagerWidgetContainersField == null || EventManagerWidgetContainersField.GetValue(eventManager) != null;
+			return HasUsableEventContainers(eventManager);
 		}
 		catch
 		{
@@ -383,22 +416,98 @@ public static class EncyclopediaHeroPersonaPatch
 		}
 	}
 
-	private static void SetWidgetVisibleIfChanged(Widget widget, bool visible)
+	private static bool IsAnchoredToEventRoot(Widget widget, EventManager eventManager)
 	{
-		if (widget == null || widget.IsVisible == visible || !IsWidgetSafeForStateWrite(widget))
+		Widget root = eventManager?.Root;
+		if (widget == null || root == null)
 		{
-			return;
+			return false;
 		}
-		widget.IsVisible = visible;
+		int depth = 0;
+		for (Widget current = widget; current != null && depth < 512; current = current.ParentWidget)
+		{
+			if (ReferenceEquals(current, root))
+			{
+				return true;
+			}
+			depth++;
+		}
+		return false;
 	}
 
-	private static void SetWidgetEnabledIfChanged(Widget widget, bool enabled)
+	private static bool HasUsableEventContainers(EventManager eventManager)
 	{
-		if (widget == null || widget.IsEnabled == enabled || !IsWidgetSafeForStateWrite(widget))
+		if (eventManager == null || EventManagerWidgetContainersField == null)
 		{
-			return;
+			return false;
 		}
-		widget.IsEnabled = enabled;
+		object containers = EventManagerWidgetContainersField.GetValue(eventManager);
+		if (containers == null)
+		{
+			return false;
+		}
+		if (containers is Array containerArray)
+		{
+			return containerArray.Length > UpdateBrushesContainerIndex && containerArray.GetValue(UpdateBrushesContainerIndex) != null;
+		}
+		if (containers is IDictionary containerDictionary)
+		{
+			foreach (DictionaryEntry entry in containerDictionary)
+			{
+				if (entry.Value != null && string.Equals(entry.Key?.ToString(), "UpdateBrushes", StringComparison.Ordinal))
+				{
+					return true;
+				}
+			}
+			return false;
+		}
+		return true;
+	}
+
+	private static bool SetWidgetVisibleIfChanged(Widget widget, bool visible)
+	{
+		try
+		{
+			if (widget == null || widget.IsVisible == visible)
+			{
+				return true;
+			}
+			if (!IsWidgetSafeForStateWrite(widget))
+			{
+				LogUnsafeStateWriteSkip();
+				return false;
+			}
+			widget.IsVisible = visible;
+			return true;
+		}
+		catch (Exception ex)
+		{
+			LogLiveRootUpdateFailure(ex);
+			return false;
+		}
+	}
+
+	private static bool SetWidgetEnabledIfChanged(Widget widget, bool enabled)
+	{
+		try
+		{
+			if (widget == null || widget.IsEnabled == enabled)
+			{
+				return true;
+			}
+			if (!IsWidgetSafeForStateWrite(widget))
+			{
+				LogUnsafeStateWriteSkip();
+				return false;
+			}
+			widget.IsEnabled = enabled;
+			return true;
+		}
+		catch (Exception ex)
+		{
+			LogLiveRootUpdateFailure(ex);
+			return false;
+		}
 	}
 
 	private static void LogStaleRootSkip(Widget root)
@@ -409,6 +518,45 @@ public static class EncyclopediaHeroPersonaPatch
 		}
 		_loggedStaleRootSkip = true;
 		Logger.Log("EncyclopediaPersona", "[INFO] Removed stale hero encyclopedia UI root from live refresh cache.");
+	}
+
+	private static void LogLiveRootUpdateFailure(Exception ex)
+	{
+		if (_loggedLiveRootUpdateFailure)
+		{
+			return;
+		}
+		_loggedLiveRootUpdateFailure = true;
+		Logger.Log("EncyclopediaPersona", "[WARN] Removed hero encyclopedia UI root after state update failed: " + ex.Message);
+	}
+
+	private static void LogUnsafeStateWriteSkip()
+	{
+		if (_loggedUnsafeStateWriteSkip)
+		{
+			return;
+		}
+		_loggedUnsafeStateWriteSkip = true;
+		Logger.Log("EncyclopediaPersona", "[INFO] Skipped hero encyclopedia button state update because its Gauntlet event context is no longer writable.");
+	}
+
+	private static void RemoveTrackedRoot(object root)
+	{
+		if (root == null)
+		{
+			return;
+		}
+		RootDataSources.Remove(root);
+		lock (SyncRoot)
+		{
+			for (int i = LiveGeneratedRoots.Count - 1; i >= 0; i--)
+			{
+				if (ReferenceEquals(LiveGeneratedRoots[i]?.Target, root))
+				{
+					LiveGeneratedRoots.RemoveAt(i);
+				}
+			}
+		}
 	}
 
 	private static void LogFirstButtonState(Hero hero, EncyclopediaHeroPageVM vm, bool visible)

@@ -1261,6 +1261,24 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		}
 		try
 		{
+			if (MyBehavior.TryApplyPartyTransferTagsForExternal(recipient, recipient.CharacterObject, -1, ref text, out var facts, out var notifications))
+			{
+				foreach (string fact in facts ?? new List<string>())
+				{
+					MyBehavior.AppendExternalDialogueHistory(recipient, null, null, fact);
+				}
+				foreach (string note in notifications ?? new List<string>())
+				{
+					InformationManager.DisplayMessage(new InformationMessage(note, Colors.Green));
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			Log("apply party transfer tags failed session=" + session.Id + " error=" + ex.Message);
+		}
+		try
+		{
 			RewardSystemBehavior.Instance?.ApplyRewardTags(recipient, Hero.MainHero, ref text);
 		}
 		catch (Exception ex)
@@ -1282,24 +1300,6 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		catch (Exception ex)
 		{
 			Log("apply marriage tags failed session=" + session.Id + " error=" + ex.Message);
-		}
-		try
-		{
-			if (MyBehavior.TryApplyPartyTransferTagsForExternal(recipient, recipient.CharacterObject, -1, ref text, out var facts, out var notifications))
-			{
-				foreach (string fact in facts ?? new List<string>())
-				{
-					MyBehavior.AppendExternalDialogueHistory(recipient, null, null, fact);
-				}
-				foreach (string note in notifications ?? new List<string>())
-				{
-					InformationManager.DisplayMessage(new InformationMessage(note, Colors.Green));
-				}
-			}
-		}
-		catch (Exception ex)
-		{
-			Log("apply party transfer tags failed session=" + session.Id + " error=" + ex.Message);
 		}
 		session.ReplyPostprocessedText = text;
 		session.PostprocessConsumed = true;
@@ -1449,6 +1449,24 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			}
 			try
 			{
+				if (MyBehavior.TryApplyPartyTransferTagsForExternal(recipient, recipient.CharacterObject, -1, ref text, out var facts, out var notifications))
+				{
+					foreach (string fact in facts ?? new List<string>())
+					{
+						MyBehavior.AppendExternalDialogueHistory(recipient, null, null, fact);
+					}
+					foreach (string note in notifications ?? new List<string>())
+					{
+						InformationManager.DisplayMessage(new InformationMessage(note, Colors.Green));
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				Log("apply party transfer tags failed session=" + session.Id + " error=" + ex.Message);
+			}
+			try
+			{
 				RewardSystemBehavior.Instance?.ApplyRewardTags(recipient, Hero.MainHero, ref text);
 			}
 			catch (Exception ex)
@@ -1470,24 +1488,6 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			catch (Exception ex)
 			{
 				Log("apply marriage tags failed session=" + session.Id + " error=" + ex.Message);
-			}
-			try
-			{
-				if (MyBehavior.TryApplyPartyTransferTagsForExternal(recipient, recipient.CharacterObject, -1, ref text, out var facts, out var notifications))
-				{
-					foreach (string fact in facts ?? new List<string>())
-					{
-						MyBehavior.AppendExternalDialogueHistory(recipient, null, null, fact);
-					}
-					foreach (string note in notifications ?? new List<string>())
-					{
-						InformationManager.DisplayMessage(new InformationMessage(note, Colors.Green));
-					}
-				}
-			}
-			catch (Exception ex)
-			{
-				Log("apply party transfer tags failed session=" + session.Id + " error=" + ex.Message);
 			}
 			session.ReplyPostprocessedText = text;
 			session.PostprocessConsumed = true;

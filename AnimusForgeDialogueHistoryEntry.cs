@@ -2,6 +2,8 @@ namespace AnimusForge;
 
 public sealed class AnimusForgeDialogueHistoryEntry
 {
+	public long EventSequence { get; set; }
+
 	public int GameDayIndex { get; set; }
 
 	public string GameDate { get; set; } = "";

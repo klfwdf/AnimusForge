@@ -171,7 +171,7 @@ if "%DRY_RUN%"=="1" (
         echo   dotnet build "%PROJECT_ROOT%\AnimusForge.csproj" -c %CONFIG% /p:BannerlordApi=1.3 /p:BannerlordRoot="%BANNERLORD_ROOT%" /p:AnimusForgeBinDir="%BUILD_DEPS_DIR%"
         if "%DUAL_BUILD%"=="1" echo   dotnet build "%PROJECT_ROOT%\AnimusForge.csproj" -c %CONFIG% /p:BannerlordApi=1.4 /p:BannerlordRoot="%BANNERLORD_ROOT%" /p:AnimusForgeBinDir="%BUILD_DEPS_DIR%"
     )
-    echo   git add -A -- . ":(exclude)%GIT_EXCLUDE_PATH_1%/**" ":(exclude)%GIT_EXCLUDE_PATH_2%/**" ":(exclude)%GIT_EXCLUDE_PATH_3%/**"
+    echo   git add -A -- . ":(exclude)%GIT_EXCLUDE_PATH_2%/**" ":(exclude)%GIT_EXCLUDE_PATH_3%/**"
     echo   if changes exist: git commit -m "%COMMIT_MSG_SAFE%"
     echo   verify origin/%BRANCH% did not change after build
     echo   git push -u origin "%BRANCH%"
@@ -282,7 +282,7 @@ if errorlevel 1 (
     exit /b 1
 )
 
-git add -A -- . ":(exclude)%GIT_EXCLUDE_PATH_1%/**" ":(exclude)%GIT_EXCLUDE_PATH_2%/**" ":(exclude)%GIT_EXCLUDE_PATH_3%/**"
+git add -A -- . ":(exclude)%GIT_EXCLUDE_PATH_2%/**" ":(exclude)%GIT_EXCLUDE_PATH_3%/**"
 if errorlevel 1 (
     echo [ERROR] git add failed.
     pause

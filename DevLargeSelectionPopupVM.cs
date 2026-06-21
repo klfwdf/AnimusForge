@@ -269,9 +269,13 @@ public sealed class DevLargeSelectionItemVM : ViewModel
 			{
 				_titleText = value;
 				OnPropertyChangedWithValue(value, nameof(TitleText));
+				OnPropertyChangedWithValue(CompactTitleText, nameof(CompactTitleText));
 			}
 		}
 	}
+
+	[DataSourceProperty]
+	public string CompactTitleText => CompactLine(TitleText, 44);
 
 	[DataSourceProperty]
 	public string DetailText
@@ -283,10 +287,16 @@ public sealed class DevLargeSelectionItemVM : ViewModel
 			{
 				_detailText = value;
 				OnPropertyChangedWithValue(value, nameof(DetailText));
+				OnPropertyChangedWithValue(CompactDetailText, nameof(CompactDetailText));
 				OnPropertyChangedWithValue(ShowDetailText, nameof(ShowDetailText));
+				OnPropertyChangedWithValue(ShowTitleOnly, nameof(ShowTitleOnly));
+				OnPropertyChangedWithValue(ShowStackedText, nameof(ShowStackedText));
 			}
 		}
 	}
+
+	[DataSourceProperty]
+	public string CompactDetailText => CompactLine(DetailText, 58);
 
 	[DataSourceProperty]
 	public string MetaText
@@ -298,10 +308,16 @@ public sealed class DevLargeSelectionItemVM : ViewModel
 			{
 				_metaText = value;
 				OnPropertyChangedWithValue(value, nameof(MetaText));
+				OnPropertyChangedWithValue(CompactMetaText, nameof(CompactMetaText));
 				OnPropertyChangedWithValue(ShowMetaText, nameof(ShowMetaText));
+				OnPropertyChangedWithValue(ShowTitleOnly, nameof(ShowTitleOnly));
+				OnPropertyChangedWithValue(ShowStackedText, nameof(ShowStackedText));
 			}
 		}
 	}
+
+	[DataSourceProperty]
+	public string CompactMetaText => CompactLine(MetaText, 52);
 
 	[DataSourceProperty]
 	public bool IsDanger
@@ -337,8 +353,28 @@ public sealed class DevLargeSelectionItemVM : ViewModel
 	[DataSourceProperty]
 	public bool ShowMetaText => !string.IsNullOrWhiteSpace(MetaText);
 
+	[DataSourceProperty]
+	public bool ShowTitleOnly => !ShowDetailText && !ShowMetaText;
+
+	[DataSourceProperty]
+	public bool ShowStackedText => !ShowTitleOnly;
+
 	public void ExecuteSelect()
 	{
 		_onSelect?.Invoke(Id ?? "");
+	}
+
+	private static string CompactLine(string value, int maxLength)
+	{
+		string text = (value ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
+		while (text.Contains("  "))
+		{
+			text = text.Replace("  ", " ");
+		}
+		if (maxLength <= 3 || text.Length <= maxLength)
+		{
+			return text;
+		}
+		return text.Substring(0, maxLength - 3).TrimEnd() + "...";
 	}
 }

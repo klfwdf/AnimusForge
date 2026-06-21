@@ -4113,42 +4113,11 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static bool IsNativeEncounterConversationTauntApplicable(Hero hero)
+	private static bool IsMissionConversationStateActive()
 	{
-		if (hero == null)
-		{
-			return false;
-		}
 		try
 		{
-			if (Campaign.Current?.ConversationManager?.IsConversationInProgress != true)
-			{
-				return false;
-			}
-		}
-		catch
-		{
-			return false;
-		}
-		try
-		{
-			if (Campaign.Current?.CurrentConversationContext != ConversationContext.PartyEncounter)
-			{
-				return false;
-			}
-		}
-		catch
-		{
-			return false;
-		}
-		Hero hero2 = ResolveNativeEncounterConversationHero();
-		if (hero2 != null && hero2 != hero)
-		{
-			return false;
-		}
-		try
-		{
-			if (PlayerEncounter.Current != null || PlayerEncounter.EncounteredParty != null)
+			if (Mission.Current != null)
 			{
 				return true;
 			}
@@ -4158,7 +4127,74 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		}
 		try
 		{
-			return hero.PartyBelongedTo?.Party != null && PartyBase.MainParty != null;
+			return Game.Current?.GameStateManager?.ActiveState is MissionState;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static bool IsNativeEncounterConversationTauntApplicable(Hero hero)
+	{
+		if (hero == null)
+		{
+			return false;
+		}
+		if (IsMissionConversationStateActive())
+		{
+			return false;
+		}
+		bool flag = false;
+		try
+		{
+			flag = Campaign.Current?.ConversationManager?.IsConversationInProgress == true;
+		}
+		catch
+		{
+			flag = false;
+		}
+		bool flag2 = false;
+		try
+		{
+			flag2 = Campaign.Current?.CurrentConversationContext == ConversationContext.PartyEncounter;
+		}
+		catch
+		{
+			flag2 = false;
+		}
+		Hero hero2 = ResolveNativeEncounterConversationHero();
+		if (hero2 != null && hero2 != hero)
+		{
+			return false;
+		}
+		PartyBase partyBase = ResolveNativeEncounterAttackDefenderParty(hero);
+		if (partyBase == null || PartyBase.MainParty == null || partyBase == PartyBase.MainParty)
+		{
+			return false;
+		}
+		bool flag3 = false;
+		try
+		{
+			if (PlayerEncounter.Current != null || PlayerEncounter.EncounteredParty != null)
+			{
+				flag3 = true;
+			}
+		}
+		catch
+		{
+		}
+		if (flag2 || flag3)
+		{
+			return true;
+		}
+		if (!flag)
+		{
+			return false;
+		}
+		try
+		{
+			return hero.PartyBelongedTo?.Party == partyBase;
 		}
 		catch
 		{
@@ -4359,6 +4395,29 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private static PartyBase TryGetMeetingReleaseEncounterParty()
+	{
+		try
+		{
+			PartyBase partyBase = PlayerEncounterCompat.GetEncounteredPartySafe();
+			if (partyBase != null)
+			{
+				return partyBase;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			return PlayerEncounter.EncounteredParty;
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
 	private static bool TryGetMeetingReleaseContext(Hero target, out Hero resolvedTarget, out int clanRelation, out int privateRelation, out int averageRelation, out int kingRelation, out string kingName, out bool negotiable)
 	{
 		resolvedTarget = null;
@@ -4371,13 +4430,20 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		try
 		{
 			resolvedTarget = target ?? EnsureEncounterTargetHero("meeting_release_context");
-			if (resolvedTarget == null)
-			{
-				return false;
-			}
 			if (!IsMeetingReleaseRuntimeSceneActive() || !IsHostileEncounterInitiatedByOpponent())
 			{
 				return false;
+			}
+			if (resolvedTarget == null)
+			{
+				PartyBase partyBase = TryGetMeetingReleaseEncounterParty();
+				if (partyBase == null || partyBase == PartyBase.MainParty)
+				{
+					return false;
+				}
+				negotiable = true;
+				kingName = partyBase.MapFaction?.Name?.ToString() ?? "当前遭遇方";
+				return true;
 			}
 			clanRelation = GetEncounterReleaseClanRelationWithPlayer(resolvedTarget);
 			privateRelation = GetEncounterReleasePrivateRelationWithPlayer(resolvedTarget);
@@ -4469,7 +4535,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			}
 			content = MeetingReleasePlayerTagRegex.Replace(content, "").Trim();
 			bool flag = TryGetMeetingReleaseContext(target, out var resolvedTarget, out var _, out var _, out var _, out var _, out var _, out var negotiable);
-			shouldRelease = flag && resolvedTarget != null && negotiable;
+			shouldRelease = flag && negotiable;
 			if (!shouldRelease)
 			{
 				Logger.Log("MeetingRelease", "Release tag ignored because current encounter is not in negotiable release state.");
@@ -4669,7 +4735,12 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 				Logger.Log("MeetingRelease", "Execute release ignored because current encounter is not eligible.");
 				return false;
 			}
-			Logger.Log("MeetingRelease", $"Player release triggered. Target={resolvedTarget?.Name}, Reason={reason ?? "N/A"}");
+			string targetName = resolvedTarget?.Name?.ToString();
+			if (string.IsNullOrWhiteSpace(targetName))
+			{
+				targetName = TryGetMeetingReleaseEncounterParty()?.Name?.ToString() ?? "encounter_party";
+			}
+			Logger.Log("MeetingRelease", $"Player release triggered. Target={targetName}, Reason={reason ?? "N/A"}");
 			bool flag = IsMissionStateActiveForMeetingRelease();
 			try
 			{

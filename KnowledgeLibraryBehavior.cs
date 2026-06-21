@@ -7378,23 +7378,29 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			{
 			};
 		}
-		string textAppearance = TrimPreview(GetPlayerAppearanceForPrompt(), 80);
-		if (string.IsNullOrWhiteSpace(textAppearance))
-		{
-			textAppearance = "（未填写）";
-		}
 		int playerPersonaSimpleVariantIndex = GetPlayerPersonaSimpleVariantIndex(rule);
-		string text = "（未填写）";
+		string appearanceText = GetPlayerAppearanceForPrompt();
+		string simpleText = "";
 		if (playerPersonaSimpleVariantIndex >= 0 && rule.Variants != null && playerPersonaSimpleVariantIndex < rule.Variants.Count)
 		{
-			text = TrimPreview(rule.Variants[playerPersonaSimpleVariantIndex]?.Content ?? "", 80);
-			if (string.IsNullOrWhiteSpace(text))
-			{
-				text = "（未填写）";
-			}
+			simpleText = rule.Variants[playerPersonaSimpleVariantIndex]?.Content ?? "";
 		}
 		List<int> playerPersonaDetailedVariantIndices = GetPlayerPersonaDetailedVariantIndices(rule);
-		string text2 = "玩家信息分为外貌信息和背景信息。\n\n外貌信息（常驻）：" + textAppearance + "\n背景信息（照旧）：" + text + "\n细化背景（有条件）：" + playerPersonaDetailedVariantIndices.Count + " 条";
+		string text2 = BuildPlayerPersonaIntroMenuBody(appearanceText, simpleText, playerPersonaDetailedVariantIndices.Count);
+		List<DevLargeSelectionPopup.Option> options = new List<DevLargeSelectionPopup.Option>
+		{
+			new DevLargeSelectionPopup.Option("appearance", "外貌信息（常驻）", BuildPlayerPersonaOptionDetail(appearanceText), isPrimary: true),
+			new DevLargeSelectionPopup.Option("simple", "背景信息（照旧）", BuildPlayerPersonaOptionDetail(simpleText), isPrimary: true),
+			new DevLargeSelectionPopup.Option("detailed", "不同的人对您的背景看法", "已设置 " + playerPersonaDetailedVariantIndices.Count + " 条带条件背景。"),
+			new DevLargeSelectionPopup.Option("done", "完成并开始游戏", "保存当前设置并离开该界面。")
+		};
+		if (DevLargeSelectionPopup.Show("玩家外貌与背景", "玩家信息分为外貌信息和背景信息。", text2, options, delegate(string selectedId)
+		{
+			HandlePlayerPersonaIntroSelection(rule, onDone, selectedId);
+		}, onDone, "跳过"))
+		{
+			return;
+		}
 		List<InquiryElement> list = new List<InquiryElement>();
 		list.Add(new InquiryElement("appearance", "外貌信息（常驻）", null));
 		list.Add(new InquiryElement("simple", "背景信息（照旧）", null));
@@ -7408,39 +7414,69 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			}
 			else
 			{
-				switch (selected[0].Identifier as string)
-				{
-				case "appearance":
-					OpenPlayerPersonaAppearanceEditor(delegate
-					{
-						OpenPlayerPersonaIntroSetupMenu(rule, onDone);
-					});
-					break;
-				case "simple":
-					OpenPlayerPersonaSimpleIntroEditor(rule, delegate
-					{
-						OpenPlayerPersonaIntroSetupMenu(rule, onDone);
-					});
-					break;
-				case "detailed":
-					OpenPlayerPersonaDetailedIntroMenu(rule, delegate
-					{
-						OpenPlayerPersonaIntroSetupMenu(rule, onDone);
-					});
-					break;
-				case "done":
-					onDone();
-					break;
-				default:
-					OpenPlayerPersonaIntroSetupMenu(rule, onDone);
-					break;
-				}
+				HandlePlayerPersonaIntroSelection(rule, onDone, selected[0].Identifier as string);
 			}
 		}, delegate
 		{
 			onDone();
 		});
 		MBInformationManager.ShowMultiSelectionInquiry(data);
+	}
+
+	private static string BuildPlayerPersonaIntroMenuBody(string appearanceText, string simpleText, int detailedCount)
+	{
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.AppendLine("玩家信息分为外貌信息和背景信息。");
+		stringBuilder.AppendLine();
+		stringBuilder.AppendLine("外貌信息（常驻）：");
+		stringBuilder.AppendLine(string.IsNullOrWhiteSpace(appearanceText) ? "（未填写）" : NormalizePlayerAppearanceForStorage(appearanceText));
+		stringBuilder.AppendLine();
+		stringBuilder.AppendLine("背景信息（照旧）：");
+		stringBuilder.AppendLine(string.IsNullOrWhiteSpace(simpleText) ? "（未填写）" : (simpleText ?? "").Trim());
+		stringBuilder.AppendLine();
+		stringBuilder.AppendLine("细化背景（有条件）：" + detailedCount + " 条");
+		return stringBuilder.ToString().TrimEnd();
+	}
+
+	private static string BuildPlayerPersonaOptionDetail(string text)
+	{
+		int length = string.IsNullOrWhiteSpace(text) ? 0 : (text ?? "").Trim().Length;
+		if (length <= 0)
+		{
+			return "当前未填写；点击后可输入完整内容。";
+		}
+		return "已填写 " + length + " 字；完整内容显示在左侧，可点击继续编辑。";
+	}
+
+	private void HandlePlayerPersonaIntroSelection(LoreRule rule, Action onDone, string selectedId)
+	{
+		switch (selectedId)
+		{
+		case "appearance":
+			OpenPlayerPersonaAppearanceEditor(delegate
+			{
+				OpenPlayerPersonaIntroSetupMenu(rule, onDone);
+			});
+			break;
+		case "simple":
+			OpenPlayerPersonaSimpleIntroEditor(rule, delegate
+			{
+				OpenPlayerPersonaIntroSetupMenu(rule, onDone);
+			});
+			break;
+		case "detailed":
+			OpenPlayerPersonaDetailedIntroMenu(rule, delegate
+			{
+				OpenPlayerPersonaIntroSetupMenu(rule, onDone);
+			});
+			break;
+		case "done":
+			onDone?.Invoke();
+			break;
+		default:
+			OpenPlayerPersonaIntroSetupMenu(rule, onDone);
+			break;
+		}
 	}
 
 	private void OpenPlayerPersonaAppearanceEditor(Action onReturn)

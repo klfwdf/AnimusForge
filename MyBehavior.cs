@@ -3857,7 +3857,7 @@ public class MyBehavior : CampaignBehaviorBase
 			+ "身份记录规则：玩家在对话中说“我是X”“我叫X”“我的名字是X”“别人叫我X”等姓名、身份、头衔、阵营、来历时，只能记录为玩家自称、声称或宣称，必须保留玩家公开称呼与自称行为。"
 			+ "不得把玩家自称改写成客观事实；例如不得写“佐洛斯来到大厅”，应写“这名帝国青年自称佐洛斯后来到大厅”。"
 			+ "TITLE 如涉及这类姓名或身份，也必须写“自称X/声称X/宣称X”，不能只写 X。"
-			+ "PUBLICITY 只允许写 public、private 或 unclear，用于判断玩家与NPC这段对话是否会作为公开传闻进入玩家个人履历：public=公开场合、主动宣扬、政治军事公开事件或NPC可能向外传播；private=明确私密、秘密、低声、密谋、个人情感或不应外传；unclear=无法判断。"
+			+ "PUBLICITY 只允许写 public、private 或 unclear，用于判断玩家与NPC这段对话是否会作为公开传闻进入玩家个人履历：public=公开场合、主动宣扬、政治军事公开事件或NPC可能向外传播；private=明确私密、秘密、低声、密谋、个人情感，闲聊，或不应外传；unclear=无法判断。"
 			+ "如果对话是私密内容，且输入中提示NPC对玩家信任很低或敌意很强，可以判为 public 并在 REASON 写明“低信任泄露”；否则私密内容必须判为 private。"
 			+ "PLAYER_HISTORY 只能写公开素材，必须从玩家言行中抽取，不要写NPC自己的长期记忆；若 PUBLICITY 不是 public，则必须留空，不要写“无”。"
 			+ "SUMMARY 必须保留关键动机、承诺、冲突、关系变化、交易/任务/情绪走向；目标长度约 " + targetChars + " 个中文字符，最少 80 字。"
@@ -12163,6 +12163,15 @@ public class MyBehavior : CampaignBehaviorBase
 		return s.Substring(0, maxChars).Trim();
 	}
 
+	private static string NormalizeGeneratedPersonaText(string text)
+	{
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return "";
+		}
+		return (text ?? "").Replace("\r\n", "\n").Replace('\r', '\n').Trim();
+	}
+
 	private static string NormalizePersonaPromptSourceText(string text, int maxLength = 1200)
 	{
 		string text2 = (text ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
@@ -14946,7 +14955,7 @@ public class MyBehavior : CampaignBehaviorBase
 		bool flag = false;
 		try
 		{
-			string sys = "你是《骑马与砍杀2：霸主》NPC的人设生成器。你只输出严格 JSON，不要输出任何额外文字。JSON 仅包含两个字段：personality 和 background。personality 大约 300 个中文字符；background 大约 300 个中文字符。内容必须符合提供的事实，不要杜撰与事实冲突的家族关系或身份；若事实中提供了势力/效忠信息，必须保持一致，禁止声称效忠于其他统治者或属于其他势力。";
+			string sys = "你是《骑马与砍杀2：霸主》NPC的人设生成器。你只输出严格 JSON，不要输出任何额外文字。JSON 仅包含两个字段：personality 和 background。没有额外要求时，personality 和 background 各约 300 个中文字符；如果玩家自定义生成要求指定了篇幅、详略或文风，则以玩家自定义生成要求为准。每个字段都必须以完整句子结束，不要在半句话处停止。内容必须符合提供的事实，不要杜撰与事实冲突的家族关系或身份；若事实中提供了势力/效忠信息，必须保持一致，禁止声称效忠于其他统治者或属于其他势力。";
 			sys = AppendNpcPersonaGenerationRequirementsToSystemPrompt(sys);
 			string facts = BuildHeroFactsForPersonaGeneration(hero);
 			string user = "请基于以下信息生成该 NPC 的【个性】与【历史背景】。必须综合“人物百科背景”“家族背景”“所在家族百科背景”“王国百科背景”“家族族长背景”；这些素材是事实来源，不要复制成百科原文。\n" + facts;
@@ -14954,8 +14963,8 @@ public class MyBehavior : CampaignBehaviorBase
 			string resp = apiCallResult.Success ? (apiCallResult.Content ?? "") : ("错误: " + (apiCallResult.ErrorMessage ?? "未知错误"));
 			if (!string.IsNullOrWhiteSpace(resp) && !resp.StartsWith("错误") && TryParsePersonaJson(resp, out var genP, out var genB))
 			{
-				genP = TrimToMaxChars(genP, 380);
-				genB = TrimToMaxChars(genB, 380);
+				genP = NormalizeGeneratedPersonaText(genP);
+				genB = NormalizeGeneratedPersonaText(genB);
 				if (string.IsNullOrWhiteSpace(genP) && !string.IsNullOrWhiteSpace(genB))
 				{
 					genP = genB;
@@ -15037,7 +15046,7 @@ public class MyBehavior : CampaignBehaviorBase
 		bool personaSaved = false;
 		try
 		{
-			string sys = "你是《骑马与砍杀2：霸主》NPC的人设生成器。你只输出严格 JSON，不要输出任何额外文字。JSON 仅包含两个字段：personality 和 background。personality 大约 300 个中文字符；background 大约 300 个中文字符。内容必须符合提供的事实，不要杜撰与事实冲突的家族关系、身份或势力。";
+			string sys = "你是《骑马与砍杀2：霸主》NPC的人设生成器。你只输出严格 JSON，不要输出任何额外文字。JSON 仅包含两个字段：personality 和 background。没有额外要求时，personality 和 background 各约 300 个中文字符；如果玩家自定义生成要求指定了篇幅、详略或文风，则以玩家自定义生成要求为准。每个字段都必须以完整句子结束，不要在半句话处停止。内容必须符合提供的事实，不要杜撰与事实冲突的家族关系、身份或势力。";
 			sys = AppendNpcPersonaGenerationRequirementsToSystemPrompt(sys);
 			StringBuilder userSb = new StringBuilder();
 			userSb.AppendLine("请基于以下信息生成该 NPC 升格为玩家同伴后的【个性】与【历史背景】。");
@@ -15057,8 +15066,8 @@ public class MyBehavior : CampaignBehaviorBase
 			string resp = apiCallResult.Success ? (apiCallResult.Content ?? "") : "";
 			if (!string.IsNullOrWhiteSpace(resp) && TryParsePersonaJson(resp, out var genP, out var genB))
 			{
-				genP = TrimToMaxChars(genP, 420);
-				genB = TrimToMaxChars(genB, 520);
+				genP = NormalizeGeneratedPersonaText(genP);
+				genB = NormalizeGeneratedPersonaText(genB);
 				if (string.IsNullOrWhiteSpace(genP) && !string.IsNullOrWhiteSpace(genB))
 				{
 					genP = genB;
@@ -19171,6 +19180,14 @@ public class MyBehavior : CampaignBehaviorBase
 					text = ReplaceSingleRuleBlockBody(text, "hero_join_party", heroJoinPartyRuntimeInstruction);
 				}
 			}
+			if (!string.IsNullOrWhiteSpace(text) && text.IndexOf("【附加规则:vanilla_issue】", StringComparison.OrdinalIgnoreCase) >= 0)
+			{
+				string vanillaIssueRuntimeInstruction = VanillaIssueOfferBridge.BuildRuntimePromptBlockForExternal(targetHero ?? targetCharacter?.HeroObject);
+				if (!string.IsNullOrWhiteSpace(vanillaIssueRuntimeInstruction))
+				{
+					text = ReplaceSingleRuleBlockBody(text, "vanilla_issue", vanillaIssueRuntimeInstruction);
+				}
+			}
 			if (!string.IsNullOrWhiteSpace(text) && text.IndexOf("【附加规则:npc_major_actions】", StringComparison.OrdinalIgnoreCase) >= 0)
 			{
 				string npcMajorActionsRuntimeInstruction = BuildNpcMajorActionsRuntimeInstruction(targetHero, targetCharacter, targetAgentIndex);
@@ -21031,7 +21048,9 @@ public class MyBehavior : CampaignBehaviorBase
 		bool extrasHasWorldMapRule = (shoutPromptContext.Extras?.IndexOf("【附加规则:worldmap_party_command】", StringComparison.OrdinalIgnoreCase)).GetValueOrDefault() >= 0;
 		bool extrasHasNpcMajorRule = (shoutPromptContext.Extras?.IndexOf("【附加规则:npc_major_actions】", StringComparison.OrdinalIgnoreCase)).GetValueOrDefault() >= 0;
 		bool extrasHasNpcRecentRule = (shoutPromptContext.Extras?.IndexOf("【附加规则:npc_recent_actions】", StringComparison.OrdinalIgnoreCase)).GetValueOrDefault() >= 0;
-		Logger.Log("Logic", $"[RuleInjectionDebug] stage=extras targetHero={(targetHero?.StringId ?? "null")} targetCharacter={(targetCharacter?.StringId ?? "null")} extrasHasDuelRule={extrasHasDuelRule} extrasHasRewardRule={extrasHasRewardRule} extrasHasLoanRule={extrasHasLoanRule} extrasHasWorldMapRule={extrasHasWorldMapRule} extrasHasNpcMajorRule={extrasHasNpcMajorRule} extrasHasNpcRecentRule={extrasHasNpcRecentRule} extrasLen={(shoutPromptContext.Extras ?? "").Length} useDuelContext={shoutPromptContext.UseDuelContext} useRewardContext={shoutPromptContext.UseRewardContext} useLoanContext={shoutPromptContext.IsLoanContext}");
+		bool extrasHasVanillaIssueRule = (shoutPromptContext.Extras?.IndexOf("【附加规则:vanilla_issue】", StringComparison.OrdinalIgnoreCase)).GetValueOrDefault() >= 0;
+		bool extrasHasVanillaIssueRuntimeBlock = (shoutPromptContext.Extras?.IndexOf("【原版任务上下文", StringComparison.OrdinalIgnoreCase)).GetValueOrDefault() >= 0;
+		Logger.Log("Logic", $"[RuleInjectionDebug] stage=extras targetHero={(targetHero?.StringId ?? "null")} targetCharacter={(targetCharacter?.StringId ?? "null")} extrasHasDuelRule={extrasHasDuelRule} extrasHasRewardRule={extrasHasRewardRule} extrasHasLoanRule={extrasHasLoanRule} extrasHasWorldMapRule={extrasHasWorldMapRule} extrasHasVanillaIssueRule={extrasHasVanillaIssueRule} extrasHasVanillaIssueRuntimeBlock={extrasHasVanillaIssueRuntimeBlock} extrasHasNpcMajorRule={extrasHasNpcMajorRule} extrasHasNpcRecentRule={extrasHasNpcRecentRule} extrasLen={(shoutPromptContext.Extras ?? "").Length} useDuelContext={shoutPromptContext.UseDuelContext} useRewardContext={shoutPromptContext.UseRewardContext} useLoanContext={shoutPromptContext.IsLoanContext}");
 		return shoutPromptContext;
 		}
 		finally
@@ -23149,7 +23168,7 @@ public class MyBehavior : CampaignBehaviorBase
 				{
 					if (!string.IsNullOrWhiteSpace(item))
 					{
-						stringBuilder.AppendLine(item.Trim());
+						stringBuilder.AppendLine(FormatPastAfefLineForPrompt(item));
 					}
 				}
 			}
@@ -23161,6 +23180,20 @@ public class MyBehavior : CampaignBehaviorBase
 			num++;
 		}
 		return stringBuilder.ToString().TrimEnd();
+	}
+
+	private static string FormatPastAfefLineForPrompt(string text)
+	{
+		string value = (text ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(value))
+		{
+			return "";
+		}
+		if (value.StartsWith("【过往行为】", StringComparison.Ordinal) || value.StartsWith("【当下行为】", StringComparison.Ordinal))
+		{
+			return value;
+		}
+		return "【过往行为】" + value;
 	}
 
 	private string BuildHistoryContext(Hero hero, int maxLines = 0, string currentInput = null, string secondaryInput = null, bool includeCurrentActiveSceneSession = false)
@@ -38709,34 +38742,30 @@ public class MyBehavior : CampaignBehaviorBase
 			page = pageCount - 1;
 			_devCompressedMemoryBlockPage = page;
 		}
-		List<InquiryElement> list = new List<InquiryElement>();
-		list.Add(new InquiryElement("__search__", "搜索压缩记忆块", null));
+		List<DevLargeSelectionPopup.Option> options = new List<DevLargeSelectionPopup.Option>();
+		options.Add(new DevLargeSelectionPopup.Option("__search__", "搜索压缩记忆块", isPrimary: true));
 		if (!string.IsNullOrWhiteSpace(q))
 		{
-			list.Add(new InquiryElement("__clear__", "清空搜索", null));
+			options.Add(new DevLargeSelectionPopup.Option("__clear__", "清空搜索"));
 		}
 		if (page > 0)
 		{
-			list.Add(new InquiryElement("__prev__", "上一页", null));
+			options.Add(new DevLargeSelectionPopup.Option("__prev__", "上一页"));
 		}
 		if (page + 1 < pageCount)
 		{
-			list.Add(new InquiryElement("__next__", "下一页", null));
-		}
-		if (filtered.Count > 0)
-		{
-			list.Add(new InquiryElement("__sep__", "----------------", null));
+			options.Add(new DevLargeSelectionPopup.Option("__next__", "下一页"));
 		}
 		foreach (Tuple<int, CompressedMemoryBlock> item in filtered.Skip(page * pageSize).Take(pageSize))
 		{
 			string blockId = GetDevCompressedMemoryBlockId(item.Item2);
 			if (!string.IsNullOrWhiteSpace(blockId))
 			{
-				list.Add(new InquiryElement(blockId, BuildDevCompressedMemoryBlockListLabel(item.Item2, item.Item1), null));
+				options.Add(new DevLargeSelectionPopup.Option(blockId, BuildDevCompressedMemoryBlockListLabel(item.Item2, item.Item1)));
 			}
 		}
 		string name = npc.Name?.ToString() ?? "NPC";
-		string descriptionText = "选择一个压缩记忆块进行编辑。\n压缩记忆块：" + blocks.Count + " 块；当前结果：" + filtered.Count + " 块；第 " + (page + 1) + "/" + pageCount + " 页。";
+		string descriptionText = "选择一个压缩记忆块进入编辑选项。\n压缩记忆块：" + blocks.Count + " 块；当前结果：" + filtered.Count + " 块；第 " + (page + 1) + "/" + pageCount + " 页。";
 		if (!string.IsNullOrWhiteSpace(q))
 		{
 			descriptionText += "\n当前搜索：" + BuildDevHistoryPreview(q, 80);
@@ -38745,15 +38774,14 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			descriptionText += "\n\n没有匹配结果。";
 		}
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("编辑压缩记忆块 - " + name, descriptionText, list, isExitShown: true, 0, 1, "进入", "返回", delegate(List<InquiryElement> selected)
+		ShowDevLargeSelectionOrInquiry("编辑压缩记忆块 - " + name, "压缩记忆块列表", descriptionText, options, delegate(string selectedId)
 		{
-			if (selected == null || selected.Count == 0)
+			if (string.IsNullOrWhiteSpace(selectedId))
 			{
 				OpenDevCompressedMemoryBlockList(npc, page, q);
 				return;
 			}
-			string text = selected[0].Identifier as string;
-			switch (text)
+			switch (selectedId)
 			{
 			case "__search__":
 				InformationManager.ShowTextInquiry(new TextInquiryData("搜索压缩记忆块", "输入关键词，可匹配标题、正文、场景、AFEF、日期或记忆块ID。", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "搜索", "返回", delegate(string input)
@@ -38773,25 +38801,14 @@ public class MyBehavior : CampaignBehaviorBase
 			case "__next__":
 				OpenDevCompressedMemoryBlockList(npc, page + 1, q);
 				break;
-			case "__sep__":
-				OpenDevCompressedMemoryBlockList(npc, page, q);
-				break;
 			default:
-				if (string.IsNullOrWhiteSpace(text))
-				{
-					OpenDevCompressedMemoryBlockList(npc, page, q);
-				}
-				else
-				{
-					OpenDevCompressedMemoryBlockEditor(npc, text, page, q);
-				}
+				OpenDevCompressedMemoryBlockEditor(npc, selectedId, page, q);
 				break;
 			}
 		}, delegate
 		{
 			OpenDevCompressedMemoryMenu(npc);
-		});
-		MBInformationManager.ShowMultiSelectionInquiry(data);
+		}, "进入", "返回");
 	}
 
 	private void OpenDevCompressedMemoryBlockEditor(Hero npc, string blockId, int returnPage, string returnQuery)
@@ -38810,23 +38827,23 @@ public class MyBehavior : CampaignBehaviorBase
 			return;
 		}
 		string name = npc.Name?.ToString() ?? "NPC";
-		List<InquiryElement> list = new List<InquiryElement>
+		List<DevLargeSelectionPopup.Option> options = new List<DevLargeSelectionPopup.Option>
 		{
-			new InquiryElement("title", "编辑标题", null),
-			new InquiryElement("summary", "编辑正文", null),
-			new InquiryElement("scenes", "编辑场景列表", null),
-			new InquiryElement("afef", "编辑AFEF行", null),
-			new InquiryElement("delete", "删除该记忆块", null),
-			new InquiryElement("back", "返回列表", null)
+			new DevLargeSelectionPopup.Option("summary", "编辑正文", "打开大编辑框修改记忆块正文；留空=清空正文。", isPrimary: true),
+			new DevLargeSelectionPopup.Option("title", "编辑标题", "打开大编辑框修改富标题；留空=清空标题。"),
+			new DevLargeSelectionPopup.Option("scenes", "编辑场景列表", "打开大编辑框逐行修改场景；最多保留16项。"),
+			new DevLargeSelectionPopup.Option("afef", "编辑AFEF行", "打开大编辑框逐行修改 AFEF；最多保留80项。"),
+			new DevLargeSelectionPopup.Option("delete", "删除该记忆块", "删除后会清空该NPC的记忆大总结并重新排队整理。", isDanger: true),
+			new DevLargeSelectionPopup.Option("back", "返回列表")
 		};
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("记忆块 - " + name, BuildDevCompressedMemoryBlockEditorDescription(block), list, isExitShown: true, 0, 1, "进入", "返回", delegate(List<InquiryElement> selected)
+		ShowDevLargeSelectionOrInquiry("记忆块 - " + name, BuildDevCompressedMemoryBlockSubtitle(block), BuildDevCompressedMemoryBlockEditorBody(block), options, delegate(string selectedId)
 		{
-			if (selected == null || selected.Count == 0)
+			if (string.IsNullOrWhiteSpace(selectedId))
 			{
 				OpenDevCompressedMemoryBlockEditor(npc, blockId, returnPage, returnQuery);
 				return;
 			}
-			switch (selected[0].Identifier as string)
+			switch (selectedId)
 			{
 			case "title":
 				OpenDevCompressedMemoryBlockTitleEditor(npc, blockId, returnPage, returnQuery);
@@ -38853,8 +38870,7 @@ public class MyBehavior : CampaignBehaviorBase
 		}, delegate
 		{
 			OpenDevCompressedMemoryBlockList(npc, returnPage, returnQuery);
-		});
-		MBInformationManager.ShowMultiSelectionInquiry(data);
+		}, "进入", "返回");
 	}
 
 	private void OpenDevCompressedMemoryBlockTitleEditor(Hero npc, string blockId, int returnPage, string returnQuery)
@@ -39076,8 +39092,8 @@ public class MyBehavior : CampaignBehaviorBase
 			return displayIndex + "# （空）";
 		}
 		string date = string.IsNullOrWhiteSpace(block.GameDate) ? ("第" + block.GameDayIndex + "日") : block.GameDate.Trim();
-		string title = !string.IsNullOrWhiteSpace(block.RichTitle) ? block.RichTitle : block.Summary;
-		return displayIndex + "# " + date + " " + FormatMemoryHourRange(block.StartHour, block.EndHour) + " | " + BuildDevHistoryPreview(title, 80);
+		string title = string.IsNullOrWhiteSpace(block.RichTitle) ? "（无标题）" : block.RichTitle.Trim();
+		return displayIndex + "# " + date + " " + FormatMemoryHourRange(block.StartHour, block.EndHour) + " | " + BuildDevHistoryPreview(title, 44);
 	}
 
 	private static string BuildDevCompressedMemoryBlockSubtitle(CompressedMemoryBlock block)
@@ -39091,14 +39107,13 @@ public class MyBehavior : CampaignBehaviorBase
 		return "ID：" + GetDevCompressedMemoryBlockId(block) + "\n日期：" + date + " " + FormatMemoryHourRange(block.StartHour, block.EndHour) + "\n标题：" + title + "\n周报素材触发器：" + ((block.WeeklyMaterialTriggers?.Count).GetValueOrDefault());
 	}
 
-	private static string BuildDevCompressedMemoryBlockEditorDescription(CompressedMemoryBlock block)
+	private static string BuildDevCompressedMemoryBlockEditorBody(CompressedMemoryBlock block)
 	{
 		if (block == null)
 		{
 			return "找不到记忆块。";
 		}
 		StringBuilder sb = new StringBuilder();
-		sb.AppendLine(BuildDevCompressedMemoryBlockSubtitle(block));
 		if (block.Scenes != null && block.Scenes.Count > 0)
 		{
 			sb.AppendLine("场景：" + string.Join(" / ", block.Scenes));

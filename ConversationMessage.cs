@@ -4,6 +4,8 @@ namespace AnimusForge;
 
 public class ConversationMessage
 {
+	public long EventSequence { get; set; }
+
 	public int GameDayIndex { get; set; } = -1;
 
 	public string GameDate { get; set; } = "";
