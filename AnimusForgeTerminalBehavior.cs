@@ -221,6 +221,7 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 		{
 			new InquiryElement("trust_query", "信任度查询", null, isEnabled: true, ""),
 			new InquiryElement("weekly_reports", "查看周报", null, isEnabled: true, ""),
+			new InquiryElement("vassalage_management", "臣属国管理", null, isEnabled: true, "只查看已有臣属国；解约、改约、吞并请通过 LLM 对话推进。"),
 			new InquiryElement("player_persona", "修改玩家外貌与背景", null, isEnabled: true, ""),
 			new InquiryElement("troop_inspection", "检阅士兵", null, isEnabled: true, ""),
 			new InquiryElement("military_exercise", "军事演习", null, isEnabled: true, ""),
@@ -241,6 +242,10 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 			else if (string.Equals(text, "weekly_reports", StringComparison.Ordinal))
 			{
 				OpenWeeklyReportBrowser();
+			}
+			else if (string.Equals(text, "vassalage_management", StringComparison.Ordinal))
+			{
+				OpenVassalageManagementView();
 			}
 			else if (string.Equals(text, "player_persona", StringComparison.Ordinal))
 			{
@@ -273,6 +278,106 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 			CloseTerminal();
 		}, "", isSeachAvailable: true);
 		MBInformationManager.ShowMultiSelectionInquiry(data, pauseGameActiveState: true);
+	}
+
+	private void OpenVassalageManagementView()
+	{
+		_terminalUiActive = true;
+		VassalageBehavior vassalageBehavior = VassalageBehavior.Instance;
+		if (vassalageBehavior == null)
+		{
+			InformationManager.ShowInquiry(new InquiryData("臣属国管理", "臣属国管理页不可用：VassalageBehavior 尚未初始化。", isAffirmativeOptionShown: true, isNegativeOptionShown: false, "关闭", "", delegate
+			{
+				CloseTerminal();
+			}, null), pauseGameActiveState: true, prioritize: false);
+			return;
+		}
+		TerminalVassalageManagementData data = vassalageBehavior.BuildTerminalVassalageManagementData();
+		if (data.Subjects.Count <= 0)
+		{
+			InformationManager.ShowInquiry(new InquiryData(data.TitleText ?? "臣属国管理", data.DescriptionText ?? "", isAffirmativeOptionShown: true, isNegativeOptionShown: false, "关闭", "", delegate
+			{
+				CloseTerminal();
+			}, null), pauseGameActiveState: true, prioritize: false);
+			return;
+		}
+		List<InquiryElement> list = data.Subjects.Select((TerminalVassalageSubjectData subject) => new InquiryElement(subject.AgreementId, subject.EntryTitleText, null, subject.IsTributePaying, subject.EntryHintText)).ToList();
+		MultiSelectionInquiryData inquiryData = new MultiSelectionInquiryData(data.TitleText ?? "臣属国管理", data.DescriptionText ?? "请选择臣属国：", list, isExitShown: true, 1, 1, "查看贡赋记录", "关闭", delegate(List<InquiryElement> selected)
+		{
+			if (selected == null || selected.Count == 0)
+			{
+				CloseTerminal();
+				return;
+			}
+			string agreementId = selected[0].Identifier as string;
+			TerminalVassalageSubjectData subject = data.Subjects.FirstOrDefault((TerminalVassalageSubjectData x) => string.Equals(x.AgreementId, agreementId, StringComparison.OrdinalIgnoreCase));
+			if (subject == null || !subject.IsTributePaying)
+			{
+				OpenVassalageManagementView();
+				return;
+			}
+			OpenVassalageTributeHistoryView(subject.AgreementId);
+		}, delegate
+		{
+			CloseTerminal();
+		}, "", isSeachAvailable: true);
+		MBInformationManager.ShowMultiSelectionInquiry(inquiryData, pauseGameActiveState: true);
+	}
+
+	private void OpenVassalageTributeHistoryView(string agreementId)
+	{
+		TerminalTributaryPaymentHistoryData historyData = VassalageBehavior.Instance?.BuildTerminalTributaryPaymentHistoryData(agreementId) ?? new TerminalTributaryPaymentHistoryData
+		{
+			SubtitleText = "VassalageBehavior 尚未初始化。",
+			EmptyStateText = "尚无贡赋入库记录。"
+		};
+		if (!TerminalVassalageTributeHistoryPopup.Show(historyData, OpenVassalageManagementView))
+		{
+			InformationManager.ShowInquiry(new InquiryData(historyData.TitleText ?? "贡赋记录", BuildVassalageTributeHistoryFallbackText(historyData), isAffirmativeOptionShown: true, isNegativeOptionShown: false, "返回", "", delegate
+			{
+				OpenVassalageManagementView();
+			}, null), pauseGameActiveState: true, prioritize: false);
+		}
+	}
+
+	private static string BuildVassalageTributeHistoryFallbackText(TerminalTributaryPaymentHistoryData data)
+	{
+		if (data == null)
+		{
+			return "尚无贡赋入库记录。";
+		}
+		StringBuilder stringBuilder = new StringBuilder();
+		if (!string.IsNullOrWhiteSpace(data.SubtitleText))
+		{
+			stringBuilder.AppendLine(data.SubtitleText);
+			stringBuilder.AppendLine();
+		}
+		if (data.Records == null || data.Records.Count <= 0)
+		{
+			stringBuilder.AppendLine(string.IsNullOrWhiteSpace(data.EmptyStateText) ? "尚无贡赋入库记录。" : data.EmptyStateText);
+			return stringBuilder.ToString().TrimEnd();
+		}
+		for (int i = 0; i < data.Records.Count; i++)
+		{
+			TerminalTributaryPaymentRecordData record = data.Records[i];
+			stringBuilder.AppendLine((i + 1).ToString() + ". " + record.DateText + "  " + record.TributeValueText);
+			if (!string.IsNullOrWhiteSpace(record.PlayerGainSummaryText))
+			{
+				stringBuilder.AppendLine(record.PlayerGainSummaryText);
+			}
+			if (!string.IsNullOrWhiteSpace(record.PlayerSettlementGainText))
+			{
+				stringBuilder.AppendLine("【宗主国各领地所得】");
+				stringBuilder.AppendLine(record.PlayerSettlementGainText);
+			}
+			if (!string.IsNullOrWhiteSpace(record.TributaryCostText))
+			{
+				stringBuilder.AppendLine("【臣属国消耗】");
+				stringBuilder.AppendLine(record.TributaryCostText);
+			}
+			stringBuilder.AppendLine();
+		}
+		return stringBuilder.ToString().TrimEnd();
 	}
 
 	private void OpenWeeklyReportBrowser()

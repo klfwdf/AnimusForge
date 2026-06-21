@@ -15,5 +15,8 @@
 		<AlwaysLoad/>
 	</SpriteCategory>
 	
+	<SpriteCategory Name="af_vassalage_notifications">
+		<AlwaysLoad/>
+	</SpriteCategory>
 
 </Config>

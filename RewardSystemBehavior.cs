@@ -10169,6 +10169,10 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			Regex regex23 = new Regex("\\[AD;(\\d+);(\\d+);([^\\]]*)\\]", RegexOptions.IgnoreCase);
 			Regex regex24 = new Regex("\\[ADP[:;]([a-zA-Z0-9_\\-]+)\\]", RegexOptions.IgnoreCase);
 			Regex regex25 = new Regex("\\[A:H_J_P_P\\]", RegexOptions.IgnoreCase);
+			Regex regexVassalageSubmit = new Regex("\\[ACTION:VASSALAGE:SUBMIT:(TRIBUTARY|GARRISON|VASSAL|MILITARY|PROTECTORATE):([a-zA-Z0-9_\\-]+)\\]", RegexOptions.IgnoreCase);
+			Regex regexVassalageAny = new Regex("\\[ACTION:VASSALAGE:[^\\]\\r\\n]*\\]", RegexOptions.IgnoreCase);
+			Regex regexKingdomAnnex = new Regex("\\[ACTION:KINGDOM_ANNEX:target_kingdom_id=([a-zA-Z0-9_\\-]+)\\]", RegexOptions.IgnoreCase);
+			Regex regexKingdomAnnexAny = new Regex("\\[ACTION:KINGDOM_ANNEX:[^\\]\r\n]*\\]", RegexOptions.IgnoreCase);
 			Regex regexLegacyDebtTag = new Regex("\\[ACTION:DEBT[^\\]]*\\]", RegexOptions.IgnoreCase);
 			HashSet<string> settledDebtIdsThisRound = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 			int num = 0;
@@ -10301,6 +10305,8 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			bool anyDebtPaymentApplied = false;
 			bool anyDebtMetaApplied = false;
 			bool anyKingdomServiceApplied = false;
+			bool anyVassalageApplied = false;
+			bool anyKingdomAnnexationApplied = false;
 			bool anySettlementTransferApplied = false;
 			bool anyHeroJoinPlayerPartyApplied = false;
 			Settlement notableMarketSettlement = ResolveNotableMarketSettlement(giver);
@@ -10805,6 +10811,14 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				}
 				return string.Empty;
 			});
+			if (ApplyVassalageRewardTags(giver, receiver, ref responseText, regexVassalageSubmit, regexVassalageAny, giverFacts, receiverFacts))
+			{
+				anyVassalageApplied = true;
+			}
+			if (ApplyKingdomAnnexationRewardTags(giver, receiver, ref responseText, regexKingdomAnnex, regexKingdomAnnexAny, giverFacts, receiverFacts))
+			{
+				anyKingdomAnnexationApplied = true;
+			}
 			responseText = regex22.Replace(responseText, delegate(Match m)
 			{
 				string directionToken = (m.Groups[1].Value ?? "").Trim();
@@ -10884,6 +10898,8 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				["anyDebtPaymentApplied"] = anyDebtPaymentApplied,
 				["anyDebtMetaApplied"] = anyDebtMetaApplied,
 				["anyKingdomServiceApplied"] = anyKingdomServiceApplied,
+				["anyVassalageApplied"] = anyVassalageApplied,
+				["anyKingdomAnnexationApplied"] = anyKingdomAnnexationApplied,
 				["anySettlementTransferApplied"] = anySettlementTransferApplied,
 				["anyHeroJoinPlayerPartyApplied"] = anyHeroJoinPlayerPartyApplied,
 				["giverFactsCount"] = giverFacts.Count,
@@ -10924,6 +10940,170 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			});
 			Logger.Metric("action.apply_reward_tags", ok: false, stopwatch.Elapsed.TotalMilliseconds);
 		}
+	}
+
+	private static bool ApplyVassalageRewardTags(Hero giver, Hero receiver, ref string responseText, Regex regexVassalageSubmit, Regex regexVassalageAny, List<string> giverFacts, List<string> receiverFacts)
+	{
+		bool anyVassalageApplied = false;
+		responseText = regexVassalageSubmit.Replace(responseText, delegate(Match m)
+		{
+			string typeToken = (m.Groups[1].Value ?? "").Trim();
+			string kingdomToken = (m.Groups[2].Value ?? "").Trim();
+			VassalageDiagnosticLog.Event("reward_tags.vassalage_submit.matched", new Dictionary<string, object>
+			{
+				["tag"] = m.Value ?? "",
+				["giver"] = VassalageDiagnosticLog.DescribeHero(giver),
+				["receiver"] = VassalageDiagnosticLog.DescribeHero(receiver),
+				["receiverIsMainHero"] = receiver == Hero.MainHero,
+				["giverIsMainHero"] = giver == Hero.MainHero,
+				["typeToken"] = typeToken,
+				["kingdomToken"] = kingdomToken
+			});
+			if (receiver == Hero.MainHero && giver != Hero.MainHero)
+			{
+				string statusText = "";
+				bool flag2 = false;
+				VassalageBehavior vassalageBehavior = VassalageBehavior.Instance;
+				if (vassalageBehavior != null)
+				{
+					flag2 = vassalageBehavior.TryApplyVassalageAction(giver, "SUBMIT", typeToken, kingdomToken, out statusText);
+				}
+				else
+				{
+					statusText = "臣属条款未执行：臣属国系统尚未初始化。";
+				}
+				VassalageDiagnosticLog.Event("reward_tags.vassalage_submit.applied", new Dictionary<string, object>
+				{
+					["ok"] = flag2,
+					["tag"] = m.Value ?? "",
+					["giver"] = VassalageDiagnosticLog.DescribeHero(giver),
+					["receiver"] = VassalageDiagnosticLog.DescribeHero(receiver),
+					["typeToken"] = typeToken,
+					["kingdomToken"] = kingdomToken,
+					["statusText"] = statusText
+				});
+				if (!string.IsNullOrWhiteSpace(statusText))
+				{
+					if (flag2)
+					{
+						anyVassalageApplied = true;
+					}
+					giverFacts.Add(statusText);
+					receiverFacts.Add(statusText);
+					InformationManager.DisplayMessage(new InformationMessage((flag2 ? "【臣属国条约】" : "【臣属国条约失败】") + statusText, flag2 ? Color.FromUint(4278242559u) : Color.FromUint(4294936661u)));
+				}
+			}
+			else
+			{
+				VassalageDiagnosticLog.Event("reward_tags.vassalage_submit.skipped", new Dictionary<string, object>
+				{
+					["reason"] = "not_npc_to_main_hero",
+					["tag"] = m.Value ?? "",
+					["giver"] = VassalageDiagnosticLog.DescribeHero(giver),
+					["receiver"] = VassalageDiagnosticLog.DescribeHero(receiver)
+				});
+			}
+			return string.Empty;
+		});
+		responseText = regexVassalageAny.Replace(responseText, delegate(Match m)
+		{
+			VassalageDiagnosticLog.Event("reward_tags.vassalage_unsupported.matched", new Dictionary<string, object>
+			{
+				["tag"] = m.Value ?? "",
+				["giver"] = VassalageDiagnosticLog.DescribeHero(giver),
+				["receiver"] = VassalageDiagnosticLog.DescribeHero(receiver)
+			});
+			if (receiver == Hero.MainHero && giver != Hero.MainHero)
+			{
+				string statusText = "臣属条款未执行：不支持该 VASSALAGE 动作。";
+				giverFacts.Add(statusText);
+				receiverFacts.Add(statusText);
+				InformationManager.DisplayMessage(new InformationMessage("【臣属国条约失败】" + statusText, Color.FromUint(4294936661u)));
+				Logger.Log("Vassalage", "Unsupported tag ignored: " + (m.Value ?? ""));
+			}
+			return string.Empty;
+		});
+		return anyVassalageApplied;
+	}
+
+	private static bool ApplyKingdomAnnexationRewardTags(Hero giver, Hero receiver, ref string responseText, Regex regexKingdomAnnex, Regex regexKingdomAnnexAny, List<string> giverFacts, List<string> receiverFacts)
+	{
+		bool anyKingdomAnnexationApplied = false;
+		responseText = regexKingdomAnnex.Replace(responseText, delegate(Match m)
+		{
+			string kingdomToken = (m.Groups[1].Value ?? "").Trim();
+			Logger.Obs("KingdomAnnexation", "reward_tags.matched", new Dictionary<string, object>
+			{
+				["tag"] = m.Value ?? "",
+				["giverId"] = giver?.StringId ?? "",
+				["receiverId"] = receiver?.StringId ?? "",
+				["targetKingdomId"] = kingdomToken
+			});
+			KingdomAnnexationDiagnosticLog.Event("reward_tags.matched", new Dictionary<string, object>
+			{
+				["tag"] = m.Value ?? "",
+				["giver"] = KingdomAnnexationDiagnosticLog.DescribeHero(giver),
+				["receiver"] = KingdomAnnexationDiagnosticLog.DescribeHero(receiver),
+				["targetKingdomId"] = kingdomToken
+			});
+			if (receiver == Hero.MainHero && giver != Hero.MainHero)
+			{
+				string statusText = "";
+				bool flag2 = KingdomAnnexationBehavior.Instance?.TryApplyKingdomAnnexation(giver, kingdomToken, out statusText) ?? false;
+				Logger.Obs("KingdomAnnexation", "reward_tags.applied", new Dictionary<string, object>
+				{
+					["ok"] = flag2,
+					["tag"] = m.Value ?? "",
+					["giverId"] = giver?.StringId ?? "",
+					["receiverId"] = receiver?.StringId ?? "",
+					["targetKingdomId"] = kingdomToken,
+					["statusText"] = statusText
+				});
+				KingdomAnnexationDiagnosticLog.Event("reward_tags.applied", new Dictionary<string, object>
+				{
+					["ok"] = flag2,
+					["tag"] = m.Value ?? "",
+					["giver"] = KingdomAnnexationDiagnosticLog.DescribeHero(giver),
+					["receiver"] = KingdomAnnexationDiagnosticLog.DescribeHero(receiver),
+					["targetKingdomId"] = kingdomToken,
+					["statusText"] = statusText
+				});
+				if (string.IsNullOrWhiteSpace(statusText) && KingdomAnnexationBehavior.Instance == null)
+				{
+					statusText = "国家吞并未执行：吞并系统尚未初始化。";
+				}
+				if (!string.IsNullOrWhiteSpace(statusText))
+				{
+					if (flag2)
+					{
+						anyKingdomAnnexationApplied = true;
+					}
+					giverFacts.Add(statusText);
+					receiverFacts.Add(statusText);
+					InformationManager.DisplayMessage(new InformationMessage((flag2 ? "【国家吞并】" : "【国家吞并失败】") + statusText, flag2 ? Color.FromUint(4278242559u) : Color.FromUint(4294936661u)));
+				}
+			}
+			return string.Empty;
+		});
+		responseText = regexKingdomAnnexAny.Replace(responseText, delegate(Match m)
+		{
+			Logger.Log("KingdomAnnexation", "Unsupported tag ignored: " + (m.Value ?? ""));
+			KingdomAnnexationDiagnosticLog.Event("reward_tags.unsupported", new Dictionary<string, object>
+			{
+				["tag"] = m.Value ?? "",
+				["giver"] = KingdomAnnexationDiagnosticLog.DescribeHero(giver),
+				["receiver"] = KingdomAnnexationDiagnosticLog.DescribeHero(receiver)
+			});
+			if (receiver == Hero.MainHero && giver != Hero.MainHero)
+			{
+				string statusText = "国家吞并未执行：不支持该 KINGDOM_ANNEX 标签格式。";
+				giverFacts.Add(statusText);
+				receiverFacts.Add(statusText);
+				InformationManager.DisplayMessage(new InformationMessage("【国家吞并失败】" + statusText, Color.FromUint(4294936661u)));
+			}
+			return string.Empty;
+		});
+		return anyKingdomAnnexationApplied;
 	}
 
 	public void ApplyPartyRewardTags(PartyBase giverParty, Hero receiver, string giverName, BasicCharacterObject giverCharacter, ref string responseText)

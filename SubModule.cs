@@ -116,6 +116,24 @@ public class SubModule : MBSubModuleBase
 			}
 			try
 			{
+				PatchClassProcessor vassalageDeclareWarPatch = harmony.CreateClassProcessor(typeof(Patch_Vassalage_DeclareWarAction));
+				vassalageDeclareWarPatch.Patch();
+			}
+			catch (Exception ex6a)
+			{
+				Logger.LogTrace("SubModule", ">>> Patch_Vassalage_DeclareWarAction failed: " + ex6a.Message);
+			}
+			try
+			{
+				PatchClassProcessor vassalageMakePeacePatch = harmony.CreateClassProcessor(typeof(Patch_Vassalage_MakePeaceAction));
+				vassalageMakePeacePatch.Patch();
+			}
+			catch (Exception ex6b)
+			{
+				Logger.LogTrace("SubModule", ">>> Patch_Vassalage_MakePeaceAction failed: " + ex6b.Message);
+			}
+			try
+			{
 				PatchClassProcessor patchClassProcessor7 = harmony.CreateClassProcessor(typeof(Patch_Meeting_SuppressChangeRelationAction));
 				patchClassProcessor7.Patch();
 			}
@@ -360,6 +378,8 @@ public class SubModule : MBSubModuleBase
 			campaignGameStarter.AddBehavior(new DiplomacyBehavior());
 			campaignGameStarter.AddBehavior(new VanillaIssuePromptBehavior());
 			campaignGameStarter.AddBehavior(new WorldMapPartyCommandBehavior());
+			campaignGameStarter.AddBehavior(new VassalageBehavior());
+			campaignGameStarter.AddBehavior(new KingdomAnnexationBehavior());
 		}
 	}
 
@@ -461,6 +481,10 @@ public class SubModule : MBSubModuleBase
 			using (PerfProbe.Scope("SubModule.AnimusForgeTerminalBehavior.OnEngineTick"))
 			{
 				AnimusForgeTerminalBehavior.Instance?.OnEngineTick();
+			}
+			using (PerfProbe.Scope("SubModule.VassalageBehavior.OnEngineTick"))
+			{
+				VassalageBehavior.Instance?.OnEngineTick();
 			}
 		}
 		finally

@@ -1181,13 +1181,27 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			bool diplomacyInjected = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "diplomacy");
 			bool worldMapPartyCommandInjected = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "worldmap_party_command");
 			bool kingdomServiceInjected = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "kingdom_service");
-			string postprocessed = ShoutBehavior.RunCourierActionPostprocessForExternal(recipient, recipient.CharacterObject, recipient.Name?.ToString() ?? "NPC", session.LetterText, historyText, reply, duelInjected, rewardInjected, loanInjected, kingdomServiceInjected, lordsHallInjected, meetingReleaseInjected, vanillaIssueInjected, heroJoinPartyInjected, sceneMechanismInjected, partyTransferInjected, settlementTransferInjected, voteDealInjected, diplomacyInjected, worldMapPartyCommandInjected, selectedRuleHits, ctx?.EntityPostprocessContext, forceLooseWeeklyMemoryMaterialSession: true);
+			bool kingdomVassalageRuleBlockInjected = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "kingdom_vassalage");
+			bool kingdomAnnexationRuleBlockInjected = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "kingdom_annexation");
+			bool kingdomVassalageSelected = HasPreprocessRuleHit(selectedRuleHits, "kingdom_vassalage");
+			bool kingdomAnnexationSelected = HasPreprocessRuleHit(selectedRuleHits, "kingdom_annexation");
+			bool kingdomVassalageInjected = kingdomVassalageRuleBlockInjected || kingdomVassalageSelected;
+			bool kingdomAnnexationInjected = kingdomAnnexationRuleBlockInjected || kingdomAnnexationSelected;
+			Log("postprocess setup chain=courier session=" + session.Id
+				+ " selectedRuleHits=" + ((selectedRuleHits == null || selectedRuleHits.Count == 0) ? "(none)" : string.Join(",", selectedRuleHits))
+				+ " kingdom_vassalage_selected=" + kingdomVassalageSelected
+				+ " kingdom_annexation_selected=" + kingdomAnnexationSelected
+				+ " kingdom_vassalage_block=" + kingdomVassalageRuleBlockInjected
+				+ " kingdom_annexation_block=" + kingdomAnnexationRuleBlockInjected
+				+ " kingdomVassalageInjected=" + kingdomVassalageInjected
+				+ " kingdomAnnexationInjected=" + kingdomAnnexationInjected);
+			string postprocessed = ShoutBehavior.RunCourierActionPostprocessForExternal(recipient, recipient.CharacterObject, recipient.Name?.ToString() ?? "NPC", session.LetterText, historyText, reply, duelInjected, rewardInjected, loanInjected, kingdomServiceInjected, lordsHallInjected, meetingReleaseInjected, vanillaIssueInjected, heroJoinPartyInjected, sceneMechanismInjected, partyTransferInjected, settlementTransferInjected, voteDealInjected, diplomacyInjected, worldMapPartyCommandInjected, preprocessRuleHits: selectedRuleHits, entityPostprocessContext: ctx?.EntityPostprocessContext, forceLooseWeeklyMemoryMaterialSession: true, kingdomVassalageRuleInjected: kingdomVassalageInjected, kingdomAnnexationRuleInjected: kingdomAnnexationInjected, chainName: "courier");
 			string replyPostprocessed = string.IsNullOrWhiteSpace(postprocessed) ? reply : postprocessed;
 			session.ReplyText = reply;
 			session.ReplyPostprocessedText = replyPostprocessed;
 			session.ReplyGenerated = true;
 			session.ReplyGenerationStarted = false;
-			Log("llm main done session=" + session.Id + " replyLen=" + reply.Length + " postLen=" + (session.ReplyPostprocessedText ?? "").Length + " preprocessHits=" + ((selectedRuleHits == null || selectedRuleHits.Count == 0) ? "(none)" : string.Join(",", selectedRuleHits)) + " duel=" + duelInjected + " reward=" + rewardInjected + " loan=" + loanInjected + " kingdom=" + kingdomServiceInjected + " lordsHall=" + lordsHallInjected + " meetingRelease=" + meetingReleaseInjected + " vanillaIssue=" + vanillaIssueInjected + " heroJoin=" + heroJoinPartyInjected + " sceneMechanism=" + sceneMechanismInjected + " partyTransfer=" + partyTransferInjected + " settlementTransfer=" + settlementTransferInjected + " voteDeal=" + voteDealInjected + " diplomacy=" + diplomacyInjected + " worldMap=" + worldMapPartyCommandInjected);
+			Log("llm main done session=" + session.Id + " replyLen=" + reply.Length + " postLen=" + (session.ReplyPostprocessedText ?? "").Length + " preprocessHits=" + ((selectedRuleHits == null || selectedRuleHits.Count == 0) ? "(none)" : string.Join(",", selectedRuleHits)) + " duel=" + duelInjected + " reward=" + rewardInjected + " loan=" + loanInjected + " kingdom=" + kingdomServiceInjected + " kingdomVassalage=" + kingdomVassalageInjected + " kingdomAnnexation=" + kingdomAnnexationInjected + " lordsHall=" + lordsHallInjected + " meetingRelease=" + meetingReleaseInjected + " vanillaIssue=" + vanillaIssueInjected + " heroJoin=" + heroJoinPartyInjected + " sceneMechanism=" + sceneMechanismInjected + " partyTransfer=" + partyTransferInjected + " settlementTransfer=" + settlementTransferInjected + " voteDeal=" + voteDealInjected + " diplomacy=" + diplomacyInjected + " worldMap=" + worldMapPartyCommandInjected);
 			MainThreadActions.Enqueue(() => ProcessSessionById(sessionId, "reply_generated"));
 		}
 		catch (Exception ex)
@@ -1279,7 +1293,11 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		}
 		try
 		{
+			bool rewardBeforeHasVassalage = ContainsVassalageActionTag(text);
+			bool rewardBeforeHasKingdomAnnex = ContainsKingdomAnnexActionTag(text);
+			Log("ApplyRewardTags start chain=courier session=" + session.Id + " containsVASSALAGE=" + rewardBeforeHasVassalage + " containsKINGDOM_ANNEX=" + rewardBeforeHasKingdomAnnex);
 			RewardSystemBehavior.Instance?.ApplyRewardTags(recipient, Hero.MainHero, ref text);
+			Log("ApplyRewardTags done chain=courier session=" + session.Id + " beforeVASSALAGE=" + rewardBeforeHasVassalage + " afterVASSALAGE=" + ContainsVassalageActionTag(text) + " beforeKINGDOM_ANNEX=" + rewardBeforeHasKingdomAnnex + " afterKINGDOM_ANNEX=" + ContainsKingdomAnnexActionTag(text));
 		}
 		catch (Exception ex)
 		{
@@ -1467,7 +1485,11 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			}
 			try
 			{
+				bool rewardBeforeHasVassalage = ContainsVassalageActionTag(text);
+				bool rewardBeforeHasKingdomAnnex = ContainsKingdomAnnexActionTag(text);
+				Log("ApplyRewardTags start chain=courier session=" + session.Id + " containsVASSALAGE=" + rewardBeforeHasVassalage + " containsKINGDOM_ANNEX=" + rewardBeforeHasKingdomAnnex);
 				RewardSystemBehavior.Instance?.ApplyRewardTags(recipient, Hero.MainHero, ref text);
+				Log("ApplyRewardTags done chain=courier session=" + session.Id + " beforeVASSALAGE=" + rewardBeforeHasVassalage + " afterVASSALAGE=" + ContainsVassalageActionTag(text) + " beforeKINGDOM_ANNEX=" + rewardBeforeHasKingdomAnnex + " afterKINGDOM_ANNEX=" + ContainsKingdomAnnexActionTag(text));
 			}
 			catch (Exception ex)
 			{
@@ -4018,6 +4040,16 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		}
 		string block = "【附加规则:npc_recent_actions】" + Environment.NewLine + playerRecent.Trim();
 		return string.IsNullOrWhiteSpace(extras) ? block : (extras.TrimEnd() + Environment.NewLine + block);
+	}
+
+	private static bool ContainsKingdomAnnexActionTag(string text)
+	{
+		return (text ?? "").IndexOf("[ACTION:KINGDOM_ANNEX:", StringComparison.OrdinalIgnoreCase) >= 0;
+	}
+
+	private static bool ContainsVassalageActionTag(string text)
+	{
+		return (text ?? "").IndexOf("[ACTION:VASSALAGE:", StringComparison.OrdinalIgnoreCase) >= 0;
 	}
 
 	private static List<string> MergeCourierSelectedRuleIds(params IEnumerable<string>[] sources)

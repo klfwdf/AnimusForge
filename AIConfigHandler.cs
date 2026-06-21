@@ -1749,6 +1749,10 @@ public static class AIConfigHandler
 		{
 			return false;
 		}
+		if (string.Equals(text, "kingdom_annexation", StringComparison.OrdinalIgnoreCase))
+		{
+			return KingdomAnnexationBehavior.CanInjectAnnexationRuleForExternal(ResolveConversationTargetHero(), ResolveConversationTargetCharacter());
+		}
 		if (!string.Equals(text, "vanilla_issue", StringComparison.OrdinalIgnoreCase))
 		{
 			return true;
@@ -5466,6 +5470,10 @@ public static class AIConfigHandler
 			return text.IndexOf("[AD;", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("[ADP;", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("[ADP:", StringComparison.OrdinalIgnoreCase) >= 0;
 		case "kingdom_service":
 			return text.IndexOf("[ACTION:KINGDOM_SERVICE:", StringComparison.OrdinalIgnoreCase) >= 0;
+		case "kingdom_vassalage":
+			return text.IndexOf("[ACTION:VASSALAGE:", StringComparison.OrdinalIgnoreCase) >= 0;
+		case "kingdom_annexation":
+			return text.IndexOf("[ACTION:KINGDOM_ANNEX:", StringComparison.OrdinalIgnoreCase) >= 0;
 		case "marriage":
 			return text.IndexOf("[ACTION:MARRIAGE_", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("[ACTION:DIVORCE:", StringComparison.OrdinalIgnoreCase) >= 0;
 		case "party_transfer":
@@ -5805,6 +5813,32 @@ public static class AIConfigHandler
 					{
 						value = runtimeHeroJoinPartyInstruction;
 					}
+				}
+				if (hasAnyHero && string.Equals(text, "kingdom_vassalage", StringComparison.OrdinalIgnoreCase))
+				{
+					string runtimeVassalageInstruction = VassalageBehavior.BuildRuntimeVassalageInstructionForExternal(ResolveConversationTargetHero(), ResolveConversationTargetCharacter());
+					if (!string.IsNullOrWhiteSpace(runtimeVassalageInstruction))
+					{
+						value = runtimeVassalageInstruction;
+					}
+					VassalageDiagnosticLog.Event("preprocess.runtime_instruction", new Dictionary<string, object>
+					{
+						["ruleId"] = text,
+						["hasAnyHero"] = hasAnyHero,
+						["targetHero"] = VassalageDiagnosticLog.DescribeHero(ResolveConversationTargetHero()),
+						["targetCharacterId"] = ResolveConversationTargetCharacter()?.StringId ?? "",
+						["usedRuntimeInstruction"] = !string.IsNullOrWhiteSpace(runtimeVassalageInstruction),
+						["instructionPreview"] = runtimeVassalageInstruction
+					});
+				}
+				if (hasAnyHero && string.Equals(text, "kingdom_annexation", StringComparison.OrdinalIgnoreCase))
+				{
+					string runtimeAnnexationInstruction = KingdomAnnexationBehavior.BuildRuntimeAnnexationInstructionForExternal(ResolveConversationTargetHero(), ResolveConversationTargetCharacter());
+					if (string.IsNullOrWhiteSpace(runtimeAnnexationInstruction))
+					{
+						continue;
+					}
+					value = runtimeAnnexationInstruction;
 				}
 				if (hasAnyHero && string.Equals(text, "marriage", StringComparison.OrdinalIgnoreCase))
 				{
@@ -7334,6 +7368,20 @@ public static class AIConfigHandler
 			{
 			case "kingdom_service":
 				return !string.IsNullOrWhiteSpace(BuildRuntimeKingdomServiceInstruction());
+			case "kingdom_vassalage":
+				VassalageDiagnosticLog.Event("preprocess.gate", new Dictionary<string, object>
+				{
+					["ruleId"] = text,
+					["hasAnyHero"] = hasAnyHero,
+					["targetHero"] = VassalageDiagnosticLog.DescribeHero(ResolveConversationTargetHero()),
+					["targetCharacterId"] = ResolveConversationTargetCharacter()?.StringId ?? "",
+					["runtimeEligible"] = VassalageBehavior.CanInjectVassalageRuleForExternal(ResolveConversationTargetHero(), ResolveConversationTargetCharacter()),
+					["allowRuleIntoPreprocess"] = true,
+					["reason"] = "Allow generic king-only refusal instruction; runtime postprocess rules still require valid king-vs-king state."
+				});
+				return true;
+			case "kingdom_annexation":
+				return KingdomAnnexationBehavior.CanInjectAnnexationRuleForExternal(ResolveConversationTargetHero(), ResolveConversationTargetCharacter());
 			case "marriage":
 				return ResolveConversationTargetHero() != null && !string.IsNullOrWhiteSpace(RomanceSystemBehavior.Instance?.BuildMarriageRuntimeInstruction(ResolveConversationTargetHero()));
 			case "vanilla_issue":
@@ -7368,6 +7416,14 @@ public static class AIConfigHandler
 			{
 				Hero speaker = ResolveConversationTargetHero();
 				return RomanceSystemBehavior.Instance?.BuildMarriageRuntimeConstraintHint(speaker) ?? "";
+			}
+			if (text == "kingdom_vassalage")
+			{
+				return VassalageBehavior.BuildRuntimeVassalageConstraintHintForExternal(ResolveConversationTargetHero(), ResolveConversationTargetCharacter());
+			}
+			if (text == "kingdom_annexation")
+			{
+				return KingdomAnnexationBehavior.BuildRuntimeAnnexationConstraintHintForExternal(ResolveConversationTargetHero(), ResolveConversationTargetCharacter());
 			}
 			if (text == "npc_major_actions")
 			{

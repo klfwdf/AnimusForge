@@ -873,23 +873,23 @@
                 },
                 {
                     "Tag": "[ACTION:DIPLOMACY:MAKE_PEACE:付贡金方ID:收贡金方ID:tributeAmount:durationDays]",
-					"Description": "议和需双方国王同意。可谈判天数和贡金：tributeAmount: 0/auto/数字，durationDays: default/1-252（21天=一季度，84天=一年）。两个ID必须是玩家+你的王国。若同时有PROPOSE标签可用，国王间外交优先用DIPLOMACY。"
+                    "Description": "议和需双方国王同意。可谈判天数和贡金：tributeAmount: 0/auto/数字，durationDays: default/1-252（21天=一季度，84天=一年）。两个ID必须是玩家+你的王国。若同时有PROPOSE标签可用，国王间外交优先用DIPLOMACY。"
                 },
                 {
                     "Tag": "[ACTION:DIPLOMACY:FORM_ALLIANCE:id1:id2:durationDays]",
-					"Description": "结盟需双方国王同意。可谈判天数：default=系统默认/1-252（21天=一季度，84天=一年）。两个ID必须是玩家+你的王国。每国最多2同盟。若同时有PROPOSE标签可用，优先DIPLOMACY。"
+                    "Description": "结盟需双方国王同意。可谈判天数：default=系统默认/1-252（21天=一季度，84天=一年）。两个ID必须是玩家+你的王国。每国最多2同盟。若同时有PROPOSE标签可用，优先DIPLOMACY。"
                 },
                 {
                     "Tag": "[ACTION:DIPLOMACY:BREAK_ALLIANCE:id1:id2]",
-					"Description": "【强制覆盖】单方解盟不看NPC是否同意。两个ID必须是玩家+你的王国。若同时有PROPOSE可用，优先DIPLOMACY。"
+                    "Description": "【强制覆盖】单方解盟不看NPC是否同意。两个ID必须是玩家+你的王国。若同时有PROPOSE可用，优先DIPLOMACY。"
                 },
                 {
                     "Tag": "[ACTION:DIPLOMACY:MAKE_TRADE:id1:id2:durationDays]",
-					"Description": "贸易协议需双方国王同意。可谈判天数：default=系统默认/1-252（21天=一季度，84天=一年）。两个ID必须是玩家+你的王国。若同时有PROPOSE标签可用，优先DIPLOMACY。"
+                    "Description": "贸易协议需双方国王同意。可谈判天数：default=系统默认/1-252（21天=一季度，84天=一年）。两个ID必须是玩家+你的王国。若同时有PROPOSE标签可用，优先DIPLOMACY。"
                 },
                 {
                     "Tag": "[ACTION:DIPLOMACY:CANCEL_TRADE:id1:id2]",
-					"Description": "【强制覆盖】单方取消贸易不看NPC是否同意。两个ID必须是玩家+你的王国。若同时有PROPOSE可用，优先DIPLOMACY。"
+                    "Description": "【强制覆盖】单方取消贸易不看NPC是否同意。两个ID必须是玩家+你的王国。若同时有PROPOSE可用，优先DIPLOMACY。"
                 }
             ],
             "TriggerKeywords": [
@@ -926,11 +926,86 @@
                 "level_9": "【信任动态提示，仅限同盟/贸易】你对{playerName}处于第9级信任（高度信任）。基本信任玩家，可在宽松条件下谈同盟或贸易。",
                 "level_10": "【信任动态提示，仅限同盟/贸易】你对{playerName}处于第10级信任（完全信赖）。完全信任玩家，可在任何合理条件下谈同盟或贸易。"
             }
+        },
+        {
+            "Id": "kingdom_vassalage",
+            "IsEnabled": true,
+            "Group": "politics",
+            "Priority": 90,
+            "TopicNumber": 19,
+            "TopicLabel": "Kingdom vassalage and submission",
+            "Code": "VASSALAGE",
+            "NonHeroInstruction": "只有国家统治者之间才能谈附庸国臣服。若玩家对非国王、士兵、平民或普通领主提出国家臣服要求，对方不能代表王国答应，只能说明必须找国王谈。",
+            "Instruction": "【AF臣属国谈判规则】以运行时事实为准：玩家必须是自己王国的国王，对话对象必须是另一个NPC王国的国王。本规则只处理“对方王国向玩家王国臣服成为臣属国”，不是玩家加入对方王国，也不是普通家族归附。正文里只能自然谈判，不要写动作标签。第二版可谈三类：TRIBUTARY=朝贡国，交钱买保护但不出兵，保留军事自主权；GARRISON=卫戍国，军事臣属，出兵，不交钱，没有军事自主权，并使用0-100忠诚度；VASSAL=附庸国，也就是傀儡国，出钱、出兵，外交军事受宗主控制。注意：“附庸国”只对应VASSAL傀儡国，不叫完全附庸国。若本轮只泛称臣属、称臣、归顺或承认宗主地位但没有明确朝贡/卫戍/附庸，应追随语义：交钱求保护=TRIBUTARY；军事臣属/卫戍/出兵=GARRISON；傀儡、附庸国、外交军事由宗主控制=VASSAL。只有当你在<latest_reply>中已经最终明确接受臣属条约、愿意以你的王国名义向玩家王国递交臣属誓约时，才算同意；如果仍在谈条件、索要保证、犹豫、拖延、拒绝、反问或只是表达尊重，就不算同意。通知只是宫廷收到誓约的报告，不是玩家再次确认。吞并不是臣属国条约；若玩家明确要求彻底吞并整个国家、取消目标王国独立王权并让所有家族并入玩家王国，应按国家吞并规则处理，而不是输出臣属国标签。",
+            "PostprocessRules": [
+                {
+                    "Tag": "[ACTION:VASSALAGE:SUBMIT:TRIBUTARY:{kingdomId}]",
+                    "Description": "如果NPC国王在<latest_reply>里最终明确同意让自己的王国成为朝贡国/Tributary，或明确说交钱、纳贡、以贡赋换取玩家王国保护但不出兵，就输出这个。kingdomId 必须使用运行时事实中的目标王国ID。若NPC同意的是取消独立王权、整个国家并入玩家王国、所有家族归入玩家王国，不得输出臣属标签，应由国家吞并规则处理。"
+                },
+                {
+                    "Tag": "[ACTION:VASSALAGE:SUBMIT:GARRISON:{kingdomId}]",
+                    "Description": "如果NPC国王在<latest_reply>里最终明确同意让自己的王国成为卫戍国/Garrison，或明确说军事臣属、承担出兵义务、没有军事自主权但不纳贡，就输出这个。kingdomId 必须使用运行时事实中的目标王国ID。若NPC同意的是取消独立王权、整个国家并入玩家王国、所有家族归入玩家王国，不得输出臣属标签，应由国家吞并规则处理。"
+                },
+                {
+                    "Tag": "[ACTION:VASSALAGE:SUBMIT:VASSAL:{kingdomId}]",
+                    "Description": "如果NPC国王在<latest_reply>里最终明确同意让自己的王国成为附庸国/Vassal，也就是傀儡国，外交军事受玩家王国控制并承担出钱出兵义务，但仍保留目标王国作为臣属国存在，就输出这个。注意“附庸国”只对应这个标签。kingdomId 必须使用运行时事实中的目标王国ID。若NPC同意的是取消独立王权、整个国家并入玩家王国、所有家族归入玩家王国，不得输出臣属标签，应由国家吞并规则处理。"
+                }
+            ],
+            "RuntimeInstructionTemplates": {},
+            "RuntimeConstraintTemplates": {},
+            "TriggerKeywords": [
+                "让你的王国臣服于我。",
+                "你的国家向我的王国宣誓臣服吧。",
+                "成为我的附庸国，外交军事由我控制。",
+                "做我的卫戍国，承担出兵义务。",
+                "成为我的朝贡国，以贡赋换取保护。",
+                "向我的王国递交臣服誓约。",
+                "保留王号，但承认我的宗主地位。",
+                "我以国王身份要求你的王国归顺。",
+                "你的王国可以在我的保护下继续存在。",
+                "我们签一份臣服条约。",
+                "你的王国愿意成为我的朝贡国吗？",
+                "履行卫戍国的军事义务。"
+            ]
+        },
+        {
+            "Id": "kingdom_annexation",
+            "IsEnabled": true,
+            "Group": "politics",
+            "Priority": 95,
+            "TopicNumber": 20,
+            "TopicLabel": "Kingdom annexation and destruction",
+            "Code": "ANNEX",
+            "NonHeroInstruction": "只有国家统治者之间才能谈国家吞并。若玩家对非国王、士兵、平民或普通领主提出吞并整个国家，对方不能代表王国答应，只能说明必须找国王谈。",
+            "Instruction": "【AF国家吞并谈判规则】以运行时事实为准：玩家必须是自己王国的国王，对话对象必须是另一个NPC王国的国王。本规则只处理“对方整个国家并入玩家王国”：目标王国放弃独立王权，所有家族归入玩家王国，原家族保留其领地归属并成为玩家王国臣民。正文里只能自然谈判，不要写动作标签。只有当你在<latest_reply>中已经最终明确接受整个国家并入玩家王国、放弃独立王权、让所有家族归入玩家王国时，才算同意吞并；如果仍在谈条件、索要保证、犹豫、拖延、拒绝、反问或只是表达尊重，就不算同意。国家吞并不是朝贡国、卫戍国、附庸国/傀儡国、保护国或保留王号的臣属条约；若对方只愿意保留王号、保留独立外交、承认宗主地位、成为朝贡国/卫戍国/附庸国/保护国，都不是国家吞并。普通求和、结盟、停战、赔款、战争赔偿、朝贡、臣服、附庸、臣属国、保护国、互不侵犯或暂时归顺都不是国家吞并，不能当作吞并共识。",
+            "PostprocessRules": [
+                {
+                    "Tag": "[ACTION:KINGDOM_ANNEX:target_kingdom_id={targetKingdomId}]",
+                    "Description": "如果NPC国王在<latest_reply>里最终明确同意让自己的整个王国并入玩家王国，明确放弃独立王权，并明确所有家族归入玩家王国，就输出这个。target_kingdom_id 必须使用运行时事实中的目标王国ID。若NPC只是同意求和、结盟、停战、赔款、朝贡、卫戍、臣属、附庸/傀儡、保护国、普通归顺、保留王号或保留独立外交，都不得输出。"
+                }
+            ],
+            "RuntimeInstructionTemplates": {},
+            "RuntimeConstraintTemplates": {},
+            "TriggerKeywords": [
+                "把你的整个国家并入我的王国。",
+                "你的王国放弃独立，加入我的王国。",
+                "让你的所有家族都归入我的王国。",
+                "我要求吞并你的王国。",
+                "你的国家从今天起不再独立，成为我国的一部分。",
+                "放弃王权，把你的王国整体交给我。",
+                "以国王身份接受我的吞并条件。",
+                "你的家族和领主全部转入我的王国。",
+                "你的王冠交给我，你的国家并入我的版图。",
+                "不是臣属，不是朝贡，而是彻底并入我的王国。",
+                "不保留独立王国，全部家族加入玩家王国。",
+                "接受国家吞并，结束你的独立统治。"
+            ]
         }
     ],
     "DuelStake": {
         "IsEnabled": true,
         "PlayerWinInstruction": "【决斗赌注与欠款】：你在正式决斗中输给了玩家，你现在应当主动向玩家交付你承诺的赌注。",
         "NpcWinInstruction": "【决斗赌注与欠款】：你在正式决斗中打败了玩家，你可以向玩家索要赌注。"
-    }
+    },
+    "Rules": []
 }
