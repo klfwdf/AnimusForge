@@ -149,7 +149,7 @@ public static class WorldEntityRetrievalService
 		public float Distance;
 	}
 
-	public static WorldEntityPromptContext BuildPromptContext(MentionedWorldEntities mentions, string playerDisplayName, Hero contextHero = null)
+	public static WorldEntityPromptContext BuildPromptContext(MentionedWorldEntities mentions, string playerDisplayName, Hero contextHero = null, bool includeResidentKingdoms = false)
 	{
 		WorldEntityPromptContext result = new WorldEntityPromptContext();
 		try
@@ -183,7 +183,7 @@ public static class WorldEntityRetrievalService
 			{
 				Logger.Log("WorldEntityRetrieval", "visible_party_context_only count=" + visibleParties.Count);
 			}
-			AddResidentEntityMatches(contextHero, ref heroes, ref settlements, ref clans, ref kingdoms);
+			AddResidentEntityMatches(contextHero, includeResidentKingdoms, ref heroes, ref settlements, ref clans, ref kingdoms);
 			int count = heroes.Count + settlements.Count + clans.Count + kingdoms.Count + visibleParties.Count;
 			if (count <= 0)
 			{
@@ -696,7 +696,7 @@ public static class WorldEntityRetrievalService
 		return StripEntityIdsFromMainPromptBlock(sb.ToString()).Trim();
 	}
 
-	private static void AddResidentEntityMatches(Hero contextHero, ref List<EntityMatch<Hero>> heroes, ref List<EntityMatch<Settlement>> settlements, ref List<EntityMatch<Clan>> clans, ref List<EntityMatch<Kingdom>> kingdoms)
+	private static void AddResidentEntityMatches(Hero contextHero, bool includeResidentKingdoms, ref List<EntityMatch<Hero>> heroes, ref List<EntityMatch<Settlement>> settlements, ref List<EntityMatch<Clan>> clans, ref List<EntityMatch<Kingdom>> kingdoms)
 	{
 		heroes = heroes ?? new List<EntityMatch<Hero>>();
 		settlements = settlements ?? new List<EntityMatch<Settlement>>();
@@ -706,14 +706,19 @@ public static class WorldEntityRetrievalService
 		Hero player = Hero.MainHero;
 		Clan playerClan = Clan.PlayerClan ?? player?.Clan;
 		AddResidentClanMatch(clans, playerClan, "常驻：玩家当前家族", priority++);
-		AddResidentKingdomMatch(kingdoms, ResolveHeroKingdomForResidentEntity(player, playerClan), "常驻：玩家当前王国", priority++);
+		if (includeResidentKingdoms)
+		{
+			AddResidentKingdomMatch(kingdoms, ResolveHeroKingdomForResidentEntity(player, playerClan), "常驻：玩家当前王国", priority++);
+		}
 		if (contextHero != null)
 		{
 			string contextName = SafeName(contextHero.Name, "当前对话人物");
 			AddResidentHeroMatch(heroes, contextHero, "常驻：" + contextName + "本人", priority++);
 			AddResidentClanMatch(clans, contextHero.Clan, "常驻：" + contextName + "家族", priority++);
-			AddResidentKingdomMatch(kingdoms, ResolveHeroKingdomForResidentEntity(contextHero, contextHero.Clan), "常驻：" + contextName + "当前王国", priority++);
-			AddResidentSettlementMatch(settlements, ResolveHeroCurrentLocationSettlementForResidentEntity(contextHero), "常驻：" + contextName + "当前位置", priority++);
+			if (includeResidentKingdoms)
+			{
+				AddResidentKingdomMatch(kingdoms, ResolveHeroKingdomForResidentEntity(contextHero, contextHero.Clan), "常驻：" + contextName + "当前王国", priority++);
+			}
 		}
 		SortEntityMatches(heroes);
 		SortEntityMatches(settlements);

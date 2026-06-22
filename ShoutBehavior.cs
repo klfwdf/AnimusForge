@@ -1777,7 +1777,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 	private Dictionary<string, float> _passiveCooldowns = new Dictionary<string, float>(StringComparer.Ordinal);
 
 
-    private const float STARE_TRIGGER_TIME = 25f;
+	private const float DEFAULT_STARE_TRIGGER_TIME = 15f;
 
 	private const float STARE_TARGET_LOST_GRACE = 2f;
 
@@ -4628,6 +4628,29 @@ public class ShoutBehavior : CampaignBehaviorBase
 			{
 			}
 		}
+		else
+		{
+			try
+			{
+				PartyBase nonHeroParty = ResolveWildernessNonHeroPartyBaseForPrompt(npc.AgentIndex);
+				if (nonHeroParty != null)
+				{
+					string npcTroopsLine = BuildPartyTroopsLineForPrompt(nonHeroParty, "你所属队伍共有", "你所属队伍无可战兵力", includeDetails: true);
+					if (!string.IsNullOrWhiteSpace(npcTroopsLine))
+					{
+						stringBuilder.Append(npcTroopsLine).Append("。");
+					}
+					string npcPrisonersLine = BuildPartyPrisonersLineForPrompt(nonHeroParty, "你所属队伍", "你所属队伍无俘虏", includeDetails: true);
+					if (!string.IsNullOrWhiteSpace(npcPrisonersLine) && !string.Equals(npcPrisonersLine, "你所属队伍无俘虏", StringComparison.Ordinal))
+					{
+						stringBuilder.Append(npcPrisonersLine).Append("。");
+					}
+				}
+			}
+			catch
+			{
+			}
+		}
 		if (hero != null)
 		{
 			string nobleEtiquettePrompt = MyBehavior.BuildNobleEtiquettePromptForExternal(hero);
@@ -4828,6 +4851,46 @@ public class ShoutBehavior : CampaignBehaviorBase
 		{
 		}
 		return false;
+	}
+
+	private static string BuildPlayerTownPartyStayHintForPrompt(Hero playerHero)
+	{
+		try
+		{
+			Settlement settlement = Settlement.CurrentSettlement ?? MobileParty.MainParty?.CurrentSettlement;
+			if (settlement == null || !settlement.IsTown)
+			{
+				return "";
+			}
+			MobileParty party = MobileParty.MainParty;
+			if (party?.MemberRoster == null)
+			{
+				return "";
+			}
+			if (party.CurrentSettlement != null && party.CurrentSettlement != settlement)
+			{
+				return "";
+			}
+			int totalMen = Math.Max(0, party.MemberRoster.TotalManCount);
+			if (totalMen <= 0)
+			{
+				return "";
+			}
+			string playerName = (playerHero?.Name?.ToString() ?? "").Trim();
+			if (string.IsNullOrWhiteSpace(playerName))
+			{
+				playerName = (GetPlayerDisplayNameForShout() ?? "").Trim();
+			}
+			if (string.IsNullOrWhiteSpace(playerName) || string.Equals(playerName, "玩家", StringComparison.Ordinal))
+			{
+				playerName = "此人";
+			}
+			return playerName + "拥有一支" + totalMen + "人的部队暂时驻扎在城外，你不清楚他的军队的具体明细";
+		}
+		catch
+		{
+			return "";
+		}
 	}
 
 	private static string BuildPrisonerContextLineForPrompt(NpcDataPacket npc, Hero hero)
@@ -5705,7 +5768,9 @@ private static void SplitSceneNpcRoleIntroSections(string fullIntro, bool isHero
 		{
 			try
 			{
-				string playerTroopsLine = BuildHeroPartyTroopsLineForPrompt(playerHero, secondPerson: false, includeDetails: !useCompactPlayerPartyRoster);
+				string playerTroopsLine = useCompactPlayerPartyRoster
+					? BuildPlayerTownPartyStayHintForPrompt(playerHero)
+					: BuildHeroPartyTroopsLineForPrompt(playerHero, secondPerson: false, includeDetails: true);
 				string playerPrisonersLine = BuildHeroPartyPrisonersLineForPrompt(playerHero, secondPerson: false, includeDetails: !useCompactPlayerPartyRoster);
 				if (!string.IsNullOrWhiteSpace(playerTroopsLine))
 				{
@@ -5718,6 +5783,14 @@ private static void SplitSceneNpcRoleIntroSections(string fullIntro, bool isHero
 			}
 			catch
 			{
+			}
+		}
+		else
+		{
+			string townPartyStayHint = BuildPlayerTownPartyStayHintForPrompt(playerHero);
+			if (!string.IsNullOrWhiteSpace(townPartyStayHint))
+			{
+				stringBuilder.Append(townPartyStayHint).Append("。");
 			}
 		}
 		return stringBuilder.ToString().Trim();
@@ -6069,22 +6142,26 @@ private static void SplitSceneNpcRoleIntroSections(string fullIntro, bool isHero
 		return result;
 	}
 
-	private static string BuildHeroPartyTroopsLineForPrompt(Hero hero, bool secondPerson, bool includeDetails = true)
+	private static string BuildPartyTroopsLineForPrompt(PartyBase partyBase, string leadingText, string noTroopsText, bool includeDetails = true)
 	{
-		string subject = secondPerson ? "你" : "他";
+		leadingText = (leadingText ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(leadingText))
+		{
+			leadingText = "该队伍共有";
+		}
+		noTroopsText = string.IsNullOrWhiteSpace(noTroopsText) ? "该队伍无可战兵力" : noTroopsText.Trim();
 		try
 		{
-			PartyBase partyBase = ResolveLedPartyBaseForPrompt(hero);
 			if (partyBase == null || partyBase.MemberRoster == null)
 			{
-				return subject + "未率领部队";
+				return noTroopsText;
 			}
 			AggregateRosterForPrompt(partyBase.MemberRoster, excludeHeroes: true,
 				out int total, out int inf, out int cav, out int arc, out int hArc,
 				out List<KeyValuePair<string, int>> top, 10);
 			if (total <= 0)
 			{
-				return subject + "未率领部队";
+				return noTroopsText;
 			}
 			List<string> classParts = new List<string>(4);
 			if (inf > 0) classParts.Add("步兵" + inf);
@@ -6092,7 +6169,7 @@ private static void SplitSceneNpcRoleIntroSections(string fullIntro, bool isHero
 			if (arc > 0) classParts.Add("弓兵" + arc);
 			if (hArc > 0) classParts.Add("骑射" + hArc);
 			StringBuilder sb = new StringBuilder();
-			sb.Append(subject).Append("率领").Append(total).Append("人部队");
+			sb.Append(leadingText).Append(total).Append("人部队");
 			if (!includeDetails)
 			{
 				return sb.ToString().Trim();
@@ -6114,19 +6191,25 @@ private static void SplitSceneNpcRoleIntroSections(string fullIntro, bool isHero
 		}
 		catch
 		{
-			return subject + "未率领部队";
+			return noTroopsText;
 		}
 	}
 
-	private static string BuildHeroPartyPrisonersLineForPrompt(Hero hero, bool secondPerson, bool includeDetails = true)
+	private static string BuildHeroPartyTroopsLineForPrompt(Hero hero, bool secondPerson, bool includeDetails = true)
 	{
 		string subject = secondPerson ? "你" : "他";
+		return BuildPartyTroopsLineForPrompt(ResolveLedPartyBaseForPrompt(hero), subject + "率领", subject + "未率领部队", includeDetails);
+	}
+
+	private static string BuildPartyPrisonersLineForPrompt(PartyBase partyBase, string subject, string noPrisonersText, bool includeDetails = true)
+	{
+		subject = string.IsNullOrWhiteSpace(subject) ? "该队伍" : subject.Trim();
+		noPrisonersText = string.IsNullOrWhiteSpace(noPrisonersText) ? (subject + "无俘虏") : noPrisonersText.Trim();
 		try
 		{
-			PartyBase partyBase = ResolveLedPartyBaseForPrompt(hero);
 			if (partyBase == null || partyBase.PrisonRoster == null)
 			{
-				return subject + "无俘虏";
+				return noPrisonersText;
 			}
 			List<string> heroNames = ExtractHeroPrisonerNamesForPrompt(partyBase.PrisonRoster);
 			AggregateRosterForPrompt(partyBase.PrisonRoster, excludeHeroes: true,
@@ -6134,7 +6217,7 @@ private static void SplitSceneNpcRoleIntroSections(string fullIntro, bool isHero
 				out List<KeyValuePair<string, int>> top, 10);
 			if ((heroNames == null || heroNames.Count == 0) && total <= 0)
 			{
-				return subject + "无俘虏";
+				return noPrisonersText;
 			}
 			if (!includeDetails)
 			{
@@ -6147,7 +6230,7 @@ private static void SplitSceneNpcRoleIntroSections(string fullIntro, bool isHero
 				{
 					prisonerTotal = Math.Max(0, total + (heroNames?.Count ?? 0));
 				}
-				return prisonerTotal <= 0 ? (subject + "无俘虏") : (subject + "押着" + prisonerTotal + "名俘虏");
+				return prisonerTotal <= 0 ? noPrisonersText : (subject + "押着" + prisonerTotal + "名俘虏");
 			}
 			StringBuilder sb = new StringBuilder();
 			sb.Append(subject);
@@ -6182,8 +6265,14 @@ private static void SplitSceneNpcRoleIntroSections(string fullIntro, bool isHero
 		}
 		catch
 		{
-			return subject + "无俘虏";
+			return noPrisonersText;
 		}
+	}
+
+	private static string BuildHeroPartyPrisonersLineForPrompt(Hero hero, bool secondPerson, bool includeDetails = true)
+	{
+		string subject = secondPerson ? "你" : "他";
+		return BuildPartyPrisonersLineForPrompt(ResolveLedPartyBaseForPrompt(hero), subject, subject + "无俘虏", includeDetails);
 	}
 
 	public static string BuildPlayerSceneIntroForExternal(Hero observerHero = null, bool includeTradePricing = false)
@@ -9766,7 +9855,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			if (closestFacingAgent == _currentStareTarget)
 			{
 				_stareTimer += dt;
-				if (_stareTimer >= STARE_TRIGGER_TIME && IsCooldownReady(closestFacingAgent))
+				if (_stareTimer >= GetPassiveStareTriggerTime() && IsCooldownReady(closestFacingAgent))
 				{
 					TriggerPassiveReaction(closestFacingAgent);
 					_stareTimer = 0f;
@@ -9794,6 +9883,19 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			_stareTimer = 0f;
 		}
 		UpdateCooldowns(dt);
+	}
+
+	private static float GetPassiveStareTriggerTime()
+	{
+		try
+		{
+			int seconds = DuelSettings.GetSettings()?.PassiveStareTriggerSeconds ?? (int)DEFAULT_STARE_TRIGGER_TIME;
+			return Math.Max(1f, Math.Min(120f, seconds));
+		}
+		catch
+		{
+			return DEFAULT_STARE_TRIGGER_TIME;
+		}
 	}
 
 	private void UpdateCooldowns(float dt)
@@ -11011,7 +11113,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		try
 		{
 			Hero hero = targetHero ?? targetCharacter?.HeroObject;
-			if (hero != null || targetCharacter == null || targetAgentIndex < 0)
+			if (hero != null || targetCharacter == null)
 			{
 				return false;
 			}
@@ -11019,13 +11121,41 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			{
 				return false;
 			}
-			PartyBase partyBase = MyBehavior.ResolvePartyTransferCounterpartyForExternal(null, targetCharacter, targetAgentIndex);
+			PartyBase partyBase = null;
+			if (targetAgentIndex >= 0)
+			{
+				partyBase = MyBehavior.ResolvePartyTransferCounterpartyForExternal(null, targetCharacter, targetAgentIndex);
+			}
+			if (partyBase == null && targetAgentIndex < 0 && IsNativeConversationWorldMapContext())
+			{
+				MobileParty mobileParty = TryResolveWildernessNonHeroMobileParty(targetAgentIndex);
+				partyBase = mobileParty?.Party;
+			}
 			if (partyBase == null || partyBase == PartyBase.MainParty || partyBase.MobileParty == null || partyBase.MobileParty == MobileParty.MainParty || partyBase.ItemRoster == null)
 			{
 				return false;
 			}
 			party = partyBase;
 			return true;
+		}
+		catch
+		{
+			party = null;
+			return false;
+		}
+	}
+
+	private static bool TryResolveNativeConversationMeetingTauntParty(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, out PartyBase party)
+	{
+		party = null;
+		try
+		{
+			Hero hero = targetHero ?? targetCharacter?.HeroObject;
+			if (hero != null)
+			{
+				return false;
+			}
+			return TryResolveWildernessNonHeroRewardParty(targetHero, targetCharacter, targetAgentIndex, out party);
 		}
 		catch
 		{
@@ -11847,6 +11977,33 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 	}
 
+	private static PartyBase ResolveWildernessNonHeroPartyBaseForPrompt(int agentIndex)
+	{
+		try
+		{
+			if (Settlement.CurrentSettlement != null || MobileParty.MainParty?.CurrentSettlement != null)
+			{
+				return null;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			MobileParty party = TryResolveWildernessNonHeroMobileParty(agentIndex);
+			if (party == null || party == MobileParty.MainParty || party.Party == PartyBase.MainParty)
+			{
+				return null;
+			}
+			return party.Party;
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
 	private static MobileParty TryResolveWildernessNonHeroMobileParty(int agentIndex)
 	{
 		try
@@ -12362,10 +12519,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				RewardSystemBehavior rewardSystem = RewardSystemBehavior.Instance;
 				bool isWildernessNonHeroPartyReward = false;
 				NpcDataPacket nonHeroNpc = null;
-				if (rewardSystem != null && TryResolveWildernessNonHeroRewardParty(targetHero, targetCharacter, agentIndex, out var party))
+				bool hasWildernessNonHeroParty = TryResolveWildernessNonHeroRewardParty(targetHero, targetCharacter, agentIndex, out var wildernessNonHeroParty);
+				if (rewardSystem != null && hasWildernessNonHeroParty)
 				{
 					string npcName = (targetCharacter.Name?.ToString() ?? "对方部队").Trim();
-					rewardSystem.ApplyPartyRewardTags(party, Hero.MainHero, npcName, targetCharacter, ref content);
+					rewardSystem.ApplyPartyRewardTags(wildernessNonHeroParty, Hero.MainHero, npcName, targetCharacter, ref content);
 					isWildernessNonHeroPartyReward = true;
 					nonHeroNpc = BuildNativeConversationNpcData(targetHero, targetCharacter);
 					nonHeroNpc.AgentIndex = agentIndex;
@@ -12385,6 +12543,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 							AppendWildernessNonHeroMemory(nonHeroNpc, targetHero, targetCharacter, agentIndex, null, null, item);
 						}
 					}
+				}
+				if (hasWildernessNonHeroParty)
+				{
+					LordEncounterBehavior.TryProcessMeetingTauntAction(null, wildernessNonHeroParty, ref content, out var _);
 				}
 			}
 			if (TryConsumeNativeConversationNpcSurrenderTag(targetHero, targetCharacter, ref content, out var surrenderAgentIndex))
@@ -12513,10 +12675,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		return true;
 	}
 
-	private static bool TryProcessNativeConversationRawMeetingTauntTags(Hero targetHero, ref string content, out bool escalatedToBattle)
+	private static bool TryProcessNativeConversationRawMeetingTauntTags(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, ref string content, out bool escalatedToBattle)
 	{
 		escalatedToBattle = false;
-		if (targetHero == null || string.IsNullOrWhiteSpace(content) || !IsNativeConversationWorldMapContext())
+		if (string.IsNullOrWhiteSpace(content) || !IsNativeConversationWorldMapContext())
 		{
 			return false;
 		}
@@ -12526,10 +12688,19 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			{
 				return false;
 			}
-			bool result = LordEncounterBehavior.TryProcessMeetingTauntAction(targetHero, ref content, out escalatedToBattle);
+			PartyBase nonHeroParty = null;
+			if (targetHero == null)
+			{
+				TryResolveNativeConversationMeetingTauntParty(targetHero, targetCharacter, targetAgentIndex, out nonHeroParty);
+			}
+			if (targetHero == null && nonHeroParty == null)
+			{
+				return false;
+			}
+			bool result = LordEncounterBehavior.TryProcessMeetingTauntAction(targetHero, nonHeroParty, ref content, out escalatedToBattle);
 			if (result)
 			{
-				Logger.Log("ShoutBehavior", "[NativeConversation] raw meeting taunt tag consumed before postprocess. target=" + (targetHero.StringId ?? "") + " escalated=" + escalatedToBattle);
+				Logger.Log("ShoutBehavior", "[NativeConversation] raw meeting taunt tag consumed before postprocess. target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? nonHeroParty?.Name?.ToString() ?? "") + " escalated=" + escalatedToBattle);
 			}
 			return result;
 		}
@@ -12614,7 +12785,12 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		case "encounter_release_player":
 			return !string.IsNullOrWhiteSpace(LordEncounterBehavior.BuildMeetingPlayerReleaseRuntimeInstructionForExternal(hero));
 		case "meeting_taunt":
-			return !string.IsNullOrWhiteSpace(LordEncounterBehavior.BuildMeetingTauntRuntimeInstructionForExternal(hero)) || !string.IsNullOrWhiteSpace(SceneTauntBehavior.BuildUnifiedTauntRuntimeInstructionForExternal(hero, targetCharacter, targetAgentIndex));
+			PartyBase meetingTauntParty = null;
+			if (hero == null)
+			{
+				TryResolveNativeConversationMeetingTauntParty(targetHero, targetCharacter, targetAgentIndex, out meetingTauntParty);
+			}
+			return !string.IsNullOrWhiteSpace(LordEncounterBehavior.BuildMeetingTauntRuntimeInstructionForExternal(hero, targetCharacter, meetingTauntParty)) || !string.IsNullOrWhiteSpace(SceneTauntBehavior.BuildUnifiedTauntRuntimeInstructionForExternal(hero, targetCharacter, targetAgentIndex));
 		case "hero_join_party":
 			if (hero != null)
 			{
@@ -12718,7 +12894,12 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 		string extraFact = proactiveFactText;
 		string nativeMeetingTauntRuleBlock = "";
-		string nativeMeetingTauntInstruction = (LordEncounterBehavior.BuildMeetingTauntRuntimeInstructionForExternal(targetHero) ?? "").Trim();
+		PartyBase nativeMeetingTauntParty = null;
+		if (targetHero == null)
+		{
+			TryResolveNativeConversationMeetingTauntParty(targetHero, targetCharacter, nativeTargetAgentIndex, out nativeMeetingTauntParty);
+		}
+		string nativeMeetingTauntInstruction = (LordEncounterBehavior.BuildMeetingTauntRuntimeInstructionForExternal(targetHero, targetCharacter, nativeMeetingTauntParty) ?? "").Trim();
 		if (!string.IsNullOrWhiteSpace(nativeMeetingTauntInstruction))
 		{
 			nativeMeetingTauntRuleBlock = "【附加规则:meeting_taunt】" + Environment.NewLine + nativeMeetingTauntInstruction;
@@ -12818,7 +12999,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		string cleaned = StripNpcNamePrefixSafely((output ?? "").Replace("\r", "").Trim(), 30);
 		cleaned = StripLeakedPromptContentForShout(cleaned);
 		cleaned = StripStageDirectionsForPassiveShout(cleaned);
-		TryProcessNativeConversationRawMeetingTauntTags(targetHero, ref cleaned, out var nativeRawMeetingTauntEscalated);
+		TryProcessNativeConversationRawMeetingTauntTags(targetHero, targetCharacter, nativeTargetAgentIndex, ref cleaned, out var nativeRawMeetingTauntEscalated);
 		try
 		{
 			string postprocessNpcName = GetSceneNpcHistoryNameForPrompt(npc);

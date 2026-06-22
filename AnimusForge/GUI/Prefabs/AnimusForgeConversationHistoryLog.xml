@@ -21,16 +21,16 @@
                       <Children>
                         <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" LayoutImp.LayoutMethod="HorizontalLeftToRight">
                           <Children>
-                            <AnimusForgeConversationHistoryAutoScrollPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="StretchToParent" AutoHideScrollBars="true" ClipRect="ItemListRect" InnerPanel="ItemListRect\ItemListPanel" MouseScrollAxis="Vertical" VerticalScrollbar="..\ItemListScrollbar2\Scrollbar">
+                            <AnimusForgeConversationHistoryAutoScrollPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginRight="8" AutoHideScrollBars="true" ClipRect="ItemListRect" InnerPanel="ItemListRect\ItemListPanel" MouseScrollAxis="Vertical" VerticalScrollbar="..\ItemListScrollbar2\Scrollbar">
                               <Children>
-                                <Widget Id="ItemListRect" WidthSizePolicy="CoverChildren" HeightSizePolicy="StretchToParent" ClipContents="true">
+                                <Widget Id="ItemListRect" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipContents="true">
                                   <Children>
-                                    <ListPanel Id="ItemListPanel" DataSource="{Items}" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="VerticalTopToBottom">
+                                    <ListPanel Id="ItemListPanel" DataSource="{Items}" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="VerticalTopToBottom">
                                       <ItemTemplate>
-                                        <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginTop="6">
+                                        <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginLeft="18" MarginRight="12" MarginTop="6" MarginBottom="4" LayoutImp.LayoutMethod="HorizontalLeftToRight">
                                           <Children>
-                                            <RichTextWidget WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="200" MarginLeft="0" Brush="Conversation.HeaderText" DoNotAcceptEvents="true" Brush.FontSize="20" Text="@ChatItemTime" />
-                                            <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginLeft="0" Brush="Conversation.HeaderText" Brush.FontSize="20" DoNotAcceptEvents="true" Text="@ChatText" Brush.TextHorizontalAlignment="Left" Brush.FontColor="@FontColor" />
+                                            <RichTextWidget WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="190" MarginRight="10" Brush="Conversation.HeaderText" DoNotAcceptEvents="true" Brush.FontSize="20" Text="@ChatItemTime" />
+                                            <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" Brush="Conversation.HeaderText" Brush.FontSize="20" DoNotAcceptEvents="true" Text="@ChatText" CanBreakWords="true" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Top" Brush.FontColor="@FontColor" />
                                           </Children>
                                         </ListPanel>
                                       </ItemTemplate>

@@ -1133,6 +1133,14 @@ public static class Logger
 		{
 			return TimeSpan.FromDays(1.0);
 		}
+		if (string.Equals(text, DuelSettings.LogCleanupEvery3Days, StringComparison.Ordinal))
+		{
+			return TimeSpan.FromDays(3.0);
+		}
+		if (string.Equals(text, DuelSettings.LogCleanupEveryWeek, StringComparison.Ordinal))
+		{
+			return TimeSpan.FromDays(7.0);
+		}
 		return TimeSpan.Zero;
 	}
 

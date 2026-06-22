@@ -16,6 +16,7 @@ using TaleWorlds.CampaignSystem.Map;
 using TaleWorlds.CampaignSystem.MapEvents;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Settlements;
+using TaleWorlds.CampaignSystem.Siege;
 using TaleWorlds.Core;
 using TaleWorlds.Engine;
 using TaleWorlds.Library;
@@ -148,8 +149,6 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 
 	private static Hero _pendingMeetingBattleVictorySettlementEncounterLeader;
 
-	private static List<string> _meetingTauntWarnedHeroIds = new List<string>();
-
 	private static readonly Regex MeetingTauntWarnTagRegex = new Regex("\\[ACTION:MEETING_TAUNT_WARN\\]", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
 	private static readonly Regex MeetingTauntBattleTagRegex = new Regex("\\[ACTION:MEETING_TAUNT_BATTLE\\]", RegexOptions.IgnoreCase | RegexOptions.Compiled);
@@ -224,17 +223,6 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 
 	public override void SyncData(IDataStore dataStore)
 	{
-		if (_meetingTauntWarnedHeroIds == null)
-		{
-			_meetingTauntWarnedHeroIds = new List<string>();
-		}
-		dataStore.SyncData("_meetingTauntWarnedHeroIds_v1", ref _meetingTauntWarnedHeroIds);
-		if (_meetingTauntWarnedHeroIds == null)
-		{
-			_meetingTauntWarnedHeroIds = new List<string>();
-			return;
-		}
-		_meetingTauntWarnedHeroIds = _meetingTauntWarnedHeroIds.Where((string x) => !string.IsNullOrWhiteSpace(x)).Select((string x) => x.Trim()).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
 	}
 
 	private void OnSessionLaunched(CampaignGameStarter starter)
@@ -516,7 +504,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 
 	internal static bool IsCustomEncounterMenuDisabledForCurrentEncounter()
 	{
-		if (IsVillageRaidEncounterContext())
+		if (IsNativeEncounterActivityContext())
 		{
 			return true;
 		}
@@ -656,6 +644,146 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		return true;
 	}
 
+	internal static bool IsNativeEncounterActivityContext(Hero target = null)
+	{
+		try
+		{
+			if (IsNativeActivityMenu(Campaign.Current?.CurrentMenuContext?.GameMenu?.StringId))
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			PlayerEncounter current = PlayerEncounter.Current;
+			if (current != null)
+			{
+				if (current.ForceRaid || current.ForceSallyOut || current.ForceSupplies || current.ForceVolunteers)
+				{
+					return true;
+				}
+#if BANNERLORD_1_4_OR_GREATER
+				if (current.IsPlayerEncounterRestartedForRaid)
+				{
+					return true;
+				}
+#endif
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (PlayerSiege.PlayerSiegeEvent != null)
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (IsNativeActivityMapEvent(PlayerEncounterCompat.GetCurrentMapEventSafe()))
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (IsNativeActivityParty(PlayerEncounterCompat.GetEncounteredPartySafe()))
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (IsNativeActivityParty(PlayerEncounter.EncounteredParty))
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (IsNativeActivityMobileParty(PlayerEncounter.EncounteredMobileParty))
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (IsNativeActivitySettlement(PlayerEncounter.EncounterSettlement))
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (IsNativeActivitySettlement(Settlement.CurrentSettlement))
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (IsNativeActivitySettlement(MobileParty.MainParty?.CurrentSettlement))
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		if (IsNativeActivityHeroParty(target))
+		{
+			return true;
+		}
+		try
+		{
+			if (Campaign.Current?.CurrentConversationContext == ConversationContext.PartyEncounter && IsNativeActivityHeroParty(Hero.OneToOneConversationHero))
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			CharacterObject characterObject = CharacterObject.OneToOneConversationCharacter;
+			if (Campaign.Current?.CurrentConversationContext == ConversationContext.PartyEncounter && IsNativeActivityHeroParty(characterObject?.HeroObject))
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		return false;
+	}
+
 	internal static bool IsVillageRaidEncounterContext(Hero target = null)
 	{
 		try
@@ -726,6 +854,197 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		{
 			CharacterObject characterObject = CharacterObject.OneToOneConversationCharacter;
 			if (Campaign.Current?.CurrentConversationContext == ConversationContext.PartyEncounter && IsVillageRaidHeroParty(characterObject?.HeroObject))
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		return false;
+	}
+
+	private static bool IsNativeActivityMenu(string menuId)
+	{
+		if (string.IsNullOrWhiteSpace(menuId))
+		{
+			return false;
+		}
+		string text = menuId.Trim();
+		return text == "join_siege_event"
+			|| text == "join_sally_out"
+			|| text == "naval_town_outside"
+			|| text == "raiding_village"
+			|| text == "raid_occupied"
+			|| text == "village_hostile_action"
+			|| text == "raid_village_no_resist_warn_player"
+			|| text == "force_supplies_village_resist_warn_player"
+			|| text == "force_troops_village_resist_warn_player"
+			|| text == "continue_siege_after_attack"
+			|| text == "menu_siege_strategies"
+			|| text.StartsWith("encounter_interrupted_raid", StringComparison.OrdinalIgnoreCase);
+	}
+
+	private static bool IsNativeActivityMapEvent(MapEvent mapEvent)
+	{
+		if (mapEvent == null)
+		{
+			return false;
+		}
+		try
+		{
+			if (mapEvent.IsRaid)
+			{
+				return mapEvent.MapEventSettlement != null && mapEvent.MapEventSettlement.IsVillage;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			return mapEvent.IsSiegeAssault
+				|| mapEvent.IsSallyOut
+				|| mapEvent.IsSiegeOutside
+				|| mapEvent.IsBlockade
+				|| mapEvent.IsBlockadeSallyOut
+				|| mapEvent.IsSiegeAmbush;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static bool IsNativeActivityParty(PartyBase party)
+	{
+		if (party == null)
+		{
+			return false;
+		}
+		try
+		{
+			if (IsNativeActivityMapEvent(party.MapEvent))
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (party.SiegeEvent != null)
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (party.IsSettlement && IsNativeActivitySettlement(party.Settlement))
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (party.IsMobile && IsNativeActivityMobileParty(party.MobileParty))
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		return false;
+	}
+
+	private static bool IsNativeActivityMobileParty(MobileParty party)
+	{
+		if (party == null)
+		{
+			return false;
+		}
+		try
+		{
+			if (IsNativeActivityMapEvent(party.MapEvent) || IsNativeActivityMapEvent(party.Party?.MapEvent))
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (party.SiegeEvent != null || party.BesiegedSettlement != null || party.BesiegerCamp != null)
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (IsVillageRaidMobileParty(party))
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (IsActiveSiegeSettlement(party.TargetSettlement) || IsActiveSiegeSettlement(party.ShortTermTargetSettlement) || IsActiveSiegeSettlement(party.CurrentSettlement))
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		return false;
+	}
+
+	private static bool IsNativeActivityHeroParty(Hero hero)
+	{
+		try
+		{
+			return hero != null && IsNativeActivityMobileParty(hero.PartyBelongedTo);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static bool IsNativeActivitySettlement(Settlement settlement)
+	{
+		if (settlement == null)
+		{
+			return false;
+		}
+		try
+		{
+			if (IsActiveVillageRaidSettlement(settlement) || IsActiveSiegeSettlement(settlement))
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (IsNativeActivityMapEvent(settlement.Party?.MapEvent))
 			{
 				return true;
 			}
@@ -860,6 +1179,18 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		try
 		{
 			return settlement != null && settlement.IsVillage && settlement.IsUnderRaid;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static bool IsActiveSiegeSettlement(Settlement settlement)
+	{
+		try
+		{
+			return settlement != null && settlement.IsFortification && (settlement.IsUnderSiege || settlement.SiegeEvent != null);
 		}
 		catch
 		{
@@ -1290,6 +1621,11 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 
 	private static PartyBase ResolveNativeEncounterAttackDefenderParty(Hero target)
 	{
+		return ResolveNativeEncounterAttackDefenderParty(target, null);
+	}
+
+	private static PartyBase ResolveNativeEncounterAttackDefenderParty(Hero target, PartyBase fallbackParty)
+	{
 		PartyBase partyBase = null;
 		try
 		{
@@ -1306,6 +1642,18 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		try
 		{
 			partyBase = target?.PartyBelongedTo?.Party;
+		}
+		catch
+		{
+			partyBase = null;
+		}
+		if (partyBase != null)
+		{
+			return partyBase;
+		}
+		try
+		{
+			partyBase = fallbackParty;
 		}
 		catch
 		{
@@ -2483,9 +2831,9 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
-		if (IsVillageRaidEncounterContext(target))
+		if (IsNativeEncounterActivityContext(target))
 		{
-			Logger.Log("LordEncounter", $"OpenEncounterMenu ignored because current encounter is a village raid context. Target={target.Name}");
+			Logger.Log("LordEncounter", $"OpenEncounterMenu ignored because current encounter is a native siege or village activity context. Target={target.Name}");
 			return;
 		}
 		if (IsCustomEncounterMenuDisabledForCurrentEncounter())
@@ -4024,36 +4372,6 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		TryApplyImmediateEscalationConsequences(partyBase, target, reason ?? "menu_attack_option");
 	}
 
-	private static string GetMeetingTauntHeroKey(Hero hero)
-	{
-		return hero?.StringId?.Trim() ?? "";
-	}
-
-	private static bool HasMeetingTauntWarning(Hero hero)
-	{
-		string meetingTauntHeroKey = GetMeetingTauntHeroKey(hero);
-		return !string.IsNullOrWhiteSpace(meetingTauntHeroKey) && _meetingTauntWarnedHeroIds != null && _meetingTauntWarnedHeroIds.Contains(meetingTauntHeroKey, StringComparer.OrdinalIgnoreCase);
-	}
-
-	private static void RememberMeetingTauntWarning(Hero hero)
-	{
-		string meetingTauntHeroKey = GetMeetingTauntHeroKey(hero);
-		if (string.IsNullOrWhiteSpace(meetingTauntHeroKey))
-		{
-			return;
-		}
-		if (_meetingTauntWarnedHeroIds == null)
-		{
-			_meetingTauntWarnedHeroIds = new List<string>();
-		}
-		if (_meetingTauntWarnedHeroIds.Contains(meetingTauntHeroKey, StringComparer.OrdinalIgnoreCase))
-		{
-			return;
-		}
-		_meetingTauntWarnedHeroIds.Add(meetingTauntHeroKey);
-		Logger.Log("MeetingTaunt", $"Recorded taunt warning state. Target={hero?.Name}, HeroId={meetingTauntHeroKey}");
-	}
-
 	private static bool IsMeetingPseudoBattleTauntApplicable(Hero hero)
 	{
 		if (hero == null)
@@ -4154,7 +4472,12 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 
 	private static bool IsNativeEncounterConversationTauntApplicable(Hero hero)
 	{
-		if (hero == null)
+		return IsNativeEncounterConversationTauntApplicable(hero, null);
+	}
+
+	private static bool IsNativeEncounterConversationTauntApplicable(Hero hero, PartyBase defenderParty)
+	{
+		if (hero == null && defenderParty == null)
 		{
 			return false;
 		}
@@ -4181,11 +4504,11 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			flag2 = false;
 		}
 		Hero hero2 = ResolveNativeEncounterConversationHero();
-		if (hero2 != null && hero2 != hero)
+		if (hero != null && hero2 != null && hero2 != hero)
 		{
 			return false;
 		}
-		PartyBase partyBase = ResolveNativeEncounterAttackDefenderParty(hero);
+		PartyBase partyBase = ResolveNativeEncounterAttackDefenderParty(hero, defenderParty);
 		if (partyBase == null || PartyBase.MainParty == null || partyBase == PartyBase.MainParty)
 		{
 			return false;
@@ -4211,7 +4534,11 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		}
 		try
 		{
-			return hero.PartyBelongedTo?.Party == partyBase;
+			if (hero != null)
+			{
+				return hero.PartyBelongedTo?.Party == partyBase;
+			}
+			return defenderParty != null && defenderParty == partyBase;
 		}
 		catch
 		{
@@ -4221,26 +4548,54 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 
 	private static bool IsMeetingTauntApplicable(Hero hero)
 	{
-		return IsMeetingPseudoBattleTauntApplicable(hero) || IsNativeEncounterConversationTauntApplicable(hero);
+		return IsMeetingTauntApplicable(hero, null);
+	}
+
+	private static bool IsMeetingTauntApplicable(Hero hero, PartyBase defenderParty)
+	{
+		return (hero != null && IsMeetingPseudoBattleTauntApplicable(hero)) || IsNativeEncounterConversationTauntApplicable(hero, defenderParty);
 	}
 
 	private static bool TryRequestNativeEncounterAttackFromConversation(Hero target, string reason)
 	{
+		return TryRequestNativeEncounterAttackFromConversation(target, null, reason);
+	}
+
+	private static bool TryRequestNativeEncounterAttackFromConversation(Hero target, PartyBase defenderParty, string reason)
+	{
 		try
 		{
-			Hero hero = target ?? ResolveNativeEncounterConversationHero() ?? EnsureEncounterTargetHero("native_conversation_taunt_attack");
-			if (!IsNativeEncounterConversationTauntApplicable(hero))
+			Hero hero = target;
+			if (hero == null)
+			{
+				try
+				{
+					hero = defenderParty?.LeaderHero;
+				}
+				catch
+				{
+					hero = null;
+				}
+			}
+			if (hero == null && defenderParty == null)
+			{
+				hero = ResolveNativeEncounterConversationHero() ?? EnsureEncounterTargetHero("native_conversation_taunt_attack");
+			}
+			PartyBase partyBase = ResolveNativeEncounterAttackDefenderParty(hero, defenderParty);
+			if (!IsNativeEncounterConversationTauntApplicable(hero, partyBase))
 			{
 				Logger.Log("MeetingTaunt", "Native attack tag ignored because current context is not a valid encounter conversation.");
 				return false;
 			}
-			PartyBase partyBase = ResolveNativeEncounterAttackDefenderParty(hero);
 			if (partyBase == null)
 			{
 				Logger.Log("MeetingTaunt", "Native attack tag ignored because defender party could not be resolved.");
 				return false;
 			}
-			SetTarget(hero);
+			if (hero != null)
+			{
+				SetTarget(hero);
+			}
 			MarkPendingForceNativeEncounterAttack(hero, partyBase, reason ?? "native_conversation_taunt_battle");
 			try
 			{
@@ -4260,10 +4615,30 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 
 	private static bool TryEscalateMeetingTauntToBattle(Hero target, string reason)
 	{
+		return TryEscalateMeetingTauntToBattle(target, null, reason);
+	}
+
+	private static bool TryEscalateMeetingTauntToBattle(Hero target, PartyBase defenderParty, string reason)
+	{
 		try
 		{
-			Hero hero = target ?? ResolveNativeEncounterConversationHero() ?? EnsureEncounterTargetHero("meeting_taunt_battle");
-			if (IsMeetingPseudoBattleTauntApplicable(hero))
+			Hero hero = target;
+			if (hero == null)
+			{
+				try
+				{
+					hero = defenderParty?.LeaderHero;
+				}
+				catch
+				{
+					hero = null;
+				}
+			}
+			if (hero == null && defenderParty == null)
+			{
+				hero = ResolveNativeEncounterConversationHero() ?? EnsureEncounterTargetHero("meeting_taunt_battle");
+			}
+			if (hero != null && IsMeetingPseudoBattleTauntApplicable(hero))
 			{
 				TryApplyImmediateAttackConsequencesForEncounter(hero, reason ?? "meeting_taunt_battle");
 				try
@@ -4276,16 +4651,17 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 				Logger.Log("MeetingTaunt", $"Meeting pseudo-battle escalation applied from taunt tag. Target={hero?.Name}, Reason={reason ?? "N/A"}");
 				return true;
 			}
-			if (IsNativeEncounterConversationTauntApplicable(hero))
+			PartyBase partyBase = ResolveNativeEncounterAttackDefenderParty(hero, defenderParty);
+			if (IsNativeEncounterConversationTauntApplicable(hero, partyBase))
 			{
-				bool flag = TryRequestNativeEncounterAttackFromConversation(hero, reason ?? "native_conversation_taunt_battle");
+				bool flag = TryRequestNativeEncounterAttackFromConversation(hero, partyBase, reason ?? "native_conversation_taunt_battle");
 				if (flag)
 				{
-					Logger.Log("MeetingTaunt", $"Native encounter attack requested from taunt tag. Target={hero?.Name}, Reason={reason ?? "N/A"}");
+					Logger.Log("MeetingTaunt", $"Native encounter attack requested from taunt tag. Target={hero?.Name}, Defender={partyBase?.Name}, Reason={reason ?? "N/A"}");
 				}
 				return flag;
 			}
-			if (!IsMeetingTauntApplicable(hero))
+			if (!IsMeetingTauntApplicable(hero, partyBase))
 			{
 				Logger.Log("MeetingTaunt", "Battle tag ignored because current context is not a valid hero meeting or encounter conversation.");
 				return false;
@@ -4301,14 +4677,25 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 
 	internal static string BuildMeetingTauntRuntimeInstructionForExternal(Hero target)
 	{
+		return BuildMeetingTauntRuntimeInstructionForExternal(target, null, null);
+	}
+
+	internal static string BuildMeetingTauntRuntimeInstructionForExternal(Hero target, CharacterObject targetCharacter)
+	{
+		return BuildMeetingTauntRuntimeInstructionForExternal(target, targetCharacter, null);
+	}
+
+	internal static string BuildMeetingTauntRuntimeInstructionForExternal(Hero target, CharacterObject targetCharacter, PartyBase defenderParty)
+	{
 		try
 		{
-			bool flag = false;
-			if (IsMeetingTauntApplicable(target))
+			Hero hero = target ?? targetCharacter?.HeroObject;
+			PartyBase partyBase = ResolveNativeEncounterAttackDefenderParty(hero, defenderParty);
+			if (!IsMeetingTauntApplicable(hero, partyBase))
 			{
-				flag = HasMeetingTauntWarning(target);
+				return "";
 			}
-			return BuildMeetingTauntFallbackInstruction(target, flag);
+			return BuildMeetingTauntFallbackInstruction(hero, targetCharacter, partyBase);
 		}
 		catch
 		{
@@ -4316,9 +4703,9 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static string BuildMeetingTauntFallbackInstruction(Hero target, bool warned)
+	private static string BuildMeetingTauntFallbackInstruction(Hero target, CharacterObject targetCharacter, PartyBase defenderParty)
 	{
-		if (!IsMeetingTauntApplicable(target))
+		if (!IsMeetingTauntApplicable(target, defenderParty))
 		{
 			return "";
 		}
@@ -4327,11 +4714,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		{
 			text = "玩家";
 		}
-		if (warned)
-		{
-			return "你已警告过" + text + "。若还忍不了，就在句末输出[ACTION:MEETING_TAUNT_BATTLE]；这会把当前会面立刻升级为战斗，并按玩家攻击了你方军队来处理后果。";
-		}
-		return "若" + text + "辱骂，贬低或者挑衅你，可在句末输出[ACTION:MEETING_TAUNT_WARN]警告他；若忍无可忍，可直接输出[ACTION:MEETING_TAUNT_BATTLE],此标签会把当前会面立刻升级为战斗，并按玩家攻击了你方军队来处理后果，注意，此标签和单挑无关，而是正式的全面战争";
+		return "若" + text + "辱骂、贬低或挑衅你，并且你决定让部队立刻开战，就在句末输出[ACTION:MEETING_TAUNT_BATTLE]；该标签会把当前野外会面直接升级为正式战斗，并按玩家攻击了你方部队处理。";
 	}
 
 	private static int GetRelationToPlayerSafe(Hero hero)
@@ -5248,6 +5631,11 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 
 	internal static bool TryProcessMeetingTauntAction(Hero target, ref string content, out bool escalatedToBattle)
 	{
+		return TryProcessMeetingTauntAction(target, null, ref content, out escalatedToBattle);
+	}
+
+	internal static bool TryProcessMeetingTauntAction(Hero target, PartyBase defenderParty, ref string content, out bool escalatedToBattle)
+	{
 		escalatedToBattle = false;
 		try
 		{
@@ -5263,14 +5651,29 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			}
 			content = MeetingTauntWarnTagRegex.Replace(content, "").Trim();
 			content = MeetingTauntBattleTagRegex.Replace(content, "").Trim();
-			Hero hero = target ?? EnsureEncounterTargetHero("meeting_taunt_action");
-			if (flag && IsMeetingTauntApplicable(hero))
+			Hero hero = target;
+			if (hero == null)
 			{
-				RememberMeetingTauntWarning(hero);
+				try
+				{
+					hero = defenderParty?.LeaderHero;
+				}
+				catch
+				{
+					hero = null;
+				}
+			}
+			if (hero == null && defenderParty == null)
+			{
+				hero = EnsureEncounterTargetHero("meeting_taunt_action");
+			}
+			if (flag)
+			{
+				Logger.Log("MeetingTaunt", "Legacy warning tag stripped without changing meeting taunt state.");
 			}
 			if (flag2)
 			{
-				escalatedToBattle = TryEscalateMeetingTauntToBattle(hero, "meeting_taunt_battle_tag");
+				escalatedToBattle = TryEscalateMeetingTauntToBattle(hero, defenderParty, "meeting_taunt_battle_tag");
 			}
 			return flag || flag2;
 		}

@@ -50,6 +50,11 @@ public static class Patch_GameMenu_ActivateGameMenu
 				Logger.LogTrace("UI_Intercept", "Native player surrender is pending; keep native 'encounter' menu so surrender result can resolve.");
 				return true;
 			}
+			if (LordEncounterBehavior.IsNativeEncounterActivityContext())
+			{
+				Logger.LogTrace("UI_Intercept", "Native encounter activity context detected; keep native 'encounter' menu.");
+				return true;
+			}
 			if (LordEncounterBehavior.HasPendingMeetingBattleVictorySettlement())
 			{
 				if (LordEncounterBehavior.IsEncounterRedirectSuspended() || LordEncounterRedirectGuard.IsSuppressed())
@@ -116,9 +121,9 @@ public static class Patch_GameMenu_ActivateGameMenu
 				if (leaderHero != null && leaderHero != Hero.MainHero && leaderHero.IsLord)
 				{
 					ProactiveNpcRequestBehavior.MarkEncounterOpened(leaderHero);
-					if (LordEncounterBehavior.IsVillageRaidEncounterContext(leaderHero))
+					if (LordEncounterBehavior.IsNativeEncounterActivityContext(leaderHero))
 					{
-						Logger.LogTrace("UI_Intercept", $"Village raid context detected; keep native 'encounter' menu. Target={leaderHero.Name}");
+						Logger.LogTrace("UI_Intercept", $"Native encounter activity target detected; keep native 'encounter' menu. Target={leaderHero.Name}");
 						return true;
 					}
 					Logger.LogTrace("UI_Intercept", $"拦截到 'encounter' 菜单请求，重定向至 'AnimusForge_lord_encounter' (目标: {leaderHero.Name})");

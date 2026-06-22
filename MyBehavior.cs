@@ -19125,6 +19125,36 @@ public class MyBehavior : CampaignBehaviorBase
 		return result;
 	}
 
+	private static bool ShouldIncludeResidentKingdomEntities(bool kingdomServiceHit, IEnumerable<string> preselectedRuleIds)
+	{
+		if (kingdomServiceHit)
+		{
+			return true;
+		}
+		try
+		{
+			foreach (string ruleId in preselectedRuleIds ?? Enumerable.Empty<string>())
+			{
+				if (IsKingdomEntityPreprocessRuleId(ruleId))
+				{
+					return true;
+				}
+			}
+		}
+		catch
+		{
+		}
+		return false;
+	}
+
+	private static bool IsKingdomEntityPreprocessRuleId(string ruleId)
+	{
+		string id = (ruleId ?? "").Trim();
+		return string.Equals(id, "kingdom_service", StringComparison.OrdinalIgnoreCase)
+			|| string.Equals(id, "kingdom_vassalage", StringComparison.OrdinalIgnoreCase)
+			|| string.Equals(id, "kingdom_annexation", StringComparison.OrdinalIgnoreCase);
+	}
+
 	private string ResolvePreselectedRuleInstructionBody(string ruleId, string body, bool hasAnyHero, Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex)
 	{
 		string id = (ruleId ?? "").Trim();
@@ -21208,7 +21238,9 @@ public class MyBehavior : CampaignBehaviorBase
 			mentionedEntities.Merge(AIConfigHandler.GetAuxiliaryMentionedEntitiesForExternal(input, npcLastUtterance, ResolveCurrentMemorySceneLabel()));
 			mentionedEntities.Merge(AIConfigHandler.GetAuxiliaryMentionedEntitiesForExternal(input, extraFact, ResolveCurrentMemorySceneLabel()));
 			mentionedEntities.Merge(AIConfigHandler.GetLatestAuxiliaryMentionedEntitiesForExternal());
-			WorldEntityPromptContext entityPromptContext = WorldEntityRetrievalService.BuildPromptContext(mentionedEntities, BuildPlayerPublicDisplayNameForPrompt(targetHero, targetCharacter, targetAgentIndex), targetHero);
+			bool includeResidentKingdomEntities = ShouldIncludeResidentKingdomEntities(flag6, auxiliaryRuleHitIds);
+			Hero entityContextHero = targetHero ?? targetCharacter?.HeroObject;
+			WorldEntityPromptContext entityPromptContext = WorldEntityRetrievalService.BuildPromptContext(mentionedEntities, BuildPlayerPublicDisplayNameForPrompt(entityContextHero, targetCharacter, targetAgentIndex), entityContextHero, includeResidentKingdomEntities);
 			if (entityPromptContext != null && entityPromptContext.HasContent)
 			{
 				if (!string.IsNullOrWhiteSpace(entityPromptContext.MainPromptBlock))
@@ -21216,7 +21248,7 @@ public class MyBehavior : CampaignBehaviorBase
 					stringBuilder.AppendLine(entityPromptContext.MainPromptBlock);
 				}
 				shoutPromptContext.EntityPostprocessContext = entityPromptContext.PostprocessPromptBlock ?? "";
-				Logger.Log("WorldEntityRetrieval", "entity_context matches=" + entityPromptContext.MatchCount + " mainLen=" + ((entityPromptContext.MainPromptBlock ?? "").Length) + " postLen=" + ((entityPromptContext.PostprocessPromptBlock ?? "").Length));
+				Logger.Log("WorldEntityRetrieval", "entity_context matches=" + entityPromptContext.MatchCount + " residentKingdoms=" + includeResidentKingdomEntities + " mainLen=" + ((entityPromptContext.MainPromptBlock ?? "").Length) + " postLen=" + ((entityPromptContext.PostprocessPromptBlock ?? "").Length));
 			}
 		}
 		bool includeTradePricing = flag7 || flag8;

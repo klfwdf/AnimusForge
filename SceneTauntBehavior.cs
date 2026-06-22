@@ -1801,9 +1801,10 @@ public class SceneTauntBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			if (IsMeetingTauntContext(targetHero))
+			string meetingInstruction = LordEncounterBehavior.BuildMeetingTauntRuntimeInstructionForExternal(targetHero, targetCharacter);
+			if (!string.IsNullOrWhiteSpace(meetingInstruction))
 			{
-				return LordEncounterBehavior.BuildMeetingTauntRuntimeInstructionForExternal(targetHero);
+				return meetingInstruction;
 			}
 			return BuildSceneTauntRuntimeInstructionForExternal(targetHero, targetCharacter, targetAgentIndex);
 		}
@@ -1968,7 +1969,7 @@ public class SceneTauntBehavior : CampaignBehaviorBase
 		if (isHeroMeeting)
 		{
 			dictionary["tauntContext"] = "hero会面场景";
-			dictionary["warnTag"] = "MEETING_TAUNT_WARN";
+			dictionary["warnTag"] = "MEETING_TAUNT_BATTLE";
 			dictionary["fightTag"] = "MEETING_TAUNT_BATTLE";
 			dictionary["fightEffectText"] = "这会把当前会面立刻升级为战斗，并按玩家攻击了你方军队来处理后果。";
 		}

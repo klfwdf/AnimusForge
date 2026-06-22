@@ -53,9 +53,19 @@ public static class Patch_PlayerEncounter_Start
 				catch
 				{
 				}
+				if (LordEncounterBehavior.IsNativeEncounterActivityContext())
+				{
+					Logger.LogTrace("Patch_PlayerEncounter_Start", "Native encounter activity context detected; skip custom encounter menu redirect.");
+					return;
+				}
 				PartyBase encounteredParty = PlayerEncounter.EncounteredParty;
 				if (encounteredParty == null)
 				{
+					return;
+				}
+				if (LordEncounterBehavior.IsNativeEncounterActivityContext(encounteredParty.LeaderHero))
+				{
+					Logger.LogTrace("Patch_PlayerEncounter_Start", "Native encounter activity target detected; skip custom encounter menu redirect.");
 					return;
 				}
 				Hero leaderHero = encounteredParty.LeaderHero;
