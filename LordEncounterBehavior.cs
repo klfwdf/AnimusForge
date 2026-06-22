@@ -124,6 +124,22 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 
 	private static string _pendingForceNativeEncounterAttackReason;
 
+	private static bool _pendingNativeConversationNpcSurrender;
+
+	private static float _pendingNativeConversationNpcSurrenderAtTime;
+
+	private static float _pendingNativeConversationNpcSurrenderLastAttemptTime = -1f;
+
+	private static Hero _pendingNativeConversationNpcSurrenderHero;
+
+	private static CharacterObject _pendingNativeConversationNpcSurrenderCharacter;
+
+	private static PartyBase _pendingNativeConversationNpcSurrenderParty;
+
+	private static int _pendingNativeConversationNpcSurrenderAgentIndex = -1;
+
+	private static string _pendingNativeConversationNpcSurrenderReason;
+
 	private static bool _pendingMeetingBattleVictorySettlement;
 
 	private static float _pendingMeetingBattleVictorySettlementAtTime;
@@ -2904,6 +2920,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		TryForcePendingDefeatCaptivityMenuIfReady();
 		TryForcePendingMeetingBattleVictorySettlementIfReady();
 		TryForcePendingNativeEncounterAttackIfReady();
+		TryForcePendingNativeConversationNpcSurrenderIfReady();
 		TryForcePendingEncounterBattleMenuIfReady();
 		TryForcePendingReturnToEncounterMenuAfterUnauthorizedMeetingExitIfReady();
 		try
@@ -4780,7 +4797,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 
 	internal static bool TryExecuteNpcSurrenderFromNativeConversation(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, string reason)
 	{
-		return TryExecuteNpcSurrenderFromFreeConversation(targetHero, targetCharacter, targetAgentIndex, reason);
+		return MarkPendingNativeConversationNpcSurrender(targetHero, targetCharacter, targetAgentIndex, reason ?? "native_conversation_npc_surrender_tag");
 	}
 
 	internal static bool TryExecuteNpcSurrenderFromDirectDialog(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, string reason)
@@ -4789,6 +4806,11 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 	}
 
 	internal static bool TryExecuteNpcSurrenderFromFreeConversation(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, string reason)
+	{
+		return TryExecuteNpcSurrenderFromFreeConversation(targetHero, targetCharacter, targetAgentIndex, reason, closeConversation: true);
+	}
+
+	private static bool TryExecuteNpcSurrenderFromFreeConversation(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, string reason, bool closeConversation)
 	{
 		string targetId = targetHero?.StringId ?? targetCharacter?.StringId ?? "unknown";
 		try
@@ -4803,12 +4825,15 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 				Logger.Log("NpcSurrender", "Conversation/dialog NPC surrender already applied. Target=" + targetId + " party=" + GetPartyLogName(encounterParty) + " source=" + (reason ?? "N/A"));
 				return true;
 			}
-			try
+			if (closeConversation)
 			{
-				Campaign.Current?.ConversationManager?.EndConversation();
-			}
-			catch
-			{
+				try
+				{
+					Campaign.Current?.ConversationManager?.EndConversation();
+				}
+				catch
+				{
+				}
 			}
 			try
 			{
@@ -4845,6 +4870,15 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 				Logger.Log("NpcSurrender", "Conversation/dialog NPC surrender failed because encounter battle is unavailable. Target=" + targetId + " party=" + GetPartyLogName(encounterParty) + " source=" + (reason ?? "N/A"));
 				return false;
 			}
+			try
+			{
+				mapEvent.SetOverrideWinner(mapEvent.PlayerSide);
+				Logger.Log("NpcSurrender", "Forced NPC surrender battle winner to player side. Target=" + targetId + " party=" + GetPartyLogName(encounterParty) + " battleState=" + mapEvent.BattleState + " source=" + (reason ?? "N/A"));
+			}
+			catch (Exception ex)
+			{
+				Logger.Log("NpcSurrender", "SetOverrideWinner for NPC surrender failed: " + ex.Message);
+			}
 			PlayerEncounter.EnemySurrender = true;
 			try
 			{
@@ -4861,13 +4895,220 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			catch
 			{
 			}
-			Logger.Log("NpcSurrender", "Executed conversation/dialog NPC surrender. Target=" + targetId + " party=" + GetPartyLogName(encounterParty) + " reason=" + (reason ?? "N/A"));
+			string currentMenu = null;
+			try
+			{
+				currentMenu = Campaign.Current?.CurrentMenuContext?.GameMenu?.StringId;
+			}
+			catch
+			{
+			}
+			Logger.Log("NpcSurrender", "Executed conversation/dialog NPC surrender. Target=" + targetId + " party=" + GetPartyLogName(encounterParty) + " currentMenu=" + (currentMenu ?? "null") + " battleState=" + mapEvent.BattleState + " reason=" + (reason ?? "N/A"));
 			return true;
 		}
 		catch (Exception ex)
 		{
 			Logger.Log("NpcSurrender", "Execute conversation/dialog NPC surrender failed. Target=" + targetId + " source=" + (reason ?? "N/A") + " error=" + ex.Message);
 			return false;
+		}
+	}
+
+	private static bool MarkPendingNativeConversationNpcSurrender(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, string reason)
+	{
+		string targetId = targetHero?.StringId ?? targetCharacter?.StringId ?? "unknown";
+		try
+		{
+			if (!TryGetNpcSurrenderEncounterParty(targetHero, targetCharacter, out var encounterParty, out var blockedReason))
+			{
+				Logger.Log("NpcSurrender", "Ignored native conversation NPC surrender tag. Target=" + targetId + " agentIndex=" + targetAgentIndex + " reason=" + (blockedReason ?? "unknown") + " source=" + (reason ?? "N/A"));
+				return false;
+			}
+			_pendingNativeConversationNpcSurrender = true;
+			try
+			{
+				_pendingNativeConversationNpcSurrenderAtTime = Time.ApplicationTime;
+			}
+			catch
+			{
+				_pendingNativeConversationNpcSurrenderAtTime = 0f;
+			}
+			_pendingNativeConversationNpcSurrenderLastAttemptTime = -1f;
+			_pendingNativeConversationNpcSurrenderHero = targetHero;
+			_pendingNativeConversationNpcSurrenderCharacter = targetCharacter;
+			_pendingNativeConversationNpcSurrenderParty = encounterParty;
+			_pendingNativeConversationNpcSurrenderAgentIndex = targetAgentIndex;
+			_pendingNativeConversationNpcSurrenderReason = reason ?? "native_conversation_npc_surrender_tag";
+			try
+			{
+				string message = "对方已同意投降。请手动离开当前对话，离开后将进入俘虏与战利品结算。";
+				InformationManager.DisplayMessage(new InformationMessage(message, new Color(0.4f, 1f, 0.4f)));
+				AnimusForgeQuickInfo.Show(message, targetHero?.CharacterObject ?? targetCharacter);
+			}
+			catch (Exception ex)
+			{
+				Logger.Log("NpcSurrender", "Show pending native NPC surrender prompt failed: " + ex.Message);
+			}
+			Logger.Log("NpcSurrender", "Marked pending native conversation NPC surrender; waiting for player to leave conversation manually. Target=" + targetId + " party=" + GetPartyLogName(encounterParty) + " agentIndex=" + targetAgentIndex + " reason=" + (reason ?? "N/A"));
+			return true;
+		}
+		catch (Exception ex2)
+		{
+			Logger.Log("NpcSurrender", "Mark pending native conversation NPC surrender failed. Target=" + targetId + " source=" + (reason ?? "N/A") + " error=" + ex2.Message);
+			return false;
+		}
+	}
+
+	private static bool HasPendingNativeConversationNpcSurrender()
+	{
+		if (!_pendingNativeConversationNpcSurrender)
+		{
+			return false;
+		}
+		if (IsNativeConversationStillActive())
+		{
+			return true;
+		}
+		float elapsed = 0f;
+		try
+		{
+			if (_pendingNativeConversationNpcSurrenderAtTime > 0f)
+			{
+				elapsed = Time.ApplicationTime - _pendingNativeConversationNpcSurrenderAtTime;
+			}
+		}
+		catch
+		{
+		}
+		if (elapsed > 600f)
+		{
+			ClearPendingNativeConversationNpcSurrender("expired");
+			return false;
+		}
+		return true;
+	}
+
+	private static void ClearPendingNativeConversationNpcSurrender(string reason)
+	{
+		_pendingNativeConversationNpcSurrender = false;
+		_pendingNativeConversationNpcSurrenderAtTime = 0f;
+		_pendingNativeConversationNpcSurrenderLastAttemptTime = -1f;
+		_pendingNativeConversationNpcSurrenderHero = null;
+		_pendingNativeConversationNpcSurrenderCharacter = null;
+		_pendingNativeConversationNpcSurrenderParty = null;
+		_pendingNativeConversationNpcSurrenderAgentIndex = -1;
+		_pendingNativeConversationNpcSurrenderReason = null;
+		Logger.Log("NpcSurrender", "Cleared pending native conversation NPC surrender. Reason=" + (reason ?? "N/A"));
+	}
+
+	private static bool IsNativeConversationStillActive()
+	{
+		try
+		{
+			ConversationManager conversationManager = Campaign.Current?.ConversationManager;
+			return conversationManager != null && (conversationManager.IsConversationInProgress || conversationManager.IsConversationFlowActive);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static void TryForcePendingNativeConversationNpcSurrenderIfReady()
+	{
+		if (!HasPendingNativeConversationNpcSurrender())
+		{
+			return;
+		}
+		try
+		{
+			if (IsNativeConversationStillActive())
+			{
+				return;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (Game.Current?.GameStateManager?.ActiveState is MissionState)
+			{
+				return;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			float applicationTime = Time.ApplicationTime;
+			if (_pendingNativeConversationNpcSurrenderAtTime > 0f && applicationTime - _pendingNativeConversationNpcSurrenderAtTime < 0.25f)
+			{
+				return;
+			}
+			if (_pendingNativeConversationNpcSurrenderLastAttemptTime > 0f && applicationTime - _pendingNativeConversationNpcSurrenderLastAttemptTime < 0.25f)
+			{
+				return;
+			}
+			_pendingNativeConversationNpcSurrenderLastAttemptTime = applicationTime;
+		}
+		catch
+		{
+			_pendingNativeConversationNpcSurrenderLastAttemptTime = 0f;
+		}
+		try
+		{
+			if (_pendingNativeConversationNpcSurrenderParty != null)
+			{
+				_pendingNativeConversationNpcSurrenderCharacter ??= _pendingNativeConversationNpcSurrenderParty.LeaderHero?.CharacterObject;
+				_pendingNativeConversationNpcSurrenderHero ??= _pendingNativeConversationNpcSurrenderParty.LeaderHero;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (PlayerEncounter.Current == null && _pendingNativeConversationNpcSurrenderParty != null && PartyBase.MainParty != null)
+			{
+				try
+				{
+					PlayerEncounter.RestartPlayerEncounter(_pendingNativeConversationNpcSurrenderParty, PartyBase.MainParty, forcePlayerOutFromSettlement: false);
+				}
+				catch (Exception ex)
+				{
+					Logger.Log("NpcSurrender", "RestartPlayerEncounter for pending native NPC surrender failed: " + ex.Message);
+				}
+				if (PlayerEncounter.Current == null)
+				{
+					try
+					{
+						PlayerEncounter.Start();
+						if (PlayerEncounter.Current != null)
+						{
+							PlayerEncounter.Current.SetupFields(PartyBase.MainParty, _pendingNativeConversationNpcSurrenderParty);
+						}
+					}
+					catch (Exception ex2)
+					{
+						Logger.Log("NpcSurrender", "Start+SetupFields fallback for pending native NPC surrender failed: " + ex2.Message);
+					}
+				}
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (TryExecuteNpcSurrenderFromFreeConversation(_pendingNativeConversationNpcSurrenderHero, _pendingNativeConversationNpcSurrenderCharacter, _pendingNativeConversationNpcSurrenderAgentIndex, _pendingNativeConversationNpcSurrenderReason ?? "native_conversation_npc_surrender_tag", closeConversation: false))
+			{
+				ClearPendingNativeConversationNpcSurrender("executed");
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("NpcSurrender", "Force pending native conversation NPC surrender failed: " + ex.Message);
 		}
 	}
 

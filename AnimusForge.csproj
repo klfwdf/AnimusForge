@@ -13,7 +13,7 @@
     <BannerlordApiCompatibility Condition="'$(BannerlordApiCompatibility)' == ''">$(BannerlordApi)</BannerlordApiCompatibility>
     <AssemblySearchPaths>{HintPathFromItem};{CandidateAssemblyFiles};{TargetFrameworkDirectory};{RawFileName}</AssemblySearchPaths>
   </PropertyGroup>
-  <PropertyGroup Condition="$([System.String]::Copy('$(BannerlordApiCompatibility)').StartsWith('1.4'))">
+  <PropertyGroup Condition="$([System.String]::Copy('$(BannerlordApi)').StartsWith('1.4'))">
     <DefineConstants>$(DefineConstants);BANNERLORD_1_4_OR_GREATER</DefineConstants>
   </PropertyGroup>
   <PropertyGroup>

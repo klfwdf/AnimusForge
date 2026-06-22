@@ -132,10 +132,10 @@ if "%DRY_RUN%"=="1" (
     echo   if origin/%BRANCH% has new commit^(s^): git rebase --autostash "origin/%BRANCH%"
     if defined WORKSHOP_CONTENT_DIR (
         echo   dotnet build "%PROJECT_ROOT%\AnimusForge.csproj" -c %CONFIG% /p:BannerlordApi=1.3 /p:BannerlordApiCompatibility=1.3 /p:BannerlordRoot="%BANNERLORD_ROOT%" /p:WorkshopContentDir="%WORKSHOP_CONTENT_DIR%"
-        echo   dotnet build "%PROJECT_ROOT%\AnimusForge.csproj" -c %CONFIG% /p:BannerlordApi=1.4 /p:BannerlordApiCompatibility=1.3 /p:BannerlordRoot="%BANNERLORD_ROOT%" /p:WorkshopContentDir="%WORKSHOP_CONTENT_DIR%"
+        echo   dotnet build "%PROJECT_ROOT%\AnimusForge.csproj" -c %CONFIG% /p:BannerlordApi=1.4 /p:BannerlordApiCompatibility=1.4 /p:BannerlordRoot="%BANNERLORD_ROOT%" /p:WorkshopContentDir="%WORKSHOP_CONTENT_DIR%"
     ) else (
         echo   dotnet build "%PROJECT_ROOT%\AnimusForge.csproj" -c %CONFIG% /p:BannerlordApi=1.3 /p:BannerlordApiCompatibility=1.3 /p:BannerlordRoot="%BANNERLORD_ROOT%"
-        echo   dotnet build "%PROJECT_ROOT%\AnimusForge.csproj" -c %CONFIG% /p:BannerlordApi=1.4 /p:BannerlordApiCompatibility=1.3 /p:BannerlordRoot="%BANNERLORD_ROOT%"
+        echo   dotnet build "%PROJECT_ROOT%\AnimusForge.csproj" -c %CONFIG% /p:BannerlordApi=1.4 /p:BannerlordApiCompatibility=1.4 /p:BannerlordRoot="%BANNERLORD_ROOT%"
     )
     echo   clear staged index only
     echo   git add --ignore-removal .
@@ -208,9 +208,9 @@ if not "%ERR%"=="0" (
 echo.
 echo [2/4] Building project for Bannerlord 1.4.5...
 if defined WORKSHOP_CONTENT_DIR (
-    dotnet build "%PROJECT_ROOT%\AnimusForge.csproj" -c %CONFIG% /p:BannerlordApi=1.4 /p:BannerlordApiCompatibility=1.3 /p:BannerlordRoot="%BANNERLORD_ROOT%" /p:WorkshopContentDir="%WORKSHOP_CONTENT_DIR%"
+    dotnet build "%PROJECT_ROOT%\AnimusForge.csproj" -c %CONFIG% /p:BannerlordApi=1.4 /p:BannerlordApiCompatibility=1.4 /p:BannerlordRoot="%BANNERLORD_ROOT%" /p:WorkshopContentDir="%WORKSHOP_CONTENT_DIR%"
 ) else (
-    dotnet build "%PROJECT_ROOT%\AnimusForge.csproj" -c %CONFIG% /p:BannerlordApi=1.4 /p:BannerlordApiCompatibility=1.3 /p:BannerlordRoot="%BANNERLORD_ROOT%"
+    dotnet build "%PROJECT_ROOT%\AnimusForge.csproj" -c %CONFIG% /p:BannerlordApi=1.4 /p:BannerlordApiCompatibility=1.4 /p:BannerlordRoot="%BANNERLORD_ROOT%"
 )
 set "ERR=%ERRORLEVEL%"
 if not "%ERR%"=="0" (

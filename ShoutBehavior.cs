@@ -8411,6 +8411,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 
 	private void OnNativeConversationEnded(IEnumerable<CharacterObject> characters)
 	{
+		TryDrainNativeConversationQueuedActions("native_conversation_ended");
 		CloseNativeConversationInput(clearSessionHistory: false);
 	}
 
@@ -12419,10 +12420,29 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				LordEncounterBehavior.TryExecuteNpcSurrenderFromNativeConversation(targetHero, targetCharacter, targetAgentIndex, reason ?? "native_conversation_npc_surrender_tag");
 			});
 			Logger.Log("NpcSurrender", "Queued native/direct conversation NPC surrender. Target=" + targetId + " agentIndex=" + targetAgentIndex + " reason=" + (reason ?? "N/A"));
+			TryDrainNativeConversationQueuedActions("npc_surrender_queued");
 		}
 		catch (Exception ex)
 		{
 			Logger.Log("NpcSurrender", "Queue native/direct conversation NPC surrender failed. Target=" + targetId + " error=" + ex.Message);
+		}
+	}
+
+	private void TryDrainNativeConversationQueuedActions(string reason)
+	{
+		try
+		{
+			int pending = _mainThreadActions.Count;
+			if (pending <= 0)
+			{
+				return;
+			}
+			Logger.Log("NpcSurrender", "Draining native/direct conversation queued actions. Pending=" + pending + " missionActive=" + (Mission.Current != null) + " reason=" + (reason ?? "N/A"));
+			DrainMainThreadActionsForMissionTick();
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("NpcSurrender", "Drain native/direct conversation queued actions failed. Reason=" + (reason ?? "N/A") + " error=" + ex.Message);
 		}
 	}
 
