@@ -1282,15 +1282,7 @@ namespace AnimusForge
 
 		private static bool HasTradeAgreementCompat(ITradeAgreementsCampaignBehavior tradeBeh, Kingdom kingdom, Kingdom other)
 		{
-			if (tradeBeh == null || kingdom == null || other == null)
-			{
-				return false;
-			}
-#if BANNERLORD_1_4_OR_GREATER
-			return tradeBeh.HasTradeAgreement(kingdom, other, out var _);
-#else
-			return tradeBeh.HasTradeAgreement(kingdom, other);
-#endif
+			return BannerlordApiCompat.HasTradeAgreement(tradeBeh, kingdom, other);
 		}
 
 		internal static bool IsBilateralDiplomacyCounterpartAgenda(KingdomDecision decision)

@@ -15,6 +15,10 @@ set "DRY_RUN=0"
 set "COMMIT_MSG="
 set "BANNERLORD_ROOT="
 set "WORKSHOP_CONTENT_DIR="
+if exist "%LOCALAPPDATA%\Microsoft\dotnet\sdk" (
+    set "DOTNET_ROOT=%LOCALAPPDATA%\Microsoft\dotnet"
+    set "PATH=%LOCALAPPDATA%\Microsoft\dotnet;%PATH%"
+)
 
 for /f "usebackq tokens=1,* delims==" %%A in (`powershell -NoProfile -ExecutionPolicy Bypass -File "%PATH_SCRIPT%"`) do (
     if /I "%%A"=="BANNERLORD_ROOT" set "BANNERLORD_ROOT=%%B"

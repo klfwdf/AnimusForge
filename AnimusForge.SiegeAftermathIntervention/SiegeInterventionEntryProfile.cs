@@ -40,6 +40,8 @@ public static class SiegeInterventionEntryProfile
 
     public const string MissingSceneTooltip = "{=!}当前没有可进入的攻城胜利定居点场景。";
 
+    public const string EntryMemoryTitle = "入城处置";
+
     public const string MissingSceneMessage = "【攻城处置】当前没有可进入的被攻陷定居点场景。";
 
     public const string DecisionPolicyMessage = "【攻城处置】处置方式由你现场决定：直接离场按搜掠结算；明确宽恕、安抚或宣抚会按对应处置结算；搜掠仍可因后续宽恕/宣抚回退；血洗不能回退为搜掠或正向处置，但仍可继续升级为屠民迁殖；屠民迁殖也可一开始直接触发。";
@@ -51,6 +53,14 @@ public static class SiegeInterventionEntryProfile
     public const string BattleEquipmentAppliedMessage = "【攻城处置】你已披甲执兵入城。";
 
     public const string NoHealthyTroopsMessage = "【攻城处置】主部队没有可入城的健康士兵或同伴。";
+
+    public static string BuildEntryMemoryText(string settlementName)
+    {
+        string safeSettlementName = string.IsNullOrWhiteSpace(settlementName)
+            ? "这座刚被攻下的定居点"
+            : settlementName.Trim();
+        return "玩家已经攻陷" + safeSettlementName + "并亲自进入城内处置战后秩序；旧守军已失败，旧领主已被打败，平民、商人、工匠、头人和要人都应知道自己处在胜利方处置现场，同时保留本文化、本定居点和个人旧记忆作为反应细节。";
+    }
 
     public static string BuildTroopSelectionInstructionMessage(int maxCount)
     {

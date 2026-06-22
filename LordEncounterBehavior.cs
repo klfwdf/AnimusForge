@@ -665,12 +665,10 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 				{
 					return true;
 				}
-#if BANNERLORD_1_4_OR_GREATER
-				if (current.IsPlayerEncounterRestartedForRaid)
+				if (BannerlordApiCompat.IsPlayerEncounterRestartedForRaid(current))
 				{
 					return true;
 				}
-#endif
 			}
 		}
 		catch

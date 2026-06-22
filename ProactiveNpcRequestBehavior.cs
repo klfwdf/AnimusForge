@@ -778,7 +778,7 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 			if (hasCommonEnemy) { urgency = 65f; return true; }
 #if BANNERLORD_1_4_OR_GREATER
 			ITradeAgreementsCampaignBehavior tradeBeh = Campaign.Current.GetCampaignBehavior<ITradeAgreementsCampaignBehavior>();
-			bool hasTrade = tradeBeh != null && tradeBeh.HasTradeAgreement(npcKingdom, playerKingdom, out var _);
+			bool hasTrade = BannerlordApiCompat.HasTradeAgreement(tradeBeh, npcKingdom, playerKingdom);
 			if (!hasTrade) { urgency = 45f; return true; }
 #endif
 			return false;
@@ -2332,13 +2332,7 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-#if BANNERLORD_1_4_OR_GREATER
-			float baseDistance = party?.IsCurrentlyAtSea == true
-				? Campaign.Current.Models.EncounterModel.NeededMaximumNavalDistanceForEncounteringMobileParty
-				: Campaign.Current.Models.EncounterModel.NeededMaximumLandDistanceForEncounteringMobileParty;
-#else
-			float baseDistance = Campaign.Current.Models.EncounterModel.NeededMaximumDistanceForEncounteringMobileParty;
-#endif
+			float baseDistance = BannerlordApiCompat.GetNeededMaximumDistanceForEncounteringMobileParty(party);
 			return Math.Max(0.75f, baseDistance * 1.35f);
 		}
 		catch

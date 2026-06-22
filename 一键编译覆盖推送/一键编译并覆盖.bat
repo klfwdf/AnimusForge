@@ -11,6 +11,10 @@ set "PATH_SCRIPT=%SCRIPT_DIR%resolve_bannerlord_paths.ps1"
 set "CONFIG=Debug"
 set "BANNERLORD_ROOT="
 set "WORKSHOP_CONTENT_DIR="
+if exist "%LOCALAPPDATA%\Microsoft\dotnet\sdk" (
+    set "DOTNET_ROOT=%LOCALAPPDATA%\Microsoft\dotnet"
+    set "PATH=%LOCALAPPDATA%\Microsoft\dotnet;%PATH%"
+)
 set "LAUNCH_GAME=1"
 set "STEAM_EXE="
 set "STEAM_GAME_ID=261550"

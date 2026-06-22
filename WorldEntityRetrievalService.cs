@@ -2048,11 +2048,7 @@ public static class WorldEntityRetrievalService
 			{
 				return false;
 			}
-#if BANNERLORD_1_4_OR_GREATER
-			return behavior.HasTradeAgreement(kingdom, other, out var _);
-#else
-			return behavior.HasTradeAgreement(kingdom, other);
-#endif
+			return BannerlordApiCompat.HasTradeAgreement(behavior, kingdom, other);
 		}
 		catch
 		{

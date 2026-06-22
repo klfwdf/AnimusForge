@@ -15,6 +15,31 @@ function Get-FullPathSafe {
     return [System.IO.Path]::GetFullPath($Path)
 }
 
+function Get-FileSha256 {
+    param([Parameter(Mandatory = $true)][string]$LiteralPath)
+
+    if (-not (Test-Path -LiteralPath $LiteralPath -PathType Leaf)) {
+        throw "File not found for hash: $LiteralPath"
+    }
+
+    $stream = [System.IO.File]::OpenRead($LiteralPath)
+    try {
+        $sha256 = [System.Security.Cryptography.SHA256]::Create()
+        try {
+            $hashBytes = $sha256.ComputeHash($stream)
+            return ([System.BitConverter]::ToString($hashBytes) -replace "-", "")
+        }
+        finally {
+            if ($sha256 -ne $null) {
+                $sha256.Dispose()
+            }
+        }
+    }
+    finally {
+        $stream.Dispose()
+    }
+}
+
 function Test-SourceModuleDir {
     param([Parameter(Mandatory = $true)][string]$Path)
 
@@ -108,13 +133,13 @@ function Sync-SubModuleXmlBackToSource {
 
     $selectedTarget = @($existingTargets)[0]
     $selectedXmlPath = Join-Path $selectedTarget "SubModule.xml"
-    $selectedHash = (Get-FileHash -LiteralPath $selectedXmlPath -Algorithm SHA256).Hash
+    $selectedHash = Get-FileSha256 -LiteralPath $selectedXmlPath
 
     if ($existingTargets.Count -gt 1) {
         $mismatchedTargets = New-Object System.Collections.Generic.List[string]
         foreach ($targetDir in $existingTargets | Select-Object -Skip 1) {
             $targetXmlPath = Join-Path $targetDir "SubModule.xml"
-            $targetHash = (Get-FileHash -LiteralPath $targetXmlPath -Algorithm SHA256).Hash
+            $targetHash = Get-FileSha256 -LiteralPath $targetXmlPath
             if ($targetHash -ne $selectedHash) {
                 $mismatchedTargets.Add($targetDir)
             }
@@ -128,51 +153,6 @@ function Sync-SubModuleXmlBackToSource {
 
     Copy-Item -LiteralPath $selectedXmlPath -Destination $sourceXmlPath -Force
     Write-Host "Synced XML   : $selectedXmlPath -> $sourceXmlPath"
-}
-
-function Sync-PlayerExportsBackToSource {
-    param(
-        [Parameter(Mandatory = $true)][string]$SourceModuleDir,
-        [Parameter(Mandatory = $true)][string[]]$TargetModuleDirs
-    )
-
-    $existingTargets = @(Get-ExistingModuleXmlTargets -TargetModuleDirs $TargetModuleDirs)
-    if ($existingTargets.Count -eq 0) {
-        Write-Host "PlayerExports: no existing target module found, keeping source copy"
-        return
-    }
-
-    $selectedTarget = @($existingTargets)[0]
-    $targetPlayerExports = Join-Path $selectedTarget "PlayerExports"
-    $sourcePlayerExports = Join-Path $SourceModuleDir "PlayerExports"
-
-    if (-not (Test-Path -LiteralPath $targetPlayerExports -PathType Container)) {
-        Write-Host "PlayerExports: target folder not found, keeping source copy"
-        return
-    }
-
-    New-Item -ItemType Directory -Path $sourcePlayerExports -Force | Out-Null
-
-    $arguments = @(
-        $targetPlayerExports,
-        $sourcePlayerExports,
-        "/MIR",
-        "/R:1",
-        "/W:1",
-        "/NP",
-        "/NFL",
-        "/NDL",
-        "/NJH",
-        "/NJS"
-    )
-
-    & robocopy @arguments | Out-Null
-    $exitCode = $LASTEXITCODE
-    if ($exitCode -ge 8) {
-        throw "robocopy failed while syncing PlayerExports back to source with exit code $exitCode"
-    }
-
-    Write-Host "Synced Data  : $targetPlayerExports -> $sourcePlayerExports"
 }
 
 function Sync-BuildOutputIntoSourceModule {
@@ -225,7 +205,8 @@ function Invoke-RobocopySync {
         "/NJH",
         "/NJS",
         "/XD",
-        "Logs"
+        "Logs",
+        "PlayerExports"
     )
 
     & robocopy @arguments | Out-Null
@@ -257,6 +238,8 @@ function Invoke-RobocopyModuleSync {
         "/XD",
         "Logs",
         "Clients",
+        "bin",
+        "PlayerExports",
         "/XF",
         "AnimusForge.1.3.x.dll",
         "AnimusForge.1.3.x.pdb",
@@ -393,8 +376,8 @@ function Assert-SameHash {
         throw "Missing deployed file: $targetPath"
     }
 
-    $sourceHash = (Get-FileHash -LiteralPath $sourcePath -Algorithm SHA256).Hash
-    $targetHash = (Get-FileHash -LiteralPath $targetPath -Algorithm SHA256).Hash
+    $sourceHash = Get-FileSha256 -LiteralPath $sourcePath
+    $targetHash = Get-FileSha256 -LiteralPath $targetPath
     if ($sourceHash -ne $targetHash) {
         throw "Hash mismatch after deploy: $RelativePath"
     }
@@ -420,8 +403,6 @@ if ($DualClientOutput) {
         throw "DualClientOutput requires -BannerlordRoot."
     }
 
-    $targetModuleDirsForSync = @(Get-DualClientTargetModuleDirs -BannerlordRootPath $BannerlordRoot)
-    Sync-PlayerExportsBackToSource -SourceModuleDir $sourceModuleDir -TargetModuleDirs $targetModuleDirsForSync
     Write-Host "Source Module: $sourceModuleDir"
     Deploy-DualClientModule -SourceModuleDir $sourceModuleDir -BannerlordRootPath $BannerlordRoot -BuildDll13Path $BuildDll13 -BuildDll14Path $BuildDll14
     exit 0
@@ -431,7 +412,6 @@ throw "Single unversioned deploy is disabled. Use -DualClientOutput so output go
 
 $targetModuleDirs = @(Get-TargetModuleDirs -BannerlordRootPath $BannerlordRoot)
 Sync-SubModuleXmlBackToSource -SourceModuleDir $sourceModuleDir -TargetModuleDirs $targetModuleDirs
-Sync-PlayerExportsBackToSource -SourceModuleDir $sourceModuleDir -TargetModuleDirs $targetModuleDirs
 Sync-BuildOutputIntoSourceModule -SourceModuleDir $sourceModuleDir -BuildDllPath $BuildDll
 
 Write-Host "Source Module: $sourceModuleDir"

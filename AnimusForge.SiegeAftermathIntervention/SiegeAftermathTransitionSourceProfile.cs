@@ -22,6 +22,8 @@ public static class SiegeAftermathTransitionSourceProfile
 
     public const string ResetGameLoadFinishedSource = "game_load_finished";
 
+    public const string ResetInterventionEntryFailedSource = "intervention_entry_failed";
+
     public const string NativeDevastateSummaryContinueLootSource = "native_devastate_summary_continue_loot";
 
     public const string NativeDevastateSummaryContinueNoLootSource = "native_devastate_summary_continue_no_loot";
@@ -33,6 +35,8 @@ public static class SiegeAftermathTransitionSourceProfile
     public const string NativeMenuActivationSourcePrefix = "native_menu_activation:";
 
     public const string NativeMenuActivationTransitionSourcePrefix = "native_menu_activation_transition:";
+
+    public const string ResetStaleEntryGuardSourcePrefix = "reset_stale_entry_guard:";
 
     public const string UnavailableSourceSuffix = "N/A";
 
@@ -54,6 +58,11 @@ public static class SiegeAftermathTransitionSourceProfile
     public static string BuildNativeMenuActivationTransitionSource(string menuId)
     {
         return NativeMenuActivationTransitionSourcePrefix + NormalizeSourceSuffix(menuId);
+    }
+
+    public static string BuildResetStaleEntryGuardSource(string menuId)
+    {
+        return ResetStaleEntryGuardSourcePrefix + NormalizeSourceSuffix(menuId);
     }
 
     private static string NormalizeSourceSuffix(string value)

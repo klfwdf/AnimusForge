@@ -12,8 +12,6 @@ public static class SiegeCivilianAssemblyProfile
 
     public const int TownSceneCap = 140;
 
-    public const int CastleSceneCap = 90;
-
     public const int SceneTotalAgentSoftCap = 220;
 
     public const int MinimumSceneCap = 60;

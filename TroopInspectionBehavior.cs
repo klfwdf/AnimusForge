@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
@@ -3140,11 +3140,7 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 				try
 				{
 					PrisonerAgentOrigin origin = new PrisonerAgentOrigin(character);
-#if BANNERLORD_1_4_OR_GREATER
-					Agent agent = base.Mission.SpawnTroop(origin, isPlayerSide: true, hasFormation: true, spawnWithHorse: false, isReinforcement: false, formationTroopCount: heroCount, formationTroopIndex: heroIdx, isAlarmed: false, wieldInitialWeapons: false, null, null, null, null, LordPrisonerFormationClass, false);
-#else
-					Agent agent = base.Mission.SpawnTroop(origin, isPlayerSide: true, hasFormation: true, spawnWithHorse: false, isReinforcement: false, formationTroopCount: heroCount, formationTroopIndex: heroIdx, isAlarmed: false, wieldInitialWeapons: false, forceDismounted: true, null, null, null, null, LordPrisonerFormationClass, false);
-#endif
+					Agent agent = BannerlordApiCompat.SpawnPrisonerInspectionTroop(base.Mission, origin, heroCount, heroIdx, LordPrisonerFormationClass);
 					if (agent != null)
 					{
 						agent.SetIsAIPaused(isPaused: true);
@@ -3181,11 +3177,7 @@ internal sealed class TroopInspectionMissionLogic : MissionLogic
 				try
 				{
 					PrisonerAgentOrigin origin = new PrisonerAgentOrigin(character);
-#if BANNERLORD_1_4_OR_GREATER
-					Agent agent = base.Mission.SpawnTroop(origin, isPlayerSide: true, hasFormation: true, spawnWithHorse: false, isReinforcement: false, formationTroopCount: regularCount, formationTroopIndex: regIdx, isAlarmed: false, wieldInitialWeapons: false, null, null, null, null, RegularPrisonerFormationClass, false);
-#else
-					Agent agent = base.Mission.SpawnTroop(origin, isPlayerSide: true, hasFormation: true, spawnWithHorse: false, isReinforcement: false, formationTroopCount: regularCount, formationTroopIndex: regIdx, isAlarmed: false, wieldInitialWeapons: false, forceDismounted: true, null, null, null, null, RegularPrisonerFormationClass, false);
-#endif
+					Agent agent = BannerlordApiCompat.SpawnPrisonerInspectionTroop(base.Mission, origin, regularCount, regIdx, RegularPrisonerFormationClass);
 					if (agent != null)
 					{
 						agent.SetIsAIPaused(isPaused: true);
@@ -4970,4 +4962,3 @@ public static class TroopInspectionOrderOfBattlePatch
 		}
 	}
 }
-

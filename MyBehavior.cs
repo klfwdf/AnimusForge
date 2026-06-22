@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -21107,7 +21107,7 @@ public class MyBehavior : CampaignBehaviorBase
 			Hero actorHero = attackerParty?.LeaderHero ?? Hero.MainHero;
 			Hero currentOwner = settlement.OwnerClan?.Leader;
 			Hero previousOwnerHero = previousOwner?.Leader;
-			NpcActionFacts facts = CreateNpcActionFacts("siege_intervention_aftermath", actorHero);
+			NpcActionFacts facts = CreateNpcActionFacts(AfGcczShoutBridge.RuleId, actorHero);
 			ApplySettlementFacts(facts, settlement, currentOwner, previousOwnerHero, settlementName);
 			ApplyTargetFacts(facts, previousOwnerHero);
 			AddRelatedFactionFacts(facts, settlement.MapFaction);
@@ -21895,6 +21895,7 @@ public class MyBehavior : CampaignBehaviorBase
 			preprocessRuleIds.Add("worldmap_party_command");
 		}
 		shoutPromptContext.PreprocessRuleIds = preprocessRuleIds.ToList();
+		AfGcczShoutBridge.AppendRuntimePromptToShoutContext(shoutPromptContext, targetHero, targetCharacter, targetAgentIndex, cultureIdOverride);
 		bool extrasHasDuelRule = (shoutPromptContext.Extras?.IndexOf("【附加规则:duel】", StringComparison.OrdinalIgnoreCase)).GetValueOrDefault() >= 0;
 		bool extrasHasRewardRule = (shoutPromptContext.Extras?.IndexOf("【附加规则:reward】", StringComparison.OrdinalIgnoreCase)).GetValueOrDefault() >= 0;
 		bool extrasHasLoanRule = (shoutPromptContext.Extras?.IndexOf("【附加规则:loan】", StringComparison.OrdinalIgnoreCase)).GetValueOrDefault() >= 0;
@@ -21903,7 +21904,8 @@ public class MyBehavior : CampaignBehaviorBase
 		bool extrasHasNpcRecentRule = (shoutPromptContext.Extras?.IndexOf("【附加规则:npc_recent_actions】", StringComparison.OrdinalIgnoreCase)).GetValueOrDefault() >= 0;
 		bool extrasHasVanillaIssueRule = (shoutPromptContext.Extras?.IndexOf("【附加规则:vanilla_issue】", StringComparison.OrdinalIgnoreCase)).GetValueOrDefault() >= 0;
 		bool extrasHasVanillaIssueRuntimeBlock = (shoutPromptContext.Extras?.IndexOf("【原版任务上下文", StringComparison.OrdinalIgnoreCase)).GetValueOrDefault() >= 0;
-		Logger.Log("Logic", $"[RuleInjectionDebug] stage=extras targetHero={(targetHero?.StringId ?? "null")} targetCharacter={(targetCharacter?.StringId ?? "null")} extrasHasDuelRule={extrasHasDuelRule} extrasHasRewardRule={extrasHasRewardRule} extrasHasLoanRule={extrasHasLoanRule} extrasHasWorldMapRule={extrasHasWorldMapRule} extrasHasVanillaIssueRule={extrasHasVanillaIssueRule} extrasHasVanillaIssueRuntimeBlock={extrasHasVanillaIssueRuntimeBlock} extrasHasNpcMajorRule={extrasHasNpcMajorRule} extrasHasNpcRecentRule={extrasHasNpcRecentRule} extrasLen={(shoutPromptContext.Extras ?? "").Length} useDuelContext={shoutPromptContext.UseDuelContext} useRewardContext={shoutPromptContext.UseRewardContext} useLoanContext={shoutPromptContext.IsLoanContext}");
+		bool extrasHasSiegeInterventionRule = AfGcczShoutBridge.HasInjectedRuleBlock(shoutPromptContext.Extras);
+		Logger.Log("Logic", $"[RuleInjectionDebug] stage=extras targetHero={(targetHero?.StringId ?? "null")} targetCharacter={(targetCharacter?.StringId ?? "null")} extrasHasDuelRule={extrasHasDuelRule} extrasHasRewardRule={extrasHasRewardRule} extrasHasLoanRule={extrasHasLoanRule} extrasHasWorldMapRule={extrasHasWorldMapRule} extrasHasVanillaIssueRule={extrasHasVanillaIssueRule} extrasHasVanillaIssueRuntimeBlock={extrasHasVanillaIssueRuntimeBlock} extrasHasSiegeInterventionRule={extrasHasSiegeInterventionRule} extrasHasNpcMajorRule={extrasHasNpcMajorRule} extrasHasNpcRecentRule={extrasHasNpcRecentRule} extrasLen={(shoutPromptContext.Extras ?? "").Length} useDuelContext={shoutPromptContext.UseDuelContext} useRewardContext={shoutPromptContext.UseRewardContext} useLoanContext={shoutPromptContext.IsLoanContext}");
 		return shoutPromptContext;
 		}
 		finally

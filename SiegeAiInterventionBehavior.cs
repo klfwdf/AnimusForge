@@ -198,7 +198,6 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	private const int CivilianGatherMessengerSpeechMinCount = SiegeCivilianGatherInteractionProfile.MessengerSpeechMinCount;
 	private const int CivilianGatherMessengerSpeechMaxCount = SiegeCivilianGatherInteractionProfile.MessengerSpeechMaxCount;
 	private const int TownCivilianAssemblySceneCap = SiegeCivilianAssemblyProfile.TownSceneCap;
-	private const int CastleCivilianAssemblySceneCap = SiegeCivilianAssemblyProfile.CastleSceneCap;
 	private const int SceneTotalAgentSoftCap = SiegeCivilianAssemblyProfile.SceneTotalAgentSoftCap;
 	private const int MinimumCivilianAssemblySceneCap = SiegeCivilianAssemblyProfile.MinimumSceneCap;
 	private const float CivilianAssemblyForwardDistance = SiegeCivilianAssemblyProfile.ForwardDistance;
@@ -521,7 +520,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				args.optionLeaveType = GameMenuOption.LeaveType.Continue;
 				return false;
 			}
-			bool baseEnabled = settlement != null && settlement.IsFortification && PlayerEncounter.LocationEncounter != null && ResolveInterventionLocation(settlement) != null;
+			bool baseEnabled = settlement != null && settlement.IsTown && PlayerEncounter.LocationEncounter != null && ResolveInterventionLocation(settlement) != null;
 			args.IsEnabled = baseEnabled;
 			args.optionLeaveType = GameMenuOption.LeaveType.Submenu;
 			args.Tooltip = new TextObject(baseEnabled
@@ -634,50 +633,24 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			}
 			TroopRoster initialSelections = BuildDefaultInterventionTroopSelection(fullRoster, AutoSummonCount);
 			_selectedInterventionRoster = null;
-#if BANNERLORD_1_4_OR_GREATER
-			args.MenuContext.OpenTroopSelection(
-				fullRoster,
-				initialSelections,
-				null,
-				CanChangeInterventionTroopSelectionStatus,
-				delegate(TroopRoster selectedRoster)
+			Action<TroopRoster> onDone = delegate(TroopRoster selectedRoster)
+			{
+				StoreSelectedInterventionRoster(selectedRoster, AutoSummonCount);
+				int selectedCount = _selectedInterventionRoster?.TotalManCount ?? 0;
+				if (selectedCount > 0)
 				{
-					StoreSelectedInterventionRoster(selectedRoster, AutoSummonCount);
-					int selectedCount = _selectedInterventionRoster?.TotalManCount ?? 0;
-					if (selectedCount > 0)
-					{
-						InformationManager.DisplayMessage(new InformationMessage(SiegeInterventionEntryProfile.BuildSelectionConfirmedMessage(selectedCount), Color.FromUint(SiegeInterventionEntryProfile.SelectionConfirmedMessageColor)));
-					}
-					else
-					{
-						InformationManager.DisplayMessage(new InformationMessage(SiegeInterventionEntryProfile.SelectionFallbackMessage, Color.FromUint(SiegeInterventionEntryProfile.SelectionFallbackMessageColor)));
-					}
-					OpenInterventionMissionNow(location, SiegeInterventionEntryProfile.TroopSelectionDoneMissionSource);
-				},
-				AutoSummonCount,
-				0);
-#else
-			args.MenuContext.OpenTroopSelection(
-				fullRoster,
-				initialSelections,
-				CanChangeInterventionTroopSelectionStatus,
-				delegate(TroopRoster selectedRoster)
+					InformationManager.DisplayMessage(new InformationMessage(SiegeInterventionEntryProfile.BuildSelectionConfirmedMessage(selectedCount), Color.FromUint(SiegeInterventionEntryProfile.SelectionConfirmedMessageColor)));
+				}
+				else
 				{
-					StoreSelectedInterventionRoster(selectedRoster, AutoSummonCount);
-					int selectedCount = _selectedInterventionRoster?.TotalManCount ?? 0;
-					if (selectedCount > 0)
-					{
-						InformationManager.DisplayMessage(new InformationMessage(SiegeInterventionEntryProfile.BuildSelectionConfirmedMessage(selectedCount), Color.FromUint(SiegeInterventionEntryProfile.SelectionConfirmedMessageColor)));
-					}
-					else
-					{
-						InformationManager.DisplayMessage(new InformationMessage(SiegeInterventionEntryProfile.SelectionFallbackMessage, Color.FromUint(SiegeInterventionEntryProfile.SelectionFallbackMessageColor)));
-					}
-					OpenInterventionMissionNow(location, SiegeInterventionEntryProfile.TroopSelectionDoneMissionSource);
-				},
-				AutoSummonCount,
-				0);
-#endif
+					InformationManager.DisplayMessage(new InformationMessage(SiegeInterventionEntryProfile.SelectionFallbackMessage, Color.FromUint(SiegeInterventionEntryProfile.SelectionFallbackMessageColor)));
+				}
+				OpenInterventionMissionNow(location, SiegeInterventionEntryProfile.TroopSelectionDoneMissionSource);
+			};
+			if (!TryOpenTroopSelectionRuntimeCompat(args.MenuContext, fullRoster, initialSelections, onDone))
+			{
+				return false;
+			}
 			Logger.Log("SiegeAiIntervention", "Opened GameMenu troop selection screen. FullRoster=" + fullRoster.TotalManCount + ", Initial=" + (initialSelections?.TotalManCount ?? 0));
 			return true;
 		}
@@ -686,6 +659,104 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			Logger.Log("SiegeAiIntervention", "Open intervention troop selection failed: " + ex.Message);
 			return false;
 		}
+	}
+
+	private static bool TryOpenTroopSelectionRuntimeCompat(MenuContext menuContext, TroopRoster fullRoster, TroopRoster initialSelections, Action<TroopRoster> onDone)
+	{
+		try
+		{
+			if (menuContext == null || fullRoster == null || initialSelections == null || onDone == null)
+			{
+				return false;
+			}
+			MethodInfo[] methods = menuContext.GetType()
+				.GetMethods(BindingFlags.Instance | BindingFlags.Public)
+				.Where(x => x.Name == "OpenTroopSelection")
+				.OrderBy(x => x.GetParameters().Length == 6 ? 0 : 1)
+				.ThenBy(x => x.GetParameters().Length)
+				.ToArray();
+			foreach (MethodInfo method in methods)
+			{
+				ParameterInfo[] parameters = method.GetParameters();
+				object[] arguments = TryBuildOpenTroopSelectionRuntimeArguments(parameters, fullRoster, initialSelections, onDone);
+				if (arguments == null)
+				{
+					continue;
+				}
+				try
+				{
+					method.Invoke(menuContext, arguments);
+					Logger.Log("SiegeAiIntervention", "Opened troop selection through runtime-compatible MenuContext bridge. ParameterCount=" + parameters.Length);
+					return true;
+				}
+				catch (TargetInvocationException ex)
+				{
+					Logger.Log("SiegeAiIntervention", "Runtime-compatible troop selection invocation failed: " + (ex.InnerException?.Message ?? ex.Message));
+					return false;
+				}
+				catch (Exception ex)
+				{
+					Logger.Log("SiegeAiIntervention", "Skipped incompatible OpenTroopSelection candidate. ParameterCount=" + parameters.Length + ", Error=" + ex.Message);
+				}
+			}
+			Logger.Log("SiegeAiIntervention", "No compatible MenuContext.OpenTroopSelection overload found at runtime.");
+			return false;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "TryOpenTroopSelectionRuntimeCompat failed: " + ex.Message);
+			return false;
+		}
+	}
+
+	private static object[] TryBuildOpenTroopSelectionRuntimeArguments(ParameterInfo[] parameters, TroopRoster fullRoster, TroopRoster initialSelections, Action<TroopRoster> onDone)
+	{
+		if (parameters == null || parameters.Length < 6)
+		{
+			return null;
+		}
+		object[] arguments = new object[parameters.Length];
+		int rosterIndex = 0;
+		int intIndex = 0;
+		bool hasCanChange = false;
+		bool hasDone = false;
+		for (int i = 0; i < parameters.Length; i++)
+		{
+			Type parameterType = parameters[i].ParameterType;
+			if (typeof(TroopRoster).IsAssignableFrom(parameterType))
+			{
+				arguments[i] = rosterIndex == 0 ? fullRoster : initialSelections;
+				rosterIndex++;
+			}
+			else if (parameterType == typeof(Func<CharacterObject, bool>))
+			{
+				arguments[i] = new Func<CharacterObject, bool>(CanChangeInterventionTroopSelectionStatus);
+				hasCanChange = true;
+			}
+			else if (parameterType == typeof(Action<TroopRoster>))
+			{
+				arguments[i] = onDone;
+				hasDone = true;
+			}
+			else if (parameterType == typeof(int))
+			{
+				arguments[i] = intIndex == 0 ? AutoSummonCount : 0;
+				intIndex++;
+			}
+			else if (parameterType == typeof(bool))
+			{
+				arguments[i] = false;
+			}
+			else if (!parameterType.IsValueType)
+			{
+				arguments[i] = null;
+			}
+			else
+			{
+				return null;
+			}
+		}
+		return rosterIndex >= 2 && intIndex >= 2 && hasCanChange && hasDone ? arguments : null;
 	}
 
 	private static TroopRoster BuildInterventionTroopSelectionFullRoster()
@@ -771,12 +842,16 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			LocationComplex complex = settlement?.LocationComplex ?? LocationComplex.Current;
+			if (settlement == null || !settlement.IsTown)
+			{
+				return null;
+			}
+			LocationComplex complex = settlement.LocationComplex ?? LocationComplex.Current;
 			if (complex == null)
 			{
 				return null;
 			}
-			return complex.GetLocationWithId("center") ?? complex.GetLocationWithId("lordshall") ?? complex.FindAll(x => x == "center" || x == "lordshall").FirstOrDefault();
+			return complex.GetLocationWithId("center") ?? complex.FindAll(x => x == "center").FirstOrDefault();
 		}
 		catch
 		{
@@ -5223,8 +5298,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			{
 				return TownCivilianAssemblySceneCap;
 			}
-			Settlement settlement = ResolveCurrentSettlement();
-			int settlementCap = settlement?.IsCastle == true ? CastleCivilianAssemblySceneCap : TownCivilianAssemblySceneCap;
+			int settlementCap = TownCivilianAssemblySceneCap;
 			int nativeCivilianCount = mission.Agents.Count(a => IsEligibleCivilianAgent(a, includeHeroes: true));
 			int nonCivilianActiveCount = mission.Agents.Count(a => a != null && a.IsActive() && !IsEligibleCivilianAgent(a, includeHeroes: true));
 			int totalAgentRoomCap = Math.Max(MinimumCivilianAssemblySceneCap, SceneTotalAgentSoftCap - nonCivilianActiveCount);

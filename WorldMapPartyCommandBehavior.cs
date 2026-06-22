@@ -1652,11 +1652,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 
 	private static void SetPartyAiActionForRaidingSettlement(MobileParty party, Settlement settlement)
 	{
-#if BANNERLORD_1_4_OR_GREATER
-		SetPartyAiAction.GetActionForRaidingSettlement(party, settlement, MobileParty.NavigationType.Default, isFromPort: false, isTargetingPort: false);
-#else
-		SetPartyAiAction.GetActionForRaidingSettlement(party, settlement, MobileParty.NavigationType.Default, isFromPort: false);
-#endif
+		BannerlordApiCompat.GetActionForRaidingSettlement(party, settlement);
 	}
 
 	private void MaintainAttackTracking(Hero actorHero, MobileParty party, MobileParty targetParty, PartyCommandQueueState state, PartyCommandEntry command, string reason)
