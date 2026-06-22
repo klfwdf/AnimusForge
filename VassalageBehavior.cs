@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using HarmonyLib;
 using Newtonsoft.Json;
 using SandBox.View.Map;
@@ -13,9 +15,15 @@ using TaleWorlds.CampaignSystem.Map;
 using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.CampaignSystem.ViewModelCollection.Map.MapNotificationTypes;
 using TaleWorlds.Core;
+using TaleWorlds.Engine.GauntletUI;
+using TaleWorlds.GauntletUI;
+using TaleWorlds.GauntletUI.Data;
 using TaleWorlds.Library;
 using TaleWorlds.Localization;
 using TaleWorlds.MountAndBlade;
+using BannerlordEngineTexture = TaleWorlds.Engine.Texture;
+using BannerlordUiSprite = TaleWorlds.TwoDimension.Sprite;
+using BannerlordUiTexture = TaleWorlds.TwoDimension.Texture;
 
 namespace AnimusForge;
 
@@ -279,6 +287,7 @@ internal sealed class AnimusForgeVassalageEstablishedMapNotificationItemVM : Map
 	public AnimusForgeVassalageEstablishedMapNotificationItemVM(AnimusForgeVassalageEstablishedMapNotification data)
 		: base(data)
 	{
+		AnimusForgeVassalageUiSprites.EnsureInstalledForNotificationUi();
 		NotificationIdentifier = "af_vassalage_contract";
 		_onInspect = delegate
 		{
@@ -318,6 +327,7 @@ internal sealed class AnimusForgeVassalageInfoMapNotificationItemVM : MapNotific
 	public AnimusForgeVassalageInfoMapNotificationItemVM(AnimusForgeVassalageInfoMapNotification data)
 		: base(data)
 	{
+		AnimusForgeVassalageUiSprites.EnsureInstalledForNotificationUi();
 		NotificationIdentifier = "af_vassalage_breach";
 		_onInspect = delegate
 		{
@@ -357,6 +367,7 @@ internal sealed class AnimusForgeVassalageProtectionMapNotificationItemVM : MapN
 	public AnimusForgeVassalageProtectionMapNotificationItemVM(AnimusForgeVassalageProtectionMapNotification data)
 		: base(data)
 	{
+		AnimusForgeVassalageUiSprites.EnsureInstalledForNotificationUi();
 		NotificationIdentifier = "af_vassalage_protection";
 		_onInspect = delegate
 		{
@@ -396,6 +407,7 @@ internal sealed class AnimusForgeTributaryPaymentMapNotificationItemVM : MapNoti
 	public AnimusForgeTributaryPaymentMapNotificationItemVM(AnimusForgeTributaryPaymentMapNotification data)
 		: base(data)
 	{
+		AnimusForgeVassalageUiSprites.EnsureInstalledForNotificationUi();
 		NotificationIdentifier = "af_vassalage_tribute";
 		_onInspect = delegate
 		{
@@ -404,6 +416,308 @@ internal sealed class AnimusForgeTributaryPaymentMapNotificationItemVM : MapNoti
 				ExecuteRemove();
 			}
 		};
+	}
+}
+
+internal static class AnimusForgeVassalageUiSprites
+{
+	private const string Source = "VassalageUiSprites";
+	private const string Prefix = "[AF-VASSALAGE-UI]";
+	private const string Category = "af_vassalage_notifications";
+	private const string BrushName = "Map.Notification.Type.Circle.Image";
+	private static readonly VassalageUiSpriteInfo[] SpriteInfos =
+	{
+		new VassalageUiSpriteInfo("af_vassalage_contract", "af_vassalage_contract.png"),
+		new VassalageUiSpriteInfo("af_vassalage_breach", "af_vassalage_breach.png"),
+		new VassalageUiSpriteInfo("af_vassalage_protection", "af_vassalage_protection.png"),
+		new VassalageUiSpriteInfo("af_vassalage_tribute", "af_vassalage_tribute.png")
+	};
+
+	private static readonly Dictionary<string, BannerlordUiSprite> RuntimeSpritesByName = new Dictionary<string, BannerlordUiSprite>(StringComparer.OrdinalIgnoreCase);
+	private static readonly HashSet<string> LoggedFailures = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+	private static bool _patched;
+	private static bool _installLogged;
+	private static bool _brushLogged;
+
+	public static void EnsurePatched(Harmony harmony)
+	{
+		if (_patched)
+		{
+			return;
+		}
+		_patched = true;
+		Harmony patcher = harmony ?? new Harmony("AnimusForge.vassalage.ui.sprites");
+		TryPatch(patcher, "RefreshSpriteData", nameof(RefreshSpriteDataPostfix));
+		TryPatch(patcher, "RefreshBrushFactory", nameof(RefreshBrushFactoryPostfix));
+		EnsureInstalledForNotificationUi();
+	}
+
+	public static void EnsureInstalledForNotificationUi()
+	{
+		TryInstallRuntimeSprites();
+		TryApplyBrushLayerSprites();
+	}
+
+	public static void RefreshSpriteDataPostfix()
+	{
+		TryInstallRuntimeSprites();
+	}
+
+	public static void RefreshBrushFactoryPostfix()
+	{
+		TryInstallRuntimeSprites();
+		TryApplyBrushLayerSprites();
+	}
+
+	private static void TryPatch(Harmony harmony, string targetName, string postfixName)
+	{
+		try
+		{
+			MethodInfo target = AccessTools.Method(typeof(UIResourceManager), targetName);
+			if (target == null)
+			{
+				LogOnce("patch-missing-" + targetName, "UIResourceManager." + targetName + " not found; runtime sprite fallback will only run when notices are created.");
+				return;
+			}
+			harmony.Patch(target, postfix: new HarmonyMethod(typeof(AnimusForgeVassalageUiSprites), postfixName));
+		}
+		catch (Exception ex)
+		{
+			LogOnce("patch-error-" + targetName, "Failed to patch UIResourceManager." + targetName + ": " + ex.Message);
+		}
+	}
+
+	private static void TryInstallRuntimeSprites()
+	{
+		try
+		{
+			if (UIResourceManager.SpriteData == null)
+			{
+				return;
+			}
+			int installed = 0;
+			foreach (VassalageUiSpriteInfo info in SpriteInfos)
+			{
+				if (UIResourceManager.SpriteData.Sprites.TryGetValue(info.SpriteName, out BannerlordUiSprite existing) && existing is RuntimeTextureSprite)
+				{
+					RuntimeSpritesByName[info.SpriteName] = existing;
+					installed++;
+					continue;
+				}
+				if (!TryCreateSprite(info, out BannerlordUiSprite sprite, out string failureReason))
+				{
+					LogOnce("create-" + info.SpriteName, "Failed to load " + info.FileName + ": " + failureReason);
+					continue;
+				}
+				UIResourceManager.SpriteData.Sprites[info.SpriteName] = sprite;
+				RuntimeSpritesByName[info.SpriteName] = sprite;
+				installed++;
+			}
+			if (installed == SpriteInfos.Length && !_installLogged)
+			{
+				_installLogged = true;
+				Log("Runtime PNG sprites installed for vassalage map notifications.");
+			}
+		}
+		catch (Exception ex)
+		{
+			LogOnce("install-exception", "Runtime PNG sprite install failed: " + ex.Message);
+		}
+	}
+
+	private static void TryApplyBrushLayerSprites()
+	{
+		try
+		{
+			Brush brush = UIResourceManager.BrushFactory?.GetBrush(BrushName);
+			if (brush == null)
+			{
+				return;
+			}
+			int applied = 0;
+			foreach (VassalageUiSpriteInfo info in SpriteInfos)
+			{
+				if (!RuntimeSpritesByName.TryGetValue(info.SpriteName, out BannerlordUiSprite sprite))
+				{
+					continue;
+				}
+				BrushLayer layer = brush.GetLayer(info.LayerName);
+				if (layer == null)
+				{
+					LogOnce("layer-" + info.LayerName, "Brush layer missing: " + info.LayerName);
+					continue;
+				}
+				layer.Sprite = sprite;
+				applied++;
+			}
+			if (applied > 0 && !_brushLogged)
+			{
+				_brushLogged = true;
+				Log("Applied runtime PNG sprites to " + BrushName + ".");
+			}
+		}
+		catch (Exception ex)
+		{
+			LogOnce("brush-exception", "Failed to apply runtime PNG sprites to brush layers: " + ex.Message);
+		}
+	}
+
+	private static bool TryCreateSprite(VassalageUiSpriteInfo info, out BannerlordUiSprite sprite, out string failureReason)
+	{
+		sprite = null;
+		string filePath = GetSpriteFilePath(info.FileName);
+		if (string.IsNullOrWhiteSpace(filePath) || !File.Exists(filePath))
+		{
+			failureReason = "file not found at " + filePath;
+			return false;
+		}
+		TryReadPngSize(filePath, out int pngWidth, out int pngHeight);
+		BannerlordEngineTexture engineTexture = TryLoadEngineTexture(filePath, out failureReason);
+		if (engineTexture == null)
+		{
+			return false;
+		}
+		try
+		{
+			engineTexture.Name = info.SpriteName;
+			engineTexture.SetTextureAsAlwaysValid();
+			engineTexture.PreloadTexture(true);
+		}
+		catch
+		{
+			// Some texture loaders report validity lazily. The sprite can still render if the native texture is valid later.
+		}
+		int width = engineTexture.Width > 0 ? engineTexture.Width : (pngWidth > 0 ? pngWidth : 256);
+		int height = engineTexture.Height > 0 ? engineTexture.Height : (pngHeight > 0 ? pngHeight : 256);
+		BannerlordUiTexture uiTexture = new BannerlordUiTexture(new EngineTexture(engineTexture));
+		sprite = new RuntimeTextureSprite(info.SpriteName, uiTexture, width, height);
+		return true;
+	}
+
+	private static BannerlordEngineTexture TryLoadEngineTexture(string filePath, out string failureReason)
+	{
+		failureReason = "";
+		try
+		{
+			byte[] bytes = File.ReadAllBytes(filePath);
+			BannerlordEngineTexture texture = BannerlordEngineTexture.CreateFromMemory(bytes);
+			if (texture != null)
+			{
+				return texture;
+			}
+		}
+		catch (Exception ex)
+		{
+			failureReason = "CreateFromMemory: " + ex.Message;
+		}
+		try
+		{
+			BannerlordEngineTexture texture = BannerlordEngineTexture.LoadTextureFromPath(Path.GetFileName(filePath), Path.GetDirectoryName(filePath));
+			if (texture != null)
+			{
+				failureReason = "";
+				return texture;
+			}
+		}
+		catch (Exception ex)
+		{
+			failureReason = string.IsNullOrWhiteSpace(failureReason) ? "LoadTextureFromPath: " + ex.Message : failureReason + "; LoadTextureFromPath: " + ex.Message;
+		}
+		if (string.IsNullOrWhiteSpace(failureReason))
+		{
+			failureReason = "native texture loader returned null";
+		}
+		return null;
+	}
+
+	private static string GetSpriteFilePath(string fileName)
+	{
+		string assemblyDir = Path.GetDirectoryName(typeof(SubModule).Assembly.Location) ?? "";
+		string moduleRoot = Path.GetFullPath(Path.Combine(assemblyDir, "..", ".."));
+		return Path.Combine(moduleRoot, "GUI", "SpriteParts", Category, fileName);
+	}
+
+	private static bool TryReadPngSize(string filePath, out int width, out int height)
+	{
+		width = 0;
+		height = 0;
+		try
+		{
+			byte[] header = new byte[24];
+			using (FileStream stream = File.OpenRead(filePath))
+			{
+				if (stream.Read(header, 0, header.Length) != header.Length)
+				{
+					return false;
+				}
+			}
+			if (header[0] != 0x89 || header[1] != 0x50 || header[2] != 0x4E || header[3] != 0x47)
+			{
+				return false;
+			}
+			width = ReadBigEndianInt32(header, 16);
+			height = ReadBigEndianInt32(header, 20);
+			return width > 0 && height > 0;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static int ReadBigEndianInt32(byte[] bytes, int offset)
+	{
+		return (bytes[offset] << 24) | (bytes[offset + 1] << 16) | (bytes[offset + 2] << 8) | bytes[offset + 3];
+	}
+
+	private static void LogOnce(string key, string message)
+	{
+		if (LoggedFailures.Add(key))
+		{
+			Log(message);
+		}
+	}
+
+	private static void Log(string message)
+	{
+		Logger.Log(Source, Prefix + " " + message);
+	}
+
+	private readonly struct VassalageUiSpriteInfo
+	{
+		public VassalageUiSpriteInfo(string layerName, string fileName)
+		{
+			LayerName = layerName;
+			FileName = fileName;
+			SpriteName = Category + "\\" + Path.GetFileNameWithoutExtension(fileName);
+		}
+
+		public readonly string LayerName;
+		public readonly string FileName;
+		public readonly string SpriteName;
+	}
+
+	private sealed class RuntimeTextureSprite : BannerlordUiSprite
+	{
+		private readonly BannerlordUiTexture _texture;
+
+		public RuntimeTextureSprite(string name, BannerlordUiTexture texture, int width, int height)
+			: base(name, width, height, TaleWorlds.TwoDimension.SpriteNinePatchParameters.Empty)
+		{
+			_texture = texture;
+		}
+
+		public override BannerlordUiTexture Texture => _texture;
+
+		public override Vec2 GetMinUvs()
+		{
+			return Vec2.Zero;
+		}
+
+		public override Vec2 GetMaxUvs()
+		{
+			return Vec2.One;
+		}
 	}
 }
 

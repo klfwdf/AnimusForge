@@ -134,6 +134,14 @@ public class SubModule : MBSubModuleBase
 			}
 			try
 			{
+				AnimusForgeVassalageUiSprites.EnsurePatched(harmony);
+			}
+			catch (Exception ex6c)
+			{
+				Logger.LogTrace("SubModule", ">>> Vassalage UI sprite bootstrap failed: " + ex6c.Message);
+			}
+			try
+			{
 				PatchClassProcessor patchClassProcessor7 = harmony.CreateClassProcessor(typeof(Patch_Meeting_SuppressChangeRelationAction));
 				patchClassProcessor7.Patch();
 			}
