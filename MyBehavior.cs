@@ -1098,6 +1098,52 @@ public class MyBehavior : CampaignBehaviorBase
 		public WeeklyReportRetryContext RetryContext;
 	}
 
+	private enum DailyMaintenanceTaskKind
+	{
+		SealPastDailyMemoryDrafts,
+		StartMemorySummaryQueue,
+		QueueDirtyMemoryOverviewScan,
+		QueueFullMemoryOverviewScan,
+		DiscontinueLandlessRebelKingdoms,
+		EnsureWeekZeroOpeningSummaryEvents,
+		RecordMissedStrategicWorldEvents,
+		ApplyKingdomStabilityRelationAdjustments,
+		ProcessWeeklyKingdomRebellions,
+		PrepareAutoWeeklyReports
+	}
+
+	private sealed class DailyMaintenanceJob
+	{
+		public DailyMaintenanceTaskKind Kind;
+
+		public int DayIndex;
+
+		public int WeekIndex;
+
+		public int StartDay;
+
+		public int EndDay;
+
+		public string Reason = "";
+	}
+
+	private sealed class PendingAutoWeeklyReportBuild
+	{
+		public int WeekIndex;
+
+		public int StartDay;
+
+		public int EndDay;
+
+		public bool WorldBuilt;
+
+		public int KingdomIndex;
+
+		public List<Kingdom> Kingdoms = new List<Kingdom>();
+
+		public List<WeeklyEventMaterialPreviewGroup> Groups = new List<WeeklyEventMaterialPreviewGroup>();
+	}
+
 	private sealed class WeeklyReportRetryContext
 	{
 		public List<WeeklyEventMaterialPreviewGroup> Groups = new List<WeeklyEventMaterialPreviewGroup>();
@@ -1443,6 +1489,24 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private string _npcMajorActionSummaryQueueJsonStorage = "";
 
+	private const double DailyMaintenanceDefaultFrameBudgetMs = 3.0;
+
+	private const int DailyMaintenanceMaxJobsPerTick = 8;
+
+	private readonly Queue<DailyMaintenanceJob> _dailyMaintenanceQueue = new Queue<DailyMaintenanceJob>();
+
+	private readonly HashSet<string> _dailyMaintenanceJobKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+	private readonly HashSet<string> _dirtyMemoryOverviewIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+	private readonly Queue<string> _pendingMemoryOverviewCandidateScanIds = new Queue<string>();
+
+	private readonly HashSet<string> _pendingMemoryOverviewCandidateScanIdSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+	private PendingAutoWeeklyReportBuild _pendingAutoWeeklyReportBuild;
+
+	private int _kingdomStabilityMaintenanceCursor;
+
 	private const double MemoryMaintenanceCampaignTickThrottleSeconds = 2.0;
 
 	private const double MemoryOverviewCandidateScanThrottleSeconds = 10.0;
@@ -1458,6 +1522,8 @@ public class MyBehavior : CampaignBehaviorBase
 	private Dictionary<string, List<NpcActionEntry>> _npcRecentActions = new Dictionary<string, List<NpcActionEntry>>();
 
 	private Dictionary<string, string> _npcRecentActionStorage = new Dictionary<string, string>();
+
+	private readonly Dictionary<string, HashSet<string>> _npcRecentActionStableKeyIndex = new Dictionary<string, HashSet<string>>(StringComparer.OrdinalIgnoreCase);
 
 	private int _npcActionGlobalOrderCounter;
 
@@ -1478,6 +1544,8 @@ public class MyBehavior : CampaignBehaviorBase
 	private List<EventSourceMaterialEntry> _eventSourceMaterials = new List<EventSourceMaterialEntry>();
 
 	private string _eventSourceMaterialJsonStorage = "";
+
+	private Dictionary<string, EventSourceMaterialEntry> _eventSourceMaterialIndex = new Dictionary<string, EventSourceMaterialEntry>(StringComparer.OrdinalIgnoreCase);
 
 	private Dictionary<string, int> _kingdomStabilityValues = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
 
@@ -3006,6 +3074,79 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private void MarkMemoryOverviewDirty(string memoryId)
+	{
+		try
+		{
+			string text = NormalizeMemoryHeroId(memoryId);
+			if (!IsMemoryEntityEligibleForCompressedMemory(text))
+			{
+				return;
+			}
+			_dirtyMemoryOverviewIds.Add(text);
+		}
+		catch
+		{
+		}
+	}
+
+	private void EnqueueMemoryOverviewCandidateScanId(string memoryId)
+	{
+		string text = NormalizeMemoryHeroId(memoryId);
+		if (!IsMemoryEntityEligibleForCompressedMemory(text))
+		{
+			return;
+		}
+		if (_pendingMemoryOverviewCandidateScanIdSet.Add(text))
+		{
+			_pendingMemoryOverviewCandidateScanIds.Enqueue(text);
+		}
+	}
+
+	private void QueueDirtyMemoryOverviewCandidatesForDeferredScan()
+	{
+		if (_dirtyMemoryOverviewIds.Count <= 0)
+		{
+			return;
+		}
+		foreach (string memoryId in _dirtyMemoryOverviewIds.ToList())
+		{
+			EnqueueMemoryOverviewCandidateScanId(memoryId);
+		}
+		_dirtyMemoryOverviewIds.Clear();
+	}
+
+	private void QueueAllMemoryOverviewCandidatesForDeferredScan()
+	{
+		if (_compressedMemoryBlocks == null || _compressedMemoryBlocks.Count <= 0)
+		{
+			return;
+		}
+		foreach (string memoryId in _compressedMemoryBlocks.Keys.ToList())
+		{
+			EnqueueMemoryOverviewCandidateScanId(memoryId);
+		}
+	}
+
+	private int ProcessMemoryOverviewCandidateScanBudget(long startTimestamp, double budgetMs)
+	{
+		int processed = 0;
+		while (_pendingMemoryOverviewCandidateScanIds.Count > 0 && !IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs))
+		{
+			string memoryId = _pendingMemoryOverviewCandidateScanIds.Dequeue();
+			_pendingMemoryOverviewCandidateScanIdSet.Remove(memoryId);
+			string text = NormalizeMemoryHeroId(memoryId);
+			if (string.IsNullOrWhiteSpace(text) || _compressedMemoryBlocks == null || !_compressedMemoryBlocks.TryGetValue(text, out var blocks) || blocks == null || blocks.Count <= 0)
+			{
+				continue;
+			}
+			string heroName = blocks.Select((CompressedMemoryBlock x) => x?.HeroName).FirstOrDefault((string x) => !string.IsNullOrWhiteSpace(x)) ?? "NPC";
+			TryEnqueueMemoryOverviewForMemoryId(text, heroName, blocks);
+			processed++;
+		}
+		return processed;
+	}
+
 	private void TrySealPastDailyMemoryDrafts()
 	{
 		try
@@ -3110,7 +3251,14 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				using (PerfProbe.Scope("MyBehavior.TryStartMemorySummaryQueue.EnqueueMemoryOverviewForAllCandidates"))
 				{
-					TryEnqueueMemoryOverviewForAllCandidates();
+					if (forceOverviewCandidateScan)
+					{
+						QueueAllMemoryOverviewCandidatesForDeferredScan();
+					}
+					else
+					{
+						QueueDirtyMemoryOverviewCandidatesForDeferredScan();
+					}
 				}
 				hasMemoryJobs = _memorySummaryQueue != null && _memorySummaryQueue.Count > 0;
 				hasMajorActionJobs = _npcMajorActionSummaryQueue != null && _npcMajorActionSummaryQueue.Count > 0;
@@ -3154,7 +3302,7 @@ public class MyBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			TryEnqueueMemoryOverviewForAllCandidates();
+			QueueDirtyMemoryOverviewCandidatesForDeferredScan();
 			List<MemorySummaryJob> jobs = SanitizeMemorySummaryQueue(_memorySummaryQueue);
 			List<MajorActionSummaryJob> majorJobs = SanitizeMajorActionSummaryQueue(_npcMajorActionSummaryQueue);
 			HashSet<string> memoryJobHeroIds = new HashSet<string>(jobs.Where((MemorySummaryJob job) => job != null).Select((MemorySummaryJob job) => NormalizeMemoryHeroId(job.HeroId)), StringComparer.OrdinalIgnoreCase);
@@ -3223,7 +3371,7 @@ public class MyBehavior : CampaignBehaviorBase
 					MarkMemoryOverviewFailure(result3.Job, result3.Error);
 				}
 			}
-			TryEnqueueMemoryOverviewForAllCandidates();
+			QueueDirtyMemoryOverviewCandidatesForDeferredScan();
 			HashSet<string> processedOverviewHeroIds = new HashSet<string>(overviewResults.Where((MemoryOverviewExecutionResult x) => x?.Job != null).Select((MemoryOverviewExecutionResult x) => NormalizeMemoryHeroId(x.Job.HeroId)), StringComparer.OrdinalIgnoreCase);
 			List<MemoryOverviewJob> extraOverviewJobs = SanitizeMemoryOverviewQueue(_memoryOverviewQueue).Where((MemoryOverviewJob job) => job != null && HasMemoryOverviewJobStillPending(job) && !processedOverviewHeroIds.Contains(NormalizeMemoryHeroId(job.HeroId))).ToList();
 			if (extraOverviewJobs.Count > 0)
@@ -4073,47 +4221,355 @@ public class MyBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			TrySealPastDailyMemoryDrafts();
-			TryStartMemorySummaryQueue(forceOverviewCandidateScan: true);
-			TryDiscontinueLandlessModRebelKingdoms("daily_tick");
-			EnsureWeekZeroOpeningSummaryEvents();
-			TryRecordMissedStrategicWorldEvents();
-			ApplyKingdomStabilityRelationAdjustments();
-			int currentGameDayIndexSafe = GetCurrentGameDayIndexSafe();
-			int num = ((currentGameDayIndexSafe > 0) ? (currentGameDayIndexSafe / 7) : 0);
-			if (currentGameDayIndexSafe > 0 && currentGameDayIndexSafe % 7 == 0)
+			if (!IsDeferredDailyMaintenanceEnabled())
 			{
-				TryProcessWeeklyKingdomRebellions(num);
-			}
-			if (_weeklyReportGenerationInProgress)
-			{
+				RunDailyMaintenanceSynchronously();
 				return;
 			}
-			DuelSettings settings = DuelSettings.GetSettings();
-			if (settings == null || !settings.AutoGenerateWeeklyReports)
-			{
-				return;
-			}
-			if (currentGameDayIndexSafe <= 0 || currentGameDayIndexSafe % 7 != 0)
-			{
-				return;
-			}
-			if (num <= 0 || _lastAutoGeneratedWeeklyReportWeek >= num)
-			{
-				return;
-			}
-			if (_automaticKingdomRebellionFlowActive)
-			{
-				_pendingAutoWeeklyReportWeek = Math.Max(_pendingAutoWeeklyReportWeek, num);
-				return;
-			}
-			StartAutoWeeklyReportsForWeek(num, currentGameDayIndexSafe);
+			EnqueueDailyMaintenanceForCurrentDay("daily_tick");
 		}
 		catch (Exception ex)
 		{
 			_weeklyReportGenerationInProgress = false;
 			Logger.Log("EventWeeklyReport", "[ERROR] OnDailyTick auto-generate failed: " + ex.Message);
 		}
+	}
+
+	private static bool IsDeferredDailyMaintenanceEnabled()
+	{
+		try
+		{
+			return DuelSettings.GetSettings()?.EnableDeferredDailyMaintenance != false;
+		}
+		catch
+		{
+			return true;
+		}
+	}
+
+	private static double GetDailyMaintenanceFrameBudgetMs()
+	{
+		try
+		{
+			return Math.Max(1.0, Math.Min(10.0, (DuelSettings.GetSettings()?.DailyMaintenanceFrameBudgetMs).GetValueOrDefault((int)DailyMaintenanceDefaultFrameBudgetMs)));
+		}
+		catch
+		{
+			return DailyMaintenanceDefaultFrameBudgetMs;
+		}
+	}
+
+	private void RunDailyMaintenanceSynchronously()
+	{
+		TrySealPastDailyMemoryDrafts();
+		QueueDirtyMemoryOverviewCandidatesForDeferredScan();
+		ProcessMemoryOverviewCandidateScanBudget(0L, double.MaxValue);
+		TryStartMemorySummaryQueue();
+		TryDiscontinueLandlessModRebelKingdoms("daily_tick");
+		EnsureWeekZeroOpeningSummaryEvents();
+		TryRecordMissedStrategicWorldEvents();
+		ApplyKingdomStabilityRelationAdjustments();
+		int currentGameDayIndexSafe = GetCurrentGameDayIndexSafe();
+		int weekIndex = (currentGameDayIndexSafe > 0) ? (currentGameDayIndexSafe / 7) : 0;
+		if (currentGameDayIndexSafe > 0 && currentGameDayIndexSafe % 7 == 0)
+		{
+			TryProcessWeeklyKingdomRebellions(weekIndex);
+		}
+		if (_weeklyReportGenerationInProgress)
+		{
+			return;
+		}
+		DuelSettings settings = DuelSettings.GetSettings();
+		if (settings == null || !settings.AutoGenerateWeeklyReports || currentGameDayIndexSafe <= 0 || currentGameDayIndexSafe % 7 != 0 || weekIndex <= 0 || _lastAutoGeneratedWeeklyReportWeek >= weekIndex)
+		{
+			return;
+		}
+		if (_automaticKingdomRebellionFlowActive)
+		{
+			_pendingAutoWeeklyReportWeek = Math.Max(_pendingAutoWeeklyReportWeek, weekIndex);
+			return;
+		}
+		StartAutoWeeklyReportsForWeek(weekIndex, currentGameDayIndexSafe);
+	}
+
+	private void EnqueueDailyMaintenanceForCurrentDay(string reason)
+	{
+		int currentGameDayIndexSafe = GetCurrentGameDayIndexSafe();
+		EnqueueDailyMaintenanceJob(DailyMaintenanceTaskKind.SealPastDailyMemoryDrafts, currentGameDayIndexSafe, reason: reason);
+		EnqueueDailyMaintenanceJob(DailyMaintenanceTaskKind.QueueDirtyMemoryOverviewScan, currentGameDayIndexSafe, reason: reason);
+		EnqueueDailyMaintenanceJob(DailyMaintenanceTaskKind.StartMemorySummaryQueue, currentGameDayIndexSafe, reason: reason);
+		EnqueueDailyMaintenanceJob(DailyMaintenanceTaskKind.DiscontinueLandlessRebelKingdoms, currentGameDayIndexSafe, reason: reason);
+		EnqueueDailyMaintenanceJob(DailyMaintenanceTaskKind.EnsureWeekZeroOpeningSummaryEvents, currentGameDayIndexSafe, reason: reason);
+		EnqueueDailyMaintenanceJob(DailyMaintenanceTaskKind.RecordMissedStrategicWorldEvents, currentGameDayIndexSafe, reason: reason);
+		EnqueueDailyMaintenanceJob(DailyMaintenanceTaskKind.ApplyKingdomStabilityRelationAdjustments, currentGameDayIndexSafe, reason: reason);
+		int weekIndex = (currentGameDayIndexSafe > 0) ? (currentGameDayIndexSafe / 7) : 0;
+		if (currentGameDayIndexSafe > 0 && currentGameDayIndexSafe % 7 == 0)
+		{
+			EnqueueDailyMaintenanceJob(DailyMaintenanceTaskKind.ProcessWeeklyKingdomRebellions, currentGameDayIndexSafe, weekIndex, reason: reason);
+			QueueDeferredAutoWeeklyReportsForWeek(weekIndex, currentGameDayIndexSafe, reason);
+		}
+	}
+
+	private void QueueDeferredAutoWeeklyReportsForWeek(int weekIndex, int currentGameDayIndexSafe, string reason)
+	{
+		if (weekIndex <= 0 || _lastAutoGeneratedWeeklyReportWeek >= weekIndex || _weeklyReportGenerationInProgress)
+		{
+			return;
+		}
+		DuelSettings settings = DuelSettings.GetSettings();
+		if (settings == null || !settings.AutoGenerateWeeklyReports)
+		{
+			return;
+		}
+		if (_automaticKingdomRebellionFlowActive)
+		{
+			_pendingAutoWeeklyReportWeek = Math.Max(_pendingAutoWeeklyReportWeek, weekIndex);
+			return;
+		}
+		int startDay = Math.Max(0, (weekIndex - 1) * 7);
+		int endDay = currentGameDayIndexSafe - 1;
+		EnqueueDailyMaintenanceJob(DailyMaintenanceTaskKind.PrepareAutoWeeklyReports, currentGameDayIndexSafe, weekIndex, startDay, endDay, reason);
+	}
+
+	private void EnqueueDailyMaintenanceJob(DailyMaintenanceTaskKind kind, int dayIndex = -1, int weekIndex = 0, int startDay = 0, int endDay = 0, string reason = "")
+	{
+		string key = BuildDailyMaintenanceJobKey(kind, dayIndex, weekIndex, startDay, endDay);
+		if (!_dailyMaintenanceJobKeys.Add(key))
+		{
+			return;
+		}
+		_dailyMaintenanceQueue.Enqueue(new DailyMaintenanceJob
+		{
+			Kind = kind,
+			DayIndex = dayIndex,
+			WeekIndex = weekIndex,
+			StartDay = startDay,
+			EndDay = endDay,
+			Reason = (reason ?? "").Trim()
+		});
+	}
+
+	private static string BuildDailyMaintenanceJobKey(DailyMaintenanceTaskKind kind, int dayIndex, int weekIndex, int startDay, int endDay)
+	{
+		return kind + ":" + dayIndex + ":" + weekIndex + ":" + startDay + ":" + endDay;
+	}
+
+	private static bool IsDailyMaintenanceBudgetExceeded(long startTimestamp, double budgetMs)
+	{
+		if (startTimestamp <= 0L || budgetMs <= 0.0 || double.IsInfinity(budgetMs) || double.IsNaN(budgetMs))
+		{
+			return false;
+		}
+		double elapsedMs = (Stopwatch.GetTimestamp() - startTimestamp) * 1000.0 / Stopwatch.Frequency;
+		return elapsedMs >= budgetMs;
+	}
+
+	private void ProcessDeferredDailyMaintenance()
+	{
+		if (!IsDeferredDailyMaintenanceEnabled())
+		{
+			return;
+		}
+		double budgetMs = GetDailyMaintenanceFrameBudgetMs();
+		long startTimestamp = Stopwatch.GetTimestamp();
+		int processedScanCount = ProcessMemoryOverviewCandidateScanBudget(startTimestamp, budgetMs);
+		int processedJobCount = 0;
+		while (_dailyMaintenanceQueue.Count > 0 && processedJobCount < DailyMaintenanceMaxJobsPerTick && !IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs))
+		{
+			DailyMaintenanceJob job = _dailyMaintenanceQueue.Dequeue();
+			_dailyMaintenanceJobKeys.Remove(BuildDailyMaintenanceJobKey(job.Kind, job.DayIndex, job.WeekIndex, job.StartDay, job.EndDay));
+			ExecuteDailyMaintenanceJob(job);
+			processedJobCount++;
+			processedScanCount += ProcessMemoryOverviewCandidateScanBudget(startTimestamp, budgetMs);
+		}
+		ProcessPendingAutoWeeklyReportBuildBudget(startTimestamp, budgetMs);
+		processedScanCount += ProcessMemoryOverviewCandidateScanBudget(startTimestamp, budgetMs);
+		if (processedScanCount > 0 && !_memorySummaryProcessing)
+		{
+			TryStartMemorySummaryQueue();
+		}
+	}
+
+	private void ExecuteDailyMaintenanceJob(DailyMaintenanceJob job)
+	{
+		if (job == null)
+		{
+			return;
+		}
+		try
+		{
+			switch (job.Kind)
+			{
+			case DailyMaintenanceTaskKind.SealPastDailyMemoryDrafts:
+				TrySealPastDailyMemoryDrafts();
+				break;
+			case DailyMaintenanceTaskKind.StartMemorySummaryQueue:
+				TryStartMemorySummaryQueue();
+				break;
+			case DailyMaintenanceTaskKind.QueueDirtyMemoryOverviewScan:
+				QueueDirtyMemoryOverviewCandidatesForDeferredScan();
+				break;
+			case DailyMaintenanceTaskKind.QueueFullMemoryOverviewScan:
+				QueueAllMemoryOverviewCandidatesForDeferredScan();
+				break;
+			case DailyMaintenanceTaskKind.DiscontinueLandlessRebelKingdoms:
+				TryDiscontinueLandlessModRebelKingdoms(string.IsNullOrWhiteSpace(job.Reason) ? "deferred_daily_tick" : job.Reason);
+				break;
+			case DailyMaintenanceTaskKind.EnsureWeekZeroOpeningSummaryEvents:
+				EnsureWeekZeroOpeningSummaryEvents();
+				break;
+			case DailyMaintenanceTaskKind.RecordMissedStrategicWorldEvents:
+				TryRecordMissedStrategicWorldEvents();
+				break;
+			case DailyMaintenanceTaskKind.ApplyKingdomStabilityRelationAdjustments:
+				if (!ProcessKingdomStabilityRelationAdjustmentsSlice())
+				{
+					EnqueueDailyMaintenanceJob(job.Kind, job.DayIndex, job.WeekIndex, job.StartDay, job.EndDay, job.Reason);
+				}
+				break;
+			case DailyMaintenanceTaskKind.ProcessWeeklyKingdomRebellions:
+				TryProcessWeeklyKingdomRebellions(job.WeekIndex);
+				break;
+			case DailyMaintenanceTaskKind.PrepareAutoWeeklyReports:
+				TryInitializePendingAutoWeeklyReportBuild(job);
+				break;
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("DailyMaintenance", "[ERROR] " + job.Kind + " failed: " + ex.Message);
+		}
+	}
+
+	private bool ProcessKingdomStabilityRelationAdjustmentsSlice()
+	{
+		if (!DuelSettings.IsKingdomStabilityAndRebellionEnabled())
+		{
+			ClearKingdomStabilityRelationAdjustments();
+			_kingdomStabilityMaintenanceCursor = 0;
+			return true;
+		}
+		List<Kingdom> kingdoms = Kingdom.All?.Where((Kingdom x) => x != null).ToList() ?? new List<Kingdom>();
+		if (kingdoms.Count == 0)
+		{
+			_kingdomStabilityMaintenanceCursor = 0;
+			return true;
+		}
+		if (_kingdomStabilityMaintenanceCursor < 0 || _kingdomStabilityMaintenanceCursor >= kingdoms.Count)
+		{
+			_kingdomStabilityMaintenanceCursor = 0;
+		}
+		int processed = 0;
+		while (_kingdomStabilityMaintenanceCursor < kingdoms.Count && processed < 2)
+		{
+			ApplyKingdomStabilityRelationAdjustmentsForKingdom(kingdoms[_kingdomStabilityMaintenanceCursor]);
+			_kingdomStabilityMaintenanceCursor++;
+			processed++;
+		}
+		if (_kingdomStabilityMaintenanceCursor >= kingdoms.Count)
+		{
+			_kingdomStabilityMaintenanceCursor = 0;
+			return true;
+		}
+		return false;
+	}
+
+	private void TryInitializePendingAutoWeeklyReportBuild(DailyMaintenanceJob job)
+	{
+		if (job == null || job.WeekIndex <= 0 || _lastAutoGeneratedWeeklyReportWeek >= job.WeekIndex)
+		{
+			return;
+		}
+		if (_weeklyReportGenerationInProgress || _pendingAutoWeeklyReportBuild != null)
+		{
+			if (_pendingAutoWeeklyReportBuild == null || _pendingAutoWeeklyReportBuild.WeekIndex != job.WeekIndex)
+			{
+				_pendingAutoWeeklyReportWeek = Math.Max(_pendingAutoWeeklyReportWeek, job.WeekIndex);
+			}
+			return;
+		}
+		if (_automaticKingdomRebellionFlowActive)
+		{
+			_pendingAutoWeeklyReportWeek = Math.Max(_pendingAutoWeeklyReportWeek, job.WeekIndex);
+			return;
+		}
+		DuelSettings settings = DuelSettings.GetSettings();
+		if (settings == null || !settings.AutoGenerateWeeklyReports)
+		{
+			return;
+		}
+		_pendingAutoWeeklyReportBuild = new PendingAutoWeeklyReportBuild
+		{
+			WeekIndex = job.WeekIndex,
+			StartDay = Math.Max(0, job.StartDay),
+			EndDay = Math.Max(job.StartDay, job.EndDay),
+			Kingdoms = GetDevEditableKingdoms().Where(IsKingdomEligibleForWeeklyReport).ToList()
+		};
+		_weeklyReportGenerationInProgress = true;
+		_pendingAutoWeeklyReportWeek = 0;
+	}
+
+	private void ProcessPendingAutoWeeklyReportBuildBudget(long startTimestamp, double budgetMs)
+	{
+		PendingAutoWeeklyReportBuild context = _pendingAutoWeeklyReportBuild;
+		if (context == null || _automaticKingdomRebellionFlowActive)
+		{
+			return;
+		}
+		try
+		{
+			if (!context.WorldBuilt && !IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs))
+			{
+				context.Groups.Add(BuildWorldWeeklyEventMaterialPreviewGroup(context.StartDay, context.EndDay));
+				context.WorldBuilt = true;
+			}
+			while (context.KingdomIndex < context.Kingdoms.Count && !IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs))
+			{
+				Kingdom kingdom = context.Kingdoms[context.KingdomIndex++];
+				if (IsKingdomEligibleForWeeklyReport(kingdom))
+				{
+					context.Groups.Add(BuildKingdomWeeklyEventMaterialPreviewGroup(kingdom, context.StartDay, context.EndDay));
+				}
+			}
+			if (context.WorldBuilt && context.KingdomIndex >= context.Kingdoms.Count)
+			{
+				FinalizePendingAutoWeeklyReportBuild(context);
+			}
+		}
+		catch (Exception ex)
+		{
+			_pendingAutoWeeklyReportBuild = null;
+			_weeklyReportGenerationInProgress = false;
+			Logger.Log("EventWeeklyReport", "[ERROR] deferred auto weekly report build failed: " + ex);
+		}
+	}
+
+	private void FinalizePendingAutoWeeklyReportBuild(PendingAutoWeeklyReportBuild context)
+	{
+		if (context == null)
+		{
+			return;
+		}
+		List<WeeklyEventMaterialPreviewGroup> groups = (context.Groups ?? new List<WeeklyEventMaterialPreviewGroup>()).Where((WeeklyEventMaterialPreviewGroup x) => x != null).ToList();
+		foreach (WeeklyEventMaterialPreviewGroup group in groups)
+		{
+			ApplyWeeklyPromptMaterialAggregation(group);
+		}
+		List<string> nearestKingdomIds = GetKingdomIdsByPlayerProximity(groups.Where((WeeklyEventMaterialPreviewGroup x) => string.Equals((x.GroupKind ?? "").Trim(), "kingdom", StringComparison.OrdinalIgnoreCase)).Select((WeeklyEventMaterialPreviewGroup x) => x.KingdomId)).Where((string x) => !string.IsNullOrWhiteSpace(x)).Select((string x) => x.Trim()).Distinct(StringComparer.OrdinalIgnoreCase).Take(3).ToList();
+		if (nearestKingdomIds.Count == 0)
+		{
+			nearestKingdomIds = groups.Where((WeeklyEventMaterialPreviewGroup x) => string.Equals((x.GroupKind ?? "").Trim(), "kingdom", StringComparison.OrdinalIgnoreCase)).Select((WeeklyEventMaterialPreviewGroup x) => (x.KingdomId ?? "").Trim()).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).Take(3).ToList();
+		}
+		HashSet<string> fullReportKingdomIds = new HashSet<string>(nearestKingdomIds, StringComparer.OrdinalIgnoreCase);
+		foreach (WeeklyEventMaterialPreviewGroup group in groups)
+		{
+			bool isKingdom = string.Equals((group?.GroupKind ?? "").Trim(), "kingdom", StringComparison.OrdinalIgnoreCase);
+			bool shortOnly = isKingdom && !fullReportKingdomIds.Contains((group?.KingdomId ?? "").Trim());
+			PrepareWeeklyPromptMaterialsForGroup(group, shortOnly);
+		}
+		groups = OrderWeeklyReportGenerationGroups(groups);
+		_pendingAutoWeeklyReportBuild = null;
+		_ = GenerateAutoWeeklyReportsAsync(groups, context.WeekIndex, context.StartDay, context.EndDay);
 	}
 
 	private void StartAutoWeeklyReportsForWeek(int weekIndex, int currentGameDayIndexSafe)
@@ -4156,7 +4612,14 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
-		StartAutoWeeklyReportsForWeek(_pendingAutoWeeklyReportWeek, currentGameDayIndexSafe);
+		if (IsDeferredDailyMaintenanceEnabled())
+		{
+			QueueDeferredAutoWeeklyReportsForWeek(_pendingAutoWeeklyReportWeek, currentGameDayIndexSafe, "deferred_auto_weekly_resume");
+		}
+		else
+		{
+			StartAutoWeeklyReportsForWeek(_pendingAutoWeeklyReportWeek, currentGameDayIndexSafe);
+		}
 	}
 
 	private async Task GenerateAutoWeeklyReportsAsync(List<WeeklyEventMaterialPreviewGroup> groups, int weekIndex, int startDay, int endDay)
@@ -5744,6 +6207,7 @@ public class MyBehavior : CampaignBehaviorBase
 			}
 		}
 		List<string> list = _kingdomStabilityRelationAppliedOffsets.Keys.Where((string x) => !string.IsNullOrWhiteSpace(x) && x.StartsWith(kingdomId + "|", StringComparison.OrdinalIgnoreCase)).ToList();
+		HashSet<string> existingKeys = new HashSet<string>(list, StringComparer.OrdinalIgnoreCase);
 		foreach (string item2 in list)
 		{
 			int desiredOffset = 0;
@@ -5765,7 +6229,7 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		foreach (KeyValuePair<string, int> item3 in dictionary)
 		{
-			if (list.Contains(item3.Key))
+			if (existingKeys.Contains(item3.Key))
 			{
 				continue;
 			}
@@ -7353,6 +7817,27 @@ public class MyBehavior : CampaignBehaviorBase
 	{
 		try
 		{
+			bool scannedKnownRebelKingdom = false;
+			foreach (string kingdomId in (_modCreatedRebelKingdomIds ?? new HashSet<string>(StringComparer.OrdinalIgnoreCase)).ToList())
+			{
+				string text = (kingdomId ?? "").Trim();
+				if (string.IsNullOrWhiteSpace(text))
+				{
+					continue;
+				}
+				Kingdom kingdom = FindKingdomById(text);
+				if (kingdom == null)
+				{
+					CleanupModCreatedRebelKingdomState(text);
+					continue;
+				}
+				scannedKnownRebelKingdom = true;
+				TryDiscontinueLandlessModRebelKingdom(kingdom, reason);
+			}
+			if (scannedKnownRebelKingdom)
+			{
+				return;
+			}
 			if (Kingdom.All == null || Kingdom.All.Count == 0)
 			{
 				return;
@@ -7962,7 +8447,20 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		int currentGameDayIndexSafe = dayOverride >= 0 ? dayOverride : GetCurrentGameDayIndexSafe();
 		string text2 = NormalizeNpcActionStableKey(stableKey, label + ":" + text);
-		EventSourceMaterialEntry eventSourceMaterialEntry = _eventSourceMaterials.FirstOrDefault((EventSourceMaterialEntry x) => x != null && x.Day == currentGameDayIndexSafe && string.Equals((x.StableKey ?? "").Trim(), text2, StringComparison.OrdinalIgnoreCase));
+		if (_eventSourceMaterialIndex == null)
+		{
+			RebuildEventSourceMaterialIndex();
+		}
+		string indexKey = BuildEventSourceMaterialIndexKey(currentGameDayIndexSafe, text2);
+		EventSourceMaterialEntry eventSourceMaterialEntry = null;
+		if (_eventSourceMaterialIndex != null)
+		{
+			_eventSourceMaterialIndex.TryGetValue(indexKey, out eventSourceMaterialEntry);
+		}
+		if (eventSourceMaterialEntry == null)
+		{
+			eventSourceMaterialEntry = _eventSourceMaterials.FirstOrDefault((EventSourceMaterialEntry x) => x != null && x.Day == currentGameDayIndexSafe && string.Equals((x.StableKey ?? "").Trim(), text2, StringComparison.OrdinalIgnoreCase));
+		}
 		if (eventSourceMaterialEntry != null)
 		{
 			eventSourceMaterialEntry.Label = (label ?? "").Trim();
@@ -7974,9 +8472,13 @@ public class MyBehavior : CampaignBehaviorBase
 			eventSourceMaterialEntry.ActorKingdomId = (actorKingdomId ?? "").Trim();
 			eventSourceMaterialEntry.IncludeInWorld = eventSourceMaterialEntry.IncludeInWorld || includeInWorld;
 			eventSourceMaterialEntry.IncludeInKingdom = eventSourceMaterialEntry.IncludeInKingdom || includeInKingdom;
+			if (_eventSourceMaterialIndex != null)
+			{
+				_eventSourceMaterialIndex[indexKey] = eventSourceMaterialEntry;
+			}
 			return;
 		}
-		_eventSourceMaterials.Add(new EventSourceMaterialEntry
+		EventSourceMaterialEntry newEntry = new EventSourceMaterialEntry
 		{
 			Day = currentGameDayIndexSafe,
 			Sequence = ++_npcActionGlobalOrderCounter,
@@ -7991,8 +8493,12 @@ public class MyBehavior : CampaignBehaviorBase
 			ActorKingdomId = (actorKingdomId ?? "").Trim(),
 			IncludeInWorld = includeInWorld,
 			IncludeInKingdom = includeInKingdom
-		});
-		_eventSourceMaterials = SanitizeEventSourceMaterials(_eventSourceMaterials);
+		};
+		_eventSourceMaterials.Add(newEntry);
+		if (_eventSourceMaterialIndex != null)
+		{
+			_eventSourceMaterialIndex[indexKey] = newEntry;
+		}
 	}
 
 	public static void RecordPlayerSceneConflictWeeklyMaterialForExternal(string text, string stableKey, int day, string gameDate, string settlementId, string settlementName, string locationText)
@@ -9185,6 +9691,7 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				int num = currentGameDayIndexSafe - RecentNpcActionWindowDays + 1;
 				value.RemoveAll((NpcActionEntry x) => x == null || x.Day < num || string.IsNullOrWhiteSpace(x.Text));
+				RefreshNpcRecentActionStableKeyIndexForHero(npcActionHeroKey, value);
 			}
 			else
 			{
@@ -9192,7 +9699,7 @@ public class MyBehavior : CampaignBehaviorBase
 			}
 			if (dedupeAcrossWindow)
 			{
-				if (value.Any((NpcActionEntry x) => x != null && string.Equals(x.StableKey ?? "", text3, StringComparison.OrdinalIgnoreCase)))
+				if ((keepOnlyRecentWindow && IsNpcRecentActionStableKeyKnown(npcActionHeroKey, text3)) || value.Any((NpcActionEntry x) => x != null && string.Equals(x.StableKey ?? "", text3, StringComparison.OrdinalIgnoreCase)))
 				{
 					return;
 				}
@@ -9210,6 +9717,10 @@ public class MyBehavior : CampaignBehaviorBase
 				value = value.Skip(value.Count - maxEntries).ToList();
 			}
 			storage[npcActionHeroKey] = value;
+			if (keepOnlyRecentWindow)
+			{
+				RefreshNpcRecentActionStableKeyIndexForHero(npcActionHeroKey, value);
+			}
 		}
 		catch (Exception ex)
 		{
@@ -10854,6 +11365,10 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				TryRunCampaignMemoryMaintenance();
 			}
+			using (PerfProbe.Scope("MyBehavior.OnCampaignTick.ProcessDeferredDailyMaintenance"))
+			{
+				ProcessDeferredDailyMaintenance();
+			}
 			using (PerfProbe.Scope("MyBehavior.OnCampaignTick.CachePlayerClanTier"))
 			{
 				int num = 0;
@@ -11756,6 +12271,7 @@ public class MyBehavior : CampaignBehaviorBase
 					}
 				}
 			}
+			RebuildNpcRecentActionStableKeyIndex();
 			dataStore.SyncData("_npcActionGlobalOrderCounter_v1", ref _npcActionGlobalOrderCounter);
 			NormalizeNpcActionSequences(_npcMajorActions);
 			NormalizeNpcActionSequences(_npcRecentActions);
@@ -11813,6 +12329,7 @@ public class MyBehavior : CampaignBehaviorBase
 					_eventSourceMaterials = new List<EventSourceMaterialEntry>();
 				}
 			}
+			RebuildEventSourceMaterialIndex();
 			dataStore.SyncData("_lastAutoGeneratedWeeklyReportWeek_v1", ref _lastAutoGeneratedWeeklyReportWeek);
 			_kingdomStabilityValues.Clear();
 			_kingdomStabilityStorage.Clear();
@@ -13002,7 +13519,80 @@ public class MyBehavior : CampaignBehaviorBase
 	private void OnGameLoadFinished()
 	{
 		QueueMissingOnnxGateCheck(TimeSpan.Zero);
-		TryDiscontinueLandlessModRebelKingdoms("game_load_finished");
+		RebuildRuntimeDerivedIndexes();
+		if (IsDeferredDailyMaintenanceEnabled())
+		{
+			int currentDay = GetCurrentGameDayIndexSafe();
+			EnqueueDailyMaintenanceJob(DailyMaintenanceTaskKind.DiscontinueLandlessRebelKingdoms, currentDay, reason: "game_load_finished");
+			EnqueueDailyMaintenanceJob(DailyMaintenanceTaskKind.QueueFullMemoryOverviewScan, currentDay, reason: "game_load_finished");
+			EnqueueDailyMaintenanceJob(DailyMaintenanceTaskKind.StartMemorySummaryQueue, currentDay, reason: "game_load_finished");
+		}
+		else
+		{
+			TryDiscontinueLandlessModRebelKingdoms("game_load_finished");
+			QueueAllMemoryOverviewCandidatesForDeferredScan();
+			ProcessMemoryOverviewCandidateScanBudget(0L, double.MaxValue);
+			TryStartMemorySummaryQueue();
+		}
+	}
+
+	private void RebuildRuntimeDerivedIndexes()
+	{
+		RebuildEventSourceMaterialIndex();
+		RebuildNpcRecentActionStableKeyIndex();
+	}
+
+	private static string BuildEventSourceMaterialIndexKey(int day, string stableKey)
+	{
+		string text = (stableKey ?? "").Trim();
+		return Math.Max(0, day) + "|" + text;
+	}
+
+	private void RebuildEventSourceMaterialIndex()
+	{
+		_eventSourceMaterialIndex = new Dictionary<string, EventSourceMaterialEntry>(StringComparer.OrdinalIgnoreCase);
+		foreach (EventSourceMaterialEntry item in _eventSourceMaterials ?? new List<EventSourceMaterialEntry>())
+		{
+			string text = (item?.StableKey ?? "").Trim();
+			if (!string.IsNullOrWhiteSpace(text))
+			{
+				_eventSourceMaterialIndex[BuildEventSourceMaterialIndexKey(item.Day, text)] = item;
+			}
+		}
+	}
+
+	private void RebuildNpcRecentActionStableKeyIndex()
+	{
+		_npcRecentActionStableKeyIndex.Clear();
+		foreach (KeyValuePair<string, List<NpcActionEntry>> pair in _npcRecentActions ?? new Dictionary<string, List<NpcActionEntry>>())
+		{
+			RefreshNpcRecentActionStableKeyIndexForHero(pair.Key, pair.Value);
+		}
+	}
+
+	private void RefreshNpcRecentActionStableKeyIndexForHero(string heroKey, List<NpcActionEntry> entries)
+	{
+		string text = (heroKey ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return;
+		}
+		HashSet<string> stableKeys = new HashSet<string>((entries ?? new List<NpcActionEntry>()).Where((NpcActionEntry x) => x != null).Select((NpcActionEntry x) => (x.StableKey ?? "").Trim()).Where((string x) => !string.IsNullOrWhiteSpace(x)), StringComparer.OrdinalIgnoreCase);
+		if (stableKeys.Count > 0)
+		{
+			_npcRecentActionStableKeyIndex[text] = stableKeys;
+		}
+		else
+		{
+			_npcRecentActionStableKeyIndex.Remove(text);
+		}
+	}
+
+	private bool IsNpcRecentActionStableKeyKnown(string heroKey, string stableKey)
+	{
+		string text = (heroKey ?? "").Trim();
+		string text2 = (stableKey ?? "").Trim();
+		return !string.IsNullOrWhiteSpace(text) && !string.IsNullOrWhiteSpace(text2) && _npcRecentActionStableKeyIndex.TryGetValue(text, out var value) && value != null && value.Contains(text2);
 	}
 
 	public void QueueMissingOnnxGateCheckAfterOnboarding()
@@ -17888,6 +18478,7 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			_compressedMemoryBlocks.Remove(text);
 		}
+		MarkMemoryOverviewDirty(text);
 	}
 
 	private static string ResolveCurrentMemorySceneLabel()
@@ -36357,6 +36948,14 @@ public class MyBehavior : CampaignBehaviorBase
 			_patienceStates = new Dictionary<string, PatienceState>();
 			_patienceStorage = new Dictionary<string, string>();
 		}
+		_dailyMaintenanceQueue.Clear();
+		_dailyMaintenanceJobKeys.Clear();
+		_dirtyMemoryOverviewIds.Clear();
+		_pendingMemoryOverviewCandidateScanIds.Clear();
+		_pendingMemoryOverviewCandidateScanIdSet.Clear();
+		_pendingAutoWeeklyReportBuild = null;
+		_kingdomStabilityMaintenanceCursor = 0;
+		RebuildRuntimeDerivedIndexes();
 		RewardSystemBehavior.Instance?.ImportDebtEntries(new Dictionary<string, RewardSystemBehavior.DebtExportEntry>());
 		ClearKnowledgeDataForCurrentSave();
 		ClearVoiceMappingDataForCurrentSave();
@@ -37846,7 +38445,9 @@ public class MyBehavior : CampaignBehaviorBase
 			break;
 		case "process":
 			TrySealPastDailyMemoryDrafts();
-			TryStartMemorySummaryQueue(forceOverviewCandidateScan: true);
+			QueueAllMemoryOverviewCandidatesForDeferredScan();
+			ProcessMemoryOverviewCandidateScanBudget(0L, double.MaxValue);
+			TryStartMemorySummaryQueue();
 			InformationManager.DisplayMessage(new InformationMessage("已触发压缩记忆总结队列检查。"));
 			OpenDevCompressedMemoryMenu(npc);
 			break;
@@ -41675,6 +42276,7 @@ public class MyBehavior : CampaignBehaviorBase
 				}
 			}
 			_compressedMemoryBlocks[text] = blocks;
+			MarkMemoryOverviewDirty(text);
 		}
 		if (queue.Count > 0 && overwriteExisting)
 		{

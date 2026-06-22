@@ -544,6 +544,14 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		}
 	}
 
+	[SettingPropertyBool("【性能】延后日结维护", Order = 10, RequireRestart = false, HintText = "开启后，每日结算只登记 AnimusForge 维护任务，记忆总览、王国维护和周报准备会在后续大地图 tick 中按预算分批执行。默认开启。")]
+	[SettingPropertyGroup("4. 开发者选项")]
+	public bool EnableDeferredDailyMaintenance { get; set; } = true;
+
+	[SettingPropertyInteger("【性能】日结维护每帧预算(ms)", 1, 10, "0", Order = 11, RequireRestart = false, HintText = "延后日结维护开启时，每个大地图 tick 最多用于后台维护的毫秒数。默认 3；调高会更快完成后台任务但更可能产生帧尖峰。")]
+	[SettingPropertyGroup("4. 开发者选项")]
+	public int DailyMaintenanceFrameBudgetMs { get; set; } = 3;
+
 	public string GetLogCleanupIntervalSelection()
 	{
 		_logCleanupIntervalDropdown = NormalizeLogCleanupIntervalDropdown(_logCleanupIntervalDropdown);

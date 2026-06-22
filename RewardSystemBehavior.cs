@@ -37,6 +37,10 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 	private const int NotableMarketInventoryPromptMaxItems = 40;
 	private const int NotableMarketPostprocessMaxItems = 80;
 	private const float RewardItemNameMatchThreshold = 0.8f;
+	private const float GeneratedRewardTemplateMiscScoreBonus = 0.18f;
+	private const float GeneratedRewardTemplateMiscScoreMultiplier = 1.25f;
+	private const float GeneratedRewardTemplateWeaponArmorScorePenalty = 0.2f;
+	private const float GeneratedRewardTemplateWeaponArmorScoreMultiplier = 0.55f;
 	private static readonly PropertyInfo RewardItemObjectNameProperty = typeof(ItemObject).GetProperty("Name", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 	private static readonly PropertyInfo RewardItemObjectCategoryProperty = typeof(ItemObject).GetProperty("ItemCategory", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 	private static readonly FieldInfo HeroClanBackingField = typeof(Hero).GetField("_clan", BindingFlags.Instance | BindingFlags.NonPublic);
@@ -6683,6 +6687,30 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		return score.ToString("0.0000", CultureInfo.InvariantCulture);
 	}
 
+	private static float CalculateGeneratedRewardTemplateScore(ItemObject item, float aliasScore)
+	{
+		float score = Math.Max(0f, aliasScore);
+		if (IsGeneratedRewardMiscTemplateItem(item))
+		{
+			return Math.Min(1f, score * GeneratedRewardTemplateMiscScoreMultiplier + GeneratedRewardTemplateMiscScoreBonus);
+		}
+		if (IsGeneratedRewardWeaponOrArmorTemplateItem(item))
+		{
+			return Math.Max(0f, score * GeneratedRewardTemplateWeaponArmorScoreMultiplier - GeneratedRewardTemplateWeaponArmorScorePenalty);
+		}
+		return score;
+	}
+
+	private static bool IsGeneratedRewardMiscTemplateItem(ItemObject item)
+	{
+		return item != null && (item.Type == ItemObject.ItemTypeEnum.Goods || item.Type == ItemObject.ItemTypeEnum.Animal || item.Type == ItemObject.ItemTypeEnum.Book);
+	}
+
+	private static bool IsGeneratedRewardWeaponOrArmorTemplateItem(ItemObject item)
+	{
+		return IsSettlementWeaponLikeItem(item) || IsSettlementArmorLikeItem(item);
+	}
+
 	private static string BuildRewardItemResolutionCandidateKey(RewardItemInfo item)
 	{
 		if (item == null)
@@ -6920,14 +6948,17 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			.Select(delegate(RewardItemResolutionCandidate x)
 			{
 				float score = WorldEntityRetrievalService.CalculateBestAliasScoreForExternal(text, GetRewardItemResolutionAliases(x.Info));
+				float templateScore = includeZeroScore ? CalculateGeneratedRewardTemplateScore(x.Info.Item, score) : score;
 				return new
 				{
 					Candidate = x,
-					Score = score
+					Score = score,
+					TemplateScore = templateScore
 				};
 			})
 			.Where(x => includeZeroScore || x.Score > 0f)
-			.OrderByDescending(x => x.Score)
+			.OrderByDescending(x => x.TemplateScore)
+			.ThenByDescending(x => x.Score)
 			.ThenByDescending(x => x.Candidate.IsContext)
 			.ThenBy(x => x.Candidate.Info.Name ?? "", StringComparer.OrdinalIgnoreCase)
 			.ThenBy(x => x.Candidate.Info.StringId ?? x.Candidate.Info.Item.StringId ?? "", StringComparer.OrdinalIgnoreCase)
