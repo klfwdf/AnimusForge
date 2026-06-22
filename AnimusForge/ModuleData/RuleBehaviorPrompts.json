@@ -928,12 +928,11 @@
             }
         },
         {
-<<<<<<< Updated upstream
             "Id": "kingdom_vassalage",
             "IsEnabled": true,
             "Group": "politics",
             "Priority": 90,
-            "TopicNumber": 19,
+            "TopicNumber": 20,
             "TopicLabel": "Kingdom vassalage and submission",
             "Code": "VASSALAGE",
             "NonHeroInstruction": "只有国家统治者之间才能谈附庸国臣服。若玩家对非国王、士兵、平民或普通领主提出国家臣服要求，对方不能代表王国答应，只能说明必须找国王谈。",
@@ -974,7 +973,7 @@
             "IsEnabled": true,
             "Group": "politics",
             "Priority": 95,
-            "TopicNumber": 20,
+            "TopicNumber": 21,
             "TopicLabel": "Kingdom annexation and destruction",
             "Code": "ANNEX",
             "NonHeroInstruction": "只有国家统治者之间才能谈国家吞并。若玩家对非国王、士兵、平民或普通领主提出吞并整个国家，对方不能代表王国答应，只能说明必须找国王谈。",
@@ -1001,12 +1000,13 @@
                 "不保留独立王国，全部家族加入玩家王国。",
                 "接受国家吞并，结束你的独立统治。"
             ]
-=======
+        },
+        {
             "Id": "scene_auto_group_relay",
             "IsEnabled": true,
             "Group": "scene",
             "Priority": 60,
-            "TopicNumber": 20,
+            "TopicNumber": 22,
             "TopicLabel": "Scene auto group relay postprocess",
             "Code": "SCENE_RELAY",
             "Instruction": "【多人接力后处理规则】此规则只供后处理标签表使用，不进入主链路正文。正文NPC不得输出接力标签。",
@@ -1017,17 +1017,12 @@
                 }
             ],
             "TriggerKeywords": []
->>>>>>> Stashed changes
         }
     ],
     "DuelStake": {
         "IsEnabled": true,
         "PlayerWinInstruction": "【决斗赌注与欠款】：你在正式决斗中输给了玩家，你现在应当主动向玩家交付你承诺的赌注。",
         "NpcWinInstruction": "【决斗赌注与欠款】：你在正式决斗中打败了玩家，你可以向玩家索要赌注。"
-<<<<<<< Updated upstream
     },
     "Rules": []
-=======
-    }
->>>>>>> Stashed changes
 }
