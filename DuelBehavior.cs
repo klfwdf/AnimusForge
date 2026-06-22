@@ -516,23 +516,6 @@ public class DuelBehavior : CampaignBehaviorBase
 			}
 		}
 
-		protected override void OnEndMission()
-		{
-			try
-			{
-				if (_isWildernessDuel)
-				{
-					CleanupWildernessDuelRuntime(_wildernessDuelRuntime, "local_behavior.OnEndMission");
-					TryReturnToMapAfterIndependentDuel();
-				}
-			}
-			catch (Exception ex)
-			{
-				Logger.Log("ArenaDuel", "[WildernessDuel][ERROR] OnEndMission return cleanup: " + ex);
-			}
-			base.OnEndMission();
-		}
-
 		private void SetupArenaDuel()
 		{
 			if (base.Mission == null)
@@ -2442,6 +2425,7 @@ public class DuelBehavior : CampaignBehaviorBase
 			}
 			_duelResultRecorded = true;
 			SetDuelDebtTagGateState(targetHero, playerDefeated ? -1 : 1);
+			MyBehavior.RecordDuelResultForExternal(targetHero, playerWon, "wilderness");
 			TryPostDuelAiShout(targetHero, null, playerWon);
 			string text = ApplyDuelStakeSettlementAndBuildResultText(targetHero, playerWon);
 			string resultText = playerWon ? "[Duel Result] You won." : "[Duel Result] You lost.";
@@ -2589,6 +2573,7 @@ public class DuelBehavior : CampaignBehaviorBase
 				return true;
 			}
 			CleanupWildernessDuelRuntime(_wildernessDuelRuntime, "open.new_request_cleanup");
+			WildernessDuelBattleRuntime runtime = CreateWildernessDuelRuntime(target, diagnosticId);
 			MissionInitializerRecord rec = BuildWildernessDuelMissionInitializerRecord(target);
 			_wildernessDuelLastOpenScene = rec.SceneName ?? "";
 			LogWildernessDuelDiagnostic("initializer.ready", diagnosticId, target, rec);
@@ -2608,24 +2593,20 @@ public class DuelBehavior : CampaignBehaviorBase
 				Instance._isDuelActive = true;
 				Instance._currentDuelIsArena = false;
 			}
-			Logger.Log("DuelBehavior", "[WildernessDuel] OpenNew lightweight-path scene=" + rec.SceneName + ", terrain=" + rec.TerrainType + ", target=" + target?.StringId);
-			LogWildernessDuelDiagnostic("OpenNew.before", diagnosticId, target, rec);
-			Mission mission = MissionState.OpenNew("AnimusForge_WildernessDuel", rec, (Mission missionController) => new MissionBehavior[8]
-			{
-				new MissionOptionsComponent(),
-				new ArenaDuelMissionBehavior(target, isWildernessDuel: true, diagnosticId),
-				new AgentHumanAILogic(),
-				new MissionHardBorderPlacer(),
-				new MissionBoundaryPlacer(),
-				CreateWildernessDuelBoundaryCrossingHandler(),
-				new DuelPlayerDeathAgentStateDeciderLogic(),
-				new DuelMainHeroDeathMissionBehavior()
-			});
+			Logger.Log("DuelBehavior", "[WildernessDuel] OpenBattleMission vanilla-path scene=" + rec.SceneName + ", terrain=" + rec.TerrainType + ", target=" + target?.StringId);
+			LogWildernessDuelDiagnostic("OpenBattleMission.before", diagnosticId, target, rec);
+			IMission openedMission = CampaignMission.OpenBattleMission(rec);
+			Mission mission = openedMission as Mission;
 			if (mission == null)
 			{
-				throw new InvalidOperationException("MissionState.OpenNew returned null for wilderness duel.");
+				throw new InvalidOperationException("CampaignMission.OpenBattleMission returned non-Mission.");
 			}
-			LogWildernessDuelDiagnostic("OpenNew.after returned=" + (mission.SceneName ?? "null"), diagnosticId, target, rec);
+			PlayerEncounter.StartAttackMission();
+			MapEvent.PlayerMapEvent?.BeginWait();
+			mission.AddMissionBehavior(new WildernessDuelBattleMissionLogic(runtime));
+			mission.AddMissionBehavior(new DuelPlayerDeathAgentStateDeciderLogic());
+			mission.AddMissionBehavior(new DuelMainHeroDeathMissionBehavior());
+			LogWildernessDuelDiagnostic("OpenBattleMission.after returned=" + (mission.SceneName ?? "null"), diagnosticId, target, rec);
 			return true;
 		}
 		catch (Exception ex)

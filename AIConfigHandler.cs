@@ -6835,6 +6835,18 @@ public static class AIConfigHandler
 		}
 	}
 
+	public static string BuildRuntimeKingdomServiceInstructionForExternal()
+	{
+		try
+		{
+			return BuildRuntimeKingdomServiceInstruction();
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
 	public static List<PostprocessRuleEntry> BuildRuntimeKingdomServicePostprocessRules()
 	{
 		List<PostprocessRuleEntry> list = new List<PostprocessRuleEntry>();

@@ -4029,6 +4029,10 @@ public class MyBehavior : CampaignBehaviorBase
 		List<DailyMemoryDraft> drafts = LoadDailyMemoryDraftsById(memoryId);
 		drafts.RemoveAll((DailyMemoryDraft x) => x != null && x.GameDayIndex == job.GameDayIndex);
 		SaveDailyMemoryDraftsById(memoryId, drafts);
+		if (hero != null)
+		{
+			ShoutBehavior.ClearNativeConversationSessionHistoryForExternal(hero, hero.CharacterObject, hero.Name?.ToString(), job.GameDayIndex);
+		}
 		if (_memorySummaryQueue != null)
 		{
 			_memorySummaryQueue.RemoveAll((MemorySummaryJob x) => x != null && string.Equals(NormalizeMemoryHeroId(x.HeroId), memoryId, StringComparison.OrdinalIgnoreCase) && x.GameDayIndex == job.GameDayIndex);
@@ -19116,7 +19120,96 @@ public class MyBehavior : CampaignBehaviorBase
 		return result;
 	}
 
-	private string BuildMatchedExtraRuleInstructionsFromPreselectedRules(IEnumerable<string> preselectedRuleIds, int maxRules, bool hasAnyHero, HashSet<string> excludedRuleIdSet)
+	private string ResolvePreselectedRuleInstructionBody(string ruleId, string body, bool hasAnyHero, Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex)
+	{
+		string id = (ruleId ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(id))
+		{
+			return "";
+		}
+		Hero hero = targetHero ?? targetCharacter?.HeroObject;
+		string text = (body ?? "").Trim();
+		if (string.Equals(id, "kingdom_service", StringComparison.OrdinalIgnoreCase))
+		{
+			string runtime = AIConfigHandler.BuildRuntimeKingdomServiceInstructionForExternal();
+			if (!string.IsNullOrWhiteSpace(runtime))
+			{
+				text = runtime;
+			}
+		}
+		if (hasAnyHero && string.Equals(id, "hero_join_party", StringComparison.OrdinalIgnoreCase))
+		{
+			string runtime = AIConfigHandler.BuildRuntimeHeroJoinPartyInstructionForExternal(hero);
+			if (!string.IsNullOrWhiteSpace(runtime))
+			{
+				text = runtime;
+			}
+		}
+		if (hasAnyHero && string.Equals(id, "kingdom_vassalage", StringComparison.OrdinalIgnoreCase))
+		{
+			string runtime = VassalageBehavior.BuildRuntimeVassalageInstructionForExternal(hero, targetCharacter);
+			if (!string.IsNullOrWhiteSpace(runtime))
+			{
+				text = runtime;
+			}
+		}
+		if (hasAnyHero && string.Equals(id, "kingdom_annexation", StringComparison.OrdinalIgnoreCase))
+		{
+			string runtime = KingdomAnnexationBehavior.BuildRuntimeAnnexationInstructionForExternal(hero, targetCharacter);
+			if (string.IsNullOrWhiteSpace(runtime))
+			{
+				return "";
+			}
+			text = runtime;
+		}
+		if (hasAnyHero && string.Equals(id, "marriage", StringComparison.OrdinalIgnoreCase))
+		{
+			string runtime = RomanceSystemBehavior.Instance?.BuildMarriageRuntimeInstruction(hero) ?? "";
+			if (!string.IsNullOrWhiteSpace(runtime))
+			{
+				text = runtime;
+			}
+		}
+		if (hasAnyHero && string.Equals(id, "vanilla_issue", StringComparison.OrdinalIgnoreCase))
+		{
+			text = VanillaIssueOfferBridge.BuildRuntimePromptBlockForExternal(hero) ?? "";
+		}
+		if (string.Equals(id, "meeting_taunt", StringComparison.OrdinalIgnoreCase))
+		{
+			string runtime = SceneTauntBehavior.BuildUnifiedTauntRuntimeInstructionForExternal(hero, targetCharacter, targetAgentIndex);
+			if (!string.IsNullOrWhiteSpace(runtime))
+			{
+				text = runtime;
+			}
+		}
+		if (hasAnyHero && string.Equals(id, "npc_major_actions", StringComparison.OrdinalIgnoreCase))
+		{
+			string runtime = BuildNpcMajorActionsRuntimeInstruction(hero, targetCharacter, targetAgentIndex);
+			if (!string.IsNullOrWhiteSpace(runtime))
+			{
+				text = runtime;
+			}
+		}
+		if (hasAnyHero && string.Equals(id, "npc_recent_actions", StringComparison.OrdinalIgnoreCase))
+		{
+			string runtime = BuildNpcRecentActionsRuntimeInstruction(hero, targetCharacter, targetAgentIndex);
+			if (!string.IsNullOrWhiteSpace(runtime))
+			{
+				text = runtime;
+			}
+		}
+		if (string.Equals(id, "lords_hall_access", StringComparison.OrdinalIgnoreCase))
+		{
+			string runtime = AIConfigHandler.BuildRuntimeLordsHallAccessInstructionForExternal();
+			if (!string.IsNullOrWhiteSpace(runtime))
+			{
+				text = runtime;
+			}
+		}
+		return text;
+	}
+
+	private string BuildMatchedExtraRuleInstructionsFromPreselectedRules(IEnumerable<string> preselectedRuleIds, int maxRules, bool hasAnyHero, HashSet<string> excludedRuleIdSet, Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex)
 	{
 		try
 		{
@@ -19143,6 +19236,7 @@ public class MyBehavior : CampaignBehaviorBase
 				{
 					body = AIConfigHandler.GetGuardrailRuleInstruction(ruleId);
 				}
+				body = ResolvePreselectedRuleInstructionBody(ruleId, body, hasAnyHero, targetHero, targetCharacter, targetAgentIndex);
 				if (string.IsNullOrWhiteSpace(body))
 				{
 					continue;
@@ -19181,7 +19275,7 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			text = preselectedRuleIds == null
 				? AIConfigHandler.BuildMatchedExtraRuleInstructions(input, npcLastUtterance, AIConfigHandler.GuardrailRuleReturnCap, hasAnyHero, excludedRuleIdSet)
-				: BuildMatchedExtraRuleInstructionsFromPreselectedRules(preselectedRuleIds, AIConfigHandler.GuardrailRuleReturnCap, hasAnyHero, excludedRuleIdSet);
+				: BuildMatchedExtraRuleInstructionsFromPreselectedRules(preselectedRuleIds, AIConfigHandler.GuardrailRuleReturnCap, hasAnyHero, excludedRuleIdSet, targetHero, targetCharacter, targetAgentIndex);
 			encounterReleaseRuleSelected = !string.IsNullOrWhiteSpace(text) && text.IndexOf("【附加规则:encounter_release_player】", StringComparison.OrdinalIgnoreCase) >= 0;
 			if (!string.IsNullOrWhiteSpace(text) && text.IndexOf("【附加规则:party_transfer】", StringComparison.OrdinalIgnoreCase) >= 0)
 			{
@@ -20200,7 +20294,12 @@ public class MyBehavior : CampaignBehaviorBase
 		try
 		{
 			MyBehavior myBehavior = Instance ?? Campaign.Current?.GetCampaignBehavior<MyBehavior>();
-			myBehavior?.RecordDuelResult(targetHero, playerWon, duelContext);
+			if (myBehavior == null)
+			{
+				Logger.Log("NpcAction", "[WARN] RecordDuelResultForExternal skipped: MyBehavior unavailable.");
+				return;
+			}
+			myBehavior.RecordDuelResult(targetHero, playerWon, duelContext);
 		}
 		catch (Exception ex)
 		{
@@ -20210,22 +20309,46 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private void RecordDuelResult(Hero targetHero, bool playerWon, string duelContext)
 	{
-		if (!ShouldTrackNpcActionHero(targetHero, allowNonLordHero: true) || targetHero == Hero.MainHero)
+		Hero mainHero = Hero.MainHero;
+		if (mainHero == null || !ShouldTrackNpcActionHero(targetHero, allowNonLordHero: true) || targetHero == mainHero)
 		{
+			Logger.Log("NpcAction", "Skipped duel result action. target=" + (targetHero?.StringId ?? "") + " playerWon=" + playerWon);
 			return;
 		}
-		Hero mainHero = Hero.MainHero;
+		int day = GetCurrentGameDayIndexSafe();
+		int hour = GetCurrentHourOfDaySafeForPrompt();
+		string gameDate = GetCurrentGameDateTextSafe();
+		string locationText = BuildDuelResultLocationText(duelContext);
 		bool targetWon = !playerWon;
 		string playerName = GetHeroDisplayName(mainHero);
+		string targetName = GetHeroDisplayName(targetHero);
 		string text = targetWon ? ("你在一场正式决斗中击败了" + playerName + "。") : ("你在一场正式决斗中败给了" + playerName + "。");
 		NpcActionFacts npcActionFacts = CreateNpcActionFacts("duel_result", targetHero);
 		ApplyTargetFacts(npcActionFacts, mainHero);
 		npcActionFacts.Won = targetWon;
-		npcActionFacts.LocationText = BuildDuelResultLocationText(duelContext);
-		string stableKey = "duel_result:" + GetHeroId(targetHero) + ":" + GetHeroId(mainHero) + ":" + GetCurrentGameDayIndexSafe() + ":" + (targetWon ? "npc_win" : "npc_loss");
+		npcActionFacts.LocationText = locationText;
+		string stableKey = "duel_result:" + GetHeroId(targetHero) + ":" + GetHeroId(mainHero) + ":" + day + ":" + hour + ":" + (targetWon ? "npc_win" : "npc_loss");
 		RecordNpcMajorAction(targetHero, text, stableKey, npcActionFacts, allowNonLordHero: true);
 		RecordNpcRecentAction(targetHero, text, stableKey, dedupeAcrossWindow: true, facts: npcActionFacts, allowNonLordHero: true);
-		Logger.Log("NpcAction", "Recorded duel result action. target=" + (targetHero.StringId ?? "") + " playerWon=" + playerWon);
+		Settlement settlement = Settlement.CurrentSettlement;
+		string playerText = playerWon ? ("你在一场正式决斗中击败了" + targetName + "。") : ("你在一场正式决斗中败给了" + targetName + "。");
+		string playerStableKey = "player_duel_result:" + GetHeroId(mainHero) + ":" + GetHeroId(targetHero) + ":" + day + ":" + hour + ":" + (playerWon ? "player_win" : "player_loss");
+		PlayerNotorietyBehavior.RecordPlayerActionForExternal(
+			playerText,
+			playerStableKey,
+			"duel_result",
+			isMajor: true,
+			day,
+			gameDate,
+			++_npcActionGlobalOrderCounter,
+			GetSettlementId(settlement),
+			(settlement?.Name?.ToString() ?? "").Trim(),
+			locationText,
+			mainHero.Culture?.StringId ?? "",
+			targetHero.Culture?.StringId ?? "",
+			settlement?.Culture?.StringId ?? "",
+			playerWon);
+		Logger.Log("NpcAction", "Recorded duel result action. target=" + (targetHero.StringId ?? "") + " playerWon=" + playerWon + " day=" + day + " hour=" + hour);
 	}
 
 	private static string BuildDuelResultLocationText(string duelContext)
@@ -20398,7 +20521,7 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	public static ShoutPromptContext BuildShoutPromptContextForExternal(Hero targetHero, string input, string extraFact, string cultureIdOverride = null, bool hasAnyHero = true, CharacterObject targetCharacter = null, string kingdomIdOverride = null, int targetAgentIndex = -1, bool suppressDynamicRuleAndLore = false, bool usePrefetchedLoreContext = false, string prefetchedLoreContext = null, IEnumerable<string> excludedRuleIds = null, IEnumerable<string> preprocessExcludedRuleIds = null)
+	public static ShoutPromptContext BuildShoutPromptContextForExternal(Hero targetHero, string input, string extraFact, string cultureIdOverride = null, bool hasAnyHero = true, CharacterObject targetCharacter = null, string kingdomIdOverride = null, int targetAgentIndex = -1, bool suppressDynamicRuleAndLore = false, bool usePrefetchedLoreContext = false, string prefetchedLoreContext = null, IEnumerable<string> excludedRuleIds = null, IEnumerable<string> preprocessExcludedRuleIds = null, IEnumerable<string> forcedPreprocessRuleIds = null)
 	{
 		try
 		{
@@ -20415,7 +20538,7 @@ public class MyBehavior : CampaignBehaviorBase
 					IsQualified = true
 				};
 			}
-			return myBehavior.BuildShoutPromptContextForExternalInternal(targetHero, input, extraFact, cultureIdOverride, hasAnyHero, targetCharacter, kingdomIdOverride, targetAgentIndex, suppressDynamicRuleAndLore, usePrefetchedLoreContext, prefetchedLoreContext, excludedRuleIds, preprocessExcludedRuleIds);
+			return myBehavior.BuildShoutPromptContextForExternalInternal(targetHero, input, extraFact, cultureIdOverride, hasAnyHero, targetCharacter, kingdomIdOverride, targetAgentIndex, suppressDynamicRuleAndLore, usePrefetchedLoreContext, prefetchedLoreContext, excludedRuleIds, preprocessExcludedRuleIds, forcedPreprocessRuleIds);
 		}
 		catch
 		{
@@ -20575,7 +20698,7 @@ public class MyBehavior : CampaignBehaviorBase
 	}
 
 	// Primary runtime chat path: scene shout / non-native conversation UI.
-	private ShoutPromptContext BuildShoutPromptContextForExternalInternal(Hero targetHero, string input, string extraFact, string cultureIdOverride, bool hasAnyHero = true, CharacterObject targetCharacter = null, string kingdomIdOverride = null, int targetAgentIndex = -1, bool suppressDynamicRuleAndLore = false, bool usePrefetchedLoreContext = false, string prefetchedLoreContext = null, IEnumerable<string> excludedRuleIds = null, IEnumerable<string> preprocessExcludedRuleIds = null)
+	private ShoutPromptContext BuildShoutPromptContextForExternalInternal(Hero targetHero, string input, string extraFact, string cultureIdOverride, bool hasAnyHero = true, CharacterObject targetCharacter = null, string kingdomIdOverride = null, int targetAgentIndex = -1, bool suppressDynamicRuleAndLore = false, bool usePrefetchedLoreContext = false, string prefetchedLoreContext = null, IEnumerable<string> excludedRuleIds = null, IEnumerable<string> preprocessExcludedRuleIds = null, IEnumerable<string> forcedPreprocessRuleIds = null)
 	{
 		ShoutPromptContext shoutPromptContext = new ShoutPromptContext
 		{
@@ -20591,6 +20714,7 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			return shoutPromptContext;
 		}
+		targetHero = targetHero ?? targetCharacter?.HeroObject;
 		HashSet<string> explicitExcludedRuleIdSet = BuildPromptRuleIdSet(excludedRuleIds);
 		HashSet<string> excludedRuleIdSet = new HashSet<string>(explicitExcludedRuleIdSet, StringComparer.OrdinalIgnoreCase);
 		AddPlayerCompanionOrFamilyRuleExclusionsForTarget(excludedRuleIdSet, targetHero, targetCharacter);
@@ -20670,6 +20794,26 @@ public class MyBehavior : CampaignBehaviorBase
 				auxiliaryRuleHitIdSet = null;
 				useAuxiliaryRuleHitSet = false;
 			}
+		}
+		List<string> forcedRuleHitIds = NormalizePreselectedPromptRuleIds(forcedPreprocessRuleIds)
+			.Where((string x) => !IsPromptRuleExcluded(preprocessExcludedRuleIdSet, x))
+			.ToList();
+		if (forcedRuleHitIds.Count > 0)
+		{
+			if (auxiliaryRuleHitIds == null)
+			{
+				auxiliaryRuleHitIds = new List<string>();
+			}
+			foreach (string ruleId in forcedRuleHitIds)
+			{
+				if (!auxiliaryRuleHitIds.Any((string x) => string.Equals((x ?? "").Trim(), ruleId, StringComparison.OrdinalIgnoreCase)))
+				{
+					auxiliaryRuleHitIds.Add(ruleId);
+				}
+			}
+			auxiliaryRuleHitIdSet = new HashSet<string>(auxiliaryRuleHitIds, StringComparer.OrdinalIgnoreCase);
+			useAuxiliaryRuleHitSet = true;
+			Logger.Log("Logic", "[RuleInjectionDebug] stage=forced_preprocess targetHero=" + (targetHero?.StringId ?? "null") + " targetCharacter=" + (targetCharacter?.StringId ?? "null") + " hits=" + string.Join(",", forcedRuleHitIds));
 		}
 		List<string> duelTriggerKeywords = AIConfigHandler.DuelTriggerKeywords;
 		bool flag = false;

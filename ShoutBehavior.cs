@@ -8377,7 +8377,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 
 	private void OnNativeConversationEnded(IEnumerable<CharacterObject> characters)
 	{
-		CloseNativeConversationInput(clearSessionHistory: true);
+		CloseNativeConversationInput(clearSessionHistory: false);
 	}
 
 	private void OnMissionStarted(IMission mission)
@@ -11413,6 +11413,26 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 	}
 
+	private static bool HasNativeConversationSessionHistory(Hero targetHero, CharacterObject targetCharacter, string npcName)
+	{
+		try
+		{
+			string key = BuildNativeConversationHistoryKey(targetHero, targetCharacter, npcName);
+			if (string.IsNullOrWhiteSpace(key))
+			{
+				return false;
+			}
+			lock (_nativeConversationSessionHistoryLock)
+			{
+				return _nativeConversationSessionHistory.TryGetValue(key, out var value) && value != null && value.Count > 0;
+			}
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
 	private static List<ConversationMessage> BuildNativeConversationSessionHistoryMessages(Hero targetHero, CharacterObject targetCharacter, string npcName, int targetAgentIndex, int maxLines = 24)
 	{
 		List<ConversationMessage> list = new List<ConversationMessage>();
@@ -12156,12 +12176,13 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		};
 	}
 
-	private static void ApplyNativeConversationActionTags(Hero targetHero, CharacterObject targetCharacter, ref string content)
+	private void ApplyNativeConversationActionTags(Hero targetHero, CharacterObject targetCharacter, ref string content)
 	{
 		if (string.IsNullOrWhiteSpace(content))
 		{
 			return;
 		}
+		targetHero = targetHero ?? targetCharacter?.HeroObject;
 		try
 		{
 			if (targetHero != null)
@@ -12187,6 +12208,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 								MyBehavior.AppendExternalDialogueHistory(targetHero, null, null, generatedFact);
 							}
 						}
+						RecordGeneratedNpcAfefFactsForNativeConversation(targetHero, targetCharacter, generatedFacts);
 					}
 					if (notifications != null)
 					{
@@ -12199,7 +12221,9 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 						}
 					}
 				}
-				RewardSystemBehavior.Instance?.ApplyRewardTags(targetHero, Hero.MainHero, ref content);
+				RewardSystemBehavior rewardSystem = RewardSystemBehavior.Instance;
+				rewardSystem?.ApplyRewardTags(targetHero, Hero.MainHero, ref content);
+				RecordGeneratedNpcAfefFactsForNativeConversation(targetHero, targetCharacter, rewardSystem?.ConsumeLastGeneratedNpcFactLines());
 				Logger.Log("ShoutBehavior", "[NativeConversation] ApplyRewardTags done chain=" + rewardChainName + " target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? "unknown") + " beforeVASSALAGE=" + rewardBeforeHasVassalage + " afterVASSALAGE=" + ContainsVassalageActionTagForLog(content) + " beforeKINGDOM_ANNEX=" + rewardBeforeHasKingdomAnnex + " afterKINGDOM_ANNEX=" + ContainsKingdomAnnexActionTagForLog(content));
 				RomanceSystemBehavior.Instance?.ApplyMarriageTags(targetHero, Hero.MainHero, ref content);
 				LordEncounterBehavior.TryProcessMeetingTauntAction(targetHero, ref content, out var escalatedToBattle);
@@ -12217,35 +12241,80 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			else if (targetCharacter != null)
 			{
 				int agentIndex = TryResolveNativeConversationAgentIndex(targetHero, targetCharacter);
-				if (RewardSystemBehavior.Instance != null && TryResolveWildernessNonHeroRewardParty(targetHero, targetCharacter, agentIndex, out var party))
+				RewardSystemBehavior rewardSystem = RewardSystemBehavior.Instance;
+				bool isWildernessNonHeroPartyReward = false;
+				NpcDataPacket nonHeroNpc = null;
+				if (rewardSystem != null && TryResolveWildernessNonHeroRewardParty(targetHero, targetCharacter, agentIndex, out var party))
 				{
 					string npcName = (targetCharacter.Name?.ToString() ?? "对方部队").Trim();
-					RewardSystemBehavior.Instance.ApplyPartyRewardTags(party, Hero.MainHero, npcName, targetCharacter, ref content);
-					List<string> list = RewardSystemBehavior.Instance.ConsumeLastGeneratedNpcFactLines();
-					if (list != null && list.Count > 0)
-					{
-						NpcDataPacket npc = BuildNativeConversationNpcData(targetHero, targetCharacter);
-						npc.AgentIndex = agentIndex;
-						foreach (string item in list)
-						{
-							if (string.IsNullOrWhiteSpace(item))
-							{
-								continue;
-							}
-							AppendNativeConversationSessionHistory(targetHero, targetCharacter, npcName, "系统", item, "fact");
-							AppendWildernessNonHeroMemory(npc, targetHero, targetCharacter, agentIndex, null, null, item);
-						}
-					}
+					rewardSystem.ApplyPartyRewardTags(party, Hero.MainHero, npcName, targetCharacter, ref content);
+					isWildernessNonHeroPartyReward = true;
+					nonHeroNpc = BuildNativeConversationNpcData(targetHero, targetCharacter);
+					nonHeroNpc.AgentIndex = agentIndex;
 				}
 				else
 				{
-					RewardSystemBehavior.Instance?.ApplyMerchantRewardTags(targetCharacter, Hero.MainHero, ref content);
+					rewardSystem?.ApplyMerchantRewardTags(targetCharacter, Hero.MainHero, ref content);
+				}
+				List<string> list = rewardSystem?.ConsumeLastGeneratedNpcFactLines();
+				RecordGeneratedNpcAfefFactsForNativeConversation(targetHero, targetCharacter, list);
+				if (isWildernessNonHeroPartyReward && list != null)
+				{
+					foreach (string item in list)
+					{
+						if (!string.IsNullOrWhiteSpace(item))
+						{
+							AppendWildernessNonHeroMemory(nonHeroNpc, targetHero, targetCharacter, agentIndex, null, null, item);
+						}
+					}
 				}
 			}
 		}
 		catch (Exception ex)
 		{
 			Logger.Log("ShoutBehavior", "[NativeConversation] action tag handling failed: " + ex.Message);
+		}
+	}
+
+	private void RecordGeneratedNpcAfefFactsForNativeConversation(Hero targetHero, CharacterObject targetCharacter, IEnumerable<string> factLines)
+	{
+		if (factLines == null)
+		{
+			return;
+		}
+		targetHero ??= targetCharacter?.HeroObject;
+		targetCharacter ??= targetHero?.CharacterObject;
+		string npcName = (targetHero?.Name?.ToString() ?? targetCharacter?.Name?.ToString() ?? "NPC").Trim();
+		if (string.IsNullOrWhiteSpace(npcName))
+		{
+			npcName = "NPC";
+		}
+		int targetAgentIndex = TryResolveNativeConversationAgentIndex(targetHero, targetCharacter);
+		string nativeKey = BuildNativeConversationHistoryKey(targetHero, targetCharacter, npcName);
+		foreach (string rawFact in factLines)
+		{
+			string fact = NormalizeNativeConversationFactLineForPrompt(rawFact, "NPC");
+			if (string.IsNullOrWhiteSpace(fact))
+			{
+				continue;
+			}
+			try
+			{
+				AppendNativeConversationSessionHistory(targetHero, targetCharacter, npcName, "系统", fact, "fact");
+				if (targetAgentIndex >= 0)
+				{
+					QueuePendingCurrentAfefFactForAgent(targetAgentIndex, fact);
+				}
+				if (!string.IsNullOrWhiteSpace(nativeKey))
+				{
+					QueuePendingCurrentNativeAfefFactForKey(nativeKey, fact);
+				}
+				Logger.Log("NativeConversationTrade", "recorded generated NPC AFEF fact target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? npcName) + " fact=" + fact.Replace("\r", "\\r").Replace("\n", "\\n"));
+			}
+			catch (Exception ex)
+			{
+				Logger.Log("NativeConversationTrade", "[WARN] Failed to record generated NPC AFEF fact: " + ex.Message);
+			}
 		}
 	}
 
@@ -12472,6 +12541,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		string cultureId = npc.CultureId ?? "neutral";
 		// Do not feed vanilla conversation UI text into AF prompt history.
 		string currentNativeDialogText = "";
+		bool hadNativeConversationSessionHistoryBeforeTurn = HasNativeConversationSessionHistory(targetHero, targetCharacter, npcName);
 		if (proactiveNpcOpening && !string.IsNullOrWhiteSpace(proactiveFactText))
 		{
 			AppendNativeConversationSessionHistory(targetHero, targetCharacter, npcName, "系统", proactiveFactText, "fact");
@@ -12541,7 +12611,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			+ " kingdom_annexation_hit=" + HasPreprocessRuleHit(postprocessPreprocessHits, "kingdom_annexation")
 			+ " kingdom_vassalage_block=" + kingdomVassalageRuleInjected
 			+ " kingdom_annexation_block=" + kingdomAnnexationRuleInjected);
-		if (duelRuleInjected && !CanInjectDuelPostprocessRule(ctx, targetHero, -1, out var duelPostprocessBlockedReason))
+		Hero nativeDuelTargetHero = targetHero ?? targetCharacter?.HeroObject;
+		if (duelRuleInjected && !CanInjectDuelPostprocessRule(ctx, nativeDuelTargetHero, -1, out var duelPostprocessBlockedReason))
 		{
 			duelRuleInjected = false;
 			Logger.Log("ShoutBehavior", "[NativeConversation] duel postprocess blocked: " + duelPostprocessBlockedReason);
@@ -12558,7 +12629,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		string nativePendingAfefKey = BuildNativeConversationHistoryKey(targetHero, targetCharacter, npcName);
 		List<ConversationMessage> pendingNativeCurrentAfefFacts = ConsumePendingCurrentNativeAfefFactMessagesForPrompt(nativePendingAfefKey);
 		List<ConversationMessage> nativeHistoryMessages = BuildNativeConversationSessionHistoryMessages(targetHero, targetCharacter, npcName, nativeTargetAgentIndex);
-		List<ConversationMessage> persistentMemoryRoleMessages = new List<ConversationMessage>();
+		List<ConversationMessage> persistentMemoryRoleMessages = hadNativeConversationSessionHistoryBeforeTurn ? new List<ConversationMessage>() : BuildUncompressedMemoryRoleMessagesForPrompt(targetHero ?? targetCharacter?.HeroObject, nativeTargetAgentIndex);
 		string taskSystemBlock = BuildSceneSingleNpcTaskSystemBlock(GetSceneNpcHistoryNameForPrompt(npc), false, minTokens, maxTokens, playerName);
 		string layeredPrompt = BuildSceneCompositeUserBlock("", roleTopIntro, taskSystemBlock);
 		layeredPrompt = AppendPlayerCustomPromptRuleToSystemPrompt(layeredPrompt);
@@ -19523,6 +19594,38 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 	}
 
+	private void QueuePendingCurrentNativeAfefFactForSceneTarget(NpcDataPacket targetNpc, string fact)
+	{
+		if (targetNpc == null || string.IsNullOrWhiteSpace(fact))
+		{
+			return;
+		}
+		try
+		{
+			Hero hero = ResolveHeroFromAgentIndex(targetNpc.AgentIndex);
+			CharacterObject character = hero?.CharacterObject;
+			if (character == null && targetNpc.AgentIndex >= 0)
+			{
+				Agent agent = Mission.Current?.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == targetNpc.AgentIndex && a.IsActive());
+				character = agent?.Character as CharacterObject;
+				hero ??= character?.HeroObject;
+			}
+			string npcName = GetSceneNpcHistoryNameForPrompt(targetNpc);
+			if (string.IsNullOrWhiteSpace(npcName))
+			{
+				npcName = (hero?.Name?.ToString() ?? character?.Name?.ToString() ?? targetNpc.Name ?? "NPC").Trim();
+			}
+			string key = BuildNativeConversationHistoryKey(hero, character, npcName);
+			if (!string.IsNullOrWhiteSpace(key))
+			{
+				QueuePendingCurrentNativeAfefFactForKey(key, fact);
+			}
+		}
+		catch
+		{
+		}
+	}
+
 	private void QueuePendingCurrentAfefFactForAgent(int targetAgentIndex, string fact)
 	{
 		if (targetAgentIndex < 0)
@@ -19888,7 +19991,9 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			return;
 		}
+		bool isAfefFact = TryNormalizeAfefFactLineForPrompt(text, out var afefFactLine);
 		List<int> visibleAgentIndices = BuildVisibleAgentSnapshot(nearbyData);
+		List<NpcDataPacket> afefPendingTargets = isAfefFact ? new List<NpcDataPacket>() : null;
 		long eventSequence = NextConversationEventSequence();
 		lock (_historyLock)
 		{
@@ -19933,6 +20038,22 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				{
 					_npcConversationHistory[agentIndex].RemoveRange(0, Math.Min(2, _npcConversationHistory[agentIndex].Count));
 				}
+				if (isAfefFact)
+				{
+					afefPendingTargets.Add(nearbyDatum);
+				}
+			}
+		}
+		if (afefPendingTargets != null)
+		{
+			foreach (NpcDataPacket target in afefPendingTargets)
+			{
+				if (target == null)
+				{
+					continue;
+				}
+				QueuePendingCurrentAfefFactForAgent(target.AgentIndex, afefFactLine);
+				QueuePendingCurrentNativeAfefFactForSceneTarget(target, afefFactLine);
 			}
 		}
 		AppendSceneEventToNativeSharedHistoryForTargets(nearbyData, "系统", text, "fact", eventSequence);
