@@ -359,6 +359,11 @@ public static class AIConfigHandler
 		return string.Equals((ruleId ?? "").Trim(), "scene_mechanism_actions", StringComparison.OrdinalIgnoreCase);
 	}
 
+	private static bool IsSceneAutoGroupRelayRule(string ruleId)
+	{
+		return string.Equals((ruleId ?? "").Trim(), "scene_auto_group_relay", StringComparison.OrdinalIgnoreCase);
+	}
+
 	public static bool ShouldExcludeSceneMoveRuleForCurrentMission()
 	{
 		try
@@ -1752,6 +1757,10 @@ public static class AIConfigHandler
 		if (string.Equals(text, "kingdom_annexation", StringComparison.OrdinalIgnoreCase))
 		{
 			return KingdomAnnexationBehavior.CanInjectAnnexationRuleForExternal(ResolveConversationTargetHero(), ResolveConversationTargetCharacter());
+		}
+		if (IsSceneAutoGroupRelayRule(text))
+		{
+			return false;
 		}
 		if (!string.Equals(text, "vanilla_issue", StringComparison.OrdinalIgnoreCase))
 		{

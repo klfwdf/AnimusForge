@@ -3,7 +3,6 @@ param(
     [string]$BuildDll = "",
     [string]$BannerlordRoot = "",
     [switch]$DualClientOutput,
-    [switch]$Client13Output,
     [string]$BuildDll13 = "",
     [string]$BuildDll14 = ""
 )
@@ -275,8 +274,7 @@ function Invoke-RobocopyModuleSync {
 function Copy-BuildOutputIntoModule {
     param(
         [Parameter(Mandatory = $true)][string]$TargetModuleDir,
-        [Parameter(Mandatory = $true)][string]$BuildDllPath,
-        [string]$SourceModuleDir = ""
+        [Parameter(Mandatory = $true)][string]$BuildDllPath
     )
 
     $buildDllFull = Get-FullPathSafe -Path $BuildDllPath
@@ -296,80 +294,6 @@ function Copy-BuildOutputIntoModule {
         $targetPdbPath = Join-Path $moduleBinDir "AnimusForge.pdb"
         Copy-Item -LiteralPath $buildPdbPath -Destination $targetPdbPath -Force
         Write-Host "Updated PDB : $targetPdbPath"
-    }
-
-    $candidateDirs = New-Object System.Collections.Generic.List[string]
-    Add-RuntimeDependencySource -Dirs $candidateDirs -Path (Split-Path -Parent $buildDllFull)
-    if (-not [string]::IsNullOrWhiteSpace($SourceModuleDir)) {
-        Add-RuntimeDependencySource -Dirs $candidateDirs -Path (Join-Path $SourceModuleDir "bin\Win64_Shipping_Client")
-    }
-
-    Copy-RuntimeDependenciesIntoModule -ModuleBinDir $moduleBinDir -CandidateDirs $candidateDirs
-}
-
-function Add-RuntimeDependencySource {
-    param(
-        [System.Collections.Generic.List[string]]$Dirs,
-        [string]$Path
-    )
-
-    if ([string]::IsNullOrWhiteSpace($Path)) {
-        return
-    }
-
-    $fullPath = Get-FullPathSafe -Path $Path
-    if (-not (Test-Path -LiteralPath $fullPath -PathType Container)) {
-        return
-    }
-
-    foreach ($existing in $Dirs) {
-        if ($existing.Equals($fullPath, [System.StringComparison]::OrdinalIgnoreCase)) {
-            return
-        }
-    }
-
-    $Dirs.Add($fullPath)
-}
-
-function Copy-RuntimeDependenciesIntoModule {
-    param(
-        [Parameter(Mandatory = $true)][string]$ModuleBinDir,
-        [Parameter(Mandatory = $true)][System.Collections.Generic.List[string]]$CandidateDirs
-    )
-
-    $requiredDependencies = @(
-        "0Harmony.dll",
-        "Microsoft.ML.OnnxRuntime.dll",
-        "System.Memory.dll",
-        "System.Buffers.dll",
-        "System.Runtime.CompilerServices.Unsafe.dll"
-    )
-
-    $optionalDependencies = @(
-        "onnxruntime.dll",
-        "onnxruntime_providers_shared.dll"
-    )
-
-    foreach ($name in ($requiredDependencies + $optionalDependencies)) {
-        foreach ($candidateDir in $CandidateDirs) {
-            $sourcePath = Join-Path $candidateDir $name
-            if (Test-Path -LiteralPath $sourcePath -PathType Leaf) {
-                Copy-Item -LiteralPath $sourcePath -Destination (Join-Path $ModuleBinDir $name) -Force
-                Write-Host "Runtime DLL : $(Join-Path $ModuleBinDir $name)"
-                break
-            }
-        }
-    }
-
-    $missing = New-Object System.Collections.Generic.List[string]
-    foreach ($name in $requiredDependencies) {
-        if (-not (Test-Path -LiteralPath (Join-Path $ModuleBinDir $name) -PathType Leaf)) {
-            $missing.Add($name)
-        }
-    }
-
-    if ($missing.Count -gt 0) {
-        throw ("Missing runtime dependencies after deploy: {0}" -f ($missing -join ", "))
     }
 }
 
@@ -442,35 +366,13 @@ function Deploy-DualClientModule {
         $targetFull = Get-FullPathSafe -Path $client.Target
         Write-Host "Deploying    : $targetFull ($($client.Label))"
         Invoke-RobocopyModuleSync -SourceDir $SourceModuleDir -TargetDir $targetFull
-        Copy-BuildOutputIntoModule -TargetModuleDir $targetFull -BuildDllPath $client.BuildDll -SourceModuleDir $SourceModuleDir
+        Copy-BuildOutputIntoModule -TargetModuleDir $targetFull -BuildDllPath $client.BuildDll
         Set-SubModuleIdentity -TargetModuleDir $targetFull -ModuleId $client.ModuleId -DisplayName $client.DisplayName
         Assert-SameHash -SourceRoot $SourceModuleDir -TargetRoot $targetFull -RelativePath "ModuleData\RuleBehaviorPrompts.json"
         Assert-SameHash -SourceRoot $targetFull -TargetRoot $targetFull -RelativePath "bin\Win64_Shipping_Client\AnimusForge.dll"
     }
 
     Write-Host "Deploy Mode  : dual version module output"
-    Write-Host "Deploy Result: success"
-}
-
-function Deploy-SingleClient13Module {
-    param(
-        [Parameter(Mandatory = $true)][string]$SourceModuleDir,
-        [Parameter(Mandatory = $true)][string]$BannerlordRootPath,
-        [Parameter(Mandatory = $true)][string]$BuildDll13Path
-    )
-
-    $modulesDir = Get-BannerlordModulesDir -BannerlordRootPath $BannerlordRootPath
-    $target13 = Join-Path $modulesDir "AnimusForge_1_3_x"
-    $targetFull = Get-FullPathSafe -Path $target13
-
-    Write-Host "Deploying    : $targetFull (1.3.x)"
-    Invoke-RobocopyModuleSync -SourceDir $SourceModuleDir -TargetDir $targetFull
-    Copy-BuildOutputIntoModule -TargetModuleDir $targetFull -BuildDllPath $BuildDll13Path -SourceModuleDir $SourceModuleDir
-    Set-SubModuleIdentity -TargetModuleDir $targetFull -ModuleId "AnimusForge_1_3_x" -DisplayName "AnimusForge 1.3.x"
-    Assert-SameHash -SourceRoot $SourceModuleDir -TargetRoot $targetFull -RelativePath "ModuleData\RuleBehaviorPrompts.json"
-    Assert-SameHash -SourceRoot $targetFull -TargetRoot $targetFull -RelativePath "bin\Win64_Shipping_Client\AnimusForge.dll"
-
-    Write-Host "Deploy Mode  : single version module output (1.3.x)"
     Write-Host "Deploy Result: success"
 }
 
@@ -522,21 +424,6 @@ if ($DualClientOutput) {
     Sync-PlayerExportsBackToSource -SourceModuleDir $sourceModuleDir -TargetModuleDirs $targetModuleDirsForSync
     Write-Host "Source Module: $sourceModuleDir"
     Deploy-DualClientModule -SourceModuleDir $sourceModuleDir -BannerlordRootPath $BannerlordRoot -BuildDll13Path $BuildDll13 -BuildDll14Path $BuildDll14
-    exit 0
-}
-
-if ($Client13Output) {
-    if ([string]::IsNullOrWhiteSpace($BuildDll13)) {
-        throw "Client13Output requires -BuildDll13."
-    }
-    if ([string]::IsNullOrWhiteSpace($BannerlordRoot)) {
-        throw "Client13Output requires -BannerlordRoot."
-    }
-
-    $targetModuleDirsForSync = @((Join-Path (Get-BannerlordModulesDir -BannerlordRootPath $BannerlordRoot) "AnimusForge_1_3_x"))
-    Sync-PlayerExportsBackToSource -SourceModuleDir $sourceModuleDir -TargetModuleDirs $targetModuleDirsForSync
-    Write-Host "Source Module: $sourceModuleDir"
-    Deploy-SingleClient13Module -SourceModuleDir $sourceModuleDir -BannerlordRootPath $BannerlordRoot -BuildDll13Path $BuildDll13
     exit 0
 }
 

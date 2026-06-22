@@ -9,7 +9,6 @@ cd /d "%SCRIPT_DIR%"
 set "CONFIG=Debug"
 set "PATH_SCRIPT=%SCRIPT_DIR%resolve_bannerlord_paths.ps1"
 set "DEPLOY_SCRIPT=%SCRIPT_DIR%deploy_module.ps1"
-set "BUILD_DEPS_SCRIPT=%SCRIPT_DIR%prepare_build_deps.ps1"
 set "BANNERLORD_ROOT="
 set "WORKSHOP_CONTENT_DIR="
 
@@ -19,7 +18,6 @@ for /f "usebackq tokens=1,* delims==" %%A in (`powershell -NoProfile -ExecutionP
 )
 
 set "BUILD_OUTPUT=%PROJECT_ROOT%\bin\%CONFIG%\net472"
-set "BUILD_DEPS_DIR=%PROJECT_ROOT%\bin\%CONFIG%\build_deps"
 set "ARTIFACT_DIR=%PROJECT_ROOT%\bin\%CONFIG%\dual_client_artifacts"
 set "ARTIFACT_13=%ARTIFACT_DIR%\1.3.x\AnimusForge.dll"
 set "ARTIFACT_14=%ARTIFACT_DIR%\1.4.5\AnimusForge.dll"
@@ -30,7 +28,6 @@ echo Project Dir: "%PROJECT_ROOT%"
 echo Bannerlord : "%BANNERLORD_ROOT%"
 if defined WORKSHOP_CONTENT_DIR echo Workshop  : "%WORKSHOP_CONTENT_DIR%"
 echo Config     : "%CONFIG%"
-echo Build deps : "%BUILD_DEPS_DIR%"
 echo.
 
 where dotnet >nul 2>nul
@@ -54,29 +51,17 @@ if not exist "%DEPLOY_SCRIPT%" (
     exit /b 1
 )
 
-if not exist "%BUILD_DEPS_SCRIPT%" (
-    echo [ERROR] Build dependency preparation script not found:
-    echo "%BUILD_DEPS_SCRIPT%"
-    pause
-    exit /b 1
-)
-
-echo [1/4] Preparing local build dependencies...
-call :PrepareBuildDeps
-if errorlevel 1 exit /b %ERRORLEVEL%
-
-echo.
-echo [2/4] Building AnimusForge for Bannerlord 1.3.x...
+echo [1/3] Building AnimusForge for Bannerlord 1.3.x...
 call :BuildVersion 1.3 "%ARTIFACT_13%"
 if errorlevel 1 exit /b %ERRORLEVEL%
 
 echo.
-echo [3/4] Building AnimusForge for Bannerlord 1.4.5...
+echo [2/3] Building AnimusForge for Bannerlord 1.4.5...
 call :BuildVersion 1.4 "%ARTIFACT_14%"
 if errorlevel 1 exit /b %ERRORLEVEL%
 
 echo.
-echo [4/4] Writing dual modules to Bannerlord Modules...
+echo [3/3] Writing dual modules to Bannerlord Modules...
 powershell -NoProfile -ExecutionPolicy Bypass -File "%DEPLOY_SCRIPT%" -ProjectRoot "%PROJECT_ROOT%" -BannerlordRoot "%BANNERLORD_ROOT%" -DualClientOutput -BuildDll13 "%ARTIFACT_13%" -BuildDll14 "%ARTIFACT_14%"
 if errorlevel 1 (
     echo [ERROR] Dual module output failed.
@@ -93,29 +78,15 @@ echo Enable only the AnimusForge module matching the current Bannerlord version.
 pause
 exit /b 0
 
-:PrepareBuildDeps
-if defined WORKSHOP_CONTENT_DIR (
-    powershell -NoProfile -ExecutionPolicy Bypass -File "%BUILD_DEPS_SCRIPT%" -ProjectRoot "%PROJECT_ROOT%" -BannerlordRoot "%BANNERLORD_ROOT%" -WorkshopContentDir "%WORKSHOP_CONTENT_DIR%" -Configuration "%CONFIG%"
-) else (
-    powershell -NoProfile -ExecutionPolicy Bypass -File "%BUILD_DEPS_SCRIPT%" -ProjectRoot "%PROJECT_ROOT%" -BannerlordRoot "%BANNERLORD_ROOT%" -Configuration "%CONFIG%"
-)
-set "ERR=%ERRORLEVEL%"
-if not "%ERR%"=="0" (
-    echo [ERROR] Failed to prepare local build dependencies. ExitCode=%ERR%
-    pause
-    exit /b %ERR%
-)
-exit /b 0
-
 :BuildVersion
 set "API_VERSION=%~1"
 set "TARGET_DLL=%~2"
 set "TARGET_DIR=%~dp2"
 
 if defined WORKSHOP_CONTENT_DIR (
-    dotnet build "%PROJECT_ROOT%\AnimusForge.csproj" -c %CONFIG% /p:BannerlordApi=%API_VERSION% /p:BannerlordRoot="%BANNERLORD_ROOT%" /p:WorkshopContentDir="%WORKSHOP_CONTENT_DIR%" /p:AnimusForgeBinDir="%BUILD_DEPS_DIR%"
+    dotnet build "%PROJECT_ROOT%\AnimusForge.csproj" -c %CONFIG% /p:BannerlordApi=%API_VERSION% /p:BannerlordRoot="%BANNERLORD_ROOT%" /p:WorkshopContentDir="%WORKSHOP_CONTENT_DIR%"
 ) else (
-    dotnet build "%PROJECT_ROOT%\AnimusForge.csproj" -c %CONFIG% /p:BannerlordApi=%API_VERSION% /p:BannerlordRoot="%BANNERLORD_ROOT%" /p:AnimusForgeBinDir="%BUILD_DEPS_DIR%"
+    dotnet build "%PROJECT_ROOT%\AnimusForge.csproj" -c %CONFIG% /p:BannerlordApi=%API_VERSION% /p:BannerlordRoot="%BANNERLORD_ROOT%"
 )
 set "ERR=%ERRORLEVEL%"
 if not "%ERR%"=="0" (
@@ -145,43 +116,6 @@ if exist "%BUILD_OUTPUT%\AnimusForge.pdb" (
     copy /Y "%BUILD_OUTPUT%\AnimusForge.pdb" "%TARGET_DIR%AnimusForge.pdb" >nul
 )
 
-for %%D in (
-    0Harmony.dll
-    Microsoft.ML.OnnxRuntime.dll
-    System.Memory.dll
-    System.Buffers.dll
-    System.Runtime.CompilerServices.Unsafe.dll
-    onnxruntime.dll
-    onnxruntime_providers_shared.dll
-) do (
-    if exist "%BUILD_DEPS_DIR%\%%D" (
-        copy /Y "%BUILD_DEPS_DIR%\%%D" "%TARGET_DIR%%%D" >nul
-        if errorlevel 1 (
-            echo [ERROR] Failed to copy runtime dependency:
-            echo   "%BUILD_DEPS_DIR%\%%D"
-            pause
-            exit /b 1
-        )
-    )
-)
-
-for %%D in (
-    0Harmony.dll
-    Microsoft.ML.OnnxRuntime.dll
-    System.Memory.dll
-    System.Buffers.dll
-    System.Runtime.CompilerServices.Unsafe.dll
-) do (
-    if not exist "%TARGET_DIR%%%D" (
-        echo [ERROR] Captured artifact is missing runtime dependency:
-        echo   "%TARGET_DIR%%%D"
-        pause
-        exit /b 1
-    )
-)
-
 echo [OK] Captured BannerlordApi=%API_VERSION% artifact:
 echo      "%TARGET_DLL%"
-echo [OK] Captured runtime dependencies:
-echo      "%TARGET_DIR%"
 exit /b 0

@@ -859,21 +859,27 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 		{
 			return "";
 		}
-		return BuildPlayerMajorRuntimeInstruction(GetHeroId(observer), observer?.Culture?.StringId);
+		return BuildPlayerMajorRuntimeInstruction(GetHeroId(observer), observer?.Culture?.StringId, BuildPlayerDisplayNameForPrompt(observer));
 	}
 
 	private string BuildPlayerMajorRuntimeInstruction(string observerKey, string cultureId)
+	{
+		return BuildPlayerMajorRuntimeInstruction(observerKey, cultureId, BuildPlayerDisplayNameForPrompt(observerKey, cultureId));
+	}
+
+	private string BuildPlayerMajorRuntimeInstruction(string observerKey, string cultureId, string playerDisplayName)
 	{
 		if (!DoesObserverKnowPlayer(observerKey, cultureId))
 		{
 			return "";
 		}
-		string major = BuildMajorHistoryForPrompt();
+		string playerName = NormalizePlayerDisplayName(playerDisplayName);
+		string major = BuildMajorHistoryForPrompt(playerName);
 		if (string.IsNullOrWhiteSpace(major))
 		{
 			return "";
 		}
-		return "【你已知的玩家重大履历】\n" + major + "\n使用边界：这些是你已经听说或确认的玩家公开履历。可以自然提及，但不要说成系统提示。";
+		return "【已知的" + playerName + "重大履历】\n" + major + "\n边界：以上是" + playerName + "公开履历，可自然提及，勿说成系统提示。";
 	}
 
 	private string BuildPlayerRecentRuntimeInstruction(Hero observer, bool courier)
@@ -882,15 +888,21 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 		{
 			return "";
 		}
-		return BuildPlayerRecentRuntimeInstruction(GetHeroId(observer), observer?.Culture?.StringId, courier);
+		return BuildPlayerRecentRuntimeInstruction(GetHeroId(observer), observer?.Culture?.StringId, courier, BuildPlayerDisplayNameForPrompt(observer));
 	}
 
 	private string BuildPlayerRecentRuntimeInstruction(string observerKey, string cultureId, bool courier)
+	{
+		return BuildPlayerRecentRuntimeInstruction(observerKey, cultureId, courier, BuildPlayerDisplayNameForPrompt(observerKey, cultureId));
+	}
+
+	private string BuildPlayerRecentRuntimeInstruction(string observerKey, string cultureId, bool courier, string playerDisplayName)
 	{
 		if (!CanObserverKnowRecentActions(observerKey, cultureId, courier))
 		{
 			return "";
 		}
+		string playerName = NormalizePlayerDisplayName(playerDisplayName);
 		PruneRecentActions();
 		List<PlayerActionEntry> recent = (_state.RecentActions ?? new List<PlayerActionEntry>())
 			.Where(x => x != null && !string.IsNullOrWhiteSpace(x.Text))
@@ -905,24 +917,26 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 			return "";
 		}
 		StringBuilder sb = new StringBuilder();
-		sb.AppendLine("【你已知的玩家近期行动】");
+		sb.AppendLine("【已知的" + playerName + "近期行动】");
 		foreach (PlayerActionEntry entry in recent)
 		{
-			sb.AppendLine("- " + (string.IsNullOrWhiteSpace(entry.GameDate) ? ("第" + entry.Day + "日") : entry.GameDate.Trim()) + "：" + entry.Text.Trim());
+			sb.AppendLine("- " + (string.IsNullOrWhiteSpace(entry.GameDate) ? ("第" + entry.Day + "日") : entry.GameDate.Trim()) + "：" + RenderPlayerActionTextForPrompt(entry.Text, playerName));
 		}
-		sb.Append("使用边界：这些是你对玩家最近十天行动的公开认知。");
+		sb.Append("边界：以上是" + playerName + "最近十天公开行动，可自然提及，勿说成系统提示。");
 		return sb.ToString().Trim();
 	}
 
-	private string BuildMajorHistoryForPrompt()
+	private string BuildMajorHistoryForPrompt(string playerDisplayName)
 	{
 		_state = NormalizeState(_state);
+		string playerName = NormalizePlayerDisplayName(playerDisplayName);
 		int summaryChars = GetMajorPromptChars();
 		string summary = (_state.MajorSummary ?? "").Trim();
 		if (summaryChars > 0 && summary.Length > summaryChars)
 		{
 			summary = summary.Substring(Math.Max(0, summary.Length - summaryChars), summaryChars);
 		}
+		summary = RenderPlayerActionTextForPrompt(summary, playerName);
 		List<PlayerHistoryMaterial> unsummarized = (_state.MajorMaterials ?? new List<PlayerHistoryMaterial>())
 			.Where(x => x != null && !x.Summarized && !string.IsNullOrWhiteSpace(x.Text))
 			.OrderBy(x => x.Day)
@@ -943,10 +957,71 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 			sb.AppendLine("尚未总结的新增公开履历素材：");
 			foreach (PlayerHistoryMaterial material in unsummarized)
 			{
-				sb.AppendLine("- " + (string.IsNullOrWhiteSpace(material.GameDate) ? ("第" + material.Day + "日") : material.GameDate.Trim()) + "：" + material.Text.Trim());
+				sb.AppendLine("- " + (string.IsNullOrWhiteSpace(material.GameDate) ? ("第" + material.Day + "日") : material.GameDate.Trim()) + "：" + RenderPlayerActionTextForPrompt(material.Text, playerName));
 			}
 		}
 		return sb.ToString().Trim();
+	}
+
+	private static string BuildPlayerDisplayNameForPrompt(Hero observer)
+	{
+		try
+		{
+			string text = MyBehavior.BuildPlayerPublicDisplayNameForExternal(observer);
+			if (!string.IsNullOrWhiteSpace(text))
+			{
+				return NormalizePlayerDisplayName(text);
+			}
+		}
+		catch
+		{
+		}
+		return "玩家";
+	}
+
+	private static string BuildPlayerDisplayNameForPrompt(string observerKey, string cultureId)
+	{
+		Hero observer = FindHeroById(observerKey);
+		if (observer != null)
+		{
+			return BuildPlayerDisplayNameForPrompt(observer);
+		}
+		try
+		{
+			string text = MyBehavior.BuildPlayerPublicDisplayNameForExternal();
+			if (!string.IsNullOrWhiteSpace(text))
+			{
+				return NormalizePlayerDisplayName(text);
+			}
+		}
+		catch
+		{
+		}
+		return "玩家";
+	}
+
+	private static string NormalizePlayerDisplayName(string playerDisplayName)
+	{
+		string text = NormalizeLine(playerDisplayName);
+		return string.IsNullOrWhiteSpace(text) ? "玩家" : text;
+	}
+
+	private static string RenderPlayerActionTextForPrompt(string rawText, string playerDisplayName)
+	{
+		string text = NormalizeLine(rawText);
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return "";
+		}
+		string name = NormalizePlayerDisplayName(playerDisplayName);
+		return text
+			.Replace("你们的", name + "一方的")
+			.Replace("你们", name + "一方")
+			.Replace("你方的", name + "一方的")
+			.Replace("你方", name + "一方")
+			.Replace("你的", name + "的")
+			.Replace("你部队", name + "的部队")
+			.Replace("你", name);
 	}
 
 	private bool DoesObserverKnowPlayer(Hero observer)
@@ -1386,7 +1461,7 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 				sb.AppendLine("- " + ResolveCultureDisplayName(pair.Key) + "：" + FormatScore(pair.Value) + "/100；有效 " + FormatScore(effective) + "/100（" + GetLevelText(effective) + "）");
 			}
 		}
-		string history = BuildMajorHistoryForPrompt();
+		string history = BuildMajorHistoryForPrompt("玩家");
 		if (!string.IsNullOrWhiteSpace(history))
 		{
 			sb.AppendLine();
@@ -1400,7 +1475,7 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 			sb.AppendLine("【玩家近期行动】");
 			foreach (PlayerActionEntry entry in _state.RecentActions.OrderByDescending(x => x.Day).ThenByDescending(x => x.Sequence).Take(20))
 			{
-				sb.AppendLine("- " + (string.IsNullOrWhiteSpace(entry.GameDate) ? ("第" + entry.Day + "日") : entry.GameDate.Trim()) + "：" + entry.Text);
+				sb.AppendLine("- " + (string.IsNullOrWhiteSpace(entry.GameDate) ? ("第" + entry.Day + "日") : entry.GameDate.Trim()) + "：" + RenderPlayerActionTextForPrompt(entry.Text, "玩家"));
 			}
 		}
 		if (includeRawMaterials)
@@ -1416,7 +1491,7 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 			{
 				foreach (PlayerHistoryMaterial material in pending.Take(30))
 				{
-					sb.AppendLine("- " + (string.IsNullOrWhiteSpace(material.GameDate) ? ("第" + material.Day + "日") : material.GameDate.Trim()) + "：" + material.Text);
+					sb.AppendLine("- " + (string.IsNullOrWhiteSpace(material.GameDate) ? ("第" + material.Day + "日") : material.GameDate.Trim()) + "：" + RenderPlayerActionTextForPrompt(material.Text, "玩家"));
 				}
 			}
 		}

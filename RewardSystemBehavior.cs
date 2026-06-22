@@ -38,6 +38,8 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 	private const int NotableMarketPostprocessMaxItems = 80;
 	private const float RewardItemNameMatchThreshold = 0.8f;
 	private static readonly PropertyInfo RewardItemObjectNameProperty = typeof(ItemObject).GetProperty("Name", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+	private static readonly PropertyInfo RewardItemObjectCategoryProperty = typeof(ItemObject).GetProperty("ItemCategory", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+	private static readonly FieldInfo HeroClanBackingField = typeof(Hero).GetField("_clan", BindingFlags.Instance | BindingFlags.NonPublic);
 
 	public enum SettlementMerchantKind
 	{
@@ -119,6 +121,21 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		public ItemObject TemplateItem;
 
 		public string RequestedName;
+	}
+
+	private sealed class HeroJoinOriginalClanRecord
+	{
+		public string OriginalClanId;
+
+		public string OriginalSettlementId;
+
+		public string OriginalSupporterClanId;
+
+		public int OriginalOccupation;
+
+		public bool WasLord;
+
+		public bool WasNotable;
 	}
 
 	public class DebtExportEntry
@@ -350,6 +367,10 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 
 	private Dictionary<string, string> _merchantFactStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
+	private Dictionary<string, HeroJoinOriginalClanRecord> _heroJoinOriginalClanRecords = new Dictionary<string, HeroJoinOriginalClanRecord>(StringComparer.OrdinalIgnoreCase);
+
+	private Dictionary<string, string> _heroJoinOriginalClanStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
 	private List<string> _lastGeneratedNpcFactLines = new List<string>();
 
 	private static readonly Dictionary<int, Hero> _promotedNonHeroCompanionsByAgentIndex = new Dictionary<int, Hero>();
@@ -404,6 +425,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		CampaignEvents.MapEventEnded.AddNonSerializedListener(this, OnMapEventEnded);
 		CampaignEvents.OnPlayerPartyKnockedOrKilledTroopEvent.AddNonSerializedListener(this, OnPlayerPartyKnockedOrKilledTroop);
 		CampaignEvents.OnQuestCompletedEvent.AddNonSerializedListener(this, OnQuestCompleted);
+		CampaignEvents.CompanionRemoved.AddNonSerializedListener(this, OnCompanionRemoved);
 	}
 
 	public override void SyncData(IDataStore dataStore)
@@ -480,6 +502,14 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			_merchantFactStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 		}
+		if (_heroJoinOriginalClanRecords == null)
+		{
+			_heroJoinOriginalClanRecords = new Dictionary<string, HeroJoinOriginalClanRecord>(StringComparer.OrdinalIgnoreCase);
+		}
+		if (_heroJoinOriginalClanStorage == null)
+		{
+			_heroJoinOriginalClanStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+		}
 		try
 		{
 			_debtStorage.Clear();
@@ -539,6 +569,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			SyncDirectTrustProgressCarryData(dataStore);
 			SyncSettlementTrustCarryData(dataStore);
 			SyncPublicTrustProgressCarryData(dataStore);
+			SyncHeroJoinOriginalClanData(dataStore);
 		}
 		catch (Exception ex3)
 		{
@@ -561,13 +592,70 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			_publicTrustProgressCarryStorage = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
 			_merchantFacts = new Dictionary<string, MerchantFactRecord>(StringComparer.OrdinalIgnoreCase);
 			_merchantFactStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+			_heroJoinOriginalClanRecords = new Dictionary<string, HeroJoinOriginalClanRecord>(StringComparer.OrdinalIgnoreCase);
+			_heroJoinOriginalClanStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+		}
+	}
+
+	private void SyncHeroJoinOriginalClanData(IDataStore dataStore)
+	{
+		if (_heroJoinOriginalClanRecords == null)
+		{
+			_heroJoinOriginalClanRecords = new Dictionary<string, HeroJoinOriginalClanRecord>(StringComparer.OrdinalIgnoreCase);
+		}
+		if (_heroJoinOriginalClanStorage == null)
+		{
+			_heroJoinOriginalClanStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+		}
+		try
+		{
+			_heroJoinOriginalClanStorage.Clear();
+			foreach (KeyValuePair<string, HeroJoinOriginalClanRecord> item in _heroJoinOriginalClanRecords)
+			{
+				if (string.IsNullOrWhiteSpace(item.Key) || item.Value == null || (string.IsNullOrWhiteSpace(item.Value.OriginalClanId) && string.IsNullOrWhiteSpace(item.Value.OriginalSettlementId)))
+				{
+					continue;
+				}
+				_heroJoinOriginalClanStorage[item.Key] = JsonConvert.SerializeObject(item.Value);
+			}
+			Dictionary<string, string> dictionary = CampaignSaveChunkHelper.FlattenStringDictionary(_heroJoinOriginalClanStorage, "_rewardHeroJoinOriginalClans_v1", "RewardHeroJoinOriginalClan");
+			dataStore.SyncData("_rewardHeroJoinOriginalClans_v1", ref dictionary);
+			_heroJoinOriginalClanStorage = CampaignSaveChunkHelper.RestoreStringDictionary(dictionary, "RewardSystem");
+			_heroJoinOriginalClanRecords.Clear();
+			foreach (KeyValuePair<string, string> item2 in _heroJoinOriginalClanStorage)
+			{
+				if (string.IsNullOrWhiteSpace(item2.Key) || string.IsNullOrWhiteSpace(item2.Value))
+				{
+					continue;
+				}
+				try
+				{
+					HeroJoinOriginalClanRecord record = JsonConvert.DeserializeObject<HeroJoinOriginalClanRecord>(item2.Value);
+					if (record != null && (!string.IsNullOrWhiteSpace(record.OriginalClanId) || !string.IsNullOrWhiteSpace(record.OriginalSettlementId)))
+					{
+						_heroJoinOriginalClanRecords[item2.Key] = record;
+					}
+				}
+				catch (Exception ex)
+				{
+					Logger.Log("RewardSystem", "[HeroJoinOriginalClan] deserialize failed hero=" + item2.Key + " error=" + ex.Message);
+				}
+			}
+		}
+		catch (Exception ex2)
+		{
+			Logger.Log("RewardSystem", "[HeroJoinOriginalClan] SyncData failed: " + ex2.Message);
+			_heroJoinOriginalClanRecords = new Dictionary<string, HeroJoinOriginalClanRecord>(StringComparer.OrdinalIgnoreCase);
+			_heroJoinOriginalClanStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 		}
 	}
 
 	private void OnGameLoadFinished()
 	{
 		ClearPromotedNonHeroCompanionCache();
+		RepairGeneratedRewardItemCategories("game_load_finished");
 		CleanupPlayerCompanionLordCacheDuplicates("game_load_finished");
+		BackfillHeroJoinOriginalClanRecordsForExistingPlayerCompanions();
 	}
 
 	private static void ClearPromotedNonHeroCompanionCache()
@@ -649,6 +737,502 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		catch (Exception ex)
 		{
 			Logger.Log("RewardSystemBehavior", "[NonHeroJoin] companion_lord_cache_cleanup_failed reason=" + (reason ?? "") + " error=" + ex.Message);
+		}
+	}
+
+	private static string GetHeroRecordKey(Hero hero)
+	{
+		try
+		{
+			string text = (hero?.StringId ?? "").Trim();
+			if (!string.IsNullOrWhiteSpace(text))
+			{
+				return text;
+			}
+			return (hero?.CharacterObject?.StringId ?? "").Trim();
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	private static Clan GetHeroBackingClan(Hero hero)
+	{
+		try
+		{
+			return HeroClanBackingField?.GetValue(hero) as Clan;
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static Clan ResolveClanByStringId(string clanId)
+	{
+		string text = (clanId ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return null;
+		}
+		try
+		{
+			return Clan.All?.FirstOrDefault((Clan clan) => clan != null && string.Equals((clan.StringId ?? "").Trim(), text, StringComparison.OrdinalIgnoreCase));
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static Settlement ResolveSettlementByStringId(string settlementId)
+	{
+		string text = (settlementId ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return null;
+		}
+		try
+		{
+			return Settlement.All?.FirstOrDefault((Settlement settlement) => settlement != null && string.Equals((settlement.StringId ?? "").Trim(), text, StringComparison.OrdinalIgnoreCase));
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static bool IsClanStillInCampaign(Clan clan)
+	{
+		if (clan == null)
+		{
+			return false;
+		}
+		try
+		{
+			return Clan.All?.Any((Clan candidate) => ReferenceEquals(candidate, clan)) == true;
+		}
+		catch
+		{
+			return true;
+		}
+	}
+
+	private static bool IsOriginalClanAvailableForDismissedLord(Clan clan)
+	{
+		try
+		{
+			return clan != null && clan != Clan.PlayerClan && !clan.IsEliminated && IsClanStillInCampaign(clan);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static bool TryResolveOccupation(int value, out Occupation occupation)
+	{
+		occupation = Occupation.Lord;
+		try
+		{
+			if (Enum.IsDefined(typeof(Occupation), value))
+			{
+				occupation = (Occupation)value;
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		return false;
+	}
+
+	private static bool IsReturnableNotableOccupation(Occupation occupation)
+	{
+		return occupation == Occupation.Merchant
+			|| occupation == Occupation.Artisan
+			|| occupation == Occupation.GangLeader
+			|| occupation == Occupation.RuralNotable
+			|| occupation == Occupation.Headman
+			|| occupation == Occupation.Preacher;
+	}
+
+	private static bool IsHeroJoinReturnTrackedHero(Hero hero)
+	{
+		if (hero == null)
+		{
+			return false;
+		}
+		try
+		{
+			return hero.IsLord || hero.IsNotable || IsReturnableNotableOccupation(hero.Occupation);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static Settlement ResolveOriginalSettlementForHeroJoin(Hero hero, Settlement currentSettlement)
+	{
+		if (hero == null)
+		{
+			return currentSettlement;
+		}
+		try
+		{
+			return FirstUsableSettlement(
+				currentSettlement,
+				ResolveNotableMarketSettlement(hero, currentSettlement),
+				hero.CurrentSettlement,
+				hero.HomeSettlement,
+				hero.BornSettlement,
+				Settlement.CurrentSettlement,
+				MobileParty.MainParty?.CurrentSettlement);
+		}
+		catch
+		{
+			return currentSettlement;
+		}
+	}
+
+	private void RememberHeroJoinOriginalClan(Hero hero, Clan originalClan, Settlement originalSettlement, string reason)
+	{
+		try
+		{
+			string heroKey = GetHeroRecordKey(hero);
+			string clanId = (originalClan?.StringId ?? "").Trim();
+			string settlementId = (originalSettlement?.StringId ?? "").Trim();
+			bool wasLord = hero?.IsLord == true;
+			bool wasNotable = false;
+			try
+			{
+				wasNotable = hero?.IsNotable == true || (hero != null && IsReturnableNotableOccupation(hero.Occupation));
+			}
+			catch
+			{
+				wasNotable = false;
+			}
+			if (string.IsNullOrWhiteSpace(heroKey) || (!wasLord && !wasNotable) || (string.IsNullOrWhiteSpace(clanId) && string.IsNullOrWhiteSpace(settlementId)))
+			{
+				return;
+			}
+			if (_heroJoinOriginalClanRecords == null)
+			{
+				_heroJoinOriginalClanRecords = new Dictionary<string, HeroJoinOriginalClanRecord>(StringComparer.OrdinalIgnoreCase);
+			}
+			_heroJoinOriginalClanRecords[heroKey] = new HeroJoinOriginalClanRecord
+			{
+				OriginalClanId = originalClan == Clan.PlayerClan ? "" : clanId,
+				OriginalSettlementId = settlementId,
+				OriginalSupporterClanId = (hero?.SupporterOf?.StringId ?? "").Trim(),
+				OriginalOccupation = (int)hero.Occupation,
+				WasLord = wasLord,
+				WasNotable = wasNotable
+			};
+			Logger.Log("RewardSystemBehavior", "[HeroJoinOriginalClan] remember hero=" + heroKey + " clan=" + (clanId ?? "") + " settlement=" + (settlementId ?? "") + " reason=" + (reason ?? ""));
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("RewardSystemBehavior", "[HeroJoinOriginalClan] remember failed: " + ex.Message);
+		}
+	}
+
+	private void BackfillHeroJoinOriginalClanRecordsForExistingPlayerCompanions()
+	{
+		try
+		{
+			Clan playerClan = Clan.PlayerClan;
+			if (playerClan?.Companions == null)
+			{
+				return;
+			}
+			foreach (Hero hero in playerClan.Companions)
+			{
+				if (hero == null || !hero.IsPlayerCompanion || !IsHeroJoinReturnTrackedHero(hero))
+				{
+					continue;
+				}
+				string heroKey = GetHeroRecordKey(hero);
+				if (!string.IsNullOrWhiteSpace(heroKey) && _heroJoinOriginalClanRecords != null && _heroJoinOriginalClanRecords.ContainsKey(heroKey))
+				{
+					continue;
+				}
+				Clan originalClan = GetHeroBackingClan(hero);
+				if (originalClan == playerClan)
+				{
+					originalClan = null;
+				}
+				Settlement originalSettlement = ResolveOriginalSettlementForHeroJoin(hero, hero.CurrentSettlement);
+				if (originalClan != null || originalSettlement != null)
+				{
+					RememberHeroJoinOriginalClan(hero, originalClan, originalSettlement, "game_load_backfill");
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("RewardSystemBehavior", "[HeroJoinOriginalClan] backfill failed: " + ex.Message);
+		}
+	}
+
+	private void OnCompanionRemoved(Hero companion, RemoveCompanionAction.RemoveCompanionDetail detail)
+	{
+		string heroKey = GetHeroRecordKey(companion);
+		HeroJoinOriginalClanRecord record = null;
+		bool hasRecord = !string.IsNullOrWhiteSpace(heroKey)
+			&& _heroJoinOriginalClanRecords != null
+			&& _heroJoinOriginalClanRecords.TryGetValue(heroKey, out record);
+		if (detail != RemoveCompanionAction.RemoveCompanionDetail.Fire)
+		{
+			if (hasRecord)
+			{
+				_heroJoinOriginalClanRecords.Remove(heroKey);
+			}
+			return;
+		}
+		try
+		{
+			Clan originalClan = hasRecord ? ResolveClanByStringId(record.OriginalClanId) : null;
+			Settlement originalSettlement = hasRecord ? ResolveSettlementByStringId(record.OriginalSettlementId) : null;
+			Clan originalSupporterClan = hasRecord ? ResolveClanByStringId(record.OriginalSupporterClanId) : null;
+			if (originalClan == null)
+			{
+				Clan backingClan = GetHeroBackingClan(companion);
+				if (backingClan != null && backingClan != Clan.PlayerClan)
+				{
+					originalClan = backingClan;
+				}
+			}
+			if (originalSettlement == null)
+			{
+				originalSettlement = ResolveOriginalSettlementForHeroJoin(companion, companion?.CurrentSettlement);
+			}
+			bool originalClanWasRecorded = hasRecord && !string.IsNullOrWhiteSpace(record?.OriginalClanId);
+			bool wasLord = record?.WasLord == true || companion?.IsLord == true;
+			bool wasNotable = record?.WasNotable == true || companion?.IsNotable == true || (companion != null && IsReturnableNotableOccupation(companion.Occupation));
+			bool shouldHandle = hasRecord || (wasLord && originalClan != null && originalClan != Clan.PlayerClan) || (wasNotable && originalSettlement != null);
+			if (!shouldHandle)
+			{
+				return;
+			}
+			if (originalClanWasRecorded && !IsOriginalClanAvailableForDismissedLord(originalClan))
+			{
+				MakeDismissedHeroWanderer(companion, originalClan);
+			}
+			else if (wasLord)
+			{
+				if (IsOriginalClanAvailableForDismissedLord(originalClan))
+				{
+					RestoreDismissedHeroToOriginalClan(companion, originalClan, hasRecord ? record : null);
+				}
+				else
+				{
+					MakeDismissedHeroWanderer(companion, originalClan);
+				}
+			}
+			else if (wasNotable && originalSettlement != null)
+			{
+				RestoreDismissedHeroToOriginalSettlement(companion, originalSettlement, originalSupporterClan, hasRecord ? record : null);
+			}
+			else
+			{
+				MakeDismissedHeroWanderer(companion, originalClan);
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("RewardSystemBehavior", "[HeroJoinOriginalClan] companion removed restore failed hero=" + heroKey + " error=" + ex.Message);
+		}
+		finally
+		{
+			if (hasRecord && !string.IsNullOrWhiteSpace(heroKey))
+			{
+				_heroJoinOriginalClanRecords.Remove(heroKey);
+			}
+		}
+	}
+
+	private static void RestoreDismissedHeroToOriginalClan(Hero hero, Clan originalClan, HeroJoinOriginalClanRecord record)
+	{
+		if (hero == null || originalClan == null)
+		{
+			return;
+		}
+		if (hero.Clan != originalClan)
+		{
+			hero.Clan = originalClan;
+		}
+		Occupation targetOccupation = Occupation.Lord;
+		if (record != null && TryResolveOccupation(record.OriginalOccupation, out Occupation recordedOccupation))
+		{
+			targetOccupation = recordedOccupation;
+		}
+		if (record?.WasLord == true)
+		{
+			targetOccupation = Occupation.Lord;
+		}
+		if (hero.Occupation != targetOccupation)
+		{
+			hero.SetNewOccupation(targetOccupation);
+		}
+		if (originalClan.Leader == null && hero.IsLord)
+		{
+			originalClan.SetLeader(hero);
+		}
+		PlaceDismissedFormerLord(hero, originalClan);
+		string heroName = hero.Name?.ToString() ?? "Hero";
+		string clanName = GetClanDisplayNameForNotification(originalClan);
+		InformationManager.DisplayMessage(new InformationMessage("【同伴离队】" + heroName + " 已回到 " + clanName + "。", Color.FromUint(4278242559u)));
+		Logger.Log("RewardSystemBehavior", "[HeroJoinOriginalClan] restored hero=" + (hero.StringId ?? "") + " clan=" + (originalClan.StringId ?? ""));
+	}
+
+	private static void RestoreDismissedHeroToOriginalSettlement(Hero hero, Settlement originalSettlement, Clan originalSupporterClan, HeroJoinOriginalClanRecord record)
+	{
+		if (hero == null || originalSettlement == null)
+		{
+			return;
+		}
+		if (hero.Clan != null)
+		{
+			hero.Clan = null;
+		}
+		Occupation targetOccupation = hero.Occupation;
+		if (record != null && TryResolveOccupation(record.OriginalOccupation, out Occupation recordedOccupation))
+		{
+			targetOccupation = recordedOccupation;
+		}
+		if (!IsReturnableNotableOccupation(targetOccupation))
+		{
+			targetOccupation = originalSettlement.IsVillage ? Occupation.RuralNotable : Occupation.Merchant;
+		}
+		if (hero.Occupation != targetOccupation)
+		{
+			hero.SetNewOccupation(targetOccupation);
+		}
+		if (originalSupporterClan != null && !originalSupporterClan.IsEliminated && IsClanStillInCampaign(originalSupporterClan))
+		{
+			hero.SupporterOf = originalSupporterClan;
+		}
+		else if (!string.IsNullOrWhiteSpace(record?.OriginalSupporterClanId))
+		{
+			hero.SupporterOf = null;
+		}
+		TeleportHeroAction.ApplyImmediateTeleportToSettlement(hero, originalSettlement);
+		try
+		{
+			hero.UpdateHomeSettlement();
+		}
+		catch
+		{
+		}
+		string heroName = hero.Name?.ToString() ?? "Hero";
+		string settlementName = originalSettlement.Name?.ToString() ?? originalSettlement.StringId ?? "原定居点";
+		InformationManager.DisplayMessage(new InformationMessage("【同伴离队】" + heroName + " 已回到 " + settlementName + "。", Color.FromUint(4278242559u)));
+		Logger.Log("RewardSystemBehavior", "[HeroJoinOriginalClan] restored_notable hero=" + (hero.StringId ?? "") + " settlement=" + (originalSettlement.StringId ?? "") + " occupation=" + targetOccupation);
+	}
+
+	private static void MakeDismissedHeroWanderer(Hero hero, Clan originalClan)
+	{
+		if (hero == null)
+		{
+			return;
+		}
+		if (hero.Clan != null)
+		{
+			hero.Clan = null;
+		}
+		if (hero.Occupation != Occupation.Wanderer)
+		{
+			hero.SetNewOccupation(Occupation.Wanderer);
+		}
+		PlaceDismissedFormerLord(hero, null);
+		string heroName = hero.Name?.ToString() ?? "Hero";
+		string clanName = GetClanDisplayNameForNotification(originalClan);
+		string reasonText = originalClan != null ? (clanName + " 已灭亡，") : "原归属不可用，";
+		InformationManager.DisplayMessage(new InformationMessage("【同伴离队】" + reasonText + heroName + " 已成为流浪者。", Color.FromUint(4294936661u)));
+		Logger.Log("RewardSystemBehavior", "[HeroJoinOriginalClan] wanderer hero=" + (hero.StringId ?? "") + " oldClan=" + (originalClan?.StringId ?? ""));
+	}
+
+	private static void PlaceDismissedFormerLord(Hero hero, Clan clan)
+	{
+		if (hero == null || hero.IsDead)
+		{
+			return;
+		}
+		try
+		{
+			Settlement settlement = FindDismissedFormerLordSettlement(hero, clan);
+			if (settlement != null)
+			{
+				TeleportHeroAction.ApplyImmediateTeleportToSettlement(hero, settlement);
+			}
+			else if (!hero.IsActive)
+			{
+				hero.ChangeState(Hero.CharacterStates.Active);
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("RewardSystemBehavior", "[HeroJoinOriginalClan] placement failed hero=" + (hero.StringId ?? "") + " error=" + ex.Message);
+		}
+	}
+
+	private static Settlement FindDismissedFormerLordSettlement(Hero hero, Clan clan)
+	{
+		try
+		{
+			Settlement settlement = FirstUsableSettlement(
+				hero?.HomeSettlement,
+				clan?.HomeSettlement,
+				clan?.InitialHomeSettlement,
+				Settlement.CurrentSettlement,
+				Hero.MainHero?.CurrentSettlement,
+				MobileParty.MainParty?.CurrentSettlement);
+			if (settlement != null)
+			{
+				return settlement;
+			}
+			settlement = clan?.Settlements?.FirstOrDefault((Settlement x) => IsUsableDismissedHeroSettlement(x));
+			if (settlement != null)
+			{
+				return settlement;
+			}
+			return Settlement.All?.FirstOrDefault((Settlement x) => IsUsableDismissedHeroSettlement(x) && x.IsTown)
+				?? Settlement.All?.FirstOrDefault((Settlement x) => IsUsableDismissedHeroSettlement(x));
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static Settlement FirstUsableSettlement(params Settlement[] settlements)
+	{
+		if (settlements == null)
+		{
+			return null;
+		}
+		foreach (Settlement settlement in settlements)
+		{
+			if (IsUsableDismissedHeroSettlement(settlement))
+			{
+				return settlement;
+			}
+		}
+		return null;
+	}
+
+	private static bool IsUsableDismissedHeroSettlement(Settlement settlement)
+	{
+		try
+		{
+			return settlement != null && !settlement.IsHideout && (settlement.IsTown || settlement.IsCastle || settlement.IsVillage);
+		}
+		catch
+		{
+			return false;
 		}
 	}
 
@@ -3512,10 +4096,12 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			}
 			List<string> transitionNotes = new List<string>();
 			// Capture the original clan before AddCompanionAction changes Hero.Clan through CompanionOf.
-			Clan originalClan = joiningHero.Clan;
+			Clan originalClan = GetHeroBackingClan(joiningHero) ?? joiningHero.Clan;
 			Kingdom originalKingdom = originalClan?.Kingdom;
 			bool originalClanWasRulingClan = originalKingdom != null && originalKingdom.RulingClan == originalClan;
 			Settlement currentSettlement = joiningHero.CurrentSettlement;
+			Settlement originalSettlement = ResolveOriginalSettlementForHeroJoin(joiningHero, currentSettlement);
+			RememberHeroJoinOriginalClan(joiningHero, originalClan, originalSettlement, "hero_join_party");
 			Town governorTown = joiningHero.GovernorOf;
 			if (governorTown != null)
 			{
@@ -6430,7 +7016,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		string templateStringId = templateItem.StringId ?? templateResolution.MatchedStringId ?? "";
 		string generatedStringId = BuildGeneratedRewardItemStringId(requestedName, templateStringId);
 		ItemObject generatedItem = TryGetOrCreateGeneratedRewardItem(generatedStringId, requestedName, templateItem, logSource);
-		if (generatedItem == null)
+		if (generatedItem == null || !TryEnsureGeneratedRewardItemCategory(generatedItem, templateItem, logSource))
 		{
 			return false;
 		}
@@ -6469,6 +7055,121 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		return true;
 	}
 
+	private static bool TryEnsureGeneratedRewardItemCategory(ItemObject item, ItemObject templateItem = null, string logSource = null)
+	{
+		if (item == null)
+		{
+			return false;
+		}
+		if (item.ItemCategory != null)
+		{
+			return true;
+		}
+		ItemCategory category = templateItem?.ItemCategory;
+		if (category != null)
+		{
+			if (TrySetGeneratedRewardItemCategory(item, category))
+			{
+				return true;
+			}
+		}
+		try
+		{
+			item.DetermineItemCategoryForItem();
+		}
+		catch
+		{
+		}
+		if (item.ItemCategory != null)
+		{
+			return true;
+		}
+		try
+		{
+			category = DefaultItemCategories.Unassigned;
+		}
+		catch
+		{
+			category = null;
+		}
+		if (category != null && TrySetGeneratedRewardItemCategory(item, category))
+		{
+			try
+			{
+				Logger.Log("Logic", "[RewardItemResolve] generated_category_fallback source=" + (logSource ?? "") + " item=" + (item.StringId ?? "") + " category=" + (category.StringId ?? ""));
+			}
+			catch
+			{
+			}
+			return true;
+		}
+		try
+		{
+			Logger.Log("Logic", "[RewardItemResolve] generated_category_failed source=" + (logSource ?? "") + " item=" + (item.StringId ?? "") + " template=" + (templateItem?.StringId ?? ""));
+		}
+		catch
+		{
+		}
+		return false;
+	}
+
+	private static bool TrySetGeneratedRewardItemCategory(ItemObject item, ItemCategory category)
+	{
+		if (item == null || category == null)
+		{
+			return false;
+		}
+		try
+		{
+			RewardItemObjectCategoryProperty?.SetValue(item, category, null);
+			return item.ItemCategory != null;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static void RepairGeneratedRewardItemCategories(string reason)
+	{
+		try
+		{
+			IEnumerable<ItemObject> items = Game.Current?.ObjectManager?.GetObjectTypeList<ItemObject>() ?? MBObjectManager.Instance?.GetObjectTypeList<ItemObject>();
+			int repaired = 0;
+			List<string> ids = new List<string>();
+			foreach (ItemObject item in items?.ToList() ?? new List<ItemObject>())
+			{
+				string stringId = (item?.StringId ?? "").Trim();
+				if (string.IsNullOrWhiteSpace(stringId) || !stringId.StartsWith("af_generated_reward_", StringComparison.OrdinalIgnoreCase) || item.ItemCategory != null)
+				{
+					continue;
+				}
+				if (TryEnsureGeneratedRewardItemCategory(item, null, reason))
+				{
+					repaired++;
+					if (ids.Count < 12)
+					{
+						ids.Add(stringId + ":" + (item.ItemCategory?.StringId ?? "null"));
+					}
+				}
+			}
+			if (repaired > 0)
+			{
+				Logger.Log("Logic", "[RewardItemResolve] generated_category_repaired reason=" + (reason ?? "") + " count=" + repaired + " items=" + string.Join(",", ids));
+			}
+		}
+		catch (Exception ex)
+		{
+			try
+			{
+				Logger.Log("Logic", "[RewardItemResolve] generated_category_repair_failed reason=" + (reason ?? "") + " error=" + ex.GetType().Name + ":" + ex.Message);
+			}
+			catch
+			{
+			}
+		}
+	}
+
 	private static ItemObject TryGetOrCreateGeneratedRewardItem(string generatedStringId, string displayName, ItemObject templateItem, string logSource = null)
 	{
 		try
@@ -6481,6 +7182,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			if (existing != null)
 			{
 				TrySetRewardItemObjectName(existing, displayName);
+				TryEnsureGeneratedRewardItemCategory(existing, templateItem, logSource);
 				return existing;
 			}
 			ItemObject generatedItem = new ItemObject(templateItem)
@@ -6488,6 +7190,10 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				StringId = generatedStringId
 			};
 			if (!TrySetRewardItemObjectName(generatedItem, displayName))
+			{
+				return null;
+			}
+			if (!TryEnsureGeneratedRewardItemCategory(generatedItem, templateItem, logSource))
 			{
 				return null;
 			}
@@ -6550,6 +7256,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			return 0;
 		}
 		EquipmentElement equipmentElement = resolution.EquipmentElement.Item != null ? resolution.EquipmentElement : new EquipmentElement(resolution.Item, null, null, false);
+		TryEnsureGeneratedRewardItemCategory(equipmentElement.Item, resolution.TemplateItem, "generate_to_roster");
 		targetRoster.AddToCounts(equipmentElement, amount);
 		itemName = equipmentElement.GetModifiedItemName()?.ToString() ?? resolution.MatchedName ?? resolution.Item.Name?.ToString() ?? resolution.MatchedStringId;
 		return amount;

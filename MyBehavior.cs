@@ -217,6 +217,8 @@ public class MyBehavior : CampaignBehaviorBase
 
 		public int DialogueSessionId = -1;
 
+		public string MemorySessionKey = "";
+
 		public bool IsAfef;
 
 		public bool IsLlmDialogue;
@@ -1422,6 +1424,8 @@ public class MyBehavior : CampaignBehaviorBase
 	private int _nativeConversationMemorySessionCounter;
 
 	private int _activeNativeConversationMemorySessionId = -1;
+
+	private string _memoryRuntimeSessionKey = Guid.NewGuid().ToString("N");
 
 	private Dictionary<string, MemoryOverviewState> _memoryOverviewStates = new Dictionary<string, MemoryOverviewState>(StringComparer.OrdinalIgnoreCase);
 
@@ -2824,6 +2828,25 @@ public class MyBehavior : CampaignBehaviorBase
 			return -1;
 		}
 		return GetOrStartActiveNativeConversationMemorySessionId();
+	}
+
+	private string BuildCurrentMemorySessionKey(int sceneSessionId, int dialogueSessionId)
+	{
+		string runtimeKey = (_memoryRuntimeSessionKey ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(runtimeKey))
+		{
+			runtimeKey = Guid.NewGuid().ToString("N");
+			_memoryRuntimeSessionKey = runtimeKey;
+		}
+		if (sceneSessionId >= 0)
+		{
+			return runtimeKey + ":scene:" + sceneSessionId;
+		}
+		if (dialogueSessionId >= 0)
+		{
+			return runtimeKey + ":dialogue:" + dialogueSessionId;
+		}
+		return runtimeKey + ":loose";
 	}
 
 	private void OnMemoryConversationEnded(IEnumerable<CharacterObject> characters)
@@ -10575,6 +10598,8 @@ public class MyBehavior : CampaignBehaviorBase
 			return "战后余波";
 		case "tournament_finished":
 			return "竞技大会胜出事件";
+		case "duel_result":
+			return "正式决斗结果";
 		case "marriage":
 			return "联姻事件";
 		case "clan_changed_kingdom":
@@ -17396,6 +17421,7 @@ public class MyBehavior : CampaignBehaviorBase
 				x.Scene = (x.Scene ?? "").Trim();
 				x.Speaker = (x.Speaker ?? "").Trim();
 				x.Text = (x.Text ?? "").Trim();
+				x.MemorySessionKey = (x.MemorySessionKey ?? "").Trim();
 				if (x.SceneSessionId < -1)
 				{
 					x.SceneSessionId = -1;
@@ -17998,6 +18024,7 @@ public class MyBehavior : CampaignBehaviorBase
 			Text = text2,
 			SceneSessionId = sceneSessionId,
 			DialogueSessionId = dialogueSessionId,
+			MemorySessionKey = BuildCurrentMemorySessionKey(sceneSessionId, dialogueSessionId),
 			IsAfef = isAfef,
 			IsLlmDialogue = isLlmDialogue && !isAfef
 		};
@@ -20166,6 +20193,60 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			return "";
 		}
+	}
+
+	public static void RecordDuelResultForExternal(Hero targetHero, bool playerWon, string duelContext = null)
+	{
+		try
+		{
+			MyBehavior myBehavior = Instance ?? Campaign.Current?.GetCampaignBehavior<MyBehavior>();
+			myBehavior?.RecordDuelResult(targetHero, playerWon, duelContext);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("NpcAction", "[ERROR] RecordDuelResultForExternal: " + ex.Message);
+		}
+	}
+
+	private void RecordDuelResult(Hero targetHero, bool playerWon, string duelContext)
+	{
+		if (!ShouldTrackNpcActionHero(targetHero, allowNonLordHero: true) || targetHero == Hero.MainHero)
+		{
+			return;
+		}
+		Hero mainHero = Hero.MainHero;
+		bool targetWon = !playerWon;
+		string playerName = GetHeroDisplayName(mainHero);
+		string text = targetWon ? ("你在一场正式决斗中击败了" + playerName + "。") : ("你在一场正式决斗中败给了" + playerName + "。");
+		NpcActionFacts npcActionFacts = CreateNpcActionFacts("duel_result", targetHero);
+		ApplyTargetFacts(npcActionFacts, mainHero);
+		npcActionFacts.Won = targetWon;
+		npcActionFacts.LocationText = BuildDuelResultLocationText(duelContext);
+		string stableKey = "duel_result:" + GetHeroId(targetHero) + ":" + GetHeroId(mainHero) + ":" + GetCurrentGameDayIndexSafe() + ":" + (targetWon ? "npc_win" : "npc_loss");
+		RecordNpcMajorAction(targetHero, text, stableKey, npcActionFacts, allowNonLordHero: true);
+		RecordNpcRecentAction(targetHero, text, stableKey, dedupeAcrossWindow: true, facts: npcActionFacts, allowNonLordHero: true);
+		Logger.Log("NpcAction", "Recorded duel result action. target=" + (targetHero.StringId ?? "") + " playerWon=" + playerWon);
+	}
+
+	private static string BuildDuelResultLocationText(string duelContext)
+	{
+		string text = (Settlement.CurrentSettlement?.Name?.ToString() ?? "").Trim();
+		if (!string.IsNullOrWhiteSpace(text))
+		{
+			return text;
+		}
+		string text2 = (duelContext ?? "").Trim().ToLowerInvariant();
+		switch (text2)
+		{
+		case "arena":
+			return "竞技场";
+		case "wilderness":
+			return "野外决斗现场";
+		case "meeting":
+			return "会面现场";
+		}
+		string text3 = (Mission.Current?.SceneName ?? "").Trim();
+		return string.IsNullOrWhiteSpace(text3) || string.Equals(text3, "Unknown", StringComparison.OrdinalIgnoreCase) ? "决斗现场" : text3;
 	}
 
 	public static string BuildNpcRecentActionsRuntimeInstructionForExternal(Hero hero)
@@ -22861,6 +22942,7 @@ public class MyBehavior : CampaignBehaviorBase
 		int currentDay = GetCurrentGameDayIndexSafe();
 		int currentSceneSessionId = includeCurrentActiveSceneSession ? -1 : GetCurrentSceneSessionIdForDailyMemorySuppression();
 		int currentDialogueSessionId = GetCurrentNativeConversationMemorySessionIdForSuppression();
+		string currentMemorySessionKey = includeCurrentActiveSceneSession ? "" : BuildCurrentMemorySessionKey(currentSceneSessionId, currentDialogueSessionId);
 		string targetName = string.IsNullOrWhiteSpace(memoryName) ? "NPC" : memoryName.Trim();
 		foreach (DailyMemoryDraft draft in drafts.Where((DailyMemoryDraft x) => x != null).OrderBy((DailyMemoryDraft x) => x.GameDayIndex))
 		{
@@ -22875,7 +22957,7 @@ public class MyBehavior : CampaignBehaviorBase
 				{
 					continue;
 				}
-				if (isToday && IsCurrentActiveMemorySessionLine(line, currentSceneSessionId, currentDialogueSessionId))
+				if (isToday && IsCurrentActiveMemorySessionLine(line, currentMemorySessionKey))
 				{
 					continue;
 				}
@@ -23035,17 +23117,19 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static bool IsCurrentActiveMemorySessionLine(DailyMemoryLine line, int currentSceneSessionId, int currentDialogueSessionId)
+	private static bool IsCurrentActiveMemorySessionLine(DailyMemoryLine line, string currentMemorySessionKey)
 	{
 		if (line == null)
 		{
 			return false;
 		}
-		if (currentSceneSessionId >= 0 && line.SceneSessionId == currentSceneSessionId)
+		string lineSessionKey = (line.MemorySessionKey ?? "").Trim();
+		string activeSessionKey = (currentMemorySessionKey ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(lineSessionKey) || string.IsNullOrWhiteSpace(activeSessionKey))
 		{
-			return true;
+			return false;
 		}
-		return currentDialogueSessionId >= 0 && line.DialogueSessionId == currentDialogueSessionId;
+		return string.Equals(lineSessionKey, activeSessionKey, StringComparison.OrdinalIgnoreCase);
 	}
 
 	private string BuildMemoryOverviewContext(Hero hero)
@@ -38058,6 +38142,7 @@ public class MyBehavior : CampaignBehaviorBase
 				Text = text,
 				SceneSessionId = -1,
 				DialogueSessionId = -1,
+				MemorySessionKey = "dev:" + Guid.NewGuid().ToString("N"),
 				IsAfef = isAfef,
 				IsLlmDialogue = !isAfef
 			});
@@ -38276,6 +38361,7 @@ public class MyBehavior : CampaignBehaviorBase
 				Text = line.Text ?? "",
 				SceneSessionId = line.SceneSessionId,
 				DialogueSessionId = line.DialogueSessionId,
+				MemorySessionKey = line.MemorySessionKey ?? "",
 				IsAfef = line.IsAfef,
 				IsLlmDialogue = line.IsLlmDialogue
 			});
@@ -38450,6 +38536,7 @@ public class MyBehavior : CampaignBehaviorBase
 			line.Scene = (line.Scene ?? "").Trim();
 			line.Speaker = (line.Speaker ?? "").Trim();
 			line.Text = NormalizeDevCompressedMemoryMultilineInput(line.Text);
+			line.MemorySessionKey = (line.MemorySessionKey ?? "").Trim();
 			if (line.IsAfef)
 			{
 				line.IsLlmDialogue = false;

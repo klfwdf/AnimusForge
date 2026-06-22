@@ -2295,22 +2295,28 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 	{
 		try
 		{
+			CampaignVec2 position = courier?.Position ?? MobileParty.MainParty?.Position ?? CampaignVec2.Invalid;
+			List<Settlement> candidates = Settlement.All?
+				.Where(x => IsCourierSafeSettlementCandidate(x, courier))
+				.ToList() ?? new List<Settlement>();
+			if (preferPort && candidates.Any(x => x.HasPort))
+			{
+				candidates = candidates.Where(x => x.HasPort).ToList();
+			}
+			List<Settlement> friendlyCandidates = candidates
+				.Where(x => IsCourierFriendlySafeSettlementCandidate(x, courier))
+				.ToList();
 			if (!string.IsNullOrWhiteSpace(session.SafeSettlementId))
 			{
 				Settlement existing = Settlement.Find(session.SafeSettlementId);
-				if (existing != null && (!preferPort || existing.HasPort))
+				if (existing != null && candidates.Contains(existing) && (friendlyCandidates.Count == 0 || IsCourierFriendlySafeSettlementCandidate(existing, courier)))
 				{
 					return existing;
 				}
+				session.SafeSettlementId = "";
 			}
-			CampaignVec2 position = courier?.Position ?? MobileParty.MainParty?.Position ?? CampaignVec2.Invalid;
-			IEnumerable<Settlement> candidates = Settlement.All?
-				.Where(x => x != null && x.IsFortification && !x.IsHideout);
-			if (preferPort && candidates?.Any(x => x.HasPort) == true)
-			{
-				candidates = candidates.Where(x => x.HasPort);
-			}
-			Settlement settlement = candidates?
+			IEnumerable<Settlement> primaryCandidates = friendlyCandidates.Count > 0 ? friendlyCandidates : candidates;
+			Settlement settlement = primaryCandidates
 				.OrderBy(x => GetSafeSettlementDistanceSquared(x, position, preferPort))
 				.FirstOrDefault();
 			session.SafeSettlementId = settlement?.StringId ?? "";
@@ -2319,6 +2325,60 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		catch
 		{
 			return null;
+		}
+	}
+
+	private static bool IsCourierFriendlySafeSettlementCandidate(Settlement settlement, MobileParty courier)
+	{
+		try
+		{
+			if (!IsCourierSafeSettlementCandidate(settlement, courier))
+			{
+				return false;
+			}
+			Clan playerClan = Clan.PlayerClan ?? Hero.MainHero?.Clan;
+			Clan courierClan = courier?.ActualClan ?? playerClan;
+			IFaction courierFaction = courier?.MapFaction ?? courierClan ?? playerClan ?? Hero.MainHero?.MapFaction;
+			if (playerClan != null && settlement.OwnerClan == playerClan)
+			{
+				return true;
+			}
+			if (courierClan != null && settlement.OwnerClan == courierClan)
+			{
+				return true;
+			}
+			if (courierFaction != null && settlement.MapFaction == courierFaction)
+			{
+				return true;
+			}
+			Kingdom courierKingdom = courierFaction as Kingdom ?? courierClan?.Kingdom ?? playerClan?.Kingdom ?? Hero.MainHero?.Clan?.Kingdom;
+			return courierKingdom != null && (settlement.MapFaction == courierKingdom || settlement.OwnerClan?.Kingdom == courierKingdom);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static bool IsCourierSafeSettlementCandidate(Settlement settlement, MobileParty courier)
+	{
+		try
+		{
+			if (settlement == null || !settlement.IsFortification || settlement.IsHideout || settlement.IsUnderSiege)
+			{
+				return false;
+			}
+			IFaction courierFaction = courier?.MapFaction ?? courier?.ActualClan ?? Clan.PlayerClan ?? Hero.MainHero?.MapFaction;
+			IFaction settlementFaction = settlement.MapFaction ?? settlement.OwnerClan;
+			if (courierFaction == null || settlementFaction == null || courierFaction == settlementFaction)
+			{
+				return true;
+			}
+			return !FactionManager.IsAtWarAgainstFaction(courierFaction, settlementFaction);
+		}
+		catch
+		{
+			return false;
 		}
 	}
 
@@ -3489,6 +3549,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			{
 				return;
 			}
+			EnsureCourierNonSettlementCombatState(courier, reason);
 			if (courier.Ai != null)
 			{
 				if (!courier.Ai.DoNotMakeNewDecisions)
@@ -3505,6 +3566,53 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		{
 			Log("ai override failed party=" + (courier?.StringId ?? "") + " reason=" + (reason ?? "") + " error=" + ex.Message);
 		}
+	}
+
+	private static void EnsureCourierNonSettlementCombatState(MobileParty courier, string reason)
+	{
+		try
+		{
+			if (courier == null)
+			{
+				return;
+			}
+			bool forbiddenBehavior = IsCourierForbiddenSettlementCombatBehavior(courier.DefaultBehavior)
+				|| IsCourierForbiddenSettlementCombatBehavior(courier.ShortTermBehavior);
+			bool inSiege = courier.BesiegerCamp != null || courier.SiegeEvent != null || courier.BesiegedSettlement != null;
+			if (!forbiddenBehavior && !inSiege)
+			{
+				return;
+			}
+			string before = DescribeMobileParty(courier);
+			if (courier.BesiegerCamp != null)
+			{
+				try
+				{
+					courier.BesiegerCamp = null;
+				}
+				catch (Exception ex)
+				{
+					Log("courier siege detach failed party=" + (courier.StringId ?? "") + " reason=" + (reason ?? "") + " error=" + ex.Message);
+				}
+			}
+			if (forbiddenBehavior || courier.BesiegerCamp != null || courier.SiegeEvent != null || courier.BesiegedSettlement != null)
+			{
+				courier.SetMoveModeHold();
+			}
+			LogCourierStatusVerbose("settlement_combat_suppressed:" + (courier.StringId ?? ""), "settlement_combat_suppressed party=" + (courier.StringId ?? "") + " reason=" + (reason ?? "") + " before=" + before + " after=" + DescribeMobileParty(courier), 5.0);
+		}
+		catch (Exception ex)
+		{
+			Log("courier settlement combat guard failed party=" + (courier?.StringId ?? "") + " reason=" + (reason ?? "") + " error=" + ex.Message);
+		}
+	}
+
+	private static bool IsCourierForbiddenSettlementCombatBehavior(AiBehavior behavior)
+	{
+		return behavior == AiBehavior.BesiegeSettlement
+			|| behavior == AiBehavior.AssaultSettlement
+			|| behavior == AiBehavior.RaidSettlement
+			|| behavior == AiBehavior.DefendSettlement;
 	}
 
 	private static void ApplyCourierMapBannerVisual(MobileParty courier, string reason)

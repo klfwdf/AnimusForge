@@ -53,7 +53,7 @@ Both DLL files inside packages must still be named `AnimusForge.dll`.
 | `IAgentOriginBase` implementation | Does not require `IsInSameArmyAsPlayer` in the same interface shape | Requires/uses `IsInSameArmyAsPlayer` | Custom prisoner origin exposes it only under `BANNERLORD_1_4_OR_GREATER`. |
 | `MissionCameraFadeView` availability | Meeting startup delay can use the mission fade behavior | The old fade view path is unavailable | `MeetingBattleLockMissionBehavior` skips that startup loading delay on 1.4. |
 | Gauntlet mouse release handling | Widget override `OnMouseReleased()` is used | Release is handled by polling `Input.IsKeyReleased(InputKey.LeftMouseButton)` in late update | `DevMultilineEditableTextWidget.cs` uses separate paths. |
-| Companion party roles | Older party role API shape may differ | `MobileParty.GetHeroPartyRoles(Hero)` is available for role detection | `ShoutBehavior.cs` guards the 1.4 role-list path. |
+| Companion party roles | Older party role API shape may differ; direct `GetHeroPartyRoles(Hero)` calls can MissingMethod on 1.3 runtimes | `MobileParty.GetHeroPartyRoles(Hero)` is available for multi-role detection | `ShoutBehavior.cs` uses shared `GetRoleHolder(PartyRole)` checks for prompt labels. |
 
 ## Known Runtime Behavior Differences
 

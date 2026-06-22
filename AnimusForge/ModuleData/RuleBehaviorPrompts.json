@@ -928,6 +928,7 @@
             }
         },
         {
+<<<<<<< Updated upstream
             "Id": "kingdom_vassalage",
             "IsEnabled": true,
             "Group": "politics",
@@ -1000,12 +1001,33 @@
                 "不保留独立王国，全部家族加入玩家王国。",
                 "接受国家吞并，结束你的独立统治。"
             ]
+=======
+            "Id": "scene_auto_group_relay",
+            "IsEnabled": true,
+            "Group": "scene",
+            "Priority": 60,
+            "TopicNumber": 20,
+            "TopicLabel": "Scene auto group relay postprocess",
+            "Code": "SCENE_RELAY",
+            "Instruction": "【多人接力后处理规则】此规则只供后处理标签表使用，不进入主链路正文。正文NPC不得输出接力标签。",
+            "PostprocessRules": [
+                {
+                    "Tag": "[RELAY:接力编号]",
+                    "Description": "你必须输出在场人物列表中你认为下一个最适合发言的NPC的接力编号；如果判断不了谁最合适就随便选一个，绝不可以不选，如果最新消息中有人表示不想聊了，或者有事要走了，那么不要输出此标签"
+                }
+            ],
+            "TriggerKeywords": []
+>>>>>>> Stashed changes
         }
     ],
     "DuelStake": {
         "IsEnabled": true,
         "PlayerWinInstruction": "【决斗赌注与欠款】：你在正式决斗中输给了玩家，你现在应当主动向玩家交付你承诺的赌注。",
         "NpcWinInstruction": "【决斗赌注与欠款】：你在正式决斗中打败了玩家，你可以向玩家索要赌注。"
+<<<<<<< Updated upstream
     },
     "Rules": []
+=======
+    }
+>>>>>>> Stashed changes
 }

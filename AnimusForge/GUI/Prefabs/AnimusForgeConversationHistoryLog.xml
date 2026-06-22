@@ -21,7 +21,7 @@
                       <Children>
                         <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" LayoutImp.LayoutMethod="HorizontalLeftToRight">
                           <Children>
-                            <ScrollablePanel WidthSizePolicy="CoverChildren" HeightSizePolicy="StretchToParent" AutoHideScrollBars="true" ClipRect="ItemListRect" InnerPanel="ItemListRect\ItemListPanel" MouseScrollAxis="Vertical" VerticalScrollbar="..\ItemListScrollbar2\Scrollbar">
+                            <AnimusForgeConversationHistoryAutoScrollPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="StretchToParent" AutoHideScrollBars="true" ClipRect="ItemListRect" InnerPanel="ItemListRect\ItemListPanel" MouseScrollAxis="Vertical" VerticalScrollbar="..\ItemListScrollbar2\Scrollbar">
                               <Children>
                                 <Widget Id="ItemListRect" WidthSizePolicy="CoverChildren" HeightSizePolicy="StretchToParent" ClipContents="true">
                                   <Children>
@@ -38,7 +38,7 @@
                                   </Children>
                                 </Widget>
                               </Children>
-                            </ScrollablePanel>
+                            </AnimusForgeConversationHistoryAutoScrollPanel>
                             <Standard.VerticalScrollbar Id="ItemListScrollbar2" HeightSizePolicy="StretchToParent" HorizontalAlignment="Right" VerticalAlignment="Bottom" />
                           </Children>
                         </ListPanel>

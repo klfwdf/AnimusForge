@@ -3534,6 +3534,10 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		{
 			return null;
 		}
+		if (CourierDeliveryBehavior.IsCourierParty(party))
+		{
+			return null;
+		}
 		if (!allowNonLeaderForRelease && party.LeaderHero != hero)
 		{
 			return null;
@@ -3552,6 +3556,11 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		if (!IsPartyUsable(party))
 		{
 			reason = "party_invalid";
+			return false;
+		}
+		if (CourierDeliveryBehavior.IsCourierParty(party))
+		{
+			reason = "courier_party";
 			return false;
 		}
 		if (party.LeaderHero != hero)
