@@ -1322,12 +1322,43 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		}
 		session.ReplyPostprocessedText = text;
 		session.PostprocessConsumed = true;
-		if (!string.IsNullOrWhiteSpace(session.ReplyText))
-		{
-			MyBehavior.AppendExternalDialogueHistory(recipient, null, "【回信】" + StripCourierActionTags(session.ReplyText), "[AFEF NPC行为补充] " + (recipient.Name?.ToString() ?? "NPC") + "已通过信使写下回信，信使正在把回信带给玩家。");
-			PlayerNotorietyBehavior.NoteCourierReplyForExternal(recipient);
-		}
+		PersistCourierReplyToHistories(session, recipient, text);
 		Log("postprocess committed at recipient session=" + session.Id + " remainingLen=" + (text ?? "").Length);
+	}
+
+	private void PersistCourierReplyToHistories(CourierSession session, Hero recipient, string processedReplyText)
+	{
+		try
+		{
+			if (session == null || recipient == null)
+			{
+				return;
+			}
+			string reply = StripCourierActionTags(processedReplyText);
+			if (string.IsNullOrWhiteSpace(reply))
+			{
+				reply = StripCourierActionTags(session.ReplyText);
+			}
+			reply = (reply ?? "").Trim();
+			if (string.IsNullOrWhiteSpace(reply))
+			{
+				return;
+			}
+			string historyLine = "【回信】" + reply;
+			string npcName = (recipient.Name?.ToString() ?? "NPC").Trim();
+			if (string.IsNullOrWhiteSpace(npcName))
+			{
+				npcName = "NPC";
+			}
+			MyBehavior.AppendExternalDialogueHistory(recipient, null, historyLine, "[AFEF NPC行为补充] " + npcName + "已通过信使写下回信，信使正在把回信带给玩家。");
+			ShoutBehavior.RecordNativeConversationNpcLineForExternal(recipient, recipient.CharacterObject, npcName, historyLine);
+			PlayerNotorietyBehavior.NoteCourierReplyForExternal(recipient);
+			Log("reply history persisted session=" + session.Id + " recipient=" + SafeHeroId(recipient));
+		}
+		catch (Exception ex)
+		{
+			Log("persist reply history failed session=" + (session?.Id ?? "") + " error=" + ex.Message);
+		}
 	}
 
 	private void ShowCourierReplyWaitPopupAndPause(CourierSession session, Hero recipient)
@@ -1514,6 +1545,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			}
 			session.ReplyPostprocessedText = text;
 			session.PostprocessConsumed = true;
+			PersistCourierReplyToHistories(session, recipient, text);
 			Log("postprocess consumed session=" + session.Id + " remainingLen=" + (text ?? "").Length);
 		}
 		ReturnCourierContentsToPlayer(session, courier);
@@ -2752,6 +2784,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			+ "请只输出你要写在回信中的正文，不要写旁白、动作描写、系统说明或标签解释。\n"
 			+ "如果你认为没有必要回信，可以完全空回复。\n"
 			+ "如果你在回信中明确同意给玩家物品、部队、俘虏或固定资产，仍然按已注入的后处理规则在正文语义中表达，标签由后处理阶段生成。";
+		system = MyBehavior.AppendPlayerCustomPromptRuleToSystemPromptForExternal(system);
 		StringBuilder user = new StringBuilder();
 		user.AppendLine("【信件内容】");
 		user.AppendLine(session.LetterText ?? "");

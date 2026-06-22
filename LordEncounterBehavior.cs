@@ -4778,6 +4778,233 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		}
 	}
 
+	internal static bool TryExecuteNpcSurrenderFromNativeConversation(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, string reason)
+	{
+		return TryExecuteNpcSurrenderFromFreeConversation(targetHero, targetCharacter, targetAgentIndex, reason);
+	}
+
+	internal static bool TryExecuteNpcSurrenderFromDirectDialog(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, string reason)
+	{
+		return TryExecuteNpcSurrenderFromFreeConversation(targetHero, targetCharacter, targetAgentIndex, reason);
+	}
+
+	internal static bool TryExecuteNpcSurrenderFromFreeConversation(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, string reason)
+	{
+		string targetId = targetHero?.StringId ?? targetCharacter?.StringId ?? "unknown";
+		try
+		{
+			if (!TryGetNpcSurrenderEncounterParty(targetHero, targetCharacter, out var encounterParty, out var blockedReason))
+			{
+				Logger.Log("NpcSurrender", "Ignored conversation/dialog NPC surrender tag. Target=" + targetId + " agentIndex=" + targetAgentIndex + " reason=" + (blockedReason ?? "unknown") + " source=" + (reason ?? "N/A"));
+				return false;
+			}
+			if (PlayerEncounter.EnemySurrender)
+			{
+				Logger.Log("NpcSurrender", "Conversation/dialog NPC surrender already applied. Target=" + targetId + " party=" + GetPartyLogName(encounterParty) + " source=" + (reason ?? "N/A"));
+				return true;
+			}
+			try
+			{
+				Campaign.Current?.ConversationManager?.EndConversation();
+			}
+			catch
+			{
+			}
+			try
+			{
+				SuspendEncounterRedirectDuringResultResolution(reason ?? "native_conversation_npc_surrender");
+			}
+			catch
+			{
+			}
+			try
+			{
+				LordEncounterRedirectGuard.SuppressForSeconds(12f);
+			}
+			catch
+			{
+			}
+			try
+			{
+				DisableCustomEncounterMenuForCurrentEncounter(reason ?? "native_conversation_npc_surrender");
+			}
+			catch
+			{
+			}
+			try
+			{
+				PlayerEncounter.LeaveEncounter = false;
+				PlayerEncounter.Current.IsPlayerWaiting = false;
+			}
+			catch
+			{
+			}
+			MapEvent mapEvent = EnsureNpcSurrenderEncounterBattle(encounterParty, reason ?? "native_conversation_npc_surrender");
+			if (mapEvent == null || PlayerEncounterCompat.GetBattleSafe() == null)
+			{
+				Logger.Log("NpcSurrender", "Conversation/dialog NPC surrender failed because encounter battle is unavailable. Target=" + targetId + " party=" + GetPartyLogName(encounterParty) + " source=" + (reason ?? "N/A"));
+				return false;
+			}
+			PlayerEncounter.EnemySurrender = true;
+			try
+			{
+				PlayerEncounter.Update();
+			}
+			catch (Exception ex)
+			{
+				Logger.Log("NpcSurrender", "PlayerEncounter.Update after NPC surrender failed: " + ex.Message);
+			}
+			try
+			{
+				AnimusForgeQuickInfo.Show("对方已投降，正在进入俘虏与战利品结算。", targetHero?.CharacterObject ?? targetCharacter);
+			}
+			catch
+			{
+			}
+			Logger.Log("NpcSurrender", "Executed conversation/dialog NPC surrender. Target=" + targetId + " party=" + GetPartyLogName(encounterParty) + " reason=" + (reason ?? "N/A"));
+			return true;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("NpcSurrender", "Execute conversation/dialog NPC surrender failed. Target=" + targetId + " source=" + (reason ?? "N/A") + " error=" + ex.Message);
+			return false;
+		}
+	}
+
+	private static bool TryGetNpcSurrenderEncounterParty(Hero targetHero, CharacterObject targetCharacter, out PartyBase encounterParty, out string blockedReason)
+	{
+		encounterParty = null;
+		blockedReason = null;
+		try
+		{
+			if (PlayerEncounter.Current == null)
+			{
+				blockedReason = "no_player_encounter";
+				return false;
+			}
+			try
+			{
+				if (PlayerEncounter.PlayerSurrender)
+				{
+					blockedReason = "player_surrender_pending";
+					return false;
+				}
+			}
+			catch
+			{
+			}
+			encounterParty = PlayerEncounterCompat.GetEncounteredPartySafe();
+			if (encounterParty == null)
+			{
+				try
+				{
+					encounterParty = PlayerEncounter.EncounteredParty;
+				}
+				catch
+				{
+				}
+			}
+			if (encounterParty == null)
+			{
+				try
+				{
+					encounterParty = MobileParty.ConversationParty?.Party;
+				}
+				catch
+				{
+				}
+			}
+			if (encounterParty == null)
+			{
+				try
+				{
+					encounterParty = targetHero?.PartyBelongedTo?.Party ?? targetCharacter?.HeroObject?.PartyBelongedTo?.Party;
+				}
+				catch
+				{
+				}
+			}
+			if (encounterParty == null)
+			{
+				blockedReason = "no_encounter_party";
+				return false;
+			}
+			if (PartyBase.MainParty == null || encounterParty == PartyBase.MainParty || encounterParty.MobileParty == MobileParty.MainParty)
+			{
+				blockedReason = "main_party_or_missing_main_party";
+				return false;
+			}
+			return true;
+		}
+		catch (Exception ex)
+		{
+			blockedReason = "exception:" + ex.Message;
+			return false;
+		}
+	}
+
+	private static MapEvent EnsureNpcSurrenderEncounterBattle(PartyBase encounterParty, string reason)
+	{
+		try
+		{
+			MapEvent mapEvent = PlayerEncounterCompat.GetBattleSafe() ?? TryGetCurrentEncounterBattle();
+			if (PlayerEncounterCompat.GetBattleSafe() != null)
+			{
+				return mapEvent;
+			}
+			if (PlayerEncounter.Current == null)
+			{
+				Logger.Log("NpcSurrender", "Cannot prepare NPC surrender battle because PlayerEncounter.Current is null. Reason=" + (reason ?? "N/A"));
+				return null;
+			}
+			Logger.Log("NpcSurrender", "Preparing encounter battle for NPC surrender via PlayerEncounter.StartBattle(). Party=" + GetPartyLogName(encounterParty) + " reason=" + (reason ?? "N/A"));
+			try
+			{
+				mapEvent = PlayerEncounter.StartBattle();
+			}
+			catch (Exception ex)
+			{
+				Logger.Log("NpcSurrender", "PlayerEncounter.StartBattle for NPC surrender failed: " + ex.Message);
+				mapEvent = null;
+			}
+			MapEvent playerEncounterBattle = PlayerEncounterCompat.GetBattleSafe();
+			if (playerEncounterBattle != null)
+			{
+				return playerEncounterBattle;
+			}
+			if (mapEvent == null && encounterParty != null && PartyBase.MainParty != null)
+			{
+				try
+				{
+					Logger.Log("NpcSurrender", "Fallback battle prep via StartBattleAction.Apply for NPC surrender. Party=" + GetPartyLogName(encounterParty));
+					StartBattleAction.Apply(PartyBase.MainParty, encounterParty);
+				}
+				catch (Exception ex)
+				{
+					Logger.Log("NpcSurrender", "StartBattleAction fallback for NPC surrender failed: " + ex.Message);
+				}
+			}
+			return PlayerEncounterCompat.GetBattleSafe();
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("NpcSurrender", "Ensure NPC surrender encounter battle failed: " + ex.Message);
+			return null;
+		}
+	}
+
+	private static string GetPartyLogName(PartyBase party)
+	{
+		try
+		{
+			return party?.Name?.ToString() ?? "unknown";
+		}
+		catch
+		{
+			return "unknown";
+		}
+	}
+
 	internal static bool TryProcessMeetingTauntAction(Hero target, ref string content, out bool escalatedToBattle)
 	{
 		escalatedToBattle = false;

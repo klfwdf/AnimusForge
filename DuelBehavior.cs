@@ -3342,6 +3342,13 @@ public class DuelBehavior : CampaignBehaviorBase
 				catch
 				{
 				}
+				try
+				{
+					ShoutBehavior.RecordNativeConversationNpcLineForExternal(targetHero, targetHero?.CharacterObject, text3, text);
+				}
+				catch
+				{
+				}
 			}
 			try
 			{

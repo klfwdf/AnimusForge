@@ -9830,6 +9830,11 @@ public class MyBehavior : CampaignBehaviorBase
 		return JoinPromptSections(BuildPlayerCustomPromptRuleBlock(), systemPrompt);
 	}
 
+	public static string AppendPlayerCustomPromptRuleToSystemPromptForExternal(string systemPrompt)
+	{
+		return AppendPlayerCustomPromptRuleToSystemPrompt(systemPrompt);
+	}
+
 	private const string SceneHistorySessionMarkerPrefix = "[AF_SCENE_SESSION:";
 
 	private static string TagSceneSessionHistoryLine(string line, int sceneSessionId)

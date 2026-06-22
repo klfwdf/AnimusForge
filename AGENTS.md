@@ -102,6 +102,25 @@
 
 如果用户说“调用场景伤害案例”“按伤害上下文防误触检查”“兼容攻城/竞技场/藏身点/原版战斗”“回归原版伤害逻辑”，默认就是指 `docs/scene_damage_context_guard_case.md`。
 
+## 信使 / 自由对话 / 场景喊话三渠道对齐案例
+
+当任务涉及以下内容时，先阅读并套用 `docs/free_conversation_scene_shout_alignment.md`：
+
+- 修改信使、自由对话、场景喊话任一 LLM 交流链路。
+- 修改前处理、主链路 prompt、后处理标签、动作执行入口、对话历史或每日记忆写入。
+- 处理“某一渠道知道/记录/触发了，但另外两个渠道不知道/没记录/没触发”的问题。
+- 修改信使回信、自由对话回复、场景喊话回复的历史写入、AFEF 事实写入或 NPC 可见输出。
+- 调整给予、展示、债务、交易、领地、部队、世界地图命令、英雄入队、决斗等机制在三渠道中的触发。
+
+该案例的核心经验：
+
+- 信使、自由对话、场景喊话必须共享同一套话题选择、规则资格、历史结构、记忆注入、后处理标签和执行入口。
+- 场景喊话当前是最完整实现；信使和自由对话应适配到这套结构，而不是各自发明请求体或历史格式。
+- 三渠道都必须写入并读取同一套 AnimusForge 记忆结构，NPC 发言用 assistant 语义，玩家发言用 user 语义，已发生事实必须用 AFEF。
+- 出现“信使知道但自由对话/场景喊话不知道”“自由对话能触发但其他渠道不能触发”“同一历史在三渠道格式不同”等现象，默认按三渠道不同步 bug 处理。
+
+如果用户说“对齐三渠道”“信使/自由对话/场景喊话要一致”“按三渠道对齐规则检查”，默认就是指 `docs/free_conversation_scene_shout_alignment.md`。
+
 ## Bannerlord 1.3 / 1.4.5 compatibility diff
 
 When a task touches Bannerlord API usage, campaign behaviors, mission behaviors, encounter flow, party/roster logic, settlement models, Gauntlet UI, Harmony patches, dual-version build scripts, deployment, or packaging, first read and apply:

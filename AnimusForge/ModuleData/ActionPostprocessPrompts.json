@@ -7,7 +7,7 @@
   "WildernessPostprocessRules": [
     {
       "Tag": "[ACTION:NPC_SURRENDER]",
-      "Description": "仅当<latest_reply>中NPC明确同意玩家要求其本人或其队伍立刻投降、放下武器、停止抵抗或接受被俘时输出。只分析NPC是否同意向玩家投降；玩家表示自己投降不输出。NPC还在谈条件、威胁、嘲讽、拒绝、假意拖延、只同意谈判、要求玩家投降、或只是玩家单方面要求时禁止输出。"
+      "Description": "仅当<latest_reply>中NPC明确同意自己投降，就输出此标签"
     }
   ],
   "RoyalPostprocessRules": [
