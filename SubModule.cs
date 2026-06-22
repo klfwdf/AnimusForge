@@ -386,6 +386,7 @@ public class SubModule : MBSubModuleBase
 			campaignGameStarter.AddBehavior(new DiplomacyBehavior());
 			campaignGameStarter.AddBehavior(new VanillaIssuePromptBehavior());
 			campaignGameStarter.AddBehavior(new WorldMapPartyCommandBehavior());
+			campaignGameStarter.AddBehavior(new NobleGatheringBehavior());
 			campaignGameStarter.AddBehavior(new VassalageBehavior());
 			campaignGameStarter.AddBehavior(new KingdomAnnexationBehavior());
 		}
@@ -489,6 +490,10 @@ public class SubModule : MBSubModuleBase
 			using (PerfProbe.Scope("SubModule.AnimusForgeTerminalBehavior.OnEngineTick"))
 			{
 				AnimusForgeTerminalBehavior.Instance?.OnEngineTick();
+			}
+			using (PerfProbe.Scope("SubModule.NobleGatheringBehavior.OnEngineTick"))
+			{
+				NobleGatheringBehavior.Instance?.OnEngineTick();
 			}
 			using (PerfProbe.Scope("SubModule.VassalageBehavior.OnEngineTick"))
 			{

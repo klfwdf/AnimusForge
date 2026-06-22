@@ -106,6 +106,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		public double ResultCommitDay = -1.0;
 		public double ResultDeadlineDay = -1.0;
 		public bool ResultLogged;
+		public string SourceId;
 	}
 
 	private sealed class PartyCommandEntry
@@ -114,6 +115,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		public string TargetType;
 		public string TargetId;
 		public int Days = 1;
+		public double HoldUntilDay = -1.0;
 		public string Mode;
 	}
 
@@ -191,6 +193,26 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 	public static string StripWorldMapOrderTags(string text)
 	{
 		return WorldMapOrderTagRegex.Replace(text ?? "", "").Trim();
+	}
+
+	private static string NormalizeExternalSourceId(string sourceId)
+	{
+		string text = (sourceId ?? "").Trim();
+		if (text.Length > 96)
+		{
+			text = text.Substring(0, 96);
+		}
+		return text;
+	}
+
+	private static bool ShouldSuppressCommandMessages(PartyCommandQueueState state)
+	{
+		return IsNobleGatheringSource(state?.SourceId);
+	}
+
+	private static bool IsNobleGatheringSource(string sourceId)
+	{
+		return NormalizeExternalSourceId(sourceId).StartsWith("noble_gathering:", StringComparison.OrdinalIgnoreCase);
 	}
 
 	public static string NormalizeWorldMapOrderTagsForExternal(string raw)
@@ -401,7 +423,86 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		}
 	}
 
+	public bool TryIssueGoToSettlementForExternal(Hero hero, Settlement settlement, int holdDays, string sourceId, out string message)
+	{
+		return TryIssueGoToSettlementUntilDayForExternal(hero, settlement, holdDays, -1.0, sourceId, out message);
+	}
+
+	public bool TryIssueGoToSettlementUntilDayForExternal(Hero hero, Settlement settlement, int holdDays, double holdUntilDay, string sourceId, out string message)
+	{
+		message = "";
+		string normalizedSource = NormalizeExternalSourceId(sourceId);
+		if (string.IsNullOrWhiteSpace(normalizedSource))
+		{
+			message = "大地图命令失败：缺少外部命令来源。";
+			return false;
+		}
+		if (hero == null || settlement == null)
+		{
+			message = "大地图命令失败：找不到有效的英雄或定居点。";
+			return false;
+		}
+		lock (_queueLock)
+		{
+			if (_queues.TryGetValue(hero.StringId ?? "", out PartyCommandQueueState existing) && existing != null)
+			{
+				string existingSource = NormalizeExternalSourceId(existing.SourceId);
+				if (!string.Equals(existingSource, normalizedSource, StringComparison.OrdinalIgnoreCase))
+				{
+					message = GetHeroName(hero) + "已有其它大地图命令，暂不能改派参加宴会。";
+					return false;
+				}
+			}
+		}
+		List<PartyCommandEntry> commands = new List<PartyCommandEntry>
+		{
+			new PartyCommandEntry
+			{
+				Kind = CommandKind.GoToSettlement.ToString(),
+				TargetType = "settlement",
+				TargetId = settlement.StringId,
+				Days = Math.Max(1, holdDays),
+				HoldUntilDay = holdUntilDay > 0.0 ? holdUntilDay : -1.0,
+				Mode = ""
+			}
+		};
+		bool ok = TryReplaceQueue(hero, commands, normalizedSource, out _, out message);
+		return ok;
+	}
+
+	public bool TryStopExternalCommandForExternal(Hero hero, string sourceId, out string message)
+	{
+		message = "";
+		string normalizedSource = NormalizeExternalSourceId(sourceId);
+		if (hero == null || string.IsNullOrWhiteSpace(hero.StringId) || string.IsNullOrWhiteSpace(normalizedSource))
+		{
+			message = "大地图命令停止失败：缺少英雄或命令来源。";
+			return false;
+		}
+		PartyCommandQueueState state = null;
+		lock (_queueLock)
+		{
+			_queues.TryGetValue(hero.StringId, out state);
+		}
+		if (state == null)
+		{
+			return true;
+		}
+		if (!string.Equals(NormalizeExternalSourceId(state.SourceId), normalizedSource, StringComparison.OrdinalIgnoreCase))
+		{
+			message = GetHeroName(hero) + "当前命令不属于该宴会来源，未停止。";
+			return false;
+		}
+		StopQueue(hero, normalizedSource + ":stop_external", out _);
+		return true;
+	}
+
 	private bool TryReplaceQueue(Hero hero, List<PartyCommandEntry> commands, out string fact, out string message)
+	{
+		return TryReplaceQueue(hero, commands, "", out fact, out message);
+	}
+
+	private bool TryReplaceQueue(Hero hero, List<PartyCommandEntry> commands, string sourceId, out string fact, out string message)
 	{
 		fact = "";
 		message = "";
@@ -429,7 +530,8 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			HeroId = hero.StringId,
 			Commands = safeCommands,
 			CurrentIndex = 0,
-			Stage = CommandStage.New.ToString()
+			Stage = CommandStage.New.ToString(),
+			SourceId = NormalizeExternalSourceId(sourceId)
 		};
 		lock (_queueLock)
 		{
@@ -862,7 +964,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 					TryCompleteCurrentAttackResult(state, CommandResultOutcome.Incomplete, BuildAttackTimeoutDetail(command, state), "timeout");
 					return;
 				}
-				LogFact(hero, BuildCommandTimeoutFact(hero, command));
+				LogFact(state, hero, BuildCommandTimeoutFact(hero, command));
 				AdvanceCommand(hero, party, state, "timeout");
 				return;
 			}
@@ -938,7 +1040,10 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			SynchronizeArmyObjectiveForCommand(party, command);
 			state.Stage = CommandStage.Traveling.ToString();
 			state.LastIssuedActionKey = "visit:" + settlement.StringId;
-			DisplayCommandMessage(GetHeroName(hero) + "开始前往" + GetSettlementName(settlement) + "，抵达后停留" + Math.Max(1, command.Days) + "天。", CommandMessageTone.Progress);
+			if (!ShouldSuppressCommandMessages(state))
+			{
+				DisplayCommandMessage(BuildGoToSettlementStartMessage(hero, settlement, command), CommandMessageTone.Progress);
+			}
 			Log("start go hero=" + hero.StringId + " settlement=" + settlement.StringId + " days=" + command.Days);
 			return;
 		}
@@ -1102,6 +1207,12 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			AdvanceCommand(hero, party, state, "settlement_missing");
 			return;
 		}
+		double holdUntilDay = GetCommandHoldUntilDay(command);
+		if (state.ArrivalDay < 0.0 && holdUntilDay > 0.0 && NowDay() >= holdUntilDay)
+		{
+			AdvanceCommand(hero, party, state, "go_hold_until_expired_before_arrival");
+			return;
+		}
 		if (state.ArrivalDay < 0.0 || !IsPartyAtSettlement(party, settlement, SettlementArrivalDistance))
 		{
 			string actionKey = "visit:" + settlement.StringId;
@@ -1125,11 +1236,16 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			state.ArrivalDay = NowDay();
 			state.TimeoutDay = -1.0;
 			state.Stage = CommandStage.Active.ToString();
-			LogFact(hero, GetHeroName(hero) + "已经抵达" + GetSettlementName(settlement) + "并开始停留。");
+			LogFact(state, hero, GetHeroName(hero) + "已经抵达" + GetSettlementName(settlement) + "并开始停留。");
 		}
-		if (state.ArrivalDay >= 0.0 && NowDay() - state.ArrivalDay >= Math.Max(1, command.Days))
+		if (state.ArrivalDay >= 0.0 && holdUntilDay > 0.0 && NowDay() >= holdUntilDay)
 		{
-			LogFact(hero, GetHeroName(hero) + "已经完成在" + GetSettlementName(settlement) + "停留" + Math.Max(1, command.Days) + "天的命令。");
+			LogFact(state, hero, GetHeroName(hero) + "已经完成在" + GetSettlementName(settlement) + "停留至指定期限的命令。");
+			AdvanceCommand(hero, party, state, "go_hold_until_done");
+		}
+		else if (state.ArrivalDay >= 0.0 && holdUntilDay <= 0.0 && NowDay() - state.ArrivalDay >= Math.Max(1, command.Days))
+		{
+			LogFact(state, hero, GetHeroName(hero) + "已经完成在" + GetSettlementName(settlement) + "停留" + Math.Max(1, command.Days) + "天的命令。");
 			AdvanceCommand(hero, party, state, "go_done");
 		}
 	}
@@ -2474,6 +2590,21 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		return actorName + "的大地图命令时限已到，已跳过当前命令。";
 	}
 
+	private static string BuildGoToSettlementStartMessage(Hero hero, Settlement settlement, PartyCommandEntry command)
+	{
+		double holdUntilDay = GetCommandHoldUntilDay(command);
+		if (holdUntilDay > 0.0)
+		{
+			return GetHeroName(hero) + "开始前往" + GetSettlementName(settlement) + "，抵达后停留至指定期限。";
+		}
+		return GetHeroName(hero) + "开始前往" + GetSettlementName(settlement) + "，抵达后停留" + Math.Max(1, command?.Days ?? 1) + "天。";
+	}
+
+	private static double GetCommandHoldUntilDay(PartyCommandEntry command)
+	{
+		return command != null && command.HoldUntilDay > 0.0 ? command.HoldUntilDay : -1.0;
+	}
+
 	private static bool TryKeepCommandAliveAfterTimeout(Hero hero, MobileParty party, PartyCommandQueueState state, PartyCommandEntry command, double now)
 	{
 		if (state == null || command == null)
@@ -2776,7 +2907,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		}
 		if (appendFact && hero != null)
 		{
-			LogFact(hero, GetHeroName(hero) + "的大地图命令队列已经结束（" + GetQueueEndReasonText(reason) + "），回归原版行动状态。");
+			LogFact(state, hero, GetHeroName(hero) + "的大地图命令队列已经结束（" + GetQueueEndReasonText(reason) + "），回归原版行动状态。");
 		}
 		Log("finish hero=" + (hero?.StringId ?? state?.HeroId ?? "") + " reason=" + reason);
 	}
@@ -3167,6 +3298,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			TargetType = NormalizeTargetType(command),
 			TargetId = command.TargetId,
 			Days = Math.Max(1, command.Days),
+			HoldUntilDay = command.HoldUntilDay > 0.0 ? command.HoldUntilDay : -1.0,
 			Mode = NormalizeAttackMode(command.Mode)
 		};
 	}
@@ -3248,11 +3380,13 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		{
 			state.Stage = CommandStage.New.ToString();
 		}
+		state.SourceId = NormalizeExternalSourceId(state.SourceId);
 		foreach (PartyCommandEntry command in state.Commands)
 		{
 			if (command != null)
 			{
 				command.Days = Math.Max(1, command.Days);
+				command.HoldUntilDay = command.HoldUntilDay > 0.0 ? command.HoldUntilDay : -1.0;
 				command.Mode = NormalizeAttackMode(command.Mode);
 				if (IsKind(command, CommandKind.AttackHero) && string.IsNullOrWhiteSpace(command.TargetType))
 				{
@@ -3704,7 +3838,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			}
 			string key = "preempt:" + phase + ":" + (command.Kind ?? "") + ":" + (command.TargetType ?? "") + ":" + (command.TargetId ?? "");
 			NotifyCommandStatus(state, key, GetHeroName(hero) + "放弃" + reason + "，改为执行新的大地图命令。", CommandMessageTone.Progress);
-			LogFact(hero, GetHeroName(hero) + "放弃" + reason + "，改为执行新的大地图命令。");
+			LogFact(state, hero, GetHeroName(hero) + "放弃" + reason + "，改为执行新的大地图命令。");
 			Log("preempt_activity hero=" + (hero?.StringId ?? "") + " party=" + (party.StringId ?? "") + " reason=" + reason + " command=" + (command.Kind ?? "") + ":" + (command.TargetType ?? "") + ":" + (command.TargetId ?? "") + " phase=" + (phase ?? "") + " " + DescribePartyAi(party));
 		}
 		catch (Exception ex)
@@ -4685,19 +4819,32 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		DisplayCommandMessage(cleanFact, InferCommandMessageTone(cleanFact));
 	}
 
+	private static void LogFact(PartyCommandQueueState state, Hero hero, string factText)
+	{
+		if (ShouldSuppressCommandMessages(state))
+		{
+			return;
+		}
+		LogFact(hero, factText);
+	}
+
 	private static void NotifyCommandStatus(PartyCommandQueueState state, string statusKey, string message, CommandMessageTone tone = CommandMessageTone.Progress)
 	{
 		if (state == null || string.IsNullOrWhiteSpace(statusKey) || string.IsNullOrWhiteSpace(message))
 		{
 			return;
 		}
-		if (string.Equals(state.LastStatusMessageKey, statusKey, StringComparison.OrdinalIgnoreCase))
-		{
-			return;
+			if (string.Equals(state.LastStatusMessageKey, statusKey, StringComparison.OrdinalIgnoreCase))
+			{
+				return;
+			}
+			state.LastStatusMessageKey = statusKey;
+			if (ShouldSuppressCommandMessages(state))
+			{
+				return;
+			}
+			DisplayCommandMessage(message, tone);
 		}
-		state.LastStatusMessageKey = statusKey;
-		DisplayCommandMessage(message, tone);
-	}
 
 	private static string BuildAttackTrackingStatusMessage(Hero actorHero, string targetName, string reason)
 	{

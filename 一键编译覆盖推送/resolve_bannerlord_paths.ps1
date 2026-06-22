@@ -11,6 +11,30 @@ function Get-FullPathSafe {
     return [System.IO.Path]::GetFullPath([Environment]::ExpandEnvironmentVariables($Path))
 }
 
+function Normalize-BannerlordRootPath {
+    param([string]$Path)
+
+    if ([string]::IsNullOrWhiteSpace($Path)) {
+        return ""
+    }
+
+    try {
+        $fullPath = Get-FullPathSafe -Path $Path
+    } catch {
+        return ""
+    }
+
+    $leaf = Split-Path -Leaf $fullPath
+    if ($leaf.Equals("Modules", [System.StringComparison]::OrdinalIgnoreCase)) {
+        $parent = Split-Path -Parent $fullPath
+        if (-not [string]::IsNullOrWhiteSpace($parent)) {
+            return $parent
+        }
+    }
+
+    return $fullPath
+}
+
 function Test-BannerlordRoot {
     param([string]$Path)
 
@@ -18,9 +42,8 @@ function Test-BannerlordRoot {
         return $false
     }
 
-    try {
-        $fullPath = Get-FullPathSafe -Path $Path
-    } catch {
+    $fullPath = Normalize-BannerlordRootPath -Path $Path
+    if ([string]::IsNullOrWhiteSpace($fullPath)) {
         return $false
     }
 
@@ -133,10 +156,11 @@ function Resolve-BannerlordRoot {
     param([string]$RequestedPath)
 
     if (Test-BannerlordRoot -Path $RequestedPath) {
-        return (Get-FullPathSafe -Path $RequestedPath)
+        return (Normalize-BannerlordRootPath -Path $RequestedPath)
     }
 
     $candidates = New-Object System.Collections.Generic.List[string]
+    Add-UniquePath -Paths $candidates -Path "E:\SteamLibrary\steamapps\common\Mount & Blade II Bannerlord"
     foreach ($library in Get-SteamLibraries) {
         Add-UniquePath -Paths $candidates -Path (Join-Path $library "steamapps\common\Mount & Blade II Bannerlord")
     }

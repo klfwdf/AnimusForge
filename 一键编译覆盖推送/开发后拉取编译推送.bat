@@ -352,16 +352,36 @@ if not "%ERR%"=="0" (
 exit /b 0
 
 :EnsureNoStagedChanges
+set "HAS_UNMERGED="
+for /f "delims=" %%U in ('git ls-files -u') do set "HAS_UNMERGED=1"
 git diff --cached --quiet
 set "STAGED_ERR=%ERRORLEVEL%"
-if "%STAGED_ERR%"=="1" (
-    echo [ERROR] There are already staged changes.
-    echo This script stages and commits automatically, so clear stale staged changes first:
-    echo   git restore --staged .
+if "%STAGED_ERR%"=="0" if not defined HAS_UNMERGED exit /b 0
+if not "%STAGED_ERR%"=="0" if not "%STAGED_ERR%"=="1" if not defined HAS_UNMERGED (
+    echo [ERROR] git diff --cached failed.
     pause
     exit /b 1
-) else if not "%STAGED_ERR%"=="0" (
-    echo [ERROR] git diff --cached failed.
+)
+echo [INFO] Existing staged or unmerged index state detected.
+echo [INFO] Clearing Git index only; working tree files are kept unchanged.
+if defined HAS_UNMERGED (
+    git reset -q
+) else (
+    git restore --staged .
+)
+set "CLEAR_INDEX_ERR=%ERRORLEVEL%"
+if not "%CLEAR_INDEX_ERR%"=="0" (
+    echo [ERROR] Failed to clear the Git index before auto-staging.
+    echo Working tree files were not intentionally changed by this step.
+    pause
+    exit /b 1
+)
+set "HAS_UNMERGED="
+for /f "delims=" %%U in ('git ls-files -u') do set "HAS_UNMERGED=1"
+if defined HAS_UNMERGED (
+    echo [ERROR] There are still unmerged paths after clearing the index.
+    echo Resolve the merge/conflict state first, then rerun this script.
+    git status --short
     pause
     exit /b 1
 )
