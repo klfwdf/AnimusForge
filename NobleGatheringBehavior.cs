@@ -1,18 +1,28 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Newtonsoft.Json;
+using SandBox;
+using SandBox.Objects;
+using SandBox.Objects.Usables;
 using SandBox.View.Map;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Actions;
+using TaleWorlds.CampaignSystem.AgentOrigins;
+using TaleWorlds.CampaignSystem.Encounters;
 using TaleWorlds.CampaignSystem.GameState;
 using TaleWorlds.CampaignSystem.Party;
+using TaleWorlds.CampaignSystem.Roster;
 using TaleWorlds.CampaignSystem.Settlements;
+using TaleWorlds.CampaignSystem.Settlements.Locations;
 using TaleWorlds.CampaignSystem.ViewModelCollection.Map.MapNotificationTypes;
 using TaleWorlds.Core;
+using TaleWorlds.Engine;
 using TaleWorlds.Library;
 using TaleWorlds.Localization;
 using TaleWorlds.MountAndBlade;
+using TaleWorlds.ObjectSystem;
 
 namespace AnimusForge;
 
@@ -128,14 +138,47 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 	private const string PlayerInvitationDeclined = "Declined";
 	private const string PlayerInvitationArrived = "Arrived";
 	private const string PlayerHostCooldownKey = "player";
+	private const string LordHallLocationId = "lordshall";
+	private const string TavernWenchSpawnTag = "sp_tavern_wench";
+	private const string MusicianSpawnTag = "musician";
+	private const string FeastWenchDisplayName = "侍女";
+	private const int MaxFeastWenches = 2;
+	private const int MaxFeastMusicians = 3;
+	private const int FeastMusicGapSeconds = 8;
+	private const int FeastMusicianPerformanceRefreshMs = 900;
+	private static readonly FieldInfo AgentNameField = typeof(Agent).GetField("_name", BindingFlags.Instance | BindingFlags.NonPublic);
 
 	private readonly Dictionary<string, NobleGatheringRecord> _gatherings = new Dictionary<string, NobleGatheringRecord>(StringComparer.OrdinalIgnoreCase);
 	private readonly Dictionary<string, double> _playerHostCooldowns = new Dictionary<string, double>(StringComparer.OrdinalIgnoreCase);
 	private readonly HashSet<string> _playerInvitationNoticesShownThisSession = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+	private readonly List<LocationCharacter> _addedAtmosphereCharacters = new List<LocationCharacter>();
 	private MapNotificationView _registeredMapNotificationView;
 	private long _nextNoticePublishRetryUtcTicks;
 	private bool _pendingOpenPlayerGatheringFlow;
 	private Hero _pendingGovernorHero;
+	private Location _currentAtmosphereLocation;
+	private SoundEvent _feastMusicEvent;
+	private List<SettlementMusicData> _feastMusicPlayList = new List<SettlementMusicData>();
+	private readonly Dictionary<int, FeastMusicianInstrumentChoice> _feastMusicianPerformances = new Dictionary<int, FeastMusicianInstrumentChoice>();
+	private int _feastMusicTrackIndex = -1;
+	private long _nextFeastMusicStartUtcTicks;
+	private long _nextFeastMusicianPerformanceUtcTicks;
+
+	private sealed class FeastMusicianInstrumentChoice
+	{
+		public InstrumentData Instrument { get; }
+
+		public ActionIndexCache Action { get; }
+
+		public float ActionSpeed { get; }
+
+		public FeastMusicianInstrumentChoice(InstrumentData instrument, float actionSpeed)
+		{
+			Instrument = instrument;
+			Action = ActionIndexCache.Create(instrument?.StandingAction);
+			ActionSpeed = actionSpeed;
+		}
+	}
 
 	public static NobleGatheringBehavior Instance { get; private set; }
 
@@ -150,6 +193,9 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 		CampaignEvents.OnSessionLaunchedEvent.AddNonSerializedListener(this, OnSessionLaunched);
 		CampaignEvents.DailyTickEvent.AddNonSerializedListener(this, OnDailyTick);
 		CampaignEvents.HourlyTickEvent.AddNonSerializedListener(this, OnHourlyTick);
+		CampaignEvents.OnMissionStartedEvent.AddNonSerializedListener(this, OnFeastAtmosphereMissionStarted);
+		CampaignEvents.OnMissionEndedEvent.AddNonSerializedListener(this, OnFeastAtmosphereMissionEnded);
+		CampaignEvents.LocationCharactersAreReadyToSpawnEvent.AddNonSerializedListener(this, OnFeastAtmosphereLocationCharactersAreReadyToSpawn);
 		MBInformationManager.OnRemoveMapNotice -= OnMapNoticeRemoved;
 		MBInformationManager.OnRemoveMapNotice += OnMapNoticeRemoved;
 	}
@@ -214,6 +260,8 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 
 	public void OnEngineTick()
 	{
+		UpdateFeastHallMusic();
+		UpdateFeastMusicianPerformances();
 		if (_pendingOpenPlayerGatheringFlow)
 		{
 			Hero governor = _pendingGovernorHero;
@@ -235,6 +283,659 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 		}
 		_nextNoticePublishRetryUtcTicks = ticks + TimeSpan.FromSeconds(1.0).Ticks;
 		TryPublishPlayerInvitationNotices();
+	}
+
+	public bool HasActiveGatheringAtSettlement(Settlement settlement)
+	{
+		string settlementId = (settlement?.StringId ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(settlementId))
+		{
+			return false;
+		}
+		double now = NowDay();
+		return _gatherings.Values.Any(record =>
+			record != null
+			&& string.Equals(record.State, StateActive, StringComparison.OrdinalIgnoreCase)
+			&& now < record.EndDay
+			&& string.Equals(record.SettlementId, settlementId, StringComparison.OrdinalIgnoreCase));
+	}
+
+	private void OnFeastAtmosphereMissionStarted(IMission mission)
+	{
+		CleanupAddedAtmosphereCharacters();
+		StopFeastHallMusic();
+		try
+		{
+			ConfigureFeastMusicianGroups(mission);
+			UpdateFeastHallMusic();
+		}
+		catch (Exception ex)
+		{
+			Log("music setup failed: " + ex.Message);
+		}
+	}
+
+	private void OnFeastAtmosphereMissionEnded(IMission mission)
+	{
+		CleanupAddedAtmosphereCharacters();
+		StopFeastHallMusic();
+		ClearFeastMusicianPerformances();
+	}
+
+	private void OnFeastAtmosphereLocationCharactersAreReadyToSpawn(Dictionary<string, int> unusedUsablePointCount)
+	{
+		try
+		{
+			if (!TryGetCurrentFeastLordHall(out Settlement settlement, out Location location))
+			{
+				return;
+			}
+			_currentAtmosphereLocation = location;
+			AddFeastWenches(location, settlement, unusedUsablePointCount);
+			AddFeastMusicians(location, settlement, unusedUsablePointCount);
+			ConfigureFeastMusicianGroups(Mission.Current);
+			UpdateFeastHallMusic();
+		}
+		catch (Exception ex)
+		{
+			Log("spawn setup failed: " + ex.Message);
+		}
+	}
+
+	private void ConfigureFeastMusicianGroups(IMission mission)
+	{
+		if (!(mission is Mission missionInstance) || !TryGetCurrentFeastLordHall(out Settlement settlement, out _))
+		{
+			return;
+		}
+		List<SettlementMusicData> playList = CreateFeastPlayList(settlement);
+		if (playList.Count == 0)
+		{
+			return;
+		}
+		foreach (MusicianGroup musicianGroup in missionInstance.MissionObjects.FindAllWithType<MusicianGroup>())
+		{
+			musicianGroup.SetPlayList(playList);
+		}
+	}
+
+	private void UpdateFeastHallMusic()
+	{
+		try
+		{
+			Mission mission = Mission.Current;
+			if (mission == null || !TryGetCurrentFeastLordHall(out Settlement settlement, out _))
+			{
+				StopFeastHallMusic();
+				return;
+			}
+			if (_feastMusicEvent != null)
+			{
+				if (_feastMusicEvent.IsPlaying())
+				{
+					_feastMusicEvent.SetPosition(GetFeastMusicPosition());
+					return;
+				}
+				ReleaseFeastMusicEvent();
+				_nextFeastMusicStartUtcTicks = DateTime.UtcNow.Ticks + TimeSpan.FromSeconds(FeastMusicGapSeconds).Ticks;
+			}
+			if (DateTime.UtcNow.Ticks < _nextFeastMusicStartUtcTicks)
+			{
+				return;
+			}
+			StartNextFeastMusicTrack(mission, settlement);
+		}
+		catch (Exception ex)
+		{
+			Log("music tick failed: " + ex.Message);
+			StopFeastHallMusic();
+		}
+	}
+
+	private void StartNextFeastMusicTrack(Mission mission, Settlement settlement)
+	{
+		if (mission?.Scene == null)
+		{
+			return;
+		}
+		if (_feastMusicPlayList == null || _feastMusicPlayList.Count == 0)
+		{
+			_feastMusicPlayList = CreateFeastPlayList(settlement);
+			_feastMusicTrackIndex = -1;
+		}
+		if (_feastMusicPlayList.Count == 0)
+		{
+			return;
+		}
+		_feastMusicTrackIndex++;
+		if (_feastMusicTrackIndex >= _feastMusicPlayList.Count)
+		{
+			_feastMusicTrackIndex = 0;
+		}
+		SettlementMusicData track = _feastMusicPlayList[_feastMusicTrackIndex];
+		if (track == null || string.IsNullOrWhiteSpace(track.MusicPath))
+		{
+			return;
+		}
+		int eventId = SoundEvent.GetEventIdFromString(track.MusicPath);
+		_feastMusicEvent = SoundEvent.CreateEvent(eventId, mission.Scene);
+		if (_feastMusicEvent == null)
+		{
+			return;
+		}
+		_feastMusicEvent.SetPosition(GetFeastMusicPosition());
+		_feastMusicEvent.Play();
+	}
+
+	private void StopFeastHallMusic()
+	{
+		ReleaseFeastMusicEvent();
+		_feastMusicPlayList.Clear();
+		_feastMusicTrackIndex = -1;
+		_nextFeastMusicStartUtcTicks = 0L;
+		ClearFeastMusicianPerformances();
+	}
+
+	private void ReleaseFeastMusicEvent()
+	{
+		if (_feastMusicEvent == null)
+		{
+			return;
+		}
+		try
+		{
+			if (_feastMusicEvent.IsPlaying())
+			{
+				_feastMusicEvent.Stop();
+			}
+			_feastMusicEvent.Release();
+		}
+		catch
+		{
+		}
+		_feastMusicEvent = null;
+	}
+
+	private static Vec3 GetFeastMusicPosition()
+	{
+		Agent mainAgent = Agent.Main;
+		return mainAgent != null ? mainAgent.Position : Vec3.Zero;
+	}
+
+	private void UpdateFeastMusicianPerformances()
+	{
+		try
+		{
+			long ticks = DateTime.UtcNow.Ticks;
+			if (ticks < _nextFeastMusicianPerformanceUtcTicks)
+			{
+				return;
+			}
+			_nextFeastMusicianPerformanceUtcTicks = ticks + TimeSpan.FromMilliseconds(FeastMusicianPerformanceRefreshMs).Ticks;
+			Mission mission = Mission.Current;
+			if (mission?.Agents == null || !TryGetCurrentFeastLordHall(out Settlement settlement, out _))
+			{
+				ClearFeastMusicianPerformances();
+				return;
+			}
+			CharacterObject musician = settlement?.Culture?.Musician;
+			if (musician == null)
+			{
+				return;
+			}
+			List<Agent> musicianAgents = mission.Agents
+				.Where(agent => agent != null && agent.IsHuman && agent.IsActive() && agent.Character == musician)
+				.ToList();
+			if (musicianAgents.Count == 0)
+			{
+				_feastMusicianPerformances.Clear();
+				return;
+			}
+			List<FeastMusicianInstrumentChoice> choices = null;
+			int fallbackSlot = 0;
+			HashSet<int> liveAgentIndexes = new HashSet<int>();
+			foreach (Agent agent in musicianAgents)
+			{
+				liveAgentIndexes.Add(agent.Index);
+				if (!_feastMusicianPerformances.TryGetValue(agent.Index, out FeastMusicianInstrumentChoice choice) || choice == null)
+				{
+					choices ??= CreateFeastInstrumentChoices(settlement);
+					choice = SelectFeastInstrumentChoice(choices, fallbackSlot++);
+					if (choice != null)
+					{
+						_feastMusicianPerformances[agent.Index] = choice;
+					}
+				}
+				ApplyFeastMusicianPerformance(agent, choice);
+			}
+			foreach (int index in _feastMusicianPerformances.Keys.ToList())
+			{
+				if (!liveAgentIndexes.Contains(index))
+				{
+					_feastMusicianPerformances.Remove(index);
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			Log("musician performance tick failed: " + ex.Message);
+		}
+	}
+
+	private void RegisterFeastMusicianAgent(IAgent agent, FeastMusicianInstrumentChoice choice)
+	{
+		if (!(agent is Agent missionAgent) || choice == null)
+		{
+			return;
+		}
+		_feastMusicianPerformances[missionAgent.Index] = choice;
+		ApplyFeastMusicianPerformance(missionAgent, choice);
+	}
+
+	private void ClearFeastMusicianPerformances()
+	{
+		try
+		{
+			Mission mission = Mission.Current;
+			if (mission?.Agents != null)
+			{
+				foreach (int index in _feastMusicianPerformances.Keys.ToList())
+				{
+					Agent agent = mission.Agents.FirstOrDefault(candidate => candidate != null && candidate.Index == index);
+					if (agent != null && agent.IsActive())
+					{
+						ClearFeastMusicianAction(agent);
+					}
+				}
+			}
+		}
+		catch
+		{
+		}
+		_feastMusicianPerformances.Clear();
+		_nextFeastMusicianPerformanceUtcTicks = 0L;
+	}
+
+	private static void ApplyFeastMusicianPerformance(Agent agent, FeastMusicianInstrumentChoice choice)
+	{
+		if (agent == null || choice?.Instrument == null || string.IsNullOrWhiteSpace(choice.Instrument.StandingAction))
+		{
+			return;
+		}
+		if (!agent.IsHuman || !agent.IsActive())
+		{
+			return;
+		}
+		ActionIndexCache action = choice.Action;
+		if (!HasActionClip(agent, action))
+		{
+			return;
+		}
+		if (agent.CurrentlyUsedGameObject != null)
+		{
+			try
+			{
+				agent.StopUsingGameObject(false, Agent.StopUsingGameObjectFlags.DoNotWieldWeaponAfterStoppingUsingGameObject);
+			}
+			catch
+			{
+			}
+		}
+		SetFeastMusicianAction(agent, action, choice.ActionSpeed);
+	}
+
+	private static void ClearFeastMusicianAction(Agent agent)
+	{
+		if (agent == null || !agent.IsActive())
+		{
+			return;
+		}
+#if BANNERLORD_1_4_OR_GREATER
+		agent.SetActionChannel(0, in ActionIndexCache.act_none, true, (AnimFlags)0UL, 0f, 1f, -0.2f, 0.4f, 0f, false, -0.2f, 0, true);
+#else
+		agent.SetActionChannel(0, ActionIndexCache.act_none, true, (AnimFlags)0UL, 0f, 1f, -0.2f, 0.4f, 0f, false, -0.2f, 0, true);
+#endif
+	}
+
+	private static bool HasActionClip(Agent agent, ActionIndexCache action)
+	{
+		if (agent == null)
+		{
+			return false;
+		}
+#if BANNERLORD_1_4_OR_GREATER
+		return MBActionSet.CheckActionAnimationClipExists(agent.ActionSet, in action);
+#else
+		return MBActionSet.CheckActionAnimationClipExists(agent.ActionSet, action);
+#endif
+	}
+
+	private static bool SetFeastMusicianAction(Agent agent, ActionIndexCache action, float actionSpeed)
+	{
+#if BANNERLORD_1_4_OR_GREATER
+		return agent.SetActionChannel(0, in action, true, (AnimFlags)0UL, 0f, actionSpeed, -0.2f, 0.4f, 0f, false, -0.2f, 0, true);
+#else
+		return agent.SetActionChannel(0, action, true, (AnimFlags)0UL, 0f, actionSpeed, -0.2f, 0.4f, 0f, false, -0.2f, 0, true);
+#endif
+	}
+
+	private void AddFeastWenches(Location location, Settlement settlement, Dictionary<string, int> unusedUsablePointCount)
+	{
+		CharacterObject tavernWench = settlement?.Culture?.TavernWench;
+		if (location == null || tavernWench == null)
+		{
+			return;
+		}
+		int available = GetAvailableCount(unusedUsablePointCount, TavernWenchSpawnTag);
+		if (available <= 0)
+		{
+			available = Math.Max(GetAvailableCount(unusedUsablePointCount, "npc_common_limited"), GetAvailableCount(unusedUsablePointCount, "npc_common"));
+		}
+		int desiredCount = Math.Min(MaxFeastWenches, Math.Max(0, available));
+		int existingCount = CountLocationCharacters(location, tavernWench, TavernWenchSpawnTag);
+		for (int i = existingCount; i < desiredCount; i++)
+		{
+			LocationCharacter character = CreateFeastTavernWench(settlement.Culture, LocationCharacter.CharacterRelations.Neutral);
+			AddAtmosphereCharacter(location, character);
+		}
+	}
+
+	private void AddFeastMusicians(Location location, Settlement settlement, Dictionary<string, int> unusedUsablePointCount)
+	{
+		CharacterObject musician = settlement?.Culture?.Musician;
+		if (location == null || musician == null)
+		{
+			return;
+		}
+		string spawnTag = GetBestAvailableSpawnTag(unusedUsablePointCount, MusicianSpawnTag, "npc_common_limited", "npc_common");
+		int available = GetAvailableCount(unusedUsablePointCount, spawnTag);
+		int desiredCount = Math.Min(MaxFeastMusicians, Math.Max(0, available));
+		int existingCount = CountLocationCharacters(location, musician);
+		List<FeastMusicianInstrumentChoice> instrumentChoices = CreateFeastInstrumentChoices(settlement);
+		for (int i = existingCount; i < desiredCount; i++)
+		{
+			FeastMusicianInstrumentChoice instrumentChoice = SelectFeastInstrumentChoice(instrumentChoices, i);
+			LocationCharacter character = CreateFeastMusician(settlement.Culture, LocationCharacter.CharacterRelations.Neutral, spawnTag, instrumentChoice);
+			AddAtmosphereCharacter(location, character);
+		}
+	}
+
+	private void AddAtmosphereCharacter(Location location, LocationCharacter character)
+	{
+		if (location == null || character == null)
+		{
+			return;
+		}
+		location.AddCharacter(character);
+		_addedAtmosphereCharacters.Add(character);
+	}
+
+	private void CleanupAddedAtmosphereCharacters()
+	{
+		if (_currentAtmosphereLocation != null)
+		{
+			foreach (LocationCharacter character in _addedAtmosphereCharacters.ToList())
+			{
+				try
+				{
+					_currentAtmosphereLocation.RemoveLocationCharacter(character);
+				}
+				catch
+				{
+				}
+			}
+		}
+		_addedAtmosphereCharacters.Clear();
+		_currentAtmosphereLocation = null;
+	}
+
+	private bool TryGetCurrentFeastLordHall(out Settlement settlement, out Location location)
+	{
+		settlement = null;
+		location = CampaignMission.Current?.Location;
+		if (!IsLordHallLocation(location))
+		{
+			return false;
+		}
+		settlement = PlayerEncounter.LocationEncounter?.Settlement ?? Settlement.CurrentSettlement;
+		return settlement != null && HasActiveGatheringAtSettlement(settlement);
+	}
+
+	private static bool IsLordHallLocation(Location location)
+	{
+		return string.Equals(location?.StringId, LordHallLocationId, StringComparison.OrdinalIgnoreCase)
+			|| string.Equals(location?.StringId, "lords_hall", StringComparison.OrdinalIgnoreCase);
+	}
+
+	private static int GetAvailableCount(Dictionary<string, int> unusedUsablePointCount, string tag)
+	{
+		if (unusedUsablePointCount == null || string.IsNullOrWhiteSpace(tag))
+		{
+			return 0;
+		}
+		return unusedUsablePointCount.TryGetValue(tag, out int count) ? Math.Max(0, count) : 0;
+	}
+
+	private static string GetBestAvailableSpawnTag(Dictionary<string, int> unusedUsablePointCount, params string[] tags)
+	{
+		foreach (string tag in tags ?? Array.Empty<string>())
+		{
+			if (GetAvailableCount(unusedUsablePointCount, tag) > 0)
+			{
+				return tag;
+			}
+		}
+		return (tags != null && tags.Length > 0) ? tags[0] : "";
+	}
+
+	private static int CountLocationCharacters(Location location, CharacterObject character)
+	{
+		if (location == null || character == null)
+		{
+			return 0;
+		}
+		return location.GetCharacterList().Count(locationCharacter =>
+			locationCharacter != null
+			&& locationCharacter.Character == character);
+	}
+
+	private static int CountLocationCharacters(Location location, CharacterObject character, string spawnTag)
+	{
+		if (location == null || character == null)
+		{
+			return 0;
+		}
+		return location.GetCharacterList().Count(locationCharacter =>
+			locationCharacter != null
+			&& locationCharacter.Character == character
+			&& string.Equals(locationCharacter.SpecialTargetTag ?? "", spawnTag ?? "", StringComparison.OrdinalIgnoreCase));
+	}
+
+	private static LocationCharacter CreateFeastTavernWench(CultureObject culture, LocationCharacter.CharacterRelations relation)
+	{
+		CharacterObject tavernWench = culture.TavernWench;
+		Campaign.Current.Models.AgeModel.GetAgeLimitForLocation(tavernWench, out int minAge, out int maxAge, "");
+		Monster monster = TaleWorlds.Core.FaceGen.GetMonsterWithSuffix(tavernWench.Race, "_settlement");
+		AgentData agentData = new AgentData(new SimpleAgentOrigin(tavernWench, -1, null, default(UniqueTroopDescriptor)))
+			.Monster(monster)
+			.Age(MBRandom.RandomInt(minAge, maxAge));
+		return new LocationCharacter(
+			agentData,
+			SandBoxManager.Instance.AgentBehaviorManager.AddFixedGuardBehaviors,
+			TavernWenchSpawnTag,
+			true,
+			relation,
+			ActionSetCode.GenerateActionSetNameWithSuffix(agentData.AgentMonster, agentData.AgentIsFemale, "_barmaid"),
+			true,
+			false,
+			null,
+			false,
+			false,
+			true,
+			ApplyFeastWenchDisplayName,
+			false)
+		{
+			PrefabNamesForBones =
+			{
+				{
+					agentData.AgentMonster.OffHandItemBoneIndex,
+					"kitchen_pitcher_b_tavern"
+				}
+			}
+		};
+	}
+
+	private static void ApplyFeastWenchDisplayName(IAgent agent)
+	{
+		if (!(agent is Agent missionAgent) || AgentNameField == null)
+		{
+			return;
+		}
+		try
+		{
+			AgentNameField.SetValue(missionAgent, new TextObject(FeastWenchDisplayName));
+		}
+		catch (Exception ex)
+		{
+			Log("rename feast wench failed: " + ex.Message);
+		}
+	}
+
+	private LocationCharacter CreateFeastMusician(CultureObject culture, LocationCharacter.CharacterRelations relation, string spawnTag, FeastMusicianInstrumentChoice instrumentChoice)
+	{
+		CharacterObject musician = culture.Musician;
+		Campaign.Current.Models.AgeModel.GetAgeLimitForLocation(musician, out int minAge, out int maxAge, "");
+		Monster monster = TaleWorlds.Core.FaceGen.GetMonsterWithSuffix(musician.Race, "_settlement");
+		AgentData agentData = new AgentData(new SimpleAgentOrigin(musician, -1, null, default(UniqueTroopDescriptor)))
+			.Monster(monster)
+			.Age(MBRandom.RandomInt(minAge, maxAge));
+		LocationCharacter character = new LocationCharacter(
+			agentData,
+			SandBoxManager.Instance.AgentBehaviorManager.AddFixedGuardBehaviors,
+			string.IsNullOrWhiteSpace(spawnTag) ? MusicianSpawnTag : spawnTag,
+			true,
+			relation,
+			ActionSetCode.GenerateActionSetNameWithSuffix(agentData.AgentMonster, agentData.AgentIsFemale, "_musician"),
+			true,
+			false,
+			null,
+			false,
+			false,
+			true,
+			agent => RegisterFeastMusicianAgent(agent, instrumentChoice),
+			false);
+		AddInstrumentPrefabs(character, instrumentChoice?.Instrument);
+		return character;
+	}
+
+	private static void AddInstrumentPrefabs(LocationCharacter character, InstrumentData instrument)
+	{
+		if (character?.PrefabNamesForBones == null || instrument?.InstrumentEntities == null)
+		{
+			return;
+		}
+		foreach (var entity in instrument.InstrumentEntities)
+		{
+			HumanBone bone = entity.Item1;
+			string prefabName = entity.Item2;
+			if (bone == HumanBone.Invalid || string.IsNullOrWhiteSpace(prefabName))
+			{
+				continue;
+			}
+			character.PrefabNamesForBones[(sbyte)bone] = prefabName;
+		}
+	}
+
+	private static List<FeastMusicianInstrumentChoice> CreateFeastInstrumentChoices(Settlement settlement)
+	{
+		List<FeastMusicianInstrumentChoice> visibleChoices = new List<FeastMusicianInstrumentChoice>();
+		List<FeastMusicianInstrumentChoice> fallbackChoices = new List<FeastMusicianInstrumentChoice>();
+		HashSet<string> visibleKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		HashSet<string> fallbackKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		foreach (SettlementMusicData track in CreateFeastPlayList(settlement))
+		{
+			if (track?.Instruments == null)
+			{
+				continue;
+			}
+			float actionSpeed = Math.Max(0.25f, Math.Min(2.0f, track.Tempo / 120f));
+			foreach (InstrumentData instrument in track.Instruments)
+			{
+				if (instrument == null || string.IsNullOrWhiteSpace(instrument.StandingAction))
+				{
+					continue;
+				}
+				if (HasVisibleInstrument(instrument))
+				{
+					AddUniqueInstrumentChoice(visibleChoices, visibleKeys, instrument, actionSpeed);
+				}
+				AddUniqueInstrumentChoice(fallbackChoices, fallbackKeys, instrument, actionSpeed);
+			}
+		}
+		return visibleChoices.Count > 0 ? visibleChoices : fallbackChoices;
+	}
+
+	private static void AddUniqueInstrumentChoice(List<FeastMusicianInstrumentChoice> choices, HashSet<string> keys, InstrumentData instrument, float actionSpeed)
+	{
+		string key = string.IsNullOrWhiteSpace(instrument.StringId) ? instrument.GetHashCode().ToString() : instrument.StringId;
+		if (keys.Add(key))
+		{
+			choices.Add(new FeastMusicianInstrumentChoice(instrument, actionSpeed));
+		}
+	}
+
+	private static bool HasVisibleInstrument(InstrumentData instrument)
+	{
+		if (instrument?.InstrumentEntities == null)
+		{
+			return false;
+		}
+		foreach (var entity in instrument.InstrumentEntities)
+		{
+			if (entity.Item1 != HumanBone.Invalid && !string.IsNullOrWhiteSpace(entity.Item2))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private static FeastMusicianInstrumentChoice SelectFeastInstrumentChoice(List<FeastMusicianInstrumentChoice> choices, int slot)
+	{
+		if (choices == null || choices.Count == 0)
+		{
+			return null;
+		}
+		return choices[Math.Abs(slot) % choices.Count];
+	}
+
+	private static List<SettlementMusicData> CreateFeastPlayList(Settlement settlement)
+	{
+		List<SettlementMusicData> allTracks = MBObjectManager.Instance.GetObjectTypeList<SettlementMusicData>()
+			.Where(track => track != null && IsFeastMusicLocation(track.LocationId))
+			.ToList();
+		if (allTracks.Count == 0)
+		{
+			return allTracks;
+		}
+		CultureObject settlementCulture = settlement?.Culture;
+		CultureObject factionCulture = settlement?.MapFaction?.Culture;
+		List<SettlementMusicData> preferredTracks = allTracks
+			.Where(track => track.Culture == settlementCulture || track.Culture == factionCulture)
+			.OrderBy(_ => MBRandom.RandomFloat)
+			.ToList();
+		List<SettlementMusicData> otherTracks = allTracks
+			.Where(track => !preferredTracks.Contains(track))
+			.OrderBy(_ => MBRandom.RandomFloat)
+			.ToList();
+		preferredTracks.AddRange(otherTracks);
+		return preferredTracks;
+	}
+
+	private static bool IsFeastMusicLocation(string locationId)
+	{
+		return string.Equals(locationId, "tavern", StringComparison.OrdinalIgnoreCase)
+			|| string.Equals(locationId, LordHallLocationId, StringComparison.OrdinalIgnoreCase);
 	}
 
 	private void OnSessionLaunched(CampaignGameStarter starter)

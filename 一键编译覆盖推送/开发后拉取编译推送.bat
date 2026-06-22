@@ -13,7 +13,6 @@ set "PATH_SCRIPT=%SCRIPT_DIR%resolve_bannerlord_paths.ps1"
 set "CONFIG=Debug"
 set "DRY_RUN=0"
 set "COMMIT_MSG="
-set "GIT_EXCLUDE_PATH=AnimusForge/ONNX/reranker"
 set "BANNERLORD_ROOT="
 set "WORKSHOP_CONTENT_DIR="
 
@@ -64,7 +63,6 @@ echo Repo      : "%PROJECT_ROOT%"
 echo Bannerlord: "%BANNERLORD_ROOT%"
 if defined WORKSHOP_CONTENT_DIR echo Workshop  : "%WORKSHOP_CONTENT_DIR%"
 echo Config    : "%CONFIG%"
-echo Exclude   : "%GIT_EXCLUDE_PATH%"
 if "%DRY_RUN%"=="1" echo Mode      : DRY RUN
 echo.
 
@@ -133,14 +131,15 @@ if "%DRY_RUN%"=="1" (
     echo   git fetch origin "%BRANCH%"
     echo   if origin/%BRANCH% has new commit^(s^): git rebase --autostash "origin/%BRANCH%"
     if defined WORKSHOP_CONTENT_DIR (
-        echo   dotnet build "%PROJECT_ROOT%\AnimusForge.csproj" -c %CONFIG% /p:BannerlordApi=1.3 /p:BannerlordRoot="%BANNERLORD_ROOT%" /p:WorkshopContentDir="%WORKSHOP_CONTENT_DIR%"
-        echo   dotnet build "%PROJECT_ROOT%\AnimusForge.csproj" -c %CONFIG% /p:BannerlordApi=1.4 /p:BannerlordRoot="%BANNERLORD_ROOT%" /p:WorkshopContentDir="%WORKSHOP_CONTENT_DIR%"
+        echo   dotnet build "%PROJECT_ROOT%\AnimusForge.csproj" -c %CONFIG% /p:BannerlordApi=1.3 /p:BannerlordApiCompatibility=1.3 /p:BannerlordRoot="%BANNERLORD_ROOT%" /p:WorkshopContentDir="%WORKSHOP_CONTENT_DIR%"
+        echo   dotnet build "%PROJECT_ROOT%\AnimusForge.csproj" -c %CONFIG% /p:BannerlordApi=1.4 /p:BannerlordApiCompatibility=1.3 /p:BannerlordRoot="%BANNERLORD_ROOT%" /p:WorkshopContentDir="%WORKSHOP_CONTENT_DIR%"
     ) else (
-        echo   dotnet build "%PROJECT_ROOT%\AnimusForge.csproj" -c %CONFIG% /p:BannerlordApi=1.3 /p:BannerlordRoot="%BANNERLORD_ROOT%"
-        echo   dotnet build "%PROJECT_ROOT%\AnimusForge.csproj" -c %CONFIG% /p:BannerlordApi=1.4 /p:BannerlordRoot="%BANNERLORD_ROOT%"
+        echo   dotnet build "%PROJECT_ROOT%\AnimusForge.csproj" -c %CONFIG% /p:BannerlordApi=1.3 /p:BannerlordApiCompatibility=1.3 /p:BannerlordRoot="%BANNERLORD_ROOT%"
+        echo   dotnet build "%PROJECT_ROOT%\AnimusForge.csproj" -c %CONFIG% /p:BannerlordApi=1.4 /p:BannerlordApiCompatibility=1.3 /p:BannerlordRoot="%BANNERLORD_ROOT%"
     )
-    echo   git rm -r --cached --ignore-unmatch -- "%GIT_EXCLUDE_PATH%"
-    echo   git add -A
+    echo   clear staged index only
+    echo   git add --ignore-removal .
+    echo   refuse commit if any deletion is staged
     echo   if changes exist: git commit -m "%COMMIT_MSG_SAFE%"
     echo   verify origin/%BRANCH% did not change after build
     echo   git push -u origin "%BRANCH%"
@@ -194,9 +193,9 @@ if not "%BEHIND_COUNT%"=="0" (
 echo.
 echo [2/4] Building project for Bannerlord 1.3.x...
 if defined WORKSHOP_CONTENT_DIR (
-    dotnet build "%PROJECT_ROOT%\AnimusForge.csproj" -c %CONFIG% /p:BannerlordApi=1.3 /p:BannerlordRoot="%BANNERLORD_ROOT%" /p:WorkshopContentDir="%WORKSHOP_CONTENT_DIR%"
+    dotnet build "%PROJECT_ROOT%\AnimusForge.csproj" -c %CONFIG% /p:BannerlordApi=1.3 /p:BannerlordApiCompatibility=1.3 /p:BannerlordRoot="%BANNERLORD_ROOT%" /p:WorkshopContentDir="%WORKSHOP_CONTENT_DIR%"
 ) else (
-    dotnet build "%PROJECT_ROOT%\AnimusForge.csproj" -c %CONFIG% /p:BannerlordApi=1.3 /p:BannerlordRoot="%BANNERLORD_ROOT%"
+    dotnet build "%PROJECT_ROOT%\AnimusForge.csproj" -c %CONFIG% /p:BannerlordApi=1.3 /p:BannerlordApiCompatibility=1.3 /p:BannerlordRoot="%BANNERLORD_ROOT%"
 )
 set "ERR=%ERRORLEVEL%"
 if not "%ERR%"=="0" (
@@ -209,9 +208,9 @@ if not "%ERR%"=="0" (
 echo.
 echo [2/4] Building project for Bannerlord 1.4.5...
 if defined WORKSHOP_CONTENT_DIR (
-    dotnet build "%PROJECT_ROOT%\AnimusForge.csproj" -c %CONFIG% /p:BannerlordApi=1.4 /p:BannerlordRoot="%BANNERLORD_ROOT%" /p:WorkshopContentDir="%WORKSHOP_CONTENT_DIR%"
+    dotnet build "%PROJECT_ROOT%\AnimusForge.csproj" -c %CONFIG% /p:BannerlordApi=1.4 /p:BannerlordApiCompatibility=1.3 /p:BannerlordRoot="%BANNERLORD_ROOT%" /p:WorkshopContentDir="%WORKSHOP_CONTENT_DIR%"
 ) else (
-    dotnet build "%PROJECT_ROOT%\AnimusForge.csproj" -c %CONFIG% /p:BannerlordApi=1.4 /p:BannerlordRoot="%BANNERLORD_ROOT%"
+    dotnet build "%PROJECT_ROOT%\AnimusForge.csproj" -c %CONFIG% /p:BannerlordApi=1.4 /p:BannerlordApiCompatibility=1.3 /p:BannerlordRoot="%BANNERLORD_ROOT%"
 )
 set "ERR=%ERRORLEVEL%"
 if not "%ERR%"=="0" (
@@ -236,19 +235,53 @@ if not defined COMMIT_MSG (
 
 set "COMMIT_MSG_SAFE=%COMMIT_MSG:"='%"
 
-git rm -r --cached --ignore-unmatch -- "%GIT_EXCLUDE_PATH%" >nul 2>nul
-if errorlevel 1 (
-    echo [ERROR] Failed to exclude Git path:
-    echo   "%GIT_EXCLUDE_PATH%"
+set "HAS_UNMERGED="
+for /f "delims=" %%U in ('git ls-files -u') do set "HAS_UNMERGED=1"
+if defined HAS_UNMERGED (
+    echo [ERROR] Unmerged paths detected. Resolve conflicts first, then rerun this script.
+    git status --short
     pause
     exit /b 1
 )
 
-git add -A
+git diff --cached --quiet
+set "STAGED_ERR=%ERRORLEVEL%"
+if "%STAGED_ERR%"=="1" (
+    echo [INFO] Clearing existing staged changes. Working tree files are kept unchanged.
+    git restore --staged .
+    if errorlevel 1 (
+        echo [ERROR] Failed to clear the Git index before auto-staging.
+        pause
+        exit /b 1
+    )
+) else if not "%STAGED_ERR%"=="0" (
+    echo [ERROR] Failed to inspect staged changes.
+    pause
+    exit /b 1
+)
+
+git add --ignore-removal .
 if errorlevel 1 (
     echo [ERROR] git add failed.
     pause
     exit /b 1
+)
+
+set "STAGED_DELETE_COUNT=0"
+for /f "delims=" %%D in ('git diff --cached --name-only --diff-filter=D') do set /a STAGED_DELETE_COUNT+=1
+if not "!STAGED_DELETE_COUNT!"=="0" (
+    echo [ERROR] Refusing to commit !STAGED_DELETE_COUNT! staged deletion^(s^).
+    echo This script only auto-commits files that still exist on disk.
+    echo To intentionally delete files from the public repository, stage and commit that manually.
+    git diff --cached --name-status --diff-filter=D
+    pause
+    exit /b 1
+)
+
+set "LOCAL_DELETE_COUNT=0"
+for /f "delims=" %%D in ('git diff --name-only --diff-filter=D') do set /a LOCAL_DELETE_COUNT+=1
+if not "!LOCAL_DELETE_COUNT!"=="0" (
+    echo [INFO] !LOCAL_DELETE_COUNT! local deletion^(s^) were left unstaged and will not be pushed.
 )
 
 git diff --cached --quiet
@@ -298,56 +331,3 @@ if errorlevel 1 (
 echo [SUCCESS] Post-work Pull + Build + Push completed. No deploy was run.
 pause
 exit /b 0
-<<<<<<< Updated upstream
-
-:PrepareBuildDeps
-if defined WORKSHOP_CONTENT_DIR (
-    powershell -NoProfile -ExecutionPolicy Bypass -File "%BUILD_DEPS_SCRIPT%" -ProjectRoot "%PROJECT_ROOT%" -BannerlordRoot "%BANNERLORD_ROOT%" -WorkshopContentDir "%WORKSHOP_CONTENT_DIR%" -Configuration "%CONFIG%"
-) else (
-    powershell -NoProfile -ExecutionPolicy Bypass -File "%BUILD_DEPS_SCRIPT%" -ProjectRoot "%PROJECT_ROOT%" -BannerlordRoot "%BANNERLORD_ROOT%" -Configuration "%CONFIG%"
-)
-set "ERR=%ERRORLEVEL%"
-if not "%ERR%"=="0" (
-    echo [ERROR] Failed to prepare local build dependencies. ExitCode=%ERR%
-    pause
-    exit /b %ERR%
-)
-exit /b 0
-
-:EnsureNoStagedChanges
-set "HAS_UNMERGED="
-for /f "delims=" %%U in ('git ls-files -u') do set "HAS_UNMERGED=1"
-git diff --cached --quiet
-set "STAGED_ERR=%ERRORLEVEL%"
-if "%STAGED_ERR%"=="0" if not defined HAS_UNMERGED exit /b 0
-if not "%STAGED_ERR%"=="0" if not "%STAGED_ERR%"=="1" if not defined HAS_UNMERGED (
-    echo [ERROR] git diff --cached failed.
-    pause
-    exit /b 1
-)
-echo [INFO] Existing staged or unmerged index state detected.
-echo [INFO] Clearing Git index only; working tree files are kept unchanged.
-if defined HAS_UNMERGED (
-    git reset -q
-) else (
-    git restore --staged .
-)
-set "CLEAR_INDEX_ERR=%ERRORLEVEL%"
-if not "%CLEAR_INDEX_ERR%"=="0" (
-    echo [ERROR] Failed to clear the Git index before auto-staging.
-    echo Working tree files were not intentionally changed by this step.
-    pause
-    exit /b 1
-)
-set "HAS_UNMERGED="
-for /f "delims=" %%U in ('git ls-files -u') do set "HAS_UNMERGED=1"
-if defined HAS_UNMERGED (
-    echo [ERROR] There are still unmerged paths after clearing the index.
-    echo Resolve the merge/conflict state first, then rerun this script.
-    git status --short
-    pause
-    exit /b 1
-)
-exit /b 0
-=======
->>>>>>> Stashed changes
