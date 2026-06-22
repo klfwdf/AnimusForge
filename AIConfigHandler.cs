@@ -7012,14 +7012,12 @@ public static class AIConfigHandler
 		case "no_kingdom_tier_full":
 			return "merc_or_vassal";
 		case "no_kingdom_tier_merc_only":
-		case "no_kingdom_trust_merc_only":
 			return "merc_only";
 		case "mercenary_target_unknown":
 		case "mercenary_same_kingdom":
 		case "mercenary_same_kingdom_tier_vassal_ready":
 			return "leave_or_vassal";
 		case "mercenary_same_kingdom_tier_vassal_locked":
-		case "mercenary_same_kingdom_trust_vassal_locked":
 		case "mercenary_other_kingdom":
 		case "vassal_target_unknown":
 		case "vassal_same_kingdom":
@@ -7054,10 +7052,6 @@ public static class AIConfigHandler
 	{
 		if (playerKingdom == null)
 		{
-			if (currentTrust < mercTrustMin)
-			{
-				return "no_kingdom_trust_below_merc";
-			}
 			if (playerTier < mercTier)
 			{
 				return "no_kingdom_tier_below_merc";
@@ -7065,10 +7059,6 @@ public static class AIConfigHandler
 			if (playerTier < vassalTier)
 			{
 				return "no_kingdom_tier_merc_only";
-			}
-			if (currentTrust < vassalTrustMin)
-			{
-				return "no_kingdom_trust_merc_only";
 			}
 			return "no_kingdom";
 		}
@@ -7083,10 +7073,6 @@ public static class AIConfigHandler
 				if (playerTier < vassalTier)
 				{
 					return "mercenary_same_kingdom_tier_vassal_locked";
-				}
-				if (currentTrust < vassalTrustMin)
-				{
-					return "mercenary_same_kingdom_trust_vassal_locked";
 				}
 				return "mercenary_same_kingdom_tier_vassal_ready";
 			}
@@ -7108,9 +7094,7 @@ public static class AIConfigHandler
 		switch ((stateKey ?? "").Trim().ToLowerInvariant())
 		{
 		case "no_player_clan":
-		case "no_kingdom_trust_below_merc":
 		case "no_kingdom_tier_below_merc":
-		case "no_kingdom_trust_merc_only":
 		case "no_kingdom_tier_merc_only":
 		case "no_kingdom_tier_full":
 			return true;
@@ -7131,8 +7115,8 @@ public static class AIConfigHandler
 		playerTier = playerClan?.Tier ?? 0;
 		mercTier = 1;
 		vassalTier = 2;
-		mercTrustMin = 5;
-		vassalTrustMin = 20;
+		mercTrustMin = 0;
+		vassalTrustMin = 0;
 		currentTrust = 0;
 		try
 		{
