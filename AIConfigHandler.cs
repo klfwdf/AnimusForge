@@ -7388,7 +7388,7 @@ public static class AIConfigHandler
 			switch (text)
 			{
 			case "kingdom_service":
-				return !string.IsNullOrWhiteSpace(BuildRuntimeKingdomServiceInstruction());
+				return true;
 			case "kingdom_vassalage":
 				VassalageDiagnosticLog.Event("preprocess.gate", new Dictionary<string, object>
 				{
