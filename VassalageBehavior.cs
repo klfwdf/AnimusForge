@@ -541,13 +541,9 @@ internal static class AnimusForgeVassalageUiSprites
 				{
 					continue;
 				}
-				BrushLayer layer = brush.GetLayer(info.LayerName);
-				if (layer == null)
-				{
-					LogOnce("layer-" + info.LayerName, "Brush layer missing: " + info.LayerName);
-					continue;
-				}
+				BrushLayer layer = EnsureBrushLayer(brush, info, sprite);
 				layer.Sprite = sprite;
+				EnsureBrushStyle(brush, info);
 				applied++;
 			}
 			if (applied > 0 && !_brushLogged)
@@ -560,6 +556,55 @@ internal static class AnimusForgeVassalageUiSprites
 		{
 			LogOnce("brush-exception", "Failed to apply runtime PNG sprites to brush layers: " + ex.Message);
 		}
+	}
+
+	private static BrushLayer EnsureBrushLayer(Brush brush, VassalageUiSpriteInfo info, BannerlordUiSprite sprite)
+	{
+		BrushLayer layer = brush.GetLayer(info.LayerName);
+		if (layer != null)
+		{
+			return layer;
+		}
+
+		layer = new BrushLayer
+		{
+			Name = info.LayerName,
+			Sprite = sprite,
+			Color = Color.White,
+			ColorFactor = 1f,
+			AlphaFactor = 1f,
+			IsHidden = true
+		};
+		brush.AddLayer(layer);
+		LogOnce("layer-created-" + info.LayerName, "Created runtime brush layer: " + info.LayerName);
+		return layer;
+	}
+
+	private static void EnsureBrushStyle(Brush brush, VassalageUiSpriteInfo info)
+	{
+		Style style = brush.GetStyle(info.LayerName);
+		if (style == null)
+		{
+			style = new Style(brush.Layers)
+			{
+				Name = info.LayerName
+			};
+			brush.AddStyle(style);
+			LogOnce("style-created-" + info.LayerName, "Created runtime brush style: " + info.LayerName);
+		}
+
+		StyleLayer styleLayer = style.GetLayer(info.LayerName);
+		if (styleLayer == null)
+		{
+			BrushLayer sourceLayer = brush.GetLayer(info.LayerName);
+			if (sourceLayer == null)
+			{
+				return;
+			}
+			styleLayer = new StyleLayer(sourceLayer);
+			style.AddLayer(styleLayer);
+		}
+		styleLayer.IsHidden = false;
 	}
 
 	private static bool TryCreateSprite(VassalageUiSpriteInfo info, out BannerlordUiSprite sprite, out string failureReason)
