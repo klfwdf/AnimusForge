@@ -1,0 +1,255 @@
+﻿{
+  "Id": "rule_斯特吉亚",
+  "Keywords": [
+    "斯特吉亚"
+  ],
+  "RagShortTexts": [
+    "斯特吉亚大公国由北方部落为抵御帝国扩张在一世纪前联合形成",
+    "斯特吉亚东部城市蒂亚尔与库赛特汗国长期联姻，波耶家谱包含可汗名字",
+    "雷维尔、巴尔加德与奥莫尔原属巴旦尼亚，境内仍保留古老石阵与习俗"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "如今的斯特吉亚大公国是一个世纪前才形成的。在那之前，这里是众多小王国和部落组成的松散联盟。随着新兴城市在北方的湖泊与海湾间兴起，当地的部落首领开始与诺德人以及其他冒险者联姻，雇佣他们的武力来征服自己的邻居。帝国的持续压力最终迫使他们选出一位王公来统一领导作战，这个头衔后来逐渐变成了世袭的爵位。不过，自主性极强的波耶们并不热衷于君主政权，叛乱的种子一直深埋于斯特吉亚的政治表象之下?\n\n"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "我们斯特吉亚是被帝国的刀剑逼出来的。一个世纪前，北方不过是湖泊和海湾边上散落着一个个小王国，各自为政。后来帝国的军团不断北上，我们的祖先才选出了第一位王公，统一指挥所有波耶的兵力。王公的头衔后来变成了世袭的，但这不代表波耶们就没想法了——我们北方人骨头硬，谁愿意永远听一家人的话?"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "斯特吉亚的形成不只是北方部落自己的事。库赛特的阿契特部落曾经在瓦尔诺瓦波尔建立过一个小汗国，那座城最早是帝国的流放地，后来落到了我们手里。蒂亚尔那边就更不用说了——那里的家族和库赛特可汗联姻是常有的事，有些波耶家族的老祠堂里，祖宗牌位旁边就摆着库赛特可汗的名字。至于西边，雷维尔、巴尔加德、奥莫尔，那些地原来全是巴旦尼亚人的。我们拿下来了，但他们从来没有真正接受过。那片土地底下埋着他们的圣林和祖先的尸骨?"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "我们斯特吉亚的西部，雷维尔、巴尔加德、奥莫尔那一片，你走进去就能感觉到不一样——地是斯特吉亚的，但住在上面的人还留着巴旦尼亚的习惯，讲他们自己的老话，信他们自己的神。那些地是打下来的，但打下来容易，消化掉难。东边蒂亚尔那边倒是和库赛特人处得不错，联姻联了好几代，通商也方便?"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "我在斯特吉亚各地都跑过。东边的蒂亚尔，波耶家谱里能找到库赛特可汗的名字，那儿的人和草原上做生意、通婚，早就不分彼此了。西边完全是另一回事——雷维尔、巴尔加德、奥莫尔那一片，你走在林子里还能踩到巴旦尼亚人当年留下的石阵。土地换了主人，但石头和树还记得从前是谁的?"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "斯特吉亚人现在占着的雷维尔、巴尔加德、奥莫尔——那是我们的故土。他们用刀剑抢走了，在上面修城堡、设税关，还管那叫文明。但他们抹不掉土地的记忆，那些古老的石阵还在，我们的圣林被砍了，但根还在地下。总有一天，斯特吉亚人会明白，抢来的土地，不是那么好消化的?"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "斯特吉亚人夺走的西部领土，是我们巴旦尼亚人心中永远不会愈合的伤口。雷维尔、巴尔加德、奥莫尔——那些地方埋着我们的祖先，矗立过我们的石阵。现在斯特吉亚人在上面放牧、收税、驻军，以为土地已经是他们的了。但土地从来不属于谁，人只是借住罢了。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "斯特吉亚和我们库赛特的关系，比外人想的要深。阿契特部落曾经在瓦尔诺瓦波尔建立过一个小汗国，那座城现在归了斯特吉亚，但那段时间的印记还在——你去问问蒂亚尔那些老波耶家族，他们祠堂的牌位旁边就供着我们库赛特可汗的名字。联姻、通商、打仗，草原和北方之间从来没有真正分开过?"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "蒂亚尔的波耶家族和我们库赛特王族之间，联姻的历史可以往上数好几代。他们的家谱里能翻出兀儿浑可汗的后裔，我们的家谱里也能找到北方女人的名字。有人说斯特吉亚和我们库赛特是世仇，但蒂亚尔的人从来不这么看。边境上的事情，从来都是恩怨交缠，分不清谁欠谁更多?"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 150
+        }
+      },
+      "Content": "斯特吉亚大公国的形成并非单纯的北方部落整合，而是一个多民族、多文化碰撞与融合的过程。在东部，蒂亚尔地区的波耶家族与库赛特可汗之间保持着长期的联姻关系，这种跨越汗国与大公国的政治联姻，使得斯特吉亚东境成为了两种文明交汇的地带。同时，库赛特的阿契特部落曾在瓦尔诺瓦波尔短暂立国，这段历史为斯特吉亚东部留下了库赛特文化的残存印记。在西部，雷维尔、巴尔加德、奥莫尔等大片领土原本属于巴旦尼亚，斯特吉亚通过军事征服将其纳入版图，但巴旦尼亚的文化和宗教传统在这些地区依然根深蒂固，成为斯特吉亚内部长期面临的文化整合难题?"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "斯特吉亚大公国远在北方冰原，我们阿塞莱人对他们的了解多半来自商队和水手。听说他们的国家是被帝国逼出来的——一群部落和诺德冒险者混在一起，选了个头领来统一作战。这种联盟式的起源，和我们阿塞莱的部落联盟有些相似，但他们的大公后来居然世袭了?"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "斯特吉亚大公国和我们的王国差不多同时期形成，但他们的路走得比我们坎坷。我们瓦兰迪亚的男爵们虽然也时有争执，但对国王的效忠是刻在骨子里的。斯特吉亚那些波耶呢？他们选出来的大公，他们自己随时可能翻脸不认。要不是帝国人在南边压着，斯特吉亚早就自己裂成好几块了?"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "斯特吉亚大公国？那不过是我们帝国北方边境上的蛮族纠集在一起的产物。一个世纪前，那里还是一片混乱的小王国和部落。是我们帝国的持续北伐，逼得他们不得不选出一个头领来统一抵抗。结果倒好，他们选出来的王公后来居然成了世袭的，现在反过来成了帝国北境的心腹大患。不过说实话，他们那些波耶们并不怎么听大公的话，内部叛乱时有发生?"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "斯特吉亚人的政治结构在帝国看来简直荒谬。他们的王公名义上是最高统治者，但底下的波耶们个个手握私兵，稍不顺心就可能在背后捅刀子。但这也正是他们难以被彻底征服的原因——就算你打败了他们的大公，那些波耶们还会各自为战，你永远找不到一个能让整个斯特吉亚投降的人?"
+    }
+  ],
+  "TextMappings": []
+}
