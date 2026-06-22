@@ -587,10 +587,15 @@ internal static class AnimusForgeVassalageUiSprites
 		{
 			style = new Style(brush.Layers)
 			{
+				DefaultStyle = brush.DefaultStyle,
 				Name = info.LayerName
 			};
 			brush.AddStyle(style);
 			LogOnce("style-created-" + info.LayerName, "Created runtime brush style: " + info.LayerName);
+		}
+		else if (style.DefaultStyle == null)
+		{
+			style.DefaultStyle = brush.DefaultStyle;
 		}
 
 		StyleLayer styleLayer = style.GetLayer(info.LayerName);
