@@ -15514,6 +15514,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			{
 				runtimeContext = AppendPostprocessContextBlockForScene(runtimeContext, entityPostprocessContext);
 			}
+			if (diplomacyRuleInjected)
+			{
+				runtimeContext = AppendPostprocessContextBlockForScene(runtimeContext, DiplomacyBehavior.BuildDiplomacyPostprocessContext(targetHero ?? targetCharacter?.HeroObject));
+			}
 			if (siegeInterventionRuleInjected)
 			{
 				runtimeContext = AppendPostprocessContextBlockForScene(runtimeContext, AfGcczShoutBridge.BuildPostprocessContext(siegeInterventionRuleInjected, targetAgentIndex, latestReplyHasPlayerInput));

@@ -7,6 +7,7 @@ using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Actions;
 using TaleWorlds.CampaignSystem.CampaignBehaviors;
 using TaleWorlds.CampaignSystem.Encounters;
+using TaleWorlds.CampaignSystem.Election;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.Core;
 using TaleWorlds.MountAndBlade;
@@ -22,6 +23,7 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 	private const string NeedPrisonerOverload = "PrisonerOverload";
 	private const string NeedKingdomMercenaryInvite = "KingdomMercenaryInvite";
 	private const string NeedKingdomVassalInvite = "KingdomVassalInvite";
+	private const string NeedPoliticalAgenda = "PoliticalAgenda";
 	private const string NeedDiplomacy = "Diplomacy";
 	private const string TriggerSourceNeedDriven = "NeedDriven";
 	private const string TriggerSourceNotorietyDriven = "NotorietyDriven";
@@ -383,38 +385,47 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 			}
 			stats.InRange++;
 			List<ProactiveCandidate> needCandidates = new List<ProactiveCandidate>();
-			if (TryBuildFoodShortageCandidate(candidate, settings, out ProactiveCandidate foodCandidate))
+			if (!candidate.AtWarWithPlayer)
 			{
-				stats.FoodShortage++;
-				needCandidates.Add(foodCandidate);
-			}
-			if (TryBuildMoneyShortageCandidate(candidate, settings, out ProactiveCandidate moneyCandidate))
-			{
-				stats.MoneyShortage++;
-				needCandidates.Add(moneyCandidate);
-			}
-			if (TryBuildTroopShortageCandidate(candidate, settings, out ProactiveCandidate troopCandidate))
-			{
-				stats.TroopShortage++;
-				needCandidates.Add(troopCandidate);
-			}
-			if (TryBuildPrisonerOverloadCandidate(candidate, settings, out ProactiveCandidate prisonerCandidate))
-			{
-				stats.PrisonerOverload++;
-				needCandidates.Add(prisonerCandidate);
-			}
-			if (TryBuildKingdomMercenaryInviteCandidate(candidate, settings, out ProactiveCandidate mercenaryInviteCandidate))
-			{
-				stats.KingdomMercenaryInvite++;
-				needCandidates.Add(mercenaryInviteCandidate);
-			}
-			if (TryBuildKingdomVassalInviteCandidate(candidate, settings, out ProactiveCandidate vassalInviteCandidate))
-			{
-				stats.KingdomVassalInvite++;
-				needCandidates.Add(vassalInviteCandidate);
+				if (TryBuildFoodShortageCandidate(candidate, settings, out ProactiveCandidate foodCandidate))
+				{
+					stats.FoodShortage++;
+					needCandidates.Add(foodCandidate);
+				}
+				if (TryBuildMoneyShortageCandidate(candidate, settings, out ProactiveCandidate moneyCandidate))
+				{
+					stats.MoneyShortage++;
+					needCandidates.Add(moneyCandidate);
+				}
+				if (TryBuildTroopShortageCandidate(candidate, settings, out ProactiveCandidate troopCandidate))
+				{
+					stats.TroopShortage++;
+					needCandidates.Add(troopCandidate);
+				}
+				if (TryBuildPrisonerOverloadCandidate(candidate, settings, out ProactiveCandidate prisonerCandidate))
+				{
+					stats.PrisonerOverload++;
+					needCandidates.Add(prisonerCandidate);
+				}
+				if (TryBuildKingdomMercenaryInviteCandidate(candidate, settings, out ProactiveCandidate mercenaryInviteCandidate))
+				{
+					stats.KingdomMercenaryInvite++;
+					needCandidates.Add(mercenaryInviteCandidate);
+				}
+				if (TryBuildKingdomVassalInviteCandidate(candidate, settings, out ProactiveCandidate vassalInviteCandidate))
+				{
+					stats.KingdomVassalInvite++;
+					needCandidates.Add(vassalInviteCandidate);
+				}
+				if (TryBuildPoliticalAgendaCandidate(candidate, settings, out ProactiveCandidate politicalAgendaCandidate))
+				{
+					stats.PoliticalAgenda++;
+					needCandidates.Add(politicalAgendaCandidate);
+				}
 			}
 			if (TryBuildDiplomacyCandidate(candidate, settings, out ProactiveCandidate diplomacyCandidate))
 			{
+				stats.Diplomacy++;
 				needCandidates.Add(diplomacyCandidate);
 			}
 			ProactiveCandidate combinedCandidate = BuildCombinedNeedCandidate(needCandidates);
@@ -525,11 +536,12 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 				skipReason = "main_party_busy_or_invalid_location";
 				return false;
 			}
-			if (party.MapFaction == null || mainParty.MapFaction == null || party.MapFaction.IsAtWarWith(mainParty.MapFaction))
+			if (party.MapFaction == null || mainParty.MapFaction == null)
 			{
-				skipReason = "war_or_missing_faction";
+				skipReason = "missing_faction";
 				return false;
 			}
+			bool atWarWithPlayer = party.MapFaction.IsAtWarWith(mainParty.MapFaction);
 			string heroKey = GetHeroKey(hero);
 			float nowDays = NowDays();
 			if (IsOnCooldown(_heroCooldownUntilDays, heroKey, nowDays))
@@ -548,6 +560,11 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 			int prisonerSizeLimit = SafePrisonerSizeLimit(party);
 			int heroPrisonerCount = SafeHeroPrisonerCount(party);
 			Kingdom targetKingdom = ResolveHeroKingdom(hero);
+			if (atWarWithPlayer && !CanBuildWartimeDiplomacyCandidate(hero, targetKingdom))
+			{
+				skipReason = "war_non_diplomacy";
+				return false;
+			}
 			KingdomManpowerNeedSnapshot kingdomNeed = BuildKingdomManpowerNeedSnapshot(targetKingdom);
 			int playerClanTier = SafePlayerClanTier();
 			bool targetHeroIsKingdomLeader = IsKingdomLeader(hero, targetKingdom);
@@ -587,7 +604,8 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 				KingdomNeedsMercenaries = kingdomNeed.NeedsMercenaries,
 				KingdomNeedsVassals = kingdomNeed.NeedsVassals,
 				KingdomMercenaryNeedUrgency = kingdomNeed.MercenaryNeedUrgency,
-				KingdomVassalNeedUrgency = kingdomNeed.VassalNeedUrgency
+				KingdomVassalNeedUrgency = kingdomNeed.VassalNeedUrgency,
+				AtWarWithPlayer = atWarWithPlayer
 			};
 			return true;
 		}
@@ -643,11 +661,31 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 			KingdomNeedsVassals = source.KingdomNeedsVassals,
 			KingdomMercenaryNeedUrgency = source.KingdomMercenaryNeedUrgency,
 			KingdomVassalNeedUrgency = source.KingdomVassalNeedUrgency,
+			AtWarWithPlayer = source.AtWarWithPlayer,
 			NeedType = needType,
 			NeedTypes = new List<string> { needType },
 			NeedUrgency = urgency,
 			IsTestFallback = source.IsTestFallback
 		};
+	}
+
+	private static bool CanBuildWartimeDiplomacyCandidate(Hero hero, Kingdom targetKingdom)
+	{
+		try
+		{
+			Kingdom playerKingdom = Clan.PlayerClan?.Kingdom;
+			return hero != null
+				&& targetKingdom != null
+				&& playerKingdom != null
+				&& !playerKingdom.IsEliminated
+				&& hero == targetKingdom.RulingClan?.Leader
+				&& Hero.MainHero == playerKingdom.RulingClan?.Leader
+				&& targetKingdom != playerKingdom;
+		}
+		catch
+		{
+			return false;
+		}
 	}
 
 	private static ProactiveCandidate BuildCombinedNeedCandidate(List<ProactiveCandidate> needCandidates)
@@ -743,6 +781,17 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		return candidate != null;
 	}
 
+	private bool TryBuildPoliticalAgendaCandidate(ProactiveCandidate source, DuelSettings settings, out ProactiveCandidate candidate)
+	{
+		candidate = null;
+		if (source == null || !IsPoliticalAgendaNeedMet(source, out float urgency))
+		{
+			return false;
+		}
+		candidate = TryBuildNeedCandidate(source, settings, NeedPoliticalAgenda, urgency);
+		return candidate != null;
+	}
+
 	private bool TryBuildDiplomacyCandidate(ProactiveCandidate source, DuelSettings settings, out ProactiveCandidate candidate)
 	{
 		candidate = null;
@@ -776,11 +825,9 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 				{ hasCommonEnemy = true; break; }
 			}
 			if (hasCommonEnemy) { urgency = 65f; return true; }
-#if BANNERLORD_1_4_OR_GREATER
 			ITradeAgreementsCampaignBehavior tradeBeh = Campaign.Current.GetCampaignBehavior<ITradeAgreementsCampaignBehavior>();
 			bool hasTrade = BannerlordApiCompat.HasTradeAgreement(tradeBeh, npcKingdom, playerKingdom);
 			if (!hasTrade) { urgency = 45f; return true; }
-#endif
 			return false;
 		}
 		catch { urgency = 0f; return false; }
@@ -807,6 +854,85 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 			return true;
 		}
 		return false;
+	}
+
+	private static bool IsPoliticalAgendaNeedMet(ProactiveCandidate candidate, out float urgency)
+	{
+		urgency = 0f;
+		try
+		{
+			Hero hero = candidate?.Hero;
+			Clan npcClan = hero?.Clan;
+			Kingdom kingdom = candidate?.TargetKingdom ?? npcClan?.Kingdom;
+			Clan playerClan = Clan.PlayerClan;
+			if (hero == null || npcClan == null || kingdom == null || playerClan == null)
+			{
+				return false;
+			}
+			if (npcClan.IsUnderMercenaryService || playerClan.IsUnderMercenaryService)
+			{
+				return false;
+			}
+			if (playerClan.Kingdom != kingdom)
+			{
+				return false;
+			}
+			if (hero != npcClan.Leader && hero != kingdom.RulingClan?.Leader)
+			{
+				return false;
+			}
+			int activeAgendaCount = CountActiveKingdomAgendas(kingdom);
+			if (activeAgendaCount <= 0)
+			{
+				return false;
+			}
+			urgency = 52f + Math.Min(18f, activeAgendaCount * 4f);
+			if (hero == kingdom.RulingClan?.Leader)
+			{
+				urgency += 6f;
+			}
+			return true;
+		}
+		catch
+		{
+			urgency = 0f;
+			return false;
+		}
+	}
+
+	private static int CountActiveKingdomAgendas(Kingdom kingdom)
+	{
+		try
+		{
+			if (kingdom?.UnresolvedDecisions == null)
+			{
+				return 0;
+			}
+			int count = 0;
+			foreach (KingdomDecision decision in kingdom.UnresolvedDecisions)
+			{
+				if (decision == null)
+				{
+					continue;
+				}
+				try
+				{
+					if (decision.ShouldBeCancelled())
+					{
+						continue;
+					}
+				}
+				catch
+				{
+				}
+				count++;
+			}
+			return count;
+		}
+		catch
+		{
+			return 0;
+		}
 	}
 
 	private static bool IsMoneyShortageNeedMet(ProactiveCandidate candidate, DuelSettings settings, out float urgency)
@@ -1338,11 +1464,27 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		{
 			return NeedKingdomVassalInvite;
 		}
+		if (string.Equals(text, NeedPoliticalAgenda, StringComparison.OrdinalIgnoreCase))
+		{
+			return NeedPoliticalAgenda;
+		}
+		if (string.Equals(text, NeedDiplomacy, StringComparison.OrdinalIgnoreCase))
+		{
+			return NeedDiplomacy;
+		}
 		return "";
 	}
 
 	private static int GetNeedPresentationPriority(string needType)
 	{
+		if (string.Equals(needType, NeedDiplomacy, StringComparison.OrdinalIgnoreCase))
+		{
+			return 120;
+		}
+		if (string.Equals(needType, NeedPoliticalAgenda, StringComparison.OrdinalIgnoreCase))
+		{
+			return 110;
+		}
 		if (string.Equals(needType, NeedFoodShortage, StringComparison.OrdinalIgnoreCase))
 		{
 			return 100;
@@ -1461,6 +1603,14 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 			return BuildCombinedOpeningFact(hero, party, playerName, npcName, activeNeedTypes);
 		}
 		string needType = activeNeedTypes.Count > 0 ? activeNeedTypes[0] : (string.IsNullOrWhiteSpace(_activeSession?.NeedType) ? NeedFoodShortage : _activeSession.NeedType);
+		if (string.Equals(needType, NeedDiplomacy, StringComparison.OrdinalIgnoreCase))
+		{
+			return BuildDiplomacyOpeningFact(hero, playerName, npcName);
+		}
+		if (string.Equals(needType, NeedPoliticalAgenda, StringComparison.OrdinalIgnoreCase))
+		{
+			return BuildPoliticalAgendaOpeningFact(hero, playerName, npcName);
+		}
 		if (string.Equals(needType, NeedKingdomVassalInvite, StringComparison.OrdinalIgnoreCase))
 		{
 			return BuildKingdomVassalInviteOpeningFact(hero, playerName, npcName);
@@ -1504,6 +1654,16 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 
 	private string BuildOpeningNeedSummary(string needType, Hero hero, MobileParty party, string playerName, string npcName)
 	{
+		if (string.Equals(needType, NeedDiplomacy, StringComparison.OrdinalIgnoreCase))
+		{
+			return BuildDiplomacyOpeningSummary(hero, playerName, npcName);
+		}
+		if (string.Equals(needType, NeedPoliticalAgenda, StringComparison.OrdinalIgnoreCase))
+		{
+			Kingdom kingdom = ResolveHeroKingdom(hero);
+			string kingdomName = ResolveKnownKingdomName(kingdom);
+			return "你和" + playerName + "同属" + kingdomName + "，当前王国内有正在公示或等待处理的议程；你主动来请求" + playerName + "在议程、投票或拉票上支持你的政治目标，可以提出报酬或条件，但不要假定玩家已经答应";
+		}
 		if (string.Equals(needType, NeedKingdomVassalInvite, StringComparison.OrdinalIgnoreCase))
 		{
 			Kingdom kingdom = ResolveHeroKingdom(hero);
@@ -1575,6 +1735,87 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		{
 		}
 		return "你的部队缺少食物，剩余食物约可维持 " + foodDays + " 天，库存食物数量约为 " + totalFood + "，因此你想请求援助或购买食物";
+	}
+
+	private string BuildDiplomacyOpeningFact(Hero hero, string playerName, string npcName)
+	{
+		Kingdom npcKingdom = hero?.Clan?.Kingdom;
+		Kingdom playerKingdom = Clan.PlayerClan?.Kingdom;
+		string npcKingdomName = ResolveKnownKingdomName(npcKingdom);
+		string playerKingdomName = ResolveKnownKingdomName(playerKingdom);
+		string topic = ResolveDiplomacyRequestLabel(npcKingdom, playerKingdom);
+		return "[AFEF NPC行为补充] " + npcName + "，你是" + npcKingdomName + "的国王，" + playerName + "是" + playerKingdomName + "的国王。你主动追上" + playerName + "，不是为了宣战，而是想当面发起国王间外交谈判，当前最合适的话题是" + topic + "。你可以提出条件、贡金方向或期限，也可以请求对方考虑共同敌人、贸易利益或战争压力；只有双方明确同意后，系统机制才会在后处理阶段生效，不要假定玩家已经答应。";
+	}
+
+	private string BuildPoliticalAgendaOpeningFact(Hero hero, string playerName, string npcName)
+	{
+		Kingdom kingdom = hero?.Clan?.Kingdom;
+		string kingdomName = ResolveKnownKingdomName(kingdom);
+		string agendaContext = VoteDealBehavior.BuildPendingDecisionsContext(hero);
+		string text = "[AFEF NPC行为补充] " + npcName + "，你和" + playerName + "同属" + kingdomName + "。你主动追上" + playerName + "，是想把当前王国议程、投票或拉票话题摆到台面上，请求" + playerName + "支持你的政治目标。你可以说明想让对方支持哪项议程、哪一方候选或哪种投票立场，也可以提出金钱、利益或未来承诺作为交换；但不要假定玩家已经答应，系统也不会因为这段开场自动记录玩家支持。";
+		if (!string.IsNullOrWhiteSpace(agendaContext))
+		{
+			text += "\n" + agendaContext;
+		}
+		return text;
+	}
+
+	private static string BuildDiplomacyOpeningSummary(Hero hero, string playerName, string npcName)
+	{
+		Kingdom npcKingdom = hero?.Clan?.Kingdom;
+		Kingdom playerKingdom = Clan.PlayerClan?.Kingdom;
+		string topic = ResolveDiplomacyRequestLabel(npcKingdom, playerKingdom);
+		return "你和" + playerName + "分别是两个王国的国王；你主动来谈" + topic + "，可以提出条件，但不要主动宣战，也不要假定玩家已经同意";
+	}
+
+	private static string ResolveDiplomacyRequestLabel(Kingdom npcKingdom, Kingdom playerKingdom)
+	{
+		try
+		{
+			if (npcKingdom != null && playerKingdom != null && FactionManager.IsAtWarAgainstFaction(npcKingdom, playerKingdom))
+			{
+				return "议和";
+			}
+			if (HasCommonEnemy(npcKingdom, playerKingdom))
+			{
+				return "结盟";
+			}
+			ITradeAgreementsCampaignBehavior tradeBeh = Campaign.Current.GetCampaignBehavior<ITradeAgreementsCampaignBehavior>();
+			if (npcKingdom != null && playerKingdom != null && !BannerlordApiCompat.HasTradeAgreement(tradeBeh, npcKingdom, playerKingdom))
+			{
+				return "通商";
+			}
+		}
+		catch
+		{
+		}
+		return "国王间外交";
+	}
+
+	private static bool HasCommonEnemy(Kingdom first, Kingdom second)
+	{
+		try
+		{
+			if (first == null || second == null)
+			{
+				return false;
+			}
+			foreach (Kingdom kingdom in Kingdom.All)
+			{
+				if (kingdom == null || kingdom.IsEliminated || kingdom == first || kingdom == second)
+				{
+					continue;
+				}
+				if (FactionManager.IsAtWarAgainstFaction(first, kingdom) && FactionManager.IsAtWarAgainstFaction(second, kingdom))
+				{
+					return true;
+				}
+			}
+		}
+		catch
+		{
+		}
+		return false;
 	}
 
 	private string BuildKingdomMercenaryInviteOpeningFact(Hero hero, string playerName, string npcName)
@@ -1694,6 +1935,14 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 
 	private static string BuildOpeningPrompt(string needType)
 	{
+		if (string.Equals(needType, NeedDiplomacy, StringComparison.OrdinalIgnoreCase))
+		{
+			return "请你先开口说明自己主动追上玩家的来意，围绕国王间外交谈判提出议和、结盟或通商请求。不要主动宣战；只有双方明确同意后才可以让机制生效。只输出你作为NPC说出的话。";
+		}
+		if (string.Equals(needType, NeedPoliticalAgenda, StringComparison.OrdinalIgnoreCase))
+		{
+			return "请你先开口说明自己主动追上玩家的来意，围绕同王国的当前议程、投票或拉票请求玩家支持。可以提出报酬或交换条件，但不要假定玩家已经答应，也不要输出任何系统标签。只输出你作为NPC说出的话。";
+		}
 		if (string.Equals(needType, NeedKingdomVassalInvite, StringComparison.OrdinalIgnoreCase))
 		{
 			return "请你先开口说明自己主动追上玩家的来意，围绕你的王国缺少长期封臣，作为国王邀请玩家为你的王国效力。玩家家族等级已达到封臣门槛，你可以同时提出正式封臣身份或雇佣兵契约两个方向。只输出你作为NPC说出的话。";
@@ -1719,6 +1968,14 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 
 	private static string GetNeedPromptLabel(string needType)
 	{
+		if (string.Equals(needType, NeedDiplomacy, StringComparison.OrdinalIgnoreCase))
+		{
+			return "国王间外交请求：议和、结盟或通商，不主动宣战";
+		}
+		if (string.Equals(needType, NeedPoliticalAgenda, StringComparison.OrdinalIgnoreCase))
+		{
+			return "同王国议程、投票或拉票请求玩家支持，可谈报酬但不自动记录承诺";
+		}
 		if (string.Equals(needType, NeedKingdomVassalInvite, StringComparison.OrdinalIgnoreCase))
 		{
 			return "王国缺少长期封臣，作为国王邀请玩家成为正式封臣，也可提出雇佣兵契约";
@@ -2580,6 +2837,7 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		public bool KingdomNeedsVassals { get; set; }
 		public float KingdomMercenaryNeedUrgency { get; set; }
 		public float KingdomVassalNeedUrgency { get; set; }
+		public bool AtWarWithPlayer { get; set; }
 		public string NeedType { get; set; }
 		public List<string> NeedTypes { get; set; }
 		public float NeedUrgency { get; set; }
@@ -2621,6 +2879,8 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		public int PrisonerOverload { get; set; }
 		public int KingdomMercenaryInvite { get; set; }
 		public int KingdomVassalInvite { get; set; }
+		public int PoliticalAgenda { get; set; }
+		public int Diplomacy { get; set; }
 		public int NeedCandidates { get; set; }
 		public int BelowMinUrgency { get; set; }
 		public int NeedDrivenTriggered { get; set; }
@@ -2659,6 +2919,8 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 				+ " prisonerOverload=" + PrisonerOverload
 				+ " mercenaryInvite=" + KingdomMercenaryInvite
 				+ " vassalInvite=" + KingdomVassalInvite
+				+ " politicalAgenda=" + PoliticalAgenda
+				+ " diplomacy=" + Diplomacy
 				+ " needCandidates=" + NeedCandidates
 				+ " belowMinUrgency=" + BelowMinUrgency
 				+ " needDrivenTriggered=" + NeedDrivenTriggered

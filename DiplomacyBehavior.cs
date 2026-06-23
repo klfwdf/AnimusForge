@@ -177,6 +177,7 @@ namespace AnimusForge
 			if (playerKingdom == null || playerKingdom.IsEliminated) { Logger.Log("DiplomacyBehavior", "[MakePeace] Player no kingdom"); return ""; }
 			if (npcKingdom == null) { Logger.Log("DiplomacyBehavior", "[MakePeace] NPC no kingdom"); return ""; }
 			if (!IsPlayerKing()) { Logger.Log("DiplomacyBehavior", "[MakePeace] Player not king"); return ""; }
+			if (!IsNpcKing(npc, npcKingdom)) { Logger.Log("DiplomacyBehavior", "[MakePeace] NPC not king"); return ""; }
 
 			Kingdom payer, receiver;
 			if (string.Equals(id1, playerKingdom.StringId, StringComparison.OrdinalIgnoreCase)
@@ -215,6 +216,7 @@ namespace AnimusForge
 			if (playerKingdom == null || playerKingdom.IsEliminated) { Logger.Log("DiplomacyBehavior", "[FormAlliance] Player no kingdom"); return ""; }
 			if (npcKingdom == null) { Logger.Log("DiplomacyBehavior", "[FormAlliance] NPC no kingdom"); return ""; }
 			if (!IsPlayerKing()) { Logger.Log("DiplomacyBehavior", "[FormAlliance] Player not king"); return ""; }
+			if (!IsNpcKing(npc, npcKingdom)) { Logger.Log("DiplomacyBehavior", "[FormAlliance] NPC not king"); return ""; }
 
 			// Validate: the two IDs must be player+NPC kingdoms
 			if (!IsPlayerNpcPair(id1, id2, playerKingdom, npcKingdom)) { Logger.Log("DiplomacyBehavior", $"[FormAlliance] IDs mismatch"); return ""; }
@@ -283,6 +285,7 @@ namespace AnimusForge
 			if (playerKingdom == null || playerKingdom.IsEliminated) { Logger.Log("DiplomacyBehavior", "[MakeTrade] Player no kingdom"); return ""; }
 			if (npcKingdom == null) { Logger.Log("DiplomacyBehavior", "[MakeTrade] NPC no kingdom"); return ""; }
 			if (!IsPlayerKing()) { Logger.Log("DiplomacyBehavior", "[MakeTrade] Player not king"); return ""; }
+			if (!IsNpcKing(npc, npcKingdom)) { Logger.Log("DiplomacyBehavior", "[MakeTrade] NPC not king"); return ""; }
 			if (!IsPlayerNpcPair(id1, id2, playerKingdom, npcKingdom)) { Logger.Log("DiplomacyBehavior", $"[MakeTrade] IDs mismatch"); return ""; }
 
 			ITradeAgreementsCampaignBehavior tradeBeh = Campaign.Current.GetCampaignBehavior<ITradeAgreementsCampaignBehavior>();
@@ -395,6 +398,11 @@ namespace AnimusForge
 		{
 			Kingdom pk = Clan.PlayerClan?.Kingdom;
 			return pk != null && Hero.MainHero == pk.RulingClan?.Leader;
+		}
+
+		private static bool IsNpcKing(Hero npc, Kingdom npcKingdom)
+		{
+			return npc != null && npcKingdom != null && npc == npcKingdom.RulingClan?.Leader;
 		}
 
 		private static string GetKingdomDisplayName(Kingdom k)
