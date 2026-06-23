@@ -367,9 +367,10 @@ Follow-up outcome tuning: finalized GCCZ destructive settlement effects now use 
 ## 2026-06-24 AF094 post-siege scene layer entry
 
 - Fused `G:\AFMOD\new-0.9.4\SiegeAiInterventionBehavior.cs` opens the GCCZ personal-entry mission through `SandBoxMissions.OpenTownCenterMission(...)` with the settlement center scene plus `Campaign.Current.Models.LocationModel.GetUpgradeLevelTag(wallLevel) + " siege"` scene levels.
-- This intentionally keeps the vanilla `TownCenter` mission stack, `MissionLocationLogic(center)`, `LocationCharacter` spawning, native civilian count, native civilian positions, culture-specific civilian templates, and normal town-location equipment; it does **not** start `OpenSiegeMissionWithDeployment` and does **not** hand-spawn additional GCCZ civilians.
-- The AF bridge may still summon the selected allied player troops as GCCZ escorts. Civilian population must remain native-location-only: no `SpawnAssemblyCivilian`, no synthetic `SimpleAgentOrigin` civilians, and no 180/220 artificial civilian target count refill.
-- If a specific siege scene level exposes fewer usable civilian spawn points than the peaceful town level, report the native spawned count and accept it for the test build instead of filling with manually spawned civilians, because the old synthetic path caused inactive/T-pose civilians.
+- This intentionally keeps the vanilla `TownCenter` mission stack, `MissionLocationLogic(center)`, native civilian positions, culture-specific civilian templates, and normal town-location equipment; it does **not** start `OpenSiegeMissionWithDeployment` and does **not** directly spawn raw GCCZ civilian agents.
+- The AF bridge may still summon the selected allied player troops as GCCZ escorts. Civilian population must remain vanilla-location-based: no `SpawnAssemblyCivilian`, no raw synthetic `SimpleAgentOrigin` agent injection, and no siege deployment refill.
+- AF094 now adds `InterventionNativeTownCivilianPopulationMissionBehavior` before the GCCZ mission behavior. It raises the active town-center civilian population toward the normal town maximum (`BannerlordConfig.CivilianAgentCount`, capped by `SiegeCivilianAssemblyProfile`) by creating vanilla `LocationCharacter` entries through `CommonTownsfolkCampaignBehavior` creators and spawning them through `MissionAgentHandler.SpawnDefaultLocationCharacter(...)`.
+- The population bridge skips protected child/teenager creators, because GCCZ separately suppresses protected child scene agents. Adult civilians, beggars, cleaners, dancers, and carrying townsfolk still use the settlement culture and normal `npc_common` / `npc_common_limited` / special town spawn tags.
 
 ## 2026-06-24 AF094 visual-only wall damage overlay
 

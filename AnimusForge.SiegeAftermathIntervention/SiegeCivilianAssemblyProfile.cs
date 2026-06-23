@@ -23,4 +23,10 @@ public static class SiegeCivilianAssemblyProfile
     public const string MissionAfterStartSource = "mission_after_start";
 
     public const string ControlTickSource = "control_tick";
+
+    public const string NativeTownMaxPopulationSource = "native_town_max_population";
+
+    public const float NativeTownPopulationRetrySeconds = 4f;
+
+    public const int NativeTownPopulationMaxSpawnAttempts = TownSceneCap;
 }

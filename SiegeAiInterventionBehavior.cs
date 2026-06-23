@@ -974,6 +974,10 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		_nextPlunderTickTime = 0f;
 		try
 		{
+			if (mission is Mission missionPopulation && missionPopulation.GetMissionBehavior<InterventionNativeTownCivilianPopulationMissionBehavior>() == null)
+			{
+				missionPopulation.AddMissionBehavior(new InterventionNativeTownCivilianPopulationMissionBehavior(_activeSettlementId));
+			}
 			if (mission is Mission mission2 && mission2.GetMissionBehavior<InterventionMissionBehavior>() == null)
 			{
 				mission2.AddMissionBehavior(new InterventionMissionBehavior());
