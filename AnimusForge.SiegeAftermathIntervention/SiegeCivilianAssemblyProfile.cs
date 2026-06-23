@@ -6,10 +6,6 @@ namespace AnimusForge.SiegeAftermathIntervention;
 /// </summary>
 public static class SiegeCivilianAssemblyProfile
 {
-    public const int MinDesiredCivilianCount = 180;
-
-    public const int MaxDesiredCivilianCount = 220;
-
     public const int TownSceneCap = 140;
 
     public const int SceneTotalAgentSoftCap = 220;

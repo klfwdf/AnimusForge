@@ -606,9 +606,9 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			SceneTauntBehavior.ClearPendingMainHeroBattleDeathForExternal(SiegeInterventionEntryProfile.SceneEntryCleanupSource);
 			InformationManager.DisplayMessage(new InformationMessage(SiegeInterventionEntryProfile.BuildTroopSelectionInstructionMessage(AutoSummonCount), Color.FromUint(SiegeInterventionEntryProfile.EntryInstructionMessageColor)));
 			InformationManager.DisplayMessage(new InformationMessage(SiegeInterventionEntryProfile.DecisionPolicyMessage, Color.FromUint(SiegeInterventionEntryProfile.EntryInstructionMessageColor)));
-			if (!TryOpenInterventionTroopSelection(args, location))
+			if (!TryOpenInterventionTroopSelection(args, settlement, location))
 			{
-				OpenInterventionMissionNow(location, SiegeInterventionEntryProfile.SelectionUnavailableMissionSource);
+				OpenInterventionMissionNow(settlement, location, SiegeInterventionEntryProfile.SelectionUnavailableMissionSource);
 			}
 		}
 		catch (Exception ex)
@@ -618,11 +618,11 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static bool TryOpenInterventionTroopSelection(MenuCallbackArgs args, Location location)
+	private static bool TryOpenInterventionTroopSelection(MenuCallbackArgs args, Settlement settlement, Location location)
 	{
 		try
 		{
-			if (location == null || args?.MenuContext?.Handler == null || MobileParty.MainParty?.MemberRoster == null)
+			if (settlement == null || location == null || args?.MenuContext?.Handler == null || MobileParty.MainParty?.MemberRoster == null)
 			{
 				return false;
 			}
@@ -645,7 +645,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				{
 					InformationManager.DisplayMessage(new InformationMessage(SiegeInterventionEntryProfile.SelectionFallbackMessage, Color.FromUint(SiegeInterventionEntryProfile.SelectionFallbackMessageColor)));
 				}
-				OpenInterventionMissionNow(location, SiegeInterventionEntryProfile.TroopSelectionDoneMissionSource);
+				OpenInterventionMissionNow(settlement, location, SiegeInterventionEntryProfile.TroopSelectionDoneMissionSource);
 			};
 			if (!TryOpenTroopSelectionRuntimeCompat(args.MenuContext, fullRoster, initialSelections, onDone))
 			{
@@ -832,10 +832,50 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		Logger.Log("SiegeAiIntervention", "Stored intervention troop selection. Count=" + (_selectedInterventionRoster?.TotalManCount ?? 0));
 	}
 
-	private static void OpenInterventionMissionNow(Location location, string source)
+	private static void OpenInterventionMissionNow(Settlement settlement, Location location, string source)
 	{
+		if (TryOpenInterventionTownCenterSiegeScene(settlement, location, source))
+		{
+			return;
+		}
 		PlayerEncounter.LocationEncounter.CreateAndOpenMissionController(location, null, null, null);
-		Logger.Log("SiegeAiIntervention", "Opened intervention mission. Source=" + (source ?? "N/A") + ", SelectedRoster=" + (_selectedInterventionRoster?.TotalManCount ?? 0));
+		Logger.Log("SiegeAiIntervention", "Opened intervention mission through location controller. Source=" + (source ?? "N/A") + ", SelectedRoster=" + (_selectedInterventionRoster?.TotalManCount ?? 0));
+	}
+
+	private static bool TryOpenInterventionTownCenterSiegeScene(Settlement settlement, Location location, string source)
+	{
+		try
+		{
+			if (settlement?.Town == null || location == null || !settlement.IsTown || !string.Equals(location.StringId, "center", StringComparison.OrdinalIgnoreCase))
+			{
+				return false;
+			}
+			int wallLevel = settlement.Town.GetWallLevel();
+			string sceneName = location.GetSceneName(wallLevel);
+			string sceneLevels = BuildInterventionSiegeSceneLevels(wallLevel);
+			if (string.IsNullOrWhiteSpace(sceneName) || string.IsNullOrWhiteSpace(sceneLevels))
+			{
+				return false;
+			}
+			SandBoxMissions.OpenTownCenterMission(sceneName, sceneLevels, location, null, null);
+			Logger.Log("SiegeAiIntervention", "Opened intervention town-center mission with siege scene layer. Source=" + (source ?? "N/A") + ", Settlement=" + (settlement.StringId ?? "N/A") + ", Scene=" + sceneName + ", SceneLevels=" + sceneLevels + ", NativeCiviliansOnly=true, SelectedRoster=" + (_selectedInterventionRoster?.TotalManCount ?? 0));
+			return true;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "Open intervention town-center siege scene failed: " + ex.Message);
+			return false;
+		}
+	}
+
+	private static string BuildInterventionSiegeSceneLevels(int wallLevel)
+	{
+		string upgradeLevelTag = Campaign.Current?.Models?.LocationModel?.GetUpgradeLevelTag(wallLevel);
+		if (string.IsNullOrWhiteSpace(upgradeLevelTag))
+		{
+			upgradeLevelTag = "level_" + Math.Max(1, wallLevel);
+		}
+		return upgradeLevelTag.Trim() + " siege";
 	}
 
 	private static Location ResolveInterventionLocation(Settlement settlement)

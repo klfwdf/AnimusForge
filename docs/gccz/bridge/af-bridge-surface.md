@@ -363,3 +363,10 @@ Follow-up outcome tuning: finalized GCCZ destructive settlement effects now use 
 - `Patch_SiegeAftermath_*_OnInit_AFRedirect` keeps native aftermath menu init from drawing stale vanilla menus after GCCZ resolution.
 - `Patch_SiegeAftermath_Continue_AFMassacreLoot` is the bridge for native Devastate contextual-summary continue, so GCCZ can open pending loot or finish the encounter after the native summary.
 - `Patch_GameStateManager_OnTick_AFMassacreLoot` is a guarded fallback pump. It calls the same direct script pump facades and is safe because the scripts return when no direct aftermath is pending, a mission is still active, or the loot screen already opened.
+
+## 2026-06-24 AF094 post-siege scene layer entry
+
+- Fused `G:\AFMOD\new-0.9.4\SiegeAiInterventionBehavior.cs` opens the GCCZ personal-entry mission through `SandBoxMissions.OpenTownCenterMission(...)` with the settlement center scene plus `Campaign.Current.Models.LocationModel.GetUpgradeLevelTag(wallLevel) + " siege"` scene levels.
+- This intentionally keeps the vanilla `TownCenter` mission stack, `MissionLocationLogic(center)`, `LocationCharacter` spawning, native civilian count, native civilian positions, culture-specific civilian templates, and normal town-location equipment; it does **not** start `OpenSiegeMissionWithDeployment` and does **not** hand-spawn additional GCCZ civilians.
+- The AF bridge may still summon the selected allied player troops as GCCZ escorts. Civilian population must remain native-location-only: no `SpawnAssemblyCivilian`, no synthetic `SimpleAgentOrigin` civilians, and no 180/220 artificial civilian target count refill.
+- If a specific siege scene level exposes fewer usable civilian spawn points than the peaceful town level, report the native spawned count and accept it for the test build instead of filling with manually spawned civilians, because the old synthetic path caused inactive/T-pose civilians.
