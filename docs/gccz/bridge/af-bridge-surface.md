@@ -370,3 +370,11 @@ Follow-up outcome tuning: finalized GCCZ destructive settlement effects now use 
 - This intentionally keeps the vanilla `TownCenter` mission stack, `MissionLocationLogic(center)`, `LocationCharacter` spawning, native civilian count, native civilian positions, culture-specific civilian templates, and normal town-location equipment; it does **not** start `OpenSiegeMissionWithDeployment` and does **not** hand-spawn additional GCCZ civilians.
 - The AF bridge may still summon the selected allied player troops as GCCZ escorts. Civilian population must remain native-location-only: no `SpawnAssemblyCivilian`, no synthetic `SimpleAgentOrigin` civilians, and no 180/220 artificial civilian target count refill.
 - If a specific siege scene level exposes fewer usable civilian spawn points than the peaceful town level, report the native spawned count and accept it for the test build instead of filling with manually spawned civilians, because the old synthetic path caused inactive/T-pose civilians.
+
+## 2026-06-24 AF094 visual-only wall damage overlay
+
+- Fused `G:\AFMOD\new-0.9.4\SiegeAiInterventionBehavior.cs` now snapshots `Settlement.SettlementWallSectionHitPointsRatioList` immediately before opening the GCCZ personal-entry scene.
+- The scene still opens as vanilla `TownCenter` through `SandBoxMissions.OpenTownCenterMission(...)`, so native center-location civilians, positions, clothing, and activity remain controlled by the normal town stack.
+- A fused-only bridge mission behavior applies a **visual-only** siege damage overlay after mission start: `damage_decal` visibility and `WallSegment.OnChooseUsedWallSegment(...)` are updated from the saved wall ratios when those scene objects exist.
+- Do not replace this with the full native `SiegeMissionPreparationHandler`: that handler also touches assault/sally-out entities, ladders, siege machines, deployment assumptions, and destructible components. GCCZ must not start siege deployment, siege AI, siege spawning, or `PreDestroy()` paths for this post-siege town-center entry.
+- Missing wall/decal objects are a safe no-op and should be logged, not compensated by spawning synthetic siege props or civilians.

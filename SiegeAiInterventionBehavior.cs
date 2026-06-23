@@ -169,6 +169,8 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		}
 	}
 
+
+
 	private const int AutoSummonCount = SiegeInterventionEntryProfile.DefaultAutoSummonCount;
 	private const int MaxSummonPerAction = SiegeInterventionEntryProfile.MaxSummonPerAction;
 	private const int NonHeroPlunderMinGold = SiegeLootAccountingProfile.NonHeroPlunderMinGold;
@@ -328,6 +330,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	private static bool _directPlunderScriptMessageShown;
 	private static int _directPlunderScriptTicks;
 	private static string _directPlunderLastDeferKey = "";
+	private static float[] _interventionWallHitPointPercentages = new float[0];
 	private static readonly SiegeOutcomeMessageDeduplicator OutcomeMessageDeduplicator = new SiegeOutcomeMessageDeduplicator();
 	private static bool _civilianAssemblyPointReady;
 	private static bool _civilianAssemblyMessageShown;
@@ -600,6 +603,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			_civilianAssemblyForward = Vec3.Forward;
 			CaptureNativeSiegeContext(settlement);
 			ResetSessionCounters();
+			CaptureInterventionSiegeDamageVisualState(settlement);
 			SceneTauntBehavior.ClearArmedCarryoverForExternal(SiegeInterventionEntryProfile.SceneEntryCleanupSource);
 			SceneTauntBehavior.ClearPendingLocalDungeonCaptivityForExternal(SiegeInterventionEntryProfile.SceneEntryCleanupSource);
 			SceneTauntBehavior.ClearPendingForcedPlayerExecutionForExternal(SiegeInterventionEntryProfile.SceneEntryCleanupSource);
@@ -974,10 +978,14 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			{
 				mission2.AddMissionBehavior(new InterventionMissionBehavior());
 			}
+			if (mission is Mission mission3 && _interventionWallHitPointPercentages != null && _interventionWallHitPointPercentages.Length > 0 && mission3.GetMissionBehavior<InterventionSiegeDamageVisualMissionBehavior>() == null)
+			{
+				mission3.AddMissionBehavior(new InterventionSiegeDamageVisualMissionBehavior(_interventionWallHitPointPercentages, _activeSettlementId));
+			}
 		}
 		catch (Exception ex)
 		{
-			Logger.Log("SiegeAiIntervention", "Add InterventionMissionBehavior failed: " + ex.Message);
+			Logger.Log("SiegeAiIntervention", "Add intervention mission behaviors failed: " + ex.Message);
 		}
 	}
 
@@ -9021,6 +9029,32 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private static void CaptureInterventionSiegeDamageVisualState(Settlement settlement)
+	{
+		_interventionWallHitPointPercentages = new float[0];
+		try
+		{
+			if (settlement == null || settlement.SettlementWallSectionHitPointsRatioList == null || settlement.SettlementWallSectionHitPointsRatioList.Count == 0)
+			{
+				Logger.Log("SiegeAiIntervention", "No settlement wall hit-point ratios available for visual-only siege damage state.");
+				return;
+			}
+			float[] ratios = new float[settlement.SettlementWallSectionHitPointsRatioList.Count];
+			for (int i = 0; i < settlement.SettlementWallSectionHitPointsRatioList.Count; i++)
+			{
+				ratios[i] = MBMath.ClampFloat(settlement.SettlementWallSectionHitPointsRatioList[i], 0f, 1f);
+			}
+			_interventionWallHitPointPercentages = ratios;
+			Logger.Log("SiegeAiIntervention", "Captured visual-only siege damage state. Settlement=" + (settlement.StringId ?? "N/A") + ", WallRatios=[" + InterventionSiegeDamageVisualMissionBehavior.BuildWallHitPointSummary(ratios) + "]");
+		}
+		catch (Exception ex)
+		{
+			_interventionWallHitPointPercentages = new float[0];
+			Logger.Log("SiegeAiIntervention", "CaptureInterventionSiegeDamageVisualState failed: " + ex.Message);
+		}
+	}
+
+
 	private static T ReadPrivateField<T>(object instance, Type type, string fieldName) where T : class
 	{
 		try
@@ -9883,6 +9917,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		_directPlunderScriptMessageShown = false;
 		_directPlunderScriptTicks = 0;
 		_directPlunderLastDeferKey = "";
+		_interventionWallHitPointPercentages = new float[0];
 		ResetOutcomeMessageDedup();
 		ActivePlunderInteractions.Clear();
 		ActiveCivilianGatherInteractions.Clear();
