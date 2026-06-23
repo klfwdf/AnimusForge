@@ -13,7 +13,11 @@ public static class Patch_PlayerEncounter_Start
 	{
 		try
 		{
-			if (LordEncounterBehavior.IsEncounterRedirectSuspended())
+			if (LordEncounterBehavior.HasPendingNativeEncounterAttackForExternal())
+			{
+				Logger.LogTrace("Patch_PlayerEncounter_Start", "Native encounter attack is pending; skip custom encounter menu redirect.");
+			}
+			else if (LordEncounterBehavior.IsEncounterRedirectSuspended())
 			{
 				Logger.LogTrace("Patch_PlayerEncounter_Start", "Encounter redirect is suspended; skip custom encounter menu redirect.");
 			}

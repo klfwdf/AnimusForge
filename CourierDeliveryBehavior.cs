@@ -158,6 +158,8 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 
 	private readonly Dictionary<string, CourierSession> _sessions = new Dictionary<string, CourierSession>(StringComparer.OrdinalIgnoreCase);
 	private readonly object _sessionLock = new object();
+	private volatile HashSet<string> _activeCourierPartyIdsSnapshot = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+	private readonly Dictionary<string, MobileParty> _courierPartyCache = new Dictionary<string, MobileParty>(StringComparer.OrdinalIgnoreCase);
 	private PendingCourierFlow _pendingFlow;
 	private long _lastCampaignTickUtcTicks;
 	private bool _courierReplyWaitTimeLocked;
@@ -218,6 +220,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 					}
 				}
 			}
+			RebuildCourierRuntimeIndexes();
 		}
 	}
 
@@ -264,6 +267,15 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			}
 			string partyId = (party.StringId ?? "").Trim();
 			if (string.IsNullOrWhiteSpace(partyId))
+			{
+				return false;
+			}
+			HashSet<string> snapshot = Instance._activeCourierPartyIdsSnapshot;
+			if (snapshot != null && snapshot.Contains(partyId))
+			{
+				return true;
+			}
+			if (snapshot != null && snapshot.Count > 0)
 			{
 				return false;
 			}
@@ -384,11 +396,92 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 					ApplyCourierAiOverrides(courier, "load_restore");
 				}
 			}
+			RebuildCourierRuntimeIndexes();
 			Log("game_load_finished active=" + GetActiveSessionCount());
 		}
 		catch (Exception ex)
 		{
 			Log("game_load_finished failed: " + ex);
+		}
+	}
+
+	private void RebuildCourierRuntimeIndexes()
+	{
+		try
+		{
+			HashSet<string> partyIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+			lock (_sessionLock)
+			{
+				foreach (CourierSession session in _sessions.Values)
+				{
+					string partyId = (session?.CourierPartyId ?? "").Trim();
+					if (!string.IsNullOrWhiteSpace(partyId) && !IsTerminalStage(session))
+					{
+						partyIds.Add(partyId);
+					}
+				}
+				foreach (string cachedId in _courierPartyCache.Keys.ToList())
+				{
+					if (!partyIds.Contains(cachedId))
+					{
+						_courierPartyCache.Remove(cachedId);
+					}
+				}
+			}
+			_activeCourierPartyIdsSnapshot = partyIds;
+		}
+		catch (Exception ex)
+		{
+			Log("runtime index rebuild failed: " + ex.Message);
+		}
+	}
+
+	private void AddCourierRuntimeIndex(CourierSession session, MobileParty courier = null)
+	{
+		try
+		{
+			string partyId = (session?.CourierPartyId ?? "").Trim();
+			if (string.IsNullOrWhiteSpace(partyId) || IsTerminalStage(session))
+			{
+				return;
+			}
+			HashSet<string> partyIds = new HashSet<string>(_activeCourierPartyIdsSnapshot ?? new HashSet<string>(StringComparer.OrdinalIgnoreCase), StringComparer.OrdinalIgnoreCase)
+			{
+				partyId
+			};
+			_activeCourierPartyIdsSnapshot = partyIds;
+			if (courier != null)
+			{
+				lock (_sessionLock)
+				{
+					_courierPartyCache[partyId] = courier;
+				}
+			}
+		}
+		catch
+		{
+		}
+	}
+
+	private void RemoveCourierRuntimeIndex(CourierSession session)
+	{
+		try
+		{
+			string partyId = (session?.CourierPartyId ?? "").Trim();
+			if (string.IsNullOrWhiteSpace(partyId))
+			{
+				return;
+			}
+			HashSet<string> partyIds = new HashSet<string>(_activeCourierPartyIdsSnapshot ?? new HashSet<string>(StringComparer.OrdinalIgnoreCase), StringComparer.OrdinalIgnoreCase);
+			partyIds.Remove(partyId);
+			_activeCourierPartyIdsSnapshot = partyIds;
+			lock (_sessionLock)
+			{
+				_courierPartyCache.Remove(partyId);
+			}
+		}
+		catch
+		{
 		}
 	}
 
@@ -783,6 +876,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			{
 				_sessions[session.Id] = session;
 			}
+			AddCourierRuntimeIndex(session);
 			Log("session created id=" + session.Id + " recipient=" + session.RecipientHeroId + " party=" + session.CourierPartyId + " mode=" + session.PayloadMode + " entries=" + session.Entries.Count);
 			StartCourierReplyGeneration(session, "created_preflight");
 			InformationManager.DisplayMessage(new InformationMessage("信使队已出发，正在前往 " + session.RecipientName + "。", Colors.Green));
@@ -904,16 +998,34 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 				return;
 			}
 			_lastCampaignTickUtcTicks = now;
-			TryPatchPartyNameplateForCourierBanner();
-			TryPatchMapTrackerProviderForCourierDiagnostics();
-			List<CourierSession> snapshot;
-			lock (_sessionLock)
+			if (!_partyNameplatePatchApplied && !_partyNameplatePatchFailed)
 			{
-				snapshot = _sessions.Values.Where(x => x != null && !IsTerminalStage(x)).ToList();
+				using (PerfProbe.Scope("CourierDelivery.OnCampaignTick.PatchPartyNameplate"))
+				{
+					TryPatchPartyNameplateForCourierBanner();
+				}
+			}
+			if (!_mapTrackerProviderPatchApplied && !_mapTrackerProviderPatchFailed)
+			{
+				using (PerfProbe.Scope("CourierDelivery.OnCampaignTick.PatchMapTrackerProvider"))
+				{
+					TryPatchMapTrackerProviderForCourierDiagnostics();
+				}
+			}
+			List<CourierSession> snapshot;
+			using (PerfProbe.Scope("CourierDelivery.OnCampaignTick.BuildSnapshot"))
+			{
+				lock (_sessionLock)
+				{
+					snapshot = _sessions.Values.Where(x => x != null && !IsTerminalStage(x)).ToList();
+				}
 			}
 			foreach (CourierSession session in snapshot)
 			{
-				ProcessSession(session);
+				using (PerfProbe.Scope("CourierDelivery.OnCampaignTick.ProcessSession"))
+				{
+					ProcessSession(session);
+				}
 			}
 		}
 		catch (Exception ex)
@@ -1742,6 +1854,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			{
 				_sessions.Remove(session.Id);
 			}
+			RemoveCourierRuntimeIndex(session);
 		}
 		catch (Exception ex)
 		{
@@ -1797,6 +1910,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		{
 			_sessions.Remove(session.Id);
 		}
+		RemoveCourierRuntimeIndex(session);
 		try
 		{
 			if (courier != null && courier.IsActive)
@@ -1835,6 +1949,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		{
 			_sessions.Remove(session.Id);
 		}
+		RemoveCourierRuntimeIndex(session);
 	}
 
 	private static void DisplayCourierDestroyedStatus(CourierSession session, string detail)
@@ -3993,7 +4108,26 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		}
 		try
 		{
-			return MobileParty.All?.FirstOrDefault(x => x != null && string.Equals((x.StringId ?? "").Trim(), id, StringComparison.OrdinalIgnoreCase));
+			lock (_sessionLock)
+			{
+				if (_courierPartyCache.TryGetValue(id, out var cached) && cached != null && cached.IsActive && string.Equals((cached.StringId ?? "").Trim(), id, StringComparison.OrdinalIgnoreCase))
+				{
+					return cached;
+				}
+			}
+			MobileParty resolved = MobileParty.All?.FirstOrDefault(x => x != null && string.Equals((x.StringId ?? "").Trim(), id, StringComparison.OrdinalIgnoreCase));
+			lock (_sessionLock)
+			{
+				if (resolved != null)
+				{
+					_courierPartyCache[id] = resolved;
+				}
+				else
+				{
+					_courierPartyCache.Remove(id);
+				}
+			}
+			return resolved;
 		}
 		catch
 		{

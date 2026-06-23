@@ -143,6 +143,13 @@ internal static class MeetingBattleRuntime
 		catch
 		{
 		}
+		try
+		{
+			LordEncounterBehavior.MarkPendingMeetingBattleNativeResultForExternal(_targetHero, reason);
+		}
+		catch
+		{
+		}
 		Logger.Log("MeetingBattle", "Combat escalation requested. Side effects unlocked. Reason=" + (reason ?? "N/A"));
 	}
 

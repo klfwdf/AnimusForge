@@ -79,7 +79,7 @@ public sealed class AnimusForgeNativeConversationOverlay
 	private AnimusForgeNativeConversationOverlay(ScreenBase screen)
 	{
 		_screen = screen;
-		_dataSource = new AnimusForgeNativeConversationOverlayVM(HandleSubmitRequested, HandleSwitchTalkRequested, HandleShowHistoryRequested, HandleGiveShowRequested, HandleEditPersonaRequested);
+		_dataSource = new AnimusForgeNativeConversationOverlayVM(HandleSubmitRequested, HandleSwitchTalkRequested, HandleShowHistoryRequested, HandleGiveShowRequested, HandleEditPersonaRequested, HandleTagTestRequested);
 		_layer = new GauntletLayer("AnimusForgeNativeConversationOverlay", 350, false);
 	}
 
@@ -166,6 +166,7 @@ public sealed class AnimusForgeNativeConversationOverlay
 		FlushPendingPostprocessNotice();
 		UpdateWaitingDotsAnimation();
 		_dataSource.SetPersonaEditVisible(ShoutBehavior.CanEditNativeConversationNpcForExternal());
+		_dataSource.SetTagTestVisible(ShoutBehavior.CanOpenNativeConversationTagTestForExternal());
 		TryStartPendingNpcOpening();
 		if (!_dataSource.IsCustomAnswerVisible)
 		{
@@ -481,7 +482,7 @@ public sealed class AnimusForgeNativeConversationOverlay
 			{
 				return false;
 			}
-			float bottom = _dataSource?.IsPersonaEditVisible == true ? 285f : 235f;
+			float bottom = _dataSource?.IsTagTestVisible == true ? 335f : (_dataSource?.IsPersonaEditVisible == true ? 285f : 235f);
 			return mouse.x >= width - 330f && mouse.y >= 60f && mouse.y <= bottom;
 		}
 		catch
@@ -560,6 +561,32 @@ public sealed class AnimusForgeNativeConversationOverlay
 			ShowOverlayRoot();
 			RestoreFocusAfterHistory();
 			Logger.Log("NativeConversationOverlay", "[WARN] Failed to open NPC editor: " + ex.Message);
+		}
+	}
+
+	private void HandleTagTestRequested()
+	{
+		if (_isClosed)
+		{
+			return;
+		}
+		try
+		{
+			HideOverlayRoot();
+			_layer.InputRestrictions.ResetInputRestrictions();
+			_layer.IsFocusLayer = false;
+			ScreenManager.TryLoseFocus(_layer);
+			if (!ShoutBehavior.OpenNativeConversationTagTestForExternal(RestoreFocusAfterHistory))
+			{
+				ShowOverlayRoot();
+				RestoreFocusAfterHistory();
+			}
+		}
+		catch (Exception ex)
+		{
+			ShowOverlayRoot();
+			RestoreFocusAfterHistory();
+			Logger.Log("NativeConversationOverlay", "[WARN] Failed to open tag test input: " + ex.Message);
 		}
 	}
 

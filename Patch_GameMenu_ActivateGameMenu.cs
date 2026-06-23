@@ -36,8 +36,23 @@ public static class Patch_GameMenu_ActivateGameMenu
 				Logger.LogTrace("UI_Intercept", "Suppressed native siege aftermath menu activation after GCCZ intervention. Menu=" + (menuId ?? "N/A"));
 				return false;
 			}
+			if (menuId == "AnimusForge_lord_encounter" && LordEncounterBehavior.IsCustomEncounterMenuHardSuppressedForExternal())
+			{
+				Logger.LogTrace("UI_Intercept", "Custom encounter menu activation suppressed while meeting battle is returning to the world map.");
+				return false;
+			}
 			if (!(menuId == "encounter"))
 			{
+				return true;
+			}
+			if (LordEncounterBehavior.HasPendingNativeEncounterAttackForExternal())
+			{
+				Logger.LogTrace("UI_Intercept", "Native encounter attack is pending; keep native 'encounter' menu and skip custom redirect.");
+				return true;
+			}
+			if (LordEncounterBehavior.HasPendingMeetingBattleNativeResultForExternal())
+			{
+				Logger.LogTrace("UI_Intercept", "Meeting battle native result is pending; keep native 'encounter' menu and skip custom redirect.");
 				return true;
 			}
 			if (PlayerEncounter.Current != null && PlayerEncounter.LeaveEncounter)
@@ -55,36 +70,7 @@ public static class Patch_GameMenu_ActivateGameMenu
 				Logger.LogTrace("UI_Intercept", "Native encounter activity context detected; keep native 'encounter' menu.");
 				return true;
 			}
-			if (LordEncounterBehavior.HasPendingMeetingBattleVictorySettlement())
-			{
-				if (LordEncounterBehavior.IsEncounterRedirectSuspended() || LordEncounterRedirectGuard.IsSuppressed())
-				{
-					Logger.LogTrace("UI_Intercept", "Pending meeting victory settlement is active, but redirect is suspended/suppressed; keep native 'encounter' menu.");
-					return true;
-				}
-				try
-				{
-					Hero hero = null;
-					try
-					{
-						hero = PlayerEncounter.EncounteredParty?.LeaderHero;
-					}
-					catch
-					{
-						hero = null;
-					}
-					if (hero != null && hero != Hero.MainHero && hero.IsLord)
-					{
-						LordEncounterBehavior.SetTarget(hero);
-					}
-				}
-				catch
-				{
-				}
-				Logger.LogTrace("UI_Intercept", "Redirecting native 'encounter' to 'AnimusForge_lord_encounter' due to pending meeting victory settlement.");
-				menuId = "AnimusForge_lord_encounter";
-			}
-			else if (LordEncounterBehavior.IsCustomEncounterMenuDisabledForCurrentEncounter())
+			if (LordEncounterBehavior.IsCustomEncounterMenuDisabledForCurrentEncounter())
 			{
 				Logger.LogTrace("UI_Intercept", "Custom encounter menu is disabled for current encounter; keep native 'encounter' menu.");
 			}

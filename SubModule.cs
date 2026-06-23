@@ -487,6 +487,10 @@ public class SubModule : MBSubModuleBase
 			{
 				DuelBehavior.Instance?.OnEngineTick();
 			}
+			using (PerfProbe.Scope("SubModule.LordEncounterBehavior.OnEngineTick"))
+			{
+				LordEncounterBehavior.OnEngineTick();
+			}
 			using (PerfProbe.Scope("SubModule.AnimusForgeTerminalBehavior.OnEngineTick"))
 			{
 				AnimusForgeTerminalBehavior.Instance?.OnEngineTick();

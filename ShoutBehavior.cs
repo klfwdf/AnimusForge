@@ -10950,6 +10950,216 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		return CanEditNativeConversationPersonaForExternal();
 	}
 
+	public static bool CanOpenNativeConversationTagTestForExternal()
+	{
+		try
+		{
+			return MyBehavior.IsDevDataManagementEnabledForExternal() && CanSubmitNativeConversationForExternal();
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	public static bool OpenNativeConversationTagTestForExternal(Action onFinished = null)
+	{
+		try
+		{
+			if (!CanOpenNativeConversationTagTestForExternal() || !TryResolveNativeConversationTarget(out var targetHero, out var targetCharacter, out var npcName))
+			{
+				return false;
+			}
+			string displayName = (targetHero?.Name?.ToString() ?? targetCharacter?.Name?.ToString() ?? npcName ?? "NPC").Trim();
+			if (string.IsNullOrWhiteSpace(displayName))
+			{
+				displayName = "NPC";
+			}
+			Action finish = delegate
+			{
+				try
+				{
+					onFinished?.Invoke();
+				}
+				catch
+				{
+				}
+			};
+			Action<string> submit = delegate(string input)
+			{
+				try
+				{
+					if (TrySubmitNativeConversationTagTestForExternal(input, out var statusText))
+					{
+						ShowTagTestStatus(statusText, success: true);
+					}
+					else
+					{
+						ShowTagTestStatus(string.IsNullOrWhiteSpace(statusText) ? "标签测试未执行。" : statusText, success: false);
+					}
+				}
+				finally
+				{
+					finish();
+				}
+			};
+			string title = "标签输入 - " + displayName;
+			string subtitle = "当前目标：" + displayName + "\n输入 NPC 可见正文和后处理标签。不会调用 API，标签会按当前 NPC 立即执行。";
+			if (ShoutTextInputPopup.Show(title, subtitle, "输入正文和标签：", "", submit, finish))
+			{
+				return true;
+			}
+			InformationManager.ShowTextInquiry(new TextInquiryData(title, subtitle + "\n\n输入正文和标签：", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "执行", "取消", submit, finish), pauseGameActiveState: true);
+			return true;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("NativeConversationTagTest", "[WARN] open failed: " + ex.Message);
+			return false;
+		}
+	}
+
+	public static bool TrySubmitNativeConversationTagTestForExternal(string rawText, out string statusText)
+	{
+		statusText = "";
+		try
+		{
+			if (!CanOpenNativeConversationTagTestForExternal())
+			{
+				statusText = "数据管理未开启，或当前没有可测试的对话目标。";
+				return false;
+			}
+			ShoutBehavior instance = CurrentInstance;
+			if (instance == null || !TryResolveNativeConversationTarget(out var targetHero, out var targetCharacter, out var npcName))
+			{
+				statusText = "当前没有可接入的对话对象。";
+				return false;
+			}
+			string content = (rawText ?? "").Replace("\r", "").Trim();
+			if (string.IsNullOrWhiteSpace(content))
+			{
+				statusText = "输入为空。";
+				return false;
+			}
+			targetHero ??= targetCharacter?.HeroObject;
+			targetCharacter ??= targetHero?.CharacterObject;
+			string displayName = (targetHero?.Name?.ToString() ?? targetCharacter?.Name?.ToString() ?? npcName ?? "NPC").Trim();
+			if (string.IsNullOrWhiteSpace(displayName))
+			{
+				displayName = "NPC";
+			}
+			int targetAgentIndex = TryResolveNativeConversationAgentIndex(targetHero, targetCharacter);
+			int tagCount = CountDeveloperTagTestTags(content);
+			Logger.Log("NativeConversationTagTest", "submit target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? displayName) + " agentIndex=" + targetAgentIndex + " tagCount=" + tagCount + " raw=" + content.Replace("\n", "\\n"));
+			if (targetHero != null)
+			{
+				MyBehavior.ApplyPostprocessMoodFromSceneHeroResponseExternal(targetHero, ref content);
+			}
+			else
+			{
+				try
+				{
+					Agent agent = (targetAgentIndex >= 0) ? Mission.Current?.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == targetAgentIndex && a.IsActive()) : null;
+					NpcDataPacket npc = ShoutUtils.ExtractNpcData(agent);
+					if (npc != null)
+					{
+						MyBehavior.ApplyPostprocessMoodFromSceneUnnamedResponseExternal(npc.UnnamedKey, npc.Name, ref content);
+					}
+				}
+				catch
+				{
+				}
+			}
+			instance.ApplyNativeConversationActionTags(targetHero, targetCharacter, ref content);
+			string visible = SanitizeSceneSpeechText(content);
+			if (!string.IsNullOrWhiteSpace(visible))
+			{
+				try
+				{
+					ConversationHelper.UpdateDialogText(visible);
+				}
+				catch
+				{
+				}
+				instance.CommitNativeConversationTagTestVisibleLine(targetHero, targetCharacter, npcName, visible, targetAgentIndex);
+			}
+			statusText = "标签测试已执行。目标：" + displayName + "，标签数：" + tagCount + (string.IsNullOrWhiteSpace(visible) ? "，无可见正文。" : "，已显示正文。");
+			return true;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("NativeConversationTagTest", "[ERROR] submit failed: " + ex);
+			statusText = "标签测试失败：" + ex.Message;
+			return false;
+		}
+	}
+
+	private static void ShowTagTestStatus(string statusText, bool success)
+	{
+		try
+		{
+			InformationManager.DisplayMessage(new InformationMessage(statusText ?? "", success ? new Color(0.4f, 1f, 0.4f) : new Color(1f, 0.45f, 0.25f)));
+		}
+		catch
+		{
+		}
+	}
+
+	private static int CountDeveloperTagTestTags(string text)
+	{
+		try
+		{
+			return Regex.Matches(text ?? "", "\\[(?:ACTION:[^\\]]*|A:H_J_P_P|AD;[^\\]]*|ADP[:;][^\\]]*|ASS:[^\\]]*|GUI:[^\\]]*|ATT[:;][^\\]]*|ATP[:;][^\\]]*|FOL|STP|END|RELAY:[^\\]]*|AFEF[^\\]]*|AF_SCENE_SESSION:[^\\]]*|CONTENT)\\]", RegexOptions.IgnoreCase).Count;
+		}
+		catch
+		{
+			return 0;
+		}
+	}
+
+	private void CommitNativeConversationTagTestVisibleLine(Hero targetHero, CharacterObject targetCharacter, string npcName, string visible, int targetAgentIndex)
+	{
+		visible = (visible ?? "").Replace("\r", "").Trim();
+		if (string.IsNullOrWhiteSpace(visible))
+		{
+			return;
+		}
+		try
+		{
+			targetHero ??= targetCharacter?.HeroObject;
+			targetCharacter ??= targetHero?.CharacterObject;
+			NpcDataPacket npc = BuildNativeConversationNpcData(targetHero, targetCharacter);
+			npc.AgentIndex = targetAgentIndex;
+			string displayName = (GetSceneNpcHistoryNameForPrompt(npc) ?? npcName ?? targetHero?.Name?.ToString() ?? targetCharacter?.Name?.ToString() ?? "NPC").Trim();
+			if (string.IsNullOrWhiteSpace(displayName))
+			{
+				displayName = "NPC";
+			}
+			if (targetHero != null)
+			{
+				int sceneSessionId = TryGetCurrentSceneHistorySessionIdForHistoryPersistence();
+				if (sceneSessionId >= 0)
+				{
+					MyBehavior.AppendExternalSceneDialogueHistory(targetHero, null, visible, null, sceneSessionId);
+				}
+				else
+				{
+					MyBehavior.AppendExternalDialogueHistory(targetHero, null, visible, null);
+				}
+			}
+			else
+			{
+				AppendWildernessNonHeroMemory(npc, targetHero, targetCharacter, targetAgentIndex, null, visible, null, TryGetCurrentSceneHistorySessionIdForHistoryPersistence());
+			}
+			RecordNativeConversationNpcLineForExternal(targetHero, targetCharacter, displayName, visible);
+			MarkNativeConversationCurrentDialogRecorded(targetHero, targetCharacter, npcName, visible);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("NativeConversationTagTest", "[WARN] commit visible line failed: " + ex.Message);
+		}
+	}
+
 	public static bool OpenNativeConversationNpcEditorForExternal(Action onFinished = null)
 	{
 		try
@@ -13355,6 +13565,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			new InquiryElement("give_prisoners", "给予俘虏并交流", null, isEnabled: true, ""),
 			new InquiryElement("give_settlements", "转移固定资产并交流", null, isEnabled: true, "")
 		};
+		if (MyBehavior.IsDevDataManagementEnabledForExternal())
+		{
+			inquiryElements.Add(new InquiryElement("tag_test", "标签测试", null, isEnabled: true, "输入 NPC 可见正文和后处理标签，不调用 API，按当前目标立即执行。"));
+		}
 		MultiSelectionInquiryData data = new MultiSelectionInquiryData(text, "当前目标：" + text + "\n此菜单用于边交流边给予或展示物品，也可转移部队、俘虏或固定资产。\n请选择交流方式：", inquiryElements, isExitShown: true, 1, 1, "确定", "取消", delegate(List<InquiryElement> selected)
 		{
 			if (selected == null || selected.Count == 0)
@@ -13383,6 +13597,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				else if (text2 == "give_settlements")
 				{
 					BeginShoutTradeFlow(primaryDataPacket, ShoutChatMode.GiveSettlements);
+				}
+				else if (text2 == "tag_test")
+				{
+					OpenShoutTagTestInput(primaryDataPacket);
 				}
 				else
 				{
@@ -13456,6 +13674,101 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			{
 				OnShoutConfirmedWithContext(input, extraFact, primaryDataPacket?.AgentIndex);
 			}, OnShoutCancelled), pauseGameActiveState: true);
+		}
+	}
+
+	private void OpenShoutTagTestInput(NpcDataPacket primaryDataPacket)
+	{
+		if (!MyBehavior.IsDevDataManagementEnabledForExternal())
+		{
+			InformationManager.DisplayMessage(new InformationMessage("[标签测试] 请先在 MCM 开启数据管理。", new Color(1f, 0.45f, 0.25f)));
+			OnShoutCancelled();
+			return;
+		}
+		string text = primaryDataPacket?.Name ?? "附近的人";
+		string titleText = "标签输入 - " + text;
+		string subtitle = "当前目标：" + text + "\n输入 NPC 可见正文和后处理标签。不会调用 API，标签会按当前目标立即执行。";
+		PauseGame();
+		if (!ShoutTextInputPopup.Show(titleText, subtitle, "输入正文和标签：", "", delegate(string input)
+		{
+			OnShoutTagTestConfirmed(input, primaryDataPacket?.AgentIndex);
+		}, OnShoutCancelled, BuildShoutTargetEncyclopediaAction(primaryDataPacket)))
+		{
+			InformationManager.ShowTextInquiry(new TextInquiryData(titleText, subtitle + "\n\n输入正文和标签：", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "执行", "取消", delegate(string input)
+			{
+				OnShoutTagTestConfirmed(input, primaryDataPacket?.AgentIndex);
+			}, OnShoutCancelled), pauseGameActiveState: true);
+		}
+	}
+
+	private void OnShoutTagTestConfirmed(string input, int? forcedPrimaryAgentIndex)
+	{
+		string content = (input ?? "").Replace("\r", "").Trim();
+		if (string.IsNullOrWhiteSpace(content))
+		{
+			OnShoutCancelled();
+			return;
+		}
+		try
+		{
+			if (!MyBehavior.IsDevDataManagementEnabledForExternal())
+			{
+				InformationManager.DisplayMessage(new InformationMessage("[标签测试] 请先在 MCM 开启数据管理。", new Color(1f, 0.45f, 0.25f)));
+				return;
+			}
+			ShoutTargetingContext targetingContext = _activeShoutTargetingContext;
+			List<Agent> nearbyAgents = GetAgentsForShoutTargetingContext(targetingContext) ?? new List<Agent>();
+			if (forcedPrimaryAgentIndex.HasValue && !nearbyAgents.Any((Agent a) => a != null && a.Index == forcedPrimaryAgentIndex.Value))
+			{
+				Agent forcedAgent = Mission.Current?.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == forcedPrimaryAgentIndex.Value && a.IsActive());
+				if (forcedAgent != null)
+				{
+					nearbyAgents.Insert(0, forcedAgent);
+				}
+			}
+			nearbyAgents = nearbyAgents.Where((Agent a) => a != null && a.IsActive()).ToList();
+			if (nearbyAgents.Count == 0)
+			{
+				InformationManager.DisplayMessage(new InformationMessage("[标签测试] 没有找到当前场景目标。", new Color(1f, 0.45f, 0.25f)));
+				return;
+			}
+			List<NpcDataPacket> allNpcData = nearbyAgents.Select((Agent a) => ShoutUtils.ExtractNpcData(a)).Where((NpcDataPacket d) => d != null).ToList();
+			ApplySceneLocalDisambiguatedNames(allNpcData);
+			Agent primaryTarget = null;
+			if (forcedPrimaryAgentIndex.HasValue)
+			{
+				primaryTarget = nearbyAgents.FirstOrDefault((Agent a) => a != null && a.Index == forcedPrimaryAgentIndex.Value);
+			}
+			primaryTarget ??= ResolvePrimaryAgentForShoutTargetingContext(targetingContext, nearbyAgents) ?? nearbyAgents.FirstOrDefault();
+			NpcDataPacket primaryNpc = (primaryTarget != null) ? allNpcData.FirstOrDefault((NpcDataPacket d) => d.AgentIndex == primaryTarget.Index) : allNpcData.FirstOrDefault();
+			if (primaryNpc == null)
+			{
+				InformationManager.DisplayMessage(new InformationMessage("[标签测试] 没有找到可执行标签的 NPC。", new Color(1f, 0.45f, 0.25f)));
+				return;
+			}
+			Dictionary<int, Hero> resolvedHeroes = new Dictionary<int, Hero>();
+			foreach (Agent agent in nearbyAgents)
+			{
+				if (agent?.Character is CharacterObject { HeroObject: not null } character)
+				{
+					resolvedHeroes[agent.Index] = character.HeroObject;
+				}
+			}
+			List<SceneSummonPromptTarget> sceneSummonTargets = BuildSceneSummonPromptTargets(allNpcData, resolvedHeroes);
+			int sceneGuideFirstPromptId = ((sceneSummonTargets != null && sceneSummonTargets.Count > 0) ? sceneSummonTargets.Max((SceneSummonPromptTarget x) => x?.PromptId ?? 0) : 0) + 1;
+			List<SceneGuidePromptTarget> sceneGuideTargets = BuildSceneGuidePromptTargets(primaryTarget, sceneGuideFirstPromptId);
+			Logger.Log("SceneTagTest", "submit target=" + (primaryNpc?.Name ?? "") + " agentIndex=" + primaryNpc.AgentIndex + " tagCount=" + CountDeveloperTagTestTags(content) + " raw=" + content.Replace("\n", "\\n"));
+			EnqueueSpeechLineWithOptions(primaryNpc, content, allNpcData, commitHistory: true, suppressStare: false, allowPlayerDirectedActions: true, requiredConversationEpoch: 0, sceneSummonTargets, sceneGuideTargets, null);
+			InformationManager.DisplayMessage(new InformationMessage("[标签测试] 已提交给 " + (primaryNpc.Name ?? "NPC") + "，标签数：" + CountDeveloperTagTestTags(content), new Color(0.4f, 1f, 0.4f)));
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SceneTagTest", "[ERROR] submit failed: " + ex);
+			InformationManager.DisplayMessage(new InformationMessage("[标签测试] 执行失败：" + ex.Message, new Color(1f, 0.35f, 0.25f)));
+		}
+		finally
+		{
+			ResumeGame();
 		}
 	}
 

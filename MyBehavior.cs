@@ -1139,9 +1139,23 @@ public class MyBehavior : CampaignBehaviorBase
 
 		public int KingdomIndex;
 
+		public int AggregationIndex;
+
+		public bool AggregationComplete;
+
+		public List<string> FullReportKingdomIds;
+
+		public int PromptMaterialIndex;
+
+		public bool PromptMaterialsComplete;
+
+		public bool Ordered;
+
 		public List<Kingdom> Kingdoms = new List<Kingdom>();
 
 		public List<WeeklyEventMaterialPreviewGroup> Groups = new List<WeeklyEventMaterialPreviewGroup>();
+
+		public List<EventSourceMaterialEntry> EventSourceMaterialSnapshot = new List<EventSourceMaterialEntry>();
 	}
 
 	private sealed class WeeklyReportRetryContext
@@ -1506,6 +1520,8 @@ public class MyBehavior : CampaignBehaviorBase
 	private PendingAutoWeeklyReportBuild _pendingAutoWeeklyReportBuild;
 
 	private int _kingdomStabilityMaintenanceCursor;
+
+	private List<EventSourceMaterialEntry> _weeklyEventSourceMaterialBuildSnapshot;
 
 	private const double MemoryMaintenanceCampaignTickThrottleSeconds = 2.0;
 
@@ -3147,13 +3163,14 @@ public class MyBehavior : CampaignBehaviorBase
 		return processed;
 	}
 
-	private void TrySealPastDailyMemoryDrafts()
+	private bool TrySealPastDailyMemoryDrafts(long startTimestamp = 0L, double budgetMs = double.MaxValue)
 	{
+		bool completed = true;
 		try
 		{
 			if (_dailyMemoryDrafts == null || _dailyMemoryDrafts.Count <= 0)
 			{
-				return;
+				return true;
 			}
 			int currentDay = (int)CampaignTime.Now.ToDays;
 			if (_memorySummaryQueue == null)
@@ -3169,17 +3186,32 @@ public class MyBehavior : CampaignBehaviorBase
 			List<string> emptyKeys = new List<string>();
 			foreach (KeyValuePair<string, List<DailyMemoryDraft>> item in _dailyMemoryDrafts.ToList())
 			{
+				if (IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs))
+				{
+					completed = false;
+					break;
+				}
 				List<DailyMemoryDraft> list = item.Value ?? new List<DailyMemoryDraft>();
 				for (int i = list.Count - 1; i >= 0; i--)
 				{
+					if (IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs))
+					{
+						completed = false;
+						break;
+					}
 					DailyMemoryDraft draft = list[i];
 					if (draft == null || draft.GameDayIndex >= currentDay)
 					{
 						continue;
 					}
-					if (!draft.HasLlmDialogue || CountDailyMemorySummarySourceChars(draft) <= 0)
+					bool hasSummarySource = CountDailyMemorySummarySourceChars(draft) > 0;
+					bool hasAfefLines = HasDailyMemoryDraftAfefLines(draft);
+					if (!draft.HasLlmDialogue || !hasSummarySource)
 					{
-						list.RemoveAt(i);
+						if (!hasAfefLines)
+						{
+							list.RemoveAt(i);
+						}
 						continue;
 					}
 					TryEnqueueMajorActionSummaryForDraft(draft, queuedMajor);
@@ -3224,6 +3256,7 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			Logger.Log("CompressedMemory", "[ERROR] TrySealPastDailyMemoryDrafts failed: " + ex.Message);
 		}
+		return completed;
 	}
 
 	private bool HasCompressedMemoryBlock(string heroId, int dayIndex)
@@ -4378,30 +4411,44 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			DailyMaintenanceJob job = _dailyMaintenanceQueue.Dequeue();
 			_dailyMaintenanceJobKeys.Remove(BuildDailyMaintenanceJobKey(job.Kind, job.DayIndex, job.WeekIndex, job.StartDay, job.EndDay));
-			ExecuteDailyMaintenanceJob(job);
+			bool completed = ExecuteDailyMaintenanceJob(job, startTimestamp, budgetMs);
+			if (!completed)
+			{
+				EnqueueDailyMaintenanceJob(job.Kind, job.DayIndex, job.WeekIndex, job.StartDay, job.EndDay, job.Reason);
+			}
 			processedJobCount++;
 			processedScanCount += ProcessMemoryOverviewCandidateScanBudget(startTimestamp, budgetMs);
 		}
-		ProcessPendingAutoWeeklyReportBuildBudget(startTimestamp, budgetMs);
+		if (!IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs))
+		{
+			ProcessPendingAutoWeeklyReportBuildBudget(startTimestamp, budgetMs);
+		}
 		processedScanCount += ProcessMemoryOverviewCandidateScanBudget(startTimestamp, budgetMs);
-		if (processedScanCount > 0 && !_memorySummaryProcessing)
+		if (processedScanCount > 0 && !_memorySummaryProcessing && !IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs))
 		{
 			TryStartMemorySummaryQueue();
 		}
 	}
 
-	private void ExecuteDailyMaintenanceJob(DailyMaintenanceJob job)
+	private bool ExecuteDailyMaintenanceJob(DailyMaintenanceJob job, long startTimestamp, double budgetMs)
 	{
 		if (job == null)
 		{
-			return;
+			return true;
 		}
 		try
 		{
+			if (IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs))
+			{
+				return false;
+			}
 			switch (job.Kind)
 			{
 			case DailyMaintenanceTaskKind.SealPastDailyMemoryDrafts:
-				TrySealPastDailyMemoryDrafts();
+				if (!TrySealPastDailyMemoryDrafts(startTimestamp, budgetMs))
+				{
+					return false;
+				}
 				break;
 			case DailyMaintenanceTaskKind.StartMemorySummaryQueue:
 				TryStartMemorySummaryQueue();
@@ -4424,7 +4471,7 @@ public class MyBehavior : CampaignBehaviorBase
 			case DailyMaintenanceTaskKind.ApplyKingdomStabilityRelationAdjustments:
 				if (!ProcessKingdomStabilityRelationAdjustmentsSlice())
 				{
-					EnqueueDailyMaintenanceJob(job.Kind, job.DayIndex, job.WeekIndex, job.StartDay, job.EndDay, job.Reason);
+					return false;
 				}
 				break;
 			case DailyMaintenanceTaskKind.ProcessWeeklyKingdomRebellions:
@@ -4434,10 +4481,12 @@ public class MyBehavior : CampaignBehaviorBase
 				TryInitializePendingAutoWeeklyReportBuild(job);
 				break;
 			}
+			return true;
 		}
 		catch (Exception ex)
 		{
 			Logger.Log("DailyMaintenance", "[ERROR] " + job.Kind + " failed: " + ex.Message);
+			return true;
 		}
 	}
 
@@ -4503,7 +4552,8 @@ public class MyBehavior : CampaignBehaviorBase
 			WeekIndex = job.WeekIndex,
 			StartDay = Math.Max(0, job.StartDay),
 			EndDay = Math.Max(job.StartDay, job.EndDay),
-			Kingdoms = GetDevEditableKingdoms().Where(IsKingdomEligibleForWeeklyReport).ToList()
+			Kingdoms = GetDevEditableKingdoms().Where(IsKingdomEligibleForWeeklyReport).ToList(),
+			EventSourceMaterialSnapshot = SanitizeEventSourceMaterials(_eventSourceMaterials)
 		};
 		_weeklyReportGenerationInProgress = true;
 		_pendingAutoWeeklyReportWeek = 0;
@@ -4520,7 +4570,7 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			if (!context.WorldBuilt && !IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs))
 			{
-				context.Groups.Add(BuildWorldWeeklyEventMaterialPreviewGroup(context.StartDay, context.EndDay));
+				context.Groups.Add(BuildWeeklyEventMaterialPreviewGroupWithSnapshot(() => BuildWorldWeeklyEventMaterialPreviewGroup(context.StartDay, context.EndDay), context.EventSourceMaterialSnapshot));
 				context.WorldBuilt = true;
 			}
 			while (context.KingdomIndex < context.Kingdoms.Count && !IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs))
@@ -4528,10 +4578,30 @@ public class MyBehavior : CampaignBehaviorBase
 				Kingdom kingdom = context.Kingdoms[context.KingdomIndex++];
 				if (IsKingdomEligibleForWeeklyReport(kingdom))
 				{
-					context.Groups.Add(BuildKingdomWeeklyEventMaterialPreviewGroup(kingdom, context.StartDay, context.EndDay));
+					context.Groups.Add(BuildWeeklyEventMaterialPreviewGroupWithSnapshot(() => BuildKingdomWeeklyEventMaterialPreviewGroup(kingdom, context.StartDay, context.EndDay), context.EventSourceMaterialSnapshot));
 				}
+				break;
 			}
-			if (context.WorldBuilt && context.KingdomIndex >= context.Kingdoms.Count)
+			if (IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs) || !context.WorldBuilt || context.KingdomIndex < context.Kingdoms.Count)
+			{
+				return;
+			}
+			ProcessPendingWeeklyReportAggregationBudget(context, startTimestamp, budgetMs);
+			if (IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs) || !context.AggregationComplete)
+			{
+				return;
+			}
+			ProcessPendingWeeklyReportPromptMaterialsBudget(context, startTimestamp, budgetMs);
+			if (IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs) || !context.PromptMaterialsComplete)
+			{
+				return;
+			}
+			if (!context.Ordered && !IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs))
+			{
+				context.Groups = OrderWeeklyReportGenerationGroups((context.Groups ?? new List<WeeklyEventMaterialPreviewGroup>()).Where((WeeklyEventMaterialPreviewGroup x) => x != null).ToList());
+				context.Ordered = true;
+			}
+			if (context.Ordered && !IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs))
 			{
 				FinalizePendingAutoWeeklyReportBuild(context);
 			}
@@ -4544,6 +4614,77 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private WeeklyEventMaterialPreviewGroup BuildWeeklyEventMaterialPreviewGroupWithSnapshot(Func<WeeklyEventMaterialPreviewGroup> builder, List<EventSourceMaterialEntry> snapshot)
+	{
+		List<EventSourceMaterialEntry> previous = _weeklyEventSourceMaterialBuildSnapshot;
+		try
+		{
+			_weeklyEventSourceMaterialBuildSnapshot = snapshot;
+			return builder?.Invoke();
+		}
+		finally
+		{
+			_weeklyEventSourceMaterialBuildSnapshot = previous;
+		}
+	}
+
+	private void ProcessPendingWeeklyReportAggregationBudget(PendingAutoWeeklyReportBuild context, long startTimestamp, double budgetMs)
+	{
+		if (context == null || context.AggregationComplete)
+		{
+			return;
+		}
+		List<WeeklyEventMaterialPreviewGroup> groups = context.Groups ?? new List<WeeklyEventMaterialPreviewGroup>();
+		while (context.AggregationIndex < groups.Count && !IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs))
+		{
+			WeeklyEventMaterialPreviewGroup group = groups[context.AggregationIndex++];
+			if (group != null)
+			{
+				ApplyWeeklyPromptMaterialAggregation(group);
+			}
+			break;
+		}
+		if (context.AggregationIndex >= groups.Count)
+		{
+			context.AggregationComplete = true;
+		}
+	}
+
+	private void ProcessPendingWeeklyReportPromptMaterialsBudget(PendingAutoWeeklyReportBuild context, long startTimestamp, double budgetMs)
+	{
+		if (context == null || context.PromptMaterialsComplete)
+		{
+			return;
+		}
+		List<WeeklyEventMaterialPreviewGroup> groups = context.Groups ?? new List<WeeklyEventMaterialPreviewGroup>();
+		if (context.FullReportKingdomIds == null)
+		{
+			List<string> nearestKingdomIds = GetKingdomIdsByPlayerProximity(groups.Where((WeeklyEventMaterialPreviewGroup x) => string.Equals((x.GroupKind ?? "").Trim(), "kingdom", StringComparison.OrdinalIgnoreCase)).Select((WeeklyEventMaterialPreviewGroup x) => x.KingdomId)).Where((string x) => !string.IsNullOrWhiteSpace(x)).Select((string x) => x.Trim()).Distinct(StringComparer.OrdinalIgnoreCase).Take(3).ToList();
+			if (nearestKingdomIds.Count == 0)
+			{
+				nearestKingdomIds = groups.Where((WeeklyEventMaterialPreviewGroup x) => string.Equals((x.GroupKind ?? "").Trim(), "kingdom", StringComparison.OrdinalIgnoreCase)).Select((WeeklyEventMaterialPreviewGroup x) => (x.KingdomId ?? "").Trim()).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).Take(3).ToList();
+			}
+			context.FullReportKingdomIds = nearestKingdomIds;
+		}
+		HashSet<string> fullReportKingdomIds = new HashSet<string>(context.FullReportKingdomIds ?? new List<string>(), StringComparer.OrdinalIgnoreCase);
+		while (context.PromptMaterialIndex < groups.Count && !IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs))
+		{
+			WeeklyEventMaterialPreviewGroup group = groups[context.PromptMaterialIndex++];
+			if (group == null)
+			{
+				continue;
+			}
+			bool isKingdom = string.Equals((group?.GroupKind ?? "").Trim(), "kingdom", StringComparison.OrdinalIgnoreCase);
+			bool shortOnly = isKingdom && !fullReportKingdomIds.Contains((group?.KingdomId ?? "").Trim());
+			PrepareWeeklyPromptMaterialsForGroup(group, shortOnly);
+			break;
+		}
+		if (context.PromptMaterialIndex >= groups.Count)
+		{
+			context.PromptMaterialsComplete = true;
+		}
+	}
+
 	private void FinalizePendingAutoWeeklyReportBuild(PendingAutoWeeklyReportBuild context)
 	{
 		if (context == null)
@@ -4551,23 +4692,6 @@ public class MyBehavior : CampaignBehaviorBase
 			return;
 		}
 		List<WeeklyEventMaterialPreviewGroup> groups = (context.Groups ?? new List<WeeklyEventMaterialPreviewGroup>()).Where((WeeklyEventMaterialPreviewGroup x) => x != null).ToList();
-		foreach (WeeklyEventMaterialPreviewGroup group in groups)
-		{
-			ApplyWeeklyPromptMaterialAggregation(group);
-		}
-		List<string> nearestKingdomIds = GetKingdomIdsByPlayerProximity(groups.Where((WeeklyEventMaterialPreviewGroup x) => string.Equals((x.GroupKind ?? "").Trim(), "kingdom", StringComparison.OrdinalIgnoreCase)).Select((WeeklyEventMaterialPreviewGroup x) => x.KingdomId)).Where((string x) => !string.IsNullOrWhiteSpace(x)).Select((string x) => x.Trim()).Distinct(StringComparer.OrdinalIgnoreCase).Take(3).ToList();
-		if (nearestKingdomIds.Count == 0)
-		{
-			nearestKingdomIds = groups.Where((WeeklyEventMaterialPreviewGroup x) => string.Equals((x.GroupKind ?? "").Trim(), "kingdom", StringComparison.OrdinalIgnoreCase)).Select((WeeklyEventMaterialPreviewGroup x) => (x.KingdomId ?? "").Trim()).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).Take(3).ToList();
-		}
-		HashSet<string> fullReportKingdomIds = new HashSet<string>(nearestKingdomIds, StringComparer.OrdinalIgnoreCase);
-		foreach (WeeklyEventMaterialPreviewGroup group in groups)
-		{
-			bool isKingdom = string.Equals((group?.GroupKind ?? "").Trim(), "kingdom", StringComparison.OrdinalIgnoreCase);
-			bool shortOnly = isKingdom && !fullReportKingdomIds.Contains((group?.KingdomId ?? "").Trim());
-			PrepareWeeklyPromptMaterialsForGroup(group, shortOnly);
-		}
-		groups = OrderWeeklyReportGenerationGroups(groups);
 		_pendingAutoWeeklyReportBuild = null;
 		_ = GenerateAutoWeeklyReportsAsync(groups, context.WeekIndex, context.StartDay, context.EndDay);
 	}
@@ -11457,7 +11581,7 @@ public class MyBehavior : CampaignBehaviorBase
 				for (int i = 0; i < drafts.Count; i++)
 				{
 					DailyMemoryDraft draft = drafts[i];
-					if (draft != null && draft.GameDayIndex < currentDay)
+					if (draft != null && draft.GameDayIndex < currentDay && draft.HasLlmDialogue && CountDailyMemorySummarySourceChars(draft) > 0 && !HasCompressedMemoryBlock(draft.HeroId, draft.GameDayIndex))
 					{
 						return true;
 					}
@@ -13524,12 +13648,14 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			int currentDay = GetCurrentGameDayIndexSafe();
 			EnqueueDailyMaintenanceJob(DailyMaintenanceTaskKind.DiscontinueLandlessRebelKingdoms, currentDay, reason: "game_load_finished");
+			EnqueueDailyMaintenanceJob(DailyMaintenanceTaskKind.SealPastDailyMemoryDrafts, currentDay, reason: "game_load_finished");
 			EnqueueDailyMaintenanceJob(DailyMaintenanceTaskKind.QueueFullMemoryOverviewScan, currentDay, reason: "game_load_finished");
 			EnqueueDailyMaintenanceJob(DailyMaintenanceTaskKind.StartMemorySummaryQueue, currentDay, reason: "game_load_finished");
 		}
 		else
 		{
 			TryDiscontinueLandlessModRebelKingdoms("game_load_finished");
+			TrySealPastDailyMemoryDrafts();
 			QueueAllMemoryOverviewCandidatesForDeferredScan();
 			ProcessMemoryOverviewCandidateScanBudget(0L, double.MaxValue);
 			TryStartMemorySummaryQueue();
@@ -23388,6 +23514,11 @@ public class MyBehavior : CampaignBehaviorBase
 		return draft.Lines.Where((DailyMemoryLine x) => x != null && !x.IsAfef && !string.IsNullOrWhiteSpace(x.Text)).Sum((DailyMemoryLine x) => x.Text.Trim().Length);
 	}
 
+	private static bool HasDailyMemoryDraftAfefLines(DailyMemoryDraft draft)
+	{
+		return draft?.Lines != null && draft.Lines.Any((DailyMemoryLine x) => x != null && x.IsAfef && !string.IsNullOrWhiteSpace(x.Text));
+	}
+
 	private static string BuildMemoryRecallQueryText(Hero hero, string currentInput, string secondaryInput, IEnumerable<DailyMemoryDraft> drafts)
 	{
 		StringBuilder stringBuilder = new StringBuilder();
@@ -23721,7 +23852,8 @@ public class MyBehavior : CampaignBehaviorBase
 		foreach (DailyMemoryDraft draft in drafts.Where((DailyMemoryDraft x) => x != null).OrderBy((DailyMemoryDraft x) => x.GameDayIndex))
 		{
 			bool isToday = draft.GameDayIndex == currentDay;
-			if (!isToday && (!draft.HasLlmDialogue || HasCompressedMemoryBlock(normalizedMemoryId, draft.GameDayIndex)))
+			bool hasAfefLines = HasDailyMemoryDraftAfefLines(draft);
+			if (!isToday && (HasCompressedMemoryBlock(normalizedMemoryId, draft.GameDayIndex) || (!draft.HasLlmDialogue && !hasAfefLines)))
 			{
 				continue;
 			}
@@ -23743,6 +23875,92 @@ public class MyBehavior : CampaignBehaviorBase
 			}
 		}
 		return result;
+	}
+
+	private string BuildUncompressedMemoryFallbackContextById(string memoryId, string memoryName, int maxLines, bool includeCurrentActiveSceneSession)
+	{
+		List<ConversationMessage> messages = BuildUncompressedMemoryRoleMessagesById(memoryId, memoryName, -1, includeCurrentActiveSceneSession)
+			.Where((ConversationMessage x) => x != null && !string.IsNullOrWhiteSpace(x.Content))
+			.OrderBy((ConversationMessage x) => x.GameDayIndex)
+			.ThenBy((ConversationMessage x) => x.GameHour)
+			.ToList();
+		if (messages.Count <= 0)
+		{
+			return "";
+		}
+		int limit = MBMath.ClampInt(maxLines > 0 ? maxLines : 24, 1, 40);
+		if (messages.Count > limit)
+		{
+			messages = messages.Skip(messages.Count - limit).ToList();
+		}
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.AppendLine("【未压缩近期记忆】");
+		foreach (ConversationMessage message in messages)
+		{
+			string date = string.IsNullOrWhiteSpace(message.GameDate) ? ("第" + message.GameDayIndex + "日") : message.GameDate.Trim();
+			string scene = (message.Scene ?? "").Trim();
+			string speaker = BuildUncompressedMemoryPromptSpeakerLabel(message, memoryName);
+			string content = CompactUncompressedMemoryPromptLine(message.Content, 500);
+			if (string.IsNullOrWhiteSpace(content))
+			{
+				continue;
+			}
+			stringBuilder.Append("- [");
+			stringBuilder.Append(date);
+			stringBuilder.Append(" ");
+			stringBuilder.Append(MBMath.ClampInt(message.GameHour, 0, 23));
+			stringBuilder.Append("时");
+			if (!string.IsNullOrWhiteSpace(scene))
+			{
+				stringBuilder.Append("｜");
+				stringBuilder.Append(scene);
+			}
+			if (!string.IsNullOrWhiteSpace(speaker))
+			{
+				stringBuilder.Append("｜");
+				stringBuilder.Append(speaker);
+			}
+			stringBuilder.Append("] ");
+			stringBuilder.AppendLine(content);
+		}
+		return stringBuilder.ToString().TrimEnd();
+	}
+
+	private static string BuildUncompressedMemoryPromptSpeakerLabel(ConversationMessage message, string memoryName)
+	{
+		if (message == null)
+		{
+			return "";
+		}
+		string role = (message.Role ?? "").Trim();
+		string speaker = (message.SpeakerName ?? "").Trim();
+		if (string.Equals(role, "system", StringComparison.OrdinalIgnoreCase))
+		{
+			return string.IsNullOrWhiteSpace(speaker) ? "AFEF" : speaker;
+		}
+		if (string.Equals(role, "assistant", StringComparison.OrdinalIgnoreCase))
+		{
+			return string.IsNullOrWhiteSpace(speaker) ? (string.IsNullOrWhiteSpace(memoryName) ? "NPC" : memoryName.Trim()) : speaker;
+		}
+		if (string.Equals(role, "user", StringComparison.OrdinalIgnoreCase))
+		{
+			return string.IsNullOrWhiteSpace(speaker) ? "玩家" : speaker;
+		}
+		return string.IsNullOrWhiteSpace(speaker) ? role : speaker;
+	}
+
+	private static string CompactUncompressedMemoryPromptLine(string text, int maxLength)
+	{
+		string value = (text ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
+		while (value.Contains("  "))
+		{
+			value = value.Replace("  ", " ");
+		}
+		if (maxLength > 0 && value.Length > maxLength)
+		{
+			value = value.Substring(0, Math.Max(0, maxLength - 1)).TrimEnd() + "…";
+		}
+		return value;
 	}
 
 	private static ConversationMessage BuildUncompressedMemoryConversationMessage(DailyMemoryLine line, string memoryName, int targetAgentIndex)
@@ -24083,6 +24301,12 @@ public class MyBehavior : CampaignBehaviorBase
 			if (!string.IsNullOrWhiteSpace(compressedMemoryContext))
 			{
 				stringBuilder.AppendLine(compressedMemoryContext);
+				stringBuilder.AppendLine();
+			}
+			string uncompressedMemoryContext = BuildUncompressedMemoryFallbackContextById(normalizedMemoryId, memoryName, maxLines, includeCurrentActiveSceneSession);
+			if (!string.IsNullOrWhiteSpace(uncompressedMemoryContext))
+			{
+				stringBuilder.AppendLine(uncompressedMemoryContext);
 				stringBuilder.AppendLine();
 			}
 			string text4 = stringBuilder.ToString().TrimEnd();
@@ -35292,6 +35516,11 @@ public class MyBehavior : CampaignBehaviorBase
 		_eventRecordEntries = SanitizeEventRecordEntries(_eventRecordEntries);
 	}
 
+	private List<EventSourceMaterialEntry> GetWeeklyEventSourceMaterialsForBuild()
+	{
+		return _weeklyEventSourceMaterialBuildSnapshot ?? SanitizeEventSourceMaterials(_eventSourceMaterials);
+	}
+
 	private WeeklyEventMaterialPreviewGroup BuildWorldWeeklyEventMaterialPreviewGroup(int startDay, int endDay)
 	{
 		WeeklyEventMaterialPreviewGroup weeklyEventMaterialPreviewGroup = new WeeklyEventMaterialPreviewGroup
@@ -35310,7 +35539,7 @@ public class MyBehavior : CampaignBehaviorBase
 				SnapshotText = (_eventWorldOpeningSummary ?? "").Trim()
 			});
 		}
-		foreach (EventSourceMaterialEntry item in SanitizeEventSourceMaterials(_eventSourceMaterials))
+		foreach (EventSourceMaterialEntry item in GetWeeklyEventSourceMaterialsForBuild())
 		{
 			if (item != null && item.IncludeInWorld && item.Day >= startDay && item.Day <= endDay)
 			{
@@ -35373,7 +35602,7 @@ public class MyBehavior : CampaignBehaviorBase
 				SnapshotText = kingdomOpeningSummary
 			});
 		}
-		foreach (EventSourceMaterialEntry item in SanitizeEventSourceMaterials(_eventSourceMaterials))
+		foreach (EventSourceMaterialEntry item in GetWeeklyEventSourceMaterialsForBuild())
 		{
 			if (item != null && item.IncludeInKingdom && item.Day >= startDay && item.Day <= endDay && DoesEventSourceMaterialRelateToKingdom(item, kingdom))
 			{

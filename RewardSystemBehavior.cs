@@ -41,6 +41,9 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 	private const float GeneratedRewardTemplateMiscScoreMultiplier = 1.25f;
 	private const float GeneratedRewardTemplateWeaponArmorScorePenalty = 0.2f;
 	private const float GeneratedRewardTemplateWeaponArmorScoreMultiplier = 0.55f;
+	private const float GeneratedRewardTemplateSemanticHintBonus = 0.42f;
+	private const float GeneratedRewardTemplateWeakSemanticHintBonus = 0.2f;
+	private const float GeneratedRewardTemplateDiversityTieBreaker = 0.08f;
 	private static readonly PropertyInfo RewardItemObjectNameProperty = typeof(ItemObject).GetProperty("Name", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 	private static readonly PropertyInfo RewardItemObjectCategoryProperty = typeof(ItemObject).GetProperty("ItemCategory", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 	private static readonly FieldInfo HeroClanBackingField = typeof(Hero).GetField("_clan", BindingFlags.Instance | BindingFlags.NonPublic);
@@ -6687,18 +6690,174 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		return score.ToString("0.0000", CultureInfo.InvariantCulture);
 	}
 
-	private static float CalculateGeneratedRewardTemplateScore(ItemObject item, float aliasScore)
+	private static float CalculateGeneratedRewardTemplateScore(string lookup, RewardItemInfo info, float aliasScore)
 	{
+		ItemObject item = info?.Item;
 		float score = Math.Max(0f, aliasScore);
 		if (IsGeneratedRewardMiscTemplateItem(item))
 		{
-			return Math.Min(1f, score * GeneratedRewardTemplateMiscScoreMultiplier + GeneratedRewardTemplateMiscScoreBonus);
+			score = score * GeneratedRewardTemplateMiscScoreMultiplier + GeneratedRewardTemplateMiscScoreBonus;
 		}
-		if (IsGeneratedRewardWeaponOrArmorTemplateItem(item))
+		else if (IsGeneratedRewardWeaponOrArmorTemplateItem(item))
 		{
-			return Math.Max(0f, score * GeneratedRewardTemplateWeaponArmorScoreMultiplier - GeneratedRewardTemplateWeaponArmorScorePenalty);
+			score = score * GeneratedRewardTemplateWeaponArmorScoreMultiplier - GeneratedRewardTemplateWeaponArmorScorePenalty;
 		}
-		return score;
+		score += CalculateGeneratedRewardTemplateSemanticHintScore(lookup, item);
+		return Math.Max(0f, Math.Min(1f, score));
+	}
+
+	private static float CalculateGeneratedRewardTemplateDiversityTieBreaker(string lookup, RewardItemInfo info)
+	{
+		string key = ((lookup ?? "").Trim() + "|" + BuildRewardItemResolutionCandidateKey(info)).ToLowerInvariant();
+		if (string.IsNullOrWhiteSpace(key))
+		{
+			return 0f;
+		}
+		if (!uint.TryParse(StablePromptKeyHash(key), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out var hash))
+		{
+			return 0f;
+		}
+		return ((hash & 0xffffu) / 65535f) * GeneratedRewardTemplateDiversityTieBreaker;
+	}
+
+	private static float CalculateGeneratedRewardTemplateSemanticHintScore(string lookup, ItemObject item)
+	{
+		if (item == null || string.IsNullOrWhiteSpace(lookup))
+		{
+			return 0f;
+		}
+		string text = lookup.Trim();
+		if (TextContainsAny(text, "\u8089", "\u732a", "\u725b", "\u7f8a", "meat", "pork", "beef", "mutton"))
+		{
+			if (ItemCategoryIsAny(item, DefaultItemCategories.Meat) || ContainsGeneratedRewardItemTextAny(item, "meat", "pork", "beef", "mutton"))
+			{
+				return GeneratedRewardTemplateSemanticHintBonus;
+			}
+			if (item.Type == ItemObject.ItemTypeEnum.Animal || item.IsFood)
+			{
+				return GeneratedRewardTemplateWeakSemanticHintBonus;
+			}
+		}
+		if (TextContainsAny(text, "\u9152", "\u5564", "\u8461\u8404\u9152", "beer", "wine", "ale", "liquor"))
+		{
+			if (ItemCategoryIsAny(item, DefaultItemCategories.Beer, DefaultItemCategories.Wine) || ContainsGeneratedRewardItemTextAny(item, "beer", "wine", "ale"))
+			{
+				return GeneratedRewardTemplateSemanticHintBonus;
+			}
+		}
+		if (TextContainsAny(text, "\u9c7c", "fish"))
+		{
+			if (ItemCategoryIsAny(item, DefaultItemCategories.Fish) || ContainsGeneratedRewardItemTextAny(item, "fish"))
+			{
+				return GeneratedRewardTemplateSemanticHintBonus;
+			}
+		}
+		if (TextContainsAny(text, "\u7cae", "\u9ea6", "\u9762\u5305", "\u98df", "food", "grain", "wheat", "bread"))
+		{
+			if (item.IsFood || ItemCategoryIsAny(item, DefaultItemCategories.Grain) || ContainsGeneratedRewardItemTextAny(item, "grain", "wheat", "bread", "food"))
+			{
+				return GeneratedRewardTemplateSemanticHintBonus;
+			}
+		}
+		if (TextContainsAny(text, "\u4e66", "\u4fe1", "\u624b\u8c15", "\u5377", "\u6587\u4e66", "\u5951\u7ea6", "book", "letter", "scroll", "decree", "paper", "contract"))
+		{
+			if (item.Type == ItemObject.ItemTypeEnum.Book || ContainsGeneratedRewardItemTextAny(item, "book", "letter", "scroll", "decree", "paper", "parchment", "ledger"))
+			{
+				return GeneratedRewardTemplateSemanticHintBonus;
+			}
+		}
+		if (TextContainsAny(text, "\u5c4e", "\u7caa", "poop", "dung", "shit", "manure"))
+		{
+			if (ItemCategoryIsAny(item, DefaultItemCategories.Clay, DefaultItemCategories.Pottery) || ContainsGeneratedRewardItemTextAny(item, "clay", "pottery"))
+			{
+				return GeneratedRewardTemplateSemanticHintBonus;
+			}
+		}
+		if (TextContainsAny(text, "\u5de5\u5177", "\u5668\u5177", "\u94a5\u5319", "\u9524", "tool", "tools", "key", "hammer"))
+		{
+			if (ItemCategoryIsAny(item, DefaultItemCategories.Tools) || ContainsGeneratedRewardItemTextAny(item, "tool", "tools", "hammer"))
+			{
+				return GeneratedRewardTemplateSemanticHintBonus;
+			}
+		}
+		if (TextContainsAny(text, "\u5b9d", "\u73e0", "\u94f6", "\u6212", "\u91d1\u5e01", "jewel", "jewelry", "silver", "ring", "coin"))
+		{
+			if (ItemCategoryIsAny(item, DefaultItemCategories.Jewelry, DefaultItemCategories.Silver) || ContainsGeneratedRewardItemTextAny(item, "jewel", "jewelry", "silver", "ring"))
+			{
+				return GeneratedRewardTemplateSemanticHintBonus;
+			}
+		}
+		if (TextContainsAny(text, "\u6728", "\u67f4", "\u6728\u677f", "wood", "plank"))
+		{
+			if (ItemCategoryIsAny(item, DefaultItemCategories.Wood, DefaultItemCategories.Planks) || ContainsGeneratedRewardItemTextAny(item, "wood", "plank"))
+			{
+				return GeneratedRewardTemplateSemanticHintBonus;
+			}
+		}
+		if (TextContainsAny(text, "\u76d0", "salt"))
+		{
+			if (ItemCategoryIsAny(item, DefaultItemCategories.Salt) || ContainsGeneratedRewardItemTextAny(item, "salt"))
+			{
+				return GeneratedRewardTemplateSemanticHintBonus;
+			}
+		}
+		if (TextContainsAny(text, "\u6cb9", "oil"))
+		{
+			if (ItemCategoryIsAny(item, DefaultItemCategories.Oil) || ContainsGeneratedRewardItemTextAny(item, "oil"))
+			{
+				return GeneratedRewardTemplateSemanticHintBonus;
+			}
+		}
+		if (TextContainsAny(text, "\u5e03", "\u8863", "\u4e1d", "\u7ef8", "cloth", "linen", "velvet", "garment", "felt"))
+		{
+			if (ItemCategoryIsAny(item, DefaultItemCategories.Cloth, DefaultItemCategories.Linen, DefaultItemCategories.Velvet, DefaultItemCategories.Garment, DefaultItemCategories.Felt) || ContainsGeneratedRewardItemTextAny(item, "cloth", "linen", "velvet", "garment", "felt"))
+			{
+				return GeneratedRewardTemplateSemanticHintBonus;
+			}
+		}
+		if (TextContainsAny(text, "\u76ae", "\u6bdb", "hide", "hides", "leather", "fur", "wool"))
+		{
+			if (ItemCategoryIsAny(item, DefaultItemCategories.Hides, DefaultItemCategories.Leather, DefaultItemCategories.Fur, DefaultItemCategories.Wool) || ContainsGeneratedRewardItemTextAny(item, "hide", "hides", "leather", "fur", "wool"))
+			{
+				return GeneratedRewardTemplateSemanticHintBonus;
+			}
+		}
+		if (TextContainsAny(text, "\u9676", "\u7f50", "\u58f6", "clay", "pottery", "jar"))
+		{
+			if (ItemCategoryIsAny(item, DefaultItemCategories.Clay, DefaultItemCategories.Pottery) || ContainsGeneratedRewardItemTextAny(item, "clay", "pottery", "jar"))
+			{
+				return GeneratedRewardTemplateSemanticHintBonus;
+			}
+		}
+		return 0f;
+	}
+
+	private static bool TextContainsAny(string text, params string[] tokens)
+	{
+		if (string.IsNullOrWhiteSpace(text) || tokens == null)
+		{
+			return false;
+		}
+		foreach (string token in tokens)
+		{
+			if (!string.IsNullOrWhiteSpace(token) && text.IndexOf(token, StringComparison.OrdinalIgnoreCase) >= 0)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private static bool ContainsGeneratedRewardItemTextAny(ItemObject item, params string[] tokens)
+	{
+		if (item == null || tokens == null)
+		{
+			return false;
+		}
+		return TextContainsAny(item.StringId, tokens)
+			|| TextContainsAny(item.Name?.ToString(), tokens)
+			|| TextContainsAny(item.ItemCategory?.StringId, tokens)
+			|| TextContainsAny(item.ItemCategory?.GetName()?.ToString(), tokens);
 	}
 
 	private static bool IsGeneratedRewardMiscTemplateItem(ItemObject item)
@@ -6948,18 +7107,21 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			.Select(delegate(RewardItemResolutionCandidate x)
 			{
 				float score = WorldEntityRetrievalService.CalculateBestAliasScoreForExternal(text, GetRewardItemResolutionAliases(x.Info));
-				float templateScore = includeZeroScore ? CalculateGeneratedRewardTemplateScore(x.Info.Item, score) : score;
+				float templateScore = includeZeroScore ? CalculateGeneratedRewardTemplateScore(text, x.Info, score) : score;
+				float templateTieBreaker = includeZeroScore ? CalculateGeneratedRewardTemplateDiversityTieBreaker(text, x.Info) : 0f;
 				return new
 				{
 					Candidate = x,
 					Score = score,
-					TemplateScore = templateScore
+					TemplateScore = templateScore,
+					TemplateTieBreaker = templateTieBreaker
 				};
 			})
 			.Where(x => includeZeroScore || x.Score > 0f)
 			.OrderByDescending(x => x.TemplateScore)
 			.ThenByDescending(x => x.Score)
 			.ThenByDescending(x => x.Candidate.IsContext)
+			.ThenByDescending(x => x.TemplateTieBreaker)
 			.ThenBy(x => x.Candidate.Info.Name ?? "", StringComparer.OrdinalIgnoreCase)
 			.ThenBy(x => x.Candidate.Info.StringId ?? x.Candidate.Info.Item.StringId ?? "", StringComparer.OrdinalIgnoreCase)
 			.ThenBy(x => x.Candidate.Order)

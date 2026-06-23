@@ -41,6 +41,11 @@ public static class Patch_Conversation_Start_Intercept
 	{
 		try
 		{
+			if (LordEncounterBehavior.HasPendingNativeEncounterAttackForExternal())
+			{
+				Logger.LogTrace("Patch_Conversation_Start_Intercept", "Native encounter attack is pending; suppress native " + __originalMethod?.Name + ".");
+				return false;
+			}
 			if (ShouldAllowNativeConversationStart(__originalMethod))
 			{
 				return true;
@@ -50,8 +55,13 @@ public static class Patch_Conversation_Start_Intercept
 			{
 				return true;
 			}
-			Logger.LogTrace("Patch_Conversation_Start_Intercept", $"检测到 {__originalMethod?.Name} 原版对话启动，记录目标领主并放行: {hero.Name}");
+			Logger.LogTrace("Patch_Conversation_Start_Intercept", $"检测到 {__originalMethod?.Name} 原版对话启动，重定向至自定义会面菜单: {hero.Name}");
+			ProactiveNpcRequestBehavior.MarkEncounterOpened(hero);
 			LordEncounterBehavior.SetTarget(hero);
+			if (LordEncounterBehavior.OpenEncounterMenu(hero))
+			{
+				return false;
+			}
 			return true;
 		}
 		catch (Exception ex)

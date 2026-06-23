@@ -23,6 +23,8 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 
 	private const float HotkeyBlockLogCooldownSeconds = 5f;
 
+	private const float TerminalKeyRefreshIntervalSeconds = 1f;
+
 	private static readonly Stopwatch TerminalClock = Stopwatch.StartNew();
 
 	private int _lastTerminalHintDay = -999999;
@@ -34,6 +36,12 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 	private float _lastHotkeyBlockLogRealTime = -999f;
 
 	private bool _wasTerminalKeyDown;
+
+	private InputKey _cachedTerminalKey = InputKey.U;
+
+	private string _cachedTerminalKeyRaw = "";
+
+	private float _nextTerminalKeyRefreshRealTime = -999f;
 
 	public static AnimusForgeTerminalBehavior Instance { get; private set; }
 
@@ -54,17 +62,32 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 
 	public void OnEngineTick()
 	{
-		MilitaryExerciseBehavior.OnEngineTick();
-		TroopInspectionBehavior.OnEngineTick();
-		InputKey configuredTerminalKey = GetConfiguredTerminalKey();
-		bool flag = false;
-		try
+		if (MilitaryExerciseBehavior.NeedsEngineTick())
 		{
-			flag = Input.IsKeyDown(configuredTerminalKey);
+			using (PerfProbe.Scope("SubModule.AnimusForgeTerminalBehavior.MilitaryExerciseTick"))
+			{
+				MilitaryExerciseBehavior.OnEngineTick();
+			}
 		}
-		catch
+		if (TroopInspectionBehavior.NeedsEngineTick())
 		{
-			flag = false;
+			using (PerfProbe.Scope("SubModule.AnimusForgeTerminalBehavior.TroopInspectionTick"))
+			{
+				TroopInspectionBehavior.OnEngineTick();
+			}
+		}
+		InputKey configuredTerminalKey = GetCachedConfiguredTerminalKey();
+		bool flag = false;
+		using (PerfProbe.Scope("SubModule.AnimusForgeTerminalBehavior.TerminalHotkeyPoll"))
+		{
+			try
+			{
+				flag = Input.IsKeyDown(configuredTerminalKey);
+			}
+			catch
+			{
+				flag = false;
+			}
 		}
 		if (!flag)
 		{
@@ -99,6 +122,31 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 	private float GetRealTimeSeconds()
 	{
 		return (float)TerminalClock.Elapsed.TotalSeconds;
+	}
+
+	private InputKey GetCachedConfiguredTerminalKey()
+	{
+		float realTimeSeconds = GetRealTimeSeconds();
+		if (realTimeSeconds < _nextTerminalKeyRefreshRealTime)
+		{
+			return _cachedTerminalKey;
+		}
+		_nextTerminalKeyRefreshRealTime = realTimeSeconds + TerminalKeyRefreshIntervalSeconds;
+		try
+		{
+			string raw = DuelSettings.GetSettings()?.TerminalKey ?? "";
+			if (!string.Equals(raw ?? "", _cachedTerminalKeyRaw ?? "", StringComparison.Ordinal))
+			{
+				_cachedTerminalKeyRaw = raw ?? "";
+				_cachedTerminalKey = ParseTerminalKey(_cachedTerminalKeyRaw);
+			}
+		}
+		catch
+		{
+			_cachedTerminalKeyRaw = "";
+			_cachedTerminalKey = InputKey.U;
+		}
+		return _cachedTerminalKey;
 	}
 
 	private void LogHotkeyBlocked(string reason, InputKey configuredTerminalKey)
@@ -225,7 +273,8 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 			new InquiryElement("player_persona", "修改玩家外貌与背景", null, isEnabled: true, ""),
 			new InquiryElement("troop_inspection", "检阅士兵", null, isEnabled: true, ""),
 			new InquiryElement("military_exercise", "军事演习", null, isEnabled: true, ""),
-			new InquiryElement("api_onboarding", "重新进行API首次引导", null, isEnabled: true, "只重新选择和测试 API 配置，不进入数据库导入或首次使用流程。")
+			new InquiryElement("api_onboarding", "重新进行API首次引导", null, isEnabled: true, "只重新选择和测试 API 配置，不进入数据库导入或首次使用流程。"),
+			new InquiryElement("tag_catalog", "标签列表", null, isEnabled: true, "查看从当前 AnimusForge 模块文件和程序集里提取到的正文/后处理标签。")
 		};
 		MultiSelectionInquiryData data = new MultiSelectionInquiryData("你现在想做什么？", "请选择终端功能：", list, isExitShown: true, 1, 1, "确定", "关闭", delegate(List<InquiryElement> selected)
 		{
@@ -268,6 +317,10 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 				{
 					InformationManager.DisplayMessage(new InformationMessage("无法打开 API 首次引导。"));
 				}
+			}
+			else if (string.Equals(text, "tag_catalog", StringComparison.Ordinal))
+			{
+				OpenTagCatalogBrowser(null, forceRefresh: true);
 			}
 			else
 			{
@@ -649,6 +702,183 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private void OpenTagCatalogBrowser(AnimusForgeTagCatalogSnapshot snapshot = null, bool forceRefresh = false)
+	{
+		_terminalUiActive = true;
+		try
+		{
+			snapshot ??= AnimusForgeTagCatalog.BuildSnapshot(forceRefresh);
+			if (snapshot == null || snapshot.Entries.Count <= 0)
+			{
+				InformationManager.ShowInquiry(new InquiryData("AnimusForge 标签列表", "没有扫描到可显示的标签。", isAffirmativeOptionShown: true, isNegativeOptionShown: false, "返回", "", OpenRootMenu, null), pauseGameActiveState: true, prioritize: false);
+				return;
+			}
+			List<InquiryElement> list = new List<InquiryElement>
+			{
+				new InquiryElement("__refresh__", "刷新标签索引", null, isEnabled: true, BuildTagCatalogRefreshHint(snapshot))
+			};
+			foreach (AnimusForgeTagCatalogEntry entry in snapshot.Entries)
+			{
+				list.Add(new InquiryElement(entry.Id, BuildTagCatalogEntryTitle(entry), null, isEnabled: true, BuildTagCatalogEntryHint(entry)));
+			}
+			MultiSelectionInquiryData data = new MultiSelectionInquiryData("AnimusForge 标签列表", BuildTagCatalogSummary(snapshot), list, isExitShown: true, 1, 1, "查看", "返回", delegate(List<InquiryElement> selected)
+			{
+				if (selected == null || selected.Count == 0)
+				{
+					OpenRootMenu();
+					return;
+				}
+				string text = selected[0].Identifier as string;
+				if (string.Equals(text, "__refresh__", StringComparison.Ordinal))
+				{
+					OpenTagCatalogBrowser(null, forceRefresh: true);
+					return;
+				}
+				AnimusForgeTagCatalogEntry tagEntry = snapshot.Entries.FirstOrDefault((AnimusForgeTagCatalogEntry x) => string.Equals(x.Id, text, StringComparison.Ordinal));
+				if (tagEntry == null)
+				{
+					OpenTagCatalogBrowser(snapshot);
+					return;
+				}
+				OpenTagCatalogEntryDetail(snapshot, tagEntry);
+			}, delegate
+			{
+				OpenRootMenu();
+			}, "", isSeachAvailable: true);
+			MBInformationManager.ShowMultiSelectionInquiry(data, pauseGameActiveState: true);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("Terminal", "[ERROR] open tag catalog failed: " + ex);
+			InformationManager.DisplayMessage(new InformationMessage("打开标签列表失败：" + ex.Message));
+			OpenRootMenu();
+		}
+	}
+
+	private void OpenTagCatalogEntryDetail(AnimusForgeTagCatalogSnapshot snapshot, AnimusForgeTagCatalogEntry entry)
+	{
+		_terminalUiActive = true;
+		if (entry == null)
+		{
+			OpenTagCatalogBrowser(snapshot);
+			return;
+		}
+		InformationManager.ShowInquiry(new InquiryData("标签详情", BuildTagCatalogEntryDetailText(entry), isAffirmativeOptionShown: true, isNegativeOptionShown: false, "返回", "", delegate
+		{
+			OpenTagCatalogBrowser(snapshot);
+		}, null), pauseGameActiveState: true, prioritize: false);
+	}
+
+	private static string BuildTagCatalogSummary(AnimusForgeTagCatalogSnapshot snapshot)
+	{
+		if (snapshot == null)
+		{
+			return "";
+		}
+		int bodyCount = snapshot.Entries.Count((AnimusForgeTagCatalogEntry x) => (x.Category ?? "").StartsWith("正文", StringComparison.Ordinal));
+		int postprocessCount = snapshot.Entries.Count((AnimusForgeTagCatalogEntry x) => (x.Category ?? "").StartsWith("后处理", StringComparison.Ordinal));
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.AppendLine("从当前 AnimusForge 模块文件、当前程序集和内置运行时规则提取。");
+		stringBuilder.AppendLine("共 " + snapshot.Entries.Count + " 项；正文/历史 " + bodyCount + " 项，后处理 " + postprocessCount + " 项。");
+		stringBuilder.AppendLine("已扫描文件：" + snapshot.ScannedFileCount + " 个。可用上方搜索框按标签、功能名或参数名筛选。");
+		if (snapshot.SourceRoots.Count > 0)
+		{
+			stringBuilder.AppendLine();
+			stringBuilder.AppendLine("来源根目录：");
+			foreach (string root in snapshot.SourceRoots.Take(3))
+			{
+				stringBuilder.AppendLine(root);
+			}
+			if (snapshot.SourceRoots.Count > 3)
+			{
+				stringBuilder.AppendLine("+" + (snapshot.SourceRoots.Count - 3) + " 个目录");
+			}
+		}
+		return stringBuilder.ToString().TrimEnd();
+	}
+
+	private static string BuildTagCatalogRefreshHint(AnimusForgeTagCatalogSnapshot snapshot)
+	{
+		int count = snapshot?.Entries?.Count ?? 0;
+		return "重新扫描当前模块文件和程序集。当前索引：" + count + " 项。";
+	}
+
+	private static string BuildTagCatalogEntryTitle(AnimusForgeTagCatalogEntry entry)
+	{
+		if (entry == null)
+		{
+			return "标签";
+		}
+		return "[" + (entry.Category ?? "标签") + "] " + (entry.Tag ?? "");
+	}
+
+	private static string BuildTagCatalogEntryHint(AnimusForgeTagCatalogEntry entry)
+	{
+		if (entry == null)
+		{
+			return "";
+		}
+		string description = CompactOneLine(entry.Description);
+		string source = (entry.Sources != null && entry.Sources.Count > 0) ? entry.Sources[0] : "";
+		string text = "";
+		if (!string.IsNullOrWhiteSpace(description))
+		{
+			text = description;
+		}
+		if (!string.IsNullOrWhiteSpace(source))
+		{
+			text = string.IsNullOrWhiteSpace(text) ? ("来源：" + source) : (text + " 来源：" + source);
+		}
+		return TruncateForInquiry(text, 220);
+	}
+
+	private static string BuildTagCatalogEntryDetailText(AnimusForgeTagCatalogEntry entry)
+	{
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.AppendLine("标签：" + (entry.Tag ?? ""));
+		stringBuilder.AppendLine("分类：" + (entry.Category ?? "标签"));
+		if (!string.IsNullOrWhiteSpace(entry.Description))
+		{
+			stringBuilder.AppendLine();
+			stringBuilder.AppendLine("说明：");
+			stringBuilder.AppendLine(entry.Description.Trim());
+		}
+		if (entry.Sources != null && entry.Sources.Count > 0)
+		{
+			stringBuilder.AppendLine();
+			stringBuilder.AppendLine("来源：");
+			foreach (string source in entry.Sources.Take(12))
+			{
+				stringBuilder.AppendLine(source);
+			}
+			if (entry.Sources.Count > 12)
+			{
+				stringBuilder.AppendLine("+" + (entry.Sources.Count - 12) + " 个来源");
+			}
+		}
+		return stringBuilder.ToString().TrimEnd();
+	}
+
+	private static string CompactOneLine(string text)
+	{
+		text = (text ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
+		while (text.Contains("  "))
+		{
+			text = text.Replace("  ", " ");
+		}
+		return text;
+	}
+
+	private static string TruncateForInquiry(string text, int maxLength)
+	{
+		text = text ?? "";
+		if (maxLength <= 0 || text.Length <= maxLength)
+		{
+			return text;
+		}
+		return text.Substring(0, Math.Max(0, maxLength - 1)).TrimEnd() + "…";
+	}
+
 	private void CloseTerminal()
 	{
 		_terminalUiActive = false;
@@ -711,20 +941,23 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 
 	private static InputKey GetConfiguredTerminalKey()
 	{
-		InputKey result = InputKey.U;
 		try
 		{
-			string terminalKey = DuelSettings.GetSettings()?.TerminalKey;
-			if (!string.IsNullOrWhiteSpace(terminalKey) && Enum.TryParse<InputKey>(terminalKey.Trim().ToUpperInvariant(), out var result2))
-			{
-				result = result2;
-			}
+			return ParseTerminalKey(DuelSettings.GetSettings()?.TerminalKey);
 		}
 		catch
 		{
-			result = InputKey.U;
+			return InputKey.U;
 		}
-		return result;
+	}
+
+	private static InputKey ParseTerminalKey(string terminalKey)
+	{
+		if (!string.IsNullOrWhiteSpace(terminalKey) && Enum.TryParse<InputKey>(terminalKey.Trim().ToUpperInvariant(), out var result))
+		{
+			return result;
+		}
+		return InputKey.U;
 	}
 
 	private static string GetConfiguredTerminalKeyLabel()

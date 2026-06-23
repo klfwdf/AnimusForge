@@ -50,6 +50,11 @@ public static class Patch_ConversationManager_SetupAndStartMapConversation
 		try
 		{
 			Logger.LogTrace("Conversation_Intercept", ">>> SetupAndStartMapConversation Prefix 正在执行 <<<");
+			if (LordEncounterBehavior.HasPendingNativeEncounterAttackForExternal())
+			{
+				Logger.LogTrace("Conversation_Intercept", "Native encounter attack is pending; suppress SetupAndStartMapConversation.");
+				return false;
+			}
 			if (LordEncounterBehavior.IsEncounterRedirectSuspended())
 			{
 				Logger.LogTrace("Conversation_Intercept", "Encounter redirect is suspended; allow native SetupAndStartMapConversation.");
@@ -90,10 +95,22 @@ public static class Patch_ConversationManager_SetupAndStartMapConversation
 				return true;
 			}
 			Hero hero = null;
+			try
+			{
+				hero = PlayerEncounter.EncounteredParty?.LeaderHero;
+			}
+			catch
+			{
+				hero = null;
+			}
 			if (__args != null)
 			{
 				foreach (object obj in __args)
 				{
+					if (hero != null)
+					{
+						break;
+					}
 					if (obj == null)
 					{
 						continue;
@@ -130,6 +147,11 @@ public static class Patch_ConversationManager_SetupAndStartMapConversation
 				{
 					ProactiveNpcRequestBehavior.MarkEncounterOpened(hero);
 					LordEncounterBehavior.SetTarget(hero);
+					if (LordEncounterBehavior.OpenEncounterMenu(hero))
+					{
+						Logger.LogTrace("Conversation_Intercept", $"SetupAndStartMapConversation 已重定向至自定义会面菜单: {hero.Name}");
+						return false;
+					}
 				}
 			}
 		}

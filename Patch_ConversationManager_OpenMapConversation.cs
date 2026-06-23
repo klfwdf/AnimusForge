@@ -47,6 +47,11 @@ public static class Patch_ConversationManager_OpenMapConversation
 		try
 		{
 			Logger.LogTrace("Conversation_Intercept", ">>> OpenMapConversation Prefix 正在执行 (" + __originalMethod?.Name + ") <<<");
+			if (LordEncounterBehavior.HasPendingNativeEncounterAttackForExternal())
+			{
+				Logger.LogTrace("Conversation_Intercept", "Native encounter attack is pending; suppress OpenMapConversation and skip custom encounter menu redirect.");
+				return false;
+			}
 			if (LordEncounterBehavior.IsEncounterRedirectSuspended())
 			{
 				Logger.LogTrace("Conversation_Intercept", "Encounter redirect is suspended; allow native OpenMapConversation.");
@@ -134,11 +139,14 @@ public static class Patch_ConversationManager_OpenMapConversation
 			}
 			if (hero != null && hero != Hero.MainHero && hero.IsLord)
 			{
-				Logger.LogTrace("Conversation_Intercept", $"检测到 OpenMapConversation 原版对话调用，记录目标领主并放行: {hero.Name}");
+				Logger.LogTrace("Conversation_Intercept", $"检测到 OpenMapConversation 原版对话调用，重定向至自定义会面菜单: {hero.Name}");
 				ProactiveNpcRequestBehavior.MarkEncounterOpened(hero);
 				LordEncounterBehavior.SetTarget(hero);
-				LordEncounterBehavior.OpenEncounterMenu(hero);
-				return false;
+				if (LordEncounterBehavior.OpenEncounterMenu(hero))
+				{
+					return false;
+				}
+				return true;
 			}
 		}
 		catch (Exception ex)

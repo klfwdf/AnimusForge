@@ -87,6 +87,22 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior, IAgentStateDeci
 
 	private const float MeetingChargeOrderSequenceWindowSeconds = 1.25f;
 
+	private const float MeetingTargetNeutralRefreshSeconds = 0.12f;
+
+	private const float MeetingTargetNeutralRefreshRtsSeconds = 0.25f;
+
+	private const float MeetingLeaderPoseRefreshSeconds = 0.08f;
+
+	private const float MeetingLeaderPoseRefreshRtsSeconds = 0.25f;
+
+	private const float MeetingMainAgentRefreshSeconds = 0.12f;
+
+	private const float MeetingMainAgentRefreshRtsSeconds = 0.35f;
+
+	private const float MeetingPauseAllRefreshSeconds = 0.2f;
+
+	private const float MeetingPauseAllRefreshRtsSeconds = 0.45f;
+
 	private static int _formalDuelIsolationSessionSequence;
 
 	private static readonly FieldInfo AgentTargetFrameChangedField = typeof(Agent).GetField("_checkIfTargetFrameIsChanged", BindingFlags.Instance | BindingFlags.NonPublic);
@@ -106,6 +122,12 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior, IAgentStateDeci
 	private float _pauseTickTimer;
 
 	private float _keepLeaderPoseTimer;
+
+	private float _leaderPoseRefreshTimer;
+
+	private float _mainAgentFreeMovementTimer;
+
+	private bool _rtsCameraControlActive;
 
 	private bool _escortsPlaced;
 
@@ -274,6 +296,9 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior, IAgentStateDeci
 		_findAgentsTimer = 0f;
 		_pauseTickTimer = 0f;
 		_keepLeaderPoseTimer = 0f;
+		_leaderPoseRefreshTimer = 0f;
+		_mainAgentFreeMovementTimer = 0f;
+		_rtsCameraControlActive = false;
 		_leadersPlaced = false;
 		_combatResumed = false;
 		_escortsPlaced = false;
@@ -456,141 +481,207 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior, IAgentStateDeci
 
 	public override void OnMissionTick(float dt)
 	{
-		base.OnMissionTick(dt);
-		if (base.Mission == null)
+		using (PerfProbe.Scope("MeetingBattleLock.OnMissionTick"))
 		{
-			return;
-		}
-		bool flag = false;
-		try
-		{
-			flag = base.Mission.MissionEnded;
-		}
-		catch
-		{
-			flag = false;
-		}
-		if (flag)
-		{
+			base.OnMissionTick(dt);
+			if (base.Mission == null)
+			{
+				return;
+			}
+			bool flag = false;
 			try
 			{
-				LordEncounterBehavior.SetEncounterMeetingMissionActive(active: false);
-				return;
+				flag = base.Mission.MissionEnded;
 			}
 			catch
 			{
+				flag = false;
+			}
+			if (flag)
+			{
+				try
+				{
+					LordEncounterBehavior.SetEncounterMeetingMissionActive(active: false);
+					return;
+				}
+				catch
+				{
+					return;
+				}
+			}
+			float missionTime = 0f;
+			try
+			{
+				missionTime = base.Mission.CurrentTime;
+			}
+			catch
+			{
+				missionTime = 0f;
+			}
+			using (PerfProbe.Scope("MeetingBattleLock.OnMissionTick.RtsCameraCompat"))
+			{
+				_rtsCameraControlActive = RtsCameraCompat.IsLikelyExternalCameraControlActive(base.Mission, missionTime);
+			}
+			using (PerfProbe.Scope("MeetingBattleLock.OnMissionTick.TryEscalateHotkeys"))
+			{
+				TryEscalateMeetingOnChargeOrderHotkeys(dt);
+			}
+			TryApplyStartupLoadingFade(dt);
+			TrySkipDeploymentPhaseForMeeting();
+			bool flag2 = false;
+			try
+			{
+				flag2 = DuelBehavior.IsFormalDuelActive;
+			}
+			catch
+			{
+				flag2 = false;
+			}
+			if (_wasFormalDuelActiveLastTick && !flag2)
+			{
+				RestoreFormalDuelIsolation("formal_duel_end_tick");
+				_formalDuelCombatReleaseApplied = false;
+				_allowTargetFreeMovementAfterFormalDuel = true;
+				Logger.Log("MeetingBattle", "Formal duel ended: target duelist skipped by meeting lock.");
+			}
+			_wasFormalDuelActiveLastTick = flag2;
+			if (flag2)
+			{
+				_allowTargetFreeMovementAfterFormalDuel = false;
+				if (!_combatResumed)
+				{
+					RestoreTargetLordControllerForCombat();
+					_combatResumed = true;
+					Logger.Log("MeetingBattle", "Formal duel active: released target controller only; keep non-duel agents locked.");
+				}
+				using (PerfProbe.Scope("MeetingBattleLock.OnMissionTick.KeepFormalDuelIsolation"))
+				{
+					KeepFormalDuelIsolation();
+				}
 				return;
 			}
-		}
-		TryEscalateMeetingOnChargeOrderHotkeys(dt);
-		TryApplyStartupLoadingFade(dt);
-		TrySkipDeploymentPhaseForMeeting();
-		bool flag2 = false;
-		try
-		{
-			flag2 = DuelBehavior.IsFormalDuelActive;
-		}
-		catch
-		{
-			flag2 = false;
-		}
-		if (_wasFormalDuelActiveLastTick && !flag2)
-		{
-			RestoreFormalDuelIsolation("formal_duel_end_tick");
-			_formalDuelCombatReleaseApplied = false;
-			_allowTargetFreeMovementAfterFormalDuel = true;
-			Logger.Log("MeetingBattle", "Formal duel ended: target duelist skipped by meeting lock.");
-		}
-		_wasFormalDuelActiveLastTick = flag2;
-		if (flag2)
-		{
-			_allowTargetFreeMovementAfterFormalDuel = false;
-			if (!_combatResumed)
+			_mainAgentFreeMovementTimer -= dt;
+			if (MeetingBattleRuntime.IsCombatEscalated)
 			{
-				RestoreTargetLordControllerForCombat();
-				_combatResumed = true;
-				Logger.Log("MeetingBattle", "Formal duel active: released target controller only; keep non-duel agents locked.");
+				RestoreTargetFormationAfterFormalDuel();
+				if (!_meetingCombatUnlockApplied)
+				{
+					ArmDeferredDetachedFormationRestoreForCombat();
+					EnsureMissionBattleModeForCombat();
+					EnsureMissionCombatTeamRelationships();
+					RestoreTargetLordControllerForCombat();
+					using (PerfProbe.Scope("MeetingBattleLock.OnMissionTick.ReleaseMeetingLocksForCombat"))
+					{
+						ReleaseMeetingLocksForCombat();
+					}
+					using (PerfProbe.Scope("MeetingBattleLock.OnMissionTick.ForceAgentsIntoCombatReadiness"))
+					{
+						ForceAgentsIntoCombatReadiness();
+					}
+					_meetingCombatUnlockApplied = true;
+				}
+				LordEncounterBehavior.SetEncounterMeetingMissionActive(active: false);
+				if (_mainAgentFreeMovementTimer <= 0f)
+				{
+					using (PerfProbe.Scope("MeetingBattleLock.OnMissionTick.EnsureMainAgentFreeMovement"))
+					{
+						EnsureMainAgentFreeMovement(allowPlayerControllerForce: !_rtsCameraControlActive);
+					}
+					_mainAgentFreeMovementTimer = _rtsCameraControlActive ? MeetingMainAgentRefreshRtsSeconds : MeetingMainAgentRefreshSeconds;
+				}
+				TryApplyEncounterHostilityForEscalatedCombat();
+				if (!_combatResumed)
+				{
+					using (PerfProbe.Scope("MeetingBattleLock.OnMissionTick.ResumeAllAIAgents"))
+					{
+						ResumeAllAIAgents();
+					}
+					_combatResumed = true;
+				}
+				TryRestoreDeferredDetachedFormationsAfterCombat();
+				return;
 			}
-			KeepFormalDuelIsolation();
-			return;
-		}
-		if (MeetingBattleRuntime.IsCombatEscalated)
-		{
 			RestoreTargetFormationAfterFormalDuel();
-			if (!_meetingCombatUnlockApplied)
+			_combatResumed = false;
+			_findAgentsTimer -= dt;
+			_pauseTickTimer -= dt;
+			_keepLeaderPoseTimer -= dt;
+			_leaderPoseRefreshTimer -= dt;
+			_escortPlacementTimer -= dt;
+			_escortDebugLogCooldown -= dt;
+			_leaderSheathTimer -= dt;
+			_targetNeutralRefreshTimer -= dt;
+			if (_findAgentsTimer <= 0f)
 			{
-				ArmDeferredDetachedFormationRestoreForCombat();
-				EnsureMissionBattleModeForCombat();
-				EnsureMissionCombatTeamRelationships();
-				RestoreTargetLordControllerForCombat();
-				ReleaseMeetingLocksForCombat();
-				ForceAgentsIntoCombatReadiness();
-				_meetingCombatUnlockApplied = true;
+				using (PerfProbe.Scope("MeetingBattleLock.OnMissionTick.FindMainAndTargetAgents"))
+				{
+					FindMainAndTargetAgents();
+				}
+				_findAgentsTimer = 0.2f;
 			}
-			LordEncounterBehavior.SetEncounterMeetingMissionActive(active: false);
-			EnsureMainAgentFreeMovement();
-			TryApplyEncounterHostilityForEscalatedCombat();
-			if (!_combatResumed)
+			if (_targetNeutralRefreshTimer <= 0f)
 			{
-				ResumeAllAIAgents();
-				_combatResumed = true;
+				if (!_allowTargetFreeMovementAfterFormalDuel)
+				{
+					using (PerfProbe.Scope("MeetingBattleLock.OnMissionTick.EnsureTargetNeutralized"))
+					{
+						EnsureTargetLordNeutralized();
+					}
+				}
+				_targetNeutralRefreshTimer = _rtsCameraControlActive ? MeetingTargetNeutralRefreshRtsSeconds : MeetingTargetNeutralRefreshSeconds;
 			}
-			TryRestoreDeferredDetachedFormationsAfterCombat();
-			return;
-		}
-		RestoreTargetFormationAfterFormalDuel();
-		_combatResumed = false;
-		_findAgentsTimer -= dt;
-		_pauseTickTimer -= dt;
-		_keepLeaderPoseTimer -= dt;
-		_escortPlacementTimer -= dt;
-		_escortDebugLogCooldown -= dt;
-		_leaderSheathTimer -= dt;
-		_targetNeutralRefreshTimer -= dt;
-		if (_findAgentsTimer <= 0f)
-		{
-			FindMainAndTargetAgents();
-			_findAgentsTimer = 0.2f;
-		}
-		if (_targetNeutralRefreshTimer <= 0f)
-		{
-			if (!_allowTargetFreeMovementAfterFormalDuel)
+			if (!_leadersPlaced && _mainAgent != null && _targetAgent != null)
 			{
-				EnsureTargetLordNeutralized();
+				PlaceLeadersForMeeting();
+				_leadersPlaced = true;
+				_keepLeaderPoseTimer = 2f;
+				_leaderPoseRefreshTimer = 0f;
 			}
-			_targetNeutralRefreshTimer = 0.03f;
-		}
-		if (!_leadersPlaced && _mainAgent != null && _targetAgent != null)
-		{
-			PlaceLeadersForMeeting();
-			_leadersPlaced = true;
-			_keepLeaderPoseTimer = 2f;
-		}
-		if (_leadersPlaced && !_allowTargetFreeMovementAfterFormalDuel)
-		{
-			KeepLeadersFacingEachOther();
-		}
-		if (_leadersPlaced && !_escortsPlaced && _escortPlacementTimer <= 0f)
-		{
-			if (TryPlaceEscortGuards())
+			if (_leadersPlaced && !_allowTargetFreeMovementAfterFormalDuel && _leaderPoseRefreshTimer <= 0f)
 			{
-				_escortsPlaced = true;
+				using (PerfProbe.Scope("MeetingBattleLock.OnMissionTick.KeepLeadersFacing"))
+				{
+					KeepLeadersFacingEachOther();
+				}
+				_leaderPoseRefreshTimer = _rtsCameraControlActive ? MeetingLeaderPoseRefreshRtsSeconds : MeetingLeaderPoseRefreshSeconds;
 			}
-			else
+			if (_leadersPlaced && !_escortsPlaced && _escortPlacementTimer <= 0f)
 			{
-				_escortPlacementTimer = 0.5f;
+				bool placed;
+				using (PerfProbe.Scope("MeetingBattleLock.OnMissionTick.TryPlaceEscortGuards"))
+				{
+					placed = TryPlaceEscortGuards();
+				}
+				if (placed)
+				{
+					_escortsPlaced = true;
+				}
+				else
+				{
+					_escortPlacementTimer = 0.5f;
+				}
 			}
-		}
-		if (_leaderSheathTimer <= 0f)
-		{
-			EnsureTargetLordSheathed();
-			_leaderSheathTimer = 0.06f;
-		}
-		EnsureMainAgentFreeMovement();
-		if (_pauseTickTimer <= 0f)
-		{
-			PauseAllAIAgentsAndSheathWeapons(sheathWeapons: false);
-			_pauseTickTimer = 0.15f;
+			if (_leaderSheathTimer <= 0f)
+			{
+				EnsureTargetLordSheathed();
+				_leaderSheathTimer = 0.06f;
+			}
+			if (_mainAgentFreeMovementTimer <= 0f)
+			{
+				using (PerfProbe.Scope("MeetingBattleLock.OnMissionTick.EnsureMainAgentFreeMovement"))
+				{
+					EnsureMainAgentFreeMovement(allowPlayerControllerForce: !_rtsCameraControlActive);
+				}
+				_mainAgentFreeMovementTimer = _rtsCameraControlActive ? MeetingMainAgentRefreshRtsSeconds : MeetingMainAgentRefreshSeconds;
+			}
+			if (_pauseTickTimer <= 0f)
+			{
+				using (PerfProbe.Scope("MeetingBattleLock.OnMissionTick.PauseAllAgents"))
+				{
+					PauseAllAIAgentsAndSheathWeapons(sheathWeapons: false, preserveExternalPlayerControl: _rtsCameraControlActive);
+				}
+				_pauseTickTimer = _rtsCameraControlActive ? MeetingPauseAllRefreshRtsSeconds : MeetingPauseAllRefreshSeconds;
+			}
 		}
 	}
 
@@ -4282,7 +4373,7 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior, IAgentStateDeci
 		}
 	}
 
-	private void PauseAllAIAgentsAndSheathWeapons(bool sheathWeapons)
+	private void PauseAllAIAgentsAndSheathWeapons(bool sheathWeapons, bool preserveExternalPlayerControl = false)
 	{
 		try
 		{
@@ -4342,7 +4433,10 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior, IAgentStateDeci
 				}
 				if (flag)
 				{
-					EnsureAgentFreeMovement(agent5);
+					if (!preserveExternalPlayerControl)
+					{
+						EnsureAgentFreeMovement(agent5);
+					}
 					continue;
 				}
 				bool flag2 = false;
@@ -4435,7 +4529,10 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior, IAgentStateDeci
 					}
 					if (flag4)
 					{
-						EnsureAgentFreeMovement(mountAgent);
+						if (!preserveExternalPlayerControl)
+						{
+							EnsureAgentFreeMovement(mountAgent);
+						}
 						continue;
 					}
 					if (_allowTargetFreeMovementAfterFormalDuel && (mountAgent == agent4 || mountAgent == agent3))
@@ -4465,7 +4562,7 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior, IAgentStateDeci
 		}
 	}
 
-	private void EnsureMainAgentFreeMovement()
+	private void EnsureMainAgentFreeMovement(bool allowPlayerControllerForce = true)
 	{
 		Agent agent = null;
 		try
@@ -4503,6 +4600,10 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior, IAgentStateDeci
 			return;
 		}
 		_mainAgent = agent;
+		if (!allowPlayerControllerForce)
+		{
+			return;
+		}
 		TryEnsureMainAgentPlayerController(agent);
 		EnsureAgentFreeMovement(agent);
 		try

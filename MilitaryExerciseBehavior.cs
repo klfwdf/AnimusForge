@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using Helpers;
 using HarmonyLib;
@@ -805,6 +806,16 @@ public static class MilitaryExerciseBehavior
 
 	private static float _nextOrphanDummyCleanupAt;
 
+	private const int OrphanDummyFallbackScanBatchSize = 64;
+
+	private static readonly HashSet<string> _knownDummyPartyIds = new HashSet<string>(StringComparer.Ordinal);
+
+	private static bool _orphanDummyFallbackScanRequested = true;
+
+	private static int _orphanDummyFallbackScanCursor;
+
+	private static List<MobileParty> _orphanDummyFallbackScanSnapshot;
+
 
 	public static void OnEngineTick()
 	{
@@ -885,6 +896,16 @@ public static class MilitaryExerciseBehavior
 			_queuedOpenBattle = false;
 			DisplayFailure("军事演习开启失败", ex);
 		}
+	}
+
+	public static bool NeedsEngineTick()
+	{
+		return !_harmonyPatched
+			|| _queuedOpenSecondTeam
+			|| _queuedOpenBattle
+			|| (_runtime != null && !_runtime.SettlementDone)
+			|| _knownDummyPartyIds.Count > 0
+			|| _orphanDummyFallbackScanRequested;
 	}
 
 	public static void OpenExerciseFromTerminal()
@@ -1347,10 +1368,17 @@ public static class MilitaryExerciseBehavior
 			}
 			_nextOrphanDummyCleanupAt = now + 3f;
 			List<MobileParty> orphanDummies = new List<MobileParty>();
-			foreach (MobileParty party in MobileParty.All)
+			foreach (string partyId in _knownDummyPartyIds.ToList())
 			{
-				if (party == null || !party.IsActive || !IsMilitaryExerciseDummyParty(party))
+				MobileParty party = FindMobilePartyByStringId(partyId);
+				if (party == null || !party.IsActive)
 				{
+					_knownDummyPartyIds.Remove(partyId);
+					continue;
+				}
+				if (!IsMilitaryExerciseDummyParty(party))
+				{
+					_knownDummyPartyIds.Remove(partyId);
 					continue;
 				}
 				if (_runtime != null && !_runtime.SettlementDone
@@ -1360,6 +1388,37 @@ public static class MilitaryExerciseBehavior
 				}
 				orphanDummies.Add(party);
 			}
+			if (_orphanDummyFallbackScanRequested)
+			{
+				if (_orphanDummyFallbackScanSnapshot == null)
+				{
+					_orphanDummyFallbackScanSnapshot = EnumerateMobilePartiesSafe().Where((MobileParty x) => x != null).ToList();
+					_orphanDummyFallbackScanCursor = 0;
+				}
+				int processed = 0;
+				while (_orphanDummyFallbackScanCursor < _orphanDummyFallbackScanSnapshot.Count && processed < OrphanDummyFallbackScanBatchSize)
+				{
+					MobileParty party = _orphanDummyFallbackScanSnapshot[_orphanDummyFallbackScanCursor++];
+					processed++;
+					if (party == null || !party.IsActive || !IsMilitaryExerciseDummyParty(party))
+					{
+						continue;
+					}
+					RegisterKnownDummyParty(party);
+					if (_runtime != null && !_runtime.SettlementDone
+						&& (ReferenceEquals(party, _runtime.OpponentDummyParty) || ReferenceEquals(party, _runtime.HoldingDummyParty)))
+					{
+						continue;
+					}
+					orphanDummies.Add(party);
+				}
+				if (_orphanDummyFallbackScanCursor >= _orphanDummyFallbackScanSnapshot.Count)
+				{
+					_orphanDummyFallbackScanRequested = false;
+					_orphanDummyFallbackScanSnapshot = null;
+					_orphanDummyFallbackScanCursor = 0;
+				}
+			}
 			foreach (MobileParty orphan in orphanDummies)
 			{
 				CleanupOrphanDummyParty(orphan);
@@ -1368,6 +1427,36 @@ public static class MilitaryExerciseBehavior
 		catch (Exception ex)
 		{
 			Log("orphan_dummy_cleanup_tick failed " + ex.GetType().Name + ": " + ex.Message);
+		}
+	}
+
+	private static MobileParty FindMobilePartyByStringId(string partyId)
+	{
+		string text = (partyId ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return null;
+		}
+		try
+		{
+			return EnumerateMobilePartiesSafe().FirstOrDefault((MobileParty x) => x != null && string.Equals(x.StringId ?? "", text, StringComparison.Ordinal));
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static IEnumerable<MobileParty> EnumerateMobilePartiesSafe()
+	{
+		try
+		{
+			IEnumerable<MobileParty> parties = MobileParty.All;
+			return parties ?? Enumerable.Empty<MobileParty>();
+		}
+		catch
+		{
+			return Enumerable.Empty<MobileParty>();
 		}
 	}
 
@@ -1438,6 +1527,23 @@ public static class MilitaryExerciseBehavior
 		string id = party?.StringId ?? "";
 		return id.StartsWith(OpponentDummyPartyPrefix, StringComparison.Ordinal)
 			|| id.StartsWith(HoldingDummyPartyPrefix, StringComparison.Ordinal);
+	}
+
+	private static void RegisterKnownDummyParty(MobileParty party)
+	{
+		string id = party?.StringId ?? "";
+		if (!string.IsNullOrWhiteSpace(id) && IsMilitaryExerciseDummyParty(party))
+		{
+			_knownDummyPartyIds.Add(id);
+		}
+	}
+
+	private static void UnregisterKnownDummyParty(string id)
+	{
+		if (!string.IsNullOrWhiteSpace(id))
+		{
+			_knownDummyPartyIds.Remove(id);
+		}
 	}
 
 	private static bool CanOpenFromCurrentState(out MobileParty mainParty, out string blockedReason)
@@ -1708,6 +1814,8 @@ public static class MilitaryExerciseBehavior
 		}
 		InitializeCreatedDummyParty(runtime.OpponentDummyParty);
 		InitializeCreatedDummyParty(runtime.HoldingDummyParty);
+		RegisterKnownDummyParty(runtime.OpponentDummyParty);
+		RegisterKnownDummyParty(runtime.HoldingDummyParty);
 	}
 
 	private static void InitializeCreatedDummyParty(MobileParty party)
@@ -2804,6 +2912,7 @@ public static class MilitaryExerciseBehavior
 			else
 			{
 			}
+			UnregisterKnownDummyParty(id);
 		}
 		catch (Exception ex)
 		{

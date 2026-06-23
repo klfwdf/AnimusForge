@@ -201,6 +201,11 @@ public static partial class TroopInspectionBehavior
 		}
 	}
 
+	public static bool NeedsEngineTick()
+	{
+		return _queuedOpenInspection || _runtime != null || _isOpening;
+	}
+
 	public static void OpenInspectionFromTerminal()
 	{
 		Log("terminal_open");
