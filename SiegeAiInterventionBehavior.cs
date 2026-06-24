@@ -77,6 +77,15 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		public float TalkStartedAt = -1f;
 	}
 
+	private sealed class BannerBearerTroopStack
+	{
+		public CharacterObject Troop;
+
+		public int Available;
+
+		public int SourceOrder;
+	}
+
 	private sealed class AmbientReactionRequest
 	{
 		public SiegeInterventionActionKind Action;
@@ -8413,7 +8422,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				return 0;
 			}
 			bool playerMounted = IsAgentMounted(main);
-			List<CharacterObject> troops = PickInterventionBannerBearerTroops(missingSides.Count, preferMounted: playerMounted);
+			List<CharacterObject> troops = PickInterventionBannerBearerTroops(missingSides.Count);
 			if (troops.Count == 0)
 			{
 				Logger.Log("SiegeAiIntervention", "Skip GCCZ banner bearers: no available non-hero troop. Source=" + (source ?? "N/A"));
@@ -8531,39 +8540,43 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		return sides;
 	}
 
-	private static List<CharacterObject> PickInterventionBannerBearerTroops(int count, bool preferMounted)
+	private static List<CharacterObject> PickInterventionBannerBearerTroops(int count)
 	{
-		List<CharacterObject> candidates = new List<CharacterObject>();
 		if (count <= 0)
 		{
-			return candidates;
+			return new List<CharacterObject>();
 		}
 		try
 		{
-			AddBannerBearerTroopCandidates(candidates, _selectedInterventionRoster, count);
-			AddBannerBearerTroopCandidates(candidates, PartyBase.MainParty?.MemberRoster, count);
-			return candidates
-				.Select((troop, index) => new { Troop = troop, Index = index })
-				.OrderBy(x => preferMounted && CharacterCanSpawnMounted(x.Troop) ? 0 : 1)
-				.ThenBy(x => x.Index)
+			List<BannerBearerTroopStack> stacks = BuildBannerBearerTroopStacks(PartyBase.MainParty?.MemberRoster);
+			if (stacks.Count == 0)
+			{
+				stacks = BuildBannerBearerTroopStacks(_selectedInterventionRoster);
+			}
+			return stacks
+				.OrderBy(stack => CharacterCanSpawnMounted(stack.Troop) ? 0 : 1)
+				.ThenByDescending(stack => stack.Available)
+				.ThenBy(stack => stack.SourceOrder)
+				.SelectMany(stack => Enumerable.Repeat(stack.Troop, Math.Min(stack.Available, count)))
 				.Take(count)
-				.Select(x => x.Troop)
 				.ToList();
 		}
 		catch
 		{
+			return new List<CharacterObject>();
 		}
-		return candidates.Take(count).ToList();
 	}
 
-	private static void AddBannerBearerTroopCandidates(List<CharacterObject> candidates, TroopRoster roster, int maxCopiesPerTroop)
+	private static List<BannerBearerTroopStack> BuildBannerBearerTroopStacks(TroopRoster roster)
 	{
-		if (candidates == null || roster == null || maxCopiesPerTroop <= 0)
+		List<BannerBearerTroopStack> result = new List<BannerBearerTroopStack>();
+		if (roster == null)
 		{
-			return;
+			return result;
 		}
 		try
 		{
+			Dictionary<string, BannerBearerTroopStack> stacksByTroopId = new Dictionary<string, BannerBearerTroopStack>(StringComparer.OrdinalIgnoreCase);
 			for (int i = 0; i < roster.Count; i++)
 			{
 				TroopRosterElement element = roster.GetElementCopyAtIndex(i);
@@ -8573,16 +8586,33 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 					continue;
 				}
 				int available = troop.HeroObject != null ? element.Number : Math.Max(0, element.Number - element.WoundedNumber);
-				int copies = Math.Min(available, maxCopiesPerTroop);
-				for (int j = 0; j < copies; j++)
+				if (available <= 0)
 				{
-					candidates.Add(troop);
+					continue;
+				}
+				string key = troop.StringId ?? RuntimeHelpers.GetHashCode(troop).ToString();
+				if (!stacksByTroopId.TryGetValue(key, out BannerBearerTroopStack stack))
+				{
+					stack = new BannerBearerTroopStack
+					{
+						Troop = troop,
+						Available = 0,
+						SourceOrder = i
+					};
+					stacksByTroopId[key] = stack;
+					result.Add(stack);
+				}
+				stack.Available += available;
+				if (i < stack.SourceOrder)
+				{
+					stack.SourceOrder = i;
 				}
 			}
 		}
 		catch
 		{
 		}
+		return result;
 	}
 
 	private static bool IsValidInterventionBannerBearerTroop(CharacterObject troop)
