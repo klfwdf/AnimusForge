@@ -352,6 +352,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	private static readonly HashSet<string> LootedTargets = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 	private static readonly HashSet<string> CivilianRobberyTargets = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 	private static readonly HashSet<int> AlliedAgentIndexes = new HashSet<int>();
+	private static readonly HashSet<int> BannerBearerAgentIndexes = new HashSet<int>();
 	private static readonly HashSet<int> CountedMassacreVictims = new HashSet<int>();
 	private static readonly HashSet<Hero> PendingInterventionNotableDeaths = new HashSet<Hero>();
 	private static readonly HashSet<int> SceneCivilianAgentIndexes = new HashSet<int>();
@@ -374,6 +375,8 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	private static readonly Dictionary<int, int> CivilianSpeechRallySlots = new Dictionary<int, int>();
 	private static readonly Dictionary<int, float> LastCordonMoveOrderTimesBySoldier = new Dictionary<int, float>();
 	private static readonly Dictionary<int, float> LastCordonLookOrderTimesBySoldier = new Dictionary<int, float>();
+	private static readonly Dictionary<int, int> BannerBearerSideByAgentIndex = new Dictionary<int, int>();
+	private static readonly Dictionary<int, float> LastBannerBearerMoveOrderTimes = new Dictionary<int, float>();
 	private static readonly Dictionary<int, Vec3> CivilianHideTargets = new Dictionary<int, Vec3>();
 	private static readonly Dictionary<int, float> LastCivilianHideOrderTimes = new Dictionary<int, float>();
 	private static readonly HashSet<int> CivilianHideSettledAgentIndexes = new HashSet<int>();
@@ -2301,6 +2304,23 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		{
 			return false;
 		}
+	}
+
+	private static bool IsInterventionBannerBearer(Agent agent)
+	{
+		try
+		{
+			return agent != null && BannerBearerAgentIndexes.Contains(agent.Index);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static bool IsCommandableInterventionSoldier(Agent agent, bool requireActive = false)
+	{
+		return IsInterventionAlliedSoldierForExternal(agent, requireActive) && !IsInterventionBannerBearer(agent);
 	}
 
 	internal static bool ShouldBlockInterventionMissionExit(out string message)
@@ -6772,6 +6792,11 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 					agent.SetWatchState(Agent.WatchState.Alarmed);
 					continue;
 				}
+				if (IsInterventionBannerBearer(agent))
+				{
+					KeepInterventionBannerBearerNearPlayer(agent, main, mission);
+					continue;
+				}
 				RestoreAlliedSoldierFriendlyState(agent, 0f, SiegeSoldierCordonProfile.AlliedControlTickSource, forceFollow: false, clearTarget: false);
 				if (agent.Formation == null || agent.Team != (mission.PlayerTeam ?? main.Team))
 				{
@@ -6931,7 +6956,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			{
 				return 0;
 			}
-			int activeSoldiers = mission.Agents.Count(a => a != null && a.IsHuman && a.IsActive() && AlliedAgentIndexes.Contains(a.Index));
+			int activeSoldiers = mission.Agents.Count(a => IsCommandableInterventionSoldier(a, requireActive: true));
 			int remainingTargets = mission.Agents.Count(a => IsEligibleCivilianAgent(a, includeHeroes: true) && !LootedTargets.Contains(BuildTargetKey(a)) && !ActivePlunderInteractions.ContainsKey(a.Index));
 			int byRatio = (int)MathF.Ceiling(activeSoldiers * PlunderSoldierAssignmentRatio);
 			int desired = Math.Min(MaxConcurrentPlunderInteractions, Math.Max(1, byRatio));
@@ -7028,7 +7053,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			return false;
 		}
 		HashSet<int> busySoldiers = new HashSet<int>(ActivePlunderInteractions.Values.Select(x => x.SoldierAgentIndex));
-		Agent soldier = mission.Agents.Where(a => a != null && a.IsActive() && AlliedAgentIndexes.Contains(a.Index) && !busySoldiers.Contains(a.Index)).OrderBy(a => a.Position.DistanceSquared(target.Position)).FirstOrDefault();
+		Agent soldier = mission.Agents.Where(a => IsCommandableInterventionSoldier(a, requireActive: true) && !busySoldiers.Contains(a.Index)).OrderBy(a => a.Position.DistanceSquared(target.Position)).FirstOrDefault();
 		if (soldier == null)
 		{
 			return false;
@@ -7310,7 +7335,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			PrepareCivilianForMassacreCombat(target, mission);
 		}
 		List<Agent> alliedSoldiers = mission.Agents
-			.Where(a => a != null && a.IsActive() && AlliedAgentIndexes.Contains(a.Index))
+			.Where(a => IsCommandableInterventionSoldier(a, requireActive: true))
 			.OrderBy(a => MassacreSoldierTargetAgentIndexes.ContainsKey(a.Index) ? 0 : 1)
 			.ThenBy(a => a.Index)
 			.ToList();
@@ -8358,12 +8383,410 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		}
 		if (spawned > 0)
 		{
+			SpawnInterventionBannerBearers(mission, main, team, party, source);
 			TrySetPlayerFormationFollowOrder(FormationClass.Infantry, SiegeSoldierCordonProfile.SpawnFollowAfterBatchSource);
 			TryPrimePlayerOrderController(mission, SiegeSoldierCordonProfile.SpawnAlliedBatchOrderControllerSource, force: true);
 			InformationManager.DisplayMessage(new InformationMessage(SiegeInterventionEntryProfile.BuildSummonedTroopsMessage(spawned), Color.FromUint(SiegeInterventionEntryProfile.SummonedTroopsMessageColor)));
 			return true;
 		}
 		return false;
+	}
+
+	private static int SpawnInterventionBannerBearers(Mission mission, Agent main, Team team, PartyBase party, string source)
+	{
+		try
+		{
+			if (!IsActiveInCurrentMission() || mission == null || main == null || team == null || party?.MemberRoster == null)
+			{
+				return 0;
+			}
+			PruneBannerBearerState(mission);
+			List<int> missingSides = GetMissingBannerBearerSides();
+			if (missingSides.Count == 0)
+			{
+				return 0;
+			}
+			ItemObject bannerItem = ResolveInterventionBannerItem();
+			if (!IsUsableBannerItem(bannerItem))
+			{
+				Logger.Log("SiegeAiIntervention", "Skip GCCZ banner bearers: no usable banner item. Source=" + (source ?? "N/A"));
+				return 0;
+			}
+			List<CharacterObject> troops = PickInterventionBannerBearerTroops(missingSides.Count);
+			if (troops.Count == 0)
+			{
+				Logger.Log("SiegeAiIntervention", "Skip GCCZ banner bearers: no available non-hero troop. Source=" + (source ?? "N/A"));
+				return 0;
+			}
+			Banner banner = ResolveInterventionBanner();
+			Formation infantryFormation = team.GetFormation(FormationClass.Infantry);
+			MarkFormationPlayerCommandable(infantryFormation, main);
+			int spawned = 0;
+			for (int i = 0; i < missingSides.Count && i < troops.Count; i++)
+			{
+				CharacterObject troop = troops[i];
+				int side = missingSides[i];
+				if (troop == null)
+				{
+					continue;
+				}
+				Vec3 position = GetBannerBearerTargetPosition(main, mission, side);
+				Vec3 spawnDirection = main.LookDirection;
+				spawnDirection.z = 0f;
+				if (spawnDirection.LengthSquared < 0.01f)
+				{
+					spawnDirection = Vec3.Forward;
+				}
+				spawnDirection.Normalize();
+				try
+				{
+					IAgentOriginBase origin = new PartyAgentOrigin(party, troop);
+					CommandableOriginRuntimeIds.Add(RuntimeHelpers.GetHashCode(origin));
+					AgentBuildData buildData = new AgentBuildData(troop).TroopOrigin(origin).Monster(TaleWorlds.Core.FaceGen.GetMonsterWithSuffix(troop.Race, "_settlement")).Team(team)
+						.InitialPosition(in position)
+						.InitialDirection(spawnDirection.AsVec2.Normalized())
+						.Controller(AgentControllerType.AI)
+						.CivilianEquipment(civilianEquipment: false)
+						.NoHorses(noHorses: true)
+						.BannerItem(bannerItem);
+					if (banner != null)
+					{
+						buildData = buildData.Banner(banner);
+					}
+					ItemObject replacementWeapon = TryGetBannerBearerReplacementWeapon(troop);
+					if (replacementWeapon != null)
+					{
+						buildData = buildData.BannerReplacementWeaponItem(replacementWeapon);
+					}
+					if (infantryFormation != null)
+					{
+						buildData = buildData.Formation(infantryFormation)
+							.FormationTroopSpawnCount(SiegeBannerBearerProfile.BannerBearerCount)
+							.FormationTroopSpawnIndex(i)
+							.SpawnsIntoOwnFormation(true)
+							.SpawnsUsingOwnTroopClass(false);
+					}
+					Agent spawnedAgent = mission.SpawnAgent(buildData, false);
+					if (spawnedAgent == null)
+					{
+						continue;
+					}
+					NotifyAgentBuiltForMission(spawnedAgent, mission);
+					AlliedAgentIndexes.Add(spawnedAgent.Index);
+					BannerBearerAgentIndexes.Add(spawnedAgent.Index);
+					BannerBearerSideByAgentIndex[spawnedAgent.Index] = side;
+					RestoreAlliedSoldierFriendlyState(spawnedAgent, 0f, SiegeBannerBearerProfile.BannerBearerRestoreSource, forceFollow: false, clearTarget: true);
+					AssignAgentToPlayerFormation(spawnedAgent, FormationClass.Infantry, refreshFormationOrders: false);
+					KeepInterventionBannerBearerNearPlayer(spawnedAgent, main, mission);
+					spawned++;
+				}
+				catch (Exception ex)
+				{
+					Logger.Log("SiegeAiIntervention", "Spawn GCCZ banner bearer failed: " + ex.Message);
+				}
+			}
+			if (spawned > 0)
+			{
+				Logger.Log("SiegeAiIntervention", "Spawned GCCZ banner bearers=" + spawned + ", Source=" + (source ?? SiegeBannerBearerProfile.SpawnSource) + ", BannerItem=" + (bannerItem?.StringId ?? "null"));
+			}
+			return spawned;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "SpawnInterventionBannerBearers failed: " + ex.Message);
+			return 0;
+		}
+	}
+
+	private static List<int> GetMissingBannerBearerSides()
+	{
+		List<int> sides = new List<int>();
+		try
+		{
+			bool hasLeft = BannerBearerSideByAgentIndex.Values.Contains(-1);
+			bool hasRight = BannerBearerSideByAgentIndex.Values.Contains(1);
+			if (!hasLeft)
+			{
+				sides.Add(-1);
+			}
+			if (!hasRight)
+			{
+				sides.Add(1);
+			}
+			while (sides.Count > SiegeBannerBearerProfile.BannerBearerCount)
+			{
+				sides.RemoveAt(sides.Count - 1);
+			}
+		}
+		catch
+		{
+		}
+		return sides;
+	}
+
+	private static List<CharacterObject> PickInterventionBannerBearerTroops(int count)
+	{
+		List<CharacterObject> result = new List<CharacterObject>();
+		if (count <= 0)
+		{
+			return result;
+		}
+		try
+		{
+			foreach (CharacterObject troop in PickInterventionTroops(count * 2))
+			{
+				if (IsValidInterventionBannerBearerTroop(troop))
+				{
+					result.Add(troop);
+					if (result.Count >= count)
+					{
+						return result;
+					}
+				}
+			}
+			foreach (CharacterObject troop in PickTroopsFromMainParty(count * 2))
+			{
+				if (IsValidInterventionBannerBearerTroop(troop))
+				{
+					result.Add(troop);
+					if (result.Count >= count)
+					{
+						return result;
+					}
+				}
+			}
+		}
+		catch
+		{
+		}
+		return result;
+	}
+
+	private static bool IsValidInterventionBannerBearerTroop(CharacterObject troop)
+	{
+		return troop != null && troop != CharacterObject.PlayerCharacter && !troop.IsHero;
+	}
+
+	private static Banner ResolveInterventionBanner()
+	{
+		try
+		{
+			return Hero.MainHero?.Clan?.Banner ?? Clan.PlayerClan?.Banner;
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static ItemObject ResolveInterventionBannerItem()
+	{
+		try
+		{
+			ItemObject playerBannerItem = null;
+			if (Hero.MainHero != null)
+			{
+				EquipmentElement playerBannerElement = Hero.MainHero.BannerItem;
+				playerBannerItem = playerBannerElement.Item;
+			}
+			if (IsUsableBannerItem(playerBannerItem))
+			{
+				return playerBannerItem;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			IEnumerable<ItemObject> items = Game.Current?.ObjectManager?.GetObjectTypeList<ItemObject>();
+			if (items == null)
+			{
+				return null;
+			}
+			BasicCultureObject playerCulture = Hero.MainHero?.Culture;
+			return items
+				.Where(IsUsableBannerItem)
+				.OrderByDescending(i => playerCulture != null && i.Culture == playerCulture)
+				.ThenBy(i => string.Equals(i.StringId ?? "", "campaign_banner_small", StringComparison.OrdinalIgnoreCase) ? 1 : 0)
+				.ThenBy(i => i.StringId ?? "")
+				.FirstOrDefault();
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "ResolveInterventionBannerItem failed: " + ex.Message);
+			return null;
+		}
+	}
+
+	private static bool IsUsableBannerItem(ItemObject item)
+	{
+		try
+		{
+			return item != null && item.IsBannerItem && item.BannerComponent != null;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static ItemObject TryGetBannerBearerReplacementWeapon(CharacterObject troop)
+	{
+		try
+		{
+			return MissionGameModels.Current?.BattleBannerBearersModel?.GetBannerBearerReplacementWeapon(troop);
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static void PruneBannerBearerState(Mission mission)
+	{
+		try
+		{
+			if (mission?.Agents == null || BannerBearerAgentIndexes.Count == 0)
+			{
+				return;
+			}
+			HashSet<int> activeBannerIndexes = new HashSet<int>(mission.Agents.Where(a => a != null && a.IsHuman && a.IsActive() && BannerBearerAgentIndexes.Contains(a.Index)).Select(a => a.Index));
+			foreach (int index in BannerBearerAgentIndexes.ToList())
+			{
+				if (activeBannerIndexes.Contains(index))
+				{
+					continue;
+				}
+				BannerBearerAgentIndexes.Remove(index);
+				BannerBearerSideByAgentIndex.Remove(index);
+				LastBannerBearerMoveOrderTimes.Remove(index);
+				CordonReadyAgentIndexes.Remove(index);
+				MassacreReadySoldierAgentIndexes.Remove(index);
+				ClearMassacreHuntAssignment(index);
+				AlliedAgentIndexes.Remove(index);
+			}
+		}
+		catch
+		{
+		}
+	}
+
+	private static Vec3 GetBannerBearerTargetPosition(Agent main, Mission mission, int side)
+	{
+		Vec3 position = main?.Position ?? Vec3.Zero;
+		try
+		{
+			Vec3 forward = main?.LookDirection ?? Vec3.Forward;
+			forward.z = 0f;
+			if (forward.LengthSquared < 0.01f)
+			{
+				forward = Vec3.Forward;
+			}
+			forward.Normalize();
+			Vec3 right = Vec3.CrossProduct(forward, Vec3.Up);
+			if (right.LengthSquared < 0.01f)
+			{
+				right = Vec3.Side;
+			}
+			right.Normalize();
+			float sideSign = side < 0 ? -1f : 1f;
+			position = main.Position - forward * SiegeBannerBearerProfile.BackOffsetMeters + right * (sideSign * SiegeBannerBearerProfile.SideOffsetMeters);
+			try
+			{
+				if (mission?.Scene != null)
+				{
+					position.z = mission.Scene.GetGroundHeightAtPosition(position);
+				}
+			}
+			catch
+			{
+			}
+		}
+		catch
+		{
+		}
+		return position;
+	}
+
+	private static void KeepInterventionBannerBearerNearPlayer(Agent bearer, Agent main, Mission mission)
+	{
+		try
+		{
+			if (bearer == null || main == null || mission == null || !bearer.IsActive())
+			{
+				return;
+			}
+			if (!BannerBearerSideByAgentIndex.TryGetValue(bearer.Index, out int side))
+			{
+				side = (bearer.Index % 2 == 0) ? -1 : 1;
+				BannerBearerSideByAgentIndex[bearer.Index] = side;
+			}
+			RestoreAlliedSoldierFriendlyState(bearer, 0f, SiegeBannerBearerProfile.BannerBearerRestoreSource, forceFollow: false, clearTarget: true);
+			DisableCompanionStyleFollow(bearer);
+			bearer.SetWatchState(_massacreStarted || _plunderStarted ? Agent.WatchState.Alarmed : Agent.WatchState.Patrolling);
+			TryWieldBannerBearerBanner(bearer);
+			Vec3 target = GetBannerBearerTargetPosition(main, mission, side);
+			float playerDistanceSq = bearer.Position.DistanceSquared(main.Position);
+			float targetDistanceSq = bearer.Position.DistanceSquared(target);
+			if (playerDistanceSq > SiegeBannerBearerProfile.TeleportBackDistanceMeters * SiegeBannerBearerProfile.TeleportBackDistanceMeters)
+			{
+				bearer.TeleportToPosition(target);
+				bearer.InvalidateTargetAgent();
+				bearer.ClearTargetFrame();
+				LastBannerBearerMoveOrderTimes[bearer.Index] = mission.CurrentTime;
+				TryWieldBannerBearerBanner(bearer);
+				return;
+			}
+			float now = mission.CurrentTime;
+			bool hasRecentMove = LastBannerBearerMoveOrderTimes.TryGetValue(bearer.Index, out float lastMoveOrderTime) && now - lastMoveOrderTime < SiegeBannerBearerProfile.FollowRefreshSeconds;
+			if (targetDistanceSq > SiegeBannerBearerProfile.FollowMoveThresholdMeters * SiegeBannerBearerProfile.FollowMoveThresholdMeters && !hasRecentMove)
+			{
+				ClearAgentLookTarget(bearer);
+				TrySetInterventionAgentTargetPosition(bearer, target, SiegeBannerBearerProfile.FollowSource);
+				LastBannerBearerMoveOrderTimes[bearer.Index] = now;
+			}
+			else if (targetDistanceSq <= SiegeBannerBearerProfile.FollowMoveThresholdMeters * SiegeBannerBearerProfile.FollowMoveThresholdMeters)
+			{
+				try
+				{
+					bearer.ClearTargetFrame();
+				}
+				catch
+				{
+				}
+				Vec3 lookDirection = main.LookDirection;
+				if (lookDirection.LengthSquared < 0.01f)
+				{
+					lookDirection = Vec3.Forward;
+				}
+				lookDirection.Normalize();
+				SetAgentLookTowardPoint(bearer, main.Position + lookDirection * 6f);
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "KeepInterventionBannerBearerNearPlayer failed: " + ex.Message);
+		}
+	}
+
+	private static void TryWieldBannerBearerBanner(Agent bearer)
+	{
+		try
+		{
+			if (bearer == null || !bearer.IsActive())
+			{
+				return;
+			}
+			ItemObject item = bearer.Equipment[EquipmentIndex.ExtraWeaponSlot].Item;
+			if (IsUsableBannerItem(item))
+			{
+				bearer.TryToWieldWeaponInSlot(EquipmentIndex.ExtraWeaponSlot, Agent.WeaponWieldActionType.InstantAfterPickUp, isWieldedOnSpawn: false);
+			}
+		}
+		catch
+		{
+		}
 	}
 
 	private static bool IsMainPartyOrSelectedInterventionTroop(CharacterObject character)
@@ -10428,6 +10851,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		LootedTargets.Clear();
 		CivilianRobberyTargets.Clear();
 		AlliedAgentIndexes.Clear();
+		BannerBearerAgentIndexes.Clear();
 		CountedMassacreVictims.Clear();
 		PendingInterventionNotableDeaths.Clear();
 		SceneCivilianAgentIndexes.Clear();
@@ -10448,6 +10872,8 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		CivilianSpeechRallySlots.Clear();
 		LastCordonMoveOrderTimesBySoldier.Clear();
 		LastCordonLookOrderTimesBySoldier.Clear();
+		BannerBearerSideByAgentIndex.Clear();
+		LastBannerBearerMoveOrderTimes.Clear();
 		CivilianHideTargets.Clear();
 		LastCivilianHideOrderTimes.Clear();
 		CivilianHideSettledAgentIndexes.Clear();

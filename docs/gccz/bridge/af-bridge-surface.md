@@ -380,3 +380,10 @@ Fused AF short scene-reaction generators must keep GCCZ identity rules at the to
 - `GenerateCompactSceneReactionLineAsync(...)` and `GenerateImmediateSceneBehaviorReactionAsync(...)` now split `ctx.Extras` and, only when `【附加规则:siege_intervention_aftermath】` is present, lift the GCCZ rule block into the system prompt instead of dropping it from auxiliary short replies.
 - The bridge also injects a compact highest-priority identity override from `SiegeRuntimePromptProfile.BuildImmediateReactionIdentityOverride(...)`: civilians address the player as 大人/领主/攻城者/胜利方首领; allied soldiers address the player as 统帅/大人/长官; short replies must not call the player 库赛特人/陌生人/路人/本地人 or claim the player's army is outside while GCCZ is active.
 - Ordinary AF scenes remain unchanged because the bridge is gated by active GCCZ state plus the injected `siege_intervention_aftermath` rule marker.
+
+## 2026-06-25 AF094 ceremonial banner-bearer bridge
+
+- `SiegeBannerBearerProfile` owns dependency-free constants for the GCCZ ceremonial entry escort: exactly two banner bearers, left/right player offsets, follow refresh, teleport catch-up distance, and AF bridge source strings.
+- Fused `G:\AFMOD\new-0.9.4\SiegeAiInterventionBehavior.cs` owns live Bannerlord side effects only: resolving the player's clan banner/banner item, picking non-hero main-party/selected troops, spawning the two agents with `AgentBuildData.BannerItem(...)`, and maintaining their left/right positions near the player.
+- Banner bearers are added to the allied-agent set so GCCZ cleanup, prompt identity, and friendly-state restoration treat them as player soldiers, but the AF bridge excludes them from commandable plunder allocation and massacre hunter selection. They should remain visual escorts, not reduce the 70% plunder/attack pool.
+- The bridge is gated by the active GCCZ mission and runs after normal allied troop summon succeeds; ordinary AF scenes and vanilla town entries are unaffected.
