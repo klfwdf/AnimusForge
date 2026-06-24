@@ -185,7 +185,6 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	private const float MassacreCivilianHideRefreshSeconds = SiegeMassacreInteractionProfile.CivilianHideRefreshSeconds;
 	private const float MassacreSoldierFollowRefreshSeconds = SiegeMassacreInteractionProfile.SoldierFollowRefreshSeconds;
 	private const float MassacreSoldierTargetRefreshSeconds = SiegeMassacreInteractionProfile.SoldierTargetRefreshSeconds;
-	private const int MassacreMaxActiveHunters = SiegeMassacreInteractionProfile.MaxActiveHunters;
 	private const int MassacreMaxHuntersPerTarget = SiegeMassacreInteractionProfile.MaxHuntersPerTarget;
 	private const float MassacreTargetApproachRadius = SiegeMassacreInteractionProfile.TargetApproachRadius;
 	private const float MassacreSoldierStuckReassignSeconds = SiegeMassacreInteractionProfile.SoldierStuckReassignSeconds;
@@ -7176,6 +7175,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			.ToList();
 		PruneMassacreHuntAssignments(alliedSoldiers, massacreTargets);
 		Dictionary<int, int> targetHunterCounts = new Dictionary<int, int>();
+		int activeHunterLimit = SiegeMassacreInteractionProfile.CalculateActiveHunterLimit(alliedSoldiers.Count);
 		int activeHunters = 0;
 		foreach (Agent allied in alliedSoldiers)
 		{
@@ -7195,7 +7195,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 					{
 					}
 				}
-				Agent target = activeHunters < MassacreMaxActiveHunters
+				Agent target = activeHunters < activeHunterLimit
 					? SelectMassacreTargetForSoldier(allied, massacreTargets, targetHunterCounts, mission)
 					: null;
 				if (target != null)

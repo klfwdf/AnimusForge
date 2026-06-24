@@ -16,7 +16,7 @@ public static class SiegeMassacreInteractionProfile
 
     public const float SoldierTargetRefreshSeconds = 0.75f;
 
-    public const int MaxActiveHunters = 12;
+    public const double ActiveHunterRatio = 0.70d;
 
     public const int MaxHuntersPerTarget = 2;
 
@@ -54,6 +54,16 @@ public static class SiegeMassacreInteractionProfile
             || carriesRealWeapon
             || isGuardOrSoldier
             || ShouldCivilianResistByStableIndex(stableIndex);
+    }
+
+    public static int CalculateActiveHunterLimit(int alliedSoldierCount)
+    {
+        if (alliedSoldierCount <= 0)
+        {
+            return 0;
+        }
+        int roundedLimit = (int)Math.Round(alliedSoldierCount * (double)ActiveHunterRatio, MidpointRounding.AwayFromZero);
+        return Math.Max(1, Math.Min(alliedSoldierCount, roundedLimit));
     }
 
     public static float GetInteriorRoutDistance(int slot)
