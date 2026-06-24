@@ -335,7 +335,6 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	private static bool _directPlunderScriptMessageShown;
 	private static int _directPlunderScriptTicks;
 	private static string _directPlunderLastDeferKey = "";
-	private static float[] _interventionWallHitPointPercentages = new float[0];
 	private static readonly SiegeOutcomeMessageDeduplicator OutcomeMessageDeduplicator = new SiegeOutcomeMessageDeduplicator();
 	private static bool _civilianAssemblyPointReady;
 	private static bool _civilianAssemblyMessageShown;
@@ -615,16 +614,15 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			_civilianAssemblyForward = Vec3.Forward;
 			CaptureNativeSiegeContext(settlement);
 			ResetSessionCounters();
-			CaptureInterventionSiegeDamageVisualState(settlement);
 			SceneTauntBehavior.ClearArmedCarryoverForExternal(SiegeInterventionEntryProfile.SceneEntryCleanupSource);
 			SceneTauntBehavior.ClearPendingLocalDungeonCaptivityForExternal(SiegeInterventionEntryProfile.SceneEntryCleanupSource);
 			SceneTauntBehavior.ClearPendingForcedPlayerExecutionForExternal(SiegeInterventionEntryProfile.SceneEntryCleanupSource);
 			SceneTauntBehavior.ClearPendingMainHeroBattleDeathForExternal(SiegeInterventionEntryProfile.SceneEntryCleanupSource);
 			InformationManager.DisplayMessage(new InformationMessage(SiegeInterventionEntryProfile.BuildTroopSelectionInstructionMessage(AutoSummonCount), Color.FromUint(SiegeInterventionEntryProfile.EntryInstructionMessageColor)));
 			InformationManager.DisplayMessage(new InformationMessage(SiegeInterventionEntryProfile.DecisionPolicyMessage, Color.FromUint(SiegeInterventionEntryProfile.EntryInstructionMessageColor)));
-			if (!TryOpenInterventionTroopSelection(args, settlement, location))
+			if (!TryOpenInterventionTroopSelection(args, location))
 			{
-				OpenInterventionMissionNow(settlement, location, SiegeInterventionEntryProfile.SelectionUnavailableMissionSource);
+				OpenInterventionMissionNow(location, SiegeInterventionEntryProfile.SelectionUnavailableMissionSource);
 			}
 		}
 		catch (Exception ex)
@@ -634,11 +632,11 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static bool TryOpenInterventionTroopSelection(MenuCallbackArgs args, Settlement settlement, Location location)
+	private static bool TryOpenInterventionTroopSelection(MenuCallbackArgs args, Location location)
 	{
 		try
 		{
-			if (settlement == null || location == null || args?.MenuContext?.Handler == null || MobileParty.MainParty?.MemberRoster == null)
+			if (location == null || args?.MenuContext?.Handler == null || MobileParty.MainParty?.MemberRoster == null)
 			{
 				return false;
 			}
@@ -661,7 +659,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				{
 					InformationManager.DisplayMessage(new InformationMessage(SiegeInterventionEntryProfile.SelectionFallbackMessage, Color.FromUint(SiegeInterventionEntryProfile.SelectionFallbackMessageColor)));
 				}
-				OpenInterventionMissionNow(settlement, location, SiegeInterventionEntryProfile.TroopSelectionDoneMissionSource);
+				OpenInterventionMissionNow(location, SiegeInterventionEntryProfile.TroopSelectionDoneMissionSource);
 			};
 			if (!TryOpenTroopSelectionRuntimeCompat(args.MenuContext, fullRoster, initialSelections, onDone))
 			{
@@ -848,50 +846,10 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		Logger.Log("SiegeAiIntervention", "Stored intervention troop selection. Count=" + (_selectedInterventionRoster?.TotalManCount ?? 0));
 	}
 
-	private static void OpenInterventionMissionNow(Settlement settlement, Location location, string source)
+	private static void OpenInterventionMissionNow(Location location, string source)
 	{
-		if (TryOpenInterventionTownCenterSiegeScene(settlement, location, source))
-		{
-			return;
-		}
 		PlayerEncounter.LocationEncounter.CreateAndOpenMissionController(location, null, null, null);
-		Logger.Log("SiegeAiIntervention", "Opened intervention mission through location controller. Source=" + (source ?? "N/A") + ", SelectedRoster=" + (_selectedInterventionRoster?.TotalManCount ?? 0));
-	}
-
-	private static bool TryOpenInterventionTownCenterSiegeScene(Settlement settlement, Location location, string source)
-	{
-		try
-		{
-			if (settlement?.Town == null || location == null || !settlement.IsTown || !string.Equals(location.StringId, "center", StringComparison.OrdinalIgnoreCase))
-			{
-				return false;
-			}
-			int wallLevel = settlement.Town.GetWallLevel();
-			string sceneName = location.GetSceneName(wallLevel);
-			string sceneLevels = BuildInterventionSiegeSceneLevels(wallLevel);
-			if (string.IsNullOrWhiteSpace(sceneName) || string.IsNullOrWhiteSpace(sceneLevels))
-			{
-				return false;
-			}
-			SandBoxMissions.OpenTownCenterMission(sceneName, sceneLevels, location, null, null);
-			Logger.Log("SiegeAiIntervention", "Opened intervention town-center mission with siege scene layer. Source=" + (source ?? "N/A") + ", Settlement=" + (settlement.StringId ?? "N/A") + ", Scene=" + sceneName + ", SceneLevels=" + sceneLevels + ", NativeCiviliansOnly=true, SelectedRoster=" + (_selectedInterventionRoster?.TotalManCount ?? 0));
-			return true;
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("SiegeAiIntervention", "Open intervention town-center siege scene failed: " + ex.Message);
-			return false;
-		}
-	}
-
-	private static string BuildInterventionSiegeSceneLevels(int wallLevel)
-	{
-		string upgradeLevelTag = Campaign.Current?.Models?.LocationModel?.GetUpgradeLevelTag(wallLevel);
-		if (string.IsNullOrWhiteSpace(upgradeLevelTag))
-		{
-			upgradeLevelTag = "level_" + Math.Max(1, wallLevel);
-		}
-		return upgradeLevelTag.Trim() + " siege";
+		Logger.Log("SiegeAiIntervention", "Opened intervention mission through normal location controller. Source=" + (source ?? "N/A") + ", SelectedRoster=" + (_selectedInterventionRoster?.TotalManCount ?? 0));
 	}
 
 	private static Location ResolveInterventionLocation(Settlement settlement)
@@ -993,10 +951,6 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			if (mission is Mission mission2 && mission2.GetMissionBehavior<InterventionMissionBehavior>() == null)
 			{
 				mission2.AddMissionBehavior(new InterventionMissionBehavior());
-			}
-			if (mission is Mission mission3 && _interventionWallHitPointPercentages != null && _interventionWallHitPointPercentages.Length > 0 && mission3.GetMissionBehavior<InterventionSiegeDamageVisualMissionBehavior>() == null)
-			{
-				mission3.AddMissionBehavior(new InterventionSiegeDamageVisualMissionBehavior(_interventionWallHitPointPercentages, _activeSettlementId));
 			}
 		}
 		catch (Exception ex)
@@ -9585,32 +9539,6 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static void CaptureInterventionSiegeDamageVisualState(Settlement settlement)
-	{
-		_interventionWallHitPointPercentages = new float[0];
-		try
-		{
-			if (settlement == null || settlement.SettlementWallSectionHitPointsRatioList == null || settlement.SettlementWallSectionHitPointsRatioList.Count == 0)
-			{
-				Logger.Log("SiegeAiIntervention", "No settlement wall hit-point ratios available for visual-only siege damage state.");
-				return;
-			}
-			float[] ratios = new float[settlement.SettlementWallSectionHitPointsRatioList.Count];
-			for (int i = 0; i < settlement.SettlementWallSectionHitPointsRatioList.Count; i++)
-			{
-				ratios[i] = MBMath.ClampFloat(settlement.SettlementWallSectionHitPointsRatioList[i], 0f, 1f);
-			}
-			_interventionWallHitPointPercentages = ratios;
-			Logger.Log("SiegeAiIntervention", "Captured visual-only siege damage state. Settlement=" + (settlement.StringId ?? "N/A") + ", WallRatios=[" + InterventionSiegeDamageVisualMissionBehavior.BuildWallHitPointSummary(ratios) + "]");
-		}
-		catch (Exception ex)
-		{
-			_interventionWallHitPointPercentages = new float[0];
-			Logger.Log("SiegeAiIntervention", "CaptureInterventionSiegeDamageVisualState failed: " + ex.Message);
-		}
-	}
-
-
 	private static T ReadPrivateField<T>(object instance, Type type, string fieldName) where T : class
 	{
 		try
@@ -10473,7 +10401,6 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		_directPlunderScriptMessageShown = false;
 		_directPlunderScriptTicks = 0;
 		_directPlunderLastDeferKey = "";
-		_interventionWallHitPointPercentages = new float[0];
 		ResetOutcomeMessageDedup();
 		ActivePlunderInteractions.Clear();
 		ActiveCivilianGatherInteractions.Clear();
