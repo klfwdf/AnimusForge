@@ -1516,19 +1516,19 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			{
 				return true;
 			}
+			if (character == null || character == CharacterObject.PlayerCharacter || IsProtectedChildCharacter(character) || IsCivilianForIntervention(character) || IsBackstreetOrCriminalCharacter(character))
+			{
+				return false;
+			}
 			string rank = (npc.UnnamedRank ?? "").Trim();
 			string role = (npc.RoleDesc ?? "").Trim();
-			bool soldierLikeNpc = string.Equals(rank, "soldier", StringComparison.OrdinalIgnoreCase)
-				|| string.Equals(role, "士兵", StringComparison.Ordinal);
-			if (!soldierLikeNpc || character == null)
-			{
-				return false;
-			}
-			if (character == CharacterObject.PlayerCharacter || IsProtectedChildCharacter(character) || IsCivilianForIntervention(character) || IsBackstreetOrCriminalCharacter(character))
-			{
-				return false;
-			}
-			return character.IsSoldier || IsGuardOrSoldier(character);
+			bool soldierLikeNpc = character.IsSoldier
+				|| IsGuardOrSoldier(character)
+				|| string.Equals(rank, "soldier", StringComparison.OrdinalIgnoreCase)
+				|| string.Equals(role, "士兵", StringComparison.Ordinal)
+				|| string.Equals(role, "守卫", StringComparison.Ordinal)
+				|| string.Equals(role, "卫兵", StringComparison.Ordinal);
+			return soldierLikeNpc && IsMainPartyOrSelectedInterventionTroop(character);
 		}
 		catch
 		{
@@ -1540,16 +1540,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			string playerName = ResolvePlayerCharacterNameForContext();
-			if (alliedSoldier)
-			{
-				return "【玩家统帅身份】当前玩家角色“" + playerName + "”就是率领你进入城镇的指挥官/统帅，也是你当前队伍的直接命令来源。你应把玩家当成我方统帅、长官或大人，不要把玩家当成本地平民、陌生路人、俘虏、敌方守军或无权处置者。";
-			}
-			if (civilian)
-			{
-				return "【玩家身份】当前玩家角色“" + playerName + "”是刚攻下本城的胜利方首领和当前处置者，城内民众应知道玩家掌握现场生杀、安抚、索取与搜掠处置权。";
-			}
-			return "【玩家身份】当前玩家角色“" + playerName + "”是本场攻城后处置的玩家本人、胜利方首领和现场处置者。";
+			return SiegeRuntimePromptProfile.BuildPlayerCommanderContext(ResolvePlayerCharacterNameForContext(), alliedSoldier, civilian);
 		}
 		catch
 		{
@@ -1614,6 +1605,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			}
 			Agent agent = TryGetAgent(agentIndex);
 			CharacterObject resolved = character ?? agent?.Character as CharacterObject ?? hero?.CharacterObject;
+			bool soldierLikeResolved = resolved != null && (resolved.IsSoldier || IsGuardOrSoldier(resolved) || IsMainPartyOrSelectedInterventionTroop(resolved));
 			NpcDataPacket packet = new NpcDataPacket
 			{
 				AgentIndex = agentIndex,
@@ -1621,7 +1613,8 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				CultureId = cultureIdOverride ?? resolved?.Culture?.StringId ?? hero?.Culture?.StringId ?? "neutral",
 				Name = agent?.Name?.ToString() ?? hero?.Name?.ToString() ?? resolved?.Name?.ToString() ?? "",
 				TroopId = resolved?.StringId ?? "",
-				UnnamedRank = (resolved != null && resolved.IsSoldier) ? "soldier" : "commoner"
+				RoleDesc = soldierLikeResolved ? "士兵" : "",
+				UnnamedRank = soldierLikeResolved ? "soldier" : "commoner"
 			};
 			return BuildRuntimePromptForAgent(hero ?? resolved?.HeroObject, packet, agentIndex);
 		}
@@ -5902,7 +5895,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			{
 				return character.IsSoldier || IsGuardOrSoldier(character);
 			}
-			return false;
+			return (character.IsSoldier || IsGuardOrSoldier(character)) && IsMainPartyOrSelectedInterventionTroop(character);
 		}
 		catch
 		{
@@ -8394,6 +8387,53 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			TryPrimePlayerOrderController(mission, SiegeSoldierCordonProfile.SpawnAlliedBatchOrderControllerSource, force: true);
 			InformationManager.DisplayMessage(new InformationMessage(SiegeInterventionEntryProfile.BuildSummonedTroopsMessage(spawned), Color.FromUint(SiegeInterventionEntryProfile.SummonedTroopsMessageColor)));
 			return true;
+		}
+		return false;
+	}
+
+	private static bool IsMainPartyOrSelectedInterventionTroop(CharacterObject character)
+	{
+		try
+		{
+			if (character == null || character == CharacterObject.PlayerCharacter || character.IsHero)
+			{
+				return false;
+			}
+			return RosterContainsAvailableTroop(_selectedInterventionRoster, character)
+				|| RosterContainsAvailableTroop(PartyBase.MainParty?.MemberRoster, character);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static bool RosterContainsAvailableTroop(TroopRoster roster, CharacterObject character)
+	{
+		if (roster == null || character == null)
+		{
+			return false;
+		}
+		string characterId = character.StringId ?? "";
+		for (int i = 0; i < roster.Count; i++)
+		{
+			TroopRosterElement element = roster.GetElementCopyAtIndex(i);
+			CharacterObject rosterCharacter = element.Character;
+			if (rosterCharacter == null)
+			{
+				continue;
+			}
+			bool sameTroop = rosterCharacter == character
+				|| (!string.IsNullOrWhiteSpace(characterId) && string.Equals(rosterCharacter.StringId ?? "", characterId, StringComparison.OrdinalIgnoreCase));
+			if (!sameTroop)
+			{
+				continue;
+			}
+			int available = Math.Max(0, element.Number - element.WoundedNumber);
+			if (available > 0)
+			{
+				return true;
+			}
 		}
 		return false;
 	}
