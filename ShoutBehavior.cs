@@ -7498,6 +7498,34 @@ private static string BuildSceneSystemRuleBlock(string ruleSection, string scene
 	return text;
 }
 
+private static bool HasGcczImmediatePromptExtras(string baseExtras)
+{
+	try
+	{
+		return !string.IsNullOrWhiteSpace(baseExtras) && AfGcczShoutBridge.IsActive() && AfGcczShoutBridge.HasInjectedRuleBlock(baseExtras);
+	}
+	catch
+	{
+		return false;
+	}
+}
+
+private static string BuildGcczImmediateIdentityOverrideBlock(Hero contextHero, CharacterObject npcCharacter, int targetAgentIndex, string baseExtras)
+{
+	if (!HasGcczImmediatePromptExtras(baseExtras))
+	{
+		return "";
+	}
+	try
+	{
+		return (AfGcczShoutBridge.BuildImmediateReactionIdentityOverride(contextHero, npcCharacter, targetAgentIndex) ?? "").Trim();
+	}
+	catch
+	{
+		return "";
+	}
+}
+
 private static string FormatSceneHistorySection(string sectionText)
 {
 	List<string> lines = (sectionText ?? "").Replace("\r", "").Split('\n').Select((string x) => x?.TrimEnd() ?? "").ToList();
@@ -21757,9 +21785,19 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			stringBuilder.AppendLine(presentNpcListBlock);
 		}
 		string baseExtras = StripScenePersonaBlocks((shoutPromptContext?.Extras ?? "").Trim());
-		string trustBlock = ExtractTrustPromptBlock(baseExtras, out var _);
+		string trustBlock = ExtractTrustPromptBlock(baseExtras, out var baseExtrasWithoutTrust);
+		bool gcczImmediatePromptExtras = HasGcczImmediatePromptExtras(baseExtras);
+		SplitSceneExtraSections(baseExtrasWithoutTrust, out var miscExtrasSection, out var ruleExtrasSection, out var knowledgeExtrasSection);
+		if (!gcczImmediatePromptExtras)
+		{
+			miscExtrasSection = "";
+			ruleExtrasSection = "";
+			knowledgeExtrasSection = "";
+		}
+		string systemRuleBlock = gcczImmediatePromptExtras ? BuildSceneSystemRuleBlock(ruleExtrasSection, null) : "";
+		string gcczIdentityOverrideBlock = BuildGcczImmediateIdentityOverrideBlock(contextHero, npcCharacter, targetNpc.AgentIndex, baseExtras);
 		bool partyTransferTopicSelected = HasPartyTransferRuleContext(baseExtras);
-		string text = BuildSceneCompositeUserBlock("", stringBuilder.ToString().Trim(), trustBlock);
+		string text = BuildSceneCompositeUserBlock("", stringBuilder.ToString().Trim(), trustBlock, miscExtrasSection);
 		List<string> historyLines = null;
 		lock (_historyLock)
 		{
@@ -21775,9 +21813,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		string roleTopIntro = BuildSceneSystemTopPromptIntroForSingle(targetNpc, contextHero, new List<NpcDataPacket> { targetNpc }, partyTransferTopicSelected: partyTransferTopicSelected);
 		string roleRuntimeContext = BuildCompactSceneUserRuntimeContextForShortReply(targetNpc, contextHero, new List<NpcDataPacket> { targetNpc }, partyTransferTopicSelected: partyTransferTopicSelected);
 		string layeredPrompt = AppendPlayerCustomPromptRuleToSystemPrompt(roleTopIntro);
+		layeredPrompt = BuildSceneCompositeUserBlock("", BuildSceneCompositeUserBlock("", gcczIdentityOverrideBlock, systemRuleBlock), layeredPrompt);
 		string extraFactUserBlock = BuildCurrentAfefFactPromptBlock(extraFactLine);
 		List<ConversationMessage> persistentMemoryRoleMessages = BuildUncompressedMemoryRoleMessagesForPrompt(contextHero, targetNpc.AgentIndex);
-		List<object> messages = BuildStrictSceneMessagesForNpc(targetNpc.AgentIndex, layeredPrompt, new string[4] { privateRecentWindowSection, persistedWithoutRecentWindow, roleRuntimeContext, BuildSceneCompositeUserBlock("", text, extraFactUserBlock) }, new string[1] { singleReplyUserContent }, suppressReplyFormatInstruction: true, persistentHistoryMessages: persistentMemoryRoleMessages);
+		List<object> messages = BuildStrictSceneMessagesForNpc(targetNpc.AgentIndex, layeredPrompt, new string[4] { privateRecentWindowSection, persistedWithoutRecentWindow, BuildSceneCompositeUserBlock("", roleRuntimeContext, knowledgeExtrasSection), BuildSceneCompositeUserBlock("", text, extraFactUserBlock) }, new string[1] { singleReplyUserContent }, suppressReplyFormatInstruction: true, persistentHistoryMessages: persistentMemoryRoleMessages);
 		if (!AIConfigHandler.TryCallAuxiliarySimpleDialogue(messages, 80, 0.35f, out var text2, out var error))
 		{
 			Logger.Log("ShoutBehavior", "[CompactSceneReaction] auxiliary_simple_dialogue failed: " + error);
@@ -28658,9 +28697,19 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 			stringBuilder.AppendLine(presentNpcListBlock);
 		}
 		string baseExtras = StripScenePersonaBlocks((shoutPromptContext?.Extras ?? "").Trim());
-		string trustBlock = ExtractTrustPromptBlock(baseExtras, out var _);
+		string trustBlock = ExtractTrustPromptBlock(baseExtras, out var baseExtrasWithoutTrust);
+		bool gcczImmediatePromptExtras = HasGcczImmediatePromptExtras(baseExtras);
+		SplitSceneExtraSections(baseExtrasWithoutTrust, out var miscExtrasSection, out var ruleExtrasSection, out var knowledgeExtrasSection);
+		if (!gcczImmediatePromptExtras)
+		{
+			miscExtrasSection = "";
+			ruleExtrasSection = "";
+			knowledgeExtrasSection = "";
+		}
+		string systemRuleBlock = gcczImmediatePromptExtras ? BuildSceneSystemRuleBlock(ruleExtrasSection, null) : "";
+		string gcczIdentityOverrideBlock = BuildGcczImmediateIdentityOverrideBlock(contextHero, npcCharacter, targetNpc.AgentIndex, baseExtras);
 		bool partyTransferTopicSelected = HasPartyTransferRuleContext(baseExtras);
-		string text = BuildSceneCompositeUserBlock("", stringBuilder.ToString().Trim(), trustBlock);
+		string text = BuildSceneCompositeUserBlock("", stringBuilder.ToString().Trim(), trustBlock, miscExtrasSection);
 		List<string> historyLines = null;
 		lock (_historyLock)
 		{
@@ -28676,8 +28725,9 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 		string roleTopIntro = BuildSceneSystemTopPromptIntroForSingle(targetNpc, contextHero, new List<NpcDataPacket> { targetNpc }, partyTransferTopicSelected: partyTransferTopicSelected);
 		string roleRuntimeContext = BuildCompactSceneUserRuntimeContextForShortReply(targetNpc, contextHero, new List<NpcDataPacket> { targetNpc }, partyTransferTopicSelected: partyTransferTopicSelected);
 		string layeredPrompt = AppendPlayerCustomPromptRuleToSystemPrompt(roleTopIntro);
+		layeredPrompt = BuildSceneCompositeUserBlock("", BuildSceneCompositeUserBlock("", gcczIdentityOverrideBlock, systemRuleBlock), layeredPrompt);
 		List<ConversationMessage> persistentMemoryRoleMessages = BuildUncompressedMemoryRoleMessagesForPrompt(contextHero, targetNpc.AgentIndex);
-		List<object> messages = BuildStrictSceneMessagesForNpc(targetNpc.AgentIndex, layeredPrompt, new string[3] { privateRecentWindowSection, persistedWithoutRecentWindow, BuildSceneCompositeUserBlock("", roleRuntimeContext, text) }, new string[1] { "请只根据你当前可见的场景消息、你自己的身份、处境和性格，回复一段发言，" + BuildSimpleDialogueReplyLengthInstruction(minTokens, maxTokens) + "，只输出你嘴里说出的话，不要描述你的行为和思考。" }, suppressReplyFormatInstruction: true, persistentHistoryMessages: persistentMemoryRoleMessages);
+		List<object> messages = BuildStrictSceneMessagesForNpc(targetNpc.AgentIndex, layeredPrompt, new string[3] { privateRecentWindowSection, persistedWithoutRecentWindow, BuildSceneCompositeUserBlock("", roleRuntimeContext, knowledgeExtrasSection, text) }, new string[1] { "请只根据你当前可见的场景消息、你自己的身份、处境和性格，回复一段发言，" + BuildSimpleDialogueReplyLengthInstruction(minTokens, maxTokens) + "，只输出你嘴里说出的话，不要描述你的行为和思考。" }, suppressReplyFormatInstruction: true, persistentHistoryMessages: persistentMemoryRoleMessages);
 		if (!AIConfigHandler.TryCallAuxiliarySimpleDialogue(messages, maxTokens, 0.35f, out var text2, out var error))
 		{
 			Logger.Log("ShoutBehavior", "[ImmediateSceneReaction] auxiliary_simple_dialogue failed: " + error);

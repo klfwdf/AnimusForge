@@ -372,3 +372,11 @@ Follow-up outcome tuning: finalized GCCZ destructive settlement effects now use 
 - The AF bridge may still summon the selected allied player troops as GCCZ escorts. Civilian population must remain vanilla-location-based: no `SpawnAssemblyCivilian`, no raw synthetic `SimpleAgentOrigin` agent injection, and no siege deployment refill.
 - AF094 keeps `InterventionNativeTownCivilianPopulationMissionBehavior` before the GCCZ mission behavior. It raises the active town-center civilian population to a prosperity-weighted random target of roughly **100-200** civilians, capped by `SiegeCivilianAssemblyProfile`, by creating vanilla `LocationCharacter` entries through `CommonTownsfolkCampaignBehavior` creators and spawning them through `MissionAgentHandler.SpawnDefaultLocationCharacter(...)`.
 - The population bridge skips protected child/teenager creators, because GCCZ separately suppresses protected child scene agents. Adult civilians, beggars, cleaners, dancers, and carrying townsfolk still use the settlement culture and normal `npc_common` / `npc_common_limited` / special town spawn tags. When common points are exhausted, the bridge may reuse unused civilian-safe town tags such as merchants, armorers, weaponsmiths, blacksmiths, barber, and gambler points; it still does not raw-spawn synthetic agents.
+
+## 2026-06-25 AF094 immediate/ambient identity prompt bridge
+
+Fused AF short scene-reaction generators must keep GCCZ identity rules at the top of the prompt while the active siege-aftermath scene is running.
+
+- `GenerateCompactSceneReactionLineAsync(...)` and `GenerateImmediateSceneBehaviorReactionAsync(...)` now split `ctx.Extras` and, only when `【附加规则:siege_intervention_aftermath】` is present, lift the GCCZ rule block into the system prompt instead of dropping it from auxiliary short replies.
+- The bridge also injects a compact highest-priority identity override from `SiegeRuntimePromptProfile.BuildImmediateReactionIdentityOverride(...)`: civilians address the player as 大人/领主/攻城者/胜利方首领; allied soldiers address the player as 统帅/大人/长官; short replies must not call the player 库赛特人/陌生人/路人/本地人 or claim the player's army is outside while GCCZ is active.
+- Ordinary AF scenes remain unchanged because the bridge is gated by active GCCZ state plus the injected `siege_intervention_aftermath` rule marker.

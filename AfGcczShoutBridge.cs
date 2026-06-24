@@ -104,6 +104,13 @@ internal static class AfGcczShoutBridge
 			: string.Empty;
 	}
 
+	internal static string BuildImmediateReactionIdentityOverride(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex)
+	{
+		return IsActive()
+			? SiegeAiInterventionBehavior.BuildImmediateReactionIdentityOverrideForExternal(targetHero, targetCharacter, targetAgentIndex)
+			: string.Empty;
+	}
+
 	internal static string NormalizePostprocessTags(bool selected, string raw, List<PostprocessRuleEntry> rules)
 	{
 		return selected ? SiegeAiInterventionBehavior.NormalizeSiegeInterventionPostprocessTagsForExternal(raw, rules) : string.Empty;

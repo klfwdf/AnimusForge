@@ -83,6 +83,21 @@ public static class SiegeRuntimePromptProfile
         return "【玩家身份】当前玩家角色“" + normalizedPlayerName + "”是本场攻城后处置的玩家本人、胜利方首领和现场处置者。";
     }
 
+    public static string BuildImmediateReactionIdentityOverride(string playerName, bool alliedSoldier, bool civilian)
+    {
+        string normalizedPlayerName = NormalizePlayerName(playerName);
+        string speakerIdentity = alliedSoldier
+            ? "当前说话者按玩家己方入城士兵处理：玩家就是你的统帅、长官和直接命令来源；你随玩家进入城内执行战后处置，不得说玩家军队在城外、玩家独自进城或玩家无权指挥你。"
+            : (civilian
+                ? "当前说话者按战败城内平民/商人/工匠/头人/要人处理：玩家是刚攻下本城的胜利方首领和现场处置者，你只能恐惧、求生、谈判或服从，不得把玩家当和平城镇里的路人或本地人。"
+                : "当前说话者必须承认玩家是刚攻下本城的胜利方首领和现场处置者；若你是玩家带入城的士兵则服从玩家，若你是城内民众则承认自己处在胜利方处置现场。");
+
+        return "【GCCZ即时/环境短句最高优先级身份覆写】当前是攻城后入城处置现场，不是和平城镇日常、巡逻执法、深夜路人问话或单人潜入。玩家角色“" + normalizedPlayerName + "”不是“库赛特人”“陌生人”“路人”“本地人”或无权处置者，而是刚攻下本城的胜利方首领、现场处置者和入城部队的命令来源。"
+            + "平民、镇民、商人、工匠、头人和要人称玩家为“大人”“领主”“攻城者”或“胜利方首领”；玩家己方士兵称玩家为“统帅”“大人”或“长官”。"
+            + "禁止称玩家为“库赛特人”“陌生人”“路人”“本地人”“外乡人”，禁止说玩家的军队在城外、玩家独自进城、玩家没有处置权，除非后续运行时明确说明这已不是GCCZ处置现场。"
+            + speakerIdentity;
+    }
+
     private static string NormalizePlayerName(string playerName)
     {
         return string.IsNullOrWhiteSpace(playerName) ? "玩家" : playerName.Trim();

@@ -1558,7 +1558,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				return "";
 			}
 			Agent agent = TryGetAgent(agentIndex);
-			CharacterObject resolved = character ?? agent?.Character as CharacterObject ?? hero?.CharacterObject;
+			CharacterObject resolved = character ?? (agent?.Character as CharacterObject) ?? hero?.CharacterObject;
 			bool soldierLikeResolved = resolved != null && (resolved.IsSoldier || IsGuardOrSoldier(resolved) || IsMainPartyOrSelectedInterventionTroop(resolved));
 			NpcDataPacket packet = new NpcDataPacket
 			{
@@ -1571,6 +1571,27 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				UnnamedRank = soldierLikeResolved ? "soldier" : "commoner"
 			};
 			return BuildRuntimePromptForAgent(hero ?? resolved?.HeroObject, packet, agentIndex);
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	internal static string BuildImmediateReactionIdentityOverrideForExternal(Hero hero, CharacterObject character, int agentIndex)
+	{
+		try
+		{
+			if (!IsActiveInCurrentMission())
+			{
+				return "";
+			}
+			Agent agent = TryGetAgent(agentIndex);
+			CharacterObject resolved = character ?? (agent?.Character as CharacterObject) ?? hero?.CharacterObject;
+			Hero resolvedHero = hero ?? resolved?.HeroObject;
+			bool alliedSoldier = IsRuntimeAlliedSoldierAgent(agent, resolved, resolvedHero);
+			bool civilian = IsCivilianForIntervention(resolved);
+			return SiegeRuntimePromptProfile.BuildImmediateReactionIdentityOverride(ResolvePlayerCharacterNameForContext(), alliedSoldier, civilian);
 		}
 		catch
 		{
