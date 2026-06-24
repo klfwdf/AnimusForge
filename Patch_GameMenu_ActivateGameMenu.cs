@@ -45,6 +45,11 @@ public static class Patch_GameMenu_ActivateGameMenu
 			{
 				return true;
 			}
+			if (LordEncounterBehavior.TryResolvePendingPeacefulMeetingCleanupForExternal("activate_native_encounter_menu"))
+			{
+				Logger.LogTrace("UI_Intercept", "Suppressed native 'encounter' menu after peaceful custom meeting cleanup.");
+				return false;
+			}
 			if (LordEncounterBehavior.HasPendingNativeEncounterAttackForExternal())
 			{
 				Logger.LogTrace("UI_Intercept", "Native encounter attack is pending; keep native 'encounter' menu and skip custom redirect.");

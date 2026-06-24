@@ -138,6 +138,13 @@ internal static class MeetingBattleRuntime
 		_diplomaticSideEffectsUnlocked = true;
 		try
 		{
+			ProactiveNpcRequestBehavior.CompleteActiveForHero(_targetHero, "meeting_combat_escalated_" + (reason ?? "unknown"));
+		}
+		catch
+		{
+		}
+		try
+		{
 			LordEncounterBehavior.SuspendEncounterRedirectDuringResultResolution(reason);
 		}
 		catch

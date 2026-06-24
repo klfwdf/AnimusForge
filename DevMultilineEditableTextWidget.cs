@@ -82,6 +82,8 @@ public class DevMultilineEditableTextWidget : BrushWidget
 
 	private int _editorFontSize = 12;
 
+	private bool _useBlackCaret;
+
 	private RepeatAction _repeatAction;
 
 	private int _nextRepeatTime;
@@ -99,6 +101,23 @@ public class DevMultilineEditableTextWidget : BrushWidget
 
 	[Editor(false)]
 	public bool SubmitOnEnter { get; set; }
+
+	[Editor(false)]
+	public bool UseBlackCaret
+	{
+		get
+		{
+			return _useBlackCaret;
+		}
+		set
+		{
+			if (_useBlackCaret != value)
+			{
+				_useBlackCaret = value;
+				_caretWidget.Color = GetCaretColor();
+			}
+		}
+	}
 
 	[Editor(false)]
 	public int EditorFontSize
@@ -169,7 +188,7 @@ public class DevMultilineEditableTextWidget : BrushWidget
 			SuggestedHeight = 24f,
 			HorizontalAlignment = HorizontalAlignment.Left,
 			VerticalAlignment = VerticalAlignment.Top,
-			Color = Color.FromUint(4294956543u),
+			Color = GetCaretColor(),
 			Sprite = context.SpriteData.GetSprite("BlankWhiteSquare_9"),
 			DoNotAcceptEvents = true,
 			DoNotPassEventsToChildren = true
@@ -214,6 +233,11 @@ public class DevMultilineEditableTextWidget : BrushWidget
 			return;
 		}
 		HandleCharacterInput(lastKeysPressed);
+	}
+
+	private Color GetCaretColor()
+	{
+		return UseBlackCaret ? AnimusForgeUiColors.ParchmentTextCaret : AnimusForgeUiColors.DefaultTextCaret;
 	}
 
 	protected override void OnMousePressed()

@@ -1,0 +1,37 @@
+<Prefab>
+  <Window>
+    <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#000000FF" AlphaFactor="0.34">
+      <Children>
+        <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1180" SuggestedHeight="740" HorizontalAlignment="Center" VerticalAlignment="Center">
+          <Children>
+            <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="af_courier\af_courier_scroll" />
+            <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="42" HorizontalAlignment="Center" VerticalAlignment="Top" MarginLeft="235" MarginRight="235" MarginTop="104" Brush="AFCourierLetter.Title.Text" Text="@TitleText" />
+            <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="30" HorizontalAlignment="Center" VerticalAlignment="Top" MarginLeft="170" MarginRight="430" MarginTop="148" Brush="AFCourierLetter.Meta.Text" Text="@SubtitleText" />
+            <ScrollablePanel WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipRect="BodyClipRect" InnerPanel="BodyClipRect\BodyInnerPanel" MarginLeft="170" MarginRight="430" MarginTop="190" MarginBottom="170" AutoHideScrollBars="true" VerticalScrollbar="..\BodyScrollbar\Scrollbar">
+              <Children>
+                <Widget Id="BodyClipRect" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipContents="true">
+                  <Children>
+                    <Widget Id="BodyInnerPanel" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MinHeight="360">
+                      <Children>
+                        <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MinHeight="360" HorizontalAlignment="Left" VerticalAlignment="Top" MarginRight="18" Brush="AFCourierLetter.Body.Text" Brush.FontSize="@BodyFontSize" Text="@BodyText" />
+                      </Children>
+                    </Widget>
+                  </Children>
+                </Widget>
+              </Children>
+            </ScrollablePanel>
+            <Widget Id="BodyScrollbar" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="1" HorizontalAlignment="Right" VerticalAlignment="Top" MarginRight="430" MarginTop="198" MarginBottom="178" DoNotAcceptEvents="true" IsVisible="false">
+              <Children>
+                <ScrollbarWidget Id="Scrollbar" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="1" AlignmentAxis="Vertical" Handle="Handle" MaxValue="100" MinValue="0" DoNotAcceptEvents="true" IsVisible="false">
+                  <Children>
+                    <Widget Id="Handle" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1" SuggestedHeight="1" DoNotAcceptEvents="true" IsVisible="false" />
+                  </Children>
+                </ScrollbarWidget>
+              </Children>
+            </Widget>
+          </Children>
+        </Widget>
+      </Children>
+    </Widget>
+  </Window>
+</Prefab>

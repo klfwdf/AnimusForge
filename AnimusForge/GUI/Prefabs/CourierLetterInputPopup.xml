@@ -1,0 +1,51 @@
+<Prefab>
+  <Window>
+    <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#000000FF" AlphaFactor="0.34">
+      <Children>
+        <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1180" SuggestedHeight="740" HorizontalAlignment="Center" VerticalAlignment="Center" DoNotPassEventsToChildren="false">
+          <Children>
+            <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="af_courier\af_courier_scroll" DoNotAcceptEvents="true" />
+            <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="42" HorizontalAlignment="Center" VerticalAlignment="Top" MarginLeft="235" MarginRight="235" MarginTop="104" Brush="AFCourierLetter.Title.Text" Text="@TitleText" DoNotAcceptEvents="true" />
+            <ScrollablePanel WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipRect="EditorClipRect" InnerPanel="EditorClipRect\EditorInnerPanel" MarginLeft="170" MarginRight="430" MarginTop="166" MarginBottom="178" AutoHideScrollBars="true" VerticalScrollbar="..\EditorScrollbar\Scrollbar">
+              <Children>
+                <Widget Id="EditorClipRect" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipContents="true">
+                  <Children>
+                    <Widget Id="EditorInnerPanel" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MinHeight="390">
+                      <Children>
+                        <DevMultilineEditableTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MinHeight="390" HorizontalAlignment="Left" VerticalAlignment="Top" MarginRight="18" Brush="AFCourierLetter.Body.Text" EditorFontSize="22" MaxLength="-1" RealText="@InputText" IsObfuscationEnabled="false" AutoFocus="true" SubmitOnEnter="false" UseBlackCaret="true" Command.TextEntered="ExecuteSubmit" Command.FocusGained="StartTyping" Command.FocusLost="StopTyping" />
+                      </Children>
+                    </Widget>
+                  </Children>
+                </Widget>
+              </Children>
+            </ScrollablePanel>
+            <Widget Id="EditorScrollbar" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="1" HorizontalAlignment="Right" VerticalAlignment="Top" MarginTop="174" MarginBottom="186" MarginRight="430" DoNotAcceptEvents="true" IsVisible="false">
+              <Children>
+                <ScrollbarWidget Id="Scrollbar" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="1" AlignmentAxis="Vertical" Handle="Handle" MaxValue="100" MinValue="0" DoNotAcceptEvents="true" IsVisible="false">
+                  <Children>
+                    <Widget Id="Handle" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1" SuggestedHeight="1" DoNotAcceptEvents="true" IsVisible="false" />
+                  </Children>
+                </ScrollbarWidget>
+              </Children>
+            </Widget>
+            <ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="48" HorizontalAlignment="Center" VerticalAlignment="Bottom" MarginBottom="102" LayoutImp.LayoutMethod="HorizontalLeftToRight">
+              <Children>
+                <ButtonWidget DoNotPassEventsToChildren="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="146" SuggestedHeight="44" Brush="Popup.Cancel.Button" Command.Click="ExecuteCancel" UpdateChildrenStates="true">
+                  <Children>
+                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="24" VerticalAlignment="Center" MarginLeft="20" MarginRight="20" Brush="AFCourierLetter.Button.Text" Text="取消" DoNotAcceptEvents="true" />
+                  </Children>
+                </ButtonWidget>
+                <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="28" SuggestedHeight="1" />
+                <ButtonWidget DoNotPassEventsToChildren="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="146" SuggestedHeight="44" Brush="Popup.Done.Button" Command.Click="ExecuteSubmit" UpdateChildrenStates="true">
+                  <Children>
+                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="24" VerticalAlignment="Center" MarginLeft="20" MarginRight="20" Brush="AFCourierLetter.Button.Text" Text="发送" DoNotAcceptEvents="true" />
+                  </Children>
+                </ButtonWidget>
+              </Children>
+            </ListPanel>
+          </Children>
+        </Widget>
+      </Children>
+    </Widget>
+  </Window>
+</Prefab>

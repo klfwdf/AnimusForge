@@ -3,8 +3,6 @@
 本仓库是 Mount & Blade II: Bannerlord 的 AnimusForge mod，当前目标分支/目录是 `animusforge-1.3.x`。
 
 ## 必须遵循
-
-- 处理本项目时必须使用 `taleworlds-bannerlord-modding` skill，并优先参考本仓库里的原版游戏本体代码、项目已有模式和 TaleWorlds API。
 - 更频繁地考虑使用 `grill-me` skill 来压力测试设计，但普通明确修 bug/加功能时不要为了提问而阻塞实现。
 - 不要擅自修改项目的一键编译/覆盖流程；本项目已经有自己的构建和覆盖方式。
 - 不要回滚用户已有改动。

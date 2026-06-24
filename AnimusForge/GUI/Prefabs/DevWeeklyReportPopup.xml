@@ -2,7 +2,7 @@
   <Window>
     <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#7A000000">
       <Children>
-        <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1320" SuggestedHeight="900" HorizontalAlignment="Center" VerticalAlignment="Center">
+        <Widget IsVisible="@ShowSingleBody" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1320" SuggestedHeight="900" HorizontalAlignment="Center" VerticalAlignment="Center">
           <Children>
             <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="StdAssets\Popup\canvas" />
             <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="StdAssets\Popup\canvas_gradient" IsEnabled="false" />
@@ -19,7 +19,7 @@
                 <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" VerticalAlignment="Top" MarginTop="156" MarginBottom="84" Sprite="BlankWhite" Color="#000000FF" AlphaFactor="0.18">
                   <Children>
                     <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" ExtendLeft="5" ExtendTop="5" ExtendRight="5" ExtendBottom="5" AlphaFactor="0.25" />
-                    <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" HorizontalAlignment="Center" VerticalAlignment="Center" MarginLeft="12" MarginRight="12" MarginTop="12" MarginBottom="12">
+                    <Widget IsVisible="@ShowSingleBody" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" HorizontalAlignment="Center" VerticalAlignment="Center" MarginLeft="12" MarginRight="12" MarginTop="12" MarginBottom="12">
                       <Children>
                         <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="StdAssets\Popup\canvas" />
                         <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="StdAssets\Popup\canvas_gradient" AlphaFactor="0.35" IsEnabled="false" />
@@ -40,9 +40,103 @@
                         <Standard.VerticalScrollbar Id="ViewerScrollbar" HeightSizePolicy="StretchToParent" HorizontalAlignment="Right" VerticalAlignment="Bottom" MarginTop="8" MarginBottom="8" MarginRight="4" />
                       </Children>
                     </Widget>
+                    <Widget IsVisible="@ShowChronicleColumns" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" HorizontalAlignment="Center" VerticalAlignment="Center" MarginLeft="16" MarginRight="16" MarginTop="14" MarginBottom="14">
+                      <Children>
+                        <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="StdAssets\Popup\canvas" />
+                        <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="StdAssets\Popup\canvas_gradient" AlphaFactor="0.18" IsEnabled="false" />
+                        <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" LayoutImp.LayoutMethod="HorizontalLeftToRight">
+                          <Children>
+                            <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginRight="8">
+                              <Children>
+                                <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" ExtendLeft="4" ExtendTop="4" ExtendRight="4" ExtendBottom="4" AlphaFactor="0.22" />
+                                <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="54" VerticalAlignment="Top" MarginLeft="18" MarginRight="18" MarginTop="14" Brush="Popup.Title.Text" Brush.FontSize="25" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="【军事事件】" DoNotAcceptEvents="true" />
+                                <ScrollablePanel WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipRect="MilitaryClipRect" InnerPanel="MilitaryClipRect\MilitaryInnerPanel" MarginLeft="20" MarginRight="22" MarginTop="76" MarginBottom="20" AutoHideScrollBars="true" VerticalScrollbar="..\MilitaryScrollbar\Scrollbar">
+                                  <Children>
+                                    <Widget Id="MilitaryClipRect" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipContents="true">
+                                      <Children>
+                                        <Widget Id="MilitaryInnerPanel" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MinHeight="480">
+                                          <Children>
+                                            <RichTextWidget Text="@MilitaryEventsText" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MinHeight="480" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="6" MarginRight="6" MarginTop="4" MarginBottom="18" Brush="Popup.Description.Text" Brush.FontSize="@ColumnBodyFontSize" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Top" CanBreakWords="true" />
+                                          </Children>
+                                        </Widget>
+                                      </Children>
+                                    </Widget>
+                                  </Children>
+                                </ScrollablePanel>
+                                <Widget Id="MilitaryScrollbar" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="1" HorizontalAlignment="Right" VerticalAlignment="Top" MarginRight="2" MarginTop="82" MarginBottom="26" DoNotAcceptEvents="true" IsVisible="false">
+                                  <Children>
+                                    <ScrollbarWidget Id="Scrollbar" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="1" AlignmentAxis="Vertical" Handle="Handle" MaxValue="100" MinValue="0" DoNotAcceptEvents="true" IsVisible="false">
+                                      <Children>
+                                        <Widget Id="Handle" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1" SuggestedHeight="1" DoNotAcceptEvents="true" IsVisible="false" />
+                                      </Children>
+                                    </ScrollbarWidget>
+                                  </Children>
+                                </Widget>
+                              </Children>
+                            </Widget>
+                            <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="8" MarginRight="8">
+                              <Children>
+                                <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" ExtendLeft="4" ExtendTop="4" ExtendRight="4" ExtendBottom="4" AlphaFactor="0.22" />
+                                <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="54" VerticalAlignment="Top" MarginLeft="18" MarginRight="18" MarginTop="14" Brush="Popup.Title.Text" Brush.FontSize="25" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="【外交事件】" DoNotAcceptEvents="true" />
+                                <ScrollablePanel WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipRect="DiplomaticClipRect" InnerPanel="DiplomaticClipRect\DiplomaticInnerPanel" MarginLeft="20" MarginRight="22" MarginTop="76" MarginBottom="20" AutoHideScrollBars="true" VerticalScrollbar="..\DiplomaticScrollbar\Scrollbar">
+                                  <Children>
+                                    <Widget Id="DiplomaticClipRect" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipContents="true">
+                                      <Children>
+                                        <Widget Id="DiplomaticInnerPanel" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MinHeight="480">
+                                          <Children>
+                                            <RichTextWidget Text="@DiplomaticAffairsText" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MinHeight="480" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="6" MarginRight="6" MarginTop="4" MarginBottom="18" Brush="Popup.Description.Text" Brush.FontSize="@ColumnBodyFontSize" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Top" CanBreakWords="true" />
+                                          </Children>
+                                        </Widget>
+                                      </Children>
+                                    </Widget>
+                                  </Children>
+                                </ScrollablePanel>
+                                <Widget Id="DiplomaticScrollbar" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="1" HorizontalAlignment="Right" VerticalAlignment="Top" MarginRight="2" MarginTop="82" MarginBottom="26" DoNotAcceptEvents="true" IsVisible="false">
+                                  <Children>
+                                    <ScrollbarWidget Id="Scrollbar" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="1" AlignmentAxis="Vertical" Handle="Handle" MaxValue="100" MinValue="0" DoNotAcceptEvents="true" IsVisible="false">
+                                      <Children>
+                                        <Widget Id="Handle" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1" SuggestedHeight="1" DoNotAcceptEvents="true" IsVisible="false" />
+                                      </Children>
+                                    </ScrollbarWidget>
+                                  </Children>
+                                </Widget>
+                              </Children>
+                            </Widget>
+                            <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="8">
+                              <Children>
+                                <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" ExtendLeft="4" ExtendTop="4" ExtendRight="4" ExtendBottom="4" AlphaFactor="0.22" />
+                                <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="54" VerticalAlignment="Top" MarginLeft="18" MarginRight="18" MarginTop="14" Brush="Popup.Title.Text" Brush.FontSize="25" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="【领地内事件】" DoNotAcceptEvents="true" />
+                                <ScrollablePanel WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipRect="DomesticClipRect" InnerPanel="DomesticClipRect\DomesticInnerPanel" MarginLeft="20" MarginRight="22" MarginTop="76" MarginBottom="20" AutoHideScrollBars="true" VerticalScrollbar="..\DomesticScrollbar\Scrollbar">
+                                  <Children>
+                                    <Widget Id="DomesticClipRect" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipContents="true">
+                                      <Children>
+                                        <Widget Id="DomesticInnerPanel" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MinHeight="480">
+                                          <Children>
+                                            <RichTextWidget Text="@DomesticRealmText" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MinHeight="480" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="6" MarginRight="6" MarginTop="4" MarginBottom="18" Brush="Popup.Description.Text" Brush.FontSize="@ColumnBodyFontSize" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Top" CanBreakWords="true" />
+                                          </Children>
+                                        </Widget>
+                                      </Children>
+                                    </Widget>
+                                  </Children>
+                                </ScrollablePanel>
+                                <Widget Id="DomesticScrollbar" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="1" HorizontalAlignment="Right" VerticalAlignment="Top" MarginRight="2" MarginTop="82" MarginBottom="26" DoNotAcceptEvents="true" IsVisible="false">
+                                  <Children>
+                                    <ScrollbarWidget Id="Scrollbar" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="1" AlignmentAxis="Vertical" Handle="Handle" MaxValue="100" MinValue="0" DoNotAcceptEvents="true" IsVisible="false">
+                                      <Children>
+                                        <Widget Id="Handle" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1" SuggestedHeight="1" DoNotAcceptEvents="true" IsVisible="false" />
+                                      </Children>
+                                    </ScrollbarWidget>
+                                  </Children>
+                                </Widget>
+                              </Children>
+                            </Widget>
+                          </Children>
+                        </ListPanel>
+                      </Children>
+                    </Widget>
                   </Children>
                 </Widget>
-                <ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="55" HorizontalAlignment="Center" VerticalAlignment="Bottom" MarginBottom="8" LayoutImp.LayoutMethod="HorizontalLeftToRight">
+                <ListPanel IsVisible="@ShowCloseButton" WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="55" HorizontalAlignment="Center" VerticalAlignment="Bottom" MarginBottom="8" LayoutImp.LayoutMethod="HorizontalLeftToRight">
                   <Children>
                     <ButtonWidget DoNotPassEventsToChildren="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="240" SuggestedHeight="56" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="Popup.Done.Button" Command.Click="ExecuteClose" UpdateChildrenStates="true">
                       <Children>
@@ -53,6 +147,116 @@
                 </ListPanel>
               </Children>
             </Widget>
+          </Children>
+        </Widget>
+        <Widget IsVisible="@ShowChronicleColumns" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1450" SuggestedHeight="870" HorizontalAlignment="Center" VerticalAlignment="Center">
+          <Children>
+            <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1450" SuggestedHeight="804" HorizontalAlignment="Center" VerticalAlignment="Top" Sprite="af_weekly_chronicle\af_weekly_chronicle_clean" DoNotAcceptEvents="true" />
+            <ScrollablePanel WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="314" SuggestedHeight="354" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="220" MarginTop="326" ClipRect="ChronicleMilitaryClipRect" InnerPanel="ChronicleMilitaryClipRect\ChronicleMilitaryInnerPanel" AutoHideScrollBars="true" VerticalScrollbar="..\ChronicleMilitaryScrollbar\Scrollbar">
+              <Children>
+                <Widget Id="ChronicleMilitaryClipRect" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipContents="true">
+                  <Children>
+                    <Widget Id="ChronicleMilitaryInnerPanel" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MinHeight="354">
+                      <Children>
+                        <RichTextWidget Text="@MilitaryEventsText" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MinHeight="354" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="8" MarginRight="10" MarginTop="6" MarginBottom="20" Brush="AFCourierLetter.Body.Text" Brush.FontSize="@ColumnBodyFontSize" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Top" CanBreakWords="true" />
+                      </Children>
+                    </Widget>
+                  </Children>
+                </Widget>
+              </Children>
+            </ScrollablePanel>
+            <Widget Id="ChronicleMilitaryScrollbar" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1" SuggestedHeight="342" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="532" MarginTop="332" DoNotAcceptEvents="true" IsVisible="false">
+              <Children>
+                <ScrollbarWidget Id="Scrollbar" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="1" AlignmentAxis="Vertical" Handle="Handle" MaxValue="100" MinValue="0" DoNotAcceptEvents="true" IsVisible="false">
+                  <Children>
+                    <Widget Id="Handle" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1" SuggestedHeight="1" DoNotAcceptEvents="true" IsVisible="false" />
+                  </Children>
+                </ScrollbarWidget>
+              </Children>
+            </Widget>
+            <ScrollablePanel WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="314" SuggestedHeight="354" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="615" MarginTop="326" ClipRect="ChronicleDiplomaticClipRect" InnerPanel="ChronicleDiplomaticClipRect\ChronicleDiplomaticInnerPanel" AutoHideScrollBars="true" VerticalScrollbar="..\ChronicleDiplomaticScrollbar\Scrollbar">
+              <Children>
+                <Widget Id="ChronicleDiplomaticClipRect" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipContents="true">
+                  <Children>
+                    <Widget Id="ChronicleDiplomaticInnerPanel" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MinHeight="354">
+                      <Children>
+                        <RichTextWidget Text="@DiplomaticAffairsText" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MinHeight="354" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="8" MarginRight="10" MarginTop="6" MarginBottom="20" Brush="AFCourierLetter.Body.Text" Brush.FontSize="@ColumnBodyFontSize" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Top" CanBreakWords="true" />
+                      </Children>
+                    </Widget>
+                  </Children>
+                </Widget>
+              </Children>
+            </ScrollablePanel>
+            <Widget Id="ChronicleDiplomaticScrollbar" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1" SuggestedHeight="342" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="927" MarginTop="332" DoNotAcceptEvents="true" IsVisible="false">
+              <Children>
+                <ScrollbarWidget Id="Scrollbar" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="1" AlignmentAxis="Vertical" Handle="Handle" MaxValue="100" MinValue="0" DoNotAcceptEvents="true" IsVisible="false">
+                  <Children>
+                    <Widget Id="Handle" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1" SuggestedHeight="1" DoNotAcceptEvents="true" IsVisible="false" />
+                  </Children>
+                </ScrollbarWidget>
+              </Children>
+            </Widget>
+            <ScrollablePanel WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="304" SuggestedHeight="354" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="1015" MarginTop="326" ClipRect="ChronicleDomesticClipRect" InnerPanel="ChronicleDomesticClipRect\ChronicleDomesticInnerPanel" AutoHideScrollBars="true" VerticalScrollbar="..\ChronicleDomesticScrollbar\Scrollbar">
+              <Children>
+                <Widget Id="ChronicleDomesticClipRect" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipContents="true">
+                  <Children>
+                    <Widget Id="ChronicleDomesticInnerPanel" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MinHeight="354">
+                      <Children>
+                        <RichTextWidget Text="@DomesticRealmText" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MinHeight="354" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="8" MarginRight="10" MarginTop="6" MarginBottom="20" Brush="AFCourierLetter.Body.Text" Brush.FontSize="@ColumnBodyFontSize" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Top" CanBreakWords="true" />
+                      </Children>
+                    </Widget>
+                  </Children>
+                </Widget>
+              </Children>
+            </ScrollablePanel>
+            <Widget Id="ChronicleDomesticScrollbar" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1" SuggestedHeight="342" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="1317" MarginTop="332" DoNotAcceptEvents="true" IsVisible="false">
+              <Children>
+                <ScrollbarWidget Id="Scrollbar" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="1" AlignmentAxis="Vertical" Handle="Handle" MaxValue="100" MinValue="0" DoNotAcceptEvents="true" IsVisible="false">
+                  <Children>
+                    <Widget Id="Handle" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1" SuggestedHeight="1" DoNotAcceptEvents="true" IsVisible="false" />
+                  </Children>
+                </ScrollbarWidget>
+              </Children>
+            </Widget>
+            <ButtonWidget IsVisible="@ShowCloseButton" DoNotPassEventsToChildren="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="190" SuggestedHeight="46" HorizontalAlignment="Center" VerticalAlignment="Bottom" MarginBottom="4" Brush="Popup.Done.Button" Command.Click="ExecuteClose" UpdateChildrenStates="true">
+              <Children>
+                <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="22" VerticalAlignment="Center" MarginLeft="24" MarginRight="24" Brush="AFCourierLetter.Button.Text" Brush.FontSize="21" Text="@CloseText" DoNotAcceptEvents="true" />
+              </Children>
+            </ButtonWidget>
+          </Children>
+        </Widget>
+        <Widget IsVisible="@ShowShortReport" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="980" SuggestedHeight="620" HorizontalAlignment="Center" VerticalAlignment="Center">
+          <Children>
+            <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="af_courier\af_courier_scroll" DoNotAcceptEvents="true" />
+            <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="38" HorizontalAlignment="Center" VerticalAlignment="Top" MarginLeft="190" MarginRight="190" MarginTop="86" Brush="AFCourierLetter.Title.Text" Brush.FontSize="29" Text="@TitleText" DoNotAcceptEvents="true" />
+            <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="28" HorizontalAlignment="Center" VerticalAlignment="Top" MarginLeft="148" MarginRight="280" MarginTop="130" Brush="AFCourierLetter.Meta.Text" Brush.FontSize="18" Text="@SubtitleText" DoNotAcceptEvents="true" />
+            <ScrollablePanel WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipRect="ShortBodyClipRect" InnerPanel="ShortBodyClipRect\ShortBodyInnerPanel" MarginLeft="140" MarginRight="285" MarginTop="174" MarginBottom="128" AutoHideScrollBars="true" VerticalScrollbar="..\ShortBodyScrollbar\Scrollbar">
+              <Children>
+                <Widget Id="ShortBodyClipRect" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipContents="true">
+                  <Children>
+                    <Widget Id="ShortBodyInnerPanel" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MinHeight="300">
+                      <Children>
+                        <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MinHeight="300" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="10" MarginRight="14" MarginTop="6" MarginBottom="18" Brush="AFCourierLetter.Body.Text" Brush.FontSize="@ShortBodyFontSize" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Top" Text="@BodyText" CanBreakWords="true" />
+                      </Children>
+                    </Widget>
+                  </Children>
+                </Widget>
+              </Children>
+            </ScrollablePanel>
+            <Widget Id="ShortBodyScrollbar" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="1" HorizontalAlignment="Right" VerticalAlignment="Top" MarginRight="285" MarginTop="180" MarginBottom="136" DoNotAcceptEvents="true" IsVisible="false">
+              <Children>
+                <ScrollbarWidget Id="Scrollbar" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="1" AlignmentAxis="Vertical" Handle="Handle" MaxValue="100" MinValue="0" DoNotAcceptEvents="true" IsVisible="false">
+                  <Children>
+                    <Widget Id="Handle" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1" SuggestedHeight="1" DoNotAcceptEvents="true" IsVisible="false" />
+                  </Children>
+                </ScrollbarWidget>
+              </Children>
+            </Widget>
+            <ButtonWidget IsVisible="@ShowCloseButton" DoNotPassEventsToChildren="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="166" SuggestedHeight="42" HorizontalAlignment="Center" VerticalAlignment="Bottom" MarginBottom="78" Brush="Popup.Done.Button" Command.Click="ExecuteClose" UpdateChildrenStates="true">
+              <Children>
+                <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="22" VerticalAlignment="Center" MarginLeft="22" MarginRight="22" Brush="AFCourierLetter.Button.Text" Brush.FontSize="21" Text="@CloseText" DoNotAcceptEvents="true" />
+              </Children>
+            </ButtonWidget>
           </Children>
         </Widget>
       </Children>

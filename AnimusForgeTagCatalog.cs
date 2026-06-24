@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -59,6 +60,48 @@ internal static class AnimusForgeTagCatalog
 			_cachedSnapshot = snapshot;
 			_cachedAtUtc = DateTime.UtcNow;
 			return snapshot;
+		}
+	}
+
+	public static bool TryExportSnapshotToModuleTxt(AnimusForgeTagCatalogSnapshot snapshot, out string filePath, out string error)
+	{
+		filePath = "";
+		error = "";
+		try
+		{
+			snapshot ??= BuildSnapshot(forceRefresh: true);
+			if (snapshot == null || snapshot.Entries.Count <= 0)
+			{
+				error = "当前没有可导出的标签。";
+				return false;
+			}
+			string moduleRoot = ResolveExportModuleRoot(snapshot);
+			if (string.IsNullOrWhiteSpace(moduleRoot) || !Directory.Exists(moduleRoot))
+			{
+				error = "没有找到可写入的 AnimusForge 模块目录。";
+				return false;
+			}
+			string timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss", CultureInfo.InvariantCulture);
+			string baseName = "AnimusForge_Tag_Catalog_" + timestamp;
+			string candidate = Path.Combine(moduleRoot, baseName + ".txt");
+			for (int i = 1; File.Exists(candidate) && i < 100; i++)
+			{
+				candidate = Path.Combine(moduleRoot, baseName + "_" + i.ToString(CultureInfo.InvariantCulture) + ".txt");
+			}
+			if (File.Exists(candidate))
+			{
+				error = "导出文件名冲突过多，请稍后再试。";
+				return false;
+			}
+			File.WriteAllText(candidate, BuildExportText(snapshot, moduleRoot), new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
+			filePath = candidate;
+			return true;
+		}
+		catch (Exception ex)
+		{
+			error = ex.Message;
+			Logger.Log("TagCatalog", "[ERROR] export failed: " + ex);
+			return false;
 		}
 	}
 
@@ -127,6 +170,50 @@ internal static class AnimusForgeTagCatalog
 		{
 		}
 		return roots;
+	}
+
+	private static string ResolveExportModuleRoot(AnimusForgeTagCatalogSnapshot snapshot)
+	{
+		try
+		{
+			string currentRoot = AnimusForgeModulePaths.GetCurrentModuleRoot();
+			if (IsAnimusForgeModuleRoot(currentRoot))
+			{
+				return Path.GetFullPath(currentRoot);
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			foreach (string root in snapshot?.SourceRoots ?? new List<string>())
+			{
+				if (IsAnimusForgeModuleRoot(root))
+				{
+					return Path.GetFullPath(root);
+				}
+			}
+		}
+		catch
+		{
+		}
+		return "";
+	}
+
+	private static bool IsAnimusForgeModuleRoot(string path)
+	{
+		try
+		{
+			return !string.IsNullOrWhiteSpace(path)
+				&& Directory.Exists(path)
+				&& File.Exists(Path.Combine(path, "SubModule.xml"))
+				&& Directory.Exists(Path.Combine(path, "ModuleData"));
+		}
+		catch
+		{
+			return false;
+		}
 	}
 
 	private static void AddRoot(List<string> roots, string root)
@@ -495,6 +582,54 @@ internal static class AnimusForgeTagCatalog
 			return explicitJsonRule ? "后处理/规则表" : "后处理";
 		}
 		return "标签";
+	}
+
+	private static string BuildExportText(AnimusForgeTagCatalogSnapshot snapshot, string moduleRoot)
+	{
+		StringBuilder stringBuilder = new StringBuilder();
+		int bodyCount = snapshot.Entries.Count((AnimusForgeTagCatalogEntry x) => (x.Category ?? "").StartsWith("正文", StringComparison.Ordinal));
+		int postprocessCount = snapshot.Entries.Count((AnimusForgeTagCatalogEntry x) => (x.Category ?? "").StartsWith("后处理", StringComparison.Ordinal));
+		stringBuilder.AppendLine("AnimusForge 标签列表");
+		stringBuilder.AppendLine("导出时间：" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture));
+		stringBuilder.AppendLine("模块目录：" + (moduleRoot ?? ""));
+		stringBuilder.AppendLine("标签总数：" + snapshot.Entries.Count.ToString(CultureInfo.InvariantCulture));
+		stringBuilder.AppendLine("正文/历史：" + bodyCount.ToString(CultureInfo.InvariantCulture));
+		stringBuilder.AppendLine("后处理：" + postprocessCount.ToString(CultureInfo.InvariantCulture));
+		stringBuilder.AppendLine("扫描文件：" + snapshot.ScannedFileCount.ToString(CultureInfo.InvariantCulture));
+		if (snapshot.SourceRoots.Count > 0)
+		{
+			stringBuilder.AppendLine();
+			stringBuilder.AppendLine("扫描来源：");
+			foreach (string root in snapshot.SourceRoots)
+			{
+				stringBuilder.AppendLine("- " + root);
+			}
+		}
+		stringBuilder.AppendLine();
+		stringBuilder.AppendLine("说明：此文件由游戏内 U 键 AnimusForge 终端的一键导出生成。列表来自当前模块文件、当前程序集字符串和内置运行时规则。");
+		foreach (IGrouping<string, AnimusForgeTagCatalogEntry> group in snapshot.Entries.GroupBy((AnimusForgeTagCatalogEntry x) => string.IsNullOrWhiteSpace(x.Category) ? "标签" : x.Category).OrderBy((IGrouping<string, AnimusForgeTagCatalogEntry> x) => CategoryOrder(x.Key)).ThenBy((IGrouping<string, AnimusForgeTagCatalogEntry> x) => x.Key, StringComparer.OrdinalIgnoreCase))
+		{
+			stringBuilder.AppendLine();
+			stringBuilder.AppendLine("==== " + group.Key + " ====");
+			foreach (AnimusForgeTagCatalogEntry entry in group.OrderBy((AnimusForgeTagCatalogEntry x) => x.Tag, StringComparer.OrdinalIgnoreCase))
+			{
+				stringBuilder.AppendLine();
+				stringBuilder.AppendLine(entry.Tag ?? "");
+				if (!string.IsNullOrWhiteSpace(entry.Description))
+				{
+					stringBuilder.AppendLine("说明：" + entry.Description.Trim());
+				}
+				if (entry.Sources.Count > 0)
+				{
+					stringBuilder.AppendLine("来源：");
+					foreach (string source in entry.Sources)
+					{
+						stringBuilder.AppendLine("- " + source);
+					}
+				}
+			}
+		}
+		return stringBuilder.ToString().TrimEnd() + Environment.NewLine;
 	}
 
 	private static int CategoryOrder(string category)

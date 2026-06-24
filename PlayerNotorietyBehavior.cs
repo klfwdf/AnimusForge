@@ -43,6 +43,16 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 		"人尽皆知"
 	};
 
+	private static readonly string[] CultureDisplayOrder = new string[6]
+	{
+		"empire",
+		"vlandia",
+		"sturgia",
+		"aserai",
+		"khuzait",
+		"battania"
+	};
+
 	private PlayerNotorietyState _state = new PlayerNotorietyState();
 	private readonly Dictionary<string, ActiveConversationState> _activeConversationStates = new Dictionary<string, ActiveConversationState>(StringComparer.OrdinalIgnoreCase);
 	private readonly HashSet<string> _soldPrisonerDonationSkipKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -1437,6 +1447,192 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 		return (a?.Order ?? 0).CompareTo(b?.Order ?? 0);
 	}
 
+	private PlayerNotorietyPopupData BuildPlayerNotorietyPopupData(bool canEdit)
+	{
+		_state = NormalizeState(_state);
+		double world = ClampPercentDouble(_state.WorldNotoriety);
+		float effectiveWorld = (float)ClampPercentDouble(world + GetPlayerClanTierBonus());
+		return new PlayerNotorietyPopupData
+		{
+			HistoryText = BuildPlayerNotorietyHistoryText(includeRawMaterials: canEdit),
+			CenturyText = "",
+			WorldFillPercent = effectiveWorld,
+			ShowEditButton = canEdit,
+			EditText = "编辑履历",
+			CultureRows = BuildPlayerNotorietyCultureRows()
+		};
+	}
+
+	private string BuildPlayerNotorietyHistoryText(bool includeRawMaterials)
+	{
+		_state = NormalizeState(_state);
+		StringBuilder sb = new StringBuilder();
+		string playerName = "玩家";
+		string summary = RenderPlayerActionTextForPrompt((_state.MajorSummary ?? "").Trim(), playerName);
+		if (!string.IsNullOrWhiteSpace(summary))
+		{
+			sb.AppendLine(summary);
+		}
+		PruneRecentActions();
+		List<PlayerActionEntry> recentActions = (_state.RecentActions ?? new List<PlayerActionEntry>())
+			.Where(x => x != null && !string.IsNullOrWhiteSpace(x.Text))
+			.OrderByDescending(x => x.Day)
+			.ThenByDescending(x => x.Sequence)
+			.ThenByDescending(x => x.Order)
+			.ToList();
+		if (recentActions.Count > 0)
+		{
+			if (sb.Length > 0)
+			{
+				sb.AppendLine();
+			}
+			sb.AppendLine("【近期行动】");
+			foreach (PlayerActionEntry entry in recentActions)
+			{
+				sb.AppendLine("- " + (string.IsNullOrWhiteSpace(entry.GameDate) ? ("第" + entry.Day + "日") : entry.GameDate.Trim()) + "：" + RenderPlayerActionTextForPrompt(entry.Text, playerName));
+			}
+		}
+		List<PlayerHistoryMaterial> materials = (_state.MajorMaterials ?? new List<PlayerHistoryMaterial>())
+			.Where(x => x != null && !string.IsNullOrWhiteSpace(x.Text) && (includeRawMaterials || !x.Summarized))
+			.OrderBy(x => x.Day)
+			.ThenBy(x => x.CreatedUtcTicks)
+			.ToList();
+		if (materials.Count > 0)
+		{
+			if (sb.Length > 0)
+			{
+				sb.AppendLine();
+			}
+			sb.AppendLine(includeRawMaterials ? "【履历素材】" : "【新增履历】");
+			foreach (PlayerHistoryMaterial material in materials)
+			{
+				sb.AppendLine("- " + (string.IsNullOrWhiteSpace(material.GameDate) ? ("第" + material.Day + "日") : material.GameDate.Trim()) + "：" + RenderPlayerActionTextForPrompt(material.Text, playerName));
+			}
+		}
+		string text = sb.ToString().Trim();
+		return string.IsNullOrWhiteSpace(text) ? "尚无可展示的公开履历。" : text;
+	}
+
+	private PlayerNotorietyCultureRowData[] BuildPlayerNotorietyCultureRows()
+	{
+		_state = NormalizeState(_state);
+		List<PlayerNotorietyCultureRowData> rows = new List<PlayerNotorietyCultureRowData>();
+		HashSet<string> added = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		foreach (CultureObject culture in GetCulturesForNotorietyPopup())
+		{
+			string id = NormalizeCultureId(culture?.StringId);
+			if (string.IsNullOrWhiteSpace(id) || !added.Add(id))
+			{
+				continue;
+			}
+			_state.CultureNotoriety.TryGetValue(id, out double value);
+			rows.Add(new PlayerNotorietyCultureRowData
+			{
+				CultureId = id,
+				CultureName = ResolveCultureDisplayName(culture, id),
+				FillPercent = (float)ClampPercentDouble(value),
+				FillColor = ResolveCultureFillColor(culture)
+			});
+		}
+		foreach (KeyValuePair<string, double> pair in _state.CultureNotoriety.OrderBy(x => ResolveCultureDisplayName(x.Key), StringComparer.OrdinalIgnoreCase).ThenBy(x => x.Key, StringComparer.OrdinalIgnoreCase))
+		{
+			string id = NormalizeCultureId(pair.Key);
+			if (string.IsNullOrWhiteSpace(id) || !added.Add(id))
+			{
+				continue;
+			}
+			rows.Add(new PlayerNotorietyCultureRowData
+			{
+				CultureId = id,
+				CultureName = ResolveCultureDisplayName(id),
+				FillPercent = (float)ClampPercentDouble(pair.Value),
+				FillColor = Color.FromUint(0xFF8F6E3Bu)
+			});
+		}
+		return rows.ToArray();
+	}
+
+	private static List<CultureObject> GetCulturesForNotorietyPopup()
+	{
+		try
+		{
+			return TaleWorlds.ObjectSystem.MBObjectManager.Instance.GetObjectTypeList<CultureObject>()
+				.Where(x => x != null && !string.IsNullOrWhiteSpace(x.StringId))
+				.GroupBy(x => NormalizeCultureId(x.StringId), StringComparer.OrdinalIgnoreCase)
+				.Select(x => x.First())
+				.OrderBy(x => GetCultureDisplayOrder(NormalizeCultureId(x.StringId)))
+				.ThenBy(x => ResolveCultureDisplayName(x, NormalizeCultureId(x.StringId)), StringComparer.OrdinalIgnoreCase)
+				.ThenBy(x => NormalizeCultureId(x.StringId), StringComparer.OrdinalIgnoreCase)
+				.ToList();
+		}
+		catch
+		{
+			return new List<CultureObject>();
+		}
+	}
+
+	private static int GetCultureDisplayOrder(string cultureId)
+	{
+		string id = NormalizeCultureId(cultureId);
+		for (int i = 0; i < CultureDisplayOrder.Length; i++)
+		{
+			if (string.Equals(id, CultureDisplayOrder[i], StringComparison.OrdinalIgnoreCase))
+			{
+				return i;
+			}
+		}
+		return int.MaxValue;
+	}
+
+	private static string ResolveCultureDisplayName(CultureObject culture, string fallbackId)
+	{
+		string name = culture?.Name?.ToString();
+		if (!string.IsNullOrWhiteSpace(name))
+		{
+			return name.Trim();
+		}
+		string id = NormalizeCultureId(fallbackId);
+		return string.IsNullOrWhiteSpace(id) ? "未知文化" : id;
+	}
+
+	private static Color ResolveCultureFillColor(CultureObject culture)
+	{
+		try
+		{
+			return Color.FromUint(NormalizeUiColor(culture?.Color ?? 0u));
+		}
+		catch
+		{
+			return Color.FromUint(0xFF8F6E3Bu);
+		}
+	}
+
+	private static uint NormalizeUiColor(uint color)
+	{
+		if ((color & 0x00FFFFFFu) == 0u)
+		{
+			return 0xFF8F6E3Bu;
+		}
+		if ((color & 0xFF000000u) == 0u)
+		{
+			color |= 0xFF000000u;
+		}
+		return color;
+	}
+
+	private static string ResolveCampaignCenturyText()
+	{
+		try
+		{
+			int year = Math.Max(1, CampaignTime.Now.GetYear);
+			return ((year + 99) / 100).ToString() + "世纪";
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
 	private string BuildPlayerNotorietyDisplayText(bool includeRawMaterials)
 	{
 		_state = NormalizeState(_state);
@@ -1500,8 +1696,12 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 
 	private void OpenPlayerNotorietyView()
 	{
-		string text = BuildPlayerNotorietyDisplayText(includeRawMaterials: true);
 		bool canEdit = MyBehavior.IsDevDataManagementEnabledForExternal();
+		if (PlayerNotorietyPopup.Show(BuildPlayerNotorietyPopupData(canEdit), canEdit ? OpenPlayerMajorHistoryEditor : null))
+		{
+			return;
+		}
+		string text = BuildPlayerNotorietyHistoryText(includeRawMaterials: canEdit);
 		if (canEdit)
 		{
 			InformationManager.ShowInquiry(new InquiryData("玩家知名度与履历", text, true, true, "编辑履历", "关闭", OpenPlayerMajorHistoryEditor, null));

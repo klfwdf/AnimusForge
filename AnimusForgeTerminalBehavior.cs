@@ -94,6 +94,12 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 			_wasTerminalKeyDown = false;
 			return;
 		}
+		if (CourierLetterInputPopup.IsOpen || CourierLetterReplyPopup.IsOpen)
+		{
+			LogHotkeyBlocked("courier_letter_ui", configuredTerminalKey);
+			_wasTerminalKeyDown = true;
+			return;
+		}
 		if (HotkeyInputGuard.IsTextInputFocused())
 		{
 			LogHotkeyBlocked("text_input_or_inquiry", configuredTerminalKey);
@@ -715,7 +721,8 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 			}
 			List<InquiryElement> list = new List<InquiryElement>
 			{
-				new InquiryElement("__refresh__", "刷新标签索引", null, isEnabled: true, BuildTagCatalogRefreshHint(snapshot))
+				new InquiryElement("__refresh__", "刷新标签索引", null, isEnabled: true, BuildTagCatalogRefreshHint(snapshot)),
+				new InquiryElement("__export__", "导出为TXT", null, isEnabled: true, "把当前标签列表一键导出到 AnimusForge 模块目录，文件名带时间戳，不覆盖旧文件。")
 			};
 			foreach (AnimusForgeTagCatalogEntry entry in snapshot.Entries)
 			{
@@ -732,6 +739,11 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 				if (string.Equals(text, "__refresh__", StringComparison.Ordinal))
 				{
 					OpenTagCatalogBrowser(null, forceRefresh: true);
+					return;
+				}
+				if (string.Equals(text, "__export__", StringComparison.Ordinal))
+				{
+					ExportTagCatalogToModuleTxt(snapshot);
 					return;
 				}
 				AnimusForgeTagCatalogEntry tagEntry = snapshot.Entries.FirstOrDefault((AnimusForgeTagCatalogEntry x) => string.Equals(x.Id, text, StringComparison.Ordinal));
@@ -752,6 +764,34 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 			Logger.Log("Terminal", "[ERROR] open tag catalog failed: " + ex);
 			InformationManager.DisplayMessage(new InformationMessage("打开标签列表失败：" + ex.Message));
 			OpenRootMenu();
+		}
+	}
+
+	private void ExportTagCatalogToModuleTxt(AnimusForgeTagCatalogSnapshot snapshot)
+	{
+		_terminalUiActive = true;
+		try
+		{
+			if (AnimusForgeTagCatalog.TryExportSnapshotToModuleTxt(snapshot, out var filePath, out var error))
+			{
+				InformationManager.ShowInquiry(new InquiryData("标签列表已导出", "已导出到：\n" + filePath, isAffirmativeOptionShown: true, isNegativeOptionShown: false, "返回", "", delegate
+				{
+					OpenTagCatalogBrowser(snapshot);
+				}, null), pauseGameActiveState: true, prioritize: false);
+				return;
+			}
+			InformationManager.ShowInquiry(new InquiryData("标签列表导出失败", string.IsNullOrWhiteSpace(error) ? "未知错误。" : error, isAffirmativeOptionShown: true, isNegativeOptionShown: false, "返回", "", delegate
+			{
+				OpenTagCatalogBrowser(snapshot);
+			}, null), pauseGameActiveState: true, prioritize: false);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("Terminal", "[ERROR] export tag catalog failed: " + ex);
+			InformationManager.ShowInquiry(new InquiryData("标签列表导出失败", ex.Message, isAffirmativeOptionShown: true, isNegativeOptionShown: false, "返回", "", delegate
+			{
+				OpenTagCatalogBrowser(snapshot);
+			}, null), pauseGameActiveState: true, prioritize: false);
 		}
 	}
 
