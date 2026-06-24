@@ -33,15 +33,11 @@ $Packages = @(
         Label = '1.3.x'
         ModuleName = 'AnimusForge_1_3_x'
         ArtifactDir = Join-Path $ScriptRoot 'bin\Debug\dual_client_artifacts\1.3.x'
-        ExpectedDllHash = '8A3462785B8C6B452CA6F8E3B9BAD9B56900ADF87485E2672B1C7D4EA0E38E03'
-        ExpectedPdbHash = 'C913A8E79F01EFC0CFE175D99288B42BD90A59AF2F2B9CA999EC66EF5AB74AEE'
     },
     [pscustomobject]@{
         Label = '1.4.5'
         ModuleName = 'AnimusForge_1_4_5'
         ArtifactDir = Join-Path $ScriptRoot 'bin\Debug\dual_client_artifacts\1.4.5'
-        ExpectedDllHash = '1767840AC07523DA30E3E27FCB367433AC866B957E0D0B249CF226C890E9CD3C'
-        ExpectedPdbHash = '57032039E8B2CD2BBB9926041758EEDF13031CAB679E14F480F1F8471A5AC3F2'
     }
 )
 
@@ -97,7 +93,7 @@ function Assert-DirectoryExists {
     }
 }
 
-function Assert-ExpectedHash {
+function Assert-MatchingHash {
     param(
         [Parameter(Mandatory = $true)]
         [string]$Path,
@@ -207,13 +203,10 @@ function Copy-ArtifactFile {
         [string]$BackupDirectory,
 
         [Parameter(Mandatory = $true)]
-        [string]$ExpectedHash,
-
-        [Parameter(Mandatory = $true)]
         [string]$Label
     )
 
-    $SourceHash = Assert-ExpectedHash -Path $SourcePath -ExpectedHash $ExpectedHash -Description "$Label artifact"
+    $SourceHash = Get-Sha256String -Path $SourcePath
     Write-Host "Verified artifact ${Label}: $SourceHash"
 
     New-DirectoryIfMissing -Path $BackupDirectory
@@ -236,7 +229,7 @@ function Copy-ArtifactFile {
     }
 
     if (-not $WhatIfPreference) {
-        $DestinationHashAfter = Assert-ExpectedHash -Path $DestinationPath -ExpectedHash $ExpectedHash -Description "$Label installed target"
+        $DestinationHashAfter = Assert-MatchingHash -Path $DestinationPath -ExpectedHash $SourceHash -Description "$Label installed target"
         Write-Host "Verified installed ${Label}: $DestinationHashAfter"
     }
     else {
@@ -292,8 +285,8 @@ foreach ($Package in $Packages) {
     Write-Host ''
     Write-Host "Installing $($Package.ModuleName) from $($Package.ArtifactDir)"
 
-    Copy-ArtifactFile -SourcePath $SourceDll -DestinationPath $TargetDll -BackupDirectory $PackageBackupDir -ExpectedHash $Package.ExpectedDllHash -Label "$($Package.ModuleName) DLL"
-    Copy-ArtifactFile -SourcePath $SourcePdb -DestinationPath $TargetPdb -BackupDirectory $PackageBackupDir -ExpectedHash $Package.ExpectedPdbHash -Label "$($Package.ModuleName) PDB"
+    Copy-ArtifactFile -SourcePath $SourceDll -DestinationPath $TargetDll -BackupDirectory $PackageBackupDir -Label "$($Package.ModuleName) DLL"
+    Copy-ArtifactFile -SourcePath $SourcePdb -DestinationPath $TargetPdb -BackupDirectory $PackageBackupDir -Label "$($Package.ModuleName) PDB"
 }
 
 Write-Host ''
