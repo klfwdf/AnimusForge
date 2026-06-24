@@ -9,12 +9,14 @@ using TaleWorlds.CampaignSystem.Encounters;
 using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.CampaignSystem.Settlements.Locations;
 using TaleWorlds.Core;
+using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
 
 namespace AnimusForge;
 
 /// <summary>
-/// GCCZ-only bridge that raises the town-center civilian population to the normal town maximum
+/// GCCZ-only bridge that raises the town-center civilian population to a prosperity-weighted
+/// 100-200 civilian target
 /// while still using vanilla LocationCharacter creators, culture equipment, wanderer behaviors,
 /// and MissionAgentHandler spawn points. It intentionally does not create raw agent builds
 /// and does not switch the mission to siege AI/deployment.
@@ -26,6 +28,16 @@ internal sealed class InterventionNativeTownCivilianPopulationMissionBehavior : 
 	private static readonly string[] CommonAdultCreators = { "CreateTownsMan", "CreateTownsWoman" };
 	private static readonly string[] LimitedAdultCreators = { "CreateTownsManCarryingStuff", "CreateTownsWomanCarryingStuff" };
 	private static readonly string[] BeggarCreators = { "CreateMaleBeggar", "CreateFemaleBeggar" };
+	private static readonly string[] AdditionalCivilianSpawnTags =
+	{
+		"sp_merchant",
+		"sp_horse_merchant",
+		"sp_armorer",
+		"sp_weaponsmith",
+		"sp_blacksmith",
+		"sp_barber",
+		"gambler_npc"
+	};
 	private static readonly HashSet<string> CivilianSpawnTags = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
 	{
 		"npc_common",
@@ -47,6 +59,8 @@ internal sealed class InterventionNativeTownCivilianPopulationMissionBehavior : 
 	private bool _completed;
 	private bool _loggedCreatorFailure;
 	private float _firstAttemptTime = -1f;
+	private int _prosperityWeightedTargetCivilianCount = -1;
+	private float _targetProsperity;
 	private int _commonCreatorIndex;
 	private int _limitedCreatorIndex;
 	private int _beggarCreatorIndex;
@@ -101,18 +115,18 @@ internal sealed class InterventionNativeTownCivilianPopulationMissionBehavior : 
 			}
 
 			int currentCivilianCount = CountCurrentCivilianLikeAgents(mission, location);
-			int targetCivilianCount = GetTargetCivilianCount(mission, currentCivilianCount);
+			int targetCivilianCount = GetTargetCivilianCount(mission, settlement, currentCivilianCount);
 			if (targetCivilianCount <= currentCivilianCount)
 			{
 				_completed = true;
-				Logger.Log("SiegeAiIntervention", "Native town civilian maximum already satisfied. Settlement=" + _settlementId + ", Current=" + currentCivilianCount + ", Target=" + targetCivilianCount + ", Source=" + (source ?? "N/A"));
+				Logger.Log("SiegeAiIntervention", "Native town prosperity civilian target already satisfied. Settlement=" + _settlementId + ", Current=" + currentCivilianCount + ", Target=" + targetCivilianCount + ", Prosperity=" + _targetProsperity.ToString("0") + ", Source=" + (source ?? "N/A"));
 				return;
 			}
 
 			int spawned = SpawnCivilianDeficit(mission, missionAgentHandler, settlement, location, targetCivilianCount - currentCivilianCount);
 			int finalCivilianCount = CountCurrentCivilianLikeAgents(mission, location);
 			_completed = true;
-			Logger.Log("SiegeAiIntervention", "Native town civilian maximum pass completed. Settlement=" + _settlementId + ", CurrentBefore=" + currentCivilianCount + ", Target=" + targetCivilianCount + ", Spawned=" + spawned + ", CurrentAfter=" + finalCivilianCount + ", Source=" + (source ?? "N/A") + ", VanillaLocationCharacters=true, VanillaSpawnPoints=true, SiegeDeployment=false");
+			Logger.Log("SiegeAiIntervention", "Native town prosperity civilian pass completed. Settlement=" + _settlementId + ", CurrentBefore=" + currentCivilianCount + ", Target=" + targetCivilianCount + ", Prosperity=" + _targetProsperity.ToString("0") + ", Spawned=" + spawned + ", CurrentAfter=" + finalCivilianCount + ", Source=" + (source ?? "N/A") + ", VanillaLocationCharacters=true, VanillaSpawnPoints=true, SiegeDeployment=false, TargetPolicy=100-200 prosperity-random");
 		}
 		catch (Exception ex)
 		{
@@ -134,18 +148,57 @@ internal sealed class InterventionNativeTownCivilianPopulationMissionBehavior : 
 		}
 	}
 
-	private static int GetTargetCivilianCount(Mission mission, int currentCivilianCount)
+	private int GetTargetCivilianCount(Mission mission, Settlement settlement, int currentCivilianCount)
 	{
-		int normalConfigMax = Math.Max(0, (int)Math.Round(BannerlordConfig.CivilianAgentCount));
-		if (normalConfigMax <= 0)
-		{
-			return currentCivilianCount;
-		}
+		int prosperityTarget = GetOrCreateProsperityWeightedTarget(settlement);
 		int activeHumanCount = mission?.Agents?.Count(agent => agent != null && agent.IsHuman && agent.IsActive()) ?? currentCivilianCount;
 		int nonCivilianActiveCount = Math.Max(0, activeHumanCount - currentCivilianCount);
 		int sceneRoomForCivilians = Math.Max(0, SiegeCivilianAssemblyProfile.SceneTotalAgentSoftCap - nonCivilianActiveCount);
-		int target = Math.Min(SiegeCivilianAssemblyProfile.TownSceneCap, Math.Min(normalConfigMax, sceneRoomForCivilians));
+		int target = Math.Min(SiegeCivilianAssemblyProfile.TownSceneCap, Math.Min(prosperityTarget, sceneRoomForCivilians));
 		return Math.Max(currentCivilianCount, target);
+	}
+
+	private int GetOrCreateProsperityWeightedTarget(Settlement settlement)
+	{
+		if (_prosperityWeightedTargetCivilianCount > 0)
+		{
+			return _prosperityWeightedTargetCivilianCount;
+		}
+		_targetProsperity = GetTownProsperity(settlement);
+		float prosperityRatio = Clamp01(_targetProsperity / Math.Max(1f, SiegeCivilianAssemblyProfile.NativeTownPopulationProsperityForMaxCount));
+		int min = SiegeCivilianAssemblyProfile.MinDesiredCivilianCount;
+		int max = SiegeCivilianAssemblyProfile.MaxDesiredCivilianCount;
+		int band = Math.Max(0, Math.Min(SiegeCivilianAssemblyProfile.NativeTownPopulationRandomBand, max - min));
+		int lower = (int)Math.Round(Lerp(min, max - band, prosperityRatio));
+		int upper = (int)Math.Round(Lerp(min + band, max, prosperityRatio));
+		lower = ClampInt(lower, min, max);
+		upper = ClampInt(Math.Max(lower, upper), min, max);
+		try
+		{
+			_prosperityWeightedTargetCivilianCount = ClampInt(MBRandom.RandomInt(lower, upper + 1), min, max);
+		}
+		catch
+		{
+			_prosperityWeightedTargetCivilianCount = ClampInt((lower + upper) / 2, min, max);
+		}
+		return _prosperityWeightedTargetCivilianCount;
+	}
+
+	private static float GetTownProsperity(Settlement settlement)
+	{
+		try
+		{
+			if (settlement?.Town != null)
+			{
+				return Math.Max(0f, settlement.Town.Prosperity);
+			}
+			SettlementComponent.ProsperityLevel level = settlement?.SettlementComponent?.GetProsperityLevel() ?? SettlementComponent.ProsperityLevel.Mid;
+			return ((float)level / 2f) * SiegeCivilianAssemblyProfile.NativeTownPopulationProsperityForMaxCount;
+		}
+		catch
+		{
+			return SiegeCivilianAssemblyProfile.NativeTownPopulationProsperityForMaxCount * 0.5f;
+		}
 	}
 
 	private int SpawnCivilianDeficit(Mission mission, MissionAgentHandler missionAgentHandler, Settlement settlement, Location location, int deficit)
@@ -171,6 +224,7 @@ internal sealed class InterventionNativeTownCivilianPopulationMissionBehavior : 
 				_exhaustedTags.Add(expectedTag);
 				continue;
 			}
+			ApplySpawnTagOverride(locationCharacter, expectedTag);
 			location.AddCharacter(locationCharacter);
 			Agent agent = null;
 			try
@@ -221,6 +275,28 @@ internal sealed class InterventionNativeTownCivilianPopulationMissionBehavior : 
 			expectedTag = "npc_common";
 			return CommonAdultCreators[(_commonCreatorIndex++) % CommonAdultCreators.Length];
 		}
+		string additionalTag = ChooseAdditionalCivilianSpawnTag(availablePointCounts);
+		if (!string.IsNullOrWhiteSpace(additionalTag))
+		{
+			expectedTag = additionalTag;
+			return CommonAdultCreators[(_commonCreatorIndex++) % CommonAdultCreators.Length];
+		}
+		return null;
+	}
+
+	private string ChooseAdditionalCivilianSpawnTag(Dictionary<string, int> availablePointCounts)
+	{
+		if (availablePointCounts == null || availablePointCounts.Count == 0)
+		{
+			return null;
+		}
+		foreach (string tag in AdditionalCivilianSpawnTags)
+		{
+			if (HasAvailable(availablePointCounts, tag))
+			{
+				return tag;
+			}
+		}
 		return null;
 	}
 
@@ -238,6 +314,22 @@ internal sealed class InterventionNativeTownCivilianPopulationMissionBehavior : 
 		catch
 		{
 			return new Dictionary<string, int>();
+		}
+	}
+
+	private static void ApplySpawnTagOverride(LocationCharacter locationCharacter, string expectedTag)
+	{
+		try
+		{
+			if (locationCharacter == null || string.IsNullOrWhiteSpace(expectedTag) || !IsCivilianSpawnTag(expectedTag))
+			{
+				return;
+			}
+			locationCharacter.SpecialTargetTag = expectedTag;
+			locationCharacter.ForceSpawnInSpecialTargetTag = false;
+		}
+		catch
+		{
 		}
 	}
 
@@ -352,5 +444,36 @@ internal sealed class InterventionNativeTownCivilianPopulationMissionBehavior : 
 		default:
 			return false;
 		}
+	}
+
+	private static float Lerp(float from, float to, float ratio)
+	{
+		return from + (to - from) * Clamp01(ratio);
+	}
+
+	private static float Clamp01(float value)
+	{
+		if (value < 0f)
+		{
+			return 0f;
+		}
+		if (value > 1f)
+		{
+			return 1f;
+		}
+		return value;
+	}
+
+	private static int ClampInt(int value, int min, int max)
+	{
+		if (value < min)
+		{
+			return min;
+		}
+		if (value > max)
+		{
+			return max;
+		}
+		return value;
 	}
 }

@@ -6,9 +6,13 @@ namespace AnimusForge.SiegeAftermathIntervention;
 /// </summary>
 public static class SiegeCivilianAssemblyProfile
 {
-    public const int TownSceneCap = 140;
+    public const int MinDesiredCivilianCount = 100;
 
-    public const int SceneTotalAgentSoftCap = 220;
+    public const int MaxDesiredCivilianCount = 200;
+
+    public const int TownSceneCap = MaxDesiredCivilianCount;
+
+    public const int SceneTotalAgentSoftCap = 320;
 
     public const int MinimumSceneCap = 60;
 
@@ -28,5 +32,9 @@ public static class SiegeCivilianAssemblyProfile
 
     public const float NativeTownPopulationRetrySeconds = 4f;
 
-    public const int NativeTownPopulationMaxSpawnAttempts = TownSceneCap;
+    public const float NativeTownPopulationProsperityForMaxCount = 8000f;
+
+    public const int NativeTownPopulationRandomBand = 30;
+
+    public const int NativeTownPopulationMaxSpawnAttempts = MaxDesiredCivilianCount * 2;
 }
