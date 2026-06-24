@@ -117,6 +117,69 @@ function Assert-ExpectedHash {
     return $ActualHash
 }
 
+function Assert-TargetWritable {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Path,
+
+        [Parameter(Mandatory = $true)]
+        [string]$Description
+    )
+
+    if (Test-Path -LiteralPath $Path -PathType Leaf) {
+        $Stream = $null
+        try {
+            $Stream = [System.IO.File]::Open(
+                $Path,
+                [System.IO.FileMode]::Open,
+                [System.IO.FileAccess]::ReadWrite,
+                [System.IO.FileShare]::ReadWrite
+            )
+        }
+        catch {
+            throw "Cannot open $Description for writing: $Path. Close Bannerlord/launcher/Steam file operations, or run this script from a normal/elevated PowerShell outside the Codex sandbox. $($_.Exception.Message)"
+        }
+        finally {
+            if ($null -ne $Stream) {
+                $Stream.Dispose()
+            }
+        }
+
+        return
+    }
+
+    $ParentDirectory = Split-Path -Parent $Path
+    Assert-DirectoryExists -Path $ParentDirectory -Description "$Description parent directory"
+
+    if ($WhatIfPreference) {
+        Write-Host "WhatIf: skipped missing-target write probe for $Description"
+        return
+    }
+
+    $ProbePath = Join-Path $ParentDirectory ".afmod-write-probe-$([guid]::NewGuid().ToString('N')).tmp"
+    $Stream = $null
+    try {
+        $Stream = [System.IO.File]::Open(
+            $ProbePath,
+            [System.IO.FileMode]::CreateNew,
+            [System.IO.FileAccess]::Write,
+            [System.IO.FileShare]::None
+        )
+    }
+    catch {
+        throw "Cannot create write probe for $Description in $ParentDirectory. Run this script from a normal/elevated PowerShell outside the Codex sandbox. $($_.Exception.Message)"
+    }
+    finally {
+        if ($null -ne $Stream) {
+            $Stream.Dispose()
+        }
+
+        if (Test-Path -LiteralPath $ProbePath -PathType Leaf) {
+            Remove-Item -LiteralPath $ProbePath -Force
+        }
+    }
+}
+
 function New-DirectoryIfMissing {
     param(
         [Parameter(Mandatory = $true)]
@@ -223,6 +286,8 @@ foreach ($Package in $Packages) {
 
     Assert-FileExists -Path $SourceDll -Description "$($Package.Label) artifact DLL"
     Assert-FileExists -Path $SourcePdb -Description "$($Package.Label) artifact PDB"
+    Assert-TargetWritable -Path $TargetDll -Description "$($Package.ModuleName) target DLL"
+    Assert-TargetWritable -Path $TargetPdb -Description "$($Package.ModuleName) target PDB"
 
     Write-Host ''
     Write-Host "Installing $($Package.ModuleName) from $($Package.ArtifactDir)"
