@@ -16,6 +16,18 @@ public static class SiegeMassacreInteractionProfile
 
     public const float SoldierTargetRefreshSeconds = 0.75f;
 
+    public const int MaxActiveHunters = 12;
+
+    public const int MaxHuntersPerTarget = 2;
+
+    public const float TargetApproachRadius = 2.0f;
+
+    public const float SoldierStuckReassignSeconds = 1.75f;
+
+    public const float SoldierStuckMinMovedDistance = 0.25f;
+
+    public const float SoldierStuckTargetMinDistance = 3.5f;
+
     public const int CivilianResistanceStableIndexModulo = 5;
 
     public const string OccupationFollowSource = "massacre_occupation_follow";

@@ -185,6 +185,12 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	private const float MassacreCivilianHideRefreshSeconds = SiegeMassacreInteractionProfile.CivilianHideRefreshSeconds;
 	private const float MassacreSoldierFollowRefreshSeconds = SiegeMassacreInteractionProfile.SoldierFollowRefreshSeconds;
 	private const float MassacreSoldierTargetRefreshSeconds = SiegeMassacreInteractionProfile.SoldierTargetRefreshSeconds;
+	private const int MassacreMaxActiveHunters = SiegeMassacreInteractionProfile.MaxActiveHunters;
+	private const int MassacreMaxHuntersPerTarget = SiegeMassacreInteractionProfile.MaxHuntersPerTarget;
+	private const float MassacreTargetApproachRadius = SiegeMassacreInteractionProfile.TargetApproachRadius;
+	private const float MassacreSoldierStuckReassignSeconds = SiegeMassacreInteractionProfile.SoldierStuckReassignSeconds;
+	private const float MassacreSoldierStuckMinMovedDistance = SiegeMassacreInteractionProfile.SoldierStuckMinMovedDistance;
+	private const float MassacreSoldierStuckTargetMinDistance = SiegeMassacreInteractionProfile.SoldierStuckTargetMinDistance;
 	private const float CivilianSpeechRallySettleTolerance = SiegeCivilianGatherInteractionProfile.SpeechRallySettleTolerance;
 	private const float CivilianGatherTalkMinSeconds = SiegeCivilianGatherInteractionProfile.TalkMinSeconds;
 	private const float CivilianGatherTalkMaxSeconds = SiegeCivilianGatherInteractionProfile.TalkMaxSeconds;
@@ -385,6 +391,10 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	private static string _pendingPositiveNotableRelationReason = "";
 	private static readonly Dictionary<int, float> LastMassacreSoldierFollowOrderTimes = new Dictionary<int, float>();
 	private static readonly Dictionary<int, float> LastMassacreSoldierTargetOrderTimes = new Dictionary<int, float>();
+	private static readonly Dictionary<int, int> MassacreSoldierTargetAgentIndexes = new Dictionary<int, int>();
+	private static readonly Dictionary<int, int> MassacreSoldierTargetSlots = new Dictionary<int, int>();
+	private static readonly Dictionary<int, Vec3> LastMassacreSoldierProbePositions = new Dictionary<int, Vec3>();
+	private static readonly Dictionary<int, float> LastMassacreSoldierProbeTimes = new Dictionary<int, float>();
 	private static readonly Dictionary<int, float> LastCivilianGatherFollowOrderTimes = new Dictionary<int, float>();
 	private static readonly Dictionary<int, Vec3> LastCivilianGatherFollowTargets = new Dictionary<int, Vec3>();
 	private static readonly Dictionary<int, Vec3> LastAgentWallRescueProbePositions = new Dictionary<int, Vec3>();
@@ -3166,6 +3176,11 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			_plunderStarted = false;
 			ActivePlunderInteractions.Clear();
 			LastMassacreSoldierFollowOrderTimes.Clear();
+			LastMassacreSoldierTargetOrderTimes.Clear();
+			MassacreSoldierTargetAgentIndexes.Clear();
+			MassacreSoldierTargetSlots.Clear();
+			LastMassacreSoldierProbePositions.Clear();
+			LastMassacreSoldierProbeTimes.Clear();
 			InformationManager.DisplayMessage(new InformationMessage(SiegeMercyTrackTransitionProfile.ReversiblePlunderStoppedMessage, Color.FromUint(SiegeMercyTrackTransitionProfile.ReversiblePlunderStoppedMessageColor)));
 			Logger.Log("SiegeAiIntervention", "Reversible plunder stopped by mercy track. Reason=" + (reason ?? "N/A"));
 		}
@@ -7154,12 +7169,16 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		{
 			PrepareCivilianForMassacreCombat(target, mission);
 		}
-		foreach (Agent allied in mission.Agents.ToList())
+		List<Agent> alliedSoldiers = mission.Agents
+			.Where(a => a != null && a.IsActive() && AlliedAgentIndexes.Contains(a.Index))
+			.OrderBy(a => MassacreSoldierTargetAgentIndexes.ContainsKey(a.Index) ? 0 : 1)
+			.ThenBy(a => a.Index)
+			.ToList();
+		PruneMassacreHuntAssignments(alliedSoldiers, massacreTargets);
+		Dictionary<int, int> targetHunterCounts = new Dictionary<int, int>();
+		int activeHunters = 0;
+		foreach (Agent allied in alliedSoldiers)
 		{
-			if (allied == null || !allied.IsActive() || !AlliedAgentIndexes.Contains(allied.Index))
-			{
-				continue;
-			}
 			try
 			{
 				RestoreAlliedSoldierFriendlyState(allied, 0f, SiegeMassacreInteractionProfile.AlliedCombatDriveSource, forceFollow: false, clearTarget: false);
@@ -7176,17 +7195,17 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 					{
 					}
 				}
-				try
-				{
-					allied.Formation?.SetMovementOrder(MovementOrder.MovementOrderCharge);
-				}
-				catch
-				{
-				}
-				Agent target = SelectMassacreTargetForSoldier(allied, massacreTargets);
+				Agent target = activeHunters < MassacreMaxActiveHunters
+					? SelectMassacreTargetForSoldier(allied, massacreTargets, targetHunterCounts, mission)
+					: null;
 				if (target != null)
 				{
+					activeHunters++;
 					GuideSoldierTowardMassacreTarget(allied, target, mission);
+				}
+				else
+				{
+					KeepMassacreReserveSoldierNearPlayer(allied, main, mission);
 				}
 			}
 			catch (Exception ex)
@@ -7196,18 +7215,45 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static Agent SelectMassacreTargetForSoldier(Agent soldier, List<Agent> massacreTargets)
+	private static Agent SelectMassacreTargetForSoldier(Agent soldier, List<Agent> massacreTargets, Dictionary<int, int> targetHunterCounts, Mission mission)
 	{
 		try
 		{
-			if (soldier == null || massacreTargets == null || massacreTargets.Count == 0)
+			if (soldier == null || massacreTargets == null || massacreTargets.Count == 0 || targetHunterCounts == null)
+			{
+				ClearMassacreHuntAssignment(soldier?.Index ?? -1);
+				return null;
+			}
+			int avoidTargetIndex = -1;
+			if (MassacreSoldierTargetAgentIndexes.TryGetValue(soldier.Index, out int assignedTargetIndex))
+			{
+				Agent assignedTarget = massacreTargets.FirstOrDefault(t => t != null && t.Index == assignedTargetIndex && t.IsActive() && !CountedMassacreVictims.Contains(t.Index));
+				int assignedCount = assignedTarget != null && targetHunterCounts.TryGetValue(assignedTarget.Index, out int currentAssignedCount) ? currentAssignedCount : 0;
+				if (assignedTarget != null && assignedCount < MassacreMaxHuntersPerTarget && !ShouldReassignMassacreSoldier(soldier, assignedTarget, mission))
+				{
+					targetHunterCounts[assignedTarget.Index] = assignedCount + 1;
+					MassacreSoldierTargetSlots[soldier.Index] = assignedCount;
+					return assignedTarget;
+				}
+				avoidTargetIndex = assignedTargetIndex;
+				ClearMassacreHuntAssignment(soldier.Index);
+			}
+			Agent target = massacreTargets
+				.Where(t => t != null && t.IsActive() && !CountedMassacreVictims.Contains(t.Index) && t.Index != avoidTargetIndex)
+				.Where(t => !targetHunterCounts.TryGetValue(t.Index, out int count) || count < MassacreMaxHuntersPerTarget)
+				.OrderBy(t => t.Position.DistanceSquared(soldier.Position))
+				.FirstOrDefault();
+			if (target == null)
 			{
 				return null;
 			}
-			return massacreTargets
-				.Where(t => t != null && t.IsActive() && !CountedMassacreVictims.Contains(t.Index))
-				.OrderBy(t => t.Position.DistanceSquared(soldier.Position))
-				.FirstOrDefault();
+			int slot = targetHunterCounts.TryGetValue(target.Index, out int targetCount) ? targetCount : 0;
+			targetHunterCounts[target.Index] = slot + 1;
+			MassacreSoldierTargetAgentIndexes[soldier.Index] = target.Index;
+			MassacreSoldierTargetSlots[soldier.Index] = slot;
+			LastMassacreSoldierProbePositions[soldier.Index] = soldier.Position;
+			LastMassacreSoldierProbeTimes[soldier.Index] = mission?.CurrentTime ?? 0f;
+			return target;
 		}
 		catch
 		{
@@ -7223,7 +7269,8 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			{
 				return null;
 			}
-			return SelectMassacreTargetForSoldier(soldier, mission.Agents.Where(a => IsMassacreTargetAgent(a, includeHeroes: true) && !CountedMassacreVictims.Contains(a.Index)).ToList());
+			var counts = new Dictionary<int, int>();
+			return SelectMassacreTargetForSoldier(soldier, mission.Agents.Where(a => IsMassacreTargetAgent(a, includeHeroes: true) && !CountedMassacreVictims.Contains(a.Index)).ToList(), counts, mission);
 		}
 		catch
 		{
@@ -7246,9 +7293,17 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			}
 			LastMassacreSoldierTargetOrderTimes[soldier.Index] = now;
 			soldier.SetLookAgent(target);
+			float closeDistance = MassacreTargetApproachRadius + 0.75f;
+			if (soldier.Position.DistanceSquared(target.Position) <= closeDistance * closeDistance)
+			{
+				return;
+			}
 			try
 			{
-				TrySetInterventionAgentTargetPosition(soldier, target.Position, SiegeAgentWallRescueProfile.Source + ":massacre_target");
+				int slot = MassacreSoldierTargetSlots.TryGetValue(soldier.Index, out int assignedSlot) ? assignedSlot : 0;
+				Vec3 approachPoint = BuildMassacreTargetApproachPoint(soldier, target, mission, slot);
+				SetAgentLookTowardPoint(soldier, approachPoint);
+				TrySetInterventionAgentTargetPosition(soldier, approachPoint, SiegeAgentWallRescueProfile.Source + ":massacre_target");
 			}
 			catch
 			{
@@ -7257,6 +7312,136 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		catch (Exception ex)
 		{
 			Logger.Log("SiegeAiIntervention", "GuideSoldierTowardMassacreTarget failed: " + ex.Message);
+		}
+	}
+
+	private static void PruneMassacreHuntAssignments(List<Agent> alliedSoldiers, List<Agent> massacreTargets)
+	{
+		try
+		{
+			var activeSoldiers = new HashSet<int>((alliedSoldiers ?? new List<Agent>()).Where(a => a != null && a.IsActive()).Select(a => a.Index));
+			var activeTargets = new HashSet<int>((massacreTargets ?? new List<Agent>()).Where(a => a != null && a.IsActive() && !CountedMassacreVictims.Contains(a.Index)).Select(a => a.Index));
+			foreach (int soldierIndex in MassacreSoldierTargetAgentIndexes.Keys.ToList())
+			{
+				if (!activeSoldiers.Contains(soldierIndex) || !activeTargets.Contains(MassacreSoldierTargetAgentIndexes[soldierIndex]))
+				{
+					ClearMassacreHuntAssignment(soldierIndex);
+				}
+			}
+		}
+		catch
+		{
+		}
+	}
+
+	private static void ClearMassacreHuntAssignment(int soldierIndex)
+	{
+		if (soldierIndex < 0)
+		{
+			return;
+		}
+		MassacreSoldierTargetAgentIndexes.Remove(soldierIndex);
+		MassacreSoldierTargetSlots.Remove(soldierIndex);
+		LastMassacreSoldierTargetOrderTimes.Remove(soldierIndex);
+		LastMassacreSoldierProbePositions.Remove(soldierIndex);
+		LastMassacreSoldierProbeTimes.Remove(soldierIndex);
+	}
+
+	private static bool ShouldReassignMassacreSoldier(Agent soldier, Agent target, Mission mission)
+	{
+		try
+		{
+			if (soldier == null || target == null || mission == null || !soldier.IsActive() || !target.IsActive())
+			{
+				return true;
+			}
+			float targetDistanceSq = soldier.Position.DistanceSquared(target.Position);
+			float targetMinDistanceSq = MassacreSoldierStuckTargetMinDistance * MassacreSoldierStuckTargetMinDistance;
+			float now = mission.CurrentTime;
+			if (targetDistanceSq <= targetMinDistanceSq)
+			{
+				LastMassacreSoldierProbePositions[soldier.Index] = soldier.Position;
+				LastMassacreSoldierProbeTimes[soldier.Index] = now;
+				return false;
+			}
+			if (!LastMassacreSoldierProbeTimes.TryGetValue(soldier.Index, out float lastProbeTime))
+			{
+				LastMassacreSoldierProbePositions[soldier.Index] = soldier.Position;
+				LastMassacreSoldierProbeTimes[soldier.Index] = now;
+				return false;
+			}
+			if (now - lastProbeTime < MassacreSoldierStuckReassignSeconds)
+			{
+				return false;
+			}
+			Vec3 lastPosition = LastMassacreSoldierProbePositions.TryGetValue(soldier.Index, out Vec3 storedPosition) ? storedPosition : soldier.Position;
+			LastMassacreSoldierProbePositions[soldier.Index] = soldier.Position;
+			LastMassacreSoldierProbeTimes[soldier.Index] = now;
+			float movedSq = soldier.Position.DistanceSquared(lastPosition);
+			float minMovedSq = MassacreSoldierStuckMinMovedDistance * MassacreSoldierStuckMinMovedDistance;
+			return movedSq < minMovedSq;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static Vec3 BuildMassacreTargetApproachPoint(Agent soldier, Agent target, Mission mission, int slot)
+	{
+		Vec3 direction = soldier.Position - target.Position;
+		direction.z = 0f;
+		if (direction.LengthSquared < 0.01f)
+		{
+			float baseAngle = ((Math.Abs((soldier?.Index ?? 0) + (target?.Index ?? 0)) % 16) / 16f) * MathF.PI * 2f;
+			direction = Vec3.Zero;
+			direction.x = MathF.Cos(baseAngle);
+			direction.y = MathF.Sin(baseAngle);
+		}
+		if (direction.LengthSquared < 0.01f)
+		{
+			direction = Vec3.Forward;
+		}
+		direction.Normalize();
+		float spread = (Math.Abs(slot) % 2 == 0 ? -0.6f : 0.6f) + (Math.Abs(slot) / 2) * 0.35f;
+		Vec3 approachDirection = RotateFlatDirection(direction, spread);
+		Vec3 point = target.Position + approachDirection * MassacreTargetApproachRadius;
+		return ProjectCivilianRoutPointToGround(mission, point);
+	}
+
+	private static Vec3 RotateFlatDirection(Vec3 direction, float radians)
+	{
+		float cos = MathF.Cos(radians);
+		float sin = MathF.Sin(radians);
+		Vec3 rotated = direction;
+		rotated.x = direction.x * cos - direction.y * sin;
+		rotated.y = direction.x * sin + direction.y * cos;
+		rotated.z = 0f;
+		if (rotated.LengthSquared < 0.01f)
+		{
+			return direction;
+		}
+		rotated.Normalize();
+		return rotated;
+	}
+
+	private static void KeepMassacreReserveSoldierNearPlayer(Agent soldier, Agent main, Mission mission)
+	{
+		try
+		{
+			if (soldier == null || main == null || mission == null || !soldier.IsActive())
+			{
+				return;
+			}
+			ClearMassacreHuntAssignment(soldier.Index);
+			MoveAlliedSoldierNearMainFallback(soldier, main);
+			soldier.InvalidateTargetAgent();
+			ClearAgentLookTarget(soldier);
+			soldier.SetWatchState(Agent.WatchState.Alarmed);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "KeepMassacreReserveSoldierNearPlayer failed: " + ex.Message);
 		}
 	}
 
@@ -10109,6 +10294,10 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		_civilianRoutPointPoolSceneName = "";
 		LastMassacreSoldierFollowOrderTimes.Clear();
 		LastMassacreSoldierTargetOrderTimes.Clear();
+		MassacreSoldierTargetAgentIndexes.Clear();
+		MassacreSoldierTargetSlots.Clear();
+		LastMassacreSoldierProbePositions.Clear();
+		LastMassacreSoldierProbeTimes.Clear();
 		LastCivilianGatherFollowOrderTimes.Clear();
 		LastCivilianGatherFollowTargets.Clear();
 		LastAgentWallRescueProbePositions.Clear();
