@@ -121,9 +121,9 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		{
 			if (affectorAgent == Agent.Main)
 			{
-				if (!SiegeAiInterventionBehavior.TryHandlePlayerAttackForAutoMassacre(affectedAgent, SiegeDestructiveChoiceProfile.PlayerAgentHitBridgeSource, Math.Max(0, blow.InflictedDamage)))
+				if (!SiegeAiInterventionBehavior.TryHandlePlayerAttackForIntervention(affectedAgent, SiegeLocalAttackProfile.PlayerAgentHitBridgeSource, Math.Max(0, blow.InflictedDamage)))
 				{
-					SiegeAiInterventionBehavior.TryHandleFriendlyHitOnAlliedSoldier(affectedAgent, SiegeDestructiveChoiceProfile.PlayerAgentHitBridgeSource, 0f);
+					SiegeAiInterventionBehavior.TryHandleFriendlyHitOnAlliedSoldier(affectedAgent, SiegeLocalAttackProfile.PlayerAgentHitBridgeSource, 0f);
 				}
 			}
 		}
@@ -133,9 +133,9 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			base.OnScoreHit(affectedAgent, affectorAgent, attackerWeapon, isBlocked, isSiegeEngineHit, in blow, in collisionData, damagedHp, hitDistance, shotDifficulty);
 			if (damagedHp > 0f && affectorAgent == Agent.Main)
 			{
-				if (!SiegeAiInterventionBehavior.TryHandlePlayerAttackForAutoMassacre(affectedAgent, SiegeDestructiveChoiceProfile.PlayerScoreHitBridgeSource, damagedHp))
+				if (!SiegeAiInterventionBehavior.TryHandlePlayerAttackForIntervention(affectedAgent, SiegeLocalAttackProfile.PlayerScoreHitBridgeSource, damagedHp))
 				{
-					SiegeAiInterventionBehavior.TryHandleFriendlyHitOnAlliedSoldier(affectedAgent, SiegeDestructiveChoiceProfile.PlayerScoreHitBridgeSource, damagedHp);
+					SiegeAiInterventionBehavior.TryHandleFriendlyHitOnAlliedSoldier(affectedAgent, SiegeLocalAttackProfile.PlayerScoreHitBridgeSource, damagedHp);
 				}
 			}
 		}
@@ -361,6 +361,9 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	private static readonly HashSet<int> CivilianCalmedAgentIndexes = new HashSet<int>();
 	private static readonly HashSet<int> CivilianFrightenedActionAgentIndexes = new HashSet<int>();
 	private static readonly HashSet<int> CivilianPreMassacrePreparedAgentIndexes = new HashSet<int>();
+	private static readonly HashSet<int> LocalPlayerAttackVictimAgentIndexes = new HashSet<int>();
+	private static readonly HashSet<int> LocalHostileCivilianAgentIndexes = new HashSet<int>();
+	private static readonly HashSet<int> LocalFleeingCivilianAgentIndexes = new HashSet<int>();
 	private static readonly HashSet<int> CivilianGatherMovePreparedAgentIndexes = new HashSet<int>();
 	private static readonly HashSet<int> CivilianGatherFollowerAgentIndexes = new HashSet<int>();
 	private static readonly HashSet<int> CivilianGatherReadyFormationAgentIndexes = new HashSet<int>();
@@ -1048,6 +1051,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			MaintainCivilianAssembly(mission, SiegeCivilianAssemblyProfile.ControlTickSource, force: false);
 			MaintainCivilianSpeechRally(mission, force: false);
 			ApplyFrightenedCivilianIdle(mission);
+			MaintainLocalPlayerAttackReactions(mission);
 			if (!_alliedTroopsAutoSummoned)
 			{
 				_alliedTroopsAutoSummoned = true;
@@ -2758,7 +2762,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		}
 	}
 
-	internal static bool TryHandlePlayerAttackForAutoMassacre(Agent affectedAgent, string source, float damagedHp = 0f)
+	internal static bool TryHandlePlayerAttackForIntervention(Agent affectedAgent, string source, float damagedHp = 0f)
 	{
 		if (!IsActiveInCurrentMission() || affectedAgent == null || !affectedAgent.IsHuman || affectedAgent == Agent.Main)
 		{
@@ -2768,24 +2772,192 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		{
 			return TryHandleFriendlyHitOnAlliedSoldier(affectedAgent, source, damagedHp);
 		}
-		CharacterObject character = affectedAgent.Character as CharacterObject;
 		if (!IsMassacreTargetAgent(affectedAgent, includeHeroes: true))
 		{
 			return false;
 		}
-		string targetName = affectedAgent.Name?.ToString();
-		if (!_massacreStarted)
+		if (_massacreStarted)
 		{
-			InformationManager.DisplayMessage(new InformationMessage(SiegeDestructiveChoiceProfile.BuildPlayerHitMessage(targetName), Color.FromUint(SiegeDestructiveChoiceProfile.DirectMassacreTriggerMessageColor)));
+			PrepareCivilianForMassacreCombat(affectedAgent, Mission.Current ?? affectedAgent.Mission);
+			return true;
 		}
-		bool wasMassacreStarted = _massacreStarted;
-		bool startedNow = StartMassacre(SiegeDestructiveChoiceProfile.PlayerHitTriggerSource, SiegeDestructiveChoiceProfile.BuildPlayerHitTriggerDetail(targetName));
-		if (!startedNow && !wasMassacreStarted)
+		return HandlePlayerLocalAttackInIntervention(affectedAgent, source, damagedHp);
+	}
+
+	private static bool HandlePlayerLocalAttackInIntervention(Agent affectedAgent, string source, float damagedHp)
+	{
+		try
 		{
+			Mission mission = Mission.Current ?? affectedAgent?.Mission;
+			Agent main = Agent.Main ?? mission?.MainAgent;
+			if (mission == null || affectedAgent == null || !affectedAgent.IsActive())
+			{
+				return false;
+			}
+			string targetName = affectedAgent.Name?.ToString();
+			bool targetWillResist = ShouldCivilianResistMassacre(affectedAgent);
+			bool firstHit = LocalPlayerAttackVictimAgentIndexes.Add(affectedAgent.Index);
+			if (firstHit)
+			{
+				InformationManager.DisplayMessage(new InformationMessage(SiegeLocalAttackProfile.BuildPlayerHitMessage(targetName, targetWillResist), Color.FromUint(SiegeLocalAttackProfile.MessageColor)));
+				RecordInterventionMemory(SiegeLocalAttackProfile.MemoryTitle, SiegeLocalAttackProfile.BuildPlayerHitMemoryText(targetName, targetWillResist));
+			}
+			NeutralizeCivilianDailyUsableBehavior(affectedAgent, SiegeLocalAttackProfile.LocalAttackSource);
+			affectedAgent.SetMortalityState(Agent.MortalityState.Mortal);
+			try
+			{
+				affectedAgent.SetCrouchMode(false);
+				affectedAgent.SetMaximumSpeedLimit(-1f, false);
+			}
+			catch
+			{
+			}
+			if (targetWillResist)
+			{
+				PrepareLocalHostileCivilian(affectedAgent, mission, main);
+			}
+			else
+			{
+				PrepareLocalFleeingCivilian(affectedAgent, mission, main);
+			}
+			Logger.Log("SiegeAiIntervention", "Handled local player attack without starting massacre. Source=" + (source ?? "N/A") + ", Agent=" + affectedAgent.Index + ", Resist=" + targetWillResist + ", Damage=" + damagedHp.ToString("0.0"));
+			return true;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "HandlePlayerLocalAttackInIntervention failed: " + ex.Message);
 			return false;
 		}
-		PrepareCivilianForMassacreCombat(affectedAgent, Mission.Current ?? affectedAgent.Mission);
-		return true;
+	}
+
+	private static void PrepareLocalHostileCivilian(Agent agent, Mission mission, Agent main)
+	{
+		try
+		{
+			if (agent == null || mission == null || !agent.IsActive())
+			{
+				return;
+			}
+			LocalHostileCivilianAgentIndexes.Add(agent.Index);
+			LocalFleeingCivilianAgentIndexes.Remove(agent.Index);
+			NeutralizeCivilianDailyUsableBehavior(agent, SiegeLocalAttackProfile.LocalHostileSource);
+			Team playerTeam = mission.PlayerTeam ?? main?.Team;
+			Team enemyTeam = EnsureInterventionCivilianEnemyTeam(mission) ?? mission.PlayerEnemyTeam ?? agent.Team;
+			if (enemyTeam != null && agent.Team != enemyTeam)
+			{
+				agent.SetTeam(enemyTeam, true);
+			}
+			if (agent.Team != null && playerTeam != null && agent.Team != playerTeam)
+			{
+				agent.Team.SetIsEnemyOf(playerTeam, isEnemyOf: true);
+				playerTeam.SetIsEnemyOf(agent.Team, isEnemyOf: true);
+			}
+			agent.SetWatchState(Agent.WatchState.Alarmed);
+			try
+			{
+				agent.WieldInitialWeapons(Agent.WeaponWieldActionType.InstantAfterPickUp, Equipment.InitialWeaponEquipPreference.Any);
+			}
+			catch
+			{
+			}
+			ForceAgentForMassacreFight(agent);
+			if (main != null && main.IsActive())
+			{
+				agent.SetLookAgent(main);
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "PrepareLocalHostileCivilian failed: " + ex.Message);
+		}
+	}
+
+	private static void PrepareLocalFleeingCivilian(Agent agent, Mission mission, Agent main)
+	{
+		try
+		{
+			if (agent == null || mission == null || !agent.IsActive())
+			{
+				return;
+			}
+			LocalFleeingCivilianAgentIndexes.Add(agent.Index);
+			LocalHostileCivilianAgentIndexes.Remove(agent.Index);
+			NeutralizeCivilianDailyUsableBehavior(agent, SiegeLocalAttackProfile.LocalFleeSource);
+			Team playerTeam = mission.PlayerTeam ?? main?.Team;
+			if (playerTeam != null && agent.Team != playerTeam)
+			{
+				agent.SetTeam(playerTeam, true);
+			}
+			agent.InvalidateTargetAgent();
+			ClearAgentLookTarget(agent);
+			agent.SetWatchState(Agent.WatchState.Alarmed);
+			if (main != null)
+			{
+				KeepCivilianHidingFromOccupation(agent, mission, main, force: true);
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "PrepareLocalFleeingCivilian failed: " + ex.Message);
+		}
+	}
+
+	private static void MaintainLocalPlayerAttackReactions(Mission mission)
+	{
+		try
+		{
+			if (mission?.Agents == null)
+			{
+				return;
+			}
+			if (_massacreStarted)
+			{
+				ClearLocalPlayerAttackState();
+				return;
+			}
+			Agent main = Agent.Main ?? mission.MainAgent;
+			foreach (int agentIndex in LocalFleeingCivilianAgentIndexes.ToList())
+			{
+				Agent agent = mission.Agents.FirstOrDefault(a => a != null && a.Index == agentIndex);
+				if (!IsMassacreTargetAgent(agent, includeHeroes: true))
+				{
+					LocalFleeingCivilianAgentIndexes.Remove(agentIndex);
+					LocalPlayerAttackVictimAgentIndexes.Remove(agentIndex);
+					continue;
+				}
+				if (main != null)
+				{
+					KeepCivilianHidingFromOccupation(agent, mission, main, force: false);
+				}
+			}
+			foreach (int agentIndex in LocalHostileCivilianAgentIndexes.ToList())
+			{
+				Agent agent = mission.Agents.FirstOrDefault(a => a != null && a.Index == agentIndex);
+				if (!IsMassacreTargetAgent(agent, includeHeroes: true))
+				{
+					LocalHostileCivilianAgentIndexes.Remove(agentIndex);
+					LocalPlayerAttackVictimAgentIndexes.Remove(agentIndex);
+					continue;
+				}
+				ForceAgentForMassacreFight(agent);
+				agent.SetWatchState(Agent.WatchState.Alarmed);
+				if (main != null && main.IsActive())
+				{
+					agent.SetLookAgent(main);
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "MaintainLocalPlayerAttackReactions failed: " + ex.Message);
+		}
+	}
+
+	private static void ClearLocalPlayerAttackState()
+	{
+		LocalPlayerAttackVictimAgentIndexes.Clear();
+		LocalHostileCivilianAgentIndexes.Clear();
+		LocalFleeingCivilianAgentIndexes.Clear();
 	}
 
 	internal static bool TryHandleFriendlyHitOnAlliedSoldier(Agent affectedAgent, string source, float damagedHp = 0f)
@@ -3878,6 +4050,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		_activeMode = InterventionMode.Massacre;
 		_civilianGatherPropagationActive = false;
 		ActiveCivilianGatherInteractions.Clear();
+		ClearLocalPlayerAttackState();
 		bool first = !_massacreStarted;
 		_massacreStarted = true;
 		if (first)
@@ -10275,6 +10448,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		CivilianCalmedAgentIndexes.Clear();
 		CivilianFrightenedActionAgentIndexes.Clear();
 		CivilianPreMassacrePreparedAgentIndexes.Clear();
+		ClearLocalPlayerAttackState();
 		CivilianGatherMovePreparedAgentIndexes.Clear();
 		CivilianGatherFollowerAgentIndexes.Clear();
 		CivilianGatherReadyFormationAgentIndexes.Clear();
@@ -11204,7 +11378,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				}
 				if (SiegeAiInterventionBehavior.IsInterventionAlliedSoldierForExternal(victim, requireActive: false))
 				{
-					SiegeAiInterventionBehavior.TryHandleFriendlyHitOnAlliedSoldier(victim, SiegeDestructiveChoiceProfile.NonEnemyDamagePrefixSource, 0f);
+					SiegeAiInterventionBehavior.TryHandleFriendlyHitOnAlliedSoldier(victim, SiegeLocalAttackProfile.NonEnemyDamagePrefixSource, 0f);
 					__result = true;
 					return false;
 				}

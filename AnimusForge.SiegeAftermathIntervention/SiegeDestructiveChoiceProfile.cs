@@ -10,15 +10,6 @@ public sealed class SiegeDestructiveChoiceProfile
 {
     public const uint ValidationMessageColor = 0xFFFFD27Fu;
 
-    public const uint DirectMassacreTriggerMessageColor = 0xFFFF7777u;
-
-    public const string PlayerHitTriggerSource = "玩家主动攻击NPC触发血洗";
-
-    public const string PlayerAgentHitBridgeSource = "intervention_agent_hit";
-
-    public const string PlayerScoreHitBridgeSource = "intervention_score_hit";
-
-    public const string NonEnemyDamagePrefixSource = "non_enemy_damage_prefix";
 
     private SiegeDestructiveChoiceProfile(
         SiegeAftermathResolutionKind aftermathKind,
@@ -103,20 +94,5 @@ public sealed class SiegeDestructiveChoiceProfile
     public string BuildMassacreMemoryText(string triggerSource)
     {
         return DescribeMassacreMemorySource(triggerSource) + "，本次处置已升级为毁坏/血洗，不能再降回宽恕、救济或普通搜掠；若玩家后续明确命令清除原住民并迁入己方人口，仍可继续升级为屠民迁殖。";
-    }
-
-    public static string BuildPlayerHitMessage(string targetName)
-    {
-        return "【攻城处置】你击中了 " + NormalizeTargetName(targetName, "一名NPC") + "，本次入城处置进入血洗。";
-    }
-
-    public static string BuildPlayerHitTriggerDetail(string targetName)
-    {
-        return "玩家在攻城后亲自进城期间主动攻击了" + NormalizeTargetName(targetName, "一名NPC") + "，本次处置按血洗处理。";
-    }
-
-    private static string NormalizeTargetName(string targetName, string fallback)
-    {
-        return string.IsNullOrWhiteSpace(targetName) ? fallback : targetName.Trim();
     }
 }

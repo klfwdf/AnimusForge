@@ -150,9 +150,14 @@ Relief validation UI text for invalid targets or missing shared material also li
 
 ## Destructive choice profile
 
-`SiegeDestructiveChoiceProfile` owns dependency-free aftermath kind, assembly source, message text, memory text, massacre source classification, player-attack damage source, and player/non-enemy hit bridge sources for 搜掠 and 血洗. Finalized settlement/notable penalties live in `SiegeSettlementOutcomeProfile`. AF adapters still apply Bannerlord aftermath, troop, mission, UI, settlement, damage, and memory side effects.
+`SiegeDestructiveChoiceProfile` owns dependency-free aftermath kind, assembly source, message text, memory text, and massacre source classification for GCCZ plunder and massacre choices. Finalized settlement/notable penalties live in `SiegeSettlementOutcomeProfile`. AF adapters still apply Bannerlord aftermath, troop, mission, UI, settlement, damage, and memory side effects.
 
 Same-culture destructive blocking has been removed from this profile. AF adapters must not block GCCZ entry, 搜掠, 血洗, or 屠民迁殖 solely because player/soldier/settlement culture matches; same-culture should only affect soldier tone.
+
+
+## Local player attack profile
+
+`SiegeLocalAttackProfile` owns dependency-free bridge source codes, UI wording, and memory wording for player strikes against one NPC during an active GCCZ scene. AF adapters must treat these hits as local flee/resist conflict unless massacre or cultural repopulation has already been explicitly triggered by soldier-mediated action tags.
 
 
 ## Massacre interaction profile
