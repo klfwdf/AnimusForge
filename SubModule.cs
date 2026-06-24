@@ -281,6 +281,14 @@ public class SubModule : MBSubModuleBase
 			}
 			try
 			{
+				CraftingOrderLoadSafetyPatch.EnsurePatched(harmony);
+			}
+			catch (Exception ex17a)
+			{
+				Logger.LogTrace("SubModule", ">>> CraftingOrderLoadSafetyPatch init failed: " + ex17a.Message);
+			}
+			try
+			{
 				McmDropdownRuntimeRefresh.EnsurePatched();
 			}
 			catch (Exception ex18a)

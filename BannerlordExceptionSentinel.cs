@@ -782,9 +782,32 @@ internal static class BannerlordExceptionSentinel
 		{
 			return false;
 		}
+		if (IsSaveLoadCriticalException(originalMethod, exception))
+		{
+			return false;
+		}
 		Type declaringType = originalMethod.DeclaringType;
 		string text = declaringType?.FullName ?? "";
 		return text.StartsWith("ManagedCallbacks.", StringComparison.Ordinal) && text.EndsWith("CallbacksGenerated", StringComparison.Ordinal);
+	}
+
+	private static bool IsSaveLoadCriticalException(MethodBase originalMethod, Exception exception)
+	{
+		string text = exception?.ToString() ?? string.Empty;
+		string text2 = originalMethod?.Name ?? string.Empty;
+		if (text.IndexOf("MBSaveLoad.", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("Game.LoadSaveGame", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("LoadSaveGame", StringComparison.OrdinalIgnoreCase) >= 0)
+		{
+			return true;
+		}
+		if (text.IndexOf("OnBeforeNonReadyObjectsDeleted", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("Campaign.OnInitialize", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("Campaign.DoLoadingForGameType", StringComparison.OrdinalIgnoreCase) >= 0)
+		{
+			return true;
+		}
+		if (text.IndexOf("GameLoadingState.OnTick", StringComparison.OrdinalIgnoreCase) >= 0 && text2.IndexOf("ApplicationTick", StringComparison.OrdinalIgnoreCase) >= 0)
+		{
+			return true;
+		}
+		return false;
 	}
 
 	private static bool ShouldSuppressLifecycleException(MethodBase originalMethod, Exception exception)
