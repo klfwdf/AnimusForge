@@ -6,9 +6,9 @@ namespace AnimusForge.SiegeAftermathIntervention;
 /// </summary>
 public static class SiegePlunderInteractionProfile
 {
-    public const int MaxConcurrentInteractions = 6;
+    public const int MaxConcurrentInteractions = 256;
 
-    public const float SoldierAssignmentRatio = 0.25f;
+    public const float SoldierAssignmentRatio = 0.70f;
 
     public const float ApproachDistance = 3.5f;
 
@@ -17,4 +17,6 @@ public static class SiegePlunderInteractionProfile
     public const string AlliedAssignmentRestoreSource = "allied_plunder_assignment_tick";
 
     public const string TargetFollowSource = "plunder_target_follow";
+
+    public const string GuardFollowSource = "plunder_guard_follow";
 }

@@ -1478,6 +1478,85 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		return civilian ? SiegeInterventionMemoryAudience.Civilian : SiegeInterventionMemoryAudience.General;
 	}
 
+	private static string AppendRuntimeContext(string existingContext, string extraContext)
+	{
+		if (string.IsNullOrWhiteSpace(existingContext))
+		{
+			return extraContext ?? "";
+		}
+		if (string.IsNullOrWhiteSpace(extraContext))
+		{
+			return existingContext ?? "";
+		}
+		return existingContext + extraContext;
+	}
+
+	private static bool IsNpcRuntimeAlliedSoldierFallback(NpcDataPacket npc, CharacterObject character)
+	{
+		try
+		{
+			if (npc == null)
+			{
+				return false;
+			}
+			if (npc.AgentIndex >= 0 && AlliedAgentIndexes.Contains(npc.AgentIndex))
+			{
+				return true;
+			}
+			string rank = (npc.UnnamedRank ?? "").Trim();
+			string role = (npc.RoleDesc ?? "").Trim();
+			bool soldierLikeNpc = string.Equals(rank, "soldier", StringComparison.OrdinalIgnoreCase)
+				|| string.Equals(role, "士兵", StringComparison.Ordinal);
+			if (!soldierLikeNpc || character == null)
+			{
+				return false;
+			}
+			if (character == CharacterObject.PlayerCharacter || IsProtectedChildCharacter(character) || IsCivilianForIntervention(character) || IsBackstreetOrCriminalCharacter(character))
+			{
+				return false;
+			}
+			return character.IsSoldier || IsGuardOrSoldier(character);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static string BuildPlayerCommanderRuntimeContext(bool alliedSoldier, bool civilian)
+	{
+		try
+		{
+			string playerName = ResolvePlayerCharacterNameForContext();
+			if (alliedSoldier)
+			{
+				return "【玩家统帅身份】当前玩家角色“" + playerName + "”就是率领你进入城镇的指挥官/统帅，也是你当前队伍的直接命令来源。你应把玩家当成我方统帅、长官或大人，不要把玩家当成本地平民、陌生路人、俘虏、敌方守军或无权处置者。";
+			}
+			if (civilian)
+			{
+				return "【玩家身份】当前玩家角色“" + playerName + "”是刚攻下本城的胜利方首领和当前处置者，城内民众应知道玩家掌握现场生杀、安抚、索取与搜掠处置权。";
+			}
+			return "【玩家身份】当前玩家角色“" + playerName + "”是本场攻城后处置的玩家本人、胜利方首领和现场处置者。";
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	private static string ResolvePlayerCharacterNameForContext()
+	{
+		try
+		{
+			CharacterObject playerCharacter = CharacterObject.PlayerCharacter ?? Hero.MainHero?.CharacterObject;
+			return playerCharacter?.Name?.ToString() ?? Hero.MainHero?.Name?.ToString() ?? "玩家";
+		}
+		catch
+		{
+			return "玩家";
+		}
+	}
+
 	internal static string BuildRuntimePromptForAgent(Hero hero, NpcDataPacket npc, int agentIndex)
 	{
 		if (!IsActiveInCurrentMission())
@@ -1488,10 +1567,16 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		Agent agent = TryGetAgent(agentIndex);
 		CharacterObject character = (agent?.Character as CharacterObject) ?? hero?.CharacterObject;
 		bool alliedSoldier = IsRuntimeAlliedSoldierAgent(agent, character, hero);
+		if (!alliedSoldier && IsNpcRuntimeAlliedSoldierFallback(npc, character))
+		{
+			alliedSoldier = true;
+		}
 		bool guard = IsGuardOrSoldier(character);
 		bool civilian = IsCivilianForIntervention(character);
 		string gatherContext = BuildCivilianGatherRuntimeContext(Mission.Current);
-		string memoryContext = BuildInterventionMemoryContext(SelectInterventionMemoryAudience(alliedSoldier, civilian));
+		string memoryContext = AppendRuntimeContext(
+			BuildInterventionMemoryContext(SelectInterventionMemoryAudience(alliedSoldier, civilian)),
+			BuildPlayerCommanderRuntimeContext(alliedSoldier, civilian));
 		return SiegeRuntimePromptProfile.Build(new SiegeRuntimePromptFacts(
 			settlementName,
 			alliedSoldier,
@@ -1590,7 +1675,9 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			bool destructiveAllowed = IsDestructiveInterventionAllowed();
 			string currentOutcome = SiegePostprocessOutcomeTextBuilder.Build(BuildPostprocessOutcomeFacts());
 			string gatherContext = BuildCivilianGatherRuntimeContext(Mission.Current);
-			string memoryContext = BuildInterventionMemoryContext(SelectInterventionMemoryAudience(alliedSoldier, civilian));
+			string memoryContext = AppendRuntimeContext(
+				BuildInterventionMemoryContext(SelectInterventionMemoryAudience(alliedSoldier, civilian)),
+				BuildPlayerCommanderRuntimeContext(alliedSoldier, civilian));
 			var facts = new SiegePostprocessContextFacts(
 				settlementName: _activeSettlementName,
 				currentOutcome: currentOutcome,
@@ -2853,6 +2940,31 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			{
 				agent.SetLookAgent(null);
 			}
+		}
+		catch
+		{
+		}
+	}
+
+	private static void SetAgentLookTowardPoint(Agent agent, Vec3 point)
+	{
+		try
+		{
+			if (agent == null || !agent.IsActive())
+			{
+				return;
+			}
+			Vec3 lookDirection = point - agent.Position;
+			lookDirection.z = 0f;
+			if (lookDirection.LengthSquared < 0.01f)
+			{
+				ClearAgentLookTarget(agent);
+				return;
+			}
+			lookDirection.Normalize();
+			Vec3 lookPoint = agent.Position + lookDirection * 4f;
+			agent.SetLookToPointOfInterest(lookPoint);
+			agent.LookDirection = lookDirection;
 		}
 		catch
 		{
@@ -4463,6 +4575,8 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				CivilianSpeechRallySlots[agent.Index] = CivilianSpeechRallySlots.Count;
 			}
 			agent.SetWatchState(Agent.WatchState.Patrolling);
+			agent.InvalidateTargetAgent();
+			ClearAgentLookTarget(agent);
 			try
 			{
 				agent.SetCrouchMode(false);
@@ -4498,6 +4612,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				AssignAgentToPlayerFormation(agent, FormationClass.Infantry, refreshFormationOrders: false);
 				agent.ClearTargetFrame();
 				agent.InvalidateTargetAgent();
+				ClearAgentLookTarget(agent);
 				agent.SetWatchState(Agent.WatchState.Patrolling);
 				agent.SetCrouchMode(false);
 				agent.SetMaximumSpeedLimit(-1f, false);
@@ -4513,6 +4628,8 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				return false;
 			}
 			MarkCivilianAsGatherFollower(agent, reason);
+			agent.InvalidateTargetAgent();
+			ClearAgentLookTarget(agent);
 			Logger.Log("SiegeAiIntervention", "Added civilian gather messenger. Reason=" + (reason ?? "N/A") + ", Agent=" + agent.Index);
 			return true;
 		}
@@ -4766,7 +4883,9 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			}
 			messenger.SetWatchState(Agent.WatchState.Patrolling);
 			messenger.SetMaximumSpeedLimit(CivilianGatherMessengerMoveSpeedLimit, false);
+			messenger.InvalidateTargetAgent();
 			ClearAgentLookTarget(messenger);
+			SetAgentLookTowardPoint(messenger, target.Position);
 			if (!TryGuideGatherMessengerToTargetAgent(messenger, target))
 			{
 				TrySetInterventionAgentTargetPosition(messenger, target.Position, SiegeAgentWallRescueProfile.Source + ":gather_messenger");
@@ -4833,6 +4952,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			messenger.DisableScriptedMovement();
 			messenger.ClearTargetFrame();
 			messenger.InvalidateTargetAgent();
+			ClearAgentLookTarget(messenger);
 		}
 		catch
 		{
@@ -4982,6 +5102,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			agent.SetMaximumSpeedLimit(-1f, false);
 			ClearCivilianUpperBodyActionForMovement(agent);
 			ClearAgentLookTarget(agent);
+			SetAgentLookTowardPoint(agent, target);
 			TrySetInterventionAgentTargetPosition(agent, target, SiegeAgentWallRescueProfile.Source + ":civilian_gather");
 			agent.SetWatchState(Agent.WatchState.Patrolling);
 			if (nearTarget)
@@ -6518,6 +6639,10 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 						agent.SetMaximumSpeedLimit(-1f, false);
 					}
 				}
+				else if (_plunderStarted)
+				{
+					KeepPlunderGuardSoldierNearPlayer(agent, main, mission);
+				}
 				else
 				{
 					if (CordonReadyAgentIndexes.Add(agent.Index))
@@ -6536,6 +6661,35 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			catch
 			{
 			}
+		}
+	}
+
+	private static void KeepPlunderGuardSoldierNearPlayer(Agent soldier, Agent main, Mission mission)
+	{
+		try
+		{
+			if (soldier == null || main == null || mission == null || !soldier.IsActive())
+			{
+				return;
+			}
+			bool firstGuardTick = CordonReadyAgentIndexes.Add(soldier.Index);
+			AssignAgentToPlayerFormation(soldier, FormationClass.Infantry, refreshFormationOrders: firstGuardTick);
+			if (!_soldierDefaultFollowOrderIssued)
+			{
+				_soldierDefaultFollowOrderIssued = TrySetPlayerFormationFollowOrder(FormationClass.Infantry, SiegePlunderInteractionProfile.GuardFollowSource);
+			}
+			if (firstGuardTick)
+			{
+				soldier.WieldInitialWeapons(Agent.WeaponWieldActionType.InstantAfterPickUp, Equipment.InitialWeaponEquipPreference.Any);
+			}
+			MoveAlliedSoldierNearMainFallback(soldier, main);
+			soldier.InvalidateTargetAgent();
+			ClearAgentLookTarget(soldier);
+			soldier.SetWatchState(Agent.WatchState.Alarmed);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "KeepPlunderGuardSoldierNearPlayer failed: " + ex.Message);
 		}
 	}
 
