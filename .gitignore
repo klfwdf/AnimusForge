@@ -6,6 +6,10 @@ obj/
 *.suo
 *.cache
 *.pdb
+*.tmp
+*.bak
+*.orig
+*.rej
 
 *.nupkg
 packages/
@@ -13,3 +17,7 @@ packages/
 *.log
 Logs/
 AnimusForge/ONNX/reranker/
+
+# Local Codex/release-prep scratch and large handoff backups.
+_codex_tmp/
+FUYONG/

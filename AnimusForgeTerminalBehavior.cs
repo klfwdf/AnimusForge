@@ -275,6 +275,7 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 		{
 			new InquiryElement("trust_query", "信任度查询", null, isEnabled: true, ""),
 			new InquiryElement("weekly_reports", "查看周报", null, isEnabled: true, ""),
+			new InquiryElement("custom_policy_management", "政策管理", null, isEnabled: true, "撰写自定义政策，或查看已经成功落地的政策记录。"),
 			new InquiryElement("vassalage_management", "臣属国管理", null, isEnabled: true, "只查看已有臣属国；解约、改约、吞并请通过 LLM 对话推进。"),
 			new InquiryElement("player_persona", "修改玩家外貌与背景", null, isEnabled: true, ""),
 			new InquiryElement("troop_inspection", "检阅士兵", null, isEnabled: true, ""),
@@ -297,6 +298,10 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 			else if (string.Equals(text, "weekly_reports", StringComparison.Ordinal))
 			{
 				OpenWeeklyReportBrowser();
+			}
+			else if (string.Equals(text, "custom_policy_management", StringComparison.Ordinal))
+			{
+				OpenCustomPolicyManagementView();
 			}
 			else if (string.Equals(text, "vassalage_management", StringComparison.Ordinal))
 			{
@@ -335,6 +340,42 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 		}, delegate
 		{
 			CloseTerminal();
+		}, "", isSeachAvailable: true);
+		MBInformationManager.ShowMultiSelectionInquiry(data, pauseGameActiveState: true);
+	}
+
+	private void OpenCustomPolicyManagementView()
+	{
+		_terminalUiActive = true;
+		List<InquiryElement> list = new List<InquiryElement>
+		{
+			new InquiryElement("compose", "撰写政策", null, isEnabled: true, "填写政策名与政策内容，提交给 LLM 评议后落地数值效果。"),
+			new InquiryElement("history", "政策记录", null, isEnabled: true, "查看最近成功落地的自定义政策摘要与影响效果。")
+		};
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData("政策管理", "请选择政策功能：", list, isExitShown: true, 1, 1, "确定", "返回", delegate(List<InquiryElement> selected)
+		{
+			if (selected == null || selected.Count == 0)
+			{
+				OpenRootMenu();
+				return;
+			}
+			string text = selected[0].Identifier as string;
+			if (string.Equals(text, "compose", StringComparison.Ordinal))
+			{
+				CloseTerminal();
+				CustomPolicyBehavior.OpenFromTerminal();
+			}
+			else if (string.Equals(text, "history", StringComparison.Ordinal))
+			{
+				CustomPolicyBehavior.OpenRecordHistoryFromTerminal(OpenCustomPolicyManagementView);
+			}
+			else
+			{
+				OpenRootMenu();
+			}
+		}, delegate
+		{
+			OpenRootMenu();
 		}, "", isSeachAvailable: true);
 		MBInformationManager.ShowMultiSelectionInquiry(data, pauseGameActiveState: true);
 	}

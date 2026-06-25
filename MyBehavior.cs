@@ -8722,6 +8722,114 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
+	public static void RecordCustomPolicyWeeklyMaterialForExternal(string recordId, string policyName, string dateText, string policySummary, string feedbackSummary, string effectSummary, string playerKingdomId, string playerKingdomName, string targetKingdomId, string targetKingdomName, string effectId, int submittedDay, string gameDate, bool includeInWorld)
+	{
+		try
+		{
+			(Campaign.Current?.GetCampaignBehavior<MyBehavior>())?.RecordCustomPolicyWeeklyMaterialInternal(recordId, policyName, dateText, policySummary, feedbackSummary, effectSummary, playerKingdomId, playerKingdomName, targetKingdomId, targetKingdomName, effectId, submittedDay, gameDate, includeInWorld);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("EventWeeklyReport", "[CustomPolicy][WARN] record weekly material failed: " + ex.Message);
+		}
+	}
+
+	private void RecordCustomPolicyWeeklyMaterialInternal(string recordId, string policyName, string dateText, string policySummary, string feedbackSummary, string effectSummary, string playerKingdomId, string playerKingdomName, string targetKingdomId, string targetKingdomName, string effectId, int submittedDay, string gameDate, bool includeInWorld)
+	{
+		string targetId = (targetKingdomId ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(targetId))
+		{
+			targetId = (playerKingdomId ?? "").Trim();
+		}
+		if (string.IsNullOrWhiteSpace(targetId))
+		{
+			Logger.Log("EventWeeklyReport", "[CustomPolicy][SKIP] target_kingdom_missing recordId=" + (recordId ?? "") + " policy=" + (policyName ?? ""));
+			return;
+		}
+		string cleanPolicyName = LimitCustomPolicyWeeklyMaterialText(policyName, 60);
+		if (string.IsNullOrWhiteSpace(cleanPolicyName))
+		{
+			cleanPolicyName = "未命名政策";
+		}
+		string cleanPlayerKingdomName = LimitCustomPolicyWeeklyMaterialText(playerKingdomName, 40);
+		if (string.IsNullOrWhiteSpace(cleanPlayerKingdomName))
+		{
+			cleanPlayerKingdomName = "玩家王国";
+		}
+		string cleanTargetKingdomName = LimitCustomPolicyWeeklyMaterialText(targetKingdomName, 40);
+		if (string.IsNullOrWhiteSpace(cleanTargetKingdomName))
+		{
+			cleanTargetKingdomName = cleanPlayerKingdomName;
+		}
+		StringBuilder sb = new StringBuilder();
+		string cleanDate = LimitCustomPolicyWeeklyMaterialText(dateText, 30);
+		sb.Append("玩家");
+		if (!string.IsNullOrWhiteSpace(cleanDate))
+		{
+			sb.Append("在").Append(cleanDate);
+		}
+		sb.Append("作为").Append(cleanPlayerKingdomName).Append("国王发布自定义政策《").Append(cleanPolicyName).Append("》。");
+		if (!string.Equals(cleanTargetKingdomName, cleanPlayerKingdomName, StringComparison.OrdinalIgnoreCase))
+		{
+			sb.Append("目标王国：").Append(cleanTargetKingdomName).Append("。");
+		}
+		string cleanPolicySummary = LimitCustomPolicyWeeklyMaterialText(policySummary, 80);
+		if (!string.IsNullOrWhiteSpace(cleanPolicySummary))
+		{
+			sb.Append("政策摘要：").Append(cleanPolicySummary.Trim().TrimEnd('。')).Append("。");
+		}
+		string cleanFeedback = LimitCustomPolicyWeeklyMaterialText(feedbackSummary, 80);
+		if (!string.IsNullOrWhiteSpace(cleanFeedback))
+		{
+			sb.Append("民众反馈：").Append(cleanFeedback.Trim().TrimEnd('。')).Append("。");
+		}
+		string cleanEffect = LimitCustomPolicyWeeklyMaterialText(effectSummary, 100);
+		if (!string.IsNullOrWhiteSpace(cleanEffect))
+		{
+			sb.Append("每日影响：").Append(cleanEffect.Trim().TrimEnd('。')).Append("。");
+		}
+		string snapshot = LimitCustomPolicyWeeklyMaterialText(sb.ToString(), 260);
+		if (string.IsNullOrWhiteSpace(snapshot))
+		{
+			Logger.Log("EventWeeklyReport", "[CustomPolicy][SKIP] snapshot_empty recordId=" + (recordId ?? "") + " kingdom=" + targetId);
+			return;
+		}
+		string stableKey = "custom_policy:" + ((recordId ?? "").Trim());
+		string effectKey = !string.IsNullOrWhiteSpace(effectId) ? effectId.Trim() : targetId;
+		if (!string.IsNullOrWhiteSpace(effectKey))
+		{
+			stableKey += ":" + effectKey;
+		}
+		RecordEventSourceMaterial(
+			"custom_policy",
+			"自定义政策 - " + cleanTargetKingdomName + " / " + cleanPolicyName,
+			snapshot,
+			stableKey,
+			targetId,
+			"",
+			includeInWorld,
+			includeInKingdom: true,
+			actorHeroId: GetHeroId(Hero.MainHero),
+			actorKingdomId: (playerKingdomId ?? "").Trim(),
+			dayOverride: Math.Max(0, submittedDay),
+			gameDateOverride: string.IsNullOrWhiteSpace(gameDate) ? cleanDate : gameDate.Trim());
+		Logger.Log("EventWeeklyReport", "[CustomPolicy] source_material_recorded recordId=" + (recordId ?? "") + " kingdom=" + targetId + " includeWorld=" + includeInWorld + " length=" + snapshot.Length);
+	}
+
+	private static string LimitCustomPolicyWeeklyMaterialText(string text, int maxChars)
+	{
+		text = (text ?? "").Replace("\r\n", " ").Replace('\r', ' ').Replace('\n', ' ').Trim();
+		while (text.Contains("  "))
+		{
+			text = text.Replace("  ", " ");
+		}
+		if (string.IsNullOrWhiteSpace(text) || maxChars <= 0 || text.Length <= maxChars)
+		{
+			return text;
+		}
+		return text.Substring(0, Math.Max(1, maxChars - 1)).TrimEnd() + "…";
+	}
+
 	public static void RecordPlayerSceneConflictWeeklyMaterialForExternal(string text, string stableKey, int day, string gameDate, string settlementId, string settlementName, string locationText)
 	{
 		try
@@ -22815,6 +22923,12 @@ public class MyBehavior : CampaignBehaviorBase
 		if (!string.IsNullOrWhiteSpace(value8a))
 		{
 			stringBuilder.AppendLine(value8a);
+		}
+		string value8aa = CustomPolicyBehavior.BuildRecentPolicyContextForNpcExternal(targetHero, targetCharacter, kingdomIdOverride);
+		if (!string.IsNullOrWhiteSpace(value8aa))
+		{
+			stringBuilder.AppendLine(value8aa);
+			CustomPolicyBehavior.LogNpcPolicyContextInjectionForExternal(targetHero, targetCharacter, kingdomIdOverride, value8aa);
 		}
 		if (!string.IsNullOrWhiteSpace(value8))
 		{

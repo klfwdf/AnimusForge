@@ -409,6 +409,7 @@ public class SubModule : MBSubModuleBase
 			campaignGameStarter.AddBehavior(new RewardSystemBehavior());
 			campaignGameStarter.AddBehavior(new PlayerNotorietyBehavior());
 			campaignGameStarter.AddBehavior(new AnimusForgeTerminalBehavior());
+			campaignGameStarter.AddBehavior(new CustomPolicyBehavior());
 			campaignGameStarter.AddBehavior(new RomanceSystemBehavior());
 			campaignGameStarter.AddBehavior(new KnowledgeLibraryBehavior());
 			campaignGameStarter.AddBehavior(new LordEncounterBehavior());
@@ -535,6 +536,10 @@ public class SubModule : MBSubModuleBase
 			using (PerfProbe.Scope("SubModule.AnimusForgeTerminalBehavior.OnEngineTick"))
 			{
 				AnimusForgeTerminalBehavior.Instance?.OnEngineTick();
+			}
+			using (PerfProbe.Scope("SubModule.CustomPolicyBehavior.OnEngineTick"))
+			{
+				CustomPolicyBehavior.Instance?.OnEngineTick();
 			}
 			using (PerfProbe.Scope("SubModule.NobleGatheringBehavior.OnEngineTick"))
 			{
