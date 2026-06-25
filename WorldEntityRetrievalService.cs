@@ -185,7 +185,12 @@ public static class WorldEntityRetrievalService
 			{
 				Logger.Log("WorldEntityRetrieval", "visible_party_context_only count=" + visibleParties.Count);
 			}
+			List<EntityMatch<Hero>> postprocessHeroes = CloneEntityMatches(heroes);
+			List<EntityMatch<Settlement>> postprocessSettlements = CloneEntityMatches(settlements);
+			List<EntityMatch<Clan>> postprocessClans = CloneEntityMatches(clans);
+			List<EntityMatch<Kingdom>> postprocessKingdoms = CloneEntityMatches(kingdoms);
 			AddResidentEntityMatches(contextHero, includeResidentKingdoms, ref heroes, ref settlements, ref clans, ref kingdoms);
+			AddPostprocessResidentEntityMatches(contextHero, ref postprocessHeroes, ref postprocessSettlements, ref postprocessClans, ref postprocessKingdoms);
 			int count = heroes.Count + settlements.Count + clans.Count + kingdoms.Count + visibleParties.Count;
 			if (count <= 0)
 			{
@@ -194,7 +199,7 @@ public static class WorldEntityRetrievalService
 			}
 			result.MatchCount = count;
 			result.MainPromptBlock = BuildMainPromptBlock(playerDisplayName, contextHero, heroes, settlements, clans, kingdoms, visibleParties);
-			result.PostprocessPromptBlock = BuildPostprocessPromptBlock(heroes, settlements, clans, kingdoms, visibleParties);
+			result.PostprocessPromptBlock = BuildPostprocessPromptBlock(postprocessHeroes, postprocessSettlements, postprocessClans, postprocessKingdoms, visibleParties);
 			return result;
 		}
 		catch (Exception ex)
@@ -728,6 +733,56 @@ public static class WorldEntityRetrievalService
 		SortEntityMatches(kingdoms);
 	}
 
+	private static void AddPostprocessResidentEntityMatches(Hero contextHero, ref List<EntityMatch<Hero>> heroes, ref List<EntityMatch<Settlement>> settlements, ref List<EntityMatch<Clan>> clans, ref List<EntityMatch<Kingdom>> kingdoms)
+	{
+		heroes = heroes ?? new List<EntityMatch<Hero>>();
+		settlements = settlements ?? new List<EntityMatch<Settlement>>();
+		clans = clans ?? new List<EntityMatch<Clan>>();
+		kingdoms = kingdoms ?? new List<EntityMatch<Kingdom>>();
+		int priority = -1000;
+		Hero player = Hero.MainHero;
+		Clan playerClan = Clan.PlayerClan ?? player?.Clan;
+		AddResidentClanMatch(clans, playerClan, "常驻：玩家当前家族", priority++);
+		AddResidentKingdomMatch(kingdoms, ResolveHeroKingdomForResidentEntity(player, playerClan), "常驻：玩家当前王国", priority++);
+		if (contextHero != null)
+		{
+			string contextName = SafeName(contextHero.Name, "当前对话人物");
+			AddResidentHeroMatch(heroes, contextHero, "常驻：" + contextName + "本人", priority++);
+			AddResidentClanMatch(clans, contextHero.Clan, "常驻：" + contextName + "的家族", priority++);
+			AddResidentKingdomMatch(kingdoms, ResolveHeroKingdomForResidentEntity(contextHero, contextHero.Clan), "常驻：" + contextName + "的王国", priority++);
+		}
+		SortEntityMatches(heroes);
+		SortEntityMatches(settlements);
+		SortEntityMatches(clans);
+		SortEntityMatches(kingdoms);
+	}
+
+	private static List<EntityMatch<T>> CloneEntityMatches<T>(IEnumerable<EntityMatch<T>> matches) where T : class
+	{
+		List<EntityMatch<T>> result = new List<EntityMatch<T>>();
+		if (matches == null)
+		{
+			return result;
+		}
+		foreach (EntityMatch<T> match in matches)
+		{
+			if (match == null)
+			{
+				continue;
+			}
+			result.Add(new EntityMatch<T>
+			{
+				Value = match.Value,
+				Id = match.Id,
+				Name = match.Name,
+				Mention = match.Mention,
+				Score = match.Score,
+				MentionPriority = match.MentionPriority
+			});
+		}
+		return result;
+	}
+
 	private static Kingdom ResolveHeroKingdomForResidentEntity(Hero hero, Clan fallbackClan = null)
 	{
 		try
@@ -972,7 +1027,7 @@ public static class WorldEntityRetrievalService
 			for (int i = 0; i < postprocessHeroes.Count; i++)
 			{
 				Hero hero = postprocessHeroes[i].Value;
-				sb.AppendLine((i + 1) + ". 名称：" + SafeName(hero?.Name, postprocessHeroes[i].Name) + "；位置：" + FormatHeroLocation(hero) + "；编号：" + postprocessHeroes[i].Id);
+				sb.AppendLine((i + 1) + ". 名称：" + SafeName(hero?.Name, postprocessHeroes[i].Name) + "；位置：" + FormatHeroLocation(hero) + "；编号：" + postprocessHeroes[i].Id + FormatPostprocessMentionHint(postprocessHeroes[i]));
 			}
 		}
 		if (settlements != null && settlements.Count > 0)
@@ -981,7 +1036,7 @@ public static class WorldEntityRetrievalService
 			for (int i = 0; i < settlements.Count; i++)
 			{
 				Settlement settlement = settlements[i].Value;
-				sb.AppendLine((i + 1) + ". 名称：" + SafeName(settlement?.Name, settlements[i].Name) + "；编号：" + settlements[i].Id);
+				sb.AppendLine((i + 1) + ". 名称：" + SafeName(settlement?.Name, settlements[i].Name) + "；编号：" + settlements[i].Id + FormatPostprocessMentionHint(settlements[i]));
 			}
 		}
 		if (postprocessClans.Count > 0)
@@ -990,7 +1045,7 @@ public static class WorldEntityRetrievalService
 			for (int i = 0; i < postprocessClans.Count; i++)
 			{
 				Clan clan = postprocessClans[i].Value;
-				sb.AppendLine((i + 1) + ". 名称：" + SafeName(clan?.Name, postprocessClans[i].Name) + "；编号：" + postprocessClans[i].Id);
+				sb.AppendLine((i + 1) + ". 名称：" + SafeName(clan?.Name, postprocessClans[i].Name) + "；编号：" + postprocessClans[i].Id + FormatPostprocessMentionHint(postprocessClans[i]));
 			}
 		}
 		if (postprocessKingdoms.Count > 0)
@@ -999,7 +1054,7 @@ public static class WorldEntityRetrievalService
 			for (int i = 0; i < postprocessKingdoms.Count; i++)
 			{
 				Kingdom kingdom = postprocessKingdoms[i].Value;
-				sb.AppendLine((i + 1) + ". 名称：" + SafeName(kingdom?.Name, postprocessKingdoms[i].Name) + "；编号：" + postprocessKingdoms[i].Id);
+				sb.AppendLine((i + 1) + ". 名称：" + SafeName(kingdom?.Name, postprocessKingdoms[i].Name) + "；编号：" + postprocessKingdoms[i].Id + FormatPostprocessMentionHint(postprocessKingdoms[i]));
 			}
 		}
 		if (visibleParties != null && visibleParties.Count > 0)
@@ -1011,6 +1066,12 @@ public static class WorldEntityRetrievalService
 			}
 		}
 		return sb.ToString().Trim();
+	}
+
+	private static string FormatPostprocessMentionHint<T>(EntityMatch<T> match) where T : class
+	{
+		string mention = (match?.Mention ?? "").Trim();
+		return string.IsNullOrWhiteSpace(mention) ? "" : ("；提示：" + mention);
 	}
 
 	private static bool IsPostprocessHeroMatchEligible(EntityMatch<Hero> match)
