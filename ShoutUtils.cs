@@ -22,6 +22,10 @@ namespace AnimusForge;
 
 public static class ShoutUtils
 {
+	private const float ShoutLineOfSightFallbackEyeHeight = 1.55f;
+
+	private const float ShoutLineOfSightLowerBodyHeight = 1.05f;
+
 	private class UnnamedNpcPersonaProfile
 	{
 		public string Description;
@@ -2074,6 +2078,79 @@ public static class ShoutUtils
 		return GetNearbyNPCAgentsLegacy(4f, 0.7853982f);
 	}
 
+	private static Vec3 GetShoutLineOfSightPoint(Agent agent, bool lowerBodyPoint = false)
+	{
+		if (agent == null)
+		{
+			return Vec3.Invalid;
+		}
+		try
+		{
+			if (!lowerBodyPoint && agent.AgentVisuals != null)
+			{
+				Vec3 eyePoint = agent.AgentVisuals.GetGlobalStableEyePoint(true);
+				if (IsValidShoutLineOfSightPoint(eyePoint))
+				{
+					return eyePoint;
+				}
+			}
+		}
+		catch
+		{
+		}
+		Vec3 position = agent.Position;
+		position.z += lowerBodyPoint ? ShoutLineOfSightLowerBodyHeight : ShoutLineOfSightFallbackEyeHeight;
+		return position;
+	}
+
+	private static bool IsValidShoutLineOfSightPoint(Vec3 point)
+	{
+		return point.IsValid && !float.IsNaN(point.x) && !float.IsNaN(point.y) && !float.IsNaN(point.z) && !float.IsInfinity(point.x) && !float.IsInfinity(point.y) && !float.IsInfinity(point.z);
+	}
+
+	private static bool CanScenePointSeePoint(Scene scene, Vec3 source, Vec3 target)
+	{
+		if (scene == null || !IsValidShoutLineOfSightPoint(source) || !IsValidShoutLineOfSightPoint(target))
+		{
+			return false;
+		}
+		try
+		{
+			float distance = source.Distance(target);
+			if (float.IsNaN(distance) || float.IsInfinity(distance) || distance <= 0.05f)
+			{
+				return true;
+			}
+			return scene.CheckPointCanSeePoint(source, target, distance);
+		}
+		catch
+		{
+			return true;
+		}
+	}
+
+	public static bool HasShoutLineOfSightToMainAgent(Agent targetAgent)
+	{
+		if (targetAgent == null || !targetAgent.IsActive() || Agent.Main == null || !Agent.Main.IsActive())
+		{
+			return false;
+		}
+		Scene scene = Mission.Current?.Scene;
+		if (scene == null)
+		{
+			return true;
+		}
+		Vec3 sourceEye = GetShoutLineOfSightPoint(Agent.Main);
+		Vec3 targetEye = GetShoutLineOfSightPoint(targetAgent);
+		if (CanScenePointSeePoint(scene, sourceEye, targetEye))
+		{
+			return true;
+		}
+		Vec3 sourceLower = GetShoutLineOfSightPoint(Agent.Main, lowerBodyPoint: true);
+		Vec3 targetLower = GetShoutLineOfSightPoint(targetAgent, lowerBodyPoint: true);
+		return CanScenePointSeePoint(scene, sourceLower, targetLower);
+	}
+
 	private static List<Agent> GetNearbyNPCAgentsLegacy(float maxDistance, float halfAngleRadians)
 	{
 		List<Agent> list = new List<Agent>();
@@ -2097,7 +2174,7 @@ public static class ShoutUtils
 			{
 				Vec3 v = agent.Position - position;
 				v.Normalize();
-				if (Vec3.DotProduct(lookDirection, v) > num3)
+				if (Vec3.DotProduct(lookDirection, v) > num3 && HasShoutLineOfSightToMainAgent(agent))
 				{
 					list.Add(agent);
 				}
@@ -2135,7 +2212,7 @@ public static class ShoutUtils
 			if (distanceSquared <= num4 && distanceSquared > 1E-05f)
 			{
 				v.Normalize();
-				if (Vec2.DotProduct(lookDirection, v) >= num3)
+				if (Vec2.DotProduct(lookDirection, v) >= num3 && HasShoutLineOfSightToMainAgent(agent))
 				{
 					list.Add(agent);
 				}

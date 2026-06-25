@@ -1837,7 +1837,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 
 	private const string AutoGroupRelayTagTemplate = "[RELAY:接力编号]";
 
-	private const string AutoGroupRelayPositiveSoundEvent = "event:/ui/notification/coins_positive";
+	private const string AutoGroupRelayPositiveSoundEvent = "event:/ui/notification/relation";
 
 	private const string AutoGroupRelayNegativeSoundEvent = "event:/ui/notification/coins_negative";
 
@@ -2980,7 +2980,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 		EnqueuePendingSceneDialogueFeed(agentIndex, npcDisplayName, content, new Color(1f, 0.8f, 0.2f), flag, executeAtMissionTime);
 	}
 
-	private SceneSpeechPlaybackInfo ShowNpcSpeechOutput(NpcDataPacket npc, Agent liveAgent, string content, bool allowTts = true, bool attachTtsToSceneAgent = true)
+	private SceneSpeechPlaybackInfo ShowNpcSpeechOutput(NpcDataPacket npc, Agent liveAgent, string content, bool allowTts = true, bool attachTtsToSceneAgent = true, bool suppressInteractionTimeoutArm = false)
 	{
 		SceneSpeechPlaybackInfo sceneSpeechPlaybackInfo = new SceneSpeechPlaybackInfo();
 		if (!CanAgentParticipateInSceneSpeech(liveAgent))
@@ -3020,7 +3020,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 			}
 		}
 		long interactionToken = 0L;
-		if (!flagHostileSpeech && num >= 0 && _activeInteractionSessions.TryGetValue(num, out var value) && value != null)
+		if (!flagHostileSpeech && !suppressInteractionTimeoutArm && num >= 0 && _activeInteractionSessions.TryGetValue(num, out var value) && value != null)
 		{
 			interactionToken = value.InteractionToken;
 		}
@@ -3030,7 +3030,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 		string text3 = "scene_lipsync_not_requested";
 		bool flag3 = flag2 && attachTtsToSceneAgent && num >= 0 && CanAgentParticipateInSceneSpeech(liveAgent) && CanAgentUseSceneLipSync(liveAgent, out text3);
 		int num2 = (flag3 ? num : (-1));
-		LogTtsReport("ShowNpcSpeechOutput.Enter", num, $"allowTts={allowTts};attachToSceneAgent={attachTtsToSceneAgent};effectiveAgentIndex={num2};contentLen={(text ?? string.Empty).Length};hostileSpeech={flagHostileSpeech};lipSyncSafe={flag3};lipSyncReason={text3}");
+		LogTtsReport("ShowNpcSpeechOutput.Enter", num, $"allowTts={allowTts};attachToSceneAgent={attachTtsToSceneAgent};suppressTimeoutArm={suppressInteractionTimeoutArm};effectiveAgentIndex={num2};contentLen={(text ?? string.Empty).Length};hostileSpeech={flagHostileSpeech};lipSyncSafe={flag3};lipSyncReason={text3}");
 		if (!allowTts)
 		{
 			try
@@ -10135,10 +10135,66 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 	}
 
+	private bool IsMultiNpcSceneConversationActive()
+	{
+		Mission mission = Mission.Current;
+		if (mission == null)
+		{
+			return false;
+		}
+		HashSet<int> agentIndices = new HashSet<int>();
+		lock (_multiSceneMovementSuppressionLock)
+		{
+			if (_multiSceneMovementSuppressionActive)
+			{
+				foreach (int agentIndex in _multiSceneMovementSuppressionAgentIndices)
+				{
+					if (agentIndex >= 0)
+					{
+						agentIndices.Add(agentIndex);
+					}
+				}
+			}
+		}
+		foreach (KeyValuePair<int, SceneInteractionSession> activeInteractionSession in _activeInteractionSessions)
+		{
+			if (activeInteractionSession.Key >= 0 && activeInteractionSession.Value != null)
+			{
+				agentIndices.Add(activeInteractionSession.Key);
+			}
+		}
+		if (agentIndices.Count < 2)
+		{
+			return false;
+		}
+		int liveParticipantCount = 0;
+		foreach (int agentIndex in agentIndices)
+		{
+			Agent agent = mission.Agents?.FirstOrDefault(a => a != null && a.Index == agentIndex && a.IsActive());
+			if (CanAgentParticipateInSceneSpeech(agent))
+			{
+				liveParticipantCount++;
+				if (liveParticipantCount >= 2)
+				{
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
 	public void UpdatePassiveStareLogic(float dt)
 	{
 		if (Mission.Current == null || Agent.Main == null || !Agent.Main.IsActive() || _isProcessingShout)
 		{
+			return;
+		}
+		if (IsMultiNpcSceneConversationActive())
+		{
+			_stareTimer = 0f;
+			_stareTargetLostGraceTimer = 0f;
+			_currentStareTarget = null;
+			UpdateCooldowns(dt);
 			return;
 		}
 		if (_interactionGraceTimer > 0f)
@@ -10460,7 +10516,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 
 	private void TriggerPassiveReaction(Agent targetAgent)
 	{
-		if (targetAgent == null || _isProcessingShout)
+		if (targetAgent == null || _isProcessingShout || IsMultiNpcSceneConversationActive())
 		{
 			return;
 		}
@@ -20333,7 +20389,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 								{
 									RefreshActiveInteractionTimeout(matchedNpc, interactionParticipantCount, interactionTimeoutSeconds);
 								}
-								SceneSpeechPlaybackInfo sceneSpeechPlaybackInfo = ShowNpcSpeechOutput(matchedNpc, agent, historyText, allowTts: true, attachTtsToSceneAgent: true);
+								bool suppressInteractionTimeoutArm = interactionParticipantCount > 1 && interactionTimeoutSeconds <= 0f;
+								SceneSpeechPlaybackInfo sceneSpeechPlaybackInfo = ShowNpcSpeechOutput(matchedNpc, agent, historyText, allowTts: true, attachTtsToSceneAgent: true, suppressInteractionTimeoutArm);
 								if (!string.IsNullOrWhiteSpace(afterSpeechInfoMessage))
 								{
 									InformationManager.DisplayMessage(new InformationMessage(afterSpeechInfoMessage, new Color(1f, 0.95f, 0.25f)));

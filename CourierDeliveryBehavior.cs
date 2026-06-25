@@ -1435,8 +1435,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 				CourierPartyId = courier.StringId,
 				Stage = CourierStage.Outbound.ToString(),
 				PayloadMode = CourierPayloadMode.Normal.ToString(),
-				LetterText = letterText.Trim(),
-				ReplyGenerated = true
+				LetterText = letterText.Trim()
 			};
 			session.DeliveryFactText = BuildInboundDeliveryFactText(session, delivered: false, sender);
 			lock (_sessionLock)
@@ -1444,6 +1443,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 				_sessions[session.Id] = session;
 			}
 			AddCourierRuntimeIndex(session, courier);
+			StartInboundLetterGeneration(session, "created_preflight");
 			float nowDays = NowDays();
 			string senderId = SafeHeroId(sender);
 			if (!string.IsNullOrWhiteSpace(senderId))
@@ -1451,7 +1451,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 				_npcDiplomacyLetterSenderCooldownUntilDays[senderId] = nowDays + NpcDiplomacyLetterSenderCooldownDays;
 			}
 			_npcDiplomacyLetterGlobalCooldownUntilDays = nowDays + NpcDiplomacyLetterGlobalCooldownDays;
-			InformationManager.DisplayMessage(new InformationMessage((sender.Name?.ToString() ?? "NPC") + "已派出信使送来外交信。", Colors.Green));
+			InformationManager.DisplayMessage(new InformationMessage((sender.Name?.ToString() ?? "NPC") + "正在写外交信，并已派出信使送来。", Colors.Green));
 			Log("npc diplomacy letter session created id=" + session.Id + " sender=" + session.SenderHeroId + " party=" + session.CourierPartyId + " reason=" + (reason ?? ""));
 			ProcessSession(session);
 			status = "created";
@@ -1751,12 +1751,16 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			RouteToSafeSettlement(session, courier, "player_wait_respawn");
 			return;
 		}
-		session.Stage = CourierStage.Outbound.ToString();
+		if (!session.ReplyGenerated && !session.ReplyGenerationStarted)
+		{
+			StartInboundLetterGeneration(session, "inbound_tick");
+		}
 		if (IsAtSender(courier, mainParty))
 		{
 			DeliverInboundLetterToPlayer(session, courier);
 			return;
 		}
+		session.Stage = CourierStage.Outbound.ToString();
 		RouteToSender(session, courier);
 	}
 
@@ -1768,6 +1772,18 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		}
 		Hero sender = ResolveSender(session);
 		string senderName = string.IsNullOrWhiteSpace(session.SenderName) ? (sender?.Name?.ToString() ?? "NPC") : session.SenderName.Trim();
+		if (!session.ReplyGenerated)
+		{
+			session.Stage = CourierStage.GeneratingReply.ToString();
+			ShowCourierReplyWaitPopupAndPause(session, sender);
+			StartInboundLetterGeneration(session, "delivered");
+			HoldInboundCourierAtPlayer(session, courier);
+			return;
+		}
+		if (session.ReplyWaitPopupShown || _courierReplyWaitTimeLocked)
+		{
+			EndCourierReplyWaitPause(session, "inbound_letter_generated");
+		}
 		string letter = (session.LetterText ?? "").Trim();
 		if (!session.DeliveryApplied)
 		{
@@ -1832,6 +1848,32 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		session.ReplyGenerationStarted = true;
 		Log("reply generation queued session=" + session.Id + " reason=" + (reason ?? ""));
 		_ = Task.Run(() => GenerateNpcReplyAsync(session.Id));
+	}
+
+	private void StartInboundLetterGeneration(CourierSession session, string reason)
+	{
+		if (session == null || !IsInboundToPlayer(session) || session.ReplyGenerated || session.ReplyGenerationStarted)
+		{
+			return;
+		}
+		session.ReplyGenerationStarted = true;
+		Log("inbound letter generation queued session=" + session.Id + " reason=" + (reason ?? ""));
+		_ = Task.Run(() => GenerateInboundNpcLetterAsync(session.Id));
+	}
+
+	private void HoldInboundCourierAtPlayer(CourierSession session, MobileParty courier)
+	{
+		if (session == null || courier == null)
+		{
+			return;
+		}
+		string key = "inbound_letter_wait:" + session.Id;
+		if (ShouldRefreshRoute(session, key, courier, AiBehavior.Hold))
+		{
+			courier.SetMoveModeHold();
+			ApplyCourierAiOverrides(courier, "inbound_letter_wait_hold");
+			LogVerbose("inbound_letter_wait_hold:" + session.Id, "inbound letter wait hold session=" + session.Id, 5.0);
+		}
 	}
 
 	private void MaintainReplyWaitAtRecipient(CourierSession session, MobileParty courier, Hero recipient)
@@ -1966,6 +2008,76 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 				session.ReplyGenerated = true;
 				session.ReplyGenerationStarted = false;
 				MainThreadActions.Enqueue(() => ProcessSessionById(sessionId, "reply_generation_failed"));
+			}
+		}
+	}
+
+	private async Task GenerateInboundNpcLetterAsync(string sessionId)
+	{
+		CourierSession session = null;
+		try
+		{
+			lock (_sessionLock)
+			{
+				_sessions.TryGetValue(sessionId ?? "", out session);
+			}
+			if (session == null || IsTerminalStage(session) || !IsInboundToPlayer(session))
+			{
+				return;
+			}
+			Hero sender = ResolveSender(session);
+			string fallbackLetter = NormalizeInboundLetterText(session.LetterText, session, sender);
+			if (sender == null || sender.IsDead)
+			{
+				session.LetterText = fallbackLetter;
+				session.ReplyGenerated = true;
+				session.ReplyGenerationStarted = false;
+				MainThreadActions.Enqueue(() => ProcessSessionById(sessionId, "inbound_letter_generated_sender_invalid"));
+				return;
+			}
+			string seed = string.IsNullOrWhiteSpace(session.LetterText) ? fallbackLetter : session.LetterText.Trim();
+			Log("inbound letter llm start session=" + session.Id + " sender=" + SafeHeroId(sender));
+			string extraFact = BuildInboundDeliveryFactText(session, delivered: false, sender);
+			List<string> preprocessRuleHits = MyBehavior.RunCourierRulePreprocessForExternal(sender, seed, extraFact, sender.CharacterObject, targetAgentIndex: -1, excludedRuleIds: CourierExcludedRuleIds);
+			MyBehavior.ShoutPromptContext ctx = MyBehavior.BuildShoutPromptContextForExternal(sender, seed, extraFact, sender.Culture?.StringId ?? "neutral", hasAnyHero: true, targetCharacter: sender.CharacterObject, targetAgentIndex: -1, excludedRuleIds: CourierExcludedRuleIds, forcedPreprocessRuleIds: preprocessRuleHits);
+			List<string> selectedRuleHits = MergeCourierSelectedRuleIds(preprocessRuleHits, ctx?.PreprocessRuleIds);
+			selectedRuleHits = ExcludeCourierSelectedRuleIds(selectedRuleHits, CourierExcludedRuleIds);
+			string extras = FilterCourierInjectedRuleBlocks(ctx?.Extras ?? "", selectedRuleHits, CourierExcludedRuleIds);
+			extras = AppendCourierPlayerRecentActionsIfSelected(extras, sender, selectedRuleHits);
+			string historyText = MyBehavior.BuildHistoryContextForExternal(sender, 24, seed, extraFact);
+			List<ConversationMessage> persistentMemoryRoleMessages = MyBehavior.BuildUncompressedMemoryRoleMessagesForExternal(sender, -1, includeCurrentActiveSceneSession: false);
+			List<object> messages = BuildInboundNpcLetterMessages(sender, session, seed, extras, extraFact, historyText, persistentMemoryRoleMessages);
+			ShoutNetwork.RecordPrimaryRequestBodyForTokenStats(messages, MainReplyMaxTokens, "courier_inbound_letter_preflight");
+			string output = await ShoutNetwork.CallApiWithMessages(messages, MainReplyMaxTokens);
+			if (IsTerminalStage(session))
+			{
+				return;
+			}
+			string letter = NormalizeInboundLetterText(output, session, sender);
+			if (LooksLikeApiError(letter))
+			{
+				Log("inbound letter llm failed session=" + session.Id + " output=" + letter);
+				letter = fallbackLetter;
+			}
+			if (string.IsNullOrWhiteSpace(letter))
+			{
+				letter = fallbackLetter;
+			}
+			session.LetterText = letter;
+			session.ReplyGenerated = true;
+			session.ReplyGenerationStarted = false;
+			Log("inbound letter llm done session=" + session.Id + " letterLen=" + letter.Length + " preprocessHits=" + ((selectedRuleHits == null || selectedRuleHits.Count == 0) ? "(none)" : string.Join(",", selectedRuleHits)));
+			MainThreadActions.Enqueue(() => ProcessSessionById(sessionId, "inbound_letter_generated"));
+		}
+		catch (Exception ex)
+		{
+			Log("generate inbound letter failed session=" + sessionId + " error=" + ex);
+			if (session != null && !IsTerminalStage(session))
+			{
+				session.LetterText = NormalizeInboundLetterText(session.LetterText, session, ResolveSender(session));
+				session.ReplyGenerated = true;
+				session.ReplyGenerationStarted = false;
+				MainThreadActions.Enqueue(() => ProcessSessionById(sessionId, "inbound_letter_generation_failed"));
 			}
 		}
 	}
@@ -2149,13 +2261,21 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		session.ReplyWaitPopupShown = true;
 		try
 		{
-			string name = recipient?.Name?.ToString() ?? session.RecipientName ?? "NPC";
-			InformationManager.ShowInquiry(new InquiryData("等待信使回信生成", "信使已经抵达 " + name + " 的位置，正在等待对方读信并写下回信。\n\n游戏时间已暂停，回信生成完成后会自动继续并执行后处理标签。", isAffirmativeOptionShown: false, isNegativeOptionShown: false, "", "", null, null), pauseGameActiveState: true, prioritize: true);
+			if (IsInboundToPlayer(session))
+			{
+				string senderName = recipient?.Name?.ToString() ?? session.SenderName ?? "NPC";
+				InformationManager.ShowInquiry(new InquiryData("等待信使来信生成", "信使已经抵达你的队伍，正在等待" + senderName + "写完信件正文。\n\n游戏时间已暂停，信件生成完成后会自动送达。", isAffirmativeOptionShown: false, isNegativeOptionShown: false, "", "", null, null), pauseGameActiveState: true, prioritize: true);
+			}
+			else
+			{
+				string name = recipient?.Name?.ToString() ?? session.RecipientName ?? "NPC";
+				InformationManager.ShowInquiry(new InquiryData("等待信使回信生成", "信使已经抵达 " + name + " 的位置，正在等待对方读信并写下回信。\n\n游戏时间已暂停，回信生成完成后会自动继续并执行后处理标签。", isAffirmativeOptionShown: false, isNegativeOptionShown: false, "", "", null, null), pauseGameActiveState: true, prioritize: true);
+			}
 		}
 		catch (Exception ex)
 		{
 			Log("show reply wait inquiry failed session=" + session.Id + " error=" + ex.Message);
-			InformationManager.DisplayMessage(new InformationMessage("信使已抵达，正在等待回信生成。游戏时间已暂停。", Colors.Yellow));
+			InformationManager.DisplayMessage(new InformationMessage(IsInboundToPlayer(session) ? "信使已抵达，正在等待来信生成。游戏时间已暂停。" : "信使已抵达，正在等待回信生成。游戏时间已暂停。", Colors.Yellow));
 		}
 	}
 
@@ -2235,7 +2355,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		{
 			lock (_sessionLock)
 			{
-				return _sessions.Values.Any(x => x != null && !IsTerminalStage(x) && x.DeliveryApplied && !x.ReplyGenerated && x.ReplyWaitPopupShown);
+				return _sessions.Values.Any(x => x != null && !IsTerminalStage(x) && !x.ReplyGenerated && x.ReplyWaitPopupShown);
 			}
 		}
 		catch
@@ -3726,6 +3846,77 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		}
 		current.AppendLine();
 		current.AppendLine("请以" + npcName + "的身份决定是否回信；如果回信，只输出信件正文。");
+		messages.Add(CreateCourierChatMessage("user", current.ToString().Trim()));
+		return messages;
+	}
+
+	private static List<object> BuildInboundNpcLetterMessages(Hero sender, CourierSession session, string seed, string extras, string factForPrompt = null, string prebuiltHistory = null, IEnumerable<ConversationMessage> persistentMemoryRoleMessages = null)
+	{
+		string npcName = sender?.Name?.ToString() ?? session?.SenderName ?? "NPC";
+		string playerName = MyBehavior.BuildPlayerPublicDisplayNameForExternal(sender);
+		if (string.IsNullOrWhiteSpace(playerName))
+		{
+			playerName = Hero.MainHero?.Name?.ToString() ?? "玩家";
+		}
+		string fact = string.IsNullOrWhiteSpace(factForPrompt) ? (session?.DeliveryFactText ?? "") : factForPrompt;
+		string history = prebuiltHistory ?? MyBehavior.BuildHistoryContextForExternal(sender, 24, seed, fact);
+		string recentFacts = MyBehavior.BuildRecentNpcFactContextForExternal(sender, 6);
+		string playerIdentity = MyBehavior.BuildPlayerCourierSenderIdentityForExternal(sender);
+		string playerRelationship = MyBehavior.BuildNpcPlayerKinshipPromptLineForExternal(sender);
+		string currentLocationLine = BuildCourierCurrentLocationLine(sender);
+		string system = "你正在扮演 Mount & Blade II: Bannerlord 世界中的角色：" + npcName + "。\n"
+			+ "这不是面对面对话。你决定主动通过信使给" + playerName + "写一封外交信。\n"
+			+ "下面 messages 中 assistant 只代表你自己过去说过的话；role=user 包含历史、事实、旁听内容、规则与本次写信意图。\n"
+			+ "你必须根据收信人的公开身份选择合适称呼；如果收信人是君主或统治者，不要降格称为勋爵、领主或普通贵族。\n"
+			+ "请只输出你要写在信中的正文，不要写旁白、动作描写、系统说明、标签解释或方括号动作标签。\n"
+			+ "你可以提出条件、邀请谈判、表明立场或请求回信，但不能宣布" + playerName + "已经同意，也不能把尚未发生的外交结果写成事实。";
+		system = MyBehavior.AppendPlayerCustomPromptRuleToSystemPromptForExternal(system);
+		StringBuilder context = new StringBuilder();
+		if (!string.IsNullOrWhiteSpace(playerIdentity))
+		{
+			context.AppendLine(playerIdentity.Trim());
+		}
+		if (!string.IsNullOrWhiteSpace(playerRelationship))
+		{
+			AppendCourierUserSection(context, "【收信人与你的关系】", playerRelationship);
+		}
+		if (!string.IsNullOrWhiteSpace(currentLocationLine))
+		{
+			AppendCourierUserSection(context, "【当前位置信息】", currentLocationLine);
+		}
+		if (!string.IsNullOrWhiteSpace(history))
+		{
+			AppendCourierRawUserSection(context, history);
+		}
+		if (!string.IsNullOrWhiteSpace(recentFacts))
+		{
+			AppendCourierRawUserSection(context, recentFacts);
+		}
+		if (!string.IsNullOrWhiteSpace(extras))
+		{
+			AppendCourierUserSection(context, "【本轮信件规则与补充】", extras);
+		}
+		List<object> messages = new List<object>
+		{
+			CreateCourierChatMessage("system", system)
+		};
+		string contextText = context.ToString().Trim();
+		if (!string.IsNullOrWhiteSpace(contextText))
+		{
+			messages.Add(CreateCourierChatMessage("user", contextText));
+		}
+		AppendCourierPersistentMemoryRoleMessages(messages, persistentMemoryRoleMessages, npcName, playerName);
+		StringBuilder current = new StringBuilder();
+		current.AppendLine("【本次主动写信意图或草稿】");
+		current.AppendLine(seed ?? "");
+		if (!string.IsNullOrWhiteSpace(fact))
+		{
+			current.AppendLine();
+			current.AppendLine("【送信事实】");
+			current.AppendLine("【当下行为】" + fact.Trim());
+		}
+		current.AppendLine();
+		current.AppendLine("请以" + npcName + "的身份写给" + playerName + "一封会由信使送达的信，只输出信件正文。");
 		messages.Add(CreateCourierChatMessage("user", current.ToString().Trim()));
 		return messages;
 	}
@@ -5396,6 +5587,30 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			return "";
 		}
 		return value;
+	}
+
+	private static string NormalizeInboundLetterText(string text, CourierSession session, Hero sender)
+	{
+		string value = (text ?? "").Trim();
+		value = Regex.Replace(value, "<think>.*?</think>", "", RegexOptions.Singleline | RegexOptions.IgnoreCase).Trim();
+		value = Regex.Replace(value, "^(NPC|来信|信件|外交信)[:：]\\s*", "", RegexOptions.IgnoreCase).Trim();
+		value = StripCourierActionTags(value).Trim();
+		if (!string.IsNullOrWhiteSpace(value) && value != "（没说话）" && value != "无" && value != "无信件")
+		{
+			return value;
+		}
+		string fallback = (session?.LetterText ?? "").Trim();
+		if (!string.IsNullOrWhiteSpace(fallback))
+		{
+			return StripCourierActionTags(fallback).Trim();
+		}
+		string senderName = string.IsNullOrWhiteSpace(session?.SenderName) ? (sender?.Name?.ToString() ?? "NPC") : session.SenderName.Trim();
+		string playerName = MyBehavior.BuildPlayerPublicDisplayNameForExternal(sender);
+		if (string.IsNullOrWhiteSpace(playerName))
+		{
+			playerName = Hero.MainHero?.Name?.ToString() ?? "玩家";
+		}
+		return senderName + "致" + playerName + "：\n\n我希望以正式信件与你讨论两国外交。若你愿意，请回信说明你的条件。";
 	}
 
 	private static bool LooksLikeApiError(string text)
