@@ -3788,6 +3788,11 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		{
 			return false;
 		}
+		if (MapSeaContextGuard.IsCurrentPlayerEncounterAtSea(target))
+		{
+			Logger.Log("LordEncounter", $"OpenEncounterMenu ignored because current encounter is at sea. Target={target.Name}");
+			return false;
+		}
 		if (HasPendingForceNativeEncounterAttack())
 		{
 			Logger.Log("LordEncounter", $"OpenEncounterMenu ignored because native encounter attack is pending. Target={target.Name}");
@@ -4227,7 +4232,12 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 				TryForcePendingDefeatCaptivityMenuIfReady();
 				return;
 			}
-			EnsureEncounterTargetHero("menu_opened");
+			Hero hero = EnsureEncounterTargetHero("menu_opened");
+			if (MapSeaContextGuard.IsCurrentPlayerEncounterAtSea(hero))
+			{
+				TryActivateNativeEncounterMenuSafely("sea_custom_menu_opened");
+				return;
+			}
 			TryRunPostMissionCleanupIfReady();
 			_cameraLockWasActive = true;
 			FocusMapCameraOnMainParty();
@@ -4286,6 +4296,11 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		}
 		if (TryFinishNativeLeaveEncounterFromCustomMenu("campaign_tick"))
 		{
+			return;
+		}
+		if (MapSeaContextGuard.IsCurrentPlayerEncounterAtSea(EnsureEncounterTargetHero("sea_custom_menu_tick")))
+		{
+			TryActivateNativeEncounterMenuSafely("sea_custom_menu_tick");
 			return;
 		}
 		if (_targetHero == null)
@@ -7358,6 +7373,23 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 				catch
 				{
 				}
+				if (MapSeaContextGuard.IsMobilePartyAtSeaOrOnWater(MobileParty.MainParty))
+				{
+					if (settlement != null)
+					{
+						string seaNearestName = FormatSettlementNameWithType(settlement);
+						if (string.IsNullOrEmpty(seaNearestName))
+						{
+							seaNearestName = settlement.Name.ToString();
+						}
+						_encounterMeetingLocationInfoOverride = "你正位于" + seaNearestName + "附近的海上。";
+					}
+					else
+					{
+						_encounterMeetingLocationInfoOverride = "你正位于海上。";
+					}
+					return;
+				}
 				if (settlement != null)
 				{
 					string text2 = FormatSettlementNameWithType(settlement);
@@ -7398,21 +7430,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 					return;
 				}
 				TerrainType terrainTypeAtPosition = Campaign.Current.MapSceneWrapper.GetTerrainTypeAtPosition(in _savedMainPartyPosition);
-				string text3 = terrainTypeAtPosition switch
-				{
-					TerrainType.Plain => "平原",
-					TerrainType.Forest => "森林",
-					TerrainType.Mountain => "山地",
-					TerrainType.Snow => "雪原",
-					TerrainType.Desert => "沙漠",
-					TerrainType.Steppe => "草原",
-					TerrainType.Swamp => "沼泽",
-					TerrainType.Canyon => "峡谷",
-					TerrainType.Dune => "沙丘",
-					TerrainType.RuralArea => "乡野",
-					TerrainType.Beach => "海滩",
-					_ => terrainTypeAtPosition.ToString(),
-				};
+				string text3 = MapSeaContextGuard.BuildTerrainPromptLabel(terrainTypeAtPosition);
 				string text4 = "";
 				try
 				{

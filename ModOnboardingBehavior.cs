@@ -2773,9 +2773,9 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			}
 			_suppressWelcomeUntilUtcTicks = ticks + TimeSpan.FromMilliseconds(fromGate ? 800 : 200).Ticks;
 			_activeOnboardingStage = OnboardingUiStage.Import;
-			string text = "首次在此存档中使用 AnimusForge。\n\n你现在可以导入编辑器导出的 JSON 数据，或先跳过这一步，直接继续填写角色信息。\n\n首次导入会同时载入：人物个性、未命名NPC、知识库、声音映射，以及事件库（开局概要/事件记录）。";
+			string text = "此内容包括世界观，角色信息，以及各个王国的开局概括，可以极大提升游戏的体验。\n\n但是一些世界观也会加大cpu的负担。";
 			_welcomeInProgress = true;
-			InformationManager.ShowInquiry(new InquiryData("AnimusForge - 首次使用", text, isAffirmativeOptionShown: true, isNegativeOptionShown: true, "一键导入", "跳过", delegate
+			InformationManager.ShowInquiry(new InquiryData("知识库数据导入", text, isAffirmativeOptionShown: true, isNegativeOptionShown: true, "一键导入", "跳过", delegate
 			{
 				_welcomeInProgress = false;
 				OpenImportFolderPicker(delegate

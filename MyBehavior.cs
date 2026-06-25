@@ -19505,11 +19505,24 @@ public class MyBehavior : CampaignBehaviorBase
 			}
 			Settlement settlement = Helpers.SettlementHelper.FindNearestSettlementToMobileParty(party, MobileParty.NavigationType.All, (Settlement x) => x != null && !x.IsHideout);
 			string settlementName = (settlement?.Name?.ToString() ?? "").Trim();
+			string terrainLabel = "";
+			if (MapSeaContextGuard.IsMobilePartyAtSeaOrOnWater(party))
+			{
+				terrainLabel = "海上";
+			}
+			else
+			{
+				terrainLabel = MapSeaContextGuard.BuildMobilePartyLandTerrainPromptLabel(party);
+				if (string.IsNullOrWhiteSpace(terrainLabel))
+				{
+					terrainLabel = "野外";
+				}
+			}
 			if (string.IsNullOrWhiteSpace(settlementName))
 			{
-				return "";
+				return terrainLabel;
 			}
-			return settlementName + "附近的野外";
+			return settlementName + "附近的" + terrainLabel;
 		}
 		catch
 		{

@@ -77,6 +77,11 @@ public static class Patch_ConversationManager_SetupAndStartMapConversation
 			{
 				return true;
 			}
+			if (MapSeaContextGuard.IsCurrentPlayerEncounterAtSea())
+			{
+				Logger.LogTrace("Conversation_Intercept", "Sea encounter context detected; allow native SetupAndStartMapConversation.");
+				return true;
+			}
 			if (MobileParty.MainParty?.MapEvent != null)
 			{
 				return true;

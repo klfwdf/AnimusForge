@@ -1492,23 +1492,6 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 				sb.AppendLine("- " + (string.IsNullOrWhiteSpace(entry.GameDate) ? ("第" + entry.Day + "日") : entry.GameDate.Trim()) + "：" + RenderPlayerActionTextForPrompt(entry.Text, playerName));
 			}
 		}
-		List<PlayerHistoryMaterial> materials = (_state.MajorMaterials ?? new List<PlayerHistoryMaterial>())
-			.Where(x => x != null && !string.IsNullOrWhiteSpace(x.Text) && (includeRawMaterials || !x.Summarized))
-			.OrderBy(x => x.Day)
-			.ThenBy(x => x.CreatedUtcTicks)
-			.ToList();
-		if (materials.Count > 0)
-		{
-			if (sb.Length > 0)
-			{
-				sb.AppendLine();
-			}
-			sb.AppendLine(includeRawMaterials ? "【履历素材】" : "【新增履历】");
-			foreach (PlayerHistoryMaterial material in materials)
-			{
-				sb.AppendLine("- " + (string.IsNullOrWhiteSpace(material.GameDate) ? ("第" + material.Day + "日") : material.GameDate.Trim()) + "：" + RenderPlayerActionTextForPrompt(material.Text, playerName));
-			}
-		}
 		string text = sb.ToString().Trim();
 		return string.IsNullOrWhiteSpace(text) ? "尚无可展示的公开履历。" : text;
 	}

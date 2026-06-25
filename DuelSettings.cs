@@ -205,7 +205,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 
 	public const int ApiMaxTokensMaximum = 64000;
 
-	public const int DefaultGeneralApiMaxTokens = 5000;
+	public const int DefaultGeneralApiMaxTokens = 8000;
 
 	public const int DefaultEventAndRebellionApiMaxTokens = 8000;
 
@@ -309,7 +309,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyGroup("1. AI 核心配置/1. 主API（正文生成）", GroupOrder = -300)]
 	public float MainApiTemperature { get; set; } = 0.8f;
 
-	[SettingPropertyInteger("最大输出Tokens", ApiMaxTokensMinimum, ApiMaxTokensMaximum, "0", Order = 9, RequireRestart = false, HintText = "主API正文生成调用的 max_tokens。默认 5000；如果接口不支持过高上限，可能会被接口拒绝。")]
+	[SettingPropertyInteger("最大输出Tokens", ApiMaxTokensMinimum, ApiMaxTokensMaximum, "0", Order = 9, RequireRestart = false, HintText = "主API正文生成调用的 max_tokens。默认 8000；如果接口不支持过高上限，可能会被接口拒绝。")]
 	[SettingPropertyGroup("1. AI 核心配置/1. 主API（正文生成）", GroupOrder = -300)]
 	public int MainApiMaxTokens { get; set; } = DefaultGeneralApiMaxTokens;
 
@@ -759,7 +759,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyGroup("1. AI 核心配置/2. 前处理API（规则检索与简易对话链路）", GroupOrder = -290)]
 	public float AuxiliaryApiTemperature { get; set; } = 0f;
 
-	[SettingPropertyInteger("最大输出Tokens", ApiMaxTokensMinimum, ApiMaxTokensMaximum, "0", Order = 9, RequireRestart = false, HintText = "前处理API规则检索、规则路由与简易对话链路调用的 max_tokens。默认 5000；如果接口不支持过高上限，可能会被接口拒绝。")]
+	[SettingPropertyInteger("最大输出Tokens", ApiMaxTokensMinimum, ApiMaxTokensMaximum, "0", Order = 9, RequireRestart = false, HintText = "前处理API规则检索、规则路由与简易对话链路调用的 max_tokens。默认 8000；如果接口不支持过高上限，可能会被接口拒绝。")]
 	[SettingPropertyGroup("1. AI 核心配置/2. 前处理API（规则检索与简易对话链路）", GroupOrder = -290)]
 	public int AuxiliaryApiMaxTokens { get; set; } = DefaultGeneralApiMaxTokens;
 
@@ -834,7 +834,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyGroup("1. AI 核心配置/3. 后处理API（动作标签与情绪标签判定）", GroupOrder = -280)]
 	public float ActionPostprocessApiTemperature { get; set; } = 0f;
 
-	[SettingPropertyInteger("最大输出Tokens", ApiMaxTokensMinimum, ApiMaxTokensMaximum, "0", Order = 9, RequireRestart = false, HintText = "后处理API动作标签与情绪标签判定调用的 max_tokens。默认 5000；如果接口不支持过高上限，可能会被接口拒绝。")]
+	[SettingPropertyInteger("最大输出Tokens", ApiMaxTokensMinimum, ApiMaxTokensMaximum, "0", Order = 9, RequireRestart = false, HintText = "后处理API动作标签与情绪标签判定调用的 max_tokens。默认 8000；如果接口不支持过高上限，可能会被接口拒绝。")]
 	[SettingPropertyGroup("1. AI 核心配置/3. 后处理API（动作标签与情绪标签判定）", GroupOrder = -280)]
 	public int ActionPostprocessApiMaxTokens { get; set; } = DefaultGeneralApiMaxTokens;
 

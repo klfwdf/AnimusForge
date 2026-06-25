@@ -41,6 +41,12 @@ public static class Patch_GameMenu_ActivateGameMenu
 				Logger.LogTrace("UI_Intercept", "Custom encounter menu activation suppressed while meeting battle is returning to the world map.");
 				return false;
 			}
+			if (menuId == "AnimusForge_lord_encounter" && MapSeaContextGuard.IsCurrentPlayerEncounterAtSea())
+			{
+				Logger.LogTrace("UI_Intercept", "Custom encounter menu activation requested at sea; redirecting back to native 'encounter' menu.");
+				menuId = "encounter";
+				return true;
+			}
 			if (!(menuId == "encounter"))
 			{
 				return true;
@@ -73,6 +79,11 @@ public static class Patch_GameMenu_ActivateGameMenu
 			if (LordEncounterBehavior.IsNativeEncounterActivityContext())
 			{
 				Logger.LogTrace("UI_Intercept", "Native encounter activity context detected; keep native 'encounter' menu.");
+				return true;
+			}
+			if (MapSeaContextGuard.IsCurrentPlayerEncounterAtSea())
+			{
+				Logger.LogTrace("UI_Intercept", "Sea encounter context detected; keep native 'encounter' menu.");
 				return true;
 			}
 			if (LordEncounterBehavior.IsCustomEncounterMenuDisabledForCurrentEncounter())

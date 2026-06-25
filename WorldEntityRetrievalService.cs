@@ -144,6 +144,8 @@ public static class WorldEntityRetrievalService
 
 		public string Affiliation;
 
+		public string ShipInfo;
+
 		public string Direction;
 
 		public float Distance;
@@ -1005,8 +1007,7 @@ public static class WorldEntityRetrievalService
 			sb.AppendLine("【附近可见部队】");
 			for (int i = 0; i < visibleParties.Count; i++)
 			{
-				VisiblePartyCandidate party = visibleParties[i];
-				sb.AppendLine((i + 1) + ". 名称：" + party.Name + "；数量：" + party.Count + "；部队ID：" + party.Id + "；从属：" + party.Affiliation + "；方位：" + party.Direction + "；距离：" + FormatDistance(party.Distance));
+				sb.AppendLine(BuildVisiblePartyPromptLine(i + 1, visibleParties[i]));
 			}
 		}
 		return sb.ToString().Trim();
@@ -1083,9 +1084,18 @@ public static class WorldEntityRetrievalService
 		sb.AppendLine("【附近可见部队】");
 		for (int i = 0; i < parties.Count; i++)
 		{
-			VisiblePartyCandidate party = parties[i];
-			sb.AppendLine((i + 1) + ". 名称：" + party.Name + "；数量：" + party.Count + "；部队ID：" + party.Id + "；从属：" + party.Affiliation + "；方位：" + party.Direction + "；距离：" + FormatDistance(party.Distance));
+			sb.AppendLine(BuildVisiblePartyPromptLine(i + 1, parties[i]));
 		}
+	}
+
+	private static string BuildVisiblePartyPromptLine(int index, VisiblePartyCandidate party)
+	{
+		if (party == null)
+		{
+			return index + ". 名称：未知；数量：0";
+		}
+		string shipSegment = string.IsNullOrWhiteSpace(party.ShipInfo) ? "" : ("；舰船：" + party.ShipInfo.Trim());
+		return index + ". 名称：" + party.Name + "；数量：" + party.Count + shipSegment + "；部队ID：" + party.Id + "；从属：" + party.Affiliation + "；方位：" + party.Direction + "；距离：" + FormatDistance(party.Distance);
 	}
 
 	private static void AppendHeroMainFacts(StringBuilder sb, List<EntityMatch<Hero>> matches, string playerDisplayName, Hero contextHero)
@@ -1539,7 +1549,7 @@ public static class WorldEntityRetrievalService
 					string nearest = FormatNearestSettlementForParty(party);
 					if (!string.IsNullOrWhiteSpace(nearest))
 					{
-						parts.Add("在 " + nearest + " 附近活动");
+						parts.Add("在 " + nearest + " 附近" + FormatMobilePartyMapTerrainSuffix(party) + "活动");
 					}
 				}
 				if (party.Army != null)
@@ -1594,27 +1604,52 @@ public static class WorldEntityRetrievalService
 			}
 			string nearest = FormatNearestSettlementForParty(party);
 			string target = party.TargetSettlement == null ? "" : FormatSettlementNameWithType(party.TargetSettlement);
+			string terrainSuffix = FormatMobilePartyMapTerrainSuffix(party);
 			if (!string.IsNullOrWhiteSpace(nearest) && !string.IsNullOrWhiteSpace(target))
 			{
-				return "大地图，当前位置：" + nearest + "附近；正在前往 " + target;
+				return "大地图，当前位置：" + nearest + "附近" + terrainSuffix + "；正在前往 " + target;
 			}
 			if (!string.IsNullOrWhiteSpace(nearest))
 			{
-				return "大地图，当前位置：" + nearest + "附近";
+				return "大地图，当前位置：" + nearest + "附近" + terrainSuffix;
 			}
 			if (!string.IsNullOrWhiteSpace(target))
 			{
-				return "大地图，正在前往 " + target;
+				string terrainLabel = FormatMobilePartyMapTerrainLabel(party);
+				return string.IsNullOrWhiteSpace(terrainLabel) ? ("大地图，正在前往 " + target) : ("大地图，当前位置：" + terrainLabel + "；正在前往 " + target);
 			}
 			if (party.LastVisitedSettlement != null)
 			{
-				return "大地图，最近离开 " + FormatSettlementNameWithType(party.LastVisitedSettlement);
+				string terrainLabel = FormatMobilePartyMapTerrainLabel(party);
+				return string.IsNullOrWhiteSpace(terrainLabel) ? ("大地图，最近离开 " + FormatSettlementNameWithType(party.LastVisitedSettlement)) : ("大地图，最近离开 " + FormatSettlementNameWithType(party.LastVisitedSettlement) + "；当前位置：" + terrainLabel);
 			}
 			return "大地图，队伍：" + SafeName(party.Name, party.StringId);
 		}
 		catch
 		{
 			return "大地图，队伍：" + SafeName(party.Name, party.StringId);
+		}
+	}
+
+	private static string FormatMobilePartyMapTerrainSuffix(MobileParty party)
+	{
+		string terrainLabel = FormatMobilePartyMapTerrainLabel(party);
+		return string.IsNullOrWhiteSpace(terrainLabel) ? "" : ("的" + terrainLabel);
+	}
+
+	private static string FormatMobilePartyMapTerrainLabel(MobileParty party)
+	{
+		try
+		{
+			if (MapSeaContextGuard.IsMobilePartyAtSeaOrOnWater(party))
+			{
+				return "海上";
+			}
+			return MapSeaContextGuard.BuildMobilePartyLandTerrainPromptLabel(party);
+		}
+		catch
+		{
+			return "";
 		}
 	}
 
@@ -2107,6 +2142,7 @@ public static class WorldEntityRetrievalService
 						Name = SafeName(party.Name, id),
 						Count = GetPartyMemberCount(party),
 						Affiliation = FormatPartyAffiliation(party),
+						ShipInfo = MapSeaContextGuard.BuildMobilePartyShipPromptText(party),
 						Direction = FormatDirection(observer.Position, party.Position),
 						Distance = distance
 					};

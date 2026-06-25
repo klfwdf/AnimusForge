@@ -526,12 +526,12 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 				skipReason = "leader_invalid";
 				return false;
 			}
-			if (party.MapEvent != null || party.CurrentSettlement != null || party.Army != null || party.BesiegedSettlement != null || party.IsInRaftState || party.IsCurrentlyAtSea)
+			if (party.MapEvent != null || party.CurrentSettlement != null || party.Army != null || party.BesiegedSettlement != null || MapSeaContextGuard.IsMobilePartyAtSeaOrOnWater(party))
 			{
 				skipReason = "party_busy_or_invalid_location";
 				return false;
 			}
-			if (mainParty.MapEvent != null || mainParty.CurrentSettlement != null || mainParty.IsInRaftState || mainParty.IsCurrentlyAtSea)
+			if (mainParty.MapEvent != null || mainParty.CurrentSettlement != null || MapSeaContextGuard.IsMobilePartyAtSeaOrOnWater(mainParty))
 			{
 				skipReason = "main_party_busy_or_invalid_location";
 				return false;
@@ -1139,8 +1139,13 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
-		if (party.MapEvent != null || mainParty.MapEvent != null || party.CurrentSettlement != null || mainParty.CurrentSettlement != null || party.IsInRaftState || mainParty.IsInRaftState || party.IsCurrentlyAtSea || mainParty.IsCurrentlyAtSea)
+		if (party.MapEvent != null || mainParty.MapEvent != null || party.CurrentSettlement != null || mainParty.CurrentSettlement != null)
 		{
+			return;
+		}
+		if (MapSeaContextGuard.IsMobilePartyAtSeaOrOnWater(party) || MapSeaContextGuard.IsMobilePartyAtSeaOrOnWater(mainParty))
+		{
+			CancelActiveSession("chase_at_sea", releaseParty: true);
 			return;
 		}
 		if (PlayerEncounter.Current != null || Campaign.Current?.ConversationManager?.IsConversationInProgress == true)
@@ -1160,6 +1165,11 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 	{
 		if (party == null || hero == null || party.Party == null || PartyBase.MainParty == null)
 		{
+			return;
+		}
+		if (MapSeaContextGuard.IsMobilePartyAtSeaOrOnWater(party) || MapSeaContextGuard.IsMobilePartyAtSeaOrOnWater(MobileParty.MainParty))
+		{
+			CancelActiveSession("open_menu_at_sea", releaseParty: true);
 			return;
 		}
 		_activeSession.Stage = "OpeningMenu";
@@ -1243,6 +1253,11 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		if (mainParty == null)
 		{
 			CancelActiveSession(reason + ":missing_main_party", releaseParty: true);
+			return;
+		}
+		if (MapSeaContextGuard.IsMobilePartyAtSeaOrOnWater(party) || MapSeaContextGuard.IsMobilePartyAtSeaOrOnWater(mainParty))
+		{
+			CancelActiveSession(reason + ":sea", releaseParty: true);
 			return;
 		}
 		float maxDistance = Math.Max(1f, mainParty.SeeingRange * 3f);
@@ -2020,14 +2035,9 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 				reason = "main_party_in_settlement";
 				return true;
 			}
-			if (mainParty.IsInRaftState)
+			if (MapSeaContextGuard.IsMobilePartyAtSeaOrOnWater(mainParty))
 			{
-				reason = "main_party_raft";
-				return true;
-			}
-			if (mainParty.IsCurrentlyAtSea)
-			{
-				reason = "main_party_at_sea";
+				reason = mainParty.IsInRaftState ? "main_party_raft" : "main_party_at_sea";
 				return true;
 			}
 			if (PlayerEncounter.Current != null)

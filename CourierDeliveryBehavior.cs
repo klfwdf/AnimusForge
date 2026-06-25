@@ -3671,6 +3671,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		string recentFacts = MyBehavior.BuildRecentNpcFactContextForExternal(recipient, 6);
 		string senderIdentity = MyBehavior.BuildPlayerCourierSenderIdentityForExternal(recipient);
 		string senderRelationship = MyBehavior.BuildNpcPlayerKinshipPromptLineForExternal(recipient);
+		string currentLocationLine = BuildCourierCurrentLocationLine(recipient);
 		string system = "你正在扮演 Mount & Blade II: Bannerlord 世界中的角色：" + npcName + "。\n"
 			+ "这不是面对面对话。你刚刚通过信使收到" + playerName + "写给你的一封信。\n"
 			+ "下面 messages 中 assistant 只代表你自己过去说过的话；role=user 包含来信、玩家发言、事实、旁听内容与规则。\n"
@@ -3687,6 +3688,10 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		if (!string.IsNullOrWhiteSpace(senderRelationship))
 		{
 			AppendCourierUserSection(context, "【来信者与你的关系】", senderRelationship);
+		}
+		if (!string.IsNullOrWhiteSpace(currentLocationLine))
+		{
+			AppendCourierUserSection(context, "【当前位置信息】", currentLocationLine);
 		}
 		if (!string.IsNullOrWhiteSpace(history))
 		{
@@ -3723,6 +3728,87 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		current.AppendLine("请以" + npcName + "的身份决定是否回信；如果回信，只输出信件正文。");
 		messages.Add(CreateCourierChatMessage("user", current.ToString().Trim()));
 		return messages;
+	}
+
+	private static string BuildCourierCurrentLocationLine(Hero recipient)
+	{
+		try
+		{
+			MobileParty party = ResolveCourierPromptParty(recipient);
+			Settlement currentSettlement = recipient?.CurrentSettlement ?? party?.CurrentSettlement;
+			if (currentSettlement != null)
+			{
+				return "你当前位于" + FormatCourierSettlementNameWithType(currentSettlement) + "。";
+			}
+			if (party == null)
+			{
+				return "";
+			}
+			if (MapSeaContextGuard.IsMobilePartyAtSeaOrOnWater(party))
+			{
+				Settlement nearest = FindNearestSettlementForCourierPrompt(party);
+				string nearestName = FormatCourierSettlementNameWithType(nearest);
+				string locationLine = string.IsNullOrWhiteSpace(nearestName)
+					? "你正位于海上。"
+					: "你正位于" + nearestName + "附近的海上。";
+				string shipText = MapSeaContextGuard.BuildMobilePartyShipPromptText(party);
+				if (!string.IsNullOrWhiteSpace(shipText))
+				{
+					locationLine += "舰船：" + shipText + "。";
+				}
+				return locationLine;
+			}
+			string terrainLabel = MapSeaContextGuard.BuildMobilePartyLandTerrainPromptLabel(party);
+			if (string.IsNullOrWhiteSpace(terrainLabel))
+			{
+				terrainLabel = "野外";
+			}
+			Settlement landNearest = FindNearestSettlementForCourierPrompt(party);
+			string landNearestName = FormatCourierSettlementNameWithType(landNearest);
+			return string.IsNullOrWhiteSpace(landNearestName)
+				? "你当前位于" + terrainLabel + "。"
+				: "你当前位于" + landNearestName + "附近的" + terrainLabel + "。";
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	private static MobileParty ResolveCourierPromptParty(Hero hero)
+	{
+		try
+		{
+			if (hero?.PartyBelongedTo != null && hero.PartyBelongedTo.IsActive)
+			{
+				return hero.PartyBelongedTo;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			PartyBase prisonerParty = hero?.PartyBelongedToAsPrisoner;
+			if (prisonerParty?.MobileParty != null && prisonerParty.MobileParty.IsActive)
+			{
+				return prisonerParty.MobileParty;
+			}
+		}
+		catch
+		{
+		}
+		return null;
+	}
+
+	private static Settlement FindNearestSettlementForCourierPrompt(MobileParty party)
+	{
+		return MapSeaContextGuard.FindNearestSettlementForPrompt(party);
+	}
+
+	private static string FormatCourierSettlementNameWithType(Settlement settlement)
+	{
+		return MapSeaContextGuard.FormatSettlementNameWithTypeForPrompt(settlement);
 	}
 
 	private static object CreateCourierChatMessage(string role, string content)
