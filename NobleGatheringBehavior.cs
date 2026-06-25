@@ -1,4 +1,4 @@
-using System;
+﻿﻿﻿﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -211,6 +211,8 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 	private readonly Dictionary<string, NobleGatheringRecord> _gatherings = new Dictionary<string, NobleGatheringRecord>(StringComparer.OrdinalIgnoreCase);
 	private readonly Dictionary<string, double> _playerHostCooldowns = new Dictionary<string, double>(StringComparer.OrdinalIgnoreCase);
 	private readonly HashSet<string> _playerInvitationNoticesShownThisSession = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+	private readonly Dictionary<string, string> _heroActiveFeastId = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+	private readonly HashSet<string> _feastAttendeeClanIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 	private readonly List<LocationCharacter> _addedAtmosphereCharacters = new List<LocationCharacter>();
 	private MapNotificationView _registeredMapNotificationView;
 	private long _nextNoticePublishRetryUtcTicks;
@@ -319,6 +321,7 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 				_playerHostCooldowns[pair.Key] = day;
 			}
 		}
+			RebuildFeastAttendeeIndex();
 	}
 
 	public void OnEngineTick()
@@ -1898,6 +1901,7 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 			}
 			invitee.Status = InviteArrived;
 			invitee.ArrivalDay = NowDay();
+			RegisterFeastAttendee(hero, record);
 			if (!invitee.RelationRewardApplied)
 			{
 				ApplyArrivalRelationReward(record, host, hero);
@@ -1967,6 +1971,7 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 			return;
 		}
 		record.State = StateFinished;
+			UnregisterFeastAttendees(record);
 		WorldMapPartyCommandBehavior world = WorldMapPartyCommandBehavior.Instance ?? Campaign.Current?.GetCampaignBehavior<WorldMapPartyCommandBehavior>();
 		if (!record.IsPlayerHosted && world != null)
 		{
@@ -2836,6 +2841,28 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 		}
 	}
 
+	public static bool IsHeroAtFeast(Hero hero)
+	{
+		try
+		{
+			if (hero == null) return false;
+			NobleGatheringBehavior behavior = Instance ?? Campaign.Current?.GetCampaignBehavior<NobleGatheringBehavior>();
+			return behavior != null && behavior._heroActiveFeastId.ContainsKey(hero.StringId ?? "");
+		}
+		catch { return false; }
+	}
+
+	public static bool IsClanAtFeast(Clan clan)
+	{
+		try
+		{
+			if (clan == null) return false;
+			NobleGatheringBehavior behavior = Instance ?? Campaign.Current?.GetCampaignBehavior<NobleGatheringBehavior>();
+			return behavior != null && behavior._feastAttendeeClanIds.Contains(clan.StringId ?? "");
+		}
+		catch { return false; }
+	}
+
 	public static string BuildFeastAttendanceContext(Hero hero)
 	{
 		try
@@ -2843,8 +2870,9 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 			if (hero == null) return "";
 			NobleGatheringBehavior behavior = Instance ?? Campaign.Current?.GetCampaignBehavior<NobleGatheringBehavior>();
 			if (behavior == null) return "";
-			NobleGatheringRecord gathering = behavior.GetActiveGatheringForHero(hero);
-			if (gathering == null) return "";
+			string heroId = hero.StringId ?? "";
+			if (!behavior._heroActiveFeastId.TryGetValue(heroId, out string gatheringId)) return "";
+			if (!behavior._gatherings.TryGetValue(gatheringId, out NobleGatheringRecord gathering)) return "";
 			Hero host = ResolveHeroById(gathering.HostHeroId);
 			Settlement settlement = ResolveSettlementById(gathering.SettlementId);
 			if (host == null || settlement == null) return "";
@@ -2852,25 +2880,18 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 			int dayNumber = Math.Max(1, (int)Math.Ceiling(now - gathering.StartDay) + 1);
 			int totalDays = GatheringDurationDays;
 			string role;
-			if (string.Equals(hero.StringId, gathering.HostHeroId, StringComparison.OrdinalIgnoreCase))
-			{
+			if (string.Equals(heroId, gathering.HostHeroId, StringComparison.OrdinalIgnoreCase))
 				role = "主办方";
-			}
 			else if (hero == Hero.MainHero)
-			{
 				role = "玩家（赴宴嘉宾）";
-			}
 			else
-			{
 				role = "受邀宾客";
-			}
 			StringBuilder sb = new StringBuilder();
 			sb.AppendLine("【宴会出席】你正在参加一场贵族宴会。");
 			sb.AppendLine("- 主办方：" + GetHeroName(host));
 			sb.AppendLine("- 举办地：" + GetSettlementName(settlement));
 			sb.AppendLine("- 宴会已进行到第 " + dayNumber + " 天，共计 " + totalDays + " 天");
 			sb.AppendLine("- 你的身份：" + role);
-			sb.AppendLine("你应当意识到自己正在宴会中，可以根据你的性格谈论宴会、酒菜、宾客、主办方或其他宴会相关话题，也可以回应玩家关于宴会的提问。");
 			return sb.ToString().Trim();
 		}
 		catch (Exception ex)
@@ -2880,48 +2901,79 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private NobleGatheringRecord GetActiveGatheringForHero(Hero hero)
+	private void RegisterFeastAttendee(Hero hero, NobleGatheringRecord record)
 	{
 		try
 		{
-			if (hero == null) return null;
-			double now = NowDay();
-			string heroId = (hero.StringId ?? "").Trim();
-			if (string.IsNullOrWhiteSpace(heroId)) return null;
-			NobleGatheringRecord byHost = _gatherings.Values.FirstOrDefault(record =>
-				record != null
-				&& string.Equals(record.State, StateActive, StringComparison.OrdinalIgnoreCase)
-				&& now < record.EndDay
-				&& string.Equals(record.HostHeroId, heroId, StringComparison.OrdinalIgnoreCase));
-			if (byHost != null) return byHost;
-			NobleGatheringRecord byInvitee = _gatherings.Values.FirstOrDefault(record =>
-				record != null
-				&& string.Equals(record.State, StateActive, StringComparison.OrdinalIgnoreCase)
-				&& now < record.EndDay
-				&& (record.Invitees ?? new List<NobleGatheringInviteeRecord>()).Any(invitee =>
-					invitee != null
-					&& string.Equals(invitee.HeroId, heroId, StringComparison.OrdinalIgnoreCase)
-					&& string.Equals(invitee.Status, InviteArrived, StringComparison.OrdinalIgnoreCase)));
-			if (byInvitee != null) return byInvitee;
-			if (hero == Hero.MainHero)
-			{
-				return _gatherings.Values.FirstOrDefault(record =>
-					record != null
-					&& string.Equals(record.State, StateActive, StringComparison.OrdinalIgnoreCase)
-					&& now < record.EndDay
-					&& !record.IsPlayerHosted
-					&& string.Equals(record.PlayerInvitationStatus, PlayerInvitationArrived, StringComparison.OrdinalIgnoreCase));
-			}
-			return null;
+			if (hero == null || record == null || string.IsNullOrWhiteSpace(hero.StringId)) return;
+			_heroActiveFeastId[hero.StringId] = record.Id;
+			if (!string.IsNullOrWhiteSpace(hero.Clan?.StringId))
+				_feastAttendeeClanIds.Add(hero.Clan.StringId);
 		}
-		catch (Exception ex)
-		{
-			Log("get active gathering for hero failed: " + ex.Message);
-			return null;
-		}
+		catch (Exception ex) { Log("register feast attendee failed: " + ex.Message); }
 	}
 
-	public static string NormalizeNobleGatheringPostprocessTagsForExternal(string raw)
+	private void UnregisterFeastAttendees(NobleGatheringRecord record)
+	{
+		try
+		{
+			if (record == null) return;
+			string hostId = record.HostHeroId ?? "";
+			if (!string.IsNullOrWhiteSpace(hostId)) _heroActiveFeastId.Remove(hostId);
+			foreach (NobleGatheringInviteeRecord invitee in record.Invitees ?? new List<NobleGatheringInviteeRecord>())
+			{
+				string heroId = invitee?.HeroId ?? "";
+				if (!string.IsNullOrWhiteSpace(heroId)) _heroActiveFeastId.Remove(heroId);
+			}
+			RebuildClanIndex();
+		}
+		catch (Exception ex) { Log("unregister feast attendees failed: " + ex.Message); }
+	}
+
+	private void RebuildClanIndex()
+	{
+		try
+		{
+			_feastAttendeeClanIds.Clear();
+			double now = NowDay();
+			foreach (NobleGatheringRecord r in _gatherings.Values)
+			{
+				if (r == null || !string.Equals(r.State, StateActive, StringComparison.OrdinalIgnoreCase) || now >= r.EndDay) continue;
+				foreach (string heroId in _heroActiveFeastId.Keys.ToList())
+				{
+					if (!string.Equals(_heroActiveFeastId[heroId], r.Id, StringComparison.OrdinalIgnoreCase)) continue;
+					Hero h = ResolveHeroById(heroId);
+					if (h?.Clan?.StringId != null) _feastAttendeeClanIds.Add(h.Clan.StringId);
+				}
+			}
+		}
+		catch (Exception ex) { Log("rebuild clan index failed: " + ex.Message); }
+	}
+
+	private void RebuildFeastAttendeeIndex()
+	{
+		try
+		{
+			_heroActiveFeastId.Clear();
+			_feastAttendeeClanIds.Clear();
+			double now = NowDay();
+			foreach (NobleGatheringRecord r in _gatherings.Values)
+			{
+				if (r == null || !string.Equals(r.State, StateActive, StringComparison.OrdinalIgnoreCase) || now >= r.EndDay) continue;
+				Hero host = ResolveHeroById(r.HostHeroId);
+				if (host != null) RegisterFeastAttendee(host, r);
+				foreach (NobleGatheringInviteeRecord invitee in r.Invitees ?? new List<NobleGatheringInviteeRecord>())
+				{
+					if (invitee == null || !string.Equals(invitee.Status, InviteArrived, StringComparison.OrdinalIgnoreCase)) continue;
+					Hero h = ResolveHeroById(invitee.HeroId);
+					if (h != null) RegisterFeastAttendee(h, r);
+				}
+			}
+		}
+		catch (Exception ex) { Log("rebuild feast attendee index failed: " + ex.Message); }
+	}
+
+public static string NormalizeNobleGatheringPostprocessTagsForExternal(string raw)
 	{
 		List<string> tags = new List<string>();
 		HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
