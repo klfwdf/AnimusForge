@@ -1373,6 +1373,82 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 		return type == AfVassalageType.Garrison || type == AfVassalageType.Vassal;
 	}
 
+	public static string BuildKingdomVassalageRelationPromptLineForExternal(Kingdom observerKingdom, Kingdom counterpartKingdom)
+	{
+		try
+		{
+			return Instance?.BuildKingdomVassalageRelationPromptLine(observerKingdom, counterpartKingdom) ?? "";
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	private string BuildKingdomVassalageRelationPromptLine(Kingdom observerKingdom, Kingdom counterpartKingdom)
+	{
+		if (!IsValidKingdom(observerKingdom) || !IsValidKingdom(counterpartKingdom))
+		{
+			return "";
+		}
+		string observerId = (observerKingdom.StringId ?? "").Trim();
+		string counterpartId = (counterpartKingdom.StringId ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(observerId)
+			|| string.IsNullOrWhiteSpace(counterpartId)
+			|| string.Equals(observerId, counterpartId, StringComparison.OrdinalIgnoreCase))
+		{
+			return "";
+		}
+		foreach (VassalageAgreement agreement in _agreementsByVassalId.Values)
+		{
+			if (agreement == null || !agreement.IsValid())
+			{
+				continue;
+			}
+			string suzerainId = (agreement.SuzerainKingdomId ?? "").Trim();
+			string vassalId = (agreement.VassalKingdomId ?? "").Trim();
+			AfVassalageType type = NormalizeVassalageType(agreement.Type);
+			string typeText = GetVassalageTypeDisplayName(type);
+			string clause = BuildVassalagePromptClause(type);
+			if (string.Equals(observerId, vassalId, StringComparison.OrdinalIgnoreCase)
+				&& string.Equals(counterpartId, suzerainId, StringComparison.OrdinalIgnoreCase))
+			{
+				Kingdom vassal = agreement.ResolveVassal() ?? observerKingdom;
+				Kingdom suzerain = agreement.ResolveSuzerain() ?? counterpartKingdom;
+				if (!IsValidKingdom(vassal) || !IsValidKingdom(suzerain))
+				{
+					continue;
+				}
+				return "【当前臣属关系】你所在的王国（" + GetKingdomDisplayName(vassal, "你的王国") + "）是面前此人所在王国（" + GetKingdomDisplayName(suzerain, "对方王国") + "）的" + typeText + "；" + clause;
+			}
+			if (string.Equals(observerId, suzerainId, StringComparison.OrdinalIgnoreCase)
+				&& string.Equals(counterpartId, vassalId, StringComparison.OrdinalIgnoreCase))
+			{
+				Kingdom suzerain = agreement.ResolveSuzerain() ?? observerKingdom;
+				Kingdom vassal = agreement.ResolveVassal() ?? counterpartKingdom;
+				if (!IsValidKingdom(suzerain) || !IsValidKingdom(vassal))
+				{
+					continue;
+				}
+				return "【当前臣属关系】你所在的王国（" + GetKingdomDisplayName(suzerain, "你的王国") + "）是面前此人所在王国（" + GetKingdomDisplayName(vassal, "对方王国") + "）的宗主国；对方王国是你的" + typeText + "；" + clause;
+			}
+		}
+		return "";
+	}
+
+	private static string BuildVassalagePromptClause(AfVassalageType type)
+	{
+		switch (NormalizeVassalageType(type))
+		{
+		case AfVassalageType.Tributary:
+			return "朝贡国缴纳贡赋换取庇护，通常保留军事自主权。";
+		case AfVassalageType.Garrison:
+			return "卫戍国接受宗主军事号令，并承担出兵义务。";
+		default:
+			return "附庸国外交军事受宗主控制，并承担贡赋与出兵义务。";
+		}
+	}
+
 	public TerminalVassalageManagementData BuildTerminalVassalageManagementData()
 	{
 		TerminalVassalageManagementData data = new TerminalVassalageManagementData();
