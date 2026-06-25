@@ -28,9 +28,23 @@ public static class SiegeBannerBearerProfile
 
     public const float MountedTeleportBackDistanceMeters = 24f;
 
+    public const float PlayerMountForwardOffsetMeters = 0.35f;
+
+    public const float PlayerMountSideOffsetMeters = 0.9f;
+
+    public const float PlayerMountAssistRefreshSeconds = 0.75f;
+
+    public const float PlayerMountRepositionDistanceMeters = 4f;
+
     public const string SpawnSource = "gccz_banner_bearer_spawn";
 
     public const string FollowSource = "gccz_banner_bearer_follow";
 
     public const string BannerBearerRestoreSource = "gccz_banner_bearer_restore";
+
+    public const string PlayerMountSpawnSource = "gccz_player_ceremony_mount_spawn";
+
+    public const string PlayerMountAssistSource = "gccz_player_ceremony_mount_assist";
+
+    public const string PlayerMountRestoreSource = "gccz_player_ceremony_mount_restore";
 }
