@@ -5387,7 +5387,10 @@ private static string BuildCompactSceneUserRuntimeContextForShortReply(NpcDataPa
 		{
 			continue;
 		}
-		if (line.StartsWith("你身上穿着", StringComparison.Ordinal) || line.StartsWith("现在的时间是", StringComparison.Ordinal) || line.StartsWith("你面前站着一个", StringComparison.Ordinal))
+		if (line.StartsWith("你身上穿着", StringComparison.Ordinal)
+			|| line.StartsWith("现在的时间是", StringComparison.Ordinal)
+			|| line.StartsWith("你面前站着一个", StringComparison.Ordinal)
+			|| line.StartsWith("【当前臣属关系】", StringComparison.Ordinal))
 		{
 			keptLines.Add(line);
 		}
@@ -5749,6 +5752,12 @@ private static void SplitSceneNpcRoleIntroSections(string fullIntro, bool isHero
 		{
 			stringBuilder.Append(identitySentence);
 		}
+		string vassalageRelationLine = BuildPlayerVassalageRelationLineForPrompt(observerHero, observerNpc);
+		if (!string.IsNullOrWhiteSpace(vassalageRelationLine))
+		{
+			stringBuilder.AppendLine();
+			stringBuilder.AppendLine(vassalageRelationLine);
+		}
 		string inlineState = BuildSceneObserverInlineStateForPrompt(observerHero, observerNpc);
 		if (!string.IsNullOrWhiteSpace(inlineState))
 		{
@@ -5841,6 +5850,48 @@ private static void SplitSceneNpcRoleIntroSections(string fullIntro, bool isHero
 		{
 			return "";
 		}
+	}
+
+	private static string BuildPlayerVassalageRelationLineForPrompt(Hero observerHero, NpcDataPacket observerNpc)
+	{
+		try
+		{
+			Kingdom observerKingdom = ResolveNpcPerspectiveKingdomForPrompt(observerHero, observerNpc);
+			Kingdom playerKingdom = Hero.MainHero?.Clan?.Kingdom;
+			if (playerKingdom == null)
+			{
+				playerKingdom = Hero.MainHero?.MapFaction as Kingdom;
+			}
+			if (playerKingdom == null)
+			{
+				playerKingdom = Clan.PlayerClan?.Kingdom;
+			}
+			return VassalageBehavior.BuildKingdomVassalageRelationPromptLineForExternal(observerKingdom, playerKingdom);
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	private static Kingdom ResolveNpcPerspectiveKingdomForPrompt(Hero observerHero, NpcDataPacket observerNpc)
+	{
+		try
+		{
+			IFaction faction = ResolveNpcPerspectiveFactionForPlayerCrimePrompt(observerHero, observerNpc);
+			if (faction is Kingdom kingdom)
+			{
+				return kingdom;
+			}
+			if (faction is Clan clan)
+			{
+				return clan.Kingdom;
+			}
+		}
+		catch
+		{
+		}
+		return null;
 	}
 
 	private static string BuildFactionNameForPrompt(IFaction faction)
