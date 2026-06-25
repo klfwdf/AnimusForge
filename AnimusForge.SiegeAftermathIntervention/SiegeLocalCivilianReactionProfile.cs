@@ -86,28 +86,60 @@ public static class SiegeLocalCivilianReactionProfile
             + "请只说一句12到32字的现场话，不要写旁白、动作描写或方括号标签。";
     }
 
-    public static string BuildSoldierWitnessInquiryFact(string targetName, bool victimDown, string settlementName)
+    public static string BuildSoldierWitnessInquiryFact(string targetName, bool victimDown, string settlementName, bool soldierIsBloodthirsty = false)
     {
         string scene = string.IsNullOrWhiteSpace(settlementName) ? SiegeAmbientReactionProfile.DefaultSettlementName : settlementName.Trim();
         string target = NormalizeTargetName(targetName, "附近一名民众");
         string incident = victimDown ? "玩家刚打倒了" : "玩家刚攻击了";
+        string responsePolicy = BuildSoldierWitnessResponsePolicy(victimDown, soldierIsBloodthirsty);
         return "【攻城处置士兵请示】当前地点是" + scene + "。" + incident + target + "，你在24米内亲眼看到这个局部暴力信号。"
-            + "你是玩家己方入城士兵，必须立刻称玩家为统帅/大人/长官，并向玩家请示：是否只维持局部惩戒、是否扩大为全城搜掠，或是否升级为血洗。"
-            + "现在只是请示，不得宣布已经执行，不得自行攻击平民，不得输出任何方括号动作标签。";
+            + "你是玩家己方入城士兵，必须称玩家为统帅/大人/长官。" + responsePolicy
+            + "只说一句自然短句，不要写成三选一菜单，不要宣布已经执行处置，不得自行攻击平民，不得输出任何方括号动作标签。";
     }
 
-    public static string BuildSoldierWitnessMemoryText(string targetName, bool victimDown, string soldierName)
+    public static string BuildSoldierWitnessMemoryText(string targetName, bool victimDown, string soldierName, bool soldierIsBloodthirsty = false)
     {
         string actor = NormalizeTargetName(soldierName, "附近己方士兵");
         string incident = victimDown ? "打倒" : "攻击";
-        return actor + " 在24米内目击玩家" + incident + " " + NormalizeTargetName(targetName, "一名NPC") + "，已向玩家请示是否扩大为搜掠或血洗；该请示本身不代表已经执行破坏性处置。";
+        string inquiry;
+        if (soldierIsBloodthirsty)
+        {
+            inquiry = "以嗜血/残酷口吻向玩家请示是否下令屠城/血洗";
+        }
+        else if (victimDown)
+        {
+            inquiry = "已向玩家请示是否控住现场，或由玩家明令扩大为搜掠/血洗";
+        }
+        else
+        {
+            inquiry = "已向玩家请示是否压住附近人群并控制街口";
+        }
+        return actor + " 在24米内目击玩家" + incident + " " + NormalizeTargetName(targetName, "一名NPC") + "，" + inquiry + "；该请示本身不代表已经执行破坏性处置。";
     }
 
-    public static string BuildSoldierWitnessFallbackMessage(string soldierName, string targetName, bool victimDown)
+    public static string BuildSoldierWitnessFallbackMessage(string soldierName, string targetName, bool victimDown, bool soldierIsBloodthirsty = false)
     {
         string actor = NormalizeTargetName(soldierName, "附近己方士兵");
-        string incident = victimDown ? "打倒了" : "攻击了";
-        return "【士兵请示】" + actor + "：大人，您刚" + incident + NormalizeTargetName(targetName, "一名民众") + "，是只做局部惩戒，还是准许全城搜掠，甚至血洗？";
+        if (soldierIsBloodthirsty)
+        {
+            return "【士兵请示】" + actor + "：统帅，要不要趁这股乱劲下屠城令？您一句话，我们就动手。";
+        }
+        if (victimDown)
+        {
+            return "【士兵请示】" + actor + "：统帅，人已经倒了。要我先控住这片？若要搜掠或血洗，请您明令。";
+        }
+        return "【士兵请示】" + actor + "：大人，这边乱起来了。要不要我带人压住街口，把围观的赶开？";
+    }
+
+    private static string BuildSoldierWitnessResponsePolicy(bool victimDown, bool soldierIsBloodthirsty)
+    {
+        if (soldierIsBloodthirsty)
+        {
+            return "你有嗜血/残酷倾向，允许更主动、更兴奋地请示是否趁乱下屠城令、血洗这座城或让士兵开杀；仍必须是在向玩家请令，不得说成已经执行。";
+        }
+        return victimDown
+            ? "人已经倒下，局势可能扩大；请先请示是否控住这一片街口，只有在话语自然时才可提醒：若玩家要扩大为全城搜掠或血洗，必须由玩家明令。"
+            : "这只是一次近处打击，局势还停留在街巷局部；请请示是否压住附近人、驱散围观、护住玩家或控住街口，不要主动提全城搜掠或血洗。";
     }
 
     private static string NormalizeTargetName(string targetName, string fallback)
