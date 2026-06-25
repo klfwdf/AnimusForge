@@ -465,6 +465,26 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		}
 	}
 
+	public static bool TrySendNpcLetterToPlayerForExternal(Hero sender, string letterText, string reason, out string status)
+	{
+		status = "";
+		try
+		{
+			if (Instance == null)
+			{
+				status = "behavior_not_initialized";
+				return false;
+			}
+			return Instance.TryCreateNpcLetterToPlayerSession(sender, letterText, reason, out status);
+		}
+		catch (Exception ex)
+		{
+			status = "exception:" + ex.Message;
+			Log("external npc letter failed sender=" + SafeHeroId(sender) + " reason=" + (reason ?? "") + " error=" + ex);
+			return false;
+		}
+	}
+
 	private void OnGameLoadFinished()
 	{
 		try
@@ -1445,6 +1465,87 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private bool TryCreateNpcLetterToPlayerSession(Hero sender, string letterText, string reason, out string status)
+	{
+		status = "";
+		try
+		{
+			if (sender == null || sender == Hero.MainHero || sender.IsDead || sender.IsPrisoner || sender.IsFugitive || sender.PartyBelongedToAsPrisoner != null)
+			{
+				status = "sender_unavailable";
+				return false;
+			}
+			if (string.IsNullOrWhiteSpace(letterText))
+			{
+				status = "empty_letter";
+				return false;
+			}
+			if (HasActiveInboundCourierFromSender(sender))
+			{
+				status = "active_inbound_exists";
+				return false;
+			}
+			if (!TryGetNpcCourierStart(sender, out CampaignVec2 startPosition, out Settlement startSettlement))
+			{
+				status = "sender_location_missing";
+				return false;
+			}
+			string id = NewSessionId();
+			TroopRoster members = TroopRoster.CreateDummyTroopRoster();
+			TroopRoster prisoners = TroopRoster.CreateDummyTroopRoster();
+			CharacterObject messenger = ResolveNpcCourierMessengerTroop(sender);
+			if (messenger != null)
+			{
+				members.AddToCounts(messenger, 1, false, 0, 0, true, -1);
+			}
+			float baseSpeed = Math.Max(4f, sender.PartyBelongedTo?.Speed ?? MobileParty.MainParty?.Speed ?? 4f);
+			Clan ownerClan = sender.Clan ?? sender.Clan?.Kingdom?.RulingClan ?? Clan.PlayerClan;
+			TextObject name = new TextObject("AnimusForge NPC Courier");
+			MobileParty courier = CustomPartyComponent.CreateCustomPartyWithTroopRoster(startPosition, 0.05f, startSettlement, name, ownerClan, members, prisoners, sender, "", "", baseSpeed * 4f, true);
+			if (courier == null)
+			{
+				status = "create_party_failed";
+				return false;
+			}
+			courier.IsVisible = true;
+			ApplyCourierMapBannerVisual(courier, "create_inbound_generic");
+			courier.Party.SetCustomName(new TextObject("信使队 - " + (sender.Name?.ToString() ?? "NPC")));
+			courier.SetMoveModeHold();
+			ApplyCourierAiOverrides(courier, "create_inbound_generic");
+			CourierSession session = new CourierSession
+			{
+				Id = id,
+				Direction = CourierDirectionInboundToPlayer,
+				SenderHeroId = SafeHeroId(sender),
+				SenderName = sender.Name?.ToString() ?? "",
+				RecipientHeroId = SafeHeroId(Hero.MainHero),
+				RecipientName = MyBehavior.BuildPlayerPublicDisplayNameForExternal(sender) ?? Hero.MainHero?.Name?.ToString() ?? "",
+				CourierPartyId = courier.StringId,
+				Stage = CourierStage.Outbound.ToString(),
+				PayloadMode = CourierPayloadMode.Normal.ToString(),
+				LetterText = letterText.Trim(),
+				ReplyGenerated = true
+			};
+			session.DeliveryFactText = BuildInboundDeliveryFactText(session, delivered: false, sender);
+			lock (_sessionLock)
+			{
+				_sessions[session.Id] = session;
+			}
+			AddCourierRuntimeIndex(session, courier);
+			InformationManager.DisplayMessage(new InformationMessage((sender.Name?.ToString() ?? "NPC") + "已派出信使送来信件。", Colors.Green));
+			Log("npc generic letter session created id=" + session.Id + " sender=" + session.SenderHeroId + " party=" + session.CourierPartyId + " reason=" + (reason ?? ""));
+			ProcessSession(session);
+			status = "created";
+			return true;
+		}
+		catch (Exception ex)
+		{
+			status = "exception:" + ex.Message;
+			Log("create npc generic letter failed sender=" + SafeHeroId(sender) + " reason=" + (reason ?? "") + " error=" + ex);
+			return false;
+		}
+	}
+
 	private bool HasActiveInboundCourierFromSender(Hero sender)
 	{
 		string senderId = SafeHeroId(sender);
@@ -1928,6 +2029,27 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		}
 		try
 		{
+			if (NobleGatheringBehavior.TryApplyNobleGatheringTagsForExternal(recipient, ref text, out var nobleFacts, out var nobleNotifications))
+			{
+				foreach (string fact in nobleFacts ?? new List<string>())
+				{
+					MyBehavior.AppendExternalDialogueHistory(recipient, null, null, fact);
+				}
+				foreach (string note in nobleNotifications ?? new List<string>())
+				{
+					if (!string.IsNullOrWhiteSpace(note))
+					{
+						InformationManager.DisplayMessage(new InformationMessage(note, Colors.Green));
+					}
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			Log("apply noble gathering tags failed session=" + session.Id + " error=" + ex.Message);
+		}
+		try
+		{
 			if (MyBehavior.TryApplyPartyTransferTagsForExternal(recipient, recipient.CharacterObject, -1, ref text, out var facts, out var notifications))
 			{
 				foreach (string fact in facts ?? new List<string>())
@@ -2148,6 +2270,27 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			catch (Exception ex)
 			{
 				Log("apply world map tags failed session=" + session.Id + " error=" + ex.Message);
+			}
+			try
+			{
+				if (NobleGatheringBehavior.TryApplyNobleGatheringTagsForExternal(recipient, ref text, out var nobleFacts, out var nobleNotifications))
+				{
+						foreach (string fact in nobleFacts ?? new List<string>())
+						{
+							MyBehavior.AppendExternalDialogueHistory(recipient, null, null, fact);
+						}
+						foreach (string note in nobleNotifications ?? new List<string>())
+						{
+							if (!string.IsNullOrWhiteSpace(note))
+							{
+									InformationManager.DisplayMessage(new InformationMessage(note, Colors.Green));
+							}
+						}
+				}
+			}
+			catch (Exception ex)
+			{
+				Log("apply noble gathering tags failed session=" + session.Id + " error=" + ex.Message);
 			}
 			try
 			{

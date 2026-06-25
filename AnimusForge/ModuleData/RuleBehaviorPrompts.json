@@ -994,6 +994,39 @@
             ]
         },
         {
+            "Id": "noble_gathering",
+            "IsEnabled": true,
+            "Group": "social",
+            "Priority": 82,
+            "TopicNumber": 23,
+            "TopicLabel": "Noble feast / gathering hosting and invitations",
+            "Code": "NOBLE_GATHERING",
+            "NonHeroInstruction": "普通士兵、平民或无名NPC不能代表玩家正式筹办贵族宴会；若玩家提出举办宴会，请引导他去找同伴、总督或能代为安排的亲信。",
+            "Instruction": "【贵族宴会规则】玩家可以通过同伴、总督或亲信安排贵族宴会。正文里只自然确认、追问或拒绝，不要直接写动作标签。只有当玩家已经明确表达要举办宴会，并且本轮能解析出举办地点以及至少一个具体人物、家族、王国、文化或群体筛选时，才视为可以安排。若缺地点或宾客范围，先追问。若对方同意帮玩家安排宴会，后处理会根据运行时候选ID输出结构化宴会标签并立即视为邀请已发出，初版不需要再派玩家信使。",
+            "PostprocessRules": [
+                {
+                    "Tag": "[ACTION:NOBLE_GATHERING:START:settlement=settlementId;heroes=heroId1,heroId2;clans=clanId1;kingdoms=kingdomId1;cultures=cultureId1;age=18-30;gender=female]",
+                    "Description": "如果NPC在<latest_reply>里明确同意帮玩家举办宴会，且玩家本轮已经给出了举办地点和邀请对象范围，就输出这个。settlement 必须使用运行时可举办地ID；heroes/clans/kingdoms/cultures/age/gender 可按玩家指定填写，可省略空项，但至少要有一个邀请人物、家族、王国、文化或群体筛选。若NPC仍在追问地点、宾客、费用，或拒绝/拖延/只闲聊，不要输出。"
+                }
+            ],
+            "RuntimeInstructionTemplates": {},
+            "RuntimeConstraintTemplates": {},
+            "TriggerKeywords": [
+                "我要举办宴会。",
+                "帮我召开一场贵族宴会。",
+                "我要在城里设宴邀请各家族。",
+                "替我安排宴会，邀请某个家族。",
+                "我要邀请某某家族来赴宴。",
+                "在某城举办宴会，邀请这些贵族。",
+                "帮我把王国里的贵族都请来赴宴。",
+                "我要在我的城镇开宴会。",
+                "请总督替我筹办宴会。",
+                "我想让同伴帮我安排一场宴会。",
+                "邀请十八到三十岁的贵族女性来赴宴。",
+                "邀请某文化的贵族家族参加宴会。"
+            ]
+        },
+        {
             "Id": "scene_auto_group_relay",
             "IsEnabled": true,
             "Group": "scene",

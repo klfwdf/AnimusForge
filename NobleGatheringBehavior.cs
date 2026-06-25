@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text;
+using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using SandBox;
 using SandBox.Objects;
@@ -13,6 +15,7 @@ using TaleWorlds.CampaignSystem.AgentOrigins;
 using TaleWorlds.CampaignSystem.Encounters;
 using TaleWorlds.CampaignSystem.GameState;
 using TaleWorlds.CampaignSystem.Party;
+using TaleWorlds.CampaignSystem.Party.PartyComponents;
 using TaleWorlds.CampaignSystem.Roster;
 using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.CampaignSystem.Settlements.Locations;
@@ -23,6 +26,7 @@ using TaleWorlds.Library;
 using TaleWorlds.Localization;
 using TaleWorlds.MountAndBlade;
 using TaleWorlds.ObjectSystem;
+using TaleWorlds.SaveSystem;
 
 namespace AnimusForge;
 
@@ -41,6 +45,12 @@ internal sealed class NobleGatheringInviteeRecord
 	public bool CommandIssued { get; set; }
 
 	public bool RelationRewardApplied { get; set; }
+
+	public string OriginSettlementId { get; set; } = "";
+
+	public string TemporaryPartyId { get; set; } = "";
+
+	public string TemporaryPartyPhase { get; set; } = "";
 }
 
 internal sealed class NobleGatheringRecord
@@ -75,7 +85,32 @@ internal sealed class NobleGatheringRecord
 
 	public bool HostCommandIssued { get; set; }
 
+	public string HostOriginSettlementId { get; set; } = "";
+
+	public string HostTemporaryPartyId { get; set; } = "";
+
+	public string HostTemporaryPartyPhase { get; set; } = "";
+
 	public List<NobleGatheringInviteeRecord> Invitees { get; set; } = new List<NobleGatheringInviteeRecord>();
+}
+
+internal sealed class NobleGatheringInvitationSelector
+{
+	public string SettlementId { get; set; } = "";
+
+	public List<string> SpecificHeroIds { get; set; } = new List<string>();
+
+	public List<string> ClanIds { get; set; } = new List<string>();
+
+	public List<string> KingdomIds { get; set; } = new List<string>();
+
+	public List<string> CultureIds { get; set; } = new List<string>();
+
+	public int MinAge { get; set; } = -1;
+
+	public int MaxAge { get; set; } = -1;
+
+	public string Gender { get; set; } = "";
 }
 
 internal sealed class NobleGatheringInvitationMapNotification : InformationData
@@ -133,6 +168,13 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 	private const string InviteDeclined = "Declined";
 	private const string InviteArrived = "Arrived";
 	private const string InviteFailed = "Failed";
+	private const string TemporaryPartyPhaseToGathering = "ToGathering";
+	private const string TemporaryPartyPhaseAtGathering = "AtGathering";
+	private const string TemporaryPartyPhaseReturning = "Returning";
+	private const string TemporaryPartyPhaseCleaned = "Cleaned";
+	private const string TemporaryPartyPrefix = "af_noble_gathering_temp_";
+	private const int TemporaryEscortMin = 10;
+	private const int TemporaryEscortMax = 30;
 	private const string PlayerInvitationPending = "Pending";
 	private const string PlayerInvitationAccepted = "Accepted";
 	private const string PlayerInvitationDeclined = "Declined";
@@ -143,10 +185,28 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 	private const string MusicianSpawnTag = "musician";
 	private const string FeastWenchDisplayName = "侍女";
 	private const int MaxFeastWenches = 2;
-	private const int MaxFeastMusicians = 3;
+	private const int MaxFeastMusicians = 2;
 	private const int FeastMusicGapSeconds = 8;
 	private const int FeastMusicianPerformanceRefreshMs = 900;
+	private const int FeastMusicianLayoutRefreshMs = 1500;
+	private const float FeastMusicianMoveToleranceSquared = 1.44f;
+	private const float FeastMusicianTeleportDistanceSquared = 25f;
 	private static readonly FieldInfo AgentNameField = typeof(Agent).GetField("_name", BindingFlags.Instance | BindingFlags.NonPublic);
+	private static readonly Regex NobleGatheringActionTagRegex = new Regex("\\[ACTION:NOBLE_GATHERING:START:[^\\]\\r\\n]*\\]", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+	private static readonly string[] FeastMainSeatTags = new string[]
+	{
+		"sp_throne",
+		"sp_lord",
+		"sp_king",
+		"sp_ruler",
+		"lord_throne",
+		"king_throne",
+		"ruler_throne",
+		"throne",
+		"lord_chair",
+		"ruler_chair",
+		"chair_lord"
+	};
 
 	private readonly Dictionary<string, NobleGatheringRecord> _gatherings = new Dictionary<string, NobleGatheringRecord>(StringComparer.OrdinalIgnoreCase);
 	private readonly Dictionary<string, double> _playerHostCooldowns = new Dictionary<string, double>(StringComparer.OrdinalIgnoreCase);
@@ -156,13 +216,16 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 	private long _nextNoticePublishRetryUtcTicks;
 	private bool _pendingOpenPlayerGatheringFlow;
 	private Hero _pendingGovernorHero;
+	private Settlement _pendingSuggestedSettlement;
 	private Location _currentAtmosphereLocation;
 	private SoundEvent _feastMusicEvent;
 	private List<SettlementMusicData> _feastMusicPlayList = new List<SettlementMusicData>();
 	private readonly Dictionary<int, FeastMusicianInstrumentChoice> _feastMusicianPerformances = new Dictionary<int, FeastMusicianInstrumentChoice>();
+	private readonly HashSet<int> _feastAtmosphereMusicianAgentIndexes = new HashSet<int>();
 	private int _feastMusicTrackIndex = -1;
 	private long _nextFeastMusicStartUtcTicks;
 	private long _nextFeastMusicianPerformanceUtcTicks;
+	private long _nextFeastMusicianLayoutUtcTicks;
 
 	private sealed class FeastMusicianInstrumentChoice
 	{
@@ -262,15 +325,15 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 	{
 		UpdateFeastHallMusic();
 		UpdateFeastMusicianPerformances();
+		UpdateFeastMusicianLayout();
 		if (_pendingOpenPlayerGatheringFlow)
 		{
 			Hero governor = _pendingGovernorHero;
+			Settlement suggestedSettlement = _pendingSuggestedSettlement;
 			_pendingOpenPlayerGatheringFlow = false;
 			_pendingGovernorHero = null;
-			if (governor != null)
-			{
-				OpenPlayerGatheringFlow(governor);
-			}
+			_pendingSuggestedSettlement = null;
+			OpenPlayerGatheringFlow(governor, suggestedSettlement);
 		}
 		if (!HasPendingPlayerInvitationNotice())
 		{
@@ -320,6 +383,7 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 		CleanupAddedAtmosphereCharacters();
 		StopFeastHallMusic();
 		ClearFeastMusicianPerformances();
+		_nextFeastMusicianLayoutUtcTicks = 0L;
 	}
 
 	private void OnFeastAtmosphereLocationCharactersAreReadyToSpawn(Dictionary<string, int> unusedUsablePointCount)
@@ -335,6 +399,7 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 			AddFeastMusicians(location, settlement, unusedUsablePointCount);
 			ConfigureFeastMusicianGroups(Mission.Current);
 			UpdateFeastHallMusic();
+			UpdateFeastMusicianLayout(force: true);
 		}
 		catch (Exception ex)
 		{
@@ -433,6 +498,7 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 		_feastMusicPlayList.Clear();
 		_feastMusicTrackIndex = -1;
 		_nextFeastMusicStartUtcTicks = 0L;
+		_nextFeastMusicianLayoutUtcTicks = 0L;
 		ClearFeastMusicianPerformances();
 	}
 
@@ -460,6 +526,369 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 	{
 		Agent mainAgent = Agent.Main;
 		return mainAgent != null ? mainAgent.Position : Vec3.Zero;
+	}
+
+	private void UpdateFeastMusicianLayout(bool force = false)
+	{
+		try
+		{
+			long ticks = DateTime.UtcNow.Ticks;
+			if (!force && ticks < _nextFeastMusicianLayoutUtcTicks)
+			{
+				return;
+			}
+			_nextFeastMusicianLayoutUtcTicks = ticks + TimeSpan.FromMilliseconds(FeastMusicianLayoutRefreshMs).Ticks;
+			Mission mission = Mission.Current;
+			if (mission?.Agents == null || mission.Scene == null || !TryGetCurrentFeastLordHall(out Settlement settlement, out _))
+			{
+				return;
+			}
+			List<Agent> musicians = GetTrackedFeastMusicianAgents(mission, settlement)
+				.OrderBy(agent => agent.Index)
+				.Take(MaxFeastMusicians)
+				.ToList();
+			if (musicians.Count == 0)
+			{
+				return;
+			}
+			MatrixFrame mainFrame = ResolveFeastMusicianMainFrame(mission, musicians);
+			Vec3 anchor = mainFrame.origin;
+			Vec3 forward = NormalizePlanar(mainFrame.rotation.f, new Vec3(1f, 0f, 0f));
+			Vec3 right = NormalizePlanar(new Vec3(forward.y, -forward.x, 0f), new Vec3(0f, 1f, 0f));
+			for (int i = 0; i < musicians.Count; i++)
+			{
+				Vec3 position = BuildFeastMusicianLayoutPosition(i, anchor, forward, right, null);
+				Vec3 lookTarget = anchor + forward * 2.5f;
+				ApplyFeastMusicianLayoutFrame(mission, musicians[i], position, lookTarget, force);
+			}
+			PruneFeastMusicianLayoutAgents(mission);
+		}
+		catch (Exception ex)
+		{
+			Log("musician layout tick failed: " + ex.Message);
+		}
+	}
+
+	private List<Agent> GetTrackedFeastMusicianAgents(Mission mission, Settlement settlement)
+	{
+		CharacterObject musician = settlement?.Culture?.Musician;
+		if (mission?.Agents == null || musician == null)
+		{
+			return new List<Agent>();
+		}
+		if (_feastAtmosphereMusicianAgentIndexes.Count > 0)
+		{
+			return mission.Agents
+				.Where(agent => agent != null
+					&& agent.IsHuman
+					&& agent.IsActive()
+					&& agent.Character == musician
+					&& _feastAtmosphereMusicianAgentIndexes.Contains(agent.Index))
+				.ToList();
+		}
+		HashSet<LocationCharacter> tracked = new HashSet<LocationCharacter>(_addedAtmosphereCharacters.Where(character => character?.Character == musician));
+		if (tracked.Count == 0)
+		{
+			return new List<Agent>();
+		}
+		return mission.Agents
+			.Where(agent => agent != null
+				&& agent.IsHuman
+				&& agent.IsActive()
+				&& agent.Character == musician
+				&& IsTrackedFeastLocationCharacter(agent, tracked))
+			.ToList();
+	}
+
+	private static bool IsTrackedFeastLocationCharacter(Agent agent, HashSet<LocationCharacter> tracked)
+	{
+		if (agent == null || tracked == null || tracked.Count == 0)
+		{
+			return false;
+		}
+		try
+		{
+			LocationCharacter locationCharacter = LocationComplex.Current?.FindCharacter(agent);
+			return locationCharacter != null && tracked.Contains(locationCharacter);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static MatrixFrame ResolveFeastMusicianMainFrame(Mission mission, List<Agent> musicians)
+	{
+		if (TryGetFeastTaggedFrame(mission?.Scene, FeastMainSeatTags, out MatrixFrame frame))
+		{
+			return frame;
+		}
+		Vec3 origin = musicians != null && musicians.Count > 0 ? AverageAgentPosition(musicians) : Vec3.Zero;
+		return BuildFeastFacingFrame(origin, new Vec3(1f, 0f, 0f));
+	}
+
+	private static List<Vec3> FindFeastDoorGuardPositions(Mission mission, Settlement settlement, Vec3 anchor)
+	{
+		CharacterObject musician = settlement?.Culture?.Musician;
+		CharacterObject tavernWench = settlement?.Culture?.TavernWench;
+		if (mission?.Agents == null)
+		{
+			return new List<Vec3>();
+		}
+		return mission.Agents
+			.Where(agent => IsFeastDoorGuardCandidate(agent, musician, tavernWench))
+			.OrderByDescending(agent => GetFeastGuardScore(agent, anchor))
+			.Take(2)
+			.Select(agent => agent.Position)
+			.ToList();
+	}
+
+	private static bool IsFeastDoorGuardCandidate(Agent agent, CharacterObject musician, CharacterObject tavernWench)
+	{
+		if (agent == null || agent == Agent.Main || !agent.IsHuman || !agent.IsActive())
+		{
+			return false;
+		}
+		if (agent.Character == musician || agent.Character == tavernWench)
+		{
+			return false;
+		}
+		CharacterObject character = agent.Character as CharacterObject;
+		if (character == null || character.HeroObject != null)
+		{
+			return false;
+		}
+		return true;
+	}
+
+	private static float GetFeastGuardScore(Agent agent, Vec3 anchor)
+	{
+		float score = (agent.Position - anchor).LengthSquared;
+		try
+		{
+			string id = ((agent.Character as CharacterObject)?.StringId ?? "").ToLowerInvariant();
+			string name = (agent.Character?.Name?.ToString() ?? "").ToLowerInvariant();
+			if (id.Contains("guard") || id.Contains("sentinel") || id.Contains("watchman") || name.Contains("guard") || name.Contains("sentinel"))
+			{
+				score += 1000f;
+			}
+		}
+		catch
+		{
+		}
+		return score;
+	}
+
+	private static Vec3 BuildFeastMusicianLayoutPosition(int index, Vec3 anchor, Vec3 forward, Vec3 right, List<Vec3> guardPositions)
+	{
+		if (index == 0)
+		{
+			return anchor + forward * 1.15f + right * 2.25f;
+		}
+		if (index == 1)
+		{
+			return anchor + forward * 1.15f - right * 2.25f;
+		}
+		int doorIndex = index - 2;
+		if (guardPositions != null && guardPositions.Count > 0)
+		{
+			Vec3 basePosition = guardPositions[Math.Min(doorIndex, guardPositions.Count - 1)];
+			Vec3 outward = NormalizePlanar(basePosition - anchor, forward);
+			Vec3 side = NormalizePlanar(new Vec3(outward.y, -outward.x, 0f), right);
+			return basePosition + outward * 0.55f + side * (doorIndex % 2 == 0 ? 1.15f : -1.15f);
+		}
+		return anchor + forward * 6.4f + right * (doorIndex % 2 == 0 ? 2.15f : -2.15f);
+	}
+
+	private static Vec3 ResolveFeastMusicianDoorLookTarget(int doorIndex, List<Vec3> guardPositions, Vec3 anchor, Vec3 forward)
+	{
+		if (guardPositions != null && guardPositions.Count > 0)
+		{
+			return guardPositions[Math.Min(Math.Max(0, doorIndex), guardPositions.Count - 1)];
+		}
+		return anchor + forward * 3.5f;
+	}
+
+	private static void ApplyFeastMusicianLayoutFrame(Mission mission, Agent agent, Vec3 position, Vec3 lookTarget, bool force)
+	{
+		if (mission?.Scene == null || agent == null || agent == Agent.Main || !agent.IsHuman || !agent.IsActive())
+		{
+			return;
+		}
+		try
+		{
+			if (Campaign.Current?.ConversationManager?.OneToOneConversationAgent == agent)
+			{
+				return;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (agent.CurrentlyUsedGameObject != null)
+			{
+				agent.StopUsingGameObject(false, Agent.StopUsingGameObjectFlags.DoNotWieldWeaponAfterStoppingUsingGameObject);
+			}
+		}
+		catch
+		{
+		}
+		ResolveFeastMusicianStandingHeight(mission.Scene, agent, ref position);
+		position.z += 0.03f;
+		float distanceSquared = (agent.Position - position).LengthSquared;
+		if (!force && distanceSquared < FeastMusicianMoveToleranceSquared)
+		{
+			return;
+		}
+		Vec3 facing = NormalizePlanar(lookTarget - position, new Vec3(1f, 0f, 0f));
+		try
+		{
+			agent.ClearTargetFrame();
+			if (distanceSquared > FeastMusicianTeleportDistanceSquared)
+			{
+				agent.TeleportToPosition(position);
+			}
+			WorldPosition scriptedPosition = new WorldPosition(mission.Scene, UIntPtr.Zero, position, true);
+			agent.SetScriptedPositionAndDirection(ref scriptedPosition, facing.AsVec2.RotationInRadians, false, Agent.AIScriptedFrameFlags.NoAttack | Agent.AIScriptedFrameFlags.DoNotRun);
+		}
+		catch (Exception ex)
+		{
+			Log("apply musician layout failed agent=" + agent.Index + " error=" + ex.Message);
+		}
+	}
+
+	private static void ResolveFeastMusicianStandingHeight(Scene scene, Agent agent, ref Vec3 position)
+	{
+		if (scene == null)
+		{
+			return;
+		}
+		float referenceZ = agent != null ? agent.Position.z : position.z;
+		float bestZ = referenceZ;
+		float bestDelta = float.MaxValue;
+		try
+		{
+			float groundHeight = scene.GetGroundHeightAtPosition(position, BodyFlags.CommonCollisionExcludeFlags);
+			float groundDelta = Math.Abs(groundHeight - referenceZ);
+			if (groundDelta <= 1.25f)
+			{
+				bestZ = groundHeight;
+				bestDelta = groundDelta;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			float heightAtPoint = position.z;
+			if (scene.GetHeightAtPoint(position.AsVec2, BodyFlags.CommonCollisionExcludeFlags, ref heightAtPoint))
+			{
+				float delta = Math.Abs(heightAtPoint - referenceZ);
+				if (delta <= 1.25f && delta < bestDelta)
+				{
+					bestZ = heightAtPoint;
+				}
+			}
+		}
+		catch
+		{
+		}
+		position.z = bestZ;
+	}
+
+	private static bool TryGetFeastTaggedFrame(Scene scene, string[] tags, out MatrixFrame frame)
+	{
+		frame = MatrixFrame.Identity;
+		if (scene == null || tags == null)
+		{
+			return false;
+		}
+		foreach (string tag in tags)
+		{
+			if (string.IsNullOrWhiteSpace(tag))
+			{
+				continue;
+			}
+			try
+			{
+				GameEntity entity = scene.FindEntityWithTag(tag);
+				if (entity != null)
+				{
+					frame = entity.GetGlobalFrame();
+					frame.rotation.OrthonormalizeAccordingToForwardAndKeepUpAsZAxis();
+					return true;
+				}
+			}
+			catch
+			{
+			}
+		}
+		return false;
+	}
+
+	private static MatrixFrame BuildFeastFacingFrame(Vec3 origin, Vec3 forward)
+	{
+		forward = NormalizePlanar(forward, new Vec3(1f, 0f, 0f));
+		MatrixFrame frame = MatrixFrame.Identity;
+		frame.origin = origin;
+		frame.rotation.f = forward;
+		frame.rotation.OrthonormalizeAccordingToForwardAndKeepUpAsZAxis();
+		return frame;
+	}
+
+	private static Vec3 NormalizePlanar(Vec3 vector, Vec3 fallback)
+	{
+		vector.z = 0f;
+		if (vector.LengthSquared < 0.0001f)
+		{
+			vector = fallback;
+			vector.z = 0f;
+		}
+		if (vector.LengthSquared < 0.0001f)
+		{
+			vector = new Vec3(1f, 0f, 0f);
+		}
+		vector.Normalize();
+		return vector;
+	}
+
+	private static Vec3 AverageAgentPosition(List<Agent> agents)
+	{
+		if (agents == null || agents.Count == 0)
+		{
+			return Vec3.Zero;
+		}
+		Vec3 sum = Vec3.Zero;
+		int count = 0;
+		foreach (Agent agent in agents)
+		{
+			if (agent == null)
+			{
+				continue;
+			}
+			sum += agent.Position;
+			count++;
+		}
+		return count > 0 ? sum * (1f / count) : Vec3.Zero;
+	}
+
+	private void PruneFeastMusicianLayoutAgents(Mission mission)
+	{
+		if (mission?.Agents == null || _feastAtmosphereMusicianAgentIndexes.Count == 0)
+		{
+			return;
+		}
+		HashSet<int> liveAgentIndexes = new HashSet<int>(mission.Agents.Where(agent => agent != null && agent.IsActive()).Select(agent => agent.Index));
+		foreach (int index in _feastAtmosphereMusicianAgentIndexes.ToList())
+		{
+			if (!liveAgentIndexes.Contains(index))
+			{
+				_feastAtmosphereMusicianAgentIndexes.Remove(index);
+			}
+		}
 	}
 
 	private void UpdateFeastMusicianPerformances()
@@ -528,6 +957,7 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
+		_feastAtmosphereMusicianAgentIndexes.Add(missionAgent.Index);
 		_feastMusicianPerformances[missionAgent.Index] = choice;
 		ApplyFeastMusicianPerformance(missionAgent, choice);
 	}
@@ -553,7 +983,9 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 		{
 		}
 		_feastMusicianPerformances.Clear();
+		_feastAtmosphereMusicianAgentIndexes.Clear();
 		_nextFeastMusicianPerformanceUtcTicks = 0L;
+		_nextFeastMusicianLayoutUtcTicks = 0L;
 	}
 
 	private static void ApplyFeastMusicianPerformance(Agent agent, FeastMusicianInstrumentChoice choice)
@@ -648,9 +1080,8 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 			return;
 		}
 		string spawnTag = GetBestAvailableSpawnTag(unusedUsablePointCount, MusicianSpawnTag, "npc_common_limited", "npc_common");
-		int available = GetAvailableCount(unusedUsablePointCount, spawnTag);
-		int desiredCount = Math.Min(MaxFeastMusicians, Math.Max(0, available));
-		int existingCount = CountLocationCharacters(location, musician);
+		int desiredCount = MaxFeastMusicians;
+		int existingCount = _addedAtmosphereCharacters.Count(locationCharacter => locationCharacter?.Character == musician);
 		List<FeastMusicianInstrumentChoice> instrumentChoices = CreateFeastInstrumentChoices(settlement);
 		for (int i = existingCount; i < desiredCount; i++)
 		{
@@ -942,7 +1373,7 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			AddGovernorDialogue(starter);
+			AddPlayerGatheringDialogues(starter);
 		}
 		catch (Exception ex)
 		{
@@ -950,7 +1381,7 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private void AddGovernorDialogue(CampaignGameStarter starter)
+	private void AddPlayerGatheringDialogues(CampaignGameStarter starter)
 	{
 		if (starter == null)
 		{
@@ -970,11 +1401,32 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 			"召开宴会",
 			IsGovernorGatheringDialogueAvailable,
 			OpenGovernorGatheringFlowConsequence);
+		starter.AddPlayerLine(
+			"af_noble_gathering_companion_start_main",
+			"hero_main_options",
+			"af_noble_gathering_companion_response",
+			"我想举办一场宴会，你帮我安排。",
+			IsCompanionGatheringDialogueAvailable,
+			OpenCompanionGatheringFlowConsequence);
+		starter.AddPlayerLine(
+			"af_noble_gathering_companion_start_ask",
+			"lord_talk_ask_something_2",
+			"af_noble_gathering_companion_response",
+			"我想举办一场宴会，你帮我安排。",
+			IsCompanionGatheringDialogueAvailable,
+			OpenCompanionGatheringFlowConsequence);
 		starter.AddDialogLine(
 			"af_noble_gathering_governor_response",
 			"af_noble_gathering_governor_response",
 			"lord_pretalk",
 			"我会为您准备名单与请柬。",
+			null,
+			null);
+		starter.AddDialogLine(
+			"af_noble_gathering_companion_response",
+			"af_noble_gathering_companion_response",
+			"lord_pretalk",
+			"明白，我会按您的意思准备举办地和宾客名单。",
 			null,
 			null);
 	}
@@ -985,9 +1437,19 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 		return TryResolveGovernorOwnedSettlement(governor, out _, out _);
 	}
 
+	private bool IsCompanionGatheringDialogueAvailable()
+	{
+		Hero companion = ResolveConversationHero();
+		return companion != null
+			&& companion != Hero.MainHero
+			&& companion.IsPlayerCompanion
+			&& GetPlayerHostSettlements(null).Any();
+	}
+
 	private void OpenGovernorGatheringFlowConsequence()
 	{
 		_pendingGovernorHero = ResolveConversationHero();
+		TryResolveGovernorOwnedSettlement(_pendingGovernorHero, out _pendingSuggestedSettlement, out _);
 		_pendingOpenPlayerGatheringFlow = true;
 		try
 		{
@@ -998,14 +1460,28 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private void OpenPlayerGatheringFlow(Hero governor)
+	private void OpenCompanionGatheringFlowConsequence()
 	{
-		if (!TryResolveGovernorOwnedSettlement(governor, out Settlement settlement, out string reject))
+		_pendingGovernorHero = ResolveConversationHero();
+		_pendingSuggestedSettlement = ResolveBestPlayerHostSettlement(null);
+		_pendingOpenPlayerGatheringFlow = true;
+		try
+		{
+			Campaign.Current?.ConversationManager?.EndConversation();
+		}
+		catch
+		{
+		}
+	}
+
+	private void OpenPlayerGatheringFlow(Hero requester, Settlement suggestedSettlement)
+	{
+		if (requester != null && requester.GovernorOf != null && !TryResolveGovernorOwnedSettlement(requester, out suggestedSettlement, out string reject))
 		{
 			ShowMessage(reject);
 			return;
 		}
-		ShowPlayerGatheringSettlementSelection(settlement);
+		ShowPlayerGatheringSettlementSelection(suggestedSettlement);
 	}
 
 	private void ShowPlayerGatheringSettlementSelection(Settlement suggestedSettlement)
@@ -1143,14 +1619,14 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 		List<InquiryElement> options = heroes
 			.Select(hero =>
 			{
-				bool enabled = IsHeroEligibleForGatheringTravel(hero, out string reason);
+				bool enabled = IsHeroEligibleForGatheringInvitation(hero, out string reason);
 				bool alreadySelected = currentHeroIdSet.Contains(hero?.StringId ?? "");
 				if (enabled)
 				{
 					enabledCount++;
 				}
 				string label = (alreadySelected ? "[已选] " : "") + "[" + GetClanName(hero?.Clan) + "] " + GetHeroName(hero);
-				string hint = GetHeroName(hero) + " / " + GetClanName(hero?.Clan) + (alreadySelected ? "\n已经在当前宴会名单中。" : enabled ? "\n可发出赴宴邀请。" : "\n不可邀请：" + reason);
+				string hint = GetHeroName(hero) + " / " + GetClanName(hero?.Clan) + (alreadySelected ? "\n已经在当前宴会名单中。" : enabled ? "\n可发出赴宴邀请；没有独立部队者将生成临时赴宴随从队。" : "\n不可邀请：" + reason);
 				return new InquiryElement(hero.StringId, label, null, enabled, hint);
 			})
 			.ToList();
@@ -1162,7 +1638,7 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 		}
 		MultiSelectionInquiryData data = new MultiSelectionInquiryData(
 			"召开宴会：选择宾客",
-			"家族：" + GetClanName(clan) + "\n只有拥有独立大地图部队的人可以接受邀请。\n已选宾客：" + currentHeroIds.Count + " 人。",
+			"家族：" + GetClanName(clan) + "\n有独立部队的人会直接被调度；留在城里的贵族、总督、无部队英雄会生成临时赴宴随从队。\n已选宾客：" + currentHeroIds.Count + " 人。",
 			options,
 			isExitShown: true,
 			0,
@@ -1229,13 +1705,13 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 			return false;
 		}
 		List<Hero> safeInvitees = (invitedHeroes ?? new List<Hero>())
-			.Where(hero => hero != null && IsHeroEligibleForGatheringTravel(hero, out _))
+			.Where(hero => hero != null && IsHeroEligibleForGatheringInvitation(hero, out _))
 			.GroupBy(hero => hero.StringId ?? "", StringComparer.OrdinalIgnoreCase)
 			.Select(group => group.First())
 			.ToList();
 		if (safeInvitees.Count == 0)
 		{
-			status = "宴会未召开：没有可真实移动赴宴的宾客。";
+			status = "宴会未召开：没有可赴宴的宾客。";
 			return false;
 		}
 		host.ChangeHeroGold(-GatheringCost);
@@ -1278,7 +1754,7 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			TryCreateNpcHostedGathering();
+			TryCreateNpcHostedGathering(force: false, out _);
 		}
 		catch (Exception ex)
 		{
@@ -1291,6 +1767,7 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 		try
 		{
 			ProcessActiveGatherings();
+			ProcessTemporaryPartyReturnsAndOrphans();
 		}
 		catch (Exception ex)
 		{
@@ -1317,6 +1794,7 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 			}
 			IssueHostTravelCommand(record);
 			IssueTravelCommands(record);
+			ProcessActiveTemporaryParties(record, settlement);
 			UpdateArrivalsAndRewards(record, settlement, host);
 			UpdatePlayerAttendanceReward(record, settlement, host);
 		}
@@ -1331,25 +1809,31 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 		Settlement settlement = ResolveSettlementById(record.SettlementId);
 		Hero host = ResolveHeroById(record.HostHeroId);
 		string reason = "";
-		if (settlement == null || !IsHeroEligibleForGatheringTravel(host, out reason))
+		if (settlement == null || host == null || host.IsDead || host.IsPrisoner)
 		{
-			Log("npc host travel skipped id=" + (record?.Id ?? "") + " reason=" + reason);
+			Log("npc host travel skipped id=" + (record?.Id ?? "") + " reason=host_invalid");
+			return;
+		}
+		if (IsHeroAtSettlement(host, settlement))
+		{
+			record.HostCommandIssued = true;
 			return;
 		}
 		WorldMapPartyCommandBehavior world = WorldMapPartyCommandBehavior.Instance ?? Campaign.Current?.GetCampaignBehavior<WorldMapPartyCommandBehavior>();
-		if (world == null)
-		{
-			return;
-		}
 		int holdDays = Math.Max(1, (int)Math.Ceiling(record.EndDay - NowDay()));
-		if (world.TryIssueGoToSettlementUntilDayForExternal(host, settlement, holdDays, record.EndDay, BuildCommandSourceId(record), out string message))
+		if (CanUseExistingPartyForGatheringTravel(host, out reason) && world != null && world.TryIssueGoToSettlementUntilDayForExternal(host, settlement, holdDays, record.EndDay, BuildCommandSourceId(record), out string message))
 		{
 			record.HostCommandIssued = true;
 			Log("npc host travel issued id=" + record.Id + " host=" + host.StringId + " settlement=" + settlement.StringId);
 		}
+		else if (TryEnsureTemporaryHostParty(record, host, settlement, out message))
+		{
+			record.HostCommandIssued = true;
+			Log("npc host temporary travel issued id=" + record.Id + " host=" + host.StringId + " settlement=" + settlement.StringId);
+		}
 		else
 		{
-			Log("npc host travel failed id=" + record.Id + " host=" + (host?.StringId ?? "") + " message=" + message);
+			Log("npc host travel failed id=" + record.Id + " host=" + (host?.StringId ?? "") + " message=" + (message ?? reason));
 		}
 	}
 
@@ -1361,10 +1845,6 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 			return;
 		}
 		WorldMapPartyCommandBehavior world = WorldMapPartyCommandBehavior.Instance ?? Campaign.Current?.GetCampaignBehavior<WorldMapPartyCommandBehavior>();
-		if (world == null)
-		{
-			return;
-		}
 		int holdDays = Math.Max(1, (int)Math.Ceiling(record.EndDay - NowDay()));
 		foreach (NobleGatheringInviteeRecord invitee in record.Invitees ?? new List<NobleGatheringInviteeRecord>())
 		{
@@ -1373,21 +1853,26 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 				continue;
 			}
 			Hero hero = ResolveHeroById(invitee.HeroId);
-			if (!IsHeroEligibleForGatheringTravel(hero, out string reason))
+			if (!IsHeroEligibleForGatheringInvitation(hero, out string reason))
 			{
 				invitee.Status = InviteFailed;
 				invitee.Reason = reason;
 				continue;
 			}
-			if (world.TryIssueGoToSettlementUntilDayForExternal(hero, settlement, holdDays, record.EndDay, BuildCommandSourceId(record), out string message))
+			if (CanUseExistingPartyForGatheringTravel(hero, out reason) && world != null && world.TryIssueGoToSettlementUntilDayForExternal(hero, settlement, holdDays, record.EndDay, BuildCommandSourceId(record), out string message))
 			{
 				invitee.CommandIssued = true;
 				invitee.Reason = "command_issued";
 			}
+			else if (TryEnsureTemporaryInviteeParty(record, invitee, hero, settlement, out message))
+			{
+				invitee.CommandIssued = true;
+				invitee.Reason = "temporary_party_issued";
+			}
 			else
 			{
 				invitee.Status = InviteFailed;
-				invitee.Reason = message;
+				invitee.Reason = string.IsNullOrWhiteSpace(message) ? reason : message;
 			}
 		}
 	}
@@ -1491,31 +1976,38 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 				world.TryStopExternalCommandForExternal(host, BuildCommandSourceId(record), out _);
 			}
 		}
+		if (!record.IsPlayerHosted)
+		{
+			StartTemporaryHostReturn(record, "finish");
+		}
 		foreach (NobleGatheringInviteeRecord invitee in record.Invitees ?? new List<NobleGatheringInviteeRecord>())
 		{
 			Hero hero = ResolveHeroById(invitee?.HeroId);
-			if (hero != null && world != null)
+			if (hero != null && world != null && string.IsNullOrWhiteSpace(invitee?.TemporaryPartyId))
 			{
 				world.TryStopExternalCommandForExternal(hero, BuildCommandSourceId(record), out _);
 			}
+			StartTemporaryInviteeReturn(invitee, "finish");
 		}
 		DisplayGatheringMessage(BuildGatheringEndMessage(record, reason), new Color(0.8f, 0.95f, 1f));
 		Log("finish gathering id=" + record.Id + " reason=" + reason);
 	}
 
-	private void TryCreateNpcHostedGathering()
+	private bool TryCreateNpcHostedGathering(bool force, out string status)
 	{
-		if (MBRandom.RandomFloat > 0.06f)
+		status = "";
+		if (!force && MBRandom.RandomFloat > 0.06f)
 		{
-			return;
+			status = "random_skip";
+			return false;
 		}
 		List<Hero> possibleHosts = Hero.AllAliveHeroes
 			.Where(hero => hero != null && hero != Hero.MainHero && hero.IsClanLeader && hero.Clan != null && !hero.IsPrisoner && hero.Gold >= GatheringCost)
 			.Where(hero => hero.Clan.Kingdom != null && !hero.Clan.IsEliminated && !hero.Clan.IsMinorFaction && !hero.Clan.IsBanditFaction)
-			.Where(hero => IsHeroEligibleForGatheringTravel(hero, out _))
+			.Where(hero => IsHeroEligibleForGatheringInvitation(hero, out _))
 			.Where(hero => !HasActiveGatheringForHost(hero))
 			.OrderBy(_ => MBRandom.RandomFloat)
-			.Take(10)
+			.Take(force ? 50 : 10)
 			.ToList();
 		foreach (Hero host in possibleHosts)
 		{
@@ -1572,10 +2064,14 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 			host.ChangeHeroGold(-GatheringCost);
 			_gatherings[record.Id] = record;
 			IssueTravelCommands(record);
+			TrySendPlayerInvitationCourier(record);
 			DisplayGatheringMessage(GetHeroName(host) + "将在" + GetSettlementName(settlement) + "举办宴会。", new Color(0.8f, 0.95f, 1f));
 			Log("npc gathering created id=" + record.Id + " host=" + host.StringId + " settlement=" + settlement.StringId);
-			return;
+			status = "created:" + record.Id;
+			return true;
 		}
+		status = "no_valid_npc_host";
+		return false;
 	}
 
 	private bool HasPendingPlayerInvitationNotice()
@@ -1659,6 +2155,34 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private void TrySendPlayerInvitationCourier(NobleGatheringRecord record)
+	{
+		if (record == null
+			|| record.IsPlayerHosted
+			|| !string.Equals(record.PlayerInvitationStatus, PlayerInvitationPending, StringComparison.OrdinalIgnoreCase))
+		{
+			return;
+		}
+		Hero host = ResolveHeroById(record.HostHeroId);
+		Settlement settlement = ResolveSettlementById(record.SettlementId);
+		if (host == null || settlement == null)
+		{
+			return;
+		}
+		string letter = GetHeroName(host) + "致" + (Hero.MainHero?.Name?.ToString() ?? "你") + "：\n\n我将在" + GetSettlementName(settlement) + "举办一场宴会，诚邀你前来赴宴。宴会预计持续到第 " + Math.Ceiling(record.EndDay) + " 天；若你愿意，到达举办地即可。";
+		if (CourierDeliveryBehavior.TrySendNpcLetterToPlayerForExternal(host, letter, "noble_gathering:" + record.Id, out string status))
+		{
+			record.PlayerInvitationStatus = PlayerInvitationAccepted;
+			record.PlayerInvitationNoticeShown = true;
+			_playerInvitationNoticesShownThisSession.Add(record.Id);
+			Log("player invitation courier sent id=" + record.Id + " status=" + status);
+		}
+		else
+		{
+			Log("player invitation courier failed id=" + record.Id + " status=" + status);
+		}
+	}
+
 	private bool TryEnsureMapNotificationRegistered()
 	{
 		try
@@ -1704,6 +2228,1036 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 				record.PlayerInvitationStatus = PlayerInvitationDeclined;
 			}
 		}
+	}
+
+	private void ProcessActiveTemporaryParties(NobleGatheringRecord record, Settlement settlement)
+	{
+		if (record == null || settlement == null)
+		{
+			return;
+		}
+		ProcessTemporaryHostToGathering(record, settlement);
+		foreach (NobleGatheringInviteeRecord invitee in record.Invitees ?? new List<NobleGatheringInviteeRecord>())
+		{
+			ProcessTemporaryInviteeToGathering(invitee, settlement);
+		}
+	}
+
+	private void ProcessTemporaryPartyReturnsAndOrphans()
+	{
+		foreach (NobleGatheringRecord record in _gatherings.Values.ToList())
+		{
+			if (record == null)
+			{
+				continue;
+			}
+			if (!string.Equals(record.State, StateActive, StringComparison.OrdinalIgnoreCase))
+			{
+				StartTemporaryHostReturn(record, "record_not_active");
+				foreach (NobleGatheringInviteeRecord invitee in record.Invitees ?? new List<NobleGatheringInviteeRecord>())
+				{
+					StartTemporaryInviteeReturn(invitee, "record_not_active");
+				}
+			}
+			ProcessTemporaryHostReturn(record);
+			foreach (NobleGatheringInviteeRecord invitee in record.Invitees ?? new List<NobleGatheringInviteeRecord>())
+			{
+				ProcessTemporaryInviteeReturn(invitee);
+			}
+		}
+		CleanupUntrackedTemporaryParties();
+	}
+
+	private void ProcessTemporaryHostToGathering(NobleGatheringRecord record, Settlement settlement)
+	{
+		if (record == null || string.IsNullOrWhiteSpace(record.HostTemporaryPartyId))
+		{
+			return;
+		}
+		if (!string.Equals(record.HostTemporaryPartyPhase, TemporaryPartyPhaseToGathering, StringComparison.OrdinalIgnoreCase))
+		{
+			return;
+		}
+		Hero host = ResolveHeroById(record.HostHeroId);
+		MobileParty party = ResolveMobilePartyById(record.HostTemporaryPartyId);
+		if (host == null || host.IsDead || host.IsPrisoner || party == null || !party.IsActive)
+		{
+			StartTemporaryHostReturn(record, "host_invalid_or_party_missing");
+			return;
+		}
+		if (EnsureTemporaryPartyAtSettlement(party, settlement, "host_arrived"))
+		{
+			record.HostTemporaryPartyPhase = TemporaryPartyPhaseAtGathering;
+			record.HostCommandIssued = true;
+		}
+		else
+		{
+			RefreshTemporaryPartyRoute(party, settlement);
+		}
+	}
+
+	private void ProcessTemporaryInviteeToGathering(NobleGatheringInviteeRecord invitee, Settlement settlement)
+	{
+		if (invitee == null || string.IsNullOrWhiteSpace(invitee.TemporaryPartyId))
+		{
+			return;
+		}
+		if (!string.Equals(invitee.TemporaryPartyPhase, TemporaryPartyPhaseToGathering, StringComparison.OrdinalIgnoreCase))
+		{
+			return;
+		}
+		Hero hero = ResolveHeroById(invitee.HeroId);
+		MobileParty party = ResolveMobilePartyById(invitee.TemporaryPartyId);
+		if (hero == null || hero.IsDead || hero.IsPrisoner || party == null || !party.IsActive)
+		{
+			invitee.Status = InviteFailed;
+			invitee.Reason = "temporary_party_missing_or_hero_invalid";
+			StartTemporaryInviteeReturn(invitee, "invalid_to_gathering");
+			return;
+		}
+		if (EnsureTemporaryPartyAtSettlement(party, settlement, "invitee_arrived"))
+		{
+			invitee.TemporaryPartyPhase = TemporaryPartyPhaseAtGathering;
+		}
+		else
+		{
+			RefreshTemporaryPartyRoute(party, settlement);
+		}
+	}
+
+	private void ProcessTemporaryHostReturn(NobleGatheringRecord record)
+	{
+		if (record == null || !string.Equals(record.HostTemporaryPartyPhase, TemporaryPartyPhaseReturning, StringComparison.OrdinalIgnoreCase))
+		{
+			return;
+		}
+		Settlement origin = ResolveSettlementById(record.HostOriginSettlementId);
+		MobileParty party = ResolveMobilePartyById(record.HostTemporaryPartyId);
+		Hero host = ResolveHeroById(record.HostHeroId);
+		if (party == null || !party.IsActive)
+		{
+			SafelyPlaceHeroBackToSettlement(host, origin, "host_party_missing");
+			record.HostTemporaryPartyPhase = TemporaryPartyPhaseCleaned;
+			record.HostTemporaryPartyId = "";
+			return;
+		}
+		if (origin == null)
+		{
+			origin = ResolveBestHeroHomeSettlement(host);
+		}
+		if (origin == null)
+		{
+			DestroyTemporaryPartyAfterRemovingHero(party, host, null, "host_return_no_origin");
+			record.HostTemporaryPartyPhase = TemporaryPartyPhaseCleaned;
+			record.HostTemporaryPartyId = "";
+			return;
+		}
+		if (EnsureTemporaryPartyAtSettlement(party, origin, "host_return_arrived"))
+		{
+			DestroyTemporaryPartyAfterRemovingHero(party, host, origin, "host_return_complete");
+			record.HostTemporaryPartyPhase = TemporaryPartyPhaseCleaned;
+			record.HostTemporaryPartyId = "";
+		}
+		else
+		{
+			RefreshTemporaryPartyRoute(party, origin);
+		}
+	}
+
+	private void ProcessTemporaryInviteeReturn(NobleGatheringInviteeRecord invitee)
+	{
+		if (invitee == null || !string.Equals(invitee.TemporaryPartyPhase, TemporaryPartyPhaseReturning, StringComparison.OrdinalIgnoreCase))
+		{
+			return;
+		}
+		Settlement origin = ResolveSettlementById(invitee.OriginSettlementId);
+		MobileParty party = ResolveMobilePartyById(invitee.TemporaryPartyId);
+		Hero hero = ResolveHeroById(invitee.HeroId);
+		if (party == null || !party.IsActive)
+		{
+			SafelyPlaceHeroBackToSettlement(hero, origin, "invitee_party_missing");
+			invitee.TemporaryPartyPhase = TemporaryPartyPhaseCleaned;
+			invitee.TemporaryPartyId = "";
+			return;
+		}
+		if (origin == null)
+		{
+			origin = ResolveBestHeroHomeSettlement(hero);
+		}
+		if (origin == null)
+		{
+			DestroyTemporaryPartyAfterRemovingHero(party, hero, null, "invitee_return_no_origin");
+			invitee.TemporaryPartyPhase = TemporaryPartyPhaseCleaned;
+			invitee.TemporaryPartyId = "";
+			return;
+		}
+		if (EnsureTemporaryPartyAtSettlement(party, origin, "invitee_return_arrived"))
+		{
+			DestroyTemporaryPartyAfterRemovingHero(party, hero, origin, "invitee_return_complete");
+			invitee.TemporaryPartyPhase = TemporaryPartyPhaseCleaned;
+			invitee.TemporaryPartyId = "";
+		}
+		else
+		{
+			RefreshTemporaryPartyRoute(party, origin);
+		}
+	}
+
+	private void StartTemporaryHostReturn(NobleGatheringRecord record, string reason)
+	{
+		if (record == null || string.IsNullOrWhiteSpace(record.HostTemporaryPartyId))
+		{
+			return;
+		}
+		if (string.Equals(record.HostTemporaryPartyPhase, TemporaryPartyPhaseReturning, StringComparison.OrdinalIgnoreCase)
+			|| string.Equals(record.HostTemporaryPartyPhase, TemporaryPartyPhaseCleaned, StringComparison.OrdinalIgnoreCase))
+		{
+			return;
+		}
+		record.HostTemporaryPartyPhase = TemporaryPartyPhaseReturning;
+		Settlement origin = ResolveSettlementById(record.HostOriginSettlementId) ?? ResolveBestHeroHomeSettlement(ResolveHeroById(record.HostHeroId));
+		MobileParty party = ResolveMobilePartyById(record.HostTemporaryPartyId);
+		if (party != null && party.IsActive && origin != null)
+		{
+			LeaveSettlementIfNeeded(party);
+			RefreshTemporaryPartyRoute(party, origin);
+		}
+		Log("temporary host return id=" + (record.Id ?? "") + " reason=" + (reason ?? ""));
+	}
+
+	private void StartTemporaryInviteeReturn(NobleGatheringInviteeRecord invitee, string reason)
+	{
+		if (invitee == null || string.IsNullOrWhiteSpace(invitee.TemporaryPartyId))
+		{
+			return;
+		}
+		if (string.Equals(invitee.TemporaryPartyPhase, TemporaryPartyPhaseReturning, StringComparison.OrdinalIgnoreCase)
+			|| string.Equals(invitee.TemporaryPartyPhase, TemporaryPartyPhaseCleaned, StringComparison.OrdinalIgnoreCase))
+		{
+			return;
+		}
+		invitee.TemporaryPartyPhase = TemporaryPartyPhaseReturning;
+		Settlement origin = ResolveSettlementById(invitee.OriginSettlementId) ?? ResolveBestHeroHomeSettlement(ResolveHeroById(invitee.HeroId));
+		MobileParty party = ResolveMobilePartyById(invitee.TemporaryPartyId);
+		if (party != null && party.IsActive && origin != null)
+		{
+			LeaveSettlementIfNeeded(party);
+			RefreshTemporaryPartyRoute(party, origin);
+		}
+		Log("temporary invitee return hero=" + (invitee.HeroId ?? "") + " reason=" + (reason ?? ""));
+	}
+
+	private bool TryEnsureTemporaryHostParty(NobleGatheringRecord record, Hero host, Settlement targetSettlement, out string message)
+	{
+		message = "";
+		if (record == null || host == null || targetSettlement == null)
+		{
+			message = "temporary_host_invalid";
+			return false;
+		}
+		if (!CanCreateTemporaryPartyForHero(host, out string reason))
+		{
+			message = reason;
+			return false;
+		}
+		if (HasActiveTemporaryPartyForHero(host, record.HostTemporaryPartyId))
+		{
+			message = "该英雄已有临时赴宴队伍。";
+			return false;
+		}
+		Settlement origin = ResolveHeroOriginSettlement(host);
+		if (origin == null)
+		{
+			message = "找不到主办人的原始所在城。";
+			return false;
+		}
+		MobileParty party = ResolveMobilePartyById(record.HostTemporaryPartyId);
+		if (party == null || !party.IsActive)
+		{
+			party = CreateTemporaryGatheringParty(host, origin, targetSettlement, out message);
+			if (party == null)
+			{
+				return false;
+			}
+			record.HostTemporaryPartyId = party.StringId ?? "";
+			record.HostOriginSettlementId = origin.StringId ?? "";
+		}
+		record.HostTemporaryPartyPhase = TemporaryPartyPhaseToGathering;
+		RefreshTemporaryPartyRoute(party, targetSettlement);
+		return true;
+	}
+
+	private bool TryEnsureTemporaryInviteeParty(NobleGatheringRecord record, NobleGatheringInviteeRecord invitee, Hero hero, Settlement targetSettlement, out string message)
+	{
+		message = "";
+		if (record == null || invitee == null || hero == null || targetSettlement == null)
+		{
+			message = "temporary_invitee_invalid";
+			return false;
+		}
+		if (!CanCreateTemporaryPartyForHero(hero, out string reason))
+		{
+			message = reason;
+			return false;
+		}
+		if (HasActiveTemporaryPartyForHero(hero, invitee.TemporaryPartyId))
+		{
+			message = "该英雄已有临时赴宴队伍。";
+			return false;
+		}
+		Settlement origin = ResolveHeroOriginSettlement(hero);
+		if (origin == null)
+		{
+			message = "找不到宾客的原始所在城。";
+			return false;
+		}
+		MobileParty party = ResolveMobilePartyById(invitee.TemporaryPartyId);
+		if (party == null || !party.IsActive)
+		{
+			party = CreateTemporaryGatheringParty(hero, origin, targetSettlement, out message);
+			if (party == null)
+			{
+				return false;
+			}
+			invitee.TemporaryPartyId = party.StringId ?? "";
+			invitee.OriginSettlementId = origin.StringId ?? "";
+		}
+		invitee.TemporaryPartyPhase = TemporaryPartyPhaseToGathering;
+		RefreshTemporaryPartyRoute(party, targetSettlement);
+		return true;
+	}
+
+	private MobileParty CreateTemporaryGatheringParty(Hero hero, Settlement origin, Settlement targetSettlement, out string message)
+	{
+		message = "";
+		try
+		{
+			if (hero?.CharacterObject == null || origin == null || targetSettlement == null)
+			{
+				message = "临时赴宴队伍创建失败：人物或地点无效。";
+				return null;
+			}
+			CampaignVec2 position = origin.GatePosition;
+			string partyId = TemporaryPartyPrefix + Guid.NewGuid().ToString("N").Substring(0, 12);
+			TextObject partyName = new TextObject("NobleGatheringTemporaryParty");
+			MobileParty party = MobileParty.CreateParty(partyId, new NobleGatheringTemporaryPartyComponent(position, partyName, hero, hero.Clan ?? Clan.PlayerClan));
+			if (party == null)
+			{
+				message = "临时赴宴队伍创建失败。";
+				return null;
+			}
+			party.IsVisible = true;
+			party.MemberRoster.AddToCounts(hero.CharacterObject, 1, insertAtFront: true, woundedCount: 0, xpChange: 0, removeDepleted: true, index: -1);
+			party.PartyComponent?.ChangePartyLeader(hero);
+			CharacterObject escortTroop = ResolveTemporaryEscortTroop(hero, origin);
+			if (escortTroop != null)
+			{
+				int escortCount = MBRandom.RandomInt(TemporaryEscortMin, TemporaryEscortMax + 1);
+				party.MemberRoster.AddToCounts(escortTroop, escortCount, insertAtFront: false, woundedCount: 0, xpChange: 0, removeDepleted: true, index: -1);
+			}
+			party.Party.SetCustomName(new TextObject("赴宴随从 - " + GetHeroName(hero)));
+			party.SetMoveModeHold();
+			RefreshTemporaryPartyRoute(party, targetSettlement);
+			message = "temporary_party_created";
+			return party;
+		}
+		catch (Exception ex)
+		{
+			message = "临时赴宴队伍创建异常：" + ex.Message;
+			Log("create temporary party failed hero=" + (hero?.StringId ?? "") + " error=" + ex);
+			return null;
+		}
+	}
+
+	private static void RefreshTemporaryPartyRoute(MobileParty party, Settlement targetSettlement)
+	{
+		if (party == null || targetSettlement == null || !party.IsActive)
+		{
+			return;
+		}
+		try
+		{
+			if (party.CurrentSettlement == targetSettlement)
+			{
+				party.SetMoveModeHold();
+				return;
+			}
+			LeaveSettlementIfNeeded(party);
+			party.SetMoveGoToSettlement(targetSettlement, MobileParty.NavigationType.Default, targetSettlement.HasPort && !party.HasLandNavigationCapability);
+		}
+		catch
+		{
+		}
+	}
+
+	private static bool EnsureTemporaryPartyAtSettlement(MobileParty party, Settlement settlement, string reason)
+	{
+		if (party == null || settlement == null || !party.IsActive)
+		{
+			return false;
+		}
+		try
+		{
+			if (party.CurrentSettlement == settlement)
+			{
+				party.SetMoveModeHold();
+				return true;
+			}
+			if (party.Position.Distance(settlement.GatePosition) > ArrivalDistance)
+			{
+				return false;
+			}
+			LeaveSettlementIfNeeded(party);
+			EnterSettlementAction.ApplyForParty(party, settlement);
+			party.SetMoveModeHold();
+			return true;
+		}
+		catch (Exception ex)
+		{
+			Log("temporary party enter settlement failed party=" + (party?.StringId ?? "") + " settlement=" + (settlement?.StringId ?? "") + " reason=" + (reason ?? "") + " error=" + ex.Message);
+			return false;
+		}
+	}
+
+	private static void DestroyTemporaryPartyAfterRemovingHero(MobileParty party, Hero hero, Settlement finalSettlement, string reason)
+	{
+		if (party == null)
+		{
+			SafelyPlaceHeroBackToSettlement(hero, finalSettlement, reason + "_missing_party");
+			return;
+		}
+		try
+		{
+			if (hero?.CharacterObject != null && party.MemberRoster != null && party.MemberRoster.Contains(hero.CharacterObject))
+			{
+				party.MemberRoster.AddToCounts(hero.CharacterObject, -1, insertAtFront: false, woundedCount: 0, xpChange: 0, removeDepleted: true, index: -1);
+			}
+			SafelyPlaceHeroBackToSettlement(hero, finalSettlement, reason);
+			if (party.IsActive)
+			{
+				if (party.CurrentSettlement != null)
+				{
+					try
+					{
+						LeaveSettlementAction.ApplyForParty(party);
+					}
+					catch
+					{
+					}
+				}
+				DestroyPartyAction.Apply(null, party);
+			}
+		}
+		catch (Exception ex)
+		{
+			Log("destroy temporary party failed party=" + (party?.StringId ?? "") + " hero=" + (hero?.StringId ?? "") + " reason=" + (reason ?? "") + " error=" + ex.Message);
+		}
+	}
+
+	private static void SafelyPlaceHeroBackToSettlement(Hero hero, Settlement settlement, string reason)
+	{
+		if (hero == null || hero.IsDead || hero.IsPrisoner || settlement == null)
+		{
+			return;
+		}
+		try
+		{
+			if (hero.PartyBelongedTo != null)
+			{
+				return;
+			}
+			if (hero.CurrentSettlement != settlement)
+			{
+				if (hero.CurrentSettlement != null)
+				{
+					LeaveSettlementAction.ApplyForCharacterOnly(hero);
+				}
+				EnterSettlementAction.ApplyForCharacterOnly(hero, settlement);
+			}
+		}
+		catch (Exception ex)
+		{
+			Log("place hero back failed hero=" + (hero?.StringId ?? "") + " settlement=" + (settlement?.StringId ?? "") + " reason=" + (reason ?? "") + " error=" + ex.Message);
+		}
+	}
+
+	private static void LeaveSettlementIfNeeded(MobileParty party)
+	{
+		try
+		{
+			if (party?.CurrentSettlement != null)
+			{
+				LeaveSettlementAction.ApplyForParty(party);
+			}
+		}
+		catch
+		{
+		}
+	}
+
+	private static void CleanupUntrackedTemporaryParties()
+	{
+		try
+		{
+			HashSet<string> tracked = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+			NobleGatheringBehavior behavior = Instance;
+			if (behavior != null)
+			{
+				foreach (NobleGatheringRecord record in behavior._gatherings.Values)
+				{
+					if (!string.IsNullOrWhiteSpace(record?.HostTemporaryPartyId))
+					{
+						tracked.Add(record.HostTemporaryPartyId);
+					}
+					foreach (NobleGatheringInviteeRecord invitee in record?.Invitees ?? new List<NobleGatheringInviteeRecord>())
+					{
+						if (!string.IsNullOrWhiteSpace(invitee?.TemporaryPartyId))
+						{
+							tracked.Add(invitee.TemporaryPartyId);
+						}
+					}
+				}
+			}
+			foreach (MobileParty party in MobileParty.All?.ToList() ?? new List<MobileParty>())
+			{
+				if (!IsTemporaryGatheringParty(party) || tracked.Contains(party.StringId ?? ""))
+				{
+					continue;
+				}
+				Hero leader = party.LeaderHero;
+				Settlement home = ResolveBestHeroHomeSettlement(leader) ?? party.HomeSettlement;
+				DestroyTemporaryPartyAfterRemovingHero(party, leader, home, "orphan_cleanup");
+			}
+		}
+		catch (Exception ex)
+		{
+			Log("orphan cleanup failed: " + ex.Message);
+		}
+	}
+
+	public static bool IsTemporaryGatheringParty(MobileParty party)
+	{
+		return party != null && IsTemporaryGatheringPartyId(party.StringId);
+	}
+
+	public static bool IsTemporaryGatheringPartyId(string partyId)
+	{
+		return !string.IsNullOrWhiteSpace(partyId) && partyId.StartsWith(TemporaryPartyPrefix, StringComparison.OrdinalIgnoreCase);
+	}
+
+	private static MobileParty ResolveMobilePartyById(string partyId)
+	{
+		string id = (partyId ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(id))
+		{
+			return null;
+		}
+		return MobileParty.All?.FirstOrDefault(party => string.Equals(party?.StringId, id, StringComparison.OrdinalIgnoreCase));
+	}
+
+	private static bool HasActiveTemporaryPartyForHero(Hero hero, string allowedPartyId)
+	{
+		string heroId = hero?.StringId ?? "";
+		if (string.IsNullOrWhiteSpace(heroId))
+		{
+			return false;
+		}
+		foreach (MobileParty party in MobileParty.All?.ToList() ?? new List<MobileParty>())
+		{
+			if (!IsTemporaryGatheringParty(party) || !party.IsActive || string.Equals(party.StringId, allowedPartyId, StringComparison.OrdinalIgnoreCase))
+			{
+				continue;
+			}
+			if (party.LeaderHero == hero || (hero.CharacterObject != null && party.MemberRoster?.Contains(hero.CharacterObject) == true))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public static List<PostprocessRuleEntry> BuildRuntimePostprocessRulesForExternal(Hero targetHero)
+	{
+		return (AIConfigHandler.GetGuardrailRulePostprocessRules("noble_gathering") ?? new List<PostprocessRuleEntry>())
+			.Where(rule => rule != null && !string.IsNullOrWhiteSpace(rule.Tag))
+			.Select(rule => new PostprocessRuleEntry
+			{
+				Tag = (rule.Tag ?? "").Trim(),
+				Description = (rule.Description ?? "").Trim()
+			})
+			.ToList();
+	}
+
+	public static string BuildPostprocessContextForExternal(Hero conversationHero)
+	{
+		try
+		{
+			StringBuilder sb = new StringBuilder();
+			sb.AppendLine("【贵族宴会可用ID】");
+			sb.AppendLine("输出格式：");
+			sb.AppendLine("[ACTION:NOBLE_GATHERING:START:settlement=settlementId;heroes=heroId1,heroId2;clans=clanId1;kingdoms=kingdomId1;cultures=cultureId1;age=18-30;gender=female]");
+			sb.AppendLine("若玩家只说邀请某家族/王国/文化/年龄/性别群体，可以省略 heroes，由系统按筛选展开。所有 id 必须优先使用下方候选，不要凭空猜。");
+			sb.AppendLine();
+			sb.AppendLine("举办地候选：");
+			foreach (Settlement settlement in GetPlayerHostSettlements(ResolveConversationSuggestedSettlement(conversationHero)).Take(24))
+			{
+				sb.AppendLine("- settlement=" + (settlement.StringId ?? "") + " | " + GetSettlementName(settlement) + " | " + (settlement.IsTown ? "town" : settlement.IsCastle ? "castle" : "settlement"));
+			}
+			sb.AppendLine();
+			sb.AppendLine("家族候选：");
+			foreach (Clan clan in GetPlayerGatheringCandidateClans(null).Take(60))
+			{
+				sb.AppendLine("- clan=" + (clan.StringId ?? "") + " | " + GetClanName(clan) + " | kingdom=" + (clan.Kingdom?.StringId ?? "") + " | culture=" + (clan.Culture?.StringId ?? ""));
+			}
+			sb.AppendLine();
+			sb.AppendLine("人物候选：");
+			foreach (Hero hero in Hero.AllAliveHeroes.Where(IsGatheringGroupCandidateHero).OrderBy(hero => GetClanName(hero.Clan)).ThenBy(GetHeroName).Take(120))
+			{
+				sb.AppendLine("- hero=" + (hero.StringId ?? "") + " | " + GetHeroName(hero) + " | clan=" + (hero.Clan?.StringId ?? "") + " | kingdom=" + (hero.Clan?.Kingdom?.StringId ?? "") + " | culture=" + (hero.Culture?.StringId ?? "") + " | age=" + Math.Floor(hero.Age) + " | gender=" + (hero.IsFemale ? "female" : "male"));
+			}
+			sb.AppendLine();
+			sb.AppendLine("王国候选：");
+			foreach (Kingdom kingdom in Kingdom.All?.Where(k => k != null && !k.IsEliminated).OrderBy(k => k.Name?.ToString() ?? k.StringId ?? "").Take(40) ?? Enumerable.Empty<Kingdom>())
+			{
+				sb.AppendLine("- kingdom=" + (kingdom.StringId ?? "") + " | " + (kingdom.Name?.ToString() ?? kingdom.StringId ?? "") + " | culture=" + (kingdom.Culture?.StringId ?? ""));
+			}
+			sb.AppendLine();
+			sb.AppendLine("文化候选：");
+			foreach (CultureObject culture in MBObjectManager.Instance.GetObjectTypeList<CultureObject>()?.Where(c => c != null && !string.IsNullOrWhiteSpace(c.StringId)).OrderBy(c => c.Name?.ToString() ?? c.StringId ?? "").Take(40) ?? Enumerable.Empty<CultureObject>())
+			{
+				sb.AppendLine("- culture=" + (culture.StringId ?? "") + " | " + (culture.Name?.ToString() ?? culture.StringId ?? ""));
+			}
+			return sb.ToString().Trim();
+		}
+		catch (Exception ex)
+		{
+			Log("build postprocess context failed: " + ex.Message);
+			return "";
+		}
+	}
+
+	public static string NormalizeNobleGatheringPostprocessTagsForExternal(string raw)
+	{
+		List<string> tags = new List<string>();
+		HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		foreach (Match match in NobleGatheringActionTagRegex.Matches(raw ?? ""))
+		{
+			string tag = (match.Value ?? "").Trim();
+			if (!string.IsNullOrWhiteSpace(tag) && seen.Add(tag))
+			{
+				tags.Add(tag);
+			}
+		}
+		return string.Join("\n", tags).Trim();
+	}
+
+	public static bool TryApplyNobleGatheringTagsForExternal(Hero conversationHero, ref string content, out List<string> generatedFacts, out List<string> notifications)
+	{
+		generatedFacts = new List<string>();
+		notifications = new List<string>();
+		string original = content ?? "";
+		MatchCollection matches = NobleGatheringActionTagRegex.Matches(original);
+		if (matches == null || matches.Count == 0)
+		{
+			return false;
+		}
+		content = NobleGatheringActionTagRegex.Replace(original, "").Trim();
+		NobleGatheringBehavior behavior = Instance ?? Campaign.Current?.GetCampaignBehavior<NobleGatheringBehavior>();
+		if (behavior == null)
+		{
+			notifications.Add("宴会系统未初始化。");
+			return true;
+		}
+		foreach (Match match in matches)
+		{
+			NobleGatheringInvitationSelector selector = ParseInvitationSelectorTag(match.Value);
+			if (selector == null)
+			{
+				continue;
+			}
+			if (behavior.TryCreatePlayerHostedGatheringFromSelector(selector, conversationHero, out string status, out string fact))
+			{
+				notifications.Add(status);
+				if (!string.IsNullOrWhiteSpace(fact))
+				{
+					generatedFacts.Add(fact);
+				}
+				return true;
+			}
+			notifications.Add(status);
+		}
+		if (notifications.Count == 0)
+		{
+			notifications.Add("宴会指令未执行：标签参数无法解析。");
+		}
+		return true;
+	}
+
+	private bool TryCreatePlayerHostedGatheringFromSelector(NobleGatheringInvitationSelector selector, Hero conversationHero, out string status, out string generatedFact)
+	{
+		status = "";
+		generatedFact = "";
+		Settlement settlement = ResolveSelectorSettlement(selector, conversationHero);
+		if (!CanPlayerHostAtSettlement(Hero.MainHero, settlement, out status))
+		{
+			return false;
+		}
+		List<Hero> invitees = ResolveSelectorInvitees(selector, conversationHero)
+			.Where(hero => IsHeroEligibleForGatheringInvitation(hero, out _))
+			.GroupBy(hero => hero.StringId ?? "", StringComparer.OrdinalIgnoreCase)
+			.Select(group => group.First())
+			.ToList();
+		if (invitees.Count == 0)
+		{
+			status = "宴会未召开：没有解析到可赴宴宾客。";
+			return false;
+		}
+		if (!TryCreatePlayerHostedGathering(settlement, invitees, out status))
+		{
+			return false;
+		}
+		generatedFact = "[AFEF玩家行为补充] 玩家通过对话安排在" + GetSettlementName(settlement) + "举办宴会，并邀请了" + string.Join("、", invitees.Take(12).Select(GetHeroName)) + (invitees.Count > 12 ? "等" + invitees.Count + "人。" : "。");
+		return true;
+	}
+
+	private static NobleGatheringInvitationSelector ParseInvitationSelectorTag(string tag)
+	{
+		string text = (tag ?? "").Trim();
+		const string prefix = "[ACTION:NOBLE_GATHERING:START:";
+		if (!text.StartsWith(prefix, StringComparison.OrdinalIgnoreCase) || !text.EndsWith("]", StringComparison.Ordinal))
+		{
+			return null;
+		}
+		text = text.Substring(prefix.Length, text.Length - prefix.Length - 1);
+		NobleGatheringInvitationSelector selector = new NobleGatheringInvitationSelector();
+		foreach (string rawPart in text.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries))
+		{
+			string part = (rawPart ?? "").Trim();
+			if (string.IsNullOrWhiteSpace(part))
+			{
+				continue;
+			}
+			int split = part.IndexOf('=');
+			if (split < 0)
+			{
+				split = part.IndexOf(':');
+			}
+			if (split <= 0)
+			{
+				continue;
+			}
+			string key = part.Substring(0, split).Trim().ToLowerInvariant();
+			string value = part.Substring(split + 1).Trim();
+			if (string.IsNullOrWhiteSpace(value))
+			{
+				continue;
+			}
+			switch (key)
+			{
+				case "settlement":
+				case "place":
+				case "地点":
+					selector.SettlementId = value;
+					break;
+				case "hero":
+				case "heroes":
+				case "persons":
+				case "人物":
+					selector.SpecificHeroIds.AddRange(SplitSelectorValues(value));
+					break;
+				case "clan":
+				case "clans":
+				case "family":
+				case "families":
+				case "家族":
+					selector.ClanIds.AddRange(SplitSelectorValues(value));
+					break;
+				case "kingdom":
+				case "kingdoms":
+				case "faction":
+				case "factions":
+				case "王国":
+				case "阵营":
+					selector.KingdomIds.AddRange(SplitSelectorValues(value));
+					break;
+				case "culture":
+				case "cultures":
+				case "文化":
+					selector.CultureIds.AddRange(SplitSelectorValues(value));
+					break;
+				case "age":
+				case "年龄":
+					ParseAgeRange(value, selector);
+					break;
+				case "gender":
+				case "sex":
+				case "性别":
+					selector.Gender = NormalizeGenderToken(value);
+					break;
+			}
+		}
+		selector.SpecificHeroIds = NormalizeStringList(selector.SpecificHeroIds);
+		selector.ClanIds = NormalizeStringList(selector.ClanIds);
+		selector.KingdomIds = NormalizeStringList(selector.KingdomIds);
+		selector.CultureIds = NormalizeStringList(selector.CultureIds);
+		return selector;
+	}
+
+	private static List<string> SplitSelectorValues(string value)
+	{
+		return (value ?? "")
+			.Split(new[] { ',', '，', '|', '/', '、' }, StringSplitOptions.RemoveEmptyEntries)
+			.Select(x => x.Trim())
+			.Where(x => !string.IsNullOrWhiteSpace(x) && !string.Equals(x, "none", StringComparison.OrdinalIgnoreCase) && !string.Equals(x, "无", StringComparison.OrdinalIgnoreCase))
+			.ToList();
+	}
+
+	private static List<string> NormalizeStringList(IEnumerable<string> values)
+	{
+		return (values ?? Enumerable.Empty<string>())
+			.Select(x => (x ?? "").Trim())
+			.Where(x => !string.IsNullOrWhiteSpace(x))
+			.Distinct(StringComparer.OrdinalIgnoreCase)
+			.ToList();
+	}
+
+	private static void ParseAgeRange(string value, NobleGatheringInvitationSelector selector)
+	{
+		if (selector == null)
+		{
+			return;
+		}
+		Match match = Regex.Match(value ?? "", "(\\d+)\\s*[-~至到]\\s*(\\d+)");
+		if (match.Success && int.TryParse(match.Groups[1].Value, out int min) && int.TryParse(match.Groups[2].Value, out int max))
+		{
+			selector.MinAge = Math.Min(min, max);
+			selector.MaxAge = Math.Max(min, max);
+			return;
+		}
+		if (int.TryParse(Regex.Match(value ?? "", "\\d+").Value, out int age))
+		{
+			selector.MinAge = age;
+			selector.MaxAge = age;
+		}
+	}
+
+	private static string NormalizeGenderToken(string value)
+	{
+		string text = (value ?? "").Trim().ToLowerInvariant();
+		if (text == "female" || text == "woman" || text == "women" || text == "f" || text.Contains("女"))
+		{
+			return "female";
+		}
+		if (text == "male" || text == "man" || text == "men" || text == "m" || text.Contains("男"))
+		{
+			return "male";
+		}
+		return "";
+	}
+
+	private static Settlement ResolveSelectorSettlement(NobleGatheringInvitationSelector selector, Hero conversationHero)
+	{
+		Settlement settlement = ResolveSettlementToken(selector?.SettlementId);
+		if (settlement != null)
+		{
+			return settlement;
+		}
+		Settlement suggested = ResolveConversationSuggestedSettlement(conversationHero);
+		return ResolveBestPlayerHostSettlement(suggested);
+	}
+
+	private static Settlement ResolveConversationSuggestedSettlement(Hero conversationHero)
+	{
+		try
+		{
+			return conversationHero?.GovernorOf?.Settlement
+				?? conversationHero?.CurrentSettlement
+				?? Settlement.CurrentSettlement;
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static Settlement ResolveSettlementToken(string token)
+	{
+		string text = (token ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return null;
+		}
+		Settlement exact = Settlement.All?.FirstOrDefault(settlement => string.Equals(settlement?.StringId, text, StringComparison.OrdinalIgnoreCase));
+		if (exact != null)
+		{
+			return exact;
+		}
+		List<Settlement> byName = Settlement.All?.Where(settlement => settlement != null && (string.Equals(settlement.Name?.ToString(), text, StringComparison.OrdinalIgnoreCase) || (settlement.Name?.ToString() ?? "").IndexOf(text, StringComparison.OrdinalIgnoreCase) >= 0)).ToList() ?? new List<Settlement>();
+		return byName.Count == 1 ? byName[0] : null;
+	}
+
+	private IEnumerable<Hero> ResolveSelectorInvitees(NobleGatheringInvitationSelector selector, Hero conversationHero)
+	{
+		HashSet<Hero> result = new HashSet<Hero>();
+		foreach (string token in selector?.SpecificHeroIds ?? new List<string>())
+		{
+			Hero hero = ResolveHeroToken(token);
+			if (hero != null)
+			{
+				result.Add(hero);
+			}
+		}
+		List<Clan> clans = (selector?.ClanIds ?? new List<string>()).Select(ResolveClanToken).Where(x => x != null).ToList();
+		List<Kingdom> kingdoms = (selector?.KingdomIds ?? new List<string>()).Select(ResolveKingdomToken).Where(x => x != null).ToList();
+		List<CultureObject> cultures = (selector?.CultureIds ?? new List<string>()).Select(ResolveCultureToken).Where(x => x != null).ToList();
+		bool hasGroupFilter = clans.Count > 0 || kingdoms.Count > 0 || cultures.Count > 0 || (selector?.MinAge ?? -1) >= 0 || (selector?.MaxAge ?? -1) >= 0 || !string.IsNullOrWhiteSpace(selector?.Gender);
+		if (hasGroupFilter)
+		{
+			foreach (Hero hero in Hero.AllAliveHeroes.Where(IsGatheringGroupCandidateHero))
+			{
+				if (clans.Count > 0 && !clans.Contains(hero.Clan))
+				{
+					continue;
+				}
+				if (kingdoms.Count > 0 && !kingdoms.Contains(hero.Clan?.Kingdom))
+				{
+					continue;
+				}
+				if (cultures.Count > 0 && !cultures.Contains(hero.Culture))
+				{
+					continue;
+				}
+				if ((selector?.MinAge ?? -1) >= 0 && hero.Age < selector.MinAge)
+				{
+					continue;
+				}
+				if ((selector?.MaxAge ?? -1) >= 0 && hero.Age > selector.MaxAge)
+				{
+					continue;
+				}
+				if (string.Equals(selector?.Gender, "female", StringComparison.OrdinalIgnoreCase) && !hero.IsFemale)
+				{
+					continue;
+				}
+				if (string.Equals(selector?.Gender, "male", StringComparison.OrdinalIgnoreCase) && hero.IsFemale)
+				{
+					continue;
+				}
+				result.Add(hero);
+			}
+		}
+		if (result.Count == 0 && conversationHero != null && conversationHero != Hero.MainHero)
+		{
+			result.Add(conversationHero);
+		}
+		return result.Where(hero => hero != null && hero != Hero.MainHero && IsHeroAdultAndSpawnedForGathering(hero, out _));
+	}
+
+	private static bool IsHeroAdultAndSpawnedForGathering(Hero hero, out string reason)
+	{
+		reason = "";
+		if (hero == null || hero.CharacterObject == null || hero.IsTemplate)
+		{
+			reason = "无效人物";
+			return false;
+		}
+		try
+		{
+			if (hero.IsNotSpawned)
+			{
+				reason = "尚未出现在世界";
+				return false;
+			}
+			if (hero.IsChild || hero.Age < 18f)
+			{
+				reason = "未满十八岁";
+				return false;
+			}
+		}
+		catch
+		{
+			reason = "未成年或未出世";
+			return false;
+		}
+		return true;
+	}
+
+	private static bool IsGatheringGroupCandidateHero(Hero hero)
+	{
+		if (hero == null || hero == Hero.MainHero || hero.IsDead)
+		{
+			return false;
+		}
+		if (!IsHeroAdultAndSpawnedForGathering(hero, out _))
+		{
+			return false;
+		}
+		return hero.Occupation == Occupation.Lord || hero.IsPlayerCompanion || hero.IsWanderer || hero.Clan != null;
+	}
+
+	private static Hero ResolveHeroToken(string token)
+	{
+		string text = (token ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return null;
+		}
+		Hero exact = Hero.AllAliveHeroes.FirstOrDefault(hero => string.Equals(hero?.StringId, text, StringComparison.OrdinalIgnoreCase));
+		if (exact != null)
+		{
+			return exact;
+		}
+		List<Hero> byName = Hero.AllAliveHeroes.Where(hero => hero != null && (string.Equals(GetHeroName(hero), text, StringComparison.OrdinalIgnoreCase) || GetHeroName(hero).IndexOf(text, StringComparison.OrdinalIgnoreCase) >= 0)).ToList();
+		return byName.Count == 1 ? byName[0] : null;
+	}
+
+	private static Clan ResolveClanToken(string token)
+	{
+		string text = (token ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return null;
+		}
+		Clan exact = Clan.All.FirstOrDefault(clan => string.Equals(clan?.StringId, text, StringComparison.OrdinalIgnoreCase));
+		if (exact != null)
+		{
+			return exact;
+		}
+		List<Clan> byName = Clan.All.Where(clan => clan != null && (string.Equals(GetClanName(clan), text, StringComparison.OrdinalIgnoreCase) || GetClanName(clan).IndexOf(text, StringComparison.OrdinalIgnoreCase) >= 0)).ToList();
+		return byName.Count == 1 ? byName[0] : null;
+	}
+
+	private static Kingdom ResolveKingdomToken(string token)
+	{
+		string text = (token ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return null;
+		}
+		Kingdom exact = Kingdom.All?.FirstOrDefault(kingdom => string.Equals(kingdom?.StringId, text, StringComparison.OrdinalIgnoreCase));
+		if (exact != null)
+		{
+			return exact;
+		}
+		List<Kingdom> byName = Kingdom.All?.Where(kingdom => kingdom != null && (string.Equals(kingdom.Name?.ToString(), text, StringComparison.OrdinalIgnoreCase) || (kingdom.Name?.ToString() ?? "").IndexOf(text, StringComparison.OrdinalIgnoreCase) >= 0)).ToList() ?? new List<Kingdom>();
+		return byName.Count == 1 ? byName[0] : null;
+	}
+
+	private static CultureObject ResolveCultureToken(string token)
+	{
+		string text = (token ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return null;
+		}
+		IEnumerable<CultureObject> cultures = MBObjectManager.Instance.GetObjectTypeList<CultureObject>() ?? Enumerable.Empty<CultureObject>();
+		CultureObject exact = cultures.FirstOrDefault(culture => string.Equals(culture?.StringId, text, StringComparison.OrdinalIgnoreCase));
+		if (exact != null)
+		{
+			return exact;
+		}
+		List<CultureObject> byName = cultures.Where(culture => culture != null && (string.Equals(culture.Name?.ToString(), text, StringComparison.OrdinalIgnoreCase) || (culture.Name?.ToString() ?? "").IndexOf(text, StringComparison.OrdinalIgnoreCase) >= 0)).ToList();
+		return byName.Count == 1 ? byName[0] : null;
 	}
 
 	private bool CanPlayerHostAtSettlement(Hero host, Settlement settlement, out string reason)
@@ -1770,17 +3324,55 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 		HashSet<string> ids = new HashSet<string>(selectedClanIds ?? new List<string>(), StringComparer.OrdinalIgnoreCase);
 		return Hero.AllAliveHeroes
 			.Where(hero => hero != null && hero != Hero.MainHero && hero.Clan != null && ids.Contains(hero.Clan.StringId ?? ""))
+			.Where(hero => IsHeroAdultAndSpawnedForGathering(hero, out _))
 			.Where(hero => hero.Occupation == Occupation.Lord)
 			.OrderBy(hero => GetClanName(hero.Clan))
 			.ThenBy(hero => GetHeroName(hero));
 	}
 
-	private bool IsHeroEligibleForGatheringTravel(Hero hero, out string reason)
+	private bool IsHeroEligibleForGatheringInvitation(Hero hero, out string reason)
 	{
 		reason = "";
 		if (hero == null || hero == Hero.MainHero || hero.IsDead)
 		{
 			reason = "无效人物";
+			return false;
+		}
+		if (hero.IsPrisoner)
+		{
+			reason = "被俘";
+			return false;
+		}
+		if (hero.IsWounded)
+		{
+			reason = "重伤";
+			return false;
+		}
+		if (!IsHeroAdultAndSpawnedForGathering(hero, out reason))
+		{
+			return false;
+		}
+		if (CanUseExistingPartyForGatheringTravel(hero, out _))
+		{
+			return true;
+		}
+		if (CanCreateTemporaryPartyForHero(hero, out reason))
+		{
+			return true;
+		}
+		return false;
+	}
+
+	private bool CanUseExistingPartyForGatheringTravel(Hero hero, out string reason)
+	{
+		reason = "";
+		if (hero == null || hero == Hero.MainHero || hero.IsDead)
+		{
+			reason = "无效人物";
+			return false;
+		}
+		if (!IsHeroAdultAndSpawnedForGathering(hero, out reason))
+		{
 			return false;
 		}
 		if (hero.IsPrisoner)
@@ -1810,6 +3402,90 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 			return false;
 		}
 		return true;
+	}
+
+	private bool CanCreateTemporaryPartyForHero(Hero hero, out string reason)
+	{
+		reason = "";
+		if (hero == null || hero == Hero.MainHero || hero.IsDead)
+		{
+			reason = "无效人物";
+			return false;
+		}
+		if (hero.IsPrisoner || hero.PartyBelongedToAsPrisoner != null)
+		{
+			reason = "被俘";
+			return false;
+		}
+		if (hero.IsWounded)
+		{
+			reason = "重伤";
+			return false;
+		}
+		if (!IsHeroAdultAndSpawnedForGathering(hero, out reason))
+		{
+			return false;
+		}
+		if (hero.PartyBelongedTo != null)
+		{
+			reason = "已有非独立部队或正处于部队中";
+			return false;
+		}
+		if (ResolveHeroOriginSettlement(hero) == null)
+		{
+			reason = "找不到原始所在城";
+			return false;
+		}
+		return true;
+	}
+
+	private static Settlement ResolveHeroOriginSettlement(Hero hero)
+	{
+		if (hero == null)
+		{
+			return null;
+		}
+		return hero.CurrentSettlement
+			?? hero.GovernorOf?.Settlement
+			?? ResolveBestHeroHomeSettlement(hero);
+	}
+
+	private static Settlement ResolveBestHeroHomeSettlement(Hero hero)
+	{
+		try
+		{
+			return hero?.HomeSettlement
+				?? hero?.Clan?.HomeSettlement
+				?? hero?.Clan?.Fiefs?.FirstOrDefault()?.Settlement
+				?? hero?.Clan?.Settlements?.FirstOrDefault(settlement => settlement?.Town != null)
+				?? Settlement.All?.Where(settlement => settlement?.Town != null && settlement.OwnerClan == hero?.Clan).OrderBy(settlement => settlement.Name?.ToString() ?? settlement.StringId ?? "").FirstOrDefault();
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static Settlement ResolveBestPlayerHostSettlement(Settlement suggestedSettlement)
+	{
+		return GetPlayerHostSettlements(suggestedSettlement).FirstOrDefault();
+	}
+
+	private static CharacterObject ResolveTemporaryEscortTroop(Hero hero, Settlement origin)
+	{
+		try
+		{
+			return hero?.Clan?.BasicTroop
+				?? hero?.Culture?.BasicTroop
+				?? origin?.Culture?.BasicTroop
+				?? origin?.MapFaction?.BasicTroop
+				?? Clan.PlayerClan?.BasicTroop
+				?? Clan.PlayerClan?.Culture?.BasicTroop;
+		}
+		catch
+		{
+			return null;
+		}
 	}
 
 	private static bool IsHeroAtSettlement(Hero hero, Settlement settlement)
@@ -1910,7 +3586,7 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 		Kingdom kingdom = host?.Clan?.Kingdom;
 		List<Hero> result = Hero.AllAliveHeroes
 			.Where(hero => hero != null && hero != host && hero.Occupation == Occupation.Lord && hero.Clan?.Kingdom == kingdom)
-			.Where(hero => hero == Hero.MainHero || IsHeroEligibleForGatheringTravel(hero, out _))
+			.Where(hero => hero == Hero.MainHero || IsHeroEligibleForGatheringInvitation(hero, out _))
 			.Where(hero => hero == Hero.MainHero || ShouldNpcConsiderInviting(host, hero))
 			.OrderByDescending(hero => hero == Hero.MainHero ? host.GetRelation(hero) : host.GetRelation(hero))
 			.ThenBy(_ => MBRandom.RandomFloat)
@@ -2101,7 +3777,20 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 	{
 		int members = Hero.AllAliveHeroes.Count(hero => hero?.Clan == clan && hero.Occupation == Occupation.Lord);
 		int movable = Hero.AllAliveHeroes.Count(hero => hero?.Clan == clan && hero.Occupation == Occupation.Lord && hero != Hero.MainHero && hero.PartyBelongedTo?.LeaderHero == hero);
-		return "成员 " + members + " 人；有独立部队 " + movable + " 人。";
+		int temporary = 0;
+		try
+		{
+			NobleGatheringBehavior behavior = Instance;
+			if (behavior != null)
+			{
+				temporary = Hero.AllAliveHeroes.Count(hero => hero?.Clan == clan && hero.Occupation == Occupation.Lord && hero != Hero.MainHero && hero.PartyBelongedTo == null && behavior.CanCreateTemporaryPartyForHero(hero, out _));
+			}
+		}
+		catch
+		{
+			temporary = 0;
+		}
+		return "成员 " + members + " 人；有独立部队 " + movable + " 人；可临时赴宴 " + temporary + " 人。";
 	}
 
 	private static string BuildGatheringEndMessage(NobleGatheringRecord record, string reason)
@@ -2129,6 +3818,9 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 		record.SettlementId = (record.SettlementId ?? "").Trim();
 		record.State = string.IsNullOrWhiteSpace(record.State) ? StateActive : record.State.Trim();
 		record.PlayerInvitationStatus = (record.PlayerInvitationStatus ?? "").Trim();
+		record.HostOriginSettlementId = (record.HostOriginSettlementId ?? "").Trim();
+		record.HostTemporaryPartyId = (record.HostTemporaryPartyId ?? "").Trim();
+		record.HostTemporaryPartyPhase = (record.HostTemporaryPartyPhase ?? "").Trim();
 		record.Invitees ??= new List<NobleGatheringInviteeRecord>();
 		foreach (NobleGatheringInviteeRecord invitee in record.Invitees)
 		{
@@ -2140,6 +3832,99 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 			invitee.ClanId = (invitee.ClanId ?? "").Trim();
 			invitee.Status = string.IsNullOrWhiteSpace(invitee.Status) ? InvitePending : invitee.Status.Trim();
 			invitee.Reason = (invitee.Reason ?? "").Trim();
+			invitee.OriginSettlementId = (invitee.OriginSettlementId ?? "").Trim();
+			invitee.TemporaryPartyId = (invitee.TemporaryPartyId ?? "").Trim();
+			invitee.TemporaryPartyPhase = (invitee.TemporaryPartyPhase ?? "").Trim();
+		}
+	}
+
+	[CommandLineFunctionality.CommandLineArgumentFunction("debug_npc_feast", "AnimusForge")]
+	public static string CommandDebugNpcFeast(List<string> args)
+	{
+		try
+		{
+			NobleGatheringBehavior behavior = Instance ?? Campaign.Current?.GetCampaignBehavior<NobleGatheringBehavior>();
+			if (behavior == null)
+			{
+				return "NobleGatheringBehavior not initialized.";
+			}
+			bool ok = behavior.TryCreateNpcHostedGathering(force: true, out string status);
+			return ok ? ("NPC noble gathering created: " + status) : ("NPC noble gathering not created: " + status);
+		}
+		catch (Exception ex)
+		{
+			return "NPC noble gathering debug failed: " + ex.Message;
+		}
+	}
+
+	public sealed class NobleGatheringSaveableTypeDefiner : SaveableTypeDefiner
+	{
+		public NobleGatheringSaveableTypeDefiner()
+			: base(711090)
+		{
+		}
+
+		protected override void DefineClassTypes()
+		{
+			AddClassDefinition(typeof(NobleGatheringTemporaryPartyComponent), 1);
+		}
+	}
+
+	private sealed class NobleGatheringTemporaryPartyComponent : PartyComponent
+	{
+		private readonly CampaignVec2 _position;
+
+		private readonly TextObject _name;
+
+		private Hero _owner;
+
+		private Clan _clan;
+
+		private Hero _leader;
+
+		public NobleGatheringTemporaryPartyComponent(CampaignVec2 position, TextObject name, Hero owner, Clan clan)
+		{
+			_position = position;
+			_name = name;
+			_owner = owner;
+			_leader = owner;
+			_clan = clan;
+		}
+
+		public override Hero PartyOwner => _owner;
+
+		public override Hero Leader => _leader;
+
+		public override TextObject Name => _name;
+
+		public override Settlement HomeSettlement => ResolveBestHeroHomeSettlement(_owner);
+
+		public override bool AvoidHostileActions => true;
+
+		public override Banner GetDefaultComponentBanner()
+		{
+			return _clan?.Banner;
+		}
+
+		protected override void OnInitialize()
+		{
+			MobileParty.ActualClan = _clan;
+			MobileParty.InitializeMobilePartyAroundPosition(TroopRoster.CreateDummyTroopRoster(), TroopRoster.CreateDummyTroopRoster(), _position, 0f, 0f, !_position.IsOnLand);
+			MobileParty.SetMoveModeHold();
+		}
+
+		protected override void OnChangePartyLeader(Hero newLeader)
+		{
+			_leader = newLeader;
+			if (newLeader != null)
+			{
+				_owner = newLeader;
+				_clan = newLeader.Clan ?? _clan;
+				if (MobileParty != null)
+				{
+					MobileParty.ActualClan = _clan;
+				}
+			}
 		}
 	}
 

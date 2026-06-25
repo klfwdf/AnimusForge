@@ -22882,6 +22882,10 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			preprocessRuleIds.Add("worldmap_party_command");
 		}
+		if (!IsPromptRuleExcluded(preprocessExcludedRuleIdSet, "noble_gathering") && (value8?.IndexOf("【附加规则:noble_gathering】", StringComparison.OrdinalIgnoreCase)).GetValueOrDefault() >= 0)
+		{
+			preprocessRuleIds.Add("noble_gathering");
+		}
 		shoutPromptContext.PreprocessRuleIds = preprocessRuleIds.ToList();
 		AfGcczShoutBridge.AppendRuntimePromptToShoutContext(shoutPromptContext, targetHero, targetCharacter, targetAgentIndex, cultureIdOverride);
 		bool extrasHasDuelRule = (shoutPromptContext.Extras?.IndexOf("【附加规则:duel】", StringComparison.OrdinalIgnoreCase)).GetValueOrDefault() >= 0;

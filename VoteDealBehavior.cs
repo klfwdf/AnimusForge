@@ -749,11 +749,21 @@ namespace AnimusForge
 		{
 			try
 			{
-				if (!IsBilateralDiplomacyCounterpartAgenda(__instance)) return true;
+				if (IsBilateralDiplomacyCounterpartAgenda(__instance))
+				{
+					__result = true;
+					Logger.Log("VoteDeal", $"[BilateralDiplomacy] Counterpart OnShowDecision bypassed for auto agenda vote: {GetSafeDecisionTitle(__instance)}");
+					return false;
+				}
 
-				__result = true;
-				Logger.Log("VoteDeal", $"[BilateralDiplomacy] Counterpart OnShowDecision bypassed for auto agenda vote: {GetSafeDecisionTitle(__instance)}");
-				return false;
+				if (ShouldBypassNativeDiplomacyOfferPopup(__instance))
+				{
+					__result = true;
+					Logger.Log("VoteDeal", $"[BilateralDiplomacy] Native diplomacy offer popup bypassed; routing to bilateral agenda: {GetSafeDecisionTitle(__instance)}");
+					return false;
+				}
+
+				return true;
 			}
 			catch (Exception ex)
 			{
@@ -1167,6 +1177,40 @@ namespace AnimusForge
 				}
 			}
 			return false;
+		}
+
+		private static bool ShouldBypassNativeDiplomacyOfferPopup(KingdomDecision decision)
+		{
+			try
+			{
+				if (!TryGetBilateralDiplomacyDecisionDetails(decision, out BilateralDiplomacyKind kind, out Kingdom source, out Kingdom target, out int tribute, out int duration))
+				{
+					return false;
+				}
+
+				Kingdom playerKingdom = Clan.PlayerClan?.Kingdom;
+				if (kind == BilateralDiplomacyKind.None || playerKingdom == null || source == null || target == null)
+				{
+					return false;
+				}
+
+				if (source == playerKingdom || target != playerKingdom)
+				{
+					return false;
+				}
+
+				if (Hero.MainHero?.Clan?.IsUnderMercenaryService == true)
+				{
+					return false;
+				}
+
+				return true;
+			}
+			catch (Exception ex)
+			{
+				Logger.Log("VoteDeal", $"[BilateralDiplomacy] Native offer bypass check failed: {ex.Message}");
+				return false;
+			}
 		}
 
 		private bool IsBilateralRecordStillPendingValid(BilateralDiplomacyRecord record)
@@ -2432,6 +2476,12 @@ namespace AnimusForge
 				    </Widget>
 				  </Children>
 				</Widget>");
+#if BANNERLORD_1_4_OR_GREATER
+			foreach (XmlElement element in _document.SelectNodes("//*[@StackLayout.LayoutMethod='VerticalBottomToTop']"))
+			{
+				element.SetAttribute("StackLayout.LayoutMethod", "VerticalTopToBottom");
+			}
+#endif
 		}
 
 		[PrefabExtensionXmlDocument(false)]
