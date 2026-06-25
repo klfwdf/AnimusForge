@@ -24,6 +24,10 @@ public static class SiegeLocalCivilianReactionProfile
 
     public const string WitnessResistSource = "local_player_attack_witness_resist";
 
+    public const string NativeFleeBridgeSource = "local_player_attack_native_flee";
+
+    public const string NativeLocalFightSource = "local_player_attack_native_fight";
+
     public const string PlayerDownSource = "local_player_attack_down";
 
     public const string SoldierWitnessInquirySource = "local_player_attack_soldier_witness_inquiry";

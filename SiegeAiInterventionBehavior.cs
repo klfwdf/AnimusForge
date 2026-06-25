@@ -376,6 +376,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	private static readonly HashSet<int> LocalHostileCivilianAgentIndexes = new HashSet<int>();
 	private static readonly HashSet<int> LocalFleeingCivilianAgentIndexes = new HashSet<int>();
 	private static readonly Dictionary<int, float> LastLocalCivilianWitnessReactionTimes = new Dictionary<int, float>();
+	private static bool _localNativeFightStarted;
 	private static readonly HashSet<int> CivilianGatherMovePreparedAgentIndexes = new HashSet<int>();
 	private static readonly HashSet<int> CivilianGatherFollowerAgentIndexes = new HashSet<int>();
 	private static readonly HashSet<int> CivilianGatherReadyFormationAgentIndexes = new HashSet<int>();
@@ -2865,6 +2866,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			{
 			}
 			ForceAgentForMassacreFight(agent);
+			TryStartOrJoinLocalNativeFight(mission, agent, source ?? SiegeLocalAttackProfile.LocalHostileSource);
 			if (main != null && main.IsActive())
 			{
 				agent.SetLookAgent(main);
@@ -2887,15 +2889,11 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			LocalFleeingCivilianAgentIndexes.Add(agent.Index);
 			LocalHostileCivilianAgentIndexes.Remove(agent.Index);
 			NeutralizeCivilianDailyUsableBehavior(agent, source ?? SiegeLocalAttackProfile.LocalFleeSource);
-			Team playerTeam = mission.PlayerTeam ?? main?.Team;
-			if (playerTeam != null && agent.Team != playerTeam)
-			{
-				agent.SetTeam(playerTeam, true);
-			}
 			agent.InvalidateTargetAgent();
 			ClearAgentLookTarget(agent);
 			agent.SetWatchState(Agent.WatchState.Alarmed);
-			if (main != null)
+			ActivateNativeLocalFleeBehavior(agent, source ?? SiegeLocalAttackProfile.LocalFleeSource);
+			if (main != null && !IsLocalNativeFightActive(mission))
 			{
 				KeepCivilianHidingFromOccupation(agent, mission, main, force: true);
 			}
@@ -2903,6 +2901,132 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		catch (Exception ex)
 		{
 			Logger.Log("SiegeAiIntervention", "PrepareLocalFleeingCivilian failed: " + ex.Message);
+		}
+	}
+
+	private static void ActivateNativeLocalFleeBehavior(Agent agent, string source)
+	{
+		try
+		{
+			if (agent == null || !agent.IsHuman || !agent.IsActive() || !LocalFleeingCivilianAgentIndexes.Contains(agent.Index))
+			{
+				return;
+			}
+			CampaignAgentComponent component = agent.GetComponent<CampaignAgentComponent>();
+			AgentNavigator navigator = component?.AgentNavigator ?? component?.CreateAgentNavigator();
+			if (navigator == null)
+			{
+				return;
+			}
+			AlarmedBehaviorGroup alarmedGroup = navigator.GetBehaviorGroup<AlarmedBehaviorGroup>() ?? navigator.AddBehaviorGroup<AlarmedBehaviorGroup>();
+			if (alarmedGroup == null)
+			{
+				return;
+			}
+			alarmedGroup.DisableCalmDown = true;
+			FleeBehavior fleeBehavior = alarmedGroup.GetBehavior<FleeBehavior>() ?? alarmedGroup.AddBehavior<FleeBehavior>();
+			if (fleeBehavior == null)
+			{
+				return;
+			}
+			if (!fleeBehavior.IsActive)
+			{
+				alarmedGroup.SetScriptedBehavior<FleeBehavior>();
+			}
+			agent.SetWatchState(Agent.WatchState.Alarmed);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "ActivateNativeLocalFleeBehavior failed (" + (source ?? SiegeLocalCivilianReactionProfile.NativeFleeBridgeSource) + "): " + ex.Message);
+		}
+	}
+
+	private static bool IsLocalNativeFightActive(Mission mission)
+	{
+		try
+		{
+			return _localNativeFightStarted && (mission?.GetMissionBehavior<MissionFightHandler>()?.IsThereActiveFight() ?? false);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static void TryStartOrJoinLocalNativeFight(Mission mission, Agent hostile, string source)
+	{
+		try
+		{
+			Agent main = Agent.Main ?? mission?.MainAgent;
+			if (!IsActiveInCurrentMission() || mission == null || hostile == null || main == null || !hostile.IsActive() || !main.IsActive())
+			{
+				return;
+			}
+			MissionFightHandler fightHandler = mission.GetMissionBehavior<MissionFightHandler>();
+			if (fightHandler == null)
+			{
+				return;
+			}
+			if (fightHandler.IsThereActiveFight())
+			{
+				if (_localNativeFightStarted)
+				{
+					fightHandler.AddAgentToSide(hostile, false);
+				}
+				return;
+			}
+			fightHandler.StartCustomFight(
+				new List<Agent> { main },
+				new List<Agent> { hostile },
+				false,
+				false,
+				null,
+				0f);
+			_localNativeFightStarted = true;
+			Logger.Log("SiegeAiIntervention", "Started native local conflict fight for GCCZ regional violence. Source=" + (source ?? SiegeLocalCivilianReactionProfile.NativeLocalFightSource) + ", Hostile=" + hostile.Index);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "TryStartOrJoinLocalNativeFight failed (" + (source ?? SiegeLocalCivilianReactionProfile.NativeLocalFightSource) + "): " + ex.Message);
+		}
+	}
+
+	private static void TryEndLocalNativeFight(Mission mission, string source)
+	{
+		try
+		{
+			if (!_localNativeFightStarted)
+			{
+				return;
+			}
+			MissionFightHandler fightHandler = mission?.GetMissionBehavior<MissionFightHandler>();
+			if (fightHandler != null && fightHandler.IsThereActiveFight())
+			{
+				fightHandler.EndFight(true);
+			}
+			_localNativeFightStarted = false;
+			Logger.Log("SiegeAiIntervention", "Ended native local conflict fight. Source=" + (source ?? "N/A"));
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "TryEndLocalNativeFight failed (" + (source ?? "N/A") + "): " + ex.Message);
+		}
+	}
+
+	private static bool IsLocalNativeFleeAllowedForExternal(Agent agent)
+	{
+		try
+		{
+			return IsOccupationSceneActiveForExternal()
+				&& !_massacreStarted
+				&& agent != null
+				&& agent.Index >= 0
+				&& LocalFleeingCivilianAgentIndexes.Contains(agent.Index)
+				&& IsEligibleCivilianAgent(agent, includeHeroes: true, requireActive: false);
+		}
+		catch
+		{
+			return false;
 		}
 	}
 
@@ -3101,6 +3225,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				return;
 			}
 			Agent main = Agent.Main ?? mission.MainAgent;
+			bool localNativeFightActive = IsLocalNativeFightActive(mission);
 			foreach (int agentIndex in LocalFleeingCivilianAgentIndexes.ToList())
 			{
 				Agent agent = mission.Agents.FirstOrDefault(a => a != null && a.Index == agentIndex);
@@ -3110,7 +3235,8 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 					LocalPlayerAttackVictimAgentIndexes.Remove(agentIndex);
 					continue;
 				}
-				if (main != null)
+				ActivateNativeLocalFleeBehavior(agent, SiegeLocalCivilianReactionProfile.NativeFleeBridgeSource);
+				if (!localNativeFightActive && main != null)
 				{
 					KeepCivilianHidingFromOccupation(agent, mission, main, force: false);
 				}
@@ -3146,6 +3272,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		LocalHostileCivilianAgentIndexes.Clear();
 		LocalFleeingCivilianAgentIndexes.Clear();
 		LastLocalCivilianWitnessReactionTimes.Clear();
+		_localNativeFightStarted = false;
 	}
 
 	internal static bool TryHandleFriendlyHitOnAlliedSoldier(Agent affectedAgent, string source, float damagedHp = 0f)
@@ -4238,6 +4365,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		_activeMode = InterventionMode.Massacre;
 		_civilianGatherPropagationActive = false;
 		ActiveCivilianGatherInteractions.Clear();
+		TryEndLocalNativeFight(Mission.Current, triggerSource);
 		ClearLocalPlayerAttackState();
 		bool first = !_massacreStarted;
 		_massacreStarted = true;
@@ -11877,6 +12005,10 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				Agent agent = __instance?.OwnerAgent;
 				if (SiegeAiInterventionBehavior.IsOccupationSceneActiveForExternal() && SiegeAiInterventionBehavior.IsEligibleCivilianAgent(agent, includeHeroes: true, requireActive: false))
 				{
+					if (SiegeAiInterventionBehavior.IsLocalNativeFleeAllowedForExternal(agent))
+					{
+						return true;
+					}
 					if (__instance != null)
 					{
 						__instance.IsActive = false;
@@ -11901,6 +12033,10 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				Agent agent = __instance?.OwnerAgent;
 				if (SiegeAiInterventionBehavior.IsOccupationSceneActiveForExternal() && SiegeAiInterventionBehavior.IsEligibleCivilianAgent(agent, includeHeroes: true, requireActive: false))
 				{
+					if (SiegeAiInterventionBehavior.IsLocalNativeFleeAllowedForExternal(agent))
+					{
+						return true;
+					}
 					__result = 0f;
 					return false;
 				}
