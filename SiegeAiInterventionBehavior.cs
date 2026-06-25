@@ -372,6 +372,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	private static readonly HashSet<int> CivilianPreMassacrePreparedAgentIndexes = new HashSet<int>();
 	private static readonly HashSet<int> LocalPlayerAttackVictimAgentIndexes = new HashSet<int>();
 	private static readonly HashSet<int> LocalPlayerAttackDownAgentIndexes = new HashSet<int>();
+	private static readonly HashSet<int> LocalSoldierWitnessInquiryVictimAgentIndexes = new HashSet<int>();
 	private static readonly HashSet<int> LocalHostileCivilianAgentIndexes = new HashSet<int>();
 	private static readonly HashSet<int> LocalFleeingCivilianAgentIndexes = new HashSet<int>();
 	private static readonly Dictionary<int, float> LastLocalCivilianWitnessReactionTimes = new Dictionary<int, float>();
@@ -2915,6 +2916,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			}
 			Agent player = main ?? Agent.Main ?? mission.MainAgent;
 			float now = mission.CurrentTime;
+			TryTriggerLocalSoldierWitnessInquiry(mission, victim, victimDown, targetName);
 			List<Agent> witnesses = mission.Agents
 				.Where(agent => IsLocalCivilianWitnessCandidate(agent, victim))
 				.OrderBy(agent => agent.Position.DistanceSquared(victim.Position))
@@ -3021,6 +3023,70 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private static bool TryTriggerLocalSoldierWitnessInquiry(Mission mission, Agent victim, bool victimDown, string targetName)
+	{
+		try
+		{
+			if (!IsActiveInCurrentMission() || mission?.Agents == null || victim == null || victim.Index < 0)
+			{
+				return false;
+			}
+			if (!LocalSoldierWitnessInquiryVictimAgentIndexes.Add(victim.Index))
+			{
+				return false;
+			}
+			List<Agent> soldiers = mission.Agents
+				.Where(agent => IsLocalSoldierWitnessCandidate(agent, victim))
+				.OrderBy(agent => agent.Position.DistanceSquared(victim.Position))
+				.ThenBy(agent => agent.Index)
+				.ToList();
+			if (soldiers.Count == 0)
+			{
+				LocalSoldierWitnessInquiryVictimAgentIndexes.Remove(victim.Index);
+				return false;
+			}
+			string factText = SiegeLocalCivilianReactionProfile.BuildSoldierWitnessInquiryFact(targetName, victimDown, _activeSettlementName);
+			foreach (Agent soldier in soldiers)
+			{
+				if (!ShoutBehavior.TriggerImmediateSceneBehaviorReactionForExternal(factText, soldier.Index, persistHeroPrivateHistory: true, suppressStare: false, postSpeechLeaveSeconds: -1f))
+				{
+					continue;
+				}
+				RecordInterventionMemory(SiegeLocalCivilianReactionProfile.SoldierWitnessMemoryTitle, SiegeLocalCivilianReactionProfile.BuildSoldierWitnessMemoryText(targetName, victimDown, soldier.Name?.ToString()));
+				Logger.Log("SiegeAiIntervention", "Triggered local soldier witness inquiry. Source=" + SiegeLocalCivilianReactionProfile.SoldierWitnessInquirySource + ", Soldier=" + soldier.Index + ", Victim=" + victim.Index + ", Down=" + victimDown);
+				return true;
+			}
+			Agent fallbackSoldier = soldiers[0];
+			InformationManager.DisplayMessage(new InformationMessage(
+				SiegeLocalCivilianReactionProfile.BuildSoldierWitnessFallbackMessage(fallbackSoldier.Name?.ToString(), targetName, victimDown),
+				Color.FromUint(SiegeLocalCivilianReactionProfile.SoldierWitnessFallbackMessageColor)));
+			RecordInterventionMemory(SiegeLocalCivilianReactionProfile.SoldierWitnessMemoryTitle, SiegeLocalCivilianReactionProfile.BuildSoldierWitnessMemoryText(targetName, victimDown, fallbackSoldier.Name?.ToString()));
+			Logger.Log("SiegeAiIntervention", "Displayed fallback local soldier witness inquiry. Source=" + SiegeLocalCivilianReactionProfile.SoldierWitnessInquirySource + ", Soldier=" + fallbackSoldier.Index + ", Victim=" + victim.Index + ", Down=" + victimDown);
+			return true;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "TryTriggerLocalSoldierWitnessInquiry failed: " + ex.Message);
+			return false;
+		}
+	}
+
+	private static bool IsLocalSoldierWitnessCandidate(Agent agent, Agent victim)
+	{
+		try
+		{
+			if (!IsInterventionAlliedSoldierForExternal(agent, requireActive: true) || victim == null)
+			{
+				return false;
+			}
+			return SiegeLocalCivilianReactionProfile.IsInsideWitnessRadiusSquared(agent.Position.DistanceSquared(victim.Position));
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
 	private static void MaintainLocalPlayerAttackReactions(Mission mission)
 	{
 		try
@@ -3076,6 +3142,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	{
 		LocalPlayerAttackVictimAgentIndexes.Clear();
 		LocalPlayerAttackDownAgentIndexes.Clear();
+		LocalSoldierWitnessInquiryVictimAgentIndexes.Clear();
 		LocalHostileCivilianAgentIndexes.Clear();
 		LocalFleeingCivilianAgentIndexes.Clear();
 		LastLocalCivilianWitnessReactionTimes.Clear();

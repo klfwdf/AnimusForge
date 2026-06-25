@@ -18,13 +18,19 @@ public static class SiegeLocalCivilianReactionProfile
 
     public const float WitnessRepeatCooldownSeconds = 18f;
 
+    public const uint SoldierWitnessFallbackMessageColor = 0xFFFFD27Fu;
+
     public const string WitnessFleeSource = "local_player_attack_witness_flee";
 
     public const string WitnessResistSource = "local_player_attack_witness_resist";
 
     public const string PlayerDownSource = "local_player_attack_down";
 
+    public const string SoldierWitnessInquirySource = "local_player_attack_soldier_witness_inquiry";
+
     public const string WitnessMemoryTitle = "局部恐慌";
+
+    public const string SoldierWitnessMemoryTitle = "士兵请示";
 
     public static bool IsInsideWitnessRadiusSquared(float distanceSquared)
     {
@@ -74,6 +80,30 @@ public static class SiegeLocalCivilianReactionProfile
             + role
             + "必须承认玩家是刚攻下此地的胜利方首领/处置者，不要把玩家叫成陌生人、路人、本地人或库赛特人。"
             + "请只说一句12到32字的现场话，不要写旁白、动作描写或方括号标签。";
+    }
+
+    public static string BuildSoldierWitnessInquiryFact(string targetName, bool victimDown, string settlementName)
+    {
+        string scene = string.IsNullOrWhiteSpace(settlementName) ? SiegeAmbientReactionProfile.DefaultSettlementName : settlementName.Trim();
+        string target = NormalizeTargetName(targetName, "附近一名民众");
+        string incident = victimDown ? "玩家刚打倒了" : "玩家刚攻击了";
+        return "【攻城处置士兵请示】当前地点是" + scene + "。" + incident + target + "，你在24米内亲眼看到这个局部暴力信号。"
+            + "你是玩家己方入城士兵，必须立刻称玩家为统帅/大人/长官，并向玩家请示：是否只维持局部惩戒、是否扩大为全城搜掠，或是否升级为血洗。"
+            + "现在只是请示，不得宣布已经执行，不得自行攻击平民，不得输出任何方括号动作标签。";
+    }
+
+    public static string BuildSoldierWitnessMemoryText(string targetName, bool victimDown, string soldierName)
+    {
+        string actor = NormalizeTargetName(soldierName, "附近己方士兵");
+        string incident = victimDown ? "打倒" : "攻击";
+        return actor + " 在24米内目击玩家" + incident + " " + NormalizeTargetName(targetName, "一名NPC") + "，已向玩家请示是否扩大为搜掠或血洗；该请示本身不代表已经执行破坏性处置。";
+    }
+
+    public static string BuildSoldierWitnessFallbackMessage(string soldierName, string targetName, bool victimDown)
+    {
+        string actor = NormalizeTargetName(soldierName, "附近己方士兵");
+        string incident = victimDown ? "打倒了" : "攻击了";
+        return "【士兵请示】" + actor + "：大人，您刚" + incident + NormalizeTargetName(targetName, "一名民众") + "，是只做局部惩戒，还是准许全城搜掠，甚至血洗？";
     }
 
     private static string NormalizeTargetName(string targetName, string fallback)
