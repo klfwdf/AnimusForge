@@ -2836,6 +2836,91 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 		}
 	}
 
+	public static string BuildFeastAttendanceContext(Hero hero)
+	{
+		try
+		{
+			if (hero == null) return "";
+			NobleGatheringBehavior behavior = Instance ?? Campaign.Current?.GetCampaignBehavior<NobleGatheringBehavior>();
+			if (behavior == null) return "";
+			NobleGatheringRecord gathering = behavior.GetActiveGatheringForHero(hero);
+			if (gathering == null) return "";
+			Hero host = ResolveHeroById(gathering.HostHeroId);
+			Settlement settlement = ResolveSettlementById(gathering.SettlementId);
+			if (host == null || settlement == null) return "";
+			double now = NowDay();
+			int dayNumber = Math.Max(1, (int)Math.Ceiling(now - gathering.StartDay) + 1);
+			int totalDays = GatheringDurationDays;
+			string role;
+			if (string.Equals(hero.StringId, gathering.HostHeroId, StringComparison.OrdinalIgnoreCase))
+			{
+				role = "主办方";
+			}
+			else if (hero == Hero.MainHero)
+			{
+				role = "玩家（赴宴嘉宾）";
+			}
+			else
+			{
+				role = "受邀宾客";
+			}
+			StringBuilder sb = new StringBuilder();
+			sb.AppendLine("【宴会出席】你正在参加一场贵族宴会。");
+			sb.AppendLine("- 主办方：" + GetHeroName(host));
+			sb.AppendLine("- 举办地：" + GetSettlementName(settlement));
+			sb.AppendLine("- 宴会已进行到第 " + dayNumber + " 天，共计 " + totalDays + " 天");
+			sb.AppendLine("- 你的身份：" + role);
+			sb.AppendLine("你应当意识到自己正在宴会中，可以根据你的性格谈论宴会、酒菜、宾客、主办方或其他宴会相关话题，也可以回应玩家关于宴会的提问。");
+			return sb.ToString().Trim();
+		}
+		catch (Exception ex)
+		{
+			Log("build feast attendance context failed: " + ex.Message);
+			return "";
+		}
+	}
+
+	private NobleGatheringRecord GetActiveGatheringForHero(Hero hero)
+	{
+		try
+		{
+			if (hero == null) return null;
+			double now = NowDay();
+			string heroId = (hero.StringId ?? "").Trim();
+			if (string.IsNullOrWhiteSpace(heroId)) return null;
+			NobleGatheringRecord byHost = _gatherings.Values.FirstOrDefault(record =>
+				record != null
+				&& string.Equals(record.State, StateActive, StringComparison.OrdinalIgnoreCase)
+				&& now < record.EndDay
+				&& string.Equals(record.HostHeroId, heroId, StringComparison.OrdinalIgnoreCase));
+			if (byHost != null) return byHost;
+			NobleGatheringRecord byInvitee = _gatherings.Values.FirstOrDefault(record =>
+				record != null
+				&& string.Equals(record.State, StateActive, StringComparison.OrdinalIgnoreCase)
+				&& now < record.EndDay
+				&& (record.Invitees ?? new List<NobleGatheringInviteeRecord>()).Any(invitee =>
+					invitee != null
+					&& string.Equals(invitee.HeroId, heroId, StringComparison.OrdinalIgnoreCase)
+					&& string.Equals(invitee.Status, InviteArrived, StringComparison.OrdinalIgnoreCase)));
+			if (byInvitee != null) return byInvitee;
+			if (hero == Hero.MainHero)
+			{
+				return _gatherings.Values.FirstOrDefault(record =>
+					record != null
+					&& string.Equals(record.State, StateActive, StringComparison.OrdinalIgnoreCase)
+					&& now < record.EndDay
+					&& !record.IsPlayerHosted
+					&& string.Equals(record.PlayerInvitationStatus, PlayerInvitationArrived, StringComparison.OrdinalIgnoreCase));
+			}
+			return null;
+		}
+		catch (Exception ex)
+		{
+			Log("get active gathering for hero failed: " + ex.Message);
+			return null;
+		}
+	}
+
 	public static string NormalizeNobleGatheringPostprocessTagsForExternal(string raw)
 	{
 		List<string> tags = new List<string>();

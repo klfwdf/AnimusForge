@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -22764,6 +22764,11 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				stringBuilder.AppendLine(activePrisonerStatusLine);
 			}
+		}
+		string feastContext = NobleGatheringBehavior.BuildFeastAttendanceContext(targetHero);
+		if (!string.IsNullOrWhiteSpace(feastContext))
+		{
+			stringBuilder.AppendLine(feastContext);
 		}
 		if (!string.IsNullOrWhiteSpace(value))
 		{
