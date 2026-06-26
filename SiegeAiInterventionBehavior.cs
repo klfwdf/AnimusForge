@@ -388,10 +388,11 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	private static readonly Dictionary<int, int> CivilianSpeechRallySlots = new Dictionary<int, int>();
 	private static readonly Dictionary<int, float> LastCordonMoveOrderTimesBySoldier = new Dictionary<int, float>();
 	private static readonly Dictionary<int, float> LastCordonLookOrderTimesBySoldier = new Dictionary<int, float>();
-	private static readonly Dictionary<int, int> BannerBearerSideByAgentIndex = new Dictionary<int, int>();
+	private static readonly Dictionary<int, int> BannerBearerSlotByAgentIndex = new Dictionary<int, int>();
 	private static readonly Dictionary<int, float> LastBannerBearerMoveOrderTimes = new Dictionary<int, float>();
+	private static readonly HashSet<int> BannerBearerBannerWieldedAgentIndexes = new HashSet<int>();
 	private static int _interventionPlayerCeremonyMountAgentIndex = -1;
-	private static bool _interventionPlayerCeremonyMountSpawnAttempted;
+	private static float _nextPlayerCeremonyMountSpawnAttemptTime;
 	private static float _nextPlayerCeremonyMountAssistTime;
 	private static readonly Dictionary<int, Vec3> CivilianHideTargets = new Dictionary<int, Vec3>();
 	private static readonly Dictionary<int, float> LastCivilianHideOrderTimes = new Dictionary<int, float>();
@@ -4686,17 +4687,21 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			{
 				return;
 			}
+			float now = mission.CurrentTime;
 			Agent mount = ResolveInterventionPlayerCeremonyMount(mission);
-			if (mount == null && !_interventionPlayerCeremonyMountSpawnAttempted)
+			if (mount == null)
 			{
-				_interventionPlayerCeremonyMountSpawnAttempted = true;
+				if (now < _nextPlayerCeremonyMountSpawnAttemptTime)
+				{
+					return;
+				}
+				_nextPlayerCeremonyMountSpawnAttemptTime = now + SiegeBannerBearerProfile.PlayerMountSpawnRetrySeconds;
 				mount = TrySpawnInterventionPlayerCeremonyMount(mission, main, source);
 			}
 			if (mount == null || !mount.IsActive() || mount.RiderAgent != null)
 			{
 				return;
 			}
-			float now = mission.CurrentTime;
 			if (now < _nextPlayerCeremonyMountAssistTime)
 			{
 				return;
@@ -4759,7 +4764,49 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		harnessElement = EquipmentElement.Invalid;
 		try
 		{
-			Equipment equipment = Hero.MainHero?.BattleEquipment ?? CharacterObject.PlayerCharacter?.Equipment;
+			if (TryResolveMountFromEquipment(Hero.MainHero?.BattleEquipment, out mountElement, out harnessElement))
+			{
+				return true;
+			}
+			if (TryResolveMountFromEquipment(Hero.MainHero?.CharacterObject?.FirstBattleEquipment, out mountElement, out harnessElement))
+			{
+				return true;
+			}
+			if (TryResolveMountFromEquipment(CharacterObject.PlayerCharacter?.FirstBattleEquipment, out mountElement, out harnessElement))
+			{
+				return true;
+			}
+			if (TryResolveMountFromEquipment(CharacterObject.PlayerCharacter?.Equipment, out mountElement, out harnessElement))
+			{
+				return true;
+			}
+			IEnumerable<Equipment> battleEquipments = Hero.MainHero?.CharacterObject?.BattleEquipments ?? CharacterObject.PlayerCharacter?.BattleEquipments;
+			if (battleEquipments != null)
+			{
+				foreach (Equipment equipment in battleEquipments)
+				{
+					if (TryResolveMountFromEquipment(equipment, out mountElement, out harnessElement))
+					{
+						return true;
+					}
+				}
+			}
+			return false;
+		}
+		catch
+		{
+			mountElement = EquipmentElement.Invalid;
+			harnessElement = EquipmentElement.Invalid;
+			return false;
+		}
+	}
+
+	private static bool TryResolveMountFromEquipment(Equipment equipment, out EquipmentElement mountElement, out EquipmentElement harnessElement)
+	{
+		mountElement = EquipmentElement.Invalid;
+		harnessElement = EquipmentElement.Invalid;
+		try
+		{
 			if (equipment == null)
 			{
 				return false;
@@ -4767,6 +4814,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			mountElement = equipment[EquipmentIndex.ArmorItemEndSlot];
 			if (mountElement.IsEmpty || mountElement.Item == null || !mountElement.Item.IsMountable)
 			{
+				mountElement = EquipmentElement.Invalid;
 				return false;
 			}
 			harnessElement = equipment[EquipmentIndex.HorseHarness];
@@ -9018,8 +9066,8 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				return 0;
 			}
 			PruneBannerBearerState(mission);
-			List<int> missingSides = GetMissingBannerBearerSides();
-			if (missingSides.Count == 0)
+			List<int> missingSlots = GetMissingBannerBearerSlots();
+			if (missingSlots.Count == 0)
 			{
 				return 0;
 			}
@@ -9030,7 +9078,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				return 0;
 			}
 			bool playerMounted = ShouldUseMountedBannerBearerLayout(main, mission);
-			List<CharacterObject> troops = PickInterventionBannerBearerTroops(missingSides.Count);
+			List<CharacterObject> troops = PickInterventionBannerBearerTroops(missingSlots.Count);
 			if (troops.Count == 0)
 			{
 				Logger.Log("SiegeAiIntervention", "Skip GCCZ banner bearers: no available non-hero troop. Source=" + (source ?? "N/A"));
@@ -9038,15 +9086,15 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			}
 			Banner banner = ResolveInterventionBanner();
 			int spawned = 0;
-			for (int i = 0; i < missingSides.Count && i < troops.Count; i++)
+			for (int i = 0; i < missingSlots.Count && i < troops.Count; i++)
 			{
 				CharacterObject troop = troops[i];
-				int side = missingSides[i];
+				int slot = missingSlots[i];
 				if (troop == null)
 				{
 					continue;
 				}
-				Vec3 position = GetBannerBearerTargetPosition(main, mission, side);
+				Vec3 position = GetBannerBearerTargetPosition(main, mission, slot);
 				Vec3 spawnDirection = main.LookDirection;
 				bool spawnWithHorse = playerMounted && CharacterCanSpawnMounted(troop);
 				FormationClass bannerFormationClass = spawnWithHorse ? FormationClass.Cavalry : FormationClass.Infantry;
@@ -9098,7 +9146,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 					NotifyAgentBuiltForMission(spawnedAgent, mission);
 					AlliedAgentIndexes.Add(spawnedAgent.Index);
 					BannerBearerAgentIndexes.Add(spawnedAgent.Index);
-					BannerBearerSideByAgentIndex[spawnedAgent.Index] = side;
+					BannerBearerSlotByAgentIndex[spawnedAgent.Index] = slot;
 					RestoreAlliedSoldierFriendlyState(spawnedAgent, 0f, SiegeBannerBearerProfile.BannerBearerRestoreSource, forceFollow: false, clearTarget: true);
 					AssignAgentToPlayerFormation(spawnedAgent, bannerFormationClass, refreshFormationOrders: false);
 					KeepInterventionBannerBearerNearPlayer(spawnedAgent, main, mission);
@@ -9122,30 +9170,24 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static List<int> GetMissingBannerBearerSides()
+	private static List<int> GetMissingBannerBearerSlots()
 	{
-		List<int> sides = new List<int>();
+		List<int> slots = new List<int>();
 		try
 		{
-			bool hasLeft = BannerBearerSideByAgentIndex.Values.Contains(-1);
-			bool hasRight = BannerBearerSideByAgentIndex.Values.Contains(1);
-			if (!hasLeft)
+			int desiredCount = Math.Max(0, SiegeBannerBearerProfile.BannerBearerCount);
+			for (int slot = 0; slot < desiredCount; slot++)
 			{
-				sides.Add(-1);
-			}
-			if (!hasRight)
-			{
-				sides.Add(1);
-			}
-			while (sides.Count > SiegeBannerBearerProfile.BannerBearerCount)
-			{
-				sides.RemoveAt(sides.Count - 1);
+				if (!BannerBearerSlotByAgentIndex.Values.Contains(slot))
+				{
+					slots.Add(slot);
+				}
 			}
 		}
 		catch
 		{
 		}
-		return sides;
+		return slots;
 	}
 
 	private static List<CharacterObject> PickInterventionBannerBearerTroops(int count)
@@ -9332,8 +9374,9 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 					continue;
 				}
 				BannerBearerAgentIndexes.Remove(index);
-				BannerBearerSideByAgentIndex.Remove(index);
+				BannerBearerSlotByAgentIndex.Remove(index);
 				LastBannerBearerMoveOrderTimes.Remove(index);
+				BannerBearerBannerWieldedAgentIndexes.Remove(index);
 				CordonReadyAgentIndexes.Remove(index);
 				MassacreReadySoldierAgentIndexes.Remove(index);
 				ClearMassacreHuntAssignment(index);
@@ -9345,7 +9388,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static Vec3 GetBannerBearerTargetPosition(Agent main, Mission mission, int side)
+	private static Vec3 GetBannerBearerTargetPosition(Agent main, Mission mission, int slot)
 	{
 		Vec3 position = main?.Position ?? Vec3.Zero;
 		try
@@ -9364,10 +9407,10 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				right = Vec3.Side;
 			}
 			right.Normalize();
-			float sideSign = side < 0 ? -1f : 1f;
 			float backOffset = playerMounted ? SiegeBannerBearerProfile.MountedBackOffsetMeters : SiegeBannerBearerProfile.BackOffsetMeters;
 			float sideOffset = playerMounted ? SiegeBannerBearerProfile.MountedSideOffsetMeters : SiegeBannerBearerProfile.SideOffsetMeters;
-			position = main.Position - forward * backOffset + right * (sideSign * sideOffset);
+			float lateralOffset = CalculateBannerBearerLateralOffset(slot, sideOffset);
+			position = main.Position - forward * backOffset + right * lateralOffset;
 			try
 			{
 				if (mission?.Scene != null)
@@ -9385,6 +9428,24 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		return position;
 	}
 
+	private static float CalculateBannerBearerLateralOffset(int slot, float sideOffset)
+	{
+		try
+		{
+			int count = Math.Max(1, SiegeBannerBearerProfile.BannerBearerCount);
+			if (count <= 1 || Math.Abs(sideOffset) < 0.001f)
+			{
+				return 0f;
+			}
+			float centeredSlot = Math.Max(0, Math.Min(slot, count - 1)) - (count - 1) * 0.5f;
+			return centeredSlot * sideOffset;
+		}
+		catch
+		{
+			return 0f;
+		}
+	}
+
 	private static void KeepInterventionBannerBearerNearPlayer(Agent bearer, Agent main, Mission mission)
 	{
 		try
@@ -9393,20 +9454,21 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			{
 				return;
 			}
-			if (!BannerBearerSideByAgentIndex.TryGetValue(bearer.Index, out int side))
+			if (!BannerBearerSlotByAgentIndex.TryGetValue(bearer.Index, out int slot))
 			{
-				side = (bearer.Index % 2 == 0) ? -1 : 1;
-				BannerBearerSideByAgentIndex[bearer.Index] = side;
+				slot = 0;
+				BannerBearerSlotByAgentIndex[bearer.Index] = slot;
 			}
 			RestoreAlliedSoldierFriendlyState(bearer, 0f, SiegeBannerBearerProfile.BannerBearerRestoreSource, forceFollow: false, clearTarget: true);
 			DisableCompanionStyleFollow(bearer);
 			RestoreBannerBearerMountState(bearer, main, mission);
 			bearer.SetWatchState(_massacreStarted || _plunderStarted ? Agent.WatchState.Alarmed : Agent.WatchState.Patrolling);
 			TryWieldBannerBearerBanner(bearer);
-			Vec3 target = GetBannerBearerTargetPosition(main, mission, side);
+			Vec3 target = GetBannerBearerTargetPosition(main, mission, slot);
 			bool playerMounted = ShouldUseMountedBannerBearerLayout(main, mission);
 			float teleportDistance = playerMounted ? SiegeBannerBearerProfile.MountedTeleportBackDistanceMeters : SiegeBannerBearerProfile.TeleportBackDistanceMeters;
 			float moveThreshold = playerMounted ? SiegeBannerBearerProfile.MountedFollowMoveThresholdMeters : SiegeBannerBearerProfile.FollowMoveThresholdMeters;
+			float stopDistance = playerMounted ? SiegeBannerBearerProfile.MountedFollowStopDistanceMeters : SiegeBannerBearerProfile.FollowStopDistanceMeters;
 			float followRefresh = playerMounted ? SiegeBannerBearerProfile.MountedFollowRefreshSeconds : SiegeBannerBearerProfile.FollowRefreshSeconds;
 			float playerDistanceSq = bearer.Position.DistanceSquared(main.Position);
 			float targetDistanceSq = bearer.Position.DistanceSquared(target);
@@ -9421,13 +9483,43 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			}
 			float now = mission.CurrentTime;
 			bool hasRecentMove = LastBannerBearerMoveOrderTimes.TryGetValue(bearer.Index, out float lastMoveOrderTime) && now - lastMoveOrderTime < followRefresh;
+			if (targetDistanceSq <= stopDistance * stopDistance)
+			{
+				try
+				{
+					bearer.DisableScriptedMovement();
+					bearer.SetMaximumSpeedLimit(0f, false);
+					bearer.ClearTargetFrame();
+				}
+				catch
+				{
+				}
+				LastBannerBearerMoveOrderTimes.Remove(bearer.Index);
+				Vec3 lookDirection = main.LookDirection;
+				if (lookDirection.LengthSquared < 0.01f)
+				{
+					lookDirection = Vec3.Forward;
+				}
+				lookDirection.Normalize();
+				SetAgentLookTowardPoint(bearer, main.Position + lookDirection * (playerMounted ? 9f : 6f));
+			}
+			else
+			{
+				try
+				{
+					bearer.SetMaximumSpeedLimit(-1f, false);
+				}
+				catch
+				{
+				}
+			}
 			if (targetDistanceSq > moveThreshold * moveThreshold && !hasRecentMove)
 			{
 				ClearAgentLookTarget(bearer);
-				TrySetInterventionAgentTargetPosition(bearer, target, SiegeBannerBearerProfile.FollowSource);
+				TrySetInterventionAgentTargetPosition(bearer, target, SiegeBannerBearerProfile.FollowSource, Agent.AIScriptedFrameFlags.NoAttack | Agent.AIScriptedFrameFlags.DoNotRun);
 				LastBannerBearerMoveOrderTimes[bearer.Index] = now;
 			}
-			else if (targetDistanceSq <= moveThreshold * moveThreshold)
+			else if (targetDistanceSq <= moveThreshold * moveThreshold && targetDistanceSq > stopDistance * stopDistance)
 			{
 				try
 				{
@@ -9512,7 +9604,12 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			ItemObject item = bearer.Equipment[EquipmentIndex.ExtraWeaponSlot].Item;
 			if (IsUsableBannerItem(item))
 			{
+				if (BannerBearerBannerWieldedAgentIndexes.Contains(bearer.Index))
+				{
+					return;
+				}
 				bearer.TryToWieldWeaponInSlot(EquipmentIndex.ExtraWeaponSlot, Agent.WeaponWieldActionType.InstantAfterPickUp, isWieldedOnSpawn: false);
+				BannerBearerBannerWieldedAgentIndexes.Add(bearer.Index);
 			}
 		}
 		catch
@@ -11603,10 +11700,11 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		CivilianSpeechRallySlots.Clear();
 		LastCordonMoveOrderTimesBySoldier.Clear();
 		LastCordonLookOrderTimesBySoldier.Clear();
-		BannerBearerSideByAgentIndex.Clear();
+		BannerBearerSlotByAgentIndex.Clear();
 		LastBannerBearerMoveOrderTimes.Clear();
+		BannerBearerBannerWieldedAgentIndexes.Clear();
 		_interventionPlayerCeremonyMountAgentIndex = -1;
-		_interventionPlayerCeremonyMountSpawnAttempted = false;
+		_nextPlayerCeremonyMountSpawnAttemptTime = 0f;
 		_nextPlayerCeremonyMountAssistTime = 0f;
 		CivilianHideTargets.Clear();
 		LastCivilianHideOrderTimes.Clear();
