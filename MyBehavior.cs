@@ -26364,6 +26364,46 @@ public class MyBehavior : CampaignBehaviorBase
 		return string.Join("\n", list.Concat(new string[1] { text }).Where((string x) => !string.IsNullOrWhiteSpace(x))).Trim();
 	}
 
+	private static string MergeNormalizedPostprocessBlocks(params string[] blocks)
+	{
+		List<string> list = new List<string>();
+		HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		string text = "";
+		foreach (string block in blocks ?? Array.Empty<string>())
+		{
+			if (string.IsNullOrWhiteSpace(block))
+			{
+				continue;
+			}
+			string[] array = block.Split(new char[2] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+			foreach (string line in array)
+			{
+				string text2 = (line ?? "").Trim();
+				if (string.IsNullOrWhiteSpace(text2))
+				{
+					continue;
+				}
+				if (text2.StartsWith("[ACTION:MOOD:", StringComparison.OrdinalIgnoreCase))
+				{
+					if (string.IsNullOrWhiteSpace(text))
+					{
+						text = text2;
+					}
+					continue;
+				}
+				if (hashSet.Add(text2))
+				{
+					list.Add(text2);
+				}
+			}
+		}
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			text = AIConfigHandler.ActionPostprocessFallbackMoodTag;
+		}
+		return string.Join("\n", list.Concat(new string[1] { text }).Where((string x) => !string.IsNullOrWhiteSpace(x))).Trim();
+	}
+
 	private string TryRunTransactionActionPostprocess(Hero targetHero, CharacterObject targetCharacter, string extraFact, string replyText, List<PostprocessRuleEntry> rules, string logPrefix)
 	{
 		string text = StripRewardActionTags(replyText);
@@ -26389,7 +26429,9 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			return (text + "\n" + AIConfigHandler.ActionPostprocessFallbackMoodTag).Trim();
 		}
-		if (rules == null || rules.Count == 0)
+		List<PostprocessRuleEntry> royalRules = AIConfigHandler.BuildRuntimeRoyalPostprocessRulesForExternal(targetHero ?? targetCharacter?.HeroObject) ?? new List<PostprocessRuleEntry>();
+		List<PostprocessRuleEntry> actionRules = MergePostprocessRules(rules, royalRules);
+		if (actionRules == null || actionRules.Count == 0)
 		{
 			if (Regex.Matches(text ?? "", "\\[ACTION:MOOD:[^\\]]+\\]", RegexOptions.IgnoreCase).Count <= 0 && !string.IsNullOrWhiteSpace(AIConfigHandler.ActionPostprocessFallbackMoodTag))
 			{
@@ -26403,7 +26445,7 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			text2 = string.IsNullOrWhiteSpace(extraFact) ? "（无）" : NormalizePlayerNameForPostprocess(extraFact.Trim(), text7);
 		}
-		string text3 = BuildPostprocessRuleText(rules);
+		string text3 = BuildPostprocessRuleText(actionRules);
 		string text4 = BuildPostprocessRuleText(AIConfigHandler.ActionPostprocessMoodRules);
 		string text5 = "（无）";
 		string text6 = "（无）";
@@ -26453,7 +26495,9 @@ public class MyBehavior : CampaignBehaviorBase
 			Logger.Log("Logic", "[" + logPrefix + "] 调用失败: " + error);
 			return (text + "\n" + AIConfigHandler.ActionPostprocessFallbackMoodTag).Trim();
 		}
-		string text10 = NormalizeRewardPostprocessTags(content, list);
+		string rewardTags = NormalizeRewardPostprocessTags(content, list);
+		string royalTags = royalRules.Count > 0 ? NormalizeKingdomServicePostprocessTags(content, royalRules) : "";
+		string text10 = MergeNormalizedPostprocessBlocks(rewardTags, royalTags);
 		if (string.IsNullOrWhiteSpace(text10))
 		{
 			text10 = AIConfigHandler.ActionPostprocessFallbackMoodTag;
@@ -26506,7 +26550,8 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			text2 = string.IsNullOrWhiteSpace(extraFact) ? "（无）" : NormalizePlayerNameForPostprocess(extraFact.Trim(), text9);
 		}
-		List<PostprocessRuleEntry> list = AIConfigHandler.BuildRuntimeKingdomServicePostprocessRules() ?? new List<PostprocessRuleEntry>();
+		List<PostprocessRuleEntry> royalRules = AIConfigHandler.BuildRuntimeRoyalPostprocessRulesForExternal(targetHero) ?? new List<PostprocessRuleEntry>();
+		List<PostprocessRuleEntry> list = MergePostprocessRules(AIConfigHandler.BuildRuntimeKingdomServicePostprocessRules() ?? new List<PostprocessRuleEntry>(), royalRules);
 		if (list.Count == 0)
 		{
 			Logger.Log("Logic", "[KingdomServicePostprocess] mood_only npc=" + (targetHero?.StringId ?? ""));
@@ -26552,12 +26597,14 @@ public class MyBehavior : CampaignBehaviorBase
 			return (text + "\n" + AIConfigHandler.ActionPostprocessFallbackMoodTag).Trim();
 		}
 		string text11 = targetHero?.Name?.ToString() ?? "NPC";
+		List<PostprocessRuleEntry> royalRules = AIConfigHandler.BuildRuntimeRoyalPostprocessRulesForExternal(targetHero) ?? new List<PostprocessRuleEntry>();
+		List<PostprocessRuleEntry> actionRules = MergePostprocessRules(AIConfigHandler.DuelPostprocessRules, royalRules);
 		string text2 = NormalizePlayerNameForPostprocess(BuildGuardrailSemanticContext(targetHero, extraFact), text11);
 		if (string.IsNullOrWhiteSpace(text2))
 		{
 			text2 = string.IsNullOrWhiteSpace(extraFact) ? "（无）" : NormalizePlayerNameForPostprocess(extraFact.Trim(), text11);
 		}
-		string text3 = BuildPostprocessRuleText(AIConfigHandler.DuelPostprocessRules);
+		string text3 = BuildPostprocessRuleText(actionRules);
 		string text4 = BuildPostprocessRuleText(AIConfigHandler.ActionPostprocessMoodRules);
 		string text5 = BuildDuelPostprocessItemList(duelStakeOptions);
 		string text7 = "（无）";
@@ -26582,7 +26629,9 @@ public class MyBehavior : CampaignBehaviorBase
 			Logger.Log("Logic", "[DuelPostprocess] 调用失败: " + error);
 			return (text + "\n" + AIConfigHandler.ActionPostprocessFallbackMoodTag).Trim();
 		}
-		string text9 = NormalizeDuelPostprocessTags(content, duelStakeOptions, targetHero);
+		string duelTags = NormalizeDuelPostprocessTags(content, duelStakeOptions, targetHero);
+		string royalTags = royalRules.Count > 0 ? NormalizeKingdomServicePostprocessTags(content, royalRules) : "";
+		string text9 = MergeNormalizedPostprocessBlocks(duelTags, royalTags);
 		if (string.IsNullOrWhiteSpace(text9))
 		{
 			text9 = AIConfigHandler.ActionPostprocessFallbackMoodTag;
