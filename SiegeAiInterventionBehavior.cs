@@ -955,6 +955,12 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
+		if (!DoesLiveCurrentSettlementMatchActiveIntervention())
+		{
+			Logger.Log("SiegeAiIntervention", "Ignored pending GCCZ mission start because live settlement did not match. PendingSettlement=" + (_activeSettlementId ?? "N/A"));
+			ResetAftermathRuntimeGuards("pending_mission_settlement_mismatch");
+			return;
+		}
 		_activeMode = _pendingMode;
 		_pendingMode = InterventionMode.None;
 		_nextControlTickTime = 0f;
@@ -6610,7 +6616,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			return mission != null && !mission.IsMissionEnding && (_activeMode != InterventionMode.None || _pendingMode != InterventionMode.None);
+			return mission != null && !mission.IsMissionEnding && (_activeMode != InterventionMode.None || (_pendingMode != InterventionMode.None && DoesLiveCurrentSettlementMatchActiveIntervention()));
 		}
 		catch
 		{
@@ -11224,6 +11230,11 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 
 	private static Settlement ResolveCurrentSettlement()
 	{
+		return ResolveLiveCurrentSettlement() ?? _activeSettlement;
+	}
+
+	private static Settlement ResolveLiveCurrentSettlement()
+	{
 		try
 		{
 			if (Settlement.CurrentSettlement != null)
@@ -11254,17 +11265,24 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		catch
 		{
 		}
+		return null;
+	}
+
+	private static bool DoesLiveCurrentSettlementMatchActiveIntervention()
+	{
 		try
 		{
-			if (_activeSettlement != null)
+			if (string.IsNullOrWhiteSpace(_activeSettlementId))
 			{
-				return _activeSettlement;
+				return false;
 			}
+			Settlement settlement = ResolveLiveCurrentSettlement();
+			return settlement != null && string.Equals(settlement.StringId, _activeSettlementId, StringComparison.OrdinalIgnoreCase);
 		}
 		catch
 		{
+			return false;
 		}
-		return null;
 	}
 
 	private static Agent TryGetAgent(int agentIndex)
@@ -11354,10 +11372,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			{
 				return false;
 			}
-			Settlement settlement = ResolveCurrentSettlement();
-			return string.IsNullOrWhiteSpace(_activeSettlementId)
-				|| settlement == null
-				|| string.Equals(settlement.StringId, _activeSettlementId, StringComparison.OrdinalIgnoreCase);
+			return DoesLiveCurrentSettlementMatchActiveIntervention();
 		}
 		catch
 		{
