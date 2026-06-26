@@ -391,9 +391,6 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	private static readonly Dictionary<int, int> BannerBearerSlotByAgentIndex = new Dictionary<int, int>();
 	private static readonly Dictionary<int, float> LastBannerBearerMoveOrderTimes = new Dictionary<int, float>();
 	private static readonly HashSet<int> BannerBearerBannerWieldedAgentIndexes = new HashSet<int>();
-	private static int _interventionPlayerCeremonyMountAgentIndex = -1;
-	private static float _nextPlayerCeremonyMountSpawnAttemptTime;
-	private static float _nextPlayerCeremonyMountAssistTime;
 	private static readonly Dictionary<int, Vec3> CivilianHideTargets = new Dictionary<int, Vec3>();
 	private static readonly Dictionary<int, float> LastCivilianHideOrderTimes = new Dictionary<int, float>();
 	private static readonly HashSet<int> CivilianHideSettledAgentIndexes = new HashSet<int>();
@@ -988,7 +985,6 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		EnsureInterventionMissionCombatModeForPlayerDamage(mission);
 		EnsureInterventionPlayerCommandTeam(mission);
 		ApplyPlayerBattleEquipment();
-		EnsureInterventionPlayerCeremonyMount(mission, SiegeBannerBearerProfile.PlayerMountSpawnSource);
 		RemoveProtectedSceneAgents(mission);
 		RemovePlayerCompanionSceneAgents(mission);
 		RemoveBackstreetCrimeAgents(mission);
@@ -1017,7 +1013,6 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		{
 			_nextControlTickTime = currentTime + 0.35f;
 			ApplyPlayerBattleEquipment();
-			EnsureInterventionPlayerCeremonyMount(mission, SiegeBannerBearerProfile.PlayerMountAssistSource);
 			RemoveProtectedSceneAgents(mission);
 			RemovePlayerCompanionSceneAgents(mission);
 			RemoveDefeatedGuardAgents(mission);
@@ -4671,251 +4666,6 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		catch (Exception ex)
 		{
 			Logger.Log("SiegeAiIntervention", "ApplyPlayerBattleEquipment failed: " + ex.Message);
-		}
-	}
-
-	private static void EnsureInterventionPlayerCeremonyMount(Mission mission, string source)
-	{
-		try
-		{
-			if (!IsActiveInCurrentMission() || mission == null || mission.IsMissionEnding)
-			{
-				return;
-			}
-			Agent main = Agent.Main ?? mission.MainAgent;
-			if (main == null || !main.IsActive() || IsAgentMounted(main))
-			{
-				return;
-			}
-			float now = mission.CurrentTime;
-			Agent mount = ResolveInterventionPlayerCeremonyMount(mission);
-			if (mount == null)
-			{
-				if (now < _nextPlayerCeremonyMountSpawnAttemptTime)
-				{
-					return;
-				}
-				_nextPlayerCeremonyMountSpawnAttemptTime = now + SiegeBannerBearerProfile.PlayerMountSpawnRetrySeconds;
-				mount = TrySpawnInterventionPlayerCeremonyMount(mission, main, source);
-			}
-			if (mount == null || !mount.IsActive() || mount.RiderAgent != null)
-			{
-				return;
-			}
-			if (now < _nextPlayerCeremonyMountAssistTime)
-			{
-				return;
-			}
-			_nextPlayerCeremonyMountAssistTime = now + SiegeBannerBearerProfile.PlayerMountAssistRefreshSeconds;
-			RestoreInterventionPlayerCeremonyMountState(mount, mission, main, SiegeBannerBearerProfile.PlayerMountRestoreSource);
-			Vec3 target = GetInterventionPlayerCeremonyMountPosition(mission, main);
-			float repositionDistance = SiegeBannerBearerProfile.PlayerMountRepositionDistanceMeters;
-			if (mount.Position.DistanceSquared(main.Position) > repositionDistance * repositionDistance)
-			{
-				mount.TeleportToPosition(target);
-			}
-			AllowInterventionPlayerToRide(main);
-			main.Mount(mount);
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("SiegeAiIntervention", "EnsureInterventionPlayerCeremonyMount failed. Source=" + (source ?? "N/A") + ", Error=" + ex.Message);
-		}
-	}
-
-	private static Agent TrySpawnInterventionPlayerCeremonyMount(Mission mission, Agent main, string source)
-	{
-		try
-		{
-			if (!TryResolveMainHeroBattleMountEquipment(out EquipmentElement mountElement, out EquipmentElement harnessElement))
-			{
-				Logger.Log("SiegeAiIntervention", "Skip GCCZ player ceremony mount: no usable battle mount. Source=" + (source ?? "N/A"));
-				return null;
-			}
-			Vec3 position = GetInterventionPlayerCeremonyMountPosition(mission, main);
-			Vec2 direction = main?.LookDirection.AsVec2 ?? Vec2.Forward;
-			if (direction.LengthSquared < 0.01f)
-			{
-				direction = Vec2.Forward;
-			}
-			direction.Normalize();
-			ItemRosterElement mountRoster = new ItemRosterElement(mountElement.Item, 1);
-			ItemRosterElement harnessRoster = harnessElement.IsEmpty ? default(ItemRosterElement) : new ItemRosterElement(harnessElement.Item, 1);
-			Agent mount = mission.SpawnMonster(mountRoster, harnessRoster, position, direction);
-			if (mount == null)
-			{
-				return null;
-			}
-			_interventionPlayerCeremonyMountAgentIndex = mount.Index;
-			RestoreInterventionPlayerCeremonyMountState(mount, mission, main, SiegeBannerBearerProfile.PlayerMountRestoreSource);
-			Logger.Log("SiegeAiIntervention", "Spawned GCCZ player ceremony mount. Source=" + (source ?? "N/A") + ", Mount=" + (mountElement.Item?.StringId ?? "null") + ", Harness=" + (harnessElement.Item?.StringId ?? "null"));
-			return mount;
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("SiegeAiIntervention", "TrySpawnInterventionPlayerCeremonyMount failed. Source=" + (source ?? "N/A") + ", Error=" + ex.Message);
-			return null;
-		}
-	}
-
-	private static bool TryResolveMainHeroBattleMountEquipment(out EquipmentElement mountElement, out EquipmentElement harnessElement)
-	{
-		mountElement = EquipmentElement.Invalid;
-		harnessElement = EquipmentElement.Invalid;
-		try
-		{
-			if (TryResolveMountFromEquipment(Hero.MainHero?.BattleEquipment, out mountElement, out harnessElement))
-			{
-				return true;
-			}
-			if (TryResolveMountFromEquipment(Hero.MainHero?.CharacterObject?.FirstBattleEquipment, out mountElement, out harnessElement))
-			{
-				return true;
-			}
-			if (TryResolveMountFromEquipment(CharacterObject.PlayerCharacter?.FirstBattleEquipment, out mountElement, out harnessElement))
-			{
-				return true;
-			}
-			if (TryResolveMountFromEquipment(CharacterObject.PlayerCharacter?.Equipment, out mountElement, out harnessElement))
-			{
-				return true;
-			}
-			IEnumerable<Equipment> battleEquipments = Hero.MainHero?.CharacterObject?.BattleEquipments ?? CharacterObject.PlayerCharacter?.BattleEquipments;
-			if (battleEquipments != null)
-			{
-				foreach (Equipment equipment in battleEquipments)
-				{
-					if (TryResolveMountFromEquipment(equipment, out mountElement, out harnessElement))
-					{
-						return true;
-					}
-				}
-			}
-			return false;
-		}
-		catch
-		{
-			mountElement = EquipmentElement.Invalid;
-			harnessElement = EquipmentElement.Invalid;
-			return false;
-		}
-	}
-
-	private static bool TryResolveMountFromEquipment(Equipment equipment, out EquipmentElement mountElement, out EquipmentElement harnessElement)
-	{
-		mountElement = EquipmentElement.Invalid;
-		harnessElement = EquipmentElement.Invalid;
-		try
-		{
-			if (equipment == null)
-			{
-				return false;
-			}
-			mountElement = equipment[EquipmentIndex.ArmorItemEndSlot];
-			if (mountElement.IsEmpty || mountElement.Item == null || !mountElement.Item.IsMountable)
-			{
-				mountElement = EquipmentElement.Invalid;
-				return false;
-			}
-			harnessElement = equipment[EquipmentIndex.HorseHarness];
-			if (harnessElement.IsEmpty)
-			{
-				harnessElement = EquipmentElement.Invalid;
-			}
-			return true;
-		}
-		catch
-		{
-			mountElement = EquipmentElement.Invalid;
-			harnessElement = EquipmentElement.Invalid;
-			return false;
-		}
-	}
-
-	private static Agent ResolveInterventionPlayerCeremonyMount(Mission mission)
-	{
-		try
-		{
-			if (_interventionPlayerCeremonyMountAgentIndex < 0 || mission?.Agents == null)
-			{
-				return null;
-			}
-			return mission.Agents.FirstOrDefault(agent => agent != null && agent.Index == _interventionPlayerCeremonyMountAgentIndex && agent.IsMount && agent.IsActive());
-		}
-		catch
-		{
-			return null;
-		}
-	}
-
-	private static Vec3 GetInterventionPlayerCeremonyMountPosition(Mission mission, Agent main)
-	{
-		Vec3 position = main?.Position ?? Vec3.Zero;
-		try
-		{
-			Vec3 forward = main?.LookDirection ?? Vec3.Forward;
-			forward.z = 0f;
-			if (forward.LengthSquared < 0.01f)
-			{
-				forward = Vec3.Forward;
-			}
-			forward.Normalize();
-			Vec3 right = Vec3.CrossProduct(forward, Vec3.Up);
-			if (right.LengthSquared < 0.01f)
-			{
-				right = Vec3.Side;
-			}
-			right.Normalize();
-			position = main.Position - forward * SiegeBannerBearerProfile.PlayerMountForwardOffsetMeters + right * SiegeBannerBearerProfile.PlayerMountSideOffsetMeters;
-			if (mission?.Scene != null)
-			{
-				position.z = mission.Scene.GetGroundHeightAtPosition(position);
-			}
-		}
-		catch
-		{
-		}
-		return position;
-	}
-
-	private static void RestoreInterventionPlayerCeremonyMountState(Agent mount, Mission mission, Agent main, string source)
-	{
-		try
-		{
-			if (mount == null || !mount.IsActive())
-			{
-				return;
-			}
-			Team playerTeam = mission?.PlayerTeam ?? main?.Team;
-			if (playerTeam != null && mount.Team != playerTeam)
-			{
-				mount.SetTeam(playerTeam, true);
-			}
-			mount.SetMortalityState(Agent.MortalityState.Invulnerable);
-			mount.Controller = AgentControllerType.None;
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("SiegeAiIntervention", "RestoreInterventionPlayerCeremonyMountState failed. Source=" + (source ?? "N/A") + ", Error=" + ex.Message);
-		}
-	}
-
-	private static void AllowInterventionPlayerToRide(Agent main)
-	{
-		try
-		{
-			if (main == null || !main.IsActive())
-			{
-				return;
-			}
-			AgentFlag flags = main.GetAgentFlags();
-			if ((flags & AgentFlag.CanRide) == AgentFlag.None)
-			{
-				main.SetAgentFlags(flags | AgentFlag.CanRide);
-			}
-		}
-		catch
-		{
 		}
 	}
 
@@ -9559,12 +9309,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			if (IsAgentMounted(main))
-			{
-				return true;
-			}
-			Agent ceremonyMount = ResolveInterventionPlayerCeremonyMount(mission);
-			return ceremonyMount != null && ceremonyMount.IsActive();
+			return IsAgentMounted(main);
 		}
 		catch
 		{
@@ -11592,6 +11337,34 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		return true;
 	}
 
+	private static bool ShouldForceDirectPlayerMountedSpawn()
+	{
+		try
+		{
+			Mission mission = Mission.Current;
+			if (mission == null || mission.IsMissionEnding)
+			{
+				return false;
+			}
+			if (IsActiveInCurrentMission())
+			{
+				return true;
+			}
+			if (_pendingMode == InterventionMode.None)
+			{
+				return false;
+			}
+			Settlement settlement = ResolveCurrentSettlement();
+			return string.IsNullOrWhiteSpace(_activeSettlementId)
+				|| settlement == null
+				|| string.Equals(settlement.StringId, _activeSettlementId, StringComparison.OrdinalIgnoreCase);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
 	private static void ResetSessionCounters()
 	{
 		_alliedTroopsAutoSummoned = false;
@@ -11703,9 +11476,6 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		BannerBearerSlotByAgentIndex.Clear();
 		LastBannerBearerMoveOrderTimes.Clear();
 		BannerBearerBannerWieldedAgentIndexes.Clear();
-		_interventionPlayerCeremonyMountAgentIndex = -1;
-		_nextPlayerCeremonyMountSpawnAttemptTime = 0f;
-		_nextPlayerCeremonyMountAssistTime = 0f;
 		CivilianHideTargets.Clear();
 		LastCivilianHideOrderTimes.Clear();
 		CivilianHideSettledAgentIndexes.Clear();
@@ -11915,6 +11685,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			{
 				Harmony harmony = new Harmony("com.AnimusForge.siege_intervention.scene_taunt_suppression");
 				PatchMovementOrderConstructors(harmony);
+				PatchInterventionPlayerSpawn(harmony);
 				MethodInfo prefix = typeof(SiegeInterventionSceneTauntSuppressionPatch).GetMethod(nameof(SuppressSceneTauntMissionBehaviorPrefix), BindingFlags.Static | BindingFlags.NonPublic);
 				PatchSceneTauntMissionMethod(harmony, prefix, nameof(SceneTauntMissionBehavior.OnMissionTick));
 				PatchSceneTauntMissionMethod(harmony, prefix, nameof(SceneTauntMissionBehavior.OnAgentHit));
@@ -12027,6 +11798,51 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			catch (Exception ex)
 			{
 				Logger.Log("SiegeAiIntervention", "PatchMovementOrderConstructors failed: " + ex.Message);
+			}
+		}
+
+		private static void PatchInterventionPlayerSpawn(Harmony harmony)
+		{
+			try
+			{
+				MethodInfo prefix = typeof(SiegeInterventionSceneTauntSuppressionPatch).GetMethod(nameof(ForceInterventionPlayerMountedSpawnPrefix), BindingFlags.Static | BindingFlags.NonPublic);
+				if (prefix == null)
+				{
+					return;
+				}
+				MethodInfo taggedSpawn = AccessTools.Method(typeof(SandBoxHelpers.MissionHelper), nameof(SandBoxHelpers.MissionHelper.SpawnPlayer), new Type[] { typeof(bool), typeof(bool), typeof(bool), typeof(bool), typeof(string) });
+				if (taggedSpawn != null)
+				{
+					harmony.Patch(taggedSpawn, prefix: new HarmonyMethod(prefix));
+				}
+				MethodInfo entitySpawn = AccessTools.Method(typeof(SandBoxHelpers.MissionHelper), nameof(SandBoxHelpers.MissionHelper.SpawnPlayer), new Type[] { typeof(GameEntity), typeof(bool), typeof(bool), typeof(bool), typeof(bool) });
+				if (entitySpawn != null)
+				{
+					harmony.Patch(entitySpawn, prefix: new HarmonyMethod(prefix));
+				}
+			}
+			catch (Exception ex)
+			{
+				Logger.Log("SiegeAiIntervention", "PatchInterventionPlayerSpawn failed: " + ex.Message);
+			}
+		}
+
+		private static void ForceInterventionPlayerMountedSpawnPrefix(ref bool civilianEquipment, ref bool noHorses)
+		{
+			try
+			{
+				Mission mission = Mission.Current;
+				if (mission == null || mission.IsMissionEnding || !SiegeAiInterventionBehavior.ShouldForceDirectPlayerMountedSpawn())
+				{
+					return;
+				}
+				civilianEquipment = false;
+				noHorses = false;
+				Logger.Log("SiegeAiIntervention", "Forced GCCZ direct player battle/mounted spawn. Source=" + SiegeBannerBearerProfile.DirectPlayerMountedSpawnSource);
+			}
+			catch (Exception ex)
+			{
+				Logger.Log("SiegeAiIntervention", "ForceInterventionPlayerMountedSpawnPrefix failed: " + ex.Message);
 			}
 		}
 
