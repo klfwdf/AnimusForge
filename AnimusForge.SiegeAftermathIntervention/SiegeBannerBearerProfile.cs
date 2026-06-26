@@ -6,6 +6,8 @@ namespace AnimusForge.SiegeAftermathIntervention;
 /// </summary>
 public static class SiegeBannerBearerProfile
 {
+    public const bool BannerBearersEnabled = false;
+
     public const int BannerBearerCount = 1;
 
     public const float SideOffsetMeters = 0f;

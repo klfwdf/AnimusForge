@@ -8811,7 +8811,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			if (!IsActiveInCurrentMission() || mission == null || main == null || team == null || party?.MemberRoster == null)
+			if (!SiegeBannerBearerProfile.BannerBearersEnabled || !IsActiveInCurrentMission() || mission == null || main == null || team == null || party?.MemberRoster == null)
 			{
 				return 0;
 			}
