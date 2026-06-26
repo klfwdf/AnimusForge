@@ -30,6 +30,7 @@ namespace AnimusForge;
 public static class AIConfigHandler
 {
 	private const int ActionPostprocessMaxHistoryAndLatestEntries = 5;
+	private const string KingAbdicateToPlayerActionTag = "[ACTION:KING_ABDICATE_TO_PLAYER]";
 
 	private sealed class ActionPostprocessHistoryEntry
 	{
@@ -581,6 +582,64 @@ public static class AIConfigHandler
 	public static List<PostprocessRuleEntry> RoyalPostprocessRules => _actionPostprocess?.RoyalPostprocessRules ?? new List<PostprocessRuleEntry>();
 
 	public static List<PostprocessRuleEntry> ActionPostprocessMoodRules => _actionPostprocess?.MoodRules ?? new List<PostprocessRuleEntry>();
+
+	public static bool IsRoyalAbdicationPostprocessTargetForExternal(Hero targetHero)
+	{
+		try
+		{
+			Hero hero = targetHero ?? ResolveConversationTargetHero();
+			Clan playerClan = Clan.PlayerClan;
+			if (hero == null || hero == Hero.MainHero || playerClan == null || Hero.MainHero == null)
+			{
+				return false;
+			}
+			Clan targetClan = hero.Clan;
+			if (targetClan == null || targetClan.IsEliminated || targetClan == playerClan)
+			{
+				return false;
+			}
+			Kingdom kingdom = targetClan.Kingdom ?? hero.MapFaction as Kingdom;
+			if (kingdom == null || kingdom.IsEliminated || kingdom.RulingClan == playerClan)
+			{
+				return false;
+			}
+			return kingdom.Leader == hero || kingdom.RulingClan?.Leader == hero;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	public static List<PostprocessRuleEntry> BuildRuntimeRoyalPostprocessRulesForExternal(Hero targetHero)
+	{
+		List<PostprocessRuleEntry> list = new List<PostprocessRuleEntry>();
+		try
+		{
+			if (!IsRoyalAbdicationPostprocessTargetForExternal(targetHero))
+			{
+				return list;
+			}
+			foreach (PostprocessRuleEntry rule in RoyalPostprocessRules ?? new List<PostprocessRuleEntry>())
+			{
+				string tag = (rule?.Tag ?? "").Trim();
+				if (!string.Equals(tag, KingAbdicateToPlayerActionTag, StringComparison.OrdinalIgnoreCase))
+				{
+					continue;
+				}
+				list.Add(new PostprocessRuleEntry
+				{
+					Tag = KingAbdicateToPlayerActionTag,
+					Description = rule?.Description ?? ""
+				});
+			}
+			Logger.Log("AIConfig", "[RoyalPostprocessRules] targetHero=" + (targetHero?.StringId ?? "") + " rules=" + ((list.Count == 0) ? "（无）" : string.Join(",", list.Select((PostprocessRuleEntry x) => x?.Tag ?? "").Where((string x) => !string.IsNullOrWhiteSpace(x)))));
+		}
+		catch
+		{
+		}
+		return list;
+	}
 
 	private static string NormalizeActionPostprocessOptionalValue(string value)
 	{

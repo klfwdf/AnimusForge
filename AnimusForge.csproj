@@ -21,7 +21,7 @@
     <VersionedDepsDir Condition="'$(VersionedDepsDir)' == '' and ! $([System.String]::Copy('$(BannerlordApi)').StartsWith('1.4')) and Exists('$(MSBuildProjectDirectory)\_deps_auto\TaleWorlds.CampaignSystem.dll')">$(MSBuildProjectDirectory)\_deps_auto</VersionedDepsDir>
     <VersionedDepsDir Condition="'$(VersionedDepsDir)' == '' and ! $([System.String]::Copy('$(BannerlordApi)').StartsWith('1.4')) and Exists('$(DepsDir)\TaleWorlds.CampaignSystem.dll')">$(DepsDir)</VersionedDepsDir>
     <BannerlordRoot Condition="'$(BannerlordRoot)' == '' and '$(BANNERLORD_ROOT)' != ''">$(BANNERLORD_ROOT)</BannerlordRoot>
-    <BannerlordRoot Condition="'$(BannerlordRoot)' == ''">E:\SteamLibrary\steamapps\common\Mount &amp; Blade II Bannerlord</BannerlordRoot>
+    <BannerlordRoot Condition="'$(BannerlordRoot)' == ''">D:\steam\steamapps\common\Mount &amp; Blade II Bannerlord</BannerlordRoot>
     <AnimusForgeModuleId Condition="'$(AnimusForgeModuleId)' == '' and $([System.String]::Copy('$(BannerlordApi)').StartsWith('1.4'))">AnimusForge_1_4_5</AnimusForgeModuleId>
     <AnimusForgeModuleId Condition="'$(AnimusForgeModuleId)' == ''">AnimusForge_1_3_x</AnimusForgeModuleId>
     <AnimusForgeBinDir Condition="'$(AnimusForgeBinDir)' == ''">$(BannerlordRoot)\Modules\$(AnimusForgeModuleId)\bin\Win64_Shipping_Client</AnimusForgeBinDir>
@@ -39,11 +39,11 @@
     <UIExtenderExPath Condition="'$(UIExtenderExPath)' == '' and Exists('$(WorkshopContentDir)\2859222409\bin\Win64_Shipping_Client\Bannerlord.UIExtenderEx.dll')">$(WorkshopContentDir)\2859222409\bin\Win64_Shipping_Client\Bannerlord.UIExtenderEx.dll</UIExtenderExPath>
     <UIExtenderExPath Condition="'$(UIExtenderExPath)' == ''">$(BannerlordRoot)\Modules\Bannerlord.UIExtenderEx\bin\Win64_Shipping_Client\Bannerlord.UIExtenderEx.dll</UIExtenderExPath>
     <MBOptionScreenPath Condition="'$(MBOptionScreenPath)' == '' and ! $([System.String]::Copy('$(BannerlordApi)').StartsWith('1.4')) and Exists('$(WorkshopContentDir)\2859238197\bin\Win64_Shipping_Client\Bannerlord.MBOptionScreen.v1.3.6.dll')">$(WorkshopContentDir)\2859238197\bin\Win64_Shipping_Client\Bannerlord.MBOptionScreen.v1.3.6.dll</MBOptionScreenPath>
+    <MBOptionScreenPath Condition="'$(MBOptionScreenPath)' == '' and ! $([System.String]::Copy('$(BannerlordApi)').StartsWith('1.4')) and Exists('$(BannerlordRoot)\Modules\Bannerlord.MBOptionScreen\bin\Win64_Shipping_Client\Bannerlord.MBOptionScreen.v1.3.6.dll')">$(BannerlordRoot)\Modules\Bannerlord.MBOptionScreen\bin\Win64_Shipping_Client\Bannerlord.MBOptionScreen.v1.3.6.dll</MBOptionScreenPath>
     <MBOptionScreenPath Condition="'$(MBOptionScreenPath)' == '' and $([System.String]::Copy('$(BannerlordApi)').StartsWith('1.4')) and Exists('$(BannerlordRoot)\Modules\Bannerlord.MBOptionScreen\bin\Win64_Shipping_Client\Bannerlord.MBOptionScreen.v1.4.0.dll')">$(BannerlordRoot)\Modules\Bannerlord.MBOptionScreen\bin\Win64_Shipping_Client\Bannerlord.MBOptionScreen.v1.4.0.dll</MBOptionScreenPath>
     <MBOptionScreenPath Condition="'$(MBOptionScreenPath)' == '' and $([System.String]::Copy('$(BannerlordApi)').StartsWith('1.4')) and Exists('$(WorkshopContentDir)\2859238197\bin\Win64_Shipping_Client\Bannerlord.MBOptionScreen.v1.4.1.dll')">$(WorkshopContentDir)\2859238197\bin\Win64_Shipping_Client\Bannerlord.MBOptionScreen.v1.4.1.dll</MBOptionScreenPath>
-    <MBOptionScreenPath Condition="'$(MBOptionScreenPath)' == '' and Exists('$(BannerlordRoot)\Modules\Bannerlord.MBOptionScreen\bin\Win64_Shipping_Client\Bannerlord.MBOptionScreen.v1.4.0.dll')">$(BannerlordRoot)\Modules\Bannerlord.MBOptionScreen\bin\Win64_Shipping_Client\Bannerlord.MBOptionScreen.v1.4.0.dll</MBOptionScreenPath>
-    <MBOptionScreenPath Condition="'$(MBOptionScreenPath)' == '' and Exists('$(WorkshopContentDir)\2859238197\bin\Win64_Shipping_Client\Bannerlord.MBOptionScreen.v1.4.1.dll')">$(WorkshopContentDir)\2859238197\bin\Win64_Shipping_Client\Bannerlord.MBOptionScreen.v1.4.1.dll</MBOptionScreenPath>
-    <MBOptionScreenPath Condition="'$(MBOptionScreenPath)' == ''">$(BannerlordRoot)\Modules\Bannerlord.MBOptionScreen\bin\Win64_Shipping_Client\Bannerlord.MBOptionScreen.v1.4.0.dll</MBOptionScreenPath>
+    <MBOptionScreenPath Condition="'$(MBOptionScreenPath)' == '' and ! $([System.String]::Copy('$(BannerlordApi)').StartsWith('1.4'))">$(BannerlordRoot)\Modules\Bannerlord.MBOptionScreen\bin\Win64_Shipping_Client\Bannerlord.MBOptionScreen.v1.3.6.dll</MBOptionScreenPath>
+    <MBOptionScreenPath Condition="'$(MBOptionScreenPath)' == '' and $([System.String]::Copy('$(BannerlordApi)').StartsWith('1.4'))">$(BannerlordRoot)\Modules\Bannerlord.MBOptionScreen\bin\Win64_Shipping_Client\Bannerlord.MBOptionScreen.v1.4.0.dll</MBOptionScreenPath>
     <Mcmv5Path Condition="'$(Mcmv5Path)' == '' and ! $([System.String]::Copy('$(BannerlordApi)').StartsWith('1.4')) and Exists('$(WorkshopContentDir)\2859238197\bin\Win64_Shipping_Client\MCMv5.dll')">$(WorkshopContentDir)\2859238197\bin\Win64_Shipping_Client\MCMv5.dll</Mcmv5Path>
     <Mcmv5Path Condition="'$(Mcmv5Path)' == '' and Exists('$(BannerlordRoot)\Modules\Bannerlord.MBOptionScreen\bin\Win64_Shipping_Client\MCMv5.dll')">$(BannerlordRoot)\Modules\Bannerlord.MBOptionScreen\bin\Win64_Shipping_Client\MCMv5.dll</Mcmv5Path>
     <Mcmv5Path Condition="'$(Mcmv5Path)' == '' and Exists('$(WorkshopContentDir)\2859238197\bin\Win64_Shipping_Client\MCMv5.dll')">$(WorkshopContentDir)\2859238197\bin\Win64_Shipping_Client\MCMv5.dll</Mcmv5Path>
@@ -71,6 +71,8 @@
     <Compile Remove="tools\**\*.cs" />
     <Compile Remove="AnimusForge.SiegeAftermathIntervention\bin\**\*.cs" />
     <Compile Remove="AnimusForge.SiegeAftermathIntervention\obj\**\*.cs" />
+    <Compile Remove="FUYONG\**\*.cs" />
+    <Compile Remove="_codex_tmp\**\*.cs" />
     <EmbeddedResource Remove="原版游戏本体代码\**\*" />
     <EmbeddedResource Remove="原版游戏本体代码*\**\*" />
     <EmbeddedResource Remove="阅兵\**\*" />
@@ -78,6 +80,8 @@
     <EmbeddedResource Remove="tools\**\*" />
     <EmbeddedResource Remove="AnimusForge.SiegeAftermathIntervention\bin\**\*" />
     <EmbeddedResource Remove="AnimusForge.SiegeAftermathIntervention\obj\**\*" />
+    <EmbeddedResource Remove="FUYONG\**\*" />
+    <EmbeddedResource Remove="_codex_tmp\**\*" />
     <None Remove="原版游戏本体代码\**\*" />
     <None Remove="原版游戏本体代码*\**\*" />
     <None Remove="阅兵\**\*" />
@@ -85,6 +89,8 @@
     <None Remove="tools\**\*" />
     <None Remove="AnimusForge.SiegeAftermathIntervention\bin\**\*" />
     <None Remove="AnimusForge.SiegeAftermathIntervention\obj\**\*" />
+    <None Remove="FUYONG\**\*" />
+    <None Remove="_codex_tmp\**\*" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Core" />
@@ -167,7 +173,7 @@
     <Reference Include="Bannerlord.UIExtenderEx">
       <HintPath>$(UIExtenderExPath)</HintPath>
     </Reference>
-    <Reference Include="Bannerlord.MBOptionScreen">
+    <Reference Include="Bannerlord.MBOptionScreen" Condition="Exists('$(MBOptionScreenPath)')">
       <HintPath>$(MBOptionScreenPath)</HintPath>
     </Reference>
     <Reference Include="SandBox">
@@ -340,7 +346,7 @@
     <_RequiredRef Include="$(BannerlordBinDir)\TaleWorlds.MountAndBlade.ViewModelCollection.dll" />
     <_RequiredRef Include="$(HarmonyPath)" />
     <_RequiredRef Include="$(UIExtenderExPath)" />
-    <_RequiredRef Include="$(MBOptionScreenPath)" />
+    <_OptionalRef Include="$(MBOptionScreenPath)" />
     <_RequiredRef Include="$(SandBoxBinDir)\SandBox.dll" />
     <_RequiredRef Include="$(SandBoxBinDir)\SandBox.GauntletUI.dll" />
     <_RequiredRef Include="$(SandBoxBinDir)\SandBox.GauntletUI.AutoGenerated.0.dll" />
@@ -390,6 +396,7 @@
   </ItemGroup>
   <Target Name="ValidateExternalReferences" BeforeTargets="ResolveReferences">
     <Error Condition="!Exists('%(_RequiredRef.Identity)')" Text="Missing required dependency: %(_RequiredRef.Identity)" />
+    <Warning Condition="!Exists('%(_OptionalRef.Identity)')" Text="Optional compile-time dependency not found: %(_OptionalRef.Identity). AnimusForge still requires Bannerlord.MBOptionScreen/MCM at runtime through SubModule.xml." />
   </Target>
   <Target Name="CopyModuleXmlsToBannerlordModule" AfterTargets="Build" Condition="'$(CopyLegacyAnimusForgeModuleData)' == 'true'">
     <Error Text="CopyLegacyAnimusForgeModuleData is disabled because unversioned Modules\AnimusForge output is not allowed. Use the dual-version deploy scripts instead." />

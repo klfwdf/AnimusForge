@@ -7,7 +7,7 @@
   "WildernessPostprocessRules": [
     {
       "Tag": "[ACTION:NPC_SURRENDER]",
-      "Description": "仅当<latest_reply>中NPC明确同意自己投降，就输出此标签"
+      "Description": "仅当<latest_reply>中NPC明确同意自己的军队缴械投降，就输出此标签，此标签将会使NPC成为俘虏"
     }
   ],
   "RoyalPostprocessRules": [

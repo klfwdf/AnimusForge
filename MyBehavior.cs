@@ -1,4 +1,4 @@
-using System;
+﻿﻿﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -999,6 +999,14 @@ public class MyBehavior : CampaignBehaviorBase
 		public WeeklyReportOutputMode OutputMode = WeeklyReportOutputMode.FullReport;
 
 		public List<WeeklyEventMaterialPreviewGroup> Groups = new List<WeeklyEventMaterialPreviewGroup>();
+
+		public string SystemPrompt = "";
+
+		public string UserPrompt = "";
+
+		public string PromptPreview = "";
+
+		public string DisplayLabel = "";
 	}
 
 	private sealed class WeeklyReportBatchBlockResult
@@ -1098,6 +1106,51 @@ public class MyBehavior : CampaignBehaviorBase
 		public WeeklyReportRetryContext RetryContext;
 	}
 
+	private sealed class PendingWeeklyReportCommitContext
+	{
+		public int WeekIndex;
+
+		public int StartDay;
+
+		public int EndDay;
+
+		public string DisplayLabel = "";
+
+		public bool OpenViewerWhenDone;
+
+		public bool QueueBlockingPopupOnFatalFailure;
+
+		public bool IsAutoGeneration;
+
+		public List<string> PopupCandidateKingdomIds = new List<string>();
+
+		public List<WeeklyEventMaterialPreviewGroup> Groups = new List<WeeklyEventMaterialPreviewGroup>();
+
+		public Dictionary<string, WeeklyEventMaterialPreviewGroup> GroupMap;
+
+		public List<WeeklyReportBatchExecutionResult> Executions = new List<WeeklyReportBatchExecutionResult>();
+
+		public int ExecutionIndex;
+
+		public int BlockIndex;
+
+		public bool CurrentPreviewCaptured;
+
+		public HashSet<string> CurrentParsedReportIds;
+
+		public List<string> FailureMessages = new List<string>();
+
+		public List<WeeklyEventMaterialPreviewGroup> FailedGroups = new List<WeeklyEventMaterialPreviewGroup>();
+
+		public int SuccessCount;
+
+		public int FailureCount;
+
+		public bool NearestKingdomWeeklyReportNotified;
+
+		public TaskCompletionSource<WeeklyReportGenerationResult> CompletionSource;
+	}
+
 	private enum DailyMaintenanceTaskKind
 	{
 		SealPastDailyMemoryDrafts,
@@ -1151,9 +1204,15 @@ public class MyBehavior : CampaignBehaviorBase
 
 		public bool Ordered;
 
+		public int BatchPromptIndex;
+
+		public bool BatchPromptsComplete;
+
 		public List<Kingdom> Kingdoms = new List<Kingdom>();
 
 		public List<WeeklyEventMaterialPreviewGroup> Groups = new List<WeeklyEventMaterialPreviewGroup>();
+
+		public List<WeeklyReportBatchRequest> Batches = new List<WeeklyReportBatchRequest>();
 
 		public List<EventSourceMaterialEntry> EventSourceMaterialSnapshot = new List<EventSourceMaterialEntry>();
 	}
@@ -1518,6 +1577,10 @@ public class MyBehavior : CampaignBehaviorBase
 	private readonly HashSet<string> _pendingMemoryOverviewCandidateScanIdSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
 	private PendingAutoWeeklyReportBuild _pendingAutoWeeklyReportBuild;
+
+	private readonly object _pendingWeeklyReportCommitLock = new object();
+
+	private readonly Queue<PendingWeeklyReportCommitContext> _pendingWeeklyReportCommits = new Queue<PendingWeeklyReportCommitContext>();
 
 	private int _kingdomStabilityMaintenanceCursor;
 
@@ -1956,6 +2019,8 @@ public class MyBehavior : CampaignBehaviorBase
 		CampaignEvents.ConversationEnded.AddNonSerializedListener(this, OnMemoryConversationEnded);
 		CampaignEvents.TickEvent.AddNonSerializedListener(this, OnCampaignTick);
 		CampaignEvents.MapEventEnded.AddNonSerializedListener(this, OnMapEventEnded);
+		CampaignEvents.MobilePartyDestroyed.AddNonSerializedListener(this, OnMobilePartyDestroyedForNonHeroMemoryCleanup);
+		CampaignEvents.OnPartyRemovedEvent.AddNonSerializedListener(this, OnPartyRemovedForNonHeroMemoryCleanup);
 		CampaignEvents.HeroPrisonerTaken.AddNonSerializedListener(this, OnHeroPrisonerTaken);
 		CampaignEvents.HeroPrisonerReleased.AddNonSerializedListener(this, OnHeroPrisonerReleased);
 		CampaignEvents.DailyTickTownEvent.AddNonSerializedListener(this, OnDailyTickTown);
@@ -4601,7 +4666,16 @@ public class MyBehavior : CampaignBehaviorBase
 				context.Groups = OrderWeeklyReportGenerationGroups((context.Groups ?? new List<WeeklyEventMaterialPreviewGroup>()).Where((WeeklyEventMaterialPreviewGroup x) => x != null).ToList());
 				context.Ordered = true;
 			}
-			if (context.Ordered && !IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs))
+			if (IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs) || !context.Ordered)
+			{
+				return;
+			}
+			ProcessPendingWeeklyReportBatchPromptsBudget(context, startTimestamp, budgetMs);
+			if (IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs) || !context.BatchPromptsComplete)
+			{
+				return;
+			}
+			if (!IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs))
 			{
 				FinalizePendingAutoWeeklyReportBuild(context);
 			}
@@ -4685,6 +4759,28 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private void ProcessPendingWeeklyReportBatchPromptsBudget(PendingAutoWeeklyReportBuild context, long startTimestamp, double budgetMs)
+	{
+		if (context == null || context.BatchPromptsComplete)
+		{
+			return;
+		}
+		if (context.Batches == null || context.Batches.Count == 0)
+		{
+			context.Batches = BuildWeeklyReportBatchRequests((context.Groups ?? new List<WeeklyEventMaterialPreviewGroup>()).Where((WeeklyEventMaterialPreviewGroup x) => x != null).ToList(), context.WeekIndex, context.StartDay, context.EndDay);
+		}
+		while (context.BatchPromptIndex < context.Batches.Count && !IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs))
+		{
+			PrepareWeeklyReportBatchPrompt(context.Batches[context.BatchPromptIndex]);
+			context.BatchPromptIndex++;
+			break;
+		}
+		if (context.BatchPromptIndex >= context.Batches.Count)
+		{
+			context.BatchPromptsComplete = true;
+		}
+	}
+
 	private void FinalizePendingAutoWeeklyReportBuild(PendingAutoWeeklyReportBuild context)
 	{
 		if (context == null)
@@ -4692,8 +4788,9 @@ public class MyBehavior : CampaignBehaviorBase
 			return;
 		}
 		List<WeeklyEventMaterialPreviewGroup> groups = (context.Groups ?? new List<WeeklyEventMaterialPreviewGroup>()).Where((WeeklyEventMaterialPreviewGroup x) => x != null).ToList();
+		List<WeeklyReportBatchRequest> batches = (context.Batches ?? new List<WeeklyReportBatchRequest>()).Where((WeeklyReportBatchRequest x) => x != null && x.Groups != null && x.Groups.Count > 0).ToList();
 		_pendingAutoWeeklyReportBuild = null;
-		_ = GenerateAutoWeeklyReportsAsync(groups, context.WeekIndex, context.StartDay, context.EndDay);
+		_ = GenerateAutoWeeklyReportsAsync(groups, context.WeekIndex, context.StartDay, context.EndDay, batches);
 	}
 
 	private void StartAutoWeeklyReportsForWeek(int weekIndex, int currentGameDayIndexSafe)
@@ -4746,11 +4843,11 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private async Task GenerateAutoWeeklyReportsAsync(List<WeeklyEventMaterialPreviewGroup> groups, int weekIndex, int startDay, int endDay)
+	private async Task GenerateAutoWeeklyReportsAsync(List<WeeklyEventMaterialPreviewGroup> groups, int weekIndex, int startDay, int endDay, List<WeeklyReportBatchRequest> preparedBatches = null)
 	{
 		try
 		{
-			WeeklyReportGenerationResult weeklyReportGenerationResult = await GenerateWeeklyReportsBatchedAsyncInternal(groups, weekIndex, startDay, endDay, BuildWeeklyEpicWeekLabel(weekIndex) + "自动周报", openViewerWhenDone: false, queueBlockingPopupOnFatalFailure: true, isAutoGeneration: true);
+			WeeklyReportGenerationResult weeklyReportGenerationResult = await GenerateWeeklyReportsBatchedAsyncInternal(groups, weekIndex, startDay, endDay, BuildWeeklyEpicWeekLabel(weekIndex) + "自动周报", openViewerWhenDone: false, queueBlockingPopupOnFatalFailure: true, isAutoGeneration: true, popupCandidateKingdomIdsOverride: null, preparedBatches: preparedBatches);
 			if (weeklyReportGenerationResult != null && weeklyReportGenerationResult.Completed && !weeklyReportGenerationResult.BlockedByFatalFailure)
 			{
 				_lastAutoGeneratedWeeklyReportWeek = Math.Max(_lastAutoGeneratedWeeklyReportWeek, weekIndex);
@@ -8625,6 +8722,114 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
+	public static void RecordCustomPolicyWeeklyMaterialForExternal(string recordId, string policyName, string dateText, string policySummary, string feedbackSummary, string effectSummary, string playerKingdomId, string playerKingdomName, string targetKingdomId, string targetKingdomName, string effectId, int submittedDay, string gameDate, bool includeInWorld)
+	{
+		try
+		{
+			(Campaign.Current?.GetCampaignBehavior<MyBehavior>())?.RecordCustomPolicyWeeklyMaterialInternal(recordId, policyName, dateText, policySummary, feedbackSummary, effectSummary, playerKingdomId, playerKingdomName, targetKingdomId, targetKingdomName, effectId, submittedDay, gameDate, includeInWorld);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("EventWeeklyReport", "[CustomPolicy][WARN] record weekly material failed: " + ex.Message);
+		}
+	}
+
+	private void RecordCustomPolicyWeeklyMaterialInternal(string recordId, string policyName, string dateText, string policySummary, string feedbackSummary, string effectSummary, string playerKingdomId, string playerKingdomName, string targetKingdomId, string targetKingdomName, string effectId, int submittedDay, string gameDate, bool includeInWorld)
+	{
+		string targetId = (targetKingdomId ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(targetId))
+		{
+			targetId = (playerKingdomId ?? "").Trim();
+		}
+		if (string.IsNullOrWhiteSpace(targetId))
+		{
+			Logger.Log("EventWeeklyReport", "[CustomPolicy][SKIP] target_kingdom_missing recordId=" + (recordId ?? "") + " policy=" + (policyName ?? ""));
+			return;
+		}
+		string cleanPolicyName = LimitCustomPolicyWeeklyMaterialText(policyName, 60);
+		if (string.IsNullOrWhiteSpace(cleanPolicyName))
+		{
+			cleanPolicyName = "未命名政策";
+		}
+		string cleanPlayerKingdomName = LimitCustomPolicyWeeklyMaterialText(playerKingdomName, 40);
+		if (string.IsNullOrWhiteSpace(cleanPlayerKingdomName))
+		{
+			cleanPlayerKingdomName = "玩家王国";
+		}
+		string cleanTargetKingdomName = LimitCustomPolicyWeeklyMaterialText(targetKingdomName, 40);
+		if (string.IsNullOrWhiteSpace(cleanTargetKingdomName))
+		{
+			cleanTargetKingdomName = cleanPlayerKingdomName;
+		}
+		StringBuilder sb = new StringBuilder();
+		string cleanDate = LimitCustomPolicyWeeklyMaterialText(dateText, 30);
+		sb.Append("玩家");
+		if (!string.IsNullOrWhiteSpace(cleanDate))
+		{
+			sb.Append("在").Append(cleanDate);
+		}
+		sb.Append("作为").Append(cleanPlayerKingdomName).Append("国王发布自定义政策《").Append(cleanPolicyName).Append("》。");
+		if (!string.Equals(cleanTargetKingdomName, cleanPlayerKingdomName, StringComparison.OrdinalIgnoreCase))
+		{
+			sb.Append("目标王国：").Append(cleanTargetKingdomName).Append("。");
+		}
+		string cleanPolicySummary = LimitCustomPolicyWeeklyMaterialText(policySummary, 80);
+		if (!string.IsNullOrWhiteSpace(cleanPolicySummary))
+		{
+			sb.Append("政策摘要：").Append(cleanPolicySummary.Trim().TrimEnd('。')).Append("。");
+		}
+		string cleanFeedback = LimitCustomPolicyWeeklyMaterialText(feedbackSummary, 80);
+		if (!string.IsNullOrWhiteSpace(cleanFeedback))
+		{
+			sb.Append("民众反馈：").Append(cleanFeedback.Trim().TrimEnd('。')).Append("。");
+		}
+		string cleanEffect = LimitCustomPolicyWeeklyMaterialText(effectSummary, 100);
+		if (!string.IsNullOrWhiteSpace(cleanEffect))
+		{
+			sb.Append("每日影响：").Append(cleanEffect.Trim().TrimEnd('。')).Append("。");
+		}
+		string snapshot = LimitCustomPolicyWeeklyMaterialText(sb.ToString(), 260);
+		if (string.IsNullOrWhiteSpace(snapshot))
+		{
+			Logger.Log("EventWeeklyReport", "[CustomPolicy][SKIP] snapshot_empty recordId=" + (recordId ?? "") + " kingdom=" + targetId);
+			return;
+		}
+		string stableKey = "custom_policy:" + ((recordId ?? "").Trim());
+		string effectKey = !string.IsNullOrWhiteSpace(effectId) ? effectId.Trim() : targetId;
+		if (!string.IsNullOrWhiteSpace(effectKey))
+		{
+			stableKey += ":" + effectKey;
+		}
+		RecordEventSourceMaterial(
+			"custom_policy",
+			"自定义政策 - " + cleanTargetKingdomName + " / " + cleanPolicyName,
+			snapshot,
+			stableKey,
+			targetId,
+			"",
+			includeInWorld,
+			includeInKingdom: true,
+			actorHeroId: GetHeroId(Hero.MainHero),
+			actorKingdomId: (playerKingdomId ?? "").Trim(),
+			dayOverride: Math.Max(0, submittedDay),
+			gameDateOverride: string.IsNullOrWhiteSpace(gameDate) ? cleanDate : gameDate.Trim());
+		Logger.Log("EventWeeklyReport", "[CustomPolicy] source_material_recorded recordId=" + (recordId ?? "") + " kingdom=" + targetId + " includeWorld=" + includeInWorld + " length=" + snapshot.Length);
+	}
+
+	private static string LimitCustomPolicyWeeklyMaterialText(string text, int maxChars)
+	{
+		text = (text ?? "").Replace("\r\n", " ").Replace('\r', ' ').Replace('\n', ' ').Trim();
+		while (text.Contains("  "))
+		{
+			text = text.Replace("  ", " ");
+		}
+		if (string.IsNullOrWhiteSpace(text) || maxChars <= 0 || text.Length <= maxChars)
+		{
+			return text;
+		}
+		return text.Substring(0, Math.Max(1, maxChars - 1)).TrimEnd() + "…";
+	}
+
 	public static void RecordPlayerSceneConflictWeeklyMaterialForExternal(string text, string stableKey, int day, string gameDate, string settlementId, string settlementName, string locationText)
 	{
 		try
@@ -11481,6 +11686,11 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				ProcessWeeklyReportUiResume();
 			}
+			bool processedWeeklyReportCommits;
+			using (PerfProbe.Scope("MyBehavior.OnCampaignTick.ProcessPendingWeeklyReportCommits"))
+			{
+				processedWeeklyReportCommits = ProcessPendingWeeklyReportCommits();
+			}
 			using (PerfProbe.Scope("MyBehavior.OnCampaignTick.TryPublishUnreadWeeklyReportMapNotifications"))
 			{
 				TryPublishUnreadWeeklyReportMapNotifications();
@@ -11491,7 +11701,10 @@ public class MyBehavior : CampaignBehaviorBase
 			}
 			using (PerfProbe.Scope("MyBehavior.OnCampaignTick.ProcessDeferredDailyMaintenance"))
 			{
-				ProcessDeferredDailyMaintenance();
+				if (!processedWeeklyReportCommits)
+				{
+					ProcessDeferredDailyMaintenance();
+				}
 			}
 			using (PerfProbe.Scope("MyBehavior.OnCampaignTick.CachePlayerClanTier"))
 			{
@@ -17506,7 +17719,7 @@ public class MyBehavior : CampaignBehaviorBase
 		IEnumerable<PartyTransferPromptEntry> enumerable = Enumerable.Empty<PartyTransferPromptEntry>();
 		if (section == PartyTransferEntrySection.NpcTroops)
 		{
-			enumerable = FilterAllowedNpcTransferTroopEntries(list, targetHero, targetCharacter);
+			enumerable = list.Where((PartyTransferPromptEntry x) => x != null && (x.Section == PartyTransferEntrySection.NpcTroops || x.Section == PartyTransferEntrySection.NpcVolunteers));
 		}
 		else if (section == PartyTransferEntrySection.NpcPrisoners)
 		{
@@ -17790,7 +18003,7 @@ public class MyBehavior : CampaignBehaviorBase
 				return false;
 			}
 			List<PartyTransferPromptEntry> list = BuildPartyTransferPromptEntriesInternal(targetHero, targetCharacter, targetAgentIndex);
-			List<PartyTransferPromptEntry> list2 = BuildDisplayIndexedPartyTransferEntries(FilterAllowedNpcTransferTroopEntries(list, targetHero, targetCharacter));
+			List<PartyTransferPromptEntry> list2 = BuildDisplayIndexedPartyTransferEntries(list.Where((PartyTransferPromptEntry x) => x != null && (x.Section == PartyTransferEntrySection.NpcTroops || x.Section == PartyTransferEntrySection.NpcVolunteers)));
 			List<PartyTransferPromptEntry> list3 = BuildDisplayIndexedPartyTransferEntries(list.Where((PartyTransferPromptEntry x) => x != null && x.Section == PartyTransferEntrySection.NpcPrisoners));
 			PartyBase party = Hero.MainHero?.PartyBelongedTo?.Party ?? MobileParty.MainParty?.Party;
 			string text2 = ResolvePartyTransferTargetDisplayName(targetHero, targetCharacter, targetAgentIndex);
@@ -18005,6 +18218,722 @@ public class MyBehavior : CampaignBehaviorBase
 	public static string BuildNonHeroMemoryIdForExternal(string unnamedKey)
 	{
 		return BuildNonHeroMemoryId(unnamedKey);
+	}
+
+	public static void MigrateNonHeroPartyIndexMemoryForExternal(string canonicalMemoryId, string baseUnnamedKey)
+	{
+		try
+		{
+			(Campaign.Current?.GetCampaignBehavior<MyBehavior>())?.MigrateNonHeroPartyIndexMemory(canonicalMemoryId, baseUnnamedKey);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("DialogueHistory", "[WARN] migrate non-hero party_index memory failed: " + ex.Message);
+		}
+	}
+
+	public static void MigrateNonHeroPartyScopedMemoryForExternal(string canonicalMemoryId, string partyKey)
+	{
+		try
+		{
+			(Campaign.Current?.GetCampaignBehavior<MyBehavior>())?.MigrateNonHeroPartyScopedMemory(canonicalMemoryId, partyKey);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("DialogueHistory", "[WARN] migrate non-hero party scoped memory failed: " + ex.Message);
+		}
+	}
+
+	private void MigrateNonHeroPartyIndexMemory(string canonicalMemoryId, string baseUnnamedKey)
+	{
+		string targetId = NormalizeMemoryHeroId(canonicalMemoryId);
+		string baseMemoryId = BuildNonHeroMemoryId(baseUnnamedKey);
+		if (string.IsNullOrWhiteSpace(targetId) || !IsNonHeroMemoryId(targetId) || string.IsNullOrWhiteSpace(baseMemoryId))
+		{
+			return;
+		}
+		string legacyPrefix = baseMemoryId + "|party:party_index:";
+		HashSet<string> aliases = CollectNonHeroMemoryAliasesByPrefix(legacyPrefix, targetId);
+		if (aliases.Count == 0)
+		{
+			return;
+		}
+		foreach (string alias in aliases.ToList())
+		{
+			MergeMemoryEntityDataById(alias, targetId);
+		}
+		Logger.Log("DialogueHistory", "migrated non-hero party_index memory aliases=" + aliases.Count + " target=" + targetId);
+	}
+
+	private void MigrateNonHeroPartyScopedMemory(string canonicalMemoryId, string partyKey)
+	{
+		string targetId = NormalizeMemoryHeroId(canonicalMemoryId);
+		string normalizedPartyKey = NormalizeMemoryHeroId(partyKey);
+		if (string.IsNullOrWhiteSpace(targetId) || !IsNonHeroMemoryId(targetId) || string.IsNullOrWhiteSpace(normalizedPartyKey))
+		{
+			return;
+		}
+		HashSet<string> aliases = CollectNonHeroMemoryAliasesByNeedle("|party:" + normalizedPartyKey, targetId);
+		if (aliases.Count == 0)
+		{
+			return;
+		}
+		foreach (string alias in aliases.ToList())
+		{
+			MergeMemoryEntityDataById(alias, targetId);
+		}
+		Logger.Log("DialogueHistory", "migrated non-hero party scoped memory aliases=" + aliases.Count + " target=" + targetId + " party=" + normalizedPartyKey);
+	}
+
+	private HashSet<string> CollectNonHeroMemoryAliasesByPrefix(string legacyPrefix, string targetId)
+	{
+		HashSet<string> aliases = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		string prefix = NormalizeMemoryHeroId(legacyPrefix);
+		string target = NormalizeMemoryHeroId(targetId);
+		if (string.IsNullOrWhiteSpace(prefix))
+		{
+			return aliases;
+		}
+		void AddAlias(string memoryId)
+		{
+			string text = NormalizeMemoryHeroId(memoryId);
+			if (!string.IsNullOrWhiteSpace(text) && !string.Equals(text, target, StringComparison.OrdinalIgnoreCase) && text.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+			{
+				aliases.Add(text);
+			}
+		}
+		void AddKeys<T>(Dictionary<string, T> dictionary)
+		{
+			if (dictionary == null)
+			{
+				return;
+			}
+			foreach (string key in dictionary.Keys)
+			{
+				AddAlias(key);
+			}
+		}
+		AddKeys(_dialogueHistory);
+		AddKeys(_dialogueHistoryStorage);
+		AddKeys(_dailyMemoryDrafts);
+		AddKeys(_dailyMemoryDraftStorage);
+		AddKeys(_compressedMemoryBlocks);
+		AddKeys(_compressedMemoryBlockStorage);
+		AddKeys(_memoryOverviewStates);
+		AddKeys(_memoryOverviewStateStorage);
+		AddKeys(_npcMajorActionSummaries);
+		AddKeys(_npcMajorActionSummaryStorage);
+		AddKeys(_npcMajorActions);
+		AddKeys(_npcMajorActionStorage);
+		AddKeys(_npcRecentActions);
+		AddKeys(_npcRecentActionStorage);
+		foreach (MemorySummaryJob job in _memorySummaryQueue ?? new List<MemorySummaryJob>())
+		{
+			AddAlias(job?.HeroId);
+		}
+		foreach (MemoryOverviewJob job in _memoryOverviewQueue ?? new List<MemoryOverviewJob>())
+		{
+			AddAlias(job?.HeroId);
+		}
+		foreach (MajorActionSummaryJob job in _npcMajorActionSummaryQueue ?? new List<MajorActionSummaryJob>())
+		{
+			AddAlias(job?.HeroId);
+		}
+		foreach (WeeklyMemoryMaterialTrigger trigger in _pendingWeeklyMemoryMaterialTriggers ?? new List<WeeklyMemoryMaterialTrigger>())
+		{
+			AddAlias(trigger?.MemoryId);
+		}
+		foreach (string id in _pendingMemoryOverviewCandidateScanIds ?? new Queue<string>())
+		{
+			AddAlias(id);
+		}
+		return aliases;
+	}
+
+	private HashSet<string> CollectNonHeroMemoryAliasesByNeedle(string needle, string targetId)
+	{
+		HashSet<string> aliases = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		string normalizedNeedle = NormalizeMemoryHeroId(needle);
+		string target = NormalizeMemoryHeroId(targetId);
+		if (string.IsNullOrWhiteSpace(normalizedNeedle))
+		{
+			return aliases;
+		}
+		void AddAlias(string memoryId)
+		{
+			string text = NormalizeMemoryHeroId(memoryId);
+			if (!string.IsNullOrWhiteSpace(text) && IsNonHeroMemoryId(text) && !string.Equals(text, target, StringComparison.OrdinalIgnoreCase) && text.IndexOf(normalizedNeedle, StringComparison.OrdinalIgnoreCase) >= 0)
+			{
+				aliases.Add(text);
+			}
+		}
+		void AddKeys<T>(Dictionary<string, T> dictionary)
+		{
+			if (dictionary == null)
+			{
+				return;
+			}
+			foreach (string key in dictionary.Keys)
+			{
+				AddAlias(key);
+			}
+		}
+		AddKeys(_dialogueHistory);
+		AddKeys(_dialogueHistoryStorage);
+		AddKeys(_dailyMemoryDrafts);
+		AddKeys(_dailyMemoryDraftStorage);
+		AddKeys(_compressedMemoryBlocks);
+		AddKeys(_compressedMemoryBlockStorage);
+		AddKeys(_memoryOverviewStates);
+		AddKeys(_memoryOverviewStateStorage);
+		AddKeys(_npcMajorActionSummaries);
+		AddKeys(_npcMajorActionSummaryStorage);
+		AddKeys(_npcMajorActions);
+		AddKeys(_npcMajorActionStorage);
+		AddKeys(_npcRecentActions);
+		AddKeys(_npcRecentActionStorage);
+		foreach (MemorySummaryJob job in _memorySummaryQueue ?? new List<MemorySummaryJob>())
+		{
+			AddAlias(job?.HeroId);
+		}
+		foreach (MemoryOverviewJob job in _memoryOverviewQueue ?? new List<MemoryOverviewJob>())
+		{
+			AddAlias(job?.HeroId);
+		}
+		foreach (MajorActionSummaryJob job in _npcMajorActionSummaryQueue ?? new List<MajorActionSummaryJob>())
+		{
+			AddAlias(job?.HeroId);
+		}
+		foreach (WeeklyMemoryMaterialTrigger trigger in _pendingWeeklyMemoryMaterialTriggers ?? new List<WeeklyMemoryMaterialTrigger>())
+		{
+			AddAlias(trigger?.MemoryId);
+		}
+		foreach (string id in _pendingMemoryOverviewCandidateScanIds ?? new Queue<string>())
+		{
+			AddAlias(id);
+		}
+		return aliases;
+	}
+
+	private void MergeMemoryEntityDataById(string sourceMemoryId, string targetMemoryId)
+	{
+		string source = NormalizeMemoryHeroId(sourceMemoryId);
+		string target = NormalizeMemoryHeroId(targetMemoryId);
+		if (string.IsNullOrWhiteSpace(source) || string.IsNullOrWhiteSpace(target) || string.Equals(source, target, StringComparison.OrdinalIgnoreCase))
+		{
+			return;
+		}
+		if (_dialogueHistory != null && _dialogueHistory.TryGetValue(source, out var sourceHistory) && sourceHistory != null && sourceHistory.Count > 0)
+		{
+			SaveDialogueHistoryById(target, MergeDialogueDayLists(LoadDialogueHistoryById(target), sourceHistory));
+		}
+		if (_dailyMemoryDrafts != null && _dailyMemoryDrafts.TryGetValue(source, out var sourceDrafts) && sourceDrafts != null && sourceDrafts.Count > 0)
+		{
+			SaveDailyMemoryDraftsById(target, MergeDailyMemoryDraftLists(LoadDailyMemoryDraftsById(target), sourceDrafts, target));
+		}
+		if (_compressedMemoryBlocks != null && _compressedMemoryBlocks.TryGetValue(source, out var sourceBlocks) && sourceBlocks != null && sourceBlocks.Count > 0)
+		{
+			SaveCompressedMemoryBlocksById(target, MergeCompressedMemoryBlockLists(LoadCompressedMemoryBlocksById(target), sourceBlocks, target));
+		}
+		RetargetMemoryQueues(source, target);
+		MergeMemoryOverviewStateById(source, target);
+		MergeMajorActionSummaryStateById(source, target);
+		MergeNpcActionStorageById(_npcMajorActions, source, target, keepOnlyRecentWindow: false);
+		MergeNpcActionStorageById(_npcRecentActions, source, target, keepOnlyRecentWindow: true);
+		RetargetMemoryOverviewCandidateScanIds(source, target);
+		RemoveMemoryEntityDataById(source);
+	}
+
+	private static List<DialogueDay> MergeDialogueDayLists(IEnumerable<DialogueDay> targetDays, IEnumerable<DialogueDay> sourceDays)
+	{
+		Dictionary<int, DialogueDay> byDay = new Dictionary<int, DialogueDay>();
+		void AddDays(IEnumerable<DialogueDay> days)
+		{
+			foreach (DialogueDay day in days ?? Enumerable.Empty<DialogueDay>())
+			{
+				if (day == null)
+				{
+					continue;
+				}
+				int dayIndex = Math.Max(0, day.GameDayIndex);
+				if (!byDay.TryGetValue(dayIndex, out var merged))
+				{
+					merged = new DialogueDay
+					{
+						GameDayIndex = dayIndex,
+						GameDate = (day.GameDate ?? "").Trim(),
+						Lines = new List<string>()
+					};
+					byDay[dayIndex] = merged;
+				}
+				if (string.IsNullOrWhiteSpace(merged.GameDate))
+				{
+					merged.GameDate = (day.GameDate ?? "").Trim();
+				}
+				foreach (string line in day.Lines ?? new List<string>())
+				{
+					string text = (line ?? "").Trim();
+					if (!string.IsNullOrWhiteSpace(text) && !merged.Lines.Contains(text, StringComparer.Ordinal))
+					{
+						merged.Lines.Add(text);
+					}
+				}
+			}
+		}
+		AddDays(targetDays);
+		AddDays(sourceDays);
+		return byDay.Values.Where((DialogueDay x) => x.Lines != null && x.Lines.Count > 0).OrderBy((DialogueDay x) => x.GameDayIndex).ToList();
+	}
+
+	private static List<DailyMemoryDraft> RetargetDailyMemoryDrafts(IEnumerable<DailyMemoryDraft> drafts, string targetMemoryId)
+	{
+		string target = NormalizeMemoryHeroId(targetMemoryId);
+		foreach (DailyMemoryDraft draft in drafts ?? Enumerable.Empty<DailyMemoryDraft>())
+		{
+			if (draft == null)
+			{
+				continue;
+			}
+			draft.HeroId = target;
+			foreach (WeeklyMemoryMaterialTrigger trigger in draft.WeeklyMaterialTriggers ?? new List<WeeklyMemoryMaterialTrigger>())
+			{
+				if (trigger != null)
+				{
+					trigger.MemoryId = target;
+				}
+			}
+		}
+		return SanitizeDailyMemoryDrafts(drafts);
+	}
+
+	private static List<DailyMemoryDraft> MergeDailyMemoryDraftLists(IEnumerable<DailyMemoryDraft> targetDrafts, IEnumerable<DailyMemoryDraft> sourceDrafts, string targetMemoryId)
+	{
+		Dictionary<int, DailyMemoryDraft> byDay = new Dictionary<int, DailyMemoryDraft>();
+		void AddDrafts(IEnumerable<DailyMemoryDraft> drafts)
+		{
+			foreach (DailyMemoryDraft draft in RetargetDailyMemoryDrafts(drafts, targetMemoryId))
+			{
+				if (!byDay.TryGetValue(draft.GameDayIndex, out var merged))
+				{
+					byDay[draft.GameDayIndex] = draft;
+					continue;
+				}
+				if (string.IsNullOrWhiteSpace(merged.HeroName))
+				{
+					merged.HeroName = draft.HeroName;
+				}
+				if (string.IsNullOrWhiteSpace(merged.GameDate))
+				{
+					merged.GameDate = draft.GameDate;
+				}
+				merged.HasLlmDialogue = merged.HasLlmDialogue || draft.HasLlmDialogue;
+				merged.QueuedForSummary = merged.QueuedForSummary || draft.QueuedForSummary;
+				merged.SummaryRetryCount = Math.Max(merged.SummaryRetryCount, draft.SummaryRetryCount);
+				if (string.IsNullOrWhiteSpace(merged.LastSummaryError))
+				{
+					merged.LastSummaryError = draft.LastSummaryError;
+				}
+				merged.Lines.AddRange(draft.Lines ?? new List<DailyMemoryLine>());
+				merged.WeeklyMaterialTriggers.AddRange(draft.WeeklyMaterialTriggers ?? new List<WeeklyMemoryMaterialTrigger>());
+			}
+		}
+		AddDrafts(targetDrafts);
+		AddDrafts(sourceDrafts);
+		return SanitizeDailyMemoryDrafts(byDay.Values);
+	}
+
+	private static List<CompressedMemoryBlock> RetargetCompressedMemoryBlocks(IEnumerable<CompressedMemoryBlock> blocks, string targetMemoryId)
+	{
+		string target = NormalizeMemoryHeroId(targetMemoryId);
+		foreach (CompressedMemoryBlock block in blocks ?? Enumerable.Empty<CompressedMemoryBlock>())
+		{
+			if (block == null)
+			{
+				continue;
+			}
+			block.HeroId = target;
+			block.Id = BuildCompressedMemoryBlockId(target, block.GameDayIndex);
+			foreach (WeeklyMemoryMaterialTrigger trigger in block.WeeklyMaterialTriggers ?? new List<WeeklyMemoryMaterialTrigger>())
+			{
+				if (trigger != null)
+				{
+					trigger.MemoryId = target;
+				}
+			}
+		}
+		return SanitizeCompressedMemoryBlocks(blocks);
+	}
+
+	private static List<CompressedMemoryBlock> MergeCompressedMemoryBlockLists(IEnumerable<CompressedMemoryBlock> targetBlocks, IEnumerable<CompressedMemoryBlock> sourceBlocks, string targetMemoryId)
+	{
+		Dictionary<int, CompressedMemoryBlock> byDay = new Dictionary<int, CompressedMemoryBlock>();
+		void AddBlocks(IEnumerable<CompressedMemoryBlock> blocks)
+		{
+			foreach (CompressedMemoryBlock block in RetargetCompressedMemoryBlocks(blocks, targetMemoryId))
+			{
+				if (!byDay.TryGetValue(block.GameDayIndex, out var merged))
+				{
+					byDay[block.GameDayIndex] = block;
+					continue;
+				}
+				if (string.IsNullOrWhiteSpace(merged.HeroName))
+				{
+					merged.HeroName = block.HeroName;
+				}
+				if (string.IsNullOrWhiteSpace(merged.GameDate))
+				{
+					merged.GameDate = block.GameDate;
+				}
+				merged.StartHour = Math.Min(merged.StartHour, block.StartHour);
+				merged.EndHour = Math.Max(merged.EndHour, block.EndHour);
+				merged.Scenes.AddRange(block.Scenes ?? new List<string>());
+				if (string.IsNullOrWhiteSpace(merged.RichTitle))
+				{
+					merged.RichTitle = block.RichTitle;
+				}
+				merged.Summary = MergeDistinctTextBlocks(merged.Summary, block.Summary);
+				merged.AfefLines.AddRange(block.AfefLines ?? new List<string>());
+				merged.PlayerPublicity = MergeDistinctTextBlocks(merged.PlayerPublicity, block.PlayerPublicity);
+				merged.PlayerHistoryMaterial = MergeDistinctTextBlocks(merged.PlayerHistoryMaterial, block.PlayerHistoryMaterial);
+				merged.PlayerPublicityReason = MergeDistinctTextBlocks(merged.PlayerPublicityReason, block.PlayerPublicityReason);
+				merged.WeeklyMaterialTriggers.AddRange(block.WeeklyMaterialTriggers ?? new List<WeeklyMemoryMaterialTrigger>());
+				if (merged.CreatedUtcTicks <= 0L || (block.CreatedUtcTicks > 0L && block.CreatedUtcTicks < merged.CreatedUtcTicks))
+				{
+					merged.CreatedUtcTicks = block.CreatedUtcTicks;
+				}
+			}
+		}
+		AddBlocks(targetBlocks);
+		AddBlocks(sourceBlocks);
+		return SanitizeCompressedMemoryBlocks(byDay.Values);
+	}
+
+	private static string MergeDistinctTextBlocks(string first, string second)
+	{
+		string left = (first ?? "").Trim();
+		string right = (second ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(left))
+		{
+			return right;
+		}
+		if (string.IsNullOrWhiteSpace(right) || string.Equals(left, right, StringComparison.Ordinal))
+		{
+			return left;
+		}
+		if (left.IndexOf(right, StringComparison.Ordinal) >= 0)
+		{
+			return left;
+		}
+		if (right.IndexOf(left, StringComparison.Ordinal) >= 0)
+		{
+			return right;
+		}
+		return left + "\n" + right;
+	}
+
+	private void RetargetMemoryQueues(string sourceMemoryId, string targetMemoryId)
+	{
+		string source = NormalizeMemoryHeroId(sourceMemoryId);
+		string target = NormalizeMemoryHeroId(targetMemoryId);
+		bool changedSummaryQueue = false;
+		foreach (MemorySummaryJob job in _memorySummaryQueue ?? new List<MemorySummaryJob>())
+		{
+			if (job != null && string.Equals(NormalizeMemoryHeroId(job.HeroId), source, StringComparison.OrdinalIgnoreCase))
+			{
+				job.HeroId = target;
+				changedSummaryQueue = true;
+			}
+		}
+		if (changedSummaryQueue)
+		{
+			_memorySummaryQueue = SanitizeMemorySummaryQueue(_memorySummaryQueue);
+		}
+		bool changedTriggers = false;
+		foreach (WeeklyMemoryMaterialTrigger trigger in _pendingWeeklyMemoryMaterialTriggers ?? new List<WeeklyMemoryMaterialTrigger>())
+		{
+			if (trigger != null && string.Equals(NormalizeMemoryHeroId(trigger.MemoryId), source, StringComparison.OrdinalIgnoreCase))
+			{
+				trigger.MemoryId = target;
+				changedTriggers = true;
+			}
+		}
+		if (changedTriggers)
+		{
+			_pendingWeeklyMemoryMaterialTriggers = SanitizeWeeklyMemoryMaterialTriggers(_pendingWeeklyMemoryMaterialTriggers);
+		}
+		bool changedOverviewQueue = false;
+		foreach (MemoryOverviewJob job2 in _memoryOverviewQueue ?? new List<MemoryOverviewJob>())
+		{
+			if (job2 != null && string.Equals(NormalizeMemoryHeroId(job2.HeroId), source, StringComparison.OrdinalIgnoreCase))
+			{
+				job2.HeroId = target;
+				changedOverviewQueue = true;
+			}
+		}
+		if (changedOverviewQueue)
+		{
+			_memoryOverviewQueue = SanitizeMemoryOverviewQueue(_memoryOverviewQueue);
+		}
+		bool changedMajorQueue = false;
+		foreach (MajorActionSummaryJob job3 in _npcMajorActionSummaryQueue ?? new List<MajorActionSummaryJob>())
+		{
+			if (job3 != null && string.Equals(NormalizeMemoryHeroId(job3.HeroId), source, StringComparison.OrdinalIgnoreCase))
+			{
+				job3.HeroId = target;
+				changedMajorQueue = true;
+			}
+		}
+		if (changedMajorQueue)
+		{
+			_npcMajorActionSummaryQueue = SanitizeMajorActionSummaryQueue(_npcMajorActionSummaryQueue);
+		}
+	}
+
+	private void MergeMemoryOverviewStateById(string sourceMemoryId, string targetMemoryId)
+	{
+		string source = NormalizeMemoryHeroId(sourceMemoryId);
+		string target = NormalizeMemoryHeroId(targetMemoryId);
+		if (_memoryOverviewStates == null || !_memoryOverviewStates.TryGetValue(source, out var sourceState) || sourceState == null)
+		{
+			return;
+		}
+		_memoryOverviewStates.TryGetValue(target, out var targetState);
+		if (targetState == null)
+		{
+			sourceState.HeroId = target;
+			_memoryOverviewStates[target] = SanitizeMemoryOverviewState(sourceState);
+			return;
+		}
+		targetState.HeroId = target;
+		if (string.IsNullOrWhiteSpace(targetState.HeroName))
+		{
+			targetState.HeroName = sourceState.HeroName;
+		}
+		targetState.Summary = MergeDistinctTextBlocks(targetState.Summary, sourceState.Summary);
+		targetState.IncludedBlockIds = (targetState.IncludedBlockIds ?? new List<string>()).Concat(sourceState.IncludedBlockIds ?? new List<string>()).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+		targetState.UpdatedUtcTicks = Math.Max(targetState.UpdatedUtcTicks, sourceState.UpdatedUtcTicks);
+		if (string.IsNullOrWhiteSpace(targetState.LastError))
+		{
+			targetState.LastError = sourceState.LastError;
+		}
+		_memoryOverviewStates[target] = SanitizeMemoryOverviewState(targetState);
+	}
+
+	private void MergeMajorActionSummaryStateById(string sourceMemoryId, string targetMemoryId)
+	{
+		string source = NormalizeMemoryHeroId(sourceMemoryId);
+		string target = NormalizeMemoryHeroId(targetMemoryId);
+		if (_npcMajorActionSummaries == null || !_npcMajorActionSummaries.TryGetValue(source, out var sourceState) || sourceState == null)
+		{
+			return;
+		}
+		_npcMajorActionSummaries.TryGetValue(target, out var targetState);
+		if (targetState == null)
+		{
+			sourceState.HeroId = target;
+			_npcMajorActionSummaries[target] = SanitizeMajorActionSummaryState(sourceState);
+			return;
+		}
+		targetState.HeroId = target;
+		if (string.IsNullOrWhiteSpace(targetState.HeroName))
+		{
+			targetState.HeroName = sourceState.HeroName;
+		}
+		targetState.Summary = MergeDistinctTextBlocks(targetState.Summary, sourceState.Summary);
+		targetState.LastSummarizedDay = Math.Max(targetState.LastSummarizedDay, sourceState.LastSummarizedDay);
+		targetState.LastSummarizedSequence = Math.Max(targetState.LastSummarizedSequence, sourceState.LastSummarizedSequence);
+		targetState.UpdatedUtcTicks = Math.Max(targetState.UpdatedUtcTicks, sourceState.UpdatedUtcTicks);
+		if (string.IsNullOrWhiteSpace(targetState.LastError))
+		{
+			targetState.LastError = sourceState.LastError;
+		}
+		_npcMajorActionSummaries[target] = SanitizeMajorActionSummaryState(targetState);
+	}
+
+	private void MergeNpcActionStorageById(Dictionary<string, List<NpcActionEntry>> storage, string sourceMemoryId, string targetMemoryId, bool keepOnlyRecentWindow)
+	{
+		string source = NormalizeMemoryHeroId(sourceMemoryId);
+		string target = NormalizeMemoryHeroId(targetMemoryId);
+		if (storage == null || !storage.TryGetValue(source, out var sourceActions) || sourceActions == null || sourceActions.Count == 0)
+		{
+			return;
+		}
+		storage.TryGetValue(target, out var targetActions);
+		List<NpcActionEntry> merged = SanitizeNpcActionEntries((targetActions ?? new List<NpcActionEntry>()).Concat(sourceActions).ToList(), keepOnlyRecentWindow);
+		if (merged.Count > 0)
+		{
+			storage[target] = merged;
+		}
+		if (keepOnlyRecentWindow)
+		{
+			RefreshNpcRecentActionStableKeyIndexForHero(target, merged);
+		}
+	}
+
+	private void RetargetMemoryOverviewCandidateScanIds(string sourceMemoryId, string targetMemoryId)
+	{
+		string source = NormalizeMemoryHeroId(sourceMemoryId);
+		string target = NormalizeMemoryHeroId(targetMemoryId);
+		if (_dirtyMemoryOverviewIds != null && _dirtyMemoryOverviewIds.Remove(source))
+		{
+			_dirtyMemoryOverviewIds.Add(target);
+		}
+		if (_pendingMemoryOverviewCandidateScanIdSet != null && _pendingMemoryOverviewCandidateScanIdSet.Remove(source))
+		{
+			_pendingMemoryOverviewCandidateScanIdSet.Add(target);
+		}
+		if (_pendingMemoryOverviewCandidateScanIds == null || _pendingMemoryOverviewCandidateScanIds.Count <= 0)
+		{
+			return;
+		}
+		List<string> ids = _pendingMemoryOverviewCandidateScanIds.Select((string x) => string.Equals(NormalizeMemoryHeroId(x), source, StringComparison.OrdinalIgnoreCase) ? target : NormalizeMemoryHeroId(x)).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+		_pendingMemoryOverviewCandidateScanIds.Clear();
+		foreach (string id in ids)
+		{
+			_pendingMemoryOverviewCandidateScanIds.Enqueue(id);
+		}
+	}
+
+	private static List<string> BuildNonHeroPartyMemoryNeedles(MobileParty mobileParty, PartyBase partyBase = null)
+	{
+		List<string> needles = new List<string>();
+		try
+		{
+			PartyBase resolvedPartyBase = partyBase ?? mobileParty?.Party;
+			string stringId = NormalizeMemoryHeroId(mobileParty?.StringId);
+			if (!string.IsNullOrWhiteSpace(stringId))
+			{
+				needles.Add("|party:" + stringId);
+			}
+			string name = NormalizeMemoryHeroId(mobileParty?.Name?.ToString());
+			if (!string.IsNullOrWhiteSpace(name))
+			{
+				needles.Add("|party:" + name);
+			}
+		}
+		catch
+		{
+		}
+		return needles.Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+	}
+
+	private static bool IsNonHeroMemoryIdForParty(string memoryId, List<string> partyNeedles)
+	{
+		string text = NormalizeMemoryHeroId(memoryId);
+		if (string.IsNullOrWhiteSpace(text) || !IsNonHeroMemoryId(text) || partyNeedles == null || partyNeedles.Count == 0)
+		{
+			return false;
+		}
+		return partyNeedles.Any((string needle) => !string.IsNullOrWhiteSpace(needle) && text.IndexOf(needle, StringComparison.OrdinalIgnoreCase) >= 0);
+	}
+
+	private void RemoveMemoryEntityDataById(string memoryId)
+	{
+		string text = NormalizeMemoryHeroId(memoryId);
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return;
+		}
+		_dialogueHistory?.Remove(text);
+		_dialogueHistoryStorage?.Remove(text);
+		_dailyMemoryDrafts?.Remove(text);
+		_dailyMemoryDraftStorage?.Remove(text);
+		_compressedMemoryBlocks?.Remove(text);
+		_compressedMemoryBlockStorage?.Remove(text);
+		_memorySummaryQueue?.RemoveAll((MemorySummaryJob x) => x != null && string.Equals(NormalizeMemoryHeroId(x.HeroId), text, StringComparison.OrdinalIgnoreCase));
+		_pendingWeeklyMemoryMaterialTriggers?.RemoveAll((WeeklyMemoryMaterialTrigger x) => x != null && string.Equals(NormalizeMemoryHeroId(x.MemoryId), text, StringComparison.OrdinalIgnoreCase));
+		_memoryOverviewStates?.Remove(text);
+		_memoryOverviewStateStorage?.Remove(text);
+		_memoryOverviewQueue?.RemoveAll((MemoryOverviewJob x) => x != null && string.Equals(NormalizeMemoryHeroId(x.HeroId), text, StringComparison.OrdinalIgnoreCase));
+		_npcMajorActionSummaries?.Remove(text);
+		_npcMajorActionSummaryStorage?.Remove(text);
+		_npcMajorActionSummaryQueue?.RemoveAll((MajorActionSummaryJob x) => x != null && string.Equals(NormalizeMemoryHeroId(x.HeroId), text, StringComparison.OrdinalIgnoreCase));
+		_npcMajorActions?.Remove(text);
+		_npcMajorActionStorage?.Remove(text);
+		_npcRecentActions?.Remove(text);
+		_npcRecentActionStorage?.Remove(text);
+		_dirtyMemoryOverviewIds?.Remove(text);
+		_pendingMemoryOverviewCandidateScanIdSet?.Remove(text);
+		if (_pendingMemoryOverviewCandidateScanIds != null && _pendingMemoryOverviewCandidateScanIds.Count > 0)
+		{
+			List<string> kept = _pendingMemoryOverviewCandidateScanIds.Where((string x) => !string.Equals(NormalizeMemoryHeroId(x), text, StringComparison.OrdinalIgnoreCase)).ToList();
+			_pendingMemoryOverviewCandidateScanIds.Clear();
+			foreach (string item in kept)
+			{
+				_pendingMemoryOverviewCandidateScanIds.Enqueue(item);
+			}
+		}
+	}
+
+	private void CleanupNonHeroMemoryForRemovedParty(PartyBase partyBase, MobileParty mobileParty, string reason)
+	{
+		try
+		{
+			MobileParty party = mobileParty ?? partyBase?.MobileParty;
+			List<string> needles = BuildNonHeroPartyMemoryNeedles(party, partyBase);
+			if (needles.Count == 0)
+			{
+				return;
+			}
+			HashSet<string> ids = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+			void AddMatchingKeys(IEnumerable<string> keys)
+			{
+				if (keys == null)
+				{
+					return;
+				}
+				foreach (string key in keys)
+				{
+					string memoryId = NormalizeMemoryHeroId(key);
+					if (IsNonHeroMemoryIdForParty(memoryId, needles))
+					{
+						ids.Add(memoryId);
+					}
+				}
+			}
+			AddMatchingKeys(_dialogueHistory?.Keys);
+			AddMatchingKeys(_dialogueHistoryStorage?.Keys);
+			AddMatchingKeys(_dailyMemoryDrafts?.Keys);
+			AddMatchingKeys(_dailyMemoryDraftStorage?.Keys);
+			AddMatchingKeys(_compressedMemoryBlocks?.Keys);
+			AddMatchingKeys(_compressedMemoryBlockStorage?.Keys);
+			AddMatchingKeys(_memoryOverviewStates?.Keys);
+			AddMatchingKeys(_memoryOverviewStateStorage?.Keys);
+			AddMatchingKeys(_npcMajorActionSummaries?.Keys);
+			AddMatchingKeys(_npcMajorActionSummaryStorage?.Keys);
+			AddMatchingKeys(_npcMajorActions?.Keys);
+			AddMatchingKeys(_npcMajorActionStorage?.Keys);
+			AddMatchingKeys(_npcRecentActions?.Keys);
+			AddMatchingKeys(_npcRecentActionStorage?.Keys);
+			AddMatchingKeys((_memorySummaryQueue ?? new List<MemorySummaryJob>()).Select((MemorySummaryJob x) => x?.HeroId));
+			AddMatchingKeys((_memoryOverviewQueue ?? new List<MemoryOverviewJob>()).Select((MemoryOverviewJob x) => x?.HeroId));
+			AddMatchingKeys((_npcMajorActionSummaryQueue ?? new List<MajorActionSummaryJob>()).Select((MajorActionSummaryJob x) => x?.HeroId));
+			AddMatchingKeys((_pendingWeeklyMemoryMaterialTriggers ?? new List<WeeklyMemoryMaterialTrigger>()).Select((WeeklyMemoryMaterialTrigger x) => x?.MemoryId));
+			foreach (string id in ids.ToList())
+			{
+				RemoveMemoryEntityDataById(id);
+			}
+			if (ids.Count > 0)
+			{
+				Logger.Log("DialogueHistory", "cleaned destroyed non-hero party memory count=" + ids.Count + " partyIndex=" + (partyBase?.Index ?? party?.Party?.Index ?? -1) + " party=" + (party?.StringId ?? party?.Name?.ToString() ?? "") + " reason=" + (reason ?? ""));
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("DialogueHistory", "[WARN] clean destroyed non-hero party memory failed: " + ex.Message);
+		}
+	}
+
+	private void OnMobilePartyDestroyedForNonHeroMemoryCleanup(MobileParty mobileParty, PartyBase destroyerParty)
+	{
+		// Non-hero wilderness memory is keyed for persistence across save/load. Party removal
+		// and destruction events can also fire during encounter teardown, so cleanup here can
+		// erase valid saved memory.
+	}
+
+	private void OnPartyRemovedForNonHeroMemoryCleanup(PartyBase party)
+	{
+		// See OnMobilePartyDestroyedForNonHeroMemoryCleanup.
 	}
 
 	private static bool IsMemoryEntityEligibleForCompressedMemory(string memoryId)
@@ -18684,11 +19613,24 @@ public class MyBehavior : CampaignBehaviorBase
 			}
 			Settlement settlement = Helpers.SettlementHelper.FindNearestSettlementToMobileParty(party, MobileParty.NavigationType.All, (Settlement x) => x != null && !x.IsHideout);
 			string settlementName = (settlement?.Name?.ToString() ?? "").Trim();
+			string terrainLabel = "";
+			if (MapSeaContextGuard.IsMobilePartyAtSeaOrOnWater(party))
+			{
+				terrainLabel = "海上";
+			}
+			else
+			{
+				terrainLabel = MapSeaContextGuard.BuildMobilePartyLandTerrainPromptLabel(party);
+				if (string.IsNullOrWhiteSpace(terrainLabel))
+				{
+					terrainLabel = "野外";
+				}
+			}
 			if (string.IsNullOrWhiteSpace(settlementName))
 			{
-				return "";
+				return terrainLabel;
 			}
-			return settlementName + "附近的野外";
+			return settlementName + "附近的" + terrainLabel;
 		}
 		catch
 		{
@@ -19267,6 +20209,24 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
+	public static List<ConversationMessage> BuildNonHeroUncompressedMemoryRoleMessagesForExternal(string nonHeroMemoryId, string npcName, int targetAgentIndex = -1, bool includeCurrentActiveSceneSession = false)
+	{
+		try
+		{
+			MyBehavior myBehavior = Campaign.Current?.GetCampaignBehavior<MyBehavior>();
+			if (myBehavior == null)
+			{
+				return new List<ConversationMessage>();
+			}
+			string memoryName = string.IsNullOrWhiteSpace(npcName) ? "NPC" : npcName.Trim();
+			return myBehavior.BuildUncompressedMemoryRoleMessagesById(nonHeroMemoryId, memoryName, targetAgentIndex, includeCurrentActiveSceneSession) ?? new List<ConversationMessage>();
+		}
+		catch
+		{
+			return new List<ConversationMessage>();
+		}
+	}
+
 	public static string BuildNonHeroHistoryContextForExternal(string nonHeroMemoryId, string npcName, int maxLines = 20, string currentInput = null, string secondaryInput = null, bool includeCurrentActiveSceneSession = false)
 	{
 		try
@@ -19301,16 +20261,39 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
+	public static List<AnimusForgeDialogueHistoryEntry> GetDialogueHistoryEntriesByIdForExternal(string memoryId, int maxLines = 260)
+	{
+		try
+		{
+			MyBehavior myBehavior = Campaign.Current?.GetCampaignBehavior<MyBehavior>();
+			if (myBehavior == null)
+			{
+				return new List<AnimusForgeDialogueHistoryEntry>();
+			}
+			return myBehavior.GetDialogueHistoryEntriesById(memoryId, maxLines);
+		}
+		catch
+		{
+			return new List<AnimusForgeDialogueHistoryEntry>();
+		}
+	}
+
 	private List<AnimusForgeDialogueHistoryEntry> GetDialogueHistoryEntries(Hero hero, int maxLines)
 	{
+		return GetDialogueHistoryEntriesById(GetMemoryHeroId(hero), maxLines);
+	}
+
+	private List<AnimusForgeDialogueHistoryEntry> GetDialogueHistoryEntriesById(string memoryId, int maxLines)
+	{
 		List<AnimusForgeDialogueHistoryEntry> result = new List<AnimusForgeDialogueHistoryEntry>();
-		if (hero == null)
+		string normalizedMemoryId = NormalizeMemoryHeroId(memoryId);
+		if (string.IsNullOrWhiteSpace(normalizedMemoryId))
 		{
 			return result;
 		}
 		try
 		{
-			List<DialogueDay> records = LoadDialogueHistory(hero);
+			List<DialogueDay> records = LoadDialogueHistoryById(normalizedMemoryId);
 			if (records == null || records.Count == 0)
 			{
 				return result;
@@ -21890,6 +22873,11 @@ public class MyBehavior : CampaignBehaviorBase
 				stringBuilder.AppendLine(activePrisonerStatusLine);
 			}
 		}
+		string feastContext = NobleGatheringBehavior.BuildFeastAttendanceContext(targetHero);
+		if (!string.IsNullOrWhiteSpace(feastContext))
+		{
+			stringBuilder.AppendLine(feastContext);
+		}
 		if (!string.IsNullOrWhiteSpace(value))
 		{
 			stringBuilder.AppendLine(value);
@@ -21935,6 +22923,12 @@ public class MyBehavior : CampaignBehaviorBase
 		if (!string.IsNullOrWhiteSpace(value8a))
 		{
 			stringBuilder.AppendLine(value8a);
+		}
+		string value8aa = CustomPolicyBehavior.BuildRecentPolicyContextForNpcExternal(targetHero, targetCharacter, kingdomIdOverride);
+		if (!string.IsNullOrWhiteSpace(value8aa))
+		{
+			stringBuilder.AppendLine(value8aa);
+			CustomPolicyBehavior.LogNpcPolicyContextInjectionForExternal(targetHero, targetCharacter, kingdomIdOverride, value8aa);
 		}
 		if (!string.IsNullOrWhiteSpace(value8))
 		{
@@ -22019,6 +23013,10 @@ public class MyBehavior : CampaignBehaviorBase
 		if (worldMapPartyCommandHit && !IsPromptRuleExcluded(preprocessExcludedRuleIdSet, "worldmap_party_command"))
 		{
 			preprocessRuleIds.Add("worldmap_party_command");
+		}
+		if (!IsPromptRuleExcluded(preprocessExcludedRuleIdSet, "noble_gathering") && (value8?.IndexOf("【附加规则:noble_gathering】", StringComparison.OrdinalIgnoreCase)).GetValueOrDefault() >= 0)
+		{
+			preprocessRuleIds.Add("noble_gathering");
 		}
 		shoutPromptContext.PreprocessRuleIds = preprocessRuleIds.ToList();
 		AfGcczShoutBridge.AppendRuntimePromptToShoutContext(shoutPromptContext, targetHero, targetCharacter, targetAgentIndex, cultureIdOverride);
@@ -23874,93 +24872,11 @@ public class MyBehavior : CampaignBehaviorBase
 				}
 			}
 		}
+		if (result.Count > 24)
+		{
+			result = result.Skip(result.Count - 24).ToList();
+		}
 		return result;
-	}
-
-	private string BuildUncompressedMemoryFallbackContextById(string memoryId, string memoryName, int maxLines, bool includeCurrentActiveSceneSession)
-	{
-		List<ConversationMessage> messages = BuildUncompressedMemoryRoleMessagesById(memoryId, memoryName, -1, includeCurrentActiveSceneSession)
-			.Where((ConversationMessage x) => x != null && !string.IsNullOrWhiteSpace(x.Content))
-			.OrderBy((ConversationMessage x) => x.GameDayIndex)
-			.ThenBy((ConversationMessage x) => x.GameHour)
-			.ToList();
-		if (messages.Count <= 0)
-		{
-			return "";
-		}
-		int limit = MBMath.ClampInt(maxLines > 0 ? maxLines : 24, 1, 40);
-		if (messages.Count > limit)
-		{
-			messages = messages.Skip(messages.Count - limit).ToList();
-		}
-		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.AppendLine("【未压缩近期记忆】");
-		foreach (ConversationMessage message in messages)
-		{
-			string date = string.IsNullOrWhiteSpace(message.GameDate) ? ("第" + message.GameDayIndex + "日") : message.GameDate.Trim();
-			string scene = (message.Scene ?? "").Trim();
-			string speaker = BuildUncompressedMemoryPromptSpeakerLabel(message, memoryName);
-			string content = CompactUncompressedMemoryPromptLine(message.Content, 500);
-			if (string.IsNullOrWhiteSpace(content))
-			{
-				continue;
-			}
-			stringBuilder.Append("- [");
-			stringBuilder.Append(date);
-			stringBuilder.Append(" ");
-			stringBuilder.Append(MBMath.ClampInt(message.GameHour, 0, 23));
-			stringBuilder.Append("时");
-			if (!string.IsNullOrWhiteSpace(scene))
-			{
-				stringBuilder.Append("｜");
-				stringBuilder.Append(scene);
-			}
-			if (!string.IsNullOrWhiteSpace(speaker))
-			{
-				stringBuilder.Append("｜");
-				stringBuilder.Append(speaker);
-			}
-			stringBuilder.Append("] ");
-			stringBuilder.AppendLine(content);
-		}
-		return stringBuilder.ToString().TrimEnd();
-	}
-
-	private static string BuildUncompressedMemoryPromptSpeakerLabel(ConversationMessage message, string memoryName)
-	{
-		if (message == null)
-		{
-			return "";
-		}
-		string role = (message.Role ?? "").Trim();
-		string speaker = (message.SpeakerName ?? "").Trim();
-		if (string.Equals(role, "system", StringComparison.OrdinalIgnoreCase))
-		{
-			return string.IsNullOrWhiteSpace(speaker) ? "AFEF" : speaker;
-		}
-		if (string.Equals(role, "assistant", StringComparison.OrdinalIgnoreCase))
-		{
-			return string.IsNullOrWhiteSpace(speaker) ? (string.IsNullOrWhiteSpace(memoryName) ? "NPC" : memoryName.Trim()) : speaker;
-		}
-		if (string.Equals(role, "user", StringComparison.OrdinalIgnoreCase))
-		{
-			return string.IsNullOrWhiteSpace(speaker) ? "玩家" : speaker;
-		}
-		return string.IsNullOrWhiteSpace(speaker) ? role : speaker;
-	}
-
-	private static string CompactUncompressedMemoryPromptLine(string text, int maxLength)
-	{
-		string value = (text ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
-		while (value.Contains("  "))
-		{
-			value = value.Replace("  ", " ");
-		}
-		if (maxLength > 0 && value.Length > maxLength)
-		{
-			value = value.Substring(0, Math.Max(0, maxLength - 1)).TrimEnd() + "…";
-		}
-		return value;
 	}
 
 	private static ConversationMessage BuildUncompressedMemoryConversationMessage(DailyMemoryLine line, string memoryName, int targetAgentIndex)
@@ -24301,12 +25217,6 @@ public class MyBehavior : CampaignBehaviorBase
 			if (!string.IsNullOrWhiteSpace(compressedMemoryContext))
 			{
 				stringBuilder.AppendLine(compressedMemoryContext);
-				stringBuilder.AppendLine();
-			}
-			string uncompressedMemoryContext = BuildUncompressedMemoryFallbackContextById(normalizedMemoryId, memoryName, maxLines, includeCurrentActiveSceneSession);
-			if (!string.IsNullOrWhiteSpace(uncompressedMemoryContext))
-			{
-				stringBuilder.AppendLine(uncompressedMemoryContext);
 				stringBuilder.AppendLine();
 			}
 			string text4 = stringBuilder.ToString().TrimEnd();
@@ -26173,7 +27083,7 @@ public class MyBehavior : CampaignBehaviorBase
 		string relationLevel = string.IsNullOrWhiteSpace(snap.RelationLevel) ? GetRelationLevelText(snap.Relation) : snap.RelationLevel;
 		string trustLevel = string.IsNullOrWhiteSpace(snap.TrustLevel) ? RewardSystemBehavior.GetTrustLevelText(snap.Trust) : snap.TrustLevel;
 		string patienceLevel = string.IsNullOrWhiteSpace(snap.PatienceLevel) ? GetPatienceLevelText(snap.Current, snap.Max) : snap.PatienceLevel;
-		return $"你对{targetPronoun}的关系是{snap.PrivateLove}（{privateLoveLevel}），你对{targetPronoun}的信任是{snap.Trust}（{trustLevel}），你的家族对{targetPronoun}的关系是{snap.Relation}（{relationLevel}），你现在对{targetPronoun}的耐心是{currentPatience}/{snap.Max}（{patienceLevel}）。";
+		return $"你对{targetPronoun}的私人关系是{privateLoveLevel}（私人关系评级）{snap.PrivateLove}，信任度是{trustLevel}（信任度评级）{snap.Trust}，你的家族对{targetPronoun}的关系是{relationLevel}（家族关系评级）{snap.Relation}，你现在对{targetPronoun}的耐心是{currentPatience}/{snap.Max}（{patienceLevel}）。";
 	}
 
 	private static string BuildSceneInlineStateText(PatienceSnapshot snap, bool includeRelationPenalty)
@@ -33254,9 +34164,33 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private static string BuildWeeklyReportBatchDisplayLabel(WeeklyReportBatchRequest batch)
 	{
+		string preparedLabel = (batch?.DisplayLabel ?? "").Trim();
+		if (!string.IsNullOrWhiteSpace(preparedLabel))
+		{
+			return preparedLabel;
+		}
 		List<string> list = (batch?.Groups ?? new List<WeeklyEventMaterialPreviewGroup>()).Select(BuildWeeklyReportGroupDisplayLabel).Where((string x) => !string.IsNullOrWhiteSpace(x)).ToList();
 		string text = ((batch?.OutputMode ?? WeeklyReportOutputMode.FullReport) == WeeklyReportOutputMode.TitleShortTagsOnly) ? "短" : "全";
 		return (list.Count == 0) ? ("未命名周报批次[" + text + "]") : ("批次[" + text + "]：" + string.Join(" | ", list));
+	}
+
+	private static bool IsWeeklyReportBatchPromptPrepared(WeeklyReportBatchRequest batch)
+	{
+		return batch != null && !string.IsNullOrWhiteSpace(batch.SystemPrompt) && !string.IsNullOrWhiteSpace(batch.UserPrompt);
+	}
+
+	private void PrepareWeeklyReportBatchPrompt(WeeklyReportBatchRequest batch)
+	{
+		if (batch == null || IsWeeklyReportBatchPromptPrepared(batch))
+		{
+			return;
+		}
+		string systemPrompt = BuildWeeklyBatchReportSystemPrompt(batch);
+		string userPrompt = BuildWeeklyBatchReportUserPrompt(batch);
+		batch.SystemPrompt = systemPrompt ?? "";
+		batch.UserPrompt = userPrompt ?? "";
+		batch.PromptPreview = BuildWeeklyBatchPromptPreviewText(batch, systemPrompt, userPrompt);
+		batch.DisplayLabel = BuildWeeklyReportBatchDisplayLabel(batch);
 	}
 
 	private static List<WeeklyEventMaterialPreviewGroup> BuildRemainingWeeklyReportGroupsForRetry(List<WeeklyReportBatchRequest> batches, int batchIndex, IEnumerable<WeeklyEventMaterialPreviewGroup> currentBatchRemainingGroups)
@@ -34131,9 +35065,10 @@ public class MyBehavior : CampaignBehaviorBase
 	private async Task<WeeklyReportBatchRequestResult> GenerateWeeklyReportBatchWithRetriesAsync(WeeklyReportBatchRequest batch, int maxAttempts)
 	{
 		WeeklyReportBatchRequestResult weeklyReportBatchRequestResult = new WeeklyReportBatchRequestResult();
-		string text = BuildWeeklyBatchReportSystemPrompt(batch);
-		string text2 = BuildWeeklyBatchReportUserPrompt(batch);
-		string text3 = BuildWeeklyBatchPromptPreviewText(batch, text, text2);
+		PrepareWeeklyReportBatchPrompt(batch);
+		string text = IsWeeklyReportBatchPromptPrepared(batch) ? (batch.SystemPrompt ?? "") : BuildWeeklyBatchReportSystemPrompt(batch);
+		string text2 = IsWeeklyReportBatchPromptPrepared(batch) ? (batch.UserPrompt ?? "") : BuildWeeklyBatchReportUserPrompt(batch);
+		string text3 = !string.IsNullOrWhiteSpace(batch?.PromptPreview) ? (batch.PromptPreview ?? "") : BuildWeeklyBatchPromptPreviewText(batch, text, text2);
 		string text4 = BuildWeeklyReportBatchDisplayLabel(batch);
 		weeklyReportBatchRequestResult.PromptPreview = text3;
 		for (int i = 1; i <= Math.Max(1, maxAttempts); i++)
@@ -35438,7 +36373,7 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private void UpsertWeeklyReportEventRecord(WeeklyEventMaterialPreviewGroup group, int weekIndex, string title, string shortSummary, string report, string tagText, string promptText)
+	private void UpsertWeeklyReportEventRecord(WeeklyEventMaterialPreviewGroup group, int weekIndex, string title, string shortSummary, string report, string tagText, string promptText, bool sanitizeAfter = true)
 	{
 		if (_eventRecordEntries == null)
 		{
@@ -35513,7 +36448,10 @@ public class MyBehavior : CampaignBehaviorBase
 			};
 		}).Where((EventMaterialReference x) => x != null).ToList();
 		ApplyWeeklyReportStabilityDelta(group, eventRecordEntry.EventId, eventRecordEntry.TagText);
-		_eventRecordEntries = SanitizeEventRecordEntries(_eventRecordEntries);
+		if (sanitizeAfter)
+		{
+			_eventRecordEntries = SanitizeEventRecordEntries(_eventRecordEntries);
+		}
 	}
 
 	private List<EventSourceMaterialEntry> GetWeeklyEventSourceMaterialsForBuild()
@@ -36422,7 +37360,7 @@ public class MyBehavior : CampaignBehaviorBase
 		await GenerateWeeklyReportsBatchedAsyncInternal(list, num2, num, currentGameDayIndexSafe, "本周周报草案", openViewerWhenDone: false, queueBlockingPopupOnFatalFailure: true, isAutoGeneration: false);
 	}
 
-	private async Task<WeeklyReportGenerationResult> GenerateWeeklyReportsMinuteBurstAsyncInternal(List<WeeklyEventMaterialPreviewGroup> list, int weekIndex, int startDay, int endDay, string displayLabel, bool openViewerWhenDone, bool queueBlockingPopupOnFatalFailure, bool isAutoGeneration, IEnumerable<string> popupCandidateKingdomIdsOverride = null)
+	private async Task<WeeklyReportGenerationResult> GenerateWeeklyReportsMinuteBurstAsyncInternal(List<WeeklyEventMaterialPreviewGroup> list, int weekIndex, int startDay, int endDay, string displayLabel, bool openViewerWhenDone, bool queueBlockingPopupOnFatalFailure, bool isAutoGeneration, IEnumerable<string> popupCandidateKingdomIdsOverride = null, List<WeeklyReportBatchRequest> preparedBatches = null)
 	{
 		WeeklyReportGenerationResult generationResult = new WeeklyReportGenerationResult();
 		list = (list ?? new List<WeeklyEventMaterialPreviewGroup>()).Where((WeeklyEventMaterialPreviewGroup x) => x != null && IsWeeklyReportGroupEligible(x)).ToList();
@@ -36442,9 +37380,12 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			list2 = list.Where((WeeklyEventMaterialPreviewGroup x) => x != null && string.Equals((x.GroupKind ?? "").Trim(), "kingdom", StringComparison.OrdinalIgnoreCase)).Select((WeeklyEventMaterialPreviewGroup x) => (x.KingdomId ?? "").Trim()).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
 		}
-		bool nearestKingdomWeeklyReportNotified = false;
 		Dictionary<string, WeeklyEventMaterialPreviewGroup> groupMap = BuildWeeklyReportGroupMap(list);
-		List<WeeklyReportBatchRequest> batches = BuildWeeklyReportBatchRequests(list, weekIndex, startDay, endDay);
+		List<WeeklyReportBatchRequest> batches = (preparedBatches ?? new List<WeeklyReportBatchRequest>()).Where((WeeklyReportBatchRequest x) => x != null && x.Groups != null && x.Groups.Count > 0).ToList();
+		if (batches.Count == 0)
+		{
+			batches = BuildWeeklyReportBatchRequests(list, weekIndex, startDay, endDay);
+		}
 		int burstSize = Math.Max(1, GetWeeklyReportRequestsPerMinute());
 		int totalWaves = Math.Max(1, (int)Math.Ceiling((double)batches.Count / (double)burstSize));
 		List<Task<WeeklyReportBatchExecutionResult>> runningTasks = new List<Task<WeeklyReportBatchExecutionResult>>();
@@ -36470,6 +37411,8 @@ public class MyBehavior : CampaignBehaviorBase
 			}
 		}
 		WeeklyReportBatchExecutionResult[] completed = await Task.WhenAll(runningTasks);
+		return await EnqueueWeeklyReportCommitAsync(list, weekIndex, startDay, endDay, displayLabel, openViewerWhenDone, queueBlockingPopupOnFatalFailure, isAutoGeneration, list2, groupMap, completed);
+#if false
 		int successCount = 0;
 		int failureCount = 0;
 		List<WeeklyEventMaterialPreviewGroup> failedGroups = new List<WeeklyEventMaterialPreviewGroup>();
@@ -36559,6 +37502,245 @@ public class MyBehavior : CampaignBehaviorBase
 		generationResult.FailureCount = failureCount;
 		generationResult.Completed = true;
 		return generationResult;
+#endif
+	}
+
+	private Task<WeeklyReportGenerationResult> EnqueueWeeklyReportCommitAsync(List<WeeklyEventMaterialPreviewGroup> groups, int weekIndex, int startDay, int endDay, string displayLabel, bool openViewerWhenDone, bool queueBlockingPopupOnFatalFailure, bool isAutoGeneration, List<string> popupCandidateKingdomIds, Dictionary<string, WeeklyEventMaterialPreviewGroup> groupMap, IEnumerable<WeeklyReportBatchExecutionResult> executions)
+	{
+		TaskCompletionSource<WeeklyReportGenerationResult> completionSource = new TaskCompletionSource<WeeklyReportGenerationResult>();
+		PendingWeeklyReportCommitContext context = new PendingWeeklyReportCommitContext
+		{
+			WeekIndex = weekIndex,
+			StartDay = startDay,
+			EndDay = endDay,
+			DisplayLabel = (displayLabel ?? "").Trim(),
+			OpenViewerWhenDone = openViewerWhenDone,
+			QueueBlockingPopupOnFatalFailure = queueBlockingPopupOnFatalFailure,
+			IsAutoGeneration = isAutoGeneration,
+			PopupCandidateKingdomIds = (popupCandidateKingdomIds ?? new List<string>()).Where((string x) => !string.IsNullOrWhiteSpace(x)).Select((string x) => x.Trim()).Distinct(StringComparer.OrdinalIgnoreCase).ToList(),
+			Groups = (groups ?? new List<WeeklyEventMaterialPreviewGroup>()).Where((WeeklyEventMaterialPreviewGroup x) => x != null).ToList(),
+			GroupMap = groupMap ?? BuildWeeklyReportGroupMap(groups),
+			Executions = (executions ?? Enumerable.Empty<WeeklyReportBatchExecutionResult>()).Where((WeeklyReportBatchExecutionResult x) => x != null).OrderBy((WeeklyReportBatchExecutionResult x) => x.BatchIndex).ToList(),
+			CompletionSource = completionSource
+		};
+		lock (_pendingWeeklyReportCommitLock)
+		{
+			_pendingWeeklyReportCommits.Enqueue(context);
+		}
+		return completionSource.Task;
+	}
+
+	private bool ProcessPendingWeeklyReportCommits()
+	{
+		bool hadWork = false;
+		double budgetMs = GetDailyMaintenanceFrameBudgetMs();
+		long startTimestamp = Stopwatch.GetTimestamp();
+		while (!IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs))
+		{
+			PendingWeeklyReportCommitContext context = null;
+			lock (_pendingWeeklyReportCommitLock)
+			{
+				if (_pendingWeeklyReportCommits.Count > 0)
+				{
+					context = _pendingWeeklyReportCommits.Peek();
+				}
+			}
+			if (context == null)
+			{
+				return hadWork;
+			}
+			hadWork = true;
+			if (!ProcessPendingWeeklyReportCommitContext(context, startTimestamp, budgetMs))
+			{
+				return true;
+			}
+			lock (_pendingWeeklyReportCommitLock)
+			{
+				if (_pendingWeeklyReportCommits.Count > 0 && ReferenceEquals(_pendingWeeklyReportCommits.Peek(), context))
+				{
+					_pendingWeeklyReportCommits.Dequeue();
+				}
+			}
+		}
+		return hadWork;
+	}
+
+	private bool ProcessPendingWeeklyReportCommitContext(PendingWeeklyReportCommitContext context, long startTimestamp, double budgetMs)
+	{
+		if (context == null)
+		{
+			return true;
+		}
+		try
+		{
+			if (context.GroupMap == null)
+			{
+				context.GroupMap = BuildWeeklyReportGroupMap(context.Groups);
+			}
+			List<WeeklyReportBatchExecutionResult> executions = context.Executions ?? new List<WeeklyReportBatchExecutionResult>();
+			while (context.ExecutionIndex < executions.Count && !IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs))
+			{
+				WeeklyReportBatchExecutionResult execution = executions[context.ExecutionIndex];
+				WeeklyReportBatchRequest batch = execution?.Batch;
+				WeeklyReportBatchRequestResult batchResult = execution?.Result ?? new WeeklyReportBatchRequestResult
+				{
+					Success = false,
+					FailureReason = "Batch execution returned no result.",
+					Blocks = new List<WeeklyReportBatchBlockResult>(),
+					MissingReportIds = new List<string>()
+				};
+				if (!context.CurrentPreviewCaptured)
+				{
+					using (PerfProbe.Scope("MyBehavior.WeeklyReportCommit.CapturePreview"))
+					{
+						CaptureWeeklyReportBatchDevPreview(batch, batchResult);
+					}
+					context.CurrentPreviewCaptured = true;
+					if (IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs))
+					{
+						return false;
+					}
+				}
+				if (context.CurrentParsedReportIds == null)
+				{
+					context.CurrentParsedReportIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+				}
+				List<WeeklyReportBatchBlockResult> blocks = batchResult.Blocks ?? new List<WeeklyReportBatchBlockResult>();
+				while (context.BlockIndex < blocks.Count && !IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs))
+				{
+					WeeklyReportBatchBlockResult block = blocks[context.BlockIndex++];
+					if (block != null && block.Parsed && !string.IsNullOrWhiteSpace(block.ReportId) && context.CurrentParsedReportIds.Add(block.ReportId) && context.GroupMap.TryGetValue(block.ReportId, out var group) && group != null)
+					{
+						using (PerfProbe.Scope("MyBehavior.WeeklyReportCommit.UpsertRecord"))
+						{
+							UpsertWeeklyReportEventRecord(group, context.WeekIndex, block.Title, block.ShortSummary, block.Report, block.TagText, batchResult.PromptPreview, sanitizeAfter: false);
+						}
+						TryNotifyNearestKingdomWeeklyReportGenerated(group, context.WeekIndex, context.PopupCandidateKingdomIds, block.Title, block.Report, ref context.NearestKingdomWeeklyReportNotified);
+						context.SuccessCount++;
+					}
+					if (IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs))
+					{
+						return false;
+					}
+				}
+				if (IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs))
+				{
+					return false;
+				}
+				FinalizePendingWeeklyReportCommitBatch(context, batch, batchResult);
+				context.ExecutionIndex++;
+				context.BlockIndex = 0;
+				context.CurrentPreviewCaptured = false;
+				context.CurrentParsedReportIds = null;
+			}
+			if (context.ExecutionIndex < executions.Count)
+			{
+				return false;
+			}
+			FinalizePendingWeeklyReportCommitContext(context);
+			return true;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("EventWeeklyReport", "[ERROR] deferred weekly report commit failed: " + ex);
+			CompletePendingWeeklyReportCommit(context, new WeeklyReportGenerationResult
+			{
+				FailureCount = Math.Max(1, context.FailureCount),
+				BlockedByFatalFailure = true
+			});
+			return true;
+		}
+	}
+
+	private void FinalizePendingWeeklyReportCommitBatch(PendingWeeklyReportCommitContext context, WeeklyReportBatchRequest batch, WeeklyReportBatchRequestResult batchResult)
+	{
+		if (context == null)
+		{
+			return;
+		}
+		HashSet<string> parsedReportIds = context.CurrentParsedReportIds ?? new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		Dictionary<string, WeeklyEventMaterialPreviewGroup> groupMap = context.GroupMap ?? BuildWeeklyReportGroupMap(context.Groups);
+		List<WeeklyEventMaterialPreviewGroup> missingGroups = new List<WeeklyEventMaterialPreviewGroup>();
+		foreach (string reportId in batchResult?.MissingReportIds ?? new List<string>())
+		{
+			if (!string.IsNullOrWhiteSpace(reportId) && !parsedReportIds.Contains(reportId) && groupMap.TryGetValue(reportId, out var missingGroup) && missingGroup != null)
+			{
+				missingGroups.Add(missingGroup);
+			}
+		}
+		if (batchResult != null && !batchResult.Success && missingGroups.Count == 0)
+		{
+			foreach (WeeklyEventMaterialPreviewGroup group in batch?.Groups ?? new List<WeeklyEventMaterialPreviewGroup>())
+			{
+				string reportId = BuildWeeklyReportGroupReportId(group);
+				if (!string.IsNullOrWhiteSpace(reportId) && !parsedReportIds.Contains(reportId))
+				{
+					missingGroups.Add(group);
+				}
+			}
+		}
+		if (missingGroups.Count <= 0)
+		{
+			return;
+		}
+		context.FailureCount += missingGroups.Count;
+		context.FailedGroups.AddRange(missingGroups.Where((WeeklyEventMaterialPreviewGroup x) => x != null));
+		context.FailureMessages.Add(BuildWeeklyReportBatchDisplayLabel(batch) + ": batch request failed; single-report fallback was not started - " + (batchResult?.FailureReason ?? "unknown error"));
+	}
+
+	private void FinalizePendingWeeklyReportCommitContext(PendingWeeklyReportCommitContext context)
+	{
+		if (context == null)
+		{
+			return;
+		}
+		List<WeeklyEventMaterialPreviewGroup> failedGroups = (context.FailedGroups ?? new List<WeeklyEventMaterialPreviewGroup>()).Where((WeeklyEventMaterialPreviewGroup x) => x != null).Distinct().ToList();
+		if (context.FailureMessages != null && context.FailureMessages.Count > 0)
+		{
+			Logger.Log("EventWeeklyReport", string.Join("\n", context.FailureMessages));
+		}
+		WeeklyReportGenerationResult result = new WeeklyReportGenerationResult
+		{
+			SuccessCount = context.SuccessCount,
+			FailureCount = context.FailureCount
+		};
+		if (failedGroups.Count > 0)
+		{
+			WeeklyEventMaterialPreviewGroup firstFailedGroup = failedGroups.FirstOrDefault();
+			WeeklyReportRequestResult failedRequest = new WeeklyReportRequestResult
+			{
+				Success = false,
+				FailureReason = context.FailureMessages?.FirstOrDefault() ?? "Batch request failed.",
+				AttemptsUsed = 3
+			};
+			result.BlockedByFatalFailure = true;
+			result.RetryContext = CreateWeeklyReportRetryContext(failedGroups, context.WeekIndex, context.StartDay, context.EndDay, context.DisplayLabel, context.OpenViewerWhenDone, context.IsAutoGeneration, firstFailedGroup, failedRequest, context.PopupCandidateKingdomIds);
+			InformationManager.DisplayMessage(new InformationMessage(context.DisplayLabel + " generation paused: " + context.FailureCount + " weekly report target(s) failed."));
+			if (context.QueueBlockingPopupOnFatalFailure)
+			{
+				QueueWeeklyReportFailurePopup(result.RetryContext, showImmediate: true);
+			}
+			CompletePendingWeeklyReportCommit(context, result);
+			return;
+		}
+		InformationManager.DisplayMessage(new InformationMessage(context.DisplayLabel + " generation completed: success " + context.SuccessCount + ", failed " + context.FailureCount + "."));
+		if (context.OpenViewerWhenDone)
+		{
+			OpenDevEventViewerMenu(0);
+		}
+		result.Completed = true;
+		CompletePendingWeeklyReportCommit(context, result);
+	}
+
+	private static void CompletePendingWeeklyReportCommit(PendingWeeklyReportCommitContext context, WeeklyReportGenerationResult result)
+	{
+		try
+		{
+			context?.CompletionSource?.TrySetResult(result ?? new WeeklyReportGenerationResult());
+		}
+		catch
+		{
+		}
 	}
 
 	private static string ResolveNearestWeeklyReportKingdomId(IEnumerable<string> kingdomIds)
@@ -36652,7 +37834,6 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			_unreadWeeklyReportNoticeEventIds.Add(text);
 		}
-		TryPublishUnreadWeeklyReportMapNotifications();
 	}
 
 	private void OnMapNoticeRemoved(InformationData data)
@@ -36696,8 +37877,9 @@ public class MyBehavior : CampaignBehaviorBase
 			MarkWeeklyReportNoticeRead(text);
 			return true;
 		}
-		string bodyText = !string.IsNullOrWhiteSpace(eventRecordEntry.Summary) ? eventRecordEntry.Summary.Trim() : (!string.IsNullOrWhiteSpace(eventRecordEntry.ShortSummary) ? eventRecordEntry.ShortSummary.Trim() : "当前周报正文为空。");
-		bool flag = DevWeeklyReportPopup.Show(BuildWeeklyReportNoticeTitle(eventRecordEntry), BuildWeeklyReportPopupSubtitle(eventRecordEntry), bodyText, null, "我知道了");
+		bool hasFullReport = !string.IsNullOrWhiteSpace(eventRecordEntry.Summary);
+		string bodyText = hasFullReport ? eventRecordEntry.Summary.Trim() : (!string.IsNullOrWhiteSpace(eventRecordEntry.ShortSummary) ? eventRecordEntry.ShortSummary.Trim() : "当前周报正文为空。");
+		bool flag = DevWeeklyReportPopup.Show(BuildWeeklyReportNoticeTitle(eventRecordEntry), BuildWeeklyReportPopupSubtitle(eventRecordEntry), bodyText, null, "", useChronicleColumns: hasFullReport, useShortReportLayout: !hasFullReport, showCloseButton: false);
 		if (flag)
 		{
 			MarkWeeklyReportNoticeRead(text);
@@ -36773,9 +37955,9 @@ public class MyBehavior : CampaignBehaviorBase
 		QueueWeeklyReportMapNotice(BuildWeeklyReportEventId("kingdom", weekIndex, text));
 	}
 
-	private async Task<WeeklyReportGenerationResult> GenerateWeeklyReportsBatchedAsyncInternal(List<WeeklyEventMaterialPreviewGroup> list, int weekIndex, int startDay, int endDay, string displayLabel, bool openViewerWhenDone, bool queueBlockingPopupOnFatalFailure, bool isAutoGeneration, IEnumerable<string> popupCandidateKingdomIdsOverride = null)
+	private async Task<WeeklyReportGenerationResult> GenerateWeeklyReportsBatchedAsyncInternal(List<WeeklyEventMaterialPreviewGroup> list, int weekIndex, int startDay, int endDay, string displayLabel, bool openViewerWhenDone, bool queueBlockingPopupOnFatalFailure, bool isAutoGeneration, IEnumerable<string> popupCandidateKingdomIdsOverride = null, List<WeeklyReportBatchRequest> preparedBatches = null)
 	{
-		return await GenerateWeeklyReportsMinuteBurstAsyncInternal(list, weekIndex, startDay, endDay, displayLabel, openViewerWhenDone, queueBlockingPopupOnFatalFailure, isAutoGeneration, popupCandidateKingdomIdsOverride);
+		return await GenerateWeeklyReportsMinuteBurstAsyncInternal(list, weekIndex, startDay, endDay, displayLabel, openViewerWhenDone, queueBlockingPopupOnFatalFailure, isAutoGeneration, popupCandidateKingdomIdsOverride, preparedBatches);
 #if false
 		WeeklyReportGenerationResult weeklyReportGenerationResult = new WeeklyReportGenerationResult();
 		list = (list ?? new List<WeeklyEventMaterialPreviewGroup>()).Where((WeeklyEventMaterialPreviewGroup x) => x != null && IsWeeklyReportGroupEligible(x)).ToList();

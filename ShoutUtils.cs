@@ -22,6 +22,10 @@ namespace AnimusForge;
 
 public static class ShoutUtils
 {
+	private const float ShoutLineOfSightFallbackEyeHeight = 1.55f;
+
+	private const float ShoutLineOfSightLowerBodyHeight = 1.05f;
+
 	private class UnnamedNpcPersonaProfile
 	{
 		public string Description;
@@ -1043,12 +1047,21 @@ public static class ShoutUtils
 	{
 		if (Mission.Current == null)
 		{
+			if (TryBuildMapSeaSceneDescription(out var mapSeaDescriptionWithoutMission))
+			{
+				return mapSeaDescriptionWithoutMission;
+			}
+			if (TryBuildMapLandSceneDescription(out var mapLandDescriptionWithoutMission))
+			{
+				return mapLandDescriptionWithoutMission;
+			}
 			return "未知场景";
 		}
 		string text = "某个地方";
 		string text2 = "";
 		bool flag = false;
 		bool flag2 = false;
+		bool flag3 = false;
 		string text3 = "";
 		try
 		{
@@ -1071,6 +1084,26 @@ public static class ShoutUtils
 						text2 = text2.TrimEnd('。', '.', ' ');
 						flag = false;
 					}
+					else if (text5.StartsWith("你正位于", StringComparison.Ordinal))
+					{
+						string text6 = text5.Substring("你正位于".Length).Trim();
+						text6 = text6.TrimEnd('。', '.', ' ');
+						const string seaSuffix = "附近的海上";
+						if (text6.EndsWith(seaSuffix, StringComparison.Ordinal))
+						{
+							text2 = text6.Substring(0, text6.Length - seaSuffix.Length).Trim();
+							flag = true;
+							flag2 = true;
+							flag3 = true;
+						}
+						else if (string.Equals(text6, "海上", StringComparison.Ordinal))
+						{
+							text2 = "";
+							flag = false;
+							flag2 = true;
+							flag3 = true;
+						}
+					}
 					else if (text5.StartsWith("你身处野外，靠近 ", StringComparison.Ordinal))
 					{
 						text2 = text5.Substring("你身处野外，靠近 ".Length).Trim();
@@ -1090,6 +1123,23 @@ public static class ShoutUtils
 		catch
 		{
 		}
+		if (!flag3 && TryBuildMapSeaSceneDescription(out var mapSeaDescription))
+		{
+			return mapSeaDescription;
+		}
+		if (!flag2 && string.IsNullOrEmpty(text2) && TryBuildMapLandSceneDescription(out var mapLandDescription))
+		{
+			return mapLandDescription;
+		}
+		if (flag3)
+		{
+			string text6 = string.IsNullOrEmpty(text2) ? "你正位于海上" : ("你正位于" + text2 + "附近的海上");
+			if (!string.IsNullOrEmpty(text3))
+			{
+				return text6 + " | " + text3;
+			}
+			return text6;
+		}
 		if (string.IsNullOrEmpty(text2))
 		{
 			try
@@ -1105,7 +1155,11 @@ public static class ShoutUtils
 		}
 		if (flag2)
 		{
-			text = "野外";
+			text = BuildCurrentMapLandTerrainSceneSpotLabel();
+			if (string.IsNullOrWhiteSpace(text))
+			{
+				text = "野外";
+			}
 		}
 		else
 		{
@@ -1173,6 +1227,71 @@ public static class ShoutUtils
 			return text8 + " | " + text3;
 		}
 		return text8;
+	}
+
+	private static bool TryBuildMapLandSceneDescription(out string description)
+	{
+		description = "";
+		try
+		{
+			if (Settlement.CurrentSettlement != null)
+			{
+				return false;
+			}
+			MobileParty party = MobileParty.MainParty;
+			if (party == null || party.CurrentSettlement != null || MapSeaContextGuard.IsMobilePartyAtSeaOrOnWater(party))
+			{
+				return false;
+			}
+			string terrainLabel = BuildCurrentMapLandTerrainSceneSpotLabel();
+			if (string.IsNullOrWhiteSpace(terrainLabel))
+			{
+				terrainLabel = "野外";
+			}
+			Settlement settlement = MapSeaContextGuard.FindNearestSettlementForPrompt(party);
+			string settlementName = MapSeaContextGuard.FormatSettlementNameWithTypeForPrompt(settlement);
+			description = string.IsNullOrWhiteSpace(settlementName) ? terrainLabel : ("靠近 " + settlementName + " 的 " + terrainLabel);
+			return !string.IsNullOrWhiteSpace(description);
+		}
+		catch
+		{
+			description = "";
+			return false;
+		}
+	}
+
+	private static string BuildCurrentMapLandTerrainSceneSpotLabel()
+	{
+		try
+		{
+			return MapSeaContextGuard.BuildMobilePartyLandTerrainPromptLabel(MobileParty.MainParty);
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	private static bool TryBuildMapSeaSceneDescription(out string description)
+	{
+		description = "";
+		try
+		{
+			MobileParty party = MobileParty.MainParty;
+			if (!MapSeaContextGuard.IsMobilePartyAtSeaOrOnWater(party))
+			{
+				return false;
+			}
+			Settlement settlement = MapSeaContextGuard.FindNearestSettlementForPrompt(party) ?? FindNearestSettlementForCurrentScene();
+			string settlementName = MapSeaContextGuard.FormatSettlementNameWithTypeForPrompt(settlement);
+			description = string.IsNullOrWhiteSpace(settlementName) ? "你正位于海上" : ("你正位于" + settlementName + "附近的海上");
+			return true;
+		}
+		catch
+		{
+			description = "";
+			return false;
+		}
 	}
 
 	public static string GetNativeSettlementInfoForPrompt()
@@ -1959,6 +2078,79 @@ public static class ShoutUtils
 		return GetNearbyNPCAgentsLegacy(4f, 0.7853982f);
 	}
 
+	private static Vec3 GetShoutLineOfSightPoint(Agent agent, bool lowerBodyPoint = false)
+	{
+		if (agent == null)
+		{
+			return Vec3.Invalid;
+		}
+		try
+		{
+			if (!lowerBodyPoint && agent.AgentVisuals != null)
+			{
+				Vec3 eyePoint = agent.AgentVisuals.GetGlobalStableEyePoint(true);
+				if (IsValidShoutLineOfSightPoint(eyePoint))
+				{
+					return eyePoint;
+				}
+			}
+		}
+		catch
+		{
+		}
+		Vec3 position = agent.Position;
+		position.z += lowerBodyPoint ? ShoutLineOfSightLowerBodyHeight : ShoutLineOfSightFallbackEyeHeight;
+		return position;
+	}
+
+	private static bool IsValidShoutLineOfSightPoint(Vec3 point)
+	{
+		return point.IsValid && !float.IsNaN(point.x) && !float.IsNaN(point.y) && !float.IsNaN(point.z) && !float.IsInfinity(point.x) && !float.IsInfinity(point.y) && !float.IsInfinity(point.z);
+	}
+
+	private static bool CanScenePointSeePoint(Scene scene, Vec3 source, Vec3 target)
+	{
+		if (scene == null || !IsValidShoutLineOfSightPoint(source) || !IsValidShoutLineOfSightPoint(target))
+		{
+			return false;
+		}
+		try
+		{
+			float distance = source.Distance(target);
+			if (float.IsNaN(distance) || float.IsInfinity(distance) || distance <= 0.05f)
+			{
+				return true;
+			}
+			return scene.CheckPointCanSeePoint(source, target, distance);
+		}
+		catch
+		{
+			return true;
+		}
+	}
+
+	public static bool HasShoutLineOfSightToMainAgent(Agent targetAgent)
+	{
+		if (targetAgent == null || !targetAgent.IsActive() || Agent.Main == null || !Agent.Main.IsActive())
+		{
+			return false;
+		}
+		Scene scene = Mission.Current?.Scene;
+		if (scene == null)
+		{
+			return true;
+		}
+		Vec3 sourceEye = GetShoutLineOfSightPoint(Agent.Main);
+		Vec3 targetEye = GetShoutLineOfSightPoint(targetAgent);
+		if (CanScenePointSeePoint(scene, sourceEye, targetEye))
+		{
+			return true;
+		}
+		Vec3 sourceLower = GetShoutLineOfSightPoint(Agent.Main, lowerBodyPoint: true);
+		Vec3 targetLower = GetShoutLineOfSightPoint(targetAgent, lowerBodyPoint: true);
+		return CanScenePointSeePoint(scene, sourceLower, targetLower);
+	}
+
 	private static List<Agent> GetNearbyNPCAgentsLegacy(float maxDistance, float halfAngleRadians)
 	{
 		List<Agent> list = new List<Agent>();
@@ -1982,7 +2174,7 @@ public static class ShoutUtils
 			{
 				Vec3 v = agent.Position - position;
 				v.Normalize();
-				if (Vec3.DotProduct(lookDirection, v) > num3)
+				if (Vec3.DotProduct(lookDirection, v) > num3 && HasShoutLineOfSightToMainAgent(agent))
 				{
 					list.Add(agent);
 				}
@@ -2020,7 +2212,7 @@ public static class ShoutUtils
 			if (distanceSquared <= num4 && distanceSquared > 1E-05f)
 			{
 				v.Normalize();
-				if (Vec2.DotProduct(lookDirection, v) >= num3)
+				if (Vec2.DotProduct(lookDirection, v) >= num3 && HasShoutLineOfSightToMainAgent(agent))
 				{
 					list.Add(agent);
 				}

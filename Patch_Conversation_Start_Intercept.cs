@@ -96,6 +96,11 @@ public static class Patch_Conversation_Start_Intercept
 		{
 			return true;
 		}
+		if (MapSeaContextGuard.IsCurrentPlayerEncounterAtSea())
+		{
+			Logger.LogTrace("Patch_Conversation_Start_Intercept", "Sea encounter context detected; allow native " + originalMethod?.Name + ".");
+			return true;
+		}
 		if (PlayerEncounter.Current == null)
 		{
 			return true;

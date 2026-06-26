@@ -182,7 +182,7 @@
                 },
                 {
                     "Tag": "[ACTION:KINGDOM_SERVICE:CLAN_JOIN_PLAYER_KINGDOM:{targetClanId}]",
-                    "Description": "NPC在<latest_reply>里最终明确同意或决定了带领整个家族加入玩家王国成为领主时，输出这个。这个标签只代表家族归附和王国归属改变，不代表NPC本人加入玩家队伍、成为玩家同伴或跟玩家上路。若<latest_reply>表达的是“我本人加入你的队伍/当你的同伴/跟你走”，禁止输出这个；若<latest_reply>只是模糊同意“效力于你/加入你/来你麾下”，没有明确整个家族加入玩家王国成为领主，禁止输出。若NPC只是谈条件、犹豫、拒绝、要求报酬、要求封地、要求保证、要求日后再议，禁止输出。"
+                    "Description": "NPC在<latest_reply>里最终明确同意或决定了带领整个家族加入玩家王国成为领主时，输出这个。这个标签只代表家族归附和王国归属改变，不代表NPC本人加入玩家队伍、成为玩家同伴或跟玩家上路；执行时目标家族当前拥有的城镇、城堡及其附属村庄会随家族一起归入玩家王国，不应留给旧王国或旧领主。若<latest_reply>表达的是“我本人加入你的队伍/当你的同伴/跟你走”，禁止输出这个；若<latest_reply>只是模糊同意“效力于你/加入你/来你麾下”，没有明确整个家族加入玩家王国成为领主，禁止输出。若NPC只是谈条件、犹豫、拒绝、要求报酬、要求封地、要求保证、要求日后再议，禁止输出。"
                 }
             ],
             "RuntimeInstructionTemplates": {
@@ -200,7 +200,7 @@
                 "player_ruler_target_eliminated": "【家族归附规则】你的家族 {targetClan} 已经灭亡或不可用，不能再作为领主家族向 {playerKingdom} 归附。",
                 "player_ruler_target_same_kingdom": "【家族归附规则】你的家族 {targetClan} 已经效力于 {playerKingdom}，不能重复宣誓加入。若玩家询问，只需说明你们已经是其麾下领主。",
                 "player_ruler_target_not_leader": "【家族归附规则】你属于 {targetClan} 家族，但你不是族长，不能代表整个家族宣誓归附。若玩家招揽你的家族，你必须引导玩家去找家族族长 {targetClanLeader}；不得替族长承诺本家族加入 {playerKingdom}。家族归附不同于你本人加入玩家队伍；如果玩家只说“加入我、跟我、为我效力、来我麾下”但没有明确是家族归附还是本人入队，你必须追问澄清，不要作出正式承诺。",
-                "player_ruler_target_ready": "【家族归附规则】你是 {targetClan} 家族族长，玩家是 {playerKingdom} 的统治者。你可以决定是否带领整个家族加入 {playerKingdom} 并作为领主效力。这不是你个人成为玩家同伴，也不是加入玩家队伍；这是整个家族改变王国归属。只有玩家明确谈到家族、王国、封臣、领主、归附或效忠玩家王国时，才按家族归附理解。若玩家只说“加入我、跟我、为我效力、来我麾下”等模糊招揽，但没有说明是让你本人入队还是让整个家族归附，你必须追问澄清，不要把话说成正式承诺。是否同意取决于利益、承诺、战争局势、安全、封地、关系和你的性格。只有当你在正文里最终明确答应带领 {targetClan} 家族加入 {playerKingdom} 时，才算同意；若你仍在讨价还价、要求保证、要求报酬、要求封地、拒绝、犹豫、反问或表示以后再谈，就不算同意。正文只自然说话，不要自己写任何动作标签。"
+                "player_ruler_target_ready": "【家族归附规则】你是 {targetClan} 家族族长，玩家是 {playerKingdom} 的统治者。你可以决定是否带领整个家族加入 {playerKingdom} 并作为领主效力。这不是你个人成为玩家同伴，也不是加入玩家队伍；这是整个家族改变王国归属。若你同意，默认代表 {targetClan} 当前拥有的城镇、城堡及其附属村庄也随家族一起归入 {playerKingdom}；除非玩家明确要求放弃封地，否则不要把归附说成只带人不带地。只有玩家明确谈到家族、王国、封臣、领主、归附或效忠玩家王国时，才按家族归附理解。若玩家只说“加入我、跟我、为我效力、来我麾下”等模糊招揽，但没有说明是让你本人入队还是让整个家族归附，你必须追问澄清，不要把话说成正式承诺。是否同意取决于利益、承诺、战争局势、安全、封地、关系和你的性格。只有当你在正文里最终明确答应带领 {targetClan} 家族加入 {playerKingdom} 时，才算同意；若你仍在讨价还价、要求保证、要求报酬、要求封地、拒绝、犹豫、反问或表示以后再谈，就不算同意。"
             },
             "RuntimeConstraintTemplates": {
                 "no_player_clan": "【运行时硬约束】未找到玩家家族信息。本轮只能解释情况，不能真的批准加入或退出任何势力。",
@@ -219,7 +219,7 @@
                 "player_ruler_target_eliminated": "【家族归附边界】你的家族 {targetClan} 已经灭亡或不可用。不要承诺家族加入 {playerKingdom}。",
                 "player_ruler_target_same_kingdom": "【家族归附边界】你的家族 {targetClan} 已经效力于 {playerKingdom}。不要重复宣誓加入，只说明你们已经是其麾下领主。",
                 "player_ruler_target_not_leader": "【家族归附边界】你不是 {targetClan} 家族族长，不能代表全族归附。只有族长 {targetClanLeader} 可以作出这个决定；你必须引导玩家去找族长。若玩家的招揽话术没有明确区分“本人入队”和“家族归附”，必须追问澄清，不作正式承诺。",
-                "player_ruler_target_ready": "【家族归附边界】你可以同意、拒绝或继续谈条件。只有当你已经决定并明确答应带领 {targetClan} 家族加入 {playerKingdom} 时，才把话说成正式承诺；如果你还需要报酬、封地、保证、时间或更多说服，就明确说还没答应。若玩家只是模糊说“加入我、跟我、为我效力、来我麾下”，必须先追问他是要你本人加入队伍，还是要你的家族归附他的王国。"
+                "player_ruler_target_ready": "【家族归附边界】你可以同意、拒绝或继续谈条件。只有当你已经决定并明确答应带领 {targetClan} 家族加入 {playerKingdom} 时，才把话说成正式承诺；正式归附默认携带 {targetClan} 当前拥有的城镇、城堡及其附属村庄一起加入玩家王国，不要承诺把封地留给旧王国。如果你还需要报酬、封地、保证、时间或更多说服，就明确说还没答应。若玩家只是模糊说“加入我、跟我、为我效力、来我麾下”，必须先追问他是要你本人加入队伍，还是要你的家族归附他的王国。"
             },
             "TriggerKeywords": [
                 "我想加入你们的王国。",
@@ -994,6 +994,39 @@
             ]
         },
         {
+            "Id": "noble_gathering",
+            "IsEnabled": true,
+            "Group": "social",
+            "Priority": 82,
+            "TopicNumber": 23,
+            "TopicLabel": "Noble feast / gathering hosting and invitations",
+            "Code": "NOBLE_GATHERING",
+            "NonHeroInstruction": "普通士兵、平民或无名NPC不能代表玩家正式筹办贵族宴会；若玩家提出举办宴会，请引导他去找同伴、总督或能代为安排的亲信。",
+            "Instruction": "【贵族宴会规则】玩家可以通过同伴、总督或亲信安排贵族宴会。正文里只自然确认、追问或拒绝，不要直接写动作标签。只有当玩家已经明确表达要举办宴会，并且本轮能解析出举办地点以及至少一个具体人物、家族、王国、文化或群体筛选时，才视为可以安排。若缺地点或宾客范围，先追问。若对方同意帮玩家安排宴会，后处理会根据运行时候选ID输出结构化宴会标签并立即视为邀请已发出，初版不需要再派玩家信使。",
+            "PostprocessRules": [
+                {
+                    "Tag": "[ACTION:NOBLE_GATHERING:START:settlement=settlementId;heroes=heroId1,heroId2;clans=clanId1;kingdoms=kingdomId1;cultures=cultureId1;age=18-30;gender=female]",
+                    "Description": "如果NPC在<latest_reply>里明确同意帮玩家举办宴会，且玩家本轮已经给出了举办地点和邀请对象范围，就输出这个。settlement 必须使用运行时可举办地ID；heroes/clans/kingdoms/cultures/age/gender 可按玩家指定填写，可省略空项，但至少要有一个邀请人物、家族、王国、文化或群体筛选。若NPC仍在追问地点、宾客、费用，或拒绝/拖延/只闲聊，不要输出。"
+                }
+            ],
+            "RuntimeInstructionTemplates": {},
+            "RuntimeConstraintTemplates": {},
+            "TriggerKeywords": [
+                "我要举办宴会。",
+                "帮我召开一场贵族宴会。",
+                "我要在城里设宴邀请各家族。",
+                "替我安排宴会，邀请某个家族。",
+                "我要邀请某某家族来赴宴。",
+                "在某城举办宴会，邀请这些贵族。",
+                "帮我把王国里的贵族都请来赴宴。",
+                "我要在我的城镇开宴会。",
+                "请总督替我筹办宴会。",
+                "我想让同伴帮我安排一场宴会。",
+                "邀请十八到三十岁的贵族女性来赴宴。",
+                "邀请某文化的贵族家族参加宴会。"
+            ]
+        },
+        {
             "Id": "scene_auto_group_relay",
             "IsEnabled": true,
             "Group": "scene",
@@ -1005,7 +1038,7 @@
             "PostprocessRules": [
                 {
                     "Tag": "[RELAY:接力编号]",
-                    "Description": "你必须输出在场人物列表中你认为下一个最适合发言的NPC的接力编号；如果判断不了谁最合适就随便选一个，绝不可以不选，如果最新消息中有人表示不想聊了，或者有事要走了，那么不要输出此标签"
+                    "Description": "你必须输出在场人物列表中你认为下一个最适合发言的NPC的接力编号；以及尽量选还未发言的人，绝不可以不选，如果最新消息中有人表示不想聊了，或者有事要走了，那么不要输出此标签"
                 }
             ],
             "TriggerKeywords": []

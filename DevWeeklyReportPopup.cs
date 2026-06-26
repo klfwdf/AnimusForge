@@ -9,6 +9,12 @@ namespace AnimusForge;
 
 public sealed class DevWeeklyReportPopup
 {
+	private enum PendingCloseAction
+	{
+		None,
+		Close
+	}
+
 	private static DevWeeklyReportPopup _activePopup;
 
 	private readonly ScreenBase _screen;
@@ -19,20 +25,22 @@ public sealed class DevWeeklyReportPopup
 
 	private readonly Action _onClose;
 
+	private PendingCloseAction _pendingCloseAction;
+
 	private bool _isClosed;
 
 	private bool _pauseRequestRegistered;
 
-	private DevWeeklyReportPopup(ScreenBase screen, string titleText, string subtitleText, string bodyText, Action onClose, string closeText)
+	private DevWeeklyReportPopup(ScreenBase screen, string titleText, string subtitleText, string bodyText, Action onClose, string closeText, bool useChronicleColumns, bool useShortReportLayout, bool showCloseButton)
 	{
 		_screen = screen;
 		_onClose = onClose;
 		int bodyFontSize = DuelSettings.GetSettings()?.WeeklyReportPopupBodyFontSize ?? 18;
-		_dataSource = new DevWeeklyReportPopupVM(titleText, subtitleText, bodyText, bodyFontSize, HandleCloseRequested, closeText);
+		_dataSource = new DevWeeklyReportPopupVM(titleText, subtitleText, bodyText, bodyFontSize, HandleCloseRequested, closeText, useChronicleColumns, useShortReportLayout, showCloseButton);
 		_layer = new GauntletLayer("DevWeeklyReportPopup", 4000, false);
 	}
 
-	public static bool Show(string titleText, string subtitleText, string bodyText, Action onClose = null, string closeText = null)
+	public static bool Show(string titleText, string subtitleText, string bodyText, Action onClose = null, string closeText = null, bool useChronicleColumns = false, bool useShortReportLayout = false, bool showCloseButton = true)
 	{
 		ScreenBase topScreen = ScreenManager.TopScreen;
 		if (topScreen == null)
@@ -42,7 +50,7 @@ public sealed class DevWeeklyReportPopup
 		try
 		{
 			_activePopup?.Close(silent: true);
-			DevWeeklyReportPopup devWeeklyReportPopup = new DevWeeklyReportPopup(topScreen, titleText, subtitleText, bodyText, onClose, closeText);
+			DevWeeklyReportPopup devWeeklyReportPopup = new DevWeeklyReportPopup(topScreen, titleText, subtitleText, bodyText, onClose, closeText, useChronicleColumns, useShortReportLayout, showCloseButton);
 			devWeeklyReportPopup.Open();
 			_activePopup = devWeeklyReportPopup;
 			return true;
@@ -56,8 +64,31 @@ public sealed class DevWeeklyReportPopup
 		}
 	}
 
+	public static void ProcessDeferredCloseIfNeeded()
+	{
+		DevWeeklyReportPopup popup = _activePopup;
+		if (popup == null || popup._isClosed)
+		{
+			return;
+		}
+		if (popup.ShouldCloseForEscapeKey())
+		{
+			popup.HandleCloseRequested();
+		}
+		popup.ProcessPendingCloseAction();
+	}
+
 	private void Open()
 	{
+		try
+		{
+			AnimusForgeCourierUiSprites.EnsureInstalled();
+			AnimusForgeWeeklyReportUiSprites.EnsureInstalledForPopupUi();
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("DevWeeklyReportPopup", "[WARN] Failed to install popup sprites: " + ex.Message);
+		}
 		_layer.LoadMovie("DevWeeklyReportPopup", _dataSource);
 		_layer.InputRestrictions.SetInputRestrictions(true, InputUsageMask.All);
 		try
@@ -73,8 +104,46 @@ public sealed class DevWeeklyReportPopup
 		RegisterPauseRequest();
 	}
 
+	private bool ShouldCloseForEscapeKey()
+	{
+		try
+		{
+			return _layer?.Input != null && (_layer.Input.IsHotKeyReleased("Exit") || _layer.Input.IsKeyReleased(InputKey.Escape));
+		}
+		catch
+		{
+		}
+		try
+		{
+			return Input.IsKeyReleased(InputKey.Escape);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
 	private void HandleCloseRequested()
 	{
+		RequestDeferredClose();
+	}
+
+	private void RequestDeferredClose()
+	{
+		if (_isClosed || _pendingCloseAction != PendingCloseAction.None)
+		{
+			return;
+		}
+		_pendingCloseAction = PendingCloseAction.Close;
+	}
+
+	private void ProcessPendingCloseAction()
+	{
+		if (_isClosed || _pendingCloseAction == PendingCloseAction.None)
+		{
+			return;
+		}
+		_pendingCloseAction = PendingCloseAction.None;
 		Close(silent: true);
 		_onClose?.Invoke();
 	}

@@ -62,6 +62,11 @@ public static class Patch_PlayerEncounter_Start
 					Logger.LogTrace("Patch_PlayerEncounter_Start", "Native encounter activity context detected; skip custom encounter menu redirect.");
 					return;
 				}
+				if (MapSeaContextGuard.IsCurrentPlayerEncounterAtSea())
+				{
+					Logger.LogTrace("Patch_PlayerEncounter_Start", "Sea encounter context detected; keep native encounter flow.");
+					return;
+				}
 				PartyBase encounteredParty = PlayerEncounter.EncounteredParty;
 				if (encounteredParty == null)
 				{

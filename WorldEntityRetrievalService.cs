@@ -144,6 +144,8 @@ public static class WorldEntityRetrievalService
 
 		public string Affiliation;
 
+		public string ShipInfo;
+
 		public string Direction;
 
 		public float Distance;
@@ -183,7 +185,12 @@ public static class WorldEntityRetrievalService
 			{
 				Logger.Log("WorldEntityRetrieval", "visible_party_context_only count=" + visibleParties.Count);
 			}
+			List<EntityMatch<Hero>> postprocessHeroes = CloneEntityMatches(heroes);
+			List<EntityMatch<Settlement>> postprocessSettlements = CloneEntityMatches(settlements);
+			List<EntityMatch<Clan>> postprocessClans = CloneEntityMatches(clans);
+			List<EntityMatch<Kingdom>> postprocessKingdoms = CloneEntityMatches(kingdoms);
 			AddResidentEntityMatches(contextHero, includeResidentKingdoms, ref heroes, ref settlements, ref clans, ref kingdoms);
+			AddPostprocessResidentEntityMatches(contextHero, ref postprocessHeroes, ref postprocessSettlements, ref postprocessClans, ref postprocessKingdoms);
 			int count = heroes.Count + settlements.Count + clans.Count + kingdoms.Count + visibleParties.Count;
 			if (count <= 0)
 			{
@@ -192,7 +199,7 @@ public static class WorldEntityRetrievalService
 			}
 			result.MatchCount = count;
 			result.MainPromptBlock = BuildMainPromptBlock(playerDisplayName, contextHero, heroes, settlements, clans, kingdoms, visibleParties);
-			result.PostprocessPromptBlock = BuildPostprocessPromptBlock(heroes, settlements, clans, kingdoms, visibleParties);
+			result.PostprocessPromptBlock = BuildPostprocessPromptBlock(postprocessHeroes, postprocessSettlements, postprocessClans, postprocessKingdoms, visibleParties);
 			return result;
 		}
 		catch (Exception ex)
@@ -726,6 +733,56 @@ public static class WorldEntityRetrievalService
 		SortEntityMatches(kingdoms);
 	}
 
+	private static void AddPostprocessResidentEntityMatches(Hero contextHero, ref List<EntityMatch<Hero>> heroes, ref List<EntityMatch<Settlement>> settlements, ref List<EntityMatch<Clan>> clans, ref List<EntityMatch<Kingdom>> kingdoms)
+	{
+		heroes = heroes ?? new List<EntityMatch<Hero>>();
+		settlements = settlements ?? new List<EntityMatch<Settlement>>();
+		clans = clans ?? new List<EntityMatch<Clan>>();
+		kingdoms = kingdoms ?? new List<EntityMatch<Kingdom>>();
+		int priority = -1000;
+		Hero player = Hero.MainHero;
+		Clan playerClan = Clan.PlayerClan ?? player?.Clan;
+		AddResidentClanMatch(clans, playerClan, "常驻：玩家当前家族", priority++);
+		AddResidentKingdomMatch(kingdoms, ResolveHeroKingdomForResidentEntity(player, playerClan), "常驻：玩家当前王国", priority++);
+		if (contextHero != null)
+		{
+			string contextName = SafeName(contextHero.Name, "当前对话人物");
+			AddResidentHeroMatch(heroes, contextHero, "常驻：" + contextName + "本人", priority++);
+			AddResidentClanMatch(clans, contextHero.Clan, "常驻：" + contextName + "的家族", priority++);
+			AddResidentKingdomMatch(kingdoms, ResolveHeroKingdomForResidentEntity(contextHero, contextHero.Clan), "常驻：" + contextName + "的王国", priority++);
+		}
+		SortEntityMatches(heroes);
+		SortEntityMatches(settlements);
+		SortEntityMatches(clans);
+		SortEntityMatches(kingdoms);
+	}
+
+	private static List<EntityMatch<T>> CloneEntityMatches<T>(IEnumerable<EntityMatch<T>> matches) where T : class
+	{
+		List<EntityMatch<T>> result = new List<EntityMatch<T>>();
+		if (matches == null)
+		{
+			return result;
+		}
+		foreach (EntityMatch<T> match in matches)
+		{
+			if (match == null)
+			{
+				continue;
+			}
+			result.Add(new EntityMatch<T>
+			{
+				Value = match.Value,
+				Id = match.Id,
+				Name = match.Name,
+				Mention = match.Mention,
+				Score = match.Score,
+				MentionPriority = match.MentionPriority
+			});
+		}
+		return result;
+	}
+
 	private static Kingdom ResolveHeroKingdomForResidentEntity(Hero hero, Clan fallbackClan = null)
 	{
 		try
@@ -970,7 +1027,7 @@ public static class WorldEntityRetrievalService
 			for (int i = 0; i < postprocessHeroes.Count; i++)
 			{
 				Hero hero = postprocessHeroes[i].Value;
-				sb.AppendLine((i + 1) + ". 名称：" + SafeName(hero?.Name, postprocessHeroes[i].Name) + "；位置：" + FormatHeroLocation(hero) + "；编号：" + postprocessHeroes[i].Id);
+				sb.AppendLine((i + 1) + ". 名称：" + SafeName(hero?.Name, postprocessHeroes[i].Name) + "；位置：" + FormatHeroLocation(hero) + "；编号：" + postprocessHeroes[i].Id + FormatPostprocessMentionHint(postprocessHeroes[i]));
 			}
 		}
 		if (settlements != null && settlements.Count > 0)
@@ -979,7 +1036,7 @@ public static class WorldEntityRetrievalService
 			for (int i = 0; i < settlements.Count; i++)
 			{
 				Settlement settlement = settlements[i].Value;
-				sb.AppendLine((i + 1) + ". 名称：" + SafeName(settlement?.Name, settlements[i].Name) + "；编号：" + settlements[i].Id);
+				sb.AppendLine((i + 1) + ". 名称：" + SafeName(settlement?.Name, settlements[i].Name) + "；编号：" + settlements[i].Id + FormatPostprocessMentionHint(settlements[i]));
 			}
 		}
 		if (postprocessClans.Count > 0)
@@ -988,7 +1045,7 @@ public static class WorldEntityRetrievalService
 			for (int i = 0; i < postprocessClans.Count; i++)
 			{
 				Clan clan = postprocessClans[i].Value;
-				sb.AppendLine((i + 1) + ". 名称：" + SafeName(clan?.Name, postprocessClans[i].Name) + "；编号：" + postprocessClans[i].Id);
+				sb.AppendLine((i + 1) + ". 名称：" + SafeName(clan?.Name, postprocessClans[i].Name) + "；编号：" + postprocessClans[i].Id + FormatPostprocessMentionHint(postprocessClans[i]));
 			}
 		}
 		if (postprocessKingdoms.Count > 0)
@@ -997,7 +1054,7 @@ public static class WorldEntityRetrievalService
 			for (int i = 0; i < postprocessKingdoms.Count; i++)
 			{
 				Kingdom kingdom = postprocessKingdoms[i].Value;
-				sb.AppendLine((i + 1) + ". 名称：" + SafeName(kingdom?.Name, postprocessKingdoms[i].Name) + "；编号：" + postprocessKingdoms[i].Id);
+				sb.AppendLine((i + 1) + ". 名称：" + SafeName(kingdom?.Name, postprocessKingdoms[i].Name) + "；编号：" + postprocessKingdoms[i].Id + FormatPostprocessMentionHint(postprocessKingdoms[i]));
 			}
 		}
 		if (visibleParties != null && visibleParties.Count > 0)
@@ -1005,11 +1062,16 @@ public static class WorldEntityRetrievalService
 			sb.AppendLine("【附近可见部队】");
 			for (int i = 0; i < visibleParties.Count; i++)
 			{
-				VisiblePartyCandidate party = visibleParties[i];
-				sb.AppendLine((i + 1) + ". 名称：" + party.Name + "；数量：" + party.Count + "；部队ID：" + party.Id + "；从属：" + party.Affiliation + "；方位：" + party.Direction + "；距离：" + FormatDistance(party.Distance));
+				sb.AppendLine(BuildVisiblePartyPromptLine(i + 1, visibleParties[i]));
 			}
 		}
 		return sb.ToString().Trim();
+	}
+
+	private static string FormatPostprocessMentionHint<T>(EntityMatch<T> match) where T : class
+	{
+		string mention = (match?.Mention ?? "").Trim();
+		return string.IsNullOrWhiteSpace(mention) ? "" : ("；提示：" + mention);
 	}
 
 	private static bool IsPostprocessHeroMatchEligible(EntityMatch<Hero> match)
@@ -1083,9 +1145,18 @@ public static class WorldEntityRetrievalService
 		sb.AppendLine("【附近可见部队】");
 		for (int i = 0; i < parties.Count; i++)
 		{
-			VisiblePartyCandidate party = parties[i];
-			sb.AppendLine((i + 1) + ". 名称：" + party.Name + "；数量：" + party.Count + "；部队ID：" + party.Id + "；从属：" + party.Affiliation + "；方位：" + party.Direction + "；距离：" + FormatDistance(party.Distance));
+			sb.AppendLine(BuildVisiblePartyPromptLine(i + 1, parties[i]));
 		}
+	}
+
+	private static string BuildVisiblePartyPromptLine(int index, VisiblePartyCandidate party)
+	{
+		if (party == null)
+		{
+			return index + ". 名称：未知；数量：0";
+		}
+		string shipSegment = string.IsNullOrWhiteSpace(party.ShipInfo) ? "" : ("；舰船：" + party.ShipInfo.Trim());
+		return index + ". 名称：" + party.Name + "；数量：" + party.Count + shipSegment + "；部队ID：" + party.Id + "；从属：" + party.Affiliation + "；方位：" + party.Direction + "；距离：" + FormatDistance(party.Distance);
 	}
 
 	private static void AppendHeroMainFacts(StringBuilder sb, List<EntityMatch<Hero>> matches, string playerDisplayName, Hero contextHero)
@@ -1539,7 +1610,7 @@ public static class WorldEntityRetrievalService
 					string nearest = FormatNearestSettlementForParty(party);
 					if (!string.IsNullOrWhiteSpace(nearest))
 					{
-						parts.Add("在 " + nearest + " 附近活动");
+						parts.Add("在 " + nearest + " 附近" + FormatMobilePartyMapTerrainSuffix(party) + "活动");
 					}
 				}
 				if (party.Army != null)
@@ -1594,27 +1665,52 @@ public static class WorldEntityRetrievalService
 			}
 			string nearest = FormatNearestSettlementForParty(party);
 			string target = party.TargetSettlement == null ? "" : FormatSettlementNameWithType(party.TargetSettlement);
+			string terrainSuffix = FormatMobilePartyMapTerrainSuffix(party);
 			if (!string.IsNullOrWhiteSpace(nearest) && !string.IsNullOrWhiteSpace(target))
 			{
-				return "大地图，当前位置：" + nearest + "附近；正在前往 " + target;
+				return "大地图，当前位置：" + nearest + "附近" + terrainSuffix + "；正在前往 " + target;
 			}
 			if (!string.IsNullOrWhiteSpace(nearest))
 			{
-				return "大地图，当前位置：" + nearest + "附近";
+				return "大地图，当前位置：" + nearest + "附近" + terrainSuffix;
 			}
 			if (!string.IsNullOrWhiteSpace(target))
 			{
-				return "大地图，正在前往 " + target;
+				string terrainLabel = FormatMobilePartyMapTerrainLabel(party);
+				return string.IsNullOrWhiteSpace(terrainLabel) ? ("大地图，正在前往 " + target) : ("大地图，当前位置：" + terrainLabel + "；正在前往 " + target);
 			}
 			if (party.LastVisitedSettlement != null)
 			{
-				return "大地图，最近离开 " + FormatSettlementNameWithType(party.LastVisitedSettlement);
+				string terrainLabel = FormatMobilePartyMapTerrainLabel(party);
+				return string.IsNullOrWhiteSpace(terrainLabel) ? ("大地图，最近离开 " + FormatSettlementNameWithType(party.LastVisitedSettlement)) : ("大地图，最近离开 " + FormatSettlementNameWithType(party.LastVisitedSettlement) + "；当前位置：" + terrainLabel);
 			}
 			return "大地图，队伍：" + SafeName(party.Name, party.StringId);
 		}
 		catch
 		{
 			return "大地图，队伍：" + SafeName(party.Name, party.StringId);
+		}
+	}
+
+	private static string FormatMobilePartyMapTerrainSuffix(MobileParty party)
+	{
+		string terrainLabel = FormatMobilePartyMapTerrainLabel(party);
+		return string.IsNullOrWhiteSpace(terrainLabel) ? "" : ("的" + terrainLabel);
+	}
+
+	private static string FormatMobilePartyMapTerrainLabel(MobileParty party)
+	{
+		try
+		{
+			if (MapSeaContextGuard.IsMobilePartyAtSeaOrOnWater(party))
+			{
+				return "海上";
+			}
+			return MapSeaContextGuard.BuildMobilePartyLandTerrainPromptLabel(party);
+		}
+		catch
+		{
+			return "";
 		}
 	}
 
@@ -2107,6 +2203,7 @@ public static class WorldEntityRetrievalService
 						Name = SafeName(party.Name, id),
 						Count = GetPartyMemberCount(party),
 						Affiliation = FormatPartyAffiliation(party),
+						ShipInfo = MapSeaContextGuard.BuildMobilePartyShipPromptText(party),
 						Direction = FormatDirection(observer.Position, party.Position),
 						Distance = distance
 					};

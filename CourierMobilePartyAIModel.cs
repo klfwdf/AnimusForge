@@ -33,6 +33,14 @@ public sealed class CourierMobilePartyAIModel : DefaultMobilePartyAIModel
 
 	public override bool ShouldConsiderAttacking(MobileParty party, MobileParty targetParty)
 	{
+		if (NobleGatheringBehavior.IsTemporaryGatheringParty(party))
+		{
+			return false;
+		}
+		if (NobleGatheringBehavior.IsTemporaryGatheringParty(targetParty) && !CourierDeliveryBehavior.IsBanditOrOutlawParty(party))
+		{
+			return false;
+		}
 		if (CourierDeliveryBehavior.IsCourierParty(party))
 		{
 			return false;
@@ -69,6 +77,20 @@ public sealed class CourierMobilePartyAIModel : DefaultMobilePartyAIModel
 				bestInitiativeTargetParty = null;
 				bestInitiativeBehaviorScore = 0f;
 				Logger.LogVerbose("ProactiveNpcRequest", "initiative_attack_suppressed:" + (mobileParty?.StringId ?? ""), () => "initiative attack suppressed party=" + (mobileParty?.StringId ?? ""), 10.0);
+			}
+			if (NobleGatheringBehavior.IsTemporaryGatheringParty(mobileParty) && bestInitiativeBehavior == AiBehavior.EngageParty)
+			{
+				bestInitiativeBehavior = AiBehavior.None;
+				bestInitiativeTargetParty = null;
+				bestInitiativeBehaviorScore = 0f;
+				Logger.LogVerbose("NobleGathering", "initiative_attack_suppressed:" + (mobileParty?.StringId ?? ""), () => "initiative attack suppressed party=" + (mobileParty?.StringId ?? ""), 10.0);
+			}
+			if (bestInitiativeBehavior == AiBehavior.EngageParty && NobleGatheringBehavior.IsTemporaryGatheringParty(bestInitiativeTargetParty) && !CourierDeliveryBehavior.IsBanditOrOutlawParty(mobileParty))
+			{
+				bestInitiativeBehavior = AiBehavior.None;
+				bestInitiativeTargetParty = null;
+				bestInitiativeBehaviorScore = 0f;
+				Logger.LogVerbose("NobleGathering", "non_bandit_temporary_party_attack_suppressed:" + (mobileParty?.StringId ?? ""), () => "non-bandit temporary gathering party attack suppressed party=" + (mobileParty?.StringId ?? ""), 10.0);
 			}
 			if (CourierDeliveryBehavior.IsCourierParty(mobileParty) && bestInitiativeBehavior == AiBehavior.EngageParty)
 			{

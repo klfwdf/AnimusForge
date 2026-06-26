@@ -15,6 +15,7 @@ using TaleWorlds.CampaignSystem.GameMenus;
 using TaleWorlds.CampaignSystem.Map;
 using TaleWorlds.CampaignSystem.MapEvents;
 using TaleWorlds.CampaignSystem.Party;
+using TaleWorlds.CampaignSystem.Roster;
 using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.CampaignSystem.Siege;
 using TaleWorlds.Core;
@@ -66,6 +67,14 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 	private static bool _cameraLockWasActive;
 
 	private static bool _meetingPlayerReleaseAuthorized;
+
+	private static bool _meetingStartedForProactiveRequest;
+
+	private static Hero _meetingStartedForProactiveRequestHero;
+
+	private static bool _meetingStartedFromCustomEncounterMenu;
+
+	private static Hero _meetingStartedFromCustomEncounterMenuHero;
 
 	private const float PlayerMeetingMinimumHealthRatio = 0.21f;
 
@@ -172,6 +181,12 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 	private static int _pendingNativeConversationNpcSurrenderAgentIndex = -1;
 
 	private static string _pendingNativeConversationNpcSurrenderReason;
+
+	private static bool _npcSurrenderSkipHeroCaptureConversations;
+
+	private static PartyBase _npcSurrenderSkipEncounterParty;
+
+	private static string _npcSurrenderSkipReason;
 
 	private static readonly Regex MeetingTauntWarnTagRegex = new Regex("\\[ACTION:MEETING_TAUNT_WARN\\]", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
@@ -312,6 +327,24 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		{
 			flag16 = false;
 		}
+		bool flag21 = false;
+		bool flag22 = false;
+		Hero hero4 = null;
+		try
+		{
+			flag21 = _meetingStartedForProactiveRequest;
+			flag22 = _meetingStartedFromCustomEncounterMenu;
+			if (flag21 || flag22)
+			{
+				hero4 = _meetingStartedFromCustomEncounterMenuHero ?? _meetingStartedForProactiveRequestHero ?? MeetingBattleRuntime.TargetHero ?? _targetHero;
+			}
+		}
+		catch
+		{
+			flag21 = false;
+			flag22 = false;
+			hero4 = null;
+		}
 		bool flag2 = false;
 		bool flag3 = false;
 		bool flag4 = false;
@@ -361,7 +394,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 				Logger.Log("MeetingBattle", "Mark pending meeting battle native result on mission end failed: " + ex.Message);
 			}
 		}
-		bool flag18 = flag12 || flag13 || flag17 || flag || flag14 || flag15 || flag16;
+		bool flag18 = flag12 || flag13 || flag17 || flag || flag14 || flag15 || flag16 || flag21 || flag22;
 		if (!flag18)
 		{
 			Logger.Log("MeetingBattle", $"OnMissionEnded ignored for non-meeting mission. missionWasBattle={flag2}, missionResultPlayerDefeated={flag3}, missionResultPlayerVictory={flag4}");
@@ -441,13 +474,23 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		}
 		bool flag10 = flag2 && !flag && !flag3 && !flag14;
 		bool flag19 = ConsumeMeetingPlayerReleaseAuthorization("mission_ended");
-		bool flag20 = flag10 && !flag19 && IsHostileEncounterInitiatedByOpponent();
+		bool flag20 = flag10 && !flag19 && !flag22 && !flag21 && IsHostileEncounterInitiatedByOpponent();
 		bool flag11 = flag2 && flag && !flag3 && !flag4 && !flag6;
 		if (flag19)
 		{
 			flag10 = flag2;
 			flag11 = false;
 			ClearPendingReturnToEncounterMenuAfterUnauthorizedMeetingExit("meeting_release_authorized_exit");
+			if (flag21)
+			{
+				try
+				{
+					ProactiveNpcRequestBehavior.CompleteActiveForHero(hero4 ?? _targetHero, "meeting_release_authorized_exit");
+				}
+				catch
+				{
+				}
+			}
 			try
 			{
 				ApplyMeetingPlayerReleaseWorldMapCooldown(_targetHero, "meeting_release_authorized_exit");
@@ -455,6 +498,30 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			catch
 			{
 			}
+		}
+		else if (flag10 && (flag22 || flag21))
+		{
+			flag11 = false;
+			string text = flag21 ? "proactive_request_meeting_exit" : "custom_encounter_meeting_exit";
+			ClearPendingReturnToEncounterMenuAfterUnauthorizedMeetingExit(text);
+			try
+			{
+				ApplyMeetingPlayerReleaseWorldMapCooldown(hero4 ?? _targetHero, text);
+			}
+			catch
+			{
+			}
+			if (flag21)
+			{
+				try
+				{
+					ProactiveNpcRequestBehavior.CompleteActiveForHero(hero4 ?? _targetHero, text);
+				}
+				catch
+				{
+				}
+			}
+			Logger.Log("MeetingBattle", "Custom encounter meeting exited peacefully; skipping hostile unauthorized encounter return. ProactiveRequest=" + flag21);
 		}
 		else if (flag2 && flag3)
 		{
@@ -503,12 +570,16 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		{
 			DisableCustomEncounterMenuForCurrentEncounter("meeting_battle_mission_ended");
 		}
-		Logger.Log("MeetingBattle", $"OnMissionEnded: combatEscalated={flag}, missionWasBattle={flag2}, missionResultPlayerDefeated={flag3}, missionResultPlayerVictory={flag4}, pendingMeetingNativeResult={flag14}, hasBattleResult={flag5}, hasResolvedBattleResult={flag6}, hasEncounterBattleContext={flag7}, hasEncounterResolvingState={flag8}, nativeResultFlow={flag9}, peacefulCleanup={flag10}, forceNativeEncounterMenu={flag11}, releaseAuthorized={flag19}, unauthorizedMeetingExit={flag20}");
+		Logger.Log("MeetingBattle", $"OnMissionEnded: combatEscalated={flag}, missionWasBattle={flag2}, missionResultPlayerDefeated={flag3}, missionResultPlayerVictory={flag4}, pendingMeetingNativeResult={flag14}, hasBattleResult={flag5}, hasResolvedBattleResult={flag6}, hasEncounterBattleContext={flag7}, hasEncounterResolvingState={flag8}, nativeResultFlow={flag9}, peacefulCleanup={flag10}, forceNativeEncounterMenu={flag11}, releaseAuthorized={flag19}, proactiveRequestMeeting={flag21}, customEncounterMeeting={flag22}, unauthorizedMeetingExit={flag20}");
 		MeetingBattleRuntime.EndMeeting();
 		_pendingPostMissionCleanup = true;
 		_pendingPostMissionCleanupDelay = 0f;
 		_pendingPeacefulMeetingBattleCleanup = flag10;
 		_encounterMeetingMissionActive = false;
+		_meetingStartedForProactiveRequest = false;
+		_meetingStartedForProactiveRequestHero = null;
+		_meetingStartedFromCustomEncounterMenu = false;
+		_meetingStartedFromCustomEncounterMenuHero = null;
 	}
 
 	internal static void DisableCustomEncounterMenuForCurrentEncounter(string reason)
@@ -3503,7 +3574,16 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 
 	private void TryRunPostMissionCleanupIfReady()
 	{
-		if (!_pendingPostMissionCleanup || _pendingPostMissionCleanupDelay > 0f || Game.Current?.GameStateManager?.ActiveState is MissionState)
+		bool nativeEncounterMenuActive = false;
+		try
+		{
+			nativeEncounterMenuActive = string.Equals(Campaign.Current?.CurrentMenuContext?.GameMenu?.StringId, "encounter", StringComparison.Ordinal);
+		}
+		catch
+		{
+			nativeEncounterMenuActive = false;
+		}
+		if (!_pendingPostMissionCleanup || _pendingPostMissionCleanupDelay > 0f || (Game.Current?.GameStateManager?.ActiveState is MissionState && !(_pendingPeacefulMeetingBattleCleanup && nativeEncounterMenuActive)))
 		{
 			return;
 		}
@@ -3550,6 +3630,64 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		}
 		_pendingPostMissionCleanup = false;
 		_pendingPostMissionCleanupDelay = 0f;
+	}
+
+	internal static bool TryResolvePendingPeacefulMeetingCleanupForExternal(string reason)
+	{
+		if (!_pendingPeacefulMeetingBattleCleanup && !_pendingPostMissionCleanup)
+		{
+			return false;
+		}
+		if (!_pendingPeacefulMeetingBattleCleanup)
+		{
+			return false;
+		}
+		Logger.Log("MeetingBattle", "Resolving pending peaceful meeting cleanup immediately. Reason=" + (reason ?? "N/A"));
+		try
+		{
+			RestoreMainPartyPosition();
+		}
+		catch
+		{
+		}
+		try
+		{
+			RunPendingPeacefulMeetingBattleCleanupIfNeeded();
+		}
+		catch
+		{
+		}
+		try
+		{
+			DisableMeetingSpawnOverride();
+		}
+		catch
+		{
+		}
+		try
+		{
+			ClearEncounterRedirectSuspension("peaceful_meeting_cleanup_" + (reason ?? "unknown"));
+		}
+		catch
+		{
+		}
+		try
+		{
+			ClearCustomEncounterMenuHardSuppression("peaceful_meeting_cleanup_" + (reason ?? "unknown"));
+		}
+		catch
+		{
+		}
+		try
+		{
+			FocusMapCameraOnMainParty();
+		}
+		catch
+		{
+		}
+		_pendingPostMissionCleanup = _pendingPeacefulMeetingBattleCleanup;
+		_pendingPostMissionCleanupDelay = 0f;
+		return true;
 	}
 
 	private static void RunPendingPeacefulMeetingBattleCleanupIfNeeded()
@@ -3606,6 +3744,13 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 				catch
 				{
 				}
+				try
+				{
+					PlayerEncounter.Finish(true);
+				}
+				catch
+				{
+				}
 				bool flag = false;
 				try
 				{
@@ -3641,6 +3786,11 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 	{
 		if (target == null)
 		{
+			return false;
+		}
+		if (MapSeaContextGuard.IsCurrentPlayerEncounterAtSea(target))
+		{
+			Logger.Log("LordEncounter", $"OpenEncounterMenu ignored because current encounter is at sea. Target={target.Name}");
 			return false;
 		}
 		if (HasPendingForceNativeEncounterAttack())
@@ -4053,6 +4203,10 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		{
 			text = null;
 		}
+		if (text == "encounter" && TryResolvePendingPeacefulMeetingCleanupForExternal("game_menu_opened_encounter"))
+		{
+			return;
+		}
 		if (args?.MenuContext?.GameMenu?.StringId == "AnimusForge_lord_encounter")
 		{
 			if (IsCustomEncounterMenuHardSuppressedUntilBackOnMap())
@@ -4078,7 +4232,12 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 				TryForcePendingDefeatCaptivityMenuIfReady();
 				return;
 			}
-			EnsureEncounterTargetHero("menu_opened");
+			Hero hero = EnsureEncounterTargetHero("menu_opened");
+			if (MapSeaContextGuard.IsCurrentPlayerEncounterAtSea(hero))
+			{
+				TryActivateNativeEncounterMenuSafely("sea_custom_menu_opened");
+				return;
+			}
 			TryRunPostMissionCleanupIfReady();
 			_cameraLockWasActive = true;
 			FocusMapCameraOnMainParty();
@@ -4137,6 +4296,11 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		}
 		if (TryFinishNativeLeaveEncounterFromCustomMenu("campaign_tick"))
 		{
+			return;
+		}
+		if (MapSeaContextGuard.IsCurrentPlayerEncounterAtSea(EnsureEncounterTargetHero("sea_custom_menu_tick")))
+		{
+			TryActivateNativeEncounterMenuSafely("sea_custom_menu_tick");
 			return;
 		}
 		if (_targetHero == null)
@@ -5077,6 +5241,13 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			{
 				SetTarget(hero);
 			}
+			try
+			{
+				ProactiveNpcRequestBehavior.CompleteActiveForHero(hero, "native_conversation_attack_" + (reason ?? "unknown"));
+			}
+			catch
+			{
+			}
 			DisableCustomEncounterMenuForCurrentEncounter(reason ?? "native_conversation_taunt_battle");
 			SuspendEncounterRedirectDuringResultResolution(reason ?? "native_conversation_taunt_battle");
 			try
@@ -5746,6 +5917,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			{
 				Logger.Log("NpcSurrender", "SetOverrideWinner for NPC surrender failed: " + ex.Message);
 			}
+			BeginNpcSurrenderHeroConversationSkip(encounterParty, reason ?? "native_conversation_npc_surrender");
 			PlayerEncounter.EnemySurrender = true;
 			try
 			{
@@ -5776,6 +5948,199 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		catch (Exception ex)
 		{
 			Logger.Log("NpcSurrender", "Execute conversation/dialog NPC surrender failed. Target=" + targetId + " source=" + (reason ?? "N/A") + " error=" + ex.Message);
+			return false;
+		}
+	}
+
+	private static void BeginNpcSurrenderHeroConversationSkip(PartyBase encounterParty, string reason)
+	{
+		_npcSurrenderSkipHeroCaptureConversations = true;
+		_npcSurrenderSkipEncounterParty = encounterParty;
+		_npcSurrenderSkipReason = reason ?? "npc_surrender";
+		Logger.Log("NpcSurrender", "Enabled hero capture conversation skip for NPC surrender. Party=" + GetPartyLogName(encounterParty) + " reason=" + (_npcSurrenderSkipReason ?? "N/A"));
+	}
+
+	private static void ClearNpcSurrenderHeroConversationSkip(string reason)
+	{
+		if (!_npcSurrenderSkipHeroCaptureConversations)
+		{
+			return;
+		}
+		Logger.Log("NpcSurrender", "Cleared hero capture conversation skip for NPC surrender. Reason=" + (reason ?? "N/A"));
+		_npcSurrenderSkipHeroCaptureConversations = false;
+		_npcSurrenderSkipEncounterParty = null;
+		_npcSurrenderSkipReason = null;
+	}
+
+	internal static bool TrySkipNpcSurrenderCapturedLordConversation(PlayerEncounter encounter)
+	{
+		try
+		{
+			if (!ShouldSkipNpcSurrenderHeroCaptureConversations(encounter))
+			{
+				return false;
+			}
+			int moved = MoveHeroLootRosterToMainPartyPrisoners(encounter?.RosterToReceiveLootPrisoners, alreadyPrisonerOnly: false, "captured_lords");
+			if (!TrySetPlayerEncounterState(encounter, PlayerEncounterState.FreeHeroes))
+			{
+				return false;
+			}
+			Logger.Log("NpcSurrender", "Skipped captured lord conversation for NPC surrender. CapturedHeroesMoved=" + moved + " reason=" + (_npcSurrenderSkipReason ?? "N/A"));
+			return true;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("NpcSurrender", "Skip captured lord conversation failed: " + ex.Message);
+			return false;
+		}
+	}
+
+	internal static bool TrySkipNpcSurrenderFreeOrCapturePrisonerHeroConversation(PlayerEncounter encounter)
+	{
+		try
+		{
+			if (!ShouldSkipNpcSurrenderHeroCaptureConversations(encounter))
+			{
+				return false;
+			}
+			int moved = MoveHeroLootRosterToMainPartyPrisoners(encounter?.RosterToReceiveLootMembers, alreadyPrisonerOnly: true, "already_prisoner_lords");
+			if (!TrySetPlayerEncounterState(encounter, PlayerEncounterState.LootParty))
+			{
+				return false;
+			}
+			Logger.Log("NpcSurrender", "Skipped free-or-capture prisoner lord conversation for NPC surrender. PrisonerHeroesMoved=" + moved + " reason=" + (_npcSurrenderSkipReason ?? "N/A"));
+			ClearNpcSurrenderHeroConversationSkip("advanced_to_loot_party");
+			return true;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("NpcSurrender", "Skip free-or-capture prisoner lord conversation failed: " + ex.Message);
+			return false;
+		}
+	}
+
+	private static bool ShouldSkipNpcSurrenderHeroCaptureConversations(PlayerEncounter encounter)
+	{
+		if (!_npcSurrenderSkipHeroCaptureConversations || encounter == null || PlayerEncounter.Current != encounter)
+		{
+			return false;
+		}
+		try
+		{
+			if (!PlayerEncounter.EnemySurrender)
+			{
+				ClearNpcSurrenderHeroConversationSkip("enemy_surrender_not_active");
+				return false;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (_npcSurrenderSkipEncounterParty != null)
+			{
+				PartyBase encounteredParty = PlayerEncounterCompat.GetEncounteredPartySafe();
+				if (encounteredParty != null && encounteredParty != _npcSurrenderSkipEncounterParty)
+				{
+					ClearNpcSurrenderHeroConversationSkip("encounter_party_changed");
+					return false;
+				}
+			}
+		}
+		catch
+		{
+		}
+		return true;
+	}
+
+	private static int MoveHeroLootRosterToMainPartyPrisoners(TroopRoster roster, bool alreadyPrisonerOnly, string source)
+	{
+		if (roster == null || PartyBase.MainParty == null)
+		{
+			return 0;
+		}
+		List<TroopRosterElement> heroes = null;
+		try
+		{
+			heroes = roster.RemoveIf((TroopRosterElement element) =>
+			{
+				Hero hero = element.Character?.HeroObject;
+				if (hero == null || hero == Hero.MainHero)
+				{
+					return false;
+				}
+				return !alreadyPrisonerOnly || hero.PartyBelongedToAsPrisoner != PartyBase.MainParty;
+			}).ToList();
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("NpcSurrender", "Remove hero loot roster entries failed. Source=" + (source ?? "unknown") + " error=" + ex.Message);
+			return 0;
+		}
+		int moved = 0;
+		foreach (TroopRosterElement element in heroes ?? new List<TroopRosterElement>())
+		{
+			if (TryMoveHeroToMainPartyPrisoners(element.Character, source))
+			{
+				moved++;
+			}
+		}
+		return moved;
+	}
+
+	private static bool TryMoveHeroToMainPartyPrisoners(CharacterObject character, string source)
+	{
+		Hero hero = character?.HeroObject;
+		if (hero == null || hero == Hero.MainHero || PartyBase.MainParty == null)
+		{
+			return false;
+		}
+		try
+		{
+			if (hero.IsPrisoner && hero.PartyBelongedToAsPrisoner == PartyBase.MainParty)
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			PartyBase prisonerOwner = hero.PartyBelongedToAsPrisoner;
+			if (prisonerOwner != null && prisonerOwner != PartyBase.MainParty && RosterContainsCharacter(prisonerOwner.PrisonRoster, character))
+			{
+				TransferPrisonerAction.Apply(character, prisonerOwner, PartyBase.MainParty);
+				Logger.Log("NpcSurrender", "Transferred already-prisoner hero to player after NPC surrender. Hero=" + (hero.StringId ?? "") + " source=" + (source ?? "unknown") + " from=" + GetPartyLogName(prisonerOwner));
+				return true;
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("NpcSurrender", "Transfer already-prisoner hero after NPC surrender failed. Hero=" + (hero.StringId ?? "") + " source=" + (source ?? "unknown") + " error=" + ex.Message);
+		}
+		try
+		{
+			TakePrisonerAction.Apply(PartyBase.MainParty, hero);
+			Logger.Log("NpcSurrender", "Captured lord directly into player prisoners after NPC surrender. Hero=" + (hero.StringId ?? "") + " source=" + (source ?? "unknown"));
+			return true;
+		}
+		catch (Exception ex2)
+		{
+			Logger.Log("NpcSurrender", "Capture lord directly after NPC surrender failed. Hero=" + (hero.StringId ?? "") + " source=" + (source ?? "unknown") + " error=" + ex2.Message);
+			return false;
+		}
+	}
+
+	private static bool RosterContainsCharacter(TroopRoster roster, CharacterObject character)
+	{
+		try
+		{
+			return roster != null && character != null && roster.FindIndexOfTroop(character) >= 0;
+		}
+		catch
+		{
 			return false;
 		}
 	}
@@ -6194,6 +6559,24 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			SetTarget(target);
 			ClearMeetingPlayerReleaseAuthorization("start_meeting");
 			ClearPendingReturnToEncounterMenuAfterUnauthorizedMeetingExit("start_meeting");
+			_meetingStartedForProactiveRequest = false;
+			_meetingStartedForProactiveRequestHero = null;
+			_meetingStartedFromCustomEncounterMenu = true;
+			_meetingStartedFromCustomEncounterMenuHero = target;
+			try
+			{
+				if (ProactiveNpcRequestBehavior.IsActiveRequestHero(target))
+				{
+					_meetingStartedForProactiveRequest = true;
+					_meetingStartedForProactiveRequestHero = target;
+					Logger.Log("MeetingBattle", "Meeting started from proactive NPC request.");
+				}
+			}
+			catch
+			{
+				_meetingStartedForProactiveRequest = false;
+				_meetingStartedForProactiveRequestHero = null;
+			}
 			_lastMeetingWasSameMapFactionConflict = false;
 			_lastMeetingPlayerFactionName = new TextObject("你的势力");
 			try
@@ -6215,6 +6598,10 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			if (args == null)
 			{
 				Logger.Log("LordEncounter", "StartMeeting aborted because menu args are null.");
+				_meetingStartedForProactiveRequest = false;
+				_meetingStartedForProactiveRequestHero = null;
+				_meetingStartedFromCustomEncounterMenu = false;
+				_meetingStartedFromCustomEncounterMenuHero = null;
 				return;
 			}
 			DisableMeetingSpawnOverride();
@@ -6248,6 +6635,10 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			Logger.Log("LordEncounter", "StartMeeting failed: " + ex2);
 			MeetingBattleRuntime.EndMeeting();
 			DisableMeetingSpawnOverride();
+			_meetingStartedForProactiveRequest = false;
+			_meetingStartedForProactiveRequestHero = null;
+			_meetingStartedFromCustomEncounterMenu = false;
+			_meetingStartedFromCustomEncounterMenuHero = null;
 		}
 	}
 
@@ -6982,6 +7373,23 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 				catch
 				{
 				}
+				if (MapSeaContextGuard.IsMobilePartyAtSeaOrOnWater(MobileParty.MainParty))
+				{
+					if (settlement != null)
+					{
+						string seaNearestName = FormatSettlementNameWithType(settlement);
+						if (string.IsNullOrEmpty(seaNearestName))
+						{
+							seaNearestName = settlement.Name.ToString();
+						}
+						_encounterMeetingLocationInfoOverride = "你正位于" + seaNearestName + "附近的海上。";
+					}
+					else
+					{
+						_encounterMeetingLocationInfoOverride = "你正位于海上。";
+					}
+					return;
+				}
 				if (settlement != null)
 				{
 					string text2 = FormatSettlementNameWithType(settlement);
@@ -7022,21 +7430,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 					return;
 				}
 				TerrainType terrainTypeAtPosition = Campaign.Current.MapSceneWrapper.GetTerrainTypeAtPosition(in _savedMainPartyPosition);
-				string text3 = terrainTypeAtPosition switch
-				{
-					TerrainType.Plain => "平原",
-					TerrainType.Forest => "森林",
-					TerrainType.Mountain => "山地",
-					TerrainType.Snow => "雪原",
-					TerrainType.Desert => "沙漠",
-					TerrainType.Steppe => "草原",
-					TerrainType.Swamp => "沼泽",
-					TerrainType.Canyon => "峡谷",
-					TerrainType.Dune => "沙丘",
-					TerrainType.RuralArea => "乡野",
-					TerrainType.Beach => "海滩",
-					_ => terrainTypeAtPosition.ToString(),
-				};
+				string text3 = MapSeaContextGuard.BuildTerrainPromptLabel(terrainTypeAtPosition);
 				string text4 = "";
 				try
 				{

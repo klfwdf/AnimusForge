@@ -1,0 +1,80 @@
+<Prefab>
+  <Window>
+    <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#000000FF" AlphaFactor="0.45">
+      <Children>
+        <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1024" SuggestedHeight="559" HorizontalAlignment="Center" VerticalAlignment="Center">
+          <Children>
+            <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="af_player_notoriety\af_player_notoriety_background" DoNotAcceptEvents="true" />
+
+            <ScrollablePanel WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="392" SuggestedHeight="242" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="168" MarginTop="186" ClipRect="HistoryClipRect" InnerPanel="HistoryClipRect\HistoryInnerPanel" AutoHideScrollBars="true" VerticalScrollbar="..\HistoryScrollbar\Scrollbar">
+              <Children>
+                <Widget Id="HistoryClipRect" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipContents="true">
+                  <Children>
+                    <Widget Id="HistoryInnerPanel" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MinHeight="242">
+                      <Children>
+                        <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MinHeight="242" MarginLeft="8" MarginRight="10" MarginTop="4" MarginBottom="18" Brush="Popup.Description.Text" Brush.FontSize="14" Brush.FontColor="#130B05FF" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Top" Text="@HistoryText" CanBreakWords="true" DoNotAcceptEvents="true" />
+                      </Children>
+                    </Widget>
+                  </Children>
+                </Widget>
+              </Children>
+            </ScrollablePanel>
+            <Widget Id="HistoryScrollbar" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1" SuggestedHeight="232" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="558" MarginTop="190" DoNotAcceptEvents="true" IsVisible="false">
+              <Children>
+                <ScrollbarWidget Id="Scrollbar" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="1" AlignmentAxis="Vertical" Handle="Handle" MaxValue="100" MinValue="0" DoNotAcceptEvents="true" IsVisible="false">
+                  <Children>
+                    <Widget Id="Handle" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1" SuggestedHeight="1" DoNotAcceptEvents="true" IsVisible="false" />
+                  </Children>
+                </ScrollbarWidget>
+              </Children>
+            </Widget>
+
+            <AnimusForgeFillBarClipWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="159" SuggestedHeight="18" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="705" MarginTop="226" FullWidth="159" FillPercent="@WorldFillPercent">
+              <Children>
+                <Widget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="0" HorizontalAlignment="Left" VerticalAlignment="Top" ClipContents="true" DoNotAcceptEvents="true">
+                  <Children>
+                    <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="159" SuggestedHeight="18" HorizontalAlignment="Left" VerticalAlignment="Top" Sprite="af_player_notoriety\af_player_notoriety_fill_world" DoNotAcceptEvents="true" />
+                  </Children>
+                </Widget>
+              </Children>
+            </AnimusForgeFillBarClipWidget>
+
+            <ScrollablePanel WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="238" SuggestedHeight="166" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="688" MarginTop="294" ClipRect="CultureClipRect" InnerPanel="CultureClipRect\CultureInnerPanel" AutoHideScrollBars="true" VerticalScrollbar="..\CultureScrollbar\Scrollbar">
+              <Children>
+                <Widget Id="CultureClipRect" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipContents="true">
+                  <Children>
+                    <ListPanel Id="CultureInnerPanel" DataSource="{CultureItems}" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="VerticalTopToBottom">
+                      <ItemTemplate>
+                        <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="26">
+                          <Children>
+                            <RichTextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="154" SuggestedHeight="24" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="8" MarginTop="1" Brush="Popup.Title.Text" Brush.FontSize="16" Brush.FontColor="#130B05FF" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" Text="@CultureName" DoNotAcceptEvents="true" />
+                            <RichTextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="54" SuggestedHeight="24" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="174" MarginTop="1" Brush="Popup.Title.Text" Brush.FontSize="16" Brush.FontColor="#130B05FF" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" Text="@ScoreText" DoNotAcceptEvents="true" />
+                          </Children>
+                        </Widget>
+                      </ItemTemplate>
+                    </ListPanel>
+                  </Children>
+                </Widget>
+              </Children>
+            </ScrollablePanel>
+            <Widget Id="CultureScrollbar" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1" SuggestedHeight="154" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="920" MarginTop="300" DoNotAcceptEvents="true" IsVisible="false">
+              <Children>
+                <ScrollbarWidget Id="Scrollbar" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="1" AlignmentAxis="Vertical" Handle="Handle" MaxValue="100" MinValue="0" DoNotAcceptEvents="true" IsVisible="false">
+                  <Children>
+                    <Widget Id="Handle" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1" SuggestedHeight="1" DoNotAcceptEvents="true" IsVisible="false" />
+                  </Children>
+                </ScrollbarWidget>
+              </Children>
+            </Widget>
+
+            <ButtonWidget IsVisible="@ShowEditButton" DoNotPassEventsToChildren="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="140" SuggestedHeight="34" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="430" MarginTop="488" Brush="Popup.Done.Button" Command.Click="ExecuteEdit" UpdateChildrenStates="true">
+              <Children>
+                <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="20" VerticalAlignment="Center" MarginLeft="12" MarginRight="12" Brush="Popup.Button.Text" Brush.FontSize="15" Text="@EditText" DoNotAcceptEvents="true" />
+              </Children>
+            </ButtonWidget>
+          </Children>
+        </Widget>
+      </Children>
+    </Widget>
+  </Window>
+</Prefab>

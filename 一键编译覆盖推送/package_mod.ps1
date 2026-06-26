@@ -277,6 +277,8 @@ function Write-ZipFromModule {
         $outputDirFull.Equals($moduleDirFullLocal, [System.StringComparison]::OrdinalIgnoreCase)
     $onnxDirFull = [System.IO.Path]::GetFullPath((Join-Path $moduleDirFullLocal "ONNX")).TrimEnd('\', '/')
     $rerankerDirFull = [System.IO.Path]::GetFullPath((Join-Path $moduleDirFullLocal "ONNX\reranker")).TrimEnd('\', '/')
+    $shippingBinDirFull = [System.IO.Path]::GetFullPath((Join-Path $moduleDirFullLocal "bin\Win64_Shipping_Client")).TrimEnd('\', '/')
+    $excludedPackageDllNames = @("0Harmony.dll")
 
     $moduleName = Split-Path -Path $moduleDirFullLocal -Leaf
     $versionForName = ($newVersion -replace "[^\w\.\-]", "_")
@@ -316,7 +318,9 @@ function Write-ZipFromModule {
             $isRerankerFile = $fullPath.StartsWith($rerankerDirFull + "\", [System.StringComparison]::OrdinalIgnoreCase) -or
                 $fullPath.Equals($rerankerDirFull, [System.StringComparison]::OrdinalIgnoreCase)
             $excludeOnnxFile = $isOnnxFile -and -not $effectiveIncludeOnnx -and (-not $effectiveIncludeReranker -or -not $isRerankerFile)
-            -not $isLogFile -and -not $isOutputFile -and -not $excludeOnnxFile
+            $isExcludedPackageDll = $fullPath.StartsWith($shippingBinDirFull + "\", [System.StringComparison]::OrdinalIgnoreCase) -and
+                ($excludedPackageDllNames -contains $_.Name)
+            -not $isLogFile -and -not $isOutputFile -and -not $excludeOnnxFile -and -not $isExcludedPackageDll
         }
 
         foreach ($file in $files) {
@@ -342,6 +346,7 @@ function Write-ZipFromModule {
         Write-Host "Package Label: $PackageLabel"
     }
     Write-Host "Exclude Rule : Logs/**/* (all files under Logs)"
+    Write-Host "Exclude Rule : bin/Win64_Shipping_Client/0Harmony.dll"
     Write-Host "ONNX ZIP     : $(if ($forceExcludeOnnx) { 'Excluded by package policy' } elseif ($effectiveIncludeOnnx) { 'Included' } elseif ($effectiveIncludeReranker) { 'Only ONNX/reranker included' } else { 'Excluded by default, pass -IncludeOnnx to include it' })"
     return $zipPath
 }
@@ -385,9 +390,13 @@ if ($DualClientPackages) {
     $versionSourceModule = $module13
     if (-not [string]::IsNullOrWhiteSpace($SourceModuleDir)) {
         $versionSourceModule = [System.IO.Path]::GetFullPath($SourceModuleDir)
-        $check = Test-AnimusForgeModuleDir -Path $versionSourceModule
-        if (-not $check.IsValid) {
-            throw ("SourceModuleDir is not a valid AnimusForge module: {0}`nMissing/Invalid: {1}" -f $versionSourceModule, ($check.Missing -join ", "))
+        if (-not (Test-Path -LiteralPath $versionSourceModule -PathType Container)) {
+            throw "SourceModuleDir does not exist: $versionSourceModule"
+        }
+
+        $sourceSubModulePath = Join-Path $versionSourceModule "SubModule.xml"
+        if (-not (Test-Path -LiteralPath $sourceSubModulePath -PathType Leaf)) {
+            throw "SourceModuleDir must contain SubModule.xml: $sourceSubModulePath"
         }
     }
 

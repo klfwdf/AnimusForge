@@ -99,6 +99,15 @@ public class SubModule : MBSubModuleBase
 			}
 			try
 			{
+				harmony.CreateClassProcessor(typeof(Patch_NpcSurrender_SkipCapturedLordConversation)).Patch();
+				harmony.CreateClassProcessor(typeof(Patch_NpcSurrender_SkipFreeOrCapturePrisonerHeroConversation)).Patch();
+			}
+			catch (Exception ex5n)
+			{
+				Logger.LogTrace("SubModule", ">>> NPC surrender hero capture conversation skip patches failed: " + ex5n.Message);
+			}
+			try
+			{
 				SiegeAftermathPatchBootstrap.Apply(harmony);
 			}
 			catch (Exception ex5a)
@@ -139,6 +148,22 @@ public class SubModule : MBSubModuleBase
 			catch (Exception ex6c)
 			{
 				Logger.LogTrace("SubModule", ">>> Vassalage UI sprite bootstrap failed: " + ex6c.Message);
+			}
+			try
+			{
+				AnimusForgeWeeklyReportUiSprites.EnsurePatched(harmony);
+			}
+			catch (Exception ex6d)
+			{
+				Logger.LogTrace("SubModule", ">>> Weekly report UI sprite bootstrap failed: " + ex6d.Message);
+			}
+			try
+			{
+				AnimusForgePlayerNotorietyUiSprites.EnsurePatched(harmony);
+			}
+			catch (Exception ex6e)
+			{
+				Logger.LogTrace("SubModule", ">>> Player notoriety UI sprite bootstrap failed: " + ex6e.Message);
 			}
 			try
 			{
@@ -343,6 +368,14 @@ public class SubModule : MBSubModuleBase
 			{
 				Logger.LogTrace("SubModule", ">>> CourierDelivery patches init failed: " + ex18d.Message);
 			}
+			try
+			{
+				RewardSystemBehavior.RegisterHarmonyPatches(harmony);
+			}
+			catch (Exception ex18e)
+			{
+				Logger.LogTrace("SubModule", ">>> RewardSystem patches init failed: " + ex18e.Message);
+			}
 			Logger.LogTrace("SubModule", ">>> Harmony patches applied.");
 		}
 		catch (Exception ex18)
@@ -384,6 +417,7 @@ public class SubModule : MBSubModuleBase
 			campaignGameStarter.AddBehavior(new RewardSystemBehavior());
 			campaignGameStarter.AddBehavior(new PlayerNotorietyBehavior());
 			campaignGameStarter.AddBehavior(new AnimusForgeTerminalBehavior());
+			campaignGameStarter.AddBehavior(new CustomPolicyBehavior());
 			campaignGameStarter.AddBehavior(new RomanceSystemBehavior());
 			campaignGameStarter.AddBehavior(new KnowledgeLibraryBehavior());
 			campaignGameStarter.AddBehavior(new LordEncounterBehavior());
@@ -442,6 +476,14 @@ public class SubModule : MBSubModuleBase
 			using (PerfProbe.Scope("SubModule.ShoutTextInputPopup.KeepMissionPausedIfOpen"))
 			{
 				ShoutTextInputPopup.KeepMissionPausedIfOpen();
+			}
+			using (PerfProbe.Scope("SubModule.DevWeeklyReportPopup.ProcessDeferredCloseIfNeeded"))
+			{
+				DevWeeklyReportPopup.ProcessDeferredCloseIfNeeded();
+			}
+			using (PerfProbe.Scope("SubModule.PlayerNotorietyPopup.ProcessDeferredCloseIfNeeded"))
+			{
+				PlayerNotorietyPopup.ProcessDeferredCloseIfNeeded();
 			}
 			using (PerfProbe.Scope("SubModule.AnimusForgeConversationHistoryLogPopup.OnApplicationTick"))
 			{
@@ -502,6 +544,10 @@ public class SubModule : MBSubModuleBase
 			using (PerfProbe.Scope("SubModule.AnimusForgeTerminalBehavior.OnEngineTick"))
 			{
 				AnimusForgeTerminalBehavior.Instance?.OnEngineTick();
+			}
+			using (PerfProbe.Scope("SubModule.CustomPolicyBehavior.OnEngineTick"))
+			{
+				CustomPolicyBehavior.Instance?.OnEngineTick();
 			}
 			using (PerfProbe.Scope("SubModule.NobleGatheringBehavior.OnEngineTick"))
 			{
