@@ -5742,7 +5742,7 @@ private static void SplitSceneNpcRoleIntroSections(string fullIntro, bool isHero
 		{
 			stringBuilder.Append("你知道他是你的上司，而你是他的")
 				.Append(BuildPlayerCompanionPartyRoleLabelForPrompt(observerHero))
-				.Append("，你要服从他的命令。");
+				.Append("，你要服从他的命令,并且你无法和他进行任何物品交换，因为你们的库存是共享的。");
 		}
 		if (!string.IsNullOrWhiteSpace(equipmentValueInline))
 		{
