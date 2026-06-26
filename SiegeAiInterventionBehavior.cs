@@ -17,7 +17,6 @@ using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Actions;
 using TaleWorlds.CampaignSystem.AgentOrigins;
 using TaleWorlds.CampaignSystem.CampaignBehaviors;
-using TaleWorlds.CampaignSystem.CharacterDevelopment;
 using TaleWorlds.CampaignSystem.Encounters;
 using TaleWorlds.CampaignSystem.GameMenus;
 using TaleWorlds.CampaignSystem.GameState;
@@ -3177,8 +3176,9 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			}
 			foreach (Agent soldier in soldiers)
 			{
-				bool soldierIsBloodthirsty = IsLocalSoldierWitnessBloodthirsty(soldier);
-				string factText = SiegeLocalCivilianReactionProfile.BuildSoldierWitnessInquiryFact(targetName, victimDown, _activeSettlementName, soldierIsBloodthirsty);
+				string soldierPersonaText = ResolveLocalSoldierWitnessPersonaText(soldier);
+				bool soldierIsBloodthirsty = SiegeLocalCivilianReactionProfile.ResolveSoldierWitnessBloodthirstyFromPersona(soldierPersonaText);
+				string factText = SiegeLocalCivilianReactionProfile.BuildSoldierWitnessInquiryFact(targetName, victimDown, _activeSettlementName, soldierIsBloodthirsty, soldierPersonaText);
 				if (!ShoutBehavior.TriggerImmediateSceneBehaviorReactionForExternal(factText, soldier.Index, persistHeroPrivateHistory: true, suppressStare: false, postSpeechLeaveSeconds: -1f))
 				{
 					continue;
@@ -3188,7 +3188,8 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				return true;
 			}
 			Agent fallbackSoldier = soldiers[0];
-			bool fallbackSoldierIsBloodthirsty = IsLocalSoldierWitnessBloodthirsty(fallbackSoldier);
+			string fallbackSoldierPersonaText = ResolveLocalSoldierWitnessPersonaText(fallbackSoldier);
+			bool fallbackSoldierIsBloodthirsty = SiegeLocalCivilianReactionProfile.ResolveSoldierWitnessBloodthirstyFromPersona(fallbackSoldierPersonaText);
 			InformationManager.DisplayMessage(new InformationMessage(
 				SiegeLocalCivilianReactionProfile.BuildSoldierWitnessFallbackMessage(fallbackSoldier.Name?.ToString(), targetName, victimDown, fallbackSoldierIsBloodthirsty),
 				Color.FromUint(SiegeLocalCivilianReactionProfile.SoldierWitnessFallbackMessageColor)));
@@ -3219,47 +3220,42 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static bool IsLocalSoldierWitnessBloodthirsty(Agent soldier)
+	private static string ResolveLocalSoldierWitnessPersonaText(Agent soldier)
 	{
 		try
 		{
 			CharacterObject character = soldier?.Character as CharacterObject;
 			Hero hero = character?.HeroObject;
-			if (hero != null && IsBloodthirstyTraitSet(
-				hero.GetTraitLevel(DefaultTraits.Mercy),
-				hero.GetTraitLevel(DefaultTraits.Honor),
-				hero.GetTraitLevel(DefaultTraits.Calculating),
-				hero.GetTraitLevel(DefaultTraits.Valor)))
+			if (hero != null)
 			{
-				return true;
+				MyBehavior.GetNpcPersonaForExternal(hero, out string personality, out string background);
+				return JoinPersonaText(personality, background);
 			}
-			if (character != null)
+			if (ShoutUtils.TryGetUnnamedNpcPersona(soldier, out string unnamedPersonality, out string unnamedBackground))
 			{
-				if (IsBloodthirstyTraitSet(
-					character.GetTraitLevel(DefaultTraits.Mercy),
-					character.GetTraitLevel(DefaultTraits.Honor),
-					character.GetTraitLevel(DefaultTraits.Calculating),
-					character.GetTraitLevel(DefaultTraits.Valor)))
-				{
-					return true;
-				}
-				string characterText = ((character.StringId ?? "") + " " + (character.Name?.ToString() ?? "") + " " + (character.Culture?.StringId ?? "") + " " + (character.Culture?.Name?.ToString() ?? "")).ToLowerInvariant();
-				return ContainsAny(characterText,
-					"blood", "cruel", "berserker", "raider", "marauder", "executioner", "slayer", "despoiler",
-					"pillager", "wolfskin", "ulfhednar", "sea_raider", "steppe_bandit", "forest_bandit", "mountain_bandit",
-					"嗜血", "残酷", "残忍", "劫掠", "掠夺", "屠", "刽子", "强盗", "土匪", "匪");
+				return JoinPersonaText(unnamedPersonality, unnamedBackground);
 			}
 		}
 		catch (Exception ex)
 		{
-			Logger.Log("SiegeAiIntervention", "IsLocalSoldierWitnessBloodthirsty failed: " + ex.Message);
+			Logger.Log("SiegeAiIntervention", "ResolveLocalSoldierWitnessPersonaText failed: " + ex.Message);
 		}
-		return false;
+		return "";
 	}
 
-	private static bool IsBloodthirstyTraitSet(int mercy, int honor, int calculating, int valor)
+	private static string JoinPersonaText(string personality, string background)
 	{
-		return mercy <= -2 || (mercy < 0 && (honor < 0 || calculating < 0 || valor > 0));
+		string p = (personality ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
+		string b = (background ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
+		if (string.IsNullOrWhiteSpace(p))
+		{
+			return b;
+		}
+		if (string.IsNullOrWhiteSpace(b))
+		{
+			return p;
+		}
+		return p + "；" + b;
 	}
 
 	private static void MaintainLocalPlayerAttackReactions(Mission mission)

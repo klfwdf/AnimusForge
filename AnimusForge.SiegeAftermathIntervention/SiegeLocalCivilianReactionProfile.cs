@@ -86,14 +86,27 @@ public static class SiegeLocalCivilianReactionProfile
             + "请只说一句12到32字的现场话，不要写旁白、动作描写或方括号标签。";
     }
 
-    public static string BuildSoldierWitnessInquiryFact(string targetName, bool victimDown, string settlementName, bool soldierIsBloodthirsty = false)
+    public static bool ResolveSoldierWitnessBloodthirstyFromPersona(string personalityText, string backgroundText = null)
+    {
+        string text = ((personalityText ?? "") + " " + (backgroundText ?? "")).Trim();
+        if (string.IsNullOrWhiteSpace(text))
+        {
+            return false;
+        }
+        return ContainsAny(text,
+            "嗜血", "残酷", "残忍", "冷血", "好杀", "屠戮", "屠城", "杀戮", "杀人如麻", "渴望战利品", "贪战利", "贪婪好战", "劫掠成性", "掠夺成性",
+            "bloodthirsty", "blood-thirsty", "cruel", "ruthless", "merciless", "sadistic", "brutal", "savage", "slaughter", "massacre", "plunder-hungry", "loot-hungry");
+    }
+
+    public static string BuildSoldierWitnessInquiryFact(string targetName, bool victimDown, string settlementName, bool soldierIsBloodthirsty = false, string soldierPersonaText = null)
     {
         string scene = string.IsNullOrWhiteSpace(settlementName) ? SiegeAmbientReactionProfile.DefaultSettlementName : settlementName.Trim();
         string target = NormalizeTargetName(targetName, "附近一名民众");
         string incident = victimDown ? "玩家刚打倒了" : "玩家刚攻击了";
+        string personaLine = BuildSoldierPersonaLine(soldierPersonaText);
         string responsePolicy = BuildSoldierWitnessResponsePolicy(victimDown, soldierIsBloodthirsty);
         return "【攻城处置士兵请示】当前地点是" + scene + "。" + incident + target + "，你在24米内亲眼看到这个局部暴力信号。"
-            + "你是玩家己方入城士兵，必须称玩家为统帅/大人/长官。" + responsePolicy
+            + "你是玩家己方入城士兵，必须称玩家为统帅/大人/长官。" + personaLine + responsePolicy
             + "只说一句自然短句，不要写成三选一菜单，不要宣布已经执行处置，不得自行攻击平民，不得输出任何方括号动作标签。";
     }
 
@@ -140,6 +153,35 @@ public static class SiegeLocalCivilianReactionProfile
         return victimDown
             ? "人已经倒下，局势可能扩大；请先请示是否控住这一片街口，只有在话语自然时才可提醒：若玩家要扩大为全城搜掠或血洗，必须由玩家明令。"
             : "这只是一次近处打击，局势还停留在街巷局部；请请示是否压住附近人、驱散围观、护住玩家或控住街口，不要主动提全城搜掠或血洗。";
+    }
+
+    private static string BuildSoldierPersonaLine(string soldierPersonaText)
+    {
+        string persona = NormalizeOptionalText(soldierPersonaText);
+        return string.IsNullOrWhiteSpace(persona)
+            ? ""
+            : "你的已知个性/背景是：" + persona + "。请按这个性格组织语气，但仍服从玩家命令。";
+    }
+
+    private static string NormalizeOptionalText(string text)
+    {
+        return (text ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
+    }
+
+    private static bool ContainsAny(string text, params string[] needles)
+    {
+        if (string.IsNullOrWhiteSpace(text) || needles == null)
+        {
+            return false;
+        }
+        foreach (string needle in needles)
+        {
+            if (!string.IsNullOrWhiteSpace(needle) && text.IndexOf(needle, StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     private static string NormalizeTargetName(string targetName, string fallback)
