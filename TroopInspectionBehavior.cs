@@ -2365,7 +2365,7 @@ private const string HoldingDummyPartyPrefix = "animusforge_troop_inspection_hol
 				TroopRosterElement sourceElement = GetFreshRosterElementCopy(mainRoster, sourceIndex);
 				int number = Math.Max(0, item.Number);
 				int wounded = Math.Min(number, Math.Max(0, item.WoundedNumber));
-				int xp = Math.Min(Math.Max(0, item.Xp), Math.Max(0, sourceElement.Xp));
+				int xp = CalculateRosterXpToMove(sourceElement, number);
 				if (sourceElement.Number < number)
 				{
 					throw new InvalidOperationException("Not enough source prisoners for " + SafeCharacterId(character) + ". have=" + sourceElement.Number + " need=" + number);
