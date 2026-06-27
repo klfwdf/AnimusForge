@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -154,6 +155,7 @@ public static class WorldEntityRetrievalService
 	public static WorldEntityPromptContext BuildPromptContext(MentionedWorldEntities mentions, string playerDisplayName, Hero contextHero = null, bool includeResidentKingdoms = false)
 	{
 		WorldEntityPromptContext result = new WorldEntityPromptContext();
+		Stopwatch totalSw = Stopwatch.StartNew();
 		try
 		{
 			if (Campaign.Current == null)
@@ -162,12 +164,14 @@ public static class WorldEntityRetrievalService
 			}
 			List<VisiblePartyCandidate> visibleParties = BuildVisiblePartyCandidates(contextHero);
 			List<string> allMentions = BuildMergedMentionList(mentions);
+			Logger.Log("WorldEntityRetrieval", "[WorldEntityPerf] start mentions=" + allMentions.Count + " heroes=" + CountList(mentions?.Heroes) + " settlements=" + CountList(mentions?.Settlements) + " clans=" + CountList(mentions?.Clans) + " kingdoms=" + CountList(mentions?.Kingdoms) + " terms=" + CountList(mentions?.Terms) + " visibleParties=" + visibleParties.Count + " contextHero=" + (contextHero?.StringId ?? "") + " includeResidentKingdoms=" + includeResidentKingdoms);
 			List<EntityMatch<Hero>> heroes = new List<EntityMatch<Hero>>();
 			List<EntityMatch<Settlement>> settlements = new List<EntityMatch<Settlement>>();
 			List<EntityMatch<Clan>> clans = new List<EntityMatch<Clan>>();
 			List<EntityMatch<Kingdom>> kingdoms = new List<EntityMatch<Kingdom>>();
 			if (allMentions.Count > 0)
 			{
+				Stopwatch stageSw = Stopwatch.StartNew();
 				Dictionary<string, int> mentionPriority = BuildMentionPriority(allMentions);
 				int maxInjectedEntities = GetMaxInjectedEntitiesFromSettings();
 				List<Hero> heroCandidates = GetHeroCandidates().ToList();
@@ -175,22 +179,28 @@ public static class WorldEntityRetrievalService
 				List<Clan> clanCandidates = GetClanCandidates().ToList();
 				List<Kingdom> kingdomCandidates = GetKingdomCandidates().ToList();
 				Logger.Log("WorldEntityRetrieval", "mentions total=" + allMentions.Count + " maxInject=" + maxInjectedEntities + " heroes=" + CountList(mentions?.Heroes) + " settlements=" + CountList(mentions?.Settlements) + " clans=" + CountList(mentions?.Clans) + " kingdoms=" + CountList(mentions?.Kingdoms) + " terms=" + CountList(mentions?.Terms) + " visibleParties=" + visibleParties.Count + " candidates hero=" + heroCandidates.Count + " settlement=" + settlementCandidates.Count + " clan=" + clanCandidates.Count + " kingdom=" + kingdomCandidates.Count + " names=" + FormatMentionsForLog(allMentions));
-				heroes = FindMatches(allMentions, mentionPriority, heroCandidates, GetHeroAliases, (Hero x) => "hero:" + SafeStringId(x?.StringId), (Hero x) => SafeName(x?.Name, x?.StringId ?? "Hero"));
-				settlements = FindMatches(allMentions, mentionPriority, settlementCandidates, GetSettlementAliases, (Settlement x) => "settlement:" + SafeStringId(x?.StringId), (Settlement x) => SafeName(x?.Name, x?.StringId ?? "Settlement"));
-				clans = FindMatches(allMentions, mentionPriority, clanCandidates, GetClanAliases, (Clan x) => "clan:" + SafeStringId(x?.StringId), (Clan x) => SafeName(x?.Name, x?.StringId ?? "Clan"));
-				kingdoms = FindMatches(allMentions, mentionPriority, kingdomCandidates, GetKingdomAliases, (Kingdom x) => "kingdom:" + SafeStringId(x?.StringId), (Kingdom x) => SafeName(x?.Name, x?.StringId ?? "Kingdom"));
+				Logger.Log("WorldEntityRetrieval", "[WorldEntityPerf] candidates_ready ms=" + Math.Round(stageSw.Elapsed.TotalMilliseconds, 2));
+				heroes = FindMatches("hero", allMentions, mentionPriority, heroCandidates, GetHeroAliases, (Hero x) => "hero:" + SafeStringId(x?.StringId), (Hero x) => SafeName(x?.Name, x?.StringId ?? "Hero"));
+				settlements = FindMatches("settlement", allMentions, mentionPriority, settlementCandidates, GetSettlementAliases, (Settlement x) => "settlement:" + SafeStringId(x?.StringId), (Settlement x) => SafeName(x?.Name, x?.StringId ?? "Settlement"));
+				clans = FindMatches("clan", allMentions, mentionPriority, clanCandidates, GetClanAliases, (Clan x) => "clan:" + SafeStringId(x?.StringId), (Clan x) => SafeName(x?.Name, x?.StringId ?? "Clan"));
+				kingdoms = FindMatches("kingdom", allMentions, mentionPriority, kingdomCandidates, GetKingdomAliases, (Kingdom x) => "kingdom:" + SafeStringId(x?.StringId), (Kingdom x) => SafeName(x?.Name, x?.StringId ?? "Kingdom"));
+				Logger.Log("WorldEntityRetrieval", "[WorldEntityPerf] all_match_done heroMatches=" + heroes.Count + " settlementMatches=" + settlements.Count + " clanMatches=" + clans.Count + " kingdomMatches=" + kingdoms.Count + " ms=" + Math.Round(stageSw.Elapsed.TotalMilliseconds, 2));
+				stageSw.Restart();
 				ApplyGlobalInjectionLimit(maxInjectedEntities, ref heroes, ref settlements, ref clans, ref kingdoms);
+				Logger.Log("WorldEntityRetrieval", "[WorldEntityPerf] global_limit_done heroMatches=" + heroes.Count + " settlementMatches=" + settlements.Count + " clanMatches=" + clans.Count + " kingdomMatches=" + kingdoms.Count + " ms=" + Math.Round(stageSw.Elapsed.TotalMilliseconds, 2));
 			}
 			else if (visibleParties.Count > 0)
 			{
 				Logger.Log("WorldEntityRetrieval", "visible_party_context_only count=" + visibleParties.Count);
 			}
+			Stopwatch residentSw = Stopwatch.StartNew();
 			List<EntityMatch<Hero>> postprocessHeroes = CloneEntityMatches(heroes);
 			List<EntityMatch<Settlement>> postprocessSettlements = CloneEntityMatches(settlements);
 			List<EntityMatch<Clan>> postprocessClans = CloneEntityMatches(clans);
 			List<EntityMatch<Kingdom>> postprocessKingdoms = CloneEntityMatches(kingdoms);
 			AddResidentEntityMatches(contextHero, includeResidentKingdoms, ref heroes, ref settlements, ref clans, ref kingdoms);
 			AddPostprocessResidentEntityMatches(contextHero, ref postprocessHeroes, ref postprocessSettlements, ref postprocessClans, ref postprocessKingdoms);
+			Logger.Log("WorldEntityRetrieval", "[WorldEntityPerf] resident_done heroMatches=" + heroes.Count + " settlementMatches=" + settlements.Count + " clanMatches=" + clans.Count + " kingdomMatches=" + kingdoms.Count + " visibleParties=" + visibleParties.Count + " ms=" + Math.Round(residentSw.Elapsed.TotalMilliseconds, 2));
 			int count = heroes.Count + settlements.Count + clans.Count + kingdoms.Count + visibleParties.Count;
 			if (count <= 0)
 			{
@@ -198,15 +208,18 @@ public static class WorldEntityRetrievalService
 				return result;
 			}
 			result.MatchCount = count;
+			Stopwatch buildSw = Stopwatch.StartNew();
+			Logger.Log("WorldEntityRetrieval", "[WorldEntityPerf] build_blocks_start matchCount=" + count);
 			result.MainPromptBlock = BuildMainPromptBlock(playerDisplayName, contextHero, heroes, settlements, clans, kingdoms, visibleParties);
 			result.PostprocessPromptBlock = BuildPostprocessPromptBlock(postprocessHeroes, postprocessSettlements, postprocessClans, postprocessKingdoms, visibleParties);
+			Logger.Log("WorldEntityRetrieval", "[WorldEntityPerf] build_blocks_done mainLen=" + ((result.MainPromptBlock ?? "").Length) + " postLen=" + ((result.PostprocessPromptBlock ?? "").Length) + " blockMs=" + Math.Round(buildSw.Elapsed.TotalMilliseconds, 2) + " totalMs=" + Math.Round(totalSw.Elapsed.TotalMilliseconds, 2));
 			return result;
 		}
 		catch (Exception ex)
 		{
 			try
 			{
-				Logger.Log("WorldEntityRetrieval", "build_prompt_context failed: " + ex.Message);
+				Logger.Log("WorldEntityRetrieval", "build_prompt_context failed afterMs=" + Math.Round(totalSw.Elapsed.TotalMilliseconds, 2) + ": " + ex.Message);
 			}
 			catch
 			{
@@ -353,12 +366,16 @@ public static class WorldEntityRetrievalService
 		}).OrderBy((EntityMatch<T> x) => x.MentionPriority).ThenByDescending((EntityMatch<T> x) => x.Score).ThenBy((EntityMatch<T> x) => x.Name, StringComparer.OrdinalIgnoreCase).ToList();
 	}
 
-	private static List<EntityMatch<T>> FindMatches<T>(IEnumerable<string> mentions, Dictionary<string, int> mentionPriority, IEnumerable<T> candidates, Func<T, IEnumerable<string>> aliases, Func<T, string> idSelector, Func<T, string> nameSelector) where T : class
+	private static List<EntityMatch<T>> FindMatches<T>(string category, IEnumerable<string> mentions, Dictionary<string, int> mentionPriority, IEnumerable<T> candidates, Func<T, IEnumerable<string>> aliases, Func<T, string> idSelector, Func<T, string> nameSelector) where T : class
 	{
+		Stopwatch categorySw = Stopwatch.StartNew();
 		Dictionary<string, EntityMatch<T>> selected = new Dictionary<string, EntityMatch<T>>(StringComparer.OrdinalIgnoreCase);
 		List<T> candidateList = (candidates ?? Enumerable.Empty<T>()).Where((T x) => x != null).ToList();
-		foreach (string mentionRaw in mentions ?? Enumerable.Empty<string>())
+		List<string> mentionList = (mentions ?? Enumerable.Empty<string>()).Select((string x) => (x ?? "").Trim()).Where((string x) => !string.IsNullOrWhiteSpace(x)).ToList();
+		Logger.Log("WorldEntityRetrieval", "[WorldEntityPerf] match_category_start category=" + (category ?? "") + " mentions=" + mentionList.Count + " candidates=" + candidateList.Count);
+		foreach (string mentionRaw in mentionList)
 		{
+			Stopwatch mentionSw = Stopwatch.StartNew();
 			string mention = (mentionRaw ?? "").Trim();
 			if (string.IsNullOrWhiteSpace(mention))
 			{
@@ -366,8 +383,11 @@ public static class WorldEntityRetrievalService
 			}
 			int priority = GetMentionPriority(mentionPriority, mention);
 			List<EntityMatch<T>> scored = new List<EntityMatch<T>>();
+			int scanned = 0;
+			Logger.Log("WorldEntityRetrieval", "[WorldEntityPerf] match_mention_start category=" + (category ?? "") + " mention=" + PreviewWorldEntityLogValue(mention, 80) + " candidates=" + candidateList.Count);
 			foreach (T candidate in candidateList)
 			{
+				scanned++;
 				float score = CalculateBestScore(mention, aliases(candidate));
 				if (score >= MatchThreshold)
 				{
@@ -381,9 +401,14 @@ public static class WorldEntityRetrievalService
 						MentionPriority = priority
 					});
 				}
+				if (candidateList.Count >= 500 && scanned % 500 == 0)
+				{
+					Logger.Log("WorldEntityRetrieval", "[WorldEntityPerf] match_scan_progress category=" + (category ?? "") + " mention=" + PreviewWorldEntityLogValue(mention, 80) + " scanned=" + scanned + "/" + candidateList.Count + " scored=" + scored.Count + " ms=" + Math.Round(mentionSw.Elapsed.TotalMilliseconds, 2));
+				}
 			}
 			if (scored.Count == 0)
 			{
+				Logger.Log("WorldEntityRetrieval", "[WorldEntityPerf] match_mention_done category=" + (category ?? "") + " mention=" + PreviewWorldEntityLogValue(mention, 80) + " scored=0 selectedTotal=" + selected.Count + " ms=" + Math.Round(mentionSw.Elapsed.TotalMilliseconds, 2));
 				continue;
 			}
 			float best = scored.Max((EntityMatch<T> x) => x.Score);
@@ -400,8 +425,21 @@ public static class WorldEntityRetrievalService
 					selected[key] = match;
 				}
 			}
+			Logger.Log("WorldEntityRetrieval", "[WorldEntityPerf] match_mention_done category=" + (category ?? "") + " mention=" + PreviewWorldEntityLogValue(mention, 80) + " scored=" + scored.Count + " selectedTotal=" + selected.Count + " best=" + best.ToString("0.###", CultureInfo.InvariantCulture) + " ms=" + Math.Round(mentionSw.Elapsed.TotalMilliseconds, 2));
 		}
-		return selected.Values.OrderBy((EntityMatch<T> x) => x.MentionPriority).ThenByDescending((EntityMatch<T> x) => x.Score).ThenBy((EntityMatch<T> x) => x.Name, StringComparer.OrdinalIgnoreCase).ToList();
+		List<EntityMatch<T>> result = selected.Values.OrderBy((EntityMatch<T> x) => x.MentionPriority).ThenByDescending((EntityMatch<T> x) => x.Score).ThenBy((EntityMatch<T> x) => x.Name, StringComparer.OrdinalIgnoreCase).ToList();
+		Logger.Log("WorldEntityRetrieval", "[WorldEntityPerf] match_category_done category=" + (category ?? "") + " result=" + result.Count + " ms=" + Math.Round(categorySw.Elapsed.TotalMilliseconds, 2));
+		return result;
+	}
+
+	private static string PreviewWorldEntityLogValue(string value, int maxLen)
+	{
+		string text = (value ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
+		if (maxLen <= 0 || text.Length <= maxLen)
+		{
+			return text;
+		}
+		return text.Substring(0, maxLen) + "...";
 	}
 
 	private static int GetMentionPriority(Dictionary<string, int> mentionPriority, string mention)

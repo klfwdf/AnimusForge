@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Reflection;
 
 namespace AnimusForge;
@@ -19,9 +20,25 @@ public static class ConversationHelper
 
 	private static readonly object _pendingLock = new object();
 
+	private static readonly double _stopwatchTickSeconds = 1.0 / Stopwatch.Frequency;
+
 	private static string _pendingText = null;
 
 	private static bool _hasPending = false;
+
+	private static bool _typewriterActive = false;
+
+	private static bool _typewriterWaitingForPlayback = false;
+
+	private static string _typewriterFullText = "";
+
+	private static string _typewriterCurrentText = "";
+
+	private static int _typewriterVisibleLength = 0;
+
+	private static long _typewriterStartTicks = 0L;
+
+	private static double _typewriterDurationSeconds = 0.0;
 
 	private static volatile bool _isStreaming = false;
 
@@ -170,6 +187,10 @@ public static class ConversationHelper
 		_lastStreamText = null;
 		_tickApplyCount = 0;
 		_refreshReapplyCount = 0;
+		lock (_pendingLock)
+		{
+			StopTypewriterNoLock(clearText: true);
+		}
 		Logger.LogTrace("ConversationHelper", "\ud83d\udd04 BeginStreaming - 流式传输开始");
 	}
 
@@ -181,12 +202,83 @@ public static class ConversationHelper
 
 	public static void UpdateDialogText(string text)
 	{
+		string value = text ?? "";
 		lock (_pendingLock)
 		{
-			_pendingText = text;
+			if (_typewriterActive && string.Equals(value, _typewriterFullText ?? "", StringComparison.Ordinal))
+			{
+				return;
+			}
+			StopTypewriterNoLock(clearText: true);
+			_pendingText = value;
 			_hasPending = true;
 		}
-		_lastStreamText = text;
+		_lastStreamText = value;
+	}
+
+	public static void StartTypewriterText(string text, float durationSeconds, bool waitForPlayback = false)
+	{
+		string value = text ?? "";
+		double duration = NormalizeTypewriterDuration(value, durationSeconds);
+		lock (_pendingLock)
+		{
+			_typewriterActive = !string.IsNullOrEmpty(value);
+			_typewriterWaitingForPlayback = _typewriterActive && waitForPlayback;
+			_typewriterFullText = value;
+			_typewriterCurrentText = "";
+			_typewriterVisibleLength = 0;
+			_typewriterStartTicks = Stopwatch.GetTimestamp();
+			_typewriterDurationSeconds = duration;
+			_pendingText = "";
+			_hasPending = true;
+		}
+		_lastStreamText = "";
+		Logger.LogTrace("ConversationHelper", $"Native dialog typewriter start len={value.Length}, duration={duration:0.00}s, wait={waitForPlayback}");
+	}
+
+	public static void StartTypewriterPlayback(float durationSeconds = 0f)
+	{
+		lock (_pendingLock)
+		{
+			if (!_typewriterActive)
+			{
+				return;
+			}
+			if (durationSeconds > 0f && !float.IsNaN(durationSeconds) && !float.IsInfinity(durationSeconds))
+			{
+				_typewriterDurationSeconds = Math.Max(0.25, Math.Min(60.0, durationSeconds));
+			}
+			_typewriterWaitingForPlayback = false;
+			_typewriterVisibleLength = 0;
+			_typewriterCurrentText = "";
+			_typewriterStartTicks = Stopwatch.GetTimestamp();
+			_pendingText = "";
+			_hasPending = true;
+		}
+		_lastStreamText = "";
+	}
+
+	public static void AdjustTypewriterDuration(float durationSeconds)
+	{
+		if (durationSeconds <= 0f || float.IsNaN(durationSeconds) || float.IsInfinity(durationSeconds))
+		{
+			return;
+		}
+		double duration = Math.Max(0.25, Math.Min(60.0, durationSeconds));
+		lock (_pendingLock)
+		{
+			if (!_typewriterActive)
+			{
+				return;
+			}
+			if (_typewriterWaitingForPlayback)
+			{
+				_typewriterDurationSeconds = duration;
+				return;
+			}
+			double elapsed = Math.Max(0.0, (Stopwatch.GetTimestamp() - _typewriterStartTicks) * _stopwatchTickSeconds);
+			_typewriterDurationSeconds = Math.Max(duration, elapsed + 0.1);
+		}
 	}
 
 	public static void Tick()
@@ -196,11 +288,17 @@ public static class ConversationHelper
 		{
 			if (!_hasPending)
 			{
-				ApplyNameLabelToVM();
-				return;
+				if (!TryBuildTypewriterTickTextNoLock(out text))
+				{
+					ApplyNameLabelToVM();
+					return;
+				}
 			}
-			text = _pendingText;
-			_hasPending = false;
+			else
+			{
+				text = _pendingText;
+				_hasPending = false;
+			}
 		}
 		if (text != null)
 		{
@@ -216,6 +314,20 @@ public static class ConversationHelper
 
 	public static void OnRefreshPostfix()
 	{
+		string typewriterText = null;
+		lock (_pendingLock)
+		{
+			if (_typewriterActive)
+			{
+				typewriterText = _typewriterCurrentText ?? "";
+			}
+		}
+		if (typewriterText != null)
+		{
+			ApplyTextToVM(typewriterText);
+			ApplyNameLabelToVM();
+			return;
+		}
 		if (!_isStreaming)
 		{
 			ApplyNameLabelToVM();
@@ -230,6 +342,75 @@ public static class ConversationHelper
 		_refreshReapplyCount++;
 		ApplyTextToVM(lastStreamText);
 		ApplyNameLabelToVM();
+	}
+
+	private static void StopTypewriterNoLock(bool clearText)
+	{
+		_typewriterActive = false;
+		_typewriterWaitingForPlayback = false;
+		_typewriterVisibleLength = 0;
+		_typewriterStartTicks = 0L;
+		_typewriterDurationSeconds = 0.0;
+		if (clearText)
+		{
+			_typewriterFullText = "";
+			_typewriterCurrentText = "";
+		}
+	}
+
+	private static double NormalizeTypewriterDuration(string text, float durationSeconds)
+	{
+		if (durationSeconds > 0f && !float.IsNaN(durationSeconds) && !float.IsInfinity(durationSeconds))
+		{
+			return Math.Max(0.25, Math.Min(60.0, durationSeconds));
+		}
+		int length = Math.Max(0, (text ?? "").Length);
+		if (length <= 0)
+		{
+			return 0.25;
+		}
+		return Math.Max(1.0, Math.Min(60.0, length * 0.05));
+	}
+
+	private static bool TryBuildTypewriterTickTextNoLock(out string text)
+	{
+		text = null;
+		if (!_typewriterActive)
+		{
+			return false;
+		}
+		if (_typewriterWaitingForPlayback)
+		{
+			return false;
+		}
+		string fullText = _typewriterFullText ?? "";
+		if (fullText.Length <= 0)
+		{
+			StopTypewriterNoLock(clearText: false);
+			text = "";
+			_lastStreamText = "";
+			return true;
+		}
+		double elapsed = Math.Max(0.0, (Stopwatch.GetTimestamp() - _typewriterStartTicks) * _stopwatchTickSeconds);
+		double duration = Math.Max(0.05, _typewriterDurationSeconds);
+		int visibleLength = Math.Min(fullText.Length, Math.Max(1, (int)Math.Floor(fullText.Length * (elapsed / duration))));
+		if (elapsed >= duration)
+		{
+			visibleLength = fullText.Length;
+		}
+		if (visibleLength == _typewriterVisibleLength)
+		{
+			return false;
+		}
+		_typewriterVisibleLength = visibleLength;
+		_typewriterCurrentText = fullText.Substring(0, visibleLength);
+		if (visibleLength >= fullText.Length)
+		{
+			_typewriterActive = false;
+		}
+		text = _typewriterCurrentText;
+		_lastStreamText = text;
+		return true;
 	}
 
 	private static string StripNameSuffix(string raw)
@@ -365,6 +546,7 @@ public static class ConversationHelper
 		_nameSuffix = null;
 		lock (_pendingLock)
 		{
+			StopTypewriterNoLock(clearText: true);
 			_pendingText = null;
 			_hasPending = false;
 		}

@@ -1117,7 +1117,7 @@ public static class AIConfigHandler
 		StringBuilder sb = new StringBuilder(text.Length);
 		foreach (string line in text.Split('\n'))
 		{
-			string cleaned = StripActionPostprocessHistoryInnerThoughts(line);
+			string cleaned = ShoutUtils.StripConversationMetadataPrefix(StripActionPostprocessHistoryInnerThoughts(line));
 			if (!string.IsNullOrWhiteSpace(cleaned))
 			{
 				sb.Append(cleaned).Append(' ');
@@ -1163,6 +1163,7 @@ public static class AIConfigHandler
 	private static string NormalizeActionPostprocessHistoryLine(string line)
 	{
 		string text = (line ?? "").Trim();
+		text = ShoutUtils.StripConversationMetadataPrefix(text);
 		text = Regex.Replace(text, "^\\[AF_SCENE_SESSION:\\d+\\]\\s*", "", RegexOptions.CultureInvariant);
 		text = Regex.Replace(text, "^\\[[^\\]\\r\\n]*[｜|][^\\]\\r\\n]*\\]\\s*", "", RegexOptions.CultureInvariant);
 		text = Regex.Replace(text, "^【[^】]*对(?:你|NPC|[^】]+)说】\\s*", "玩家: ", RegexOptions.CultureInvariant);
@@ -1282,6 +1283,7 @@ public static class AIConfigHandler
 		{
 			return "";
 		}
+		text2 = ShoutUtils.StripConversationMetadataPrefix(text2);
 		return Regex.Replace(text2, "\\s+", " ").Trim();
 	}
 
@@ -7822,21 +7824,36 @@ public static class AIConfigHandler
 
 	public static string GetLoreContext(string inputText, Hero npcHero)
 	{
-		return GetLoreContext(inputText, npcHero, null);
+		return GetLoreContext(inputText, npcHero, null, null);
 	}
 
 	public static string GetLoreContext(string inputText, Hero npcHero, string secondaryInput)
 	{
+		return GetLoreContext(inputText, npcHero, secondaryInput, null);
+	}
+
+	public static string GetLoreContext(string inputText, Hero npcHero, string secondaryInput, MentionedWorldEntities mentionedEntities)
+	{
 		if (string.IsNullOrWhiteSpace(inputText))
 		{
-			return "";
+			try
+			{
+				if (mentionedEntities == null || mentionedEntities.IsEmpty)
+				{
+					return "";
+				}
+			}
+			catch
+			{
+				return "";
+			}
 		}
 		try
 		{
 			KnowledgeLibraryBehavior instance = KnowledgeLibraryBehavior.Instance;
 			if (instance != null)
 			{
-				string text = instance.BuildLoreContext(inputText, npcHero, secondaryInput);
+				string text = instance.BuildLoreContext(inputText, npcHero, secondaryInput, mentionedEntities);
 				if (!string.IsNullOrEmpty(text))
 				{
 					return text;
@@ -7851,21 +7868,36 @@ public static class AIConfigHandler
 
 	public static string GetLoreContext(string inputText, CharacterObject npcCharacter, string kingdomIdOverride = null)
 	{
-		return GetLoreContext(inputText, npcCharacter, kingdomIdOverride, null);
+		return GetLoreContext(inputText, npcCharacter, kingdomIdOverride, null, null);
 	}
 
 	public static string GetLoreContext(string inputText, CharacterObject npcCharacter, string kingdomIdOverride, string secondaryInput)
 	{
+		return GetLoreContext(inputText, npcCharacter, kingdomIdOverride, secondaryInput, null);
+	}
+
+	public static string GetLoreContext(string inputText, CharacterObject npcCharacter, string kingdomIdOverride, string secondaryInput, MentionedWorldEntities mentionedEntities)
+	{
 		if (string.IsNullOrWhiteSpace(inputText))
 		{
-			return "";
+			try
+			{
+				if (mentionedEntities == null || mentionedEntities.IsEmpty)
+				{
+					return "";
+				}
+			}
+			catch
+			{
+				return "";
+			}
 		}
 		try
 		{
 			KnowledgeLibraryBehavior instance = KnowledgeLibraryBehavior.Instance;
 			if (instance != null)
 			{
-				string text = instance.BuildLoreContext(inputText, npcCharacter, kingdomIdOverride, secondaryInput);
+				string text = instance.BuildLoreContext(inputText, npcCharacter, kingdomIdOverride, secondaryInput, mentionedEntities);
 				if (!string.IsNullOrEmpty(text))
 				{
 					return text;

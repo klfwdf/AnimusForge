@@ -689,12 +689,17 @@ public sealed class AnimusForgeNativeConversationOverlay
 		SetLayerForButtonsOnly();
 		ConversationHelper.BeginStreaming();
 		StartWaitingDotsAnimation(generation);
+		bool suppressVisibleStreamingForTts = ShoutBehavior.ShouldSuppressNativeConversationVisibleStreamingForTtsExternal();
 		try
 		{
 			string reply = await ShoutBehavior.SubmitNativeConversationNpcInitiatedOpeningForExternalAsync(delegate(string partial)
 			{
 				if (IsSubmitGenerationActive(generation) && !string.IsNullOrWhiteSpace(partial))
 				{
+					if (suppressVisibleStreamingForTts)
+					{
+						return;
+					}
 					receivedVisibleText = true;
 					StopWaitingDotsAnimation(generation);
 					ConversationHelper.UpdateDialogText(partial);
@@ -717,6 +722,10 @@ public sealed class AnimusForgeNativeConversationOverlay
 			else if (IsSubmitGenerationActive(generation) && !receivedVisibleText)
 			{
 				ConversationHelper.UpdateDialogText(originalDialogText ?? "");
+			}
+			if (suppressVisibleStreamingForTts && IsSubmitGenerationActive(generation))
+			{
+				await ShoutBehavior.WaitForNativeConversationTtsPlaybackFinishedForExternalAsync();
 			}
 		}
 		catch (Exception ex)
@@ -775,12 +784,17 @@ public sealed class AnimusForgeNativeConversationOverlay
 		SetLayerForButtonsOnly();
 		ConversationHelper.BeginStreaming();
 		StartWaitingDotsAnimation(generation);
+		bool suppressVisibleStreamingForTts = ShoutBehavior.ShouldSuppressNativeConversationVisibleStreamingForTtsExternal();
 		try
 		{
 			string reply = await ShoutBehavior.SubmitNativeConversationTextForExternalAsync(text, delegate(string partial)
 			{
 				if (IsSubmitGenerationActive(generation) && !string.IsNullOrWhiteSpace(partial))
 				{
+					if (suppressVisibleStreamingForTts)
+					{
+						return;
+					}
 					receivedVisibleText = true;
 					StopWaitingDotsAnimation(generation);
 					ConversationHelper.UpdateDialogText(partial);
@@ -803,6 +817,10 @@ public sealed class AnimusForgeNativeConversationOverlay
 			else if (IsSubmitGenerationActive(generation) && !receivedVisibleText)
 			{
 				ConversationHelper.UpdateDialogText(originalDialogText ?? "");
+			}
+			if (suppressVisibleStreamingForTts && IsSubmitGenerationActive(generation))
+			{
+				await ShoutBehavior.WaitForNativeConversationTtsPlaybackFinishedForExternalAsync();
 			}
 		}
 		catch (Exception ex)

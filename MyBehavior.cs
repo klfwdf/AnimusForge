@@ -2012,6 +2012,8 @@ public class MyBehavior : CampaignBehaviorBase
 
 	public override void RegisterEvents()
 	{
+		CampaignEvents.OnNewGameCreatedEvent.AddNonSerializedListener(this, OnNewGameCreated);
+		CampaignEvents.OnGameLoadedEvent.AddNonSerializedListener(this, OnGameLoaded);
 		CampaignEvents.OnSessionLaunchedEvent.AddNonSerializedListener(this, OnSessionLaunched);
 		CampaignEvents.OnGameLoadFinishedEvent.AddNonSerializedListener(this, OnGameLoadFinished);
 		CampaignEvents.OnMissionStartedEvent.AddNonSerializedListener(this, OnMissionStarted);
@@ -2056,6 +2058,65 @@ public class MyBehavior : CampaignBehaviorBase
 		CampaignEvents.TournamentFinished.AddNonSerializedListener(this, OnTournamentFinished);
 		MBInformationManager.OnRemoveMapNotice -= OnMapNoticeRemoved;
 		MBInformationManager.OnRemoveMapNotice += OnMapNoticeRemoved;
+	}
+
+	private void OnNewGameCreated(CampaignGameStarter starter)
+	{
+		ResetRuntimeForLoadedSave("new_game_created");
+	}
+
+	private void OnGameLoaded(CampaignGameStarter starter)
+	{
+		ResetRuntimeForLoadedSave("game_loaded");
+	}
+
+	private void ResetRuntimeForLoadedSave(string reason)
+	{
+		try
+		{
+			SaveRuntimeGuard.AdvanceGeneration(reason);
+			ResetLocalTransientRuntimeForLoadedSave(reason);
+			ShoutBehavior.ResetTransientRuntimeForLoadedSaveExternal(reason);
+			CourierDeliveryBehavior.ResetTransientRuntimeForLoadedSaveExternal(reason);
+			AIConfigHandler.ClearLatestAuxiliaryMentionedEntitiesForExternal();
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SaveRuntimeGuard", "[WARN] reset runtime failed reason=" + (reason ?? "") + " error=" + ex.Message);
+		}
+	}
+
+	private void ResetLocalTransientRuntimeForLoadedSave(string reason)
+	{
+		try
+		{
+			ClearRuleStickyCarry();
+			_memorySummaryProcessing = false;
+			_memorySummaryFailurePopupActive = false;
+			_nativeConversationMemorySessionCounter = 0;
+			_activeNativeConversationMemorySessionId = -1;
+			_pendingWeeklyMemoryMaterialTriggers.Clear();
+			_pendingAutoWeeklyReportBuild = null;
+			lock (_pendingWeeklyReportCommitLock)
+			{
+				_pendingWeeklyReportCommits.Clear();
+			}
+			_dailyMaintenanceQueue.Clear();
+			_dailyMaintenanceJobKeys.Clear();
+			_dirtyMemoryOverviewIds.Clear();
+			_pendingMemoryOverviewCandidateScanIds.Clear();
+			_pendingMemoryOverviewCandidateScanIdSet.Clear();
+			lock (_npcPersonaAutoGenLock)
+			{
+				_npcPersonaAutoGenInFlight.Clear();
+				_npcPersonaAutoGenRetryAfterUtcTicks.Clear();
+			}
+			Logger.Log("SaveRuntimeGuard", "local_transient_cleared reason=" + (reason ?? ""));
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SaveRuntimeGuard", "[WARN] local transient clear failed: " + ex.Message);
+		}
 	}
 
 	private void OnHeroComesOfAge(Hero hero)
@@ -3398,6 +3459,7 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private async Task ProcessMemorySummaryQueueAsync()
 	{
+		long runtimeGeneration = SaveRuntimeGuard.CaptureGeneration();
 		try
 		{
 			QueueDirtyMemoryOverviewCandidatesForDeferredScan();
@@ -3420,6 +3482,10 @@ public class MyBehavior : CampaignBehaviorBase
 			List<MajorActionSummaryExecutionResult> majorResults = new List<MajorActionSummaryExecutionResult>();
 			List<MemoryOverviewExecutionResult> overviewResults = new List<MemoryOverviewExecutionResult>();
 			await RunDailySummaryQueueItemsAsync(queueItems, burstSize, results, majorResults, overviewResults);
+			if (SaveRuntimeGuard.IsStale(runtimeGeneration, "memory_summary_queue_results"))
+			{
+				return;
+			}
 			List<string> failures = new List<string>();
 			foreach (MemorySummaryExecutionResult result in results)
 			{
@@ -3478,10 +3544,18 @@ public class MyBehavior : CampaignBehaviorBase
 				{
 					await Task.Delay(60000);
 				}
+				if (SaveRuntimeGuard.IsStale(runtimeGeneration, "memory_summary_queue_extra_delay"))
+				{
+					return;
+				}
 				List<MemorySummaryExecutionResult> extraMemoryResults = new List<MemorySummaryExecutionResult>();
 				List<MajorActionSummaryExecutionResult> extraMajorResults = new List<MajorActionSummaryExecutionResult>();
 				List<MemoryOverviewExecutionResult> extraOverviewResults = new List<MemoryOverviewExecutionResult>();
 				await RunDailySummaryQueueItemsAsync(extraOverviewJobs.Cast<object>().ToList(), burstSize, extraMemoryResults, extraMajorResults, extraOverviewResults);
+				if (SaveRuntimeGuard.IsStale(runtimeGeneration, "memory_summary_queue_extra_results"))
+				{
+					return;
+				}
 				foreach (MemoryOverviewExecutionResult result4 in extraOverviewResults)
 				{
 					if (result4 == null || result4.Job == null)
@@ -3515,11 +3589,17 @@ public class MyBehavior : CampaignBehaviorBase
 		catch (Exception ex)
 		{
 			Logger.Log("CompressedMemory", "[ERROR] ProcessMemorySummaryQueueAsync failed: " + ex);
-			ShowCompressedMemoryBlockingPopup("压缩记忆总结异常", ex.Message);
+			if (SaveRuntimeGuard.IsCurrentGeneration(runtimeGeneration))
+			{
+				ShowCompressedMemoryBlockingPopup("压缩记忆总结异常", ex.Message);
+			}
 		}
 		finally
 		{
-			_memorySummaryProcessing = false;
+			if (SaveRuntimeGuard.IsCurrentGeneration(runtimeGeneration))
+			{
+				_memorySummaryProcessing = false;
+			}
 		}
 	}
 
@@ -3995,7 +4075,7 @@ public class MyBehavior : CampaignBehaviorBase
 		stringBuilder.AppendLine("已有重大履历摘要：");
 		if (existingState != null && !string.IsNullOrWhiteSpace(existingState.Summary))
 		{
-			stringBuilder.AppendLine(existingState.Summary.Trim());
+			stringBuilder.AppendLine(StripBattlePlayerMarker(existingState.Summary.Trim()));
 		}
 		else
 		{
@@ -10258,15 +10338,16 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			return "";
 		}
-		if (hero == Hero.MainHero)
-		{
-			text += "（player）";
-		}
 		if (isHighlighted && !string.IsNullOrWhiteSpace(highlightTag))
 		{
 			text += "（" + highlightTag + "）";
 		}
 		return text;
+	}
+
+	private static string StripBattlePlayerMarker(string text)
+	{
+		return (text ?? "").Replace("\uFF08player\uFF09", "").Replace("(player)", "").Trim();
 	}
 
 	private static string BuildTrackedHeroListText(IEnumerable<Hero> heroes, Hero highlightedHero, string highlightTag, int maxCount = 5)
@@ -11252,7 +11333,7 @@ public class MyBehavior : CampaignBehaviorBase
 			MajorActionSummaryState state = GetMajorActionSummaryState(npcActionHeroKey);
 			if (state != null && !string.IsNullOrWhiteSpace(state.Summary))
 			{
-				string summary = state.Summary.Trim();
+				string summary = StripBattlePlayerMarker(state.Summary.Trim());
 				List<NpcActionEntry> pendingActions = list.Where((NpcActionEntry x) => IsNpcActionAfterSummaryCursor(x, state)).ToList();
 				string pendingRaw = RenderNpcActionEntriesForPrompt(hero, pendingActions);
 				if (!string.IsNullOrWhiteSpace(pendingRaw))
@@ -11299,7 +11380,7 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private static string RenderNpcActionPromptText(Hero hero, string rawText)
 	{
-		string text = (rawText ?? "").Trim();
+		string text = StripBattlePlayerMarker((rawText ?? "").Trim());
 		if (string.IsNullOrWhiteSpace(text))
 		{
 			return "";
@@ -11989,6 +12070,10 @@ public class MyBehavior : CampaignBehaviorBase
 		if (_unnamedPersonaJsonStorage == null)
 		{
 			_unnamedPersonaJsonStorage = "";
+		}
+		if (dataStore != null && dataStore.IsLoading)
+		{
+			ResetRuntimeForLoadedSave("sync_load");
 		}
 		try
 		{
@@ -15883,6 +15968,7 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private async Task EnsureNpcPersonaGeneratedAsync(Hero hero)
 	{
+		long runtimeGeneration = SaveRuntimeGuard.CaptureGeneration();
 		if (hero == null)
 		{
 			return;
@@ -15923,6 +16009,10 @@ public class MyBehavior : CampaignBehaviorBase
 			string facts = BuildHeroFactsForPersonaGeneration(hero);
 			string user = "请基于以下信息生成该 NPC 的【个性】与【历史背景】。必须综合“人物百科背景”“家族背景”“所在家族百科背景”“王国百科背景”“家族族长背景”；这些素材是事实来源，不要复制成百科原文。\n" + facts;
 			ApiCallResult apiCallResult = await CallUniversalApiDetailed(sys, user, route: UniversalApiRoute.Auxiliary);
+			if (SaveRuntimeGuard.IsStale(runtimeGeneration, "npc_persona_autogen"))
+			{
+				return;
+			}
 			string resp = apiCallResult.Success ? (apiCallResult.Content ?? "") : ("错误: " + (apiCallResult.ErrorMessage ?? "未知错误"));
 			if (!string.IsNullOrWhiteSpace(resp) && !resp.StartsWith("错误") && TryParsePersonaJson(resp, out var genP, out var genB))
 			{
@@ -15955,16 +16045,19 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		finally
 		{
-			lock (_npcPersonaAutoGenLock)
+			if (SaveRuntimeGuard.IsCurrentGeneration(runtimeGeneration))
 			{
-				_npcPersonaAutoGenInFlight.Remove(id);
-				if (flag)
+				lock (_npcPersonaAutoGenLock)
 				{
-					_npcPersonaAutoGenRetryAfterUtcTicks.Remove(id);
-				}
-				else
-				{
-					_npcPersonaAutoGenRetryAfterUtcTicks[id] = DateTime.UtcNow.AddMinutes(5.0).Ticks;
+					_npcPersonaAutoGenInFlight.Remove(id);
+					if (flag)
+					{
+						_npcPersonaAutoGenRetryAfterUtcTicks.Remove(id);
+					}
+					else
+					{
+						_npcPersonaAutoGenRetryAfterUtcTicks[id] = DateTime.UtcNow.AddMinutes(5.0).Ticks;
+					}
 				}
 			}
 		}
@@ -15988,6 +16081,7 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private async Task GeneratePromotedNonHeroCompanionProfileAsync(Hero hero, string personalName, string originalFullName, string originalTroopName, string originalTroopId, string cultureName, string sceneLabel, string joinEventFact, string dialogueHistory, string equipmentSummary)
 	{
+		long runtimeGeneration = SaveRuntimeGuard.CaptureGeneration();
 		if (hero == null)
 		{
 			return;
@@ -16026,6 +16120,10 @@ public class MyBehavior : CampaignBehaviorBase
 			userSb.AppendLine("加入前该 NPC 与玩家的全部可用对话历史:");
 			userSb.AppendLine(history);
 			ApiCallResult apiCallResult = await CallUniversalApiDetailed(sys, userSb.ToString().Trim(), route: UniversalApiRoute.Auxiliary);
+			if (SaveRuntimeGuard.IsStale(runtimeGeneration, "promoted_companion_persona"))
+			{
+				return;
+			}
 			string resp = apiCallResult.Success ? (apiCallResult.Content ?? "") : "";
 			if (!string.IsNullOrWhiteSpace(resp) && TryParsePersonaJson(resp, out var genP, out var genB))
 			{
@@ -16051,6 +16149,10 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			Logger.Log("NpcPersona", "[WARN] Promoted companion persona generation error hero=" + heroId + ": " + ex.Message);
 		}
+		if (SaveRuntimeGuard.IsStale(runtimeGeneration, "promoted_companion_persona_fallback"))
+		{
+			return;
+		}
 		if (!personaSaved)
 		{
 			NpcPersonaProfile prof = GetNpcPersonaProfile(hero, createIfMissing: true) ?? new NpcPersonaProfile();
@@ -16064,11 +16166,16 @@ public class MyBehavior : CampaignBehaviorBase
 			}
 			SaveNpcPersonaProfile(hero, prof);
 		}
+		if (SaveRuntimeGuard.IsStale(runtimeGeneration, "promoted_companion_skills_start"))
+		{
+			return;
+		}
 		await GeneratePromotedNonHeroCompanionSkillsAsync(hero, name, troopName, culture, equipment);
 	}
 
 	private async Task GeneratePromotedNonHeroCompanionSkillsAsync(Hero hero, string personalName, string originalTroopName, string cultureName, string equipmentSummary)
 	{
+		long runtimeGeneration = SaveRuntimeGuard.CaptureGeneration();
 		if (hero == null)
 		{
 			return;
@@ -16087,6 +16194,10 @@ public class MyBehavior : CampaignBehaviorBase
 			userSb.AppendLine("当前基础技能(来自原兵种模板，生成失败时保留这些值): " + BuildPromotedHeroSkillSummary(hero));
 			userSb.AppendLine("人设摘要: " + TrimToMaxChars((personality + " " + background).Trim(), 700));
 			ApiCallResult apiCallResult = await CallUniversalApiDetailed(sys, userSb.ToString().Trim(), route: UniversalApiRoute.Auxiliary);
+			if (SaveRuntimeGuard.IsStale(runtimeGeneration, "promoted_companion_skills"))
+			{
+				return;
+			}
 			string resp = apiCallResult.Success ? (apiCallResult.Content ?? "") : "";
 			if (!TryApplyPromotedHeroSkillJson(hero, resp))
 			{
@@ -19417,7 +19528,7 @@ public class MyBehavior : CampaignBehaviorBase
 		int chars = 0;
 		if (state != null && !string.IsNullOrWhiteSpace(state.Summary))
 		{
-			chars += state.Summary.Trim().Length;
+			chars += StripBattlePlayerMarker(state.Summary.Trim()).Length;
 		}
 		foreach (NpcActionEntry entry in sourceActions ?? new List<NpcActionEntry>())
 		{
@@ -22768,6 +22879,15 @@ public class MyBehavior : CampaignBehaviorBase
 		Logger.Log("Logic", $"[SemanticTrigger-Shout] DuelHit={flag} [{text2}] RewardHit={flag3} [{text3}] LoanHit={flag4} [{text4}] PartyTransferHit={partyTransferHit} [{text9}] WorldMapHit={worldMapPartyCommandHit} [{text10}] SurroundingsHit={flag5} [{text5}] KingdomServiceHit={flag6} [{text6}] MarriageHit={marriageHit} [{text8}] NpcRecall={(string.IsNullOrWhiteSpace(npcLastUtterance) ? "off" : "on")} Input='{input}' NPC='{text7}'");
 		Logger.Log("Logic", $"[RuleInjectionDebug] stage=semantic targetHero={(targetHero?.StringId ?? "null")} targetCharacter={(targetCharacter?.StringId ?? "null")} liveDuel={liveDuelSemanticHit} liveReward={liveRewardSemanticHit} liveLoan={liveLoanSemanticHit} auxRuleHits={(auxiliaryRuleHitIds == null ? "(skip)" : ((auxiliaryRuleHitIds.Count == 0) ? "(none)" : string.Join(",", auxiliaryRuleHitIds)))} finalDuel={flag} finalReward={flag3} finalLoan={flag4} useDuelContext={flag2} qualified={isQualified} marriageHit={marriageHit} partyTransferHit={partyTransferHit} worldMapHit={worldMapPartyCommandHit}");
 		StringBuilder stringBuilder = new StringBuilder();
+		MentionedWorldEntities mentionedEntities = new MentionedWorldEntities();
+		if (!suppressDynamicRuleAndLore)
+		{
+			string memorySceneLabelForMentions = ResolveCurrentMemorySceneLabel();
+			mentionedEntities = AIConfigHandler.GetAuxiliaryMentionedEntitiesForExternal(input, npcLastUtterance, guardrailSemanticContext);
+			mentionedEntities.Merge(AIConfigHandler.GetAuxiliaryMentionedEntitiesForExternal(input, npcLastUtterance, memorySceneLabelForMentions));
+			mentionedEntities.Merge(AIConfigHandler.GetAuxiliaryMentionedEntitiesForExternal(input, extraFact, memorySceneLabelForMentions));
+			mentionedEntities.Merge(AIConfigHandler.GetLatestAuxiliaryMentionedEntitiesForExternal());
+		}
 		string loreContext = "";
 		string loreCtxSource = "none";
 		if (!suppressDynamicRuleAndLore && usePrefetchedLoreContext && !string.IsNullOrWhiteSpace(prefetchedLoreContext))
@@ -22777,12 +22897,12 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		else if (!suppressDynamicRuleAndLore && targetHero != null)
 		{
-			loreContext = AIConfigHandler.GetLoreContext(input, targetHero, npcLastUtterance);
+			loreContext = AIConfigHandler.GetLoreContext(input, targetHero, npcLastUtterance, mentionedEntities);
 			loreCtxSource = ((usePrefetchedLoreContext && string.IsNullOrWhiteSpace(prefetchedLoreContext)) ? "prefetch_empty_fallback_hero" : "hero");
 		}
 		else if (!suppressDynamicRuleAndLore && targetCharacter != null)
 		{
-			loreContext = AIConfigHandler.GetLoreContext(input, targetCharacter, kingdomIdOverride, npcLastUtterance);
+			loreContext = AIConfigHandler.GetLoreContext(input, targetCharacter, kingdomIdOverride, npcLastUtterance, mentionedEntities);
 			loreCtxSource = ((usePrefetchedLoreContext && string.IsNullOrWhiteSpace(prefetchedLoreContext)) ? "prefetch_empty_fallback_character" : "character");
 		}
 		try
@@ -22945,10 +23065,6 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		if (!suppressDynamicRuleAndLore)
 		{
-			MentionedWorldEntities mentionedEntities = AIConfigHandler.GetAuxiliaryMentionedEntitiesForExternal(input, npcLastUtterance, guardrailSemanticContext);
-			mentionedEntities.Merge(AIConfigHandler.GetAuxiliaryMentionedEntitiesForExternal(input, npcLastUtterance, ResolveCurrentMemorySceneLabel()));
-			mentionedEntities.Merge(AIConfigHandler.GetAuxiliaryMentionedEntitiesForExternal(input, extraFact, ResolveCurrentMemorySceneLabel()));
-			mentionedEntities.Merge(AIConfigHandler.GetLatestAuxiliaryMentionedEntitiesForExternal());
 			bool includeResidentKingdomEntities = ShouldIncludeResidentKingdomEntities(flag6, auxiliaryRuleHitIds);
 			Hero entityContextHero = targetHero ?? targetCharacter?.HeroObject;
 			WorldEntityPromptContext entityPromptContext = WorldEntityRetrievalService.BuildPromptContext(mentionedEntities, BuildPlayerPublicDisplayNameForPrompt(entityContextHero, targetCharacter, targetAgentIndex), entityContextHero, includeResidentKingdomEntities);
@@ -24559,11 +24675,16 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private bool TryBuildMemoryRecallCandidates(Hero hero, List<CompressedMemoryBlock> blocks, string currentInput, string secondaryInput, List<DailyMemoryDraft> drafts, int candidateLimit, out List<MemoryRecallCandidate> candidates, out string error)
 	{
+		Stopwatch sw = Stopwatch.StartNew();
 		candidates = new List<MemoryRecallCandidate>();
 		error = "";
 		List<CompressedMemoryBlock> list = (blocks ?? new List<CompressedMemoryBlock>()).Where((CompressedMemoryBlock x) => x != null && (!string.IsNullOrWhiteSpace(x.RichTitle) || !string.IsNullOrWhiteSpace(x.Summary))).ToList();
+		string debugHeroId = NormalizeMemoryHeroId(hero?.StringId ?? list.Select((CompressedMemoryBlock x) => x?.HeroId).FirstOrDefault((string x) => !string.IsNullOrWhiteSpace(x)));
+		Logger.Log("Logic", "[MemoryPerf] recall_candidates_start hero=" + (debugHeroId ?? "") + " blocks=" + ((blocks ?? new List<CompressedMemoryBlock>()).Count) + " eligible=" + list.Count + " candidateLimit=" + candidateLimit + " currentLen=" + ((currentInput ?? "").Length) + " secondaryLen=" + ((secondaryInput ?? "").Length) + " drafts=" + ((drafts ?? new List<DailyMemoryDraft>()).Count));
 		if (list.Count <= 0 || candidateLimit <= 0)
 		{
+			sw.Stop();
+			Logger.Log("Logic", "[MemoryPerf] recall_candidates_done hero=" + (debugHeroId ?? "") + " mode=empty selected=0 ms=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2));
 			return true;
 		}
 		if (list.Count <= candidateLimit)
@@ -24574,28 +24695,41 @@ public class MyBehavior : CampaignBehaviorBase
 				Score = 1.0
 			}).OrderBy((MemoryRecallCandidate x) => x.Block.GameDayIndex).ThenBy((MemoryRecallCandidate x) => x.Block.StartHour).ToList();
 			AssignMemoryCandidateDisplayIds(candidates);
+			sw.Stop();
+			Logger.Log("Logic", "[MemoryPerf] recall_candidates_done hero=" + (debugHeroId ?? "") + " mode=direct selected=" + candidates.Count + " ms=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2));
 			return true;
 		}
 		try
 		{
 			OnnxEmbeddingEngine instance = OnnxEmbeddingEngine.Instance;
 			string text = BuildMemoryRecallQueryText(hero, currentInput, secondaryInput, drafts);
+			Stopwatch querySw = Stopwatch.StartNew();
 			if (instance == null || !instance.IsAvailable || string.IsNullOrWhiteSpace(text) || !instance.TryGetEmbedding(text, out var vector) || vector == null || vector.Length == 0)
 			{
+				querySw.Stop();
 				error = "本地 ONNX embedding 不可用，无法对超过候选上限的压缩记忆执行富标题 RAG。";
+				sw.Stop();
+				Logger.Log("Logic", "[MemoryPerf] recall_candidates_failed hero=" + (debugHeroId ?? "") + " reason=query_embedding_unavailable queryLen=" + ((text ?? "").Length) + " queryMs=" + Math.Round(querySw.Elapsed.TotalMilliseconds, 2) + " totalMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2));
 				ShowCompressedMemoryBlockingPopup("压缩记忆召回被阻塞", error + "\n\n请修复 embedding 模型或降低记忆块数量后重试。系统不会静默改用日期或全文兜底。");
 				return false;
 			}
+			querySw.Stop();
 			List<MemoryRecallCandidate> list2 = new List<MemoryRecallCandidate>();
+			Stopwatch titleSw = Stopwatch.StartNew();
+			int scanned = 0;
+			int titleEmbeddingFailed = 0;
 			foreach (CompressedMemoryBlock block in list)
 			{
+				scanned++;
 				string text2 = (block.RichTitle ?? "").Trim();
 				if (string.IsNullOrWhiteSpace(text2))
 				{
+					titleEmbeddingFailed++;
 					continue;
 				}
 				if (!instance.TryGetEmbedding(text2, out var vector2) || vector2 == null || vector2.Length == 0)
 				{
+					titleEmbeddingFailed++;
 					continue;
 				}
 				int num = Math.Min(vector.Length, vector2.Length);
@@ -24610,19 +24744,26 @@ public class MyBehavior : CampaignBehaviorBase
 					Score = num2
 				});
 			}
+			titleSw.Stop();
 			if (list2.Count <= 0)
 			{
 				error = "压缩记忆富标题 embedding 全部失败。";
+				sw.Stop();
+				Logger.Log("Logic", "[MemoryPerf] recall_candidates_failed hero=" + (debugHeroId ?? "") + " reason=title_embedding_empty scanned=" + scanned + " failed=" + titleEmbeddingFailed + " queryMs=" + Math.Round(querySw.Elapsed.TotalMilliseconds, 2) + " titleMs=" + Math.Round(titleSw.Elapsed.TotalMilliseconds, 2) + " totalMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2));
 				ShowCompressedMemoryBlockingPopup("压缩记忆召回被阻塞", error + "\n\n请修复 embedding 模型后重试。");
 				return false;
 			}
 			candidates = list2.OrderByDescending((MemoryRecallCandidate x) => x.Score).ThenByDescending((MemoryRecallCandidate x) => x.Block.GameDayIndex).Take(candidateLimit).OrderBy((MemoryRecallCandidate x) => x.Block.GameDayIndex).ThenBy((MemoryRecallCandidate x) => x.Block.StartHour).ToList();
 			AssignMemoryCandidateDisplayIds(candidates);
+			sw.Stop();
+			Logger.Log("Logic", "[MemoryPerf] recall_candidates_done hero=" + (debugHeroId ?? "") + " mode=onnx eligible=" + list.Count + " scanned=" + scanned + " titleOk=" + list2.Count + " titleFail=" + titleEmbeddingFailed + " selected=" + candidates.Count + " queryMs=" + Math.Round(querySw.Elapsed.TotalMilliseconds, 2) + " titleMs=" + Math.Round(titleSw.Elapsed.TotalMilliseconds, 2) + " totalMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2));
 			return true;
 		}
 		catch (Exception ex)
 		{
 			error = ex.Message;
+			sw.Stop();
+			Logger.Log("Logic", "[MemoryPerf] recall_candidates_failed hero=" + (debugHeroId ?? "") + " reason=exception type=" + ex.GetType().Name + " totalMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2) + " msg=" + ex.Message);
 			ShowCompressedMemoryBlockingPopup("压缩记忆召回异常", error);
 			return false;
 		}
@@ -24645,16 +24786,22 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private bool TrySelectMemoryIdsWithPreprocess(List<MemoryRecallCandidate> candidates, int finalCount, string currentInput, string secondaryInput, out List<int> selectedIds, out string error)
 	{
+		Stopwatch sw = Stopwatch.StartNew();
 		selectedIds = new List<int>();
 		error = "";
 		List<MemoryRecallCandidate> list = (candidates ?? new List<MemoryRecallCandidate>()).Where((MemoryRecallCandidate x) => x?.Block != null && x.DisplayId > 0).ToList();
+		string debugHeroId = NormalizeMemoryHeroId(list.Select((MemoryRecallCandidate x) => x?.Block?.HeroId).FirstOrDefault((string x) => !string.IsNullOrWhiteSpace(x)));
 		if (list.Count <= 0 || finalCount <= 0)
 		{
+			sw.Stop();
+			Logger.Log("Logic", "[MemoryPerf] memory_preprocess_done hero=" + (debugHeroId ?? "") + " mode=empty candidates=" + list.Count + " finalCount=" + finalCount + " selected=0 ms=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2));
 			return true;
 		}
 		if (list.Count <= finalCount)
 		{
 			selectedIds = list.Select((MemoryRecallCandidate x) => x.DisplayId).ToList();
+			sw.Stop();
+			Logger.Log("Logic", "[MemoryPerf] memory_preprocess_done hero=" + (debugHeroId ?? "") + " mode=direct candidates=" + list.Count + " finalCount=" + finalCount + " selected=" + selectedIds.Count + " ms=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2));
 			return true;
 		}
 		string system = "You are an AnimusForge preprocessing router. Select compressed memory blocks relevant to the latest player/NPC exchange. Return strict JSON only.";
@@ -24697,6 +24844,7 @@ public class MyBehavior : CampaignBehaviorBase
 			}
 		};
 		string content = "";
+		Stopwatch apiSw = Stopwatch.StartNew();
 		if (mode == 2)
 		{
 			string memoryError = "";
@@ -24711,13 +24859,19 @@ public class MyBehavior : CampaignBehaviorBase
 			}
 			catch (Exception ex)
 			{
+				apiSw.Stop();
+				sw.Stop();
 				error = ex.Message;
+				Logger.Log("Logic", "[MemoryPerf] memory_preprocess_failed hero=" + (debugHeroId ?? "") + " mode=" + mode + " candidates=" + list.Count + " finalCount=" + finalCount + " promptChars=" + user.Length + " apiMs=" + Math.Round(apiSw.Elapsed.TotalMilliseconds, 2) + " totalMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2) + " reason=wait_exception type=" + ex.GetType().Name);
 				ShowCompressedMemoryBlockingPopup("压缩记忆前处理失败", "记忆前处理请求异常：" + error);
 				return false;
 			}
+			apiSw.Stop();
 			if (!memoryOk)
 			{
 				error = memoryError;
+				sw.Stop();
+				Logger.Log("Logic", "[MemoryPerf] memory_preprocess_failed hero=" + (debugHeroId ?? "") + " mode=" + mode + " candidates=" + list.Count + " finalCount=" + finalCount + " promptChars=" + user.Length + " apiMs=" + Math.Round(apiSw.Elapsed.TotalMilliseconds, 2) + " totalMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2) + " reason=api_failed error=" + (error ?? ""));
 				ShowCompressedMemoryBlockingPopup("压缩记忆前处理失败", "记忆前处理没有成功：" + error + "\n\n请修复前处理 API 后重试。");
 				return false;
 			}
@@ -24725,17 +24879,23 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		else if (!AIConfigHandler.TryCallAuxiliarySimpleDialogue(messages, 800, 0f, out content, out error))
 		{
+			apiSw.Stop();
+			sw.Stop();
+			Logger.Log("Logic", "[MemoryPerf] memory_preprocess_failed hero=" + (debugHeroId ?? "") + " mode=" + mode + " candidates=" + list.Count + " finalCount=" + finalCount + " promptChars=" + user.Length + " apiMs=" + Math.Round(apiSw.Elapsed.TotalMilliseconds, 2) + " totalMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2) + " reason=api_failed error=" + (error ?? ""));
 			ShowCompressedMemoryBlockingPopup("压缩记忆前处理失败", "记忆筛选请求失败：" + (error ?? "未知错误") + "\n\n请修复前处理 API 后重试。");
 			return false;
 		}
 		else
 		{
+			apiSw.Stop();
 			AIConfigHandler.PublishAuxiliaryMentionedEntitiesForExternal(currentInput, secondaryInput, ResolveCurrentMemorySceneLabel(), content);
 		}
 		selectedIds = ParseMemoryPreprocessIds(content, list.Select((MemoryRecallCandidate x) => x.DisplayId), finalCount);
 		if (selectedIds.Count <= 0)
 		{
 			error = "memory_ids 解析为空。raw=" + (content ?? "");
+			sw.Stop();
+			Logger.Log("Logic", "[MemoryPerf] memory_preprocess_failed hero=" + (debugHeroId ?? "") + " mode=" + mode + " candidates=" + list.Count + " finalCount=" + finalCount + " promptChars=" + user.Length + " apiMs=" + Math.Round(apiSw.Elapsed.TotalMilliseconds, 2) + " totalMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2) + " reason=parse_empty responseLen=" + ((content ?? "").Length));
 			ShowCompressedMemoryBlockingPopup("压缩记忆前处理失败", error + "\n\n请修复前处理提示词或 API 输出后重试。");
 			return false;
 		}
@@ -24749,6 +24909,8 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			selectedIds = selectedIds.Take(finalCount).ToList();
 		}
+		sw.Stop();
+		Logger.Log("Logic", "[MemoryPerf] memory_preprocess_done hero=" + (debugHeroId ?? "") + " mode=" + mode + " candidates=" + list.Count + " finalCount=" + finalCount + " selected=" + selectedIds.Count + " promptChars=" + user.Length + " responseLen=" + ((content ?? "").Length) + " apiMs=" + Math.Round(apiSw.Elapsed.TotalMilliseconds, 2) + " totalMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2));
 		return true;
 	}
 
@@ -24831,6 +24993,7 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private List<ConversationMessage> BuildUncompressedMemoryRoleMessagesById(string memoryId, string memoryName, int targetAgentIndex = -1, bool includeCurrentActiveSceneSession = false)
 	{
+		Stopwatch sw = Stopwatch.StartNew();
 		List<ConversationMessage> result = new List<ConversationMessage>();
 		string normalizedMemoryId = NormalizeMemoryHeroId(memoryId);
 		if (!IsMemoryEntityEligibleForCompressedMemory(normalizedMemoryId))
@@ -24840,6 +25003,8 @@ public class MyBehavior : CampaignBehaviorBase
 		List<DailyMemoryDraft> drafts = LoadDailyMemoryDraftsById(normalizedMemoryId);
 		if (drafts == null || drafts.Count <= 0)
 		{
+			sw.Stop();
+			Logger.Log("Logic", "[MemoryPerf] uncompressed_memory_done hero=" + normalizedMemoryId + " drafts=0 messages=0 agent=" + targetAgentIndex + " includeCurrentSession=" + includeCurrentActiveSceneSession + " ms=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2));
 			return result;
 		}
 		int currentDay = GetCurrentGameDayIndexSafe();
@@ -24876,6 +25041,8 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			result = result.Skip(result.Count - 24).ToList();
 		}
+		sw.Stop();
+		Logger.Log("Logic", "[MemoryPerf] uncompressed_memory_done hero=" + normalizedMemoryId + " drafts=" + drafts.Count + " messages=" + result.Count + " agent=" + targetAgentIndex + " includeCurrentSession=" + includeCurrentActiveSceneSession + " ms=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2));
 		return result;
 	}
 
@@ -25076,15 +25243,19 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private string BuildCompressedMemoryContextById(string memoryId, string currentInput, string secondaryInput)
 	{
+		Stopwatch sw = Stopwatch.StartNew();
 		string heroId = NormalizeMemoryHeroId(memoryId);
 		List<CompressedMemoryBlock> list = LoadCompressedMemoryBlocksById(heroId);
 		if (list == null || list.Count <= 0)
 		{
+			sw.Stop();
+			Logger.Log("Logic", "[MemoryPerf] compressed_context_done hero=" + heroId + " blocks=0 candidates=0 final=0 chars=0 ms=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2));
 			return "";
 		}
 		int finalCount = GetMemoryFinalInjectCountFromSettings();
 		int candidateLimit = GetMemoryCandidateLimitFromSettings();
 		List<MemoryRecallCandidate> candidates;
+		Logger.Log("Logic", "[MemoryPerf] compressed_context_start hero=" + heroId + " blocks=" + list.Count + " finalCount=" + finalCount + " candidateLimit=" + candidateLimit + " currentLen=" + ((currentInput ?? "").Length) + " secondaryLen=" + ((secondaryInput ?? "").Length));
 		if (list.Count <= finalCount)
 		{
 			candidates = list.OrderBy((CompressedMemoryBlock x) => x.GameDayIndex).ThenBy((CompressedMemoryBlock x) => x.StartHour).Select((CompressedMemoryBlock x) => new MemoryRecallCandidate
@@ -25108,6 +25279,8 @@ public class MyBehavior : CampaignBehaviorBase
 				if (!TryBuildMemoryRecallCandidates(null, selectableBlocks, currentInput, secondaryInput, drafts, selectableCandidateLimit, out candidates, out var error))
 				{
 					Logger.Log("CompressedMemory", "[ERROR] recall failed hero=" + heroId + " error=" + error);
+					sw.Stop();
+					Logger.Log("Logic", "[MemoryPerf] compressed_context_failed hero=" + heroId + " reason=recall_failed blocks=" + list.Count + " selectable=" + selectableBlocks.Count + " ms=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2));
 					return "";
 				}
 				if (candidates.Count > selectableFinalCount)
@@ -25115,6 +25288,8 @@ public class MyBehavior : CampaignBehaviorBase
 					if (!TrySelectMemoryIdsWithPreprocess(candidates, selectableFinalCount, currentInput, secondaryInput, out var selectedIds, out var error2))
 					{
 						Logger.Log("CompressedMemory", "[ERROR] preprocess failed hero=" + heroId + " error=" + error2);
+						sw.Stop();
+						Logger.Log("Logic", "[MemoryPerf] compressed_context_failed hero=" + heroId + " reason=preprocess_failed blocks=" + list.Count + " candidates=" + candidates.Count + " selectableFinal=" + selectableFinalCount + " ms=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2));
 						return "";
 					}
 					HashSet<int> selected = new HashSet<int>(selectedIds);
@@ -25132,6 +25307,8 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		if (candidates.Count <= 0)
 		{
+			sw.Stop();
+			Logger.Log("Logic", "[MemoryPerf] compressed_context_done hero=" + heroId + " blocks=" + list.Count + " candidates=0 final=0 chars=0 ms=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2));
 			return "";
 		}
 		StringBuilder stringBuilder = new StringBuilder();
@@ -25171,7 +25348,10 @@ public class MyBehavior : CampaignBehaviorBase
 			stringBuilder.AppendLine();
 			num++;
 		}
-		return stringBuilder.ToString().TrimEnd();
+		string result = stringBuilder.ToString().TrimEnd();
+		sw.Stop();
+		Logger.Log("Logic", "[MemoryPerf] compressed_context_done hero=" + heroId + " blocks=" + list.Count + " candidates=" + candidates.Count + " final=" + (num - 1) + " chars=" + result.Length + " ms=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2));
+		return result;
 	}
 
 	private static string FormatPastAfefLineForPrompt(string text)
@@ -25206,6 +25386,9 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		try
 		{
+			Stopwatch sw = Stopwatch.StartNew();
+			int memoryBlockCount = LoadCompressedMemoryBlocksById(normalizedMemoryId).Count;
+			int dailyDraftCount = LoadDailyMemoryDraftsById(normalizedMemoryId).Count;
 			StringBuilder stringBuilder = new StringBuilder(4096);
 			string memoryOverviewContext = BuildMemoryOverviewContextById(normalizedMemoryId);
 			if (!string.IsNullOrWhiteSpace(memoryOverviewContext))
@@ -25220,12 +25403,14 @@ public class MyBehavior : CampaignBehaviorBase
 				stringBuilder.AppendLine();
 			}
 			string text4 = stringBuilder.ToString().TrimEnd();
-			Logger.Log("DialogueHistory", string.Format("compressed_context hero={0} chars={1} blocks={2} drafts={3}", normalizedMemoryId, text4.Length, LoadCompressedMemoryBlocksById(normalizedMemoryId).Count, LoadDailyMemoryDraftsById(normalizedMemoryId).Count));
+			sw.Stop();
+			Logger.Log("DialogueHistory", string.Format("compressed_context hero={0} chars={1} blocks={2} drafts={3}", normalizedMemoryId, text4.Length, memoryBlockCount, dailyDraftCount));
+			Logger.Log("Logic", "[MemoryPerf] history_context_done hero=" + normalizedMemoryId + " blocks=" + memoryBlockCount + " drafts=" + dailyDraftCount + " overviewChars=" + ((memoryOverviewContext ?? "").Length) + " compressedChars=" + ((compressedMemoryContext ?? "").Length) + " totalChars=" + text4.Length + " npcRecall=" + (!string.IsNullOrWhiteSpace(secondaryInput)) + " includeCurrentSession=" + includeCurrentActiveSceneSession + " ms=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2));
 			Logger.Obs("History", "build_context", new Dictionary<string, object>
 			{
 				["heroId"] = normalizedMemoryId,
-				["memoryBlocks"] = LoadCompressedMemoryBlocksById(normalizedMemoryId).Count,
-				["dailyDrafts"] = LoadDailyMemoryDraftsById(normalizedMemoryId).Count,
+				["memoryBlocks"] = memoryBlockCount,
+				["dailyDrafts"] = dailyDraftCount,
 				["npcRecall"] = !string.IsNullOrWhiteSpace(secondaryInput),
 				["chars"] = text4.Length
 			});
@@ -25624,6 +25809,7 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private async Task<ApiCallResult> CallUniversalApiDetailed(string sys, string user, bool logToEventLogs = false, string eventLogSource = "EventWeeklyReport", UniversalApiRoute route = UniversalApiRoute.Main, bool streamResponse = true, bool forceThinkingDisabled = false)
 	{
+		long runtimeGeneration = SaveRuntimeGuard.CaptureGeneration();
 		ApiCallResult apiCallResult = new ApiCallResult();
 		Action<string> apiLog = delegate(string message)
 		{
@@ -25697,6 +25883,12 @@ public class MyBehavior : CampaignBehaviorBase
 				request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
 				request.Content = (HttpContent)new StringContent(jsonBody, Encoding.UTF8, "application/json");
 				HttpResponseMessage response = await DuelSettings.GlobalClient.SendAsync(request, (HttpCompletionOption)1);
+				if (SaveRuntimeGuard.IsStale(runtimeGeneration, "universal_api_response:" + eventLogSource))
+				{
+					apiCallResult.ErrorMessage = SaveRuntimeGuard.BuildStaleRequestErrorText();
+					response.Dispose();
+					return apiCallResult;
+				}
 				try
 				{
 					string statusLine = (int)response.StatusCode + " " + response.ReasonPhrase;
@@ -25704,6 +25896,11 @@ public class MyBehavior : CampaignBehaviorBase
 					if (!response.IsSuccessStatusCode)
 					{
 						string text = await response.Content.ReadAsStringAsync();
+						if (SaveRuntimeGuard.IsStale(runtimeGeneration, "universal_api_error_body:" + eventLogSource))
+						{
+							apiCallResult.ErrorMessage = SaveRuntimeGuard.BuildStaleRequestErrorText();
+							return apiCallResult;
+						}
 						if (response.StatusCode == HttpStatusCode.BadRequest && thinkingMode != "plain" && LooksLikeUniversalThinkingControlError(text))
 						{
 							apiLog("[HTTP] 思维链参数被接口拒绝，改用无思维链控制参数重试。");
@@ -25716,9 +25913,20 @@ public class MyBehavior : CampaignBehaviorBase
 							retryRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
 							retryRequest.Content = (HttpContent)new StringContent(retryJsonBody, Encoding.UTF8, "application/json");
 							response = await DuelSettings.GlobalClient.SendAsync(retryRequest, (HttpCompletionOption)1);
+							if (SaveRuntimeGuard.IsStale(runtimeGeneration, "universal_api_retry_response:" + eventLogSource))
+							{
+								apiCallResult.ErrorMessage = SaveRuntimeGuard.BuildStaleRequestErrorText();
+								response.Dispose();
+								return apiCallResult;
+							}
 							thinkingMode += "_retry_plain";
 							apiLog("[HTTP] 重试响应状态: " + (int)response.StatusCode + " " + response.ReasonPhrase);
 							text = response.IsSuccessStatusCode ? "" : await response.Content.ReadAsStringAsync();
+							if (SaveRuntimeGuard.IsStale(runtimeGeneration, "universal_api_retry_body:" + eventLogSource))
+							{
+								apiCallResult.ErrorMessage = SaveRuntimeGuard.BuildStaleRequestErrorText();
+								return apiCallResult;
+							}
 						}
 						if (!response.IsSuccessStatusCode)
 						{
@@ -25739,6 +25947,11 @@ public class MyBehavior : CampaignBehaviorBase
 					if (!streamResponse)
 					{
 						string responseBody = await response.Content.ReadAsStringAsync();
+						if (SaveRuntimeGuard.IsStale(runtimeGeneration, "universal_api_non_stream_body:" + eventLogSource))
+						{
+							apiCallResult.ErrorMessage = SaveRuntimeGuard.BuildStaleRequestErrorText();
+							return apiCallResult;
+						}
 						string nonStreamRaw = "";
 						try
 						{
@@ -25752,6 +25965,11 @@ public class MyBehavior : CampaignBehaviorBase
 						if (string.IsNullOrWhiteSpace(nonStreamRaw))
 						{
 							apiLog("[HTTP] 非流式解析为空，原始响应=\n" + TrimUniversalApiRawForLog(responseBody));
+						}
+						if (SaveRuntimeGuard.IsStale(runtimeGeneration, "universal_api_non_stream_complete:" + eventLogSource))
+						{
+							apiCallResult.ErrorMessage = SaveRuntimeGuard.BuildStaleRequestErrorText();
+							return apiCallResult;
 						}
 						apiCallResult.Success = true;
 						apiCallResult.Content = CleanAIResponse(nonStreamRaw);
@@ -25775,6 +25993,11 @@ public class MyBehavior : CampaignBehaviorBase
 					{
 						string text;
 						string line = (text = await reader.ReadLineAsync());
+						if (SaveRuntimeGuard.IsStale(runtimeGeneration, "universal_api_stream_read:" + eventLogSource))
+						{
+							apiCallResult.ErrorMessage = SaveRuntimeGuard.BuildStaleRequestErrorText();
+							return apiCallResult;
+						}
 						if (text == null)
 						{
 							break;
@@ -25811,6 +26034,11 @@ public class MyBehavior : CampaignBehaviorBase
 					if (string.IsNullOrWhiteSpace(raw))
 					{
 						apiLog("[HTTP] 流式解析为空，原始响应片段样本=\n" + TrimUniversalApiRawForLog(rawStreamSample.ToString()));
+					}
+					if (SaveRuntimeGuard.IsStale(runtimeGeneration, "universal_api_stream_complete:" + eventLogSource))
+					{
+						apiCallResult.ErrorMessage = SaveRuntimeGuard.BuildStaleRequestErrorText();
+						return apiCallResult;
 					}
 					apiCallResult.Success = true;
 					apiCallResult.Content = CleanAIResponse(raw);
@@ -35952,7 +36180,7 @@ public class MyBehavior : CampaignBehaviorBase
 		stringBuilder.AppendLine("[SHORT]短摘要");
 		if (!flag)
 		{
-			stringBuilder.AppendLine("[REPORT]正文");
+			stringBuilder.AppendLine("[REPORT]正文,\n【军事事件】\n【外交事件】\n【领地内事件】");
 		}
 		stringBuilder.AppendLine("[TAGS]");
 		stringBuilder.AppendLine("标签文本");

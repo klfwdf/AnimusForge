@@ -478,6 +478,30 @@ public static class ShoutUtils
 		return TrySplitNamePrefixedLineSafely(text, out var _, out var rest, maxPrefixLength) ? rest : ((text ?? "").Trim());
 	}
 
+	public static string StripConversationMetadataPrefix(string text)
+	{
+		string result = (text ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(result))
+		{
+			return result;
+		}
+		const string pattern = @"^\s*\[?\s*(?:(?:\d{1,4}年|当前日期)[^｜\|\]\r\n]{0,40})\s*\d{1,2}时\s*[｜\|]\s*[^｜\|\]\r\n]{1,120}\s*[｜\|]\s*[^]\r\n]{1,60}\]\s*";
+		for (int i = 0; i < 3; i++)
+		{
+			string stripped = Regex.Replace(result, pattern, "", RegexOptions.CultureInvariant);
+			if (string.Equals(stripped, result, StringComparison.Ordinal))
+			{
+				break;
+			}
+			result = stripped.Trim();
+			if (string.IsNullOrWhiteSpace(result))
+			{
+				return "";
+			}
+		}
+		return result;
+	}
+
 	public static string StripKnownSpeakerMetadataPrefix(string text)
 	{
 		string text2 = (text ?? "").Trim();

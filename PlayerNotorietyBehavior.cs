@@ -772,7 +772,7 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 	{
 		StringBuilder sb = new StringBuilder();
 		sb.AppendLine("已有玩家履历摘要：");
-		sb.AppendLine(string.IsNullOrWhiteSpace(_state.MajorSummary) ? "（无）" : _state.MajorSummary.Trim());
+		sb.AppendLine(string.IsNullOrWhiteSpace(_state.MajorSummary) ? "（无）" : StripPlayerInternalMarkers(_state.MajorSummary.Trim()));
 		sb.AppendLine();
 		sb.AppendLine("新增公开素材：");
 		foreach (PlayerHistoryMaterial material in materials ?? new List<PlayerHistoryMaterial>())
@@ -781,7 +781,7 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 			{
 				continue;
 			}
-			sb.AppendLine("- [" + (string.IsNullOrWhiteSpace(material.GameDate) ? ("第" + material.Day + "日") : material.GameDate.Trim()) + "][" + (material.SourceKind ?? "material") + "][culture:" + string.Join(",", material.CultureIds ?? new List<string>()) + "] " + material.Text.Trim());
+			sb.AppendLine("- [" + (string.IsNullOrWhiteSpace(material.GameDate) ? ("第" + material.Day + "日") : material.GameDate.Trim()) + "][" + (material.SourceKind ?? "material") + "][culture:" + string.Join(",", material.CultureIds ?? new List<string>()) + "] " + StripPlayerInternalMarkers(material.Text.Trim()));
 		}
 		return sb.ToString().Trim();
 	}
@@ -1016,9 +1016,14 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 		return string.IsNullOrWhiteSpace(text) ? "玩家" : text;
 	}
 
+	private static string StripPlayerInternalMarkers(string text)
+	{
+		return (text ?? "").Replace("\uFF08player\uFF09", "").Replace("(player)", "");
+	}
+
 	private static string RenderPlayerActionTextForPrompt(string rawText, string playerDisplayName)
 	{
-		string text = NormalizeLine(rawText);
+		string text = StripPlayerInternalMarkers(NormalizeLine(rawText));
 		if (string.IsNullOrWhiteSpace(text))
 		{
 			return "";

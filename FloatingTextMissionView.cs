@@ -512,6 +512,10 @@ public class FloatingTextMissionView : MissionView
 			value.FullTargetText = text;
 			value.CurrentDisplayedText = "";
 			value.TypingTimer = 0f;
+			if (value.VM != null)
+			{
+				value.VM.Text = "";
+			}
 		}
 		int num = ((!string.IsNullOrEmpty(value.FullTargetText)) ? value.FullTargetText.Length : 0);
 		if (typingDurationSeconds > 0f && num > 0)
