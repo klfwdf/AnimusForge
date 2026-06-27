@@ -45,11 +45,18 @@ public sealed class AnimusForgeConversationHistoryLogPopup
 		try
 		{
 			CloseActive();
-			ShoutBehavior.TryGetNativeConversationHistoryTargetForExternal(out Hero targetHero, out string targetName);
+			ShoutBehavior.TryGetNativeConversationPersistentHistoryTargetForExternal(out Hero targetHero, out string targetName, out string memoryId);
 			List<AnimusForgeDialogueHistoryEntry> entries = targetHero != null ? MyBehavior.GetDialogueHistoryEntriesForExternal(targetHero, 260) : new List<AnimusForgeDialogueHistoryEntry>();
+			if (entries.Count == 0 && targetHero == null && !string.IsNullOrWhiteSpace(memoryId))
+			{
+				// 读档后非 hero 原生自由对话的 session 历史不存在，右上角必须读取同一个 af_nonhero 持久历史。
+				entries = MyBehavior.GetDialogueHistoryEntriesByIdForExternal(memoryId, 260);
+				Logger.Log("NativeConversationHistory", "open source=persistent_nonhero memoryId=" + memoryId + " entries=" + entries.Count);
+			}
 			if (entries.Count == 0)
 			{
 				entries = ShoutBehavior.GetNativeConversationSessionHistoryEntriesForExternal(260);
+				Logger.Log("NativeConversationHistory", "open source=session target=" + (targetHero?.StringId ?? targetName ?? "") + " entries=" + entries.Count);
 			}
 			AnimusForgeConversationHistoryLogPopup popup = new AnimusForgeConversationHistoryLogPopup(topScreen, targetName, entries, onClose);
 			popup.Open();

@@ -1524,8 +1524,8 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			};
 			ApplyApiValidationRequestControls(requestPayload, target.Target, effectiveApiUrl, target.ModelName);
 			using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, effectiveApiUrl);
-			request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", target.ApiKey);
-			request.Content = new StringContent(requestPayload.ToString(Formatting.None), Encoding.UTF8, "application/json");
+			LlmApiCompat.ApplyAuthenticationHeaders(request, effectiveApiUrl, target.ApiKey);
+			request.Content = new StringContent(LlmApiCompat.PrepareChatRequestJson(effectiveApiUrl, requestPayload), Encoding.UTF8, "application/json");
 			HttpResponseMessage response = await DuelSettings.GlobalClient.SendAsync(request, cancellationToken);
 			string responseBody = await response.Content.ReadAsStringAsync();
 			if (response.IsSuccessStatusCode)
@@ -2164,7 +2164,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 				_modelFetchCancellation = cancellationTokenSource;
 				string modelsApiUrl = BuildModelsApiUrl(apiUrl);
 				using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, modelsApiUrl);
-				request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
+				LlmApiCompat.ApplyAuthenticationHeaders(request, modelsApiUrl, apiKey);
 				HttpResponseMessage httpResponseMessage = await DuelSettings.GlobalClient.SendAsync(request, cancellationTokenSource.Token);
 				string text2 = await httpResponseMessage.Content.ReadAsStringAsync();
 				if (httpResponseMessage.IsSuccessStatusCode)
@@ -2474,10 +2474,11 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 					["stream"] = false
 				};
 				ApplyApiValidationRequestControls(requestPayload, validationTarget, effectiveApiUrl, modelName);
-				string jsonBody = requestPayload.ToString(Formatting.None);
-				StringContent content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
-				DuelSettings.GlobalClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
-				HttpResponseMessage httpResponseMessage = await DuelSettings.GlobalClient.PostAsync(effectiveApiUrl, (HttpContent)(object)content, cancellationTokenSource.Token);
+				string jsonBody = LlmApiCompat.PrepareChatRequestJson(effectiveApiUrl, requestPayload);
+				using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, effectiveApiUrl);
+				LlmApiCompat.ApplyAuthenticationHeaders(request, effectiveApiUrl, apiKey);
+				request.Content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
+				HttpResponseMessage httpResponseMessage = await DuelSettings.GlobalClient.SendAsync(request, cancellationTokenSource.Token);
 				string text2 = await httpResponseMessage.Content.ReadAsStringAsync();
 				if (httpResponseMessage.IsSuccessStatusCode)
 				{
@@ -2485,7 +2486,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 					try
 					{
 						JObject jObject = JObject.Parse(text2);
-						string text3 = jObject["choices"]?[0]?["message"]?["content"]?.ToString();
+						string text3 = LlmApiCompat.ExtractAssistantText(jObject);
 						text = string.IsNullOrWhiteSpace(text3) ? ("MCM 中的" + CurrentApiDisplayName() + "连接测试成功，可以进入下一步。") : ("MCM 中的" + CurrentApiDisplayName() + "连接测试成功：" + text3.Trim());
 					}
 					catch
@@ -3031,21 +3032,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 
 	private static string BuildModelsApiUrl(string rawUrl)
 	{
-		string text = (rawUrl ?? "").Trim();
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			return "";
-		}
-		text = text.TrimEnd('/');
-		if (text.EndsWith("/chat/completions", StringComparison.OrdinalIgnoreCase))
-		{
-			text = text.Substring(0, text.Length - "/chat/completions".Length);
-		}
-		else if (text.EndsWith("/completions", StringComparison.OrdinalIgnoreCase))
-		{
-			text = text.Substring(0, text.Length - "/completions".Length);
-		}
-		return text.TrimEnd('/') + "/models";
+		return LlmApiCompat.BuildModelListApiUrl(rawUrl);
 	}
 
 	private static bool CanUseBaseUrlStatusCode(HttpStatusCode statusCode)

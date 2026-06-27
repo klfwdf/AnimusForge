@@ -42,6 +42,7 @@ using TaleWorlds.Library;
 using TaleWorlds.Library.EventSystem;
 using TaleWorlds.Localization;
 using TaleWorlds.MountAndBlade;
+using TaleWorlds.SaveSystem;
 
 namespace AnimusForge;
 
@@ -1545,6 +1546,8 @@ public class MyBehavior : CampaignBehaviorBase
 	private int _activeNativeConversationMemorySessionId = -1;
 
 	private string _memoryRuntimeSessionKey = Guid.NewGuid().ToString("N");
+
+	private Dictionary<MobileParty, string> _wildernessNonHeroPartyMemoryIds = new Dictionary<MobileParty, string>();
 
 	private Dictionary<string, MemoryOverviewState> _memoryOverviewStates = new Dictionary<string, MemoryOverviewState>(StringComparer.OrdinalIgnoreCase);
 
@@ -12637,6 +12640,10 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			_memoryOverviewQueueJsonStorage = "";
 		}
+		if (_wildernessNonHeroPartyMemoryIds == null)
+		{
+			_wildernessNonHeroPartyMemoryIds = new Dictionary<MobileParty, string>();
+		}
 		if (_npcMajorActionSummaries == null)
 		{
 			_npcMajorActionSummaries = new Dictionary<string, MajorActionSummaryState>(StringComparer.OrdinalIgnoreCase);
@@ -12770,6 +12777,9 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			if (dataStore != null && dataStore.IsSaving)
 			{
+				SanitizeWildernessNonHeroPartyMemoryIdMap(removeInactive: false);
+				dataStore.SyncData<Dictionary<MobileParty, string>>("_af_wildernessNonHeroPartyMemoryIds_v1", ref _wildernessNonHeroPartyMemoryIds);
+				LogNonHeroMemoryTrace("stage=sync_save_begin partyGuidMap=" + (_wildernessNonHeroPartyMemoryIds?.Count ?? 0) + " dialogueOwners=" + CountNonHeroDialogueHistoryOwners() + " dialogueLines=" + CountNonHeroDialogueHistoryLines() + " dailyDraftOwners=" + CountNonHeroDailyDraftOwners() + " dailyDraftLines=" + CountNonHeroDailyDraftLines() + " sample=" + BuildNonHeroMemorySampleIds());
 				_shownRecordStorage.Clear();
 				foreach (KeyValuePair<string, HeroShownRecord> shownRecord in _shownRecords)
 				{
@@ -12820,6 +12830,7 @@ public class MyBehavior : CampaignBehaviorBase
 						}
 					}
 				}
+				LogNonHeroMemoryTrace("stage=sync_save_dialogue_storage owners=" + _dialogueHistoryStorage.Keys.Count(IsNonHeroMemoryId) + " storageBytes=" + _dialogueHistoryStorage.Where((KeyValuePair<string, string> item) => IsNonHeroMemoryId(item.Key)).Sum((KeyValuePair<string, string> item) => (item.Value ?? "").Length));
 				Dictionary<string, string> dictionary2 = CampaignSaveChunkHelper.FlattenStringDictionary(_dialogueHistoryStorage, "_dialogueHistory_v2", "DialogueHistory");
 				dataStore.SyncData("_dialogueHistory_v2", ref dictionary2);
 				_dailyMemoryDraftStorage.Clear();
@@ -12837,6 +12848,7 @@ public class MyBehavior : CampaignBehaviorBase
 						}
 					}
 				}
+				LogNonHeroMemoryTrace("stage=sync_save_daily_storage owners=" + _dailyMemoryDraftStorage.Keys.Count(IsNonHeroMemoryId) + " storageBytes=" + _dailyMemoryDraftStorage.Where((KeyValuePair<string, string> item) => IsNonHeroMemoryId(item.Key)).Sum((KeyValuePair<string, string> item) => (item.Value ?? "").Length));
 				Dictionary<string, string> dictionaryMemoryDrafts = CampaignSaveChunkHelper.FlattenStringDictionary(_dailyMemoryDraftStorage, "_af_dailyMemoryDrafts_v1", "CompressedMemory");
 				dataStore.SyncData("_af_dailyMemoryDrafts_v1", ref dictionaryMemoryDrafts);
 				_compressedMemoryBlockStorage.Clear();
@@ -13095,6 +13107,9 @@ public class MyBehavior : CampaignBehaviorBase
 				SyncPatienceData(dataStore);
 				return;
 			}
+			dataStore.SyncData<Dictionary<MobileParty, string>>("_af_wildernessNonHeroPartyMemoryIds_v1", ref _wildernessNonHeroPartyMemoryIds);
+			SanitizeWildernessNonHeroPartyMemoryIdMap(removeInactive: false);
+			LogNonHeroMemoryTrace("stage=sync_load_party_map partyGuidMap=" + (_wildernessNonHeroPartyMemoryIds?.Count ?? 0));
 			_shownRecords.Clear();
 			_shownRecordStorage.Clear();
 			Dictionary<string, string> dictionary7 = new Dictionary<string, string>();
@@ -13161,6 +13176,7 @@ public class MyBehavior : CampaignBehaviorBase
 					}
 				}
 			}
+			LogNonHeroMemoryTrace("stage=sync_load_dialogue_restored owners=" + CountNonHeroDialogueHistoryOwners() + " lines=" + CountNonHeroDialogueHistoryLines() + " storageOwners=" + (_dialogueHistoryStorage?.Keys.Count(IsNonHeroMemoryId) ?? 0) + " sample=" + BuildNonHeroMemorySampleIds());
 			_dailyMemoryDrafts.Clear();
 			_dailyMemoryDraftStorage.Clear();
 			Dictionary<string, string> dictionaryMemoryDraftsLoad = new Dictionary<string, string>();
@@ -13189,6 +13205,7 @@ public class MyBehavior : CampaignBehaviorBase
 					}
 				}
 			}
+			LogNonHeroMemoryTrace("stage=sync_load_daily_restored owners=" + CountNonHeroDailyDraftOwners() + " lines=" + CountNonHeroDailyDraftLines() + " storageOwners=" + (_dailyMemoryDraftStorage?.Keys.Count(IsNonHeroMemoryId) ?? 0) + " sample=" + BuildNonHeroMemorySampleIds());
 			_compressedMemoryBlocks.Clear();
 			_compressedMemoryBlockStorage.Clear();
 			Dictionary<string, string> dictionaryMemoryBlocksLoad = new Dictionary<string, string>();
@@ -19015,6 +19032,119 @@ public class MyBehavior : CampaignBehaviorBase
 		return text.StartsWith(NonHeroMemoryIdPrefix, StringComparison.OrdinalIgnoreCase) && text.Length > NonHeroMemoryIdPrefix.Length;
 	}
 
+	private static void LogNonHeroMemoryTrace(string message)
+	{
+		try
+		{
+			Logger.Log("Logic", "[NonHeroMemoryTrace] " + (message ?? ""));
+		}
+		catch
+		{
+		}
+	}
+
+	private static int CountDialogueHistoryLines(IEnumerable<DialogueDay> records)
+	{
+		try
+		{
+			return (records ?? Enumerable.Empty<DialogueDay>()).Sum((DialogueDay day) => day?.Lines?.Count ?? 0);
+		}
+		catch
+		{
+			return 0;
+		}
+	}
+
+	private static int CountDailyMemoryDraftLines(IEnumerable<DailyMemoryDraft> drafts)
+	{
+		try
+		{
+			return (drafts ?? Enumerable.Empty<DailyMemoryDraft>()).Sum((DailyMemoryDraft draft) => draft?.Lines?.Count ?? 0);
+		}
+		catch
+		{
+			return 0;
+		}
+	}
+
+	private int CountNonHeroDialogueHistoryOwners()
+	{
+		try
+		{
+			return (_dialogueHistory ?? new Dictionary<string, List<DialogueDay>>()).Keys.Count(IsNonHeroMemoryId);
+		}
+		catch
+		{
+			return 0;
+		}
+	}
+
+	private int CountNonHeroDialogueHistoryLines()
+	{
+		try
+		{
+			return (_dialogueHistory ?? new Dictionary<string, List<DialogueDay>>()).Where((KeyValuePair<string, List<DialogueDay>> item) => IsNonHeroMemoryId(item.Key)).Sum((KeyValuePair<string, List<DialogueDay>> item) => CountDialogueHistoryLines(item.Value));
+		}
+		catch
+		{
+			return 0;
+		}
+	}
+
+	private int CountNonHeroDailyDraftOwners()
+	{
+		try
+		{
+			return (_dailyMemoryDrafts ?? new Dictionary<string, List<DailyMemoryDraft>>(StringComparer.OrdinalIgnoreCase)).Keys.Count(IsNonHeroMemoryId);
+		}
+		catch
+		{
+			return 0;
+		}
+	}
+
+	private int CountNonHeroDailyDraftLines()
+	{
+		try
+		{
+			return (_dailyMemoryDrafts ?? new Dictionary<string, List<DailyMemoryDraft>>(StringComparer.OrdinalIgnoreCase)).Where((KeyValuePair<string, List<DailyMemoryDraft>> item) => IsNonHeroMemoryId(item.Key)).Sum((KeyValuePair<string, List<DailyMemoryDraft>> item) => CountDailyMemoryDraftLines(item.Value));
+		}
+		catch
+		{
+			return 0;
+		}
+	}
+
+	private string BuildNonHeroMemorySampleIds(int maxCount = 5)
+	{
+		try
+		{
+			List<string> ids = new List<string>();
+			foreach (string key in (_dialogueHistory ?? new Dictionary<string, List<DialogueDay>>()).Keys)
+			{
+				string id = NormalizeMemoryHeroId(key);
+				if (!string.IsNullOrWhiteSpace(id) && IsNonHeroMemoryId(id))
+				{
+					ids.Add(id);
+				}
+			}
+			foreach (string key in (_dailyMemoryDrafts ?? new Dictionary<string, List<DailyMemoryDraft>>(StringComparer.OrdinalIgnoreCase)).Keys)
+			{
+				string id = NormalizeMemoryHeroId(key);
+				if (!string.IsNullOrWhiteSpace(id) && IsNonHeroMemoryId(id))
+				{
+					ids.Add(id);
+				}
+			}
+			ids = ids.Distinct(StringComparer.OrdinalIgnoreCase).Take(Math.Max(1, maxCount)).ToList();
+			return ids.Count == 0 ? "(none)" : string.Join(",", ids);
+		}
+		catch
+		{
+			return "(trace_failed)";
+		}
+	}
+
 	private static string BuildNonHeroMemoryId(string unnamedKey)
 	{
 		string text = (unnamedKey ?? "").Trim().ToLowerInvariant();
@@ -19028,6 +19158,132 @@ public class MyBehavior : CampaignBehaviorBase
 	public static string BuildNonHeroMemoryIdForExternal(string unnamedKey)
 	{
 		return BuildNonHeroMemoryId(unnamedKey);
+	}
+
+	public static string GetOrCreateWildernessNonHeroPartyMemoryKeyForExternal(MobileParty party)
+	{
+		try
+		{
+			return (Campaign.Current?.GetCampaignBehavior<MyBehavior>())?.GetOrCreateWildernessNonHeroPartyMemoryKey(party) ?? "";
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("DialogueHistory", "[WARN] get wilderness non-hero party memory key failed: " + ex.Message);
+			return "";
+		}
+	}
+
+	public static string GetExistingWildernessNonHeroPartyMemoryKeyForExternal(MobileParty party)
+	{
+		try
+		{
+			return (Campaign.Current?.GetCampaignBehavior<MyBehavior>())?.GetExistingWildernessNonHeroPartyMemoryKey(party) ?? "";
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("DialogueHistory", "[WARN] get existing wilderness non-hero party memory key failed: " + ex.Message);
+			return "";
+		}
+	}
+
+	private string GetOrCreateWildernessNonHeroPartyMemoryKey(MobileParty party)
+	{
+		if (!IsValidWildernessNonHeroMemoryParty(party))
+		{
+			return "";
+		}
+		if (_wildernessNonHeroPartyMemoryIds == null)
+		{
+			_wildernessNonHeroPartyMemoryIds = new Dictionary<MobileParty, string>();
+		}
+		if (_wildernessNonHeroPartyMemoryIds.TryGetValue(party, out var existing) && !string.IsNullOrWhiteSpace(existing))
+		{
+			return "party_guid:" + NormalizeMemoryHeroId(existing);
+		}
+		string id = Guid.NewGuid().ToString("N");
+		_wildernessNonHeroPartyMemoryIds[party] = id;
+		Logger.Log("DialogueHistory", "assigned wilderness non-hero party memory id party=" + (party.StringId ?? party.Name?.ToString() ?? "") + " id=" + id);
+		return "party_guid:" + id;
+	}
+
+	private string GetExistingWildernessNonHeroPartyMemoryKey(MobileParty party)
+	{
+		if (!IsValidWildernessNonHeroMemoryParty(party) || _wildernessNonHeroPartyMemoryIds == null)
+		{
+			return "";
+		}
+		if (_wildernessNonHeroPartyMemoryIds.TryGetValue(party, out var existing) && !string.IsNullOrWhiteSpace(existing))
+		{
+			return "party_guid:" + NormalizeMemoryHeroId(existing);
+		}
+		return "";
+	}
+
+	private static bool IsValidWildernessNonHeroMemoryParty(MobileParty party)
+	{
+		try
+		{
+			if (party == null || party == MobileParty.MainParty || party.Party == null || party.Party == PartyBase.MainParty)
+			{
+				return false;
+			}
+			return true;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private void SanitizeWildernessNonHeroPartyMemoryIdMap(bool removeInactive)
+	{
+		if (_wildernessNonHeroPartyMemoryIds == null)
+		{
+			_wildernessNonHeroPartyMemoryIds = new Dictionary<MobileParty, string>();
+			return;
+		}
+		Dictionary<MobileParty, string> sanitized = new Dictionary<MobileParty, string>();
+		foreach (KeyValuePair<MobileParty, string> item in _wildernessNonHeroPartyMemoryIds.ToList())
+		{
+			MobileParty party = item.Key;
+			string id = NormalizeMemoryHeroId(item.Value);
+			if (string.IsNullOrWhiteSpace(id) || party == null)
+			{
+				continue;
+			}
+			if (removeInactive && !IsValidWildernessNonHeroMemoryParty(party))
+			{
+				continue;
+			}
+			sanitized[party] = id;
+		}
+		_wildernessNonHeroPartyMemoryIds = sanitized;
+	}
+
+	private void RemoveWildernessNonHeroPartyMemory(MobileParty party, PartyBase partyBase, string reason)
+	{
+		try
+		{
+			MobileParty resolvedParty = party ?? partyBase?.MobileParty;
+			string guid = "";
+			if (resolvedParty != null && _wildernessNonHeroPartyMemoryIds != null)
+			{
+				_wildernessNonHeroPartyMemoryIds.TryGetValue(resolvedParty, out guid);
+			}
+			CleanupNonHeroMemoryForRemovedParty(partyBase, resolvedParty, reason);
+			if (resolvedParty != null && _wildernessNonHeroPartyMemoryIds != null)
+			{
+				_wildernessNonHeroPartyMemoryIds.Remove(resolvedParty);
+			}
+			if (!string.IsNullOrWhiteSpace(guid))
+			{
+				Logger.Log("DialogueHistory", "released wilderness non-hero fallback party guid party=" + (resolvedParty?.StringId ?? resolvedParty?.Name?.ToString() ?? "") + " guid=" + guid + " reason=" + (reason ?? ""));
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("DialogueHistory", "[WARN] remove wilderness non-hero party memory failed: " + ex.Message);
+		}
 	}
 
 	public static void MigrateNonHeroPartyIndexMemoryForExternal(string canonicalMemoryId, string baseUnnamedKey)
@@ -19056,43 +19312,41 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private void MigrateNonHeroPartyIndexMemory(string canonicalMemoryId, string baseUnnamedKey)
 	{
-		string targetId = NormalizeMemoryHeroId(canonicalMemoryId);
-		string baseMemoryId = BuildNonHeroMemoryId(baseUnnamedKey);
-		if (string.IsNullOrWhiteSpace(targetId) || !IsNonHeroMemoryId(targetId) || string.IsNullOrWhiteSpace(baseMemoryId))
-		{
-			return;
-		}
-		string legacyPrefix = baseMemoryId + "|party:party_index:";
-		HashSet<string> aliases = CollectNonHeroMemoryAliasesByPrefix(legacyPrefix, targetId);
-		if (aliases.Count == 0)
-		{
-			return;
-		}
-		foreach (string alias in aliases.ToList())
-		{
-			MergeMemoryEntityDataById(alias, targetId);
-		}
-		Logger.Log("DialogueHistory", "migrated non-hero party_index memory aliases=" + aliases.Count + " target=" + targetId);
+		// Do not migrate party_index memories into another canonical key.
+		// party_index identifies one wilderness party inside one save; merging aliases here
+		// would combine multiple bandit/caravan parties and recreate shared memory.
 	}
 
 	private void MigrateNonHeroPartyScopedMemory(string canonicalMemoryId, string partyKey)
 	{
-		string targetId = NormalizeMemoryHeroId(canonicalMemoryId);
-		string normalizedPartyKey = NormalizeMemoryHeroId(partyKey);
-		if (string.IsNullOrWhiteSpace(targetId) || !IsNonHeroMemoryId(targetId) || string.IsNullOrWhiteSpace(normalizedPartyKey))
+		string target = NormalizeMemoryHeroId(canonicalMemoryId);
+		string sourcePartyKey = NormalizeMemoryHeroId(partyKey);
+		if (string.IsNullOrWhiteSpace(target) || string.IsNullOrWhiteSpace(sourcePartyKey) || !IsNonHeroMemoryId(target))
 		{
 			return;
 		}
-		HashSet<string> aliases = CollectNonHeroMemoryAliasesByNeedle("|party:" + normalizedPartyKey, targetId);
-		if (aliases.Count == 0)
+		int partyMarker = target.LastIndexOf("|party:", StringComparison.OrdinalIgnoreCase);
+		if (partyMarker < 0)
 		{
 			return;
 		}
-		foreach (string alias in aliases.ToList())
+		string sourcePartySegment = sourcePartyKey;
+		if (sourcePartyKey.StartsWith("party_string_id:", StringComparison.OrdinalIgnoreCase))
 		{
-			MergeMemoryEntityDataById(alias, targetId);
+			// 兼容旧版曾经写入的未标注 StringId 记录；不迁移名字记录，避免同名部队再次共享记忆。
+			sourcePartySegment = sourcePartyKey.Substring("party_string_id:".Length);
 		}
-		Logger.Log("DialogueHistory", "migrated non-hero party scoped memory aliases=" + aliases.Count + " target=" + targetId + " party=" + normalizedPartyKey);
+		if (string.IsNullOrWhiteSpace(sourcePartySegment))
+		{
+			return;
+		}
+		string source = target.Substring(0, partyMarker + "|party:".Length) + sourcePartySegment;
+		if (string.Equals(source, target, StringComparison.OrdinalIgnoreCase))
+		{
+			return;
+		}
+		LogNonHeroMemoryTrace("stage=migrate_party_scoped source=" + source + " target=" + target + " partyKey=" + sourcePartyKey);
+		MergeMemoryEntityDataById(source, target);
 	}
 
 	private HashSet<string> CollectNonHeroMemoryAliasesByPrefix(string legacyPrefix, string targetId)
@@ -19604,7 +19858,7 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static List<string> BuildNonHeroPartyMemoryNeedles(MobileParty mobileParty, PartyBase partyBase = null)
+	private List<string> BuildNonHeroPartyMemoryNeedles(MobileParty mobileParty, PartyBase partyBase = null)
 	{
 		List<string> needles = new List<string>();
 		try
@@ -19613,18 +19867,51 @@ public class MyBehavior : CampaignBehaviorBase
 			string stringId = NormalizeMemoryHeroId(mobileParty?.StringId);
 			if (!string.IsNullOrWhiteSpace(stringId))
 			{
+				// MobileParty.StringId 是随存档保存的唯一对象 ID，是非 hero 野外部队记忆的主键。
+				needles.Add("|party:party_string_id:" + stringId);
+				// 兼容旧版曾经写入的未标注 StringId 记录；只用 StringId，不用显示名称。
 				needles.Add("|party:" + stringId);
 			}
-			string name = NormalizeMemoryHeroId(mobileParty?.Name?.ToString());
-			if (!string.IsNullOrWhiteSpace(name))
+			if (mobileParty != null && _wildernessNonHeroPartyMemoryIds != null && _wildernessNonHeroPartyMemoryIds.TryGetValue(mobileParty, out var guid))
 			{
-				needles.Add("|party:" + name);
+				string normalizedGuid = NormalizeMemoryHeroId(guid);
+				if (!string.IsNullOrWhiteSpace(normalizedGuid))
+				{
+					// 仅作为没有 StringId 的异常部队兜底；销毁时仍要能清掉旧 GUID 记忆。
+					needles.Add("|party:party_guid:" + normalizedGuid);
+				}
+			}
+			if (resolvedPartyBase != null && resolvedPartyBase.Index >= 0)
+			{
+				// party_index 只清理当前会话里已存在的旧 fallback 记录，不能作为读档后的持久主键。
+				needles.Add("|party:party_index:" + resolvedPartyBase.Index);
 			}
 		}
 		catch
 		{
 		}
 		return needles.Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+	}
+
+	private static bool ContainsExactNonHeroPartyNeedle(string memoryId, string partyNeedle)
+	{
+		string text = NormalizeMemoryHeroId(memoryId);
+		string needle = NormalizeMemoryHeroId(partyNeedle);
+		if (string.IsNullOrWhiteSpace(text) || string.IsNullOrWhiteSpace(needle))
+		{
+			return false;
+		}
+		int index = text.IndexOf(needle, StringComparison.OrdinalIgnoreCase);
+		while (index >= 0)
+		{
+			int after = index + needle.Length;
+			if (after >= text.Length || text[after] == '|')
+			{
+				return true;
+			}
+			index = text.IndexOf(needle, index + 1, StringComparison.OrdinalIgnoreCase);
+		}
+		return false;
 	}
 
 	private static bool IsNonHeroMemoryIdForParty(string memoryId, List<string> partyNeedles)
@@ -19634,7 +19921,7 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			return false;
 		}
-		return partyNeedles.Any((string needle) => !string.IsNullOrWhiteSpace(needle) && text.IndexOf(needle, StringComparison.OrdinalIgnoreCase) >= 0);
+		return partyNeedles.Any((string needle) => ContainsExactNonHeroPartyNeedle(text, needle));
 	}
 
 	private void RemoveMemoryEntityDataById(string memoryId)
@@ -19723,6 +20010,7 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				RemoveMemoryEntityDataById(id);
 			}
+			LogNonHeroMemoryTrace("stage=cleanup_removed_party reason=" + (reason ?? "") + " party=" + (party?.StringId ?? party?.Name?.ToString() ?? "") + " partyIndex=" + (partyBase?.Index ?? party?.Party?.Index ?? -1) + " needles=" + string.Join(",", needles) + " removed=" + ids.Count);
 			if (ids.Count > 0)
 			{
 				Logger.Log("DialogueHistory", "cleaned destroyed non-hero party memory count=" + ids.Count + " partyIndex=" + (partyBase?.Index ?? party?.Party?.Index ?? -1) + " party=" + (party?.StringId ?? party?.Name?.ToString() ?? "") + " reason=" + (reason ?? ""));
@@ -19736,14 +20024,15 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private void OnMobilePartyDestroyedForNonHeroMemoryCleanup(MobileParty mobileParty, PartyBase destroyerParty)
 	{
-		// Non-hero wilderness memory is keyed for persistence across save/load. Party removal
-		// and destruction events can also fire during encounter teardown, so cleanup here can
-		// erase valid saved memory.
+		// 清理只按本存档这一支 MobileParty 的精确 key 执行：StringId 为主，GUID/party_index 仅兼容旧 fallback。
+		// 不能按名字/兵种模糊删除，否则同名劫匪、商队会互相清理并重新表现为共享记忆。
+		RemoveWildernessNonHeroPartyMemory(mobileParty, mobileParty?.Party, "mobile_party_destroyed");
 	}
 
 	private void OnPartyRemovedForNonHeroMemoryCleanup(PartyBase party)
 	{
-		// See OnMobilePartyDestroyedForNonHeroMemoryCleanup.
+		// 只删除这一支被移除部队的精确 party 记忆，避免同名队伍共享/误删。
+		RemoveWildernessNonHeroPartyMemory(party?.MobileParty, party, "party_removed");
 	}
 
 	private static bool IsMemoryEntityEligibleForCompressedMemory(string memoryId)
@@ -20517,6 +20806,10 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			PlayerNotorietyBehavior.NoteConversationLineForExternal(heroId);
 		}
+		if (IsNonHeroMemoryId(heroId))
+		{
+			LogNonHeroMemoryTrace("stage=daily_append memoryId=" + heroId + " memoryName=" + (dailyMemoryDraft.HeroName ?? "") + " day=" + dayIndex + " drafts=" + list.Count + " lines=" + CountDailyMemoryDraftLines(list) + " speaker=" + (dailyMemoryLine.Speaker ?? "") + " isAfef=" + dailyMemoryLine.IsAfef + " isLlm=" + dailyMemoryLine.IsLlmDialogue + " sceneSession=" + sceneSessionId + " dialogueSession=" + dialogueSessionId);
+		}
 	}
 
 	private List<DialogueDay> LoadDialogueHistory(Hero hero)
@@ -20545,7 +20838,15 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				SaveDialogueHistoryById(stringId, value);
 			}
+			if (IsNonHeroMemoryId(stringId))
+			{
+				LogNonHeroMemoryTrace("stage=load_dialogue_hit memoryId=" + stringId + " days=" + value.Count + " lines=" + CountDialogueHistoryLines(value));
+			}
 			return value;
+		}
+		if (IsNonHeroMemoryId(stringId))
+		{
+			LogNonHeroMemoryTrace("stage=load_dialogue_miss memoryId=" + stringId + " knownDialogueOwners=" + CountNonHeroDialogueHistoryOwners() + " knownDailyOwners=" + CountNonHeroDailyDraftOwners() + " sample=" + BuildNonHeroMemorySampleIds());
 		}
 		return new List<DialogueDay>();
 	}
@@ -20708,6 +21009,10 @@ public class MyBehavior : CampaignBehaviorBase
 			if (!string.IsNullOrEmpty(stringId))
 			{
 				_dialogueHistory[stringId] = records;
+				if (IsNonHeroMemoryId(stringId))
+				{
+					LogNonHeroMemoryTrace("stage=save_dialogue_in_memory memoryId=" + stringId + " days=" + records.Count + " lines=" + CountDialogueHistoryLines(records));
+				}
 			}
 		}
 	}
@@ -20782,6 +21087,10 @@ public class MyBehavior : CampaignBehaviorBase
 		string normalizedMemoryId = NormalizeMemoryHeroId(memoryId);
 		if (!IsMemoryEntityEligibleForCompressedMemory(normalizedMemoryId) || (string.IsNullOrWhiteSpace(playerText) && string.IsNullOrWhiteSpace(aiText) && string.IsNullOrWhiteSpace(extraFact)))
 		{
+			if (IsNonHeroMemoryId(normalizedMemoryId))
+			{
+				LogNonHeroMemoryTrace("stage=append_skip memoryId=" + normalizedMemoryId + " eligible=" + IsMemoryEntityEligibleForCompressedMemory(normalizedMemoryId) + " playerLen=" + ((playerText ?? "").Length) + " aiLen=" + ((aiText ?? "").Length) + " factLen=" + ((extraFact ?? "").Length));
+			}
 			return;
 		}
 		try
@@ -20815,6 +21124,7 @@ public class MyBehavior : CampaignBehaviorBase
 				AppendDailyMemoryLineById(normalizedMemoryId, npcNameForMemory, npcNameForMemory, memoryAiText, isAfef: false, isLlmDialogue: true, sceneSessionId: sceneSessionId);
 			}
 			List<DialogueDay> list = LoadDialogueHistoryById(normalizedMemoryId);
+			int beforeLines = CountDialogueHistoryLines(list);
 			int dayIndex = (int)CampaignTime.Now.ToDays;
 			string gameDate = CampaignTime.Now.ToString();
 			string text = npcNameForMemory;
@@ -20898,6 +21208,10 @@ public class MyBehavior : CampaignBehaviorBase
 				dialogueDay2.Lines.Add(entry.Item3);
 			}
 			SaveDialogueHistoryById(normalizedMemoryId, list3);
+			if (IsNonHeroMemoryId(normalizedMemoryId))
+			{
+				LogNonHeroMemoryTrace("stage=append_commit memoryId=" + normalizedMemoryId + " memoryName=" + npcNameForMemory + " beforeLines=" + beforeLines + " afterLines=" + CountDialogueHistoryLines(list3) + " days=" + list3.Count + " playerLen=" + ((playerText ?? "").Length) + " aiLen=" + ((aiText ?? "").Length) + " factLen=" + ((extraFact ?? "").Length) + " sceneSession=" + sceneSessionId);
+			}
 		}
 		catch (Exception ex)
 		{
@@ -21106,6 +21420,10 @@ public class MyBehavior : CampaignBehaviorBase
 			List<DialogueDay> records = LoadDialogueHistoryById(normalizedMemoryId);
 			if (records == null || records.Count == 0)
 			{
+				if (IsNonHeroMemoryId(normalizedMemoryId))
+				{
+					LogNonHeroMemoryTrace("stage=entries_read memoryId=" + normalizedMemoryId + " days=0 lines=0 entries=0 maxLines=" + maxLines);
+				}
 				return result;
 			}
 			foreach (DialogueDay record in records.OrderBy((DialogueDay d) => d?.GameDayIndex ?? 0))
@@ -21141,6 +21459,10 @@ public class MyBehavior : CampaignBehaviorBase
 			if (result.Count > limit)
 			{
 				result = result.Skip(result.Count - limit).ToList();
+			}
+			if (IsNonHeroMemoryId(normalizedMemoryId))
+			{
+				LogNonHeroMemoryTrace("stage=entries_read memoryId=" + normalizedMemoryId + " days=" + records.Count + " lines=" + CountDialogueHistoryLines(records) + " entries=" + result.Count + " maxLines=" + maxLines);
 			}
 		}
 		catch (Exception ex)
@@ -25779,6 +26101,10 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			sw.Stop();
 			Logger.Log("Logic", "[MemoryPerf] uncompressed_memory_done hero=" + normalizedMemoryId + " drafts=0 messages=0 agent=" + targetAgentIndex + " includeCurrentSession=" + includeCurrentActiveSceneSession + " ms=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2));
+			if (IsNonHeroMemoryId(normalizedMemoryId))
+			{
+				LogNonHeroMemoryTrace("stage=uncompressed_build_done memoryId=" + normalizedMemoryId + " drafts=0 draftLines=0 messages=0 agent=" + targetAgentIndex + " includeCurrentSession=" + includeCurrentActiveSceneSession + " ms=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2));
+			}
 			return result;
 		}
 		int currentDay = GetCurrentGameDayIndexSafe();
@@ -25817,6 +26143,10 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		sw.Stop();
 		Logger.Log("Logic", "[MemoryPerf] uncompressed_memory_done hero=" + normalizedMemoryId + " drafts=" + drafts.Count + " messages=" + result.Count + " agent=" + targetAgentIndex + " includeCurrentSession=" + includeCurrentActiveSceneSession + " ms=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2));
+		if (IsNonHeroMemoryId(normalizedMemoryId))
+		{
+			LogNonHeroMemoryTrace("stage=uncompressed_build_done memoryId=" + normalizedMemoryId + " drafts=" + drafts.Count + " draftLines=" + CountDailyMemoryDraftLines(drafts) + " messages=" + result.Count + " agent=" + targetAgentIndex + " includeCurrentSession=" + includeCurrentActiveSceneSession + " currentDay=" + currentDay + " suppressedSceneSession=" + currentSceneSessionId + " suppressedDialogueSession=" + currentDialogueSessionId + " ms=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2));
+		}
 		return result;
 	}
 
@@ -26180,6 +26510,10 @@ public class MyBehavior : CampaignBehaviorBase
 			sw.Stop();
 			Logger.Log("DialogueHistory", string.Format("compressed_context hero={0} chars={1} blocks={2} drafts={3}", normalizedMemoryId, text4.Length, memoryBlockCount, dailyDraftCount));
 			Logger.Log("Logic", "[MemoryPerf] history_context_done hero=" + normalizedMemoryId + " blocks=" + memoryBlockCount + " drafts=" + dailyDraftCount + " overviewChars=" + ((memoryOverviewContext ?? "").Length) + " compressedChars=" + ((compressedMemoryContext ?? "").Length) + " totalChars=" + text4.Length + " npcRecall=" + (!string.IsNullOrWhiteSpace(secondaryInput)) + " includeCurrentSession=" + includeCurrentActiveSceneSession + " ms=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2));
+			if (IsNonHeroMemoryId(normalizedMemoryId))
+			{
+				LogNonHeroMemoryTrace("stage=history_context_done memoryId=" + normalizedMemoryId + " blocks=" + memoryBlockCount + " drafts=" + dailyDraftCount + " overviewChars=" + ((memoryOverviewContext ?? "").Length) + " compressedChars=" + ((compressedMemoryContext ?? "").Length) + " totalChars=" + text4.Length + " npcRecall=" + (!string.IsNullOrWhiteSpace(secondaryInput)) + " includeCurrentSession=" + includeCurrentActiveSceneSession + " ms=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2));
+			}
 			Logger.Obs("History", "build_context", new Dictionary<string, object>
 			{
 				["heroId"] = normalizedMemoryId,
@@ -26426,74 +26760,12 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private static string ExtractUniversalStreamDelta(JObject json)
 	{
-		if (json == null)
-		{
-			return "";
-		}
-		string delta = "";
-		if (json["choices"] is JArray choices)
-		{
-			foreach (JToken choice in choices)
-			{
-				delta = choice?["delta"]?["content"]?.ToString()
-					?? choice?["message"]?["content"]?.ToString()
-					?? choice?["text"]?.ToString();
-				if (!string.IsNullOrEmpty(delta))
-				{
-					return delta;
-				}
-			}
-		}
-		if (string.IsNullOrEmpty(delta))
-		{
-			delta = json.SelectToken("delta.content")?.ToString()
-				?? json.SelectToken("content")?.ToString()
-				?? json.SelectToken("text")?.ToString();
-		}
-		if (!string.IsNullOrEmpty(delta))
-		{
-			return delta;
-		}
-		return ExtractUniversalGeminiCandidateText(json.SelectToken("candidates[0]"));
+		return LlmApiCompat.ExtractStreamDeltaText(json);
 	}
 
 	private static bool IsUniversalStreamNonContentChunk(JObject json)
 	{
-		if (json == null)
-		{
-			return true;
-		}
-		if (json["choices"] is JArray choices)
-		{
-			if (choices.Count == 0)
-			{
-				return true;
-			}
-			bool sawReasoning = false;
-			foreach (JToken choice in choices)
-			{
-				string content = choice?["delta"]?["content"]?.ToString()
-					?? choice?["message"]?["content"]?.ToString()
-					?? choice?["text"]?.ToString();
-				if (!string.IsNullOrEmpty(content))
-				{
-					return false;
-				}
-				string reasoning = choice?["delta"]?["reasoning_content"]?.ToString()
-					?? choice?["delta"]?["reasoning"]?.ToString()
-					?? choice?["reasoning_content"]?.ToString();
-				if (!string.IsNullOrEmpty(reasoning))
-				{
-					sawReasoning = true;
-				}
-			}
-			if (sawReasoning)
-			{
-				return true;
-			}
-			return choices.Any((JToken choice) => choice?["finish_reason"] != null || choice?["delta"]?["role"] != null);
-		}
-		return json["usage"] != null;
+		return LlmApiCompat.IsNonContentStreamChunk(json);
 	}
 
 	private static string ExtractUniversalContentTokenText(JToken token)
@@ -26538,47 +26810,7 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private static string ExtractUniversalNonStreamContent(JObject json)
 	{
-		if (json == null)
-		{
-			return "";
-		}
-		StringBuilder stringBuilder = new StringBuilder();
-		if (json["choices"] is JArray choices)
-		{
-			foreach (JToken choice in choices)
-			{
-				string text = ExtractUniversalContentTokenText(choice?["message"]?["content"]);
-				if (string.IsNullOrEmpty(text))
-				{
-					text = ExtractUniversalContentTokenText(choice?["content"]);
-				}
-				if (string.IsNullOrEmpty(text))
-				{
-					text = choice?["text"]?.ToString() ?? "";
-				}
-				if (!string.IsNullOrEmpty(text))
-				{
-					stringBuilder.Append(text);
-				}
-			}
-		}
-		if (stringBuilder.Length > 0)
-		{
-			return stringBuilder.ToString();
-		}
-		string directText = ExtractUniversalContentTokenText(json.SelectToken("message.content"));
-		if (string.IsNullOrEmpty(directText))
-		{
-			directText = json.SelectToken("output_text")?.ToString()
-				?? json.SelectToken("content")?.ToString()
-				?? json.SelectToken("text")?.ToString()
-				?? "";
-		}
-		if (!string.IsNullOrEmpty(directText))
-		{
-			return directText;
-		}
-		return ExtractUniversalGeminiCandidateText(json.SelectToken("candidates[0]"));
+		return LlmApiCompat.ExtractAssistantText(json);
 	}
 
 	private async Task<ApiCallResult> CallUniversalApiDetailed(string sys, string user, bool logToEventLogs = false, string eventLogSource = "EventWeeklyReport", UniversalApiRoute route = UniversalApiRoute.Main, bool streamResponse = true, bool forceThinkingDisabled = false)
@@ -26631,7 +26863,7 @@ public class MyBehavior : CampaignBehaviorBase
 				thinkingEnabled = false;
 			}
 			DuelSettings.ApplyThinkingControls(body, effectiveApiUrl, modelName, thinkingEnabled, effort, out var thinkingMode);
-			string jsonBody = body.ToString(Formatting.None);
+			string jsonBody = LlmApiCompat.PrepareChatRequestJson(effectiveApiUrl, body);
 			string requestBodyForTokenStats = jsonBody;
 			JArray tokenStatsMessages = body["messages"] as JArray;
 			bool skipTokenStatsLog = logToEventLogs && string.Equals((eventLogSource ?? "").Trim(), "EventWeeklyReport", StringComparison.OrdinalIgnoreCase);
@@ -26654,7 +26886,7 @@ public class MyBehavior : CampaignBehaviorBase
 			HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, effectiveApiUrl);
 			try
 			{
-				request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
+				LlmApiCompat.ApplyAuthenticationHeaders(request, effectiveApiUrl, apiKey);
 				request.Content = (HttpContent)new StringContent(jsonBody, Encoding.UTF8, "application/json");
 				HttpResponseMessage response = await DuelSettings.GlobalClient.SendAsync(request, (HttpCompletionOption)1);
 				if (SaveRuntimeGuard.IsStale(runtimeGeneration, "universal_api_response:" + eventLogSource))
@@ -26684,7 +26916,7 @@ public class MyBehavior : CampaignBehaviorBase
 							string retryJsonBody = retryBody.ToString(Formatting.None);
 							requestBodyForTokenStats = retryJsonBody;
 							using HttpRequestMessage retryRequest = new HttpRequestMessage(HttpMethod.Post, effectiveApiUrl);
-							retryRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
+							LlmApiCompat.ApplyAuthenticationHeaders(retryRequest, effectiveApiUrl, apiKey);
 							retryRequest.Content = (HttpContent)new StringContent(retryJsonBody, Encoding.UTF8, "application/json");
 							response = await DuelSettings.GlobalClient.SendAsync(retryRequest, (HttpCompletionOption)1);
 							if (SaveRuntimeGuard.IsStale(runtimeGeneration, "universal_api_retry_response:" + eventLogSource))
@@ -48724,4 +48956,17 @@ public class MyBehavior : CampaignBehaviorBase
 		return Path.Combine(playerExportsRootPath, text2);
 	}
 
+}
+
+public sealed class MyBehaviorSaveableTypeDefiner : SaveableTypeDefiner
+{
+	public MyBehaviorSaveableTypeDefiner()
+		: base(711100)
+	{
+	}
+
+	protected override void DefineContainerDefinitions()
+	{
+		ConstructContainerDefinition(typeof(Dictionary<MobileParty, string>));
+	}
 }

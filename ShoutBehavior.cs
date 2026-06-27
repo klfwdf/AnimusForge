@@ -13330,6 +13330,53 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 	}
 
+	public static bool TryGetNativeConversationPersistentHistoryTargetForExternal(out Hero targetHero, out string targetName, out string memoryId)
+	{
+		targetHero = null;
+		targetName = "";
+		memoryId = "";
+		try
+		{
+			if (!TryResolveNativeConversationTarget(out var hero, out var character, out var npcName))
+			{
+				return false;
+			}
+			targetHero = hero ?? character?.HeroObject;
+			targetName = (targetHero?.Name?.ToString() ?? character?.Name?.ToString() ?? npcName ?? "").Trim();
+			if (targetHero != null)
+			{
+				memoryId = (targetHero.StringId ?? "").Trim();
+				return !string.IsNullOrWhiteSpace(memoryId) || !string.IsNullOrWhiteSpace(targetName);
+			}
+			int targetAgentIndex = TryResolveNativeConversationAgentIndex(targetHero, character);
+			NpcDataPacket npc = BuildNativeConversationNpcData(targetHero, character);
+			if (npc != null && targetAgentIndex >= 0)
+			{
+				npc.AgentIndex = targetAgentIndex;
+			}
+			// 读档后原生自由对话的短期 session 表会清空；右上角历史必须回到同一个 af_nonhero 持久记忆 ID 读取。
+			if (TryResolveWildernessNonHeroMemory(npc, targetHero, character, targetAgentIndex, out var nonHeroMemoryId, out var nonHeroMemoryName))
+			{
+				memoryId = nonHeroMemoryId;
+				if (!string.IsNullOrWhiteSpace(nonHeroMemoryName))
+				{
+					targetName = nonHeroMemoryName.Trim();
+				}
+				Logger.Log("NativeConversationHistory", "persistent_target kind=nonhero memoryId=" + memoryId + " targetName=" + targetName + " agent=" + targetAgentIndex);
+				return !string.IsNullOrWhiteSpace(memoryId);
+			}
+			return !string.IsNullOrWhiteSpace(targetName);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("NativeConversationHistory", "[WARN] persistent target resolve failed: " + ex.Message);
+			targetHero = null;
+			targetName = "";
+			memoryId = "";
+			return false;
+		}
+	}
+
 	public static List<AnimusForgeDialogueHistoryEntry> GetNativeConversationSessionHistoryEntriesForExternal(int maxLines = 260)
 	{
 		try
@@ -13501,6 +13548,12 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			{
 				return (hero.StringId ?? "").Trim();
 			}
+			// 野外非 hero 大地图部队必须和长期记忆使用同一个 party-scoped key。
+			// 否则同名劫匪/商队会在原生对话短期历史里按兵种或名字合流，看起来仍然共享记忆。
+			if (TryResolveWildernessNonHeroMemory(npc, null, character, targetAgentIndex, out var wildernessMemoryId, out var _))
+			{
+				return wildernessMemoryId;
+			}
 			string key = (npc != null && !npc.IsHero) ? (npc.UnnamedKey ?? "").Trim() : "";
 			if (string.IsNullOrWhiteSpace(key))
 			{
@@ -13513,6 +13566,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				{
 					key += "|agent:" + targetAgentIndex;
 				}
+				// 这里只能作为非野外或场景临时 NPC 的 fallback。
+				// 大地图非 hero 部队已在上方转成 af_nonhero:...|party:party_string_id/party_guid，不能退回 troop/name 共享键。
 				return "native_nonhero:" + key;
 			}
 			string characterId = NormalizeWildernessNonHeroMemoryKeyPart(character?.StringId);
@@ -13727,11 +13782,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		return "";
 	}
 
-	private static List<AnimusForgeDialogueHistoryEntry> GetNativeConversationSessionHistorySnapshot(Hero targetHero, CharacterObject targetCharacter, string npcName, int targetAgentIndex = -1, int maxLines = 24)
+	private static List<AnimusForgeDialogueHistoryEntry> GetNativeConversationSessionHistorySnapshot(Hero targetHero, CharacterObject targetCharacter, string npcName, int targetAgentIndex = -1, int maxLines = 24, NpcDataPacket npc = null)
 	{
 		try
 		{
-			string key = BuildNativeConversationHistoryKey(targetHero, targetCharacter, npcName, targetAgentIndex);
+			string key = BuildNativeConversationHistoryKey(targetHero, targetCharacter, npcName, targetAgentIndex, npc);
 			if (string.IsNullOrWhiteSpace(key))
 			{
 				return new List<AnimusForgeDialogueHistoryEntry>();
@@ -13776,11 +13831,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 	}
 
-	private static bool HasNativeConversationSessionHistory(Hero targetHero, CharacterObject targetCharacter, string npcName, int targetAgentIndex = -1)
+	private static bool HasNativeConversationSessionHistory(Hero targetHero, CharacterObject targetCharacter, string npcName, int targetAgentIndex = -1, NpcDataPacket npc = null)
 	{
 		try
 		{
-			string key = BuildNativeConversationHistoryKey(targetHero, targetCharacter, npcName, targetAgentIndex);
+			string key = BuildNativeConversationHistoryKey(targetHero, targetCharacter, npcName, targetAgentIndex, npc);
 			if (string.IsNullOrWhiteSpace(key))
 			{
 				return false;
@@ -13796,12 +13851,12 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 	}
 
-	private static List<ConversationMessage> BuildNativeConversationSessionHistoryMessages(Hero targetHero, CharacterObject targetCharacter, string npcName, int targetAgentIndex, int maxLines = 24)
+	private static List<ConversationMessage> BuildNativeConversationSessionHistoryMessages(Hero targetHero, CharacterObject targetCharacter, string npcName, int targetAgentIndex, int maxLines = 24, NpcDataPacket npc = null)
 	{
 		List<ConversationMessage> list = new List<ConversationMessage>();
 		try
 		{
-			List<AnimusForgeDialogueHistoryEntry> entries = GetNativeConversationSessionHistorySnapshot(targetHero, targetCharacter, npcName, targetAgentIndex, maxLines);
+			List<AnimusForgeDialogueHistoryEntry> entries = GetNativeConversationSessionHistorySnapshot(targetHero, targetCharacter, npcName, targetAgentIndex, maxLines, npc);
 			string targetName = (npcName ?? "").Trim();
 			string npcSpeakerName = string.IsNullOrWhiteSpace(targetName) ? "NPC" : targetName;
 			float playerDistanceMeters = GetPlayerDistanceToAgentForScenePrompt(targetAgentIndex);
@@ -13891,7 +13946,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			Hero hero = character?.HeroObject;
 			NpcDataPacket npc = ShoutUtils.ExtractNpcData(agent);
 			string npcName = (npc != null) ? GetSceneNpcHistoryNameForPrompt(npc) : (hero?.Name?.ToString() ?? character?.Name?.ToString() ?? "");
-			return BuildNativeConversationSessionHistoryMessages(hero, character, npcName, targetAgentIndex, maxLines);
+			return BuildNativeConversationSessionHistoryMessages(hero, character, npcName, targetAgentIndex, maxLines, npc);
 		}
 		catch
 		{
@@ -13901,12 +13956,42 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 
 	private static List<ConversationMessage> BuildUncompressedMemoryRoleMessagesForPrompt(Hero hero, int targetAgentIndex)
 	{
+		return BuildUncompressedMemoryRoleMessagesForPrompt(hero, null, null, targetAgentIndex);
+	}
+
+	private static List<ConversationMessage> BuildUncompressedMemoryRoleMessagesForPrompt(Hero hero, CharacterObject targetCharacter, NpcDataPacket npc, int targetAgentIndex)
+	{
 		try
 		{
-			return MyBehavior.BuildUncompressedMemoryRoleMessagesForExternal(hero, targetAgentIndex, includeCurrentActiveSceneSession: false) ?? new List<ConversationMessage>();
+			if (hero != null)
+			{
+				return MyBehavior.BuildUncompressedMemoryRoleMessagesForExternal(hero, targetAgentIndex, includeCurrentActiveSceneSession: false) ?? new List<ConversationMessage>();
+			}
+			NpcDataPacket resolvedNpc = npc;
+			CharacterObject resolvedCharacter = targetCharacter;
+			if ((resolvedNpc == null || resolvedCharacter == null) && targetAgentIndex >= 0 && Mission.Current?.Agents != null)
+			{
+				Agent agent = Mission.Current.Agents.FirstOrDefault((Agent a) => a != null && a.Index == targetAgentIndex && a.IsActive());
+				resolvedCharacter ??= agent?.Character as CharacterObject;
+				resolvedNpc ??= ShoutUtils.ExtractNpcData(agent);
+			}
+			if (resolvedNpc != null && resolvedNpc.AgentIndex < 0 && targetAgentIndex >= 0)
+			{
+				resolvedNpc.AgentIndex = targetAgentIndex;
+			}
+			if (TryResolveWildernessNonHeroMemory(resolvedNpc, null, resolvedCharacter, targetAgentIndex, out var memoryId, out var memoryName))
+			{
+				List<ConversationMessage> messages = MyBehavior.BuildNonHeroUncompressedMemoryRoleMessagesForExternal(memoryId, memoryName, targetAgentIndex, includeCurrentActiveSceneSession: false) ?? new List<ConversationMessage>();
+				// 读档后原生短期会话历史会清空，非 hero 必须从同一个 af_nonhero 记忆 ID 注入未压缩长期记忆。
+				LogNonHeroMemoryTrace("stage=uncompressed_inject agent=" + targetAgentIndex + " memoryId=" + memoryId + " memoryName=" + memoryName + " messages=" + messages.Count);
+				return messages;
+			}
+			LogNonHeroMemoryTrace("stage=uncompressed_inject agent=" + targetAgentIndex + " memoryId= reason=resolve_failed messages=0 character=" + (resolvedCharacter?.StringId ?? "") + " npc=" + (resolvedNpc?.TroopId ?? resolvedNpc?.UnnamedKey ?? ""));
+			return new List<ConversationMessage>();
 		}
-		catch
+		catch (Exception ex)
 		{
+			LogNonHeroMemoryTrace("stage=uncompressed_inject agent=" + targetAgentIndex + " memoryId= reason=exception messages=0 error=" + ex.Message);
 			return new List<ConversationMessage>();
 		}
 	}
@@ -13924,6 +14009,12 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			{
 				Agent agent = Mission.Current.Agents.FirstOrDefault((Agent a) => a != null && a.Index == targetAgentIndex && a.IsActive());
 				hero = (agent?.Character as CharacterObject)?.HeroObject;
+				if (hero == null)
+				{
+					CharacterObject character = agent?.Character as CharacterObject;
+					NpcDataPacket npc = ShoutUtils.ExtractNpcData(agent);
+					return BuildUncompressedMemoryRoleMessagesForPrompt(null, character, npc, targetAgentIndex);
+				}
 			}
 			return BuildUncompressedMemoryRoleMessagesForPrompt(hero, targetAgentIndex);
 		}
@@ -14197,22 +14288,99 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		return text;
 	}
 
+	private static void LogNonHeroMemoryTrace(string message)
+	{
+		try
+		{
+			Logger.Log("Logic", "[NonHeroMemoryTrace] " + (message ?? ""));
+		}
+		catch
+		{
+		}
+	}
+
+	private static string BuildWildernessNonHeroPartyTrace(MobileParty party)
+	{
+		try
+		{
+			if (party == null)
+			{
+				return "party=null";
+			}
+			PartyBase partyBase = party.Party;
+			return "partyStringId=" + (party.StringId ?? "")
+				+ " partyName=" + ((party.Name?.ToString() ?? "").Replace("\r", " ").Replace("\n", " ").Trim())
+				+ " partyIndex=" + (partyBase?.Index ?? -1)
+				+ " mapFaction=" + (party.MapFaction?.StringId ?? "")
+				+ " leader=" + (party.LeaderHero?.StringId ?? "");
+		}
+		catch
+		{
+			return "party=trace_failed";
+		}
+	}
+
 	private static string BuildWildernessNonHeroPartyMemoryKey(int agentIndex)
 	{
 		try
 		{
 			MobileParty party = TryResolveWildernessNonHeroMobileParty(agentIndex);
-			string key = NormalizeWildernessNonHeroMemoryKeyPart(party?.StringId);
-			if (string.IsNullOrWhiteSpace(key))
+			string partyStringId = NormalizeWildernessNonHeroMemoryKeyPart(party?.StringId);
+			if (!string.IsNullOrWhiteSpace(partyStringId))
 			{
-				key = NormalizeWildernessNonHeroMemoryKeyPart(party?.Name?.ToString());
+				// MobileParty.StringId 是 Bannerlord 为每支 MobileParty 分配并随存档保存的唯一对象 ID。
+				// 只用 StringId，不用显示名称；同名劫匪/商队可以同名，但 StringId 不同。
+				LogNonHeroMemoryTrace("stage=party_key ok=1 mode=party_string_id agent=" + agentIndex + " key=party_string_id:" + partyStringId + " " + BuildWildernessNonHeroPartyTrace(party));
+				return "party_string_id:" + partyStringId;
 			}
-			return key;
+			string savedPartyKey = MyBehavior.GetOrCreateWildernessNonHeroPartyMemoryKeyForExternal(party);
+			if (!string.IsNullOrWhiteSpace(savedPartyKey))
+			{
+				// 备用路径：如果某些非原版部队没有 StringId，再使用本模组存档内 GUID。
+				LogNonHeroMemoryTrace("stage=party_key ok=1 mode=party_guid agent=" + agentIndex + " key=" + savedPartyKey + " " + BuildWildernessNonHeroPartyTrace(party));
+				return savedPartyKey;
+			}
+			PartyBase partyBase = party?.Party;
+			if (partyBase != null && partyBase.Index >= 0)
+			{
+				// 仅作为极端 fallback。party_index 不能作为持久记忆主键，读档后可能查不到旧记忆。
+				LogNonHeroMemoryTrace("stage=party_key ok=1 mode=party_index agent=" + agentIndex + " key=party_index:" + partyBase.Index + " " + BuildWildernessNonHeroPartyTrace(party));
+				return "party_index:" + partyBase.Index;
+			}
+			// 不要退回显示名称：刷新的劫匪、商队经常同名，会再次共享记忆。
+			LogNonHeroMemoryTrace("stage=party_key ok=0 reason=no_stable_party_key agent=" + agentIndex + " " + BuildWildernessNonHeroPartyTrace(party));
+			return "";
 		}
-		catch
+		catch (Exception ex)
+		{
+			LogNonHeroMemoryTrace("stage=party_key ok=0 reason=exception agent=" + agentIndex + " error=" + ex.Message);
+			return "";
+		}
+	}
+
+	private static string BuildWildernessNonHeroCharacterMemoryKey(CharacterObject character, MobileParty party)
+	{
+		string troopKey = NormalizeWildernessNonHeroMemoryKeyPart(character?.StringId);
+		if (string.IsNullOrWhiteSpace(troopKey))
 		{
 			return "";
 		}
+		string key = "troop:" + troopKey;
+		string factionKey = NormalizeWildernessNonHeroMemoryKeyPart(party?.MapFaction?.StringId);
+		if (string.IsNullOrWhiteSpace(factionKey))
+		{
+			factionKey = NormalizeWildernessNonHeroMemoryKeyPart(character?.Culture?.StringId);
+		}
+		if (!string.IsNullOrWhiteSpace(factionKey))
+		{
+			key += ":kingdom:" + factionKey;
+		}
+		string leaderKey = NormalizeWildernessNonHeroMemoryKeyPart(party?.LeaderHero?.StringId);
+		if (!string.IsNullOrWhiteSpace(leaderKey))
+		{
+			key += ":lord:" + leaderKey;
+		}
+		return key;
 	}
 
 	private static bool TryResolveWildernessNonHeroMemory(NpcDataPacket npc, Hero targetHero, CharacterObject targetCharacter, int agentIndex, out string memoryId, out string memoryName)
@@ -14227,28 +14395,52 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			}
 			if (!IsWildernessNonHeroMemoryScope(agentIndex))
 			{
+				LogNonHeroMemoryTrace("stage=resolve ok=0 reason=not_wilderness_scope agent=" + agentIndex);
 				return false;
 			}
+			MobileParty party = TryResolveWildernessNonHeroMobileParty(agentIndex);
 			NpcDataPacket data = npc;
+			CharacterObject character = targetCharacter;
 			if ((data == null || string.IsNullOrWhiteSpace(data.UnnamedKey)) && agentIndex >= 0)
 			{
 				Agent agent = Mission.Current?.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == agentIndex && a.IsActive());
 				data = ShoutUtils.ExtractNpcData(agent) ?? data;
+				character ??= agent?.Character as CharacterObject;
 			}
 			string key = (data?.UnnamedKey ?? "").Trim();
 			if (string.IsNullOrWhiteSpace(key))
 			{
+				key = BuildWildernessNonHeroCharacterMemoryKey(character, party);
+			}
+			if (string.IsNullOrWhiteSpace(key) && !string.IsNullOrWhiteSpace(data?.TroopId))
+			{
+				key = "troop:" + NormalizeWildernessNonHeroMemoryKeyPart(data.TroopId);
+			}
+			if (string.IsNullOrWhiteSpace(key))
+			{
+				LogNonHeroMemoryTrace("stage=resolve ok=0 reason=no_base_key agent=" + agentIndex + " troop=" + (character?.StringId ?? data?.TroopId ?? "") + " " + BuildWildernessNonHeroPartyTrace(party));
 				return false;
 			}
 			string partyKey = BuildWildernessNonHeroPartyMemoryKey(agentIndex);
-			if (!string.IsNullOrWhiteSpace(partyKey))
+			if (string.IsNullOrWhiteSpace(partyKey))
 			{
-				key = key + "|party:" + partyKey;
+				LogNonHeroMemoryTrace("stage=resolve ok=0 reason=no_party_key agent=" + agentIndex + " baseKey=" + NormalizeWildernessNonHeroMemoryKeyPart(key) + " " + BuildWildernessNonHeroPartyTrace(party));
+				return false;
 			}
+			key = key + "|party:" + partyKey;
 			memoryId = MyBehavior.BuildNonHeroMemoryIdForExternal(key);
 			if (string.IsNullOrWhiteSpace(memoryId))
 			{
+				LogNonHeroMemoryTrace("stage=resolve ok=0 reason=no_memory_id agent=" + agentIndex + " baseKey=" + NormalizeWildernessNonHeroMemoryKeyPart(key) + " partyKey=" + partyKey + " " + BuildWildernessNonHeroPartyTrace(party));
 				return false;
+			}
+			// 读档稳定性以 party_string_id 为准；这里仅把同一支部队的旧 GUID/未标注 StringId 记录迁到新 key。
+			// 不迁移显示名称或兵种共享 key，避免同名劫匪、商队再次合并记忆。
+			MyBehavior.MigrateNonHeroPartyScopedMemoryForExternal(memoryId, partyKey);
+			string oldGuidPartyKey = MyBehavior.GetExistingWildernessNonHeroPartyMemoryKeyForExternal(party);
+			if (!string.IsNullOrWhiteSpace(oldGuidPartyKey) && !string.Equals(oldGuidPartyKey, partyKey, StringComparison.OrdinalIgnoreCase))
+			{
+				MyBehavior.MigrateNonHeroPartyScopedMemoryForExternal(memoryId, oldGuidPartyKey);
 			}
 			memoryName = (data != null ? GetSceneNpcHistoryNameForPrompt(data) : "").Trim();
 			if (string.IsNullOrWhiteSpace(memoryName))
@@ -14259,10 +14451,12 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			{
 				memoryName = "NPC";
 			}
+			LogNonHeroMemoryTrace("stage=resolve ok=1 agent=" + agentIndex + " memoryId=" + memoryId + " memoryName=" + memoryName + " baseKey=" + NormalizeWildernessNonHeroMemoryKeyPart(key) + " partyKey=" + partyKey + " troop=" + (character?.StringId ?? data?.TroopId ?? "") + " oldGuidKey=" + (oldGuidPartyKey ?? "") + " " + BuildWildernessNonHeroPartyTrace(party));
 			return true;
 		}
-		catch
+		catch (Exception ex)
 		{
+			LogNonHeroMemoryTrace("stage=resolve ok=0 reason=exception agent=" + agentIndex + " error=" + ex.Message);
 			memoryId = "";
 			memoryName = "";
 			return false;
@@ -14431,17 +14625,22 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 	{
 		if (!TryResolveWildernessNonHeroMemory(npc, targetHero, targetCharacter, agentIndex, out var memoryId, out var memoryName))
 		{
+			LogNonHeroMemoryTrace("stage=history_context_request ok=0 reason=resolve_failed agent=" + agentIndex);
 			return "";
 		}
-		return (MyBehavior.BuildNonHeroHistoryContextForExternal(memoryId, memoryName, 0, currentInput, secondaryInput, includeCurrentActiveSceneSession) ?? "").Trim();
+		string context = (MyBehavior.BuildNonHeroHistoryContextForExternal(memoryId, memoryName, 0, currentInput, secondaryInput, includeCurrentActiveSceneSession) ?? "").Trim();
+		LogNonHeroMemoryTrace("stage=history_context_request ok=1 agent=" + agentIndex + " memoryId=" + memoryId + " memoryName=" + memoryName + " chars=" + context.Length + " includeCurrentSession=" + includeCurrentActiveSceneSession + " currentInputLen=" + ((currentInput ?? "").Length) + " secondaryInputLen=" + ((secondaryInput ?? "").Length));
+		return context;
 	}
 
 	private static void AppendWildernessNonHeroMemory(NpcDataPacket npc, Hero targetHero, CharacterObject targetCharacter, int agentIndex, string playerText, string aiText, string extraFact, int sceneSessionId = -1)
 	{
 		if (!TryResolveWildernessNonHeroMemory(npc, targetHero, targetCharacter, agentIndex, out var memoryId, out var memoryName))
 		{
+			LogNonHeroMemoryTrace("stage=append_request ok=0 reason=resolve_failed agent=" + agentIndex + " playerLen=" + ((playerText ?? "").Length) + " aiLen=" + ((aiText ?? "").Length) + " factLen=" + ((extraFact ?? "").Length) + " sceneSession=" + sceneSessionId);
 			return;
 		}
+		LogNonHeroMemoryTrace("stage=append_request ok=1 agent=" + agentIndex + " memoryId=" + memoryId + " memoryName=" + memoryName + " playerLen=" + ((playerText ?? "").Length) + " aiLen=" + ((aiText ?? "").Length) + " factLen=" + ((extraFact ?? "").Length) + " sceneSession=" + sceneSessionId);
 		if (sceneSessionId >= 0)
 		{
 			MyBehavior.AppendExternalNonHeroSceneDialogueHistory(memoryId, memoryName, playerText, aiText, extraFact, sceneSessionId);
@@ -15745,7 +15944,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		string cultureId = npc.CultureId ?? "neutral";
 		// Do not feed vanilla conversation UI text into AF prompt history.
 		string currentNativeDialogText = "";
-		bool hadNativeConversationSessionHistoryBeforeTurn = HasNativeConversationSessionHistory(targetHero, targetCharacter, npcName, nativeTargetAgentIndex);
+		bool hadNativeConversationSessionHistoryBeforeTurn = HasNativeConversationSessionHistory(targetHero, targetCharacter, npcName, nativeTargetAgentIndex, npc);
 		if (proactiveNpcOpening && !string.IsNullOrWhiteSpace(proactiveFactText))
 		{
 			AppendNativeConversationSessionHistory(targetHero, targetCharacter, npcName, "系统", proactiveFactText, "fact", targetAgentIndex: nativeTargetAgentIndex, npc: npc);
@@ -15859,8 +16058,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 		string nativePendingAfefKey = BuildNativeConversationHistoryKey(targetHero, targetCharacter, npcName, nativeTargetAgentIndex, npc);
 		List<ConversationMessage> pendingNativeCurrentAfefFacts = ConsumePendingCurrentNativeAfefFactMessagesForPrompt(nativePendingAfefKey);
-		List<ConversationMessage> nativeHistoryMessages = BuildNativeConversationSessionHistoryMessages(targetHero, targetCharacter, npcName, nativeTargetAgentIndex);
-		List<ConversationMessage> persistentMemoryRoleMessages = hadNativeConversationSessionHistoryBeforeTurn ? new List<ConversationMessage>() : BuildUncompressedMemoryRoleMessagesForPrompt(targetHero ?? targetCharacter?.HeroObject, nativeTargetAgentIndex);
+		List<ConversationMessage> nativeHistoryMessages = BuildNativeConversationSessionHistoryMessages(targetHero, targetCharacter, npcName, nativeTargetAgentIndex, npc: npc);
+		List<ConversationMessage> persistentMemoryRoleMessages = hadNativeConversationSessionHistoryBeforeTurn ? new List<ConversationMessage>() : BuildUncompressedMemoryRoleMessagesForPrompt(targetHero ?? targetCharacter?.HeroObject, targetCharacter, npc, nativeTargetAgentIndex);
 		string taskSystemBlock = BuildSceneSingleNpcTaskSystemBlock(GetSceneNpcHistoryNameForPrompt(npc), false, minTokens, maxTokens, playerName);
 		string layeredPrompt = BuildSceneCompositeUserBlock("", roleTopIntro, taskSystemBlock);
 		layeredPrompt = AppendPlayerCustomPromptRuleToSystemPrompt(layeredPrompt);
@@ -24655,7 +24854,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		string layeredPrompt = AppendPlayerCustomPromptRuleToSystemPrompt(roleTopIntro);
 		layeredPrompt = BuildSceneCompositeUserBlock("", BuildSceneCompositeUserBlock("", gcczIdentityOverrideBlock, systemRuleBlock), layeredPrompt);
 		string extraFactUserBlock = BuildCurrentAfefFactPromptBlock(extraFactLine);
-		List<ConversationMessage> persistentMemoryRoleMessages = BuildUncompressedMemoryRoleMessagesForPrompt(contextHero, targetNpc.AgentIndex);
+		List<ConversationMessage> persistentMemoryRoleMessages = BuildUncompressedMemoryRoleMessagesForPrompt(contextHero, npcCharacter, targetNpc, targetNpc.AgentIndex);
 		List<object> messages = BuildStrictSceneMessagesForNpc(targetNpc.AgentIndex, layeredPrompt, new string[4] { privateRecentWindowSection, persistedWithoutRecentWindow, BuildSceneCompositeUserBlock("", roleRuntimeContext, knowledgeExtrasSection), BuildSceneCompositeUserBlock("", text, extraFactUserBlock) }, new string[1] { singleReplyUserContent }, suppressReplyFormatInstruction: true, persistentHistoryMessages: persistentMemoryRoleMessages);
 		if (!AIConfigHandler.TryCallAuxiliarySimpleDialogue(messages, 80, 0.35f, out var text2, out var error))
 		{
@@ -31567,7 +31766,7 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 		string roleRuntimeContext = BuildCompactSceneUserRuntimeContextForShortReply(targetNpc, contextHero, new List<NpcDataPacket> { targetNpc }, partyTransferTopicSelected: partyTransferTopicSelected);
 		string layeredPrompt = AppendPlayerCustomPromptRuleToSystemPrompt(roleTopIntro);
 		layeredPrompt = BuildSceneCompositeUserBlock("", BuildSceneCompositeUserBlock("", gcczIdentityOverrideBlock, systemRuleBlock), layeredPrompt);
-		List<ConversationMessage> persistentMemoryRoleMessages = BuildUncompressedMemoryRoleMessagesForPrompt(contextHero, targetNpc.AgentIndex);
+		List<ConversationMessage> persistentMemoryRoleMessages = BuildUncompressedMemoryRoleMessagesForPrompt(contextHero, npcCharacter, targetNpc, targetNpc.AgentIndex);
 		List<object> messages = BuildStrictSceneMessagesForNpc(targetNpc.AgentIndex, layeredPrompt, new string[3] { privateRecentWindowSection, persistedWithoutRecentWindow, BuildSceneCompositeUserBlock("", roleRuntimeContext, knowledgeExtrasSection, text) }, new string[1] { "请只根据你当前可见的场景消息、你自己的身份、处境和性格，回复一段发言，" + BuildSimpleDialogueReplyLengthInstruction(minTokens, maxTokens) + "，只输出你嘴里说出的话，不要描述你的行为和思考。" }, suppressReplyFormatInstruction: true, persistentHistoryMessages: persistentMemoryRoleMessages);
 		if (!AIConfigHandler.TryCallAuxiliarySimpleDialogue(messages, maxTokens, 0.35f, out var text2, out var error))
 		{

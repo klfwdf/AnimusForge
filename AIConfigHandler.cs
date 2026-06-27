@@ -2499,7 +2499,8 @@ public static class AIConfigHandler
 
 	public static string BuildAuxiliaryRouterRequestJsonForExternal(string apiUrl, string modelName, IEnumerable<object> messages, int maxTokens, float temperature, out string controlMode, bool disableThinkingControls = false, bool useConfiguredMaxTokens = true)
 	{
-		return BuildAuxiliaryRouterRequestPayload(apiUrl, modelName, messages, maxTokens, temperature, out controlMode, disableThinkingControls, useConfiguredMaxTokens).ToString(Formatting.None);
+		JObject payload = BuildAuxiliaryRouterRequestPayload(apiUrl, modelName, messages, maxTokens, temperature, out controlMode, disableThinkingControls, useConfiguredMaxTokens);
+		return LlmApiCompat.PrepareChatRequestJson(apiUrl, payload);
 	}
 
 	private static string BuildAuxiliarySimpleDialogueRequestJson(string apiUrl, string modelName, IEnumerable<object> messages, int maxTokens, float temperature, out string controlMode)
@@ -2510,7 +2511,7 @@ public static class AIConfigHandler
 		{
 			controlMode = disabledThinkingMode;
 		}
-		return payload.ToString(Formatting.None);
+		return LlmApiCompat.PrepareChatRequestJson(apiUrl, payload);
 	}
 
 	private static bool TryGetAuxiliaryRuleRoutingConfig(out string apiUrl, out string apiKey, out string modelName)
@@ -2982,10 +2983,10 @@ public static class AIConfigHandler
 			ResolveActionPostprocessApiSettings(apiUrl, apiKey, modelName, temperature, out var thinkingEnabled, out var effort, out var effectiveTemperature);
 			payload["temperature"] = effectiveTemperature;
 			DuelSettings.ApplyThinkingControls(payload, apiUrl, modelName, thinkingEnabled, effort, out var controlMode);
-			string jsonBody = payload.ToString(Formatting.None);
+			string jsonBody = LlmApiCompat.PrepareChatRequestJson(apiUrl, payload);
 			requestBodyForTokenStats = jsonBody;
 			using HttpRequestMessage httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, apiUrl);
-			httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
+			LlmApiCompat.ApplyAuthenticationHeaders(httpRequestMessage, apiUrl, apiKey);
 			httpRequestMessage.Content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
 			HttpResponseMessage result = DuelSettings.GlobalClient.SendAsync(httpRequestMessage, timeoutCts.Token).GetAwaiter().GetResult();
 			string text = result.Content.ReadAsStringAsync().GetAwaiter().GetResult();
@@ -2997,7 +2998,7 @@ public static class AIConfigHandler
 				string retryBody = retryPayload.ToString(Formatting.None);
 				requestBodyForTokenStats = retryBody;
 				using HttpRequestMessage httpRequestMessage2 = new HttpRequestMessage(HttpMethod.Post, apiUrl);
-				httpRequestMessage2.Headers.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
+				LlmApiCompat.ApplyAuthenticationHeaders(httpRequestMessage2, apiUrl, apiKey);
 				httpRequestMessage2.Content = new StringContent(retryBody, Encoding.UTF8, "application/json");
 				result = DuelSettings.GlobalClient.SendAsync(httpRequestMessage2, timeoutCts.Token).GetAwaiter().GetResult();
 				text = result.Content.ReadAsStringAsync().GetAwaiter().GetResult();
@@ -3010,7 +3011,7 @@ public static class AIConfigHandler
 				return false;
 			}
 			JObject jObject = JObject.Parse(text);
-			content = (jObject["choices"]?[0]?["message"]?["content"]?.ToString() ?? "").Trim();
+			content = LlmApiCompat.ExtractAssistantText(jObject).Trim();
 			if (string.IsNullOrWhiteSpace(content))
 			{
 				error = "empty_content";
@@ -3051,7 +3052,7 @@ public static class AIConfigHandler
 			string jsonBody = BuildAuxiliarySimpleDialogueRequestJson(apiUrl, modelName, array, Math.Max(16, maxTokens), temperature, out var controlMode);
 			requestBodyForTokenStats = jsonBody;
 			using HttpRequestMessage httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, apiUrl);
-			httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
+			LlmApiCompat.ApplyAuthenticationHeaders(httpRequestMessage, apiUrl, apiKey);
 			httpRequestMessage.Content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
 			HttpResponseMessage result = DuelSettings.GlobalClient.SendAsync(httpRequestMessage).GetAwaiter().GetResult();
 			string text = result.Content.ReadAsStringAsync().GetAwaiter().GetResult();
@@ -3063,7 +3064,7 @@ public static class AIConfigHandler
 				string content2 = jObject2.ToString(Formatting.None);
 				requestBodyForTokenStats = content2;
 				using HttpRequestMessage httpRequestMessage2 = new HttpRequestMessage(HttpMethod.Post, apiUrl);
-				httpRequestMessage2.Headers.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
+				LlmApiCompat.ApplyAuthenticationHeaders(httpRequestMessage2, apiUrl, apiKey);
 				httpRequestMessage2.Content = new StringContent(content2, Encoding.UTF8, "application/json");
 				result = DuelSettings.GlobalClient.SendAsync(httpRequestMessage2).GetAwaiter().GetResult();
 				text = result.Content.ReadAsStringAsync().GetAwaiter().GetResult();
@@ -3076,7 +3077,7 @@ public static class AIConfigHandler
 				return false;
 			}
 			JObject jObject = JObject.Parse(text);
-			content = (jObject["choices"]?[0]?["message"]?["content"]?.ToString() ?? "").Trim();
+			content = LlmApiCompat.ExtractAssistantText(jObject).Trim();
 			if (string.IsNullOrWhiteSpace(content))
 			{
 				error = "empty_content";
@@ -3933,7 +3934,7 @@ public static class AIConfigHandler
 			string jsonBody = BuildAuxiliaryRouterRequestJsonForExternal(apiUrl, modelName, array, 5000, 0f, out var controlMode);
 			requestBodyForTokenStats = jsonBody;
 			using HttpRequestMessage httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, apiUrl);
-			httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
+			LlmApiCompat.ApplyAuthenticationHeaders(httpRequestMessage, apiUrl, apiKey);
 			httpRequestMessage.Content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
 			HttpResponseMessage result = DuelSettings.GlobalClient.SendAsync(httpRequestMessage).GetAwaiter().GetResult();
 			string text = result.Content.ReadAsStringAsync().GetAwaiter().GetResult();
@@ -3945,7 +3946,7 @@ public static class AIConfigHandler
 				string content2 = jObject2.ToString(Formatting.None);
 				requestBodyForTokenStats = content2;
 				using HttpRequestMessage httpRequestMessage2 = new HttpRequestMessage(HttpMethod.Post, apiUrl);
-				httpRequestMessage2.Headers.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
+				LlmApiCompat.ApplyAuthenticationHeaders(httpRequestMessage2, apiUrl, apiKey);
 				httpRequestMessage2.Content = new StringContent(content2, Encoding.UTF8, "application/json");
 				result = DuelSettings.GlobalClient.SendAsync(httpRequestMessage2).GetAwaiter().GetResult();
 				text = result.Content.ReadAsStringAsync().GetAwaiter().GetResult();
@@ -3958,7 +3959,7 @@ public static class AIConfigHandler
 				return false;
 			}
 			JObject jObject = JObject.Parse(text);
-			content = (jObject["choices"]?[0]?["message"]?["content"]?.ToString() ?? "").Trim();
+			content = LlmApiCompat.ExtractAssistantText(jObject).Trim();
 			if (string.IsNullOrWhiteSpace(content))
 			{
 				error = "empty_content";

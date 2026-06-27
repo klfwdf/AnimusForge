@@ -10951,12 +10951,12 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 			}
 		};
 		jObject["messages"] = value;
-		string text = jObject.ToString(Formatting.None);
+		string text = LlmApiCompat.PrepareChatRequestJson(effectiveApiUrl, jObject);
 		using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(45.0));
 		HttpRequestMessage val = new HttpRequestMessage(HttpMethod.Post, effectiveApiUrl);
 		try
 		{
-			val.Headers.Authorization = new AuthenticationHeaderValue("Bearer", settings.ApiKey);
+			LlmApiCompat.ApplyAuthenticationHeaders(val, effectiveApiUrl, settings.ApiKey);
 			val.Content = (HttpContent)new StringContent(text, Encoding.UTF8, "application/json");
 			HttpResponseMessage result = ((HttpMessageInvoker)DuelSettings.GlobalClient).SendAsync(val, cancellationTokenSource.Token).GetAwaiter().GetResult();
 			try
@@ -10974,7 +10974,7 @@ private static bool IsMatch(LoreWhen when, Hero npcHero, CharacterObject npcChar
 				try
 				{
 					JObject jObject2 = JObject.Parse(result2);
-					string text3 = ((string)jObject2.SelectToken("choices[0].message.content")) ?? ((string)jObject2.SelectToken("choices[0].text")) ?? ((string)jObject2.SelectToken("output_text")) ?? ((string)jObject2.SelectToken("content")) ?? ((string)jObject2.SelectToken("text"));
+					string text3 = LlmApiCompat.ExtractAssistantText(jObject2);
 					if (string.IsNullOrWhiteSpace(text3))
 					{
 						throw new Exception("API 响应为空。");

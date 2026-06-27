@@ -3125,42 +3125,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 
 	private static string BuildModelListApiUrl(string rawApiUrl)
 	{
-		string text = (rawApiUrl ?? "").Trim();
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			return "";
-		}
-		try
-		{
-			if (!Uri.TryCreate(text, UriKind.Absolute, out var result))
-			{
-				return text.TrimEnd('/') + "/models";
-			}
-			string text2 = (result.AbsolutePath ?? "").Trim();
-			if (string.IsNullOrWhiteSpace(text2))
-			{
-				text2 = "/v1";
-			}
-			string text3 = text2.TrimEnd('/');
-			if (text3.EndsWith("/chat/completions", StringComparison.OrdinalIgnoreCase))
-			{
-				text3 = text3.Substring(0, text3.Length - "/chat/completions".Length);
-			}
-			if (string.IsNullOrWhiteSpace(text3))
-			{
-				text3 = "/v1";
-			}
-			UriBuilder uriBuilder = new UriBuilder(result)
-			{
-				Path = text3.TrimEnd('/') + "/models",
-				Query = ""
-			};
-			return uriBuilder.Uri.ToString();
-		}
-		catch
-		{
-			return text.TrimEnd('/') + "/models";
-		}
+		return LlmApiCompat.BuildModelListApiUrl(rawApiUrl);
 	}
 
 	private static List<string> ParseModelListFromResponse(string responseBody)
@@ -3226,7 +3191,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 				return modelListFetchResult;
 			}
 			using HttpRequestMessage httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, modelListFetchResult.RequestUrl);
-			httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", apiKey.Trim());
+			LlmApiCompat.ApplyAuthenticationHeaders(httpRequestMessage, modelListFetchResult.RequestUrl, apiKey);
 			HttpResponseMessage result = await GlobalClient.SendAsync(httpRequestMessage);
 			try
 			{
@@ -3495,34 +3460,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 
 	public static string GetEffectiveApiUrl(string rawUrl)
 	{
-		string text = (rawUrl ?? "").Trim();
-		if (string.IsNullOrEmpty(text))
-		{
-			return text;
-		}
-		try
-		{
-			if (!Uri.TryCreate(text, UriKind.Absolute, out var result))
-			{
-				return text;
-			}
-			string text2 = (result.AbsolutePath ?? "").Trim();
-			string text3 = text2.TrimEnd('/').ToLowerInvariant();
-			if (text3.EndsWith("/chat/completions", StringComparison.Ordinal))
-			{
-				return text;
-			}
-			if (text3.EndsWith("/v1", StringComparison.Ordinal))
-			{
-				return text.TrimEnd('/') + "/chat/completions";
-			}
-			string text4 = text.EndsWith("/", StringComparison.Ordinal) ? "v1/chat/completions" : "/v1/chat/completions";
-			return text + text4;
-		}
-		catch
-		{
-		}
-		return text;
+		return LlmApiCompat.GetEffectiveChatApiUrl(rawUrl);
 	}
 
 	public static bool ShouldWarnForContextExtractionApi(string rawUrl)
@@ -3558,46 +3496,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 
 	private static string TryExtractAssistantReplyText(string responseString)
 	{
-		string text = (responseString ?? "").Trim();
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			return "";
-		}
-		try
-		{
-			JObject jObject = JObject.Parse(text);
-			JToken jToken = jObject["choices"]?[0]?["message"]?["content"];
-			if (jToken == null)
-			{
-				return "";
-			}
-			if (jToken.Type == JTokenType.String)
-			{
-				return (jToken.ToString() ?? "").Trim();
-			}
-			if (jToken.Type == JTokenType.Array)
-			{
-				StringBuilder stringBuilder = new StringBuilder();
-				foreach (JToken item in (JArray)jToken)
-				{
-					string text2 = (item?["text"]?.ToString() ?? "").Trim();
-					if (!string.IsNullOrWhiteSpace(text2))
-					{
-						if (stringBuilder.Length > 0)
-						{
-							stringBuilder.Append(' ');
-						}
-						stringBuilder.Append(text2);
-					}
-				}
-				return stringBuilder.ToString().Trim();
-			}
-			return (jToken.ToString() ?? "").Trim();
-		}
-		catch
-		{
-			return "";
-		}
+		return LlmApiCompat.ExtractAssistantText(responseString);
 	}
 
 	private static string BuildApiErrorHint(string effectiveApiUrl, string modelName, HttpStatusCode statusCode, string responseBody)
@@ -3756,10 +3655,11 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 						};
 						requestPayload["temperature"] = GetMainApiTemperature();
 						ApplyThinkingControls(requestPayload, effectiveApiUrl, effectiveModelName, MainApiThinkingEnabled, GetMainApiReasoningEffort(), out var _);
-						string jsonBody = requestPayload.ToString(Formatting.None);
-						StringContent content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
-						GlobalClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", ApiKey);
-						HttpResponseMessage response = await GlobalClient.PostAsync(effectiveApiUrl, (HttpContent)(object)content);
+						string jsonBody = LlmApiCompat.PrepareChatRequestJson(effectiveApiUrl, requestPayload);
+						using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, effectiveApiUrl);
+						LlmApiCompat.ApplyAuthenticationHeaders(request, effectiveApiUrl, ApiKey);
+						request.Content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
+						HttpResponseMessage response = await GlobalClient.SendAsync(request);
 						string responseString = await response.Content.ReadAsStringAsync();
 						if (response.IsSuccessStatusCode)
 						{
@@ -3835,7 +3735,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 					StringContent content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
 					string effectiveApiUrl = GetEffectiveApiUrl(AuxiliaryApiUrl);
 					using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, effectiveApiUrl);
-					request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", AuxiliaryApiKey);
+					LlmApiCompat.ApplyAuthenticationHeaders(request, effectiveApiUrl, AuxiliaryApiKey);
 					request.Content = content;
 					HttpResponseMessage response = await GlobalClient.SendAsync(request);
 					string responseString = await response.Content.ReadAsStringAsync();
@@ -3908,10 +3808,10 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 						["temperature"] = GetActionPostprocessApiTemperature()
 					};
 					ApplyThinkingControls(requestPayload, effectiveApiUrl, effectiveModelName, ActionPostprocessApiThinkingEnabled, GetActionPostprocessApiReasoningEffort(), out var _);
-					string jsonBody = requestPayload.ToString(Formatting.None);
+					string jsonBody = LlmApiCompat.PrepareChatRequestJson(effectiveApiUrl, requestPayload);
 					StringContent content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
 					using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, effectiveApiUrl);
-					request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", ActionPostprocessApiKey);
+					LlmApiCompat.ApplyAuthenticationHeaders(request, effectiveApiUrl, ActionPostprocessApiKey);
 					request.Content = content;
 					HttpResponseMessage response = await GlobalClient.SendAsync(request);
 					string responseString = await response.Content.ReadAsStringAsync();
@@ -3984,10 +3884,10 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 						["temperature"] = GetEventAndRebellionApiTemperature()
 					};
 					ApplyThinkingControls(requestPayload, effectiveApiUrl, effectiveModelName, EventAndRebellionApiThinkingEnabled, GetEventAndRebellionApiReasoningEffort(), out var _);
-					string jsonBody = requestPayload.ToString(Formatting.None);
+					string jsonBody = LlmApiCompat.PrepareChatRequestJson(effectiveApiUrl, requestPayload);
 					StringContent content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
 					using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, effectiveApiUrl);
-					request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", EventAndRebellionApiKey);
+					LlmApiCompat.ApplyAuthenticationHeaders(request, effectiveApiUrl, EventAndRebellionApiKey);
 					request.Content = content;
 					HttpResponseMessage response = await GlobalClient.SendAsync(request);
 					string responseString = await response.Content.ReadAsStringAsync();

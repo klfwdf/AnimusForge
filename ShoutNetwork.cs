@@ -184,19 +184,7 @@ public static class ShoutNetwork
 
 	private static string ExtractPrimaryResponseText(JObject responseJson)
 	{
-		if (responseJson == null)
-		{
-			return "";
-		}
-		string content = ((string)responseJson.SelectToken("choices[0].message.content"))
-			?? ((string)responseJson.SelectToken("choices[0].text"))
-			?? ((string)responseJson.SelectToken("content"))
-			?? ((string)responseJson.SelectToken("text"));
-		if (!string.IsNullOrWhiteSpace(content))
-		{
-			return content;
-		}
-		return ExtractTextFromGeminiCandidateParts(responseJson.SelectToken("candidates[0]"));
+		return LlmApiCompat.ExtractAssistantText(responseJson);
 	}
 
 	private static string ExtractPrimaryReasoningText(JObject responseJson)
@@ -205,37 +193,12 @@ public static class ShoutNetwork
 		{
 			return "";
 		}
-		return ((string)responseJson.SelectToken("choices[0].message.reasoning_content"))
-			?? ((string)responseJson.SelectToken("choices[0].message.reasoning"))
-			?? ((string)responseJson.SelectToken("reasoning_content"))
-			?? ((string)responseJson.SelectToken("reasoning"))
-			?? "";
+		return LlmApiCompat.ExtractReasoningText(responseJson);
 	}
 
 	private static string ExtractPrimaryStreamDelta(JObject chunk)
 	{
-		if (chunk == null)
-		{
-			return "";
-		}
-		string delta = (string)chunk.SelectToken("choices[0].delta.content");
-		if (delta == null)
-		{
-			delta = (string)chunk.SelectToken("delta.content");
-		}
-		if (delta == null)
-		{
-			delta = (string)chunk.SelectToken("content");
-		}
-		if (delta == null)
-		{
-			delta = (string)chunk.SelectToken("text");
-		}
-		if (!string.IsNullOrEmpty(delta))
-		{
-			return delta;
-		}
-		return ExtractTextFromGeminiCandidateParts(chunk.SelectToken("candidates[0]"));
+		return LlmApiCompat.ExtractStreamDeltaText(chunk);
 	}
 
 	private static bool ContainsAnyIgnoreCase(string text, params string[] patterns)
@@ -466,7 +429,7 @@ public static class ShoutNetwork
 			string effectiveApiUrl = DuelSettings.GetEffectiveApiUrl(settings.ApiUrl);
 			int actualMaxTokens = ResolvePrimaryMaxTokens(settings);
 			JObject payload = BuildPrimaryChatPayload(normalizedMessages, settings, effectiveApiUrl, effectiveModelName, actualMaxTokens, stream: false, out var thinkingMode);
-			string requestBody = payload.ToString(Formatting.None);
+			string requestBody = LlmApiCompat.PrepareChatRequestJson(effectiveApiUrl, payload);
 			string pending = "[PRIMARY REQUEST PENDING]\nmode=" + (mode ?? "") + "\nmaxTokens=" + Math.Max(16, maxTokens) + "\nactualMaxTokens=" + actualMaxTokens + "\nthinkingMode=" + (thinkingMode ?? "");
 			Logger.RecordTokenStats(inputTokens, 0, normalizedMessages, pending, mode, requestBody);
 		}
@@ -613,12 +576,12 @@ public static class ShoutNetwork
 			int configuredMaxTokens = ResolvePrimaryMaxTokens(settings);
 			int actualMaxTokens = overrideMaxTokens.HasValue ? Math.Max(16, DuelSettings.ClampApiMaxTokens(overrideMaxTokens.Value, configuredMaxTokens)) : configuredMaxTokens;
 			JObject payload = BuildPrimaryChatPayload(messages, settings, effectiveApiUrl, effectiveModelName, actualMaxTokens, stream: false, out var thinkingMode, forceDisableThinking);
-			string jsonBody = payload.ToString(Formatting.None);
+			string jsonBody = LlmApiCompat.PrepareChatRequestJson(effectiveApiUrl, payload);
 			string requestBodyForTokenStats = jsonBody;
 			HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, effectiveApiUrl);
 			try
 			{
-				request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", settings.ApiKey);
+				LlmApiCompat.ApplyAuthenticationHeaders(request, effectiveApiUrl, settings.ApiKey);
 				request.Content = (HttpContent)new StringContent(jsonBody, Encoding.UTF8, "application/json");
 				HttpResponseMessage response = await DuelSettings.GlobalClient.SendAsync(request);
 				if (SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_non_stream_response"))
@@ -639,10 +602,10 @@ public static class ShoutNetwork
 					response.Dispose();
 					JObject payload2 = BuildPrimaryChatPayload(messages, settings, effectiveApiUrl, effectiveModelName, actualMaxTokens, stream: false, out var _);
 					DuelSettings.RemoveThinkingControls(payload2);
-					string jsonBody2 = payload2.ToString(Formatting.None);
+					string jsonBody2 = LlmApiCompat.PrepareChatRequestJson(effectiveApiUrl, payload2);
 					requestBodyForTokenStats = jsonBody2;
 					using HttpRequestMessage httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, effectiveApiUrl);
-					httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", settings.ApiKey);
+					LlmApiCompat.ApplyAuthenticationHeaders(httpRequestMessage, effectiveApiUrl, settings.ApiKey);
 					httpRequestMessage.Content = (HttpContent)new StringContent(jsonBody2, Encoding.UTF8, "application/json");
 					response = await DuelSettings.GlobalClient.SendAsync(httpRequestMessage);
 					if (SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_non_stream_retry_response"))
@@ -807,7 +770,7 @@ public static class ShoutNetwork
 			string effectiveApiUrl = DuelSettings.GetEffectiveApiUrl(settings.ApiUrl);
 			int actualMaxTokens = ResolvePrimaryMaxTokens(settings);
 			JObject payload = BuildPrimaryChatPayload(messages, settings, effectiveApiUrl, effectiveModelName, actualMaxTokens, stream: true, out var thinkingMode);
-			string jsonBody = payload.ToString(Formatting.None);
+			string jsonBody = LlmApiCompat.PrepareChatRequestJson(effectiveApiUrl, payload);
 			requestBodyForTokenStats = jsonBody;
 			bool streamSucceeded = false;
 			Exception lastStreamException = null;
@@ -822,7 +785,7 @@ public static class ShoutNetwork
 					HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, effectiveApiUrl);
 					try
 					{
-						request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", settings.ApiKey);
+						LlmApiCompat.ApplyAuthenticationHeaders(request, effectiveApiUrl, settings.ApiKey);
 						request.Headers.ConnectionClose = true;
 						request.Content = (HttpContent)new StringContent(jsonBody, Encoding.UTF8, "application/json");
 						HttpResponseMessage response = await DuelSettings.GlobalClient.SendAsync(request, (HttpCompletionOption)1, cancellationToken);
@@ -846,7 +809,7 @@ public static class ShoutNetwork
 								response.Dispose();
 								JObject retryPayload = BuildPrimaryChatPayload(messages, settings, effectiveApiUrl, effectiveModelName, actualMaxTokens, stream: true, out var _);
 								DuelSettings.RemoveThinkingControls(retryPayload);
-								jsonBody = retryPayload.ToString(Formatting.None);
+								jsonBody = LlmApiCompat.PrepareChatRequestJson(effectiveApiUrl, retryPayload);
 								requestBodyForTokenStats = jsonBody;
 								thinkingMode += "_retry_plain";
 								continue;
@@ -892,15 +855,7 @@ public static class ShoutNetwork
 							try
 							{
 								JObject chunk = JObject.Parse(data);
-								string reasoningDelta = (string)chunk.SelectToken("choices[0].delta.reasoning_content");
-								if (reasoningDelta == null)
-								{
-									reasoningDelta = (string)chunk.SelectToken("delta.reasoning_content");
-								}
-								if (reasoningDelta == null)
-								{
-									reasoningDelta = (string)chunk.SelectToken("reasoning_content");
-								}
+								string reasoningDelta = LlmApiCompat.ExtractStreamReasoningText(chunk);
 								if (!string.IsNullOrEmpty(reasoningDelta))
 								{
 									fullReasoning.Append(reasoningDelta);
