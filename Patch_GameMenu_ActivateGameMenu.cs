@@ -120,7 +120,7 @@ public static class Patch_GameMenu_ActivateGameMenu
 					return true;
 				}
 				Hero leaderHero = encounteredParty.LeaderHero;
-				if (leaderHero != null && leaderHero != Hero.MainHero && leaderHero.IsLord)
+				if (LordEncounterBehavior.IsEligibleCustomLordEncounterTarget(leaderHero, encounteredParty))
 				{
 					ProactiveNpcRequestBehavior.MarkEncounterOpened(leaderHero);
 					if (LordEncounterBehavior.IsNativeEncounterActivityContext(leaderHero))
@@ -136,6 +136,10 @@ public static class Patch_GameMenu_ActivateGameMenu
 						PlayerEncounter.Current.IsPlayerWaiting = false;
 					}
 					menuId = "AnimusForge_lord_encounter";
+				}
+				else if (leaderHero != null && leaderHero != Hero.MainHero && leaderHero.IsLord)
+				{
+					Logger.LogTrace("UI_Intercept", $"Encounter leader is a lord-shaped non-kingdom-noble target; keep native 'encounter' menu. Target={leaderHero.Name}, Party={encounteredParty.Name}");
 				}
 			}
 		}

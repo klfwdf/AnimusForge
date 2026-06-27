@@ -78,8 +78,12 @@ public static class Patch_PlayerEncounter_Start
 					return;
 				}
 				Hero leaderHero = encounteredParty.LeaderHero;
-				if (leaderHero == null || leaderHero == Hero.MainHero || !leaderHero.IsLord)
+				if (!LordEncounterBehavior.IsEligibleCustomLordEncounterTarget(leaderHero, encounteredParty))
 				{
+					if (leaderHero != null && leaderHero != Hero.MainHero && leaderHero.IsLord)
+					{
+						Logger.LogTrace("Patch_PlayerEncounter_Start", $"Encounter leader is not an eligible kingdom noble target; skip custom encounter menu redirect. Target={leaderHero.Name}, Party={encounteredParty.Name}");
+					}
 					return;
 				}
 				ProactiveNpcRequestBehavior.MarkEncounterOpened(leaderHero);

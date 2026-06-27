@@ -72,6 +72,14 @@ public class DuelBehavior : CampaignBehaviorBase
 	{
 		public Hero TargetHero;
 
+		public CharacterObject TargetCharacter;
+
+		public string TargetDisplayName;
+
+		public string NonHeroMemoryId;
+
+		public string NonHeroMemoryName;
+
 		public MobileParty OpponentDummyParty;
 
 		public MobileParty TargetOriginalParty;
@@ -316,7 +324,7 @@ public class DuelBehavior : CampaignBehaviorBase
 					return true;
 				}
 				CharacterObject character = agent.Character as CharacterObject;
-				return character != null && _runtime?.TargetHero != null && character == _runtime.TargetHero.CharacterObject;
+				return character != null && _runtime?.TargetCharacter != null && character == _runtime.TargetCharacter;
 			}
 			catch
 			{
@@ -328,7 +336,7 @@ public class DuelBehavior : CampaignBehaviorBase
 		{
 			try
 			{
-				CharacterObject targetCharacter = _runtime?.TargetHero?.CharacterObject;
+				CharacterObject targetCharacter = _runtime?.TargetCharacter ?? _runtime?.TargetHero?.CharacterObject;
 				if (targetCharacter == null || base.Mission?.Agents == null)
 				{
 					return null;
@@ -387,6 +395,10 @@ public class DuelBehavior : CampaignBehaviorBase
 	{
 		private readonly Hero _targetHero;
 
+		private readonly CharacterObject _targetCharacter;
+
+		private readonly string _targetDisplayName;
+
 		private readonly bool _isWildernessDuel;
 
 		private readonly int _diagnosticId;
@@ -414,6 +426,17 @@ public class DuelBehavior : CampaignBehaviorBase
 		public ArenaDuelMissionBehavior(Hero target, bool isWildernessDuel = false, int diagnosticId = 0)
 		{
 			_targetHero = target;
+			_targetCharacter = target?.CharacterObject;
+			_targetDisplayName = ResolveDuelTargetDisplayName(null, target, _targetCharacter);
+			_isWildernessDuel = isWildernessDuel;
+			_diagnosticId = diagnosticId;
+		}
+
+		public ArenaDuelMissionBehavior(CharacterObject targetCharacter, bool isWildernessDuel = false, int diagnosticId = 0)
+		{
+			_targetCharacter = targetCharacter;
+			_targetHero = targetCharacter?.HeroObject;
+			_targetDisplayName = ResolveDuelTargetDisplayName(null, _targetHero, targetCharacter);
 			_isWildernessDuel = isWildernessDuel;
 			_diagnosticId = diagnosticId;
 		}
@@ -493,15 +516,7 @@ public class DuelBehavior : CampaignBehaviorBase
 			{
 				if (!_localDuelResultRecorded && agentState != AgentState.Active)
 				{
-					Hero hero = null;
-					try
-					{
-						hero = ((affectedAgent?.Character is CharacterObject characterObject) ? characterObject.HeroObject : null);
-					}
-					catch
-					{
-					}
-					if (hero != null && hero == _targetHero)
+					if (affectedAgent?.Character is CharacterObject characterObject && characterObject == _targetCharacter)
 					{
 						EndDuelLocal(playerDefeated: false);
 					}
@@ -522,7 +537,7 @@ public class DuelBehavior : CampaignBehaviorBase
 			{
 				return;
 			}
-			if (base.Mission.Agents != null && base.Mission.Agents.Count > 0 && FindAgentForHero(_targetHero) != null)
+			if (base.Mission.Agents != null && base.Mission.Agents.Count > 0 && FindTargetAgent() != null)
 			{
 				_localAgentsSpawned = true;
 				return;
@@ -530,17 +545,17 @@ public class DuelBehavior : CampaignBehaviorBase
 			try
 			{
 				Hero mainHero = Hero.MainHero;
-				if (mainHero == null || _targetHero == null)
+				if (mainHero == null || _targetCharacter == null)
 				{
-					Logger.Log("ArenaDuel", "[Spawn] Hero.MainHero 或目标 Hero 为空，无法生成决斗双方。");
+					Logger.Log("ArenaDuel", "[Spawn] Hero.MainHero 或目标 CharacterObject 为空，无法生成决斗双方。");
 					return;
 				}
 				uint color = ((mainHero.MapFaction != null) ? mainHero.MapFaction.Color : 4278190335u);
 				uint color2 = ((mainHero.MapFaction != null) ? mainHero.MapFaction.Color2 : 4278190208u);
 				Banner banner = ((mainHero.Clan != null) ? mainHero.Clan.Banner : null);
-				uint color3 = ((_targetHero.MapFaction != null) ? _targetHero.MapFaction.Color : 4294901760u);
-				uint color4 = ((_targetHero.MapFaction != null) ? _targetHero.MapFaction.Color2 : 4286578688u);
-				Banner banner2 = ((_targetHero.Clan != null) ? _targetHero.Clan.Banner : null);
+				uint color3 = ((_targetHero?.MapFaction != null) ? _targetHero.MapFaction.Color : 4294901760u);
+				uint color4 = ((_targetHero?.MapFaction != null) ? _targetHero.MapFaction.Color2 : 4286578688u);
+				Banner banner2 = ((_targetHero?.Clan != null) ? _targetHero.Clan.Banner : null);
 				Team team = base.Mission.Teams.Add(BattleSideEnum.Attacker, color, color2, banner);
 				Team team2 = base.Mission.Teams.Add(BattleSideEnum.Defender, color3, color4, banner2, isPlayerGeneral: false, isPlayerSergeant: true);
 				base.Mission.PlayerTeam = team;
@@ -565,11 +580,11 @@ public class DuelBehavior : CampaignBehaviorBase
 					direction2 = new Vec2(-1f, 0f);
 				}
 				CharacterObject characterObject = mainHero.CharacterObject;
-				CharacterObject characterObject2 = _targetHero.CharacterObject;
+				CharacterObject characterObject2 = _targetCharacter;
 				Equipment equipment = mainHero.BattleEquipment.Clone();
 				equipment[EquipmentIndex.ArmorItemEndSlot] = EquipmentElement.Invalid;
 				equipment[EquipmentIndex.HorseHarness] = EquipmentElement.Invalid;
-				Equipment equipment2 = _targetHero.BattleEquipment.Clone();
+				Equipment equipment2 = ((_targetHero != null) ? _targetHero.BattleEquipment : _targetCharacter.FirstBattleEquipment).Clone();
 				equipment2[EquipmentIndex.ArmorItemEndSlot] = EquipmentElement.Invalid;
 				equipment2[EquipmentIndex.HorseHarness] = EquipmentElement.Invalid;
 				AgentBuildData agentBuildData = new AgentBuildData(characterObject).Team(team).Equipment(equipment).InitialPosition(in position)
@@ -626,8 +641,8 @@ public class DuelBehavior : CampaignBehaviorBase
 				_localPostDuelFreezeActive = false;
 				_localDuelResultRecorded = false;
 				agent2.SetWatchState(Agent.WatchState.Alarmed);
-				AnimusForgeQuickInfo.Show("双方就位！5秒后开始决斗！(无敌保护中)", _targetHero?.CharacterObject);
-				Logger.Log("ArenaDuel", $"[Spawn] 已在竞技场生成双方 Agent。Player={mainHero.Name}, Enemy={_targetHero.Name}");
+				AnimusForgeQuickInfo.Show("双方就位！5秒后开始决斗！(无敌保护中)", _targetCharacter);
+				Logger.Log("ArenaDuel", $"[Spawn] 已在竞技场生成双方 Agent。Player={mainHero.Name}, Enemy={_targetDisplayName}");
 			}
 			catch (Exception ex)
 			{
@@ -653,15 +668,15 @@ public class DuelBehavior : CampaignBehaviorBase
 			}
 		}
 
-		private Agent FindAgentForHero(Hero hero)
+		private Agent FindTargetAgent()
 		{
-			if (hero == null || base.Mission == null || base.Mission.Agents == null)
+			if (_targetCharacter == null || base.Mission == null || base.Mission.Agents == null)
 			{
 				return null;
 			}
 			foreach (Agent agent in base.Mission.Agents)
 			{
-				if (agent.Character is CharacterObject characterObject && characterObject.HeroObject == hero)
+				if (agent.Character is CharacterObject characterObject && characterObject == _targetCharacter)
 				{
 					_hadEnemyAgentEver = true;
 					return agent;
@@ -1090,7 +1105,7 @@ public class DuelBehavior : CampaignBehaviorBase
 				if (currentTime >= _localPreFightTimer)
 				{
 					_localPreFightActive = false;
-					Agent agent = FindAgentForHero(_targetHero);
+					Agent agent = FindTargetAgent();
 					if (agent != null)
 					{
 						SetAgentController(agent, "AI");
@@ -1098,12 +1113,12 @@ public class DuelBehavior : CampaignBehaviorBase
 					}
 					(base.Mission?.MainAgent ?? Agent.Main)?.SetMortalityState(Agent.MortalityState.Mortal);
 					agent?.SetMortalityState(Agent.MortalityState.Mortal);
-					AnimusForgeQuickInfo.Show("决斗开始！", _targetHero?.CharacterObject);
+					AnimusForgeQuickInfo.Show("决斗开始！", _targetCharacter);
 				}
 			}
 			if (_localPostDuelFreezeActive)
 			{
-				Agent agent2 = FindAgentForHero(_targetHero);
+				Agent agent2 = FindTargetAgent();
 				if (agent2 != null)
 				{
 					agent2.SetMovementDirection(in Vec2.Zero);
@@ -1198,7 +1213,7 @@ public class DuelBehavior : CampaignBehaviorBase
 				return;
 			}
 			Agent agent = base.Mission?.MainAgent ?? Agent.Main;
-			Agent agent2 = FindAgentForHero(_targetHero);
+			Agent agent2 = FindTargetAgent();
 			if (agent == null)
 			{
 				return;
@@ -1270,16 +1285,19 @@ public class DuelBehavior : CampaignBehaviorBase
 			{
 				_localDuelResultRecorded = true;
 				bool flag = !playerDefeated;
-				if (Instance != null)
+				if (Instance != null && _targetHero != null && !string.IsNullOrEmpty(_targetHero.StringId))
 				{
 					Instance._lastDuelResults[_targetHero.StringId] = (flag ? 1 : (-1));
 				}
-				SetDuelDebtTagGateState(_targetHero, playerDefeated ? -1 : 1);
-				MyBehavior.RecordDuelResultForExternal(_targetHero, flag, _isWildernessDuel ? "wilderness" : "arena");
+				if (_targetHero != null)
+				{
+					SetDuelDebtTagGateState(_targetHero, playerDefeated ? -1 : 1);
+					MyBehavior.RecordDuelResultForExternal(_targetHero, flag, _isWildernessDuel ? "wilderness" : "arena");
+				}
 				_localPostDuelFreezeActive = true;
 				float currentTime = base.Mission.CurrentTime;
 				_localPostDuelExitTimer = currentTime + 10f;
-				Agent agent = FindAgentForHero(_targetHero);
+				Agent agent = FindTargetAgent();
 				TryPostDuelAiShout(_targetHero, agent, flag);
 				if (agent != null && agent.IsActive())
 				{
@@ -1290,11 +1308,11 @@ public class DuelBehavior : CampaignBehaviorBase
 				{
 					Agent.Main.SetMortalityState(Agent.MortalityState.Invulnerable);
 				}
-				string text = ApplyDuelStakeSettlementAndBuildResultText(_targetHero, flag);
+				string text = (_targetHero != null) ? ApplyDuelStakeSettlementAndBuildResultText(_targetHero, flag) : "";
 				string text2 = (flag ? "【决斗结果】你赢了！" : "【决斗结果】你输了！");
 				Color color = (flag ? Color.FromUint(4281257073u) : Color.FromUint(4293348412u));
 				string text3 = _isWildernessDuel ? " 10秒后返回大地图..." : " 10秒后退出竞技场...";
-				AnimusForgeQuickInfo.Show(text2 + text + text3, _targetHero?.CharacterObject);
+				AnimusForgeQuickInfo.Show(text2 + text + text3, _targetCharacter);
 			}
 		}
 	}
@@ -1321,8 +1339,7 @@ public class DuelBehavior : CampaignBehaviorBase
 					bool flag2 = false;
 					try
 					{
-						Hero hero = ((effectedAgent.Character is CharacterObject characterObject) ? characterObject.HeroObject : null);
-						flag2 = hero != null && instance._targetHero != null && hero == instance._targetHero;
+						flag2 = instance.IsCurrentDuelTargetAgent(effectedAgent);
 					}
 					catch
 					{
@@ -1387,17 +1404,9 @@ public class DuelBehavior : CampaignBehaviorBase
 			try
 			{
 				DuelBehavior instance = Instance;
-				if (instance != null && instance._isDuelActive && !_duelResultRecorded && instance._targetHero != null && (agentState == AgentState.Unconscious || agentState == AgentState.Killed))
+				if (instance != null && instance._isDuelActive && !_duelResultRecorded && affectedAgent != null && (agentState == AgentState.Unconscious || agentState == AgentState.Killed))
 				{
-					Hero hero = null;
-					try
-					{
-						hero = ((affectedAgent?.Character is CharacterObject characterObject) ? characterObject.HeroObject : null);
-					}
-					catch
-					{
-					}
-					if (hero != null && hero == instance._targetHero)
+					if (instance.IsCurrentDuelTargetAgent(affectedAgent))
 					{
 						instance.EndDuel(playerDefeated: false);
 					}
@@ -1414,6 +1423,12 @@ public class DuelBehavior : CampaignBehaviorBase
 	private bool _isDuelActive = false;
 
 	private Hero _targetHero = null;
+
+	private CharacterObject _targetCharacter = null;
+
+	private int _targetAgentIndex = -1;
+
+	private string _targetDisplayName = "";
 
 	private Dictionary<string, float> _duelCooldowns = new Dictionary<string, float>();
 
@@ -1475,6 +1490,10 @@ public class DuelBehavior : CampaignBehaviorBase
 
 	private static WildernessDuelBattleRuntime _wildernessDuelRuntime;
 
+	private static string _pendingNonHeroDuelMemoryId = "";
+
+	private static string _pendingNonHeroDuelMemoryName = "";
+
 	private static bool _duelResultRecorded = false;
 
 	private static bool _forcedMainHeroDeath = false;
@@ -1496,6 +1515,8 @@ public class DuelBehavior : CampaignBehaviorBase
 	private static bool _openTownMenuRequested = false;
 
 	private static Hero _queuedArenaDuelTarget = null;
+
+	private static CharacterObject _queuedDuelTargetCharacter = null;
 
 	private static float _queuedArenaDuelDelay = 0f;
 
@@ -1575,6 +1596,31 @@ public class DuelBehavior : CampaignBehaviorBase
 		catch (Exception ex)
 		{
 			Logger.Log("DuelBehavior", "[WildernessDuel][Harmony][WARN] failed " + patchType.Name + ": " + ex.Message);
+		}
+	}
+
+	public static void SetPendingNonHeroDuelMemoryTarget(string memoryId, string memoryName)
+	{
+		_pendingNonHeroDuelMemoryId = (memoryId ?? "").Trim();
+		_pendingNonHeroDuelMemoryName = (memoryName ?? "").Trim();
+	}
+
+	private static void TryCapturePendingNonHeroDuelMemoryFromAgent(Agent targetAgent)
+	{
+		try
+		{
+			if (targetAgent?.Character is not CharacterObject characterObject || characterObject.HeroObject != null)
+			{
+				return;
+			}
+			NpcDataPacket npc = ShoutUtils.ExtractNpcData(targetAgent);
+			if (ShoutBehavior.TryResolveWildernessNonHeroMemoryForExternal(npc, null, characterObject, targetAgent.Index, out var memoryId, out var memoryName))
+			{
+				SetPendingNonHeroDuelMemoryTarget(memoryId, memoryName);
+			}
+		}
+		catch
+		{
 		}
 	}
 
@@ -1728,16 +1774,23 @@ public class DuelBehavior : CampaignBehaviorBase
 
 	private static void QueueDuelAfterConversationExit(Hero target, float delaySeconds, bool wildernessDuel)
 	{
+		QueueDuelAfterConversationExit(target?.CharacterObject, delaySeconds, wildernessDuel);
 		_queuedArenaDuelTarget = target;
+	}
+
+	private static void QueueDuelAfterConversationExit(CharacterObject targetCharacter, float delaySeconds, bool wildernessDuel)
+	{
+		_queuedArenaDuelTarget = targetCharacter?.HeroObject;
+		_queuedDuelTargetCharacter = targetCharacter;
 		_queuedArenaDuelDelay = delaySeconds;
 		_queuedWildernessDuel = wildernessDuel;
 		_queuedDuelWaitingForConversationExit = true;
 		_queuedDuelConversationCloseAttempts = 0;
 		_queuedDuelReadyUtcTicks = DateTime.UtcNow.AddMilliseconds(250.0).Ticks;
-		Logger.Log("DuelBehavior", "[Queue] Duel queued until campaign conversation exits. wilderness=" + wildernessDuel + ", target=" + target?.StringId);
+		Logger.Log("DuelBehavior", "[Queue] Duel queued until campaign conversation exits. wilderness=" + wildernessDuel + ", target=" + (targetCharacter?.StringId ?? "null"));
 		if (wildernessDuel)
 		{
-			LogWildernessDuelDiagnostic("queue.until_conversation_exit delay=" + delaySeconds.ToString("0.0"), _wildernessDuelActiveDiagnosticId, target);
+			LogWildernessDuelDiagnostic("queue.until_conversation_exit delay=" + delaySeconds.ToString("0.0"), _wildernessDuelActiveDiagnosticId, targetCharacter?.HeroObject);
 		}
 	}
 
@@ -1765,6 +1818,7 @@ public class DuelBehavior : CampaignBehaviorBase
 			{
 				Logger.Log("DuelBehavior", "[WildernessDuel][Queue] Current mission=" + Mission.Current.SceneName + ", will leave source mission before opening wilderness duel.");
 				_queuedArenaDuelTarget = target;
+				_queuedDuelTargetCharacter = target.CharacterObject;
 				_queuedArenaDuelDelay = delaySeconds;
 				_queuedWildernessDuel = true;
 				_queuedDuelWaitingForConversationExit = false;
@@ -1830,6 +1884,7 @@ public class DuelBehavior : CampaignBehaviorBase
 				{
 					Logger.Log("DuelBehavior", "[Queue] 当前在场景 " + Mission.Current.SceneName + "，将在 10 秒后退出并前往竞技场。");
 					_queuedArenaDuelTarget = target;
+					_queuedDuelTargetCharacter = target.CharacterObject;
 					_queuedArenaDuelDelay = delaySeconds;
 					_queuedWildernessDuel = false;
 					_queuedDuelWaitingForConversationExit = false;
@@ -1853,6 +1908,116 @@ public class DuelBehavior : CampaignBehaviorBase
 		_preDuelTimer = delaySeconds;
 		string information = $"[系统] 双方约定 {delaySeconds:F0} 秒后开始决斗！";
 		InformationManager.DisplayMessage(new InformationMessage(information, Color.FromUint(4294901760u)));
+	}
+
+	public static void PrepareDuel(Agent targetAgent, float delaySeconds)
+	{
+		if (targetAgent == null)
+		{
+			Logger.Log("DuelBehavior", "[AgentDuel] 收到空 Agent 的决斗请求，已忽略。");
+			return;
+		}
+		if (targetAgent.Character is CharacterObject { HeroObject: not null } characterObject)
+		{
+			PrepareDuel(characterObject.HeroObject, delaySeconds);
+			return;
+		}
+		if (targetAgent.Character is CharacterObject nonHeroCharacter)
+		{
+			TryCapturePendingNonHeroDuelMemoryFromAgent(targetAgent);
+			if (Mission.Current != null && !CanTargetAgentStartDuel(targetAgent, out string blockedReason))
+			{
+				Logger.Log("DuelBehavior", "[AgentDuel][DuelHealthGate] " + blockedReason);
+				if (!string.IsNullOrWhiteSpace(blockedReason))
+				{
+					InformationManager.DisplayMessage(new InformationMessage(blockedReason, Color.FromUint(4294901760u)));
+				}
+				return;
+			}
+			PrepareDuel(nonHeroCharacter, delaySeconds);
+			return;
+		}
+		Logger.Log("DuelBehavior", "[AgentDuel] 目标 Agent 没有有效 CharacterObject。");
+	}
+
+	public static void PrepareDuel(CharacterObject targetCharacter, float delaySeconds)
+	{
+		if (targetCharacter == null)
+		{
+			Logger.Log("DuelBehavior", "[CharacterDuel] 收到空 CharacterObject 的决斗请求，已忽略。");
+			return;
+		}
+		if (targetCharacter.HeroObject != null)
+		{
+			PrepareDuel(targetCharacter.HeroObject, delaySeconds);
+			return;
+		}
+		if (Instance == null)
+		{
+			Logger.Log("DuelBehavior", "[CharacterDuel] Instance 为空，非 Hero 决斗已取消。");
+			return;
+		}
+		ShowDuelRiskWarning();
+		bool isWildernessDuel = IsWildernessDuelContext(targetCharacter, out string wildernessBlockedReason);
+		if (isWildernessDuel)
+		{
+			if (Mission.Current != null)
+			{
+				Logger.Log("DuelBehavior", "[CharacterDuel][WildernessDuel][Queue] Current mission=" + Mission.Current.SceneName + ", will leave source mission before opening wilderness duel.");
+				_queuedArenaDuelTarget = null;
+				_queuedDuelTargetCharacter = targetCharacter;
+				_queuedArenaDuelDelay = delaySeconds;
+				_queuedWildernessDuel = true;
+				_queuedDuelWaitingForConversationExit = false;
+				_queuedDuelReadyUtcTicks = 0L;
+				_queuedDuelConversationCloseAttempts = 0;
+				float num = Mission.Current.CurrentTime;
+				_leaveSourceMissionReadyTime = num + 10f;
+				InformationManager.DisplayMessage(new InformationMessage("双方怒目而视，约定 10 秒后前往野外一决胜负！", Color.FromUint(4294901760u)));
+				_leaveSourceMissionRequested = true;
+				return;
+			}
+			if (IsCampaignConversationActive())
+			{
+				Logger.Log("DuelBehavior", "[CharacterDuel][WildernessDuel][Queue] Campaign conversation is active; deferring wilderness duel until conversation exits.");
+				QueueDuelAfterConversationExit(targetCharacter, delaySeconds, wildernessDuel: true);
+				InformationManager.DisplayMessage(new InformationMessage("AnimusForge: wilderness duel will start after the current conversation closes.", Color.FromUint(4294901760u)));
+				return;
+			}
+			if (Instance.TryOpenWildernessDuelMission(targetCharacter))
+			{
+				return;
+			}
+			Logger.Log("DuelBehavior", "[CharacterDuel][WildernessDuel][ERROR] failed to open independent wilderness duel; request aborted.");
+			InformationManager.DisplayMessage(new InformationMessage("无法打开野外决斗场景，本次决斗已取消。", Color.FromUint(4294901760u)));
+			return;
+		}
+		if (!string.IsNullOrWhiteSpace(wildernessBlockedReason))
+		{
+			Logger.Log("DuelBehavior", "[CharacterDuel] Not using wilderness duel: " + wildernessBlockedReason);
+		}
+		if (targetCharacter.HeroObject == null)
+		{
+			_pendingNonHeroDuelMemoryId = "";
+			_pendingNonHeroDuelMemoryName = "";
+		}
+		if (Mission.Current != null)
+		{
+			Logger.Log("DuelBehavior", "[CharacterDuel][Queue] 当前在场景 " + Mission.Current.SceneName + "，将在 10 秒后退出并前往竞技场。");
+			_queuedArenaDuelTarget = null;
+			_queuedDuelTargetCharacter = targetCharacter;
+			_queuedArenaDuelDelay = delaySeconds;
+			_queuedWildernessDuel = false;
+			_queuedDuelWaitingForConversationExit = false;
+			_queuedDuelReadyUtcTicks = 0L;
+			_queuedDuelConversationCloseAttempts = 0;
+			float num2 = Mission.Current.CurrentTime;
+			_leaveSourceMissionReadyTime = num2 + 10f;
+			InformationManager.DisplayMessage(new InformationMessage("双方怒目而视，约定 10 秒后前往竞技场一决胜负！", Color.FromUint(4294901760u)));
+			_leaveSourceMissionRequested = true;
+			return;
+		}
+		Instance.TryTeleportToArenaForDuel(targetCharacter);
 	}
 
 	private static bool CanTargetNpcStartDuel(Hero target, out string blockedReason)
@@ -1881,6 +2046,59 @@ public class DuelBehavior : CampaignBehaviorBase
 		return true;
 	}
 
+	private static bool CanTargetAgentStartDuel(Agent targetAgent, out string blockedReason)
+	{
+		blockedReason = "";
+		if (targetAgent == null)
+		{
+			blockedReason = "决斗失败: 目标 NPC 不存在。";
+			return false;
+		}
+		bool active = false;
+		try
+		{
+			active = targetAgent.IsActive();
+		}
+		catch
+		{
+			active = false;
+		}
+		if (!active)
+		{
+			blockedReason = "决斗失败: 目标 NPC 当前没有可用实体。";
+			return false;
+		}
+		if (targetAgent.IsMainAgent || targetAgent == Agent.Main)
+		{
+			blockedReason = "决斗失败: 不能把玩家自己作为决斗目标。";
+			return false;
+		}
+		CharacterObject characterObject = targetAgent.Character as CharacterObject;
+		if (characterObject == null)
+		{
+			blockedReason = "决斗失败: 目标 NPC 无效。";
+			return false;
+		}
+		string npcName = ResolveDuelTargetDisplayName(targetAgent, characterObject.HeroObject, characterObject);
+		if (targetAgent.HealthLimit > 0f)
+		{
+			float healthRatio = Math.Max(0f, Math.Min(1f, targetAgent.Health / targetAgent.HealthLimit));
+			if (healthRatio < 0.999f)
+			{
+				blockedReason = AIConfigHandler.FormatDuelHealthTemplate(AIConfigHandler.DuelHealthBlockedMessage, npcName, healthRatio);
+				return false;
+			}
+		}
+		Hero heroObject = characterObject.HeroObject;
+		if (heroObject != null && heroObject.MaxHitPoints > 0 && heroObject.HitPoints < heroObject.MaxHitPoints)
+		{
+			float healthRatio2 = Math.Max(0f, Math.Min(1f, (float)heroObject.HitPoints / heroObject.MaxHitPoints));
+			blockedReason = AIConfigHandler.FormatDuelHealthTemplate(AIConfigHandler.DuelHealthBlockedMessage, npcName, healthRatio2);
+			return false;
+		}
+		return true;
+	}
+
 	private static bool IsWaterOrSeaTerrain(TerrainType terrainType)
 	{
 		return terrainType == TerrainType.Water || terrainType == TerrainType.River || terrainType == TerrainType.Lake || terrainType == TerrainType.CoastalSea || terrainType == TerrainType.OpenSea || terrainType == TerrainType.NonNavigableRiver || terrainType == TerrainType.SeaRestriction || terrainType == TerrainType.UnderBridge;
@@ -1888,10 +2106,15 @@ public class DuelBehavior : CampaignBehaviorBase
 
 	private static bool IsWildernessDuelContext(Hero target, out string blockedReason)
 	{
+		return IsWildernessDuelContext(target?.CharacterObject, out blockedReason);
+	}
+
+	private static bool IsWildernessDuelContext(CharacterObject targetCharacter, out string blockedReason)
+	{
 		blockedReason = "";
 		try
 		{
-			if (Campaign.Current == null || MobileParty.MainParty == null || target == null)
+			if (Campaign.Current == null || MobileParty.MainParty == null || targetCharacter == null)
 			{
 				blockedReason = "campaign context is missing";
 				return false;
@@ -2041,7 +2264,13 @@ public class DuelBehavior : CampaignBehaviorBase
 
 	private static MissionInitializerRecord BuildWildernessDuelMissionInitializerRecord(Hero target)
 	{
+		return BuildWildernessDuelMissionInitializerRecord(target?.CharacterObject);
+	}
+
+	private static MissionInitializerRecord BuildWildernessDuelMissionInitializerRecord(CharacterObject targetCharacter)
+	{
 		MobileParty mainParty = MobileParty.MainParty;
+		Hero target = targetCharacter?.HeroObject;
 		TerrainType faceTerrainType = ResolveWildernessDuelTerrainType();
 		MapPatchData mapPatchAtPosition = default(MapPatchData);
 		bool hasMapPatch = false;
@@ -2082,7 +2311,7 @@ public class DuelBehavior : CampaignBehaviorBase
 		rec.SceneHasMapPatch = hasMapPatch;
 		rec.PatchCoordinates = hasMapPatch ? mapPatchAtPosition.normalizedCoordinates : Vec2.Zero;
 		rec.PatchEncounterDir = ResolveWildernessDuelEncounterDirection(mainParty, target);
-		Logger.Log("DuelBehavior", "[WildernessDuel] initializer scene=" + rec.SceneName + ", terrain=" + faceTerrainType + ", mapPatch=" + hasMapPatch + ", target=" + target?.StringId);
+		Logger.Log("DuelBehavior", "[WildernessDuel] initializer scene=" + rec.SceneName + ", terrain=" + faceTerrainType + ", mapPatch=" + hasMapPatch + ", target=" + (target?.StringId ?? targetCharacter?.StringId));
 		return rec;
 	}
 
@@ -2219,7 +2448,13 @@ public class DuelBehavior : CampaignBehaviorBase
 
 	private static WildernessDuelBattleRuntime CreateWildernessDuelRuntime(Hero target, int diagnosticId)
 	{
-		if (target == null || target.CharacterObject == null)
+		return CreateWildernessDuelRuntime(target?.CharacterObject, diagnosticId);
+	}
+
+	private static WildernessDuelBattleRuntime CreateWildernessDuelRuntime(CharacterObject targetCharacter, int diagnosticId)
+	{
+		Hero target = targetCharacter?.HeroObject;
+		if (targetCharacter == null)
 		{
 			throw new InvalidOperationException("Wilderness duel target is invalid.");
 		}
@@ -2235,14 +2470,15 @@ public class DuelBehavior : CampaignBehaviorBase
 		}
 		CampaignVec2 dummyPosition = mainParty.Position - direction * 0.35f;
 		string partyId = WildernessDuelDummyPartyPrefix + DateTime.UtcNow.Ticks + "_" + MBRandom.RandomInt(1000000);
-		MobileParty dummyParty = MobileParty.CreateParty(partyId, new WildernessDuelDummyPartyComponent(dummyPosition, new TextObject("AnimusForge Wilderness Duel"), target, target.Clan ?? Clan.PlayerClan));
+		Clan targetClan = target?.Clan ?? PlayerEncounter.EncounteredMobileParty?.ActualClan ?? Clan.PlayerClan;
+		MobileParty dummyParty = MobileParty.CreateParty(partyId, new WildernessDuelDummyPartyComponent(dummyPosition, new TextObject("AnimusForge Wilderness Duel"), target, targetClan));
 		if (dummyParty == null)
 		{
 			throw new InvalidOperationException("Failed to create wilderness duel dummy party.");
 		}
 		dummyParty.IsVisible = false;
 		dummyParty.SetMoveModeHold();
-		MobileParty originalParty = target.PartyBelongedTo;
+		MobileParty originalParty = target?.PartyBelongedTo;
 		bool wasOriginalLeader = false;
 		try
 		{
@@ -2254,8 +2490,11 @@ public class DuelBehavior : CampaignBehaviorBase
 		}
 		try
 		{
-			dummyParty.MemberRoster.AddToCounts(target.CharacterObject, 1, insertAtFront: true, woundedCount: 0, xpChange: 0, removeDepleted: true, index: -1);
-			dummyParty.PartyComponent?.ChangePartyLeader(target);
+			dummyParty.MemberRoster.AddToCounts(targetCharacter, 1, insertAtFront: true, woundedCount: 0, xpChange: 0, removeDepleted: true, index: -1);
+			if (target != null)
+			{
+				dummyParty.PartyComponent?.ChangePartyLeader(target);
+			}
 		}
 		catch
 		{
@@ -2263,11 +2502,17 @@ public class DuelBehavior : CampaignBehaviorBase
 		WildernessDuelBattleRuntime runtime = new WildernessDuelBattleRuntime
 		{
 			TargetHero = target,
+			TargetCharacter = targetCharacter,
+			TargetDisplayName = ResolveDuelTargetDisplayName(null, target, targetCharacter),
+			NonHeroMemoryId = target == null ? _pendingNonHeroDuelMemoryId : "",
+			NonHeroMemoryName = target == null ? _pendingNonHeroDuelMemoryName : "",
 			OpponentDummyParty = dummyParty,
 			TargetOriginalParty = originalParty,
 			TargetWasOriginalLeader = wasOriginalLeader,
 			DiagnosticId = diagnosticId
 		};
+		_pendingNonHeroDuelMemoryId = "";
+		_pendingNonHeroDuelMemoryName = "";
 		FieldBattleEventComponent component = FieldBattleEventComponent.CreateFieldBattleEvent(PartyBase.MainParty, dummyParty.Party);
 		runtime.MapEvent = component?.MapEvent;
 		if (runtime.MapEvent == null)
@@ -2417,6 +2662,7 @@ public class DuelBehavior : CampaignBehaviorBase
 		runtime.PlayerDefeated = playerDefeated;
 		bool playerWon = !playerDefeated;
 		Hero targetHero = runtime.TargetHero;
+		CharacterObject targetCharacter = runtime.TargetCharacter ?? targetHero?.CharacterObject;
 		try
 		{
 			if (Instance != null && targetHero != null && !string.IsNullOrEmpty(targetHero.StringId))
@@ -2424,17 +2670,55 @@ public class DuelBehavior : CampaignBehaviorBase
 				Instance._lastDuelResults[targetHero.StringId] = playerWon ? 1 : -1;
 			}
 			_duelResultRecorded = true;
-			SetDuelDebtTagGateState(targetHero, playerDefeated ? -1 : 1);
-			MyBehavior.RecordDuelResultForExternal(targetHero, playerWon, "wilderness");
+			if (targetHero != null)
+			{
+				SetDuelDebtTagGateState(targetHero, playerDefeated ? -1 : 1);
+				MyBehavior.RecordDuelResultForExternal(targetHero, playerWon, "wilderness");
+			}
+			else
+			{
+				RecordWildernessNonHeroDuelResult(runtime, playerWon);
+			}
 			TryPostDuelAiShout(targetHero, null, playerWon);
-			string text = ApplyDuelStakeSettlementAndBuildResultText(targetHero, playerWon);
+			string text = (targetHero != null) ? ApplyDuelStakeSettlementAndBuildResultText(targetHero, playerWon) : "";
 			string resultText = playerWon ? "[Duel Result] You won." : "[Duel Result] You lost.";
-			AnimusForgeQuickInfo.Show(resultText + text + " Returning to campaign map...", targetHero?.CharacterObject);
+			AnimusForgeQuickInfo.Show(resultText + text + " Returning to campaign map...", targetCharacter);
 			LogWildernessDuelDiagnostic("vanilla_behavior.settled source=" + source + " playerWon=" + playerWon, runtime.DiagnosticId, targetHero);
 		}
 		catch (Exception ex)
 		{
 			Logger.Log("DuelBehavior", "[WildernessDuel][ERROR] settle failed: " + ex);
+		}
+	}
+
+	private static void RecordWildernessNonHeroDuelResult(WildernessDuelBattleRuntime runtime, bool playerWon)
+	{
+		try
+		{
+			if (runtime == null || string.IsNullOrWhiteSpace(runtime.NonHeroMemoryId))
+			{
+				Logger.Log("DuelBehavior", "[WildernessDuel] non-hero duel result history skipped: memory id missing.");
+				return;
+			}
+			string npcName = (runtime.NonHeroMemoryName ?? runtime.TargetDisplayName ?? runtime.TargetCharacter?.Name?.ToString() ?? "NPC").Trim();
+			if (string.IsNullOrWhiteSpace(npcName))
+			{
+				npcName = "NPC";
+			}
+			string playerName = (Hero.MainHero?.Name?.ToString() ?? "玩家").Trim();
+			if (string.IsNullOrWhiteSpace(playerName))
+			{
+				playerName = "玩家";
+			}
+			string fact = playerWon
+				? ("[AFEF NPC行为补充] " + npcName + "在野外决斗中败给了" + playerName + "。")
+				: ("[AFEF NPC行为补充] " + npcName + "在野外决斗中击败了" + playerName + "。");
+			MyBehavior.AppendExternalNonHeroDialogueHistory(runtime.NonHeroMemoryId, npcName, null, null, fact);
+			Logger.Log("DuelBehavior", "[WildernessDuel] recorded non-hero duel result history memoryId=" + runtime.NonHeroMemoryId + " playerWon=" + playerWon);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("DuelBehavior", "[WildernessDuel][WARN] record non-hero duel result failed: " + ex.Message);
 		}
 	}
 
@@ -2527,6 +2811,9 @@ public class DuelBehavior : CampaignBehaviorBase
 			{
 				Instance._isDuelActive = false;
 				Instance._targetHero = null;
+				Instance._targetCharacter = null;
+				Instance._targetAgentIndex = -1;
+				Instance._targetDisplayName = "";
 			}
 			try
 			{
@@ -2552,6 +2839,12 @@ public class DuelBehavior : CampaignBehaviorBase
 
 	private bool TryOpenWildernessDuelMission(Hero target)
 	{
+		return TryOpenWildernessDuelMission(target?.CharacterObject);
+	}
+
+	private bool TryOpenWildernessDuelMission(CharacterObject targetCharacter)
+	{
+		Hero target = targetCharacter?.HeroObject;
 		try
 		{
 			int diagnosticId = ++_wildernessDuelDiagnosticSerial;
@@ -2559,7 +2852,7 @@ public class DuelBehavior : CampaignBehaviorBase
 			_wildernessDuelOpenStartedUtcTicks = DateTime.UtcNow.Ticks;
 			_wildernessDuelLastOpeningDiagUtcTicks = 0L;
 			LogWildernessDuelDiagnostic("open.enter", diagnosticId, target);
-			if (!IsWildernessDuelContext(target, out string blockedReason))
+			if (!IsWildernessDuelContext(targetCharacter, out string blockedReason))
 			{
 				Logger.Log("DuelBehavior", "[WildernessDuel] blocked: " + blockedReason);
 				LogWildernessDuelDiagnostic("open.blocked " + blockedReason, diagnosticId, target);
@@ -2569,12 +2862,12 @@ public class DuelBehavior : CampaignBehaviorBase
 			{
 				Logger.Log("DuelBehavior", "[WildernessDuel][Queue] Open requested while conversation is still active; queued instead of opening synchronously.");
 				LogWildernessDuelDiagnostic("open.requeue_conversation_active", diagnosticId, target);
-				QueueDuelAfterConversationExit(target, 0f, wildernessDuel: true);
+				QueueDuelAfterConversationExit(targetCharacter, 0f, wildernessDuel: true);
 				return true;
 			}
 			CleanupWildernessDuelRuntime(_wildernessDuelRuntime, "open.new_request_cleanup");
-			WildernessDuelBattleRuntime runtime = CreateWildernessDuelRuntime(target, diagnosticId);
-			MissionInitializerRecord rec = BuildWildernessDuelMissionInitializerRecord(target);
+			WildernessDuelBattleRuntime runtime = CreateWildernessDuelRuntime(targetCharacter, diagnosticId);
+			MissionInitializerRecord rec = BuildWildernessDuelMissionInitializerRecord(targetCharacter);
 			_wildernessDuelLastOpenScene = rec.SceneName ?? "";
 			LogWildernessDuelDiagnostic("initializer.ready", diagnosticId, target, rec);
 			_arenaMissionActive = true;
@@ -2590,10 +2883,13 @@ public class DuelBehavior : CampaignBehaviorBase
 			if (Instance != null)
 			{
 				Instance._targetHero = target;
+				Instance._targetCharacter = targetCharacter;
+				Instance._targetAgentIndex = -1;
+				Instance._targetDisplayName = ResolveDuelTargetDisplayName(null, target, targetCharacter);
 				Instance._isDuelActive = true;
 				Instance._currentDuelIsArena = false;
 			}
-			Logger.Log("DuelBehavior", "[WildernessDuel] OpenBattleMission vanilla-path scene=" + rec.SceneName + ", terrain=" + rec.TerrainType + ", target=" + target?.StringId);
+			Logger.Log("DuelBehavior", "[WildernessDuel] OpenBattleMission vanilla-path scene=" + rec.SceneName + ", terrain=" + rec.TerrainType + ", target=" + (target?.StringId ?? targetCharacter?.StringId));
 			LogWildernessDuelDiagnostic("OpenBattleMission.before", diagnosticId, target, rec);
 			IMission openedMission = CampaignMission.OpenBattleMission(rec);
 			Mission mission = openedMission as Mission;
@@ -2698,7 +2994,7 @@ public class DuelBehavior : CampaignBehaviorBase
 
 	public static void GlobalDuelStarterTick()
 	{
-		if (_queuedArenaDuelTarget == null || Mission.Current != null)
+		if ((_queuedArenaDuelTarget == null && _queuedDuelTargetCharacter == null) || Mission.Current != null)
 		{
 			return;
 		}
@@ -2727,6 +3023,7 @@ public class DuelBehavior : CampaignBehaviorBase
 					{
 						Logger.Log("DuelBehavior", "[Queue][ERROR] Campaign conversation did not close before queued duel; aborting queued duel.");
 						_queuedArenaDuelTarget = null;
+						_queuedDuelTargetCharacter = null;
 						_queuedWildernessDuel = false;
 						_queuedDuelWaitingForConversationExit = false;
 						_queuedDuelReadyUtcTicks = 0L;
@@ -2743,13 +3040,15 @@ public class DuelBehavior : CampaignBehaviorBase
 				return;
 			}
 			Hero queuedArenaDuelTarget = _queuedArenaDuelTarget;
+			CharacterObject queuedDuelTargetCharacter = _queuedDuelTargetCharacter ?? queuedArenaDuelTarget?.CharacterObject;
 			_queuedArenaDuelTarget = null;
+			_queuedDuelTargetCharacter = null;
 			bool queuedWildernessDuel = _queuedWildernessDuel;
 			_queuedWildernessDuel = false;
 			_queuedDuelWaitingForConversationExit = false;
 			_queuedDuelReadyUtcTicks = 0L;
 			_queuedDuelConversationCloseAttempts = 0;
-			Logger.Log("DuelBehavior", $"[Queue] 监测到 Mission 已退出，正在启动排队的竞技场决斗: Target={queuedArenaDuelTarget.Name}");
+			Logger.Log("DuelBehavior", "[Queue] 监测到 Mission 已退出，正在启动排队的决斗: Target=" + ResolveDuelTargetDisplayName(null, queuedArenaDuelTarget, queuedDuelTargetCharacter));
 			if (queuedWildernessDuel)
 			{
 				LogWildernessDuelDiagnostic("queue.open_ready", _wildernessDuelActiveDiagnosticId, queuedArenaDuelTarget);
@@ -2758,11 +3057,11 @@ public class DuelBehavior : CampaignBehaviorBase
 			{
 				if (queuedWildernessDuel)
 				{
-					Instance.TryOpenWildernessDuelMission(queuedArenaDuelTarget);
+					Instance.TryOpenWildernessDuelMission(queuedDuelTargetCharacter);
 				}
 				else
 				{
-					Instance.TryTeleportToArenaForDuel(queuedArenaDuelTarget);
+					Instance.TryTeleportToArenaForDuel(queuedDuelTargetCharacter);
 				}
 			}
 			else
@@ -3273,12 +3572,12 @@ public class DuelBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			if (Instance == null || targetHero == null)
+			if (Instance == null || (targetHero == null && targetAgent == null))
 			{
 				return;
 			}
 			string text = null;
-			if (Instance.TryConsumeDuelAfterLines(targetHero, out var lines) && lines != null)
+			if (targetHero != null && Instance.TryConsumeDuelAfterLines(targetHero, out var lines) && lines != null)
 			{
 				text = (playerWon ? lines.LoseLine : lines.WinLine);
 				if (string.IsNullOrWhiteSpace(text))
@@ -3334,7 +3633,8 @@ public class DuelBehavior : CampaignBehaviorBase
 			}
 			if (!flag)
 			{
-				string text3 = targetHero?.Name?.ToString() ?? "NPC";
+				CharacterObject characterObject = targetAgent?.Character as CharacterObject;
+				string text3 = ResolveDuelTargetDisplayName(targetAgent, targetHero, characterObject);
 				try
 				{
 					InformationManager.DisplayMessage(new InformationMessage("[" + text3 + "] " + text, new Color(1f, 0.8f, 0.2f)));
@@ -3342,20 +3642,26 @@ public class DuelBehavior : CampaignBehaviorBase
 				catch
 				{
 				}
+				if (targetHero != null)
+				{
+					try
+					{
+						ShoutBehavior.RecordNativeConversationNpcLineForExternal(targetHero, targetHero?.CharacterObject, text3, text);
+					}
+					catch
+					{
+					}
+				}
+			}
+			if (targetHero != null)
+			{
 				try
 				{
-					ShoutBehavior.RecordNativeConversationNpcLineForExternal(targetHero, targetHero?.CharacterObject, text3, text);
+					MyBehavior.AppendExternalDialogueHistory(targetHero, null, text, null);
 				}
 				catch
 				{
 				}
-			}
-			try
-			{
-				MyBehavior.AppendExternalDialogueHistory(targetHero, null, text, null);
-			}
-			catch
-			{
 			}
 		}
 		catch
@@ -3424,6 +3730,81 @@ public class DuelBehavior : CampaignBehaviorBase
 		}
 	}
 
+	public void StartDuelViaAI(Agent targetAgent)
+	{
+		if (Mission.Current == null || targetAgent == null)
+		{
+			return;
+		}
+		if (targetAgent.Character is CharacterObject { HeroObject: not null } characterObject)
+		{
+			StartDuelViaAI(characterObject.HeroObject);
+			return;
+		}
+		if (!CanTargetAgentStartDuel(targetAgent, out string blockedReason))
+		{
+			Logger.Log("DuelBehavior", "[AgentDuel] StartDuelViaAI blocked: " + blockedReason);
+			if (!string.IsNullOrWhiteSpace(blockedReason))
+			{
+				InformationManager.DisplayMessage(new InformationMessage(blockedReason, Color.FromUint(4294901760u)));
+			}
+			return;
+		}
+		ShowDuelRiskWarning();
+		if (!TrySetCurrentDuelTargetFromAgent(targetAgent))
+		{
+			Logger.Log("DuelBehavior", "[AgentDuel] StartDuelViaAI failed: target agent has no CharacterObject.");
+			return;
+		}
+		bool flag = false;
+		try
+		{
+			Campaign current = Campaign.Current;
+			flag = current != null && current.ConversationManager?.IsConversationInProgress == true;
+		}
+		catch
+		{
+		}
+		if (flag)
+		{
+			_meetingPendingStart = true;
+			try
+			{
+				Agent.Main?.SetMortalityState(Agent.MortalityState.Invulnerable);
+			}
+			catch
+			{
+			}
+			try
+			{
+				targetAgent.SetMortalityState(Agent.MortalityState.Invulnerable);
+			}
+			catch
+			{
+			}
+			TrySetAgentController(targetAgent, "None");
+			try
+			{
+				targetAgent.SetIsAIPaused(isPaused: true);
+			}
+			catch
+			{
+			}
+			try
+			{
+				targetAgent.ClearTargetFrame();
+			}
+			catch
+			{
+			}
+			AnimusForgeQuickInfo.Show("已接受决斗。请你手动结束对话；结束后将进入 10 秒准备期，然后正式开战（准备期双方无法互相伤害）。", _targetCharacter);
+		}
+		else
+		{
+			StartDuelInternal(targetAgent);
+		}
+	}
+
 	public void OnEngineTick()
 	{
 		GlobalDuelStarterTick();
@@ -3434,7 +3815,7 @@ public class DuelBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
-		if (_meetingPendingStart && _targetHero != null)
+		if (_meetingPendingStart && (_targetHero != null || _targetCharacter != null || _targetAgentIndex >= 0))
 		{
 			bool flag = false;
 			try
@@ -3448,16 +3829,28 @@ public class DuelBehavior : CampaignBehaviorBase
 			if (!flag)
 			{
 				_meetingPendingStart = false;
-				StartDuelInternal(_targetHero);
+				Agent targetAgent = GetTargetAgent();
+				if (targetAgent != null)
+				{
+					StartDuelInternal(targetAgent);
+				}
+				else if (_targetHero != null)
+				{
+					StartDuelInternal(_targetHero);
+				}
+				else
+				{
+					Logger.Log("DuelBehavior", "[AgentDuel] 对话结束后找不到目标 Agent，决斗取消。");
+				}
 			}
 		}
 		else
 		{
-			if (!_isDuelActive || _targetHero == null)
+			if (!_isDuelActive)
 			{
 				return;
 			}
-			Agent agent = GetAgent(_targetHero);
+			Agent agent = GetTargetAgent();
 			Agent main = Agent.Main;
 			if (main == null || agent == null)
 			{
@@ -4068,12 +4461,32 @@ public class DuelBehavior : CampaignBehaviorBase
 
 	private void StartDuelInternal(Hero target)
 	{
+		if (target == null)
+		{
+			Logger.Log("DuelBehavior", "决斗启动失败: 目标 Hero 为空");
+			return;
+		}
+		Agent agent = GetAgent(target);
+		if (agent == null)
+		{
+			Logger.Log("DuelBehavior", "决斗启动失败: 找不到目标的 Agent 实体");
+			return;
+		}
+		StartDuelInternal(agent);
+	}
+
+	private void StartDuelInternal(Agent agent)
+	{
 		if (Hero.MainHero.Clan.Tier < DuelSettings.GetSettings().MinimumClanTier)
 		{
 			Logger.Log("DuelBehavior", "决斗失败: 玩家家族等级不足");
 			return;
 		}
-		_targetHero = target;
+		if (!TrySetCurrentDuelTargetFromAgent(agent))
+		{
+			Logger.Log("DuelBehavior", "决斗启动失败: 目标 Agent 无法解析为 CharacterObject");
+			return;
+		}
 		string text = Mission.Current?.SceneName ?? "Unknown";
 		bool flag = text.Equals("arena_vlandia_a", StringComparison.OrdinalIgnoreCase);
 		if (flag)
@@ -4084,7 +4497,6 @@ public class DuelBehavior : CampaignBehaviorBase
 		{
 			Logger.Log("DuelBehavior", "[ArenaInfo] 当前场景 " + text + " 非瓦兰迪亚竞技场 (arena_vlandia_a)，暂时仍在原地决斗。");
 		}
-		Agent agent = GetAgent(target);
 		if (agent != null)
 		{
 			Mission current = Mission.Current;
@@ -4093,7 +4505,10 @@ public class DuelBehavior : CampaignBehaviorBase
 				_preDuelMode = current.Mode;
 			}
 			_duelResultRecorded = false;
-			SetDuelDebtTagGateState(_targetHero, 0);
+			if (_targetHero != null)
+			{
+				SetDuelDebtTagGateState(_targetHero, 0);
+			}
 			_forcedMainHeroDeath = false;
 			EnsureDeathBehaviorsPresent();
 			_preDuelTargetTeam = agent.Team;
@@ -4107,7 +4522,10 @@ public class DuelBehavior : CampaignBehaviorBase
 				Campaign.Current.ConversationManager?.EndConversation();
 			}
 			_isDuelActive = true;
-			_duelCooldowns[_targetHero.StringId] = (float)CampaignTime.Now.ToDays;
+			if (_targetHero != null && !string.IsNullOrEmpty(_targetHero.StringId))
+			{
+				_duelCooldowns[_targetHero.StringId] = (float)CampaignTime.Now.ToDays;
+			}
 			DuelSettings settings = DuelSettings.GetSettings();
 			if (current != null)
 			{
@@ -4231,7 +4649,7 @@ public class DuelBehavior : CampaignBehaviorBase
 					_meetingPreFightActive = true;
 					_meetingPreFightEndTime = current.CurrentTime + 10f;
 					RefreshMeetingDuelParticipantLocks(Agent.Main, agent, preFight: true);
-					AnimusForgeQuickInfo.Show("双方就位！10秒后正式开战（此期间无法互相伤害）", target?.CharacterObject);
+					AnimusForgeQuickInfo.Show("双方就位！10秒后正式开战（此期间无法互相伤害）", _targetCharacter);
 				}
 				else
 				{
@@ -4248,9 +4666,9 @@ public class DuelBehavior : CampaignBehaviorBase
 			if (flag)
 			{
 				string information = $"【竞技场决斗已开始】当前场景: {text2}。规则：任一方生命值低于 {DuelSettings.GetHealthThreshold():P0} 判定为战败。";
-				AnimusForgeQuickInfo.Show(information, _targetHero?.CharacterObject);
+				AnimusForgeQuickInfo.Show(information, _targetCharacter);
 			}
-			Logger.Log("DuelBehavior", $"决斗已启动/初始化! 目标: {_targetHero.Name}, 场景: {text2}, 模式已切换为 Duel");
+			Logger.Log("DuelBehavior", $"决斗已启动/初始化! 目标: {GetCurrentDuelTargetDisplayName()}, 场景: {text2}, 模式已切换为 Duel");
 		}
 		else
 		{
@@ -4260,16 +4678,22 @@ public class DuelBehavior : CampaignBehaviorBase
 
 	private bool TryTeleportToArenaForDuel(Hero target)
 	{
+		return TryTeleportToArenaForDuel(target?.CharacterObject);
+	}
+
+	private bool TryTeleportToArenaForDuel(CharacterObject targetCharacter)
+	{
 		try
 		{
+			Hero target = targetCharacter?.HeroObject;
 			string text = "arena_vlandia_a";
 			string text2 = Mission.Current?.SceneName ?? "Unknown";
 			string text3 = Hero.MainHero?.CurrentSettlement?.StringId ?? "";
-			Logger.Log("DuelBehavior", "[ArenaTeleport] 尝试通过 MissionState.OpenNew 切换到竞技场。CurrentScene=" + text2 + ", TargetScene=" + text + ", SettlementId=" + text3 + ", Target=" + target?.StringId);
+			Logger.Log("DuelBehavior", "[ArenaTeleport] 尝试通过 MissionState.OpenNew 切换到竞技场。CurrentScene=" + text2 + ", TargetScene=" + text + ", SettlementId=" + text3 + ", Target=" + (target?.StringId ?? targetCharacter?.StringId));
 			MissionInitializerRecord rec = new MissionInitializerRecord(text);
 			MissionState.OpenNew("AnimusForge_ArenaDuel", rec, (Mission mission) => new MissionBehavior[4]
 			{
-				new ArenaDuelMissionBehavior(target),
+				new ArenaDuelMissionBehavior(targetCharacter),
 				new AgentHumanAILogic(),
 				new DuelPlayerDeathAgentStateDeciderLogic(),
 				new DuelMainHeroDeathMissionBehavior()
@@ -4467,9 +4891,12 @@ public class DuelBehavior : CampaignBehaviorBase
 		{
 			_lastDuelResults[_targetHero.StringId] = (flag ? 1 : (-1));
 		}
-		SetDuelDebtTagGateState(_targetHero, playerDefeated ? -1 : 1);
-		MyBehavior.RecordDuelResultForExternal(_targetHero, flag, _currentDuelIsArena ? "arena" : "meeting");
-		Agent agent = GetAgent(_targetHero);
+		if (_targetHero != null)
+		{
+			SetDuelDebtTagGateState(_targetHero, playerDefeated ? -1 : 1);
+			MyBehavior.RecordDuelResultForExternal(_targetHero, flag, _currentDuelIsArena ? "arena" : "meeting");
+		}
+		Agent agent = GetTargetAgent();
 		TryPostDuelAiShout(_targetHero, agent, flag);
 		if (!_currentDuelIsArena)
 		{
@@ -4496,11 +4923,11 @@ public class DuelBehavior : CampaignBehaviorBase
 				agent.ClearTargetFrame();
 			}
 		}
-		string text = ApplyDuelStakeSettlementAndBuildResultText(_targetHero, flag);
+		string text = (_targetHero != null) ? ApplyDuelStakeSettlementAndBuildResultText(_targetHero, flag) : "";
 		string text2 = (flag ? "【决斗结果】你赢了！" : "【决斗结果】你输了！");
 		Color color = (flag ? Color.FromUint(4281257073u) : Color.FromUint(4293348412u));
 		string text3 = (_currentDuelIsArena ? " 10秒后退出竞技场..." : "");
-		AnimusForgeQuickInfo.Show(text2 + text + text3, _targetHero?.CharacterObject);
+		AnimusForgeQuickInfo.Show(text2 + text + text3, _targetCharacter);
 	}
 
 	private void RestoreState()
@@ -4514,7 +4941,7 @@ public class DuelBehavior : CampaignBehaviorBase
 		{
 			flag = false;
 		}
-		Agent agent = GetAgent(_targetHero);
+		Agent agent = GetTargetAgent();
 		try
 		{
 			_meetingPreFightActive = false;
@@ -4825,7 +5252,131 @@ public class DuelBehavior : CampaignBehaviorBase
 
 	private Agent GetAgent(Hero hero)
 	{
-		return Mission.Current?.Agents.FirstOrDefault((Agent a) => a.Character == hero.CharacterObject);
+		if (hero?.CharacterObject == null)
+		{
+			return null;
+		}
+		return Mission.Current?.Agents.FirstOrDefault((Agent a) => a != null && a.Character == hero.CharacterObject);
+	}
+
+	private Agent GetTargetAgent()
+	{
+		try
+		{
+			Mission current = Mission.Current;
+			if (current?.Agents == null)
+			{
+				return null;
+			}
+			if (_targetAgentIndex >= 0)
+			{
+				Agent indexedAgent = current.Agents.FirstOrDefault((Agent a) => a != null && a.Index == _targetAgentIndex);
+				if (indexedAgent != null)
+				{
+					return indexedAgent;
+				}
+			}
+			CharacterObject targetCharacter = _targetCharacter ?? _targetHero?.CharacterObject;
+			if (targetCharacter != null)
+			{
+				Agent characterAgent = current.Agents.FirstOrDefault((Agent a) => a != null && a.Character == targetCharacter);
+				if (characterAgent != null)
+				{
+					return characterAgent;
+				}
+			}
+			if (_targetHero != null)
+			{
+				return GetAgent(_targetHero);
+			}
+		}
+		catch
+		{
+		}
+		return null;
+	}
+
+	private bool TrySetCurrentDuelTargetFromAgent(Agent agent)
+	{
+		try
+		{
+			if (agent == null)
+			{
+				return false;
+			}
+			CharacterObject characterObject = agent.Character as CharacterObject;
+			if (characterObject == null)
+			{
+				return false;
+			}
+			_targetCharacter = characterObject;
+			_targetHero = characterObject.HeroObject;
+			_targetAgentIndex = agent.Index;
+			_targetDisplayName = ResolveDuelTargetDisplayName(agent, _targetHero, characterObject);
+			return true;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private bool IsCurrentDuelTargetAgent(Agent agent)
+	{
+		try
+		{
+			if (agent == null)
+			{
+				return false;
+			}
+			if (_targetAgentIndex >= 0 && agent.Index == _targetAgentIndex)
+			{
+				return true;
+			}
+			CharacterObject characterObject = agent.Character as CharacterObject;
+			if (_targetHero != null && characterObject?.HeroObject == _targetHero)
+			{
+				return true;
+			}
+			return _targetHero == null && _targetCharacter != null && characterObject == _targetCharacter;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private string GetCurrentDuelTargetDisplayName()
+	{
+		if (!string.IsNullOrWhiteSpace(_targetDisplayName))
+		{
+			return _targetDisplayName.Trim();
+		}
+		return ResolveDuelTargetDisplayName(GetTargetAgent(), _targetHero, _targetCharacter);
+	}
+
+	private static string ResolveDuelTargetDisplayName(Agent agent, Hero hero, CharacterObject characterObject)
+	{
+		try
+		{
+			string text = hero?.Name?.ToString();
+			if (string.IsNullOrWhiteSpace(text))
+			{
+				text = characterObject?.Name?.ToString();
+			}
+			if (string.IsNullOrWhiteSpace(text))
+			{
+				text = agent?.Name;
+			}
+			if (!string.IsNullOrWhiteSpace(text))
+			{
+				return text.Trim();
+			}
+		}
+		catch
+		{
+		}
+		return "NPC";
 	}
 
 	public sealed class DuelBehaviorSaveableTypeDefiner : SaveableTypeDefiner

@@ -30,6 +30,7 @@ namespace AnimusForge;
 public static class AIConfigHandler
 {
 	private const int ActionPostprocessMaxHistoryAndLatestEntries = 5;
+	private const int ActionPostprocessRequestTimeoutMilliseconds = 120000;
 	private const string KingAbdicateToPlayerActionTag = "[ACTION:KING_ABDICATE_TO_PLAYER]";
 
 	private sealed class ActionPostprocessHistoryEntry
@@ -337,13 +338,55 @@ public static class AIConfigHandler
 		}
 	}
 
-	private static bool IsPlayerCompanionOrFamilyExcludedRule(string ruleId)
+	public static bool IsPlayerPartyTradeLimitedTarget(Hero targetHero)
 	{
-		string text = (ruleId ?? "").Trim();
-		return string.Equals(text, "reward", StringComparison.OrdinalIgnoreCase) || string.Equals(text, "loan", StringComparison.OrdinalIgnoreCase) || string.Equals(text, "vote_deal", StringComparison.OrdinalIgnoreCase) || string.Equals(text, "diplomacy", StringComparison.OrdinalIgnoreCase) || string.Equals(text, "party_transfer", StringComparison.OrdinalIgnoreCase) || string.Equals(text, "settlement_transfer", StringComparison.OrdinalIgnoreCase);
+		try
+		{
+			if (targetHero == null || targetHero == Hero.MainHero)
+			{
+				return false;
+			}
+			MobileParty mainParty = MobileParty.MainParty;
+			if (mainParty == null)
+			{
+				return false;
+			}
+			if (targetHero.PartyBelongedTo == mainParty)
+			{
+				return true;
+			}
+			return targetHero.CharacterObject != null && mainParty.MemberRoster != null && mainParty.MemberRoster.FindIndexOfTroop(targetHero.CharacterObject) >= 0;
+		}
+		catch
+		{
+			return false;
+		}
 	}
 
-	private static bool ShouldExcludePlayerCompanionOrFamilyRulesForConversationTarget()
+	private static bool IsPlayerPartyTradeLimitedRule(string ruleId)
+	{
+		string text = (ruleId ?? "").Trim();
+		return string.Equals(text, "loan", StringComparison.OrdinalIgnoreCase) || string.Equals(text, "vote_deal", StringComparison.OrdinalIgnoreCase) || string.Equals(text, "diplomacy", StringComparison.OrdinalIgnoreCase) || string.Equals(text, "party_transfer", StringComparison.OrdinalIgnoreCase) || string.Equals(text, "settlement_transfer", StringComparison.OrdinalIgnoreCase);
+	}
+
+	private static bool IsSettlementTransferRule(string ruleId)
+	{
+		return string.Equals((ruleId ?? "").Trim(), "settlement_transfer", StringComparison.OrdinalIgnoreCase);
+	}
+
+	private static bool ShouldExcludePlayerPartyTradeLimitedRulesForConversationTarget()
+	{
+		try
+		{
+			return IsPlayerPartyTradeLimitedTarget(ResolveConversationTargetHero());
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static bool ShouldExcludePlayerCompanionOrFamilySettlementTransferForConversationTarget()
 	{
 		try
 		{
@@ -353,6 +396,15 @@ public static class AIConfigHandler
 		{
 			return false;
 		}
+	}
+
+	private static bool ShouldExcludeRuntimeRuleForConversationTarget(string ruleId)
+	{
+		if (IsPlayerPartyTradeLimitedRule(ruleId) && ShouldExcludePlayerPartyTradeLimitedRulesForConversationTarget())
+		{
+			return true;
+		}
+		return IsSettlementTransferRule(ruleId) && ShouldExcludePlayerCompanionOrFamilySettlementTransferForConversationTarget();
 	}
 
 	private static bool IsSceneMoveRule(string ruleId)
@@ -1807,7 +1859,7 @@ public static class AIConfigHandler
 		{
 			return false;
 		}
-		if (IsPlayerCompanionOrFamilyExcludedRule(text) && ShouldExcludePlayerCompanionOrFamilyRulesForConversationTarget())
+		if (ShouldExcludeRuntimeRuleForConversationTarget(text))
 		{
 			return false;
 		}
@@ -1984,7 +2036,7 @@ public static class AIConfigHandler
 		return string.IsNullOrWhiteSpace(text) ? "RULE" : text;
 	}
 
-	private static GuardrailRulePromptConfig BuildLegacyRulePrompt(string id, bool enabled, string instruction, List<string> triggerKeywords, string group, int priority, int topicNumber, string topicLabel)
+	private static GuardrailRulePromptConfig BuildLegacyRulePrompt(string id, bool enabled, string instruction, List<string> triggerKeywords, string group, int priority, int topicNumber, string topicLabel, string code = "")
 	{
 		return new GuardrailRulePromptConfig
 		{
@@ -1992,7 +2044,7 @@ public static class AIConfigHandler
 			IsEnabled = enabled,
 			TopicNumber = topicNumber,
 			TopicLabel = (topicLabel ?? "").Trim(),
-			Code = NormalizeRuleCode("", id, topicLabel),
+			Code = NormalizeRuleCode(code, id, topicLabel),
 			Instruction = (instruction ?? ""),
 			TriggerKeywords = NormalizeTriggerKeywordList(triggerKeywords),
 			Group = (group ?? "").Trim(),
@@ -2050,10 +2102,10 @@ public static class AIConfigHandler
 			{
 				duelRegistryInstruction = (_guardrail?.Duel?.DialogueInstruction ?? "").Trim();
 			}
-			upsert(BuildLegacyRulePrompt("duel", _guardrail?.Duel?.IsEnabled ?? true, duelRegistryInstruction, _guardrail?.Duel?.AcceptKeywords ?? new List<string>(), "combat", 90, _guardrail?.Duel?.TopicNumber ?? 0, _guardrail?.Duel?.TopicLabel ?? ""));
-			upsert(BuildLegacyRulePrompt("reward", _guardrail?.Reward?.IsEnabled ?? true, _guardrail?.Reward?.Instruction ?? "", _guardrail?.Reward?.TriggerKeywords ?? new List<string>(), "trade", 80, _guardrail?.Reward?.TopicNumber ?? 0, _guardrail?.Reward?.TopicLabel ?? ""));
-			upsert(BuildLegacyRulePrompt("loan", _guardrail?.Loan?.IsEnabled ?? true, _guardrail?.Loan?.Instruction ?? "", _guardrail?.Loan?.TriggerKeywords ?? new List<string>(), "finance", 85, _guardrail?.Loan?.TopicNumber ?? 0, _guardrail?.Loan?.TopicLabel ?? ""));
-			upsert(BuildLegacyRulePrompt("surroundings", _guardrail?.Surroundings?.IsEnabled ?? true, _guardrail?.Surroundings?.Instruction ?? "", _guardrail?.Surroundings?.TriggerKeywords ?? new List<string>(), "world", 70, _guardrail?.Surroundings?.TopicNumber ?? 0, _guardrail?.Surroundings?.TopicLabel ?? ""));
+			upsert(BuildLegacyRulePrompt("duel", _guardrail?.Duel?.IsEnabled ?? true, duelRegistryInstruction, _guardrail?.Duel?.AcceptKeywords ?? new List<string>(), "combat", 90, _guardrail?.Duel?.TopicNumber ?? 0, _guardrail?.Duel?.TopicLabel ?? "", _guardrail?.Duel?.Code ?? ""));
+			upsert(BuildLegacyRulePrompt("reward", _guardrail?.Reward?.IsEnabled ?? true, _guardrail?.Reward?.Instruction ?? "", _guardrail?.Reward?.TriggerKeywords ?? new List<string>(), "trade", 80, _guardrail?.Reward?.TopicNumber ?? 0, _guardrail?.Reward?.TopicLabel ?? "", _guardrail?.Reward?.Code ?? ""));
+			upsert(BuildLegacyRulePrompt("loan", _guardrail?.Loan?.IsEnabled ?? true, _guardrail?.Loan?.Instruction ?? "", _guardrail?.Loan?.TriggerKeywords ?? new List<string>(), "finance", 85, _guardrail?.Loan?.TopicNumber ?? 0, _guardrail?.Loan?.TopicLabel ?? "", _guardrail?.Loan?.Code ?? ""));
+			upsert(BuildLegacyRulePrompt("surroundings", _guardrail?.Surroundings?.IsEnabled ?? true, _guardrail?.Surroundings?.Instruction ?? "", _guardrail?.Surroundings?.TriggerKeywords ?? new List<string>(), "world", 70, _guardrail?.Surroundings?.TopicNumber ?? 0, _guardrail?.Surroundings?.TopicLabel ?? "", _guardrail?.Surroundings?.Code ?? ""));
 			if (_guardrail?.RulePrompts != null && _guardrail.RulePrompts.Count > 0)
 			{
 				for (int i = 0; i < _guardrail.RulePrompts.Count; i++)
@@ -2917,6 +2969,7 @@ public static class AIConfigHandler
 		string requestBodyForTokenStats = "";
 		try
 		{
+			using CancellationTokenSource timeoutCts = new CancellationTokenSource(ActionPostprocessRequestTimeoutMilliseconds);
 			int actualMaxTokens = ResolveActionPostprocessApiMaxTokens(apiUrl, apiKey, modelName, maxTokens);
 			JObject payload = new JObject
 			{
@@ -2934,7 +2987,7 @@ public static class AIConfigHandler
 			using HttpRequestMessage httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, apiUrl);
 			httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
 			httpRequestMessage.Content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
-			HttpResponseMessage result = DuelSettings.GlobalClient.SendAsync(httpRequestMessage).GetAwaiter().GetResult();
+			HttpResponseMessage result = DuelSettings.GlobalClient.SendAsync(httpRequestMessage, timeoutCts.Token).GetAwaiter().GetResult();
 			string text = result.Content.ReadAsStringAsync().GetAwaiter().GetResult();
 			if (!result.IsSuccessStatusCode && result.StatusCode == System.Net.HttpStatusCode.BadRequest && controlMode != "plain" && LooksLikeAuxiliaryThinkingControlError(text))
 			{
@@ -2946,7 +2999,7 @@ public static class AIConfigHandler
 				using HttpRequestMessage httpRequestMessage2 = new HttpRequestMessage(HttpMethod.Post, apiUrl);
 				httpRequestMessage2.Headers.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
 				httpRequestMessage2.Content = new StringContent(retryBody, Encoding.UTF8, "application/json");
-				result = DuelSettings.GlobalClient.SendAsync(httpRequestMessage2).GetAwaiter().GetResult();
+				result = DuelSettings.GlobalClient.SendAsync(httpRequestMessage2, timeoutCts.Token).GetAwaiter().GetResult();
 				text = result.Content.ReadAsStringAsync().GetAwaiter().GetResult();
 				controlMode += "_retry_plain";
 			}
@@ -2966,6 +3019,12 @@ public static class AIConfigHandler
 			}
 			LogAuxiliaryRouterTokenTrace("action_postprocess_http", array, "[ACTION POSTPROCESS HTTP]\nurl=" + apiUrl + "\nmodel=" + modelName + "\ncontrol_mode=" + controlMode + "\nai_response=\n" + content + "\nraw_response=\n" + (text ?? ""), Logger.EstimateTokens(content), requestBodyForTokenStats);
 			return true;
+		}
+		catch (OperationCanceledException ex)
+		{
+			error = "timeout_" + ActionPostprocessRequestTimeoutMilliseconds + "ms";
+			LogAuxiliaryRouterTokenTrace("action_postprocess_timeout", array, "[ACTION POSTPROCESS TIMEOUT]\ntimeoutMs=" + ActionPostprocessRequestTimeoutMilliseconds + "\nerror=" + BuildAuxiliaryRouterExceptionText(ex) + "\nstack=\n" + (ex?.StackTrace ?? ""), 0, requestBodyForTokenStats);
+			return false;
 		}
 		catch (Exception ex)
 		{
@@ -5178,9 +5237,9 @@ public static class AIConfigHandler
 			Logger.Log("GuardrailSemantic", "rule=" + ruleTag + " hit=False mode=blocked_excluded_rule");
 			return false;
 		}
-		if (IsPlayerCompanionOrFamilyExcludedRule(ruleTag) && ShouldExcludePlayerCompanionOrFamilyRulesForConversationTarget())
+		if (ShouldExcludeRuntimeRuleForConversationTarget(ruleTag))
 		{
-			Logger.Log("GuardrailSemantic", "rule=" + ruleTag + " hit=False mode=blocked_player_companion_or_family_rule");
+			Logger.Log("GuardrailSemantic", "rule=" + ruleTag + " hit=False mode=blocked_runtime_target_rule");
 			return false;
 		}
 		if (IsSceneMoveRule(ruleTag) && ShouldExcludeSceneMoveRuleForCurrentMission())
@@ -5314,13 +5373,16 @@ public static class AIConfigHandler
 					set.Add(text);
 				}
 			}
-			if (applyRuntimeAutoExclusions && ShouldExcludePlayerCompanionOrFamilyRulesForConversationTarget())
+			if (applyRuntimeAutoExclusions && ShouldExcludePlayerPartyTradeLimitedRulesForConversationTarget())
 			{
-				set.Add("reward");
 				set.Add("loan");
 				set.Add("diplomacy");
 				set.Add("vote_deal");
 				set.Add("party_transfer");
+				set.Add("settlement_transfer");
+			}
+			if (applyRuntimeAutoExclusions && ShouldExcludePlayerCompanionOrFamilySettlementTransferForConversationTarget())
+			{
 				set.Add("settlement_transfer");
 			}
 			if (applyRuntimeAutoExclusions && ShouldExcludeSceneMoveRuleForCurrentMission())
@@ -5864,7 +5926,7 @@ public static class AIConfigHandler
 						value = text2;
 					}
 				}
-				if (hasAnyHero && IsPlayerCompanionOrFamilyExcludedRule(text) && ShouldExcludePlayerCompanionOrFamilyRulesForConversationTarget())
+				if (hasAnyHero && ShouldExcludeRuntimeRuleForConversationTarget(text))
 				{
 					continue;
 				}
@@ -6197,10 +6259,6 @@ public static class AIConfigHandler
 		{
 			Hero hero = targetHero ?? ResolveConversationTargetHero();
 			CharacterObject characterObject = targetCharacter ?? ResolveConversationTargetCharacter();
-			if (IsPlayerCompanionOrFamilyTradeTarget(hero))
-			{
-				return "";
-			}
 			string text = ApplyPlayerDisplayNameToGuardrailText(_guardrail?.Reward?.Instruction ?? "");
 			string text2 = ApplyRuntimeTemplate(text, BuildRewardRuntimeTokens(hero, characterObject));
 			string text3 = RewardSystemBehavior.Instance?.BuildNotableMarketRewardInstruction(hero) ?? "";
@@ -6279,7 +6337,7 @@ public static class AIConfigHandler
 		{
 			Hero hero = targetHero ?? ResolveConversationTargetHero();
 			CharacterObject characterObject = targetCharacter ?? ResolveConversationTargetCharacter();
-			if (IsPlayerCompanionOrFamilyTradeTarget(hero))
+			if (IsPlayerPartyTradeLimitedTarget(hero))
 			{
 				return "";
 			}

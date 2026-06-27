@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Helpers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using TaleWorlds.CampaignSystem;
@@ -56,6 +57,10 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 	private PlayerNotorietyState _state = new PlayerNotorietyState();
 	private readonly Dictionary<string, ActiveConversationState> _activeConversationStates = new Dictionary<string, ActiveConversationState>(StringComparer.OrdinalIgnoreCase);
 	private readonly HashSet<string> _soldPrisonerDonationSkipKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+	private string _currentSettlementStayId = "";
+	private string _currentSettlementStayName = "";
+	private double _currentSettlementStayStartDays = -1.0;
+	private int _currentSettlementStayStartDay = -1;
 	private bool _summaryProcessing;
 
 	public static PlayerNotorietyBehavior Instance { get; private set; }
@@ -70,6 +75,17 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 		CampaignEvents.OnPrisonerSoldEvent.AddNonSerializedListener(this, OnPlayerPrisonersSold);
 		CampaignEvents.OnMainPartyPrisonerRecruitedEvent.AddNonSerializedListener(this, OnMainPartyPrisonerRecruited);
 		CampaignEvents.OnPrisonerDonatedToSettlementEvent.AddNonSerializedListener(this, OnPlayerPrisonersDonatedToSettlement);
+		CampaignEvents.AfterSettlementEntered.AddNonSerializedListener(this, OnPlayerSettlementEnteredForRecentAction);
+		CampaignEvents.OnSettlementLeftEvent.AddNonSerializedListener(this, OnPlayerSettlementLeftForRecentAction);
+		CampaignEvents.OnTroopRecruitedEvent.AddNonSerializedListener(this, OnPlayerTroopRecruitedForRecentAction);
+		CampaignEvents.TournamentFinished.AddNonSerializedListener(this, OnTournamentFinishedForPlayerRecentAction);
+		CampaignEvents.OnPlayerBoardGameOverEvent.AddNonSerializedListener(this, OnPlayerBoardGameOverForRecentAction);
+		CampaignEvents.OnRansomOfferCancelledEvent.AddNonSerializedListener(this, OnRansomOfferCancelledForPlayerRecentAction);
+		CampaignEvents.OnMarriageOfferCanceledEvent.AddNonSerializedListener(this, OnMarriageOfferCanceledForPlayerRecentAction);
+		CampaignEvents.OnVassalOrMercenaryServiceOfferCanceledEvent.AddNonSerializedListener(this, OnVassalOrMercenaryOfferCanceledForPlayerRecentAction);
+		CampaignEvents.OnPartyLeaderChangeOfferCanceledEvent.AddNonSerializedListener(this, OnPartyLeaderChangeOfferCanceledForPlayerRecentAction);
+		CampaignEvents.OnPeaceOfferResolvedEvent.AddNonSerializedListener(this, OnPeaceOfferResolvedForPlayerRecentAction);
+		CampaignEvents.AlleyClearedByPlayer.AddNonSerializedListener(this, OnAlleyClearedByPlayerForRecentAction);
 		Logger.Log("PlayerNotoriety", "registered v1 behavior.");
 	}
 
@@ -146,6 +162,18 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 		catch (Exception ex)
 		{
 			Logger.Log("PlayerNotoriety", "record history material failed: " + ex.Message);
+		}
+	}
+
+	public static void RecordPlayerPrisonBreakRescueForExternal(Hero rescuedHero)
+	{
+		try
+		{
+			Instance?.RecordPlayerPrisonBreakRescue(rescuedHero);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("PlayerNotoriety", "record prison break rescue failed: " + ex.Message);
 		}
 	}
 
@@ -442,6 +470,47 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 		LogDebug("record history material kind=" + material.SourceKind + " day=" + material.Day + " text=" + material.Text);
 	}
 
+	private void RecordPlayerPrisonBreakRescue(Hero rescuedHero)
+	{
+		try
+		{
+			Hero player = Hero.MainHero;
+			if (player == null || rescuedHero == null || rescuedHero == player)
+			{
+				return;
+			}
+			int day = GetCurrentGameDayIndex();
+			int hour = GetCurrentGameHour();
+			Settlement settlement = ResolvePlayerCurrentSettlement() ?? rescuedHero.CurrentSettlement ?? rescuedHero.StayingInSettlement;
+			bool hasSettlement = settlement != null;
+			string settlementName = hasSettlement ? GetSettlementDisplayName(settlement) : "";
+			string locationText = hasSettlement ? settlementName : "越狱现场";
+			string locationPhrase = hasSettlement ? ("在" + settlementName + "的地牢中") : "从囚禁中";
+			string rescuedName = GetHeroDisplayName(rescuedHero);
+			string text = "你" + locationPhrase + "越狱营救了" + rescuedName + "，并帮助其成功脱离囚禁。";
+			string stableKey = "player_prison_break_rescue:" + GetHeroId(player) + ":" + GetHeroId(rescuedHero) + ":" + (settlement?.StringId ?? "") + ":" + day + ":" + hour;
+			RecordPlayerAction(
+				text,
+				stableKey,
+				"prison_break_rescue",
+				isMajor: true,
+				day,
+				GetCurrentGameDateText(),
+				0,
+				settlement?.StringId ?? "",
+				settlementName,
+				locationText,
+				player.Culture?.StringId ?? "",
+				rescuedHero.Culture?.StringId ?? "",
+				settlement?.Culture?.StringId ?? "",
+				true);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("PlayerNotoriety", "RecordPlayerPrisonBreakRescue failed: " + ex.Message);
+		}
+	}
+
 	private void RecordPublicMemory(Hero npc, Settlement settlement, string material, string publicity, string reason, int gameDayIndex, string gameDate)
 	{
 		_state = NormalizeState(_state);
@@ -603,6 +672,238 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 		catch (Exception ex)
 		{
 			Logger.Log("PlayerNotoriety", "prisoner donated recent action failed: " + ex.Message);
+		}
+	}
+
+	private void OnPlayerSettlementEnteredForRecentAction(MobileParty party, Settlement settlement, Hero hero)
+	{
+		try
+		{
+			if (settlement == null || settlement.IsHideout || (!IsPlayerMobileParty(party) && hero != Hero.MainHero))
+			{
+				return;
+			}
+			_currentSettlementStayId = (settlement.StringId ?? "").Trim();
+			_currentSettlementStayName = GetSettlementDisplayName(settlement);
+			_currentSettlementStayStartDays = GetCurrentGameTimeDays();
+			_currentSettlementStayStartDay = GetCurrentGameDayIndex();
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("PlayerNotoriety", "settlement stay start tracking failed: " + ex.Message);
+		}
+	}
+
+	private void OnPlayerSettlementLeftForRecentAction(MobileParty party, Settlement settlement)
+	{
+		try
+		{
+			if (!IsPlayerMobileParty(party) || settlement == null || settlement.IsHideout)
+			{
+				return;
+			}
+			string settlementId = (settlement.StringId ?? "").Trim();
+			if (_currentSettlementStayStartDays < 0.0 || !string.Equals(_currentSettlementStayId, settlementId, StringComparison.OrdinalIgnoreCase))
+			{
+				ClearCurrentSettlementStayTracking();
+				return;
+			}
+			double stayHours = Math.Max(0.0, (GetCurrentGameTimeDays() - _currentSettlementStayStartDays) * 24.0);
+			int currentDay = GetCurrentGameDayIndex();
+			bool crossedDay = _currentSettlementStayStartDay >= 0 && _currentSettlementStayStartDay != currentDay;
+			if (stayHours >= 6.0 || (crossedDay && stayHours >= 3.0))
+			{
+				string settlementName = string.IsNullOrWhiteSpace(_currentSettlementStayName) ? GetSettlementDisplayName(settlement) : _currentSettlementStayName.Trim();
+				string text = stayHours >= 20.0
+					? ("你最近在" + settlementName + "停留了约 " + FormatStayDuration(stayHours) + "，进行休整和补给。")
+					: ("你最近在" + settlementName + "休整了约 " + FormatStayDuration(stayHours) + "。");
+				RecordPlayerRecentActionFromEvent(text, "settlement_rest_stay", settlementId + ":" + _currentSettlementStayStartDay + ":" + currentDay, settlement?.Culture?.StringId ?? "", settlement, settlementName);
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("PlayerNotoriety", "settlement stay recent action failed: " + ex.Message);
+		}
+		finally
+		{
+			ClearCurrentSettlementStayTracking();
+		}
+	}
+
+	private void OnPlayerTroopRecruitedForRecentAction(Hero recruiterHero, Settlement recruitmentSettlement, Hero recruiter, CharacterObject troop, int amount)
+	{
+		try
+		{
+			if (recruiterHero != Hero.MainHero || troop == null || amount <= 0)
+			{
+				return;
+			}
+			string settlementName = GetSettlementDisplayName(recruitmentSettlement);
+			string troopName = GetCharacterDisplayName(troop);
+			string sourceText = recruiter == null || recruiter == Hero.MainHero ? "" : ("，来源：" + GetHeroDisplayName(recruiter));
+			string text = "你在" + settlementName + "招募了 " + amount + " 名 " + troopName + sourceText + "。";
+			string scope = (recruitmentSettlement?.StringId ?? "") + ":" + (troop.StringId ?? troopName) + ":" + GetHeroId(recruiter) + ":" + amount;
+			RecordPlayerRecentActionFromEvent(text, "troops_recruited", scope, troop.Culture?.StringId ?? "", recruitmentSettlement, settlementName);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("PlayerNotoriety", "troop recruitment recent action failed: " + ex.Message);
+		}
+	}
+
+	private void OnTournamentFinishedForPlayerRecentAction(CharacterObject winner, MBReadOnlyList<CharacterObject> participants, Town town, ItemObject prize)
+	{
+		try
+		{
+			CharacterObject playerCharacter = Hero.MainHero?.CharacterObject;
+			if (playerCharacter == null || participants == null || !participants.Any(x => x == playerCharacter || x?.HeroObject == Hero.MainHero))
+			{
+				return;
+			}
+			if (winner == playerCharacter || winner?.HeroObject == Hero.MainHero)
+			{
+				return;
+			}
+			Settlement settlement = town?.Settlement;
+			string settlementName = GetSettlementDisplayName(settlement);
+			string winnerName = GetCharacterDisplayName(winner);
+			string prizeText = string.IsNullOrWhiteSpace(prize?.Name?.ToString()) ? "" : (" 奖品是" + prize.Name.ToString().Trim() + "。");
+			string text = "你参加了" + settlementName + "的竞技大会，但没有夺冠。本次冠军是" + winnerName + "。" + prizeText;
+			string scope = (settlement?.StringId ?? "") + ":" + GetCurrentGameDayIndex() + ":" + (winner?.StringId ?? winnerName);
+			RecordPlayerRecentActionFromEvent(text, "tournament_participated_nonwinner", scope, winner?.Culture?.StringId ?? "", settlement, settlementName);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("PlayerNotoriety", "tournament participation recent action failed: " + ex.Message);
+		}
+	}
+
+	private void OnPlayerBoardGameOverForRecentAction(Hero opposingHero, BoardGameHelper.BoardGameState state)
+	{
+		try
+		{
+			if (state == BoardGameHelper.BoardGameState.None)
+			{
+				return;
+			}
+			string opponentName = GetHeroDisplayName(opposingHero);
+			string resultText = GetBoardGameResultText(state);
+			string text = "你与" + opponentName + "下了一局棋，结果：" + resultText + "。";
+			string scope = GetHeroId(opposingHero) + ":" + state;
+			RecordPlayerRecentActionFromEvent(text, "board_game_result", scope, opposingHero?.Culture?.StringId ?? "", ResolvePlayerCurrentSettlement(), "");
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("PlayerNotoriety", "board game recent action failed: " + ex.Message);
+		}
+	}
+
+	private void OnRansomOfferCancelledForPlayerRecentAction(Hero captiveHero)
+	{
+		try
+		{
+			if (captiveHero == null)
+			{
+				return;
+			}
+			string captiveName = GetHeroDisplayName(captiveHero);
+			string text = "有关" + captiveName + "的赎金提议没有达成。";
+			RecordPlayerRecentActionFromEvent(text, "ransom_offer_cancelled", GetHeroId(captiveHero), captiveHero.Culture?.StringId ?? "", ResolvePlayerCurrentSettlement(), "");
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("PlayerNotoriety", "ransom offer cancellation recent action failed: " + ex.Message);
+		}
+	}
+
+	private void OnMarriageOfferCanceledForPlayerRecentAction(Hero suitor, Hero maiden)
+	{
+		try
+		{
+			if (!IsPlayerClanHero(suitor) && !IsPlayerClanHero(maiden))
+			{
+				return;
+			}
+			string suitorName = GetHeroDisplayName(suitor);
+			string maidenName = GetHeroDisplayName(maiden);
+			string text = "有关" + suitorName + "与" + maidenName + "的婚约提议没有达成。";
+			Hero otherHero = IsPlayerClanHero(suitor) ? maiden : suitor;
+			RecordPlayerRecentActionFromEvent(text, "marriage_offer_cancelled", GetHeroId(suitor) + ":" + GetHeroId(maiden), otherHero?.Culture?.StringId ?? "", ResolvePlayerCurrentSettlement(), "");
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("PlayerNotoriety", "marriage offer cancellation recent action failed: " + ex.Message);
+		}
+	}
+
+	private void OnVassalOrMercenaryOfferCanceledForPlayerRecentAction(Kingdom offeredKingdom)
+	{
+		try
+		{
+			if (offeredKingdom == null)
+			{
+				return;
+			}
+			string kingdomName = GetFactionDisplayName(offeredKingdom, "某个王国");
+			string text = "来自" + kingdomName + "的雇佣或效忠邀请没有达成。";
+			RecordPlayerRecentActionFromEvent(text, "vassal_mercenary_offer_cancelled", GetKingdomId(offeredKingdom), "", null, kingdomName);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("PlayerNotoriety", "vassal or mercenary offer cancellation recent action failed: " + ex.Message);
+		}
+	}
+
+	private void OnPartyLeaderChangeOfferCanceledForPlayerRecentAction(MobileParty party)
+	{
+		try
+		{
+			if (party == null)
+			{
+				return;
+			}
+			string partyName = string.IsNullOrWhiteSpace(party.Name?.ToString()) ? "一支部队" : party.Name.ToString().Trim();
+			string text = "你收到的接管" + partyName + "领导权提议没有达成。";
+			RecordPlayerRecentActionFromEvent(text, "party_leader_change_offer_cancelled", party.StringId ?? partyName, party.LeaderHero?.Culture?.StringId ?? "", party.CurrentSettlement ?? ResolvePlayerCurrentSettlement(), "");
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("PlayerNotoriety", "party leader change offer cancellation recent action failed: " + ex.Message);
+		}
+	}
+
+	private void OnPeaceOfferResolvedForPlayerRecentAction(IFaction opponentFaction)
+	{
+		try
+		{
+			if (opponentFaction == null)
+			{
+				return;
+			}
+			string factionName = GetFactionDisplayName(opponentFaction, "对方势力");
+			string text = "你所在势力近期处理了来自" + factionName + "的和平提议。";
+			RecordPlayerRecentActionFromEvent(text, "peace_offer_resolved", GetFactionId(opponentFaction), "", null, factionName);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("PlayerNotoriety", "peace offer recent action failed: " + ex.Message);
+		}
+	}
+
+	private void OnAlleyClearedByPlayerForRecentAction(Alley alley)
+	{
+		try
+		{
+			Settlement settlement = alley?.Settlement ?? Settlement.CurrentSettlement ?? MobileParty.MainParty?.CurrentSettlement;
+			string settlementName = GetSettlementDisplayName(settlement);
+			string alleyName = GetAlleyDisplayName(alley);
+			string text = "你清理了" + settlementName + "的" + alleyName + "，并选择不占领该街巷。";
+			string scope = (settlement?.StringId ?? "") + ":" + (alley?.Tag ?? alleyName);
+			RecordPlayerRecentActionFromEvent(text, "alley_cleared_not_occupied", scope, settlement?.Culture?.StringId ?? "", settlement, settlementName);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("PlayerNotoriety", "alley cleared recent action failed: " + ex.Message);
 		}
 	}
 
@@ -1988,6 +2289,22 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private static bool IsPlayerClanHero(Hero hero)
+	{
+		try
+		{
+			if (hero == null)
+			{
+				return false;
+			}
+			return hero == Hero.MainHero || hero.Clan == Clan.PlayerClan || hero.IsPlayerCompanion;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
 	private static Settlement ResolvePlayerCurrentSettlement()
 	{
 		try
@@ -2021,6 +2338,12 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 		{
 			return "";
 		}
+	}
+
+	private static string GetAlleyDisplayName(Alley alley)
+	{
+		string text = alley?.Name?.ToString();
+		return string.IsNullOrWhiteSpace(text) ? "一处街巷" : text.Trim();
 	}
 
 	private static string BuildPartyScope(PartyBase party)
@@ -2057,9 +2380,85 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 		return string.IsNullOrWhiteSpace(text) ? "当前地点" : text.Trim();
 	}
 
+	private static string GetKingdomId(Kingdom kingdom)
+	{
+		return (kingdom?.StringId ?? "").Trim();
+	}
+
+	private static string GetFactionId(IFaction faction)
+	{
+		return (faction?.StringId ?? faction?.Name?.ToString() ?? "").Trim();
+	}
+
+	private static string GetFactionDisplayName(IFaction faction, string fallback)
+	{
+		string text = "";
+		try
+		{
+			text = faction?.Name?.ToString();
+			if (string.IsNullOrWhiteSpace(text))
+			{
+				text = faction?.InformalName?.ToString();
+			}
+		}
+		catch
+		{
+			text = "";
+		}
+		return string.IsNullOrWhiteSpace(text) ? fallback : text.Trim();
+	}
+
 	private static string BuildPrisonerDonationSkipKey(Settlement settlement, string signature)
 	{
 		return GetCurrentGameDayIndex() + ":" + (settlement?.StringId ?? "") + ":" + ((signature ?? "").Trim());
+	}
+
+	private static double GetCurrentGameTimeDays()
+	{
+		try
+		{
+			return Math.Max(0.0, CampaignTime.Now.ToDays);
+		}
+		catch
+		{
+			return 0.0;
+		}
+	}
+
+	private void ClearCurrentSettlementStayTracking()
+	{
+		_currentSettlementStayId = "";
+		_currentSettlementStayName = "";
+		_currentSettlementStayStartDays = -1.0;
+		_currentSettlementStayStartDay = -1;
+	}
+
+	private static string FormatStayDuration(double stayHours)
+	{
+		if (stayHours >= 48.0)
+		{
+			return Math.Max(1, (int)Math.Round(stayHours / 24.0)) + " 天";
+		}
+		if (stayHours >= 20.0)
+		{
+			return "1 天";
+		}
+		return Math.Max(1, (int)Math.Round(stayHours)) + " 小时";
+	}
+
+	private static string GetBoardGameResultText(BoardGameHelper.BoardGameState state)
+	{
+		switch (state)
+		{
+		case BoardGameHelper.BoardGameState.Win:
+			return "获胜";
+		case BoardGameHelper.BoardGameState.Loss:
+			return "落败";
+		case BoardGameHelper.BoardGameState.Draw:
+			return "平局";
+		default:
+			return "结束";
+		}
 	}
 
 	private static string BuildPlayerRecentEventStableKey(string actionKind, string scope, int day)

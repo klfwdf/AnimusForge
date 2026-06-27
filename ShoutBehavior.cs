@@ -577,6 +577,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 			{
 				_parent.UpdateMultiSceneMovementSuppression(dt);
 			}
+			_parent.UpdatePendingNativeSceneTauntFightDelay();
 			if (Campaign.Current != null && Campaign.Current.ConversationManager.IsConversationInProgress)
 			{
 				_parent.CancelShoutHotkeyCharge("conversation");
@@ -1758,6 +1759,16 @@ public class ShoutBehavior : CampaignBehaviorBase
 
 	private readonly Dictionary<string, List<ConversationMessage>> _pendingCurrentNativeAfefFactsByKey = new Dictionary<string, List<ConversationMessage>>(StringComparer.OrdinalIgnoreCase);
 
+	private readonly object _pendingNativeSceneMechanismActionLock = new object();
+
+	private readonly Queue<PendingNativeSceneMechanismAction> _pendingNativeSceneMechanismActions = new Queue<PendingNativeSceneMechanismAction>();
+
+	private const float NativeSceneTauntFightDelaySeconds = 10f;
+
+	private readonly object _pendingNativeSceneTauntFightLock = new object();
+
+	private PendingNativeSceneTauntFight _pendingNativeSceneTauntFight;
+
 	private static int _sceneHistorySessionId = 0;
 
 	private static long _currentConversationEventSequence = 0L;
@@ -2605,6 +2616,31 @@ public class ShoutBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private void EnsureTtsPlaybackEventsSubscribedForNativeConversation()
+	{
+		try
+		{
+			TtsEngine instance = TtsEngine.Instance;
+			if (instance == null)
+			{
+				return;
+			}
+			lock (_ttsEventSubLock)
+			{
+				if (_ttsEventSubscribedOwner == this)
+				{
+					return;
+				}
+			}
+			SubscribeTtsPlaybackEvents();
+			Logger.Log("NativeConversation", "[TTS] ensured playback event subscription for native conversation");
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("NativeConversation", "[TTS] ensure playback event subscription failed: " + ex.Message);
+		}
+	}
+
 	private void EnqueuePendingNpcBubble(int agentIndex, Agent liveAgent, string uiContent, string npcName, float fallbackDurationSeconds = -1f)
 	{
 		if (agentIndex < 0 || liveAgent == null || string.IsNullOrWhiteSpace(uiContent))
@@ -2977,7 +3013,12 @@ public class ShoutBehavior : CampaignBehaviorBase
 
 	private void HandleTtsPlaybackFailed(int agentIndex, string errorMessage)
 	{
+		bool releaseNativeTypewriter = IsNativeConversationTtsPlaybackWaitAgentIndex(agentIndex);
 		CompleteNativeConversationTtsPlaybackWait(agentIndex, "playback_failed");
+		if (releaseNativeTypewriter)
+		{
+			ConversationHelper.StartTypewriterPlaybackIfWaiting();
+		}
 		bool hasAgent = agentIndex >= 0;
 		long interactionToken = 0L;
 		bool hasInteractionToken = TryDequeuePendingSpeechCompletionToken(agentIndex, out interactionToken);
@@ -3324,21 +3365,37 @@ public class ShoutBehavior : CampaignBehaviorBase
 			targetHero ??= targetCharacter?.HeroObject;
 			targetCharacter ??= targetHero?.CharacterObject;
 			string voiceId = "";
+			string voiceSource = "";
+			string voiceKey = "";
 			try
 			{
 				if (targetHero != null)
 				{
 					voiceId = MyBehavior.GetNpcVoiceIdForExternal(targetHero);
+					if (!string.IsNullOrWhiteSpace(voiceId))
+					{
+						voiceSource = "hero_preferred";
+					}
 					if (string.IsNullOrWhiteSpace(voiceId))
 					{
 						voiceId = VoiceMapper.ResolveVoiceId(targetHero);
+						voiceSource = "hero_mapper";
 					}
 				}
 				if (string.IsNullOrWhiteSpace(voiceId))
 				{
 					bool isFemale = npc?.IsFemale ?? targetHero?.IsFemale ?? targetCharacter?.IsFemale ?? false;
-					float age = npc?.Age ?? targetHero?.Age ?? 0f;
-					voiceId = VoiceMapper.ResolveVoiceIdForNonHero(isFemale, age, targetAgentIndex);
+					float age = npc?.Age ?? 0f;
+					if (age < 18f || age > 80f)
+					{
+						age = targetHero?.Age ?? ResolveNativeConversationNonHeroAge(targetCharacter);
+					}
+					if (targetHero == null && targetAgentIndex < 0)
+					{
+						voiceKey = BuildNativeConversationNonHeroVoiceKey(npc, targetHero, targetCharacter, targetAgentIndex);
+					}
+					voiceId = VoiceMapper.ResolveVoiceIdForNonHeroKey(voiceKey, isFemale, age, targetAgentIndex);
+					voiceSource = string.IsNullOrWhiteSpace(voiceKey) ? "nonhero_agent_or_random" : "nonhero_key";
 				}
 			}
 			catch
@@ -3365,13 +3422,15 @@ public class ShoutBehavior : CampaignBehaviorBase
 			bool accepted = false;
 			try
 			{
+				EnsureTtsPlaybackEventsSubscribedForNativeConversation();
 				ResumeTtsForNativeConversationReply();
 				accepted = TtsEngine.Instance.SpeakAsync(ttsText, -1, -1f, effectiveAgentIndex, voiceId);
 				if (accepted)
 				{
 					float estimatedDuration = Math.Max(0.75f, EstimateBubbleTypingDurationSeconds(uiText));
-					RegisterNativeConversationTtsPlaybackWait(effectiveAgentIndex, estimatedDuration, uiText.Length);
-					ConversationHelper.StartTypewriterText(uiText, estimatedDuration, effectiveAgentIndex >= 0);
+					long waitToken = RegisterNativeConversationTtsPlaybackWait(effectiveAgentIndex, estimatedDuration, uiText.Length);
+					ConversationHelper.StartTypewriterText(uiText, estimatedDuration, waitForPlayback: true);
+					ScheduleNativeConversationTypewriterPlaybackFallback(waitToken, effectiveAgentIndex, estimatedDuration, uiText.Length);
 				}
 			}
 			catch (Exception ex2)
@@ -3391,7 +3450,8 @@ public class ShoutBehavior : CampaignBehaviorBase
 				{
 				}
 			}
-			LogTtsReport("NativeConversationTts.SpeakAttempt", targetAgentIndex, $"effectiveAgentIndex={effectiveAgentIndex};speakAccepted={accepted};voiceId={voiceId};lipSyncSafe={lipSyncSafe};reason={lipSyncReason};ttsLen={ttsText.Length};uiLen={(uiText ?? string.Empty).Length}");
+			string logVoiceKey = (voiceKey ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
+			LogTtsReport("NativeConversationTts.SpeakAttempt", targetAgentIndex, $"effectiveAgentIndex={effectiveAgentIndex};speakAccepted={accepted};voiceId={voiceId};voiceSource={voiceSource};voiceKey={logVoiceKey};lipSyncSafe={lipSyncSafe};reason={lipSyncReason};ttsLen={ttsText.Length};uiLen={(uiText ?? string.Empty).Length}");
 		}
 		catch (Exception ex)
 		{
@@ -4163,6 +4223,121 @@ public class ShoutBehavior : CampaignBehaviorBase
 		return !string.IsNullOrWhiteSpace(displayName);
 	}
 
+	private static bool IsSceneLocation(Location location, string locationId)
+	{
+		return string.Equals((location?.StringId ?? "").Trim(), (locationId ?? "").Trim(), StringComparison.OrdinalIgnoreCase);
+	}
+
+	private static bool IsSceneGuideTavernkeeper(LocationCharacter locationCharacter)
+	{
+		try
+		{
+			return locationCharacter?.Character is CharacterObject characterObject && characterObject.Occupation == Occupation.Tavernkeeper;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static LocationCharacter CreateSceneGuideFallbackTavernkeeper(CultureObject culture)
+	{
+		if (culture?.Tavernkeeper == null)
+		{
+			return null;
+		}
+		try
+		{
+			Type type = AppDomain.CurrentDomain.GetAssemblies().Select((Assembly a) => a?.GetType("SandBox.CampaignBehaviors.TavernEmployeesCampaignBehavior", throwOnError: false)).FirstOrDefault((Type t) => t != null);
+			MethodInfo methodInfo = type?.GetMethod("CreateTavernkeeper", BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic, null, new Type[2]
+			{
+				typeof(CultureObject),
+				typeof(LocationCharacter.CharacterRelations)
+			}, null);
+			return methodInfo?.Invoke(null, new object[2]
+			{
+				culture,
+				LocationCharacter.CharacterRelations.Neutral
+			}) as LocationCharacter;
+		}
+		catch (Exception ex)
+		{
+			try
+			{
+				Logger.Log("SceneGuide", "fallback_tavernkeeper_create_failed error=" + ex.Message);
+			}
+			catch
+			{
+			}
+			return null;
+		}
+	}
+
+	private static void EnsureSceneGuideTavernkeeperTarget(LocationComplex locationComplex, Location currentLocation, Dictionary<string, List<LocationCharacter>> targetsByLabel)
+	{
+		if (locationComplex == null || currentLocation == null || targetsByLabel == null)
+		{
+			return;
+		}
+		try
+		{
+			Location tavernLocation = locationComplex.GetLocationWithId("tavern");
+			if (tavernLocation == null || FindSceneLocationPath(currentLocation, tavernLocation) == null)
+			{
+				return;
+			}
+			if (targetsByLabel.TryGetValue("酒馆老板", out var existingTargets) && existingTargets != null && existingTargets.Any((LocationCharacter x) => x != null && locationComplex.GetLocationOfCharacter(x) == tavernLocation))
+			{
+				return;
+			}
+			LocationCharacter locationCharacter = tavernLocation.GetCharacterList().FirstOrDefault(IsSceneGuideTavernkeeper);
+			if (locationCharacter == null)
+			{
+				Settlement settlement = Settlement.CurrentSettlement ?? PlayerEncounter.LocationEncounter?.Settlement;
+				if (settlement == null || !settlement.IsTown)
+				{
+					return;
+				}
+				locationCharacter = CreateSceneGuideFallbackTavernkeeper(settlement.Culture);
+				if (locationCharacter == null)
+				{
+					return;
+				}
+				tavernLocation.AddCharacter(locationCharacter);
+				try
+				{
+					Logger.Log("SceneGuide", "fallback_tavernkeeper_added settlement=" + (settlement.StringId ?? "") + " location=tavern");
+				}
+				catch
+				{
+				}
+			}
+			if (!TryGetSceneGuideTargetLabel(locationCharacter, out var displayName, out var _) || !string.Equals(displayName, "酒馆老板", StringComparison.OrdinalIgnoreCase))
+			{
+				return;
+			}
+			if (!targetsByLabel.TryGetValue(displayName, out var list))
+			{
+				list = new List<LocationCharacter>();
+				targetsByLabel[displayName] = list;
+			}
+			if (!list.Contains(locationCharacter))
+			{
+				list.Add(locationCharacter);
+			}
+		}
+		catch (Exception ex2)
+		{
+			try
+			{
+				Logger.Log("SceneGuide", "fallback_tavernkeeper_target_failed error=" + ex2.Message);
+			}
+			catch
+			{
+			}
+		}
+	}
+
 	private List<SceneGuidePromptTarget> BuildSceneGuidePromptTargets(Agent guideAgent = null, int firstPromptId = 1)
 	{
 		List<SceneGuidePromptTarget> list = new List<SceneGuidePromptTarget>();
@@ -4200,6 +4375,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 			}
 			value.Add(item);
 		}
+		EnsureSceneGuideTavernkeeperTarget(locationComplex, location, dictionary);
 		Vec3 vec = guideAgent?.Position ?? Agent.Main?.Position ?? Vec3.Zero;
 		string[] array = new string[14] { "盔甲匠", "武器匠", "铁匠", "马匹贩子", "商贩", "工坊工人", "理发师", "竞技场老板", "酒馆老板", "赎金经纪人", "棋局主持", "酒馆女侍", "乐师", "雇佣兵" };
 		foreach (string text in array)
@@ -4219,6 +4395,24 @@ public class ShoutBehavior : CampaignBehaviorBase
 						return agent.Position.DistanceSquared(vec);
 					}
 					return float.MaxValue;
+				}).ThenBy((LocationCharacter x) => (x.Character?.Name?.ToString() ?? "").Trim(), StringComparer.CurrentCulture).FirstOrDefault();
+			}
+			else if (string.Equals(text, "酒馆老板", StringComparison.OrdinalIgnoreCase))
+			{
+				Location tavernLocation = locationComplex.GetLocationWithId("tavern");
+				bool currentIsTavern = IsSceneLocation(location, "tavern");
+				locationCharacter = value2.OrderBy(delegate(LocationCharacter x)
+				{
+					Location candidateLocation = locationComplex.GetLocationOfCharacter(x);
+					if (currentIsTavern)
+					{
+						return candidateLocation == location ? 0 : 1;
+					}
+					return candidateLocation == tavernLocation ? 0 : 1;
+				}).ThenBy(delegate(LocationCharacter x)
+				{
+					Agent agent = ResolveAgentForLocationCharacter(x);
+					return agent != null && agent.IsActive() ? 0 : 1;
 				}).ThenBy((LocationCharacter x) => (x.Character?.Name?.ToString() ?? "").Trim(), StringComparer.CurrentCulture).FirstOrDefault();
 			}
 			else
@@ -5573,10 +5767,484 @@ public class ShoutBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private static string BuildSceneAgentSelfActionFactForPrompt(NpcDataPacket npc, Hero hero = null)
+	{
+		try
+		{
+			if (npc == null)
+			{
+				return "";
+			}
+			Agent agent = (npc.AgentIndex >= 0 && Mission.Current != null)
+				? Mission.Current.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == npc.AgentIndex)
+				: null;
+			List<string> labels = agent != null ? CollectSceneAgentSelfActionLabels(agent) : new List<string>();
+			if (labels.Count == 0 && IsNativeConversationTargetForActionPrompt(npc, hero))
+			{
+				AddSceneAgentActionLabel(labels, new HashSet<string>(labels), "正在对话");
+			}
+			return labels.Count > 0 ? "【当前动作】你当前状态：" + string.Join("、", labels) + "。" : "";
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	private static List<string> CollectSceneAgentSelfActionLabels(Agent agent)
+	{
+		List<string> labels = new List<string>();
+		HashSet<string> seen = new HashSet<string>();
+		if (agent == null)
+		{
+			return labels;
+		}
+		if (!IsSceneAgentPromptActive(agent))
+		{
+			AddSceneAgentActionLabel(labels, seen, "倒地/受击/死亡");
+			return labels;
+		}
+		string actionSearchText = BuildSceneAgentActionSearchText(agent);
+		Agent.ActionCodeType lowerBodyAction = GetSceneAgentCurrentActionType(agent, 0);
+		Agent.ActionCodeType upperBodyAction = GetSceneAgentCurrentActionType(agent, 1);
+		if (IsSceneAgentSittingForPrompt(agent))
+		{
+			AddSceneAgentActionLabel(labels, seen, "坐着");
+		}
+		if (IsSceneAgentConversingForPrompt(agent, actionSearchText))
+		{
+			AddSceneAgentActionLabel(labels, seen, "正在对话");
+		}
+		if (IsSceneAgentUsingObjectForPrompt(agent))
+		{
+			AddSceneAgentActionLabel(labels, seen, "正在使用物体");
+		}
+		if (ContainsSceneActionKeyword(actionSearchText, "dance", "dancing", "perform", "performance", "performer", "bard", "minstrel", "entertain", "sing", "song", "stage", "跳舞", "表演", "歌唱"))
+		{
+			AddSceneAgentActionLabel(labels, seen, "正在跳舞/表演");
+		}
+		if (ContainsSceneActionKeyword(actionSearchText, "drink", "drinking", "eat", "eating", "food", "beer", "ale", "wine", "mug", "cup", "bowl", "meal", "feast", "bread", "喝", "吃", "酒"))
+		{
+			AddSceneAgentActionLabel(labels, seen, "正在喝酒/吃东西");
+		}
+		if (IsSceneAgentPlayingMusicForPrompt(agent, actionSearchText))
+		{
+			AddSceneAgentActionLabel(labels, seen, "正在演奏");
+		}
+		if (IsSceneAgentMovingForPrompt(agent, actionSearchText, lowerBodyAction))
+		{
+			AddSceneAgentActionLabel(labels, seen, "正在行走/移动");
+		}
+		if (IsSceneAgentAttackAction(lowerBodyAction) || IsSceneAgentAttackAction(upperBodyAction) || ContainsSceneActionKeyword(actionSearchText, "fightbehavior", "combat", "attack"))
+		{
+			AddSceneAgentActionLabel(labels, seen, "正在战斗/攻击");
+		}
+		if (IsSceneAgentDefenseAction(lowerBodyAction) || IsSceneAgentDefenseAction(upperBodyAction) || ContainsSceneActionKeyword(actionSearchText, "defend", "block", "parry"))
+		{
+			AddSceneAgentActionLabel(labels, seen, "正在防御/格挡");
+		}
+		if (IsSceneAgentDownOrHitForPrompt(agent, lowerBodyAction, upperBodyAction))
+		{
+			AddSceneAgentActionLabel(labels, seen, "倒地/受击/死亡");
+		}
+		ShoutBehavior instance = CurrentInstance;
+		if (instance != null)
+		{
+			if (instance.IsAgentFollowingPlayerBySceneCommand(agent) || ContainsSceneActionKeyword(actionSearchText, "followagentbehavior"))
+			{
+				AddSceneAgentActionLabel(labels, seen, "正在跟随");
+			}
+			if (instance.IsAgentBusyWithSceneGuideErrand(agent.Index) || GetSceneGuideEscortBehavior(agent) != null)
+			{
+				AddSceneAgentActionLabel(labels, seen, "正在带路");
+			}
+			if (instance._sceneGuideArrivalHolds.ContainsKey(agent.Index))
+			{
+				AddSceneAgentActionLabel(labels, seen, "正在等待");
+			}
+		}
+		if (labels.Count == 0 && IsSceneAgentWaitingForPrompt(agent, actionSearchText, lowerBodyAction, upperBodyAction))
+		{
+			AddSceneAgentActionLabel(labels, seen, "正在等待");
+		}
+		return labels;
+	}
+
+	private static bool IsSceneAgentPromptActive(Agent agent)
+	{
+		try
+		{
+			return agent != null && agent.IsActive() && agent.State == AgentState.Active && agent.Health > 0f;
+		}
+		catch
+		{
+			try
+			{
+				return agent != null && agent.IsActive();
+			}
+			catch
+			{
+				return false;
+			}
+		}
+	}
+
+	private static bool IsSceneAgentSittingForPrompt(Agent agent)
+	{
+		try
+		{
+			return agent != null && agent.IsSitting();
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static bool IsSceneAgentConversingForPrompt(Agent agent, string actionSearchText)
+	{
+		if (agent == null)
+		{
+			return false;
+		}
+		try
+		{
+			ShoutBehavior instance = CurrentInstance;
+			if (instance != null)
+			{
+				if (instance._speakingAgentIndices.Contains(agent.Index) || instance._activeInteractionSessions.ContainsKey(agent.Index) || instance._staringAgents.Any((Agent a) => a != null && a.Index == agent.Index))
+				{
+					return true;
+				}
+			}
+			if (Campaign.Current?.ConversationManager?.IsConversationInProgress == true && TryResolveNativeConversationTarget(out var targetHero, out var targetCharacter, out var _))
+			{
+				int targetAgentIndex = TryResolveNativeConversationAgentIndex(targetHero, targetCharacter);
+				if (targetAgentIndex == agent.Index)
+				{
+					return true;
+				}
+			}
+		}
+		catch
+		{
+		}
+		return ContainsSceneActionKeyword(actionSearchText, "conversation", "talkbehavior", "talk");
+	}
+
+	private static bool IsNativeConversationTargetForActionPrompt(NpcDataPacket npc, Hero hero)
+	{
+		try
+		{
+			if (npc == null || Campaign.Current?.ConversationManager?.IsConversationInProgress != true)
+			{
+				return false;
+			}
+			if (!TryResolveNativeConversationTarget(out var targetHero, out var targetCharacter, out var targetName))
+			{
+				return false;
+			}
+			if (hero != null && (targetHero == hero || targetCharacter?.HeroObject == hero))
+			{
+				return true;
+			}
+			if (npc.AgentIndex >= 0 && TryResolveNativeConversationAgentIndex(targetHero, targetCharacter) == npc.AgentIndex)
+			{
+				return true;
+			}
+			string npcName = GetSceneNpcIdentityNameForPrompt(npc);
+			string resolvedName = (targetName ?? targetHero?.Name?.ToString() ?? targetCharacter?.Name?.ToString() ?? "").Trim();
+			return !string.IsNullOrWhiteSpace(npcName) && !string.IsNullOrWhiteSpace(resolvedName) && string.Equals(npcName.Trim(), resolvedName, StringComparison.OrdinalIgnoreCase);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static bool IsSceneAgentUsingObjectForPrompt(Agent agent)
+	{
+		try
+		{
+			return agent != null && (agent.IsUsingGameObject || agent.CurrentlyUsedGameObject != null);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static bool IsSceneAgentPlayingMusicForPrompt(Agent agent, string actionSearchText)
+	{
+		try
+		{
+			if (agent?.CurrentlyUsedGameObject is PlayMusicPoint)
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		return ContainsSceneActionKeyword(actionSearchText, "playmusic", "play_music", "music", "musician", "instrument", "lute", "lyre", "drum", "flute", "horn", "演奏", "乐器", "音乐");
+	}
+
+	private static bool IsSceneAgentMovingForPrompt(Agent agent, string actionSearchText, Agent.ActionCodeType lowerBodyAction)
+	{
+		try
+		{
+			if (agent != null && agent.GetCurrentVelocity().LengthSquared > 0.01f)
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		return lowerBodyAction == Agent.ActionCodeType.Dash
+			|| lowerBodyAction == Agent.ActionCodeType.JumpStart
+			|| lowerBodyAction == Agent.ActionCodeType.Jump
+			|| lowerBodyAction == Agent.ActionCodeType.JumpEnd
+			|| lowerBodyAction == Agent.ActionCodeType.Mount
+			|| lowerBodyAction == Agent.ActionCodeType.Dismount
+			|| ContainsSceneActionKeyword(actionSearchText, "walkingbehavior", "patrol", "escortagentbehavior", "followagentbehavior", "goto", "move");
+	}
+
+	private static bool IsSceneAgentWaitingForPrompt(Agent agent, string actionSearchText, Agent.ActionCodeType lowerBodyAction, Agent.ActionCodeType upperBodyAction)
+	{
+		try
+		{
+			if (agent == null || agent.GetCurrentVelocity().LengthSquared > 0.01f)
+			{
+				return false;
+			}
+		}
+		catch
+		{
+		}
+		return lowerBodyAction == Agent.ActionCodeType.Idle
+			|| lowerBodyAction == Agent.ActionCodeType.Guard
+			|| upperBodyAction == Agent.ActionCodeType.Idle
+			|| ContainsSceneActionKeyword(actionSearchText, "idleagentbehavior", "wait");
+	}
+
+	private static bool IsSceneAgentDownOrHitForPrompt(Agent agent, Agent.ActionCodeType lowerBodyAction, Agent.ActionCodeType upperBodyAction)
+	{
+		try
+		{
+			if (agent != null && agent.IsInBeingStruckAction)
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		return lowerBodyAction == Agent.ActionCodeType.Fall
+			|| upperBodyAction == Agent.ActionCodeType.Fall
+			|| IsSceneAgentStrikeAction(lowerBodyAction)
+			|| IsSceneAgentStrikeAction(upperBodyAction);
+	}
+
+	private static bool IsSceneAgentAttackAction(Agent.ActionCodeType actionType)
+	{
+		return actionType == Agent.ActionCodeType.ReadyRanged
+			|| actionType == Agent.ActionCodeType.ReleaseRanged
+			|| actionType == Agent.ActionCodeType.ReleaseThrowing
+			|| actionType == Agent.ActionCodeType.ReadyMelee
+			|| actionType == Agent.ActionCodeType.ReleaseMelee
+			|| actionType == Agent.ActionCodeType.Kick
+			|| actionType == Agent.ActionCodeType.KickContinue
+			|| actionType == Agent.ActionCodeType.KickHit
+			|| actionType == Agent.ActionCodeType.WeaponBash
+			|| actionType == Agent.ActionCodeType.HitObject;
+	}
+
+	private static bool IsSceneAgentDefenseAction(Agent.ActionCodeType actionType)
+	{
+		int value = (int)actionType;
+		return (value >= (int)Agent.ActionCodeType.DefendFist && value <= (int)Agent.ActionCodeType.DefendLeftStaff)
+			|| actionType == Agent.ActionCodeType.ParriedMelee
+			|| actionType == Agent.ActionCodeType.BlockedMelee
+			|| actionType == Agent.ActionCodeType.Guard;
+	}
+
+	private static bool IsSceneAgentStrikeAction(Agent.ActionCodeType actionType)
+	{
+		return actionType == Agent.ActionCodeType.StrikeLight
+			|| actionType == Agent.ActionCodeType.StrikeMedium
+			|| actionType == Agent.ActionCodeType.StrikeHeavy
+			|| actionType == Agent.ActionCodeType.StrikeKnockBack
+			|| actionType == Agent.ActionCodeType.MountStrike;
+	}
+
+	private static Agent.ActionCodeType GetSceneAgentCurrentActionType(Agent agent, int channelNo)
+	{
+		try
+		{
+			return agent != null ? agent.GetCurrentActionType(channelNo) : Agent.ActionCodeType.Other;
+		}
+		catch
+		{
+			return Agent.ActionCodeType.Other;
+		}
+	}
+
+	private static string BuildSceneAgentActionSearchText(Agent agent)
+	{
+		if (agent == null)
+		{
+			return "";
+		}
+		StringBuilder stringBuilder = new StringBuilder();
+		AppendSceneAgentActionSearchPart(stringBuilder, GetSceneAgentCurrentActionType(agent, 0).ToString());
+		AppendSceneAgentActionSearchPart(stringBuilder, GetSceneAgentCurrentActionType(agent, 1).ToString());
+		AppendSceneAgentCurrentAnimationName(stringBuilder, agent, 0);
+		AppendSceneAgentCurrentAnimationName(stringBuilder, agent, 1);
+		AppendSceneAgentUsableObjectSearchText(stringBuilder, agent);
+		AppendSceneAgentNavigatorSearchText(stringBuilder, agent);
+		return stringBuilder.ToString().ToLowerInvariant();
+	}
+
+	private static void AppendSceneAgentCurrentAnimationName(StringBuilder stringBuilder, Agent agent, int channelNo)
+	{
+		try
+		{
+			ActionIndexCache action = agent.GetCurrentAction(channelNo);
+			if (action == ActionIndexCache.act_none)
+			{
+				return;
+			}
+			AppendSceneAgentActionSearchPart(stringBuilder, agent.ActionSet.GetAnimationName(action));
+		}
+		catch
+		{
+		}
+	}
+
+	private static void AppendSceneAgentUsableObjectSearchText(StringBuilder stringBuilder, Agent agent)
+	{
+		object usedObject = null;
+		try
+		{
+			usedObject = agent?.CurrentlyUsedGameObject;
+		}
+		catch
+		{
+		}
+		if (usedObject == null)
+		{
+			return;
+		}
+		AppendSceneAgentActionSearchPart(stringBuilder, usedObject.GetType().Name);
+		try
+		{
+			WeakGameEntity gameEntity = agent.CurrentlyUsedGameObject.GameEntity;
+			if (gameEntity.IsValid)
+			{
+				AppendSceneAgentActionSearchPart(stringBuilder, gameEntity.Name);
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (usedObject is AnimationPoint animationPoint)
+			{
+				AppendSceneAgentActionSearchPart(stringBuilder, animationPoint.ArriveAction);
+				AppendSceneAgentActionSearchPart(stringBuilder, animationPoint.LoopStartAction);
+				AppendSceneAgentActionSearchPart(stringBuilder, animationPoint.PairLoopStartAction);
+				AppendSceneAgentActionSearchPart(stringBuilder, animationPoint.LeaveAction);
+				AppendSceneAgentActionSearchPart(stringBuilder, animationPoint.LeftHandItem);
+				AppendSceneAgentActionSearchPart(stringBuilder, animationPoint.RightHandItem);
+			}
+			if (usedObject is DynamicObjectAnimationPoint dynamicObjectAnimationPoint)
+			{
+				AppendSceneAgentActionSearchPart(stringBuilder, dynamicObjectAnimationPoint.ArriveAction);
+				AppendSceneAgentActionSearchPart(stringBuilder, dynamicObjectAnimationPoint.LoopStartAction);
+				AppendSceneAgentActionSearchPart(stringBuilder, dynamicObjectAnimationPoint.LeaveAction);
+			}
+		}
+		catch
+		{
+		}
+	}
+
+	private static void AppendSceneAgentNavigatorSearchText(StringBuilder stringBuilder, Agent agent)
+	{
+		try
+		{
+			AgentNavigator agentNavigator = agent?.GetComponent<CampaignAgentComponent>()?.AgentNavigator;
+			AgentBehavior activeBehavior = agentNavigator?.GetActiveBehavior();
+			if (activeBehavior != null)
+			{
+				AppendSceneAgentActionSearchPart(stringBuilder, activeBehavior.GetType().Name);
+			}
+			UsableMachine targetMachine = agentNavigator?.TargetUsableMachine;
+			if (targetMachine != null)
+			{
+				AppendSceneAgentActionSearchPart(stringBuilder, targetMachine.GetType().Name);
+				WeakGameEntity gameEntity = targetMachine.GameEntity;
+				if (gameEntity.IsValid)
+				{
+					AppendSceneAgentActionSearchPart(stringBuilder, gameEntity.Name);
+				}
+			}
+		}
+		catch
+		{
+		}
+	}
+
+	private static void AppendSceneAgentActionSearchPart(StringBuilder stringBuilder, string value)
+	{
+		if (stringBuilder == null || string.IsNullOrWhiteSpace(value))
+		{
+			return;
+		}
+		stringBuilder.Append(' ').Append(value.Trim());
+	}
+
+	private static bool ContainsSceneActionKeyword(string text, params string[] keywords)
+	{
+		if (string.IsNullOrWhiteSpace(text) || keywords == null)
+		{
+			return false;
+		}
+		foreach (string keyword in keywords)
+		{
+			if (!string.IsNullOrWhiteSpace(keyword) && text.IndexOf(keyword, StringComparison.OrdinalIgnoreCase) >= 0)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private static void AddSceneAgentActionLabel(List<string> labels, HashSet<string> seen, string label)
+	{
+		if (labels == null || seen == null || string.IsNullOrWhiteSpace(label))
+		{
+			return;
+		}
+		label = label.Trim();
+		if (seen.Add(label))
+		{
+			labels.Add(label);
+		}
+	}
+
 private static string BuildSceneSystemTopPromptIntroForSingle(NpcDataPacket npc, Hero hero, IEnumerable<NpcDataPacket> presentNpcs = null, bool includeInventorySummary = false, bool includeTradePricing = false, bool partyTransferTopicSelected = false)
 {
 	string fullIntro = BuildSceneNpcRoleIntroForPrompt(npc, hero, presentNpcs, includeInventorySummary, includeTradePricing, partyTransferTopicSelected);
 	SplitSceneNpcRoleIntroSections(fullIntro, hero != null, out var stableIntro, out var _);
+	string selfActionFact = BuildSceneAgentSelfActionFactForPrompt(npc, hero);
+	if (!string.IsNullOrWhiteSpace(selfActionFact))
+	{
+		stableIntro = (stableIntro ?? "").TrimEnd();
+		stableIntro = string.IsNullOrWhiteSpace(stableIntro) ? selfActionFact : stableIntro + Environment.NewLine + selfActionFact;
+	}
 	return stableIntro;
 }
 
@@ -5603,6 +6271,11 @@ private static string BuildSceneSystemTopPromptIntroForGroup(IEnumerable<NpcData
 			if (string.IsNullOrWhiteSpace(intro))
 			{
 				continue;
+			}
+			string selfActionFact = BuildSceneAgentSelfActionFactForPrompt(npc, hero);
+			if (!string.IsNullOrWhiteSpace(selfActionFact))
+			{
+				intro = intro.TrimEnd() + Environment.NewLine + selfActionFact;
 			}
 			if (stringBuilder.Length > 0)
 			{
@@ -9002,6 +9675,27 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 	}
 
+	public static void OnApplicationTickForNativeConversationTtsExternal()
+	{
+		try
+		{
+			ShoutBehavior instance = CurrentInstance;
+			if (instance == null || Mission.Current != null)
+			{
+				return;
+			}
+			if (Campaign.Current?.ConversationManager?.IsConversationInProgress != true)
+			{
+				return;
+			}
+			instance.DrainMainThreadActionsForMissionTick();
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("ShoutBehavior", "[WARN] Application tick native conversation TTS drain failed: " + ex.Message);
+		}
+	}
+
 	public override void SyncData(IDataStore dataStore)
 	{
 		try
@@ -9088,8 +9782,9 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 
 	private void OnNativeConversationEnded(IEnumerable<CharacterObject> characters)
 	{
-		TryDrainNativeConversationQueuedActions("native_conversation_ended");
 		CloseNativeConversationInput(clearSessionHistory: false);
+		ExecutePendingNativeSceneMechanismActionsAfterConversationExit("native_conversation_ended");
+		TryDrainNativeConversationQueuedActions("native_conversation_ended");
 	}
 
 	private void OnMissionStarted(IMission mission)
@@ -9108,6 +9803,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			_pendingHeroHistoryExtraFactTargetsAfterSceneReply.Clear();
 		}
 		ClearPendingCurrentAfefFacts();
+		ClearPendingNativeSceneMechanismActions("mission_started");
+		ClearPendingNativeSceneTauntFight("mission_started");
 		_staringAgents.Clear();
 		_staringAgentAnchors.Clear();
 		_currentStareTarget = null;
@@ -9184,6 +9881,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				_pendingHeroHistoryExtraFactTargetsAfterSceneReply.Clear();
 			}
 			ClearPendingCurrentAfefFacts();
+			ClearPendingNativeSceneMechanismActions("mission_ended");
+			ClearPendingNativeSceneTauntFight("mission_ended");
 			_staringAgents.Clear();
 			_staringAgentAnchors.Clear();
 			_currentStareTarget = null;
@@ -9246,18 +9945,34 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				UnsubscribeTtsPlaybackEventsInternal(instance, clearOwnerIfMatch: false);
 				_ttsOnAudioFileReadyHandler = delegate(int agentIndex, string wavPath, string xmlPath, float durationSecs)
 				{
+					bool nativeConversationWait = IsNativeConversationTtsPlaybackWaitAgentIndex(agentIndex);
+					if (nativeConversationWait)
+					{
+						ConversationHelper.AdjustTypewriterDuration(durationSecs);
+					}
+					if (agentIndex < 0)
+					{
+						bool mapTableauQueued = false;
+						if (!string.IsNullOrWhiteSpace(wavPath))
+						{
+							mapTableauQueued = TryQueueNativeMapConversationTableauTtsPlayback(wavPath, xmlPath, durationSecs);
+						}
+						if (!mapTableauQueued && nativeConversationWait)
+						{
+							ConversationHelper.StartTypewriterPlaybackIfWaiting(durationSecs);
+						}
+						LogTtsReport("AudioDurationReady.NativeNoAgent", agentIndex, $"duration={durationSecs:F2};wav={System.IO.Path.GetFileName(wavPath)};xml={System.IO.Path.GetFileName(xmlPath)};mapTableauQueued={mapTableauQueued}");
+						return;
+					}
+					if (nativeConversationWait)
+					{
+						ConversationHelper.StartTypewriterPlaybackIfWaiting(durationSecs);
+					}
 					if (agentIndex >= 0)
 					{
 						Logger.Log("LipSync", $"[OnAudioFileReady] agentIndex={agentIndex}, wav={wavPath}, xml={xmlPath}, dur={durationSecs:F2}s");
 						EnqueuePendingAudioDuration(agentIndex, durationSecs);
 						LogTtsReport("AudioFileReady", agentIndex, $"duration={durationSecs:F2};wav={System.IO.Path.GetFileName(wavPath)};xml={System.IO.Path.GetFileName(xmlPath)}");
-						if (IsNativeConversationLipSyncAgentIndex(agentIndex))
-						{
-							_mainThreadActions.Enqueue(delegate
-							{
-								ConversationHelper.AdjustTypewriterDuration(durationSecs);
-							});
-						}
 						bool flag = false;
 						lock (_ttsBubbleSyncLock)
 						{
@@ -9428,6 +10143,13 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				};
 				_ttsOnPlaybackStartedHandler = delegate(int agentIndex)
 				{
+					if (IsNativeConversationTtsPlaybackWaitAgentIndex(agentIndex))
+					{
+						if (agentIndex >= 0 || !ShouldUseMapConversationTableauPlaybackForNativeTtsExternal())
+						{
+							ConversationHelper.StartTypewriterPlaybackIfWaiting();
+						}
+					}
 					if (agentIndex >= 0)
 					{
 						if (!CanAgentParticipateInSceneSpeechExternal(agentIndex))
@@ -9459,13 +10181,6 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 						}
 						Logger.Log("LipSync", $"[OnPlaybackStarted] agentIndex={agentIndex}, lipSyncSafe={flag2}, reason={text}");
 						LogTtsReport("PlaybackStarted", agentIndex, $"lipSyncSafe={flag2};reason={text}");
-						if (IsNativeConversationLipSyncAgentIndex(agentIndex))
-						{
-							_mainThreadActions.Enqueue(delegate
-							{
-								ConversationHelper.StartTypewriterPlayback();
-							});
-						}
 						lock (_ttsBubbleSyncLock)
 						{
 							_ttsPlaybackStartedAgents.Add(agentIndex);
@@ -11236,11 +11951,12 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 	}
 
-	private static void RegisterNativeConversationTtsPlaybackWait(int agentIndex, float estimatedDurationSeconds, int textLength)
+	private static long RegisterNativeConversationTtsPlaybackWait(int agentIndex, float estimatedDurationSeconds, int textLength)
 	{
 		TaskCompletionSource<bool> oldTcs = null;
 		int timeoutMs = ResolveNativeConversationTtsPlaybackWaitTimeoutMs(estimatedDurationSeconds, textLength);
 		TaskCompletionSource<bool> newTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+		long token = 0L;
 		lock (_nativeConversationTtsPlaybackWaitLock)
 		{
 			oldTcs = _nativeConversationTtsPlaybackWaitTcs;
@@ -11248,6 +11964,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			_nativeConversationTtsPlaybackWaitAgentIndex = agentIndex;
 			_nativeConversationTtsPlaybackWaitTimeoutMs = timeoutMs;
 			_nativeConversationTtsPlaybackWaitToken++;
+			token = _nativeConversationTtsPlaybackWaitToken;
 		}
 		try
 		{
@@ -11256,7 +11973,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		catch
 		{
 		}
-		Logger.Log("NativeConversation", "[TTS] registered native playback wait. agentIndex=" + agentIndex + ", timeoutMs=" + timeoutMs);
+		Logger.Log("NativeConversation", "[TTS] registered native playback wait. agentIndex=" + agentIndex + ", timeoutMs=" + timeoutMs + ", token=" + token);
+		return token;
 	}
 
 	private static int ResolveNativeConversationTtsPlaybackWaitTimeoutMs(float estimatedDurationSeconds, int textLength)
@@ -11273,6 +11991,58 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		seconds += 30.0;
 		int timeoutMs = (int)Math.Round(seconds * 1000.0);
 		return Math.Max(NativeConversationTtsPlaybackWaitMinTimeoutMs, Math.Min(NativeConversationTtsPlaybackWaitMaxTimeoutMs, timeoutMs));
+	}
+
+	private static void ScheduleNativeConversationTypewriterPlaybackFallback(long waitToken, int agentIndex, float estimatedDurationSeconds, int textLength)
+	{
+		int delayMs = ResolveNativeConversationTypewriterFallbackDelayMs(estimatedDurationSeconds, textLength);
+		Task.Run(async delegate
+		{
+			try
+			{
+				await Task.Delay(delayMs).ConfigureAwait(false);
+				if (!IsNativeConversationTtsPlaybackWaitToken(waitToken, agentIndex) || !ConversationHelper.IsTypewriterWaitingForPlayback)
+				{
+					return;
+				}
+				bool started = ConversationHelper.StartTypewriterPlaybackIfWaiting(estimatedDurationSeconds);
+				if (started)
+				{
+					Logger.Log("NativeConversation", "[TTS] typewriter playback fallback released waiting text. agentIndex=" + agentIndex + ", token=" + waitToken + ", delayMs=" + delayMs);
+				}
+			}
+			catch (Exception ex)
+			{
+				Logger.Log("NativeConversation", "[TTS] typewriter playback fallback failed: " + ex.Message);
+			}
+		});
+	}
+
+	private static int ResolveNativeConversationTypewriterFallbackDelayMs(float estimatedDurationSeconds, int textLength)
+	{
+		double seconds = 12.0;
+		if (estimatedDurationSeconds > 0f && !float.IsNaN(estimatedDurationSeconds) && !float.IsInfinity(estimatedDurationSeconds))
+		{
+			seconds = Math.Max(seconds, Math.Min(45.0, estimatedDurationSeconds + 4.0));
+		}
+		else if (textLength > 0)
+		{
+			seconds = Math.Max(seconds, Math.Min(45.0, textLength * 0.05 + 4.0));
+		}
+		return (int)Math.Round(seconds * 1000.0);
+	}
+
+	private static bool IsNativeConversationTtsPlaybackWaitToken(long token, int agentIndex)
+	{
+		lock (_nativeConversationTtsPlaybackWaitLock)
+		{
+			if (_nativeConversationTtsPlaybackWaitTcs == null || _nativeConversationTtsPlaybackWaitToken != token)
+			{
+				return false;
+			}
+			int expectedAgentIndex = _nativeConversationTtsPlaybackWaitAgentIndex;
+			return expectedAgentIndex == agentIndex || (expectedAgentIndex < 0 && agentIndex < 0);
+		}
 	}
 
 	private static void CompleteNativeConversationTtsPlaybackWait(int agentIndex, string reason, bool force = false)
@@ -11332,6 +12102,19 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 		}
 		Logger.Log("NativeConversation", "[TTS] completed native playback wait by token. reason=" + (reason ?? "") + ", expectedAgentIndex=" + expectedAgentIndex + ", token=" + token);
+	}
+
+	private static bool IsNativeConversationTtsPlaybackWaitAgentIndex(int agentIndex)
+	{
+		lock (_nativeConversationTtsPlaybackWaitLock)
+		{
+			if (_nativeConversationTtsPlaybackWaitTcs == null)
+			{
+				return false;
+			}
+			int expectedAgentIndex = _nativeConversationTtsPlaybackWaitAgentIndex;
+			return expectedAgentIndex == agentIndex || (expectedAgentIndex < 0 && agentIndex < 0);
+		}
 	}
 
 	private static bool IsNativeConversationLipSyncAgentIndex(int agentIndex)
@@ -11768,6 +12551,116 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 	}
 
+	public static bool ShouldUseMapConversationTableauPlaybackForNativeTtsExternal()
+	{
+		try
+		{
+			if (CurrentInstance == null || !_nativeConversationInputOpen || Campaign.Current?.ConversationManager?.IsConversationInProgress != true)
+			{
+				return false;
+			}
+			if (Mission.Current != null)
+			{
+				return false;
+			}
+			return IsMapConversationMission(CampaignMission.Current);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static bool IsMapConversationMission(ICampaignMission campaignMission)
+	{
+		try
+		{
+			string typeName = campaignMission?.GetType()?.FullName ?? "";
+			return typeName.IndexOf("MapConversation", StringComparison.OrdinalIgnoreCase) >= 0;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static bool TryQueueNativeMapConversationTableauTtsPlayback(string wavPath, string xmlPath, float durationSecs)
+	{
+		try
+		{
+			ShoutBehavior instance = CurrentInstance;
+			if (instance == null || !ShouldUseMapConversationTableauPlaybackForNativeTtsExternal())
+			{
+				return false;
+			}
+			if (string.IsNullOrWhiteSpace(wavPath) || !File.Exists(wavPath))
+			{
+				return false;
+			}
+			instance._mainThreadActions.Enqueue(delegate
+			{
+				try
+				{
+					if (!ShouldUseMapConversationTableauPlaybackForNativeTtsExternal())
+					{
+						return;
+					}
+					ICampaignMission currentMission = CampaignMission.Current;
+					if (!IsMapConversationMission(currentMission))
+					{
+						return;
+					}
+					if (string.IsNullOrWhiteSpace(wavPath) || !File.Exists(wavPath))
+					{
+						return;
+					}
+					currentMission.OnConversationPlay("", "", "", "", wavPath);
+					ConversationHelper.StartTypewriterPlaybackIfWaiting(durationSecs);
+					ScheduleNativeMapConversationTtsFileCleanup(wavPath, xmlPath, durationSecs);
+					Logger.Log("NativeConversation", "[TTS] queued map conversation tableau playback. wav=" + System.IO.Path.GetFileName(wavPath) + ", duration=" + durationSecs.ToString("F2"));
+				}
+				catch (Exception ex)
+				{
+					Logger.Log("NativeConversation", "[TTS] map conversation tableau playback failed: " + ex.Message);
+					ConversationHelper.StartTypewriterPlaybackIfWaiting(durationSecs);
+				}
+			});
+			return true;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("NativeConversation", "[TTS] queue map conversation tableau playback failed: " + ex.Message);
+			return false;
+		}
+	}
+
+	private static void ScheduleNativeMapConversationTtsFileCleanup(string wavPath, string xmlPath, float durationSecs)
+	{
+		int delayMs = 15000;
+		if (durationSecs > 0f && !float.IsNaN(durationSecs) && !float.IsInfinity(durationSecs))
+		{
+			delayMs = Math.Max(15000, Math.Min(300000, (int)Math.Round((durationSecs + 10f) * 1000f)));
+		}
+		Task.Run(async delegate
+		{
+			try
+			{
+				await Task.Delay(delayMs).ConfigureAwait(false);
+				if (!string.IsNullOrWhiteSpace(wavPath) && File.Exists(wavPath))
+				{
+					File.Delete(wavPath);
+				}
+				if (!string.IsNullOrWhiteSpace(xmlPath) && File.Exists(xmlPath))
+				{
+					File.Delete(xmlPath);
+				}
+			}
+			catch
+			{
+			}
+		});
+	}
+
 	public static async Task WaitForNativeConversationTtsPlaybackFinishedForExternalAsync()
 	{
 		Task waitTask = null;
@@ -11937,6 +12830,18 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			int targetAgentIndex = TryResolveNativeConversationAgentIndex(targetHero, targetCharacter);
 			int tagCount = CountDeveloperTagTestTags(content);
 			Logger.Log("NativeConversationTagTest", "submit target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? displayName) + " agentIndex=" + targetAgentIndex + " tagCount=" + tagCount + " raw=" + content.Replace("\n", "\\n"));
+			NpcDataPacket nativeTagTestNpc = BuildNativeConversationNpcData(targetHero, targetCharacter);
+			nativeTagTestNpc.AgentIndex = targetAgentIndex;
+			List<NpcDataPacket> presentNpcs = new List<NpcDataPacket> { nativeTagTestNpc };
+			Dictionary<int, Hero> resolvedHeroes = new Dictionary<int, Hero>();
+			if (targetAgentIndex >= 0 && targetHero != null)
+			{
+				resolvedHeroes[targetAgentIndex] = targetHero;
+			}
+			List<SceneSummonPromptTarget> sceneSummonTargets = (targetAgentIndex >= 0) ? instance.BuildSceneSummonPromptTargets(presentNpcs, resolvedHeroes) : null;
+			int sceneGuideFirstPromptId = ((sceneSummonTargets != null && sceneSummonTargets.Count > 0) ? sceneSummonTargets.Max((SceneSummonPromptTarget x) => x?.PromptId ?? 0) : 0) + 1;
+			Agent targetAgent = (targetAgentIndex >= 0) ? Mission.Current?.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == targetAgentIndex) : null;
+			List<SceneGuidePromptTarget> sceneGuideTargets = (targetAgentIndex >= 0) ? instance.BuildSceneGuidePromptTargets(targetAgent, sceneGuideFirstPromptId) : null;
 			if (targetHero != null)
 			{
 				MyBehavior.ApplyPostprocessMoodFromSceneHeroResponseExternal(targetHero, ref content);
@@ -11956,6 +12861,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				{
 				}
 			}
+			bool sceneMechanismHandled = instance.TryQueueNativeSceneMechanismActionAfterConversationExit(nativeTagTestNpc, presentNpcs, sceneSummonTargets, sceneGuideTargets, ref content);
 			instance.ApplyNativeConversationActionTags(targetHero, targetCharacter, ref content);
 			string visible = SanitizeSceneSpeechText(content);
 			if (!string.IsNullOrWhiteSpace(visible))
@@ -11969,7 +12875,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				}
 				instance.CommitNativeConversationTagTestVisibleLine(targetHero, targetCharacter, npcName, visible, targetAgentIndex);
 			}
-			statusText = "标签测试已执行。目标：" + displayName + "，标签数：" + tagCount + (string.IsNullOrWhiteSpace(visible) ? "，无可见正文。" : "，已显示正文。");
+			statusText = "标签测试已执行。目标：" + displayName + "，标签数：" + tagCount + (sceneMechanismHandled ? "，SCENE_MOVE将在退出对话框后执行。" : "") + (string.IsNullOrWhiteSpace(visible) ? "，无可见正文。" : "，已显示正文。");
 			return true;
 		}
 		catch (Exception ex)
@@ -12037,8 +12943,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			{
 				AppendWildernessNonHeroMemory(npc, targetHero, targetCharacter, targetAgentIndex, null, visible, null, TryGetCurrentSceneHistorySessionIdForHistoryPersistence());
 			}
-			RecordNativeConversationNpcLineForExternal(targetHero, targetCharacter, displayName, visible);
-			MarkNativeConversationCurrentDialogRecorded(targetHero, targetCharacter, npcName, visible);
+			RecordNativeConversationNpcLineForExternal(targetHero, targetCharacter, displayName, visible, targetAgentIndex, npc);
+			MarkNativeConversationCurrentDialogRecorded(targetHero, targetCharacter, npcName, visible, targetAgentIndex, npc);
 		}
 		catch (Exception ex)
 		{
@@ -12143,18 +13049,98 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			{
 				return conversationAgent.Index;
 			}
+			if (IsUsableNativeConversationFallbackAgent(conversationAgent, targetHero, targetCharacter))
+			{
+				Logger.Log("NativeConversation", "[AgentResolve] using fallback OneToOneConversationAgent index=" + conversationAgent.Index + " target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? "nonhero"));
+				return conversationAgent.Index;
+			}
 			CharacterObject character = targetCharacter ?? targetHero?.CharacterObject;
 			if ((character == null && targetHero == null) || Mission.Current?.Agents == null)
 			{
 				return -1;
 			}
 			Agent agent = Mission.Current.Agents.FirstOrDefault((Agent a) => IsValidNativeConversationTargetAgent(a, targetHero, targetCharacter));
-			return agent?.Index ?? -1;
+			if (agent != null)
+			{
+				return agent.Index;
+			}
+			if (targetHero == null)
+			{
+				Agent fallbackAgent = Mission.Current.Agents.FirstOrDefault((Agent a) => IsUsableNativeConversationFallbackAgent(a, targetHero, targetCharacter));
+				if (fallbackAgent != null)
+				{
+					Logger.Log("NativeConversation", "[AgentResolve] using fallback mission agent index=" + fallbackAgent.Index + " targetCharacter=" + (targetCharacter?.StringId ?? "nonhero"));
+					return fallbackAgent.Index;
+				}
+			}
+			return -1;
 		}
 		catch
 		{
 			return -1;
 		}
+	}
+
+	private static bool IsUsableNativeConversationFallbackAgent(Agent agent, Hero targetHero, CharacterObject targetCharacter)
+	{
+		if (agent == null || agent.IsMainAgent || agent.Character == null || targetHero != null)
+		{
+			return false;
+		}
+		try
+		{
+			if (!agent.IsActive())
+			{
+				return false;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (Campaign.Current?.ConversationManager?.IsConversationInProgress != true)
+			{
+				return false;
+			}
+		}
+		catch
+		{
+			return false;
+		}
+		CharacterObject agentCharacter = agent.Character as CharacterObject;
+		if (agentCharacter == null || agentCharacter.HeroObject != null)
+		{
+			return false;
+		}
+		if (targetCharacter != null && ReferenceEquals(agentCharacter, targetCharacter))
+		{
+			return true;
+		}
+		try
+		{
+			Agent conversationAgent = Campaign.Current?.ConversationManager?.OneToOneConversationAgent as Agent;
+			if (conversationAgent != null && conversationAgent.Index == agent.Index)
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			PartyBase encounteredParty = PlayerEncounter.EncounteredParty;
+			PartyBase agentParty = agent.Origin?.BattleCombatant as PartyBase;
+			if (encounteredParty != null && agentParty != null && ReferenceEquals(encounteredParty, agentParty))
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		return false;
 	}
 
 	private static bool IsValidNativeConversationTargetAgent(Agent agent, Hero targetHero, CharacterObject targetCharacter)
@@ -12352,7 +13338,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			{
 				return new List<AnimusForgeDialogueHistoryEntry>();
 			}
-			string key = BuildNativeConversationHistoryKey(targetHero, targetCharacter, npcName);
+			int targetAgentIndex = TryResolveNativeConversationAgentIndex(targetHero, targetCharacter);
+			string key = BuildNativeConversationHistoryKey(targetHero, targetCharacter, npcName, targetAgentIndex);
 			if (string.IsNullOrWhiteSpace(key))
 			{
 				return new List<AnimusForgeDialogueHistoryEntry>();
@@ -12389,7 +13376,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			{
 				npcName = (targetHero?.Name?.ToString() ?? targetCharacter?.Name?.ToString() ?? "").Trim();
 			}
-			string key = BuildNativeConversationHistoryKey(targetHero, targetCharacter, npcName);
+			int targetAgentIndex = TryResolveNativeConversationAgentIndex(targetHero, targetCharacter);
+			string key = BuildNativeConversationHistoryKey(targetHero, targetCharacter, npcName, targetAgentIndex);
 			if (string.IsNullOrWhiteSpace(key))
 			{
 				return;
@@ -12418,7 +13406,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 	}
 
-	public static void RecordNativeConversationNpcLineForExternal(Hero targetHero, CharacterObject targetCharacter, string npcName, string text)
+	public static void RecordNativeConversationNpcLineForExternal(Hero targetHero, CharacterObject targetCharacter, string npcName, string text, int targetAgentIndex = -1, NpcDataPacket npc = null)
 	{
 		try
 		{
@@ -12440,7 +13428,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			{
 				displayName = "NPC";
 			}
-			string key = BuildNativeConversationHistoryKey(targetHero, targetCharacter, displayName);
+			if (targetAgentIndex < 0)
+			{
+				targetAgentIndex = TryResolveNativeConversationAgentIndex(targetHero, targetCharacter);
+			}
+			string key = BuildNativeConversationHistoryKey(targetHero, targetCharacter, displayName, targetAgentIndex, npc);
 			if (string.IsNullOrWhiteSpace(key))
 			{
 				return;
@@ -12456,7 +13448,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					}
 				}
 			}
-			AppendNativeConversationSessionHistory(targetHero, targetCharacter, displayName, displayName, line, "npc");
+			AppendNativeConversationSessionHistory(targetHero, targetCharacter, displayName, displayName, line, "npc", targetAgentIndex: targetAgentIndex, npc: npc);
 			Logger.Log("NativeConversation", "[ExternalNpcLine] recorded target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? displayName));
 		}
 		catch (Exception ex)
@@ -12484,12 +13476,66 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		};
 	}
 
-	private static string BuildNativeConversationHistoryKey(Hero targetHero, CharacterObject targetCharacter, string npcName)
+	private static string BuildNativeConversationHistoryKey(Hero targetHero, CharacterObject targetCharacter, string npcName, int targetAgentIndex = -1, NpcDataPacket npc = null)
 	{
-		return (targetHero?.StringId ?? targetCharacter?.StringId ?? npcName ?? "").Trim();
+		try
+		{
+			if (targetAgentIndex < 0 && npc?.AgentIndex >= 0)
+			{
+				targetAgentIndex = npc.AgentIndex;
+			}
+			Hero hero = targetHero ?? targetCharacter?.HeroObject;
+			CharacterObject character = targetCharacter;
+			if ((hero == null || character == null) && targetAgentIndex >= 0 && Mission.Current?.Agents != null)
+			{
+				Agent agent = Mission.Current.Agents.FirstOrDefault((Agent a) => a != null && a.Index == targetAgentIndex && a.IsActive());
+				CharacterObject agentCharacter = agent?.Character as CharacterObject;
+				if (character == null)
+				{
+					character = agentCharacter;
+				}
+				hero ??= agentCharacter?.HeroObject;
+				npc ??= ShoutUtils.ExtractNpcData(agent);
+			}
+			if (hero != null)
+			{
+				return (hero.StringId ?? "").Trim();
+			}
+			string key = (npc != null && !npc.IsHero) ? (npc.UnnamedKey ?? "").Trim() : "";
+			if (string.IsNullOrWhiteSpace(key))
+			{
+				key = BuildNativeConversationNonHeroUnnamedKey(character, npcName, targetAgentIndex);
+			}
+			if (!string.IsNullOrWhiteSpace(key))
+			{
+				key = NormalizeWildernessNonHeroMemoryKeyPart(key);
+				if (targetAgentIndex >= 0 && key.IndexOf("|agent:", StringComparison.OrdinalIgnoreCase) < 0)
+				{
+					key += "|agent:" + targetAgentIndex;
+				}
+				return "native_nonhero:" + key;
+			}
+			string characterId = NormalizeWildernessNonHeroMemoryKeyPart(character?.StringId);
+			string name = NormalizeWildernessNonHeroMemoryKeyPart(npcName);
+			if (!string.IsNullOrWhiteSpace(characterId))
+			{
+				return "native_nonhero:character:" + characterId + (string.IsNullOrWhiteSpace(name) ? "" : "|name:" + name);
+			}
+			return string.IsNullOrWhiteSpace(name) ? "" : "native_nonhero:name:" + name;
+		}
+		catch
+		{
+			string heroId = (targetHero?.StringId ?? targetCharacter?.HeroObject?.StringId ?? "").Trim();
+			if (!string.IsNullOrWhiteSpace(heroId))
+			{
+				return heroId;
+			}
+			string fallback = ((targetCharacter?.StringId ?? npcName ?? "").Trim()).ToLowerInvariant();
+			return string.IsNullOrWhiteSpace(fallback) ? "" : "native_nonhero:fallback:" + fallback;
+		}
 	}
 
-	private static void AppendNativeConversationSessionHistory(Hero targetHero, CharacterObject targetCharacter, string npcName, string speaker, string text, string kind, long eventSequence = 0L, bool bridgeToSceneHistory = true)
+	private static void AppendNativeConversationSessionHistory(Hero targetHero, CharacterObject targetCharacter, string npcName, string speaker, string text, string kind, long eventSequence = 0L, bool bridgeToSceneHistory = true, int targetAgentIndex = -1, NpcDataPacket npc = null)
 	{
 		text = (text ?? "").Trim();
 		if (string.IsNullOrWhiteSpace(text))
@@ -12498,7 +13544,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 		try
 		{
-			string key = BuildNativeConversationHistoryKey(targetHero, targetCharacter, npcName);
+			string key = BuildNativeConversationHistoryKey(targetHero, targetCharacter, npcName, targetAgentIndex, npc);
 			if (string.IsNullOrWhiteSpace(key))
 			{
 				return;
@@ -12546,7 +13592,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			}
 			if (bridgeToSceneHistory)
 			{
-				CurrentInstance?.AppendNativeConversationSessionLineToSceneHistory(targetHero, targetCharacter, npcName, speaker, text, kind, eventSequence);
+				CurrentInstance?.AppendNativeConversationSessionLineToSceneHistory(targetHero, targetCharacter, npcName, speaker, text, kind, eventSequence, targetAgentIndex, npc);
 			}
 		}
 		catch
@@ -12554,7 +13600,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 	}
 
-	private static void MarkNativeConversationCurrentDialogRecorded(Hero targetHero, CharacterObject targetCharacter, string npcName, string currentDialogText)
+	private static void MarkNativeConversationCurrentDialogRecorded(Hero targetHero, CharacterObject targetCharacter, string npcName, string currentDialogText, int targetAgentIndex = -1, NpcDataPacket npc = null)
 	{
 		try
 		{
@@ -12563,7 +13609,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			{
 				return;
 			}
-			string key = BuildNativeConversationHistoryKey(targetHero, targetCharacter, npcName);
+			if (targetAgentIndex < 0)
+			{
+				targetAgentIndex = TryResolveNativeConversationAgentIndex(targetHero, targetCharacter);
+			}
+			string key = BuildNativeConversationHistoryKey(targetHero, targetCharacter, npcName, targetAgentIndex, npc);
 			if (string.IsNullOrWhiteSpace(key))
 			{
 				return;
@@ -12611,7 +13661,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			{
 				return;
 			}
-			string key = BuildNativeConversationHistoryKey(targetHero, targetCharacter, npcName);
+			int targetAgentIndex = TryResolveNativeConversationAgentIndex(targetHero, targetCharacter);
+			string key = BuildNativeConversationHistoryKey(targetHero, targetCharacter, npcName, targetAgentIndex);
 			if (string.IsNullOrWhiteSpace(key))
 			{
 				return;
@@ -12627,7 +13678,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			}
 			if (shouldAppend)
 			{
-				AppendNativeConversationSessionHistory(targetHero, targetCharacter, npcName, string.IsNullOrWhiteSpace(npcDisplayName) ? npcName : npcDisplayName, normalizedLine, "npc");
+				AppendNativeConversationSessionHistory(targetHero, targetCharacter, npcName, string.IsNullOrWhiteSpace(npcDisplayName) ? npcName : npcDisplayName, normalizedLine, "npc", targetAgentIndex: targetAgentIndex);
 			}
 		}
 		catch
@@ -12635,12 +13686,16 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 	}
 
-	public static string GetLatestNativeConversationNpcUtteranceForExternal(Hero targetHero, CharacterObject targetCharacter)
+	public static string GetLatestNativeConversationNpcUtteranceForExternal(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex = -1)
 	{
 		try
 		{
 			string npcName = targetHero?.Name?.ToString() ?? targetCharacter?.Name?.ToString() ?? "";
-			string key = BuildNativeConversationHistoryKey(targetHero, targetCharacter, npcName);
+			if (targetAgentIndex < 0)
+			{
+				targetAgentIndex = TryResolveNativeConversationAgentIndex(targetHero, targetCharacter);
+			}
+			string key = BuildNativeConversationHistoryKey(targetHero, targetCharacter, npcName, targetAgentIndex);
 			if (string.IsNullOrWhiteSpace(key))
 			{
 				return "";
@@ -12672,11 +13727,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		return "";
 	}
 
-	private static List<AnimusForgeDialogueHistoryEntry> GetNativeConversationSessionHistorySnapshot(Hero targetHero, CharacterObject targetCharacter, string npcName, int maxLines = 24)
+	private static List<AnimusForgeDialogueHistoryEntry> GetNativeConversationSessionHistorySnapshot(Hero targetHero, CharacterObject targetCharacter, string npcName, int targetAgentIndex = -1, int maxLines = 24)
 	{
 		try
 		{
-			string key = BuildNativeConversationHistoryKey(targetHero, targetCharacter, npcName);
+			string key = BuildNativeConversationHistoryKey(targetHero, targetCharacter, npcName, targetAgentIndex);
 			if (string.IsNullOrWhiteSpace(key))
 			{
 				return new List<AnimusForgeDialogueHistoryEntry>();
@@ -12721,11 +13776,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 	}
 
-	private static bool HasNativeConversationSessionHistory(Hero targetHero, CharacterObject targetCharacter, string npcName)
+	private static bool HasNativeConversationSessionHistory(Hero targetHero, CharacterObject targetCharacter, string npcName, int targetAgentIndex = -1)
 	{
 		try
 		{
-			string key = BuildNativeConversationHistoryKey(targetHero, targetCharacter, npcName);
+			string key = BuildNativeConversationHistoryKey(targetHero, targetCharacter, npcName, targetAgentIndex);
 			if (string.IsNullOrWhiteSpace(key))
 			{
 				return false;
@@ -12746,7 +13801,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		List<ConversationMessage> list = new List<ConversationMessage>();
 		try
 		{
-			List<AnimusForgeDialogueHistoryEntry> entries = GetNativeConversationSessionHistorySnapshot(targetHero, targetCharacter, npcName, maxLines);
+			List<AnimusForgeDialogueHistoryEntry> entries = GetNativeConversationSessionHistorySnapshot(targetHero, targetCharacter, npcName, targetAgentIndex, maxLines);
 			string targetName = (npcName ?? "").Trim();
 			string npcSpeakerName = string.IsNullOrWhiteSpace(targetName) ? "NPC" : targetName;
 			float playerDistanceMeters = GetPlayerDistanceToAgentForScenePrompt(targetAgentIndex);
@@ -13001,17 +14056,21 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			{
 				int agentIndex = TryResolveNativeConversationAgentIndex(targetHero, targetCharacter);
 				NpcDataPacket npc = BuildNativeConversationNpcData(targetHero, targetCharacter);
+				if (npc != null)
+				{
+					npc.AgentIndex = agentIndex;
+				}
 				string nonHeroSecondaryInput = NormalizeNativeConversationVisibleTextKey(currentNativeDialogText);
 				if (string.IsNullOrWhiteSpace(nonHeroSecondaryInput))
 				{
-					nonHeroSecondaryInput = GetLatestNativeConversationNpcUtteranceForExternal(targetHero, targetCharacter);
+					nonHeroSecondaryInput = GetLatestNativeConversationNpcUtteranceForExternal(targetHero, targetCharacter, agentIndex);
 				}
 				return BuildWildernessNonHeroHistoryContextForPrompt(npc, targetHero, targetCharacter, agentIndex, playerText, nonHeroSecondaryInput, includeCurrentActiveSceneSession);
 			}
 			string secondaryInput = NormalizeNativeConversationVisibleTextKey(currentNativeDialogText);
 			if (string.IsNullOrWhiteSpace(secondaryInput))
 			{
-				secondaryInput = GetLatestNativeConversationNpcUtteranceForExternal(targetHero, targetCharacter);
+				secondaryInput = GetLatestNativeConversationNpcUtteranceForExternal(targetHero, targetCharacter, TryResolveNativeConversationAgentIndex(targetHero, targetCharacter));
 			}
 			string text = MyBehavior.BuildHistoryContextForExternal(hero, 0, playerText, secondaryInput, includeCurrentActiveSceneSession);
 			return (text ?? "").Trim();
@@ -13208,6 +14267,164 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			memoryName = "";
 			return false;
 		}
+	}
+
+	public static bool TryResolveWildernessNonHeroMemoryForExternal(NpcDataPacket npc, Hero targetHero, CharacterObject targetCharacter, int agentIndex, out string memoryId, out string memoryName)
+	{
+		return TryResolveWildernessNonHeroMemory(npc, targetHero, targetCharacter, agentIndex, out memoryId, out memoryName);
+	}
+
+	private static string BuildNativeConversationNonHeroVoiceKey(NpcDataPacket npc, Hero targetHero, CharacterObject targetCharacter, int agentIndex)
+	{
+		try
+		{
+			if (targetHero != null || targetCharacter?.HeroObject != null || npc?.IsHero == true)
+			{
+				return "";
+			}
+			if (TryResolveWildernessNonHeroMemory(npc, targetHero, targetCharacter, agentIndex, out var memoryId, out var _))
+			{
+				return memoryId;
+			}
+			string key = (npc?.UnnamedKey ?? "").Trim();
+			if (string.IsNullOrWhiteSpace(key))
+			{
+				key = BuildNativeConversationNonHeroUnnamedKey(targetCharacter, npc?.Name, agentIndex);
+			}
+			if (string.IsNullOrWhiteSpace(key))
+			{
+				key = BuildNativeConversationHistoryKey(null, targetCharacter, npc?.Name, agentIndex, npc);
+			}
+			string partyKey = BuildWildernessNonHeroPartyMemoryKey(agentIndex);
+			if (!string.IsNullOrWhiteSpace(key) && !string.IsNullOrWhiteSpace(partyKey) && key.IndexOf("|party:", StringComparison.OrdinalIgnoreCase) < 0)
+			{
+				key = key + "|party:" + partyKey;
+			}
+			return (key ?? "").Trim();
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	private static string BuildNativeConversationNonHeroUnnamedKey(CharacterObject targetCharacter, string npcName, int agentIndex)
+	{
+		try
+		{
+			if (targetCharacter?.HeroObject != null)
+			{
+				return "";
+			}
+			string troopId = NormalizeWildernessNonHeroMemoryKeyPart(targetCharacter?.StringId);
+			string factionKey = "";
+			string leaderKey = "";
+			try
+			{
+				MobileParty party = TryResolveWildernessNonHeroMobileParty(agentIndex);
+				if (party != null && party != MobileParty.MainParty)
+				{
+					factionKey = NormalizeWildernessNonHeroMemoryKeyPart(party.MapFaction?.StringId);
+					leaderKey = NormalizeWildernessNonHeroMemoryKeyPart(party.LeaderHero?.StringId);
+				}
+			}
+			catch
+			{
+				factionKey = "";
+				leaderKey = "";
+			}
+			string key;
+			if (!string.IsNullOrWhiteSpace(troopId))
+			{
+				key = "troop:" + troopId;
+			}
+			else
+			{
+				string cultureId = NormalizeWildernessNonHeroMemoryKeyPart(targetCharacter?.Culture?.StringId);
+				if (string.IsNullOrWhiteSpace(cultureId))
+				{
+					cultureId = "neutral";
+				}
+				string rank = "commoner";
+				try
+				{
+					rank = targetCharacter != null && targetCharacter.IsSoldier ? "soldier" : "commoner";
+				}
+				catch
+				{
+					rank = "commoner";
+				}
+				string name = NormalizeWildernessNonHeroMemoryKeyPart(npcName ?? targetCharacter?.Name?.ToString() ?? "npc");
+				if (string.IsNullOrWhiteSpace(name))
+				{
+					name = "npc";
+				}
+				key = "mix:" + cultureId + ":" + rank + ":" + name;
+			}
+			if (!string.IsNullOrWhiteSpace(factionKey))
+			{
+				key += ":kingdom:" + factionKey;
+			}
+			if (!string.IsNullOrWhiteSpace(leaderKey))
+			{
+				key += ":lord:" + leaderKey;
+			}
+			return key.ToLowerInvariant();
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	private static float ResolveNativeConversationNonHeroAge(CharacterObject targetCharacter)
+	{
+		float age = 0f;
+		try
+		{
+			age = targetCharacter?.Age ?? 0f;
+		}
+		catch
+		{
+			age = 0f;
+		}
+		if (age >= 18f && age <= 55f)
+		{
+			return age;
+		}
+		float fallbackAge = 30f;
+		try
+		{
+			if (targetCharacter != null && !targetCharacter.IsSoldier)
+			{
+				switch (targetCharacter.Occupation)
+				{
+				case Occupation.Weaponsmith:
+				case Occupation.Blacksmith:
+				case Occupation.Armorer:
+				case Occupation.GoodsTrader:
+				case Occupation.HorseTrader:
+				case Occupation.Artisan:
+				case Occupation.Merchant:
+					fallbackAge = 38f;
+					break;
+				case Occupation.Headman:
+				case Occupation.Preacher:
+				case Occupation.GangLeader:
+				case Occupation.RuralNotable:
+					fallbackAge = 46f;
+					break;
+				default:
+					fallbackAge = 30f;
+					break;
+				}
+			}
+		}
+		catch
+		{
+			fallbackAge = 30f;
+		}
+		return Math.Max(18f, Math.Min(55f, fallbackAge));
 	}
 
 	private static string BuildWildernessNonHeroHistoryContextForPrompt(NpcDataPacket npc, Hero targetHero, CharacterObject targetCharacter, int agentIndex, string currentInput, string secondaryInput, bool includeCurrentActiveSceneSession = false)
@@ -13416,6 +14633,12 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			targetHero = targetCharacter?.HeroObject;
 		}
+		if (targetHero == null && TryResolveNativeConversationTargetFromAgent(out var directAgentHero, out var directAgentCharacter, out var directAgentName) && !IsNativeConversationSelfTarget(directAgentHero, directAgentCharacter))
+		{
+			targetHero = directAgentHero;
+			targetCharacter = directAgentCharacter;
+			npcName = directAgentName;
+		}
 		if (IsNativeConversationSelfTarget(targetHero, targetCharacter))
 		{
 			if (TryResolveNativeConversationTargetFromAgent(out var agentHero, out var agentCharacter, out var agentName) && !IsNativeConversationSelfTarget(agentHero, agentCharacter))
@@ -13528,6 +14751,24 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				background = "";
 			}
 		}
+		Hero npcHero = targetHero ?? targetCharacter?.HeroObject;
+		bool isNonHero = npcHero == null;
+		string troopId = targetCharacter?.StringId ?? targetHero?.CharacterObject?.StringId ?? "";
+		int unnamedAgentIndex = isNonHero ? TryResolveNativeConversationAgentIndex(targetHero, targetCharacter) : -1;
+		string unnamedKey = isNonHero ? BuildNativeConversationNonHeroUnnamedKey(targetCharacter, npcName, unnamedAgentIndex) : "";
+		string unnamedRank = "";
+		if (isNonHero)
+		{
+			try
+			{
+				unnamedRank = targetCharacter != null && targetCharacter.IsSoldier ? "soldier" : "commoner";
+			}
+			catch
+			{
+				unnamedRank = "";
+			}
+		}
+		float age = npcHero?.Age ?? (isNonHero ? ResolveNativeConversationNonHeroAge(targetCharacter) : 0f);
 		return new NpcDataPacket
 		{
 			Name = npcName,
@@ -13535,16 +14776,375 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			PersonalityDesc = (personality ?? "").Trim(),
 			BackgroundDesc = (background ?? "").Trim(),
 			AgentIndex = -1,
-			IsHero = targetHero != null || targetCharacter?.HeroObject != null,
+			IsHero = !isNonHero,
 			CultureId = targetHero?.Culture?.StringId ?? targetCharacter?.Culture?.StringId ?? "neutral",
-			UnnamedKey = "",
-			TroopId = targetCharacter?.StringId ?? targetHero?.CharacterObject?.StringId ?? "",
-			UnnamedRank = "",
+			UnnamedKey = unnamedKey,
+			TroopId = troopId,
+			UnnamedRank = unnamedRank,
 			IsFemale = targetHero?.IsFemale ?? targetCharacter?.IsFemale ?? false,
-			Age = targetHero?.Age ?? 0f,
+			Age = age,
 			PromptGivenName = npcName,
 			PromptDisplayName = npcName
 		};
+	}
+
+	private sealed class PendingNativeSceneMechanismAction
+	{
+		public NpcDataPacket Speaker;
+
+		public List<NpcDataPacket> Context;
+
+		public List<SceneSummonPromptTarget> SummonTargets;
+
+		public List<SceneGuidePromptTarget> GuideTargets;
+
+		public string Tags;
+
+		public long CreatedUtcTicks;
+	}
+
+	private sealed class PendingNativeSceneTauntFight
+	{
+		public Hero TargetHero;
+
+		public CharacterObject TargetCharacter;
+
+		public int TargetAgentIndex;
+
+		public string TargetKey;
+
+		public string TargetName;
+
+		public float ExecuteAtMissionTime;
+
+		public long CreatedUtcTicks;
+	}
+
+	private bool TryQueueNativeSceneMechanismActionAfterConversationExit(NpcDataPacket npc, List<NpcDataPacket> allNpcData, List<SceneSummonPromptTarget> sceneSummonTargets, List<SceneGuidePromptTarget> sceneGuideTargets, ref string content)
+	{
+		string text = ExtractSceneMechanismActionTagsForScene(content);
+		if (npc == null || string.IsNullOrWhiteSpace(text))
+		{
+			return false;
+		}
+		content = StripSceneMechanismActionTagsForScene(content);
+		PendingNativeSceneMechanismAction pending = new PendingNativeSceneMechanismAction
+		{
+			Speaker = CloneNpcDataPacket(npc),
+			Context = CloneNpcDataSnapshot(allNpcData),
+			SummonTargets = CloneSceneSummonPromptTargets(sceneSummonTargets),
+			GuideTargets = CloneSceneGuidePromptTargets(sceneGuideTargets),
+			Tags = text,
+			CreatedUtcTicks = DateTime.UtcNow.Ticks
+		};
+		int pendingCount;
+		lock (_pendingNativeSceneMechanismActionLock)
+		{
+			_pendingNativeSceneMechanismActions.Enqueue(pending);
+			pendingCount = _pendingNativeSceneMechanismActions.Count;
+		}
+		ShowNativeSceneMechanismPendingExitPrompt(pendingCount);
+		Logger.Log("ShoutBehavior", "[NativeConversation] deferred scene mechanism action until manual conversation exit agent=" + pending.Speaker.AgentIndex + " pending=" + pendingCount + " tags=" + text.Replace("\r", "\\r").Replace("\n", "\\n"));
+		return true;
+	}
+
+	private static void ShowNativeSceneMechanismPendingExitPrompt(int pendingCount)
+	{
+		try
+		{
+			string suffix = pendingCount > 1 ? (" 当前待执行 " + pendingCount + " 个。") : "";
+			InformationManager.DisplayMessage(new InformationMessage("SCENE_MOVE已准备。请手动退出对话框，退出后将执行NPC场景动作。" + suffix, new Color(1f, 0.95f, 0.25f)));
+		}
+		catch
+		{
+		}
+	}
+
+	private void ExecutePendingNativeSceneMechanismActionsAfterConversationExit(string reason)
+	{
+		List<PendingNativeSceneMechanismAction> pendingActions = new List<PendingNativeSceneMechanismAction>();
+		lock (_pendingNativeSceneMechanismActionLock)
+		{
+			while (_pendingNativeSceneMechanismActions.Count > 0)
+			{
+				pendingActions.Add(_pendingNativeSceneMechanismActions.Dequeue());
+			}
+		}
+		if (pendingActions.Count == 0)
+		{
+			return;
+		}
+		foreach (PendingNativeSceneMechanismAction pending in pendingActions)
+		{
+			_mainThreadActions.Enqueue(delegate
+			{
+				ExecutePendingNativeSceneMechanismAction(pending, reason);
+			});
+		}
+		Logger.Log("ShoutBehavior", "[NativeConversation] queued deferred scene mechanism actions after manual exit count=" + pendingActions.Count + " reason=" + (reason ?? ""));
+		TryDrainNativeConversationQueuedActions("scene_mechanism_after_conversation_exit");
+	}
+
+	private void ExecutePendingNativeSceneMechanismAction(PendingNativeSceneMechanismAction pending, string reason)
+	{
+		if (pending == null || pending.Speaker == null || string.IsNullOrWhiteSpace(pending.Tags))
+		{
+			return;
+		}
+		try
+		{
+			if (TryExecuteNativeSceneMechanismActionTagsDirectly(pending.Speaker, pending.SummonTargets, pending.GuideTargets, pending.Tags))
+			{
+				Logger.Log("ShoutBehavior", "[NativeConversation] executed deferred scene mechanism action agent=" + pending.Speaker.AgentIndex + " reason=" + (reason ?? "") + " tags=" + pending.Tags.Replace("\r", "\\r").Replace("\n", "\\n"));
+				return;
+			}
+			EnqueueSpeechLineWithOptions(pending.Speaker, pending.Tags, pending.Context, commitHistory: false, suppressStare: true, allowPlayerDirectedActions: true, requiredConversationEpoch: 0, pending.SummonTargets, pending.GuideTargets, null);
+			Logger.Log("ShoutBehavior", "[NativeConversation] queued deferred scene mechanism action fallback agent=" + pending.Speaker.AgentIndex + " reason=" + (reason ?? "") + " tags=" + pending.Tags.Replace("\r", "\\r").Replace("\n", "\\n"));
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("ShoutBehavior", "[NativeConversation] execute deferred scene mechanism action failed: " + ex.Message);
+		}
+	}
+
+	private void ClearPendingNativeSceneMechanismActions(string reason)
+	{
+		try
+		{
+			int count;
+			lock (_pendingNativeSceneMechanismActionLock)
+			{
+				count = _pendingNativeSceneMechanismActions.Count;
+				_pendingNativeSceneMechanismActions.Clear();
+			}
+			if (count > 0)
+			{
+				Logger.Log("ShoutBehavior", "[NativeConversation] cleared pending scene mechanism actions count=" + count + " reason=" + (reason ?? ""));
+			}
+		}
+		catch
+		{
+		}
+	}
+
+	private bool ScheduleNativeSceneTauntFightAfterDelay(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, string targetKey, string reason)
+	{
+		try
+		{
+			if (Mission.Current == null)
+			{
+				return false;
+			}
+			string targetName = (targetHero?.Name?.ToString() ?? targetCharacter?.Name?.ToString() ?? "NPC").Trim();
+			if (string.IsNullOrWhiteSpace(targetName))
+			{
+				targetName = "NPC";
+			}
+			PendingNativeSceneTauntFight pending = new PendingNativeSceneTauntFight
+			{
+				TargetHero = targetHero,
+				TargetCharacter = targetCharacter,
+				TargetAgentIndex = targetAgentIndex,
+				TargetKey = targetKey,
+				TargetName = targetName,
+				ExecuteAtMissionTime = Mission.Current.CurrentTime + NativeSceneTauntFightDelaySeconds,
+				CreatedUtcTicks = DateTime.UtcNow.Ticks
+			};
+			lock (_pendingNativeSceneTauntFightLock)
+			{
+				_pendingNativeSceneTauntFight = pending;
+			}
+			try
+			{
+				InformationManager.DisplayMessage(new InformationMessage("SCENE_TAUNT_FIGHT已触发：10秒后将自动退出对话并爆发冲突。", new Color(1f, 0.55f, 0.25f)));
+			}
+			catch
+			{
+			}
+			Logger.Log("ShoutBehavior", "[NativeConversation] delayed scene taunt fight scheduled target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? targetName) + " agentIndex=" + targetAgentIndex + " executeAt=" + pending.ExecuteAtMissionTime.ToString("F2") + " reason=" + (reason ?? ""));
+			return true;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("ShoutBehavior", "[NativeConversation] schedule delayed scene taunt fight failed: " + ex.Message);
+			return false;
+		}
+	}
+
+	private void UpdatePendingNativeSceneTauntFightDelay()
+	{
+		PendingNativeSceneTauntFight pending = null;
+		try
+		{
+			if (Mission.Current == null)
+			{
+				return;
+			}
+			lock (_pendingNativeSceneTauntFightLock)
+			{
+				if (_pendingNativeSceneTauntFight == null)
+				{
+					return;
+				}
+				double elapsedRealSeconds = new TimeSpan(Math.Max(0L, DateTime.UtcNow.Ticks - _pendingNativeSceneTauntFight.CreatedUtcTicks)).TotalSeconds;
+				bool missionTimeElapsed = Mission.Current.CurrentTime >= _pendingNativeSceneTauntFight.ExecuteAtMissionTime;
+				bool realTimeElapsed = elapsedRealSeconds >= NativeSceneTauntFightDelaySeconds;
+				if (!missionTimeElapsed && !realTimeElapsed)
+				{
+					return;
+				}
+				pending = _pendingNativeSceneTauntFight;
+				_pendingNativeSceneTauntFight = null;
+			}
+			ExecuteDelayedNativeSceneTauntFight(pending);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("ShoutBehavior", "[NativeConversation] update delayed scene taunt fight failed: " + ex.Message);
+			if (pending != null)
+			{
+				ClearPendingNativeSceneTauntFight("update_failed");
+			}
+		}
+	}
+
+	private void ExecuteDelayedNativeSceneTauntFight(PendingNativeSceneTauntFight pending)
+	{
+		if (pending == null)
+		{
+			return;
+		}
+		try
+		{
+			CloseNativeConversationForSceneMechanism("native_scene_taunt_fight_delay_elapsed");
+			bool started = SceneTauntBehavior.TryStartSceneTauntFightForExternal(pending.TargetHero, pending.TargetCharacter, pending.TargetAgentIndex, pending.TargetKey, "native_scene_taunt_fight_delay_elapsed");
+			try
+			{
+				InformationManager.DisplayMessage(new InformationMessage(started ? "冲突爆发！" : "冲突未能爆发：当前场景目标不可用。", started ? new Color(1f, 0.35f, 0.2f) : new Color(1f, 0.75f, 0.25f)));
+			}
+			catch
+			{
+			}
+			Logger.Log("ShoutBehavior", "[NativeConversation] delayed scene taunt fight executed started=" + started + " target=" + (pending.TargetHero?.StringId ?? pending.TargetCharacter?.StringId ?? pending.TargetName ?? "unknown") + " agentIndex=" + pending.TargetAgentIndex);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("ShoutBehavior", "[NativeConversation] execute delayed scene taunt fight failed: " + ex.Message);
+		}
+	}
+
+	private void ClearPendingNativeSceneTauntFight(string reason)
+	{
+		try
+		{
+			bool hadPending;
+			lock (_pendingNativeSceneTauntFightLock)
+			{
+				hadPending = _pendingNativeSceneTauntFight != null;
+				_pendingNativeSceneTauntFight = null;
+			}
+			if (hadPending)
+			{
+				Logger.Log("ShoutBehavior", "[NativeConversation] cleared delayed scene taunt fight reason=" + (reason ?? ""));
+			}
+		}
+		catch
+		{
+		}
+	}
+
+	private bool TryExecuteNativeSceneMechanismActionTagsDirectly(NpcDataPacket npc, List<SceneSummonPromptTarget> sceneSummonTargets, List<SceneGuidePromptTarget> sceneGuideTargets, string tags)
+	{
+		if (npc == null || string.IsNullOrWhiteSpace(tags) || Mission.Current == null)
+		{
+			return false;
+		}
+		Agent agent = Mission.Current.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == npc.AgentIndex);
+		if (!CanAgentParticipateInSceneSpeech(agent) || agent == Agent.Main)
+		{
+			Logger.Log("ShoutBehavior", "[NativeConversation] scene mechanism direct skip agent=" + (npc?.AgentIndex ?? -1) + " reason=agent_unavailable tags=" + ((tags ?? "").Replace("\r", "\\r").Replace("\n", "\\n")));
+			return false;
+		}
+		string content = tags;
+		SceneSummonConversationSession sceneSummonConversationSession = null;
+		ActiveSceneSummonRequest activeSceneSummonRequest = null;
+		ActiveSceneGuideRequest activeSceneGuideRequest = null;
+		bool stopFollow = TryConsumeSceneFollowStopTag(npc, agent, ref content);
+		bool startFollow = TryConsumeSceneFollowStartTag(npc, agent, ref content);
+		bool endChat = TryConsumeSceneEndChatActionTag(npc, agent, ref content, out sceneSummonConversationSession);
+		bool summon = !string.IsNullOrWhiteSpace(content) && TryTriggerSceneSummonAction(npc, agent, sceneSummonTargets, ref content, out activeSceneSummonRequest);
+		bool guide = !string.IsNullOrWhiteSpace(content) && TryTriggerSceneGuideAction(npc, agent, sceneGuideTargets, sceneSummonTargets, ref content, out activeSceneGuideRequest);
+		bool handled = stopFollow || startFollow || endChat || summon || guide;
+		if (!handled)
+		{
+			Logger.Log("ShoutBehavior", "[NativeConversation] scene mechanism direct no-op agent=" + npc.AgentIndex + " tags=" + ((tags ?? "").Replace("\r", "\\r").Replace("\n", "\\n")));
+			return false;
+		}
+		if (stopFollow)
+		{
+			StopSceneSummonFollowPlayer(agent, restoreDailyBehaviors: false);
+			ReturnAgentAfterStoppingSceneFollow(agent);
+		}
+		else if (startFollow)
+		{
+			RememberSceneFollowReturnState(agent, overwriteExisting: true);
+			RemoveAgentFromSceneSummonConversationForFollow(agent);
+			StartSceneSummonFollowPlayer(agent);
+		}
+		if (endChat && sceneSummonConversationSession != null)
+		{
+			BeginSceneSummonConversationReturn(sceneSummonConversationSession);
+		}
+		if (summon && activeSceneSummonRequest != null)
+		{
+			SchedulePreparedSceneSummonLaunch(activeSceneSummonRequest, null, "");
+		}
+		if (guide && activeSceneGuideRequest != null)
+		{
+			SchedulePreparedSceneGuideLaunch(activeSceneGuideRequest, null, "");
+		}
+		Logger.Log("ShoutBehavior", "[NativeConversation] scene mechanism direct result agent=" + npc.AgentIndex + " stop=" + stopFollow + " start=" + startFollow + " end=" + endChat + " summon=" + summon + " guide=" + guide + " remaining=" + ((content ?? "").Replace("\r", "\\r").Replace("\n", "\\n")));
+		return true;
+	}
+
+	private static void CloseNativeConversationForSceneMechanism(string reason)
+	{
+		try
+		{
+			CloseNativeConversationInput(clearSessionHistory: false);
+			ConversationManager conversationManager = Campaign.Current?.ConversationManager;
+			if (conversationManager != null && (conversationManager.IsConversationInProgress || conversationManager.IsConversationFlowActive))
+			{
+				conversationManager.EndConversation();
+				Logger.Log("ShoutBehavior", "[NativeConversation] closed native conversation for scene mechanism. reason=" + (reason ?? ""));
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("ShoutBehavior", "[NativeConversation] close native conversation for scene mechanism failed: " + ex.Message);
+		}
+	}
+
+	private bool TryTriggerNativeConversationOpenLordsHallAction(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, ref string content)
+	{
+		if (string.IsNullOrWhiteSpace(content) || content.IndexOf("[ACTION:OPEN_LORDS_HALL]", StringComparison.OrdinalIgnoreCase) < 0)
+		{
+			return false;
+		}
+		try
+		{
+			NpcDataPacket npc = BuildNativeConversationNpcData(targetHero, targetCharacter);
+			npc.AgentIndex = targetAgentIndex;
+			Agent agent = (targetAgentIndex >= 0) ? Mission.Current?.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == targetAgentIndex) : null;
+			bool result = TryTriggerOpenLordsHallAction(npc, agent, ref content);
+			Logger.Log("ShoutBehavior", "[NativeConversation] open lords hall tag handled=" + result + " target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? "unknown") + " agentIndex=" + targetAgentIndex);
+			return result;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("ShoutBehavior", "[NativeConversation] open lords hall action failed: " + ex.Message);
+			return false;
+		}
 	}
 
 	private void ApplyNativeConversationActionTags(Hero targetHero, CharacterObject targetCharacter, ref string content)
@@ -13566,11 +15166,19 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			if (targetHero != null)
 			{
 				VoteDealBehavior.ProcessVoteDealTagsDispatch(targetHero, ref content);
+				VoteDealBehavior.ProcessProposeDispatch(targetHero, ref content);
 				DiplomacyBehavior.ProcessDiplomacyTagsDispatch(targetHero, ref content);
 				WorldMapPartyCommandBehavior.ProcessWorldMapOrderTagsDispatch(targetHero, ref content);
 				DuelBehavior.TryCacheDuelAfterLinesFromText(targetHero, ref content);
 				DuelBehavior.TryCacheDuelStakeFromText(targetHero, ref content);
 				VanillaIssueOfferBridge.ApplyIssueOfferTags(targetHero, ref content);
+				int targetAgentIndex = TryResolveNativeConversationAgentIndex(targetHero, targetCharacter);
+				bool nativeSceneTauntHandled = TryProcessNativeConversationSceneTauntTags(targetHero, targetCharacter, targetAgentIndex, ref content, out var nativeSceneTauntEscalated);
+				if (nativeSceneTauntHandled && string.IsNullOrWhiteSpace(content))
+				{
+					content = BuildFallbackSceneTauntSpeech(nativeSceneTauntEscalated);
+				}
+				TryTriggerNativeConversationOpenLordsHallAction(targetHero, targetCharacter, targetAgentIndex, ref content);
 				if (NobleGatheringBehavior.TryApplyNobleGatheringTagsForExternal(targetHero, ref content, out var nobleFacts, out var nobleNotifications))
 				{
 					if (nobleFacts != null)
@@ -13596,7 +15204,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				bool rewardBeforeHasKingdomAnnex = ContainsKingdomAnnexActionTagForLog(content);
 				string rewardChainName = ResolveNativeConversationPostprocessChainName();
 				Logger.Log("ShoutBehavior", "[NativeConversation] ApplyRewardTags start chain=" + rewardChainName + " target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? "unknown") + " containsVASSALAGE=" + rewardBeforeHasVassalage + " containsKINGDOM_ANNEX=" + rewardBeforeHasKingdomAnnex);
-				if (MyBehavior.TryApplyPartyTransferTagsForExternal(targetHero, targetCharacter, -1, ref content, out var generatedFacts, out var notifications))
+				if (MyBehavior.TryApplyPartyTransferTagsForExternal(targetHero, targetCharacter, targetAgentIndex, ref content, out var generatedFacts, out var notifications))
 				{
 					if (generatedFacts != null)
 					{
@@ -13631,7 +15239,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				{
 					LordEncounterBehavior.TryExecuteMeetingPlayerRelease(targetHero, "native_conversation_release_tag_no_speech");
 				}
-				if (!escalatedToBattle && !meetingReleaseTriggered && Regex.IsMatch(content, "\\[ACTION:DUEL\\]", RegexOptions.IgnoreCase))
+				if (!escalatedToBattle && !meetingReleaseTriggered && !nativeSceneTauntEscalated && Regex.IsMatch(content, "\\[ACTION:DUEL\\]", RegexOptions.IgnoreCase))
 				{
 					content = Regex.Replace(content, "\\[ACTION:DUEL\\]", "", RegexOptions.IgnoreCase).Trim();
 					DuelBehavior.PrepareDuel(targetHero, 3f);
@@ -13643,14 +15251,48 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				RewardSystemBehavior rewardSystem = RewardSystemBehavior.Instance;
 				bool isWildernessNonHeroPartyReward = false;
 				NpcDataPacket nonHeroNpc = null;
-				bool hasWildernessNonHeroParty = TryResolveWildernessNonHeroRewardParty(targetHero, targetCharacter, agentIndex, out var wildernessNonHeroParty);
+				bool nonHeroJoinTagHandled = false;
+				bool nonHeroSceneTauntHandled = TryProcessNativeConversationSceneTauntTags(targetHero, targetCharacter, agentIndex, ref content, out var nonHeroSceneTauntEscalated);
+				if (nonHeroSceneTauntHandled && string.IsNullOrWhiteSpace(content))
+				{
+					content = BuildFallbackSceneTauntSpeech(nonHeroSceneTauntEscalated);
+				}
+				TryTriggerNativeConversationOpenLordsHallAction(targetHero, targetCharacter, agentIndex, ref content);
+				if (MyBehavior.TryApplyPartyTransferTagsForExternal(targetHero, targetCharacter, agentIndex, ref content, out var nonHeroTransferFacts, out var nonHeroTransferNotifications))
+				{
+					RecordGeneratedNpcAfefFactsForNativeConversation(targetHero, targetCharacter, nonHeroTransferFacts);
+					foreach (string notification in nonHeroTransferNotifications ?? new List<string>())
+					{
+						if (!string.IsNullOrWhiteSpace(notification))
+						{
+							InformationManager.DisplayMessage(new InformationMessage(notification, new Color(0.4f, 1f, 0.4f)));
+						}
+					}
+				}
+				if (rewardSystem != null)
+				{
+					nonHeroNpc = BuildNativeConversationNpcData(targetHero, targetCharacter);
+					nonHeroNpc.AgentIndex = agentIndex;
+					if (rewardSystem.TryApplyNonHeroJoinPlayerPartyTagForExternal(targetCharacter, agentIndex, nonHeroNpc.PromptGivenName, nonHeroNpc.PromptDisplayName, ref content, out var joinFacts, out var joinNotifications))
+					{
+						nonHeroJoinTagHandled = true;
+						RecordGeneratedNpcAfefFactsForNativeConversation(targetHero, targetCharacter, joinFacts);
+						foreach (string notification in joinNotifications ?? new List<string>())
+						{
+							if (!string.IsNullOrWhiteSpace(notification))
+							{
+								InformationManager.DisplayMessage(new InformationMessage(notification, notification.IndexOf("失败", StringComparison.OrdinalIgnoreCase) >= 0 ? new Color(1f, 0.45f, 0.25f) : new Color(0.4f, 1f, 0.4f)));
+							}
+						}
+					}
+				}
+				PartyBase wildernessNonHeroParty = null;
+				bool hasWildernessNonHeroParty = !nonHeroJoinTagHandled && TryResolveWildernessNonHeroRewardParty(targetHero, targetCharacter, agentIndex, out wildernessNonHeroParty);
 				if (rewardSystem != null && hasWildernessNonHeroParty)
 				{
 					string npcName = (targetCharacter.Name?.ToString() ?? "对方部队").Trim();
 					rewardSystem.ApplyPartyRewardTags(wildernessNonHeroParty, Hero.MainHero, npcName, targetCharacter, ref content);
 					isWildernessNonHeroPartyReward = true;
-					nonHeroNpc = BuildNativeConversationNpcData(targetHero, targetCharacter);
-					nonHeroNpc.AgentIndex = agentIndex;
 				}
 				else
 				{
@@ -13670,7 +15312,51 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				}
 				if (hasWildernessNonHeroParty)
 				{
-					LordEncounterBehavior.TryProcessMeetingTauntAction(null, wildernessNonHeroParty, ref content, out var _);
+					LordEncounterBehavior.TryProcessMeetingTauntAction(null, wildernessNonHeroParty, ref content, out var nonHeroMeetingTauntEscalated);
+					if (!nonHeroMeetingTauntEscalated && !nonHeroSceneTauntEscalated && Regex.IsMatch(content, "\\[ACTION:DUEL\\]", RegexOptions.IgnoreCase))
+					{
+						content = Regex.Replace(content, "\\[ACTION:DUEL\\]", "", RegexOptions.IgnoreCase).Trim();
+						Agent duelAgent = (agentIndex >= 0) ? Mission.Current?.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == agentIndex) : null;
+						if (duelAgent != null)
+						{
+							DuelBehavior.PrepareDuel(duelAgent, 3f);
+						}
+						else
+						{
+							if (nonHeroNpc == null)
+							{
+								nonHeroNpc = BuildNativeConversationNpcData(targetHero, targetCharacter);
+								nonHeroNpc.AgentIndex = agentIndex;
+							}
+							if (TryResolveWildernessNonHeroMemoryForExternal(nonHeroNpc, targetHero, targetCharacter, agentIndex, out var duelMemoryId, out var duelMemoryName))
+							{
+								DuelBehavior.SetPendingNonHeroDuelMemoryTarget(duelMemoryId, duelMemoryName);
+							}
+							DuelBehavior.PrepareDuel(targetCharacter, 3f);
+						}
+					}
+				}
+				else if (!nonHeroSceneTauntEscalated && Regex.IsMatch(content, "\\[ACTION:DUEL\\]", RegexOptions.IgnoreCase))
+				{
+					content = Regex.Replace(content, "\\[ACTION:DUEL\\]", "", RegexOptions.IgnoreCase).Trim();
+					Agent duelAgent = (agentIndex >= 0) ? Mission.Current?.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == agentIndex) : null;
+					if (duelAgent != null)
+					{
+						DuelBehavior.PrepareDuel(duelAgent, 3f);
+					}
+					else
+					{
+						if (nonHeroNpc == null)
+						{
+							nonHeroNpc = BuildNativeConversationNpcData(targetHero, targetCharacter);
+							nonHeroNpc.AgentIndex = agentIndex;
+						}
+						if (TryResolveWildernessNonHeroMemoryForExternal(nonHeroNpc, targetHero, targetCharacter, agentIndex, out var duelMemoryId, out var duelMemoryName))
+						{
+							DuelBehavior.SetPendingNonHeroDuelMemoryTarget(duelMemoryId, duelMemoryName);
+						}
+						DuelBehavior.PrepareDuel(targetCharacter, 3f);
+					}
 				}
 			}
 			if (TryConsumeNativeConversationNpcSurrenderTag(targetHero, targetCharacter, ref content, out var surrenderAgentIndex))
@@ -13723,12 +15409,12 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			{
 				return;
 			}
-			Logger.Log("NpcSurrender", "Draining native/direct conversation queued actions. Pending=" + pending + " missionActive=" + (Mission.Current != null) + " reason=" + (reason ?? "N/A"));
+			Logger.Log("ShoutBehavior", "[NativeConversation] draining queued actions. Pending=" + pending + " missionActive=" + (Mission.Current != null) + " reason=" + (reason ?? "N/A"));
 			DrainMainThreadActionsForMissionTick();
 		}
 		catch (Exception ex)
 		{
-			Logger.Log("NpcSurrender", "Drain native/direct conversation queued actions failed. Reason=" + (reason ?? "N/A") + " error=" + ex.Message);
+			Logger.Log("ShoutBehavior", "[NativeConversation] drain queued actions failed. Reason=" + (reason ?? "N/A") + " error=" + ex.Message);
 		}
 	}
 
@@ -13746,7 +15432,9 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			npcName = "NPC";
 		}
 		int targetAgentIndex = TryResolveNativeConversationAgentIndex(targetHero, targetCharacter);
-		string nativeKey = BuildNativeConversationHistoryKey(targetHero, targetCharacter, npcName);
+		NpcDataPacket targetNpc = BuildNativeConversationNpcData(targetHero, targetCharacter);
+		targetNpc.AgentIndex = targetAgentIndex;
+		string nativeKey = BuildNativeConversationHistoryKey(targetHero, targetCharacter, npcName, targetAgentIndex, targetNpc);
 		foreach (string rawFact in factLines)
 		{
 			string fact = NormalizeNativeConversationFactLineForPrompt(rawFact, "NPC");
@@ -13756,7 +15444,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			}
 			try
 			{
-				AppendNativeConversationSessionHistory(targetHero, targetCharacter, npcName, "系统", fact, "fact");
+				AppendNativeConversationSessionHistory(targetHero, targetCharacter, npcName, "系统", fact, "fact", targetAgentIndex: targetAgentIndex, npc: targetNpc);
 				if (targetAgentIndex >= 0)
 				{
 					QueuePendingCurrentAfefFactForAgent(targetAgentIndex, fact);
@@ -13835,6 +15523,43 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 	}
 
+	private static bool TryProcessNativeConversationSceneTauntTags(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, ref string content, out bool escalatedToFight)
+	{
+		escalatedToFight = false;
+		if (string.IsNullOrWhiteSpace(content))
+		{
+			return false;
+		}
+		try
+		{
+			if (SceneTauntBehavior.HasSceneTauntFightTagForExternal(content))
+			{
+				if (SceneTauntBehavior.TryConsumeSceneTauntTagsForDelayedFightExternal(targetHero, targetCharacter, targetAgentIndex, ref content, out var hadWarnTag, out var hadFightTag, out var targetKey))
+				{
+					bool scheduled = hadFightTag && CurrentInstance?.ScheduleNativeSceneTauntFightAfterDelay(targetHero, targetCharacter, targetAgentIndex, targetKey, "native_conversation_scene_taunt_fight_tag") == true;
+					escalatedToFight = scheduled;
+					Logger.Log("ShoutBehavior", "[NativeConversation] scene taunt tag consumed for delayed fight. target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? "unknown") + " agentIndex=" + targetAgentIndex + " warn=" + hadWarnTag + " fight=" + hadFightTag + " scheduled=" + scheduled);
+					return true;
+				}
+			}
+			bool result = SceneTauntBehavior.TryProcessSceneTauntAction(targetHero, targetCharacter, targetAgentIndex, ref content, out escalatedToFight);
+			if (result)
+			{
+				Logger.Log("ShoutBehavior", "[NativeConversation] scene taunt tag consumed. target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? "unknown") + " agentIndex=" + targetAgentIndex + " escalated=" + escalatedToFight);
+				if (escalatedToFight)
+				{
+					CloseNativeConversationForSceneMechanism("native_scene_taunt_fight");
+				}
+			}
+			return result;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("ShoutBehavior", "[NativeConversation] scene taunt handling failed: " + ex.Message);
+			return false;
+		}
+	}
+
 	private List<string> BuildPreprocessExcludedRuleIdsForCurrentInteraction(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, bool hasAnyHero, List<SceneSummonPromptTarget> sceneSummonTargets = null, List<SceneGuidePromptTarget> sceneGuideTargets = null, NpcDataPacket sceneSpeakerNpc = null, List<NpcDataPacket> sceneCandidates = null)
 	{
 		List<string> allRuleIds = AIConfigHandler.GetEnabledGuardrailRuleIdsForExternal();
@@ -13888,7 +15613,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			return false;
 		}
 		Hero hero = targetHero ?? targetCharacter?.HeroObject;
-		if (AIConfigHandler.IsPlayerCompanionOrFamilyTradeTarget(hero) && (id == "reward" || id == "loan" || id == "vote_deal" || id == "party_transfer" || id == "settlement_transfer"))
+		if (AIConfigHandler.IsPlayerPartyTradeLimitedTarget(hero) && (id == "loan" || id == "vote_deal" || id == "diplomacy" || id == "party_transfer" || id == "settlement_transfer"))
+		{
+			return false;
+		}
+		if (id == "settlement_transfer" && AIConfigHandler.IsPlayerCompanionOrFamilyTradeTarget(hero))
 		{
 			return false;
 		}
@@ -14016,10 +15745,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		string cultureId = npc.CultureId ?? "neutral";
 		// Do not feed vanilla conversation UI text into AF prompt history.
 		string currentNativeDialogText = "";
-		bool hadNativeConversationSessionHistoryBeforeTurn = HasNativeConversationSessionHistory(targetHero, targetCharacter, npcName);
+		bool hadNativeConversationSessionHistoryBeforeTurn = HasNativeConversationSessionHistory(targetHero, targetCharacter, npcName, nativeTargetAgentIndex);
 		if (proactiveNpcOpening && !string.IsNullOrWhiteSpace(proactiveFactText))
 		{
-			AppendNativeConversationSessionHistory(targetHero, targetCharacter, npcName, "系统", proactiveFactText, "fact");
+			AppendNativeConversationSessionHistory(targetHero, targetCharacter, npcName, "系统", proactiveFactText, "fact", targetAgentIndex: nativeTargetAgentIndex, npc: npc);
 		}
 		string extraFact = proactiveFactText;
 		string nativeMeetingTauntRuleBlock = "";
@@ -14029,6 +15758,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			TryResolveNativeConversationMeetingTauntParty(targetHero, targetCharacter, nativeTargetAgentIndex, out nativeMeetingTauntParty);
 		}
 		string nativeMeetingTauntInstruction = (LordEncounterBehavior.BuildMeetingTauntRuntimeInstructionForExternal(targetHero, targetCharacter, nativeMeetingTauntParty) ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(nativeMeetingTauntInstruction))
+		{
+			nativeMeetingTauntInstruction = (SceneTauntBehavior.BuildSceneTauntRuntimeInstructionForExternal(targetHero, targetCharacter, nativeTargetAgentIndex) ?? "").Trim();
+		}
 		if (!string.IsNullOrWhiteSpace(nativeMeetingTauntInstruction))
 		{
 			nativeMeetingTauntRuleBlock = "【附加规则:meeting_taunt】" + Environment.NewLine + nativeMeetingTauntInstruction;
@@ -14070,8 +15803,12 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		bool partyTransferTopicSelected = HasPartyTransferRuleContext(baseExtras);
 		string roleTopIntro = BuildSceneSystemTopPromptIntroForSingle(npc, targetHero, presentNpcs, includeInventorySummary, includeTradePricing, partyTransferTopicSelected);
 		string roleRuntimeContext = BuildSceneUserRuntimeContextForSingle(npc, targetHero, presentNpcs, includeInventorySummary, includeTradePricing, partyTransferTopicSelected);
-		string systemRuleBlock = BuildSceneSystemRuleBlock(ruleExtrasSection, null);
+		string nativeSceneSummonClosureInstruction = BuildSceneSummonClosurePromptInstruction(presentNpcs);
+		string nativeSceneFollowControlInstruction = BuildSceneFollowControlPromptInstruction(npc);
+		string nativeSceneMechanismPromptSection = BuildSceneMechanismPromptSection(nativeSceneSummonTargets, nativeSceneGuideTargets, nativeSceneSummonClosureInstruction, nativeSceneFollowControlInstruction);
+		string systemRuleBlock = BuildSceneSystemRuleBlock(ruleExtrasSection, nativeSceneMechanismPromptSection);
 		string combinedRuleInspectionBlock = BuildSceneCompositeUserBlock("", knowledgeExtrasSection, systemRuleBlock);
+		Hero nativePostprocessHero = targetHero ?? targetCharacter?.HeroObject;
 		bool duelRuleInjected = HasInjectedRuleBlockForPostprocess(combinedRuleInspectionBlock, "duel");
 		bool rewardRuleInjected = HasInjectedRuleBlockForPostprocess(combinedRuleInspectionBlock, "reward");
 		bool loanRuleInjected = HasInjectedRuleBlockForPostprocess(combinedRuleInspectionBlock, "loan");
@@ -14082,12 +15819,21 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		bool meetingReleaseRuleInjected = HasInjectedRuleBlockForPostprocess(combinedRuleInspectionBlock, "encounter_release_player");
 		bool vanillaIssueRuleInjected = HasInjectedRuleBlockForPostprocess(combinedRuleInspectionBlock, "vanilla_issue");
 		bool heroJoinPartyRuleInjected = HasInjectedRuleBlockForPostprocess(combinedRuleInspectionBlock, "hero_join_party");
-		bool sceneMechanismRuleInjected = false;
+		if (heroJoinPartyRuleInjected && ShouldSuppressHeroJoinPartyPostprocessForScene(nativePostprocessHero))
+		{
+			heroJoinPartyRuleInjected = false;
+		}
+		bool sceneMechanismRuleInjected = HasInjectedRuleBlockForPostprocess(combinedRuleInspectionBlock, "scene_mechanism_actions");
+		if (AIConfigHandler.ShouldExcludeSceneMoveRuleForCurrentMission())
+		{
+			sceneMechanismRuleInjected = false;
+		}
 		bool partyTransferRuleInjected = HasInjectedRuleBlockForPostprocess(combinedRuleInspectionBlock, "party_transfer");
 		bool settlementTransferRuleInjected = HasInjectedRuleBlockForPostprocess(combinedRuleInspectionBlock, "settlement_transfer");
 		bool voteDealRuleInjected = HasInjectedRuleBlockForPostprocess(combinedRuleInspectionBlock, "vote_deal");
 		bool diplomacyRuleInjected = HasInjectedRuleBlockForPostprocess(combinedRuleInspectionBlock, "diplomacy");
 		bool worldMapPartyCommandRuleInjected = HasInjectedRuleBlockForPostprocess(combinedRuleInspectionBlock, "worldmap_party_command");
+		bool siegeInterventionRuleInjected = AfGcczShoutBridge.ShouldRunPostprocessFromPrompt(combinedRuleInspectionBlock, postprocessPreprocessHits);
 		string nativePostprocessChainName = ResolveNativeConversationPostprocessChainName();
 		Logger.Log("ShoutBehavior", "[NativeConversation] postprocess setup chain=" + nativePostprocessChainName
 			+ " target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? "unknown")
@@ -14096,8 +15842,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			+ " kingdom_annexation_hit=" + HasPreprocessRuleHit(postprocessPreprocessHits, "kingdom_annexation")
 			+ " kingdom_vassalage_block=" + kingdomVassalageRuleInjected
 			+ " kingdom_annexation_block=" + kingdomAnnexationRuleInjected);
-		Hero nativeDuelTargetHero = targetHero ?? targetCharacter?.HeroObject;
-		if (duelRuleInjected && !CanInjectDuelPostprocessRule(ctx, nativeDuelTargetHero, -1, out var duelPostprocessBlockedReason))
+		Hero nativeDuelTargetHero = nativePostprocessHero;
+		if (duelRuleInjected && !CanInjectDuelPostprocessRule(ctx, nativeDuelTargetHero, nativeTargetAgentIndex, out var duelPostprocessBlockedReason))
 		{
 			duelRuleInjected = false;
 			Logger.Log("ShoutBehavior", "[NativeConversation] duel postprocess blocked: " + duelPostprocessBlockedReason);
@@ -14109,9 +15855,9 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 		if (shouldRecordPlayerInput)
 		{
-			AppendNativeConversationSessionHistory(targetHero, targetCharacter, npcName, playerName, promptPlayerText, "player");
+			AppendNativeConversationSessionHistory(targetHero, targetCharacter, npcName, playerName, promptPlayerText, "player", targetAgentIndex: nativeTargetAgentIndex, npc: npc);
 		}
-		string nativePendingAfefKey = BuildNativeConversationHistoryKey(targetHero, targetCharacter, npcName);
+		string nativePendingAfefKey = BuildNativeConversationHistoryKey(targetHero, targetCharacter, npcName, nativeTargetAgentIndex, npc);
 		List<ConversationMessage> pendingNativeCurrentAfefFacts = ConsumePendingCurrentNativeAfefFactMessagesForPrompt(nativePendingAfefKey);
 		List<ConversationMessage> nativeHistoryMessages = BuildNativeConversationSessionHistoryMessages(targetHero, targetCharacter, npcName, nativeTargetAgentIndex);
 		List<ConversationMessage> persistentMemoryRoleMessages = hadNativeConversationSessionHistoryBeforeTurn ? new List<ConversationMessage>() : BuildUncompressedMemoryRoleMessagesForPrompt(targetHero ?? targetCharacter?.HeroObject, nativeTargetAgentIndex);
@@ -14138,6 +15884,18 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		cleaned = StripLeakedPromptContentForShout(cleaned);
 		cleaned = StripStageDirectionsForPassiveShout(cleaned);
 		TryProcessNativeConversationRawMeetingTauntTags(targetHero, targetCharacter, nativeTargetAgentIndex, ref cleaned, out var nativeRawMeetingTauntEscalated);
+		if (TryProcessNativeConversationSceneTauntTags(targetHero, targetCharacter, nativeTargetAgentIndex, ref cleaned, out var nativeRawSceneTauntEscalated) && string.IsNullOrWhiteSpace(cleaned))
+		{
+			cleaned = BuildFallbackSceneTauntSpeech(nativeRawSceneTauntEscalated);
+		}
+		string nativeMainVisibleForTts = SanitizeSceneSpeechText(cleaned);
+		bool nativeTtsDispatchedBeforePostprocess = false;
+		if (!string.IsNullOrWhiteSpace(nativeMainVisibleForTts) && !IsNativeConversationNoSpeechPlaceholder(nativeMainVisibleForTts))
+		{
+			TrySpeakNativeConversationReplyWithTts(targetHero, targetCharacter, npc, nativeTargetAgentIndex, nativeMainVisibleForTts);
+			nativeTtsDispatchedBeforePostprocess = true;
+			LogTtsReport("NativeConversationTts.EarlyDispatchBeforePostprocess", nativeTargetAgentIndex, $"uiLen={nativeMainVisibleForTts.Length};target={(targetHero?.StringId ?? targetCharacter?.StringId ?? npc?.Name ?? "unknown")}");
+		}
 		try
 		{
 			string postprocessNpcName = GetSceneNpcHistoryNameForPrompt(npc);
@@ -14158,7 +15916,55 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			historyForPostprocess = proactiveNpcOpening ? proactiveFactText : promptPlayerText;
 		}
-		string postprocessed = RunCourierActionPostprocessForExternal(targetHero, targetCharacter, GetSceneNpcHistoryNameForPrompt(npc), shouldRecordPlayerInput ? promptPlayerText : "", historyForPostprocess, cleaned, duelRuleInjected, rewardRuleInjected, loanRuleInjected, kingdomServiceRuleInjected, lordsHallRuleInjected, meetingReleaseRuleInjected, vanillaIssueRuleInjected, heroJoinPartyRuleInjected, sceneMechanismRuleInjected, partyTransferRuleInjected, settlementTransferRuleInjected, voteDealRuleInjected, diplomacyRuleInjected, worldMapPartyCommandRuleInjected, postprocessPreprocessHits, postprocessEntityContext, nativeTargetAgentIndex, latestReplyHasPlayerInput: shouldRecordPlayerInput, kingdomVassalageRuleInjected: kingdomVassalageRuleInjected, kingdomAnnexationRuleInjected: kingdomAnnexationRuleInjected, chainName: nativePostprocessChainName);
+		bool duelPostprocessSelected = duelRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "duel");
+		bool rewardPostprocessSelected = rewardRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "reward");
+		bool loanPostprocessSelected = loanRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "loan");
+		bool kingdomServicePostprocessSelected = kingdomServiceRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "kingdom_service");
+		bool kingdomVassalagePostprocessSelected = kingdomVassalageRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "kingdom_vassalage");
+		bool kingdomAnnexationPostprocessSelected = kingdomAnnexationRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "kingdom_annexation");
+		bool lordsHallPostprocessSelected = lordsHallRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "lords_hall_access");
+		bool meetingReleasePostprocessSelected = meetingReleaseRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "encounter_release_player");
+		bool vanillaIssuePostprocessSelected = vanillaIssueRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "vanilla_issue");
+		bool heroJoinPartyPostprocessSelected = heroJoinPartyRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "hero_join_party");
+		bool sceneMechanismPostprocessSelected = (sceneMechanismRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "scene_mechanism_actions")) && !AIConfigHandler.ShouldExcludeSceneMoveRuleForCurrentMission();
+		bool partyTransferPostprocessSelected = partyTransferRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "party_transfer");
+		bool settlementTransferPostprocessSelected = settlementTransferRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "settlement_transfer");
+		bool voteDealPostprocessSelected = voteDealRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "vote_deal");
+		bool diplomacyPostprocessSelected = diplomacyRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "diplomacy");
+		bool worldMapPartyCommandPostprocessSelected = worldMapPartyCommandRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "worldmap_party_command");
+		bool marriagePostprocessSelected = HasPreprocessRuleHit(postprocessPreprocessHits, "marriage");
+		bool siegeInterventionPostprocessSelected = AfGcczShoutBridge.ShouldContinuePostprocess(siegeInterventionRuleInjected, postprocessPreprocessHits);
+		List<RewardSystemBehavior.DuelStakeOption> nativeDuelStakeOptions = null;
+		if (duelPostprocessSelected && nativeDuelTargetHero != null && RewardSystemBehavior.Instance != null)
+		{
+			nativeDuelStakeOptions = RewardSystemBehavior.Instance.BuildDuelStakeOptionsForAI(nativeDuelTargetHero);
+		}
+		List<PostprocessRuleEntry> nativeSceneMechanismPostprocessRules = sceneMechanismPostprocessSelected ? BuildRuntimeSceneMechanismPostprocessRulesForScene(npc, nativeSceneSummonTargets, nativeSceneGuideTargets) : null;
+		string runtimeTargetKingdomId = ResolveCourierRuntimeTargetKingdomId(targetHero, targetCharacter);
+		string runtimeTargetHeroId = (targetHero?.StringId ?? targetCharacter?.HeroObject?.StringId ?? "").Trim();
+		string runtimeTargetCharacterId = (targetCharacter?.StringId ?? "").Trim();
+		string runtimeTargetTroopId = runtimeTargetCharacterId.ToLowerInvariant();
+		string runtimeTargetUnnamedRank = (targetHero == null && targetCharacter != null) ? (targetCharacter.IsSoldier ? "soldier" : "commoner") : "";
+		string postprocessed;
+		AIConfigHandler.SetGuardrailRuntimeTargetKingdom(runtimeTargetKingdomId);
+		AIConfigHandler.SetGuardrailRuntimeTargetHero(runtimeTargetHeroId);
+		AIConfigHandler.SetGuardrailRuntimeTargetCharacter(runtimeTargetCharacterId);
+		AIConfigHandler.SetGuardrailRuntimeTargetTroop(runtimeTargetTroopId);
+		AIConfigHandler.SetGuardrailRuntimeTargetUnnamedRank(runtimeTargetUnnamedRank);
+		AIConfigHandler.SetGuardrailRuntimeTargetAgentIndex(nativeTargetAgentIndex);
+		try
+		{
+			postprocessed = TryRunSceneUnifiedActionPostprocess(targetHero, targetCharacter, nativeTargetAgentIndex, GetSceneNpcHistoryNameForPrompt(npc), shouldRecordPlayerInput ? promptPlayerText : "", historyForPostprocess, cleaned, duelPostprocessSelected, rewardPostprocessSelected, loanPostprocessSelected, kingdomServicePostprocessSelected, kingdomVassalagePostprocessSelected, kingdomAnnexationPostprocessSelected, lordsHallPostprocessSelected, meetingReleasePostprocessSelected, vanillaIssuePostprocessSelected, heroJoinPartyPostprocessSelected, sceneMechanismPostprocessSelected, partyTransferPostprocessSelected, settlementTransferPostprocessSelected, voteDealPostprocessSelected, diplomacyPostprocessSelected, worldMapPartyCommandPostprocessSelected, marriagePostprocessSelected, nativeDuelStakeOptions, null, nativeSceneMechanismPostprocessRules, nativeSceneSummonTargets, nativeSceneGuideTargets, postprocessEntityContext, siegeInterventionRuleInjected: siegeInterventionPostprocessSelected, replyIsDirectPlayerResponse: shouldRecordPlayerInput, preprocessRuleHits: postprocessPreprocessHits, chainName: nativePostprocessChainName);
+		}
+		finally
+		{
+			AIConfigHandler.SetGuardrailRuntimeTargetKingdom("");
+			AIConfigHandler.SetGuardrailRuntimeTargetHero("");
+			AIConfigHandler.SetGuardrailRuntimeTargetCharacter("");
+			AIConfigHandler.SetGuardrailRuntimeTargetTroop("");
+			AIConfigHandler.SetGuardrailRuntimeTargetUnnamedRank("");
+			AIConfigHandler.SetGuardrailRuntimeTargetAgentIndex(-1);
+		}
 		if (!string.IsNullOrWhiteSpace(postprocessed))
 		{
 			cleaned = postprocessed.Trim();
@@ -14167,7 +15973,15 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			return SaveRuntimeGuard.BuildStaleRequestErrorText();
 		}
-		MyBehavior.ApplyPostprocessMoodFromSceneHeroResponseExternal(targetHero, ref cleaned);
+		if (targetHero != null)
+		{
+			MyBehavior.ApplyPostprocessMoodFromSceneHeroResponseExternal(targetHero, ref cleaned);
+		}
+		else
+		{
+			MyBehavior.ApplyPostprocessMoodFromSceneUnnamedResponseExternal(npc?.UnnamedKey, npc?.Name, ref cleaned);
+		}
+		TryQueueNativeSceneMechanismActionAfterConversationExit(npc, presentNpcs, nativeSceneSummonTargets, nativeSceneGuideTargets, ref cleaned);
 		ApplyNativeConversationActionTags(targetHero, targetCharacter, ref cleaned);
 		string visible = SanitizeSceneSpeechText(cleaned);
 		bool suppressHistoryWrite = IsNativeConversationNoSpeechPlaceholder(visible);
@@ -14197,9 +16011,12 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 		if (!suppressHistoryWrite)
 		{
-			RecordNativeConversationNpcLineForExternal(targetHero, targetCharacter, GetSceneNpcHistoryNameForPrompt(npc), visible);
-			MarkNativeConversationCurrentDialogRecorded(targetHero, targetCharacter, npcName, visible);
-			TrySpeakNativeConversationReplyWithTts(targetHero, targetCharacter, npc, nativeTargetAgentIndex, visible);
+			RecordNativeConversationNpcLineForExternal(targetHero, targetCharacter, GetSceneNpcHistoryNameForPrompt(npc), visible, nativeTargetAgentIndex, npc);
+			MarkNativeConversationCurrentDialogRecorded(targetHero, targetCharacter, npcName, visible, nativeTargetAgentIndex, npc);
+			if (!nativeTtsDispatchedBeforePostprocess)
+			{
+				TrySpeakNativeConversationReplyWithTts(targetHero, targetCharacter, npc, nativeTargetAgentIndex, visible);
+			}
 		}
 		return string.IsNullOrWhiteSpace(visible) ? cleaned.Trim() : visible.Trim();
 	}
@@ -15289,13 +17106,13 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			}
 			else
 			{
-				QueuePendingCurrentNativeAfefFactForKey(BuildNativeConversationHistoryKey(targetHero, targetCharacter, npcName), fact);
+				QueuePendingCurrentNativeAfefFactForKey(BuildNativeConversationHistoryKey(targetHero, targetCharacter, npcName, targetAgentIndex, _shoutTradeTargetNpc), fact);
 			}
 			if (targetHero != null)
 			{
 				MyBehavior.AppendExternalDialogueHistory(targetHero, null, null, fact);
 			}
-			AppendNativeConversationSessionHistory(targetHero, targetCharacter, npcName, "玩家动作", fact, "fact");
+			AppendNativeConversationSessionHistory(targetHero, targetCharacter, npcName, "玩家动作", fact, "fact", targetAgentIndex: targetAgentIndex, npc: _shoutTradeTargetNpc);
 			Logger.Log("NativeConversationTrade", "recorded action-only fact target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? npcName) + " fact=" + fact.Replace("\r", "\\r").Replace("\n", "\\n"));
 		}
 		catch (Exception ex)
@@ -16541,11 +18358,6 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			reason = "player_not_qualified";
 			return false;
 		}
-		if (targetHero == null)
-		{
-			reason = "target_not_hero";
-			return false;
-		}
 		try
 		{
 			Agent agent = null;
@@ -16557,7 +18369,27 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				}
 				if (agent == null)
 				{
-					agent = Mission.Current.Agents?.FirstOrDefault((Agent a) => a != null && a.Character == targetHero.CharacterObject);
+					agent = Mission.Current.Agents?.FirstOrDefault((Agent a) => a != null && targetHero != null && a.Character == targetHero.CharacterObject);
+				}
+			}
+			if (targetHero == null)
+			{
+				if (agent == null)
+				{
+					return true;
+				}
+				try
+				{
+					if (!agent.IsActive() || agent.IsMainAgent || agent == Agent.Main || !(agent.Character is CharacterObject))
+					{
+						reason = "target_agent_invalid";
+						return false;
+					}
+				}
+				catch
+				{
+					reason = "target_agent_invalid";
+					return false;
 				}
 			}
 			if (agent != null && agent.HealthLimit > 0f && agent.Health / agent.HealthLimit < 0.999f)
@@ -16565,7 +18397,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				reason = "target_agent_not_full_health";
 				return false;
 			}
-			if (targetHero.MaxHitPoints > 0 && targetHero.HitPoints < targetHero.MaxHitPoints)
+			if (targetHero != null && targetHero.MaxHitPoints > 0 && targetHero.HitPoints < targetHero.MaxHitPoints)
 			{
 				reason = "target_hero_not_full_health";
 				return false;
@@ -17709,6 +19541,26 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		return text2.Trim();
 	}
 
+	private static string ExtractSceneMechanismActionTagsForScene(string text)
+	{
+		string text2 = (text ?? "").Replace("\r", "");
+		if (string.IsNullOrWhiteSpace(text2))
+		{
+			return "";
+		}
+		List<string> list = new List<string>();
+		HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		foreach (Match item in Regex.Matches(text2, "\\[(?:(?:ASS|ACTION:SCENE_SUMMON):[^\\]\\r\\n]+|(?:GUI|ACTION:SCENE_GUIDE):[^\\]\\r\\n]+|FOL|ACTION:SCENE_FOLLOW_PLAYER|STP|ACTION:SCENE_STOP_FOLLOW|END)\\]", RegexOptions.IgnoreCase))
+		{
+			string text3 = (item?.Value ?? "").Trim();
+			if (!string.IsNullOrWhiteSpace(text3) && hashSet.Add(text3))
+			{
+				list.Add(text3);
+			}
+		}
+		return string.Join(" ", list).Trim();
+	}
+
 	private static string BuildSceneMechanismTargetListForPostprocess(List<SceneSummonPromptTarget> summonTargets, List<SceneGuidePromptTarget> guideTargets)
 	{
 		StringBuilder stringBuilder = new StringBuilder();
@@ -18651,7 +20503,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 	private static string TryRunSceneTransactionActionPostprocess(Hero targetHero, CharacterObject targetCharacter, string historyText, string replyText, List<PostprocessRuleEntry> rules, string logPrefix)
 	{
 		string text = StripRewardActionTagsForScene(replyText);
-		if ((string.Equals(logPrefix, "RewardPostprocess", StringComparison.OrdinalIgnoreCase) || string.Equals(logPrefix, "LoanPostprocess", StringComparison.OrdinalIgnoreCase)) && AIConfigHandler.IsPlayerCompanionOrFamilyTradeTarget(targetHero))
+		if (string.Equals(logPrefix, "LoanPostprocess", StringComparison.OrdinalIgnoreCase) && AIConfigHandler.IsPlayerPartyTradeLimitedTarget(targetHero))
 		{
 			if (Regex.Matches(text ?? "", "\\[ACTION:MOOD:[^\\]]+\\]", RegexOptions.IgnoreCase).Count <= 0 && !string.IsNullOrWhiteSpace(AIConfigHandler.ActionPostprocessFallbackMoodTag))
 			{
@@ -19065,6 +20917,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			_isWaitingForScenePostprocessGate = false;
 			EndShoutProcessing("mission_end:" + (reason ?? ""));
 			ClearQueuedSceneSpeech();
+			ClearPendingNativeSceneMechanismActions("reset_runtime:" + (reason ?? ""));
+			ClearPendingNativeSceneTauntFight("reset_runtime:" + (reason ?? ""));
 			Action result;
 			while (_mainThreadActions.TryDequeue(out result))
 			{
@@ -21158,7 +23012,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		AppendSceneEventToNativeSharedHistoryForTargets(nearbyData, "系统", text, "fact", eventSequence);
 	}
 
-	private void AppendNativeConversationSessionLineToSceneHistory(Hero targetHero, CharacterObject targetCharacter, string npcName, string speaker, string text, string kind, long eventSequence = 0L)
+	private void AppendNativeConversationSessionLineToSceneHistory(Hero targetHero, CharacterObject targetCharacter, string npcName, string speaker, string text, string kind, long eventSequence = 0L, int targetAgentIndexOverride = -1, NpcDataPacket targetNpc = null)
 	{
 		text = (text ?? "").Replace("\r", "").Trim();
 		if (string.IsNullOrWhiteSpace(text))
@@ -21167,7 +23021,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 		try
 		{
-			int targetAgentIndex = TryResolveNativeConversationAgentIndex(targetHero, targetCharacter);
+			int targetAgentIndex = targetAgentIndexOverride >= 0 ? targetAgentIndexOverride : TryResolveNativeConversationAgentIndex(targetHero, targetCharacter);
 			if (targetAgentIndex < 0)
 			{
 				return;
@@ -21175,8 +23029,12 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			string targetName = (npcName ?? "").Trim();
 			try
 			{
-				Agent agent = Mission.Current?.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == targetAgentIndex && a.IsActive());
-				NpcDataPacket npc = ShoutUtils.ExtractNpcData(agent);
+				NpcDataPacket npc = targetNpc;
+				if (npc == null)
+				{
+					Agent agent = Mission.Current?.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == targetAgentIndex && a.IsActive());
+					npc = ShoutUtils.ExtractNpcData(agent);
+				}
 				string sceneName = (npc != null) ? GetSceneNpcHistoryNameForPrompt(npc) : "";
 				if (!string.IsNullOrWhiteSpace(sceneName))
 				{
@@ -21321,7 +23179,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			{
 				npcName = (hero?.Name?.ToString() ?? character?.Name?.ToString() ?? targetNpc.Name ?? "NPC").Trim();
 			}
-			AppendNativeConversationSessionHistory(hero, character, npcName, speaker, text, kind, eventSequence, bridgeToSceneHistory: false);
+			AppendNativeConversationSessionHistory(hero, character, npcName, speaker, text, kind, eventSequence, bridgeToSceneHistory: false, targetAgentIndex: targetNpc.AgentIndex, npc: targetNpc);
 		}
 		catch (Exception ex)
 		{
@@ -21372,7 +23230,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			{
 				npcName = (hero?.Name?.ToString() ?? character?.Name?.ToString() ?? targetNpc.Name ?? "NPC").Trim();
 			}
-			string key = BuildNativeConversationHistoryKey(hero, character, npcName);
+			string key = BuildNativeConversationHistoryKey(hero, character, npcName, targetNpc.AgentIndex, targetNpc);
 			if (!string.IsNullOrWhiteSpace(key))
 			{
 				QueuePendingCurrentNativeAfefFactForKey(key, fact);

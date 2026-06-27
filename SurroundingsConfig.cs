@@ -10,6 +10,8 @@ public class SurroundingsConfig
 
 	public string TopicLabel { get; set; } = "";
 
+	public string Code { get; set; } = "";
+
 	public string Instruction { get; set; } = "";
 
 	public List<string> TriggerKeywords { get; set; } = new List<string>();

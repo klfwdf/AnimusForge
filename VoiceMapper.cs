@@ -32,7 +32,7 @@ internal static class VoiceMapper
 		EnsureLoaded();
 		if (_voicePools == null || _voicePools.Count == 0)
 		{
-			return null;
+			return string.IsNullOrWhiteSpace(_fallbackVoice) ? null : _fallbackVoice;
 		}
 		string groupKey = GetGroupKey(isFemale, age);
 		List<string> list = null;
@@ -96,6 +96,16 @@ internal static class VoiceMapper
 	public static string ResolveVoiceIdForNonHero(bool isFemale, float age, int agentIndex)
 	{
 		return ResolveVoiceId(null, isFemale, age, agentIndex);
+	}
+
+	public static string ResolveVoiceIdForNonHeroKey(string nonHeroKey, bool isFemale, float age, int agentIndex)
+	{
+		string key = (nonHeroKey ?? "").Trim();
+		if (!string.IsNullOrWhiteSpace(key))
+		{
+			return ResolveVoiceId("nonhero:" + key, isFemale, age, -1);
+		}
+		return ResolveVoiceIdForNonHero(isFemale, age, agentIndex);
 	}
 
 	public static void ClearSceneCache()

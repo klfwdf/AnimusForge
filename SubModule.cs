@@ -108,6 +108,14 @@ public class SubModule : MBSubModuleBase
 			}
 			try
 			{
+				harmony.CreateClassProcessor(typeof(Patch_PrisonBreakRescue_RecordSuccess)).Patch();
+			}
+			catch (Exception ex5p)
+			{
+				Logger.LogTrace("SubModule", ">>> Prison break rescue record patch failed: " + ex5p.Message);
+			}
+			try
+			{
 				SiegeAftermathPatchBootstrap.Apply(harmony);
 			}
 			catch (Exception ex5a)
@@ -330,6 +338,14 @@ public class SubModule : MBSubModuleBase
 			}
 			try
 			{
+				EncyclopediaKingdomStabilityPatch.EnsurePatched(harmony);
+			}
+			catch (Exception ex18aaa)
+			{
+				Logger.LogTrace("SubModule", ">>> EncyclopediaKingdomStabilityPatch init failed: " + ex18aaa.Message);
+			}
+			try
+			{
 				PlayerNotorietyCharacterDeveloperPatch.EnsurePatched(harmony);
 			}
 			catch (Exception ex18ab)
@@ -496,6 +512,10 @@ public class SubModule : MBSubModuleBase
 			using (PerfProbe.Scope("SubModule.NativeConversationAnswerAreaController.OnApplicationTick"))
 			{
 				NativeConversationAnswerAreaController.OnApplicationTick();
+			}
+			using (PerfProbe.Scope("SubModule.ShoutBehavior.NativeConversationTts.OnApplicationTick"))
+			{
+				ShoutBehavior.OnApplicationTickForNativeConversationTtsExternal();
 			}
 			using (PerfProbe.Scope("SubModule.ConversationHelper.Tick"))
 			{
