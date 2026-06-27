@@ -45,7 +45,15 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 
 	private const string DefaultNpcPersonaGenerationRequirements = "";
 
-	private const string DefaultCustomPolicyEvaluatorPrompt = "你是卡拉迪亚大陆的王国政策评判器。你要把玩家撰写的内容当成王国政策、法令、改革、宣言、外交羞辱、军事动员或公共事务方案来评判，并直接决定每日数值影响与持续天数。"
+	private const string DefaultCustomPolicyEvaluatorPrompt = "你是卡拉迪亚大陆的王国政策评判器。玩家提交的内容应被视为王国政策、法令、改革、宣言、动员令或公共事务安排。你需要根据政策内容、玩家王国状态、世界背景和知识库资料，判断这项政策会造成什么民间反应、政策摘要、每日影响、持续时间和影响目标。"
+		+ "\n\n卡拉迪亚不是现代国家，而是封君、封臣、氏族、城镇、城堡、村庄、驻军、税赋和封地收益共同维系的社会。任何政策都不可能只靠国王一句话就无成本执行。评判时要考虑贵族是否配合，地方是否能执行，商人和农户是否受益，军队是否承担额外负担，以及政策会不会破坏既有秩序。"
+		+ "\n\n数值要有因果关系。繁荣度主要受贸易、税负、治安、工商业、战争破坏和市场信心影响；粮食主要受征收、储备、运输、农业负担和军队消耗影响；村庄户数主要受劳动力、安全、徭役、迁徙和破坏影响；忠诚度主要受公平感、文化认同、自治、压迫、恐惧、荣誉和利益分配影响。"
+		+ "\n\n不同数值不是同一把尺子。繁荣度是城镇和城堡的长期体量，常以几千计，约二千以下偏低，约五千以上算高；粮食是城镇库存，会受消耗、生产、市场和储存上限影响；村庄户数代表村庄人口和劳力，约二百以下偏低，约六百以上较高；忠诚度是零到一百的民心尺度，低于二十时定居点很容易叛乱。"
+		+ "\n\n每日影响是每天结算的变化，不是整项政策的总变化。持续时间越长，每日变化越应谨慎。繁荣度、粮食和户数的数值空间较大，可以承受更明显的每日变化；忠诚度空间很小，一点变化就有政治意义，连续多天下降会很快接近叛乱线。除非政策本身确实是在制造暴政、迫害、饥荒、屠掠或叛乱级后果，否则忠诚度不应像繁荣度、粮食或户数那样大幅波动。"
+		+ "\n\n如果玩家在政策正文里写了参考数值、倍率、强弱或持续时间，可以参考其意图，但仍要按各项数值本身的尺度折算。强政策可以有强效果，荒唐政策也可以反噬；但不要把总影响误当成每日影响，也不要让忠诚度脱离零到一百的民心尺度。"
+		+ "\n\n民众反馈要像真实的卡拉迪亚社会反应，而不是公告摘要。可以写街市、村庄、酒馆、军营、贵族厅堂、商队、工匠、农户、民兵、总督或祭司等不同人群的看法。让他们有具体的支持、担忧、抱怨、观望或流言，比如粮价、税吏、征役、治安、士兵口粮、村庄劳力、商路消息、封臣脸色等。语气应像政策发布后在各地传开的议论和余波，不要写成系统说明，也不要编造上下文没有支持的具体人物、定居点或他国事实。";
+
+	private const string PreviousDefaultCustomPolicyEvaluatorPromptForMigration = "你是卡拉迪亚大陆的王国政策评判器。你要把玩家撰写的内容当成王国政策、法令、改革、宣言、外交羞辱、军事动员或公共事务方案来评判，并直接决定每日数值影响与持续天数。"
 		+ "\n\n卡拉迪亚不是现代中央集权国家，而是封君—封臣与封土体系。国王依靠贵族家族、封地收益、城镇、城堡、村庄、军役、税赋、驻军和地方总督维持统治；政策通常要经过贵族、封臣、市镇商人、村社、民兵和驻军执行。"
 		+ "\n\n每项政策都要判断它改变了谁的利益：税负、封地收益、粮食流向、征兵义务、民兵职责、贸易安全、地方自治、贵族权威、文化认同、敌国威望、军队士气和公共秩序。再判断受益者、受损者、执行阻力、短期震荡与长期收益。空泛、超出行政能力或无代价绕过封臣利益的政策可以无效或反噬；强力、明确、残酷、全国动员式政策也可以产生很大的正面或负面效果。"
 		+ "\n\n数值必须有因果链：繁荣度来自贸易、税负、治安、工商业和战争破坏；粮食来自征收、储备、运输、农业负担与军队消耗；户数/炉户来自村庄劳动力、安全、徭役、迁徙和破坏；忠诚度来自公平感、文化认同、自治、压迫、恐惧、荣誉和利益分配。请结合当前王国文化、原版生效政策、领地状态、战争外交和知识库上下文，自主决定影响项、正负、每日强度与持续时间。"
@@ -55,6 +63,14 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	private const int DefaultCustomPolicyGoldCost = 50000;
 
 	private const int DefaultCustomPolicyInfluenceCost = 500;
+
+	private const int CustomPolicyPublicFeedbackTargetMinChars = 100;
+
+	private const int CustomPolicyPublicFeedbackTargetMaxChars = 1800;
+
+	private const int CustomPolicyPublicFeedbackTargetStepChars = 100;
+
+	private const int DefaultCustomPolicyPublicFeedbackTargetChars = 900;
 
 	private const string NpcPersonaGenerationRequirementsFileName = "NpcPersonaGenerationRequirements.txt";
 
@@ -1050,6 +1066,10 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyGroup("10. 自定义政策")]
 	public int CustomPolicyInfluenceCost { get; set; } = DefaultCustomPolicyInfluenceCost;
 
+	[SettingPropertyInteger("民众反馈目标字数", CustomPolicyPublicFeedbackTargetMinChars, CustomPolicyPublicFeedbackTargetMaxChars, "0", Order = 2, RequireRestart = false, HintText = "控制自定义政策 publicFeedback 的目标中文字符数。读取时按 100 字步进归整；默认 900，最高 1800。")]
+	[SettingPropertyGroup("10. 自定义政策")]
+	public int CustomPolicyPublicFeedbackTargetChars { get; set; } = DefaultCustomPolicyPublicFeedbackTargetChars;
+
 	[SettingPropertyInteger("周报篇幅档位", 1, 4, "0", Order = 0, RequireRestart = false, HintText = "1=200-400字；2=200-800字；3=200-1200字；4=200-1500字。世界周报和王国周报共用这一档位。")]
 	[SettingPropertyGroup("11. 事件系统（开发）")]
 	public int WeeklyReportLengthPreset { get; set; } = 2;
@@ -1249,6 +1269,18 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		}
 	}
 
+	public static int GetCustomPolicyPublicFeedbackTargetCharsForExternal()
+	{
+		try
+		{
+			return ClampCustomPolicyPublicFeedbackTargetChars(GetSettings()?.CustomPolicyPublicFeedbackTargetChars ?? DefaultCustomPolicyPublicFeedbackTargetChars);
+		}
+		catch
+		{
+			return DefaultCustomPolicyPublicFeedbackTargetChars;
+		}
+	}
+
 	private static int ClampCustomPolicyGoldCost(int value)
 	{
 		return Math.Max(0, Math.Min(500000, value));
@@ -1257,6 +1289,17 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	private static int ClampCustomPolicyInfluenceCost(int value)
 	{
 		return Math.Max(0, Math.Min(5000, value));
+	}
+
+	private static int ClampCustomPolicyPublicFeedbackTargetChars(int value)
+	{
+		if (value <= 0)
+		{
+			value = DefaultCustomPolicyPublicFeedbackTargetChars;
+		}
+		int clamped = Math.Max(CustomPolicyPublicFeedbackTargetMinChars, Math.Min(CustomPolicyPublicFeedbackTargetMaxChars, value));
+		int rounded = ((clamped + (CustomPolicyPublicFeedbackTargetStepChars / 2)) / CustomPolicyPublicFeedbackTargetStepChars) * CustomPolicyPublicFeedbackTargetStepChars;
+		return Math.Max(CustomPolicyPublicFeedbackTargetMinChars, Math.Min(CustomPolicyPublicFeedbackTargetMaxChars, rounded));
 	}
 
 	public static bool IsPeaceSceneConflictEnabled()
@@ -1807,7 +1850,8 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	private static bool IsBuiltInCustomPolicyEvaluatorPromptText(string input)
 	{
 		string text = NormalizeCustomPolicyEvaluatorPromptText(input);
-		return string.Equals(text, NormalizeCustomPolicyEvaluatorPromptText(DefaultCustomPolicyEvaluatorPrompt), StringComparison.Ordinal);
+		return string.Equals(text, NormalizeCustomPolicyEvaluatorPromptText(DefaultCustomPolicyEvaluatorPrompt), StringComparison.Ordinal)
+			|| string.Equals(text, NormalizeCustomPolicyEvaluatorPromptText(PreviousDefaultCustomPolicyEvaluatorPromptForMigration), StringComparison.Ordinal);
 	}
 
 	private static bool TryReadPlayerCustomPromptRuleFile(out string text)

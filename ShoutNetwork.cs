@@ -256,8 +256,14 @@ public static class ShoutNetwork
 		return false;
 	}
 
-	private static bool TryApplyPrimaryThinkingControls(JObject payload, DuelSettings settings, string apiUrl, string modelName, out string thinkingMode)
+	private static bool TryApplyPrimaryThinkingControls(JObject payload, DuelSettings settings, string apiUrl, string modelName, bool forceDisableThinking, out string thinkingMode)
 	{
+		if (forceDisableThinking)
+		{
+			DuelSettings.RemoveThinkingControls(payload);
+			thinkingMode = "plain_forced";
+			return false;
+		}
 		bool thinkingEnabled = settings?.MainApiThinkingEnabled ?? true;
 		string effort = settings?.GetMainApiReasoningEffort() ?? DuelSettings.ReasoningEffortHigh;
 		return DuelSettings.ApplyThinkingControls(payload, apiUrl, modelName, thinkingEnabled, effort, out thinkingMode);
@@ -313,7 +319,7 @@ public static class ShoutNetwork
 		}
 	}
 
-	private static JObject BuildPrimaryChatPayload(List<object> messages, DuelSettings settings, string apiUrl, string modelName, int actualMaxTokens, bool stream, out string thinkingMode)
+	private static JObject BuildPrimaryChatPayload(List<object> messages, DuelSettings settings, string apiUrl, string modelName, int actualMaxTokens, bool stream, out string thinkingMode, bool forceDisableThinking = false)
 	{
 		JObject jObject = new JObject
 		{
@@ -336,7 +342,7 @@ public static class ShoutNetwork
 			});
 		}
 		jObject["messages"] = jArray;
-		TryApplyPrimaryThinkingControls(jObject, settings, apiUrl, modelName, out thinkingMode);
+		TryApplyPrimaryThinkingControls(jObject, settings, apiUrl, modelName, forceDisableThinking, out thinkingMode);
 		return jObject;
 	}
 
@@ -561,7 +567,7 @@ public static class ShoutNetwork
 		}
 	}
 
-	public static async Task<string> CallApiWithMessages(List<object> messages, int maxTokens, bool recordTokenStats = true)
+	public static async Task<string> CallApiWithMessages(List<object> messages, int maxTokens, bool recordTokenStats = true, int? overrideMaxTokens = null, bool forceDisableThinking = false)
 	{
 		long runtimeGeneration = SaveRuntimeGuard.CaptureGeneration();
 		messages = ApplyPlayerDisplayNameToOutgoingMessages(messages);
@@ -604,8 +610,9 @@ public static class ShoutNetwork
 				return "（错误：未配置模型名称）";
 			}
 			string effectiveApiUrl = DuelSettings.GetEffectiveApiUrl(settings.ApiUrl);
-			int actualMaxTokens = ResolvePrimaryMaxTokens(settings);
-			JObject payload = BuildPrimaryChatPayload(messages, settings, effectiveApiUrl, effectiveModelName, actualMaxTokens, stream: false, out var thinkingMode);
+			int configuredMaxTokens = ResolvePrimaryMaxTokens(settings);
+			int actualMaxTokens = overrideMaxTokens.HasValue ? Math.Max(16, DuelSettings.ClampApiMaxTokens(overrideMaxTokens.Value, configuredMaxTokens)) : configuredMaxTokens;
+			JObject payload = BuildPrimaryChatPayload(messages, settings, effectiveApiUrl, effectiveModelName, actualMaxTokens, stream: false, out var thinkingMode, forceDisableThinking);
 			string jsonBody = payload.ToString(Formatting.None);
 			string requestBodyForTokenStats = jsonBody;
 			HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, effectiveApiUrl);
@@ -669,7 +676,7 @@ public static class ShoutNetwork
 								{
 									return SaveRuntimeGuard.BuildStaleRequestErrorText();
 								}
-								string retryContent = await CallApiWithMessages(BuildEmptyResponseRetryMessages(messages), maxTokens, recordTokenStats);
+								string retryContent = await CallApiWithMessages(BuildEmptyResponseRetryMessages(messages), maxTokens, recordTokenStats, overrideMaxTokens, forceDisableThinking);
 								if (SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_non_stream_empty_retry_complete"))
 								{
 									return SaveRuntimeGuard.BuildStaleRequestErrorText();
