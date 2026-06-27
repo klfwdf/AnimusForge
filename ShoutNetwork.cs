@@ -563,6 +563,7 @@ public static class ShoutNetwork
 
 	public static async Task<string> CallApiWithMessages(List<object> messages, int maxTokens, bool recordTokenStats = true)
 	{
+		long runtimeGeneration = SaveRuntimeGuard.CaptureGeneration();
 		messages = ApplyPlayerDisplayNameToOutgoingMessages(messages);
 		Stopwatch sw = Stopwatch.StartNew();
 		int msgCount = messages?.Count ?? 0;
@@ -613,7 +614,17 @@ public static class ShoutNetwork
 				request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", settings.ApiKey);
 				request.Content = (HttpContent)new StringContent(jsonBody, Encoding.UTF8, "application/json");
 				HttpResponseMessage response = await DuelSettings.GlobalClient.SendAsync(request);
+				if (SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_non_stream_response"))
+				{
+					response.Dispose();
+					return SaveRuntimeGuard.BuildStaleRequestErrorText();
+				}
 				string str = await response.Content.ReadAsStringAsync();
+				if (SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_non_stream_body"))
+				{
+					response.Dispose();
+					return SaveRuntimeGuard.BuildStaleRequestErrorText();
+				}
 				LogPrimaryRawResponse("non_stream_status_" + (int)response.StatusCode, str);
 				if (!response.IsSuccessStatusCode && response.StatusCode == System.Net.HttpStatusCode.BadRequest && thinkingMode != "plain" && LooksLikeThinkingControlError(str))
 				{
@@ -627,7 +638,17 @@ public static class ShoutNetwork
 					httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", settings.ApiKey);
 					httpRequestMessage.Content = (HttpContent)new StringContent(jsonBody2, Encoding.UTF8, "application/json");
 					response = await DuelSettings.GlobalClient.SendAsync(httpRequestMessage);
+					if (SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_non_stream_retry_response"))
+					{
+						response.Dispose();
+						return SaveRuntimeGuard.BuildStaleRequestErrorText();
+					}
 					str = await response.Content.ReadAsStringAsync();
+					if (SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_non_stream_retry_body"))
+					{
+						response.Dispose();
+						return SaveRuntimeGuard.BuildStaleRequestErrorText();
+					}
 					LogPrimaryRawResponse("non_stream_retry_status_" + (int)response.StatusCode, str);
 					thinkingMode = "thinking_retry_plain";
 				}
@@ -644,7 +665,16 @@ public static class ShoutNetwork
 							if (!HasEmptyResponseRetryMarker(messages))
 							{
 								Logger.Log("ShoutNetwork", "[PrimaryChat] empty content; retrying once with explicit non-empty instruction.");
-								return await CallApiWithMessages(BuildEmptyResponseRetryMessages(messages), maxTokens, recordTokenStats);
+								if (SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_non_stream_empty_retry"))
+								{
+									return SaveRuntimeGuard.BuildStaleRequestErrorText();
+								}
+								string retryContent = await CallApiWithMessages(BuildEmptyResponseRetryMessages(messages), maxTokens, recordTokenStats);
+								if (SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_non_stream_empty_retry_complete"))
+								{
+									return SaveRuntimeGuard.BuildStaleRequestErrorText();
+								}
+								return retryContent;
 							}
 							content = "（没说话）";
 						}
@@ -664,6 +694,10 @@ public static class ShoutNetwork
 						{
 							string outputContent = BuildTokenStatsOutputContent(content, reasoning);
 							Logger.RecordTokenStats(inputTokens, Logger.EstimateTokens(outputContent), messages, outputContent, "non_stream", requestBodyForTokenStats);
+						}
+						if (SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_non_stream_complete"))
+						{
+							return SaveRuntimeGuard.BuildStaleRequestErrorText();
 						}
 						return content.Trim();
 					}
@@ -715,6 +749,7 @@ public static class ShoutNetwork
 
 	public static async Task CallApiWithMessagesStream(List<object> messages, int maxTokens, Action<string> onChunk, Action<string> onComplete, Action<string> onError, CancellationToken cancellationToken = default(CancellationToken))
 	{
+		long runtimeGeneration = SaveRuntimeGuard.CaptureGeneration();
 		messages = ApplyPlayerDisplayNameToOutgoingMessages(messages);
 		PlayerReferenceStreamFilter outputFilter = new PlayerReferenceStreamFilter();
 		StringBuilder fullText = new StringBuilder();
@@ -784,9 +819,19 @@ public static class ShoutNetwork
 						request.Headers.ConnectionClose = true;
 						request.Content = (HttpContent)new StringContent(jsonBody, Encoding.UTF8, "application/json");
 						HttpResponseMessage response = await DuelSettings.GlobalClient.SendAsync(request, (HttpCompletionOption)1, cancellationToken);
+						if (SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_stream_response"))
+						{
+							response.Dispose();
+							return;
+						}
 						if (!response.IsSuccessStatusCode)
 						{
 							string errBody = await response.Content.ReadAsStringAsync();
+							if (SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_stream_error_body"))
+							{
+								response.Dispose();
+								return;
+							}
 							LogPrimaryRawResponse("stream_status_" + (int)response.StatusCode, errBody);
 							if (response.StatusCode == System.Net.HttpStatusCode.BadRequest && thinkingMode != "plain" && LooksLikeThinkingControlError(errBody) && attempt < 2)
 							{
@@ -819,6 +864,10 @@ public static class ShoutNetwork
 						{
 							string text;
 							string line = (text = await reader.ReadLineAsync());
+							if (SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_stream_read"))
+							{
+								return;
+							}
 							if (text == null || cancellationToken.IsCancellationRequested)
 							{
 								break;
@@ -868,7 +917,10 @@ public static class ShoutNetwork
 										fullText.Append(text2);
 										try
 										{
-											onChunk?.Invoke(text2);
+											if (!SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_stream_chunk"))
+											{
+												onChunk?.Invoke(text2);
+											}
 										}
 										catch
 										{
@@ -896,7 +948,10 @@ public static class ShoutNetwork
 						fullText.Append(text3);
 						try
 						{
-							onChunk?.Invoke(text3);
+							if (!SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_stream_flush"))
+							{
+								onChunk?.Invoke(text3);
+							}
 						}
 						catch
 						{
@@ -916,6 +971,10 @@ public static class ShoutNetwork
 			if (!streamSucceeded)
 			{
 				string fallback = await CallApiWithMessages(messages, maxTokens, recordTokenStats: false);
+				if (SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_stream_fallback"))
+				{
+					return;
+				}
 				if (!string.IsNullOrWhiteSpace(fallback) && !fallback.StartsWith("（错误") && !fallback.StartsWith("（程序错误") && !fallback.StartsWith("（API请求失败"))
 				{
 					sw.Stop();
@@ -931,7 +990,10 @@ public static class ShoutNetwork
 					});
 					Logger.Metric("network.stream", ok: true, sw.Elapsed.TotalMilliseconds);
 					Logger.RecordTokenStats(inputTokens, Logger.EstimateTokens(fallback), messages, BuildTokenStatsOutputContent(fallback), "stream_fallback", requestBodyForTokenStats);
-					onComplete?.Invoke(fallback.Trim());
+					if (!SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_stream_fallback_complete"))
+					{
+						onComplete?.Invoke(fallback.Trim());
+					}
 					return;
 				}
 				if (fullText.Length > 0)
@@ -956,7 +1018,10 @@ public static class ShoutNetwork
 					Logger.Metric("network.stream", ok: true, sw.Elapsed.TotalMilliseconds);
 					string outputContent3 = BuildTokenStatsOutputContent(fullText.ToString(), fullReasoning.ToString());
 					Logger.RecordTokenStats(inputTokens, Logger.EstimateTokens(outputContent3), messages, outputContent3, "stream_partial", requestBodyForTokenStats);
-					onComplete?.Invoke(ApplyPlayerDynamicNameToMainText(fullText.ToString()).Trim());
+					if (!SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_stream_partial_complete"))
+					{
+						onComplete?.Invoke(ApplyPlayerDynamicNameToMainText(fullText.ToString()).Trim());
+					}
 					return;
 				}
 				if (lastStreamException != null)
@@ -984,9 +1049,16 @@ public static class ShoutNetwork
 				{
 					Logger.Log("ShoutNetwork", "[PrimaryChat] empty stream final; retrying once with explicit non-empty instruction.");
 					string retry = await CallApiWithMessages(BuildEmptyResponseRetryMessages(messages), maxTokens, recordTokenStats: false);
+					if (SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_stream_empty_retry"))
+					{
+						return;
+					}
 					if (!string.IsNullOrWhiteSpace(retry) && !retry.StartsWith("（错误") && !retry.StartsWith("（程序错误") && !retry.StartsWith("（API请求失败"))
 					{
-						onComplete?.Invoke(retry.Trim());
+						if (!SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_stream_empty_retry_complete"))
+						{
+							onComplete?.Invoke(retry.Trim());
+						}
 						return;
 					}
 				}
@@ -1006,7 +1078,10 @@ public static class ShoutNetwork
 			Logger.Metric("network.stream", ok: true, sw.Elapsed.TotalMilliseconds);
 			string outputContent2 = BuildTokenStatsOutputContent(finalText, fullReasoning.ToString());
 			Logger.RecordTokenStats(inputTokens, Logger.EstimateTokens(outputContent2), messages, outputContent2, "stream", requestBodyForTokenStats);
-			onComplete?.Invoke(finalText);
+			if (!SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_stream_complete"))
+			{
+				onComplete?.Invoke(finalText);
+			}
 		}
 		catch (OperationCanceledException)
 		{

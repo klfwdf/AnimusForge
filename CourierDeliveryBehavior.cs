@@ -204,6 +204,10 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 	public override void SyncData(IDataStore dataStore)
 	{
 		Dictionary<string, string> storage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+		if (dataStore != null && dataStore.IsLoading)
+		{
+			ResetTransientRuntimeForLoadedSaveExternal("courier_sync_load");
+		}
 		if (dataStore.IsSaving)
 		{
 			lock (_sessionLock)
@@ -300,6 +304,53 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 				Log("main action failed: " + ex);
 			}
 		}
+	}
+
+	public static void ResetTransientRuntimeForLoadedSaveExternal(string reason)
+	{
+		try
+		{
+			while (MainThreadActions.TryDequeue(out var _))
+			{
+			}
+			Instance?.ResetTransientRuntimeForLoadedSave(reason);
+			Log("transient runtime cleared reason=" + (reason ?? ""));
+		}
+		catch (Exception ex)
+		{
+			Log("transient runtime clear failed reason=" + (reason ?? "") + " error=" + ex.Message);
+		}
+	}
+
+	private void ResetTransientRuntimeForLoadedSave(string reason)
+	{
+		try
+		{
+			_pendingFlow = null;
+			_lastCampaignTickUtcTicks = 0L;
+			_courierReplyWaitTimeLocked = false;
+			_courierReplyWaitPreviousMode = CampaignTimeControlMode.Stop;
+			_courierReplyWaitPreviousLock = false;
+			_courierPartyCache.Clear();
+			_activeCourierPartyIdsSnapshot = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		}
+		catch (Exception ex)
+		{
+			Log("instance transient clear failed reason=" + (reason ?? "") + " error=" + ex.Message);
+		}
+	}
+
+	private static void EnqueueMainThreadActionForGeneration(long generation, Action action, string source)
+	{
+		MainThreadActions.Enqueue(() =>
+		{
+			if (SaveRuntimeGuard.IsCurrentGeneration(generation))
+			{
+				action?.Invoke();
+				return;
+			}
+			SaveRuntimeGuard.IsStale(generation, "courier_main_thread:" + (source ?? ""));
+		});
 	}
 
 	public static bool IsCourierInputOpen => _letterInputOpen;
@@ -1847,7 +1898,8 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		}
 		session.ReplyGenerationStarted = true;
 		Log("reply generation queued session=" + session.Id + " reason=" + (reason ?? ""));
-		_ = Task.Run(() => GenerateNpcReplyAsync(session.Id));
+		long runtimeGeneration = SaveRuntimeGuard.CaptureGeneration();
+		_ = Task.Run(() => GenerateNpcReplyAsync(session.Id, runtimeGeneration));
 	}
 
 	private void StartInboundLetterGeneration(CourierSession session, string reason)
@@ -1858,7 +1910,8 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		}
 		session.ReplyGenerationStarted = true;
 		Log("inbound letter generation queued session=" + session.Id + " reason=" + (reason ?? ""));
-		_ = Task.Run(() => GenerateInboundNpcLetterAsync(session.Id));
+		long runtimeGeneration = SaveRuntimeGuard.CaptureGeneration();
+		_ = Task.Run(() => GenerateInboundNpcLetterAsync(session.Id, runtimeGeneration));
 	}
 
 	private void HoldInboundCourierAtPlayer(CourierSession session, MobileParty courier)
@@ -1905,11 +1958,15 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		return "reply_wait:" + recipientId + ":" + x + ":" + y;
 	}
 
-	private async Task GenerateNpcReplyAsync(string sessionId)
+	private async Task GenerateNpcReplyAsync(string sessionId, long runtimeGeneration)
 	{
 		CourierSession session = null;
 		try
 		{
+			if (SaveRuntimeGuard.IsStale(runtimeGeneration, "courier_reply_start"))
+			{
+				return;
+			}
 			lock (_sessionLock)
 			{
 				_sessions.TryGetValue(sessionId ?? "", out session);
@@ -1927,22 +1984,31 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			{
 				session.ReplyGenerated = true;
 				session.ReplyGenerationStarted = false;
-				MainThreadActions.Enqueue(() => ProcessSessionById(sessionId, "reply_generated_recipient_invalid"));
+				EnqueueMainThreadActionForGeneration(runtimeGeneration, () => ProcessSessionById(sessionId, "reply_generated_recipient_invalid"), "reply_generated_recipient_invalid");
 				return;
 			}
 			Log("llm main start session=" + session.Id + " recipient=" + SafeHeroId(recipient));
 			string extraFact = BuildDeliveryFactText(session, delivered: true, recipient);
+			Log("[MemoryPerf] parallel_history_start reason=courier_reply session=" + session.Id + " hero=" + SafeHeroId(recipient) + " mode=task");
+			Task<string> historyTextTask = Task.Run(() => MyBehavior.BuildHistoryContextForExternal(recipient, 24, session.LetterText, extraFact));
 			List<string> preprocessRuleHits = MyBehavior.RunCourierRulePreprocessForExternal(recipient, session.LetterText, extraFact, recipient.CharacterObject, targetAgentIndex: -1, excludedRuleIds: CourierExcludedRuleIds);
 			MyBehavior.ShoutPromptContext ctx = MyBehavior.BuildShoutPromptContextForExternal(recipient, session.LetterText, extraFact, recipient.Culture?.StringId ?? "neutral", hasAnyHero: true, targetCharacter: recipient.CharacterObject, targetAgentIndex: -1, excludedRuleIds: CourierExcludedRuleIds, forcedPreprocessRuleIds: preprocessRuleHits);
 			List<string> selectedRuleHits = MergeCourierSelectedRuleIds(preprocessRuleHits, ctx?.PreprocessRuleIds);
 			selectedRuleHits = ExcludeCourierSelectedRuleIds(selectedRuleHits, CourierExcludedRuleIds);
 			string extras = FilterCourierInjectedRuleBlocks(ctx?.Extras ?? "", selectedRuleHits, CourierExcludedRuleIds);
 			extras = AppendCourierPlayerRecentActionsIfSelected(extras, recipient, selectedRuleHits);
-			string historyText = MyBehavior.BuildHistoryContextForExternal(recipient, 24, session.LetterText, extraFact);
+			System.Diagnostics.Stopwatch historyJoinSw = System.Diagnostics.Stopwatch.StartNew();
+			string historyText = ((await historyTextTask) ?? "").Trim();
+			historyJoinSw.Stop();
+			Log("[MemoryPerf] parallel_history_join reason=courier_reply session=" + session.Id + " hero=" + SafeHeroId(recipient) + " chars=" + historyText.Length + " hasValue=" + !string.IsNullOrWhiteSpace(historyText) + " waitMs=" + Math.Round(historyJoinSw.Elapsed.TotalMilliseconds, 2));
 			List<ConversationMessage> persistentMemoryRoleMessages = MyBehavior.BuildUncompressedMemoryRoleMessagesForExternal(recipient, -1, includeCurrentActiveSceneSession: false);
 			List<object> messages = BuildCourierReplyMessages(recipient, session, extras, extraFact, historyText, persistentMemoryRoleMessages);
 			ShoutNetwork.RecordPrimaryRequestBodyForTokenStats(messages, MainReplyMaxTokens, "courier_reply_preflight");
 			string output = await ShoutNetwork.CallApiWithMessages(messages, MainReplyMaxTokens);
+			if (SaveRuntimeGuard.IsStale(runtimeGeneration, "courier_reply_response"))
+			{
+				return;
+			}
 			if (IsTerminalStage(session))
 			{
 				return;
@@ -1960,7 +2026,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 				session.ReplyGenerated = true;
 				session.ReplyGenerationStarted = false;
 				Log("npc no reply session=" + session.Id);
-				MainThreadActions.Enqueue(() => ProcessSessionById(sessionId, "reply_generated_empty"));
+				EnqueueMainThreadActionForGeneration(runtimeGeneration, () => ProcessSessionById(sessionId, "reply_generated_empty"), "reply_generated_empty");
 				return;
 			}
 			bool duelInjected = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "duel");
@@ -1992,31 +2058,39 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 				+ " kingdomVassalageInjected=" + kingdomVassalageInjected
 				+ " kingdomAnnexationInjected=" + kingdomAnnexationInjected);
 			string postprocessed = ShoutBehavior.RunCourierActionPostprocessForExternal(recipient, recipient.CharacterObject, recipient.Name?.ToString() ?? "NPC", session.LetterText, historyText, reply, duelInjected, rewardInjected, loanInjected, kingdomServiceInjected, lordsHallInjected, meetingReleaseInjected, vanillaIssueInjected, heroJoinPartyInjected, sceneMechanismInjected, partyTransferInjected, settlementTransferInjected, voteDealInjected, diplomacyInjected, worldMapPartyCommandInjected, preprocessRuleHits: selectedRuleHits, entityPostprocessContext: ctx?.EntityPostprocessContext, forceLooseWeeklyMemoryMaterialSession: true, kingdomVassalageRuleInjected: kingdomVassalageInjected, kingdomAnnexationRuleInjected: kingdomAnnexationInjected, chainName: "courier");
+			if (SaveRuntimeGuard.IsStale(runtimeGeneration, "courier_reply_postprocess"))
+			{
+				return;
+			}
 			string replyPostprocessed = string.IsNullOrWhiteSpace(postprocessed) ? reply : postprocessed;
 			session.ReplyText = reply;
 			session.ReplyPostprocessedText = replyPostprocessed;
 			session.ReplyGenerated = true;
 			session.ReplyGenerationStarted = false;
 			Log("llm main done session=" + session.Id + " replyLen=" + reply.Length + " postLen=" + (session.ReplyPostprocessedText ?? "").Length + " preprocessHits=" + ((selectedRuleHits == null || selectedRuleHits.Count == 0) ? "(none)" : string.Join(",", selectedRuleHits)) + " duel=" + duelInjected + " reward=" + rewardInjected + " loan=" + loanInjected + " kingdom=" + kingdomServiceInjected + " kingdomVassalage=" + kingdomVassalageInjected + " kingdomAnnexation=" + kingdomAnnexationInjected + " lordsHall=" + lordsHallInjected + " meetingRelease=" + meetingReleaseInjected + " vanillaIssue=" + vanillaIssueInjected + " heroJoin=" + heroJoinPartyInjected + " sceneMechanism=" + sceneMechanismInjected + " partyTransfer=" + partyTransferInjected + " settlementTransfer=" + settlementTransferInjected + " voteDeal=" + voteDealInjected + " diplomacy=" + diplomacyInjected + " worldMap=" + worldMapPartyCommandInjected);
-			MainThreadActions.Enqueue(() => ProcessSessionById(sessionId, "reply_generated"));
+			EnqueueMainThreadActionForGeneration(runtimeGeneration, () => ProcessSessionById(sessionId, "reply_generated"), "reply_generated");
 		}
 		catch (Exception ex)
 		{
 			Log("generate reply failed session=" + sessionId + " error=" + ex);
-			if (session != null && !IsTerminalStage(session))
+			if (session != null && !IsTerminalStage(session) && SaveRuntimeGuard.IsCurrentGeneration(runtimeGeneration))
 			{
 				session.ReplyGenerated = true;
 				session.ReplyGenerationStarted = false;
-				MainThreadActions.Enqueue(() => ProcessSessionById(sessionId, "reply_generation_failed"));
+				EnqueueMainThreadActionForGeneration(runtimeGeneration, () => ProcessSessionById(sessionId, "reply_generation_failed"), "reply_generation_failed");
 			}
 		}
 	}
 
-	private async Task GenerateInboundNpcLetterAsync(string sessionId)
+	private async Task GenerateInboundNpcLetterAsync(string sessionId, long runtimeGeneration)
 	{
 		CourierSession session = null;
 		try
 		{
+			if (SaveRuntimeGuard.IsStale(runtimeGeneration, "courier_inbound_start"))
+			{
+				return;
+			}
 			lock (_sessionLock)
 			{
 				_sessions.TryGetValue(sessionId ?? "", out session);
@@ -2032,23 +2106,32 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 				session.LetterText = fallbackLetter;
 				session.ReplyGenerated = true;
 				session.ReplyGenerationStarted = false;
-				MainThreadActions.Enqueue(() => ProcessSessionById(sessionId, "inbound_letter_generated_sender_invalid"));
+				EnqueueMainThreadActionForGeneration(runtimeGeneration, () => ProcessSessionById(sessionId, "inbound_letter_generated_sender_invalid"), "inbound_letter_generated_sender_invalid");
 				return;
 			}
 			string seed = string.IsNullOrWhiteSpace(session.LetterText) ? fallbackLetter : session.LetterText.Trim();
 			Log("inbound letter llm start session=" + session.Id + " sender=" + SafeHeroId(sender));
 			string extraFact = BuildInboundDeliveryFactText(session, delivered: false, sender);
+			Log("[MemoryPerf] parallel_history_start reason=courier_inbound session=" + session.Id + " hero=" + SafeHeroId(sender) + " mode=task");
+			Task<string> historyTextTask = Task.Run(() => MyBehavior.BuildHistoryContextForExternal(sender, 24, seed, extraFact));
 			List<string> preprocessRuleHits = MyBehavior.RunCourierRulePreprocessForExternal(sender, seed, extraFact, sender.CharacterObject, targetAgentIndex: -1, excludedRuleIds: CourierExcludedRuleIds);
 			MyBehavior.ShoutPromptContext ctx = MyBehavior.BuildShoutPromptContextForExternal(sender, seed, extraFact, sender.Culture?.StringId ?? "neutral", hasAnyHero: true, targetCharacter: sender.CharacterObject, targetAgentIndex: -1, excludedRuleIds: CourierExcludedRuleIds, forcedPreprocessRuleIds: preprocessRuleHits);
 			List<string> selectedRuleHits = MergeCourierSelectedRuleIds(preprocessRuleHits, ctx?.PreprocessRuleIds);
 			selectedRuleHits = ExcludeCourierSelectedRuleIds(selectedRuleHits, CourierExcludedRuleIds);
 			string extras = FilterCourierInjectedRuleBlocks(ctx?.Extras ?? "", selectedRuleHits, CourierExcludedRuleIds);
 			extras = AppendCourierPlayerRecentActionsIfSelected(extras, sender, selectedRuleHits);
-			string historyText = MyBehavior.BuildHistoryContextForExternal(sender, 24, seed, extraFact);
+			System.Diagnostics.Stopwatch historyJoinSw = System.Diagnostics.Stopwatch.StartNew();
+			string historyText = ((await historyTextTask) ?? "").Trim();
+			historyJoinSw.Stop();
+			Log("[MemoryPerf] parallel_history_join reason=courier_inbound session=" + session.Id + " hero=" + SafeHeroId(sender) + " chars=" + historyText.Length + " hasValue=" + !string.IsNullOrWhiteSpace(historyText) + " waitMs=" + Math.Round(historyJoinSw.Elapsed.TotalMilliseconds, 2));
 			List<ConversationMessage> persistentMemoryRoleMessages = MyBehavior.BuildUncompressedMemoryRoleMessagesForExternal(sender, -1, includeCurrentActiveSceneSession: false);
 			List<object> messages = BuildInboundNpcLetterMessages(sender, session, seed, extras, extraFact, historyText, persistentMemoryRoleMessages);
 			ShoutNetwork.RecordPrimaryRequestBodyForTokenStats(messages, MainReplyMaxTokens, "courier_inbound_letter_preflight");
 			string output = await ShoutNetwork.CallApiWithMessages(messages, MainReplyMaxTokens);
+			if (SaveRuntimeGuard.IsStale(runtimeGeneration, "courier_inbound_response"))
+			{
+				return;
+			}
 			if (IsTerminalStage(session))
 			{
 				return;
@@ -2067,17 +2150,17 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			session.ReplyGenerated = true;
 			session.ReplyGenerationStarted = false;
 			Log("inbound letter llm done session=" + session.Id + " letterLen=" + letter.Length + " preprocessHits=" + ((selectedRuleHits == null || selectedRuleHits.Count == 0) ? "(none)" : string.Join(",", selectedRuleHits)));
-			MainThreadActions.Enqueue(() => ProcessSessionById(sessionId, "inbound_letter_generated"));
+			EnqueueMainThreadActionForGeneration(runtimeGeneration, () => ProcessSessionById(sessionId, "inbound_letter_generated"), "inbound_letter_generated");
 		}
 		catch (Exception ex)
 		{
 			Log("generate inbound letter failed session=" + sessionId + " error=" + ex);
-			if (session != null && !IsTerminalStage(session))
+			if (session != null && !IsTerminalStage(session) && SaveRuntimeGuard.IsCurrentGeneration(runtimeGeneration))
 			{
 				session.LetterText = NormalizeInboundLetterText(session.LetterText, session, ResolveSender(session));
 				session.ReplyGenerated = true;
 				session.ReplyGenerationStarted = false;
-				MainThreadActions.Enqueue(() => ProcessSessionById(sessionId, "inbound_letter_generation_failed"));
+				EnqueueMainThreadActionForGeneration(runtimeGeneration, () => ProcessSessionById(sessionId, "inbound_letter_generation_failed"), "inbound_letter_generation_failed");
 			}
 		}
 	}
@@ -2200,7 +2283,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		}
 		try
 		{
-			RomanceSystemBehavior.Instance?.ApplyMarriageTags(recipient, Hero.MainHero, ref text);
+			RomanceSystemBehavior.Instance?.ApplyMarriageTags(recipient, Hero.MainHero, ref text, runPostprocessIfMissing: false);
 		}
 		catch (Exception ex)
 		{
@@ -2452,7 +2535,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			}
 			try
 			{
-				RomanceSystemBehavior.Instance?.ApplyMarriageTags(recipient, Hero.MainHero, ref text);
+				RomanceSystemBehavior.Instance?.ApplyMarriageTags(recipient, Hero.MainHero, ref text, runPostprocessIfMissing: false);
 			}
 			catch (Exception ex)
 			{

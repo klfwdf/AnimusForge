@@ -3238,7 +3238,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		return text10;
 	}
 
-	public void ApplyMarriageTags(Hero speaker, Hero receiver, ref string responseText)
+	public void ApplyMarriageTags(Hero speaker, Hero receiver, ref string responseText, bool runPostprocessIfMissing = true)
 	{
 		try
 		{
@@ -3247,7 +3247,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 			{
 				return;
 			}
-			if (!ContainsMarriageActionTags(text))
+			if (runPostprocessIfMissing && !ContainsMarriageActionTags(text))
 			{
 				text = TryRunMarriageActionPostprocess(speaker, text);
 			}

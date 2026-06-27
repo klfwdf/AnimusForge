@@ -117,6 +117,12 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		public float Weight = 1f;
 	}
 
+	private const int KnowledgeMentionQueryMaxCount = IntentQueryOptimizer.MaxCombinedIntentCount;
+
+	private const int KnowledgeMentionTermsPerQuery = 6;
+
+	private const int KnowledgeMentionQueryMaxChars = 220;
+
 	public class RuleIndexItem
 	{
 		public string Id;
@@ -1108,10 +1114,6 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 				return "";
 			}
 			StringBuilder stringBuilder = new StringBuilder();
-			if (!string.IsNullOrWhiteSpace(rule.Id))
-			{
-				stringBuilder.Append(rule.Id).Append(' ');
-			}
 			if (rule.Keywords != null)
 			{
 				for (int i = 0; i < rule.Keywords.Count; i++)
@@ -1123,7 +1125,6 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 					}
 				}
 			}
-			bool flag = false;
 			if (rule.RagShortTexts != null && rule.RagShortTexts.Count > 0)
 			{
 				for (int j = 0; j < rule.RagShortTexts.Count; j++)
@@ -1132,22 +1133,6 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 					if (!string.IsNullOrEmpty(value2))
 					{
 						stringBuilder.Append(value2).Append(' ');
-						flag = true;
-					}
-				}
-			}
-			if (!flag && rule.Variants != null)
-			{
-				for (int k = 0; k < rule.Variants.Count; k++)
-				{
-					LoreVariant loreVariant = rule.Variants[k];
-					if (loreVariant != null)
-					{
-						string value3 = (loreVariant.Content ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
-						if (!string.IsNullOrEmpty(value3))
-						{
-							stringBuilder.Append(value3).Append(' ');
-						}
 					}
 				}
 			}
@@ -1191,40 +1176,27 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 				return list;
 			}
 			HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-			if (rule.RagShortTexts != null)
+			if (rule.Keywords != null)
 			{
-				for (int i = 0; i < rule.RagShortTexts.Count; i++)
+				for (int i = 0; i < rule.Keywords.Count; i++)
 				{
-					string text = (rule.RagShortTexts[i] ?? "").Trim();
+					string text = (rule.Keywords[i] ?? "").Trim();
 					if (!string.IsNullOrWhiteSpace(text))
 					{
-						AddSemanticSeed(list, seen, text, 220);
+						AddSemanticSeed(list, seen, text, 120);
 					}
 				}
 			}
-			if (list.Count > 0)
+			if (rule.RagShortTexts != null)
 			{
-				return list;
-			}
-			if (rule.Variants != null)
-			{
-				for (int j = 0; j < rule.Variants.Count; j++)
+				for (int j = 0; j < rule.RagShortTexts.Count; j++)
 				{
-					string text2 = (rule.Variants[j]?.Content ?? "").Trim();
+					string text2 = (rule.RagShortTexts[j] ?? "").Trim();
 					if (!string.IsNullOrWhiteSpace(text2))
 					{
-						AddSemanticSeed(list, seen, text2, 320);
+						AddSemanticSeed(list, seen, text2, 220);
 					}
 				}
-			}
-			if (list.Count <= 0)
-			{
-				string raw = BuildRuleSearchText(rule);
-				AddSemanticSeed(list, seen, raw, 320);
-			}
-			if (list.Count <= 0)
-			{
-				AddSemanticSeed(list, seen, rule?.Id, 200);
 			}
 		}
 		catch
@@ -1243,7 +1215,6 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 				return list;
 			}
 			HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-			AddSemanticSeed(list, seen, rule.Id, 120);
 			if (rule.Keywords != null)
 			{
 				for (int i = 0; i < rule.Keywords.Count; i++)
@@ -1264,21 +1235,6 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 					if (!string.IsNullOrWhiteSpace(text2))
 					{
 						AddSemanticSeed(list, seen, text2, 180);
-					}
-				}
-			}
-			if (list.Count <= 0 && rule.Variants != null)
-			{
-				for (int k = 0; k < rule.Variants.Count; k++)
-				{
-					string text3 = (rule.Variants[k]?.Content ?? "").Trim();
-					if (!string.IsNullOrWhiteSpace(text3))
-					{
-						AddSemanticSeed(list, seen, text3, 120);
-						if (list.Count >= 2)
-						{
-							break;
-						}
 					}
 				}
 			}
@@ -2124,49 +2080,154 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		return list;
 	}
 
-	private static List<WeightedKnowledgeInput> BuildKnowledgeQueryInputs(string input, string secondaryInput)
+	private static List<WeightedKnowledgeInput> BuildKnowledgeQueryInputsFromMentions(MentionedWorldEntities mentionedEntities, out int mentionTermCount)
 	{
 		List<WeightedKnowledgeInput> list = new List<WeightedKnowledgeInput>();
 		HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		mentionTermCount = 0;
 		try
 		{
-			appendInputs(SplitKnowledgeIntents(input, IntentQueryOptimizer.MaxIntentCountPerSpeaker), IntentQueryOptimizer.MaxIntentCountPerSpeaker);
-			string text = (secondaryInput ?? "").Trim();
-			if (!string.IsNullOrWhiteSpace(text) && !string.Equals(text, (input ?? "").Trim(), StringComparison.OrdinalIgnoreCase))
+			List<string> terms = BuildKnowledgeMentionTerms(mentionedEntities);
+			mentionTermCount = terms.Count;
+			if (terms.Count <= 0)
 			{
-				appendInputs(SplitKnowledgeIntents(text, IntentQueryOptimizer.MaxIntentCountPerSpeaker), IntentQueryOptimizer.MaxIntentCountPerSpeaker);
+				return list;
+			}
+			List<string> chunk = new List<string>();
+			int chunkChars = 0;
+			for (int i = 0; i < terms.Count; i++)
+			{
+				if (list.Count >= KnowledgeMentionQueryMaxCount)
+				{
+					break;
+				}
+				string term = (terms[i] ?? "").Trim();
+				if (string.IsNullOrWhiteSpace(term))
+				{
+					continue;
+				}
+				if (term.Length > KnowledgeMentionQueryMaxChars)
+				{
+					term = term.Substring(0, KnowledgeMentionQueryMaxChars).Trim();
+				}
+				int nextChars = chunkChars + ((chunk.Count > 0) ? 1 : 0) + term.Length;
+				if (chunk.Count > 0 && (chunk.Count >= KnowledgeMentionTermsPerQuery || nextChars > KnowledgeMentionQueryMaxChars))
+				{
+					appendCurrentChunk();
+					if (list.Count >= KnowledgeMentionQueryMaxCount)
+					{
+						break;
+					}
+				}
+				chunk.Add(term);
+				chunkChars += ((chunk.Count > 1) ? 1 : 0) + term.Length;
+			}
+			appendCurrentChunk();
+
+			void appendCurrentChunk()
+			{
+				if (chunk.Count <= 0 || list.Count >= KnowledgeMentionQueryMaxCount)
+				{
+					chunk.Clear();
+					chunkChars = 0;
+					return;
+				}
+				string query = string.Join(" ", chunk.Where((string x) => !string.IsNullOrWhiteSpace(x))).Trim();
+				chunk.Clear();
+				chunkChars = 0;
+				if (string.IsNullOrWhiteSpace(query) || !hashSet.Add(query))
+				{
+					return;
+				}
+				list.Add(new WeightedKnowledgeInput
+				{
+					Text = query,
+					Weight = 1f
+				});
 			}
 		}
 		catch
 		{
 		}
 		return list;
+	}
 
-		void appendInputs(List<string> intents, int perSourceLimit)
+	private static List<string> BuildKnowledgeMentionTerms(MentionedWorldEntities mentionedEntities)
+	{
+		List<string> result = new List<string>();
+		HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		try
 		{
-			if (intents == null || intents.Count <= 0 || perSourceLimit <= 0)
+			append(mentionedEntities?.Heroes);
+			append(mentionedEntities?.Settlements);
+			append(mentionedEntities?.Clans);
+			append(mentionedEntities?.Kingdoms);
+			append(mentionedEntities?.Terms);
+		}
+		catch
+		{
+		}
+		return result;
+
+		void append(IEnumerable<string> values)
+		{
+			if (values == null)
 			{
 				return;
 			}
-			int num = 0;
-			for (int i = 0; i < intents.Count; i++)
+			foreach (string value in values)
 			{
-				string text2 = (intents[i] ?? "").Trim();
-				if (!string.IsNullOrWhiteSpace(text2) && hashSet.Add(text2))
+				if (result.Count >= KnowledgeMentionQueryMaxCount * KnowledgeMentionTermsPerQuery)
 				{
-					list.Add(new WeightedKnowledgeInput
-					{
-						Text = text2,
-						Weight = 1f
-					});
-					num++;
-					if (num >= perSourceLimit || list.Count >= IntentQueryOptimizer.MaxCombinedIntentCount)
-					{
-						break;
-					}
+					return;
+				}
+				string text = NormalizeKeywordForCompare(value);
+				if (string.IsNullOrWhiteSpace(text))
+				{
+					continue;
+				}
+				if (text.Length > 80)
+				{
+					text = text.Substring(0, 80).Trim();
+				}
+				if (!string.IsNullOrWhiteSpace(text) && seen.Add(text))
+				{
+					result.Add(text);
 				}
 			}
 		}
+	}
+
+	private static int CountKnowledgeMentionTerms(MentionedWorldEntities mentionedEntities)
+	{
+		return BuildKnowledgeMentionTerms(mentionedEntities).Count;
+	}
+
+	private static string BuildKnowledgeMentionSignature(MentionedWorldEntities mentionedEntities)
+	{
+		try
+		{
+			List<string> terms = BuildKnowledgeMentionTerms(mentionedEntities);
+			if (terms.Count <= 0)
+			{
+				return "mentions=empty";
+			}
+			string joined = string.Join("|", terms.Select((string x) => (x ?? "").Trim().ToLowerInvariant()));
+			return "mentions=" + Hash8(joined) + ":" + terms.Count;
+		}
+		catch
+		{
+			return "mentions=error";
+		}
+	}
+
+	private static string FormatKnowledgeMentionCounts(MentionedWorldEntities mentionedEntities)
+	{
+		if (mentionedEntities == null)
+		{
+			return "heroes=0 settlements=0 clans=0 kingdoms=0 terms=0";
+		}
+		return "heroes=" + (mentionedEntities.Heroes?.Count ?? 0) + " settlements=" + (mentionedEntities.Settlements?.Count ?? 0) + " clans=" + (mentionedEntities.Clans?.Count ?? 0) + " kingdoms=" + (mentionedEntities.Kingdoms?.Count ?? 0) + " terms=" + (mentionedEntities.Terms?.Count ?? 0);
 	}
 
 	private static string BuildKnowledgeHitRateDetail(string detail, string secondaryInput)
@@ -2174,15 +2235,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		string text = (detail ?? "").Trim();
 		string text2 = (secondaryInput ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
 		string text3 = string.IsNullOrWhiteSpace(text2) ? "off" : "on";
-		if (text2.Length > 72)
-		{
-			text2 = text2.Substring(0, 72);
-		}
 		string value = $"npcRecall={text3} secondaryLen={(string.IsNullOrWhiteSpace(text2) ? 0 : text2.Length)}";
-		if (!string.IsNullOrWhiteSpace(text2))
-		{
-			value = value + " secondaryPreview=" + JsonConvert.ToString(text2);
-		}
 		return string.IsNullOrWhiteSpace(text) ? value : (text + " " + value);
 	}
 
@@ -2353,22 +2406,11 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		return result;
 	}
 
-	private CandidateRules CollectCandidateRules(string input, string secondaryInput = null)
+	private CandidateRules CollectCandidateRules(MentionedWorldEntities mentionedEntities)
 	{
 		CandidateRules result = new CandidateRules();
 		try
 		{
-			List<WeightedKnowledgeInput> intentInputs = BuildKnowledgeQueryInputs(input, secondaryInput);
-			if (intentInputs.Count > 1)
-			{
-				try
-				{
-					Logger.Log("LoreMatch", string.Format("intent_split count={0} intents={1}", intentInputs.Count, string.Join(" || ", intentInputs.Select((WeightedKnowledgeInput x) => $"{x.Text}@{x.Weight:0.00}"))));
-				}
-				catch
-				{
-				}
-			}
 			bool semanticEnabled = true;
 			try
 			{
@@ -2380,6 +2422,25 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			if (!semanticEnabled)
 			{
 				return result;
+			}
+			List<WeightedKnowledgeInput> intentInputs = BuildKnowledgeQueryInputsFromMentions(mentionedEntities, out var mentionTermCount);
+			if (intentInputs.Count <= 0)
+			{
+				try
+				{
+					Logger.Log("LoreMatch", "knowledge_mentions skip reason=no_mentions " + FormatKnowledgeMentionCounts(mentionedEntities));
+				}
+				catch
+				{
+				}
+				return result;
+			}
+			try
+			{
+				Logger.Log("LoreMatch", $"knowledge_mentions terms={mentionTermCount} queries={intentInputs.Count} {FormatKnowledgeMentionCounts(mentionedEntities)} signature={BuildKnowledgeMentionSignature(mentionedEntities)}");
+			}
+			catch
+			{
 			}
 			int knowledgeReturnCap = GetKnowledgeReturnCap();
 			int rerankBudget = GetKnowledgeRerankBudget(knowledgeReturnCap);
@@ -2394,11 +2455,11 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			List<LoreRule> list4 = MergeVectorRulesAcrossIntents(intentInputs, knowledgePerIntentRecall, knowledgePerIntentRerank, loreInjectLimit, out var matchMode);
 			if (list4 != null && list4.Count > 0)
 			{
-				result.MatchMode = matchMode;
+				result.MatchMode = "mentions_" + matchMode;
 				result.OrderedRules = list4.Where((LoreRule x) => x != null).ToList();
 				try
 				{
-					Logger.Log("LoreMatch", $"candidate_pool mode={result.MatchMode} returnCap={loreInjectLimit} rerankBudget={rerankBudget} rerankPerIntent={knowledgePerIntentRerank} recallPerIntent={knowledgePerIntentRecall} intents={num} got={result.OrderedRules.Count}");
+					Logger.Log("LoreMatch", $"candidate_pool mode={result.MatchMode} returnCap={loreInjectLimit} rerankBudget={rerankBudget} rerankPerIntent={knowledgePerIntentRerank} recallPerIntent={knowledgePerIntentRecall} mentionTerms={mentionTermCount} queries={num} got={result.OrderedRules.Count}");
 				}
 				catch
 				{
@@ -5525,8 +5586,14 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 
 	public string BuildLoreContext(string inputText, Hero npcHero, string secondaryInput = null)
 	{
+		return BuildLoreContext(inputText, npcHero, secondaryInput, null);
+	}
+
+	public string BuildLoreContext(string inputText, Hero npcHero, string secondaryInput, MentionedWorldEntities mentionedEntities)
+	{
 		string text = (inputText ?? "").Trim();
-		if (string.IsNullOrEmpty(text))
+		MentionedWorldEntities loreMentionedEntities = mentionedEntities?.Clone() ?? new MentionedWorldEntities();
+		if (string.IsNullOrEmpty(text) && loreMentionedEntities.IsEmpty)
 		{
 			return "";
 		}
@@ -5607,7 +5674,8 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		LogLoreContextTrace("hero", text2, "", text3, text4, text6, text5, flag, flag2, "", text);
 		long ruleDataVersion = _ruleDataVersion;
 		bool allowLoreContextCache = !HasAnyTextMappings();
-		string key = Hash8($"{ruleDataVersion}|H|{text2}|{text8}|{text3}|{text4}|{text6}|{text5}|{(flag ? 1 : 0)}|{(flag2 ? 1 : 0)}|{BuildExactKeywordSlotCacheSignature()}|{text}");
+		string mentionSignature = BuildKnowledgeMentionSignature(loreMentionedEntities);
+		string key = Hash8($"{ruleDataVersion}|H|{text2}|{text8}|{text3}|{text4}|{text6}|{text5}|{(flag ? 1 : 0)}|{(flag2 ? 1 : 0)}|{BuildExactKeywordSlotCacheSignature()}|{mentionSignature}|{text}");
 		if (allowLoreContextCache && TryGetLoreContextCache(key, ruleDataVersion, out var value))
 		{
 			return value;
@@ -5644,7 +5712,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		int num3 = 0;
 		StringBuilder stringBuilder = new StringBuilder();
 		AppendPermanentPlayerAppearanceContext(stringBuilder, text7, playerAppearanceForPrompt);
-		CandidateRules candidateRules = CollectCandidateRules(text, secondaryInput);
+		CandidateRules candidateRules = CollectCandidateRules(loreMentionedEntities);
 		int loreInjectLimit = candidateRules?.InjectLimit ?? GetLoreInjectLimit(GetKnowledgeReturnCap());
 		string matchMode = candidateRules?.MatchMode ?? "none";
 		List<LoreRule> list = candidateRules?.OrderedRules;
@@ -5679,7 +5747,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			LogLoreMissOnce(((list == null || list.Count == 0) ? "rule_miss" : "variant_or_content_miss"), text, num, text2, text3, text4, text5);
 			try
 			{
-				string value2 = ((list == null || list.Count == 0) ? $"reason=rule_miss rules={num} inputLen={text.Length} mode={matchMode}" : $"reason=variant_or_content_miss candidates={list?.Count ?? 0} mode={matchMode} inputLen={text.Length}");
+				string value2 = ((list == null || list.Count == 0) ? $"reason=rule_miss rules={num} inputLen={text.Length} mode={matchMode} mentionTerms={CountKnowledgeMentionTerms(loreMentionedEntities)}" : $"reason=variant_or_content_miss candidates={list?.Count ?? 0} mode={matchMode} inputLen={text.Length} mentionTerms={CountKnowledgeMentionTerms(loreMentionedEntities)}");
 				Logger.RecordHitRate("knowledge", "__query__", hit: false, BuildKnowledgeHitRateDetail(value2, secondaryInput), text);
 			}
 			catch
@@ -5690,7 +5758,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		{
 			try
 			{
-				Logger.RecordHitRate("knowledge", "__query__", hit: true, BuildKnowledgeHitRateDetail($"reason=ok matched={num2} candidates={list?.Count ?? 0} mode={matchMode} inputLen={text.Length}", secondaryInput), text);
+				Logger.RecordHitRate("knowledge", "__query__", hit: true, BuildKnowledgeHitRateDetail($"reason=ok matched={num2} candidates={list?.Count ?? 0} mode={matchMode} inputLen={text.Length} mentionTerms={CountKnowledgeMentionTerms(loreMentionedEntities)}", secondaryInput), text);
 			}
 			catch
 			{
@@ -5875,8 +5943,14 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 
 	public string BuildLoreContext(string inputText, CharacterObject npcCharacter, string kingdomIdOverride = null, string secondaryInput = null)
 	{
+		return BuildLoreContext(inputText, npcCharacter, kingdomIdOverride, secondaryInput, null);
+	}
+
+	public string BuildLoreContext(string inputText, CharacterObject npcCharacter, string kingdomIdOverride, string secondaryInput, MentionedWorldEntities mentionedEntities)
+	{
 		string text = (inputText ?? "").Trim();
-		if (string.IsNullOrEmpty(text))
+		MentionedWorldEntities loreMentionedEntities = mentionedEntities?.Clone() ?? new MentionedWorldEntities();
+		if (string.IsNullOrEmpty(text) && loreMentionedEntities.IsEmpty)
 		{
 			return "";
 		}
@@ -6007,7 +6081,8 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		LogLoreContextTrace((hero != null) ? "character_hero" : "character", text2, textCharId, text3, text4, text6, text5, flag, flag2, kingdomIdOverride, text);
 		long ruleDataVersion = _ruleDataVersion;
 		bool allowLoreContextCache = !HasAnyTextMappings();
-		string key = Hash8($"{ruleDataVersion}|C|{text2}|{text8}|{text3}|{text4}|{text6}|{text5}|{(flag ? 1 : 0)}|{(flag2 ? 1 : 0)}|{BuildExactKeywordSlotCacheSignature()}|{text}");
+		string mentionSignature = BuildKnowledgeMentionSignature(loreMentionedEntities);
+		string key = Hash8($"{ruleDataVersion}|C|{text2}|{text8}|{text3}|{text4}|{text6}|{text5}|{(flag ? 1 : 0)}|{(flag2 ? 1 : 0)}|{BuildExactKeywordSlotCacheSignature()}|{mentionSignature}|{text}");
 		if (allowLoreContextCache && TryGetLoreContextCache(key, ruleDataVersion, out var value))
 		{
 			return value;
@@ -6044,7 +6119,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		int num3 = 0;
 		StringBuilder stringBuilder = new StringBuilder();
 		AppendPermanentPlayerAppearanceContext(stringBuilder, text7, playerAppearanceForPrompt);
-		CandidateRules candidateRules = CollectCandidateRules(text, secondaryInput);
+		CandidateRules candidateRules = CollectCandidateRules(loreMentionedEntities);
 		int loreInjectLimit = candidateRules?.InjectLimit ?? GetLoreInjectLimit(GetKnowledgeReturnCap());
 		string matchMode = candidateRules?.MatchMode ?? "none";
 		List<LoreRule> list = candidateRules?.OrderedRules;
@@ -6079,7 +6154,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			LogLoreMissOnce(((list == null || list.Count == 0) ? "rule_miss" : "variant_or_content_miss"), text, num, text2, text3, text4, text5);
 			try
 			{
-				string value2 = ((list == null || list.Count == 0) ? $"reason=rule_miss rules={num} inputLen={text.Length} mode={matchMode}" : $"reason=variant_or_content_miss candidates={list?.Count ?? 0} mode={matchMode} inputLen={text.Length}");
+				string value2 = ((list == null || list.Count == 0) ? $"reason=rule_miss rules={num} inputLen={text.Length} mode={matchMode} mentionTerms={CountKnowledgeMentionTerms(loreMentionedEntities)}" : $"reason=variant_or_content_miss candidates={list?.Count ?? 0} mode={matchMode} inputLen={text.Length} mentionTerms={CountKnowledgeMentionTerms(loreMentionedEntities)}");
 				Logger.RecordHitRate("knowledge", "__query__", hit: false, BuildKnowledgeHitRateDetail(value2, secondaryInput), text);
 			}
 			catch
@@ -6090,7 +6165,7 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 		{
 			try
 			{
-				Logger.RecordHitRate("knowledge", "__query__", hit: true, BuildKnowledgeHitRateDetail($"reason=ok matched={num2} candidates={list?.Count ?? 0} mode={matchMode} inputLen={text.Length}", secondaryInput), text);
+				Logger.RecordHitRate("knowledge", "__query__", hit: true, BuildKnowledgeHitRateDetail($"reason=ok matched={num2} candidates={list?.Count ?? 0} mode={matchMode} inputLen={text.Length} mentionTerms={CountKnowledgeMentionTerms(loreMentionedEntities)}", secondaryInput), text);
 			}
 			catch
 			{

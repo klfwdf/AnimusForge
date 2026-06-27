@@ -7946,6 +7946,37 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private static ItemObject TryGetRegisteredGeneratedRewardItemByStringId(string generatedStringId)
+	{
+		if (!IsGeneratedRewardItemStringId(generatedStringId))
+		{
+			return null;
+		}
+		string key = generatedStringId.Trim();
+		bool previousSuppressObjectLookup = SuppressGeneratedRewardObjectLookup;
+		bool previousSuppressPendingLookup = SuppressGeneratedRewardPendingLookup;
+		try
+		{
+			SuppressGeneratedRewardObjectLookup = true;
+			SuppressGeneratedRewardPendingLookup = true;
+			ItemObject item = MBObjectManager.Instance?.GetObject<ItemObject>(key);
+			if (item == null)
+			{
+				item = Game.Current?.ObjectManager?.GetObject<ItemObject>(key);
+			}
+			return item != null && string.Equals((item.StringId ?? "").Trim(), key, StringComparison.OrdinalIgnoreCase) ? item : null;
+		}
+		catch
+		{
+			return null;
+		}
+		finally
+		{
+			SuppressGeneratedRewardObjectLookup = previousSuppressObjectLookup;
+			SuppressGeneratedRewardPendingLookup = previousSuppressPendingLookup;
+		}
+	}
+
 	private static bool TryResolveGeneratedRewardItemForObjectId(uint objectIdValue, out ItemObject item, string source = null)
 	{
 		item = null;
@@ -7992,23 +8023,51 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 		string key = generatedStringId.Trim();
 		EnsureGeneratedRewardManifestLoaded();
+		ItemObject registeredItem = TryGetRegisteredGeneratedRewardItemByStringId(key);
+		if (registeredItem != null)
+		{
+			lock (GeneratedRewardItemRegistrationLock)
+			{
+				if (registeredItem.Id.InternalValue != 0u)
+				{
+					GeneratedRewardDetachedItemsByObjectId[registeredItem.Id.InternalValue] = registeredItem;
+				}
+				GeneratedRewardDetachedItemsByStringId[key] = registeredItem;
+			}
+			item = registeredItem;
+			return true;
+		}
 		GeneratedRewardItemRecord record = null;
+		ItemObject cachedItem = null;
 		lock (GeneratedRewardItemRegistrationLock)
 		{
 			if (GeneratedRewardDetachedItemsByStringId.TryGetValue(key, out var cached) && cached != null)
 			{
-				item = cached;
-				return true;
+				cachedItem = cached;
 			}
 			GeneratedRewardManifestByStringId.TryGetValue(key, out record);
 		}
 		record ??= Instance?.GetGeneratedRewardItemRecord(key);
 		if (record == null)
 		{
+			if (cachedItem != null)
+			{
+				item = cachedItem;
+				return true;
+			}
 			return false;
 		}
 		item = TryGetOrCreateGeneratedRewardDetachedItem(record, source);
-		return item != null;
+		if (item != null)
+		{
+			return true;
+		}
+		if (cachedItem != null)
+		{
+			item = cachedItem;
+			return true;
+		}
+		return false;
 	}
 
 	private static ItemObject TryGetOrCreateGeneratedRewardDetachedItem(GeneratedRewardItemRecord record, string source = null)
@@ -8018,21 +8077,37 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			return null;
 		}
-		lock (GeneratedRewardItemRegistrationLock)
+		ItemObject registeredExisting = TryGetRegisteredGeneratedRewardItemByStringId(record.GeneratedStringId);
+		if (registeredExisting != null)
 		{
-			if (record.ObjectId != 0u && GeneratedRewardDetachedItemsByObjectId.TryGetValue(record.ObjectId, out var cachedByObjectId) && cachedByObjectId != null)
+			lock (GeneratedRewardItemRegistrationLock)
 			{
-				return cachedByObjectId;
+				if (registeredExisting.Id.InternalValue != 0u)
+				{
+					record.ObjectId = registeredExisting.Id.InternalValue;
+					GeneratedRewardDetachedItemsByObjectId[registeredExisting.Id.InternalValue] = registeredExisting;
+				}
+				GeneratedRewardDetachedItemsByStringId[record.GeneratedStringId] = registeredExisting;
+				RegisterGeneratedRewardManifestRecordNoLock(record);
 			}
-			if (GeneratedRewardDetachedItemsByStringId.TryGetValue(record.GeneratedStringId, out var cachedByStringId) && cachedByStringId != null)
-			{
-				return cachedByStringId;
-			}
+			return registeredExisting;
 		}
 		ItemObject templateItem = ResolveItemById(record.TemplateStringId) ?? GetGeneratedRewardFallbackTemplateItem();
 		if (templateItem == null)
 		{
 			return null;
+		}
+		ItemObject cachedItem = null;
+		lock (GeneratedRewardItemRegistrationLock)
+		{
+			if (record.ObjectId != 0u && GeneratedRewardDetachedItemsByObjectId.TryGetValue(record.ObjectId, out var cachedByObjectId) && cachedByObjectId != null)
+			{
+				cachedItem = cachedByObjectId;
+			}
+			if (GeneratedRewardDetachedItemsByStringId.TryGetValue(record.GeneratedStringId, out var cachedByStringId) && cachedByStringId != null)
+			{
+				cachedItem = cachedByStringId;
+			}
 		}
 		uint objectIdValue = record.ObjectId;
 		MBGUID objectId = objectIdValue != 0u ? new MBGUID(objectIdValue) : default(MBGUID);
@@ -8044,6 +8119,30 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			}
 			objectIdValue = objectId.InternalValue;
 			record.ObjectId = objectIdValue;
+		}
+		if (cachedItem != null)
+		{
+			cachedItem.StringId = record.GeneratedStringId;
+			cachedItem.Id = objectId;
+			ApplyGeneratedRewardItemTemplateState(cachedItem, templateItem, record.DisplayName);
+			cachedItem.Initialize();
+			cachedItem.IsReady = true;
+			if (TrySetRewardItemObjectName(cachedItem, record.DisplayName) && TryEnsureGeneratedRewardItemCategory(cachedItem, templateItem, source))
+			{
+				ItemObject registeredCachedItem = TryRegisterGeneratedRewardItemWithStableId(cachedItem, source ?? "cached_detached_runtime");
+				if (registeredCachedItem != null)
+				{
+					objectIdValue = registeredCachedItem.Id.InternalValue != 0u ? registeredCachedItem.Id.InternalValue : objectIdValue;
+					record.ObjectId = objectIdValue;
+					lock (GeneratedRewardItemRegistrationLock)
+					{
+						GeneratedRewardDetachedItemsByObjectId[objectIdValue] = registeredCachedItem;
+						GeneratedRewardDetachedItemsByStringId[record.GeneratedStringId] = registeredCachedItem;
+						RegisterGeneratedRewardManifestRecordNoLock(record);
+					}
+					return registeredCachedItem;
+				}
+			}
 		}
 		ItemObject generatedItem = new ItemObject(templateItem)
 		{
@@ -8069,6 +8168,8 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			generatedItem.Initialize();
 			generatedItem.IsReady = true;
 		}
+		objectIdValue = generatedItem.Id.InternalValue != 0u ? generatedItem.Id.InternalValue : objectIdValue;
+		record.ObjectId = objectIdValue;
 		lock (GeneratedRewardItemRegistrationLock)
 		{
 			GeneratedRewardDetachedItemsByObjectId[objectIdValue] = generatedItem;
@@ -8598,7 +8699,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				}
 				continue;
 			}
-			ItemObject existing = MBObjectManager.Instance?.GetObject<ItemObject>(record.GeneratedStringId) ?? Game.Current?.ObjectManager?.GetObject<ItemObject>(record.GeneratedStringId);
+			ItemObject existing = TryGetRegisteredGeneratedRewardItemByStringId(record.GeneratedStringId);
 			if (existing != null)
 			{
 				TrySetRewardItemObjectName(existing, record.DisplayName);
@@ -8970,14 +9071,45 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			MBObjectBase idCollision = MBObjectManager.Instance.GetObject(generatedItem.Id);
 			if (idCollision != null)
 			{
-				return string.Equals((idCollision.StringId ?? "").Trim(), (generatedItem.StringId ?? "").Trim(), StringComparison.OrdinalIgnoreCase) ? idCollision as ItemObject : null;
+				if (!string.Equals((idCollision.StringId ?? "").Trim(), (generatedItem.StringId ?? "").Trim(), StringComparison.OrdinalIgnoreCase))
+				{
+					return null;
+				}
+				ItemObject stringCollision = MBObjectManager.Instance.GetObject<ItemObject>(generatedItem.StringId);
+				if (stringCollision != null && string.Equals((stringCollision.StringId ?? "").Trim(), (generatedItem.StringId ?? "").Trim(), StringComparison.OrdinalIgnoreCase))
+				{
+					return stringCollision;
+				}
+				try
+				{
+					Logger.Log("Logic", "[RewardItemResolve] generated_stable_collision_missing_string_index source=" + (logSource ?? "") + " generated=" + (generatedItem.StringId ?? "") + " id=" + generatedItem.Id.InternalValue.ToString(CultureInfo.InvariantCulture));
+				}
+				catch
+				{
+				}
+				return null;
 			}
 			generatedItem.Initialize();
 			RewardObjectManagerTryRegisterWithoutInitializationMethod.Invoke(MBObjectManager.Instance, new object[1] { generatedItem });
 			generatedItem.OnRegistered();
 			generatedItem.AfterInitialized();
-			ItemObject registered = MBObjectManager.Instance.GetObject<ItemObject>(generatedItem.StringId) ?? MBObjectManager.Instance.GetObject(generatedItem.Id) as ItemObject;
-			return registered != null && string.Equals((registered.StringId ?? "").Trim(), (generatedItem.StringId ?? "").Trim(), StringComparison.OrdinalIgnoreCase) ? registered : null;
+			ItemObject registeredByString = MBObjectManager.Instance.GetObject<ItemObject>(generatedItem.StringId);
+			if (registeredByString != null && string.Equals((registeredByString.StringId ?? "").Trim(), (generatedItem.StringId ?? "").Trim(), StringComparison.OrdinalIgnoreCase))
+			{
+				return registeredByString;
+			}
+			ItemObject registeredById = MBObjectManager.Instance.GetObject(generatedItem.Id) as ItemObject;
+			if (registeredById != null && string.Equals((registeredById.StringId ?? "").Trim(), (generatedItem.StringId ?? "").Trim(), StringComparison.OrdinalIgnoreCase))
+			{
+				try
+				{
+					Logger.Log("Logic", "[RewardItemResolve] generated_stable_register_missing_string_index source=" + (logSource ?? "") + " generated=" + (generatedItem.StringId ?? "") + " id=" + generatedItem.Id.InternalValue.ToString(CultureInfo.InvariantCulture));
+				}
+				catch
+				{
+				}
+			}
+			return null;
 		}
 		catch (Exception ex)
 		{
@@ -9016,7 +9148,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				Instance?.RememberGeneratedRewardItemRecord(key, name, templateItem, cachedGeneratedItem);
 				return cachedGeneratedItem;
 			}
-			ItemObject existing = MBObjectManager.Instance?.GetObject<ItemObject>(key) ?? Game.Current?.ObjectManager?.GetObject<ItemObject>(key);
+			ItemObject existing = TryGetRegisteredGeneratedRewardItemByStringId(key);
 			if (existing != null)
 			{
 				TrySetRewardItemObjectName(existing, name);

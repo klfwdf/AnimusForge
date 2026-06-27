@@ -558,6 +558,7 @@ internal sealed class TtsEngine : IDisposable
 		if (job.AgentIndex >= 0 && !ShoutBehavior.CanAgentParticipateInSceneSpeechExternal(job.AgentIndex))
 		{
 			LogTtsReport("ProcessJob.AbortInvalidAgent.BeforeSynthesis", job.AgentIndex, "speakerId=" + job.SpeakerId);
+			NotifyPlaybackFailed(job, "Scene speech target became unavailable before synthesis.");
 			_currentAgentIndex = -1;
 			return;
 		}
@@ -598,6 +599,7 @@ internal sealed class TtsEngine : IDisposable
 				if (job.AgentIndex >= 0 && !ShoutBehavior.CanAgentParticipateInSceneSpeechExternal(job.AgentIndex))
 				{
 					LogTtsReport("ProcessJob.AbortInvalidAgent.BeforePlayback", job.AgentIndex, $"bytes={array.Length}");
+					NotifyPlaybackFailed(job, "Scene speech target became unavailable before playback.");
 					_currentAgentIndex = -1;
 					return;
 				}
