@@ -1172,6 +1172,12 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 			CancelActiveSession("open_menu_at_sea", releaseParty: true);
 			return;
 		}
+		if (!LordEncounterBehavior.IsEligibleCustomLordEncounterTarget(hero, party.Party))
+		{
+			Logger.Log("ProactiveNpcRequest", "active encounter menu blocked because target is not an eligible kingdom noble. hero=" + GetHeroKey(hero) + " party=" + (party.StringId ?? ""));
+			CancelActiveSession("ineligible_custom_lord_encounter_target", releaseParty: true);
+			return;
+		}
 		_activeSession.Stage = "OpeningMenu";
 		_activeSession.EncounterOpenedAtHours = NowHours();
 		try

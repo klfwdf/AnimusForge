@@ -2895,10 +2895,7 @@ public static class ShoutUtils
 		if (content.Contains("[ACTION:DUEL]"))
 		{
 			content = content.Replace("[ACTION:DUEL]", "").Trim();
-			if (npcData.IsHero)
-			{
-				return true;
-			}
+			return npcData != null;
 		}
 		return false;
 	}
@@ -2908,6 +2905,11 @@ public static class ShoutUtils
 		if (agent != null && agent.Character is CharacterObject { HeroObject: not null } characterObject)
 		{
 			DuelBehavior.PrepareDuel(characterObject.HeroObject, 3f);
+			return;
+		}
+		if (agent != null)
+		{
+			DuelBehavior.PrepareDuel(agent, 3f);
 		}
 	}
 

@@ -3788,6 +3788,12 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		{
 			return false;
 		}
+		PartyBase encounterParty = GetCurrentEncounterPartySafe();
+		if (!IsEligibleCustomLordEncounterTarget(target, encounterParty))
+		{
+			Logger.Log("LordEncounter", $"OpenEncounterMenu ignored because target is not an eligible kingdom noble encounter. Target={target.Name}, Party={encounterParty?.Name}");
+			return false;
+		}
 		if (MapSeaContextGuard.IsCurrentPlayerEncounterAtSea(target))
 		{
 			Logger.Log("LordEncounter", $"OpenEncounterMenu ignored because current encounter is at sea. Target={target.Name}");
@@ -3852,6 +3858,88 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 	public static void SetTarget(Hero target)
 	{
 		_targetHero = target;
+	}
+
+	internal static bool IsEligibleCustomLordEncounterTarget(Hero hero, PartyBase encounterParty = null)
+	{
+		if (hero == null || hero == Hero.MainHero || !hero.IsLord)
+		{
+			return false;
+		}
+		Clan clan = null;
+		try
+		{
+			clan = hero.Clan;
+		}
+		catch
+		{
+			clan = null;
+		}
+		if (IsExcludedCustomLordClan(clan))
+		{
+			return false;
+		}
+		try
+		{
+			if (encounterParty != null)
+			{
+				Hero partyLeader = encounterParty.LeaderHero;
+				if (partyLeader != null && partyLeader != hero)
+				{
+					return false;
+				}
+				IFaction partyFaction = encounterParty.MapFaction;
+				if (IsExcludedCustomLordMapFaction(partyFaction))
+				{
+					return false;
+				}
+				if (clan.Kingdom != null && partyFaction != null && partyFaction != clan.Kingdom)
+				{
+					return false;
+				}
+			}
+		}
+		catch
+		{
+			return false;
+		}
+		return true;
+	}
+
+	private static bool IsExcludedCustomLordClan(Clan clan)
+	{
+		if (clan == null)
+		{
+			return true;
+		}
+		try
+		{
+			if (!clan.IsNoble || clan.Kingdom == null || clan.IsBanditFaction || clan.IsMinorFaction || clan.IsOutlaw)
+			{
+				return true;
+			}
+			return IsExcludedCustomLordMapFaction(clan.Kingdom);
+		}
+		catch
+		{
+			return true;
+		}
+	}
+
+	private static bool IsExcludedCustomLordMapFaction(IFaction faction)
+	{
+		if (faction == null)
+		{
+			return true;
+		}
+		try
+		{
+			return faction.IsBanditFaction || faction.IsMinorFaction || faction.IsOutlaw || !faction.IsKingdomFaction;
+		}
+		catch
+		{
+			return true;
+		}
 	}
 
 	internal static void SuspendEncounterRedirectDuringResultResolution(string reason)
@@ -4101,8 +4189,9 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			Hero hero = PlayerEncounter.EncounteredParty?.LeaderHero;
-			if (hero != null && hero != Hero.MainHero && hero.IsLord)
+			PartyBase encounteredParty = PlayerEncounter.EncounteredParty;
+			Hero hero = encounteredParty?.LeaderHero;
+			if (IsEligibleCustomLordEncounterTarget(hero, encounteredParty))
 			{
 				return hero;
 			}

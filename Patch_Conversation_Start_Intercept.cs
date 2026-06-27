@@ -198,7 +198,20 @@ public static class Patch_Conversation_Start_Intercept
 
 	private static bool IsValidLord(Hero hero)
 	{
-		return hero != null && hero != Hero.MainHero && hero.IsLord;
+		PartyBase encounteredParty = null;
+		try
+		{
+			encounteredParty = PlayerEncounter.EncounteredParty;
+		}
+		catch
+		{
+			encounteredParty = null;
+		}
+		if (encounteredParty != null && encounteredParty.LeaderHero != null)
+		{
+			return LordEncounterBehavior.IsEligibleCustomLordEncounterTarget(hero, encounteredParty);
+		}
+		return LordEncounterBehavior.IsEligibleCustomLordEncounterTarget(hero);
 	}
 
 	private static void TryAddDeclaredMethod(HashSet<MethodBase> methods, string methodName, int? parameterCount = null)

@@ -8,7 +8,7 @@ public static class ChatDuelHandler
 {
 	public static void InjectDuelInstructions(StringBuilder sb, bool isHero)
 	{
-		if (isHero)
+		if (sb != null)
 		{
 			sb.AppendLine(" ");
 			sb.AppendLine("【特殊动作系统 - 决斗】：");
@@ -19,6 +19,10 @@ public static class ChatDuelHandler
 			sb.AppendLine("3. 执行：如果你决定【接受挑战】，请务必在回复的最后加上 `[ACTION:DUEL]` 标记。");
 			sb.AppendLine("\u00a0 \u00a0- 例如：\"好啊，用你的鲜血来偿还你的傲慢吧！ [ACTION:DUEL]\"");
 			sb.AppendLine("\u00a0 \u00a0- 如果拒绝，正常回复即可，不要加标记。");
+			if (!isHero)
+			{
+				sb.AppendLine("\u00a0 \u00a0- 你不是领主或有名有姓的英雄时，也可以接受决斗；定居点中会前往竞技场，野外上下文中会进入野外战斗场景。");
+			}
 		}
 	}
 
@@ -35,12 +39,13 @@ public static class ChatDuelHandler
 			Logger.Log("ChatDuelHandler", "决斗触发失败: Agent 无效或非活跃状态");
 			return false;
 		}
-		if (!(agent.Character is CharacterObject { IsHero: not false, HeroObject: not null, HeroObject: var heroObject }))
+		if (!(agent.Character is CharacterObject characterObject))
 		{
-			Logger.Log("ChatDuelHandler", "决斗触发拦截: 目标 [" + agent.Name + "] 不是英雄/领主，无法决斗。");
+			Logger.Log("ChatDuelHandler", "决斗触发拦截: 目标 [" + agent.Name + "] 不是有效 NPC。");
 			return false;
 		}
-		Logger.Log("ChatDuelHandler", $"决斗条件验证通过! 目标: {heroObject.Name}。准备通知主行为类...");
+		string targetName = characterObject.HeroObject?.Name?.ToString() ?? characterObject.Name?.ToString() ?? agent.Name ?? "NPC";
+		Logger.Log("ChatDuelHandler", $"决斗条件验证通过! 目标: {targetName}。准备通知主行为类...");
 		return true;
 	}
 
@@ -50,6 +55,11 @@ public static class ChatDuelHandler
 		{
 			Logger.Log("ChatDuelHandler", $"正在调用 DuelBehavior.PrepareDuel -> 目标: {characterObject.HeroObject.Name}");
 			DuelBehavior.PrepareDuel(characterObject.HeroObject, 4f);
+		}
+		else if (agent?.Character is CharacterObject nonHeroCharacter)
+		{
+			Logger.Log("ChatDuelHandler", $"正在调用 DuelBehavior.PrepareDuel -> 非Hero目标: {nonHeroCharacter.Name}");
+			DuelBehavior.PrepareDuel(agent, 4f);
 		}
 		else
 		{

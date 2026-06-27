@@ -1770,7 +1770,7 @@ public class SceneTauntBehavior : CampaignBehaviorBase
 			}
 			if (SceneTauntMissionBehavior.IsSettlementCriminalConflictTargetExternal(targetHero, targetCharacter))
 			{
-				return "【AFEF与匪徒冲突规则】你是匪徒/帮派成员，这一类冲突不走普通场景口角的警告-升级流程，也不要输出[ACTION:SCENE_TAUNT_WARN]。" + text + "若只是嘴硬、试探、骂你几句，你可以继续放狠话、威胁、索要买路钱或逼他滚开；只有当你明确决定和他立刻翻脸开打时，才在句末输出[ACTION:SCENE_TAUNT_FIGHT]。一旦输出，该冲突会进入原版的匪徒冲突流程。";
+				return "【AFEF与匪徒冲突规则】你是匪徒/帮派成员，这一类冲突不走普通场景口角的警告-升级流程，也不要输出[ACTION:SCENE_TAUNT_WARN]。" + text + "若只是嘴硬、试探、骂你几句，你可以继续放狠话、威胁、索要买路钱或逼他滚开；只有当你明确决定和他短暂对峙后翻脸开打时，才在句末输出[ACTION:SCENE_TAUNT_FIGHT]。输出后会先维持对话约10秒，然后自动退出对话并进入原版匪徒冲突流程。";
 			}
 			string sceneTauntTargetKey = BuildSceneTauntTargetKey(targetHero, targetCharacter, targetAgentIndex);
 			bool flag = HasSceneTauntWarning(sceneTauntTargetKey);
@@ -1781,15 +1781,15 @@ public class SceneTauntBehavior : CampaignBehaviorBase
 			{
 				if (flag4)
 				{
-					return "你已警告过" + text + "。若还忍不了，就在句末输出[ACTION:SCENE_TAUNT_FIGHT]；一旦开打，场上己方士兵和领主会来帮你砍他。";
+					return "你已警告过" + text + "。若还忍不了，就在句末输出[ACTION:SCENE_TAUNT_FIGHT]；输出后会先维持对话约10秒，然后自动退出对话并爆发冲突，场上己方士兵和领主会来帮你砍他。";
 				}
-				return "你已警告过" + text + "。若还忍不了，就在句末输出[ACTION:SCENE_TAUNT_FIGHT]，用拳头教训他。";
+				return "你已警告过" + text + "。若还忍不了，就在句末输出[ACTION:SCENE_TAUNT_FIGHT]，短暂对峙后用拳头教训他。输出后会先维持对话约10秒，然后自动退出对话并爆发冲突。";
 			}
 			if (flag4)
 			{
-				return "若" + text + "辱骂，贬低或者招惹你你可在句末输出[ACTION:SCENE_TAUNT_WARN]警告他；若忍无可忍，可直接输出[ACTION:SCENE_TAUNT_FIGHT]。一旦开打，场上己方士兵和领主会来帮你砍他。";
+				return "若" + text + "辱骂，贬低或者招惹你你可在句末输出[ACTION:SCENE_TAUNT_WARN]警告他；若忍无可忍，可直接输出[ACTION:SCENE_TAUNT_FIGHT]。输出后会先维持对话约10秒，然后自动退出对话并爆发冲突，场上己方士兵和领主会来帮你砍他。";
 			}
-			return "若" + text + "辱骂，贬低或者招惹你可在句末输出[ACTION:SCENE_TAUNT_WARN]警告他；若忍无可忍，可直接输出[ACTION:SCENE_TAUNT_FIGHT]，用拳头教训他。";
+			return "若" + text + "辱骂，贬低或者招惹你可在句末输出[ACTION:SCENE_TAUNT_WARN]警告他；若忍无可忍，可直接输出[ACTION:SCENE_TAUNT_FIGHT]，短暂对峙后用拳头教训他。输出后会先维持对话约10秒，然后自动退出对话并爆发冲突。";
 		}
 		catch
 		{
@@ -1869,6 +1869,59 @@ public class SceneTauntBehavior : CampaignBehaviorBase
 	internal static string BuildSceneTauntTargetKey(CharacterObject targetCharacter, int targetAgentIndex)
 	{
 		return BuildSceneTauntTargetKey(targetCharacter?.HeroObject, targetCharacter, targetAgentIndex);
+	}
+
+	internal static bool HasSceneTauntFightTagForExternal(string content)
+	{
+		try
+		{
+			return !string.IsNullOrWhiteSpace(content) && SceneTauntFightTagRegex.IsMatch(content);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	internal static bool TryConsumeSceneTauntTagsForDelayedFightExternal(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, ref string content, out bool hadWarnTag, out bool hadFightTag, out string targetKey)
+	{
+		hadWarnTag = false;
+		hadFightTag = false;
+		targetKey = "";
+		try
+		{
+			if (string.IsNullOrWhiteSpace(content))
+			{
+				return false;
+			}
+			hadWarnTag = SceneTauntWarnTagRegex.IsMatch(content);
+			hadFightTag = SceneTauntFightTagRegex.IsMatch(content);
+			if (!hadWarnTag && !hadFightTag)
+			{
+				return false;
+			}
+			content = SceneTauntWarnTagRegex.Replace(content, "").Trim();
+			content = SceneTauntFightTagRegex.Replace(content, "").Trim();
+			targetKey = BuildSceneTauntTargetKey(targetHero, targetCharacter, targetAgentIndex);
+			if (hadWarnTag && !string.IsNullOrWhiteSpace(targetKey) && IsSceneTauntApplicable(targetHero, targetCharacter, targetAgentIndex))
+			{
+				RememberSceneTauntWarning(targetKey);
+			}
+			return true;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SceneTaunt", "Consuming delayed scene taunt tag failed: " + ex.Message);
+			return false;
+		}
+	}
+
+	internal static bool TryStartSceneTauntFightForExternal(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, string targetKey = null, string reason = null)
+	{
+		string resolvedTargetKey = string.IsNullOrWhiteSpace(targetKey) ? BuildSceneTauntTargetKey(targetHero, targetCharacter, targetAgentIndex) : targetKey;
+		bool result = TryStartSceneTauntFight(targetHero, targetCharacter, targetAgentIndex, resolvedTargetKey);
+		Logger.Log("SceneTaunt", $"Delayed scene taunt fight requested. Started={result}, Reason={reason ?? "N/A"}, Target={targetHero?.Name ?? targetCharacter?.Name}, AgentIndex={targetAgentIndex}, Key={resolvedTargetKey}");
+		return result;
 	}
 
 	internal static string BuildSceneTauntTargetKey(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex)
@@ -1978,14 +2031,14 @@ public class SceneTauntBehavior : CampaignBehaviorBase
 			dictionary["tauntContext"] = "非会面场景中的领主互动";
 			dictionary["warnTag"] = "SCENE_TAUNT_WARN";
 			dictionary["fightTag"] = "SCENE_TAUNT_FIGHT";
-			dictionary["fightEffectText"] = "这会把当前场景立刻升级为持械冲突；该领主和场上士兵会拿武器围攻玩家；并且会按玩家公开敌对该领主所属势力来处理，必要时会先强制让玩家脱离原势力再宣战。";
+			dictionary["fightEffectText"] = "这会在约10秒对峙后自动退出对话，并把当前场景升级为持械冲突；该领主和场上士兵会拿武器围攻玩家；并且会按玩家公开敌对该领主所属势力来处理，必要时会先强制让玩家脱离原势力再宣战。";
 		}
 		else
 		{
 			dictionary["tauntContext"] = "普通NPC的场景互动";
 			dictionary["warnTag"] = "SCENE_TAUNT_WARN";
 			dictionary["fightTag"] = "SCENE_TAUNT_FIGHT";
-			dictionary["fightEffectText"] = "这会把当前场景立刻升级为冲突。";
+			dictionary["fightEffectText"] = "这会在约10秒对峙后自动退出对话，并把当前场景升级为冲突。";
 		}
 		return dictionary;
 	}

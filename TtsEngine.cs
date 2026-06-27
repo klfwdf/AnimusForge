@@ -605,51 +605,70 @@ internal sealed class TtsEngine : IDisposable
 				}
 				float num3 = (float)pcmData.Length / ((float)sampleRate * 2f);
 				bool flag3 = job.AgentIndex >= 0;
-				bool flag4 = !flag3 || flag;
-		LogTtsReport("ProcessJob.PlaybackPrepared", job.AgentIndex, $"duration={num3:F2};sampleRate={sampleRate};sceneAgent={flag3};playAudible={flag4}");
+				bool nativeMapConversationTableauPlayback = !flag3 && this.OnAudioFileReady != null && ShoutBehavior.ShouldUseMapConversationTableauPlaybackForNativeTtsExternal();
+				bool flag4 = flag3 ? flag : !nativeMapConversationTableauPlayback;
+				LogTtsReport("ProcessJob.PlaybackPrepared", job.AgentIndex, $"duration={num3:F2};sampleRate={sampleRate};sceneAgent={flag3};playAudible={flag4};mapTableau={nativeMapConversationTableauPlayback}");
 				try
 				{
-					if (job.AgentIndex >= 0 && this.OnAudioFileReady != null)
+					if (this.OnAudioFileReady != null)
 					{
-						string tempAudioDir = GetTempAudioDir();
-							string tempFileStem = $"tts_{job.AgentIndex}_{Stopwatch.GetTimestamp()}";
-							string text8 = Path.Combine(tempAudioDir, tempFileStem + ".wav");
-							string text9 = Path.Combine(tempAudioDir, tempFileStem + ".xml");
-						float num4 = 1f;
-						if (flag3 && flag4)
-						{
-							num4 = 0f;
-						}
-						else
+						if (job.AgentIndex < 0 && !nativeMapConversationTableauPlayback)
 						{
 							try
 							{
-								num4 = DuelSettings.GetSettings()?.TtsLipSyncSoundEventVolume ?? 0f;
+								this.OnAudioFileReady(job.AgentIndex, "", "", num3);
+								LogTtsReport("ProcessJob.OnAudioDurationReadyDispatched", job.AgentIndex, $"duration={num3:F2}");
 							}
-							catch
+							catch (Exception ex)
+							{
+								BannerlordExceptionSentinel.ReportObservedException("TtsEngine.OnAudioDurationReady", ex, "agentIndex=" + job.AgentIndex);
+							}
+						}
+						else
+						{
+							string tempAudioDir = GetTempAudioDir();
+							string tempFileStem = $"tts_{(job.AgentIndex >= 0 ? job.AgentIndex.ToString() : "map")}_{Stopwatch.GetTimestamp()}";
+							string text8 = Path.Combine(tempAudioDir, tempFileStem + ".wav");
+							string text9 = Path.Combine(tempAudioDir, tempFileStem + ".xml");
+							float num4 = 1f;
+							if (flag3)
+							{
+								if (flag4)
+								{
+									num4 = 0f;
+								}
+								else
+								{
+									try
+									{
+										num4 = DuelSettings.GetSettings()?.TtsLipSyncSoundEventVolume ?? 0f;
+									}
+									catch
+									{
+										num4 = 0f;
+									}
+								}
+							}
+							if (num4 < 0f)
 							{
 								num4 = 0f;
 							}
-						}
-						if (num4 < 0f)
-						{
-							num4 = 0f;
-						}
-						if (num4 > 1f)
-						{
-							num4 = 1f;
-						}
-						byte[] pcmData2 = ScalePcm16Mono(pcmData, num4);
-						SavePcmAsWav(pcmData2, sampleRate, text8);
-						GenerateRhubarbXml(text9, num3);
-						try
-						{
-							this.OnAudioFileReady(job.AgentIndex, text8, text9, num3);
-							LogTtsReport("ProcessJob.OnAudioFileReadyDispatched", job.AgentIndex, $"wav={Path.GetFileName(text8)};xml={Path.GetFileName(text9)};duration={num3:F2}");
-						}
-						catch (Exception ex)
-						{
-							BannerlordExceptionSentinel.ReportObservedException("TtsEngine.OnAudioFileReady", ex, "agentIndex=" + job.AgentIndex);
+							if (num4 > 1f)
+							{
+								num4 = 1f;
+							}
+							byte[] pcmData2 = ScalePcm16Mono(pcmData, num4);
+							SavePcmAsWav(pcmData2, sampleRate, text8);
+							GenerateRhubarbXml(text9, num3);
+							try
+							{
+								this.OnAudioFileReady(job.AgentIndex, text8, text9, num3);
+								LogTtsReport("ProcessJob.OnAudioFileReadyDispatched", job.AgentIndex, $"wav={Path.GetFileName(text8)};xml={Path.GetFileName(text9)};duration={num3:F2}");
+							}
+							catch (Exception ex)
+							{
+								BannerlordExceptionSentinel.ReportObservedException("TtsEngine.OnAudioFileReady", ex, "agentIndex=" + job.AgentIndex);
+							}
 						}
 					}
 				}
@@ -683,11 +702,7 @@ internal sealed class TtsEngine : IDisposable
 						bool flag5 = false;
 						while (num6 < num5)
 						{
-							if (_cancelCurrent)
-							{
-								break;
-							}
-							if (_stopWorker)
+							if (_cancelCurrent || _stopWorker)
 							{
 								break;
 							}
@@ -709,6 +724,25 @@ internal sealed class TtsEngine : IDisposable
 							}
 							Thread.Sleep(50);
 							num6 += 50;
+						}
+					}
+					else if (!flag4)
+					{
+						int num7 = Math.Max(100, (int)(num3 * 1000f) + 100);
+						int num8 = 0;
+						while (num8 < num7)
+						{
+							if (_cancelCurrent || _stopWorker)
+							{
+								break;
+							}
+							if (_pauseRequested)
+							{
+								Thread.Sleep(50);
+								continue;
+							}
+							Thread.Sleep(50);
+							num8 += 50;
 						}
 					}
 					else

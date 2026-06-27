@@ -56,6 +56,28 @@ public static class ConversationHelper
 
 	public static bool HasActiveVM => _currentVM != null && (_dialogTextProp != null || _dialogTextField != null);
 
+	public static bool IsTypewriterActive
+	{
+		get
+		{
+			lock (_pendingLock)
+			{
+				return _typewriterActive;
+			}
+		}
+	}
+
+	public static bool IsTypewriterWaitingForPlayback
+	{
+		get
+		{
+			lock (_pendingLock)
+			{
+				return _typewriterActive && _typewriterWaitingForPlayback;
+			}
+		}
+	}
+
 	public static string GetCurrentDialogText()
 	{
 		object currentVM = _currentVM;
@@ -256,6 +278,29 @@ public static class ConversationHelper
 			_hasPending = true;
 		}
 		_lastStreamText = "";
+	}
+
+	public static bool StartTypewriterPlaybackIfWaiting(float durationSeconds = 0f)
+	{
+		lock (_pendingLock)
+		{
+			if (!_typewriterActive || !_typewriterWaitingForPlayback)
+			{
+				return false;
+			}
+			if (durationSeconds > 0f && !float.IsNaN(durationSeconds) && !float.IsInfinity(durationSeconds))
+			{
+				_typewriterDurationSeconds = Math.Max(0.25, Math.Min(60.0, durationSeconds));
+			}
+			_typewriterWaitingForPlayback = false;
+			_typewriterVisibleLength = 0;
+			_typewriterCurrentText = "";
+			_typewriterStartTicks = Stopwatch.GetTimestamp();
+			_pendingText = "";
+			_hasPending = true;
+		}
+		_lastStreamText = "";
+		return true;
 	}
 
 	public static void AdjustTypewriterDuration(float durationSeconds)

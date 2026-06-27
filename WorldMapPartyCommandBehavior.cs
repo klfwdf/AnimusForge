@@ -882,6 +882,10 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 					continue;
 				}
 				bool success = winnerSide == BattleSideEnum.Attacker || IsVillageLooted(settlement);
+				if (!success && TryKeepRaidCommandAliveAfterRaidEnded(state, command, settlement, raidEvent, "raid_completed_before_loot"))
+				{
+					continue;
+				}
 				string detail = success ? "村庄已被洗劫。" : "守军击退了袭掠，村庄没有被洗劫。";
 				TryCompleteCurrentAttackResult(state, success ? CommandResultOutcome.Success : CommandResultOutcome.Failure, detail, success ? "raid_completed_success" : "raid_completed_failure");
 			}
@@ -1609,6 +1613,10 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		if (IsPartyCommittedToSettlementAttack(party, settlement))
 		{
 			SynchronizeArmyObjectiveForCommand(party, command);
+			if (settlement.IsVillage)
+			{
+				EnsureCommittedRaidBehavior(party, settlement);
+			}
 			LockPartyAi(party);
 			return;
 		}
@@ -1653,6 +1661,50 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 	private static void SetPartyAiActionForRaidingSettlement(MobileParty party, Settlement settlement)
 	{
 		BannerlordApiCompat.GetActionForRaidingSettlement(party, settlement);
+	}
+
+	private bool TryKeepRaidCommandAliveAfterRaidEnded(PartyCommandQueueState state, PartyCommandEntry command, Settlement settlement, RaidEventComponent raidEvent, string reason)
+	{
+		try
+		{
+			if (state == null || command == null || !IsTargetSettlement(command, settlement) || !settlement.IsVillage || state.ResultLogged)
+			{
+				return false;
+			}
+			if (IsVillageLooted(settlement) || settlement.SettlementHitPoints <= 0.001f)
+			{
+				return false;
+			}
+			if (raidEvent?.AttackerSide == null || raidEvent.AttackerSide.TroopCount <= 0 || !MapEventSideHasHero(raidEvent.AttackerSide, state.HeroId))
+			{
+				return false;
+			}
+			Hero hero = ResolveHeroByIdAny(state.HeroId);
+			MobileParty party = ResolveActorParty(hero);
+			if (!IsPartyUsable(party) || !CanForceCommitSettlementAttack(party, settlement))
+			{
+				return false;
+			}
+			double now = NowDay();
+			if (state.TimeoutDay > 0.0 && now >= state.TimeoutDay)
+			{
+				return false;
+			}
+			LockPartyAi(party);
+			SynchronizeArmyObjectiveForCommand(party, command);
+			MoveTowardSettlementAttackPoint(party, settlement);
+			state.EngageCommitted = false;
+			state.Stage = CommandStage.Tracking.ToString();
+			state.LastIssuedActionKey = "raid_retry:" + settlement.StringId;
+			NotifyCommandStatus(state, state.LastIssuedActionKey + ":" + reason, GetHeroName(hero) + "的烧村行动被原版事件提前中断，正在重新保持对" + GetSettlementName(settlement) + "的烧掠命令。", CommandMessageTone.Progress);
+			Log("raid_retry_after_nonfinal_end hero=" + (state.HeroId ?? "") + " settlement=" + (settlement.StringId ?? "") + " reason=" + (reason ?? "") + " hp=" + settlement.SettlementHitPoints.ToString("0.000") + " troops=" + raidEvent.AttackerSide.TroopCount + " " + DescribePartyAi(party));
+			return true;
+		}
+		catch (Exception ex)
+		{
+			Log("raid retry check failed hero=" + (state?.HeroId ?? "") + " settlement=" + (settlement?.StringId ?? "") + " error=" + ex.Message);
+			return false;
+		}
 	}
 
 	private void MaintainAttackTracking(Hero actorHero, MobileParty party, MobileParty targetParty, PartyCommandQueueState state, PartyCommandEntry command, string reason)
@@ -2667,6 +2719,21 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 				{
 					state.TimeoutDay = now + 0.25;
 					Log("merge timeout deferred because party is already near player hero=" + (hero?.StringId ?? "") + " distance=" + GetPartyDistance(party, MobileParty.MainParty).ToString("0.0"));
+					return true;
+				}
+			}
+			if (IsKind(command, CommandKind.AttackHero) && IsSettlementTarget(command) && state.EngageCommitted)
+			{
+				Settlement settlement = ResolveSettlementById(command.TargetId);
+				if (settlement != null && !IsSettlementAttackComplete(party, settlement) && IsPartyCommittedToSettlementAttack(party, settlement))
+				{
+					state.TimeoutDay = now + 1.0;
+					if (settlement.IsVillage)
+					{
+						EnsureCommittedRaidBehavior(party, settlement);
+					}
+					LockPartyAi(party);
+					Log("settlement attack timeout deferred while committed hero=" + (hero?.StringId ?? "") + " settlement=" + settlement.StringId + " " + DescribePartyAi(party));
 					return true;
 				}
 			}
@@ -4208,6 +4275,38 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 				return true;
 			}
 			return party.SiegeEvent != null && party.SiegeEvent.BesiegedSettlement == settlement;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static void EnsureCommittedRaidBehavior(MobileParty party, Settlement settlement)
+	{
+		try
+		{
+			if (!IsPartyUsable(party) || settlement?.IsVillage != true || IsPartyRaidBehaviorTargetingSettlement(party, settlement))
+			{
+				return;
+			}
+			SetPartyAiActionForRaidingSettlement(party, settlement);
+			Log("raid_behavior_reasserted party=" + (party.StringId ?? "") + " settlement=" + (settlement.StringId ?? "") + " " + DescribePartyAi(party));
+		}
+		catch (Exception ex)
+		{
+			Log("raid behavior reassert failed party=" + (party?.StringId ?? "") + " settlement=" + (settlement?.StringId ?? "") + " error=" + ex.Message);
+		}
+	}
+
+	private static bool IsPartyRaidBehaviorTargetingSettlement(MobileParty party, Settlement settlement)
+	{
+		try
+		{
+			return IsPartyUsable(party)
+				&& settlement != null
+				&& ((party.DefaultBehavior == AiBehavior.RaidSettlement && party.TargetSettlement == settlement)
+					|| (party.ShortTermBehavior == AiBehavior.RaidSettlement && party.ShortTermTargetSettlement == settlement));
 		}
 		catch
 		{

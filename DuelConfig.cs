@@ -10,6 +10,8 @@ public class DuelConfig
 
 	public string TopicLabel { get; set; } = "";
 
+	public string Code { get; set; } = "";
+
 	public string DialogueInstruction { get; set; } = "";
 
 	public string HealthBlockedInstruction { get; set; } = "";

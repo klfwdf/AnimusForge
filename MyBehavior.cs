@@ -2021,6 +2021,10 @@ public class MyBehavior : CampaignBehaviorBase
 		CampaignEvents.ConversationEnded.AddNonSerializedListener(this, OnMemoryConversationEnded);
 		CampaignEvents.TickEvent.AddNonSerializedListener(this, OnCampaignTick);
 		CampaignEvents.MapEventEnded.AddNonSerializedListener(this, OnMapEventEnded);
+		CampaignEvents.OnQuestCompletedEvent.AddNonSerializedListener(this, OnQuestCompletedForActionHistory);
+		CampaignEvents.NewCompanionAdded.AddNonSerializedListener(this, OnNewCompanionAddedForActionHistory);
+		CampaignEvents.CompanionRemoved.AddNonSerializedListener(this, OnCompanionRemovedForActionHistory);
+		CampaignEvents.OnGovernorChangedEvent.AddNonSerializedListener(this, OnGovernorChangedForActionHistory);
 		CampaignEvents.MobilePartyDestroyed.AddNonSerializedListener(this, OnMobilePartyDestroyedForNonHeroMemoryCleanup);
 		CampaignEvents.OnPartyRemovedEvent.AddNonSerializedListener(this, OnPartyRemovedForNonHeroMemoryCleanup);
 		CampaignEvents.HeroPrisonerTaken.AddNonSerializedListener(this, OnHeroPrisonerTaken);
@@ -2192,6 +2196,406 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			Logger.Log("NpcAction", "[ERROR] TrackNpcActionsFromMapEvent: " + ex2.Message);
 		}
+		try
+		{
+			RecordPlayerRoutineBanditDefeatRecentAction(mapEvent);
+		}
+		catch (Exception ex3)
+		{
+			Logger.Log("NpcAction", "[ERROR] RecordPlayerRoutineBanditDefeatRecentAction: " + ex3.Message);
+		}
+		try
+		{
+			RecordPlayerHideoutClearRecentAction(mapEvent);
+		}
+		catch (Exception ex4)
+		{
+			Logger.Log("NpcAction", "[ERROR] RecordPlayerHideoutClearRecentAction: " + ex4.Message);
+		}
+	}
+
+	public static void RecordNpcActionForExternal(Hero actorHero, string text, string stableKey, string actionKind, bool isMajor, bool isRecent, Hero targetHero = null, Settlement settlement = null, string locationText = null, bool allowNonLordHero = false, bool? won = null)
+	{
+		try
+		{
+			(Instance ?? Campaign.Current?.GetCampaignBehavior<MyBehavior>())?.RecordExternalNpcAction(actorHero, text, stableKey, actionKind, isMajor, isRecent, targetHero, settlement, locationText, allowNonLordHero, won);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("NpcAction", "[ERROR] RecordNpcActionForExternal: " + ex.Message);
+		}
+	}
+
+	public static void RecordPlayerActionForExternal(string text, string stableKey, string actionKind, bool isMajor, Hero targetHero = null, Settlement settlement = null, string locationText = null, bool? won = null)
+	{
+		try
+		{
+			(Instance ?? Campaign.Current?.GetCampaignBehavior<MyBehavior>())?.RecordExternalPlayerAction(text, stableKey, actionKind, isMajor, targetHero, settlement, locationText, won);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("PlayerNotoriety", "[ERROR] RecordPlayerActionForExternal bridge: " + ex.Message);
+		}
+	}
+
+	public static void RecordVoteDealFulfilledForExternal(Hero npc, KingdomDecision decision, DecisionOutcome chosenOutcome, string dealId, string targetDecisionTitle, string targetOptionTitle)
+	{
+		try
+		{
+			(Instance ?? Campaign.Current?.GetCampaignBehavior<MyBehavior>())?.RecordVoteDealFulfilled(npc, decision, chosenOutcome, dealId, targetDecisionTitle, targetOptionTitle);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("VoteDeal", "[ERROR] record vote deal action failed: " + ex.Message);
+		}
+	}
+
+	private void OnQuestCompletedForActionHistory(QuestBase quest, QuestBase.QuestCompleteDetails detail)
+	{
+		try
+		{
+			Hero questGiver = quest?.QuestGiver;
+			string questTitle = (quest?.Title?.ToString() ?? "").Trim();
+			if (string.IsNullOrWhiteSpace(questTitle))
+			{
+				questTitle = "一项原版任务";
+			}
+			string detailLabel = GetQuestCompletionDetailLabel(detail);
+			string actionKind = GetQuestCompletionActionKind(detail);
+			bool? won = detail == QuestBase.QuestCompleteDetails.Success ? true : (detail == QuestBase.QuestCompleteDetails.Cancel ? (bool?)null : false);
+			string stableKey = "quest_result:" + ((quest?.StringId ?? questTitle).Trim()) + ":" + detail + ":" + GetCurrentGameDayIndexSafe();
+			Settlement settlement = ResolveQuestActionSettlement(questGiver);
+			if (questGiver != null)
+			{
+				string npcText = "你交给玩家的任务“" + questTitle + "”已有结果：" + detailLabel + "。";
+				RecordExternalNpcAction(questGiver, npcText, stableKey + ":giver", actionKind, isMajor: true, isRecent: true, targetHero: Hero.MainHero, settlement: settlement, locationText: GetSettlementDisplayName(settlement), allowNonLordHero: true, won: won);
+			}
+			string giverName = questGiver != null ? GetHeroDisplayName(questGiver) : "任务发布人";
+			string playerText = "你承接的任务“" + questTitle + "”已有结果：" + detailLabel + "。发布人：" + giverName + "。";
+			RecordExternalPlayerAction(playerText, stableKey + ":player", actionKind, isMajor: true, targetHero: questGiver, settlement: settlement, locationText: GetSettlementDisplayName(settlement), won: won);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("NpcAction", "[ERROR] OnQuestCompletedForActionHistory: " + ex.Message);
+		}
+	}
+
+	private void OnNewCompanionAddedForActionHistory(Hero newCompanion)
+	{
+		try
+		{
+			if (newCompanion == null || !newCompanion.IsPlayerCompanion || newCompanion == Hero.MainHero)
+			{
+				return;
+			}
+			Settlement settlement = ResolveCurrentActionSettlement(newCompanion);
+			string companionName = GetHeroDisplayName(newCompanion);
+			string stableKey = "companion_join:" + GetHeroId(newCompanion) + ":" + GetCurrentGameDayIndexSafe();
+			RecordExternalNpcAction(newCompanion, "你加入了玩家队伍，成为玩家的同伴。", stableKey + ":npc", "companion_join", isMajor: true, isRecent: true, targetHero: Hero.MainHero, settlement: settlement, locationText: GetSettlementDisplayName(settlement), allowNonLordHero: true, won: true);
+			RecordExternalPlayerAction("你招募了" + companionName + "加入队伍，成为你的同伴。", stableKey + ":player", "companion_join", isMajor: true, targetHero: newCompanion, settlement: settlement, locationText: GetSettlementDisplayName(settlement), won: true);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("NpcAction", "[ERROR] OnNewCompanionAddedForActionHistory: " + ex.Message);
+		}
+	}
+
+	private void OnCompanionRemovedForActionHistory(Hero companion, RemoveCompanionAction.RemoveCompanionDetail detail)
+	{
+		try
+		{
+			if (companion == null || companion == Hero.MainHero)
+			{
+				return;
+			}
+			Settlement settlement = ResolveCurrentActionSettlement(companion);
+			string detailLabel = GetCompanionRemovedDetailLabel(detail);
+			string companionName = GetHeroDisplayName(companion);
+			string stableKey = "companion_leave:" + GetHeroId(companion) + ":" + detail + ":" + GetCurrentGameDayIndexSafe();
+			string npcText = "你离开了玩家队伍。原因：" + detailLabel + "。";
+			string playerText = companionName + "离开了你的队伍。原因：" + detailLabel + "。";
+			RecordExternalNpcAction(companion, npcText, stableKey + ":npc", "companion_leave", isMajor: true, isRecent: true, targetHero: Hero.MainHero, settlement: settlement, locationText: GetSettlementDisplayName(settlement), allowNonLordHero: true, won: null);
+			RecordExternalPlayerAction(playerText, stableKey + ":player", "companion_leave", isMajor: true, targetHero: companion, settlement: settlement, locationText: GetSettlementDisplayName(settlement), won: null);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("NpcAction", "[ERROR] OnCompanionRemovedForActionHistory: " + ex.Message);
+		}
+	}
+
+	private void OnGovernorChangedForActionHistory(Town fortification, Hero oldGovernor, Hero newGovernor)
+	{
+		try
+		{
+			Settlement settlement = fortification?.Settlement;
+			if (settlement == null || !IsPlayerRelatedGovernorChange(settlement, oldGovernor, newGovernor))
+			{
+				return;
+			}
+			string settlementName = GetSettlementDisplayName(settlement);
+			string stablePrefix = "governor_changed:" + GetSettlementId(settlement) + ":" + GetCurrentGameDayIndexSafe();
+			if (oldGovernor != null && oldGovernor != newGovernor)
+			{
+				string oldName = GetHeroDisplayName(oldGovernor);
+				RecordExternalNpcAction(oldGovernor, "你卸任了" + settlementName + "总督。", stablePrefix + ":removed:" + GetHeroId(oldGovernor), "governor_removed", isMajor: true, isRecent: true, targetHero: Hero.MainHero, settlement: settlement, locationText: settlementName, allowNonLordHero: true, won: null);
+				RecordExternalPlayerAction("你解除了" + oldName + "的" + settlementName + "总督职务。", stablePrefix + ":player_removed:" + GetHeroId(oldGovernor), "governor_removed", isMajor: true, targetHero: oldGovernor, settlement: settlement, locationText: settlementName, won: null);
+			}
+			if (newGovernor != null)
+			{
+				string newName = GetHeroDisplayName(newGovernor);
+				RecordExternalNpcAction(newGovernor, "你被任命为" + settlementName + "总督。", stablePrefix + ":appointed:" + GetHeroId(newGovernor), "governor_appointed", isMajor: true, isRecent: true, targetHero: Hero.MainHero, settlement: settlement, locationText: settlementName, allowNonLordHero: true, won: true);
+				RecordExternalPlayerAction("你任命了" + newName + "担任" + settlementName + "总督。", stablePrefix + ":player_appointed:" + GetHeroId(newGovernor), "governor_appointed", isMajor: true, targetHero: newGovernor, settlement: settlement, locationText: settlementName, won: true);
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("NpcAction", "[ERROR] OnGovernorChangedForActionHistory: " + ex.Message);
+		}
+	}
+
+	private void RecordPlayerHideoutClearRecentAction(MapEvent mapEvent)
+	{
+		if (mapEvent == null || !mapEvent.IsPlayerMapEvent || !mapEvent.HasWinner || mapEvent.WinningSide != mapEvent.PlayerSide || !mapEvent.IsHideoutBattle)
+		{
+			return;
+		}
+		Settlement settlement = mapEvent.MapEventSettlement;
+		string settlementName = GetSettlementDisplayName(settlement);
+		if (string.IsNullOrWhiteSpace(settlementName))
+		{
+			settlementName = "一处藏身处";
+		}
+		string text = "你清剿了" + settlementName + "，击败了盘踞其中的匪帮。";
+		string stableKey = "hideout_cleared:" + (GetSettlementId(settlement) ?? "") + ":" + GetCurrentGameDayIndexSafe();
+		RecordExternalPlayerAction(text, stableKey, "hideout_cleared", isMajor: false, targetHero: null, settlement: settlement, locationText: settlementName, won: true);
+	}
+
+	private void RecordPlayerRoutineBanditDefeatRecentAction(MapEvent mapEvent)
+	{
+		if (mapEvent == null || !mapEvent.IsPlayerMapEvent || !mapEvent.HasWinner || mapEvent.WinningSide != mapEvent.PlayerSide || mapEvent.IsHideoutBattle)
+		{
+			return;
+		}
+		if (!ShouldSkipRoutineBanditDefeatMapEvent(mapEvent))
+		{
+			return;
+		}
+		MapEventSide defeatedSide = GetMapEventDefeatedSide(mapEvent);
+		if (defeatedSide == null)
+		{
+			return;
+		}
+		string locationLabel = GetMapEventLocationLabel(mapEvent);
+		string enemyLabel = GetPrimaryOtherSideLabel(defeatedSide);
+		if (string.IsNullOrWhiteSpace(enemyLabel) || string.Equals(enemyLabel, "敌军", StringComparison.OrdinalIgnoreCase))
+		{
+			enemyLabel = "一支野外匪帮";
+		}
+		int enemyCount = GetMapEventSideCommittedTroopCount(defeatedSide);
+		StringBuilder stringBuilder = new StringBuilder();
+		if (string.Equals(locationLabel, "野外", StringComparison.Ordinal))
+		{
+			stringBuilder.Append("你在野外击败了").Append(enemyLabel).Append("，取得了一场小规模遭遇战胜利。");
+		}
+		else
+		{
+			stringBuilder.Append("你在").Append(locationLabel).Append("附近击败了").Append(enemyLabel).Append("，取得了一场小规模遭遇战胜利。");
+		}
+		if (enemyCount > 0)
+		{
+			stringBuilder.Append(" 敌方投入约").Append(enemyCount).Append("人。");
+		}
+		if (GetMapEventSideCasualtyCount(defeatedSide) > 0)
+		{
+			stringBuilder.Append(" 敌方").Append(BuildMapEventCasualtyText(defeatedSide)).Append("。");
+		}
+		string stableKey = BuildRoutineBanditDefeatStableKey(mapEvent, defeatedSide, locationLabel);
+		RecordExternalPlayerAction(stringBuilder.ToString(), stableKey, "wild_party_defeated", isMajor: false, targetHero: null, settlement: mapEvent.MapEventSettlement, locationText: locationLabel, won: true);
+	}
+
+	private void RecordExternalNpcAction(Hero actorHero, string text, string stableKey, string actionKind, bool isMajor, bool isRecent, Hero targetHero, Settlement settlement, string locationText, bool allowNonLordHero, bool? won)
+	{
+		if (!ShouldTrackNpcActionHero(actorHero, allowNonLordHero))
+		{
+			return;
+		}
+		string cleanText = (text ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
+		if (string.IsNullOrWhiteSpace(cleanText))
+		{
+			return;
+		}
+		NpcActionFacts facts = CreateNpcActionFacts(actionKind, actorHero);
+		ApplyTargetFacts(facts, targetHero);
+		if (settlement != null)
+		{
+			ApplySettlementFacts(facts, settlement, null, null, locationText);
+			AddRelatedFactionFacts(facts, settlement.MapFaction);
+		}
+		else
+		{
+			facts.LocationText = (locationText ?? "").Trim();
+		}
+		facts.Won = won;
+		string key = string.IsNullOrWhiteSpace(stableKey) ? BuildExternalActionStableKey(actionKind, actorHero, targetHero, cleanText) : stableKey.Trim();
+		if (isMajor)
+		{
+			RecordNpcMajorAction(actorHero, cleanText, key, facts, allowNonLordHero);
+		}
+		if (isRecent)
+		{
+			RecordNpcRecentAction(actorHero, cleanText, key, dedupeAcrossWindow: true, facts, allowNonLordHero);
+		}
+	}
+
+	private void RecordExternalPlayerAction(string text, string stableKey, string actionKind, bool isMajor, Hero targetHero, Settlement settlement, string locationText, bool? won)
+	{
+		string cleanText = (text ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
+		if (string.IsNullOrWhiteSpace(cleanText))
+		{
+			return;
+		}
+		Hero player = Hero.MainHero;
+		int day = GetCurrentGameDayIndexSafe();
+		string key = string.IsNullOrWhiteSpace(stableKey) ? BuildExternalActionStableKey(actionKind, player, targetHero, cleanText) : stableKey.Trim();
+		PlayerNotorietyBehavior.RecordPlayerActionForExternal(
+			cleanText,
+			key,
+			(actionKind ?? "").Trim(),
+			isMajor,
+			day,
+			GetCurrentGameDateTextSafe(),
+			++_npcActionGlobalOrderCounter,
+			GetSettlementId(settlement),
+			GetSettlementDisplayName(settlement),
+			(locationText ?? GetSettlementDisplayName(settlement)).Trim(),
+			player?.Culture?.StringId ?? "",
+			targetHero?.Culture?.StringId ?? "",
+			settlement?.Culture?.StringId ?? "",
+			won);
+	}
+
+	private void RecordVoteDealFulfilled(Hero npc, KingdomDecision decision, DecisionOutcome chosenOutcome, string dealId, string targetDecisionTitle, string targetOptionTitle)
+	{
+		if (npc == null || npc == Hero.MainHero)
+		{
+			return;
+		}
+		string decisionTitle = CleanExternalActionTitle(targetDecisionTitle);
+		if (string.IsNullOrWhiteSpace(decisionTitle))
+		{
+			try
+			{
+				decisionTitle = CleanExternalActionTitle(decision?.GetGeneralTitle()?.ToString());
+			}
+			catch
+			{
+				decisionTitle = "";
+			}
+		}
+		if (string.IsNullOrWhiteSpace(decisionTitle))
+		{
+			decisionTitle = "一项王国决议";
+		}
+		string optionTitle = CleanExternalActionTitle(targetOptionTitle);
+		if (string.IsNullOrWhiteSpace(optionTitle))
+		{
+			try
+			{
+				optionTitle = CleanExternalActionTitle(chosenOutcome?.GetDecisionTitle()?.ToString());
+			}
+			catch
+			{
+				optionTitle = "";
+			}
+		}
+		string optionPhrase = string.IsNullOrWhiteSpace(optionTitle) ? "" : ("，支持“" + optionTitle + "”");
+		string stableKey = "vote_deal_fulfilled:" + ((dealId ?? "").Trim()) + ":" + GetHeroId(npc) + ":" + NormalizeWeeklyPromptKeyPart(decisionTitle);
+		string npcText = "你履行了与玩家达成的投票交易，在“" + decisionTitle + "”中按承诺投票" + optionPhrase + "。";
+		string playerText = "你促成" + GetHeroDisplayName(npc) + "履行投票交易，在“" + decisionTitle + "”中按承诺投票" + optionPhrase + "。";
+		RecordExternalNpcAction(npc, npcText, stableKey + ":npc", "vote_deal_fulfilled", isMajor: true, isRecent: true, targetHero: Hero.MainHero, settlement: null, locationText: GetKingdomDisplayName(decision?.Kingdom, ""), allowNonLordHero: false, won: true);
+		RecordExternalPlayerAction(playerText, stableKey + ":player", "vote_deal_fulfilled", isMajor: true, targetHero: npc, settlement: null, locationText: GetKingdomDisplayName(decision?.Kingdom, ""), won: true);
+	}
+
+	private static string BuildExternalActionStableKey(string actionKind, Hero actorHero, Hero targetHero, string text)
+	{
+		return "external_action:" + NormalizeWeeklyPromptKeyPart(actionKind) + ":" + GetHeroId(actorHero) + ":" + GetHeroId(targetHero) + ":" + GetCurrentGameDayIndexSafe() + ":" + NormalizeWeeklyPromptKeyPart((text ?? "").Length > 80 ? text.Substring(0, 80) : text);
+	}
+
+	private static Settlement ResolveQuestActionSettlement(Hero questGiver)
+	{
+		return ResolveCurrentActionSettlement(questGiver);
+	}
+
+	private static Settlement ResolveCurrentActionSettlement(Hero hero)
+	{
+		try
+		{
+			return Settlement.CurrentSettlement ?? PlayerEncounter.EncounterSettlement ?? MobileParty.MainParty?.CurrentSettlement ?? hero?.CurrentSettlement ?? hero?.StayingInSettlement ?? hero?.HomeSettlement;
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static bool IsPlayerRelatedGovernorChange(Settlement settlement, Hero oldGovernor, Hero newGovernor)
+	{
+		try
+		{
+			return settlement?.OwnerClan == Clan.PlayerClan || oldGovernor?.Clan == Clan.PlayerClan || newGovernor?.Clan == Clan.PlayerClan;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static string CleanExternalActionTitle(string value)
+	{
+		return (value ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
+	}
+
+	private static string GetQuestCompletionActionKind(QuestBase.QuestCompleteDetails detail)
+	{
+		switch (detail)
+		{
+		case QuestBase.QuestCompleteDetails.Success:
+			return "quest_success";
+		case QuestBase.QuestCompleteDetails.Timeout:
+			return "quest_timeout";
+		case QuestBase.QuestCompleteDetails.FailWithBetrayal:
+			return "quest_betrayal";
+		case QuestBase.QuestCompleteDetails.Fail:
+			return "quest_fail";
+		case QuestBase.QuestCompleteDetails.Cancel:
+			return "quest_cancel";
+		default:
+			return "quest_result";
+		}
+	}
+
+	private static string GetQuestCompletionDetailLabel(QuestBase.QuestCompleteDetails detail)
+	{
+		switch (detail)
+		{
+		case QuestBase.QuestCompleteDetails.Success:
+			return "成功完成";
+		case QuestBase.QuestCompleteDetails.Fail:
+			return "任务失败";
+		case QuestBase.QuestCompleteDetails.FailWithBetrayal:
+			return "以背叛结局失败";
+		case QuestBase.QuestCompleteDetails.Timeout:
+			return "超时结束";
+		case QuestBase.QuestCompleteDetails.Cancel:
+			return "已取消";
+		default:
+			return detail.ToString();
+		}
+	}
+
+	private static string GetCompanionRemovedDetailLabel(RemoveCompanionAction.RemoveCompanionDetail detail)
+	{
+		return detail == RemoveCompanionAction.RemoveCompanionDetail.Fire ? "被遣散" : detail.ToString();
 	}
 
 	private void OnHeroPrisonerTaken(PartyBase capturer, Hero prisoner)
@@ -2299,6 +2703,103 @@ public class MyBehavior : CampaignBehaviorBase
 		catch (Exception ex)
 		{
 			Logger.Log("BattleStatus", "[ERROR] OnHeroPrisonerReleased: " + ex.Message);
+		}
+	}
+
+	public static void RecordPlayerPrisonBreakRescueForExternal(Hero rescuedHero)
+	{
+		try
+		{
+			(Instance ?? Campaign.Current?.GetCampaignBehavior<MyBehavior>())?.RecordPlayerPrisonBreakRescue(rescuedHero);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("PrisonBreakRescue", "RecordPlayerPrisonBreakRescueForExternal failed: " + ex.Message);
+		}
+	}
+
+	private void RecordPlayerPrisonBreakRescue(Hero rescuedHero)
+	{
+		try
+		{
+			Hero player = Hero.MainHero;
+			if (player == null || rescuedHero == null || rescuedHero == player || !ShouldTrackNpcActionHero(rescuedHero, allowNonLordHero: true))
+			{
+				return;
+			}
+			int day = GetCurrentGameDayIndexSafe();
+			int hour = GetCurrentHourOfDaySafeForPrompt();
+			Settlement settlement = ResolvePrisonBreakRescueSettlement(rescuedHero, player);
+			string settlementName = GetSettlementDisplayName(settlement);
+			string locationText = string.IsNullOrWhiteSpace(settlementName) ? "越狱现场" : settlementName;
+			string locationPhrase = string.IsNullOrWhiteSpace(settlementName) ? "" : ("在" + settlementName + "的地牢中");
+			string playerName = GetHeroDisplayName(player);
+			string text = "你" + locationPhrase + "被" + playerName + "越狱营救，成功脱离囚禁。";
+			NpcActionFacts facts = CreateNpcActionFacts("prison_break_rescue", rescuedHero);
+			ApplyTargetFacts(facts, player);
+			if (settlement != null)
+			{
+				ApplySettlementFacts(facts, settlement, null, null, locationText);
+				AddRelatedFactionFacts(facts, settlement.MapFaction);
+			}
+			else
+			{
+				facts.LocationText = locationText;
+			}
+			facts.Won = true;
+			string stableKey = BuildPrisonBreakRescueStableKey(player, rescuedHero, settlement, day, hour);
+			RemoveGenericEscapeRecentActionForPlayerRescue(rescuedHero, day);
+			RecordNpcMajorAction(rescuedHero, text, stableKey, facts, allowNonLordHero: true);
+			RecordNpcRecentAction(rescuedHero, text, stableKey, dedupeAcrossWindow: true, facts, allowNonLordHero: true);
+			Logger.Log("PrisonBreakRescue", "Recorded player prison break rescue. hero=" + (rescuedHero.StringId ?? "") + " settlement=" + (settlement?.StringId ?? "") + " day=" + day + " hour=" + hour);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("PrisonBreakRescue", "RecordPlayerPrisonBreakRescue failed: " + ex.Message);
+		}
+	}
+
+	private static Settlement ResolvePrisonBreakRescueSettlement(Hero rescuedHero, Hero player)
+	{
+		try
+		{
+			return Settlement.CurrentSettlement ?? rescuedHero?.CurrentSettlement ?? rescuedHero?.StayingInSettlement ?? MobileParty.MainParty?.CurrentSettlement ?? player?.CurrentSettlement;
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static string BuildPrisonBreakRescueStableKey(Hero player, Hero rescuedHero, Settlement settlement, int day, int hour)
+	{
+		return "prison_break_rescue:" + GetHeroId(player) + ":" + GetHeroId(rescuedHero) + ":" + GetSettlementId(settlement) + ":" + day + ":" + hour;
+	}
+
+	private void RemoveGenericEscapeRecentActionForPlayerRescue(Hero rescuedHero, int day)
+	{
+		try
+		{
+			string heroKey = GetNpcActionHeroKey(rescuedHero);
+			string heroId = GetHeroId(rescuedHero);
+			if (string.IsNullOrWhiteSpace(heroKey) || string.IsNullOrWhiteSpace(heroId) || _npcRecentActions == null || !_npcRecentActions.TryGetValue(heroKey, out var entries) || entries == null)
+			{
+				return;
+			}
+			int removed = entries.RemoveAll(entry =>
+				entry != null
+				&& entry.Day == day
+				&& string.Equals((entry.ActionKind ?? "").Trim(), "prisoner_released_prisoner", StringComparison.OrdinalIgnoreCase)
+				&& (entry.StableKey ?? "").IndexOf(":" + heroId + ":", StringComparison.OrdinalIgnoreCase) >= 0
+				&& (entry.StableKey ?? "").IndexOf("ReleasedAfterEscape", StringComparison.OrdinalIgnoreCase) >= 0);
+			if (removed > 0)
+			{
+				RefreshNpcRecentActionStableKeyIndexForHero(heroKey, entries);
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("PrisonBreakRescue", "RemoveGenericEscapeRecentActionForPlayerRescue failed: " + ex.Message);
 		}
 	}
 
@@ -2630,6 +3131,7 @@ public class MyBehavior : CampaignBehaviorBase
 				RecordNpcMajorAction(item, text3, text, npcActionFacts);
 				RecordNpcRecentAction(item, text3, text, facts: npcActionFacts);
 			}
+			RecordPlayerClanChangedKingdomActionIfRelevant(clan, oldKingdom, newKingdom, detail, text3, text);
 			if (flag)
 			{
 				Settlement settlement = clan.Settlements?.FirstOrDefault((Settlement x) => x != null && (x.IsTown || x.IsCastle));
@@ -2648,6 +3150,50 @@ public class MyBehavior : CampaignBehaviorBase
 		catch (Exception ex)
 		{
 			Logger.Log("NpcAction", "[ERROR] OnClanChangedKingdom: " + ex.Message);
+		}
+	}
+
+	private void RecordPlayerClanChangedKingdomActionIfRelevant(Clan clan, Kingdom oldKingdom, Kingdom newKingdom, ChangeKingdomAction.ChangeKingdomActionDetail detail, string narrative, string stableKey)
+	{
+		try
+		{
+			Clan playerClan = Clan.PlayerClan;
+			if (clan == null || playerClan == null)
+			{
+				return;
+			}
+			Kingdom playerKingdom = playerClan.Kingdom;
+			bool playerClanChanged = clan == playerClan;
+			bool playerRulesKingdom = playerKingdom != null && playerKingdom.RulingClan == playerClan;
+			bool joinsPlayerKingdom = playerRulesKingdom && newKingdom == playerKingdom && clan != playerClan;
+			bool leavesPlayerKingdom = playerRulesKingdom && oldKingdom == playerKingdom && clan != playerClan;
+			if (!playerClanChanged && !joinsPlayerKingdom && !leavesPlayerKingdom)
+			{
+				return;
+			}
+			string clanName = GetClanDisplayName(clan);
+			string actionKind = playerClanChanged ? "player_clan_changed_kingdom" : (joinsPlayerKingdom ? "clan_joined_player_kingdom" : "clan_left_player_kingdom");
+			string text;
+			bool? won = null;
+			if (playerClanChanged)
+			{
+				text = string.IsNullOrWhiteSpace(narrative) ? ("你的" + clanName + "家族发生王国归属变更。") : narrative;
+			}
+			else if (joinsPlayerKingdom)
+			{
+				text = "你统治的" + GetKingdomDisplayName(playerKingdom, "玩家王国") + "接纳了" + clanName + "家族加入。";
+				won = true;
+			}
+			else
+			{
+				text = clanName + "家族脱离了你统治的" + GetKingdomDisplayName(playerKingdom, "玩家王国") + "。";
+				won = false;
+			}
+			RecordExternalPlayerAction(text, stableKey + ":player_relevant", actionKind, isMajor: true, targetHero: clan.Leader, settlement: null, locationText: GetKingdomDisplayName(newKingdom ?? oldKingdom, ""), won: won);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("NpcAction", "[ERROR] RecordPlayerClanChangedKingdomActionIfRelevant: " + ex.Message);
 		}
 	}
 
@@ -2710,6 +3256,12 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				string kingdomId = GetKingdomId(decision.Kingdom);
 				RecordEventSourceMaterial("kingdom_decision_support", "决议支持明细 - " + GetKingdomDisplayName(decision.Kingdom, "该王国"), text4, text + ":supporters", kingdomId, "", includeInWorld: false, includeInKingdom: true);
+			}
+			if (isPlayerInvolved)
+			{
+				Hero targetHero = ResolveKingdomDecisionActionTargetHero(decision, chosenOutcome);
+				string playerText = BuildPlayerKingdomDecisionActionText(decision, chosenOutcome);
+				RecordExternalPlayerAction(playerText, text + ":player", "kingdom_decision_player_involved", isMajor: true, targetHero: targetHero, settlement: null, locationText: GetKingdomDisplayName(decision.Kingdom, ""), won: null);
 			}
 		}
 		catch (Exception ex)
@@ -5946,6 +6498,50 @@ public class MyBehavior : CampaignBehaviorBase
 		return (forProposer ? "你推动的" : "你所参与的") + kingdomDisplayName + "王国决议已有结果：" + text;
 	}
 
+	private static string BuildPlayerKingdomDecisionActionText(KingdomDecision decision, DecisionOutcome chosenOutcome)
+	{
+		string kingdomDisplayName = GetKingdomDisplayName(decision?.Kingdom, "该王国");
+		string decisionTitle = "";
+		try
+		{
+			decisionTitle = decision?.GetGeneralTitle()?.ToString() ?? "";
+		}
+		catch
+		{
+			decisionTitle = "";
+		}
+		string outcomeTitle = "";
+		try
+		{
+			outcomeTitle = chosenOutcome?.GetDecisionTitle()?.ToString() ?? "";
+		}
+		catch
+		{
+			outcomeTitle = "";
+		}
+		decisionTitle = (decisionTitle ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
+		outcomeTitle = (outcomeTitle ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
+		if (string.IsNullOrWhiteSpace(decisionTitle))
+		{
+			decisionTitle = "一项王国决议";
+		}
+		return string.IsNullOrWhiteSpace(outcomeTitle)
+			? ("你参与了" + kingdomDisplayName + "的“" + decisionTitle + "”决议。")
+			: ("你参与了" + kingdomDisplayName + "的“" + decisionTitle + "”决议，最终结果为“" + outcomeTitle + "”。");
+	}
+
+	private static Hero ResolveKingdomDecisionActionTargetHero(KingdomDecision decision, DecisionOutcome chosenOutcome)
+	{
+		try
+		{
+			return chosenOutcome?.SponsorClan?.Leader ?? decision?.ProposerClan?.Leader ?? decision?.DetermineChooser()?.Leader;
+		}
+		catch
+		{
+			return decision?.ProposerClan?.Leader;
+		}
+	}
+
 	private static void ApplyKingdomDecisionSpecificFacts(NpcActionFacts facts, KingdomDecision decision, DecisionOutcome chosenOutcome)
 	{
 		if (facts == null || decision == null)
@@ -6307,6 +6903,61 @@ public class MyBehavior : CampaignBehaviorBase
 			return ClampKingdomStabilityValue(value);
 		}
 		return KingdomStabilityDefaultValue;
+	}
+
+	public static string BuildKingdomStabilityEncyclopediaTextForExternal(Kingdom kingdom)
+	{
+		try
+		{
+			return (Instance ?? Campaign.Current?.GetCampaignBehavior<MyBehavior>())?.BuildKingdomStabilityEncyclopediaText(kingdom) ?? "";
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("EncyclopediaKingdomStability", "[WARN] Failed to build kingdom stability encyclopedia text: " + ex.Message);
+			return "";
+		}
+	}
+
+	private string BuildKingdomStabilityEncyclopediaText(Kingdom kingdom)
+	{
+		if (kingdom == null)
+		{
+			return "";
+		}
+		int stabilityValue = GetKingdomStabilityValue(kingdom);
+		bool enabled = DuelSettings.IsKingdomStabilityAndRebellionEnabled();
+		bool protectedByImmunity = PlayerKingdomRebellionImmunity.ShouldProtectKingdom(kingdom);
+		float rebellionChance = enabled && !protectedByImmunity ? GetKingdomRebellionWeeklyChance(stabilityValue) : 0f;
+		int relationOffset = enabled && !protectedByImmunity ? GetKingdomStabilityRelationTargetOffset(stabilityValue) : 0;
+		int activeClanCount = CountActiveKingdomClansForLowClanCountRule(kingdom);
+		int royalDomainLoyaltyAdjustment = enabled && !protectedByImmunity && activeClanCount <= 4 ? GetLowClanCountRoyalDomainLoyaltyAdjustment(stabilityValue, activeClanCount) : 0;
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.AppendLine("【王国稳定度】");
+		stringBuilder.AppendLine("当前数值：" + stabilityValue + "/100（" + GetKingdomStabilityTierText(stabilityValue) + "）");
+		if (!enabled)
+		{
+			stringBuilder.AppendLine("机制状态：MCM 已关闭，仅显示当前保存数值。");
+			return stringBuilder.ToString().TrimEnd();
+		}
+		if (protectedByImmunity)
+		{
+			stringBuilder.AppendLine("本周叛乱概率：0%（玩家王国稳定度叛乱免疫）");
+		}
+		else
+		{
+			stringBuilder.AppendLine("本周叛乱概率：" + FormatKingdomRebellionChance(rebellionChance));
+		}
+		List<string> effects = new List<string>();
+		if (relationOffset != 0)
+		{
+			effects.Add("国王与本国非王族成年成员关系修正 " + FormatKingdomStabilityRelationOffsetText(relationOffset));
+		}
+		if (royalDomainLoyaltyAdjustment != 0)
+		{
+			effects.Add("王室直辖地忠诚日修正 " + FormatKingdomStabilityRelationOffsetText(royalDomainLoyaltyAdjustment));
+		}
+		stringBuilder.AppendLine(effects.Count == 0 ? "当前额外影响：无" : ("当前额外影响：" + string.Join("；", effects)));
+		return stringBuilder.ToString().TrimEnd();
 	}
 
 	private void SetKingdomStabilityValue(Kingdom kingdom, int value)
@@ -10421,6 +11072,27 @@ public class MyBehavior : CampaignBehaviorBase
 		return "阵亡" + num + "、负伤" + num2;
 	}
 
+	private static int GetMapEventSideCasualtyCount(MapEventSide side)
+	{
+		if (side?.Parties == null)
+		{
+			return 0;
+		}
+		int num = 0;
+		try
+		{
+			foreach (MapEventParty party in side.Parties)
+			{
+				num += GetTroopRosterTotalManCount(party?.DiedInBattle);
+				num += GetTroopRosterTotalManCount(party?.WoundedInBattle);
+			}
+		}
+		catch
+		{
+		}
+		return Math.Max(0, num);
+	}
+
 	private static int GetMapEventPartyCommittedTroopCount(MapEventParty party)
 	{
 		if (party == null)
@@ -10631,6 +11303,21 @@ public class MyBehavior : CampaignBehaviorBase
 			text = NormalizeWeeklyPromptKeyPart(mapEvent.StringId ?? locationLabel);
 		}
 		return "mapevent:" + text;
+	}
+
+	private static string BuildRoutineBanditDefeatStableKey(MapEvent mapEvent, MapEventSide defeatedSide, string locationLabel)
+	{
+		List<string> list = new List<string>
+		{
+			GetCurrentGameDayIndexSafe().ToString(),
+			NormalizeWeeklyPromptKeyPart(mapEvent?.StringId),
+			NormalizeWeeklyPromptKeyPart(locationLabel),
+			NormalizeWeeklyPromptKeyPart(GetPrimaryOtherSideLabel(defeatedSide)),
+			GetMapEventSideCommittedTroopCount(defeatedSide).ToString(),
+			NormalizeWeeklyPromptKeyPart(BuildMapEventCasualtyText(defeatedSide)),
+			NormalizeWeeklyPromptKeyPart(BuildMapEventStableKey(mapEvent, locationLabel))
+		};
+		return "wild_party_defeated:" + string.Join(":", list.Where((string x) => !string.IsNullOrWhiteSpace(x)));
 	}
 
 	private static string NormalizeWeeklyPromptKeyPart(string value)
@@ -11026,6 +11713,10 @@ public class MyBehavior : CampaignBehaviorBase
 	private void TrackNpcActionsFromMapEvent(MapEvent mapEvent)
 	{
 		if (mapEvent == null || !mapEvent.HasWinner)
+		{
+			return;
+		}
+		if (mapEvent.IsHideoutBattle)
 		{
 			return;
 		}
@@ -16978,6 +17669,10 @@ public class MyBehavior : CampaignBehaviorBase
 	private static bool IsSettlementTransferLeaderEligible(Hero targetHero, CharacterObject targetCharacter = null)
 	{
 		Hero hero = targetHero ?? targetCharacter?.HeroObject;
+		if (AIConfigHandler.IsPlayerCompanionOrFamilyTradeTarget(hero))
+		{
+			return false;
+		}
 		return CanDiscussSettlementTransferAssets(hero);
 	}
 
@@ -17315,6 +18010,10 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			Clan playerClan = Clan.PlayerClan;
 			Hero hero = targetHero ?? targetCharacter?.HeroObject;
+			if (AIConfigHandler.IsPlayerCompanionOrFamilyTradeTarget(hero))
+			{
+				return list;
+			}
 			Clan clan = hero?.Clan;
 			if (playerClan != null)
 			{
@@ -20855,15 +21554,19 @@ public class MyBehavior : CampaignBehaviorBase
 			return;
 		}
 		Hero hero = targetHero ?? targetCharacter?.HeroObject;
-		if (!AIConfigHandler.IsPlayerCompanionOrFamilyTradeTarget(hero))
+		if (AIConfigHandler.IsPlayerPartyTradeLimitedTarget(hero))
 		{
+			excludedRuleIds.Add("loan");
+			excludedRuleIds.Add("vote_deal");
+			excludedRuleIds.Add("diplomacy");
+			excludedRuleIds.Add("party_transfer");
+			excludedRuleIds.Add("settlement_transfer");
 			return;
 		}
-		excludedRuleIds.Add("reward");
-		excludedRuleIds.Add("loan");
-		excludedRuleIds.Add("vote_deal");
-		excludedRuleIds.Add("party_transfer");
-		excludedRuleIds.Add("settlement_transfer");
+		if (AIConfigHandler.IsPlayerCompanionOrFamilyTradeTarget(hero))
+		{
+			excludedRuleIds.Add("settlement_transfer");
+		}
 	}
 
 	private static void AddWorldMapCommandRuleExclusionForTarget(HashSet<string> excludedRuleIds, Hero targetHero, CharacterObject targetCharacter = null)
@@ -21370,6 +22073,31 @@ public class MyBehavior : CampaignBehaviorBase
 		return disclaimer + Environment.NewLine + text.TrimStart();
 	}
 
+	private static string AppendPlayerPartySharedResourcePrompt(string text, Hero targetHero, CharacterObject targetCharacter = null)
+	{
+		const string marker = "【队内资源共享限制】";
+		if (string.IsNullOrWhiteSpace(text) || CountInjectedRuleBlocks(text) <= 0)
+		{
+			return text;
+		}
+		if (text.IndexOf(marker, StringComparison.OrdinalIgnoreCase) >= 0)
+		{
+			return text;
+		}
+		Hero hero = targetHero ?? targetCharacter?.HeroObject;
+		if (!AIConfigHandler.IsPlayerPartyTradeLimitedTarget(hero))
+		{
+			return text;
+		}
+		string playerName = (BuildPlayerPublicDisplayNameForPrompt(hero) ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(playerName))
+		{
+			playerName = "玩家";
+		}
+		string prompt = marker + "由于你是" + playerName + "的队内成员，你和" + playerName + "的大部分资源都共享，例如定居点、工坊、商队和部队。正文中不要把部队转移或固定资产转移当作你与" + playerName + "之间需要谈判或执行的交易；如果被问到，应自然说明队内资源共享，不要提出部队转移或固定资产转移。";
+		return text.TrimEnd() + Environment.NewLine + prompt;
+	}
+
 	private static void AppendRuleBlock(StringBuilder sb, string ruleId, string body)
 	{
 		if (sb != null)
@@ -21384,21 +22112,76 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private static Agent ResolveDuelRuntimeTargetAgent(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex)
+	{
+		try
+		{
+			Mission mission = Mission.Current;
+			if (mission?.Agents == null)
+			{
+				return null;
+			}
+			if (targetAgentIndex >= 0)
+			{
+				Agent indexedAgent = mission.Agents.FirstOrDefault((Agent a) => a != null && a.Index == targetAgentIndex);
+				if (indexedAgent != null)
+				{
+					return indexedAgent;
+				}
+			}
+			Hero hero = targetHero ?? targetCharacter?.HeroObject;
+			if (hero?.CharacterObject != null)
+			{
+				Agent heroAgent = mission.Agents.FirstOrDefault((Agent a) => a != null && a.Character == hero.CharacterObject);
+				if (heroAgent != null)
+				{
+					return heroAgent;
+				}
+			}
+			if (targetCharacter != null)
+			{
+				return mission.Agents.FirstOrDefault((Agent a) => a != null && a.Character == targetCharacter);
+			}
+		}
+		catch
+		{
+		}
+		return null;
+	}
+
+	private static bool HasDuelRuntimeTarget(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex)
+	{
+		if (targetHero != null || targetCharacter != null)
+		{
+			return true;
+		}
+		Agent agent = ResolveDuelRuntimeTargetAgent(targetHero, targetCharacter, targetAgentIndex);
+		if (agent == null)
+		{
+			return false;
+		}
+		try
+		{
+			if (!agent.IsActive() || agent.IsMainAgent || agent == Agent.Main)
+			{
+				return false;
+			}
+		}
+		catch
+		{
+			return false;
+		}
+		return agent.Character is CharacterObject;
+	}
+
 	private static string BuildDuelRuntimeInstruction(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex)
 	{
 		string baseInstruction = AIConfigHandler.DuelDialogueInstruction;
 		Hero hero = targetHero ?? targetCharacter?.HeroObject;
-		Agent agent = null;
-		if (Mission.Current != null)
+		Agent agent = ResolveDuelRuntimeTargetAgent(targetHero, targetCharacter, targetAgentIndex);
+		if (hero == null && agent == null)
 		{
-			if (targetAgentIndex >= 0)
-			{
-				agent = Mission.Current.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == targetAgentIndex);
-			}
-			if (agent == null && hero != null)
-			{
-				agent = Mission.Current.Agents?.FirstOrDefault((Agent a) => a != null && a.Character == hero.CharacterObject);
-			}
+			return AIConfigHandler.DuelNonHeroInstruction;
 		}
 		bool isBelowFullHealth = false;
 		float healthRatio = 1f;
@@ -21435,33 +22218,22 @@ public class MyBehavior : CampaignBehaviorBase
 			StringBuilder stringBuilder = new StringBuilder();
 			if (useDuelContext && !IsPromptRuleExcluded(excludedRuleIdSet, "duel"))
 			{
-				if (!hasAnyHero)
+				if (isQualified)
 				{
-					string duelNonHeroInstruction = AIConfigHandler.DuelNonHeroInstruction;
-					if (!string.IsNullOrWhiteSpace(duelNonHeroInstruction))
+					string value = BuildDuelRuntimeInstruction(targetHero, targetCharacter, targetAgentIndex);
+					if (!string.IsNullOrWhiteSpace(value))
 					{
-						AppendRuleBlock(stringBuilder, "duel", duelNonHeroInstruction);
+						AppendRuleBlock(stringBuilder, "duel", value);
 					}
 				}
 				else
 				{
-					if (isQualified)
+					string text10 = BuildPlayerPublicDisplayNameForPrompt(targetHero ?? targetCharacter?.HeroObject);
+					if (string.IsNullOrWhiteSpace(text10))
 					{
-						string value = BuildDuelRuntimeInstruction(targetHero, targetCharacter, targetAgentIndex);
-						if (!string.IsNullOrWhiteSpace(value))
-						{
-							AppendRuleBlock(stringBuilder, "duel", value);
-						}
+						text10 = "玩家";
 					}
-					else
-					{
-						string text10 = BuildPlayerPublicDisplayNameForPrompt(targetHero ?? targetCharacter?.HeroObject);
-						if (string.IsNullOrWhiteSpace(text10))
-						{
-							text10 = "玩家";
-						}
-						AppendRuleBlock(stringBuilder, "duel", $"{text10}触发了决斗相关话题，但等级({playerTier})过低。请拒绝决斗并羞辱其不自量力。严禁使用决斗标签，如果玩家执意要和你单挑，那么你可以在回复末尾输出[ACTION:MEETING_TAUNT_BATTLE]，这样可以让你率领的所有军队攻击他");
-					}
+					AppendRuleBlock(stringBuilder, "duel", $"{text10}触发了决斗相关话题，但等级({playerTier})过低。请拒绝决斗并羞辱其不自量力。严禁使用决斗标签，如果玩家执意要和你单挑，那么你可以在回复末尾输出[ACTION:MEETING_TAUNT_BATTLE]，这样可以让你率领的所有军队攻击他");
 				}
 			}
 			if (AIConfigHandler.RewardEnabled && useRewardContext && !IsPromptRuleExcluded(excludedRuleIdSet, "reward"))
@@ -22429,6 +23201,7 @@ public class MyBehavior : CampaignBehaviorBase
 	{
 		List<string> result = new List<string>();
 		HashSet<string> excludedRuleIdSet = BuildPromptRuleIdSet(excludedRuleIds);
+		AddPlayerCompanionOrFamilyRuleExclusionsForTarget(excludedRuleIdSet, targetHero, targetCharacter);
 		AddWorldMapCommandRuleExclusionForTarget(excludedRuleIdSet, targetHero, targetCharacter);
 		string targetKingdomId = ResolveTargetKingdomIdForRules(targetHero, targetCharacter, kingdomIdOverride);
 		AIConfigHandler.SetGuardrailRuntimeTargetKingdom(targetKingdomId);
@@ -22441,7 +23214,7 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			AIConfigHandler.SetGuardrailSemanticContext(BuildGuardrailSemanticContext(targetHero, extraFact));
 			string npcLastUtterance = GetLatestNpcDialogueUtterance(targetHero, targetCharacter, targetAgentIndex);
-			List<GuardrailRuleHit> hits = AIConfigHandler.GetGuardrailSemanticRuleHits(input, npcLastUtterance, AIConfigHandler.GuardrailRuleReturnCap, includeBuiltInRules: true, excludedRuleIdSet);
+			List<GuardrailRuleHit> hits = AIConfigHandler.GetGuardrailSemanticRuleHitsForPreprocess(input, npcLastUtterance, AIConfigHandler.GuardrailRuleReturnCap, includeBuiltInRules: true, excludedRuleIdSet);
 			result = (hits ?? new List<GuardrailRuleHit>())
 				.Where(x => x != null && !string.IsNullOrWhiteSpace(x.RuleId))
 				.OrderByDescending(x => x.Priority)
@@ -22682,7 +23455,7 @@ public class MyBehavior : CampaignBehaviorBase
 			}
 		}
 		bool liveDuelSemanticHit = flag;
-		bool flag2 = targetHero != null && flag;
+		bool flag2 = flag && HasDuelRuntimeTarget(targetHero, targetCharacter, targetAgentIndex);
 		List<string> rewardTriggerKeywords = AIConfigHandler.RewardTriggerKeywords;
 		bool flag3 = false;
 		string matchedKeyword2 = "";
@@ -22854,7 +23627,7 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			UpdateRuleStickyCarryFromHits(targetHero, targetCharacter, liveDuelSemanticHit, liveRewardSemanticHit, liveLoanSemanticHit);
 		}
-		flag2 = targetHero != null && flag;
+		flag2 = flag && HasDuelRuntimeTarget(targetHero, targetCharacter, targetAgentIndex);
 		bool flag7 = flag3;
 		bool flag8 = flag4;
 		if (partyTransferHit && IsPartyTransferRuleEligible(targetHero, targetCharacter))
@@ -23136,6 +23909,7 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		shoutPromptContext.PreprocessRuleIds = preprocessRuleIds.ToList();
 		AfGcczShoutBridge.AppendRuntimePromptToShoutContext(shoutPromptContext, targetHero, targetCharacter, targetAgentIndex, cultureIdOverride);
+		shoutPromptContext.Extras = AppendPlayerPartySharedResourcePrompt(shoutPromptContext.Extras, targetHero, targetCharacter);
 		bool extrasHasDuelRule = (shoutPromptContext.Extras?.IndexOf("【附加规则:duel】", StringComparison.OrdinalIgnoreCase)).GetValueOrDefault() >= 0;
 		bool extrasHasRewardRule = (shoutPromptContext.Extras?.IndexOf("【附加规则:reward】", StringComparison.OrdinalIgnoreCase)).GetValueOrDefault() >= 0;
 		bool extrasHasLoanRule = (shoutPromptContext.Extras?.IndexOf("【附加规则:loan】", StringComparison.OrdinalIgnoreCase)).GetValueOrDefault() >= 0;
@@ -26635,7 +27409,7 @@ public class MyBehavior : CampaignBehaviorBase
 	private string TryRunTransactionActionPostprocess(Hero targetHero, CharacterObject targetCharacter, string extraFact, string replyText, List<PostprocessRuleEntry> rules, string logPrefix)
 	{
 		string text = StripRewardActionTags(replyText);
-		if ((string.Equals(logPrefix, "RewardPostprocess", StringComparison.OrdinalIgnoreCase) || string.Equals(logPrefix, "LoanPostprocess", StringComparison.OrdinalIgnoreCase)) && AIConfigHandler.IsPlayerCompanionOrFamilyTradeTarget(targetHero))
+		if (string.Equals(logPrefix, "LoanPostprocess", StringComparison.OrdinalIgnoreCase) && AIConfigHandler.IsPlayerPartyTradeLimitedTarget(targetHero))
 		{
 			if (Regex.Matches(text ?? "", "\\[ACTION:MOOD:[^\\]]+\\]", RegexOptions.IgnoreCase).Count <= 0 && !string.IsNullOrWhiteSpace(AIConfigHandler.ActionPostprocessFallbackMoodTag))
 			{

@@ -509,6 +509,7 @@ namespace AnimusForge
 					AnimusForgeQuickInfo.ShowForDuration(
 						completionText,
 						5000, npc.CharacterObject);
+					MyBehavior.RecordVoteDealFulfilledForExternal(npc, decision, chosenOutcome, deal.DealId, deal.TargetDecisionTitle, deal.TargetOptionTitle);
 				}
 
 				if (processedDeals.Count > 0)

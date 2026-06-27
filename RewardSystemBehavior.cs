@@ -3907,6 +3907,11 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				statusText = "执行失败：缺少转移双方。";
 				return false;
 			}
+			if (AIConfigHandler.IsPlayerCompanionOrFamilyTradeTarget(giver))
+			{
+				statusText = "执行失败：家族成员或同伴不允许通过固定资产转移。";
+				return false;
+			}
 			if (!MyBehavior.IsSettlementTransferEntryValidForExternal(entry))
 			{
 				statusText = "执行失败：缺少可转移固定资产。";
@@ -13661,6 +13666,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 					MyBehavior.AppendExternalNpcFact(receiver, string.Join(" ", receiverFacts));
 				}
 			}
+			TryRecordRewardActionHistory(giver, receiver, giverName, receiverName, giverFacts, receiverFacts, anyActualGiveToPlayer, anyDebtRecorded, anyDebtPaymentApplied, anyRoyalAbdicationApplied, anyKingdomServiceApplied, anyVassalageApplied, anyKingdomAnnexationApplied, anySettlementTransferApplied);
 		}
 		catch (Exception ex)
 		{
@@ -13677,6 +13683,217 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			});
 			Logger.Metric("action.apply_reward_tags", ok: false, stopwatch.Elapsed.TotalMilliseconds);
 		}
+	}
+
+	private static void TryRecordRewardActionHistory(Hero giver, Hero receiver, string giverName, string receiverName, List<string> giverFacts, List<string> receiverFacts, bool anyActualGiveToPlayer, bool anyDebtRecorded, bool anyDebtPaymentApplied, bool anyRoyalAbdicationApplied, bool anyKingdomServiceApplied, bool anyVassalageApplied, bool anyKingdomAnnexationApplied, bool anySettlementTransferApplied)
+	{
+		try
+		{
+			bool economicAction = anyActualGiveToPlayer || anyDebtRecorded || anyDebtPaymentApplied || anySettlementTransferApplied;
+			bool politicalAction = anyRoyalAbdicationApplied || anyKingdomServiceApplied || anyVassalageApplied || anyKingdomAnnexationApplied;
+			if (!economicAction && !politicalAction)
+			{
+				return;
+			}
+			Hero player = Hero.MainHero;
+			Hero npc = giver == player ? receiver : giver;
+			if (player == null || npc == null || npc == player)
+			{
+				return;
+			}
+			string actionKind = ResolveRewardActionHistoryKind(anyActualGiveToPlayer, anyDebtRecorded, anyDebtPaymentApplied, anyRoyalAbdicationApplied, anyKingdomServiceApplied, anyVassalageApplied, anyKingdomAnnexationApplied, anySettlementTransferApplied);
+			string summary = BuildRewardActionHistorySummary(giverFacts, receiverFacts);
+			if (string.IsNullOrWhiteSpace(summary))
+			{
+				summary = politicalAction ? "双方完成了一项政治承诺。" : "双方完成了一项交易或债务约定。";
+			}
+			string npcName = string.IsNullOrWhiteSpace(giverName) ? (npc.Name?.ToString() ?? "对方") : giverName.Trim();
+			string playerName = string.IsNullOrWhiteSpace(receiverName) ? (player.Name?.ToString() ?? "玩家") : receiverName.Trim();
+			string npcText = BuildRewardNpcActionHistoryText(actionKind, playerName, summary);
+			string playerText = BuildRewardPlayerActionHistoryText(actionKind, npcName, summary);
+			Settlement settlement = ResolveRewardActionSettlement(npc);
+			string locationText = settlement?.Name?.ToString() ?? "";
+			string stableKey = BuildRewardActionHistoryStableKey(actionKind, npc, player, summary);
+			MyBehavior.RecordNpcActionForExternal(npc, npcText, stableKey + ":npc", actionKind, isMajor: true, isRecent: true, targetHero: player, settlement: settlement, locationText: locationText, allowNonLordHero: true, won: true);
+			MyBehavior.RecordPlayerActionForExternal(playerText, stableKey + ":player", actionKind, isMajor: true, targetHero: npc, settlement: settlement, locationText: locationText, won: true);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("NpcAction", "[ERROR] TryRecordRewardActionHistory: " + ex.Message);
+		}
+	}
+
+	private static string ResolveRewardActionHistoryKind(bool anyActualGiveToPlayer, bool anyDebtRecorded, bool anyDebtPaymentApplied, bool anyRoyalAbdicationApplied, bool anyKingdomServiceApplied, bool anyVassalageApplied, bool anyKingdomAnnexationApplied, bool anySettlementTransferApplied)
+	{
+		if (anyKingdomAnnexationApplied)
+		{
+			return "kingdom_annexation";
+		}
+		if (anyRoyalAbdicationApplied)
+		{
+			return "royal_abdication";
+		}
+		if (anyVassalageApplied || anyKingdomServiceApplied)
+		{
+			return "persuasion_defection";
+		}
+		if (anySettlementTransferApplied)
+		{
+			return "asset_transfer";
+		}
+		if (anyDebtPaymentApplied)
+		{
+			return "debt_payment";
+		}
+		if (anyDebtRecorded)
+		{
+			return "debt_recorded";
+		}
+		return anyActualGiveToPlayer ? "major_exchange" : "reward_action";
+	}
+
+	private static string BuildRewardNpcActionHistoryText(string actionKind, string playerName, string summary)
+	{
+		string prefix;
+		switch ((actionKind ?? "").Trim().ToLowerInvariant())
+		{
+		case "kingdom_annexation":
+		case "royal_abdication":
+		case "persuasion_defection":
+			prefix = "你与" + playerName + "完成了一项势力归附或政治承诺：";
+			break;
+		case "asset_transfer":
+			prefix = "你与" + playerName + "完成了一项固定资产转移：";
+			break;
+		case "debt_payment":
+			prefix = "你确认了" + playerName + "的一项债务履约：";
+			break;
+		case "debt_recorded":
+			prefix = "你与" + playerName + "确立了一项债务约定：";
+			break;
+		default:
+			prefix = "你与" + playerName + "完成了一项重要交易或交付：";
+			break;
+		}
+		return LimitRewardHistoryText(prefix + summary, 260);
+	}
+
+	private static string BuildRewardPlayerActionHistoryText(string actionKind, string npcName, string summary)
+	{
+		string prefix;
+		switch ((actionKind ?? "").Trim().ToLowerInvariant())
+		{
+		case "kingdom_annexation":
+		case "royal_abdication":
+		case "persuasion_defection":
+			prefix = "你与" + npcName + "完成了一项势力归附或政治承诺：";
+			break;
+		case "asset_transfer":
+			prefix = "你与" + npcName + "完成了一项固定资产转移：";
+			break;
+		case "debt_payment":
+			prefix = "你完成了与" + npcName + "有关的一项债务履约：";
+			break;
+		case "debt_recorded":
+			prefix = "你与" + npcName + "确立了一项债务约定：";
+			break;
+		default:
+			prefix = "你与" + npcName + "完成了一项重要交易或交付：";
+			break;
+		}
+		return LimitRewardHistoryText(prefix + summary, 260);
+	}
+
+	private static string BuildRewardActionHistorySummary(List<string> giverFacts, List<string> receiverFacts)
+	{
+		IEnumerable<string> lines = (receiverFacts ?? new List<string>()).Concat(giverFacts ?? new List<string>());
+		string text = string.Join(" ", lines.Where(x => !string.IsNullOrWhiteSpace(x)).Select(x => x.Replace("\r", " ").Replace("\n", " ").Trim()));
+		return LimitRewardHistoryText(text, 190);
+	}
+
+	private static string BuildRewardActionHistoryStableKey(string actionKind, Hero npc, Hero player, string summary)
+	{
+		int day = 0;
+		try
+		{
+			day = Math.Max(0, (int)Math.Floor(CampaignTime.Now.ToDays));
+		}
+		catch
+		{
+			day = 0;
+		}
+		return "reward_action:" + NormalizeRewardActionKeyPart(actionKind) + ":" + (npc?.StringId ?? "") + ":" + (player?.StringId ?? "") + ":" + day + ":" + NormalizeRewardActionKeyPart(summary);
+	}
+
+	private static Settlement ResolveRewardActionSettlement(Hero npc)
+	{
+		try
+		{
+			return Settlement.CurrentSettlement ?? PlayerEncounter.EncounterSettlement ?? MobileParty.MainParty?.CurrentSettlement ?? npc?.CurrentSettlement ?? npc?.StayingInSettlement ?? npc?.HomeSettlement;
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static string NormalizeRewardActionKeyPart(string value)
+	{
+		string text = (value ?? "").Trim().ToLowerInvariant();
+		if (text.Length > 80)
+		{
+			text = text.Substring(0, 80);
+		}
+		return Regex.Replace(text, "[\\s:|]+", "_");
+	}
+
+	private static string LimitRewardHistoryText(string value, int maxChars)
+	{
+		string text = (value ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
+		if (maxChars <= 0 || text.Length <= maxChars)
+		{
+			return text;
+		}
+		return text.Substring(0, maxChars).TrimEnd() + "...";
+	}
+
+	private static void TryRecordNonHeroRewardActionHistory(string giverName, Hero receiver, List<string> playerFacts, string sourceKind, Settlement settlement)
+	{
+		try
+		{
+			if (receiver != Hero.MainHero || playerFacts == null || playerFacts.Count == 0)
+			{
+				return;
+			}
+			string summary = BuildRewardActionHistorySummary(null, playerFacts);
+			if (string.IsNullOrWhiteSpace(summary))
+			{
+				return;
+			}
+			string actionKind = ResolveNonHeroRewardActionKind(summary, sourceKind);
+			string displayName = string.IsNullOrWhiteSpace(giverName) ? "对方" : giverName.Trim();
+			string text = "你与" + displayName + "完成了一项交易、交付或债务履约：" + summary;
+			string stableKey = "nonhero_reward_action:" + NormalizeRewardActionKeyPart(sourceKind) + ":" + NormalizeRewardActionKeyPart(displayName) + ":" + NormalizeRewardActionKeyPart(summary);
+			MyBehavior.RecordPlayerActionForExternal(LimitRewardHistoryText(text, 260), stableKey, actionKind, isMajor: true, targetHero: null, settlement: settlement, locationText: settlement?.Name?.ToString() ?? displayName, won: true);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("NpcAction", "[ERROR] TryRecordNonHeroRewardActionHistory: " + ex.Message);
+		}
+	}
+
+	private static string ResolveNonHeroRewardActionKind(string summary, string sourceKind)
+	{
+		string text = (summary ?? "").Trim();
+		if (text.IndexOf("还款", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("偿还", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("已解除", StringComparison.OrdinalIgnoreCase) >= 0)
+		{
+			return "debt_payment";
+		}
+		if (text.IndexOf("欠", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("债务", StringComparison.OrdinalIgnoreCase) >= 0)
+		{
+			return "debt_recorded";
+		}
+		return string.Equals(sourceKind, "merchant_reward_action", StringComparison.OrdinalIgnoreCase) ? "merchant_exchange" : "major_exchange";
 	}
 
 	private static bool ApplyVassalageRewardTags(Hero giver, Hero receiver, ref string responseText, Regex regexVassalageSubmit, Regex regexVassalageAny, List<string> giverFacts, List<string> receiverFacts)
@@ -13921,6 +14138,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			if (playerFacts.Count > 0 && receiver == Hero.MainHero)
 			{
 				MyBehavior.AppendExternalPlayerFact(receiver, string.Join(" ", playerFacts));
+				TryRecordNonHeroRewardActionHistory(text, receiver, playerFacts, "party_reward_action", ResolveRewardActionSettlement(null));
 			}
 		}
 		catch (Exception ex)
@@ -14208,6 +14426,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		if (playerFacts.Count > 0 && receiver == Hero.MainHero)
 		{
 			MyBehavior.AppendExternalPlayerFact(receiver, string.Join(" ", playerFacts));
+			TryRecordNonHeroRewardActionHistory(giverName, receiver, playerFacts, "merchant_reward_action", currentSettlement);
 		}
 	}
 

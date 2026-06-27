@@ -717,7 +717,10 @@ public sealed class AnimusForgeNativeConversationOverlay
 			{
 				receivedVisibleText = true;
 				StopWaitingDotsAnimation(generation);
-				ConversationHelper.UpdateDialogText(reply);
+				if (!suppressVisibleStreamingForTts || !ConversationHelper.IsTypewriterActive)
+				{
+					ConversationHelper.UpdateDialogText(reply);
+				}
 			}
 			else if (IsSubmitGenerationActive(generation) && !receivedVisibleText)
 			{
@@ -812,7 +815,10 @@ public sealed class AnimusForgeNativeConversationOverlay
 			{
 				receivedVisibleText = true;
 				StopWaitingDotsAnimation(generation);
-				ConversationHelper.UpdateDialogText(reply);
+				if (!suppressVisibleStreamingForTts || !ConversationHelper.IsTypewriterActive)
+				{
+					ConversationHelper.UpdateDialogText(reply);
+				}
 			}
 			else if (IsSubmitGenerationActive(generation) && !receivedVisibleText)
 			{
