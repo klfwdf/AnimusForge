@@ -40,6 +40,8 @@ public static class SiegeMassacreInteractionProfile
 
     public const string CivilianPanicRoutSource = "massacre_civilian_panic_rout";
 
+    public const string CivilianHunterContactSource = "massacre_civilian_hunter_contact";
+
     public const string AlliedCombatDriveSource = "massacre_drive";
 
     public const string AllTargetsDownVictorySource = "all_targets_down";

@@ -417,3 +417,10 @@ Follow-up isolation: GCCZ postprocess frequency policy now lives in `SiegePostpr
 - 融合树 `SiegeAiInterventionBehavior.cs` 只复用 AF 原版城镇冲突中更稳的移动方式：`AgentNavigator.SetTargetFrame(WorldPosition)`、navmesh 采样、以及远离威胁的 direct retreat 采样。
 - 已标记为 GCCZ 逃跑的平民在血洗阶段也必须允许 `FleeBehavior` tick/availability；这是路径行为桥，不改变平民逃跑/反抗判定。
 - 独立参数位于 `SiegeAgentWallRescueProfile`，融合树 live adapter 负责 Bannerlord `Mission`/`AgentNavigator` 调用。若 agent 已触发卡住救援、离目标仍超过穿墙阈值且冷却允许，adapter 可以把非玩家 agent 瞬移到已校验的 navmesh 目标点，作为 GCCZ 专用 wall-pass 兜底；普通 AF/原版城镇进入不调用这条路径。
+
+### 2026-06-29 massacre/repopulation fleeing-civilian bridge
+
+- 血洗和屠民迁殖共用 GCCZ massacre combat driver；殖民只是在触发/结算层升级为最高级毁坏与改文化，不另开一套平民 AI。
+- 融合树不得在 `PrepareCivilianForMassacreCombat(...)` 开头把所有目标平民统一 `SetTeam(enemyTeam)`。只有 GCCZ 策略判定会反抗的少数平民、携械者、要人/头人、守卫/守军会立即切敌队并接 `FightBehavior`。
+- 非反抗平民先进入 `LocalFleeingCivilianAgentIndexes`，清目标/队形/日常 usable，播放受惊动作，并优先用 direct retreat/navmesh 藏身点逃散；这条路径同时服务血洗和殖民，避免触发后全城平民瞬间红名冲向玩家/士兵。
+- 70% 追击士兵仍会追猎全部未结算目标。逃跑平民只有在追击士兵已经逼近目标时，才通过 `SiegeMassacreInteractionProfile.CivilianHunterContactSource` 被桥接为可攻击敌对目标；该目标仍维持恐慌/逃跑行为，不被强行改成成建制反击者。

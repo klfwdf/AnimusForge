@@ -375,6 +375,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	private static readonly HashSet<int> LocalSoldierWitnessInquiryVictimAgentIndexes = new HashSet<int>();
 	private static readonly HashSet<int> LocalHostileCivilianAgentIndexes = new HashSet<int>();
 	private static readonly HashSet<int> LocalFleeingCivilianAgentIndexes = new HashSet<int>();
+	private static readonly HashSet<int> MassacreCaughtFleeingVictimAgentIndexes = new HashSet<int>();
 	private static readonly Dictionary<int, float> LastLocalCivilianWitnessReactionTimes = new Dictionary<int, float>();
 	private static bool _localNativeFightStarted;
 	private static int _regionalConflictIncidentCount;
@@ -3409,6 +3410,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		LocalSoldierWitnessInquiryVictimAgentIndexes.Clear();
 		LocalHostileCivilianAgentIndexes.Clear();
 		LocalFleeingCivilianAgentIndexes.Clear();
+		MassacreCaughtFleeingVictimAgentIndexes.Clear();
 		LastLocalCivilianWitnessReactionTimes.Clear();
 		_localNativeFightStarted = false;
 	}
@@ -7878,21 +7880,9 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				return;
 			}
 			Agent main = Agent.Main ?? mission.MainAgent;
-			Team playerTeam = mission.PlayerTeam ?? main?.Team;
-			Team enemyTeam = EnsureInterventionCivilianEnemyTeam(mission) ?? mission.PlayerEnemyTeam ?? agent.Team;
-			CharacterObject character = agent.Character as CharacterObject;
 			bool canResist = ShouldCivilianResistMassacre(agent);
 			NeutralizeCivilianDailyUsableBehavior(agent, SiegeMassacreInteractionProfile.CombatPrepareSource);
 			agent.SetMortalityState(Agent.MortalityState.Mortal);
-			if (enemyTeam != null && agent.Team != enemyTeam)
-			{
-				agent.SetTeam(enemyTeam, true);
-			}
-			if (agent.Team != null && playerTeam != null && agent.Team != playerTeam)
-			{
-				agent.Team.SetIsEnemyOf(playerTeam, isEnemyOf: true);
-				playerTeam.SetIsEnemyOf(agent.Team, isEnemyOf: true);
-			}
 			try
 			{
 				agent.SetCrouchMode(false);
@@ -7905,6 +7895,9 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			if (canResist)
 			{
 				LocalFleeingCivilianAgentIndexes.Remove(agent.Index);
+				MassacreCaughtFleeingVictimAgentIndexes.Remove(agent.Index);
+				SetCivilianMassacreEnemyTeam(agent, mission, main, SiegeMassacreInteractionProfile.CombatPrepareSource);
+				Team enemyTeam = EnsureInterventionCivilianEnemyTeam(mission) ?? mission.PlayerEnemyTeam ?? agent.Team;
 				try
 				{
 					Formation enemyFormation = enemyTeam?.GetFormation(FormationClass.Infantry);
@@ -7933,30 +7926,109 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			}
 			else
 			{
-				LocalHostileCivilianAgentIndexes.Remove(agent.Index);
-				LocalFleeingCivilianAgentIndexes.Add(agent.Index);
-				agent.InvalidateTargetAgent();
-				ClearAgentLookTarget(agent);
-				try
-				{
-					agent.DisableScriptedMovement();
-					agent.ClearTargetFrame();
-					if (agent.Formation != null)
-					{
-						agent.Formation = null;
-					}
-					agent.SetShouldCatchUpWithFormation(false);
-				}
-				catch
-				{
-				}
-				ActivateCivilianPanicFleeBehavior(agent, SiegeMassacreInteractionProfile.CivilianPanicRoutSource);
-				KeepCivilianHidingFromOccupation(agent, mission, main, force: false);
+				PrepareMassacreFleeingCivilian(agent, mission, main);
 			}
 		}
 		catch (Exception ex)
 		{
 			Logger.Log("SiegeAiIntervention", "PrepareCivilianForMassacreCombat failed: " + ex.Message);
+		}
+	}
+
+	private static void SetCivilianMassacreEnemyTeam(Agent agent, Mission mission, Agent main, string source)
+	{
+		try
+		{
+			if (agent == null || mission == null || !agent.IsHuman || !agent.IsActive())
+			{
+				return;
+			}
+			Team playerTeam = mission.PlayerTeam ?? main?.Team;
+			Team enemyTeam = EnsureInterventionCivilianEnemyTeam(mission) ?? mission.PlayerEnemyTeam ?? agent.Team;
+			if (enemyTeam != null && agent.Team != enemyTeam)
+			{
+				agent.SetTeam(enemyTeam, true);
+			}
+			if (agent.Team != null && playerTeam != null && agent.Team != playerTeam)
+			{
+				agent.Team.SetIsEnemyOf(playerTeam, isEnemyOf: true);
+				playerTeam.SetIsEnemyOf(agent.Team, isEnemyOf: true);
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "SetCivilianMassacreEnemyTeam failed (" + (source ?? "N/A") + "): " + ex.Message);
+		}
+	}
+
+	private static void PrepareMassacreFleeingCivilian(Agent agent, Mission mission, Agent main)
+	{
+		try
+		{
+			if (agent == null || mission == null || !agent.IsHuman || !agent.IsActive())
+			{
+				return;
+			}
+			LocalHostileCivilianAgentIndexes.Remove(agent.Index);
+			LocalFleeingCivilianAgentIndexes.Add(agent.Index);
+			agent.InvalidateTargetAgent();
+			ClearAgentLookTarget(agent);
+			try
+			{
+				agent.DisableScriptedMovement();
+				agent.ClearTargetFrame();
+				if (agent.Formation != null)
+				{
+					agent.Formation = null;
+				}
+				agent.SetShouldCatchUpWithFormation(false);
+			}
+			catch
+			{
+			}
+			ApplyOneTimeFrightenedCivilianAction(agent, allowGathered: true);
+			if (main != null && TryForceInterventionCivilianDirectRetreat(agent, mission, main, SiegeAgentWallRescueProfile.NativeDirectRetreatSource + ":" + SiegeMassacreInteractionProfile.CivilianPanicRoutSource, out Vec3 directRetreatTarget))
+			{
+				CivilianHideSettledAgentIndexes.Remove(agent.Index);
+				CivilianHideTargets[agent.Index] = directRetreatTarget;
+				LastCivilianHideOrderTimes[agent.Index] = mission.CurrentTime;
+				return;
+			}
+			ActivateCivilianPanicFleeBehavior(agent, SiegeMassacreInteractionProfile.CivilianPanicRoutSource);
+			if (main != null)
+			{
+				KeepCivilianHidingFromOccupation(agent, mission, main, force: false);
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "PrepareMassacreFleeingCivilian failed: " + ex.Message);
+		}
+	}
+
+	private static void MarkMassacreFleeingVictimCaughtByHunter(Agent target, Mission mission, Agent hunter)
+	{
+		try
+		{
+			if (!_massacreStarted || target == null || mission == null || !target.IsHuman || !target.IsActive() || !LocalFleeingCivilianAgentIndexes.Contains(target.Index))
+			{
+				return;
+			}
+			Agent main = Agent.Main ?? mission.MainAgent ?? hunter;
+			SetCivilianMassacreEnemyTeam(target, mission, main, SiegeMassacreInteractionProfile.CivilianHunterContactSource);
+			target.SetMortalityState(Agent.MortalityState.Mortal);
+			target.SetWatchState(Agent.WatchState.Alarmed);
+			target.InvalidateTargetAgent();
+			ClearAgentLookTarget(target);
+			ActivateCivilianPanicFleeBehavior(target, SiegeMassacreInteractionProfile.CivilianHunterContactSource);
+			if (MassacreCaughtFleeingVictimAgentIndexes.Add(target.Index))
+			{
+				Logger.Log("SiegeAiIntervention", "Massacre fleeing civilian caught by hunter. Target=" + target.Index + ", Hunter=" + (hunter?.Index.ToString() ?? "N/A"));
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "MarkMassacreFleeingVictimCaughtByHunter failed: " + ex.Message);
 		}
 	}
 
@@ -8149,6 +8221,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			float closeDistance = MassacreTargetApproachRadius + 0.75f;
 			if (soldier.Position.DistanceSquared(target.Position) <= closeDistance * closeDistance)
 			{
+				MarkMassacreFleeingVictimCaughtByHunter(target, mission, soldier);
 				return;
 			}
 			try
@@ -12160,6 +12233,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		CommandableOriginRuntimeIds.Clear();
 		MassacreReadySoldierAgentIndexes.Clear();
 		MassacreCombatPreparedAgentIndexes.Clear();
+		MassacreCaughtFleeingVictimAgentIndexes.Clear();
 		CivilianSpeechRallySlots.Clear();
 		LastCordonMoveOrderTimesBySoldier.Clear();
 		LastCordonLookOrderTimesBySoldier.Clear();
