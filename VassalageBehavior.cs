@@ -328,7 +328,7 @@ internal sealed class AnimusForgeNpcTributaryVassalageMapNotificationItemVM : Ma
 		: base(data)
 	{
 		AnimusForgeVassalageUiSprites.EnsureInstalledForNotificationUi();
-		NotificationIdentifier = "af_vassalage_contract";
+		NotificationIdentifier = "af_npc_tributary_vassalage";
 		_onInspect = delegate
 		{
 			if (VassalageBehavior.Instance?.OpenNpcTributaryVassalageNoticeFromMap(data.NoticeId) == true)
@@ -467,6 +467,7 @@ internal static class AnimusForgeVassalageUiSprites
 	private const string BrushName = "Map.Notification.Type.Circle.Image";
 	private static readonly VassalageUiSpriteInfo[] SpriteInfos =
 	{
+		new VassalageUiSpriteInfo("af_npc_tributary_vassalage", "af_npc_tributary_vassalage.png"),
 		new VassalageUiSpriteInfo("af_vassalage_contract", "af_vassalage_contract.png"),
 		new VassalageUiSpriteInfo("af_vassalage_breach", "af_vassalage_breach.png"),
 		new VassalageUiSpriteInfo("af_vassalage_protection", "af_vassalage_protection.png"),
