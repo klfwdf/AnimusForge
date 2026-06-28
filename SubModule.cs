@@ -241,6 +241,14 @@ public class SubModule : MBSubModuleBase
 			}
 			try
 			{
+				HeroClosestSettlementSafePatch.EnsurePatched(harmony);
+			}
+			catch (Exception ex8ae)
+			{
+				Logger.LogTrace("SubModule", ">>> HeroClosestSettlementSafePatch init failed: " + ex8ae.Message);
+			}
+			try
+			{
 				Patch_Conversation_Start_Intercept.ManualPatch(harmony);
 			}
 			catch (Exception ex8b)
