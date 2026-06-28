@@ -370,20 +370,78 @@ namespace AnimusForge
 			return hasTribute ? 100 : 0;
 		}
 
+		internal static bool TryBuildTributePowerContext(Kingdom payer, Kingdom receiver, out AfTributePowerContext context)
+		{
+			context = default;
+			try
+			{
+				if (payer == null || receiver == null || payer == receiver || Campaign.Current?.Models?.DiplomacyModel == null)
+				{
+					return false;
+				}
+				var dm = Campaign.Current.Models.DiplomacyModel;
+				float scorePayer = dm.GetScoreOfDeclaringPeace(payer, receiver);
+				float scoreReceiver = dm.GetScoreOfDeclaringPeace(receiver, payer);
+				float settlementValue = dm.GetValueOfSettlementsForFaction(payer);
+				float receiverDecisionThreshold = dm.GetDecisionMakingThreshold(receiver);
+				float num = scoreReceiver > 0f ? scoreReceiver - scorePayer : receiverDecisionThreshold - scoreReceiver;
+				float payerWarProgress = dm.GetWarProgressScore(payer, receiver).ResultNumber;
+				float receiverWarProgress = dm.GetWarProgressScore(receiver, payer).ResultNumber;
+				float warDiff = MathF.Abs(payerWarProgress - receiverWarProgress);
+				float rawRatio = num / (settlementValue + 1f);
+				float ratio = rawRatio;
+				if (warDiff < 75f)
+				{
+					ratio = 0.05f;
+				}
+				else
+				{
+					ratio /= 2f;
+					if (ratio < 0.05f)
+					{
+						ratio = 0f;
+					}
+					else if (ratio < 0.10f)
+					{
+						ratio = 0.05f;
+					}
+					else if (ratio < 0.15f)
+					{
+						ratio = 0.10f;
+					}
+					else
+					{
+						ratio = 0.15f;
+					}
+				}
+				float payerFiefProsperity = payer.Fiefs.Sum(x => x.Prosperity);
+				int calculatedTribute = (int)(ratio * payerFiefProsperity * 0.35f) / 10 * 10;
+				context = new AfTributePowerContext(
+					scorePayer,
+					scoreReceiver,
+					receiverDecisionThreshold,
+					settlementValue,
+					payerWarProgress,
+					receiverWarProgress,
+					warDiff,
+					rawRatio,
+					ratio,
+					payerFiefProsperity,
+					calculatedTribute);
+				return true;
+			}
+			catch (Exception ex)
+			{
+				Logger.Log("DiplomacyBehavior", "[TributePower] context failed: " + ex.Message);
+				return false;
+			}
+		}
+
 		private static int CalculateTribute(Kingdom payer, Kingdom receiver)
 		{
-			var dm = Campaign.Current.Models.DiplomacyModel;
-			float scorePayer = dm.GetScoreOfDeclaringPeace(payer, receiver);
-			float scoreReceiver = dm.GetScoreOfDeclaringPeace(receiver, payer);
-			float settlementValue = dm.GetValueOfSettlementsForFaction(payer);
-			float num = scoreReceiver > 0f ? scoreReceiver - scorePayer : dm.GetDecisionMakingThreshold(receiver) - scoreReceiver;
-			float wp = dm.GetWarProgressScore(payer, receiver).ResultNumber;
-			float wr = dm.GetWarProgressScore(receiver, payer).ResultNumber;
-			float warDiff = MathF.Abs(wp - wr);
-			float ratio = num / (settlementValue + 1f);
-			if (warDiff < 75f) ratio = 0.05f;
-			else { ratio /= 2f; if (ratio < 0.05f) ratio = 0f; else if (ratio < 0.10f) ratio = 0.05f; else if (ratio < 0.15f) ratio = 0.10f; else ratio = 0.15f; }
-			return (int)(ratio * payer.Fiefs.Sum(x => x.Prosperity) * 0.35f) / 10 * 10;
+			return TryBuildTributePowerContext(payer, receiver, out AfTributePowerContext context)
+				? context.CalculatedTribute
+				: 0;
 		}
 
 		private static Kingdom ResolveKingdom(string id)

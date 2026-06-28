@@ -151,6 +151,14 @@ public class SubModule : MBSubModuleBase
 			}
 			try
 			{
+				NpcTributeVassalageBehavior.RegisterHarmonyPatches(harmony);
+			}
+			catch (Exception ex6b2)
+			{
+				Logger.LogTrace("SubModule", ">>> NpcTributeVassalage patches failed: " + ex6b2.Message);
+			}
+			try
+			{
 				AnimusForgeVassalageUiSprites.EnsurePatched(harmony);
 			}
 			catch (Exception ex6c)
@@ -446,6 +454,7 @@ public class SubModule : MBSubModuleBase
 			campaignGameStarter.AddBehavior(new WorldMapPartyCommandBehavior());
 			campaignGameStarter.AddBehavior(new NobleGatheringBehavior());
 			campaignGameStarter.AddBehavior(new VassalageBehavior());
+			campaignGameStarter.AddBehavior(new NpcTributeVassalageBehavior());
 			campaignGameStarter.AddBehavior(new KingdomAnnexationBehavior());
 		}
 	}
