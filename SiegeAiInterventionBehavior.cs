@@ -2944,8 +2944,16 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			agent.InvalidateTargetAgent();
 			ClearAgentLookTarget(agent);
 			agent.SetWatchState(Agent.WatchState.Alarmed);
+			ApplyOneTimeFrightenedCivilianAction(agent, allowGathered: true);
+			if (main != null && TryForceInterventionCivilianDirectRetreat(agent, mission, main, SiegeAgentWallRescueProfile.NativeDirectRetreatSource + ":local_flee", out Vec3 directRetreatTarget))
+			{
+				CivilianHideSettledAgentIndexes.Remove(agent.Index);
+				CivilianHideTargets[agent.Index] = directRetreatTarget;
+				LastCivilianHideOrderTimes[agent.Index] = mission.CurrentTime;
+				return;
+			}
 			ActivateNativeLocalFleeBehavior(agent, source ?? SiegeLocalAttackProfile.LocalFleeSource);
-			if (main != null && !IsLocalNativeFightActive(mission))
+			if (main != null)
 			{
 				KeepCivilianHidingFromOccupation(agent, mission, main, force: true);
 			}
@@ -2985,6 +2993,26 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			if (navigator == null)
 			{
 				return;
+			}
+			if (navigator.GetBehaviorGroup<DailyBehaviorGroup>() == null)
+			{
+				try
+				{
+					navigator.AddBehaviorGroup<DailyBehaviorGroup>();
+				}
+				catch
+				{
+				}
+			}
+			if (navigator.GetBehaviorGroup<InterruptingBehaviorGroup>() == null)
+			{
+				try
+				{
+					navigator.AddBehaviorGroup<InterruptingBehaviorGroup>();
+				}
+				catch
+				{
+				}
 			}
 			AlarmedBehaviorGroup alarmedGroup = navigator.GetBehaviorGroup<AlarmedBehaviorGroup>() ?? navigator.AddBehaviorGroup<AlarmedBehaviorGroup>();
 			if (alarmedGroup == null)
@@ -3331,7 +3359,6 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				return;
 			}
 			Agent main = Agent.Main ?? mission.MainAgent;
-			bool localNativeFightActive = IsLocalNativeFightActive(mission);
 			foreach (int agentIndex in LocalFleeingCivilianAgentIndexes.ToList())
 			{
 				Agent agent = mission.Agents.FirstOrDefault(a => a != null && a.Index == agentIndex);
@@ -3341,10 +3368,15 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 					LocalPlayerAttackVictimAgentIndexes.Remove(agentIndex);
 					continue;
 				}
-				ActivateNativeLocalFleeBehavior(agent, SiegeLocalCivilianReactionProfile.NativeFleeBridgeSource);
-				if (!localNativeFightActive && main != null)
+				bool hasHideTarget = CivilianHideTargets.ContainsKey(agent.Index);
+				if (main != null)
 				{
 					KeepCivilianHidingFromOccupation(agent, mission, main, force: false);
+					hasHideTarget = CivilianHideTargets.ContainsKey(agent.Index);
+				}
+				if (!hasHideTarget)
+				{
+					ActivateNativeLocalFleeBehavior(agent, SiegeLocalCivilianReactionProfile.NativeFleeBridgeSource);
 				}
 			}
 			foreach (int agentIndex in LocalHostileCivilianAgentIndexes.ToList())
