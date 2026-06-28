@@ -1741,7 +1741,7 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 		Kingdom playerKingdom = GetPlayerKingdom();
 		Kingdom declaringKingdom = ResolveFactionKingdom(faction1, playerKingdom);
 		Kingdom targetKingdom = ResolveFactionKingdom(faction2, playerKingdom);
-		if (playerKingdom == null || declaringKingdom == null || targetKingdom == null || declaringKingdom == targetKingdom)
+		if (declaringKingdom == null || targetKingdom == null || declaringKingdom == targetKingdom)
 		{
 			return true;
 		}
@@ -1749,6 +1749,8 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 		bool targetIsPlayer = IsPlayerFactionForDiplomacy(faction2, targetKingdom, playerKingdom);
 		VassalageAgreement targetAgreement = GetPlayerVassalAgreement(targetKingdom);
 		VassalageAgreement declaringAgreement = GetPlayerVassalAgreement(declaringKingdom);
+		VassalageAgreement targetAnyAgreement = GetAnyVassalAgreement(targetKingdom);
+		VassalageAgreement declaringAnyAgreement = GetAnyVassalAgreement(declaringKingdom);
 		VassalageDiagnosticLog.Event("diplomacy.declare_war.guard.observe", new Dictionary<string, object>
 		{
 			["rawFaction1"] = DescribeFactionForDiagnostics(faction1, declaringKingdom),
@@ -1759,6 +1761,8 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 			["targetIsPlayer"] = targetIsPlayer,
 			["declaringAgreement"] = DescribeAgreementForDiagnostics(declaringAgreement),
 			["targetAgreement"] = DescribeAgreementForDiagnostics(targetAgreement),
+			["declaringAnyAgreement"] = DescribeAgreementForDiagnostics(declaringAnyAgreement),
+			["targetAnyAgreement"] = DescribeAgreementForDiagnostics(targetAnyAgreement),
 			["detail"] = detail
 		});
 		if (declaringIsPlayer && targetAgreement != null)
@@ -1790,6 +1794,40 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 				["detail"] = detail
 			});
 			return allowWar;
+		}
+		Kingdom declaringSuzerain = declaringAnyAgreement?.ResolveSuzerain();
+		if (declaringAnyAgreement != null && IsValidKingdom(declaringSuzerain) && declaringSuzerain == targetKingdom)
+		{
+			Logger.Log("Vassalage", "Blocked subject war against suzerain subject=" + (declaringKingdom.StringId ?? "") + " target=" + (targetKingdom.StringId ?? "") + " detail=" + detail);
+			VassalageDiagnosticLog.Event("diplomacy.declare_war.block", new Dictionary<string, object>
+			{
+				["reason"] = "subject_declaring_war_against_suzerain",
+				["faction1"] = DescribeFactionForDiagnostics(faction1, declaringKingdom),
+				["faction2"] = DescribeFactionForDiagnostics(faction2, targetKingdom),
+				["declaring"] = VassalageDiagnosticLog.DescribeKingdom(declaringKingdom),
+				["target"] = VassalageDiagnosticLog.DescribeKingdom(targetKingdom),
+				["agreement"] = DescribeAgreementForDiagnostics(declaringAnyAgreement),
+				["type"] = declaringAnyAgreement.Type,
+				["detail"] = detail
+			});
+			return false;
+		}
+		Kingdom targetSuzerain = targetAnyAgreement?.ResolveSuzerain();
+		if (targetAnyAgreement != null && IsValidKingdom(targetSuzerain) && targetSuzerain == declaringKingdom)
+		{
+			Logger.Log("Vassalage", "Blocked suzerain war against subject suzerain=" + (declaringKingdom.StringId ?? "") + " subject=" + (targetKingdom.StringId ?? "") + " detail=" + detail);
+			VassalageDiagnosticLog.Event("diplomacy.declare_war.block", new Dictionary<string, object>
+			{
+				["reason"] = "suzerain_declaring_war_against_subject",
+				["faction1"] = DescribeFactionForDiagnostics(faction1, declaringKingdom),
+				["faction2"] = DescribeFactionForDiagnostics(faction2, targetKingdom),
+				["declaring"] = VassalageDiagnosticLog.DescribeKingdom(declaringKingdom),
+				["target"] = VassalageDiagnosticLog.DescribeKingdom(targetKingdom),
+				["agreement"] = DescribeAgreementForDiagnostics(targetAnyAgreement),
+				["type"] = targetAnyAgreement.Type,
+				["detail"] = detail
+			});
+			return false;
 		}
 		if (declaringAgreement != null && targetIsPlayer)
 		{
@@ -3088,8 +3126,11 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 		Kingdom enemy = side1IsPlayer ? kingdom2 : (side2IsPlayer ? kingdom1 : null);
 		VassalageAgreement declaringSubjectAgreement = GetPlayerVassalAgreement(kingdom1);
 		VassalageAgreement targetSubjectAgreement = GetPlayerVassalAgreement(kingdom2);
+		VassalageAgreement declaringNpcTributaryAgreement = GetNpcTributaryAgreement(kingdom1);
+		VassalageAgreement targetNpcTributaryAgreement = GetNpcTributaryAgreement(kingdom2);
 		bool involvesPlayerSubject = declaringSubjectAgreement != null || targetSubjectAgreement != null;
-		bool subjectSystemRelevant = enemy != null || involvesPlayerSubject;
+		bool involvesNpcTributary = declaringNpcTributaryAgreement != null || targetNpcTributaryAgreement != null;
+		bool subjectSystemRelevant = enemy != null || involvesPlayerSubject || involvesNpcTributary;
 		VassalageDiagnosticLog.Event("war_declared.raw", new Dictionary<string, object>
 		{
 			["rawFaction1"] = DescribeFactionForDiagnostics(faction1, kingdom1),
@@ -3102,9 +3143,12 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 			["side2IsPlayer"] = side2IsPlayer,
 			["playerInvolved"] = enemy != null,
 			["subjectInvolved"] = involvesPlayerSubject,
+			["npcTributaryInvolved"] = involvesNpcTributary,
 			["subjectSystemRelevant"] = subjectSystemRelevant,
 			["declaringSubjectAgreement"] = DescribeAgreementForDiagnostics(declaringSubjectAgreement),
 			["targetSubjectAgreement"] = DescribeAgreementForDiagnostics(targetSubjectAgreement),
+			["declaringNpcTributaryAgreement"] = DescribeAgreementForDiagnostics(declaringNpcTributaryAgreement),
+			["targetNpcTributaryAgreement"] = DescribeAgreementForDiagnostics(targetNpcTributaryAgreement),
 			["pendingDiplomacySyncCount"] = _pendingDiplomacySyncs.Count
 		});
 		if (isApplyingVassalageDiplomacy)
@@ -3125,7 +3169,7 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 			LogProtectionSkipReason("internal_vassalage_diplomacy_guard", null, null, enemy, kingdom1, kingdom2, faction1, faction2, detail, "internal_sync", true, "");
 			return;
 		}
-		if (playerKingdom == null || kingdom1 == null || kingdom2 == null)
+		if (kingdom1 == null || kingdom2 == null)
 		{
 			VassalageDiagnosticLog.Event("war_declared.ignored", new Dictionary<string, object>
 			{
@@ -3149,7 +3193,8 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 				["faction2"] = VassalageDiagnosticLog.DescribeKingdom(kingdom2),
 				["detail"] = detail,
 				["playerInvolved"] = enemy != null,
-				["subjectInvolved"] = involvesPlayerSubject
+				["subjectInvolved"] = involvesPlayerSubject,
+				["npcTributaryInvolved"] = involvesNpcTributary
 			});
 		}
 		bool canInferProtectionWarRole = CanInferProtectionWarRole(detail);
@@ -3178,6 +3223,7 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 			});
 			BringControlledSubjectsIntoWar(enemy, "suzerain_war_declared_" + detail);
 		}
+		HandleNpcTributaryWarDeclared(kingdom1, kingdom2, faction1, faction2, detail, canInferProtectionWarRole);
 		foreach (VassalageAgreement agreement in GetPlayerVassalAgreements().ToList())
 		{
 			Kingdom vassal = agreement.ResolveVassal();
@@ -3278,6 +3324,144 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private bool HandleNpcTributaryWarDeclared(Kingdom declaringKingdom, Kingdom targetKingdom, IFaction faction1, IFaction faction2, DeclareWarAction.DeclareWarDetail detail, bool canInferDeclarer)
+	{
+		if (!canInferDeclarer || !IsValidKingdom(declaringKingdom) || !IsValidKingdom(targetKingdom) || declaringKingdom == targetKingdom)
+		{
+			return false;
+		}
+		bool handled = false;
+		VassalageAgreement declaringAgreement = GetNpcTributaryAgreement(declaringKingdom);
+		if (declaringAgreement != null)
+		{
+			Kingdom suzerain = declaringAgreement.ResolveSuzerain();
+			VassalageDiagnosticLog.Event("npc_tribute_vassalage.war_declared.tributary_autonomous", new Dictionary<string, object>
+			{
+				["agreementId"] = declaringAgreement.AgreementId,
+				["agreement"] = DescribeAgreementForDiagnostics(declaringAgreement),
+				["suzerain"] = VassalageDiagnosticLog.DescribeKingdom(suzerain),
+				["tributary"] = VassalageDiagnosticLog.DescribeKingdom(declaringKingdom),
+				["target"] = VassalageDiagnosticLog.DescribeKingdom(targetKingdom),
+				["rawFaction1"] = DescribeFactionForDiagnostics(faction1, declaringKingdom),
+				["rawFaction2"] = DescribeFactionForDiagnostics(faction2, targetKingdom),
+				["detail"] = detail,
+				["policy"] = "tributary_declared_war_autonomous"
+			});
+			handled = true;
+		}
+		VassalageAgreement targetAgreement = GetNpcTributaryAgreement(targetKingdom);
+		if (targetAgreement == null)
+		{
+			return handled;
+		}
+		Kingdom targetSuzerain = targetAgreement.ResolveSuzerain();
+		Kingdom declaringSuzerain = declaringAgreement?.ResolveSuzerain();
+		if (declaringAgreement != null && IsValidKingdom(declaringSuzerain) && declaringSuzerain == targetSuzerain)
+		{
+			VassalageDiagnosticLog.Event("npc_tribute_vassalage.protection.skip", new Dictionary<string, object>
+			{
+				["reason"] = "same_suzerain_tributary_war_notice_only",
+				["declaringAgreement"] = DescribeAgreementForDiagnostics(declaringAgreement),
+				["targetAgreement"] = DescribeAgreementForDiagnostics(targetAgreement),
+				["suzerain"] = VassalageDiagnosticLog.DescribeKingdom(targetSuzerain),
+				["declaringTributary"] = VassalageDiagnosticLog.DescribeKingdom(declaringKingdom),
+				["targetTributary"] = VassalageDiagnosticLog.DescribeKingdom(targetKingdom),
+				["detail"] = detail,
+				["policy"] = "tributary_tributary_war_autonomous"
+			});
+			return true;
+		}
+		if (!IsValidKingdom(targetSuzerain) || targetSuzerain == declaringKingdom)
+		{
+			VassalageDiagnosticLog.Event("npc_tribute_vassalage.protection.skip", new Dictionary<string, object>
+			{
+				["reason"] = "invalid_suzerain_or_suzerain_is_attacker",
+				["agreementId"] = targetAgreement.AgreementId,
+				["agreement"] = DescribeAgreementForDiagnostics(targetAgreement),
+				["suzerain"] = VassalageDiagnosticLog.DescribeKingdom(targetSuzerain),
+				["tributary"] = VassalageDiagnosticLog.DescribeKingdom(targetKingdom),
+				["enemy"] = VassalageDiagnosticLog.DescribeKingdom(declaringKingdom),
+				["detail"] = detail
+			});
+			return true;
+		}
+		if (TryFindActiveProtectedSubjectWar(targetKingdom, declaringKingdom, requirePlayerWar: false, out var existingProtectedKey, out var _, out var _, out var _))
+		{
+			VassalageDiagnosticLog.Event("npc_tribute_vassalage.protection.skip", new Dictionary<string, object>
+			{
+				["reason"] = "protected_subject_war_already_recorded",
+				["protectedKey"] = existingProtectedKey ?? "",
+				["agreementId"] = targetAgreement.AgreementId,
+				["agreement"] = DescribeAgreementForDiagnostics(targetAgreement),
+				["suzerain"] = VassalageDiagnosticLog.DescribeKingdom(targetSuzerain),
+				["tributary"] = VassalageDiagnosticLog.DescribeKingdom(targetKingdom),
+				["enemy"] = VassalageDiagnosticLog.DescribeKingdom(declaringKingdom),
+				["detail"] = detail
+			});
+			return true;
+		}
+		ApplyNpcTributaryProtectionWar(targetAgreement, targetKingdom, declaringKingdom, "npc_tributary_protection_accepted");
+		return true;
+	}
+
+	private void ApplyNpcTributaryProtectionWar(VassalageAgreement agreement, Kingdom tributary, Kingdom enemy, string reason)
+	{
+		Kingdom suzerain = agreement?.ResolveSuzerain();
+		if (agreement == null
+			|| NormalizeVassalageType(agreement.Type) != AfVassalageType.Tributary
+			|| !IsValidKingdom(suzerain)
+			|| !IsValidKingdom(tributary)
+			|| !IsValidKingdom(enemy)
+			|| suzerain == tributary
+			|| suzerain == enemy
+			|| tributary == enemy)
+		{
+			VassalageDiagnosticLog.Event("npc_tribute_vassalage.protection.reject", new Dictionary<string, object>
+			{
+				["reason"] = "invalid_context",
+				["agreement"] = DescribeAgreementForDiagnostics(agreement),
+				["suzerain"] = VassalageDiagnosticLog.DescribeKingdom(suzerain),
+				["tributary"] = VassalageDiagnosticLog.DescribeKingdom(tributary),
+				["enemy"] = VassalageDiagnosticLog.DescribeKingdom(enemy)
+			});
+			return;
+		}
+		string protectionReason = string.IsNullOrWhiteSpace(reason) ? "npc_tributary_protection_accepted" : reason.Trim();
+		bool alreadyAtWar = IsAtWar(suzerain, enemy);
+		int pendingBefore = _pendingDiplomacySyncs.Count;
+		bool declaredNow = false;
+		bool queuedOrScheduled = false;
+		if (!alreadyAtWar)
+		{
+			declaredNow = DeclareWarIfNeeded(suzerain, enemy, protectionReason);
+			queuedOrScheduled = !declaredNow && HasPendingDeclareWarSync(suzerain, enemy, protectionReason);
+		}
+		bool protectedRecordCreated = false;
+		if (IsAtWar(tributary, enemy) && (alreadyAtWar || declaredNow || queuedOrScheduled || IsAtWar(suzerain, enemy)))
+		{
+			RecordProtectedTributaryWar(agreement, tributary, enemy, protectionReason);
+			protectedRecordCreated = true;
+		}
+		Logger.Log("NpcTributeVassalage", "Protection applied suzerain=" + (suzerain.StringId ?? "") + " tributary=" + (tributary.StringId ?? "") + " enemy=" + (enemy.StringId ?? "") + " reason=" + protectionReason);
+		VassalageDiagnosticLog.Event("npc_tribute_vassalage.protection.apply", new Dictionary<string, object>
+		{
+			["agreementId"] = agreement.AgreementId,
+			["agreement"] = DescribeAgreementForDiagnostics(agreement),
+			["suzerain"] = VassalageDiagnosticLog.DescribeKingdom(suzerain),
+			["tributary"] = VassalageDiagnosticLog.DescribeKingdom(tributary),
+			["enemy"] = VassalageDiagnosticLog.DescribeKingdom(enemy),
+			["alreadyAtWar"] = alreadyAtWar,
+			["declaredNow"] = declaredNow,
+			["queuedOrScheduled"] = queuedOrScheduled,
+			["tributaryAtWarAfter"] = IsAtWar(tributary, enemy),
+			["suzerainAtWarAfter"] = IsAtWar(suzerain, enemy),
+			["protectedRecordCreated"] = protectedRecordCreated,
+			["pendingDiplomacySyncCountBefore"] = pendingBefore,
+			["pendingDiplomacySyncCountAfter"] = _pendingDiplomacySyncs.Count,
+			["reason"] = protectionReason
+		});
+	}
+
 	private void LogProtectionClassify(VassalageAgreement agreement, Kingdom subject, Kingdom externalEnemy, Kingdom kingdom1, Kingdom kingdom2, IFaction faction1, IFaction faction2, DeclareWarAction.DeclareWarDetail detail, string subjectWarRole, string action, bool canInferDeclarer, bool alreadyPending, bool alreadyProtected, string existingKeyOrNoticeId)
 	{
 		AfVassalageType normalizedType = NormalizeVassalageType(agreement?.Type ?? AfVassalageType.Military);
@@ -3339,43 +3523,84 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 		Kingdom playerKingdom = GetPlayerKingdom();
 		Kingdom kingdom1 = ResolveFactionKingdom(faction1, playerKingdom);
 		Kingdom kingdom2 = ResolveFactionKingdom(faction2, playerKingdom);
-		if (playerKingdom == null || kingdom1 == null || kingdom2 == null)
+		if (kingdom1 == null || kingdom2 == null)
 		{
+			return;
+		}
+		if (TryFindProtectedSuzerainWarByParties(kingdom1, kingdom2, requireSubjectWar: true, out var suzerainProtectedKey, out var suzerainProtectedAgreement, out var protectedSuzerainForPeace, out var suzerainProtectedSubject, out var suzerainProtectedEnemy))
+		{
+			VassalageDiagnosticLog.Event("make_peace.protected_suzerain_anchor.detected", new Dictionary<string, object>
+			{
+				["protectedKey"] = suzerainProtectedKey ?? "",
+				["agreementId"] = suzerainProtectedAgreement?.AgreementId ?? "",
+				["type"] = suzerainProtectedAgreement?.Type ?? AfVassalageType.Tributary,
+				["suzerain"] = VassalageDiagnosticLog.DescribeKingdom(protectedSuzerainForPeace),
+				["subject"] = VassalageDiagnosticLog.DescribeKingdom(suzerainProtectedSubject),
+				["formerEnemy"] = VassalageDiagnosticLog.DescribeKingdom(suzerainProtectedEnemy),
+				["subjectAtWarBeforeSync"] = IsAtWar(suzerainProtectedSubject, suzerainProtectedEnemy),
+				["suzerainAtWarBeforeEventCompleted"] = IsAtWar(protectedSuzerainForPeace, suzerainProtectedEnemy),
+				["protectedSubjectWarCount"] = _protectedTributaryWars.Count,
+				["detail"] = detail
+			});
+			int syncedSubjectPeaceCount = SynchronizeProtectedTributaryPeaceForSuzerain(protectedSuzerainForPeace, suzerainProtectedEnemy, detail, "protected_subject_suzerain_peace");
+			if (protectedSuzerainForPeace == playerKingdom)
+			{
+				SynchronizeControlledSubjectsPeaceWithEnemy(suzerainProtectedEnemy, detail, "protected_subject_suzerain_peace_sync_controlled_subject");
+			}
+			VassalageDiagnosticLog.Event("make_peace.protected_suzerain_anchor", new Dictionary<string, object>
+			{
+				["protectedKey"] = suzerainProtectedKey ?? "",
+				["agreementId"] = suzerainProtectedAgreement?.AgreementId ?? "",
+				["type"] = suzerainProtectedAgreement?.Type ?? AfVassalageType.Tributary,
+				["suzerain"] = VassalageDiagnosticLog.DescribeKingdom(protectedSuzerainForPeace),
+				["subject"] = VassalageDiagnosticLog.DescribeKingdom(suzerainProtectedSubject),
+				["formerEnemy"] = VassalageDiagnosticLog.DescribeKingdom(suzerainProtectedEnemy),
+				["detail"] = detail,
+				["syncedSubjectPeaceCount"] = syncedSubjectPeaceCount,
+				["protectedSubjectWarCount"] = _protectedTributaryWars.Count
+			});
 			return;
 		}
 		if (TryFindProtectedSubjectWarByParties(kingdom1, kingdom2, requireSubjectWar: false, requirePlayerWar: false, out var protectedKey, out var protectedAgreement, out var protectedSubject, out var protectedEnemy))
 		{
+			Kingdom protectedSuzerain = protectedAgreement?.ResolveSuzerain();
 			VassalageDiagnosticLog.Event("make_peace.protected_subject_anchor.detected", new Dictionary<string, object>
 			{
 				["protectedKey"] = protectedKey ?? "",
 				["agreementId"] = protectedAgreement?.AgreementId ?? "",
 				["type"] = protectedAgreement?.Type ?? AfVassalageType.Tributary,
+				["suzerain"] = VassalageDiagnosticLog.DescribeKingdom(protectedSuzerain),
 				["subject"] = VassalageDiagnosticLog.DescribeKingdom(protectedSubject),
 				["formerEnemy"] = VassalageDiagnosticLog.DescribeKingdom(protectedEnemy),
 				["subjectAtWarBeforeEventCompleted"] = IsAtWar(protectedSubject, protectedEnemy),
+				["suzerainAtWarBeforeSync"] = IsAtWar(protectedSuzerain, protectedEnemy),
 				["playerAtWarBeforeSync"] = IsAtWar(playerKingdom, protectedEnemy),
 				["protectedSubjectWarCount"] = _protectedTributaryWars.Count,
 				["detail"] = detail
 			});
 			_protectedTributaryWars.Remove(protectedKey);
-			int removedPendingPlayerDeclareWar = RemovePendingDeclareWarSyncsByParties(playerKingdom, protectedEnemy, "protected_subject_anchor_peace_cancel_player_declare");
+			int removedPendingSuzerainDeclareWar = RemovePendingDeclareWarSyncsByParties(protectedSuzerain, protectedEnemy, "protected_subject_anchor_peace_cancel_suzerain_declare");
 			int removedPendingSubjectDeclareWar = RemovePendingDeclareWarSyncsByParties(protectedSubject, protectedEnemy, "protected_subject_anchor_peace_cancel_subject_declare");
 			int pendingBeforePlayerPeace = _pendingDiplomacySyncs.Count;
-			bool playerWasAtWar = IsAtWar(playerKingdom, protectedEnemy);
-			bool playerPeaceAppliedNow = playerWasAtWar && MakePeaceIfNeeded(playerKingdom, protectedEnemy, "protected_subject_peace_sync_player");
-			SynchronizeControlledSubjectsPeaceWithEnemy(protectedEnemy, detail, "protected_subject_peace_sync_controlled_subject");
+			bool suzerainWasAtWar = IsAtWar(protectedSuzerain, protectedEnemy);
+			bool suzerainPeaceAppliedNow = suzerainWasAtWar && MakePeaceIfNeeded(protectedSuzerain, protectedEnemy, "protected_subject_peace_sync_suzerain");
+			if (protectedSuzerain == playerKingdom)
+			{
+				SynchronizeControlledSubjectsPeaceWithEnemy(protectedEnemy, detail, "protected_subject_peace_sync_controlled_subject");
+			}
 			VassalageDiagnosticLog.Event("make_peace.protected_subject_anchor", new Dictionary<string, object>
 			{
 				["protectedKey"] = protectedKey ?? "",
 				["agreementId"] = protectedAgreement?.AgreementId ?? "",
 				["type"] = protectedAgreement?.Type ?? AfVassalageType.Tributary,
+				["suzerain"] = VassalageDiagnosticLog.DescribeKingdom(protectedSuzerain),
 				["subject"] = VassalageDiagnosticLog.DescribeKingdom(protectedSubject),
 				["formerEnemy"] = VassalageDiagnosticLog.DescribeKingdom(protectedEnemy),
 				["detail"] = detail,
-				["playerWasAtWar"] = playerWasAtWar,
-				["playerPeaceAppliedNow"] = playerPeaceAppliedNow,
-				["playerPeaceQueued"] = playerWasAtWar && !playerPeaceAppliedNow && _pendingDiplomacySyncs.Count > pendingBeforePlayerPeace,
-				["removedPendingPlayerDeclareWar"] = removedPendingPlayerDeclareWar,
+				["suzerainWasAtWar"] = suzerainWasAtWar,
+				["suzerainPeaceAppliedNow"] = suzerainPeaceAppliedNow,
+				["suzerainPeaceQueued"] = suzerainWasAtWar && !suzerainPeaceAppliedNow && _pendingDiplomacySyncs.Count > pendingBeforePlayerPeace,
+				["removedPendingSuzerainDeclareWar"] = removedPendingSuzerainDeclareWar,
 				["removedPendingSubjectDeclareWar"] = removedPendingSubjectDeclareWar,
 				["protectedTributaryWarCount"] = _protectedTributaryWars.Count
 			});
@@ -5553,6 +5778,8 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 		string value = (reason ?? "").Trim();
 		return string.Equals(value, "tributary_protection_accepted", StringComparison.OrdinalIgnoreCase)
 			|| string.Equals(value, "tributary_treaty_protection_accepted", StringComparison.OrdinalIgnoreCase)
+			|| string.Equals(value, "npc_tributary_protection_accepted", StringComparison.OrdinalIgnoreCase)
+			|| string.Equals(value, "npc_tributary_treaty_protection_accepted", StringComparison.OrdinalIgnoreCase)
 			|| string.Equals(value, "garrison_protection_accepted", StringComparison.OrdinalIgnoreCase);
 	}
 
@@ -6104,6 +6331,23 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 		return agreement;
 	}
 
+	private VassalageAgreement GetNpcTributaryAgreement(Kingdom kingdom)
+	{
+		VassalageAgreement agreement = GetAnyVassalAgreement(kingdom);
+		if (agreement == null || NormalizeVassalageType(agreement.Type) != AfVassalageType.Tributary)
+		{
+			return null;
+		}
+		Kingdom playerKingdom = GetPlayerKingdom();
+		Kingdom suzerain = agreement.ResolveSuzerain();
+		Kingdom vassal = agreement.ResolveVassal();
+		if (IsValidKingdom(playerKingdom) && (suzerain == playerKingdom || vassal == playerKingdom))
+		{
+			return null;
+		}
+		return agreement;
+	}
+
 	private IEnumerable<VassalageAgreement> GetTributePayingAgreements()
 	{
 		return _agreementsByVassalId.Values.Where((VassalageAgreement x) => x != null
@@ -6382,6 +6626,48 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 		return TryFindProtectedSubjectWar(kingdom2, kingdom1, requireSubjectWar, requirePlayerWar, out protectedKey, out agreement, out subject, out enemy);
 	}
 
+	private bool TryFindProtectedSuzerainWarByParties(Kingdom kingdom1, Kingdom kingdom2, bool requireSubjectWar, out string protectedKey, out VassalageAgreement agreement, out Kingdom suzerain, out Kingdom subject, out Kingdom enemy)
+	{
+		protectedKey = "";
+		agreement = null;
+		suzerain = null;
+		subject = null;
+		enemy = null;
+		if (!IsValidKingdom(kingdom1) || !IsValidKingdom(kingdom2) || _protectedTributaryWars.Count == 0)
+		{
+			return false;
+		}
+		foreach (KeyValuePair<string, string> item in _protectedTributaryWars.ToList())
+		{
+			if (!TryResolveProtectedTributaryWar(item, out var resolvedAgreement, out var resolvedSubject, out var resolvedEnemy))
+			{
+				continue;
+			}
+			Kingdom resolvedSuzerain = resolvedAgreement.ResolveSuzerain();
+			if (!IsValidKingdom(resolvedSuzerain))
+			{
+				continue;
+			}
+			bool sameDirection = resolvedSuzerain == kingdom1 && resolvedEnemy == kingdom2;
+			bool reverseDirection = resolvedSuzerain == kingdom2 && resolvedEnemy == kingdom1;
+			if (!sameDirection && !reverseDirection)
+			{
+				continue;
+			}
+			if (requireSubjectWar && !IsAtWar(resolvedSubject, resolvedEnemy))
+			{
+				continue;
+			}
+			protectedKey = item.Key;
+			agreement = resolvedAgreement;
+			suzerain = resolvedSuzerain;
+			subject = resolvedSubject;
+			enemy = resolvedEnemy;
+			return true;
+		}
+		return false;
+	}
+
 	private bool TryFindProtectedSubjectWar(Kingdom subjectFilter, Kingdom enemyFilter, bool requireSubjectWar, bool requirePlayerWar, out string protectedKey, out VassalageAgreement agreement, out Kingdom subject, out Kingdom enemy)
 	{
 		protectedKey = "";
@@ -6426,6 +6712,77 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 			return true;
 		}
 		return false;
+	}
+
+	private int SynchronizeProtectedTributaryPeaceForSuzerain(Kingdom suzerain, Kingdom formerEnemy, MakePeaceAction.MakePeaceDetail detail, string reason)
+	{
+		if (!IsValidKingdom(suzerain) || !IsValidKingdom(formerEnemy) || _protectedTributaryWars.Count == 0)
+		{
+			return 0;
+		}
+		int syncedOrQueued = 0;
+		foreach (KeyValuePair<string, string> item in _protectedTributaryWars.ToList())
+		{
+			if (!TryResolveProtectedTributaryWar(item, out var agreement, out var subject, out var enemy))
+			{
+				_protectedTributaryWars.Remove(item.Key);
+				VassalageDiagnosticLog.Event("protected_subject_war.drop", new Dictionary<string, object>
+				{
+					["protectedKey"] = item.Key,
+					["reason"] = "invalid_record",
+					["payload"] = item.Value ?? ""
+				});
+				continue;
+			}
+			Kingdom agreementSuzerain = agreement.ResolveSuzerain();
+			if (agreementSuzerain != suzerain || enemy != formerEnemy)
+			{
+				continue;
+			}
+			if (!IsAtWar(subject, enemy))
+			{
+				_protectedTributaryWars.Remove(item.Key);
+				RemovePendingDeclareWarSyncsByParties(subject, enemy, "protected_subject_suzerain_peace_subject_already_peace_cancel_declare");
+				VassalageDiagnosticLog.Event("protected_subject_war.drop", new Dictionary<string, object>
+				{
+					["protectedKey"] = item.Key,
+					["agreementId"] = agreement.AgreementId,
+					["type"] = agreement.Type,
+					["reason"] = "subject_already_at_peace",
+					["suzerain"] = VassalageDiagnosticLog.DescribeKingdom(suzerain),
+					["subject"] = VassalageDiagnosticLog.DescribeKingdom(subject),
+					["enemy"] = VassalageDiagnosticLog.DescribeKingdom(enemy)
+				});
+				continue;
+			}
+			int pendingBefore = _pendingDiplomacySyncs.Count;
+			bool peaceAppliedNow = MakePeaceIfNeeded(subject, enemy, reason ?? "protected_subject_suzerain_peace");
+			bool stillAtWar = IsAtWar(subject, enemy);
+			if (!stillAtWar)
+			{
+				_protectedTributaryWars.Remove(item.Key);
+				RemovePendingDeclareWarSyncsByParties(subject, enemy, "protected_subject_suzerain_peace_applied_cancel_declare");
+			}
+			if (peaceAppliedNow || _pendingDiplomacySyncs.Count > pendingBefore)
+			{
+				syncedOrQueued++;
+			}
+			VassalageDiagnosticLog.Event("make_peace.sync_protected_subject_by_suzerain", new Dictionary<string, object>
+			{
+				["protectedKey"] = item.Key,
+				["agreementId"] = agreement.AgreementId,
+				["type"] = agreement.Type,
+				["suzerain"] = VassalageDiagnosticLog.DescribeKingdom(suzerain),
+				["subject"] = VassalageDiagnosticLog.DescribeKingdom(subject),
+				["formerEnemy"] = VassalageDiagnosticLog.DescribeKingdom(enemy),
+				["detail"] = detail,
+				["peaceAppliedNow"] = peaceAppliedNow,
+				["queued"] = !peaceAppliedNow && _pendingDiplomacySyncs.Count > pendingBefore,
+				["stillAtWar"] = stillAtWar,
+				["protectedTributaryWarCount"] = _protectedTributaryWars.Count
+			});
+		}
+		return syncedOrQueued;
 	}
 
 	private void SynchronizeProtectedTributaryPeace(Kingdom formerEnemy, MakePeaceAction.MakePeaceDetail detail)
