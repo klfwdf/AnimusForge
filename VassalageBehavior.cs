@@ -299,6 +299,46 @@ internal sealed class AnimusForgeVassalageEstablishedMapNotificationItemVM : Map
 	}
 }
 
+internal sealed class AnimusForgeNpcTributaryVassalageMapNotification : InformationData
+{
+	private readonly TextObject _titleText;
+
+	public string NoticeId { get; }
+
+	public override TextObject TitleText => _titleText;
+
+	public override string SoundEventPath => "event:/ui/notification/kingdom_decision";
+
+	public AnimusForgeNpcTributaryVassalageMapNotification(string noticeId, string descriptionText)
+		: base(new TextObject(string.IsNullOrWhiteSpace(descriptionText) ? "诸国使节送来朝贡条约的消息。" : descriptionText))
+	{
+		NoticeId = (noticeId ?? "").Trim();
+		_titleText = new TextObject("诸国朝贡条约");
+	}
+
+	public override bool IsValid()
+	{
+		return VassalageBehavior.Instance?.HasPendingNpcTributaryVassalageNotice(NoticeId) == true;
+	}
+}
+
+internal sealed class AnimusForgeNpcTributaryVassalageMapNotificationItemVM : MapNotificationItemBaseVM
+{
+	public AnimusForgeNpcTributaryVassalageMapNotificationItemVM(AnimusForgeNpcTributaryVassalageMapNotification data)
+		: base(data)
+	{
+		AnimusForgeVassalageUiSprites.EnsureInstalledForNotificationUi();
+		NotificationIdentifier = "af_vassalage_contract";
+		_onInspect = delegate
+		{
+			if (VassalageBehavior.Instance?.OpenNpcTributaryVassalageNoticeFromMap(data.NoticeId) == true)
+			{
+				ExecuteRemove();
+			}
+		};
+	}
+}
+
 internal sealed class AnimusForgeVassalageInfoMapNotification : InformationData
 {
 	private readonly TextObject _titleText;
@@ -776,6 +816,7 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 	private const string SaveKeyAgreements = "_afVassalageAgreements_v1";
 	private const string SaveKeyPendingInfoNotice = "_afVassalagePendingInfoNotice_v1";
 	private const string SaveKeyPendingProtection = "_afVassalagePendingProtection_v1";
+	private const string SaveKeyPendingNpcTributaryVassalageNotice = "_afVassalagePendingNpcTributaryVassalageNotice_v1";
 	private const string SaveKeyPendingDiplomacySync = "_afVassalagePendingDiplomacySync_v1";
 	private const string SaveKeyGarrisonObedience = "_afVassalageGarrisonObedience_v1";
 	private const string SaveKeyProtectedTributaryWars = "_afVassalageProtectedTributaryWars_v1";
@@ -841,6 +882,7 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 	private readonly Dictionary<string, string> _agreementStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 	private readonly Dictionary<string, string> _pendingInfoNotices = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 	private readonly Dictionary<string, string> _pendingProtectionNotices = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+	private readonly Dictionary<string, string> _pendingNpcTributaryVassalageNotices = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 	private readonly Dictionary<string, string> _pendingTributaryPaymentNotices = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 	private readonly Dictionary<string, string> _pendingDiplomacySyncs = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 	private readonly Dictionary<string, string> _protectedTributaryWars = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
@@ -853,6 +895,7 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 	private readonly HashSet<string> _infoNoticesShownThisSession = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 	private readonly HashSet<string> _protectionNoticesShownThisSession = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 	private readonly HashSet<string> _protectionNoticesOpenedFromMap = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+	private readonly HashSet<string> _npcTributaryVassalageNoticesShownThisSession = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 	private readonly HashSet<string> _tributaryPaymentNoticesShownThisSession = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 	private readonly object _noticePublishLock = new object();
 	private long _nextNoticePublishRetryUtcTicks;
@@ -926,6 +969,8 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 			dataStore.SyncData(SaveKeyPendingInfoNotice, ref pendingInfoNoticeStore);
 			Dictionary<string, string> pendingProtectionStore = CampaignSaveChunkHelper.FlattenStringDictionary(_pendingProtectionNotices);
 			dataStore.SyncData(SaveKeyPendingProtection, ref pendingProtectionStore);
+			Dictionary<string, string> pendingNpcTributaryVassalageNoticeStore = CampaignSaveChunkHelper.FlattenStringDictionary(_pendingNpcTributaryVassalageNotices);
+			dataStore.SyncData(SaveKeyPendingNpcTributaryVassalageNotice, ref pendingNpcTributaryVassalageNoticeStore);
 			Dictionary<string, string> pendingDiplomacyStore = CampaignSaveChunkHelper.FlattenStringDictionary(_pendingDiplomacySyncs);
 			dataStore.SyncData(SaveKeyPendingDiplomacySync, ref pendingDiplomacyStore);
 			Dictionary<string, string> protectedTributaryWarStore = CampaignSaveChunkHelper.FlattenStringDictionary(_protectedTributaryWars);
@@ -961,6 +1006,7 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 				["agreementCount"] = _agreementStorage.Count,
 				["pendingInfoNoticeCount"] = _pendingInfoNotices.Count,
 				["pendingProtectionCount"] = _pendingProtectionNotices.Count,
+				["pendingNpcTributaryVassalageNoticeCount"] = _pendingNpcTributaryVassalageNotices.Count,
 				["pendingDiplomacySyncCount"] = _pendingDiplomacySyncs.Count,
 				["protectedTributaryWarCount"] = _protectedTributaryWars.Count,
 				["tributaryPaymentLastSettlementDayCount"] = _tributaryPaymentLastSettlementDays.Count,
@@ -969,6 +1015,7 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 				["garrisonObedienceCount"] = _garrisonObedienceStorage.Count,
 				["saveKeyAgreements"] = SaveKeyAgreements,
 				["saveKeyPendingInfoNotice"] = SaveKeyPendingInfoNotice,
+				["saveKeyPendingNpcTributaryVassalageNotice"] = SaveKeyPendingNpcTributaryVassalageNotice,
 				["saveKeyPendingDiplomacySync"] = SaveKeyPendingDiplomacySync,
 				["saveKeyProtectedTributaryWars"] = SaveKeyProtectedTributaryWars,
 				["saveKeyTributaryPaymentLastSettlementDay"] = SaveKeyTributaryPaymentLastSettlementDay,
@@ -1019,6 +1066,18 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 			if (!string.IsNullOrWhiteSpace(key) && !string.IsNullOrWhiteSpace(value))
 			{
 				_pendingProtectionNotices[key] = value;
+			}
+		}
+		_pendingNpcTributaryVassalageNotices.Clear();
+		Dictionary<string, string> storedNpcTributaryVassalageNotices = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+		dataStore.SyncData(SaveKeyPendingNpcTributaryVassalageNotice, ref storedNpcTributaryVassalageNotices);
+		foreach (KeyValuePair<string, string> item in CampaignSaveChunkHelper.RestoreStringDictionary(storedNpcTributaryVassalageNotices, "NpcTributaryVassalageNotice"))
+		{
+			string key = (item.Key ?? "").Trim();
+			string value = (item.Value ?? "").Trim();
+			if (!string.IsNullOrWhiteSpace(key) && !string.IsNullOrWhiteSpace(value))
+			{
+				_pendingNpcTributaryVassalageNotices[key] = value;
 			}
 		}
 		_pendingDiplomacySyncs.Clear();
@@ -1098,6 +1157,7 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 			["agreementCount"] = _agreementsByVassalId.Count,
 			["pendingInfoNoticeCount"] = _pendingInfoNotices.Count,
 			["pendingProtectionCount"] = _pendingProtectionNotices.Count,
+			["pendingNpcTributaryVassalageNoticeCount"] = _pendingNpcTributaryVassalageNotices.Count,
 			["pendingDiplomacySyncCount"] = _pendingDiplomacySyncs.Count,
 			["protectedTributaryWarCount"] = _protectedTributaryWars.Count,
 			["tributaryPaymentLastSettlementDayCount"] = _tributaryPaymentLastSettlementDays.Count,
@@ -1179,6 +1239,12 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 		return !string.IsNullOrWhiteSpace(key) && _pendingProtectionNotices.ContainsKey(key) && TryResolvePendingProtectionNotice(key, out var _, out var _, out var _);
 	}
 
+	public bool HasPendingNpcTributaryVassalageNotice(string noticeId)
+	{
+		string key = (noticeId ?? "").Trim();
+		return !string.IsNullOrWhiteSpace(key) && _pendingNpcTributaryVassalageNotices.ContainsKey(key) && TryResolvePendingNpcTributaryVassalageNotice(key, out var _);
+	}
+
 	public bool HasPendingTributaryPaymentNotice(string noticeId)
 	{
 		string key = (noticeId ?? "").Trim();
@@ -1226,6 +1292,31 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 			["textLen"] = detail?.Length ?? 0
 		});
 		InformationManager.ShowInquiry(new InquiryData(title, detail, isAffirmativeOptionShown: true, isNegativeOptionShown: false, "我知道了", "", null, null));
+		return true;
+	}
+
+	public bool OpenNpcTributaryVassalageNoticeFromMap(string noticeId)
+	{
+		string key = (noticeId ?? "").Trim();
+		if (!TryResolvePendingNpcTributaryVassalageNotice(key, out var agreement))
+		{
+			RemovePendingNpcTributaryVassalageNotice(key);
+			return true;
+		}
+		RemovePendingNpcTributaryVassalageNotice(key);
+		string text = BuildEstablishedNoticeDetail(agreement);
+		VassalageDiagnosticLog.Event("npc_tribute_vassalage.notice_open", new Dictionary<string, object>
+		{
+			["noticeId"] = key,
+			["agreementId"] = agreement.AgreementId,
+			["type"] = agreement.Type,
+			["createdDay"] = agreement.CreatedDay,
+			["campaignDate"] = FormatCampaignDate(agreement.CreatedDay),
+			["vassal"] = VassalageDiagnosticLog.DescribeKingdom(agreement.ResolveVassal()),
+			["suzerain"] = VassalageDiagnosticLog.DescribeKingdom(agreement.ResolveSuzerain()),
+			["textLen"] = text?.Length ?? 0
+		});
+		InformationManager.ShowInquiry(new InquiryData("诸国朝贡条约", text, isAffirmativeOptionShown: true, isNegativeOptionShown: false, "我知道了", "", null, null));
 		return true;
 	}
 
@@ -2242,6 +2333,7 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 			["agreementCount"] = _agreementsByVassalId.Count,
 			["pendingInfoNoticeCount"] = _pendingInfoNotices.Count,
 			["pendingProtectionCount"] = _pendingProtectionNotices.Count,
+			["pendingNpcTributaryVassalageNoticeCount"] = _pendingNpcTributaryVassalageNotices.Count,
 			["pendingTributaryPaymentCount"] = _pendingTributaryPaymentNotices.Count,
 			["tributaryPaymentLastSettlementDayCount"] = _tributaryPaymentLastSettlementDays.Count,
 			["pendingDiplomacySyncCount"] = _pendingDiplomacySyncs.Count,
@@ -2260,6 +2352,7 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 			["agreementCount"] = _agreementsByVassalId.Count,
 			["pendingInfoNoticeCount"] = _pendingInfoNotices.Count,
 			["pendingProtectionCount"] = _pendingProtectionNotices.Count,
+			["pendingNpcTributaryVassalageNoticeCount"] = _pendingNpcTributaryVassalageNotices.Count,
 			["pendingTributaryPaymentCount"] = _pendingTributaryPaymentNotices.Count,
 			["tributaryPaymentLastSettlementDayCount"] = _tributaryPaymentLastSettlementDays.Count,
 			["pendingDiplomacySyncCount"] = _pendingDiplomacySyncs.Count,
@@ -3708,6 +3801,10 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 		{
 			RemovePendingProtectionNotice(noticeId);
 		}
+		foreach (string noticeId in _pendingNpcTributaryVassalageNotices.Keys.Where((string x) => (x ?? "").IndexOf(id, StringComparison.OrdinalIgnoreCase) >= 0 || (_pendingNpcTributaryVassalageNotices[x] ?? "").IndexOf(id, StringComparison.OrdinalIgnoreCase) >= 0).ToList())
+		{
+			RemovePendingNpcTributaryVassalageNotice(noticeId);
+		}
 		foreach (string noticeId in _pendingTributaryPaymentNotices.Keys.Where((string x) => (x ?? "").IndexOf(id, StringComparison.OrdinalIgnoreCase) >= 0).ToList())
 		{
 			RemovePendingTributaryPaymentNotice(noticeId);
@@ -3751,6 +3848,14 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 		else if (data is AnimusForgeVassalageProtectionMapNotification protection)
 		{
 			HandleProtectionNoticeDismissed(protection.NoticeId);
+		}
+		else if (data is AnimusForgeNpcTributaryVassalageMapNotification npcTributaryVassalage)
+		{
+			VassalageDiagnosticLog.Event("npc_tribute_vassalage.notice_remove", new Dictionary<string, object>
+			{
+				["noticeId"] = npcTributaryVassalage.NoticeId
+			});
+			RemovePendingNpcTributaryVassalageNotice(npcTributaryVassalage.NoticeId);
 		}
 		else if (data is AnimusForgeTributaryPaymentMapNotification payment)
 		{
@@ -4010,6 +4115,7 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 			+ ((syncedWarCount > 0 || queuedWarSyncCount > 0)
 				? ("宗主国已接手朝贡国现有战事：" + syncedWarCount.ToString(CultureInfo.InvariantCulture) + "项已生效，" + queuedWarSyncCount.ToString(CultureInfo.InvariantCulture) + "项将在局势安全时生效。")
 				: "");
+		QueueNpcTributaryVassalageNotice(agreement);
 		Logger.Log("NpcTributeVassalage", "Agreement created suzerain=" + agreement.SuzerainKingdomId + " vassal=" + agreement.VassalKingdomId + " type=" + agreement.Type);
 		VassalageDiagnosticLog.Event("npc_tribute_vassalage.agreement.create.success", new Dictionary<string, object>
 		{
@@ -4215,6 +4321,35 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 		ScheduleNoticePublish();
 	}
 
+	private void QueueNpcTributaryVassalageNotice(VassalageAgreement agreement)
+	{
+		if (agreement == null || !agreement.IsValid())
+		{
+			return;
+		}
+		if (!IsNpcTributaryVassalageAgreement(agreement))
+		{
+			return;
+		}
+		string noticeId = BuildNpcTributaryVassalageNoticeId(agreement.AgreementId);
+		if (string.IsNullOrWhiteSpace(noticeId))
+		{
+			return;
+		}
+		_pendingNpcTributaryVassalageNotices[noticeId] = agreement.AgreementId;
+		Logger.Log("NpcTributeVassalage", "Queued agreement notice agreement=" + agreement.AgreementId + " notice=" + noticeId);
+		VassalageDiagnosticLog.Event("npc_tribute_vassalage.notice_queue", new Dictionary<string, object>
+		{
+			["noticeId"] = noticeId,
+			["agreementId"] = agreement.AgreementId,
+			["type"] = agreement.Type,
+			["canPublishNow"] = CanPublishMapNotification(),
+			["vassal"] = VassalageDiagnosticLog.DescribeKingdom(agreement.ResolveVassal()),
+			["suzerain"] = VassalageDiagnosticLog.DescribeKingdom(agreement.ResolveSuzerain())
+		});
+		ScheduleNoticePublish();
+	}
+
 	private void QueueTributaryPaymentNotice(TributaryPaymentNoticeRecord record)
 	{
 		StoreTributaryPaymentRecord(record, true);
@@ -4315,6 +4450,30 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 					});
 				}
 			}
+			foreach (string noticeId in _pendingNpcTributaryVassalageNotices.Keys.ToList())
+			{
+				if (_npcTributaryVassalageNoticesShownThisSession.Contains(noticeId))
+				{
+					continue;
+				}
+				if (!TryResolvePendingNpcTributaryVassalageNotice(noticeId, out var agreement))
+				{
+					RemovePendingNpcTributaryVassalageNotice(noticeId);
+					continue;
+				}
+				_npcTributaryVassalageNoticesShownThisSession.Add(noticeId);
+				MBInformationManager.AddNotice(new AnimusForgeNpcTributaryVassalageMapNotification(noticeId, BuildNpcTributaryVassalageNoticeDescription(agreement)));
+				VassalageDiagnosticLog.Event("npc_tribute_vassalage.notice_publish", new Dictionary<string, object>
+				{
+					["noticeId"] = noticeId,
+					["agreementId"] = agreement.AgreementId,
+					["type"] = agreement.Type,
+					["createdDay"] = agreement.CreatedDay,
+					["campaignDate"] = FormatCampaignDate(agreement.CreatedDay),
+					["vassal"] = VassalageDiagnosticLog.DescribeKingdom(agreement.ResolveVassal()),
+					["suzerain"] = VassalageDiagnosticLog.DescribeKingdom(agreement.ResolveSuzerain())
+				});
+			}
 			foreach (string noticeId in _pendingInfoNotices.Keys.ToList())
 			{
 				if (_infoNoticesShownThisSession.Contains(noticeId))
@@ -4410,6 +4569,7 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 		{
 			bool hasEstablished = GetPlayerVassalAgreements().Any((VassalageAgreement x) => x != null && !x.EstablishedNoticeShown && !_establishedNoticesShownThisSession.Contains(x.AgreementId));
 			return hasEstablished
+				|| _pendingNpcTributaryVassalageNotices.Keys.Any((string x) => !_npcTributaryVassalageNoticesShownThisSession.Contains(x))
 				|| _pendingInfoNotices.Keys.Any((string x) => !_infoNoticesShownThisSession.Contains(x))
 				|| _pendingProtectionNotices.Keys.Any((string x) => !_protectionNoticesShownThisSession.Contains(x))
 				|| _pendingTributaryPaymentNotices.Keys.Any((string x) => !_tributaryPaymentNoticesShownThisSession.Contains(x));
@@ -4446,8 +4606,10 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 				_establishedNoticesShownThisSession.Clear();
 				_infoNoticesShownThisSession.Clear();
 				_protectionNoticesShownThisSession.Clear();
+				_npcTributaryVassalageNoticesShownThisSession.Clear();
 				_tributaryPaymentNoticesShownThisSession.Clear();
 				mapNotificationView.RegisterMapNotificationType(typeof(AnimusForgeVassalageEstablishedMapNotification), typeof(AnimusForgeVassalageEstablishedMapNotificationItemVM));
+				mapNotificationView.RegisterMapNotificationType(typeof(AnimusForgeNpcTributaryVassalageMapNotification), typeof(AnimusForgeNpcTributaryVassalageMapNotificationItemVM));
 				mapNotificationView.RegisterMapNotificationType(typeof(AnimusForgeVassalageInfoMapNotification), typeof(AnimusForgeVassalageInfoMapNotificationItemVM));
 				mapNotificationView.RegisterMapNotificationType(typeof(AnimusForgeVassalageProtectionMapNotification), typeof(AnimusForgeVassalageProtectionMapNotificationItemVM));
 				mapNotificationView.RegisterMapNotificationType(typeof(AnimusForgeTributaryPaymentMapNotification), typeof(AnimusForgeTributaryPaymentMapNotificationItemVM));
@@ -5308,6 +5470,10 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 		{
 			RemovePendingProtectionNotice(noticeId);
 		}
+		foreach (string noticeId in _pendingNpcTributaryVassalageNotices.Keys.Where((string x) => NoticeBelongsToAgreement(x, agreement)).ToList())
+		{
+			RemovePendingNpcTributaryVassalageNotice(noticeId);
+		}
 		ClearTributaryPaymentStateForAgreement(agreement, reason ?? "agreement_broken");
 		int removedPendingDiplomacySyncs = RemovePendingDiplomacySyncsForAgreement(agreement, reason ?? "agreement_broken");
 		RemoveProtectedTributaryWarsForAgreement(agreement, reason ?? "agreement_broken");
@@ -5560,6 +5726,11 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 		string key = (noticeId ?? "").Trim();
 		string agreementId = agreement.AgreementId ?? "";
 		if (_pendingProtectionNotices.TryGetValue(key, out var protectionValue) && (protectionValue ?? "").StartsWith(agreementId + "|", StringComparison.OrdinalIgnoreCase))
+		{
+			return true;
+		}
+		if (_pendingNpcTributaryVassalageNotices.TryGetValue(key, out var npcTributaryVassalageValue)
+			&& string.Equals(npcTributaryVassalageValue ?? "", agreementId, StringComparison.OrdinalIgnoreCase))
 		{
 			return true;
 		}
@@ -6058,6 +6229,18 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 			&& IsAtWar(vassal, enemy);
 	}
 
+	private bool TryResolvePendingNpcTributaryVassalageNotice(string noticeId, out VassalageAgreement agreement)
+	{
+		agreement = null;
+		string key = (noticeId ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(key) || !_pendingNpcTributaryVassalageNotices.TryGetValue(key, out var agreementId))
+		{
+			return false;
+		}
+		agreement = FindAgreementById(agreementId);
+		return IsNpcTributaryVassalageAgreement(agreement);
+	}
+
 	private bool TryResolvePendingTributaryPaymentNotice(string noticeId, out TributaryPaymentNoticeRecord record)
 	{
 		record = null;
@@ -6146,6 +6329,11 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 	private void RemovePendingProtectionNotice(string noticeId)
 	{
 		RemovePendingNoticeCore(noticeId, _pendingProtectionNotices, _protectionNoticesShownThisSession, _protectionNoticesOpenedFromMap);
+	}
+
+	private void RemovePendingNpcTributaryVassalageNotice(string noticeId)
+	{
+		RemovePendingNoticeCore(noticeId, _pendingNpcTributaryVassalageNotices, _npcTributaryVassalageNoticesShownThisSession);
 	}
 
 	private void RemovePendingTributaryPaymentNotice(string noticeId)
@@ -6923,6 +7111,13 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 				RemovePendingTributaryPaymentNotice(noticeId);
 			}
 		}
+		foreach (string noticeId in _pendingNpcTributaryVassalageNotices.Keys.ToList())
+		{
+			if (!TryResolvePendingNpcTributaryVassalageNotice(noticeId, out var _))
+			{
+				RemovePendingNpcTributaryVassalageNotice(noticeId);
+			}
+		}
 		foreach (KeyValuePair<string, string> item in _tributaryPaymentHistory.ToList())
 		{
 			if (!TryDeserializeTributaryPaymentRecord(item.Key, item.Value, out var record)
@@ -7329,6 +7524,22 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private static bool IsNpcTributaryVassalageAgreement(VassalageAgreement agreement)
+	{
+		if (agreement == null || !agreement.IsValid() || NormalizeVassalageType(agreement.Type) != AfVassalageType.Tributary)
+		{
+			return false;
+		}
+		Kingdom suzerain = agreement.ResolveSuzerain();
+		Kingdom vassal = agreement.ResolveVassal();
+		if (!IsValidKingdom(suzerain) || !IsValidKingdom(vassal))
+		{
+			return false;
+		}
+		Kingdom playerKingdom = GetPlayerKingdom();
+		return playerKingdom == null || (suzerain != playerKingdom && vassal != playerKingdom);
+	}
+
 	private static bool IsAtWar(Kingdom left, Kingdom right)
 	{
 		try
@@ -7360,6 +7571,16 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 		return "protect:" + vassal + ":" + enemy;
 	}
 
+	private static string BuildNpcTributaryVassalageNoticeId(string agreementId)
+	{
+		string id = (agreementId ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(id))
+		{
+			return "";
+		}
+		return "npc_tribute_vassalage:" + id;
+	}
+
 	private static string BuildTributaryPaymentNoticeId(string tributaryKingdomId, int settlementDay)
 	{
 		string tributary = (tributaryKingdomId ?? "").Trim();
@@ -7384,6 +7605,13 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 		default:
 			return subjectName + "已立誓为附庸国，接受宗主统辖，承担贡赋与出兵义务。";
 		}
+	}
+
+	private static string BuildNpcTributaryVassalageNoticeDescription(VassalageAgreement agreement)
+	{
+		Kingdom suzerain = agreement?.ResolveSuzerain();
+		Kingdom vassal = agreement?.ResolveVassal();
+		return GetKingdomDisplayName(vassal, "某国") + "已承认" + GetKingdomDisplayName(suzerain, "另一国") + "的宗主权，成为朝贡国。";
 	}
 
 	private static string BuildEstablishedNoticeDetail(VassalageAgreement agreement)
