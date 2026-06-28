@@ -22,6 +22,8 @@ public sealed class SiegeCivicChoiceProfile
 
     public const int InspirationNotableRelationBonus = 50;
 
+    public const int InspirationNotableTrustBonus = InspirationNotableRelationBonus;
+
     public const float RallyOathLoyaltyValue = 100f;
 
     public const float RallyOathProsperityGrowthMultiplier = 2f;
@@ -33,6 +35,8 @@ public sealed class SiegeCivicChoiceProfile
     public const int RallyOathBoundVillagePublicTrustBonus = 50;
 
     public const int RallyOathNotableRelationBonus = 100;
+
+    public const int RallyOathNotableTrustBonus = RallyOathNotableRelationBonus;
 
     public const int PositiveBuffYears = 1;
 
@@ -47,6 +51,7 @@ public sealed class SiegeCivicChoiceProfile
         float loyaltyDelta,
         float securityDelta,
         int notableRelationDelta,
+        int notableTrustDelta,
         float notablePowerDelta,
         int resultingInspirationLevel,
         bool locksLoyalty,
@@ -70,6 +75,7 @@ public sealed class SiegeCivicChoiceProfile
         LoyaltyDelta = loyaltyDelta;
         SecurityDelta = securityDelta;
         NotableRelationDelta = notableRelationDelta;
+        NotableTrustDelta = notableTrustDelta;
         NotablePowerDelta = notablePowerDelta;
         ResultingInspirationLevel = resultingInspirationLevel;
         LocksLoyalty = locksLoyalty;
@@ -102,6 +108,8 @@ public sealed class SiegeCivicChoiceProfile
     public float SecurityDelta { get; }
 
     public int NotableRelationDelta { get; }
+
+    public int NotableTrustDelta { get; }
 
     public float NotablePowerDelta { get; }
 
@@ -152,6 +160,7 @@ public sealed class SiegeCivicChoiceProfile
             loyaltyDelta: InspirationLoyaltyBonus,
             securityDelta: 0f,
             notableRelationDelta: InspirationNotableRelationBonus,
+            notableTrustDelta: InspirationNotableTrustBonus,
             notablePowerDelta: 0f,
             resultingInspirationLevel: 1,
             locksLoyalty: false,
@@ -180,6 +189,7 @@ public sealed class SiegeCivicChoiceProfile
             loyaltyDelta: 0f,
             securityDelta: 0f,
             notableRelationDelta: alreadyInspired ? Math.Max(0, RallyOathNotableRelationBonus - InspirationNotableRelationBonus) : RallyOathNotableRelationBonus,
+            notableTrustDelta: alreadyInspired ? Math.Max(0, RallyOathNotableTrustBonus - InspirationNotableTrustBonus) : RallyOathNotableTrustBonus,
             notablePowerDelta: 0f,
             resultingInspirationLevel: 2,
             locksLoyalty: true,

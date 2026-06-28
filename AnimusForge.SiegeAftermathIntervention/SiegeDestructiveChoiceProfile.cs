@@ -66,7 +66,7 @@ public sealed class SiegeDestructiveChoiceProfile
             aftermathKind: SiegeAftermathResolutionKind.Devastate,
             assemblySource: string.Empty,
             messageKey: "massacre",
-            messageText: "【攻城处置】血洗已触发：士兵将主动追击城内民众；多数民众会逃向预设藏身点/城门方向，少数民众、头人或携械者会反抗。本次处置不能再降回宽恕、救济或普通搜掠，但仍可继续升级为屠民迁殖；可随时按 TAB 离场，市场战利品在离场后结算。",
+            messageText: "【攻城处置】血洗已触发：士兵将主动追击城内民众；多数普通民众会恐慌逃向预设藏身点/城门方向或蹲伏求饶，只有旧守军、少数携械者、头人/要人或胆大者会反抗。本次处置不能再降回宽恕、救济或普通搜掠，但仍可继续升级为屠民迁殖；可随时按 TAB 离场，市场战利品在离场后结算。",
             messageColor: 0xFFFF7777u,
             memoryTitle: "血洗",
             firstMemoryText: string.Empty,
@@ -93,6 +93,6 @@ public sealed class SiegeDestructiveChoiceProfile
 
     public string BuildMassacreMemoryText(string triggerSource)
     {
-        return DescribeMassacreMemorySource(triggerSource) + "，本次处置已升级为毁坏/血洗，不能再降回宽恕、救济或普通搜掠；若玩家后续明确命令清除原住民并迁入己方人口，仍可继续升级为屠民迁殖。";
+        return DescribeMassacreMemorySource(triggerSource) + "，本次处置已升级为毁坏/血洗，不能再降回宽恕、救济或普通搜掠；多数普通平民应恐慌逃散、躲藏、蹲伏或求饶，只有旧守军、少数携械者、头人/要人或胆大者会反抗；若玩家后续明确命令清除原住民并迁入己方人口，仍可继续升级为屠民迁殖。";
     }
 }

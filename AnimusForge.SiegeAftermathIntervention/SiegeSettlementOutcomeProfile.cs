@@ -14,6 +14,8 @@ public sealed class SiegeSettlementOutcomeProfile
 
     public const int CulturalRepopulationProsperityGrowthDebuffYears = 1;
 
+    public const int DestructiveRecruitmentSuppressionYears = 1;
+
     private SiegeSettlementOutcomeProfile(
         string key,
         int settlementPublicTrustDelta,
@@ -21,7 +23,11 @@ public sealed class SiegeSettlementOutcomeProfile
         int boundVillagePublicTrustDelta,
         string boundVillagePublicTrustReason,
         int notableRelationDelta,
-        string notableRelationReason)
+        string notableRelationReason,
+        int notableTrustDelta,
+        string notableTrustReason,
+        int recruitmentSuppressionYears,
+        string recruitmentSuppressionReason)
     {
         Key = key;
         SettlementPublicTrustDelta = settlementPublicTrustDelta;
@@ -30,6 +36,10 @@ public sealed class SiegeSettlementOutcomeProfile
         BoundVillagePublicTrustReason = boundVillagePublicTrustReason;
         NotableRelationDelta = notableRelationDelta;
         NotableRelationReason = notableRelationReason;
+        NotableTrustDelta = notableTrustDelta;
+        NotableTrustReason = notableTrustReason;
+        RecruitmentSuppressionYears = recruitmentSuppressionYears;
+        RecruitmentSuppressionReason = recruitmentSuppressionReason;
     }
 
     public string Key { get; }
@@ -46,11 +56,21 @@ public sealed class SiegeSettlementOutcomeProfile
 
     public string NotableRelationReason { get; }
 
+    public int NotableTrustDelta { get; }
+
+    public string NotableTrustReason { get; }
+
+    public int RecruitmentSuppressionYears { get; }
+
+    public string RecruitmentSuppressionReason { get; }
+
     public bool ResetsLoyaltyToInitial => Key == "cultural_repopulation";
 
     public bool DoublesNativeDevastateProsperityPenalty => Key == "cultural_repopulation";
 
     public bool AppliesProsperityGrowthDebuff => Key == "cultural_repopulation";
+
+    public bool SuppressesRecruitment => RecruitmentSuppressionYears > 0;
 
     public static SiegeSettlementOutcomeProfile BuildPlunder()
     {
@@ -61,7 +81,11 @@ public sealed class SiegeSettlementOutcomeProfile
             boundVillagePublicTrustDelta: -20,
             boundVillagePublicTrustReason: "siege_ai_plunder_bound_village",
             notableRelationDelta: -30,
-            notableRelationReason: "siege_ai_plunder_notables");
+            notableRelationReason: "siege_ai_plunder_notables",
+            notableTrustDelta: -30,
+            notableTrustReason: "siege_ai_plunder_notable_trust",
+            recruitmentSuppressionYears: 0,
+            recruitmentSuppressionReason: string.Empty);
     }
 
     public static SiegeSettlementOutcomeProfile BuildMassacre()
@@ -73,7 +97,11 @@ public sealed class SiegeSettlementOutcomeProfile
             boundVillagePublicTrustDelta: -50,
             boundVillagePublicTrustReason: "siege_ai_massacre_bound_village",
             notableRelationDelta: -70,
-            notableRelationReason: "siege_ai_massacre_notables");
+            notableRelationReason: "siege_ai_massacre_notables",
+            notableTrustDelta: -70,
+            notableTrustReason: "siege_ai_massacre_notable_trust",
+            recruitmentSuppressionYears: DestructiveRecruitmentSuppressionYears,
+            recruitmentSuppressionReason: "siege_ai_massacre_recruitment_suppression");
     }
 
     public static SiegeSettlementOutcomeProfile BuildCulturalRepopulation()
@@ -85,6 +113,10 @@ public sealed class SiegeSettlementOutcomeProfile
             boundVillagePublicTrustDelta: -80,
             boundVillagePublicTrustReason: "siege_ai_repopulation_bound_village",
             notableRelationDelta: 0,
-            notableRelationReason: string.Empty);
+            notableRelationReason: string.Empty,
+            notableTrustDelta: 0,
+            notableTrustReason: string.Empty,
+            recruitmentSuppressionYears: DestructiveRecruitmentSuppressionYears,
+            recruitmentSuppressionReason: "siege_ai_repopulation_recruitment_suppression");
     }
 }

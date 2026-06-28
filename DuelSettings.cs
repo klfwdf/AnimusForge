@@ -15,6 +15,7 @@ using MCM.Abstractions.Base.Global;
 using MCM.Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using AnimusForge.SiegeAftermathIntervention;
 using TaleWorlds.Library;
 
 namespace AnimusForge;
@@ -518,6 +519,30 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		return ActionPostprocessApiMaxTokens;
 	}
 
+	public static bool IsGcczPostprocessUnlimitedFrequencyEnabled()
+	{
+		try
+		{
+			return GetSettings()?.GcczPostprocessUnlimitedFrequency ?? true;
+		}
+		catch
+		{
+			return true;
+		}
+	}
+
+	public static int GetGcczPostprocessFrequencyLimit()
+	{
+		try
+		{
+			return SiegePostprocessFrequencyProfile.ClampFrequencyLimit(GetSettings()?.GcczPostprocessFrequencyLimit ?? SiegePostprocessFrequencyProfile.DefaultFrequencyLimit);
+		}
+		catch
+		{
+			return SiegePostprocessFrequencyProfile.DefaultFrequencyLimit;
+		}
+	}
+
 	public int GetEventAndRebellionApiMaxTokens()
 	{
 		EventAndRebellionApiMaxTokens = ClampApiMaxTokens(EventAndRebellionApiMaxTokens, DefaultEventAndRebellionApiMaxTokens);
@@ -868,6 +893,14 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyInteger("最大输出Tokens", ApiMaxTokensMinimum, ApiMaxTokensMaximum, "0", Order = 9, RequireRestart = false, HintText = "后处理API动作标签与情绪标签判定调用的 max_tokens。默认 8000；如果接口不支持过高上限，可能会被接口拒绝。")]
 	[SettingPropertyGroup("1. AI 核心配置/3. 后处理API（动作标签与情绪标签判定）", GroupOrder = -280)]
 	public int ActionPostprocessApiMaxTokens { get; set; } = DefaultGeneralApiMaxTokens;
+
+	[SettingPropertyBool("GCCZ后处理无限频率", Order = 10, RequireRestart = false, HintText = "仅影响攻城后处置(GCCZ)场景的动作后处理。开启时保持当前行为，不做频率限制，并忽略下方 1-10 上限。")]
+	[SettingPropertyGroup("1. AI 核心配置/3. 后处理API（动作标签与情绪标签判定）", GroupOrder = -280)]
+	public bool GcczPostprocessUnlimitedFrequency { get; set; } = true;
+
+	[SettingPropertyInteger("GCCZ后处理每10次上限", SiegePostprocessFrequencyProfile.MinFrequencyLimit, SiegePostprocessFrequencyProfile.MaxFrequencyLimit, "0", Order = 11, RequireRestart = false, HintText = "关闭“无限频率”后生效：每 10 次低优先级 GCCZ 后处理最多允许 N 次，用于降低 token 消耗。疑似搜掠/血洗/救济/召集等直接玩家文本只会绕过限频并送入 AI 复核，不会固定词触发标签或结算；ACTION 标签仍必须由后处理 AI 输出。")]
+	[SettingPropertyGroup("1. AI 核心配置/3. 后处理API（动作标签与情绪标签判定）", GroupOrder = -280)]
+	public int GcczPostprocessFrequencyLimit { get; set; } = SiegePostprocessFrequencyProfile.DefaultFrequencyLimit;
 
 	[SettingPropertyText("事件/叛乱API 地址（支持填写 Base URL）", -1, true, "", Order = 0, RequireRestart = false, HintText = "用于事件系统周报与王国叛乱命名的独立接口地址，例如: https://api.openai.com/v1。填写到 /v1 时会自动补全为 /v1/chat/completions。留空时将继续回退使用主API。")]
 	[SettingPropertyGroup("1. AI 核心配置/4. 事件与王国叛乱API（周报生成与叛乱命名）", GroupOrder = -270)]

@@ -159,10 +159,12 @@ Same-culture destructive blocking has been removed from this profile. AF adapter
 
 `SiegeLocalAttackProfile` owns dependency-free bridge source codes, UI wording, and memory wording for player strikes against one NPC during an active GCCZ scene. AF adapters must treat these hits as local flee/resist conflict unless massacre or cultural repopulation has already been explicitly triggered by soldier-mediated action tags.
 
+`SiegeRegionalConflictProfile` owns dependency-free town trust-delta, 24m-diameter area de-duplication, generic player-facing notice text, and positive-effect-debt policy for regional civilian conflict. The fused AF adapter records the live first-hit/down center for each debt area, applies -1 settlement public trust once per area, shows only a generic regional-conflict panic prompt without backend values, then accumulates backend conflict debt that reduces later positive public-trust, loyalty, relation, and trust gains.
+
 
 ## Massacre interaction profile
 
-`SiegeMassacreInteractionProfile` owns dependency-free runtime parameters and source codes for GCCZ 血洗 civilian hide distance, hide refresh timing, soldier follow refresh, soldier target refresh, occupation follow, combat preparation, allied combat drive, and all-targets-down victory completion. AF adapters still own live mission-agent routing, order timing application, hide-point projection, and combat side effects.
+`SiegeMassacreInteractionProfile` owns dependency-free runtime parameters and source codes for GCCZ 血洗 civilian hide distance, hide refresh timing, soldier follow refresh, soldier target refresh, rare/limited civilian resistance selection, panic rout, occupation follow, combat preparation, allied combat drive, and all-targets-down victory completion. AF adapters still own live mission-agent routing, order timing application, hide-point projection, flee/fight behavior assignment, and combat side effects.
 
 
 `SiegeAgentWallRescueProfile` owns dependency-free thresholds for temporary native movement rescue when a GCCZ scene NPC appears pinned against collision while still far from its target. The fused AF adapter may reissue the same target with Bannerlord scripted movement flags for a short window, but ordinary AF scenes must not use this rescue.

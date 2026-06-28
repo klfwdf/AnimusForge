@@ -28,11 +28,17 @@ public static class SiegeMassacreInteractionProfile
 
     public const float SoldierStuckTargetMinDistance = 3.5f;
 
-    public const int CivilianResistanceStableIndexModulo = 5;
+    public const int CivilianResistanceStableIndexModulo = 12;
+
+    public const int ArmedCivilianResistanceStableIndexModulo = 3;
+
+    public const int NotableResistanceStableIndexModulo = 2;
 
     public const string OccupationFollowSource = "massacre_occupation_follow";
 
     public const string CombatPrepareSource = "massacre_combat_prepare";
+
+    public const string CivilianPanicRoutSource = "massacre_civilian_panic_rout";
 
     public const string AlliedCombatDriveSource = "massacre_drive";
 
@@ -44,16 +50,40 @@ public static class SiegeMassacreInteractionProfile
         return modulo > 0 && Math.Abs(stableIndex) % modulo == 0;
     }
 
+    public static bool ShouldArmedCivilianResistByStableIndex(int stableIndex)
+    {
+        int modulo = ArmedCivilianResistanceStableIndexModulo;
+        return modulo > 0 && Math.Abs(stableIndex) % modulo == 0;
+    }
+
+    public static bool ShouldNotableResistByStableIndex(int stableIndex)
+    {
+        int modulo = NotableResistanceStableIndexModulo;
+        return modulo > 0 && Math.Abs(stableIndex) % modulo == 0;
+    }
+
     public static bool ShouldCivilianResist(
         int stableIndex,
         bool isInterventionNotable,
         bool carriesRealWeapon,
         bool isGuardOrSoldier)
     {
-        return isInterventionNotable
-            || carriesRealWeapon
-            || isGuardOrSoldier
-            || ShouldCivilianResistByStableIndex(stableIndex);
+        if (isGuardOrSoldier)
+        {
+            return true;
+        }
+
+        if (isInterventionNotable && ShouldNotableResistByStableIndex(stableIndex))
+        {
+            return true;
+        }
+
+        if (carriesRealWeapon && ShouldArmedCivilianResistByStableIndex(stableIndex))
+        {
+            return true;
+        }
+
+        return ShouldCivilianResistByStableIndex(stableIndex);
     }
 
     public static int CalculateActiveHunterLimit(int alliedSoldierCount)

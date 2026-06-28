@@ -17365,6 +17365,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		Settlement currentSettlement = Settlement.CurrentSettlement;
 		int shoutTradeTargetAgentIndex = GetShoutTradeTargetAgentIndex();
 		bool hasWildernessNonHeroParty = TryResolveWildernessNonHeroRewardParty(hero, characterObject, shoutTradeTargetAgentIndex, out var wildernessNonHeroParty);
+		bool captureGcczSharedRelief = AfGcczShoutBridge.ShouldCaptureSharedReliefTransfer(shoutTradeTargetAgentIndex);
 		string text = MyBehavior.BuildRuleTargetKeyForExternal(hero, characterObject, shoutTradeTargetAgentIndex);
 		MobileParty mobileParty = Hero.MainHero?.PartyBelongedTo;
 		for (int i = 0; i < _shoutPendingTradeItems.Count; i++)
@@ -17404,7 +17405,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				shoutPendingTradeItem.Amount = num2;
 				if (num2 > 0)
 				{
-					if (hero != null)
+					if (captureGcczSharedRelief && AfGcczShoutBridge.CaptureSharedReliefGoldTransfer(shoutTradeTargetAgentIndex, num2))
+					{
+						GiveGoldAction.ApplyBetweenCharacters(Hero.MainHero, null, num2, disableNotification: true);
+					}
+					else if (hero != null)
 					{
 						GiveGoldAction.ApplyBetweenCharacters(Hero.MainHero, hero, num2);
 						try
@@ -17464,7 +17469,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				{
 					continue;
 				}
-				if (hasWildernessNonHeroParty && RewardSystemBehavior.Instance != null)
+				if (!captureGcczSharedRelief && hasWildernessNonHeroParty && RewardSystemBehavior.Instance != null)
 				{
 					string itemName;
 					int num3 = RewardSystemBehavior.Instance.TransferItemToParty(wildernessNonHeroParty, Hero.MainHero, text2, shoutPendingTradeItem.Amount, out itemName);
@@ -17480,6 +17485,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				shoutPendingTradeItem.Amount = num4;
 				if (num4 > 0)
 				{
+					if (captureGcczSharedRelief && AfGcczShoutBridge.CaptureSharedReliefItemTransfer(shoutTradeTargetAgentIndex, text2, num4, itemObject ?? shoutPendingTradeItem.Item, shoutPendingTradeItem.InventoryUnitValue))
+					{
+						continue;
+					}
 					if (hero?.PartyBelongedTo != null && itemObject != null)
 					{
 						hero.PartyBelongedTo.ItemRoster.AddToCounts(itemObject, num4);
@@ -18265,6 +18274,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			bool nobleGatheringRuleInjected = HasPreprocessRuleHit(preprocessRuleHits, "noble_gathering");
 			bool marriageRuleInjected = HasPreprocessRuleHit(preprocessRuleHits, "marriage");
 			bool siegeInterventionRuleInjected = AfGcczShoutBridge.ShouldRunPostprocessFromPreprocessHits(preprocessRuleHits);
+			siegeInterventionRuleInjected = AfGcczShoutBridge.ShouldAllowPostprocessByFrequency(siegeInterventionRuleInjected, playerText, latestReplyHasPlayerInput, "native");
 			if (AIConfigHandler.ShouldExcludeSceneMoveRuleForCurrentMission())
 			{
 				sceneMechanismRuleInjected = false;
@@ -20469,7 +20479,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		List<PostprocessRuleEntry> marriageRules = marriageRuleInjected ? MergePostprocessRulesForScene(AIConfigHandler.GetGuardrailRulePostprocessRules("marriage") ?? new List<PostprocessRuleEntry>(), marriageRuntimeRules) : null;
 		bool npcSurrenderPostprocessEnabled = IsNpcSurrenderPostprocessContext();
 		List<PostprocessRuleEntry> npcSurrenderRules = BuildNpcSurrenderPostprocessRulesForScene(npcSurrenderPostprocessEnabled);
-		bool siegeInterventionPostprocessEnabled = AfGcczShoutBridge.ShouldContinuePostprocess(siegeInterventionRuleInjected, preprocessRuleHits);
+		bool siegeInterventionPostprocessEnabled = siegeInterventionRuleInjected && AfGcczShoutBridge.ShouldContinuePostprocess(siegeInterventionRuleInjected, preprocessRuleHits);
 		List<PostprocessRuleEntry> siegeInterventionRules = AfGcczShoutBridge.BuildPostprocessRules(siegeInterventionPostprocessEnabled);
 		List<PostprocessRuleEntry> relayRules = BuildAutoGroupRelayPostprocessRulesForScene(relayRuleInjected);
 		List<PostprocessRuleEntry> mergedRules = MergePostprocessRulesForScene(duelRules, transactionRules, kingdomRules, royalRules, vassalageRules, annexationRules, lordsHallRules, meetingReleaseRules, vanillaIssueRules, heroJoinPartyRules, mechanismRules, partyTransferRules, settlementTransferRules, voteDealRules, diplomacyRules, worldMapPartyCommandRules, nobleGatheringRules, marriageRules, proposeAgendaRules, npcSurrenderRules, siegeInterventionRules, relayRules);
@@ -22535,10 +22545,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					bool worldMapPartyCommandPostprocessSelected = worldMapPartyCommandRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "worldmap_party_command");
 					bool nobleGatheringPostprocessSelected = HasPreprocessRuleHit(postprocessPreprocessHits, "noble_gathering");
 					bool marriagePostprocessSelected = HasPreprocessRuleHit(postprocessPreprocessHits, "marriage");
+					bool replyIsDirectPlayerResponse = firstTurn;
 					bool siegeInterventionPostprocessSelected = AfGcczShoutBridge.ShouldContinuePostprocess(siegeInterventionRuleInjected, postprocessPreprocessHits);
+					siegeInterventionPostprocessSelected = AfGcczShoutBridge.ShouldAllowPostprocessByFrequency(siegeInterventionPostprocessSelected, playerText, replyIsDirectPlayerResponse, "scene_queue");
 					bool npcSurrenderPostprocessSelected = IsNpcSurrenderPostprocessContext();
 					bool royalPostprocessSelected = AIConfigHandler.IsRoyalAbdicationPostprocessTargetForExternal(speakingHero ?? npcCharacter?.HeroObject);
-					bool replyIsDirectPlayerResponse = firstTurn;
 					relayPostprocessSelected = multiNpcScene && !endRequested && speakableCandidates.Count > 1;
 					bool flag11 = duelPostprocessSelected || rewardPostprocessSelected || loanPostprocessSelected || kingdomServicePostprocessSelected || kingdomVassalagePostprocessSelected || kingdomAnnexationPostprocessSelected || lordsHallPostprocessSelected || meetingReleasePostprocessSelected || vanillaIssuePostprocessSelected || heroJoinPartyPostprocessSelected || sceneMechanismPostprocessSelected || partyTransferPostprocessSelected || settlementTransferPostprocessSelected || voteDealPostprocessSelected || diplomacyPostprocessSelected || worldMapPartyCommandPostprocessSelected || nobleGatheringPostprocessSelected || marriagePostprocessSelected || siegeInterventionPostprocessSelected || npcSurrenderPostprocessSelected || royalPostprocessSelected || relayPostprocessSelected;
 					Logger.Log("ShoutBehavior", "[RuleInjectionDebug] stage=scene_queue npc=" + GetSceneNpcHistoryNameForPrompt(currentSpeaker) + " duelInjected=" + duelRuleInjected + " rewardInjected=" + rewardRuleInjected + " loanInjected=" + loanRuleInjected + " kingdomServiceInjected=" + kingdomServiceRuleInjected + " kingdomVassalageInjected=" + kingdomVassalageRuleInjected + " kingdomAnnexationInjected=" + kingdomAnnexationRuleInjected + " lordsHallInjected=" + lordsHallRuleInjected + " meetingReleaseInjected=" + meetingReleaseRuleInjected + " vanillaIssueInjected=" + vanillaIssueRuleInjected + " heroJoinPartyInjected=" + heroJoinPartyRuleInjected + " sceneMechanismInjected=" + sceneMechanismRuleInjected + " partyTransferInjected=" + partyTransferRuleInjected + " settlementTransferInjected=" + settlementTransferRuleInjected + " voteDealInjected=" + voteDealRuleInjected + " diplomacyInjected=" + diplomacyRuleInjected + " worldMapInjected=" + worldMapPartyCommandRuleInjected + " nobleGatheringSelected=" + nobleGatheringPostprocessSelected + " marriageSelected=" + marriagePostprocessSelected + " siegeInterventionSelected=" + siegeInterventionPostprocessSelected + " npcSurrenderSelected=" + npcSurrenderPostprocessSelected + " royalSelected=" + royalPostprocessSelected + " relaySelected=" + relayPostprocessSelected + " replyIsDirectPlayerResponse=" + replyIsDirectPlayerResponse + " preprocessHits=" + ((postprocessPreprocessHits == null || postprocessPreprocessHits.Count == 0) ? "(none)" : string.Join(",", postprocessPreprocessHits)) + " queueDeferred=" + flag11 + " replyLen=" + cleaned.Length);

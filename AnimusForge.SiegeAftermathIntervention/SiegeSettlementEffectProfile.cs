@@ -18,7 +18,13 @@ public static class SiegeSettlementEffectProfile
 
     public const string ReliefNotableRelationReason = "siege_ai_relief_notables";
 
+    public const string ReliefNotableTrustReason = "siege_ai_relief_notable_trust";
+
     public const string InspirationNotableRelationReason = "siege_ai_inspiration_notables";
 
+    public const string InspirationNotableTrustReason = "siege_ai_inspiration_notable_trust";
+
     public const string RallyOathNotableRelationReason = "siege_ai_rally_oath_notables";
+
+    public const string RallyOathNotableTrustReason = "siege_ai_rally_oath_notable_trust";
 }

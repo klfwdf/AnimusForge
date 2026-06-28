@@ -14,6 +14,8 @@ public sealed class SiegeReliefChoiceProfile
 
     public const int NotableRelationBonus = 10;
 
+    public const int NotableTrustBonus = NotableRelationBonus;
+
     public const string SoldierMaterialReliefTargetMessage = "【攻城处置】命令分发共享物资需要对己方入城士兵进行。";
 
     public const string SoldierMaterialReliefMissingPoolMessage = "【攻城处置】让士兵分发救济需要先通过AF给予功能交给士兵或在场NPC第纳尔、粮食或物资。";
@@ -31,6 +33,7 @@ public sealed class SiegeReliefChoiceProfile
         float loyaltyDelta,
         float securityDelta,
         int notableRelationDelta,
+        int notableTrustDelta,
         string sharedPoolEffectReason,
         string messageKey,
         string messageText,
@@ -46,6 +49,7 @@ public sealed class SiegeReliefChoiceProfile
         LoyaltyDelta = loyaltyDelta;
         SecurityDelta = securityDelta;
         NotableRelationDelta = notableRelationDelta;
+        NotableTrustDelta = notableTrustDelta;
         SharedPoolEffectReason = sharedPoolEffectReason;
         MessageKey = messageKey;
         MessageText = messageText;
@@ -68,6 +72,8 @@ public sealed class SiegeReliefChoiceProfile
     public float SecurityDelta { get; }
 
     public int NotableRelationDelta { get; }
+
+    public int NotableTrustDelta { get; }
 
     public string SharedPoolEffectReason { get; }
 
@@ -105,6 +111,7 @@ public sealed class SiegeReliefChoiceProfile
                 loyaltyDelta: BaseLoyaltyBonus,
                 securityDelta: 0f,
                 notableRelationDelta: NotableRelationBonus,
+                notableTrustDelta: NotableTrustBonus,
                 sharedPoolEffectReason: civilianVerbalOnly ? "civilian_relief_with_pool" : "relief",
                 messageKey: "relief",
                 messageText: "【攻城处置】你选择救济民众并分发共享物资；离场后按宽恕处置结算，本地忠诚度和要人好感上升。",
@@ -122,6 +129,7 @@ public sealed class SiegeReliefChoiceProfile
             loyaltyDelta: BaseLoyaltyBonus,
             securityDelta: 0f,
             notableRelationDelta: NotableRelationBonus,
+            notableTrustDelta: NotableTrustBonus,
             sharedPoolEffectReason: string.Empty,
             messageKey: "civilian_verbal_relief",
             messageText: "【攻城处置】你通过对话救济并安抚了民众；离场后按宽恕处置结算，本地忠诚度和要人好感上升。",

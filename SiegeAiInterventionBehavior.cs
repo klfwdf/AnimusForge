@@ -377,6 +377,8 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	private static readonly HashSet<int> LocalFleeingCivilianAgentIndexes = new HashSet<int>();
 	private static readonly Dictionary<int, float> LastLocalCivilianWitnessReactionTimes = new Dictionary<int, float>();
 	private static bool _localNativeFightStarted;
+	private static int _regionalConflictIncidentCount;
+	private static readonly List<Vec3> RegionalConflictDebtCenters = new List<Vec3>();
 	private static readonly HashSet<int> CivilianGatherMovePreparedAgentIndexes = new HashSet<int>();
 	private static readonly HashSet<int> CivilianGatherFollowerAgentIndexes = new HashSet<int>();
 	private static readonly HashSet<int> CivilianGatherReadyFormationAgentIndexes = new HashSet<int>();
@@ -388,9 +390,6 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	private static readonly Dictionary<int, int> CivilianSpeechRallySlots = new Dictionary<int, int>();
 	private static readonly Dictionary<int, float> LastCordonMoveOrderTimesBySoldier = new Dictionary<int, float>();
 	private static readonly Dictionary<int, float> LastCordonLookOrderTimesBySoldier = new Dictionary<int, float>();
-	private static readonly Dictionary<int, int> BannerBearerSlotByAgentIndex = new Dictionary<int, int>();
-	private static readonly Dictionary<int, float> LastBannerBearerMoveOrderTimes = new Dictionary<int, float>();
-	private static readonly HashSet<int> BannerBearerBannerWieldedAgentIndexes = new HashSet<int>();
 	private static readonly Dictionary<int, Vec3> CivilianHideTargets = new Dictionary<int, Vec3>();
 	private static readonly Dictionary<int, float> LastCivilianHideOrderTimes = new Dictionary<int, float>();
 	private static readonly HashSet<int> CivilianHideSettledAgentIndexes = new HashSet<int>();
@@ -403,10 +402,15 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	private static Dictionary<string, float> _civicProsperityLastObservedBySettlement = new Dictionary<string, float>();
 	private static Dictionary<string, float> _civicProsperityGrowthMultiplierBySettlement = new Dictionary<string, float>();
 	private static Dictionary<string, int> _rallyOathLoyaltyLockUntilDayBySettlement = new Dictionary<string, int>();
+	private static Dictionary<string, float> _rallyOathLoyaltyLockValueBySettlement = new Dictionary<string, float>();
 	private static Dictionary<string, int> _rallyOathRecruitmentBuffUntilDayBySettlement = new Dictionary<string, int>();
+	private static Dictionary<string, int> _recruitmentSuppressionUntilDayBySettlement = new Dictionary<string, int>();
 	private static int _pendingPositiveNotableRelationDelta;
 	private static bool _pendingPositiveNotableRelationIncludesBoundVillages;
 	private static string _pendingPositiveNotableRelationReason = "";
+	private static int _pendingPositiveNotableTrustDelta;
+	private static bool _pendingPositiveNotableTrustIncludesBoundVillages;
+	private static string _pendingPositiveNotableTrustReason = "";
 	private static readonly Dictionary<int, float> LastMassacreSoldierFollowOrderTimes = new Dictionary<int, float>();
 	private static readonly Dictionary<int, float> LastMassacreSoldierTargetOrderTimes = new Dictionary<int, float>();
 	private static readonly Dictionary<int, int> MassacreSoldierTargetAgentIndexes = new Dictionary<int, int>();
@@ -453,19 +457,24 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		dataStore.SyncData("_gcczCivicProsperityLastObservedBySettlement_v1", ref _civicProsperityLastObservedBySettlement);
 		dataStore.SyncData("_gcczCivicProsperityGrowthMultiplierBySettlement_v1", ref _civicProsperityGrowthMultiplierBySettlement);
 		dataStore.SyncData("_gcczRallyOathLoyaltyLockUntilDayBySettlement_v1", ref _rallyOathLoyaltyLockUntilDayBySettlement);
+		dataStore.SyncData("_gcczRallyOathLoyaltyLockValueBySettlement_v1", ref _rallyOathLoyaltyLockValueBySettlement);
 		dataStore.SyncData("_gcczRallyOathRecruitmentBuffUntilDayBySettlement_v1", ref _rallyOathRecruitmentBuffUntilDayBySettlement);
+		dataStore.SyncData("_gcczRecruitmentSuppressionUntilDayBySettlement_v1", ref _recruitmentSuppressionUntilDayBySettlement);
 		_repopulationProsperityDebuffUntilDayBySettlement ??= new Dictionary<string, int>();
 		_repopulationProsperityLastObservedBySettlement ??= new Dictionary<string, float>();
 		_civicProsperityBuffUntilDayBySettlement ??= new Dictionary<string, int>();
 		_civicProsperityLastObservedBySettlement ??= new Dictionary<string, float>();
 		_civicProsperityGrowthMultiplierBySettlement ??= new Dictionary<string, float>();
 		_rallyOathLoyaltyLockUntilDayBySettlement ??= new Dictionary<string, int>();
+		_rallyOathLoyaltyLockValueBySettlement ??= new Dictionary<string, float>();
 		_rallyOathRecruitmentBuffUntilDayBySettlement ??= new Dictionary<string, int>();
+		_recruitmentSuppressionUntilDayBySettlement ??= new Dictionary<string, int>();
 	}
 
 	private void OnDailyTickTown(Town town)
 	{
 		ApplyRepopulationProsperityGrowthDebuff(town);
+		ApplyRecruitmentSuppressionDebuff(town);
 		ApplyCivicProsperityGrowthBuff(town);
 		ApplyRallyOathLoyaltyLock(town);
 		ApplyRallyOathRecruitmentBuff(town);
@@ -479,6 +488,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	private void OnNewGameCreated(CampaignGameStarter starter)
 	{
 		ClearRepopulationProsperityDebuffs();
+		ClearRecruitmentSuppressionDebuffs();
 		ClearCivicPositiveBuffs();
 		ResetAftermathRuntimeGuards(SiegeAftermathTransitionSourceProfile.ResetNewGameCreatedSource);
 	}
@@ -965,6 +975,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		_pendingMode = InterventionMode.None;
 		_nextControlTickTime = 0f;
 		_nextPlunderTickTime = 0f;
+		AfGcczShoutBridge.ResetPostprocessFrequencyForMissionBoundary(SiegePostprocessFrequencyProfile.MissionStartResetSource);
 		try
 		{
 			if (mission is Mission missionPopulation && missionPopulation.GetMissionBehavior<InterventionNativeTownCivilianPopulationMissionBehavior>() == null)
@@ -1081,6 +1092,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
+		AfGcczShoutBridge.ResetPostprocessFrequencyForMissionBoundary(SiegePostprocessFrequencyProfile.MissionEndResetSource);
 		EnsureMissionExitOutcomeBeforeFinalizing();
 		if (_plunderStarted && !_massacreStarted)
 		{
@@ -1905,25 +1917,6 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		}
 	}
 
-	internal static bool TryProcessPlayerInstruction(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, string playerInstruction, out bool actionHandled)
-	{
-		actionHandled = false;
-		try
-		{
-			if (!IsActiveInCurrentMission() || string.IsNullOrWhiteSpace(playerInstruction) || !AnySiegeTagRegex.IsMatch(playerInstruction))
-			{
-				return false;
-			}
-			string taggedInstruction = playerInstruction;
-			return TryProcessAiActionTags(targetHero, targetCharacter, targetAgentIndex, ref taggedInstruction, out actionHandled, replyIsDirectPlayerResponse: true);
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("SiegeAiIntervention", "TryProcessPlayerInstruction failed: " + ex.Message);
-		}
-		return false;
-	}
-
 	private static bool TryPromptSoldierDestructiveInquiry(Agent sourceAgent, int sourceAgentIndex, string reason)
 	{
 		try
@@ -2341,17 +2334,6 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	private static bool IsCommandableInterventionSoldier(Agent agent, bool requireActive = false)
 	{
 		return IsInterventionAlliedSoldierForExternal(agent, requireActive) && !IsInterventionBannerBearer(agent);
-	}
-
-	internal static bool ShouldBlockInterventionMissionExit(out string message)
-	{
-		message = "";
-		return false;
-	}
-
-	internal static bool ShouldForceAllowInterventionMissionExitForExternal()
-	{
-		return false;
 	}
 
 	private static void EnsureInterventionMissionCombatModeForPlayerDamage(Mission mission)
@@ -2807,6 +2789,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			bool firstHit = LocalPlayerAttackVictimAgentIndexes.Add(affectedAgent.Index);
 			if (firstHit)
 			{
+				TryApplyRegionalConflictTrustPenalty(ResolveCurrentSettlement(), affectedAgent, targetName, victimDown: false, source ?? SiegeLocalAttackProfile.LocalAttackSource);
 				InformationManager.DisplayMessage(new InformationMessage(SiegeLocalAttackProfile.BuildPlayerHitMessage(targetName, targetWillResist), Color.FromUint(SiegeLocalAttackProfile.MessageColor)));
 				RecordInterventionMemory(SiegeLocalAttackProfile.MemoryTitle, SiegeLocalAttackProfile.BuildPlayerHitMemoryText(targetName, targetWillResist));
 			}
@@ -2838,6 +2821,67 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		catch (Exception ex)
 		{
 			Logger.Log("SiegeAiIntervention", "HandlePlayerLocalAttackInIntervention failed: " + ex.Message);
+			return false;
+		}
+	}
+
+	private static bool TryApplyRegionalConflictTrustPenalty(Settlement settlement, Agent victim, string targetName, bool victimDown, string source)
+	{
+		try
+		{
+			if (settlement == null || victim == null)
+			{
+				return false;
+			}
+			Vec3 center = victim.Position;
+			if (!TryReserveRegionalConflictDebtArea(center))
+			{
+				Logger.Log("SiegeAiIntervention", "Skipped regional conflict trust penalty inside existing debt area. Source=" + (source ?? "N/A")
+					+ ", Victim=" + (targetName ?? "N/A")
+					+ ", Down=" + victimDown
+					+ ", Incidents=" + _regionalConflictIncidentCount);
+				return false;
+			}
+			_regionalConflictIncidentCount++;
+			AdjustSettlementPublicTrustOnly(
+				settlement,
+				SiegeRegionalConflictProfile.SettlementPublicTrustDeltaPerIncident,
+				SiegeRegionalConflictProfile.SettlementPublicTrustReason);
+			InformationManager.DisplayMessage(new InformationMessage(
+				SiegeRegionalConflictProfile.BuildConflictNoticeMessage(targetName, victimDown),
+				Color.FromUint(SiegeLocalAttackProfile.MessageColor)));
+			Logger.Log("SiegeAiIntervention", "Applied regional conflict trust debt. Source=" + (source ?? "N/A")
+				+ ", Settlement=" + (settlement.StringId ?? "N/A")
+				+ ", Victim=" + (targetName ?? "N/A")
+				+ ", Down=" + victimDown
+				+ ", Incidents=" + _regionalConflictIncidentCount
+				+ ", AreaDiameter=" + SiegeRegionalConflictProfile.ConflictAreaDiameter.ToString("0.0")
+				+ ", SettlementTrust=" + SiegeRegionalConflictProfile.SettlementPublicTrustDeltaPerIncident);
+			return true;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "TryApplyRegionalConflictTrustPenalty failed: " + ex.Message);
+			return false;
+		}
+	}
+
+	private static bool TryReserveRegionalConflictDebtArea(Vec3 center)
+	{
+		try
+		{
+			foreach (Vec3 existingCenter in RegionalConflictDebtCenters)
+			{
+				if (SiegeRegionalConflictProfile.IsInsideConflictAreaSquared(existingCenter.DistanceSquared(center)))
+				{
+					return false;
+				}
+			}
+			RegionalConflictDebtCenters.Add(center);
+			return true;
+		}
+		catch
+		{
 			return false;
 		}
 	}
@@ -2919,6 +2963,22 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			{
 				return;
 			}
+			ActivateCivilianPanicFleeBehavior(agent, source ?? SiegeLocalCivilianReactionProfile.NativeFleeBridgeSource);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "ActivateNativeLocalFleeBehavior failed (" + (source ?? SiegeLocalCivilianReactionProfile.NativeFleeBridgeSource) + "): " + ex.Message);
+		}
+	}
+
+	private static void ActivateCivilianPanicFleeBehavior(Agent agent, string source)
+	{
+		try
+		{
+			if (agent == null || !agent.IsHuman || !agent.IsActive())
+			{
+				return;
+			}
 			CampaignAgentComponent component = agent.GetComponent<CampaignAgentComponent>();
 			AgentNavigator navigator = component?.AgentNavigator ?? component?.CreateAgentNavigator();
 			if (navigator == null)
@@ -2936,15 +2996,12 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			{
 				return;
 			}
-			if (!fleeBehavior.IsActive)
-			{
-				alarmedGroup.SetScriptedBehavior<FleeBehavior>();
-			}
+			alarmedGroup.SetScriptedBehavior<FleeBehavior>();
 			agent.SetWatchState(Agent.WatchState.Alarmed);
 		}
 		catch (Exception ex)
 		{
-			Logger.Log("SiegeAiIntervention", "ActivateNativeLocalFleeBehavior failed (" + (source ?? SiegeLocalCivilianReactionProfile.NativeFleeBridgeSource) + "): " + ex.Message);
+			Logger.Log("SiegeAiIntervention", "ActivateCivilianPanicFleeBehavior failed (" + (source ?? "N/A") + "): " + ex.Message);
 		}
 	}
 
@@ -3952,12 +4009,15 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				{
 				}
 			}
-			if (reliefEffect.HasSettlementDeltas)
+			int adjustedPublicTrustDelta = ReducePositiveIntDeltaForRegionalConflict(reliefEffect.PublicTrustDelta, "shared_relief_public_trust");
+			float adjustedLoyaltyDelta = ReducePositiveFloatDeltaForRegionalConflict(reliefEffect.LoyaltyDelta, "shared_relief_loyalty");
+			float adjustedSecurityDelta = ReducePositiveFloatDeltaForRegionalConflict(reliefEffect.SecurityDelta, "shared_relief_security");
+			if (adjustedPublicTrustDelta != 0 || Math.Abs(adjustedLoyaltyDelta) > 0.001f || Math.Abs(adjustedSecurityDelta) > 0.001f)
 			{
-				AdjustSettlementAfterRelief(settlement, reliefEffect.PublicTrustDelta, reliefEffect.LoyaltyDelta, reliefEffect.SecurityDelta);
+				AdjustSettlementAfterRelief(settlement, adjustedPublicTrustDelta, adjustedLoyaltyDelta, adjustedSecurityDelta);
 			}
 			InformationManager.DisplayMessage(new InformationMessage(SiegeSharedReliefPoolFormatter.BuildAppliedEffectMessage(DescribeSharedCivilianReliefPoolForContext()), Color.FromUint(SiegeSharedReliefPoolFormatter.AppliedEffectMessageColor)));
-			Logger.Log("SiegeAiIntervention", "Applied shared civilian relief pool effects. Reason=" + (reason ?? "N/A") + ", NewGold=" + reliefEffect.NewGold + ", NewFood=" + reliefEffect.NewFoodUnits + ", NewMaterialValue=" + reliefEffect.NewMaterialValue + ", PublicTrustDelta=" + reliefEffect.PublicTrustDelta + ", LoyaltyDelta=" + reliefEffect.LoyaltyDelta + ", SecurityDelta=" + reliefEffect.SecurityDelta);
+			Logger.Log("SiegeAiIntervention", "Applied shared civilian relief pool effects. Reason=" + (reason ?? "N/A") + ", NewGold=" + reliefEffect.NewGold + ", NewFood=" + reliefEffect.NewFoodUnits + ", NewMaterialValue=" + reliefEffect.NewMaterialValue + ", PublicTrustDelta=" + adjustedPublicTrustDelta + ", LoyaltyDelta=" + adjustedLoyaltyDelta + ", SecurityDelta=" + adjustedSecurityDelta + ", RegionalConflictIncidents=" + _regionalConflictIncidentCount);
 			return true;
 		}
 		catch (Exception ex)
@@ -4025,8 +4085,13 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			MarkPendingAftermath(SiegeAftermathAction.SiegeAftermath.ShowMercy, triggerSource, triggerDetail);
 			MaybeTriggerSoldierAppeasementNeed(reliefProfile.SoldierAppeasementReason);
 			Settlement settlement = ResolveCurrentSettlement();
-			AdjustSettlementAfterRelief(settlement, reliefProfile.PublicTrustDelta, reliefProfile.LoyaltyDelta, reliefProfile.SecurityDelta);
-			QueuePositiveNotableRelationForFinalAftermath(reliefProfile.NotableRelationDelta, includeBoundVillages: false, SiegeSettlementEffectProfile.ReliefNotableRelationReason);
+			AdjustSettlementAfterRelief(
+				settlement,
+				ReducePositiveIntDeltaForRegionalConflict(reliefProfile.PublicTrustDelta, "relief_public_trust"),
+				ReducePositiveFloatDeltaForRegionalConflict(reliefProfile.LoyaltyDelta, "relief_loyalty"),
+				ReducePositiveFloatDeltaForRegionalConflict(reliefProfile.SecurityDelta, "relief_security"));
+			QueuePositiveNotableRelationForFinalAftermath(ReducePositiveIntDeltaForRegionalConflict(reliefProfile.NotableRelationDelta, "relief_notable_relation"), includeBoundVillages: false, SiegeSettlementEffectProfile.ReliefNotableRelationReason);
+			QueuePositiveNotableTrustForFinalAftermath(ReducePositiveIntDeltaForRegionalConflict(reliefProfile.NotableTrustDelta, "relief_notable_trust"), includeBoundVillages: false, SiegeSettlementEffectProfile.ReliefNotableTrustReason);
 			if (reliefProfile.HasSharedPool && !string.IsNullOrWhiteSpace(reliefProfile.SharedPoolEffectReason))
 			{
 				ApplySharedCivilianReliefPoolEffects(settlement, reliefProfile.SharedPoolEffectReason);
@@ -4067,7 +4132,8 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			ApplySharedCivilianReliefPoolEffects(settlement, civicProfile.SharedPoolEffectReason);
 			BeginCivicPositiveBuff(settlement, civicProfile);
 			_inspirationLevelApplied = civicProfile.ResultingInspirationLevel;
-			QueuePositiveNotableRelationForFinalAftermath(civicProfile.NotableRelationDelta, includeBoundVillages: true, SiegeSettlementEffectProfile.InspirationNotableRelationReason);
+			QueuePositiveNotableRelationForFinalAftermath(ReducePositiveIntDeltaForRegionalConflict(civicProfile.NotableRelationDelta, "inspiration_notable_relation"), includeBoundVillages: true, SiegeSettlementEffectProfile.InspirationNotableRelationReason);
+			QueuePositiveNotableTrustForFinalAftermath(ReducePositiveIntDeltaForRegionalConflict(civicProfile.NotableTrustDelta, "inspiration_notable_trust"), includeBoundVillages: true, SiegeSettlementEffectProfile.InspirationNotableTrustReason);
 			int powerAdjusted = 0;
 			GatherCiviliansForSpeech(civicProfile.GatherSource);
 			ShowOutcomeMessageOnce(civicProfile.MessageKey, civicProfile.MessageText, civicProfile.MessageColor);
@@ -4106,12 +4172,13 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			ApplySharedCivilianReliefPoolEffects(settlement, civicProfile.SharedPoolEffectReason);
 			BeginCivicPositiveBuff(settlement, civicProfile);
 			_inspirationLevelApplied = civicProfile.ResultingInspirationLevel;
-			QueuePositiveNotableRelationForFinalAftermath(SiegeCivicChoiceProfile.RallyOathNotableRelationBonus, includeBoundVillages: true, SiegeSettlementEffectProfile.RallyOathNotableRelationReason);
+			QueuePositiveNotableRelationForFinalAftermath(ReducePositiveIntDeltaForRegionalConflict(civicProfile.NotableRelationDelta, "rally_oath_notable_relation"), includeBoundVillages: true, SiegeSettlementEffectProfile.RallyOathNotableRelationReason);
+			QueuePositiveNotableTrustForFinalAftermath(ReducePositiveIntDeltaForRegionalConflict(civicProfile.NotableTrustDelta, "rally_oath_notable_trust"), includeBoundVillages: true, SiegeSettlementEffectProfile.RallyOathNotableTrustReason);
 			int powerAdjusted = 0;
 			GatherCiviliansForSpeech(civicProfile.GatherSource);
 			ShowOutcomeMessageOnce(civicProfile.MessageKey, civicProfile.MessageText, civicProfile.MessageColor);
 			RecordInterventionMemory(civicProfile.MemoryTitle, civicProfile.MemoryText);
-			Logger.Log("SiegeAiIntervention", "Applied rally oath choice. Settlement=" + (settlement?.StringId ?? "N/A") + ", QueuedRelationDelta=" + SiegeCivicChoiceProfile.RallyOathNotableRelationBonus + ", PowerAdjusted=" + powerAdjusted);
+			Logger.Log("SiegeAiIntervention", "Applied rally oath choice. Settlement=" + (settlement?.StringId ?? "N/A") + ", QueuedRelationDelta=" + civicProfile.NotableRelationDelta + ", QueuedTrustDelta=" + civicProfile.NotableTrustDelta + ", PowerAdjusted=" + powerAdjusted);
 			return true;
 		}
 		catch (Exception ex)
@@ -7171,7 +7238,11 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				}
 				if (IsInterventionBannerBearer(agent))
 				{
-					KeepInterventionBannerBearerNearPlayer(agent, main, mission);
+					RestoreAlliedSoldierFriendlyState(agent, 0f, SiegeBannerBearerProfile.BannerBearerRestoreSource, forceFollow: false, clearTarget: false);
+					AssignAgentToPlayerFormation(agent, GetBannerBearerFormationClass(), refreshFormationOrders: false);
+					RestoreBannerBearerMountTeam(agent, main, mission);
+					TryWieldBannerBearerBanner(agent);
+					agent.SetWatchState(_massacreStarted || _plunderStarted ? Agent.WatchState.Alarmed : Agent.WatchState.Patrolling);
 					continue;
 				}
 				RestoreAlliedSoldierFriendlyState(agent, 0f, SiegeSoldierCordonProfile.AlliedControlTickSource, forceFollow: false, clearTarget: false);
@@ -7599,6 +7670,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			agent.SetWatchState(Agent.WatchState.Alarmed);
 			if (canResist)
 			{
+				LocalFleeingCivilianAgentIndexes.Remove(agent.Index);
 				try
 				{
 					Formation enemyFormation = enemyTeam?.GetFormation(FormationClass.Infantry);
@@ -7627,7 +7699,10 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			}
 			else
 			{
+				LocalHostileCivilianAgentIndexes.Remove(agent.Index);
+				LocalFleeingCivilianAgentIndexes.Add(agent.Index);
 				agent.InvalidateTargetAgent();
+				ClearAgentLookTarget(agent);
 				try
 				{
 					agent.DisableScriptedMovement();
@@ -7641,6 +7716,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				catch
 				{
 				}
+				ActivateCivilianPanicFleeBehavior(agent, SiegeMassacreInteractionProfile.CivilianPanicRoutSource);
 				KeepCivilianHidingFromOccupation(agent, mission, main, force: false);
 			}
 		}
@@ -8515,9 +8591,13 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				return false;
 			}
 			string targetName = affectedAgent.Name?.ToString();
-			LocalPlayerAttackVictimAgentIndexes.Add(affectedAgent.Index);
+			bool firstTrackedVictim = LocalPlayerAttackVictimAgentIndexes.Add(affectedAgent.Index);
 			if (LocalPlayerAttackDownAgentIndexes.Add(affectedAgent.Index))
 			{
+				if (firstTrackedVictim)
+				{
+					TryApplyRegionalConflictTrustPenalty(ResolveCurrentSettlement(), affectedAgent, targetName, victimDown: true, SiegeLocalCivilianReactionProfile.PlayerDownSource);
+				}
 				InformationManager.DisplayMessage(new InformationMessage(SiegeLocalCivilianReactionProfile.BuildPlayerDownMessage(targetName), Color.FromUint(SiegeLocalAttackProfile.MessageColor)));
 				RecordInterventionMemory(SiegeLocalAttackProfile.MemoryTitle, SiegeLocalCivilianReactionProfile.BuildPlayerDownMemoryText(targetName));
 				TriggerLocalCivilianWitnessReactions(mission, affectedAgent, Agent.Main ?? mission.MainAgent, victimDown: true, targetName);
@@ -8822,8 +8902,8 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				return 0;
 			}
 			PruneBannerBearerState(mission);
-			List<int> missingSlots = GetMissingBannerBearerSlots();
-			if (missingSlots.Count == 0)
+			int missingCount = Math.Max(0, SiegeBannerBearerProfile.BannerBearerCount - BannerBearerAgentIndexes.Count);
+			if (missingCount == 0)
 			{
 				return 0;
 			}
@@ -8833,8 +8913,11 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				Logger.Log("SiegeAiIntervention", "Skip GCCZ banner bearers: no usable banner item. Source=" + (source ?? "N/A"));
 				return 0;
 			}
-			bool playerMounted = ShouldUseMountedBannerBearerLayout(main, mission);
-			List<CharacterObject> troops = PickInterventionBannerBearerTroops(missingSlots.Count);
+			bool playerHasMount = ShouldSpawnMountedBannerBearers(main);
+			FormationClass bannerFormationClass = GetBannerBearerFormationClass();
+			Formation bannerFormation = team.GetFormation(bannerFormationClass);
+			MarkFormationPlayerCommandable(bannerFormation, main);
+			List<CharacterObject> troops = PickInterventionBannerBearerTroops(missingCount);
 			if (troops.Count == 0)
 			{
 				Logger.Log("SiegeAiIntervention", "Skip GCCZ banner bearers: no available non-hero troop. Source=" + (source ?? "N/A"));
@@ -8842,20 +8925,16 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			}
 			Banner banner = ResolveInterventionBanner();
 			int spawned = 0;
-			for (int i = 0; i < missingSlots.Count && i < troops.Count; i++)
+			for (int i = 0; i < missingCount && i < troops.Count; i++)
 			{
 				CharacterObject troop = troops[i];
-				int slot = missingSlots[i];
 				if (troop == null)
 				{
 					continue;
 				}
-				Vec3 position = GetBannerBearerTargetPosition(main, mission, slot);
+				Vec3 position = GetBannerBearerInitialSpawnPosition(main, mission, i);
 				Vec3 spawnDirection = main.LookDirection;
-				bool spawnWithHorse = playerMounted && CharacterCanSpawnMounted(troop);
-				FormationClass bannerFormationClass = spawnWithHorse ? FormationClass.Cavalry : FormationClass.Infantry;
-				Formation bannerFormation = team.GetFormation(bannerFormationClass);
-				MarkFormationPlayerCommandable(bannerFormation, main);
+				bool spawnWithHorse = playerHasMount && CharacterCanSpawnMounted(troop);
 				spawnDirection.z = 0f;
 				if (spawnDirection.LengthSquared < 0.01f)
 				{
@@ -8902,10 +8981,11 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 					NotifyAgentBuiltForMission(spawnedAgent, mission);
 					AlliedAgentIndexes.Add(spawnedAgent.Index);
 					BannerBearerAgentIndexes.Add(spawnedAgent.Index);
-					BannerBearerSlotByAgentIndex[spawnedAgent.Index] = slot;
 					RestoreAlliedSoldierFriendlyState(spawnedAgent, 0f, SiegeBannerBearerProfile.BannerBearerRestoreSource, forceFollow: false, clearTarget: true);
 					AssignAgentToPlayerFormation(spawnedAgent, bannerFormationClass, refreshFormationOrders: false);
-					KeepInterventionBannerBearerNearPlayer(spawnedAgent, main, mission);
+					RestoreBannerBearerMountTeam(spawnedAgent, main, mission);
+					TryWieldBannerBearerBanner(spawnedAgent);
+					spawnedAgent.SetWatchState(_massacreStarted || _plunderStarted ? Agent.WatchState.Alarmed : Agent.WatchState.Patrolling);
 					spawned++;
 				}
 				catch (Exception ex)
@@ -8915,7 +8995,9 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			}
 			if (spawned > 0)
 			{
-				Logger.Log("SiegeAiIntervention", "Spawned GCCZ banner bearers=" + spawned + ", Source=" + (source ?? SiegeBannerBearerProfile.SpawnSource) + ", BannerItem=" + (bannerItem?.StringId ?? "null"));
+				TrySetPlayerFormationFollowOrder(bannerFormationClass, SiegeBannerBearerProfile.NativeFormationSource);
+				TryPrimePlayerOrderController(mission, SiegeBannerBearerProfile.NativeFormationSource, force: true);
+				Logger.Log("SiegeAiIntervention", "Spawned GCCZ banner bearers=" + spawned + ", Formation=" + bannerFormationClass + ", Mounted=" + playerHasMount + ", Source=" + (source ?? SiegeBannerBearerProfile.SpawnSource) + ", BannerItem=" + (bannerItem?.StringId ?? "null"));
 			}
 			return spawned;
 		}
@@ -8926,26 +9008,6 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static List<int> GetMissingBannerBearerSlots()
-	{
-		List<int> slots = new List<int>();
-		try
-		{
-			int desiredCount = Math.Max(0, SiegeBannerBearerProfile.BannerBearerCount);
-			for (int slot = 0; slot < desiredCount; slot++)
-			{
-				if (!BannerBearerSlotByAgentIndex.Values.Contains(slot))
-				{
-					slots.Add(slot);
-				}
-			}
-		}
-		catch
-		{
-		}
-		return slots;
-	}
-
 	private static List<CharacterObject> PickInterventionBannerBearerTroops(int count)
 	{
 		if (count <= 0)
@@ -8954,22 +9016,103 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		}
 		try
 		{
-			List<BannerBearerTroopStack> stacks = BuildBannerBearerTroopStacks(PartyBase.MainParty?.MemberRoster);
-			if (stacks.Count == 0)
+			CharacterObject selectedTroop = PickBannerBearerTroopFromRoster(_selectedInterventionRoster);
+			if (selectedTroop != null)
 			{
-				stacks = BuildBannerBearerTroopStacks(_selectedInterventionRoster);
+				return RepeatBannerBearerTroop(selectedTroop, count);
 			}
-			return stacks
-				.OrderBy(stack => CharacterCanSpawnMounted(stack.Troop) ? 0 : 1)
-				.ThenByDescending(stack => stack.Available)
-				.ThenBy(stack => stack.SourceOrder)
-				.SelectMany(stack => Enumerable.Repeat(stack.Troop, Math.Min(stack.Available, count)))
-				.Take(count)
-				.ToList();
+			CharacterObject cultureTroop = PickHighestTierPlayerCultureBannerBearerTroop();
+			if (cultureTroop != null)
+			{
+				return RepeatBannerBearerTroop(cultureTroop, count);
+			}
+			CharacterObject mainPartyTroop = PickBannerBearerTroopFromRoster(PartyBase.MainParty?.MemberRoster);
+			return RepeatBannerBearerTroop(mainPartyTroop, count);
 		}
 		catch
 		{
 			return new List<CharacterObject>();
+		}
+	}
+
+	private static List<CharacterObject> RepeatBannerBearerTroop(CharacterObject troop, int count)
+	{
+		List<CharacterObject> result = new List<CharacterObject>();
+		if (troop == null || count <= 0)
+		{
+			return result;
+		}
+		for (int i = 0; i < count; i++)
+		{
+			result.Add(troop);
+		}
+		return result;
+	}
+
+	private static CharacterObject PickBannerBearerTroopFromRoster(TroopRoster roster)
+	{
+		try
+		{
+			List<BannerBearerTroopStack> stacks = BuildBannerBearerTroopStacks(roster);
+			if (stacks.Count == 0)
+			{
+				return null;
+			}
+			int maxAvailable = stacks.Max(stack => stack.Available);
+			List<BannerBearerTroopStack> tiedStacks = stacks
+				.Where(stack => stack.Available == maxAvailable)
+				.OrderBy(stack => stack.SourceOrder)
+				.ToList();
+			if (tiedStacks.Count == 0)
+			{
+				return null;
+			}
+			int index = tiedStacks.Count == 1 ? 0 : MBRandom.RandomInt(tiedStacks.Count);
+			return tiedStacks[index].Troop;
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static CharacterObject PickHighestTierPlayerCultureBannerBearerTroop()
+	{
+		try
+		{
+			CultureObject playerCulture = Hero.MainHero?.Culture ?? Clan.PlayerClan?.Culture;
+			string playerCultureId = playerCulture?.StringId ?? "";
+			IEnumerable<CharacterObject> characters = Game.Current?.ObjectManager?.GetObjectTypeList<CharacterObject>();
+			if (string.IsNullOrWhiteSpace(playerCultureId) || characters == null)
+			{
+				return null;
+			}
+			List<CharacterObject> candidates = characters
+				.Where(character => IsValidInterventionBannerBearerTroop(character))
+				.Where(character => character.IsSoldier)
+				.Where(character => string.Equals(character.Culture?.StringId ?? "", playerCultureId, StringComparison.OrdinalIgnoreCase))
+				.ToList();
+			if (candidates.Count == 0)
+			{
+				return null;
+			}
+			int maxTier = candidates.Max(character => character.Tier);
+			List<CharacterObject> maxTierCandidates = candidates.Where(character => character.Tier == maxTier).ToList();
+			int maxLevel = maxTierCandidates.Max(character => character.Level);
+			List<CharacterObject> tiedCandidates = maxTierCandidates
+				.Where(character => character.Level == maxLevel)
+				.OrderBy(character => character.StringId ?? "")
+				.ToList();
+			if (tiedCandidates.Count == 0)
+			{
+				return null;
+			}
+			int index = tiedCandidates.Count == 1 ? 0 : MBRandom.RandomInt(tiedCandidates.Count);
+			return tiedCandidates[index];
+		}
+		catch
+		{
+			return null;
 		}
 	}
 
@@ -8991,7 +9134,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				{
 					continue;
 				}
-				int available = troop.HeroObject != null ? element.Number : Math.Max(0, element.Number - element.WoundedNumber);
+				int available = Math.Max(0, element.Number - element.WoundedNumber);
 				if (available <= 0)
 				{
 					continue;
@@ -9130,9 +9273,6 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 					continue;
 				}
 				BannerBearerAgentIndexes.Remove(index);
-				BannerBearerSlotByAgentIndex.Remove(index);
-				LastBannerBearerMoveOrderTimes.Remove(index);
-				BannerBearerBannerWieldedAgentIndexes.Remove(index);
 				CordonReadyAgentIndexes.Remove(index);
 				MassacreReadySoldierAgentIndexes.Remove(index);
 				ClearMassacreHuntAssignment(index);
@@ -9144,12 +9284,11 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static Vec3 GetBannerBearerTargetPosition(Agent main, Mission mission, int slot)
+	private static Vec3 GetBannerBearerInitialSpawnPosition(Agent main, Mission mission, int index)
 	{
 		Vec3 position = main?.Position ?? Vec3.Zero;
 		try
 		{
-			bool playerMounted = ShouldUseMountedBannerBearerLayout(main, mission);
 			Vec3 forward = main?.LookDirection ?? Vec3.Forward;
 			forward.z = 0f;
 			if (forward.LengthSquared < 0.01f)
@@ -9163,10 +9302,8 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				right = Vec3.Side;
 			}
 			right.Normalize();
-			float backOffset = playerMounted ? SiegeBannerBearerProfile.MountedBackOffsetMeters : SiegeBannerBearerProfile.BackOffsetMeters;
-			float sideOffset = playerMounted ? SiegeBannerBearerProfile.MountedSideOffsetMeters : SiegeBannerBearerProfile.SideOffsetMeters;
-			float lateralOffset = CalculateBannerBearerLateralOffset(slot, sideOffset);
-			position = main.Position - forward * backOffset + right * lateralOffset;
+			float centered = index - (Math.Max(1, SiegeBannerBearerProfile.BannerBearerCount) - 1) * 0.5f;
+			position = main.Position - forward * SiegeBannerBearerProfile.InitialBackOffsetMeters + right * centered * SiegeBannerBearerProfile.InitialSideSpacingMeters;
 			try
 			{
 				if (mission?.Scene != null)
@@ -9184,118 +9321,18 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		return position;
 	}
 
-	private static float CalculateBannerBearerLateralOffset(int slot, float sideOffset)
+	private static FormationClass GetBannerBearerFormationClass()
 	{
 		try
 		{
-			int count = Math.Max(1, SiegeBannerBearerProfile.BannerBearerCount);
-			if (count <= 1 || Math.Abs(sideOffset) < 0.001f)
-			{
-				return 0f;
-			}
-			float centeredSlot = Math.Max(0, Math.Min(slot, count - 1)) - (count - 1) * 0.5f;
-			return centeredSlot * sideOffset;
+			FormationClass formationClass = (FormationClass)SiegeBannerBearerProfile.NativeFormationClassIndex;
+			return formationClass >= FormationClass.Infantry && formationClass < FormationClass.NumberOfRegularFormations
+				? formationClass
+				: FormationClass.Cavalry;
 		}
 		catch
 		{
-			return 0f;
-		}
-	}
-
-	private static void KeepInterventionBannerBearerNearPlayer(Agent bearer, Agent main, Mission mission)
-	{
-		try
-		{
-			if (bearer == null || main == null || mission == null || !bearer.IsActive())
-			{
-				return;
-			}
-			if (!BannerBearerSlotByAgentIndex.TryGetValue(bearer.Index, out int slot))
-			{
-				slot = 0;
-				BannerBearerSlotByAgentIndex[bearer.Index] = slot;
-			}
-			RestoreAlliedSoldierFriendlyState(bearer, 0f, SiegeBannerBearerProfile.BannerBearerRestoreSource, forceFollow: false, clearTarget: true);
-			DisableCompanionStyleFollow(bearer);
-			RestoreBannerBearerMountState(bearer, main, mission);
-			bearer.SetWatchState(_massacreStarted || _plunderStarted ? Agent.WatchState.Alarmed : Agent.WatchState.Patrolling);
-			TryWieldBannerBearerBanner(bearer);
-			Vec3 target = GetBannerBearerTargetPosition(main, mission, slot);
-			bool playerMounted = ShouldUseMountedBannerBearerLayout(main, mission);
-			float teleportDistance = playerMounted ? SiegeBannerBearerProfile.MountedTeleportBackDistanceMeters : SiegeBannerBearerProfile.TeleportBackDistanceMeters;
-			float moveThreshold = playerMounted ? SiegeBannerBearerProfile.MountedFollowMoveThresholdMeters : SiegeBannerBearerProfile.FollowMoveThresholdMeters;
-			float stopDistance = playerMounted ? SiegeBannerBearerProfile.MountedFollowStopDistanceMeters : SiegeBannerBearerProfile.FollowStopDistanceMeters;
-			float followRefresh = playerMounted ? SiegeBannerBearerProfile.MountedFollowRefreshSeconds : SiegeBannerBearerProfile.FollowRefreshSeconds;
-			float playerDistanceSq = bearer.Position.DistanceSquared(main.Position);
-			float targetDistanceSq = bearer.Position.DistanceSquared(target);
-			if (playerDistanceSq > teleportDistance * teleportDistance)
-			{
-				bearer.TeleportToPosition(target);
-				bearer.InvalidateTargetAgent();
-				bearer.ClearTargetFrame();
-				LastBannerBearerMoveOrderTimes[bearer.Index] = mission.CurrentTime;
-				TryWieldBannerBearerBanner(bearer);
-				return;
-			}
-			float now = mission.CurrentTime;
-			bool hasRecentMove = LastBannerBearerMoveOrderTimes.TryGetValue(bearer.Index, out float lastMoveOrderTime) && now - lastMoveOrderTime < followRefresh;
-			if (targetDistanceSq <= stopDistance * stopDistance)
-			{
-				try
-				{
-					bearer.DisableScriptedMovement();
-					bearer.SetMaximumSpeedLimit(0f, false);
-					bearer.ClearTargetFrame();
-				}
-				catch
-				{
-				}
-				LastBannerBearerMoveOrderTimes.Remove(bearer.Index);
-				Vec3 lookDirection = main.LookDirection;
-				if (lookDirection.LengthSquared < 0.01f)
-				{
-					lookDirection = Vec3.Forward;
-				}
-				lookDirection.Normalize();
-				SetAgentLookTowardPoint(bearer, main.Position + lookDirection * (playerMounted ? 9f : 6f));
-			}
-			else
-			{
-				try
-				{
-					bearer.SetMaximumSpeedLimit(-1f, false);
-				}
-				catch
-				{
-				}
-			}
-			if (targetDistanceSq > moveThreshold * moveThreshold && !hasRecentMove)
-			{
-				ClearAgentLookTarget(bearer);
-				TrySetInterventionAgentTargetPosition(bearer, target, SiegeBannerBearerProfile.FollowSource, Agent.AIScriptedFrameFlags.NoAttack | Agent.AIScriptedFrameFlags.DoNotRun);
-				LastBannerBearerMoveOrderTimes[bearer.Index] = now;
-			}
-			else if (targetDistanceSq <= moveThreshold * moveThreshold && targetDistanceSq > stopDistance * stopDistance)
-			{
-				try
-				{
-					bearer.ClearTargetFrame();
-				}
-				catch
-				{
-				}
-				Vec3 lookDirection = main.LookDirection;
-				if (lookDirection.LengthSquared < 0.01f)
-				{
-					lookDirection = Vec3.Forward;
-				}
-				lookDirection.Normalize();
-				SetAgentLookTowardPoint(bearer, main.Position + lookDirection * (playerMounted ? 9f : 6f));
-			}
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("SiegeAiIntervention", "KeepInterventionBannerBearerNearPlayer failed: " + ex.Message);
+			return FormationClass.Cavalry;
 		}
 	}
 
@@ -9311,11 +9348,11 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static bool ShouldUseMountedBannerBearerLayout(Agent main, Mission mission)
+	private static bool ShouldSpawnMountedBannerBearers(Agent main)
 	{
 		try
 		{
-			return IsAgentMounted(main);
+			return IsAgentMounted(main) || DoesPlayerHaveBattleMountEquipment();
 		}
 		catch
 		{
@@ -9323,7 +9360,30 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static void RestoreBannerBearerMountState(Agent bearer, Agent main, Mission mission)
+	private static bool DoesPlayerHaveBattleMountEquipment()
+	{
+		try
+		{
+			if (CharacterObject.PlayerCharacter?.HasMount() == true)
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			Equipment battleEquipment = Hero.MainHero?.BattleEquipment;
+			return battleEquipment != null && battleEquipment[EquipmentIndex.Horse].Item?.HorseComponent != null;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static void RestoreBannerBearerMountTeam(Agent bearer, Agent main, Mission mission)
 	{
 		try
 		{
@@ -9353,15 +9413,15 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				return;
 			}
 			ItemObject item = bearer.Equipment[EquipmentIndex.ExtraWeaponSlot].Item;
-			if (IsUsableBannerItem(item))
+			if (!IsUsableBannerItem(item))
 			{
-				if (BannerBearerBannerWieldedAgentIndexes.Contains(bearer.Index))
-				{
-					return;
-				}
-				bearer.TryToWieldWeaponInSlot(EquipmentIndex.ExtraWeaponSlot, Agent.WeaponWieldActionType.InstantAfterPickUp, isWieldedOnSpawn: false);
-				BannerBearerBannerWieldedAgentIndexes.Add(bearer.Index);
+				return;
 			}
+			if (bearer.GetPrimaryWieldedItemIndex() == EquipmentIndex.ExtraWeaponSlot || bearer.GetOffhandWieldedItemIndex() == EquipmentIndex.ExtraWeaponSlot)
+			{
+				return;
+			}
+			bearer.TryToWieldWeaponInSlot(EquipmentIndex.ExtraWeaponSlot, Agent.WeaponWieldActionType.InstantAfterPickUp, isWieldedOnSpawn: false);
 		}
 		catch
 		{
@@ -9618,6 +9678,32 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private static int ReducePositiveIntDeltaForRegionalConflict(int delta, string effectName)
+	{
+		int adjusted = SiegeRegionalConflictProfile.ReducePositiveIntDelta(delta, _regionalConflictIncidentCount);
+		if (adjusted != delta && delta > 0)
+		{
+			Logger.Log("SiegeAiIntervention", "Reduced positive integer effect by regional conflict debt. Effect=" + (effectName ?? "N/A")
+				+ ", Original=" + delta
+				+ ", Adjusted=" + adjusted
+				+ ", Incidents=" + _regionalConflictIncidentCount);
+		}
+		return adjusted;
+	}
+
+	private static float ReducePositiveFloatDeltaForRegionalConflict(float delta, string effectName)
+	{
+		float adjusted = SiegeRegionalConflictProfile.ReducePositiveFloatDelta(delta, _regionalConflictIncidentCount);
+		if (Math.Abs(adjusted - delta) > 0.001f && delta > 0f)
+		{
+			Logger.Log("SiegeAiIntervention", "Reduced positive float effect by regional conflict debt. Effect=" + (effectName ?? "N/A")
+				+ ", Original=" + delta.ToString("0.##")
+				+ ", Adjusted=" + adjusted.ToString("0.##")
+				+ ", Incidents=" + _regionalConflictIncidentCount);
+		}
+		return adjusted;
+	}
+
 	private static void ApplyCivicChoiceSettlementEffects(Settlement settlement, SiegeCivicChoiceProfile profile, string settlementTrustReason, string boundVillageTrustReason)
 	{
 		try
@@ -9626,19 +9712,20 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			{
 				return;
 			}
-			AdjustSettlementPublicTrustOnly(settlement, profile.SettlementPublicTrustDelta, settlementTrustReason);
-			AdjustBoundVillagePublicTrust(settlement, profile.BoundVillagePublicTrustDelta, boundVillageTrustReason);
+			AdjustSettlementPublicTrustOnly(settlement, ReducePositiveIntDeltaForRegionalConflict(profile.SettlementPublicTrustDelta, "civic_settlement_public_trust"), settlementTrustReason);
+			AdjustBoundVillagePublicTrust(settlement, ReducePositiveIntDeltaForRegionalConflict(profile.BoundVillagePublicTrustDelta, "civic_bound_village_public_trust"), boundVillageTrustReason);
 			if (settlement.Town != null)
 			{
 				if (profile.LocksLoyalty)
 				{
-					settlement.Town.Loyalty = profile.LoyaltyLockValue;
+					float adjustedLockValue = ReducePositiveFloatDeltaForRegionalConflict(profile.LoyaltyLockValue, "civic_loyalty_lock");
+					settlement.Town.Loyalty = MathF.Max(settlement.Town.Loyalty, adjustedLockValue);
 				}
 				else
 				{
-					settlement.Town.Loyalty += profile.LoyaltyDelta;
+					settlement.Town.Loyalty += ReducePositiveFloatDeltaForRegionalConflict(profile.LoyaltyDelta, "civic_loyalty");
 				}
-				settlement.Town.Security += profile.SecurityDelta;
+				settlement.Town.Security += ReducePositiveFloatDeltaForRegionalConflict(profile.SecurityDelta, "civic_security");
 			}
 		}
 		catch (Exception ex)
@@ -9702,6 +9789,26 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private static void QueuePositiveNotableTrustForFinalAftermath(int trustDelta, bool includeBoundVillages, string reason)
+	{
+		try
+		{
+			if (trustDelta <= 0)
+			{
+				return;
+			}
+			if (trustDelta > _pendingPositiveNotableTrustDelta || (trustDelta == _pendingPositiveNotableTrustDelta && includeBoundVillages && !_pendingPositiveNotableTrustIncludesBoundVillages))
+			{
+				_pendingPositiveNotableTrustDelta = trustDelta;
+				_pendingPositiveNotableTrustIncludesBoundVillages = includeBoundVillages;
+				_pendingPositiveNotableTrustReason = string.IsNullOrWhiteSpace(reason) ? "siege_ai_positive_notable_trust" : reason.Trim();
+			}
+		}
+		catch
+		{
+		}
+	}
+
 	private static int ApplyPendingPositiveNotableRelationsForFinalAftermath(Settlement settlement, SiegeAftermathAction.SiegeAftermath aftermath)
 	{
 		try
@@ -9730,6 +9837,38 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		catch (Exception ex)
 		{
 			Logger.Log("SiegeAiIntervention", "ApplyPendingPositiveNotableRelationsForFinalAftermath failed: " + ex.Message);
+			return 0;
+		}
+	}
+
+	private static int ApplyPendingPositiveNotableTrustForFinalAftermath(Settlement settlement, SiegeAftermathAction.SiegeAftermath aftermath)
+	{
+		try
+		{
+			int trustDelta = _pendingPositiveNotableTrustDelta;
+			bool includeBoundVillages = _pendingPositiveNotableTrustIncludesBoundVillages;
+			string reason = _pendingPositiveNotableTrustReason;
+			_pendingPositiveNotableTrustDelta = 0;
+			_pendingPositiveNotableTrustIncludesBoundVillages = false;
+			_pendingPositiveNotableTrustReason = "";
+			if (trustDelta <= 0)
+			{
+				return 0;
+			}
+			if (!SiegePositiveRelationTimingProfile.ShouldApplyQueuedPositiveRelations(ToStandaloneAftermathKind(aftermath)))
+			{
+				Logger.Log("SiegeAiIntervention", "Skipped queued positive notable trust because final aftermath is not mercy. Aftermath=" + aftermath + ", Delta=" + trustDelta);
+				return 0;
+			}
+			int adjusted = includeBoundVillages
+				? AdjustSettlementAndBoundVillageNotableTrust(settlement, trustDelta, reason)
+				: AdjustSettlementNotableTrust(settlement, trustDelta, reason);
+			Logger.Log("SiegeAiIntervention", "Applied queued positive notable trust after final mercy aftermath. Delta=" + trustDelta + ", IncludeBoundVillages=" + includeBoundVillages + ", Adjusted=" + adjusted + ", Reason=" + (reason ?? "N/A"));
+			return adjusted;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "ApplyPendingPositiveNotableTrustForFinalAftermath failed: " + ex.Message);
 			return 0;
 		}
 	}
@@ -9902,6 +10041,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				ApplyFinalizedSettlementOutcomeEffects(settlement, SiegeSettlementOutcomeProfile.BuildPlunder(), prosperityBefore);
 			}
 			ApplyPendingPositiveNotableRelationsForFinalAftermath(settlement, aftermath);
+			ApplyPendingPositiveNotableTrustForFinalAftermath(settlement, aftermath);
 			CommitPendingInterventionNotableDeaths(SiegeNotableSceneDeathProfile.SettlementResolutionKillReason);
 			ApplyPendingMarketLootForFinalAftermath(aftermath);
 			TrySetNativePlayerEncounterAftermathForSummary(aftermath);
@@ -9956,6 +10096,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			AdjustSettlementPublicTrustOnly(settlement, profile.SettlementPublicTrustDelta, profile.SettlementPublicTrustReason);
 			int villageTrustAdjusted = AdjustBoundVillagePublicTrust(settlement, profile.BoundVillagePublicTrustDelta, profile.BoundVillagePublicTrustReason);
 			int notableRelationAdjusted = AdjustSettlementAndBoundVillageNotableRelations(settlement, profile.NotableRelationDelta, profile.NotableRelationReason);
+			int notableTrustAdjusted = AdjustSettlementAndBoundVillageNotableTrust(settlement, profile.NotableTrustDelta, profile.NotableTrustReason);
 			float extraProsperityDelta = 0f;
 			if (profile.DoublesNativeDevastateProsperityPenalty)
 			{
@@ -9969,7 +10110,11 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			{
 				BeginRepopulationProsperityGrowthDebuff(settlement);
 			}
-			Logger.Log("SiegeAiIntervention", $"Applied finalized GCCZ settlement outcome. Key={profile.Key}, Settlement={settlement.StringId}, SettlementTrust={profile.SettlementPublicTrustDelta}, VillageTrust={profile.BoundVillagePublicTrustDelta}x{villageTrustAdjusted}, NotableRelation={profile.NotableRelationDelta}x{notableRelationAdjusted}, ExtraProsperityDelta={extraProsperityDelta:0.##}");
+			if (profile.SuppressesRecruitment)
+			{
+				BeginRecruitmentSuppressionDebuff(settlement, profile);
+			}
+			Logger.Log("SiegeAiIntervention", $"Applied finalized GCCZ settlement outcome. Key={profile.Key}, Settlement={settlement.StringId}, SettlementTrust={profile.SettlementPublicTrustDelta}, VillageTrust={profile.BoundVillagePublicTrustDelta}x{villageTrustAdjusted}, NotableRelation={profile.NotableRelationDelta}x{notableRelationAdjusted}, NotableTrust={profile.NotableTrustDelta}x{notableTrustAdjusted}, ExtraProsperityDelta={extraProsperityDelta:0.##}");
 		}
 		catch (Exception ex)
 		{
@@ -10037,6 +10182,76 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		catch (Exception ex)
 		{
 			Logger.Log("SiegeAiIntervention", "AdjustSettlementAndBoundVillageNotableRelations failed: " + ex.Message);
+		}
+		return adjusted;
+	}
+
+	private static int AdjustSettlementNotableTrust(Settlement settlement, int trustDelta, string reason)
+	{
+		int adjusted = 0;
+		try
+		{
+			if (settlement?.Notables == null || trustDelta == 0 || RewardSystemBehavior.Instance == null)
+			{
+				return 0;
+			}
+			HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+			foreach (Hero notable in settlement.Notables.ToList())
+			{
+				string key = notable?.StringId;
+				if (notable == null || notable == Hero.MainHero || !notable.IsAlive || string.IsNullOrWhiteSpace(key) || !seen.Add(key))
+				{
+					continue;
+				}
+				try
+				{
+					RewardSystemBehavior.Instance.AdjustPersonalTrustWholeDeltaForExternal(notable, trustDelta, reason ?? "siege_ai_notable_trust");
+					adjusted++;
+				}
+				catch (Exception ex)
+				{
+					Logger.Log("SiegeAiIntervention", "Settlement notable trust adjustment failed. Reason=" + (reason ?? "N/A") + ", Notable=" + key + ": " + ex.Message);
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "AdjustSettlementNotableTrust failed: " + ex.Message);
+		}
+		return adjusted;
+	}
+
+	private static int AdjustSettlementAndBoundVillageNotableTrust(Settlement settlement, int trustDelta, string reason)
+	{
+		int adjusted = 0;
+		try
+		{
+			if (settlement == null || trustDelta == 0 || RewardSystemBehavior.Instance == null)
+			{
+				return 0;
+			}
+			HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+			foreach (Hero notable in EnumerateSettlementAndBoundVillageNotables(settlement))
+			{
+				string key = notable?.StringId;
+				if (notable == null || notable == Hero.MainHero || !notable.IsAlive || string.IsNullOrWhiteSpace(key) || !seen.Add(key))
+				{
+					continue;
+				}
+				try
+				{
+					RewardSystemBehavior.Instance.AdjustPersonalTrustWholeDeltaForExternal(notable, trustDelta, reason ?? "siege_ai_notable_trust");
+					adjusted++;
+				}
+				catch (Exception ex)
+				{
+					Logger.Log("SiegeAiIntervention", "Notable trust adjustment failed. Reason=" + (reason ?? "N/A") + ", Notable=" + key + ": " + ex.Message);
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "AdjustSettlementAndBoundVillageNotableTrust failed: " + ex.Message);
 		}
 		return adjusted;
 	}
@@ -10156,6 +10371,113 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		_repopulationProsperityLastObservedBySettlement.Clear();
 	}
 
+	private static void BeginRecruitmentSuppressionDebuff(Settlement settlement, SiegeSettlementOutcomeProfile profile)
+	{
+		try
+		{
+			string key = settlement?.StringId;
+			if (string.IsNullOrWhiteSpace(key) || settlement?.Town == null || profile == null || !profile.SuppressesRecruitment)
+			{
+				return;
+			}
+			int untilDay = GetCurrentCampaignDay() + Math.Max(1, CampaignTime.DaysInYear * profile.RecruitmentSuppressionYears);
+			_recruitmentSuppressionUntilDayBySettlement[key] = untilDay;
+			int cleared = ClearVolunteerSlotsForSettlementAndBoundVillages(settlement);
+			Logger.Log("SiegeAiIntervention", $"Applied recruitment suppression debuff. Settlement={key}, UntilDay={untilDay}, ClearedSlots={cleared}, Reason={profile.RecruitmentSuppressionReason ?? "N/A"}");
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "BeginRecruitmentSuppressionDebuff failed: " + ex.Message);
+		}
+	}
+
+	private static void ApplyRecruitmentSuppressionDebuff(Town town)
+	{
+		try
+		{
+			Settlement settlement = town?.Settlement;
+			string key = settlement?.StringId;
+			if (string.IsNullOrWhiteSpace(key))
+			{
+				return;
+			}
+			int today = GetCurrentCampaignDay();
+			if (!_recruitmentSuppressionUntilDayBySettlement.TryGetValue(key, out int untilDay) || today > untilDay)
+			{
+				_recruitmentSuppressionUntilDayBySettlement.Remove(key);
+				return;
+			}
+			int cleared = ClearVolunteerSlotsForSettlementAndBoundVillages(settlement);
+			if (cleared > 0)
+			{
+				Logger.Log("SiegeAiIntervention", $"Recruitment suppression debuff applied. Settlement={key}, ClearedSlots={cleared}, UntilDay={untilDay}");
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "ApplyRecruitmentSuppressionDebuff failed: " + ex.Message);
+		}
+	}
+
+	private static int ClearVolunteerSlotsForSettlementAndBoundVillages(Settlement settlement)
+	{
+		int cleared = ClearVolunteerSlotsForSettlement(settlement);
+		try
+		{
+			if (settlement?.BoundVillages != null)
+			{
+				foreach (Village village in settlement.BoundVillages)
+				{
+					cleared += ClearVolunteerSlotsForSettlement(village?.Settlement);
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "ClearVolunteerSlotsForSettlementAndBoundVillages failed: " + ex.Message);
+		}
+		return cleared;
+	}
+
+	private static int ClearVolunteerSlotsForSettlement(Settlement settlement)
+	{
+		int cleared = 0;
+		try
+		{
+			if (settlement?.Notables == null)
+			{
+				return 0;
+			}
+			foreach (Hero notable in settlement.Notables.ToList())
+			{
+				CharacterObject[] volunteerTypes = notable?.VolunteerTypes;
+				if (notable == null || !notable.IsAlive || volunteerTypes == null)
+				{
+					continue;
+				}
+				for (int i = 0; i < volunteerTypes.Length; i++)
+				{
+					if (volunteerTypes[i] == null)
+					{
+						continue;
+					}
+					volunteerTypes[i] = null;
+					cleared++;
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "ClearVolunteerSlotsForSettlement failed. Settlement=" + (settlement?.StringId ?? "N/A") + ": " + ex.Message);
+		}
+		return cleared;
+	}
+
+	private static void ClearRecruitmentSuppressionDebuffs()
+	{
+		_recruitmentSuppressionUntilDayBySettlement.Clear();
+	}
+
 
 	private static void BeginCivicPositiveBuff(Settlement settlement, SiegeCivicChoiceProfile profile)
 	{
@@ -10175,14 +10497,21 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			}
 			if (profile.LocksLoyalty)
 			{
+				float adjustedLockValue = ReducePositiveFloatDeltaForRegionalConflict(profile.LoyaltyLockValue, "civic_buff_loyalty_lock");
 				_rallyOathLoyaltyLockUntilDayBySettlement[key] = untilDay;
-				settlement.Town.Loyalty = profile.LoyaltyLockValue;
+				_rallyOathLoyaltyLockValueBySettlement[key] = adjustedLockValue;
+				settlement.Town.Loyalty = MathF.Max(settlement.Town.Loyalty, adjustedLockValue);
 			}
 			if (profile.HasRecruitmentSpeedBuff)
 			{
 				_rallyOathRecruitmentBuffUntilDayBySettlement[key] = untilDay;
+				int changed = ApplyExtraVolunteerProductionForSettlementAndBoundVillages(settlement);
+				if (changed > 0)
+				{
+					Logger.Log("SiegeAiIntervention", $"Applied immediate rally oath recruitment speed buff. Settlement={key}, ChangedSlots={changed}, UntilDay={untilDay}");
+				}
 			}
-			Logger.Log("SiegeAiIntervention", $"Applied civic positive buff. Settlement={key}, UntilDay={untilDay}, ProsperityMultiplier={profile.ProsperityGrowthMultiplier:0.##}, RecruitmentMultiplier={profile.RecruitmentSpeedMultiplier:0.##}, LoyaltyLock={profile.LocksLoyalty}");
+			Logger.Log("SiegeAiIntervention", $"Applied civic positive buff. Settlement={key}, UntilDay={untilDay}, ProsperityMultiplier={profile.ProsperityGrowthMultiplier:0.##}, RecruitmentMultiplier={profile.RecruitmentSpeedMultiplier:0.##}, LoyaltyLock={profile.LocksLoyalty}, RegionalConflictIncidents={_regionalConflictIncidentCount}");
 		}
 		catch (Exception ex)
 		{
@@ -10259,9 +10588,13 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			if (!_rallyOathLoyaltyLockUntilDayBySettlement.TryGetValue(key, out int untilDay) || today > untilDay)
 			{
 				_rallyOathLoyaltyLockUntilDayBySettlement.Remove(key);
+				_rallyOathLoyaltyLockValueBySettlement.Remove(key);
 				return;
 			}
-			town.Loyalty = SiegeCivicChoiceProfile.RallyOathLoyaltyValue;
+			float lockValue = _rallyOathLoyaltyLockValueBySettlement.TryGetValue(key, out float savedLockValue)
+				? savedLockValue
+				: SiegeCivicChoiceProfile.RallyOathLoyaltyValue;
+			town.Loyalty = MathF.Max(town.Loyalty, lockValue);
 		}
 		catch (Exception ex)
 		{
@@ -10285,14 +10618,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				_rallyOathRecruitmentBuffUntilDayBySettlement.Remove(key);
 				return;
 			}
-			int changed = ApplyExtraVolunteerProductionForSettlement(settlement);
-			if (settlement?.BoundVillages != null)
-			{
-				foreach (Village village in settlement.BoundVillages)
-				{
-					changed += ApplyExtraVolunteerProductionForSettlement(village?.Settlement);
-				}
-			}
+			int changed = ApplyExtraVolunteerProductionForSettlementAndBoundVillages(settlement);
 			if (changed > 0)
 			{
 				Logger.Log("SiegeAiIntervention", $"Rally oath recruitment speed buff applied. Settlement={key}, ChangedSlots={changed}, UntilDay={untilDay}");
@@ -10302,6 +10628,26 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		{
 			Logger.Log("SiegeAiIntervention", "ApplyRallyOathRecruitmentBuff failed: " + ex.Message);
 		}
+	}
+
+	private static int ApplyExtraVolunteerProductionForSettlementAndBoundVillages(Settlement settlement)
+	{
+		int changed = ApplyExtraVolunteerProductionForSettlement(settlement);
+		try
+		{
+			if (settlement?.BoundVillages != null)
+			{
+				foreach (Village village in settlement.BoundVillages)
+				{
+					changed += ApplyExtraVolunteerProductionForSettlement(village?.Settlement);
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "ApplyExtraVolunteerProductionForSettlementAndBoundVillages failed. Settlement=" + (settlement?.StringId ?? "N/A") + ": " + ex.Message);
+		}
+		return changed;
 	}
 
 	private static int ApplyExtraVolunteerProductionForSettlement(Settlement settlement)
@@ -10440,6 +10786,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			_civicProsperityLastObservedBySettlement.Remove(key);
 			_civicProsperityGrowthMultiplierBySettlement.Remove(key);
 			_rallyOathLoyaltyLockUntilDayBySettlement.Remove(key);
+			_rallyOathLoyaltyLockValueBySettlement.Remove(key);
 			_rallyOathRecruitmentBuffUntilDayBySettlement.Remove(key);
 		}
 		catch
@@ -10453,6 +10800,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		_civicProsperityLastObservedBySettlement.Clear();
 		_civicProsperityGrowthMultiplierBySettlement.Clear();
 		_rallyOathLoyaltyLockUntilDayBySettlement.Clear();
+		_rallyOathLoyaltyLockValueBySettlement.Clear();
 		_rallyOathRecruitmentBuffUntilDayBySettlement.Clear();
 	}
 
@@ -11416,6 +11764,11 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		_pendingPositiveNotableRelationDelta = 0;
 		_pendingPositiveNotableRelationIncludesBoundVillages = false;
 		_pendingPositiveNotableRelationReason = "";
+		_pendingPositiveNotableTrustDelta = 0;
+		_pendingPositiveNotableTrustIncludesBoundVillages = false;
+		_pendingPositiveNotableTrustReason = "";
+		_regionalConflictIncidentCount = 0;
+		RegionalConflictDebtCenters.Clear();
 		_lastMassacreRealKillMissionTime = -100f;
 		_lastDestructiveInquiryMissionTime = -100f;
 		_lastDestructiveInquirySourceAgentIndex = -1;
@@ -11488,9 +11841,6 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		CivilianSpeechRallySlots.Clear();
 		LastCordonMoveOrderTimesBySoldier.Clear();
 		LastCordonLookOrderTimesBySoldier.Clear();
-		BannerBearerSlotByAgentIndex.Clear();
-		LastBannerBearerMoveOrderTimes.Clear();
-		BannerBearerBannerWieldedAgentIndexes.Clear();
 		CivilianHideTargets.Clear();
 		LastCivilianHideOrderTimes.Clear();
 		CivilianHideSettledAgentIndexes.Clear();

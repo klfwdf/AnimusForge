@@ -2,41 +2,27 @@ namespace AnimusForge.SiegeAftermathIntervention;
 
 /// <summary>
 /// Dependency-free constants for GCCZ ceremonial banner bearers. AF-side code
-/// still resolves live troops, player banner items, spawn positions, and movement.
+/// resolves live troops, player banner items, spawn positions, and native formations.
 /// </summary>
 public static class SiegeBannerBearerProfile
 {
-    public const bool BannerBearersEnabled = false;
+    public const bool BannerBearersEnabled = true;
 
-    public const int BannerBearerCount = 1;
+    public const int BannerBearerCount = 2;
 
-    public const float SideOffsetMeters = 0f;
+    /// <summary>
+    /// Native FormationClass.Cavalry, displayed as the third command group in Bannerlord.
+    /// Keep this as an integer so the standalone GCCZ project stays TaleWorlds-free.
+    /// </summary>
+    public const int NativeFormationClassIndex = 2;
 
-    public const float MountedSideOffsetMeters = 0f;
+    public const float InitialBackOffsetMeters = 2.8f;
 
-    public const float BackOffsetMeters = 2.1f;
-
-    public const float MountedBackOffsetMeters = 3.2f;
-
-    public const float FollowMoveThresholdMeters = 1.85f;
-
-    public const float MountedFollowMoveThresholdMeters = 2.75f;
-
-    public const float FollowStopDistanceMeters = 0.75f;
-
-    public const float MountedFollowStopDistanceMeters = 1.15f;
-
-    public const float FollowRefreshSeconds = 1.15f;
-
-    public const float MountedFollowRefreshSeconds = 0.95f;
-
-    public const float TeleportBackDistanceMeters = 18f;
-
-    public const float MountedTeleportBackDistanceMeters = 24f;
+    public const float InitialSideSpacingMeters = 1.7f;
 
     public const string SpawnSource = "gccz_banner_bearer_spawn";
 
-    public const string FollowSource = "gccz_banner_bearer_follow";
+    public const string NativeFormationSource = "gccz_banner_bearer_native_third_formation";
 
     public const string BannerBearerRestoreSource = "gccz_banner_bearer_restore";
 
