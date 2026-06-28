@@ -217,6 +217,30 @@ public class SubModule : MBSubModuleBase
 			}
 			try
 			{
+				KingdomDecisionCleanupSafePatch.EnsurePatched(harmony);
+			}
+			catch (Exception ex8ab)
+			{
+				Logger.LogTrace("SubModule", ">>> KingdomDecisionCleanupSafePatch init failed: " + ex8ab.Message);
+			}
+			try
+			{
+				WorkshopDailyTickSafetyPatch.EnsurePatched(harmony);
+			}
+			catch (Exception ex8ac)
+			{
+				Logger.LogTrace("SubModule", ">>> WorkshopDailyTickSafetyPatch init failed: " + ex8ac.Message);
+			}
+			try
+			{
+				MapSceneTerrainTypeSafePatch.EnsurePatched(harmony);
+			}
+			catch (Exception ex8ad)
+			{
+				Logger.LogTrace("SubModule", ">>> MapSceneTerrainTypeSafePatch init failed: " + ex8ad.Message);
+			}
+			try
+			{
 				Patch_Conversation_Start_Intercept.ManualPatch(harmony);
 			}
 			catch (Exception ex8b)

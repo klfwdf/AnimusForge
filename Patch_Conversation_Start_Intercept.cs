@@ -105,11 +105,11 @@ public static class Patch_Conversation_Start_Intercept
 		{
 			return true;
 		}
-		if (MobileParty.MainParty?.MapEvent != null || MapEvent.PlayerMapEvent != null)
+		if (PlayerEncounterCompat.HasCampaignBattleResult())
 		{
 			return true;
 		}
-		if (PlayerEncounterCompat.HasCampaignBattleResult())
+		if (PlayerEncounterCompat.HasResolvedEncounterBattleContext())
 		{
 			return true;
 		}

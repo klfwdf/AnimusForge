@@ -82,15 +82,11 @@ public static class Patch_ConversationManager_SetupAndStartMapConversation
 				Logger.LogTrace("Conversation_Intercept", "Sea encounter context detected; allow native SetupAndStartMapConversation.");
 				return true;
 			}
-			if (MobileParty.MainParty?.MapEvent != null)
-			{
-				return true;
-			}
 			if (PlayerEncounterCompat.HasCampaignBattleResult())
 			{
 				return true;
 			}
-			if (PlayerEncounterCompat.HasBattleOrEncounteredBattle())
+			if (PlayerEncounterCompat.HasResolvedEncounterBattleContext())
 			{
 				return true;
 			}

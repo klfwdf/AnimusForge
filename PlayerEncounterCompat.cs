@@ -111,6 +111,27 @@ internal static class PlayerEncounterCompat
 		return GetCurrentMapEventSafe() != null;
 	}
 
+	internal static bool IsResolvedMapEvent(MapEvent mapEvent)
+	{
+		if (mapEvent == null)
+		{
+			return false;
+		}
+		try
+		{
+			return mapEvent.HasWinner || mapEvent.IsFinalized;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	internal static bool HasResolvedEncounterBattleContext()
+	{
+		return IsResolvedMapEvent(GetCurrentMapEventSafe());
+	}
+
 	internal static CampaignBattleResult GetCampaignBattleResultSafe()
 	{
 		PlayerEncounter currentSafe = GetCurrentSafe();

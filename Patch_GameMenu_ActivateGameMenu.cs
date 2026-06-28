@@ -108,9 +108,9 @@ public static class Patch_GameMenu_ActivateGameMenu
 						return true;
 					}
 					MapEvent mapEvent = PlayerEncounterCompat.GetCurrentMapEventSafe();
-					if (mapEvent != null)
+					if (PlayerEncounterCompat.IsResolvedMapEvent(mapEvent))
 					{
-						Logger.LogTrace("UI_Intercept", "Active encounter battle context detected; keep native 'encounter' menu.");
+						Logger.LogTrace("UI_Intercept", "Resolved encounter battle context detected; keep native 'encounter' menu.");
 						return true;
 					}
 				}

@@ -5,6 +5,7 @@ using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Actions;
 using TaleWorlds.CampaignSystem.CampaignBehaviors;
 using TaleWorlds.CampaignSystem.Encounters;
+using TaleWorlds.CampaignSystem.Map;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.Core;
@@ -169,6 +170,51 @@ internal static class BannerlordApiCompat
 			Logger.Log("BannerlordApiCompat", "SpawnPrisonerInspectionTroop failed: " + ex.Message);
 			return null;
 		}
+	}
+
+	internal static TerrainType ResolveTerrainTypeForParty(MobileParty party, TerrainType fallback = TerrainType.Plain, bool allowNavigationFaceFallback = false)
+	{
+		try
+		{
+			IMapScene mapSceneWrapper = Campaign.Current?.MapSceneWrapper;
+			if (party == null || mapSceneWrapper == null)
+			{
+				return fallback;
+			}
+			if (party.Position.IsValid())
+			{
+				try
+				{
+					CampaignVec2 position = party.Position;
+					return mapSceneWrapper.GetTerrainTypeAtPosition(in position);
+				}
+				catch
+				{
+				}
+				try
+				{
+					mapSceneWrapper.GetEnvironmentTerrainTypesCount(party.Position, out TerrainType environmentTerrainType);
+					return environmentTerrainType;
+				}
+				catch
+				{
+				}
+			}
+			if (allowNavigationFaceFallback)
+			{
+				try
+				{
+					return mapSceneWrapper.GetFaceTerrainType(party.CurrentNavigationFace);
+				}
+				catch
+				{
+				}
+			}
+		}
+		catch
+		{
+		}
+		return fallback;
 	}
 
 	private static MethodInfo FindMethod(Type type, string name, int parameterCount)

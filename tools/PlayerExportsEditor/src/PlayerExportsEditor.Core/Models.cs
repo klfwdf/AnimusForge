@@ -100,6 +100,22 @@ public sealed class ValidationIssue
     public string FileName => string.IsNullOrWhiteSpace(FilePath) ? "" : Path.GetFileName(FilePath);
 }
 
+public sealed class DeletedFilesMoveResult
+{
+    public required string DeletedRoot { get; init; }
+
+    public required IReadOnlyList<string> MovedFiles { get; init; }
+}
+
+public enum PlayerExportsDataType
+{
+    Knowledge,
+    PersonalityBackground,
+    VoiceMapping,
+    EventData,
+    UnnamedPersona
+}
+
 public enum ValidationSeverity
 {
     Info,

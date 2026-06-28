@@ -1346,6 +1346,11 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 		{
 			return false;
 		}
+		if (IsPlayerCompanionOrFamilyObserver(observer))
+		{
+			MarkObserverKnowsPlayer(observer, "player_companion_or_family");
+			return true;
+		}
 		return DoesObserverKnowPlayer(GetHeroId(observer), observer?.Culture?.StringId);
 	}
 
@@ -1370,6 +1375,10 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 		if (!IsValidObserver(observer))
 		{
 			return false;
+		}
+		if (IsPlayerCompanionOrFamilyObserver(observer))
+		{
+			return true;
 		}
 		return HasObserverUnlockedPlayerMajor(GetHeroId(observer));
 	}
@@ -2297,7 +2306,25 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 			{
 				return false;
 			}
-			return hero == Hero.MainHero || hero.Clan == Clan.PlayerClan || hero.IsPlayerCompanion;
+			Clan playerClan = Clan.PlayerClan ?? Hero.MainHero?.Clan;
+			return hero == Hero.MainHero || hero.IsPlayerCompanion || (playerClan != null && (hero.Clan == playerClan || hero.CompanionOf == playerClan));
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static bool IsPlayerCompanionOrFamilyObserver(Hero hero)
+	{
+		try
+		{
+			if (!IsValidObserver(hero))
+			{
+				return false;
+			}
+			Clan playerClan = Clan.PlayerClan ?? Hero.MainHero?.Clan;
+			return hero.IsPlayerCompanion || (playerClan != null && (hero.Clan == playerClan || hero.CompanionOf == playerClan));
 		}
 		catch
 		{

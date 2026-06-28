@@ -1695,12 +1695,38 @@ public class SceneTauntBehavior : CampaignBehaviorBase
 			{
 				return false;
 			}
-			if (targetHero == Hero.MainHero || targetHero.IsPlayerCompanion)
+			if (targetHero == Hero.MainHero || targetHero.IsPlayerCompanion || IsPlayerMainPartyHero(targetHero))
 			{
 				return true;
 			}
 			Clan playerClan = Clan.PlayerClan ?? Hero.MainHero?.Clan;
 			return playerClan != null && targetHero.Clan == playerClan;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	internal static bool IsPlayerMainPartyHero(Hero targetHero)
+	{
+		try
+		{
+			if (targetHero == null || targetHero.IsPrisoner)
+			{
+				return false;
+			}
+			MobileParty mainParty = MobileParty.MainParty;
+			if (mainParty == null)
+			{
+				return false;
+			}
+			if (targetHero.PartyBelongedTo == mainParty)
+			{
+				return true;
+			}
+			CharacterObject characterObject = targetHero.CharacterObject;
+			return characterObject != null && mainParty.MemberRoster != null && mainParty.MemberRoster.FindIndexOfTroop(characterObject) >= 0;
 		}
 		catch
 		{
@@ -6540,6 +6566,12 @@ public class SceneTauntMissionBehavior : MissionBehavior
 					continue;
 				}
 				if (agent == Agent.Main)
+				{
+					AddUniqueAgent(list, agent);
+					continue;
+				}
+				Hero hero = (agent.Character as CharacterObject)?.HeroObject;
+				if (SceneTauntBehavior.IsPlayerMainPartyHero(hero))
 				{
 					AddUniqueAgent(list, agent);
 					continue;

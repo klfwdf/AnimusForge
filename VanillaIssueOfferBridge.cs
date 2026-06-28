@@ -168,6 +168,10 @@ internal static class VanillaIssueOfferBridge
 
 	private static readonly FieldInfo DiscussDialogFlowField = AccessTools.Field(typeof(QuestBase), "DiscussDialogFlow");
 
+	private static readonly FieldInfo OfferDialogFlowField = AccessTools.Field(typeof(QuestBase), "OfferDialogFlow");
+
+	private static readonly FieldInfo DialogFlowLinesField = AccessTools.Field(typeof(DialogFlow), "Lines");
+
 	private static PendingAlternativeDispatch _pendingAlternativeDispatch;
 
 	public static bool IsRagEligibleForExternal(Hero targetHero)
@@ -834,20 +838,29 @@ internal static class VanillaIssueOfferBridge
 		}
 		try
 		{
-			bool flag = TryInvokeQuestAcceptHook(issueQuest, "QuestAcceptedConsequences");
-			flag = TryInvokeQuestAcceptHook(issueQuest, "OnQuestAccepted") || flag;
-			flag = TryInvokeQuestAcceptHook(issueQuest, "OfferDialogFlowConsequence") || flag;
-			if (!issueQuest.IsOngoing)
+			bool flag = TryInvokeQuestAcceptHook(issueQuest, out var text);
+			if (!issueQuest.IsOngoing && IsIssueQuestStillAttached(issue, issueQuest) && !flag)
 			{
-				Logger.Log("Logic", "[IssueOffer] FinalizeClassicQuestAcceptance fail=quest_not_ongoing issue=" + (issue?.StringId ?? "") + " quest=" + (issueQuest?.StringId ?? "") + " hook=" + flag + " logs=" + issueQuest.JournalEntries.Count);
+				flag = TryInvokeOfferDialogFlowAutoConsequence(issueQuest, out text);
+			}
+			if (!issueQuest.IsOngoing && IsIssueQuestStillAttached(issue, issueQuest))
+			{
+				Logger.Log("Logic", "[IssueOffer] FinalizeClassicQuestAcceptance fallback_StartQuest issue=" + (issue?.StringId ?? "") + " quest=" + (issueQuest?.StringId ?? "") + " hook=" + (text ?? "") + " logs=" + issueQuest.JournalEntries.Count);
 				issueQuest.StartQuest();
+				text = string.IsNullOrWhiteSpace(text) ? "StartQuestFallback" : (text + "+StartQuestFallback");
+			}
+			if (!IsIssueQuestStillAttached(issue, issueQuest))
+			{
+				Logger.Log("Logic", "[IssueOffer] FinalizeClassicQuestAcceptance fail=quest_detached_or_finalized issue=" + (issue?.StringId ?? "") + " quest=" + (issueQuest?.StringId ?? "") + " hook=" + (text ?? "") + " questOngoing=" + issueQuest.IsOngoing + " logs=" + issueQuest.JournalEntries.Count);
+				error = "原版接取分支已立即结束或移除了任务，未能进入普通进行中状态。";
+				return false;
 			}
 			if (!issueQuest.IsOngoing)
 			{
 				error = "任务没有进入进行中状态。";
 				return false;
 			}
-			Logger.Log("Logic", "[IssueOffer] 经典任务接受收尾完成 quest=" + (issueQuest.StringId ?? "") + " hook=" + flag + " logs=" + issueQuest.JournalEntries.Count);
+			Logger.Log("Logic", "[IssueOffer] 经典任务接受收尾完成 quest=" + (issueQuest.StringId ?? "") + " hook=" + (text ?? "") + " logs=" + issueQuest.JournalEntries.Count);
 			return true;
 		}
 		catch (Exception ex)
@@ -856,6 +869,26 @@ internal static class VanillaIssueOfferBridge
 			error = "原版任务接受收尾异常。";
 			return false;
 		}
+	}
+
+	private static bool IsIssueQuestStillAttached(IssueBase issue, QuestBase quest)
+	{
+		return issue != null && quest != null && issue.IssueQuest == quest && issue.IsSolvingWithQuest;
+	}
+
+	private static bool TryInvokeQuestAcceptHook(QuestBase quest, out string methodName)
+	{
+		methodName = "";
+		string[] array = new string[3] { "QuestAcceptedConsequences", "OnQuestAccepted", "OfferDialogFlowConsequence" };
+		for (int i = 0; i < array.Length; i++)
+		{
+			if (TryInvokeQuestAcceptHook(quest, array[i]))
+			{
+				methodName = array[i];
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private static bool TryInvokeQuestAcceptHook(QuestBase quest, string methodName)
@@ -879,6 +912,97 @@ internal static class VanillaIssueOfferBridge
 		{
 			Logger.Log("Logic", "[IssueOffer] 调用任务接受钩子失败 quest=" + (quest?.StringId ?? "") + " method=" + methodName + " ex=" + ex.Message);
 			return false;
+		}
+	}
+
+	private static bool TryInvokeOfferDialogFlowAutoConsequence(QuestBase quest, out string consequenceName)
+	{
+		consequenceName = "";
+		try
+		{
+			DialogFlow dialogFlow = OfferDialogFlowField?.GetValue(quest) as DialogFlow;
+			if (dialogFlow == null)
+			{
+				return false;
+			}
+			System.Collections.IEnumerable enumerable = DialogFlowLinesField?.GetValue(dialogFlow) as System.Collections.IEnumerable;
+			if (enumerable == null)
+			{
+				return false;
+			}
+			List<ConversationSentence.OnConsequenceDelegate> list = new List<ConversationSentence.OnConsequenceDelegate>();
+			foreach (object item in enumerable)
+			{
+				if (item == null || GetDialogFlowLineBool(item, "ByPlayer"))
+				{
+					continue;
+				}
+				string dialogFlowLineString = GetDialogFlowLineString(item, "InputToken");
+				if (!string.Equals(dialogFlowLineString, "issue_classic_quest_start", StringComparison.Ordinal))
+				{
+					continue;
+				}
+				ConversationSentence.OnConsequenceDelegate dialogFlowLineDelegate = GetDialogFlowLineDelegate<ConversationSentence.OnConsequenceDelegate>(item, "ConsequenceDelegate");
+				if (dialogFlowLineDelegate != null)
+				{
+					list.Add(dialogFlowLineDelegate);
+				}
+			}
+			if (list.Count != 1)
+			{
+				if (list.Count > 1)
+				{
+					Logger.Log("Logic", "[IssueOffer] OfferDialogFlow auto consequence skipped: ambiguous count=" + list.Count + " quest=" + (quest?.StringId ?? ""));
+				}
+				return false;
+			}
+			ConversationSentence.OnConsequenceDelegate onConsequenceDelegate = list[0];
+			consequenceName = "OfferDialogFlow." + (onConsequenceDelegate.Method?.Name ?? "anonymous");
+			onConsequenceDelegate();
+			Logger.Log("Logic", "[IssueOffer] 调用 OfferDialogFlow 自动接取收尾 quest=" + (quest.StringId ?? "") + " consequence=" + consequenceName);
+			return true;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("Logic", "[IssueOffer] OfferDialogFlow 自动接取收尾失败 quest=" + (quest?.StringId ?? "") + " ex=" + ex.Message);
+			return false;
+		}
+	}
+
+	private static string GetDialogFlowLineString(object line, string fieldName)
+	{
+		try
+		{
+			return (line?.GetType().GetField(fieldName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)?.GetValue(line) as string) ?? "";
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	private static bool GetDialogFlowLineBool(object line, string fieldName)
+	{
+		try
+		{
+			object value = line?.GetType().GetField(fieldName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)?.GetValue(line);
+			return value is bool flag && flag;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static T GetDialogFlowLineDelegate<T>(object line, string fieldName) where T : class
+	{
+		try
+		{
+			return line?.GetType().GetField(fieldName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)?.GetValue(line) as T;
+		}
+		catch
+		{
+			return null;
 		}
 	}
 

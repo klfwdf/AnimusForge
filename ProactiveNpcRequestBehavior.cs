@@ -8,7 +8,10 @@ using TaleWorlds.CampaignSystem.Actions;
 using TaleWorlds.CampaignSystem.CampaignBehaviors;
 using TaleWorlds.CampaignSystem.Encounters;
 using TaleWorlds.CampaignSystem.Election;
+using TaleWorlds.CampaignSystem.MapEvents;
 using TaleWorlds.CampaignSystem.Party;
+using TaleWorlds.CampaignSystem.Siege;
+using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.Core;
 using TaleWorlds.MountAndBlade;
 
@@ -529,6 +532,11 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 			if (party.MapEvent != null || party.CurrentSettlement != null || party.Army != null || party.BesiegedSettlement != null || MapSeaContextGuard.IsMobilePartyAtSeaOrOnWater(party))
 			{
 				skipReason = "party_busy_or_invalid_location";
+				return false;
+			}
+			if (TryGetPlayerNativeActivityBusyReason(mainParty, out string mainBusyReason))
+			{
+				skipReason = "main_party_" + mainBusyReason;
 				return false;
 			}
 			if (mainParty.MapEvent != null || mainParty.CurrentSettlement != null || MapSeaContextGuard.IsMobilePartyAtSeaOrOnWater(mainParty))
@@ -1139,13 +1147,21 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
-		if (party.MapEvent != null || mainParty.MapEvent != null || party.CurrentSettlement != null || mainParty.CurrentSettlement != null)
-		{
-			return;
-		}
 		if (MapSeaContextGuard.IsMobilePartyAtSeaOrOnWater(party) || MapSeaContextGuard.IsMobilePartyAtSeaOrOnWater(mainParty))
 		{
 			CancelActiveSession("chase_at_sea", releaseParty: true);
+			return;
+		}
+		if (TryGetPlayerBusyReason(out string busyReason))
+		{
+			if (ShouldCancelActiveSessionForPlayerBusyReason(busyReason))
+			{
+				CancelActiveSession("player_busy:" + busyReason, releaseParty: true);
+			}
+			return;
+		}
+		if (party.MapEvent != null || party.CurrentSettlement != null)
+		{
 			return;
 		}
 		if (PlayerEncounter.Current != null || Campaign.Current?.ConversationManager?.IsConversationInProgress == true)
@@ -1259,6 +1275,13 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		if (mainParty == null)
 		{
 			CancelActiveSession(reason + ":missing_main_party", releaseParty: true);
+			return;
+		}
+		if (string.Equals(_activeSession.Stage, "Chasing", StringComparison.OrdinalIgnoreCase)
+			&& TryGetPlayerBusyReason(out string busyReason)
+			&& ShouldCancelActiveSessionForPlayerBusyReason(busyReason))
+		{
+			CancelActiveSession(reason + ":player_busy:" + busyReason, releaseParty: true);
 			return;
 		}
 		if (MapSeaContextGuard.IsMobilePartyAtSeaOrOnWater(party) || MapSeaContextGuard.IsMobilePartyAtSeaOrOnWater(mainParty))
@@ -2031,6 +2054,10 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 				reason = "missing_main_party";
 				return true;
 			}
+			if (TryGetPlayerNativeActivityBusyReason(mainParty, out reason))
+			{
+				return true;
+			}
 			if (mainParty.MapEvent != null)
 			{
 				reason = "main_party_map_event";
@@ -2062,6 +2089,204 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		{
 			reason = "exception:" + ex.Message;
 			return true;
+		}
+	}
+
+	private static bool TryGetPlayerNativeActivityBusyReason(MobileParty mainParty, out string reason)
+	{
+		reason = "";
+		try
+		{
+			if (PlayerSiege.PlayerSiegeEvent != null)
+			{
+				reason = "player_siege_event";
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (mainParty?.MapEvent != null && IsNativeActivityMapEvent(mainParty.MapEvent))
+			{
+				reason = "main_party_native_activity_map_event";
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (mainParty?.Party?.MapEvent != null && IsNativeActivityMapEvent(mainParty.Party.MapEvent))
+			{
+				reason = "main_party_native_activity_party_map_event";
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (mainParty != null && (mainParty.SiegeEvent != null || mainParty.BesiegedSettlement != null || mainParty.BesiegerCamp != null))
+			{
+				reason = "main_party_siege";
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (mainParty?.Party?.SiegeEvent != null)
+			{
+				reason = "main_party_party_siege";
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (mainParty != null && IsSettlementCombatBehavior(mainParty.DefaultBehavior))
+			{
+				reason = "main_party_default_" + mainParty.DefaultBehavior;
+				return true;
+			}
+			if (mainParty != null && IsSettlementCombatBehavior(mainParty.ShortTermBehavior))
+			{
+				reason = "main_party_short_" + mainParty.ShortTermBehavior;
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			Settlement targetSettlement = mainParty?.TargetSettlement
+				?? mainParty?.ShortTermTargetSettlement
+				?? mainParty?.BesiegedSettlement
+				?? mainParty?.CurrentSettlement;
+			if (IsActivePlayerSiegeSettlement(targetSettlement))
+			{
+				reason = "target_settlement_siege";
+				return true;
+			}
+			if (IsActivePlayerRaidSettlement(targetSettlement, mainParty))
+			{
+				reason = "target_village_raid";
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (LordEncounterBehavior.IsVillageRaidEncounterContext())
+			{
+				reason = "village_raid_context";
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (LordEncounterBehavior.IsNativeEncounterActivityContext())
+			{
+				reason = "native_activity_context";
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		return false;
+	}
+
+	private static bool ShouldCancelActiveSessionForPlayerBusyReason(string reason)
+	{
+		if (string.IsNullOrWhiteSpace(reason))
+		{
+			return false;
+		}
+		return reason.IndexOf("siege", StringComparison.OrdinalIgnoreCase) >= 0
+			|| reason.IndexOf("besieg", StringComparison.OrdinalIgnoreCase) >= 0
+			|| reason.IndexOf("raid", StringComparison.OrdinalIgnoreCase) >= 0
+			|| reason.IndexOf("native_activity", StringComparison.OrdinalIgnoreCase) >= 0
+			|| reason.IndexOf("map_event", StringComparison.OrdinalIgnoreCase) >= 0;
+	}
+
+	private static bool IsSettlementCombatBehavior(AiBehavior behavior)
+	{
+		return behavior == AiBehavior.BesiegeSettlement
+			|| behavior == AiBehavior.AssaultSettlement
+			|| behavior == AiBehavior.RaidSettlement;
+	}
+
+	private static bool IsNativeActivityMapEvent(MapEvent mapEvent)
+	{
+		if (mapEvent == null)
+		{
+			return false;
+		}
+		try
+		{
+			if (mapEvent.IsRaid)
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			return mapEvent.IsSiegeAssault
+				|| mapEvent.IsSallyOut
+				|| mapEvent.IsSiegeOutside
+				|| mapEvent.IsBlockade
+				|| mapEvent.IsBlockadeSallyOut
+				|| mapEvent.IsSiegeAmbush;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static bool IsActivePlayerSiegeSettlement(Settlement settlement)
+	{
+		try
+		{
+			return settlement != null && settlement.IsFortification && (settlement.IsUnderSiege || settlement.SiegeEvent != null);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static bool IsActivePlayerRaidSettlement(Settlement settlement, MobileParty mainParty)
+	{
+		try
+		{
+			if (settlement == null || !settlement.IsVillage || !settlement.IsUnderRaid)
+			{
+				return false;
+			}
+			return mainParty == null || settlement.LastAttackerParty == null || settlement.LastAttackerParty == mainParty;
+		}
+		catch
+		{
+			return false;
 		}
 	}
 

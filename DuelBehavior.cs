@@ -2146,7 +2146,7 @@ public class DuelBehavior : CampaignBehaviorBase
 				blockedReason = "map scene wrapper is missing";
 				return false;
 			}
-			TerrainType faceTerrainType = mapSceneWrapper.GetFaceTerrainType(MobileParty.MainParty.CurrentNavigationFace);
+			TerrainType faceTerrainType = BannerlordApiCompat.ResolveTerrainTypeForParty(MobileParty.MainParty, TerrainType.Plain, allowNavigationFaceFallback: false);
 			if (IsWaterOrSeaTerrain(faceTerrainType))
 			{
 				blockedReason = "terrain is not a wilderness land terrain: " + faceTerrainType;
@@ -2200,7 +2200,7 @@ public class DuelBehavior : CampaignBehaviorBase
 			MobileParty mainParty = MobileParty.MainParty;
 			if (mapSceneWrapper != null && mainParty != null)
 			{
-				TerrainType terrainType = mapSceneWrapper.GetFaceTerrainType(mainParty.CurrentNavigationFace);
+				TerrainType terrainType = BannerlordApiCompat.ResolveTerrainTypeForParty(mainParty, TerrainType.Plain, allowNavigationFaceFallback: false);
 				if (!IsWaterOrSeaTerrain(terrainType))
 				{
 					return terrainType;

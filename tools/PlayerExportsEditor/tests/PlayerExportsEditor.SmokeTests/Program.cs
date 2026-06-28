@@ -2,6 +2,9 @@ using PlayerExportsEditor.Core;
 
 var service = new PlayerExportsService();
 var validator = new PlayerExportsValidator();
+
+RunDataTypeDeletionSmoke(service);
+
 var root = service.FindDefaultPlayerExportsRoot(AppContext.BaseDirectory) ??
            service.FindDefaultPlayerExportsRoot(Directory.GetCurrentDirectory());
 
@@ -77,4 +80,47 @@ return 0;
 static int CountLocalized(IEnumerable<ConditionCandidate> candidates)
 {
     return candidates.Count(x => (x.Label ?? "").Any(c => c > 127));
+}
+
+static void RunDataTypeDeletionSmoke(PlayerExportsService service)
+{
+    var tempRoot = Path.Combine(Path.GetTempPath(), "af_playerexports_editor_" + Guid.NewGuid().ToString("N"));
+    Directory.CreateDirectory(tempRoot);
+    try
+    {
+        var package = service.CreatePackage(tempRoot, "DeletionSmoke");
+        var eventFiles = service.ListDataTypeJsonFiles(package.FullPath, PlayerExportsDataType.EventData);
+        if (eventFiles.Count < 3)
+        {
+            throw new InvalidOperationException("Deletion smoke package did not create the expected event JSON files.");
+        }
+
+        var deleted = service.MoveDataTypeToDeleted(package.FullPath, PlayerExportsDataType.EventData);
+        if (deleted.MovedFiles.Count != eventFiles.Count)
+        {
+            throw new InvalidOperationException("Data type deletion moved " + deleted.MovedFiles.Count + " files; expected " + eventFiles.Count + ".");
+        }
+
+        if (service.ListDataTypeJsonFiles(package.FullPath, PlayerExportsDataType.EventData).Count != 0)
+        {
+            throw new InvalidOperationException("Event data files still exist after data type deletion.");
+        }
+
+        foreach (var movedFile in deleted.MovedFiles)
+        {
+            if (!File.Exists(movedFile))
+            {
+                throw new InvalidOperationException("Moved file was not found in deleted root: " + movedFile);
+            }
+        }
+
+        Console.WriteLine("data-type-delete-smoke: moved=" + deleted.MovedFiles.Count);
+    }
+    finally
+    {
+        if (Directory.Exists(tempRoot))
+        {
+            Directory.Delete(tempRoot, recursive: true);
+        }
+    }
 }

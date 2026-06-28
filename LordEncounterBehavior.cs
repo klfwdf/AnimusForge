@@ -906,7 +906,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 				}
 				try
 				{
-					flag3 = PlayerEncounter.Battle != null || PlayerEncounter.EncounteredBattle != null || MapEvent.PlayerMapEvent != null;
+					flag3 = PlayerEncounterCompat.HasResolvedEncounterBattleContext();
 				}
 				catch
 				{
@@ -4087,7 +4087,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			bool flag7 = false;
 			try
 			{
-				flag4 = PlayerEncounter.Battle != null || PlayerEncounter.EncounteredBattle != null || MapEvent.PlayerMapEvent != null;
+				flag4 = PlayerEncounterCompat.HasResolvedEncounterBattleContext();
 			}
 			catch
 			{
@@ -6889,7 +6889,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		MapPatchData mapPatchAtPosition = mapSceneWrapper.GetMapPatchAtPosition(MobileParty.MainParty.Position);
 		string battleSceneForMapPatch = Campaign.Current.Models.SceneModel.GetBattleSceneForMapPatch(mapPatchAtPosition, flag);
 		MissionInitializerRecord rec = new MissionInitializerRecord(battleSceneForMapPatch);
-		TerrainType faceTerrainType = Campaign.Current.MapSceneWrapper.GetFaceTerrainType(MobileParty.MainParty.CurrentNavigationFace);
+		TerrainType faceTerrainType = BannerlordApiCompat.ResolveTerrainTypeForParty(MobileParty.MainParty, TerrainType.Plain, allowNavigationFaceFallback: false);
 		rec.TerrainType = (int)faceTerrainType;
 		rec.DamageToFriendsMultiplier = Campaign.Current.Models.DifficultyModel.GetPlayerTroopsReceivedDamageMultiplier();
 		rec.DamageFromPlayerToFriendsMultiplier = Campaign.Current.Models.DifficultyModel.GetPlayerTroopsReceivedDamageMultiplier();

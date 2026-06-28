@@ -846,6 +846,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		RestoreGeneratedRewardItemDefinitions("game_load_finished");
 		RepairGeneratedRewardItemCategories("game_load_finished");
 		CleanupPlayerCompanionLordCacheDuplicates("game_load_finished");
+		RepairInactivePromotedPlayerCompanions("game_load_finished");
 		BackfillHeroJoinOriginalClanRecordsForExistingPlayerCompanions();
 	}
 
@@ -928,6 +929,136 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		catch (Exception ex)
 		{
 			Logger.Log("RewardSystemBehavior", "[NonHeroJoin] companion_lord_cache_cleanup_failed reason=" + (reason ?? "") + " error=" + ex.Message);
+		}
+	}
+
+	private static void RepairInactivePromotedPlayerCompanions(string reason)
+	{
+		try
+		{
+			Clan playerClan = Clan.PlayerClan;
+			MobileParty mainParty = MobileParty.MainParty;
+			if (playerClan == null || mainParty == null)
+			{
+				return;
+			}
+			List<Hero> candidates = new List<Hero>();
+			if (playerClan.Companions != null)
+			{
+				candidates.AddRange(playerClan.Companions.Where((Hero hero) => hero != null));
+			}
+			if (playerClan.Heroes != null)
+			{
+				candidates.AddRange(playerClan.Heroes.Where((Hero hero) => hero != null));
+			}
+			int repaired = 0;
+			foreach (Hero hero in candidates.Distinct())
+			{
+				if (!IsInactivePromotedPlayerCompanionRepairCandidate(hero, mainParty))
+				{
+					continue;
+				}
+				if (TryActivatePromotedCompanionHero(hero, reason))
+				{
+					repaired++;
+				}
+				LogPromotedCompanionGovernorEligibility(hero, reason + "_repair");
+			}
+			if (repaired > 0)
+			{
+				Logger.Log("RewardSystemBehavior", "[NonHeroJoin] inactive_promoted_companion_repair reason=" + (reason ?? "") + " count=" + repaired);
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("RewardSystemBehavior", "[NonHeroJoin] inactive_promoted_companion_repair_failed reason=" + (reason ?? "") + " error=" + ex.Message);
+		}
+	}
+
+	private static bool IsInactivePromotedPlayerCompanionRepairCandidate(Hero hero, MobileParty mainParty)
+	{
+		if (hero == null || mainParty == null || hero.IsDead || hero.IsActive || hero.IsHumanPlayerCharacter || hero.IsChild)
+		{
+			return false;
+		}
+		if (!hero.IsPlayerCompanion || hero.CompanionOf != Clan.PlayerClan || hero.Occupation != Occupation.Wanderer)
+		{
+			return false;
+		}
+		if (hero.IsPrisoner || hero.IsFugitive || hero.IsReleased || hero.IsTraveling || hero.IsSpecial || hero.IsTemplate)
+		{
+			return false;
+		}
+		return hero.PartyBelongedTo == mainParty || IsHeroInParty(hero, mainParty);
+	}
+
+	private static bool TryActivatePromotedCompanionHero(Hero hero, string reason)
+	{
+		if (hero == null || hero.IsDead || hero.IsActive)
+		{
+			return false;
+		}
+		try
+		{
+			Hero.CharacterStates oldState = hero.HeroState;
+			hero.ChangeState(Hero.CharacterStates.Active);
+			Logger.Log("RewardSystemBehavior", "[NonHeroJoin] promoted_companion_activated reason=" + (reason ?? "") + " hero=" + (hero.StringId ?? "") + " oldState=" + oldState + " newState=" + hero.HeroState);
+			return true;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("RewardSystemBehavior", "[NonHeroJoin] promoted_companion_activate_failed reason=" + (reason ?? "") + " hero=" + (hero?.StringId ?? "") + " error=" + ex.Message);
+			return false;
+		}
+	}
+
+	private static void LogPromotedCompanionGovernorEligibility(Hero hero, string reason)
+	{
+		try
+		{
+			if (hero == null)
+			{
+				return;
+			}
+			bool canHavePartyRole = false;
+			try
+			{
+				canHavePartyRole = hero.CanBeGovernorOrHavePartyRole();
+			}
+			catch
+			{
+			}
+			bool canBeGovernor = false;
+			try
+			{
+				canBeGovernor = Campaign.Current?.Models?.ClanPoliticsModel?.CanHeroBeGovernor(hero) == true;
+			}
+			catch
+			{
+			}
+			Logger.Log("RewardSystemBehavior", "[NonHeroJoin] governor_eligibility reason=" + (reason ?? "") +
+				" hero=" + (hero.StringId ?? "") +
+				" state=" + hero.HeroState +
+				" active=" + hero.IsActive +
+				" child=" + hero.IsChild +
+				" player=" + hero.IsHumanPlayerCharacter +
+				" partyLeader=" + hero.IsPartyLeader +
+				" fugitive=" + hero.IsFugitive +
+				" released=" + hero.IsReleased +
+				" traveling=" + hero.IsTraveling +
+				" prisoner=" + hero.IsPrisoner +
+				" canRole=" + canHavePartyRole +
+				" special=" + hero.IsSpecial +
+				" template=" + hero.IsTemplate +
+				" occupation=" + hero.Occupation +
+				" party=" + (hero.PartyBelongedTo?.StringId ?? "") +
+				" companionOf=" + (hero.CompanionOf?.StringId ?? "") +
+				" clan=" + (hero.Clan?.StringId ?? "") +
+				" canGovernor=" + canBeGovernor);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("RewardSystemBehavior", "[NonHeroJoin] governor_eligibility_log_failed reason=" + (reason ?? "") + " hero=" + (hero?.StringId ?? "") + " error=" + ex.Message);
 		}
 	}
 
@@ -3991,18 +4122,51 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		return true;
 	}
 
+	private static bool IsWorkshopFixedAssetStateUsable(Workshop workshop)
+	{
+		try
+		{
+			return workshop != null
+				&& workshop.Settlement?.Town != null
+				&& workshop.Settlement.OwnerClan != null
+				&& workshop.Settlement.Town.Owner?.ItemRoster != null
+				&& workshop.WorkshopType?.Productions != null;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static bool IsValidWorkshopFixedAssetOwner(Hero hero)
+	{
+		try
+		{
+			return hero != null && hero.IsAlive && hero.CharacterObject != null;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
 	private bool TryApplyWorkshopFixedAssetTransfer(Hero giver, Hero receiver, Hero targetOwner, string direction, Workshop workshop, string assetName, out string statusText)
 	{
 		statusText = "";
-		if (workshop == null || workshop.WorkshopType == null)
+		if (!IsWorkshopFixedAssetStateUsable(workshop))
 		{
-			statusText = $"执行失败：{assetName} 不是可转移工坊。";
+			statusText = $"执行失败：{assetName} 不是可安全转移的工坊。";
 			return false;
 		}
 		Hero oldOwner = workshop.Owner;
 		if (oldOwner == null)
 		{
 			statusText = $"执行失败：{assetName} 当前没有可识别的工坊主人。";
+			return false;
+		}
+		if (!IsValidWorkshopFixedAssetOwner(oldOwner))
+		{
+			statusText = $"执行失败：{assetName} 当前工坊主人无效或已死亡。";
 			return false;
 		}
 		if (direction == "TO_PLAYER")
@@ -4021,6 +4185,11 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		if (targetOwner == null)
 		{
 			statusText = "执行失败：缺少工坊接收者。";
+			return false;
+		}
+		if (!IsValidWorkshopFixedAssetOwner(targetOwner))
+		{
+			statusText = "执行失败：工坊接收者不是有效存活英雄。";
 			return false;
 		}
 		if (oldOwner == targetOwner)
@@ -4204,19 +4373,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			}
 			Clan temporaryRulingClan = candidates[0];
 			ChangeRulingClanAction.Apply(kingdom, temporaryRulingClan);
-			if (candidates.Count > 1)
-			{
-				KingSelectionKingdomDecision decision = new KingSelectionKingdomDecision(temporaryRulingClan, departingClan)
-				{
-					IsEnforced = true
-				};
-				kingdom.AddDecision(decision, ignoreInfluenceCost: true);
-				transitionNotes?.Add($"{kingdomName} 已由 {GetClanDisplayNameForNotification(temporaryRulingClan)} 临时接任，并触发新统治者选举");
-			}
-			else
-			{
-				transitionNotes?.Add($"{kingdomName} 已由 {GetClanDisplayNameForNotification(temporaryRulingClan)} 接任执政家族");
-			}
+			transitionNotes?.Add($"{kingdomName} 已由 {GetClanDisplayNameForNotification(temporaryRulingClan)} 接任执政家族");
 		}
 		catch (Exception ex)
 		{
@@ -4779,12 +4936,14 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		hero.Weight = ClampBodyShape01(bodyProperties.DynamicProperties.Weight);
 		hero.Build = ClampBodyShape01(bodyProperties.DynamicProperties.Build);
 		hero.SetNewOccupation(Occupation.Wanderer);
+		TryActivatePromotedCompanionHero(hero, "new_nonhero_promotion");
 		ApplyTemplateSkillsToHero(hero, template);
 		ApplyPromotedCompanionRandomTraits(hero, template);
 		CopyCapturedEquipmentToHero(hero, capturedEquipment);
 		AddCompanionAction.Apply(Clan.PlayerClan, hero);
 		CleanupPlayerCompanionLordCacheDuplicates("after_nonhero_promotion");
 		AddHeroToPartyAction.Apply(hero, MobileParty.MainParty, showNotification: true);
+		LogPromotedCompanionGovernorEligibility(hero, "after_nonhero_promotion");
 		RememberPromotedNonHeroCompanion(targetAgentIndex, hero);
 		bool sceneFollowStarted = ShoutBehavior.TryForceSceneFollowPlayerForExternal(targetAgentIndex, transient: true, reason: "nonhero_join_party_promotion");
 		RemoveJoinedNonHeroLocationCharacters(template, targetAgentIndex, removeAllMatchingTavernMercenaries: false);

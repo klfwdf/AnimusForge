@@ -118,6 +118,12 @@ public static class WorldEntityRetrievalService
 
 	private const float VisiblePartyRangeMultiplier = 1.5f;
 
+	private const int MainPromptClanMemberCap = 8;
+
+	private const int MainPromptClanFiefCap = 8;
+
+	private const int MainPromptKingdomClanCap = 6;
+
 	private sealed class EntityMatch<T>
 	{
 		public T Value;
@@ -1209,15 +1215,15 @@ public static class WorldEntityRetrievalService
 		{
 			Hero hero = matches[i].Value;
 			sb.AppendLine((i + 1) + ". " + SafeName(hero?.Name, matches[i].Name) + "（编号：" + matches[i].Id + "；匹配分：" + FormatScore(matches[i].Score) + "；提及：" + matches[i].Mention + "）");
-			sb.AppendLine("所属家族：" + SafeName(hero?.Clan?.Name, "未知") + "；王国：" + FormatHeroKingdom(hero) + "；家族族长：" + SafeName(hero?.Clan?.Leader?.Name, "未知"));
+			sb.AppendLine("所属家族：" + SafeName(hero?.Clan?.Name, "未知") + "；王国：" + FormatHeroKingdom(hero));
 			string relationship = FormatHeroRelationshipForMainPrompt(playerDisplayName, contextHero, hero);
 			if (!string.IsNullOrWhiteSpace(relationship))
 			{
 				sb.AppendLine(relationship);
 			}
-			sb.AppendLine("特质：" + FormatHeroTraits(hero) + "；所有亲人：" + FormatHeroRelatives(hero));
-			sb.AppendLine("现在的位置：" + FormatHeroLocation(hero) + "；目前的状态：" + FormatHeroStatus(hero) + "；是否被俘(IsPrisoner)：" + FormatHeroPrisonerFlag(hero));
-			sb.AppendLine("年龄(Age)：" + FormatAge(hero) + "；生死状态(IsAlive)：" + FormatBool(hero != null && hero.IsAlive) + "；性别：" + FormatGender(hero) + "；职业/头衔(Occupation/Title)：" + FormatHeroOccupation(hero));
+			sb.AppendLine("特质：" + FormatHeroTraits(hero) + "；亲属：" + FormatHeroRelatives(hero));
+			sb.AppendLine("位置：" + FormatHeroLocation(hero) + "；状态：" + FormatHeroStatus(hero));
+			sb.AppendLine("年龄：" + FormatAge(hero) + "；生死：" + FormatBool(hero != null && hero.IsAlive) + "；性别：" + FormatGender(hero) + "；职业/头衔：" + FormatHeroOccupation(hero));
 		}
 	}
 
@@ -1234,7 +1240,7 @@ public static class WorldEntityRetrievalService
 			Settlement settlement = matches[i].Value;
 			string settlementDisplayName = settlement == null ? SafeName(settlement?.Name, matches[i].Name) : FormatSettlementNameWithType(settlement);
 			sb.AppendLine((i + 1) + ". " + settlementDisplayName + "（编号：" + matches[i].Id + "；匹配分：" + FormatScore(matches[i].Score) + "；提及：" + matches[i].Mention + "）");
-			sb.AppendLine("所属家族：" + SafeName(settlement?.OwnerClan?.Name, "未知") + "；王国：" + FormatSettlementKingdom(settlement) + "；文化(Culture)：" + SafeName(settlement?.Culture?.Name, settlement?.Culture?.StringId ?? "未知") + "；家族族长：" + SafeName(settlement?.OwnerClan?.Leader?.Name, "未知"));
+			sb.AppendLine("所属家族：" + SafeName(settlement?.OwnerClan?.Name, "未知") + "；王国：" + FormatSettlementKingdom(settlement) + "；文化：" + SafeName(settlement?.Culture?.Name, settlement?.Culture?.StringId ?? "未知"));
 			sb.AppendLine("兵力：" + FormatSettlementStrength(settlement) + "；繁荣度：" + FormatSettlementProsperity(settlement) + "；人口：" + FormatSettlementPopulation(settlement) + "；忠诚度：" + FormatSettlementLoyalty(settlement));
 			sb.AppendLine("下属村庄：" + FormatBoundVillages(settlement) + "；当前状态：" + FormatSettlementStatus(settlement));
 		}
@@ -1252,9 +1258,9 @@ public static class WorldEntityRetrievalService
 		{
 			Clan clan = matches[i].Value;
 			sb.AppendLine((i + 1) + ". " + SafeName(clan?.Name, matches[i].Name) + "（编号：" + matches[i].Id + "；匹配分：" + FormatScore(matches[i].Score) + "；提及：" + matches[i].Mention + "）");
-			sb.AppendLine("所有成员：" + FormatHeroList(clan?.Heroes, 24));
-			sb.AppendLine("所属王国：" + SafeName(clan?.Kingdom?.Name, "无") + "；家族影响力(Influence)：" + FormatFloat(clan?.Influence) + "；家族文化(Culture)：" + SafeName(clan?.Culture?.Name, clan?.Culture?.StringId ?? "未知"));
-			sb.AppendLine("家族财富：" + FormatInt(clan?.Gold) + "；家族等级：" + FormatInt(clan?.Tier) + "；家族是否灭亡(IsEliminated)：" + FormatEliminatedStatus(clan?.IsEliminated) + "；家族拥有的所有定居点：" + FormatClanFiefs(clan));
+			sb.AppendLine("族长：" + SafeName(clan?.Leader?.Name, "未知") + "；主要成员：" + FormatHeroList(clan?.Heroes, MainPromptClanMemberCap));
+			sb.AppendLine("所属王国：" + SafeName(clan?.Kingdom?.Name, "无") + "；影响力：" + FormatFloat(clan?.Influence) + "；文化：" + SafeName(clan?.Culture?.Name, clan?.Culture?.StringId ?? "未知"));
+			sb.AppendLine("财富：" + FormatInt(clan?.Gold) + "；等级：" + FormatInt(clan?.Tier) + "；是否灭亡：" + FormatEliminatedStatus(clan?.IsEliminated) + "；主要定居点：" + FormatClanFiefs(clan, MainPromptClanFiefCap));
 		}
 	}
 
@@ -1270,9 +1276,9 @@ public static class WorldEntityRetrievalService
 		{
 			Kingdom kingdom = matches[i].Value;
 			sb.AppendLine((i + 1) + ". " + SafeName(kingdom?.Name, matches[i].Name) + "（编号：" + matches[i].Id + "；匹配分：" + FormatScore(matches[i].Score) + "；提及：" + matches[i].Mention + "）");
-			sb.AppendLine("国王名称：" + SafeName(kingdom?.Leader?.Name, "未知") + "；王国总兵力：" + FormatFloat(kingdom?.CurrentTotalStrength) + "；国家文化(Culture)：" + SafeName(kingdom?.Culture?.Name, kingdom?.Culture?.StringId ?? "未知"));
+			sb.AppendLine("国王：" + SafeName(kingdom?.Leader?.Name, "未知") + "；总兵力：" + FormatFloat(kingdom?.CurrentTotalStrength) + "；文化：" + SafeName(kingdom?.Culture?.Name, kingdom?.Culture?.StringId ?? "未知"));
 			sb.AppendLine("王国定居点概览：" + FormatKingdomSettlementSummary(kingdom));
-			sb.AppendLine("所有家族与族长：" + FormatKingdomClans(kingdom));
+			sb.AppendLine("主要家族：" + FormatKingdomClans(kingdom, MainPromptKingdomClanCap));
 			sb.AppendLine("王国当前状态：" + FormatKingdomStatus(kingdom));
 		}
 	}
@@ -2065,12 +2071,25 @@ public static class WorldEntityRetrievalService
 		return parts.Count == 0 ? "无特殊状态" : string.Join("；", parts);
 	}
 
-	private static string FormatClanFiefs(Clan clan)
+	private static string FormatClanFiefs(Clan clan, int cap = MainPromptClanFiefCap)
 	{
 		try
 		{
-			List<string> names = (((IEnumerable<Town>)clan?.Fiefs) ?? Enumerable.Empty<Town>()).Where((Town x) => x?.Settlement != null).Select((Town x) => FormatSettlementNameWithType(x.Settlement)).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
-			return names.Count == 0 ? "无" : string.Join("、", names);
+			List<string> names = (((IEnumerable<Town>)clan?.Fiefs) ?? Enumerable.Empty<Town>()).Where((Town x) => x?.Settlement != null).Select((Town x) => FormatSettlementNameWithType(x.Settlement)).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).Take(Math.Max(1, cap)).ToList();
+			int total = 0;
+			try
+			{
+				total = (((IEnumerable<Town>)clan?.Fiefs) ?? Enumerable.Empty<Town>()).Count((Town x) => x?.Settlement != null);
+			}
+			catch
+			{
+				total = names.Count;
+			}
+			if (names.Count == 0)
+			{
+				return "无";
+			}
+			return total > names.Count ? (string.Join("、", names) + "等，共" + total.ToString(CultureInfo.InvariantCulture) + "处") : string.Join("、", names);
 		}
 		catch
 		{
@@ -2078,12 +2097,17 @@ public static class WorldEntityRetrievalService
 		}
 	}
 
-	private static string FormatKingdomClans(Kingdom kingdom)
+	private static string FormatKingdomClans(Kingdom kingdom, int cap = MainPromptKingdomClanCap)
 	{
 		try
 		{
-			List<string> names = (((IEnumerable<Clan>)kingdom?.Clans) ?? Enumerable.Empty<Clan>()).Where((Clan x) => x != null).Select((Clan x) => SafeName(x.Name, x.StringId) + "（族长：" + SafeName(x.Leader?.Name, "未知") + "）").Where((string x) => !string.IsNullOrWhiteSpace(x)).Take(24).ToList();
-			return names.Count == 0 ? "无" : string.Join("、", names);
+			List<Clan> clans = (((IEnumerable<Clan>)kingdom?.Clans) ?? Enumerable.Empty<Clan>()).Where((Clan x) => x != null && !x.IsEliminated).ToList();
+			List<string> names = clans.Select((Clan x) => SafeName(x.Name, x.StringId)).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).Take(Math.Max(1, cap)).ToList();
+			if (names.Count == 0)
+			{
+				return "无";
+			}
+			return clans.Count > names.Count ? (string.Join("、", names) + "等，共" + clans.Count.ToString(CultureInfo.InvariantCulture) + "个家族") : string.Join("、", names);
 		}
 		catch
 		{
