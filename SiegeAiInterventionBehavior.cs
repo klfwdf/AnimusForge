@@ -3082,7 +3082,6 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		try
 		{
 			return IsOccupationSceneActiveForExternal()
-				&& !_massacreStarted
 				&& agent != null
 				&& agent.Index >= 0
 				&& LocalFleeingCivilianAgentIndexes.Contains(agent.Index)
@@ -3573,6 +3572,126 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private static bool TrySetInterventionNativeNavmeshTargetFrame(
+		Agent agent,
+		Mission mission,
+		Vec3 target,
+		string source,
+		Agent.AIScriptedFrameFlags flags,
+		bool forceNearbySample,
+		out Vec3 resolvedTarget)
+	{
+		resolvedTarget = target;
+		try
+		{
+			if (agent == null || mission?.Scene == null || !agent.IsHuman || !agent.IsActive())
+			{
+				return false;
+			}
+			CampaignAgentComponent component = agent.GetComponent<CampaignAgentComponent>();
+			AgentNavigator navigator = component?.AgentNavigator ?? component?.CreateAgentNavigator();
+			if (navigator == null)
+			{
+				return false;
+			}
+			if (!TryResolveInterventionNativeNavmeshWorldPosition(mission, agent.Position, target, forceNearbySample, out WorldPosition worldPosition, out resolvedTarget))
+			{
+				return false;
+			}
+			Vec2 direction = worldPosition.AsVec2 - agent.Position.AsVec2;
+			float rotation = direction.LengthSquared > 0.04f ? direction.RotationInRadians : agent.LookDirection.AsVec2.RotationInRadians;
+			navigator.SetTargetFrame(
+				worldPosition,
+				rotation,
+				SiegeAgentWallRescueProfile.NativeTargetFrameArrivalRadius,
+				SiegeAgentWallRescueProfile.NativeTargetFrameStopDistance,
+				flags,
+				false);
+			return true;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "Native navmesh target frame failed (" + (source ?? SiegeAgentWallRescueProfile.NativeTargetFrameSource) + "): " + ex.Message);
+			return false;
+		}
+	}
+
+	private static bool TryResolveInterventionNativeNavmeshWorldPosition(
+		Mission mission,
+		Vec3 agentPosition,
+		Vec3 target,
+		bool forceNearbySample,
+		out WorldPosition worldPosition,
+		out Vec3 resolvedTarget)
+	{
+		worldPosition = WorldPosition.Invalid;
+		resolvedTarget = target;
+		try
+		{
+			if (mission?.Scene == null)
+			{
+				return false;
+			}
+			Vec3 groundedTarget = ProjectCivilianRoutPointToGround(mission, target);
+			if (!forceNearbySample)
+			{
+				WorldPosition direct = new WorldPosition(mission.Scene, groundedTarget);
+				if (direct.GetNearestNavMesh() != UIntPtr.Zero)
+				{
+					worldPosition = direct;
+					resolvedTarget = groundedTarget;
+					return true;
+				}
+			}
+			WorldPosition bestWorldPosition = WorldPosition.Invalid;
+			Vec3 bestPoint = groundedTarget;
+			float bestScore = float.MinValue;
+			Vec2 desiredDirection = groundedTarget.AsVec2 - agentPosition.AsVec2;
+			if (desiredDirection.LengthSquared > 0.04f)
+			{
+				desiredDirection.Normalize();
+			}
+			for (int i = 0; i < SiegeAgentWallRescueProfile.NativeTargetFrameSampleCount; i++)
+			{
+				bool preferReachable = i % 2 == 0;
+				Vec3 candidate = mission.GetRandomPositionAroundPoint(
+					groundedTarget,
+					SiegeAgentWallRescueProfile.NativeTargetFrameSampleMinRadius,
+					SiegeAgentWallRescueProfile.NativeTargetFrameSampleMaxRadius,
+					preferReachable);
+				WorldPosition candidateWorldPosition = new WorldPosition(mission.Scene, candidate);
+				if (candidateWorldPosition.GetNearestNavMesh() == UIntPtr.Zero)
+				{
+					continue;
+				}
+				Vec2 candidateDirection = candidateWorldPosition.AsVec2 - agentPosition.AsVec2;
+				float directionScore = 0f;
+				if (desiredDirection.LengthSquared > 0.04f && candidateDirection.LengthSquared > 0.04f)
+				{
+					candidateDirection.Normalize();
+					directionScore = Vec2.DotProduct(candidateDirection, desiredDirection);
+				}
+				float score = -candidateWorldPosition.AsVec2.DistanceSquared(groundedTarget.AsVec2) + directionScore;
+				if (score > bestScore)
+				{
+					bestScore = score;
+					bestWorldPosition = candidateWorldPosition;
+					bestPoint = candidate;
+				}
+			}
+			if (bestScore <= float.MinValue / 2f)
+			{
+				return false;
+			}
+			worldPosition = bestWorldPosition;
+			resolvedTarget = bestPoint;
+			return true;
+		}
+		catch
+		{
+			return false;
+		}
+	}
 
 	private static bool TrySetInterventionAgentTargetPosition(Agent agent, Vec3 target, string source, Agent.AIScriptedFrameFlags rescueFlags = Agent.AIScriptedFrameFlags.NeverSlowDown)
 	{
@@ -3593,6 +3712,11 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			}
 			if (ShouldUseTemporaryWallRescue(agent, mission, resolvedTarget, source))
 			{
+				if (TrySetInterventionNativeNavmeshTargetFrame(agent, mission, resolvedTarget, source, rescueFlags, forceNearbySample: true, out Vec3 nativeRescueTarget))
+				{
+					SetAgentLookTowardPoint(agent, nativeRescueTarget);
+					return true;
+				}
 				try
 				{
 					WorldPosition scriptedPosition = new WorldPosition(mission.Scene, UIntPtr.Zero, resolvedTarget, false);
@@ -3603,6 +3727,11 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				{
 					Logger.Log("SiegeAiIntervention", "Wall rescue scripted movement failed (" + (source ?? SiegeAgentWallRescueProfile.Source) + "): " + ex.Message);
 				}
+			}
+			if (TrySetInterventionNativeNavmeshTargetFrame(agent, mission, resolvedTarget, source, rescueFlags, forceNearbySample: false, out Vec3 nativeTarget))
+			{
+				SetAgentLookTowardPoint(agent, nativeTarget);
+				return true;
 			}
 			agent.SetTargetPosition(resolvedTarget.AsVec2);
 			return true;
@@ -8339,6 +8468,89 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		return point;
 	}
 
+	private static bool TryForceInterventionCivilianDirectRetreat(Agent civilian, Mission mission, Agent threat, string source, out Vec3 retreatTarget)
+	{
+		retreatTarget = civilian?.Position ?? Vec3.Zero;
+		try
+		{
+			CampaignAgentComponent component = civilian?.GetComponent<CampaignAgentComponent>();
+			AgentNavigator navigator = component?.AgentNavigator ?? component?.CreateAgentNavigator();
+			if (civilian == null || mission?.Scene == null || threat == null || !threat.IsActive() || navigator == null || !civilian.IsHuman || !civilian.IsActive())
+			{
+				return false;
+			}
+			Vec2 civilianPosition = civilian.Position.AsVec2;
+			Vec2 threatPosition = threat.Position.AsVec2;
+			Vec2 retreatDirection = civilianPosition - threatPosition;
+			if (retreatDirection.LengthSquared < 0.04f)
+			{
+				retreatDirection = civilian.Frame.rotation.f.AsVec2;
+			}
+			if (retreatDirection.LengthSquared < 0.04f)
+			{
+				retreatDirection = new Vec2(1f, 0f);
+			}
+			retreatDirection.Normalize();
+			WorldPosition bestWorldPosition = WorldPosition.Invalid;
+			Vec3 bestPoint = civilian.Position;
+			float bestScore = float.MinValue;
+			for (int i = 0; i < SiegeAgentWallRescueProfile.NativeDirectRetreatSampleCount; i++)
+			{
+				bool preferReachable = i % 2 == 0;
+				Vec3 candidate = mission.GetRandomPositionAroundPoint(
+					civilian.Position,
+					SiegeAgentWallRescueProfile.NativeDirectRetreatMinRadius,
+					SiegeAgentWallRescueProfile.NativeDirectRetreatMaxRadius,
+					preferReachable);
+				WorldPosition candidateWorldPosition = new WorldPosition(mission.Scene, candidate);
+				if (candidateWorldPosition.GetNearestNavMesh() == UIntPtr.Zero)
+				{
+					continue;
+				}
+				Vec2 candidateDirection = candidateWorldPosition.AsVec2 - civilianPosition;
+				if (candidateDirection.LengthSquared < 0.25f)
+				{
+					continue;
+				}
+				candidateDirection.Normalize();
+				float directionScore = Vec2.DotProduct(candidateDirection, retreatDirection);
+				if (directionScore < SiegeAgentWallRescueProfile.NativeDirectRetreatMinDirectionDot)
+				{
+					continue;
+				}
+				float score = candidateWorldPosition.AsVec2.DistanceSquared(threatPosition)
+					+ directionScore * SiegeAgentWallRescueProfile.NativeDirectRetreatDirectionScoreBonus;
+				if (score > bestScore)
+				{
+					bestWorldPosition = candidateWorldPosition;
+					bestPoint = candidate;
+					bestScore = score;
+				}
+			}
+			if (bestScore <= 0f)
+			{
+				return false;
+			}
+			Vec2 finalDirection = bestWorldPosition.AsVec2 - civilianPosition;
+			float rotation = finalDirection.LengthSquared > 0.04f ? finalDirection.RotationInRadians : retreatDirection.RotationInRadians;
+			civilian.DisableScriptedMovement();
+			navigator.SetTargetFrame(
+				bestWorldPosition,
+				rotation,
+				SiegeAgentWallRescueProfile.NativeTargetFrameArrivalRadius,
+				SiegeAgentWallRescueProfile.NativeTargetFrameStopDistance,
+				Agent.AIScriptedFrameFlags.NoAttack | Agent.AIScriptedFrameFlags.NeverSlowDown,
+				false);
+			retreatTarget = ProjectCivilianRoutPointToGround(mission, bestPoint);
+			return true;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "Intervention civilian direct retreat failed (" + (source ?? SiegeAgentWallRescueProfile.NativeDirectRetreatSource) + "): " + ex.Message);
+			return false;
+		}
+	}
+
 	private static void KeepCivilianHidingFromOccupation(Agent civilian, Mission mission, Agent main, bool force)
 	{
 		try
@@ -8369,6 +8581,11 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				}
 				catch
 				{
+				}
+				if (TryForceInterventionCivilianDirectRetreat(civilian, mission, main, SiegeAgentWallRescueProfile.NativeDirectRetreatSource + ":civilian_hide", out Vec3 directRetreatTarget))
+				{
+					CivilianHideTargets[civilian.Index] = directRetreatTarget;
+					return;
 				}
 				TrySetInterventionAgentTargetPosition(civilian, hideTarget, SiegeAgentWallRescueProfile.Source + ":civilian_hide");
 			}

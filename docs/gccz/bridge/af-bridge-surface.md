@@ -409,3 +409,10 @@ Cultural-repopulation tag audit: `[ACTION:殖民]` remains a soldier-mediated de
 - When regional conflict escalates to massacre, end the narrow native local fight before handing control to GCCZ massacre combat driving.
 
 Follow-up isolation: GCCZ postprocess frequency policy now lives in `SiegePostprocessFrequencyProfile`; fused AF keeps MCM settings and the active-scene runtime throttle inside `DuelSettings`, `AfGcczShoutBridge`, and `ShoutBehavior`. Default is unlimited/current behavior. When unlimited is disabled, low-priority GCCZ postprocess calls are limited to N per 10; direct player destructive/mercy/gather-looking text may bypass only to force an AI postprocess review, but the fixed text check never emits ACTION tags or applies outcomes. The fused bridge resets the throttle bucket on GCCZ mission start/end to avoid cross-mission carryover.
+
+## 2026-06-29 GCCZ native navigation bridge note
+
+- 血洗/区域冲突的“谁逃跑、谁反抗、多少士兵追击”仍由 GCCZ 独立策略决定，不接管 AF 普通城镇冲突结算、犯罪、通缉或 SceneTaunt 状态机。
+- 融合树 `SiegeAiInterventionBehavior.cs` 只复用 AF 原版城镇冲突中更稳的移动方式：`AgentNavigator.SetTargetFrame(WorldPosition)`、navmesh 采样、以及远离威胁的 direct retreat 采样。
+- 已标记为 GCCZ 逃跑的平民在血洗阶段也必须允许 `FleeBehavior` tick/availability；这是路径行为桥，不改变平民逃跑/反抗判定。
+- 独立参数位于 `SiegeAgentWallRescueProfile`，融合树 live adapter 负责 Bannerlord `Mission`/`AgentNavigator` 调用。
