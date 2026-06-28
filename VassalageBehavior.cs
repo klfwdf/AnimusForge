@@ -2247,26 +2247,22 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 	private void ProcessTributaryPayments()
 	{
 		Kingdom playerKingdom = GetPlayerKingdom();
-		if (!IsValidKingdom(playerKingdom))
-		{
-			VassalageDiagnosticLog.Event("tributary_payment.daily_check.skip", new Dictionary<string, object>
-			{
-				["reason"] = "invalid_player_kingdom",
-				["agreementCount"] = _agreementsByVassalId.Count,
-				["pendingTributaryPaymentCount"] = _pendingTributaryPaymentNotices.Count,
-				["lastSettlementDayCount"] = _tributaryPaymentLastSettlementDays.Count
-			});
-			return;
-		}
+		bool hasValidPlayerKingdom = IsValidKingdom(playerKingdom);
 		int today = GetCurrentCampaignDay();
-		List<VassalageAgreement> tributePayingAgreements = GetPlayerVassalAgreements().Where((VassalageAgreement x) => x != null && IsTributePayingSubjectType(x.Type)).ToList();
+		List<VassalageAgreement> tributePayingAgreements = GetTributePayingAgreements().ToList();
+		int playerSuzerainAgreementCount = hasValidPlayerKingdom
+			? tributePayingAgreements.Count((VassalageAgreement x) => string.Equals(x.SuzerainKingdomId ?? "", playerKingdom.StringId ?? "", StringComparison.OrdinalIgnoreCase))
+			: 0;
 		VassalageDiagnosticLog.Event("tributary_payment.daily_check", new Dictionary<string, object>
 		{
 			["today"] = today,
 			["playerKingdom"] = VassalageDiagnosticLog.DescribeKingdom(playerKingdom),
+			["hasValidPlayerKingdom"] = hasValidPlayerKingdom,
 			["totalAgreementCount"] = _agreementsByVassalId.Count,
 			["tributaryAgreementCount"] = tributePayingAgreements.Count,
 			["tributePayingAgreementCount"] = tributePayingAgreements.Count,
+			["playerSuzerainAgreementCount"] = playerSuzerainAgreementCount,
+			["npcSuzerainAgreementCount"] = Math.Max(0, tributePayingAgreements.Count - playerSuzerainAgreementCount),
 			["pendingTributaryPaymentCount"] = _pendingTributaryPaymentNotices.Count,
 			["lastSettlementDayCount"] = _tributaryPaymentLastSettlementDays.Count,
 			["canPublishMapNotification"] = CanPublishMapNotification(),
@@ -2286,9 +2282,12 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 				});
 				continue;
 			}
+			Kingdom suzerainKingdom = agreement.ResolveSuzerain();
+			Kingdom tributaryKingdom = agreement.ResolveVassal();
 			int lastSettlementDay = GetTributaryPaymentLastSettlementDay(agreement);
 			int daysSinceLastSettlement = today - lastSettlementDay;
 			bool isDue = daysSinceLastSettlement >= TributaryPaymentIntervalDays;
+			bool queuePlayerNotice = hasValidPlayerKingdom && suzerainKingdom == playerKingdom;
 			VassalageDiagnosticLog.Event("tributary_payment.evaluate", new Dictionary<string, object>
 			{
 				["agreementId"] = agreementId,
@@ -2301,16 +2300,28 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 				["daysUntilNextSettlement"] = Math.Max(0, TributaryPaymentIntervalDays - daysSinceLastSettlement),
 				["intervalDays"] = TributaryPaymentIntervalDays,
 				["isDue"] = isDue,
-				["suzerain"] = VassalageDiagnosticLog.DescribeKingdom(agreement.ResolveSuzerain()),
-				["tributary"] = VassalageDiagnosticLog.DescribeKingdom(agreement.ResolveVassal())
+				["queuePlayerNotice"] = queuePlayerNotice,
+				["suzerain"] = VassalageDiagnosticLog.DescribeKingdom(suzerainKingdom),
+				["tributary"] = VassalageDiagnosticLog.DescribeKingdom(tributaryKingdom)
 			});
 			if (!isDue)
 			{
 				continue;
 			}
+			if (!IsValidKingdom(suzerainKingdom))
+			{
+				VassalageDiagnosticLog.Event("tributary_payment.evaluate.skip", new Dictionary<string, object>
+				{
+					["reason"] = "invalid_suzerain",
+					["agreementId"] = agreementId,
+					["suzerain"] = VassalageDiagnosticLog.DescribeKingdom(suzerainKingdom),
+					["tributary"] = VassalageDiagnosticLog.DescribeKingdom(tributaryKingdom)
+				});
+				continue;
+			}
 			try
 			{
-				TrySettleTributaryPayment(agreement, playerKingdom, today, lastSettlementDay);
+				TrySettleTributaryPayment(agreement, suzerainKingdom, today, lastSettlementDay, queuePlayerNotice);
 			}
 			catch (Exception ex)
 			{
@@ -2326,9 +2337,9 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private bool TrySettleTributaryPayment(VassalageAgreement agreement, Kingdom playerKingdom, int today, int lastSettlementDay)
+	private bool TrySettleTributaryPayment(VassalageAgreement agreement, Kingdom suzerainKingdom, int today, int lastSettlementDay, bool queuePlayerNotice)
 	{
-		if (agreement == null || !IsValidKingdom(playerKingdom))
+		if (agreement == null || !IsValidKingdom(suzerainKingdom))
 		{
 			return false;
 		}
@@ -2338,7 +2349,7 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 			return false;
 		}
 		Kingdom tributary = agreement.ResolveVassal();
-		if (!IsValidKingdom(tributary) || tributary == playerKingdom)
+		if (!IsValidKingdom(tributary) || tributary == suzerainKingdom)
 		{
 			VassalageDiagnosticLog.Event("tributary_payment.settlement_skip", new Dictionary<string, object>
 			{
@@ -2346,45 +2357,51 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 				["type"] = agreement.Type,
 				["normalizedType"] = normalizedType,
 				["reason"] = "invalid_tributary_or_self",
-				["playerKingdom"] = VassalageDiagnosticLog.DescribeKingdom(playerKingdom),
+				["suzerainKingdom"] = VassalageDiagnosticLog.DescribeKingdom(suzerainKingdom),
+				["playerKingdom"] = VassalageDiagnosticLog.DescribeKingdom(suzerainKingdom),
 				["tributary"] = VassalageDiagnosticLog.DescribeKingdom(tributary),
 				["today"] = today,
 				["lastSettlementDay"] = lastSettlementDay
 			});
 			return false;
 		}
-		List<Settlement> playerSettlements = GetKingdomSettlements(playerKingdom);
+		List<Settlement> suzerainSettlements = GetKingdomSettlements(suzerainKingdom);
 		List<Settlement> tributarySettlements = GetKingdomSettlements(tributary);
 		VassalageDiagnosticLog.Event("tributary_payment.settlement_begin", new Dictionary<string, object>
 		{
 			["agreementId"] = agreement.AgreementId,
 			["type"] = agreement.Type,
 			["normalizedType"] = normalizedType,
-			["playerKingdom"] = VassalageDiagnosticLog.DescribeKingdom(playerKingdom),
+			["suzerainKingdom"] = VassalageDiagnosticLog.DescribeKingdom(suzerainKingdom),
+			["playerKingdom"] = VassalageDiagnosticLog.DescribeKingdom(suzerainKingdom),
 			["tributary"] = VassalageDiagnosticLog.DescribeKingdom(tributary),
 			["today"] = today,
 			["lastSettlementDay"] = lastSettlementDay,
-			["playerSettlementCount"] = playerSettlements.Count,
-			["playerTownCount"] = playerSettlements.Count((Settlement s) => s != null && s.IsTown),
-			["playerCastleCount"] = playerSettlements.Count((Settlement s) => s != null && s.IsCastle),
-			["playerVillageCount"] = playerSettlements.Count((Settlement s) => s != null && s.IsVillage),
+			["queuePlayerNotice"] = queuePlayerNotice,
+			["suzerainSettlementCount"] = suzerainSettlements.Count,
+			["playerSettlementCount"] = suzerainSettlements.Count,
+			["suzerainTownCount"] = suzerainSettlements.Count((Settlement s) => s != null && s.IsTown),
+			["suzerainCastleCount"] = suzerainSettlements.Count((Settlement s) => s != null && s.IsCastle),
+			["suzerainVillageCount"] = suzerainSettlements.Count((Settlement s) => s != null && s.IsVillage),
 			["tributarySettlementCount"] = tributarySettlements.Count,
 			["tributaryTownCount"] = tributarySettlements.Count((Settlement s) => s != null && s.IsTown),
 			["tributaryCastleCount"] = tributarySettlements.Count((Settlement s) => s != null && s.IsCastle),
 			["tributaryVillageCount"] = tributarySettlements.Count((Settlement s) => s != null && s.IsVillage),
-			["playerSettlements"] = playerSettlements.Select(VassalageDiagnosticLog.DescribeSettlement).ToList(),
+			["suzerainSettlements"] = suzerainSettlements.Select(VassalageDiagnosticLog.DescribeSettlement).ToList(),
 			["tributarySettlements"] = tributarySettlements.Select(VassalageDiagnosticLog.DescribeSettlement).ToList()
 		});
-		if (playerSettlements.Count == 0 || tributarySettlements.Count == 0)
+		if (suzerainSettlements.Count == 0 || tributarySettlements.Count == 0)
 		{
 			VassalageDiagnosticLog.Event("tributary_payment.skip", new Dictionary<string, object>
 			{
 				["agreementId"] = agreement.AgreementId,
-				["playerKingdom"] = VassalageDiagnosticLog.DescribeKingdom(playerKingdom),
+				["suzerainKingdom"] = VassalageDiagnosticLog.DescribeKingdom(suzerainKingdom),
+				["playerKingdom"] = VassalageDiagnosticLog.DescribeKingdom(suzerainKingdom),
 				["tributary"] = VassalageDiagnosticLog.DescribeKingdom(tributary),
 				["today"] = today,
 				["lastSettlementDay"] = lastSettlementDay,
-				["playerSettlementCount"] = playerSettlements.Count,
+				["suzerainSettlementCount"] = suzerainSettlements.Count,
+				["playerSettlementCount"] = suzerainSettlements.Count,
 				["tributarySettlementCount"] = tributarySettlements.Count,
 				["reason"] = "missing_settlements"
 			});
@@ -2410,22 +2427,22 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 			["villageHearthGainPerFief"] = tier.VillageHearth,
 			["strengthClampMax"] = 10000f
 		});
-		TributaryPaymentTotals plannedPlayerGain = CalculateTributaryPaymentPotentialBenefits(playerSettlements, tier);
-		TributaryPaymentTotals tributaryLoss = ApplyTributaryPaymentCosts(tributarySettlements, plannedPlayerGain);
-		float prosperityPaymentRatio = CalculateTributaryPaymentRatio(plannedPlayerGain.Prosperity * TributaryProsperityLossRatio, tributaryLoss.Prosperity);
-		float foodPaymentRatio = CalculateTributaryPaymentRatio(plannedPlayerGain.Food * TributaryFoodLossRatio, tributaryLoss.Food);
-		float hearthPaymentRatio = CalculateTributaryPaymentRatio(plannedPlayerGain.Hearth * TributaryHearthLossRatio, tributaryLoss.Hearth);
+		TributaryPaymentTotals plannedSuzerainGain = CalculateTributaryPaymentPotentialBenefits(suzerainSettlements, tier);
+		TributaryPaymentTotals tributaryLoss = ApplyTributaryPaymentCosts(tributarySettlements, plannedSuzerainGain);
+		float prosperityPaymentRatio = CalculateTributaryPaymentRatio(plannedSuzerainGain.Prosperity * TributaryProsperityLossRatio, tributaryLoss.Prosperity);
+		float foodPaymentRatio = CalculateTributaryPaymentRatio(plannedSuzerainGain.Food * TributaryFoodLossRatio, tributaryLoss.Food);
+		float hearthPaymentRatio = CalculateTributaryPaymentRatio(plannedSuzerainGain.Hearth * TributaryHearthLossRatio, tributaryLoss.Hearth);
 		VassalageDiagnosticLog.Event("tributary_payment.payment_ratio", new Dictionary<string, object>
 		{
 			["agreementId"] = agreement.AgreementId,
 			["type"] = agreement.Type,
 			["normalizedType"] = normalizedType,
-			["plannedPlayerProsperityGain"] = plannedPlayerGain.Prosperity,
-			["plannedPlayerFoodGain"] = plannedPlayerGain.Food,
-			["plannedPlayerHearthGain"] = plannedPlayerGain.Hearth,
-			["requestedTributaryProsperityLoss"] = plannedPlayerGain.Prosperity * TributaryProsperityLossRatio,
-			["requestedTributaryFoodLoss"] = plannedPlayerGain.Food * TributaryFoodLossRatio,
-			["requestedTributaryHearthLoss"] = plannedPlayerGain.Hearth * TributaryHearthLossRatio,
+			["plannedSuzerainProsperityGain"] = plannedSuzerainGain.Prosperity,
+			["plannedSuzerainFoodGain"] = plannedSuzerainGain.Food,
+			["plannedSuzerainHearthGain"] = plannedSuzerainGain.Hearth,
+			["requestedTributaryProsperityLoss"] = plannedSuzerainGain.Prosperity * TributaryProsperityLossRatio,
+			["requestedTributaryFoodLoss"] = plannedSuzerainGain.Food * TributaryFoodLossRatio,
+			["requestedTributaryHearthLoss"] = plannedSuzerainGain.Hearth * TributaryHearthLossRatio,
 			["tributaryProsperityLoss"] = tributaryLoss.Prosperity,
 			["tributaryFoodLoss"] = tributaryLoss.Food,
 			["tributaryHearthLoss"] = tributaryLoss.Hearth,
@@ -2433,7 +2450,7 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 			["foodPaymentRatio"] = foodPaymentRatio,
 			["hearthPaymentRatio"] = hearthPaymentRatio
 		});
-		TributaryPaymentTotals playerGain = ApplyTributaryPaymentBenefits(playerSettlements, tier, prosperityPaymentRatio, foodPaymentRatio, hearthPaymentRatio);
+		TributaryPaymentTotals suzerainGain = ApplyTributaryPaymentBenefits(suzerainSettlements, tier, prosperityPaymentRatio, foodPaymentRatio, hearthPaymentRatio);
 		SetTributaryPaymentLastSettlementDay(agreement, today);
 		TributaryPaymentNoticeRecord record = new TributaryPaymentNoticeRecord
 		{
@@ -2443,9 +2460,9 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 			TributaryName = GetKingdomDisplayName(tributary, GetVassalageTypeDisplayName(normalizedType)),
 			SettlementDay = today,
 			TributaryStrength = strength,
-			PlayerTownCount = playerGain.TownCount,
-			PlayerCastleCount = playerGain.CastleCount,
-			PlayerVillageCount = playerGain.VillageCount,
+			PlayerTownCount = suzerainGain.TownCount,
+			PlayerCastleCount = suzerainGain.CastleCount,
+			PlayerVillageCount = suzerainGain.VillageCount,
 			TributaryTownCount = tributaryLoss.TownCount,
 			TributaryCastleCount = tributaryLoss.CastleCount,
 			TributaryVillageCount = tributaryLoss.VillageCount,
@@ -2454,25 +2471,25 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 			CastleProsperityGainPerFief = tier.CastleProsperity,
 			CastleFoodGainPerFief = tier.CastleFood,
 			VillageHearthGainPerFief = tier.VillageHearth,
-			PlannedPlayerProsperityGain = plannedPlayerGain.Prosperity,
-			PlannedPlayerFoodGain = plannedPlayerGain.Food,
-			PlannedPlayerHearthGain = plannedPlayerGain.Hearth,
-			PlannedPlayerTownProsperityGain = plannedPlayerGain.TownProsperity,
-			PlannedPlayerTownFoodGain = plannedPlayerGain.TownFood,
-			PlannedPlayerCastleProsperityGain = plannedPlayerGain.CastleProsperity,
-			PlannedPlayerCastleFoodGain = plannedPlayerGain.CastleFood,
-			PlannedPlayerVillageHearthGain = plannedPlayerGain.VillageHearth,
+			PlannedPlayerProsperityGain = plannedSuzerainGain.Prosperity,
+			PlannedPlayerFoodGain = plannedSuzerainGain.Food,
+			PlannedPlayerHearthGain = plannedSuzerainGain.Hearth,
+			PlannedPlayerTownProsperityGain = plannedSuzerainGain.TownProsperity,
+			PlannedPlayerTownFoodGain = plannedSuzerainGain.TownFood,
+			PlannedPlayerCastleProsperityGain = plannedSuzerainGain.CastleProsperity,
+			PlannedPlayerCastleFoodGain = plannedSuzerainGain.CastleFood,
+			PlannedPlayerVillageHearthGain = plannedSuzerainGain.VillageHearth,
 			ProsperityPaymentRatio = prosperityPaymentRatio,
 			FoodPaymentRatio = foodPaymentRatio,
 			HearthPaymentRatio = hearthPaymentRatio,
-			PlayerProsperityGain = playerGain.Prosperity,
-			PlayerFoodGain = playerGain.Food,
-			PlayerHearthGain = playerGain.Hearth,
-			PlayerTownProsperityGain = playerGain.TownProsperity,
-			PlayerTownFoodGain = playerGain.TownFood,
-			PlayerCastleProsperityGain = playerGain.CastleProsperity,
-			PlayerCastleFoodGain = playerGain.CastleFood,
-			PlayerVillageHearthGain = playerGain.VillageHearth,
+			PlayerProsperityGain = suzerainGain.Prosperity,
+			PlayerFoodGain = suzerainGain.Food,
+			PlayerHearthGain = suzerainGain.Hearth,
+			PlayerTownProsperityGain = suzerainGain.TownProsperity,
+			PlayerTownFoodGain = suzerainGain.TownFood,
+			PlayerCastleProsperityGain = suzerainGain.CastleProsperity,
+			PlayerCastleFoodGain = suzerainGain.CastleFood,
+			PlayerVillageHearthGain = suzerainGain.VillageHearth,
 			TributaryProsperityLoss = tributaryLoss.Prosperity,
 			TributaryFoodLoss = tributaryLoss.Food,
 			TributaryHearthLoss = tributaryLoss.Hearth,
@@ -2481,35 +2498,44 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 			TributaryCastleProsperityLoss = tributaryLoss.CastleProsperity,
 			TributaryCastleFoodLoss = tributaryLoss.CastleFood,
 			TributaryVillageHearthLoss = tributaryLoss.VillageHearth,
-			PlayerSettlementGainLines = playerGain.NoticeLines.ToList()
+			PlayerSettlementGainLines = suzerainGain.NoticeLines.ToList()
 		};
-		QueueTributaryPaymentNotice(record);
+		if (queuePlayerNotice)
+		{
+			QueueTributaryPaymentNotice(record);
+		}
+		else
+		{
+			StoreTributaryPaymentRecord(record, false);
+		}
 		VassalageDiagnosticLog.Event("tributary_payment.settled", new Dictionary<string, object>
 		{
 			["agreementId"] = agreement.AgreementId,
 			["type"] = agreement.Type,
 			["normalizedType"] = normalizedType,
 			["noticeId"] = record.NoticeId,
-			["playerKingdom"] = VassalageDiagnosticLog.DescribeKingdom(playerKingdom),
+			["suzerainKingdom"] = VassalageDiagnosticLog.DescribeKingdom(suzerainKingdom),
+			["playerKingdom"] = VassalageDiagnosticLog.DescribeKingdom(suzerainKingdom),
 			["tributary"] = VassalageDiagnosticLog.DescribeKingdom(tributary),
 			["today"] = today,
 			["lastSettlementDay"] = lastSettlementDay,
+			["queuePlayerNotice"] = queuePlayerNotice,
 			["strength"] = strength,
 			["tier"] = tier.TierName,
-			["plannedPlayerProsperityGain"] = plannedPlayerGain.Prosperity,
-			["plannedPlayerFoodGain"] = plannedPlayerGain.Food,
-			["plannedPlayerHearthGain"] = plannedPlayerGain.Hearth,
+			["plannedSuzerainProsperityGain"] = plannedSuzerainGain.Prosperity,
+			["plannedSuzerainFoodGain"] = plannedSuzerainGain.Food,
+			["plannedSuzerainHearthGain"] = plannedSuzerainGain.Hearth,
 			["prosperityPaymentRatio"] = prosperityPaymentRatio,
 			["foodPaymentRatio"] = foodPaymentRatio,
 			["hearthPaymentRatio"] = hearthPaymentRatio,
-			["playerProsperityGain"] = playerGain.Prosperity,
-			["playerFoodGain"] = playerGain.Food,
-			["playerHearthGain"] = playerGain.Hearth,
-			["playerTownProsperityGain"] = playerGain.TownProsperity,
-			["playerTownFoodGain"] = playerGain.TownFood,
-			["playerCastleProsperityGain"] = playerGain.CastleProsperity,
-			["playerCastleFoodGain"] = playerGain.CastleFood,
-			["playerVillageHearthGain"] = playerGain.VillageHearth,
+			["suzerainProsperityGain"] = suzerainGain.Prosperity,
+			["suzerainFoodGain"] = suzerainGain.Food,
+			["suzerainHearthGain"] = suzerainGain.Hearth,
+			["suzerainTownProsperityGain"] = suzerainGain.TownProsperity,
+			["suzerainTownFoodGain"] = suzerainGain.TownFood,
+			["suzerainCastleProsperityGain"] = suzerainGain.CastleProsperity,
+			["suzerainCastleFoodGain"] = suzerainGain.CastleFood,
+			["suzerainVillageHearthGain"] = suzerainGain.VillageHearth,
 			["tributaryProsperityLoss"] = tributaryLoss.Prosperity,
 			["tributaryFoodLoss"] = tributaryLoss.Food,
 			["tributaryHearthLoss"] = tributaryLoss.Hearth,
@@ -2518,8 +2544,8 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 			["tributaryCastleProsperityLoss"] = tributaryLoss.CastleProsperity,
 			["tributaryCastleFoodLoss"] = tributaryLoss.CastleFood,
 			["tributaryVillageHearthLoss"] = tributaryLoss.VillageHearth,
-			["plannedPlayerChangeDetails"] = plannedPlayerGain.Details,
-			["playerChangeDetails"] = playerGain.Details,
+			["plannedSuzerainChangeDetails"] = plannedSuzerainGain.Details,
+			["suzerainChangeDetails"] = suzerainGain.Details,
 			["tributaryChangeDetails"] = tributaryLoss.Details
 		});
 		return true;
@@ -3966,6 +3992,11 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 
 	private void QueueTributaryPaymentNotice(TributaryPaymentNoticeRecord record)
 	{
+		StoreTributaryPaymentRecord(record, true);
+	}
+
+	private void StoreTributaryPaymentRecord(TributaryPaymentNoticeRecord record, bool queueMapNotice)
+	{
 		if (record == null || !record.IsValid())
 		{
 			return;
@@ -3976,14 +4007,19 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 			return;
 		}
 		string serializedRecord = JsonConvert.SerializeObject(record);
-		_pendingTributaryPaymentNotices[noticeId] = serializedRecord;
+		if (queueMapNotice)
+		{
+			_pendingTributaryPaymentNotices[noticeId] = serializedRecord;
+		}
 		_tributaryPaymentHistory[noticeId] = serializedRecord;
-		VassalageDiagnosticLog.Event("tributary_payment.notice_queue", new Dictionary<string, object>
+		VassalageDiagnosticLog.Event(queueMapNotice ? "tributary_payment.notice_queue" : "tributary_payment.history_store", new Dictionary<string, object>
 		{
 			["noticeId"] = noticeId,
 			["agreementId"] = record.AgreementId,
 			["tributaryKingdomId"] = record.TributaryKingdomId,
 			["settlementDay"] = record.SettlementDay,
+			["queueMapNotice"] = queueMapNotice,
+			["pendingTributaryPaymentCount"] = _pendingTributaryPaymentNotices.Count,
 			["plannedPlayerProsperityGain"] = record.PlannedPlayerProsperityGain,
 			["plannedPlayerFoodGain"] = record.PlannedPlayerFoodGain,
 			["plannedPlayerHearthGain"] = record.PlannedPlayerHearthGain,
@@ -4008,7 +4044,10 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 			["tributaryVillageHearthLoss"] = record.TributaryVillageHearthLoss,
 			["tributaryPaymentHistoryCount"] = _tributaryPaymentHistory.Count
 		});
-		ScheduleNoticePublish();
+		if (queueMapNotice)
+		{
+			ScheduleNoticePublish();
+		}
 	}
 
 	private void ScheduleNoticePublish()
@@ -6063,6 +6102,15 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 			return null;
 		}
 		return agreement;
+	}
+
+	private IEnumerable<VassalageAgreement> GetTributePayingAgreements()
+	{
+		return _agreementsByVassalId.Values.Where((VassalageAgreement x) => x != null
+			&& x.IsValid()
+			&& IsTributePayingSubjectType(x.Type)
+			&& IsValidKingdom(x.ResolveSuzerain())
+			&& IsValidKingdom(x.ResolveVassal()));
 	}
 
 	private IEnumerable<VassalageAgreement> GetPlayerVassalAgreements()
