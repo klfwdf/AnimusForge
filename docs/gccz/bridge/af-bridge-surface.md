@@ -415,4 +415,4 @@ Follow-up isolation: GCCZ postprocess frequency policy now lives in `SiegePostpr
 - 血洗/区域冲突的“谁逃跑、谁反抗、多少士兵追击”仍由 GCCZ 独立策略决定，不接管 AF 普通城镇冲突结算、犯罪、通缉或 SceneTaunt 状态机。
 - 融合树 `SiegeAiInterventionBehavior.cs` 只复用 AF 原版城镇冲突中更稳的移动方式：`AgentNavigator.SetTargetFrame(WorldPosition)`、navmesh 采样、以及远离威胁的 direct retreat 采样。
 - 已标记为 GCCZ 逃跑的平民在血洗阶段也必须允许 `FleeBehavior` tick/availability；这是路径行为桥，不改变平民逃跑/反抗判定。
-- 独立参数位于 `SiegeAgentWallRescueProfile`，融合树 live adapter 负责 Bannerlord `Mission`/`AgentNavigator` 调用。
+- 独立参数位于 `SiegeAgentWallRescueProfile`，融合树 live adapter 负责 Bannerlord `Mission`/`AgentNavigator` 调用。若 agent 已触发卡住救援、离目标仍超过穿墙阈值且冷却允许，adapter 可以把非玩家 agent 瞬移到已校验的 navmesh 目标点，作为 GCCZ 专用 wall-pass 兜底；普通 AF/原版城镇进入不调用这条路径。

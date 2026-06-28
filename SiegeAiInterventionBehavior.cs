@@ -423,6 +423,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	private static readonly Dictionary<int, float> LastAgentWallRescueProbeTimes = new Dictionary<int, float>();
 	private static readonly Dictionary<int, float> AgentWallRescueUntilTimes = new Dictionary<int, float>();
 	private static readonly Dictionary<int, float> LastAgentWallRescueLogTimes = new Dictionary<int, float>();
+	private static readonly Dictionary<int, float> LastAgentWallRescueTeleportTimes = new Dictionary<int, float>();
 	private static readonly FieldInfo OrderTroopPlacerOrderControllerField = AccessTools.Field(typeof(OrderTroopPlacer), "_orderController");
 	private static readonly FieldInfo SingleVisualOrderOrderTypeField = AccessTools.Field(typeof(SingleVisualOrder), "_orderType");
 	private static readonly FieldInfo FollowAgentBehaviorIdleDistanceField = typeof(FollowAgentBehavior).GetField("_idleDistance", BindingFlags.Instance | BindingFlags.NonPublic);
@@ -3715,6 +3716,11 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				if (TrySetInterventionNativeNavmeshTargetFrame(agent, mission, resolvedTarget, source, rescueFlags, forceNearbySample: true, out Vec3 nativeRescueTarget))
 				{
 					SetAgentLookTowardPoint(agent, nativeRescueTarget);
+					TryTeleportAgentForWallRescue(agent, mission, nativeRescueTarget, source);
+					return true;
+				}
+				if (TryTeleportAgentForWallRescue(agent, mission, resolvedTarget, source))
+				{
 					return true;
 				}
 				try
@@ -3739,6 +3745,73 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		catch (Exception ex)
 		{
 			Logger.Log("SiegeAiIntervention", "TrySetInterventionAgentTargetPosition failed (" + (source ?? "N/A") + "): " + ex.Message);
+			return false;
+		}
+	}
+
+	private static bool TryTeleportAgentForWallRescue(Agent agent, Mission mission, Vec3 target, string source)
+	{
+		try
+		{
+			if (agent == null || agent == Agent.Main || mission?.Scene == null || !agent.IsHuman || !agent.IsActive())
+			{
+				return false;
+			}
+			float distanceSq = agent.Position.DistanceSquared(target);
+			float minDistanceSq = SiegeAgentWallRescueProfile.WallPassTeleportMinDistance * SiegeAgentWallRescueProfile.WallPassTeleportMinDistance;
+			if (distanceSq <= minDistanceSq)
+			{
+				return false;
+			}
+			float now = mission.CurrentTime;
+			if (LastAgentWallRescueTeleportTimes.TryGetValue(agent.Index, out float lastTeleportTime)
+				&& now - lastTeleportTime < SiegeAgentWallRescueProfile.WallPassTeleportCooldownSeconds)
+			{
+				return false;
+			}
+			Vec3 teleportTarget = ProjectCivilianRoutPointToGround(mission, target);
+			WorldPosition worldPosition = new WorldPosition(mission.Scene, teleportTarget);
+			if (worldPosition.GetNearestNavMesh() == UIntPtr.Zero
+				&& !TryResolveInterventionNativeNavmeshWorldPosition(mission, agent.Position, teleportTarget, forceNearbySample: true, out worldPosition, out teleportTarget))
+			{
+				return false;
+			}
+			teleportTarget = ProjectCivilianRoutPointToGround(mission, teleportTarget);
+			try
+			{
+				agent.DisableScriptedMovement();
+				agent.ClearTargetFrame();
+				agent.InvalidateTargetAgent();
+				agent.SetMaximumSpeedLimit(-1f, false);
+			}
+			catch
+			{
+			}
+			try
+			{
+				Agent mountAgent = agent.MountAgent;
+				if (mountAgent != null && mountAgent.IsActive())
+				{
+					mountAgent.TeleportToPosition(teleportTarget);
+					mountAgent.ClearTargetFrame();
+					mountAgent.SetTargetPosition(teleportTarget.AsVec2);
+				}
+			}
+			catch
+			{
+			}
+			agent.TeleportToPosition(teleportTarget);
+			agent.SetTargetPosition(teleportTarget.AsVec2);
+			LastAgentWallRescueTeleportTimes[agent.Index] = now;
+			LastAgentWallRescueProbePositions[agent.Index] = teleportTarget;
+			LastAgentWallRescueProbeTimes[agent.Index] = now;
+			AgentWallRescueUntilTimes.Remove(agent.Index);
+			Logger.Log("SiegeAiIntervention", "Applied wall-pass teleport rescue. Source=" + (source ?? SiegeAgentWallRescueProfile.WallPassTeleportSource) + ", Agent=" + agent.Index + ", Distance=" + MathF.Sqrt(distanceSq).ToString("0.0"));
+			return true;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "Wall-pass teleport rescue failed (" + (source ?? SiegeAgentWallRescueProfile.WallPassTeleportSource) + "): " + ex.Message);
 			return false;
 		}
 	}
@@ -12076,6 +12149,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		LastAgentWallRescueProbeTimes.Clear();
 		AgentWallRescueUntilTimes.Clear();
 		LastAgentWallRescueLogTimes.Clear();
+		LastAgentWallRescueTeleportTimes.Clear();
 		_civilianAssemblyPointReady = false;
 		_civilianAssemblyMessageShown = false;
 		_civilianAssemblyAnchor = Vec3.Zero;
