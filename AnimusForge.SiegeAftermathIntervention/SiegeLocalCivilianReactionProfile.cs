@@ -4,7 +4,7 @@ namespace AnimusForge.SiegeAftermathIntervention;
 
 /// <summary>
 /// Dependency-free policy for local civilian witness reactions when the player hurts a civilian
-/// during the active GCCZ scene. AF adapters own live agent lookup, movement, combat, and speech dispatch.
+/// during the active GCCZ scene. AF adapters own live agent lookup, movement, and speech dispatch; combat escalation stays outside this local panic policy.
 /// </summary>
 public static class SiegeLocalCivilianReactionProfile
 {
@@ -14,7 +14,7 @@ public static class SiegeLocalCivilianReactionProfile
 
     public const int MaxSpeakersPerIncident = 4;
 
-    public const int MaxResistersPerIncident = 3;
+    public const int MaxDefiantWitnessesPerIncident = 3;
 
     public const float WitnessRepeatCooldownSeconds = 18f;
 
@@ -22,7 +22,7 @@ public static class SiegeLocalCivilianReactionProfile
 
     public const string WitnessFleeSource = "local_player_attack_witness_flee";
 
-    public const string WitnessResistSource = "local_player_attack_witness_resist";
+    public const string WitnessDefiantSource = "local_player_attack_witness_defiant";
 
     public const string NativeFleeBridgeSource = "local_player_attack_native_flee";
 
@@ -39,15 +39,15 @@ public static class SiegeLocalCivilianReactionProfile
         return distanceSquared <= WitnessRadius * WitnessRadius;
     }
 
-    public static int CalculateMaxResisters(int witnessCount, int resistantEligibleCount)
+    public static int CalculateMaxDefiantWitnesses(int witnessCount, int defiantEligibleCount)
     {
-        if (witnessCount <= 0 || resistantEligibleCount <= 0)
+        if (witnessCount <= 0 || defiantEligibleCount <= 0)
         {
             return 0;
         }
         int proportionalLimit = (int)Math.Round(witnessCount * 0.18d, MidpointRounding.AwayFromZero);
         int safeLimit = Math.Max(1, proportionalLimit);
-        return Math.Min(MaxResistersPerIncident, Math.Min(resistantEligibleCount, safeLimit));
+        return Math.Min(MaxDefiantWitnessesPerIncident, Math.Min(defiantEligibleCount, safeLimit));
     }
 
     public static bool ShouldAssignWitnessSpeech(int currentSpeakerCount)
@@ -65,17 +65,17 @@ public static class SiegeLocalCivilianReactionProfile
         return "玩家在攻城后处置场景中打倒了 " + NormalizeTargetName(targetName, "一名NPC") + "；这只触发局部区域恐慌和少量喝止/对峙，不得自动升级为全城血洗或士兵参战。";
     }
 
-    public static string BuildWitnessMemoryText(string targetName, int fleeingCount, int resistingCount)
+    public static string BuildWitnessMemoryText(string targetName, int fleeingCount, int defiantCount)
     {
-        return "玩家攻击 " + NormalizeTargetName(targetName, "一名NPC") + " 后，附近约 " + Math.Max(0, fleeingCount) + " 名民众开始逃散，约 " + Math.Max(0, resistingCount) + " 名民众尝试局部喝止/对峙；该反应只代表街巷区域性冲突，不接入血洗式敌对。";
+        return "玩家攻击 " + NormalizeTargetName(targetName, "一名NPC") + " 后，附近约 " + Math.Max(0, fleeingCount) + " 名民众开始逃散，约 " + Math.Max(0, defiantCount) + " 名民众尝试局部喝止/对峙；该反应只代表街巷区域性冲突，不接入血洗式敌对。";
     }
 
-    public static string BuildWitnessFact(string targetName, bool victimDown, bool witnessWillResist, string settlementName)
+    public static string BuildWitnessFact(string targetName, bool victimDown, bool witnessWillDefy, string settlementName)
     {
         string scene = string.IsNullOrWhiteSpace(settlementName) ? SiegeAmbientReactionProfile.DefaultSettlementName : settlementName.Trim();
         string target = NormalizeTargetName(targetName, "附近一名民众");
         string incident = victimDown ? "玩家刚打倒了" : "玩家刚攻击了";
-        string role = witnessWillResist
+        string role = witnessWillDefy
             ? "你是附近少数胆大、带武器或有身份的人，会惊恐但只做短促喝止、退让或对峙，不要说自己正主动攻击玩家或士兵。"
             : "你是附近目击的战败平民，会惊恐求生、喊人快跑、求饶或提醒家人躲开。";
         return "【攻城处置环境发言】当前地点是" + scene + "。" + incident + target + "，这只是局部街巷冲突，不是全城血洗命令。"

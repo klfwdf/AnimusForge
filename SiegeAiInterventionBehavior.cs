@@ -2946,7 +2946,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				return false;
 			}
 			string targetName = affectedAgent.Name?.ToString();
-			bool targetWillDefy = ShouldCivilianResistMassacre(affectedAgent);
+			bool targetWillDefy = ShouldCivilianDefyLocalAttack(affectedAgent);
 			bool firstHit = LocalPlayerAttackVictimAgentIndexes.Add(affectedAgent.Index);
 			if (firstHit)
 			{
@@ -2976,7 +2976,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			{
 				TriggerLocalCivilianWitnessReactions(mission, affectedAgent, main, victimDown: false, targetName);
 			}
-			Logger.Log("SiegeAiIntervention", "Handled local player attack without starting massacre. Source=" + (source ?? "N/A") + ", Agent=" + affectedAgent.Index + ", Resist=" + targetWillDefy + ", Damage=" + damagedHp.ToString("0.0"));
+			Logger.Log("SiegeAiIntervention", "Handled local player attack without starting massacre. Source=" + (source ?? "N/A") + ", Agent=" + affectedAgent.Index + ", Defy=" + targetWillDefy + ", Damage=" + damagedHp.ToString("0.0"));
 			return true;
 		}
 		catch (Exception ex)
@@ -3045,6 +3045,11 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		{
 			return false;
 		}
+	}
+
+	private static bool ShouldCivilianDefyLocalAttack(Agent agent)
+	{
+		return ShouldCivilianResistMassacre(agent);
 	}
 
 	private static void PrepareLocalDefiantCivilian(Agent agent, Mission mission, Agent main, string source = SiegeLocalAttackProfile.LocalDefiantSource)
@@ -3245,9 +3250,9 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			{
 				return;
 			}
-			int resistantEligibleCount = witnesses.Count(ShouldCivilianResistMassacre);
-			int maxResisters = SiegeLocalCivilianReactionProfile.CalculateMaxResisters(witnesses.Count, resistantEligibleCount);
-			int resistingCount = 0;
+			int defiantEligibleCount = witnesses.Count(ShouldCivilianDefyLocalAttack);
+			int maxDefiantWitnesses = SiegeLocalCivilianReactionProfile.CalculateMaxDefiantWitnesses(witnesses.Count, defiantEligibleCount);
+			int defiantCount = 0;
 			int fleeingCount = 0;
 			int speakerCount = 0;
 			foreach (Agent witness in witnesses)
@@ -3256,11 +3261,11 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				{
 					continue;
 				}
-				bool witnessWillDefy = resistingCount < maxResisters && ShouldCivilianResistMassacre(witness);
+				bool witnessWillDefy = defiantCount < maxDefiantWitnesses && ShouldCivilianDefyLocalAttack(witness);
 				if (witnessWillDefy)
 				{
-				PrepareLocalDefiantCivilian(witness, mission, player, SiegeLocalCivilianReactionProfile.WitnessResistSource);
-					resistingCount++;
+					PrepareLocalDefiantCivilian(witness, mission, player, SiegeLocalCivilianReactionProfile.WitnessDefiantSource);
+					defiantCount++;
 				}
 				else
 				{
@@ -3273,10 +3278,10 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 					speakerCount++;
 				}
 			}
-			if (fleeingCount > 0 || resistingCount > 0)
+			if (fleeingCount > 0 || defiantCount > 0)
 			{
-				RecordInterventionMemory(SiegeLocalCivilianReactionProfile.WitnessMemoryTitle, SiegeLocalCivilianReactionProfile.BuildWitnessMemoryText(targetName, fleeingCount, resistingCount));
-				Logger.Log("SiegeAiIntervention", "Triggered local civilian witness reactions. Victim=" + victim.Index + ", Down=" + victimDown + ", Fleeing=" + fleeingCount + ", Resisting=" + resistingCount + ", Speakers=" + speakerCount);
+				RecordInterventionMemory(SiegeLocalCivilianReactionProfile.WitnessMemoryTitle, SiegeLocalCivilianReactionProfile.BuildWitnessMemoryText(targetName, fleeingCount, defiantCount));
+				Logger.Log("SiegeAiIntervention", "Triggered local civilian witness reactions. Victim=" + victim.Index + ", Down=" + victimDown + ", Fleeing=" + fleeingCount + ", Defiant=" + defiantCount + ", Speakers=" + speakerCount);
 			}
 		}
 		catch (Exception ex)
