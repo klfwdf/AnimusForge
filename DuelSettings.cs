@@ -894,12 +894,12 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyGroup("1. AI 核心配置/3. 后处理API（动作标签与情绪标签判定）", GroupOrder = -280)]
 	public int ActionPostprocessApiMaxTokens { get; set; } = DefaultGeneralApiMaxTokens;
 
-	[SettingPropertyBool("对话后处理无限频率", Order = 0, RequireRestart = false, HintText = "仅影响攻城后处置(GCCZ)场景的动作后处理。开启时保持当前行为，不做频率限制，并忽略下方 1-10 上限。")]
-	[SettingPropertyGroup("13. 攻城后处置", GroupOrder = -150)]
+	[SettingPropertyBool("GCCZ对话后处理无限频率", Order = 0, RequireRestart = false, HintText = "仅影响攻城后处置(GCCZ)场景的动作后处理。开启时保持当前行为，不做频率限制，并忽略下方 1-10 上限。")]
+	[SettingPropertyGroup("13. GCCZ攻城后处置", GroupOrder = -150)]
 	public bool GcczPostprocessUnlimitedFrequency { get; set; } = true;
 
-	[SettingPropertyInteger("对话后限制后处理", SiegePostprocessFrequencyProfile.MinFrequencyLimit, SiegePostprocessFrequencyProfile.MaxFrequencyLimit, "0", Order = 1, RequireRestart = false, HintText = "关闭“对话后处理无限频率”后生效：每 10 次低优先级 GCCZ 后处理最多允许 N 次，用于降低 token 消耗。疑似搜掠/血洗/救济/召集等直接玩家文本只会绕过限频并送入 AI 复核，不会固定词触发标签或结算；ACTION 标签仍必须由后处理 AI 输出。")]
-	[SettingPropertyGroup("13. 攻城后处置", GroupOrder = -150)]
+	[SettingPropertyInteger("GCCZ对话后限制后处理", SiegePostprocessFrequencyProfile.MinFrequencyLimit, SiegePostprocessFrequencyProfile.MaxFrequencyLimit, "0", Order = 1, RequireRestart = false, HintText = "关闭“GCCZ对话后处理无限频率”后生效：每 10 次低优先级 GCCZ 后处理最多允许 N 次，用于降低 token 消耗。疑似搜掠/血洗/救济/召集等直接玩家文本只会绕过限频并送入 AI 复核，不会固定词触发标签或结算；ACTION 标签仍必须由后处理 AI 输出。")]
+	[SettingPropertyGroup("13. GCCZ攻城后处置", GroupOrder = -150)]
 	public int GcczPostprocessFrequencyLimit { get; set; } = SiegePostprocessFrequencyProfile.DefaultFrequencyLimit;
 
 	[SettingPropertyText("事件/叛乱API 地址（支持填写 Base URL）", -1, true, "", Order = 0, RequireRestart = false, HintText = "用于事件系统周报与王国叛乱命名的独立接口地址，例如: https://api.openai.com/v1。填写到 /v1 时会自动补全为 /v1/chat/completions。留空时将继续回退使用主API。")]
