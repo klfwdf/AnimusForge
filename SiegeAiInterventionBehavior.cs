@@ -3049,7 +3049,27 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 
 	private static bool ShouldCivilianDefyLocalAttack(Agent agent)
 	{
-		return ShouldCivilianResistMassacre(agent);
+		try
+		{
+			if (agent == null || !agent.IsHuman || AlliedAgentIndexes.Contains(agent.Index))
+			{
+				return false;
+			}
+			if (!IsMassacreTargetAgent(agent, includeHeroes: true))
+			{
+				return false;
+			}
+			CharacterObject character = agent.Character as CharacterObject;
+			return SiegeLocalCivilianReactionProfile.ShouldCivilianDefy(
+				agent.Index,
+				IsInterventionNotableHero(character?.HeroObject),
+				DoesAgentCarryRealWeapon(agent),
+				IsGuardOrSoldier(character));
+		}
+		catch
+		{
+			return false;
+		}
 	}
 
 	private static void PrepareLocalDefiantCivilian(Agent agent, Mission mission, Agent main, string source = SiegeLocalAttackProfile.LocalDefiantSource)

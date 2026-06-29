@@ -50,6 +50,25 @@ public static class SiegeLocalCivilianReactionProfile
         return Math.Min(MaxDefiantWitnessesPerIncident, Math.Min(defiantEligibleCount, safeLimit));
     }
 
+    public static bool ShouldCivilianDefy(int deterministicSeed, bool isNotable, bool carriesWeapon, bool isGuardOrSoldier)
+    {
+        if (isGuardOrSoldier)
+        {
+            return false;
+        }
+        int normalizedSeed = deterministicSeed == int.MinValue ? int.MaxValue : Math.Abs(deterministicSeed);
+        int bucket = normalizedSeed % 12;
+        if (isNotable)
+        {
+            return bucket < 4;
+        }
+        if (carriesWeapon)
+        {
+            return bucket < 3;
+        }
+        return bucket == 0;
+    }
+
     public static bool ShouldAssignWitnessSpeech(int currentSpeakerCount)
     {
         return currentSpeakerCount >= 0 && currentSpeakerCount < MaxSpeakersPerIncident;
