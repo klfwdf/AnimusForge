@@ -5155,7 +5155,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 					{
 						newNotable.Culture = targetCulture;
 					}
-					if (newNotable.CurrentSettlement != settlement)
+					if (!IsReplacementNotableAlreadyPlaced(newNotable, settlement))
 					{
 						EnterSettlementAction.ApplyForCharacterOnly(newNotable, settlement);
 					}
@@ -5170,6 +5170,27 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		catch (Exception ex)
 		{
 			Logger.Log("SiegeAiIntervention", "SpawnReplacementNotablesForCulturalRepopulation failed. Source=" + (source ?? "N/A") + ", Settlement=" + (settlement?.StringId ?? "null") + ", Occupation=" + occupation + ": " + ex.Message);
+		}
+	}
+
+	private static bool IsReplacementNotableAlreadyPlaced(Hero notable, Settlement settlement)
+	{
+		try
+		{
+			if (notable == null || settlement == null)
+			{
+				return false;
+			}
+			if (notable.CurrentSettlement == settlement || notable.StayingInSettlement == settlement)
+			{
+				return true;
+			}
+			return settlement.Notables != null && settlement.Notables.Contains(notable);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "IsReplacementNotableAlreadyPlaced failed. Notable=" + (notable?.StringId ?? "null") + ", Settlement=" + (settlement?.StringId ?? "null") + ": " + ex.Message);
+			return false;
 		}
 	}
 

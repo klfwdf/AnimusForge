@@ -2429,7 +2429,7 @@ public static class MilitaryExerciseBehavior
 			throw new InvalidOperationException("Battle scene is empty.");
 		}
 		MissionInitializerRecord rec = new MissionInitializerRecord(scene);
-		TerrainType terrainType = Campaign.Current.MapSceneWrapper.GetFaceTerrainType(mainParty.CurrentNavigationFace);
+		TerrainType terrainType = BannerlordApiCompat.ResolveTerrainTypeForParty(mainParty, TerrainType.Plain, allowNavigationFaceFallback: false);
 		rec.TerrainType = (int)terrainType;
 		rec.DamageToFriendsMultiplier = Campaign.Current.Models.DifficultyModel.GetPlayerTroopsReceivedDamageMultiplier();
 		rec.DamageFromPlayerToFriendsMultiplier = Campaign.Current.Models.DifficultyModel.GetPlayerTroopsReceivedDamageMultiplier();

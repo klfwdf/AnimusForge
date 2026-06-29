@@ -25,6 +25,7 @@ using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Roster;
 using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.CampaignSystem.Settlements.Locations;
+using TaleWorlds.CampaignSystem.Siege;
 using TaleWorlds.Core;
 using TaleWorlds.Engine;
 using TaleWorlds.InputSystem;
@@ -1847,6 +1848,8 @@ public class ShoutBehavior : CampaignBehaviorBase
 
 	private const string NpcSurrenderActionTag = "[ACTION:NPC_SURRENDER]";
 
+	private const string SiegeSurrenderActionTag = NpcSurrenderActionTag;
+
 	private const string AutoGroupRelayRuleId = "scene_auto_group_relay";
 
 	private const string AutoGroupRelayTagTemplate = "[RELAY:接力编号]";
@@ -3606,6 +3609,116 @@ public class ShoutBehavior : CampaignBehaviorBase
 		return text2.IndexOf("商铺可用财富与物品", StringComparison.Ordinal) > 1 || text2.IndexOf("当前可用财富与物品", StringComparison.Ordinal) > 1 || text2.IndexOf("携带的所有物资和财富", StringComparison.Ordinal) > 1;
 	}
 
+	private static string BuildNpcCurrentMountLineForPrompt(NpcDataPacket npc)
+	{
+		try
+		{
+			Agent agent = ResolveSceneAgentForMountPrompt(npc?.AgentIndex ?? -1);
+			return TryGetLiveRiddenMountNameForPrompt(agent, out var mountName) ? ("【当前坐骑】你骑着：" + mountName + "。") : "";
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	private static string BuildPlayerCurrentMountLineForPrompt()
+	{
+		try
+		{
+			return TryGetLiveRiddenMountNameForPrompt(Agent.Main, out var mountName) ? ("【当前坐骑】面前此人骑着：" + mountName + "。") : "";
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	private static Agent ResolveSceneAgentForMountPrompt(int agentIndex)
+	{
+		try
+		{
+			if (agentIndex < 0 || Mission.Current?.Agents == null)
+			{
+				return null;
+			}
+			return Mission.Current.Agents.FirstOrDefault((Agent a) => a != null && a.Index == agentIndex && a.IsActive());
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static bool TryGetLiveRiddenMountNameForPrompt(Agent riderAgent, out string mountName)
+	{
+		mountName = "";
+		try
+		{
+			if (riderAgent == null || !riderAgent.IsActive())
+			{
+				return false;
+			}
+			Agent mountAgent = riderAgent.MountAgent;
+			if (mountAgent == null || !mountAgent.IsActive())
+			{
+				return false;
+			}
+			if (!TryGetMountEquipmentNameForPrompt(mountAgent, out mountName))
+			{
+				TryGetMountEquipmentNameForPrompt(riderAgent, out mountName);
+			}
+			if (string.IsNullOrWhiteSpace(mountName))
+			{
+				mountName = NormalizeInlinePromptText(mountAgent.Name?.ToString());
+			}
+			return !string.IsNullOrWhiteSpace(mountName);
+		}
+		catch
+		{
+			mountName = "";
+			return false;
+		}
+	}
+
+	private static bool TryGetMountEquipmentNameForPrompt(Agent agent, out string mountName)
+	{
+		mountName = "";
+		try
+		{
+			Equipment equipment = agent?.SpawnEquipment;
+			if (equipment == null)
+			{
+				return false;
+			}
+			EquipmentElement mountElement = equipment[EquipmentIndex.ArmorItemEndSlot];
+			if (mountElement.IsEmpty || mountElement.Item == null || mountElement.Item.HorseComponent == null)
+			{
+				return false;
+			}
+			mountName = NormalizeInlinePromptText(mountElement.GetModifiedItemName()?.ToString());
+			if (string.IsNullOrWhiteSpace(mountName))
+			{
+				mountName = NormalizeInlinePromptText(mountElement.Item.Name?.ToString());
+			}
+			if (string.IsNullOrWhiteSpace(mountName))
+			{
+				mountName = NormalizeInlinePromptText(mountElement.Item.StringId);
+			}
+			return !string.IsNullOrWhiteSpace(mountName);
+		}
+		catch
+		{
+			mountName = "";
+			return false;
+		}
+	}
+
+	private static string NormalizeInlinePromptText(string value)
+	{
+		return Regex.Replace((value ?? "").Replace("\r", " ").Replace("\n", " "), "[ \\t]{2,}", " ").Trim();
+	}
+
 	private static string GetSceneNpcListIdentityForPrompt(NpcDataPacket npc)
 	{
 		if (npc != null && !npc.IsHero)
@@ -5044,6 +5157,12 @@ public class ShoutBehavior : CampaignBehaviorBase
 			.Append("你身上穿着")
 			.Append(equipment)
 			.Append("。");
+		string npcCurrentMountLine = BuildNpcCurrentMountLineForPrompt(npc);
+		if (!string.IsNullOrWhiteSpace(npcCurrentMountLine))
+		{
+			stringBuilder.AppendLine();
+			stringBuilder.Append(npcCurrentMountLine);
+		}
 		if (hero != null)
 		{
 			try
@@ -5824,7 +5943,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 		{
 			AddSceneAgentActionLabel(labels, seen, "正在跳舞/表演");
 		}
-		if (ContainsSceneActionKeyword(actionSearchText, "drink", "drinking", "eat", "eating", "food", "beer", "ale", "wine", "mug", "cup", "bowl", "meal", "feast", "bread", "喝", "吃", "酒"))
+		if (ContainsSceneEatingOrDrinkingKeyword(actionSearchText))
 		{
 			AddSceneAgentActionLabel(labels, seen, "正在喝酒/吃东西");
 		}
@@ -6219,6 +6338,50 @@ public class ShoutBehavior : CampaignBehaviorBase
 			{
 				return true;
 			}
+		}
+		return false;
+	}
+
+	private static bool ContainsSceneEatingOrDrinkingKeyword(string text)
+	{
+		return ContainsSceneActionTokenKeyword(text, "drink", "drinking", "eat", "eating", "food", "beer", "ale", "wine", "mug", "cup", "bowl", "meal", "feast", "bread", "tavern_drink")
+			|| ContainsSceneActionKeyword(text, "喝酒", "饮酒", "进食", "吃饭", "吃东西", "啤酒", "麦酒", "酒杯", "酒桶", "饭碗", "食物");
+	}
+
+	private static bool ContainsSceneActionTokenKeyword(string text, params string[] keywords)
+	{
+		if (string.IsNullOrWhiteSpace(text) || keywords == null)
+		{
+			return false;
+		}
+		foreach (string keyword in keywords)
+		{
+			if (ContainsSceneActionTokenKeyword(text, keyword))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private static bool ContainsSceneActionTokenKeyword(string text, string keyword)
+	{
+		if (string.IsNullOrWhiteSpace(text) || string.IsNullOrWhiteSpace(keyword))
+		{
+			return false;
+		}
+		int index = text.IndexOf(keyword, StringComparison.OrdinalIgnoreCase);
+		while (index >= 0)
+		{
+			int before = index - 1;
+			int after = index + keyword.Length;
+			bool beforeOk = before < 0 || !char.IsLetterOrDigit(text[before]);
+			bool afterOk = after >= text.Length || !char.IsLetterOrDigit(text[after]);
+			if (beforeOk && afterOk)
+			{
+				return true;
+			}
+			index = text.IndexOf(keyword, index + 1, StringComparison.OrdinalIgnoreCase);
 		}
 		return false;
 	}
@@ -6661,6 +6824,12 @@ private static void SplitSceneNpcRoleIntroSections(string fullIntro, bool isHero
 				.Append("，穿着")
 				.Append(equipment)
 				.Append("。");
+		}
+		string playerCurrentMountLine = BuildPlayerCurrentMountLineForPrompt();
+		if (!string.IsNullOrWhiteSpace(playerCurrentMountLine))
+		{
+			stringBuilder.AppendLine();
+			stringBuilder.Append(playerCurrentMountLine);
 		}
 		if (observerHero != null && observerHero.IsPlayerCompanion)
 		{
@@ -15356,15 +15525,19 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		targetHero = targetHero ?? targetCharacter?.HeroObject;
 		try
 		{
+			LogNativeActionStep("start", targetHero, targetCharacter, content);
 			int siegeAgentIndex = TryResolveNativeConversationAgentIndex(targetHero, targetCharacter);
 			bool siegeActionHandled;
+			LogNativeActionStep("siege_before", targetHero, targetCharacter, content);
 			if (AfGcczShoutBridge.TryProcessActionTags(targetHero, targetCharacter, siegeAgentIndex, ref content, out siegeActionHandled, replyIsDirectPlayerResponse: true) && siegeActionHandled)
 			{
 				Logger.Log("ShoutBehavior", "[NativeConversation] siege_intervention handled target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? "unknown"));
 			}
+			LogNativeActionStep("siege_after", targetHero, targetCharacter, content);
 
 			if (targetHero != null)
 			{
+				LogNativeActionStep("hero_dispatch_before", targetHero, targetCharacter, content);
 				VoteDealBehavior.ProcessVoteDealTagsDispatch(targetHero, ref content);
 				VoteDealBehavior.ProcessProposeDispatch(targetHero, ref content);
 				DiplomacyBehavior.ProcessDiplomacyTagsDispatch(targetHero, ref content);
@@ -15372,6 +15545,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				DuelBehavior.TryCacheDuelAfterLinesFromText(targetHero, ref content);
 				DuelBehavior.TryCacheDuelStakeFromText(targetHero, ref content);
 				VanillaIssueOfferBridge.ApplyIssueOfferTags(targetHero, ref content);
+				LogNativeActionStep("hero_dispatch_after", targetHero, targetCharacter, content);
 				int targetAgentIndex = TryResolveNativeConversationAgentIndex(targetHero, targetCharacter);
 				bool nativeSceneTauntHandled = TryProcessNativeConversationSceneTauntTags(targetHero, targetCharacter, targetAgentIndex, ref content, out var nativeSceneTauntEscalated);
 				if (nativeSceneTauntHandled && string.IsNullOrWhiteSpace(content))
@@ -15379,6 +15553,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					content = BuildFallbackSceneTauntSpeech(nativeSceneTauntEscalated);
 				}
 				TryTriggerNativeConversationOpenLordsHallAction(targetHero, targetCharacter, targetAgentIndex, ref content);
+				LogNativeActionStep("scene_taunt_lords_hall_after", targetHero, targetCharacter, content);
+				LogNativeActionStep("noble_gathering_before", targetHero, targetCharacter, content);
 				if (NobleGatheringBehavior.TryApplyNobleGatheringTagsForExternal(targetHero, ref content, out var nobleFacts, out var nobleNotifications))
 				{
 					if (nobleFacts != null)
@@ -15400,10 +15576,12 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 						}
 					}
 				}
+				LogNativeActionStep("noble_gathering_after", targetHero, targetCharacter, content);
 				bool rewardBeforeHasVassalage = ContainsVassalageActionTagForLog(content);
 				bool rewardBeforeHasKingdomAnnex = ContainsKingdomAnnexActionTagForLog(content);
 				string rewardChainName = ResolveNativeConversationPostprocessChainName();
 				Logger.Log("ShoutBehavior", "[NativeConversation] ApplyRewardTags start chain=" + rewardChainName + " target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? "unknown") + " containsVASSALAGE=" + rewardBeforeHasVassalage + " containsKINGDOM_ANNEX=" + rewardBeforeHasKingdomAnnex);
+				LogNativeActionStep("party_transfer_before", targetHero, targetCharacter, content);
 				if (MyBehavior.TryApplyPartyTransferTagsForExternal(targetHero, targetCharacter, targetAgentIndex, ref content, out var generatedFacts, out var notifications))
 				{
 					if (generatedFacts != null)
@@ -15428,11 +15606,17 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 						}
 					}
 				}
+				LogNativeActionStep("party_transfer_after", targetHero, targetCharacter, content);
 				RewardSystemBehavior rewardSystem = RewardSystemBehavior.Instance;
+				LogNativeActionStep("reward_before", targetHero, targetCharacter, content);
 				rewardSystem?.ApplyRewardTags(targetHero, Hero.MainHero, ref content);
 				RecordGeneratedNpcAfefFactsForNativeConversation(targetHero, targetCharacter, rewardSystem?.ConsumeLastGeneratedNpcFactLines());
 				Logger.Log("ShoutBehavior", "[NativeConversation] ApplyRewardTags done chain=" + rewardChainName + " target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? "unknown") + " beforeVASSALAGE=" + rewardBeforeHasVassalage + " afterVASSALAGE=" + ContainsVassalageActionTagForLog(content) + " beforeKINGDOM_ANNEX=" + rewardBeforeHasKingdomAnnex + " afterKINGDOM_ANNEX=" + ContainsKingdomAnnexActionTagForLog(content));
+				LogNativeActionStep("reward_after", targetHero, targetCharacter, content);
+				LogNativeActionStep("marriage_before", targetHero, targetCharacter, content);
 				RomanceSystemBehavior.Instance?.ApplyMarriageTags(targetHero, Hero.MainHero, ref content, runPostprocessIfMissing: false);
+				LogNativeActionStep("marriage_after", targetHero, targetCharacter, content);
+				LogNativeActionStep("meeting_duel_before", targetHero, targetCharacter, content);
 				LordEncounterBehavior.TryProcessMeetingTauntAction(targetHero, ref content, out var escalatedToBattle);
 				LordEncounterBehavior.TryConsumeMeetingPlayerReleaseTag(targetHero, ref content, out var meetingReleaseTriggered);
 				if (meetingReleaseTriggered && string.IsNullOrWhiteSpace(content))
@@ -15444,6 +15628,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					content = Regex.Replace(content, "\\[ACTION:DUEL\\]", "", RegexOptions.IgnoreCase).Trim();
 					DuelBehavior.PrepareDuel(targetHero, 3f);
 				}
+				LogNativeActionStep("meeting_duel_after", targetHero, targetCharacter, content);
 			}
 			else if (targetCharacter != null)
 			{
@@ -15452,12 +15637,15 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				bool isWildernessNonHeroPartyReward = false;
 				NpcDataPacket nonHeroNpc = null;
 				bool nonHeroJoinTagHandled = false;
+				LogNativeActionStep("nonhero_scene_taunt_before", targetHero, targetCharacter, content);
 				bool nonHeroSceneTauntHandled = TryProcessNativeConversationSceneTauntTags(targetHero, targetCharacter, agentIndex, ref content, out var nonHeroSceneTauntEscalated);
 				if (nonHeroSceneTauntHandled && string.IsNullOrWhiteSpace(content))
 				{
 					content = BuildFallbackSceneTauntSpeech(nonHeroSceneTauntEscalated);
 				}
 				TryTriggerNativeConversationOpenLordsHallAction(targetHero, targetCharacter, agentIndex, ref content);
+				LogNativeActionStep("nonhero_scene_taunt_after", targetHero, targetCharacter, content);
+				LogNativeActionStep("nonhero_party_transfer_before", targetHero, targetCharacter, content);
 				if (MyBehavior.TryApplyPartyTransferTagsForExternal(targetHero, targetCharacter, agentIndex, ref content, out var nonHeroTransferFacts, out var nonHeroTransferNotifications))
 				{
 					RecordGeneratedNpcAfefFactsForNativeConversation(targetHero, targetCharacter, nonHeroTransferFacts);
@@ -15469,10 +15657,12 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 						}
 					}
 				}
+				LogNativeActionStep("nonhero_party_transfer_after", targetHero, targetCharacter, content);
 				if (rewardSystem != null)
 				{
 					nonHeroNpc = BuildNativeConversationNpcData(targetHero, targetCharacter);
 					nonHeroNpc.AgentIndex = agentIndex;
+					LogNativeActionStep("nonhero_join_before", targetHero, targetCharacter, content);
 					if (rewardSystem.TryApplyNonHeroJoinPlayerPartyTagForExternal(targetCharacter, agentIndex, nonHeroNpc.PromptGivenName, nonHeroNpc.PromptDisplayName, ref content, out var joinFacts, out var joinNotifications))
 					{
 						nonHeroJoinTagHandled = true;
@@ -15485,9 +15675,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 							}
 						}
 					}
+					LogNativeActionStep("nonhero_join_after", targetHero, targetCharacter, content);
 				}
 				PartyBase wildernessNonHeroParty = null;
 				bool hasWildernessNonHeroParty = !nonHeroJoinTagHandled && TryResolveWildernessNonHeroRewardParty(targetHero, targetCharacter, agentIndex, out wildernessNonHeroParty);
+				LogNativeActionStep("nonhero_reward_before", targetHero, targetCharacter, content);
 				if (rewardSystem != null && hasWildernessNonHeroParty)
 				{
 					string npcName = (targetCharacter.Name?.ToString() ?? "对方部队").Trim();
@@ -15498,6 +15690,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				{
 					rewardSystem?.ApplyMerchantRewardTags(targetCharacter, Hero.MainHero, ref content);
 				}
+				LogNativeActionStep("nonhero_reward_after", targetHero, targetCharacter, content);
 				List<string> list = rewardSystem?.ConsumeLastGeneratedNpcFactLines();
 				RecordGeneratedNpcAfefFactsForNativeConversation(targetHero, targetCharacter, list);
 				if (isWildernessNonHeroPartyReward && list != null)
@@ -15512,6 +15705,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				}
 				if (hasWildernessNonHeroParty)
 				{
+					LogNativeActionStep("nonhero_meeting_duel_before", targetHero, targetCharacter, content);
 					LordEncounterBehavior.TryProcessMeetingTauntAction(null, wildernessNonHeroParty, ref content, out var nonHeroMeetingTauntEscalated);
 					if (!nonHeroMeetingTauntEscalated && !nonHeroSceneTauntEscalated && Regex.IsMatch(content, "\\[ACTION:DUEL\\]", RegexOptions.IgnoreCase))
 					{
@@ -15535,9 +15729,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 							DuelBehavior.PrepareDuel(targetCharacter, 3f);
 						}
 					}
+					LogNativeActionStep("nonhero_meeting_duel_after", targetHero, targetCharacter, content);
 				}
 				else if (!nonHeroSceneTauntEscalated && Regex.IsMatch(content, "\\[ACTION:DUEL\\]", RegexOptions.IgnoreCase))
 				{
+					LogNativeActionStep("nonhero_duel_before", targetHero, targetCharacter, content);
 					content = Regex.Replace(content, "\\[ACTION:DUEL\\]", "", RegexOptions.IgnoreCase).Trim();
 					Agent duelAgent = (agentIndex >= 0) ? Mission.Current?.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == agentIndex) : null;
 					if (duelAgent != null)
@@ -15557,17 +15753,118 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 						}
 						DuelBehavior.PrepareDuel(targetCharacter, 3f);
 					}
+					LogNativeActionStep("nonhero_duel_after", targetHero, targetCharacter, content);
 				}
+			}
+			LogNativeActionStep("npc_surrender_before", targetHero, targetCharacter, content);
+			if (TryConsumeNativeConversationSiegeSurrenderTag(targetHero, targetCharacter, ref content, out var siegeSurrenderAgentIndex))
+			{
+				Logger.Log("SiegeSurrender", "Consumed native/direct conversation siege surrender tag. Target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? "unknown") + " agentIndex=" + siegeSurrenderAgentIndex);
 			}
 			if (TryConsumeNativeConversationNpcSurrenderTag(targetHero, targetCharacter, ref content, out var surrenderAgentIndex))
 			{
 				QueueNativeConversationNpcSurrender(targetHero, targetCharacter, surrenderAgentIndex, "native_conversation_npc_surrender_tag");
 			}
+			LogNativeActionStep("done", targetHero, targetCharacter, content);
 		}
 		catch (Exception ex)
 		{
 			Logger.Log("ShoutBehavior", "[NativeConversation] action tag handling failed: " + ex.Message);
 		}
+	}
+
+	private static void LogNativeActionStep(string step, Hero targetHero, CharacterObject targetCharacter, string content)
+	{
+		try
+		{
+			Logger.Log("Logic", "[NativeActionStep] step=" + (step ?? "") + " target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? "unknown") + " contentLen=" + ((content ?? "").Length));
+		}
+		catch
+		{
+		}
+	}
+
+	private Task<string> ApplyNativeConversationGameActionsOnMainThreadAsync(Hero targetHero, CharacterObject targetCharacter, NpcDataPacket npc, List<NpcDataPacket> allNpcData, List<SceneSummonPromptTarget> sceneSummonTargets, List<SceneGuidePromptTarget> sceneGuideTargets, string content, string npcName, int targetAgentIndex)
+	{
+		string initial = content ?? "";
+		string targetLog = targetHero?.StringId ?? targetCharacter?.StringId ?? npcName ?? npc?.Name ?? "unknown";
+		if (IsBannerlordMainThreadForNativeActions())
+		{
+			Stopwatch directSw = Stopwatch.StartNew();
+			string direct = ApplyNativeConversationGameActionsCore(targetHero, targetCharacter, npc, allNpcData, sceneSummonTargets, sceneGuideTargets, initial);
+			directSw.Stop();
+			Logger.Log("Logic", "[NativePerf] game_actions_mainthread_direct target=" + targetLog + " agent=" + targetAgentIndex + " ms=" + Math.Round(directSw.Elapsed.TotalMilliseconds, 2));
+			return Task.FromResult(direct);
+		}
+		TaskCompletionSource<string> tcs = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
+		try
+		{
+			_mainThreadActions.Enqueue(delegate
+			{
+				Stopwatch actionSw = Stopwatch.StartNew();
+				string result = initial;
+				try
+				{
+					Logger.Log("Logic", "[NativePerf] game_actions_mainthread_start target=" + targetLog + " agent=" + targetAgentIndex);
+					result = ApplyNativeConversationGameActionsCore(targetHero, targetCharacter, npc, allNpcData, sceneSummonTargets, sceneGuideTargets, result);
+					actionSw.Stop();
+					Logger.Log("Logic", "[NativePerf] game_actions_mainthread_done target=" + targetLog + " agent=" + targetAgentIndex + " ms=" + Math.Round(actionSw.Elapsed.TotalMilliseconds, 2) + " resultLen=" + ((result ?? "").Length));
+					tcs.TrySetResult(result ?? "");
+				}
+				catch (Exception ex)
+				{
+					actionSw.Stop();
+					Logger.Log("ShoutBehavior", "[NativeConversation] main-thread game actions failed target=" + targetLog + " agent=" + targetAgentIndex + " ms=" + Math.Round(actionSw.Elapsed.TotalMilliseconds, 2) + " error=" + ex.Message);
+					tcs.TrySetResult(result ?? "");
+				}
+			});
+			Logger.Log("Logic", "[NativePerf] game_actions_queued target=" + targetLog + " agent=" + targetAgentIndex + " callerThread=" + Thread.CurrentThread.ManagedThreadId);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("ShoutBehavior", "[NativeConversation] queue game actions failed target=" + targetLog + " agent=" + targetAgentIndex + " error=" + ex.Message);
+			tcs.TrySetResult(initial);
+		}
+		return tcs.Task;
+	}
+
+	private string ApplyNativeConversationGameActionsCore(Hero targetHero, CharacterObject targetCharacter, NpcDataPacket npc, List<NpcDataPacket> allNpcData, List<SceneSummonPromptTarget> sceneSummonTargets, List<SceneGuidePromptTarget> sceneGuideTargets, string content)
+	{
+		string result = content ?? "";
+		TryQueueNativeSceneMechanismActionAfterConversationExit(npc, allNpcData, sceneSummonTargets, sceneGuideTargets, ref result);
+		ApplyNativeConversationActionTags(targetHero, targetCharacter, ref result);
+		return result ?? "";
+	}
+
+	private static bool IsBannerlordMainThreadForNativeActions()
+	{
+		try
+		{
+			return TWParallel.IsMainThread();
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static bool TryConsumeNativeConversationSiegeSurrenderTag(Hero targetHero, CharacterObject targetCharacter, ref string content, out int targetAgentIndex)
+	{
+		targetAgentIndex = -1;
+		string pattern = Regex.Escape(SiegeSurrenderActionTag);
+		if (string.IsNullOrWhiteSpace(content) || !Regex.IsMatch(content, pattern, RegexOptions.IgnoreCase))
+		{
+			return false;
+		}
+		targetAgentIndex = TryResolveNativeConversationAgentIndex(targetHero, targetCharacter);
+		bool validContext = TryResolveNativeConversationSiegeSurrenderContext(targetHero, targetCharacter, targetAgentIndex, out var settlement, out var side, out var sideLabel);
+		if (!validContext)
+		{
+			return false;
+		}
+		content = Regex.Replace(content, pattern, "", RegexOptions.IgnoreCase).Trim();
+		Logger.Log("SiegeSurrender", "Accepted native/direct conversation siege surrender tag. Target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? "unknown") + " settlement=" + (settlement?.StringId ?? "") + " side=" + (sideLabel ?? side.ToString()) + " agentIndex=" + targetAgentIndex);
+		return true;
 	}
 
 	private static bool TryConsumeNativeConversationNpcSurrenderTag(Hero targetHero, CharacterObject targetCharacter, ref string content, out int targetAgentIndex)
@@ -15577,8 +15874,14 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			return false;
 		}
-		content = Regex.Replace(content, "\\[ACTION:NPC_SURRENDER\\]", "", RegexOptions.IgnoreCase).Trim();
 		targetAgentIndex = TryResolveNativeConversationAgentIndex(targetHero, targetCharacter);
+		if (TryResolveNativeConversationSiegeSurrenderContext(targetHero, targetCharacter, targetAgentIndex, out var settlement, out var side, out var sideLabel))
+		{
+			content = Regex.Replace(content, "\\[ACTION:NPC_SURRENDER\\]", "", RegexOptions.IgnoreCase).Trim();
+			Logger.Log("NpcSurrender", "Hidden native/direct conversation NPC surrender tag in siege context. Target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? "unknown") + " settlement=" + (settlement?.StringId ?? "") + " side=" + (sideLabel ?? side.ToString()) + " agentIndex=" + targetAgentIndex);
+			return false;
+		}
+		content = Regex.Replace(content, "\\[ACTION:NPC_SURRENDER\\]", "", RegexOptions.IgnoreCase).Trim();
 		return true;
 	}
 
@@ -15610,6 +15913,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				return;
 			}
 			Logger.Log("ShoutBehavior", "[NativeConversation] draining queued actions. Pending=" + pending + " missionActive=" + (Mission.Current != null) + " reason=" + (reason ?? "N/A"));
+			if (!IsBannerlordMainThreadForNativeActions())
+			{
+				Logger.Log("ShoutBehavior", "[NativeConversation] skip immediate drain from background thread. Pending=" + pending + " reason=" + (reason ?? "N/A") + " thread=" + Thread.CurrentThread.ManagedThreadId);
+				return;
+			}
 			DrainMainThreadActionsForMissionTick();
 		}
 		catch (Exception ex)
@@ -15907,6 +16215,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 
 	private async Task<string> SubmitNativeConversationTextInternalAsync(string playerText, Action<string> onStreamText = null, string currentDialogTextOverride = null, Action<string> onPostprocessStarted = null, bool npcInitiatedOpening = false)
 	{
+		Stopwatch nativeTurnSw = Stopwatch.StartNew();
 		long runtimeGeneration = SaveRuntimeGuard.CaptureGeneration();
 		playerText = (playerText ?? "").Replace("\r", "").Trim();
 		if (string.IsNullOrWhiteSpace(playerText) && !npcInitiatedOpening)
@@ -15917,6 +16226,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			return "当前没有可接入的对话对象。";
 		}
+		Logger.Log("Logic", "[NativePerf] submit_start target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? npcName ?? "unknown") + " npcInitiated=" + npcInitiatedOpening + " inputLen=" + playerText.Length);
 		string proactiveExtraFact = "";
 		string proactivePromptText = "";
 		string proactiveFactText = "";
@@ -15983,9 +16293,12 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 		Logger.Log("Logic", "[MemoryPerf] parallel_history_start reason=native_conversation target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? "unknown") + " agent=" + nativeTargetAgentIndex + " mode=task");
 		Task<string> persistedHeroHistoryTask = Task.Run(() => BuildNativeConversationPersistedHistoryContextForPrompt(targetHero, targetCharacter, shouldRecordPlayerInput ? promptPlayerText : "", currentNativeDialogText, includeCurrentSceneSessionInPersistedHistory));
+		Stopwatch nativePreprocessSw = Stopwatch.StartNew();
 		MyBehavior.ShoutPromptContext ctx = MyBehavior.BuildShoutPromptContextForExternal(targetHero, routingInput, extraFact, cultureId, hasAnyHero: npc.IsHero, targetCharacter: targetCharacter, kingdomIdOverride: null, targetAgentIndex: nativeTargetAgentIndex, preprocessExcludedRuleIds: preprocessExcludedRuleIds);
+		nativePreprocessSw.Stop();
 		List<string> postprocessPreprocessHits = ctx?.PreprocessRuleIds ?? new List<string>();
 		string postprocessEntityContext = ctx?.EntityPostprocessContext ?? "";
+		Logger.Log("Logic", "[NativePerf] preprocess_done target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? npcName ?? "unknown") + " agent=" + nativeTargetAgentIndex + " ms=" + Math.Round(nativePreprocessSw.Elapsed.TotalMilliseconds, 2) + " hits=" + ((postprocessPreprocessHits == null || postprocessPreprocessHits.Count == 0) ? "(none)" : string.Join(",", postprocessPreprocessHits)) + " extrasLen=" + ((ctx?.Extras ?? "").Length));
 		GetSceneReplyLengthLimits(DuelSettings.GetSettings(), out var minTokens, out var maxTokens);
 		string baseExtras = StripScenePersonaBlocks((ctx?.Extras ?? "").Trim());
 		string trustBlock = ExtractTrustPromptBlock(baseExtras, out var baseExtrasWithoutTrust);
@@ -16067,7 +16380,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		string sceneDynamicUserBlock = BuildSceneCompositeUserBlock("", roleRuntimeContext, nativeNpcListBlock, trustBlock, miscExtrasSection);
 		List<object> messages = BuildStrictSceneMessagesForNpc(nativeTargetAgentIndex, layeredPrompt, new string[4] { privateRecentWindowSection, persistedWithoutRecentWindow, sceneDynamicUserBlock, BuildSceneCompositeUserBlock("", knowledgeExtrasSection, systemRuleBlock, nativeMeetingTauntRuleBlock) }, null, currentInputAlreadyRecorded: true, currentPlayerInput: promptPlayerText, injectedHistoryMessages: nativeHistoryMessages, includeSceneHistory: false, persistentHistoryMessages: persistentMemoryRoleMessages, pendingCurrentAfefFactMessages: pendingNativeCurrentAfefFacts);
 		Logger.Log("ShoutBehavior", "[NativeConversation] request target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? "unknown") + " agentIndex=" + nativeTargetAgentIndex + " messages=" + messages.Count + " includeSceneSessionMemory=" + includeCurrentSceneSessionInPersistedHistory + " persistedChars=" + (persistedHeroHistory?.Length ?? 0) + " preprocessHits=" + ((postprocessPreprocessHits.Count == 0) ? "(none)" : string.Join(",", postprocessPreprocessHits)));
+		Stopwatch nativeMainApiSw = Stopwatch.StartNew();
 		string output = await CallNativeConversationApiAsync(messages, onStreamText).ConfigureAwait(false);
+		nativeMainApiSw.Stop();
+		Logger.Log("Logic", "[NativePerf] main_reply_done target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? npcName ?? "unknown") + " agent=" + nativeTargetAgentIndex + " outputLen=" + ((output ?? "").Length) + " apiMs=" + Math.Round(nativeMainApiSw.Elapsed.TotalMilliseconds, 2) + " elapsedMs=" + Math.Round(nativeTurnSw.Elapsed.TotalMilliseconds, 2));
 		if (SaveRuntimeGuard.IsStale(runtimeGeneration, "native_conversation_reply"))
 		{
 			return SaveRuntimeGuard.BuildStaleRequestErrorText();
@@ -16107,10 +16423,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 		List<string> nativePostprocessHistoryLines = BuildNativeConversationUnifiedSceneHistoryLinesForPrompt(targetHero, targetCharacter, npcName, nativeTargetAgentIndex, 24);
 		string scenePublicHistorySection = BuildScenePublicHistorySection(nativePostprocessHistoryLines);
-		scenePublicHistorySection = StripAfefFactLinesForActionPostprocess(scenePublicHistorySection);
 		string privateRecentWindowForPostprocess = TrimPrivateRecentWindowForActionPostprocess(privateRecentWindowSection, 5);
 		privateRecentWindowForPostprocess = FilterHistorySectionAgainstScenePublicHistory(privateRecentWindowForPostprocess, scenePublicHistorySection);
-		privateRecentWindowForPostprocess = StripAfefFactLinesForActionPostprocess(privateRecentWindowForPostprocess);
 		string historyForPostprocess = BuildSceneCompositeUserBlock("", privateRecentWindowForPostprocess, scenePublicHistorySection);
 		if (string.IsNullOrWhiteSpace(historyForPostprocess))
 		{
@@ -16151,6 +16465,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		string runtimeTargetTroopId = runtimeTargetCharacterId.ToLowerInvariant();
 		string runtimeTargetUnnamedRank = (targetHero == null && targetCharacter != null) ? (targetCharacter.IsSoldier ? "soldier" : "commoner") : "";
 		string postprocessed;
+		Stopwatch nativePostprocessSw = Stopwatch.StartNew();
+		Logger.Log("Logic", "[NativePerf] postprocess_start target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? npcName ?? "unknown") + " agent=" + nativeTargetAgentIndex + " hits=" + ((postprocessPreprocessHits == null || postprocessPreprocessHits.Count == 0) ? "(none)" : string.Join(",", postprocessPreprocessHits)));
 		AIConfigHandler.SetGuardrailRuntimeTargetKingdom(runtimeTargetKingdomId);
 		AIConfigHandler.SetGuardrailRuntimeTargetHero(runtimeTargetHeroId);
 		AIConfigHandler.SetGuardrailRuntimeTargetCharacter(runtimeTargetCharacterId);
@@ -16170,6 +16486,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			AIConfigHandler.SetGuardrailRuntimeTargetUnnamedRank("");
 			AIConfigHandler.SetGuardrailRuntimeTargetAgentIndex(-1);
 		}
+		nativePostprocessSw.Stop();
+		Logger.Log("Logic", "[NativePerf] postprocess_done target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? npcName ?? "unknown") + " agent=" + nativeTargetAgentIndex + " resultLen=" + ((postprocessed ?? "").Length) + " ms=" + Math.Round(nativePostprocessSw.Elapsed.TotalMilliseconds, 2) + " elapsedMs=" + Math.Round(nativeTurnSw.Elapsed.TotalMilliseconds, 2));
 		if (!string.IsNullOrWhiteSpace(postprocessed))
 		{
 			cleaned = postprocessed.Trim();
@@ -16186,8 +16504,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			MyBehavior.ApplyPostprocessMoodFromSceneUnnamedResponseExternal(npc?.UnnamedKey, npc?.Name, ref cleaned);
 		}
-		TryQueueNativeSceneMechanismActionAfterConversationExit(npc, presentNpcs, nativeSceneSummonTargets, nativeSceneGuideTargets, ref cleaned);
-		ApplyNativeConversationActionTags(targetHero, targetCharacter, ref cleaned);
+		Stopwatch nativeActionSw = Stopwatch.StartNew();
+		cleaned = await ApplyNativeConversationGameActionsOnMainThreadAsync(targetHero, targetCharacter, npc, presentNpcs, nativeSceneSummonTargets, nativeSceneGuideTargets, cleaned, npcName, nativeTargetAgentIndex).ConfigureAwait(false);
+		nativeActionSw.Stop();
+		Logger.Log("Logic", "[NativePerf] action_tags_done target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? npcName ?? "unknown") + " agent=" + nativeTargetAgentIndex + " ms=" + Math.Round(nativeActionSw.Elapsed.TotalMilliseconds, 2) + " elapsedMs=" + Math.Round(nativeTurnSw.Elapsed.TotalMilliseconds, 2));
 		string visible = SanitizeSceneSpeechText(cleaned);
 		bool suppressHistoryWrite = IsNativeConversationNoSpeechPlaceholder(visible);
 		try
@@ -16223,7 +16543,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				TrySpeakNativeConversationReplyWithTts(targetHero, targetCharacter, npc, nativeTargetAgentIndex, visible);
 			}
 		}
-		return string.IsNullOrWhiteSpace(visible) ? cleaned.Trim() : visible.Trim();
+		string finalVisible = string.IsNullOrWhiteSpace(visible) ? cleaned.Trim() : visible.Trim();
+		nativeTurnSw.Stop();
+		Logger.Log("Logic", "[NativePerf] submit_done target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? npcName ?? "unknown") + " agent=" + nativeTargetAgentIndex + " visibleLen=" + ((finalVisible ?? "").Length) + " elapsedMs=" + Math.Round(nativeTurnSw.Elapsed.TotalMilliseconds, 2));
+		return finalVisible;
 	}
 
 	private static bool IsNativeConversationNoSpeechPlaceholder(string text)
@@ -18242,7 +18565,6 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 
 	public static string RunCourierActionPostprocessForExternal(Hero targetHero, CharacterObject targetCharacter, string npcName, string playerText, string historyText, string replyText, bool duelRuleInjected, bool rewardRuleInjected, bool loanRuleInjected, bool kingdomServiceRuleInjected, bool lordsHallRuleInjected, bool meetingReleaseRuleInjected, bool vanillaIssueRuleInjected, bool heroJoinPartyRuleInjected, bool sceneMechanismRuleInjected, bool partyTransferRuleInjected, bool settlementTransferRuleInjected, bool voteDealRuleInjected = false, bool diplomacyRuleInjected = false, bool worldMapPartyCommandRuleInjected = false, List<string> preprocessRuleHits = null, string entityPostprocessContext = null, int targetAgentIndex = -1, bool latestReplyHasPlayerInput = true, bool forceLooseWeeklyMemoryMaterialSession = false, bool kingdomVassalageRuleInjected = false, bool kingdomAnnexationRuleInjected = false, string chainName = null)
 	{
-		historyText = StripAfefFactLinesForActionPostprocess(historyText);
 		string text = StripActionTagsForSceneSpeech(replyText ?? "");
 		string resolvedChainName = string.IsNullOrWhiteSpace(chainName) ? "courier" : chainName.Trim();
 		string runtimeTargetKingdomId = ResolveCourierRuntimeTargetKingdomId(targetHero, targetCharacter);
@@ -18708,6 +19030,496 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		return true;
 	}
 
+	private static bool IsNativeConversationPostprocessChain(string chainName)
+	{
+		return string.Equals((chainName ?? "").Trim(), "native_conversation", StringComparison.OrdinalIgnoreCase);
+	}
+
+	private static bool IsActiveSiegeSettlementForSurrender(Settlement settlement)
+	{
+		try
+		{
+			if (settlement == null || !settlement.IsFortification)
+			{
+				return false;
+			}
+			if (settlement.IsUnderSiege || settlement.SiegeEvent != null)
+			{
+				return true;
+			}
+		}
+		catch
+		{
+			return false;
+		}
+		try
+		{
+			return PlayerSiege.PlayerSiegeEvent?.BesiegedSettlement == settlement;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static Settlement ResolveSiegeEventSettlementForSurrender(SiegeEvent siegeEvent)
+	{
+		if (siegeEvent == null)
+		{
+			return null;
+		}
+		try
+		{
+			Settlement settlement = siegeEvent.BesiegedSettlement;
+			if (IsActiveSiegeSettlementForSurrender(settlement))
+			{
+				return settlement;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			return Settlement.All?.FirstOrDefault((Settlement x) => x != null && x.SiegeEvent == siegeEvent && IsActiveSiegeSettlementForSurrender(x));
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static void AddSiegeSettlementCandidate(List<Settlement> settlements, Settlement settlement)
+	{
+		if (settlements == null || !IsActiveSiegeSettlementForSurrender(settlement))
+		{
+			return;
+		}
+		if (!settlements.Any((Settlement x) => x == settlement))
+		{
+			settlements.Add(settlement);
+		}
+	}
+
+	private static void AddSiegePartyCandidate(List<PartyBase> parties, PartyBase party)
+	{
+		if (parties == null || party == null)
+		{
+			return;
+		}
+		if (!parties.Any((PartyBase x) => x == party))
+		{
+			parties.Add(party);
+		}
+	}
+
+	private static PartyBase ResolveNativeConversationAgentPartyForSiegeSurrender(int targetAgentIndex)
+	{
+		try
+		{
+			if (targetAgentIndex < 0)
+			{
+				return null;
+			}
+			Agent agent = Mission.Current?.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == targetAgentIndex);
+			return agent?.Origin?.BattleCombatant as PartyBase;
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static List<PartyBase> ResolveNativeConversationPartiesForSiegeSurrender(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex)
+	{
+		List<PartyBase> list = new List<PartyBase>();
+		AddSiegePartyCandidate(list, ResolveNativeConversationAgentPartyForSiegeSurrender(targetAgentIndex));
+		try
+		{
+			AddSiegePartyCandidate(list, targetHero?.PartyBelongedTo?.Party);
+		}
+		catch
+		{
+		}
+		try
+		{
+			AddSiegePartyCandidate(list, targetCharacter?.HeroObject?.PartyBelongedTo?.Party);
+		}
+		catch
+		{
+		}
+		try
+		{
+			AddSiegePartyCandidate(list, MobileParty.ConversationParty?.Party);
+		}
+		catch
+		{
+		}
+		try
+		{
+			AddSiegePartyCandidate(list, PlayerEncounter.EncounteredParty);
+		}
+		catch
+		{
+		}
+		return list;
+	}
+
+	private static Settlement ResolveActiveSiegeSettlementForNativeConversation(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex)
+	{
+		List<Settlement> list = new List<Settlement>();
+		try
+		{
+			AddSiegeSettlementCandidate(list, PlayerSiege.PlayerSiegeEvent?.BesiegedSettlement);
+		}
+		catch
+		{
+		}
+		try
+		{
+			AddSiegeSettlementCandidate(list, PlayerEncounter.EncounterSettlement);
+		}
+		catch
+		{
+		}
+		try
+		{
+			AddSiegeSettlementCandidate(list, Settlement.CurrentSettlement);
+		}
+		catch
+		{
+		}
+		try
+		{
+			AddSiegeSettlementCandidate(list, MobileParty.MainParty?.CurrentSettlement);
+			AddSiegeSettlementCandidate(list, MobileParty.MainParty?.BesiegedSettlement);
+			AddSiegeSettlementCandidate(list, ResolveSiegeEventSettlementForSurrender(MobileParty.MainParty?.SiegeEvent));
+		}
+		catch
+		{
+		}
+		targetHero = targetHero ?? targetCharacter?.HeroObject;
+		try
+		{
+			AddSiegeSettlementCandidate(list, targetHero?.CurrentSettlement);
+			AddSiegeSettlementCandidate(list, targetHero?.PartyBelongedTo?.CurrentSettlement);
+			AddSiegeSettlementCandidate(list, targetHero?.PartyBelongedTo?.BesiegedSettlement);
+			AddSiegeSettlementCandidate(list, ResolveSiegeEventSettlementForSurrender(targetHero?.PartyBelongedTo?.SiegeEvent));
+		}
+		catch
+		{
+		}
+		foreach (PartyBase party in ResolveNativeConversationPartiesForSiegeSurrender(targetHero, targetCharacter, targetAgentIndex))
+		{
+			try
+			{
+				AddSiegeSettlementCandidate(list, party.Settlement);
+			}
+			catch
+			{
+			}
+			try
+			{
+				AddSiegeSettlementCandidate(list, party.MobileParty?.CurrentSettlement);
+				AddSiegeSettlementCandidate(list, party.MobileParty?.BesiegedSettlement);
+				AddSiegeSettlementCandidate(list, party.MobileParty?.TargetSettlement);
+				AddSiegeSettlementCandidate(list, party.MobileParty?.ShortTermTargetSettlement);
+				AddSiegeSettlementCandidate(list, ResolveSiegeEventSettlementForSurrender(party.MobileParty?.SiegeEvent));
+			}
+			catch
+			{
+			}
+			try
+			{
+				AddSiegeSettlementCandidate(list, party.MapEvent?.MapEventSettlement);
+			}
+			catch
+			{
+			}
+			try
+			{
+				AddSiegeSettlementCandidate(list, ResolveSiegeEventSettlementForSurrender(party.SiegeEvent));
+			}
+			catch
+			{
+			}
+		}
+		return list.FirstOrDefault();
+	}
+
+	private static IFaction ResolveSiegeSurrenderTargetFaction(Hero targetHero, CharacterObject targetCharacter, List<PartyBase> parties)
+	{
+		try
+		{
+			if (targetHero?.MapFaction != null)
+			{
+				return targetHero.MapFaction;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (targetCharacter?.HeroObject?.MapFaction != null)
+			{
+				return targetCharacter.HeroObject.MapFaction;
+			}
+		}
+		catch
+		{
+		}
+		foreach (PartyBase party in parties ?? new List<PartyBase>())
+		{
+			try
+			{
+				if (party?.MapFaction != null)
+				{
+					return party.MapFaction;
+				}
+			}
+			catch
+			{
+			}
+		}
+		return null;
+	}
+
+	private static IFaction ResolveSiegeAttackerFaction(Settlement settlement)
+	{
+		try
+		{
+			if (settlement?.SiegeEvent?.BesiegerCamp?.MapFaction != null)
+			{
+				return settlement.SiegeEvent.BesiegerCamp.MapFaction;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			return settlement?.SiegeEvent?.BesiegerCamp?.LeaderParty?.MapFaction;
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static bool IsSiegeAttackerPartyForSurrender(Settlement settlement, PartyBase party)
+	{
+		if (!IsActiveSiegeSettlementForSurrender(settlement) || party == null)
+		{
+			return false;
+		}
+		try
+		{
+			if (settlement.SiegeEvent?.BesiegerCamp?.HasInvolvedPartyForEventType(party) == true)
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			MobileParty mobileParty = party.MobileParty;
+			if (mobileParty != null && settlement.SiegeEvent?.BesiegerCamp?.IsBesiegerSideParty(mobileParty) == true)
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			MobileParty mobileParty2 = party.MobileParty;
+			if (mobileParty2 != null && (mobileParty2.BesiegedSettlement == settlement || mobileParty2.SiegeEvent == settlement.SiegeEvent))
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		return false;
+	}
+
+	private static bool IsSiegeDefenderPartyForSurrender(Settlement settlement, PartyBase party)
+	{
+		if (!IsActiveSiegeSettlementForSurrender(settlement) || party == null)
+		{
+			return false;
+		}
+		try
+		{
+			if (party.IsSettlement && party.Settlement == settlement)
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (settlement.HasInvolvedPartyForEventType(party))
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (party.MobileParty?.CurrentSettlement == settlement && !IsSiegeAttackerPartyForSurrender(settlement, party))
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		return false;
+	}
+
+	private static bool TryResolveSiegeSurrenderSide(Settlement settlement, Hero targetHero, CharacterObject targetCharacter, List<PartyBase> parties, out BattleSideEnum side)
+	{
+		side = BattleSideEnum.None;
+		if (!IsActiveSiegeSettlementForSurrender(settlement))
+		{
+			return false;
+		}
+		foreach (PartyBase party in parties ?? new List<PartyBase>())
+		{
+			if (IsSiegeAttackerPartyForSurrender(settlement, party))
+			{
+				side = BattleSideEnum.Attacker;
+				return true;
+			}
+			if (IsSiegeDefenderPartyForSurrender(settlement, party))
+			{
+				side = BattleSideEnum.Defender;
+				return true;
+			}
+		}
+		targetHero = targetHero ?? targetCharacter?.HeroObject;
+		try
+		{
+			if (targetHero?.CurrentSettlement == settlement)
+			{
+				side = BattleSideEnum.Defender;
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			IFaction faction = ResolveSiegeSurrenderTargetFaction(targetHero, targetCharacter, parties);
+			IFaction defenderFaction = settlement.MapFaction;
+			IFaction attackerFaction = ResolveSiegeAttackerFaction(settlement);
+			if (faction != null && attackerFaction != null && faction == attackerFaction)
+			{
+				side = BattleSideEnum.Attacker;
+				return true;
+			}
+			if (faction != null && defenderFaction != null && faction == defenderFaction)
+			{
+				side = BattleSideEnum.Defender;
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (Settlement.CurrentSettlement == settlement || MobileParty.MainParty?.CurrentSettlement == settlement)
+			{
+				side = BattleSideEnum.Defender;
+				return targetHero != null || targetCharacter != null;
+			}
+		}
+		catch
+		{
+		}
+		return false;
+	}
+
+	private static bool TryResolveNativeConversationSiegeSurrenderContext(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, out Settlement settlement, out BattleSideEnum targetSide, out string sideLabel)
+	{
+		settlement = null;
+		targetSide = BattleSideEnum.None;
+		sideLabel = "";
+		try
+		{
+			targetHero = targetHero ?? targetCharacter?.HeroObject;
+			settlement = ResolveActiveSiegeSettlementForNativeConversation(targetHero, targetCharacter, targetAgentIndex);
+			if (!IsActiveSiegeSettlementForSurrender(settlement))
+			{
+				return false;
+			}
+			List<PartyBase> parties = ResolveNativeConversationPartiesForSiegeSurrender(targetHero, targetCharacter, targetAgentIndex);
+			if (!TryResolveSiegeSurrenderSide(settlement, targetHero, targetCharacter, parties, out targetSide))
+			{
+				return false;
+			}
+			sideLabel = targetSide == BattleSideEnum.Attacker ? "攻城方" : "守城方";
+			return true;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("ShoutBehavior", "[SiegeSurrender] context resolve failed: " + ex.Message);
+			settlement = null;
+			targetSide = BattleSideEnum.None;
+			sideLabel = "";
+			return false;
+		}
+	}
+
+	private static List<PostprocessRuleEntry> BuildSiegeSurrenderPostprocessRulesForNativeConversation(bool enabled, Settlement settlement, BattleSideEnum targetSide)
+	{
+		if (!enabled)
+		{
+			return null;
+		}
+		string settlementName = settlement?.Name?.ToString() ?? "当前围城";
+		string description;
+		if (targetSide == BattleSideEnum.Defender)
+		{
+			description = "仅当NPC明确代表守方同意" + settlementName + "开城投降、交出城池或停止守城时输出；讨论、求饶、无授权禁止。";
+		}
+		else if (targetSide == BattleSideEnum.Attacker)
+		{
+			description = "仅当NPC明确代表攻城方同意在" + settlementName + "投降、撤围并接受战败处置时输出；讨论、威胁、临时撤退、无授权禁止。";
+		}
+		else
+		{
+			description = "仅当NPC明确代表当前围城本方同意投降或撤围时输出；模糊表态或无授权禁止。";
+		}
+		return new List<PostprocessRuleEntry>
+		{
+			new PostprocessRuleEntry
+			{
+				Tag = SiegeSurrenderActionTag,
+				Description = description
+			}
+		};
+	}
+
+	private static string BuildSiegeSurrenderPostprocessContextForNativeConversation(Settlement settlement, string sideLabel)
+	{
+		string settlementName = settlement?.Name?.ToString() ?? "当前围城";
+		string side = string.IsNullOrWhiteSpace(sideLabel) ? "当前NPC本方" : sideLabel.Trim();
+		return "【当前围城投降上下文】\n围城目标：" + settlementName + "\n当前NPC归属：" + side + "\n标签：" + SiegeSurrenderActionTag;
+	}
+
 	private static List<PostprocessRuleEntry> BuildNpcSurrenderPostprocessRulesForScene(bool enabled)
 	{
 		if (!enabled)
@@ -18750,6 +19562,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 	private static bool HasNpcSurrenderPostprocessRule(List<PostprocessRuleEntry> rules)
 	{
 		return (rules ?? new List<PostprocessRuleEntry>()).Any((PostprocessRuleEntry x) => string.Equals((x?.Tag ?? "").Trim(), NpcSurrenderActionTag, StringComparison.OrdinalIgnoreCase));
+	}
+
+	private static bool HasSiegeSurrenderPostprocessRule(List<PostprocessRuleEntry> rules)
+	{
+		return (rules ?? new List<PostprocessRuleEntry>()).Any((PostprocessRuleEntry x) => string.Equals((x?.Tag ?? "").Trim(), SiegeSurrenderActionTag, StringComparison.OrdinalIgnoreCase));
 	}
 
 	private static string BuildDuelPostprocessItemListForScene(List<RewardSystemBehavior.DuelStakeOption> options)
@@ -20276,6 +21093,43 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		return string.Join("\n", list.Concat(new string[1] { text }).Where((string x) => !string.IsNullOrWhiteSpace(x))).Trim();
 	}
 
+	private static string NormalizeSiegeSurrenderPostprocessTagsForScene(string raw, List<PostprocessRuleEntry> rules, bool enabled)
+	{
+		if (!enabled || !HasSiegeSurrenderPostprocessRule(rules))
+		{
+			return "";
+		}
+		List<string> list = new List<string>();
+		HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		string text = "";
+		foreach (Match item in Regex.Matches(raw ?? "", "\\[ACTION:[^\\]\\r\\n]*\\]", RegexOptions.IgnoreCase))
+		{
+			string text2 = (item?.Value ?? "").Trim();
+			if (string.IsNullOrWhiteSpace(text2))
+			{
+				continue;
+			}
+			if (text2.StartsWith("[ACTION:MOOD:", StringComparison.OrdinalIgnoreCase))
+			{
+				text = text2;
+				continue;
+			}
+			if (!string.Equals(text2, SiegeSurrenderActionTag, StringComparison.OrdinalIgnoreCase))
+			{
+				continue;
+			}
+			if (hashSet.Add(SiegeSurrenderActionTag))
+			{
+				list.Add(SiegeSurrenderActionTag);
+			}
+		}
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			text = AIConfigHandler.ActionPostprocessFallbackMoodTag;
+		}
+		return string.Join("\n", list.Concat(new string[1] { text }).Where((string x) => !string.IsNullOrWhiteSpace(x))).Trim();
+	}
+
 	private static string NormalizeVanillaIssuePostprocessTagsForScene(string raw, List<PostprocessRuleEntry> rules)
 	{
 		HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -20402,7 +21256,6 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 
 	private static string TryRunSceneUnifiedActionPostprocess(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, string npcName, string playerText, string historyText, string replyText, bool duelRuleInjected, bool rewardRuleInjected, bool loanRuleInjected, bool kingdomServiceRuleInjected, bool kingdomVassalageRuleInjected, bool kingdomAnnexationRuleInjected, bool lordsHallRuleInjected, bool meetingReleaseRuleInjected, bool vanillaIssueRuleInjected, bool heroJoinPartyRuleInjected, bool sceneMechanismRuleInjected, bool partyTransferRuleInjected, bool settlementTransferRuleInjected, bool voteDealRuleInjected, bool diplomacyRuleInjected, bool worldMapPartyCommandRuleInjected, bool marriageRuleInjected, List<RewardSystemBehavior.DuelStakeOption> duelStakeOptions, List<PostprocessRuleEntry> kingdomServiceRules, List<PostprocessRuleEntry> sceneMechanismRules, List<SceneSummonPromptTarget> sceneSummonTargets, List<SceneGuidePromptTarget> sceneGuideTargets, string entityPostprocessContext = null, bool siegeInterventionRuleInjected = false, bool replyIsDirectPlayerResponse = false, List<string> preprocessRuleHits = null, string chainName = null, bool relayRuleInjected = false, List<NpcDataPacket> relayCandidates = null)
 	{
-		historyText = StripAfefFactLinesForActionPostprocess(historyText);
 		string text = StripActionTagsForSceneSpeech(replyText ?? "");
 		string resolvedChainName = string.IsNullOrWhiteSpace(chainName) ? ResolveScenePostprocessChainName() : chainName.Trim();
 		bool kingdomVassalagePreprocessHit = HasPreprocessRuleHit(preprocessRuleHits, "kingdom_vassalage");
@@ -20483,12 +21336,17 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		Hero marriageSpeaker = targetHero ?? targetCharacter?.HeroObject;
 		List<PostprocessRuleEntry> marriageRuntimeRules = marriageRuleInjected ? (RomanceSystemBehavior.Instance?.BuildRuntimeMarriagePostprocessRulesForExternal(marriageSpeaker) ?? new List<PostprocessRuleEntry>()) : null;
 		List<PostprocessRuleEntry> marriageRules = marriageRuleInjected ? MergePostprocessRulesForScene(AIConfigHandler.GetGuardrailRulePostprocessRules("marriage") ?? new List<PostprocessRuleEntry>(), marriageRuntimeRules) : null;
-		bool npcSurrenderPostprocessEnabled = IsNpcSurrenderPostprocessContext();
+		Settlement siegeSurrenderSettlement = null;
+		BattleSideEnum siegeSurrenderSide = BattleSideEnum.None;
+		string siegeSurrenderSideLabel = "";
+		bool siegeSurrenderPostprocessEnabled = IsNativeConversationPostprocessChain(resolvedChainName) && TryResolveNativeConversationSiegeSurrenderContext(targetHero, targetCharacter, targetAgentIndex, out siegeSurrenderSettlement, out siegeSurrenderSide, out siegeSurrenderSideLabel);
+		List<PostprocessRuleEntry> siegeSurrenderRules = BuildSiegeSurrenderPostprocessRulesForNativeConversation(siegeSurrenderPostprocessEnabled, siegeSurrenderSettlement, siegeSurrenderSide);
+		bool npcSurrenderPostprocessEnabled = !siegeSurrenderPostprocessEnabled && IsNpcSurrenderPostprocessContext();
 		List<PostprocessRuleEntry> npcSurrenderRules = BuildNpcSurrenderPostprocessRulesForScene(npcSurrenderPostprocessEnabled);
 		bool siegeInterventionPostprocessEnabled = siegeInterventionRuleInjected && AfGcczShoutBridge.ShouldContinuePostprocess(siegeInterventionRuleInjected, preprocessRuleHits);
 		List<PostprocessRuleEntry> siegeInterventionRules = AfGcczShoutBridge.BuildPostprocessRules(siegeInterventionPostprocessEnabled);
 		List<PostprocessRuleEntry> relayRules = BuildAutoGroupRelayPostprocessRulesForScene(relayRuleInjected);
-		List<PostprocessRuleEntry> mergedRules = MergePostprocessRulesForScene(duelRules, transactionRules, kingdomRules, royalRules, vassalageRules, annexationRules, lordsHallRules, meetingReleaseRules, vanillaIssueRules, heroJoinPartyRules, mechanismRules, partyTransferRules, settlementTransferRules, voteDealRules, diplomacyRules, worldMapPartyCommandRules, nobleGatheringRules, marriageRules, proposeAgendaRules, npcSurrenderRules, siegeInterventionRules, relayRules);
+		List<PostprocessRuleEntry> mergedRules = MergePostprocessRulesForScene(duelRules, transactionRules, kingdomRules, royalRules, vassalageRules, annexationRules, lordsHallRules, meetingReleaseRules, vanillaIssueRules, heroJoinPartyRules, mechanismRules, partyTransferRules, settlementTransferRules, voteDealRules, diplomacyRules, worldMapPartyCommandRules, nobleGatheringRules, marriageRules, proposeAgendaRules, siegeSurrenderRules, npcSurrenderRules, siegeInterventionRules, relayRules);
 		bool royalPostprocessRuleInjected = (royalRules ?? new List<PostprocessRuleEntry>()).Any((PostprocessRuleEntry x) => string.Equals((x?.Tag ?? "").Trim(), "[ACTION:KING_ABDICATE_TO_PLAYER]", StringComparison.OrdinalIgnoreCase));
 		bool vassalagePostprocessRuleInjected = (vassalageRules ?? new List<PostprocessRuleEntry>()).Any((PostprocessRuleEntry x) => (x?.Tag ?? "").StartsWith("[ACTION:VASSALAGE:", StringComparison.OrdinalIgnoreCase));
 		bool kingdomAnnexPostprocessRuleInjected = (annexationRules ?? new List<PostprocessRuleEntry>()).Any((PostprocessRuleEntry x) => (x?.Tag ?? "").StartsWith("[ACTION:KINGDOM_ANNEX:", StringComparison.OrdinalIgnoreCase));
@@ -20502,7 +21360,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				["mergedTags"] = (mergedRules ?? new List<PostprocessRuleEntry>()).Select((PostprocessRuleEntry x) => x?.Tag ?? "").ToList()
 			});
 		}
-		Logger.Log("ShoutBehavior", "[UnifiedPostprocess] requested chain=" + resolvedChainName + " duel=" + duelRuleInjected + " reward=" + rewardRuleInjected + " loan=" + loanRuleInjected + " kingdom=" + kingdomServiceRuleInjected + " royalRule=" + royalPostprocessRuleInjected + " vassalage=" + kingdomVassalageRuleInjected + " annexation=" + kingdomAnnexationRuleInjected + " VASSALAGE_rule_injected=" + vassalagePostprocessRuleInjected + " KINGDOM_ANNEX_rule_injected=" + kingdomAnnexPostprocessRuleInjected + " royalRuleCount=" + (royalRules?.Count ?? 0) + " vassalageRuleCount=" + (vassalageRules?.Count ?? 0) + " annexationRuleCount=" + (annexationRules?.Count ?? 0) + " lordsHall=" + lordsHallRuleInjected + " meetingRelease=" + meetingReleaseRuleInjected + " vanillaIssue=" + vanillaIssueRuleInjected + " heroJoin=" + heroJoinPartyRuleInjected + " sceneMechanism=" + sceneMechanismRuleInjected + " partyTransfer=" + partyTransferRuleInjected + " settlementTransfer=" + settlementTransferRuleInjected + " voteDeal=" + voteDealRuleInjected + " diplomacy=" + diplomacyRuleInjected + " worldMap=" + worldMapPartyCommandRuleInjected + " nobleGathering=" + nobleGatheringRuleInjected + " marriage=" + marriageRuleInjected + " npcSurrender=" + npcSurrenderPostprocessEnabled + " siegeIntervention=" + siegeInterventionPostprocessEnabled + " relay=" + relayRuleInjected + " npcSurrenderRule=" + HasNpcSurrenderPostprocessRule(npcSurrenderRules) + " mergedHasNpcSurrender=" + HasNpcSurrenderPostprocessRule(mergedRules) + " preprocessHits=" + ((preprocessRuleHits == null || preprocessRuleHits.Count == 0) ? "(none)" : string.Join(",", preprocessRuleHits)) + " mergedRules=" + ((mergedRules == null || mergedRules.Count == 0) ? "(none; mood postprocess still runs)" : string.Join(",", mergedRules.Select((PostprocessRuleEntry x) => x?.Tag ?? "").Where((string x) => !string.IsNullOrWhiteSpace(x)))));
+		Logger.Log("ShoutBehavior", "[UnifiedPostprocess] requested chain=" + resolvedChainName + " duel=" + duelRuleInjected + " reward=" + rewardRuleInjected + " loan=" + loanRuleInjected + " kingdom=" + kingdomServiceRuleInjected + " royalRule=" + royalPostprocessRuleInjected + " vassalage=" + kingdomVassalageRuleInjected + " annexation=" + kingdomAnnexationRuleInjected + " VASSALAGE_rule_injected=" + vassalagePostprocessRuleInjected + " KINGDOM_ANNEX_rule_injected=" + kingdomAnnexPostprocessRuleInjected + " royalRuleCount=" + (royalRules?.Count ?? 0) + " vassalageRuleCount=" + (vassalageRules?.Count ?? 0) + " annexationRuleCount=" + (annexationRules?.Count ?? 0) + " lordsHall=" + lordsHallRuleInjected + " meetingRelease=" + meetingReleaseRuleInjected + " vanillaIssue=" + vanillaIssueRuleInjected + " heroJoin=" + heroJoinPartyRuleInjected + " sceneMechanism=" + sceneMechanismRuleInjected + " partyTransfer=" + partyTransferRuleInjected + " settlementTransfer=" + settlementTransferRuleInjected + " voteDeal=" + voteDealRuleInjected + " diplomacy=" + diplomacyRuleInjected + " worldMap=" + worldMapPartyCommandRuleInjected + " nobleGathering=" + nobleGatheringRuleInjected + " marriage=" + marriageRuleInjected + " siegeSurrender=" + siegeSurrenderPostprocessEnabled + " siegeSurrenderSide=" + (siegeSurrenderSideLabel ?? "") + " siegeSurrenderSettlement=" + (siegeSurrenderSettlement?.StringId ?? "") + " npcSurrender=" + npcSurrenderPostprocessEnabled + " siegeIntervention=" + siegeInterventionPostprocessEnabled + " relay=" + relayRuleInjected + " siegeSurrenderRule=" + HasSiegeSurrenderPostprocessRule(siegeSurrenderRules) + " mergedHasSiegeSurrender=" + HasSiegeSurrenderPostprocessRule(mergedRules) + " npcSurrenderRule=" + HasNpcSurrenderPostprocessRule(npcSurrenderRules) + " mergedHasNpcSurrender=" + HasNpcSurrenderPostprocessRule(mergedRules) + " preprocessHits=" + ((preprocessRuleHits == null || preprocessRuleHits.Count == 0) ? "(none)" : string.Join(",", preprocessRuleHits)) + " mergedRules=" + ((mergedRules == null || mergedRules.Count == 0) ? "(none; mood postprocess still runs)" : string.Join(",", mergedRules.Select((PostprocessRuleEntry x) => x?.Tag ?? "").Where((string x) => !string.IsNullOrWhiteSpace(x)))));
 		if (kingdomServiceRuleInjected)
 		{
 			Logger.Log("ShoutBehavior", "[UnifiedPostprocess] kingdom_rules=" + ((kingdomRules == null || kingdomRules.Count == 0) ? "（无）" : string.Join(",", kingdomRules.Select((PostprocessRuleEntry x) => x?.Tag ?? "").Where((string x) => !string.IsNullOrWhiteSpace(x)))) + " merged_rules=" + ((mergedRules == null || mergedRules.Count == 0) ? "（无）" : string.Join(",", mergedRules.Select((PostprocessRuleEntry x) => x?.Tag ?? "").Where((string x) => !string.IsNullOrWhiteSpace(x)))));
@@ -20649,6 +21507,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			runtimeContext = AppendPostprocessContextBlockForScene(runtimeContext, NobleGatheringBehavior.BuildPostprocessContextForExternal(targetHero ?? targetCharacter?.HeroObject));
 		}
+		if (siegeSurrenderPostprocessEnabled)
+		{
+			runtimeContext = AppendPostprocessContextBlockForScene(runtimeContext, BuildSiegeSurrenderPostprocessContextForNativeConversation(siegeSurrenderSettlement, siegeSurrenderSideLabel));
+		}
 		if (siegeInterventionPostprocessEnabled)
 		{
 			runtimeContext = AppendPostprocessContextBlockForScene(runtimeContext, AfGcczShoutBridge.BuildPostprocessContext(siegeInterventionPostprocessEnabled, targetAgentIndex, replyIsDirectPlayerResponse));
@@ -20701,10 +21563,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		string worldMapPartyCommandTags = worldMapPartyCommandRuleInjected ? NormalizeWorldMapPartyCommandPostprocessTagsForScene(content) : "";
 		string nobleGatheringTags = nobleGatheringRuleInjected ? NobleGatheringBehavior.NormalizeNobleGatheringPostprocessTagsForExternal(content) : "";
 		string marriageTags = (marriageRuleInjected && RomanceSystemBehavior.Instance != null) ? RomanceSystemBehavior.Instance.NormalizeMarriagePostprocessTagsForExternal(content, marriageRules, marriageSpeaker) : "";
+		string siegeSurrenderTags = NormalizeSiegeSurrenderPostprocessTagsForScene(content, siegeSurrenderRules, siegeSurrenderPostprocessEnabled);
 		string npcSurrenderTags = NormalizeNpcSurrenderPostprocessTagsForScene(content, npcSurrenderRules, npcSurrenderPostprocessEnabled);
 		string siegeInterventionTags = siegeInterventionPostprocessEnabled ? AfGcczShoutBridge.NormalizePostprocessTags(siegeInterventionPostprocessEnabled, content, siegeInterventionRules) : "";
 		string relayTags = relayRuleInjected ? NormalizeAutoGroupRelayPostprocessTagsForScene(content, relayCandidates, targetAgentIndex) : "";
-		string text21 = MergeNormalizedPostprocessBlocksForScene(text10, text11, text12, royalTags, vassalageTags, annexationTags, text13, text14, text15, text16, text17, text18, text19, voteDealTags, diplomacyTags, worldMapPartyCommandTags, nobleGatheringTags, marriageTags, proposeAgendaTags, npcSurrenderTags, siegeInterventionTags, relayTags);
+		string text21 = MergeNormalizedPostprocessBlocksForScene(text10, text11, text12, royalTags, vassalageTags, annexationTags, text13, text14, text15, text16, text17, text18, text19, voteDealTags, diplomacyTags, worldMapPartyCommandTags, nobleGatheringTags, marriageTags, proposeAgendaTags, siegeSurrenderTags, npcSurrenderTags, siegeInterventionTags, relayTags);
 		if (string.IsNullOrWhiteSpace(text21))
 		{
 			text21 = AIConfigHandler.ActionPostprocessFallbackMoodTag;
@@ -21303,8 +22166,6 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}).ToList();
 		string privateRecentWindowForPostprocess = TrimPrivateRecentWindowForActionPostprocess(privateRecentWindowSection, 5);
 		privateRecentWindowForPostprocess = FilterHistorySectionAgainstScenePublicHistory(privateRecentWindowForPostprocess, scenePublicHistorySection);
-		privateRecentWindowForPostprocess = StripAfefFactLinesForActionPostprocess(privateRecentWindowForPostprocess);
-		scenePublicHistorySection = StripAfefFactLinesForActionPostprocess(scenePublicHistorySection);
 		string historyForPostprocess = BuildSceneCompositeUserBlock("", privateRecentWindowForPostprocess, scenePublicHistorySection);
 		if (string.IsNullOrWhiteSpace(historyForPostprocess))
 		{

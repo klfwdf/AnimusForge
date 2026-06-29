@@ -121,11 +121,13 @@ public sealed class MainForm : Form
         var editFieldsButton = Button("\u7f16\u8f91\u5b57\u6bb5", 100);
         var newRuleButton = Button("\u65b0\u5efa\u77e5\u8bc6", 90);
         var deleteFileButton = Button("\u5220\u9664\u6587\u4ef6", 90);
+        var deleteTypeButton = Button("\u6e05\u7a7a\u5f53\u524d\u7c7b\u578b", 120);
         rawButtons.Controls.Add(saveJsonButton);
         rawButtons.Controls.Add(formatJsonButton);
         rawButtons.Controls.Add(editFieldsButton);
         rawButtons.Controls.Add(newRuleButton);
         rawButtons.Controls.Add(deleteFileButton);
+        rawButtons.Controls.Add(deleteTypeButton);
         rawPanel.Controls.Add(rawButtons, 0, 2);
 
         _statusLabel.Dock = DockStyle.Fill;
@@ -143,6 +145,7 @@ public sealed class MainForm : Form
         editFieldsButton.Click += (_, _) => EditActiveStructuredDocument();
         newRuleButton.Click += (_, _) => CreateKnowledgeRule();
         deleteFileButton.Click += (_, _) => DeleteActiveJsonFile();
+        deleteTypeButton.Click += (_, _) => DeleteCurrentDataType();
     }
 
     private TabPage BuildSummaryTab()
@@ -688,6 +691,88 @@ public sealed class MainForm : Form
         catch (Exception ex)
         {
             MessageBox.Show(this, ex.Message, "\u5220\u9664\u6587\u4ef6\u5931\u8d25", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+    }
+
+    private void DeleteCurrentDataType()
+    {
+        if (_currentPackage == null)
+        {
+            return;
+        }
+
+        var target = GetCurrentDataTypeDeleteTarget();
+        if (!target.HasValue)
+        {
+            MessageBox.Show(this, "\u8bf7\u5148\u5207\u6362\u5230\u77e5\u8bc6\u3001\u4eba\u7269\u8d44\u6599\u3001\u58f0\u97f3\u6620\u5c04\u3001\u4e8b\u4ef6\u6570\u636e\u6216\u672a\u547d\u540dNPC\u9875\u7b7e\u3002", "\u6e05\u7a7a\u5f53\u524d\u7c7b\u578b", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            return;
+        }
+
+        try
+        {
+            var files = _service.ListDataTypeJsonFiles(_currentPackage.Info.FullPath, target.Value.DataType);
+            if (files.Count == 0)
+            {
+                MessageBox.Show(this, "\u5f53\u524d\u7c7b\u578b\u6ca1\u6709\u53ef\u5220\u9664\u7684 JSON \u6570\u636e\u6587\u4ef6\u3002", "\u6e05\u7a7a\u5f53\u524d\u7c7b\u578b", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            var message = "\u5c06\u5f53\u524d\u7c7b\u578b\u7684\u6240\u6709 JSON \u6570\u636e\u6587\u4ef6\u79fb\u52a8\u5230 .deleted_files\uff1f\r\n" +
+                          "\u7c7b\u578b\uff1a" + target.Value.Label + "\r\n" +
+                          "\u6587\u4ef6\u6570\uff1a" + files.Count + "\r\n\r\n" +
+                          BuildDeletePreview(_currentPackage.Info.FullPath, files);
+            var result = MessageBox.Show(this, message, "\u6e05\u7a7a\u5f53\u524d\u7c7b\u578b", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+            if (result != DialogResult.Yes)
+            {
+                return;
+            }
+
+            var deleted = _service.MoveDataTypeToDeleted(_currentPackage.Info.FullPath, target.Value.DataType);
+            ReloadCurrentPackage();
+            SetStatus(target.Value.Label + "\u5df2\u6e05\u7a7a\uff1a" + deleted.MovedFiles.Count + "\u4e2a\u6587\u4ef6\uff0c\u5df2\u79fb\u52a8\u5230\uff1a" + deleted.DeletedRoot);
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(this, ex.Message, "\u6e05\u7a7a\u5f53\u524d\u7c7b\u578b\u5931\u8d25", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+    }
+
+    private (PlayerExportsDataType DataType, string Label)? GetCurrentDataTypeDeleteTarget()
+    {
+        return _tabs.SelectedTab?.Text switch
+        {
+            "\u77e5\u8bc6" => (PlayerExportsDataType.Knowledge, "\u77e5\u8bc6"),
+            "\u4eba\u7269\u8d44\u6599" => (PlayerExportsDataType.PersonalityBackground, "\u4eba\u7269\u8d44\u6599"),
+            "\u58f0\u97f3\u6620\u5c04" => (PlayerExportsDataType.VoiceMapping, "\u58f0\u97f3\u6620\u5c04"),
+            "\u4e8b\u4ef6\u6570\u636e" => (PlayerExportsDataType.EventData, "\u4e8b\u4ef6\u6570\u636e"),
+            "\u672a\u547d\u540dNPC" => (PlayerExportsDataType.UnnamedPersona, "\u672a\u547d\u540dNPC"),
+            _ => null
+        };
+    }
+
+    private static string BuildDeletePreview(string packageRoot, IReadOnlyList<string> files)
+    {
+        var preview = files
+            .Take(12)
+            .Select(file => " - " + SafeRelativePath(packageRoot, file))
+            .ToList();
+        if (files.Count > 12)
+        {
+            preview.Add(" - ...");
+        }
+
+        return string.Join(Environment.NewLine, preview);
+    }
+
+    private static string SafeRelativePath(string root, string file)
+    {
+        try
+        {
+            return Path.GetRelativePath(root, file);
+        }
+        catch
+        {
+            return file;
         }
     }
 

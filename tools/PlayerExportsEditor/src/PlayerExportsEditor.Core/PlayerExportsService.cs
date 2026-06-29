@@ -156,24 +156,45 @@ public sealed class PlayerExportsService
 
     public string MoveJsonFileToDeleted(string packageRoot, string filePath)
     {
+        var deletedRoot = CreateUniqueDeletedRoot(packageRoot);
+        return MoveJsonFileToDeletedRoot(packageRoot, filePath, deletedRoot);
+    }
+
+    public IReadOnlyList<string> ListDataTypeJsonFiles(string packageRoot, PlayerExportsDataType dataType)
+    {
+        if (string.IsNullOrWhiteSpace(packageRoot) || !Directory.Exists(packageRoot))
+        {
+            return Array.Empty<string>();
+        }
+
         var root = Path.GetFullPath(packageRoot);
-        var source = Path.GetFullPath(filePath);
-        var relative = Path.GetRelativePath(root, source);
-        if (relative.StartsWith("..", StringComparison.Ordinal) || Path.IsPathRooted(relative))
+        return GetDataTypeCandidateFiles(root, dataType)
+            .Where(File.Exists)
+            .Select(Path.GetFullPath)
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .OrderBy(file => Path.GetRelativePath(root, file), StringComparer.OrdinalIgnoreCase)
+            .ToList();
+    }
+
+    public DeletedFilesMoveResult MoveDataTypeToDeleted(string packageRoot, PlayerExportsDataType dataType)
+    {
+        var files = ListDataTypeJsonFiles(packageRoot, dataType);
+        if (files.Count == 0)
         {
-            throw new InvalidOperationException("File is outside the package root.");
+            return new DeletedFilesMoveResult { DeletedRoot = "", MovedFiles = Array.Empty<string>() };
         }
 
-        if (!File.Exists(source))
+        var deletedRoot = CreateUniqueDeletedRoot(packageRoot);
+        var movedFiles = new List<string>();
+        foreach (var file in files)
         {
-            throw new FileNotFoundException("JSON file was not found.", source);
+            if (File.Exists(file))
+            {
+                movedFiles.Add(MoveJsonFileToDeletedRoot(packageRoot, file, deletedRoot));
+            }
         }
 
-        var deletedRoot = Path.Combine(root, ".deleted_files", DateTime.Now.ToString("yyyyMMdd_HHmmss"));
-        var target = Path.Combine(deletedRoot, relative);
-        Directory.CreateDirectory(Path.GetDirectoryName(target) ?? deletedRoot);
-        File.Move(source, target);
-        return target;
+        return new DeletedFilesMoveResult { DeletedRoot = deletedRoot, MovedFiles = movedFiles };
     }
 
     public string FormatJson(string json)
@@ -293,6 +314,62 @@ public sealed class PlayerExportsService
         }
 
         return when;
+    }
+
+    private static IEnumerable<string> GetDataTypeCandidateFiles(string packageRoot, PlayerExportsDataType dataType)
+    {
+        return dataType switch
+        {
+            PlayerExportsDataType.Knowledge => EnumerateJsonFiles(Path.Combine(packageRoot, "knowledge", "rules"))
+                .Concat(new[] { Path.Combine(packageRoot, "knowledge", "KnowledgeRules.json") }),
+            PlayerExportsDataType.PersonalityBackground => EnumerateJsonFiles(Path.Combine(packageRoot, "personality_background")),
+            PlayerExportsDataType.VoiceMapping => new[] { Path.Combine(packageRoot, "voice_mapping", "VoiceMapping.json") },
+            PlayerExportsDataType.EventData => EnumerateJsonFiles(Path.Combine(packageRoot, "event_data")),
+            PlayerExportsDataType.UnnamedPersona => new[] { Path.Combine(packageRoot, "unnamed_persona", "UnnamedNpcProfiles.json") },
+            _ => Array.Empty<string>()
+        };
+    }
+
+    private static IEnumerable<string> EnumerateJsonFiles(string directory)
+    {
+        return Directory.Exists(directory)
+            ? Directory.EnumerateFiles(directory, "*.json")
+            : Array.Empty<string>();
+    }
+
+    private static string CreateUniqueDeletedRoot(string packageRoot)
+    {
+        var root = Path.GetFullPath(packageRoot);
+        var basePath = Path.Combine(root, ".deleted_files", DateTime.Now.ToString("yyyyMMdd_HHmmss"));
+        var candidate = basePath;
+        for (var i = 2; Directory.Exists(candidate); i++)
+        {
+            candidate = basePath + "_" + i;
+        }
+
+        Directory.CreateDirectory(candidate);
+        return candidate;
+    }
+
+    private static string MoveJsonFileToDeletedRoot(string packageRoot, string filePath, string deletedRoot)
+    {
+        var root = Path.GetFullPath(packageRoot);
+        var source = Path.GetFullPath(filePath);
+        var relative = Path.GetRelativePath(root, source);
+        if (relative.StartsWith("..", StringComparison.Ordinal) || Path.IsPathRooted(relative))
+        {
+            throw new InvalidOperationException("File is outside the package root.");
+        }
+
+        if (!File.Exists(source))
+        {
+            throw new FileNotFoundException("JSON file was not found.", source);
+        }
+
+        var target = Path.Combine(Path.GetFullPath(deletedRoot), relative);
+        Directory.CreateDirectory(Path.GetDirectoryName(target) ?? deletedRoot);
+        File.Move(source, target);
+        return target;
     }
 
     private PlayerExportsPackageInfo BuildPackageInfo(string packagePath)

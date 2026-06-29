@@ -714,15 +714,59 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyGroup("7. NPC主动接触")]
 	public int ProactiveNpcRequestPrisonerRatioThresholdPercent { get; set; } = 90;
 
-	[SettingPropertyFloatingInteger("已知履历需求倍率", 1f, 5f, "0.0", Order = 13, RequireRestart = false, HintText = "NPC 已经知晓玩家重大履历时，需求驱动主动接触概率的倍率。默认 2.0。")]
+	[SettingPropertyInteger("低士气阈值", 0, 100, "0", Order = 13, RequireRestart = false, HintText = "NPC 领主队伍士气低于或等于该值时，可以触发低士气主动接触；0 表示关闭该需求。正常游玩默认 35。")]
+	[SettingPropertyGroup("7. NPC主动接触")]
+	public int ProactiveNpcRequestLowMoraleThreshold { get; set; } = 35;
+
+	[SettingPropertyInteger("缺马比例阈值(%)", 0, 100, "0", Order = 14, RequireRestart = false, HintText = "NPC 领主队伍坐骑数量低于队伍人数的该比例时，可以触发缺马/机动不足主动接触；0 表示关闭该需求。正常游玩默认 25。")]
+	[SettingPropertyGroup("7. NPC主动接触")]
+	public int ProactiveNpcRequestMountRatioThresholdPercent { get; set; } = 25;
+
+	[SettingPropertyInteger("负重压力阈值(%)", 50, 150, "0", Order = 15, RequireRestart = false, HintText = "NPC 领主队伍总负重达到库存容量的该比例时，可以触发负重压力主动接触。正常游玩默认 92。")]
+	[SettingPropertyGroup("7. NPC主动接触")]
+	public int ProactiveNpcRequestOverburdenRatioThresholdPercent { get; set; } = 92;
+
+	[SettingPropertyInteger("家族金库阈值", 0, 200000, "0", Order = 16, RequireRestart = false, HintText = "NPC 家族金库低于该值时，可以触发家族财政紧张主动接触；0 表示不看金库。正常游玩默认 15000。")]
+	[SettingPropertyGroup("7. NPC主动接触")]
+	public int ProactiveNpcRequestClanGoldThreshold { get; set; } = 15000;
+
+	[SettingPropertyInteger("家族债务阈值", 0, 200000, "0", Order = 17, RequireRestart = false, HintText = "NPC 家族欠王国债务高于该值时，可以触发家族财政紧张主动接触；0 表示不看债务。正常游玩默认 5000。")]
+	[SettingPropertyGroup("7. NPC主动接触")]
+	public int ProactiveNpcRequestClanDebtThreshold { get; set; } = 5000;
+
+	[SettingPropertyInteger("联姻压力成人阈值", 1, 12, "0", Order = 18, RequireRestart = false, HintText = "NPC 家族成年核心成员数量小于或等于该值，且存在成年未婚家族成员时，可以触发继承/联姻压力主动接触。正常游玩默认 3。")]
+	[SettingPropertyGroup("7. NPC主动接触")]
+	public int ProactiveNpcRequestMarriageAdultClanThreshold { get; set; } = 3;
+
+	[SettingPropertyInteger("封地忠诚阈值", 0, 100, "0", Order = 19, RequireRestart = false, HintText = "NPC 家族封地忠诚低于或等于该值时，可以触发封地治理焦虑主动接触；0 表示不看忠诚。正常游玩默认 35。")]
+	[SettingPropertyGroup("7. NPC主动接触")]
+	public int ProactiveNpcRequestFiefLoyaltyThreshold { get; set; } = 35;
+
+	[SettingPropertyInteger("封地治安阈值", 0, 100, "0", Order = 20, RequireRestart = false, HintText = "NPC 家族封地治安低于或等于该值时，可以触发封地治理焦虑主动接触；0 表示不看治安。正常游玩默认 35。")]
+	[SettingPropertyGroup("7. NPC主动接触")]
+	public int ProactiveNpcRequestFiefSecurityThreshold { get; set; } = 35;
+
+	[SettingPropertyInteger("封地驻军阈值", 0, 1000, "0", Order = 21, RequireRestart = false, HintText = "NPC 家族封地驻军低于或等于该值时，可以触发封地治理焦虑主动接触；0 表示不看驻军。正常游玩默认 80。")]
+	[SettingPropertyGroup("7. NPC主动接触")]
+	public int ProactiveNpcRequestFiefGarrisonThreshold { get; set; } = 80;
+
+	[SettingPropertyInteger("孤立影响力阈值", 0, 500, "0", Order = 22, RequireRestart = false, HintText = "NPC 家族影响力低于或等于该值时，结合盟友数量可以触发缺少盟友主动接触；0 表示不看影响力。正常游玩默认 40。")]
+	[SettingPropertyGroup("7. NPC主动接触")]
+	public int ProactiveNpcRequestIsolationInfluenceThreshold { get; set; } = 40;
+
+	[SettingPropertyInteger("孤立友好家族上限", 0, 10, "0", Order = 23, RequireRestart = false, HintText = "同王国内与 NPC 家族关系达到 20 以上的友好家族数量小于或等于该值时，结合低影响力或敌对关系可以触发缺少盟友主动接触。正常游玩默认 1。")]
+	[SettingPropertyGroup("7. NPC主动接触")]
+	public int ProactiveNpcRequestIsolationMaxFriendlyClans { get; set; } = 1;
+
+	[SettingPropertyFloatingInteger("已知履历需求倍率", 1f, 5f, "0.0", Order = 24, RequireRestart = false, HintText = "NPC 已经知晓玩家重大履历时，需求驱动主动接触概率的倍率。默认 2.0。")]
 	[SettingPropertyGroup("7. NPC主动接触")]
 	public float ProactiveNpcKnownMajorMultiplier { get; set; } = 2f;
 
-	[SettingPropertyFloatingInteger("知名度触发倍率", 0f, 3f, "0.0", Order = 14, RequireRestart = false, HintText = "玩家有效知名度转化为 NPC 主动接触额外概率的倍率。正常游玩默认 0.35。")]
+	[SettingPropertyFloatingInteger("知名度触发倍率", 0f, 3f, "0.0", Order = 25, RequireRestart = false, HintText = "玩家有效知名度转化为 NPC 主动接触额外概率的倍率。正常游玩默认 0.35。")]
 	[SettingPropertyGroup("7. NPC主动接触")]
 	public float ProactiveNpcNotorietyChanceMultiplier { get; set; } = 0.35f;
 
-	[SettingPropertyInteger("最低需求紧急度", 0, 100, "0", Order = 15, RequireRestart = false, HintText = "NPC 主动接触必须达到的最低需求紧急度；测试模式下运行时按 0 处理。正常游玩默认 60。")]
+	[SettingPropertyInteger("最低需求紧急度", 0, 100, "0", Order = 26, RequireRestart = false, HintText = "NPC 主动接触必须达到的最低需求紧急度；测试模式下运行时按 0 处理。正常游玩默认 60。")]
 	[SettingPropertyGroup("7. NPC主动接触")]
 	public int ProactiveNpcMinNeedUrgency { get; set; } = 60;
 
@@ -1119,17 +1163,21 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyGroup("12. 事件系统（开发）")]
 	public bool EnablePlayerKingdomRebellionImmunity { get; set; } = false;
 
-	[SettingPropertyBool("NPC回应无限数量", Order = 0, RequireRestart = false, HintText = "仅影响攻城后处置(GCCZ)场景。开启后，NPC对处置标签的环境回应、以及玩家集体喊话可回应的NPC不再套用下方 1-10 人数限制；关闭后使用下方人数上限。")]
-	[SettingPropertyGroup("13. GCCZ攻城后处置")]
+[SettingPropertyBool("NPC回应无限数量", Order = 0, RequireRestart = false, HintText = "仅影响攻城后处置(GCCZ)场景。开启后，NPC对处置标签的环境回应、以及玩家集体喊话可回应的NPC不再套用下方 1-10 人数限制；关闭后使用下方人数上限。")]
+	[SettingPropertyGroup("14. GCCZ攻城后处置")]
 	public bool GcczNpcResponseUnlimited { get; set; } = true;
 
 	[SettingPropertyInteger("NPC回应数量限制", SiegeNpcResponseLimitProfile.MinResponseLimit, SiegeNpcResponseLimitProfile.MaxResponseLimit, "0", Order = 1, RequireRestart = false, HintText = "关闭“NPC回应无限数量”后生效：限制每次GCCZ处置标签环境回应、以及玩家一次集体喊话最多有多少NPC开口回应。范围 1-10。")]
-	[SettingPropertyGroup("13. GCCZ攻城后处置")]
+	[SettingPropertyGroup("14. GCCZ攻城后处置")]
 	public int GcczNpcResponseLimit { get; set; } = SiegeNpcResponseLimitProfile.DefaultResponseLimit;
 
 	[SettingPropertyButton("导出GCCZ_Debug.log", -1, true, "", Content = "导出到桌面", Order = 2, RequireRestart = false, HintText = "将当前模块 Logs 文件夹里的 GCCZ_Debug.log 复制到桌面，文件名会带时间戳。原始日志通常在 Bannerlord/Modules/AnimusForge_对应版本/Logs/GCCZ_Debug.log。")]
-	[SettingPropertyGroup("13. GCCZ攻城后处置")]
+	[SettingPropertyGroup("14. GCCZ攻城后处置")]
 	public Action ExportGcczDebugLog { get; set; }
+
+	[SettingPropertyBool("允许 NPC 拥有自己的臣属国/朝贡国", Order = 0, RequireRestart = false, HintText = "开启后，NPC-NPC 议和时，主动求和且国力明显较弱的一方有低概率成为对方朝贡国。关闭后只阻止新建 NPC 朝贡；已有 NPC 朝贡协议继续贡赋、保护战与和平同步。默认开启。")]
+	[SettingPropertyGroup("12. 臣属国系统")]
+	public bool EnableNpcTributaryVassalage { get; set; } = true;
 
 
 	public bool UseMcmKnowledgeRetrieval { get; set; } = true;
@@ -1372,6 +1420,18 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		catch
 		{
 			return false;
+		}
+	}
+
+	public static bool IsNpcTributaryVassalageEnabled()
+	{
+		try
+		{
+			return GetSettings()?.EnableNpcTributaryVassalage ?? true;
+		}
+		catch
+		{
+			return true;
 		}
 	}
 

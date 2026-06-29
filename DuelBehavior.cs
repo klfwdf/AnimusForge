@@ -2146,7 +2146,7 @@ public class DuelBehavior : CampaignBehaviorBase
 				blockedReason = "map scene wrapper is missing";
 				return false;
 			}
-			TerrainType faceTerrainType = mapSceneWrapper.GetFaceTerrainType(MobileParty.MainParty.CurrentNavigationFace);
+			TerrainType faceTerrainType = BannerlordApiCompat.ResolveTerrainTypeForParty(MobileParty.MainParty, TerrainType.Plain, allowNavigationFaceFallback: false);
 			if (IsWaterOrSeaTerrain(faceTerrainType))
 			{
 				blockedReason = "terrain is not a wilderness land terrain: " + faceTerrainType;
@@ -2200,7 +2200,7 @@ public class DuelBehavior : CampaignBehaviorBase
 			MobileParty mainParty = MobileParty.MainParty;
 			if (mapSceneWrapper != null && mainParty != null)
 			{
-				TerrainType terrainType = mapSceneWrapper.GetFaceTerrainType(mainParty.CurrentNavigationFace);
+				TerrainType terrainType = BannerlordApiCompat.ResolveTerrainTypeForParty(mainParty, TerrainType.Plain, allowNavigationFaceFallback: false);
 				if (!IsWaterOrSeaTerrain(terrainType))
 				{
 					return terrainType;
@@ -2433,6 +2433,84 @@ public class DuelBehavior : CampaignBehaviorBase
 		return default;
 	}
 
+	private static void ClearPlayerEncounterProperty()
+	{
+		try
+		{
+			if (Campaign.Current != null)
+			{
+				typeof(Campaign).GetProperty("PlayerEncounter", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)?.SetValue(Campaign.Current, null);
+			}
+		}
+		catch
+		{
+		}
+	}
+
+	private static MapEvent GetCurrentPlayerEncounterMapEvent()
+	{
+		try
+		{
+			return GetPrivateField<MapEvent>(PlayerEncounter.Current, "_mapEvent");
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static void CleanupWildernessDuelMapEventAndPlayerEncounter(MapEvent mapEvent, string source)
+	{
+		try
+		{
+			if (mapEvent != null)
+			{
+				try
+				{
+					SetPrivateField(mapEvent, "_mapEventResultsApplied", true);
+				}
+				catch
+				{
+				}
+				if (!mapEvent.IsFinalized)
+				{
+					mapEvent.ResetBattleState();
+					mapEvent.FinalizeEvent();
+					Logger.Log("DuelBehavior", "[WildernessDuel] finalized duel map event source=" + source);
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("DuelBehavior", "[WildernessDuel][WARN] cleanup map event failed source=" + source + ": " + ex.Message);
+		}
+		try
+		{
+			PlayerEncounter current = PlayerEncounter.Current;
+			if (current == null)
+			{
+				return;
+			}
+			MapEvent currentMapEvent = GetPrivateField<MapEvent>(current, "_mapEvent");
+			if ((mapEvent != null && ReferenceEquals(currentMapEvent, mapEvent)) || IsWildernessDuelMapEvent(currentMapEvent))
+			{
+				PlayerEncounter.LeaveEncounter = true;
+				current.IsPlayerWaiting = false;
+				SetPlayerEncounterState(current, "End");
+				SetPrivateField(current, "_stateHandled", true);
+				SetPrivateField<object>(current, "_campaignBattleResult", null);
+				SetPrivateField<MapEvent>(current, "_mapEvent", null);
+				SetPrivateField<PartyBase>(current, "_encounteredParty", null);
+				ClearPlayerEncounterProperty();
+				Logger.Log("DuelBehavior", "[WildernessDuel] cleared player encounter context source=" + source);
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("DuelBehavior", "[WildernessDuel][WARN] cleanup player encounter failed source=" + source + ": " + ex.Message);
+		}
+	}
+
 	private static void ResetWildernessDuelOpeningState()
 	{
 		_arenaMissionActive = false;
@@ -2604,7 +2682,7 @@ public class DuelBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			return IsWildernessDuelMapEvent(MapEvent.PlayerMapEvent);
+			return IsWildernessDuelMapEvent(MapEvent.PlayerMapEvent) || IsWildernessDuelMapEvent(GetCurrentPlayerEncounterMapEvent());
 		}
 		catch
 		{
@@ -2641,6 +2719,10 @@ public class DuelBehavior : CampaignBehaviorBase
 			if (_wildernessDuelRuntime != null && !_wildernessDuelRuntime.CleanupDone)
 			{
 				CleanupWildernessDuelRuntime(_wildernessDuelRuntime, source);
+			}
+			else
+			{
+				CleanupWildernessDuelMapEventAndPlayerEncounter(mapEvent, source);
 			}
 			SetPlayerEncounterState(encounter, "End");
 			SetPrivateField(encounter, "_stateHandled", true);
@@ -2792,6 +2874,7 @@ public class DuelBehavior : CampaignBehaviorBase
 					}
 				}
 			}
+			CleanupWildernessDuelMapEventAndPlayerEncounter(runtime.MapEvent, source);
 			if (dummy != null && dummy.IsActive && (dummy.StringId ?? "").StartsWith(WildernessDuelDummyPartyPrefix, StringComparison.Ordinal))
 			{
 				try
@@ -2814,20 +2897,6 @@ public class DuelBehavior : CampaignBehaviorBase
 				Instance._targetCharacter = null;
 				Instance._targetAgentIndex = -1;
 				Instance._targetDisplayName = "";
-			}
-			try
-			{
-				PlayerEncounter current = PlayerEncounter.Current;
-				if (current != null && IsWildernessDuelMapEvent(GetPrivateField<MapEvent>(current, "_mapEvent")))
-				{
-					PlayerEncounter.LeaveEncounter = true;
-					current.IsPlayerWaiting = false;
-					SetPlayerEncounterState(current, "End");
-					SetPrivateField(current, "_stateHandled", true);
-				}
-			}
-			catch
-			{
 			}
 			Logger.Log("DuelBehavior", "[WildernessDuel] cleanup source=" + source);
 		}
@@ -2972,6 +3041,7 @@ public class DuelBehavior : CampaignBehaviorBase
 		}
 		try
 		{
+			CleanupWildernessDuelRuntime(_wildernessDuelRuntime, "return_to_map");
 			if (PlayerEncounter.Current != null)
 			{
 				PlayerEncounter.LeaveEncounter = true;

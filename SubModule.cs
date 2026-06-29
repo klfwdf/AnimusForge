@@ -217,6 +217,46 @@ public class SubModule : MBSubModuleBase
 			}
 			try
 			{
+				KingdomDecisionCleanupSafePatch.EnsurePatched(harmony);
+			}
+			catch (Exception ex8ab)
+			{
+				Logger.LogTrace("SubModule", ">>> KingdomDecisionCleanupSafePatch init failed: " + ex8ab.Message);
+			}
+			try
+			{
+				WorkshopDailyTickSafetyPatch.EnsurePatched(harmony);
+			}
+			catch (Exception ex8ac)
+			{
+				Logger.LogTrace("SubModule", ">>> WorkshopDailyTickSafetyPatch init failed: " + ex8ac.Message);
+			}
+			try
+			{
+				MapSceneTerrainTypeSafePatch.EnsurePatched(harmony);
+			}
+			catch (Exception ex8ad)
+			{
+				Logger.LogTrace("SubModule", ">>> MapSceneTerrainTypeSafePatch init failed: " + ex8ad.Message);
+			}
+			try
+			{
+				HeroClosestSettlementSafePatch.EnsurePatched(harmony);
+			}
+			catch (Exception ex8ae)
+			{
+				Logger.LogTrace("SubModule", ">>> HeroClosestSettlementSafePatch init failed: " + ex8ae.Message);
+			}
+			try
+			{
+				AnimusForgeMobilePartyAiSafetyPatch.EnsurePatched(harmony);
+			}
+			catch (Exception ex8af)
+			{
+				Logger.LogTrace("SubModule", ">>> AnimusForgeMobilePartyAiSafetyPatch init failed: " + ex8af.Message);
+			}
+			try
+			{
 				Patch_Conversation_Start_Intercept.ManualPatch(harmony);
 			}
 			catch (Exception ex8b)
@@ -399,6 +439,14 @@ public class SubModule : MBSubModuleBase
 			catch (Exception ex18e)
 			{
 				Logger.LogTrace("SubModule", ">>> RewardSystem patches init failed: " + ex18e.Message);
+			}
+			try
+			{
+				NobleGatheringBehavior.RegisterHarmonyPatches(harmony);
+			}
+			catch (Exception ex18f)
+			{
+				Logger.LogTrace("SubModule", ">>> NobleGathering patches init failed: " + ex18f.Message);
 			}
 			Logger.LogTrace("SubModule", ">>> Harmony patches applied.");
 		}

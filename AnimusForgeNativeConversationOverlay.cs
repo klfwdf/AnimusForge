@@ -16,6 +16,8 @@ public sealed class AnimusForgeNativeConversationOverlay
 {
 	private const int WaitingDotsIntervalMilliseconds = 350;
 
+	private static readonly TimeSpan LongNpcReplyUnlockDelay = TimeSpan.FromMinutes(1.0);
+
 	private const string EncyclopediaLayerName = "EncyclopediaBar";
 
 	private const string MissionEscapeMenuLayerName = "MissionEscapeMenu";
@@ -57,6 +59,12 @@ public sealed class AnimusForgeNativeConversationOverlay
 	private int _waitingDotsPhase;
 
 	private long _nextWaitingDotsUpdateUtcTicks;
+
+	private long _waitingForReplyStartedUtcTicks;
+
+	private bool _longWaitEscapeUnlockAvailable;
+
+	private bool _longWaitEscapeNoticeShown;
 
 	private readonly object _postprocessNoticeLock = new object();
 
@@ -165,6 +173,7 @@ public sealed class AnimusForgeNativeConversationOverlay
 		ProcessPostRestoreNativeAnswerRestore();
 		FlushPendingPostprocessNotice();
 		UpdateWaitingDotsAnimation();
+		TickLongWaitEscapeUnlock();
 		_dataSource.SetPersonaEditVisible(ShoutBehavior.CanEditNativeConversationNpcForExternal());
 		_dataSource.SetTagTestVisible(ShoutBehavior.CanOpenNativeConversationTagTestForExternal());
 		TryStartPendingNpcOpening();
@@ -878,6 +887,9 @@ public sealed class AnimusForgeNativeConversationOverlay
 		_waitingDotsGeneration = generation;
 		_waitingDotsPhase = 0;
 		_nextWaitingDotsUpdateUtcTicks = 0L;
+		_waitingForReplyStartedUtcTicks = DateTime.UtcNow.Ticks;
+		_longWaitEscapeUnlockAvailable = false;
+		_longWaitEscapeNoticeShown = false;
 		_waitingDotsActive = true;
 		UpdateWaitingDotsAnimation(force: true);
 	}
@@ -894,6 +906,9 @@ public sealed class AnimusForgeNativeConversationOverlay
 	{
 		_waitingDotsActive = false;
 		_nextWaitingDotsUpdateUtcTicks = 0L;
+		_waitingForReplyStartedUtcTicks = 0L;
+		_longWaitEscapeUnlockAvailable = false;
+		_longWaitEscapeNoticeShown = false;
 	}
 
 	private void UpdateWaitingDotsAnimation(bool force = false)
@@ -924,6 +939,84 @@ public sealed class AnimusForgeNativeConversationOverlay
 			return "...";
 		default:
 			return "";
+		}
+	}
+
+	private void TickLongWaitEscapeUnlock()
+	{
+		if (!_isSubmitting || !_waitingDotsActive || _waitingDotsGeneration != _submitGeneration || !_dataSource.IsCustomAnswerVisible)
+		{
+			_longWaitEscapeUnlockAvailable = false;
+			return;
+		}
+		long startedTicks = _waitingForReplyStartedUtcTicks;
+		if (startedTicks <= 0L)
+		{
+			return;
+		}
+		if (!_longWaitEscapeNoticeShown && DateTime.UtcNow.Ticks - startedTicks >= LongNpcReplyUnlockDelay.Ticks)
+		{
+			_longWaitEscapeNoticeShown = true;
+			_longWaitEscapeUnlockAvailable = true;
+			ShowLongWaitEscapeNotice();
+		}
+		if (_longWaitEscapeUnlockAvailable && ShouldUnlockLongWaitForEscapeKey())
+		{
+			ReleaseLongWaitUiLock();
+		}
+	}
+
+	private bool ShouldUnlockLongWaitForEscapeKey()
+	{
+		try
+		{
+			if (_layer?.Input != null && (_layer.Input.IsHotKeyReleased("Exit") || _layer.Input.IsKeyReleased(InputKey.Escape)))
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			return Input.IsKeyReleased(InputKey.Escape);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private void ReleaseLongWaitUiLock()
+	{
+		if (_isClosed || !_longWaitEscapeUnlockAvailable)
+		{
+			return;
+		}
+		_longWaitEscapeUnlockAvailable = false;
+		_longWaitEscapeNoticeShown = false;
+		Logger.Log("NativeConversationOverlay", "Long NPC reply wait unlocked by ESC. Generation=" + _submitGeneration);
+		SetInputVisible(false);
+		try
+		{
+			InformationManager.DisplayMessage(new InformationMessage("已解除自由对话 UI 锁定。", new Color(0.35f, 1f, 0.35f)));
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("NativeConversationOverlay", "[WARN] Failed to show long-wait unlock message: " + ex.Message);
+		}
+	}
+
+	private static void ShowLongWaitEscapeNotice()
+	{
+		try
+		{
+			InformationManager.DisplayMessage(new InformationMessage("NPC长时间未回复，现在可以按ESC解除UI锁定限制。", new Color(1f, 0.95f, 0.25f)));
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("NativeConversationOverlay", "[WARN] Failed to show long-wait escape notice: " + ex.Message);
 		}
 	}
 

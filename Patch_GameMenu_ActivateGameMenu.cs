@@ -41,6 +41,11 @@ public static class Patch_GameMenu_ActivateGameMenu
 				Logger.LogTrace("UI_Intercept", "Custom encounter menu activation suppressed while meeting battle is returning to the world map.");
 				return false;
 			}
+			if (menuId == "AnimusForge_lord_encounter" && LordEncounterBehavior.IsNativeSettlementRequestMeetingContext())
+			{
+				Logger.LogTrace("UI_Intercept", "Custom encounter menu activation suppressed during native hostile settlement request meeting.");
+				return false;
+			}
 			if (menuId == "AnimusForge_lord_encounter" && MapSeaContextGuard.IsCurrentPlayerEncounterAtSea())
 			{
 				Logger.LogTrace("UI_Intercept", "Custom encounter menu activation requested at sea; redirecting back to native 'encounter' menu.");
@@ -81,6 +86,11 @@ public static class Patch_GameMenu_ActivateGameMenu
 				Logger.LogTrace("UI_Intercept", "Native encounter activity context detected; keep native 'encounter' menu.");
 				return true;
 			}
+			if (LordEncounterBehavior.IsNativeSettlementRequestMeetingContext())
+			{
+				Logger.LogTrace("UI_Intercept", "Native hostile settlement request meeting detected; keep native 'encounter' menu.");
+				return true;
+			}
 			if (MapSeaContextGuard.IsCurrentPlayerEncounterAtSea())
 			{
 				Logger.LogTrace("UI_Intercept", "Sea encounter context detected; keep native 'encounter' menu.");
@@ -108,9 +118,9 @@ public static class Patch_GameMenu_ActivateGameMenu
 						return true;
 					}
 					MapEvent mapEvent = PlayerEncounterCompat.GetCurrentMapEventSafe();
-					if (mapEvent != null)
+					if (PlayerEncounterCompat.IsResolvedMapEvent(mapEvent))
 					{
-						Logger.LogTrace("UI_Intercept", "Active encounter battle context detected; keep native 'encounter' menu.");
+						Logger.LogTrace("UI_Intercept", "Resolved encounter battle context detected; keep native 'encounter' menu.");
 						return true;
 					}
 				}

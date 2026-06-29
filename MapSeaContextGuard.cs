@@ -370,14 +370,6 @@ internal static class MapSeaContextGuard
 			}
 			try
 			{
-				terrainType = mapSceneWrapper.GetFaceTerrainType(party.CurrentNavigationFace);
-				return true;
-			}
-			catch
-			{
-			}
-			try
-			{
 				if (party.Position.IsValid())
 				{
 					CampaignVec2 position = party.Position;
@@ -399,6 +391,8 @@ internal static class MapSeaContextGuard
 			catch
 			{
 			}
+			terrainType = BannerlordApiCompat.ResolveTerrainTypeForParty(party, TerrainType.Plain, allowNavigationFaceFallback: false);
+			return true;
 		}
 		catch
 		{

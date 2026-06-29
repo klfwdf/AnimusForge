@@ -9,7 +9,7 @@ namespace AnimusForge;
 
 public sealed class AnimusForgeSettlementLoyaltyModel : SettlementLoyaltyModel
 {
-	private static readonly TextObject KingdomStabilityText = new TextObject("王国稳定度现状");
+	private static readonly TextObject KingdomStabilityText = new TextObject("王国稳定度与王室直辖地");
 
 	private readonly SettlementLoyaltyModel _inner;
 

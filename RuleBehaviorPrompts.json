@@ -493,15 +493,15 @@
             "PostprocessRules": [
                 {
                     "Tag": "[ACTION:ISSUE_ACCEPT_SELF]",
-                    "Description": "Output only when the NPC clearly assigns the current original-game Issue quest to the player in <latest_reply>. Never output for a player command ordering the NPC to form a party, receive troops, travel, patrol, follow, attack, or otherwise act on the world map."
+                    "Description": "仅当 <latest_reply> 中 NPC 明确把当前原版 Issue 任务正式交给玩家本人，并且该任务会作为进行中的个人任务继续存在时，才输出此标签。若本轮只是介绍任务、询问意向、谈条件、拒绝、拖延、玩家单方面说接了、直接买断/付款后立刻结算，或玩家是在命令 NPC 组建部队、接收士兵、旅行、巡逻、跟随、攻击、处理世界地图命令，一律不得输出。"
                 },
                 {
                     "Tag": "[ACTION:ISSUE_ACCEPT_ALT:COMPANION=HeroId]",
-                    "Description": "Output only when the NPC clearly accepts that a named companion candidate will handle the current original-game Issue quest for the player. HeroId must be one of the provided companion candidates. Never output for creating a companion party or commanding a companion party on the world map."
+                    "Description": "仅当 <latest_reply> 中 NPC 明确同意由玩家点名的某个同伴候选人代办当前原版 Issue 任务时，才输出此标签。HeroId 必须来自系统提供的同伴候选清单。玩家未点名、点名对象不在候选清单、NPC 还在追问或未明确同意时不得输出；选择普通士兵、创建同伴部队、NPC 接收玩家给的士兵、或对同伴部队下达世界地图命令时也不得输出。"
                 },
                 {
                     "Tag": "[ACTION:QUEST_TURN_IN]",
-                    "Description": "Output only when the NPC clearly confirms the current original-game Issue quest is complete and formally turns it in. Do not use this for completion, cancellation, or results of WORLDMAP_ORDER commands."
+                    "Description": "仅当系统当前已处于可交付状态，并且 <latest_reply> 中 NPC 明确确认当前原版 Issue 任务已经完成、正式验收并交付时，才输出此标签。玩家单方面声称完成、NPC 仍在追问或质疑、任务取消/失败、或 WORLDMAP_ORDER 命令的完成结果，一律不得输出。"
                 }
             ],
             "RuntimeInstructionTemplates": {

@@ -29,7 +29,7 @@ namespace AnimusForge;
 
 public static class AIConfigHandler
 {
-	private const int ActionPostprocessMaxHistoryAndLatestEntries = 5;
+	private const int ActionPostprocessMaxHistoryAndLatestEntries = 8;
 	private const int ActionPostprocessRequestTimeoutMilliseconds = 120000;
 	private const string KingAbdicateToPlayerActionTag = "[ACTION:KING_ABDICATE_TO_PLAYER]";
 
@@ -988,6 +988,7 @@ public static class AIConfigHandler
 		List<ActionPostprocessHistoryEntry> entries = new List<ActionPostprocessHistoryEntry>();
 		string[] array = (historyText ?? "").Split('\n');
 		bool skipRecallBlock = false;
+		string pendingAfefPrefix = "";
 		string pendingRole = "";
 		StringBuilder pendingRoleContent = null;
 		int nextIndex = 0;
@@ -998,6 +999,7 @@ public static class AIConfigHandler
 			if (TryParseActionPostprocessRoleMarker(line, out var role))
 			{
 				FlushActionPostprocessRoleHistoryEntry(entries, ref nextIndex, pendingRole, pendingRoleContent);
+				pendingAfefPrefix = "";
 				pendingRole = role;
 				pendingRoleContent = new StringBuilder();
 				continue;
@@ -1015,8 +1017,14 @@ public static class AIConfigHandler
 			{
 				continue;
 			}
+			if (TryParseActionPostprocessAfefHeaderLine(line, out var afefPrefix))
+			{
+				pendingAfefPrefix = afefPrefix;
+				continue;
+			}
 			if (IsActionPostprocessRecallBlockStart(line))
 			{
+				pendingAfefPrefix = "";
 				skipRecallBlock = true;
 				continue;
 			}
@@ -1032,11 +1040,32 @@ public static class AIConfigHandler
 				}
 			}
 			string text = StripActionPostprocessHistoryInnerThoughts(line);
-			if (string.IsNullOrWhiteSpace(text) || ShouldSkipActionPostprocessHistoryLine(text))
+			if (string.IsNullOrWhiteSpace(text))
 			{
 				continue;
 			}
-			text = NormalizeActionPostprocessHistoryLine(text);
+			if (!string.IsNullOrWhiteSpace(pendingAfefPrefix))
+			{
+				if (ShouldSkipActionPostprocessHistoryLine(text))
+				{
+					pendingAfefPrefix = "";
+					continue;
+				}
+				text = NormalizeActionPostprocessHistoryLine(text);
+				if (!text.StartsWith("[AFEF", StringComparison.Ordinal))
+				{
+					text = (pendingAfefPrefix + " " + text).Trim();
+				}
+				pendingAfefPrefix = "";
+			}
+			else
+			{
+				if (ShouldSkipActionPostprocessHistoryLine(text))
+				{
+					continue;
+				}
+				text = NormalizeActionPostprocessHistoryLine(text);
+			}
 			if (string.IsNullOrWhiteSpace(text))
 			{
 				continue;
@@ -1058,6 +1087,23 @@ public static class AIConfigHandler
 		}
 		FlushActionPostprocessRoleHistoryEntry(entries, ref nextIndex, pendingRole, pendingRoleContent);
 		return entries;
+	}
+
+	private static bool TryParseActionPostprocessAfefHeaderLine(string line, out string prefix)
+	{
+		string text = (line ?? "").Trim();
+		if (text.Equals("【AFEF玩家行为补充】", StringComparison.Ordinal) || text.Equals("[AFEF玩家行为补充]", StringComparison.Ordinal))
+		{
+			prefix = "[AFEF玩家行为补充]";
+			return true;
+		}
+		if (text.Equals("【AFEF NPC行为补充】", StringComparison.Ordinal) || text.Equals("[AFEF NPC行为补充]", StringComparison.Ordinal))
+		{
+			prefix = "[AFEF NPC行为补充]";
+			return true;
+		}
+		prefix = "";
+		return false;
 	}
 
 	private static bool TryParseActionPostprocessRoleMarker(string line, out string role)
@@ -1218,8 +1264,23 @@ public static class AIConfigHandler
 		text = ShoutUtils.StripConversationMetadataPrefix(text);
 		text = Regex.Replace(text, "^\\[AF_SCENE_SESSION:\\d+\\]\\s*", "", RegexOptions.CultureInvariant);
 		text = Regex.Replace(text, "^\\[[^\\]\\r\\n]*[｜|][^\\]\\r\\n]*\\]\\s*", "", RegexOptions.CultureInvariant);
+		text = NormalizeActionPostprocessAfefHistoryLine(text);
 		text = Regex.Replace(text, "^【[^】]*对(?:你|NPC|[^】]+)说】\\s*", "玩家: ", RegexOptions.CultureInvariant);
 		text = Regex.Replace(text, "\\s+", " ", RegexOptions.CultureInvariant).Trim();
+		return text;
+	}
+
+	private static string NormalizeActionPostprocessAfefHistoryLine(string line)
+	{
+		string text = (line ?? "").Trim();
+		if (text.StartsWith("【AFEF玩家行为补充】", StringComparison.Ordinal))
+		{
+			return "[AFEF玩家行为补充] " + text.Substring("【AFEF玩家行为补充】".Length).Trim();
+		}
+		if (text.StartsWith("【AFEF NPC行为补充】", StringComparison.Ordinal))
+		{
+			return "[AFEF NPC行为补充] " + text.Substring("【AFEF NPC行为补充】".Length).Trim();
+		}
 		return text;
 	}
 

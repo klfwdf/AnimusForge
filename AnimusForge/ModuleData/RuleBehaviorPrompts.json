@@ -23,7 +23,7 @@
         "PostprocessRules": [
             {
                 "Tag": "[ACTION:DUEL]",
-                "Description": "如果玩家和NPC都无条件同意或决定了真剑，武器，比武决斗，输出这个,只有一方同意不算，如果双方只是叫嚣也不算,如果还在讨论彩头和赌注，以及并非单挑而是群战，那么不允许输出这个"
+                "Description": "如果玩家和NPC都无条件正式同意或决定了真剑，武器，比武决斗，输出这个,只有一方同意不算，不是正式单挑，普通打架不算，如果双方只是叫嚣也不算,如果还在讨论彩头和赌注，以及并非单挑而是群战，那么不允许输出这个"
             },
             {
                 "Tag": "[AD;金额;天数;备注内容]",
@@ -57,7 +57,7 @@
             },
             {
                 "Tag": "[AD;金额;天数;备注内容]",
-                "Description": "如果对话中NPC欠了玩家任何事物或承诺，严禁输出此标签，NPC欠玩家不需要输出标签，此标签有两种用法，最常见的用法：在交易中如果NPC先给予了玩家物品或第纳尔或人或资产，但是玩家还未交付物品和第纳尔或人或资产(玩家是否交付，必须认准*[AFEF玩家行为补充] XXX（玩家名称）已经将 xxx(物品）交给 NPC*）。,必须在金额处填写玩家需要交付的全部事物的总价值，此时天数填1，备注内容请根据对话内容自由发挥 [赊账与承诺用法]：如果玩家想要向NPC借钱或者物品，NPC同意并交付了物品，那么在金额处填写玩家借到的所有事物的总价值，如果玩家承诺(如果是NPC承诺的，请勿输出此标签）未来给予NPC某个物品，第纳尔甚至领地，或者任意事项，请估算玩家承诺的事物的价值，在金额中填入，如果约定了期限，那么根据期限填写（天数说明：21天=一季度，84天=一年，不存在周的概念），如未规定，填写一天，备注内容根据对话内容自由发挥"
+                "Description": "【仅限玩家单方面债务/承诺】。当且仅当“玩家欠付NPC（如赊账）”或“玩家主动向NPC承诺未来给予事物（如物品、第纳尔、领地等）”时触发。金额=玩家应付/承诺的总价值；天数=约定期限（1季度=21天，1年=84天，无“周”，未约定填1,抽象事务填0）；备注=不少于50字的对话背景。⚠️绝对红线：若出现“NPC欠玩家”、“NPC向玩家承诺”（如NPC承诺付钱换取自由）或决斗赌注，【严禁】输出此标签！"
             },
             {
                 "Tag": "[ADP;债务ID]",
@@ -107,7 +107,7 @@
             },
             {
                 "Tag": "[AD;金额;天数;备注内容]",
-                "Description": "此标签有两种用法，最常见的用法：在交易中如果NPC先给予了玩家物品或第纳尔或人或资产，但是玩家还未交付物品和第纳尔或人或资产，可以在金额处填写玩家需要交付的全部事物的总价值，此时天数填1，备注内容请根据对话内容自由发挥 [赊账与承诺用法]：如果玩家想要向NPC借钱或者物品，NPC同意并交付了物品，那么在金额处填写玩家借到的所有事物的总价值，如果玩家承诺未来给予NPC某个物品，第纳尔甚至领地，或者任意事项，请估算玩家承诺的事物的价值，在金额中填入，如果约定了期限，那么根据期限填写（天数说明：21天=一季度，84天=一年，不存在周的概念），如未规定，填写一天，备注内容根据对话内容自由发挥（备注：此标签仅适用于玩家欠NPC债务和承诺，绝不可用于NPC欠玩家债务和承诺，以及此标签不适用于切磋和决斗的赌注，彩头,）"
+                "Description": "【仅限玩家单方面债务/承诺】。当且仅当“玩家欠付NPC（如赊账）”或“玩家主动向NPC承诺未来给予事物（如物品、第纳尔、领地等）”时触发。金额=玩家应付/承诺的总价值；天数=约定期限（1季度=21天，1年=84天，无“周”，未约定填1,抽象事务填0）；备注=不少于50字的对话背景。⚠️绝对红线：若出现“NPC欠玩家”、“NPC向玩家承诺”（如NPC承诺付钱换取自由）或决斗赌注，【严禁】输出此标签！"
             },
             {
                 "Tag": "[ADP;债务ID]",
@@ -486,35 +486,35 @@
             "TopicNumber": 11,
             "TopicLabel": "Vanilla issue quests only: NPC offers, accepts, tracks, or turns in original-game quests for the player",
             "Code": "ISSUE",
-            "NonHeroInstruction": "【原版任务规则】你不是有名有姓、能发布原版任务的NPC，请让玩家去寻找要人，头人或者领主与国王",
-            "Instruction": "【原版任务规则】只处理系统当前确实存在的原版任务状态：可发布、进行中、同伴代办进行中、可交付、刚完成、当前无任务。",
+            "NonHeroInstruction": "【原版任务规则】你不是有名有姓、能发布原版任务的英雄。本轮不得向玩家发布、验收或结算任何原版任务；若玩家来问差事、任务进度或交付，你只能口头说明自己无权处理，或引导他去找真正的委托人。",
+            "Instruction": "【原版任务规则】只处理系统当前确实存在的原版任务状态：可发布、进行中、同伴代办进行中、可交付、刚完成、当前无任务。你必须以本轮运行时状态为准，不得编造不存在的委托、目标、进度、完成结果、失败原因或奖励。\n[Intent boundary] This rule is only for original-game Issue quests assigned by the NPC to the player or turned in by the player. Player orders given to the NPC are not vanilla issues: forming a companion party, receiving player-supplied troops, traveling, patrolling, following, attacking looters/bandits/lords/settlements, solving trouble by command, stopping orders, or leading a detachment must route to WORLDMAP_ORDER or another specific rule, even if the player uses words like task, job, help, errand, handle this, deal with them, or solve this problem.\n【发布边界】只有当你在正文里最终明确把当前任务正式交给玩家时，才算真的发布；如果你还在介绍情况、试探、谈条件、反问、拒绝、挽留、拖延，或玩家只是说“我接了”，都不算已经接任务。\n【同伴代办边界】只有当玩家明确要求由同伴代办，且明确指定系统给出的可用同伴之一，而你也在正文里最终明确同意时，才算真的以同伴代办方式接取；如果玩家没点名、你还在追问、或目标不在系统候选里，就不算成立。\n【交付边界】只有当系统当前已处于可交付状态，且你在正文里最终明确确认任务完成并验收时，才算真的交付；如果你只是在讨论进度、提醒要求、质疑完成度、继续追问细节，或玩家单方面声称“我做完了”，都不算已经结算。\n【奖励边界】原版任务的奖励、声望、关系和日志推进由系统在交付成功后自动处理。你可以在正文里口头提及报酬，但不要把原版任务奖励当成普通交易或借贷，也不要自行转账、交货或生成别的经济标签。",
             "PostprocessRules": [
                 {
                     "Tag": "[ACTION:ISSUE_ACCEPT_SELF]",
-                    "Description": "Output only when the NPC clearly assigns the current original-game Issue quest to the player in <latest_reply>. Never output for a player command ordering the NPC to form a party, receive troops, travel, patrol, follow, attack, or otherwise act on the world map."
+                    "Description": "仅当 <latest_reply> 中 NPC 明确把当前原版 Issue 任务正式交给玩家本人且玩家本人同意时，才输出此标签。若本轮只是介绍任务、询问意向、谈条件、拒绝、拖延、玩家单方面说接了、直接买断/付款后立刻结算，或玩家是在命令 NPC 组建部队、接收士兵、旅行、巡逻、跟随、攻击、处理世界地图命令，一律不得输出。"
                 },
                 {
                     "Tag": "[ACTION:ISSUE_ACCEPT_ALT:COMPANION=HeroId]",
-                    "Description": "Output only when the NPC clearly accepts that a named companion candidate will handle the current original-game Issue quest for the player. HeroId must be one of the provided companion candidates. Never output for creating a companion party or commanding a companion party on the world map."
+                    "Description": "仅当 <latest_reply> 中 NPC 明确同意由玩家点名的某个同伴候选人代办当前原版 Issue 任务时，才输出此标签。HeroId 必须来自系统提供的同伴候选清单。玩家未点名、点名对象不在候选清单、NPC 还在追问或未明确同意时不得输出；选择普通士兵、创建同伴部队、NPC 接收玩家给的士兵、或对同伴部队下达世界地图命令时也不得输出。"
                 },
                 {
                     "Tag": "[ACTION:QUEST_TURN_IN]",
-                    "Description": "Output only when the NPC clearly confirms the current original-game Issue quest is complete and formally turns it in. Do not use this for completion, cancellation, or results of WORLDMAP_ORDER commands."
+                    "Description": "仅当系统当前已处于可交付状态，并且 <latest_reply> 中 NPC 明确确认当前原版 Issue 任务已经完成、正式验收并交付时，才输出此标签。玩家单方面声称完成、NPC 仍在追问或质疑、任务取消/失败、或 WORLDMAP_ORDER 命令的完成结果，一律不得输出。"
                 }
             ],
             "RuntimeInstructionTemplates": {
-                "offer": "【原版任务规则】当前你这里有一项可正式提供给玩家的任务,以及是否允许由指定的玩家同伴代办；",
-                "in_progress": "【原版任务规则】当前这项任务已经由玩家本人接下，任务仍在进行中。",
-                "in_progress_alternative": "【原版任务规则】当前这项任务已经交由玩家的一名同伴代办，任务仍在进行中。",
-                "ready_to_turn_in": "【原版任务规则】当前这项任务已经满足可交付条件。",
-                "recently_completed": "【原版任务规则】玩家最近刚完成过你的一项原版任务。",
-                "no_available": "【原版任务规则】你当前没有可委托的任务。。"
+                "offer": "【原版任务规则】当前你这里有一项可正式提供给玩家的原版任务。本轮只可讨论任务内容、接取条件、是否接受，以及是否允许由指定同伴代办；只有当你最终明确同意时，才算真的接取。",
+                "in_progress": "【原版任务规则】当前这项原版任务已经由玩家本人接下，任务仍在进行中。本轮只讨论进度、要求、期限、提醒和是否快完成；禁止再次发布同一任务，也禁止把未完成任务当成已交付。",
+                "in_progress_alternative": "【原版任务规则】当前这项原版任务已经交由玩家的一名同伴代办，任务仍在进行中。本轮只讨论代办进展、剩余时间、要求和提醒；禁止再次发布同一任务，也禁止把未完成任务当成已交付。",
+                "ready_to_turn_in": "【原版任务规则】当前这项原版任务已经满足可交付条件。本轮重点应放在验收、确认结果与结算；只有当你最终明确确认完成时，才算真的交付。",
+                "recently_completed": "【原版任务规则】玩家最近刚完成过你的一项原版任务。这条事实只用于承接后续对话，提醒你不要把刚完成的旧任务当成仍未完成，也不要立刻把同一件旧任务重新发给玩家。",
+                "no_available": "【原版任务规则】你当前没有可讨论的原版任务。本轮不得临时编造新委托；如果玩家来问差事、进度或交付，只能据实说明当前无事可托。"
             },
             "RuntimeConstraintTemplates": {
-                "offer_accept_only": "【运行时硬约束】当前状态是“可委托”。",
-                "offer_alt_requires_named_companion": "【运行时硬约束】若要以同伴代办方式接取，玩家必须明确点名系统候选中的某位同伴",
-                "progress_only": "【运行时硬约束】当前状态是“正在进行中”。",
-                "turn_in_only_when_ready": "【运行时硬约束】只有系统当前明确处于“可交付”状态。",
+                "offer_accept_only": "【运行时硬约束】当前状态是“可发布”。本轮只可讨论是否接取当前原版任务；若玩家未明确接受、未满足前提，或你未明确同意，就不准输出任何接取标签。",
+                "offer_alt_requires_named_companion": "【运行时硬约束】若要以同伴代办方式接取，玩家必须明确点名系统候选中的某位同伴；未点名、点错人、或你尚未明确同意时，严禁输出 [ACTION:ISSUE_ACCEPT_ALT:COMPANION=HeroId]。",
+                "progress_only": "【运行时硬约束】当前状态是“进行中”。本轮只可讨论任务进展，不准再次发布同一任务，也不准把未完成状态误判为已交付。",
+                "turn_in_only_when_ready": "【运行时硬约束】只有系统当前明确处于“可交付”状态，且你在正文里明确确认验收完成时，才可输出 [ACTION:QUEST_TURN_IN]；玩家单方面自称做完、或你仍在追问时，一律不得输出。",
                 "no_available": "【运行时硬约束】当前没有可用原版任务。本轮不得编造任务、奖励、进度或验收结果，也不准输出任何原版任务标签。"
             },
             "TriggerKeywords": [

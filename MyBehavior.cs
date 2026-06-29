@@ -1,5 +1,6 @@
 ﻿﻿﻿using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -1147,7 +1148,7 @@ public class MyBehavior : CampaignBehaviorBase
 
 		public int FailureCount;
 
-		public bool NearestKingdomWeeklyReportNotified;
+		public HashSet<string> WeeklyReportNoticeEventIdsQueued = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
 		public TaskCompletionSource<WeeklyReportGenerationResult> CompletionSource;
 	}
@@ -1720,6 +1721,8 @@ public class MyBehavior : CampaignBehaviorBase
 	private PendingAutomaticKingdomRebellionContext _pendingAutomaticKingdomRebellionContext;
 
 	private readonly List<PendingAutomaticKingdomRebellionContext> _queuedAutomaticKingdomRebellions = new List<PendingAutomaticKingdomRebellionContext>();
+
+	private readonly ConcurrentQueue<Action> _kingdomRebellionNamingMainThreadActions = new ConcurrentQueue<Action>();
 
 	private int _pendingAutoWeeklyReportWeek;
 
@@ -3255,10 +3258,13 @@ public class MyBehavior : CampaignBehaviorBase
 				RecordNpcRecentAction(leader2, text3, text + ":chooser", facts: npcActionFacts2);
 			}
 			string text4 = BuildKingdomDecisionSupporterSummary(decision, chosenOutcome);
+			string text5 = BuildKingdomDecisionPoliticalTriggerReason(decision, chosenOutcome);
+			text4 = AppendEventMaterialSentence(text4, text5);
 			if (!string.IsNullOrWhiteSpace(text4))
 			{
 				string kingdomId = GetKingdomId(decision.Kingdom);
-				RecordEventSourceMaterial("kingdom_decision_support", "决议支持明细 - " + GetKingdomDisplayName(decision.Kingdom, "该王国"), text4, text + ":supporters", kingdomId, "", includeInWorld: false, includeInKingdom: true);
+				string labelPrefix = string.IsNullOrWhiteSpace(text5) ? "决议支持明细" : "决议支持与触发原因";
+				RecordEventSourceMaterial("kingdom_decision_support", labelPrefix + " - " + GetKingdomDisplayName(decision.Kingdom, "该王国"), text4, text + ":supporters", kingdomId, "", includeInWorld: false, includeInKingdom: true);
 			}
 			if (isPlayerInvolved)
 			{
@@ -3465,6 +3471,7 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			text3 += " 原版事件细节：" + detailText.Trim() + "。";
 		}
+		text3 = AppendEventMaterialSentence(text3, BuildWarOrPeacePoliticalTriggerReason(materialKind, faction1, faction2, detailText));
 		string kingdomId = GetKingdomId(faction1);
 		string kingdomId2 = GetKingdomId(faction2);
 		string text4 = (materialKind ?? "diplomacy").Trim() + ":" + kingdomId + ":" + kingdomId2 + ":" + (detailText ?? "").Trim();
@@ -6501,6 +6508,2546 @@ public class MyBehavior : CampaignBehaviorBase
 		return (forProposer ? "你推动的" : "你所参与的") + kingdomDisplayName + "王国决议已有结果：" + text;
 	}
 
+	private static string AppendEventMaterialSentence(string text, string addition)
+	{
+		string text2 = (text ?? "").Trim();
+		string text3 = (addition ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text3))
+		{
+			return text2;
+		}
+		return string.IsNullOrWhiteSpace(text2) ? text3 : (text2 + " " + text3);
+	}
+
+	private static string BuildKingdomDecisionPoliticalTriggerReason(KingdomDecision decision, DecisionOutcome chosenOutcome)
+	{
+		try
+		{
+			if (decision is DeclareWarDecision declareWarDecision)
+			{
+				return BuildDeclareWarPoliticalTriggerReason(decision.Kingdom, declareWarDecision.FactionToDeclareWarOn, decision.ProposerClan, declareWarDecision, "KingdomDecision");
+			}
+			if (decision is MakePeaceKingdomDecision makePeaceKingdomDecision)
+			{
+				return BuildMakePeacePoliticalTriggerReason(decision.Kingdom, makePeaceKingdomDecision.FactionToMakePeaceWith, decision.ProposerClan, makePeaceKingdomDecision, "KingdomDecision");
+			}
+			if (decision is KingdomPolicyDecision kingdomPolicyDecision)
+			{
+				return BuildKingdomPolicyPoliticalTriggerReason(kingdomPolicyDecision);
+			}
+			if (decision is KingSelectionKingdomDecision kingSelectionKingdomDecision)
+			{
+				return BuildKingSelectionPoliticalTriggerReason(kingSelectionKingdomDecision, chosenOutcome);
+			}
+			if (decision is StartAllianceDecision startAllianceDecision)
+			{
+				return BuildStartAlliancePoliticalTriggerReason(startAllianceDecision, chosenOutcome);
+			}
+			if (decision is TradeAgreementDecision tradeAgreementDecision)
+			{
+				return BuildTradeAgreementPoliticalTriggerReason(tradeAgreementDecision, chosenOutcome);
+			}
+			if (decision is ProposeCallToWarAgreementDecision proposeCallToWarAgreementDecision)
+			{
+				return BuildProposeCallToWarPoliticalTriggerReason(proposeCallToWarAgreementDecision, chosenOutcome);
+			}
+			if (decision is AcceptCallToWarAgreementDecision acceptCallToWarAgreementDecision)
+			{
+				return BuildAcceptCallToWarPoliticalTriggerReason(acceptCallToWarAgreementDecision, chosenOutcome);
+			}
+			if (decision is ExpelClanFromKingdomDecision expelClanFromKingdomDecision)
+			{
+				return BuildExpelClanPoliticalTriggerReason(expelClanFromKingdomDecision, chosenOutcome);
+			}
+			if (decision is SettlementClaimantPreliminaryDecision settlementClaimantPreliminaryDecision)
+			{
+				return BuildSettlementClaimantPreliminaryPoliticalTriggerReason(settlementClaimantPreliminaryDecision, chosenOutcome);
+			}
+			if (decision is SettlementClaimantDecision settlementClaimantDecision)
+			{
+				return BuildSettlementClaimantPoliticalTriggerReason(settlementClaimantDecision, chosenOutcome);
+			}
+		}
+		catch
+		{
+		}
+		return "";
+	}
+
+	private static string BuildWarOrPeacePoliticalTriggerReason(string materialKind, IFaction faction1, IFaction faction2, string detailText)
+	{
+		try
+		{
+			if (string.Equals((materialKind ?? "").Trim(), "war_declared", StringComparison.OrdinalIgnoreCase))
+			{
+				return BuildDeclareWarPoliticalTriggerReason(faction1, faction2, ResolvePoliticalReasonEvaluatorClan(faction1), null, detailText);
+			}
+			if (string.Equals((materialKind ?? "").Trim(), "peace_made", StringComparison.OrdinalIgnoreCase))
+			{
+				return BuildMakePeacePoliticalTriggerReason(faction1, faction2, ResolvePoliticalReasonEvaluatorClan(faction1), null, detailText);
+			}
+		}
+		catch
+		{
+		}
+		return "";
+	}
+
+	private static string BuildDeclareWarPoliticalTriggerReason(IFaction declaringFaction, IFaction targetFaction, Clan evaluatingClan, DeclareWarDecision decision, string detailText)
+	{
+		try
+		{
+			if (declaringFaction == null || targetFaction == null)
+			{
+				return "";
+			}
+			Clan clan = evaluatingClan ?? ResolvePoliticalReasonEvaluatorClan(declaringFaction);
+			List<string> parts = new List<string>();
+			bool hasModelReason = false;
+			if (clan != null)
+			{
+				try
+				{
+					var diplomacyModel = Campaign.Current?.Models?.DiplomacyModel;
+					if (diplomacyModel != null)
+					{
+						TextObject reason;
+						float score = diplomacyModel.GetScoreOfDeclaringWar(declaringFaction, targetFaction, clan, out reason, true);
+						string text = NormalizePoliticalReasonText(reason?.ToString());
+						if (!string.IsNullOrWhiteSpace(text))
+						{
+							parts.Add("原版理由：" + text);
+							hasModelReason = true;
+						}
+						AddPoliticalScoreAgainstThresholdPart(parts, "宣战倾向", score, SafeGetPoliticalDecisionThreshold(targetFaction), "目标阈值");
+					}
+				}
+				catch
+				{
+				}
+				if (decision != null)
+				{
+					AddPoliticalReasonNumberPart(parts, "提案家族支持度", SafeCalculateDeclareWarSupport(decision, clan));
+				}
+			}
+			AddPoliticalFallbackPartIfNeeded(parts, hasModelReason, "宣战", detailText);
+			AddPoliticalFactionParameterParts(parts, declaringFaction, targetFaction, clan);
+			return BuildPoliticalReasonSentence("宣战触发原因", parts);
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	private static string BuildMakePeacePoliticalTriggerReason(IFaction peaceFaction, IFaction targetFaction, Clan evaluatingClan, MakePeaceKingdomDecision decision, string detailText)
+	{
+		try
+		{
+			if (peaceFaction == null || targetFaction == null)
+			{
+				return "";
+			}
+			Clan clan = evaluatingClan ?? ResolvePoliticalReasonEvaluatorClan(peaceFaction);
+			List<string> parts = new List<string>();
+			bool hasModelReason = false;
+			if (clan != null)
+			{
+				try
+				{
+					var diplomacyModel = Campaign.Current?.Models?.DiplomacyModel;
+					if (diplomacyModel != null)
+					{
+						TextObject reason;
+						float score = diplomacyModel.GetScoreOfDeclaringPeaceForClan(peaceFaction, targetFaction, clan, out reason, true);
+						string text = NormalizePoliticalReasonText(reason?.ToString());
+						if (!string.IsNullOrWhiteSpace(text))
+						{
+							parts.Add("原版理由：" + text);
+							hasModelReason = true;
+						}
+						AddPoliticalScoreAgainstThresholdPart(parts, "议和倾向", score, SafeGetPoliticalDecisionThreshold(peaceFaction), "己方阈值");
+					}
+				}
+				catch
+				{
+				}
+				if (decision != null)
+				{
+					AddPoliticalReasonNumberPart(parts, "提案家族支持度", SafeCalculateMakePeaceSupport(decision, clan));
+					string tributeText = BuildPeaceTributeParameter(decision, peaceFaction);
+					if (!string.IsNullOrWhiteSpace(tributeText))
+					{
+						parts.Add(tributeText);
+					}
+				}
+			}
+			AddPoliticalFallbackPartIfNeeded(parts, hasModelReason, "议和", detailText);
+			AddPoliticalFactionParameterParts(parts, peaceFaction, targetFaction, clan);
+			return BuildPoliticalReasonSentence("议和触发原因", parts);
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	private static string BuildKingdomPolicyPoliticalTriggerReason(KingdomPolicyDecision decision)
+	{
+		try
+		{
+			if (decision == null || decision.Policy == null)
+			{
+				return "";
+			}
+			Clan proposerClan = decision.ProposerClan;
+			PolicyObject policy = decision.Policy;
+			bool isInverted = SafeGetKingdomPolicyDecisionIsInverted(decision);
+			List<string> parts = new List<string>();
+			string policyName = GetPolicyDisplayName(policy);
+			parts.Add((isInverted ? "议题类型：废止政策“" : "议题类型：推行政策“") + policyName + "”");
+			string dominantWeight = BuildPolicyDominantWeightPart(policy, isInverted);
+			if (!string.IsNullOrWhiteSpace(dominantWeight))
+			{
+				parts.Add(dominantWeight);
+			}
+			string weightSummary = BuildPolicyWeightSummaryPart(policy);
+			if (!string.IsNullOrWhiteSpace(weightSummary))
+			{
+				parts.Add(weightSummary);
+			}
+			string proposerPart = BuildPolicyProposerProfilePart(proposerClan);
+			if (!string.IsNullOrWhiteSpace(proposerPart))
+			{
+				parts.Add(proposerPart);
+			}
+			string traitPart = BuildPolicyLeaderTraitPart(proposerClan?.Leader);
+			if (!string.IsNullOrWhiteSpace(traitPart))
+			{
+				parts.Add(traitPart);
+			}
+			AddPolicySupportTendencyPart(parts, SafeCalculateKingdomPolicySupport(decision, proposerClan));
+			return BuildPoliticalReasonSentence("政策触发原因", parts);
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	private static bool SafeGetKingdomPolicyDecisionIsInverted(KingdomPolicyDecision decision)
+	{
+		try
+		{
+			if (decision == null)
+			{
+				return false;
+			}
+			FieldInfo field = typeof(KingdomPolicyDecision).GetField("_isInvertedDecision", BindingFlags.Instance | BindingFlags.NonPublic);
+			if (field?.GetValue(decision) is bool result)
+			{
+				return result;
+			}
+		}
+		catch
+		{
+		}
+		return false;
+	}
+
+	private static float? SafeCalculateKingdomPolicySupport(KingdomPolicyDecision decision, Clan clan)
+	{
+		try
+		{
+			return decision != null && clan != null ? decision.CalculateSupport(clan) : (float?)null;
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static string GetPolicyDisplayName(PolicyObject policy)
+	{
+		try
+		{
+			string text = NormalizePoliticalReasonText(policy?.Name?.ToString());
+			return string.IsNullOrWhiteSpace(text) ? "未知政策" : text;
+		}
+		catch
+		{
+			return "未知政策";
+		}
+	}
+
+	private static string BuildPolicyDominantWeightPart(PolicyObject policy, bool isInverted)
+	{
+		if (policy == null)
+		{
+			return "";
+		}
+		float egalitarianAbs = Math.Abs(policy.EgalitarianWeight);
+		float oligarchicAbs = Math.Abs(policy.OligarchicWeight);
+		float authoritarianAbs = Math.Abs(policy.AuthoritarianWeight);
+		float max = Math.Max(egalitarianAbs, Math.Max(oligarchicAbs, authoritarianAbs));
+		if (max < 0.001f)
+		{
+			return "权重方向：政策取向较中性";
+		}
+		string axis;
+		float weight;
+		if (egalitarianAbs >= oligarchicAbs && egalitarianAbs >= authoritarianAbs)
+		{
+			axis = "平民与地方共同体利益";
+			weight = policy.EgalitarianWeight;
+		}
+		else if (oligarchicAbs >= authoritarianAbs)
+		{
+			axis = "贵族寡头与高阶家族利益";
+			weight = policy.OligarchicWeight;
+		}
+		else
+		{
+			axis = "王权集中与统治家族利益";
+			weight = policy.AuthoritarianWeight;
+		}
+		if (isInverted)
+		{
+			return "权重方向：废止议题会" + (weight >= 0f ? "削弱" : "强化") + axis;
+		}
+		return "权重方向：推行议题会" + (weight >= 0f ? "强化" : "削弱") + axis;
+	}
+
+	private static string BuildPolicyWeightSummaryPart(PolicyObject policy)
+	{
+		if (policy == null)
+		{
+			return "";
+		}
+		return "政策权重：平民 " + FormatPoliticalPolicyWeight(policy.EgalitarianWeight) + "、贵族 " + FormatPoliticalPolicyWeight(policy.OligarchicWeight) + "、王权 " + FormatPoliticalPolicyWeight(policy.AuthoritarianWeight);
+	}
+
+	private static string FormatPoliticalPolicyWeight(float value)
+	{
+		if (float.IsNaN(value) || float.IsInfinity(value))
+		{
+			return "0";
+		}
+		string text = value.ToString("0.##");
+		return value > 0f ? ("+" + text) : text;
+	}
+
+	private static string BuildPolicyProposerProfilePart(Clan clan)
+	{
+		if (clan == null)
+		{
+			return "";
+		}
+		string clanName = GetClanDisplayName(clan);
+		try
+		{
+			if (clan.Kingdom != null && clan.Kingdom.RulingClan == clan)
+			{
+				return "提案家族：" + clanName + "是统治家族，公式中更偏王权集中";
+			}
+			if (clan.IsMinorFaction)
+			{
+				return "提案家族：" + clanName + "是小派系，公式中更偏平民取向";
+			}
+			if (clan.Tier >= 3)
+			{
+				return "提案家族：" + clanName + "是高阶贵族家族（等级 " + clan.Tier + "），公式中更偏贵族寡头";
+			}
+			if (clan.Tier == 2)
+			{
+				return "提案家族：" + clanName + "是二阶家族，公式中略偏贵族寡头";
+			}
+			return "提案家族：" + clanName + "是低阶家族（等级 " + clan.Tier + "），身份修正较弱";
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	private static string BuildPolicyLeaderTraitPart(Hero leader)
+	{
+		try
+		{
+			if (leader == null)
+			{
+				return "";
+			}
+			List<string> parts = new List<string>();
+			AddPolicyLeaderTraitLabel(parts, "平民", leader.GetTraitLevel(DefaultTraits.Egalitarian));
+			AddPolicyLeaderTraitLabel(parts, "贵族寡头", leader.GetTraitLevel(DefaultTraits.Oligarchic));
+			AddPolicyLeaderTraitLabel(parts, "王权", leader.GetTraitLevel(DefaultTraits.Authoritarian));
+			if (parts.Count == 0)
+			{
+				return "";
+			}
+			return "领袖政治性格：" + string.Join("、", parts);
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	private static void AddPolicyLeaderTraitLabel(List<string> parts, string label, int level)
+	{
+		if (parts == null || string.IsNullOrWhiteSpace(label) || level == 0)
+		{
+			return;
+		}
+		parts.Add(label.Trim() + " " + (level > 0 ? "+" : "") + level);
+	}
+
+	private static void AddPolicySupportTendencyPart(List<string> parts, float? support)
+	{
+		if (parts == null || !support.HasValue || float.IsNaN(support.Value) || float.IsInfinity(support.Value))
+		{
+			return;
+		}
+		string supportText = FormatPoliticalReasonNumber(support);
+		if (string.IsNullOrWhiteSpace(supportText))
+		{
+			return;
+		}
+		parts.Add("提案家族" + GetPolicySupportTendencyLabel(support.Value) + "（支持度 " + supportText + "）");
+	}
+
+	private static string GetPolicySupportTendencyLabel(float support)
+	{
+		if (support >= 100f)
+		{
+			return "强烈支持该议题";
+		}
+		if (support >= 35f)
+		{
+			return "支持该议题";
+		}
+		if (support > 0f)
+		{
+			return "轻度支持该议题";
+		}
+		if (support <= -100f)
+		{
+			return "强烈反对该议题";
+		}
+		if (support <= -35f)
+		{
+			return "反对该议题";
+		}
+		return "倾向反对该议题";
+	}
+
+	private static string BuildKingSelectionPoliticalTriggerReason(KingSelectionKingdomDecision decision, DecisionOutcome chosenOutcome)
+	{
+		try
+		{
+			if (decision == null || chosenOutcome == null)
+			{
+				return "";
+			}
+			Hero chosenKing = ResolveKingSelectionOutcomeKing(chosenOutcome);
+			if (chosenKing == null)
+			{
+				return "";
+			}
+			Kingdom kingdom = decision.Kingdom;
+			if (kingdom == null)
+			{
+				kingdom = chosenKing.MapFaction as Kingdom;
+			}
+			List<string> parts = new List<string>();
+			parts.Add("议题类型：选择" + GetKingdomDisplayName(kingdom, "该王国") + "新统治者，最终由" + GetHeroDisplayName(chosenKing) + "继位");
+			AddKingSelectionFormulaRulePart(parts);
+			AddKingSelectionCandidateProfileParts(parts, chosenKing, kingdom);
+			AddKingSelectionCandidateRankingPart(parts, decision, chosenKing);
+			AddKingSelectionOutcomeScorePart(parts, chosenOutcome);
+			AddKingSelectionVoteSupportPart(parts, chosenOutcome);
+			AddKingSelectionVoterTraitPart(parts, kingdom);
+			return BuildPoliticalReasonSentence("统治者选择触发原因", parts);
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	private static Hero ResolveKingSelectionOutcomeKing(DecisionOutcome chosenOutcome)
+	{
+		try
+		{
+			return (chosenOutcome as KingSelectionKingdomDecision.KingSelectionDecisionOutcome)?.King;
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static void AddKingSelectionFormulaRulePart(List<string> parts)
+	{
+		if (parts == null)
+		{
+			return;
+		}
+		parts.Add("原版候选池：符合资格的家族按家族强度取前三");
+		parts.Add("原版评分因素：候选家族强度、王族延续偏好、各家族投票支持");
+	}
+
+	private static void AddKingSelectionCandidateProfileParts(List<string> parts, Hero chosenKing, Kingdom kingdom)
+	{
+		if (parts == null || chosenKing?.Clan == null)
+		{
+			return;
+		}
+		Clan clan = chosenKing.Clan;
+		List<string> profileParts = new List<string>();
+		profileParts.Add("候选家族：" + GetClanDisplayName(clan));
+		profileParts.Add("等级 " + clan.Tier);
+		string strengthText = FormatPoliticalReasonNumber(SafeGetDiplomacyClanStrength(clan));
+		if (!string.IsNullOrWhiteSpace(strengthText))
+		{
+			profileParts.Add("家族强度 " + strengthText);
+		}
+		string influenceText = FormatPoliticalReasonNumber(SafeGetClanInfluence(clan));
+		if (!string.IsNullOrWhiteSpace(influenceText))
+		{
+			profileParts.Add("影响力 " + influenceText);
+		}
+		string renownText = FormatPoliticalReasonNumber(SafeGetClanRenown(clan));
+		if (!string.IsNullOrWhiteSpace(renownText))
+		{
+			profileParts.Add("声望 " + renownText);
+		}
+		parts.Add(string.Join("、", profileParts));
+		AddKingSelectionCandidateFiefPart(parts, clan, kingdom);
+		AddKingSelectionCandidateWarPartyPart(parts, clan);
+	}
+
+	private static float? SafeGetDiplomacyClanStrength(Clan clan)
+	{
+		try
+		{
+			return clan != null && Campaign.Current?.Models?.DiplomacyModel != null ? Campaign.Current.Models.DiplomacyModel.GetClanStrength(clan) : (float?)null;
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static void AddKingSelectionCandidateFiefPart(List<string> parts, Clan clan, Kingdom kingdom)
+	{
+		if (parts == null || clan == null)
+		{
+			return;
+		}
+		try
+		{
+			int count = 0;
+			float totalValue = 0f;
+			IEnumerable<Settlement> settlements = Enumerable.Empty<Settlement>();
+			if (clan.Settlements != null)
+			{
+				settlements = clan.Settlements;
+			}
+			foreach (Settlement settlement in settlements)
+			{
+				if (settlement == null || !settlement.IsFortification)
+				{
+					continue;
+				}
+				count++;
+				totalValue += SafeGetSettlementValueForKingdom(settlement, kingdom) ?? 0f;
+			}
+			if (count <= 0)
+			{
+				parts.Add("候选家族没有可统计城镇或城堡");
+				return;
+			}
+			parts.Add("候选家族掌握要塞 " + count + " 处，封地价值 " + FormatPoliticalReasonNumber(totalValue));
+		}
+		catch
+		{
+		}
+	}
+
+	private static void AddKingSelectionCandidateWarPartyPart(List<string> parts, Clan clan)
+	{
+		if (parts == null || clan == null)
+		{
+			return;
+		}
+		try
+		{
+			int partyCount = 0;
+			int troopCount = 0;
+			IEnumerable<WarPartyComponent> warPartyComponents = Enumerable.Empty<WarPartyComponent>();
+			if (clan.WarPartyComponents != null)
+			{
+				warPartyComponents = clan.WarPartyComponents;
+			}
+			foreach (WarPartyComponent warPartyComponent in warPartyComponents)
+			{
+				if (warPartyComponent?.MobileParty == null)
+				{
+					continue;
+				}
+				partyCount++;
+				troopCount += warPartyComponent.MobileParty.MemberRoster.TotalManCount;
+			}
+			if (partyCount <= 0)
+			{
+				parts.Add("候选家族无可统计战争部队");
+				return;
+			}
+			parts.Add("候选家族战争部队 " + partyCount + " 支、兵员 " + troopCount);
+		}
+		catch
+		{
+		}
+	}
+
+	private static void AddKingSelectionCandidateRankingPart(List<string> parts, KingSelectionKingdomDecision decision, Hero chosenKing)
+	{
+		if (parts == null || decision == null || chosenKing?.Clan == null)
+		{
+			return;
+		}
+		try
+		{
+			Kingdom kingdom = decision.Kingdom;
+			var diplomacyModel = Campaign.Current?.Models?.DiplomacyModel;
+			if (kingdom?.Clans == null || diplomacyModel == null)
+			{
+				return;
+			}
+			Clan excludedClan = SafeGetKingSelectionClanToExclude(decision);
+			List<Tuple<Clan, float>> eligible = new List<Tuple<Clan, float>>();
+			foreach (Clan clan in kingdom.Clans)
+			{
+				if (clan == null || clan == excludedClan)
+				{
+					continue;
+				}
+				if (!diplomacyModel.IsClanEligibleToBecomeRuler(clan))
+				{
+					continue;
+				}
+				eligible.Add(Tuple.Create(clan, diplomacyModel.GetClanStrength(clan)));
+			}
+			eligible = eligible.OrderByDescending((Tuple<Clan, float> x) => x.Item2).ToList();
+			if (eligible.Count == 0)
+			{
+				return;
+			}
+			string chosenClanId = GetClanId(chosenKing.Clan);
+			int fullIndex = eligible.FindIndex((Tuple<Clan, float> x) => string.Equals(GetClanId(x.Item1), chosenClanId, StringComparison.OrdinalIgnoreCase));
+			if (fullIndex < 0)
+			{
+				return;
+			}
+			List<Tuple<Clan, float>> candidatePool = eligible.Take(3).ToList();
+			int poolIndex = candidatePool.FindIndex((Tuple<Clan, float> x) => string.Equals(GetClanId(x.Item1), chosenClanId, StringComparison.OrdinalIgnoreCase));
+			parts.Add("家族强度排名：" + (fullIndex + 1) + "/" + eligible.Count + "（强度 " + FormatPoliticalReasonNumber(eligible[fullIndex].Item2) + "）");
+			if (poolIndex >= 0)
+			{
+				parts.Add("候选池排名：" + (poolIndex + 1) + "/" + candidatePool.Count);
+			}
+			if (fullIndex > 0)
+			{
+				parts.Add("家族强度最高者为" + GetClanDisplayName(eligible[0].Item1) + "，最终结果还受到议会支持和结算评分影响");
+			}
+		}
+		catch
+		{
+		}
+	}
+
+	private static Clan SafeGetKingSelectionClanToExclude(KingSelectionKingdomDecision decision)
+	{
+		try
+		{
+			if (decision == null)
+			{
+				return null;
+			}
+			FieldInfo field = typeof(KingSelectionKingdomDecision).GetField("_clanToExclude", BindingFlags.Instance | BindingFlags.NonPublic);
+			return field?.GetValue(decision) as Clan;
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static void AddKingSelectionOutcomeScorePart(List<string> parts, DecisionOutcome chosenOutcome)
+	{
+		if (parts == null || chosenOutcome == null)
+		{
+			return;
+		}
+		string initialText = FormatPoliticalReasonNumber(chosenOutcome.InitialMerit);
+		string meritText = FormatPoliticalReasonNumber(chosenOutcome.Merit);
+		if (string.IsNullOrWhiteSpace(initialText) && string.IsNullOrWhiteSpace(meritText))
+		{
+			return;
+		}
+		if (!string.IsNullOrWhiteSpace(initialText) && !string.IsNullOrWhiteSpace(meritText))
+		{
+			parts.Add("结算保存评分：基础 " + initialText + "，投票后 " + meritText);
+			return;
+		}
+		parts.Add("结算保存评分：" + (string.IsNullOrWhiteSpace(meritText) ? initialText : meritText));
+	}
+
+	private static void AddKingSelectionVoteSupportPart(List<string> parts, DecisionOutcome chosenOutcome)
+	{
+		if (parts == null || chosenOutcome == null)
+		{
+			return;
+		}
+		try
+		{
+			int slight = 0;
+			int strong = 0;
+			int full = 0;
+			int other = 0;
+			foreach (Supporter supporter in chosenOutcome.SupporterList ?? new List<Supporter>())
+			{
+				if (supporter?.Clan == null)
+				{
+					continue;
+				}
+				switch (supporter.SupportWeight)
+				{
+				case Supporter.SupportWeights.SlightlyFavor:
+					slight++;
+					break;
+				case Supporter.SupportWeights.StronglyFavor:
+					strong++;
+					break;
+				case Supporter.SupportWeights.FullyPush:
+					full++;
+					break;
+				default:
+					other++;
+					break;
+				}
+			}
+			int total = slight + strong + full + other;
+			if (total <= 0)
+			{
+				return;
+			}
+			List<string> labels = new List<string>();
+			if (slight > 0)
+			{
+				labels.Add("轻度 " + slight);
+			}
+			if (strong > 0)
+			{
+				labels.Add("强力 " + strong);
+			}
+			if (full > 0)
+			{
+				labels.Add("全力 " + full);
+			}
+			if (other > 0)
+			{
+				labels.Add("其他 " + other);
+			}
+			parts.Add("投票支持：" + total + "个家族支持获选者" + (labels.Count > 0 ? "（" + string.Join("、", labels) + "）" : ""));
+		}
+		catch
+		{
+		}
+	}
+
+	private static void AddKingSelectionVoterTraitPart(List<string> parts, Kingdom kingdom)
+	{
+		if (parts == null || kingdom?.Clans == null)
+		{
+			return;
+		}
+		try
+		{
+			int authoritarian = 0;
+			int oligarchic = 0;
+			int other = 0;
+			foreach (Clan clan in kingdom.Clans)
+			{
+				Hero leader = clan?.Leader;
+				if (leader == null || leader == Hero.MainHero)
+				{
+					continue;
+				}
+				if (leader.GetTraitLevel(DefaultTraits.Authoritarian) > 0)
+				{
+					authoritarian++;
+				}
+				else if (leader.GetTraitLevel(DefaultTraits.Oligarchic) > 0)
+				{
+					oligarchic++;
+				}
+				else
+				{
+					other++;
+				}
+			}
+			if (authoritarian + oligarchic + other <= 0)
+			{
+				return;
+			}
+			parts.Add("王国内投票性格：王权倾向 " + authoritarian + "、贵族寡头倾向 " + oligarchic + "、其他 " + other + "；这些性格会影响王族延续加权");
+		}
+		catch
+		{
+		}
+	}
+
+	private static string BuildStartAlliancePoliticalTriggerReason(StartAllianceDecision decision, DecisionOutcome chosenOutcome)
+	{
+		try
+		{
+			if (decision == null || decision.KingdomToStartAllianceWith == null)
+			{
+				return "";
+			}
+			Kingdom sourceKingdom = decision.Kingdom;
+			Kingdom targetKingdom = decision.KingdomToStartAllianceWith;
+			bool? shouldStart = SafeGetStartAllianceOutcomeShouldStart(chosenOutcome);
+			List<string> parts = new List<string>();
+			parts.Add("议题类型：与" + GetKingdomDisplayName(targetKingdom, "目标王国") + "结盟，最终" + GetAgreementOutcomeLabel(shouldStart, "结盟", "拒绝结盟"));
+			string reasonText;
+			float? score = SafeGetStartAllianceSupportScore(decision, decision.ProposerClan, out reasonText);
+			AddAgreementModelScorePart(parts, "提案家族结盟倾向", score, reasonText);
+			AddAgreementFinalSupportPart(parts, decision, decision.ProposerClan, chosenOutcome);
+			AddAgreementVoteSupportPart(parts, chosenOutcome, shouldStart, "结盟", "拒绝结盟");
+			AddKingdomDiplomaticStatusPart(parts, sourceKingdom, targetKingdom);
+			AddPoliticalFactionParameterParts(parts, sourceKingdom, targetKingdom, decision.ProposerClan);
+			return BuildPoliticalReasonSentence("联盟协议触发原因", parts);
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	private static string BuildTradeAgreementPoliticalTriggerReason(TradeAgreementDecision decision, DecisionOutcome chosenOutcome)
+	{
+		try
+		{
+			if (decision == null || decision.TargetKingdom == null)
+			{
+				return "";
+			}
+			Kingdom sourceKingdom = decision.Kingdom;
+			Kingdom targetKingdom = decision.TargetKingdom;
+			bool? shouldStart = SafeGetTradeAgreementOutcomeShouldStart(chosenOutcome);
+			List<string> parts = new List<string>();
+			parts.Add("议题类型：与" + GetKingdomDisplayName(targetKingdom, "目标王国") + "签署贸易协议，最终" + GetAgreementOutcomeLabel(shouldStart, "签署", "拒绝签署"));
+			string reasonText;
+			float? score = SafeGetTradeAgreementSupportScore(sourceKingdom, targetKingdom, decision.ProposerClan, out reasonText);
+			AddTradeAgreementScorePart(parts, score, reasonText);
+			AddAgreementFinalSupportPart(parts, decision, decision.ProposerClan, chosenOutcome);
+			AddAgreementVoteSupportPart(parts, chosenOutcome, shouldStart, "签署", "拒绝签署");
+			AddKingdomDiplomaticStatusPart(parts, sourceKingdom, targetKingdom);
+			AddPoliticalFactionParameterParts(parts, sourceKingdom, targetKingdom, decision.ProposerClan);
+			return BuildPoliticalReasonSentence("贸易协议触发原因", parts);
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	private static string BuildProposeCallToWarPoliticalTriggerReason(ProposeCallToWarAgreementDecision decision, DecisionOutcome chosenOutcome)
+	{
+		try
+		{
+			if (decision == null || decision.CalledKingdom == null || decision.KingdomToCallToWarAgainst == null)
+			{
+				return "";
+			}
+			Kingdom sourceKingdom = decision.Kingdom;
+			Kingdom calledKingdom = decision.CalledKingdom;
+			Kingdom targetKingdom = decision.KingdomToCallToWarAgainst;
+			bool? shouldCall = SafeGetProposeCallToWarOutcomeShouldCall(chosenOutcome);
+			List<string> parts = new List<string>();
+			parts.Add("议题类型：召唤盟友" + GetKingdomDisplayName(calledKingdom, "盟友王国") + "对" + GetKingdomDisplayName(targetKingdom, "敌对王国") + "参战，最终" + GetAgreementOutcomeLabel(shouldCall, "召战", "不召战"));
+			parts.Add("召战费用 " + decision.CallToWarCost);
+			string reasonText;
+			float? score = SafeGetCallingToWarScore(sourceKingdom, calledKingdom, targetKingdom, decision.ProposerClan, out reasonText);
+			AddAgreementModelScorePart(parts, "提案家族召战倾向", score, reasonText);
+			AddAgreementFinalSupportPart(parts, decision, decision.ProposerClan, chosenOutcome);
+			AddAgreementVoteSupportPart(parts, chosenOutcome, shouldCall, "召战", "不召战");
+			AddCallToWarDiplomaticStatusParts(parts, sourceKingdom, calledKingdom, targetKingdom, isAcceptanceDecision: false);
+			AddCallToWarStrengthParts(parts, sourceKingdom, calledKingdom, targetKingdom);
+			return BuildPoliticalReasonSentence("召盟友参战触发原因", parts);
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	private static string BuildAcceptCallToWarPoliticalTriggerReason(AcceptCallToWarAgreementDecision decision, DecisionOutcome chosenOutcome)
+	{
+		try
+		{
+			if (decision == null || decision.CallingKingdom == null || decision.KingdomToCallToWarAgainst == null)
+			{
+				return "";
+			}
+			Kingdom calledKingdom = decision.Kingdom;
+			Kingdom callingKingdom = decision.CallingKingdom;
+			Kingdom targetKingdom = decision.KingdomToCallToWarAgainst;
+			bool? shouldAccept = SafeGetAcceptCallToWarOutcomeShouldAccept(chosenOutcome);
+			List<string> parts = new List<string>();
+			parts.Add("议题类型：响应盟友" + GetKingdomDisplayName(callingKingdom, "召战王国") + "，对" + GetKingdomDisplayName(targetKingdom, "敌对王国") + "参战，最终" + GetAgreementOutcomeLabel(shouldAccept, "应召参战", "拒绝参战"));
+			parts.Add("应召付款 " + decision.CallToWarCost);
+			string reasonText;
+			float? score = SafeGetJoiningWarScore(callingKingdom, calledKingdom, targetKingdom, decision.ProposerClan, out reasonText);
+			AddAgreementModelScorePart(parts, "提案家族应召倾向", score, reasonText);
+			AddAgreementFinalSupportPart(parts, decision, decision.ProposerClan, chosenOutcome);
+			AddAgreementVoteSupportPart(parts, chosenOutcome, shouldAccept, "应召参战", "拒绝参战");
+			AddCallToWarDiplomaticStatusParts(parts, callingKingdom, calledKingdom, targetKingdom, isAcceptanceDecision: true);
+			AddCallToWarStrengthParts(parts, calledKingdom, callingKingdom, targetKingdom);
+			return BuildPoliticalReasonSentence("应召参战触发原因", parts);
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	private static bool? SafeGetStartAllianceOutcomeShouldStart(DecisionOutcome chosenOutcome)
+	{
+		try
+		{
+			if (chosenOutcome is StartAllianceDecision.StartAllianceDecisionOutcome outcome)
+			{
+				return outcome.ShouldAllianceBeStarted;
+			}
+		}
+		catch
+		{
+		}
+		return null;
+	}
+
+	private static bool? SafeGetTradeAgreementOutcomeShouldStart(DecisionOutcome chosenOutcome)
+	{
+		try
+		{
+			if (chosenOutcome is TradeAgreementDecision.TradeAgreementDecisionOutcome outcome)
+			{
+				return outcome.ShouldTradeAgreementStart;
+			}
+		}
+		catch
+		{
+		}
+		return null;
+	}
+
+	private static bool? SafeGetProposeCallToWarOutcomeShouldCall(DecisionOutcome chosenOutcome)
+	{
+		try
+		{
+			if (chosenOutcome is ProposeCallToWarAgreementDecision.ProposeCallToWarAgreementDecisionOutcome outcome)
+			{
+				return outcome.ShouldCallToWar;
+			}
+		}
+		catch
+		{
+		}
+		return null;
+	}
+
+	private static bool? SafeGetAcceptCallToWarOutcomeShouldAccept(DecisionOutcome chosenOutcome)
+	{
+		try
+		{
+			if (chosenOutcome is AcceptCallToWarAgreementDecision.AcceptCallToWarAgreementDecisionOutcome outcome)
+			{
+				return outcome.ShouldAcceptCallToWar;
+			}
+		}
+		catch
+		{
+		}
+		return null;
+	}
+
+	private static string GetAgreementOutcomeLabel(bool? accepted, string positiveLabel, string negativeLabel)
+	{
+		if (!accepted.HasValue)
+		{
+			return "已结算";
+		}
+		return accepted.Value ? positiveLabel : negativeLabel;
+	}
+
+	private static float? SafeGetStartAllianceSupportScore(StartAllianceDecision decision, Clan clan, out string reasonText)
+	{
+		reasonText = "";
+		try
+		{
+			if (decision == null || clan == null)
+			{
+				return null;
+			}
+			TextObject hint;
+			float score = decision.CalculateSupport(clan, out hint, true);
+			reasonText = NormalizePoliticalReasonText(hint?.ToString());
+			return score;
+		}
+		catch
+		{
+			reasonText = "";
+			return null;
+		}
+	}
+
+	private static float? SafeGetTradeAgreementSupportScore(Kingdom sourceKingdom, Kingdom targetKingdom, Clan clan, out string reasonText)
+	{
+		reasonText = "";
+		try
+		{
+			var tradeModel = Campaign.Current?.Models?.TradeAgreementModel;
+			if (sourceKingdom == null || targetKingdom == null || clan == null || tradeModel == null)
+			{
+				return null;
+			}
+			TextObject hint;
+			float score = tradeModel.GetScoreOfStartingTradeAgreement(sourceKingdom, targetKingdom, clan, out hint, true);
+			reasonText = NormalizePoliticalReasonText(hint?.ToString());
+			return score;
+		}
+		catch
+		{
+			reasonText = "";
+			return null;
+		}
+	}
+
+	private static float? SafeGetCallingToWarScore(Kingdom callingKingdom, Kingdom calledKingdom, Kingdom targetKingdom, Clan clan, out string reasonText)
+	{
+		reasonText = "";
+		try
+		{
+			var allianceModel = Campaign.Current?.Models?.AllianceModel;
+			if (callingKingdom == null || calledKingdom == null || targetKingdom == null || clan == null || allianceModel == null)
+			{
+				return null;
+			}
+			TextObject hint;
+			float score = allianceModel.GetScoreOfCallingToWar(callingKingdom, calledKingdom, targetKingdom, clan, out hint);
+			reasonText = NormalizePoliticalReasonText(hint?.ToString());
+			return score;
+		}
+		catch
+		{
+			reasonText = "";
+			return null;
+		}
+	}
+
+	private static float? SafeGetJoiningWarScore(Kingdom callingKingdom, Kingdom calledKingdom, Kingdom targetKingdom, Clan clan, out string reasonText)
+	{
+		reasonText = "";
+		try
+		{
+			var allianceModel = Campaign.Current?.Models?.AllianceModel;
+			if (callingKingdom == null || calledKingdom == null || targetKingdom == null || clan == null || allianceModel == null)
+			{
+				return null;
+			}
+			TextObject hint;
+			float score = allianceModel.GetScoreOfJoiningWar(callingKingdom, calledKingdom, targetKingdom, clan, out hint);
+			reasonText = NormalizePoliticalReasonText(hint?.ToString());
+			return score;
+		}
+		catch
+		{
+			reasonText = "";
+			return null;
+		}
+	}
+
+	private static void AddAgreementModelScorePart(List<string> parts, string label, float? score, string reasonText)
+	{
+		if (parts == null)
+		{
+			return;
+		}
+		string scoreText = FormatPoliticalReasonNumber(score);
+		if (!string.IsNullOrWhiteSpace(scoreText))
+		{
+			string tendency = score.HasValue && score.Value >= 0f ? "支持" : "反对";
+			parts.Add((string.IsNullOrWhiteSpace(label) ? "模型倾向" : label.Trim()) + "：" + tendency + "（评分 " + scoreText + "）");
+		}
+		AddAgreementReasonTextPart(parts, reasonText);
+	}
+
+	private static void AddTradeAgreementScorePart(List<string> parts, float? score, string reasonText)
+	{
+		if (parts == null)
+		{
+			return;
+		}
+		string scoreText = FormatPoliticalReasonNumber(score);
+		if (!string.IsNullOrWhiteSpace(scoreText))
+		{
+			string tendency = score.HasValue && score.Value >= 50f ? "倾向签署" : "倾向拒绝";
+			parts.Add("提案家族贸易协议倾向：" + tendency + "（评分 " + scoreText + "/阈值 50）");
+		}
+		AddAgreementReasonTextPart(parts, reasonText);
+	}
+
+	private static void AddAgreementReasonTextPart(List<string> parts, string reasonText)
+	{
+		if (parts == null)
+		{
+			return;
+		}
+		string text = NormalizePoliticalReasonText(reasonText);
+		if (!string.IsNullOrWhiteSpace(text))
+		{
+			parts.Add("原版理由：" + text);
+		}
+	}
+
+	private static void AddAgreementFinalSupportPart(List<string> parts, KingdomDecision decision, Clan clan, DecisionOutcome chosenOutcome)
+	{
+		float? support = SafeDetermineKingdomDecisionSupport(decision, clan, chosenOutcome);
+		AddSettlementSupportTendencyPart(parts, "提案家族对最终选项", support);
+	}
+
+	private static void AddAgreementVoteSupportPart(List<string> parts, DecisionOutcome chosenOutcome, bool? accepted, string positiveLabel, string negativeLabel)
+	{
+		if (parts == null || chosenOutcome == null)
+		{
+			return;
+		}
+		try
+		{
+			int count = chosenOutcome.SupporterList?.Count((Supporter x) => x?.Clan != null) ?? 0;
+			if (count <= 0)
+			{
+				return;
+			}
+			string action = accepted.HasValue ? (accepted.Value ? positiveLabel : negativeLabel) : "最终选项";
+			parts.Add("投票支持：" + count + "个家族支持" + action);
+		}
+		catch
+		{
+		}
+	}
+
+	private static void AddKingdomDiplomaticStatusPart(List<string> parts, Kingdom sourceKingdom, Kingdom targetKingdom)
+	{
+		if (parts == null || sourceKingdom == null || targetKingdom == null)
+		{
+			return;
+		}
+		try
+		{
+			string sourceName = GetKingdomDisplayName(sourceKingdom, "己方王国");
+			string targetName = GetKingdomDisplayName(targetKingdom, "目标王国");
+			if (sourceKingdom.IsAtWarWith(targetKingdom))
+			{
+				parts.Add(sourceName + "与" + targetName + "当前处于战争状态");
+			}
+			else if (sourceKingdom.IsAllyWith(targetKingdom))
+			{
+				parts.Add(sourceName + "与" + targetName + "当前已是盟友");
+			}
+			else
+			{
+				parts.Add(sourceName + "与" + targetName + "当前未交战");
+			}
+		}
+		catch
+		{
+		}
+	}
+
+	private static void AddCallToWarDiplomaticStatusParts(List<string> parts, Kingdom callingKingdom, Kingdom calledKingdom, Kingdom targetKingdom, bool isAcceptanceDecision)
+	{
+		if (parts == null || callingKingdom == null || calledKingdom == null || targetKingdom == null)
+		{
+			return;
+		}
+		try
+		{
+			string callingName = GetKingdomDisplayName(callingKingdom, "召战方");
+			string calledName = GetKingdomDisplayName(calledKingdom, "应召方");
+			string targetName = GetKingdomDisplayName(targetKingdom, "敌对王国");
+			parts.Add(callingName + "与" + calledName + (callingKingdom.IsAllyWith(calledKingdom) ? "是盟友" : "不是盟友"));
+			parts.Add(callingName + "与" + targetName + (callingKingdom.IsAtWarWith(targetKingdom) ? "已经交战" : "未交战"));
+			parts.Add(calledName + "与" + targetName + (calledKingdom.IsAtWarWith(targetKingdom) ? "已经交战" : "尚未交战"));
+			if (isAcceptanceDecision)
+			{
+				parts.Add("该议题由盟友召战请求触发");
+			}
+			else
+			{
+				parts.Add("该议题由主动召唤盟友参战触发");
+			}
+		}
+		catch
+		{
+		}
+	}
+
+	private static void AddCallToWarStrengthParts(List<string> parts, Kingdom firstKingdom, Kingdom secondKingdom, Kingdom targetKingdom)
+	{
+		if (parts == null)
+		{
+			return;
+		}
+		string firstPart = BuildPoliticalStrengthComparisonPart(firstKingdom, targetKingdom, SafeGetFactionStrength(firstKingdom), SafeGetFactionStrength(targetKingdom));
+		if (!string.IsNullOrWhiteSpace(firstPart))
+		{
+			parts.Add(firstPart);
+		}
+		string secondPart = BuildPoliticalStrengthComparisonPart(secondKingdom, targetKingdom, SafeGetFactionStrength(secondKingdom), SafeGetFactionStrength(targetKingdom));
+		if (!string.IsNullOrWhiteSpace(secondPart))
+		{
+			parts.Add(secondPart);
+		}
+	}
+
+	private static string BuildExpelClanPoliticalTriggerReason(ExpelClanFromKingdomDecision decision, DecisionOutcome chosenOutcome)
+	{
+		try
+		{
+			if (decision == null || decision.ClanToExpel == null)
+			{
+				return "";
+			}
+			Clan targetClan = decision.ClanToExpel;
+			Kingdom kingdom = decision.OldKingdom ?? decision.Kingdom ?? targetClan.Kingdom;
+			bool? shouldExpel = SafeGetExpelClanOutcomeShouldBeExpelled(chosenOutcome);
+			List<string> parts = new List<string>();
+			string kingdomName = GetKingdomDisplayName(kingdom, "该王国");
+			string clanName = GetClanDisplayName(targetClan);
+			parts.Add(shouldExpel.HasValue ? ("议题类型：是否将" + clanName + "逐出" + kingdomName + "，最终" + (shouldExpel.Value ? "驱逐" : "保留")) : ("议题类型：是否将" + clanName + "逐出" + kingdomName));
+			AddExpelClanTargetProfileParts(parts, targetClan, kingdom);
+			AddExpelClanRelationNetworkParts(parts, targetClan, kingdom);
+			AddExpelClanRelationToKeyClanPart(parts, "与提案家族关系", targetClan, decision.ProposerClan);
+			AddExpelClanRelationToKeyClanPart(parts, "与统治家族关系", targetClan, kingdom?.RulingClan);
+			AddExpelClanDefaultFormulaPart(parts, shouldExpel);
+			AddExpelClanVoteSupportPart(parts, chosenOutcome, shouldExpel);
+			AddExpelClanRelationCostPart(parts, shouldExpel);
+			AddExpelClanFormulaValuePart(parts, decision, chosenOutcome, shouldExpel);
+			return BuildPoliticalReasonSentence("驱逐家族触发原因", parts);
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	private static bool? SafeGetExpelClanOutcomeShouldBeExpelled(DecisionOutcome chosenOutcome)
+	{
+		try
+		{
+			if (chosenOutcome is ExpelClanFromKingdomDecision.ExpelClanDecisionOutcome expelOutcome)
+			{
+				return expelOutcome.ShouldBeExpelled;
+			}
+		}
+		catch
+		{
+		}
+		return null;
+	}
+
+	private static void AddExpelClanTargetProfileParts(List<string> parts, Clan targetClan, Kingdom kingdom)
+	{
+		if (parts == null || targetClan == null)
+		{
+			return;
+		}
+		parts.Add("目标家族等级 " + targetClan.Tier + "、影响力 " + FormatPoliticalReasonNumber(SafeGetClanInfluence(targetClan)) + "、声望 " + FormatPoliticalReasonNumber(SafeGetClanRenown(targetClan)));
+		string strengthText = FormatPoliticalReasonNumber(SafeGetClanStrength(targetClan));
+		if (!string.IsNullOrWhiteSpace(strengthText))
+		{
+			parts.Add("目标家族野战力量 " + strengthText);
+		}
+		AddExpelClanFiefValueParts(parts, targetClan, kingdom);
+		AddExpelClanWarPartyParts(parts, targetClan);
+	}
+
+	private static float? SafeGetClanInfluence(Clan clan)
+	{
+		try
+		{
+			return clan?.Influence;
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static float? SafeGetClanRenown(Clan clan)
+	{
+		try
+		{
+			return clan?.Renown;
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static void AddExpelClanFiefValueParts(List<string> parts, Clan targetClan, Kingdom kingdom)
+	{
+		if (parts == null || targetClan == null)
+		{
+			return;
+		}
+		try
+		{
+			int count = 0;
+			float totalValue = 0f;
+			IEnumerable<Settlement> settlements = Enumerable.Empty<Settlement>();
+			if (targetClan.Settlements != null)
+			{
+				settlements = targetClan.Settlements;
+			}
+			foreach (Settlement settlement in settlements)
+			{
+				if (settlement == null)
+				{
+					continue;
+				}
+				count++;
+				totalValue += SafeGetSettlementValueForKingdom(settlement, kingdom) ?? 0f;
+			}
+			if (count <= 0)
+			{
+				parts.Add("目标家族没有可统计封地，封地价值不会提高保留权重");
+				return;
+			}
+			parts.Add("目标家族封地 " + count + " 处，封地价值 " + FormatPoliticalReasonNumber(totalValue) + " 会提高保留该家族的公式权重");
+		}
+		catch
+		{
+		}
+	}
+
+	private static float? SafeGetSettlementValueForKingdom(Settlement settlement, Kingdom kingdom)
+	{
+		try
+		{
+			return settlement != null && kingdom != null ? settlement.GetSettlementValueForFaction(kingdom) : (float?)null;
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static void AddExpelClanWarPartyParts(List<string> parts, Clan targetClan)
+	{
+		if (parts == null || targetClan == null)
+		{
+			return;
+		}
+		try
+		{
+			int partyCount = 0;
+			int troopCount = 0;
+			IEnumerable<WarPartyComponent> warPartyComponents = Enumerable.Empty<WarPartyComponent>();
+			if (targetClan.WarPartyComponents != null)
+			{
+				warPartyComponents = targetClan.WarPartyComponents;
+			}
+			foreach (WarPartyComponent warPartyComponent in warPartyComponents)
+			{
+				if (warPartyComponent?.MobileParty == null)
+				{
+					continue;
+				}
+				partyCount++;
+				troopCount += warPartyComponent.MobileParty.MemberRoster.TotalManCount;
+			}
+			if (partyCount <= 0)
+			{
+				parts.Add("目标家族无可统计战争部队");
+				return;
+			}
+			parts.Add("目标家族战争部队 " + partyCount + " 支、兵员 " + troopCount + "，统帅型投票者会把兵力计入保留权重");
+		}
+		catch
+		{
+		}
+	}
+
+	private static void AddExpelClanRelationNetworkParts(List<string> parts, Clan targetClan, Kingdom kingdom)
+	{
+		if (parts == null || targetClan == null || kingdom?.Clans == null)
+		{
+			return;
+		}
+		int positiveCount = 0;
+		int nonPositiveCount = 0;
+		int positiveMagnitude = 0;
+		int nonPositiveMagnitude = 0;
+		int? worstRelation = null;
+		int? bestRelation = null;
+		foreach (Clan clan in kingdom.Clans)
+		{
+			if (clan == null || clan == targetClan)
+			{
+				continue;
+			}
+			int? relation = SafeGetClanRelation(targetClan, clan);
+			if (!relation.HasValue)
+			{
+				continue;
+			}
+			if (!worstRelation.HasValue || relation.Value < worstRelation.Value)
+			{
+				worstRelation = relation.Value;
+			}
+			if (!bestRelation.HasValue || relation.Value > bestRelation.Value)
+			{
+				bestRelation = relation.Value;
+			}
+			if (relation.Value > 0)
+			{
+				positiveCount++;
+				positiveMagnitude += relation.Value;
+			}
+			else
+			{
+				nonPositiveCount++;
+				nonPositiveMagnitude += Math.Abs(relation.Value);
+			}
+		}
+		if (positiveCount + nonPositiveCount == 0)
+		{
+			return;
+		}
+		string range = worstRelation.HasValue && bestRelation.HasValue ? ("，关系范围 " + worstRelation.Value + "/" + bestRelation.Value) : "";
+		parts.Add("王国内关系网：" + positiveCount + "个家族关系为正、" + nonPositiveCount + "个不高于0" + range);
+		if (nonPositiveMagnitude > positiveMagnitude)
+		{
+			parts.Add("负面关系权重更重，政治上更容易形成清算目标");
+		}
+		else if (positiveMagnitude > nonPositiveMagnitude)
+		{
+			parts.Add("正面关系权重更重，原版公式更倾向保留该家族");
+		}
+	}
+
+	private static int? SafeGetClanRelation(Clan sourceClan, Clan targetClan)
+	{
+		try
+		{
+			return sourceClan != null && targetClan != null ? FactionManager.GetRelationBetweenClans(sourceClan, targetClan) : (int?)null;
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static void AddExpelClanRelationToKeyClanPart(List<string> parts, string label, Clan targetClan, Clan keyClan)
+	{
+		if (parts == null || string.IsNullOrWhiteSpace(label) || targetClan == null || keyClan == null)
+		{
+			return;
+		}
+		int? relation = SafeGetClanRelation(targetClan, keyClan);
+		if (!relation.HasValue)
+		{
+			return;
+		}
+		parts.Add(label.Trim() + " " + relation.Value);
+	}
+
+	private static void AddExpelClanDefaultFormulaPart(List<string> parts, bool? shouldExpel)
+	{
+		if (parts == null)
+		{
+			return;
+		}
+		if (shouldExpel == true)
+		{
+			parts.Add("原版公式有 10000 的保留基准，最终驱逐通常意味着政治表态或统治者裁决压过保留倾向");
+		}
+		else if (shouldExpel == false)
+		{
+			parts.Add("原版公式有 10000 的保留基准，关系、封地、军力和声望通常都会强化保留倾向");
+		}
+		else
+		{
+			parts.Add("原版公式有 10000 的保留基准，天然更偏向保留家族");
+		}
+	}
+
+	private static void AddExpelClanVoteSupportPart(List<string> parts, DecisionOutcome chosenOutcome, bool? shouldExpel)
+	{
+		if (parts == null || chosenOutcome == null)
+		{
+			return;
+		}
+		try
+		{
+			int count = chosenOutcome.SupporterList?.Count((Supporter x) => x?.Clan != null) ?? 0;
+			if (count <= 0)
+			{
+				return;
+			}
+			string action = shouldExpel == true ? "驱逐" : shouldExpel == false ? "保留" : "最终选项";
+			parts.Add("投票支持：" + count + "个家族支持" + action);
+		}
+		catch
+		{
+		}
+	}
+
+	private static void AddExpelClanRelationCostPart(List<string> parts, bool? shouldExpel)
+	{
+		if (parts == null || shouldExpel != true)
+		{
+			return;
+		}
+		try
+		{
+			var diplomacyModel = Campaign.Current?.Models?.DiplomacyModel;
+			if (diplomacyModel == null)
+			{
+				return;
+			}
+			int relationCost = diplomacyModel.GetRelationCostOfExpellingClanFromKingdom();
+			parts.Add("驱逐副作用：支持者会与目标家族产生关系变化 " + relationCost);
+		}
+		catch
+		{
+		}
+	}
+
+	private static void AddExpelClanFormulaValuePart(List<string> parts, ExpelClanFromKingdomDecision decision, DecisionOutcome chosenOutcome, bool? shouldExpel)
+	{
+		if (parts == null || decision == null || chosenOutcome == null)
+		{
+			return;
+		}
+		float? value = SafeDetermineKingdomDecisionSupport(decision, decision.ProposerClan, chosenOutcome);
+		string valueText = FormatPoliticalReasonNumber(value);
+		if (string.IsNullOrWhiteSpace(valueText))
+		{
+			return;
+		}
+		if (shouldExpel == true && value.HasValue && value.Value < 0f)
+		{
+			parts.Add("提案家族公式阻力：驱逐选项被保留基准压制（公式值 " + valueText + "）");
+		}
+		else if (shouldExpel == false && value.HasValue && value.Value > 0f)
+		{
+			parts.Add("提案家族公式倾向：保留目标家族（公式值 " + valueText + "）");
+		}
+		else
+		{
+			parts.Add("提案家族公式值 " + valueText);
+		}
+	}
+
+	private static string BuildSettlementClaimantPreliminaryPoliticalTriggerReason(SettlementClaimantPreliminaryDecision decision, DecisionOutcome chosenOutcome)
+	{
+		try
+		{
+			if (decision == null || decision.Settlement == null)
+			{
+				return "";
+			}
+			Settlement settlement = decision.Settlement;
+			Clan ownerClan = SafeResolveSettlementClaimantPreliminaryOwnerClan(decision) ?? settlement.OwnerClan;
+			bool? shouldChange = SafeGetSettlementClaimantPreliminaryOutcomeShouldChange(chosenOutcome);
+			List<string> parts = new List<string>();
+			string settlementName = GetSettlementDisplayName(settlement);
+			if (shouldChange.HasValue)
+			{
+				parts.Add("议题类型：是否重分配" + settlementName + "，最终" + (shouldChange.Value ? "进入新封地主竞争" : "维持现任封地主"));
+			}
+			else
+			{
+				parts.Add("议题类型：是否重分配" + settlementName);
+			}
+			if (ownerClan != null)
+			{
+				parts.Add("现任封地主：" + GetClanDisplayName(ownerClan));
+				AddSettlementOwnerRelationNetworkParts(parts, ownerClan);
+				AddSettlementOwnerStrengthPart(parts, ownerClan);
+			}
+			AddSettlementSupportTendencyPart(parts, "提案家族对重分配", SafeCalculateSettlementClaimantPreliminarySupport(decision, decision.ProposerClan));
+			AddSettlementSupportTendencyPart(parts, "提案家族对最终选项", SafeDetermineKingdomDecisionSupport(decision, decision.ProposerClan, chosenOutcome));
+			return BuildPoliticalReasonSentence("封地重分配触发原因", parts);
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	private static string BuildSettlementClaimantPoliticalTriggerReason(SettlementClaimantDecision decision, DecisionOutcome chosenOutcome)
+	{
+		try
+		{
+			if (decision == null || decision.Settlement == null || chosenOutcome == null)
+			{
+				return "";
+			}
+			Clan chosenClan = ResolveSettlementClaimantOutcomeClan(chosenOutcome);
+			if (chosenClan == null)
+			{
+				return "";
+			}
+			Settlement settlement = decision.Settlement;
+			List<string> parts = new List<string>();
+			parts.Add("议题类型：决定" + GetSettlementDisplayName(settlement) + "归属，获选家族为" + GetClanDisplayName(chosenClan));
+			AddSettlementClaimantCandidateFormulaParts(parts, settlement, chosenClan);
+			AddSettlementClaimantCandidateRankingPart(parts, decision, chosenClan);
+			AddSettlementClaimantVoteSupportPart(parts, chosenOutcome);
+			AddSettlementSupportTendencyPart(parts, "提案家族对获选方", SafeDetermineKingdomDecisionSupport(decision, decision.ProposerClan, chosenOutcome));
+			return BuildPoliticalReasonSentence("封地分配触发原因", parts);
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	private static Clan SafeResolveSettlementClaimantPreliminaryOwnerClan(SettlementClaimantPreliminaryDecision decision)
+	{
+		try
+		{
+			if (decision == null)
+			{
+				return null;
+			}
+			FieldInfo field = typeof(SettlementClaimantPreliminaryDecision).GetField("_ownerClan", BindingFlags.Instance | BindingFlags.NonPublic);
+			return field?.GetValue(decision) as Clan;
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static bool? SafeGetSettlementClaimantPreliminaryOutcomeShouldChange(DecisionOutcome chosenOutcome)
+	{
+		try
+		{
+			if (chosenOutcome is SettlementClaimantPreliminaryDecision.SettlementClaimantPreliminaryOutcome preliminaryOutcome)
+			{
+				return preliminaryOutcome.ShouldSettlementOwnerChange;
+			}
+		}
+		catch
+		{
+		}
+		return null;
+	}
+
+	private static Clan ResolveSettlementClaimantOutcomeClan(DecisionOutcome chosenOutcome)
+	{
+		try
+		{
+			return (chosenOutcome as SettlementClaimantDecision.ClanAsDecisionOutcome)?.Clan ?? chosenOutcome?.SponsorClan;
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static float? SafeCalculateSettlementClaimantPreliminarySupport(SettlementClaimantPreliminaryDecision decision, Clan clan)
+	{
+		try
+		{
+			return decision != null && clan != null ? decision.CalculateSupport(clan) : (float?)null;
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static float? SafeDetermineKingdomDecisionSupport(KingdomDecision decision, Clan clan, DecisionOutcome outcome)
+	{
+		try
+		{
+			return decision != null && clan != null && outcome != null ? decision.DetermineSupport(clan, outcome) : (float?)null;
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static void AddSettlementOwnerRelationNetworkParts(List<string> parts, Clan ownerClan)
+	{
+		if (parts == null || ownerClan?.Leader == null)
+		{
+			return;
+		}
+		List<Clan> clans = new List<Clan>();
+		try
+		{
+			if (ownerClan.Kingdom?.Clans != null)
+			{
+				clans.AddRange(ownerClan.Kingdom.Clans.Where((Clan x) => x?.Leader != null));
+			}
+			else
+			{
+				clans.Add(ownerClan);
+			}
+		}
+		catch
+		{
+			clans.Clear();
+			clans.Add(ownerClan);
+		}
+		int positiveCount = 0;
+		int nonPositiveCount = 0;
+		int positiveMagnitude = 0;
+		int nonPositiveMagnitude = 0;
+		foreach (Clan clan in clans)
+		{
+			int? relation = SafeGetLeaderRelation(clan?.Leader, ownerClan.Leader);
+			if (!relation.HasValue)
+			{
+				continue;
+			}
+			if (relation.Value > 0)
+			{
+				positiveCount++;
+				positiveMagnitude += relation.Value;
+			}
+			else
+			{
+				nonPositiveCount++;
+				nonPositiveMagnitude += Math.Abs(relation.Value);
+			}
+		}
+		if (positiveCount + nonPositiveCount == 0)
+		{
+			return;
+		}
+		parts.Add("现任家族关系网：" + positiveCount + "个家族关系为正、" + nonPositiveCount + "个不高于0");
+		if (nonPositiveMagnitude > positiveMagnitude)
+		{
+			parts.Add("关系权重显示对现任家族不满更重，原版公式更容易推动重分配");
+		}
+		else if (positiveMagnitude > nonPositiveMagnitude)
+		{
+			parts.Add("关系权重显示现任家族盟友更强，原版公式更容易维持原主");
+		}
+	}
+
+	private static int? SafeGetLeaderRelation(Hero source, Hero target)
+	{
+		try
+		{
+			return source != null && target != null ? source.GetRelation(target) : (int?)null;
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static void AddSettlementOwnerStrengthPart(List<string> parts, Clan ownerClan)
+	{
+		if (parts == null || ownerClan == null)
+		{
+			return;
+		}
+		string strengthText = FormatPoliticalReasonNumber(SafeGetClanStrength(ownerClan));
+		if (string.IsNullOrWhiteSpace(strengthText))
+		{
+			return;
+		}
+		parts.Add("现任家族实力 " + strengthText + "，实力越高越会提高维持原主的公式基准");
+	}
+
+	private static void AddSettlementClaimantCandidateFormulaParts(List<string> parts, Settlement settlement, Clan clan)
+	{
+		if (parts == null || settlement == null || clan == null)
+		{
+			return;
+		}
+		parts.Add("候选家族等级 " + clan.Tier + "，等级越高基础分越高");
+		string strengthText = FormatPoliticalReasonNumber(SafeGetSettlementClaimantAdjustedStrength(settlement, clan));
+		if (!string.IsNullOrWhiteSpace(strengthText))
+		{
+			parts.Add("候选家族野战力量 " + strengthText + "，会折入候选基础分");
+		}
+		AddSettlementClaimantExistingFiefParts(parts, settlement, clan);
+		AddSettlementClaimantSpecialBonusParts(parts, settlement, clan);
+		string settlementValue = FormatPoliticalReasonNumber(SafeGetSettlementValueForClan(settlement, clan));
+		if (!string.IsNullOrWhiteSpace(settlementValue))
+		{
+			parts.Add("目标封地价值 " + settlementValue + "，价值越高越会稀释候选分母");
+		}
+	}
+
+	private static void AddSettlementClaimantExistingFiefParts(List<string> parts, Settlement targetSettlement, Clan clan)
+	{
+		if (parts == null || targetSettlement == null || clan == null)
+		{
+			return;
+		}
+		int count = 0;
+		float totalValue = 0f;
+		float nearest = Campaign.MapDiagonal + 1f;
+		float secondNearest = Campaign.MapDiagonal + 1f;
+		try
+		{
+			foreach (Settlement settlement in Settlement.All)
+			{
+				if (settlement == null || settlement == targetSettlement || settlement.OwnerClan != clan || !settlement.IsFortification)
+				{
+					continue;
+				}
+				count++;
+				totalValue += SafeGetSettlementValueForClan(settlement, clan) ?? 0f;
+				float distance = Campaign.Current.Models.MapDistanceModel.GetDistance(settlement, targetSettlement, false, false, MobileParty.NavigationType.All);
+				if (distance < secondNearest)
+				{
+					if (distance < nearest)
+					{
+						secondNearest = nearest;
+						nearest = distance;
+					}
+					else
+					{
+						secondNearest = distance;
+					}
+				}
+			}
+		}
+		catch
+		{
+		}
+		if (count == 0)
+		{
+			parts.Add("该家族没有其他城镇或城堡，原版公式给予无封地补正");
+			return;
+		}
+		string valueText = FormatPoliticalReasonNumber(totalValue);
+		parts.Add("该家族已有要塞 " + count + " 处" + (string.IsNullOrWhiteSpace(valueText) ? "" : ("，既有封地价值 " + valueText + " 会降低新增封地需求")));
+		string distancePart = BuildSettlementClaimantDistancePart(nearest, secondNearest);
+		if (!string.IsNullOrWhiteSpace(distancePart))
+		{
+			parts.Add(distancePart);
+		}
+	}
+
+	private static string BuildSettlementClaimantDistancePart(float nearest, float secondNearest)
+	{
+		try
+		{
+			if (nearest >= Campaign.MapDiagonal)
+			{
+				return "";
+			}
+			float distance = secondNearest < Campaign.MapDiagonal ? ((nearest + secondNearest) / 2f) : nearest;
+			float days = Campaign.Current.EstimatedAverageLordPartySpeed > 0f ? distance / (Campaign.Current.EstimatedAverageLordPartySpeed * (float)CampaignTime.HoursInDay) : 0f;
+			string daysText = days.ToString("0.#");
+			if (days <= 1f)
+			{
+				return "现有封地与目标封地很近（约 " + daysText + " 天行军），连片治理加成明显";
+			}
+			if (days <= 2.5f)
+			{
+				return "现有封地与目标封地距离适中（约 " + daysText + " 天行军），仍有连片治理加成";
+			}
+			return "现有封地离目标较远（约 " + daysText + " 天行军），距离因子不占优";
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	private static void AddSettlementClaimantSpecialBonusParts(List<string> parts, Settlement settlement, Clan clan)
+	{
+		if (parts == null || settlement == null || clan?.Leader == null)
+		{
+			return;
+		}
+		try
+		{
+			if (clan.Leader == clan.Kingdom?.Leader)
+			{
+				parts.Add("候选人是王国统治者，原版公式给予统治者加成");
+			}
+			if (settlement.Town != null && settlement.Town.LastCapturedBy == clan)
+			{
+				parts.Add("该家族最后攻下此封地，原版公式给予攻城功劳加成");
+			}
+			if (clan.Leader == Hero.MainHero)
+			{
+				parts.Add("候选人是玩家，原版公式给予玩家候选加成");
+			}
+			int gold = clan.Leader.Gold;
+			if (gold < 30000)
+			{
+				parts.Add("家族领袖资金不足（" + gold + "），原版公式给予财政困难补正");
+			}
+		}
+		catch
+		{
+		}
+	}
+
+	private static float? SafeGetSettlementClaimantAdjustedStrength(Settlement settlement, Clan clan)
+	{
+		try
+		{
+			if (settlement == null || clan == null)
+			{
+				return null;
+			}
+			float strength = clan.CurrentTotalStrength;
+			if (settlement.OwnerClan == clan && settlement.Town?.GarrisonParty?.Party != null)
+			{
+				strength -= settlement.Town.GarrisonParty.Party.CalculateCurrentStrength();
+				if (strength < 0f)
+				{
+					strength = 0f;
+				}
+			}
+			return strength;
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static float? SafeGetClanStrength(Clan clan)
+	{
+		try
+		{
+			return clan?.CurrentTotalStrength;
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static float? SafeGetSettlementValueForClan(Settlement settlement, Clan clan)
+	{
+		try
+		{
+			return settlement != null && clan?.Kingdom != null ? settlement.GetSettlementValueForFaction(clan.Kingdom) : (float?)null;
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static void AddSettlementClaimantCandidateRankingPart(List<string> parts, SettlementClaimantDecision decision, Clan chosenClan)
+	{
+		if (parts == null || decision == null || chosenClan == null)
+		{
+			return;
+		}
+		try
+		{
+			List<Tuple<Clan, float>> candidates = new List<Tuple<Clan, float>>();
+			foreach (DecisionOutcome outcome in decision.DetermineInitialCandidates() ?? Enumerable.Empty<DecisionOutcome>())
+			{
+				Clan clan = ResolveSettlementClaimantOutcomeClan(outcome);
+				if (clan == null)
+				{
+					continue;
+				}
+				float merit = decision.CalculateMeritOfOutcome(outcome);
+				candidates.Add(Tuple.Create(clan, merit));
+			}
+			candidates = candidates.OrderByDescending((Tuple<Clan, float> x) => x.Item2).ToList();
+			if (candidates.Count == 0)
+			{
+				return;
+			}
+			string chosenId = GetClanId(chosenClan);
+			int index = candidates.FindIndex((Tuple<Clan, float> x) => string.Equals(GetClanId(x.Item1), chosenId, StringComparison.OrdinalIgnoreCase));
+			if (index < 0)
+			{
+				return;
+			}
+			parts.Add("候选基础评分排名：" + (index + 1) + "/" + candidates.Count + "（评分 " + FormatPoliticalReasonNumber(candidates[index].Item2) + "）");
+			if (index > 0)
+			{
+				parts.Add("基础评分最高者为" + GetClanDisplayName(candidates[0].Item1) + "，最终结果还受到投票支持和统治者裁决影响");
+			}
+		}
+		catch
+		{
+		}
+	}
+
+	private static void AddSettlementClaimantVoteSupportPart(List<string> parts, DecisionOutcome chosenOutcome)
+	{
+		if (parts == null || chosenOutcome == null)
+		{
+			return;
+		}
+		try
+		{
+			int count = chosenOutcome.SupporterList?.Count((Supporter x) => x?.Clan != null) ?? 0;
+			if (count <= 0)
+			{
+				return;
+			}
+			string meritText = FormatPoliticalReasonNumber(chosenOutcome.Merit);
+			parts.Add("投票支持：" + count + "个家族支持获选方" + (string.IsNullOrWhiteSpace(meritText) ? "" : ("，支持后总评分 " + meritText)));
+		}
+		catch
+		{
+		}
+	}
+
+	private static void AddSettlementSupportTendencyPart(List<string> parts, string label, float? support)
+	{
+		if (parts == null || string.IsNullOrWhiteSpace(label) || !support.HasValue || float.IsNaN(support.Value) || float.IsInfinity(support.Value))
+		{
+			return;
+		}
+		string supportText = FormatPoliticalReasonNumber(support);
+		if (string.IsNullOrWhiteSpace(supportText))
+		{
+			return;
+		}
+		parts.Add(label.Trim() + GetSettlementSupportTendencyLabel(support.Value) + "（支持度 " + supportText + "）");
+	}
+
+	private static string GetSettlementSupportTendencyLabel(float support)
+	{
+		if (support >= 100f)
+		{
+			return "强烈支持";
+		}
+		if (support >= 35f)
+		{
+			return "支持";
+		}
+		if (support > 0f)
+		{
+			return "轻度支持";
+		}
+		if (support <= -100f)
+		{
+			return "强烈反对";
+		}
+		if (support <= -35f)
+		{
+			return "反对";
+		}
+		return "倾向反对";
+	}
+
+	private static Clan ResolvePoliticalReasonEvaluatorClan(IFaction faction)
+	{
+		try
+		{
+			return (faction as Clan) ?? faction?.Leader?.Clan ?? (faction as Kingdom)?.RulingClan;
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static float? SafeGetPoliticalDecisionThreshold(IFaction faction)
+	{
+		try
+		{
+			if (faction == null || Campaign.Current?.Models?.DiplomacyModel == null)
+			{
+				return null;
+			}
+			return Campaign.Current.Models.DiplomacyModel.GetDecisionMakingThreshold(faction);
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static float? SafeCalculateDeclareWarSupport(DeclareWarDecision decision, Clan clan)
+	{
+		try
+		{
+			return decision != null && clan != null ? decision.CalculateSupport(clan) : (float?)null;
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static float? SafeCalculateMakePeaceSupport(MakePeaceKingdomDecision decision, Clan clan)
+	{
+		try
+		{
+			return decision != null && clan != null ? decision.CalculateSupport(clan) : (float?)null;
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static string BuildPeaceTributeParameter(MakePeaceKingdomDecision decision, IFaction peaceFaction)
+	{
+		if (decision == null)
+		{
+			return "";
+		}
+		int tribute = decision.DailyTributeToBePaid;
+		if (tribute == 0)
+		{
+			return "停战贡金 0";
+		}
+		string factionName = GetFactionDisplayName(peaceFaction, "己方");
+		string verb = tribute > 0 ? "支付" : "收取";
+		return factionName + verb + "每日贡金 " + Math.Abs(tribute) + "，持续 " + Math.Abs(decision.DailyTributeDurationInDays) + " 天";
+	}
+
+	private static void AddPoliticalFactionParameterParts(List<string> parts, IFaction sourceFaction, IFaction targetFaction, Clan evaluatingClan)
+	{
+		if (parts == null)
+		{
+			return;
+		}
+		float? sourceStrengthValue = SafeGetFactionStrength(sourceFaction);
+		float? targetStrengthValue = SafeGetFactionStrength(targetFaction);
+		string strengthPart = BuildPoliticalStrengthComparisonPart(sourceFaction, targetFaction, sourceStrengthValue, targetStrengthValue);
+		if (!string.IsNullOrWhiteSpace(strengthPart))
+		{
+			parts.Add(strengthPart);
+		}
+		int? relation = SafeGetPoliticalRelation(evaluatingClan, sourceFaction, targetFaction);
+		if (relation.HasValue)
+		{
+			parts.Add("相关家族关系 " + relation.Value);
+		}
+		int? sourceWarParties = SafeGetFactionWarPartyCount(sourceFaction);
+		int? targetWarParties = SafeGetFactionWarPartyCount(targetFaction);
+		if (sourceWarParties.HasValue && targetWarParties.HasValue)
+		{
+			parts.Add("战争部队数 " + sourceWarParties.Value + "/" + targetWarParties.Value);
+		}
+	}
+
+	private static void AddPoliticalFallbackPartIfNeeded(List<string> parts, bool hasModelReason, string actionLabel, string detailText)
+	{
+		if (parts == null || hasModelReason)
+		{
+			return;
+		}
+		string text = GetPoliticalEventDetailLabel(detailText);
+		string action = string.IsNullOrWhiteSpace(actionLabel) ? "外交事件" : actionLabel.Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			parts.Add("触发方式：" + action + "事件，原版未提供更细原因");
+		}
+		else
+		{
+			parts.Add("触发方式：" + text + "，原版未提供更细原因");
+		}
+	}
+
+	private static string GetPoliticalEventDetailLabel(string detailText)
+	{
+		string text = (detailText ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return "";
+		}
+		if (text.IndexOf("KingdomDecision", StringComparison.OrdinalIgnoreCase) >= 0)
+		{
+			return "王国决议";
+		}
+		if (text.IndexOf("Default", StringComparison.OrdinalIgnoreCase) >= 0)
+		{
+			return "默认外交结算";
+		}
+		if (text.IndexOf("Barter", StringComparison.OrdinalIgnoreCase) >= 0)
+		{
+			return "交易或谈判";
+		}
+		if (text.IndexOf("Conversation", StringComparison.OrdinalIgnoreCase) >= 0)
+		{
+			return "对话谈判";
+		}
+		return "原版细节 " + text;
+	}
+
+	private static string BuildPoliticalStrengthComparisonPart(IFaction sourceFaction, IFaction targetFaction, float? sourceStrength, float? targetStrength)
+	{
+		string sourceText = FormatPoliticalReasonNumber(sourceStrength);
+		string targetText = FormatPoliticalReasonNumber(targetStrength);
+		if (string.IsNullOrWhiteSpace(sourceText) || string.IsNullOrWhiteSpace(targetText))
+		{
+			return "";
+		}
+		string sourceName = GetFactionDisplayName(sourceFaction, "己方");
+		string targetName = GetFactionDisplayName(targetFaction, "对方");
+		if (sourceStrength.Value <= 0f && targetStrength.Value <= 0f)
+		{
+			return "实力对比：双方均无可统计野战力量";
+		}
+		if (sourceStrength.Value <= 0f)
+		{
+			return "实力对比：" + sourceName + "无可统计野战力量";
+		}
+		if (targetStrength.Value <= 0f)
+		{
+			return "实力对比：" + targetName + "无可统计野战力量";
+		}
+		string relation = GetPoliticalStrengthComparisonLabel(sourceStrength.Value, targetStrength.Value, targetName);
+		return "实力对比：" + sourceName + relation + "（" + sourceText + "/" + targetText + "）";
+	}
+
+	private static string GetPoliticalStrengthComparisonLabel(float sourceStrength, float targetStrength, string targetName)
+	{
+		string targetText = string.IsNullOrWhiteSpace(targetName) ? "对方" : targetName.Trim();
+		float ratio = sourceStrength / targetStrength;
+		if (ratio >= 1.75f)
+		{
+			return "明显强于" + targetText;
+		}
+		if (ratio >= 1.2f)
+		{
+			return "略强于" + targetText;
+		}
+		if (ratio > 0.83f)
+		{
+			return "与" + targetText + "接近";
+		}
+		if (ratio > 0.57f)
+		{
+			return "略弱于" + targetText;
+		}
+		return "明显弱于" + targetText;
+	}
+
+	private static float? SafeGetFactionStrength(IFaction faction)
+	{
+		try
+		{
+			return faction?.CurrentTotalStrength;
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static int? SafeGetFactionWarPartyCount(IFaction faction)
+	{
+		try
+		{
+			return faction?.WarPartyComponents?.Count;
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static int? SafeGetPoliticalRelation(Clan evaluatingClan, IFaction sourceFaction, IFaction targetFaction)
+	{
+		try
+		{
+			Clan sourceClan = evaluatingClan ?? ResolvePoliticalReasonEvaluatorClan(sourceFaction);
+			Clan targetClan = ResolvePoliticalReasonEvaluatorClan(targetFaction);
+			if (sourceClan == null || targetClan == null)
+			{
+				return null;
+			}
+			return FactionManager.GetRelationBetweenClans(sourceClan, targetClan);
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static void AddPoliticalReasonNumberPart(List<string> parts, string label, float value)
+	{
+		AddPoliticalReasonNumberPart(parts, label, (float?)value);
+	}
+
+	private static void AddPoliticalReasonNumberPart(List<string> parts, string label, float? value)
+	{
+		if (parts == null || string.IsNullOrWhiteSpace(label))
+		{
+			return;
+		}
+		string text = FormatPoliticalReasonNumber(value);
+		if (!string.IsNullOrWhiteSpace(text))
+		{
+			parts.Add(label.Trim() + " " + text);
+		}
+	}
+
+	private static void AddPoliticalScoreAgainstThresholdPart(List<string> parts, string label, float score, float? threshold, string thresholdLabel)
+	{
+		if (parts == null || string.IsNullOrWhiteSpace(label))
+		{
+			return;
+		}
+		string scoreLabel = label.Trim();
+		string thresholdText = FormatPoliticalReasonNumber(threshold);
+		if (IsExtremePoliticalReasonScore(score))
+		{
+			string tendency = score > 0f ? "极高" : "极低";
+			parts.Add(string.IsNullOrWhiteSpace(thresholdText) ? (scoreLabel + tendency) : (scoreLabel + tendency + "（" + thresholdLabel + " " + thresholdText + "）"));
+			return;
+		}
+		string scoreText = FormatPoliticalReasonNumber(score);
+		if (string.IsNullOrWhiteSpace(scoreText))
+		{
+			return;
+		}
+		if (!threshold.HasValue || string.IsNullOrWhiteSpace(thresholdText))
+		{
+			parts.Add(scoreLabel + " " + scoreText);
+			return;
+		}
+		parts.Add(scoreLabel + GetPoliticalScoreThresholdRelation(score, threshold.Value) + thresholdLabel + "（" + scoreText + "/" + thresholdText + "）");
+	}
+
+	private static bool IsExtremePoliticalReasonScore(float value)
+	{
+		return !float.IsNaN(value) && !float.IsInfinity(value) && Math.Abs(value) >= 1000000f;
+	}
+
+	private static string GetPoliticalScoreThresholdRelation(float score, float threshold)
+	{
+		if (threshold <= 0f)
+		{
+			return score >= threshold ? "高于" : "低于";
+		}
+		float ratio = score / threshold;
+		if (ratio >= 1.5f)
+		{
+			return "明显高于";
+		}
+		if (ratio >= 1.05f)
+		{
+			return "略高于";
+		}
+		if (ratio >= 0.95f)
+		{
+			return "接近";
+		}
+		return "低于";
+	}
+
+	private static string FormatPoliticalReasonNumber(float? value)
+	{
+		if (!value.HasValue || float.IsNaN(value.Value) || float.IsInfinity(value.Value))
+		{
+			return "";
+		}
+		return value.Value.ToString("0");
+	}
+
+	private static string NormalizePoliticalReasonText(string text)
+	{
+		return (text ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
+	}
+
+	private const int PoliticalReasonMaxMaterialParts = 6;
+	private const int PoliticalReasonMaxPartLength = 86;
+
+	private static string BuildPoliticalReasonSentence(string label, IEnumerable<string> parts)
+	{
+		List<string> list = (parts ?? Enumerable.Empty<string>()).Where((string x) => !string.IsNullOrWhiteSpace(x)).Select(CondensePoliticalReasonPart).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+		if (list.Count == 0)
+		{
+			return "";
+		}
+		list = SelectPoliticalReasonMaterialParts(list);
+		return label + "：" + string.Join("；", list) + "。";
+	}
+
+	private static List<string> SelectPoliticalReasonMaterialParts(List<string> parts)
+	{
+		List<string> source = parts ?? new List<string>();
+		List<string> selected = new List<string>();
+		string topicPart = source.FirstOrDefault((string x) => (x ?? "").StartsWith("议题类型：", StringComparison.OrdinalIgnoreCase));
+		AddPoliticalReasonPartIfUseful(selected, topicPart);
+		string corePart = BuildPoliticalReasonCorePart(source);
+		AddPoliticalReasonPartIfUseful(selected, corePart);
+		for (int priority = 0; priority <= 8 && selected.Count < PoliticalReasonMaxMaterialParts; priority++)
+		{
+			foreach (string part in source)
+			{
+				if (selected.Count >= PoliticalReasonMaxMaterialParts)
+				{
+					break;
+				}
+				if (string.Equals(part, topicPart, StringComparison.OrdinalIgnoreCase))
+				{
+					continue;
+				}
+				if (GetPoliticalReasonPartPriority(part) == priority)
+				{
+					AddPoliticalReasonPartIfUseful(selected, part);
+				}
+			}
+		}
+		return selected.Count > 0 ? selected : source.Take(PoliticalReasonMaxMaterialParts).ToList();
+	}
+
+	private static void AddPoliticalReasonPartIfUseful(List<string> parts, string part)
+	{
+		if (parts == null || string.IsNullOrWhiteSpace(part))
+		{
+			return;
+		}
+		string text = CondensePoliticalReasonPart(part);
+		if (!string.IsNullOrWhiteSpace(text) && !parts.Any((string x) => string.Equals(x, text, StringComparison.OrdinalIgnoreCase)))
+		{
+			parts.Add(text);
+		}
+	}
+
+	private static string CondensePoliticalReasonPart(string part)
+	{
+		string text = NormalizePoliticalReasonText(part);
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return "";
+		}
+		text = Regex.Replace(text, "\\s+", " ");
+		if (text.StartsWith("原版理由：", StringComparison.OrdinalIgnoreCase))
+		{
+			text = "原版理由：" + TrimPoliticalReasonPart(text.Substring("原版理由：".Length), 62);
+		}
+		return TrimPoliticalReasonPart(text, PoliticalReasonMaxPartLength);
+	}
+
+	private static string TrimPoliticalReasonPart(string text, int maxLength)
+	{
+		string value = (text ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(value) || value.Length <= maxLength)
+		{
+			return value;
+		}
+		int cut = value.LastIndexOf('，', Math.Min(maxLength - 4, value.Length - 1));
+		if (cut < 18)
+		{
+			cut = value.LastIndexOf('；', Math.Min(maxLength - 4, value.Length - 1));
+		}
+		if (cut < 18)
+		{
+			cut = Math.Max(12, maxLength - 3);
+		}
+		return value.Substring(0, Math.Min(cut, value.Length)).TrimEnd('，', '；', '。', ' ') + "...";
+	}
+
+	private static string BuildPoliticalReasonCorePart(List<string> parts)
+	{
+		if (parts == null || parts.Count == 0)
+		{
+			return "";
+		}
+		List<string> tags = new List<string>();
+		AddPoliticalReasonCoreTag(tags, parts, "关系因素", "关系", "不满", "负面", "不高于0", "恶化");
+		AddPoliticalReasonCoreTag(tags, parts, "实力对比", "实力对比", "野战力量", "家族强度", "战争部队", "兵员");
+		AddPoliticalReasonCoreTag(tags, parts, "模型评分", "评分", "阈值", "支持度", "模型倾向", "倾向");
+		AddPoliticalReasonCoreTag(tags, parts, "封地利益", "封地", "要塞", "城镇", "城堡", "连片治理");
+		AddPoliticalReasonCoreTag(tags, parts, "政策取向", "政策权重", "王权", "贵族寡头", "平民");
+		AddPoliticalReasonCoreTag(tags, parts, "盟约义务", "盟友", "结盟", "召战", "应召");
+		AddPoliticalReasonCoreTag(tags, parts, "贸易利益", "贸易协议", "贸易");
+		AddPoliticalReasonCoreTag(tags, parts, "战争状态", "宣战", "议和", "参战", "交战");
+		AddPoliticalReasonCoreTag(tags, parts, "财政成本", "贡金", "费用", "付款", "资金不足");
+		AddPoliticalReasonCoreTag(tags, parts, "议会支持", "投票支持", "支持者表态", "支持获选者");
+		if (tags.Count == 0)
+		{
+			return "";
+		}
+		return "核心原因：" + string.Join("、", tags.Take(4));
+	}
+
+	private static void AddPoliticalReasonCoreTag(List<string> tags, List<string> parts, string tag, params string[] keywords)
+	{
+		if (tags == null || parts == null || string.IsNullOrWhiteSpace(tag) || tags.Any((string x) => string.Equals(x, tag, StringComparison.OrdinalIgnoreCase)))
+		{
+			return;
+		}
+		foreach (string part in parts)
+		{
+			string text = part ?? "";
+			if (keywords.Any((string keyword) => !string.IsNullOrWhiteSpace(keyword) && text.IndexOf(keyword, StringComparison.OrdinalIgnoreCase) >= 0))
+			{
+				tags.Add(tag);
+				return;
+			}
+		}
+	}
+
+	private static int GetPoliticalReasonPartPriority(string part)
+	{
+		string text = part ?? "";
+		if (text.StartsWith("原版理由：", StringComparison.OrdinalIgnoreCase))
+		{
+			return 0;
+		}
+		if (text.IndexOf("评分", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("阈值", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("支持度", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("模型倾向", StringComparison.OrdinalIgnoreCase) >= 0)
+		{
+			return 1;
+		}
+		if (text.IndexOf("关系", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("实力对比", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("野战力量", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("家族强度", StringComparison.OrdinalIgnoreCase) >= 0)
+		{
+			return 2;
+		}
+		if (text.IndexOf("政策权重", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("权重方向", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("封地", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("要塞", StringComparison.OrdinalIgnoreCase) >= 0)
+		{
+			return 3;
+		}
+		if (text.IndexOf("投票支持", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("支持者", StringComparison.OrdinalIgnoreCase) >= 0)
+		{
+			return 4;
+		}
+		if (text.IndexOf("费用", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("贡金", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("付款", StringComparison.OrdinalIgnoreCase) >= 0)
+		{
+			return 5;
+		}
+		if (text.IndexOf("战争", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("盟友", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("贸易", StringComparison.OrdinalIgnoreCase) >= 0)
+		{
+			return 6;
+		}
+		return 8;
+	}
+
 	private static string BuildPlayerKingdomDecisionActionText(KingdomDecision decision, DecisionOutcome chosenOutcome)
 	{
 		string kingdomDisplayName = GetKingdomDisplayName(decision?.Kingdom, "该王国");
@@ -6560,6 +9107,29 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			AddRelatedFactionFacts(facts, makePeaceKingdomDecision.FactionToMakePeaceWith);
 		}
+		else if (decision is StartAllianceDecision startAllianceDecision)
+		{
+			AddUniqueId(facts.RelatedKingdomIds, GetKingdomId(startAllianceDecision.KingdomToStartAllianceWith));
+		}
+		else if (decision is TradeAgreementDecision tradeAgreementDecision)
+		{
+			AddUniqueId(facts.RelatedKingdomIds, GetKingdomId(tradeAgreementDecision.TargetKingdom));
+		}
+		else if (decision is ProposeCallToWarAgreementDecision proposeCallToWarAgreementDecision)
+		{
+			AddUniqueId(facts.RelatedKingdomIds, GetKingdomId(proposeCallToWarAgreementDecision.CalledKingdom));
+			AddUniqueId(facts.RelatedKingdomIds, GetKingdomId(proposeCallToWarAgreementDecision.KingdomToCallToWarAgainst));
+		}
+		else if (decision is AcceptCallToWarAgreementDecision acceptCallToWarAgreementDecision)
+		{
+			AddUniqueId(facts.RelatedKingdomIds, GetKingdomId(acceptCallToWarAgreementDecision.CallingKingdom));
+			AddUniqueId(facts.RelatedKingdomIds, GetKingdomId(acceptCallToWarAgreementDecision.KingdomToCallToWarAgainst));
+		}
+		else if (decision is ExpelClanFromKingdomDecision expelClanFromKingdomDecision)
+		{
+			AddUniqueId(facts.RelatedClanIds, GetClanId(expelClanFromKingdomDecision.ClanToExpel));
+			AddUniqueId(facts.RelatedKingdomIds, GetKingdomId(expelClanFromKingdomDecision.OldKingdom));
+		}
 		else if (decision is SettlementClaimantPreliminaryDecision settlementClaimantPreliminaryDecision)
 		{
 			ApplySettlementFacts(facts, settlementClaimantPreliminaryDecision.Settlement);
@@ -6569,6 +9139,7 @@ public class MyBehavior : CampaignBehaviorBase
 		if (chosenOutcome is KingSelectionKingdomDecision.KingSelectionDecisionOutcome kingSelectionDecisionOutcome)
 		{
 			ApplyTargetFacts(facts, kingSelectionDecisionOutcome.King);
+			AddUniqueId(facts.RelatedClanIds, GetClanId(kingSelectionDecisionOutcome.King?.Clan));
 		}
 	}
 
@@ -8998,12 +11569,25 @@ public class MyBehavior : CampaignBehaviorBase
 		_pendingAutomaticKingdomRebellionReady = false;
 		_pendingAutomaticKingdomRebellionContext = null;
 		InformationManager.ShowInquiry(new InquiryData("正在生成叛乱建国命名", "系统正在为本周自动叛乱生成新王国的名称与百科简介。\n\n这一步完成前不会继续本轮自动叛乱与周报流程。\n请稍候，结果完成后会自动弹出。", isAffirmativeOptionShown: false, isNegativeOptionShown: false, "", "", null, null), pauseGameActiveState: true);
+		long runtimeGeneration = SaveRuntimeGuard.CaptureGeneration();
+		string logTarget = "自动叛乱建国命名 - " + GetClanId(clan);
 		Task.Run(delegate
 		{
-			RebelKingdomNamingResult namingResult = GenerateRebelKingdomNamingFromPrompts(systemPrompt, userPrompt, "自动叛乱建国命名 - " + GetClanId(clan), RebelKingdomNamingMaxAttempts);
-			pendingAutomaticKingdomRebellionContext.NamingResult = namingResult;
-			_pendingAutomaticKingdomRebellionContext = pendingAutomaticKingdomRebellionContext;
-			_pendingAutomaticKingdomRebellionReady = true;
+			RebelKingdomNamingResult namingResult;
+			try
+			{
+				namingResult = GenerateRebelKingdomNamingFromPrompts(systemPrompt, userPrompt, logTarget, RebelKingdomNamingMaxAttempts);
+			}
+			catch (Exception ex)
+			{
+				namingResult = BuildFailedRebelKingdomNamingResult("叛乱建国命名后台任务异常：" + ex.Message);
+			}
+			EnqueueKingdomRebellionNamingMainThreadAction(runtimeGeneration, delegate
+			{
+				pendingAutomaticKingdomRebellionContext.NamingResult = namingResult;
+				_pendingAutomaticKingdomRebellionContext = pendingAutomaticKingdomRebellionContext;
+				_pendingAutomaticKingdomRebellionReady = true;
+			}, "automatic_rebellion_naming");
 		});
 	}
 
@@ -9177,12 +11761,25 @@ public class MyBehavior : CampaignBehaviorBase
 		_pendingAutomaticKingdomRebellionReady = false;
 		_pendingAutomaticKingdomRebellionContext = null;
 		InformationManager.ShowInquiry(new InquiryData("正在重新生成叛乱建国命名", "系统正在按修正后的事件/叛乱API配置重新请求新王国名称与百科简介。\n\n这一步完成前不会继续本轮自动叛乱与周报流程。", isAffirmativeOptionShown: false, isNegativeOptionShown: false, "", "", null, null), pauseGameActiveState: true);
+		long runtimeGeneration = SaveRuntimeGuard.CaptureGeneration();
+		string logTarget = "自动叛乱建国命名重试 - " + GetClanId(clan);
 		Task.Run(delegate
 		{
-			RebelKingdomNamingResult namingResult = GenerateRebelKingdomNamingFromPrompts(systemPrompt, userPrompt, "自动叛乱建国命名重试 - " + GetClanId(clan), RebelKingdomNamingMaxAttempts);
-			context.NamingResult = namingResult;
-			_pendingAutomaticKingdomRebellionContext = context;
-			_pendingAutomaticKingdomRebellionReady = true;
+			RebelKingdomNamingResult namingResult;
+			try
+			{
+				namingResult = GenerateRebelKingdomNamingFromPrompts(systemPrompt, userPrompt, logTarget, RebelKingdomNamingMaxAttempts);
+			}
+			catch (Exception ex)
+			{
+				namingResult = BuildFailedRebelKingdomNamingResult("叛乱建国命名重试后台任务异常：" + ex.Message);
+			}
+			EnqueueKingdomRebellionNamingMainThreadAction(runtimeGeneration, delegate
+			{
+				context.NamingResult = namingResult;
+				_pendingAutomaticKingdomRebellionContext = context;
+				_pendingAutomaticKingdomRebellionReady = true;
+			}, "automatic_rebellion_naming_retry");
 		});
 	}
 
@@ -10430,19 +13027,43 @@ public class MyBehavior : CampaignBehaviorBase
 			_townStatWeekBaselineWeekIndexes[settlementId] = currentWeeklyIndexSafe;
 		}
 		List<string> list = new List<string>();
-		AppendTownChangeRangeLine(list, "繁荣", value2.Prosperity, townStatSnapshot.Prosperity, 100f);
-		AppendTownChangeRangeLine(list, "忠诚度", value2.Loyalty, townStatSnapshot.Loyalty, 2f);
-		AppendTownChangeRangeLine(list, "治安", value2.Security, townStatSnapshot.Security, 2f);
-		AppendTownChangeRangeLine(list, "粮食", value2.FoodStocks, townStatSnapshot.FoodStocks, 5f);
-		AppendTownChangeRangeLine(list, "民兵", value2.Militia, townStatSnapshot.Militia, 8f);
-		AppendTownChangeRangeLine(list, "驻军", value2.Garrison, townStatSnapshot.Garrison, 10);
+		HashSet<string> changedLabels = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		if (AppendTownChangeRangeLine(list, "繁荣", value2.Prosperity, townStatSnapshot.Prosperity, 100f))
+		{
+			changedLabels.Add("繁荣");
+		}
+		if (AppendTownChangeRangeLine(list, "忠诚度", value2.Loyalty, townStatSnapshot.Loyalty, 2f))
+		{
+			changedLabels.Add("忠诚度");
+		}
+		if (AppendTownChangeRangeLine(list, "治安", value2.Security, townStatSnapshot.Security, 2f))
+		{
+			changedLabels.Add("治安");
+		}
+		if (AppendTownChangeRangeLine(list, "粮食", value2.FoodStocks, townStatSnapshot.FoodStocks, 5f))
+		{
+			changedLabels.Add("粮食");
+		}
+		if (AppendTownChangeRangeLine(list, "民兵", value2.Militia, townStatSnapshot.Militia, 8f))
+		{
+			changedLabels.Add("民兵");
+		}
+		if (AppendTownChangeRangeLine(list, "驻军", value2.Garrison, townStatSnapshot.Garrison, 10))
+		{
+			changedLabels.Add("驻军");
+		}
 		_townStatSnapshots[settlementId] = townStatSnapshot;
 		if (list.Count == 0)
 		{
 			return;
 		}
 		string settlementDisplayName = GetSettlementDisplayName(town.Settlement);
-		string text = settlementDisplayName + "本周出现定居点状态波动：" + string.Join("；", list) + "。";
+		string text = settlementDisplayName + "本周治理状态发生波动：" + string.Join("；", list) + "。";
+		string townStatChangeReasonText = BuildTownStatChangeReasonText(town, changedLabels);
+		if (!string.IsNullOrWhiteSpace(townStatChangeReasonText))
+		{
+			text = text + " " + townStatChangeReasonText;
+		}
 		string clanDisplayName = GetClanDisplayName(town.Settlement.OwnerClan);
 		string kingdomDisplayName = GetKingdomDisplayName(town.Settlement.MapFaction as Kingdom, "所属王国");
 		if (!string.IsNullOrWhiteSpace(clanDisplayName) && !string.IsNullOrWhiteSpace(kingdomDisplayName))
@@ -10471,6 +13092,104 @@ public class MyBehavior : CampaignBehaviorBase
 		};
 	}
 
+	private const int TownStatReasonMaxStats = 6;
+	private const int TownStatReasonMaxLinesPerStat = 3;
+	private const int TownStatReasonMaxLineLength = 34;
+
+	private static string BuildTownStatChangeReasonText(Town town, HashSet<string> changedLabels)
+	{
+		if (town?.Settlement == null || changedLabels == null || changedLabels.Count == 0)
+		{
+			return "";
+		}
+		var models = Campaign.Current?.Models;
+		if (models == null)
+		{
+			return "";
+		}
+		List<string> parts = new List<string>();
+		if (changedLabels.Contains("繁荣"))
+		{
+			AddTownStatModelReasonPart(parts, "繁荣", () => models.SettlementProsperityModel.CalculateProsperityChange(town, true));
+		}
+		if (changedLabels.Contains("忠诚度"))
+		{
+			AddTownStatModelReasonPart(parts, "忠诚度", () => models.SettlementLoyaltyModel.CalculateLoyaltyChange(town, true));
+		}
+		if (changedLabels.Contains("治安"))
+		{
+			AddTownStatModelReasonPart(parts, "治安", () => models.SettlementSecurityModel.CalculateSecurityChange(town, true));
+		}
+		if (changedLabels.Contains("粮食"))
+		{
+			AddTownStatModelReasonPart(parts, "粮食", () => models.SettlementFoodModel.CalculateTownFoodStocksChange(town, true, true));
+		}
+		if (changedLabels.Contains("民兵"))
+		{
+			AddTownStatModelReasonPart(parts, "民兵", () => models.SettlementMilitiaModel.CalculateMilitiaChange(town.Settlement, true));
+		}
+		if (changedLabels.Contains("驻军"))
+		{
+			AddTownStatModelReasonPart(parts, "驻军", () => models.SettlementGarrisonModel.CalculateBaseGarrisonChange(town.Settlement, true));
+		}
+		if (parts.Count == 0)
+		{
+			return "";
+		}
+		return "变化原因：" + string.Join("；", parts.Take(TownStatReasonMaxStats)) + "。";
+	}
+
+	private static void AddTownStatModelReasonPart(List<string> parts, string label, Func<ExplainedNumber> calculator)
+	{
+		if (parts == null || calculator == null)
+		{
+			return;
+		}
+		try
+		{
+			string text = BuildTownStatExplainedNumberReason(label, calculator());
+			if (!string.IsNullOrWhiteSpace(text) && !parts.Any((string x) => string.Equals(x, text, StringComparison.OrdinalIgnoreCase)))
+			{
+				parts.Add(text);
+			}
+		}
+		catch
+		{
+		}
+	}
+
+	private static string BuildTownStatExplainedNumberReason(string label, ExplainedNumber explainedNumber)
+	{
+		List<Tuple<string, float>> list = new List<Tuple<string, float>>();
+		foreach (var line in explainedNumber.GetLines())
+		{
+			string text = CondenseTownStatReasonLineName(line.Item1);
+			float item = line.Item2;
+			if (string.IsNullOrWhiteSpace(text) || float.IsNaN(item) || float.IsInfinity(item) || MathF.Abs(item) < 0.005f)
+			{
+				continue;
+			}
+			list.Add(Tuple.Create(text, item));
+		}
+		if (list.Count == 0)
+		{
+			return "";
+		}
+		List<string> factors = list.OrderByDescending((Tuple<string, float> x) => MathF.Abs(x.Item2)).ThenBy((Tuple<string, float> x) => x.Item1, StringComparer.OrdinalIgnoreCase).Select((Tuple<string, float> x) => x.Item1).Distinct(StringComparer.OrdinalIgnoreCase).Take(TownStatReasonMaxLinesPerStat).ToList();
+		return label + "主因：" + string.Join("、", factors);
+	}
+
+	private static string CondenseTownStatReasonLineName(string text)
+	{
+		text = NormalizePoliticalReasonText(text);
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return "";
+		}
+		text = Regex.Replace(text, "\\s+", " ");
+		return TrimPoliticalReasonPart(text, TownStatReasonMaxLineLength);
+	}
+
 	private static void AppendTownChangeLine(List<string> lines, string label, float oldValue, float newValue, float threshold)
 	{
 		if (lines == null)
@@ -10482,7 +13201,7 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
-		lines.Add(label + (num > 0f ? "上升" : "下降") + MathF.Abs(num).ToString("0.#"));
+		lines.Add(BuildTownChangeQualitativeLine(label, num, threshold));
 	}
 
 	private static void AppendTownChangeLine(List<string> lines, string label, int oldValue, int newValue, int threshold)
@@ -10496,35 +13215,60 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
-		lines.Add(label + (num > 0 ? "上升" : "下降") + Math.Abs(num));
+		lines.Add(BuildTownChangeQualitativeLine(label, num, threshold));
 	}
 
-	private static void AppendTownChangeRangeLine(List<string> lines, string label, float oldValue, float newValue, float threshold)
+	private static bool AppendTownChangeRangeLine(List<string> lines, string label, float oldValue, float newValue, float threshold)
 	{
 		if (lines == null)
 		{
-			return;
+			return false;
 		}
 		float num = newValue - oldValue;
 		if (MathF.Abs(num) < threshold)
 		{
-			return;
+			return false;
 		}
-		lines.Add(label + (num > 0f ? "上升" : "下降") + oldValue.ToString("0.#") + "→" + newValue.ToString("0.#"));
+		lines.Add(BuildTownChangeQualitativeLine(label, num, threshold));
+		return true;
 	}
 
-	private static void AppendTownChangeRangeLine(List<string> lines, string label, int oldValue, int newValue, int threshold)
+	private static bool AppendTownChangeRangeLine(List<string> lines, string label, int oldValue, int newValue, int threshold)
 	{
 		if (lines == null)
 		{
-			return;
+			return false;
 		}
 		int num = newValue - oldValue;
 		if (Math.Abs(num) < threshold)
 		{
-			return;
+			return false;
 		}
-		lines.Add(label + (num > 0 ? "上升" : "下降") + oldValue.ToString("0") + "→" + newValue.ToString("0"));
+		lines.Add(BuildTownChangeQualitativeLine(label, num, threshold));
+		return true;
+	}
+
+	private static string BuildTownChangeQualitativeLine(string label, float delta, float threshold)
+	{
+		string text = (label ?? "").Trim();
+		string intensity = MathF.Abs(delta) >= Math.Max(threshold * 3f, threshold + 0.001f) ? "明显" : "小幅";
+		bool rise = delta > 0f;
+		switch (text)
+		{
+		case "繁荣":
+			return text + intensity + (rise ? "扩张" : "回落");
+		case "忠诚度":
+			return text + intensity + (rise ? "改善" : "走低");
+		case "治安":
+			return text + intensity + (rise ? "改善" : "恶化");
+		case "粮食":
+			return text + intensity + (rise ? "恢复" : "吃紧");
+		case "民兵":
+		case "驻军":
+			return text + intensity + (rise ? "增加" : "减少");
+		default:
+			return text + intensity + (rise ? "改善" : "走低");
+		}
 	}
 
 	private static NpcActionEntry CreateNpcActionEntry(Hero hero, string text, string stableKey, int day, int order, int sequence, NpcActionFacts facts, bool isMajor)
@@ -14637,12 +17381,46 @@ public class MyBehavior : CampaignBehaviorBase
 			ProcessWeeklyReportUiResume();
 			TryPublishUnreadWeeklyReportMapNotifications();
 			ProcessKingdomRebellionApiRepairResume();
+			ProcessKingdomRebellionNamingMainThreadActions();
 			ProcessPendingDevForcedKingdomRebellionResult();
 			ProcessPendingAutomaticKingdomRebellionResult();
 			TryStartDeferredAutoWeeklyReports();
 		}
 		catch
 		{
+		}
+	}
+
+	private void EnqueueKingdomRebellionNamingMainThreadAction(long runtimeGeneration, Action action, string source)
+	{
+		if (action == null)
+		{
+			return;
+		}
+		_kingdomRebellionNamingMainThreadActions.Enqueue(delegate
+		{
+			if (SaveRuntimeGuard.IsStale(runtimeGeneration, source))
+			{
+				return;
+			}
+			action();
+		});
+	}
+
+	private void ProcessKingdomRebellionNamingMainThreadActions()
+	{
+		int processed = 0;
+		while (processed < 16 && _kingdomRebellionNamingMainThreadActions.TryDequeue(out var action))
+		{
+			processed++;
+			try
+			{
+				action?.Invoke();
+			}
+			catch (Exception ex)
+			{
+				Logger.Log("KingdomRebellion", "[ERROR] naming main-thread action failed: " + ex);
+			}
 		}
 	}
 
@@ -15185,21 +17963,35 @@ public class MyBehavior : CampaignBehaviorBase
 		_pendingDevForcedKingdomRebellionReady = false;
 		_pendingDevForcedKingdomRebellionContext = null;
 		InformationManager.ShowInquiry(new InquiryData("正在生成叛乱建国命名", "系统正在后台请求 LLM 为这次叛乱生成新王国的名称与百科简介。\n\n这一步完成后，才会真正执行家族反出与建国。\n请稍候，结果完成后会自动弹出。", isAffirmativeOptionShown: false, isNegativeOptionShown: false, "", "", null, null), pauseGameActiveState: true);
+		long runtimeGeneration = SaveRuntimeGuard.CaptureGeneration();
+		string logTarget = "叛乱建国命名 - " + GetClanId(clan);
+		PendingDevForcedKingdomRebellionContext pendingContext = new PendingDevForcedKingdomRebellionContext
+		{
+			KingdomId = GetKingdomId(kingdom),
+			ClanId = GetClanId(clan),
+			WeekIndex = weekIndex,
+			RelationToKing = relationToKing,
+			TownCount = townCount,
+			CastleCount = castleCount,
+			FollowerClanIds = list.Select(GetClanId).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList()
+		};
 		Task.Run(delegate
 		{
-			RebelKingdomNamingResult namingResult = GenerateRebelKingdomNamingFromPrompts(systemPrompt, userPrompt, "叛乱建国命名 - " + GetClanId(clan), RebelKingdomNamingMaxAttempts);
-			_pendingDevForcedKingdomRebellionContext = new PendingDevForcedKingdomRebellionContext
+			RebelKingdomNamingResult namingResult;
+			try
 			{
-				KingdomId = GetKingdomId(kingdom),
-				ClanId = GetClanId(clan),
-				WeekIndex = weekIndex,
-				RelationToKing = relationToKing,
-				TownCount = townCount,
-				CastleCount = castleCount,
-				FollowerClanIds = list.Select(GetClanId).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList(),
-				NamingResult = namingResult
-			};
-			_pendingDevForcedKingdomRebellionReady = true;
+				namingResult = GenerateRebelKingdomNamingFromPrompts(systemPrompt, userPrompt, logTarget, RebelKingdomNamingMaxAttempts);
+			}
+			catch (Exception ex)
+			{
+				namingResult = BuildFailedRebelKingdomNamingResult("强制叛乱建国命名后台任务异常：" + ex.Message);
+			}
+			EnqueueKingdomRebellionNamingMainThreadAction(runtimeGeneration, delegate
+			{
+				pendingContext.NamingResult = namingResult;
+				_pendingDevForcedKingdomRebellionContext = pendingContext;
+				_pendingDevForcedKingdomRebellionReady = true;
+			}, "dev_forced_rebellion_naming");
 		});
 	}
 
@@ -31722,6 +34514,7 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 		Dictionary<string, HashSet<string>> dictionary = new Dictionary<string, HashSet<string>>(StringComparer.OrdinalIgnoreCase);
+		Dictionary<string, HashSet<string>> reasonTagsBySettlement = new Dictionary<string, HashSet<string>>(StringComparer.OrdinalIgnoreCase);
 		foreach (EventMaterialReference item in list)
 		{
 			string text = ResolveWeeklyPromptSettlementStatsKey(item);
@@ -31730,7 +34523,7 @@ public class MyBehavior : CampaignBehaviorBase
 				text = "settlement_stats_" + hashSet.Count;
 			}
 			hashSet.Add(text);
-			foreach (Match item2 in Regex.Matches(item.SnapshotText ?? "", "(繁荣|忠诚度|治安|粮食|民兵|驻军)(上升|下降)", RegexOptions.IgnoreCase))
+			foreach (Match item2 in Regex.Matches(item.SnapshotText ?? "", "(繁荣|忠诚度|忠诚|治安|粮食|民兵|驻军)(?:小幅|明显)?(扩张|回落|改善|走低|恶化|恢复|吃紧|增加|减少|上升|下降)", RegexOptions.IgnoreCase))
 			{
 				string text2 = NormalizeWeeklyPromptSettlementStatsLabel(item2.Groups[1]?.Value);
 				string text3 = (item2.Groups[2]?.Value ?? "").Trim();
@@ -31738,7 +34531,11 @@ public class MyBehavior : CampaignBehaviorBase
 				{
 					continue;
 				}
-				string text4 = text2 + text3;
+				string text4 = NormalizeWeeklyPromptSettlementStatsTrend(text2, text3);
+				if (string.IsNullOrWhiteSpace(text4))
+				{
+					continue;
+				}
 				if (!dictionary.TryGetValue(text4, out var value))
 				{
 					value = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -31746,15 +34543,27 @@ public class MyBehavior : CampaignBehaviorBase
 				}
 				value.Add(text);
 			}
+			foreach (string item3 in ExtractWeeklyPromptSettlementStatsReasonTags(item.SnapshotText ?? ""))
+			{
+				if (!reasonTagsBySettlement.TryGetValue(item3, out var value2))
+				{
+					value2 = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+					reasonTagsBySettlement[item3] = value2;
+				}
+				value2.Add(text);
+			}
 		}
 		List<string> list2 = new List<string>();
-		list2.Add("波动据点：" + Math.Max(hashSet.Count, list.Count) + "处");
-		foreach (string item3 in GetWeeklyPromptSettlementStatsOrder())
+		list2.Add(Math.Max(hashSet.Count, list.Count) > 2 ? "多处据点出现治理波动" : "个别据点出现治理波动");
+		List<string> trends = GetWeeklyPromptSettlementStatsOrder().Where((string orderKey) => dictionary.TryGetValue(orderKey, out var value3) && value3.Count > 0).Take(6).ToList();
+		if (trends.Count > 0)
 		{
-			if (dictionary.TryGetValue(item3, out var value2) && value2.Count > 0)
-			{
-				list2.Add(item3 + "：" + value2.Count + "处");
-			}
+			list2.Add("主要表现为" + string.Join("、", trends));
+		}
+		List<string> list3 = reasonTagsBySettlement.OrderByDescending((KeyValuePair<string, HashSet<string>> x) => x.Value.Count).ThenBy((KeyValuePair<string, HashSet<string>> x) => x.Key, StringComparer.OrdinalIgnoreCase).Select((KeyValuePair<string, HashSet<string>> x) => x.Key).Take(5).ToList();
+		if (list3.Count > 0)
+		{
+			list2.Add("常见变化原因：" + string.Join("、", list3));
 		}
 		EventMaterialReference eventMaterialReference = CloneEventMaterialReference(list[0]);
 		eventMaterialReference.MaterialType = "prompt_short_settlement_stats";
@@ -31765,11 +34574,52 @@ public class MyBehavior : CampaignBehaviorBase
 		eventMaterialReference.SourceMaterialCount = list.Count;
 		eventMaterialReference.ActionDay = list.Min((EventMaterialReference x) => x?.ActionDay ?? int.MaxValue);
 		eventMaterialReference.ActionSequence = list.Min((EventMaterialReference x) => x?.ActionSequence ?? int.MaxValue);
-		foreach (EventMaterialReference item4 in list.Skip(1))
+		foreach (EventMaterialReference additionalSource in list.Skip(1))
 		{
-			AppendMaterialReferenceIds(item4, eventMaterialReference);
+			AppendMaterialReferenceIds(additionalSource, eventMaterialReference);
 		}
 		return eventMaterialReference;
+	}
+
+	private static List<string> ExtractWeeklyPromptSettlementStatsReasonTags(string snapshotText)
+	{
+		string text = NormalizePoliticalReasonText(snapshotText);
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return new List<string>();
+		}
+		Match match = Regex.Match(text, "变化原因：(?<reason>.*?)(?:。|$)", RegexOptions.IgnoreCase);
+		if (!match.Success)
+		{
+			return new List<string>();
+		}
+		string reasonText = match.Groups["reason"]?.Value ?? "";
+		List<string> tags = new List<string>();
+		AddWeeklyPromptSettlementReasonTag(tags, reasonText, "粮食供需", "粮食", "Food", "食物", "饥", "Starv", "Surplus", "Food Stores", "Food Shortage");
+		AddWeeklyPromptSettlementReasonTag(tags, reasonText, "驻军与军费", "驻军", "Garrison", "军费", "工资", "wage", "Morale", "Payment", "Unpaid");
+		AddWeeklyPromptSettlementReasonTag(tags, reasonText, "村庄状态", "村庄", "Village", "Raided", "Looted", "劫掠", "袭扰", "Hearth");
+		AddWeeklyPromptSettlementReasonTag(tags, reasonText, "围城压力", "围城", "Siege", "Under Siege");
+		AddWeeklyPromptSettlementReasonTag(tags, reasonText, "治安与匪患", "治安", "Security", "Hideout", "藏身处", "Bandit", "Patrol", "Guard", "Corruption", "腐败");
+		AddWeeklyPromptSettlementReasonTag(tags, reasonText, "忠诚与文化", "忠诚", "Loyalty", "文化", "Culture", "Governor", "总督", "王国稳定度");
+		AddWeeklyPromptSettlementReasonTag(tags, reasonText, "政策与建设", "政策", "Policy", "Rights", "建筑", "Building", "Project", "工程", "Aqueduct", "Fairground", "Irrigation");
+		AddWeeklyPromptSettlementReasonTag(tags, reasonText, "市场与繁荣", "市场", "Market", "Goods", "繁荣", "Prosperity", "Housing");
+		return tags;
+	}
+
+	private static void AddWeeklyPromptSettlementReasonTag(List<string> tags, string text, string tag, params string[] keywords)
+	{
+		if (tags == null || string.IsNullOrWhiteSpace(text) || string.IsNullOrWhiteSpace(tag) || tags.Any((string x) => string.Equals(x, tag, StringComparison.OrdinalIgnoreCase)))
+		{
+			return;
+		}
+		foreach (string keyword in keywords ?? Array.Empty<string>())
+		{
+			if (!string.IsNullOrWhiteSpace(keyword) && text.IndexOf(keyword, StringComparison.OrdinalIgnoreCase) >= 0)
+			{
+				tags.Add(tag);
+				return;
+			}
+		}
 	}
 
 	private static EventMaterialReference BuildWeeklyPromptShortVillageRaidMaterial(List<EventMaterialReference> source, WeeklyEventMaterialPreviewGroup group)
@@ -31904,7 +34754,11 @@ public class MyBehavior : CampaignBehaviorBase
 			}
 		}
 		string text3 = (material?.SnapshotText ?? "").Trim();
-		int num = text3.IndexOf("本周出现定居点状态波动", StringComparison.OrdinalIgnoreCase);
+		int num = text3.IndexOf("本周治理状态发生波动", StringComparison.OrdinalIgnoreCase);
+		if (num <= 0)
+		{
+			num = text3.IndexOf("本周出现定居点状态波动", StringComparison.OrdinalIgnoreCase);
+		}
 		if (num > 0)
 		{
 			return text3.Substring(0, num).Trim();
@@ -31923,22 +34777,51 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private static string NormalizeWeeklyPromptSettlementStatsTrend(string label, string direction)
+	{
+		string text = NormalizeWeeklyPromptSettlementStatsLabel(label);
+		string text2 = (direction ?? "").Trim();
+		bool rise = text2 == "上升" || text2 == "扩张" || text2 == "改善" || text2 == "恢复" || text2 == "增加";
+		bool fall = text2 == "下降" || text2 == "回落" || text2 == "走低" || text2 == "恶化" || text2 == "吃紧" || text2 == "减少";
+		if (!rise && !fall)
+		{
+			return "";
+		}
+		switch (text)
+		{
+		case "繁荣":
+			return rise ? "繁荣扩张" : "繁荣回落";
+		case "粮食":
+			return rise ? "粮食恢复" : "粮食吃紧";
+		case "忠诚":
+			return rise ? "忠诚改善" : "忠诚走低";
+		case "治安":
+			return rise ? "治安改善" : "治安恶化";
+		case "民兵":
+			return rise ? "民兵增加" : "民兵减少";
+		case "驻军":
+			return rise ? "驻军增加" : "驻军减少";
+		default:
+			return text + (rise ? "改善" : "走低");
+		}
+	}
+
 	private static List<string> GetWeeklyPromptSettlementStatsOrder()
 	{
 		return new List<string>
 		{
-			"繁荣上升",
-			"繁荣下降",
-			"粮食上升",
-			"粮食下降",
-			"忠诚上升",
-			"忠诚下降",
-			"治安上升",
-			"治安下降",
-			"民兵上升",
-			"民兵下降",
-			"驻军上升",
-			"驻军下降"
+			"繁荣扩张",
+			"繁荣回落",
+			"粮食恢复",
+			"粮食吃紧",
+			"忠诚改善",
+			"忠诚走低",
+			"治安改善",
+			"治安恶化",
+			"民兵增加",
+			"民兵减少",
+			"驻军增加",
+			"驻军减少"
 		};
 	}
 
@@ -36909,6 +39792,24 @@ public class MyBehavior : CampaignBehaviorBase
 		stringBuilder.AppendLine(text);
 	}
 
+	private static void AppendWeeklyReportPoliticalReasonWritingRule(StringBuilder stringBuilder, bool fullReport)
+	{
+		if (stringBuilder == null)
+		{
+			return;
+		}
+		stringBuilder.AppendLine(fullReport ? "若素材含“触发原因”，正文要自然交代至少一个关键因由（距离、实力、关系、财政、投票或封地），不要照抄字段名。" : "若素材含“触发原因”，SHORT可简写关键因由，不要照抄字段名。");
+	}
+
+	private static void AppendWeeklyReportSettlementReasonWritingRule(StringBuilder stringBuilder)
+	{
+		if (stringBuilder == null)
+		{
+			return;
+		}
+		stringBuilder.AppendLine("若定居点状态材料含“变化原因”，【领地内事件】只写治理趋势和模型原因；禁止复述数字、箭头、加减号、几处、上升多少或下降多少；没有原因材料时不要推测。");
+	}
+
 	private static string BuildWeeklyReportSystemPrompt(WeeklyEventMaterialPreviewGroup group)
 	{
 		WeeklyReportPromptProfile weeklyReportPromptProfile = GetWeeklyReportPromptProfile();
@@ -36921,6 +39822,11 @@ public class MyBehavior : CampaignBehaviorBase
 		stringBuilder.AppendLine("你不是在自由编造故事，而是在根据给定素材生成一篇流利、可信、克制的周报。");
 		stringBuilder.AppendLine(text2);
 		AppendWeeklyReportWritingRequirements(stringBuilder);
+		AppendWeeklyReportPoliticalReasonWritingRule(stringBuilder, !flag2);
+		if (!flag2)
+		{
+			AppendWeeklyReportSettlementReasonWritingRule(stringBuilder);
+		}
 		stringBuilder.AppendLine(" ");
 		stringBuilder.AppendLine("篇幅要求：");
 		stringBuilder.AppendLine($"- 当前档位：{weeklyReportPromptProfile.Label}");
@@ -36963,6 +39869,8 @@ public class MyBehavior : CampaignBehaviorBase
 		stringBuilder.AppendLine("你的任务是根据已保存的完整素材，为一条历史短周报补写完整正文。");
 		stringBuilder.AppendLine("这次补写只用于档案馆展示，不参与当前稳定度结算。");
 		AppendWeeklyReportWritingRequirements(stringBuilder);
+		AppendWeeklyReportPoliticalReasonWritingRule(stringBuilder, true);
+		AppendWeeklyReportSettlementReasonWritingRule(stringBuilder);
 		stringBuilder.AppendLine(" ");
 		stringBuilder.AppendLine("篇幅要求：");
 		stringBuilder.AppendLine($"- 当前档位：{weeklyReportPromptProfile.Label}");
@@ -37165,6 +40073,11 @@ public class MyBehavior : CampaignBehaviorBase
 		stringBuilder.AppendLine("你必须严格按输入 block 分别生成，不得漏块，不得串写，不得合并不同 report_id。");
 		stringBuilder.AppendLine("输入里的 previous_report 只作连续性参考，不是本周事实来源；本周标题、短摘要、正文和稳定度标签必须依据 materials，禁止复用上一周标题或正文。");
 		AppendWeeklyReportWritingRequirements(stringBuilder);
+		AppendWeeklyReportPoliticalReasonWritingRule(stringBuilder, !flag);
+		if (!flag)
+		{
+			AppendWeeklyReportSettlementReasonWritingRule(stringBuilder);
+		}
 		stringBuilder.AppendLine(" ");
 		stringBuilder.AppendLine("篇幅要求：");
 		stringBuilder.AppendLine($"- 当前档位：{weeklyReportPromptProfile.Label}");
@@ -38898,7 +41811,7 @@ public class MyBehavior : CampaignBehaviorBase
 						{
 							UpsertWeeklyReportEventRecord(group, context.WeekIndex, block.Title, block.ShortSummary, block.Report, block.TagText, batchResult.PromptPreview, sanitizeAfter: false);
 						}
-						TryNotifyNearestKingdomWeeklyReportGenerated(group, context.WeekIndex, context.PopupCandidateKingdomIds, block.Title, block.Report, ref context.NearestKingdomWeeklyReportNotified);
+						TryQueueWeeklyReportMapNoticeForGeneratedReport(group, context.WeekIndex, context.PopupCandidateKingdomIds, context.WeeklyReportNoticeEventIdsQueued);
 						context.SuccessCount++;
 					}
 					if (IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs))
@@ -39040,6 +41953,25 @@ public class MyBehavior : CampaignBehaviorBase
 			return text.Trim();
 		}
 		return (list[0] ?? "").Trim();
+	}
+
+	private static List<string> ResolveWeeklyReportNoticeKingdomIds(IEnumerable<string> kingdomIds)
+	{
+		List<string> list = (kingdomIds ?? Enumerable.Empty<string>()).Where((string x) => !string.IsNullOrWhiteSpace(x)).Select((string x) => x.Trim()).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+		if (list.Count == 0)
+		{
+			return new List<string>();
+		}
+		List<string> kingdomIdsByPlayerProximity = GetKingdomIdsByPlayerProximity(list);
+		List<string> ordered = kingdomIdsByPlayerProximity.Where((string x) => !string.IsNullOrWhiteSpace(x)).Select((string x) => x.Trim()).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+		foreach (string item in list)
+		{
+			if (!ordered.Any((string x) => string.Equals(x, item, StringComparison.OrdinalIgnoreCase)))
+			{
+				ordered.Add(item);
+			}
+		}
+		return ordered.Take(3).ToList();
 	}
 
 	private static bool CanPublishWeeklyReportMapNotification()
@@ -39214,28 +42146,45 @@ public class MyBehavior : CampaignBehaviorBase
 		return (source ?? Enumerable.Empty<string>()).Where((string x) => !string.IsNullOrWhiteSpace(x)).Select((string x) => x.Trim()).Where((string x) => x.StartsWith("weekly_report:", StringComparison.OrdinalIgnoreCase)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
 	}
 
-	private void TryNotifyNearestKingdomWeeklyReportGenerated(WeeklyEventMaterialPreviewGroup group, int weekIndex, IEnumerable<string> candidateKingdomIds, string title, string report, ref bool notified)
+	private void TryQueueWeeklyReportMapNoticeForGeneratedReport(WeeklyEventMaterialPreviewGroup group, int weekIndex, IEnumerable<string> candidateKingdomIds, HashSet<string> queuedEventIds)
 	{
-		if (notified || group == null)
+		if (group == null || weekIndex <= 0)
 		{
 			return;
 		}
-		if (!string.Equals((group.GroupKind ?? "").Trim(), "kingdom", StringComparison.OrdinalIgnoreCase))
+		string groupKind = (group.GroupKind ?? "").Trim();
+		string eventId = "";
+		if (string.Equals(groupKind, "world", StringComparison.OrdinalIgnoreCase))
+		{
+			eventId = BuildWeeklyReportEventId("world", weekIndex, "");
+		}
+		else if (string.Equals(groupKind, "kingdom", StringComparison.OrdinalIgnoreCase))
+		{
+			if (group.OutputMode == WeeklyReportOutputMode.TitleShortTagsOnly)
+			{
+				return;
+			}
+			string kingdomId = (group.KingdomId ?? "").Trim();
+			if (string.IsNullOrWhiteSpace(kingdomId))
+			{
+				return;
+			}
+			List<string> noticeKingdomIds = ResolveWeeklyReportNoticeKingdomIds(candidateKingdomIds);
+			if (noticeKingdomIds.Count > 0 && !noticeKingdomIds.Any((string x) => string.Equals((x ?? "").Trim(), kingdomId, StringComparison.OrdinalIgnoreCase)))
+			{
+				return;
+			}
+			eventId = BuildWeeklyReportEventId("kingdom", weekIndex, kingdomId);
+		}
+		if (string.IsNullOrWhiteSpace(eventId))
 		{
 			return;
 		}
-		string text = (group.KingdomId ?? "").Trim();
-		string text2 = ResolveNearestWeeklyReportKingdomId(candidateKingdomIds);
-		if (string.IsNullOrWhiteSpace(text) || string.IsNullOrWhiteSpace(text2))
+		if (queuedEventIds != null && !queuedEventIds.Add(eventId))
 		{
 			return;
 		}
-		if (!string.Equals(text, text2, StringComparison.OrdinalIgnoreCase))
-		{
-			return;
-		}
-		notified = true;
-		QueueWeeklyReportMapNotice(BuildWeeklyReportEventId("kingdom", weekIndex, text));
+		QueueWeeklyReportMapNotice(eventId);
 	}
 
 	private async Task<WeeklyReportGenerationResult> GenerateWeeklyReportsBatchedAsyncInternal(List<WeeklyEventMaterialPreviewGroup> list, int weekIndex, int startDay, int endDay, string displayLabel, bool openViewerWhenDone, bool queueBlockingPopupOnFatalFailure, bool isAutoGeneration, IEnumerable<string> popupCandidateKingdomIdsOverride = null, List<WeeklyReportBatchRequest> preparedBatches = null)
@@ -39627,6 +42576,9 @@ public class MyBehavior : CampaignBehaviorBase
 		_pendingAutomaticKingdomRebellionReady = false;
 		_pendingAutomaticKingdomRebellionContext = null;
 		_queuedAutomaticKingdomRebellions.Clear();
+		while (_kingdomRebellionNamingMainThreadActions.TryDequeue(out var _))
+		{
+		}
 		_pendingAutoWeeklyReportWeek = 0;
 		lock (_weekZeroShortSummaryQueueLock)
 		{

@@ -1,0 +1,410 @@
+﻿<!DOCTYPE html><html><head><meta charset="UTF-8"><title>ExceptionSentry Core Log</title><style>body{font-family:Segoe UI,Arial,sans-serif;background:#f8fafc;color:#0f172a;margin:24px}pre{white-space:pre-wrap;background:#fff;border:1px solid #cbd5e1;border-radius:8px;padding:16px}</style></head><body><pre>================================================================
+ExceptionSentry Core Early Exception
+================================================================
+Time: 2026-06-28 01:02:04.577
+Context: ScreenManager.Update
+Type: System.Reflection.TargetInvocationException
+Message: Exception has been thrown by the target of an invocation.
+
+System.Reflection.TargetInvocationException: Exception has been thrown by the target of an invocation. ---&gt; System.NullReferenceException: Object reference not set to an instance of an object.
+   at TaleWorlds.CampaignSystem.CampaignBehaviors.KingdomDecisionProposalBehavior.UpdateKingdomDecisions(Kingdom kingdom)
+   at TaleWorlds.CampaignSystem.MbEvent`1.InvokeList(EventHandlerRec`1 list, T t)
+   at TaleWorlds.CampaignSystem.CampaignEvents.OnKingdomDestroyed(Kingdom destroyedKingdom)
+   at TaleWorlds.CampaignSystem.CampaignEventDispatcher.OnKingdomDestroyed(Kingdom destroyedKingdom)
+   at TaleWorlds.CampaignSystem.Actions.DestroyKingdomAction.ApplyInternal(Kingdom destroyedKingdom, Boolean isKingdomLeaderDeath)
+   at TaleWorlds.CampaignSystem.CampaignBehaviors.FactionDiscontinuationCampaignBehavior.DiscontinueKingdom(Kingdom kingdom)
+   at TaleWorlds.CampaignSystem.CampaignBehaviors.FactionDiscontinuationCampaignBehavior.OnSettlementOwnerChanged(Settlement settlement, Boolean openToClaim, Hero newOwner, Hero oldOwner, Hero capturerHero, ChangeOwnerOfSettlementDetail detail)
+   at TaleWorlds.CampaignSystem.MbEvent`6.InvokeList(EventHandlerRec`6 list, T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6)
+   at TaleWorlds.CampaignSystem.CampaignEvents.OnSettlementOwnerChanged(Settlement settlement, Boolean openToClaim, Hero newOwner, Hero oldOwner, Hero capturerHero, ChangeOwnerOfSettlementDetail detail)
+   at TaleWorlds.CampaignSystem.CampaignEventDispatcher.OnSettlementOwnerChanged(Settlement settlement, Boolean openToClaim, Hero newOwner, Hero oldOwner, Hero capturerHero, ChangeOwnerOfSettlementDetail detail)
+   at TaleWorlds.CampaignSystem.Actions.ChangeOwnerOfSettlementAction.ApplyInternal(Settlement settlement, Hero newOwner, Hero capturerHero, ChangeOwnerOfSettlementDetail detail)
+   at TaleWorlds.CampaignSystem.KingdomManager.SiegeCompleted(Settlement settlement, MobileParty capturerParty, Boolean isWin, BattleTypes battleType)
+   at TaleWorlds.CampaignSystem.MbEvent`4.InvokeList(EventHandlerRec`4 list, T1 t1, T2 t2, T3 t3, T4 t4)
+   at TaleWorlds.CampaignSystem.CampaignEvents.SiegeCompleted(Settlement siegeSettlement, MobileParty attackerParty, Boolean isWin, BattleTypes battleType)
+   at TaleWorlds.CampaignSystem.CampaignEventDispatcher.SiegeCompleted(Settlement siegeSettlement, MobileParty attackerParty, Boolean isWin, BattleTypes battleType)
+   at TaleWorlds.CampaignSystem.MapEvents.MapEvent.FinalizeEventAux()
+   at TaleWorlds.CampaignSystem.Encounters.PlayerEncounter.FinalizeBattle()
+   at TaleWorlds.CampaignSystem.Encounters.PlayerEncounter.Finish(Boolean forcePlayerOutFromSettlement)
+   at TaleWorlds.CampaignSystem.Encounters.PlayerEncounter.DoEnd_Patch4(PlayerEncounter this)
+   at TaleWorlds.CampaignSystem.Encounters.PlayerEncounter.UpdateInternal()
+   at TaleWorlds.CampaignSystem.CampaignBehaviors.EncounterGameMenuBehavior.game_menu_encounter_on_init(MenuCallbackArgs args)
+   at TaleWorlds.CampaignSystem.GameMenus.GameMenu.RunOnInit(Game game, MenuContext menuContext)
+   at TaleWorlds.CampaignSystem.GameState.MenuContext.HandleStates()
+   at TaleWorlds.CampaignSystem.GameState.MapState.OnActivate()
+   at TaleWorlds.Core.GameState.HandleActivate()
+   at TaleWorlds.Core.GameStateManager.OnPopState(Int32 level)
+   at TaleWorlds.Core.GameStateManager.DoGameStateJobs()
+   at TaleWorlds.Core.GameStateManager.PopState(Int32 level)
+   at Helpers.InventoryScreenHelper.CloseInventoryPresentation(Boolean fromCancel)
+   at TaleWorlds.CampaignSystem.ViewModelCollection.Inventory.SPInventoryVM.HandleDone()
+   --- End of inner exception stack trace ---
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Object[] arguments, Signature sig, Boolean constructor)
+   at System.Reflection.RuntimeMethodInfo.UnsafeInvokeInternal(Object obj, Object[] parameters, Object[] arguments)
+   at System.Reflection.RuntimeMethodInfo.Invoke(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+   at TaleWorlds.Library.Common.InvokeWithLog(MethodInfo methodInfo, Object obj, Object[] args)
+   at TaleWorlds.Library.ViewModel.ExecuteCommand_Patch1(ViewModel this, String commandName, Object[] parameters)
+   at TaleWorlds.GauntletUI.Data.GauntletView.OnCommand(String command, Object[] args)
+   at TaleWorlds.GauntletUI.BaseTypes.Widget.EventFired(String eventName, Object[] args)
+   at TaleWorlds.GauntletUI.BaseTypes.ButtonWidget.HandleClick_Patch3(ButtonWidget this)
+   at TaleWorlds.GauntletUI.BaseTypes.ButtonWidget.OnMouseReleased()
+   at TaleWorlds.GauntletUI.EventManager.MouseUp()
+   at TaleWorlds.GauntletUI.UIContext.UpdateInput(InputType handleInputs)
+   at TaleWorlds.ScreenSystem.ScreenManager.Update_Patch1()
+
+</pre></body></html>
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>ExceptionSentry Core Log</title><style>body{font-family:Segoe UI,Arial,sans-serif;background:#f8fafc;color:#0f172a;margin:24px}pre{white-space:pre-wrap;background:#fff;border:1px solid #cbd5e1;border-radius:8px;padding:16px}</style></head><body><pre>================================================================
+ExceptionSentry Core Early Exception
+================================================================
+Time: 2026-06-28 01:41:31.351
+Context: Module.OnApplicationTick
+Type: System.NullReferenceException
+Message: Object reference not set to an instance of an object.
+
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at NavalDLC.CampaignBehaviors.ShipTradeCampaignBehavior.OnShipOwnerChanged(Ship ship, PartyBase oldOwner, ShipOwnerChangeDetail details)
+   at TaleWorlds.CampaignSystem.MbEvent`3.InvokeList(EventHandlerRec`3 list, T1 t1, T2 t2, T3 t3)
+   at TaleWorlds.CampaignSystem.CampaignEvents.OnShipOwnerChanged(Ship ship, PartyBase oldOwner, ShipOwnerChangeDetail changeDetail)
+   at TaleWorlds.CampaignSystem.CampaignEventDispatcher.OnShipOwnerChanged(Ship ship, PartyBase oldOwner, ShipOwnerChangeDetail changeDetail)
+   at TaleWorlds.CampaignSystem.Actions.ChangeShipOwnerAction.ApplyInternal(PartyBase newOwner, Ship ship, ShipOwnerChangeDetail changeDetail)
+   at NavalDLC.CampaignBehaviors.ShipTradeCampaignBehavior.TryPurchasingShipFromTown(MobileParty mobileParty, Town town)
+   at NavalDLC.CampaignBehaviors.ShipTradeCampaignBehavior.ConsiderPurchasingShip(Clan clan)
+   at NavalDLC.CampaignBehaviors.ShipTradeCampaignBehavior.DailyTickClan(Clan clan)
+   at TaleWorlds.CampaignSystem.MbEvent`1.InvokeList(EventHandlerRec`1 list, T t)
+   at TaleWorlds.CampaignSystem.CampaignEvents.DailyTickClan(Clan clan)
+   at TaleWorlds.CampaignSystem.CampaignEventDispatcher.DailyTickClan(Clan clan)
+   at TaleWorlds.CampaignSystem.CampaignPeriodicEventManager.PeriodicTicker`1.PeriodicTickSome(Double timeUnitsElapsed)
+   at TaleWorlds.CampaignSystem.CampaignPeriodicEventManager.PeriodicDailyTick()
+   at TaleWorlds.CampaignSystem.CampaignPeriodicEventManager.TickPeriodicEvents()
+   at TaleWorlds.CampaignSystem.Campaign.Tick()
+   at TaleWorlds.CampaignSystem.GameState.MapState.OnMapModeTick(Single dt)
+   at TaleWorlds.CampaignSystem.GameState.MapState.OnTick(Single dt)
+   at TaleWorlds.Core.GameStateManager.OnTick_Patch3(GameStateManager this, Single dt)
+   at TaleWorlds.Core.Game.OnTick(Single dt)
+   at TaleWorlds.Core.GameManagerBase.OnTick(Single dt)
+   at TaleWorlds.MountAndBlade.Module.OnApplicationTick_Patch5(Module this, Single dt)
+
+</pre></body></html>
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>ExceptionSentry Core Log</title><style>body{font-family:Segoe UI,Arial,sans-serif;background:#f8fafc;color:#0f172a;margin:24px}pre{white-space:pre-wrap;background:#fff;border:1px solid #cbd5e1;border-radius:8px;padding:16px}</style></head><body><pre>================================================================
+ExceptionSentry Core Early Exception
+================================================================
+Time: 2026-06-28 02:44:38.993
+Context: Module.OnApplicationTick
+Type: System.NullReferenceException
+Message: Object reference not set to an instance of an object.
+
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at TaleWorlds.CampaignSystem.CampaignBehaviors.AiBehaviors.AiVisitSettlementBehavior.AiHourlyTick(MobileParty mobileParty, PartyThinkParams p)
+   at TaleWorlds.CampaignSystem.MbEvent`2.InvokeList(EventHandlerRec`2 list, T1 t1, T2 t2)
+   at TaleWorlds.CampaignSystem.CampaignEvents.AiHourlyTick(MobileParty party, PartyThinkParams partyThinkParams)
+   at TaleWorlds.CampaignSystem.CampaignEventDispatcher.AiHourlyTick(MobileParty party, PartyThinkParams partyThinkParams)
+   at TaleWorlds.CampaignSystem.CampaignBehaviors.AiBehaviors.AiPartyThinkBehavior.PartyHourlyAiTick(MobileParty mobileParty)
+   at TaleWorlds.CampaignSystem.MbEvent`1.InvokeList(EventHandlerRec`1 list, T t)
+   at TaleWorlds.CampaignSystem.CampaignEvents.TickPartialHourlyAi(MobileParty party)
+   at TaleWorlds.CampaignSystem.CampaignEventDispatcher.TickPartialHourlyAi(MobileParty party)
+   at TaleWorlds.CampaignSystem.CampaignPeriodicEventManager.PeriodicTicker`1.PeriodicTickSome(Double timeUnitsElapsed)
+   at TaleWorlds.CampaignSystem.CampaignPeriodicEventManager.TickPartialHourlyAi()
+   at TaleWorlds.CampaignSystem.Campaign.Tick()
+   at TaleWorlds.CampaignSystem.GameState.MapState.OnMapModeTick(Single dt)
+   at TaleWorlds.CampaignSystem.GameState.MapState.OnTick(Single dt)
+   at TaleWorlds.Core.GameStateManager.OnTick_Patch3(GameStateManager this, Single dt)
+   at TaleWorlds.Core.Game.OnTick(Single dt)
+   at TaleWorlds.Core.GameManagerBase.OnTick(Single dt)
+   at TaleWorlds.MountAndBlade.Module.OnApplicationTick_Patch5(Module this, Single dt)
+
+</pre></body></html>
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>ExceptionSentry Core Log</title><style>body{font-family:Segoe UI,Arial,sans-serif;background:#f8fafc;color:#0f172a;margin:24px}pre{white-space:pre-wrap;background:#fff;border:1px solid #cbd5e1;border-radius:8px;padding:16px}</style></head><body><pre>================================================================
+ExceptionSentry Core Early Exception
+================================================================
+Time: 2026-06-28 02:44:41.990
+Context: Module.OnApplicationTick
+Type: System.NullReferenceException
+Message: Object reference not set to an instance of an object.
+
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at Helpers.PartyBaseHelper.HasFeat(PartyBase party, FeatObject feat)
+   at TaleWorlds.CampaignSystem.GameComponents.DefaultPartyWageModel.GetTotalWage(MobileParty mobileParty, TroopRoster troopRoster, Boolean includeDescriptions)
+   at NavalDLC.GameComponents.NavalDLCPartyWageModel.GetTotalWage(MobileParty mobileParty, TroopRoster troopRoster, Boolean includeDescriptions)
+   at TaleWorlds.CampaignSystem.Party.MobileParty.get_TotalWage()
+   at TaleWorlds.CampaignSystem.GameComponents.DefaultClanFinanceModel.CalculatePartyWage(MobileParty mobileParty, Int32 budget, Boolean applyWithdrawals)
+   at TaleWorlds.CampaignSystem.GameComponents.DefaultClanFinanceModel.AddExpenseFromLeaderParty(Clan clan, ExplainedNumber goldChange, Boolean applyWithdrawals)
+   at TaleWorlds.CampaignSystem.GameComponents.DefaultClanFinanceModel.AddExpensesFromPartiesAndGarrisons(Clan clan, ExplainedNumber&amp; goldChange, Boolean applyWithdrawals, Boolean includeDetails)
+   at TaleWorlds.CampaignSystem.GameComponents.DefaultClanFinanceModel.CalculateClanExpensesInternal(Clan clan, ExplainedNumber&amp; goldChange, Boolean applyWithdrawals, Boolean includeDetails)
+   at TaleWorlds.CampaignSystem.GameComponents.DefaultClanFinanceModel.CalculateClanGoldChange(Clan clan, Boolean includeDescriptions, Boolean applyWithdrawals, Boolean includeDetails)
+   at NavalDLC.GameComponents.NavalDLCClanFinanceModel.CalculateClanGoldChange(Clan clan, Boolean includeDescriptions, Boolean applyWithdrawals, Boolean includeDetails)
+   at TaleWorlds.CampaignSystem.CampaignBehaviors.ClanVariablesCampaignBehavior.DailyTickClan(Clan clan)
+   at TaleWorlds.CampaignSystem.MbEvent`1.InvokeList(EventHandlerRec`1 list, T t)
+   at TaleWorlds.CampaignSystem.CampaignEvents.DailyTickClan(Clan clan)
+   at TaleWorlds.CampaignSystem.CampaignEventDispatcher.DailyTickClan(Clan clan)
+   at TaleWorlds.CampaignSystem.CampaignPeriodicEventManager.PeriodicTicker`1.PeriodicTickSome(Double timeUnitsElapsed)
+   at TaleWorlds.CampaignSystem.CampaignPeriodicEventManager.PeriodicDailyTick()
+   at TaleWorlds.CampaignSystem.CampaignPeriodicEventManager.TickPeriodicEvents()
+   at TaleWorlds.CampaignSystem.Campaign.Tick()
+   at TaleWorlds.CampaignSystem.GameState.MapState.OnMapModeTick(Single dt)
+   at TaleWorlds.CampaignSystem.GameState.MapState.OnTick(Single dt)
+   at TaleWorlds.Core.GameStateManager.OnTick_Patch3(GameStateManager this, Single dt)
+   at TaleWorlds.Core.Game.OnTick(Single dt)
+   at TaleWorlds.Core.GameManagerBase.OnTick(Single dt)
+   at TaleWorlds.MountAndBlade.Module.OnApplicationTick_Patch5(Module this, Single dt)
+
+</pre></body></html>
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>ExceptionSentry Core Log</title><style>body{font-family:Segoe UI,Arial,sans-serif;background:#f8fafc;color:#0f172a;margin:24px}pre{white-space:pre-wrap;background:#fff;border:1px solid #cbd5e1;border-radius:8px;padding:16px}</style></head><body><pre>================================================================
+ExceptionSentry Core Early Exception
+================================================================
+Time: 2026-06-28 02:44:52.569
+Context: Module.OnApplicationTick
+Type: System.NullReferenceException
+Message: Object reference not set to an instance of an object.
+
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at TaleWorlds.CampaignSystem.CampaignBehaviors.PartyUpgraderCampaignBehavior.GetPossibleUpgradeTargets(PartyBase party, TroopRosterElement element)
+   at TaleWorlds.CampaignSystem.CampaignBehaviors.PartyUpgraderCampaignBehavior.UpgradeReadyTroops(PartyBase party)
+   at TaleWorlds.CampaignSystem.CampaignBehaviors.PartyUpgraderCampaignBehavior.DailyTickParty(MobileParty party)
+   at TaleWorlds.CampaignSystem.MbEvent`1.InvokeList(EventHandlerRec`1 list, T t)
+   at TaleWorlds.CampaignSystem.CampaignEvents.DailyTickParty(MobileParty mobileParty)
+   at TaleWorlds.CampaignSystem.CampaignEventDispatcher.DailyTickParty(MobileParty mobileParty)
+   at TaleWorlds.CampaignSystem.CampaignPeriodicEventManager.PeriodicTicker`1.PeriodicTickSome(Double timeUnitsElapsed)
+   at TaleWorlds.CampaignSystem.CampaignPeriodicEventManager.PeriodicDailyTick()
+   at TaleWorlds.CampaignSystem.CampaignPeriodicEventManager.TickPeriodicEvents()
+   at TaleWorlds.CampaignSystem.Campaign.Tick()
+   at TaleWorlds.CampaignSystem.GameState.MapState.OnMapModeTick(Single dt)
+   at TaleWorlds.CampaignSystem.GameState.MapState.OnTick(Single dt)
+   at TaleWorlds.Core.GameStateManager.OnTick_Patch3(GameStateManager this, Single dt)
+   at TaleWorlds.Core.Game.OnTick(Single dt)
+   at TaleWorlds.Core.GameManagerBase.OnTick(Single dt)
+   at TaleWorlds.MountAndBlade.Module.OnApplicationTick_Patch5(Module this, Single dt)
+
+</pre></body></html>
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>ExceptionSentry Core Log</title><style>body{font-family:Segoe UI,Arial,sans-serif;background:#f8fafc;color:#0f172a;margin:24px}pre{white-space:pre-wrap;background:#fff;border:1px solid #cbd5e1;border-radius:8px;padding:16px}</style></head><body><pre>================================================================
+ExceptionSentry Core Early Exception
+================================================================
+Time: 2026-06-28 02:49:08.455
+Context: Module.OnApplicationTick
+Type: System.NullReferenceException
+Message: Object reference not set to an instance of an object.
+
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at TaleWorlds.CampaignSystem.CampaignBehaviors.PartyDiplomaticHandlerCampaignBehavior.CheckSettlementSuitabilityForParties(IEnumerable`1 parties)
+   at TaleWorlds.CampaignSystem.CampaignBehaviors.PartyDiplomaticHandlerCampaignBehavior.CheckFactionPartiesAndSettlements(IFaction faction)
+   at TaleWorlds.CampaignSystem.MbEvent`1.InvokeList(EventHandlerRec`1 list, T t)
+   at TaleWorlds.CampaignSystem.CampaignEvents.OnMapEventContinuityNeedsUpdate(IFaction faction)
+   at TaleWorlds.CampaignSystem.CampaignEventDispatcher.OnMapEventContinuityNeedsUpdate(IFaction faction)
+   at TaleWorlds.CampaignSystem.MbEvent`5.InvokeList(EventHandlerRec`5 list, T1 t1, T2 t2, T3 t3, T4 t4, T5 t5)
+   at TaleWorlds.CampaignSystem.CampaignEvents.OnClanChangedKingdom(Clan clan, Kingdom oldKingdom, Kingdom newKingdom, ChangeKingdomActionDetail detail, Boolean showNotification)
+   at TaleWorlds.CampaignSystem.CampaignEventDispatcher.OnClanChangedKingdom(Clan clan, Kingdom oldKingdom, Kingdom newKingdom, ChangeKingdomActionDetail actionDetail, Boolean showNotification)
+   at TaleWorlds.CampaignSystem.Actions.ChangeKingdomAction.ApplyInternal(Clan clan, Kingdom newKingdom, ChangeKingdomActionDetail detail, CampaignTime shouldStayInKingdomUntil, Int32 awardMultiplier, Boolean byRebellion, Boolean showNotification)
+   at TaleWorlds.CampaignSystem.BarterSystem.Barterables.MercenaryJoinKingdomBarterable.Apply()
+   at TaleWorlds.CampaignSystem.BarterSystem.BarterManager.ApplyBarterOffer(Hero offererHero, Hero otherHero, List`1 barters)
+   at TaleWorlds.CampaignSystem.BarterSystem.BarterManager.ExecuteAIBarter(BarterData barterData, IFaction faction1, IFaction faction2, Hero faction1Hero, Hero faction2Hero)
+   at TaleWorlds.CampaignSystem.CampaignBehaviors.BarterBehaviors.DiplomaticBartersBehavior.ConsiderClanJoinAsMercenary(Clan clan, Kingdom kingdom)
+   at TaleWorlds.CampaignSystem.CampaignBehaviors.BarterBehaviors.DiplomaticBartersBehavior.DailyTickClan(Clan clan)
+   at TaleWorlds.CampaignSystem.MbEvent`1.InvokeList(EventHandlerRec`1 list, T t)
+   at TaleWorlds.CampaignSystem.CampaignEvents.DailyTickClan(Clan clan)
+   at TaleWorlds.CampaignSystem.CampaignEventDispatcher.DailyTickClan(Clan clan)
+   at TaleWorlds.CampaignSystem.CampaignPeriodicEventManager.PeriodicTicker`1.PeriodicTickSome(Double timeUnitsElapsed)
+   at TaleWorlds.CampaignSystem.CampaignPeriodicEventManager.PeriodicDailyTick()
+   at TaleWorlds.CampaignSystem.CampaignPeriodicEventManager.TickPeriodicEvents()
+   at TaleWorlds.CampaignSystem.Campaign.Tick()
+   at TaleWorlds.CampaignSystem.GameState.MapState.OnMapModeTick(Single dt)
+   at TaleWorlds.CampaignSystem.GameState.MapState.OnTick(Single dt)
+   at TaleWorlds.Core.GameStateManager.OnTick_Patch3(GameStateManager this, Single dt)
+   at TaleWorlds.Core.Game.OnTick(Single dt)
+   at TaleWorlds.Core.GameManagerBase.OnTick(Single dt)
+   at TaleWorlds.MountAndBlade.Module.OnApplicationTick_Patch5(Module this, Single dt)
+
+</pre></body></html>
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>ExceptionSentry Core Log</title><style>body{font-family:Segoe UI,Arial,sans-serif;background:#f8fafc;color:#0f172a;margin:24px}pre{white-space:pre-wrap;background:#fff;border:1px solid #cbd5e1;border-radius:8px;padding:16px}</style></head><body><pre>================================================================
+ExceptionSentry Core Early Exception
+================================================================
+Time: 2026-06-28 02:49:09.548
+Context: Module.OnApplicationTick
+Type: System.NullReferenceException
+Message: Object reference not set to an instance of an object.
+
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at Helpers.PartyBaseHelper.HasFeat(PartyBase party, FeatObject feat)
+   at TaleWorlds.CampaignSystem.GameComponents.DefaultPartyWageModel.GetTotalWage(MobileParty mobileParty, TroopRoster troopRoster, Boolean includeDescriptions)
+   at NavalDLC.GameComponents.NavalDLCPartyWageModel.GetTotalWage(MobileParty mobileParty, TroopRoster troopRoster, Boolean includeDescriptions)
+   at TaleWorlds.CampaignSystem.Party.MobileParty.get_TotalWage()
+   at Helpers.HeroHelper.StartRecruitingMoneyLimitForClanLeader(Hero hero)
+   at TaleWorlds.CampaignSystem.CampaignBehaviors.AiBehaviors.AiVisitSettlementBehavior.AiHourlyTick(MobileParty mobileParty, PartyThinkParams p)
+   at TaleWorlds.CampaignSystem.MbEvent`2.InvokeList(EventHandlerRec`2 list, T1 t1, T2 t2)
+   at TaleWorlds.CampaignSystem.CampaignEvents.AiHourlyTick(MobileParty party, PartyThinkParams partyThinkParams)
+   at TaleWorlds.CampaignSystem.CampaignEventDispatcher.AiHourlyTick(MobileParty party, PartyThinkParams partyThinkParams)
+   at TaleWorlds.CampaignSystem.CampaignBehaviors.AiBehaviors.AiPartyThinkBehavior.PartyHourlyAiTick(MobileParty mobileParty)
+   at TaleWorlds.CampaignSystem.MbEvent`1.InvokeList(EventHandlerRec`1 list, T t)
+   at TaleWorlds.CampaignSystem.CampaignEvents.TickPartialHourlyAi(MobileParty party)
+   at TaleWorlds.CampaignSystem.CampaignEventDispatcher.TickPartialHourlyAi(MobileParty party)
+   at TaleWorlds.CampaignSystem.CampaignPeriodicEventManager.PeriodicTicker`1.PeriodicTickSome(Double timeUnitsElapsed)
+   at TaleWorlds.CampaignSystem.CampaignPeriodicEventManager.TickPartialHourlyAi()
+   at TaleWorlds.CampaignSystem.Campaign.Tick()
+   at TaleWorlds.CampaignSystem.GameState.MapState.OnMapModeTick(Single dt)
+   at TaleWorlds.CampaignSystem.GameState.MapState.OnTick(Single dt)
+   at TaleWorlds.Core.GameStateManager.OnTick_Patch3(GameStateManager this, Single dt)
+   at TaleWorlds.Core.Game.OnTick(Single dt)
+   at TaleWorlds.Core.GameManagerBase.OnTick(Single dt)
+   at TaleWorlds.MountAndBlade.Module.OnApplicationTick_Patch5(Module this, Single dt)
+
+</pre></body></html>
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>ExceptionSentry Core Log</title><style>body{font-family:Segoe UI,Arial,sans-serif;background:#f8fafc;color:#0f172a;margin:24px}pre{white-space:pre-wrap;background:#fff;border:1px solid #cbd5e1;border-radius:8px;padding:16px}</style></head><body><pre>================================================================
+ExceptionSentry Core Early Exception
+================================================================
+Time: 2026-06-28 03:06:48.115
+Context: Module.OnApplicationTick
+Type: System.NullReferenceException
+Message: Object reference not set to an instance of an object.
+
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at TaleWorlds.CampaignSystem.CampaignBehaviors.AiBehaviors.AiVisitSettlementBehavior.AiHourlyTick(MobileParty mobileParty, PartyThinkParams p)
+   at TaleWorlds.CampaignSystem.MbEvent`2.InvokeList(EventHandlerRec`2 list, T1 t1, T2 t2)
+   at TaleWorlds.CampaignSystem.CampaignEvents.AiHourlyTick(MobileParty party, PartyThinkParams partyThinkParams)
+   at TaleWorlds.CampaignSystem.CampaignEventDispatcher.AiHourlyTick(MobileParty party, PartyThinkParams partyThinkParams)
+   at TaleWorlds.CampaignSystem.CampaignBehaviors.AiBehaviors.AiPartyThinkBehavior.PartyHourlyAiTick(MobileParty mobileParty)
+   at TaleWorlds.CampaignSystem.MbEvent`1.InvokeList(EventHandlerRec`1 list, T t)
+   at TaleWorlds.CampaignSystem.CampaignEvents.TickPartialHourlyAi(MobileParty party)
+   at TaleWorlds.CampaignSystem.CampaignEventDispatcher.TickPartialHourlyAi(MobileParty party)
+   at TaleWorlds.CampaignSystem.CampaignPeriodicEventManager.PeriodicTicker`1.PeriodicTickSome(Double timeUnitsElapsed)
+   at TaleWorlds.CampaignSystem.CampaignPeriodicEventManager.TickPartialHourlyAi()
+   at TaleWorlds.CampaignSystem.Campaign.Tick()
+   at TaleWorlds.CampaignSystem.GameState.MapState.OnMapModeTick(Single dt)
+   at TaleWorlds.CampaignSystem.GameState.MapState.OnTick(Single dt)
+   at TaleWorlds.Core.GameStateManager.OnTick_Patch1(GameStateManager this, Single dt)
+   at TaleWorlds.Core.Game.OnTick(Single dt)
+   at TaleWorlds.Core.GameManagerBase.OnTick(Single dt)
+   at TaleWorlds.MountAndBlade.Module.OnApplicationTick_Patch3(Module this, Single dt)
+
+</pre></body></html>
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>ExceptionSentry Core Log</title><style>body{font-family:Segoe UI,Arial,sans-serif;background:#f8fafc;color:#0f172a;margin:24px}pre{white-space:pre-wrap;background:#fff;border:1px solid #cbd5e1;border-radius:8px;padding:16px}</style></head><body><pre>================================================================
+ExceptionSentry Core Early Exception
+================================================================
+Time: 2026-06-28 03:12:00.108
+Context: Module.OnApplicationTick
+Type: System.NullReferenceException
+Message: Object reference not set to an instance of an object.
+
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at Helpers.PartyBaseHelper.HasFeat(PartyBase party, FeatObject feat)
+   at TaleWorlds.CampaignSystem.GameComponents.DefaultPartyWageModel.GetTotalWage(MobileParty mobileParty, TroopRoster troopRoster, Boolean includeDescriptions)
+   at NavalDLC.GameComponents.NavalDLCPartyWageModel.GetTotalWage(MobileParty mobileParty, TroopRoster troopRoster, Boolean includeDescriptions)
+   at TaleWorlds.CampaignSystem.Party.MobileParty.get_TotalWage()
+   at Helpers.HeroHelper.StartRecruitingMoneyLimitForClanLeader(Hero hero)
+   at TaleWorlds.CampaignSystem.CampaignBehaviors.AiBehaviors.AiVisitSettlementBehavior.AiHourlyTick(MobileParty mobileParty, PartyThinkParams p)
+   at TaleWorlds.CampaignSystem.MbEvent`2.InvokeList(EventHandlerRec`2 list, T1 t1, T2 t2)
+   at TaleWorlds.CampaignSystem.CampaignEvents.AiHourlyTick(MobileParty party, PartyThinkParams partyThinkParams)
+   at TaleWorlds.CampaignSystem.CampaignEventDispatcher.AiHourlyTick(MobileParty party, PartyThinkParams partyThinkParams)
+   at TaleWorlds.CampaignSystem.CampaignBehaviors.AiBehaviors.AiPartyThinkBehavior.PartyHourlyAiTick(MobileParty mobileParty)
+   at TaleWorlds.CampaignSystem.MbEvent`1.InvokeList(EventHandlerRec`1 list, T t)
+   at TaleWorlds.CampaignSystem.CampaignEvents.TickPartialHourlyAi(MobileParty party)
+   at TaleWorlds.CampaignSystem.CampaignEventDispatcher.TickPartialHourlyAi(MobileParty party)
+   at TaleWorlds.CampaignSystem.CampaignPeriodicEventManager.PeriodicTicker`1.PeriodicTickSome(Double timeUnitsElapsed)
+   at TaleWorlds.CampaignSystem.CampaignPeriodicEventManager.TickPartialHourlyAi()
+   at TaleWorlds.CampaignSystem.Campaign.Tick()
+   at TaleWorlds.CampaignSystem.GameState.MapState.OnMapModeTick(Single dt)
+   at TaleWorlds.CampaignSystem.GameState.MapState.OnTick(Single dt)
+   at TaleWorlds.Core.GameStateManager.OnTick_Patch1(GameStateManager this, Single dt)
+   at TaleWorlds.Core.Game.OnTick(Single dt)
+   at TaleWorlds.Core.GameManagerBase.OnTick(Single dt)
+   at TaleWorlds.MountAndBlade.Module.OnApplicationTick_Patch3(Module this, Single dt)
+
+</pre></body></html>
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>ExceptionSentry Core Log</title><style>body{font-family:Segoe UI,Arial,sans-serif;background:#f8fafc;color:#0f172a;margin:24px}pre{white-space:pre-wrap;background:#fff;border:1px solid #cbd5e1;border-radius:8px;padding:16px}</style></head><body><pre>================================================================
+ExceptionSentry Core Early Exception
+================================================================
+Time: 2026-06-28 03:12:06.349
+Context: Module.OnApplicationTick
+Type: System.NullReferenceException
+Message: Object reference not set to an instance of an object.
+
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at Helpers.PartyBaseHelper.HasFeat(PartyBase party, FeatObject feat)
+   at TaleWorlds.CampaignSystem.GameComponents.DefaultPartyWageModel.GetTotalWage(MobileParty mobileParty, TroopRoster troopRoster, Boolean includeDescriptions)
+   at NavalDLC.GameComponents.NavalDLCPartyWageModel.GetTotalWage(MobileParty mobileParty, TroopRoster troopRoster, Boolean includeDescriptions)
+   at TaleWorlds.CampaignSystem.Party.MobileParty.get_TotalWage()
+   at TaleWorlds.CampaignSystem.GameComponents.DefaultClanFinanceModel.CalculatePartyWage(MobileParty mobileParty, Int32 budget, Boolean applyWithdrawals)
+   at TaleWorlds.CampaignSystem.GameComponents.DefaultClanFinanceModel.AddExpenseFromLeaderParty(Clan clan, ExplainedNumber goldChange, Boolean applyWithdrawals)
+   at TaleWorlds.CampaignSystem.GameComponents.DefaultClanFinanceModel.AddExpensesFromPartiesAndGarrisons(Clan clan, ExplainedNumber&amp; goldChange, Boolean applyWithdrawals, Boolean includeDetails)
+   at TaleWorlds.CampaignSystem.GameComponents.DefaultClanFinanceModel.CalculateClanExpensesInternal(Clan clan, ExplainedNumber&amp; goldChange, Boolean applyWithdrawals, Boolean includeDetails)
+   at TaleWorlds.CampaignSystem.GameComponents.DefaultClanFinanceModel.CalculateClanGoldChange(Clan clan, Boolean includeDescriptions, Boolean applyWithdrawals, Boolean includeDetails)
+   at NavalDLC.GameComponents.NavalDLCClanFinanceModel.CalculateClanGoldChange(Clan clan, Boolean includeDescriptions, Boolean applyWithdrawals, Boolean includeDetails)
+   at TaleWorlds.CampaignSystem.CampaignBehaviors.ClanVariablesCampaignBehavior.DailyTickClan(Clan clan)
+   at TaleWorlds.CampaignSystem.MbEvent`1.InvokeList(EventHandlerRec`1 list, T t)
+   at TaleWorlds.CampaignSystem.CampaignEvents.DailyTickClan(Clan clan)
+   at TaleWorlds.CampaignSystem.CampaignEventDispatcher.DailyTickClan(Clan clan)
+   at TaleWorlds.CampaignSystem.CampaignPeriodicEventManager.PeriodicTicker`1.PeriodicTickSome(Double timeUnitsElapsed)
+   at TaleWorlds.CampaignSystem.CampaignPeriodicEventManager.PeriodicDailyTick()
+   at TaleWorlds.CampaignSystem.CampaignPeriodicEventManager.TickPeriodicEvents()
+   at TaleWorlds.CampaignSystem.Campaign.Tick()
+   at TaleWorlds.CampaignSystem.GameState.MapState.OnMapModeTick(Single dt)
+   at TaleWorlds.CampaignSystem.GameState.MapState.OnTick(Single dt)
+   at TaleWorlds.Core.GameStateManager.OnTick_Patch1(GameStateManager this, Single dt)
+   at TaleWorlds.Core.Game.OnTick(Single dt)
+   at TaleWorlds.Core.GameManagerBase.OnTick(Single dt)
+   at TaleWorlds.MountAndBlade.Module.OnApplicationTick_Patch3(Module this, Single dt)
+
+</pre></body></html>
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>ExceptionSentry Core Log</title><style>body{font-family:Segoe UI,Arial,sans-serif;background:#f8fafc;color:#0f172a;margin:24px}pre{white-space:pre-wrap;background:#fff;border:1px solid #cbd5e1;border-radius:8px;padding:16px}</style></head><body><pre>================================================================
+ExceptionSentry Core Early Exception
+================================================================
+Time: 2026-06-28 03:12:44.291
+Context: Module.OnApplicationTick
+Type: System.NullReferenceException
+Message: Object reference not set to an instance of an object.
+
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at NavalDLC.CampaignBehaviors.ShipTradeCampaignBehavior.OnShipOwnerChanged(Ship ship, PartyBase oldOwner, ShipOwnerChangeDetail details)
+   at TaleWorlds.CampaignSystem.MbEvent`3.InvokeList(EventHandlerRec`3 list, T1 t1, T2 t2, T3 t3)
+   at TaleWorlds.CampaignSystem.CampaignEvents.OnShipOwnerChanged(Ship ship, PartyBase oldOwner, ShipOwnerChangeDetail changeDetail)
+   at TaleWorlds.CampaignSystem.CampaignEventDispatcher.OnShipOwnerChanged(Ship ship, PartyBase oldOwner, ShipOwnerChangeDetail changeDetail)
+   at TaleWorlds.CampaignSystem.Actions.ChangeShipOwnerAction.ApplyInternal(PartyBase newOwner, Ship ship, ShipOwnerChangeDetail changeDetail)
+   at NavalDLC.CampaignBehaviors.ShipTradeCampaignBehavior.TryPurchasingShipFromTown(MobileParty mobileParty, Town town)
+   at NavalDLC.CampaignBehaviors.ShipTradeCampaignBehavior.ConsiderPurchasingShip(Clan clan)
+   at NavalDLC.CampaignBehaviors.ShipTradeCampaignBehavior.DailyTickClan(Clan clan)
+   at TaleWorlds.CampaignSystem.MbEvent`1.InvokeList(EventHandlerRec`1 list, T t)
+   at TaleWorlds.CampaignSystem.CampaignEvents.DailyTickClan(Clan clan)
+   at TaleWorlds.CampaignSystem.CampaignEventDispatcher.DailyTickClan(Clan clan)
+   at TaleWorlds.CampaignSystem.CampaignPeriodicEventManager.PeriodicTicker`1.PeriodicTickSome(Double timeUnitsElapsed)
+   at TaleWorlds.CampaignSystem.CampaignPeriodicEventManager.PeriodicDailyTick()
+   at TaleWorlds.CampaignSystem.CampaignPeriodicEventManager.TickPeriodicEvents()
+   at TaleWorlds.CampaignSystem.Campaign.Tick()
+   at TaleWorlds.CampaignSystem.GameState.MapState.OnMapModeTick(Single dt)
+   at TaleWorlds.CampaignSystem.GameState.MapState.OnTick(Single dt)
+   at TaleWorlds.Core.GameStateManager.OnTick_Patch1(GameStateManager this, Single dt)
+   at TaleWorlds.Core.Game.OnTick(Single dt)
+   at TaleWorlds.Core.GameManagerBase.OnTick(Single dt)
+   at TaleWorlds.MountAndBlade.Module.OnApplicationTick_Patch3(Module this, Single dt)
+
+</pre></body></html>
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>ExceptionSentry Core Log</title><style>body{font-family:Segoe UI,Arial,sans-serif;background:#f8fafc;color:#0f172a;margin:24px}pre{white-space:pre-wrap;background:#fff;border:1px solid #cbd5e1;border-radius:8px;padding:16px}</style></head><body><pre>================================================================
+ExceptionSentry Core Early Exception
+================================================================
+Time: 2026-06-28 03:59:30.554
+Context: Module.OnApplicationTick
+Type: System.NullReferenceException
+Message: Object reference not set to an instance of an object.
+
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at Helpers.PartyBaseHelper.HasFeat(PartyBase party, FeatObject feat)
+   at TaleWorlds.CampaignSystem.GameComponents.DefaultPartyWageModel.GetTotalWage(MobileParty mobileParty, TroopRoster troopRoster, Boolean includeDescriptions)
+   at NavalDLC.GameComponents.NavalDLCPartyWageModel.GetTotalWage(MobileParty mobileParty, TroopRoster troopRoster, Boolean includeDescriptions)
+   at TaleWorlds.CampaignSystem.Party.MobileParty.get_TotalWage()
+   at Helpers.HeroHelper.StartRecruitingMoneyLimitForClanLeader(Hero hero)
+   at TaleWorlds.CampaignSystem.CampaignBehaviors.RecruitmentCampaignBehavior.CheckRecruiting(MobileParty mobileParty, Settlement settlement)
+   at TaleWorlds.CampaignSystem.CampaignBehaviors.RecruitmentCampaignBehavior.OnBeforeSettlementEntered(MobileParty mobileParty, Settlement settlement, Hero hero)
+   at TaleWorlds.CampaignSystem.MbEvent`3.InvokeList(EventHandlerRec`3 list, T1 t1, T2 t2, T3 t3)
+   at TaleWorlds.CampaignSystem.CampaignEvents.OnBeforeSettlementEntered(MobileParty party, Settlement settlement, Hero hero)
+   at TaleWorlds.CampaignSystem.CampaignEventDispatcher.OnBeforeSettlementEntered(MobileParty party, Settlement settlement, Hero hero)
+   at TaleWorlds.CampaignSystem.Actions.EnterSettlementAction.ApplyInternal(Hero hero, MobileParty mobileParty, Settlement settlement, EnterSettlementDetail detail, Object subject, Boolean isPlayerInvolved)
+   at TaleWorlds.CampaignSystem.Actions.EnterSettlementAction.ApplyForParty(MobileParty mobileParty, Settlement settlement)
+   at TaleWorlds.CampaignSystem.EncounterManager.StartSettlementEncounter(MobileParty attackerParty, Settlement settlement)
+   at TaleWorlds.CampaignSystem.Settlements.Settlement.OnPartyInteraction(MobileParty engagingParty)
+   at TaleWorlds.CampaignSystem.Party.PartyBase.TaleWorlds.CampaignSystem.Map.IInteractablePoint.OnPartyInteraction(MobileParty engagingParty)
+   at TaleWorlds.CampaignSystem.EncounterManager.HandleEncounterForMobileParty(MobileParty mobileParty, Single dt)
+   at TaleWorlds.CampaignSystem.EncounterManager.HandleEncounters(Single dt)
+   at TaleWorlds.CampaignSystem.Campaign.Tick()
+   at TaleWorlds.CampaignSystem.GameState.MapState.OnMapModeTick(Single dt)
+   at TaleWorlds.CampaignSystem.GameState.MapState.OnTick(Single dt)
+   at TaleWorlds.Core.GameStateManager.OnTick_Patch1(GameStateManager this, Single dt)
+   at TaleWorlds.Core.Game.OnTick(Single dt)
+   at TaleWorlds.Core.GameManagerBase.OnTick(Single dt)
+   at TaleWorlds.MountAndBlade.Module.OnApplicationTick_Patch3(Module this, Single dt)
+
+</pre></body></html>

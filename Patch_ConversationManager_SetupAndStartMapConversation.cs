@@ -60,6 +60,11 @@ public static class Patch_ConversationManager_SetupAndStartMapConversation
 				Logger.LogTrace("Conversation_Intercept", "Encounter redirect is suspended; allow native SetupAndStartMapConversation.");
 				return true;
 			}
+			if (LordEncounterBehavior.IsNativeSettlementRequestMeetingContext())
+			{
+				Logger.LogTrace("Conversation_Intercept", "Native hostile settlement request meeting detected; allow native SetupAndStartMapConversation.");
+				return true;
+			}
 			if (LordEncounterBehavior.IsCustomEncounterMenuDisabledForCurrentEncounter())
 			{
 				Logger.LogTrace("Conversation_Intercept", "Custom encounter menu is disabled for current encounter; allow native SetupAndStartMapConversation.");
@@ -82,15 +87,11 @@ public static class Patch_ConversationManager_SetupAndStartMapConversation
 				Logger.LogTrace("Conversation_Intercept", "Sea encounter context detected; allow native SetupAndStartMapConversation.");
 				return true;
 			}
-			if (MobileParty.MainParty?.MapEvent != null)
-			{
-				return true;
-			}
 			if (PlayerEncounterCompat.HasCampaignBattleResult())
 			{
 				return true;
 			}
-			if (PlayerEncounterCompat.HasBattleOrEncounteredBattle())
+			if (PlayerEncounterCompat.HasResolvedEncounterBattleContext())
 			{
 				return true;
 			}
@@ -99,10 +100,10 @@ public static class Patch_ConversationManager_SetupAndStartMapConversation
 			{
 				return true;
 			}
-			Hero hero = null;
+			Hero hero = EncounterConversationTargetResolver.TryResolveLordFromArgumentsThenEncounterLeader(__instance, __args);
 			try
 			{
-				hero = PlayerEncounter.EncounteredParty?.LeaderHero;
+				hero = hero ?? PlayerEncounter.EncounteredParty?.LeaderHero;
 			}
 			catch
 			{
@@ -148,7 +149,21 @@ public static class Patch_ConversationManager_SetupAndStartMapConversation
 			if (hero != null)
 			{
 				Logger.LogTrace("Conversation_Intercept", $"SetupAndStartMapConversation 遭遇对象: {hero.Name}, IsLord={hero.IsLord}, IsMainHero={hero == Hero.MainHero}");
-				if (hero != Hero.MainHero && hero.IsLord)
+				if (LordEncounterBehavior.IsNativeSettlementRequestMeetingContext(hero))
+				{
+					Logger.LogTrace("Conversation_Intercept", $"SetupAndStartMapConversation 命中敌对定居点原版会面，放行原版对话: {hero.Name}");
+					return true;
+				}
+				PartyBase encounterParty = null;
+				try
+				{
+					encounterParty = PlayerEncounter.EncounteredParty;
+				}
+				catch
+				{
+					encounterParty = null;
+				}
+				if (LordEncounterBehavior.IsEligibleCustomLordEncounterTarget(hero, encounterParty))
 				{
 					ProactiveNpcRequestBehavior.MarkEncounterOpened(hero);
 					LordEncounterBehavior.SetTarget(hero);
@@ -157,6 +172,10 @@ public static class Patch_ConversationManager_SetupAndStartMapConversation
 						Logger.LogTrace("Conversation_Intercept", $"SetupAndStartMapConversation 已重定向至自定义会面菜单: {hero.Name}");
 						return false;
 					}
+				}
+				else if (hero != Hero.MainHero && hero.IsLord)
+				{
+					Logger.LogTrace("Conversation_Intercept", $"SetupAndStartMapConversation 遭遇对象不是可接管的王国贵族遭遇，放行原版对话: {hero.Name}");
 				}
 			}
 		}
