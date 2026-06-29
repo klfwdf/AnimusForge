@@ -21,6 +21,10 @@ public static class Patch_PlayerEncounter_Start
 			{
 				Logger.LogTrace("Patch_PlayerEncounter_Start", "Encounter redirect is suspended; skip custom encounter menu redirect.");
 			}
+			else if (LordEncounterBehavior.IsNativeSettlementRequestMeetingContext())
+			{
+				Logger.LogTrace("Patch_PlayerEncounter_Start", "Native hostile settlement request meeting detected; skip custom encounter menu redirect.");
+			}
 			else if (LordEncounterBehavior.IsCustomEncounterMenuDisabledForCurrentEncounter())
 			{
 				Logger.LogTrace("Patch_PlayerEncounter_Start", "Custom encounter menu is disabled for current encounter; skip custom encounter menu redirect.");

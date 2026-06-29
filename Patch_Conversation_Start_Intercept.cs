@@ -55,6 +55,11 @@ public static class Patch_Conversation_Start_Intercept
 			{
 				return true;
 			}
+			if (LordEncounterBehavior.IsNativeSettlementRequestMeetingContext(hero))
+			{
+				Logger.LogTrace("Patch_Conversation_Start_Intercept", "Native hostile settlement request meeting detected; allow native " + __originalMethod?.Name + ".");
+				return true;
+			}
 			Logger.LogTrace("Patch_Conversation_Start_Intercept", $"检测到 {__originalMethod?.Name} 原版对话启动，重定向至自定义会面菜单: {hero.Name}");
 			ProactiveNpcRequestBehavior.MarkEncounterOpened(hero);
 			LordEncounterBehavior.SetTarget(hero);
@@ -92,6 +97,11 @@ public static class Patch_Conversation_Start_Intercept
 		{
 			return true;
 		}
+		if (LordEncounterBehavior.IsNativeSettlementRequestMeetingContext())
+		{
+			Logger.LogTrace("Patch_Conversation_Start_Intercept", "Native hostile settlement request meeting detected; allow native " + originalMethod?.Name + ".");
+			return true;
+		}
 		if (LordEncounterRedirectGuard.IsSuppressed())
 		{
 			return true;
@@ -124,76 +134,8 @@ public static class Patch_Conversation_Start_Intercept
 
 	private static Hero TryResolveConversationLord(object instance, object[] args)
 	{
-		Hero hero = PlayerEncounter.EncounteredParty?.LeaderHero;
-		if (IsValidLord(hero))
-		{
-			return hero;
-		}
-		if (args != null)
-		{
-			foreach (object arg in args)
-			{
-				hero = TryResolveHeroFromObject(arg);
-				if (IsValidLord(hero))
-				{
-					return hero;
-				}
-			}
-		}
-		hero = TryResolveHeroFromObject(instance);
-		if (IsValidLord(hero))
-		{
-			return hero;
-		}
-		return null;
-	}
-
-	private static Hero TryResolveHeroFromObject(object value)
-	{
-		if (value == null)
-		{
-			return null;
-		}
-		if (value is Hero hero)
-		{
-			return hero;
-		}
-		if (value is CharacterObject characterObject)
-		{
-			return characterObject.HeroObject;
-		}
-		if (value is ConversationCharacterData conversationCharacterData)
-		{
-			return conversationCharacterData.Character?.HeroObject;
-		}
-		object obj = AccessTools.Property(value.GetType(), "LeaderHero")?.GetValue(value);
-		if (obj is Hero hero2)
-		{
-			return hero2;
-		}
-		object obj2 = AccessTools.Property(value.GetType(), "HeroObject")?.GetValue(value);
-		if (obj2 is Hero hero3)
-		{
-			return hero3;
-		}
-		object obj3 = AccessTools.Property(value.GetType(), "Character")?.GetValue(value);
-		if (obj3 is CharacterObject characterObject2)
-		{
-			return characterObject2.HeroObject;
-		}
-		object obj4 = AccessTools.Property(value.GetType(), "Party")?.GetValue(value);
-		Hero hero4 = TryResolveHeroFromObject(obj4);
-		if (hero4 != null)
-		{
-			return hero4;
-		}
-		object obj5 = AccessTools.Property(value.GetType(), "MobileParty")?.GetValue(value);
-		Hero hero5 = TryResolveHeroFromObject(obj5);
-		if (hero5 != null)
-		{
-			return hero5;
-		}
-		return null;
+		Hero hero = EncounterConversationTargetResolver.TryResolveLordFromArgumentsThenEncounterLeader(instance, args);
+		return IsValidLord(hero) ? hero : null;
 	}
 
 	private static bool IsValidLord(Hero hero)

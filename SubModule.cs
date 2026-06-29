@@ -249,6 +249,14 @@ public class SubModule : MBSubModuleBase
 			}
 			try
 			{
+				AnimusForgeMobilePartyAiSafetyPatch.EnsurePatched(harmony);
+			}
+			catch (Exception ex8af)
+			{
+				Logger.LogTrace("SubModule", ">>> AnimusForgeMobilePartyAiSafetyPatch init failed: " + ex8af.Message);
+			}
+			try
+			{
 				Patch_Conversation_Start_Intercept.ManualPatch(harmony);
 			}
 			catch (Exception ex8b)

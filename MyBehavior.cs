@@ -13029,7 +13029,7 @@ public class MyBehavior : CampaignBehaviorBase
 			return;
 		}
 		string settlementDisplayName = GetSettlementDisplayName(town.Settlement);
-		string text = settlementDisplayName + "本周出现定居点状态波动：" + string.Join("；", list) + "。";
+		string text = settlementDisplayName + "本周治理状态发生波动：" + string.Join("；", list) + "。";
 		string townStatChangeReasonText = BuildTownStatChangeReasonText(town, changedLabels);
 		if (!string.IsNullOrWhiteSpace(townStatChangeReasonText))
 		{
@@ -13146,10 +13146,8 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			return "";
 		}
-		List<string> factors = list.OrderByDescending((Tuple<string, float> x) => MathF.Abs(x.Item2)).ThenBy((Tuple<string, float> x) => x.Item1, StringComparer.OrdinalIgnoreCase).Take(TownStatReasonMaxLinesPerStat).Select((Tuple<string, float> x) => x.Item1 + FormatTownStatReasonNumberSuffix(x.Item2)).ToList();
-		string resultNumber = FormatTownStatReasonNumber(explainedNumber.ResultNumber);
-		string prefix = string.IsNullOrWhiteSpace(resultNumber) ? (label + "主因") : (label + "当前模型日变" + resultNumber + "，主因");
-		return prefix + string.Join("、", factors);
+		List<string> factors = list.OrderByDescending((Tuple<string, float> x) => MathF.Abs(x.Item2)).ThenBy((Tuple<string, float> x) => x.Item1, StringComparer.OrdinalIgnoreCase).Select((Tuple<string, float> x) => x.Item1).Distinct(StringComparer.OrdinalIgnoreCase).Take(TownStatReasonMaxLinesPerStat).ToList();
+		return label + "主因：" + string.Join("、", factors);
 	}
 
 	private static string CondenseTownStatReasonLineName(string text)
@@ -13163,21 +13161,6 @@ public class MyBehavior : CampaignBehaviorBase
 		return TrimPoliticalReasonPart(text, TownStatReasonMaxLineLength);
 	}
 
-	private static string FormatTownStatReasonNumberSuffix(float value)
-	{
-		string text = FormatTownStatReasonNumber(value);
-		return string.IsNullOrWhiteSpace(text) ? "" : ("(" + text + ")");
-	}
-
-	private static string FormatTownStatReasonNumber(float value)
-	{
-		if (float.IsNaN(value) || float.IsInfinity(value) || MathF.Abs(value) < 0.005f)
-		{
-			return "";
-		}
-		return (value > 0f ? "+" : "") + value.ToString("0.##");
-	}
-
 	private static void AppendTownChangeLine(List<string> lines, string label, float oldValue, float newValue, float threshold)
 	{
 		if (lines == null)
@@ -13189,7 +13172,7 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
-		lines.Add(label + (num > 0f ? "上升" : "下降") + MathF.Abs(num).ToString("0.#"));
+		lines.Add(BuildTownChangeQualitativeLine(label, num, threshold));
 	}
 
 	private static void AppendTownChangeLine(List<string> lines, string label, int oldValue, int newValue, int threshold)
@@ -13203,7 +13186,7 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
-		lines.Add(label + (num > 0 ? "上升" : "下降") + Math.Abs(num));
+		lines.Add(BuildTownChangeQualitativeLine(label, num, threshold));
 	}
 
 	private static bool AppendTownChangeRangeLine(List<string> lines, string label, float oldValue, float newValue, float threshold)
@@ -13217,7 +13200,7 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			return false;
 		}
-		lines.Add(label + (num > 0f ? "上升" : "下降") + oldValue.ToString("0.#") + "→" + newValue.ToString("0.#"));
+		lines.Add(BuildTownChangeQualitativeLine(label, num, threshold));
 		return true;
 	}
 
@@ -13232,8 +13215,31 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			return false;
 		}
-		lines.Add(label + (num > 0 ? "上升" : "下降") + oldValue.ToString("0") + "→" + newValue.ToString("0"));
+		lines.Add(BuildTownChangeQualitativeLine(label, num, threshold));
 		return true;
+	}
+
+	private static string BuildTownChangeQualitativeLine(string label, float delta, float threshold)
+	{
+		string text = (label ?? "").Trim();
+		string intensity = MathF.Abs(delta) >= Math.Max(threshold * 3f, threshold + 0.001f) ? "明显" : "小幅";
+		bool rise = delta > 0f;
+		switch (text)
+		{
+		case "繁荣":
+			return text + intensity + (rise ? "扩张" : "回落");
+		case "忠诚度":
+			return text + intensity + (rise ? "改善" : "走低");
+		case "治安":
+			return text + intensity + (rise ? "改善" : "恶化");
+		case "粮食":
+			return text + intensity + (rise ? "恢复" : "吃紧");
+		case "民兵":
+		case "驻军":
+			return text + intensity + (rise ? "增加" : "减少");
+		default:
+			return text + intensity + (rise ? "改善" : "走低");
+		}
 	}
 
 	private static NpcActionEntry CreateNpcActionEntry(Hero hero, string text, string stableKey, int day, int order, int sequence, NpcActionFacts facts, bool isMajor)
@@ -34440,7 +34446,7 @@ public class MyBehavior : CampaignBehaviorBase
 				text = "settlement_stats_" + hashSet.Count;
 			}
 			hashSet.Add(text);
-			foreach (Match item2 in Regex.Matches(item.SnapshotText ?? "", "(繁荣|忠诚度|治安|粮食|民兵|驻军)(上升|下降)", RegexOptions.IgnoreCase))
+			foreach (Match item2 in Regex.Matches(item.SnapshotText ?? "", "(繁荣|忠诚度|忠诚|治安|粮食|民兵|驻军)(?:小幅|明显)?(扩张|回落|改善|走低|恶化|恢复|吃紧|增加|减少|上升|下降)", RegexOptions.IgnoreCase))
 			{
 				string text2 = NormalizeWeeklyPromptSettlementStatsLabel(item2.Groups[1]?.Value);
 				string text3 = (item2.Groups[2]?.Value ?? "").Trim();
@@ -34448,7 +34454,11 @@ public class MyBehavior : CampaignBehaviorBase
 				{
 					continue;
 				}
-				string text4 = text2 + text3;
+				string text4 = NormalizeWeeklyPromptSettlementStatsTrend(text2, text3);
+				if (string.IsNullOrWhiteSpace(text4))
+				{
+					continue;
+				}
 				if (!dictionary.TryGetValue(text4, out var value))
 				{
 					value = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -34467,13 +34477,11 @@ public class MyBehavior : CampaignBehaviorBase
 			}
 		}
 		List<string> list2 = new List<string>();
-		list2.Add("波动据点：" + Math.Max(hashSet.Count, list.Count) + "处");
-		foreach (string orderKey in GetWeeklyPromptSettlementStatsOrder())
+		list2.Add(Math.Max(hashSet.Count, list.Count) > 2 ? "多处据点出现治理波动" : "个别据点出现治理波动");
+		List<string> trends = GetWeeklyPromptSettlementStatsOrder().Where((string orderKey) => dictionary.TryGetValue(orderKey, out var value3) && value3.Count > 0).Take(6).ToList();
+		if (trends.Count > 0)
 		{
-			if (dictionary.TryGetValue(orderKey, out var value3) && value3.Count > 0)
-			{
-				list2.Add(orderKey + "：" + value3.Count + "处");
-			}
+			list2.Add("主要表现为" + string.Join("、", trends));
 		}
 		List<string> list3 = reasonTagsBySettlement.OrderByDescending((KeyValuePair<string, HashSet<string>> x) => x.Value.Count).ThenBy((KeyValuePair<string, HashSet<string>> x) => x.Key, StringComparer.OrdinalIgnoreCase).Select((KeyValuePair<string, HashSet<string>> x) => x.Key).Take(5).ToList();
 		if (list3.Count > 0)
@@ -34669,7 +34677,11 @@ public class MyBehavior : CampaignBehaviorBase
 			}
 		}
 		string text3 = (material?.SnapshotText ?? "").Trim();
-		int num = text3.IndexOf("本周出现定居点状态波动", StringComparison.OrdinalIgnoreCase);
+		int num = text3.IndexOf("本周治理状态发生波动", StringComparison.OrdinalIgnoreCase);
+		if (num <= 0)
+		{
+			num = text3.IndexOf("本周出现定居点状态波动", StringComparison.OrdinalIgnoreCase);
+		}
 		if (num > 0)
 		{
 			return text3.Substring(0, num).Trim();
@@ -34688,22 +34700,51 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private static string NormalizeWeeklyPromptSettlementStatsTrend(string label, string direction)
+	{
+		string text = NormalizeWeeklyPromptSettlementStatsLabel(label);
+		string text2 = (direction ?? "").Trim();
+		bool rise = text2 == "上升" || text2 == "扩张" || text2 == "改善" || text2 == "恢复" || text2 == "增加";
+		bool fall = text2 == "下降" || text2 == "回落" || text2 == "走低" || text2 == "恶化" || text2 == "吃紧" || text2 == "减少";
+		if (!rise && !fall)
+		{
+			return "";
+		}
+		switch (text)
+		{
+		case "繁荣":
+			return rise ? "繁荣扩张" : "繁荣回落";
+		case "粮食":
+			return rise ? "粮食恢复" : "粮食吃紧";
+		case "忠诚":
+			return rise ? "忠诚改善" : "忠诚走低";
+		case "治安":
+			return rise ? "治安改善" : "治安恶化";
+		case "民兵":
+			return rise ? "民兵增加" : "民兵减少";
+		case "驻军":
+			return rise ? "驻军增加" : "驻军减少";
+		default:
+			return text + (rise ? "改善" : "走低");
+		}
+	}
+
 	private static List<string> GetWeeklyPromptSettlementStatsOrder()
 	{
 		return new List<string>
 		{
-			"繁荣上升",
-			"繁荣下降",
-			"粮食上升",
-			"粮食下降",
-			"忠诚上升",
-			"忠诚下降",
-			"治安上升",
-			"治安下降",
-			"民兵上升",
-			"民兵下降",
-			"驻军上升",
-			"驻军下降"
+			"繁荣扩张",
+			"繁荣回落",
+			"粮食恢复",
+			"粮食吃紧",
+			"忠诚改善",
+			"忠诚走低",
+			"治安改善",
+			"治安恶化",
+			"民兵增加",
+			"民兵减少",
+			"驻军增加",
+			"驻军减少"
 		};
 	}
 
@@ -39689,7 +39730,7 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
-		stringBuilder.AppendLine("若定居点状态材料含“变化原因”，【领地内事件】要融合这些模型原因，不要只罗列数值；没有原因材料时不要推测。");
+		stringBuilder.AppendLine("若定居点状态材料含“变化原因”，【领地内事件】只写治理趋势和模型原因；禁止复述数字、箭头、加减号、几处、上升多少或下降多少；没有原因材料时不要推测。");
 	}
 
 	private static string BuildWeeklyReportSystemPrompt(WeeklyEventMaterialPreviewGroup group)

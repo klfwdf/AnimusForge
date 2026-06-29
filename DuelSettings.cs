@@ -714,15 +714,35 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyGroup("7. NPC主动接触")]
 	public int ProactiveNpcRequestPrisonerRatioThresholdPercent { get; set; } = 90;
 
-	[SettingPropertyFloatingInteger("已知履历需求倍率", 1f, 5f, "0.0", Order = 13, RequireRestart = false, HintText = "NPC 已经知晓玩家重大履历时，需求驱动主动接触概率的倍率。默认 2.0。")]
+	[SettingPropertyInteger("低士气阈值", 0, 100, "0", Order = 13, RequireRestart = false, HintText = "NPC 领主队伍士气低于或等于该值时，可以触发低士气主动接触；0 表示关闭该需求。正常游玩默认 35。")]
+	[SettingPropertyGroup("7. NPC主动接触")]
+	public int ProactiveNpcRequestLowMoraleThreshold { get; set; } = 35;
+
+	[SettingPropertyInteger("缺马比例阈值(%)", 0, 100, "0", Order = 14, RequireRestart = false, HintText = "NPC 领主队伍坐骑数量低于队伍人数的该比例时，可以触发缺马/机动不足主动接触；0 表示关闭该需求。正常游玩默认 25。")]
+	[SettingPropertyGroup("7. NPC主动接触")]
+	public int ProactiveNpcRequestMountRatioThresholdPercent { get; set; } = 25;
+
+	[SettingPropertyInteger("负重压力阈值(%)", 50, 150, "0", Order = 15, RequireRestart = false, HintText = "NPC 领主队伍总负重达到库存容量的该比例时，可以触发负重压力主动接触。正常游玩默认 92。")]
+	[SettingPropertyGroup("7. NPC主动接触")]
+	public int ProactiveNpcRequestOverburdenRatioThresholdPercent { get; set; } = 92;
+
+	[SettingPropertyInteger("家族金库阈值", 0, 200000, "0", Order = 16, RequireRestart = false, HintText = "NPC 家族金库低于该值时，可以触发家族财政紧张主动接触；0 表示不看金库。正常游玩默认 15000。")]
+	[SettingPropertyGroup("7. NPC主动接触")]
+	public int ProactiveNpcRequestClanGoldThreshold { get; set; } = 15000;
+
+	[SettingPropertyInteger("家族债务阈值", 0, 200000, "0", Order = 17, RequireRestart = false, HintText = "NPC 家族欠王国债务高于该值时，可以触发家族财政紧张主动接触；0 表示不看债务。正常游玩默认 5000。")]
+	[SettingPropertyGroup("7. NPC主动接触")]
+	public int ProactiveNpcRequestClanDebtThreshold { get; set; } = 5000;
+
+	[SettingPropertyFloatingInteger("已知履历需求倍率", 1f, 5f, "0.0", Order = 18, RequireRestart = false, HintText = "NPC 已经知晓玩家重大履历时，需求驱动主动接触概率的倍率。默认 2.0。")]
 	[SettingPropertyGroup("7. NPC主动接触")]
 	public float ProactiveNpcKnownMajorMultiplier { get; set; } = 2f;
 
-	[SettingPropertyFloatingInteger("知名度触发倍率", 0f, 3f, "0.0", Order = 14, RequireRestart = false, HintText = "玩家有效知名度转化为 NPC 主动接触额外概率的倍率。正常游玩默认 0.35。")]
+	[SettingPropertyFloatingInteger("知名度触发倍率", 0f, 3f, "0.0", Order = 19, RequireRestart = false, HintText = "玩家有效知名度转化为 NPC 主动接触额外概率的倍率。正常游玩默认 0.35。")]
 	[SettingPropertyGroup("7. NPC主动接触")]
 	public float ProactiveNpcNotorietyChanceMultiplier { get; set; } = 0.35f;
 
-	[SettingPropertyInteger("最低需求紧急度", 0, 100, "0", Order = 15, RequireRestart = false, HintText = "NPC 主动接触必须达到的最低需求紧急度；测试模式下运行时按 0 处理。正常游玩默认 60。")]
+	[SettingPropertyInteger("最低需求紧急度", 0, 100, "0", Order = 20, RequireRestart = false, HintText = "NPC 主动接触必须达到的最低需求紧急度；测试模式下运行时按 0 处理。正常游玩默认 60。")]
 	[SettingPropertyGroup("7. NPC主动接触")]
 	public int ProactiveNpcMinNeedUrgency { get; set; } = 60;
 

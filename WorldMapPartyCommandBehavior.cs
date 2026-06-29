@@ -511,6 +511,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			message = "大地图命令失败：不能这样指挥玩家本人的部队。";
 			return false;
 		}
+		string normalizedSource = NormalizeExternalSourceId(sourceId);
 		List<PartyCommandEntry> safeCommands = (commands ?? new List<PartyCommandEntry>()).Where(IsExecutableCommand).Select(CloneCommand).ToList();
 		if (safeCommands.Count == 0)
 		{
@@ -523,6 +524,11 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			message = "大地图命令失败：" + GetHeroName(hero) + "当前没有独立可控制部队。";
 			return false;
 		}
+		int hostileGoToConvertedCount = 0;
+		if (ShouldConvertHostileGoToSettlementCommands(normalizedSource))
+		{
+			safeCommands = ConvertHostileGoToSettlementCommandsToAttacks(hero, party, safeCommands, out hostileGoToConvertedCount);
+		}
 		LeaveArmyIfNeeded(party);
 		ReleasePartyAi(party);
 		PartyCommandQueueState state = new PartyCommandQueueState
@@ -531,15 +537,17 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			Commands = safeCommands,
 			CurrentIndex = 0,
 			Stage = CommandStage.New.ToString(),
-			SourceId = NormalizeExternalSourceId(sourceId)
+			SourceId = normalizedSource
 		};
 		lock (_queueLock)
 		{
 			_queues[hero.StringId] = state;
 		}
 		StartCurrentCommand(hero, party, state);
-		fact = "[AFEF NPC行为补充] " + GetHeroName(hero) + "接受了玩家的大地图命令队列，共" + safeCommands.Count + "道命令。";
-		message = GetHeroName(hero) + "已接受大地图命令队列（" + safeCommands.Count + "道）。";
+		string conversionFact = hostileGoToConvertedCount > 0 ? ("，其中" + hostileGoToConvertedCount + "道敌对定居点前往命令已按AI攻击处理") : "";
+		string conversionMessage = hostileGoToConvertedCount > 0 ? "，敌对定居点按AI攻击" : "";
+		fact = "[AFEF NPC行为补充] " + GetHeroName(hero) + "接受了玩家的大地图命令队列，共" + safeCommands.Count + "道命令" + conversionFact + "。";
+		message = GetHeroName(hero) + "已接受大地图命令队列（" + safeCommands.Count + "道" + conversionMessage + "）。";
 		return true;
 	}
 
@@ -1023,6 +1031,10 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			return;
 		}
 		PartyCommandEntry command = state.Commands[state.CurrentIndex];
+		if (TryConvertCurrentHostileGoToSettlementCommand(hero, party, state, command, "start"))
+		{
+			command = state.Commands[state.CurrentIndex];
+		}
 		ResetResultTracking(state);
 		state.CommandStartDay = NowDay();
 		state.ArrivalDay = -1.0;
@@ -1209,6 +1221,11 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		if (settlement == null)
 		{
 			AdvanceCommand(hero, party, state, "settlement_missing");
+			return;
+		}
+		if (TryConvertCurrentHostileGoToSettlementCommand(hero, party, state, command, "tick_go"))
+		{
+			StartCurrentCommand(hero, party, state);
 			return;
 		}
 		double holdUntilDay = GetCommandHoldUntilDay(command);
@@ -3364,6 +3381,84 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			HoldUntilDay = command.HoldUntilDay > 0.0 ? command.HoldUntilDay : -1.0,
 			Mode = NormalizeAttackMode(command.Mode)
 		};
+	}
+
+	private static bool ShouldConvertHostileGoToSettlementCommands(string sourceId)
+	{
+		return string.IsNullOrWhiteSpace(NormalizeExternalSourceId(sourceId));
+	}
+
+	private static List<PartyCommandEntry> ConvertHostileGoToSettlementCommandsToAttacks(Hero hero, MobileParty party, List<PartyCommandEntry> commands, out int convertedCount)
+	{
+		convertedCount = 0;
+		if (commands == null || commands.Count == 0 || !IsPartyUsable(party))
+		{
+			return commands ?? new List<PartyCommandEntry>();
+		}
+		List<PartyCommandEntry> result = new List<PartyCommandEntry>(commands.Count);
+		foreach (PartyCommandEntry command in commands)
+		{
+			if (TryBuildHostileGoToSettlementAttackCommand(party, command, out PartyCommandEntry attackCommand, out Settlement settlement))
+			{
+				result.Add(attackCommand);
+				convertedCount++;
+				Log("go_to_hostile_settlement_converted hero=" + (hero?.StringId ?? "") + " party=" + (party.StringId ?? "") + " settlement=" + (settlement?.StringId ?? command?.TargetId ?? "") + " days=" + Math.Max(1, command?.Days ?? 1));
+				continue;
+			}
+			result.Add(command);
+		}
+		return result;
+	}
+
+	private static bool TryConvertCurrentHostileGoToSettlementCommand(Hero hero, MobileParty party, PartyCommandQueueState state, PartyCommandEntry command, string phase)
+	{
+		if (state == null || !ShouldConvertHostileGoToSettlementCommands(state.SourceId))
+		{
+			return false;
+		}
+		if (!TryBuildHostileGoToSettlementAttackCommand(party, command, out PartyCommandEntry attackCommand, out Settlement settlement))
+		{
+			return false;
+		}
+		command.Kind = attackCommand.Kind;
+		command.TargetType = attackCommand.TargetType;
+		command.TargetId = attackCommand.TargetId;
+		command.Days = attackCommand.Days;
+		command.HoldUntilDay = attackCommand.HoldUntilDay;
+		command.Mode = attackCommand.Mode;
+		state.ArrivalDay = -1.0;
+		state.TimeoutDay = -1.0;
+		state.EngageCommitted = false;
+		state.LastIssuedActionKey = "";
+		state.Stage = CommandStage.New.ToString();
+		NotifyCommandStatus(state, "go_to_hostile_settlement_converted:" + (phase ?? "") + ":" + (settlement?.StringId ?? command.TargetId ?? ""), GetHeroName(hero) + "原本要前往的" + GetSettlementName(settlement) + "已是敌对定居点，改按AI攻击命令执行。", CommandMessageTone.Progress);
+		Log("current_go_to_hostile_settlement_converted hero=" + (hero?.StringId ?? "") + " party=" + (party?.StringId ?? "") + " settlement=" + (settlement?.StringId ?? command.TargetId ?? "") + " phase=" + (phase ?? "") + " days=" + Math.Max(1, command.Days));
+		return true;
+	}
+
+	private static bool TryBuildHostileGoToSettlementAttackCommand(MobileParty party, PartyCommandEntry command, out PartyCommandEntry attackCommand, out Settlement settlement)
+	{
+		attackCommand = null;
+		settlement = null;
+		if (!IsKind(command, CommandKind.GoToSettlement) || !IsPartyUsable(party))
+		{
+			return false;
+		}
+		settlement = ResolveSettlementById(command.TargetId);
+		if (!IsSupportedAttackSettlement(settlement) || !IsPartyAtWarWithSettlement(party, settlement))
+		{
+			return false;
+		}
+		attackCommand = new PartyCommandEntry
+		{
+			Kind = CommandKind.AttackHero.ToString(),
+			TargetType = "settlement",
+			TargetId = command.TargetId,
+			Days = Math.Max(1, command.Days),
+			HoldUntilDay = -1.0,
+			Mode = AttackModeAi
+		};
+		return true;
 	}
 
 	private static string NormalizeTargetType(PartyCommandEntry command)

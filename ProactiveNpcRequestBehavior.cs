@@ -28,6 +28,11 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 	private const string NeedKingdomVassalInvite = "KingdomVassalInvite";
 	private const string NeedPoliticalAgenda = "PoliticalAgenda";
 	private const string NeedDiplomacy = "Diplomacy";
+	private const string NeedClanCaptive = "ClanCaptive";
+	private const string NeedLowMorale = "LowMorale";
+	private const string NeedMountShortage = "MountShortage";
+	private const string NeedOverburdened = "Overburdened";
+	private const string NeedClanFinanceStrain = "ClanFinanceStrain";
 	private const string TriggerSourceNeedDriven = "NeedDriven";
 	private const string TriggerSourceNotorietyDriven = "NotorietyDriven";
 	private const int MercenaryInviteMinPlayerClanTier = 1;
@@ -352,6 +357,7 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 			return;
 		}
 		Logger.Log("ProactiveNpcRequest", "scan selected: triggerSource=" + (candidate.TriggerSource ?? "") + " knownMajorBefore=" + candidate.KnownMajorBeforeRequest + " effectiveNotoriety=" + candidate.EffectiveNotorietyAtRequest + " needChance=" + candidate.NeedDrivenChance.ToString("0.##") + " notorietyChance=" + candidate.NotorietyDrivenChance.ToString("0.##") + " selectedUrgency=" + candidate.SelectedNeedUrgency.ToString("0.##") + " need=" + (candidate.NeedType ?? "") + " needs=" + JoinNeedTypesForLog(candidate.NeedTypes, candidate.NeedType) + " hero=" + (candidate.Hero?.StringId ?? "") + " party=" + (candidate.Party?.StringId ?? "") + " kingdom=" + (candidate.TargetKingdomId ?? "") + " playerClanTier=" + candidate.PlayerClanTier + " isKingdomLeader=" + candidate.TargetHeroIsKingdomLeader + " kingdomVassals=" + candidate.KingdomFormalVassalClanCount + "/" + candidate.KingdomTargetVassalClanCount + " kingdomMercs=" + candidate.KingdomMercenaryClanCount + "/" + candidate.KingdomTargetMercenaryClanCount + " kingdomFiefScore=" + candidate.KingdomFiefScore + " kingdomWars=" + candidate.KingdomWarKingdomCount + " kingdomPowerRatio=" + candidate.KingdomPowerRatioToEnemies.ToString("0.00") + " distance=" + candidate.Distance.ToString("0.0") + " foodDays=" + candidate.FoodDays + " partyGold=" + candidate.PartyGold + " totalWage=" + candidate.TotalWage + " unpaidWages=" + candidate.UnpaidWages.ToString("0.00") + " troops=" + candidate.MemberCount + "/" + candidate.PartySizeLimit + " troopRatio=" + candidate.PartySizeRatio.ToString("0.00") + " prisoners=" + candidate.PrisonerCount + "/" + candidate.PrisonerSizeLimit + " heroPrisoners=" + candidate.HeroPrisonerCount + " prisonerRatio=" + candidate.PrisonerSizeRatio.ToString("0.00") + " wageBudget=" + candidate.AvailableWageBudget + " testFallback=" + candidate.IsTestFallback + " stats=" + stats?.ToLogString());
+		Logger.Log("ProactiveNpcRequest", "scan selected extra needs=" + JoinNeedTypesForLog(candidate.NeedTypes, candidate.NeedType) + " morale=" + candidate.Morale.ToString("0.0") + " mounts=" + candidate.MountCount + " packAnimals=" + candidate.PackAnimalCount + " mountRatio=" + candidate.MountRatio.ToString("0.00") + " carry=" + candidate.TotalWeightCarried.ToString("0.0") + "/" + candidate.InventoryCapacity + " carryRatio=" + candidate.CarryRatio.ToString("0.00") + " clanGold=" + candidate.ClanGold + " clanDebt=" + candidate.ClanDebtToKingdom + " captiveClanHeroes=" + candidate.CaptiveClanHeroCount + " captiveHero=" + (candidate.CaptiveClanHeroName ?? "") + " captiveHolder=" + (candidate.CaptiveClanHeroHolderName ?? "") + " captiveLeader=" + candidate.CaptiveClanLeaderHeld);
 		StartRequest(candidate, settings);
 	}
 
@@ -409,6 +415,31 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 				{
 					stats.PrisonerOverload++;
 					needCandidates.Add(prisonerCandidate);
+				}
+				if (TryBuildClanCaptiveCandidate(candidate, settings, out ProactiveCandidate clanCaptiveCandidate))
+				{
+					stats.ClanCaptive++;
+					needCandidates.Add(clanCaptiveCandidate);
+				}
+				if (TryBuildLowMoraleCandidate(candidate, settings, out ProactiveCandidate lowMoraleCandidate))
+				{
+					stats.LowMorale++;
+					needCandidates.Add(lowMoraleCandidate);
+				}
+				if (TryBuildMountShortageCandidate(candidate, settings, out ProactiveCandidate mountShortageCandidate))
+				{
+					stats.MountShortage++;
+					needCandidates.Add(mountShortageCandidate);
+				}
+				if (TryBuildOverburdenedCandidate(candidate, settings, out ProactiveCandidate overburdenedCandidate))
+				{
+					stats.Overburdened++;
+					needCandidates.Add(overburdenedCandidate);
+				}
+				if (TryBuildClanFinanceStrainCandidate(candidate, settings, out ProactiveCandidate clanFinanceCandidate))
+				{
+					stats.ClanFinanceStrain++;
+					needCandidates.Add(clanFinanceCandidate);
 				}
 				if (TryBuildKingdomMercenaryInviteCandidate(candidate, settings, out ProactiveCandidate mercenaryInviteCandidate))
 				{
@@ -567,6 +598,14 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 			int prisonerCount = SafePrisonerCount(party);
 			int prisonerSizeLimit = SafePrisonerSizeLimit(party);
 			int heroPrisonerCount = SafeHeroPrisonerCount(party);
+			float morale = SafeMorale(party);
+			int inventoryCapacity = SafeInventoryCapacity(party);
+			float totalWeightCarried = SafeTotalWeightCarried(party);
+			int mountCount = SafeMountCount(party);
+			int packAnimalCount = SafePackAnimalCount(party);
+			int clanGold = SafeClanGold(hero.Clan);
+			int clanDebtToKingdom = SafeClanDebtToKingdom(hero.Clan);
+			ClanCaptiveSnapshot captiveSnapshot = BuildClanCaptiveSnapshot(hero);
 			Kingdom targetKingdom = ResolveHeroKingdom(hero);
 			if (atWarWithPlayer && !CanBuildWartimeDiplomacyCandidate(hero, targetKingdom))
 			{
@@ -596,6 +635,20 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 				PrisonerSizeLimit = prisonerSizeLimit,
 				HeroPrisonerCount = heroPrisonerCount,
 				PrisonerSizeRatio = CalculatePrisonerSizeRatio(prisonerCount, prisonerSizeLimit),
+				Morale = morale,
+				InventoryCapacity = inventoryCapacity,
+				TotalWeightCarried = totalWeightCarried,
+				CarryRatio = CalculateCarryRatio(totalWeightCarried, inventoryCapacity),
+				MountCount = mountCount,
+				PackAnimalCount = packAnimalCount,
+				MountRatio = CalculateAnimalRatio(mountCount, memberCount),
+				PackAnimalRatio = CalculateAnimalRatio(packAnimalCount, memberCount),
+				ClanGold = clanGold,
+				ClanDebtToKingdom = clanDebtToKingdom,
+				CaptiveClanHeroCount = captiveSnapshot.Count,
+				CaptiveClanHeroName = captiveSnapshot.FirstHeroName,
+				CaptiveClanHeroHolderName = captiveSnapshot.FirstHolderName,
+				CaptiveClanLeaderHeld = captiveSnapshot.LeaderHeld,
 				TargetKingdom = targetKingdom,
 				TargetKingdomId = GetKingdomKey(targetKingdom),
 				TargetKingdomName = GetKingdomName(targetKingdom),
@@ -652,6 +705,20 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 			PrisonerSizeLimit = source.PrisonerSizeLimit,
 			HeroPrisonerCount = source.HeroPrisonerCount,
 			PrisonerSizeRatio = source.PrisonerSizeRatio,
+			Morale = source.Morale,
+			InventoryCapacity = source.InventoryCapacity,
+			TotalWeightCarried = source.TotalWeightCarried,
+			CarryRatio = source.CarryRatio,
+			MountCount = source.MountCount,
+			PackAnimalCount = source.PackAnimalCount,
+			MountRatio = source.MountRatio,
+			PackAnimalRatio = source.PackAnimalRatio,
+			ClanGold = source.ClanGold,
+			ClanDebtToKingdom = source.ClanDebtToKingdom,
+			CaptiveClanHeroCount = source.CaptiveClanHeroCount,
+			CaptiveClanHeroName = source.CaptiveClanHeroName,
+			CaptiveClanHeroHolderName = source.CaptiveClanHeroHolderName,
+			CaptiveClanLeaderHeld = source.CaptiveClanLeaderHeld,
 			TargetKingdom = source.TargetKingdom,
 			TargetKingdomId = source.TargetKingdomId,
 			TargetKingdomName = source.TargetKingdomName,
@@ -764,6 +831,61 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 			return false;
 		}
 		candidate = TryBuildNeedCandidate(source, settings, NeedPrisonerOverload, urgency);
+		return candidate != null;
+	}
+
+	private bool TryBuildClanCaptiveCandidate(ProactiveCandidate source, DuelSettings settings, out ProactiveCandidate candidate)
+	{
+		candidate = null;
+		if (source == null || !IsClanCaptiveNeedMet(source, out float urgency))
+		{
+			return false;
+		}
+		candidate = TryBuildNeedCandidate(source, settings, NeedClanCaptive, urgency);
+		return candidate != null;
+	}
+
+	private bool TryBuildLowMoraleCandidate(ProactiveCandidate source, DuelSettings settings, out ProactiveCandidate candidate)
+	{
+		candidate = null;
+		if (source == null || !IsLowMoraleNeedMet(source, settings, out float urgency))
+		{
+			return false;
+		}
+		candidate = TryBuildNeedCandidate(source, settings, NeedLowMorale, urgency);
+		return candidate != null;
+	}
+
+	private bool TryBuildMountShortageCandidate(ProactiveCandidate source, DuelSettings settings, out ProactiveCandidate candidate)
+	{
+		candidate = null;
+		if (source == null || !IsMountShortageNeedMet(source, settings, out float urgency))
+		{
+			return false;
+		}
+		candidate = TryBuildNeedCandidate(source, settings, NeedMountShortage, urgency);
+		return candidate != null;
+	}
+
+	private bool TryBuildOverburdenedCandidate(ProactiveCandidate source, DuelSettings settings, out ProactiveCandidate candidate)
+	{
+		candidate = null;
+		if (source == null || !IsOverburdenedNeedMet(source, settings, out float urgency))
+		{
+			return false;
+		}
+		candidate = TryBuildNeedCandidate(source, settings, NeedOverburdened, urgency);
+		return candidate != null;
+	}
+
+	private bool TryBuildClanFinanceStrainCandidate(ProactiveCandidate source, DuelSettings settings, out ProactiveCandidate candidate)
+	{
+		candidate = null;
+		if (source == null || !IsClanFinanceStrainNeedMet(source, settings, out float urgency))
+		{
+			return false;
+		}
+		candidate = TryBuildNeedCandidate(source, settings, NeedClanFinanceStrain, urgency);
 		return candidate != null;
 	}
 
@@ -1021,6 +1143,119 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		return false;
 	}
 
+	private static bool IsClanCaptiveNeedMet(ProactiveCandidate candidate, out float urgency)
+	{
+		urgency = 0f;
+		if (candidate == null || candidate.CaptiveClanHeroCount <= 0)
+		{
+			return false;
+		}
+		urgency = 64f + Math.Min(18f, candidate.CaptiveClanHeroCount * 6f);
+		if (candidate.CaptiveClanLeaderHeld)
+		{
+			urgency += 12f;
+		}
+		return true;
+	}
+
+	private static bool IsLowMoraleNeedMet(ProactiveCandidate candidate, DuelSettings settings, out float urgency)
+	{
+		urgency = 0f;
+		if (candidate == null || candidate.MemberCount <= 0)
+		{
+			return false;
+		}
+		int threshold = Clamp(settings?.ProactiveNpcRequestLowMoraleThreshold ?? 35, 0, 100);
+		if (threshold <= 0 || candidate.Morale > threshold)
+		{
+			return false;
+		}
+		float deficitRatio = threshold <= 0 ? 0f : Clamp((threshold - candidate.Morale) / Math.Max(1f, threshold), 0f, 1f);
+		urgency = 54f + deficitRatio * 30f;
+		return true;
+	}
+
+	private static bool IsMountShortageNeedMet(ProactiveCandidate candidate, DuelSettings settings, out float urgency)
+	{
+		urgency = 0f;
+		if (candidate == null || candidate.MemberCount <= 0)
+		{
+			return false;
+		}
+		int thresholdPercent = Clamp(settings?.ProactiveNpcRequestMountRatioThresholdPercent ?? 25, 0, 100);
+		if (thresholdPercent <= 0)
+		{
+			return false;
+		}
+		float thresholdRatio = thresholdPercent / 100f;
+		if (candidate.MountRatio >= thresholdRatio)
+		{
+			return false;
+		}
+		float deficitRatio = Clamp((thresholdRatio - candidate.MountRatio) / Math.Max(0.01f, thresholdRatio), 0f, 1f);
+		urgency = 50f + deficitRatio * 26f;
+		if (candidate.PackAnimalRatio < Math.Min(0.15f, thresholdRatio))
+		{
+			urgency += 4f;
+		}
+		return true;
+	}
+
+	private static bool IsOverburdenedNeedMet(ProactiveCandidate candidate, DuelSettings settings, out float urgency)
+	{
+		urgency = 0f;
+		if (candidate == null || candidate.InventoryCapacity <= 0 || candidate.TotalWeightCarried <= 0f)
+		{
+			return false;
+		}
+		int thresholdPercent = Clamp(settings?.ProactiveNpcRequestOverburdenRatioThresholdPercent ?? 92, 50, 150);
+		float thresholdRatio = thresholdPercent / 100f;
+		if (candidate.CarryRatio < thresholdRatio)
+		{
+			return false;
+		}
+		if (candidate.CarryRatio >= 1f)
+		{
+			float overRatio = Clamp(candidate.CarryRatio - 1f, 0f, 1f);
+			urgency = 76f + overRatio * 20f;
+			return true;
+		}
+		float pressure = Clamp((candidate.CarryRatio - thresholdRatio) / Math.Max(0.01f, 1f - Math.Min(thresholdRatio, 0.99f)), 0f, 1f);
+		urgency = 58f + pressure * 18f;
+		return true;
+	}
+
+	private static bool IsClanFinanceStrainNeedMet(ProactiveCandidate candidate, DuelSettings settings, out float urgency)
+	{
+		urgency = 0f;
+		if (candidate == null)
+		{
+			return false;
+		}
+		int goldThreshold = Clamp(settings?.ProactiveNpcRequestClanGoldThreshold ?? 15000, 0, 200000);
+		int debtThreshold = Clamp(settings?.ProactiveNpcRequestClanDebtThreshold ?? 5000, 0, 200000);
+		bool goldLow = goldThreshold > 0 && candidate.ClanGold < goldThreshold;
+		bool debtHigh = debtThreshold > 0 && candidate.ClanDebtToKingdom > debtThreshold;
+		if (!goldLow && !debtHigh)
+		{
+			return false;
+		}
+		float goldUrgency = 0f;
+		if (goldLow)
+		{
+			float deficitRatio = Clamp((goldThreshold - candidate.ClanGold) / (float)Math.Max(1, goldThreshold), 0f, 1f);
+			goldUrgency = 56f + deficitRatio * 22f;
+		}
+		float debtUrgency = 0f;
+		if (debtHigh)
+		{
+			float debtRatio = Clamp((candidate.ClanDebtToKingdom - debtThreshold) / (float)Math.Max(1, debtThreshold), 0f, 2f);
+			debtUrgency = 62f + Math.Min(24f, debtRatio * 12f);
+		}
+		urgency = Math.Max(goldUrgency, debtUrgency);
+		return urgency > 0f;
+	}
+
 	private static bool IsKingdomMercenaryInviteNeedMet(ProactiveCandidate candidate, out float urgency)
 	{
 		urgency = 0f;
@@ -1104,6 +1339,20 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 			LastKnownPrisonerCount = candidate.PrisonerCount,
 			LastKnownPrisonerSizeLimit = candidate.PrisonerSizeLimit,
 			LastKnownHeroPrisonerCount = candidate.HeroPrisonerCount,
+			LastKnownMorale = candidate.Morale,
+			LastKnownInventoryCapacity = candidate.InventoryCapacity,
+			LastKnownTotalWeightCarried = candidate.TotalWeightCarried,
+			LastKnownCarryRatio = candidate.CarryRatio,
+			LastKnownMountCount = candidate.MountCount,
+			LastKnownPackAnimalCount = candidate.PackAnimalCount,
+			LastKnownMountRatio = candidate.MountRatio,
+			LastKnownPackAnimalRatio = candidate.PackAnimalRatio,
+			LastKnownClanGold = candidate.ClanGold,
+			LastKnownClanDebtToKingdom = candidate.ClanDebtToKingdom,
+			LastKnownCaptiveClanHeroCount = candidate.CaptiveClanHeroCount,
+			LastKnownCaptiveClanHeroName = candidate.CaptiveClanHeroName,
+			LastKnownCaptiveClanHeroHolderName = candidate.CaptiveClanHeroHolderName,
+			LastKnownCaptiveClanLeaderHeld = candidate.CaptiveClanLeaderHeld,
 			TargetKingdomId = candidate.TargetKingdomId,
 			TargetKingdomName = candidate.TargetKingdomName,
 			PlayerClanTier = candidate.PlayerClanTier,
@@ -1127,7 +1376,7 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		SetPartyAiAction.GetActionForEngagingParty(party, MobileParty.MainParty, MobileParty.NavigationType.Default, isFromPort: false);
 		int globalCooldown = GetEffectiveGlobalCooldownHours(settings);
 		_globalCooldownUntilHours = NowHours() + globalCooldown;
-		Logger.Log("ProactiveNpcRequest", "started request triggerSource=" + (_activeSession.TriggerSource ?? "") + " knownMajorBefore=" + _activeSession.KnownMajorBeforeRequest + " effectiveNotoriety=" + _activeSession.EffectiveNotorietyAtRequest + " needChance=" + _activeSession.NeedDrivenChance.ToString("0.##") + " notorietyChance=" + _activeSession.NotorietyDrivenChance.ToString("0.##") + " selectedUrgency=" + _activeSession.SelectedNeedUrgency.ToString("0.##") + " need=" + _activeSession.NeedType + " needs=" + JoinNeedTypesForLog(_activeSession.NeedTypes, _activeSession.NeedType) + " hero=" + _activeSession.HeroId + " party=" + _activeSession.PartyId + " kingdom=" + (_activeSession.TargetKingdomId ?? "") + " playerClanTier=" + _activeSession.PlayerClanTier + " isKingdomLeader=" + _activeSession.TargetHeroIsKingdomLeader + " kingdomVassals=" + _activeSession.KingdomFormalVassalClanCount + "/" + _activeSession.KingdomTargetVassalClanCount + " kingdomMercs=" + _activeSession.KingdomMercenaryClanCount + "/" + _activeSession.KingdomTargetMercenaryClanCount + " kingdomFiefScore=" + _activeSession.KingdomFiefScore + " kingdomWars=" + _activeSession.KingdomWarKingdomCount + " kingdomPowerRatio=" + _activeSession.KingdomPowerRatioToEnemies.ToString("0.00") + " foodDays=" + candidate.FoodDays + " partyGold=" + candidate.PartyGold + " totalWage=" + candidate.TotalWage + " unpaidWages=" + candidate.UnpaidWages.ToString("0.00") + " troops=" + candidate.MemberCount + "/" + candidate.PartySizeLimit + " troopRatio=" + candidate.PartySizeRatio.ToString("0.00") + " prisoners=" + candidate.PrisonerCount + "/" + candidate.PrisonerSizeLimit + " heroPrisoners=" + candidate.HeroPrisonerCount + " prisonerRatio=" + candidate.PrisonerSizeRatio.ToString("0.00") + " wageBudget=" + candidate.AvailableWageBudget + " distance=" + candidate.Distance.ToString("0.0") + " testFallback=" + candidate.IsTestFallback);
+		Logger.Log("ProactiveNpcRequest", "started request triggerSource=" + (_activeSession.TriggerSource ?? "") + " knownMajorBefore=" + _activeSession.KnownMajorBeforeRequest + " effectiveNotoriety=" + _activeSession.EffectiveNotorietyAtRequest + " needChance=" + _activeSession.NeedDrivenChance.ToString("0.##") + " notorietyChance=" + _activeSession.NotorietyDrivenChance.ToString("0.##") + " selectedUrgency=" + _activeSession.SelectedNeedUrgency.ToString("0.##") + " need=" + _activeSession.NeedType + " needs=" + JoinNeedTypesForLog(_activeSession.NeedTypes, _activeSession.NeedType) + " hero=" + _activeSession.HeroId + " party=" + _activeSession.PartyId + " kingdom=" + (_activeSession.TargetKingdomId ?? "") + " playerClanTier=" + _activeSession.PlayerClanTier + " isKingdomLeader=" + _activeSession.TargetHeroIsKingdomLeader + " kingdomVassals=" + _activeSession.KingdomFormalVassalClanCount + "/" + _activeSession.KingdomTargetVassalClanCount + " kingdomMercs=" + _activeSession.KingdomMercenaryClanCount + "/" + _activeSession.KingdomTargetMercenaryClanCount + " kingdomFiefScore=" + _activeSession.KingdomFiefScore + " kingdomWars=" + _activeSession.KingdomWarKingdomCount + " kingdomPowerRatio=" + _activeSession.KingdomPowerRatioToEnemies.ToString("0.00") + " foodDays=" + candidate.FoodDays + " partyGold=" + candidate.PartyGold + " totalWage=" + candidate.TotalWage + " unpaidWages=" + candidate.UnpaidWages.ToString("0.00") + " troops=" + candidate.MemberCount + "/" + candidate.PartySizeLimit + " troopRatio=" + candidate.PartySizeRatio.ToString("0.00") + " prisoners=" + candidate.PrisonerCount + "/" + candidate.PrisonerSizeLimit + " heroPrisoners=" + candidate.HeroPrisonerCount + " prisonerRatio=" + candidate.PrisonerSizeRatio.ToString("0.00") + " morale=" + candidate.Morale.ToString("0.0") + " mounts=" + candidate.MountCount + " packAnimals=" + candidate.PackAnimalCount + " mountRatio=" + candidate.MountRatio.ToString("0.00") + " carry=" + candidate.TotalWeightCarried.ToString("0.0") + "/" + candidate.InventoryCapacity + " carryRatio=" + candidate.CarryRatio.ToString("0.00") + " clanGold=" + candidate.ClanGold + " clanDebt=" + candidate.ClanDebtToKingdom + " captiveClanHeroes=" + candidate.CaptiveClanHeroCount + " captiveLeader=" + candidate.CaptiveClanLeaderHeld + " wageBudget=" + candidate.AvailableWageBudget + " distance=" + candidate.Distance.ToString("0.0") + " testFallback=" + candidate.IsTestFallback);
 	}
 
 	private void TryOpenActiveEncounterWhenClose()
@@ -1500,6 +1749,26 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		{
 			return NeedPrisonerOverload;
 		}
+		if (string.Equals(text, NeedClanCaptive, StringComparison.OrdinalIgnoreCase))
+		{
+			return NeedClanCaptive;
+		}
+		if (string.Equals(text, NeedLowMorale, StringComparison.OrdinalIgnoreCase))
+		{
+			return NeedLowMorale;
+		}
+		if (string.Equals(text, NeedMountShortage, StringComparison.OrdinalIgnoreCase))
+		{
+			return NeedMountShortage;
+		}
+		if (string.Equals(text, NeedOverburdened, StringComparison.OrdinalIgnoreCase))
+		{
+			return NeedOverburdened;
+		}
+		if (string.Equals(text, NeedClanFinanceStrain, StringComparison.OrdinalIgnoreCase))
+		{
+			return NeedClanFinanceStrain;
+		}
 		if (string.Equals(text, NeedKingdomMercenaryInvite, StringComparison.OrdinalIgnoreCase))
 		{
 			return NeedKingdomMercenaryInvite;
@@ -1540,6 +1809,26 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		if (string.Equals(needType, NeedPrisonerOverload, StringComparison.OrdinalIgnoreCase))
 		{
 			return 85;
+		}
+		if (string.Equals(needType, NeedClanCaptive, StringComparison.OrdinalIgnoreCase))
+		{
+			return 84;
+		}
+		if (string.Equals(needType, NeedClanFinanceStrain, StringComparison.OrdinalIgnoreCase))
+		{
+			return 82;
+		}
+		if (string.Equals(needType, NeedOverburdened, StringComparison.OrdinalIgnoreCase))
+		{
+			return 78;
+		}
+		if (string.Equals(needType, NeedMountShortage, StringComparison.OrdinalIgnoreCase))
+		{
+			return 76;
+		}
+		if (string.Equals(needType, NeedLowMorale, StringComparison.OrdinalIgnoreCase))
+		{
+			return 74;
 		}
 		if (string.Equals(needType, NeedTroopShortage, StringComparison.OrdinalIgnoreCase))
 		{
@@ -1667,6 +1956,26 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		{
 			return BuildPrisonerOverloadOpeningFact(party, playerName, npcName);
 		}
+		if (string.Equals(needType, NeedClanCaptive, StringComparison.OrdinalIgnoreCase))
+		{
+			return BuildClanCaptiveOpeningFact(playerName, npcName);
+		}
+		if (string.Equals(needType, NeedClanFinanceStrain, StringComparison.OrdinalIgnoreCase))
+		{
+			return BuildClanFinanceStrainOpeningFact(playerName, npcName);
+		}
+		if (string.Equals(needType, NeedOverburdened, StringComparison.OrdinalIgnoreCase))
+		{
+			return BuildOverburdenedOpeningFact(party, playerName, npcName);
+		}
+		if (string.Equals(needType, NeedMountShortage, StringComparison.OrdinalIgnoreCase))
+		{
+			return BuildMountShortageOpeningFact(party, playerName, npcName);
+		}
+		if (string.Equals(needType, NeedLowMorale, StringComparison.OrdinalIgnoreCase))
+		{
+			return BuildLowMoraleOpeningFact(party, playerName, npcName);
+		}
 		if (string.Equals(needType, NeedTroopShortage, StringComparison.OrdinalIgnoreCase))
 		{
 			return BuildTroopShortageOpeningFact(party, playerName, npcName);
@@ -1753,6 +2062,61 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 			string ratioText = prisonerSizeLimit > 0 ? "，约为俘虏容量的 " + (CalculatePrisonerSizeRatio(prisonerCount, prisonerSizeLimit) * 100f).ToString("0") + "%" : "";
 			string heroText = heroPrisonerCount > 0 ? "，其中包括 " + heroPrisonerCount + " 名英雄俘虏" : "";
 			return "你的队伍俘虏负担过重，当前俘虏约为 " + prisonerCount + "/" + prisonerSizeLimit + ratioText + heroText + "，因此你想询问是否愿意赎买、接收、转运俘虏，或帮助联系赎金渠道";
+		}
+		if (string.Equals(needType, NeedClanCaptive, StringComparison.OrdinalIgnoreCase))
+		{
+			int captiveCount = Math.Max(0, _activeSession?.LastKnownCaptiveClanHeroCount ?? 0);
+			string captiveName = (_activeSession?.LastKnownCaptiveClanHeroName ?? "").Trim();
+			string holderName = (_activeSession?.LastKnownCaptiveClanHeroHolderName ?? "").Trim();
+			bool leaderHeld = _activeSession?.LastKnownCaptiveClanLeaderHeld == true;
+			string captiveText = string.IsNullOrWhiteSpace(captiveName) ? "家族成员" : captiveName;
+			string holderText = string.IsNullOrWhiteSpace(holderName) ? "" : "，目前看押方似乎是" + holderName;
+			string leaderText = leaderHeld ? "，其中包括家族领袖或关键成员" : "";
+			return "你的家族有 " + captiveCount + " 名成员被俘，尤其是" + captiveText + holderText + leaderText + "；你因此想请求" + playerName + "帮忙赎回、营救、斡旋、打听下落或提供赎金渠道";
+		}
+		if (string.Equals(needType, NeedClanFinanceStrain, StringComparison.OrdinalIgnoreCase))
+		{
+			int clanGold = _activeSession?.LastKnownClanGold ?? 0;
+			int clanDebt = _activeSession?.LastKnownClanDebtToKingdom ?? 0;
+			string debtText = clanDebt > 0 ? "，欠王国债务约 " + clanDebt + " 第纳尔" : "";
+			return "你的家族财政紧张，当前家族金库约 " + clanGold + " 第纳尔" + debtText + "；你想向" + playerName + "寻求投资、预付款、贸易周转、雇佣收入或短期资助机会";
+		}
+		if (string.Equals(needType, NeedOverburdened, StringComparison.OrdinalIgnoreCase))
+		{
+			float totalWeight = SafeTotalWeightCarried(party);
+			int capacity = SafeInventoryCapacity(party);
+			int packAnimals = SafePackAnimalCount(party);
+			if (party == null && _activeSession != null)
+			{
+				totalWeight = _activeSession.LastKnownTotalWeightCarried;
+				capacity = _activeSession.LastKnownInventoryCapacity;
+				packAnimals = _activeSession.LastKnownPackAnimalCount;
+			}
+			float ratio = CalculateCarryRatio(totalWeight, capacity);
+			return "你的队伍负重压力很大，当前负重约 " + totalWeight.ToString("0") + "/" + capacity + "，约为容量的 " + (ratio * 100f).ToString("0") + "%，驮畜约 " + packAnimals + " 匹；你想请求" + playerName + "购买、转运、护送或提供驮畜";
+		}
+		if (string.Equals(needType, NeedMountShortage, StringComparison.OrdinalIgnoreCase))
+		{
+			int memberCount = SafeMemberCount(party);
+			int mountCount = SafeMountCount(party);
+			int packAnimals = SafePackAnimalCount(party);
+			if (party == null && _activeSession != null)
+			{
+				memberCount = _activeSession.LastKnownMemberCount;
+				mountCount = _activeSession.LastKnownMountCount;
+				packAnimals = _activeSession.LastKnownPackAnimalCount;
+			}
+			float mountRatio = CalculateAnimalRatio(mountCount, memberCount);
+			return "你的队伍坐骑和机动力不足，当前人数约 " + memberCount + "，坐骑约 " + mountCount + "，约为人数的 " + (mountRatio * 100f).ToString("0") + "%，驮畜约 " + packAnimals + "；你想向" + playerName + "购买马匹、驮畜，或请求帮助摆脱机动劣势";
+		}
+		if (string.Equals(needType, NeedLowMorale, StringComparison.OrdinalIgnoreCase))
+		{
+			float morale = SafeMorale(party);
+			if (party == null && _activeSession != null)
+			{
+				morale = _activeSession.LastKnownMorale;
+			}
+			return "你的队伍士气低落，当前士气约 " + morale.ToString("0") + "/100；你想请求" + playerName + "提供补给、金钱、酒食、胜利机会、护送或短期合作来稳定军心";
 		}
 		if (string.Equals(needType, NeedMoneyShortage, StringComparison.OrdinalIgnoreCase))
 		{
@@ -1886,6 +2250,36 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		return "[AFEF NPC行为补充] " + npcName + "，你是" + kingdomName + "的国王，有权同时邀请" + playerName + "成为正式封臣或签订雇佣兵契约。" + manpowerText + "你判断" + kingdomName + "当前缺少能长期治理土地、承担军役和参与王国政治的正式封臣。" + playerState + "。" + playerName + "的玩家家族等级为 " + playerClanTier + "，已经达到正式封臣门槛 " + VassalInviteMinPlayerClanTier + "，也达到雇佣兵门槛 " + MercenaryInviteMinPlayerClanTier + "。你主动追上" + playerName + "，决定试探并邀请" + playerName + "为" + kingdomName + "效力，可以重点提出正式封臣身份，也可以把雇佣兵契约作为较低承诺的选择。你应该先开口说明来意，不要把这当作" + playerName + "主动提出的话。";
 	}
 
+	private string BuildClanCaptiveOpeningFact(string playerName, string npcName)
+	{
+		string summary = BuildOpeningNeedSummary(NeedClanCaptive, null, ResolveActiveParty(), playerName, npcName);
+		return "[AFEF NPC行为补充] " + npcName + "，你主动追上" + playerName + "，并非来开战，而是因为" + summary + "。你应该先开口说明来意，不要把这当作" + playerName + "主动提出的话。不要假定赎买、营救、放人、付款或承诺已经成立。";
+	}
+
+	private string BuildLowMoraleOpeningFact(MobileParty party, string playerName, string npcName)
+	{
+		string summary = BuildOpeningNeedSummary(NeedLowMorale, null, party, playerName, npcName);
+		return "[AFEF NPC行为补充] " + npcName + "，你主动追上" + playerName + "，并非来开战，而是因为" + summary + "。你应该先开口说明来意，不要把这当作" + playerName + "主动提出的话。不要假定任何补给、付款、护送或合作已经成立。";
+	}
+
+	private string BuildMountShortageOpeningFact(MobileParty party, string playerName, string npcName)
+	{
+		string summary = BuildOpeningNeedSummary(NeedMountShortage, null, party, playerName, npcName);
+		return "[AFEF NPC行为补充] " + npcName + "，你主动追上" + playerName + "，并非来开战，而是因为" + summary + "。你应该先开口说明来意，不要把这当作" + playerName + "主动提出的话。不要假定任何马匹买卖、转让、护送或合作已经成立。";
+	}
+
+	private string BuildOverburdenedOpeningFact(MobileParty party, string playerName, string npcName)
+	{
+		string summary = BuildOpeningNeedSummary(NeedOverburdened, null, party, playerName, npcName);
+		return "[AFEF NPC行为补充] " + npcName + "，你主动追上" + playerName + "，并非来开战，而是因为" + summary + "。你应该先开口说明来意，不要把这当作" + playerName + "主动提出的话。不要假定任何购买、转运、护送、付款或物资转移已经成立。";
+	}
+
+	private string BuildClanFinanceStrainOpeningFact(string playerName, string npcName)
+	{
+		string summary = BuildOpeningNeedSummary(NeedClanFinanceStrain, null, ResolveActiveParty(), playerName, npcName);
+		return "[AFEF NPC行为补充] " + npcName + "，你主动追上" + playerName + "，并非来开战，而是因为" + summary + "。你应该先开口说明来意，不要把这当作" + playerName + "主动提出的话。不要假定任何借款、欠款、还款承诺、投资、交易或记账已经成立。";
+	}
+
 	private string BuildFoodShortageOpeningFact(MobileParty party, string playerName, string npcName)
 	{
 		int foodDays = SafeFoodDays(party);
@@ -1979,6 +2373,26 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 
 	private static string BuildOpeningPrompt(string needType)
 	{
+		if (string.Equals(needType, NeedClanCaptive, StringComparison.OrdinalIgnoreCase))
+		{
+			return "请你先开口说明自己主动追上玩家的来意，围绕家族成员被俘，请求赎回、营救、斡旋、打听下落或赎金渠道。只输出你作为NPC说出的话。不要假定赎买、营救、放人或付款已经成立。";
+		}
+		if (string.Equals(needType, NeedLowMorale, StringComparison.OrdinalIgnoreCase))
+		{
+			return "请你先开口说明自己主动追上玩家的来意，围绕队伍士气低落，请求补给、金钱、酒食、护送、胜利机会或短期合作。只输出你作为NPC说出的话。不要假定任何帮助已经成立。";
+		}
+		if (string.Equals(needType, NeedMountShortage, StringComparison.OrdinalIgnoreCase))
+		{
+			return "请你先开口说明自己主动追上玩家的来意，围绕队伍缺少坐骑或机动不足，请求购买马匹、驮畜、护送或摆脱机动劣势。只输出你作为NPC说出的话。不要假定交易或护送已经成立。";
+		}
+		if (string.Equals(needType, NeedOverburdened, StringComparison.OrdinalIgnoreCase))
+		{
+			return "请你先开口说明自己主动追上玩家的来意，围绕队伍负重压力，请求购买、转运、护送或提供驮畜。只输出你作为NPC说出的话。不要假定购买、付款或物资转移已经成立。";
+		}
+		if (string.Equals(needType, NeedClanFinanceStrain, StringComparison.OrdinalIgnoreCase))
+		{
+			return "请你先开口说明自己主动追上玩家的来意，围绕家族财政紧张，请求投资、预付款、贸易周转、雇佣收入或短期资助。只输出你作为NPC说出的话。不要假定借款、欠款、还款承诺、交易或记账已经成立。";
+		}
 		if (string.Equals(needType, NeedDiplomacy, StringComparison.OrdinalIgnoreCase))
 		{
 			return "请你先开口说明自己主动追上玩家的来意，围绕国王间外交谈判提出议和、结盟或通商请求。不要主动宣战；只有双方明确同意后才可以让机制生效。只输出你作为NPC说出的话。";
@@ -2012,6 +2426,26 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 
 	private static string GetNeedPromptLabel(string needType)
 	{
+		if (string.Equals(needType, NeedClanCaptive, StringComparison.OrdinalIgnoreCase))
+		{
+			return "家族成员被俘，请求赎回、营救、斡旋或打听下落";
+		}
+		if (string.Equals(needType, NeedLowMorale, StringComparison.OrdinalIgnoreCase))
+		{
+			return "队伍士气低落，请求补给、金钱、酒食、护送或短期合作";
+		}
+		if (string.Equals(needType, NeedMountShortage, StringComparison.OrdinalIgnoreCase))
+		{
+			return "队伍缺少坐骑或机动不足，请求马匹、驮畜或护送";
+		}
+		if (string.Equals(needType, NeedOverburdened, StringComparison.OrdinalIgnoreCase))
+		{
+			return "队伍负重压力过高，请求购买、转运、护送或驮畜";
+		}
+		if (string.Equals(needType, NeedClanFinanceStrain, StringComparison.OrdinalIgnoreCase))
+		{
+			return "家族财政紧张，请求投资、预付款、贸易周转或短期资助";
+		}
 		if (string.Equals(needType, NeedDiplomacy, StringComparison.OrdinalIgnoreCase))
 		{
 			return "国王间外交请求：议和、结盟或通商，不主动宣战";
@@ -2414,6 +2848,90 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private static float SafeMorale(MobileParty party)
+	{
+		try
+		{
+			return Clamp(party?.Morale ?? 100f, 0f, 100f);
+		}
+		catch
+		{
+			return 100f;
+		}
+	}
+
+	private static int SafeInventoryCapacity(MobileParty party)
+	{
+		try
+		{
+			return Math.Max(0, party?.InventoryCapacity ?? 0);
+		}
+		catch
+		{
+			return 0;
+		}
+	}
+
+	private static float SafeTotalWeightCarried(MobileParty party)
+	{
+		try
+		{
+			return Math.Max(0f, party?.TotalWeightCarried ?? 0f);
+		}
+		catch
+		{
+			return 0f;
+		}
+	}
+
+	private static int SafeMountCount(MobileParty party)
+	{
+		try
+		{
+			return Math.Max(0, party?.Party?.NumberOfMounts ?? party?.ItemRoster?.NumberOfMounts ?? 0);
+		}
+		catch
+		{
+			return 0;
+		}
+	}
+
+	private static int SafePackAnimalCount(MobileParty party)
+	{
+		try
+		{
+			return Math.Max(0, party?.Party?.NumberOfPackAnimals ?? party?.ItemRoster?.NumberOfPackAnimals ?? 0);
+		}
+		catch
+		{
+			return 0;
+		}
+	}
+
+	private static int SafeClanGold(Clan clan)
+	{
+		try
+		{
+			return Math.Max(0, clan?.Gold ?? 0);
+		}
+		catch
+		{
+			return 0;
+		}
+	}
+
+	private static int SafeClanDebtToKingdom(Clan clan)
+	{
+		try
+		{
+			return Math.Max(0, clan?.DebtToKingdom ?? 0);
+		}
+		catch
+		{
+			return 0;
+		}
+	}
+
 	private static float CalculateWageDays(int partyGold, int totalWage)
 	{
 		return totalWage <= 0 ? 999f : Math.Max(0f, partyGold / (float)totalWage);
@@ -2427,6 +2945,96 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 	private static float CalculatePrisonerSizeRatio(int prisonerCount, int prisonerSizeLimit)
 	{
 		return prisonerSizeLimit <= 0 ? 0f : Clamp(prisonerCount / (float)prisonerSizeLimit, 0f, 2f);
+	}
+
+	private static float CalculateCarryRatio(float totalWeightCarried, int inventoryCapacity)
+	{
+		return inventoryCapacity <= 0 ? 0f : Clamp(totalWeightCarried / inventoryCapacity, 0f, 3f);
+	}
+
+	private static float CalculateAnimalRatio(int animalCount, int memberCount)
+	{
+		return memberCount <= 0 ? 0f : Clamp(animalCount / (float)memberCount, 0f, 3f);
+	}
+
+	private static ClanCaptiveSnapshot BuildClanCaptiveSnapshot(Hero requester)
+	{
+		ClanCaptiveSnapshot snapshot = new ClanCaptiveSnapshot();
+		try
+		{
+			Clan clan = requester?.Clan;
+			if (clan?.Heroes == null)
+			{
+				return snapshot;
+			}
+			List<Hero> captives = clan.Heroes
+				.Where(h => IsRelevantCaptiveClanHero(h, requester))
+				.OrderByDescending(h => h == clan.Leader)
+				.ThenByDescending(h => h?.IsLord == true)
+				.ToList();
+			snapshot.Count = captives.Count;
+			Hero first = captives.FirstOrDefault();
+			if (first != null)
+			{
+				snapshot.FirstHeroName = GetHeroDisplayName(first);
+				snapshot.FirstHolderName = ResolvePrisonerHolderName(first);
+				snapshot.LeaderHeld = first == clan.Leader || captives.Any(h => h == clan.Leader);
+			}
+			else
+			{
+				snapshot.LeaderHeld = false;
+			}
+		}
+		catch
+		{
+		}
+		return snapshot;
+	}
+
+	private static bool IsRelevantCaptiveClanHero(Hero hero, Hero requester)
+	{
+		try
+		{
+			if (hero == null || requester == null || hero == requester || hero == Hero.MainHero || hero.IsDead || hero.IsChild)
+			{
+				return false;
+			}
+			if (hero.Clan == null || hero.Clan != requester.Clan)
+			{
+				return false;
+			}
+			return hero.IsPrisoner || hero.PartyBelongedToAsPrisoner != null;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static string ResolvePrisonerHolderName(Hero captive)
+	{
+		try
+		{
+			PartyBase holder = captive?.PartyBelongedToAsPrisoner;
+			if (holder == null)
+			{
+				return "";
+			}
+			if (holder == PartyBase.MainParty)
+			{
+				return MyBehavior.BuildPlayerPublicDisplayNameForExternal() ?? "玩家";
+			}
+			string leaderName = GetHeroDisplayName(holder.LeaderHero);
+			if (!string.IsNullOrWhiteSpace(leaderName))
+			{
+				return leaderName;
+			}
+			return (holder.Name?.ToString() ?? "").Trim();
+		}
+		catch
+		{
+			return "";
+		}
 	}
 
 	private static int GetEffectiveMoneyGoldThreshold(DuelSettings settings)
@@ -2866,6 +3474,18 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		return (hero?.StringId ?? "").Trim();
 	}
 
+	private static string GetHeroDisplayName(Hero hero)
+	{
+		try
+		{
+			return (hero?.Name?.ToString() ?? "").Trim();
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
 	private static bool IsOnCooldown(Dictionary<string, float> dict, string key, float nowDays)
 	{
 		return !string.IsNullOrWhiteSpace(key) && dict != null && dict.TryGetValue(key, out float untilDays) && untilDays > nowDays;
@@ -3021,6 +3641,20 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		public int LastKnownPrisonerCount { get; set; }
 		public int LastKnownPrisonerSizeLimit { get; set; }
 		public int LastKnownHeroPrisonerCount { get; set; }
+		public float LastKnownMorale { get; set; }
+		public int LastKnownInventoryCapacity { get; set; }
+		public float LastKnownTotalWeightCarried { get; set; }
+		public float LastKnownCarryRatio { get; set; }
+		public int LastKnownMountCount { get; set; }
+		public int LastKnownPackAnimalCount { get; set; }
+		public float LastKnownMountRatio { get; set; }
+		public float LastKnownPackAnimalRatio { get; set; }
+		public int LastKnownClanGold { get; set; }
+		public int LastKnownClanDebtToKingdom { get; set; }
+		public int LastKnownCaptiveClanHeroCount { get; set; }
+		public string LastKnownCaptiveClanHeroName { get; set; }
+		public string LastKnownCaptiveClanHeroHolderName { get; set; }
+		public bool LastKnownCaptiveClanLeaderHeld { get; set; }
 		public string TargetKingdomId { get; set; }
 		public string TargetKingdomName { get; set; }
 		public int PlayerClanTier { get; set; }
@@ -3061,6 +3695,20 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		public int PrisonerSizeLimit { get; set; }
 		public int HeroPrisonerCount { get; set; }
 		public float PrisonerSizeRatio { get; set; }
+		public float Morale { get; set; }
+		public int InventoryCapacity { get; set; }
+		public float TotalWeightCarried { get; set; }
+		public float CarryRatio { get; set; }
+		public int MountCount { get; set; }
+		public int PackAnimalCount { get; set; }
+		public float MountRatio { get; set; }
+		public float PackAnimalRatio { get; set; }
+		public int ClanGold { get; set; }
+		public int ClanDebtToKingdom { get; set; }
+		public int CaptiveClanHeroCount { get; set; }
+		public string CaptiveClanHeroName { get; set; }
+		public string CaptiveClanHeroHolderName { get; set; }
+		public bool CaptiveClanLeaderHeld { get; set; }
 		public Kingdom TargetKingdom { get; set; }
 		public string TargetKingdomId { get; set; }
 		public string TargetKingdomName { get; set; }
@@ -3107,6 +3755,14 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		public float VassalNeedUrgency { get; set; }
 	}
 
+	private sealed class ClanCaptiveSnapshot
+	{
+		public int Count { get; set; }
+		public string FirstHeroName { get; set; }
+		public string FirstHolderName { get; set; }
+		public bool LeaderHeld { get; set; }
+	}
+
 	private sealed class CandidateScanStats
 	{
 		public bool MainPartyMissing { get; set; }
@@ -3118,6 +3774,11 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		public int MoneyShortage { get; set; }
 		public int TroopShortage { get; set; }
 		public int PrisonerOverload { get; set; }
+		public int ClanCaptive { get; set; }
+		public int LowMorale { get; set; }
+		public int MountShortage { get; set; }
+		public int Overburdened { get; set; }
+		public int ClanFinanceStrain { get; set; }
 		public int KingdomMercenaryInvite { get; set; }
 		public int KingdomVassalInvite { get; set; }
 		public int PoliticalAgenda { get; set; }
@@ -3158,6 +3819,11 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 				+ " moneyShortage=" + MoneyShortage
 				+ " troopShortage=" + TroopShortage
 				+ " prisonerOverload=" + PrisonerOverload
+				+ " clanCaptive=" + ClanCaptive
+				+ " lowMorale=" + LowMorale
+				+ " mountShortage=" + MountShortage
+				+ " overburdened=" + Overburdened
+				+ " clanFinanceStrain=" + ClanFinanceStrain
 				+ " mercenaryInvite=" + KingdomMercenaryInvite
 				+ " vassalInvite=" + KingdomVassalInvite
 				+ " politicalAgenda=" + PoliticalAgenda

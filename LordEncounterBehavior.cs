@@ -188,6 +188,14 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 
 	private static string _npcSurrenderSkipReason;
 
+	private static bool _nativeSettlementRequestMeetingContextActive;
+
+	private static float _nativeSettlementRequestMeetingContextUntilTime = -1f;
+
+	private static Settlement _nativeSettlementRequestMeetingSettlement;
+
+	private static string _nativeSettlementRequestMeetingMenuId;
+
 	private static readonly Regex MeetingTauntWarnTagRegex = new Regex("\\[ACTION:MEETING_TAUNT_WARN\\]", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
 	private static readonly Regex MeetingTauntBattleTagRegex = new Regex("\\[ACTION:MEETING_TAUNT_BATTLE\\]", RegexOptions.IgnoreCase | RegexOptions.Compiled);
@@ -833,6 +841,10 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 
 	internal static bool IsCustomEncounterMenuDisabledForCurrentEncounter()
 	{
+		if (IsNativeSettlementRequestMeetingContext())
+		{
+			return true;
+		}
 		if (IsCustomEncounterMenuHardSuppressedUntilBackOnMap())
 		{
 			return true;
@@ -987,6 +999,307 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			return false;
 		}
 		return true;
+	}
+
+	internal static bool IsNativeSettlementRequestMeetingContext(Hero target = null)
+	{
+		try
+		{
+			string menuId = Campaign.Current?.CurrentMenuContext?.GameMenu?.StringId;
+			if (IsNativeSettlementRequestMeetingMenu(menuId))
+			{
+				if (TryGetNativeSettlementRequestMeetingSettlement(target, out Settlement settlement) && IsHostileSettlementForMainHero(settlement, target))
+				{
+					MarkNativeSettlementRequestMeetingContext(settlement, menuId, "current_menu");
+					return true;
+				}
+				ClearNativeSettlementRequestMeetingContext("current_menu_not_hostile");
+				return false;
+			}
+		}
+		catch
+		{
+		}
+		if (TryGetNativeSettlementRequestMeetingSettlement(target, out Settlement encounterSettlement)
+			&& IsHostileSettlementForMainHero(encounterSettlement, target)
+			&& IsCurrentPlayerEncounterBoundToSettlement(encounterSettlement, target))
+		{
+			MarkNativeSettlementRequestMeetingContext(encounterSettlement, "encounter", "player_encounter_settlement");
+			return true;
+		}
+		if (!_nativeSettlementRequestMeetingContextActive)
+		{
+			return false;
+		}
+		try
+		{
+			float applicationTime = Time.ApplicationTime;
+			if (_nativeSettlementRequestMeetingContextUntilTime > 0f && applicationTime > _nativeSettlementRequestMeetingContextUntilTime)
+			{
+				ClearNativeSettlementRequestMeetingContext("expired");
+				return false;
+			}
+		}
+		catch
+		{
+		}
+		if (_nativeSettlementRequestMeetingSettlement != null)
+		{
+			return IsHostileSettlementForMainHero(_nativeSettlementRequestMeetingSettlement, target);
+		}
+		return true;
+	}
+
+	private static bool IsNativeSettlementRequestMeetingMenu(string menuId)
+	{
+		if (string.IsNullOrWhiteSpace(menuId))
+		{
+			return false;
+		}
+		string text = menuId.Trim();
+		return text == "request_meeting"
+			|| text == "encounter_meeting"
+			|| text == "request_meeting_with_besiegers"
+			|| text == "request_meeting_parley";
+	}
+
+	private static bool TryGetNativeSettlementRequestMeetingSettlement(Hero target, out Settlement settlement)
+	{
+		settlement = null;
+		try
+		{
+			settlement = Settlement.CurrentSettlement;
+		}
+		catch
+		{
+			settlement = null;
+		}
+		try
+		{
+			settlement ??= PlayerEncounter.EncounterSettlement;
+		}
+		catch
+		{
+		}
+		try
+		{
+			PartyBase encounteredParty = PlayerEncounterCompat.GetEncounteredPartySafe();
+			if (settlement == null && encounteredParty != null)
+			{
+				if (encounteredParty.IsSettlement)
+				{
+					settlement = encounteredParty.Settlement;
+				}
+				else if (encounteredParty.IsMobile)
+				{
+					settlement = encounteredParty.MobileParty?.CurrentSettlement;
+				}
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			PartyBase encounteredParty = PlayerEncounter.EncounteredParty;
+			if (settlement == null && encounteredParty != null)
+			{
+				if (encounteredParty.IsSettlement)
+				{
+					settlement = encounteredParty.Settlement;
+				}
+				else if (encounteredParty.IsMobile)
+				{
+					settlement = encounteredParty.MobileParty?.CurrentSettlement;
+				}
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			settlement ??= PlayerEncounter.EncounteredMobileParty?.CurrentSettlement;
+		}
+		catch
+		{
+		}
+		try
+		{
+			settlement ??= PlayerEncounterCompat.GetCurrentMapEventSafe()?.MapEventSettlement;
+		}
+		catch
+		{
+		}
+		try
+		{
+			settlement ??= MobileParty.MainParty?.CurrentSettlement;
+		}
+		catch
+		{
+		}
+		try
+		{
+			settlement ??= target?.CurrentSettlement;
+		}
+		catch
+		{
+		}
+		try
+		{
+			settlement ??= target?.PartyBelongedTo?.CurrentSettlement;
+		}
+		catch
+		{
+		}
+		return settlement != null && settlement.IsFortification;
+	}
+
+	private static bool IsCurrentPlayerEncounterBoundToSettlement(Settlement settlement, Hero target)
+	{
+		if (settlement == null)
+		{
+			return false;
+		}
+		try
+		{
+			if (PlayerEncounter.Current == null)
+			{
+				return false;
+			}
+		}
+		catch
+		{
+			return false;
+		}
+		try
+		{
+			if (PlayerEncounter.EncounterSettlement == settlement)
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			PartyBase encounteredParty = PlayerEncounterCompat.GetEncounteredPartySafe() ?? PlayerEncounter.EncounteredParty;
+			if (encounteredParty != null)
+			{
+				if (encounteredParty.IsSettlement && encounteredParty.Settlement == settlement)
+				{
+					return true;
+				}
+				if (encounteredParty.IsMobile && encounteredParty.MobileParty?.CurrentSettlement == settlement)
+				{
+					return true;
+				}
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (PlayerEncounter.EncounteredMobileParty?.CurrentSettlement == settlement)
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (PlayerEncounterCompat.GetCurrentMapEventSafe()?.MapEventSettlement == settlement)
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (target != null && (target.CurrentSettlement == settlement || target.PartyBelongedTo?.CurrentSettlement == settlement))
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		return false;
+	}
+
+	private static bool IsHostileSettlementForMainHero(Settlement settlement, Hero target)
+	{
+		try
+		{
+			IFaction playerFaction = Hero.MainHero?.MapFaction ?? Clan.PlayerClan?.MapFaction;
+			IFaction settlementFaction = settlement?.MapFaction ?? settlement?.OwnerClan?.MapFaction;
+			if (playerFaction != null && settlementFaction != null && FactionManager.IsAtWarAgainstFaction(settlementFaction, playerFaction))
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			IFaction playerFaction = Hero.MainHero?.MapFaction ?? Clan.PlayerClan?.MapFaction;
+			IFaction targetFaction = target?.MapFaction ?? target?.Clan?.MapFaction;
+			if (playerFaction != null && targetFaction != null && FactionManager.IsAtWarAgainstFaction(targetFaction, playerFaction))
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			return target?.Clan != null && Clan.PlayerClan != null && target.Clan.IsAtWarWith(Clan.PlayerClan);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static void MarkNativeSettlementRequestMeetingContext(Settlement settlement, string menuId, string reason)
+	{
+		bool flag = !_nativeSettlementRequestMeetingContextActive || _nativeSettlementRequestMeetingSettlement != settlement || _nativeSettlementRequestMeetingMenuId != menuId;
+		_nativeSettlementRequestMeetingContextActive = true;
+		_nativeSettlementRequestMeetingSettlement = settlement;
+		_nativeSettlementRequestMeetingMenuId = menuId;
+		try
+		{
+			_nativeSettlementRequestMeetingContextUntilTime = Time.ApplicationTime + 20f;
+		}
+		catch
+		{
+			_nativeSettlementRequestMeetingContextUntilTime = -1f;
+		}
+		if (flag)
+		{
+			Logger.Log("LordEncounter", "Native hostile settlement request meeting detected; custom encounter menu disabled for this vanilla meeting. Menu=" + (menuId ?? "N/A") + ", Settlement=" + (settlement?.Name?.ToString() ?? "N/A") + ", Reason=" + (reason ?? "N/A"));
+		}
+	}
+
+	private static void ClearNativeSettlementRequestMeetingContext(string reason)
+	{
+		if (!_nativeSettlementRequestMeetingContextActive)
+		{
+			return;
+		}
+		_nativeSettlementRequestMeetingContextActive = false;
+		_nativeSettlementRequestMeetingContextUntilTime = -1f;
+		_nativeSettlementRequestMeetingSettlement = null;
+		_nativeSettlementRequestMeetingMenuId = null;
+		Logger.Log("LordEncounter", "Native hostile settlement request meeting guard cleared. Reason=" + (reason ?? "N/A"));
 	}
 
 	internal static bool IsNativeEncounterActivityContext(Hero target = null)
@@ -3788,6 +4101,11 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		{
 			return false;
 		}
+		if (IsNativeSettlementRequestMeetingContext(target))
+		{
+			Logger.Log("LordEncounter", $"OpenEncounterMenu ignored because this is a native hostile settlement request meeting. Target={target.Name}");
+			return false;
+		}
 		PartyBase encounterParty = GetCurrentEncounterPartySafe();
 		if (!IsEligibleCustomLordEncounterTarget(target, encounterParty))
 		{
@@ -3884,16 +4202,16 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			if (encounterParty != null)
 			{
 				Hero partyLeader = encounterParty.LeaderHero;
-				if (partyLeader != null && partyLeader != hero)
+				if (partyLeader != null && partyLeader != hero && !IsEncounterArmyMemberTarget(hero, encounterParty))
 				{
 					return false;
 				}
 				IFaction partyFaction = encounterParty.MapFaction;
-				if (IsExcludedCustomLordMapFaction(partyFaction))
+				if (!IsEligibleCustomLordEncounterFaction(partyFaction, clan))
 				{
 					return false;
 				}
-				if (clan.Kingdom != null && partyFaction != null && partyFaction != clan.Kingdom)
+				if (clan.Kingdom != null && partyFaction != null && partyFaction != clan.Kingdom && !(IsEligibleMercenaryClanForCustomLordEncounter(clan) && partyFaction == clan))
 				{
 					return false;
 				}
@@ -3906,6 +4224,38 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		return true;
 	}
 
+	private static bool IsEncounterArmyMemberTarget(Hero hero, PartyBase encounterParty)
+	{
+		if (hero == null || encounterParty == null || !encounterParty.IsMobile)
+		{
+			return false;
+		}
+		try
+		{
+			MobileParty targetParty = hero.PartyBelongedTo;
+			MobileParty encounterMobileParty = encounterParty.MobileParty;
+			if (targetParty == null || encounterMobileParty == null || targetParty.LeaderHero != hero)
+			{
+				return false;
+			}
+			Army army = encounterMobileParty.Army;
+			if (army == null || targetParty.Army != army)
+			{
+				return false;
+			}
+			MobileParty leaderParty = army.LeaderParty;
+			if (leaderParty == null)
+			{
+				return false;
+			}
+			return targetParty == leaderParty || leaderParty.AttachedParties.Contains(targetParty);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
 	private static bool IsExcludedCustomLordClan(Clan clan)
 	{
 		if (clan == null)
@@ -3914,7 +4264,8 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		}
 		try
 		{
-			if (!clan.IsNoble || clan.Kingdom == null || clan.IsBanditFaction || clan.IsMinorFaction || clan.IsOutlaw)
+			bool eligibleMercenary = IsEligibleMercenaryClanForCustomLordEncounter(clan);
+			if ((!clan.IsNoble && !eligibleMercenary) || clan.Kingdom == null || clan.IsBanditFaction || (clan.IsMinorFaction && !eligibleMercenary) || clan.IsOutlaw)
 			{
 				return true;
 			}
@@ -3923,6 +4274,35 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		catch
 		{
 			return true;
+		}
+	}
+
+	private static bool IsEligibleCustomLordEncounterFaction(IFaction faction, Clan clan)
+	{
+		if (faction == null)
+		{
+			return false;
+		}
+		if (!IsExcludedCustomLordMapFaction(faction))
+		{
+			return true;
+		}
+		return IsEligibleMercenaryClanForCustomLordEncounter(clan) && faction == clan;
+	}
+
+	private static bool IsEligibleMercenaryClanForCustomLordEncounter(Clan clan)
+	{
+		if (clan == null)
+		{
+			return false;
+		}
+		try
+		{
+			return clan.IsUnderMercenaryService && clan.Kingdom != null && !clan.IsBanditFaction && !clan.IsOutlaw;
+		}
+		catch
+		{
+			return false;
 		}
 	}
 
@@ -4292,6 +4672,14 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		{
 			text = null;
 		}
+		if (IsNativeSettlementRequestMeetingMenu(text))
+		{
+			IsNativeSettlementRequestMeetingContext();
+		}
+		else if (text != "AnimusForge_lord_encounter")
+		{
+			ClearNativeSettlementRequestMeetingContext("game_menu_opened_" + (text ?? "null"));
+		}
 		if (text == "encounter" && TryResolvePendingPeacefulMeetingCleanupForExternal("game_menu_opened_encounter"))
 		{
 			return;
@@ -4322,6 +4710,11 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 				return;
 			}
 			Hero hero = EnsureEncounterTargetHero("menu_opened");
+			if (IsNativeSettlementRequestMeetingContext(hero))
+			{
+				Logger.Log("LordEncounter", "Custom encounter menu opened during a native hostile settlement request meeting; leaving vanilla meeting flow intact.");
+				return;
+			}
 			if (MapSeaContextGuard.IsCurrentPlayerEncounterAtSea(hero))
 			{
 				TryActivateNativeEncounterMenuSafely("sea_custom_menu_opened");
@@ -4361,6 +4754,10 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			TryRunPostMissionCleanupIfReady();
 		}
 		string text = Campaign.Current?.CurrentMenuContext?.GameMenu?.StringId;
+		if (IsNativeSettlementRequestMeetingMenu(text))
+		{
+			IsNativeSettlementRequestMeetingContext();
+		}
 		if (!(text == "AnimusForge_lord_encounter"))
 		{
 			if (_cameraLockWasActive)
@@ -4385,6 +4782,11 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		}
 		if (TryFinishNativeLeaveEncounterFromCustomMenu("campaign_tick"))
 		{
+			return;
+		}
+		if (IsNativeSettlementRequestMeetingContext(EnsureEncounterTargetHero("native_settlement_request_meeting_custom_menu_tick")))
+		{
+			Logger.Log("LordEncounter", "Custom encounter menu tick ignored during a native hostile settlement request meeting.");
 			return;
 		}
 		if (MapSeaContextGuard.IsCurrentPlayerEncounterAtSea(EnsureEncounterTargetHero("sea_custom_menu_tick")))

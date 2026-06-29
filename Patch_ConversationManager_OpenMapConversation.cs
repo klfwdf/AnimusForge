@@ -57,6 +57,11 @@ public static class Patch_ConversationManager_OpenMapConversation
 				Logger.LogTrace("Conversation_Intercept", "Encounter redirect is suspended; allow native OpenMapConversation.");
 				return true;
 			}
+			if (LordEncounterBehavior.IsNativeSettlementRequestMeetingContext())
+			{
+				Logger.LogTrace("Conversation_Intercept", "Native hostile settlement request meeting detected; allow native OpenMapConversation.");
+				return true;
+			}
 			if (LordEncounterBehavior.IsCustomEncounterMenuDisabledForCurrentEncounter())
 			{
 				Logger.LogTrace("Conversation_Intercept", "Custom encounter menu is disabled for current encounter; allow native OpenMapConversation.");
@@ -93,8 +98,8 @@ public static class Patch_ConversationManager_OpenMapConversation
 			{
 				return true;
 			}
-			Hero hero = null;
-			if (PlayerEncounter.Current != null)
+			Hero hero = EncounterConversationTargetResolver.TryResolveLordFromArgumentsThenEncounterLeader(null, __args);
+			if (hero == null && PlayerEncounter.Current != null)
 			{
 				PartyBase encounteredParty = PlayerEncounter.EncounteredParty;
 				if (encounteredParty != null)
@@ -138,7 +143,21 @@ public static class Patch_ConversationManager_OpenMapConversation
 					}
 				}
 			}
-			if (hero != null && hero != Hero.MainHero && hero.IsLord)
+			if (hero != null && LordEncounterBehavior.IsNativeSettlementRequestMeetingContext(hero))
+			{
+				Logger.LogTrace("Conversation_Intercept", $"OpenMapConversation 命中敌对定居点原版会面，放行原版对话: {hero.Name}");
+				return true;
+			}
+			PartyBase encounterPartyForEligibility = null;
+			try
+			{
+				encounterPartyForEligibility = PlayerEncounter.EncounteredParty;
+			}
+			catch
+			{
+				encounterPartyForEligibility = null;
+			}
+			if (hero != null && LordEncounterBehavior.IsEligibleCustomLordEncounterTarget(hero, encounterPartyForEligibility))
 			{
 				Logger.LogTrace("Conversation_Intercept", $"检测到 OpenMapConversation 原版对话调用，重定向至自定义会面菜单: {hero.Name}");
 				ProactiveNpcRequestBehavior.MarkEncounterOpened(hero);
@@ -148,6 +167,10 @@ public static class Patch_ConversationManager_OpenMapConversation
 					return false;
 				}
 				return true;
+			}
+			if (hero != null && hero != Hero.MainHero && hero.IsLord)
+			{
+				Logger.LogTrace("Conversation_Intercept", $"OpenMapConversation 遭遇对象不是可接管的王国贵族遭遇，放行原版对话: {hero.Name}");
 			}
 		}
 		catch (Exception ex)
