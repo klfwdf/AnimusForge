@@ -39,6 +39,8 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 	private const int MainReplyMaxTokens = 5000;
 	private const double RouteRefreshSeconds = 2.0;
 	private const double CampaignTickThrottleSeconds = 0.75;
+	private const float CourierThreatAvoidanceMinimumScore = 1f;
+	private const float CourierThreatAvoidanceMinimumMoveDistanceSquared = 0.25f;
 	private const string CourierPartyPrefix = "af_courier_";
 	private const string TemporaryCourierShipName = "AnimusForge Courier Boat";
 	private const double NavalStuckRefreshHours = 12.0;
@@ -3487,6 +3489,10 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
+		if (TryRouteCourierAwayFromBanditThreat(session, courier, "recipient"))
+		{
+			return;
+		}
 		CourierRoutePlan plan = BuildCourierRoutePlan(courier, targetParty?.Position ?? targetSettlement?.GatePosition ?? courier.Position, targetSettlement, targetParty, false);
 		if (!EnsureCourierNavalReadiness(session, courier, plan, "recipient"))
 		{
@@ -3545,6 +3551,10 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
+		if (TryRouteCourierAwayFromBanditThreat(session, courier, "sender"))
+		{
+			return;
+		}
 		Settlement targetSettlement = mainParty.CurrentSettlement;
 		CourierRoutePlan plan = BuildCourierRoutePlan(courier, targetSettlement?.GatePosition ?? mainParty.Position, targetSettlement, mainParty, targetSettlement != null && courier.IsCurrentlyAtSea);
 		if (!EnsureCourierNavalReadiness(session, courier, plan, "sender"))
@@ -3582,6 +3592,118 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			ApplyCourierAiOverrides(courier, "route_sender");
 			LogVerbose("route_sender:" + session.Id, "route sender session=" + session.Id + " key=" + key, 5.0);
 		}
+	}
+
+	private bool TryRouteCourierAwayFromBanditThreat(CourierSession session, MobileParty courier, string routeReason)
+	{
+		try
+		{
+			if (session == null || courier == null || courier.Ai == null || Campaign.Current?.Models?.MobilePartyAIModel == null)
+			{
+				return false;
+			}
+			if (!Campaign.Current.Models.MobilePartyAIModel.ShouldPartyCheckInitiativeBehavior(courier))
+			{
+				return false;
+			}
+			Campaign.Current.Models.MobilePartyAIModel.GetBestInitiativeBehavior(courier, out AiBehavior behavior, out MobileParty threat, out float score, out Vec2 averageEnemyVec);
+			if (score <= CourierThreatAvoidanceMinimumScore || !MobileParty.IsFleeBehavior(behavior) || threat == null || threat == courier || !threat.IsActive || !IsBanditOrOutlawParty(threat))
+			{
+				return false;
+			}
+			if (courier.CurrentSettlement != null && IsCourierSafeSettlementCandidate(courier.CurrentSettlement, courier))
+			{
+				string holdKey = "avoid_bandit_hold:" + (routeReason ?? "") + ":" + (threat.StringId ?? "");
+				if (ShouldRefreshRoute(session, holdKey, courier, AiBehavior.Hold))
+				{
+					courier.SetMoveModeHold();
+					ApplyCourierAiOverrides(courier, "avoid_bandit_hold");
+					LogCourierStatus("route_avoid_bandit_hold session=" + session.Id + " reason=" + (routeReason ?? "") + " threat=" + DescribeMobileParty(threat) + " courier=" + DescribeMobileParty(courier));
+				}
+				return true;
+			}
+			courier.Ai.CalculateFleePosition(out CampaignVec2 fleePoint, threat, averageEnemyVec);
+			if (!IsValidCampaignPosition(fleePoint) || fleePoint.DistanceSquared(courier.Position) <= CourierThreatAvoidanceMinimumMoveDistanceSquared)
+			{
+				LogCourierStatusVerbose("route_avoid_bandit_fallback:" + session.Id, "route_avoid_bandit_fallback session=" + session.Id + " reason=" + (routeReason ?? "") + " behavior=" + behavior + " score=" + score + " fleePoint=" + FormatCampaignVec2(fleePoint) + " threat=" + DescribeMobileParty(threat) + " courier=" + DescribeMobileParty(courier), 2.0);
+				RouteToSafeSettlementForThreat(session, courier, "bandit_threat_" + (routeReason ?? ""));
+				return true;
+			}
+			CourierRoutePlan plan = BuildCourierRoutePlan(courier, fleePoint, null, null, courier.IsCurrentlyAtSea || threat.IsCurrentlyAtSea);
+			if (!EnsureCourierNavalReadiness(session, courier, plan, "avoid_bandit_" + (routeReason ?? "")))
+			{
+				if (plan.RequiresNaval)
+				{
+					RouteToSafeSettlementForThreat(session, courier, "bandit_threat_no_naval_" + (routeReason ?? ""));
+					return true;
+				}
+				plan.NavigationType = GetEffectiveCourierNavigationType(courier, false);
+				plan.RequiresNaval = false;
+				plan.UsePort = false;
+			}
+			string key = BuildThreatAvoidanceRouteKey(threat, fleePoint, plan, routeReason);
+			if (ShouldDivertToSafeSettlementAfterNavalStuck(session, plan))
+			{
+				LogCourierStatus("route_avoid_bandit_divert_safe session=" + session.Id + " reason=" + (routeReason ?? "") + " key=" + key + " threat=" + DescribeMobileParty(threat) + " courier=" + DescribeMobileParty(courier) + " stuckCount=" + session.NavalStuckRefreshCount);
+				RouteToSafeSettlementForThreat(session, courier, "bandit_threat_naval_stuck_" + (routeReason ?? ""));
+				return true;
+			}
+			if (ShouldRefreshRouteWithProgress(session, key, courier, plan.RequiresNaval, AiBehavior.GoToPoint))
+			{
+				courier.SetMoveGoToPoint(fleePoint, plan.NavigationType);
+				ApplyCourierAiOverrides(courier, "avoid_bandit");
+				LogCourierStatus("route_avoid_bandit_set session=" + session.Id + " reason=" + (routeReason ?? "") + " key=" + key + " behavior=" + behavior + " score=" + score + " fleePoint=" + FormatCampaignVec2(fleePoint) + " " + DescribeRoutePlan(plan) + " threat=" + DescribeMobileParty(threat) + " courier=" + DescribeMobileParty(courier));
+			}
+			return true;
+		}
+		catch (Exception ex)
+		{
+			LogVerbose("route_avoid_bandit_failed:" + (session?.Id ?? ""), "route avoid bandit failed session=" + (session?.Id ?? "") + " reason=" + (routeReason ?? "") + " error=" + ex.Message, 5.0);
+			return false;
+		}
+	}
+
+	private void RouteToSafeSettlementForThreat(CourierSession session, MobileParty courier, string reason)
+	{
+		try
+		{
+			bool preferPort = ShouldPreferSafeSettlementPort(courier, reason);
+			Settlement settlement = ResolveSafeSettlement(session, courier, preferPort);
+			if (settlement == null)
+			{
+				if (ShouldRefreshRoute(session, "avoid_bandit_safe_hold:" + (reason ?? ""), courier, AiBehavior.Hold))
+				{
+					courier.SetMoveModeHold();
+					ApplyCourierAiOverrides(courier, "avoid_bandit_safe_hold");
+				}
+				return;
+			}
+			CourierRoutePlan plan = BuildCourierRoutePlan(courier, settlement.GatePosition, settlement, null, preferPort);
+			if (!EnsureCourierNavalReadiness(session, courier, plan, "avoid_bandit_safe_" + (reason ?? "")))
+			{
+				plan.NavigationType = GetEffectiveCourierNavigationType(courier, false);
+				plan.RequiresNaval = false;
+				plan.UsePort = false;
+			}
+			string key = "avoid_bandit_safe:" + (reason ?? "") + ":" + (settlement.StringId ?? "") + (plan?.KeySuffix ?? "");
+			if (ShouldRefreshRouteWithProgress(session, key, courier, plan.RequiresNaval, AiBehavior.GoToSettlement))
+			{
+				courier.SetMoveGoToSettlement(settlement, plan.NavigationType, plan.UsePort);
+				ApplyCourierAiOverrides(courier, "avoid_bandit_safe");
+				LogCourierStatus("route_avoid_bandit_safe_set session=" + session.Id + " reason=" + (reason ?? "") + " key=" + key + " " + DescribeRoutePlan(plan) + " safeSettlement=" + DescribeSettlement(settlement) + " courier=" + DescribeMobileParty(courier));
+			}
+		}
+		catch (Exception ex)
+		{
+			LogVerbose("route_avoid_bandit_safe_failed:" + (session?.Id ?? ""), "route avoid bandit safe failed session=" + (session?.Id ?? "") + " reason=" + (reason ?? "") + " error=" + ex.Message, 5.0);
+		}
+	}
+
+	private static string BuildThreatAvoidanceRouteKey(MobileParty threat, CampaignVec2 fleePoint, CourierRoutePlan plan, string routeReason)
+	{
+		int x = (int)MathF.Round(fleePoint.X * 2f);
+		int y = (int)MathF.Round(fleePoint.Y * 2f);
+		return "avoid_bandit:" + (routeReason ?? "") + ":" + (threat?.StringId ?? "") + ":" + x + ":" + y + (plan?.KeySuffix ?? "");
 	}
 
 	private static string BuildSenderRouteKey(MobileParty mainParty, CourierRoutePlan plan)

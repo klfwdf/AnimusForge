@@ -1794,6 +1794,27 @@ public class DuelBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private static bool IsEncounterMeetingDuelMissionActive()
+	{
+		try
+		{
+			Mission mission = Mission.Current;
+			if (mission == null)
+			{
+				return false;
+			}
+			if (LordEncounterBehavior.IsEncounterMeetingMissionActive || MeetingBattleRuntime.IsMeetingActive)
+			{
+				return true;
+			}
+			return mission.GetMissionBehavior<MeetingBattleLockMissionBehavior>() != null;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
 	public static void PrepareDuel(Hero target, float delaySeconds)
 	{
 		if (target == null)
@@ -1811,6 +1832,12 @@ public class DuelBehavior : CampaignBehaviorBase
 			return;
 		}
 		ShowDuelRiskWarning();
+		if (IsEncounterMeetingDuelMissionActive() && Instance != null)
+		{
+			Logger.Log("DuelBehavior", "[WildernessDuel] Current mission is an AnimusForge encounter meeting; keep duel in-place.");
+			Instance.StartDuelViaAI(target);
+			return;
+		}
 		bool isWildernessDuel = IsWildernessDuelContext(target, out string wildernessBlockedReason);
 		if (isWildernessDuel)
 		{
@@ -1853,14 +1880,7 @@ public class DuelBehavior : CampaignBehaviorBase
 		{
 			Logger.Log("DuelBehavior", "[WildernessDuel] Not using wilderness duel: " + wildernessBlockedReason);
 		}
-		bool flag = false;
-		try
-		{
-			flag = LordEncounterBehavior.IsEncounterMeetingMissionActive;
-		}
-		catch
-		{
-		}
+		bool flag = IsEncounterMeetingDuelMissionActive();
 		bool flag2 = !flag;
 		if (!flag2)
 		{
@@ -2114,6 +2134,11 @@ public class DuelBehavior : CampaignBehaviorBase
 		blockedReason = "";
 		try
 		{
+			if (IsEncounterMeetingDuelMissionActive())
+			{
+				blockedReason = "current context is an AnimusForge encounter meeting mission";
+				return false;
+			}
 			if (Campaign.Current == null || MobileParty.MainParty == null || targetCharacter == null)
 			{
 				blockedReason = "campaign context is missing";

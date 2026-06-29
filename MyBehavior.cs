@@ -26001,11 +26001,87 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				stringBuilder.AppendLine("来信者详细身份：你尚未确认其真实姓名、家族、势力或头衔，只能依据公开称呼、信件内容和你已知的公开传闻判断。");
 			}
+			string vassalageRelationLine = BuildPlayerVassalageRelationPromptLineForExternal(observer, counterpartKingdomLabel: "玩家所在王国");
+			if (!string.IsNullOrWhiteSpace(vassalageRelationLine))
+			{
+				stringBuilder.AppendLine(vassalageRelationLine);
+			}
 			return stringBuilder.ToString().Trim();
 		}
 		catch
 		{
 			return "";
+		}
+	}
+
+	public static string BuildPlayerVassalageRelationPromptLineForExternal(Hero observer, CharacterObject observerCharacter = null, string kingdomIdOverride = null, string counterpartKingdomLabel = "玩家所在王国")
+	{
+		try
+		{
+			Kingdom observerKingdom = ResolveObserverKingdomForVassalagePrompt(observer, observerCharacter, kingdomIdOverride);
+			Kingdom playerKingdom = ResolvePlayerKingdomForVassalagePrompt();
+			return VassalageBehavior.BuildKingdomVassalageRelationPromptLineForExternal(observerKingdom, playerKingdom, counterpartKingdomLabel);
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	private static Kingdom ResolveObserverKingdomForVassalagePrompt(Hero observer, CharacterObject observerCharacter, string kingdomIdOverride)
+	{
+		try
+		{
+			Hero targetHero = observer ?? observerCharacter?.HeroObject;
+			Kingdom kingdom = targetHero?.Clan?.Kingdom;
+			if (kingdom != null)
+			{
+				return kingdom;
+			}
+			kingdom = targetHero?.MapFaction as Kingdom;
+			if (kingdom != null)
+			{
+				return kingdom;
+			}
+			kingdom = VassalageBehavior.ResolveKingdomById(kingdomIdOverride);
+			if (kingdom != null)
+			{
+				return kingdom;
+			}
+			Clan clan = targetHero?.MapFaction as Clan;
+			return clan?.Kingdom;
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static Kingdom ResolvePlayerKingdomForVassalagePrompt()
+	{
+		try
+		{
+			Kingdom kingdom = Hero.MainHero?.Clan?.Kingdom;
+			if (kingdom != null)
+			{
+				return kingdom;
+			}
+			kingdom = Hero.MainHero?.MapFaction as Kingdom;
+			if (kingdom != null)
+			{
+				return kingdom;
+			}
+			kingdom = Clan.PlayerClan?.Kingdom;
+			if (kingdom != null)
+			{
+				return kingdom;
+			}
+			Clan playerFactionClan = Clan.PlayerClan?.MapFaction as Clan;
+			return playerFactionClan?.Kingdom;
+		}
+		catch
+		{
+			return null;
 		}
 	}
 

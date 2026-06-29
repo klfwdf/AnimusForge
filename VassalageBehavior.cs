@@ -1469,7 +1469,7 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			return Instance?.BuildKingdomVassalageRelationPromptLine(observerKingdom, counterpartKingdom) ?? "";
+			return BuildKingdomVassalageRelationPromptLineForExternal(observerKingdom, counterpartKingdom, "面前此人所在王国");
 		}
 		catch
 		{
@@ -1477,11 +1477,28 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private string BuildKingdomVassalageRelationPromptLine(Kingdom observerKingdom, Kingdom counterpartKingdom)
+	public static string BuildKingdomVassalageRelationPromptLineForExternal(Kingdom observerKingdom, Kingdom counterpartKingdom, string counterpartKingdomLabel)
+	{
+		try
+		{
+			return Instance?.BuildKingdomVassalageRelationPromptLine(observerKingdom, counterpartKingdom, counterpartKingdomLabel) ?? "";
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	private string BuildKingdomVassalageRelationPromptLine(Kingdom observerKingdom, Kingdom counterpartKingdom, string counterpartKingdomLabel)
 	{
 		if (!IsValidKingdom(observerKingdom) || !IsValidKingdom(counterpartKingdom))
 		{
 			return "";
+		}
+		string counterpartLabel = (counterpartKingdomLabel ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(counterpartLabel))
+		{
+			counterpartLabel = "对方所在王国";
 		}
 		string observerId = (observerKingdom.StringId ?? "").Trim();
 		string counterpartId = (counterpartKingdom.StringId ?? "").Trim();
@@ -1511,7 +1528,7 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 				{
 					continue;
 				}
-				return "【当前臣属关系】你所在的王国（" + GetKingdomDisplayName(vassal, "你的王国") + "）是面前此人所在王国（" + GetKingdomDisplayName(suzerain, "对方王国") + "）的" + typeText + "；" + clause;
+				return "【当前臣属关系】你所在的王国（" + GetKingdomDisplayName(vassal, "你的王国") + "）是" + counterpartLabel + "（" + GetKingdomDisplayName(suzerain, "对方王国") + "）的" + typeText + "；" + clause;
 			}
 			if (string.Equals(observerId, suzerainId, StringComparison.OrdinalIgnoreCase)
 				&& string.Equals(counterpartId, vassalId, StringComparison.OrdinalIgnoreCase))
@@ -1522,7 +1539,7 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 				{
 					continue;
 				}
-				return "【当前臣属关系】你所在的王国（" + GetKingdomDisplayName(suzerain, "你的王国") + "）是面前此人所在王国（" + GetKingdomDisplayName(vassal, "对方王国") + "）的宗主国；对方王国是你的" + typeText + "；" + clause;
+				return "【当前臣属关系】你所在的王国（" + GetKingdomDisplayName(suzerain, "你的王国") + "）是" + counterpartLabel + "（" + GetKingdomDisplayName(vassal, "对方王国") + "）的宗主国；对方王国是你的" + typeText + "；" + clause;
 			}
 		}
 		return "";
