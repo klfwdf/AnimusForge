@@ -689,9 +689,9 @@ namespace AnimusForge
 				if (__instance == Clan.PlayerClan?.Kingdom) return true;
 				if (behavior.FindCounterpartRecordForDecision(kingdomDecision) == null) return true;
 
-				if (!IsBilateralCounterpartDecisionStillHardValid(kingdomDecision))
+				if (!IsBilateralCounterpartDecisionHardValid(kingdomDecision, out string hardFailureReason))
 				{
-					Logger.Log("VoteDeal", "[BilateralDiplomacy] Counterpart AddDecision skipped because hard validity failed.");
+					Logger.Log("VoteDeal", "[BilateralDiplomacy] Counterpart AddDecision skipped because hard validity failed: " + hardFailureReason);
 					return false;
 				}
 
@@ -866,10 +866,10 @@ namespace AnimusForge
 			};
 
 			_bilateralDiplomacyRecords.Add(record);
-			if (!CreateBilateralCounterpartDecision(record))
+			if (!CreateBilateralCounterpartDecision(record, out string creationFailureReason))
 			{
 				_bilateralDiplomacyRecords.Remove(record);
-				Logger.Log("VoteDeal", $"[BilateralDiplomacy] Counterpart creation failed, original effect blocked. id={record.RecordId}");
+				Logger.Log("VoteDeal", $"[BilateralDiplomacy] Counterpart creation failed, original effect blocked. id={record.RecordId} reason={creationFailureReason}");
 				DisplayBilateralDiplomacyMessage("双向外交议程：对等复议议程创建失败，外交效果未生效。", 0xFFD166);
 				return true;
 			}
@@ -881,16 +881,44 @@ namespace AnimusForge
 			return true;
 		}
 
-		private bool CreateBilateralCounterpartDecision(BilateralDiplomacyRecord record)
+		private bool CreateBilateralCounterpartDecision(BilateralDiplomacyRecord record, out string failureReason)
 		{
+			failureReason = "";
 			try
 			{
-				if (record == null) return false;
+				if (record == null)
+				{
+					failureReason = "record_null";
+					return false;
+				}
 				Kingdom first = ResolveKingdom(record.FirstKingdomId);
 				Kingdom second = ResolveKingdom(record.SecondKingdomId);
-				if (first == null || second == null || first == second) return false;
+				if (first == null)
+				{
+					failureReason = "first_kingdom_missing:" + (record.FirstKingdomId ?? "");
+					return false;
+				}
+				if (second == null)
+				{
+					failureReason = "second_kingdom_missing:" + (record.SecondKingdomId ?? "");
+					return false;
+				}
+				if (first == second)
+				{
+					failureReason = "same_kingdom:" + (first.StringId ?? "");
+					return false;
+				}
 				Clan technicalProposer = second.RulingClan;
-				if (technicalProposer == null || technicalProposer.Kingdom != second) return false;
+				if (technicalProposer == null)
+				{
+					failureReason = "second_ruling_clan_missing:" + (second.StringId ?? "");
+					return false;
+				}
+				if (technicalProposer.Kingdom != second)
+				{
+					failureReason = "second_ruling_clan_not_in_second:" + (technicalProposer.StringId ?? "");
+					return false;
+				}
 
 				BilateralDiplomacyKind kind = ParseKind(record.Kind);
 				KingdomDecision counterpart;
@@ -906,13 +934,15 @@ namespace AnimusForge
 						counterpart = new TradeAgreementDecision(technicalProposer, first);
 						break;
 					default:
+						failureReason = "unsupported_kind:" + (record.Kind ?? "");
 						return false;
 				}
 
-				if (!IsBilateralCounterpartDecisionStillHardValid(counterpart)) return false;
-				record.CounterpartCreated = true;
-				second.AddDecision(counterpart, true);
-				if (second.UnresolvedDecisions == null || !second.UnresolvedDecisions.Contains(counterpart))
+				if (!IsBilateralCounterpartDecisionHardValid(counterpart, out failureReason))
+				{
+					return false;
+				}
+				if (!QueueBilateralCounterpartDecision(second, counterpart, record, out failureReason))
 				{
 					record.CounterpartCreated = false;
 					return false;
@@ -922,8 +952,101 @@ namespace AnimusForge
 			catch (Exception ex)
 			{
 				if (record != null) record.CounterpartCreated = false;
+				failureReason = "exception:" + ex.Message;
 				Logger.Log("VoteDeal", $"[BilateralDiplomacy] Create counterpart error: {ex.Message}");
 				return false;
+			}
+		}
+
+		private static bool QueueBilateralCounterpartDecision(Kingdom kingdom, KingdomDecision decision, BilateralDiplomacyRecord record, out string failureReason)
+		{
+			failureReason = "";
+			try
+			{
+				if (kingdom == null)
+				{
+					failureReason = "queue_kingdom_null";
+					return false;
+				}
+				if (decision == null)
+				{
+					failureReason = "queue_decision_null";
+					return false;
+				}
+				if (record == null)
+				{
+					failureReason = "queue_record_null";
+					return false;
+				}
+
+				MBList<KingdomDecision> unresolved = Traverse.Create(kingdom)
+					.Field("_unresolvedDecisions")
+					.GetValue<MBList<KingdomDecision>>();
+				if (unresolved == null)
+				{
+					failureReason = "unresolved_field_null:" + (kingdom.StringId ?? "");
+					return false;
+				}
+
+				record.CounterpartCreated = true;
+				try
+				{
+					CampaignEventDispatcher.Instance.OnKingdomDecisionAdded(decision, false);
+				}
+				catch (Exception eventEx)
+				{
+					Logger.Log("VoteDeal", $"[BilateralDiplomacy] Counterpart OnKingdomDecisionAdded failed: {eventEx.Message}");
+				}
+
+				if (!unresolved.Contains(decision))
+				{
+					unresolved.Add(decision);
+				}
+				if (kingdom.UnresolvedDecisions == null || !kingdom.UnresolvedDecisions.Contains(decision))
+				{
+					failureReason = "queue_contains_failed:" + (kingdom.StringId ?? "");
+					return false;
+				}
+
+				RegisterAgendaDelaySnapshot(decision, kingdom, 3f);
+				Logger.Log("VoteDeal", $"[BilateralDiplomacy] Queued counterpart agenda directly: id={record.RecordId} kingdom={kingdom.StringId} decision={GetSafeDecisionTitle(decision)}");
+				return true;
+			}
+			catch (Exception ex)
+			{
+				if (record != null) record.CounterpartCreated = false;
+				failureReason = "queue_exception:" + ex.Message;
+				Logger.Log("VoteDeal", $"[BilateralDiplomacy] Queue counterpart agenda failed: {ex.Message}");
+				return false;
+			}
+		}
+
+		private static void RegisterAgendaDelaySnapshot(KingdomDecision decision, Kingdom kingdom, float delayDays)
+		{
+			try
+			{
+				if (decision == null || kingdom == null)
+				{
+					return;
+				}
+				Traverse.Create(decision).Property("TriggerTime")
+					.SetValue(CampaignTime.DaysFromNow(delayDays));
+				lock (KingdomAgendaVM._snapshots)
+				{
+					KingdomAgendaVM._snapshots.RemoveAll(snapshot => snapshot?.Decision == decision);
+					KingdomAgendaVM._snapshots.Add(new KingdomAgendaVM.Snapshot
+					{
+						Decision = decision,
+						KingdomId = kingdom.StringId,
+						CreatedAt = CampaignTime.Now,
+						DelayDays = delayDays,
+						IsPlayerKingdom = kingdom == Clan.PlayerClan?.Kingdom
+					});
+				}
+			}
+			catch (Exception ex)
+			{
+				Logger.Log("VoteDeal", $"[BilateralDiplomacy] Register agenda delay snapshot failed: {ex.Message}");
 			}
 		}
 
@@ -1140,43 +1263,116 @@ namespace AnimusForge
 
 		private static bool IsBilateralCounterpartDecisionStillHardValid(KingdomDecision decision)
 		{
+			return IsBilateralCounterpartDecisionHardValid(decision, out _);
+		}
+
+		private static bool IsBilateralCounterpartDecisionHardValid(KingdomDecision decision, out string failureReason)
+		{
 			if (!TryGetBilateralDiplomacyDecisionDetails(decision, out BilateralDiplomacyKind kind, out Kingdom source, out Kingdom target, out int tribute, out int duration))
 			{
+				failureReason = "details_unresolved";
 				return false;
 			}
-			if (source == null || target == null || source == target) return false;
-			if (source.IsEliminated || target.IsEliminated) return false;
-			if (decision.ProposerClan == null || decision.ProposerClan.Kingdom != source) return false;
-			try
+			if (source == null)
 			{
-				if (!decision.IsAllowed()) return false;
+				failureReason = "source_null";
+				return false;
 			}
-			catch
+			if (target == null)
 			{
+				failureReason = "target_null";
+				return false;
+			}
+			if (source == target)
+			{
+				failureReason = "same_kingdom:" + (source.StringId ?? "");
+				return false;
+			}
+			if (source.IsEliminated)
+			{
+				failureReason = "source_eliminated:" + (source.StringId ?? "");
+				return false;
+			}
+			if (target.IsEliminated)
+			{
+				failureReason = "target_eliminated:" + (target.StringId ?? "");
+				return false;
+			}
+			if (decision.ProposerClan == null)
+			{
+				failureReason = "proposer_null";
+				return false;
+			}
+			if (decision.ProposerClan.Kingdom != source)
+			{
+				failureReason = "proposer_not_in_source:" + (decision.ProposerClan.StringId ?? "");
 				return false;
 			}
 
 			switch (kind)
 			{
 				case BilateralDiplomacyKind.Peace:
-					return FactionManager.IsAtWarAgainstFaction(source, target);
+					if (!FactionManager.IsAtWarAgainstFaction(source, target))
+					{
+						failureReason = "peace_not_at_war:" + (source.StringId ?? "") + "->" + (target.StringId ?? "");
+						return false;
+					}
+					failureReason = "";
+					return true;
 				case BilateralDiplomacyKind.Alliance:
 				{
 					IAllianceCampaignBehavior allianceBehavior = Campaign.Current.GetCampaignBehavior<IAllianceCampaignBehavior>();
-					if (allianceBehavior == null) return false;
-					if (FactionManager.IsAtWarAgainstFaction(source, target)) return false;
-					if (allianceBehavior.IsAllyWithKingdom(source, target)) return false;
-					return source.AlliedKingdoms.Count < Campaign.Current.Models.AllianceModel.MaxNumberOfAlliances
-						&& target.AlliedKingdoms.Count < Campaign.Current.Models.AllianceModel.MaxNumberOfAlliances;
+					if (allianceBehavior == null)
+					{
+						failureReason = "alliance_behavior_missing";
+						return false;
+					}
+					if (FactionManager.IsAtWarAgainstFaction(source, target))
+					{
+						failureReason = "alliance_at_war";
+						return false;
+					}
+					if (allianceBehavior.IsAllyWithKingdom(source, target))
+					{
+						failureReason = "alliance_already_allied";
+						return false;
+					}
+					if (source.AlliedKingdoms.Count >= Campaign.Current.Models.AllianceModel.MaxNumberOfAlliances)
+					{
+						failureReason = "source_alliance_limit:" + (source.StringId ?? "");
+						return false;
+					}
+					if (target.AlliedKingdoms.Count >= Campaign.Current.Models.AllianceModel.MaxNumberOfAlliances)
+					{
+						failureReason = "target_alliance_limit:" + (target.StringId ?? "");
+						return false;
+					}
+					failureReason = "";
+					return true;
 				}
 				case BilateralDiplomacyKind.Trade:
 				{
 					ITradeAgreementsCampaignBehavior tradeBehavior = Campaign.Current.GetCampaignBehavior<ITradeAgreementsCampaignBehavior>();
-					if (tradeBehavior == null) return false;
-					if (FactionManager.IsAtWarAgainstFaction(source, target)) return false;
-					return !HasTradeAgreementCompat(tradeBehavior, source, target);
+					if (tradeBehavior == null)
+					{
+						failureReason = "trade_behavior_missing";
+						return false;
+					}
+					if (FactionManager.IsAtWarAgainstFaction(source, target))
+					{
+						failureReason = "trade_at_war";
+						return false;
+					}
+					if (HasTradeAgreementCompat(tradeBehavior, source, target))
+					{
+						failureReason = "trade_already_exists";
+						return false;
+					}
+					failureReason = "";
+					return true;
 				}
 			}
+			failureReason = "unsupported_kind:" + kind;
 			return false;
 		}
 
@@ -2077,15 +2273,7 @@ namespace AnimusForge
 				Kingdom kingdom = kingdomDecision.Kingdom;
 				if (kingdom == null) return;
 				float delayDays = (kingdom == Clan.PlayerClan?.Kingdom) ? 21f : 3f;
-
-				Traverse.Create(kingdomDecision).Property("TriggerTime")
-					.SetValue(CampaignTime.DaysFromNow(delayDays));
-
-				lock (KingdomAgendaVM._snapshots)
-				{
-					KingdomAgendaVM._snapshots.Add(new KingdomAgendaVM.Snapshot
-					{Decision=kingdomDecision,KingdomId=kingdom.StringId,CreatedAt=CampaignTime.Now,DelayDays=delayDays,IsPlayerKingdom=kingdom==Clan.PlayerClan?.Kingdom});
-				}
+				RegisterAgendaDelaySnapshot(kingdomDecision, kingdom, delayDays);
 			}
 			catch (Exception ex)
 			{
