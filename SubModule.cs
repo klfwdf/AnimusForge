@@ -432,6 +432,14 @@ public class SubModule : MBSubModuleBase
 			{
 				Logger.LogTrace("SubModule", ">>> RewardSystem patches init failed: " + ex18e.Message);
 			}
+			try
+			{
+				NobleGatheringBehavior.RegisterHarmonyPatches(harmony);
+			}
+			catch (Exception ex18f)
+			{
+				Logger.LogTrace("SubModule", ">>> NobleGathering patches init failed: " + ex18f.Message);
+			}
 			Logger.LogTrace("SubModule", ">>> Harmony patches applied.");
 		}
 		catch (Exception ex18)

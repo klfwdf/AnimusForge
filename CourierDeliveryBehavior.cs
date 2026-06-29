@@ -1848,9 +1848,34 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		string visibleLetter = StripCourierActionTags(letter);
 		MainThreadActions.Enqueue(() =>
 		{
-			InformationManager.ShowInquiry(new InquiryData("信使送来外交信", senderName + "写道：\n\n" + visibleLetter, true, false, "知道了", "", null, null), true);
+			ShowInboundCourierLetterNotice(senderName, visibleLetter);
 		});
 		CompleteAndDestroyCourier(session, courier);
+	}
+
+	private static void ShowInboundCourierLetterNotice(string senderName, string letterText)
+	{
+		string name = string.IsNullOrWhiteSpace(senderName) ? "NPC" : senderName.Trim();
+		string body = string.IsNullOrWhiteSpace(letterText) ? "（无来信正文）" : letterText.Trim();
+		try
+		{
+			if (CourierLetterReplyPopup.Show("信使送来来信", name + "写道：", body, null, "ESC关闭"))
+			{
+				return;
+			}
+		}
+		catch (Exception ex)
+		{
+			Log("show inbound courier letter popup failed sender=" + name + " error=" + ex.Message);
+		}
+		try
+		{
+			InformationManager.ShowInquiry(new InquiryData("信使送来来信", name + "写道：\n\n" + body, true, false, "知道了", "", null, null), true);
+		}
+		catch
+		{
+			InformationManager.DisplayMessage(new InformationMessage("信使送来来信：" + body, Colors.Green));
+		}
 	}
 
 	private void DeliverToRecipient(CourierSession session, MobileParty courier, Hero recipient)
