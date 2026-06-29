@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -373,11 +373,10 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	private static readonly HashSet<int> LocalPlayerAttackVictimAgentIndexes = new HashSet<int>();
 	private static readonly HashSet<int> LocalPlayerAttackDownAgentIndexes = new HashSet<int>();
 	private static readonly HashSet<int> LocalSoldierWitnessInquiryVictimAgentIndexes = new HashSet<int>();
-	private static readonly HashSet<int> LocalHostileCivilianAgentIndexes = new HashSet<int>();
+	private static readonly HashSet<int> LocalDefiantCivilianAgentIndexes = new HashSet<int>();
 	private static readonly HashSet<int> LocalFleeingCivilianAgentIndexes = new HashSet<int>();
 	private static readonly HashSet<int> MassacreCaughtFleeingVictimAgentIndexes = new HashSet<int>();
 	private static readonly Dictionary<int, float> LastLocalCivilianWitnessReactionTimes = new Dictionary<int, float>();
-	private static bool _localNativeFightStarted;
 	private static int _regionalConflictIncidentCount;
 	private static readonly List<Vec3> RegionalConflictDebtCenters = new List<Vec3>();
 	private static readonly HashSet<int> CivilianGatherMovePreparedAgentIndexes = new HashSet<int>();
@@ -1980,7 +1979,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				return false;
 			}
 			int agentIndex = civilian.Index;
-			if (LocalHostileCivilianAgentIndexes.Contains(agentIndex))
+			if (LocalDefiantCivilianAgentIndexes.Contains(agentIndex))
 			{
 				return false;
 			}
@@ -2947,13 +2946,13 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				return false;
 			}
 			string targetName = affectedAgent.Name?.ToString();
-			bool targetWillResist = ShouldCivilianResistMassacre(affectedAgent);
+			bool targetWillDefy = ShouldCivilianResistMassacre(affectedAgent);
 			bool firstHit = LocalPlayerAttackVictimAgentIndexes.Add(affectedAgent.Index);
 			if (firstHit)
 			{
 				TryApplyRegionalConflictTrustPenalty(ResolveCurrentSettlement(), affectedAgent, targetName, victimDown: false, source ?? SiegeLocalAttackProfile.LocalAttackSource);
-				InformationManager.DisplayMessage(new InformationMessage(SiegeLocalAttackProfile.BuildPlayerHitMessage(targetName, targetWillResist), Color.FromUint(SiegeLocalAttackProfile.MessageColor)));
-				RecordInterventionMemory(SiegeLocalAttackProfile.MemoryTitle, SiegeLocalAttackProfile.BuildPlayerHitMemoryText(targetName, targetWillResist));
+				InformationManager.DisplayMessage(new InformationMessage(SiegeLocalAttackProfile.BuildPlayerHitMessage(targetName, targetWillDefy), Color.FromUint(SiegeLocalAttackProfile.MessageColor)));
+				RecordInterventionMemory(SiegeLocalAttackProfile.MemoryTitle, SiegeLocalAttackProfile.BuildPlayerHitMemoryText(targetName, targetWillDefy));
 			}
 			NeutralizeCivilianDailyUsableBehavior(affectedAgent, SiegeLocalAttackProfile.LocalAttackSource);
 			affectedAgent.SetMortalityState(Agent.MortalityState.Mortal);
@@ -2965,9 +2964,9 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			catch
 			{
 			}
-			if (targetWillResist)
+			if (targetWillDefy)
 			{
-				PrepareLocalHostileCivilian(affectedAgent, mission, main);
+				PrepareLocalDefiantCivilian(affectedAgent, mission, main);
 			}
 			else
 			{
@@ -2977,7 +2976,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			{
 				TriggerLocalCivilianWitnessReactions(mission, affectedAgent, main, victimDown: false, targetName);
 			}
-			Logger.Log("SiegeAiIntervention", "Handled local player attack without starting massacre. Source=" + (source ?? "N/A") + ", Agent=" + affectedAgent.Index + ", Resist=" + targetWillResist + ", Damage=" + damagedHp.ToString("0.0"));
+			Logger.Log("SiegeAiIntervention", "Handled local player attack without starting massacre. Source=" + (source ?? "N/A") + ", Agent=" + affectedAgent.Index + ", Resist=" + targetWillDefy + ", Damage=" + damagedHp.ToString("0.0"));
 			return true;
 		}
 		catch (Exception ex)
@@ -3048,7 +3047,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static void PrepareLocalHostileCivilian(Agent agent, Mission mission, Agent main, string source = SiegeLocalAttackProfile.LocalHostileSource)
+	private static void PrepareLocalDefiantCivilian(Agent agent, Mission mission, Agent main, string source = SiegeLocalAttackProfile.LocalDefiantSource)
 	{
 		try
 		{
@@ -3056,30 +3055,24 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			{
 				return;
 			}
-			LocalHostileCivilianAgentIndexes.Add(agent.Index);
+			LocalDefiantCivilianAgentIndexes.Add(agent.Index);
 			LocalFleeingCivilianAgentIndexes.Remove(agent.Index);
-			NeutralizeCivilianDailyUsableBehavior(agent, source ?? SiegeLocalAttackProfile.LocalHostileSource);
-			Team playerTeam = mission.PlayerTeam ?? main?.Team;
-			Team enemyTeam = EnsureInterventionCivilianEnemyTeam(mission) ?? mission.PlayerEnemyTeam ?? agent.Team;
-			if (enemyTeam != null && agent.Team != enemyTeam)
-			{
-				agent.SetTeam(enemyTeam, true);
-			}
-			if (agent.Team != null && playerTeam != null && agent.Team != playerTeam)
-			{
-				agent.Team.SetIsEnemyOf(playerTeam, isEnemyOf: true);
-				playerTeam.SetIsEnemyOf(agent.Team, isEnemyOf: true);
-			}
+			NeutralizeCivilianDailyUsableBehavior(agent, source ?? SiegeLocalAttackProfile.LocalDefiantSource);
+			ClearLocalDefiantCivilianCombatState(agent);
+			agent.InvalidateTargetAgent();
+			ClearAgentLookTarget(agent);
 			agent.SetWatchState(Agent.WatchState.Alarmed);
 			try
 			{
-				agent.WieldInitialWeapons(Agent.WeaponWieldActionType.InstantAfterPickUp, Equipment.InitialWeaponEquipPreference.Any);
+				agent.SetMaximumSpeedLimit(0f, false);
+				agent.SetCrouchMode(false);
+				agent.TryToSheathWeaponInHand(Agent.HandIndex.MainHand, Agent.WeaponWieldActionType.Instant);
+				agent.TryToSheathWeaponInHand(Agent.HandIndex.OffHand, Agent.WeaponWieldActionType.Instant);
 			}
 			catch
 			{
 			}
-			ForceAgentForMassacreFight(agent);
-			TryStartOrJoinLocalNativeFight(mission, agent, source ?? SiegeLocalAttackProfile.LocalHostileSource);
+			ApplyOneTimeFrightenedCivilianAction(agent, allowGathered: true);
 			if (main != null && main.IsActive())
 			{
 				agent.SetLookAgent(main);
@@ -3087,7 +3080,27 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		}
 		catch (Exception ex)
 		{
-			Logger.Log("SiegeAiIntervention", "PrepareLocalHostileCivilian failed: " + ex.Message);
+			Logger.Log("SiegeAiIntervention", "PrepareLocalDefiantCivilian failed: " + ex.Message);
+		}
+	}
+
+	private static void ClearLocalDefiantCivilianCombatState(Agent agent)
+	{
+		try
+		{
+			if (agent == null || !agent.IsHuman || !agent.IsActive())
+			{
+				return;
+			}
+			agent.ResetEnemyCaches();
+			agent.InvalidateTargetAgent();
+			agent.InvalidateAIWeaponSelections();
+			CampaignAgentComponent component = agent.GetComponent<CampaignAgentComponent>();
+			AlarmedBehaviorGroup alarmedGroup = component?.AgentNavigator?.GetBehaviorGroup<AlarmedBehaviorGroup>();
+			alarmedGroup?.DisableScriptedBehavior();
+		}
+		catch
+		{
 		}
 	}
 
@@ -3100,7 +3113,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				return;
 			}
 			LocalFleeingCivilianAgentIndexes.Add(agent.Index);
-			LocalHostileCivilianAgentIndexes.Remove(agent.Index);
+			LocalDefiantCivilianAgentIndexes.Remove(agent.Index);
 			NeutralizeCivilianDailyUsableBehavior(agent, source ?? SiegeLocalAttackProfile.LocalFleeSource);
 			agent.InvalidateTargetAgent();
 			ClearAgentLookTarget(agent);
@@ -3195,78 +3208,6 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static bool IsLocalNativeFightActive(Mission mission)
-	{
-		try
-		{
-			return _localNativeFightStarted && (mission?.GetMissionBehavior<MissionFightHandler>()?.IsThereActiveFight() ?? false);
-		}
-		catch
-		{
-			return false;
-		}
-	}
-
-	private static void TryStartOrJoinLocalNativeFight(Mission mission, Agent hostile, string source)
-	{
-		try
-		{
-			Agent main = Agent.Main ?? mission?.MainAgent;
-			if (!IsActiveInCurrentMission() || mission == null || hostile == null || main == null || !hostile.IsActive() || !main.IsActive())
-			{
-				return;
-			}
-			MissionFightHandler fightHandler = mission.GetMissionBehavior<MissionFightHandler>();
-			if (fightHandler == null)
-			{
-				return;
-			}
-			if (fightHandler.IsThereActiveFight())
-			{
-				if (_localNativeFightStarted)
-				{
-					fightHandler.AddAgentToSide(hostile, false);
-				}
-				return;
-			}
-			fightHandler.StartCustomFight(
-				new List<Agent> { main },
-				new List<Agent> { hostile },
-				false,
-				false,
-				null,
-				0f);
-			_localNativeFightStarted = true;
-			Logger.Log("SiegeAiIntervention", "Started native local conflict fight for GCCZ regional violence. Source=" + (source ?? SiegeLocalCivilianReactionProfile.NativeLocalFightSource) + ", Hostile=" + hostile.Index);
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("SiegeAiIntervention", "TryStartOrJoinLocalNativeFight failed (" + (source ?? SiegeLocalCivilianReactionProfile.NativeLocalFightSource) + "): " + ex.Message);
-		}
-	}
-
-	private static void TryEndLocalNativeFight(Mission mission, string source)
-	{
-		try
-		{
-			if (!_localNativeFightStarted)
-			{
-				return;
-			}
-			MissionFightHandler fightHandler = mission?.GetMissionBehavior<MissionFightHandler>();
-			if (fightHandler != null && fightHandler.IsThereActiveFight())
-			{
-				fightHandler.EndFight(true);
-			}
-			_localNativeFightStarted = false;
-			Logger.Log("SiegeAiIntervention", "Ended native local conflict fight. Source=" + (source ?? "N/A"));
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("SiegeAiIntervention", "TryEndLocalNativeFight failed (" + (source ?? "N/A") + "): " + ex.Message);
-		}
-	}
-
 	private static bool IsLocalNativeFleeAllowedForExternal(Agent agent)
 	{
 		try
@@ -3315,10 +3256,10 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				{
 					continue;
 				}
-				bool witnessWillResist = resistingCount < maxResisters && ShouldCivilianResistMassacre(witness);
-				if (witnessWillResist)
+				bool witnessWillDefy = resistingCount < maxResisters && ShouldCivilianResistMassacre(witness);
+				if (witnessWillDefy)
 				{
-				PrepareLocalHostileCivilian(witness, mission, player, SiegeLocalCivilianReactionProfile.WitnessResistSource);
+				PrepareLocalDefiantCivilian(witness, mission, player, SiegeLocalCivilianReactionProfile.WitnessResistSource);
 					resistingCount++;
 				}
 				else
@@ -3328,7 +3269,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				}
 				if (SiegeLocalCivilianReactionProfile.ShouldAssignWitnessSpeech(speakerCount))
 				{
-					TryTriggerLocalCivilianWitnessSpeech(witness, targetName, victimDown, witnessWillResist);
+					TryTriggerLocalCivilianWitnessSpeech(witness, targetName, victimDown, witnessWillDefy);
 					speakerCount++;
 				}
 			}
@@ -3382,7 +3323,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		return true;
 	}
 
-	private static bool TryTriggerLocalCivilianWitnessSpeech(Agent witness, string targetName, bool victimDown, bool witnessWillResist)
+	private static bool TryTriggerLocalCivilianWitnessSpeech(Agent witness, string targetName, bool victimDown, bool witnessWillDefy)
 	{
 		try
 		{
@@ -3390,7 +3331,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			{
 				return false;
 			}
-			string factText = SiegeLocalCivilianReactionProfile.BuildWitnessFact(targetName, victimDown, witnessWillResist, _activeSettlementName);
+			string factText = SiegeLocalCivilianReactionProfile.BuildWitnessFact(targetName, victimDown, witnessWillDefy, _activeSettlementName);
 			return ShoutBehavior.TriggerImmediateSceneBehaviorReactionForExternal(factText, witness.Index, persistHeroPrivateHistory: true, suppressStare: true, postSpeechLeaveSeconds: -1f);
 		}
 		catch (Exception ex)
@@ -3540,17 +3481,26 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 					ActivateNativeLocalFleeBehavior(agent, SiegeLocalCivilianReactionProfile.NativeFleeBridgeSource);
 				}
 			}
-			foreach (int agentIndex in LocalHostileCivilianAgentIndexes.ToList())
+			foreach (int agentIndex in LocalDefiantCivilianAgentIndexes.ToList())
 			{
 				Agent agent = mission.Agents.FirstOrDefault(a => a != null && a.Index == agentIndex);
 				if (!IsMassacreTargetAgent(agent, includeHeroes: true))
 				{
-					LocalHostileCivilianAgentIndexes.Remove(agentIndex);
+					LocalDefiantCivilianAgentIndexes.Remove(agentIndex);
 					LocalPlayerAttackVictimAgentIndexes.Remove(agentIndex);
 					continue;
 				}
-				ForceAgentForMassacreFight(agent);
+				ClearLocalDefiantCivilianCombatState(agent);
+				agent.InvalidateTargetAgent();
+				ClearAgentLookTarget(agent);
 				agent.SetWatchState(Agent.WatchState.Alarmed);
+				try
+				{
+					agent.SetMaximumSpeedLimit(0f, false);
+				}
+				catch
+				{
+				}
 				if (main != null && main.IsActive())
 				{
 					agent.SetLookAgent(main);
@@ -3568,11 +3518,10 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		LocalPlayerAttackVictimAgentIndexes.Clear();
 		LocalPlayerAttackDownAgentIndexes.Clear();
 		LocalSoldierWitnessInquiryVictimAgentIndexes.Clear();
-		LocalHostileCivilianAgentIndexes.Clear();
+		LocalDefiantCivilianAgentIndexes.Clear();
 		LocalFleeingCivilianAgentIndexes.Clear();
 		MassacreCaughtFleeingVictimAgentIndexes.Clear();
 		LastLocalCivilianWitnessReactionTimes.Clear();
-		_localNativeFightStarted = false;
 	}
 
 	internal static bool TryHandleFriendlyHitOnAlliedSoldier(Agent affectedAgent, string source, float damagedHp = 0f)
@@ -4877,7 +4826,6 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		_activeMode = InterventionMode.Massacre;
 		_civilianGatherPropagationActive = false;
 		ActiveCivilianGatherInteractions.Clear();
-		TryEndLocalNativeFight(Mission.Current, triggerSource);
 		ClearLocalPlayerAttackState();
 		bool first = !_massacreStarted;
 		_massacreStarted = true;
@@ -8129,7 +8077,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			{
 				return;
 			}
-			LocalHostileCivilianAgentIndexes.Remove(agent.Index);
+			LocalDefiantCivilianAgentIndexes.Remove(agent.Index);
 			LocalFleeingCivilianAgentIndexes.Add(agent.Index);
 			agent.InvalidateTargetAgent();
 			ClearAgentLookTarget(agent);

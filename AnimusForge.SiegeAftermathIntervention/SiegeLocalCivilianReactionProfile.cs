@@ -26,8 +26,6 @@ public static class SiegeLocalCivilianReactionProfile
 
     public const string NativeFleeBridgeSource = "local_player_attack_native_flee";
 
-    public const string NativeLocalFightSource = "local_player_attack_native_fight";
-
     public const string PlayerDownSource = "local_player_attack_down";
 
     public const string SoldierWitnessInquirySource = "local_player_attack_soldier_witness_inquiry";
@@ -59,17 +57,17 @@ public static class SiegeLocalCivilianReactionProfile
 
     public static string BuildPlayerDownMessage(string targetName)
     {
-        return "【局部冲突】你打倒了 " + NormalizeTargetName(targetName, "一名NPC") + "；附近民众会按区域恐慌逃散，少数胆大或带武器者可能反抗，但不会自动升级为全城血洗。";
+        return "【局部冲突】你打倒了 " + NormalizeTargetName(targetName, "一名NPC") + "；附近民众会按区域恐慌逃散，少数胆大或带武器者可能喝止/对峙，但不会自动升级为全城血洗。";
     }
 
     public static string BuildPlayerDownMemoryText(string targetName)
     {
-        return "玩家在攻城后处置场景中打倒了 " + NormalizeTargetName(targetName, "一名NPC") + "；这只触发局部区域恐慌和少量自卫反抗，不得自动升级为全城血洗。";
+        return "玩家在攻城后处置场景中打倒了 " + NormalizeTargetName(targetName, "一名NPC") + "；这只触发局部区域恐慌和少量喝止/对峙，不得自动升级为全城血洗或士兵参战。";
     }
 
     public static string BuildWitnessMemoryText(string targetName, int fleeingCount, int resistingCount)
     {
-        return "玩家攻击 " + NormalizeTargetName(targetName, "一名NPC") + " 后，附近约 " + Math.Max(0, fleeingCount) + " 名民众开始逃散，约 " + Math.Max(0, resistingCount) + " 名民众尝试局部反抗；该反应只代表街巷区域性冲突。";
+        return "玩家攻击 " + NormalizeTargetName(targetName, "一名NPC") + " 后，附近约 " + Math.Max(0, fleeingCount) + " 名民众开始逃散，约 " + Math.Max(0, resistingCount) + " 名民众尝试局部喝止/对峙；该反应只代表街巷区域性冲突，不接入血洗式敌对。";
     }
 
     public static string BuildWitnessFact(string targetName, bool victimDown, bool witnessWillResist, string settlementName)
@@ -78,7 +76,7 @@ public static class SiegeLocalCivilianReactionProfile
         string target = NormalizeTargetName(targetName, "附近一名民众");
         string incident = victimDown ? "玩家刚打倒了" : "玩家刚攻击了";
         string role = witnessWillResist
-            ? "你是附近少数胆大、带武器或有身份的人，会惊恐但试图短促反抗或喝止。"
+            ? "你是附近少数胆大、带武器或有身份的人，会惊恐但只做短促喝止、退让或对峙，不要说自己正主动攻击玩家或士兵。"
             : "你是附近目击的战败平民，会惊恐求生、喊人快跑、求饶或提醒家人躲开。";
         return "【攻城处置环境发言】当前地点是" + scene + "。" + incident + target + "，这只是局部街巷冲突，不是全城血洗命令。"
             + role

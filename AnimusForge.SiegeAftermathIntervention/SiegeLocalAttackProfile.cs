@@ -2,7 +2,7 @@ namespace AnimusForge.SiegeAftermathIntervention;
 
 /// <summary>
 /// Dependency-free policy and wording for local player attacks during active GCCZ intervention scenes.
-/// A player strike against one NPC is a local conflict signal; AF adapters own live agent panic/fight routing.
+/// A player strike against one NPC is a local conflict signal; AF adapters own live agent panic and standoff routing.
 /// </summary>
 public static class SiegeLocalAttackProfile
 {
@@ -18,19 +18,19 @@ public static class SiegeLocalAttackProfile
 
     public const string LocalFleeSource = "local_player_attack_flee";
 
-    public const string LocalHostileSource = "local_player_attack_resist";
+    public const string LocalDefiantSource = "local_player_attack_defiant";
 
     public const string MemoryTitle = "局部冲突";
 
-    public static string BuildPlayerHitMessage(string targetName, bool targetWillResist)
+    public static string BuildPlayerHitMessage(string targetName, bool targetWillDefy)
     {
-        string reaction = targetWillResist ? "目标会进行局部反抗" : "目标会逃跑并引发附近恐慌";
+        string reaction = targetWillDefy ? "目标会惊恐喝止或短暂对峙，但不会自动攻击士兵" : "目标会逃跑并引发附近恐慌";
         return "【局部冲突】你击中了 " + NormalizeTargetName(targetName, "一名NPC") + "，" + reaction + "；这不会自动进入全城血洗。若要血洗全城，必须对己方士兵明确下令。";
     }
 
-    public static string BuildPlayerHitMemoryText(string targetName, bool targetWillResist)
+    public static string BuildPlayerHitMemoryText(string targetName, bool targetWillDefy)
     {
-        string reaction = targetWillResist ? "该目标被标记为局部反抗者" : "该目标被标记为局部逃散者";
+        string reaction = targetWillDefy ? "该目标被标记为局部对峙/喝止者，不得接入血洗式敌对" : "该目标被标记为局部逃散者";
         return "玩家在攻城后处置场景中攻击了 " + NormalizeTargetName(targetName, "一名NPC") + "，这只造成局部冲突；" + reaction + "，不得因此自动升级为全城血洗。";
     }
 
