@@ -16,6 +16,14 @@ public static class SiegeLocalCivilianReactionProfile
 
     public const int MaxDefiantWitnessesPerIncident = 3;
 
+    public const float LocalFleeMinDistance = 28f;
+
+    public const float LocalFleeFallbackDistance = 36f;
+
+    public const float LocalFleeArrivalRadius = 5f;
+
+    public const float LocalFleeRefreshSeconds = 3.5f;
+
     public const float WitnessRepeatCooldownSeconds = 18f;
 
     public const uint SoldierWitnessFallbackMessageColor = 0xFFFFD27Fu;
@@ -67,6 +75,24 @@ public static class SiegeLocalCivilianReactionProfile
             return bucket < 3;
         }
         return bucket == 0;
+    }
+
+    public static bool IsLocalFleeTargetFarEnough(float distanceSquared)
+    {
+        return distanceSquared >= LocalFleeMinDistance * LocalFleeMinDistance;
+    }
+
+    public static bool IsLocalFleeTargetReached(float distanceSquared)
+    {
+        return distanceSquared <= LocalFleeArrivalRadius * LocalFleeArrivalRadius;
+    }
+
+    public static bool ShouldRefreshLocalFleeOrder(bool force, bool hasTarget, bool hasLastOrder, bool reachedTarget, float elapsedSeconds)
+    {
+        return force
+            || !hasTarget
+            || !hasLastOrder
+            || (!reachedTarget && elapsedSeconds >= LocalFleeRefreshSeconds);
     }
 
     public static bool ShouldAssignWitnessSpeech(int currentSpeakerCount)

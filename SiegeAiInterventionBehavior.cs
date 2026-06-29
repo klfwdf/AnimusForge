@@ -3144,23 +3144,119 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			ClearAgentLookTarget(agent);
 			agent.SetWatchState(Agent.WatchState.Alarmed);
 			ApplyOneTimeFrightenedCivilianAction(agent, allowGathered: true);
-			if (main != null && TryForceInterventionCivilianDirectRetreat(agent, mission, main, SiegeAgentWallRescueProfile.NativeDirectRetreatSource + ":local_flee", out Vec3 directRetreatTarget))
+			if (main != null)
 			{
-				CivilianHideSettledAgentIndexes.Remove(agent.Index);
-				CivilianHideTargets[agent.Index] = directRetreatTarget;
-				LastCivilianHideOrderTimes[agent.Index] = mission.CurrentTime;
+				KeepLocalConflictCivilianFleeing(agent, mission, main, force: true);
 				return;
 			}
 			ActivateNativeLocalFleeBehavior(agent, source ?? SiegeLocalAttackProfile.LocalFleeSource);
-			if (main != null)
-			{
-				KeepCivilianHidingFromOccupation(agent, mission, main, force: true);
-			}
 		}
 		catch (Exception ex)
 		{
 			Logger.Log("SiegeAiIntervention", "PrepareLocalFleeingCivilian failed: " + ex.Message);
 		}
+	}
+
+	private static void KeepLocalConflictCivilianFleeing(Agent civilian, Mission mission, Agent main, bool force)
+	{
+		try
+		{
+			if (civilian == null || mission == null || main == null || !civilian.IsHuman || !civilian.IsActive())
+			{
+				return;
+			}
+			civilian.InvalidateTargetAgent();
+			ClearAgentLookTarget(civilian);
+			civilian.SetWatchState(Agent.WatchState.Alarmed);
+			ApplyOneTimeFrightenedCivilianAction(civilian, allowGathered: true);
+			float now = mission.CurrentTime;
+			bool hasTarget = CivilianHideTargets.TryGetValue(civilian.Index, out Vec3 fleeTarget);
+			bool hasLastOrder = LastCivilianHideOrderTimes.TryGetValue(civilian.Index, out float lastOrder);
+			bool reachedTarget = hasTarget && SiegeLocalCivilianReactionProfile.IsLocalFleeTargetReached(civilian.Position.DistanceSquared(fleeTarget));
+			bool refresh = SiegeLocalCivilianReactionProfile.ShouldRefreshLocalFleeOrder(
+				force,
+				hasTarget,
+				hasLastOrder,
+				reachedTarget,
+				hasLastOrder ? now - lastOrder : 0f);
+			if (refresh)
+			{
+				CivilianHideSettledAgentIndexes.Remove(civilian.Index);
+				if (force || !hasTarget || reachedTarget)
+				{
+					fleeTarget = ResolveLocalConflictCivilianFleeTarget(civilian, mission, main);
+					CivilianHideTargets[civilian.Index] = fleeTarget;
+				}
+				LastCivilianHideOrderTimes[civilian.Index] = now;
+				try
+				{
+					civilian.SetMaximumSpeedLimit(-1f, false);
+					civilian.SetCrouchMode(false);
+				}
+				catch
+				{
+				}
+				if (!TrySetInterventionAgentTargetPosition(civilian, fleeTarget, SiegeLocalCivilianReactionProfile.WitnessFleeSource + ":long_flee", Agent.AIScriptedFrameFlags.NoAttack | Agent.AIScriptedFrameFlags.NeverSlowDown))
+				{
+					ActivateNativeLocalFleeBehavior(civilian, SiegeLocalCivilianReactionProfile.NativeFleeBridgeSource);
+				}
+				return;
+			}
+			if (reachedTarget)
+			{
+				if (CivilianHideSettledAgentIndexes.Add(civilian.Index))
+				{
+					try
+					{
+						civilian.DisableScriptedMovement();
+						civilian.ClearTargetFrame();
+						civilian.InvalidateTargetAgent();
+						civilian.SetMaximumSpeedLimit(0f, false);
+						civilian.SetCrouchMode(true);
+						civilian.SetLookToPointOfInterest(main.Position);
+					}
+					catch
+					{
+					}
+				}
+				return;
+			}
+			try
+			{
+				civilian.SetMaximumSpeedLimit(-1f, false);
+			}
+			catch
+			{
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "KeepLocalConflictCivilianFleeing failed: " + ex.Message);
+		}
+	}
+
+	private static Vec3 ResolveLocalConflictCivilianFleeTarget(Agent civilian, Mission mission, Agent main)
+	{
+		Vec3 origin = civilian?.Position ?? Vec3.Zero;
+		Vec3 target = ResolveCivilianEscapeOrHideTarget(civilian, mission, main);
+		if (SiegeLocalCivilianReactionProfile.IsLocalFleeTargetFarEnough(origin.DistanceSquared(target)))
+		{
+			return target;
+		}
+		Vec3 mainPosition = main?.Position ?? origin;
+		Vec3 away = origin - mainPosition;
+		away.z = 0f;
+		if (away.LengthSquared < 0.01f)
+		{
+			away = -(main?.LookDirection ?? Vec3.Forward);
+			away.z = 0f;
+		}
+		if (away.LengthSquared < 0.01f)
+		{
+			away = Vec3.Forward;
+		}
+		away.Normalize();
+		return ProjectCivilianRoutPointToGround(mission, origin + away * SiegeLocalCivilianReactionProfile.LocalFleeFallbackDistance);
 	}
 
 	private static void ActivateNativeLocalFleeBehavior(Agent agent, string source)
@@ -3498,7 +3594,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				bool hasHideTarget = CivilianHideTargets.ContainsKey(agent.Index);
 				if (main != null)
 				{
-					KeepCivilianHidingFromOccupation(agent, mission, main, force: false);
+					KeepLocalConflictCivilianFleeing(agent, mission, main, force: false);
 					hasHideTarget = CivilianHideTargets.ContainsKey(agent.Index);
 				}
 				if (!hasHideTarget)
