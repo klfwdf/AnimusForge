@@ -170,7 +170,7 @@ namespace AnimusForge
 					{
 						harmony.Patch(
 							addDecisionMethod,
-							prefix: new HarmonyMethod(typeof(VoteDealBehavior), nameof(Patch_AddDecision_BilateralDiplomacy_Prefix)));
+							prefix: new HarmonyMethod(typeof(VoteDealBehavior), nameof(Patch_AddDecision_AgendaDelay_Prefix)));
 					}
 				}
 				catch (Exception ex)
@@ -181,6 +181,22 @@ namespace AnimusForge
 					typeof(Kingdom).GetMethod("AddDecision"),
 					postfix: new HarmonyMethod(typeof(VoteDealBehavior), nameof(Patch_AddDecision_Delay_Postfix)));
 				Logger.Log("VoteDeal", "[Harmony] Kingdom.AddDecision delay hook applied (player=21d, others=3d).");
+
+				try
+				{
+					MethodInfo updateKingdomDecisionsMethod = AccessTools.Method(typeof(KingdomDecisionProposalBehavior), "UpdateKingdomDecisions", new[] { typeof(Kingdom) });
+					if (updateKingdomDecisionsMethod != null)
+					{
+						harmony.Patch(
+							updateKingdomDecisionsMethod,
+							prefix: new HarmonyMethod(typeof(VoteDealBehavior), nameof(Patch_UpdateKingdomDecisions_Delay_Prefix)));
+						Logger.Log("VoteDeal", "[Harmony] KingdomDecisionProposalBehavior.UpdateKingdomDecisions delay hook applied.");
+					}
+				}
+				catch (Exception ex)
+				{
+					Logger.Log("VoteDeal", $"[AgendaDelay] UpdateKingdomDecisions patch failed: {ex.Message}");
+				}
 
 				PatchBilateralDiplomacyDecision(harmony, typeof(MakePeaceKingdomDecision));
 				PatchBilateralDiplomacyDecision(harmony, typeof(StartAllianceDecision));
@@ -671,7 +687,7 @@ namespace AnimusForge
 			}
 		}
 
-		private static bool Patch_AddDecision_BilateralDiplomacy_Prefix(Kingdom __instance, KingdomDecision kingdomDecision, bool ignoreInfluenceCost)
+		private static bool Patch_AddDecision_AgendaDelay_Prefix(Kingdom __instance, KingdomDecision kingdomDecision, bool ignoreInfluenceCost)
 		{
 			try
 			{
@@ -687,9 +703,12 @@ namespace AnimusForge
 				}
 
 				if (__instance == Clan.PlayerClan?.Kingdom) return true;
-				if (behavior.FindCounterpartRecordForDecision(kingdomDecision) == null) return true;
+				if (kingdomDecision.Kingdom != null && kingdomDecision.Kingdom != __instance) return true;
+				if (kingdomDecision.IsEnforced) return true;
+				if (kingdomDecision.ShouldBeCancelled()) return true;
 
-				if (!IsBilateralCounterpartDecisionHardValid(kingdomDecision, out string hardFailureReason))
+				bool isBilateralCounterpart = behavior.FindCounterpartRecordForDecision(kingdomDecision) != null;
+				if (isBilateralCounterpart && !IsBilateralCounterpartDecisionHardValid(kingdomDecision, out string hardFailureReason))
 				{
 					Logger.Log("VoteDeal", "[BilateralDiplomacy] Counterpart AddDecision skipped because hard validity failed: " + hardFailureReason);
 					return false;
@@ -700,6 +719,9 @@ namespace AnimusForge
 					.GetValue<MBList<KingdomDecision>>();
 				if (unresolved == null) return true;
 
+				float delayDays = 3f;
+				SetDecisionTriggerTime(kingdomDecision, delayDays);
+
 				if (!ignoreInfluenceCost && kingdomDecision.ProposerClan != null)
 				{
 					int influenceCost = kingdomDecision.GetInfluenceCost(kingdomDecision.ProposerClan);
@@ -708,7 +730,7 @@ namespace AnimusForge
 
 				try
 				{
-					CampaignEventDispatcher.Instance.OnKingdomDecisionAdded(kingdomDecision, false);
+					CampaignEventDispatcher.Instance.OnKingdomDecisionAdded(kingdomDecision, IsPlayerInvolvedInDecision(kingdomDecision));
 				}
 				catch (Exception eventEx)
 				{
@@ -719,13 +741,219 @@ namespace AnimusForge
 				{
 					unresolved.Add(kingdomDecision);
 				}
-				Logger.Log("VoteDeal", $"[BilateralDiplomacy] Queued foreign counterpart agenda in {__instance.StringId} instead of immediate AI election.");
+				RegisterAgendaDelaySnapshot(kingdomDecision, __instance, delayDays);
+				Logger.Log("VoteDeal", $"[AgendaDelay] Queued foreign agenda in {__instance.StringId} instead of immediate AI election: {GetSafeDecisionTitle(kingdomDecision)}");
 				return false;
 			}
 			catch (Exception ex)
 			{
 				Logger.Log("VoteDeal", $"[BilateralDiplomacy] AddDecision prefix error: {ex.Message}");
 				return true;
+			}
+		}
+
+		private static bool Patch_UpdateKingdomDecisions_Delay_Prefix(Kingdom kingdom)
+		{
+			try
+			{
+				if (kingdom == null)
+				{
+					Logger.Log("VoteDeal", "[AgendaDelay] Skipped UpdateKingdomDecisions for null kingdom.");
+					return false;
+				}
+				if (IsKingdomEliminatedSafe(kingdom))
+				{
+					int removed = ClearUnresolvedDecisionsSafe(kingdom);
+					Logger.Log("VoteDeal", $"[AgendaDelay] Skipped eliminated kingdom={kingdom.StringId ?? ""} removedDecisions={removed}");
+					return false;
+				}
+
+				if (!UpdateDelayedKingdomDecisionsSafe(kingdom))
+				{
+					return true;
+				}
+				return false;
+			}
+			catch (Exception ex)
+			{
+				Logger.Log("VoteDeal", $"[AgendaDelay] UpdateKingdomDecisions prefix error: {ex.Message}");
+				return true;
+			}
+		}
+
+		private static bool UpdateDelayedKingdomDecisionsSafe(Kingdom kingdom)
+		{
+			try
+			{
+				List<KingdomDecision> decisions = kingdom?.UnresolvedDecisions?.ToList() ?? new List<KingdomDecision>();
+				int cancelled = 0;
+				int started = 0;
+
+				foreach (KingdomDecision decision in decisions)
+				{
+					if (decision == null || !IsDecisionPendingInKingdom(decision, kingdom))
+					{
+						continue;
+					}
+
+					if (ShouldCancelDecisionSafe(decision))
+					{
+						if (CancelDecisionSafe(kingdom, decision))
+						{
+							cancelled++;
+						}
+						continue;
+					}
+
+					if (decision.IsEnforced)
+					{
+						if (!NeedsPlayerResolutionSafe(decision) && StartDecisionElectionSafe(kingdom, decision))
+						{
+							started++;
+						}
+						continue;
+					}
+
+					if (IsDecisionTriggerFutureSafe(decision))
+					{
+						continue;
+					}
+
+					if (NeedsPlayerResolutionSafe(decision))
+					{
+						continue;
+					}
+
+					if (StartDecisionElectionSafe(kingdom, decision))
+					{
+						started++;
+					}
+				}
+
+				if (cancelled > 0 || started > 0)
+				{
+					Logger.Log("VoteDeal", $"[AgendaDelay] UpdateKingdomDecisions handled kingdom={kingdom.StringId ?? ""} cancelled={cancelled} started={started}");
+				}
+				return true;
+			}
+			catch (Exception ex)
+			{
+				Logger.Log("VoteDeal", $"[AgendaDelay] Delayed UpdateKingdomDecisions failed, falling back to original: {ex.Message}");
+				return false;
+			}
+		}
+
+		private static bool IsKingdomEliminatedSafe(Kingdom kingdom)
+		{
+			try
+			{
+				return kingdom?.IsEliminated == true;
+			}
+			catch
+			{
+				return true;
+			}
+		}
+
+		private static int ClearUnresolvedDecisionsSafe(Kingdom kingdom)
+		{
+			int removed = 0;
+			try
+			{
+				List<KingdomDecision> decisions = kingdom?.UnresolvedDecisions?.ToList() ?? new List<KingdomDecision>();
+				foreach (KingdomDecision decision in decisions)
+				{
+					try
+					{
+						kingdom.RemoveDecision(decision);
+						removed++;
+					}
+					catch (Exception ex)
+					{
+						Logger.Log("VoteDeal", $"[AgendaDelay] Failed to remove eliminated kingdom decision: {ex.Message}");
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				Logger.Log("VoteDeal", $"[AgendaDelay] Failed to enumerate eliminated kingdom decisions: {ex.Message}");
+			}
+			return removed;
+		}
+
+		private static bool ShouldCancelDecisionSafe(KingdomDecision decision)
+		{
+			try
+			{
+				return decision?.ShouldBeCancelled() == true;
+			}
+			catch (Exception ex)
+			{
+				Logger.Log("VoteDeal", $"[AgendaDelay] ShouldBeCancelled failed: {ex.Message}");
+				return false;
+			}
+		}
+
+		private static bool IsDecisionTriggerFutureSafe(KingdomDecision decision)
+		{
+			try
+			{
+				return decision?.TriggerTime.IsFuture == true;
+			}
+			catch (Exception ex)
+			{
+				Logger.Log("VoteDeal", $"[AgendaDelay] TriggerTime check failed: {ex.Message}");
+				return false;
+			}
+		}
+
+		private static bool NeedsPlayerResolutionSafe(KingdomDecision decision)
+		{
+			try
+			{
+				return decision?.NeedsPlayerResolution == true;
+			}
+			catch (Exception ex)
+			{
+				Logger.Log("VoteDeal", $"[AgendaDelay] NeedsPlayerResolution check failed: {ex.Message}");
+				return false;
+			}
+		}
+
+		private static bool CancelDecisionSafe(Kingdom kingdom, KingdomDecision decision)
+		{
+			try
+			{
+				if (!IsDecisionPendingInKingdom(decision, kingdom))
+				{
+					return false;
+				}
+				kingdom.RemoveDecision(decision);
+				CampaignEventDispatcher.Instance.OnKingdomDecisionCancelled(decision, IsPlayerInvolvedInDecision(decision));
+				return true;
+			}
+			catch (Exception ex)
+			{
+				Logger.Log("VoteDeal", $"[AgendaDelay] Failed to cancel delayed kingdom decision: {ex.Message}");
+				return false;
+			}
+		}
+
+		private static bool StartDecisionElectionSafe(Kingdom kingdom, KingdomDecision decision)
+		{
+			try
+			{
+				if (!IsDecisionPendingInKingdom(decision, kingdom))
+				{
+					return false;
+				}
+				new KingdomElection(decision).StartElectionWithoutPlayer();
+				return true;
+			}
+			catch (Exception ex)
+			{
+				Logger.Log("VoteDeal", $"[AgendaDelay] Failed to start delayed kingdom decision election: {ex.Message}");
+				return false;
 			}
 		}
 
@@ -989,6 +1217,8 @@ namespace AnimusForge
 				}
 
 				record.CounterpartCreated = true;
+				float delayDays = 3f;
+				SetDecisionTriggerTime(decision, delayDays);
 				try
 				{
 					CampaignEventDispatcher.Instance.OnKingdomDecisionAdded(decision, false);
@@ -1008,7 +1238,7 @@ namespace AnimusForge
 					return false;
 				}
 
-				RegisterAgendaDelaySnapshot(decision, kingdom, 3f);
+				RegisterAgendaDelaySnapshot(decision, kingdom, delayDays);
 				Logger.Log("VoteDeal", $"[BilateralDiplomacy] Queued counterpart agenda directly: id={record.RecordId} kingdom={kingdom.StringId} decision={GetSafeDecisionTitle(decision)}");
 				return true;
 			}
@@ -1021,6 +1251,27 @@ namespace AnimusForge
 			}
 		}
 
+		private static void SetDecisionTriggerTime(KingdomDecision decision, float delayDays)
+		{
+			if (decision == null) return;
+			Traverse.Create(decision).Property("TriggerTime")
+				.SetValue(CampaignTime.DaysFromNow(delayDays));
+		}
+
+		internal static bool IsDecisionPendingInKingdom(KingdomDecision decision, Kingdom kingdom)
+		{
+			try
+			{
+				return decision != null
+					&& kingdom?.UnresolvedDecisions != null
+					&& kingdom.UnresolvedDecisions.Contains(decision);
+			}
+			catch
+			{
+				return false;
+			}
+		}
+
 		private static void RegisterAgendaDelaySnapshot(KingdomDecision decision, Kingdom kingdom, float delayDays)
 		{
 			try
@@ -1029,11 +1280,14 @@ namespace AnimusForge
 				{
 					return;
 				}
-				Traverse.Create(decision).Property("TriggerTime")
-					.SetValue(CampaignTime.DaysFromNow(delayDays));
 				lock (KingdomAgendaVM._snapshots)
 				{
 					KingdomAgendaVM._snapshots.RemoveAll(snapshot => snapshot?.Decision == decision);
+					if (!IsDecisionPendingInKingdom(decision, kingdom))
+					{
+						return;
+					}
+					SetDecisionTriggerTime(decision, delayDays);
 					KingdomAgendaVM._snapshots.Add(new KingdomAgendaVM.Snapshot
 					{
 						Decision = decision,
@@ -1459,7 +1713,7 @@ namespace AnimusForge
 			}
 		}
 
-		private static Kingdom ResolveKingdom(string kingdomId)
+		internal static Kingdom ResolveKingdom(string kingdomId)
 		{
 			if (string.IsNullOrWhiteSpace(kingdomId)) return null;
 			return Kingdom.All.FirstOrDefault(k => k != null && string.Equals(k.StringId, kingdomId, StringComparison.OrdinalIgnoreCase));
@@ -2876,13 +3130,14 @@ namespace AnimusForge
 							AgendaItems.Add(item);
 						}
 
-						// 2. From snapshots (captures decisions processed by AI)
+						// 2. From snapshots for decisions that are still truly pending.
 						List<Snapshot> snaps;
 						lock (_snapshots)
 						{
 							snaps = _snapshots
 								.Where(s => s.Decision != null
 									&& !seen.Contains(s.Decision)
+									&& VoteDealBehavior.IsDecisionPendingInKingdom(s.Decision, kingdom)
 									&& string.Equals(s.KingdomId, kingdom.StringId, StringComparison.OrdinalIgnoreCase))
 								.ToList();
 						}
@@ -2911,7 +3166,8 @@ namespace AnimusForge
 					{
 						_snapshots.RemoveAll(s =>
 							s.Decision == null
-							|| s.CreatedAt.ElapsedDaysUntilNow > s.DelayDays + 1f);
+							|| s.CreatedAt.ElapsedDaysUntilNow > s.DelayDays + 1f
+							|| !VoteDealBehavior.IsDecisionPendingInKingdom(s.Decision, VoteDealBehavior.ResolveKingdom(s.KingdomId)));
 					}
 				}
 				catch (Exception ex)
