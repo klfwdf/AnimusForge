@@ -9,9 +9,7 @@ public static class SiegeAmbientReactionProfile
 {
     public const float WindowSeconds = 30.0f;
 
-    public const int MaxSpeakersPerAudience = 3;
-
-    public const float RequestSpacingSeconds = WindowSeconds / MaxSpeakersPerAudience;
+    public const float RequestSpacingSeconds = 10.0f;
 
     public const int RangeShoutAutoFollowupSpeakers = 3;
 

@@ -229,7 +229,6 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	private const float SoldierCordonLookRefreshSeconds = SiegeSoldierCordonProfile.LookRefreshSeconds;
 	private const int MaxInterventionMemoryEvents = SiegeInterventionMemoryContextBuilder.MaxMemoryEvents;
 	private const float AmbientReactionWindowSeconds = SiegeAmbientReactionProfile.WindowSeconds;
-	private const int MaxAmbientReactionSpeakersPerAudience = SiegeAmbientReactionProfile.MaxSpeakersPerAudience;
 	private const float AmbientReactionRequestSpacingSeconds = SiegeAmbientReactionProfile.RequestSpacingSeconds;
 
 	private static readonly Regex MercyTagRegex = new Regex(SiegeActionTagCatalog.MercyTagPattern, RegexOptions.IgnoreCase | RegexOptions.Compiled);
@@ -2065,11 +2064,16 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			Agent direct = TryGetAgent(directAgentIndex);
 			Agent anchor = focus ?? direct ?? Agent.Main ?? mission.MainAgent;
 			string focusName = focus?.Name?.ToString() ?? direct?.Name?.ToString() ?? SiegeAmbientReactionProfile.DefaultFocusName;
-			List<Agent> candidates = mission.Agents
+			List<Agent> allCandidates = mission.Agents
 				.Where(a => IsAmbientReactionCandidate(a, action, alliedSoldier, directAgentIndex, focusAgentIndex))
 				.OrderBy(a => anchor != null ? a.Position.DistanceSquared(anchor.Position) : a.Index)
 				.ThenBy(a => a.Index)
-				.Take(MaxAmbientReactionSpeakersPerAudience)
+				.ToList();
+			int allowedSpeakers = AfGcczShoutBridge.ResolveNpcResponseLimitForExternal(
+				allCandidates.Count,
+				"ambient_action_" + action + (alliedSoldier ? "_soldier" : "_civilian"));
+			List<Agent> candidates = allCandidates
+				.Take(Math.Max(0, allowedSpeakers))
 				.ToList();
 			if (candidates.Count == 0)
 			{

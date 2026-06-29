@@ -425,8 +425,8 @@ Follow-up isolation: GCCZ postprocess frequency policy now lives in `SiegePostpr
 - 非反抗平民先进入 `LocalFleeingCivilianAgentIndexes`，清目标/队形/日常 usable，播放受惊动作，并优先用 direct retreat/navmesh 藏身点逃散；这条路径同时服务血洗和殖民，避免触发后全城平民瞬间红名冲向玩家/士兵。
 - 70% 追击士兵仍会追猎全部未结算目标。逃跑平民只有在追击士兵已经逼近目标时，才通过 `SiegeMassacreInteractionProfile.CivilianHunterContactSource` 被桥接为可攻击敌对目标；该目标仍维持恐慌/逃跑行为，不被强行改成成建制反击者。
 
-## 2026-06-29 mercy and GCCZ postprocess throttle contract
+## 2026-06-29 mercy and GCCZ NPC response limit contract
 
 - `[ACTION:宽恕]` is a unilateral player mercy choice: the player clearly declaring no killing, no plunder, no pursuit, or protection of civilians is enough. Civilian fear, refusal, silence, or inability to represent the whole town must not block simple mercy.
 - Regional conflict debt still makes higher positive routes (`[ACTION:救济]`, `[ACTION:宣抚]`, `[ACTION:盟誓]`) harder to justify in prompt wording and continues to reduce their later positive settlement/notable effects; it does not block simple mercy.
-- Fused AF must expose the GCCZ postprocess throttle under MCM group `13. GCCZ攻城后处置`. The throttle must gate all GCCZ postprocess entrypoints, including native conversation, native/courier, and scene-queue calls. Direct high-value player text only bypasses to AI review; it never emits ACTION tags by fixed-word match.
+- Fused AF must expose the GCCZ NPC response limit under MCM group `13. GCCZ攻城后处置`. The limit controls how many NPCs may speak after a GCCZ action-tag/event reaction and how many NPCs may answer one player group shout during the active GCCZ scene. It must not throttle or skip ACTION postprocess itself; ACTION tags still come only from AI postprocess.

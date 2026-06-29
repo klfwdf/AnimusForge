@@ -519,11 +519,11 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		return ActionPostprocessApiMaxTokens;
 	}
 
-	public static bool IsGcczPostprocessUnlimitedFrequencyEnabled()
+	public static bool IsGcczNpcResponseUnlimitedEnabled()
 	{
 		try
 		{
-			return GetSettings()?.GcczPostprocessUnlimitedFrequency ?? true;
+			return GetSettings()?.GcczNpcResponseUnlimited ?? true;
 		}
 		catch
 		{
@@ -531,15 +531,15 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		}
 	}
 
-	public static int GetGcczPostprocessFrequencyLimit()
+	public static int GetGcczNpcResponseLimit()
 	{
 		try
 		{
-			return SiegePostprocessFrequencyProfile.ClampFrequencyLimit(GetSettings()?.GcczPostprocessFrequencyLimit ?? SiegePostprocessFrequencyProfile.DefaultFrequencyLimit);
+			return SiegeNpcResponseLimitProfile.ClampResponseLimit(GetSettings()?.GcczNpcResponseLimit ?? SiegeNpcResponseLimitProfile.DefaultResponseLimit);
 		}
 		catch
 		{
-			return SiegePostprocessFrequencyProfile.DefaultFrequencyLimit;
+			return SiegeNpcResponseLimitProfile.DefaultResponseLimit;
 		}
 	}
 
@@ -894,14 +894,6 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyGroup("1. AI 核心配置/3. 后处理API（动作标签与情绪标签判定）", GroupOrder = -280)]
 	public int ActionPostprocessApiMaxTokens { get; set; } = DefaultGeneralApiMaxTokens;
 
-	[SettingPropertyBool("GCCZ对话后处理无限频率", Order = 0, RequireRestart = false, HintText = "仅影响攻城后处置(GCCZ)场景的动作后处理。开启时保持当前行为，不做频率限制，并忽略下方 1-10 上限。")]
-	[SettingPropertyGroup("13. GCCZ攻城后处置", GroupOrder = -150)]
-	public bool GcczPostprocessUnlimitedFrequency { get; set; } = true;
-
-	[SettingPropertyInteger("GCCZ对话后限制后处理", SiegePostprocessFrequencyProfile.MinFrequencyLimit, SiegePostprocessFrequencyProfile.MaxFrequencyLimit, "0", Order = 1, RequireRestart = false, HintText = "关闭“GCCZ对话后处理无限频率”后生效：每 10 次低优先级 GCCZ 后处理最多允许 N 次，用于降低 token 消耗。疑似搜掠/血洗/救济/召集等直接玩家文本只会绕过限频并送入 AI 复核，不会固定词触发标签或结算；ACTION 标签仍必须由后处理 AI 输出。")]
-	[SettingPropertyGroup("13. GCCZ攻城后处置", GroupOrder = -150)]
-	public int GcczPostprocessFrequencyLimit { get; set; } = SiegePostprocessFrequencyProfile.DefaultFrequencyLimit;
-
 	[SettingPropertyText("事件/叛乱API 地址（支持填写 Base URL）", -1, true, "", Order = 0, RequireRestart = false, HintText = "用于事件系统周报与王国叛乱命名的独立接口地址，例如: https://api.openai.com/v1。填写到 /v1 时会自动补全为 /v1/chat/completions。留空时将继续回退使用主API。")]
 	[SettingPropertyGroup("1. AI 核心配置/4. 事件与王国叛乱API（周报生成与叛乱命名）", GroupOrder = -270)]
 	public string EventAndRebellionApiUrl { get; set; } = "";
@@ -1126,6 +1118,14 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyBool("玩家为国王时免疫稳定度叛乱", Order = 5, RequireRestart = false, HintText = "开启后，当玩家家族是某个王国的执政家族或玩家本人是该王国领袖时，本模组的王国稳定度不会继续给该王国施加关系修正、国王直辖地忠诚修正或王国叛乱判定。原版城镇低忠诚叛乱仍按原版规则运行。")]
 	[SettingPropertyGroup("12. 事件系统（开发）")]
 	public bool EnablePlayerKingdomRebellionImmunity { get; set; } = false;
+
+	[SettingPropertyBool("NPC回应无限数量", Order = 0, RequireRestart = false, HintText = "仅影响攻城后处置(GCCZ)场景。开启后，NPC对处置标签的环境回应、以及玩家集体喊话可回应的NPC不再套用下方 1-10 人数限制；关闭后使用下方人数上限。")]
+	[SettingPropertyGroup("13. GCCZ攻城后处置")]
+	public bool GcczNpcResponseUnlimited { get; set; } = true;
+
+	[SettingPropertyInteger("NPC回应数量限制", SiegeNpcResponseLimitProfile.MinResponseLimit, SiegeNpcResponseLimitProfile.MaxResponseLimit, "0", Order = 1, RequireRestart = false, HintText = "关闭“NPC回应无限数量”后生效：限制每次GCCZ处置标签环境回应、以及玩家一次集体喊话最多有多少NPC开口回应。范围 1-10。")]
+	[SettingPropertyGroup("13. GCCZ攻城后处置")]
+	public int GcczNpcResponseLimit { get; set; } = SiegeNpcResponseLimitProfile.DefaultResponseLimit;
 
 
 	public bool UseMcmKnowledgeRetrieval { get; set; } = true;

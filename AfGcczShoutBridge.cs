@@ -13,12 +13,6 @@ namespace AnimusForge;
 /// </summary>
 internal static class AfGcczShoutBridge
 {
-	private static readonly object PostprocessThrottleLock = new object();
-
-	private static int _postprocessThrottleCredit = SiegePostprocessFrequencyProfile.FrequencyWindowSize;
-
-	private static int _postprocessThrottleSkipLogCounter;
-
 	internal static string RuleId => SiegePostprocessRuleCatalog.RuleId;
 
 	internal static string InjectedRuleBlockMarker => SiegePostprocessRuleCatalog.InjectedRuleBlockMarker;
@@ -77,69 +71,38 @@ internal static class AfGcczShoutBridge
 		}
 		if (!IsActive())
 		{
-			ResetPostprocessThrottle();
 			return false;
 		}
-		if (DuelSettings.IsGcczPostprocessUnlimitedFrequencyEnabled())
-		{
-			ResetPostprocessThrottle();
-			return true;
-		}
-		if (SiegePostprocessFrequencyProfile.ShouldBypassThrottleForPlayerIntentReview(playerText, replyIsDirectPlayerResponse))
-		{
-			Logger.Log("Logic", "[GcczShoutBridge] postprocess throttle bypassed for AI review candidate source=" + NormalizeThrottleSource(source) + " reason=" + SiegePostprocessFrequencyProfile.AiReviewCandidateBypassSource);
-			return true;
-		}
-
-		int limit = DuelSettings.GetGcczPostprocessFrequencyLimit();
-		if (limit >= SiegePostprocessFrequencyProfile.FrequencyWindowSize)
-		{
-			ResetPostprocessThrottle();
-			return true;
-		}
-
-		bool shouldLogSkip = false;
-		lock (PostprocessThrottleLock)
-		{
-			_postprocessThrottleCredit = Math.Min(
-				SiegePostprocessFrequencyProfile.FrequencyWindowSize,
-				_postprocessThrottleCredit + limit);
-			if (_postprocessThrottleCredit >= SiegePostprocessFrequencyProfile.FrequencyWindowSize)
-			{
-				_postprocessThrottleCredit -= SiegePostprocessFrequencyProfile.FrequencyWindowSize;
-				_postprocessThrottleSkipLogCounter = 0;
-				return true;
-			}
-
-			_postprocessThrottleSkipLogCounter++;
-			shouldLogSkip = _postprocessThrottleSkipLogCounter == 1 || _postprocessThrottleSkipLogCounter % SiegePostprocessFrequencyProfile.FrequencyWindowSize == 0;
-		}
-
-		if (shouldLogSkip)
-		{
-			Logger.Log("Logic", "[GcczShoutBridge] postprocess skipped by frequency limit=" + limit + "/10 source=" + NormalizeThrottleSource(source));
-		}
-		return false;
-	}
-
-	private static void ResetPostprocessThrottle()
-	{
-		lock (PostprocessThrottleLock)
-		{
-			_postprocessThrottleCredit = SiegePostprocessFrequencyProfile.FrequencyWindowSize;
-			_postprocessThrottleSkipLogCounter = 0;
-		}
+		return true;
 	}
 
 	internal static void ResetPostprocessFrequencyForMissionBoundary(string source)
 	{
-		ResetPostprocessThrottle();
-		Logger.Log("Logic", "[GcczShoutBridge] postprocess throttle reset source=" + NormalizeThrottleSource(source));
+		GcczDiagnosticLog.Log("Postprocess", "boundary source=" + NormalizeThrottleSource(source));
 	}
 
 	private static string NormalizeThrottleSource(string source)
 	{
 		return string.IsNullOrWhiteSpace(source) ? "unknown" : source.Trim();
+	}
+
+	internal static int ResolveNpcResponseLimitForExternal(int availableCount, string source)
+	{
+		int safeAvailableCount = Math.Max(0, availableCount);
+		if (!IsActive())
+		{
+			return safeAvailableCount;
+		}
+
+		bool unlimited = DuelSettings.IsGcczNpcResponseUnlimitedEnabled();
+		int configuredLimit = DuelSettings.GetGcczNpcResponseLimit();
+		int allowed = SiegeNpcResponseLimitProfile.ResolveAllowedResponseCount(unlimited, configuredLimit, safeAvailableCount);
+		GcczDiagnosticLog.Log("ResponseLimit", "source=" + NormalizeThrottleSource(source)
+			+ " unlimited=" + unlimited
+			+ " configured=" + configuredLimit
+			+ " available=" + safeAvailableCount
+			+ " allowed=" + allowed);
+		return allowed;
 	}
 
 	internal static void AppendRuntimePromptToShoutContext(MyBehavior.ShoutPromptContext shoutPromptContext, Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, string cultureIdOverride)

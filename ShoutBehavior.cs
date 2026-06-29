@@ -10,6 +10,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using AnimusForge.SiegeAftermathIntervention;
 using SandBox;
 using SandBox.Missions.AgentBehaviors;
 using SandBox.Missions.MissionLogics;
@@ -21757,6 +21758,64 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		});
 	}
 
+	private static List<NpcDataPacket> BuildGroupSpeakingCandidatesWithGcczLimit(List<NpcDataPacket> allNpcData, NpcDataPacket primaryNpc, string source)
+	{
+		const int DefaultGroupResponseLimit = 10;
+		int limit = DefaultGroupResponseLimit;
+		if (AfGcczShoutBridge.IsActive())
+		{
+			int availableCount = CountPotentialGroupSpeakingCandidates(allNpcData, primaryNpc);
+			limit = AfGcczShoutBridge.ResolveNpcResponseLimitForExternal(availableCount, source);
+		}
+
+		List<NpcDataPacket> speakingCandidates = new List<NpcDataPacket>();
+		if (limit <= 0)
+		{
+			return speakingCandidates;
+		}
+		HashSet<int> addedAgentIndices = new HashSet<int>();
+		if (primaryNpc != null && addedAgentIndices.Add(primaryNpc.AgentIndex))
+		{
+			speakingCandidates.Add(primaryNpc);
+		}
+		if (allNpcData != null)
+		{
+			foreach (NpcDataPacket n in allNpcData)
+			{
+				if (speakingCandidates.Count >= limit)
+				{
+					break;
+				}
+				if (n == null || !addedAgentIndices.Add(n.AgentIndex))
+				{
+					continue;
+				}
+				speakingCandidates.Add(n);
+			}
+		}
+		return speakingCandidates;
+	}
+
+	private static int CountPotentialGroupSpeakingCandidates(List<NpcDataPacket> allNpcData, NpcDataPacket primaryNpc)
+	{
+		HashSet<int> candidateAgentIndices = new HashSet<int>();
+		if (primaryNpc != null)
+		{
+			candidateAgentIndices.Add(primaryNpc.AgentIndex);
+		}
+		if (allNpcData != null)
+		{
+			foreach (NpcDataPacket n in allNpcData)
+			{
+				if (n != null)
+				{
+					candidateAgentIndices.Add(n.AgentIndex);
+				}
+			}
+		}
+		return candidateAgentIndices.Count;
+	}
+
 	private async Task HandleGroupResponse(string playerText, List<NpcDataPacket> allNpcData, string sceneDesc, NpcDataPacket primaryNpc, string extraFact, Dictionary<int, PrecomputedShoutRagContext> precomputedContexts, Dictionary<int, Hero> resolvedHeroes, int conversationEpoch)
 	{
 		try
@@ -21777,26 +21836,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					return;
 				}
 				DuelSettings settings = DuelSettings.GetSettings();
-				int maxCount = 10;
-				List<NpcDataPacket> speakingCandidates = new List<NpcDataPacket>();
-				if (primaryNpc != null)
-				{
-					speakingCandidates.Add(primaryNpc);
-				}
-				if (allNpcData != null)
-				{
-					foreach (NpcDataPacket n in allNpcData)
-					{
-						if (n != null && (primaryNpc == null || n.AgentIndex != primaryNpc.AgentIndex))
-						{
-							speakingCandidates.Add(n);
-							if (speakingCandidates.Count >= maxCount)
-							{
-								break;
-							}
-						}
-					}
-				}
+				List<NpcDataPacket> speakingCandidates = BuildGroupSpeakingCandidatesWithGcczLimit(allNpcData, primaryNpc, "group_shout_stream");
 				List<string> patienceStatusLines = new List<string>();
 				List<NpcDataPacket> speakableCandidates = new List<NpcDataPacket>();
 				foreach (NpcDataPacket npc in speakingCandidates)
@@ -22192,23 +22232,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			{
 				allNpcData = new List<NpcDataPacket>();
 			}
-			int maxCount = 10;
-			List<NpcDataPacket> speakingCandidates = new List<NpcDataPacket>();
-			if (primaryNpc != null)
-			{
-				speakingCandidates.Add(primaryNpc);
-			}
-			foreach (NpcDataPacket n in allNpcData)
-			{
-				if (n != null && (primaryNpc == null || n.AgentIndex != primaryNpc.AgentIndex))
-				{
-					speakingCandidates.Add(n);
-					if (speakingCandidates.Count >= maxCount)
-					{
-						break;
-					}
-				}
-			}
+			List<NpcDataPacket> speakingCandidates = BuildGroupSpeakingCandidatesWithGcczLimit(allNpcData, primaryNpc, "group_shout_independent");
 			List<NpcDataPacket> speakableCandidates = new List<NpcDataPacket>();
 			List<string> patienceStatusLines = new List<string>();
 			foreach (NpcDataPacket npc in speakingCandidates)
