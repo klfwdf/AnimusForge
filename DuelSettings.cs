@@ -1127,6 +1127,10 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyGroup("13. GCCZ攻城后处置")]
 	public int GcczNpcResponseLimit { get; set; } = SiegeNpcResponseLimitProfile.DefaultResponseLimit;
 
+	[SettingPropertyButton("导出GCCZ_Debug.log", -1, true, "", Content = "导出到桌面", Order = 2, RequireRestart = false, HintText = "将当前模块 Logs 文件夹里的 GCCZ_Debug.log 复制到桌面，文件名会带时间戳。原始日志通常在 Bannerlord/Modules/AnimusForge_对应版本/Logs/GCCZ_Debug.log。")]
+	[SettingPropertyGroup("13. GCCZ攻城后处置")]
+	public Action ExportGcczDebugLog { get; set; }
+
 
 	public bool UseMcmKnowledgeRetrieval { get; set; } = true;
 
@@ -1503,6 +1507,31 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		catch (Exception ex)
 		{
 			InformationManager.DisplayMessage(new InformationMessage("[提示词扩展] 打开自定义提示词 JSON 文件夹失败: " + ex.Message, Color.FromUint(4294901760u)));
+		}
+	}
+
+	private void ExportGcczDebugLogToDesktop()
+	{
+		try
+		{
+			string sourcePath = GcczDiagnosticLog.GetDiagnosticLogPath();
+			string sourceDirectory = GcczDiagnosticLog.GetDiagnosticLogDirectory();
+			string exportPath = GcczDiagnosticLog.ExportLogToDesktop();
+			string exportDirectory = Path.GetDirectoryName(exportPath);
+			if (!string.IsNullOrWhiteSpace(exportDirectory) && Directory.Exists(exportDirectory))
+			{
+				Process.Start(new ProcessStartInfo(exportDirectory)
+				{
+					UseShellExecute = true
+				});
+			}
+			InformationManager.DisplayMessage(new InformationMessage("[GCCZ] 日志已导出到桌面：" + Path.GetFileName(exportPath) + "；原始目录：" + sourceDirectory, Color.FromUint(4278255360u)));
+			Logger.Log("DuelSettings", "[GCCZ] 导出日志成功 source=" + sourcePath + " export=" + exportPath);
+		}
+		catch (Exception ex)
+		{
+			InformationManager.DisplayMessage(new InformationMessage("[GCCZ] 导出日志失败: " + ex.Message, Color.FromUint(4294901760u)));
+			Logger.Log("DuelSettings", "[WARN] GCCZ日志导出失败: " + ex);
 		}
 	}
 
@@ -3579,6 +3608,10 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		OpenCustomPromptTextStoreFolderAction = delegate
 		{
 			OpenCustomPromptTextStoreFolder();
+		};
+		ExportGcczDebugLog = delegate
+		{
+			ExportGcczDebugLogToDesktop();
 		};
 		TestTtsVolcDedicatedVoice = delegate
 		{
