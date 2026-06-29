@@ -16133,6 +16133,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		bool worldMapPartyCommandPostprocessSelected = worldMapPartyCommandRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "worldmap_party_command");
 		bool marriagePostprocessSelected = HasPreprocessRuleHit(postprocessPreprocessHits, "marriage");
 		bool siegeInterventionPostprocessSelected = AfGcczShoutBridge.ShouldContinuePostprocess(siegeInterventionRuleInjected, postprocessPreprocessHits);
+		siegeInterventionPostprocessSelected = AfGcczShoutBridge.ShouldAllowPostprocessByFrequency(
+			siegeInterventionPostprocessSelected,
+			shouldRecordPlayerInput ? promptPlayerText : "",
+			shouldRecordPlayerInput,
+			"native_conversation");
 		List<RewardSystemBehavior.DuelStakeOption> nativeDuelStakeOptions = null;
 		if (duelPostprocessSelected && nativeDuelTargetHero != null && RewardSystemBehavior.Instance != null)
 		{

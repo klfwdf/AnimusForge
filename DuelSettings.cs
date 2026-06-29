@@ -894,12 +894,12 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyGroup("1. AI 核心配置/3. 后处理API（动作标签与情绪标签判定）", GroupOrder = -280)]
 	public int ActionPostprocessApiMaxTokens { get; set; } = DefaultGeneralApiMaxTokens;
 
-	[SettingPropertyBool("GCCZ后处理无限频率", Order = 10, RequireRestart = false, HintText = "仅影响攻城后处置(GCCZ)场景的动作后处理。开启时保持当前行为，不做频率限制，并忽略下方 1-10 上限。")]
-	[SettingPropertyGroup("1. AI 核心配置/3. 后处理API（动作标签与情绪标签判定）", GroupOrder = -280)]
+	[SettingPropertyBool("对话后处理无限频率", Order = 0, RequireRestart = false, HintText = "仅影响攻城后处置(GCCZ)场景的动作后处理。开启时保持当前行为，不做频率限制，并忽略下方 1-10 上限。")]
+	[SettingPropertyGroup("13. 攻城后处置", GroupOrder = -150)]
 	public bool GcczPostprocessUnlimitedFrequency { get; set; } = true;
 
-	[SettingPropertyInteger("GCCZ后处理每10次上限", SiegePostprocessFrequencyProfile.MinFrequencyLimit, SiegePostprocessFrequencyProfile.MaxFrequencyLimit, "0", Order = 11, RequireRestart = false, HintText = "关闭“无限频率”后生效：每 10 次低优先级 GCCZ 后处理最多允许 N 次，用于降低 token 消耗。疑似搜掠/血洗/救济/召集等直接玩家文本只会绕过限频并送入 AI 复核，不会固定词触发标签或结算；ACTION 标签仍必须由后处理 AI 输出。")]
-	[SettingPropertyGroup("1. AI 核心配置/3. 后处理API（动作标签与情绪标签判定）", GroupOrder = -280)]
+	[SettingPropertyInteger("对话后限制后处理", SiegePostprocessFrequencyProfile.MinFrequencyLimit, SiegePostprocessFrequencyProfile.MaxFrequencyLimit, "0", Order = 1, RequireRestart = false, HintText = "关闭“对话后处理无限频率”后生效：每 10 次低优先级 GCCZ 后处理最多允许 N 次，用于降低 token 消耗。疑似搜掠/血洗/救济/召集等直接玩家文本只会绕过限频并送入 AI 复核，不会固定词触发标签或结算；ACTION 标签仍必须由后处理 AI 输出。")]
+	[SettingPropertyGroup("13. 攻城后处置", GroupOrder = -150)]
 	public int GcczPostprocessFrequencyLimit { get; set; } = SiegePostprocessFrequencyProfile.DefaultFrequencyLimit;
 
 	[SettingPropertyText("事件/叛乱API 地址（支持填写 Base URL）", -1, true, "", Order = 0, RequireRestart = false, HintText = "用于事件系统周报与王国叛乱命名的独立接口地址，例如: https://api.openai.com/v1。填写到 /v1 时会自动补全为 /v1/chat/completions。留空时将继续回退使用主API。")]
@@ -1104,27 +1104,27 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	public int CustomPolicyPublicFeedbackTargetChars { get; set; } = DefaultCustomPolicyPublicFeedbackTargetChars;
 
 	[SettingPropertyInteger("周报篇幅档位", 1, 4, "0", Order = 0, RequireRestart = false, HintText = "1=200-400字；2=200-800字；3=200-1200字；4=200-1500字。世界周报和王国周报共用这一档位。")]
-	[SettingPropertyGroup("11. 事件系统（开发）")]
+	[SettingPropertyGroup("12. 事件系统（开发）")]
 	public int WeeklyReportLengthPreset { get; set; } = 2;
 
 	[SettingPropertyInteger("每分钟最多生成周报数", 1, 20, "0", Order = 1, RequireRestart = false, HintText = "限制开发态周报生成的请求速率。默认 5；最高 20。用于应对部分 API 渠道的 RPM 或并发限制。")]
-	[SettingPropertyGroup("11. 事件系统（开发）")]
+	[SettingPropertyGroup("12. 事件系统（开发）")]
 	public int WeeklyReportRequestsPerMinute { get; set; } = 5;
 
 	[SettingPropertyBool("每周自动生成周报", Order = 2, RequireRestart = false, HintText = "开启后，系统会在每个新周开始时自动结算上一周，并生成世界周报与各王国周报。第0天会自动写入开局概要作为 week 0 事件。")]
-	[SettingPropertyGroup("11. 事件系统（开发）")]
+	[SettingPropertyGroup("12. 事件系统（开发）")]
 	public bool AutoGenerateWeeklyReports { get; set; } = true;
 
 	[SettingPropertyInteger("周报弹窗正文字号", 12, 36, "0", Order = 3, RequireRestart = false, HintText = "仅影响最近王国周报的大弹窗正文，不影响别的界面。默认 18。")]
-	[SettingPropertyGroup("11. 事件系统（开发）")]
+	[SettingPropertyGroup("12. 事件系统（开发）")]
 	public int WeeklyReportPopupBodyFontSize { get; set; } = 18;
 
 	[SettingPropertyBool("启用王国稳定度与叛乱", Order = 4, RequireRestart = false, HintText = "关闭后，不再触发本模组的王国叛乱；王国稳定度不会再影响国王直辖领地忠诚度，也不会继续施加稳定度关系修正。")]
-	[SettingPropertyGroup("11. 事件系统（开发）")]
+	[SettingPropertyGroup("12. 事件系统（开发）")]
 	public bool EnableKingdomStabilityAndRebellion { get; set; } = true;
 
 	[SettingPropertyBool("玩家为国王时免疫稳定度叛乱", Order = 5, RequireRestart = false, HintText = "开启后，当玩家家族是某个王国的执政家族或玩家本人是该王国领袖时，本模组的王国稳定度不会继续给该王国施加关系修正、国王直辖地忠诚修正或王国叛乱判定。原版城镇低忠诚叛乱仍按原版规则运行。")]
-	[SettingPropertyGroup("11. 事件系统（开发）")]
+	[SettingPropertyGroup("12. 事件系统（开发）")]
 	public bool EnablePlayerKingdomRebellionImmunity { get; set; } = false;
 
 

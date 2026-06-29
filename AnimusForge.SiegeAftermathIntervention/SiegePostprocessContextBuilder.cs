@@ -40,6 +40,8 @@ public static class SiegePostprocessContextBuilder
         sb.AppendLine("- AF给予共享物资：" + facts.SharedReliefPoolDescription);
         sb.AppendLine("- GCCZ共享物资规则：本阶段玩家通过AF给予功能交给任一己方士兵、平民、商人、工匠、头人或要人的第纳尔、粮食或物资，全部视为全城平民共享安抚物资，不是收件NPC私人独占。");
         sb.AppendLine("- 若AF给予共享物资已经存在，且平民/商人/工匠/要人的回复谈到粮食、原料、钱货、供应、商路、工坊、修缮、安置、发放或救济，应优先判为[ACTION:救济]；不要只判为[ACTION:宽恕]。");
+        sb.AppendLine("- [ACTION:宽恕] 是单方处置：玩家明确宣布不杀不抢/不追究/放过民众即可，不需要平民同意；区域冲突造成的不信任不阻止宽恕。");
+        sb.AppendLine("- 区域冲突后的不信任会让 [ACTION:救济]/[ACTION:宣抚]/[ACTION:盟誓] 更难成立：只有 NPC 回复明确接受、传达或配合更高安抚安排时才输出这些标签；若只是玩家单方说不杀不抢，输出宽恕。");
 
         if (!string.IsNullOrWhiteSpace(facts.CivilianGatherContext))
         {
