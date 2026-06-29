@@ -60,9 +60,10 @@ internal readonly struct AfTributePowerContext
 internal sealed class NpcTributeVassalageBehavior : CampaignBehaviorBase
 {
 	private const string LogCategory = "NpcTributeVassalage";
-	private const float MinimumStrengthRatio = 1.35f;
-	private const float BaseChance = 0.12f;
-	private const float MaximumChance = 0.65f;
+	private const float MinimumStrengthRatio = 1.70f;
+	private const float BaseChance = 0.08f;
+	private const float MaximumChance = 0.45f;
+	private const float ChanceStrengthRatioRange = 1.50f;
 
 	public static NpcTributeVassalageBehavior Instance { get; private set; }
 
@@ -165,6 +166,11 @@ internal sealed class NpcTributeVassalageBehavior : CampaignBehaviorBase
 			if (float.IsNaN(strengthRatio) || float.IsInfinity(strengthRatio) || strengthRatio <= 0f)
 			{
 				strengthRatio = CalculateStrengthRatio(opponentStrength, activeStrength);
+			}
+			if (!DuelSettings.IsNpcTributaryVassalageEnabled())
+			{
+				LogCandidate("skip", "mcm_disabled", snapshot, tributeContext, activeStrength, opponentStrength, strengthRatio, 0f, 0f, "");
+				return;
 			}
 			if (!IsWeakActivePeaceSide(activeStrength, opponentStrength, strengthRatio))
 			{
@@ -614,7 +620,7 @@ internal sealed class NpcTributeVassalageBehavior : CampaignBehaviorBase
 
 	private static float CalculateVassalageChance(float strengthRatio)
 	{
-		float strengthProgress = Clamp01((strengthRatio - MinimumStrengthRatio) / 1.5f);
+		float strengthProgress = Clamp01((strengthRatio - MinimumStrengthRatio) / ChanceStrengthRatioRange);
 		return Clamp(BaseChance + strengthProgress * (MaximumChance - BaseChance), BaseChance, MaximumChance);
 	}
 
