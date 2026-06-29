@@ -734,15 +734,39 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyGroup("7. NPC主动接触")]
 	public int ProactiveNpcRequestClanDebtThreshold { get; set; } = 5000;
 
-	[SettingPropertyFloatingInteger("已知履历需求倍率", 1f, 5f, "0.0", Order = 18, RequireRestart = false, HintText = "NPC 已经知晓玩家重大履历时，需求驱动主动接触概率的倍率。默认 2.0。")]
+	[SettingPropertyInteger("联姻压力成人阈值", 1, 12, "0", Order = 18, RequireRestart = false, HintText = "NPC 家族成年核心成员数量小于或等于该值，且存在成年未婚家族成员时，可以触发继承/联姻压力主动接触。正常游玩默认 3。")]
+	[SettingPropertyGroup("7. NPC主动接触")]
+	public int ProactiveNpcRequestMarriageAdultClanThreshold { get; set; } = 3;
+
+	[SettingPropertyInteger("封地忠诚阈值", 0, 100, "0", Order = 19, RequireRestart = false, HintText = "NPC 家族封地忠诚低于或等于该值时，可以触发封地治理焦虑主动接触；0 表示不看忠诚。正常游玩默认 35。")]
+	[SettingPropertyGroup("7. NPC主动接触")]
+	public int ProactiveNpcRequestFiefLoyaltyThreshold { get; set; } = 35;
+
+	[SettingPropertyInteger("封地治安阈值", 0, 100, "0", Order = 20, RequireRestart = false, HintText = "NPC 家族封地治安低于或等于该值时，可以触发封地治理焦虑主动接触；0 表示不看治安。正常游玩默认 35。")]
+	[SettingPropertyGroup("7. NPC主动接触")]
+	public int ProactiveNpcRequestFiefSecurityThreshold { get; set; } = 35;
+
+	[SettingPropertyInteger("封地驻军阈值", 0, 1000, "0", Order = 21, RequireRestart = false, HintText = "NPC 家族封地驻军低于或等于该值时，可以触发封地治理焦虑主动接触；0 表示不看驻军。正常游玩默认 80。")]
+	[SettingPropertyGroup("7. NPC主动接触")]
+	public int ProactiveNpcRequestFiefGarrisonThreshold { get; set; } = 80;
+
+	[SettingPropertyInteger("孤立影响力阈值", 0, 500, "0", Order = 22, RequireRestart = false, HintText = "NPC 家族影响力低于或等于该值时，结合盟友数量可以触发缺少盟友主动接触；0 表示不看影响力。正常游玩默认 40。")]
+	[SettingPropertyGroup("7. NPC主动接触")]
+	public int ProactiveNpcRequestIsolationInfluenceThreshold { get; set; } = 40;
+
+	[SettingPropertyInteger("孤立友好家族上限", 0, 10, "0", Order = 23, RequireRestart = false, HintText = "同王国内与 NPC 家族关系达到 20 以上的友好家族数量小于或等于该值时，结合低影响力或敌对关系可以触发缺少盟友主动接触。正常游玩默认 1。")]
+	[SettingPropertyGroup("7. NPC主动接触")]
+	public int ProactiveNpcRequestIsolationMaxFriendlyClans { get; set; } = 1;
+
+	[SettingPropertyFloatingInteger("已知履历需求倍率", 1f, 5f, "0.0", Order = 24, RequireRestart = false, HintText = "NPC 已经知晓玩家重大履历时，需求驱动主动接触概率的倍率。默认 2.0。")]
 	[SettingPropertyGroup("7. NPC主动接触")]
 	public float ProactiveNpcKnownMajorMultiplier { get; set; } = 2f;
 
-	[SettingPropertyFloatingInteger("知名度触发倍率", 0f, 3f, "0.0", Order = 19, RequireRestart = false, HintText = "玩家有效知名度转化为 NPC 主动接触额外概率的倍率。正常游玩默认 0.35。")]
+	[SettingPropertyFloatingInteger("知名度触发倍率", 0f, 3f, "0.0", Order = 25, RequireRestart = false, HintText = "玩家有效知名度转化为 NPC 主动接触额外概率的倍率。正常游玩默认 0.35。")]
 	[SettingPropertyGroup("7. NPC主动接触")]
 	public float ProactiveNpcNotorietyChanceMultiplier { get; set; } = 0.35f;
 
-	[SettingPropertyInteger("最低需求紧急度", 0, 100, "0", Order = 20, RequireRestart = false, HintText = "NPC 主动接触必须达到的最低需求紧急度；测试模式下运行时按 0 处理。正常游玩默认 60。")]
+	[SettingPropertyInteger("最低需求紧急度", 0, 100, "0", Order = 26, RequireRestart = false, HintText = "NPC 主动接触必须达到的最低需求紧急度；测试模式下运行时按 0 处理。正常游玩默认 60。")]
 	[SettingPropertyGroup("7. NPC主动接触")]
 	public int ProactiveNpcMinNeedUrgency { get; set; } = 60;
 

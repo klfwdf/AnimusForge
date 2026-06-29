@@ -1,5 +1,6 @@
 ﻿﻿﻿using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -1720,6 +1721,8 @@ public class MyBehavior : CampaignBehaviorBase
 	private PendingAutomaticKingdomRebellionContext _pendingAutomaticKingdomRebellionContext;
 
 	private readonly List<PendingAutomaticKingdomRebellionContext> _queuedAutomaticKingdomRebellions = new List<PendingAutomaticKingdomRebellionContext>();
+
+	private readonly ConcurrentQueue<Action> _kingdomRebellionNamingMainThreadActions = new ConcurrentQueue<Action>();
 
 	private int _pendingAutoWeeklyReportWeek;
 
@@ -11566,12 +11569,25 @@ public class MyBehavior : CampaignBehaviorBase
 		_pendingAutomaticKingdomRebellionReady = false;
 		_pendingAutomaticKingdomRebellionContext = null;
 		InformationManager.ShowInquiry(new InquiryData("正在生成叛乱建国命名", "系统正在为本周自动叛乱生成新王国的名称与百科简介。\n\n这一步完成前不会继续本轮自动叛乱与周报流程。\n请稍候，结果完成后会自动弹出。", isAffirmativeOptionShown: false, isNegativeOptionShown: false, "", "", null, null), pauseGameActiveState: true);
+		long runtimeGeneration = SaveRuntimeGuard.CaptureGeneration();
+		string logTarget = "自动叛乱建国命名 - " + GetClanId(clan);
 		Task.Run(delegate
 		{
-			RebelKingdomNamingResult namingResult = GenerateRebelKingdomNamingFromPrompts(systemPrompt, userPrompt, "自动叛乱建国命名 - " + GetClanId(clan), RebelKingdomNamingMaxAttempts);
-			pendingAutomaticKingdomRebellionContext.NamingResult = namingResult;
-			_pendingAutomaticKingdomRebellionContext = pendingAutomaticKingdomRebellionContext;
-			_pendingAutomaticKingdomRebellionReady = true;
+			RebelKingdomNamingResult namingResult;
+			try
+			{
+				namingResult = GenerateRebelKingdomNamingFromPrompts(systemPrompt, userPrompt, logTarget, RebelKingdomNamingMaxAttempts);
+			}
+			catch (Exception ex)
+			{
+				namingResult = BuildFailedRebelKingdomNamingResult("叛乱建国命名后台任务异常：" + ex.Message);
+			}
+			EnqueueKingdomRebellionNamingMainThreadAction(runtimeGeneration, delegate
+			{
+				pendingAutomaticKingdomRebellionContext.NamingResult = namingResult;
+				_pendingAutomaticKingdomRebellionContext = pendingAutomaticKingdomRebellionContext;
+				_pendingAutomaticKingdomRebellionReady = true;
+			}, "automatic_rebellion_naming");
 		});
 	}
 
@@ -11745,12 +11761,25 @@ public class MyBehavior : CampaignBehaviorBase
 		_pendingAutomaticKingdomRebellionReady = false;
 		_pendingAutomaticKingdomRebellionContext = null;
 		InformationManager.ShowInquiry(new InquiryData("正在重新生成叛乱建国命名", "系统正在按修正后的事件/叛乱API配置重新请求新王国名称与百科简介。\n\n这一步完成前不会继续本轮自动叛乱与周报流程。", isAffirmativeOptionShown: false, isNegativeOptionShown: false, "", "", null, null), pauseGameActiveState: true);
+		long runtimeGeneration = SaveRuntimeGuard.CaptureGeneration();
+		string logTarget = "自动叛乱建国命名重试 - " + GetClanId(clan);
 		Task.Run(delegate
 		{
-			RebelKingdomNamingResult namingResult = GenerateRebelKingdomNamingFromPrompts(systemPrompt, userPrompt, "自动叛乱建国命名重试 - " + GetClanId(clan), RebelKingdomNamingMaxAttempts);
-			context.NamingResult = namingResult;
-			_pendingAutomaticKingdomRebellionContext = context;
-			_pendingAutomaticKingdomRebellionReady = true;
+			RebelKingdomNamingResult namingResult;
+			try
+			{
+				namingResult = GenerateRebelKingdomNamingFromPrompts(systemPrompt, userPrompt, logTarget, RebelKingdomNamingMaxAttempts);
+			}
+			catch (Exception ex)
+			{
+				namingResult = BuildFailedRebelKingdomNamingResult("叛乱建国命名重试后台任务异常：" + ex.Message);
+			}
+			EnqueueKingdomRebellionNamingMainThreadAction(runtimeGeneration, delegate
+			{
+				context.NamingResult = namingResult;
+				_pendingAutomaticKingdomRebellionContext = context;
+				_pendingAutomaticKingdomRebellionReady = true;
+			}, "automatic_rebellion_naming_retry");
 		});
 	}
 
@@ -17352,12 +17381,46 @@ public class MyBehavior : CampaignBehaviorBase
 			ProcessWeeklyReportUiResume();
 			TryPublishUnreadWeeklyReportMapNotifications();
 			ProcessKingdomRebellionApiRepairResume();
+			ProcessKingdomRebellionNamingMainThreadActions();
 			ProcessPendingDevForcedKingdomRebellionResult();
 			ProcessPendingAutomaticKingdomRebellionResult();
 			TryStartDeferredAutoWeeklyReports();
 		}
 		catch
 		{
+		}
+	}
+
+	private void EnqueueKingdomRebellionNamingMainThreadAction(long runtimeGeneration, Action action, string source)
+	{
+		if (action == null)
+		{
+			return;
+		}
+		_kingdomRebellionNamingMainThreadActions.Enqueue(delegate
+		{
+			if (SaveRuntimeGuard.IsStale(runtimeGeneration, source))
+			{
+				return;
+			}
+			action();
+		});
+	}
+
+	private void ProcessKingdomRebellionNamingMainThreadActions()
+	{
+		int processed = 0;
+		while (processed < 16 && _kingdomRebellionNamingMainThreadActions.TryDequeue(out var action))
+		{
+			processed++;
+			try
+			{
+				action?.Invoke();
+			}
+			catch (Exception ex)
+			{
+				Logger.Log("KingdomRebellion", "[ERROR] naming main-thread action failed: " + ex);
+			}
 		}
 	}
 
@@ -17900,21 +17963,35 @@ public class MyBehavior : CampaignBehaviorBase
 		_pendingDevForcedKingdomRebellionReady = false;
 		_pendingDevForcedKingdomRebellionContext = null;
 		InformationManager.ShowInquiry(new InquiryData("正在生成叛乱建国命名", "系统正在后台请求 LLM 为这次叛乱生成新王国的名称与百科简介。\n\n这一步完成后，才会真正执行家族反出与建国。\n请稍候，结果完成后会自动弹出。", isAffirmativeOptionShown: false, isNegativeOptionShown: false, "", "", null, null), pauseGameActiveState: true);
+		long runtimeGeneration = SaveRuntimeGuard.CaptureGeneration();
+		string logTarget = "叛乱建国命名 - " + GetClanId(clan);
+		PendingDevForcedKingdomRebellionContext pendingContext = new PendingDevForcedKingdomRebellionContext
+		{
+			KingdomId = GetKingdomId(kingdom),
+			ClanId = GetClanId(clan),
+			WeekIndex = weekIndex,
+			RelationToKing = relationToKing,
+			TownCount = townCount,
+			CastleCount = castleCount,
+			FollowerClanIds = list.Select(GetClanId).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList()
+		};
 		Task.Run(delegate
 		{
-			RebelKingdomNamingResult namingResult = GenerateRebelKingdomNamingFromPrompts(systemPrompt, userPrompt, "叛乱建国命名 - " + GetClanId(clan), RebelKingdomNamingMaxAttempts);
-			_pendingDevForcedKingdomRebellionContext = new PendingDevForcedKingdomRebellionContext
+			RebelKingdomNamingResult namingResult;
+			try
 			{
-				KingdomId = GetKingdomId(kingdom),
-				ClanId = GetClanId(clan),
-				WeekIndex = weekIndex,
-				RelationToKing = relationToKing,
-				TownCount = townCount,
-				CastleCount = castleCount,
-				FollowerClanIds = list.Select(GetClanId).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList(),
-				NamingResult = namingResult
-			};
-			_pendingDevForcedKingdomRebellionReady = true;
+				namingResult = GenerateRebelKingdomNamingFromPrompts(systemPrompt, userPrompt, logTarget, RebelKingdomNamingMaxAttempts);
+			}
+			catch (Exception ex)
+			{
+				namingResult = BuildFailedRebelKingdomNamingResult("强制叛乱建国命名后台任务异常：" + ex.Message);
+			}
+			EnqueueKingdomRebellionNamingMainThreadAction(runtimeGeneration, delegate
+			{
+				pendingContext.NamingResult = namingResult;
+				_pendingDevForcedKingdomRebellionContext = pendingContext;
+				_pendingDevForcedKingdomRebellionReady = true;
+			}, "dev_forced_rebellion_naming");
 		});
 	}
 
@@ -42499,6 +42576,9 @@ public class MyBehavior : CampaignBehaviorBase
 		_pendingAutomaticKingdomRebellionReady = false;
 		_pendingAutomaticKingdomRebellionContext = null;
 		_queuedAutomaticKingdomRebellions.Clear();
+		while (_kingdomRebellionNamingMainThreadActions.TryDequeue(out var _))
+		{
+		}
 		_pendingAutoWeeklyReportWeek = 0;
 		lock (_weekZeroShortSummaryQueueLock)
 		{

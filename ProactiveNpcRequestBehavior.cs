@@ -33,6 +33,10 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 	private const string NeedMountShortage = "MountShortage";
 	private const string NeedOverburdened = "Overburdened";
 	private const string NeedClanFinanceStrain = "ClanFinanceStrain";
+	private const string NeedMarriageAlliancePressure = "MarriageAlliancePressure";
+	private const string NeedRevengePressure = "RevengePressure";
+	private const string NeedFiefGovernanceAnxiety = "FiefGovernanceAnxiety";
+	private const string NeedAllySupport = "AllySupport";
 	private const string TriggerSourceNeedDriven = "NeedDriven";
 	private const string TriggerSourceNotorietyDriven = "NotorietyDriven";
 	private const int MercenaryInviteMinPlayerClanTier = 1;
@@ -357,7 +361,7 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 			return;
 		}
 		Logger.Log("ProactiveNpcRequest", "scan selected: triggerSource=" + (candidate.TriggerSource ?? "") + " knownMajorBefore=" + candidate.KnownMajorBeforeRequest + " effectiveNotoriety=" + candidate.EffectiveNotorietyAtRequest + " needChance=" + candidate.NeedDrivenChance.ToString("0.##") + " notorietyChance=" + candidate.NotorietyDrivenChance.ToString("0.##") + " selectedUrgency=" + candidate.SelectedNeedUrgency.ToString("0.##") + " need=" + (candidate.NeedType ?? "") + " needs=" + JoinNeedTypesForLog(candidate.NeedTypes, candidate.NeedType) + " hero=" + (candidate.Hero?.StringId ?? "") + " party=" + (candidate.Party?.StringId ?? "") + " kingdom=" + (candidate.TargetKingdomId ?? "") + " playerClanTier=" + candidate.PlayerClanTier + " isKingdomLeader=" + candidate.TargetHeroIsKingdomLeader + " kingdomVassals=" + candidate.KingdomFormalVassalClanCount + "/" + candidate.KingdomTargetVassalClanCount + " kingdomMercs=" + candidate.KingdomMercenaryClanCount + "/" + candidate.KingdomTargetMercenaryClanCount + " kingdomFiefScore=" + candidate.KingdomFiefScore + " kingdomWars=" + candidate.KingdomWarKingdomCount + " kingdomPowerRatio=" + candidate.KingdomPowerRatioToEnemies.ToString("0.00") + " distance=" + candidate.Distance.ToString("0.0") + " foodDays=" + candidate.FoodDays + " partyGold=" + candidate.PartyGold + " totalWage=" + candidate.TotalWage + " unpaidWages=" + candidate.UnpaidWages.ToString("0.00") + " troops=" + candidate.MemberCount + "/" + candidate.PartySizeLimit + " troopRatio=" + candidate.PartySizeRatio.ToString("0.00") + " prisoners=" + candidate.PrisonerCount + "/" + candidate.PrisonerSizeLimit + " heroPrisoners=" + candidate.HeroPrisonerCount + " prisonerRatio=" + candidate.PrisonerSizeRatio.ToString("0.00") + " wageBudget=" + candidate.AvailableWageBudget + " testFallback=" + candidate.IsTestFallback + " stats=" + stats?.ToLogString());
-		Logger.Log("ProactiveNpcRequest", "scan selected extra needs=" + JoinNeedTypesForLog(candidate.NeedTypes, candidate.NeedType) + " morale=" + candidate.Morale.ToString("0.0") + " mounts=" + candidate.MountCount + " packAnimals=" + candidate.PackAnimalCount + " mountRatio=" + candidate.MountRatio.ToString("0.00") + " carry=" + candidate.TotalWeightCarried.ToString("0.0") + "/" + candidate.InventoryCapacity + " carryRatio=" + candidate.CarryRatio.ToString("0.00") + " clanGold=" + candidate.ClanGold + " clanDebt=" + candidate.ClanDebtToKingdom + " captiveClanHeroes=" + candidate.CaptiveClanHeroCount + " captiveHero=" + (candidate.CaptiveClanHeroName ?? "") + " captiveHolder=" + (candidate.CaptiveClanHeroHolderName ?? "") + " captiveLeader=" + candidate.CaptiveClanLeaderHeld);
+		Logger.Log("ProactiveNpcRequest", "scan selected extra needs=" + JoinNeedTypesForLog(candidate.NeedTypes, candidate.NeedType) + " morale=" + candidate.Morale.ToString("0.0") + " mounts=" + candidate.MountCount + " packAnimals=" + candidate.PackAnimalCount + " mountRatio=" + candidate.MountRatio.ToString("0.00") + " carry=" + candidate.TotalWeightCarried.ToString("0.0") + "/" + candidate.InventoryCapacity + " carryRatio=" + candidate.CarryRatio.ToString("0.00") + " clanGold=" + candidate.ClanGold + " clanDebt=" + candidate.ClanDebtToKingdom + " captiveClanHeroes=" + candidate.CaptiveClanHeroCount + " captiveHero=" + (candidate.CaptiveClanHeroName ?? "") + " captiveHolder=" + (candidate.CaptiveClanHeroHolderName ?? "") + " captiveLeader=" + candidate.CaptiveClanLeaderHeld + " marriageAdults=" + candidate.MarriageAdultClanHeroCount + " unmarriedAdults=" + candidate.MarriageUnmarriedAdultCount + " firstUnmarried=" + (candidate.MarriageFirstUnmarriedName ?? "") + " revengeScore=" + candidate.RevengePressureScore.ToString("0.0") + " revengeTarget=" + (candidate.RevengeTargetName ?? "") + " fiefProblems=" + candidate.FiefProblemCount + " fief=" + (candidate.FiefProblemName ?? "") + " fiefIssue=" + (candidate.FiefIssueText ?? "") + " allyInfluence=" + candidate.ClanInfluence.ToString("0.0") + " friendlyClans=" + candidate.FriendlyClanCount + " hostileClans=" + candidate.HostileClanCount);
 		StartRequest(candidate, settings);
 	}
 
@@ -440,6 +444,26 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 				{
 					stats.ClanFinanceStrain++;
 					needCandidates.Add(clanFinanceCandidate);
+				}
+				if (TryBuildMarriageAlliancePressureCandidate(candidate, settings, out ProactiveCandidate marriageCandidate))
+				{
+					stats.MarriageAlliancePressure++;
+					needCandidates.Add(marriageCandidate);
+				}
+				if (TryBuildRevengePressureCandidate(candidate, settings, out ProactiveCandidate revengeCandidate))
+				{
+					stats.RevengePressure++;
+					needCandidates.Add(revengeCandidate);
+				}
+				if (TryBuildFiefGovernanceAnxietyCandidate(candidate, settings, out ProactiveCandidate fiefGovernanceCandidate))
+				{
+					stats.FiefGovernanceAnxiety++;
+					needCandidates.Add(fiefGovernanceCandidate);
+				}
+				if (TryBuildAllySupportCandidate(candidate, settings, out ProactiveCandidate allySupportCandidate))
+				{
+					stats.AllySupport++;
+					needCandidates.Add(allySupportCandidate);
 				}
 				if (TryBuildKingdomMercenaryInviteCandidate(candidate, settings, out ProactiveCandidate mercenaryInviteCandidate))
 				{
@@ -607,6 +631,10 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 			int clanDebtToKingdom = SafeClanDebtToKingdom(hero.Clan);
 			ClanCaptiveSnapshot captiveSnapshot = BuildClanCaptiveSnapshot(hero);
 			Kingdom targetKingdom = ResolveHeroKingdom(hero);
+			MarriageAllianceSnapshot marriageSnapshot = BuildMarriageAllianceSnapshot(hero);
+			FiefGovernanceSnapshot fiefGovernanceSnapshot = BuildFiefGovernanceSnapshot(hero.Clan, settings);
+			AllySupportSnapshot allySupportSnapshot = BuildAllySupportSnapshot(hero.Clan, targetKingdom, settings);
+			RevengePressureSnapshot revengeSnapshot = BuildRevengePressureSnapshot(hero, targetKingdom, captiveSnapshot, fiefGovernanceSnapshot);
 			if (atWarWithPlayer && !CanBuildWartimeDiplomacyCandidate(hero, targetKingdom))
 			{
 				skipReason = "war_non_diplomacy";
@@ -649,6 +677,23 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 				CaptiveClanHeroName = captiveSnapshot.FirstHeroName,
 				CaptiveClanHeroHolderName = captiveSnapshot.FirstHolderName,
 				CaptiveClanLeaderHeld = captiveSnapshot.LeaderHeld,
+				MarriageAdultClanHeroCount = marriageSnapshot.AdultClanHeroCount,
+				MarriageUnmarriedAdultCount = marriageSnapshot.UnmarriedAdultCount,
+				MarriageFirstUnmarriedName = marriageSnapshot.FirstUnmarriedName,
+				MarriageRequesterUnmarried = marriageSnapshot.RequesterUnmarried,
+				RevengePressureScore = revengeSnapshot.PressureScore,
+				RevengeTargetName = revengeSnapshot.TargetName,
+				RevengeReasonText = revengeSnapshot.ReasonText,
+				FiefProblemCount = fiefGovernanceSnapshot.ProblemCount,
+				FiefProblemName = fiefGovernanceSnapshot.FirstProblemName,
+				FiefLoyalty = fiefGovernanceSnapshot.LowestLoyalty,
+				FiefSecurity = fiefGovernanceSnapshot.LowestSecurity,
+				FiefGarrisonCount = fiefGovernanceSnapshot.LowestGarrisonCount,
+				FiefIssueText = fiefGovernanceSnapshot.IssueText,
+				FiefUnderAttack = fiefGovernanceSnapshot.UnderAttack,
+				ClanInfluence = allySupportSnapshot.ClanInfluence,
+				FriendlyClanCount = allySupportSnapshot.FriendlyClanCount,
+				HostileClanCount = allySupportSnapshot.HostileClanCount,
 				TargetKingdom = targetKingdom,
 				TargetKingdomId = GetKingdomKey(targetKingdom),
 				TargetKingdomName = GetKingdomName(targetKingdom),
@@ -719,6 +764,23 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 			CaptiveClanHeroName = source.CaptiveClanHeroName,
 			CaptiveClanHeroHolderName = source.CaptiveClanHeroHolderName,
 			CaptiveClanLeaderHeld = source.CaptiveClanLeaderHeld,
+			MarriageAdultClanHeroCount = source.MarriageAdultClanHeroCount,
+			MarriageUnmarriedAdultCount = source.MarriageUnmarriedAdultCount,
+			MarriageFirstUnmarriedName = source.MarriageFirstUnmarriedName,
+			MarriageRequesterUnmarried = source.MarriageRequesterUnmarried,
+			RevengePressureScore = source.RevengePressureScore,
+			RevengeTargetName = source.RevengeTargetName,
+			RevengeReasonText = source.RevengeReasonText,
+			FiefProblemCount = source.FiefProblemCount,
+			FiefProblemName = source.FiefProblemName,
+			FiefLoyalty = source.FiefLoyalty,
+			FiefSecurity = source.FiefSecurity,
+			FiefGarrisonCount = source.FiefGarrisonCount,
+			FiefIssueText = source.FiefIssueText,
+			FiefUnderAttack = source.FiefUnderAttack,
+			ClanInfluence = source.ClanInfluence,
+			FriendlyClanCount = source.FriendlyClanCount,
+			HostileClanCount = source.HostileClanCount,
 			TargetKingdom = source.TargetKingdom,
 			TargetKingdomId = source.TargetKingdomId,
 			TargetKingdomName = source.TargetKingdomName,
@@ -886,6 +948,50 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 			return false;
 		}
 		candidate = TryBuildNeedCandidate(source, settings, NeedClanFinanceStrain, urgency);
+		return candidate != null;
+	}
+
+	private bool TryBuildMarriageAlliancePressureCandidate(ProactiveCandidate source, DuelSettings settings, out ProactiveCandidate candidate)
+	{
+		candidate = null;
+		if (source == null || !IsMarriageAlliancePressureNeedMet(source, settings, out float urgency))
+		{
+			return false;
+		}
+		candidate = TryBuildNeedCandidate(source, settings, NeedMarriageAlliancePressure, urgency);
+		return candidate != null;
+	}
+
+	private bool TryBuildRevengePressureCandidate(ProactiveCandidate source, DuelSettings settings, out ProactiveCandidate candidate)
+	{
+		candidate = null;
+		if (source == null || !IsRevengePressureNeedMet(source, out float urgency))
+		{
+			return false;
+		}
+		candidate = TryBuildNeedCandidate(source, settings, NeedRevengePressure, urgency);
+		return candidate != null;
+	}
+
+	private bool TryBuildFiefGovernanceAnxietyCandidate(ProactiveCandidate source, DuelSettings settings, out ProactiveCandidate candidate)
+	{
+		candidate = null;
+		if (source == null || !IsFiefGovernanceAnxietyNeedMet(source, out float urgency))
+		{
+			return false;
+		}
+		candidate = TryBuildNeedCandidate(source, settings, NeedFiefGovernanceAnxiety, urgency);
+		return candidate != null;
+	}
+
+	private bool TryBuildAllySupportCandidate(ProactiveCandidate source, DuelSettings settings, out ProactiveCandidate candidate)
+	{
+		candidate = null;
+		if (source == null || !IsAllySupportNeedMet(source, settings, out float urgency))
+		{
+			return false;
+		}
+		candidate = TryBuildNeedCandidate(source, settings, NeedAllySupport, urgency);
 		return candidate != null;
 	}
 
@@ -1256,6 +1362,97 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		return urgency > 0f;
 	}
 
+	private static bool IsMarriageAlliancePressureNeedMet(ProactiveCandidate candidate, DuelSettings settings, out float urgency)
+	{
+		urgency = 0f;
+		if (candidate == null || candidate.MarriageUnmarriedAdultCount <= 0)
+		{
+			return false;
+		}
+		int adultThreshold = Clamp(settings?.ProactiveNpcRequestMarriageAdultClanThreshold ?? 3, 1, 12);
+		if (candidate.MarriageAdultClanHeroCount > adultThreshold && !candidate.MarriageRequesterUnmarried)
+		{
+			return false;
+		}
+		float adultDeficit = Math.Max(0, adultThreshold - candidate.MarriageAdultClanHeroCount);
+		urgency = 52f + adultDeficit * 8f + Math.Min(10f, candidate.MarriageUnmarriedAdultCount * 2f);
+		if (candidate.MarriageRequesterUnmarried)
+		{
+			urgency += 8f;
+		}
+		if (candidate.MarriageAdultClanHeroCount <= 1)
+		{
+			urgency += 8f;
+		}
+		return urgency >= 50f;
+	}
+
+	private static bool IsRevengePressureNeedMet(ProactiveCandidate candidate, out float urgency)
+	{
+		urgency = 0f;
+		if (candidate == null || candidate.RevengePressureScore <= 0f)
+		{
+			return false;
+		}
+		urgency = Clamp(candidate.RevengePressureScore, 0f, 100f);
+		return urgency >= 55f;
+	}
+
+	private static bool IsFiefGovernanceAnxietyNeedMet(ProactiveCandidate candidate, out float urgency)
+	{
+		urgency = 0f;
+		if (candidate == null || candidate.FiefProblemCount <= 0)
+		{
+			return false;
+		}
+		urgency = 56f + Math.Min(18f, candidate.FiefProblemCount * 4f);
+		if (candidate.FiefUnderAttack)
+		{
+			urgency += 18f;
+		}
+		if (candidate.FiefLoyalty >= 0f && candidate.FiefLoyalty <= 25f)
+		{
+			urgency += 8f;
+		}
+		if (candidate.FiefSecurity >= 0f && candidate.FiefSecurity <= 25f)
+		{
+			urgency += 6f;
+		}
+		if (candidate.FiefGarrisonCount > 0 && candidate.FiefGarrisonCount <= 40)
+		{
+			urgency += 4f;
+		}
+		urgency = Clamp(urgency, 0f, 100f);
+		return urgency >= 50f;
+	}
+
+	private static bool IsAllySupportNeedMet(ProactiveCandidate candidate, DuelSettings settings, out float urgency)
+	{
+		urgency = 0f;
+		if (candidate == null || candidate.TargetKingdom == null || candidate.Hero?.Clan == null)
+		{
+			return false;
+		}
+		int influenceThreshold = Clamp(settings?.ProactiveNpcRequestIsolationInfluenceThreshold ?? 40, 0, 500);
+		int maxFriendly = Clamp(settings?.ProactiveNpcRequestIsolationMaxFriendlyClans ?? 1, 0, 10);
+		bool lowInfluence = influenceThreshold > 0 && candidate.ClanInfluence <= influenceThreshold;
+		bool fewFriends = candidate.FriendlyClanCount <= maxFriendly;
+		bool manyEnemies = candidate.HostileClanCount >= 3;
+		if (!fewFriends || (!lowInfluence && !manyEnemies))
+		{
+			return false;
+		}
+		float influencePressure = lowInfluence
+			? Clamp((influenceThreshold - candidate.ClanInfluence) / Math.Max(1f, influenceThreshold), 0f, 1f) * 18f
+			: 0f;
+		urgency = 52f + influencePressure + Math.Min(16f, candidate.HostileClanCount * 4f);
+		if (candidate.FriendlyClanCount <= 0)
+		{
+			urgency += 8f;
+		}
+		return urgency >= 50f;
+	}
+
 	private static bool IsKingdomMercenaryInviteNeedMet(ProactiveCandidate candidate, out float urgency)
 	{
 		urgency = 0f;
@@ -1353,6 +1550,23 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 			LastKnownCaptiveClanHeroName = candidate.CaptiveClanHeroName,
 			LastKnownCaptiveClanHeroHolderName = candidate.CaptiveClanHeroHolderName,
 			LastKnownCaptiveClanLeaderHeld = candidate.CaptiveClanLeaderHeld,
+			LastKnownMarriageAdultClanHeroCount = candidate.MarriageAdultClanHeroCount,
+			LastKnownMarriageUnmarriedAdultCount = candidate.MarriageUnmarriedAdultCount,
+			LastKnownMarriageFirstUnmarriedName = candidate.MarriageFirstUnmarriedName,
+			LastKnownMarriageRequesterUnmarried = candidate.MarriageRequesterUnmarried,
+			LastKnownRevengePressureScore = candidate.RevengePressureScore,
+			LastKnownRevengeTargetName = candidate.RevengeTargetName,
+			LastKnownRevengeReasonText = candidate.RevengeReasonText,
+			LastKnownFiefProblemCount = candidate.FiefProblemCount,
+			LastKnownFiefProblemName = candidate.FiefProblemName,
+			LastKnownFiefLoyalty = candidate.FiefLoyalty,
+			LastKnownFiefSecurity = candidate.FiefSecurity,
+			LastKnownFiefGarrisonCount = candidate.FiefGarrisonCount,
+			LastKnownFiefIssueText = candidate.FiefIssueText,
+			LastKnownFiefUnderAttack = candidate.FiefUnderAttack,
+			LastKnownClanInfluence = candidate.ClanInfluence,
+			LastKnownFriendlyClanCount = candidate.FriendlyClanCount,
+			LastKnownHostileClanCount = candidate.HostileClanCount,
 			TargetKingdomId = candidate.TargetKingdomId,
 			TargetKingdomName = candidate.TargetKingdomName,
 			PlayerClanTier = candidate.PlayerClanTier,
@@ -1377,6 +1591,7 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		int globalCooldown = GetEffectiveGlobalCooldownHours(settings);
 		_globalCooldownUntilHours = NowHours() + globalCooldown;
 		Logger.Log("ProactiveNpcRequest", "started request triggerSource=" + (_activeSession.TriggerSource ?? "") + " knownMajorBefore=" + _activeSession.KnownMajorBeforeRequest + " effectiveNotoriety=" + _activeSession.EffectiveNotorietyAtRequest + " needChance=" + _activeSession.NeedDrivenChance.ToString("0.##") + " notorietyChance=" + _activeSession.NotorietyDrivenChance.ToString("0.##") + " selectedUrgency=" + _activeSession.SelectedNeedUrgency.ToString("0.##") + " need=" + _activeSession.NeedType + " needs=" + JoinNeedTypesForLog(_activeSession.NeedTypes, _activeSession.NeedType) + " hero=" + _activeSession.HeroId + " party=" + _activeSession.PartyId + " kingdom=" + (_activeSession.TargetKingdomId ?? "") + " playerClanTier=" + _activeSession.PlayerClanTier + " isKingdomLeader=" + _activeSession.TargetHeroIsKingdomLeader + " kingdomVassals=" + _activeSession.KingdomFormalVassalClanCount + "/" + _activeSession.KingdomTargetVassalClanCount + " kingdomMercs=" + _activeSession.KingdomMercenaryClanCount + "/" + _activeSession.KingdomTargetMercenaryClanCount + " kingdomFiefScore=" + _activeSession.KingdomFiefScore + " kingdomWars=" + _activeSession.KingdomWarKingdomCount + " kingdomPowerRatio=" + _activeSession.KingdomPowerRatioToEnemies.ToString("0.00") + " foodDays=" + candidate.FoodDays + " partyGold=" + candidate.PartyGold + " totalWage=" + candidate.TotalWage + " unpaidWages=" + candidate.UnpaidWages.ToString("0.00") + " troops=" + candidate.MemberCount + "/" + candidate.PartySizeLimit + " troopRatio=" + candidate.PartySizeRatio.ToString("0.00") + " prisoners=" + candidate.PrisonerCount + "/" + candidate.PrisonerSizeLimit + " heroPrisoners=" + candidate.HeroPrisonerCount + " prisonerRatio=" + candidate.PrisonerSizeRatio.ToString("0.00") + " morale=" + candidate.Morale.ToString("0.0") + " mounts=" + candidate.MountCount + " packAnimals=" + candidate.PackAnimalCount + " mountRatio=" + candidate.MountRatio.ToString("0.00") + " carry=" + candidate.TotalWeightCarried.ToString("0.0") + "/" + candidate.InventoryCapacity + " carryRatio=" + candidate.CarryRatio.ToString("0.00") + " clanGold=" + candidate.ClanGold + " clanDebt=" + candidate.ClanDebtToKingdom + " captiveClanHeroes=" + candidate.CaptiveClanHeroCount + " captiveLeader=" + candidate.CaptiveClanLeaderHeld + " wageBudget=" + candidate.AvailableWageBudget + " distance=" + candidate.Distance.ToString("0.0") + " testFallback=" + candidate.IsTestFallback);
+		Logger.Log("ProactiveNpcRequest", "started request extra needs=" + JoinNeedTypesForLog(_activeSession.NeedTypes, _activeSession.NeedType) + " marriageAdults=" + _activeSession.LastKnownMarriageAdultClanHeroCount + " unmarriedAdults=" + _activeSession.LastKnownMarriageUnmarriedAdultCount + " firstUnmarried=" + (_activeSession.LastKnownMarriageFirstUnmarriedName ?? "") + " revengeScore=" + _activeSession.LastKnownRevengePressureScore.ToString("0.0") + " revengeTarget=" + (_activeSession.LastKnownRevengeTargetName ?? "") + " revengeReason=" + (_activeSession.LastKnownRevengeReasonText ?? "") + " fiefProblems=" + _activeSession.LastKnownFiefProblemCount + " fief=" + (_activeSession.LastKnownFiefProblemName ?? "") + " fiefIssue=" + (_activeSession.LastKnownFiefIssueText ?? "") + " fiefLoyalty=" + _activeSession.LastKnownFiefLoyalty.ToString("0.0") + " fiefSecurity=" + _activeSession.LastKnownFiefSecurity.ToString("0.0") + " fiefGarrison=" + _activeSession.LastKnownFiefGarrisonCount + " allyInfluence=" + _activeSession.LastKnownClanInfluence.ToString("0.0") + " friendlyClans=" + _activeSession.LastKnownFriendlyClanCount + " hostileClans=" + _activeSession.LastKnownHostileClanCount);
 	}
 
 	private void TryOpenActiveEncounterWhenClose()
@@ -1769,6 +1984,22 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		{
 			return NeedClanFinanceStrain;
 		}
+		if (string.Equals(text, NeedMarriageAlliancePressure, StringComparison.OrdinalIgnoreCase))
+		{
+			return NeedMarriageAlliancePressure;
+		}
+		if (string.Equals(text, NeedRevengePressure, StringComparison.OrdinalIgnoreCase))
+		{
+			return NeedRevengePressure;
+		}
+		if (string.Equals(text, NeedFiefGovernanceAnxiety, StringComparison.OrdinalIgnoreCase))
+		{
+			return NeedFiefGovernanceAnxiety;
+		}
+		if (string.Equals(text, NeedAllySupport, StringComparison.OrdinalIgnoreCase))
+		{
+			return NeedAllySupport;
+		}
 		if (string.Equals(text, NeedKingdomMercenaryInvite, StringComparison.OrdinalIgnoreCase))
 		{
 			return NeedKingdomMercenaryInvite;
@@ -1818,6 +2049,14 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		{
 			return 82;
 		}
+		if (string.Equals(needType, NeedRevengePressure, StringComparison.OrdinalIgnoreCase))
+		{
+			return 81;
+		}
+		if (string.Equals(needType, NeedFiefGovernanceAnxiety, StringComparison.OrdinalIgnoreCase))
+		{
+			return 79;
+		}
 		if (string.Equals(needType, NeedOverburdened, StringComparison.OrdinalIgnoreCase))
 		{
 			return 78;
@@ -1829,6 +2068,14 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		if (string.Equals(needType, NeedLowMorale, StringComparison.OrdinalIgnoreCase))
 		{
 			return 74;
+		}
+		if (string.Equals(needType, NeedMarriageAlliancePressure, StringComparison.OrdinalIgnoreCase))
+		{
+			return 73;
+		}
+		if (string.Equals(needType, NeedAllySupport, StringComparison.OrdinalIgnoreCase))
+		{
+			return 72;
 		}
 		if (string.Equals(needType, NeedTroopShortage, StringComparison.OrdinalIgnoreCase))
 		{
@@ -1964,6 +2211,22 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		{
 			return BuildClanFinanceStrainOpeningFact(playerName, npcName);
 		}
+		if (string.Equals(needType, NeedMarriageAlliancePressure, StringComparison.OrdinalIgnoreCase))
+		{
+			return BuildMarriageAlliancePressureOpeningFact(playerName, npcName);
+		}
+		if (string.Equals(needType, NeedRevengePressure, StringComparison.OrdinalIgnoreCase))
+		{
+			return BuildRevengePressureOpeningFact(playerName, npcName);
+		}
+		if (string.Equals(needType, NeedFiefGovernanceAnxiety, StringComparison.OrdinalIgnoreCase))
+		{
+			return BuildFiefGovernanceAnxietyOpeningFact(playerName, npcName);
+		}
+		if (string.Equals(needType, NeedAllySupport, StringComparison.OrdinalIgnoreCase))
+		{
+			return BuildAllySupportOpeningFact(playerName, npcName);
+		}
 		if (string.Equals(needType, NeedOverburdened, StringComparison.OrdinalIgnoreCase))
 		{
 			return BuildOverburdenedOpeningFact(party, playerName, npcName);
@@ -2007,6 +2270,38 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 
 	private string BuildOpeningNeedSummary(string needType, Hero hero, MobileParty party, string playerName, string npcName)
 	{
+		if (string.Equals(needType, NeedMarriageAlliancePressure, StringComparison.OrdinalIgnoreCase))
+		{
+			int adults = Math.Max(0, _activeSession?.LastKnownMarriageAdultClanHeroCount ?? 0);
+			int unmarried = Math.Max(0, _activeSession?.LastKnownMarriageUnmarriedAdultCount ?? 0);
+			string firstName = (_activeSession?.LastKnownMarriageFirstUnmarriedName ?? "").Trim();
+			string firstText = string.IsNullOrWhiteSpace(firstName) ? "" : "，其中包括 " + firstName;
+			return "你的家族成年核心成员偏少，成年成员约 " + adults + " 人，未婚成年成员约 " + unmarried + " 人" + firstText + "；你想与" + playerName + "谈联姻、介绍合适婚配、家族继承安全或家族间长期互助";
+		}
+		if (string.Equals(needType, NeedRevengePressure, StringComparison.OrdinalIgnoreCase))
+		{
+			string reason = (_activeSession?.LastKnownRevengeReasonText ?? "").Trim();
+			string target = (_activeSession?.LastKnownRevengeTargetName ?? "").Trim();
+			string targetText = string.IsNullOrWhiteSpace(target) ? "" : "，矛头可能指向 " + target;
+			return "你的家族正承受复仇压力" + (string.IsNullOrWhiteSpace(reason) ? "" : "，原因是" + reason) + targetText + "；你想请" + playerName + "协助打听敌情、赎回亲族、报复敌人、护送或参与后续军事行动";
+		}
+		if (string.Equals(needType, NeedFiefGovernanceAnxiety, StringComparison.OrdinalIgnoreCase))
+		{
+			string fief = (_activeSession?.LastKnownFiefProblemName ?? "").Trim();
+			string issue = (_activeSession?.LastKnownFiefIssueText ?? "").Trim();
+			float loyalty = _activeSession?.LastKnownFiefLoyalty ?? -1f;
+			float security = _activeSession?.LastKnownFiefSecurity ?? -1f;
+			int garrison = _activeSession?.LastKnownFiefGarrisonCount ?? -1;
+			string fiefText = string.IsNullOrWhiteSpace(fief) ? "某处封地" : fief;
+			return "你的家族封地治理出现焦虑，重点是 " + fiefText + "，问题包括 " + (string.IsNullOrWhiteSpace(issue) ? "忠诚、治安、驻军或战事压力" : issue) + "；当前忠诚约 " + loyalty.ToString("0") + "，治安约 " + security.ToString("0") + "，驻军约 " + garrison + "；你想请" + playerName + "提供粮食、金钱、护送、驻军、治安或政治支持";
+		}
+		if (string.Equals(needType, NeedAllySupport, StringComparison.OrdinalIgnoreCase))
+		{
+			float influence = _activeSession?.LastKnownClanInfluence ?? 0f;
+			int friendly = _activeSession?.LastKnownFriendlyClanCount ?? 0;
+			int hostile = _activeSession?.LastKnownHostileClanCount ?? 0;
+			return "你的家族在王国内显得孤立，影响力约 " + influence.ToString("0") + "，可靠友好家族约 " + friendly + " 个，敌意家族约 " + hostile + " 个；你想与" + playerName + "谈互相背书、投票支持、政治结盟、护送或短期利益交换";
+		}
 		if (string.Equals(needType, NeedDiplomacy, StringComparison.OrdinalIgnoreCase))
 		{
 			return BuildDiplomacyOpeningSummary(hero, playerName, npcName);
@@ -2280,6 +2575,30 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		return "[AFEF NPC行为补充] " + npcName + "，你主动追上" + playerName + "，并非来开战，而是因为" + summary + "。你应该先开口说明来意，不要把这当作" + playerName + "主动提出的话。不要假定任何借款、欠款、还款承诺、投资、交易或记账已经成立。";
 	}
 
+	private string BuildMarriageAlliancePressureOpeningFact(string playerName, string npcName)
+	{
+		string summary = BuildOpeningNeedSummary(NeedMarriageAlliancePressure, null, ResolveActiveParty(), playerName, npcName);
+		return "[AFEF NPC行为补充] " + npcName + "，你主动追上" + playerName + "，并非来开战，而是因为" + summary + "。你应该先开口说明来意，不要把这当作" + playerName + "主动提出的话。不要假定任何婚约、联姻、家族承诺或关系变更已经成立。";
+	}
+
+	private string BuildRevengePressureOpeningFact(string playerName, string npcName)
+	{
+		string summary = BuildOpeningNeedSummary(NeedRevengePressure, null, ResolveActiveParty(), playerName, npcName);
+		return "[AFEF NPC行为补充] " + npcName + "，你主动追上" + playerName + "，并非来开战，而是因为" + summary + "。你应该先开口说明来意，不要把这当作" + playerName + "主动提出的话。不要假定任何攻击、营救、赎买、雇佣或军事承诺已经成立。";
+	}
+
+	private string BuildFiefGovernanceAnxietyOpeningFact(string playerName, string npcName)
+	{
+		string summary = BuildOpeningNeedSummary(NeedFiefGovernanceAnxiety, null, ResolveActiveParty(), playerName, npcName);
+		return "[AFEF NPC行为补充] " + npcName + "，你主动追上" + playerName + "，并非来开战，而是因为" + summary + "。你应该先开口说明来意，不要把这当作" + playerName + "主动提出的话。不要假定任何驻军、金钱、粮食、治理或政治支持已经成立。";
+	}
+
+	private string BuildAllySupportOpeningFact(string playerName, string npcName)
+	{
+		string summary = BuildOpeningNeedSummary(NeedAllySupport, null, ResolveActiveParty(), playerName, npcName);
+		return "[AFEF NPC行为补充] " + npcName + "，你主动追上" + playerName + "，并非来开战，而是因为" + summary + "。你应该先开口说明来意，不要把这当作" + playerName + "主动提出的话。不要假定任何结盟、投票、背书、护送或利益交换已经成立。";
+	}
+
 	private string BuildFoodShortageOpeningFact(MobileParty party, string playerName, string npcName)
 	{
 		int foodDays = SafeFoodDays(party);
@@ -2368,11 +2687,27 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 			return BuildOpeningPrompt(normalized.Count > 0 ? normalized[0] : NeedFoodShortage);
 		}
 		List<string> labels = normalized.Take(3).Select(GetNeedPromptLabel).Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
-		return "请你先开口说明自己主动追上玩家的来意。你同时有多个请求，可以按紧急程度合并表达，依次围绕：" + string.Join("；", labels) + "。只输出你作为NPC说出的话。不要假定任何交易、赎买、转移俘虏、借款、欠款、还款承诺、记账、入队或效力关系已经成立。";
+		return "请你先开口说明自己主动追上玩家的来意。你同时有多个请求，可以按紧急程度合并表达，依次围绕：" + string.Join("；", labels) + "。只输出你作为NPC说出的话。不要假定任何交易、赎买、转移俘虏、借款、欠款、还款承诺、记账、婚约、结盟、军事行动、入队或效力关系已经成立。";
 	}
 
 	private static string BuildOpeningPrompt(string needType)
 	{
+		if (string.Equals(needType, NeedMarriageAlliancePressure, StringComparison.OrdinalIgnoreCase))
+		{
+			return "请你先开口说明自己主动追上玩家的来意，围绕家族继承与联姻压力，请求介绍婚配、家族互助或长期合作。只输出你作为NPC说出的话。不要假定婚约或承诺已成立。";
+		}
+		if (string.Equals(needType, NeedRevengePressure, StringComparison.OrdinalIgnoreCase))
+		{
+			return "请你先开口说明自己主动追上玩家的来意，围绕家族受辱、亲族被俘、封地受袭或战争压力，请求打听、营救、报复或军事协助。只输出你作为NPC说出的话。不要假定行动已成立。";
+		}
+		if (string.Equals(needType, NeedFiefGovernanceAnxiety, StringComparison.OrdinalIgnoreCase))
+		{
+			return "请你先开口说明自己主动追上玩家的来意，围绕封地忠诚、治安、驻军、劫掠或围困压力，请求粮食、金钱、护送、驻军或政治支持。只输出你作为NPC说出的话。不要假定支持已成立。";
+		}
+		if (string.Equals(needType, NeedAllySupport, StringComparison.OrdinalIgnoreCase))
+		{
+			return "请你先开口说明自己主动追上玩家的来意，围绕家族在王国内孤立、影响力不足或缺少盟友，请求背书、投票支持、政治互助或短期合作。只输出你作为NPC说出的话。不要假定结盟已成立。";
+		}
 		if (string.Equals(needType, NeedClanCaptive, StringComparison.OrdinalIgnoreCase))
 		{
 			return "请你先开口说明自己主动追上玩家的来意，围绕家族成员被俘，请求赎回、营救、斡旋、打听下落或赎金渠道。只输出你作为NPC说出的话。不要假定赎买、营救、放人或付款已经成立。";
@@ -2426,6 +2761,22 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 
 	private static string GetNeedPromptLabel(string needType)
 	{
+		if (string.Equals(needType, NeedMarriageAlliancePressure, StringComparison.OrdinalIgnoreCase))
+		{
+			return "家族成年核心成员偏少或未婚压力，请求联姻介绍、家族互助或长期合作";
+		}
+		if (string.Equals(needType, NeedRevengePressure, StringComparison.OrdinalIgnoreCase))
+		{
+			return "家族亲族被俘、封地受袭或战争压力，请求打听、营救、报复或军事协助";
+		}
+		if (string.Equals(needType, NeedFiefGovernanceAnxiety, StringComparison.OrdinalIgnoreCase))
+		{
+			return "封地忠诚、治安、驻军、劫掠或围困压力，请求粮食、金钱、驻军、护送或政治支持";
+		}
+		if (string.Equals(needType, NeedAllySupport, StringComparison.OrdinalIgnoreCase))
+		{
+			return "家族在王国内孤立或影响力不足，请求背书、投票支持、政治互助或短期合作";
+		}
 		if (string.Equals(needType, NeedClanCaptive, StringComparison.OrdinalIgnoreCase))
 		{
 			return "家族成员被俘，请求赎回、营救、斡旋或打听下落";
@@ -3030,6 +3381,311 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 				return leaderName;
 			}
 			return (holder.Name?.ToString() ?? "").Trim();
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	private static MarriageAllianceSnapshot BuildMarriageAllianceSnapshot(Hero requester)
+	{
+		MarriageAllianceSnapshot snapshot = new MarriageAllianceSnapshot();
+		try
+		{
+			Clan clan = requester?.Clan;
+			if (clan?.Heroes == null)
+			{
+				return snapshot;
+			}
+			List<Hero> adults = clan.Heroes
+				.Where(h => IsRelevantAdultClanHeroForAlliance(h, clan))
+				.OrderByDescending(h => h == requester)
+				.ThenByDescending(h => h == clan.Leader)
+				.ToList();
+			List<Hero> unmarried = adults.Where(h => h?.Spouse == null).ToList();
+			snapshot.AdultClanHeroCount = adults.Count;
+			snapshot.UnmarriedAdultCount = unmarried.Count;
+			snapshot.RequesterUnmarried = requester != null && unmarried.Contains(requester);
+			snapshot.FirstUnmarriedName = GetHeroDisplayName(unmarried.FirstOrDefault());
+		}
+		catch
+		{
+		}
+		return snapshot;
+	}
+
+	private static bool IsRelevantAdultClanHeroForAlliance(Hero hero, Clan clan)
+	{
+		try
+		{
+			if (hero == null || clan == null || hero.Clan != clan || hero == Hero.MainHero || hero.IsDead || hero.IsPrisoner || hero.IsChild || hero.PartyBelongedToAsPrisoner != null)
+			{
+				return false;
+			}
+			float adultAge = Campaign.Current?.Models?.AgeModel?.HeroComesOfAge ?? 18f;
+			if (hero.Age > 0f && hero.Age < adultAge)
+			{
+				return false;
+			}
+			return hero.IsLord;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static FiefGovernanceSnapshot BuildFiefGovernanceSnapshot(Clan clan, DuelSettings settings)
+	{
+		FiefGovernanceSnapshot snapshot = new FiefGovernanceSnapshot
+		{
+			LowestLoyalty = -1f,
+			LowestSecurity = -1f,
+			LowestGarrisonCount = -1,
+			FirstProblemPriority = -1
+		};
+		try
+		{
+			if (clan?.Fiefs == null)
+			{
+				return snapshot;
+			}
+			int loyaltyThreshold = Clamp(settings?.ProactiveNpcRequestFiefLoyaltyThreshold ?? 35, 0, 100);
+			int securityThreshold = Clamp(settings?.ProactiveNpcRequestFiefSecurityThreshold ?? 35, 0, 100);
+			int garrisonThreshold = Clamp(settings?.ProactiveNpcRequestFiefGarrisonThreshold ?? 80, 0, 1000);
+			foreach (Town town in clan.Fiefs)
+			{
+				if (town?.Settlement == null)
+				{
+					continue;
+				}
+				Settlement settlement = town.Settlement;
+				float loyalty = SafeTownLoyalty(town);
+				float security = SafeTownSecurity(town);
+				int garrison = SafeTownGarrisonCount(town);
+				bool underAttack = IsSettlementUnderAttack(settlement);
+				List<string> issues = new List<string>();
+				if (underAttack)
+				{
+					issues.Add("封地正在被围困或劫掠");
+				}
+				if (loyaltyThreshold > 0 && loyalty >= 0f && loyalty <= loyaltyThreshold)
+				{
+					issues.Add("忠诚偏低");
+				}
+				if (securityThreshold > 0 && security >= 0f && security <= securityThreshold)
+				{
+					issues.Add("治安偏低");
+				}
+				if (garrisonThreshold > 0 && garrison >= 0 && garrison <= garrisonThreshold)
+				{
+					issues.Add("驻军薄弱");
+				}
+				if (issues.Count <= 0)
+				{
+					continue;
+				}
+				snapshot.ProblemCount++;
+				snapshot.UnderAttack = snapshot.UnderAttack || underAttack;
+				int priority = (underAttack ? 1000 : 0)
+					+ Math.Max(0, loyaltyThreshold - (int)Math.Max(0f, loyalty))
+					+ Math.Max(0, securityThreshold - (int)Math.Max(0f, security))
+					+ Math.Max(0, garrisonThreshold - Math.Max(0, garrison));
+				if (priority > snapshot.FirstProblemPriority)
+				{
+					snapshot.FirstProblemPriority = priority;
+					snapshot.FirstProblemName = GetSettlementDisplayName(settlement);
+					snapshot.LowestLoyalty = loyalty;
+					snapshot.LowestSecurity = security;
+					snapshot.LowestGarrisonCount = garrison;
+					snapshot.IssueText = string.Join("、", issues);
+				}
+			}
+		}
+		catch
+		{
+		}
+		return snapshot;
+	}
+
+	private static AllySupportSnapshot BuildAllySupportSnapshot(Clan clan, Kingdom kingdom, DuelSettings settings)
+	{
+		AllySupportSnapshot snapshot = new AllySupportSnapshot();
+		try
+		{
+			if (clan == null || kingdom == null || kingdom.Clans == null)
+			{
+				return snapshot;
+			}
+			snapshot.ClanInfluence = Clamp(clan.Influence, 0f, 9999f);
+			foreach (Clan other in kingdom.Clans)
+			{
+				if (other == null || other == clan || other.IsEliminated || other.Kingdom != kingdom || other.IsUnderMercenaryService || other.IsClanTypeMercenary)
+				{
+					continue;
+				}
+				int relation = clan.GetRelationWithClan(other);
+				if (relation >= 20)
+				{
+					snapshot.FriendlyClanCount++;
+				}
+				if (relation <= -20)
+				{
+					snapshot.HostileClanCount++;
+				}
+			}
+		}
+		catch
+		{
+		}
+		return snapshot;
+	}
+
+	private static RevengePressureSnapshot BuildRevengePressureSnapshot(Hero requester, Kingdom targetKingdom, ClanCaptiveSnapshot captiveSnapshot, FiefGovernanceSnapshot fiefSnapshot)
+	{
+		RevengePressureSnapshot snapshot = new RevengePressureSnapshot();
+		try
+		{
+			if (requester?.Clan == null)
+			{
+				return snapshot;
+			}
+			if (captiveSnapshot?.Count > 0)
+			{
+				snapshot.PressureScore = 72f + Math.Min(16f, captiveSnapshot.Count * 4f);
+				snapshot.TargetName = captiveSnapshot.FirstHolderName;
+				snapshot.ReasonText = "家族成员被俘";
+				return snapshot;
+			}
+			if (fiefSnapshot?.UnderAttack == true)
+			{
+				snapshot.PressureScore = 70f + Math.Min(16f, fiefSnapshot.ProblemCount * 4f);
+				snapshot.TargetName = ResolveFirstAttackerFactionName(requester.Clan);
+				snapshot.ReasonText = "家族封地遭到围困或劫掠";
+				return snapshot;
+			}
+			if (targetKingdom == null || targetKingdom.FactionsAtWarWith == null)
+			{
+				return snapshot;
+			}
+			int warCount = CountKingdomWars(targetKingdom);
+			if (warCount <= 0)
+			{
+				return snapshot;
+			}
+			bool hasPressure = (fiefSnapshot?.ProblemCount ?? 0) > 0;
+			if (!hasPressure)
+			{
+				MobileParty party = requester.PartyBelongedTo;
+				int memberCount = SafeMemberCount(party);
+				int sizeLimit = SafePartySizeLimit(party);
+				hasPressure = memberCount > 0 && sizeLimit > 0 && CalculatePartySizeRatio(memberCount, sizeLimit) <= 0.45f;
+			}
+			if (!hasPressure)
+			{
+				return snapshot;
+			}
+			IFaction enemy = targetKingdom.FactionsAtWarWith.FirstOrDefault(f => f?.IsKingdomFaction == true);
+			snapshot.PressureScore = 56f + Math.Min(18f, warCount * 5f);
+			snapshot.TargetName = GetFactionDisplayName(enemy);
+			snapshot.ReasonText = "战争压力已经影响家族安全";
+		}
+		catch
+		{
+		}
+		return snapshot;
+	}
+
+	private static float SafeTownLoyalty(Town town)
+	{
+		try
+		{
+			return town?.Loyalty ?? -1f;
+		}
+		catch
+		{
+			return -1f;
+		}
+	}
+
+	private static float SafeTownSecurity(Town town)
+	{
+		try
+		{
+			return town?.Security ?? -1f;
+		}
+		catch
+		{
+			return -1f;
+		}
+	}
+
+	private static int SafeTownGarrisonCount(Town town)
+	{
+		try
+		{
+			return Math.Max(0, town?.GarrisonParty?.MemberRoster?.TotalManCount ?? town?.Settlement?.Town?.GarrisonParty?.MemberRoster?.TotalManCount ?? 0);
+		}
+		catch
+		{
+			return 0;
+		}
+	}
+
+	private static bool IsSettlementUnderAttack(Settlement settlement)
+	{
+		try
+		{
+			return settlement != null && (settlement.IsUnderRaid || settlement.IsUnderSiege || settlement.SiegeEvent != null);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static string ResolveFirstAttackerFactionName(Clan clan)
+	{
+		try
+		{
+			foreach (Town town in clan?.Fiefs ?? Enumerable.Empty<Town>())
+			{
+				Settlement settlement = town?.Settlement;
+				if (settlement == null || !IsSettlementUnderAttack(settlement))
+				{
+					continue;
+				}
+				string name = GetFactionDisplayName(settlement.LastAttackerParty?.MapFaction);
+				if (!string.IsNullOrWhiteSpace(name))
+				{
+					return name;
+				}
+			}
+		}
+		catch
+		{
+		}
+		return "";
+	}
+
+	private static string GetSettlementDisplayName(Settlement settlement)
+	{
+		try
+		{
+			return (settlement?.Name?.ToString() ?? "").Trim();
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	private static string GetFactionDisplayName(IFaction faction)
+	{
+		try
+		{
+			return (faction?.Name?.ToString() ?? "").Trim();
 		}
 		catch
 		{
@@ -3655,6 +4311,23 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		public string LastKnownCaptiveClanHeroName { get; set; }
 		public string LastKnownCaptiveClanHeroHolderName { get; set; }
 		public bool LastKnownCaptiveClanLeaderHeld { get; set; }
+		public int LastKnownMarriageAdultClanHeroCount { get; set; }
+		public int LastKnownMarriageUnmarriedAdultCount { get; set; }
+		public string LastKnownMarriageFirstUnmarriedName { get; set; }
+		public bool LastKnownMarriageRequesterUnmarried { get; set; }
+		public float LastKnownRevengePressureScore { get; set; }
+		public string LastKnownRevengeTargetName { get; set; }
+		public string LastKnownRevengeReasonText { get; set; }
+		public int LastKnownFiefProblemCount { get; set; }
+		public string LastKnownFiefProblemName { get; set; }
+		public float LastKnownFiefLoyalty { get; set; }
+		public float LastKnownFiefSecurity { get; set; }
+		public int LastKnownFiefGarrisonCount { get; set; }
+		public string LastKnownFiefIssueText { get; set; }
+		public bool LastKnownFiefUnderAttack { get; set; }
+		public float LastKnownClanInfluence { get; set; }
+		public int LastKnownFriendlyClanCount { get; set; }
+		public int LastKnownHostileClanCount { get; set; }
 		public string TargetKingdomId { get; set; }
 		public string TargetKingdomName { get; set; }
 		public int PlayerClanTier { get; set; }
@@ -3709,6 +4382,23 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		public string CaptiveClanHeroName { get; set; }
 		public string CaptiveClanHeroHolderName { get; set; }
 		public bool CaptiveClanLeaderHeld { get; set; }
+		public int MarriageAdultClanHeroCount { get; set; }
+		public int MarriageUnmarriedAdultCount { get; set; }
+		public string MarriageFirstUnmarriedName { get; set; }
+		public bool MarriageRequesterUnmarried { get; set; }
+		public float RevengePressureScore { get; set; }
+		public string RevengeTargetName { get; set; }
+		public string RevengeReasonText { get; set; }
+		public int FiefProblemCount { get; set; }
+		public string FiefProblemName { get; set; }
+		public float FiefLoyalty { get; set; }
+		public float FiefSecurity { get; set; }
+		public int FiefGarrisonCount { get; set; }
+		public string FiefIssueText { get; set; }
+		public bool FiefUnderAttack { get; set; }
+		public float ClanInfluence { get; set; }
+		public int FriendlyClanCount { get; set; }
+		public int HostileClanCount { get; set; }
 		public Kingdom TargetKingdom { get; set; }
 		public string TargetKingdomId { get; set; }
 		public string TargetKingdomName { get; set; }
@@ -3763,6 +4453,40 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		public bool LeaderHeld { get; set; }
 	}
 
+	private sealed class MarriageAllianceSnapshot
+	{
+		public int AdultClanHeroCount { get; set; }
+		public int UnmarriedAdultCount { get; set; }
+		public string FirstUnmarriedName { get; set; }
+		public bool RequesterUnmarried { get; set; }
+	}
+
+	private sealed class RevengePressureSnapshot
+	{
+		public float PressureScore { get; set; }
+		public string TargetName { get; set; }
+		public string ReasonText { get; set; }
+	}
+
+	private sealed class FiefGovernanceSnapshot
+	{
+		public int ProblemCount { get; set; }
+		public string FirstProblemName { get; set; }
+		public float LowestLoyalty { get; set; }
+		public float LowestSecurity { get; set; }
+		public int LowestGarrisonCount { get; set; }
+		public string IssueText { get; set; }
+		public bool UnderAttack { get; set; }
+		public int FirstProblemPriority { get; set; }
+	}
+
+	private sealed class AllySupportSnapshot
+	{
+		public float ClanInfluence { get; set; }
+		public int FriendlyClanCount { get; set; }
+		public int HostileClanCount { get; set; }
+	}
+
 	private sealed class CandidateScanStats
 	{
 		public bool MainPartyMissing { get; set; }
@@ -3779,6 +4503,10 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		public int MountShortage { get; set; }
 		public int Overburdened { get; set; }
 		public int ClanFinanceStrain { get; set; }
+		public int MarriageAlliancePressure { get; set; }
+		public int RevengePressure { get; set; }
+		public int FiefGovernanceAnxiety { get; set; }
+		public int AllySupport { get; set; }
 		public int KingdomMercenaryInvite { get; set; }
 		public int KingdomVassalInvite { get; set; }
 		public int PoliticalAgenda { get; set; }
@@ -3824,6 +4552,10 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 				+ " mountShortage=" + MountShortage
 				+ " overburdened=" + Overburdened
 				+ " clanFinanceStrain=" + ClanFinanceStrain
+				+ " marriageAlliance=" + MarriageAlliancePressure
+				+ " revengePressure=" + RevengePressure
+				+ " fiefGovernance=" + FiefGovernanceAnxiety
+				+ " allySupport=" + AllySupport
 				+ " mercenaryInvite=" + KingdomMercenaryInvite
 				+ " vassalInvite=" + KingdomVassalInvite
 				+ " politicalAgenda=" + PoliticalAgenda
