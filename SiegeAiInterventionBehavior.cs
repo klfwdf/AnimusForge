@@ -367,6 +367,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	private static readonly HashSet<int> VictoryCheerAgentIndexes = new HashSet<int>();
 	private static readonly HashSet<int> CordonReadyAgentIndexes = new HashSet<int>();
 	private static readonly HashSet<int> CivilianCalmedAgentIndexes = new HashSet<int>();
+	private static readonly HashSet<int> CivilianPositiveCheerAgentIndexes = new HashSet<int>();
 	private static readonly HashSet<int> CivilianFrightenedActionAgentIndexes = new HashSet<int>();
 	private static readonly HashSet<int> CivilianPreMassacrePreparedAgentIndexes = new HashSet<int>();
 	private static readonly HashSet<int> LocalPlayerAttackVictimAgentIndexes = new HashSet<int>();
@@ -1829,6 +1830,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				if (handled)
 				{
 					TryTriggerAmbientReactionsForAction(SiegeInterventionActionKind.Mercy, targetAgentIndex, targetAgentIndex, includeCivilians: true, includeSoldiers: true);
+					ApplyCivilianMoraleReactionForPositiveAction(SiegeInterventionActionKind.Mercy, targetAgentIndex);
 				}
 			}
 			if (canApplyMercyTrack && ReliefTagRegex.IsMatch(text))
@@ -1840,6 +1842,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				if (handled)
 				{
 					TryTriggerAmbientReactionsForAction(SiegeInterventionActionKind.Relief, targetAgentIndex, targetAgentIndex, includeCivilians: true, includeSoldiers: true);
+					ApplyCivilianMoraleReactionForPositiveAction(SiegeInterventionActionKind.Relief, targetAgentIndex);
 				}
 			}
 			if (canApplyMercyTrack && soldierPositiveCapToRelief)
@@ -1849,6 +1852,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				if (handled)
 				{
 					TryTriggerAmbientReactionsForAction(SiegeInterventionActionKind.Relief, targetAgentIndex, targetAgentIndex, includeCivilians: true, includeSoldiers: true);
+					ApplyCivilianMoraleReactionForPositiveAction(SiegeInterventionActionKind.Relief, targetAgentIndex);
 				}
 			}
 			if (canApplyMercyTrack && !soldierPositiveCapToRelief && InspireTagRegex.IsMatch(text))
@@ -1858,6 +1862,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				if (handled)
 				{
 					TryTriggerAmbientReactionsForAction(SiegeInterventionActionKind.Inspire, targetAgentIndex, targetAgentIndex, includeCivilians: true, includeSoldiers: true);
+					ApplyCivilianMoraleReactionForPositiveAction(SiegeInterventionActionKind.Inspire, targetAgentIndex);
 				}
 			}
 			if (canApplyMercyTrack && !soldierPositiveCapToRelief && RallyOathTagRegex.IsMatch(text))
@@ -1867,6 +1872,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				if (handled)
 				{
 					TryTriggerAmbientReactionsForAction(SiegeInterventionActionKind.RallyOath, targetAgentIndex, targetAgentIndex, includeCivilians: true, includeSoldiers: true);
+					ApplyCivilianMoraleReactionForPositiveAction(SiegeInterventionActionKind.RallyOath, targetAgentIndex);
 				}
 			}
 			bool hasPlunderTag = PlunderTagRegex.IsMatch(text);
@@ -1915,6 +1921,156 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			Logger.Log("SiegeAiIntervention", "TryProcessAiActionTags failed: " + ex.Message);
 			text = StripSiegeTags(text);
 			return actionHandled;
+		}
+	}
+
+	private static void ApplyCivilianMoraleReactionForPositiveAction(SiegeInterventionActionKind action, int focusAgentIndex)
+	{
+		try
+		{
+			if (!IsActiveInCurrentMission() || _massacreStarted || !SiegeCivilianMoraleReactionProfile.ShouldStopPanic(action))
+			{
+				return;
+			}
+			Mission mission = Mission.Current;
+			if (mission?.Agents == null)
+			{
+				return;
+			}
+			Agent focus = TryGetAgent(focusAgentIndex) ?? Agent.Main ?? mission.MainAgent;
+			bool shouldCheer = SiegeCivilianMoraleReactionProfile.ShouldCheer(action);
+			string reactionSource = shouldCheer ? SiegeCivilianMoraleReactionProfile.CheerSource : SiegeCivilianMoraleReactionProfile.StopPanicSource;
+			int calmed = 0;
+			int cheered = 0;
+			foreach (Agent civilian in mission.Agents.ToList())
+			{
+				if (!IsEligibleCivilianAgent(civilian, includeHeroes: true))
+				{
+					continue;
+				}
+				bool cheeredThisAgent;
+				if (ApplyCivilianMoraleReactionToAgent(civilian, focus, shouldCheer, out cheeredThisAgent))
+				{
+					calmed++;
+					if (cheeredThisAgent)
+					{
+						cheered++;
+					}
+				}
+			}
+			if (calmed > 0 || cheered > 0)
+			{
+				GcczDiagnosticLog.Log("CivilianMorale", "source=" + reactionSource + " action=" + action + " calmed=" + calmed + " cheered=" + cheered);
+				Logger.Log("SiegeAiIntervention", "Applied civilian morale reaction. Source=" + reactionSource + ", Action=" + action + ", Calmed=" + calmed + ", Cheered=" + cheered);
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "ApplyCivilianMoraleReactionForPositiveAction failed: " + ex.Message);
+		}
+	}
+
+	private static bool ApplyCivilianMoraleReactionToAgent(Agent civilian, Agent focus, bool shouldCheer, out bool cheered)
+	{
+		cheered = false;
+		try
+		{
+			if (civilian == null || !civilian.IsHuman || !civilian.IsActive())
+			{
+				return false;
+			}
+			int agentIndex = civilian.Index;
+			if (LocalHostileCivilianAgentIndexes.Contains(agentIndex))
+			{
+				return false;
+			}
+			bool hadPanicState = HasCivilianPanicState(civilian);
+			bool firstCalm = CivilianCalmedAgentIndexes.Add(agentIndex);
+			ClearCivilianPanicRoutingState(agentIndex);
+			if (hadPanicState || firstCalm)
+			{
+				civilian.InvalidateTargetAgent();
+				ClearCivilianUpperBodyActionForMovement(civilian);
+				ClearAgentLookTarget(civilian);
+				try
+				{
+					civilian.DisableScriptedMovement();
+					civilian.ClearTargetFrame();
+				}
+				catch
+				{
+				}
+				try
+				{
+					civilian.SetMaximumSpeedLimit(-1f, false);
+					civilian.SetCrouchMode(false);
+				}
+				catch
+				{
+				}
+				civilian.SetWatchState(Agent.WatchState.Patrolling);
+				SetCivilianLookTowardPositiveFocus(civilian, focus);
+			}
+			if (shouldCheer && CivilianPositiveCheerAgentIndexes.Add(agentIndex))
+			{
+				SetCivilianLookTowardPositiveFocus(civilian, focus);
+				civilian.SetWatchState(Agent.WatchState.Patrolling);
+				civilian.SetActionChannel(0, ActionIndexCache.act_cheer_1, true, (AnimFlags)0UL, 0f, 1f, -0.2f, 0.4f, MBRandom.RandomFloat, false, -0.2f, 0, true);
+				civilian.SetActionChannel(1, ActionIndexCache.act_none, true, (AnimFlags)0UL, 0f, 1f, -0.2f, 0.4f, 0f, false, -0.2f, 0, true);
+				cheered = true;
+			}
+			return hadPanicState || firstCalm || cheered;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SiegeAiIntervention", "ApplyCivilianMoraleReactionToAgent failed: " + ex.Message);
+			return false;
+		}
+	}
+
+	private static bool HasCivilianPanicState(Agent civilian)
+	{
+		try
+		{
+			if (civilian == null)
+			{
+				return false;
+			}
+			int agentIndex = civilian.Index;
+			return CivilianFrightenedActionAgentIndexes.Contains(agentIndex)
+				|| LocalFleeingCivilianAgentIndexes.Contains(agentIndex)
+				|| CivilianHideTargets.ContainsKey(agentIndex)
+				|| CivilianHideSettledAgentIndexes.Contains(agentIndex)
+				|| civilian.GetCurrentAction(1) == ActionIndexCache.act_scared_idle_1;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static void ClearCivilianPanicRoutingState(int agentIndex)
+	{
+		CivilianFrightenedActionAgentIndexes.Remove(agentIndex);
+		LocalFleeingCivilianAgentIndexes.Remove(agentIndex);
+		MassacreCaughtFleeingVictimAgentIndexes.Remove(agentIndex);
+		CivilianHideTargets.Remove(agentIndex);
+		LastCivilianHideOrderTimes.Remove(agentIndex);
+		CivilianHideSettledAgentIndexes.Remove(agentIndex);
+	}
+
+	private static void SetCivilianLookTowardPositiveFocus(Agent civilian, Agent focus)
+	{
+		try
+		{
+			if (civilian == null || !civilian.IsHuman || !civilian.IsActive() || focus == null || !focus.IsActive())
+			{
+				return;
+			}
+			civilian.SetLookAgent(focus);
+		}
+		catch
+		{
 		}
 	}
 
@@ -7416,7 +7572,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			{
 				continue;
 			}
-			if (CivilianFrightenedActionAgentIndexes.Contains(agent.Index) || CivilianGatherFollowerAgentIndexes.Contains(agent.Index) || CivilianGatherMovePreparedAgentIndexes.Contains(agent.Index))
+			if (CivilianCalmedAgentIndexes.Contains(agent.Index) || CivilianFrightenedActionAgentIndexes.Contains(agent.Index) || CivilianGatherFollowerAgentIndexes.Contains(agent.Index) || CivilianGatherMovePreparedAgentIndexes.Contains(agent.Index))
 			{
 				continue;
 			}
@@ -12226,6 +12382,7 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		VictoryCheerAgentIndexes.Clear();
 		CordonReadyAgentIndexes.Clear();
 		CivilianCalmedAgentIndexes.Clear();
+		CivilianPositiveCheerAgentIndexes.Clear();
 		CivilianFrightenedActionAgentIndexes.Clear();
 		CivilianPreMassacrePreparedAgentIndexes.Clear();
 		ClearLocalPlayerAttackState();
