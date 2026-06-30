@@ -178,6 +178,8 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 	private const string TemporaryPartyPrefix = "af_noble_gathering_temp_";
 	private const int TemporaryEscortCount = 50;
 	private const int TemporaryPartyTargetFood = 80;
+	private const float TemporaryPartySpawnRadius = 8f;
+	private const float TemporaryPartySpawnMinRadius = 0.5f;
 	private const string PlayerInvitationPending = "Pending";
 	private const string PlayerInvitationAccepted = "Accepted";
 	private const string PlayerInvitationDeclined = "Declined";
@@ -1653,6 +1655,14 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 		{
 			Log("dialog add failed: " + ex.Message);
 		}
+		try
+		{
+			RepairTrackedTemporaryGatheringParties("session_launched");
+		}
+		catch (Exception ex)
+		{
+			Log("session temporary party repair failed: " + ex.Message);
+		}
 	}
 
 	private void AddPlayerGatheringDialogues(CampaignGameStarter starter)
@@ -2041,6 +2051,7 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 	{
 		try
 		{
+			RepairTrackedTemporaryGatheringParties("hourly");
 			ProcessActiveGatherings();
 			ProcessTemporaryPartyReturnsAndOrphans();
 		}
@@ -2884,7 +2895,12 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 				message = "临时赴宴队伍创建失败：人物或地点无效。";
 				return null;
 			}
-			CampaignVec2 position = origin.GatePosition;
+			if (!TryResolveTemporaryGatheringLandPosition(origin, out CampaignVec2 position, out string positionReason))
+			{
+				message = "临时赴宴队伍创建失败：找不到安全陆地点（" + positionReason + "）。";
+				Log("create temporary party no safe land position hero=" + (hero?.StringId ?? "") + " origin=" + (origin?.StringId ?? "") + " reason=" + positionReason);
+				return null;
+			}
 			string partyId = TemporaryPartyPrefix + Guid.NewGuid().ToString("N").Substring(0, 12);
 			TextObject partyName = new TextObject("NobleGatheringTemporaryParty");
 			MobileParty party = MobileParty.CreateParty(partyId, new NobleGatheringTemporaryPartyComponent(position, partyName, hero, hero.Clan ?? Clan.PlayerClan));
@@ -2894,6 +2910,8 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 				return null;
 			}
 			party.IsVisible = true;
+			PrepareTemporaryGatheringPartyForLandTravel(party);
+			RepairTemporaryGatheringPartyPosition(party, origin, "create");
 			party.MemberRoster.AddToCounts(hero.CharacterObject, 1, insertAtFront: true, woundedCount: 0, xpChange: 0, removeDepleted: true, index: -1);
 			party.PartyComponent?.ChangePartyLeader(hero);
 			CharacterObject escortTroop = ResolveTemporaryEscortTroop(hero, origin);
@@ -2925,13 +2943,19 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 		}
 		try
 		{
+			PrepareTemporaryGatheringPartyForLandTravel(party);
+			if (!RepairTemporaryGatheringPartyPosition(party, targetSettlement, "route"))
+			{
+				party.SetMoveModeHold();
+				return;
+			}
 			if (party.CurrentSettlement == targetSettlement)
 			{
 				party.SetMoveModeHold();
 				return;
 			}
 			LeaveSettlementIfNeeded(party);
-			party.SetMoveGoToSettlement(targetSettlement, MobileParty.NavigationType.Default, targetSettlement.HasPort && !party.HasLandNavigationCapability);
+			party.SetMoveGoToSettlement(targetSettlement, MobileParty.NavigationType.Default, false);
 		}
 		catch
 		{
@@ -2946,12 +2970,21 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 		}
 		try
 		{
+			if (!RepairTemporaryGatheringPartyPosition(party, settlement, "arrival_" + (reason ?? "")))
+			{
+				return false;
+			}
 			if (party.CurrentSettlement == settlement)
 			{
 				party.SetMoveModeHold();
 				return true;
 			}
-			if (party.Position.Distance(settlement.GatePosition) > ArrivalDistance)
+			CampaignVec2 arrivalPosition = settlement.GatePosition;
+			if (TryResolveTemporaryGatheringLandPosition(settlement, out CampaignVec2 safeArrivalPosition, out _))
+			{
+				arrivalPosition = safeArrivalPosition;
+			}
+			if (party.Position.Distance(arrivalPosition) > ArrivalDistance)
 			{
 				return false;
 			}
@@ -2964,6 +2997,286 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 		{
 			Log("temporary party enter settlement failed party=" + (party?.StringId ?? "") + " settlement=" + (settlement?.StringId ?? "") + " reason=" + (reason ?? "") + " error=" + ex.Message);
 			return false;
+		}
+	}
+
+	private void RepairTrackedTemporaryGatheringParties(string reason)
+	{
+		try
+		{
+			foreach (NobleGatheringRecord record in _gatherings.Values.ToList())
+			{
+				if (record == null)
+				{
+					continue;
+				}
+				RepairTrackedTemporaryHostParty(record, reason);
+				foreach (NobleGatheringInviteeRecord invitee in record.Invitees ?? new List<NobleGatheringInviteeRecord>())
+				{
+					RepairTrackedTemporaryInviteeParty(record, invitee, reason);
+				}
+			}
+			CleanupUntrackedTemporaryParties();
+		}
+		catch (Exception ex)
+		{
+			Log("temporary party repair sweep failed reason=" + (reason ?? "") + " error=" + ex.Message);
+		}
+	}
+
+	private void RepairTrackedTemporaryHostParty(NobleGatheringRecord record, string reason)
+	{
+		if (record == null || string.IsNullOrWhiteSpace(record.HostTemporaryPartyId))
+		{
+			return;
+		}
+		MobileParty party = ResolveMobilePartyById(record.HostTemporaryPartyId);
+		if (party == null || !party.IsActive)
+		{
+			return;
+		}
+		Hero host = ResolveHeroById(record.HostHeroId);
+		Settlement preferred = ResolveTemporaryPartyPreferredSettlement(record.HostTemporaryPartyPhase, record.SettlementId, record.HostOriginSettlementId, host, party);
+		if (RepairTemporaryGatheringPartyPosition(party, preferred, (reason ?? "") + "_host"))
+		{
+			return;
+		}
+		DestroyTemporaryPartyAfterRemovingHero(party, host, preferred, (reason ?? "") + "_host_bad_position");
+		record.HostTemporaryPartyPhase = TemporaryPartyPhaseCleaned;
+		record.HostTemporaryPartyId = "";
+	}
+
+	private void RepairTrackedTemporaryInviteeParty(NobleGatheringRecord record, NobleGatheringInviteeRecord invitee, string reason)
+	{
+		if (record == null || invitee == null || string.IsNullOrWhiteSpace(invitee.TemporaryPartyId))
+		{
+			return;
+		}
+		MobileParty party = ResolveMobilePartyById(invitee.TemporaryPartyId);
+		if (party == null || !party.IsActive)
+		{
+			return;
+		}
+		Hero hero = ResolveHeroById(invitee.HeroId);
+		Settlement preferred = ResolveTemporaryPartyPreferredSettlement(invitee.TemporaryPartyPhase, record.SettlementId, invitee.OriginSettlementId, hero, party);
+		if (RepairTemporaryGatheringPartyPosition(party, preferred, (reason ?? "") + "_invitee"))
+		{
+			return;
+		}
+		DestroyTemporaryPartyAfterRemovingHero(party, hero, preferred, (reason ?? "") + "_invitee_bad_position");
+		invitee.Status = InviteFailed;
+		invitee.Reason = "temporary_party_bad_position";
+		invitee.TemporaryPartyPhase = TemporaryPartyPhaseCleaned;
+		invitee.TemporaryPartyId = "";
+	}
+
+	private static Settlement ResolveTemporaryPartyPreferredSettlement(string phase, string gatheringSettlementId, string originSettlementId, Hero hero, MobileParty party)
+	{
+		Settlement gathering = ResolveSettlementById(gatheringSettlementId);
+		Settlement origin = ResolveSettlementById(originSettlementId);
+		Settlement home = ResolveBestHeroHomeSettlement(hero) ?? party?.HomeSettlement;
+		if (string.Equals(phase, TemporaryPartyPhaseReturning, StringComparison.OrdinalIgnoreCase))
+		{
+			return origin ?? home ?? party?.CurrentSettlement ?? party?.TargetSettlement ?? gathering;
+		}
+		return gathering ?? party?.TargetSettlement ?? party?.CurrentSettlement ?? origin ?? home;
+	}
+
+	private static void PrepareTemporaryGatheringPartyForLandTravel(MobileParty party)
+	{
+		if (party == null || !party.IsActive)
+		{
+			return;
+		}
+		try
+		{
+			party.SetLandNavigationAccess(true);
+			if (IsValidTemporaryGatheringLandPosition(party.Position))
+			{
+				party.IsCurrentlyAtSea = false;
+			}
+		}
+		catch
+		{
+		}
+	}
+
+	private static bool RepairTemporaryGatheringPartyPosition(MobileParty party, Settlement preferredSettlement, string reason)
+	{
+		if (!IsTemporaryGatheringParty(party) || !party.IsActive)
+		{
+			return false;
+		}
+		try
+		{
+			PrepareTemporaryGatheringPartyForLandTravel(party);
+			if (!party.IsCurrentlyAtSea && IsValidTemporaryGatheringLandPosition(party.Position))
+			{
+				return true;
+			}
+			Settlement fallback = preferredSettlement ?? party.TargetSettlement ?? party.CurrentSettlement ?? party.HomeSettlement ?? ResolveBestHeroHomeSettlement(party.LeaderHero);
+			string positionReason = "";
+			if (fallback == null || !TryResolveTemporaryGatheringLandPosition(fallback, out CampaignVec2 position, out positionReason))
+			{
+				Log("temporary party repair no safe position party=" + (party.StringId ?? "") + " settlement=" + (fallback?.StringId ?? "") + " reason=" + (reason ?? "") + " positionReason=" + (positionReason ?? ""));
+				return false;
+			}
+			LeaveSettlementIfNeeded(party);
+			party.SetLandNavigationAccess(true);
+			party.IsCurrentlyAtSea = false;
+			party.Position = position;
+			party.MoveTargetPoint = position;
+			party.SetMoveModeHold();
+			Log("temporary party position repaired party=" + (party.StringId ?? "") + " settlement=" + (fallback.StringId ?? "") + " reason=" + (reason ?? ""));
+			return true;
+		}
+		catch (Exception ex)
+		{
+			Log("temporary party repair failed party=" + (party?.StringId ?? "") + " reason=" + (reason ?? "") + " error=" + ex.Message);
+			return false;
+		}
+	}
+
+	private static bool TryResolveTemporaryGatheringLandPosition(Settlement settlement, out CampaignVec2 position, out string reason)
+	{
+		position = CampaignVec2.Invalid;
+		reason = "";
+		if (settlement == null)
+		{
+			reason = "settlement_missing";
+			return false;
+		}
+		CampaignVec2[] centers = new CampaignVec2[]
+		{
+			settlement.GatePosition,
+			settlement.Position
+		};
+		foreach (CampaignVec2 center in centers)
+		{
+			if (TryResolveReachableTemporaryGatheringLandPosition(center, out position))
+			{
+				return true;
+			}
+			if (TryGetClosestTemporaryGatheringLandCenter(center, out CampaignVec2 closest)
+				&& TryResolveReachableTemporaryGatheringLandPosition(closest, out position))
+			{
+				return true;
+			}
+		}
+		reason = "no_valid_land_position";
+		return false;
+	}
+
+	private static bool TryResolveReachableTemporaryGatheringLandPosition(CampaignVec2 center, out CampaignVec2 position)
+	{
+		position = CampaignVec2.Invalid;
+		try
+		{
+			if (!center.IsValid())
+			{
+				return false;
+			}
+			CampaignVec2 candidate = Helpers.NavigationHelper.FindReachablePointAroundPosition(center, MobileParty.NavigationType.Default, TemporaryPartySpawnRadius, TemporaryPartySpawnMinRadius, true);
+			if (IsValidTemporaryGatheringLandPosition(candidate))
+			{
+				position = candidate;
+				return true;
+			}
+			if (IsValidTemporaryGatheringLandPosition(center))
+			{
+				position = center;
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		return false;
+	}
+
+	private static bool TryGetClosestTemporaryGatheringLandCenter(CampaignVec2 center, out CampaignVec2 position)
+	{
+		position = CampaignVec2.Invalid;
+		try
+		{
+			if (!center.IsValid())
+			{
+				return false;
+			}
+			int[] invalidTerrainTypes = Campaign.Current.Models.PartyNavigationModel.GetInvalidTerrainTypesForNavigationType(MobileParty.NavigationType.Default);
+			position = Helpers.NavigationHelper.GetClosestNavMeshFaceCenterPositionForPosition(center, invalidTerrainTypes);
+			return position.IsValid();
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static bool IsValidTemporaryGatheringLandPosition(CampaignVec2 position)
+	{
+		try
+		{
+			return position.IsValid()
+				&& position.IsOnLand
+				&& Helpers.NavigationHelper.IsPositionValidForNavigationType(position, MobileParty.NavigationType.Default)
+				&& IsTemporaryGatheringPositionInsideWeatherBounds(position)
+				&& IsTemporaryGatheringPositionWeatherSafe(position);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static bool IsTemporaryGatheringPositionInsideWeatherBounds(CampaignVec2 position)
+	{
+		try
+		{
+			if (Campaign.Current?.MapSceneWrapper == null)
+			{
+				return true;
+			}
+			Vec2 terrainSize = Campaign.Current.MapSceneWrapper.GetTerrainSize();
+			Vec2 vec = position.ToVec2();
+			if (float.IsNaN(vec.x) || float.IsNaN(vec.y))
+			{
+				return false;
+			}
+			if (terrainSize.X <= 0f || terrainSize.Y <= 0f)
+			{
+				return true;
+			}
+			return vec.x >= 0f && vec.y >= 0f && vec.x < terrainSize.X && vec.y < terrainSize.Y;
+		}
+		catch
+		{
+			return true;
+		}
+	}
+
+	private static bool IsTemporaryGatheringPositionWeatherSafe(CampaignVec2 position)
+	{
+		try
+		{
+			if (Campaign.Current?.Models?.MapWeatherModel == null)
+			{
+				return true;
+			}
+			Campaign.Current.Models.MapWeatherModel.GetWeatherEffectOnTerrainForPosition(position.ToVec2());
+			return true;
+		}
+		catch (IndexOutOfRangeException)
+		{
+			return false;
+		}
+		catch (ArgumentOutOfRangeException)
+		{
+			return false;
+		}
+		catch
+		{
+			return true;
 		}
 	}
 
@@ -4546,7 +4859,9 @@ public static string NormalizeNobleGatheringPostprocessTagsForExternal(string ra
 		protected override void OnInitialize()
 		{
 			MobileParty.ActualClan = _clan;
-			MobileParty.InitializeMobilePartyAroundPosition(TroopRoster.CreateDummyTroopRoster(), TroopRoster.CreateDummyTroopRoster(), _position, 0f, 0f, !_position.IsOnLand);
+			MobileParty.InitializeMobilePartyAroundPosition(TroopRoster.CreateDummyTroopRoster(), TroopRoster.CreateDummyTroopRoster(), _position, 0f, 0f, false);
+			MobileParty.SetLandNavigationAccess(true);
+			MobileParty.IsCurrentlyAtSea = false;
 			MobileParty.SetMoveModeHold();
 		}
 
