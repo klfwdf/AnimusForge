@@ -12147,6 +12147,74 @@ public class MyBehavior : CampaignBehaviorBase
 		Logger.Log("EventWeeklyReport", "[CustomPolicy] source_material_recorded recordId=" + (recordId ?? "") + " kingdom=" + targetId + " includeWorld=" + includeInWorld + " length=" + snapshot.Length);
 	}
 
+	public static void RecordPlayerKingdomRenameWeeklyMaterialForExternal(string oldKingdomName, string newKingdomName, string oldInformalName, string newInformalName, string kingdomId, int day, string gameDate, string stableKey)
+	{
+		try
+		{
+			(Campaign.Current?.GetCampaignBehavior<MyBehavior>())?.RecordPlayerKingdomRenameWeeklyMaterialInternal(oldKingdomName, newKingdomName, oldInformalName, newInformalName, kingdomId, day, gameDate, stableKey);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("EventWeeklyReport", "[PlayerKingdomRename][WARN] record weekly material failed: " + ex.Message);
+		}
+	}
+
+	private void RecordPlayerKingdomRenameWeeklyMaterialInternal(string oldKingdomName, string newKingdomName, string oldInformalName, string newInformalName, string kingdomId, int day, string gameDate, string stableKey)
+	{
+		string cleanOldName = LimitCustomPolicyWeeklyMaterialText(oldKingdomName, 60);
+		string cleanNewName = LimitCustomPolicyWeeklyMaterialText(newKingdomName, 60);
+		if (string.IsNullOrWhiteSpace(cleanOldName) || string.IsNullOrWhiteSpace(cleanNewName) || string.Equals(cleanOldName, cleanNewName, StringComparison.OrdinalIgnoreCase))
+		{
+			return;
+		}
+		string targetKingdomId = (kingdomId ?? "").Trim();
+		Kingdom kingdom = FindKingdomById(targetKingdomId) ?? Clan.PlayerClan?.Kingdom;
+		if (string.IsNullOrWhiteSpace(targetKingdomId))
+		{
+			targetKingdomId = GetKingdomId(kingdom);
+		}
+		if (string.IsNullOrWhiteSpace(targetKingdomId))
+		{
+			Logger.Log("EventWeeklyReport", "[PlayerKingdomRename][SKIP] kingdom_missing old=" + cleanOldName + " new=" + cleanNewName);
+			return;
+		}
+		string cleanDate = LimitCustomPolicyWeeklyMaterialText(gameDate, 30);
+		string cleanOldInformalName = LimitCustomPolicyWeeklyMaterialText(oldInformalName, 50);
+		string cleanNewInformalName = LimitCustomPolicyWeeklyMaterialText(newInformalName, 50);
+		StringBuilder sb = new StringBuilder();
+		sb.Append("玩家王国更名素材。");
+		if (!string.IsNullOrWhiteSpace(cleanDate))
+		{
+			sb.Append("日期：").Append(cleanDate).Append("。");
+		}
+		sb.Append("旧国号：").Append(cleanOldName).Append("。新国号：").Append(cleanNewName).Append("。");
+		if (!string.IsNullOrWhiteSpace(cleanOldInformalName) || !string.IsNullOrWhiteSpace(cleanNewInformalName))
+		{
+			sb.Append("简称变化：").Append(string.IsNullOrWhiteSpace(cleanOldInformalName) ? cleanOldName : cleanOldInformalName).Append(" -> ").Append(string.IsNullOrWhiteSpace(cleanNewInformalName) ? cleanNewName : cleanNewInformalName).Append("。");
+		}
+		sb.Append("事实约束：这是玩家统治王国的名称/国号更改，不是新王国建立、家族叛乱、征服、吞并或王国覆灭。");
+		string snapshot = LimitCustomPolicyWeeklyMaterialText(sb.ToString(), 260);
+		if (string.IsNullOrWhiteSpace(snapshot))
+		{
+			return;
+		}
+		string key = "player_kingdom_rename:" + NormalizeNpcActionStableKey(stableKey, cleanOldName + ":" + cleanNewName);
+		RecordEventSourceMaterial(
+			"player_kingdom_rename",
+			"玩家王国更名 - " + cleanNewName,
+			snapshot,
+			key,
+			targetKingdomId,
+			"",
+			includeInWorld: true,
+			includeInKingdom: true,
+			actorHeroId: GetHeroId(Hero.MainHero),
+			actorKingdomId: targetKingdomId,
+			dayOverride: day >= 0 ? day : GetCurrentGameDayIndexSafe(),
+			gameDateOverride: string.IsNullOrWhiteSpace(gameDate) ? GetCurrentGameDateTextSafe() : gameDate.Trim());
+		Logger.Log("EventWeeklyReport", "[PlayerKingdomRename] source_material_recorded kingdom=" + targetKingdomId + " old=" + cleanOldName + " new=" + cleanNewName + " length=" + snapshot.Length);
+	}
+
 	private static string LimitCustomPolicyWeeklyMaterialText(string text, int maxChars)
 	{
 		text = (text ?? "").Replace("\r\n", " ").Replace('\r', ' ').Replace('\n', ' ').Trim();
@@ -12525,7 +12593,7 @@ public class MyBehavior : CampaignBehaviorBase
 			string text = (tag ?? "").Trim();
 			if (Regex.IsMatch(text, "^\\[ACTION:GIVE_GOLD:\\d+\\]$", RegexOptions.IgnoreCase) ||
 				Regex.IsMatch(text, "^\\[ACTION:GIVE_ITEM:[^\\]\\r\\n:]+:\\d+\\]$", RegexOptions.IgnoreCase) ||
-				Regex.IsMatch(text, "^\\[AD;\\d+;\\d+;[^\\]]*\\]$", RegexOptions.IgnoreCase) ||
+				Regex.IsMatch(text, "^\\[AD;\\d+;\\d+;(?:P;[^\\]]*|(?!(?:N|P);)[^\\]]*)\\]$", RegexOptions.IgnoreCase) ||
 				Regex.IsMatch(text, "^\\[ADP[:;][^\\]\\r\\n:;]+\\]$", RegexOptions.IgnoreCase) ||
 				Regex.IsMatch(text, "^\\[ATT:\\d+:\\d+\\]$", RegexOptions.IgnoreCase) ||
 				Regex.IsMatch(text, "^\\[ATP:\\d+:\\d+\\]$", RegexOptions.IgnoreCase) ||
@@ -12638,7 +12706,7 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			return gold;
 		}
-		match = Regex.Match(text, "^\\[AD;(\\d+);\\d+;[^\\]]*\\]$", RegexOptions.IgnoreCase);
+		match = Regex.Match(text, "^\\[AD;(\\d+);\\d+;(?:P;[^\\]]*|(?!(?:N|P);)[^\\]]*)\\]$", RegexOptions.IgnoreCase);
 		if (match.Success && TryParsePositiveLong(match.Groups[1].Value, out var debtGold))
 		{
 			return debtGold;
@@ -16535,6 +16603,32 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private void GetNpcPersonaGenerationRuntimeState(Hero hero, out bool active, out bool coolingDown)
+	{
+		active = false;
+		coolingDown = false;
+		string text = (hero?.StringId ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return;
+		}
+		lock (_npcPersonaAutoGenLock)
+		{
+			active = _npcPersonaAutoGenInFlight.Contains(text);
+			if (_npcPersonaAutoGenRetryAfterUtcTicks.TryGetValue(text, out var value))
+			{
+				if (DateTime.UtcNow.Ticks < value)
+				{
+					coolingDown = true;
+				}
+				else
+				{
+					_npcPersonaAutoGenRetryAfterUtcTicks.Remove(text);
+				}
+			}
+		}
+	}
+
 	private string GetNpcVoiceId(Hero hero)
 	{
 		if (hero == null)
@@ -16637,17 +16731,6 @@ public class MyBehavior : CampaignBehaviorBase
 		if (!string.IsNullOrWhiteSpace(text))
 		{
 			return text;
-		}
-		try
-		{
-			text = NormalizePersonaPromptSourceText(Hero.SetHeroEncyclopediaTextAndLinks(hero)?.ToString() ?? "", maxLength);
-			if (!string.Equals(text, "Placeholder text", StringComparison.OrdinalIgnoreCase))
-			{
-				return text;
-			}
-		}
-		catch
-		{
 		}
 		return "";
 	}
@@ -19466,7 +19549,7 @@ public class MyBehavior : CampaignBehaviorBase
 		return text + "\n\n" + text3;
 	}
 
-	private async Task EnsureNpcPersonaGeneratedAsync(Hero hero)
+	private async Task EnsureNpcPersonaGeneratedAsync(Hero hero, bool ignoreRetryCooldown = false)
 	{
 		long runtimeGeneration = SaveRuntimeGuard.CaptureGeneration();
 		if (hero == null)
@@ -19493,7 +19576,7 @@ public class MyBehavior : CampaignBehaviorBase
 			}
 			if (_npcPersonaAutoGenRetryAfterUtcTicks.TryGetValue(id, out var value))
 			{
-				if (DateTime.UtcNow.Ticks < value)
+				if (!ignoreRetryCooldown && DateTime.UtcNow.Ticks < value)
 				{
 					return;
 				}
@@ -24726,6 +24809,15 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private static void AddPreprocessOnlyResidentRuleExclusions(HashSet<string> excludedRuleIds)
+	{
+		if (excludedRuleIds == null)
+		{
+			return;
+		}
+		excludedRuleIds.Add("noble_deference");
+	}
+
 	private static bool IsBuiltInPromptRuleIdForExtraInjection(string ruleId)
 	{
 		string id = (ruleId ?? "").Trim().ToLowerInvariant();
@@ -24781,6 +24873,15 @@ public class MyBehavior : CampaignBehaviorBase
 		return string.Equals(id, "kingdom_service", StringComparison.OrdinalIgnoreCase)
 			|| string.Equals(id, "kingdom_vassalage", StringComparison.OrdinalIgnoreCase)
 			|| string.Equals(id, "kingdom_annexation", StringComparison.OrdinalIgnoreCase);
+	}
+
+	private static bool IsRuntimeGatedPreprocessRuleId(string ruleId)
+	{
+		string id = (ruleId ?? "").Trim();
+		return string.Equals(id, "kingdom_vassalage", StringComparison.OrdinalIgnoreCase)
+			|| string.Equals(id, "diplomacy", StringComparison.OrdinalIgnoreCase)
+			|| string.Equals(id, "vote_deal", StringComparison.OrdinalIgnoreCase)
+			|| string.Equals(id, "propose_agenda", StringComparison.OrdinalIgnoreCase);
 	}
 
 	private string ResolvePreselectedRuleInstructionBody(string ruleId, string body, bool hasAnyHero, Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex)
@@ -24894,6 +24995,11 @@ public class MyBehavior : CampaignBehaviorBase
 				{
 					continue;
 				}
+				if (IsRuntimeGatedPreprocessRuleId(ruleId)
+					&& !AIConfigHandler.CanInjectRuleTopicIntoPreprocessForExternal(ruleId, hasAnyHero))
+				{
+					continue;
+				}
 				string body = hasAnyHero ? AIConfigHandler.GetGuardrailRuleInstruction(ruleId) : AIConfigHandler.GetGuardrailRuleNonHeroInstruction(ruleId);
 				if (string.IsNullOrWhiteSpace(body))
 				{
@@ -24920,6 +25026,7 @@ public class MyBehavior : CampaignBehaviorBase
 		string text = "";
 		string text2 = "";
 		string encounterReleaseInstruction = "";
+		string restrictedReferralHint = "";
 		bool encounterReleaseRuleSelected = false;
 		int num = AIConfigHandler.GuardrailRuleReturnCap;
 		HashSet<string> excludedRuleIdSet = BuildPromptRuleIdSet(excludedRuleIds);
@@ -24997,6 +25104,7 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				encounterReleaseInstruction = (LordEncounterBehavior.BuildMeetingPlayerReleaseRuntimeInstructionForExternal(targetHero ?? targetCharacter?.HeroObject, encounterReleaseRuleSelected) ?? "").Trim();
 			}
+			restrictedReferralHint = BuildRestrictedRuleReferralHint(hasAnyHero, targetHero, targetCharacter, targetAgentIndex, excludedRuleIdSet);
 		}
 		finally
 		{
@@ -25035,11 +25143,117 @@ public class MyBehavior : CampaignBehaviorBase
 			string text6 = "【附加规则:noble_deference】" + Environment.NewLine + nobleDeferenceInstruction;
 			text = string.IsNullOrWhiteSpace(text) ? text6 : (text.TrimEnd() + Environment.NewLine + text6);
 		}
+		if (!string.IsNullOrWhiteSpace(restrictedReferralHint) && (string.IsNullOrWhiteSpace(text) || text.IndexOf("【转介】", StringComparison.OrdinalIgnoreCase) < 0))
+		{
+			text = string.IsNullOrWhiteSpace(text) ? restrictedReferralHint : (text.TrimEnd() + Environment.NewLine + restrictedReferralHint);
+		}
 		if (!IsPromptRuleExcluded(excludedRuleIdSet, "scene_mechanism_actions") && IsSceneFollowingAgentForRules(targetAgentIndex))
 		{
 			text = ReplaceSceneMechanismRuleForFollowing(text);
 		}
 		return PrependExtraRuleDisclaimer(text);
+	}
+
+	private static string BuildRestrictedRuleReferralHint(bool hasAnyHero, Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, HashSet<string> excludedRuleIdSet)
+	{
+		List<string> tips = new List<string>();
+		if (AnyRestrictedReferralRuleBlocked(hasAnyHero, targetHero, targetCharacter, targetAgentIndex, excludedRuleIdSet, "diplomacy", "kingdom_vassalage", "kingdom_annexation"))
+		{
+			AddReferralTip(tips, "国事找国王");
+		}
+		if (AnyRestrictedReferralRuleBlocked(hasAnyHero, targetHero, targetCharacter, targetAgentIndex, excludedRuleIdSet, "vote_deal", "propose_agenda"))
+		{
+			AddReferralTip(tips, "投票/提案找领主或国王");
+		}
+		if (AnyRestrictedReferralRuleBlocked(hasAnyHero, targetHero, targetCharacter, targetAgentIndex, excludedRuleIdSet, "worldmap_party_command"))
+		{
+			AddReferralTip(tips, "行军/攻击找带队英雄");
+		}
+		if (AnyRestrictedReferralRuleBlocked(hasAnyHero, targetHero, targetCharacter, targetAgentIndex, excludedRuleIdSet, "party_transfer"))
+		{
+			AddReferralTip(tips, "部队/俘虏找领主");
+		}
+		if (AnyRestrictedReferralRuleBlocked(hasAnyHero, targetHero, targetCharacter, targetAgentIndex, excludedRuleIdSet, "settlement_transfer"))
+		{
+			AddReferralTip(tips, "领地找族长或国王");
+		}
+		if (AnyRestrictedReferralRuleBlocked(hasAnyHero, targetHero, targetCharacter, targetAgentIndex, excludedRuleIdSet, "marriage"))
+		{
+			AddReferralTip(tips, "婚事找家主/当事人");
+		}
+		if (AnyRestrictedReferralRuleBlocked(hasAnyHero, targetHero, targetCharacter, targetAgentIndex, excludedRuleIdSet, "vanilla_issue"))
+		{
+			AddReferralTip(tips, "任务找委托人");
+		}
+		if (tips.Count == 0)
+		{
+			return "";
+		}
+		if (tips.Count > 4)
+		{
+			tips = tips.Take(4).ToList();
+		}
+		return "【转介】无权时简短引导：" + string.Join("；", tips) + "。";
+	}
+
+	private static bool AnyRestrictedReferralRuleBlocked(bool hasAnyHero, Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, HashSet<string> excludedRuleIdSet, params string[] ruleIds)
+	{
+		if (ruleIds == null)
+		{
+			return false;
+		}
+		for (int i = 0; i < ruleIds.Length; i++)
+		{
+			if (IsRestrictedReferralRuleBlocked(ruleIds[i], hasAnyHero, targetHero, targetCharacter, targetAgentIndex, excludedRuleIdSet))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private static bool IsRestrictedReferralRuleBlocked(string ruleId, bool hasAnyHero, Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, HashSet<string> excludedRuleIdSet)
+	{
+		string id = (ruleId ?? "").Trim().ToLowerInvariant();
+		if (string.IsNullOrWhiteSpace(id))
+		{
+			return false;
+		}
+		if (IsPromptRuleExcluded(excludedRuleIdSet, id))
+		{
+			return true;
+		}
+		Hero hero = targetHero ?? targetCharacter?.HeroObject;
+		switch (id)
+		{
+		case "diplomacy":
+		case "kingdom_vassalage":
+		case "kingdom_annexation":
+		case "vote_deal":
+		case "propose_agenda":
+		case "marriage":
+		case "vanilla_issue":
+		case "lords_hall_access":
+		case "siege_intervention_aftermath":
+			return !AIConfigHandler.CanInjectRuleTopicIntoPreprocessForExternal(id, hasAnyHero);
+		case "worldmap_party_command":
+			return ShouldExcludeWorldMapCommandRuleForTarget(hero, targetCharacter);
+		case "party_transfer":
+			return !IsPartyTransferRuleEligible(hero, targetCharacter);
+		case "settlement_transfer":
+			return !IsSettlementTransferLeaderEligibleForExternal(hero, targetCharacter);
+		default:
+			return false;
+		}
+	}
+
+	private static void AddReferralTip(List<string> tips, string tip)
+	{
+		string text = (tip ?? "").Trim();
+		if (tips != null && !string.IsNullOrWhiteSpace(text) && !tips.Any((string x) => string.Equals((x ?? "").Trim(), text, StringComparison.OrdinalIgnoreCase)))
+		{
+			tips.Add(text);
+		}
 	}
 
 	private static string BuildNobleDeferenceRuntimeInstruction(bool hasAnyHero)
@@ -25448,10 +25662,13 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				stringBuilder.AppendLine(text3.Trim());
 			}
-			string text4 = SceneTauntBehavior.BuildUnifiedTauntRuntimeInstructionForExternal(targetHero, targetCharacter, targetAgentIndex);
-			if (!string.IsNullOrWhiteSpace(text4))
+			if (!AfGcczShoutBridge.ShouldUseExclusivePreprocessRuleRouting())
 			{
-				stringBuilder.AppendLine(text4.Trim());
+				string text4 = SceneTauntBehavior.BuildUnifiedTauntRuntimeInstructionForExternal(targetHero, targetCharacter, targetAgentIndex);
+				if (!string.IsNullOrWhiteSpace(text4))
+				{
+					stringBuilder.AppendLine(text4.Trim());
+				}
 			}
 			return stringBuilder.ToString().Trim();
 		}
@@ -25625,6 +25842,26 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
+	public static bool TryGetNpcPersonaGenerationRuntimeStateForExternal(Hero hero, out bool active, out bool coolingDown)
+	{
+		active = false;
+		coolingDown = false;
+		try
+		{
+			MyBehavior myBehavior = Campaign.Current?.GetCampaignBehavior<MyBehavior>();
+			if (myBehavior == null || hero == null)
+			{
+				return false;
+			}
+			myBehavior.GetNpcPersonaGenerationRuntimeState(hero, out active, out coolingDown);
+			return true;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
 	public static string BuildNpcPersonaGenerationHintForExternal(Hero hero)
 	{
 		string text = hero?.Name?.ToString()?.Trim();
@@ -25635,14 +25872,14 @@ public class MyBehavior : CampaignBehaviorBase
 		return "正在生成" + text + "的个性与背景，请稍等......";
 	}
 
-	public static async Task EnsureNpcPersonaGeneratedForExternalAsync(Hero hero)
+	public static async Task EnsureNpcPersonaGeneratedForExternalAsync(Hero hero, bool ignoreRetryCooldown = false)
 	{
 		try
 		{
 			MyBehavior inst = Campaign.Current?.GetCampaignBehavior<MyBehavior>();
 			if (inst != null && hero != null)
 			{
-				await inst.EnsureNpcPersonaGeneratedAsync(hero);
+				await inst.EnsureNpcPersonaGeneratedAsync(hero, ignoreRetryCooldown);
 			}
 		}
 		catch
@@ -25752,7 +25989,115 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private static string BuildPlayerArmyRuntimeFactForPrompt(Hero observerHero, CharacterObject observerCharacter, int targetAgentIndex)
+	{
+		try
+		{
+			Hero playerHero = Hero.MainHero;
+			MobileParty playerParty = MobileParty.MainParty ?? playerHero?.PartyBelongedTo;
+			Army army = playerParty?.Army;
+			if (playerHero == null || army == null)
+			{
+				return "";
+			}
+			Hero targetHero = observerHero ?? observerCharacter?.HeroObject;
+			if (targetHero == playerHero)
+			{
+				return "";
+			}
+			try
+			{
+				MobileParty targetParty = targetHero?.PartyBelongedTo;
+				if (targetParty != null && targetParty.Army == army)
+				{
+					return "";
+				}
+			}
+			catch
+			{
+			}
+			MobileParty leaderParty = army.LeaderParty;
+			Hero leaderHero = leaderParty?.LeaderHero ?? army.ArmyOwner;
+			bool playerIsArmyLeader = leaderHero == playerHero || leaderParty == playerParty;
+			string playerName = (BuildPlayerPublicDisplayNameForPrompt(observerHero, observerCharacter, targetAgentIndex) ?? "").Trim();
+			if (string.IsNullOrWhiteSpace(playerName))
+			{
+				playerName = "玩家";
+			}
+			string armyName = GetArmyDisplayName(army);
+			if (leaderHero == playerHero && string.IsNullOrWhiteSpace(army?.Name?.ToString()))
+			{
+				armyName = playerName + "的军团";
+			}
+			string leaderName = leaderHero == playerHero ? playerName : GetHeroDisplayName(leaderHero);
+			int partyCount = 0;
+			int totalMen = 0;
+			try
+			{
+				partyCount = Math.Max(0, army.Parties?.Count ?? 0);
+			}
+			catch
+			{
+				partyCount = 0;
+			}
+			try
+			{
+				totalMen = Math.Max(0, army.TotalManCount);
+			}
+			catch
+			{
+				totalMen = 0;
+			}
+			List<string> heroNames = BuildArmyHeroListForPrompt(army, null, leaderHero, 18, out int heroCount, playerHero, playerName);
+			StringBuilder stringBuilder = new StringBuilder();
+			stringBuilder.Append("【玩家当前军团事实】");
+			if (playerIsArmyLeader)
+			{
+				stringBuilder.Append(playerName).Append("正在率领").Append(armyName);
+			}
+			else
+			{
+				stringBuilder.Append(playerName).Append("现在属于").Append(leaderName).Append("统率的").Append(armyName);
+			}
+			if (partyCount > 0 || totalMen > 0)
+			{
+				stringBuilder.Append("，当前约有");
+				if (partyCount > 0)
+				{
+					stringBuilder.Append(partyCount).Append("支部队");
+					if (totalMen > 0)
+					{
+						stringBuilder.Append("、");
+					}
+				}
+				if (totalMen > 0)
+				{
+					stringBuilder.Append(totalMen).Append("名士兵");
+				}
+			}
+			if (heroNames.Count > 0)
+			{
+				stringBuilder.Append("；军团Hero包括：").Append(string.Join("、", heroNames));
+				if (heroCount > heroNames.Count)
+				{
+					stringBuilder.Append("等").Append(heroCount).Append("人");
+				}
+			}
+			stringBuilder.Append("。");
+			return stringBuilder.ToString().Replace("\r", " ").Replace("\n", " ").Trim();
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
 	private static List<string> BuildArmyHeroListForPrompt(Army army, Hero perspectiveHero, Hero leaderHero, int maxCount, out int totalHeroCount)
+	{
+		return BuildArmyHeroListForPrompt(army, perspectiveHero, leaderHero, maxCount, out totalHeroCount, null, null);
+	}
+
+	private static List<string> BuildArmyHeroListForPrompt(Army army, Hero perspectiveHero, Hero leaderHero, int maxCount, out int totalHeroCount, Hero displayOverrideHero, string displayOverrideName)
 	{
 		totalHeroCount = 0;
 		List<Tuple<Hero, string>> heroes = new List<Tuple<Hero, string>>();
@@ -25832,7 +26177,7 @@ public class MyBehavior : CampaignBehaviorBase
 				{
 					tags.Add(role);
 				}
-				string name = GetHeroDisplayName(value);
+				string name = value == displayOverrideHero && !string.IsNullOrWhiteSpace(displayOverrideName) ? displayOverrideName.Trim() : GetHeroDisplayName(value);
 				return tags.Count > 0 ? (name + "（" + string.Join("，", tags.Distinct()) + "）") : name;
 			})
 			.ToList();
@@ -26014,11 +26359,11 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	public static string BuildPlayerVassalageRelationPromptLineForExternal(Hero observer, CharacterObject observerCharacter = null, string kingdomIdOverride = null, string counterpartKingdomLabel = "玩家所在王国")
+	public static string BuildPlayerVassalageRelationPromptLineForExternal(Hero observer, CharacterObject observerCharacter = null, string kingdomIdOverride = null, string counterpartKingdomLabel = "玩家所在王国", int targetAgentIndex = -1)
 	{
 		try
 		{
-			Kingdom observerKingdom = ResolveObserverKingdomForVassalagePrompt(observer, observerCharacter, kingdomIdOverride);
+			Kingdom observerKingdom = ResolveObserverKingdomForVassalagePrompt(observer, observerCharacter, kingdomIdOverride, targetAgentIndex);
 			Kingdom playerKingdom = ResolvePlayerKingdomForVassalagePrompt();
 			return VassalageBehavior.BuildKingdomVassalageRelationPromptLineForExternal(observerKingdom, playerKingdom, counterpartKingdomLabel);
 		}
@@ -26028,17 +26373,12 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static Kingdom ResolveObserverKingdomForVassalagePrompt(Hero observer, CharacterObject observerCharacter, string kingdomIdOverride)
+	private static Kingdom ResolveObserverKingdomForVassalagePrompt(Hero observer, CharacterObject observerCharacter, string kingdomIdOverride, int targetAgentIndex)
 	{
 		try
 		{
 			Hero targetHero = observer ?? observerCharacter?.HeroObject;
-			Kingdom kingdom = targetHero?.Clan?.Kingdom;
-			if (kingdom != null)
-			{
-				return kingdom;
-			}
-			kingdom = targetHero?.MapFaction as Kingdom;
+			Kingdom kingdom = ResolveKingdomFromFactionForVassalagePrompt(targetHero?.Clan?.Kingdom ?? targetHero?.MapFaction);
 			if (kingdom != null)
 			{
 				return kingdom;
@@ -26048,13 +26388,93 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				return kingdom;
 			}
-			Clan clan = targetHero?.MapFaction as Clan;
-			return clan?.Kingdom;
+			kingdom = ResolveAgentKingdomForVassalagePrompt(targetAgentIndex);
+			if (kingdom != null)
+			{
+				return kingdom;
+			}
+			return ResolveCurrentSettlementKingdomForVassalagePrompt();
 		}
 		catch
 		{
 			return null;
 		}
+	}
+
+	private static Kingdom ResolveAgentKingdomForVassalagePrompt(int targetAgentIndex)
+	{
+		try
+		{
+			if (targetAgentIndex < 0 || Mission.Current?.Agents == null)
+			{
+				return null;
+			}
+			Agent agent = Mission.Current.Agents.FirstOrDefault((Agent a) => a != null && a.Index == targetAgentIndex);
+			CharacterObject characterObject = agent?.Character as CharacterObject;
+			Kingdom kingdom = ResolveKingdomFromFactionForVassalagePrompt(characterObject?.HeroObject?.Clan?.Kingdom ?? characterObject?.HeroObject?.MapFaction);
+			if (kingdom != null)
+			{
+				return kingdom;
+			}
+			PartyBase party = agent?.Origin?.BattleCombatant as PartyBase;
+			kingdom = ResolveKingdomFromFactionForVassalagePrompt(party?.MapFaction);
+			if (kingdom != null)
+			{
+				return kingdom;
+			}
+			kingdom = ResolveKingdomFromFactionForVassalagePrompt(party?.MobileParty?.MapFaction);
+			if (kingdom != null)
+			{
+				return kingdom;
+			}
+			kingdom = ResolveKingdomFromFactionForVassalagePrompt(party?.MobileParty?.ActualClan);
+			if (kingdom != null)
+			{
+				return kingdom;
+			}
+			kingdom = ResolveKingdomFromFactionForVassalagePrompt(party?.Owner?.MapFaction);
+			if (kingdom != null)
+			{
+				return kingdom;
+			}
+			return party?.Owner?.Clan?.Kingdom;
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static Kingdom ResolveCurrentSettlementKingdomForVassalagePrompt()
+	{
+		try
+		{
+			Settlement settlement = Settlement.CurrentSettlement ?? MobileParty.MainParty?.CurrentSettlement;
+			return settlement?.OwnerClan?.Kingdom ?? ResolveKingdomFromFactionForVassalagePrompt(settlement?.MapFaction);
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static Kingdom ResolveKingdomFromFactionForVassalagePrompt(IFaction faction)
+	{
+		try
+		{
+			if (faction is Kingdom kingdom)
+			{
+				return kingdom;
+			}
+			if (faction is Clan clan)
+			{
+				return clan.Kingdom;
+			}
+		}
+		catch
+		{
+		}
+		return null;
 	}
 
 	private static Kingdom ResolvePlayerKingdomForVassalagePrompt()
@@ -26393,6 +26813,8 @@ public class MyBehavior : CampaignBehaviorBase
 		HashSet<string> excludedRuleIdSet = BuildPromptRuleIdSet(excludedRuleIds);
 		AddPlayerCompanionOrFamilyRuleExclusionsForTarget(excludedRuleIdSet, targetHero, targetCharacter);
 		AddWorldMapCommandRuleExclusionForTarget(excludedRuleIdSet, targetHero, targetCharacter);
+		AfGcczShoutBridge.AddExclusivePreprocessRuleExclusions(excludedRuleIdSet);
+		AddPreprocessOnlyResidentRuleExclusions(excludedRuleIdSet);
 		string targetKingdomId = ResolveTargetKingdomIdForRules(targetHero, targetCharacter, kingdomIdOverride);
 		AIConfigHandler.SetGuardrailRuntimeTargetKingdom(targetKingdomId);
 		AIConfigHandler.SetGuardrailRuntimeTargetHero(targetHero?.StringId ?? targetCharacter?.HeroObject?.StringId ?? "");
@@ -26529,6 +26951,7 @@ public class MyBehavior : CampaignBehaviorBase
 		AddPlayerCompanionOrFamilyRuleExclusionsForTarget(excludedRuleIdSet, targetHero, targetCharacter);
 		AddWorldMapCommandRuleExclusionForTarget(excludedRuleIdSet, targetHero, targetCharacter);
 		AddSceneMoveRuleExclusionForCurrentMission(excludedRuleIdSet);
+		AfGcczShoutBridge.AddExclusivePreprocessRuleExclusions(excludedRuleIdSet);
 		HashSet<string> preprocessExcludedRuleIdSet = preprocessExcludedRuleIds == null ? new HashSet<string>(excludedRuleIdSet, StringComparer.OrdinalIgnoreCase) : BuildPromptRuleIdSet(preprocessExcludedRuleIds);
 		foreach (string excludedRuleId in explicitExcludedRuleIdSet)
 		{
@@ -26537,6 +26960,8 @@ public class MyBehavior : CampaignBehaviorBase
 				preprocessExcludedRuleIdSet.Add(excludedRuleId.Trim());
 			}
 		}
+		AfGcczShoutBridge.AddExclusivePreprocessRuleExclusions(preprocessExcludedRuleIdSet);
+		AddPreprocessOnlyResidentRuleExclusions(preprocessExcludedRuleIdSet);
 		string targetKingdomId = ResolveTargetKingdomIdForRules(targetHero, targetCharacter, kingdomIdOverride);
 		AIConfigHandler.SetGuardrailRuntimeTargetKingdom(targetKingdomId);
 		string runtimeTargetHeroId = targetHero?.StringId ?? targetCharacter?.HeroObject?.StringId ?? "";
@@ -26606,6 +27031,8 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		List<string> forcedRuleHitIds = NormalizePreselectedPromptRuleIds(forcedPreprocessRuleIds)
 			.Where((string x) => !IsPromptRuleExcluded(preprocessExcludedRuleIdSet, x))
+			.Where((string x) => !IsRuntimeGatedPreprocessRuleId(x)
+				|| AIConfigHandler.CanInjectRuleTopicIntoPreprocessForExternal(x, hasAnyHero))
 			.ToList();
 		if (forcedRuleHitIds.Count > 0)
 		{
@@ -26969,6 +27396,11 @@ public class MyBehavior : CampaignBehaviorBase
 		if (!string.IsNullOrWhiteSpace(armyRuntimeFact))
 		{
 			stringBuilder.AppendLine(armyRuntimeFact);
+		}
+		string playerArmyRuntimeFact = BuildPlayerArmyRuntimeFactForPrompt(targetHero, targetCharacter, targetAgentIndex);
+		if (!string.IsNullOrWhiteSpace(playerArmyRuntimeFact))
+		{
+			stringBuilder.AppendLine(playerArmyRuntimeFact);
 		}
 		if (flag5)
 		{
@@ -34004,6 +34436,8 @@ public class MyBehavior : CampaignBehaviorBase
 			return "世界开局概要";
 		case "kingdom_opening_summary":
 			return "王国开局概要";
+		case "kingdom_current_ruler":
+			return "当前统治者";
 		case "npc_recent_action":
 			return "NPC近期行动";
 		case "npc_major_action":
@@ -40258,14 +40692,28 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			return text;
 		}
+		if (HasWeeklyReportRulerContextMaterial(group))
+		{
+			return text;
+		}
 		Kingdom kingdom = FindKingdomById(group?.KingdomId);
-		Hero ruler = kingdom?.Leader;
+		Hero ruler = kingdom?.Leader ?? kingdom?.RulingClan?.Leader;
 		string rulerName = GetHeroDisplayName(ruler);
 		if (ruler == null || string.IsNullOrWhiteSpace(rulerName) || string.Equals(rulerName, "某位领主", StringComparison.OrdinalIgnoreCase) || rulerName.Trim().Length < 2)
 		{
 			return text;
 		}
 		return AnnotateWeeklyReportRulerNameInText(text, rulerName.Trim());
+	}
+
+	private static bool HasWeeklyReportRulerContextMaterial(WeeklyEventMaterialPreviewGroup group)
+	{
+		return HasWeeklyReportRulerContextMaterial(group?.PromptMaterials) || HasWeeklyReportRulerContextMaterial(group?.Materials);
+	}
+
+	private static bool HasWeeklyReportRulerContextMaterial(IEnumerable<EventMaterialReference> materials)
+	{
+		return (materials ?? Enumerable.Empty<EventMaterialReference>()).Any((EventMaterialReference x) => string.Equals((x?.MaterialType ?? "").Trim(), "kingdom_current_ruler", StringComparison.OrdinalIgnoreCase));
 	}
 
 	private static string AnnotateWeeklyReportRulerNameInText(string text, string rulerName)
@@ -40812,6 +41260,7 @@ public class MyBehavior : CampaignBehaviorBase
 				SnapshotText = kingdomOpeningSummary
 			});
 		}
+		TryAddKingdomCurrentRulerMaterial(weeklyEventMaterialPreviewGroup.Materials, kingdom);
 		foreach (EventSourceMaterialEntry item in GetWeeklyEventSourceMaterialsForBuild())
 		{
 			if (item != null && item.IncludeInKingdom && item.Day >= startDay && item.Day <= endDay && DoesEventSourceMaterialRelateToKingdom(item, kingdom))
@@ -40850,6 +41299,56 @@ public class MyBehavior : CampaignBehaviorBase
 			}
 		}
 		return weeklyEventMaterialPreviewGroup;
+	}
+
+	private static void TryAddKingdomCurrentRulerMaterial(List<EventMaterialReference> materials, Kingdom kingdom)
+	{
+		if (materials == null || kingdom == null)
+		{
+			return;
+		}
+		string kingdomId = GetKingdomId(kingdom);
+		if (string.IsNullOrWhiteSpace(kingdomId))
+		{
+			return;
+		}
+		Hero ruler = kingdom.Leader ?? kingdom.RulingClan?.Leader;
+		string rulerName = GetHeroDisplayName(ruler);
+		if (ruler == null || string.IsNullOrWhiteSpace(rulerName) || string.Equals(rulerName, "某位领主", StringComparison.OrdinalIgnoreCase))
+		{
+			return;
+		}
+		Clan rulingClan = kingdom.RulingClan ?? ruler.Clan;
+		string kingdomName = GetKingdomDisplayName(kingdom, ResolveKingdomDisplay(kingdomId));
+		string rulingClanName = GetClanDisplayName(rulingClan);
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.Append("当前王国：").Append(kingdomName).Append("。");
+		stringBuilder.Append("当前统治者：").Append(rulerName.Trim()).Append("。");
+		if (rulingClan != null && !string.IsNullOrWhiteSpace(rulingClanName) && !string.Equals(rulingClanName, "某个", StringComparison.OrdinalIgnoreCase))
+		{
+			stringBuilder.Append("执政家族：").Append(rulingClanName.Trim()).Append("。");
+		}
+		stringBuilder.Append("事实约束：这是本期王国周报目标的现任统治者上下文，不代表本周发生过继位、政变、叛乱或王位更替；除非其他素材明确写明，否则不要把它写成新事件。");
+		EventMaterialReference material = new EventMaterialReference
+		{
+			MaterialType = "kingdom_current_ruler",
+			Label = kingdomName + " 当前统治者",
+			SnapshotText = stringBuilder.ToString(),
+			HeroId = GetHeroId(ruler),
+			KingdomId = kingdomId,
+			ActorHeroId = GetHeroId(ruler),
+			ActorClanId = GetClanId(rulingClan),
+			ActorKingdomId = kingdomId,
+			SourceMaterialCount = 1,
+			ActionKind = "kingdom_context:ruler",
+			ActionStableKey = "kingdom_current_ruler:" + kingdomId + ":" + GetHeroId(ruler)
+		};
+		AddUniqueId(material.RelatedHeroIds, GetHeroId(ruler));
+		AddUniqueId(material.RelatedClanIds, GetClanId(rulingClan));
+		AddUniqueId(material.RelatedKingdomIds, kingdomId);
+		AddUniqueId(material.SourceStableKeys, material.ActionStableKey);
+		AddUniqueId(material.SourceActionKinds, material.ActionKind);
+		materials.Add(material);
 	}
 
 	private static Hero FindHeroById(string heroId)
@@ -41362,7 +41861,11 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			return 0;
 		}
-		return 1;
+		if (text == "kingdom_current_ruler")
+		{
+			return 1;
+		}
+		return 2;
 	}
 
 	private string BuildWeeklyPreviewGroupDetailText(WeeklyEventMaterialPreviewGroup group, int page, int totalPages)

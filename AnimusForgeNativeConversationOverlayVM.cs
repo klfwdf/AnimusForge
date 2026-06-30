@@ -47,10 +47,11 @@ public sealed class AnimusForgeNativeConversationOverlayVM : ViewModel
 		get => _inputText;
 		set
 		{
-			if (value != _inputText)
+			string text = AnimusForgeTextInputSanitizer.SanitizeSingleLine(value, AnimusForgeTextInputSanitizer.MaxNativeConversationChars);
+			if (text != _inputText)
 			{
-				_inputText = value;
-				OnPropertyChangedWithValue(value, nameof(InputText));
+				_inputText = text;
+				OnPropertyChangedWithValue(text, nameof(InputText));
 			}
 		}
 	}
@@ -266,7 +267,7 @@ public sealed class AnimusForgeNativeConversationOverlayVM : ViewModel
 		{
 			return;
 		}
-		_onSubmit?.Invoke(InputText ?? "");
+		_onSubmit?.Invoke(AnimusForgeTextInputSanitizer.SanitizeSingleLine(InputText, AnimusForgeTextInputSanitizer.MaxNativeConversationChars));
 	}
 
 	public void SwitchTalk()

@@ -4565,11 +4565,11 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static Hero TryResolveEncounterLeaderHero()
+	private static Hero TryResolveEncounterLeaderHero(PartyBase encounteredParty = null)
 	{
 		try
 		{
-			PartyBase encounteredParty = PlayerEncounter.EncounteredParty;
+			encounteredParty ??= PlayerEncounter.EncounteredParty;
 			Hero hero = encounteredParty?.LeaderHero;
 			if (IsEligibleCustomLordEncounterTarget(hero, encounteredParty))
 			{
@@ -4584,7 +4584,12 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 
 	private static Hero EnsureEncounterTargetHero(string reason)
 	{
-		Hero hero = TryResolveEncounterLeaderHero();
+		PartyBase encounteredParty = GetCurrentEncounterPartySafe();
+		if (_targetHero != null && IsEligibleCustomLordEncounterTarget(_targetHero, encounteredParty))
+		{
+			return _targetHero;
+		}
+		Hero hero = TryResolveEncounterLeaderHero(encounteredParty);
 		if (hero != null)
 		{
 			if (_targetHero != hero)
@@ -4596,21 +4601,8 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		}
 		if (_targetHero != null)
 		{
-			bool flag = false;
-			try
-			{
-				PartyBase encounteredParty = PlayerEncounter.EncounteredParty;
-				flag = encounteredParty == null || encounteredParty.LeaderHero != _targetHero;
-			}
-			catch
-			{
-				flag = true;
-			}
-			if (flag)
-			{
-				Logger.Log("LordEncounter", "Clearing stale encounter target. Reason=" + (reason ?? "N/A"));
-				_targetHero = null;
-			}
+			Logger.Log("LordEncounter", "Clearing stale encounter target. Reason=" + (reason ?? "N/A"));
+			_targetHero = null;
 		}
 		return _targetHero;
 	}

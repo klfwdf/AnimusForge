@@ -52,7 +52,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 	private const float NpcDiplomacyLetterGlobalCooldownDays = 5f;
 	private const float NpcDiplomacyLetterSenderCooldownDays = 21f;
 	private const float NpcDiplomacyLetterSendChance = 0.25f;
-	private static readonly string[] CourierExcludedRuleIds = new[] { "duel", "lords_hall_access", "scene_mechanism_actions", "encounter_release_player" };
+	private static readonly string[] CourierExcludedRuleIds = new[] { "duel", "lords_hall_access", "scene_mechanism_actions", "encounter_release_player", "noble_deference" };
 
 	private enum CourierStage
 	{
@@ -1527,7 +1527,8 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 				CourierPartyId = courier.StringId,
 				Stage = CourierStage.Outbound.ToString(),
 				PayloadMode = CourierPayloadMode.Normal.ToString(),
-				LetterText = letterText.Trim()
+				LetterText = letterText.Trim(),
+				CrewEntries = BuildCargoEntriesFromRoster(members, "crew")
 			};
 			session.DeliveryFactText = BuildInboundDeliveryFactText(session, delivered: false, sender);
 			lock (_sessionLock)
@@ -1616,6 +1617,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 				Stage = CourierStage.Outbound.ToString(),
 				PayloadMode = CourierPayloadMode.Normal.ToString(),
 				LetterText = letterText.Trim(),
+				CrewEntries = BuildCargoEntriesFromRoster(members, "crew"),
 				ReplyGenerated = true
 			};
 			session.DeliveryFactText = BuildInboundDeliveryFactText(session, delivered: false, sender);
@@ -4596,6 +4598,14 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		{
 			sb.Append("[AFEF玩家行为补充] ").Append(playerName).Append("已安排信使携带一封信出发。");
 		}
+		string crewSummary = BuildCourierCrewSummaryForPrompt(session);
+		if (!string.IsNullOrWhiteSpace(crewSummary))
+		{
+			sb.Append("\n[AFEF玩家行为补充] ").Append(playerName)
+				.Append(delivered ? "派来送达这封信的信使队成员为：" : "安排的送信队伍成员为：")
+				.Append(crewSummary)
+				.Append("。这些成员只负责送信与护送回信，不属于随信赠与或转移给你的物资或部队。");
+		}
 		foreach (CourierCargoEntry entry in session.Entries ?? new List<CourierCargoEntry>())
 		{
 			if (entry == null || entry.Amount <= 0)
@@ -4647,9 +4657,39 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		{
 			playerName = Hero.MainHero?.Name?.ToString() ?? "玩家";
 		}
-		return delivered
+		string fact = delivered
 			? "[AFEF NPC行为补充] " + senderName + "通过信使给" + playerName + "送来一封外交信。"
 			: "[AFEF NPC行为补充] " + senderName + "已经派出信使，准备把一封外交信送给" + playerName + "。";
+		string crewSummary = BuildCourierCrewSummaryForPrompt(session);
+		if (!string.IsNullOrWhiteSpace(crewSummary))
+		{
+			fact += "\n[AFEF NPC行为补充] " + senderName + "派出的信使队成员为：" + crewSummary + "。这些成员只负责送信，不属于随信赠与或转移给" + playerName + "的物资或部队。";
+		}
+		return fact;
+	}
+
+	private static string BuildCourierCrewSummaryForPrompt(CourierSession session)
+	{
+		List<string> parts = new List<string>();
+		foreach (CourierCargoEntry entry in session?.CrewEntries ?? new List<CourierCargoEntry>())
+		{
+			if (entry == null || entry.Amount <= 0)
+			{
+				continue;
+			}
+			if (!string.Equals(entry.Kind ?? "", "crew", StringComparison.OrdinalIgnoreCase))
+			{
+				continue;
+			}
+			string name = string.IsNullOrWhiteSpace(entry.Name) ? (entry.Id ?? "").Trim() : entry.Name.Trim();
+			if (string.IsNullOrWhiteSpace(name))
+			{
+				continue;
+			}
+			string role = entry.IsHero ? "角色" : "士兵";
+			parts.Add(name + "×" + Math.Max(1, entry.Amount) + "（" + role + "）");
+		}
+		return parts.Count == 0 ? "" : string.Join("，", parts);
 	}
 
 	private static string BuildCourierCargoValueSuffix(CourierCargoEntry entry)

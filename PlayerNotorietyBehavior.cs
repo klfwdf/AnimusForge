@@ -1000,7 +1000,12 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 	private bool HasSummaryWorkDue()
 	{
 		_state = NormalizeState(_state);
-		if (!_state.MajorMaterials.Any(x => x != null && !x.Summarized))
+		if (IsMajorSummaryOverPromptLimit())
+		{
+			return true;
+		}
+		bool hasPendingMaterials = _state.MajorMaterials.Any(x => x != null && !x.Summarized);
+		if (!hasPendingMaterials)
 		{
 			return false;
 		}
@@ -1023,7 +1028,8 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 				.ThenBy(x => x.CreatedUtcTicks)
 				.Take(24)
 				.ToList();
-			if (sourceMaterials.Count == 0)
+			bool compactOnly = sourceMaterials.Count == 0 && IsMajorSummaryOverPromptLimit();
+			if (sourceMaterials.Count == 0 && !compactOnly)
 			{
 				return;
 			}
@@ -1040,11 +1046,19 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 			Logger.Log("PlayerNotoriety", "summary parse failed: " + error);
 			if (_state.SummaryRetryCount >= MaxSummaryRetries)
 			{
-				foreach (PlayerHistoryMaterial material in sourceMaterials)
+				if (compactOnly)
 				{
-					if (material != null)
+					_state.MajorSummary = TrimMajorSummaryFallback(_state.MajorSummary, GetMajorPromptChars());
+				}
+				else
+				{
+					_state.MajorSummary = BuildFallbackMajorSummary(_state.MajorSummary, sourceMaterials);
+					foreach (PlayerHistoryMaterial material in sourceMaterials)
 					{
-						material.Summarized = true;
+						if (material != null)
+						{
+							material.Summarized = true;
+						}
 					}
 				}
 				_state.SummaryRetryCount = 0;
@@ -1063,9 +1077,10 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 
 	private static string BuildSummarySystemPrompt()
 	{
-		return "你是 AnimusForge 的玩家履历与知名度总结器。你必须只输出严格 JSON：{\"summary_content\":\"新的玩家重大履历时间线摘要\",\"notoriety_delta\":0到10之间的小数}。"
-			+ "你要把已有摘要与新增重大履历融合成一段新的时间线摘要，保留关键人物、地点、胜败、承诺和公开影响。"
-			+ "不要编造素材没有的事实。summary_content 最多约700个中文字符。"
+		int targetChars = GetMajorPromptChars();
+		return "你是 AnimusForge 的玩家履历与知名度总结器。只输出严格 JSON：{\"summary_content\":\"新的玩家重大履历时间线摘要\",\"notoriety_delta\":0到10之间的小数}。"
+			+ "把已有摘要与新增素材重新融合成约" + targetChars + "个中文字符且不超过" + targetChars + "个中文字符的时间线摘要；保留关键人物、地点、胜败、承诺和公开影响，删除重复、数字细节和次要过程。"
+			+ "没有新增素材时只压缩已有摘要，notoriety_delta 输出0。不要编造素材没有的事实。"
 			+ "notoriety_delta 表示这批公开素材带来的文化知名度增量，范围0-10；小事应为0到1之间的小数，重大胜利、夺城、处决、王国事件才可接近10。";
 	}
 
@@ -1076,7 +1091,12 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 		sb.AppendLine(string.IsNullOrWhiteSpace(_state.MajorSummary) ? "（无）" : StripPlayerInternalMarkers(_state.MajorSummary.Trim()));
 		sb.AppendLine();
 		sb.AppendLine("新增公开素材：");
-		foreach (PlayerHistoryMaterial material in materials ?? new List<PlayerHistoryMaterial>())
+		List<PlayerHistoryMaterial> sourceMaterials = materials ?? new List<PlayerHistoryMaterial>();
+		if (sourceMaterials.Count == 0)
+		{
+			sb.AppendLine("（无新增素材；只压缩已有摘要，丢弃不重要信息）");
+		}
+		foreach (PlayerHistoryMaterial material in sourceMaterials)
 		{
 			if (material == null || string.IsNullOrWhiteSpace(material.Text))
 			{
@@ -1132,29 +1152,35 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 	private void ApplySummarySuccess(List<PlayerHistoryMaterial> materials, string summary, double delta)
 	{
 		_state = NormalizeState(_state);
-		_state.MajorSummary = NormalizeLine(summary);
+		_state.MajorSummary = NormalizeMajorSummaryForStorage(summary);
 		_state.LastSummaryDay = GetCurrentGameDayIndex();
 		_state.SummaryRetryCount = 0;
 		_state.LastSummaryError = "";
 		_state.UpdatedUtcTicks = DateTime.UtcNow.Ticks;
 		HashSet<string> cultures = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		int materialCount = 0;
 		foreach (PlayerHistoryMaterial material in materials ?? new List<PlayerHistoryMaterial>())
 		{
 			if (material == null)
 			{
 				continue;
 			}
+			materialCount++;
 			material.Summarized = true;
 			foreach (string cultureId in NormalizeCultureList(material.CultureIds))
 			{
 				cultures.Add(cultureId);
 			}
 		}
-		if (cultures.Count == 0)
+		if (materialCount <= 0)
+		{
+			delta = 0.0;
+		}
+		if (materialCount > 0 && cultures.Count == 0)
 		{
 			AddWorldNotoriety(delta / 3.0, "summary_world_only");
 		}
-		else
+		else if (materialCount > 0)
 		{
 			foreach (string cultureId in cultures)
 			{
@@ -1241,35 +1267,12 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 	{
 		_state = NormalizeState(_state);
 		string playerName = NormalizePlayerDisplayName(playerDisplayName);
-		int summaryChars = GetMajorPromptChars();
-		string summary = (_state.MajorSummary ?? "").Trim();
-		if (summaryChars > 0 && summary.Length > summaryChars)
-		{
-			summary = summary.Substring(Math.Max(0, summary.Length - summaryChars), summaryChars);
-		}
+		string summary = NormalizeMajorSummaryForStorage(_state.MajorSummary);
 		summary = RenderPlayerActionTextForPrompt(summary, playerName);
-		List<PlayerHistoryMaterial> unsummarized = (_state.MajorMaterials ?? new List<PlayerHistoryMaterial>())
-			.Where(x => x != null && !x.Summarized && !string.IsNullOrWhiteSpace(x.Text))
-			.OrderBy(x => x.Day)
-			.ThenBy(x => x.CreatedUtcTicks)
-			.Take(16)
-			.ToList();
 		StringBuilder sb = new StringBuilder();
 		if (!string.IsNullOrWhiteSpace(summary))
 		{
 			sb.AppendLine(summary);
-		}
-		if (unsummarized.Count > 0)
-		{
-			if (sb.Length > 0)
-			{
-				sb.AppendLine();
-			}
-			sb.AppendLine("尚未总结的新增公开履历素材：");
-			foreach (PlayerHistoryMaterial material in unsummarized)
-			{
-				sb.AppendLine("- " + (string.IsNullOrWhiteSpace(material.GameDate) ? ("第" + material.Day + "日") : material.GameDate.Trim()) + "：" + RenderPlayerActionTextForPrompt(material.Text, playerName));
-			}
 		}
 		return sb.ToString().Trim();
 	}
@@ -1351,6 +1354,11 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 			MarkObserverKnowsPlayer(observer, "player_companion_or_family");
 			return true;
 		}
+		if (IsObserverInPlayerOwnedSettlement(observer))
+		{
+			MarkObserverKnowsPlayer(observer, "player_owned_settlement");
+			return true;
+		}
 		return DoesObserverKnowPlayer(GetHeroId(observer), observer?.Culture?.StringId);
 	}
 
@@ -1360,6 +1368,16 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 		if (string.IsNullOrWhiteSpace(key) || key == PlayerHeroId)
 		{
 			return false;
+		}
+		Hero observer = FindHeroById(key);
+		if (IsObserverInPlayerOwnedSettlement(observer))
+		{
+			MarkObserverKnowsPlayer(observer, "player_owned_settlement");
+			return true;
+		}
+		if (IsNonHeroObserverKey(key) && IsObserverKeyInPlayerOwnedSettlement(key))
+		{
+			return true;
 		}
 		PlayerNpcKnowledgeState state = GetNpcKnowledgeState(key, create: true);
 		if (state.KnowsMajorHistory)
@@ -1380,6 +1398,10 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 		{
 			return true;
 		}
+		if (IsObserverInPlayerOwnedSettlement(observer))
+		{
+			return true;
+		}
 		return HasObserverUnlockedPlayerMajor(GetHeroId(observer));
 	}
 
@@ -1389,6 +1411,15 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 		if (string.IsNullOrWhiteSpace(key) || key == PlayerHeroId)
 		{
 			return false;
+		}
+		Hero observer = FindHeroById(key);
+		if (IsObserverInPlayerOwnedSettlement(observer))
+		{
+			return true;
+		}
+		if (IsNonHeroObserverKey(key) && IsObserverKeyInPlayerOwnedSettlement(key))
+		{
+			return true;
 		}
 		PlayerNpcKnowledgeState state = GetNpcKnowledgeState(key, create: false);
 		return state?.KnowsMajorHistory == true;
@@ -2063,6 +2094,57 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 		return (input ?? "").Replace("\r\n", "\n").Replace('\r', '\n').Trim();
 	}
 
+	private static string NormalizeMajorSummaryForStorage(string input)
+	{
+		return TrimMajorSummaryFallback(NormalizeLine(input), GetMajorPromptChars());
+	}
+
+	private static string BuildFallbackMajorSummary(string existingSummary, List<PlayerHistoryMaterial> materials)
+	{
+		StringBuilder sb = new StringBuilder();
+		string existing = NormalizeLine(existingSummary);
+		if (!string.IsNullOrWhiteSpace(existing))
+		{
+			sb.Append(existing);
+		}
+		foreach (PlayerHistoryMaterial material in materials ?? new List<PlayerHistoryMaterial>())
+		{
+			string text = NormalizeLine(material?.Text);
+			if (string.IsNullOrWhiteSpace(text))
+			{
+				continue;
+			}
+			if (sb.Length > 0)
+			{
+				sb.Append(" ");
+			}
+			sb.Append(string.IsNullOrWhiteSpace(material.GameDate) ? "" : (material.GameDate.Trim() + "："));
+			sb.Append(StripPlayerInternalMarkers(text));
+		}
+		return NormalizeMajorSummaryForStorage(sb.ToString());
+	}
+
+	private bool IsMajorSummaryOverPromptLimit()
+	{
+		int maxChars = GetMajorPromptChars();
+		string summary = (_state?.MajorSummary ?? "").Trim();
+		return maxChars > 0 && summary.Length > maxChars;
+	}
+
+	private static string TrimMajorSummaryFallback(string input, int maxChars)
+	{
+		string text = NormalizeLine(input);
+		if (maxChars <= 0 || text.Length <= maxChars)
+		{
+			return text;
+		}
+		if (maxChars <= 3)
+		{
+			return text.Substring(0, maxChars);
+		}
+		return text.Substring(0, maxChars - 3).TrimEnd() + "...";
+	}
+
 	private static PlayerNotorietyState NormalizeState(PlayerNotorietyState state)
 	{
 		state ??= new PlayerNotorietyState();
@@ -2332,6 +2414,116 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private static bool IsObserverInPlayerOwnedSettlement(Hero hero)
+	{
+		try
+		{
+			if (!IsValidObserver(hero))
+			{
+				return false;
+			}
+			if (IsPlayerOwnedSettlement(ResolveObserverSettlement(hero)))
+			{
+				return true;
+			}
+			return hero == Hero.OneToOneConversationHero && IsPlayerOwnedSettlement(ResolveCurrentInteractionSettlement());
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static Settlement ResolveObserverSettlement(Hero hero)
+	{
+		try
+		{
+			return hero?.CurrentSettlement
+				?? hero?.StayingInSettlement
+				?? hero?.PartyBelongedTo?.CurrentSettlement
+				?? hero?.PartyBelongedToAsPrisoner?.MobileParty?.CurrentSettlement;
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static bool IsObserverKeyInPlayerOwnedSettlement(string observerKey)
+	{
+		try
+		{
+			return IsPlayerOwnedSettlement(ResolveObserverKeySettlement(observerKey) ?? ResolveCurrentInteractionSettlement());
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static Settlement ResolveObserverKeySettlement(string observerKey)
+	{
+		string key = NormalizeObserverKey(observerKey);
+		int at = key.LastIndexOf('@');
+		if (at < 0 || at >= key.Length - 1)
+		{
+			return null;
+		}
+		string settlementId = key.Substring(at + 1).Trim();
+		if (string.IsNullOrWhiteSpace(settlementId))
+		{
+			return null;
+		}
+		try
+		{
+			return Settlement.All?.FirstOrDefault(x => x != null && string.Equals((x.StringId ?? "").Trim(), settlementId, StringComparison.OrdinalIgnoreCase));
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static Settlement ResolveCurrentInteractionSettlement()
+	{
+		try
+		{
+			return Settlement.CurrentSettlement ?? MobileParty.MainParty?.CurrentSettlement ?? Hero.MainHero?.CurrentSettlement;
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static bool IsPlayerOwnedSettlement(Settlement settlement)
+	{
+		try
+		{
+			if (settlement == null || settlement.IsHideout)
+			{
+				return false;
+			}
+			Clan playerClan = Clan.PlayerClan ?? Hero.MainHero?.Clan;
+			if (playerClan == null)
+			{
+				return false;
+			}
+			Clan ownerClan = settlement.OwnerClan;
+			return ownerClan == playerClan || ownerClan?.Leader == Hero.MainHero;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static bool IsNonHeroObserverKey(string observerKey)
+	{
+		string key = NormalizeObserverKey(observerKey);
+		return key.StartsWith("agent:", StringComparison.OrdinalIgnoreCase) || key.StartsWith("troop:", StringComparison.OrdinalIgnoreCase);
+	}
+
 	private static Settlement ResolvePlayerCurrentSettlement()
 	{
 		try
@@ -2521,6 +2713,12 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 	private static string NormalizeHeroId(string heroId)
 	{
 		return (heroId ?? "").Trim().ToLowerInvariant();
+	}
+
+	private static string NormalizeHeroLookupId(string heroId)
+	{
+		string id = NormalizeHeroId(heroId);
+		return id.StartsWith("hero:", StringComparison.OrdinalIgnoreCase) ? id.Substring("hero:".Length).Trim() : id;
 	}
 
 	private static string NormalizeObserverKey(string observerKey)
@@ -2767,7 +2965,7 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 
 	private static Hero FindHeroById(string heroId)
 	{
-		string id = NormalizeHeroId(heroId);
+		string id = NormalizeHeroLookupId(heroId);
 		if (string.IsNullOrWhiteSpace(id))
 		{
 			return null;

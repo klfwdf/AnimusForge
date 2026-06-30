@@ -104,10 +104,11 @@ public sealed class ShoutTextInputPopupVM : ViewModel
 		get => _inputText;
 		set
 		{
-			if (value != _inputText)
+			string text = AnimusForgeTextInputSanitizer.SanitizeMultiline(value, AnimusForgeTextInputSanitizer.MaxShoutInputChars);
+			if (text != _inputText)
 			{
-				_inputText = value;
-				OnPropertyChangedWithValue(value, "InputText");
+				_inputText = text;
+				OnPropertyChangedWithValue(text, "InputText");
 			}
 		}
 	}
@@ -196,7 +197,7 @@ public sealed class ShoutTextInputPopupVM : ViewModel
 		}
 		else
 		{
-			_onSubmit?.Invoke(InputText ?? "");
+			_onSubmit?.Invoke(AnimusForgeTextInputSanitizer.SanitizeMultiline(InputText, AnimusForgeTextInputSanitizer.MaxShoutInputChars));
 		}
 	}
 

@@ -13,6 +13,18 @@ namespace AnimusForge;
 /// </summary>
 internal static class AfGcczShoutBridge
 {
+	private static readonly string[] ExclusiveRuntimeBlockedRuleIds =
+	{
+		"duel",
+		"reward",
+		"loan",
+		"surroundings",
+		"scene_mechanism_actions",
+		"worldmap_party_command",
+		"meeting_taunt",
+		"duel_stake"
+	};
+
 	internal static string RuleId => SiegePostprocessRuleCatalog.RuleId;
 
 	internal static string InjectedRuleBlockMarker => SiegePostprocessRuleCatalog.InjectedRuleBlockMarker;
@@ -20,6 +32,55 @@ internal static class AfGcczShoutBridge
 	internal static bool IsActive()
 	{
 		return SiegeAiInterventionBehavior.ShouldRunSiegeInterventionPostprocessForExternal();
+	}
+
+	internal static bool ShouldUseExclusivePreprocessRuleRouting()
+	{
+		return IsActive();
+	}
+
+	internal static bool IsExclusivePreprocessRuleId(string ruleId)
+	{
+		return string.Equals((ruleId ?? string.Empty).Trim(), RuleId, StringComparison.OrdinalIgnoreCase);
+	}
+
+	internal static List<string> BuildExclusivePreprocessRuleExclusions(IEnumerable<string> ruleIds)
+	{
+		HashSet<string> excluded = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		if (!ShouldUseExclusivePreprocessRuleRouting())
+		{
+			return excluded.ToList();
+		}
+		foreach (string ruleId in ruleIds ?? Enumerable.Empty<string>())
+		{
+			string id = (ruleId ?? string.Empty).Trim();
+			if (!string.IsNullOrWhiteSpace(id) && !IsExclusivePreprocessRuleId(id))
+			{
+				excluded.Add(id);
+			}
+		}
+		foreach (string runtimeRuleId in ExclusiveRuntimeBlockedRuleIds)
+		{
+			excluded.Add(runtimeRuleId);
+		}
+		return excluded.ToList();
+	}
+
+	internal static void AddExclusivePreprocessRuleExclusions(HashSet<string> excludedRuleIds)
+	{
+		if (excludedRuleIds == null || !ShouldUseExclusivePreprocessRuleRouting())
+		{
+			return;
+		}
+		excludedRuleIds.Remove(RuleId);
+		foreach (string ruleId in BuildExclusivePreprocessRuleExclusions(AIConfigHandler.GetEnabledGuardrailRuleIdsForExternal()))
+		{
+			string id = (ruleId ?? string.Empty).Trim();
+			if (!string.IsNullOrWhiteSpace(id))
+			{
+				excludedRuleIds.Add(id);
+			}
+		}
 	}
 
 	internal static bool HasPreprocessRuleHit(IEnumerable<string> preprocessRuleHits)
@@ -194,6 +255,11 @@ internal static class AfGcczShoutBridge
 
 	private static void EnsurePreprocessRuleHit(MyBehavior.ShoutPromptContext shoutPromptContext)
 	{
+		if (ShouldUseExclusivePreprocessRuleRouting())
+		{
+			shoutPromptContext.PreprocessRuleIds = new List<string> { RuleId };
+			return;
+		}
 		if (shoutPromptContext.PreprocessRuleIds == null)
 		{
 			shoutPromptContext.PreprocessRuleIds = new List<string>();

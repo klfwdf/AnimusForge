@@ -5706,15 +5706,6 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			{
 				return false;
 			}
-			int num = 1;
-			try
-			{
-				num = Campaign.Current?.Models?.ClanTierModel?.MercenaryEligibleTier ?? 1;
-			}
-			catch
-			{
-				num = 1;
-			}
 			int num2 = 0;
 			try
 			{
@@ -5726,11 +5717,10 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			}
 			bool flag = playerClan.Kingdom == null;
 			bool flag2 = !playerClan.IsAtWarWith(offerKingdom);
-			bool flag3 = playerClan.Tier >= num;
-			bool flag4 = offerKingdom.Leader != null && offerKingdom.Leader.GetRelationWithPlayer() >= (float)num2;
-			bool flag5 = playerClan.Settlements == null || playerClan.Settlements.Count <= 0;
-			bool flag6 = IsPlayerWarsCompatibleWithKingdom(offerKingdom);
-			return flag && flag2 && flag3 && flag4 && flag5 && flag6;
+			bool flag3 = offerKingdom.Leader != null && offerKingdom.Leader.GetRelationWithPlayer() >= (float)num2;
+			bool flag4 = playerClan.Settlements == null || playerClan.Settlements.Count <= 0;
+			bool flag5 = IsPlayerWarsCompatibleWithKingdom(offerKingdom);
+			return flag && flag2 && flag3 && flag4 && flag5;
 		}
 		catch
 		{
@@ -5954,20 +5944,6 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				if (giver?.Clan == null || giver.Clan.Kingdom != kingdom2 || giver.Clan.IsUnderMercenaryService)
 				{
 					statusText = "执行失败：当前对话对象并非该势力正式封臣，不能签订雇佣兵契约。";
-					return false;
-				}
-				int num = 1;
-				try
-				{
-					num = Campaign.Current?.Models?.ClanTierModel?.MercenaryEligibleTier ?? 1;
-				}
-				catch
-				{
-					num = 1;
-				}
-				if (playerClan.Tier < num)
-				{
-					statusText = "执行失败：玩家家族等级不足，成为雇佣兵至少需要家族等级 " + num + "。";
 					return false;
 				}
 				if (playerClan.Kingdom != null && !playerClan.IsUnderMercenaryService)
@@ -13013,6 +12989,38 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		return text2.Trim();
 	}
 
+	private static bool ShouldApplyAdDebtTag(Match match, string source)
+	{
+		string direction = "";
+		if (match != null && match.Groups.Count > 3)
+		{
+			direction = (match.Groups[3].Value ?? "").Trim();
+		}
+		if (string.Equals(direction, "N", StringComparison.OrdinalIgnoreCase))
+		{
+			Logger.Log("Logic", "[Reward] AD tag ignored: direction=N means NPC owes player; no player debt is created. source=" + (source ?? ""));
+			return false;
+		}
+		return true;
+	}
+
+	private static string GetAdDebtNote(Match match)
+	{
+		if (match == null)
+		{
+			return "";
+		}
+		if (match.Groups.Count > 4)
+		{
+			return (match.Groups[4].Value ?? "").Trim();
+		}
+		if (match.Groups.Count > 3)
+		{
+			return (match.Groups[3].Value ?? "").Trim();
+		}
+		return "";
+	}
+
 	public void ApplyRewardTags(Hero giver, Hero receiver, ref string responseText)
 	{
 		SetLastGeneratedNpcFactLines(null);
@@ -13045,7 +13053,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			Regex regex20 = new Regex("\\[ACTION:KINGDOM_SERVICE:LEAVE\\]", RegexOptions.IgnoreCase);
 			Regex regex21 = new Regex("\\[ACTION:TRADE_TRUST:(-?\\d+)\\]", RegexOptions.IgnoreCase);
 			Regex regex22 = new Regex("\\[ACTION:SETTLEMENT_TRANSFER:(TO_PLAYER|TO_NPC):([^\\]\\r\\n:]+)\\]", RegexOptions.IgnoreCase);
-			Regex regex23 = new Regex("\\[AD;(\\d+);(\\d+);([^\\]]*)\\]", RegexOptions.IgnoreCase);
+			Regex regex23 = new Regex("\\[AD;(\\d+);(\\d+);(?:(N|P);)?([^\\]]*)\\]", RegexOptions.IgnoreCase);
 			Regex regex24 = new Regex("\\[ADP[:;]([a-zA-Z0-9_\\-]+)\\]", RegexOptions.IgnoreCase);
 			Regex regex25 = new Regex("\\[A:H_J_P_P\\]", RegexOptions.IgnoreCase);
 			Regex regexKingAbdicateToPlayer = new Regex("\\[ACTION:KING_ABDICATE_TO_PLAYER\\]", RegexOptions.IgnoreCase);
@@ -13284,7 +13292,11 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				{
 					return string.Empty;
 				}
-				string text3 = (m.Groups[3].Value ?? "").Trim();
+				string text3 = GetAdDebtNote(m);
+				if (!ShouldApplyAdDebtTag(m, "hero"))
+				{
+					return string.Empty;
+				}
 				if (receiver == Hero.MainHero && giver != Hero.MainHero)
 				{
 					if (hasDuelActionTagInCurrentReply)
@@ -14336,7 +14348,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		Regex regex11 = new Regex("\\[ACTION:DEBT_PAY_GOLD:([a-zA-Z0-9_\\-]+):(\\d+)\\]", RegexOptions.IgnoreCase);
 		Regex regex12 = new Regex("\\[ACTION:DEBT_PAY_ITEM:([a-zA-Z0-9_\\-]+):([^\\]\\r\\n:]+):(\\d+)\\]", RegexOptions.IgnoreCase);
 		Regex regex13 = new Regex("\\[ACTION:TRADE_TRUST:(-?\\d+)\\]", RegexOptions.IgnoreCase);
-		Regex regex14 = new Regex("\\[AD;(\\d+);(\\d+);([^\\]]*)\\]", RegexOptions.IgnoreCase);
+		Regex regex14 = new Regex("\\[AD;(\\d+);(\\d+);(?:(N|P);)?([^\\]]*)\\]", RegexOptions.IgnoreCase);
 		Regex regex15 = new Regex("\\[ADP[:;]([a-zA-Z0-9_\\-]+)\\]", RegexOptions.IgnoreCase);
 		Regex regexLegacyDebtTag = new Regex("\\[ACTION:DEBT[^\\]]*\\]", RegexOptions.IgnoreCase);
 		List<string> merchantFacts = new List<string>();
@@ -14460,7 +14472,11 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			{
 				return string.Empty;
 			}
-			string text = (m.Groups[3].Value ?? "").Trim();
+			string text = GetAdDebtNote(m);
+			if (!ShouldApplyAdDebtTag(m, "merchant"))
+			{
+				return string.Empty;
+			}
 			if (receiver == Hero.MainHero)
 			{
 				if (result8 > 0)

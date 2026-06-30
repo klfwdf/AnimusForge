@@ -100,10 +100,11 @@ public class DevHistoryEditPopupVM : ViewModel
 		}
 		set
 		{
-			if (value != _editedText)
+			string text = AnimusForgeTextInputSanitizer.SanitizeMultiline(value, AnimusForgeTextInputSanitizer.MaxLongEditorChars);
+			if (text != _editedText)
 			{
-				_editedText = value;
-				OnPropertyChangedWithValue(value, "EditedText");
+				_editedText = text;
+				OnPropertyChangedWithValue(text, "EditedText");
 			}
 		}
 	}
@@ -157,7 +158,7 @@ public class DevHistoryEditPopupVM : ViewModel
 
 	public void ExecuteSave()
 	{
-		_onSave?.Invoke(EditedText ?? "");
+		_onSave?.Invoke(AnimusForgeTextInputSanitizer.SanitizeMultiline(EditedText, AnimusForgeTextInputSanitizer.MaxLongEditorChars));
 	}
 
 	public void ExecuteCancel()

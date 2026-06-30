@@ -80,6 +80,25 @@
 
 如果用户说“调用场景 Agent 移动案例”“参考带路传唤跟随案例”“不要用坐标节点，要用 agent 节点”，默认就是指 `docs/scene_agent_command_movement_case.md`。
 
+## 军团成员自定义会面目标案例
+
+当任务涉及以下内容时，先阅读并套用 `docs/army_member_custom_meeting_target_case.md`：
+
+- 大地图接触军团后，原版先进入军团成员选择界面。
+- 排查“选择军团其他成员后，自定义会面仍导向军团长”的问题。
+- 修改 `ConversationManager.OpenMapConversation`、`ConversationManager.SetupAndStartMapConversation`、`Conversation.Start` 相关 encounter/conversation patch。
+- 修改 `LordEncounterBehavior` 的 `_targetHero`、`EnsureEncounterTargetHero(...)`、`IsEligibleCustomLordEncounterTarget(...)` 或自定义会面菜单目标解析。
+- 排查军团成员会面、原版 meeting 选择目标、AnimusForge 自定义会面菜单目标不一致的问题。
+
+该案例的核心经验：
+
+- `PlayerEncounter.EncounteredParty.LeaderHero` 在军团遭遇中通常会指向军团长，不能代表玩家在成员选择界面里选中的附属队伍首领。
+- conversation 入口 patch 要优先从原版传参解析选中 Hero，再把遭遇首领作为最后兜底。
+- 合法性判断要允许当前遭遇军团里的附属队伍首领。
+- `EnsureEncounterTargetHero(...)` 不能无条件用遭遇首领覆盖 `_targetHero`；只要当前 `_targetHero` 仍然合法，就必须保留。
+
+如果用户说“调用军团成员自定义会面目标案例”“选军团成员却会面军团长”“自定义会面目标串到军团长”，默认就是指 `docs/army_member_custom_meeting_target_case.md`。
+
 ## 场景伤害上下文防误触案例
 
 当任务涉及以下内容时，先阅读并套用 `docs/scene_damage_context_guard_case.md`：

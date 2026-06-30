@@ -663,7 +663,7 @@ public sealed class AnimusForgeNativeConversationOverlay
 		{
 			return;
 		}
-		string text = (inputText ?? "").Replace("\r", "").Trim();
+		string text = AnimusForgeTextInputSanitizer.SanitizeSingleLine(inputText, AnimusForgeTextInputSanitizer.MaxNativeConversationChars).Trim();
 		if (string.IsNullOrWhiteSpace(text))
 		{
 			return;

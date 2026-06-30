@@ -663,6 +663,29 @@ public static class AIConfigHandler
 		}
 	}
 
+	private static bool IsKingdomLordOrKingRuleTargetForPreprocess(Hero targetHero, CharacterObject targetCharacter)
+	{
+		try
+		{
+			Hero hero = targetHero ?? targetCharacter?.HeroObject;
+			Clan clan = hero?.Clan;
+			Kingdom kingdom = clan?.Kingdom ?? hero?.MapFaction as Kingdom;
+			if (hero == null || clan == null || kingdom == null || clan.IsEliminated || kingdom.IsEliminated || clan.IsUnderMercenaryService)
+			{
+				return false;
+			}
+			if (kingdom.Leader == hero || kingdom.RulingClan?.Leader == hero || hero.IsFactionLeader)
+			{
+				return true;
+			}
+			return hero.IsLord;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
 	public static List<PostprocessRuleEntry> BuildRuntimeRoyalPostprocessRulesForExternal(Hero targetHero)
 	{
 		List<PostprocessRuleEntry> list = new List<PostprocessRuleEntry>();
@@ -1928,11 +1951,32 @@ public static class AIConfigHandler
 		{
 			return false;
 		}
+		if (string.Equals(text, "siege_intervention_aftermath", StringComparison.OrdinalIgnoreCase))
+		{
+			return AfGcczShoutBridge.IsActive();
+		}
+		if (string.Equals(text, "kingdom_vassalage", StringComparison.OrdinalIgnoreCase))
+		{
+			return VassalageBehavior.CanInjectVassalageRuleForExternal(ResolveConversationTargetHero(), ResolveConversationTargetCharacter());
+		}
+		if (string.Equals(text, "diplomacy", StringComparison.OrdinalIgnoreCase))
+		{
+			return DiplomacyBehavior.CanInjectDiplomacyRuleForExternal(ResolveConversationTargetHero(), ResolveConversationTargetCharacter());
+		}
 		if (string.Equals(text, "kingdom_annexation", StringComparison.OrdinalIgnoreCase))
 		{
 			return KingdomAnnexationBehavior.CanInjectAnnexationRuleForExternal(ResolveConversationTargetHero(), ResolveConversationTargetCharacter());
 		}
+		if (string.Equals(text, "vote_deal", StringComparison.OrdinalIgnoreCase)
+			|| string.Equals(text, "propose_agenda", StringComparison.OrdinalIgnoreCase))
+		{
+			return IsKingdomLordOrKingRuleTargetForPreprocess(ResolveConversationTargetHero(), ResolveConversationTargetCharacter());
+		}
 		if (IsSceneAutoGroupRelayRule(text))
+		{
+			return false;
+		}
+		if (string.Equals(text, "noble_deference", StringComparison.OrdinalIgnoreCase))
 		{
 			return false;
 		}
@@ -5385,7 +5429,7 @@ public static class AIConfigHandler
 			{
 				string text2 = (rule.Key ?? "").Trim().ToLowerInvariant();
 				GuardrailRuleEval value = rule.Value;
-				if (!string.IsNullOrWhiteSpace(text2) && !excluded.Contains(text2) && value != null && value.Hit && (includeBuiltInRules || !IsBuiltInRuleTag(text2)))
+				if (!string.IsNullOrWhiteSpace(text2) && !excluded.Contains(text2) && value != null && value.Hit && (includeBuiltInRules || !IsBuiltInRuleTag(text2)) && IsRuleCurrentlyEligibleForRag(text2))
 				{
 					dictionary.TryGetValue(text2, out var value2);
 					string text3 = value2?.Instruction ?? "";
@@ -5863,7 +5907,7 @@ public static class AIConfigHandler
 			for (int k = 0; k < list2.Count; k++)
 			{
 				StickyGuardrailRuleState stickyGuardrailRuleState3 = list2[k];
-				if (stickyGuardrailRuleState3 == null || hashSet.Contains(stickyGuardrailRuleState3.RuleId) || !dictionary.TryGetValue(stickyGuardrailRuleState3.RuleId, out var value3) || value3 == null)
+				if (stickyGuardrailRuleState3 == null || hashSet.Contains(stickyGuardrailRuleState3.RuleId) || !IsRuleCurrentlyEligibleForRag(stickyGuardrailRuleState3.RuleId) || !dictionary.TryGetValue(stickyGuardrailRuleState3.RuleId, out var value3) || value3 == null)
 				{
 					continue;
 				}
@@ -7192,6 +7236,7 @@ public static class AIConfigHandler
 		case "no_kingdom":
 		case "no_kingdom_tier_full":
 			return "merc_or_vassal";
+		case "no_kingdom_tier_below_merc":
 		case "no_kingdom_tier_merc_only":
 			return "merc_only";
 		case "mercenary_target_unknown":
@@ -7554,20 +7599,30 @@ public static class AIConfigHandler
 			{
 			case "kingdom_service":
 				return true;
+			case "siege_intervention_aftermath":
+				return AfGcczShoutBridge.IsActive();
 			case "kingdom_vassalage":
+			{
+				bool runtimeEligible = VassalageBehavior.CanInjectVassalageRuleForExternal(ResolveConversationTargetHero(), ResolveConversationTargetCharacter());
 				VassalageDiagnosticLog.Event("preprocess.gate", new Dictionary<string, object>
 				{
 					["ruleId"] = text,
 					["hasAnyHero"] = hasAnyHero,
 					["targetHero"] = VassalageDiagnosticLog.DescribeHero(ResolveConversationTargetHero()),
 					["targetCharacterId"] = ResolveConversationTargetCharacter()?.StringId ?? "",
-					["runtimeEligible"] = VassalageBehavior.CanInjectVassalageRuleForExternal(ResolveConversationTargetHero(), ResolveConversationTargetCharacter()),
-					["allowRuleIntoPreprocess"] = true,
-					["reason"] = "Allow generic king-only refusal instruction; runtime postprocess rules still require valid king-vs-king state."
+					["runtimeEligible"] = runtimeEligible,
+					["allowRuleIntoPreprocess"] = runtimeEligible,
+					["reason"] = runtimeEligible ? "player_and_target_are_rulers" : "requires_player_and_target_rulers"
 				});
-				return true;
+				return runtimeEligible;
+			}
+			case "diplomacy":
+				return DiplomacyBehavior.CanInjectDiplomacyRuleForExternal(ResolveConversationTargetHero(), ResolveConversationTargetCharacter());
 			case "kingdom_annexation":
 				return KingdomAnnexationBehavior.CanInjectAnnexationRuleForExternal(ResolveConversationTargetHero(), ResolveConversationTargetCharacter());
+			case "vote_deal":
+			case "propose_agenda":
+				return IsKingdomLordOrKingRuleTargetForPreprocess(ResolveConversationTargetHero(), ResolveConversationTargetCharacter());
 			case "marriage":
 				return ResolveConversationTargetHero() != null && !string.IsNullOrWhiteSpace(RomanceSystemBehavior.Instance?.BuildMarriageRuntimeInstruction(ResolveConversationTargetHero()));
 			case "vanilla_issue":
@@ -7582,7 +7637,7 @@ public static class AIConfigHandler
 			case "lords_hall_access":
 				return !string.IsNullOrWhiteSpace(BuildRuntimeLordsHallAccessInstructionForExternal());
 			case "noble_deference":
-				return IsNobleDeferenceRuntimeEligible(hasAnyHero);
+				return false;
 			default:
 				return true;
 			}

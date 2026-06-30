@@ -89,6 +89,14 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 
 	private const string LegacyCustomPromptTextStoreFileName = "CustomPrompts.json";
 
+	private const int CustomPromptTextMaxChars = 60000;
+
+	private const long CustomPromptJsonMaxBytes = 262144L;
+
+	private static readonly Encoding CustomPromptStrictUtf8Encoding = new UTF8Encoding(false, true);
+
+	private static readonly Encoding CustomPromptWriteEncoding = new UTF8Encoding(false);
+
 	private static readonly object CustomPromptTextStoreFileLock = new object();
 
 	private static bool _customPromptTextStoreFolderHydrated;
@@ -622,7 +630,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyGroup("5. 知识检索（返回）")]
 	public int WorldEntityInjectMaxCount { get; set; } = 6;
 
-	[SettingPropertyInteger("清单候选显示上限", 1, 30, "0", Order = 2, RequireRestart = false, HintText = "控制每类物品、装备、部队、俘虏和固定资产清单最多向 AI 注入多少条。默认 10；不影响人物、地点、家族、王国的实体注入上限。")]
+	[SettingPropertyInteger("清单候选显示上限", 1, 30, "0", Order = 2, RequireRestart = false, HintText = "控制每类物品、装备、部队、俘虏和固定资产清单向 AI 注入多少条；候选足够时会补满到该数量，候选不足则显示全部。默认 10；不影响人物、地点、家族、王国的实体注入上限。")]
 	[SettingPropertyGroup("5. 知识检索（返回）")]
 	public int PromptListCandidateMaxCount { get; set; } = 10;
 
@@ -774,7 +782,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyGroup("8. 玩家知名度")]
 	public int PlayerNotorietySummaryIntervalDays { get; set; } = 3;
 
-	[SettingPropertyInteger("玩家履历注入字数", 80, 1000, "0", Order = 1, RequireRestart = false, HintText = "NPC 已知玩家重大履历时，已总结履历注入主链路的最大中文字符数。未总结新增素材会追加在下方，不计入该限制。默认 300。")]
+	[SettingPropertyInteger("玩家履历字数", 80, 1000, "0", Order = 1, RequireRestart = false, HintText = "玩家公开重大履历总结目标字数，也是NPC已知玩家重大履历时主链路注入的履历字数上限。未总结原始素材不会直接注入主链路。默认 300。")]
 	[SettingPropertyGroup("8. 玩家知名度")]
 	public int PlayerNotorietyMajorPromptChars { get; set; } = 300;
 
@@ -1085,31 +1093,61 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyGroup("8. 婚姻规则")]
 	public bool MarriageRequireOppositeGender { get; set; } = true;
 
-	public string PlayerCustomPromptRule { get; set; } = LoadPlayerCustomPromptRuleFromDiskOrDefault();
+	private string _playerCustomPromptRule = LoadPlayerCustomPromptRuleFromDiskOrDefault();
+
+	public string PlayerCustomPromptRule
+	{
+		get => _playerCustomPromptRule;
+		set => _playerCustomPromptRule = NormalizePlayerCustomPromptRuleText(value);
+	}
 
 	[SettingPropertyButton("玩家自定义规则文案", -1, true, "", Content = "打开编辑器", Order = 0, RequireRestart = false, HintText = "点击这里使用大文本编辑器保存完整规则文案。")]
 	[SettingPropertyGroup("9. 提示词扩展")]
 	public Action EditPlayerCustomPromptRule { get; set; }
 
-	public string KingdomRebellionSystemPrompt { get; set; } = LoadKingdomRebellionSystemPromptFromDiskOrDefault();
+	private string _kingdomRebellionSystemPrompt = LoadKingdomRebellionSystemPromptFromDiskOrDefault();
+
+	public string KingdomRebellionSystemPrompt
+	{
+		get => _kingdomRebellionSystemPrompt;
+		set => _kingdomRebellionSystemPrompt = NormalizeKingdomRebellionSystemPromptText(value);
+	}
 
 	[SettingPropertyButton("王国叛乱系统提示词", -1, true, "", Content = "打开编辑器", Order = 1, RequireRestart = false, HintText = "点击这里使用大文本编辑器保存王国叛乱建国命名的完整 system prompt。默认内容为当前内置系统提示词，可按需要删减或改写。")]
 	[SettingPropertyGroup("9. 提示词扩展")]
 	public Action EditKingdomRebellionSystemPrompt { get; set; }
 
-	public string WeeklyReportWritingRequirements { get; set; } = LoadWeeklyReportWritingRequirementsFromDiskOrDefault();
+	private string _weeklyReportWritingRequirements = LoadWeeklyReportWritingRequirementsFromDiskOrDefault();
+
+	public string WeeklyReportWritingRequirements
+	{
+		get => _weeklyReportWritingRequirements;
+		set => _weeklyReportWritingRequirements = NormalizeWeeklyReportWritingRequirementsText(value);
+	}
 
 	[SettingPropertyButton("周报写作要求文案", -1, true, "", Content = "打开编辑器", Order = 2, RequireRestart = false, HintText = "点击这里使用大文本编辑器修改周报生成的写作要求。默认文本就是内置写作要求；留空保存后表示不注入写作要求。")]
 	[SettingPropertyGroup("9. 提示词扩展")]
 	public Action EditWeeklyReportWritingRequirements { get; set; }
 
-	public string NpcPersonaGenerationRequirements { get; set; } = LoadNpcPersonaGenerationRequirementsFromDiskOrDefault();
+	private string _npcPersonaGenerationRequirements = LoadNpcPersonaGenerationRequirementsFromDiskOrDefault();
+
+	public string NpcPersonaGenerationRequirements
+	{
+		get => _npcPersonaGenerationRequirements;
+		set => _npcPersonaGenerationRequirements = NormalizeNpcPersonaGenerationRequirementsText(value);
+	}
 
 	[SettingPropertyButton("NPC个性背景生成要求文案", -1, true, "", Content = "打开编辑器", Order = 3, RequireRestart = false, HintText = "点击这里使用大文本编辑器保存 NPC 个性与历史背景生成的自定义要求。原始人设生成器提示词不会被覆盖，该文案会作为“玩家自定义生成要求”追加在其下方。")]
 	[SettingPropertyGroup("9. 提示词扩展")]
 	public Action EditNpcPersonaGenerationRequirements { get; set; }
 
-	public string CustomPolicyEvaluatorPrompt { get; set; } = LoadCustomPolicyEvaluatorPromptFromDiskOrDefault();
+	private string _customPolicyEvaluatorPrompt = LoadCustomPolicyEvaluatorPromptFromDiskOrDefault();
+
+	public string CustomPolicyEvaluatorPrompt
+	{
+		get => _customPolicyEvaluatorPrompt;
+		set => _customPolicyEvaluatorPrompt = NormalizeCustomPolicyEvaluatorPromptText(value);
+	}
 
 	[SettingPropertyButton("自定义政策评判器提示词", -1, true, "", Content = "打开编辑器", Order = 4, RequireRestart = false, HintText = "默认是卡拉迪亚大陆政策评判器；玩家可以完全改写为任意评判器。该文本只作为自定义政策链路主评判阶段的 system prompt 主体；后处理只整理 JSON，最低落地校验由代码固定。")]
 	[SettingPropertyGroup("9. 提示词扩展")]
@@ -1853,13 +1891,13 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 
 	private static string NormalizePlayerCustomPromptRuleText(string input)
 	{
-		return (input ?? "").Replace("\r\n", "\n").Replace('\r', '\n').Trim();
+		return LimitCustomPromptText((input ?? "").Replace("\r\n", "\n").Replace('\r', '\n').Trim(), PlayerCustomPromptRuleJsonFileName);
 	}
 
 	private static string NormalizeKingdomRebellionSystemPromptText(string input)
 	{
-		string text = (input ?? "").Replace("\r\n", "\n").Replace('\r', '\n').Trim();
-		return StripKingdomRebellionOutputFormatBlock(text).Trim();
+		string text = LimitCustomPromptText((input ?? "").Replace("\r\n", "\n").Replace('\r', '\n').Trim(), KingdomRebellionSystemPromptJsonFileName);
+		return LimitCustomPromptText(StripKingdomRebellionOutputFormatBlock(text).Trim(), KingdomRebellionSystemPromptJsonFileName);
 	}
 
 	private static string StripKingdomRebellionOutputFormatBlock(string input)
@@ -1922,23 +1960,40 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 
 	private static string NormalizeWeeklyReportWritingRequirementsText(string input)
 	{
-		return (input ?? "").Replace("\r\n", "\n").Replace('\r', '\n').Trim();
+		return LimitCustomPromptText((input ?? "").Replace("\r\n", "\n").Replace('\r', '\n').Trim(), WeeklyReportWritingRequirementsJsonFileName);
 	}
 
 	private static string NormalizeNpcPersonaGenerationRequirementsText(string input)
 	{
-		return (input ?? "").Replace("\r\n", "\n").Replace('\r', '\n').Trim();
+		return LimitCustomPromptText((input ?? "").Replace("\r\n", "\n").Replace('\r', '\n').Trim(), NpcPersonaGenerationRequirementsJsonFileName);
 	}
 
 	private static string NormalizeCustomPolicyEvaluatorPromptText(string input)
 	{
 		string text = NormalizePromptLineEndings(input);
-		return MigrateLegacyCustomPolicyEvaluatorPromptPrefix(text).Trim();
+		return LimitCustomPromptText(MigrateLegacyCustomPolicyEvaluatorPromptPrefix(text).Trim(), CustomPolicyEvaluatorPromptJsonFileName);
 	}
 
 	private static string NormalizePromptLineEndings(string input)
 	{
-		return (input ?? "").Replace("\r\n", "\n").Replace('\r', '\n').Trim();
+		return LimitCustomPromptText((input ?? "").Replace("\r\n", "\n").Replace('\r', '\n').Trim(), "CustomPrompt");
+	}
+
+	private static string LimitCustomPromptText(string text, string source)
+	{
+		text = text ?? "";
+		if (text.Length <= CustomPromptTextMaxChars)
+		{
+			return text;
+		}
+		try
+		{
+			LogPlayerCustomPromptRuleWarning("自定义提示词过长，已截断以避免启动或请求卡死: " + (source ?? "unknown") + " chars=" + text.Length + " max=" + CustomPromptTextMaxChars);
+		}
+		catch
+		{
+		}
+		return text.Substring(0, CustomPromptTextMaxChars).TrimEnd();
 	}
 
 	private static string MigrateLegacyCustomPolicyEvaluatorPromptPrefix(string text)
@@ -2109,7 +2164,12 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 			{
 				return false;
 			}
-			string value = File.ReadAllText(path, Encoding.UTF8);
+			if (IsCustomPromptTextFileTooLarge(path))
+			{
+				LogPlayerCustomPromptRuleWarning("旧自定义提示词文件过大，已跳过迁移: " + path);
+				return false;
+			}
+			string value = File.ReadAllText(path, CustomPromptStrictUtf8Encoding);
 			text = normalize != null ? normalize(value) : (value ?? "").Trim();
 			return true;
 		}
@@ -2143,23 +2203,23 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 				}
 				store = BuildInitialCustomPromptTextStore();
 				EnsureCustomPromptTextStoreFilesUnlocked(directory, store);
-				if (TryReadCustomPromptTextJsonFile(GetCustomPromptTextFilePath(directory, PlayerCustomPromptRuleJsonFileName), NormalizePlayerCustomPromptRuleText, out string playerRule))
+				if (TryReadCustomPromptTextJsonFile(GetCustomPromptTextFilePath(directory, PlayerCustomPromptRuleJsonFileName), NormalizePlayerCustomPromptRuleText, store.PlayerCustomPromptRule, out string playerRule))
 				{
 					store.PlayerCustomPromptRule = playerRule;
 				}
-				if (TryReadCustomPromptTextJsonFile(GetCustomPromptTextFilePath(directory, KingdomRebellionSystemPromptJsonFileName), NormalizeKingdomRebellionSystemPromptText, out string rebellionPrompt))
+				if (TryReadCustomPromptTextJsonFile(GetCustomPromptTextFilePath(directory, KingdomRebellionSystemPromptJsonFileName), NormalizeKingdomRebellionSystemPromptText, store.KingdomRebellionSystemPrompt, out string rebellionPrompt))
 				{
 					store.KingdomRebellionSystemPrompt = rebellionPrompt;
 				}
-				if (TryReadCustomPromptTextJsonFile(GetCustomPromptTextFilePath(directory, WeeklyReportWritingRequirementsJsonFileName), NormalizeWeeklyReportWritingRequirementsText, out string weeklyRequirements))
+				if (TryReadCustomPromptTextJsonFile(GetCustomPromptTextFilePath(directory, WeeklyReportWritingRequirementsJsonFileName), NormalizeWeeklyReportWritingRequirementsText, store.WeeklyReportWritingRequirements, out string weeklyRequirements))
 				{
 					store.WeeklyReportWritingRequirements = weeklyRequirements;
 				}
-				if (TryReadCustomPromptTextJsonFile(GetCustomPromptTextFilePath(directory, NpcPersonaGenerationRequirementsJsonFileName), NormalizeNpcPersonaGenerationRequirementsText, out string npcRequirements))
+				if (TryReadCustomPromptTextJsonFile(GetCustomPromptTextFilePath(directory, NpcPersonaGenerationRequirementsJsonFileName), NormalizeNpcPersonaGenerationRequirementsText, store.NpcPersonaGenerationRequirements, out string npcRequirements))
 				{
 					store.NpcPersonaGenerationRequirements = npcRequirements;
 				}
-				if (TryReadCustomPromptTextJsonFile(GetCustomPromptTextFilePath(directory, CustomPolicyEvaluatorPromptJsonFileName), NormalizeCustomPolicyEvaluatorPromptText, out string customPolicyPrompt))
+				if (TryReadCustomPromptTextJsonFile(GetCustomPromptTextFilePath(directory, CustomPolicyEvaluatorPromptJsonFileName), NormalizeCustomPolicyEvaluatorPromptText, store.CustomPolicyEvaluatorPrompt, out string customPolicyPrompt))
 				{
 					store.CustomPolicyEvaluatorPrompt = customPolicyPrompt;
 				}
@@ -2272,7 +2332,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 			Text = text ?? ""
 		};
 		string json = JsonConvert.SerializeObject(jsonModel, Formatting.Indented);
-		File.WriteAllText(path, json, Encoding.UTF8);
+		File.WriteAllText(path, json, CustomPromptWriteEncoding);
 	}
 
 	private static CustomPromptTextStoreJson NormalizeCustomPromptTextStore(CustomPromptTextStoreJson store)
@@ -2323,7 +2383,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		}
 	}
 
-	private static bool TryReadCustomPromptTextJsonFile(string path, Func<string, string> normalize, out string text)
+	private static bool TryReadCustomPromptTextJsonFile(string path, Func<string, string> normalize, string fallbackText, out string text)
 	{
 		text = "";
 		try
@@ -2332,13 +2392,45 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 			{
 				return false;
 			}
-			string json = File.ReadAllText(path, Encoding.UTF8);
-			CustomPromptTextJson parsed = JsonConvert.DeserializeObject<CustomPromptTextJson>(json);
+			if (IsCustomPromptTextFileTooLarge(path))
+			{
+				QuarantineAndRestoreCustomPromptTextFileUnlocked(path, fallbackText, "too_large");
+				return false;
+			}
+			string json;
+			try
+			{
+				json = File.ReadAllText(path, CustomPromptStrictUtf8Encoding);
+			}
+			catch (DecoderFallbackException ex)
+			{
+				LogPlayerCustomPromptRuleWarning("自定义提示词 JSON 不是严格 UTF-8，已隔离并恢复默认: " + path + " - " + ex.Message);
+				QuarantineAndRestoreCustomPromptTextFileUnlocked(path, fallbackText, "non_utf8");
+				return false;
+			}
+			CustomPromptTextJson parsed;
+			try
+			{
+				parsed = JsonConvert.DeserializeObject<CustomPromptTextJson>(json);
+			}
+			catch (Exception ex)
+			{
+				LogPlayerCustomPromptRuleWarning("自定义提示词 JSON 格式错误，已隔离并恢复默认: " + path + " - " + ex.Message);
+				QuarantineAndRestoreCustomPromptTextFileUnlocked(path, fallbackText, "invalid_json");
+				return false;
+			}
 			if (parsed == null || parsed.Text == null)
 			{
+				LogPlayerCustomPromptRuleWarning("自定义提示词 JSON 缺少 Text 字段，已隔离并恢复默认: " + path);
+				QuarantineAndRestoreCustomPromptTextFileUnlocked(path, fallbackText, "invalid_schema");
 				return false;
 			}
 			text = normalize != null ? normalize(parsed.Text) : (parsed.Text ?? "").Replace("\r\n", "\n").Replace('\r', '\n').Trim();
+			if ((parsed.Text ?? "").Length > CustomPromptTextMaxChars)
+			{
+				QuarantineCustomPromptTextFileUnlocked(path, "too_long");
+				WriteCustomPromptTextJsonFileUnlocked(path, text);
+			}
 			return true;
 		}
 		catch (Exception ex)
@@ -2346,6 +2438,90 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 			LogPlayerCustomPromptRuleWarning("读取自定义提示词 JSON 失败: " + path + " - " + ex.Message);
 			return false;
 		}
+	}
+
+	private static bool IsCustomPromptTextFileTooLarge(string path)
+	{
+		try
+		{
+			return !string.IsNullOrWhiteSpace(path) && File.Exists(path) && new FileInfo(path).Length > CustomPromptJsonMaxBytes;
+		}
+		catch
+		{
+			return true;
+		}
+	}
+
+	private static void QuarantineAndRestoreCustomPromptTextFileUnlocked(string path, string fallbackText, string reason)
+	{
+		QuarantineCustomPromptTextFileUnlocked(path, reason);
+		try
+		{
+			WriteCustomPromptTextJsonFileUnlocked(path, fallbackText ?? "");
+		}
+		catch (Exception ex)
+		{
+			LogPlayerCustomPromptRuleWarning("恢复自定义提示词默认 JSON 失败: " + path + " - " + ex.Message);
+		}
+	}
+
+	private static void QuarantineCustomPromptTextFileUnlocked(string path, string reason)
+	{
+		try
+		{
+			if (string.IsNullOrWhiteSpace(path) || !File.Exists(path))
+			{
+				return;
+			}
+			string backupPath = BuildCustomPromptQuarantinePath(path, reason);
+			string directoryName = Path.GetDirectoryName(backupPath);
+			if (!string.IsNullOrWhiteSpace(directoryName) && !Directory.Exists(directoryName))
+			{
+				Directory.CreateDirectory(directoryName);
+			}
+			File.Copy(path, backupPath, true);
+			LogPlayerCustomPromptRuleWarning("已备份异常自定义提示词 JSON: " + path + " -> " + backupPath);
+		}
+		catch (Exception ex)
+		{
+			LogPlayerCustomPromptRuleWarning("备份异常自定义提示词 JSON 失败: " + path + " - " + ex.Message);
+		}
+	}
+
+	private static string BuildCustomPromptQuarantinePath(string path, string reason)
+	{
+		string safeReason = SanitizeCustomPromptQuarantineReason(reason);
+		string suffix = ".bad-" + DateTime.UtcNow.ToString("yyyyMMdd-HHmmss") + "-" + safeReason;
+		string candidate = path + suffix;
+		if (!File.Exists(candidate))
+		{
+			return candidate;
+		}
+		return path + suffix + "-" + Guid.NewGuid().ToString("N").Substring(0, 8);
+	}
+
+	private static string SanitizeCustomPromptQuarantineReason(string reason)
+	{
+		reason = (reason ?? "invalid").Trim();
+		if (string.IsNullOrWhiteSpace(reason))
+		{
+			return "invalid";
+		}
+		StringBuilder builder = new StringBuilder(reason.Length);
+		for (int i = 0; i < reason.Length; i++)
+		{
+			char c = reason[i];
+			if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '_' || c == '-')
+			{
+				builder.Append(c);
+			}
+			else
+			{
+				builder.Append('_');
+			}
+		}
+		string text = builder.ToString().Trim('_');
+		return string.IsNullOrWhiteSpace(text) ? "invalid" : text;
 	}
 
 	private static bool TryReadLegacyCustomPromptTextStore(out CustomPromptTextStoreJson store)
@@ -2358,7 +2534,12 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 			{
 				return false;
 			}
-			string json = File.ReadAllText(path, Encoding.UTF8);
+			if (IsCustomPromptTextFileTooLarge(path))
+			{
+				LogPlayerCustomPromptRuleWarning("旧自定义提示词 JSON 过大，已跳过迁移: " + path);
+				return false;
+			}
+			string json = File.ReadAllText(path, CustomPromptStrictUtf8Encoding);
 			CustomPromptTextStoreJson parsed = JsonConvert.DeserializeObject<CustomPromptTextStoreJson>(json);
 			if (parsed == null)
 			{

@@ -127,13 +127,29 @@ public static class PromptListRetrievalService
 		{
 			return list.Take(limit).ToList();
 		}
-		return matches
+		List<T> selected = matches
 			.OrderByDescending((CandidateMatch<T> x) => x.Score)
 			.ThenBy((CandidateMatch<T> x) => x.MentionPriority)
 			.ThenBy((CandidateMatch<T> x) => x.Index)
 			.Take(limit)
 			.Select((CandidateMatch<T> x) => x.Value)
 			.ToList();
+		if (selected.Count < limit)
+		{
+			HashSet<T> selectedSet = new HashSet<T>(selected);
+			foreach (T candidate in list)
+			{
+				if (selected.Count >= limit)
+				{
+					break;
+				}
+				if (selectedSet.Add(candidate))
+				{
+					selected.Add(candidate);
+				}
+			}
+		}
+		return selected;
 	}
 
 	public static List<RewardSystemBehavior.RewardItemInfo> FilterRewardItems(IEnumerable<RewardSystemBehavior.RewardItemInfo> candidates, MentionedWorldEntities mentions, int maxCount = 0)
@@ -148,10 +164,14 @@ public static class PromptListRetrievalService
 		{
 			return SelectCandidates(list, mentions, GetRewardItemAliases, maxCount);
 		}
+		int limit = ClampCandidateLimit(maxCount);
 		List<RewardSystemBehavior.RewardItemInfo> publicItems = list.Where((RewardSystemBehavior.RewardItemInfo x) => !x.IsPrivateEquipment).ToList();
-		List<RewardSystemBehavior.RewardItemInfo> result = SelectCandidates(publicItems, mentions, GetRewardItemAliases, maxCount);
-		result.AddRange(privateItems);
-		return result;
+		List<RewardSystemBehavior.RewardItemInfo> result = SelectCandidates(privateItems, mentions, GetRewardItemAliases, limit);
+		if (result.Count < limit)
+		{
+			result.AddRange(SelectCandidates(publicItems, mentions, GetRewardItemAliases, limit - result.Count));
+		}
+		return result.Take(limit).ToList();
 	}
 
 	public static List<MyBehavior.PartyTransferPromptEntry> FilterPartyTransferEntries(IEnumerable<MyBehavior.PartyTransferPromptEntry> candidates, MentionedWorldEntities mentions, int maxCount = 0, bool isPrisoner = false)

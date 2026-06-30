@@ -463,6 +463,29 @@ namespace AnimusForge
 			return npc != null && npcKingdom != null && npc == npcKingdom.RulingClan?.Leader;
 		}
 
+		internal static bool CanInjectDiplomacyRuleForExternal(Hero targetHero, CharacterObject targetCharacter = null)
+		{
+			try
+			{
+				Hero npc = targetHero ?? targetCharacter?.HeroObject;
+				if (npc == null || npc == Hero.MainHero || npc.IsDead)
+				{
+					return false;
+				}
+				Kingdom playerKingdom = Clan.PlayerClan?.Kingdom;
+				Kingdom npcKingdom = npc.Clan?.Kingdom;
+				if (playerKingdom == null || npcKingdom == null || playerKingdom.IsEliminated || npcKingdom.IsEliminated || playerKingdom == npcKingdom)
+				{
+					return false;
+				}
+				return IsPlayerKing() && IsNpcKing(npc, npcKingdom);
+			}
+			catch
+			{
+				return false;
+			}
+		}
+
 		private static string GetKingdomDisplayName(Kingdom k)
 		{ return k?.Name?.ToString() ?? k?.StringId ?? "未知王国"; }
 
@@ -473,11 +496,9 @@ namespace AnimusForge
 			try
 			{
 				if (npc == null) return "";
+				if (!CanInjectDiplomacyRuleForExternal(npc)) return "";
 				Kingdom npcKingdom = npc.Clan?.Kingdom;
 				if (npcKingdom == null) return "";
-				bool npcIsKing = npc == npcKingdom.RulingClan?.Leader;
-				bool playerIsKing = IsPlayerKing();
-				if (!npcIsKing && !playerIsKing) return "";
 				Kingdom playerKingdom = Clan.PlayerClan?.Kingdom;
 				if (playerKingdom == null || playerKingdom.IsEliminated) return "";
 
@@ -485,15 +506,7 @@ namespace AnimusForge
 				sb.AppendLine();
 				sb.AppendLine("【国王外交规则】");
 				sb.AppendLine("重要：游戏内84天=一年，21天=一季度，没有月和周的概念。谈论时间请用季度或年。");
-
-				if (!playerIsKing)
-				{
-					sb.AppendLine($"【身份限制】玩家只是{GetKingdomDisplayName(playerKingdom)}的领主，不是国王。");
-					sb.AppendLine("只有双方国王才能谈论议和、结盟、贸易等外交事务。");
-					sb.AppendLine("但玩家即使不是国王也可以通过挑衅对你方宣战——宣战是单方行为，你阻止不了。");
-				}
-				else
-				{ sb.AppendLine("你和玩家都是国王，可以讨论宣战、议和、结盟、贸易等所有外交事务。"); }
+				sb.AppendLine("你和玩家都是国王，可以讨论宣战、议和、结盟、贸易等外交事务。");
 
 				List<Kingdom> warTargets = new List<Kingdom>();
 				foreach (Kingdom k in Kingdom.All)
@@ -541,6 +554,7 @@ namespace AnimusForge
 			try
 			{
 				if (npc == null) return "";
+				if (!CanInjectDiplomacyRuleForExternal(npc)) return "";
 				Kingdom npcKingdom = npc.Clan?.Kingdom;
 				if (npcKingdom == null) return "";
 				if (npc != npcKingdom.RulingClan?.Leader && !IsPlayerKing()) return "";
@@ -616,6 +630,7 @@ namespace AnimusForge
 				if ((__result.Extras ?? "").IndexOf("【附加规则:diplomacy】", StringComparison.OrdinalIgnoreCase) < 0) return;
 				Hero ctx = targetHero ?? targetCharacter?.HeroObject;
 				if (ctx == null) return;
+				if (!CanInjectDiplomacyRuleForExternal(ctx, targetCharacter)) return;
 				string ins = BuildDiplomacyInstructionContext(ctx);
 				if (!string.IsNullOrWhiteSpace(ins)) __result.Extras = (__result.Extras ?? "") + "\n" + ins;
 				string trustIns = BuildDiplomacyRuntimeInstruction(ctx);
@@ -629,6 +644,7 @@ namespace AnimusForge
 			try
 			{
 				if (npc == null) return "";
+				if (!CanInjectDiplomacyRuleForExternal(npc)) return "";
 				Clan clan = npc.Clan;
 				Kingdom kingdom = clan?.Kingdom;
 				string playerName = MyBehavior.BuildPlayerPublicDisplayNameForExternal();

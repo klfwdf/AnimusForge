@@ -402,6 +402,14 @@ public class SubModule : MBSubModuleBase
 			}
 			try
 			{
+				harmony.CreateClassProcessor(typeof(Patch_PlayerKingdomNameChange_RecordMaterials)).Patch();
+			}
+			catch (Exception ex18ac)
+			{
+				Logger.LogTrace("SubModule", ">>> Player kingdom rename material patch init failed: " + ex18ac.Message);
+			}
+			try
+			{
 				TroopInspectionBehavior.RegisterHarmonyPatches(harmony);
 			}
 			catch (Exception ex18b)

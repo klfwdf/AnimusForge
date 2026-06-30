@@ -8,11 +8,16 @@ public static class DevTextEditorHelper
 {
 	public static void ShowLongTextEditor(string titleText, string subtitleText, string inputHintText, string initialText, Action<string> onSave, Action onCancel, string saveText = "保存", string cancelText = "返回")
 	{
-		if (DevHistoryEditPopup.Show(titleText, subtitleText, initialText, initialText, onSave, onCancel, inputHintText, saveText, cancelText))
+		string safeInitialText = AnimusForgeTextInputSanitizer.SanitizeMultiline(initialText, AnimusForgeTextInputSanitizer.MaxLongEditorChars);
+		Action<string> safeOnSave = delegate(string text)
+		{
+			onSave?.Invoke(AnimusForgeTextInputSanitizer.SanitizeMultiline(text, AnimusForgeTextInputSanitizer.MaxLongEditorChars));
+		};
+		if (DevHistoryEditPopup.Show(titleText, subtitleText, safeInitialText, safeInitialText, safeOnSave, onCancel, inputHintText, saveText, cancelText))
 		{
 			return;
 		}
-		InformationManager.ShowTextInquiry(new TextInquiryData(titleText, BuildFallbackDescription(subtitleText, inputHintText), isAffirmativeOptionShown: true, isNegativeOptionShown: true, saveText, cancelText, onSave, onCancel, shouldInputBeObfuscated: false, null, "", initialText ?? ""));
+		InformationManager.ShowTextInquiry(new TextInquiryData(titleText, BuildFallbackDescription(subtitleText, inputHintText), isAffirmativeOptionShown: true, isNegativeOptionShown: true, saveText, cancelText, safeOnSave, onCancel, shouldInputBeObfuscated: false, null, "", safeInitialText));
 	}
 
 	private static string BuildFallbackDescription(string subtitleText, string inputHintText)

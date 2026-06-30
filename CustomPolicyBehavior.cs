@@ -4148,9 +4148,10 @@ public sealed class CustomPolicyComposePopupVM : ViewModel
 		get => _policyName;
 		set
 		{
-			if (value != _policyName)
+			string text = AnimusForgeTextInputSanitizer.SanitizeSingleLine(value, AnimusForgeTextInputSanitizer.MaxPolicyNameChars);
+			if (text != _policyName)
 			{
-				_policyName = value ?? "";
+				_policyName = text;
 				OnPropertyChangedWithValue(_policyName, nameof(PolicyName));
 				RefreshCanPublish();
 			}
@@ -4163,9 +4164,10 @@ public sealed class CustomPolicyComposePopupVM : ViewModel
 		get => _policyContent;
 		set
 		{
-			if (value != _policyContent)
+			string text = AnimusForgeTextInputSanitizer.SanitizeMultiline(value, AnimusForgeTextInputSanitizer.MaxPolicyContentChars);
+			if (text != _policyContent)
 			{
-				_policyContent = value ?? "";
+				_policyContent = text;
 				OnPropertyChangedWithValue(_policyContent, nameof(PolicyContent));
 				RefreshCanPublish();
 			}

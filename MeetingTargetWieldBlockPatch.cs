@@ -120,12 +120,12 @@ public static class MeetingTargetWieldBlockPatch
 			{
 				return false;
 			}
-			Hero targetHero = MeetingBattleRuntime.TargetHero;
-			if (targetHero == null)
+			Hero hero = ((agent.Character is CharacterObject characterObject) ? characterObject.HeroObject : null);
+			if (hero == null)
 			{
 				return false;
 			}
-			return ((agent.Character is CharacterObject characterObject) ? characterObject.HeroObject : null) == targetHero;
+			return MeetingBattleRuntime.IsTargetHero(hero);
 		}
 		catch
 		{

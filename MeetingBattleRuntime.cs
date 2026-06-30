@@ -81,6 +81,19 @@ internal static class MeetingBattleRuntime
 		return hero != primary && hero != Hero.MainHero && _targetHeroes.Contains(hero);
 	}
 
+	internal static bool IsTargetHero(Hero hero)
+	{
+		if (hero == null)
+		{
+			return false;
+		}
+		if (_targetHeroes != null && _targetHeroes.Contains(hero))
+		{
+			return true;
+		}
+		return _targetHero == hero;
+	}
+
 	internal static bool ShouldBlockDiplomaticSideEffects => _meetingActive && !_diplomaticSideEffectsUnlocked;
 
 	internal static void BeginMeeting(Hero target)

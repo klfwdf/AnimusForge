@@ -12,7 +12,7 @@
                   <Children>
                     <Widget Id="EditorInnerPanel" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MinHeight="390">
                       <Children>
-                        <DevMultilineEditableTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MinHeight="390" HorizontalAlignment="Left" VerticalAlignment="Top" MarginRight="18" Brush="AFCourierLetter.Body.Text" EditorFontSize="22" MaxLength="-1" RealText="@InputText" IsObfuscationEnabled="false" AutoFocus="true" SubmitOnEnter="false" UseBlackCaret="true" Command.TextEntered="ExecuteSubmit" Command.FocusGained="StartTyping" Command.FocusLost="StopTyping" />
+                        <DevMultilineEditableTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MinHeight="390" HorizontalAlignment="Left" VerticalAlignment="Top" MarginRight="18" Brush="AFCourierLetter.Body.Text" EditorFontSize="22" MaxLength="12000" RealText="@InputText" IsObfuscationEnabled="false" AutoFocus="true" SubmitOnEnter="false" UseBlackCaret="true" Command.TextEntered="ExecuteSubmit" Command.FocusGained="StartTyping" Command.FocusLost="StopTyping" />
                       </Children>
                     </Widget>
                   </Children>

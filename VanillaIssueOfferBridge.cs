@@ -879,7 +879,7 @@ internal static class VanillaIssueOfferBridge
 	private static bool TryInvokeQuestAcceptHook(QuestBase quest, out string methodName)
 	{
 		methodName = "";
-		string[] array = new string[3] { "QuestAcceptedConsequences", "OnQuestAccepted", "OfferDialogFlowConsequence" };
+		string[] array = new string[4] { "QuestAcceptedConsequences", "QuestAcceptedByPlayerConsequences", "OnQuestAccepted", "OfferDialogFlowConsequence" };
 		for (int i = 0; i < array.Length; i++)
 		{
 			if (TryInvokeQuestAcceptHook(quest, array[i]))

@@ -3784,6 +3784,7 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior, IAgentStateDeci
 			return;
 		}
 		TrySetAgentController(_targetAgent, "None");
+		SuppressPeacefulMeetingCombatIntent(_targetAgent);
 		_targetControllerSuppressed = true;
 		try
 		{
@@ -3791,8 +3792,54 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior, IAgentStateDeci
 			if (mountAgent != null && mountAgent.IsActive())
 			{
 				TrySetAgentController(mountAgent, "None");
+				SuppressPeacefulMeetingCombatIntent(mountAgent);
 				_targetMountControllerSuppressed = true;
 			}
+		}
+		catch
+		{
+		}
+	}
+
+	private void SuppressPeacefulMeetingCombatIntent(Agent agent)
+	{
+		if (agent == null || !agent.IsActive())
+		{
+			return;
+		}
+		try
+		{
+			agent.SetIsAIPaused(isPaused: true);
+		}
+		catch
+		{
+		}
+		try
+		{
+			agent.ClearTargetFrame();
+		}
+		catch
+		{
+		}
+		try
+		{
+			agent.SetLookAgent(null);
+		}
+		catch
+		{
+		}
+		try
+		{
+			agent.ResetEnemyCaches();
+			agent.InvalidateTargetAgent();
+			agent.InvalidateAIWeaponSelections();
+		}
+		catch
+		{
+		}
+		try
+		{
+			agent.SetWatchState(Agent.WatchState.Patrolling);
 		}
 		catch
 		{
@@ -6724,7 +6771,8 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior, IAgentStateDeci
 		catch
 		{
 		}
-		bool flag = IsMeetingFormationManagedAgent(agent) || agent == _targetAgent;
+		bool flag = IsMeetingFormationManagedAgent(agent);
+		bool flag2 = flag || agent == _targetAgent;
 		if (configureWeapons && flag && MarkMeetingEscortWeaponConfigured(agent))
 		{
 			try
@@ -6735,19 +6783,19 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior, IAgentStateDeci
 			{
 			}
 		}
-		bool flag2 = false;
+		bool flag3 = false;
 		try
 		{
 			Agent mountAgent = agent.MountAgent;
 			if (mountAgent != null && mountAgent.IsActive())
 			{
-				flag2 = true;
+				flag3 = true;
 				mountAgent.TeleportToPosition(position);
 				mountAgent.LookDirection = lookDirection;
 				mountAgent.SetIsAIPaused(isPaused: true);
 				mountAgent.ClearTargetFrame();
 				mountAgent.SetTargetPosition(position.AsVec2);
-				if (flag)
+				if (flag2)
 				{
 					TrySetAgentController(mountAgent, "None");
 				}
@@ -6760,7 +6808,7 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior, IAgentStateDeci
 		catch
 		{
 		}
-		if (flag && flag2)
+		if (flag2 && flag3)
 		{
 			try
 			{

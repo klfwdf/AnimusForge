@@ -1,8 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Text;
 using TaleWorlds.GauntletUI;
 using TaleWorlds.GauntletUI.BaseTypes;
 using TaleWorlds.InputSystem;
@@ -750,7 +747,11 @@ public class DevMultilineEditableTextWidget : BrushWidget
 			int num = lastKeysPressed[i];
 			if (num >= 32 && (num < 127 || num >= 160) && num != 60 && num != 62)
 			{
-				ReplaceSelection(char.ConvertFromUtf32(num));
+				string text = AnimusForgeTextInputSanitizer.SanitizeCodePoint(num, allowNewLines: true);
+				if (!string.IsNullOrEmpty(text))
+				{
+					ReplaceSelection(text);
+				}
 			}
 		}
 	}
@@ -984,7 +985,7 @@ public class DevMultilineEditableTextWidget : BrushWidget
 
 	private void ApplyTextChange(string newText, int newCursorIndex, int newSelectionAnchor, bool recordUndo)
 	{
-		newText = ApplyLengthLimit(newText);
+		newText = ApplyLengthLimit(NormalizeText(newText));
 		if (_realText == newText && _cursorIndex == newCursorIndex && _selectionAnchor == newSelectionAnchor)
 		{
 			return;
@@ -1141,80 +1142,29 @@ public class DevMultilineEditableTextWidget : BrushWidget
 		}
 	}
 
-	private static string NormalizeText(string text)
+	private string NormalizeText(string text)
 	{
-		if (string.IsNullOrEmpty(text))
-		{
-			return string.Empty;
-		}
-		text = text.Replace("\r\n", "\n").Replace('\r', '\n');
-		text = text.Replace('<', ' ').Replace('>', ' ');
-		return new string(text.Where((char c) => !char.IsControl(c) || c == '\n' || c == '\t').ToArray());
+		return AnimusForgeTextInputSanitizer.SanitizeMultiline(text, AnimusForgeTextInputSanitizer.ResolveUnboundedMaxChars(MaxLength));
 	}
 
-	private static string SanitizeClipboardText(string text)
+	private string SanitizeClipboardText(string text)
 	{
-		text = NormalizeText(text).Normalize(NormalizationForm.FormC);
-		if (string.IsNullOrEmpty(text))
-		{
-			return string.Empty;
-		}
-		StringBuilder stringBuilder = new StringBuilder(text.Length);
-		foreach (char c in text)
-		{
-			switch (c)
-			{
-			case '\u00A0':
-			case '\u1680':
-			case '\u2000':
-			case '\u2001':
-			case '\u2002':
-			case '\u2003':
-			case '\u2004':
-			case '\u2005':
-			case '\u2006':
-			case '\u2007':
-			case '\u2008':
-			case '\u2009':
-			case '\u200A':
-			case '\u202F':
-			case '\u205F':
-			case '\u3000':
-				stringBuilder.Append(' ');
-				continue;
-			case '\u200B':
-			case '\u200C':
-			case '\u200D':
-			case '\u2060':
-			case '\uFEFF':
-			case '\uFFFD':
-				continue;
-			}
-			UnicodeCategory unicodeCategory = char.GetUnicodeCategory(c);
-			if (unicodeCategory == UnicodeCategory.Surrogate || unicodeCategory == UnicodeCategory.PrivateUse || unicodeCategory == UnicodeCategory.OtherNotAssigned || unicodeCategory == UnicodeCategory.Format)
-			{
-				continue;
-			}
-			stringBuilder.Append(c);
-		}
-		return stringBuilder.ToString();
+		return NormalizeText(text);
 	}
 
 	private string ApplyLengthLimit(string text)
 	{
-		if (MaxLength >= 0 && text.Length > MaxLength)
+		int maxLength = AnimusForgeTextInputSanitizer.ResolveUnboundedMaxChars(MaxLength);
+		if (maxLength >= 0 && text.Length > maxLength)
 		{
-			return text.Substring(0, MaxLength);
+			return text.Substring(0, maxLength);
 		}
 		return text;
 	}
 
 	private int GetAllowedExtraLength(int selectedLength)
 	{
-		if (MaxLength < 0)
-		{
-			return int.MaxValue;
-		}
-		return Math.Max(0, MaxLength - (_realText.Length - selectedLength));
+		int maxLength = AnimusForgeTextInputSanitizer.ResolveUnboundedMaxChars(MaxLength);
+		return Math.Max(0, maxLength - (_realText.Length - selectedLength));
 	}
 }
