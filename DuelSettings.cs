@@ -1213,9 +1213,9 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyGroup("14. GCCZ攻城后处置")]
 	public Action ExportGcczDebugLog { get; set; }
 
-	[SettingPropertyBool("允许 NPC 拥有自己的臣属国/朝贡国", Order = 0, RequireRestart = false, HintText = "开启后，NPC-NPC 议和时，主动求和且国力明显较弱的一方有低概率成为对方朝贡国。关闭后只阻止新建 NPC 朝贡；已有 NPC 朝贡协议继续贡赋、保护战与和平同步。默认开启。")]
+	[SettingPropertyBool("【测试】允许 NPC 拥有自己的臣属国/朝贡国", Order = 0, RequireRestart = false, HintText = "测试功能，默认关闭。开启后，NPC-NPC 议和时，主动求和且国力明显较弱的一方才有低概率成为对方朝贡国。关闭后只阻止新建 NPC 朝贡；已有 NPC 朝贡协议继续贡赋、保护战与和平同步。")]
 	[SettingPropertyGroup("12. 臣属国系统")]
-	public bool EnableNpcTributaryVassalage { get; set; } = true;
+	public bool EnableNpcTributaryVassalage { get; set; } = false;
 
 
 	public bool UseMcmKnowledgeRetrieval { get; set; } = true;
@@ -1465,11 +1465,11 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	{
 		try
 		{
-			return GetSettings()?.EnableNpcTributaryVassalage ?? true;
+			return GetSettings()?.EnableNpcTributaryVassalage ?? false;
 		}
 		catch
 		{
-			return true;
+			return false;
 		}
 	}
 
