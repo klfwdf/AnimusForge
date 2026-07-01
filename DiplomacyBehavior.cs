@@ -156,8 +156,8 @@ namespace AnimusForge
 			if (allianceBeh != null && allianceBeh.IsAllyWithKingdom(declarer, target))
 			{ allianceBeh.EndAlliance(declarer, target); Logger.Log("DiplomacyBehavior", $"[DeclareWar] Broke alliance"); }
 
-			MeetingBattleRuntime.UnlockDiplomaticSideEffects("diplomacy_declare_war");
-			DeclareWarAction.ApplyByKingdomDecision(declarer, target);
+			MeetingBattleRuntime.RunWithDiplomaticSideEffectsUnlocked("diplomacy_declare_war", () =>
+				DeclareWarAction.ApplyByKingdomDecision(declarer, target));
 			Logger.Log("DiplomacyBehavior", $"[DeclareWar] {declarer.StringId} -> {target.StringId}");
 			return "";
 		}
@@ -195,8 +195,9 @@ namespace AnimusForge
 			if (tributeAmount < 0) return "";
 			int durationDays = ParseDurationDays(daysStr, tributeAmount > 0);
 
-			MeetingBattleRuntime.UnlockDiplomaticSideEffects("diplomacy_make_peace");
-			MakePeaceAction.ApplyByKingdomDecision(payer, receiver, tributeAmount, durationDays);
+			MeetingBattleRuntime.RunWithDiplomaticSideEffectsUnlocked("diplomacy_make_peace", () =>
+				MakePeaceAction.ApplyByKingdomDecision(payer, receiver, tributeAmount, durationDays));
+			DiplomacyRecentPeaceGuard.RegisterPeace(payer, receiver, "diplomacy_make_peace");
 			Logger.Log("DiplomacyBehavior", $"[MakePeace] {payer.StringId}->{receiver.StringId} tribute={tributeAmount} days={durationDays}");
 			return "";
 		}
@@ -238,8 +239,8 @@ namespace AnimusForge
 			{ if (!k.IsEliminated && k != npcKingdom && allianceBeh.IsAllyWithKingdom(npcKingdom, k)) allianceCount++; }
 			if (allianceCount >= 2) { Logger.Log("DiplomacyBehavior", "[FormAlliance] NPC at max alliances (2)"); return ""; }
 
-			MeetingBattleRuntime.UnlockDiplomaticSideEffects("diplomacy_form_alliance");
-			allianceBeh.StartAlliance(playerKingdom, npcKingdom);
+			MeetingBattleRuntime.RunWithDiplomaticSideEffectsUnlocked("diplomacy_form_alliance", () =>
+				allianceBeh.StartAlliance(playerKingdom, npcKingdom));
 			Logger.Log("DiplomacyBehavior", $"[FormAlliance] {playerKingdom.StringId} <-> {npcKingdom.StringId}");
 			return "";
 		}
@@ -264,8 +265,8 @@ namespace AnimusForge
 			if (allianceBeh == null) { Logger.Log("DiplomacyBehavior", "[BreakAlliance] No Alliance behavior"); return ""; }
 			if (!allianceBeh.IsAllyWithKingdom(playerKingdom, npcKingdom)) { Logger.Log("DiplomacyBehavior", "[BreakAlliance] Not allied"); return ""; }
 
-			MeetingBattleRuntime.UnlockDiplomaticSideEffects("diplomacy_break_alliance");
-			allianceBeh.EndAlliance(playerKingdom, npcKingdom);
+			MeetingBattleRuntime.RunWithDiplomaticSideEffectsUnlocked("diplomacy_break_alliance", () =>
+				allianceBeh.EndAlliance(playerKingdom, npcKingdom));
 			Logger.Log("DiplomacyBehavior", $"[BreakAlliance] {playerKingdom.StringId} <-> {npcKingdom.StringId}");
 			return "";
 		}
@@ -301,8 +302,8 @@ namespace AnimusForge
 			else
 				duration = Campaign.Current.Models.TradeAgreementModel.GetTradeAgreementDurationInYears(playerKingdom, npcKingdom);
 
-			MeetingBattleRuntime.UnlockDiplomaticSideEffects("diplomacy_make_trade");
-			tradeBeh.MakeTradeAgreement(playerKingdom, npcKingdom, duration);
+			MeetingBattleRuntime.RunWithDiplomaticSideEffectsUnlocked("diplomacy_make_trade", () =>
+				tradeBeh.MakeTradeAgreement(playerKingdom, npcKingdom, duration));
 			Logger.Log("DiplomacyBehavior", $"[MakeTrade] {playerKingdom.StringId} <-> {npcKingdom.StringId} days={(int)duration.ToDays}");
 			return "";
 		}
@@ -327,8 +328,8 @@ namespace AnimusForge
 			if (tradeBeh == null) { Logger.Log("DiplomacyBehavior", "[CancelTrade] No Trade behavior"); return ""; }
 			if (!HasTradeAgreementCompat(tradeBeh, playerKingdom, npcKingdom)) { Logger.Log("DiplomacyBehavior", "[CancelTrade] No trade agreement"); return ""; }
 
-			MeetingBattleRuntime.UnlockDiplomaticSideEffects("diplomacy_cancel_trade");
-			tradeBeh.EndTradeAgreement(playerKingdom, npcKingdom);
+			MeetingBattleRuntime.RunWithDiplomaticSideEffectsUnlocked("diplomacy_cancel_trade", () =>
+				tradeBeh.EndTradeAgreement(playerKingdom, npcKingdom));
 			Logger.Log("DiplomacyBehavior", $"[CancelTrade] {playerKingdom.StringId} <-> {npcKingdom.StringId}");
 			return "";
 		}

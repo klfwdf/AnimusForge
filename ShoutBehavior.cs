@@ -15476,6 +15476,16 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			return false;
 		}
 		Agent agent = agents.FirstOrDefault((Agent a) => a != null && a.Index == npc.AgentIndex);
+		if (IsPrisonBreakRescueMissionActive() && (SceneFollowStartTagRegex.IsMatch(tags) || SceneFollowStopTagRegex.IsMatch(tags)))
+		{
+			Agent commandAgent = ResolvePrisonBreakSceneFollowCommandAgent(agent);
+			if (commandAgent != null && commandAgent != agent)
+			{
+				Logger.Log("SceneFollow", "prison_break_native_follow_redirect requested=" + (agent?.Index ?? npc.AgentIndex) + " prisoner=" + commandAgent.Index);
+				agent = commandAgent;
+				npc = ShoutUtils.ExtractNpcData(commandAgent) ?? npc;
+			}
+		}
 		if (!CanAgentParticipateInSceneSpeech(agent) || agent == Agent.Main)
 		{
 			Logger.Log("ShoutBehavior", "[NativeConversation] scene mechanism direct skip agent=" + (npc?.AgentIndex ?? -1) + " reason=agent_unavailable tags=" + ((tags ?? "").Replace("\r", "\\r").Replace("\n", "\\n")));
@@ -28487,6 +28497,16 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			return false;
 		}
 		Agent agent = Mission.Current?.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == npc.AgentIndex);
+		if (IsPrisonBreakRescueMissionActive())
+		{
+			Agent commandAgent = ResolvePrisonBreakSceneFollowCommandAgent(agent);
+			if (commandAgent != null && commandAgent != agent)
+			{
+				Logger.Log("SceneFollow", "prison_break_deferred_follow_redirect requested=" + (agent?.Index ?? npc.AgentIndex) + " prisoner=" + commandAgent.Index);
+				agent = commandAgent;
+				npc = ShoutUtils.ExtractNpcData(commandAgent) ?? npc;
+			}
+		}
 		if (!CanAgentParticipateInSceneSpeech(agent) || agent == Agent.Main)
 		{
 			Logger.Log("SceneFollow", "deferred_follow_skip agent=" + (npc?.AgentIndex ?? -1) + " reason=agent_unavailable tags=" + ((tags ?? "").Replace("\r", "\\r").Replace("\n", "\\n")));
@@ -28792,6 +28812,25 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 	private static bool IsPrisonBreakRescueMissionActive()
 	{
 		return GetPrisonBreakMissionController() != null;
+	}
+
+	private static bool TryGetPrisonBreakRescuePrisonerAgent(out Agent prisonerAgent)
+	{
+		prisonerAgent = GetPrisonBreakPrisonerAgent();
+		return CanAgentParticipateInSceneSpeech(prisonerAgent) && prisonerAgent != Agent.Main;
+	}
+
+	private static Agent ResolvePrisonBreakSceneFollowCommandAgent(Agent requestedAgent)
+	{
+		if (!IsPrisonBreakRescueMissionActive())
+		{
+			return requestedAgent;
+		}
+		if (IsPrisonBreakRescuePrisonerAgent(requestedAgent))
+		{
+			return requestedAgent;
+		}
+		return TryGetPrisonBreakRescuePrisonerAgent(out var prisonerAgent) ? prisonerAgent : requestedAgent;
 	}
 
 	private static Agent GetPrisonBreakPrisonerAgent(PrisonBreakMissionController controller = null)

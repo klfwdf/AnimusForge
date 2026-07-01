@@ -1,19 +1,19 @@
 using HarmonyLib;
 using TaleWorlds.CampaignSystem.Actions;
-using TaleWorlds.MountAndBlade;
+using TaleWorlds.CampaignSystem.Party;
 
 namespace AnimusForge;
 
 [HarmonyPatch(typeof(BeHostileAction), "ApplyEncounterHostileAction")]
 public static class Patch_Meeting_SuppressEncounterHostileAction
 {
-	public static bool Prefix()
+	public static bool Prefix(PartyBase attackerParty, PartyBase defenderParty)
 	{
-		if (!MeetingBattleRuntime.ShouldBlockDiplomaticSideEffects)
+		if (DiplomacyRecentPeaceGuard.ShouldBlockEncounterHostility(attackerParty, defenderParty, "BeHostileAction.ApplyEncounterHostileAction"))
 		{
-			return true;
+			return false;
 		}
-		if (Mission.Current == null)
+		if (!MeetingBattleRuntime.ShouldBlockDiplomaticSideEffects)
 		{
 			return true;
 		}

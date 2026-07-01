@@ -13680,6 +13680,11 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			return text.Trim();
 		}
+		text = BuildMapEventNonLordPartyListText(side, 3, includeCounts: false);
+		if (!string.IsNullOrWhiteSpace(text))
+		{
+			return text.Trim();
+		}
 		text = side?.LeaderParty?.Name?.ToString();
 		if (!string.IsNullOrWhiteSpace(text))
 		{
@@ -13687,6 +13692,164 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		text = side?.MapFaction?.Name?.ToString();
 		return string.IsNullOrWhiteSpace(text) ? "敌军" : text.Trim();
+	}
+
+	private static string BuildMapEventSideNarrativeLabel(MapEventSide side)
+	{
+		if (side == null)
+		{
+			return "敌军";
+		}
+		if (CountTrackedLordParties(side) > 0)
+		{
+			return GetFactionDisplayName(side.MapFaction, GetPrimaryOtherSideLabel(side));
+		}
+		string text = BuildMapEventNonLordPartyListText(side, 3, includeCounts: false);
+		if (!string.IsNullOrWhiteSpace(text))
+		{
+			return text.Trim();
+		}
+		return GetFactionDisplayName(side.MapFaction, GetPrimaryOtherSideLabel(side));
+	}
+
+	private static string BuildMapEventNonLordPartyListText(MapEventSide side, int maxCount = 5, bool includeCounts = true)
+	{
+		if (side?.Parties == null)
+		{
+			return "";
+		}
+		List<string> list = new List<string>();
+		HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		try
+		{
+			foreach (MapEventParty party in side.Parties)
+			{
+				PartyBase partyBase = party?.Party;
+				if (partyBase == null || ShouldMentionBattleHero(partyBase.LeaderHero))
+				{
+					continue;
+				}
+				string text = BuildMapEventNonLordPartyDisplayText(partyBase, party, includeCounts);
+				if (string.IsNullOrWhiteSpace(text) || !hashSet.Add(text))
+				{
+					continue;
+				}
+				list.Add(text);
+			}
+		}
+		catch
+		{
+		}
+		if (list.Count == 0)
+		{
+			return "";
+		}
+		int count = Math.Max(1, maxCount);
+		if (list.Count <= count)
+		{
+			return string.Join("、", list);
+		}
+		return string.Join("、", list.Take(count)) + "等" + list.Count + "支";
+	}
+
+	private static string BuildMapEventNonLordPartyDisplayText(PartyBase partyBase, MapEventParty party, bool includeCounts)
+	{
+		if (partyBase == null)
+		{
+			return "";
+		}
+		string text = GetPartyBaseDisplayName(partyBase);
+		string text2 = GetMapEventNonLordPartyTypeLabel(partyBase);
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			text = string.IsNullOrWhiteSpace(text2) ? "非领主部队" : text2;
+			text2 = "";
+		}
+		List<string> list = new List<string>();
+		if (!string.IsNullOrWhiteSpace(text2) && text.IndexOf(text2, StringComparison.OrdinalIgnoreCase) < 0)
+		{
+			list.Add(text2);
+		}
+		if (includeCounts)
+		{
+			int mapEventPartyCommittedTroopCount = GetMapEventPartyCommittedTroopCount(party);
+			if (mapEventPartyCommittedTroopCount > 0)
+			{
+				list.Add("约" + mapEventPartyCommittedTroopCount + "人");
+			}
+		}
+		return list.Count > 0 ? (text.Trim() + "（" + string.Join("，", list) + "）") : text.Trim();
+	}
+
+	private static string GetPartyBaseDisplayName(PartyBase partyBase)
+	{
+		if (partyBase == null)
+		{
+			return "";
+		}
+		try
+		{
+			string text = partyBase.Name?.ToString();
+			if (!string.IsNullOrWhiteSpace(text))
+			{
+				return text.Trim();
+			}
+			text = partyBase.MobileParty?.Name?.ToString();
+			if (!string.IsNullOrWhiteSpace(text))
+			{
+				return text.Trim();
+			}
+			text = partyBase.MobileParty?.StringId;
+			return string.IsNullOrWhiteSpace(text) ? "" : text.Trim();
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	private static string GetMapEventNonLordPartyTypeLabel(PartyBase partyBase)
+	{
+		try
+		{
+			MobileParty mobileParty = partyBase?.MobileParty;
+			if (mobileParty == null)
+			{
+				return "";
+			}
+			if (mobileParty.IsVillager || mobileParty.PartyComponent is VillagerPartyComponent)
+			{
+				return "村民队";
+			}
+			if (mobileParty.IsCaravan || mobileParty.PartyComponent is CaravanPartyComponent)
+			{
+				return "商队";
+			}
+			if (mobileParty.IsPatrolParty || mobileParty.PartyComponent is PatrolPartyComponent)
+			{
+				return "巡逻队";
+			}
+			if (mobileParty.IsMilitia || mobileParty.PartyComponent is MilitiaPartyComponent)
+			{
+				return "民兵队";
+			}
+			if (mobileParty.IsGarrison || mobileParty.PartyComponent is GarrisonPartyComponent)
+			{
+				return "驻军";
+			}
+			if (IsBanditOrOutlawPartyBase(partyBase) || mobileParty.PartyComponent is BanditPartyComponent)
+			{
+				return "匪帮";
+			}
+			if (mobileParty.PartyComponent is CustomPartyComponent)
+			{
+				return "自定义部队";
+			}
+		}
+		catch
+		{
+		}
+		return "非领主部队";
 	}
 
 	private static int GetMapEventTroopCount(MapEvent mapEvent)
@@ -13946,9 +14109,13 @@ public class MyBehavior : CampaignBehaviorBase
 		return (mapEventSideCommittedTroopCount > 0) ? (mapEventSideCommittedTroopCount + "人") : "";
 	}
 
-	private static string BuildMapEventStandoutText(MapEventSide side)
+	private static string BuildMapEventStandoutText(MapEventSide side, MapEventSide oppositeSide = null)
 	{
 		if (side?.Parties == null)
+		{
+			return "";
+		}
+		if (oppositeSide != null && CountTrackedLordParties(oppositeSide) <= 0 && !string.IsNullOrWhiteSpace(BuildMapEventNonLordPartyListText(oppositeSide, 1, includeCounts: false)))
 		{
 			return "";
 		}
@@ -14043,7 +14210,7 @@ public class MyBehavior : CampaignBehaviorBase
 			return "";
 		}
 		string text = BuildMapEventActorRoleClause(actorHero, side);
-		string text2 = GetFactionDisplayName(side.OtherSide?.MapFaction, GetPrimaryOtherSideLabel(side.OtherSide));
+		string text2 = BuildMapEventSideNarrativeLabel(side.OtherSide);
 		Settlement mapEventSettlement = mapEvent.MapEventSettlement;
 		string text3 = BuildArmyCommandClause(side, actorHero);
 		string text4;
@@ -14068,6 +14235,8 @@ public class MyBehavior : CampaignBehaviorBase
 		StringBuilder stringBuilder = new StringBuilder(text4);
 		string text7 = BuildTrackedHeroListText(side, 5);
 		string text8 = BuildTrackedHeroListText(side.OtherSide, 5);
+		string text9 = BuildMapEventNonLordPartyListText(side, 5);
+		string text10 = BuildMapEventNonLordPartyListText(side.OtherSide, 5);
 		if (!string.IsNullOrWhiteSpace(text7))
 		{
 			stringBuilder.Append(" 我方领主：").Append(text7).Append('。');
@@ -14076,18 +14245,26 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			stringBuilder.Append(" 敌方领主：").Append(text8).Append('。');
 		}
-		string text9 = BuildMapEventCommittedTroopText(side);
-		string text10 = BuildMapEventCommittedTroopText(side.OtherSide);
-		if (!string.IsNullOrWhiteSpace(text9) || !string.IsNullOrWhiteSpace(text10))
+		if (!string.IsNullOrWhiteSpace(text9))
 		{
-			stringBuilder.Append(" 战前投入兵力：我方").Append(string.IsNullOrWhiteSpace(text9) ? "不详" : text9);
-			stringBuilder.Append("；敌方").Append(string.IsNullOrWhiteSpace(text10) ? "不详" : text10).Append('。');
+			stringBuilder.Append(" 我方非领主部队：").Append(text9).Append('。');
 		}
-		string text11 = BuildMapEventCasualtyText(side);
-		string text12 = BuildMapEventCasualtyText(side.OtherSide);
-		stringBuilder.Append(" 我方死伤：").Append(text11);
-		stringBuilder.Append("；敌方死伤：").Append(text12).Append('。');
-		string text13 = BuildMapEventStandoutText(side);
+		if (!string.IsNullOrWhiteSpace(text10))
+		{
+			stringBuilder.Append(" 敌方非领主部队：").Append(text10).Append('。');
+		}
+		string text11 = BuildMapEventCommittedTroopText(side);
+		string text12 = BuildMapEventCommittedTroopText(side.OtherSide);
+		if (!string.IsNullOrWhiteSpace(text11) || !string.IsNullOrWhiteSpace(text12))
+		{
+			stringBuilder.Append(" 战前投入兵力：我方").Append(string.IsNullOrWhiteSpace(text11) ? "不详" : text11);
+			stringBuilder.Append("；敌方").Append(string.IsNullOrWhiteSpace(text12) ? "不详" : text12).Append('。');
+		}
+		string text13 = BuildMapEventStandoutText(side, side.OtherSide);
+		string text14 = BuildMapEventCasualtyText(side);
+		string text15 = BuildMapEventCasualtyText(side.OtherSide);
+		stringBuilder.Append(" 我方死伤：").Append(text14);
+		stringBuilder.Append("；敌方死伤：").Append(text15).Append('。');
 		if (!string.IsNullOrWhiteSpace(text13))
 		{
 			stringBuilder.Append(" ：").Append(text13);
@@ -14107,6 +14284,8 @@ public class MyBehavior : CampaignBehaviorBase
 			NormalizeWeeklyPromptKeyPart(locationLabel),
 			GetHeroId(mapEvent.AttackerSide?.LeaderParty?.LeaderHero),
 			GetHeroId(mapEvent.DefenderSide?.LeaderParty?.LeaderHero),
+			BuildMapEventNonLordPartyListText(mapEvent.AttackerSide, 3, includeCounts: false),
+			BuildMapEventNonLordPartyListText(mapEvent.DefenderSide, 3, includeCounts: false),
 			BuildMapEventCommittedTroopText(mapEvent.AttackerSide),
 			BuildMapEventCommittedTroopText(mapEvent.DefenderSide),
 			BuildMapEventCasualtyText(mapEvent.AttackerSide),
@@ -36469,7 +36648,12 @@ public class MyBehavior : CampaignBehaviorBase
 			return string.Join("、", list2.Take(2));
 		}
 		List<string> list3 = BuildWeeklyPromptBattleSideHeroNames(ownMaterials, oppositeMaterials);
-		return (list3.Count > 0) ? string.Join("、", list3.Take(2)) : "";
+		if (list3.Count > 0)
+		{
+			return string.Join("、", list3.Take(2));
+		}
+		List<string> list4 = BuildWeeklyPromptBattleSidePartyNames(ownMaterials, oppositeMaterials);
+		return (list4.Count > 0) ? string.Join("、", list4.Take(2)) : "";
 	}
 
 	private static string BuildWeeklyPromptBattleSideField(string label, List<EventMaterialReference> ownMaterials, List<EventMaterialReference> oppositeMaterials)
@@ -36489,6 +36673,11 @@ public class MyBehavior : CampaignBehaviorBase
 		if (list4.Count > 0)
 		{
 			list.Add("人物=" + string.Join("、", list4.Take(8)));
+		}
+		List<string> list5 = BuildWeeklyPromptBattleSidePartyNames(ownMaterials, oppositeMaterials);
+		if (list5.Count > 0)
+		{
+			list.Add("非领主部队=" + string.Join("、", list5.Take(8)));
 		}
 		if (list.Count == 0)
 		{
@@ -36654,6 +36843,12 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			return text.Trim() + "部队";
 		}
+		List<string> list2 = BuildWeeklyPromptBattleSidePartyNames(ownMaterials, oppositeMaterials);
+		text = list2.FirstOrDefault((string x) => !string.IsNullOrWhiteSpace(x));
+		if (!string.IsNullOrWhiteSpace(text))
+		{
+			return text.Trim();
+		}
 		text = BuildWeeklyPromptBattleSideShortName(ownMaterials, oppositeMaterials);
 		if (!string.IsNullOrWhiteSpace(text))
 		{
@@ -36743,6 +36938,46 @@ public class MyBehavior : CampaignBehaviorBase
 		foreach (string item3 in ResolveHeroNames(CollectMaterialIds(oppositeMaterials, (EventMaterialReference x) => new string[1] { x.TargetHeroId }, null)).Concat(ExtractWeeklyPromptBattleHeroNames(oppositeMaterials, "敌方领主")))
 		{
 			AddUniqueId(list, item3);
+		}
+		return list;
+	}
+
+	private static List<string> BuildWeeklyPromptBattleSidePartyNames(List<EventMaterialReference> ownMaterials, List<EventMaterialReference> oppositeMaterials)
+	{
+		List<string> list = new List<string>();
+		foreach (string item in ExtractWeeklyPromptBattlePartyNames(ownMaterials, "我方非领主部队"))
+		{
+			AddUniqueId(list, item);
+		}
+		if (list.Count > 0)
+		{
+			return list;
+		}
+		foreach (string item2 in ExtractWeeklyPromptBattlePartyNames(oppositeMaterials, "敌方非领主部队"))
+		{
+			AddUniqueId(list, item2);
+		}
+		return list;
+	}
+
+	private static IEnumerable<string> ExtractWeeklyPromptBattlePartyNames(List<EventMaterialReference> materials, string marker)
+	{
+		List<string> list = new List<string>();
+		foreach (EventMaterialReference item in materials ?? new List<EventMaterialReference>())
+		{
+			string text = ExtractWeeklyPromptBattleMarkedText(item?.SnapshotText, marker);
+			if (string.IsNullOrWhiteSpace(text))
+			{
+				continue;
+			}
+			foreach (string item2 in text.Split(new char[5] { '、', ',', '，', ';', '；' }, StringSplitOptions.RemoveEmptyEntries))
+			{
+				string text2 = item2.Trim();
+				if (!string.IsNullOrWhiteSpace(text2))
+				{
+					AddUniqueId(list, text2);
+				}
+			}
 		}
 		return list;
 	}

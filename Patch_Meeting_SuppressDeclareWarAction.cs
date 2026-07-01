@@ -20,6 +20,10 @@ public static class Patch_Meeting_SuppressDeclareWarAction
 			});
 			return true;
 		}
+		if (DiplomacyRecentPeaceGuard.ShouldBlockDeclareWar(faction1, faction2, declareWarDetail, "DeclareWarAction.ApplyInternal"))
+		{
+			return false;
+		}
 		if (!MeetingBattleRuntime.ShouldBlockDiplomaticSideEffects)
 		{
 			return true;

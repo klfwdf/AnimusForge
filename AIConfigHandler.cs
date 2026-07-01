@@ -7190,6 +7190,10 @@ public static class AIConfigHandler
 				{
 					continue;
 				}
+				if (!ShouldIncludeKingdomServicePostprocessTag(text, text3))
+				{
+					continue;
+				}
 				if (text3.IndexOf("{targetKingdomId}", StringComparison.OrdinalIgnoreCase) >= 0)
 				{
 					if (string.IsNullOrWhiteSpace(text2))
@@ -7278,16 +7282,17 @@ public static class AIConfigHandler
 		case "no_kingdom_tier_below_merc":
 		case "no_kingdom_tier_merc_only":
 			return "merc_only";
-		case "mercenary_target_unknown":
 		case "mercenary_same_kingdom":
+		case "mercenary_same_kingdom_tier_vassal_locked":
+		case "vassal_same_kingdom":
+			return "leave_only";
 		case "mercenary_same_kingdom_tier_vassal_ready":
 			return "leave_or_vassal";
-		case "mercenary_same_kingdom_tier_vassal_locked":
+		case "mercenary_target_unknown":
 		case "mercenary_other_kingdom":
 		case "vassal_target_unknown":
-		case "vassal_same_kingdom":
 		case "vassal_other_kingdom":
-			return "leave_only";
+			return "blocked";
 		default:
 			return "blocked";
 		}

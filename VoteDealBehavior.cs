@@ -1315,15 +1315,16 @@ namespace AnimusForge
 				switch (kind)
 				{
 					case BilateralDiplomacyKind.Peace:
-						MeetingBattleRuntime.UnlockDiplomaticSideEffects("bilateral_diplomacy_peace");
-						MakePeaceAction.ApplyByKingdomDecision(first, second, record.TributeFromFirstToSecond, record.TributeDurationDays);
+						MeetingBattleRuntime.RunWithDiplomaticSideEffectsUnlocked("bilateral_diplomacy_peace", () =>
+							MakePeaceAction.ApplyByKingdomDecision(first, second, record.TributeFromFirstToSecond, record.TributeDurationDays));
+						DiplomacyRecentPeaceGuard.RegisterPeace(first, second, "bilateral_diplomacy_peace");
 						return true;
 					case BilateralDiplomacyKind.Alliance:
 					{
 						IAllianceCampaignBehavior allianceBehavior = Campaign.Current.GetCampaignBehavior<IAllianceCampaignBehavior>();
 						if (allianceBehavior == null) return false;
-						MeetingBattleRuntime.UnlockDiplomaticSideEffects("bilateral_diplomacy_alliance");
-						allianceBehavior.StartAlliance(first, second);
+						MeetingBattleRuntime.RunWithDiplomaticSideEffectsUnlocked("bilateral_diplomacy_alliance", () =>
+							allianceBehavior.StartAlliance(first, second));
 						return true;
 					}
 					case BilateralDiplomacyKind.Trade:
@@ -1331,8 +1332,8 @@ namespace AnimusForge
 						ITradeAgreementsCampaignBehavior tradeBehavior = Campaign.Current.GetCampaignBehavior<ITradeAgreementsCampaignBehavior>();
 						if (tradeBehavior == null) return false;
 						CampaignTime tradeDuration = Campaign.Current.Models.TradeAgreementModel.GetTradeAgreementDurationInYears(first, second);
-						MeetingBattleRuntime.UnlockDiplomaticSideEffects("bilateral_diplomacy_trade");
-						tradeBehavior.MakeTradeAgreement(first, second, tradeDuration);
+						MeetingBattleRuntime.RunWithDiplomaticSideEffectsUnlocked("bilateral_diplomacy_trade", () =>
+							tradeBehavior.MakeTradeAgreement(first, second, tradeDuration));
 						return true;
 					}
 				}

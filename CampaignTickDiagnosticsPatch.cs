@@ -15,7 +15,8 @@ internal static class CampaignTickDiagnosticsPatch
 {
 	private const string LogSource = "CampaignTickDiag";
 	private const string CheckpointFileName = "CampaignTick_LastCheckpoint.txt";
-	private const int MaxCheckpointLines = 32;
+	private const int MaxCheckpointLines = 12;
+	private const int CheckpointWriteIntervalMs = 1000;
 	private const int PriorCrashSuspectSkipCount = 18;
 
 	private static readonly object StateLock = new object();
@@ -26,6 +27,7 @@ internal static class CampaignTickDiagnosticsPatch
 
 	private static bool _patched;
 	private static long _sequence;
+	private static long _nextCheckpointWriteUtcTicks;
 	private static string _lastContext = "";
 
 	public static void EnsurePatched(Harmony harmony)
@@ -71,7 +73,7 @@ internal static class CampaignTickDiagnosticsPatch
 			{
 				Logger.Log(LogSource, "CampaignPeriodicEventManager not found; periodic phase diagnostics skipped.");
 			}
-			Logger.Log(LogSource, "Campaign tick diagnostics patch applied. methods=" + patched + ", checkpoint=" + CheckpointFileName);
+			Logger.Log(LogSource, "Campaign tick diagnostics patch applied. methods=" + patched + ", checkpoint=" + CheckpointFileName + ", writeIntervalMs=" + CheckpointWriteIntervalMs);
 		}
 		catch (Exception ex)
 		{
@@ -83,8 +85,12 @@ internal static class CampaignTickDiagnosticsPatch
 	{
 		try
 		{
+			if (!ShouldCaptureCheckpoint(forceWrite: false))
+			{
+				return;
+			}
 			string context = BuildContext("ENTER", __originalMethod, __args);
-			StoreCheckpoint(context);
+			StoreCheckpoint(context, forceWrite: false);
 		}
 		catch
 		{
@@ -95,11 +101,35 @@ internal static class CampaignTickDiagnosticsPatch
 	{
 		try
 		{
+			if (!ShouldCaptureCheckpoint(forceWrite: false))
+			{
+				return;
+			}
 			string context = BuildContext("EXIT", __originalMethod, __args);
-			StoreCheckpoint(context);
+			StoreCheckpoint(context, forceWrite: false);
 		}
 		catch
 		{
+		}
+	}
+
+	private static bool ShouldCaptureCheckpoint(bool forceWrite)
+	{
+		if (forceWrite)
+		{
+			return true;
+		}
+		try
+		{
+			long nowTicks = DateTime.UtcNow.Ticks;
+			lock (StateLock)
+			{
+				return nowTicks >= _nextCheckpointWriteUtcTicks;
+			}
+		}
+		catch
+		{
+			return false;
 		}
 	}
 
@@ -112,7 +142,7 @@ internal static class CampaignTickDiagnosticsPatch
 		try
 		{
 			string context = BuildContext("EXCEPTION", __originalMethod, __args);
-			StoreCheckpoint(context);
+			StoreCheckpoint(context, forceWrite: true);
 			Logger.LogImmediate(LogSource, "[tick-exception] " + context + "\n" + __exception);
 		}
 		catch
@@ -231,11 +261,12 @@ internal static class CampaignTickDiagnosticsPatch
 		}
 	}
 
-	private static void StoreCheckpoint(string context)
+	private static void StoreCheckpoint(string context, bool forceWrite)
 	{
 		string snapshot = "";
 		try
 		{
+			long nowTicks = DateTime.UtcNow.Ticks;
 			lock (StateLock)
 			{
 				_lastContext = context ?? "";
@@ -244,10 +275,16 @@ internal static class CampaignTickDiagnosticsPatch
 				{
 					LastCheckpointLines.RemoveAt(0);
 				}
+				if (!forceWrite && nowTicks < _nextCheckpointWriteUtcTicks)
+				{
+					return;
+				}
+				_nextCheckpointWriteUtcTicks = nowTicks + TimeSpan.FromMilliseconds(CheckpointWriteIntervalMs).Ticks;
 				StringBuilder sb = new StringBuilder();
 				sb.AppendLine("Campaign tick last checkpoint");
 				sb.AppendLine("updated=" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"));
 				sb.AppendLine("last=" + (_lastContext ?? ""));
+				sb.AppendLine("writeIntervalMs=" + CheckpointWriteIntervalMs);
 				sb.AppendLine();
 				for (int i = 0; i < LastCheckpointLines.Count; i++)
 				{

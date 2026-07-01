@@ -5845,6 +5845,27 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private static bool CanGiverAuthorizePlayerKingdomLeave(Hero giver, Kingdom currentKingdom)
+	{
+		try
+		{
+			if (giver == null || currentKingdom == null)
+			{
+				return false;
+			}
+			if (currentKingdom.Leader == giver || currentKingdom.RulingClan?.Leader == giver)
+			{
+				return true;
+			}
+			Clan giverClan = giver.Clan;
+			return giverClan != null && !giverClan.IsEliminated && giverClan.Kingdom == currentKingdom;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
 	private bool TryApplyKingdomServiceAction(Hero giver, string serviceType, string kingdomToken, out string statusText)
 	{
 		statusText = "";
@@ -5863,6 +5884,12 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				if (kingdom == null)
 				{
 					statusText = "执行失败：玩家当前未加入任何势力，无需退出。";
+					return false;
+				}
+				if (!CanGiverAuthorizePlayerKingdomLeave(giver, kingdom))
+				{
+					string giverKingdomName = giver?.Clan?.Kingdom?.Name?.ToString() ?? (giver?.MapFaction as Kingdom)?.Name?.ToString() ?? "非当前效力势力";
+					statusText = "执行失败：当前对话对象属于 " + giverKingdomName + "，不能代表 " + kingdom.Name + " 批准玩家退出当前效力。";
 					return false;
 				}
 				if (playerClan.IsUnderMercenaryService)

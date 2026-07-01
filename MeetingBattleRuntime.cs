@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using TaleWorlds.CampaignSystem;
@@ -179,6 +180,32 @@ internal static class MeetingBattleRuntime
 		{
 			_diplomaticSideEffectsUnlocked = true;
 			Logger.Log("MeetingBattle", "Diplomatic side effects unlocked. Reason=" + (reason ?? "N/A"));
+		}
+	}
+
+	internal static void RunWithDiplomaticSideEffectsUnlocked(string reason, Action action)
+	{
+		if (action == null)
+		{
+			return;
+		}
+		bool restoreAfterAction = _meetingActive && !_diplomaticSideEffectsUnlocked;
+		if (restoreAfterAction)
+		{
+			_diplomaticSideEffectsUnlocked = true;
+			Logger.Log("MeetingBattle", "Diplomatic side effects temporarily unlocked. Reason=" + (reason ?? "N/A"));
+		}
+		try
+		{
+			action();
+		}
+		finally
+		{
+			if (restoreAfterAction && _meetingActive && !_combatEscalated)
+			{
+				_diplomaticSideEffectsUnlocked = false;
+				Logger.Log("MeetingBattle", "Diplomatic side effects lock restored. Reason=" + (reason ?? "N/A"));
+			}
 		}
 	}
 
