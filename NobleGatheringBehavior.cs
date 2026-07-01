@@ -13,8 +13,10 @@ using SandBox.View.Map;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Actions;
 using TaleWorlds.CampaignSystem.AgentOrigins;
+using TaleWorlds.CampaignSystem.CampaignBehaviors;
 using TaleWorlds.CampaignSystem.Encounters;
 using TaleWorlds.CampaignSystem.GameState;
+using TaleWorlds.CampaignSystem.Map;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Party.PartyComponents;
 using TaleWorlds.CampaignSystem.Roster;
@@ -48,6 +50,8 @@ internal sealed class NobleGatheringInviteeRecord
 	public bool RelationRewardApplied { get; set; }
 
 	public string OriginSettlementId { get; set; } = "";
+
+	public string SettlementReturnState { get; set; } = "";
 
 	public string TemporaryPartyId { get; set; } = "";
 
@@ -87,6 +91,8 @@ internal sealed class NobleGatheringRecord
 	public bool HostCommandIssued { get; set; }
 
 	public string HostOriginSettlementId { get; set; } = "";
+
+	public string HostSettlementReturnState { get; set; } = "";
 
 	public string HostTemporaryPartyId { get; set; } = "";
 
@@ -176,10 +182,12 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 	private const string TemporaryPartyPhaseReturning = "Returning";
 	private const string TemporaryPartyPhaseCleaned = "Cleaned";
 	private const string TemporaryPartyPrefix = "af_noble_gathering_temp_";
-	private const int TemporaryEscortCount = 50;
 	private const int TemporaryPartyTargetFood = 80;
 	private const float TemporaryPartySpawnRadius = 8f;
 	private const float TemporaryPartySpawnMinRadius = 0.5f;
+	private const string SettlementReturnPending = "Pending";
+	private const string SettlementReturnIssued = "Issued";
+	private const string SettlementReturnSkipped = "Skipped";
 	private const string PlayerInvitationPending = "Pending";
 	private const string PlayerInvitationAccepted = "Accepted";
 	private const string PlayerInvitationDeclined = "Declined";
@@ -1926,7 +1934,7 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 					enabledCount++;
 				}
 				string label = (alreadySelected ? "[已选] " : "") + "[" + GetClanName(hero?.Clan) + "] " + GetHeroName(hero);
-				string hint = GetHeroName(hero) + " / " + GetClanName(hero?.Clan) + (alreadySelected ? "\n已经在当前宴会名单中。" : enabled ? "\n可发出赴宴邀请；没有独立部队者将生成临时赴宴随从队。" : "\n不可邀请：" + reason);
+				string hint = GetHeroName(hero) + " / " + GetClanName(hero?.Clan) + (alreadySelected ? "\n已经在当前宴会名单中。" : enabled ? "\n可发出赴宴邀请；没有独立部队者将按原版旅行机制前往主办地。" : "\n不可邀请：" + reason);
 				return new InquiryElement(hero.StringId, label, null, enabled, hint);
 			})
 			.ToList();
@@ -1938,7 +1946,7 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 		}
 		MultiSelectionInquiryData data = new MultiSelectionInquiryData(
 			"召开宴会：选择宾客",
-			"家族：" + GetClanName(clan) + "\n有独立部队的人会直接被调度；留在城里的贵族、总督、无部队英雄会生成临时赴宴随从队。\n已选宾客：" + currentHeroIds.Count + " 人。",
+			"家族：" + GetClanName(clan) + "\n有独立部队的人会直接被调度；留在城里的贵族、总督、无部队英雄会按原版旅行机制前往主办地，宴会结束后返回原驻留地。\n已选宾客：" + currentHeroIds.Count + " 人。",
 			options,
 			isExitShown: true,
 			0,
@@ -2070,6 +2078,7 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 			RepairTrackedTemporaryGatheringParties("hourly");
 			ProcessActiveGatherings();
 			ProcessTemporaryPartyReturnsAndOrphans();
+			ProcessSettlementTravelReturnsAndOrphans();
 		}
 		catch (Exception ex)
 		{
@@ -2129,10 +2138,10 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 			record.HostCommandIssued = true;
 			Log("npc host travel issued id=" + record.Id + " host=" + host.StringId + " settlement=" + settlement.StringId);
 		}
-		else if (TryEnsureTemporaryHostParty(record, host, settlement, out message))
+		else if (TryIssueDelayedSettlementTravel(record, null, host, settlement, out message))
 		{
 			record.HostCommandIssued = true;
-			Log("npc host temporary travel issued id=" + record.Id + " host=" + host.StringId + " settlement=" + settlement.StringId);
+			Log("npc host settlement travel issued id=" + record.Id + " host=" + host.StringId + " settlement=" + settlement.StringId + " message=" + message);
 		}
 		else
 		{
@@ -2167,10 +2176,10 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 				invitee.CommandIssued = true;
 				invitee.Reason = "command_issued";
 			}
-			else if (TryEnsureTemporaryInviteeParty(record, invitee, hero, settlement, out message))
+			else if (TryIssueDelayedSettlementTravel(record, invitee, hero, settlement, out message))
 			{
 				invitee.CommandIssued = true;
-				invitee.Reason = "temporary_party_issued";
+				invitee.Reason = "settlement_travel_issued";
 			}
 			else
 			{
@@ -2333,11 +2342,11 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 			return;
 		}
 		record.State = StateFinished;
-			UnregisterFeastAttendees(record);
+		UnregisterFeastAttendees(record);
 		WorldMapPartyCommandBehavior world = WorldMapPartyCommandBehavior.Instance ?? Campaign.Current?.GetCampaignBehavior<WorldMapPartyCommandBehavior>();
+		Hero host = ResolveHeroById(record.HostHeroId);
 		if (!record.IsPlayerHosted && world != null)
 		{
-			Hero host = ResolveHeroById(record.HostHeroId);
 			if (host != null)
 			{
 				world.TryStopExternalCommandForExternal(host, BuildCommandSourceId(record), out _);
@@ -2345,7 +2354,14 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 		}
 		if (!record.IsPlayerHosted)
 		{
-			StartTemporaryHostReturn(record, "finish");
+			if (!string.IsNullOrWhiteSpace(record.HostTemporaryPartyId))
+			{
+				StartTemporaryHostReturn(record, "finish");
+			}
+			else
+			{
+				QueueSettlementHostReturn(record, "finish");
+			}
 		}
 		foreach (NobleGatheringInviteeRecord invitee in record.Invitees ?? new List<NobleGatheringInviteeRecord>())
 		{
@@ -2354,7 +2370,14 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 			{
 				world.TryStopExternalCommandForExternal(hero, BuildCommandSourceId(record), out _);
 			}
-			StartTemporaryInviteeReturn(invitee, "finish");
+			if (!string.IsNullOrWhiteSpace(invitee?.TemporaryPartyId))
+			{
+				StartTemporaryInviteeReturn(invitee, "finish");
+			}
+			else
+			{
+				QueueSettlementInviteeReturn(invitee, "finish");
+			}
 		}
 		DisplayGatheringMessage(BuildGatheringEndMessage(record, reason), new Color(0.8f, 0.95f, 1f));
 		Log("finish gathering id=" + record.Id + " reason=" + reason);
@@ -2821,135 +2844,264 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 		Log("temporary invitee return hero=" + (invitee.HeroId ?? "") + " reason=" + (reason ?? ""));
 	}
 
-	private bool TryEnsureTemporaryHostParty(NobleGatheringRecord record, Hero host, Settlement targetSettlement, out string message)
+	private bool TryIssueDelayedSettlementTravel(NobleGatheringRecord record, NobleGatheringInviteeRecord invitee, Hero hero, Settlement targetSettlement, out string message)
 	{
 		message = "";
-		if (record == null || host == null || targetSettlement == null)
+		if (record == null || hero == null || targetSettlement == null)
 		{
-			message = "temporary_host_invalid";
+			message = "settlement_travel_invalid";
 			return false;
 		}
-		if (!CanCreateTemporaryPartyForHero(host, out string reason))
+		bool alreadyAtTarget = IsHeroAtSettlement(hero, targetSettlement);
+		bool alreadyTravelingToTarget = IsHeroTeleportingToSettlement(hero, targetSettlement);
+		if (!alreadyAtTarget && !alreadyTravelingToTarget && !CanUseDelayedSettlementTravelForGathering(hero, out string reason))
 		{
 			message = reason;
 			return false;
 		}
-		if (HasActiveTemporaryPartyForHero(host, record.HostTemporaryPartyId))
-		{
-			message = "该英雄已有临时赴宴队伍。";
-			return false;
-		}
-		Settlement origin = ResolveHeroOriginSettlement(host);
+		Settlement origin = ResolveSettlementById(invitee == null ? record.HostOriginSettlementId : invitee.OriginSettlementId) ?? ResolveHeroOriginSettlement(hero);
 		if (origin == null)
 		{
-			message = "找不到主办人的原始所在城。";
+			message = invitee == null ? "找不到主办人的原始所在城。" : "找不到宾客的原始所在城。";
 			return false;
 		}
-		MobileParty party = ResolveMobilePartyById(record.HostTemporaryPartyId);
-		if (party == null || !party.IsActive)
+		if (invitee == null)
 		{
-			party = CreateTemporaryGatheringParty(host, origin, targetSettlement, out message);
-			if (party == null)
-			{
-				return false;
-			}
-			record.HostTemporaryPartyId = party.StringId ?? "";
 			record.HostOriginSettlementId = origin.StringId ?? "";
+			record.HostSettlementReturnState = "";
 		}
-		record.HostTemporaryPartyPhase = TemporaryPartyPhaseToGathering;
-		RefreshTemporaryPartyRoute(party, targetSettlement);
-		return true;
-	}
-
-	private bool TryEnsureTemporaryInviteeParty(NobleGatheringRecord record, NobleGatheringInviteeRecord invitee, Hero hero, Settlement targetSettlement, out string message)
-	{
-		message = "";
-		if (record == null || invitee == null || hero == null || targetSettlement == null)
+		else
 		{
-			message = "temporary_invitee_invalid";
-			return false;
-		}
-		if (!CanCreateTemporaryPartyForHero(hero, out string reason))
-		{
-			message = reason;
-			return false;
-		}
-		if (HasActiveTemporaryPartyForHero(hero, invitee.TemporaryPartyId))
-		{
-			message = "该英雄已有临时赴宴队伍。";
-			return false;
-		}
-		Settlement origin = ResolveHeroOriginSettlement(hero);
-		if (origin == null)
-		{
-			message = "找不到宾客的原始所在城。";
-			return false;
-		}
-		MobileParty party = ResolveMobilePartyById(invitee.TemporaryPartyId);
-		if (party == null || !party.IsActive)
-		{
-			party = CreateTemporaryGatheringParty(hero, origin, targetSettlement, out message);
-			if (party == null)
-			{
-				return false;
-			}
-			invitee.TemporaryPartyId = party.StringId ?? "";
 			invitee.OriginSettlementId = origin.StringId ?? "";
+			invitee.SettlementReturnState = "";
 		}
-		invitee.TemporaryPartyPhase = TemporaryPartyPhaseToGathering;
-		RefreshTemporaryPartyRoute(party, targetSettlement);
-		return true;
-	}
-
-	private MobileParty CreateTemporaryGatheringParty(Hero hero, Settlement origin, Settlement targetSettlement, out string message)
-	{
-		message = "";
+		if (alreadyAtTarget)
+		{
+			message = "settlement_travel_already_at_target";
+			return true;
+		}
+		if (alreadyTravelingToTarget)
+		{
+			message = "settlement_travel_already_pending";
+			return true;
+		}
+		if (TryGetHeroTeleportTarget(hero, out Settlement currentTarget))
+		{
+			message = "正在旅行至" + GetSettlementName(currentTarget);
+			return false;
+		}
+		if (hero.IsTraveling)
+		{
+			message = "正在旅行";
+			return false;
+		}
+		if (hero.PartyBelongedTo != null)
+		{
+			message = "已有部队";
+			return false;
+		}
+		if (!CanHeroMoveToSettlement(hero, out string moveReason))
+		{
+			message = moveReason;
+			return false;
+		}
 		try
 		{
-			if (hero?.CharacterObject == null || origin == null || targetSettlement == null)
-			{
-				message = "临时赴宴队伍创建失败：人物或地点无效。";
-				return null;
-			}
-			if (!TryResolveTemporaryGatheringLandPosition(origin, out CampaignVec2 position, out string positionReason))
-			{
-				message = "临时赴宴队伍创建失败：找不到安全陆地点（" + positionReason + "）。";
-				Log("create temporary party no safe land position hero=" + (hero?.StringId ?? "") + " origin=" + (origin?.StringId ?? "") + " reason=" + positionReason);
-				return null;
-			}
-			string partyId = TemporaryPartyPrefix + Guid.NewGuid().ToString("N").Substring(0, 12);
-			TextObject partyName = new TextObject("NobleGatheringTemporaryParty");
-			MobileParty party = MobileParty.CreateParty(partyId, new NobleGatheringTemporaryPartyComponent(position, partyName, hero, hero.Clan ?? Clan.PlayerClan));
-			if (party == null)
-			{
-				message = "临时赴宴队伍创建失败。";
-				return null;
-			}
-			party.IsVisible = true;
-			PrepareTemporaryGatheringPartyForLandTravel(party);
-			LockTemporaryPartyNativeAi(party, "create");
-			RepairTemporaryGatheringPartyPosition(party, origin, "create");
-			party.MemberRoster.AddToCounts(hero.CharacterObject, 1, insertAtFront: true, woundedCount: 0, xpChange: 0, removeDepleted: true, index: -1);
-			party.PartyComponent?.ChangePartyLeader(hero);
-			CharacterObject escortTroop = ResolveTemporaryEscortTroop(hero, origin);
-			if (escortTroop != null)
-			{
-				party.MemberRoster.AddToCounts(escortTroop, TemporaryEscortCount, insertAtFront: false, woundedCount: 0, xpChange: 0, removeDepleted: true, index: -1);
-			}
-			EnsureTemporaryGatheringPartySupplies(party);
-			RemoveGovernorPositionForTemporaryGatheringHero(hero);
-			party.Party.SetCustomName(new TextObject("赴宴随从 - " + GetHeroName(hero)));
-			party.SetMoveModeHold();
-			RefreshTemporaryPartyRoute(party, targetSettlement);
-			Log("temporary party created party=" + (party.StringId ?? "") + " hero=" + (hero.StringId ?? "") + " origin=" + (origin.StringId ?? "") + " target=" + (targetSettlement.StringId ?? ""));
-			message = "temporary_party_created";
-			return party;
+			TeleportHeroAction.ApplyDelayedTeleportToSettlement(hero, targetSettlement);
+			message = "settlement_travel_issued";
+			Log("settlement travel issued hero=" + (hero.StringId ?? "") + " origin=" + (origin.StringId ?? "") + " target=" + (targetSettlement.StringId ?? "") + " gathering=" + (record.Id ?? ""));
+			return true;
 		}
 		catch (Exception ex)
 		{
-			message = "临时赴宴队伍创建异常：" + ex.Message;
-			Log("create temporary party failed hero=" + (hero?.StringId ?? "") + " error=" + ex);
-			return null;
+			message = "原版旅行下达失败：" + ex.Message;
+			Log("settlement travel failed hero=" + (hero?.StringId ?? "") + " target=" + (targetSettlement?.StringId ?? "") + " error=" + ex);
+			return false;
+		}
+	}
+
+	private void QueueSettlementHostReturn(NobleGatheringRecord record, string reason)
+	{
+		if (record == null || string.IsNullOrWhiteSpace(record.HostOriginSettlementId))
+		{
+			return;
+		}
+		if (string.Equals(record.HostSettlementReturnState, SettlementReturnIssued, StringComparison.OrdinalIgnoreCase)
+			|| string.Equals(record.HostSettlementReturnState, SettlementReturnSkipped, StringComparison.OrdinalIgnoreCase))
+		{
+			return;
+		}
+		record.HostSettlementReturnState = SettlementReturnPending;
+		Log("settlement host return queued id=" + (record.Id ?? "") + " host=" + (record.HostHeroId ?? "") + " origin=" + (record.HostOriginSettlementId ?? "") + " reason=" + (reason ?? ""));
+		ProcessSettlementHostReturn(record, reason);
+	}
+
+	private void QueueSettlementInviteeReturn(NobleGatheringInviteeRecord invitee, string reason)
+	{
+		if (invitee == null || string.IsNullOrWhiteSpace(invitee.OriginSettlementId))
+		{
+			return;
+		}
+		if (string.Equals(invitee.SettlementReturnState, SettlementReturnIssued, StringComparison.OrdinalIgnoreCase)
+			|| string.Equals(invitee.SettlementReturnState, SettlementReturnSkipped, StringComparison.OrdinalIgnoreCase))
+		{
+			return;
+		}
+		invitee.SettlementReturnState = SettlementReturnPending;
+		Log("settlement invitee return queued hero=" + (invitee.HeroId ?? "") + " origin=" + (invitee.OriginSettlementId ?? "") + " reason=" + (reason ?? ""));
+		ProcessSettlementInviteeReturn(invitee, reason);
+	}
+
+	private void ProcessSettlementTravelReturnsAndOrphans()
+	{
+		foreach (NobleGatheringRecord record in _gatherings.Values.ToList())
+		{
+			if (record == null)
+			{
+				continue;
+			}
+			ProcessSettlementHostReturn(record, "hourly");
+			foreach (NobleGatheringInviteeRecord invitee in record.Invitees ?? new List<NobleGatheringInviteeRecord>())
+			{
+				ProcessSettlementInviteeReturn(invitee, "hourly");
+			}
+		}
+	}
+
+	private void ProcessSettlementHostReturn(NobleGatheringRecord record, string reason)
+	{
+		if (record == null || !string.Equals(record.HostSettlementReturnState, SettlementReturnPending, StringComparison.OrdinalIgnoreCase))
+		{
+			return;
+		}
+		Settlement origin = ResolveSettlementById(record.HostOriginSettlementId);
+		Hero host = ResolveHeroById(record.HostHeroId);
+		string state = TryIssueSettlementReturnTravel(host, origin, out string message);
+		if (!string.Equals(state, SettlementReturnPending, StringComparison.OrdinalIgnoreCase))
+		{
+			record.HostSettlementReturnState = state;
+			Log("settlement host return " + state + " id=" + (record.Id ?? "") + " host=" + (record.HostHeroId ?? "") + " origin=" + (record.HostOriginSettlementId ?? "") + " reason=" + (reason ?? "") + " message=" + (message ?? ""));
+		}
+	}
+
+	private void ProcessSettlementInviteeReturn(NobleGatheringInviteeRecord invitee, string reason)
+	{
+		if (invitee == null || !string.Equals(invitee.SettlementReturnState, SettlementReturnPending, StringComparison.OrdinalIgnoreCase))
+		{
+			return;
+		}
+		Settlement origin = ResolveSettlementById(invitee.OriginSettlementId);
+		Hero hero = ResolveHeroById(invitee.HeroId);
+		string state = TryIssueSettlementReturnTravel(hero, origin, out string message);
+		if (!string.Equals(state, SettlementReturnPending, StringComparison.OrdinalIgnoreCase))
+		{
+			invitee.SettlementReturnState = state;
+			Log("settlement invitee return " + state + " hero=" + (invitee.HeroId ?? "") + " origin=" + (invitee.OriginSettlementId ?? "") + " reason=" + (reason ?? "") + " message=" + (message ?? ""));
+		}
+	}
+
+	private static string TryIssueSettlementReturnTravel(Hero hero, Settlement origin, out string message)
+	{
+		message = "";
+		if (origin == null)
+		{
+			message = "return_no_origin";
+			return SettlementReturnSkipped;
+		}
+		if (hero == null || hero.IsDead)
+		{
+			message = "return_hero_invalid";
+			return SettlementReturnSkipped;
+		}
+		if (hero.IsPrisoner || hero.PartyBelongedToAsPrisoner != null)
+		{
+			message = "return_hero_prisoner";
+			return SettlementReturnSkipped;
+		}
+		if (hero.PartyBelongedTo != null)
+		{
+			message = "return_skipped_has_party";
+			return SettlementReturnSkipped;
+		}
+		if (IsHeroAtSettlement(hero, origin))
+		{
+			message = "return_already_home";
+			return SettlementReturnIssued;
+		}
+		if (TryGetHeroTeleportTarget(hero, out Settlement currentTarget))
+		{
+			if (currentTarget == origin)
+			{
+				message = "return_already_pending";
+				return SettlementReturnIssued;
+			}
+			message = "return_waiting_current_travel:" + (currentTarget?.StringId ?? "");
+			return SettlementReturnPending;
+		}
+		if (hero.IsTraveling)
+		{
+			message = "return_waiting_current_travel";
+			return SettlementReturnPending;
+		}
+		if (!CanHeroMoveToSettlement(hero, out string moveReason))
+		{
+			message = moveReason;
+			return SettlementReturnPending;
+		}
+		try
+		{
+			TeleportHeroAction.ApplyDelayedTeleportToSettlement(hero, origin);
+			message = "return_issued";
+			return SettlementReturnIssued;
+		}
+		catch (Exception ex)
+		{
+			message = "return_exception:" + ex.Message;
+			Log("settlement return failed hero=" + (hero?.StringId ?? "") + " origin=" + (origin?.StringId ?? "") + " error=" + ex);
+			return SettlementReturnPending;
+		}
+	}
+
+	private static bool TryGetHeroTeleportTarget(Hero hero, out Settlement targetSettlement)
+	{
+		targetSettlement = null;
+		try
+		{
+			ITeleportationCampaignBehavior teleportation = Campaign.Current?.GetCampaignBehavior<ITeleportationCampaignBehavior>();
+			if (teleportation == null || !teleportation.GetTargetOfTeleportingHero(hero, out _, out _, out IMapPoint target))
+			{
+				return false;
+			}
+			targetSettlement = target as Settlement;
+			return targetSettlement != null;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static bool IsHeroTeleportingToSettlement(Hero hero, Settlement settlement)
+	{
+		return settlement != null && TryGetHeroTeleportTarget(hero, out Settlement targetSettlement) && targetSettlement == settlement;
+	}
+
+	private static bool CanHeroMoveToSettlement(Hero hero, out string reason)
+	{
+		reason = "";
+		try
+		{
+			if (hero != null && hero.CanMoveToSettlement())
+			{
+				return true;
+			}
+			reason = "当前无法移动至定居点";
+			return false;
+		}
+		catch (Exception ex)
+		{
+			reason = "移动检查失败：" + ex.Message;
+			return false;
 		}
 	}
 
@@ -3605,27 +3757,6 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 			return null;
 		}
 		return MobileParty.All?.FirstOrDefault(party => string.Equals(party?.StringId, id, StringComparison.OrdinalIgnoreCase));
-	}
-
-	private static bool HasActiveTemporaryPartyForHero(Hero hero, string allowedPartyId)
-	{
-		string heroId = hero?.StringId ?? "";
-		if (string.IsNullOrWhiteSpace(heroId))
-		{
-			return false;
-		}
-		foreach (MobileParty party in MobileParty.All?.ToList() ?? new List<MobileParty>())
-		{
-			if (!IsTemporaryGatheringParty(party) || !party.IsActive || string.Equals(party.StringId, allowedPartyId, StringComparison.OrdinalIgnoreCase))
-			{
-				continue;
-			}
-			if (party.LeaderHero == hero || (hero.CharacterObject != null && party.MemberRoster?.Contains(hero.CharacterObject) == true))
-			{
-				return true;
-			}
-		}
-		return false;
 	}
 
 	public static List<PostprocessRuleEntry> BuildRuntimePostprocessRulesForExternal(Hero targetHero)
@@ -4340,7 +4471,7 @@ public static string NormalizeNobleGatheringPostprocessTagsForExternal(string ra
 		{
 			return true;
 		}
-		if (CanCreateTemporaryPartyForHero(hero, out reason))
+		if (CanUseDelayedSettlementTravelForGathering(hero, out reason))
 		{
 			return true;
 		}
@@ -4388,7 +4519,7 @@ public static string NormalizeNobleGatheringPostprocessTagsForExternal(string ra
 		return true;
 	}
 
-	private bool CanCreateTemporaryPartyForHero(Hero hero, out string reason)
+	private bool CanUseDelayedSettlementTravelForGathering(Hero hero, out string reason)
 	{
 		reason = "";
 		if (hero == null || hero == Hero.MainHero || hero.IsDead)
@@ -4415,9 +4546,23 @@ public static string NormalizeNobleGatheringPostprocessTagsForExternal(string ra
 			reason = "已有非独立部队或正处于部队中";
 			return false;
 		}
+		if (TryGetHeroTeleportTarget(hero, out Settlement target))
+		{
+			reason = "正在旅行至" + GetSettlementName(target);
+			return false;
+		}
+		if (hero.IsTraveling)
+		{
+			reason = "正在旅行";
+			return false;
+		}
 		if (ResolveHeroOriginSettlement(hero) == null)
 		{
 			reason = "找不到原始所在城";
+			return false;
+		}
+		if (!CanHeroMoveToSettlement(hero, out reason))
+		{
 			return false;
 		}
 		return true;
@@ -4453,130 +4598,6 @@ public static string NormalizeNobleGatheringPostprocessTagsForExternal(string ra
 	private static Settlement ResolveBestPlayerHostSettlement(Settlement suggestedSettlement)
 	{
 		return GetPlayerHostSettlements(suggestedSettlement).FirstOrDefault();
-	}
-
-	private static CharacterObject ResolveTemporaryEscortTroop(Hero hero, Settlement origin)
-	{
-		try
-		{
-			CharacterObject[] roots = new CharacterObject[]
-			{
-				hero?.Culture?.EliteBasicTroop,
-				hero?.Clan?.Culture?.EliteBasicTroop,
-				origin?.Culture?.EliteBasicTroop,
-				origin?.MapFaction?.Culture?.EliteBasicTroop,
-				Clan.PlayerClan?.Culture?.EliteBasicTroop,
-				hero?.Clan?.BasicTroop,
-				hero?.Culture?.BasicTroop,
-				origin?.Culture?.BasicTroop,
-				origin?.MapFaction?.BasicTroop,
-				Clan.PlayerClan?.BasicTroop,
-				Clan.PlayerClan?.Culture?.BasicTroop
-			};
-			foreach (CharacterObject root in roots)
-			{
-				CharacterObject troop = ResolveHighestUpgradeTroop(root);
-				if (troop != null)
-				{
-					return troop;
-				}
-			}
-		}
-		catch
-		{
-		}
-		return null;
-	}
-
-	private static CharacterObject ResolveHighestUpgradeTroop(CharacterObject root)
-	{
-		if (root == null)
-		{
-			return null;
-		}
-		CharacterObject best = root;
-		HashSet<string> visited = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-		Stack<CharacterObject> stack = new Stack<CharacterObject>();
-		stack.Push(root);
-		while (stack.Count > 0)
-		{
-			CharacterObject current = stack.Pop();
-			if (current == null || !visited.Add(current.StringId ?? current.Name?.ToString() ?? ""))
-			{
-				continue;
-			}
-			if (CompareTemporaryEscortTroops(current, best) > 0)
-			{
-				best = current;
-			}
-			foreach (CharacterObject upgrade in current.UpgradeTargets ?? new CharacterObject[0])
-			{
-				if (upgrade != null)
-				{
-					stack.Push(upgrade);
-				}
-			}
-		}
-		return best;
-	}
-
-	private static int CompareTemporaryEscortTroops(CharacterObject left, CharacterObject right)
-	{
-		int leftTier = GetTroopTierSafe(left);
-		int rightTier = GetTroopTierSafe(right);
-		if (leftTier != rightTier)
-		{
-			return leftTier.CompareTo(rightTier);
-		}
-		int leftLevel = GetTroopLevelSafe(left);
-		int rightLevel = GetTroopLevelSafe(right);
-		if (leftLevel != rightLevel)
-		{
-			return leftLevel.CompareTo(rightLevel);
-		}
-		return string.Compare(left?.StringId ?? "", right?.StringId ?? "", StringComparison.OrdinalIgnoreCase);
-	}
-
-	private static int GetTroopTierSafe(CharacterObject troop)
-	{
-		try
-		{
-			return troop?.Tier ?? 0;
-		}
-		catch
-		{
-			return 0;
-		}
-	}
-
-	private static int GetTroopLevelSafe(CharacterObject troop)
-	{
-		try
-		{
-			return troop?.Level ?? 0;
-		}
-		catch
-		{
-			return 0;
-		}
-	}
-
-	private static void RemoveGovernorPositionForTemporaryGatheringHero(Hero hero)
-	{
-		if (hero?.GovernorOf == null)
-		{
-			return;
-		}
-		try
-		{
-			Town town = hero.GovernorOf;
-			ChangeGovernorAction.RemoveGovernorOf(hero);
-			Log("temporary gathering governor removed hero=" + (hero.StringId ?? "") + " settlement=" + (town?.Settlement?.StringId ?? ""));
-		}
-		catch (Exception ex)
-		{
-			Log("remove temporary gathering governor failed hero=" + (hero?.StringId ?? "") + " error=" + ex.Message);
-		}
 	}
 
 	private static bool IsHeroAtSettlement(Hero hero, Settlement settlement)
@@ -4868,20 +4889,20 @@ public static string NormalizeNobleGatheringPostprocessTagsForExternal(string ra
 	{
 		int members = Hero.AllAliveHeroes.Count(hero => hero?.Clan == clan && hero.Occupation == Occupation.Lord);
 		int movable = Hero.AllAliveHeroes.Count(hero => hero?.Clan == clan && hero.Occupation == Occupation.Lord && hero != Hero.MainHero && hero.PartyBelongedTo?.LeaderHero == hero);
-		int temporary = 0;
+		int settlementTravel = 0;
 		try
 		{
 			NobleGatheringBehavior behavior = Instance;
 			if (behavior != null)
 			{
-				temporary = Hero.AllAliveHeroes.Count(hero => hero?.Clan == clan && hero.Occupation == Occupation.Lord && hero != Hero.MainHero && hero.PartyBelongedTo == null && behavior.CanCreateTemporaryPartyForHero(hero, out _));
+				settlementTravel = Hero.AllAliveHeroes.Count(hero => hero?.Clan == clan && hero.Occupation == Occupation.Lord && hero != Hero.MainHero && hero.PartyBelongedTo == null && behavior.CanUseDelayedSettlementTravelForGathering(hero, out _));
 			}
 		}
 		catch
 		{
-			temporary = 0;
+			settlementTravel = 0;
 		}
-		return "成员 " + members + " 人；有独立部队 " + movable + " 人；可临时赴宴 " + temporary + " 人。";
+		return "成员 " + members + " 人；有独立部队 " + movable + " 人；可原版旅行赴宴 " + settlementTravel + " 人。";
 	}
 
 	private static string BuildGatheringEndMessage(NobleGatheringRecord record, string reason)
@@ -4910,6 +4931,7 @@ public static string NormalizeNobleGatheringPostprocessTagsForExternal(string ra
 		record.State = string.IsNullOrWhiteSpace(record.State) ? StateActive : record.State.Trim();
 		record.PlayerInvitationStatus = (record.PlayerInvitationStatus ?? "").Trim();
 		record.HostOriginSettlementId = (record.HostOriginSettlementId ?? "").Trim();
+		record.HostSettlementReturnState = (record.HostSettlementReturnState ?? "").Trim();
 		record.HostTemporaryPartyId = (record.HostTemporaryPartyId ?? "").Trim();
 		record.HostTemporaryPartyPhase = (record.HostTemporaryPartyPhase ?? "").Trim();
 		record.RelationRewardedClanIds = (record.RelationRewardedClanIds ?? new List<string>())
@@ -4930,6 +4952,7 @@ public static string NormalizeNobleGatheringPostprocessTagsForExternal(string ra
 			invitee.Status = string.IsNullOrWhiteSpace(invitee.Status) ? InvitePending : invitee.Status.Trim();
 			invitee.Reason = (invitee.Reason ?? "").Trim();
 			invitee.OriginSettlementId = (invitee.OriginSettlementId ?? "").Trim();
+			invitee.SettlementReturnState = (invitee.SettlementReturnState ?? "").Trim();
 			invitee.TemporaryPartyId = (invitee.TemporaryPartyId ?? "").Trim();
 			invitee.TemporaryPartyPhase = (invitee.TemporaryPartyPhase ?? "").Trim();
 			if (invitee.RelationRewardApplied && !string.IsNullOrWhiteSpace(invitee.ClanId) && rewardedClanIds.Add(invitee.ClanId))
