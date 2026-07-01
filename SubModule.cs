@@ -257,6 +257,14 @@ public class SubModule : MBSubModuleBase
 			}
 			try
 			{
+				CampaignTickDiagnosticsPatch.EnsurePatched(harmony);
+			}
+			catch (Exception ex8ag)
+			{
+				Logger.LogTrace("SubModule", ">>> CampaignTickDiagnosticsPatch init failed: " + ex8ag.Message);
+			}
+			try
+			{
 				Patch_Conversation_Start_Intercept.ManualPatch(harmony);
 			}
 			catch (Exception ex8b)

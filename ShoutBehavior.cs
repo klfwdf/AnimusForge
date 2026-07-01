@@ -14,6 +14,7 @@ using AnimusForge.SiegeAftermathIntervention;
 using SandBox;
 using SandBox.Missions.AgentBehaviors;
 using SandBox.Missions.MissionLogics;
+using SandBox.Missions.MissionLogics.Towns;
 using SandBox.Objects.AnimationPoints;
 using SandBox.Objects.Usables;
 using TaleWorlds.CampaignSystem;
@@ -580,7 +581,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 				_parent.UpdateMultiSceneMovementSuppression(dt);
 			}
 			_parent.UpdatePendingNativeSceneTauntFightDelay();
-			if (Campaign.Current != null && Campaign.Current.ConversationManager.IsConversationInProgress)
+			if (Campaign.Current?.ConversationManager?.IsConversationInProgress == true)
 			{
 				_parent.CancelShoutHotkeyCharge("conversation");
 				_parent._stareTimer = 0f;
@@ -1061,13 +1062,15 @@ public class ShoutBehavior : CampaignBehaviorBase
 
 	private static bool TrySetShoutPreviewAgentHighlight(int agentIndex, bool highlighted)
 	{
-		if (agentIndex < 0 || Mission.Current?.Agents == null)
+		Mission mission = Mission.Current;
+		var agents = mission?.Agents;
+		if (agentIndex < 0 || agents == null)
 		{
 			return false;
 		}
 		try
 		{
-			Agent agent = Mission.Current.Agents.FirstOrDefault(a => a != null && a.Index == agentIndex && a.IsActive());
+			Agent agent = agents.FirstOrDefault(a => a != null && a.Index == agentIndex && a.IsActive());
 			if (agent?.AgentVisuals == null)
 			{
 				return false;
@@ -1156,9 +1159,10 @@ public class ShoutBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			if (Mission.Current?.Scene != null)
+			Mission mission = Mission.Current;
+			if (mission?.Scene != null)
 			{
-				point.z = Mission.Current.Scene.GetGroundHeightAtPosition(point, BodyFlags.CommonCollisionExcludeFlags) + ShoutPreviewMarkerGroundOffset;
+				point.z = mission.Scene.GetGroundHeightAtPosition(point, BodyFlags.CommonCollisionExcludeFlags) + ShoutPreviewMarkerGroundOffset;
 			}
 			else
 			{
@@ -1416,13 +1420,15 @@ public class ShoutBehavior : CampaignBehaviorBase
 		{
 			return ShoutUtils.GetNearbyNPCAgents() ?? new List<Agent>();
 		}
-		if (targetingContext.CandidateAgentIndices == null || targetingContext.CandidateAgentIndices.Count == 0 || Mission.Current == null)
+		Mission mission = Mission.Current;
+		var agents = mission?.Agents;
+		if (targetingContext.CandidateAgentIndices == null || targetingContext.CandidateAgentIndices.Count == 0 || agents == null)
 		{
 			return new List<Agent>();
 		}
 		HashSet<int> wanted = new HashSet<int>(targetingContext.CandidateAgentIndices);
 		Dictionary<int, Agent> liveAgents = new Dictionary<int, Agent>();
-		foreach (Agent agent in Mission.Current.Agents)
+		foreach (Agent agent in agents)
 		{
 			if (agent != null && wanted.Contains(agent.Index) && agent != Agent.Main && agent.IsActive() && agent.IsHuman)
 			{
@@ -1656,7 +1662,8 @@ public class ShoutBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			return Mission.Current != null && Mission.Current.Scene != null && Mission.Current.Scene.TimeSpeed <= 0.001f;
+			var scene = Mission.Current?.Scene;
+			return scene != null && scene.TimeSpeed <= 0.001f;
 		}
 		catch
 		{
@@ -1867,6 +1874,12 @@ public class ShoutBehavior : CampaignBehaviorBase
 	private static readonly Regex SceneFollowStopTagRegex = new Regex("\\[(?:STP|ACTION:SCENE_STOP_FOLLOW)\\]", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
 	private static readonly Regex SceneEndChatActionTagRegex = new Regex("\\[END\\]", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
+	private static readonly FieldInfo PrisonBreakPrisonerAgentField = typeof(PrisonBreakMissionController).GetField("_prisonerAgent", BindingFlags.Instance | BindingFlags.NonPublic);
+
+	private static readonly FieldInfo PrisonBreakPrisonerFollowingField = typeof(PrisonBreakMissionController).GetField("_isPrisonerFollowing", BindingFlags.Instance | BindingFlags.NonPublic);
+
+	private static readonly MethodInfo PrisonBreakSwitchPrisonerFollowingStateMethod = typeof(PrisonBreakMissionController).GetMethod("SwitchPrisonerFollowingState", BindingFlags.Instance | BindingFlags.NonPublic);
 
 	private const int SCENE_SUMMON_PROMPT_TARGET_LIMIT = 12;
 
@@ -2930,7 +2943,8 @@ public class ShoutBehavior : CampaignBehaviorBase
 
 	private void ConvertPendingSceneDialogueFeedToTimedFlush(int agentIndex, float delaySeconds)
 	{
-		if (agentIndex < 0 || Mission.Current == null)
+		Mission mission = Mission.Current;
+		if (agentIndex < 0 || mission == null)
 		{
 			return;
 		}
@@ -2943,7 +2957,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 			PendingSceneDialogueFeedEntry[] array = value.ToArray();
 			value.Clear();
 			bool flag = false;
-			float num = Mission.Current.CurrentTime + Math.Max(0f, delaySeconds);
+			float num = mission.CurrentTime + Math.Max(0f, delaySeconds);
 			for (int i = 0; i < array.Length; i++)
 			{
 				PendingSceneDialogueFeedEntry pendingSceneDialogueFeedEntry = array[i];
@@ -3166,13 +3180,14 @@ public class ShoutBehavior : CampaignBehaviorBase
 
 	private void ScheduleNpcSpeechToMessageFeed(int agentIndex, string npcDisplayName, string content, SceneSpeechPlaybackInfo playbackInfo)
 	{
-		if (agentIndex < 0 || string.IsNullOrWhiteSpace(content) || Mission.Current == null)
+		Mission mission = Mission.Current;
+		if (agentIndex < 0 || string.IsNullOrWhiteSpace(content) || mission == null)
 		{
 			return;
 		}
 		float num = Math.Max(0f, playbackInfo?.VisualDurationSeconds ?? 0f);
 		bool flag = playbackInfo != null && playbackInfo.TtsAccepted && playbackInfo.WaitForPlaybackFinished;
-		float executeAtMissionTime = flag ? (-1f) : (Mission.Current.CurrentTime + num);
+		float executeAtMissionTime = flag ? (-1f) : (mission.CurrentTime + num);
 		EnqueuePendingSceneDialogueFeed(agentIndex, npcDisplayName, content, new Color(1f, 0.8f, 0.2f), flag, executeAtMissionTime);
 	}
 
@@ -3411,9 +3426,11 @@ public class ShoutBehavior : CampaignBehaviorBase
 			Agent liveAgent = null;
 			try
 			{
-				if (targetAgentIndex >= 0 && Mission.Current?.Agents != null)
+				Mission mission = Mission.Current;
+				var agents = mission?.Agents;
+				if (targetAgentIndex >= 0 && agents != null)
 				{
-					liveAgent = Mission.Current.Agents.FirstOrDefault((Agent a) => a != null && a.Index == targetAgentIndex);
+					liveAgent = agents.FirstOrDefault((Agent a) => a != null && a.Index == targetAgentIndex);
 				}
 				lipSyncSafe = CanAgentParticipateInSceneSpeech(liveAgent) && CanAgentUseSceneLipSync(liveAgent, out lipSyncReason);
 			}
@@ -3465,13 +3482,14 @@ public class ShoutBehavior : CampaignBehaviorBase
 
 	public static bool CanAgentParticipateInSceneSpeechExternal(int agentIndex)
 	{
-		if (agentIndex < 0 || Mission.Current == null)
+		var agents = Mission.Current?.Agents;
+		if (agentIndex < 0 || agents == null)
 		{
 			return false;
 		}
 		try
 		{
-			Agent agent = Mission.Current.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == agentIndex);
+			Agent agent = agents.FirstOrDefault((Agent a) => a != null && a.Index == agentIndex);
 			return CanAgentParticipateInSceneSpeech(agent);
 		}
 		catch
@@ -3638,11 +3656,13 @@ public class ShoutBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			if (agentIndex < 0 || Mission.Current?.Agents == null)
+			Mission mission = Mission.Current;
+			var agents = mission?.Agents;
+			if (agentIndex < 0 || agents == null)
 			{
 				return null;
 			}
-			return Mission.Current.Agents.FirstOrDefault((Agent a) => a != null && a.Index == agentIndex && a.IsActive());
+			return agents.FirstOrDefault((Agent a) => a != null && a.Index == agentIndex && a.IsActive());
 		}
 		catch
 		{
@@ -4638,6 +4658,10 @@ public class ShoutBehavior : CampaignBehaviorBase
 		{
 			return "";
 		}
+		if (IsPrisonBreakRescueMissionActive())
+		{
+			return string.IsNullOrWhiteSpace(sceneFollowControlInstruction) ? "" : sceneFollowControlInstruction.Trim();
+		}
 		StringBuilder stringBuilder = new StringBuilder();
 		AppendSceneUnifiedTargetPromptSection(stringBuilder, sceneSummonTargets, sceneGuideTargets);
 		if (!string.IsNullOrWhiteSpace(sceneSummonClosureInstruction))
@@ -4757,26 +4781,28 @@ public class ShoutBehavior : CampaignBehaviorBase
 
 	private void FlushPendingSceneSummonLaunches(int agentIndex, float additionalDelaySeconds = 0f)
 	{
-		if (agentIndex < 0 || Mission.Current == null)
+		Mission mission = Mission.Current;
+		if (agentIndex < 0 || mission == null)
 		{
 			return;
 		}
 		while (TryDequeuePendingSceneSummonLaunch(agentIndex, out var request))
 		{
-			request.NextStageMissionTime = Mission.Current.CurrentTime + Math.Max(0f, additionalDelaySeconds);
+			request.NextStageMissionTime = mission.CurrentTime + Math.Max(0f, additionalDelaySeconds);
 			LogSceneSummonState("pending_launch_tts_finished", request, ResolveAgentForLocationCharacter(request.SpeakerLocationCharacter), ResolveAgentForLocationCharacter(request.TargetLocationCharacter), "extraDelay=" + additionalDelaySeconds.ToString("F2"), force: true);
 		}
 	}
 
 	private void FlushPendingSceneGuideLaunches(int agentIndex, float additionalDelaySeconds = 0f)
 	{
-		if (agentIndex < 0 || Mission.Current == null)
+		Mission mission = Mission.Current;
+		if (agentIndex < 0 || mission == null)
 		{
 			return;
 		}
 		while (TryDequeuePendingSceneGuideLaunch(agentIndex, out var request))
 		{
-			request.NextStageMissionTime = Mission.Current.CurrentTime + Math.Max(0f, additionalDelaySeconds);
+			request.NextStageMissionTime = mission.CurrentTime + Math.Max(0f, additionalDelaySeconds);
 		}
 	}
 
@@ -4946,6 +4972,12 @@ public class ShoutBehavior : CampaignBehaviorBase
 		if (!CanAgentParticipateInSceneSpeech(agent))
 		{
 			return "";
+		}
+		if (IsPrisonBreakRescuePrisonerAgent(agent))
+		{
+			return IsPrisonBreakPrisonerFollowing(agent)
+				? "【当前正按原版营救跟随玩家】若此人明确让你停下且你同意，系统会记录停止营救跟随。正文只自然说话，不要自己写标签。"
+				: "【营救跟随】若此人明确让你跟随一起逃离且你同意，系统会记录原版营救跟随。正文只自然说话，不要自己写标签。";
 		}
 		if (TryGetSceneSummonConversationSessionForAgentIndex(agent.Index) != null)
 		{
@@ -5662,6 +5694,11 @@ public class ShoutBehavior : CampaignBehaviorBase
 
 	private static bool ShouldSuppressHeroJoinPartyPostprocessForScene(Hero hero)
 	{
+		return IsHeroInPlayerMainPartyForPrompt(hero) || AIConfigHandler.IsHeroImprisonedForHeroJoin(hero);
+	}
+
+	private static bool ShouldSuppressHeroJoinPartyPreprocessForScene(Hero hero)
+	{
 		return IsHeroInPlayerMainPartyForPrompt(hero);
 	}
 
@@ -5895,8 +5932,9 @@ public class ShoutBehavior : CampaignBehaviorBase
 			{
 				return "";
 			}
-			Agent agent = (npc.AgentIndex >= 0 && Mission.Current != null)
-				? Mission.Current.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == npc.AgentIndex)
+			var agents = Mission.Current?.Agents;
+			Agent agent = (npc.AgentIndex >= 0 && agents != null)
+				? agents.FirstOrDefault((Agent a) => a != null && a.Index == npc.AgentIndex)
 				: null;
 			List<string> labels = agent != null ? CollectSceneAgentSelfActionLabels(agent) : new List<string>();
 			if (labels.Count == 0 && IsNativeConversationTargetForActionPrompt(npc, hero))
@@ -9953,7 +9991,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 
 	private void OnMissionStarted(IMission mission)
 	{
-		if (mission == null || Mission.Current == null)
+		Mission currentMission = Mission.Current;
+		if (mission == null || currentMission == null)
 		{
 			return;
 		}
@@ -9998,8 +10037,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		Interlocked.Increment(ref _sceneHistorySessionId);
 		RagWarmupCoordinator.TryStartBackgroundWarmup("mission_start");
 		AIConfigHandler.TryStartBackgroundSemanticWarmup("mission_start");
-		Mission.Current.AddMissionBehavior(new ShoutMissionBehavior(this));
-		Mission.Current.AddMissionBehavior(new FloatingTextMissionView());
+		currentMission.AddMissionBehavior(new ShoutMissionBehavior(this));
+		currentMission.AddMissionBehavior(new FloatingTextMissionView());
 		SubscribeTtsPlaybackEvents();
 		try
 		{
@@ -10188,14 +10227,15 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 										return;
 									}
 								}
-								if (_enableRhubarbSoundEventPlayback && Mission.Current != null && !(Mission.Current.Scene == null))
+								Mission mission = Mission.Current;
+								if (_enableRhubarbSoundEventPlayback && mission?.Scene != null)
 								{
-									Agent agent = Mission.Current.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == agentIndex);
+									Agent agent = mission.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == agentIndex);
 									if (agent != null && agent.IsActive())
 									{
 										CleanupPreviousLipSyncPlaybackForReplacement("OnAudioFileReady.ReplaceExisting");
 								LogLipSyncNativeProbe("CreateEventFromExternalFile.Before", agentIndex, "wav=" + System.IO.Path.GetFileName(wavPath));
-								SoundEvent soundEvent = SoundEvent.CreateEventFromExternalFile("event:/Extra/voiceover", wavPath, Mission.Current.Scene, is3d: false, isBlocking: false);
+								SoundEvent soundEvent = SoundEvent.CreateEventFromExternalFile("event:/Extra/voiceover", wavPath, mission.Scene, is3d: false, isBlocking: false);
 								if (soundEvent == null)
 								{
 									Logger.Log("LipSync", $"[WARN] SoundEvent.CreateEventFromExternalFile 返回 null, agentIndex={agentIndex}");
@@ -10612,7 +10652,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 	{
 		try
 		{
-			return Mission.Current != null && Mission.Current.Scene != null;
+			return Mission.Current?.Scene != null;
 		}
 		catch
 		{
@@ -11276,11 +11316,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			}
 			list = new List<int>(_speakingAgentIndices);
 		}
-		if (Mission.Current == null)
-		{
-			return;
-		}
-		AgentReadOnlyList agents = Mission.Current.Agents;
+		Mission mission = Mission.Current;
+		var agents = mission?.Agents;
 		if (agents == null)
 		{
 			return;
@@ -11660,13 +11697,15 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 	private List<Agent> GetPassiveCooldownGroupAgents(Agent targetAgent)
 	{
 		List<Agent> list = new List<Agent>();
-		if (targetAgent == null || !targetAgent.IsActive() || Mission.Current == null || Agent.Main == null || !Agent.Main.IsActive())
+		Mission mission = Mission.Current;
+		var agents = mission?.Agents;
+		if (targetAgent == null || !targetAgent.IsActive() || agents == null || Agent.Main == null || !Agent.Main.IsActive())
 		{
 			return list;
 		}
 		Vec3 playerPos = Agent.Main.Position;
 		Vec3 playerLook = Agent.Main.LookDirection;
-		foreach (Agent agent in Mission.Current.Agents)
+		foreach (Agent agent in agents)
 		{
 			if (agent == null || agent == Agent.Main || !agent.IsActive() || !agent.IsHuman)
 			{
@@ -12283,13 +12322,14 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 
 	private static bool IsNativeConversationLipSyncAgentIndex(int agentIndex)
 	{
-		if (agentIndex < 0 || Mission.Current?.Agents == null)
+		var agents = Mission.Current?.Agents;
+		if (agentIndex < 0 || agents == null)
 		{
 			return false;
 		}
 		try
 		{
-			Agent agent = Mission.Current.Agents.FirstOrDefault((Agent a) => a != null && a.Index == agentIndex);
+			Agent agent = agents.FirstOrDefault((Agent a) => a != null && a.Index == agentIndex);
 			return IsNativeConversationLipSyncAgent(agent);
 		}
 		catch
@@ -12306,11 +12346,12 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 		try
 		{
-			if (Campaign.Current?.ConversationManager?.IsConversationInProgress != true)
+			var conversationManager = Campaign.Current?.ConversationManager;
+			if (conversationManager?.IsConversationInProgress != true)
 			{
 				return false;
 			}
-			Agent conversationAgent = Campaign.Current.ConversationManager.OneToOneConversationAgent as Agent;
+			Agent conversationAgent = conversationManager.OneToOneConversationAgent as Agent;
 			if (conversationAgent != null && conversationAgent.Index == agent.Index)
 			{
 				return true;
@@ -12330,13 +12371,14 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 	private static bool CanAgentUseSceneLipSyncExternal(int agentIndex, out string reason)
 	{
 		reason = "agent_index_invalid";
-		if (agentIndex < 0 || Mission.Current == null)
+		var agents = Mission.Current?.Agents;
+		if (agentIndex < 0 || agents == null)
 		{
 			return false;
 		}
 		try
 		{
-			Agent agent = Mission.Current.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == agentIndex);
+			Agent agent = agents.FirstOrDefault((Agent a) => a != null && a.Index == agentIndex);
 			if (agent == null)
 			{
 				reason = "agent_missing";
@@ -13219,18 +13261,20 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				return conversationAgent.Index;
 			}
 			CharacterObject character = targetCharacter ?? targetHero?.CharacterObject;
-			if ((character == null && targetHero == null) || Mission.Current?.Agents == null)
+			Mission mission = Mission.Current;
+			var agents = mission?.Agents;
+			if ((character == null && targetHero == null) || agents == null)
 			{
 				return -1;
 			}
-			Agent agent = Mission.Current.Agents.FirstOrDefault((Agent a) => IsValidNativeConversationTargetAgent(a, targetHero, targetCharacter));
+			Agent agent = agents.FirstOrDefault((Agent a) => IsValidNativeConversationTargetAgent(a, targetHero, targetCharacter));
 			if (agent != null)
 			{
 				return agent.Index;
 			}
 			if (targetHero == null)
 			{
-				Agent fallbackAgent = Mission.Current.Agents.FirstOrDefault((Agent a) => IsUsableNativeConversationFallbackAgent(a, targetHero, targetCharacter));
+				Agent fallbackAgent = agents.FirstOrDefault((Agent a) => IsUsableNativeConversationFallbackAgent(a, targetHero, targetCharacter));
 				if (fallbackAgent != null)
 				{
 					Logger.Log("NativeConversation", "[AgentResolve] using fallback mission agent index=" + fallbackAgent.Index + " targetCharacter=" + (targetCharacter?.StringId ?? "nonhero"));
@@ -13697,9 +13741,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			}
 			Hero hero = targetHero ?? targetCharacter?.HeroObject;
 			CharacterObject character = targetCharacter;
-			if ((hero == null || character == null) && targetAgentIndex >= 0 && Mission.Current?.Agents != null)
+			var agents = Mission.Current?.Agents;
+			if ((hero == null || character == null) && targetAgentIndex >= 0 && agents != null)
 			{
-				Agent agent = Mission.Current.Agents.FirstOrDefault((Agent a) => a != null && a.Index == targetAgentIndex && a.IsActive());
+				Agent agent = agents.FirstOrDefault((Agent a) => a != null && a.Index == targetAgentIndex && a.IsActive());
 				CharacterObject agentCharacter = agent?.Character as CharacterObject;
 				if (character == null)
 				{
@@ -14097,11 +14142,12 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 	{
 		try
 		{
-			if (targetAgentIndex < 0 || Mission.Current?.Agents == null)
+			var agents = Mission.Current?.Agents;
+			if (targetAgentIndex < 0 || agents == null)
 			{
 				return new List<ConversationMessage>();
 			}
-			Agent agent = Mission.Current.Agents.FirstOrDefault((Agent a) => a != null && a.Index == targetAgentIndex && a.IsActive());
+			Agent agent = agents.FirstOrDefault((Agent a) => a != null && a.Index == targetAgentIndex && a.IsActive());
 			if (agent == null)
 			{
 				return new List<ConversationMessage>();
@@ -14133,9 +14179,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			}
 			NpcDataPacket resolvedNpc = npc;
 			CharacterObject resolvedCharacter = targetCharacter;
-			if ((resolvedNpc == null || resolvedCharacter == null) && targetAgentIndex >= 0 && Mission.Current?.Agents != null)
+			var agents = Mission.Current?.Agents;
+			if ((resolvedNpc == null || resolvedCharacter == null) && targetAgentIndex >= 0 && agents != null)
 			{
-				Agent agent = Mission.Current.Agents.FirstOrDefault((Agent a) => a != null && a.Index == targetAgentIndex && a.IsActive());
+				Agent agent = agents.FirstOrDefault((Agent a) => a != null && a.Index == targetAgentIndex && a.IsActive());
 				resolvedCharacter ??= agent?.Character as CharacterObject;
 				resolvedNpc ??= ShoutUtils.ExtractNpcData(agent);
 			}
@@ -14169,9 +14216,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			{
 				resolvedHeroes.TryGetValue(targetAgentIndex, out hero);
 			}
-			if (hero == null && targetAgentIndex >= 0 && Mission.Current?.Agents != null)
+			var agents = Mission.Current?.Agents;
+			if (hero == null && targetAgentIndex >= 0 && agents != null)
 			{
-				Agent agent = Mission.Current.Agents.FirstOrDefault((Agent a) => a != null && a.Index == targetAgentIndex && a.IsActive());
+				Agent agent = agents.FirstOrDefault((Agent a) => a != null && a.Index == targetAgentIndex && a.IsActive());
 				hero = (agent?.Character as CharacterObject)?.HeroObject;
 				if (hero == null)
 				{
@@ -14268,7 +14316,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 	{
 		try
 		{
-			if (Mission.Current == null || Mission.Current.Scene == null || !ShoutUtils.IsInValidScene())
+			if (Mission.Current?.Scene == null || !ShoutUtils.IsInValidScene())
 			{
 				return false;
 			}
@@ -15076,9 +15124,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		try
 		{
 			int agentIndex = TryResolveNativeConversationAgentIndex(targetHero, targetCharacter);
-			if (agentIndex >= 0 && Mission.Current?.Agents != null)
+			var agents = Mission.Current?.Agents;
+			if (agentIndex >= 0 && agents != null)
 			{
-				Agent agent = Mission.Current.Agents.FirstOrDefault((Agent a) => a != null && a.Index == agentIndex && a.IsActive());
+				Agent agent = agents.FirstOrDefault((Agent a) => a != null && a.Index == agentIndex && a.IsActive());
 				NpcDataPacket sceneNpc = ShoutUtils.ExtractNpcData(agent);
 				if (sceneNpc != null)
 				{
@@ -15294,7 +15343,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 	{
 		try
 		{
-			if (Mission.Current == null)
+			Mission mission = Mission.Current;
+			if (mission == null)
 			{
 				return false;
 			}
@@ -15310,7 +15360,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				TargetAgentIndex = targetAgentIndex,
 				TargetKey = targetKey,
 				TargetName = targetName,
-				ExecuteAtMissionTime = Mission.Current.CurrentTime + NativeSceneTauntFightDelaySeconds,
+				ExecuteAtMissionTime = mission.CurrentTime + NativeSceneTauntFightDelaySeconds,
 				CreatedUtcTicks = DateTime.UtcNow.Ticks
 			};
 			lock (_pendingNativeSceneTauntFightLock)
@@ -15339,7 +15389,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		PendingNativeSceneTauntFight pending = null;
 		try
 		{
-			if (Mission.Current == null)
+			Mission mission = Mission.Current;
+			if (mission == null)
 			{
 				return;
 			}
@@ -15350,7 +15401,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					return;
 				}
 				double elapsedRealSeconds = new TimeSpan(Math.Max(0L, DateTime.UtcNow.Ticks - _pendingNativeSceneTauntFight.CreatedUtcTicks)).TotalSeconds;
-				bool missionTimeElapsed = Mission.Current.CurrentTime >= _pendingNativeSceneTauntFight.ExecuteAtMissionTime;
+				bool missionTimeElapsed = mission.CurrentTime >= _pendingNativeSceneTauntFight.ExecuteAtMissionTime;
 				bool realTimeElapsed = elapsedRealSeconds >= NativeSceneTauntFightDelaySeconds;
 				if (!missionTimeElapsed && !realTimeElapsed)
 				{
@@ -15418,11 +15469,13 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 
 	private bool TryExecuteNativeSceneMechanismActionTagsDirectly(NpcDataPacket npc, List<SceneSummonPromptTarget> sceneSummonTargets, List<SceneGuidePromptTarget> sceneGuideTargets, string tags)
 	{
-		if (npc == null || string.IsNullOrWhiteSpace(tags) || Mission.Current == null)
+		Mission mission = Mission.Current;
+		var agents = mission?.Agents;
+		if (npc == null || string.IsNullOrWhiteSpace(tags) || agents == null)
 		{
 			return false;
 		}
-		Agent agent = Mission.Current.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == npc.AgentIndex);
+		Agent agent = agents.FirstOrDefault((Agent a) => a != null && a.Index == npc.AgentIndex);
 		if (!CanAgentParticipateInSceneSpeech(agent) || agent == Agent.Main)
 		{
 			Logger.Log("ShoutBehavior", "[NativeConversation] scene mechanism direct skip agent=" + (npc?.AgentIndex ?? -1) + " reason=agent_unavailable tags=" + ((tags ?? "").Replace("\r", "\\r").Replace("\n", "\\n")));
@@ -15613,9 +15666,9 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				LogNativeActionStep("meeting_duel_before", targetHero, targetCharacter, content);
 				LordEncounterBehavior.TryProcessMeetingTauntAction(targetHero, ref content, out var escalatedToBattle);
 				LordEncounterBehavior.TryConsumeMeetingPlayerReleaseTag(targetHero, ref content, out var meetingReleaseTriggered);
-				if (meetingReleaseTriggered && string.IsNullOrWhiteSpace(content))
+				if (meetingReleaseTriggered)
 				{
-					LordEncounterBehavior.TryExecuteMeetingPlayerRelease(targetHero, "native_conversation_release_tag_no_speech");
+					LordEncounterBehavior.ScheduleNativeConversationMeetingPlayerRelease(targetHero, "native_conversation_release_tag");
 				}
 				if (!escalatedToBattle && !meetingReleaseTriggered && !nativeSceneTauntEscalated && Regex.IsMatch(content, "\\[ACTION:DUEL\\]", RegexOptions.IgnoreCase))
 				{
@@ -16153,7 +16206,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		case "hero_join_party":
 			if (hero != null)
 			{
-				return !ShouldSuppressHeroJoinPartyPostprocessForScene(hero);
+				return !ShouldSuppressHeroJoinPartyPreprocessForScene(hero);
 			}
 			return targetCharacter != null && targetCharacter != CharacterObject.PlayerCharacter;
 		default:
@@ -16441,12 +16494,14 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		bool lordsHallPostprocessSelected = lordsHallRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "lords_hall_access");
 		bool meetingReleasePostprocessSelected = meetingReleaseRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "encounter_release_player");
 		bool vanillaIssuePostprocessSelected = vanillaIssueRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "vanilla_issue");
-		bool heroJoinPartyPostprocessSelected = heroJoinPartyRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "hero_join_party");
+		bool heroJoinPartyPostprocessSelected = (heroJoinPartyRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "hero_join_party"))
+			&& !ShouldSuppressHeroJoinPartyPostprocessForScene(nativePostprocessHero);
 		bool sceneMechanismPostprocessSelected = (sceneMechanismRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "scene_mechanism_actions")) && !AIConfigHandler.ShouldExcludeSceneMoveRuleForCurrentMission();
 		bool partyTransferPostprocessSelected = partyTransferRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "party_transfer");
 		bool settlementTransferPostprocessSelected = settlementTransferRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "settlement_transfer");
 		bool voteDealPostprocessSelected = voteDealRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "vote_deal");
-		bool diplomacyPostprocessSelected = diplomacyRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "diplomacy");
+		bool diplomacyPostprocessSelected = (diplomacyRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "diplomacy"))
+			&& DiplomacyBehavior.CanUseDiplomacyActionPostprocessForExternal(targetHero, targetCharacter);
 		bool worldMapPartyCommandPostprocessSelected = worldMapPartyCommandRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "worldmap_party_command");
 		bool marriagePostprocessSelected = HasPreprocessRuleHit(postprocessPreprocessHits, "marriage");
 		bool siegeInterventionPostprocessSelected = AfGcczShoutBridge.ShouldContinuePostprocess(siegeInterventionRuleInjected, postprocessPreprocessHits);
@@ -18656,11 +18711,19 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			meetingReleaseRuleInjected = meetingReleaseRuleInjected || HasPreprocessRuleHit(preprocessRuleHits, "encounter_release_player");
 			vanillaIssueRuleInjected = vanillaIssueRuleInjected || HasPreprocessRuleHit(preprocessRuleHits, "vanilla_issue");
 			heroJoinPartyRuleInjected = heroJoinPartyRuleInjected || HasPreprocessRuleHit(preprocessRuleHits, "hero_join_party");
+			if (heroJoinPartyRuleInjected && ShouldSuppressHeroJoinPartyPostprocessForScene(targetHero ?? targetCharacter?.HeroObject))
+			{
+				heroJoinPartyRuleInjected = false;
+			}
 			sceneMechanismRuleInjected = sceneMechanismRuleInjected || HasPreprocessRuleHit(preprocessRuleHits, "scene_mechanism_actions");
 			partyTransferRuleInjected = partyTransferRuleInjected || HasPreprocessRuleHit(preprocessRuleHits, "party_transfer");
 			settlementTransferRuleInjected = settlementTransferRuleInjected || HasPreprocessRuleHit(preprocessRuleHits, "settlement_transfer");
 			voteDealRuleInjected = voteDealRuleInjected || HasPreprocessRuleHit(preprocessRuleHits, "vote_deal");
 			diplomacyRuleInjected = diplomacyRuleInjected || HasPreprocessRuleHit(preprocessRuleHits, "diplomacy");
+			if (diplomacyRuleInjected && !DiplomacyBehavior.CanUseDiplomacyActionPostprocessForExternal(targetHero, targetCharacter))
+			{
+				diplomacyRuleInjected = false;
+			}
 			bool proposeAgendaRuleInjected = HasPreprocessRuleHit(preprocessRuleHits, "propose_agenda");
 			worldMapPartyCommandRuleInjected = worldMapPartyCommandRuleInjected || HasPreprocessRuleHit(preprocessRuleHits, "worldmap_party_command");
 			bool nobleGatheringRuleInjected = HasPreprocessRuleHit(preprocessRuleHits, "noble_gathering");
@@ -18966,15 +19029,16 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		try
 		{
 			Agent agent = null;
-			if (Mission.Current != null)
+			var agents = Mission.Current?.Agents;
+			if (agents != null)
 			{
 				if (targetAgentIndex >= 0)
 				{
-					agent = Mission.Current.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == targetAgentIndex);
+					agent = agents.FirstOrDefault((Agent a) => a != null && a.Index == targetAgentIndex);
 				}
 				if (agent == null)
 				{
-					agent = Mission.Current.Agents?.FirstOrDefault((Agent a) => a != null && targetHero != null && a.Character == targetHero.CharacterObject);
+					agent = agents.FirstOrDefault((Agent a) => a != null && targetHero != null && a.Character == targetHero.CharacterObject);
 				}
 			}
 			if (targetHero == null)
@@ -20710,6 +20774,31 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		Agent agent = (num >= 0) ? Mission.Current?.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == num) : null;
 		bool flag2 = agent != null && IsAgentFollowingPlayerBySceneCommand(agent);
 		HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		if (IsPrisonBreakRescueMissionActive())
+		{
+			if (!IsPrisonBreakRescuePrisonerAgent(agent))
+			{
+				return list;
+			}
+			foreach (PostprocessRuleEntry guardrailRulePostprocessRule in guardrailRulePostprocessRules)
+			{
+				string text = (guardrailRulePostprocessRule?.Tag ?? "").Trim();
+				string text2 = guardrailRulePostprocessRule?.Description ?? "";
+				if (string.Equals(text, "[ACTION:SCENE_FOLLOW_PLAYER]", StringComparison.OrdinalIgnoreCase))
+				{
+					if (!flag2)
+					{
+						AddSceneMechanismPostprocessRule(list, hashSet, text, text2);
+					}
+					continue;
+				}
+				if (string.Equals(text, "[ACTION:SCENE_STOP_FOLLOW]", StringComparison.OrdinalIgnoreCase) && flag2)
+				{
+					AddSceneMechanismPostprocessRule(list, hashSet, text, text2);
+				}
+			}
+			return list;
+		}
 		foreach (PostprocessRuleEntry guardrailRulePostprocessRule in guardrailRulePostprocessRules)
 		{
 			string text = (guardrailRulePostprocessRule?.Tag ?? "").Trim();
@@ -21332,6 +21421,14 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		bool proposeAgendaRuleInjected = HasPreprocessRuleHit(preprocessRuleHits, "propose_agenda");
 		kingdomVassalageRuleInjected = kingdomVassalageRuleInjected || kingdomVassalagePreprocessHit;
 		kingdomAnnexationRuleInjected = kingdomAnnexationRuleInjected || kingdomAnnexationPreprocessHit;
+		if (heroJoinPartyRuleInjected && ShouldSuppressHeroJoinPartyPostprocessForScene(targetHero ?? targetCharacter?.HeroObject))
+		{
+			heroJoinPartyRuleInjected = false;
+		}
+		if (diplomacyRuleInjected && !DiplomacyBehavior.CanUseDiplomacyActionPostprocessForExternal(targetHero, targetCharacter))
+		{
+			diplomacyRuleInjected = false;
+		}
 		Logger.Log("ShoutBehavior", "[UnifiedPostprocess] setup chain=" + resolvedChainName
 			+ " preprocessHits=" + ((preprocessRuleHits == null || preprocessRuleHits.Count == 0) ? "(none)" : string.Join(",", preprocessRuleHits))
 			+ " kingdom_vassalage_hit=" + kingdomVassalagePreprocessHit
@@ -23500,12 +23597,14 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					bool lordsHallPostprocessSelected = lordsHallRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "lords_hall_access");
 					bool meetingReleasePostprocessSelected = meetingReleaseRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "encounter_release_player");
 					bool vanillaIssuePostprocessSelected = vanillaIssueRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "vanilla_issue");
-					bool heroJoinPartyPostprocessSelected = heroJoinPartyRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "hero_join_party");
+					bool heroJoinPartyPostprocessSelected = (heroJoinPartyRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "hero_join_party"))
+						&& !ShouldSuppressHeroJoinPartyPostprocessForScene(speakingHero);
 					bool sceneMechanismPostprocessSelected = (sceneMechanismRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "scene_mechanism_actions")) && !AIConfigHandler.ShouldExcludeSceneMoveRuleForCurrentMission();
 					bool partyTransferPostprocessSelected = partyTransferRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "party_transfer");
 					bool settlementTransferPostprocessSelected = settlementTransferRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "settlement_transfer");
 					bool voteDealPostprocessSelected = voteDealRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "vote_deal");
-					bool diplomacyPostprocessSelected = diplomacyRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "diplomacy");
+					bool diplomacyPostprocessSelected = (diplomacyRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "diplomacy"))
+						&& DiplomacyBehavior.CanUseDiplomacyActionPostprocessForExternal(speakingHero, npcCharacter);
 					bool worldMapPartyCommandPostprocessSelected = worldMapPartyCommandRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "worldmap_party_command");
 					bool nobleGatheringPostprocessSelected = HasPreprocessRuleHit(postprocessPreprocessHits, "noble_gathering");
 					bool marriagePostprocessSelected = HasPreprocessRuleHit(postprocessPreprocessHits, "marriage");
@@ -23568,7 +23667,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 
 	private void HoldSceneConversationParticipants(List<NpcDataPacket> participants)
 	{
-		if (ShouldSuppressSceneConversationControlForMeeting() || participants == null || participants.Count <= 1 || Mission.Current == null)
+		var agents = Mission.Current?.Agents;
+		if (ShouldSuppressSceneConversationControlForMeeting() || participants == null || participants.Count <= 1 || agents == null)
 		{
 			return;
 		}
@@ -23580,7 +23680,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			{
 				continue;
 			}
-			Agent agent = Mission.Current.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == npcDataPacket.AgentIndex);
+			Agent agent = agents.FirstOrDefault((Agent a) => a != null && a.Index == npcDataPacket.AgentIndex);
 			if (agent != null && agent.IsActive() && agent.IsHuman && agent != Agent.Main)
 			{
 				AddAgentToStareList(agent, interruptCurrentUse: false);
@@ -25045,14 +25145,16 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 
 	private static Agent ResolveAgentForLocationCharacter(LocationCharacter locationCharacter)
 	{
-		if (locationCharacter == null || Mission.Current?.Agents == null)
+		Mission mission = Mission.Current;
+		var agents = mission?.Agents;
+		if (locationCharacter == null || agents == null)
 		{
 			return null;
 		}
 		IAgentOriginBase agentOrigin = locationCharacter.AgentOrigin;
 		if (agentOrigin != null)
 		{
-			Agent agent = Mission.Current.Agents.FirstOrDefault((Agent a) => a != null && a.Origin == agentOrigin);
+			Agent agent = agents.FirstOrDefault((Agent a) => a != null && a.Origin == agentOrigin);
 			if (agent != null)
 			{
 				return agent;
@@ -25063,7 +25165,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			return null;
 		}
-		return Mission.Current.Agents.FirstOrDefault((Agent a) => a != null && a.Character == character);
+		return agents.FirstOrDefault((Agent a) => a != null && a.Character == character);
 	}
 
 	private static Passage FindCurrentScenePassageToLocation(Location targetLocation)
@@ -25087,11 +25189,13 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 
 	private Agent ResolveSceneSummonDoorProxyAgent(ActiveSceneSummonRequest request)
 	{
-		if (request == null || request.DoorProxyAgentIndex < 0 || Mission.Current?.Agents == null)
+		Mission mission = Mission.Current;
+		var agents = mission?.Agents;
+		if (request == null || request.DoorProxyAgentIndex < 0 || agents == null)
 		{
 			return null;
 		}
-		Agent agent = Mission.Current.Agents.FirstOrDefault((Agent a) => a != null && a.Index == request.DoorProxyAgentIndex);
+		Agent agent = agents.FirstOrDefault((Agent a) => a != null && a.Index == request.DoorProxyAgentIndex);
 		if (agent == null || !agent.IsActive())
 		{
 			request.DoorProxyAgentIndex = -1;
@@ -25107,7 +25211,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			return agent;
 		}
-		if (request == null || passage == null || Mission.Current?.Scene == null)
+		Mission mission = Mission.Current;
+		if (request == null || passage == null || mission?.Scene == null)
 		{
 			return null;
 		}
@@ -25121,7 +25226,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			return null;
 		}
 		Vec3 passageWaitingPosition = GetPassageWaitingPosition(passage);
-		passageWaitingPosition.z = Mission.Current.Scene.GetGroundHeightAtPosition(passageWaitingPosition, BodyFlags.CommonCollisionExcludeFlags);
+		passageWaitingPosition.z = mission.Scene.GetGroundHeightAtPosition(passageWaitingPosition, BodyFlags.CommonCollisionExcludeFlags);
 		Vec3 vec3 = passageWaitingPosition;
 		vec3.z -= 25f;
 		Vec2 vec = Vec2.Forward;
@@ -25152,7 +25257,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			try
 			{
-				equipment = (Mission.Current.DoesMissionRequireCivilianEquipment ? characterObject.FirstCivilianEquipment : characterObject.FirstBattleEquipment)?.Clone(false);
+				equipment = (mission.DoesMissionRequireCivilianEquipment ? characterObject.FirstCivilianEquipment : characterObject.FirstBattleEquipment)?.Clone(false);
 			}
 			catch
 			{
@@ -25163,17 +25268,17 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			team = speakerAgent.Team;
 		}
-		else if (IsUsableTeam(Mission.Current.PlayerTeam))
+		else if (IsUsableTeam(mission.PlayerTeam))
 		{
-			team = Mission.Current.PlayerTeam;
+			team = mission.PlayerTeam;
 		}
-		else if (IsUsableTeam(Mission.Current.DefenderTeam))
+		else if (IsUsableTeam(mission.DefenderTeam))
 		{
-			team = Mission.Current.DefenderTeam;
+			team = mission.DefenderTeam;
 		}
-		else if (IsUsableTeam(Mission.Current.AttackerTeam))
+		else if (IsUsableTeam(mission.AttackerTeam))
 		{
-			team = Mission.Current.AttackerTeam;
+			team = mission.AttackerTeam;
 		}
 		if (!IsUsableTeam(team))
 		{
@@ -25189,7 +25294,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			{
 				agentBuildData = agentBuildData.Equipment(equipment);
 			}
-			Agent agent2 = Mission.Current.SpawnAgent(agentBuildData, false);
+			Agent agent2 = mission.SpawnAgent(agentBuildData, false);
 			if (agent2 == null)
 			{
 				return null;
@@ -25284,11 +25389,13 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 
 	private Agent ResolveSceneGuideDoorProxyAgent(ActiveSceneGuideRequest request)
 	{
-		if (request == null || request.DoorProxyAgentIndex < 0 || Mission.Current?.Agents == null)
+		Mission mission = Mission.Current;
+		var agents = mission?.Agents;
+		if (request == null || request.DoorProxyAgentIndex < 0 || agents == null)
 		{
 			return null;
 		}
-		Agent agent = Mission.Current.Agents.FirstOrDefault((Agent a) => a != null && a.Index == request.DoorProxyAgentIndex);
+		Agent agent = agents.FirstOrDefault((Agent a) => a != null && a.Index == request.DoorProxyAgentIndex);
 		if (agent == null || !agent.IsActive())
 		{
 			request.DoorProxyAgentIndex = -1;
@@ -25304,7 +25411,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			return agent;
 		}
-		if (request == null || passage == null || Mission.Current?.Scene == null)
+		Mission mission = Mission.Current;
+		if (request == null || passage == null || mission?.Scene == null)
 		{
 			return null;
 		}
@@ -25318,7 +25426,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			return null;
 		}
 		Vec3 passageWaitingPosition = GetPassageWaitingPosition(passage);
-		passageWaitingPosition.z = Mission.Current.Scene.GetGroundHeightAtPosition(passageWaitingPosition, BodyFlags.CommonCollisionExcludeFlags);
+		passageWaitingPosition.z = mission.Scene.GetGroundHeightAtPosition(passageWaitingPosition, BodyFlags.CommonCollisionExcludeFlags);
 		Vec3 vec3 = passageWaitingPosition;
 		vec3.z -= 25f;
 		Vec2 vec = Vec2.Forward;
@@ -25349,7 +25457,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			try
 			{
-				equipment = (Mission.Current.DoesMissionRequireCivilianEquipment ? characterObject.FirstCivilianEquipment : characterObject.FirstBattleEquipment)?.Clone(false);
+				equipment = (mission.DoesMissionRequireCivilianEquipment ? characterObject.FirstCivilianEquipment : characterObject.FirstBattleEquipment)?.Clone(false);
 			}
 			catch
 			{
@@ -25360,17 +25468,17 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			team = guideAgent.Team;
 		}
-		else if (IsUsableTeam(Mission.Current.PlayerTeam))
+		else if (IsUsableTeam(mission.PlayerTeam))
 		{
-			team = Mission.Current.PlayerTeam;
+			team = mission.PlayerTeam;
 		}
-		else if (IsUsableTeam(Mission.Current.DefenderTeam))
+		else if (IsUsableTeam(mission.DefenderTeam))
 		{
-			team = Mission.Current.DefenderTeam;
+			team = mission.DefenderTeam;
 		}
-		else if (IsUsableTeam(Mission.Current.AttackerTeam))
+		else if (IsUsableTeam(mission.AttackerTeam))
 		{
-			team = Mission.Current.AttackerTeam;
+			team = mission.AttackerTeam;
 		}
 		if (!IsUsableTeam(team))
 		{
@@ -25386,7 +25494,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			{
 				agentBuildData = agentBuildData.Equipment(equipment);
 			}
-			Agent agent2 = Mission.Current.SpawnAgent(agentBuildData, false);
+			Agent agent2 = mission.SpawnAgent(agentBuildData, false);
 			if (agent2 == null)
 			{
 				return null;
@@ -25481,11 +25589,13 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 
 	private Agent ResolveSceneReturnDoorProxyAgent(SceneReturnJob job)
 	{
-		if (job == null || job.DoorProxyAgentIndex < 0 || Mission.Current?.Agents == null)
+		Mission mission = Mission.Current;
+		var agents = mission?.Agents;
+		if (job == null || job.DoorProxyAgentIndex < 0 || agents == null)
 		{
 			return null;
 		}
-		Agent agent = Mission.Current.Agents.FirstOrDefault((Agent a) => a != null && a.Index == job.DoorProxyAgentIndex);
+		Agent agent = agents.FirstOrDefault((Agent a) => a != null && a.Index == job.DoorProxyAgentIndex);
 		if (agent == null || !agent.IsActive())
 		{
 			job.DoorProxyAgentIndex = -1;
@@ -25501,7 +25611,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			return agent;
 		}
-		if (job == null || passage == null || Mission.Current?.Scene == null)
+		Mission mission = Mission.Current;
+		if (job == null || passage == null || mission?.Scene == null)
 		{
 			return null;
 		}
@@ -25515,7 +25626,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			return null;
 		}
 		Vec3 passageWaitingPosition = GetPassageWaitingPosition(passage);
-		passageWaitingPosition.z = Mission.Current.Scene.GetGroundHeightAtPosition(passageWaitingPosition, BodyFlags.CommonCollisionExcludeFlags);
+		passageWaitingPosition.z = mission.Scene.GetGroundHeightAtPosition(passageWaitingPosition, BodyFlags.CommonCollisionExcludeFlags);
 		Vec3 vec3 = passageWaitingPosition;
 		vec3.z -= 25f;
 		Vec2 vec = Vec2.Forward;
@@ -25546,7 +25657,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			try
 			{
-				equipment = (Mission.Current.DoesMissionRequireCivilianEquipment ? characterObject.FirstCivilianEquipment : characterObject.FirstBattleEquipment)?.Clone(false);
+				equipment = (mission.DoesMissionRequireCivilianEquipment ? characterObject.FirstCivilianEquipment : characterObject.FirstBattleEquipment)?.Clone(false);
 			}
 			catch
 			{
@@ -25557,17 +25668,17 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			team = movingAgent.Team;
 		}
-		else if (IsUsableTeam(Mission.Current.PlayerTeam))
+		else if (IsUsableTeam(mission.PlayerTeam))
 		{
-			team = Mission.Current.PlayerTeam;
+			team = mission.PlayerTeam;
 		}
-		else if (IsUsableTeam(Mission.Current.DefenderTeam))
+		else if (IsUsableTeam(mission.DefenderTeam))
 		{
-			team = Mission.Current.DefenderTeam;
+			team = mission.DefenderTeam;
 		}
-		else if (IsUsableTeam(Mission.Current.AttackerTeam))
+		else if (IsUsableTeam(mission.AttackerTeam))
 		{
-			team = Mission.Current.AttackerTeam;
+			team = mission.AttackerTeam;
 		}
 		if (!IsUsableTeam(team))
 		{
@@ -25583,7 +25694,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			{
 				agentBuildData = agentBuildData.Equipment(equipment);
 			}
-			Agent agent2 = Mission.Current.SpawnAgent(agentBuildData, false);
+			Agent agent2 = mission.SpawnAgent(agentBuildData, false);
 			if (agent2 == null)
 			{
 				return null;
@@ -26485,7 +26596,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 	private Vec3 GetPassageWaitingPosition(Passage passage)
 	{
 		Vec3 result;
-		if (Mission.Current?.Scene == null || passage == null)
+		var scene = Mission.Current?.Scene;
+		if (scene == null || passage == null)
 		{
 			return Vec3.Zero;
 		}
@@ -26501,7 +26613,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					vec.Normalize();
 					result -= vec * 0.35f;
 				}
-				result.z = Mission.Current.Scene.GetGroundHeightAtPosition(result, BodyFlags.CommonCollisionExcludeFlags);
+				result.z = scene.GetGroundHeightAtPosition(result, BodyFlags.CommonCollisionExcludeFlags);
 				return result;
 			}
 		}
@@ -26511,7 +26623,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		try
 		{
 			result = passage.GameEntity.GlobalPosition;
-			result.z = Mission.Current.Scene.GetGroundHeightAtPosition(result, BodyFlags.CommonCollisionExcludeFlags);
+			result.z = scene.GetGroundHeightAtPosition(result, BodyFlags.CommonCollisionExcludeFlags);
 			return result;
 		}
 		catch
@@ -26522,7 +26634,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 
 	private bool NavigateAgentToWorldPosition(Agent agent, Vec3 targetPosition, float rangeThreshold = 0.8f, bool doNotRun = false)
 	{
-		if (agent == null || !agent.IsActive() || Mission.Current?.Scene == null)
+		var scene = Mission.Current?.Scene;
+		if (agent == null || !agent.IsActive() || scene == null)
 		{
 			return false;
 		}
@@ -26535,14 +26648,14 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			{
 				rotationInRadians = vec.RotationInRadians;
 			}
-			targetPosition.z = Mission.Current.Scene.GetGroundHeightAtPosition(targetPosition, BodyFlags.CommonCollisionExcludeFlags);
+			targetPosition.z = scene.GetGroundHeightAtPosition(targetPosition, BodyFlags.CommonCollisionExcludeFlags);
 			CampaignAgentComponent component = agent.GetComponent<CampaignAgentComponent>();
 			AgentNavigator agentNavigator = component?.AgentNavigator ?? component?.CreateAgentNavigator();
 			if (agentNavigator == null)
 			{
 				return false;
 			}
-			WorldPosition worldPosition = new WorldPosition(Mission.Current.Scene, targetPosition);
+			WorldPosition worldPosition = new WorldPosition(scene, targetPosition);
 			WorldFrame targetWorldFrame = new WorldFrame(Mat3.CreateMat3WithForward(Vec3.Forward), worldPosition);
 			try
 			{
@@ -26572,7 +26685,9 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 
 	private void UpdateSceneCommandGhostMovement()
 	{
-		if (Mission.Current == null || Mission.Current.Scene == null || Agent.Main == null || !Agent.Main.IsActive())
+		Mission mission = Mission.Current;
+		var agents = mission?.Agents;
+		if (mission?.Scene == null || agents == null || Agent.Main == null || !Agent.Main.IsActive())
 		{
 			_sceneGhostWalkStates.Clear();
 			return;
@@ -26587,7 +26702,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		foreach (KeyValuePair<int, Vec3> target in targets)
 		{
 			activeAgentIndices.Add(target.Key);
-			Agent agent = Mission.Current.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == target.Key);
+			Agent agent = agents.FirstOrDefault((Agent a) => a != null && a.Index == target.Key);
 			ApplySceneGhostMovementIfStuck(agent, target.Value);
 		}
 		foreach (int agentIndex in _sceneGhostWalkStates.Keys.Where((int x) => !activeAgentIndices.Contains(x)).ToList())
@@ -26793,7 +26908,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 
 	private void ApplySceneGhostMovementIfStuck(Agent agent, Vec3 targetPosition)
 	{
-		if (!CanAgentUseSceneGhostMovement(agent) || Mission.Current == null || Mission.Current.Scene == null)
+		Mission mission = Mission.Current;
+		if (!CanAgentUseSceneGhostMovement(agent) || mission?.Scene == null)
 		{
 			return;
 		}
@@ -26802,7 +26918,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			_sceneGhostWalkStates.Remove(agent.Index);
 			return;
 		}
-		float currentTime = Mission.Current.CurrentTime;
+		float currentTime = mission.CurrentTime;
 		float distanceSquared = agent.Position.DistanceSquared(targetPosition);
 		if (distanceSquared < SCENE_GHOST_MIN_TARGET_DISTANCE_SQ)
 		{
@@ -26867,7 +26983,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 
 	private bool TrySceneGhostStep(Agent agent, Vec3 targetPosition)
 	{
-		if (!CanAgentUseSceneGhostMovement(agent) || IsSceneGhostTeleportDisabledNearPlayer(agent) || Mission.Current?.Scene == null)
+		var scene = Mission.Current?.Scene;
+		if (!CanAgentUseSceneGhostMovement(agent) || IsSceneGhostTeleportDisabledNearPlayer(agent) || scene == null)
 		{
 			return false;
 		}
@@ -26885,7 +27002,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				stepDistance = length;
 			}
 			Vec3 position = agent.Position + vec.ToVec3() * stepDistance;
-			position.z = Mission.Current.Scene.GetGroundHeightAtPosition(position, BodyFlags.CommonCollisionExcludeFlags);
+			position.z = scene.GetGroundHeightAtPosition(position, BodyFlags.CommonCollisionExcludeFlags);
 			agent.TeleportToPosition(position);
 			try
 			{
@@ -27121,6 +27238,12 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			return false;
 		}
+		if (IsPrisonBreakRescueMissionActive())
+		{
+			content = SceneSummonActionTagRegex.Replace(content, "").Trim();
+			Logger.Log("SceneFollow", "prison_break_unsupported_scene_summon_ignored agent=" + (agent?.Index ?? -1));
+			return false;
+		}
 		content = SceneSummonActionTagRegex.Replace(content, "").Trim();
 		HashSet<LocationCharacter> hashSet = new HashSet<LocationCharacter>();
 		List<SceneSummonPromptTarget> list = new List<SceneSummonPromptTarget>();
@@ -27232,6 +27355,12 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		Match match = SceneGuideActionTagRegex.Match(content);
 		if (!match.Success)
 		{
+			return false;
+		}
+		if (IsPrisonBreakRescueMissionActive())
+		{
+			content = SceneGuideActionTagRegex.Replace(content, "").Trim();
+			Logger.Log("SceneFollow", "prison_break_unsupported_scene_guide_ignored agent=" + (agent?.Index ?? -1));
 			return false;
 		}
 		content = SceneGuideActionTagRegex.Replace(content, "").Trim();
@@ -27433,9 +27562,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			{
 				return false;
 			}
-			if (Mission.Current?.Scene != null)
+			var scene = Mission.Current?.Scene;
+			if (scene != null)
 			{
-				targetPosition.z = Mission.Current.Scene.GetGroundHeightAtPosition(targetPosition, BodyFlags.CommonCollisionExcludeFlags);
+				targetPosition.z = scene.GetGroundHeightAtPosition(targetPosition, BodyFlags.CommonCollisionExcludeFlags);
 			}
 			EscortAgentBehavior escortAgentBehavior = behaviorGroup.GetBehavior<EscortAgentBehavior>() ?? behaviorGroup.AddBehavior<EscortAgentBehavior>();
 			behaviorGroup.SetScriptedBehavior<EscortAgentBehavior>();
@@ -27623,7 +27753,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 
 	private void HoldSceneGuideAgentForArrivalSpeech(Agent agent)
 	{
-		if (!CanAgentParticipateInSceneSpeech(agent) || Mission.Current == null)
+		Mission mission = Mission.Current;
+		if (!CanAgentParticipateInSceneSpeech(agent) || mission == null)
 		{
 			return;
 		}
@@ -27632,7 +27763,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			AgentIndex = agent.Index,
 			AnchorPosition = agent.Position,
-			ExpiresAtMissionTime = Mission.Current.CurrentTime + SCENE_GUIDE_ARRIVAL_HOLD_FAILSAFE_SECONDS
+			ExpiresAtMissionTime = mission.CurrentTime + SCENE_GUIDE_ARRIVAL_HOLD_FAILSAFE_SECONDS
 		};
 		_sceneGuideArrivalHolds[agent.Index] = hold;
 		try
@@ -27771,16 +27902,18 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 
 	private void UpdateSceneGuideArrivalHolds()
 	{
-		if (Mission.Current == null || _sceneGuideArrivalHolds.Count == 0)
+		Mission mission = Mission.Current;
+		var agents = mission?.Agents;
+		if (agents == null || _sceneGuideArrivalHolds.Count == 0)
 		{
 			return;
 		}
-		float currentTime = Mission.Current.CurrentTime;
+		float currentTime = mission.CurrentTime;
 		List<int> list = null;
 		foreach (KeyValuePair<int, SceneGuideArrivalHold> sceneGuideArrivalHold in _sceneGuideArrivalHolds)
 		{
 			SceneGuideArrivalHold value = sceneGuideArrivalHold.Value;
-			Agent agent = Mission.Current.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == sceneGuideArrivalHold.Key && a.IsActive());
+			Agent agent = agents.FirstOrDefault((Agent a) => a != null && a.Index == sceneGuideArrivalHold.Key && a.IsActive());
 			if (value == null || !CanAgentParticipateInSceneSpeech(agent) || currentTime >= value.ExpiresAtMissionTime)
 			{
 				if (list == null)
@@ -27850,9 +27983,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 
 	private ActiveSceneSummonRequest BuildSceneSummonRequest(SceneSummonBatchState batch, Agent speakerAgent, SceneSummonPromptTarget target, bool keepMessengerWithTarget, bool isInitialRequest)
 	{
+		Mission mission = Mission.Current;
 		LocationComplex locationComplex = LocationComplex.Current;
 		Location location = CampaignMission.Current?.Location;
-		if (batch == null || speakerAgent == null || !speakerAgent.IsActive() || target == null || target.LocationCharacter == null || locationComplex == null || location == null)
+		if (batch == null || speakerAgent == null || !speakerAgent.IsActive() || target == null || target.LocationCharacter == null || locationComplex == null || location == null || mission == null)
 		{
 			return null;
 		}
@@ -27896,8 +28030,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				PassageHopLocation = location,
 				OriginalSpeakerPosition = batch.OriginalSpeakerPosition ?? speakerAgent.Position,
 				OriginalTargetPosition = agent.Position,
-				NextStageMissionTime = Mission.Current.CurrentTime,
-				ArrivalSpeechDeadlineMissionTime = Mission.Current.CurrentTime + 6f,
+				NextStageMissionTime = mission.CurrentTime,
+				ArrivalSpeechDeadlineMissionTime = mission.CurrentTime + 6f,
 				Stage = SceneSummonStage.PendingLaunch,
 				PendingLaunchStage = SceneSummonStage.MessengerToTarget,
 				LaunchAnnouncement = (isInitialRequest ? (batch.SpeakerName + " 去叫" + text2 + "了。") : null),
@@ -27906,7 +28040,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			LogSceneSummonState(isInitialRequest ? "start_same_scene" : "start_same_scene_followup", activeSceneSummonRequest, speakerAgent, agent, "pathLen=1 keepMessenger=" + keepMessengerWithTarget, force: true);
 			if (!isInitialRequest)
 			{
-				activeSceneSummonRequest.NextStageMissionTime = Mission.Current.CurrentTime + 0.25f;
+				activeSceneSummonRequest.NextStageMissionTime = mission.CurrentTime + 0.25f;
 			}
 			return activeSceneSummonRequest;
 		}
@@ -27933,8 +28067,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			OriginalSpeakerPosition = batch.OriginalSpeakerPosition ?? speakerAgent.Position,
 			OriginalTargetPosition = null,
 			MessengerDoorPassage = currentScenePassageToLocation,
-			NextStageMissionTime = Mission.Current.CurrentTime + (isInitialRequest ? SCENE_SUMMON_DELAY_SECONDS : 0.25f),
-			ArrivalSpeechDeadlineMissionTime = Mission.Current.CurrentTime + 8f,
+			NextStageMissionTime = mission.CurrentTime + (isInitialRequest ? SCENE_SUMMON_DELAY_SECONDS : 0.25f),
+			ArrivalSpeechDeadlineMissionTime = mission.CurrentTime + 8f,
 			Stage = SceneSummonStage.PendingLaunch,
 			PendingLaunchStage = SceneSummonStage.MessengerToDoor,
 			LaunchAnnouncement = (isInitialRequest ? (batch.SpeakerName + " 去帮你叫" + text2 + "了。") : null),
@@ -27946,11 +28080,12 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 
 	private void UpdateActiveSceneSummonRequests()
 	{
-		if (_activeSceneSummonRequests.Count == 0 || Mission.Current == null)
+		Mission mission = Mission.Current;
+		if (_activeSceneSummonRequests.Count == 0 || mission == null)
 		{
 			return;
 		}
-		float currentTime = Mission.Current.CurrentTime;
+		float currentTime = mission.CurrentTime;
 		for (int num = _activeSceneSummonRequests.Count - 1; num >= 0; num--)
 		{
 			ActiveSceneSummonRequest activeSceneSummonRequest = _activeSceneSummonRequests[num];
@@ -27992,7 +28127,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 
 	private void SchedulePreparedSceneSummonLaunch(ActiveSceneSummonRequest request, SceneSpeechPlaybackInfo playbackInfo, string spokenText)
 	{
-		if (request == null || Mission.Current == null)
+		Mission mission = Mission.Current;
+		if (request == null || mission == null)
 		{
 			return;
 		}
@@ -28013,13 +28149,14 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			num = Math.Max(num, EstimateBubbleTypingDurationSeconds(spokenText ?? ""));
 		}
 		float num2 = Math.Max(0.15f, num);
-		request.NextStageMissionTime = Mission.Current.CurrentTime + num2;
+		request.NextStageMissionTime = mission.CurrentTime + num2;
 		LogSceneSummonState("pending_launch_scheduled", request, ResolveAgentForLocationCharacter(request.SpeakerLocationCharacter), ResolveAgentForLocationCharacter(request.TargetLocationCharacter), "delay=" + num2.ToString("F2") + " ttsAccepted=" + ((playbackInfo != null) ? playbackInfo.TtsAccepted.ToString() : "False") + " waitForFinish=" + ((playbackInfo != null) ? playbackInfo.WaitForPlaybackFinished.ToString() : "False") + " speechLen=" + ((spokenText ?? "").Length), force: true);
 	}
 
 	private void SchedulePreparedSceneGuideLaunch(ActiveSceneGuideRequest request, SceneSpeechPlaybackInfo playbackInfo, string spokenText)
 	{
-		if (request == null || Mission.Current == null)
+		Mission mission = Mission.Current;
+		if (request == null || mission == null)
 		{
 			return;
 		}
@@ -28034,7 +28171,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			num = playbackInfo.VisualDurationSeconds;
 		}
-		request.NextStageMissionTime = Mission.Current.CurrentTime + Math.Max(0.15f, num);
+		request.NextStageMissionTime = mission.CurrentTime + Math.Max(0.15f, num);
 	}
 
 	private bool TickSceneGuideRequest(ActiveSceneGuideRequest request, float currentTime)
@@ -28399,11 +28536,13 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 
 	private bool TryForceSceneFollowPlayerInternal(int targetAgentIndex, bool transient, string reason)
 	{
-		if (targetAgentIndex < 0 || Mission.Current == null)
+		Mission mission = Mission.Current;
+		var agents = mission?.Agents;
+		if (targetAgentIndex < 0 || agents == null)
 		{
 			return false;
 		}
-		Agent agent = Mission.Current.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == targetAgentIndex);
+		Agent agent = agents.FirstOrDefault((Agent a) => a != null && a.Index == targetAgentIndex);
 		if (!CanAgentParticipateInSceneSpeech(agent) || agent == Agent.Main)
 		{
 			Logger.Log("SceneFollow", "external_force_start_skip agent=" + targetAgentIndex + " reason=" + (reason ?? "") + " cause=agent_unavailable");
@@ -28448,6 +28587,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			return false;
 		}
 		content = SceneFollowStartTagRegex.Replace(content, "").Trim();
+		if (IsPrisonBreakRescueMissionActive())
+		{
+			return IsPrisonBreakRescuePrisonerAgent(agent);
+		}
 		return CanAgentParticipateInSceneSpeech(agent) && agent != Agent.Main;
 	}
 
@@ -28471,6 +28614,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			content = SceneEndChatActionTagRegex.Replace(content, "").Trim();
 		}
+		if (IsPrisonBreakRescueMissionActive())
+		{
+			return flag && IsPrisonBreakRescuePrisonerAgent(agent) && IsPrisonBreakPrisonerFollowing(agent);
+		}
 		return CanAgentParticipateInSceneSpeech(agent) && agent != Agent.Main && IsAgentFollowingPlayerBySceneCommand(agent);
 	}
 
@@ -28489,11 +28636,13 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 
 	private void UpdateActiveSceneGuideRequests()
 	{
-		if (_activeSceneGuideRequests.Count == 0 || Mission.Current == null)
+		Mission mission = Mission.Current;
+		var agents = mission?.Agents;
+		if (_activeSceneGuideRequests.Count == 0 || mission == null)
 		{
 			return;
 		}
-		float currentTime = Mission.Current.CurrentTime;
+		float currentTime = mission.CurrentTime;
 		for (int num = _activeSceneGuideRequests.Count - 1; num >= 0; num--)
 		{
 			ActiveSceneGuideRequest activeSceneGuideRequest = _activeSceneGuideRequests[num];
@@ -28503,14 +28652,14 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				{
 					ReleaseSceneGuideArrivalHold(activeSceneGuideRequest.GuideAgentIndex, restoreAutonomy: false);
 				}
-				StopSceneGuideEscort(Mission.Current?.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == activeSceneGuideRequest?.GuideAgentIndex));
+				StopSceneGuideEscort(agents?.FirstOrDefault((Agent a) => a != null && a.Index == activeSceneGuideRequest?.GuideAgentIndex));
 				CleanupSceneGuideDoorProxyAgent(activeSceneGuideRequest);
 				_activeSceneGuideRequests.RemoveAt(num);
 				continue;
 			}
 			if (activeSceneGuideRequest.ArrivalTriggered)
 			{
-				Agent agent = Mission.Current?.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == activeSceneGuideRequest.GuideAgentIndex);
+				Agent agent = agents?.FirstOrDefault((Agent a) => a != null && a.Index == activeSceneGuideRequest.GuideAgentIndex);
 				StopSceneGuideEscort(agent);
 				if (_sceneGuideArrivalHolds.TryGetValue(activeSceneGuideRequest.GuideAgentIndex, out var value))
 				{
@@ -28522,7 +28671,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			}
 			if (TickSceneGuideRequest(activeSceneGuideRequest, currentTime))
 			{
-				Agent agent = Mission.Current?.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == activeSceneGuideRequest?.GuideAgentIndex);
+				Agent agent = agents?.FirstOrDefault((Agent a) => a != null && a.Index == activeSceneGuideRequest?.GuideAgentIndex);
 				StopSceneGuideEscort(agent);
 				if (activeSceneGuideRequest != null && _sceneGuideArrivalHolds.TryGetValue(activeSceneGuideRequest.GuideAgentIndex, out var value))
 				{
@@ -28625,6 +28774,122 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			{
 				prompt.AppendLine(target.PromptId + " " + target.DisplayName.Trim() + " " + (target.LocationCode ?? "处"));
 			}
+		}
+	}
+
+	private static PrisonBreakMissionController GetPrisonBreakMissionController()
+	{
+		try
+		{
+			return Mission.Current?.GetMissionBehavior<PrisonBreakMissionController>();
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static bool IsPrisonBreakRescueMissionActive()
+	{
+		return GetPrisonBreakMissionController() != null;
+	}
+
+	private static Agent GetPrisonBreakPrisonerAgent(PrisonBreakMissionController controller = null)
+	{
+		try
+		{
+			controller = controller ?? GetPrisonBreakMissionController();
+			return (controller != null && PrisonBreakPrisonerAgentField != null) ? PrisonBreakPrisonerAgentField.GetValue(controller) as Agent : null;
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static bool IsPrisonBreakRescuePrisonerAgent(Agent agent)
+	{
+		try
+		{
+			PrisonBreakMissionController controller = GetPrisonBreakMissionController();
+			Agent prisonerAgent = GetPrisonBreakPrisonerAgent(controller);
+			return CanAgentParticipateInSceneSpeech(agent) && prisonerAgent != null && prisonerAgent == agent;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static bool IsPrisonBreakPrisonerFollowing(Agent agent)
+	{
+		try
+		{
+			PrisonBreakMissionController controller = GetPrisonBreakMissionController();
+			if (controller == null || GetPrisonBreakPrisonerAgent(controller) != agent || PrisonBreakPrisonerFollowingField == null)
+			{
+				return false;
+			}
+			return PrisonBreakPrisonerFollowingField.GetValue(controller) is bool value && value;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private void ClearAnimusForgeSceneFollowStateForPrisonBreak(Agent agent)
+	{
+		if (agent == null || agent.Index < 0)
+		{
+			return;
+		}
+		_transientSceneFollowAgentIndices.Remove(agent.Index);
+		_sceneFollowReturnStates.Remove(agent.Index);
+		_pendingSceneFollowCommands.Remove(agent.Index);
+		_pendingSceneAutonomyRestoresAfterSpeech.Remove(agent.Index);
+		_pendingSceneSummonReturnsAfterSpeech.Remove(agent.Index);
+		_pendingSceneGuideReturnsAfterSpeech.Remove(agent.Index);
+		_pendingInteractionTimeoutArms.Remove(agent.Index);
+		_activeInteractionSessions.Remove(agent.Index);
+		TrySetSceneFollowPersistence(agent, isFollowing: false);
+	}
+
+	private bool TryApplyPrisonBreakSceneFollowCommand(Agent agent, bool startFollow, string reason)
+	{
+		try
+		{
+			PrisonBreakMissionController controller = GetPrisonBreakMissionController();
+			if (controller == null)
+			{
+				return false;
+			}
+			Agent prisonerAgent = GetPrisonBreakPrisonerAgent(controller);
+			if (!CanAgentParticipateInSceneSpeech(agent) || prisonerAgent == null || prisonerAgent != agent || PrisonBreakSwitchPrisonerFollowingStateMethod == null)
+			{
+				Logger.Log("SceneFollow", "prison_break_follow_skip agent=" + (agent?.Index ?? -1) + " reason=" + (reason ?? "") + " cause=not_rescue_prisoner");
+				return true;
+			}
+			ClearAnimusForgeSceneFollowStateForPrisonBreak(agent);
+			bool currentlyFollowing = IsPrisonBreakPrisonerFollowing(agent);
+			if (startFollow)
+			{
+				if (!currentlyFollowing)
+				{
+					PrisonBreakSwitchPrisonerFollowingStateMethod.Invoke(controller, new object[] { true });
+				}
+			}
+			else if (currentlyFollowing)
+			{
+				PrisonBreakSwitchPrisonerFollowingStateMethod.Invoke(controller, new object[] { false });
+			}
+			Logger.Log("SceneFollow", "prison_break_follow_" + (startFollow ? "start" : "stop") + " agent=" + agent.Index + " name=" + (agent.Name ?? "") + " wasFollowing=" + currentlyFollowing + " nowFollowing=" + IsPrisonBreakPrisonerFollowing(agent) + " reason=" + (reason ?? ""));
+			return true;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("SceneFollow", "prison_break_follow_failed agent=" + (agent?.Index ?? -1) + " start=" + startFollow + " reason=" + (reason ?? "") + " error=" + ex.Message);
+			return true;
 		}
 	}
 
@@ -28737,11 +29002,12 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 
 	private bool TryGuideSummonParticipantToPosition(Agent agent, Vec3 targetPosition)
 	{
-		if (!CanAgentParticipateInSceneSpeech(agent) || Mission.Current?.Scene == null)
+		var scene = Mission.Current?.Scene;
+		if (!CanAgentParticipateInSceneSpeech(agent) || scene == null)
 		{
 			return false;
 		}
-		targetPosition.z = Mission.Current.Scene.GetGroundHeightAtPosition(targetPosition, BodyFlags.CommonCollisionExcludeFlags);
+		targetPosition.z = scene.GetGroundHeightAtPosition(targetPosition, BodyFlags.CommonCollisionExcludeFlags);
 		NavigateAgentToWorldPosition(agent, targetPosition, 0.75f, doNotRun: false);
 		return agent.Position.DistanceSquared(targetPosition) <= SCENE_SUMMON_TARGET_ARRIVAL_DISTANCE_SQ;
 	}
@@ -28750,6 +29016,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 	{
 		if (!CanAgentParticipateInSceneSpeech(agent) || Agent.Main == null || !Agent.Main.IsActive() || agent == Agent.Main)
 		{
+			return;
+		}
+		if (IsPrisonBreakRescueMissionActive())
+		{
+			TryApplyPrisonBreakSceneFollowCommand(agent, startFollow: true, "scene_follow_start");
 			return;
 		}
 		try
@@ -28791,6 +29062,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			return;
 		}
+		if (IsPrisonBreakRescueMissionActive())
+		{
+			TryApplyPrisonBreakSceneFollowCommand(agent, startFollow: false, "scene_follow_stop");
+			return;
+		}
 		try
 		{
 			bool wasTransient = _transientSceneFollowAgentIndices.Remove(agent.Index);
@@ -28810,6 +29086,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 	private void RememberSceneFollowReturnState(Agent agent, bool overwriteExisting = true)
 	{
 		if (!CanAgentParticipateInSceneSpeech(agent))
+		{
+			return;
+		}
+		if (IsPrisonBreakRescuePrisonerAgent(agent))
 		{
 			return;
 		}
@@ -28881,6 +29161,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 	private void ReturnAgentAfterStoppingSceneFollow(Agent agent)
 	{
 		if (agent == null)
+		{
+			return;
+		}
+		if (IsPrisonBreakRescuePrisonerAgent(agent))
 		{
 			return;
 		}
@@ -28977,6 +29261,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			{
 				return false;
 			}
+			if (isFollowing && IsPrisonBreakRescuePrisonerAgent(agent))
+			{
+				return false;
+			}
 			LocationCharacter locationCharacter = locationComplex.FindCharacter(agent);
 			if (locationCharacter == null)
 			{
@@ -29010,6 +29298,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			if (!CanAgentParticipateInSceneSpeech(agent) || agent == Agent.Main)
 			{
 				return false;
+			}
+			if (IsPrisonBreakRescuePrisonerAgent(agent))
+			{
+				return IsPrisonBreakPrisonerFollowing(agent);
 			}
 			if (_transientSceneFollowAgentIndices.Contains(agent.Index))
 			{
@@ -29109,7 +29401,60 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		return list;
 	}
 
+	private static string NormalizeSceneHeroId(string heroId)
+	{
+		return (heroId ?? "").Trim();
+	}
+
+	private static string ResolveSceneHeroIdFromAgentIndex(int agentIndex)
+	{
+		var agents = Mission.Current?.Agents;
+		if (agentIndex < 0 || agents == null)
+		{
+			return "";
+		}
+		try
+		{
+			Agent agent = agents.FirstOrDefault((Agent a) => a != null && a.Index == agentIndex);
+			CharacterObject characterObject = agent?.Character as CharacterObject;
+			return NormalizeSceneHeroId(characterObject?.HeroObject?.StringId);
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	private static bool IsSameSceneHeroId(string left, string right)
+	{
+		string text = NormalizeSceneHeroId(left);
+		string text2 = NormalizeSceneHeroId(right);
+		return !string.IsNullOrWhiteSpace(text) && !string.IsNullOrWhiteSpace(text2) && string.Equals(text, text2, StringComparison.OrdinalIgnoreCase);
+	}
+
+	private static bool ContainsSceneHeroId(IEnumerable<string> heroIds, string heroId)
+	{
+		string text = NormalizeSceneHeroId(heroId);
+		if (string.IsNullOrWhiteSpace(text) || heroIds == null)
+		{
+			return false;
+		}
+		foreach (string item in heroIds)
+		{
+			if (IsSameSceneHeroId(item, text))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
 	private static bool IsSceneHistoryVisibleToAgent(ConversationMessage msg, int viewerAgentIndex)
+	{
+		return IsSceneHistoryVisibleToAgentOrHero(msg, viewerAgentIndex, ResolveSceneHeroIdFromAgentIndex(viewerAgentIndex));
+	}
+
+	private static bool IsSceneHistoryVisibleToAgentOrHero(ConversationMessage msg, int viewerAgentIndex, string viewerHeroId)
 	{
 		if (msg == null)
 		{
@@ -29120,15 +29465,25 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			return true;
 		}
 		List<int> visibleAgentIndices = msg.VisibleAgentIndices;
-		if (visibleAgentIndices == null || visibleAgentIndices.Count == 0)
+		List<string> visibleHeroIds = msg.VisibleHeroIds;
+		bool hasAgentVisibility = visibleAgentIndices != null && visibleAgentIndices.Count > 0;
+		bool hasHeroVisibility = visibleHeroIds != null && visibleHeroIds.Count > 0;
+		if (!hasAgentVisibility && !hasHeroVisibility)
 		{
 			return true;
 		}
-		for (int i = 0; i < visibleAgentIndices.Count; i++)
+		if (ContainsSceneHeroId(visibleHeroIds, viewerHeroId))
 		{
-			if (visibleAgentIndices[i] == viewerAgentIndex)
+			return true;
+		}
+		if (hasAgentVisibility)
+		{
+			for (int i = 0; i < visibleAgentIndices.Count; i++)
 			{
-				return true;
+				if (visibleAgentIndices[i] == viewerAgentIndex)
+				{
+					return true;
+				}
 			}
 		}
 		return false;
@@ -29192,6 +29547,52 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 		lock (_historyLock)
 		{
 			List<ConversationMessage> list = null;
+			string viewerHeroId = ResolveSceneHeroIdFromAgentIndex(npcAgentIndex);
+			if (!string.IsNullOrWhiteSpace(viewerHeroId))
+			{
+				List<ConversationMessage> merged = new List<ConversationMessage>();
+				HashSet<string> seen = new HashSet<string>(StringComparer.Ordinal);
+				void addVisible(IEnumerable<ConversationMessage> source)
+				{
+					if (source == null)
+					{
+						return;
+					}
+					foreach (ConversationMessage msg in source)
+					{
+						if (msg == null || !IsSceneHistoryVisibleToAgentOrHero(msg, npcAgentIndex, viewerHeroId))
+						{
+							continue;
+						}
+						string key = BuildSceneHistoryMergeKey(msg);
+						if (!seen.Add(key))
+						{
+							continue;
+						}
+						merged.Add(msg);
+					}
+				}
+				addVisible(_publicConversationHistory);
+				if (_npcConversationHistory != null)
+				{
+					if (_npcConversationHistory.TryGetValue(npcAgentIndex, out list) && list != null)
+					{
+						addVisible(list);
+					}
+					foreach (KeyValuePair<int, List<ConversationMessage>> pair in _npcConversationHistory)
+					{
+						if (pair.Key == npcAgentIndex || pair.Value == null || !DoesSceneHistoryBucketRelateToHero(pair.Value, viewerHeroId))
+						{
+							continue;
+						}
+						addVisible(pair.Value);
+					}
+				}
+				if (merged.Count > 0)
+				{
+					return SortConversationMessagesByEventSequence(merged);
+				}
+			}
 			if (_npcConversationHistory != null && _npcConversationHistory.TryGetValue(npcAgentIndex, out list) && list != null && list.Count > 0)
 			{
 				return list.Where((ConversationMessage msg) => msg != null && IsSceneHistoryVisibleToAgent(msg, npcAgentIndex)).ToList();
@@ -29202,6 +29603,47 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 			}
 		}
 		return new List<ConversationMessage>();
+	}
+
+	private static bool IsSceneHistoryMessageRelatedToHero(ConversationMessage msg, string heroId)
+	{
+		if (msg == null || string.IsNullOrWhiteSpace(heroId))
+		{
+			return false;
+		}
+		return IsSameSceneHeroId(msg.SpeakerHeroId, heroId)
+			|| IsSameSceneHeroId(msg.TargetHeroId, heroId)
+			|| ContainsSceneHeroId(msg.VisibleHeroIds, heroId);
+	}
+
+	private static bool DoesSceneHistoryBucketRelateToHero(IEnumerable<ConversationMessage> messages, string heroId)
+	{
+		if (messages == null || string.IsNullOrWhiteSpace(heroId))
+		{
+			return false;
+		}
+		foreach (ConversationMessage msg in messages)
+		{
+			if (IsSceneHistoryMessageRelatedToHero(msg, heroId))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private static string BuildSceneHistoryMergeKey(ConversationMessage msg)
+	{
+		if (msg == null)
+		{
+			return "";
+		}
+		string role = (msg.Role ?? "").Trim().ToLowerInvariant();
+		if (msg.EventSequence > 0L)
+		{
+			return "seq|" + msg.EventSequence + "|" + role;
+		}
+		return BuildConversationMessageDedupeKey(msg);
 	}
 
 	private static string NormalizeStrictSceneAssistantContent(string content, string speakerName)
@@ -29284,13 +29726,14 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 
 	private static float GetPlayerDistanceToAgentForScenePrompt(int agentIndex)
 	{
-		if (agentIndex < 0 || Mission.Current?.Agents == null)
+		var agents = Mission.Current?.Agents;
+		if (agentIndex < 0 || agents == null)
 		{
 			return -1f;
 		}
 		try
 		{
-			Agent agent = Mission.Current.Agents.FirstOrDefault((Agent a) => a != null && a.Index == agentIndex && a.IsActive());
+			Agent agent = agents.FirstOrDefault((Agent a) => a != null && a.Index == agentIndex && a.IsActive());
 			return TryGetPlayerPlanarDistanceMeters(agent, out var distanceMeters) ? distanceMeters : (-1f);
 		}
 		catch
@@ -29315,6 +29758,50 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 	private static long NextConversationEventSequence()
 	{
 		return Interlocked.Increment(ref _currentConversationEventSequence);
+	}
+
+	private static void FillSceneMessageHeroIdentity(ConversationMessage message)
+	{
+		if (message == null)
+		{
+			return;
+		}
+		message.SpeakerHeroId = NormalizeSceneHeroId(message.SpeakerHeroId);
+		if (string.IsNullOrWhiteSpace(message.SpeakerHeroId) && message.SpeakerAgentIndex >= 0)
+		{
+			message.SpeakerHeroId = ResolveSceneHeroIdFromAgentIndex(message.SpeakerAgentIndex);
+		}
+		message.TargetHeroId = NormalizeSceneHeroId(message.TargetHeroId);
+		if (string.IsNullOrWhiteSpace(message.TargetHeroId) && message.TargetAgentIndex >= 0)
+		{
+			message.TargetHeroId = ResolveSceneHeroIdFromAgentIndex(message.TargetAgentIndex);
+		}
+		if (message.VisibleAgentIndices == null)
+		{
+			message.VisibleAgentIndices = new List<int>();
+		}
+		List<string> visibleHeroIds = new List<string>();
+		HashSet<string> seenHeroIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		if (message.VisibleHeroIds != null)
+		{
+			foreach (string heroId in message.VisibleHeroIds)
+			{
+				string normalizedHeroId = NormalizeSceneHeroId(heroId);
+				if (!string.IsNullOrWhiteSpace(normalizedHeroId) && seenHeroIds.Add(normalizedHeroId))
+				{
+					visibleHeroIds.Add(normalizedHeroId);
+				}
+			}
+		}
+		foreach (int visibleAgentIndex in message.VisibleAgentIndices)
+		{
+			string visibleHeroId = ResolveSceneHeroIdFromAgentIndex(visibleAgentIndex);
+			if (!string.IsNullOrWhiteSpace(visibleHeroId) && seenHeroIds.Add(visibleHeroId))
+			{
+				visibleHeroIds.Add(visibleHeroId);
+			}
+		}
+		message.VisibleHeroIds = visibleHeroIds;
 	}
 
 	private static ConversationMessage StampConversationMessageWithCurrentMemoryContext(ConversationMessage message)
@@ -29355,6 +29842,7 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 		{
 			message.Scene = MyBehavior.ResolveCurrentMemorySceneLabelForExternal();
 		}
+		FillSceneMessageHeroIdentity(message);
 		return message;
 	}
 
@@ -29434,6 +29922,7 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 		{
 			return false;
 		}
+		string npcHeroId = ResolveSceneHeroIdFromAgentIndex(npcAgentIndex);
 		bool isAfefFact = TryNormalizeAfefFactLineForPrompt(text2, out var afefFactLine);
 		bool isAfefNpcFact = afefFactLine.StartsWith("[AFEF NPC行为补充]", StringComparison.Ordinal);
 		bool isAfefPlayerFact = afefFactLine.StartsWith("[AFEF玩家行为补充]", StringComparison.Ordinal);
@@ -29445,7 +29934,7 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 			{
 				return false;
 			}
-			if (msg.SpeakerAgentIndex == npcAgentIndex)
+			if (msg.SpeakerAgentIndex == npcAgentIndex || IsSameSceneHeroId(msg.SpeakerHeroId, npcHeroId))
 			{
 				chatMessage = CreateChatMessage("assistant", PrefixConversationMessageForPrompt(msg, string.IsNullOrWhiteSpace(msg.SpeakerName) ? "NPC" : msg.SpeakerName.Trim(), text3));
 				return true;
@@ -29457,7 +29946,7 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 		if (text.Equals("user", StringComparison.OrdinalIgnoreCase))
 		{
 			string text5 = GetStrictScenePlayerDisplayName();
-			if (msg.TargetAgentIndex == npcAgentIndex)
+			if (msg.TargetAgentIndex == npcAgentIndex || IsSameSceneHeroId(msg.TargetHeroId, npcHeroId))
 			{
 				chatMessage = CreateChatMessage("user", PrefixConversationMessageForPrompt(msg, text5, "【" + FormatScenePlayerDirectSpeechLabel(text5, msg.PlayerDistanceMeters) + "】" + text2));
 				return true;
@@ -29959,7 +30448,9 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 
 	private bool TriggerImmediateSceneBehaviorReaction(string factText, int targetAgentIndex, bool persistHeroPrivateHistory, bool suppressStare, float postSpeechLeaveSeconds = -1f, bool skipSceneFactRecord = false, bool returnSceneSummonOnTimeout = false, Action onNoSpeech = null)
 	{
-		if (string.IsNullOrWhiteSpace(factText) || targetAgentIndex < 0 || Mission.Current == null)
+		Mission mission = Mission.Current;
+		var agents = mission?.Agents;
+		if (string.IsNullOrWhiteSpace(factText) || targetAgentIndex < 0 || agents == null)
 		{
 			InvokeImmediateSceneReactionNoSpeechFallback(onNoSpeech);
 			return false;
@@ -29968,7 +30459,7 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 		try
 		{
 			List<Agent> nearbyNPCAgents = ShoutUtils.GetNearbyNPCAgents();
-			Agent agent = nearbyNPCAgents?.FirstOrDefault(a => a != null && a.Index == targetAgentIndex && a.IsActive()) ?? Mission.Current.Agents?.FirstOrDefault(a => a != null && a.Index == targetAgentIndex && a.IsActive());
+			Agent agent = nearbyNPCAgents?.FirstOrDefault(a => a != null && a.Index == targetAgentIndex && a.IsActive()) ?? agents.FirstOrDefault(a => a != null && a.Index == targetAgentIndex && a.IsActive());
 			if (!CanAgentParticipateInSceneSpeech(agent))
 			{
 				InvokeImmediateSceneReactionNoSpeechFallback(onNoSpeech);
@@ -30088,14 +30579,16 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 
 	private void StopAgentRhubarbRecordIfPossible(int agentIndex, string reason = "Unknown")
 	{
-		if (agentIndex < 0 || Mission.Current == null)
+		Mission mission = Mission.Current;
+		var agents = mission?.Agents;
+		if (agentIndex < 0 || agents == null)
 		{
-			LogTtsReport("StopRhubarbRecord.Skip", agentIndex, "reason=" + reason + ";missionNull=" + (Mission.Current == null));
+			LogTtsReport("StopRhubarbRecord.Skip", agentIndex, "reason=" + reason + ";missionNull=" + (mission == null));
 			return;
 		}
 		try
 		{
-			Agent agent = Mission.Current.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == agentIndex && a.IsActive());
+			Agent agent = agents.FirstOrDefault((Agent a) => a != null && a.Index == agentIndex && a.IsActive());
 			if (agent == null || agent.AgentVisuals == null)
 			{
 				LogTtsReport("StopRhubarbRecord.Skip", agentIndex, $"reason={reason};agentMissing={(agent == null)};visualsMissing={(agent != null && agent.AgentVisuals == null)}");
@@ -30605,7 +31098,10 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 			_multiSceneMovementSuppressionTimer = 0f;
 			list = _multiSceneMovementSuppressionAgentIndices.ToList();
 		}
-		if (Mission.Current == null || Agent.Main == null || !Agent.Main.IsActive())
+		Mission mission = Mission.Current;
+		var agents = mission?.Agents;
+		Agent main = Agent.Main;
+		if (agents == null || main == null || !main.IsActive())
 		{
 			DeactivateMultiSceneMovementSuppression();
 			return;
@@ -30614,7 +31110,7 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 		int num = 0;
 		foreach (int item in list)
 		{
-			Agent agent = Mission.Current.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == item);
+			Agent agent = agents.FirstOrDefault((Agent a) => a != null && a.Index == item);
 			if (!CanAgentParticipateInSceneSpeech(agent))
 			{
 				if (list2 == null)
@@ -30629,7 +31125,7 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 				_activeInteractionSessions.TryGetValue(item, out var interactionSession);
 				float playerRange = ResolveActiveInteractionPlayerRangeMeters(interactionSession);
 				float num2 = playerRange * playerRange;
-				if (agent.Position.AsVec2.DistanceSquared(Agent.Main.Position.AsVec2) > num2)
+				if (agent.Position.AsVec2.DistanceSquared(main.Position.AsVec2) > num2)
 				{
 					continue;
 				}
@@ -30656,9 +31152,9 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 				}
 			}
 		}
-		if (num >= 1 && Mission.Current != null)
+		if (num >= 1)
 		{
-			_stopStaringTime = Math.Max(_stopStaringTime, Mission.Current.CurrentTime + MULTI_SCENE_MOVEMENT_SUPPRESSION_HOLD_SECONDS);
+			_stopStaringTime = Math.Max(_stopStaringTime, mission.CurrentTime + MULTI_SCENE_MOVEMENT_SUPPRESSION_HOLD_SECONDS);
 		}
 	}
 
@@ -30758,10 +31254,12 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 		}
 		try
 		{
+			Mission mission = Mission.Current;
+			var agents = mission?.Agents;
 			Agent main = Agent.Main;
-			if (main != null && main.IsActive() && Mission.Current?.Agents != null)
+			if (main != null && main.IsActive() && agents != null)
 			{
-				foreach (Agent agent in Mission.Current.Agents)
+				foreach (Agent agent in agents)
 				{
 					if (agent != null && agent.IsActive() && agent != main && AreAgentsHostileForSceneConversation(agent, main))
 					{
@@ -31254,11 +31752,13 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 
 	private void TrackPlayerInteraction(NpcDataPacket primaryTarget, int participantCount = 1, float timeoutSeconds = -1f, bool returnSceneSummonOnTimeout = false, ShoutTargetingContext shoutTargetingContext = null)
 	{
-		if (primaryTarget == null || primaryTarget.AgentIndex < 0 || Mission.Current == null)
+		Mission mission = Mission.Current;
+		var agents = mission?.Agents;
+		if (primaryTarget == null || primaryTarget.AgentIndex < 0 || mission == null)
 		{
 			return;
 		}
-		Agent agent = Mission.Current.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == primaryTarget.AgentIndex && a.IsActive());
+		Agent agent = agents?.FirstOrDefault((Agent a) => a != null && a.Index == primaryTarget.AgentIndex && a.IsActive());
 		bool flag = IsAgentBusyWithSceneGuideErrand(primaryTarget.AgentIndex);
 		bool flag2 = flag && _sceneGuideArrivalHolds.ContainsKey(primaryTarget.AgentIndex);
 		if (IsAgentBusyWithSceneSummonErrand(primaryTarget.AgentIndex) || (flag && !flag2))
@@ -31288,7 +31788,7 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 		{
 			TargetAgentIndex = primaryTarget.AgentIndex,
 			TargetName = text,
-			LastActivityTime = Mission.Current.CurrentTime,
+			LastActivityTime = mission.CurrentTime,
 			TimeoutArmed = false,
 			TimeoutSeconds = ResolveActiveInteractionTimeoutSeconds(participantCount, timeoutSeconds),
 			InteractionToken = DateTime.UtcNow.Ticks,
@@ -31301,11 +31801,12 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 
 	private void ScheduleInteractionTimeoutArm(int agentIndex, long interactionToken, float speechDurationSeconds)
 	{
-		if (agentIndex < 0 || interactionToken == 0L || Mission.Current == null)
+		Mission mission = Mission.Current;
+		if (agentIndex < 0 || interactionToken == 0L || mission == null)
 		{
 			return;
 		}
-		float num = Mission.Current.CurrentTime + Math.Max(0f, speechDurationSeconds);
+		float num = mission.CurrentTime + Math.Max(0f, speechDurationSeconds);
 		_pendingInteractionTimeoutArms[agentIndex] = new PendingInteractionTimeoutArm
 		{
 			AgentIndex = agentIndex,
@@ -31316,7 +31817,8 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 
 	private void ArmActiveInteractionTimeoutNow(int agentIndex, long interactionToken)
 	{
-		if (agentIndex < 0 || Mission.Current == null)
+		Mission mission = Mission.Current;
+		if (agentIndex < 0 || mission == null)
 		{
 			return;
 		}
@@ -31324,18 +31826,19 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 		{
 			return;
 		}
-		value.LastActivityTime = Mission.Current.CurrentTime;
+		value.LastActivityTime = mission.CurrentTime;
 		value.TimeoutArmed = true;
 		_pendingInteractionTimeoutArms.Remove(agentIndex);
 	}
 
 	private void UpdatePendingSceneDialogueFeeds()
 	{
-		if (Mission.Current == null || _pendingSceneDialogueFeedQueues.Count == 0)
+		Mission mission = Mission.Current;
+		if (mission == null || _pendingSceneDialogueFeedQueues.Count == 0)
 		{
 			return;
 		}
-		float currentTime = Mission.Current.CurrentTime;
+		float currentTime = mission.CurrentTime;
 		List<int> list = null;
 		lock (_ttsBubbleSyncLock)
 		{
@@ -31374,11 +31877,12 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 
 	private void ProcessPendingInteractionTimeoutArms()
 	{
-		if (Mission.Current == null || _pendingInteractionTimeoutArms.Count == 0)
+		Mission mission = Mission.Current;
+		if (mission == null || _pendingInteractionTimeoutArms.Count == 0)
 		{
 			return;
 		}
-		float currentTime = Mission.Current.CurrentTime;
+		float currentTime = mission.CurrentTime;
 		List<int> list = null;
 		foreach (KeyValuePair<int, PendingInteractionTimeoutArm> pendingInteractionTimeoutArm in _pendingInteractionTimeoutArms)
 		{
@@ -31414,13 +31918,14 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 
 	private void ScheduleSceneSummonReturnAfterSpeech(int agentIndex, SceneSpeechPlaybackInfo playbackInfo)
 	{
-		if (agentIndex < 0 || Mission.Current == null || !_pendingSceneSummonReturnsAfterSpeech.TryGetValue(agentIndex, out var value) || value == null)
+		Mission mission = Mission.Current;
+		if (agentIndex < 0 || mission == null || !_pendingSceneSummonReturnsAfterSpeech.TryGetValue(agentIndex, out var value) || value == null)
 		{
 			return;
 		}
 		float num = Math.Max(0.25f, playbackInfo?.VisualDurationSeconds ?? 0f);
 		value.WaitForPlaybackFinished = playbackInfo != null && playbackInfo.TtsAccepted && playbackInfo.WaitForPlaybackFinished;
-		value.ExecuteAtMissionTime = value.WaitForPlaybackFinished ? (-1f) : (Mission.Current.CurrentTime + num);
+		value.ExecuteAtMissionTime = value.WaitForPlaybackFinished ? (-1f) : (mission.CurrentTime + num);
 	}
 
 	private void FlushSceneSummonReturnAfterSpeech(int agentIndex)
@@ -31445,7 +31950,8 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 
 	private void ScheduleSceneFollowCommandAfterSpeech(int agentIndex, bool startFollow, SceneSpeechPlaybackInfo playbackInfo)
 	{
-		if (agentIndex < 0 || Mission.Current == null)
+		Mission mission = Mission.Current;
+		if (agentIndex < 0 || mission == null)
 		{
 			return;
 		}
@@ -31455,7 +31961,7 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 			AgentIndex = agentIndex,
 			StartFollow = startFollow,
 			WaitForPlaybackFinished = playbackInfo != null && playbackInfo.TtsAccepted && playbackInfo.WaitForPlaybackFinished,
-			ExecuteAtMissionTime = ((playbackInfo != null && playbackInfo.TtsAccepted && playbackInfo.WaitForPlaybackFinished) ? (-1f) : (Mission.Current.CurrentTime + num))
+			ExecuteAtMissionTime = ((playbackInfo != null && playbackInfo.TtsAccepted && playbackInfo.WaitForPlaybackFinished) ? (-1f) : (mission.CurrentTime + num))
 		};
 	}
 
@@ -31486,7 +31992,8 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 
 	private void ScheduleMeetingReleaseAfterSpeech(int agentIndex, Hero targetHero, SceneSpeechPlaybackInfo playbackInfo)
 	{
-		if (agentIndex < 0 || targetHero == null || Mission.Current == null)
+		Mission mission = Mission.Current;
+		if (agentIndex < 0 || targetHero == null || mission == null)
 		{
 			return;
 		}
@@ -31496,7 +32003,7 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 			AgentIndex = agentIndex,
 			TargetHero = targetHero,
 			WaitForPlaybackFinished = playbackInfo != null && playbackInfo.TtsAccepted && playbackInfo.WaitForPlaybackFinished,
-			ExecuteAtMissionTime = ((playbackInfo != null && playbackInfo.TtsAccepted && playbackInfo.WaitForPlaybackFinished) ? (-1f) : (Mission.Current.CurrentTime + num))
+			ExecuteAtMissionTime = ((playbackInfo != null && playbackInfo.TtsAccepted && playbackInfo.WaitForPlaybackFinished) ? (-1f) : (mission.CurrentTime + num))
 		};
 	}
 
@@ -31512,7 +32019,8 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 
 	private void ScheduleSceneGuideReturnAfterSpeech(int agentIndex, SceneSpeechPlaybackInfo playbackInfo)
 	{
-		if (agentIndex < 0 || Mission.Current == null || !_pendingSceneGuideReturnsAfterSpeech.TryGetValue(agentIndex, out var value) || value == null)
+		Mission mission = Mission.Current;
+		if (agentIndex < 0 || mission == null || !_pendingSceneGuideReturnsAfterSpeech.TryGetValue(agentIndex, out var value) || value == null)
 		{
 			return;
 		}
@@ -31520,7 +32028,7 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 		value.SpeechPlaybackScheduled = true;
 		value.WaitForPlaybackFinished = playbackInfo != null && playbackInfo.TtsAccepted && playbackInfo.WaitForPlaybackFinished;
 		value.PostPlaybackDelayArmed = false;
-		value.ExecuteAtMissionTime = value.WaitForPlaybackFinished ? (-1f) : (Mission.Current.CurrentTime + num + SCENE_GUIDE_RETURN_EXTRA_DELAY_SECONDS);
+		value.ExecuteAtMissionTime = value.WaitForPlaybackFinished ? (-1f) : (mission.CurrentTime + num + SCENE_GUIDE_RETURN_EXTRA_DELAY_SECONDS);
 		try
 		{
 			Logger.Log("SceneGuide", "return_after_speech_scheduled agent=" + agentIndex + " waitPlayback=" + value.WaitForPlaybackFinished + " delay=" + (num + SCENE_GUIDE_RETURN_EXTRA_DELAY_SECONDS).ToString("F2"));
@@ -31530,7 +32038,7 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 		}
 		if (_sceneGuideArrivalHolds.TryGetValue(agentIndex, out var value2) && value2 != null)
 		{
-			value2.ExpiresAtMissionTime = Math.Max(value2.ExpiresAtMissionTime, Mission.Current.CurrentTime + Math.Max(SCENE_GUIDE_ARRIVAL_HOLD_FAILSAFE_SECONDS, num + SCENE_GUIDE_RETURN_EXTRA_DELAY_SECONDS + 15f));
+			value2.ExpiresAtMissionTime = Math.Max(value2.ExpiresAtMissionTime, mission.CurrentTime + Math.Max(SCENE_GUIDE_ARRIVAL_HOLD_FAILSAFE_SECONDS, num + SCENE_GUIDE_RETURN_EXTRA_DELAY_SECONDS + 15f));
 		}
 	}
 
@@ -31544,9 +32052,10 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 		{
 			return;
 		}
-		if (Mission.Current != null)
+		Mission mission = Mission.Current;
+		if (mission != null)
 		{
-			float currentTime = Mission.Current.CurrentTime;
+			float currentTime = mission.CurrentTime;
 			if (value.WaitForPlaybackFinished && !value.PostPlaybackDelayArmed)
 			{
 				value.WaitForPlaybackFinished = false;
@@ -31587,13 +32096,14 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 
 	private void ScheduleSceneAutonomyRestoreAfterSpeech(int agentIndex, SceneSpeechPlaybackInfo playbackInfo)
 	{
-		if (agentIndex < 0 || Mission.Current == null || !_pendingSceneAutonomyRestoresAfterSpeech.TryGetValue(agentIndex, out var value) || value == null)
+		Mission mission = Mission.Current;
+		if (agentIndex < 0 || mission == null || !_pendingSceneAutonomyRestoresAfterSpeech.TryGetValue(agentIndex, out var value) || value == null)
 		{
 			return;
 		}
 		float num = Math.Max(0.25f, playbackInfo?.VisualDurationSeconds ?? 0f);
 		value.WaitForPlaybackFinished = playbackInfo != null && playbackInfo.TtsAccepted && playbackInfo.WaitForPlaybackFinished;
-		value.ExecuteAtMissionTime = value.WaitForPlaybackFinished ? (-1f) : (Mission.Current.CurrentTime + num);
+		value.ExecuteAtMissionTime = value.WaitForPlaybackFinished ? (-1f) : (mission.CurrentTime + num);
 	}
 
 	private void FlushSceneAutonomyRestoreAfterSpeech(int agentIndex)
@@ -31620,11 +32130,12 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 
 	private void UpdatePendingSceneSummonReturnsAfterSpeech()
 	{
-		if (Mission.Current == null || _pendingSceneSummonReturnsAfterSpeech.Count == 0)
+		Mission mission = Mission.Current;
+		if (mission == null || _pendingSceneSummonReturnsAfterSpeech.Count == 0)
 		{
 			return;
 		}
-		float currentTime = Mission.Current.CurrentTime;
+		float currentTime = mission.CurrentTime;
 		List<int> list = null;
 		foreach (KeyValuePair<int, PendingSceneSummonReturnAfterSpeech> pendingSceneSummonReturnsAfterSpeech in _pendingSceneSummonReturnsAfterSpeech)
 		{
@@ -31650,11 +32161,12 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 
 	private void UpdatePendingSceneGuideReturnsAfterSpeech()
 	{
-		if (Mission.Current == null || _pendingSceneGuideReturnsAfterSpeech.Count == 0)
+		Mission mission = Mission.Current;
+		if (mission == null || _pendingSceneGuideReturnsAfterSpeech.Count == 0)
 		{
 			return;
 		}
-		float currentTime = Mission.Current.CurrentTime;
+		float currentTime = mission.CurrentTime;
 		List<int> list = null;
 		foreach (KeyValuePair<int, PendingSceneGuideReturnAfterSpeech> pendingSceneGuideReturnsAfterSpeech in _pendingSceneGuideReturnsAfterSpeech)
 		{
@@ -31680,11 +32192,12 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 
 	private void UpdatePendingSceneAutonomyRestoresAfterSpeech()
 	{
-		if (Mission.Current == null || _pendingSceneAutonomyRestoresAfterSpeech.Count == 0)
+		Mission mission = Mission.Current;
+		if (mission == null || _pendingSceneAutonomyRestoresAfterSpeech.Count == 0)
 		{
 			return;
 		}
-		float currentTime = Mission.Current.CurrentTime;
+		float currentTime = mission.CurrentTime;
 		List<int> list = null;
 		foreach (KeyValuePair<int, PendingSceneAutonomyRestoreAfterSpeech> pendingSceneAutonomyRestoresAfterSpeech in _pendingSceneAutonomyRestoresAfterSpeech)
 		{
@@ -31710,11 +32223,12 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 
 	private void UpdatePendingSceneFollowCommands()
 	{
-		if (Mission.Current == null || _pendingSceneFollowCommands.Count == 0)
+		Mission mission = Mission.Current;
+		if (mission == null || _pendingSceneFollowCommands.Count == 0)
 		{
 			return;
 		}
-		float currentTime = Mission.Current.CurrentTime;
+		float currentTime = mission.CurrentTime;
 		List<int> list = null;
 		foreach (KeyValuePair<int, PendingSceneFollowCommand> pendingSceneFollowCommand in _pendingSceneFollowCommands)
 		{
@@ -31740,11 +32254,12 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 
 	private void UpdatePendingMeetingReleasesAfterSpeech()
 	{
-		if (Mission.Current == null || _pendingMeetingReleasesAfterSpeech.Count == 0)
+		Mission mission = Mission.Current;
+		if (mission == null || _pendingMeetingReleasesAfterSpeech.Count == 0)
 		{
 			return;
 		}
-		float currentTime = Mission.Current.CurrentTime;
+		float currentTime = mission.CurrentTime;
 		List<int> list = null;
 		foreach (KeyValuePair<int, PendingMeetingReleaseAfterSpeech> pendingMeetingReleaseAfterSpeech in _pendingMeetingReleasesAfterSpeech)
 		{
@@ -31770,11 +32285,13 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 
 	private void UpdateSceneFollowSpacing()
 	{
-		if (Mission.Current == null || Agent.Main == null || !Agent.Main.IsActive() || FollowAgentBehaviorIdleDistanceField == null)
+		Mission mission = Mission.Current;
+		var agents = mission?.Agents;
+		if (agents == null || Agent.Main == null || !Agent.Main.IsActive() || FollowAgentBehaviorIdleDistanceField == null)
 		{
 			return;
 		}
-		foreach (Agent agent in Mission.Current.Agents)
+		foreach (Agent agent in agents)
 		{
 			if (!IsAgentFollowingPlayerBySceneCommand(agent))
 			{
@@ -31796,11 +32313,13 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 
 	private void UpdateSceneFollowHostilityState()
 	{
-		if (Mission.Current == null)
+		Mission mission = Mission.Current;
+		var agents = mission?.Agents;
+		if (agents == null)
 		{
 			return;
 		}
-		foreach (Agent agent in Mission.Current.Agents)
+		foreach (Agent agent in agents)
 		{
 			if (!IsAgentFollowingPlayerBySceneCommand(agent) || !IsAgentHostileToMainAgent(agent))
 			{
@@ -31894,11 +32413,13 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 
 	private void UpdateActiveInteractionTimeouts()
 	{
-		if (Mission.Current == null || _activeInteractionSessions.Count == 0)
+		Mission mission = Mission.Current;
+		var agents = mission?.Agents;
+		if (mission == null || agents == null || _activeInteractionSessions.Count == 0)
 		{
 			return;
 		}
-		float currentTime = Mission.Current.CurrentTime;
+		float currentTime = mission.CurrentTime;
 		List<int> list = null;
 		HashSet<int> outOfRangeReleaseAgentIndices = null;
 		foreach (KeyValuePair<int, SceneInteractionSession> activeInteractionSession in _activeInteractionSessions)
@@ -31932,7 +32453,7 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 				_pendingInteractionTimeoutArms.Remove(activeInteractionSession.Key);
 				continue;
 			}
-			Agent agent = Mission.Current.Agents?.FirstOrDefault(a => a != null && a.Index == activeInteractionSession.Key && a.IsActive());
+			Agent agent = agents.FirstOrDefault(a => a != null && a.Index == activeInteractionSession.Key && a.IsActive());
 			if (IsAgentFollowingPlayerBySceneCommand(agent))
 			{
 				if (list == null)
@@ -32017,11 +32538,13 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 
 	private List<SceneInteractionSession> BuildGroupedExpiredInteractionSessions(SceneInteractionSession seedSession, List<int> expiredAgentIndices)
 	{
-		if (seedSession == null || seedSession.TargetAgentIndex < 0 || expiredAgentIndices == null || expiredAgentIndices.Count < 2 || seedSession.TimeoutSeconds <= 3.5f || Mission.Current == null)
+		Mission mission = Mission.Current;
+		var agents = mission?.Agents;
+		if (seedSession == null || seedSession.TargetAgentIndex < 0 || expiredAgentIndices == null || expiredAgentIndices.Count < 2 || seedSession.TimeoutSeconds <= 3.5f || agents == null)
 		{
 			return null;
 		}
-		Agent agent = Mission.Current.Agents?.FirstOrDefault(a => a != null && a.Index == seedSession.TargetAgentIndex && a.IsActive());
+		Agent agent = agents.FirstOrDefault(a => a != null && a.Index == seedSession.TargetAgentIndex && a.IsActive());
 		if (agent == null)
 		{
 			return null;
@@ -32038,7 +32561,7 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 			{
 				continue;
 			}
-			Agent agent2 = Mission.Current.Agents?.FirstOrDefault(a => a != null && a.Index == num && a.IsActive());
+			Agent agent2 = agents.FirstOrDefault(a => a != null && a.Index == num && a.IsActive());
 			if (agent2 == null || agent.Position.DistanceSquared(agent2.Position) > 36f)
 			{
 				continue;
@@ -32050,7 +32573,8 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 
 	private void ExpireGroupedActiveInteractions(List<SceneInteractionSession> sessions)
 	{
-		if (sessions == null || sessions.Count == 0 || Mission.Current == null)
+		Mission mission = Mission.Current;
+		if (sessions == null || sessions.Count == 0 || mission == null)
 		{
 			return;
 		}
@@ -32090,7 +32614,9 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 
 	private SceneInteractionSession ChooseGroupedTimeoutRepresentative(List<SceneInteractionSession> sessions)
 	{
-		if (sessions == null || sessions.Count == 0 || Mission.Current == null)
+		Mission mission = Mission.Current;
+		var agents = mission?.Agents;
+		if (sessions == null || sessions.Count == 0 || agents == null)
 		{
 			return null;
 		}
@@ -32104,7 +32630,7 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 			{
 				continue;
 			}
-			Agent agent = Mission.Current.Agents?.FirstOrDefault(a => a != null && a.Index == sceneInteractionSession2.TargetAgentIndex && a.IsActive());
+			Agent agent = agents.FirstOrDefault(a => a != null && a.Index == sceneInteractionSession2.TargetAgentIndex && a.IsActive());
 			if (!CanAgentParticipateInSceneSpeech(agent) || IsAgentHostileToMainAgent(agent))
 			{
 				continue;
@@ -32121,11 +32647,13 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 
 	private bool TriggerGroupedTimeoutDisperseSpeech(SceneInteractionSession representativeSession, List<SceneInteractionSession> sessions, SceneSummonConversationSession representativeSummonSession)
 	{
-		if (representativeSession == null || representativeSession.TargetAgentIndex < 0 || Mission.Current == null)
+		Mission mission = Mission.Current;
+		var agents = mission?.Agents;
+		if (representativeSession == null || representativeSession.TargetAgentIndex < 0 || agents == null)
 		{
 			return false;
 		}
-		Agent agent = Mission.Current.Agents?.FirstOrDefault(a => a != null && a.Index == representativeSession.TargetAgentIndex && a.IsActive());
+		Agent agent = agents.FirstOrDefault(a => a != null && a.Index == representativeSession.TargetAgentIndex && a.IsActive());
 		if (!CanAgentParticipateInSceneSpeech(agent) || IsAgentHostileToMainAgent(agent))
 		{
 			return false;
@@ -32144,7 +32672,7 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 				{
 					continue;
 				}
-				Agent agent2 = Mission.Current.Agents?.FirstOrDefault(a => a != null && a.Index == session.TargetAgentIndex && a.IsActive());
+				Agent agent2 = agents.FirstOrDefault(a => a != null && a.Index == session.TargetAgentIndex && a.IsActive());
 				NpcDataPacket npcDataPacket2 = ShoutUtils.ExtractNpcData(agent2);
 				if (npcDataPacket2 != null && !list.Any(x => x != null && x.AgentIndex == npcDataPacket2.AgentIndex))
 				{
@@ -32526,6 +33054,11 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 		}
 		try
 		{
+			var scene = Mission.Current?.Scene;
+			if (scene == null)
+			{
+				return;
+			}
 			CampaignAgentComponent component = agent.GetComponent<CampaignAgentComponent>();
 			AgentNavigator agentNavigator = component?.AgentNavigator ?? component?.CreateAgentNavigator();
 			Vec3 anchorPosition = agent.Position;
@@ -32535,12 +33068,12 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 			}
 			if (agentNavigator != null && rotation.HasValue)
 			{
-				WorldPosition worldPosition = new WorldPosition(Mission.Current.Scene, anchorPosition);
+				WorldPosition worldPosition = new WorldPosition(scene, anchorPosition);
 				agentNavigator.SetTargetFrame(worldPosition, rotation.Value, 0.05f, 0.8f, Agent.AIScriptedFrameFlags.DoNotRun | Agent.AIScriptedFrameFlags.NoAttack, false);
 			}
 			else
 			{
-				WorldPosition worldPosition2 = new WorldPosition(Mission.Current.Scene, anchorPosition);
+				WorldPosition worldPosition2 = new WorldPosition(scene, anchorPosition);
 				agent.SetScriptedPosition(ref worldPosition2, addHumanLikeDelay: false);
 			}
 		}
@@ -32559,7 +33092,8 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 
 	private void ForceAgentFacePlayer(Agent agent)
 	{
-		if (agent == null || !agent.IsActive() || Mission.Current?.Scene == null || Agent.Main == null || !Agent.Main.IsActive())
+		var scene = Mission.Current?.Scene;
+		if (agent == null || !agent.IsActive() || scene == null || Agent.Main == null || !Agent.Main.IsActive())
 		{
 			return;
 		}
@@ -32617,7 +33151,7 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 				{
 					vec2 = value;
 				}
-				WorldPosition scriptedPosition = new WorldPosition(Mission.Current.Scene, vec2);
+				WorldPosition scriptedPosition = new WorldPosition(scene, vec2);
 				agent.SetScriptedPositionAndDirection(ref scriptedPosition, vec.AsVec2.RotationInRadians, addHumanLikeDelay: false, Agent.AIScriptedFrameFlags.NoAttack | Agent.AIScriptedFrameFlags.DoNotRun);
 			}
 		}
@@ -32653,13 +33187,14 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 			return;
 		}
 		ResetStaringBehavior();
-		if (Mission.Current == null)
+		Mission mission = Mission.Current;
+		if (mission == null)
 		{
 			TraceStareDebug("ResetStaringForActiveInteraction aborted: Mission.Current null");
 			return;
 		}
 		TraceStareDebug("ResetStaringForActiveInteraction primary=" + GetAgentDebugLabel(primaryTarget) + " nearby=" + list.Count);
-		_stopStaringTime = Mission.Current.CurrentTime + 20f;
+		_stopStaringTime = mission.CurrentTime + 20f;
 		foreach (Agent item in list)
 		{
 			AddAgentToStareList(item, primaryTarget != null && item.Index == primaryTarget.Index);
@@ -32668,11 +33203,12 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 
 	private void ExtendStaringHoldForPlayerDrivenSceneRound(int participantCount)
 	{
-		if (participantCount <= 1 || Mission.Current == null)
+		Mission mission = Mission.Current;
+		if (participantCount <= 1 || mission == null)
 		{
 			return;
 		}
-		_stopStaringTime = Math.Max(_stopStaringTime, Mission.Current.CurrentTime + PLAYER_DRIVEN_MULTI_SCENE_STARE_HOLD_SECONDS);
+		_stopStaringTime = Math.Max(_stopStaringTime, mission.CurrentTime + PLAYER_DRIVEN_MULTI_SCENE_STARE_HOLD_SECONDS);
 	}
 
 	private async Task<bool> GenerateImmediateSceneBehaviorReactionAsync(NpcDataPacket targetNpc, List<NpcDataPacket> allNpcData, Dictionary<int, Hero> resolvedHeroes, bool suppressStare)
@@ -33036,7 +33572,7 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 	{
 		try
 		{
-			if (Mission.Current == null || Mission.Current.Scene == null)
+			if (Mission.Current?.Scene == null)
 			{
 				return -1;
 			}
@@ -33050,11 +33586,12 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 
 	public void UpdateStaringBehavior()
 	{
-		if (_staringAgents.Count <= 0 || Mission.Current == null)
+		Mission mission = Mission.Current;
+		if (_staringAgents.Count <= 0 || mission == null)
 		{
 			return;
 		}
-		float currentTime = Mission.Current.CurrentTime;
+		float currentTime = mission.CurrentTime;
 		if (currentTime < _stopStaringTime)
 		{
 			foreach (Agent staringAgent in _staringAgents)
@@ -33109,9 +33646,10 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 		}
 		if (agent != null)
 		{
-			if (Mission.Current != null)
+			Mission mission = Mission.Current;
+			if (mission != null)
 			{
-				_stopStaringTime = Math.Max(_stopStaringTime, Mission.Current.CurrentTime + 20f);
+				_stopStaringTime = Math.Max(_stopStaringTime, mission.CurrentTime + 20f);
 			}
 			if (interruptCurrentUse)
 			{
@@ -33136,18 +33674,20 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 
 	private void PauseGame()
 	{
-		if (Mission.Current != null)
+		Mission mission = Mission.Current;
+		if (mission?.Scene != null)
 		{
-			Mission.Current.Scene.TimeSpeed = 0.0001f;
+			mission.Scene.TimeSpeed = 0.0001f;
 		}
 		PauseTtsForShoutUi();
 	}
 
 	private void ResumeGame()
 	{
-		if (Mission.Current != null)
+		Mission mission = Mission.Current;
+		if (mission?.Scene != null)
 		{
-			Mission.Current.Scene.TimeSpeed = 1f;
+			mission.Scene.TimeSpeed = 1f;
 		}
 		ResumeTtsAfterShoutUi();
 		EndShoutProcessing("resume_game");

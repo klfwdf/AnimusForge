@@ -21,7 +21,7 @@
     <VersionedDepsDir Condition="'$(VersionedDepsDir)' == '' and ! $([System.String]::Copy('$(BannerlordApi)').StartsWith('1.4')) and Exists('$(MSBuildProjectDirectory)\_deps_auto\TaleWorlds.CampaignSystem.dll')">$(MSBuildProjectDirectory)\_deps_auto</VersionedDepsDir>
     <VersionedDepsDir Condition="'$(VersionedDepsDir)' == '' and ! $([System.String]::Copy('$(BannerlordApi)').StartsWith('1.4')) and Exists('$(DepsDir)\TaleWorlds.CampaignSystem.dll')">$(DepsDir)</VersionedDepsDir>
     <BannerlordRoot Condition="'$(BannerlordRoot)' == '' and '$(BANNERLORD_ROOT)' != ''">$(BANNERLORD_ROOT)</BannerlordRoot>
-    <BannerlordRoot Condition="'$(BannerlordRoot)' == ''">D:\steam\steamapps\common\Mount &amp; Blade II Bannerlord</BannerlordRoot>
+    <BannerlordRoot Condition="'$(BannerlordRoot)' == ''">F:\SteamLibrary\steamapps\common\Mount &amp; Blade II Bannerlord</BannerlordRoot>
     <AnimusForgeModuleId Condition="'$(AnimusForgeModuleId)' == '' and $([System.String]::Copy('$(BannerlordApi)').StartsWith('1.4'))">AnimusForge_1_4_5</AnimusForgeModuleId>
     <AnimusForgeModuleId Condition="'$(AnimusForgeModuleId)' == ''">AnimusForge_1_3_x</AnimusForgeModuleId>
     <AnimusForgeBinDir Condition="'$(AnimusForgeBinDir)' == ''">$(BannerlordRoot)\Modules\$(AnimusForgeModuleId)\bin\Win64_Shipping_Client</AnimusForgeBinDir>
@@ -29,7 +29,7 @@
     <NativeBinDir Condition="'$(NativeBinDir)' == ''">$(BannerlordRoot)\Modules\Native\bin\Win64_Shipping_Client</NativeBinDir>
     <SandBoxBinDir Condition="'$(SandBoxBinDir)' == ''">$(BannerlordRoot)\Modules\SandBox\bin\Win64_Shipping_Client</SandBoxBinDir>
     <WorkshopContentDir Condition="'$(WorkshopContentDir)' == '' and '$(WORKSHOP_CONTENT_DIR)' != ''">$(WORKSHOP_CONTENT_DIR)</WorkshopContentDir>
-    <WorkshopContentDir Condition="'$(WorkshopContentDir)' == ''">E:\SteamLibrary\steamapps\workshop\content\261550</WorkshopContentDir>
+    <WorkshopContentDir Condition="'$(WorkshopContentDir)' == ''">F:\SteamLibrary\steamapps\workshop\content\261550</WorkshopContentDir>
     <HarmonyPath Condition="'$(HarmonyPath)' == '' and ! $([System.String]::Copy('$(BannerlordApi)').StartsWith('1.4')) and Exists('$(WorkshopContentDir)\2859188632\bin\Win64_Shipping_Client\Bannerlord.Harmony.dll')">$(WorkshopContentDir)\2859188632\bin\Win64_Shipping_Client\Bannerlord.Harmony.dll</HarmonyPath>
     <HarmonyPath Condition="'$(HarmonyPath)' == '' and Exists('$(BannerlordRoot)\Modules\Bannerlord.Harmony\bin\Win64_Shipping_Client\Bannerlord.Harmony.dll')">$(BannerlordRoot)\Modules\Bannerlord.Harmony\bin\Win64_Shipping_Client\Bannerlord.Harmony.dll</HarmonyPath>
     <HarmonyPath Condition="'$(HarmonyPath)' == '' and Exists('$(WorkshopContentDir)\2859188632\bin\Win64_Shipping_Client\Bannerlord.Harmony.dll')">$(WorkshopContentDir)\2859188632\bin\Win64_Shipping_Client\Bannerlord.Harmony.dll</HarmonyPath>

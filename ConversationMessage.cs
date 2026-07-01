@@ -22,11 +22,17 @@ public class ConversationMessage
 
 	public int SpeakerAgentIndex { get; set; } = -1;
 
+	public string SpeakerHeroId { get; set; } = "";
+
 	public int TargetAgentIndex { get; set; } = -1;
 
 	public string TargetName { get; set; }
 
+	public string TargetHeroId { get; set; } = "";
+
 	public float PlayerDistanceMeters { get; set; } = -1f;
 
 	public List<int> VisibleAgentIndices { get; set; } = new List<int>();
+
+	public List<string> VisibleHeroIds { get; set; } = new List<string>();
 }

@@ -1022,7 +1022,13 @@ internal static class VanillaIssueOfferBridge
 			return false;
 		}
 		IssueModel issueModel = Campaign.Current?.Models?.IssueModel;
-		foreach (TroopRosterElement troopRosterElement in MobileParty.MainParty.MemberRoster.GetTroopRoster())
+		TroopRoster mainPartyRoster = MobileParty.MainParty?.MemberRoster ?? PartyBase.MainParty?.MemberRoster;
+		if (mainPartyRoster == null)
+		{
+			failureReason = "当前玩家队伍不可用。";
+			return false;
+		}
+		foreach (TroopRosterElement troopRosterElement in mainPartyRoster.GetTroopRoster())
 		{
 			CharacterObject character = troopRosterElement.Character;
 			Hero heroObject = character?.HeroObject;
@@ -1638,11 +1644,13 @@ internal static class VanillaIssueOfferBridge
 
 	private static Agent FindAgentForHeroInMission(Hero hero)
 	{
-		if (hero == null || Mission.Current?.Agents == null)
+		Mission mission = Mission.Current;
+		var agents = mission?.Agents;
+		if (hero == null || agents == null)
 		{
 			return null;
 		}
-		foreach (Agent agent in Mission.Current.Agents)
+		foreach (Agent agent in agents)
 		{
 			if (agent?.Character is CharacterObject characterObject && characterObject.HeroObject == hero)
 			{

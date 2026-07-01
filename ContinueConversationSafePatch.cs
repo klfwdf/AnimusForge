@@ -36,12 +36,8 @@ public static class ContinueConversationSafePatch
 		}
 	}
 
-	public static Exception Finalizer(Exception __exception)
+	public static Exception Finalizer(Exception __exception, object __instance, MethodBase __originalMethod)
 	{
-		if (__exception != null)
-		{
-			return null;
-		}
-		return null;
+		return ConversationExceptionGuard.Filter(__exception, __instance, "ContinueConversation", __originalMethod);
 	}
 }

@@ -139,9 +139,11 @@ internal static class AnimusForgeCourierUiSprites
 			{
 				return;
 			}
-			BrushLayer layer = EnsureBrushLayer(brush, sprite);
-			layer.Sprite = sprite;
-			EnsureBrushStyle(brush);
+			if (!AnimusForgeRuntimeBrushSpriteGuard.TryApplyLayerStyle(brush, ReplyNoticeIdentifier, sprite, out string failureReason))
+			{
+				LogOnce("brush-apply-" + ReplyNoticeIdentifier, "Skipped courier reply brush layer apply: " + failureReason);
+				return;
+			}
 			if (!_brushLogged)
 			{
 				_brushLogged = true;
@@ -152,58 +154,6 @@ internal static class AnimusForgeCourierUiSprites
 		{
 			LogOnce("brush-exception", "Failed to apply courier reply runtime PNG sprite to brush layer: " + ex.Message);
 		}
-	}
-
-	private static BrushLayer EnsureBrushLayer(Brush brush, BannerlordUiSprite sprite)
-	{
-		BrushLayer layer = brush.GetLayer(ReplyNoticeIdentifier);
-		if (layer != null)
-		{
-			return layer;
-		}
-		layer = new BrushLayer
-		{
-			Name = ReplyNoticeIdentifier,
-			Sprite = sprite,
-			Color = Color.White,
-			ColorFactor = 1f,
-			AlphaFactor = 1f,
-			IsHidden = true
-		};
-		brush.AddLayer(layer);
-		LogOnce("layer-created-" + ReplyNoticeIdentifier, "Created runtime brush layer: " + ReplyNoticeIdentifier);
-		return layer;
-	}
-
-	private static void EnsureBrushStyle(Brush brush)
-	{
-		Style style = brush.GetStyle(ReplyNoticeIdentifier);
-		if (style == null)
-		{
-			style = new Style(brush.Layers)
-			{
-				DefaultStyle = brush.DefaultStyle,
-				Name = ReplyNoticeIdentifier
-			};
-			brush.AddStyle(style);
-			LogOnce("style-created-" + ReplyNoticeIdentifier, "Created runtime brush style: " + ReplyNoticeIdentifier);
-		}
-		else if (style.DefaultStyle == null)
-		{
-			style.DefaultStyle = brush.DefaultStyle;
-		}
-		StyleLayer styleLayer = style.GetLayer(ReplyNoticeIdentifier);
-		if (styleLayer == null)
-		{
-			BrushLayer sourceLayer = brush.GetLayer(ReplyNoticeIdentifier);
-			if (sourceLayer == null)
-			{
-				return;
-			}
-			styleLayer = new StyleLayer(sourceLayer);
-			style.AddLayer(styleLayer);
-		}
-		styleLayer.IsHidden = false;
 	}
 
 	private static bool TryCreateSprite(string spriteName, string fileName, out BannerlordUiSprite sprite, out string failureReason)

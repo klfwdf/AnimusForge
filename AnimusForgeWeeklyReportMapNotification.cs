@@ -202,9 +202,11 @@ internal static class AnimusForgeWeeklyReportUiSprites
 			{
 				return;
 			}
-			BrushLayer layer = EnsureBrushLayer(brush, _runtimeSprite);
-			layer.Sprite = _runtimeSprite;
-			EnsureBrushStyle(brush);
+			if (!AnimusForgeRuntimeBrushSpriteGuard.TryApplyLayerStyle(brush, LayerName, _runtimeSprite, out string failureReason))
+			{
+				LogOnce("brush-apply-" + LayerName, "Skipped weekly report brush layer apply: " + failureReason);
+				return;
+			}
 			if (!_brushLogged)
 			{
 				_brushLogged = true;
@@ -215,58 +217,6 @@ internal static class AnimusForgeWeeklyReportUiSprites
 		{
 			LogOnce("brush-exception", "Failed to apply weekly report runtime PNG sprite to brush layer: " + ex.Message);
 		}
-	}
-
-	private static BrushLayer EnsureBrushLayer(Brush brush, BannerlordUiSprite sprite)
-	{
-		BrushLayer layer = brush.GetLayer(LayerName);
-		if (layer != null)
-		{
-			return layer;
-		}
-		layer = new BrushLayer
-		{
-			Name = LayerName,
-			Sprite = sprite,
-			Color = Color.White,
-			ColorFactor = 1f,
-			AlphaFactor = 1f,
-			IsHidden = true
-		};
-		brush.AddLayer(layer);
-		LogOnce("layer-created-" + LayerName, "Created runtime brush layer: " + LayerName);
-		return layer;
-	}
-
-	private static void EnsureBrushStyle(Brush brush)
-	{
-		Style style = brush.GetStyle(LayerName);
-		if (style == null)
-		{
-			style = new Style(brush.Layers)
-			{
-				DefaultStyle = brush.DefaultStyle,
-				Name = LayerName
-			};
-			brush.AddStyle(style);
-			LogOnce("style-created-" + LayerName, "Created runtime brush style: " + LayerName);
-		}
-		else if (style.DefaultStyle == null)
-		{
-			style.DefaultStyle = brush.DefaultStyle;
-		}
-		StyleLayer styleLayer = style.GetLayer(LayerName);
-		if (styleLayer == null)
-		{
-			BrushLayer sourceLayer = brush.GetLayer(LayerName);
-			if (sourceLayer == null)
-			{
-				return;
-			}
-			styleLayer = new StyleLayer(sourceLayer);
-			style.AddLayer(styleLayer);
-		}
-		styleLayer.IsHidden = false;
 	}
 
 	private static bool TryCreateSprite(out BannerlordUiSprite sprite, out string failureReason)

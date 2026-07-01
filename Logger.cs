@@ -358,6 +358,60 @@ public static class Logger
 		WriteHumanLine(_modLogPath, source, message);
 	}
 
+	public static void LogImmediate(string source, string message)
+	{
+		try
+		{
+			if (ShouldRouteModLogicLogToVerbose(source, message) && !IsVerboseModLogicEnabled)
+			{
+				return;
+			}
+			if (string.IsNullOrWhiteSpace(_modLogPath) || !IsPathEnabled(_modLogPath))
+			{
+				return;
+			}
+			string text = DateTime.Now.ToString("HH:mm:ss");
+			string currentTraceId = CurrentTraceId;
+			string text2 = string.IsNullOrWhiteSpace(currentTraceId) ? "" : (" [trace=" + currentTraceId + "]");
+			lock (_fileLock)
+			{
+				AppendUtf8(_modLogPath, "[" + text + "] [" + source + "]" + text2 + " " + (message ?? "") + "\n");
+			}
+		}
+		catch
+		{
+		}
+	}
+
+	public static void WriteLogSnapshotImmediate(string fileName, string content)
+	{
+		try
+		{
+			if (!IsModLogicEnabled)
+			{
+				return;
+			}
+			string safeFileName = System.IO.Path.GetFileName((fileName ?? "").Trim());
+			if (string.IsNullOrWhiteSpace(safeFileName))
+			{
+				safeFileName = "AnimusForge_LastCheckpoint.txt";
+			}
+			string path = AnimusForgeModulePaths.GetLogFilePath(safeFileName);
+			string directory = System.IO.Path.GetDirectoryName(path);
+			if (!string.IsNullOrWhiteSpace(directory) && !Directory.Exists(directory))
+			{
+				Directory.CreateDirectory(directory);
+			}
+			lock (_fileLock)
+			{
+				File.WriteAllText(path, content ?? "", _utf8WithBom);
+			}
+		}
+		catch
+		{
+		}
+	}
+
 	public static void LogLazy(string source, Func<string> messageFactory)
 	{
 		try

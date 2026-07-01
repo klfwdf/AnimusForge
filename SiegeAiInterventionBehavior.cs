@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -12282,11 +12282,12 @@ public class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			if (agentIndex < 0 || Mission.Current?.Agents == null)
+			var agents = Mission.Current?.Agents;
+			if (agentIndex < 0 || agents == null)
 			{
 				return null;
 			}
-			return Mission.Current.Agents.FirstOrDefault(a => a != null && a.Index == agentIndex);
+			return agents.FirstOrDefault(a => a != null && a.Index == agentIndex);
 		}
 		catch
 		{

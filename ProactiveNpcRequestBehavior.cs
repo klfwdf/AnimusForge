@@ -732,6 +732,11 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		{
 			return null;
 		}
+		if (!IsPlayerEligibleForProactiveNeed(source, needType, out string ineligibleReason))
+		{
+			Logger.LogVerbose("ProactiveNpcRequest", "need_player_ineligible", () => "need skipped because player is ineligible. need=" + needType + " hero=" + (source.Hero?.StringId ?? "") + " reason=" + ineligibleReason, 30.0);
+			return null;
+		}
 		return new ProactiveCandidate
 		{
 			Party = source.Party,
@@ -832,7 +837,7 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 			return null;
 		}
 		List<ProactiveCandidate> ordered = needCandidates
-			.Where(c => c != null && !string.IsNullOrWhiteSpace(c.NeedType))
+			.Where(c => c != null && !string.IsNullOrWhiteSpace(c.NeedType) && IsPlayerEligibleForProactiveNeed(c, c.NeedType, out _))
 			.OrderByDescending(c => c.NeedUrgency)
 			.ThenByDescending(c => GetNeedPresentationPriority(c.NeedType))
 			.ToList();
@@ -850,6 +855,297 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		combined.NeedType = needTypes[0];
 		combined.NeedUrgency = ordered.Max(c => c.NeedUrgency) + Math.Min(12f, Math.Max(0, needTypes.Count - 1) * 4f);
 		return combined;
+	}
+
+	private static List<string> FilterPlayerEligibleNeedTypes(ProactiveCandidate candidate, IEnumerable<string> needTypes, string fallbackNeedType)
+	{
+		List<string> raw = new List<string>();
+		try
+		{
+			if (needTypes != null)
+			{
+				foreach (string needType in needTypes)
+				{
+					string normalized = NormalizeNeedType(needType);
+					if (!string.IsNullOrWhiteSpace(normalized) && !raw.Any(x => string.Equals(x, normalized, StringComparison.OrdinalIgnoreCase)))
+					{
+						raw.Add(normalized);
+					}
+				}
+			}
+			string fallback = NormalizeNeedType(fallbackNeedType);
+			if (raw.Count == 0 && !string.IsNullOrWhiteSpace(fallback))
+			{
+				raw.Add(fallback);
+			}
+			List<string> eligible = raw
+				.Where(needType => IsPlayerEligibleForProactiveNeed(candidate, needType, out _))
+				.ToList();
+			return eligible.Count <= 0 ? new List<string>() : NormalizeNeedTypes(eligible, eligible[0]);
+		}
+		catch
+		{
+			return new List<string>();
+		}
+	}
+
+	private static bool IsPlayerEligibleForProactiveNeed(ProactiveCandidate candidate, string needType, out string reason)
+	{
+		reason = "";
+		string normalized = NormalizeNeedType(needType);
+		if (candidate == null || string.IsNullOrWhiteSpace(normalized))
+		{
+			reason = "candidate_or_need_invalid";
+			return false;
+		}
+		try
+		{
+			if (string.Equals(normalized, NeedKingdomMercenaryInvite, StringComparison.OrdinalIgnoreCase))
+			{
+				return IsPlayerEligibleForMercenaryInvite(candidate, out reason);
+			}
+			if (string.Equals(normalized, NeedKingdomVassalInvite, StringComparison.OrdinalIgnoreCase))
+			{
+				return IsPlayerEligibleForVassalInvite(candidate, out reason);
+			}
+			if (string.Equals(normalized, NeedPoliticalAgenda, StringComparison.OrdinalIgnoreCase))
+			{
+				return IsPlayerEligibleForPoliticalAgendaRequest(candidate, out reason);
+			}
+			if (string.Equals(normalized, NeedDiplomacy, StringComparison.OrdinalIgnoreCase))
+			{
+				return IsPlayerEligibleForDiplomacyRequest(candidate, out reason);
+			}
+			if (string.Equals(normalized, NeedMarriageAlliancePressure, StringComparison.OrdinalIgnoreCase))
+			{
+				return IsPlayerEligibleForMarriageAllianceRequest(candidate, out reason);
+			}
+			if (string.Equals(normalized, NeedAllySupport, StringComparison.OrdinalIgnoreCase))
+			{
+				return IsPlayerEligibleForAllySupportRequest(candidate, out reason);
+			}
+			return true;
+		}
+		catch (Exception ex)
+		{
+			reason = "exception:" + ex.Message;
+			return false;
+		}
+	}
+
+	private static bool IsPlayerEligibleForMercenaryInvite(ProactiveCandidate candidate, out string reason)
+	{
+		reason = "";
+		Clan playerClan = Clan.PlayerClan;
+		if (playerClan == null)
+		{
+			reason = "player_clan_missing";
+			return false;
+		}
+		if (candidate.TargetKingdom == null || !candidate.TargetClanCanOfferKingdomService || !candidate.KingdomNeedsMercenaries)
+		{
+			reason = "target_cannot_offer_mercenary";
+			return false;
+		}
+		if (candidate.PlayerClanTier < MercenaryInviteMinPlayerClanTier)
+		{
+			reason = "player_tier_below_mercenary";
+			return false;
+		}
+		if (playerClan.Kingdom != null || playerClan.IsUnderMercenaryService)
+		{
+			reason = "player_already_serving";
+			return false;
+		}
+		return true;
+	}
+
+	private static bool IsPlayerEligibleForVassalInvite(ProactiveCandidate candidate, out string reason)
+	{
+		reason = "";
+		Clan playerClan = Clan.PlayerClan;
+		if (playerClan == null)
+		{
+			reason = "player_clan_missing";
+			return false;
+		}
+		if (candidate.TargetKingdom == null || !candidate.TargetClanCanOfferKingdomService || !candidate.TargetHeroIsKingdomLeader || !candidate.KingdomNeedsVassals)
+		{
+			reason = "target_cannot_offer_vassalage";
+			return false;
+		}
+		if (candidate.PlayerClanTier < VassalInviteMinPlayerClanTier)
+		{
+			reason = "player_tier_below_vassal";
+			return false;
+		}
+		if (playerClan.Kingdom == null)
+		{
+			return true;
+		}
+		if (playerClan.IsUnderMercenaryService && playerClan.Kingdom == candidate.TargetKingdom)
+		{
+			return true;
+		}
+		reason = "player_not_independent_or_target_mercenary";
+		return false;
+	}
+
+	private static bool IsPlayerEligibleForPoliticalAgendaRequest(ProactiveCandidate candidate, out string reason)
+	{
+		reason = "";
+		Clan playerClan = Clan.PlayerClan;
+		if (playerClan == null || candidate.TargetKingdom == null)
+		{
+			reason = "player_or_kingdom_missing";
+			return false;
+		}
+		if (playerClan.Kingdom != candidate.TargetKingdom || playerClan.IsUnderMercenaryService)
+		{
+			reason = "player_not_formal_member_of_target_kingdom";
+			return false;
+		}
+		return true;
+	}
+
+	private static bool IsPlayerEligibleForDiplomacyRequest(ProactiveCandidate candidate, out string reason)
+	{
+		reason = "";
+		Kingdom playerKingdom = Clan.PlayerClan?.Kingdom;
+		if (playerKingdom == null || playerKingdom.IsEliminated)
+		{
+			reason = "player_kingdom_missing";
+			return false;
+		}
+		if (Hero.MainHero != playerKingdom.RulingClan?.Leader)
+		{
+			reason = "player_not_kingdom_leader";
+			return false;
+		}
+		if (candidate.TargetKingdom == null || candidate.TargetKingdom == playerKingdom || candidate.Hero != candidate.TargetKingdom.RulingClan?.Leader)
+		{
+			reason = "target_not_foreign_king";
+			return false;
+		}
+		return true;
+	}
+
+	private static bool IsPlayerEligibleForAllySupportRequest(ProactiveCandidate candidate, out string reason)
+	{
+		reason = "";
+		Clan playerClan = Clan.PlayerClan;
+		if (playerClan == null || candidate.TargetKingdom == null)
+		{
+			reason = "player_or_kingdom_missing";
+			return false;
+		}
+		if (playerClan.Kingdom != candidate.TargetKingdom || playerClan.IsUnderMercenaryService)
+		{
+			reason = "player_cannot_vote_or_back_in_target_kingdom";
+			return false;
+		}
+		return true;
+	}
+
+	private static bool IsPlayerEligibleForMarriageAllianceRequest(ProactiveCandidate candidate, out string reason)
+	{
+		reason = "";
+		Clan npcClan = candidate?.Hero?.Clan;
+		Clan playerClan = Clan.PlayerClan ?? Hero.MainHero?.Clan;
+		if (npcClan == null || playerClan == null || npcClan == playerClan)
+		{
+			reason = "clan_invalid";
+			return false;
+		}
+		List<Hero> npcCandidates = GetMarriageableClanHeroes(npcClan, includeMainHero: false);
+		List<Hero> playerCandidates = GetMarriageableClanHeroes(playerClan, includeMainHero: true);
+		if (npcCandidates.Count <= 0)
+		{
+			reason = "npc_clan_no_marriage_candidate";
+			return false;
+		}
+		if (playerCandidates.Count <= 0)
+		{
+			reason = "player_clan_no_marriage_candidate";
+			return false;
+		}
+		foreach (Hero npcHero in npcCandidates)
+		{
+			foreach (Hero playerHero in playerCandidates)
+			{
+				if (AreHeroesSuitableForMarriageRequest(npcHero, playerHero))
+				{
+					return true;
+				}
+			}
+		}
+		reason = "no_suitable_marriage_pair";
+		return false;
+	}
+
+	private static List<Hero> GetMarriageableClanHeroes(Clan clan, bool includeMainHero)
+	{
+		List<Hero> result = new List<Hero>();
+		try
+		{
+			if (clan?.Heroes != null)
+			{
+				foreach (Hero hero in clan.Heroes)
+				{
+					AddMarriageableHero(result, hero, clan);
+				}
+			}
+			if (includeMainHero)
+			{
+				AddMarriageableHero(result, Hero.MainHero, clan);
+			}
+		}
+		catch
+		{
+		}
+		return result;
+	}
+
+	private static void AddMarriageableHero(List<Hero> result, Hero hero, Clan clan)
+	{
+		try
+		{
+			if (result == null || hero == null || clan == null || hero.Clan != clan || hero.IsDead || hero.IsPrisoner || hero.PartyBelongedToAsPrisoner != null)
+			{
+				return;
+			}
+			string heroKey = GetHeroKey(hero);
+			if (result.Any(h => string.Equals(GetHeroKey(h), heroKey, StringComparison.OrdinalIgnoreCase)))
+			{
+				return;
+			}
+			if (!hero.CanMarry())
+			{
+				return;
+			}
+			result.Add(hero);
+		}
+		catch
+		{
+		}
+	}
+
+	private static bool AreHeroesSuitableForMarriageRequest(Hero left, Hero right)
+	{
+		try
+		{
+			return left != null
+				&& right != null
+				&& left != right
+				&& left.Clan != null
+				&& right.Clan != null
+				&& left.Clan != right.Clan
+				&& Campaign.Current?.Models?.MarriageModel?.IsCoupleSuitableForMarriage(left, right) == true;
+		}
+		catch
+		{
+			return false;
+		}
 	}
 
 	private bool TryBuildFoodShortageCandidate(ProactiveCandidate source, DuelSettings settings, out ProactiveCandidate candidate)
@@ -1506,6 +1802,14 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
+		List<string> eligibleNeedTypes = FilterPlayerEligibleNeedTypes(candidate, candidate.NeedTypes, candidate.NeedType);
+		if (eligibleNeedTypes.Count <= 0)
+		{
+			Logger.Log("ProactiveNpcRequest", "start aborted: all needs became player-ineligible. hero=" + GetHeroKey(hero) + " needs=" + JoinNeedTypesForLog(candidate.NeedTypes, candidate.NeedType));
+			return;
+		}
+		candidate.NeedTypes = eligibleNeedTypes;
+		candidate.NeedType = eligibleNeedTypes[0];
 		if (string.Equals(candidate.TriggerSource, TriggerSourceNotorietyDriven, StringComparison.OrdinalIgnoreCase))
 		{
 			PlayerNotorietyBehavior.MarkObserverKnowsPlayerForExternal(hero, "proactive_notoriety_request");
@@ -1677,7 +1981,7 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		}
 		try
 		{
-			PlayerEncounter.RestartPlayerEncounter(party.Party, PartyBase.MainParty, forcePlayerOutFromSettlement: false);
+			PlayerEncounterCompat.RestartPlayerEncounter(party.Party, PartyBase.MainParty, forcePlayerOutFromSettlement: false);
 		}
 		catch (Exception ex)
 		{

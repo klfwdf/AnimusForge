@@ -36,12 +36,8 @@ public static class ProcessSentenceSafePatch
 		}
 	}
 
-	public static Exception Finalizer(Exception __exception)
+	public static Exception Finalizer(Exception __exception, object __instance, MethodBase __originalMethod)
 	{
-		if (__exception != null)
-		{
-			return null;
-		}
-		return null;
+		return ConversationExceptionGuard.Filter(__exception, __instance, "ProcessSentence", __originalMethod);
 	}
 }

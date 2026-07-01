@@ -539,9 +539,10 @@ public sealed class ShoutTextInputPopup
 	{
 		try
 		{
-			if (Mission.Current != null)
+			Mission mission = Mission.Current;
+			if (mission?.Scene != null)
 			{
-				Mission.Current.Scene.TimeSpeed = 0f;
+				mission.Scene.TimeSpeed = 0f;
 			}
 		}
 		catch

@@ -1,4 +1,4 @@
-﻿﻿﻿using System;
+﻿﻿using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -3557,7 +3557,7 @@ public class MyBehavior : CampaignBehaviorBase
 			}
 			try
 			{
-				if (Mission.Current != null && Mission.Current.Scene != null && ShoutUtils.IsInValidScene())
+				if (Mission.Current?.Scene != null && ShoutUtils.IsInValidScene())
 				{
 					return false;
 				}
@@ -16477,13 +16477,14 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private void OnMissionStarted(IMission mission)
 	{
-		if (mission != null && Mission.Current != null)
+		Mission currentMission = Mission.Current;
+		if (mission != null && currentMission != null)
 		{
 			try
 			{
-				string arg = Mission.Current.SceneName ?? "Unknown";
+				string arg = currentMission.SceneName ?? "Unknown";
 				string arg2 = MobileParty.MainParty?.CurrentSettlement?.Name?.ToString() ?? "";
-				MissionMode mode = Mission.Current.Mode;
+				MissionMode mode = currentMission.Mode;
 				Logger.Log("SceneInfo", $"[MyBehavior.OnMissionStarted] SceneName={arg}, Mode={mode}, Settlement={arg2}");
 			}
 			catch
@@ -25157,9 +25158,13 @@ public class MyBehavior : CampaignBehaviorBase
 	private static string BuildRestrictedRuleReferralHint(bool hasAnyHero, Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, HashSet<string> excludedRuleIdSet)
 	{
 		List<string> tips = new List<string>();
-		if (AnyRestrictedReferralRuleBlocked(hasAnyHero, targetHero, targetCharacter, targetAgentIndex, excludedRuleIdSet, "diplomacy", "kingdom_vassalage", "kingdom_annexation"))
+		if (AnyRestrictedReferralRuleBlocked(hasAnyHero, targetHero, targetCharacter, targetAgentIndex, excludedRuleIdSet, "diplomacy"))
 		{
-			AddReferralTip(tips, "国事找国王");
+			AddReferralTip(tips, "外交找国王");
+		}
+		else if (AnyRestrictedReferralRuleBlocked(hasAnyHero, targetHero, targetCharacter, targetAgentIndex, excludedRuleIdSet, "kingdom_vassalage", "kingdom_annexation"))
+		{
+			AddReferralTip(tips, "臣属/吞并需双方国王");
 		}
 		if (AnyRestrictedReferralRuleBlocked(hasAnyHero, targetHero, targetCharacter, targetAgentIndex, excludedRuleIdSet, "vote_deal", "propose_agenda"))
 		{
@@ -25327,11 +25332,13 @@ public class MyBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			if (targetAgentIndex < 0 || Mission.Current == null || PlayerEncounter.LocationEncounter == null || TaleWorlds.CampaignSystem.Settlements.Locations.LocationComplex.Current == null)
+			Mission mission = Mission.Current;
+			var agents = mission?.Agents;
+			if (targetAgentIndex < 0 || agents == null || PlayerEncounter.LocationEncounter == null || TaleWorlds.CampaignSystem.Settlements.Locations.LocationComplex.Current == null)
 			{
 				return false;
 			}
-			Agent agent = Mission.Current.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == targetAgentIndex && a.IsActive());
+			Agent agent = agents.FirstOrDefault((Agent a) => a != null && a.Index == targetAgentIndex && a.IsActive());
 			if (agent == null || agent == Agent.Main)
 			{
 				return false;
@@ -26405,11 +26412,13 @@ public class MyBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			if (targetAgentIndex < 0 || Mission.Current?.Agents == null)
+			Mission mission = Mission.Current;
+			var agents = mission?.Agents;
+			if (targetAgentIndex < 0 || agents == null)
 			{
 				return null;
 			}
-			Agent agent = Mission.Current.Agents.FirstOrDefault((Agent a) => a != null && a.Index == targetAgentIndex);
+			Agent agent = agents.FirstOrDefault((Agent a) => a != null && a.Index == targetAgentIndex);
 			CharacterObject characterObject = agent?.Character as CharacterObject;
 			Kingdom kingdom = ResolveKingdomFromFactionForVassalagePrompt(characterObject?.HeroObject?.Clan?.Kingdom ?? characterObject?.HeroObject?.MapFaction);
 			if (kingdom != null)
@@ -27462,7 +27471,34 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			bool includeResidentKingdomEntities = ShouldIncludeResidentKingdomEntities(flag6, auxiliaryRuleHitIds);
 			Hero entityContextHero = targetHero ?? targetCharacter?.HeroObject;
-			WorldEntityPromptContext entityPromptContext = WorldEntityRetrievalService.BuildPromptContext(mentionedEntities, BuildPlayerPublicDisplayNameForPrompt(entityContextHero, targetCharacter, targetAgentIndex), entityContextHero, includeResidentKingdomEntities);
+			HashSet<string> entityRetrievalRuleIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+			if (auxiliaryRuleHitIds != null)
+			{
+				foreach (string ruleId in auxiliaryRuleHitIds)
+				{
+					if (!string.IsNullOrWhiteSpace(ruleId))
+					{
+						entityRetrievalRuleIds.Add(ruleId.Trim());
+					}
+				}
+			}
+			if (flag7)
+			{
+				entityRetrievalRuleIds.Add("reward");
+			}
+			if (flag8)
+			{
+				entityRetrievalRuleIds.Add("loan");
+			}
+			if (partyTransferHit)
+			{
+				entityRetrievalRuleIds.Add("party_transfer");
+			}
+			if (worldMapPartyCommandHit)
+			{
+				entityRetrievalRuleIds.Add("worldmap_party_command");
+			}
+			WorldEntityPromptContext entityPromptContext = WorldEntityRetrievalService.BuildPromptContext(mentionedEntities, BuildPlayerPublicDisplayNameForPrompt(entityContextHero, targetCharacter, targetAgentIndex), entityContextHero, includeResidentKingdomEntities, entityRetrievalRuleIds);
 			if (entityPromptContext != null && entityPromptContext.HasContent)
 			{
 				if (!string.IsNullOrWhiteSpace(entityPromptContext.MainPromptBlock))
@@ -29204,9 +29240,9 @@ public class MyBehavior : CampaignBehaviorBase
 		StringBuilder user = new StringBuilder();
 		int mode = GetMemoryPreprocessModeFromSettings();
 		user.AppendLine(mode == 2 ? "Mode: parallel memory selector request. memory_ids is the required field for this request." : "Mode: unified preprocessing body. Include rule_codes and memory_ids even if rule_codes is empty.");
-		user.AppendLine("Output JSON schema: {\"rule_codes\":[],\"memory_ids\":[1,2],\"mentioned_entities\":{\"heroes\":[],\"settlements\":[],\"clans\":[],\"kingdoms\":[],\"terms\":[]}}");
+		user.AppendLine("Output JSON schema: {\"rule_codes\":[],\"memory_ids\":[1,2],\"mentioned_entities\":{\"heroes\":[],\"settlements\":[],\"clans\":[],\"kingdoms\":[],\"items\":[],\"troops\":[],\"terms\":[]}}");
 		user.AppendLine("Select exactly " + Math.Max(1, finalCount) + " memory_ids from the candidate list. If uncertain, choose the closest by semantic relevance. Do not select more than " + Math.Max(1, finalCount) + ".");
-		user.AppendLine("mentioned_entities must contain named people, settlements/places, clans/families, kingdoms/countries, and every other explicitly mentioned referable noun from the latest player input or latest NPC/context input. Put named people in heroes, settlements/places in settlements, clans/families in clans, kingdoms/countries/factions in kingdoms, and all other nouns or noun phrases in terms, including item names, item type names, troop names, troop type names, prisoner names, prisoner type names, asset names, and asset type names. Personal names and titles such as king, queen, lord, lady, noble, notable, headman, gang leader, wanderer, artisan, or ruler must go in heroes, not settlements. Do not extract the current conversation NPC/speaker's own name, role, title, aliases, or the player name merely because they are the current speakers; mentioned_entities should describe third-party entities or things being explicitly discussed. If a name is ambiguous, put it in the closest bucket and also include the raw phrase in terms; runtime retrieval will search every extracted name across world entities and current lists. Order every mentioned_entities array by dialogue recency: names from the latest player input first, then latest NPC/context input. Do not extract names from memory candidate titles unless they are also mentioned in the latest exchange.");
+		user.AppendLine("mentioned_entities: heroes named people/titles; settlements places; clans families; kingdoms factions; items item/goods/equipment names or types; troops troop/unit/prisoner names or types; terms other useful raw phrases. Do not extract current speakers or player names just because they are speakers. If ambiguous, also add the raw phrase to terms. Order arrays by recency. Do not extract names from memory candidate titles unless also mentioned in the latest exchange.");
 		user.AppendLine();
 		user.AppendLine("Latest player input:");
 		user.AppendLine(string.IsNullOrWhiteSpace(currentInput) ? "(none)" : currentInput.Trim());
@@ -29573,7 +29609,7 @@ public class MyBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			if (Mission.Current == null || Mission.Current.Scene == null)
+			if (Mission.Current?.Scene == null)
 			{
 				return -1;
 			}

@@ -232,7 +232,7 @@ public static partial class TroopInspectionBehavior
 			}
 			int healthyInspectableTroops = CountHealthyNonPlayerTroops(PartyBase.MainParty.MemberRoster);
 			Log($"precheck {BuildMainHeroInspectionStateSummary()} healthy_non_player={healthyInspectableTroops} mission_current={Mission.Current != null} player_encounter={PlayerEncounter.Current != null} player_mapevent={MapEvent.PlayerMapEvent != null}");
-			if (Hero.MainHero.IsWounded)
+			if (Hero.MainHero?.IsWounded == true)
 			{
 				Display("你受伤了，无法检阅部队。");
 				ResetPendingSelection("player_wounded");
@@ -381,9 +381,10 @@ public static partial class TroopInspectionBehavior
 			{
 				return MapEvent.PlayerMapEvent;
 			}
-			if (IsInspectionMapEvent(MobileParty.MainParty?.MapEvent))
+			MobileParty mainParty = MobileParty.MainParty;
+			if (IsInspectionMapEvent(mainParty?.MapEvent))
 			{
-				return MobileParty.MainParty.MapEvent;
+				return mainParty.MapEvent;
 			}
 			foreach (MobileParty party in MobileParty.All)
 			{
@@ -586,7 +587,7 @@ public static partial class TroopInspectionBehavior
 				blockedReason = "当前任务中无法检阅部队。";
 				return false;
 			}
-			if (Campaign.Current.ConversationManager != null && Campaign.Current.ConversationManager.IsConversationInProgress)
+			if (Campaign.Current?.ConversationManager?.IsConversationInProgress == true)
 			{
 				blockedReason = "当前对话中无法检阅部队。";
 				return false;

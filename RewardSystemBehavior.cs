@@ -4470,6 +4470,11 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				statusText = $"执行跳过：{joiningHero.Name} 已经在玩家队伍中。";
 				return false;
 			}
+			if (AIConfigHandler.IsHeroImprisonedForHeroJoin(joiningHero))
+			{
+				statusText = $"执行失败：{joiningHero.Name} 正处于囚禁状态，不能通过入队标签直接加入玩家队伍。";
+				return false;
+			}
 			List<string> transitionNotes = new List<string>();
 			// Capture the original clan before AddCompanionAction changes Hero.Clan through CompanionOf.
 			Clan originalClan = GetHeroBackingClan(joiningHero) ?? joiningHero.Clan;
@@ -4996,11 +5001,13 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			if (targetAgentIndex < 0 || Mission.Current == null)
+			Mission mission = Mission.Current;
+			var agents = mission?.Agents;
+			if (targetAgentIndex < 0 || agents == null)
 			{
 				return null;
 			}
-			return Mission.Current.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == targetAgentIndex);
+			return agents.FirstOrDefault((Agent a) => a != null && a.Index == targetAgentIndex);
 		}
 		catch
 		{
@@ -13326,12 +13333,12 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 						string text4 = ((debtLine != null) ? BuildDebtDueStatusText(debtLine.DueDay, debtLine.IsDueUnlimited) : "");
 						string text5 = debtLine?.DebtId ?? "";
 						string text6 = string.IsNullOrWhiteSpace(text3) ? "" : ("；备注：" + text3);
-						giverFacts.Add($"你已经记下：玩家欠你 {result8} 第纳尔（债务ID:{text5}）。{text4}{text6}");
-						receiverFacts.Add($"你欠 {giverName} {result8} 第纳尔（债务ID:{text5}）。{text4}{text6}");
+						giverFacts.Add($"你已经记下：玩家的承诺值 {result8} （债务ID:{text5}）。{text4}{text6}");
+						receiverFacts.Add($"你的承诺 {giverName}的事物值{result8} （债务ID:{text5}）。{text4}{text6}");
 						string text7 = (string.IsNullOrWhiteSpace(text4) ? "" : ("（" + text4 + "）"));
 						string text8 = (string.IsNullOrWhiteSpace(text5) ? "" : ("[ID:" + text5 + "] "));
 						string text9 = string.IsNullOrWhiteSpace(text3) ? "" : (" 备注：" + text3);
-						ShowRewardMessage($"【欠款记录】{text8}你欠 {giverName} {result8} 第纳尔{text7}{text9}", Color.FromUint(4294936576u), giver);
+						ShowRewardMessage($"【欠款或承诺记录】{text8}你欠 {giverName} {result8} 价值{text7}{text9}", Color.FromUint(4294936576u), giver);
 					}
 				}
 				return string.Empty;

@@ -1,12 +1,18 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using HarmonyLib;
 using TaleWorlds.CampaignSystem;
+using TaleWorlds.CampaignSystem.Actions;
+using TaleWorlds.CampaignSystem.CampaignBehaviors;
+using TaleWorlds.CampaignSystem.GameComponents;
+using TaleWorlds.CampaignSystem.Naval;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Roster;
 using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.Core;
+using TaleWorlds.Library;
 
 namespace AnimusForge;
 
@@ -30,6 +36,12 @@ internal static class AnimusForgeMobilePartyAiSafetyPatch
 		{
 			PatchPartyHourlyAiTick(harmony);
 			PatchAiVisitSettlementTick(harmony);
+			PatchPartyWageModel(harmony);
+			PatchPartyUpgrader(harmony);
+			PatchRecruitment(harmony);
+			PatchPartyDiplomaticHandler(harmony);
+			PatchChangeShipOwnerAction(harmony);
+			PatchNavalShipTradeOwnerChanged(harmony);
 		}
 		catch (Exception ex)
 		{
@@ -42,6 +54,12 @@ internal static class AnimusForgeMobilePartyAiSafetyPatch
 		try
 		{
 			MobileParty party = ExtractParty(__args);
+			if (CampaignTickDiagnosticsPatch.ConsumePriorCrashSuspectPartySkip(party, out string priorCrashReason))
+			{
+				TryDelayNativeAiDecisionOneTick(party, priorCrashReason);
+				LogGuard("party_hourly_ai_prior_crash_skip", party, priorCrashReason);
+				return false;
+			}
 			if (!ShouldSkipNativeAiForUtilityParty(party, out string reason))
 			{
 				return true;
@@ -107,6 +125,201 @@ internal static class AnimusForgeMobilePartyAiSafetyPatch
 		return __exception;
 	}
 
+	public static bool GetTotalWagePrefix(MobileParty mobileParty, TroopRoster troopRoster, bool includeDescriptions, ref ExplainedNumber __result)
+	{
+		try
+		{
+			if (!ShouldUseSafeWageFallback(mobileParty, troopRoster, out string reason, out bool zeroWage))
+			{
+				return true;
+			}
+			__result = BuildSafeWageFallback(troopRoster, includeDescriptions, zeroWage);
+			LogGuard("wage_safe_fallback", mobileParty, reason);
+			return false;
+		}
+		catch
+		{
+			return true;
+		}
+	}
+
+	public static Exception GetTotalWageFinalizer(Exception __exception, MobileParty mobileParty, TroopRoster troopRoster, bool includeDescriptions, ref ExplainedNumber __result, MethodBase __originalMethod)
+	{
+		if (__exception == null)
+		{
+			return null;
+		}
+		try
+		{
+			if (IsRecoverableNativeAiStateException(__exception) && ShouldUseSafeWageFallback(mobileParty, troopRoster, out string reason, out bool zeroWage))
+			{
+				__result = BuildSafeWageFallback(troopRoster, includeDescriptions, zeroWage);
+				LogGuard("wage_exception_suppressed", mobileParty, reason, __exception, __originalMethod);
+				return null;
+			}
+		}
+		catch
+		{
+		}
+		return __exception;
+	}
+
+	public static bool UpgradeReadyTroopsPrefix(PartyBase party)
+	{
+		try
+		{
+			if (!ShouldSkipNativeUpgradeForPartyBase(party, out string reason, out MobileParty mobileParty))
+			{
+				return true;
+			}
+			LogGuard("upgrade_ready_troops_skip", mobileParty, reason);
+			return false;
+		}
+		catch
+		{
+			return true;
+		}
+	}
+
+	public static Exception UpgradeReadyTroopsFinalizer(Exception __exception, PartyBase party, MethodBase __originalMethod)
+	{
+		if (__exception == null)
+		{
+			return null;
+		}
+		try
+		{
+			if (IsRecoverableNativeAiStateException(__exception) && ShouldSkipNativeUpgradeForPartyBase(party, out string reason, out MobileParty mobileParty))
+			{
+				LogGuard("upgrade_ready_troops_exception_suppressed", mobileParty, reason, __exception, __originalMethod);
+				return null;
+			}
+		}
+		catch
+		{
+		}
+		return __exception;
+	}
+
+	public static bool CheckRecruitingPrefix(MobileParty mobileParty, Settlement settlement)
+	{
+		try
+		{
+			if (!ShouldSkipNativeRecruiting(mobileParty, settlement, out string reason))
+			{
+				return true;
+			}
+			TryLockNativeAiDecisions(mobileParty, reason);
+			LogGuard("recruiting_skip", mobileParty, reason);
+			return false;
+		}
+		catch
+		{
+			return true;
+		}
+	}
+
+	public static Exception CheckRecruitingFinalizer(Exception __exception, MobileParty mobileParty, Settlement settlement, MethodBase __originalMethod)
+	{
+		if (__exception == null)
+		{
+			return null;
+		}
+		try
+		{
+			if (IsRecoverableNativeAiStateException(__exception) && ShouldSkipNativeRecruiting(mobileParty, settlement, out string reason))
+			{
+				LogGuard("recruiting_exception_suppressed", mobileParty, reason, __exception, __originalMethod);
+				return null;
+			}
+		}
+		catch
+		{
+		}
+		return __exception;
+	}
+
+	public static Exception CheckSettlementSuitabilityFinalizer(Exception __exception, IEnumerable<MobileParty> parties, MethodBase __originalMethod)
+	{
+		if (__exception == null)
+		{
+			return null;
+		}
+		try
+		{
+			if (IsRecoverableNativeAiStateException(__exception) && ContainsUnsafePartyForNativeSettlementSuitability(parties, out string reason, out MobileParty party))
+			{
+				LogGuard("settlement_suitability_exception_suppressed", party, reason, __exception, __originalMethod);
+				return null;
+			}
+		}
+		catch
+		{
+		}
+		return __exception;
+	}
+
+	public static bool ChangeShipOwnerPrefix(PartyBase newOwner, Ship ship)
+	{
+		try
+		{
+			if (!ShouldSkipShipOwnerChange(newOwner, ship, out string reason, out MobileParty mobileParty))
+			{
+				return true;
+			}
+			LogGuard("ship_owner_change_skip", mobileParty, reason);
+			return false;
+		}
+		catch
+		{
+			return true;
+		}
+	}
+
+	public static Exception ChangeShipOwnerFinalizer(Exception __exception, PartyBase newOwner, Ship ship, MethodBase __originalMethod)
+	{
+		if (__exception == null)
+		{
+			return null;
+		}
+		try
+		{
+			if (IsRecoverableNativeAiStateException(__exception) && ShouldSuppressShipOwnerChangeException(newOwner, ship, out string reason, out MobileParty mobileParty))
+			{
+				LogGuard("ship_owner_change_exception_suppressed", mobileParty, reason, __exception, __originalMethod);
+				return null;
+			}
+		}
+		catch
+		{
+		}
+		return __exception;
+	}
+
+	public static Exception NavalShipTradeOwnerChangedFinalizer(Exception __exception, Ship ship, PartyBase oldOwner, MethodBase __originalMethod)
+	{
+		if (__exception == null)
+		{
+			return null;
+		}
+		try
+		{
+			if (!IsRecoverableNativeAiStateException(__exception))
+			{
+				return __exception;
+			}
+			PartyBase currentOwner = GetShipOwnerSafe(ship);
+			MobileParty party = ExtractMobileParty(currentOwner) ?? ExtractMobileParty(oldOwner);
+			string reason = "naval_ship_trade_owner_changed:" + DescribeShip(ship);
+			LogGuard("naval_ship_trade_exception_suppressed", party, reason, __exception, __originalMethod);
+			return null;
+		}
+		catch
+		{
+		}
+		return __exception;
+	}
+
 	private static void PatchPartyHourlyAiTick(Harmony harmony)
 	{
 		Type type = AccessTools.TypeByName("TaleWorlds.CampaignSystem.CampaignBehaviors.AiBehaviors.AiPartyThinkBehavior");
@@ -134,6 +347,91 @@ internal static class AnimusForgeMobilePartyAiSafetyPatch
 			prefix: new HarmonyMethod(typeof(AnimusForgeMobilePartyAiSafetyPatch), nameof(AiVisitSettlementPrefix)),
 			finalizer: new HarmonyMethod(typeof(AnimusForgeMobilePartyAiSafetyPatch), nameof(AiVisitSettlementFinalizer)));
 		Logger.Log(LogSource, "AiVisitSettlementBehavior.AiHourlyTick guard applied.");
+	}
+
+	private static void PatchPartyWageModel(Harmony harmony)
+	{
+		MethodInfo target = AccessTools.Method(typeof(DefaultPartyWageModel), nameof(DefaultPartyWageModel.GetTotalWage), new[] { typeof(MobileParty), typeof(TroopRoster), typeof(bool) });
+		if (target == null)
+		{
+			Logger.Log(LogSource, "DefaultPartyWageModel.GetTotalWage not found; wage guard skipped.");
+			return;
+		}
+		harmony.Patch(
+			target,
+			prefix: new HarmonyMethod(typeof(AnimusForgeMobilePartyAiSafetyPatch), nameof(GetTotalWagePrefix)),
+			finalizer: new HarmonyMethod(typeof(AnimusForgeMobilePartyAiSafetyPatch), nameof(GetTotalWageFinalizer)));
+		Logger.Log(LogSource, "DefaultPartyWageModel.GetTotalWage guard applied.");
+	}
+
+	private static void PatchPartyUpgrader(Harmony harmony)
+	{
+		MethodInfo target = AccessTools.Method(typeof(PartyUpgraderCampaignBehavior), nameof(PartyUpgraderCampaignBehavior.UpgradeReadyTroops), new[] { typeof(PartyBase) });
+		if (target == null)
+		{
+			Logger.Log(LogSource, "PartyUpgraderCampaignBehavior.UpgradeReadyTroops not found; upgrade guard skipped.");
+			return;
+		}
+		harmony.Patch(
+			target,
+			prefix: new HarmonyMethod(typeof(AnimusForgeMobilePartyAiSafetyPatch), nameof(UpgradeReadyTroopsPrefix)),
+			finalizer: new HarmonyMethod(typeof(AnimusForgeMobilePartyAiSafetyPatch), nameof(UpgradeReadyTroopsFinalizer)));
+		Logger.Log(LogSource, "PartyUpgraderCampaignBehavior.UpgradeReadyTroops guard applied.");
+	}
+
+	private static void PatchRecruitment(Harmony harmony)
+	{
+		MethodInfo target = AccessTools.Method(typeof(RecruitmentCampaignBehavior), "CheckRecruiting", new[] { typeof(MobileParty), typeof(Settlement) });
+		if (target == null)
+		{
+			Logger.Log(LogSource, "RecruitmentCampaignBehavior.CheckRecruiting not found; recruitment guard skipped.");
+			return;
+		}
+		harmony.Patch(
+			target,
+			prefix: new HarmonyMethod(typeof(AnimusForgeMobilePartyAiSafetyPatch), nameof(CheckRecruitingPrefix)),
+			finalizer: new HarmonyMethod(typeof(AnimusForgeMobilePartyAiSafetyPatch), nameof(CheckRecruitingFinalizer)));
+		Logger.Log(LogSource, "RecruitmentCampaignBehavior.CheckRecruiting guard applied.");
+	}
+
+	private static void PatchPartyDiplomaticHandler(Harmony harmony)
+	{
+		MethodInfo target = AccessTools.Method(typeof(PartyDiplomaticHandlerCampaignBehavior), "CheckSettlementSuitabilityForParties", new[] { typeof(IEnumerable<MobileParty>) });
+		if (target == null)
+		{
+			Logger.Log(LogSource, "PartyDiplomaticHandlerCampaignBehavior.CheckSettlementSuitabilityForParties not found; diplomatic guard skipped.");
+			return;
+		}
+		harmony.Patch(target, finalizer: new HarmonyMethod(typeof(AnimusForgeMobilePartyAiSafetyPatch), nameof(CheckSettlementSuitabilityFinalizer)));
+		Logger.Log(LogSource, "PartyDiplomaticHandlerCampaignBehavior.CheckSettlementSuitabilityForParties guard applied.");
+	}
+
+	private static void PatchChangeShipOwnerAction(Harmony harmony)
+	{
+		MethodInfo target = AccessTools.Method(typeof(ChangeShipOwnerAction), "ApplyInternal");
+		if (target == null)
+		{
+			Logger.Log(LogSource, "ChangeShipOwnerAction.ApplyInternal not found; ship owner guard skipped.");
+			return;
+		}
+		harmony.Patch(
+			target,
+			prefix: new HarmonyMethod(typeof(AnimusForgeMobilePartyAiSafetyPatch), nameof(ChangeShipOwnerPrefix)),
+			finalizer: new HarmonyMethod(typeof(AnimusForgeMobilePartyAiSafetyPatch), nameof(ChangeShipOwnerFinalizer)));
+		Logger.Log(LogSource, "ChangeShipOwnerAction.ApplyInternal guard applied.");
+	}
+
+	private static void PatchNavalShipTradeOwnerChanged(Harmony harmony)
+	{
+		Type type = AccessTools.TypeByName("NavalDLC.CampaignBehaviors.ShipTradeCampaignBehavior");
+		MethodInfo target = type == null ? null : AccessTools.Method(type, "OnShipOwnerChanged");
+		if (target == null)
+		{
+			Logger.Log(LogSource, "NavalDLC ShipTradeCampaignBehavior.OnShipOwnerChanged not found; naval ship trade guard skipped.");
+			return;
+		}
+		harmony.Patch(target, finalizer: new HarmonyMethod(typeof(AnimusForgeMobilePartyAiSafetyPatch), nameof(NavalShipTradeOwnerChangedFinalizer)));
+		Logger.Log(LogSource, "NavalDLC ShipTradeCampaignBehavior.OnShipOwnerChanged guard applied.");
 	}
 
 	private static MobileParty ExtractParty(object[] args)
@@ -177,6 +475,577 @@ internal static class AnimusForgeMobilePartyAiSafetyPatch
 			return true;
 		}
 		return false;
+	}
+
+	private static bool ShouldUseSafeWageFallback(MobileParty party, TroopRoster roster, out string reason, out bool zeroWage)
+	{
+		reason = "";
+		zeroWage = false;
+		try
+		{
+			if (ShouldSkipNativeAiForUtilityParty(party, out reason))
+			{
+				zeroWage = true;
+				return true;
+			}
+			if (party == null)
+			{
+				reason = "wage_party_null";
+				return true;
+			}
+			if (party == MobileParty.MainParty)
+			{
+				return false;
+			}
+			if (roster == null)
+			{
+				reason = "wage_roster_null";
+				return true;
+			}
+			if (!ValidateMobilePartyForNativeDailySystems(party, "wage_party", out reason))
+			{
+				return true;
+			}
+			if (!ValidateRosterForNativeWage(roster, "wage_roster", out reason))
+			{
+				return true;
+			}
+			Settlement currentSettlement = party.CurrentSettlement;
+			if (party.IsGarrison && currentSettlement?.Town != null)
+			{
+				if (currentSettlement.Owner == null || currentSettlement.Owner.Culture == null)
+				{
+					reason = "wage_garrison_owner_culture_null";
+					return true;
+				}
+			}
+			Hero leader = party.LeaderHero;
+			if (leader != null && leader.Clan == null)
+			{
+				reason = "wage_leader_clan_null";
+				return true;
+			}
+			if (party.EffectiveQuartermaster != null && party.EffectiveQuartermaster.CharacterObject == null)
+			{
+				reason = "wage_quartermaster_character_null";
+				return true;
+			}
+			return false;
+		}
+		catch (Exception ex)
+		{
+			reason = "wage_guard_exception:" + ex.GetType().Name;
+			return true;
+		}
+	}
+
+	private static ExplainedNumber BuildSafeWageFallback(TroopRoster roster, bool includeDescriptions, bool zeroWage)
+	{
+		int total = 0;
+		if (!zeroWage)
+		{
+			try
+			{
+				for (int i = 0; roster != null && i < roster.Count; i++)
+				{
+					TroopRosterElement element = roster.GetElementCopyAtIndex(i);
+					CharacterObject character = element.Character;
+					if (character == null)
+					{
+						continue;
+					}
+					int count = Math.Max(0, element.Number);
+					int wage = Math.Max(0, character.TroopWage);
+					if (count > 0 && wage > 0)
+					{
+						total += count * wage;
+					}
+				}
+			}
+			catch
+			{
+				total = 0;
+			}
+		}
+		ExplainedNumber result = new ExplainedNumber(total, includeDescriptions);
+		result.LimitMin(0f);
+		return result;
+	}
+
+	private static bool ShouldSkipNativeUpgradeForPartyBase(PartyBase partyBase, out string reason, out MobileParty mobileParty)
+	{
+		reason = "";
+		mobileParty = ExtractMobileParty(partyBase);
+		try
+		{
+			if (partyBase == null)
+			{
+				reason = "upgrade_partybase_null";
+				return true;
+			}
+			if (partyBase == PartyBase.MainParty)
+			{
+				return false;
+			}
+			if (mobileParty != null && ShouldSkipNativeAiForUtilityParty(mobileParty, out reason))
+			{
+				return true;
+			}
+			if (!partyBase.IsActive)
+			{
+				return false;
+			}
+			if (Campaign.Current == null || Campaign.Current.Models == null || Campaign.Current.Models.PartyTroopUpgradeModel == null || Campaign.Current.Models.PartyWageModel == null)
+			{
+				reason = "upgrade_campaign_models_unavailable";
+				return true;
+			}
+			if (mobileParty == null)
+			{
+				reason = "upgrade_mobile_party_null";
+				return true;
+			}
+			if (!ValidateMobilePartyForNativeDailySystems(mobileParty, "upgrade_party", out reason))
+			{
+				return true;
+			}
+			if (partyBase.Culture == null)
+			{
+				reason = "upgrade_party_culture_null";
+				return true;
+			}
+			if (!ValidateRosterForNativeUpgrade(partyBase.MemberRoster, "upgrade_roster", out reason))
+			{
+				return true;
+			}
+			return false;
+		}
+		catch (Exception ex)
+		{
+			reason = "upgrade_guard_exception:" + ex.GetType().Name;
+			return true;
+		}
+	}
+
+	private static bool ShouldSkipNativeRecruiting(MobileParty party, Settlement settlement, out string reason)
+	{
+		reason = "";
+		try
+		{
+			if (ShouldSkipNativeAiForUtilityParty(party, out reason))
+			{
+				return true;
+			}
+			if (party == null)
+			{
+				reason = "recruit_party_null";
+				return true;
+			}
+			if (party == MobileParty.MainParty)
+			{
+				return false;
+			}
+			if (settlement == null)
+			{
+				reason = "recruit_settlement_null";
+				return true;
+			}
+			if (Campaign.Current == null || Campaign.Current.Models == null || Campaign.Current.Models.PartyWageModel == null || Campaign.Current.Models.VolunteerModel == null)
+			{
+				reason = "recruit_campaign_models_unavailable";
+				return true;
+			}
+			if (!ValidateMobilePartyForNativeDailySystems(party, "recruit_party", out reason))
+			{
+				return true;
+			}
+			if (!ValidateNativeVisitSettlementCandidate(settlement, "recruit_settlement", out reason))
+			{
+				return true;
+			}
+			if (settlement.IsTown && settlement.Town == null)
+			{
+				reason = "recruit_town_null";
+				return true;
+			}
+			if (settlement.Notables == null)
+			{
+				reason = "recruit_notables_null";
+				return true;
+			}
+			foreach (Hero notable in settlement.Notables)
+			{
+				if (notable == null)
+				{
+					reason = "recruit_notable_null";
+					return true;
+				}
+				if (notable.VolunteerTypes == null || notable.VolunteerTypes.Length < 6)
+				{
+					reason = "recruit_volunteers_invalid";
+					return true;
+				}
+			}
+			Hero leader = party.LeaderHero;
+			if (party.IsLordParty && (leader == null || leader.Clan == null))
+			{
+				reason = "recruit_lord_leader_clan_null";
+				return true;
+			}
+			if (party.Party.PartySizeLimit <= 0)
+			{
+				reason = "recruit_party_size_limit_nonpositive";
+				return true;
+			}
+			return false;
+		}
+		catch (Exception ex)
+		{
+			reason = "recruit_guard_exception:" + ex.GetType().Name;
+			return true;
+		}
+	}
+
+	private static bool ContainsUnsafePartyForNativeSettlementSuitability(IEnumerable<MobileParty> parties, out string reason, out MobileParty unsafeParty)
+	{
+		reason = "";
+		unsafeParty = null;
+		try
+		{
+			if (parties == null)
+			{
+				reason = "settlement_suitability_parties_null";
+				return true;
+			}
+			int checkedCount = 0;
+			foreach (MobileParty party in parties)
+			{
+				if (checkedCount++ >= MaxFactionSettlementsChecked)
+				{
+					break;
+				}
+				if (IsUnsafeForNativeSettlementSuitability(party, out reason))
+				{
+					unsafeParty = party;
+					return true;
+				}
+			}
+			return false;
+		}
+		catch (Exception ex)
+		{
+			reason = "settlement_suitability_enumeration_exception:" + ex.GetType().Name;
+			return true;
+		}
+	}
+
+	private static bool IsUnsafeForNativeSettlementSuitability(MobileParty party, out string reason)
+	{
+		reason = "";
+		try
+		{
+			if (ShouldSkipNativeAiForUtilityParty(party, out reason))
+			{
+				return true;
+			}
+			if (party == null)
+			{
+				reason = "settlement_suitability_party_null";
+				return true;
+			}
+			Settlement currentSettlement = party.CurrentSettlement;
+			if (currentSettlement == null)
+			{
+				return false;
+			}
+			if (party.MapFaction == null)
+			{
+				reason = "settlement_suitability_map_faction_null";
+				return true;
+			}
+			if (currentSettlement.MapFaction == null)
+			{
+				reason = "settlement_suitability_settlement_faction_null";
+				return true;
+			}
+			if (party.Army != null)
+			{
+				if (party.Army.LeaderParty == null)
+				{
+					reason = "settlement_suitability_army_leader_null";
+					return true;
+				}
+				if (party.Army.Parties == null)
+				{
+					reason = "settlement_suitability_army_parties_null";
+					return true;
+				}
+			}
+			return false;
+		}
+		catch (Exception ex)
+		{
+			reason = "settlement_suitability_guard_exception:" + ex.GetType().Name;
+			return true;
+		}
+	}
+
+	private static bool ShouldSkipShipOwnerChange(PartyBase newOwner, Ship ship, out string reason, out MobileParty mobileParty)
+	{
+		reason = "";
+		mobileParty = ExtractMobileParty(newOwner);
+		try
+		{
+			if (ship == null)
+			{
+				reason = "ship_null";
+				return true;
+			}
+			if (ship.ShipHull == null)
+			{
+				reason = "ship_hull_null";
+				return true;
+			}
+			if (newOwner == null)
+			{
+				reason = "ship_new_owner_null";
+				return true;
+			}
+			if (mobileParty != null && ShouldSkipNativeAiForUtilityParty(mobileParty, out string utilityReason) && !ValidateMobilePartyForNativeDailySystems(mobileParty, "ship_owner_utility", out reason))
+			{
+				reason = utilityReason + ":" + reason;
+				return true;
+			}
+			return false;
+		}
+		catch (Exception ex)
+		{
+			reason = "ship_owner_change_guard_exception:" + ex.GetType().Name;
+			return true;
+		}
+	}
+
+	private static bool ShouldSuppressShipOwnerChangeException(PartyBase newOwner, Ship ship, out string reason, out MobileParty mobileParty)
+	{
+		if (ShouldSkipShipOwnerChange(newOwner, ship, out reason, out mobileParty))
+		{
+			return true;
+		}
+		try
+		{
+			PartyBase currentOwner = GetShipOwnerSafe(ship);
+			MobileParty currentOwnerParty = ExtractMobileParty(currentOwner);
+			if (currentOwnerParty != null && ShouldSkipNativeAiForUtilityParty(currentOwnerParty, out reason))
+			{
+				mobileParty = currentOwnerParty;
+				return true;
+			}
+			mobileParty = ExtractMobileParty(newOwner);
+			if (mobileParty != null && ShouldSkipNativeAiForUtilityParty(mobileParty, out reason))
+			{
+				return true;
+			}
+			if (ship == null || ship.ShipHull == null)
+			{
+				reason = "ship_invalid_after_exception";
+				return true;
+			}
+		}
+		catch (Exception ex)
+		{
+			reason = "ship_owner_exception_guard_exception:" + ex.GetType().Name;
+			return true;
+		}
+		return false;
+	}
+
+	private static bool ValidateMobilePartyForNativeDailySystems(MobileParty party, string label, out string reason)
+	{
+		reason = "";
+		try
+		{
+			if (party == null)
+			{
+				reason = label + "_null";
+				return false;
+			}
+			if (!party.IsActive)
+			{
+				reason = label + "_inactive";
+				return false;
+			}
+			if (party.Party == null)
+			{
+				reason = label + "_partybase_null";
+				return false;
+			}
+			if (party.MemberRoster == null)
+			{
+				reason = label + "_member_roster_null";
+				return false;
+			}
+			if (party.PrisonRoster == null)
+			{
+				reason = label + "_prison_roster_null";
+				return false;
+			}
+			if (party.ItemRoster == null)
+			{
+				reason = label + "_item_roster_null";
+				return false;
+			}
+			if (party.MapFaction == null)
+			{
+				reason = label + "_map_faction_null";
+				return false;
+			}
+			if (party.Party.Culture == null)
+			{
+				reason = label + "_party_culture_null";
+				return false;
+			}
+			Hero owner = party.Party.Owner;
+			if (owner != null && owner.CharacterObject == null)
+			{
+				reason = label + "_owner_character_null";
+				return false;
+			}
+			Hero leader = party.LeaderHero;
+			if (leader != null && leader.CharacterObject == null)
+			{
+				reason = label + "_leader_character_null";
+				return false;
+			}
+			return true;
+		}
+		catch (Exception ex)
+		{
+			reason = label + "_guard_exception:" + ex.GetType().Name;
+			return false;
+		}
+	}
+
+	private static bool ValidateRosterForNativeWage(TroopRoster roster, string label, out string reason)
+	{
+		reason = "";
+		try
+		{
+			if (roster == null)
+			{
+				reason = label + "_null";
+				return false;
+			}
+			for (int i = 0; i < roster.Count; i++)
+			{
+				TroopRosterElement element = roster.GetElementCopyAtIndex(i);
+				CharacterObject character = element.Character;
+				if (character == null)
+				{
+					reason = label + "_character_null";
+					return false;
+				}
+				if (character.IsHero)
+				{
+					if (character.HeroObject == null || character.HeroObject.CharacterObject == null)
+					{
+						reason = label + "_hero_invalid";
+						return false;
+					}
+				}
+				else if (character.Culture == null)
+				{
+					reason = label + "_culture_null";
+					return false;
+				}
+			}
+			return true;
+		}
+		catch (Exception ex)
+		{
+			reason = label + "_guard_exception:" + ex.GetType().Name;
+			return false;
+		}
+	}
+
+	private static bool ValidateRosterForNativeUpgrade(TroopRoster roster, string label, out string reason)
+	{
+		if (!ValidateRosterForNativeWage(roster, label, out reason))
+		{
+			return false;
+		}
+		try
+		{
+			for (int i = 0; i < roster.Count; i++)
+			{
+				CharacterObject character = roster.GetElementCopyAtIndex(i).Character;
+				if (character?.UpgradeTargets == null)
+				{
+					reason = label + "_upgrade_targets_null";
+					return false;
+				}
+				foreach (CharacterObject target in character.UpgradeTargets)
+				{
+					if (target == null)
+					{
+						reason = label + "_upgrade_target_null";
+						return false;
+					}
+					if (target.Culture == null)
+					{
+						reason = label + "_upgrade_target_culture_null";
+						return false;
+					}
+				}
+			}
+			return true;
+		}
+		catch (Exception ex)
+		{
+			reason = label + "_upgrade_guard_exception:" + ex.GetType().Name;
+			return false;
+		}
+	}
+
+	private static MobileParty ExtractMobileParty(PartyBase partyBase)
+	{
+		try
+		{
+			return partyBase?.MobileParty;
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static PartyBase GetShipOwnerSafe(Ship ship)
+	{
+		try
+		{
+			return ship?.Owner;
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static string DescribeShip(Ship ship)
+	{
+		if (ship == null)
+		{
+			return "ship=null";
+		}
+		try
+		{
+			return "hull=" + (ship.ShipHull?.StringId ?? "null") +
+				" owner=" + (ship.Owner?.MobileParty?.StringId ?? ship.Owner?.Settlement?.StringId ?? "null") +
+				" hp=" + ship.HitPoints.ToString("0.##") + "/" + ship.MaxHitPoints.ToString("0.##");
+		}
+		catch (Exception ex)
+		{
+			return "ship_describe_failed=" + ex.GetType().Name;
+		}
 	}
 
 	private static bool IsUnsafeForNativeAiVisitSettlement(MobileParty party, out string reason)
@@ -833,6 +1702,23 @@ internal static class AnimusForgeMobilePartyAiSafetyPatch
 		catch (Exception ex)
 		{
 			LogGuard("native_decisions_lock_failed", party, reason, ex);
+		}
+	}
+
+	private static void TryDelayNativeAiDecisionOneTick(MobileParty party, string reason)
+	{
+		try
+		{
+			if (party?.Ai == null)
+			{
+				return;
+			}
+			party.Ai.RethinkAtNextHourlyTick = false;
+			party.Ai.HourCounter++;
+		}
+		catch (Exception ex)
+		{
+			LogGuard("native_decision_delay_failed", party, reason, ex);
 		}
 	}
 

@@ -10,6 +10,7 @@ using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Actions;
 using TaleWorlds.CampaignSystem.CampaignBehaviors;
 using TaleWorlds.CampaignSystem.Election;
+using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
 using TaleWorlds.Localization;
@@ -458,6 +459,27 @@ namespace AnimusForge
 			return pk != null && Hero.MainHero == pk.RulingClan?.Leader;
 		}
 
+		private static bool IsPlayerIndependentSettlementClan()
+		{
+			try
+			{
+				Clan playerClan = Clan.PlayerClan ?? Hero.MainHero?.Clan;
+				if (playerClan == null || Hero.MainHero == null || playerClan.Kingdom != null || playerClan.IsUnderMercenaryService)
+				{
+					return false;
+				}
+				if (playerClan.Leader != null && playerClan.Leader != Hero.MainHero)
+				{
+					return false;
+				}
+				return (playerClan.Settlements ?? Enumerable.Empty<Settlement>()).Any((Settlement x) => x != null && (x.IsTown || x.IsCastle));
+			}
+			catch
+			{
+				return false;
+			}
+		}
+
 		private static bool IsNpcKing(Hero npc, Kingdom npcKingdom)
 		{
 			return npc != null && npcKingdom != null && npc == npcKingdom.RulingClan?.Leader;
@@ -472,13 +494,30 @@ namespace AnimusForge
 				{
 					return false;
 				}
-				Kingdom playerKingdom = Clan.PlayerClan?.Kingdom;
 				Kingdom npcKingdom = npc.Clan?.Kingdom;
-				if (playerKingdom == null || npcKingdom == null || playerKingdom.IsEliminated || npcKingdom.IsEliminated || playerKingdom == npcKingdom)
-				{
-					return false;
-				}
-				return IsPlayerKing() && IsNpcKing(npc, npcKingdom);
+				return npcKingdom != null && !npcKingdom.IsEliminated && IsNpcKing(npc, npcKingdom);
+			}
+			catch
+			{
+				return false;
+			}
+		}
+
+		internal static bool CanUseDiplomacyActionPostprocessForExternal(Hero targetHero, CharacterObject targetCharacter = null)
+		{
+			try
+			{
+				Hero npc = targetHero ?? targetCharacter?.HeroObject;
+				Kingdom playerKingdom = Clan.PlayerClan?.Kingdom;
+				Kingdom npcKingdom = npc?.Clan?.Kingdom;
+				return npc != null
+					&& playerKingdom != null
+					&& npcKingdom != null
+					&& !playerKingdom.IsEliminated
+					&& !npcKingdom.IsEliminated
+					&& playerKingdom != npcKingdom
+					&& IsPlayerKing()
+					&& IsNpcKing(npc, npcKingdom);
 			}
 			catch
 			{
@@ -500,27 +539,65 @@ namespace AnimusForge
 				Kingdom npcKingdom = npc.Clan?.Kingdom;
 				if (npcKingdom == null) return "";
 				Kingdom playerKingdom = Clan.PlayerClan?.Kingdom;
-				if (playerKingdom == null || playerKingdom.IsEliminated) return "";
+				bool playerIsKing = IsPlayerKing();
+				bool playerIsIndependentSettlementClan = IsPlayerIndependentSettlementClan();
 
 				StringBuilder sb = new StringBuilder();
 				sb.AppendLine();
 				sb.AppendLine("【国王外交规则】");
 				sb.AppendLine("重要：游戏内84天=一年，21天=一季度，没有月和周的概念。谈论时间请用季度或年。");
-				sb.AppendLine("你和玩家都是国王，可以讨论宣战、议和、结盟、贸易等外交事务。");
+				if (playerIsKing)
+				{
+					sb.AppendLine("你和玩家都是国王，可以讨论宣战、议和、结盟、贸易等外交事务。");
+				}
+				else
+				{
+					if (playerIsIndependentSettlementClan)
+					{
+						sb.AppendLine("玩家尚未建国，但其独立家族占有城镇/城堡，可与国王谈政治承认、停战、互不侵犯、贡金或建国前条件。正式王国同盟、贸易协议和王国和约需建国后。");
+						sb.AppendLine(BuildPlayerIndependentSettlementClanContext());
+					}
+					else
+					{
+						sb.AppendLine("玩家不是国王，不能签正式王国外交；可谈政治交涉、觐见、承认、停战或建国前条件。");
+					}
+				}
 
 				List<Kingdom> warTargets = new List<Kingdom>();
 				foreach (Kingdom k in Kingdom.All)
 				{ if (!k.IsEliminated && k != npcKingdom && FactionManager.IsAtWarAgainstFaction(npcKingdom, k)) warTargets.Add(k); }
-				if (playerKingdom != npcKingdom && !playerKingdom.IsEliminated && FactionManager.IsAtWarAgainstFaction(npcKingdom, playerKingdom) && !warTargets.Contains(playerKingdom))
+				if (playerKingdom != null && playerKingdom != npcKingdom && !playerKingdom.IsEliminated && FactionManager.IsAtWarAgainstFaction(npcKingdom, playerKingdom) && !warTargets.Contains(playerKingdom))
 					warTargets.Add(playerKingdom);
 				foreach (Kingdom enemy in warTargets) AppendWarStatsBlock(sb, npcKingdom, enemy);
 
-				if (playerKingdom != npcKingdom && !playerKingdom.IsEliminated && !FactionManager.IsAtWarAgainstFaction(npcKingdom, playerKingdom))
+				if (playerKingdom != null && playerKingdom != npcKingdom && !playerKingdom.IsEliminated && !FactionManager.IsAtWarAgainstFaction(npcKingdom, playerKingdom))
 				{ sb.AppendLine(); sb.AppendLine($"【与{GetKingdomDisplayName(playerKingdom)}的和平状态】双方目前处于和平状态。"); }
 
 				return sb.ToString().TrimEnd();
 			}
 			catch (Exception ex) { Logger.Log("DiplomacyBehavior", $"[BuildInstruction Error] {ex.Message}"); return ""; }
+		}
+
+		private static string BuildPlayerIndependentSettlementClanContext()
+		{
+			try
+			{
+				Clan playerClan = Clan.PlayerClan ?? Hero.MainHero?.Clan;
+				string clanName = playerClan?.Name?.ToString() ?? "玩家家族";
+				List<string> fiefs = (playerClan?.Settlements ?? Enumerable.Empty<Settlement>())
+					.Where((Settlement x) => x != null && (x.IsTown || x.IsCastle))
+					.Select((Settlement x) => x.Name?.ToString() ?? x.StringId ?? "")
+					.Where((string x) => !string.IsNullOrWhiteSpace(x))
+					.Distinct(StringComparer.OrdinalIgnoreCase)
+					.Take(4)
+					.ToList();
+				string fiefText = fiefs.Count == 0 ? "无明确据点" : string.Join("、", fiefs);
+				return "【玩家政治身份】独立有城家族：" + clanName + "；据点：" + fiefText + "。";
+			}
+			catch
+			{
+				return "【玩家政治身份】独立有城家族。";
+			}
 		}
 
 		private static void AppendWarStatsBlock(StringBuilder sb, Kingdom myKingdom, Kingdom enemy)
@@ -656,7 +733,10 @@ namespace AnimusForge
 				if (kingdom == null) { stateKey = "no_kingdom"; }
 				else if (clan.IsUnderMercenaryService) { stateKey = "mercenary"; }
 				else if (npc != kingdom.RulingClan?.Leader) { stateKey = "not_king"; }
-				else if (!IsPlayerKing()) { stateKey = "player_not_king"; }
+				else if (!IsPlayerKing())
+				{
+					stateKey = IsPlayerIndependentSettlementClan() ? "player_independent_settlement_clan" : "player_not_king";
+				}
 
 				if (!string.IsNullOrWhiteSpace(stateKey))
 				{

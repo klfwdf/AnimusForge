@@ -904,6 +904,11 @@ internal static class BannerlordExceptionSentinel
 		{
 			text7 = " extra=" + extra;
 		}
+		string lastCampaignTickContext = CampaignTickDiagnosticsPatch.GetLastContextSummary();
+		if (!string.IsNullOrWhiteSpace(lastCampaignTickContext))
+		{
+			text7 += " lastCampaignTick=" + lastCampaignTickContext;
+		}
 		string text8 = exception?.ToString() ?? "(exception unavailable)";
 		Logger.Log("ExceptionSentinel", $"[{category}] count={num} suppress={suppress} method={text6} exception={text3}: {text4}{text7}\n{text8}");
 	}

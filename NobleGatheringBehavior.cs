@@ -197,8 +197,12 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 	private const int FeastMusicianLayoutRefreshMs = 1500;
 	private const float FeastMusicianMoveToleranceSquared = 1.0f;
 	private const float FeastMusicianTeleportDistanceSquared = 25f;
+	private const int PendingTemporaryPartyDestroyDelayMs = 750;
+	private const int MaxPendingTemporaryPartyDestroyAttempts = 5;
 	private static readonly FieldInfo AgentNameField = typeof(Agent).GetField("_name", BindingFlags.Instance | BindingFlags.NonPublic);
 	private static readonly Regex NobleGatheringActionTagRegex = new Regex("\\[ACTION:NOBLE_GATHERING:START:[^\\]\\r\\n]*\\]", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+	private static readonly object PendingTemporaryPartyDestroyLock = new object();
+	private static readonly Dictionary<string, PendingTemporaryPartyDestroyRecord> PendingTemporaryPartyDestroys = new Dictionary<string, PendingTemporaryPartyDestroyRecord>(StringComparer.OrdinalIgnoreCase);
 	private static readonly string[] FeastMainSeatTags = new string[]
 	{
 		"sp_throne",
@@ -253,6 +257,17 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 			Action = ActionIndexCache.Create(instrument?.StandingAction);
 			ActionSpeed = actionSpeed;
 		}
+	}
+
+	private sealed class PendingTemporaryPartyDestroyRecord
+	{
+		public string PartyId;
+
+		public string Reason;
+
+		public long MarkedUtcTicks;
+
+		public int Attempts;
 	}
 
 	public static NobleGatheringBehavior Instance { get; private set; }
@@ -380,6 +395,7 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 
 	public void OnEngineTick()
 	{
+		ProcessPendingTemporaryPartyDestroysOnEngineTick();
 		UpdateFeastHallMusic();
 		UpdateFeastMusicianPerformances();
 		UpdateFeastMusicianLayout();
@@ -2911,6 +2927,7 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 			}
 			party.IsVisible = true;
 			PrepareTemporaryGatheringPartyForLandTravel(party);
+			LockTemporaryPartyNativeAi(party, "create");
 			RepairTemporaryGatheringPartyPosition(party, origin, "create");
 			party.MemberRoster.AddToCounts(hero.CharacterObject, 1, insertAtFront: true, woundedCount: 0, xpChange: 0, removeDepleted: true, index: -1);
 			party.PartyComponent?.ChangePartyLeader(hero);
@@ -2924,6 +2941,7 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 			party.Party.SetCustomName(new TextObject("赴宴随从 - " + GetHeroName(hero)));
 			party.SetMoveModeHold();
 			RefreshTemporaryPartyRoute(party, targetSettlement);
+			Log("temporary party created party=" + (party.StringId ?? "") + " hero=" + (hero.StringId ?? "") + " origin=" + (origin.StringId ?? "") + " target=" + (targetSettlement.StringId ?? ""));
 			message = "temporary_party_created";
 			return party;
 		}
@@ -2944,6 +2962,7 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 		try
 		{
 			PrepareTemporaryGatheringPartyForLandTravel(party);
+			LockTemporaryPartyNativeAi(party, "route");
 			if (!RepairTemporaryGatheringPartyPosition(party, targetSettlement, "route"))
 			{
 				party.SetMoveModeHold();
@@ -2954,11 +2973,17 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 				party.SetMoveModeHold();
 				return;
 			}
+			string previousTarget = party.TargetSettlement?.StringId ?? "";
 			LeaveSettlementIfNeeded(party);
 			party.SetMoveGoToSettlement(targetSettlement, MobileParty.NavigationType.Default, false);
+			if (!string.Equals(previousTarget, targetSettlement.StringId ?? "", StringComparison.OrdinalIgnoreCase))
+			{
+				Log("temporary party route set party=" + (party.StringId ?? "") + " target=" + (targetSettlement.StringId ?? "") + " previousTarget=" + previousTarget + " leader=" + (party.LeaderHero?.StringId ?? "null"));
+			}
 		}
-		catch
+		catch (Exception ex)
 		{
+			Logger.LogImmediate(LogSource, "temporary party route failed party=" + (party?.StringId ?? "") + " target=" + (targetSettlement?.StringId ?? "") + " error=" + ex);
 		}
 	}
 
@@ -2970,6 +2995,7 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 		}
 		try
 		{
+			LockTemporaryPartyNativeAi(party, "arrival_" + (reason ?? ""));
 			if (!RepairTemporaryGatheringPartyPosition(party, settlement, "arrival_" + (reason ?? "")))
 			{
 				return false;
@@ -2991,6 +3017,7 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 			LeaveSettlementIfNeeded(party);
 			EnterSettlementAction.ApplyForParty(party, settlement);
 			party.SetMoveModeHold();
+			Log("temporary party arrived party=" + (party.StringId ?? "") + " settlement=" + (settlement.StringId ?? "") + " reason=" + (reason ?? ""));
 			return true;
 		}
 		catch (Exception ex)
@@ -3091,6 +3118,7 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 		try
 		{
 			party.SetLandNavigationAccess(true);
+			LockTemporaryPartyNativeAi(party, "prepare_land_travel");
 			if (IsValidTemporaryGatheringLandPosition(party.Position))
 			{
 				party.IsCurrentlyAtSea = false;
@@ -3110,6 +3138,7 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 		try
 		{
 			PrepareTemporaryGatheringPartyForLandTravel(party);
+			LockTemporaryPartyNativeAi(party, "repair_" + (reason ?? ""));
 			if (!party.IsCurrentlyAtSea && IsValidTemporaryGatheringLandPosition(party.Position))
 			{
 				return true;
@@ -3325,6 +3354,7 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 		}
 		try
 		{
+			LockTemporaryPartyNativeAi(party, "destroy_" + (reason ?? ""));
 			if (hero?.CharacterObject != null && party.MemberRoster != null && party.MemberRoster.Contains(hero.CharacterObject))
 			{
 				party.MemberRoster.AddToCounts(hero.CharacterObject, -1, insertAtFront: false, woundedCount: 0, xpChange: 0, removeDepleted: true, index: -1);
@@ -3332,22 +3362,147 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 			SafelyPlaceHeroBackToSettlement(hero, finalSettlement, reason);
 			if (party.IsActive)
 			{
-				if (party.CurrentSettlement != null)
-				{
-					try
-					{
-						LeaveSettlementAction.ApplyForParty(party);
-					}
-					catch
-					{
-					}
-				}
-				DestroyPartyAction.Apply(null, party);
+				MarkTemporaryPartyForDelayedDestroy(party, reason);
 			}
 		}
 		catch (Exception ex)
 		{
 			Log("destroy temporary party failed party=" + (party?.StringId ?? "") + " hero=" + (hero?.StringId ?? "") + " reason=" + (reason ?? "") + " error=" + ex.Message);
+		}
+	}
+
+	private static void MarkTemporaryPartyForDelayedDestroy(MobileParty party, string reason)
+	{
+		if (!IsTemporaryGatheringParty(party) || !party.IsActive)
+		{
+			return;
+		}
+		try
+		{
+			LockTemporaryPartyNativeAi(party, "delayed_destroy_mark");
+			party.SetMoveModeHold();
+			string partyId = party.StringId ?? "";
+			if (string.IsNullOrWhiteSpace(partyId))
+			{
+				return;
+			}
+			lock (PendingTemporaryPartyDestroyLock)
+			{
+				if (!PendingTemporaryPartyDestroys.TryGetValue(partyId, out PendingTemporaryPartyDestroyRecord record))
+				{
+					record = new PendingTemporaryPartyDestroyRecord
+					{
+						PartyId = partyId,
+						Attempts = 0
+					};
+					PendingTemporaryPartyDestroys[partyId] = record;
+				}
+				record.Reason = (reason ?? "").Trim();
+				record.MarkedUtcTicks = DateTime.UtcNow.Ticks;
+			}
+			Logger.LogImmediate(LogSource, "temporary party delayed destroy marked party=" + partyId + " reason=" + (reason ?? "") + " leader=" + (party.LeaderHero?.StringId ?? "null") + " settlement=" + (party.CurrentSettlement?.StringId ?? "null") + " target=" + (party.TargetSettlement?.StringId ?? "null"));
+		}
+		catch (Exception ex)
+		{
+			Logger.LogImmediate(LogSource, "temporary party delayed destroy mark failed party=" + (party?.StringId ?? "") + " reason=" + (reason ?? "") + " error=" + ex);
+		}
+	}
+
+	private static void ProcessPendingTemporaryPartyDestroysOnEngineTick()
+	{
+		try
+		{
+			List<PendingTemporaryPartyDestroyRecord> due = new List<PendingTemporaryPartyDestroyRecord>();
+			long nowTicks = DateTime.UtcNow.Ticks;
+			long delayTicks = TimeSpan.FromMilliseconds(PendingTemporaryPartyDestroyDelayMs).Ticks;
+			lock (PendingTemporaryPartyDestroyLock)
+			{
+				foreach (PendingTemporaryPartyDestroyRecord record in PendingTemporaryPartyDestroys.Values.ToList())
+				{
+					if (record == null || string.IsNullOrWhiteSpace(record.PartyId))
+					{
+						continue;
+					}
+					if (nowTicks - record.MarkedUtcTicks < delayTicks)
+					{
+						continue;
+					}
+					PendingTemporaryPartyDestroys.Remove(record.PartyId);
+					due.Add(record);
+				}
+			}
+			foreach (PendingTemporaryPartyDestroyRecord record in due)
+			{
+				ApplyPendingTemporaryPartyDestroy(record);
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.LogImmediate(LogSource, "pending temporary party destroy sweep failed: " + ex);
+		}
+	}
+
+	private static void ApplyPendingTemporaryPartyDestroy(PendingTemporaryPartyDestroyRecord record)
+	{
+		if (record == null || string.IsNullOrWhiteSpace(record.PartyId))
+		{
+			return;
+		}
+		MobileParty party = ResolveMobilePartyById(record.PartyId);
+		if (party == null || !party.IsActive)
+		{
+			Logger.LogImmediate(LogSource, "pending temporary party destroy skipped inactive party=" + (record.PartyId ?? "") + " reason=" + (record.Reason ?? ""));
+			return;
+		}
+		if (!IsTemporaryGatheringParty(party))
+		{
+			Logger.LogImmediate(LogSource, "pending temporary party destroy skipped non-temp party=" + (record.PartyId ?? "") + " reason=" + (record.Reason ?? ""));
+			return;
+		}
+		try
+		{
+			LockTemporaryPartyNativeAi(party, "delayed_destroy_apply");
+			party.SetMoveModeHold();
+			if (party.CurrentSettlement != null)
+			{
+				LeaveSettlementIfNeeded(party);
+			}
+			Logger.LogImmediate(LogSource, "pending temporary party destroy apply party=" + (party.StringId ?? "") + " reason=" + (record.Reason ?? "") + " attempts=" + record.Attempts + " leader=" + (party.LeaderHero?.StringId ?? "null") + " settlement=" + (party.CurrentSettlement?.StringId ?? "null") + " target=" + (party.TargetSettlement?.StringId ?? "null"));
+			DestroyPartyAction.Apply(null, party);
+		}
+		catch (Exception ex)
+		{
+			Logger.LogImmediate(LogSource, "pending temporary party destroy failed party=" + (record.PartyId ?? "") + " reason=" + (record.Reason ?? "") + " attempts=" + record.Attempts + " error=" + ex);
+			if (record.Attempts >= MaxPendingTemporaryPartyDestroyAttempts)
+			{
+				return;
+			}
+			record.Attempts++;
+			record.MarkedUtcTicks = DateTime.UtcNow.Ticks;
+			lock (PendingTemporaryPartyDestroyLock)
+			{
+				PendingTemporaryPartyDestroys[record.PartyId] = record;
+			}
+		}
+	}
+
+	private static void LockTemporaryPartyNativeAi(MobileParty party, string reason)
+	{
+		if (!IsTemporaryGatheringParty(party) || !party.IsActive)
+		{
+			return;
+		}
+		try
+		{
+			if (party.Ai != null && !party.Ai.DoNotMakeNewDecisions)
+			{
+				party.Ai.SetDoNotMakeNewDecisions(true);
+				Log("temporary party native ai locked party=" + (party.StringId ?? "") + " reason=" + (reason ?? ""));
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.LogImmediate(LogSource, "temporary party native ai lock failed party=" + (party?.StringId ?? "") + " reason=" + (reason ?? "") + " error=" + ex);
 		}
 	}
 

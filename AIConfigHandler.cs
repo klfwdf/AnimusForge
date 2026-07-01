@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -13,6 +13,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SandBox;
 using SandBox.Missions.MissionLogics;
+using SandBox.Missions.MissionLogics.Towns;
 using SandBox.Objects.Usables;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.ComponentInterfaces;
@@ -435,6 +436,10 @@ public static class AIConfigHandler
 		{
 			return false;
 		}
+		if (IsPrisonBreakMission(mission))
+		{
+			return false;
+		}
 		try
 		{
 			if (LordEncounterBehavior.IsEncounterMeetingMissionActive || MeetingBattleRuntime.IsMeetingActive || mission.GetMissionBehavior<MeetingBattleLockMissionBehavior>() != null)
@@ -497,6 +502,18 @@ public static class AIConfigHandler
 		{
 		}
 		return false;
+	}
+
+	private static bool IsPrisonBreakMission(Mission mission)
+	{
+		try
+		{
+			return mission?.GetMissionBehavior<PrisonBreakMissionController>() != null;
+		}
+		catch
+		{
+			return false;
+		}
 	}
 
 	public static bool LoanEnabled => _guardrail?.Loan?.IsEnabled == true;
@@ -3980,7 +3997,7 @@ public static class AIConfigHandler
 		stringBuilder.AppendLine("*Latest NPC/player exchange*:");
 		stringBuilder.Append("NPC: ").AppendLine(string.IsNullOrWhiteSpace(text2) ? "(none)" : NormalizeAuxiliaryRoutingRequestText(text2));
 		stringBuilder.Append("Player: ").AppendLine(string.IsNullOrWhiteSpace(text5) ? "(none)" : NormalizeAuxiliaryRoutingRequestText(text5));
-		stringBuilder.AppendLine("Select the most similar topics. You MUST output exactly " + Math.Max(1, topN) + " topic codes in rule_codes, ranked by similarity. Even if the dialogue seems entirely unrelated, you must still force-select the closest matching topics. Also extract all explicitly mentioned or strongly referred nouns from the *Latest NPC/player exchange* into mentioned_entities. Keep named people in heroes, places/settlements in settlements, clans/families in clans, and kingdoms/countries/factions in kingdoms. Put every other referable noun or noun phrase in terms, including item names, item type names, troop names, troop type names, prisoner names, prisoner type names, asset names, and asset type names. Personal names and titles such as king, queen, lord, lady, noble, notable, headman, gang leader, wanderer, artisan, or ruler must go in heroes, not settlements. Do not extract the current conversation NPC/speaker's own name, role, title, aliases, or the player name merely because they are the current speakers; mentioned_entities should describe third-party entities or things being explicitly discussed. If a name is ambiguous, put it in the closest bucket and also include the raw phrase in terms. Runtime retrieval will search every extracted name across world entities and current lists. Order every mentioned_entities array by dialogue recency: names from the latest player line first, then latest NPC line, then newer scene history before older scene history. Use the scene history only as supporting context and do not invent names. Output strict JSON only: {\"rule_codes\":[\"CODE\"],\"mentioned_entities\":{\"heroes\":[],\"settlements\":[],\"clans\":[],\"kingdoms\":[],\"terms\":[]}}. Do not output topic numbers, prose, markdown, or any other key.");
+		stringBuilder.AppendLine("Select exactly " + Math.Max(1, topN) + " closest topic codes in rule_codes. Also extract explicit third-party nouns from the latest exchange into mentioned_entities. Use heroes for named people/titles, settlements for places, clans for families, kingdoms for factions, items for item/goods/equipment names or types, troops for troop/unit/prisoner names or types, and terms for other useful raw phrases. Do not extract current speakers or player names just because they are speakers. If ambiguous, put it in the closest bucket and also terms. Order arrays by recency. Output strict JSON only: {\"rule_codes\":[\"CODE\"],\"mentioned_entities\":{\"heroes\":[],\"settlements\":[],\"clans\":[],\"kingdoms\":[],\"items\":[],\"troops\":[],\"terms\":[]}}.");
 		return SanitizeAuxiliaryRoutingPromptDialogueSections(stringBuilder.ToString()).Trim();
 	}
 
@@ -4009,7 +4026,7 @@ public static class AIConfigHandler
 				flag2 = true;
 				continue;
 			}
-			if (text2.StartsWith("Select the most similar topics.", StringComparison.Ordinal))
+			if (text2.StartsWith("Select the most similar topics.", StringComparison.Ordinal) || text2.StartsWith("Select exactly ", StringComparison.Ordinal))
 			{
 				flag = false;
 				flag2 = false;
@@ -4261,9 +4278,9 @@ public static class AIConfigHandler
 	{
 		if (entities == null)
 		{
-			return "heroes=0 settlements=0 clans=0 kingdoms=0 terms=0";
+			return "heroes=0 settlements=0 clans=0 kingdoms=0 items=0 troops=0 terms=0";
 		}
-		return "heroes=" + (entities.Heroes?.Count ?? 0) + " settlements=" + (entities.Settlements?.Count ?? 0) + " clans=" + (entities.Clans?.Count ?? 0) + " kingdoms=" + (entities.Kingdoms?.Count ?? 0) + " terms=" + (entities.Terms?.Count ?? 0);
+		return "heroes=" + (entities.Heroes?.Count ?? 0) + " settlements=" + (entities.Settlements?.Count ?? 0) + " clans=" + (entities.Clans?.Count ?? 0) + " kingdoms=" + (entities.Kingdoms?.Count ?? 0) + " items=" + (entities.Items?.Count ?? 0) + " troops=" + (entities.Troops?.Count ?? 0) + " terms=" + (entities.Terms?.Count ?? 0);
 	}
 
 	private static string HashAuxiliaryMentionKey(string value)
@@ -4314,9 +4331,15 @@ public static class AIConfigHandler
 			FillMentionedEntityList(entities.Clans, GetJsonPropertyIgnoreCase(obj, "clans", "families", "houses"));
 			FillMentionedEntityList(entities.Kingdoms, GetJsonPropertyIgnoreCase(obj, "kingdoms", "countries", "nations", "realms", "factions"));
 			FillMentionedEntityList(entities.Terms, GetJsonPropertyIgnoreCase(obj, "terms", "nouns", "keywords", "mentions", "mentioned_terms"));
-			FillMentionedEntityList(entities.Terms, GetJsonPropertyIgnoreCase(obj, "items", "item_names", "item_types", "goods", "equipment", "assets"));
-			FillMentionedEntityList(entities.Terms, GetJsonPropertyIgnoreCase(obj, "troops", "troop_names", "troop_types", "units", "soldiers"));
-			FillMentionedEntityList(entities.Terms, GetJsonPropertyIgnoreCase(obj, "prisoners", "prisoner_names", "prisoner_types", "captives"));
+			JToken itemToken = GetJsonPropertyIgnoreCase(obj, "items", "item_names", "item_types", "goods", "equipment");
+			FillMentionedEntityList(entities.Items, itemToken);
+			FillMentionedEntityList(entities.Terms, itemToken);
+			JToken troopToken = GetJsonPropertyIgnoreCase(obj, "troops", "troop_names", "troop_types", "units", "soldiers");
+			FillMentionedEntityList(entities.Troops, troopToken);
+			FillMentionedEntityList(entities.Terms, troopToken);
+			JToken prisonerToken = GetJsonPropertyIgnoreCase(obj, "prisoners", "prisoner_names", "prisoner_types", "captives");
+			FillMentionedEntityList(entities.Troops, prisonerToken);
+			FillMentionedEntityList(entities.Terms, prisonerToken);
 			FillMentionedEntityList(entities.Terms, GetJsonPropertyIgnoreCase(obj, "asset_names", "asset_types", "fiefs", "workshops", "caravans"));
 			return !entities.IsEmpty;
 		}
@@ -6575,11 +6598,27 @@ public static class AIConfigHandler
 		}
 	}
 
+	public static bool IsHeroImprisonedForHeroJoin(Hero hero)
+	{
+		try
+		{
+			return hero != null && (hero.IsPrisoner || hero.PartyBelongedToAsPrisoner != null);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
 	private static string ResolveHeroJoinPartyRuntimeStateKey(Hero targetHero)
 	{
 		if (targetHero == null || targetHero == Hero.MainHero)
 		{
 			return "";
+		}
+		if (IsHeroImprisonedForHeroJoin(targetHero))
+		{
+			return "imprisoned";
 		}
 		try
 		{
@@ -7400,11 +7439,13 @@ public static class AIConfigHandler
 	{
 		try
 		{
-			if (agentIndex < 0 || Mission.Current == null)
+			Mission mission = Mission.Current;
+			var agents = mission?.Agents;
+			if (agentIndex < 0 || agents == null)
 			{
 				return false;
 			}
-			Agent agent = Mission.Current.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == agentIndex);
+			Agent agent = agents.FirstOrDefault((Agent a) => a != null && a.Index == agentIndex);
 			if (agent == null || !(agent.Character is CharacterObject characterObject) || !characterObject.IsSoldier)
 			{
 				return false;
@@ -7417,7 +7458,7 @@ public static class AIConfigHandler
 				if (!flag && (agentNavigator.SpecialTargetTag == "sp_guard_castle" || agentNavigator.SpecialTargetTag == "sp_guard"))
 				{
 					Location lordsHallLocation = LocationComplex.Current?.GetLocationWithId("lordshall");
-					MissionAgentHandler missionBehavior = Mission.Current.GetMissionBehavior<MissionAgentHandler>();
+					MissionAgentHandler missionBehavior = mission.GetMissionBehavior<MissionAgentHandler>();
 					if (lordsHallLocation != null && missionBehavior?.TownPassageProps != null)
 					{
 						UsableMachine usableMachine = missionBehavior.TownPassageProps.FirstOrDefault((UsableMachine x) => x is Passage passage && passage.ToLocation == lordsHallLocation);

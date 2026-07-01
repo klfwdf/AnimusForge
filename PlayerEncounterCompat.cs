@@ -1,4 +1,6 @@
+using System;
 using System.Reflection;
+using System.Runtime.ExceptionServices;
 using HarmonyLib;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Encounters;
@@ -14,6 +16,29 @@ internal static class PlayerEncounterCompat
 	private static readonly FieldInfo _mapEventField = AccessTools.Field(typeof(PlayerEncounter), "_mapEvent");
 
 	private static readonly FieldInfo _encounteredPartyField = AccessTools.Field(typeof(PlayerEncounter), "_encounteredParty");
+
+	private static readonly MethodInfo _restartPlayerEncounterMethod = ResolveRestartPlayerEncounterMethod();
+
+	internal static void RestartPlayerEncounter(PartyBase defenderParty, PartyBase attackerParty, bool forcePlayerOutFromSettlement = true, bool isPlayerEncounterRestartedForRaid = false)
+	{
+		MethodInfo methodInfo = _restartPlayerEncounterMethod;
+		if (methodInfo == null)
+		{
+			throw new MissingMethodException(typeof(PlayerEncounter).FullName, "RestartPlayerEncounter");
+		}
+		object[] parameters = methodInfo.GetParameters().Length >= 4
+			? new object[] { defenderParty, attackerParty, forcePlayerOutFromSettlement, isPlayerEncounterRestartedForRaid }
+			: new object[] { defenderParty, attackerParty, forcePlayerOutFromSettlement };
+		try
+		{
+			methodInfo.Invoke(null, parameters);
+		}
+		catch (TargetInvocationException ex) when (ex.InnerException != null)
+		{
+			ExceptionDispatchInfo.Capture(ex.InnerException).Throw();
+			throw;
+		}
+	}
 
 	internal static PlayerEncounter GetCurrentSafe()
 	{
@@ -187,5 +212,34 @@ internal static class PlayerEncounterCompat
 		{
 			return null;
 		}
+	}
+
+	private static MethodInfo ResolveRestartPlayerEncounterMethod()
+	{
+		MethodInfo fallback = null;
+		MethodInfo[] methods = typeof(PlayerEncounter).GetMethods(BindingFlags.Public | BindingFlags.Static);
+		for (int i = 0; i < methods.Length; i++)
+		{
+			MethodInfo method = methods[i];
+			if (method.Name != "RestartPlayerEncounter")
+			{
+				continue;
+			}
+			ParameterInfo[] parameters = method.GetParameters();
+			if (parameters.Length < 3 || parameters.Length > 4)
+			{
+				continue;
+			}
+			if (parameters[0].ParameterType != typeof(PartyBase) || parameters[1].ParameterType != typeof(PartyBase) || parameters[2].ParameterType != typeof(bool))
+			{
+				continue;
+			}
+			if (parameters.Length == 4 && parameters[3].ParameterType == typeof(bool))
+			{
+				return method;
+			}
+			fallback = method;
+		}
+		return fallback;
 	}
 }

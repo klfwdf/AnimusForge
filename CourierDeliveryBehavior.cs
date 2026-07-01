@@ -3269,6 +3269,12 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 				LogCourierStatus("temporary_ship_hull_missing session=" + session.Id + " reason=" + (reason ?? "") + " courier=" + DescribeMobileParty(courier));
 				return false;
 			}
+			if (!IsCourierSafeForTemporaryShipOwner(courier, out string ownerReason))
+			{
+				Log("courier temporary ship owner invalid session=" + session.Id + " reason=" + (reason ?? "") + " ownerReason=" + ownerReason);
+				LogCourierStatus("temporary_ship_owner_invalid session=" + session.Id + " reason=" + (reason ?? "") + " ownerReason=" + ownerReason + " courier=" + DescribeMobileParty(courier));
+				return false;
+			}
 			Ship ship = new Ship(hull);
 			ship.SetName(new TextObject(TemporaryCourierShipName));
 			ship.IsUsedByQuest = true;
@@ -3285,6 +3291,65 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		{
 			Log("courier temporary ship create failed session=" + session.Id + " reason=" + (reason ?? "") + " error=" + ex.Message);
 			LogCourierStatus("temporary_ship_create_failed session=" + session.Id + " reason=" + (reason ?? "") + " error=" + ex.Message + " courier=" + DescribeMobileParty(courier));
+			return false;
+		}
+	}
+
+	private static bool IsCourierSafeForTemporaryShipOwner(MobileParty courier, out string reason)
+	{
+		reason = "";
+		try
+		{
+			if (courier == null)
+			{
+				reason = "courier_null";
+				return false;
+			}
+			if (!courier.IsActive)
+			{
+				reason = "courier_inactive";
+				return false;
+			}
+			if (courier.Party == null)
+			{
+				reason = "partybase_null";
+				return false;
+			}
+			if (courier.Party.MobileParty != courier)
+			{
+				reason = "partybase_mobile_party_mismatch";
+				return false;
+			}
+			if (courier.MemberRoster == null)
+			{
+				reason = "member_roster_null";
+				return false;
+			}
+			if (courier.PrisonRoster == null)
+			{
+				reason = "prison_roster_null";
+				return false;
+			}
+			if (courier.ItemRoster == null)
+			{
+				reason = "item_roster_null";
+				return false;
+			}
+			if (courier.Party.Owner == null && courier.LeaderHero == null && courier.ActualClan?.Leader == null)
+			{
+				reason = "owner_leader_null";
+				return false;
+			}
+			if (courier.MapFaction == null)
+			{
+				reason = "map_faction_null";
+				return false;
+			}
+			return true;
+		}
+		catch (Exception ex)
+		{
+			reason = "guard_exception:" + ex.GetType().Name;
 			return false;
 		}
 	}

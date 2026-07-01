@@ -83,10 +83,6 @@ public static class MainAgentControllerSafePatch
 
 	public static Exception Finalizer(Exception __exception)
 	{
-		if (__exception != null)
-		{
-			return null;
-		}
-		return null;
+		return MissionViewExceptionGuard.Filter(__exception, requireMainAgent: false, "MissionMainAgentController.OnPreMissionTick");
 	}
 }

@@ -2162,6 +2162,8 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 			append(mentionedEntities?.Settlements);
 			append(mentionedEntities?.Clans);
 			append(mentionedEntities?.Kingdoms);
+			append(mentionedEntities?.Items);
+			append(mentionedEntities?.Troops);
 			append(mentionedEntities?.Terms);
 		}
 		catch
@@ -2225,9 +2227,9 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 	{
 		if (mentionedEntities == null)
 		{
-			return "heroes=0 settlements=0 clans=0 kingdoms=0 terms=0";
+			return "heroes=0 settlements=0 clans=0 kingdoms=0 items=0 troops=0 terms=0";
 		}
-		return "heroes=" + (mentionedEntities.Heroes?.Count ?? 0) + " settlements=" + (mentionedEntities.Settlements?.Count ?? 0) + " clans=" + (mentionedEntities.Clans?.Count ?? 0) + " kingdoms=" + (mentionedEntities.Kingdoms?.Count ?? 0) + " terms=" + (mentionedEntities.Terms?.Count ?? 0);
+		return "heroes=" + (mentionedEntities.Heroes?.Count ?? 0) + " settlements=" + (mentionedEntities.Settlements?.Count ?? 0) + " clans=" + (mentionedEntities.Clans?.Count ?? 0) + " kingdoms=" + (mentionedEntities.Kingdoms?.Count ?? 0) + " items=" + (mentionedEntities.Items?.Count ?? 0) + " troops=" + (mentionedEntities.Troops?.Count ?? 0) + " terms=" + (mentionedEntities.Terms?.Count ?? 0);
 	}
 
 	private static string BuildKnowledgeHitRateDetail(string detail, string secondaryInput)

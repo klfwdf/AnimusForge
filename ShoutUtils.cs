@@ -1035,7 +1035,8 @@ public static class ShoutUtils
 
 	public static bool IsInValidScene()
 	{
-		if (Mission.Current == null)
+		Mission mission = Mission.Current;
+		if (mission == null)
 		{
 			return false;
 		}
@@ -1059,7 +1060,7 @@ public static class ShoutUtils
 		catch
 		{
 		}
-		string text = Mission.Current.SceneName?.ToLower() ?? "";
+		string text = mission.SceneName?.ToLower() ?? "";
 		if (text.Contains("arena"))
 		{
 			return true;
@@ -1069,7 +1070,8 @@ public static class ShoutUtils
 
 	public static string GetCurrentSceneDescription()
 	{
-		if (Mission.Current == null)
+		Mission mission = Mission.Current;
+		if (mission == null)
 		{
 			if (TryBuildMapSeaSceneDescription(out var mapSeaDescriptionWithoutMission))
 			{
@@ -1241,7 +1243,7 @@ public static class ShoutUtils
 			}
 			else
 			{
-				string text7 = Mission.Current.SceneName?.ToLower() ?? "";
+				string text7 = mission.SceneName?.ToLower() ?? "";
 				text = ((!text7.Contains("lordshall") && !text7.Contains("lord_hall") && !text7.Contains("lordhall") && !text7.Contains("lord") && !text7.Contains("keep")) ? (text7.Contains("tavern") ? "酒馆" : (text7.Contains("arena") ? "竞技场" : ((text7.Contains("prison") || text7.Contains("dungeon")) ? "地牢" : (string.IsNullOrEmpty(text2) ? "野外" : "街道")))) : "领主大厅");
 			}
 		}
@@ -2178,18 +2180,21 @@ public static class ShoutUtils
 	private static List<Agent> GetNearbyNPCAgentsLegacy(float maxDistance, float halfAngleRadians)
 	{
 		List<Agent> list = new List<Agent>();
-		if (Mission.Current == null || Agent.Main == null)
+		Mission mission = Mission.Current;
+		Agent mainAgent = Agent.Main;
+		var agents = mission?.Agents;
+		if (agents == null || mainAgent == null)
 		{
 			return list;
 		}
 		float num = Math.Max(0.1f, maxDistance);
 		float num2 = Math.Max(0f, Math.Min((float)Math.PI, halfAngleRadians));
 		float num3 = (float)Math.Cos(num2);
-		Vec3 position = Agent.Main.Position;
-		Vec3 lookDirection = Agent.Main.LookDirection;
-		foreach (Agent agent in Mission.Current.Agents)
+		Vec3 position = mainAgent.Position;
+		Vec3 lookDirection = mainAgent.LookDirection;
+		foreach (Agent agent in agents)
 		{
-			if (agent == Agent.Main || !agent.IsActive() || !agent.IsHuman)
+			if (agent == mainAgent || !agent.IsActive() || !agent.IsHuman)
 			{
 				continue;
 			}
@@ -2210,7 +2215,10 @@ public static class ShoutUtils
 	public static List<Agent> GetNearbyNPCAgents(float maxDistance, float halfAngleRadians)
 	{
 		List<Agent> list = new List<Agent>();
-		if (Mission.Current == null || Agent.Main == null)
+		Mission mission = Mission.Current;
+		Agent mainAgent = Agent.Main;
+		var agents = mission?.Agents;
+		if (agents == null || mainAgent == null)
 		{
 			return list;
 		}
@@ -2218,16 +2226,16 @@ public static class ShoutUtils
 		float num2 = Math.Max(0f, Math.Min((float)Math.PI, halfAngleRadians));
 		float num3 = (float)Math.Cos(num2);
 		float num4 = num * num;
-		Vec2 position = Agent.Main.Position.AsVec2;
-		Vec2 lookDirection = Agent.Main.LookDirection.AsVec2;
+		Vec2 position = mainAgent.Position.AsVec2;
+		Vec2 lookDirection = mainAgent.LookDirection.AsVec2;
 		if (lookDirection.LengthSquared <= 1E-05f)
 		{
 			return list;
 		}
 		lookDirection.Normalize();
-		foreach (Agent agent in Mission.Current.Agents)
+		foreach (Agent agent in agents)
 		{
-			if (agent == Agent.Main || !agent.IsActive() || !agent.IsHuman)
+			if (agent == mainAgent || !agent.IsActive() || !agent.IsHuman)
 			{
 				continue;
 			}
@@ -2247,19 +2255,22 @@ public static class ShoutUtils
 
 	public static Agent GetClosestFacingAgent(float maxDistance)
 	{
-		if (Mission.Current == null || Agent.Main == null)
+		Mission mission = Mission.Current;
+		Agent mainAgent = Agent.Main;
+		var agents = mission?.Agents;
+		if (agents == null || mainAgent == null)
 		{
 			return null;
 		}
-		Vec3 position = Agent.Main.Position;
-		Vec3 lookDirection = Agent.Main.LookDirection;
+		Vec3 position = mainAgent.Position;
+		Vec3 lookDirection = mainAgent.LookDirection;
 		Agent result = null;
 		float num = maxDistance;
 		const float strictCrosshairDotThreshold = 0.9f;
 		const float npcFront120DotThreshold = 0.5f;
-		foreach (Agent agent in Mission.Current.Agents)
+		foreach (Agent agent in agents)
 		{
-			if (agent == Agent.Main || !agent.IsActive() || !agent.IsHuman)
+			if (agent == mainAgent || !agent.IsActive() || !agent.IsHuman)
 			{
 				continue;
 			}

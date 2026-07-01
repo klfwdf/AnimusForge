@@ -2507,9 +2507,10 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		int activeHumanAgents = 0;
 		try
 		{
-			if (Mission.Current?.Agents != null)
+			var agents = Mission.Current?.Agents;
+			if (agents != null)
 			{
-				foreach (Agent agent in Mission.Current.Agents)
+				foreach (Agent agent in agents)
 				{
 					totalAgents++;
 					if (agent != null && agent.IsHuman && agent.IsActive())
@@ -2816,7 +2817,8 @@ public class SceneTauntMissionBehavior : MissionBehavior
 	{
 		try
 		{
-			if (Mission.Current == null || Agent.Main == null || !Agent.Main.IsActive())
+			var agents = Mission.Current?.Agents;
+			if (agents == null || Agent.Main == null || !Agent.Main.IsActive())
 			{
 				return null;
 			}
@@ -2824,7 +2826,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			Vec3 lookDirection = Agent.Main.LookDirection;
 			Agent result = null;
 			float num = -1f;
-			foreach (Agent agent in Mission.Current.Agents)
+			foreach (Agent agent in agents)
 			{
 				if (agent == null || agent == Agent.Main || !agent.IsHuman || !agent.IsActive())
 				{
@@ -2867,7 +2869,8 @@ public class SceneTauntMissionBehavior : MissionBehavior
 	{
 		try
 		{
-			if (Mission.Current == null || Agent.Main == null || !Agent.Main.IsActive())
+			var agents = Mission.Current?.Agents;
+			if (agents == null || Agent.Main == null || !Agent.Main.IsActive())
 			{
 				return null;
 			}
@@ -2875,7 +2878,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			Vec3 lookDirection = Agent.Main.LookDirection;
 			Agent result = null;
 			float num = float.MaxValue;
-			foreach (Agent agent in Mission.Current.Agents)
+			foreach (Agent agent in agents)
 			{
 				if (agent == null || agent == Agent.Main || !agent.IsHuman || !agent.IsActive())
 				{
@@ -3773,14 +3776,15 @@ public class SceneTauntMissionBehavior : MissionBehavior
 				}
 				return;
 			}
-			if (_ownedSettlementPassiveVictimAgentIndices.Count == 0 || Mission.Current == null)
+			var agents = Mission.Current?.Agents;
+			if (_ownedSettlementPassiveVictimAgentIndices.Count == 0 || agents == null)
 			{
 				return;
 			}
 			List<int> list = null;
 			foreach (int item in _ownedSettlementPassiveVictimAgentIndices)
 			{
-				Agent agent = Mission.Current.Agents?.FirstOrDefault(a => a != null && a.Index == item);
+				Agent agent = agents.FirstOrDefault(a => a != null && a.Index == item);
 				if (!IsValidOwnedSettlementPassiveAttackTarget(agent))
 				{
 					if (list == null)
@@ -5469,21 +5473,23 @@ public class SceneTauntMissionBehavior : MissionBehavior
 
 	private bool ShouldSuppressDuplicateNativeCriminalConflict(Agent targetAgent)
 	{
-		if (targetAgent == null || targetAgent.Index < 0 || Mission.Current == null)
+		Mission mission = Mission.Current;
+		if (targetAgent == null || targetAgent.Index < 0 || mission == null)
 		{
 			return false;
 		}
-		return _lastNativeCriminalConflictTargetAgentIndex == targetAgent.Index && Mission.Current.CurrentTime - _lastNativeCriminalConflictMissionTime <= 0.45f;
+		return _lastNativeCriminalConflictTargetAgentIndex == targetAgent.Index && mission.CurrentTime - _lastNativeCriminalConflictMissionTime <= 0.45f;
 	}
 
 	private void RememberNativeCriminalConflictTarget(Agent targetAgent)
 	{
-		if (targetAgent == null || targetAgent.Index < 0 || Mission.Current == null)
+		Mission mission = Mission.Current;
+		if (targetAgent == null || targetAgent.Index < 0 || mission == null)
 		{
 			return;
 		}
 		_lastNativeCriminalConflictTargetAgentIndex = targetAgent.Index;
-		_lastNativeCriminalConflictMissionTime = Mission.Current.CurrentTime;
+		_lastNativeCriminalConflictMissionTime = mission.CurrentTime;
 	}
 
 	private bool TryAddFacingAgentToArmedConflict(Agent targetAgent, string reason)
@@ -5963,7 +5969,8 @@ public class SceneTauntMissionBehavior : MissionBehavior
 
 	private bool CanTryArmedConflictReactionNow()
 	{
-		if (!_conflictActive || !_armedConflict || Mission.Current == null)
+		Mission mission = Mission.Current;
+		if (!_conflictActive || !_armedConflict || mission == null)
 		{
 			return false;
 		}
@@ -5975,16 +5982,17 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		{
 			return true;
 		}
-		return _lastArmedConflictReactionMissionTime < 0f || Mission.Current.CurrentTime - _lastArmedConflictReactionMissionTime >= ArmedConflictReactionIntervalSeconds;
+		return _lastArmedConflictReactionMissionTime < 0f || mission.CurrentTime - _lastArmedConflictReactionMissionTime >= ArmedConflictReactionIntervalSeconds;
 	}
 
 	private bool TryTriggerBudgetedArmedConflictReaction(string factText, int targetAgentIndex)
 	{
-		if (string.IsNullOrWhiteSpace(factText) || targetAgentIndex < 0 || !_conflictActive || !_armedConflict || Mission.Current == null)
+		Mission mission = Mission.Current;
+		if (string.IsNullOrWhiteSpace(factText) || targetAgentIndex < 0 || !_conflictActive || !_armedConflict || mission == null)
 		{
 			return false;
 		}
-		float currentTime = Mission.Current.CurrentTime;
+		float currentTime = mission.CurrentTime;
 		if (_armedConflictReactionCount >= ArmedConflictReactionMaxCount)
 		{
 			return false;
@@ -6559,34 +6567,38 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		List<Agent> list = new List<Agent>();
 		try
 		{
-			foreach (Agent agent in Mission.Current.Agents)
+			var agents = Mission.Current?.Agents;
+			if (agents != null)
 			{
-				if (agent == null || !agent.IsHuman || !agent.IsActive())
+				foreach (Agent agent in agents)
 				{
-					continue;
-				}
-				if (agent == Agent.Main)
-				{
-					AddUniqueAgent(list, agent);
-					continue;
-				}
-				Hero hero = (agent.Character as CharacterObject)?.HeroObject;
-				if (SceneTauntBehavior.IsPlayerMainPartyHero(hero))
-				{
-					AddUniqueAgent(list, agent);
-					continue;
-				}
-				try
-				{
-					LocationCharacter locationCharacter = LocationComplex.Current?.FindCharacter(agent);
-					AccompanyingCharacter accompanyingCharacter = PlayerEncounter.LocationEncounter?.GetAccompanyingCharacter(locationCharacter);
-					if (accompanyingCharacter != null && accompanyingCharacter.IsFollowingPlayerAtMissionStart)
+					if (agent == null || !agent.IsHuman || !agent.IsActive())
+					{
+						continue;
+					}
+					if (agent == Agent.Main)
 					{
 						AddUniqueAgent(list, agent);
+						continue;
 					}
-				}
-				catch
-				{
+					Hero hero = (agent.Character as CharacterObject)?.HeroObject;
+					if (SceneTauntBehavior.IsPlayerMainPartyHero(hero))
+					{
+						AddUniqueAgent(list, agent);
+						continue;
+					}
+					try
+					{
+						LocationCharacter locationCharacter = LocationComplex.Current?.FindCharacter(agent);
+						AccompanyingCharacter accompanyingCharacter = PlayerEncounter.LocationEncounter?.GetAccompanyingCharacter(locationCharacter);
+						if (accompanyingCharacter != null && accompanyingCharacter.IsFollowingPlayerAtMissionStart)
+						{
+							AddUniqueAgent(list, agent);
+						}
+					}
+					catch
+					{
+					}
 				}
 			}
 		}
@@ -6620,7 +6632,12 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		}
 		try
 		{
-			foreach (Agent agent in Mission.Current.Agents)
+			var agents = Mission.Current?.Agents;
+			if (agents == null)
+			{
+				return list;
+			}
+			foreach (Agent agent in agents)
 			{
 				if (agent == null || agent == targetAgent || !agent.IsHuman || !agent.IsActive())
 				{
@@ -6651,7 +6668,12 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		List<Agent> list = new List<Agent>();
 		try
 		{
-			foreach (Agent agent in Mission.Current.Agents)
+			var agents = Mission.Current?.Agents;
+			if (agents == null)
+			{
+				return list;
+			}
+			foreach (Agent agent in agents)
 			{
 				if (agent == null || !agent.IsHuman || !agent.IsActive() || hashSet.Contains(agent.Index))
 				{
@@ -6681,7 +6703,12 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		guardAgents = new List<Agent>();
 		try
 		{
-			foreach (Agent agent in Mission.Current.Agents)
+			var agents = Mission.Current?.Agents;
+			if (agents == null)
+			{
+				return list;
+			}
+			foreach (Agent agent in agents)
 			{
 				if (agent == null || !agent.IsHuman || !agent.IsActive() || hashSet.Contains(agent.Index))
 				{
@@ -6738,7 +6765,8 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		{
 			return;
 		}
-		if (Mission.Current == null || Agent.Main == null || !Agent.Main.IsActive() || Settlement.CurrentSettlement == null || _fightHandler == null)
+		Mission mission = Mission.Current;
+		if (mission == null || Agent.Main == null || !Agent.Main.IsActive() || Settlement.CurrentSettlement == null || _fightHandler == null)
 		{
 			return;
 		}
@@ -6754,7 +6782,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		{
 			return;
 		}
-		float currentTime = Mission.Current.CurrentTime;
+		float currentTime = mission.CurrentTime;
 		if (_lastArmedCarryoverAttemptAtMissionTime >= 0f && currentTime - _lastArmedCarryoverAttemptAtMissionTime < 0.25f)
 		{
 			return;
@@ -6908,13 +6936,14 @@ public class SceneTauntMissionBehavior : MissionBehavior
 	{
 		try
 		{
-			if (indices == null || indices.Count == 0 || Mission.Current?.Agents == null)
+			var agents = Mission.Current?.Agents;
+			if (indices == null || indices.Count == 0 || agents == null)
 			{
 				return true;
 			}
 			foreach (int index in indices)
 			{
-				Agent agent = Mission.Current.Agents.FirstOrDefault(a => a != null && a.Index == index);
+				Agent agent = agents.FirstOrDefault(a => a != null && a.Index == index);
 				if (agent != null && agent.IsHuman && agent.State == AgentState.Active)
 				{
 					return false;
@@ -6977,7 +7006,8 @@ public class SceneTauntMissionBehavior : MissionBehavior
 	{
 		try
 		{
-			if (!_pendingPlayerUnarmedPrep || Mission.Current == null || _armedConflict)
+			Mission mission = Mission.Current;
+			if (!_pendingPlayerUnarmedPrep || mission == null || _armedConflict)
 			{
 				if (_armedConflict)
 				{
@@ -6985,7 +7015,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 				}
 				return;
 			}
-			if (Mission.Current.CurrentTime < _pendingPlayerUnarmedPrepAtMissionTime)
+			if (mission.CurrentTime < _pendingPlayerUnarmedPrepAtMissionTime)
 			{
 				return;
 			}
@@ -7024,18 +7054,20 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			_pendingActiveUnarmedTargetFlee = false;
 			_pendingActiveUnarmedTargetFleeAgentIndex = -1;
 			_pendingActiveUnarmedTargetFleeAtMissionTime = -1f;
-			if (!_armedConflict || _activeTargetAgentIndex < 0 || Mission.Current == null)
+			Mission mission = Mission.Current;
+			var agents = mission?.Agents;
+			if (!_armedConflict || _activeTargetAgentIndex < 0 || agents == null)
 			{
 				return;
 			}
-			Agent agent = Mission.Current.Agents?.FirstOrDefault(a => a != null && a.Index == _activeTargetAgentIndex);
+			Agent agent = agents.FirstOrDefault(a => a != null && a.Index == _activeTargetAgentIndex);
 			if (agent == null || !agent.IsActive() || !ShouldFleeWhenArmedVictim(agent))
 			{
 				return;
 			}
 			_pendingActiveUnarmedTargetFlee = true;
 			_pendingActiveUnarmedTargetFleeAgentIndex = agent.Index;
-			_pendingActiveUnarmedTargetFleeAtMissionTime = Mission.Current.CurrentTime + 0.12f;
+			_pendingActiveUnarmedTargetFleeAtMissionTime = mission.CurrentTime + 0.12f;
 			TryForceUnarmedBystanderToFlee(agent);
 			Logger.Log("SceneTaunt", $"Queued active unarmed target to flee after armed escalation. Agent={agent.Name}, AgentIndex={agent.Index}, ExecuteAt={_pendingActiveUnarmedTargetFleeAtMissionTime:0.###}");
 		}
@@ -7049,15 +7081,17 @@ public class SceneTauntMissionBehavior : MissionBehavior
 	{
 		try
 		{
-			if (!_pendingActiveUnarmedTargetFlee || Mission.Current == null)
+			Mission mission = Mission.Current;
+			var agents = mission?.Agents;
+			if (!_pendingActiveUnarmedTargetFlee || agents == null)
 			{
 				return;
 			}
-			if (Mission.Current.CurrentTime < _pendingActiveUnarmedTargetFleeAtMissionTime)
+			if (mission.CurrentTime < _pendingActiveUnarmedTargetFleeAtMissionTime)
 			{
 				return;
 			}
-			Agent agent = Mission.Current.Agents?.FirstOrDefault(a => a != null && a.Index == _pendingActiveUnarmedTargetFleeAgentIndex);
+			Agent agent = agents.FirstOrDefault(a => a != null && a.Index == _pendingActiveUnarmedTargetFleeAgentIndex);
 			bool flag = agent != null && agent.IsActive();
 			bool flag2 = flag && ShouldFleeWhenArmedVictim(agent);
 			bool flag3 = false;
@@ -7098,15 +7132,17 @@ public class SceneTauntMissionBehavior : MissionBehavior
 	{
 		try
 		{
-			if (!_armedConflict || !_pendingActiveUnarmedTargetFlee || Mission.Current == null || _pendingActiveUnarmedTargetFleeAgentIndex < 0)
+			Mission mission = Mission.Current;
+			var agents = mission?.Agents;
+			if (!_armedConflict || !_pendingActiveUnarmedTargetFlee || agents == null || _pendingActiveUnarmedTargetFleeAgentIndex < 0)
 			{
 				return;
 			}
-			if (Mission.Current.CurrentTime < _pendingActiveUnarmedTargetFleeAtMissionTime)
+			if (mission.CurrentTime < _pendingActiveUnarmedTargetFleeAtMissionTime)
 			{
 				return;
 			}
-			Agent agent = Mission.Current.Agents?.FirstOrDefault(a => a != null && a.Index == _pendingActiveUnarmedTargetFleeAgentIndex);
+			Agent agent = agents.FirstOrDefault(a => a != null && a.Index == _pendingActiveUnarmedTargetFleeAgentIndex);
 			if (agent == null || !agent.IsActive())
 			{
 				ClearPendingActiveUnarmedTargetFlee();
@@ -7141,11 +7177,13 @@ public class SceneTauntMissionBehavior : MissionBehavior
 	{
 		try
 		{
-			if (Mission.Current == null || _recentNeutralizedFleeingCivilianUntilMissionTime.Count == 0)
+			Mission mission = Mission.Current;
+			var agents = mission?.Agents;
+			if (agents == null || _recentNeutralizedFleeingCivilianUntilMissionTime.Count == 0)
 			{
 				return;
 			}
-			float currentTime = Mission.Current.CurrentTime;
+			float currentTime = mission.CurrentTime;
 			foreach (int item in _recentNeutralizedFleeingCivilianUntilMissionTime.Keys.ToList())
 			{
 				if (!_recentNeutralizedFleeingCivilianUntilMissionTime.TryGetValue(item, out var value) || currentTime > value)
@@ -7153,7 +7191,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 					_recentNeutralizedFleeingCivilianUntilMissionTime.Remove(item);
 					continue;
 				}
-				Agent agent = Mission.Current.Agents?.FirstOrDefault(a => a != null && a.Index == item);
+				Agent agent = agents.FirstOrDefault(a => a != null && a.Index == item);
 				if (agent == null || !agent.IsActive() || _opponentAgentIndices.Contains(item) || !ShouldFleeWhenArmedVictim(agent))
 				{
 					_recentNeutralizedFleeingCivilianUntilMissionTime.Remove(item);
@@ -7172,13 +7210,14 @@ public class SceneTauntMissionBehavior : MissionBehavior
 	{
 		try
 		{
-			if (!_conflictActive || !_armedConflict || Mission.Current?.Agents == null || _opponentAgentIndices.Count == 0)
+			var agents = Mission.Current?.Agents;
+			if (!_conflictActive || !_armedConflict || agents == null || _opponentAgentIndices.Count == 0)
 			{
 				return;
 			}
 			foreach (int item in _opponentAgentIndices.ToList())
 			{
-				Agent agent = Mission.Current.Agents?.FirstOrDefault(a => a != null && a.Index == item);
+				Agent agent = agents.FirstOrDefault(a => a != null && a.Index == item);
 				if (agent == null || !agent.IsActive() || !ShouldFleeWhenArmedVictim(agent))
 				{
 					continue;
@@ -7196,11 +7235,12 @@ public class SceneTauntMissionBehavior : MissionBehavior
 	{
 		try
 		{
-			if (!_pendingPlayerRearmAfterArmedConflictEnd || Mission.Current == null)
+			Mission mission = Mission.Current;
+			if (!_pendingPlayerRearmAfterArmedConflictEnd || mission == null)
 			{
 				return;
 			}
-			if (Mission.Current.CurrentTime < _pendingPlayerRearmAfterArmedConflictEndAtMissionTime)
+			if (mission.CurrentTime < _pendingPlayerRearmAfterArmedConflictEndAtMissionTime)
 			{
 				return;
 			}
@@ -7542,9 +7582,10 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			catch
 			{
 			}
-			if (Mission.Current != null && ShouldFleeWhenArmedVictim(agent))
+			Mission mission = Mission.Current;
+			if (mission != null && ShouldFleeWhenArmedVictim(agent))
 			{
-				_recentNeutralizedFleeingCivilianUntilMissionTime[agent.Index] = Mission.Current.CurrentTime + 6f;
+				_recentNeutralizedFleeingCivilianUntilMissionTime[agent.Index] = mission.CurrentTime + 6f;
 			}
 			return true;
 		}
@@ -7610,7 +7651,13 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			long startTimestamp = StartPerfTimer();
 			int scanned = 0;
 			int eligible = 0;
-			foreach (Agent agent in Mission.Current.Agents)
+			var agents = Mission.Current?.Agents;
+			if (agents == null)
+			{
+				LogPerfElapsed("forceAllMortal.inner", startTimestamp, $"scanned={scanned} eligible={eligible}", SceneTauntPerfHeavyStageThresholdMs);
+				return;
+			}
+			foreach (Agent agent in agents)
 			{
 				scanned++;
 				if (agent == null || !agent.IsHuman || !agent.IsActive() || _playerAgentIndices.Contains(agent.Index))
@@ -7948,7 +7995,13 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		int fled = 0;
 		try
 		{
-			foreach (Agent agent in Mission.Current.Agents)
+			var agents = Mission.Current?.Agents;
+			if (agents == null)
+			{
+				LogPerfElapsed("alarmNearbyBystanders.inner", startTimestamp, $"scanned={scanned} inRadius={inRadius} joined={joined} fled={fled}", SceneTauntPerfHeavyStageThresholdMs);
+				return;
+			}
+			foreach (Agent agent in agents)
 			{
 				scanned++;
 				if (agent == null || !agent.IsHuman || !agent.IsActive() || hashSet.Contains(agent.Index) || !IsAgentWithinArmedBystanderReactionRadius(agent, main))
@@ -7978,11 +8031,13 @@ public class SceneTauntMissionBehavior : MissionBehavior
 	{
 		try
 		{
-			if (!_conflictActive || !_armedConflict || Mission.Current?.Agents == null)
+			Mission mission = Mission.Current;
+			var agents = mission?.Agents;
+			if (!_conflictActive || !_armedConflict || agents == null)
 			{
 				return;
 			}
-			float currentTime = Mission.Current.CurrentTime;
+			float currentTime = mission.CurrentTime;
 			if (_lastArmedBystanderReactionRefreshAtMissionTime >= 0f && currentTime - _lastArmedBystanderReactionRefreshAtMissionTime < ArmedBystanderReactionRefreshIntervalSeconds)
 			{
 				return;
@@ -7997,7 +8052,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			int inRadius = 0;
 			int joined = 0;
 			int fled = 0;
-			foreach (Agent agent in Mission.Current.Agents)
+			foreach (Agent agent in agents)
 			{
 				scanned++;
 				if (agent == null || !agent.IsHuman || !agent.IsActive() || hashSet.Contains(agent.Index) || !IsAgentWithinArmedBystanderReactionRadius(agent, main))
@@ -8936,7 +8991,8 @@ public class SceneTauntConsequenceMissionLogic : MissionLogic
 
 	public override void OnMissionTick(float dt)
 	{
-		SceneTauntMissionBehavior missionBehavior = Mission.Current?.GetMissionBehavior<SceneTauntMissionBehavior>();
+		Mission mission = Mission.Current;
+		SceneTauntMissionBehavior missionBehavior = mission?.GetMissionBehavior<SceneTauntMissionBehavior>();
 		if (missionBehavior == null)
 		{
 			_pendingDefeatCaptivityAtMissionTime = -1f;
@@ -8946,10 +9002,10 @@ public class SceneTauntConsequenceMissionLogic : MissionLogic
 		{
 			if (_pendingDefeatCaptivityAtMissionTime < 0f)
 			{
-				_pendingDefeatCaptivityAtMissionTime = Mission.Current.CurrentTime + 0.2f;
+				_pendingDefeatCaptivityAtMissionTime = mission.CurrentTime + 0.2f;
 				return;
 			}
-			if (Mission.Current.CurrentTime < _pendingDefeatCaptivityAtMissionTime)
+			if (mission.CurrentTime < _pendingDefeatCaptivityAtMissionTime)
 			{
 				return;
 			}
@@ -8963,10 +9019,10 @@ public class SceneTauntConsequenceMissionLogic : MissionLogic
 		}
 		if (_pendingDefeatCaptivityAtMissionTime < 0f)
 		{
-			_pendingDefeatCaptivityAtMissionTime = Mission.Current.CurrentTime + 0.5f;
+			_pendingDefeatCaptivityAtMissionTime = mission.CurrentTime + 0.5f;
 			return;
 		}
-		if (Mission.Current.CurrentTime < _pendingDefeatCaptivityAtMissionTime)
+		if (mission.CurrentTime < _pendingDefeatCaptivityAtMissionTime)
 		{
 			return;
 		}

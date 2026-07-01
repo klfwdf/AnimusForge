@@ -56,6 +56,17 @@ internal static class WorkshopDailyTickSafetyPatch
 			{
 				Logger.Log("WorkshopSafety", "DefaultWorkshopModel conversion speed method not found; guard skipped.");
 			}
+
+			var afterLoad = AccessTools.Method(typeof(Workshop), "AfterLoad", Type.EmptyTypes);
+			if (afterLoad != null)
+			{
+				harmony.Patch(afterLoad, finalizer: new HarmonyMethod(typeof(WorkshopDailyTickSafetyPatch), nameof(WorkshopAfterLoadFinalizer)));
+				Logger.Log("WorkshopSafety", "Workshop.AfterLoad guard applied.");
+			}
+			else
+			{
+				Logger.Log("WorkshopSafety", "Workshop.AfterLoad not found; load guard skipped.");
+			}
 		}
 		catch (Exception ex)
 		{
@@ -81,6 +92,40 @@ internal static class WorkshopDailyTickSafetyPatch
 		}
 		__result = new ExplainedNumber(speed, includeDescription);
 		return false;
+	}
+
+	public static Exception WorkshopAfterLoadFinalizer(Workshop __instance, Exception __exception)
+	{
+		if (__exception == null)
+		{
+			return null;
+		}
+		if (!IsRecoverableWorkshopException(__exception))
+		{
+			return __exception;
+		}
+		try
+		{
+			string key = GetWorkshopKey(__instance);
+			string repairReason = "afterload exception suppressed: " + __exception.GetType().Name + ": " + __exception.Message;
+			WorkshopType workshopType = __instance?.WorkshopType;
+			if (workshopType?.Productions != null)
+			{
+				EnsureProductionProgress(__instance, workshopType, out string progressReason);
+				if (!string.IsNullOrWhiteSpace(progressReason))
+				{
+					repairReason += "; " + progressReason;
+				}
+				__instance.UpdateLastRunTime();
+			}
+			LogSkip("afterload_exception_suppressed", key, repairReason);
+			return null;
+		}
+		catch (Exception ex)
+		{
+			LogSkip("afterload_exception_suppressed", GetWorkshopKey(__instance), "afterload repair guard failed: " + ex.Message);
+			return null;
+		}
 	}
 
 	private static bool IsWorkshopSafeForDailyTick(Workshop workshop, Town expectedTown, string stage)
@@ -259,6 +304,14 @@ internal static class WorkshopDailyTickSafetyPatch
 			throw new InvalidOperationException("Workshop owner did not update");
 		}
 		CampaignEventDispatcher.Instance.OnWorkshopOwnerChanged(workshop, oldOwner);
+	}
+
+	private static bool IsRecoverableWorkshopException(Exception exception)
+	{
+		return exception is NullReferenceException
+			|| exception is InvalidOperationException
+			|| exception is ArgumentException
+			|| exception is IndexOutOfRangeException;
 	}
 
 	private static string GetWorkshopKey(Workshop workshop)
