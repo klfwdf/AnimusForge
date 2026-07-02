@@ -46,7 +46,16 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 
 	private const string DefaultNpcPersonaGenerationRequirements = "";
 
-	private const string DefaultCustomPolicyEvaluatorPrompt = "你是卡拉迪亚大陆的王国政策评判器。玩家提交的内容应被视为王国政策、法令、改革、宣言、动员令或公共事务安排。你需要根据政策内容、玩家王国状态、世界背景和知识库资料，判断这项政策会造成什么民间反应、政策摘要、每日影响、持续时间和影响目标。"
+	private const string DefaultCustomPolicyEvaluatorPrompt = "你是卡拉迪亚大陆的王国政策评判器。玩家提交的内容应被视为王国政策、法令、改革、宣言、动员令或公共事务安排。你需要根据政策内容、玩家王国状态、世界背景和知识库资料，判断这项政策会造成什么民间反应、政策摘要、每日持续影响、持续时间和影响目标。"
+		+ "\n\n卡拉迪亚不是现代国家，而是封君、封臣、氏族、城镇、城堡、村庄、驻军、民兵、税赋、治安和封地收益共同维系的社会。任何政策都不可能只靠国王一句话就无成本执行。评判时要考虑贵族是否配合，地方是否能执行，商人和农户是否受益，军队、民兵和治安机构是否承担额外负担，以及政策会不会破坏既有秩序。"
+		+ "\n\n当前可落地影响项共有七类：繁荣度、粮食、村庄户数/炉户、忠诚度、治安度、民兵、AF 王国稳定度。繁荣度主要受贸易、税负、工商业、市场信心和战争破坏影响；粮食主要受征收、储备、运输、农业负担和军队消耗影响；户数/炉户主要受劳动力、安全、徭役、迁徙和破坏影响；忠诚度主要受公平感、文化认同、自治、压迫、恐惧、荣誉和利益分配影响；治安度主要受匪患、巡逻、执法、公正、腐败和地方秩序影响；民兵主要受训练、征召、地方防务、士气、粮饷和人口压力影响；王国稳定度主要受封臣信任、王权合法性、战争胜败、贵族利益、财政压力和国内分裂风险影响。"
+		+ "\n\n不同数值不是同一把尺子。繁荣度是城镇和城堡的长期体量，常以几千计；粮食是城镇库存，会受消耗、生产、市场和储存上限影响；村庄户数代表村庄人口和劳力；忠诚度与治安度都是 0-100 尺度，连续小幅变化也有政治意义；民兵是实际防务人数，过度增加会消耗地方劳力和粮饷。AF 王国稳定度也是 0-100 的国家级尺度，但它不是单个城镇民心，而是王国是否还能被同一套权威、利益分配和军事威望维系住的总指标；低稳定度会提高分裂和叛乱风险，因此不能按城镇数量叠加，也不能被普通治安或民兵变化机械替代。"
+		+ "\n\n每日影响是每天结算的变化，不是整项政策的总变化。持续时间越长，每日变化越应谨慎，但谨慎不等于把所有政策压成固定小档位。请按政策的制度级影响、覆盖范围、执行阻力、持续时间、受益者与受损者判断强弱。稳定度尤其要看这项政策是否改变王权合法性、封臣信任、贵族利益、财政压力、战争信心、继承与自治矛盾、文化压迫、全国动员或国内分裂风险；小修小补可以不动稳定度，真正触及王国结构的改革、暴政、胜利、失败、妥协或崩溃应当让稳定度有相称变化。"
+		+ "\n\n当输出结构要求你评估政策消耗时，requiredGoldCost 与 requiredInfluenceCost 表示完整执行这项政策所需的财政和政治资本，不是玩家当前实际会支付多少。第纳尔成本对应物资、粮饷、工程、赈济、运输、行政和军备投入；影响力成本对应封臣协调、贵族让步、政治信用、合法性、动员命令和秩序压力。请按政策本身的规模与阻力评估完整成本，不要因为玩家当前资源不足而故意压低成本。"
+		+ "\n\n如果玩家在政策正文或自定义评判器提示词里写了参考数值、倍率、强弱或持续时间，应尊重其意图，并按各项数值本身的尺度折算。强政策可以有强效果，荒唐政策也可以反噬；不要把总影响误当成每日影响，也不要用内置建议压低玩家明确要求。忠诚、治安和稳定度仍要理解为 0-100 体系中的变化：它们影响很重，但不代表永远只能输出同一组固定数值。"
+		+ "\n\n民众反馈要像真实的卡拉迪亚社会反应，而不是公告摘要。可以写街市、村庄、酒馆、军营、贵族厅堂、商队、工匠、农户、民兵、巡逻队、总督或祭司等不同人群的看法。让他们有具体的支持、担忧、抱怨、观望或流言，比如粮价、税吏、征役、治安、士兵口粮、村庄劳力、民兵训练、商路消息、封臣脸色和王国分裂传闻等。语气应像政策发布后在各地传开的议论和余波，不要写成系统说明，也不要编造上下文没有支持的具体人物、定居点或他国事实。";
+
+	private const string PreviousDefaultCustomPolicyEvaluatorPromptBeforeExpandedStats = "你是卡拉迪亚大陆的王国政策评判器。玩家提交的内容应被视为王国政策、法令、改革、宣言、动员令或公共事务安排。你需要根据政策内容、玩家王国状态、世界背景和知识库资料，判断这项政策会造成什么民间反应、政策摘要、每日影响、持续时间和影响目标。"
 		+ "\n\n卡拉迪亚不是现代国家，而是封君、封臣、氏族、城镇、城堡、村庄、驻军、税赋和封地收益共同维系的社会。任何政策都不可能只靠国王一句话就无成本执行。评判时要考虑贵族是否配合，地方是否能执行，商人和农户是否受益，军队是否承担额外负担，以及政策会不会破坏既有秩序。"
 		+ "\n\n数值要有因果关系。繁荣度主要受贸易、税负、治安、工商业、战争破坏和市场信心影响；粮食主要受征收、储备、运输、农业负担和军队消耗影响；村庄户数主要受劳动力、安全、徭役、迁徙和破坏影响；忠诚度主要受公平感、文化认同、自治、压迫、恐惧、荣誉和利益分配影响。"
 		+ "\n\n不同数值不是同一把尺子。繁荣度是城镇和城堡的长期体量，常以几千计，约二千以下偏低，约五千以上算高；粮食是城镇库存，会受消耗、生产、市场和储存上限影响；村庄户数代表村庄人口和劳力，约二百以下偏低，约六百以上较高；忠诚度是零到一百的民心尺度，低于二十时定居点很容易叛乱。"
@@ -1170,15 +1179,19 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyGroup("9. 提示词扩展")]
 	public bool PreserveSceneAsteriskActions { get; set; } = false;
 
-	[SettingPropertyInteger("发布第纳尔消耗", 0, 500000, "0", Order = 0, RequireRestart = false, HintText = "自定义政策成功落地时扣除的第纳尔。默认 50000；设置为 0 表示不消耗第纳尔。")]
+	[SettingPropertyBool("AI 判断自定义政策消耗", Order = 0, RequireRestart = false, HintText = "开启：由自定义政策主评判 AI 判断完整执行所需第纳尔和影响力，玩家资源不足时按实际投入比例折算效果。关闭：完全使用下方滑条固定扣费，效果不折算。")]
+	[SettingPropertyGroup("10. 自定义政策")]
+	public bool UseAiEvaluatedCustomPolicyCost { get; set; } = true;
+
+	[SettingPropertyInteger("发布第纳尔消耗", 0, 500000, "0", Order = 1, RequireRestart = false, HintText = "关闭“AI 判断自定义政策消耗”后生效：自定义政策成功落地时扣除的第纳尔。默认 50000；设置为 0 表示不消耗第纳尔。")]
 	[SettingPropertyGroup("10. 自定义政策")]
 	public int CustomPolicyGoldCost { get; set; } = DefaultCustomPolicyGoldCost;
 
-	[SettingPropertyInteger("发布影响力消耗", 0, 5000, "0", Order = 1, RequireRestart = false, HintText = "自定义政策成功落地时扣除的影响力。默认 500；设置为 0 表示不消耗影响力。")]
+	[SettingPropertyInteger("发布影响力消耗", 0, 5000, "0", Order = 2, RequireRestart = false, HintText = "关闭“AI 判断自定义政策消耗”后生效：自定义政策成功落地时扣除的影响力。默认 500；设置为 0 表示不消耗影响力。")]
 	[SettingPropertyGroup("10. 自定义政策")]
 	public int CustomPolicyInfluenceCost { get; set; } = DefaultCustomPolicyInfluenceCost;
 
-	[SettingPropertyInteger("民众反馈目标字数", CustomPolicyPublicFeedbackTargetMinChars, CustomPolicyPublicFeedbackTargetMaxChars, "0", Order = 2, RequireRestart = false, HintText = "控制自定义政策 publicFeedback 的目标中文字符数。读取时按 100 字步进归整；默认 900，最高 1800。")]
+	[SettingPropertyInteger("民众反馈目标字数", CustomPolicyPublicFeedbackTargetMinChars, CustomPolicyPublicFeedbackTargetMaxChars, "0", Order = 3, RequireRestart = false, HintText = "控制自定义政策 publicFeedback 的目标中文字符数。读取时按 100 字步进归整；默认 900，最高 1800。")]
 	[SettingPropertyGroup("10. 自定义政策")]
 	public int CustomPolicyPublicFeedbackTargetChars { get; set; } = DefaultCustomPolicyPublicFeedbackTargetChars;
 
@@ -1380,6 +1393,18 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		catch
 		{
 			return DefaultCustomPolicyInfluenceCost;
+		}
+	}
+
+	public static bool IsAiEvaluatedCustomPolicyCostEnabledForExternal()
+	{
+		try
+		{
+			return GetSettings()?.UseAiEvaluatedCustomPolicyCost ?? true;
+		}
+		catch
+		{
+			return true;
 		}
 	}
 
@@ -2045,6 +2070,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	{
 		string text = NormalizeCustomPolicyEvaluatorPromptText(input);
 		return string.Equals(text, NormalizeCustomPolicyEvaluatorPromptText(DefaultCustomPolicyEvaluatorPrompt), StringComparison.Ordinal)
+			|| string.Equals(text, NormalizeCustomPolicyEvaluatorPromptText(PreviousDefaultCustomPolicyEvaluatorPromptBeforeExpandedStats), StringComparison.Ordinal)
 			|| string.Equals(text, NormalizeCustomPolicyEvaluatorPromptText(PreviousDefaultCustomPolicyEvaluatorPromptForMigration), StringComparison.Ordinal);
 	}
 
