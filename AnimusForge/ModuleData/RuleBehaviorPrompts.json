@@ -792,7 +792,7 @@
                 },
                 {
                     "Tag": "[ACTION:WORLDMAP_ORDER:CREATE_COMPANION_PARTY]",
-                    "Description": "执行其他ACTION:WORLDMAP类别的标签时，无论如何都必须先在最开头输入此标签，非ACTION:WORLDMAP不用"
+                    "Description": "此标签会为NPC创建一支新的队伍，执行其他ACTION:WORLDMAP类别的标签时，无论如何都必须先在最开头输入此标签，执行其他非ACTION:WORLDMAP时，禁止输出此标签"
                 },
                 {
                     "Tag": "[ACTION:WORLDMAP_ORDER:STOP]",

@@ -1824,7 +1824,7 @@ public class DuelBehavior : CampaignBehaviorBase
 		}
 		if (!CanTargetNpcStartDuel(target, out string blockedReason))
 		{
-			Logger.Log("DuelBehavior", "[DuelHealthGate] " + blockedReason);
+			Logger.Log("DuelBehavior", "[DuelEligibilityGate] " + blockedReason);
 			if (!string.IsNullOrWhiteSpace(blockedReason))
 			{
 				InformationManager.DisplayMessage(new InformationMessage(blockedReason, Color.FromUint(4294901760u)));
@@ -1950,7 +1950,7 @@ public class DuelBehavior : CampaignBehaviorBase
 			TryCapturePendingNonHeroDuelMemoryFromAgent(targetAgent);
 			if (Mission.Current != null && !CanTargetAgentStartDuel(targetAgent, out string blockedReason))
 			{
-				Logger.Log("DuelBehavior", "[AgentDuel][DuelHealthGate] " + blockedReason);
+				Logger.Log("DuelBehavior", "[AgentDuel][DuelEligibilityGate] " + blockedReason);
 				if (!string.IsNullOrWhiteSpace(blockedReason))
 				{
 					InformationManager.DisplayMessage(new InformationMessage(blockedReason, Color.FromUint(4294901760u)));
@@ -2052,22 +2052,6 @@ public class DuelBehavior : CampaignBehaviorBase
 		{
 			return false;
 		}
-		Agent agent = Mission.Current?.Agents.FirstOrDefault((Agent a) => a.Character == target.CharacterObject);
-		if (agent != null && agent.HealthLimit > 0f)
-		{
-			float healthRatio = agent.Health / agent.HealthLimit;
-			if (healthRatio < 0.999f)
-			{
-				blockedReason = AIConfigHandler.FormatDuelHealthTemplate(AIConfigHandler.DuelHealthBlockedMessage, target.Name?.ToString(), healthRatio);
-				return false;
-			}
-		}
-		if (target.MaxHitPoints > 0 && target.HitPoints < target.MaxHitPoints)
-		{
-			float healthRatio2 = (float)target.HitPoints / target.MaxHitPoints;
-			blockedReason = AIConfigHandler.FormatDuelHealthTemplate(AIConfigHandler.DuelHealthBlockedMessage, target.Name?.ToString(), healthRatio2);
-			return false;
-		}
 		return true;
 	}
 
@@ -2102,23 +2086,6 @@ public class DuelBehavior : CampaignBehaviorBase
 		if (characterObject == null)
 		{
 			blockedReason = "决斗失败: 目标 NPC 无效。";
-			return false;
-		}
-		string npcName = ResolveDuelTargetDisplayName(targetAgent, characterObject.HeroObject, characterObject);
-		if (targetAgent.HealthLimit > 0f)
-		{
-			float healthRatio = Math.Max(0f, Math.Min(1f, targetAgent.Health / targetAgent.HealthLimit));
-			if (healthRatio < 0.999f)
-			{
-				blockedReason = AIConfigHandler.FormatDuelHealthTemplate(AIConfigHandler.DuelHealthBlockedMessage, npcName, healthRatio);
-				return false;
-			}
-		}
-		Hero heroObject = characterObject.HeroObject;
-		if (heroObject != null && heroObject.MaxHitPoints > 0 && heroObject.HitPoints < heroObject.MaxHitPoints)
-		{
-			float healthRatio2 = Math.Max(0f, Math.Min(1f, (float)heroObject.HitPoints / heroObject.MaxHitPoints));
-			blockedReason = AIConfigHandler.FormatDuelHealthTemplate(AIConfigHandler.DuelHealthBlockedMessage, npcName, healthRatio2);
 			return false;
 		}
 		return true;

@@ -25950,28 +25950,7 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			return AIConfigHandler.DuelNonHeroInstruction;
 		}
-		bool isBelowFullHealth = false;
-		float healthRatio = 1f;
-		if (agent != null && agent.HealthLimit > 0f)
-		{
-			healthRatio = Math.Max(0f, Math.Min(1f, agent.Health / agent.HealthLimit));
-			isBelowFullHealth = healthRatio < 0.999f;
-		}
-		if (hero != null && hero.MaxHitPoints > 0 && hero.HitPoints < hero.MaxHitPoints)
-		{
-			float heroHealthRatio = Math.Max(0f, Math.Min(1f, (float)hero.HitPoints / hero.MaxHitPoints));
-			if (!isBelowFullHealth || heroHealthRatio < healthRatio)
-			{
-				healthRatio = heroHealthRatio;
-			}
-			isBelowFullHealth = true;
-		}
-		if (!isBelowFullHealth)
-		{
-			return baseInstruction;
-		}
-		string npcName = (hero?.Name?.ToString() ?? targetCharacter?.Name?.ToString() ?? agent?.Name ?? "目标NPC").Trim();
-		return AIConfigHandler.FormatDuelHealthTemplate(AIConfigHandler.DuelHealthBlockedInstruction, npcName, healthRatio);
+		return baseInstruction;
 	}
 
 	private string BuildTriggeredRuleInstructions(string input, Hero targetHero, bool useDuelContext, bool isQualified, int playerTier, bool useRewardContext, bool isLoanContext, bool isSurroundingsContext, bool hasAnyHero = true, CharacterObject targetCharacter = null, string kingdomIdOverride = null, int targetAgentIndex = -1, string npcLastUtterance = null, bool includeDuelStakeContext = false, bool playerWonLastDuel = false, bool worldMapPartyCommandContext = false, IEnumerable<string> excludedRuleIds = null, IEnumerable<string> preselectedRuleIds = null)

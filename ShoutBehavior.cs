@@ -8558,6 +8558,25 @@ private static void SplitSceneNpcRoleIntroSections(string fullIntro, bool isHero
 		return string.Join(" ", list).Trim();
 	}
 
+	private static bool HasDeferredDirectGameActionTag(string text)
+	{
+		return Regex.IsMatch(text ?? "", "\\[(?:ACTION:(?:GIVE_GOLD|GIVE_ITEM|DEBT_|DEBT_PAY|SETTLEMENT_TRANSFER|KINGDOM_SERVICE|JOIN_MERCENARY|JOIN_VASSAL|TRADE_TRUST|KING_ABDICATE_TO_PLAYER|VASSALAGE|KINGDOM_ANNEX|PROPOSE|VOTE_DEAL|WORLDMAP_ORDER|DUEL|ISSUE_|QUEST_TURN_IN|NOBLE_GATHERING|MEETING_TAUNT_BATTLE|ENCOUNTER_RELEASE_PLAYER|NPC_SURRENDER|SIEGE_)[^\\]]*|A:H_J_P_P|AD;[^\\]]*|ADP[:;][^\\]]*)\\]", RegexOptions.IgnoreCase);
+	}
+
+	private bool TryApplyDeferredScenePostprocessActionTagsDirectly(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, ref string tags)
+	{
+		if (!HasDeferredDirectGameActionTag(tags))
+		{
+			return false;
+		}
+		string before = tags ?? "";
+		Logger.Log("ShoutBehavior", "[DeferredPostprocess] direct_action_apply start target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? "unknown") + " agent=" + targetAgentIndex + " tags=" + before.Replace("\r", "\\r").Replace("\n", "\\n"));
+		ApplyNativeConversationActionTags(targetHero, targetCharacter, ref tags, targetAgentIndex);
+		bool changed = !string.Equals(before, tags ?? "", StringComparison.Ordinal);
+		Logger.Log("ShoutBehavior", "[DeferredPostprocess] direct_action_apply done target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? "unknown") + " agent=" + targetAgentIndex + " changed=" + changed + " remaining=" + ((tags ?? "").Replace("\r", "\\r").Replace("\n", "\\n")));
+		return changed;
+	}
+
 	private static string StripNpcNamePrefixSafely(string text, int maxPrefixLength = 30)
 	{
 		return ShoutUtils.StripNamePrefixedLineSafely(text, maxPrefixLength);
@@ -13069,7 +13088,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				}
 			}
 			bool sceneMechanismHandled = instance.TryQueueNativeSceneMechanismActionAfterConversationExit(nativeTagTestNpc, presentNpcs, sceneSummonTargets, sceneGuideTargets, ref content);
-			instance.ApplyNativeConversationActionTags(targetHero, targetCharacter, ref content);
+			instance.ApplyNativeConversationActionTags(targetHero, targetCharacter, ref content, targetAgentIndex);
 			string visible = SanitizeSceneSpeechText(content);
 			if (!string.IsNullOrWhiteSpace(visible))
 			{
@@ -15574,17 +15593,18 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 	}
 
-	private void ApplyNativeConversationActionTags(Hero targetHero, CharacterObject targetCharacter, ref string content)
+	private void ApplyNativeConversationActionTags(Hero targetHero, CharacterObject targetCharacter, ref string content, int targetAgentIndexOverride = -1)
 	{
 		if (string.IsNullOrWhiteSpace(content))
 		{
 			return;
 		}
 		targetHero = targetHero ?? targetCharacter?.HeroObject;
+		int resolvedTargetAgentIndex = targetAgentIndexOverride >= 0 ? targetAgentIndexOverride : TryResolveNativeConversationAgentIndex(targetHero, targetCharacter);
 		try
 		{
 			LogNativeActionStep("start", targetHero, targetCharacter, content);
-			int siegeAgentIndex = TryResolveNativeConversationAgentIndex(targetHero, targetCharacter);
+			int siegeAgentIndex = resolvedTargetAgentIndex;
 			bool siegeActionHandled;
 			LogNativeActionStep("siege_before", targetHero, targetCharacter, content);
 			if (AfGcczShoutBridge.TryProcessActionTags(targetHero, targetCharacter, siegeAgentIndex, ref content, out siegeActionHandled, replyIsDirectPlayerResponse: true) && siegeActionHandled)
@@ -15604,7 +15624,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				DuelBehavior.TryCacheDuelStakeFromText(targetHero, ref content);
 				VanillaIssueOfferBridge.ApplyIssueOfferTags(targetHero, ref content);
 				LogNativeActionStep("hero_dispatch_after", targetHero, targetCharacter, content);
-				int targetAgentIndex = TryResolveNativeConversationAgentIndex(targetHero, targetCharacter);
+				int targetAgentIndex = resolvedTargetAgentIndex;
 				bool nativeSceneTauntHandled = TryProcessNativeConversationSceneTauntTags(targetHero, targetCharacter, targetAgentIndex, ref content, out var nativeSceneTauntEscalated);
 				if (nativeSceneTauntHandled && string.IsNullOrWhiteSpace(content))
 				{
@@ -15690,7 +15710,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			}
 			else if (targetCharacter != null)
 			{
-				int agentIndex = TryResolveNativeConversationAgentIndex(targetHero, targetCharacter);
+				int agentIndex = resolvedTargetAgentIndex;
 				RewardSystemBehavior rewardSystem = RewardSystemBehavior.Instance;
 				bool isWildernessNonHeroPartyReward = false;
 				NpcDataPacket nonHeroNpc = null;
@@ -15890,7 +15910,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 	{
 		string result = content ?? "";
 		TryQueueNativeSceneMechanismActionAfterConversationExit(npc, allNpcData, sceneSummonTargets, sceneGuideTargets, ref result);
-		ApplyNativeConversationActionTags(targetHero, targetCharacter, ref result);
+		ApplyNativeConversationActionTags(targetHero, targetCharacter, ref result, npc?.AgentIndex ?? -1);
 		return result ?? "";
 	}
 
@@ -16628,6 +16648,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 
 	private const int NativeConversationPersonaGenerationWaitTimeoutMs = 180000;
 
+	private const int NativeConversationMainReplyTimeoutMs = 180000;
+
 	private static async Task<bool> EnsureNativeConversationPersonaReadyAsync(Hero targetHero, Action<string> onStreamText)
 	{
 		if (targetHero == null)
@@ -16733,11 +16755,19 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 	{
 		if (onStreamText == null)
 		{
-			return await ShoutNetwork.CallApiWithMessages(messages, 5000, promptRetryOnError: true).ConfigureAwait(false);
+			Task<string> requestTask = ShoutNetwork.CallApiWithMessages(messages, 5000, promptRetryOnError: false);
+			Task completedTask = await Task.WhenAny(requestTask, Task.Delay(NativeConversationMainReplyTimeoutMs)).ConfigureAwait(false);
+			if (!ReferenceEquals(completedTask, requestTask))
+			{
+				Logger.Log("NativeConversation", "[WARN] main reply timed out before non-stream completion. timeoutMs=" + NativeConversationMainReplyTimeoutMs);
+				return "（API请求失败: 原生对话正文生成超时 " + NativeConversationMainReplyTimeoutMs + "ms）";
+			}
+			return await requestTask.ConfigureAwait(false);
 		}
 		StringBuilder streamed = new StringBuilder();
 		string completed = "";
 		string error = "";
+		using CancellationTokenSource timeoutCts = new CancellationTokenSource(NativeConversationMainReplyTimeoutMs);
 		await ShoutNetwork.CallApiWithMessagesStream(messages, 5000, delegate(string delta)
 		{
 			if (string.IsNullOrEmpty(delta))
@@ -16756,7 +16786,12 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}, delegate(string err)
 		{
 			error = (err ?? "").Trim();
-		}).ConfigureAwait(false);
+		}, timeoutCts.Token, promptRetryOnError: false).ConfigureAwait(false);
+		if (timeoutCts.IsCancellationRequested && string.IsNullOrWhiteSpace(completed) && streamed.Length == 0 && string.IsNullOrWhiteSpace(error))
+		{
+			Logger.Log("NativeConversation", "[WARN] main reply timed out before first stream chunk. timeoutMs=" + NativeConversationMainReplyTimeoutMs);
+			return "（API请求失败: 原生对话正文生成超时 " + NativeConversationMainReplyTimeoutMs + "ms）";
+		}
 		if (!string.IsNullOrWhiteSpace(completed))
 		{
 			return completed;
@@ -19071,16 +19106,6 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					reason = "target_agent_invalid";
 					return false;
 				}
-			}
-			if (agent != null && agent.HealthLimit > 0f && agent.Health / agent.HealthLimit < 0.999f)
-			{
-				reason = "target_agent_not_full_health";
-				return false;
-			}
-			if (targetHero != null && targetHero.MaxHitPoints > 0 && targetHero.HitPoints < targetHero.MaxHitPoints)
-			{
-				reason = "target_hero_not_full_health";
-				return false;
 			}
 		}
 		catch
@@ -22465,6 +22490,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 								Logger.Log("ShoutBehavior", "[DeferredPostprocess] siege_intervention handled=" + siegeActionHandled + " npc=" + (speakingHero?.StringId ?? currentSpeaker?.Name ?? "unknown"));
 								text3 = ExtractDeferredSceneActionTags(text3);
 							}
+						}
+						if (TryApplyDeferredScenePostprocessActionTagsDirectly(speakingHero, npcCharacter, runtimeTargetAgentIndex, ref text3))
+						{
+							text3 = ExtractDeferredSceneActionTags(text3);
 						}
 						if (HasNonMoodDeferredSceneActionTag(text3))
 						{

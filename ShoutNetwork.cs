@@ -789,6 +789,13 @@ public static class ShoutNetwork
 			JObject payload = BuildPrimaryChatPayload(messages, settings, effectiveApiUrl, effectiveModelName, actualMaxTokens, stream: true, out var thinkingMode);
 			string jsonBody = LlmApiCompat.PrepareChatRequestJson(effectiveApiUrl, payload);
 			requestBodyForTokenStats = jsonBody;
+			Logger.RecordTokenStats(
+				inputTokens,
+				0,
+				messages,
+				"[PRIMARY REQUEST PENDING]\nmode=stream\nmaxTokens=" + Math.Max(16, maxTokens) + "\nactualMaxTokens=" + actualMaxTokens + "\nthinkingMode=" + (thinkingMode ?? ""),
+				"stream_pending",
+				requestBodyForTokenStats);
 			bool streamSucceeded = false;
 			Exception lastStreamException = null;
 			for (int attempt = 1; attempt <= 2; attempt++)

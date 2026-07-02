@@ -7,6 +7,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Xml;
 using HarmonyLib;
 using Newtonsoft.Json;
 using TaleWorlds.CampaignSystem;
@@ -49,6 +50,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 	private const uint GeneratedRewardReservedSubIdMask = 0x02000000u;
 	private const uint GeneratedRewardReservedSubIdBits = 0x02000000u;
 	private const string GeneratedRewardItemManifestFileName = "GeneratedRewardItems.json";
+	private const string GeneratedRewardPlayerRosterStorageKey = "_rewardGeneratedPlayerRosterItems_v1";
 	private static readonly Encoding GeneratedRewardManifestEncoding = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
 	private static readonly object GeneratedRewardItemRegistrationLock = new object();
 	private static readonly Dictionary<uint, ItemObject> GeneratedRewardPendingItemsByObjectId = new Dictionary<uint, ItemObject>();
@@ -61,8 +63,16 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 	private static bool SuppressGeneratedRewardObjectLookup;
 	[ThreadStatic]
 	private static bool SuppressGeneratedRewardPendingLookup;
+	private static DateTime GeneratedRewardLastInventoryVmLogUtc = DateTime.MinValue;
+	private static string GeneratedRewardLastInventoryVmLogSignature = "";
 	private static readonly PropertyInfo RewardItemObjectNameProperty = typeof(ItemObject).GetProperty("Name", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 	private static readonly PropertyInfo RewardItemObjectCategoryProperty = typeof(ItemObject).GetProperty("ItemCategory", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+	private static readonly PropertyInfo RewardItemObjectComponentProperty = typeof(ItemObject).GetProperty("ItemComponent", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+	private static readonly PropertyInfo RewardItemObjectValueProperty = typeof(ItemObject).GetProperty("Value", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+	private static readonly PropertyInfo RewardItemObjectWeightProperty = typeof(ItemObject).GetProperty("Weight", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+	private static readonly PropertyInfo RewardItemObjectIsFoodProperty = typeof(ItemObject).GetProperty("IsFood", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+	private static readonly PropertyInfo RewardItemObjectNotMerchandiseProperty = typeof(ItemObject).GetProperty("NotMerchandise", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+	private static readonly PropertyInfo RewardItemObjectItemFlagsProperty = typeof(ItemObject).GetProperty("ItemFlags", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 	private static readonly MethodInfo RewardObjectManagerTryRegisterWithoutInitializationMethod = typeof(MBObjectManager).GetMethod("TryRegisterObjectWithoutInitialization", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 	private static readonly FieldInfo HeroClanBackingField = typeof(Hero).GetField("_clan", BindingFlags.Instance | BindingFlags.NonPublic);
 
@@ -95,6 +105,50 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		public EquipmentElement EquipmentElement { get; set; }
 
 		public bool IsPrivateEquipment { get; set; }
+	}
+
+	public sealed class GeneratedInventoryItemSnapshot
+	{
+		public string GeneratedStringId { get; set; }
+
+		public string DisplayName { get; set; }
+
+		public string TemplateStringId { get; set; }
+
+		public uint ObjectId { get; set; }
+	}
+
+	public sealed class GeneratedRewardRpItemComponent : ItemComponent
+	{
+		public TextObject Description { get; set; }
+
+		public string CreatedBy { get; set; }
+
+		public int CreatedDay { get; set; }
+
+		public GeneratedRewardRpItemComponent()
+		{
+			Description = new TextObject("{=!}");
+			CreatedBy = "";
+			CreatedDay = 0;
+		}
+
+		private GeneratedRewardRpItemComponent(GeneratedRewardRpItemComponent other)
+		{
+			Description = other?.Description ?? new TextObject("{=!}");
+			CreatedBy = other?.CreatedBy ?? "";
+			CreatedDay = other?.CreatedDay ?? 0;
+		}
+
+		public override ItemComponent GetCopy()
+		{
+			return new GeneratedRewardRpItemComponent(this);
+		}
+
+		public override void Deserialize(MBObjectManager objectManager, XmlNode node)
+		{
+			Initialize();
+		}
 	}
 
 	public class DuelStakeOption
@@ -174,6 +228,21 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		public uint ObjectId;
 
 		public List<uint> LegacyObjectIds;
+
+		public int LastTouchedDay;
+	}
+
+	private sealed class GeneratedRewardRosterItemRecord
+	{
+		public string GeneratedStringId;
+
+		public string DisplayName;
+
+		public string TemplateStringId;
+
+		public uint ObjectId;
+
+		public int Amount;
 
 		public int LastTouchedDay;
 	}
@@ -415,6 +484,10 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 
 	private Dictionary<string, string> _generatedRewardItemStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
+	private Dictionary<string, GeneratedRewardRosterItemRecord> _generatedRewardPlayerRosterRecords = new Dictionary<string, GeneratedRewardRosterItemRecord>(StringComparer.OrdinalIgnoreCase);
+
+	private Dictionary<string, string> _generatedRewardPlayerRosterStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
 	private List<string> _lastGeneratedNpcFactLines = new List<string>();
 
 	private static readonly Dictionary<int, Hero> _promotedNonHeroCompanionsByAgentIndex = new Dictionary<int, Hero>();
@@ -464,6 +537,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 
 	public override void RegisterEvents()
 	{
+		ClearGeneratedRewardRuntimeState("register_events");
 		CampaignEvents.OnGameLoadFinishedEvent.AddNonSerializedListener(this, OnGameLoadFinished);
 		CampaignEvents.DailyTickEvent.AddNonSerializedListener(this, OnDailyTick);
 		CampaignEvents.MapEventEnded.AddNonSerializedListener(this, OnMapEventEnded);
@@ -513,6 +587,34 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		catch (Exception ex3)
 		{
 			Logger.LogTrace("RewardSystem", ">>> Generated item pre-trash roster repair patch failed: " + ex3.Message);
+		}
+		try
+		{
+			Type inventoryVmType = AccessTools.TypeByName("TaleWorlds.CampaignSystem.ViewModelCollection.Inventory.SPInventoryVM");
+			MethodInfo refreshInformationValues = inventoryVmType != null ? AccessTools.Method(inventoryVmType, "RefreshInformationValues") : null;
+			MethodInfo refreshInformationValuesPostfix = AccessTools.Method(typeof(RewardSystemBehavior), nameof(SPInventoryVMRefreshInformationValuesPostfix));
+			if (refreshInformationValues != null && refreshInformationValuesPostfix != null)
+			{
+				patcher.Patch(refreshInformationValues, postfix: new HarmonyMethod(refreshInformationValuesPostfix));
+			}
+		}
+		catch (Exception ex4)
+		{
+			Logger.LogTrace("RewardSystem", ">>> Generated item inventory VM diagnostics patch failed: " + ex4.Message);
+		}
+		try
+		{
+			Type itemMenuVmType = AccessTools.TypeByName("TaleWorlds.CampaignSystem.ViewModelCollection.Inventory.ItemMenuVM");
+			MethodInfo refreshItemTooltips = itemMenuVmType != null ? AccessTools.Method(itemMenuVmType, "RefreshItemTooltips") : null;
+			MethodInfo refreshItemTooltipsPostfix = AccessTools.Method(typeof(RewardSystemBehavior), nameof(ItemMenuVMRefreshItemTooltipsPostfix));
+			if (refreshItemTooltips != null && refreshItemTooltipsPostfix != null)
+			{
+				patcher.Patch(refreshItemTooltips, postfix: new HarmonyMethod(refreshItemTooltipsPostfix));
+			}
+		}
+		catch (Exception ex5)
+		{
+			Logger.LogTrace("RewardSystem", ">>> Generated item tooltip patch failed: " + ex5.Message);
 		}
 	}
 
@@ -629,6 +731,14 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			_generatedRewardItemStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 		}
+		if (_generatedRewardPlayerRosterRecords == null)
+		{
+			_generatedRewardPlayerRosterRecords = new Dictionary<string, GeneratedRewardRosterItemRecord>(StringComparer.OrdinalIgnoreCase);
+		}
+		if (_generatedRewardPlayerRosterStorage == null)
+		{
+			_generatedRewardPlayerRosterStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+		}
 		try
 		{
 			_debtStorage.Clear();
@@ -716,6 +826,8 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			_heroJoinOriginalClanStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 			_generatedRewardItemRecords = new Dictionary<string, GeneratedRewardItemRecord>(StringComparer.OrdinalIgnoreCase);
 			_generatedRewardItemStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+			_generatedRewardPlayerRosterRecords = new Dictionary<string, GeneratedRewardRosterItemRecord>(StringComparer.OrdinalIgnoreCase);
+			_generatedRewardPlayerRosterStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 		}
 	}
 
@@ -781,8 +893,24 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		EnsureGeneratedRewardItemData();
 		try
 		{
+			if (dataStore.IsLoading)
+			{
+				ClearGeneratedRewardRuntimeState("sync_data_load_begin");
+				_generatedRewardItemRecords.Clear();
+				_generatedRewardItemStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+				_generatedRewardPlayerRosterRecords.Clear();
+				_generatedRewardPlayerRosterStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+				try
+				{
+					Logger.Log("Logic", "[RewardItemResolve] generated_save_scope_cleared reason=sync_data_load_begin");
+				}
+				catch
+				{
+				}
+			}
 			if (dataStore.IsSaving)
 			{
+				CaptureGeneratedRewardPlayerRosterItems("sync_data_save");
 				_generatedRewardItemStorage.Clear();
 				foreach (KeyValuePair<string, GeneratedRewardItemRecord> item in _generatedRewardItemRecords)
 				{
@@ -806,9 +934,11 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			_generatedRewardItemStorage = CampaignSaveChunkHelper.RestoreStringDictionary(dictionary, "RewardSystem") ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 			if (dataStore.IsSaving)
 			{
+				SyncGeneratedRewardPlayerRosterData(dataStore);
 				SyncGeneratedRewardRecordsToManifest("sync_data_save");
 				return;
 			}
+			ClearGeneratedRewardRuntimeState("sync_data_load");
 			_generatedRewardItemRecords.Clear();
 			foreach (KeyValuePair<string, string> item2 in _generatedRewardItemStorage)
 			{
@@ -829,14 +959,105 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 					Logger.Log("RewardSystem", "[GeneratedRewardItem] deserialize failed item=" + item2.Key + " error=" + ex2.Message);
 				}
 			}
+			SyncGeneratedRewardPlayerRosterData(dataStore);
 			SyncGeneratedRewardRecordsToManifest("sync_data_load");
 			RestoreGeneratedRewardItemDefinitions("sync_data_load");
+			RestoreGeneratedRewardPlayerRosterItems("sync_data_load");
 		}
 		catch (Exception ex3)
 		{
 			Logger.Log("RewardSystem", "[GeneratedRewardItem] SyncData failed: " + ex3.Message);
 			_generatedRewardItemRecords = new Dictionary<string, GeneratedRewardItemRecord>(StringComparer.OrdinalIgnoreCase);
 			_generatedRewardItemStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+			_generatedRewardPlayerRosterRecords = new Dictionary<string, GeneratedRewardRosterItemRecord>(StringComparer.OrdinalIgnoreCase);
+			_generatedRewardPlayerRosterStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+		}
+	}
+
+	private void SyncGeneratedRewardPlayerRosterData(IDataStore dataStore)
+	{
+		if (dataStore == null)
+		{
+			return;
+		}
+		EnsureGeneratedRewardItemData();
+		try
+		{
+			if (dataStore.IsSaving)
+			{
+				_generatedRewardPlayerRosterStorage.Clear();
+				foreach (KeyValuePair<string, GeneratedRewardRosterItemRecord> item in _generatedRewardPlayerRosterRecords.ToList())
+				{
+					GeneratedRewardRosterItemRecord record = NormalizeGeneratedRewardRosterItemRecord(item.Key, item.Value);
+					if (record == null || record.Amount <= 0)
+					{
+						continue;
+					}
+					try
+					{
+						_generatedRewardPlayerRosterStorage[record.GeneratedStringId] = JsonConvert.SerializeObject(record);
+					}
+					catch (Exception ex)
+					{
+						Logger.Log("RewardSystem", "[GeneratedRewardRoster] serialize failed item=" + item.Key + " error=" + ex.Message);
+					}
+				}
+				_generatedRewardPlayerRosterStorage = CampaignSaveChunkHelper.FlattenStringDictionary(_generatedRewardPlayerRosterStorage, GeneratedRewardPlayerRosterStorageKey, "GeneratedRewardPlayerRoster");
+				try
+				{
+					Logger.Log("Logic", "[RewardItemResolve] generated_player_roster_sync_save records=" + _generatedRewardPlayerRosterRecords.Count + " stored=" + _generatedRewardPlayerRosterStorage.Count + " key=" + GeneratedRewardPlayerRosterStorageKey);
+				}
+				catch
+				{
+				}
+			}
+			Dictionary<string, string> dictionary = dataStore.IsSaving ? _generatedRewardPlayerRosterStorage : new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+			dataStore.SyncData(GeneratedRewardPlayerRosterStorageKey, ref dictionary);
+			if (!dataStore.IsLoading)
+			{
+				return;
+			}
+			_generatedRewardPlayerRosterStorage = CampaignSaveChunkHelper.RestoreStringDictionary(dictionary, "GeneratedRewardPlayerRoster") ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+			_generatedRewardPlayerRosterRecords.Clear();
+			foreach (KeyValuePair<string, string> item in _generatedRewardPlayerRosterStorage)
+			{
+				if (string.IsNullOrWhiteSpace(item.Key) || string.IsNullOrWhiteSpace(item.Value))
+				{
+					continue;
+				}
+				try
+				{
+					GeneratedRewardRosterItemRecord record = NormalizeGeneratedRewardRosterItemRecord(item.Key, JsonConvert.DeserializeObject<GeneratedRewardRosterItemRecord>(item.Value));
+					if (record != null && record.Amount > 0)
+					{
+						_generatedRewardPlayerRosterRecords[record.GeneratedStringId] = record;
+					}
+				}
+				catch (Exception ex2)
+				{
+					Logger.Log("RewardSystem", "[GeneratedRewardRoster] deserialize failed item=" + item.Key + " error=" + ex2.Message);
+				}
+			}
+			try
+			{
+				Logger.Log("Logic", "[RewardItemResolve] generated_player_roster_sync_load stored=" + _generatedRewardPlayerRosterStorage.Count + " records=" + _generatedRewardPlayerRosterRecords.Count + " key=" + GeneratedRewardPlayerRosterStorageKey);
+			}
+			catch
+			{
+			}
+		}
+		catch (Exception ex3)
+		{
+			Logger.Log("RewardSystem", "[GeneratedRewardRoster] SyncData failed: " + ex3.Message);
+			try
+			{
+				Logger.Log("Logic", "[RewardItemResolve] generated_player_roster_sync_failed error=" + ex3.GetType().Name + ":" + ex3.Message);
+			}
+			catch
+			{
+			}
+			_generatedRewardPlayerRosterRecords = new Dictionary<string, GeneratedRewardRosterItemRecord>(StringComparer.OrdinalIgnoreCase);
+			_generatedRewardPlayerRosterStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 		}
 	}
 
@@ -844,7 +1065,9 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 	{
 		ClearPromotedNonHeroCompanionCache();
 		RestoreGeneratedRewardItemDefinitions("game_load_finished");
+		RestoreGeneratedRewardPlayerRosterItems("game_load_finished");
 		RepairGeneratedRewardItemCategories("game_load_finished");
+		CourierDeliveryBehavior.Instance?.RestoreCourierLetterInventoryItemsAfterGeneratedRewardRestore("reward_game_load_finished");
 		CleanupPlayerCompanionLordCacheDuplicates("game_load_finished");
 		RepairInactivePromotedPlayerCompanions("game_load_finished");
 		BackfillHeroJoinOriginalClanRecordsForExistingPlayerCompanions();
@@ -7930,17 +8153,770 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		return true;
 	}
 
+	public static int GenerateNamedInventoryItemToRosterForExternal(ItemRoster targetRoster, string requestedName, int amount, out string generatedStringId, out string itemName, string logSource = null)
+	{
+		generatedStringId = null;
+		itemName = null;
+		try
+		{
+			if (targetRoster == null || string.IsNullOrWhiteSpace(requestedName) || amount <= 0)
+			{
+				return 0;
+			}
+			RewardItemResolution templateResolution = null;
+			RewardSystemBehavior instance = Instance;
+			if (instance != null)
+			{
+				try
+				{
+					List<RewardItemInfo> contextItems = instance.BuildRewardItemResolutionContextFromRoster(targetRoster);
+					instance.TryFindBestRewardItemResolution(requestedName, contextItems, includeZeroScore: true, out templateResolution, logSource ?? "external_generate_named", logMatch: false, logMiss: false);
+					if (!IsStableGeneratedRewardTemplateItem(templateResolution?.Item))
+					{
+						templateResolution = null;
+					}
+				}
+				catch
+				{
+				}
+			}
+			if (templateResolution?.Item == null)
+			{
+				ItemObject fallbackTemplate = ResolveGeneratedInventoryTemplateItem(null, requestedName);
+				if (fallbackTemplate == null)
+				{
+					return 0;
+				}
+				EquipmentElement templateEquipment = new EquipmentElement(fallbackTemplate, null, null, false);
+				templateResolution = new RewardItemResolution
+				{
+					Info = new RewardItemInfo
+					{
+						Item = fallbackTemplate,
+						StringId = fallbackTemplate.StringId ?? "",
+						PromptStringId = fallbackTemplate.StringId ?? "",
+						Name = fallbackTemplate.Name?.ToString() ?? fallbackTemplate.StringId ?? "",
+						Count = 0,
+						GuidePrice = Math.Max(1, fallbackTemplate.Value),
+						EquipmentElement = templateEquipment
+					},
+					Item = fallbackTemplate,
+					EquipmentElement = templateEquipment,
+					ActionKey = fallbackTemplate.StringId ?? "",
+					MatchedName = fallbackTemplate.Name?.ToString() ?? fallbackTemplate.StringId ?? "",
+					MatchedStringId = fallbackTemplate.StringId ?? "",
+					BestScore = 0f,
+					SecondScore = 0f,
+					IsContext = false,
+					TemplateItem = fallbackTemplate
+				};
+			}
+			if (!TryCreateGeneratedRewardItemResolution(requestedName, templateResolution, out RewardItemResolution resolution, logSource ?? "external_generate_named"))
+			{
+				return 0;
+			}
+			generatedStringId = resolution.MatchedStringId;
+			int generated = GenerateResolvedItemsToRoster(targetRoster, resolution, amount, out itemName);
+			if (generated > 0)
+			{
+				TryPrimeGeneratedInventoryItemForExternal(generatedStringId, requestedName, resolution.TemplateItem?.StringId, resolution.Item?.Id.InternalValue ?? 0u, out _, out _, out _, (logSource ?? "external_generate_named") + "_prime");
+			}
+			return generated;
+		}
+		catch (Exception ex)
+		{
+			try
+			{
+				Logger.Log("Logic", "[RewardItemResolve] generate_named_inventory_failed source=" + (logSource ?? "") + " error=" + ex.GetType().Name + ":" + ex.Message);
+			}
+			catch
+			{
+			}
+			return 0;
+		}
+	}
+
+	public static bool TryPrimeGeneratedInventoryItemForExternal(string generatedStringId, string displayName, string templateItemId, uint objectId, out string normalizedStringId, out string normalizedTemplateItemId, out uint normalizedObjectId, string logSource = null)
+	{
+		normalizedStringId = null;
+		normalizedTemplateItemId = null;
+		normalizedObjectId = 0u;
+		try
+		{
+			string key = (generatedStringId ?? "").Trim();
+			string name = NormalizeGeneratedInventoryDisplayName(displayName);
+			if (!IsGeneratedRewardItemStringId(key) || string.IsNullOrWhiteSpace(name))
+			{
+				return false;
+			}
+			GeneratedRewardItemRecord existingRecord = Instance?.GetGeneratedRewardItemRecord(key);
+			if (existingRecord == null)
+			{
+				EnsureGeneratedRewardManifestLoaded();
+				lock (GeneratedRewardItemRegistrationLock)
+				{
+					GeneratedRewardManifestByStringId.TryGetValue(key, out existingRecord);
+				}
+			}
+			if (existingRecord != null)
+			{
+				if (string.IsNullOrWhiteSpace(templateItemId))
+				{
+					templateItemId = existingRecord.TemplateStringId;
+				}
+				if (objectId == 0u)
+				{
+					objectId = existingRecord.ObjectId;
+				}
+				if (string.IsNullOrWhiteSpace(name))
+				{
+					name = existingRecord.DisplayName;
+				}
+			}
+			ItemObject registered = TryGetRegisteredGeneratedRewardItemByStringId(key);
+			if (registered != null && objectId == 0u)
+			{
+				objectId = registered.Id.InternalValue;
+			}
+			ItemObject templateItem = ResolveGeneratedInventoryTemplateItem(templateItemId, name);
+			if (!IsStableGeneratedRewardTemplateItem(templateItem))
+			{
+				templateItem = ResolveGeneratedInventoryTemplateItem(null, name);
+			}
+			if (!IsStableGeneratedRewardTemplateItem(templateItem))
+			{
+				return false;
+			}
+			GeneratedRewardItemRecord record = new GeneratedRewardItemRecord
+			{
+				GeneratedStringId = key,
+				DisplayName = name,
+				TemplateStringId = (templateItem.StringId ?? "").Trim(),
+				ObjectId = objectId,
+				LegacyObjectIds = existingRecord?.LegacyObjectIds != null ? existingRecord.LegacyObjectIds.ToList() : new List<uint>(),
+				LastTouchedDay = Math.Max(existingRecord?.LastTouchedDay ?? 0, GetCampaignDayIndex())
+			};
+			if (record.ObjectId == 0u && TryGetGeneratedRewardItemId(key, templateItem, 0u, out var stableObjectId, logSource ?? "external_prime"))
+			{
+				record.ObjectId = stableObjectId.InternalValue;
+			}
+			GeneratedRewardItemRecord normalizedRecord = NormalizeGeneratedRewardItemRecord(key, record);
+			if (normalizedRecord == null)
+			{
+				return false;
+			}
+			DiscardGeneratedRewardRecordObjectIdIfPolluted(normalizedRecord, templateItem, logSource ?? "external_prime");
+			RewardSystemBehavior instance = Instance;
+			if (instance != null)
+			{
+				instance.EnsureGeneratedRewardItemData();
+				instance._generatedRewardItemRecords[normalizedRecord.GeneratedStringId] = normalizedRecord;
+			}
+			RegisterGeneratedRewardManifestRecord(normalizedRecord);
+			ItemObject generatedItem = TryGetOrCreateGeneratedRewardItem(normalizedRecord.GeneratedStringId, normalizedRecord.DisplayName, templateItem, logSource ?? "external_prime");
+			if (generatedItem != null)
+			{
+				normalizedRecord.ObjectId = generatedItem.Id.InternalValue != 0u ? generatedItem.Id.InternalValue : normalizedRecord.ObjectId;
+				Instance?.RememberGeneratedRewardItemRecord(normalizedRecord.GeneratedStringId, normalizedRecord.DisplayName, templateItem, generatedItem);
+			}
+			else
+			{
+				SaveGeneratedRewardManifest(logSource ?? "external_prime");
+			}
+			GeneratedRewardItemRecord finalRecord = Instance?.GetGeneratedRewardItemRecord(normalizedRecord.GeneratedStringId) ?? normalizedRecord;
+			normalizedStringId = finalRecord.GeneratedStringId;
+			normalizedTemplateItemId = finalRecord.TemplateStringId;
+			normalizedObjectId = finalRecord.ObjectId;
+			return true;
+		}
+		catch (Exception ex)
+		{
+			try
+			{
+				Logger.Log("Logic", "[RewardItemResolve] generated_external_prime_failed source=" + (logSource ?? "") + " generated=" + (generatedStringId ?? "") + " error=" + ex.GetType().Name + ":" + ex.Message);
+			}
+			catch
+			{
+			}
+			return false;
+		}
+	}
+
+	public static int GenerateKnownInventoryItemToRosterForExternal(ItemRoster targetRoster, string generatedStringId, string displayName, string templateItemId, uint objectId, int amount, out string itemName, out string normalizedStringId, out string normalizedTemplateItemId, out uint normalizedObjectId, string logSource = null)
+	{
+		itemName = null;
+		normalizedStringId = null;
+		normalizedTemplateItemId = null;
+		normalizedObjectId = 0u;
+		try
+		{
+			if (targetRoster == null || amount <= 0)
+			{
+				return 0;
+			}
+			if (!TryPrepareGeneratedRewardInventoryElementForRoster(generatedStringId, displayName, templateItemId, objectId, out EquipmentElement equipmentElement, out itemName, out normalizedStringId, out normalizedTemplateItemId, out normalizedObjectId, logSource ?? "external_known_generate"))
+			{
+				return 0;
+			}
+			int generated = AddEquipmentElementToRosterAndCountDelta(targetRoster, equipmentElement, amount, logSource ?? "external_known_generate");
+			return generated;
+		}
+		catch (Exception ex)
+		{
+			try
+			{
+				Logger.Log("Logic", "[RewardItemResolve] generated_external_known_generate_failed source=" + (logSource ?? "") + " generated=" + (generatedStringId ?? "") + " error=" + ex.GetType().Name + ":" + ex.Message);
+			}
+			catch
+			{
+			}
+			return 0;
+		}
+	}
+
+	private static bool TryPrepareGeneratedRewardInventoryElementForRoster(string generatedStringId, string displayName, string templateItemId, uint objectId, out EquipmentElement equipmentElement, out string itemName, out string normalizedStringId, out string normalizedTemplateItemId, out uint normalizedObjectId, string logSource = null)
+	{
+		equipmentElement = default(EquipmentElement);
+		itemName = null;
+		normalizedStringId = null;
+		normalizedTemplateItemId = null;
+		normalizedObjectId = 0u;
+		try
+		{
+			string name = NormalizeGeneratedInventoryDisplayName(displayName);
+			if (string.IsNullOrWhiteSpace(name))
+			{
+				LogGeneratedRewardInventoryGuard("empty_name", generatedStringId, "", templateItemId, null, null, logSource);
+				return false;
+			}
+			if (!TryPrimeGeneratedInventoryItemForExternal(generatedStringId, name, templateItemId, objectId, out normalizedStringId, out normalizedTemplateItemId, out normalizedObjectId, logSource ?? "prepare_generated_inventory"))
+			{
+				LogGeneratedRewardInventoryGuard("prime_failed", generatedStringId, name, templateItemId, null, null, logSource);
+				return false;
+			}
+			ItemObject templateItem = ResolveGeneratedInventoryTemplateItem(normalizedTemplateItemId, name);
+			if (!IsStableGeneratedRewardTemplateItem(templateItem))
+			{
+				LogGeneratedRewardInventoryGuard("bad_template", normalizedStringId, name, normalizedTemplateItemId, null, templateItem, logSource);
+				return false;
+			}
+			ItemObject generatedItem = TryGetOrCreateGeneratedRewardItem(normalizedStringId, name, templateItem, logSource ?? "prepare_generated_inventory");
+			if (!TryValidateGeneratedRewardInventoryItemForRoster(generatedItem, normalizedStringId, name, templateItem, logSource ?? "prepare_generated_inventory"))
+			{
+				return false;
+			}
+			normalizedObjectId = generatedItem.Id.InternalValue != 0u ? generatedItem.Id.InternalValue : normalizedObjectId;
+			Instance?.RememberGeneratedRewardItemRecord(normalizedStringId, name, templateItem, generatedItem);
+			equipmentElement = new EquipmentElement(generatedItem, null, null, false);
+			itemName = name;
+			return true;
+		}
+		catch (Exception ex)
+		{
+			try
+			{
+				Logger.Log("Logic", "[RewardItemResolve] generated_inventory_prepare_failed source=" + (logSource ?? "") + " generated=" + (generatedStringId ?? "") + " error=" + ex.GetType().Name + ":" + ex.Message);
+			}
+			catch
+			{
+			}
+			return false;
+		}
+	}
+
+	public static List<GeneratedInventoryItemSnapshot> ExportGeneratedInventoryItemsForExternal(string logSource = null)
+	{
+		List<GeneratedInventoryItemSnapshot> result = new List<GeneratedInventoryItemSnapshot>();
+		try
+		{
+			EnsureGeneratedRewardManifestLoaded();
+			Dictionary<string, GeneratedRewardItemRecord> records = new Dictionary<string, GeneratedRewardItemRecord>(StringComparer.OrdinalIgnoreCase);
+			if (Instance?._generatedRewardItemRecords != null)
+			{
+				foreach (KeyValuePair<string, GeneratedRewardItemRecord> pair in Instance._generatedRewardItemRecords.ToList())
+				{
+					GeneratedRewardItemRecord record = NormalizeGeneratedRewardItemRecord(pair.Key, pair.Value);
+					if (record != null)
+					{
+						records[record.GeneratedStringId] = record;
+					}
+				}
+			}
+			foreach (GeneratedRewardItemRecord record in records.Values)
+			{
+				result.Add(new GeneratedInventoryItemSnapshot
+				{
+					GeneratedStringId = record.GeneratedStringId,
+					DisplayName = record.DisplayName,
+					TemplateStringId = record.TemplateStringId,
+					ObjectId = record.ObjectId
+				});
+			}
+		}
+		catch (Exception ex)
+		{
+			try
+			{
+				Logger.Log("Logic", "[RewardItemResolve] export_generated_inventory_failed source=" + (logSource ?? "") + " error=" + ex.GetType().Name + ":" + ex.Message);
+			}
+			catch
+			{
+			}
+		}
+		return result;
+	}
+
+	public static bool TryCreateGeneratedInventoryItemForExternal(string displayName, string identityKey, out ItemObject generatedItem, string templateItemId = null, string logSource = null)
+	{
+		generatedItem = null;
+		try
+		{
+			string name = NormalizeGeneratedInventoryDisplayName(displayName);
+			if (string.IsNullOrWhiteSpace(name))
+			{
+				return false;
+			}
+			ItemObject templateItem = ResolveGeneratedInventoryTemplateItem(templateItemId, name);
+			if (templateItem == null)
+			{
+				return false;
+			}
+			string identity = string.IsNullOrWhiteSpace(identityKey) ? name : identityKey.Trim();
+			string generatedStringId = BuildGeneratedRewardItemStringId(identity, templateItem.StringId ?? "");
+			generatedItem = TryGetOrCreateGeneratedRewardItem(generatedStringId, name, templateItem, logSource ?? "external_generated_inventory");
+			return generatedItem != null && TryEnsureGeneratedRewardItemCategory(generatedItem, templateItem, logSource ?? "external_generated_inventory");
+		}
+		catch (Exception ex)
+		{
+			try
+			{
+				Logger.Log("Logic", "[RewardItemResolve] generated_external_inventory_failed source=" + (logSource ?? "") + " error=" + ex.GetType().Name + ":" + ex.Message);
+			}
+			catch
+			{
+			}
+			return false;
+		}
+	}
+
+	private static string NormalizeGeneratedInventoryDisplayName(string displayName)
+	{
+		string name = AnimusForgeTextInputSanitizer.SanitizeMultiline(displayName ?? "", AnimusForgeTextInputSanitizer.MaxCourierLetterChars + 512).Trim();
+		if (string.IsNullOrWhiteSpace(name))
+		{
+			return "";
+		}
+		return name;
+	}
+
+	private static ItemObject ResolveGeneratedInventoryTemplateItem(string templateItemId, string displayName)
+	{
+		ItemObject explicitTemplate = ResolveItemById(templateItemId);
+		if (IsStableGeneratedRewardTemplateItem(explicitTemplate))
+		{
+			return explicitTemplate;
+		}
+		try
+		{
+			IEnumerable<ItemObject> items = Game.Current?.ObjectManager?.GetObjectTypeList<ItemObject>() ?? MBObjectManager.Instance?.GetObjectTypeList<ItemObject>();
+			List<ItemObject> list = items?.Where(IsStableGeneratedRewardTemplateItem).ToList() ?? new List<ItemObject>();
+			ItemObject documentLike = list.FirstOrDefault((ItemObject x) => x.Type == ItemObject.ItemTypeEnum.Goods && ContainsGeneratedRewardItemTextAny(x, "book", "letter", "scroll", "decree", "paper", "parchment", "ledger", "document"));
+			if (documentLike != null)
+			{
+				return documentLike;
+			}
+			ItemObject goods = list.FirstOrDefault((ItemObject x) => x.Type == ItemObject.ItemTypeEnum.Goods && x.ItemCategory != null);
+			if (goods != null)
+			{
+				return goods;
+			}
+			ItemObject book = list.FirstOrDefault((ItemObject x) => x.Type == ItemObject.ItemTypeEnum.Book);
+			if (book != null)
+			{
+				return book;
+			}
+		}
+		catch
+		{
+		}
+		return GetGeneratedRewardFallbackTemplateItem();
+	}
+
+	private static bool IsStableGeneratedRewardTemplateItem(ItemObject item)
+	{
+		if (item == null || item.Id.InternalValue == 0u)
+		{
+			return false;
+		}
+		string stringId = (item.StringId ?? "").Trim();
+		return !IsGeneratedRewardItemStringId(stringId) && !stringId.StartsWith("af_generated_reward_pending_", StringComparison.OrdinalIgnoreCase);
+	}
+
+	private GeneratedRewardRosterItemRecord NormalizeGeneratedRewardRosterItemRecord(string fallbackKey, GeneratedRewardRosterItemRecord record)
+	{
+		if (record == null)
+		{
+			return null;
+		}
+		string generatedStringId = (record.GeneratedStringId ?? fallbackKey ?? "").Trim();
+		if (!IsGeneratedRewardItemStringId(generatedStringId))
+		{
+			return null;
+		}
+		string displayName = AnimusForgeTextInputSanitizer.SanitizeMultiline(record.DisplayName ?? "", AnimusForgeTextInputSanitizer.MaxCourierLetterChars + 512).Trim();
+		GeneratedRewardItemRecord itemRecord = GetGeneratedRewardItemRecord(generatedStringId);
+		if (string.IsNullOrWhiteSpace(displayName))
+		{
+			displayName = (itemRecord?.DisplayName ?? generatedStringId).Trim();
+		}
+		if (string.IsNullOrWhiteSpace(displayName))
+		{
+			return null;
+		}
+		string templateStringId = (record.TemplateStringId ?? itemRecord?.TemplateStringId ?? "").Trim();
+		uint objectId = record.ObjectId != 0u ? record.ObjectId : (itemRecord?.ObjectId ?? 0u);
+		record.GeneratedStringId = generatedStringId;
+		record.DisplayName = displayName;
+		record.TemplateStringId = templateStringId;
+		record.ObjectId = objectId;
+		record.Amount = Math.Max(0, Math.Min(record.Amount, 9999));
+		record.LastTouchedDay = Math.Max(0, record.LastTouchedDay);
+		return record;
+	}
+
+	private void CaptureGeneratedRewardPlayerRosterItems(string reason)
+	{
+		try
+		{
+			EnsureGeneratedRewardItemData();
+			ItemRoster roster = PartyBase.MainParty?.ItemRoster ?? MobileParty.MainParty?.ItemRoster;
+			if (roster == null)
+			{
+				try
+				{
+					Logger.Log("Logic", "[RewardItemResolve] generated_player_roster_capture_skipped reason=" + (reason ?? "") + " player_roster=null");
+				}
+				catch
+				{
+				}
+				return;
+			}
+			Dictionary<string, GeneratedRewardRosterItemRecord> captured = new Dictionary<string, GeneratedRewardRosterItemRecord>(StringComparer.OrdinalIgnoreCase);
+			List<string> sample = new List<string>();
+			for (int i = 0; i < roster.Count; i++)
+			{
+				ItemRosterElement element = roster.GetElementCopyAtIndex(i);
+				ItemObject item = element.EquipmentElement.Item;
+				if (item == null || element.Amount <= 0)
+				{
+					continue;
+				}
+				string generatedStringId = (item.StringId ?? "").Trim();
+				if (!IsGeneratedRewardItemStringId(generatedStringId))
+				{
+					continue;
+				}
+				GeneratedRewardItemRecord itemRecord = GetGeneratedRewardItemRecord(generatedStringId);
+				string displayName = element.EquipmentElement.GetModifiedItemName()?.ToString() ?? item.Name?.ToString() ?? itemRecord?.DisplayName ?? generatedStringId;
+				string templateStringId = itemRecord?.TemplateStringId ?? "";
+				uint objectId = item.Id.InternalValue != 0u ? item.Id.InternalValue : (itemRecord?.ObjectId ?? 0u);
+				if (captured.TryGetValue(generatedStringId, out GeneratedRewardRosterItemRecord existing) && existing != null)
+				{
+					existing.Amount += element.Amount;
+					existing.ObjectId = objectId != 0u ? objectId : existing.ObjectId;
+					if (string.IsNullOrWhiteSpace(existing.TemplateStringId))
+					{
+						existing.TemplateStringId = templateStringId;
+					}
+					continue;
+				}
+				GeneratedRewardRosterItemRecord record = NormalizeGeneratedRewardRosterItemRecord(generatedStringId, new GeneratedRewardRosterItemRecord
+				{
+					GeneratedStringId = generatedStringId,
+					DisplayName = displayName,
+					TemplateStringId = templateStringId,
+					ObjectId = objectId,
+					Amount = element.Amount,
+					LastTouchedDay = GetCampaignDayIndex()
+				});
+				if (record != null && record.Amount > 0)
+				{
+					captured[record.GeneratedStringId] = record;
+					if (sample.Count < 8)
+					{
+						sample.Add(record.GeneratedStringId + ":" + record.Amount.ToString(CultureInfo.InvariantCulture));
+					}
+				}
+			}
+			_generatedRewardPlayerRosterRecords = captured;
+			try
+			{
+				Logger.Log("Logic", "[RewardItemResolve] generated_player_roster_capture reason=" + (reason ?? "") + " rosterSlots=" + roster.Count + " records=" + captured.Count + " amount=" + captured.Values.Sum((GeneratedRewardRosterItemRecord x) => Math.Max(0, x.Amount)).ToString(CultureInfo.InvariantCulture) + " sample=" + string.Join(",", sample));
+			}
+			catch
+			{
+			}
+		}
+		catch (Exception ex)
+		{
+			try
+			{
+				Logger.Log("Logic", "[RewardItemResolve] generated_player_roster_capture_failed reason=" + (reason ?? "") + " error=" + ex.GetType().Name + ":" + ex.Message);
+			}
+			catch
+			{
+			}
+		}
+	}
+
+	private static int CountGeneratedRewardRosterItem(ItemRoster roster, GeneratedRewardRosterItemRecord record)
+	{
+		if (roster == null || record == null)
+		{
+			return 0;
+		}
+		string generatedStringId = (record.GeneratedStringId ?? "").Trim();
+		uint objectId = record.ObjectId;
+		if (string.IsNullOrWhiteSpace(generatedStringId) && objectId == 0u)
+		{
+			return 0;
+		}
+		int count = 0;
+		for (int i = 0; i < roster.Count; i++)
+		{
+			ItemRosterElement element = roster.GetElementCopyAtIndex(i);
+			ItemObject item = element.EquipmentElement.Item;
+			if (item == null || element.Amount <= 0)
+			{
+				continue;
+			}
+			bool stringMatches = !string.IsNullOrWhiteSpace(generatedStringId) && string.Equals((item.StringId ?? "").Trim(), generatedStringId, StringComparison.OrdinalIgnoreCase);
+			bool objectMatches = objectId != 0u && item.Id.InternalValue == objectId;
+			if (stringMatches || objectMatches)
+			{
+				count += element.Amount;
+			}
+		}
+		return count;
+	}
+
+	private void RememberGeneratedRewardPlayerRosterItem(EquipmentElement equipmentElement, int amount, string source)
+	{
+		try
+		{
+			if (amount <= 0 || equipmentElement.Item == null)
+			{
+				return;
+			}
+			EnsureGeneratedRewardItemData();
+			string generatedStringId = (equipmentElement.Item.StringId ?? "").Trim();
+			if (!IsGeneratedRewardItemStringId(generatedStringId))
+			{
+				return;
+			}
+			GeneratedRewardItemRecord itemRecord = GetGeneratedRewardItemRecord(generatedStringId);
+			string displayName = equipmentElement.GetModifiedItemName()?.ToString() ?? equipmentElement.Item.Name?.ToString() ?? itemRecord?.DisplayName ?? generatedStringId;
+			string templateStringId = itemRecord?.TemplateStringId ?? "";
+			uint objectId = equipmentElement.Item.Id.InternalValue != 0u ? equipmentElement.Item.Id.InternalValue : (itemRecord?.ObjectId ?? 0u);
+			GeneratedRewardRosterItemRecord existing = null;
+			_generatedRewardPlayerRosterRecords?.TryGetValue(generatedStringId, out existing);
+			GeneratedRewardRosterItemRecord record = NormalizeGeneratedRewardRosterItemRecord(generatedStringId, existing ?? new GeneratedRewardRosterItemRecord
+			{
+				GeneratedStringId = generatedStringId
+			});
+			record ??= new GeneratedRewardRosterItemRecord
+			{
+				GeneratedStringId = generatedStringId
+			};
+			record.DisplayName = displayName;
+			if (!string.IsNullOrWhiteSpace(templateStringId))
+			{
+				record.TemplateStringId = templateStringId;
+			}
+			record.ObjectId = objectId;
+			int rosterCount = 0;
+			ItemRoster playerRoster = GetPlayerMainItemRoster();
+			if (playerRoster != null)
+			{
+				GeneratedRewardRosterItemRecord countRecord = NormalizeGeneratedRewardRosterItemRecord(generatedStringId, new GeneratedRewardRosterItemRecord
+				{
+					GeneratedStringId = generatedStringId,
+					DisplayName = displayName,
+					TemplateStringId = record.TemplateStringId,
+					ObjectId = objectId,
+					Amount = Math.Max(1, amount),
+					LastTouchedDay = GetCampaignDayIndex()
+				});
+				rosterCount = CountGeneratedRewardRosterItem(playerRoster, countRecord);
+			}
+			record.Amount = Math.Max(rosterCount, Math.Max(0, record.Amount) + amount);
+			if (rosterCount > 0)
+			{
+				record.Amount = rosterCount;
+			}
+			record.LastTouchedDay = GetCampaignDayIndex();
+			_generatedRewardPlayerRosterRecords[record.GeneratedStringId] = record;
+			try
+			{
+				Logger.Log("Logic", "[RewardItemResolve] generated_player_roster_remember source=" + (source ?? "") + " generated=" + record.GeneratedStringId + " amount=" + amount.ToString(CultureInfo.InvariantCulture) + " recordAmount=" + record.Amount.ToString(CultureInfo.InvariantCulture) + " rosterCount=" + rosterCount.ToString(CultureInfo.InvariantCulture) + " template=" + (record.TemplateStringId ?? "") + " objectId=" + record.ObjectId.ToString(CultureInfo.InvariantCulture));
+			}
+			catch
+			{
+			}
+		}
+		catch (Exception ex)
+		{
+			try
+			{
+				Logger.Log("Logic", "[RewardItemResolve] generated_player_roster_remember_failed source=" + (source ?? "") + " error=" + ex.GetType().Name + ":" + ex.Message);
+			}
+			catch
+			{
+			}
+		}
+	}
+
+	private void RestoreGeneratedRewardPlayerRosterItems(string reason)
+	{
+		try
+		{
+			EnsureGeneratedRewardItemData();
+			if (_generatedRewardPlayerRosterRecords == null || _generatedRewardPlayerRosterRecords.Count == 0)
+			{
+				try
+				{
+					Logger.Log("Logic", "[RewardItemResolve] generated_player_roster_restore_skipped reason=" + (reason ?? "") + " records=0");
+				}
+				catch
+				{
+				}
+				return;
+			}
+			ItemRoster roster = PartyBase.MainParty?.ItemRoster ?? MobileParty.MainParty?.ItemRoster;
+			if (roster == null)
+			{
+				try
+				{
+					Logger.Log("Logic", "[RewardItemResolve] generated_player_roster_restore_skipped reason=" + (reason ?? "") + " player_roster=null records=" + _generatedRewardPlayerRosterRecords.Count);
+				}
+				catch
+				{
+				}
+				return;
+			}
+			int restored = 0;
+			int checkedRecords = 0;
+			int totalExpected = 0;
+			int totalCurrent = 0;
+			int totalMissing = 0;
+			List<string> sample = new List<string>();
+			foreach (string key in _generatedRewardPlayerRosterRecords.Keys.ToList())
+			{
+				GeneratedRewardRosterItemRecord record = NormalizeGeneratedRewardRosterItemRecord(key, _generatedRewardPlayerRosterRecords[key]);
+				if (record == null || record.Amount <= 0)
+				{
+					_generatedRewardPlayerRosterRecords.Remove(key);
+					continue;
+				}
+				checkedRecords++;
+				TryPrimeGeneratedInventoryItemForExternal(record.GeneratedStringId, record.DisplayName, record.TemplateStringId, record.ObjectId, out string normalizedStringId, out string normalizedTemplateStringId, out uint normalizedObjectId, "generated_player_roster_restore_prime_" + (reason ?? ""));
+				if (!string.IsNullOrWhiteSpace(normalizedStringId) && !string.Equals(record.GeneratedStringId, normalizedStringId, StringComparison.OrdinalIgnoreCase))
+				{
+					_generatedRewardPlayerRosterRecords.Remove(key);
+					record.GeneratedStringId = normalizedStringId;
+				}
+				if (!string.IsNullOrWhiteSpace(normalizedTemplateStringId))
+				{
+					record.TemplateStringId = normalizedTemplateStringId;
+				}
+				if (normalizedObjectId != 0u)
+				{
+					record.ObjectId = normalizedObjectId;
+				}
+				int current = CountGeneratedRewardRosterItem(roster, record);
+				int missing = Math.Max(0, record.Amount - current);
+				totalExpected += Math.Max(0, record.Amount);
+				totalCurrent += Math.Max(0, current);
+				totalMissing += missing;
+				if (missing <= 0)
+				{
+					_generatedRewardPlayerRosterRecords[record.GeneratedStringId] = record;
+					if (sample.Count < 8)
+					{
+						sample.Add(record.GeneratedStringId + ":ok:" + current.ToString(CultureInfo.InvariantCulture) + "/" + record.Amount.ToString(CultureInfo.InvariantCulture));
+					}
+					continue;
+				}
+				int generated = GenerateKnownInventoryItemToRosterForExternal(roster, record.GeneratedStringId, record.DisplayName, record.TemplateStringId, record.ObjectId, missing, out _, out string restoredStringId, out string restoredTemplateStringId, out uint restoredObjectId, "generated_player_roster_restore");
+				if (generated <= 0 || string.IsNullOrWhiteSpace(restoredStringId))
+				{
+					if (sample.Count < 8)
+					{
+						sample.Add(record.GeneratedStringId + ":failed:" + missing.ToString(CultureInfo.InvariantCulture));
+					}
+					_generatedRewardPlayerRosterRecords[record.GeneratedStringId] = record;
+					continue;
+				}
+				restored += generated;
+				if (!string.Equals(record.GeneratedStringId, restoredStringId, StringComparison.OrdinalIgnoreCase))
+				{
+					_generatedRewardPlayerRosterRecords.Remove(record.GeneratedStringId);
+					record.GeneratedStringId = restoredStringId;
+				}
+				if (!string.IsNullOrWhiteSpace(restoredTemplateStringId))
+				{
+					record.TemplateStringId = restoredTemplateStringId;
+				}
+				if (restoredObjectId != 0u)
+				{
+					record.ObjectId = restoredObjectId;
+				}
+				record.Amount = CountGeneratedRewardRosterItem(roster, record);
+				record.LastTouchedDay = GetCampaignDayIndex();
+				_generatedRewardPlayerRosterRecords[record.GeneratedStringId] = record;
+				if (sample.Count < 8)
+				{
+					sample.Add(record.GeneratedStringId + ":restored:" + generated.ToString(CultureInfo.InvariantCulture) + "/" + missing.ToString(CultureInfo.InvariantCulture));
+				}
+			}
+			try
+			{
+				Logger.Log("Logic", "[RewardItemResolve] generated_player_roster_restore reason=" + (reason ?? "") + " checked=" + checkedRecords + " expected=" + totalExpected + " currentBefore=" + totalCurrent + " missing=" + totalMissing + " restored=" + restored + " sample=" + string.Join(",", sample));
+			}
+			catch
+			{
+			}
+		}
+		catch (Exception ex)
+		{
+			try
+			{
+				Logger.Log("Logic", "[RewardItemResolve] generated_player_roster_restore_failed reason=" + (reason ?? "") + " error=" + ex.GetType().Name + ":" + ex.Message);
+			}
+			catch
+			{
+			}
+		}
+	}
+
 	private static bool TryEnsureGeneratedRewardItemCategory(ItemObject item, ItemObject templateItem = null, string logSource = null)
 	{
 		if (item == null)
 		{
 			return false;
 		}
+		ItemCategory category = templateItem?.ItemCategory;
+		if (category != null && IsGeneratedRewardItemStringId(item.StringId) && !ReferenceEquals(item.ItemCategory, category))
+		{
+			if (TrySetGeneratedRewardItemCategory(item, category))
+			{
+				return true;
+			}
+		}
 		if (item.ItemCategory != null)
 		{
 			return true;
 		}
-		ItemCategory category = templateItem?.ItemCategory;
 		if (category != null)
 		{
 			if (TrySetGeneratedRewardItemCategory(item, category))
@@ -8054,6 +9030,14 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		if (_generatedRewardItemStorage == null)
 		{
 			_generatedRewardItemStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+		}
+		if (_generatedRewardPlayerRosterRecords == null)
+		{
+			_generatedRewardPlayerRosterRecords = new Dictionary<string, GeneratedRewardRosterItemRecord>(StringComparer.OrdinalIgnoreCase);
+		}
+		if (_generatedRewardPlayerRosterStorage == null)
+		{
+			_generatedRewardPlayerRosterStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 		}
 	}
 
@@ -8374,34 +9358,28 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				return;
 			}
 			GeneratedRewardManifestLoaded = true;
-			try
+		}
+	}
+
+	private static void ClearGeneratedRewardRuntimeState(string reason)
+	{
+		try
+		{
+			lock (GeneratedRewardItemRegistrationLock)
 			{
-				string path = GetGeneratedRewardItemManifestPath();
-				if (string.IsNullOrWhiteSpace(path) || !File.Exists(path))
-				{
-					return;
-				}
-				string json = File.ReadAllText(path, GeneratedRewardManifestEncoding);
-				Dictionary<string, GeneratedRewardItemRecord> records = JsonConvert.DeserializeObject<Dictionary<string, GeneratedRewardItemRecord>>(json) ?? new Dictionary<string, GeneratedRewardItemRecord>(StringComparer.OrdinalIgnoreCase);
-				foreach (KeyValuePair<string, GeneratedRewardItemRecord> pair in records)
-				{
-					GeneratedRewardItemRecord record = NormalizeGeneratedRewardItemRecord(pair.Key, pair.Value);
-					if (record != null)
-					{
-						RegisterGeneratedRewardManifestRecordNoLock(record);
-					}
-				}
+				GeneratedRewardPendingItemsByObjectId.Clear();
+				GeneratedRewardDetachedItemsByObjectId.Clear();
+				GeneratedRewardDetachedItemsByStringId.Clear();
+				GeneratedRewardManifestByObjectId.Clear();
+				GeneratedRewardManifestByStringId.Clear();
+				GeneratedRewardManifestLoaded = true;
 			}
-			catch (Exception ex)
-			{
-				try
-				{
-					Logger.Log("RewardSystem", "[GeneratedRewardItem] manifest load failed: " + ex.GetType().Name + ":" + ex.Message);
-				}
-				catch
-				{
-				}
-			}
+			GeneratedRewardLastInventoryVmLogSignature = "";
+			GeneratedRewardLastInventoryVmLogUtc = DateTime.MinValue;
+			Logger.Log("Logic", "[RewardItemResolve] generated_runtime_state_cleared reason=" + (reason ?? "") + " global_manifest_io=disabled");
+		}
+		catch
+		{
 		}
 	}
 
@@ -8486,38 +9464,6 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 	private static void SaveGeneratedRewardManifest(string reason = null)
 	{
 		EnsureGeneratedRewardManifestLoaded();
-		Dictionary<string, GeneratedRewardItemRecord> snapshot = new Dictionary<string, GeneratedRewardItemRecord>(StringComparer.OrdinalIgnoreCase);
-		lock (GeneratedRewardItemRegistrationLock)
-		{
-			foreach (KeyValuePair<string, GeneratedRewardItemRecord> pair in GeneratedRewardManifestByStringId.ToList())
-			{
-				GeneratedRewardItemRecord record = NormalizeGeneratedRewardItemRecord(pair.Key, pair.Value);
-				if (record != null)
-				{
-					snapshot[record.GeneratedStringId] = record;
-				}
-			}
-		}
-		try
-		{
-			string path = GetGeneratedRewardItemManifestPath();
-			string directory = Path.GetDirectoryName(path);
-			if (!string.IsNullOrWhiteSpace(directory))
-			{
-				Directory.CreateDirectory(directory);
-			}
-			File.WriteAllText(path, JsonConvert.SerializeObject(snapshot, Formatting.Indented), GeneratedRewardManifestEncoding);
-		}
-		catch (Exception ex)
-		{
-			try
-			{
-				Logger.Log("RewardSystem", "[GeneratedRewardItem] manifest save failed reason=" + (reason ?? "") + " error=" + ex.GetType().Name + ":" + ex.Message);
-			}
-			catch
-			{
-			}
-		}
 	}
 
 	private void SyncGeneratedRewardRecordsToManifest(string reason)
@@ -8538,30 +9484,12 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			_generatedRewardItemRecords[record.GeneratedStringId] = record;
 			RegisterGeneratedRewardManifestRecord(record);
 		}
-		SaveGeneratedRewardManifest(reason);
 	}
 
 	private void MergeGeneratedRewardManifestIntoRecords()
 	{
 		EnsureGeneratedRewardItemData();
 		EnsureGeneratedRewardManifestLoaded();
-		List<GeneratedRewardItemRecord> records;
-		lock (GeneratedRewardItemRegistrationLock)
-		{
-			records = GeneratedRewardManifestByStringId.Values.ToList();
-		}
-		foreach (GeneratedRewardItemRecord item in records)
-		{
-			GeneratedRewardItemRecord record = NormalizeGeneratedRewardItemRecord(item?.GeneratedStringId, item);
-			if (record == null)
-			{
-				continue;
-			}
-			if (!_generatedRewardItemRecords.ContainsKey(record.GeneratedStringId))
-			{
-				_generatedRewardItemRecords[record.GeneratedStringId] = record;
-			}
-		}
 	}
 
 	private static bool IsGeneratedRewardReservedObjectId(MBGUID objectId)
@@ -8622,12 +9550,12 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		try
 		{
 			IEnumerable<ItemObject> items = Game.Current?.ObjectManager?.GetObjectTypeList<ItemObject>() ?? MBObjectManager.Instance?.GetObjectTypeList<ItemObject>();
-			ItemObject item = items?.FirstOrDefault((ItemObject x) => x != null && x.Type == ItemObject.ItemTypeEnum.Goods && x.ItemCategory != null);
+			ItemObject item = items?.FirstOrDefault((ItemObject x) => IsStableGeneratedRewardTemplateItem(x) && x.Type == ItemObject.ItemTypeEnum.Goods && x.ItemCategory != null);
 			if (item != null)
 			{
 				return item;
 			}
-			return items?.FirstOrDefault((ItemObject x) => x != null && x.Id.InternalValue != 0u);
+			return items?.FirstOrDefault(IsStableGeneratedRewardTemplateItem);
 		}
 		catch
 		{
@@ -8644,7 +9572,24 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 		lock (GeneratedRewardItemRegistrationLock)
 		{
-			ItemObject existing = MBObjectManager.Instance?.GetObject(objectId) as ItemObject;
+			bool previousSuppressObjectLookup = SuppressGeneratedRewardObjectLookup;
+			bool previousSuppressPendingLookup = SuppressGeneratedRewardPendingLookup;
+			ItemObject existing;
+			try
+			{
+				SuppressGeneratedRewardObjectLookup = true;
+				SuppressGeneratedRewardPendingLookup = true;
+				existing = MBObjectManager.Instance?.GetObject(objectId) as ItemObject;
+			}
+			finally
+			{
+				SuppressGeneratedRewardObjectLookup = previousSuppressObjectLookup;
+				SuppressGeneratedRewardPendingLookup = previousSuppressPendingLookup;
+			}
+			if (!IsGeneratedRewardPendingItem(existing) && GeneratedRewardPendingItemsByObjectId.TryGetValue(objectId.InternalValue, out var cachedPending) && IsGeneratedRewardPendingItem(cachedPending))
+			{
+				existing = cachedPending;
+			}
 			if (!IsGeneratedRewardPendingItem(existing))
 			{
 				return false;
@@ -8686,6 +9631,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		try
 		{
 			ItemObject copy = new ItemObject(templateItem);
+			CopyGeneratedRewardItemProperty(target, copy, "ItemCategory");
 			CopyGeneratedRewardItemProperty(target, copy, "ItemComponent");
 			CopyGeneratedRewardItemProperty(target, copy, "MultiMeshName");
 			CopyGeneratedRewardItemProperty(target, copy, "HolsterMeshName");
@@ -8721,6 +9667,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		{
 		}
 		TrySetRewardItemObjectName(target, displayName);
+		ApplyGeneratedRewardItemRpState(target, displayName);
 		TryEnsureGeneratedRewardItemCategory(target, templateItem, "template_state");
 	}
 
@@ -8746,6 +9693,33 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 		catch
 		{
+		}
+	}
+
+	private static void ApplyGeneratedRewardItemRpState(ItemObject target, string displayName)
+	{
+		if (target == null)
+		{
+			return;
+		}
+		try
+		{
+			string text = NormalizeGeneratedInventoryDisplayName(displayName);
+			if (string.IsNullOrWhiteSpace(text))
+			{
+				text = target.Name?.ToString() ?? target.StringId ?? "";
+			}
+			TrySetRewardItemObjectName(target, text);
+		}
+		catch (Exception ex)
+		{
+			try
+			{
+				Logger.Log("Logic", "[RewardItemResolve] generated_rp_state_failed item=" + (target.StringId ?? "") + " error=" + ex.GetType().Name + ":" + ex.Message);
+			}
+			catch
+			{
+			}
 		}
 	}
 
@@ -8810,36 +9784,34 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 
 	private void RememberGeneratedRewardItemRecord(string generatedStringId, string displayName, ItemObject templateItem, ItemObject generatedItem)
 	{
-		if (!IsGeneratedRewardItemStringId(generatedStringId) || templateItem == null || generatedItem == null)
+		if (IsGeneratedRewardItemStringId(generatedStringId) && templateItem != null && generatedItem != null)
 		{
-			return;
+			EnsureGeneratedRewardItemData();
+			string key = generatedStringId.Trim();
+			if (!_generatedRewardItemRecords.TryGetValue(key, out var record) || record == null)
+			{
+				record = new GeneratedRewardItemRecord();
+			}
+			uint oldObjectId = record.ObjectId;
+			uint newObjectId = generatedItem.Id.InternalValue;
+			record.GeneratedStringId = key;
+			record.DisplayName = string.IsNullOrWhiteSpace(displayName) ? (generatedItem.Name?.ToString() ?? key) : displayName.Trim();
+			record.TemplateStringId = (templateItem.StringId ?? "").Trim();
+			if (record.LegacyObjectIds == null)
+			{
+				record.LegacyObjectIds = new List<uint>();
+			}
+			if (oldObjectId != 0u && newObjectId != 0u && oldObjectId != newObjectId && !record.LegacyObjectIds.Contains(oldObjectId))
+			{
+				record.LegacyObjectIds.Add(oldObjectId);
+			}
+			record.LegacyObjectIds = record.LegacyObjectIds.Where((uint x) => x != 0u && x != newObjectId).Distinct().Take(16).ToList();
+			record.ObjectId = newObjectId;
+			record.LastTouchedDay = GetCampaignDayIndex();
+			_generatedRewardItemRecords[key] = record;
+			RegisterGeneratedRewardManifestRecord(record);
+			SaveGeneratedRewardManifest("remember");
 		}
-		EnsureGeneratedRewardItemData();
-		string key = generatedStringId.Trim();
-		GeneratedRewardItemRecord record;
-		if (!_generatedRewardItemRecords.TryGetValue(key, out record) || record == null)
-		{
-			record = new GeneratedRewardItemRecord();
-		}
-		uint oldObjectId = record.ObjectId;
-		uint newObjectId = generatedItem.Id.InternalValue;
-		record.GeneratedStringId = key;
-		record.DisplayName = string.IsNullOrWhiteSpace(displayName) ? (generatedItem.Name?.ToString() ?? key) : displayName.Trim();
-		record.TemplateStringId = (templateItem.StringId ?? "").Trim();
-		if (record.LegacyObjectIds == null)
-		{
-			record.LegacyObjectIds = new List<uint>();
-		}
-		if (oldObjectId != 0u && newObjectId != 0u && oldObjectId != newObjectId && !record.LegacyObjectIds.Contains(oldObjectId))
-		{
-			record.LegacyObjectIds.Add(oldObjectId);
-		}
-		record.LegacyObjectIds = record.LegacyObjectIds.Where((uint x) => x != 0u && x != newObjectId).Distinct().Take(16).ToList();
-		record.ObjectId = newObjectId;
-		record.LastTouchedDay = GetCampaignDayIndex();
-		_generatedRewardItemRecords[key] = record;
-		RegisterGeneratedRewardManifestRecord(record);
-		SaveGeneratedRewardManifest("remember");
 	}
 
 	private void RestoreGeneratedRewardItemDefinitions(string reason)
@@ -9000,9 +9972,10 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			{
 				continue;
 			}
-			bool alreadyCorrect = string.Equals((currentItem.StringId ?? "").Trim(), record.GeneratedStringId.Trim(), StringComparison.OrdinalIgnoreCase) && currentItem.IsReady;
+			bool alreadyCorrect = IsGeneratedRewardRosterItemCanonical(currentItem, record);
 			if (alreadyCorrect)
 			{
+				ApplyGeneratedRewardItemRpState(currentItem, record.DisplayName);
 				TryEnsureGeneratedRewardItemCategory(currentItem, ResolveItemById(record.TemplateStringId), reason);
 				continue;
 			}
@@ -9018,8 +9991,13 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			}
 			if (ReferenceEquals(currentItem, generatedItem))
 			{
+				ApplyGeneratedRewardItemRpState(generatedItem, record.DisplayName);
 				generatedItem.IsReady = true;
 				TryEnsureGeneratedRewardItemCategory(generatedItem, templateItem, reason);
+				if (!IsGeneratedRewardRosterItemCanonical(generatedItem, record))
+				{
+					LogGeneratedRewardInventoryGuard("repair_same_reference_not_canonical", record.GeneratedStringId, record.DisplayName, record.TemplateStringId, generatedItem, templateItem, reason);
+				}
 				continue;
 			}
 			replacements.Add(Tuple.Create(element, generatedItem, record));
@@ -9046,6 +10024,67 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			}
 		}
 		return repaired > 0;
+	}
+
+	private static bool IsGeneratedRewardRosterItemCanonical(ItemObject item, GeneratedRewardItemRecord record)
+	{
+		if (item == null || record == null || !IsGeneratedRewardItemStringId(record.GeneratedStringId))
+		{
+			return false;
+		}
+		if (!string.Equals((item.StringId ?? "").Trim(), record.GeneratedStringId.Trim(), StringComparison.OrdinalIgnoreCase))
+		{
+			return false;
+		}
+		if (!item.IsReady)
+		{
+			return false;
+		}
+		if (item.ItemComponent is GeneratedRewardRpItemComponent)
+		{
+			return false;
+		}
+		ItemObject templateItem = ResolveItemById(record.TemplateStringId);
+		if (templateItem != null && item.Type != templateItem.Type)
+		{
+			return false;
+		}
+		if (templateItem?.ItemCategory != null && !ReferenceEquals(item.ItemCategory, templateItem.ItemCategory))
+		{
+			return false;
+		}
+		return IsGeneratedRewardItemVisibleToObjectManager(item);
+	}
+
+	private static bool IsGeneratedRewardItemVisibleToObjectManager(ItemObject item)
+	{
+		if (item == null || !IsGeneratedRewardItemStringId(item.StringId))
+		{
+			return false;
+		}
+		bool previousSuppressObjectLookup = SuppressGeneratedRewardObjectLookup;
+		bool previousSuppressPendingLookup = SuppressGeneratedRewardPendingLookup;
+		try
+		{
+			SuppressGeneratedRewardObjectLookup = true;
+			SuppressGeneratedRewardPendingLookup = true;
+			ItemObject stringItem = MBObjectManager.Instance?.GetObject<ItemObject>(item.StringId);
+			if (stringItem != null && string.Equals((stringItem.StringId ?? "").Trim(), (item.StringId ?? "").Trim(), StringComparison.OrdinalIgnoreCase))
+			{
+				return true;
+			}
+			ItemObject idItem = item.Id.InternalValue != 0u ? MBObjectManager.Instance?.GetObject(item.Id) as ItemObject : null;
+			return idItem != null && string.Equals((idItem.StringId ?? "").Trim(), (item.StringId ?? "").Trim(), StringComparison.OrdinalIgnoreCase);
+		}
+		catch
+		{
+			return false;
+		}
+		finally
+		{
+			SuppressGeneratedRewardObjectLookup = previousSuppressObjectLookup;
+			SuppressGeneratedRewardPendingLookup = previousSuppressPendingLookup;
+		}
 	}
 
 	private Dictionary<uint, GeneratedRewardItemRecord> BuildGeneratedRewardItemRecordsByObjectId()
@@ -9254,6 +10293,11 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				{
 					return stringCollision;
 				}
+				ItemObject idCollisionItem = idCollision as ItemObject;
+				if (idCollisionItem != null)
+				{
+					return idCollisionItem;
+				}
 				try
 				{
 					Logger.Log("Logic", "[RewardItemResolve] generated_stable_collision_missing_string_index source=" + (logSource ?? "") + " generated=" + (generatedItem.StringId ?? "") + " id=" + generatedItem.Id.InternalValue.ToString(CultureInfo.InvariantCulture));
@@ -9282,6 +10326,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				catch
 				{
 				}
+				return registeredById;
 			}
 			return null;
 		}
@@ -9315,17 +10360,27 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			string name = displayName.Trim();
 			if (TryResolveGeneratedRewardItemForStringId(key, out var cachedGeneratedItem, logSource ?? "generated_create_cached") && cachedGeneratedItem != null)
 			{
-				TrySetRewardItemObjectName(cachedGeneratedItem, name);
+				ApplyGeneratedRewardItemTemplateState(cachedGeneratedItem, templateItem, name);
+				ApplyGeneratedRewardItemRpState(cachedGeneratedItem, name);
 				TryEnsureGeneratedRewardItemCategory(cachedGeneratedItem, templateItem, logSource);
-				cachedGeneratedItem.Initialize();
-				cachedGeneratedItem.IsReady = true;
-				Instance?.RememberGeneratedRewardItemRecord(key, name, templateItem, cachedGeneratedItem);
-				return cachedGeneratedItem;
+				ItemObject registeredCachedItem = TryRegisterGeneratedRewardItemWithStableId(cachedGeneratedItem, logSource ?? "generated_create_cached_promote");
+				if (registeredCachedItem != null)
+				{
+					ApplyGeneratedRewardItemTemplateState(registeredCachedItem, templateItem, name);
+					ApplyGeneratedRewardItemRpState(registeredCachedItem, name);
+					TryEnsureGeneratedRewardItemCategory(registeredCachedItem, templateItem, logSource);
+					registeredCachedItem.Initialize();
+					registeredCachedItem.IsReady = true;
+					Instance?.RememberGeneratedRewardItemRecord(key, name, templateItem, registeredCachedItem);
+					return registeredCachedItem;
+				}
+				LogGeneratedRewardInventoryGuard("cached_register_failed", key, name, templateItem.StringId, cachedGeneratedItem, templateItem, logSource);
 			}
 			ItemObject existing = TryGetRegisteredGeneratedRewardItemByStringId(key);
 			if (existing != null)
 			{
-				TrySetRewardItemObjectName(existing, name);
+				ApplyGeneratedRewardItemTemplateState(existing, templateItem, name);
+				ApplyGeneratedRewardItemRpState(existing, name);
 				TryEnsureGeneratedRewardItemCategory(existing, templateItem, logSource);
 				existing.Initialize();
 				existing.IsReady = true;
@@ -9359,26 +10414,36 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				ItemObject detachedItem = TryGetOrCreateGeneratedRewardDetachedItem(record, logSource);
 				if (detachedItem != null)
 				{
-					Instance?.RememberGeneratedRewardItemRecord(key, name, templateItem, detachedItem);
-					return detachedItem;
+					ApplyGeneratedRewardItemRpState(detachedItem, name);
+					ItemObject registeredDetachedItem = TryRegisterGeneratedRewardItemWithStableId(detachedItem, logSource ?? "generated_create_detached_promote");
+					if (registeredDetachedItem != null)
+					{
+						ApplyGeneratedRewardItemRpState(registeredDetachedItem, name);
+						TryEnsureGeneratedRewardItemCategory(registeredDetachedItem, templateItem, logSource);
+						registeredDetachedItem.Initialize();
+						registeredDetachedItem.IsReady = true;
+						Instance?.RememberGeneratedRewardItemRecord(key, name, templateItem, registeredDetachedItem);
+						return registeredDetachedItem;
+					}
+					LogGeneratedRewardInventoryGuard("detached_register_failed", key, name, templateItem.StringId, detachedItem, templateItem, logSource);
 				}
 			}
 			ItemObject generatedItem = new ItemObject(templateItem)
 			{
 				StringId = key
 			};
-			if (!TrySetRewardItemObjectName(generatedItem, name))
-			{
-				return null;
-			}
+			ApplyGeneratedRewardItemTemplateState(generatedItem, templateItem, name);
 			if (!TryEnsureGeneratedRewardItemCategory(generatedItem, templateItem, logSource))
 			{
 				return null;
 			}
 			ItemObject registered = MBObjectManager.Instance?.RegisterObject<ItemObject>(generatedItem) ?? generatedItem;
+			ApplyGeneratedRewardItemRpState(registered, name);
+			TryEnsureGeneratedRewardItemCategory(registered, templateItem, logSource);
 			registered.Initialize();
 			registered.IsReady = true;
 			Instance?.RememberGeneratedRewardItemRecord(key, name, templateItem, registered);
+			LogGeneratedRewardObjectVisibility("generated_create_registered", registered, logSource);
 			return registered;
 		}
 		catch (Exception ex)
@@ -9411,6 +10476,290 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private static bool IsRuntimeGeneratedRewardItemForKey(ItemObject item, string generatedStringId)
+	{
+		string key = (generatedStringId ?? "").Trim();
+		string itemStringId = (item?.StringId ?? "").Trim();
+		return item != null && IsGeneratedRewardItemStringId(key) && IsGeneratedRewardItemStringId(itemStringId) && string.Equals(itemStringId, key, StringComparison.OrdinalIgnoreCase);
+	}
+
+	private static void DiscardGeneratedRewardRecordObjectIdIfPolluted(GeneratedRewardItemRecord record, ItemObject templateItem, string logSource = null)
+	{
+		if (record == null || record.ObjectId == 0u)
+		{
+			return;
+		}
+		uint objectId = record.ObjectId;
+		string reason = null;
+		ItemObject collisionItem = null;
+		if (templateItem != null && templateItem.Id.InternalValue != 0u && objectId == templateItem.Id.InternalValue)
+		{
+			reason = "record_object_id_is_template";
+			collisionItem = templateItem;
+		}
+		else if (MBObjectManager.Instance != null)
+		{
+			bool previousSuppressObjectLookup = SuppressGeneratedRewardObjectLookup;
+			bool previousSuppressPendingLookup = SuppressGeneratedRewardPendingLookup;
+			try
+			{
+				SuppressGeneratedRewardObjectLookup = true;
+				SuppressGeneratedRewardPendingLookup = true;
+				collisionItem = MBObjectManager.Instance.GetObject(new MBGUID(objectId)) as ItemObject;
+			}
+			catch
+			{
+				collisionItem = null;
+			}
+			finally
+			{
+				SuppressGeneratedRewardObjectLookup = previousSuppressObjectLookup;
+				SuppressGeneratedRewardPendingLookup = previousSuppressPendingLookup;
+			}
+			if (collisionItem != null && !IsGeneratedRewardPendingItem(collisionItem) && !IsRuntimeGeneratedRewardItemForKey(collisionItem, record.GeneratedStringId))
+			{
+				reason = "record_object_id_collision";
+			}
+		}
+		if (reason == null)
+		{
+			return;
+		}
+		LogGeneratedRewardInventoryGuard(reason, record.GeneratedStringId, record.DisplayName, record.TemplateStringId, collisionItem, templateItem, logSource);
+		record.ObjectId = 0u;
+		if (record.LegacyObjectIds != null)
+		{
+			record.LegacyObjectIds.RemoveAll((uint x) => x == objectId);
+		}
+		lock (GeneratedRewardItemRegistrationLock)
+		{
+			GeneratedRewardDetachedItemsByObjectId.Remove(objectId);
+			GeneratedRewardManifestByObjectId.Remove(objectId);
+		}
+	}
+
+	private static bool TryValidateGeneratedRewardInventoryItemForRoster(ItemObject generatedItem, string generatedStringId, string displayName, ItemObject templateItem, string logSource = null)
+	{
+		string key = (generatedStringId ?? "").Trim();
+		string name = NormalizeGeneratedInventoryDisplayName(displayName);
+		if (!IsGeneratedRewardItemStringId(key) || string.IsNullOrWhiteSpace(name))
+		{
+			LogGeneratedRewardInventoryGuard("invalid_expected", key, name, templateItem?.StringId, generatedItem, templateItem, logSource);
+			return false;
+		}
+		if (!IsRuntimeGeneratedRewardItemForKey(generatedItem, key))
+		{
+			LogGeneratedRewardInventoryGuard("wrong_runtime_item", key, name, templateItem?.StringId, generatedItem, templateItem, logSource);
+			return false;
+		}
+		if (templateItem != null && (ReferenceEquals(generatedItem, templateItem) || (generatedItem.Id.InternalValue != 0u && generatedItem.Id.InternalValue == templateItem.Id.InternalValue)))
+		{
+			LogGeneratedRewardInventoryGuard("template_leak", key, name, templateItem.StringId, generatedItem, templateItem, logSource);
+			return false;
+		}
+		if (!TrySetRewardItemObjectName(generatedItem, name))
+		{
+			LogGeneratedRewardInventoryGuard("name_set_failed", key, name, templateItem?.StringId, generatedItem, templateItem, logSource);
+			return false;
+		}
+		if (!TryEnsureGeneratedRewardItemCategory(generatedItem, templateItem, logSource ?? "generated_inventory_guard"))
+		{
+			LogGeneratedRewardInventoryGuard("category_failed", key, name, templateItem?.StringId, generatedItem, templateItem, logSource);
+			return false;
+		}
+		try
+		{
+			generatedItem.Initialize();
+			generatedItem.IsReady = true;
+		}
+		catch
+		{
+		}
+		return true;
+	}
+
+	private static void LogGeneratedRewardInventoryGuard(string reason, string generatedStringId, string displayName, string templateStringId, ItemObject actualItem, ItemObject templateItem, string logSource = null)
+	{
+		try
+		{
+			Logger.Log("Logic", "[RewardItemResolve] generated_inventory_guard reason=" + (reason ?? "") + " source=" + (logSource ?? "") + " expected=" + (generatedStringId ?? "") + " display=" + (displayName ?? "") + " template=" + (templateStringId ?? templateItem?.StringId ?? "") + " actualStringId=" + (actualItem?.StringId ?? "") + " actualName=" + (actualItem?.Name?.ToString() ?? "") + " actualId=" + (actualItem != null ? actualItem.Id.InternalValue.ToString(CultureInfo.InvariantCulture) : "0") + " templateName=" + (templateItem?.Name?.ToString() ?? "") + " templateId=" + (templateItem != null ? templateItem.Id.InternalValue.ToString(CultureInfo.InvariantCulture) : "0"));
+		}
+		catch
+		{
+		}
+	}
+
+	private static void LogGeneratedRewardObjectVisibility(string reason, ItemObject item, string logSource = null)
+	{
+		if (item == null || !IsGeneratedRewardItemStringId(item.StringId))
+		{
+			return;
+		}
+		try
+		{
+			bool byString = false;
+			bool byId = false;
+			bool previousSuppressObjectLookup = SuppressGeneratedRewardObjectLookup;
+			bool previousSuppressPendingLookup = SuppressGeneratedRewardPendingLookup;
+			try
+			{
+				SuppressGeneratedRewardObjectLookup = true;
+				SuppressGeneratedRewardPendingLookup = true;
+				ItemObject stringItem = MBObjectManager.Instance?.GetObject<ItemObject>(item.StringId);
+				byString = stringItem != null && string.Equals((stringItem.StringId ?? "").Trim(), (item.StringId ?? "").Trim(), StringComparison.OrdinalIgnoreCase);
+				ItemObject idItem = item.Id.InternalValue != 0u ? MBObjectManager.Instance?.GetObject(item.Id) as ItemObject : null;
+				byId = idItem != null && string.Equals((idItem.StringId ?? "").Trim(), (item.StringId ?? "").Trim(), StringComparison.OrdinalIgnoreCase);
+			}
+			finally
+			{
+				SuppressGeneratedRewardObjectLookup = previousSuppressObjectLookup;
+				SuppressGeneratedRewardPendingLookup = previousSuppressPendingLookup;
+			}
+			Logger.Log("Logic", "[RewardItemResolve] generated_object_visibility reason=" + (reason ?? "") + " source=" + (logSource ?? "") + " item=" + (item.StringId ?? "") + " name=" + (item.Name?.ToString() ?? "") + " id=" + item.Id.InternalValue.ToString(CultureInfo.InvariantCulture) + " byString=" + byString + " byId=" + byId + " ready=" + item.IsReady + " initialized=" + item.IsInitialized + " type=" + item.Type + " category=" + (item.ItemCategory?.StringId ?? "null") + " component=" + (item.ItemComponent?.GetType().Name ?? "null") + " value=" + item.Value.ToString(CultureInfo.InvariantCulture) + " weight=" + item.Weight.ToString(CultureInfo.InvariantCulture));
+		}
+		catch
+		{
+		}
+	}
+
+	private static void SPInventoryVMRefreshInformationValuesPostfix(object __instance)
+	{
+		try
+		{
+			if (__instance == null)
+			{
+				return;
+			}
+			Type type = __instance.GetType();
+			object rightList = type.GetProperty("RightItemListVM", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)?.GetValue(__instance, null);
+			if (!(rightList is System.Collections.IEnumerable enumerable))
+			{
+				return;
+			}
+			List<string> sample = new List<string>();
+			int generatedCount = 0;
+			foreach (object itemVm in enumerable)
+			{
+				if (itemVm == null)
+				{
+					continue;
+				}
+				PropertyInfo rosterElementProperty = itemVm.GetType().GetProperty("ItemRosterElement", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+				if (rosterElementProperty == null)
+				{
+					continue;
+				}
+				ItemRosterElement element = (ItemRosterElement)rosterElementProperty.GetValue(itemVm, null);
+				ItemObject item = element.EquipmentElement.Item;
+				if (item == null || !IsGeneratedRewardItemStringId(item.StringId))
+				{
+					continue;
+				}
+				generatedCount++;
+				if (sample.Count < 10)
+				{
+					bool isFiltered = false;
+					try
+					{
+						object filteredValue = itemVm.GetType().GetProperty("IsFiltered", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)?.GetValue(itemVm, null);
+						if (filteredValue is bool filtered)
+						{
+							isFiltered = filtered;
+						}
+					}
+					catch
+					{
+					}
+					int typeId = -1;
+					try
+					{
+						object typeIdValue = itemVm.GetType().GetProperty("TypeId", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)?.GetValue(itemVm, null);
+						if (typeIdValue is int id)
+						{
+							typeId = id;
+						}
+					}
+					catch
+					{
+					}
+					sample.Add((item.StringId ?? "") + ":" + element.Amount.ToString(CultureInfo.InvariantCulture) + ":filtered=" + isFiltered + ":typeId=" + typeId.ToString(CultureInfo.InvariantCulture) + ":name=" + (item.Name?.ToString() ?? ""));
+				}
+			}
+			if (generatedCount <= 0)
+			{
+				return;
+			}
+			string signature = generatedCount.ToString(CultureInfo.InvariantCulture) + "|" + string.Join(",", sample);
+			DateTime now = DateTime.UtcNow;
+			if (string.Equals(signature, GeneratedRewardLastInventoryVmLogSignature, StringComparison.Ordinal) && (now - GeneratedRewardLastInventoryVmLogUtc).TotalSeconds < 5.0)
+			{
+				return;
+			}
+			GeneratedRewardLastInventoryVmLogSignature = signature;
+			GeneratedRewardLastInventoryVmLogUtc = now;
+			Logger.Log("Logic", "[RewardItemResolve] inventory_vm_generated_items count=" + generatedCount.ToString(CultureInfo.InvariantCulture) + " sample=" + string.Join(",", sample));
+		}
+		catch (Exception ex)
+		{
+			try
+			{
+				Logger.Log("Logic", "[RewardItemResolve] inventory_vm_generated_items_failed error=" + ex.GetType().Name + ":" + ex.Message);
+			}
+			catch
+			{
+			}
+		}
+	}
+
+	private static void ItemMenuVMRefreshItemTooltipsPostfix(object __instance, object item)
+	{
+		try
+		{
+			if (__instance == null || item == null)
+			{
+				return;
+			}
+			PropertyInfo rosterElementProperty = item.GetType().GetProperty("ItemRosterElement", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+			if (rosterElementProperty == null)
+			{
+				return;
+			}
+			ItemRosterElement element = (ItemRosterElement)rosterElementProperty.GetValue(item, null);
+			ItemObject itemObject = element.EquipmentElement.Item;
+			if (itemObject == null || !IsGeneratedRewardItemStringId(itemObject.StringId))
+			{
+				return;
+			}
+			string text = Instance?.GetGeneratedRewardItemRecord(itemObject.StringId)?.DisplayName;
+			if (string.IsNullOrWhiteSpace(text))
+			{
+				text = itemObject.Name?.ToString();
+			}
+			if (string.IsNullOrWhiteSpace(text))
+			{
+				return;
+			}
+			MethodInfo createProperty = __instance.GetType().GetMethod("CreateProperty", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+			PropertyInfo targetItemPropertiesProperty = __instance.GetType().GetProperty("TargetItemProperties", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+			object targetItemProperties = targetItemPropertiesProperty?.GetValue(__instance, null);
+			if (createProperty == null || targetItemProperties == null)
+			{
+				return;
+			}
+			createProperty.Invoke(__instance, new object[5] { targetItemProperties, "", text, 0, null });
+		}
+		catch (Exception ex)
+		{
+			try
+			{
+				Logger.Log("Logic", "[RewardItemResolve] generated_tooltip_failed error=" + ex.GetType().Name + ":" + ex.Message);
+			}
+			catch
+			{
+			}
+		}
+	}
+
 	private static string BuildGeneratedRewardItemStringId(string requestedName, string templateStringId)
 	{
 		string text = ((requestedName ?? "").Trim() + "|" + (templateStringId ?? "").Trim()).ToLowerInvariant();
@@ -9439,9 +10788,9 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		}
 		EquipmentElement equipmentElement = resolution.EquipmentElement.Item != null ? resolution.EquipmentElement : new EquipmentElement(resolution.Item, null, null, false);
 		TryEnsureGeneratedRewardItemCategory(equipmentElement.Item, resolution.TemplateItem, "generate_to_roster");
-		targetRoster.AddToCounts(equipmentElement, amount);
-		itemName = equipmentElement.GetModifiedItemName()?.ToString() ?? resolution.MatchedName ?? resolution.Item.Name?.ToString() ?? resolution.MatchedStringId;
-		return amount;
+		int generated = AddEquipmentElementToRosterAndCountDelta(targetRoster, equipmentElement, amount, "generate_to_roster:" + (resolution.MatchedStringId ?? resolution.MatchedName ?? ""));
+		itemName = IsGeneratedRewardItemStringId(equipmentElement.Item?.StringId) ? (resolution.MatchedName ?? resolution.Item.Name?.ToString() ?? resolution.MatchedStringId) : (equipmentElement.GetModifiedItemName()?.ToString() ?? resolution.MatchedName ?? resolution.Item.Name?.ToString() ?? resolution.MatchedStringId);
+		return generated;
 	}
 
 	private static string GetWeaponClassTypeLabel(WeaponClass weaponClass)
@@ -14818,10 +16167,15 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				{
 					firstTransferredElement = equipmentElement;
 				}
-				sourceRoster.AddToCounts(equipmentElement, -num3);
-				targetRoster.AddToCounts(equipmentElement, num3);
-				num -= num3;
-				num2 += num3;
+				int added = AddEquipmentElementToRosterAndCountDelta(targetRoster, equipmentElement, num3, "move_matching:" + text);
+				if (added <= 0)
+				{
+					LogRewardTransferRosterAdd("move_roster_add_failed", "move_matching:" + text, targetRoster, equipmentElement, num3, 0, 0, -1);
+					return num2;
+				}
+				sourceRoster.AddToCounts(equipmentElement, -added);
+				num -= added;
+				num2 += added;
 				flag = true;
 				break;
 			}
@@ -14831,6 +16185,186 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			}
 		}
 		return num2;
+	}
+
+	private static ItemRoster GetPlayerMainItemRoster()
+	{
+		try
+		{
+			ItemRoster roster = PartyBase.MainParty?.ItemRoster;
+			if (roster != null)
+			{
+				return roster;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			return MobileParty.MainParty?.ItemRoster;
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static bool IsPlayerMainItemRoster(ItemRoster roster)
+	{
+		if (roster == null)
+		{
+			return false;
+		}
+		try
+		{
+			if (PartyBase.MainParty?.ItemRoster != null && ReferenceEquals(roster, PartyBase.MainParty.ItemRoster))
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			return MobileParty.MainParty?.ItemRoster != null && ReferenceEquals(roster, MobileParty.MainParty.ItemRoster);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static ItemRoster ResolveReceiverItemRosterForGive(Hero receiver)
+	{
+		if (receiver == null)
+		{
+			return null;
+		}
+		if (receiver == Hero.MainHero)
+		{
+			return GetPlayerMainItemRoster();
+		}
+		ItemRoster roster = receiver.PartyBelongedTo?.ItemRoster;
+		if (roster == null && receiver.Clan?.Leader?.PartyBelongedTo != null)
+		{
+			roster = receiver.Clan.Leader.PartyBelongedTo.ItemRoster;
+		}
+		return roster;
+	}
+
+	private static bool ItemObjectsMatchForRosterCount(ItemObject left, ItemObject right)
+	{
+		if (left == null || right == null)
+		{
+			return false;
+		}
+		if (ReferenceEquals(left, right))
+		{
+			return true;
+		}
+		try
+		{
+			uint leftId = left.Id.InternalValue;
+			uint rightId = right.Id.InternalValue;
+			if (leftId != 0u && leftId == rightId)
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		return string.Equals((left.StringId ?? "").Trim(), (right.StringId ?? "").Trim(), StringComparison.OrdinalIgnoreCase);
+	}
+
+	private static bool EquipmentElementsMatchForRosterCount(EquipmentElement left, EquipmentElement right)
+	{
+		if (!ItemObjectsMatchForRosterCount(left.Item, right.Item))
+		{
+			return false;
+		}
+		string leftModifier = left.ItemModifier?.StringId ?? "";
+		string rightModifier = right.ItemModifier?.StringId ?? "";
+		return string.Equals(leftModifier.Trim(), rightModifier.Trim(), StringComparison.OrdinalIgnoreCase);
+	}
+
+	private static int CountEquipmentElementInRoster(ItemRoster roster, EquipmentElement equipmentElement)
+	{
+		if (roster == null || equipmentElement.Item == null)
+		{
+			return 0;
+		}
+		int count = 0;
+		for (int i = 0; i < roster.Count; i++)
+		{
+			ItemRosterElement element = roster.GetElementCopyAtIndex(i);
+			if (element.Amount > 0 && EquipmentElementsMatchForRosterCount(element.EquipmentElement, equipmentElement))
+			{
+				count += element.Amount;
+			}
+		}
+		return count;
+	}
+
+	private static int AddEquipmentElementToRosterAndCountDelta(ItemRoster targetRoster, EquipmentElement equipmentElement, int amount, string logSource)
+	{
+		if (targetRoster == null || equipmentElement.Item == null || amount <= 0)
+		{
+			return 0;
+		}
+		int before = CountEquipmentElementInRoster(targetRoster, equipmentElement);
+		int index = -1;
+		try
+		{
+			index = targetRoster.AddToCounts(equipmentElement, amount);
+		}
+		catch (Exception ex)
+		{
+			try
+			{
+				Logger.Log("Logic", "[RewardTransfer] roster_add_exception source=" + (logSource ?? "") + " requested=" + amount.ToString(CultureInfo.InvariantCulture) + " item=" + (equipmentElement.Item.StringId ?? "") + " error=" + ex.GetType().Name + ":" + ex.Message);
+			}
+			catch
+			{
+			}
+			return 0;
+		}
+		int after = CountEquipmentElementInRoster(targetRoster, equipmentElement);
+		int delta = Math.Max(0, after - before);
+		if (delta <= 0 || delta < amount)
+		{
+			LogRewardTransferRosterAdd(delta <= 0 ? "roster_add_no_delta" : "roster_add_partial_delta", logSource, targetRoster, equipmentElement, amount, before, after, index);
+		}
+		if (delta > 0)
+		{
+			LogRewardTransferRosterAdd("roster_add_verified", logSource, targetRoster, equipmentElement, amount, before, after, index);
+			LogGeneratedRewardObjectVisibility("roster_add_verified", equipmentElement.Item, logSource);
+			RememberGeneratedRewardPlayerRosterItemIfNeeded(targetRoster, equipmentElement, delta, logSource);
+		}
+		return Math.Min(amount, delta);
+	}
+
+	private static void LogRewardTransferRosterAdd(string reason, string source, ItemRoster targetRoster, EquipmentElement equipmentElement, int requested, int before, int after, int index)
+	{
+		try
+		{
+			ItemObject item = equipmentElement.Item;
+			Logger.Log("Logic", "[RewardTransfer] " + (reason ?? "") + " source=" + (source ?? "") + " requested=" + requested.ToString(CultureInfo.InvariantCulture) + " before=" + before.ToString(CultureInfo.InvariantCulture) + " after=" + after.ToString(CultureInfo.InvariantCulture) + " index=" + index.ToString(CultureInfo.InvariantCulture) + " rosterSlots=" + (targetRoster?.Count ?? 0).ToString(CultureInfo.InvariantCulture) + " isPlayerRoster=" + IsPlayerMainItemRoster(targetRoster) + " item=" + (item?.StringId ?? "") + " itemName=" + (item?.Name?.ToString() ?? "") + " itemId=" + (item != null ? item.Id.InternalValue.ToString(CultureInfo.InvariantCulture) : "0") + " itemType=" + (item != null ? item.Type.ToString() : "") + " itemCategory=" + (item?.ItemCategory?.StringId ?? "null") + " component=" + (item?.ItemComponent?.GetType().Name ?? "null") + " modifier=" + (equipmentElement.ItemModifier?.StringId ?? ""));
+		}
+		catch
+		{
+		}
+	}
+
+	private static void RememberGeneratedRewardPlayerRosterItemIfNeeded(ItemRoster targetRoster, EquipmentElement equipmentElement, int amount, string source)
+	{
+		if (amount <= 0 || !IsPlayerMainItemRoster(targetRoster))
+		{
+			return;
+		}
+		Instance?.RememberGeneratedRewardPlayerRosterItem(equipmentElement, amount, source);
 	}
 
 	internal int TransferItemById(Hero giver, Hero receiver, string itemStringId, int amount, out string itemName)
@@ -14871,15 +16405,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			itemRoster = MobileParty.MainParty.ItemRoster;
 		}
-		ItemRoster itemRoster2 = ((receiver.PartyBelongedTo != null) ? receiver.PartyBelongedTo.ItemRoster : null);
-		if (itemRoster2 == null && receiver.Clan?.Leader?.PartyBelongedTo != null)
-		{
-			itemRoster2 = receiver.Clan.Leader.PartyBelongedTo.ItemRoster;
-		}
-		if (itemRoster2 == null && MobileParty.MainParty != null && receiver == Hero.MainHero)
-		{
-			itemRoster2 = MobileParty.MainParty.ItemRoster;
-		}
+		ItemRoster itemRoster2 = ResolveReceiverItemRosterForGive(receiver);
 		if (itemRoster2 == null)
 		{
 			return 0;
@@ -14966,9 +16492,13 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			ItemObject item4 = equipmentElement2.Item;
 			if (item4 != null && MatchesItemLookupToken(equipmentElement2, lookup))
 			{
+				int addedFromEquipment = AddEquipmentElementToRosterAndCountDelta(itemRoster2, equipmentElement2, 1, "hero_equipment:" + lookup);
+				if (addedFromEquipment <= 0)
+				{
+					continue;
+				}
 				giver.BattleEquipment[index] = EquipmentElement.Invalid;
-				itemRoster2.AddToCounts(equipmentElement2, 1);
-				num4++;
+				num4 += addedFromEquipment;
 				if (firstTransferredElement.Item == null)
 				{
 					firstTransferredElement = equipmentElement2;
@@ -15056,7 +16586,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			return 0;
 		}
 		ItemRoster itemRoster = giverParty.ItemRoster;
-		ItemRoster itemRoster2 = ((receiver.PartyBelongedTo != null) ? receiver.PartyBelongedTo.ItemRoster : null) ?? MobileParty.MainParty?.ItemRoster;
+		ItemRoster itemRoster2 = ResolveReceiverItemRosterForGive(receiver);
 		if (itemRoster == null || itemRoster2 == null)
 		{
 			return 0;
@@ -15174,7 +16704,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			return 0;
 		}
 		ItemRoster itemRoster = settlement.ItemRoster;
-		ItemRoster itemRoster2 = ((receiver.PartyBelongedTo != null) ? receiver.PartyBelongedTo.ItemRoster : null) ?? MobileParty.MainParty?.ItemRoster;
+		ItemRoster itemRoster2 = ResolveReceiverItemRosterForGive(receiver);
 		if (itemRoster == null || itemRoster2 == null)
 		{
 			return 0;
@@ -15253,9 +16783,13 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		int num2 = Math.Min(amount, Math.Max(0, num));
 		if (num2 > 0 && equipmentElement.Item != null)
 		{
-			itemRoster.AddToCounts(equipmentElement, -num2);
-			itemRoster2.AddToCounts(equipmentElement, num2);
-			itemName = BuildSettlementMerchantDisplayName(equipmentElement);
+			int movedFromSettlement = AddEquipmentElementToRosterAndCountDelta(itemRoster2, equipmentElement, num2, "settlement_transfer:" + lookup);
+			if (movedFromSettlement > 0)
+			{
+				itemRoster.AddToCounts(equipmentElement, -movedFromSettlement);
+				itemName = BuildSettlementMerchantDisplayName(equipmentElement);
+			}
+			num2 = movedFromSettlement;
 		}
 		if (allowForceComplete && num2 < amount)
 		{

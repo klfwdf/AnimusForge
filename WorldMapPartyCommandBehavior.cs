@@ -304,7 +304,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 	{
 		if (targetInPlayerParty)
 		{
-			return "如果玩家没有主动提到无需回归队伍，那么你必须输出此标签在最下方";
+			return "你在输出了其他ACTION:WORLDMAP时，如果玩家没有主动提到无需回归队伍，那么你必须输出此标签在最下方";
 		}
 		return "Independent companion-party variant. Output this only when the NPC already leads an independent player-clan companion party and clearly agrees to move back to the player and merge that independent party into the player main party. {days} is the approach/merge timeout; use 1 if unspecified. Do not use this for ordinary lords, enemies, non-player-clan heroes, or heroes who are already in the player's party unless the player-party temporary-create-party variant applies.";
 	}
