@@ -2074,6 +2074,23 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			{
 				return;
 			}
+			_ = Task.Run(() => PrepareAndGenerateCourierReplyOffMainThreadAsync(sessionId, runtimeGeneration));
+		}
+		catch (Exception ex)
+		{
+			Log("queue background reply prepare failed session=" + sessionId + " error=" + ex);
+			FailCourierReplyGenerationOnMainThread(sessionId, runtimeGeneration, "reply_generation_failed");
+		}
+	}
+
+	private async Task PrepareAndGenerateCourierReplyOffMainThreadAsync(string sessionId, long runtimeGeneration)
+	{
+		try
+		{
+			if (SaveRuntimeGuard.IsStale(runtimeGeneration, "courier_reply_prepare_background_start"))
+			{
+				return;
+			}
 			CourierSession session = GetSessionById(sessionId);
 			if (session == null || IsTerminalStage(session))
 			{
@@ -2082,19 +2099,27 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			Hero recipient = ResolveRecipient(session);
 			if (recipient == null || recipient.IsDead)
 			{
-				session.ReplyGenerated = true;
-				session.ReplyGenerationStarted = false;
-				ProcessSessionById(sessionId, "reply_generated_recipient_invalid");
+				EnqueueMainThreadActionForGeneration(runtimeGeneration, () =>
+				{
+					CourierSession invalidSession = GetSessionById(sessionId);
+					if (invalidSession == null || IsTerminalStage(invalidSession))
+					{
+						return;
+					}
+					invalidSession.ReplyGenerated = true;
+					invalidSession.ReplyGenerationStarted = false;
+					ProcessSessionById(sessionId, "reply_generated_recipient_invalid");
+				}, "reply_generated_recipient_invalid");
 				return;
 			}
 			CourierReplyGenerationRequest request = BuildCourierReplyGenerationRequestOnMainThread(session, recipient, runtimeGeneration);
 			ShoutNetwork.RecordPrimaryRequestBodyForTokenStats(request.Messages, MainReplyMaxTokens, "courier_reply_preflight");
-			_ = Task.Run(() => GenerateNpcReplyAsync(request));
+			await GenerateNpcReplyAsync(request).ConfigureAwait(false);
 		}
 		catch (Exception ex)
 		{
-			Log("prepare reply failed session=" + sessionId + " error=" + ex);
-			FailCourierReplyGenerationOnMainThread(sessionId, runtimeGeneration, "reply_generation_failed");
+			Log("background prepare reply failed session=" + sessionId + " error=" + ex);
+			EnqueueMainThreadActionForGeneration(runtimeGeneration, () => FailCourierReplyGenerationOnMainThread(sessionId, runtimeGeneration, "reply_generation_failed"), "reply_prepare_failed");
 		}
 	}
 
@@ -2102,7 +2127,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 	{
 		Log("llm main start session=" + session.Id + " recipient=" + SafeHeroId(recipient));
 		string extraFact = BuildDeliveryFactText(session, delivered: true, recipient);
-		Log("[MemoryPerf] history_start reason=courier_reply session=" + session.Id + " hero=" + SafeHeroId(recipient) + " mode=main_thread");
+		Log("[MemoryPerf] history_start reason=courier_reply session=" + session.Id + " hero=" + SafeHeroId(recipient) + " mode=background_prepare");
 		System.Diagnostics.Stopwatch historySw = System.Diagnostics.Stopwatch.StartNew();
 		string historyText = (MyBehavior.BuildHistoryContextForExternal(recipient, 24, session.LetterText, extraFact) ?? "").Trim();
 		historySw.Stop();
