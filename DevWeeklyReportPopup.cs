@@ -25,22 +25,33 @@ public sealed class DevWeeklyReportPopup
 
 	private readonly Action _onClose;
 
+	private readonly Action _onMinimumDwellMet;
+
+	private readonly DateTime _openedAtUtc;
+
+	private readonly double _minimumDwellSeconds;
+
 	private PendingCloseAction _pendingCloseAction;
 
 	private bool _isClosed;
 
 	private bool _pauseRequestRegistered;
 
-	private DevWeeklyReportPopup(ScreenBase screen, string titleText, string subtitleText, string bodyText, Action onClose, string closeText, bool useChronicleColumns, bool useShortReportLayout, bool showCloseButton)
+	private bool _minimumDwellCallbackInvoked;
+
+	private DevWeeklyReportPopup(ScreenBase screen, string titleText, string subtitleText, string bodyText, Action onClose, string closeText, bool useChronicleColumns, bool useShortReportLayout, bool showCloseButton, double minimumDwellSeconds, Action onMinimumDwellMet)
 	{
 		_screen = screen;
 		_onClose = onClose;
+		_onMinimumDwellMet = onMinimumDwellMet;
+		_minimumDwellSeconds = Math.Max(0.0, minimumDwellSeconds);
+		_openedAtUtc = DateTime.UtcNow;
 		int bodyFontSize = DuelSettings.GetSettings()?.WeeklyReportPopupBodyFontSize ?? 18;
 		_dataSource = new DevWeeklyReportPopupVM(titleText, subtitleText, bodyText, bodyFontSize, HandleCloseRequested, closeText, useChronicleColumns, useShortReportLayout, showCloseButton);
 		_layer = new GauntletLayer("DevWeeklyReportPopup", 4000, false);
 	}
 
-	public static bool Show(string titleText, string subtitleText, string bodyText, Action onClose = null, string closeText = null, bool useChronicleColumns = false, bool useShortReportLayout = false, bool showCloseButton = true)
+	public static bool Show(string titleText, string subtitleText, string bodyText, Action onClose = null, string closeText = null, bool useChronicleColumns = false, bool useShortReportLayout = false, bool showCloseButton = true, double minimumDwellSeconds = 0.0, Action onMinimumDwellMet = null)
 	{
 		ScreenBase topScreen = ScreenManager.TopScreen;
 		if (topScreen == null)
@@ -50,7 +61,7 @@ public sealed class DevWeeklyReportPopup
 		try
 		{
 			_activePopup?.Close(silent: true);
-			DevWeeklyReportPopup devWeeklyReportPopup = new DevWeeklyReportPopup(topScreen, titleText, subtitleText, bodyText, onClose, closeText, useChronicleColumns, useShortReportLayout, showCloseButton);
+			DevWeeklyReportPopup devWeeklyReportPopup = new DevWeeklyReportPopup(topScreen, titleText, subtitleText, bodyText, onClose, closeText, useChronicleColumns, useShortReportLayout, showCloseButton, minimumDwellSeconds, onMinimumDwellMet);
 			devWeeklyReportPopup.Open();
 			_activePopup = devWeeklyReportPopup;
 			return true;
@@ -71,6 +82,7 @@ public sealed class DevWeeklyReportPopup
 		{
 			return;
 		}
+		popup.ProcessMinimumDwellCallbackIfNeeded();
 		if (popup.ShouldCloseForEscapeKey())
 		{
 			popup.HandleCloseRequested();
@@ -102,6 +114,27 @@ public sealed class DevWeeklyReportPopup
 		_layer.IsFocusLayer = true;
 		ScreenManager.TrySetFocus(_layer);
 		RegisterPauseRequest();
+	}
+
+	private void ProcessMinimumDwellCallbackIfNeeded()
+	{
+		if (_minimumDwellCallbackInvoked || _onMinimumDwellMet == null || _minimumDwellSeconds <= 0.0)
+		{
+			return;
+		}
+		if ((DateTime.UtcNow - _openedAtUtc).TotalSeconds < _minimumDwellSeconds)
+		{
+			return;
+		}
+		_minimumDwellCallbackInvoked = true;
+		try
+		{
+			_onMinimumDwellMet();
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("DevWeeklyReportPopup", "[WARN] Minimum dwell callback failed: " + ex.Message);
+		}
 	}
 
 	private bool ShouldCloseForEscapeKey()

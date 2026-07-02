@@ -312,6 +312,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 
 	public void OnEngineTick()
 	{
+		LlmRetryPrompt.CaptureMainThreadContext();
 		try
 		{
 			CourierLetterInputPopup.ProcessDeferredCloseIfNeeded();
@@ -537,6 +538,31 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		}
 	}
 
+	public static void OpenCourierReplyFlowForExternal(string targetHeroId, string targetName)
+	{
+		try
+		{
+			if (Instance == null)
+			{
+				InformationManager.DisplayMessage(new InformationMessage("信使系统尚未初始化，暂时不能回信。", Colors.Yellow));
+				return;
+			}
+			Hero target = ResolveHeroByIdForCourier(targetHeroId);
+			if (target == null)
+			{
+				string name = string.IsNullOrWhiteSpace(targetName) ? "该角色" : targetName.Trim();
+				InformationManager.DisplayMessage(new InformationMessage("找不到" + name + "，暂时不能回信。", Colors.Yellow));
+				return;
+			}
+			Instance.OpenCourierFlow(target, allowLetterReply: true);
+		}
+		catch (Exception ex)
+		{
+			Log("open courier reply flow failed target=" + (targetHeroId ?? "") + " error=" + ex);
+			InformationManager.DisplayMessage(new InformationMessage("回信打开失败：" + ex.Message, Colors.Red));
+		}
+	}
+
 	public static bool TrySendNpcDiplomacyLetterToPlayerForExternal(Hero sender, string letterText, out string status)
 	{
 		status = "";
@@ -681,10 +707,15 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private void OpenCourierFlow(Hero recipient)
+	private void OpenCourierFlow(Hero recipient, bool allowLetterReply = false)
 	{
 		if (!ModOnboardingBehavior.EnsureSetupReady())
 		{
+			return;
+		}
+		if (recipient == null || recipient == Hero.MainHero || recipient.CharacterObject?.IsHero != true)
+		{
+			InformationManager.DisplayMessage(new InformationMessage("找不到可通信的收件人。", Colors.Yellow));
 			return;
 		}
 		if (IsHeroInPlayerPartyForCourier(recipient))
@@ -692,7 +723,12 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			InformationManager.DisplayMessage(new InformationMessage("该角色正在你的队伍中，不能通过信使写信。", Colors.Yellow));
 			return;
 		}
-		if (!ShouldShowCourierButtonForExternal(recipient, informationHidden: false))
+		if (recipient.IsDead)
+		{
+			InformationManager.DisplayMessage(new InformationMessage("该角色已经死亡，不能通过信使写信。", Colors.Yellow));
+			return;
+		}
+		if (!allowLetterReply && !ShouldShowCourierButtonForExternal(recipient, informationHidden: false))
 		{
 			InformationManager.DisplayMessage(new InformationMessage("你尚未掌握此人的信息，不能寄信。", Colors.Yellow));
 			return;
@@ -1889,20 +1925,22 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			Log("inbound delivered session=" + session.Id + " sender=" + SafeHeroId(sender) + " factLen=" + (session.DeliveryFactText ?? "").Length);
 		}
 		string visibleLetter = StripCourierActionTags(letter);
+		string senderHeroId = SafeHeroId(sender);
 		MainThreadActions.Enqueue(() =>
 		{
-			ShowInboundCourierLetterNotice(senderName, visibleLetter);
+			ShowInboundCourierLetterNotice(senderHeroId, senderName, visibleLetter);
 		});
 		CompleteAndDestroyCourier(session, courier);
 	}
 
-	private static void ShowInboundCourierLetterNotice(string senderName, string letterText)
+	private static void ShowInboundCourierLetterNotice(string senderHeroId, string senderName, string letterText)
 	{
 		string name = string.IsNullOrWhiteSpace(senderName) ? "NPC" : senderName.Trim();
 		string body = string.IsNullOrWhiteSpace(letterText) ? "（无来信正文）" : letterText.Trim();
+		Action replyAction = string.IsNullOrWhiteSpace(senderHeroId) ? null : (() => OpenCourierReplyFlowForExternal(senderHeroId, name));
 		try
 		{
-			if (CourierLetterReplyPopup.Show("信使送来来信", name + "写道：", body, null, "ESC关闭"))
+			if (CourierLetterReplyPopup.ShowWithReply("信使送来来信", name + "写道：", body, replyAction, "回信", null, "关闭"))
 			{
 				return;
 			}
@@ -2143,6 +2181,10 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			if (LooksLikeApiError(reply))
 			{
 				Log("llm main failed session=" + session.Id + " output=" + reply);
+				if (ShowCourierReplyGenerationRetryPrompt(request, reply))
+				{
+					return;
+				}
 				reply = "";
 			}
 			if (string.IsNullOrWhiteSpace(reply))
@@ -2210,6 +2252,53 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		{
 			Log("complete reply failed session=" + request.SessionId + " error=" + ex);
 			FailCourierReplyGenerationOnMainThread(request.SessionId, request.RuntimeGeneration, "reply_generation_failed");
+		}
+	}
+
+	private bool ShowCourierReplyGenerationRetryPrompt(CourierReplyGenerationRequest request, string error)
+	{
+		if (request == null || !LlmRetryPrompt.IsRetryableLlmError(error))
+		{
+			return false;
+		}
+		try
+		{
+			CourierSession session = GetSessionById(request.SessionId);
+			if (session == null || IsTerminalStage(session))
+			{
+				return false;
+			}
+			InformationManager.ShowInquiry(new InquiryData(
+				"信使回信生成失败",
+				LlmRetryPrompt.BuildRetryDescription("信使回信正文生成", error),
+				isAffirmativeOptionShown: true,
+				isNegativeOptionShown: true,
+				"重试",
+				"放弃",
+				delegate
+				{
+					CourierSession retrySession = GetSessionById(request.SessionId);
+					if (retrySession == null || IsTerminalStage(retrySession))
+					{
+						return;
+					}
+					retrySession.ReplyGenerated = false;
+					retrySession.ReplyGenerationStarted = true;
+					Log("retry courier reply generation session=" + request.SessionId);
+					_ = Task.Run(() => GenerateNpcReplyAsync(request));
+				},
+				delegate
+				{
+					FailCourierReplyGenerationOnMainThread(request.SessionId, request.RuntimeGeneration, "reply_generation_abandoned_after_api_error");
+				}),
+				pauseGameActiveState: true,
+				prioritize: true);
+			return true;
+		}
+		catch (Exception ex)
+		{
+			Log("show courier reply retry prompt failed session=" + request?.SessionId + " error=" + ex.Message);
+			return false;
 		}
 	}
 
@@ -2344,6 +2433,10 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			if (LooksLikeApiError(letter))
 			{
 				Log("inbound letter llm failed session=" + session.Id + " output=" + letter);
+				if (ShowInboundLetterGenerationRetryPrompt(request, letter, fallbackLetter))
+				{
+					return;
+				}
 				letter = fallbackLetter;
 			}
 			if (string.IsNullOrWhiteSpace(letter))
@@ -2360,6 +2453,53 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		{
 			Log("complete inbound letter failed session=" + request.SessionId + " error=" + ex);
 			FailInboundLetterGenerationOnMainThread(request.SessionId, request.RuntimeGeneration, request.FallbackLetter, "inbound_letter_generation_failed");
+		}
+	}
+
+	private bool ShowInboundLetterGenerationRetryPrompt(InboundLetterGenerationRequest request, string error, string fallbackLetter)
+	{
+		if (request == null || !LlmRetryPrompt.IsRetryableLlmError(error))
+		{
+			return false;
+		}
+		try
+		{
+			CourierSession session = GetSessionById(request.SessionId);
+			if (session == null || IsTerminalStage(session) || !IsInboundToPlayer(session))
+			{
+				return false;
+			}
+			InformationManager.ShowInquiry(new InquiryData(
+				"信使来信生成失败",
+				LlmRetryPrompt.BuildRetryDescription("信使来信正文生成", error),
+				isAffirmativeOptionShown: true,
+				isNegativeOptionShown: true,
+				"重试",
+				"放弃",
+				delegate
+				{
+					CourierSession retrySession = GetSessionById(request.SessionId);
+					if (retrySession == null || IsTerminalStage(retrySession) || !IsInboundToPlayer(retrySession))
+					{
+						return;
+					}
+					retrySession.ReplyGenerated = false;
+					retrySession.ReplyGenerationStarted = true;
+					Log("retry inbound letter generation session=" + request.SessionId);
+					_ = Task.Run(() => GenerateInboundNpcLetterAsync(request));
+				},
+				delegate
+				{
+					FailInboundLetterGenerationOnMainThread(request.SessionId, request.RuntimeGeneration, fallbackLetter, "inbound_letter_generation_abandoned_after_api_error");
+				}),
+				pauseGameActiveState: true,
+				prioritize: true);
+			return true;
+		}
+		catch (Exception ex)
+		{
+			Log("show inbound retry prompt failed session=" + request?.SessionId + " error=" + ex.Message);
+			return false;
 		}
 	}
 
@@ -2775,9 +2915,10 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			session.ReplyPopupShown = true;
 			string reply = StripCourierActionTags(session.ReplyPostprocessedText ?? session.ReplyText);
 			string senderName = recipient?.Name?.ToString() ?? session.RecipientName ?? "NPC";
+			string senderHeroId = SafeHeroId(recipient);
 			MainThreadActions.Enqueue(() =>
 			{
-				ShowCourierReplyNotice(senderName, reply);
+				ShowCourierReplyNotice(senderHeroId, senderName, reply);
 			});
 		}
 		else if (!session.DeliveryApplied)
@@ -2791,18 +2932,30 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		CompleteAndDestroyCourier(session, courier);
 	}
 
-	private static void ShowCourierReplyNotice(string senderName, string replyText)
+	private static void ShowCourierReplyNotice(string senderHeroId, string senderName, string replyText)
 	{
 		string name = string.IsNullOrWhiteSpace(senderName) ? "NPC" : senderName.Trim();
 		string body = string.IsNullOrWhiteSpace(replyText) ? "（无回信正文）" : replyText.Trim();
-		if (TryPublishCourierReplyMapNotification(name, body))
+		if (TryPublishCourierReplyMapNotification(senderHeroId, name, body))
 		{
 			return;
+		}
+		Action replyAction = string.IsNullOrWhiteSpace(senderHeroId) ? null : (() => OpenCourierReplyFlowForExternal(senderHeroId, name));
+		try
+		{
+			if (CourierLetterReplyPopup.ShowWithReply("信使带回了回信", name + "写道：", body, replyAction, "回信", null, "关闭"))
+			{
+				return;
+			}
+		}
+		catch (Exception ex)
+		{
+			Log("show courier reply popup failed sender=" + name + " error=" + ex.Message);
 		}
 		InformationManager.DisplayMessage(new InformationMessage("信使带回了" + name + "的回信。", Colors.Green));
 	}
 
-	private static bool TryPublishCourierReplyMapNotification(string senderName, string replyText)
+	private static bool TryPublishCourierReplyMapNotification(string senderHeroId, string senderName, string replyText)
 	{
 		try
 		{
@@ -2820,7 +2973,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 				mapNotificationView.RegisterMapNotificationType(typeof(AnimusForgeCourierReplyMapNotification), typeof(AnimusForgeCourierReplyMapNotificationItemVM));
 				_courierReplyRegisteredMapNotificationView = mapNotificationView;
 			}
-			MBInformationManager.AddNotice(new AnimusForgeCourierReplyMapNotification(senderName, replyText));
+			MBInformationManager.AddNotice(new AnimusForgeCourierReplyMapNotification(senderHeroId, senderName, replyText));
 			return true;
 		}
 		catch (Exception ex)
@@ -5890,24 +6043,17 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 
 	private Hero ResolveRecipient(CourierSession session)
 	{
-		string id = (session?.RecipientHeroId ?? "").Trim();
-		if (string.IsNullOrWhiteSpace(id))
-		{
-			return null;
-		}
-		try
-		{
-			return Hero.Find(id) ?? Hero.FindFirst(x => x != null && string.Equals((x.StringId ?? "").Trim(), id, StringComparison.OrdinalIgnoreCase));
-		}
-		catch
-		{
-			return null;
-		}
+		return ResolveHeroByIdForCourier(session?.RecipientHeroId);
 	}
 
 	private Hero ResolveSender(CourierSession session)
 	{
-		string id = (session?.SenderHeroId ?? "").Trim();
+		return ResolveHeroByIdForCourier(session?.SenderHeroId);
+	}
+
+	private static Hero ResolveHeroByIdForCourier(string heroId)
+	{
+		string id = (heroId ?? "").Trim();
 		if (string.IsNullOrWhiteSpace(id))
 		{
 			return null;
@@ -6145,7 +6291,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 	private static bool LooksLikeApiError(string text)
 	{
 		string value = (text ?? "").Trim();
-		return value.StartsWith("（错误", StringComparison.Ordinal) || value.StartsWith("（程序错误", StringComparison.Ordinal) || value.StartsWith("（API请求失败", StringComparison.Ordinal);
+		return value.StartsWith("（错误", StringComparison.Ordinal) || value.StartsWith("（程序错误", StringComparison.Ordinal) || value.StartsWith("（API请求失败", StringComparison.Ordinal) || value.StartsWith("（API响应格式错误", StringComparison.Ordinal);
 	}
 
 	private static bool HasPreprocessRuleHit(List<string> hits, string ruleId)

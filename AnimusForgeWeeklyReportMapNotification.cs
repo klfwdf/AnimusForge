@@ -372,6 +372,8 @@ internal sealed class AnimusForgeCourierReplyMapNotification : InformationData
 {
 	private readonly TextObject _titleText;
 
+	public string SenderHeroId { get; }
+
 	public string SenderName { get; }
 
 	public string ReplyText { get; }
@@ -381,8 +383,14 @@ internal sealed class AnimusForgeCourierReplyMapNotification : InformationData
 	public override string SoundEventPath => "event:/ui/notification/kingdom_decision";
 
 	public AnimusForgeCourierReplyMapNotification(string senderName, string replyText)
+		: this("", senderName, replyText)
+	{
+	}
+
+	public AnimusForgeCourierReplyMapNotification(string senderHeroId, string senderName, string replyText)
 		: base(new TextObject("点击查看" + NormalizeSenderName(senderName) + "的回信。"))
 	{
+		SenderHeroId = (senderHeroId ?? "").Trim();
 		SenderName = NormalizeSenderName(senderName);
 		ReplyText = (replyText ?? "").Trim();
 		_titleText = new TextObject("信使带回了回信");
@@ -396,9 +404,10 @@ internal sealed class AnimusForgeCourierReplyMapNotification : InformationData
 	internal bool OpenReply()
 	{
 		string body = string.IsNullOrWhiteSpace(ReplyText) ? "（无回信正文）" : ReplyText.Trim();
+		Action replyAction = string.IsNullOrWhiteSpace(SenderHeroId) ? null : (() => CourierDeliveryBehavior.OpenCourierReplyFlowForExternal(SenderHeroId, SenderName));
 		try
 		{
-			if (CourierLetterReplyPopup.Show(SenderName, body))
+			if (CourierLetterReplyPopup.ShowWithReply("信使带回了回信", SenderName + "写道：", body, replyAction, "回信", null, "关闭"))
 			{
 				return true;
 			}

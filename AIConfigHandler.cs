@@ -31,7 +31,7 @@ namespace AnimusForge;
 public static class AIConfigHandler
 {
 	private const int ActionPostprocessMaxHistoryAndLatestEntries = 8;
-	private const int ActionPostprocessRequestTimeoutMilliseconds = 120000;
+	private const int ActionPostprocessRequestTimeoutMilliseconds = DuelSettings.LlmRequestTimeoutMilliseconds;
 	private const string KingAbdicateToPlayerActionTag = "[ACTION:KING_ABDICATE_TO_PLAYER]";
 
 	private sealed class ActionPostprocessHistoryEntry
@@ -3076,6 +3076,22 @@ public static class AIConfigHandler
 
 	public static bool TryCallAuxiliaryActionPostprocess(string systemPrompt, string userPrompt, int maxTokens, float temperature, out string content, out string error)
 	{
+		while (true)
+		{
+			if (TryCallAuxiliaryActionPostprocessOnce(systemPrompt, userPrompt, maxTokens, temperature, out content, out error))
+			{
+				return true;
+			}
+			if (!LlmRetryPrompt.PromptRetryBlocking("动作后处理", error))
+			{
+				return false;
+			}
+			Logger.Log("AIConfig", "[ActionPostprocess] user requested retry after error: " + error);
+		}
+	}
+
+	private static bool TryCallAuxiliaryActionPostprocessOnce(string systemPrompt, string userPrompt, int maxTokens, float temperature, out string content, out string error)
+	{
 		content = "";
 		error = "";
 		if (!ActionPostprocessEnabled)
@@ -3158,6 +3174,22 @@ public static class AIConfigHandler
 	}
 
 	public static bool TryCallAuxiliarySimpleDialogue(IEnumerable<object> messages, int maxTokens, float temperature, out string content, out string error)
+	{
+		while (true)
+		{
+			if (TryCallAuxiliarySimpleDialogueOnce(messages, maxTokens, temperature, out content, out error))
+			{
+				return true;
+			}
+			if (!LlmRetryPrompt.PromptRetryBlocking("辅助对话", error))
+			{
+				return false;
+			}
+			Logger.Log("AIConfig", "[AuxiliarySimpleDialogue] user requested retry after error: " + error);
+		}
+	}
+
+	private static bool TryCallAuxiliarySimpleDialogueOnce(IEnumerable<object> messages, int maxTokens, float temperature, out string content, out string error)
 	{
 		content = "";
 		error = "";
@@ -4046,6 +4078,22 @@ public static class AIConfigHandler
 	}
 
 	private static bool TryCallAuxiliaryRuleRouterApi(string apiUrl, string apiKey, string modelName, string prompt, out string content, out string error)
+	{
+		while (true)
+		{
+			if (TryCallAuxiliaryRuleRouterApiOnce(apiUrl, apiKey, modelName, prompt, out content, out error))
+			{
+				return true;
+			}
+			if (!LlmRetryPrompt.PromptRetryBlocking("前处理规则选择", error))
+			{
+				return false;
+			}
+			Logger.Log("AIConfig", "[AuxiliaryRuleRouter] user requested retry after error: " + error);
+		}
+	}
+
+	private static bool TryCallAuxiliaryRuleRouterApiOnce(string apiUrl, string apiKey, string modelName, string prompt, out string content, out string error)
 	{
 		content = "";
 		error = "";
@@ -7178,6 +7226,8 @@ public static class AIConfigHandler
 			{
 				text2 = (value ?? "").Trim();
 			}
+			Hero targetHero = ResolveConversationTargetHero();
+			bool canInjectLeaveCurrent = CanInjectKingdomServiceLeaveCurrentPostprocessTag(kingdom, flag, kingdom2, targetHero);
 			foreach (PostprocessRuleEntry guardrailRulePostprocessRule in GetGuardrailRulePostprocessRules("kingdom_service"))
 			{
 				string text3 = (guardrailRulePostprocessRule?.Tag ?? "").Trim();
@@ -7190,7 +7240,7 @@ public static class AIConfigHandler
 				{
 					continue;
 				}
-				if (!ShouldIncludeKingdomServicePostprocessTag(text, text3))
+				if (!ShouldIncludeKingdomServicePostprocessTag(text, text3, canInjectLeaveCurrent))
 				{
 					continue;
 				}
@@ -7233,6 +7283,38 @@ public static class AIConfigHandler
 		return text.StartsWith("[ACTION:KINGDOM_SERVICE:MERCENARY:", StringComparison.OrdinalIgnoreCase)
 			|| text.StartsWith("[ACTION:KINGDOM_SERVICE:VASSAL:", StringComparison.OrdinalIgnoreCase)
 			|| text.Equals("[ACTION:KINGDOM_SERVICE:LEAVE:current]", StringComparison.OrdinalIgnoreCase);
+	}
+
+	private static bool IsKingdomServiceLeaveCurrentPostprocessTag(string tag)
+	{
+		return string.Equals((tag ?? "").Trim(), "[ACTION:KINGDOM_SERVICE:LEAVE:current]", StringComparison.OrdinalIgnoreCase);
+	}
+
+	private static bool CanInjectKingdomServiceLeaveCurrentPostprocessTag(Kingdom playerKingdom, bool isMercenaryService, Kingdom targetKingdom, Hero targetHero)
+	{
+		try
+		{
+			if (playerKingdom == null || targetKingdom == null || targetHero == null || targetHero == Hero.MainHero)
+			{
+				return false;
+			}
+			if (playerKingdom != targetKingdom)
+			{
+				return false;
+			}
+			Clan targetClan = targetHero.Clan;
+			if (targetClan == null || targetClan.IsEliminated || targetClan.Kingdom != playerKingdom || targetClan.IsUnderMercenaryService)
+			{
+				return false;
+			}
+			bool isTargetRuler = targetKingdom.Leader == targetHero || targetKingdom.RulingClan?.Leader == targetHero || targetHero.IsFactionLeader;
+			bool isTargetLord = targetHero.IsLord || targetClan.Leader == targetHero;
+			return isMercenaryService ? (isTargetRuler || isTargetLord) : isTargetRuler;
+		}
+		catch
+		{
+			return false;
+		}
 	}
 
 	public static List<PostprocessRuleEntry> BuildRuntimeLordsHallAccessPostprocessRules()
@@ -7298,7 +7380,7 @@ public static class AIConfigHandler
 		}
 	}
 
-	private static bool ShouldIncludeKingdomServicePostprocessTag(string stateKey, string tag)
+	private static bool ShouldIncludeKingdomServicePostprocessTag(string stateKey, string tag, bool canInjectLeaveCurrent)
 	{
 		string text = (tag ?? "").Trim();
 		switch ((stateKey ?? "").Trim().ToLowerInvariant())
@@ -7308,9 +7390,9 @@ public static class AIConfigHandler
 		case "merc_or_vassal":
 			return text.StartsWith("[ACTION:KINGDOM_SERVICE:MERCENARY:", StringComparison.OrdinalIgnoreCase) || text.StartsWith("[ACTION:KINGDOM_SERVICE:VASSAL:", StringComparison.OrdinalIgnoreCase);
 		case "leave_or_vassal":
-			return text.Equals("[ACTION:KINGDOM_SERVICE:LEAVE:current]", StringComparison.OrdinalIgnoreCase) || text.StartsWith("[ACTION:KINGDOM_SERVICE:VASSAL:", StringComparison.OrdinalIgnoreCase);
+			return (IsKingdomServiceLeaveCurrentPostprocessTag(text) && canInjectLeaveCurrent) || text.StartsWith("[ACTION:KINGDOM_SERVICE:VASSAL:", StringComparison.OrdinalIgnoreCase);
 		case "leave_only":
-			return text.Equals("[ACTION:KINGDOM_SERVICE:LEAVE:current]", StringComparison.OrdinalIgnoreCase);
+			return IsKingdomServiceLeaveCurrentPostprocessTag(text) && canInjectLeaveCurrent;
 		case "player_ruler_target_ready":
 			return text.StartsWith("[ACTION:KINGDOM_SERVICE:CLAN_JOIN_PLAYER_KINGDOM:", StringComparison.OrdinalIgnoreCase);
 		default:

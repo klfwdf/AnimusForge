@@ -6,11 +6,14 @@ namespace AnimusForge;
 public sealed class CourierLetterReplyPopupVM : ViewModel
 {
 	private readonly Action _onClose;
+	private readonly Action _onReply;
 	private string _titleText;
 	private string _subtitleText;
 	private string _bodyText;
 	private string _closeText;
+	private string _replyText;
 	private int _bodyFontSize;
+	private bool _canReply;
 
 	[DataSourceProperty]
 	public string TitleText
@@ -69,6 +72,20 @@ public sealed class CourierLetterReplyPopupVM : ViewModel
 	}
 
 	[DataSourceProperty]
+	public string ReplyText
+	{
+		get => _replyText;
+		set
+		{
+			if (value != _replyText)
+			{
+				_replyText = value;
+				OnPropertyChangedWithValue(value, "ReplyText");
+			}
+		}
+	}
+
+	[DataSourceProperty]
 	public int BodyFontSize
 	{
 		get => _bodyFontSize;
@@ -82,18 +99,43 @@ public sealed class CourierLetterReplyPopupVM : ViewModel
 		}
 	}
 
-	public CourierLetterReplyPopupVM(string titleText, string subtitleText, string bodyText, int bodyFontSize, Action onClose, string closeText)
+	[DataSourceProperty]
+	public bool CanReply
+	{
+		get => _canReply;
+		set
+		{
+			if (value != _canReply)
+			{
+				_canReply = value;
+				OnPropertyChangedWithValue(value, "CanReply");
+			}
+		}
+	}
+
+	public CourierLetterReplyPopupVM(string titleText, string subtitleText, string bodyText, int bodyFontSize, Action onClose, string closeText, Action onReply, string replyText)
 	{
 		_onClose = onClose;
+		_onReply = onReply;
 		TitleText = string.IsNullOrWhiteSpace(titleText) ? "信使带回了回信" : titleText;
 		SubtitleText = subtitleText ?? "";
 		BodyText = string.IsNullOrWhiteSpace(bodyText) ? "（无回信正文）" : bodyText;
 		BodyFontSize = Math.Max(14, Math.Min(34, bodyFontSize));
-		CloseText = closeText ?? "";
+		CloseText = string.IsNullOrWhiteSpace(closeText) ? "关闭" : closeText;
+		ReplyText = string.IsNullOrWhiteSpace(replyText) ? "回信" : replyText;
+		CanReply = onReply != null;
 	}
 
 	public void ExecuteClose()
 	{
 		_onClose?.Invoke();
+	}
+
+	public void ExecuteReply()
+	{
+		if (CanReply)
+		{
+			_onReply?.Invoke();
+		}
 	}
 }

@@ -170,15 +170,15 @@
             "PostprocessRules": [
                 {
                     "Tag": "[ACTION:KINGDOM_SERVICE:LEAVE:current]",
-                    "Description": "如果NPC在<latest_reply>里正式无条件同意或决定了玩家退出当前效力，就输出这个"
+                    "Description": "如果NPC和玩家在<latest_reply>里正式无条件同意或决定了玩家退出当前效力，就输出这个。"
                 },
                 {
                     "Tag": "[ACTION:KINGDOM_SERVICE:MERCENARY:{targetKingdomId}]",
-                    "Description": "如果NPC在<latest_reply>里正式无条件同意或决定了玩家以雇佣兵身份加入目标王国，就输出这个"
+                    "Description": "如果NPC和玩家在<latest_reply>里正式无条件同意或决定了玩家以雇佣兵身份加入目标王国，就输出这个，本标签禁止用于NPC加入目标王国"
                 },
                 {
                     "Tag": "[ACTION:KINGDOM_SERVICE:VASSAL:{targetKingdomId}]",
-                    "Description": "如果NPC在<latest_reply>里正式无条件同意或决定了玩家以正式封臣身份加入目标王国，就输出这个"
+                    "Description": "如果NPC和玩家在<latest_reply>里正式无条件同意或决定了玩家以正式封臣身份加入目标王国，就输出这个，本标签禁止用于NPC加入目标王国"
                 },
                 {
                     "Tag": "[ACTION:KINGDOM_SERVICE:CLAN_JOIN_PLAYER_KINGDOM:{targetClanId}]",

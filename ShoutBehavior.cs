@@ -1511,6 +1511,7 @@ public class ShoutBehavior : CampaignBehaviorBase
 
 	private void DrainMainThreadActionsForMissionTick()
 	{
+		LlmRetryPrompt.CaptureMainThreadContext();
 #if BANNERLORD_1_4_OR_GREATER
 		Action action;
 		while (_mainThreadActions.TryDequeue(out action))
@@ -12668,10 +12669,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			List<object> messages = BuildStrictSceneMessagesForNpc(speakerNpc.AgentIndex, layeredPrompt, new string[9] { privateRecentWindowSection, persistedWithoutRecentWindow, roleRuntimeContext, local.ToString().Trim(), currentAfefFactBlock, trustBlock, miscExtrasSection, scenePatienceInstruction, BuildSceneCompositeUserBlock("", knowledgeExtrasSection, systemRuleBlock) }, persistentHistoryMessages: persistentMemoryRoleMessages);
 			Logger.Log("Logic", "[MemoryPerf] group_turn_fallback_prompt_ready agent=" + speakerNpc.AgentIndex + " hero=" + (hero?.StringId ?? "") + " messages=" + messages.Count + " persistedChars=" + ((persistedHeroHistory ?? "").Length) + " privateChars=" + ((privateRecentWindowSection ?? "").Length) + " oldCompressedChars=" + ((persistedWithoutRecentWindow ?? "").Length));
 			Stopwatch apiSw = Stopwatch.StartNew();
-			string text = await ShoutNetwork.CallApiWithMessages(messages, 5000);
+			string text = await ShoutNetwork.CallApiWithMessages(messages, 5000, promptRetryOnError: true);
 			apiSw.Stop();
 			Logger.Log("Logic", "[MemoryPerf] group_turn_fallback_api_done agent=" + speakerNpc.AgentIndex + " hero=" + (hero?.StringId ?? "") + " outputLen=" + ((text ?? "").Length) + " apiMs=" + Math.Round(apiSw.Elapsed.TotalMilliseconds, 2) + " elapsedMs=" + Math.Round(turnSw.Elapsed.TotalMilliseconds, 2));
-			if (string.IsNullOrWhiteSpace(text) || text.StartsWith("（错误") || text.StartsWith("（程序错误") || text.StartsWith("（API请求失败"))
+			if (string.IsNullOrWhiteSpace(text) || text.StartsWith("（错误") || text.StartsWith("（程序错误") || text.StartsWith("（API请求失败") || text.StartsWith("（API响应格式错误"))
 			{
 				return "";
 			}
@@ -16457,7 +16458,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			return "";
 		}
-		if (output.StartsWith("（错误") || output.StartsWith("（程序错误") || output.StartsWith("（API请求失败"))
+		if (output.StartsWith("（错误") || output.StartsWith("（程序错误") || output.StartsWith("（API请求失败") || output.StartsWith("（API响应格式错误"))
 		{
 			return output.Trim();
 		}
@@ -16732,7 +16733,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 	{
 		if (onStreamText == null)
 		{
-			return await ShoutNetwork.CallApiWithMessages(messages, 5000).ConfigureAwait(false);
+			return await ShoutNetwork.CallApiWithMessages(messages, 5000, promptRetryOnError: true).ConfigureAwait(false);
 		}
 		StringBuilder streamed = new StringBuilder();
 		string completed = "";
@@ -16917,9 +16918,9 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				List<ConversationMessage> persistentMemoryRoleMessages = BuildUncompressedMemoryRoleMessagesForPrompt(data.AgentIndex, resolvedHeroes);
 				List<object> messages = BuildStrictSceneMessagesForNpc(data.AgentIndex, layeredPrompt, new string[8] { privateRecentWindowSection, persistedWithoutRecentWindow, roleRuntimeContext, sysPrompt.ToString().Trim(), trustBlock, miscExtrasSection, scenePatienceInstruction, BuildSceneCompositeUserBlock("", knowledgeExtrasSection, systemRuleBlock) }, new string[1] { string.IsNullOrWhiteSpace(inputActionText) ? "" : ("【当前触发】\n" + inputActionText.Trim()) }, currentInputAlreadyRecorded: true, persistentHistoryMessages: persistentMemoryRoleMessages);
 				Stopwatch swApi = Stopwatch.StartNew();
-				string output = await ShoutNetwork.CallApiWithMessages(messages, 5000);
+				string output = await ShoutNetwork.CallApiWithMessages(messages, 5000, promptRetryOnError: true);
 				swApi.Stop();
-				bool ok = !string.IsNullOrWhiteSpace(output) && !output.StartsWith("（错误") && !output.StartsWith("（程序错误") && !output.StartsWith("（API请求失败");
+				bool ok = !string.IsNullOrWhiteSpace(output) && !output.StartsWith("（错误") && !output.StartsWith("（程序错误") && !output.StartsWith("（API请求失败") && !output.StartsWith("（API响应格式错误");
 				Logger.Obs("API", "complete", new Dictionary<string, object>
 				{
 					["mode"] = "shout_passive",
@@ -23533,14 +23534,14 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					promptSw.Stop();
 					Logger.Log("Logic", "[MemoryPerf] group_turn_prompt_ready agent=" + currentSpeaker.AgentIndex + " hero=" + (speakingHero?.StringId ?? turnHeroId ?? "") + " messages=" + messages.Count + " persistedChars=" + ((persistedHeroHistory ?? "").Length) + " privateChars=" + ((privateRecentWindowSection ?? "").Length) + " oldCompressedChars=" + ((persistedWithoutRecentWindow ?? "").Length) + " sceneHistoryChars=" + ((scenePublicHistorySection ?? "").Length) + " dynamicChars=" + ((sceneDynamicUserBlock ?? "").Length) + " ruleChars=" + ((systemRuleBlock ?? "").Length) + " promptBuildMs=" + Math.Round(promptSw.Elapsed.TotalMilliseconds, 2));
 					Stopwatch apiSw = Stopwatch.StartNew();
-					string output = await ShoutNetwork.CallApiWithMessages(messages, 5000);
+					string output = await ShoutNetwork.CallApiWithMessages(messages, 5000, promptRetryOnError: true);
 					apiSw.Stop();
 					Logger.Log("Logic", "[MemoryPerf] group_turn_api_done agent=" + currentSpeaker.AgentIndex + " hero=" + (speakingHero?.StringId ?? turnHeroId ?? "") + " outputLen=" + ((output ?? "").Length) + " apiMs=" + Math.Round(apiSw.Elapsed.TotalMilliseconds, 2) + " elapsedMs=" + Math.Round(turnSw.Elapsed.TotalMilliseconds, 2));
 					if (!IsSceneConversationEpochCurrent(conversationEpoch))
 					{
 						return;
 					}
-					if (!string.IsNullOrWhiteSpace(output) && (output.StartsWith("（错误") || output.StartsWith("（程序错误") || output.StartsWith("（API请求失败")))
+					if (!string.IsNullOrWhiteSpace(output) && (output.StartsWith("（错误") || output.StartsWith("（程序错误") || output.StartsWith("（API请求失败") || output.StartsWith("（API响应格式错误")))
 					{
 						Logger.Log("ShoutBehavior(主动)", "<<< API错误: " + output);
 						_mainThreadActions.Enqueue(delegate

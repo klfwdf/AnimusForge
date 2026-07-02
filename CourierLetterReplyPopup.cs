@@ -12,7 +12,8 @@ public sealed class CourierLetterReplyPopup
 	private enum PendingCloseAction
 	{
 		None,
-		Close
+		Close,
+		Reply
 	}
 
 	private static CourierLetterReplyPopup _activePopup;
@@ -21,17 +22,19 @@ public sealed class CourierLetterReplyPopup
 	private readonly GauntletLayer _layer;
 	private readonly CourierLetterReplyPopupVM _dataSource;
 	private readonly Action _onClose;
+	private readonly Action _onReply;
 	private PendingCloseAction _pendingCloseAction;
 	private bool _isClosed;
 	private bool _pauseRequestRegistered;
 
 	public static bool IsOpen => _activePopup != null && !_activePopup._isClosed;
 
-	private CourierLetterReplyPopup(ScreenBase screen, string titleText, string subtitleText, string bodyText, Action onClose, string closeText)
+	private CourierLetterReplyPopup(ScreenBase screen, string titleText, string subtitleText, string bodyText, Action onClose, string closeText, Action onReply, string replyText)
 	{
 		_screen = screen;
 		_onClose = onClose;
-		_dataSource = new CourierLetterReplyPopupVM(titleText, subtitleText, bodyText, 22, HandleCloseRequested, closeText);
+		_onReply = onReply;
+		_dataSource = new CourierLetterReplyPopupVM(titleText, subtitleText, bodyText, 22, HandleCloseRequested, closeText, onReply == null ? null : HandleReplyRequested, replyText);
 		_layer = new GauntletLayer("CourierLetterReplyPopup", 4100, false);
 	}
 
@@ -43,6 +46,16 @@ public sealed class CourierLetterReplyPopup
 
 	public static bool Show(string titleText, string subtitleText, string bodyText, Action onClose = null, string closeText = null)
 	{
+		return ShowInternal(titleText, subtitleText, bodyText, onClose, closeText, null, null);
+	}
+
+	public static bool ShowWithReply(string titleText, string subtitleText, string bodyText, Action onReply, string replyText = null, Action onClose = null, string closeText = null)
+	{
+		return ShowInternal(titleText, subtitleText, bodyText, onClose, closeText, onReply, replyText);
+	}
+
+	private static bool ShowInternal(string titleText, string subtitleText, string bodyText, Action onClose, string closeText, Action onReply, string replyText)
+	{
 		ScreenBase topScreen = ScreenManager.TopScreen;
 		if (topScreen == null)
 		{
@@ -51,7 +64,7 @@ public sealed class CourierLetterReplyPopup
 		try
 		{
 			_activePopup?.Close(silent: true);
-			CourierLetterReplyPopup popup = new CourierLetterReplyPopup(topScreen, titleText, subtitleText, bodyText, onClose, closeText);
+			CourierLetterReplyPopup popup = new CourierLetterReplyPopup(topScreen, titleText, subtitleText, bodyText, onClose, closeText, onReply, replyText);
 			popup.Open();
 			_activePopup = popup;
 			return true;
@@ -118,16 +131,21 @@ public sealed class CourierLetterReplyPopup
 
 	private void HandleCloseRequested()
 	{
-		RequestDeferredClose();
+		RequestDeferredClose(PendingCloseAction.Close);
 	}
 
-	private void RequestDeferredClose()
+	private void HandleReplyRequested()
+	{
+		RequestDeferredClose(PendingCloseAction.Reply);
+	}
+
+	private void RequestDeferredClose(PendingCloseAction closeAction)
 	{
 		if (_isClosed || _pendingCloseAction != PendingCloseAction.None)
 		{
 			return;
 		}
-		_pendingCloseAction = PendingCloseAction.Close;
+		_pendingCloseAction = closeAction;
 	}
 
 	private void ProcessPendingCloseAction()
@@ -136,9 +154,17 @@ public sealed class CourierLetterReplyPopup
 		{
 			return;
 		}
+		PendingCloseAction action = _pendingCloseAction;
 		_pendingCloseAction = PendingCloseAction.None;
 		Close(silent: true);
-		_onClose?.Invoke();
+		if (action == PendingCloseAction.Reply)
+		{
+			_onReply?.Invoke();
+		}
+		else
+		{
+			_onClose?.Invoke();
+		}
 	}
 
 	private void Close(bool silent)

@@ -1652,6 +1652,8 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private List<string> _unreadWeeklyReportNoticeEventIds = new List<string>();
 
+	private List<string> _weeklyReportReadingXpClaimedEventIds = new List<string>();
+
 	private readonly HashSet<string> _weeklyReportNoticeEventIdsShownThisSession = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
 	private MapNotificationView _weeklyReportRegisteredMapNotificationView;
@@ -3355,6 +3357,11 @@ public class MyBehavior : CampaignBehaviorBase
 				RecordNpcMajorAction(killer, "你" + GetHeroKilledVerb(detail) + GetHeroDisplayName(victim) + "。", text + ":killer", npcActionFacts);
 				RecordNpcRecentAction(killer, "你" + GetHeroKilledVerb(detail) + GetHeroDisplayName(victim) + "。", text + ":killer", facts: npcActionFacts);
 			}
+			if (IsExecutionKillDetail(detail))
+			{
+				RecordExecutedVictimAction(victim, killer, detail, text);
+				RecordPlayerExecutionWeeklyMaterial(victim, killer, detail, text);
+			}
 			Hero leader = victim.Clan?.Leader;
 			if (ShouldTrackNpcActionHero(leader) && !string.Equals(GetHeroId(leader), GetHeroId(victim), StringComparison.OrdinalIgnoreCase))
 			{
@@ -3375,6 +3382,93 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			Logger.Log("NpcAction", "[ERROR] OnHeroKilled: " + ex.Message);
 		}
+	}
+
+	private void RecordExecutedVictimAction(Hero victim, Hero killer, KillCharacterAction.KillCharacterActionDetail detail, string stablePrefix)
+	{
+		if (victim == null || !ShouldTrackNpcActionHero(victim, allowNonLordHero: true))
+		{
+			return;
+		}
+		NpcActionFacts facts = CreateNpcActionFacts("hero_executed_victim", victim);
+		ApplyTargetFacts(facts, killer);
+		Settlement settlement = ResolveHeroExecutionSettlement(victim, killer);
+		string locationText = ResolveHeroExecutionLocationText(settlement, victim, killer);
+		if (settlement != null)
+		{
+			ApplySettlementFacts(facts, settlement, locationText: locationText);
+			AddRelatedFactionFacts(facts, settlement.MapFaction);
+		}
+		else
+		{
+			facts.LocationText = locationText;
+		}
+		facts.Won = false;
+		string text = BuildExecutedVictimActionText(killer, detail);
+		string key = (string.IsNullOrWhiteSpace(stablePrefix) ? ("hero_killed:" + GetHeroId(victim) + ":" + detail) : stablePrefix.Trim()) + ":victim";
+		RecordNpcMajorAction(victim, text, key, facts, allowNonLordHero: true);
+		RecordNpcRecentAction(victim, text, key, dedupeAcrossWindow: true, facts, allowNonLordHero: true);
+	}
+
+	private void RecordPlayerExecutionWeeklyMaterial(Hero victim, Hero killer, KillCharacterAction.KillCharacterActionDetail detail, string stablePrefix)
+	{
+		Hero player = Hero.MainHero;
+		if (player == null || (victim != player && killer != player))
+		{
+			return;
+		}
+		int day = GetCurrentGameDayIndexSafe();
+		string gameDate = GetCurrentGameDateTextSafe();
+		Settlement settlement = ResolveHeroExecutionSettlement(victim, killer);
+		string settlementId = GetSettlementId(settlement);
+		string locationText = ResolveHeroExecutionLocationText(settlement, victim, killer);
+		Kingdom victimKingdom = ResolveHeroKingdomForWeeklyMaterial(victim);
+		Kingdom killerKingdom = ResolveHeroKingdomForWeeklyMaterial(killer);
+		string victimKingdomId = GetKingdomId(victimKingdom);
+		string killerKingdomId = GetKingdomId(killerKingdom);
+		string primaryKingdomId = !string.IsNullOrWhiteSpace(victimKingdomId) ? victimKingdomId : killerKingdomId;
+		if (string.IsNullOrWhiteSpace(primaryKingdomId))
+		{
+			Logger.Log("EventWeeklyReport", "[PlayerExecution][SKIP] kingdom_missing victim=" + GetHeroId(victim) + " killer=" + GetHeroId(killer));
+			return;
+		}
+		string snapshot = BuildPlayerExecutionWeeklySnapshot(victim, killer, detail, victimKingdom, killerKingdom, locationText, gameDate);
+		if (string.IsNullOrWhiteSpace(snapshot))
+		{
+			return;
+		}
+		string baseKey = "player_execution:" + NormalizeNpcActionStableKey(stablePrefix, GetHeroId(victim) + ":" + GetHeroId(killer) + ":" + detail);
+		string label = victim == player ? "玩家被处决 - " + GetHeroDisplayName(killer) : "玩家处决英雄 - " + GetHeroDisplayName(victim);
+		RecordEventSourceMaterial(
+			"player_execution",
+			label,
+			snapshot,
+			baseKey + ":victim_kingdom",
+			primaryKingdomId,
+			settlementId,
+			includeInWorld: true,
+			includeInKingdom: true,
+			actorHeroId: GetHeroId(killer),
+			actorKingdomId: killerKingdomId,
+			dayOverride: day,
+			gameDateOverride: gameDate);
+		if (!string.IsNullOrWhiteSpace(killerKingdomId) && !string.Equals(killerKingdomId, primaryKingdomId, StringComparison.OrdinalIgnoreCase))
+		{
+			RecordEventSourceMaterial(
+				"player_execution",
+				label,
+				snapshot,
+				baseKey + ":killer_kingdom",
+				killerKingdomId,
+				settlementId,
+				includeInWorld: false,
+				includeInKingdom: true,
+				actorHeroId: GetHeroId(killer),
+				actorKingdomId: killerKingdomId,
+				dayOverride: day,
+				gameDateOverride: gameDate);
+		}
+		Logger.Log("EventWeeklyReport", "[PlayerExecution] source_material_recorded day=" + day + " victim=" + GetHeroId(victim) + " killer=" + GetHeroId(killer) + " kingdom=" + primaryKingdomId + " key=" + baseKey);
 	}
 
 	private void OnGivenBirth(Hero mother, List<Hero> aliveChildren, int stillbornCount)
@@ -9191,6 +9285,113 @@ public class MyBehavior : CampaignBehaviorBase
 		default:
 			return "使其死亡：";
 		}
+	}
+
+	private static bool IsExecutionKillDetail(KillCharacterAction.KillCharacterActionDetail detail)
+	{
+		return detail == KillCharacterAction.KillCharacterActionDetail.Executed || detail == KillCharacterAction.KillCharacterActionDetail.ExecutionAfterMapEvent;
+	}
+
+	private static string BuildExecutedVictimActionText(Hero killer, KillCharacterAction.KillCharacterActionDetail detail)
+	{
+		string killerName = GetHeroDisplayName(killer);
+		if (killer == null)
+		{
+			return detail == KillCharacterAction.KillCharacterActionDetail.ExecutionAfterMapEvent ? "你在战后被处决。" : "你被处决。";
+		}
+		if (detail == KillCharacterAction.KillCharacterActionDetail.ExecutionAfterMapEvent)
+		{
+			return "你在战后被" + killerName + "处决。";
+		}
+		return "你被" + killerName + "处决。";
+	}
+
+	private static Settlement ResolveHeroExecutionSettlement(Hero victim, Hero killer)
+	{
+		try
+		{
+			Settlement settlement = ResolveCurrentActionSettlement(killer ?? victim);
+			if (settlement != null)
+			{
+				return settlement;
+			}
+			return victim?.CurrentSettlement
+				?? victim?.StayingInSettlement
+				?? victim?.PartyBelongedTo?.CurrentSettlement
+				?? victim?.PartyBelongedToAsPrisoner?.MobileParty?.CurrentSettlement
+				?? killer?.CurrentSettlement
+				?? killer?.StayingInSettlement
+				?? killer?.PartyBelongedTo?.CurrentSettlement;
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static string ResolveHeroExecutionLocationText(Settlement settlement, Hero victim, Hero killer)
+	{
+		string text = GetSettlementDisplayName(settlement);
+		if (!string.IsNullOrWhiteSpace(text) && !string.Equals(text, "某处定居点", StringComparison.Ordinal))
+		{
+			return text;
+		}
+		text = GetNearestSettlementNameForParty(killer?.PartyBelongedTo ?? victim?.PartyBelongedTo ?? MobileParty.MainParty);
+		return string.IsNullOrWhiteSpace(text) ? "" : text;
+	}
+
+	private static Kingdom ResolveHeroKingdomForWeeklyMaterial(Hero hero)
+	{
+		try
+		{
+			return (hero?.MapFaction as Kingdom) ?? hero?.Clan?.Kingdom;
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static string BuildPlayerExecutionWeeklySnapshot(Hero victim, Hero killer, KillCharacterAction.KillCharacterActionDetail detail, Kingdom victimKingdom, Kingdom killerKingdom, string locationText, string gameDate)
+	{
+		Hero player = Hero.MainHero;
+		string victimName = victim == player ? "玩家" : GetHeroDisplayName(victim);
+		string killerName = killer == player ? "玩家" : GetHeroDisplayName(killer);
+		string victimKingdomName = GetKingdomDisplayName(victimKingdom, "");
+		string killerKingdomName = GetKingdomDisplayName(killerKingdom, "");
+		string victimClanName = GetClanDisplayName(victim?.Clan);
+		string killerClanName = GetClanDisplayName(killer?.Clan);
+		StringBuilder sb = new StringBuilder();
+		sb.Append(victim == player ? "玩家被处决素材。" : "玩家处决英雄素材。");
+		if (!string.IsNullOrWhiteSpace(gameDate))
+		{
+			sb.Append("日期：").Append(gameDate.Trim()).Append("。");
+		}
+		if (!string.IsNullOrWhiteSpace(locationText))
+		{
+			sb.Append("地点：").Append(locationText.Trim()).Append("。");
+		}
+		sb.Append("执行者：").Append(killerName).Append("。");
+		if (!string.IsNullOrWhiteSpace(killerClanName) && !string.Equals(killerClanName, "某个", StringComparison.Ordinal))
+		{
+			sb.Append("执行者家族：").Append(killerClanName).Append("。");
+		}
+		if (!string.IsNullOrWhiteSpace(killerKingdomName))
+		{
+			sb.Append("执行者所属王国：").Append(killerKingdomName).Append("。");
+		}
+		sb.Append("被处决者：").Append(victimName).Append("。");
+		if (!string.IsNullOrWhiteSpace(victimClanName) && !string.Equals(victimClanName, "某个", StringComparison.Ordinal))
+		{
+			sb.Append("被处决者家族：").Append(victimClanName).Append("。");
+		}
+		if (!string.IsNullOrWhiteSpace(victimKingdomName))
+		{
+			sb.Append("被处决者所属王国：").Append(victimKingdomName).Append("。");
+		}
+		sb.Append("处决类型：").Append(detail == KillCharacterAction.KillCharacterActionDetail.ExecutionAfterMapEvent ? "战后处决" : "处决").Append("。");
+		sb.Append("事实约束：这是处决事件，不得写成战场击杀、谋杀、自然死亡或普通俘虏释放。");
+		return LimitCustomPolicyWeeklyMaterialText(sb.ToString(), 360);
 	}
 
 	private static string BuildPrisonerTakenStableKey(Hero capturerHero, Hero prisoner)
@@ -15235,6 +15436,8 @@ public class MyBehavior : CampaignBehaviorBase
 			return "定居点易主事件";
 		case "hero_killed":
 			return "英雄死亡事件";
+		case "hero_executed_victim":
+			return "被处决事件";
 		case "clan_member_killed":
 			return "家族成员死亡事件";
 		case "prisoner_taken_captor":
@@ -16017,6 +16220,10 @@ public class MyBehavior : CampaignBehaviorBase
 				List<string> unreadWeeklyReportNoticeEventIds = new List<string>(_unreadWeeklyReportNoticeEventIds);
 				dataStore.SyncData("_af_unreadWeeklyReportNotices_v1", ref unreadWeeklyReportNoticeEventIds);
 				_unreadWeeklyReportNoticeEventIds = SanitizeUnreadWeeklyReportNoticeEventIds(unreadWeeklyReportNoticeEventIds);
+				_weeklyReportReadingXpClaimedEventIds = SanitizeWeeklyReportReadingXpClaimedEventIds(_weeklyReportReadingXpClaimedEventIds).Where((string x) => FindWeeklyReportRecordById(x) != null).ToList();
+				List<string> weeklyReportReadingXpClaimedEventIds = new List<string>(_weeklyReportReadingXpClaimedEventIds);
+				dataStore.SyncData("_af_weeklyReportReadingXpClaimed_v1", ref weeklyReportReadingXpClaimedEventIds);
+				_weeklyReportReadingXpClaimedEventIds = SanitizeWeeklyReportReadingXpClaimedEventIds(weeklyReportReadingXpClaimedEventIds).Where((string x) => FindWeeklyReportRecordById(x) != null).ToList();
 				try
 				{
 					_eventSourceMaterialJsonStorage = JsonConvert.SerializeObject(SanitizeEventSourceMaterials(_eventSourceMaterials));
@@ -16433,6 +16640,9 @@ public class MyBehavior : CampaignBehaviorBase
 			List<string> unreadWeeklyReportNoticeEventIdsLoad = new List<string>();
 			dataStore.SyncData("_af_unreadWeeklyReportNotices_v1", ref unreadWeeklyReportNoticeEventIdsLoad);
 			_unreadWeeklyReportNoticeEventIds = SanitizeUnreadWeeklyReportNoticeEventIds(unreadWeeklyReportNoticeEventIdsLoad).Where((string x) => FindWeeklyReportRecordById(x) != null).ToList();
+			List<string> weeklyReportReadingXpClaimedEventIdsLoad = new List<string>();
+			dataStore.SyncData("_af_weeklyReportReadingXpClaimed_v1", ref weeklyReportReadingXpClaimedEventIdsLoad);
+			_weeklyReportReadingXpClaimedEventIds = SanitizeWeeklyReportReadingXpClaimedEventIds(weeklyReportReadingXpClaimedEventIdsLoad).Where((string x) => FindWeeklyReportRecordById(x) != null).ToList();
 			_weeklyReportNoticeEventIdsShownThisSession.Clear();
 			_weeklyReportRegisteredMapNotificationView = null;
 			_eventSourceMaterials.Clear();
@@ -36282,6 +36492,7 @@ public class MyBehavior : CampaignBehaviorBase
 		case "settlement_owner_changed_capture":
 			return "settlement_change";
 		case "hero_killed":
+		case "hero_executed_victim":
 		case "clan_member_killed":
 			return "death";
 		case "prisoner_taken_captor":
@@ -36382,7 +36593,7 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			return text2;
 		}
-		string[] array = new string[8] { ":captor", ":prisoner", ":gain", ":loss", ":capture", ":chooser", ":killer", ":clan" };
+		string[] array = new string[9] { ":captor", ":prisoner", ":gain", ":loss", ":capture", ":chooser", ":killer", ":victim", ":clan" };
 		foreach (string value in array)
 		{
 			if (text.EndsWith(value, StringComparison.OrdinalIgnoreCase))
@@ -37308,6 +37519,14 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private static string ResolveWeeklyPromptAggregateDeathVictimHeroId(EventMaterialReference item)
 	{
+		if (string.Equals((item?.ActionKind ?? "").Trim(), "hero_executed_victim", StringComparison.OrdinalIgnoreCase))
+		{
+			string actorHeroId = (item?.ActorHeroId ?? "").Trim();
+			if (!string.IsNullOrWhiteSpace(actorHeroId))
+			{
+				return actorHeroId;
+			}
+		}
 		string text = (item?.TargetHeroId ?? "").Trim();
 		if (!string.IsNullOrWhiteSpace(text))
 		{
@@ -42943,8 +43162,11 @@ public class MyBehavior : CampaignBehaviorBase
 			return true;
 		}
 		bool hasFullReport = !string.IsNullOrWhiteSpace(eventRecordEntry.Summary);
-		string bodyText = hasFullReport ? eventRecordEntry.Summary.Trim() : (!string.IsNullOrWhiteSpace(eventRecordEntry.ShortSummary) ? eventRecordEntry.ShortSummary.Trim() : "当前周报正文为空。");
-		bool flag = DevWeeklyReportPopup.Show(BuildWeeklyReportNoticeTitle(eventRecordEntry), BuildWeeklyReportPopupSubtitle(eventRecordEntry), bodyText, null, "", useChronicleColumns: hasFullReport, useShortReportLayout: !hasFullReport, showCloseButton: false);
+		string bodyText = BuildWeeklyReportPopupBodyText(eventRecordEntry);
+		bool flag = DevWeeklyReportPopup.Show(BuildWeeklyReportNoticeTitle(eventRecordEntry), BuildWeeklyReportPopupSubtitle(eventRecordEntry), bodyText, null, "", useChronicleColumns: hasFullReport, useShortReportLayout: !hasFullReport, showCloseButton: false, minimumDwellSeconds: 10.0, onMinimumDwellMet: delegate
+		{
+			TryAwardWeeklyReportReadingXp(text);
+		});
 		if (flag)
 		{
 			MarkWeeklyReportNoticeRead(text);
@@ -42956,6 +43178,91 @@ public class MyBehavior : CampaignBehaviorBase
 		return flag;
 	}
 
+	private void TryAwardWeeklyReportReadingXp(string eventId)
+	{
+		string text = (eventId ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text) || !text.StartsWith("weekly_report:", StringComparison.OrdinalIgnoreCase))
+		{
+			return;
+		}
+		if (_weeklyReportReadingXpClaimedEventIds == null)
+		{
+			_weeklyReportReadingXpClaimedEventIds = new List<string>();
+		}
+		if (_weeklyReportReadingXpClaimedEventIds.Any((string x) => string.Equals((x ?? "").Trim(), text, StringComparison.OrdinalIgnoreCase)))
+		{
+			return;
+		}
+		DuelSettings settings = DuelSettings.GetSettings();
+		if (settings == null || !settings.EnableWeeklyReportReadingXpReward)
+		{
+			return;
+		}
+		int xpPerHundred = Math.Max(0, Math.Min(100, settings.WeeklyReportReadingXpPerHundredChars));
+		int skillCap = Math.Max(0, Math.Min(500, settings.WeeklyReportReadingXpSkillCap));
+		if (xpPerHundred <= 0 || skillCap <= 0)
+		{
+			return;
+		}
+		Hero mainHero = Hero.MainHero;
+		if (mainHero == null)
+		{
+			return;
+		}
+		EventRecordEntry eventRecordEntry = FindWeeklyReportRecordById(text);
+		if (eventRecordEntry == null)
+		{
+			return;
+		}
+		string bodyText = BuildWeeklyReportPopupBodyText(eventRecordEntry);
+		WeeklyReportSectionSplit split = WeeklyReportTextHelper.SplitChronicleBody(bodyText);
+		int leadershipXp;
+		int charmXp;
+		int stewardXp;
+		if (split.HasExplicitSections)
+		{
+			leadershipXp = CalculateWeeklyReportReadingXp(WeeklyReportTextHelper.CountMeaningfulUnits(split.MilitaryEventsText), xpPerHundred, skillCap);
+			charmXp = CalculateWeeklyReportReadingXp(WeeklyReportTextHelper.CountMeaningfulUnits(split.DiplomaticAffairsText), xpPerHundred, skillCap);
+			stewardXp = CalculateWeeklyReportReadingXp(WeeklyReportTextHelper.CountMeaningfulUnits(split.DomesticRealmText), xpPerHundred, skillCap);
+		}
+		else
+		{
+			int sharedXp = CalculateWeeklyReportReadingXp(WeeklyReportTextHelper.CountMeaningfulUnits(split.NormalizedBodyText), xpPerHundred, skillCap);
+			leadershipXp = sharedXp;
+			charmXp = sharedXp;
+			stewardXp = sharedXp;
+		}
+		if (leadershipXp <= 0 && charmXp <= 0 && stewardXp <= 0)
+		{
+			return;
+		}
+		if (leadershipXp > 0)
+		{
+			mainHero.AddSkillXp(DefaultSkills.Leadership, leadershipXp);
+		}
+		if (charmXp > 0)
+		{
+			mainHero.AddSkillXp(DefaultSkills.Charm, charmXp);
+		}
+		if (stewardXp > 0)
+		{
+			mainHero.AddSkillXp(DefaultSkills.Steward, stewardXp);
+		}
+		_weeklyReportReadingXpClaimedEventIds.Add(text);
+		InformationManager.DisplayMessage(new InformationMessage("周报研读完成：魅力 +" + charmXp + "，统御 +" + leadershipXp + "，管理 +" + stewardXp + "。"));
+		Logger.Log("EventWeeklyReport", "[ReadingXp] eventId=" + text + " charm=" + charmXp + " leadership=" + leadershipXp + " steward=" + stewardXp + " per100=" + xpPerHundred + " cap=" + skillCap);
+	}
+
+	private static int CalculateWeeklyReportReadingXp(int meaningfulUnitCount, int xpPerHundred, int skillCap)
+	{
+		if (meaningfulUnitCount <= 0 || xpPerHundred <= 0 || skillCap <= 0)
+		{
+			return 0;
+		}
+		int xp = (int)Math.Round((double)meaningfulUnitCount * xpPerHundred / 100.0, MidpointRounding.AwayFromZero);
+		return Math.Max(0, Math.Min(skillCap, xp));
+	}
+
 	private static string BuildWeeklyReportNoticeTitle(EventRecordEntry entry)
 	{
 		string text = (entry?.Title ?? "").Trim();
@@ -42964,6 +43271,21 @@ public class MyBehavior : CampaignBehaviorBase
 			return text;
 		}
 		return BuildWeeklyReportBrowserDefaultTitle(entry?.EventKind, entry?.ScopeKingdomId, entry?.WeekIndex ?? 0);
+	}
+
+	private static string BuildWeeklyReportPopupBodyText(EventRecordEntry entry)
+	{
+		if (entry == null)
+		{
+			return "当前周报正文为空。";
+		}
+		string text = (entry.Summary ?? "").Trim();
+		if (!string.IsNullOrWhiteSpace(text))
+		{
+			return text;
+		}
+		text = (entry.ShortSummary ?? "").Trim();
+		return string.IsNullOrWhiteSpace(text) ? "当前周报正文为空。" : text;
 	}
 
 	private static string BuildWeeklyReportPopupSubtitle(EventRecordEntry entry)
@@ -42992,6 +43314,16 @@ public class MyBehavior : CampaignBehaviorBase
 	}
 
 	private static List<string> SanitizeUnreadWeeklyReportNoticeEventIds(IEnumerable<string> source)
+	{
+		return SanitizeWeeklyReportEventIds(source);
+	}
+
+	private static List<string> SanitizeWeeklyReportReadingXpClaimedEventIds(IEnumerable<string> source)
+	{
+		return SanitizeWeeklyReportEventIds(source);
+	}
+
+	private static List<string> SanitizeWeeklyReportEventIds(IEnumerable<string> source)
 	{
 		return (source ?? Enumerable.Empty<string>()).Where((string x) => !string.IsNullOrWhiteSpace(x)).Select((string x) => x.Trim()).Where((string x) => x.StartsWith("weekly_report:", StringComparison.OrdinalIgnoreCase)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
 	}
@@ -43399,6 +43731,7 @@ public class MyBehavior : CampaignBehaviorBase
 		_lastAutoGeneratedWeeklyReportWeek = -1;
 		_lastProcessedKingdomRebellionWeek = -1;
 		_unreadWeeklyReportNoticeEventIds = new List<string>();
+		_weeklyReportReadingXpClaimedEventIds = new List<string>();
 		_weeklyReportNoticeEventIdsShownThisSession.Clear();
 		_weeklyReportRegisteredMapNotificationView = null;
 		_weeklyReportGenerationInProgress = false;

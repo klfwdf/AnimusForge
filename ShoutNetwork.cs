@@ -530,8 +530,9 @@ public static class ShoutNetwork
 		}
 	}
 
-	public static async Task<string> CallApiWithMessages(List<object> messages, int maxTokens, bool recordTokenStats = true, int? overrideMaxTokens = null, bool forceDisableThinking = false)
+	public static async Task<string> CallApiWithMessages(List<object> messages, int maxTokens, bool recordTokenStats = true, int? overrideMaxTokens = null, bool forceDisableThinking = false, bool promptRetryOnError = false)
 	{
+		LlmRetryPrompt.CaptureMainThreadContext();
 		long runtimeGeneration = SaveRuntimeGuard.CaptureGeneration();
 		messages = ApplyPlayerDisplayNameToOutgoingMessages(messages);
 		Stopwatch sw = Stopwatch.StartNew();
@@ -639,7 +640,7 @@ public static class ShoutNetwork
 								{
 									return SaveRuntimeGuard.BuildStaleRequestErrorText();
 								}
-								string retryContent = await CallApiWithMessages(BuildEmptyResponseRetryMessages(messages), maxTokens, recordTokenStats, overrideMaxTokens, forceDisableThinking);
+								string retryContent = await CallApiWithMessages(BuildEmptyResponseRetryMessages(messages), maxTokens, recordTokenStats, overrideMaxTokens, forceDisableThinking, promptRetryOnError);
 								if (SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_non_stream_empty_retry_complete"))
 								{
 									return SaveRuntimeGuard.BuildStaleRequestErrorText();
@@ -682,7 +683,12 @@ public static class ShoutNetwork
 							["latencyMs"] = Math.Round(sw.Elapsed.TotalMilliseconds, 2)
 						});
 						Logger.Metric("network.non_stream", ok: false, sw.Elapsed.TotalMilliseconds);
-						return "（API响应格式错误）";
+						string parseError = "（API响应格式错误）";
+						if (promptRetryOnError && await LlmRetryPrompt.PromptRetryAsync("正文生成", parseError))
+						{
+							return await CallApiWithMessages(messages, maxTokens, recordTokenStats, overrideMaxTokens, forceDisableThinking, promptRetryOnError);
+						}
+						return parseError;
 					}
 				}
 				sw.Stop();
@@ -695,7 +701,12 @@ public static class ShoutNetwork
 					["latencyMs"] = Math.Round(sw.Elapsed.TotalMilliseconds, 2)
 				});
 				Logger.Metric("network.non_stream", ok: false, sw.Elapsed.TotalMilliseconds);
-				return $"（API请求失败: {response.StatusCode}{BuildApiErrorDetail(str)}）";
+				string httpError = $"（API请求失败: {response.StatusCode}{BuildApiErrorDetail(str)}）";
+				if (promptRetryOnError && await LlmRetryPrompt.PromptRetryAsync("正文生成", httpError))
+				{
+					return await CallApiWithMessages(messages, maxTokens, recordTokenStats, overrideMaxTokens, forceDisableThinking, promptRetryOnError);
+				}
+				return httpError;
 			}
 			finally
 			{
@@ -713,12 +724,18 @@ public static class ShoutNetwork
 				["type"] = ex.GetType().Name
 			});
 			Logger.Metric("network.non_stream", ok: false, sw.Elapsed.TotalMilliseconds);
-			return "（程序错误: " + ex.Message + "）";
+			string exceptionError = "（程序错误: " + ex.Message + "）";
+			if (promptRetryOnError && await LlmRetryPrompt.PromptRetryAsync("正文生成", exceptionError))
+			{
+				return await CallApiWithMessages(messages, maxTokens, recordTokenStats, overrideMaxTokens, forceDisableThinking, promptRetryOnError);
+			}
+			return exceptionError;
 		}
 	}
 
-	public static async Task CallApiWithMessagesStream(List<object> messages, int maxTokens, Action<string> onChunk, Action<string> onComplete, Action<string> onError, CancellationToken cancellationToken = default(CancellationToken))
+	public static async Task CallApiWithMessagesStream(List<object> messages, int maxTokens, Action<string> onChunk, Action<string> onComplete, Action<string> onError, CancellationToken cancellationToken = default(CancellationToken), bool promptRetryOnError = true)
 	{
+		LlmRetryPrompt.CaptureMainThreadContext();
 		long runtimeGeneration = SaveRuntimeGuard.CaptureGeneration();
 		messages = ApplyPlayerDisplayNameToOutgoingMessages(messages);
 		PlayerReferenceStreamFilter outputFilter = new PlayerReferenceStreamFilter();
@@ -825,7 +842,13 @@ public static class ShoutNetwork
 								["latencyMs"] = Math.Round(sw.Elapsed.TotalMilliseconds, 2)
 							});
 							Logger.Metric("network.stream", ok: false, sw.Elapsed.TotalMilliseconds);
-							onError?.Invoke($"（API请求失败: {response.StatusCode}{BuildApiErrorDetail(errBody)}）");
+							string httpError = $"（API请求失败: {response.StatusCode}{BuildApiErrorDetail(errBody)}）";
+							if (promptRetryOnError && await LlmRetryPrompt.PromptRetryAsync("正文生成", httpError))
+							{
+								await CallApiWithMessagesStream(messages, maxTokens, onChunk, onComplete, onError, cancellationToken, promptRetryOnError);
+								return;
+							}
+							onError?.Invoke(httpError);
 							return;
 						}
 						using Stream stream = await response.Content.ReadAsStreamAsync();
@@ -932,12 +955,12 @@ public static class ShoutNetwork
 			}
 			if (!streamSucceeded)
 			{
-				string fallback = await CallApiWithMessages(messages, maxTokens, recordTokenStats: false);
+				string fallback = await CallApiWithMessages(messages, maxTokens, recordTokenStats: false, promptRetryOnError: false);
 				if (SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_stream_fallback"))
 				{
 					return;
 				}
-				if (!string.IsNullOrWhiteSpace(fallback) && !fallback.StartsWith("（错误") && !fallback.StartsWith("（程序错误") && !fallback.StartsWith("（API请求失败"))
+				if (!string.IsNullOrWhiteSpace(fallback) && !fallback.StartsWith("（错误") && !LlmRetryPrompt.IsRetryableLlmError(fallback))
 				{
 					sw.Stop();
 					Logger.Obs("Network", "request_complete", new Dictionary<string, object>
@@ -998,7 +1021,13 @@ public static class ShoutNetwork
 						["type"] = lastStreamException.GetType().Name
 					});
 					Logger.Metric("network.stream", ok: false, sw.Elapsed.TotalMilliseconds);
-					onError?.Invoke("（程序错误: " + lastStreamException.Message + "）");
+					string streamError = "（程序错误: " + lastStreamException.Message + "）";
+					if (promptRetryOnError && await LlmRetryPrompt.PromptRetryAsync("正文生成", streamError))
+					{
+						await CallApiWithMessagesStream(messages, maxTokens, onChunk, onComplete, onError, cancellationToken, promptRetryOnError);
+						return;
+					}
+					onError?.Invoke(streamError);
 					return;
 				}
 			}
@@ -1010,12 +1039,12 @@ public static class ShoutNetwork
 				if (!HasEmptyResponseRetryMarker(messages))
 				{
 					Logger.Log("ShoutNetwork", "[PrimaryChat] empty stream final; retrying once with explicit non-empty instruction.");
-					string retry = await CallApiWithMessages(BuildEmptyResponseRetryMessages(messages), maxTokens, recordTokenStats: false);
+					string retry = await CallApiWithMessages(BuildEmptyResponseRetryMessages(messages), maxTokens, recordTokenStats: false, promptRetryOnError: false);
 					if (SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_stream_empty_retry"))
 					{
 						return;
 					}
-					if (!string.IsNullOrWhiteSpace(retry) && !retry.StartsWith("（错误") && !retry.StartsWith("（程序错误") && !retry.StartsWith("（API请求失败"))
+					if (!string.IsNullOrWhiteSpace(retry) && !retry.StartsWith("（错误") && !LlmRetryPrompt.IsRetryableLlmError(retry))
 					{
 						if (!SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_stream_empty_retry_complete"))
 						{
@@ -1091,7 +1120,13 @@ public static class ShoutNetwork
 					["type"] = ex3.GetType().Name
 				});
 				Logger.Metric("network.stream", ok: false, sw.Elapsed.TotalMilliseconds);
-				onError?.Invoke("（程序错误: " + ex3.Message + "）");
+				string streamError = "（程序错误: " + ex3.Message + "）";
+				if (promptRetryOnError && await LlmRetryPrompt.PromptRetryAsync("正文生成", streamError))
+				{
+					await CallApiWithMessagesStream(messages, maxTokens, onChunk, onComplete, onError, cancellationToken, promptRetryOnError);
+					return;
+				}
+				onError?.Invoke(streamError);
 			}
 		}
 	}

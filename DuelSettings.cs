@@ -249,7 +249,12 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 
 	public const int DefaultEventAndRebellionApiMaxTokens = 8000;
 
-	public static readonly HttpClient GlobalClient = new HttpClient();
+	public const int LlmRequestTimeoutMilliseconds = 480000;
+
+	public static readonly HttpClient GlobalClient = new HttpClient
+	{
+		Timeout = TimeSpan.FromMilliseconds(LlmRequestTimeoutMilliseconds)
+	};
 
 	public override string Id => "AnimusForge_global_settings";
 
@@ -1193,11 +1198,23 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyGroup("12. 事件系统（开发）")]
 	public int WeeklyReportPopupBodyFontSize { get; set; } = 18;
 
-	[SettingPropertyBool("启用王国稳定度与叛乱", Order = 4, RequireRestart = false, HintText = "关闭后，不再触发本模组的王国叛乱；王国稳定度不会再影响国王直辖领地忠诚度，也不会继续施加稳定度关系修正。")]
+	[SettingPropertyBool("启用周报阅读经验奖励", Order = 4, RequireRestart = false, HintText = "开启后，从地图通知打开周报并停留满 10 秒，会按周报三栏字数给玩家魅力、统御和管理经验。")]
+	[SettingPropertyGroup("12. 事件系统（开发）")]
+	public bool EnableWeeklyReportReadingXpReward { get; set; } = true;
+
+	[SettingPropertyInteger("周报每百字经验", 0, 100, "0", Order = 5, RequireRestart = false, HintText = "周报阅读奖励的字数倍率。默认 20，表示每栏每 100 个有效字/词给 20 点对应技能经验。")]
+	[SettingPropertyGroup("12. 事件系统（开发）")]
+	public int WeeklyReportReadingXpPerHundredChars { get; set; } = 20;
+
+	[SettingPropertyInteger("周报单技能经验上限", 0, 500, "0", Order = 6, RequireRestart = false, HintText = "单份周报每个技能最多获得多少经验。默认 100；设置为 0 表示不发放周报阅读经验。")]
+	[SettingPropertyGroup("12. 事件系统（开发）")]
+	public int WeeklyReportReadingXpSkillCap { get; set; } = 100;
+
+	[SettingPropertyBool("启用王国稳定度与叛乱", Order = 7, RequireRestart = false, HintText = "关闭后，不再触发本模组的王国叛乱；王国稳定度不会再影响国王直辖领地忠诚度，也不会继续施加稳定度关系修正。")]
 	[SettingPropertyGroup("12. 事件系统（开发）")]
 	public bool EnableKingdomStabilityAndRebellion { get; set; } = true;
 
-	[SettingPropertyBool("玩家为国王时免疫稳定度叛乱", Order = 5, RequireRestart = false, HintText = "开启后，当玩家家族是某个王国的执政家族或玩家本人是该王国领袖时，本模组的王国稳定度不会继续给该王国施加关系修正、国王直辖地忠诚修正或王国叛乱判定。原版城镇低忠诚叛乱仍按原版规则运行。")]
+	[SettingPropertyBool("玩家为国王时免疫稳定度叛乱", Order = 8, RequireRestart = false, HintText = "开启后，当玩家家族是某个王国的执政家族或玩家本人是该王国领袖时，本模组的王国稳定度不会继续给该王国施加关系修正、国王直辖地忠诚修正或王国叛乱判定。原版城镇低忠诚叛乱仍按原版规则运行。")]
 	[SettingPropertyGroup("12. 事件系统（开发）")]
 	public bool EnablePlayerKingdomRebellionImmunity { get; set; } = false;
 

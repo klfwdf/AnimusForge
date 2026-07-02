@@ -1673,7 +1673,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		}
 		try
 		{
-			if (IsActiveSiegeSettlement(party.TargetSettlement) || IsActiveSiegeSettlement(party.ShortTermTargetSettlement) || IsActiveSiegeSettlement(party.CurrentSettlement))
+			if (IsActiveSiegeSettlement(party.CurrentSettlement))
 			{
 				return true;
 			}
