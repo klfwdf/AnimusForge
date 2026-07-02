@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -9678,6 +9679,48 @@ public class MyBehavior : CampaignBehaviorBase
 			return ClampKingdomStabilityValue(value);
 		}
 		return KingdomStabilityDefaultValue;
+	}
+
+	public static int GetKingdomStabilityValueForExternal(Kingdom kingdom)
+	{
+		try
+		{
+			return (Instance ?? Campaign.Current?.GetCampaignBehavior<MyBehavior>())?.GetKingdomStabilityValue(kingdom) ?? KingdomStabilityDefaultValue;
+		}
+		catch
+		{
+			return KingdomStabilityDefaultValue;
+		}
+	}
+
+	public static bool TryAdjustKingdomStabilityForExternal(Kingdom kingdom, int delta, string reason, out int before, out int after)
+	{
+		before = KingdomStabilityDefaultValue;
+		after = KingdomStabilityDefaultValue;
+		try
+		{
+			MyBehavior behavior = Instance ?? Campaign.Current?.GetCampaignBehavior<MyBehavior>();
+			if (behavior == null || kingdom == null)
+			{
+				return false;
+			}
+			before = behavior.GetKingdomStabilityValue(kingdom);
+			after = ClampKingdomStabilityValue(before + delta);
+			behavior.SetKingdomStabilityValue(kingdom, after);
+			Logger.Log("KingdomStability", "[CustomPolicy] adjusted kingdom=" + GetKingdomId(kingdom)
+				+ " delta=" + delta.ToString(CultureInfo.InvariantCulture)
+				+ " before=" + before.ToString(CultureInfo.InvariantCulture)
+				+ " after=" + after.ToString(CultureInfo.InvariantCulture)
+				+ " reason=" + ((reason ?? "").Trim()));
+			return true;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("KingdomStability", "[CustomPolicy][WARN] adjust failed kingdom=" + GetKingdomId(kingdom)
+				+ " delta=" + delta.ToString(CultureInfo.InvariantCulture)
+				+ " error=" + ex.Message);
+			return false;
+		}
 	}
 
 	public static string BuildKingdomStabilityEncyclopediaTextForExternal(Kingdom kingdom)
