@@ -1951,15 +1951,25 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
+		LordEncounterBehavior.LogEncounterDiagnostic("ProactiveNpcRequest.OpenActiveEncounterMenu", "enter", null, hero, party.Party);
 		if (MapSeaContextGuard.IsMobilePartyAtSeaOrOnWater(party) || MapSeaContextGuard.IsMobilePartyAtSeaOrOnWater(MobileParty.MainParty))
 		{
+			LordEncounterBehavior.LogEncounterDiagnostic("ProactiveNpcRequest.OpenActiveEncounterMenu", "cancel_at_sea", null, hero, party.Party);
 			CancelActiveSession("open_menu_at_sea", releaseParty: true);
 			return;
 		}
 		if (!LordEncounterBehavior.IsEligibleCustomLordEncounterTarget(hero, party.Party))
 		{
+			LordEncounterBehavior.LogEncounterDiagnostic("ProactiveNpcRequest.OpenActiveEncounterMenu", "cancel_ineligible_target", null, hero, party.Party);
 			Logger.Log("ProactiveNpcRequest", "active encounter menu blocked because target is not an eligible kingdom noble. hero=" + GetHeroKey(hero) + " party=" + (party.StringId ?? ""));
 			CancelActiveSession("ineligible_custom_lord_encounter_target", releaseParty: true);
+			return;
+		}
+		if (LordEncounterBehavior.IsVillageRaidEncounterContext(hero) || LordEncounterBehavior.IsNativeEncounterActivityContext(hero))
+		{
+			LordEncounterBehavior.LogEncounterDiagnostic("ProactiveNpcRequest.OpenActiveEncounterMenu", "cancel_native_activity_context", null, hero, party.Party);
+			Logger.Log("ProactiveNpcRequest", "active encounter menu blocked because target is in native raid/siege activity. hero=" + GetHeroKey(hero) + " party=" + (party.StringId ?? ""));
+			CancelActiveSession("target_native_activity_context", releaseParty: true);
 			return;
 		}
 		_activeSession.Stage = "OpeningMenu";
@@ -1981,11 +1991,14 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		}
 		try
 		{
+			LordEncounterBehavior.LogEncounterDiagnostic("ProactiveNpcRequest.OpenActiveEncounterMenu", "restart_player_encounter_before", null, hero, party.Party);
 			PlayerEncounterCompat.RestartPlayerEncounter(party.Party, PartyBase.MainParty, forcePlayerOutFromSettlement: false);
+			LordEncounterBehavior.LogEncounterDiagnostic("ProactiveNpcRequest.OpenActiveEncounterMenu", "restart_player_encounter_after", null, hero, party.Party);
 		}
 		catch (Exception ex)
 		{
 			Logger.Log("ProactiveNpcRequest", "RestartPlayerEncounter failed: " + ex.Message);
+			Logger.LogImmediate("Logic", "[EncounterDiag] stage=ProactiveNpcRequest.OpenActiveEncounterMenu | reason=restart_player_encounter_exception | error=" + ex);
 		}
 		try
 		{
@@ -2005,6 +2018,7 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		if (PlayerEncounter.Current == null)
 		{
 			_activeSession.Stage = "Chasing";
+			LordEncounterBehavior.LogEncounterDiagnostic("ProactiveNpcRequest.OpenActiveEncounterMenu", "current_null_after_restart", null, hero, party.Party);
 			Logger.Log("ProactiveNpcRequest", "close contact reached but PlayerEncounter.Current is null; distance=" + distance.ToString("0.00") + " trigger=" + triggerDistance.ToString("0.00"));
 			return;
 		}
@@ -2018,6 +2032,7 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		}
 		MarkEncounterOpenedInternal(hero);
 		LordEncounterBehavior.SetTarget(hero);
+		LordEncounterBehavior.LogEncounterDiagnostic("ProactiveNpcRequest.OpenActiveEncounterMenu", "open_custom_menu", null, hero, party.Party);
 		Logger.Log("ProactiveNpcRequest", "opening custom encounter menu hero=" + GetHeroKey(hero) + " party=" + (party.StringId ?? "") + " distance=" + distance.ToString("0.00") + " trigger=" + triggerDistance.ToString("0.00"));
 		LordEncounterBehavior.OpenEncounterMenu(hero);
 	}

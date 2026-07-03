@@ -133,6 +133,8 @@ public static class WorldEntityRetrievalService
 
 	private const int MainPromptKingdomClanCap = 6;
 
+	private const int MainPromptKingdomEncyclopediaTextCap = 600;
+
 	private sealed class EntityMatch<T>
 	{
 		public T Value;
@@ -1688,6 +1690,11 @@ public static class WorldEntityRetrievalService
 			Kingdom kingdom = matches[i].Value;
 			sb.AppendLine((i + 1) + ". " + SafeName(kingdom?.Name, matches[i].Name) + "（编号：" + matches[i].Id + "；匹配分：" + FormatScore(matches[i].Score) + "；提及：" + matches[i].Mention + "）");
 			sb.AppendLine("国王：" + SafeName(kingdom?.Leader?.Name, "未知") + "；总兵力：" + FormatFloat(kingdom?.CurrentTotalStrength) + "；文化：" + SafeName(kingdom?.Culture?.Name, kingdom?.Culture?.StringId ?? "未知"));
+			string encyclopediaBackground = FormatKingdomEncyclopediaBackground(kingdom);
+			if (!string.IsNullOrWhiteSpace(encyclopediaBackground))
+			{
+				sb.AppendLine("百科背景：" + encyclopediaBackground);
+			}
 			sb.AppendLine("王国定居点概览：" + FormatKingdomSettlementSummary(kingdom));
 			sb.AppendLine("主要家族：" + FormatKingdomClans(kingdom, MainPromptKingdomClanCap));
 			sb.AppendLine("王国当前状态：" + FormatKingdomStatus(kingdom));
@@ -2692,6 +2699,32 @@ public static class WorldEntityRetrievalService
 		catch
 		{
 			return "未知";
+		}
+	}
+
+	private static string FormatKingdomEncyclopediaBackground(Kingdom kingdom)
+	{
+		if (kingdom == null)
+		{
+			return "";
+		}
+		try
+		{
+			string text = (kingdom.EncyclopediaText?.ToString() ?? "").Replace("\r\n", "\n").Replace('\r', '\n').Trim();
+			if (string.IsNullOrWhiteSpace(text))
+			{
+				return "";
+			}
+			text = Regex.Replace(text, @"\s+", " ").Trim();
+			if (text.Length > MainPromptKingdomEncyclopediaTextCap)
+			{
+				text = text.Substring(0, MainPromptKingdomEncyclopediaTextCap).TrimEnd() + "...";
+			}
+			return text;
+		}
+		catch
+		{
+			return "";
 		}
 	}
 

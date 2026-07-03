@@ -2052,7 +2052,14 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		}
 		try
 		{
-			InformationManager.ShowInquiry(new InquiryData("信使送来来信", name + "写道：\n\n" + body, true, false, "知道了", "", null, null), true);
+			if (replyAction != null)
+			{
+				InformationManager.ShowInquiry(new InquiryData("信使送来来信", name + "写道：\n\n" + body, true, true, "回信", "关闭", replyAction, null), true);
+			}
+			else
+			{
+				InformationManager.ShowInquiry(new InquiryData("信使送来来信", name + "写道：\n\n" + body, true, false, "知道了", "", null, null), true);
+			}
 		}
 		catch
 		{
@@ -5439,7 +5446,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
-		foreach (ConversationMessage message in historyMessages.Where((ConversationMessage x) => x != null && !string.IsNullOrWhiteSpace(x.Content)).Take(24))
+		foreach (ConversationMessage message in historyMessages.Where((ConversationMessage x) => x != null && !string.IsNullOrWhiteSpace(x.Content)))
 		{
 			if (TryConvertCourierMemoryMessageToChatMessage(message, npcName, playerName, out var chatMessage))
 			{

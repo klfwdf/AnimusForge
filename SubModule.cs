@@ -99,6 +99,14 @@ public class SubModule : MBSubModuleBase
 			}
 			try
 			{
+				harmony.CreateClassProcessor(typeof(Patch_MenuHelper_EncounterAttackConsequence_RaidVillageRestore)).Patch();
+			}
+			catch (Exception ex5r)
+			{
+				Logger.LogTrace("SubModule", ">>> Raid village encounter restore patch failed: " + ex5r.Message);
+			}
+			try
+			{
 				harmony.CreateClassProcessor(typeof(Patch_NpcSurrender_SkipCapturedLordConversation)).Patch();
 				harmony.CreateClassProcessor(typeof(Patch_NpcSurrender_SkipFreeOrCapturePrisonerHeroConversation)).Patch();
 			}
@@ -496,6 +504,7 @@ public class SubModule : MBSubModuleBase
 		{
 			RegisterCourierFoodConsumptionModel(campaignGameStarter);
 			RegisterCourierMobilePartyAiModel(campaignGameStarter);
+			RegisterAnimusForgeSettlementAccessModel(campaignGameStarter);
 			RegisterAnimusForgeSettlementLoyaltyModel(campaignGameStarter);
 			campaignGameStarter.AddBehavior(new ModOnboardingBehavior());
 			campaignGameStarter.AddBehavior(new MyBehavior());
@@ -546,6 +555,32 @@ public class SubModule : MBSubModuleBase
 		catch (Exception ex)
 		{
 			Logger.LogTrace("SubModule", ">>> AnimusForge settlement loyalty model registration failed: " + ex);
+		}
+	}
+
+	private static void RegisterAnimusForgeSettlementAccessModel(CampaignGameStarter campaignGameStarter)
+	{
+		if (campaignGameStarter == null)
+		{
+			return;
+		}
+		try
+		{
+			SettlementAccessModel inner = null;
+			foreach (GameModel model in campaignGameStarter.Models)
+			{
+				if (model is SettlementAccessModel accessModel && !(accessModel is AnimusForgeSettlementAccessModel))
+				{
+					inner = accessModel;
+				}
+			}
+			inner ??= new DefaultSettlementAccessModel();
+			campaignGameStarter.AddModel<SettlementAccessModel>(new AnimusForgeSettlementAccessModel(inner));
+			Logger.LogTrace("SubModule", ">>> AnimusForge settlement access model registered.");
+		}
+		catch (Exception ex)
+		{
+			Logger.LogTrace("SubModule", ">>> AnimusForge settlement access model registration failed: " + ex);
 		}
 	}
 

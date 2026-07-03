@@ -627,8 +627,8 @@
             "Group": "social",
             "Priority": 74,
             "TopicNumber": 15,
-            "TopicLabel": "Recruit Hero NPCs to Player's Party",
-            "Code": "HERO_JOIN",
+            "TopicLabel": "Recruit NPCs to Player's Party",
+            "Code": "NPC_JOIN",
             "NonHeroInstruction": "【加入玩家队伍规则】非英雄NPC也可以被玩家招募",
             "Instruction": "【加入玩家队伍规则】这里只处理当前说话者本人加入玩家队伍，当玩家同伴或随玩家行动；取决于家族关系、私人关系和信任度。",
             "PostprocessRules": [

@@ -665,6 +665,307 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		}
 	}
 
+	internal static bool ShouldLogEncounterDiagnosticForMenu(string menuId)
+	{
+		if (string.IsNullOrWhiteSpace(menuId))
+		{
+			return false;
+		}
+		string text = menuId.Trim();
+		return text == "encounter"
+			|| text == "join_encounter"
+			|| text == "AnimusForge_lord_encounter"
+			|| text.StartsWith("encounter_interrupted", StringComparison.OrdinalIgnoreCase)
+			|| text.IndexOf("raid", StringComparison.OrdinalIgnoreCase) >= 0
+			|| text.IndexOf("village", StringComparison.OrdinalIgnoreCase) >= 0
+			|| text.IndexOf("siege", StringComparison.OrdinalIgnoreCase) >= 0;
+	}
+
+	internal static void LogEncounterDiagnostic(string stage, string reason = null, string menuId = null, Hero target = null, PartyBase encounterParty = null)
+	{
+		try
+		{
+			Logger.LogImmediate("Logic", BuildEncounterDiagnostic(stage, reason, menuId, target, encounterParty));
+		}
+		catch
+		{
+		}
+	}
+
+	private static string BuildEncounterDiagnostic(string stage, string reason, string menuId, Hero target, PartyBase encounterParty)
+	{
+		List<string> parts = new List<string>
+		{
+			"[EncounterDiag]",
+			"stage=" + EncounterDiagText(stage),
+			"reason=" + EncounterDiagText(reason),
+			"menu=" + EncounterDiagText(menuId)
+		};
+		PartyBase resolvedParty = encounterParty ?? GetCurrentEncounterPartySafe();
+		Hero resolvedTarget = target;
+		if (resolvedTarget == null)
+		{
+			try
+			{
+				resolvedTarget = resolvedParty?.LeaderHero ?? _targetHero;
+			}
+			catch
+			{
+				resolvedTarget = _targetHero;
+			}
+		}
+		AddEncounterDiagPart(parts, "currentMenu", () => Campaign.Current?.CurrentMenuContext?.GameMenu?.StringId);
+		AddEncounterDiagPart(parts, "conversationContext", () => (Campaign.Current?.CurrentConversationContext ?? ConversationContext.Default).ToString());
+		AddEncounterDiagPart(parts, "flags", () => string.Join(",",
+			"native=" + EncounterDiagBool(() => IsNativeEncounterActivityContext(resolvedTarget)),
+			"villageRaid=" + EncounterDiagBool(() => IsVillageRaidEncounterContext(resolvedTarget)),
+			"eligible=" + EncounterDiagBool(() => IsEligibleCustomLordEncounterTarget(resolvedTarget, resolvedParty)),
+			"sea=" + EncounterDiagBool(() => MapSeaContextGuard.IsCurrentPlayerEncounterAtSea(resolvedTarget)),
+			"pendingAttack=" + EncounterDiagBool(() => HasPendingForceNativeEncounterAttack()),
+			"pendingMeetingResult=" + EncounterDiagBool(() => HasPendingMeetingBattleNativeResult()),
+			"redirectSuspended=" + EncounterDiagBool(() => IsEncounterRedirectSuspended())));
+		AddEncounterDiagPart(parts, "playerEncounter", DescribePlayerEncounterForEncounterDiag);
+		AddEncounterDiagPart(parts, "target", () => DescribeHeroForEncounterDiag(resolvedTarget));
+		AddEncounterDiagPart(parts, "encounterParty", () => DescribePartyBaseForEncounterDiag(resolvedParty));
+		AddEncounterDiagPart(parts, "encounteredPartyStatic", () => DescribePartyBaseForEncounterDiag(PlayerEncounter.EncounteredParty));
+		AddEncounterDiagPart(parts, "encounteredMobileStatic", () => DescribeMobilePartyForEncounterDiag(PlayerEncounter.EncounteredMobileParty));
+		AddEncounterDiagPart(parts, "targetMobile", () => DescribeMobilePartyForEncounterDiag(resolvedTarget?.PartyBelongedTo));
+		AddEncounterDiagPart(parts, "mainMobile", () => DescribeMobilePartyForEncounterDiag(MobileParty.MainParty));
+		AddEncounterDiagPart(parts, "encounterSettlement", () => DescribeSettlementForEncounterDiag(PlayerEncounter.EncounterSettlement));
+		AddEncounterDiagPart(parts, "settlementCurrent", () => DescribeSettlementForEncounterDiag(Settlement.CurrentSettlement));
+		AddEncounterDiagPart(parts, "mainCurrentSettlement", () => DescribeSettlementForEncounterDiag(MobileParty.MainParty?.CurrentSettlement));
+		AddEncounterDiagPart(parts, "mapCurrent", () => DescribeMapEventForEncounterDiag(PlayerEncounterCompat.GetCurrentMapEventSafe()));
+		AddEncounterDiagPart(parts, "mapBattle", () => DescribeMapEventForEncounterDiag(PlayerEncounterCompat.GetBattleSafe()));
+		AddEncounterDiagPart(parts, "mapEncountered", () => DescribeMapEventForEncounterDiag(PlayerEncounterCompat.GetEncounteredBattleSafe()));
+		AddEncounterDiagPart(parts, "mapPlayer", () => DescribeMapEventForEncounterDiag(MapEvent.PlayerMapEvent));
+		AddEncounterDiagPart(parts, "mapMainParty", () => DescribeMapEventForEncounterDiag(PartyBase.MainParty?.MapEvent));
+		return string.Join(" | ", parts);
+	}
+
+	private static void AddEncounterDiagPart(List<string> parts, string name, Func<string> valueFactory)
+	{
+		try
+		{
+			parts.Add(name + "=" + EncounterDiagText(valueFactory?.Invoke()));
+		}
+		catch (Exception ex)
+		{
+			parts.Add(name + "=ERR:" + ex.GetType().Name);
+		}
+	}
+
+	private static string EncounterDiagBool(Func<bool> valueFactory)
+	{
+		try
+		{
+			return valueFactory != null && valueFactory() ? "1" : "0";
+		}
+		catch (Exception ex)
+		{
+			return "ERR:" + ex.GetType().Name;
+		}
+	}
+
+	private static string EncounterDiagText(object value)
+	{
+		string text = value?.ToString() ?? "null";
+		return text.Replace("\r", " ").Replace("\n", " ").Replace("|", "/");
+	}
+
+	private static string DescribePlayerEncounterForEncounterDiag()
+	{
+		PlayerEncounter current = null;
+		try
+		{
+			current = PlayerEncounter.Current;
+		}
+		catch
+		{
+			current = null;
+		}
+		if (current == null)
+		{
+			return "null";
+		}
+		List<string> parts = new List<string>();
+		AddEncounterDiagPart(parts, "state", () => current.EncounterState.ToString());
+		AddEncounterDiagPart(parts, "leave", () => PlayerEncounter.LeaveEncounter ? "1" : "0");
+		AddEncounterDiagPart(parts, "surrender", () => PlayerEncounter.PlayerSurrender ? "1" : "0");
+		AddEncounterDiagPart(parts, "playerAttacker", () => PlayerEncounter.PlayerIsAttacker ? "1" : "0");
+		AddEncounterDiagPart(parts, "forceRaid", () => current.ForceRaid ? "1" : "0");
+		AddEncounterDiagPart(parts, "forceSallyOut", () => current.ForceSallyOut ? "1" : "0");
+		AddEncounterDiagPart(parts, "forceSupplies", () => current.ForceSupplies ? "1" : "0");
+		AddEncounterDiagPart(parts, "forceVolunteers", () => current.ForceVolunteers ? "1" : "0");
+		AddEncounterDiagPart(parts, "restartedForRaid", () => BannerlordApiCompat.IsPlayerEncounterRestartedForRaid(current) ? "1" : "0");
+		AddEncounterDiagPart(parts, "waiting", () => current.IsPlayerWaiting ? "1" : "0");
+		return string.Join(",", parts);
+	}
+
+	private static string DescribeHeroForEncounterDiag(Hero hero)
+	{
+		if (hero == null)
+		{
+			return "null";
+		}
+		List<string> parts = new List<string>();
+		AddEncounterDiagPart(parts, "id", () => hero.StringId);
+		AddEncounterDiagPart(parts, "name", () => hero.Name?.ToString());
+		AddEncounterDiagPart(parts, "isLord", () => hero.IsLord ? "1" : "0");
+		AddEncounterDiagPart(parts, "clan", () => hero.Clan?.StringId);
+		AddEncounterDiagPart(parts, "kingdom", () => hero.Clan?.Kingdom?.StringId);
+		return string.Join(",", parts);
+	}
+
+	private static string DescribePartyBaseForEncounterDiag(PartyBase party)
+	{
+		if (party == null)
+		{
+			return "null";
+		}
+		List<string> parts = new List<string>();
+		AddEncounterDiagPart(parts, "key", () => DescribePartyBaseKeyForEncounterDiag(party));
+		AddEncounterDiagPart(parts, "name", () => party.Name?.ToString());
+		AddEncounterDiagPart(parts, "leader", () => DescribeHeroForEncounterDiag(party.LeaderHero));
+		AddEncounterDiagPart(parts, "mobile", () => party.IsMobile ? "1" : "0");
+		AddEncounterDiagPart(parts, "settlement", () => party.IsSettlement ? "1" : "0");
+		AddEncounterDiagPart(parts, "all", () => party.NumberOfAllMembers.ToString());
+		AddEncounterDiagPart(parts, "healthy", () => party.NumberOfHealthyMembers.ToString());
+		AddEncounterDiagPart(parts, "side", () => party.Side.ToString());
+		AddEncounterDiagPart(parts, "mapEvent", () => DescribeMapEventKeyForEncounterDiag(party.MapEvent));
+		AddEncounterDiagPart(parts, "mobileParty", () => DescribeMobilePartyForEncounterDiag(party.MobileParty));
+		AddEncounterDiagPart(parts, "settlementObj", () => DescribeSettlementForEncounterDiag(party.Settlement));
+		return string.Join(",", parts);
+	}
+
+	private static string DescribeMobilePartyForEncounterDiag(MobileParty party)
+	{
+		if (party == null)
+		{
+			return "null";
+		}
+		List<string> parts = new List<string>();
+		AddEncounterDiagPart(parts, "id", () => party.StringId);
+		AddEncounterDiagPart(parts, "name", () => party.Name?.ToString());
+		AddEncounterDiagPart(parts, "active", () => party.IsActive ? "1" : "0");
+		AddEncounterDiagPart(parts, "main", () => party.IsMainParty ? "1" : "0");
+		AddEncounterDiagPart(parts, "leader", () => DescribeHeroForEncounterDiag(party.LeaderHero));
+		AddEncounterDiagPart(parts, "default", () => party.DefaultBehavior.ToString());
+		AddEncounterDiagPart(parts, "short", () => party.ShortTermBehavior.ToString());
+		AddEncounterDiagPart(parts, "current", () => DescribeSettlementKeyForEncounterDiag(party.CurrentSettlement));
+		AddEncounterDiagPart(parts, "target", () => DescribeSettlementKeyForEncounterDiag(party.TargetSettlement));
+		AddEncounterDiagPart(parts, "shortTarget", () => DescribeSettlementKeyForEncounterDiag(party.ShortTermTargetSettlement));
+		AddEncounterDiagPart(parts, "mapEvent", () => DescribeMapEventKeyForEncounterDiag(party.MapEvent));
+		AddEncounterDiagPart(parts, "siege", () => party.SiegeEvent != null ? "1" : "0");
+		AddEncounterDiagPart(parts, "besieged", () => DescribeSettlementKeyForEncounterDiag(party.BesiegedSettlement));
+		return string.Join(",", parts);
+	}
+
+	private static string DescribeSettlementForEncounterDiag(Settlement settlement)
+	{
+		if (settlement == null)
+		{
+			return "null";
+		}
+		List<string> parts = new List<string>();
+		AddEncounterDiagPart(parts, "id", () => settlement.StringId);
+		AddEncounterDiagPart(parts, "name", () => settlement.Name?.ToString());
+		AddEncounterDiagPart(parts, "village", () => settlement.IsVillage ? "1" : "0");
+		AddEncounterDiagPart(parts, "fort", () => settlement.IsFortification ? "1" : "0");
+		AddEncounterDiagPart(parts, "raid", () => settlement.IsUnderRaid ? "1" : "0");
+		AddEncounterDiagPart(parts, "siege", () => settlement.IsUnderSiege ? "1" : "0");
+		AddEncounterDiagPart(parts, "lastAttacker", () => DescribeMobilePartyKeyForEncounterDiag(settlement.LastAttackerParty));
+		AddEncounterDiagPart(parts, "partyMapEvent", () => DescribeMapEventKeyForEncounterDiag(settlement.Party?.MapEvent));
+		return string.Join(",", parts);
+	}
+
+	private static string DescribeMapEventForEncounterDiag(MapEvent mapEvent)
+	{
+		if (mapEvent == null)
+		{
+			return "null";
+		}
+		List<string> parts = new List<string>();
+		AddEncounterDiagPart(parts, "type", () => mapEvent.EventType.ToString());
+		AddEncounterDiagPart(parts, "settlement", () => DescribeSettlementKeyForEncounterDiag(mapEvent.MapEventSettlement));
+		AddEncounterDiagPart(parts, "player", () => mapEvent.IsPlayerMapEvent ? "1" : "0");
+		AddEncounterDiagPart(parts, "raid", () => mapEvent.IsRaid ? "1" : "0");
+		AddEncounterDiagPart(parts, "forceSupplies", () => mapEvent.IsForcingSupplies ? "1" : "0");
+		AddEncounterDiagPart(parts, "forceVolunteers", () => mapEvent.IsForcingVolunteers ? "1" : "0");
+		AddEncounterDiagPart(parts, "siegeAssault", () => mapEvent.IsSiegeAssault ? "1" : "0");
+		AddEncounterDiagPart(parts, "sally", () => mapEvent.IsSallyOut ? "1" : "0");
+		AddEncounterDiagPart(parts, "siegeOutside", () => mapEvent.IsSiegeOutside ? "1" : "0");
+		AddEncounterDiagPart(parts, "blockade", () => mapEvent.IsBlockade ? "1" : "0");
+		AddEncounterDiagPart(parts, "blockadeSally", () => mapEvent.IsBlockadeSallyOut ? "1" : "0");
+		AddEncounterDiagPart(parts, "siegeAmbush", () => mapEvent.IsSiegeAmbush ? "1" : "0");
+		AddEncounterDiagPart(parts, "finalized", () => mapEvent.IsFinalized ? "1" : "0");
+		AddEncounterDiagPart(parts, "hasWinner", () => mapEvent.HasWinner ? "1" : "0");
+		AddEncounterDiagPart(parts, "battleState", () => mapEvent.BattleState.ToString());
+		AddEncounterDiagPart(parts, "playerSide", () => mapEvent.PlayerSide.ToString());
+		AddEncounterDiagPart(parts, "winningSide", () => mapEvent.WinningSide.ToString());
+		AddEncounterDiagPart(parts, "attLeader", () => DescribePartyBaseKeyForEncounterDiag(mapEvent.AttackerSide?.LeaderParty));
+		AddEncounterDiagPart(parts, "defLeader", () => DescribePartyBaseKeyForEncounterDiag(mapEvent.DefenderSide?.LeaderParty));
+		AddEncounterDiagPart(parts, "attTroops", () => mapEvent.AttackerSide?.TroopCount.ToString());
+		AddEncounterDiagPart(parts, "defTroops", () => mapEvent.DefenderSide?.TroopCount.ToString());
+		AddEncounterDiagPart(parts, "wasLooting", () => MapEventWasEverInLootingPhase(mapEvent) ? "1" : "0");
+		return string.Join(",", parts);
+	}
+
+	private static string DescribeMapEventKeyForEncounterDiag(MapEvent mapEvent)
+	{
+		if (mapEvent == null)
+		{
+			return "null";
+		}
+		return "type=" + EncounterDiagText(mapEvent.EventType) + ",settlement=" + DescribeSettlementKeyForEncounterDiag(mapEvent.MapEventSettlement);
+	}
+
+	private static string DescribePartyBaseKeyForEncounterDiag(PartyBase party)
+	{
+		if (party == null)
+		{
+			return "null";
+		}
+		string id = null;
+		try
+		{
+			if (party.IsMobile)
+			{
+				id = party.MobileParty?.StringId;
+			}
+			else if (party.IsSettlement)
+			{
+				id = party.Settlement?.StringId;
+			}
+		}
+		catch
+		{
+			id = null;
+		}
+		if (string.IsNullOrWhiteSpace(id))
+		{
+			id = "party";
+		}
+		return EncounterDiagText(id) + "/" + EncounterDiagText(party.Name);
+	}
+
+	private static string DescribeMobilePartyKeyForEncounterDiag(MobileParty party)
+	{
+		if (party == null)
+		{
+			return "null";
+		}
+		return EncounterDiagText(party.StringId) + "/" + EncounterDiagText(party.Name);
+	}
+
+	private static string DescribeSettlementKeyForEncounterDiag(Settlement settlement)
+	{
+		if (settlement == null)
+		{
+			return "null";
+		}
+		return EncounterDiagText(settlement.StringId) + "/" + EncounterDiagText(settlement.Name);
+	}
+
 	internal static void SuppressCustomEncounterMenuUntilBackOnMapForExternal(string reason)
 	{
 		SuppressCustomEncounterMenuUntilBackOnMap(reason);
@@ -1563,9 +1864,10 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		}
 		try
 		{
-			if (mapEvent.IsRaid)
+			Settlement settlement = mapEvent.MapEventSettlement;
+			if (settlement != null && settlement.IsVillage && IsNativeVillageHostileMapEvent(mapEvent))
 			{
-				return mapEvent.MapEventSettlement != null && mapEvent.MapEventSettlement.IsVillage;
+				return true;
 			}
 		}
 		catch
@@ -1734,7 +2036,43 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			return mapEvent != null && mapEvent.IsRaid && mapEvent.MapEventSettlement != null && mapEvent.MapEventSettlement.IsVillage;
+			return mapEvent != null && mapEvent.MapEventSettlement != null && mapEvent.MapEventSettlement.IsVillage && IsNativeVillageHostileMapEvent(mapEvent);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static bool IsNativeVillageHostileMapEvent(MapEvent mapEvent)
+	{
+		if (mapEvent == null)
+		{
+			return false;
+		}
+		try
+		{
+			if (mapEvent.IsRaid || mapEvent.IsForcingSupplies || mapEvent.IsForcingVolunteers)
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		return MapEventWasEverInLootingPhase(mapEvent);
+	}
+
+	private static bool MapEventWasEverInLootingPhase(MapEvent mapEvent)
+	{
+		if (mapEvent == null)
+		{
+			return false;
+		}
+		try
+		{
+			PropertyInfo property = mapEvent.GetType().GetProperty("WasEverInLootingPhase", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+			return property != null && Convert.ToBoolean(property.GetValue(mapEvent, null));
 		}
 		catch
 		{
@@ -4153,42 +4491,51 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 	{
 		if (target == null)
 		{
+			LogEncounterDiagnostic("LordEncounter.OpenEncounterMenu", "target_null");
 			return false;
 		}
+		LogEncounterDiagnostic("LordEncounter.OpenEncounterMenu", "enter", null, target);
 		if (IsNativeSettlementRequestMeetingContext(target))
 		{
 			Logger.Log("LordEncounter", $"OpenEncounterMenu ignored because this is a native hostile settlement request meeting. Target={target.Name}");
+			LogEncounterDiagnostic("LordEncounter.OpenEncounterMenu", "ignore_native_settlement_request_meeting", null, target);
 			return false;
 		}
 		PartyBase encounterParty = GetCurrentEncounterPartySafe();
 		if (!IsEligibleCustomLordEncounterTarget(target, encounterParty))
 		{
 			Logger.Log("LordEncounter", $"OpenEncounterMenu ignored because target is not an eligible kingdom noble encounter. Target={target.Name}, Party={encounterParty?.Name}");
+			LogEncounterDiagnostic("LordEncounter.OpenEncounterMenu", "ignore_ineligible_target", null, target, encounterParty);
 			return false;
 		}
 		if (MapSeaContextGuard.IsCurrentPlayerEncounterAtSea(target))
 		{
 			Logger.Log("LordEncounter", $"OpenEncounterMenu ignored because current encounter is at sea. Target={target.Name}");
+			LogEncounterDiagnostic("LordEncounter.OpenEncounterMenu", "ignore_sea_context", null, target, encounterParty);
 			return false;
 		}
 		if (HasPendingForceNativeEncounterAttack())
 		{
 			Logger.Log("LordEncounter", $"OpenEncounterMenu ignored because native encounter attack is pending. Target={target.Name}");
+			LogEncounterDiagnostic("LordEncounter.OpenEncounterMenu", "ignore_pending_attack", null, target, encounterParty);
 			return false;
 		}
 		if (IsNativeEncounterActivityContext(target))
 		{
 			Logger.Log("LordEncounter", $"OpenEncounterMenu ignored because current encounter is a native siege or village activity context. Target={target.Name}");
+			LogEncounterDiagnostic("LordEncounter.OpenEncounterMenu", "ignore_native_activity_context", null, target, encounterParty);
 			return false;
 		}
 		if (IsCustomEncounterMenuDisabledForCurrentEncounter())
 		{
 			Logger.Log("LordEncounter", $"OpenEncounterMenu ignored because custom encounter menu is disabled. Target={target.Name}");
+			LogEncounterDiagnostic("LordEncounter.OpenEncounterMenu", "ignore_custom_disabled", null, target, encounterParty);
 			return false;
 		}
 		if (IsEncounterRedirectSuspended())
 		{
 			Logger.Log("LordEncounter", $"OpenEncounterMenu ignored because redirect is suspended. Target={target.Name}");
+			LogEncounterDiagnostic("LordEncounter.OpenEncounterMenu", "ignore_redirect_suspended", null, target, encounterParty);
 			return false;
 		}
 		try
@@ -4196,11 +4543,13 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			if (PlayerEncounter.Current != null && PlayerEncounter.LeaveEncounter)
 			{
 				Logger.Log("LordEncounter", $"OpenEncounterMenu ignored because native encounter leave is pending. Target={target.Name}");
+				LogEncounterDiagnostic("LordEncounter.OpenEncounterMenu", "ignore_leave_encounter", null, target, encounterParty);
 				return false;
 			}
 			if (PlayerEncounter.Current != null && PlayerEncounter.PlayerSurrender)
 			{
 				Logger.Log("LordEncounter", $"OpenEncounterMenu ignored because native player surrender is pending. Target={target.Name}");
+				LogEncounterDiagnostic("LordEncounter.OpenEncounterMenu", "ignore_player_surrender", null, target, encounterParty);
 				return false;
 			}
 		}
@@ -4217,12 +4566,14 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			catch
 			{
 			}
+			LogEncounterDiagnostic("LordEncounter.OpenEncounterMenu", "activate_custom_menu", "AnimusForge_lord_encounter", target, encounterParty);
 			GameMenu.ActivateGameMenu("AnimusForge_lord_encounter");
 			return true;
 		}
 		catch (Exception ex)
 		{
 			Logger.Log("LordEncounter", "Failed to activate menu: " + ex.Message);
+			Logger.LogImmediate("Logic", "[EncounterDiag] stage=LordEncounter.OpenEncounterMenu | reason=activate_exception | error=" + ex);
 			return false;
 		}
 	}

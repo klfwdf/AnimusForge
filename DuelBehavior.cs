@@ -485,6 +485,7 @@ public class DuelBehavior : CampaignBehaviorBase
 				if (_isWildernessDuel)
 				{
 					LogWildernessDuelDiagnostic("behavior.AfterStart.enter", _diagnosticId, _targetHero);
+					LogDuelLoadingCheckpoint("wilderness.behavior.AfterStart.enter", _diagnosticId, _targetHero, null, immediate: true);
 				}
 				if (base.Mission != null && !_setupDone)
 				{
@@ -497,6 +498,7 @@ public class DuelBehavior : CampaignBehaviorBase
 					if (_isWildernessDuel)
 					{
 						LogWildernessDuelDiagnostic("behavior.AfterStart.after_setup spawned=" + _localAgentsSpawned, _diagnosticId, _targetHero);
+						LogDuelLoadingCheckpoint("wilderness.behavior.AfterStart.after_setup spawned=" + _localAgentsSpawned, _diagnosticId, _targetHero, null, immediate: true);
 					}
 				}
 			}
@@ -506,6 +508,7 @@ public class DuelBehavior : CampaignBehaviorBase
 				if (_isWildernessDuel)
 				{
 					LogWildernessDuelDiagnostic("behavior.AfterStart.error " + ex.GetType().Name + ": " + ex.Message, _diagnosticId, _targetHero);
+					LogDuelLoadingCheckpoint("wilderness.behavior.AfterStart.error " + ex.GetType().Name + ": " + ex.Message, _diagnosticId, _targetHero, null, immediate: true);
 				}
 			}
 		}
@@ -1872,9 +1875,13 @@ public class DuelBehavior : CampaignBehaviorBase
 				{
 					return;
 				}
+				if (TryOpenArenaFallbackForWildernessDuel(target.CharacterObject, "PrepareDuel(hero)", "open wilderness mission failed"))
+				{
+					return;
+				}
 			}
 			Logger.Log("DuelBehavior", "[WildernessDuel][ERROR] failed to open independent wilderness duel; request aborted.");
-			InformationManager.DisplayMessage(new InformationMessage("无法打开野外决斗场景，本次决斗已取消。", Color.FromUint(4294901760u)));
+			InformationManager.DisplayMessage(new InformationMessage("无法打开野外决斗或竞技场场景，本次决斗已取消。", Color.FromUint(4294901760u)));
 			return;
 		}
 		if (!string.IsNullOrWhiteSpace(wildernessBlockedReason))
@@ -2012,8 +2019,12 @@ public class DuelBehavior : CampaignBehaviorBase
 			{
 				return;
 			}
+			if (TryOpenArenaFallbackForWildernessDuel(targetCharacter, "PrepareDuel(character)", "open wilderness mission failed"))
+			{
+				return;
+			}
 			Logger.Log("DuelBehavior", "[CharacterDuel][WildernessDuel][ERROR] failed to open independent wilderness duel; request aborted.");
-			InformationManager.DisplayMessage(new InformationMessage("无法打开野外决斗场景，本次决斗已取消。", Color.FromUint(4294901760u)));
+			InformationManager.DisplayMessage(new InformationMessage("无法打开野外决斗或竞技场场景，本次决斗已取消。", Color.FromUint(4294901760u)));
 			return;
 		}
 		if (!string.IsNullOrWhiteSpace(wildernessBlockedReason))
@@ -2094,6 +2105,26 @@ public class DuelBehavior : CampaignBehaviorBase
 	private static bool IsWaterOrSeaTerrain(TerrainType terrainType)
 	{
 		return terrainType == TerrainType.Water || terrainType == TerrainType.River || terrainType == TerrainType.Lake || terrainType == TerrainType.CoastalSea || terrainType == TerrainType.OpenSea || terrainType == TerrainType.NonNavigableRiver || terrainType == TerrainType.SeaRestriction || terrainType == TerrainType.UnderBridge;
+	}
+
+	private static bool TryOpenArenaFallbackForWildernessDuel(CharacterObject targetCharacter, string source, string reason)
+	{
+		try
+		{
+			if (Instance == null || targetCharacter == null)
+			{
+				Logger.Log("DuelBehavior", "[WildernessDuel][FallbackArena] skipped source=" + (source ?? "") + " reason=" + (reason ?? "") + " target=" + (targetCharacter?.StringId ?? "null"));
+				return false;
+			}
+			Logger.Log("DuelBehavior", "[WildernessDuel][FallbackArena] source=" + (source ?? "") + " reason=" + (reason ?? "") + " target=" + (targetCharacter.HeroObject?.StringId ?? targetCharacter.StringId));
+			InformationManager.DisplayMessage(new InformationMessage("无法识别当前野外决斗场景，已改为前往竞技场。", Color.FromUint(4294901760u)));
+			return Instance.TryTeleportToArenaForDuel(targetCharacter);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("DuelBehavior", "[WildernessDuel][FallbackArena][ERROR] " + ex);
+			return false;
+		}
 	}
 
 	private static bool IsWildernessDuelContext(Hero target, out string blockedReason)
@@ -2266,6 +2297,17 @@ public class DuelBehavior : CampaignBehaviorBase
 
 	private static MissionInitializerRecord BuildWildernessDuelMissionInitializerRecord(CharacterObject targetCharacter)
 	{
+		if (!TryBuildWildernessDuelMissionInitializerRecord(targetCharacter, out var rec, out var failureReason))
+		{
+			throw new InvalidOperationException(failureReason);
+		}
+		return rec;
+	}
+
+	private static bool TryBuildWildernessDuelMissionInitializerRecord(CharacterObject targetCharacter, out MissionInitializerRecord rec, out string failureReason)
+	{
+		rec = default(MissionInitializerRecord);
+		failureReason = "";
 		MobileParty mainParty = MobileParty.MainParty;
 		Hero target = targetCharacter?.HeroObject;
 		TerrainType faceTerrainType = ResolveWildernessDuelTerrainType();
@@ -2275,27 +2317,35 @@ public class DuelBehavior : CampaignBehaviorBase
 		try
 		{
 			IMapScene mapSceneWrapper = Campaign.Current?.MapSceneWrapper;
-			if (mapSceneWrapper != null && mainParty != null)
+			if (mapSceneWrapper == null || mainParty == null)
 			{
-				mapPatchAtPosition = mapSceneWrapper.GetMapPatchAtPosition(mainParty.Position);
-				battleSceneForMapPatch = Campaign.Current.Models.SceneModel.GetBattleSceneForMapPatch(mapPatchAtPosition, isNavalEncounter: false);
-				hasMapPatch = !string.IsNullOrWhiteSpace(battleSceneForMapPatch);
+				failureReason = "current wilderness map scene is unavailable";
+				Logger.Log("DuelBehavior", "[WildernessDuel][WARN] " + failureReason);
+				return false;
+			}
+			if (Campaign.Current?.Models?.SceneModel == null)
+			{
+				failureReason = "campaign scene model is unavailable";
+				Logger.Log("DuelBehavior", "[WildernessDuel][WARN] " + failureReason);
+				return false;
+			}
+			mapPatchAtPosition = mapSceneWrapper.GetMapPatchAtPosition(mainParty.Position);
+			battleSceneForMapPatch = Campaign.Current.Models.SceneModel.GetBattleSceneForMapPatch(mapPatchAtPosition, isNavalEncounter: false);
+			hasMapPatch = !string.IsNullOrWhiteSpace(battleSceneForMapPatch);
+			if (!hasMapPatch)
+			{
+				failureReason = "current wilderness map patch did not resolve a battle scene";
+				Logger.Log("DuelBehavior", "[WildernessDuel][WARN] " + failureReason + ", terrain=" + faceTerrainType + ", target=" + (target?.StringId ?? targetCharacter?.StringId));
+				return false;
 			}
 		}
 		catch (Exception ex)
 		{
-			Logger.Log("DuelBehavior", "[WildernessDuel][WARN] resolve battle map patch failed: " + ex.Message);
+			failureReason = "resolve current wilderness battle scene failed: " + ex.Message;
+			Logger.Log("DuelBehavior", "[WildernessDuel][WARN] " + failureReason);
+			return false;
 		}
-		if (string.IsNullOrWhiteSpace(battleSceneForMapPatch))
-		{
-			battleSceneForMapPatch = ResolveWildernessDuelBattleScene(faceTerrainType);
-			hasMapPatch = false;
-		}
-		if (string.IsNullOrWhiteSpace(battleSceneForMapPatch))
-		{
-			throw new InvalidOperationException("Battle scene is empty for wilderness duel.");
-		}
-		MissionInitializerRecord rec = new MissionInitializerRecord(battleSceneForMapPatch);
+		rec = new MissionInitializerRecord(battleSceneForMapPatch);
 		rec.TerrainType = (int)faceTerrainType;
 		rec.DamageToFriendsMultiplier = Campaign.Current.Models.DifficultyModel.GetPlayerTroopsReceivedDamageMultiplier();
 		rec.DamageFromPlayerToFriendsMultiplier = Campaign.Current.Models.DifficultyModel.GetPlayerTroopsReceivedDamageMultiplier();
@@ -2309,7 +2359,7 @@ public class DuelBehavior : CampaignBehaviorBase
 		rec.PatchCoordinates = hasMapPatch ? mapPatchAtPosition.normalizedCoordinates : Vec2.Zero;
 		rec.PatchEncounterDir = ResolveWildernessDuelEncounterDirection(mainParty, target);
 		Logger.Log("DuelBehavior", "[WildernessDuel] initializer scene=" + rec.SceneName + ", terrain=" + faceTerrainType + ", mapPatch=" + hasMapPatch + ", target=" + (target?.StringId ?? targetCharacter?.StringId));
-		return rec;
+		return true;
 	}
 
 	private static MissionBehavior CreateWildernessDuelBoundaryCrossingHandler()
@@ -2400,6 +2450,34 @@ public class DuelBehavior : CampaignBehaviorBase
 		catch (Exception ex)
 		{
 			Logger.Log("DuelBehavior", "[WildernessDuelDiag][ERROR] " + ex.GetType().Name + ": " + ex.Message);
+		}
+	}
+
+	private static void LogDuelLoadingCheckpoint(string stage, int diagnosticId, Hero target = null, MissionInitializerRecord? rec = null, bool immediate = false)
+	{
+		try
+		{
+			string recPart = "";
+			if (rec.HasValue)
+			{
+				MissionInitializerRecord value = rec.Value;
+				recPart = " recScene=" + (value.SceneName ?? "null") + " terrain=" + value.TerrainType + " mapPatch=" + value.SceneHasMapPatch + " randomTerrain=" + value.NeedsRandomTerrain;
+			}
+			string message = "id=" + diagnosticId + " stage=" + (stage ?? "") + " target=" + (target?.StringId ?? "null") + recPart + " state={" + BuildWildernessDuelRuntimeDiagnostic() + "}";
+			if (immediate)
+			{
+				Logger.LogImmediate("DuelLoading", message);
+				FreezeWatchdog.Mark("DuelLoading." + (stage ?? ""), message, immediate: true);
+			}
+			else
+			{
+				Logger.Log("DuelLoading", message);
+				FreezeWatchdog.Mark("DuelLoading." + (stage ?? ""), message);
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("DuelLoading", "[ERROR] checkpoint failed: " + ex.GetType().Name + ": " + ex.Message);
 		}
 	}
 
@@ -2918,22 +2996,34 @@ public class DuelBehavior : CampaignBehaviorBase
 			_wildernessDuelOpenStartedUtcTicks = DateTime.UtcNow.Ticks;
 			_wildernessDuelLastOpeningDiagUtcTicks = 0L;
 			LogWildernessDuelDiagnostic("open.enter", diagnosticId, target);
+			LogDuelLoadingCheckpoint("wilderness.open.enter", diagnosticId, target, null, immediate: true);
 			if (!IsWildernessDuelContext(targetCharacter, out string blockedReason))
 			{
 				Logger.Log("DuelBehavior", "[WildernessDuel] blocked: " + blockedReason);
 				LogWildernessDuelDiagnostic("open.blocked " + blockedReason, diagnosticId, target);
+				LogDuelLoadingCheckpoint("wilderness.open.blocked " + blockedReason, diagnosticId, target, null, immediate: true);
 				return false;
 			}
 			if (IsCampaignConversationActive())
 			{
 				Logger.Log("DuelBehavior", "[WildernessDuel][Queue] Open requested while conversation is still active; queued instead of opening synchronously.");
 				LogWildernessDuelDiagnostic("open.requeue_conversation_active", diagnosticId, target);
+				LogDuelLoadingCheckpoint("wilderness.open.requeue_conversation_active", diagnosticId, target, null, immediate: true);
 				QueueDuelAfterConversationExit(targetCharacter, 0f, wildernessDuel: true);
 				return true;
 			}
+			if (!TryBuildWildernessDuelMissionInitializerRecord(targetCharacter, out var rec, out var sceneFailureReason))
+			{
+				Logger.Log("DuelBehavior", "[WildernessDuel] current wilderness scene unavailable, fallback required: " + sceneFailureReason);
+				LogWildernessDuelDiagnostic("initializer.unavailable " + sceneFailureReason, diagnosticId, target);
+				LogDuelLoadingCheckpoint("wilderness.initializer.unavailable " + sceneFailureReason, diagnosticId, target, null, immediate: true);
+				return false;
+			}
+			LogDuelLoadingCheckpoint("wilderness.initializer.ready", diagnosticId, target, rec, immediate: true);
 			CleanupWildernessDuelRuntime(_wildernessDuelRuntime, "open.new_request_cleanup");
+			LogDuelLoadingCheckpoint("wilderness.runtime.create.before", diagnosticId, target, rec, immediate: true);
 			WildernessDuelBattleRuntime runtime = CreateWildernessDuelRuntime(targetCharacter, diagnosticId);
-			MissionInitializerRecord rec = BuildWildernessDuelMissionInitializerRecord(targetCharacter);
+			LogDuelLoadingCheckpoint("wilderness.runtime.create.after mapEvent=" + (runtime?.MapEvent != null), diagnosticId, target, rec, immediate: true);
 			_wildernessDuelLastOpenScene = rec.SceneName ?? "";
 			LogWildernessDuelDiagnostic("initializer.ready", diagnosticId, target, rec);
 			_arenaMissionActive = true;
@@ -2957,18 +3047,25 @@ public class DuelBehavior : CampaignBehaviorBase
 			}
 			Logger.Log("DuelBehavior", "[WildernessDuel] OpenBattleMission vanilla-path scene=" + rec.SceneName + ", terrain=" + rec.TerrainType + ", target=" + (target?.StringId ?? targetCharacter?.StringId));
 			LogWildernessDuelDiagnostic("OpenBattleMission.before", diagnosticId, target, rec);
+			LogDuelLoadingCheckpoint("wilderness.OpenBattleMission.before", diagnosticId, target, rec, immediate: true);
 			IMission openedMission = CampaignMission.OpenBattleMission(rec);
+			LogDuelLoadingCheckpoint("wilderness.OpenBattleMission.after_return type=" + (openedMission?.GetType().FullName ?? "null"), diagnosticId, target, rec, immediate: true);
 			Mission mission = openedMission as Mission;
 			if (mission == null)
 			{
 				throw new InvalidOperationException("CampaignMission.OpenBattleMission returned non-Mission.");
 			}
+			LogDuelLoadingCheckpoint("wilderness.StartAttackMission.before", diagnosticId, target, rec, immediate: true);
 			PlayerEncounter.StartAttackMission();
+			LogDuelLoadingCheckpoint("wilderness.StartAttackMission.after", diagnosticId, target, rec, immediate: true);
+			LogDuelLoadingCheckpoint("wilderness.BeginWait.before", diagnosticId, target, rec, immediate: true);
 			MapEvent.PlayerMapEvent?.BeginWait();
+			LogDuelLoadingCheckpoint("wilderness.BeginWait.after", diagnosticId, target, rec, immediate: true);
 			mission.AddMissionBehavior(new WildernessDuelBattleMissionLogic(runtime));
 			mission.AddMissionBehavior(new DuelPlayerDeathAgentStateDeciderLogic());
 			mission.AddMissionBehavior(new DuelMainHeroDeathMissionBehavior());
 			LogWildernessDuelDiagnostic("OpenBattleMission.after returned=" + (mission.SceneName ?? "null"), diagnosticId, target, rec);
+			LogDuelLoadingCheckpoint("wilderness.behaviors.added returnedScene=" + (mission.SceneName ?? "null"), diagnosticId, target, rec, immediate: true);
 			return true;
 		}
 		catch (Exception ex)
@@ -2977,6 +3074,7 @@ public class DuelBehavior : CampaignBehaviorBase
 			ResetWildernessDuelOpeningState();
 			Logger.Log("DuelBehavior", "[WildernessDuel][ERROR] " + ex.ToString());
 			LogWildernessDuelDiagnostic("open.error " + ex.GetType().Name + ": " + ex.Message, _wildernessDuelActiveDiagnosticId, target);
+			LogDuelLoadingCheckpoint("wilderness.open.error " + ex.GetType().Name + ": " + ex.Message, _wildernessDuelActiveDiagnosticId, target, null, immediate: true);
 			return false;
 		}
 	}
@@ -3124,7 +3222,10 @@ public class DuelBehavior : CampaignBehaviorBase
 			{
 				if (queuedWildernessDuel)
 				{
-					Instance.TryOpenWildernessDuelMission(queuedDuelTargetCharacter);
+					if (!Instance.TryOpenWildernessDuelMission(queuedDuelTargetCharacter))
+					{
+						TryOpenArenaFallbackForWildernessDuel(queuedDuelTargetCharacter, "GlobalDuelStarterTick", "queued wilderness mission failed");
+					}
 				}
 				else
 				{
@@ -4770,11 +4871,13 @@ public class DuelBehavior : CampaignBehaviorBase
 		try
 		{
 			Hero target = targetCharacter?.HeroObject;
+			int diagnosticId = _wildernessDuelActiveDiagnosticId > 0 ? _wildernessDuelActiveDiagnosticId : ++_wildernessDuelDiagnosticSerial;
 			string text = "arena_vlandia_a";
 			string text2 = Mission.Current?.SceneName ?? "Unknown";
 			string text3 = Hero.MainHero?.CurrentSettlement?.StringId ?? "";
 			Logger.Log("DuelBehavior", "[ArenaTeleport] 尝试通过 MissionState.OpenNew 切换到竞技场。CurrentScene=" + text2 + ", TargetScene=" + text + ", SettlementId=" + text3 + ", Target=" + (target?.StringId ?? targetCharacter?.StringId));
 			MissionInitializerRecord rec = new MissionInitializerRecord(text);
+			LogDuelLoadingCheckpoint("arena.OpenNew.before currentScene=" + text2 + " settlement=" + text3, diagnosticId, target, rec, immediate: true);
 			MissionState.OpenNew("AnimusForge_ArenaDuel", rec, (Mission mission) => new MissionBehavior[4]
 			{
 				new ArenaDuelMissionBehavior(targetCharacter),
@@ -4783,11 +4886,13 @@ public class DuelBehavior : CampaignBehaviorBase
 				new DuelMainHeroDeathMissionBehavior()
 			});
 			Logger.Log("DuelBehavior", "[ArenaTeleport] MissionState.OpenNew 调用已返回，等待新 Mission 初始化。");
+			LogDuelLoadingCheckpoint("arena.OpenNew.after_return", diagnosticId, target, rec, immediate: true);
 			return true;
 		}
 		catch (Exception ex)
 		{
 			Logger.Log("DuelBehavior", "[ArenaTeleport][ERROR] 打开竞技场 Mission 失败: " + ex.ToString());
+			LogDuelLoadingCheckpoint("arena.OpenNew.error " + ex.GetType().Name + ": " + ex.Message, _wildernessDuelActiveDiagnosticId, targetCharacter?.HeroObject, null, immediate: true);
 			return false;
 		}
 	}
@@ -4808,10 +4913,12 @@ public class DuelBehavior : CampaignBehaviorBase
 							_wildernessDuelLastOpeningDiagUtcTicks = nowTicks;
 							double elapsedSeconds = (_wildernessDuelOpenStartedUtcTicks > 0L) ? TimeSpan.FromTicks(nowTicks - _wildernessDuelOpenStartedUtcTicks).TotalSeconds : 0.0;
 							LogWildernessDuelDiagnostic("opening.wait elapsed=" + elapsedSeconds.ToString("0.0") + "s", _wildernessDuelActiveDiagnosticId);
+							LogDuelLoadingCheckpoint("opening.wait elapsed=" + elapsedSeconds.ToString("0.0") + "s", _wildernessDuelActiveDiagnosticId, null, null, immediate: true);
 						}
 						return;
 					}
 					LogWildernessDuelDiagnostic("opening.timeout_before_afterstart", _wildernessDuelActiveDiagnosticId);
+					LogDuelLoadingCheckpoint("opening.timeout_before_afterstart", _wildernessDuelActiveDiagnosticId, null, null, immediate: true);
 					CleanupWildernessDuelRuntime(_wildernessDuelRuntime, "opening.timeout_before_afterstart");
 					TryReturnToMapAfterIndependentDuel();
 					_arenaMissionActive = false;

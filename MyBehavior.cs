@@ -1761,6 +1761,8 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private HashSet<string> _recentlyDefeatedByPlayer = new HashSet<string>();
 
+	private readonly HashSet<string> _playerDefeatedHeroBattleFactKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
 	private HashSet<string> _recentlyReleasedPrisoners = new HashSet<string>();
 
 	private static int _cachedPlayerClanTier;
@@ -2026,9 +2028,11 @@ public class MyBehavior : CampaignBehaviorBase
 		CampaignEvents.OnSessionLaunchedEvent.AddNonSerializedListener(this, OnSessionLaunched);
 		CampaignEvents.OnGameLoadFinishedEvent.AddNonSerializedListener(this, OnGameLoadFinished);
 		CampaignEvents.OnMissionStartedEvent.AddNonSerializedListener(this, OnMissionStarted);
+		CampaignEvents.BattleStarted.AddNonSerializedListener(this, OnBattleStartedForEncounterDiag);
 		CampaignEvents.OnSaveOverEvent.AddNonSerializedListener(this, OnSaveOver);
 		CampaignEvents.ConversationEnded.AddNonSerializedListener(this, OnMemoryConversationEnded);
 		CampaignEvents.TickEvent.AddNonSerializedListener(this, OnCampaignTick);
+		CampaignEvents.OnPlayerBattleEndEvent.AddNonSerializedListener(this, OnPlayerBattleEndForDefeatMemory);
 		CampaignEvents.MapEventEnded.AddNonSerializedListener(this, OnMapEventEnded);
 		CampaignEvents.OnQuestCompletedEvent.AddNonSerializedListener(this, OnQuestCompletedForActionHistory);
 		CampaignEvents.NewCompanionAdded.AddNonSerializedListener(this, OnNewCompanionAddedForActionHistory);
@@ -2104,6 +2108,7 @@ public class MyBehavior : CampaignBehaviorBase
 		try
 		{
 			ClearRuleStickyCarry();
+			_playerDefeatedHeroBattleFactKeys.Clear();
 			_memorySummaryProcessing = false;
 			_memorySummaryFailurePopupActive = false;
 			_nativeConversationMemorySessionCounter = 0;
@@ -2186,9 +2191,7 @@ public class MyBehavior : CampaignBehaviorBase
 					Hero hero = party.Party?.LeaderHero;
 					if (hero != null && hero != Hero.MainHero && hero.IsLord)
 					{
-						_recentlyDefeatedByPlayer.Add(hero.StringId);
-						Logger.Log("BattleStatus", $"原版战斗结束：玩家击败了 {hero.Name}");
-						AppendExternalDialogueHistory(hero, null, null, $"你在一场战斗中被 {Hero.MainHero.Name} 击败了。");
+						RecordPlayerDefeatedHeroBattleFact(mapEvent, mapEventSide, hero, "map_event_ended");
 					}
 				}
 			}
@@ -2199,28 +2202,87 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		try
 		{
-			TrackNpcActionsFromMapEvent(mapEvent);
+			RecordPlayerBattleDefeatRecentAction(mapEvent);
 		}
 		catch (Exception ex2)
 		{
-			Logger.Log("NpcAction", "[ERROR] TrackNpcActionsFromMapEvent: " + ex2.Message);
+			Logger.Log("NpcAction", "[ERROR] RecordPlayerBattleDefeatRecentAction: " + ex2.Message);
+		}
+		try
+		{
+			TrackNpcActionsFromMapEvent(mapEvent);
+		}
+		catch (Exception ex3)
+		{
+			Logger.Log("NpcAction", "[ERROR] TrackNpcActionsFromMapEvent: " + ex3.Message);
 		}
 		try
 		{
 			RecordPlayerRoutineBanditDefeatRecentAction(mapEvent);
 		}
-		catch (Exception ex3)
+		catch (Exception ex4)
 		{
-			Logger.Log("NpcAction", "[ERROR] RecordPlayerRoutineBanditDefeatRecentAction: " + ex3.Message);
+			Logger.Log("NpcAction", "[ERROR] RecordPlayerRoutineBanditDefeatRecentAction: " + ex4.Message);
 		}
 		try
 		{
 			RecordPlayerHideoutClearRecentAction(mapEvent);
 		}
-		catch (Exception ex4)
+		catch (Exception ex5)
 		{
-			Logger.Log("NpcAction", "[ERROR] RecordPlayerHideoutClearRecentAction: " + ex4.Message);
+			Logger.Log("NpcAction", "[ERROR] RecordPlayerHideoutClearRecentAction: " + ex5.Message);
 		}
+	}
+
+	private void OnPlayerBattleEndForDefeatMemory(MapEvent mapEvent)
+	{
+		try
+		{
+			if (mapEvent == null || !mapEvent.IsPlayerMapEvent || !mapEvent.HasWinner || mapEvent.WinningSide != mapEvent.PlayerSide)
+			{
+				return;
+			}
+			MapEventSide defeatedSide = GetMapEventDefeatedSide(mapEvent);
+			if (defeatedSide?.Parties == null)
+			{
+				return;
+			}
+			foreach (MapEventParty party in defeatedSide.Parties)
+			{
+				Hero hero = party?.Party?.LeaderHero;
+				if (hero != null && hero != Hero.MainHero && hero.IsLord)
+				{
+					RecordPlayerDefeatedHeroBattleFact(mapEvent, defeatedSide, hero, "player_battle_end");
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("BattleStatus", "[ERROR] OnPlayerBattleEndForDefeatMemory: " + ex.Message);
+		}
+	}
+
+	private void RecordPlayerDefeatedHeroBattleFact(MapEvent mapEvent, MapEventSide defeatedSide, Hero defeatedHero, string reason)
+	{
+		if (mapEvent == null || defeatedHero == null || defeatedHero == Hero.MainHero || string.IsNullOrWhiteSpace(defeatedHero.StringId) || !mapEvent.IsPlayerMapEvent || !mapEvent.HasWinner || mapEvent.WinningSide != mapEvent.PlayerSide)
+		{
+			return;
+		}
+		defeatedSide ??= GetMapEventDefeatedSide(mapEvent);
+		if (defeatedSide == null)
+		{
+			return;
+		}
+		string locationLabel = GetMapEventLocationLabel(mapEvent);
+		string stableKey = BuildPlayerDefeatedHeroBattleFactKey(mapEvent, defeatedSide, defeatedHero, locationLabel);
+		if (!_playerDefeatedHeroBattleFactKeys.Add(stableKey))
+		{
+			return;
+		}
+		_recentlyDefeatedByPlayer.Add(defeatedHero.StringId);
+		Logger.Log("BattleStatus", "玩家击败领主事实写入 reason=" + (reason ?? "") + " hero=" + defeatedHero.StringId + " name=" + (defeatedHero.Name?.ToString() ?? ""));
+		AppendExternalDialogueHistory(defeatedHero, null, null, BuildPlayerDefeatedHeroDialogueFact(mapEvent, defeatedSide, locationLabel));
+		RecordNpcDefeatedByPlayerRecentAction(mapEvent, defeatedSide, defeatedHero);
 	}
 
 	public static void RecordNpcActionForExternal(Hero actorHero, string text, string stableKey, string actionKind, bool isMajor, bool isRecent, Hero targetHero = null, Settlement settlement = null, string locationText = null, bool allowNonLordHero = false, bool? won = null)
@@ -2359,6 +2421,206 @@ public class MyBehavior : CampaignBehaviorBase
 		catch (Exception ex)
 		{
 			Logger.Log("NpcAction", "[ERROR] OnGovernorChangedForActionHistory: " + ex.Message);
+		}
+	}
+
+	private void RecordNpcDefeatedByPlayerRecentAction(MapEvent mapEvent, MapEventSide defeatedSide, Hero defeatedHero)
+	{
+		if (mapEvent == null || defeatedHero == null || defeatedHero == Hero.MainHero || !mapEvent.IsPlayerMapEvent || !mapEvent.HasWinner || mapEvent.WinningSide != mapEvent.PlayerSide)
+		{
+			return;
+		}
+		defeatedSide ??= GetMapEventDefeatedSide(mapEvent);
+		if (defeatedSide == null || !ShouldTrackNpcActionHero(defeatedHero))
+		{
+			return;
+		}
+		string locationLabel = GetMapEventLocationLabel(mapEvent);
+		string text = BuildNpcDefeatedByPlayerRecentActionText(mapEvent, defeatedSide, locationLabel);
+		string stableKey = BuildMapEventParticipantStableKey(mapEvent, defeatedSide, defeatedHero, locationLabel);
+		bool isMajor = ShouldRecordMajorBattleAction(GetMapEventTroopCount(mapEvent));
+		RecordExternalNpcAction(defeatedHero, text, stableKey, "map_event", isMajor, isRecent: true, targetHero: Hero.MainHero, settlement: mapEvent.MapEventSettlement, locationText: locationLabel, allowNonLordHero: false, won: false);
+	}
+
+	private void RecordPlayerBattleDefeatRecentAction(MapEvent mapEvent)
+	{
+		if (mapEvent == null || !mapEvent.IsPlayerMapEvent || !mapEvent.HasWinner || mapEvent.WinningSide == mapEvent.PlayerSide || Hero.MainHero == null)
+		{
+			return;
+		}
+		MapEventSide playerSide = GetMapEventSideByBattleSide(mapEvent, mapEvent.PlayerSide);
+		if (playerSide == null)
+		{
+			return;
+		}
+		string locationLabel = GetMapEventLocationLabel(mapEvent);
+		string text = BuildPlayerBattleDefeatRecentActionText(mapEvent, playerSide, locationLabel);
+		string stableKey = BuildMapEventParticipantStableKey(mapEvent, playerSide, Hero.MainHero, locationLabel);
+		Hero targetHero = playerSide.OtherSide?.LeaderParty?.LeaderHero;
+		bool isMajor = ShouldRecordMajorBattleAction(GetMapEventTroopCount(mapEvent));
+		RecordExternalPlayerAction(text, stableKey, "map_event", isMajor, targetHero, mapEvent.MapEventSettlement, locationLabel, won: false);
+	}
+
+	private static string BuildMapEventParticipantStableKey(MapEvent mapEvent, MapEventSide side, Hero hero, string locationLabel)
+	{
+		string mapEventStableKey = BuildMapEventStableKey(mapEvent, locationLabel);
+		return mapEventStableKey + ":side:" + side?.MissionSide + ":hero:" + (hero?.StringId ?? "");
+	}
+
+	private static string BuildPlayerDefeatedHeroBattleFactKey(MapEvent mapEvent, MapEventSide defeatedSide, Hero defeatedHero, string locationLabel)
+	{
+		List<string> list = new List<string>
+		{
+			"player_defeated_hero_fact",
+			GetCurrentGameDayIndexSafe().ToString(),
+			NormalizeWeeklyPromptKeyPart(mapEvent?.StringId),
+			NormalizeWeeklyPromptKeyPart(locationLabel),
+			NormalizeWeeklyPromptKeyPart(mapEvent == null ? "" : mapEvent.PlayerSide.ToString()),
+			NormalizeWeeklyPromptKeyPart(defeatedSide == null ? "" : defeatedSide.MissionSide.ToString()),
+			GetHeroId(defeatedHero),
+			GetHeroId(defeatedSide?.LeaderParty?.LeaderHero),
+			GetHeroId(defeatedSide?.OtherSide?.LeaderParty?.LeaderHero),
+			NormalizeWeeklyPromptKeyPart(BuildMapEventStableKey(mapEvent, locationLabel))
+		};
+		return string.Join(":", list.Where((string x) => !string.IsNullOrWhiteSpace(x)));
+	}
+
+	private bool HasRecordedPlayerDefeatedHeroBattleFact(MapEvent mapEvent, MapEventSide defeatedSide, Hero defeatedHero)
+	{
+		if (mapEvent == null || defeatedSide == null || defeatedHero == null)
+		{
+			return false;
+		}
+		string locationLabel = GetMapEventLocationLabel(mapEvent);
+		string stableKey = BuildPlayerDefeatedHeroBattleFactKey(mapEvent, defeatedSide, defeatedHero, locationLabel);
+		return !string.IsNullOrWhiteSpace(stableKey) && _playerDefeatedHeroBattleFactKeys.Contains(stableKey);
+	}
+
+	private static MapEventSide GetMapEventSideByBattleSide(MapEvent mapEvent, BattleSideEnum side)
+	{
+		if (mapEvent == null)
+		{
+			return null;
+		}
+		if (side == BattleSideEnum.Attacker)
+		{
+			return mapEvent.AttackerSide;
+		}
+		if (side == BattleSideEnum.Defender)
+		{
+			return mapEvent.DefenderSide;
+		}
+		return null;
+	}
+
+	private static string BuildPlayerDefeatedHeroDialogueFact(MapEvent mapEvent, MapEventSide defeatedSide, string locationLabel)
+	{
+		string playerName = Hero.MainHero?.Name?.ToString()?.Trim();
+		if (string.IsNullOrWhiteSpace(playerName))
+		{
+			playerName = "玩家";
+		}
+		string place = string.IsNullOrWhiteSpace(locationLabel) ? "野外" : locationLabel.Trim();
+		string battleKind = "战斗";
+		if (mapEvent?.IsSiegeAssault == true || mapEvent?.IsSiegeOutside == true || mapEvent?.IsSallyOut == true)
+		{
+			battleKind = "攻守战";
+		}
+		else if (mapEvent?.IsRaid == true)
+		{
+			battleKind = "袭掠战";
+		}
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.Append("[AFEF玩家行为补充] 你刚在").Append(place).Append("的").Append(battleKind).Append("中被").Append(playerName).Append("一方击败；这场战败已经发生。");
+		string winningLords = BuildTrackedHeroListText(defeatedSide?.OtherSide, 4);
+		if (!string.IsNullOrWhiteSpace(winningLords))
+		{
+			stringBuilder.Append(" 胜方主要领主：").Append(winningLords).Append('。');
+		}
+		return stringBuilder.ToString();
+	}
+
+	private static string BuildNpcDefeatedByPlayerRecentActionText(MapEvent mapEvent, MapEventSide defeatedSide, string locationLabel)
+	{
+		string playerName = Hero.MainHero?.Name?.ToString()?.Trim();
+		if (string.IsNullOrWhiteSpace(playerName))
+		{
+			playerName = "玩家";
+		}
+		StringBuilder stringBuilder = new StringBuilder();
+		if (mapEvent?.IsSiegeAssault == true || mapEvent?.IsSiegeOutside == true || mapEvent?.IsSallyOut == true)
+		{
+			stringBuilder.Append("你在").Append(string.IsNullOrWhiteSpace(locationLabel) ? "某处要塞" : locationLabel.Trim()).Append("的攻守战中被").Append(playerName).Append("一方击败。");
+		}
+		else if (mapEvent?.IsRaid == true)
+		{
+			stringBuilder.Append("你在").Append(string.IsNullOrWhiteSpace(locationLabel) ? "某处村庄" : locationLabel.Trim()).Append("的袭掠战中被").Append(playerName).Append("一方击败。");
+		}
+		else
+		{
+			stringBuilder.Append("你在").Append(string.IsNullOrWhiteSpace(locationLabel) ? "野外" : locationLabel.Trim()).Append("的战斗中被").Append(playerName).Append("一方击败。");
+		}
+		AppendBattleOpponentDetails(stringBuilder, defeatedSide?.OtherSide, "胜方");
+		AppendBattleCasualtyDetails(stringBuilder, defeatedSide, defeatedSide?.OtherSide);
+		return stringBuilder.ToString();
+	}
+
+	private static string BuildPlayerBattleDefeatRecentActionText(MapEvent mapEvent, MapEventSide playerSide, string locationLabel)
+	{
+		string opponentLabel = BuildMapEventSideNarrativeLabel(playerSide?.OtherSide);
+		if (string.IsNullOrWhiteSpace(opponentLabel))
+		{
+			opponentLabel = "敌军";
+		}
+		StringBuilder stringBuilder = new StringBuilder();
+		if (mapEvent?.IsSiegeAssault == true || mapEvent?.IsSiegeOutside == true || mapEvent?.IsSallyOut == true)
+		{
+			stringBuilder.Append("玩家在").Append(string.IsNullOrWhiteSpace(locationLabel) ? "某处要塞" : locationLabel.Trim()).Append("的攻守战中败给了").Append(opponentLabel).Append("。");
+		}
+		else if (mapEvent?.IsRaid == true)
+		{
+			stringBuilder.Append("玩家在").Append(string.IsNullOrWhiteSpace(locationLabel) ? "某处村庄" : locationLabel.Trim()).Append("的袭掠战中败给了").Append(opponentLabel).Append("。");
+		}
+		else
+		{
+			stringBuilder.Append("玩家在").Append(string.IsNullOrWhiteSpace(locationLabel) ? "野外" : locationLabel.Trim()).Append("的战斗中败给了").Append(opponentLabel).Append("。");
+		}
+		AppendBattleOpponentDetails(stringBuilder, playerSide?.OtherSide, "胜方");
+		AppendBattleCasualtyDetails(stringBuilder, playerSide, playerSide?.OtherSide);
+		return stringBuilder.ToString();
+	}
+
+	private static void AppendBattleOpponentDetails(StringBuilder stringBuilder, MapEventSide opponentSide, string label)
+	{
+		if (stringBuilder == null || opponentSide == null)
+		{
+			return;
+		}
+		string sideLabel = string.IsNullOrWhiteSpace(label) ? "对方" : label.Trim();
+		string lords = BuildTrackedHeroListText(opponentSide, 6);
+		if (!string.IsNullOrWhiteSpace(lords))
+		{
+			stringBuilder.Append(' ').Append(sideLabel).Append("领主：").Append(lords).Append('。');
+		}
+		string nonLordParties = BuildMapEventNonLordPartyListText(opponentSide, 5);
+		if (!string.IsNullOrWhiteSpace(nonLordParties))
+		{
+			stringBuilder.Append(' ').Append(sideLabel).Append("非领主部队：").Append(nonLordParties).Append('。');
+		}
+	}
+
+	private static void AppendBattleCasualtyDetails(StringBuilder stringBuilder, MapEventSide defeatedSide, MapEventSide winningSide)
+	{
+		if (stringBuilder == null)
+		{
+			return;
+		}
+		string defeatedCasualties = BuildMapEventCasualtyText(defeatedSide);
+		string winningCasualties = BuildMapEventCasualtyText(winningSide);
+		if (!string.IsNullOrWhiteSpace(defeatedCasualties) || !string.IsNullOrWhiteSpace(winningCasualties))
+		{
+			stringBuilder.Append(" 败方死伤：").Append(string.IsNullOrWhiteSpace(defeatedCasualties) ? "不详" : defeatedCasualties);
+			stringBuilder.Append("；胜方死伤：").Append(string.IsNullOrWhiteSpace(winningCasualties) ? "不详" : winningCasualties).Append('。');
 		}
 	}
 
@@ -15100,6 +15362,10 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				continue;
 			}
+			if (!won && mapEvent.IsPlayerMapEvent && mapEvent.HasWinner && mapEvent.WinningSide == mapEvent.PlayerSide && HasRecordedPlayerDefeatedHeroBattleFact(mapEvent, side, leaderHero))
+			{
+				continue;
+			}
 			string text = BuildMapEventNarrative(mapEvent, side, leaderHero, won, locationLabel);
 			string text2 = (string.IsNullOrWhiteSpace(mapEventStableKey) ? BuildMapEventStableKey(mapEvent, locationLabel) : mapEventStableKey) + ":side:" + side.MissionSide + ":hero:" + (leaderHero.StringId ?? "");
 			NpcActionFacts npcActionFacts = CreateNpcActionFacts("map_event", leaderHero);
@@ -16918,11 +17184,125 @@ public class MyBehavior : CampaignBehaviorBase
 				string arg2 = MobileParty.MainParty?.CurrentSettlement?.Name?.ToString() ?? "";
 				MissionMode mode = currentMission.Mode;
 				Logger.Log("SceneInfo", $"[MyBehavior.OnMissionStarted] SceneName={arg}, Mode={mode}, Settlement={arg2}");
+				LordEncounterBehavior.LogEncounterDiagnostic("MyBehavior.OnMissionStarted", "mission_started_scene_" + arg + "_mode_" + mode);
 			}
 			catch
 			{
 			}
 		}
+	}
+
+	private void OnBattleStartedForEncounterDiag(PartyBase attackerParty, PartyBase defenderParty, object subject, bool showNotification)
+	{
+		try
+		{
+			Logger.LogImmediate("Logic", "[EncounterDiag] stage=MyBehavior.OnBattleStarted | subject=" + EncounterDiagEscape(subject?.GetType().FullName ?? "null")
+				+ " | showNotification=" + showNotification
+				+ " | attacker=" + DescribeBattleStartPartyForEncounterDiag(attackerParty)
+				+ " | defender=" + DescribeBattleStartPartyForEncounterDiag(defenderParty));
+			LordEncounterBehavior.LogEncounterDiagnostic("MyBehavior.OnBattleStarted", "battle_started_subject_" + (subject?.GetType().Name ?? "null"), null, null, defenderParty);
+		}
+		catch
+		{
+		}
+	}
+
+	private static string DescribeBattleStartPartyForEncounterDiag(PartyBase party)
+	{
+		if (party == null)
+		{
+			return "null";
+		}
+		List<string> parts = new List<string>();
+		try
+		{
+			parts.Add("index=" + party.Index);
+		}
+		catch
+		{
+		}
+		try
+		{
+			parts.Add("name=" + EncounterDiagEscape(party.Name?.ToString()));
+		}
+		catch
+		{
+		}
+		try
+		{
+			parts.Add("leader=" + EncounterDiagEscape(party.LeaderHero?.StringId ?? party.LeaderHero?.Name?.ToString()));
+		}
+		catch
+		{
+		}
+		try
+		{
+			parts.Add("mobile=" + (party.IsMobile ? "1" : "0"));
+			parts.Add("settlement=" + (party.IsSettlement ? "1" : "0"));
+		}
+		catch
+		{
+		}
+		try
+		{
+			parts.Add("healthy=" + party.NumberOfHealthyMembers);
+			parts.Add("all=" + party.NumberOfAllMembers);
+		}
+		catch
+		{
+		}
+		try
+		{
+			MobileParty mobileParty = party.MobileParty;
+			if (mobileParty != null)
+			{
+				parts.Add("mobileId=" + EncounterDiagEscape(mobileParty.StringId));
+				parts.Add("default=" + mobileParty.DefaultBehavior);
+				parts.Add("short=" + mobileParty.ShortTermBehavior);
+				parts.Add("targetSettlement=" + EncounterDiagEscape(mobileParty.TargetSettlement?.StringId ?? mobileParty.TargetSettlement?.Name?.ToString()));
+				parts.Add("currentSettlement=" + EncounterDiagEscape(mobileParty.CurrentSettlement?.StringId ?? mobileParty.CurrentSettlement?.Name?.ToString()));
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			Settlement settlement = party.Settlement;
+			if (settlement != null)
+			{
+				parts.Add("settlementId=" + EncounterDiagEscape(settlement.StringId));
+				parts.Add("isVillage=" + (settlement.IsVillage ? "1" : "0"));
+				parts.Add("isUnderRaid=" + (settlement.IsUnderRaid ? "1" : "0"));
+				parts.Add("lastAttacker=" + EncounterDiagEscape(settlement.LastAttackerParty?.StringId ?? settlement.LastAttackerParty?.Name?.ToString()));
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			MapEvent mapEvent = party.MapEvent;
+			if (mapEvent != null)
+			{
+				parts.Add("mapType=" + mapEvent.EventType);
+				parts.Add("mapRaid=" + (mapEvent.IsRaid ? "1" : "0"));
+				parts.Add("mapForceSupplies=" + (mapEvent.IsForcingSupplies ? "1" : "0"));
+				parts.Add("mapForceVolunteers=" + (mapEvent.IsForcingVolunteers ? "1" : "0"));
+				parts.Add("mapSettlement=" + EncounterDiagEscape(mapEvent.MapEventSettlement?.StringId ?? mapEvent.MapEventSettlement?.Name?.ToString()));
+				parts.Add("attTroops=" + (mapEvent.AttackerSide?.TroopCount.ToString() ?? "null"));
+				parts.Add("defTroops=" + (mapEvent.DefenderSide?.TroopCount.ToString() ?? "null"));
+			}
+		}
+		catch
+		{
+		}
+		return string.Join(",", parts);
+	}
+
+	private static string EncounterDiagEscape(string text)
+	{
+		return (text ?? "null").Replace("\r", " ").Replace("\n", " ").Replace("|", "/");
 	}
 
 	private NpcPersonaProfile GetNpcPersonaProfile(Hero npc, bool createIfMissing)
@@ -29884,10 +30264,6 @@ public class MyBehavior : CampaignBehaviorBase
 				}
 			}
 		}
-		if (result.Count > 24)
-		{
-			result = result.Skip(result.Count - 24).ToList();
-		}
 		sw.Stop();
 		Logger.Log("Logic", "[MemoryPerf] uncompressed_memory_done hero=" + normalizedMemoryId + " drafts=" + drafts.Count + " messages=" + result.Count + " agent=" + targetAgentIndex + " includeCurrentSession=" + includeCurrentActiveSceneSession + " ms=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2));
 		if (IsNonHeroMemoryId(normalizedMemoryId))
@@ -39935,8 +40311,8 @@ public class MyBehavior : CampaignBehaviorBase
 			}
 			if (num == 0)
 			{
-				stringBuilder.AppendLine("【近期三个王国短周报】");
-				stringBuilder.AppendLine("以下为最近三个相关王国的短周报，只作背景事实参考；不要把其中事实错说到别的王国。");
+				stringBuilder.AppendLine("【近期三个王国发生的事】");
+				stringBuilder.AppendLine("以下为最近三个相关王国的事");
 			}
 			num++;
 			stringBuilder.Append("- ").Append(ResolveKingdomDisplay(item));

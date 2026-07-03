@@ -9411,8 +9411,8 @@ private static bool TryExtractReplyFormatInstruction(ref string prompt, out stri
 
 private static void GetSceneReplyLengthLimits(DuelSettings settings, out int minTokens, out int maxTokens)
 {
-	minTokens = Math.Max(1, settings?.ShoutMinTokens ?? 1);
-	maxTokens = Math.Max(1, settings?.ShoutMaxTokens ?? minTokens);
+	minTokens = Math.Max(1, settings?.ShoutMinTokens ?? DuelSettings.DefaultShoutMinTokens);
+	maxTokens = Math.Max(1, settings?.ShoutMaxTokens ?? DuelSettings.DefaultShoutMaxTokens);
 	if (maxTokens < minTokens)
 	{
 		maxTokens = minTokens;
@@ -12769,7 +12769,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 	{
 		try
 		{
-			if (!_nativeConversationInputOpen || CurrentInstance == null || Campaign.Current?.ConversationManager?.IsConversationInProgress != true)
+			if (!_nativeConversationInputOpen || CurrentInstance == null || Campaign.Current?.ConversationManager?.IsConversationInProgress != true || PlayerEncounterCompat.IsInPostBattleResultFlow())
 			{
 				return false;
 			}
@@ -12786,7 +12786,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 	{
 		try
 		{
-			return CurrentInstance != null && Campaign.Current?.ConversationManager?.IsConversationInProgress == true && TryResolveNativeConversationTarget(out var _, out var _, out var _);
+			return CurrentInstance != null && Campaign.Current?.ConversationManager?.IsConversationInProgress == true && !PlayerEncounterCompat.IsInPostBattleResultFlow() && TryResolveNativeConversationTarget(out var _, out var _, out var _);
 		}
 		catch
 		{
@@ -15013,6 +15013,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			return Task.FromResult("AnimusForge ShoutBehavior is not ready.");
 		}
+		if (PlayerEncounterCompat.IsInPostBattleResultFlow())
+		{
+			return Task.FromResult("");
+		}
 		return Task.Run(async delegate
 		{
 			SynchronizationContext.SetSynchronizationContext(null);
@@ -15026,6 +15030,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		if (currentInstance == null)
 		{
 			return Task.FromResult("AnimusForge ShoutBehavior is not ready.");
+		}
+		if (PlayerEncounterCompat.IsInPostBattleResultFlow())
+		{
+			return Task.FromResult("");
 		}
 		return Task.Run(async delegate
 		{
@@ -16341,6 +16349,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		Stopwatch nativeTurnSw = Stopwatch.StartNew();
 		long runtimeGeneration = SaveRuntimeGuard.CaptureGeneration();
 		playerText = (playerText ?? "").Replace("\r", "").Trim();
+		if (PlayerEncounterCompat.IsInPostBattleResultFlow())
+		{
+			return "";
+		}
 		if (string.IsNullOrWhiteSpace(playerText) && !npcInitiatedOpening)
 		{
 			return "";

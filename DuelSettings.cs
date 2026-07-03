@@ -82,6 +82,10 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 
 	private const int DefaultCustomPolicyPublicFeedbackTargetChars = 900;
 
+	public const int DefaultShoutMinTokens = 40;
+
+	public const int DefaultShoutMaxTokens = 200;
+
 	private const string NpcPersonaGenerationRequirementsFileName = "NpcPersonaGenerationRequirements.txt";
 
 	private const string CustomPromptTextStoreFolderName = "CustomPrompts";
@@ -399,13 +403,13 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyGroup("3. 场景喊话")]
 	public float ShoutMaxRangeMeters { get; set; } = 150f;
 
-	[SettingPropertyInteger("喊话回复最小字数", 1, 500, "0", Order = 6, RequireRestart = false, HintText = "场景喊话回复的最小字数。")]
+	[SettingPropertyInteger("喊话回复最小字数", 1, 500, "0", Order = 6, RequireRestart = false, HintText = "场景喊话回复的最小字数。默认 40。")]
 	[SettingPropertyGroup("3. 场景喊话")]
-	public int ShoutMinTokens { get; set; } = 20;
+	public int ShoutMinTokens { get; set; } = DefaultShoutMinTokens;
 
-	[SettingPropertyInteger("喊话回复最大字数", 1, 500, "0", Order = 7, RequireRestart = false, HintText = "场景喊话回复的最大字数。若小于最小字数，运行时会按最小字数处理。")]
+	[SettingPropertyInteger("喊话回复最大字数", 1, 500, "0", Order = 7, RequireRestart = false, HintText = "场景喊话回复的最大字数。默认 200；若小于最小字数，运行时会按最小字数处理。")]
 	[SettingPropertyGroup("3. 场景喊话")]
-	public int ShoutMaxTokens { get; set; } = 40;
+	public int ShoutMaxTokens { get; set; } = DefaultShoutMaxTokens;
 
 	[SettingPropertyInteger("内心思考最小字数", 40, 2000, "0", Order = 8, RequireRestart = false, HintText = "场景喊话回复格式中，括号内心思考部分的最小字数。最低 40，默认 200。")]
 	[SettingPropertyGroup("3. 场景喊话")]
