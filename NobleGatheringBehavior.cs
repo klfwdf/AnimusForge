@@ -2560,7 +2560,8 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
-		string letter = GetHeroName(host) + "致" + (Hero.MainHero?.Name?.ToString() ?? "你") + "：\n\n我将在" + GetSettlementName(settlement) + "举办一场宴会，诚邀你前来赴宴。宴会预计持续到第 " + Math.Ceiling(record.EndDay) + " 天；若你愿意，到达举办地即可。";
+		string endDate = CampaignTime.Days((float)record.EndDay).ToString();
+		string letter = GetHeroName(host) + "致" + (Hero.MainHero?.Name?.ToString() ?? "你") + "：\n\n我将在" + GetSettlementName(settlement) + "举办一场宴会，诚邀你前来赴宴。宴会预计持续至 " + endDate + "；若你愿意，到达举办地即可。";
 		if (CourierDeliveryBehavior.TrySendNpcLetterToPlayerForExternal(host, letter, "noble_gathering:" + record.Id, out string status))
 		{
 			record.PlayerInvitationStatus = PlayerInvitationAccepted;
