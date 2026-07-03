@@ -3106,6 +3106,8 @@ public static class AIConfigHandler
 		}
 		object[] array = BuildAuxiliaryChatMessages(systemPrompt, userPrompt);
 		string requestBodyForTokenStats = "";
+		Stopwatch freezeWatchSw = Stopwatch.StartNew();
+		FreezeWatchdog.Mark("AuxActionPostprocess.start", "model=" + modelName + " messages=" + array.Length + " timeoutMs=" + ActionPostprocessRequestTimeoutMilliseconds, immediate: true);
 		try
 		{
 			using CancellationTokenSource timeoutCts = new CancellationTokenSource(ActionPostprocessRequestTimeoutMilliseconds);
@@ -3126,7 +3128,9 @@ public static class AIConfigHandler
 			using HttpRequestMessage httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, apiUrl);
 			LlmApiCompat.ApplyAuthenticationHeaders(httpRequestMessage, apiUrl, apiKey);
 			httpRequestMessage.Content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
+			FreezeWatchdog.Mark("AuxActionPostprocess.send_begin", "model=" + modelName + " maxTokens=" + Math.Max(16, actualMaxTokens), immediate: true);
 			HttpResponseMessage result = DuelSettings.GlobalClient.SendAsync(httpRequestMessage, timeoutCts.Token).GetAwaiter().GetResult();
+			FreezeWatchdog.Mark("AuxActionPostprocess.response", "status=" + (int)result.StatusCode + " elapsedMs=" + Math.Round(freezeWatchSw.Elapsed.TotalMilliseconds, 2), immediate: true);
 			string text = result.Content.ReadAsStringAsync().GetAwaiter().GetResult();
 			if (!result.IsSuccessStatusCode && result.StatusCode == System.Net.HttpStatusCode.BadRequest && controlMode != "plain" && LooksLikeAuxiliaryThinkingControlError(text))
 			{
@@ -3138,13 +3142,16 @@ public static class AIConfigHandler
 				using HttpRequestMessage httpRequestMessage2 = new HttpRequestMessage(HttpMethod.Post, apiUrl);
 				LlmApiCompat.ApplyAuthenticationHeaders(httpRequestMessage2, apiUrl, apiKey);
 				httpRequestMessage2.Content = new StringContent(retryBody, Encoding.UTF8, "application/json");
+				FreezeWatchdog.Mark("AuxActionPostprocess.retry_send_begin", "model=" + modelName, immediate: true);
 				result = DuelSettings.GlobalClient.SendAsync(httpRequestMessage2, timeoutCts.Token).GetAwaiter().GetResult();
+				FreezeWatchdog.Mark("AuxActionPostprocess.retry_response", "status=" + (int)result.StatusCode + " elapsedMs=" + Math.Round(freezeWatchSw.Elapsed.TotalMilliseconds, 2), immediate: true);
 				text = result.Content.ReadAsStringAsync().GetAwaiter().GetResult();
 				controlMode += "_retry_plain";
 			}
 			if (!result.IsSuccessStatusCode)
 			{
 				error = "http_" + (int)result.StatusCode;
+				FreezeWatchdog.Mark("AuxActionPostprocess.http_error", "status=" + (int)result.StatusCode + " elapsedMs=" + Math.Round(freezeWatchSw.Elapsed.TotalMilliseconds, 2), immediate: true);
 				LogAuxiliaryRouterTokenTrace("action_postprocess_http_error", array, "[ACTION POSTPROCESS HTTP]\nurl=" + apiUrl + "\nmodel=" + modelName + "\ncontrol_mode=" + controlMode + "\nstatus=" + (int)result.StatusCode + " " + (result.ReasonPhrase ?? "") + "\nresponse_body=\n" + (text ?? ""), 0, requestBodyForTokenStats);
 				return false;
 			}
@@ -3153,21 +3160,25 @@ public static class AIConfigHandler
 			if (string.IsNullOrWhiteSpace(content))
 			{
 				error = "empty_content";
+				FreezeWatchdog.Mark("AuxActionPostprocess.empty_content", "elapsedMs=" + Math.Round(freezeWatchSw.Elapsed.TotalMilliseconds, 2), immediate: true);
 				LogAuxiliaryRouterTokenTrace("action_postprocess_empty_content", array, "[ACTION POSTPROCESS HTTP]\nurl=" + apiUrl + "\nmodel=" + modelName + "\ncontrol_mode=" + controlMode + "\nstatus=" + (int)result.StatusCode + " " + (result.ReasonPhrase ?? "") + "\nresponse_body=\n" + (text ?? ""), 0, requestBodyForTokenStats);
 				return false;
 			}
+			FreezeWatchdog.Mark("AuxActionPostprocess.complete", "contentLen=" + content.Length + " elapsedMs=" + Math.Round(freezeWatchSw.Elapsed.TotalMilliseconds, 2), immediate: true);
 			LogAuxiliaryRouterTokenTrace("action_postprocess_http", array, "[ACTION POSTPROCESS HTTP]\nurl=" + apiUrl + "\nmodel=" + modelName + "\ncontrol_mode=" + controlMode + "\nai_response=\n" + content + "\nraw_response=\n" + (text ?? ""), Logger.EstimateTokens(content), requestBodyForTokenStats);
 			return true;
 		}
 		catch (OperationCanceledException ex)
 		{
 			error = "timeout_" + ActionPostprocessRequestTimeoutMilliseconds + "ms";
+			FreezeWatchdog.Mark("AuxActionPostprocess.timeout", "elapsedMs=" + Math.Round(freezeWatchSw.Elapsed.TotalMilliseconds, 2), immediate: true);
 			LogAuxiliaryRouterTokenTrace("action_postprocess_timeout", array, "[ACTION POSTPROCESS TIMEOUT]\ntimeoutMs=" + ActionPostprocessRequestTimeoutMilliseconds + "\nerror=" + BuildAuxiliaryRouterExceptionText(ex) + "\nstack=\n" + (ex?.StackTrace ?? ""), 0, requestBodyForTokenStats);
 			return false;
 		}
 		catch (Exception ex)
 		{
 			error = BuildAuxiliaryRouterExceptionText(ex);
+			FreezeWatchdog.Mark("AuxActionPostprocess.exception", ex.GetType().Name + ": " + ex.Message + " elapsedMs=" + Math.Round(freezeWatchSw.Elapsed.TotalMilliseconds, 2), immediate: true);
 			LogAuxiliaryRouterTokenTrace("action_postprocess_exception", array, "[ACTION POSTPROCESS EXCEPTION]\nerror=" + error + "\nstack=\n" + (ex?.StackTrace ?? ""), 0, requestBodyForTokenStats);
 			return false;
 		}
@@ -3201,6 +3212,8 @@ public static class AIConfigHandler
 		object[] array = CopyAuxiliaryChatMessagesPreservingNames(messages);
 		Logger.RecordMessageDump("auxiliary_simple_dialogue_request", array, "auxiliary_simple_dialogue_request");
 		string requestBodyForTokenStats = "";
+		Stopwatch freezeWatchSw = Stopwatch.StartNew();
+		FreezeWatchdog.Mark("AuxSimpleDialogue.start", "model=" + modelName + " messages=" + array.Length, immediate: true);
 		try
 		{
 			string jsonBody = BuildAuxiliarySimpleDialogueRequestJson(apiUrl, modelName, array, Math.Max(16, maxTokens), temperature, out var controlMode);
@@ -3208,7 +3221,9 @@ public static class AIConfigHandler
 			using HttpRequestMessage httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, apiUrl);
 			LlmApiCompat.ApplyAuthenticationHeaders(httpRequestMessage, apiUrl, apiKey);
 			httpRequestMessage.Content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
+			FreezeWatchdog.Mark("AuxSimpleDialogue.send_begin", "model=" + modelName + " maxTokens=" + Math.Max(16, maxTokens), immediate: true);
 			HttpResponseMessage result = DuelSettings.GlobalClient.SendAsync(httpRequestMessage).GetAwaiter().GetResult();
+			FreezeWatchdog.Mark("AuxSimpleDialogue.response", "status=" + (int)result.StatusCode + " elapsedMs=" + Math.Round(freezeWatchSw.Elapsed.TotalMilliseconds, 2), immediate: true);
 			string text = result.Content.ReadAsStringAsync().GetAwaiter().GetResult();
 			if (!result.IsSuccessStatusCode && result.StatusCode == System.Net.HttpStatusCode.BadRequest && controlMode != "plain" && LooksLikeAuxiliaryThinkingControlError(text))
 			{
@@ -3220,13 +3235,16 @@ public static class AIConfigHandler
 				using HttpRequestMessage httpRequestMessage2 = new HttpRequestMessage(HttpMethod.Post, apiUrl);
 				LlmApiCompat.ApplyAuthenticationHeaders(httpRequestMessage2, apiUrl, apiKey);
 				httpRequestMessage2.Content = new StringContent(content2, Encoding.UTF8, "application/json");
+				FreezeWatchdog.Mark("AuxSimpleDialogue.retry_send_begin", "model=" + modelName, immediate: true);
 				result = DuelSettings.GlobalClient.SendAsync(httpRequestMessage2).GetAwaiter().GetResult();
+				FreezeWatchdog.Mark("AuxSimpleDialogue.retry_response", "status=" + (int)result.StatusCode + " elapsedMs=" + Math.Round(freezeWatchSw.Elapsed.TotalMilliseconds, 2), immediate: true);
 				text = result.Content.ReadAsStringAsync().GetAwaiter().GetResult();
 				controlMode += "_retry_plain";
 			}
 			if (!result.IsSuccessStatusCode)
 			{
 				error = "http_" + (int)result.StatusCode;
+				FreezeWatchdog.Mark("AuxSimpleDialogue.http_error", "status=" + (int)result.StatusCode + " elapsedMs=" + Math.Round(freezeWatchSw.Elapsed.TotalMilliseconds, 2), immediate: true);
 				LogAuxiliaryRouterTokenTrace("auxiliary_simple_dialogue_http_error", array, "[AUXILIARY SIMPLE DIALOGUE HTTP]\nurl=" + apiUrl + "\nmodel=" + modelName + "\ncontrol_mode=" + controlMode + "\nstatus=" + (int)result.StatusCode + " " + (result.ReasonPhrase ?? "") + "\nresponse_body=\n" + (text ?? ""), 0, requestBodyForTokenStats);
 				return false;
 			}
@@ -3235,15 +3253,18 @@ public static class AIConfigHandler
 			if (string.IsNullOrWhiteSpace(content))
 			{
 				error = "empty_content";
+				FreezeWatchdog.Mark("AuxSimpleDialogue.empty_content", "elapsedMs=" + Math.Round(freezeWatchSw.Elapsed.TotalMilliseconds, 2), immediate: true);
 				LogAuxiliaryRouterTokenTrace("auxiliary_simple_dialogue_empty_content", array, "[AUXILIARY SIMPLE DIALOGUE HTTP]\nurl=" + apiUrl + "\nmodel=" + modelName + "\ncontrol_mode=" + controlMode + "\nstatus=" + (int)result.StatusCode + " " + (result.ReasonPhrase ?? "") + "\nresponse_body=\n" + (text ?? ""), 0, requestBodyForTokenStats);
 				return false;
 			}
+			FreezeWatchdog.Mark("AuxSimpleDialogue.complete", "contentLen=" + content.Length + " elapsedMs=" + Math.Round(freezeWatchSw.Elapsed.TotalMilliseconds, 2), immediate: true);
 			LogAuxiliaryRouterTokenTrace("auxiliary_simple_dialogue_http", array, "[AUXILIARY SIMPLE DIALOGUE HTTP]\nurl=" + apiUrl + "\nmodel=" + modelName + "\ncontrol_mode=" + controlMode + "\nai_response=\n" + content + "\nraw_response=\n" + (text ?? ""), Logger.EstimateTokens(content), requestBodyForTokenStats);
 			return true;
 		}
 		catch (Exception ex)
 		{
 			error = BuildAuxiliaryRouterExceptionText(ex);
+			FreezeWatchdog.Mark("AuxSimpleDialogue.exception", ex.GetType().Name + ": " + ex.Message + " elapsedMs=" + Math.Round(freezeWatchSw.Elapsed.TotalMilliseconds, 2), immediate: true);
 			LogAuxiliaryRouterTokenTrace("auxiliary_simple_dialogue_exception", array, "[AUXILIARY SIMPLE DIALOGUE EXCEPTION]\nerror=" + error + "\nstack=\n" + (ex?.StackTrace ?? ""), 0, requestBodyForTokenStats);
 			return false;
 		}

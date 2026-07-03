@@ -552,108 +552,55 @@ public class SubModule : MBSubModuleBase
 	protected override void OnApplicationTick(float dt)
 	{
 		long perfFrame = PerfProbe.BeginFrame(dt);
+		FreezeWatchdog.BeginFrame(dt);
 		try
 		{
-			using (PerfProbe.Scope("SubModule.ShoutTextInputPopup.ProcessDeferredCloseIfNeeded"))
-			{
-				ShoutTextInputPopup.ProcessDeferredCloseIfNeeded();
-			}
-			using (PerfProbe.Scope("SubModule.ShoutTextInputPopup.CloseForSystemInterruptionIfNeeded"))
-			{
-				ShoutTextInputPopup.CloseForSystemInterruptionIfNeeded();
-			}
-			using (PerfProbe.Scope("SubModule.ShoutTextInputPopup.KeepMissionPausedIfOpen"))
-			{
-				ShoutTextInputPopup.KeepMissionPausedIfOpen();
-			}
-			using (PerfProbe.Scope("SubModule.DevWeeklyReportPopup.ProcessDeferredCloseIfNeeded"))
-			{
-				DevWeeklyReportPopup.ProcessDeferredCloseIfNeeded();
-			}
-			using (PerfProbe.Scope("SubModule.PlayerNotorietyPopup.ProcessDeferredCloseIfNeeded"))
-			{
-				PlayerNotorietyPopup.ProcessDeferredCloseIfNeeded();
-			}
-			using (PerfProbe.Scope("SubModule.AnimusForgeConversationHistoryLogPopup.OnApplicationTick"))
-			{
-				AnimusForgeConversationHistoryLogPopup.OnApplicationTick();
-			}
-			using (PerfProbe.Scope("SubModule.AnimusForgeNativeConversationOverlay.OnApplicationTick"))
-			{
-				AnimusForgeNativeConversationOverlay.OnApplicationTick();
-			}
-			using (PerfProbe.Scope("SubModule.NativeConversationAnswerAreaController.OnApplicationTick"))
-			{
-				NativeConversationAnswerAreaController.OnApplicationTick();
-			}
-			using (PerfProbe.Scope("SubModule.ShoutBehavior.NativeConversationTts.OnApplicationTick"))
-			{
-				ShoutBehavior.OnApplicationTickForNativeConversationTtsExternal();
-			}
-			using (PerfProbe.Scope("SubModule.ConversationHelper.Tick"))
-			{
-				ConversationHelper.Tick();
-			}
-			using (PerfProbe.Scope("SubModule.ProcessPendingInitialApiGuideNotice"))
-			{
-				ProcessPendingInitialApiGuideNotice();
-			}
-			using (PerfProbe.Scope("SubModule.Logger.OnApplicationTick"))
-			{
-				Logger.OnApplicationTick();
-			}
-			using (PerfProbe.Scope("SubModule.BannerlordExceptionSentinel.OnApplicationTick"))
-			{
-				BannerlordExceptionSentinel.OnApplicationTick();
-			}
-			using (PerfProbe.Scope("SubModule.McmDropdownRuntimeRefresh.OnApplicationTick"))
-			{
-				McmDropdownRuntimeRefresh.OnApplicationTick();
-			}
-			using (PerfProbe.Scope("SubModule.EncyclopediaHeroPersonaPatch.OnApplicationTick"))
-			{
-				EncyclopediaHeroPersonaPatch.OnApplicationTick();
-			}
-			using (PerfProbe.Scope("SubModule.ModOnboardingBehavior.OnEngineTick"))
-			{
-				ModOnboardingBehavior.Instance?.OnEngineTick();
-			}
-			using (PerfProbe.Scope("SubModule.MyBehavior.OnEngineTick"))
-			{
-				MyBehavior.Instance?.OnEngineTick();
-			}
-			using (PerfProbe.Scope("SubModule.CourierDeliveryBehavior.OnEngineTick"))
-			{
-				CourierDeliveryBehavior.Instance?.OnEngineTick();
-			}
-			using (PerfProbe.Scope("SubModule.DuelBehavior.OnEngineTick"))
-			{
-				DuelBehavior.Instance?.OnEngineTick();
-			}
-			using (PerfProbe.Scope("SubModule.LordEncounterBehavior.OnEngineTick"))
-			{
-				LordEncounterBehavior.OnEngineTick();
-			}
-			using (PerfProbe.Scope("SubModule.AnimusForgeTerminalBehavior.OnEngineTick"))
-			{
-				AnimusForgeTerminalBehavior.Instance?.OnEngineTick();
-			}
-			using (PerfProbe.Scope("SubModule.CustomPolicyBehavior.OnEngineTick"))
-			{
-				CustomPolicyBehavior.Instance?.OnEngineTick();
-			}
-			using (PerfProbe.Scope("SubModule.NobleGatheringBehavior.OnEngineTick"))
-			{
-				NobleGatheringBehavior.Instance?.OnEngineTick();
-			}
-			using (PerfProbe.Scope("SubModule.VassalageBehavior.OnEngineTick"))
-			{
-				VassalageBehavior.Instance?.OnEngineTick();
-			}
+			RunWatchedTickPhase("SubModule.ShoutTextInputPopup.ProcessDeferredCloseIfNeeded", () => ShoutTextInputPopup.ProcessDeferredCloseIfNeeded());
+			RunWatchedTickPhase("SubModule.ShoutTextInputPopup.CloseForSystemInterruptionIfNeeded", () => ShoutTextInputPopup.CloseForSystemInterruptionIfNeeded());
+			RunWatchedTickPhase("SubModule.ShoutTextInputPopup.KeepMissionPausedIfOpen", () => ShoutTextInputPopup.KeepMissionPausedIfOpen());
+			RunWatchedTickPhase("SubModule.DevWeeklyReportPopup.ProcessDeferredCloseIfNeeded", () => DevWeeklyReportPopup.ProcessDeferredCloseIfNeeded());
+			RunWatchedTickPhase("SubModule.PlayerNotorietyPopup.ProcessDeferredCloseIfNeeded", () => PlayerNotorietyPopup.ProcessDeferredCloseIfNeeded());
+			RunWatchedTickPhase("SubModule.AnimusForgeConversationHistoryLogPopup.OnApplicationTick", () => AnimusForgeConversationHistoryLogPopup.OnApplicationTick());
+			RunWatchedTickPhase("SubModule.AnimusForgeNativeConversationOverlay.OnApplicationTick", () => AnimusForgeNativeConversationOverlay.OnApplicationTick());
+			RunWatchedTickPhase("SubModule.NativeConversationAnswerAreaController.OnApplicationTick", () => NativeConversationAnswerAreaController.OnApplicationTick());
+			RunWatchedTickPhase("SubModule.ShoutBehavior.NativeConversationTts.OnApplicationTick", () => ShoutBehavior.OnApplicationTickForNativeConversationTtsExternal());
+			RunWatchedTickPhase("SubModule.ConversationHelper.Tick", () => ConversationHelper.Tick());
+			RunWatchedTickPhase("SubModule.ProcessPendingInitialApiGuideNotice", () => ProcessPendingInitialApiGuideNotice());
+			RunWatchedTickPhase("SubModule.Logger.OnApplicationTick", () => Logger.OnApplicationTick());
+			RunWatchedTickPhase("SubModule.BannerlordExceptionSentinel.OnApplicationTick", () => BannerlordExceptionSentinel.OnApplicationTick());
+			RunWatchedTickPhase("SubModule.McmDropdownRuntimeRefresh.OnApplicationTick", () => McmDropdownRuntimeRefresh.OnApplicationTick());
+			RunWatchedTickPhase("SubModule.EncyclopediaHeroPersonaPatch.OnApplicationTick", () => EncyclopediaHeroPersonaPatch.OnApplicationTick());
+			RunWatchedTickPhase("SubModule.ModOnboardingBehavior.OnEngineTick", () => ModOnboardingBehavior.Instance?.OnEngineTick());
+			RunWatchedTickPhase("SubModule.MyBehavior.OnEngineTick", () => MyBehavior.Instance?.OnEngineTick());
+			RunWatchedTickPhase("SubModule.CourierDeliveryBehavior.OnEngineTick", () => CourierDeliveryBehavior.Instance?.OnEngineTick());
+			RunWatchedTickPhase("SubModule.DuelBehavior.OnEngineTick", () => DuelBehavior.Instance?.OnEngineTick());
+			RunWatchedTickPhase("SubModule.LordEncounterBehavior.OnEngineTick", () => LordEncounterBehavior.OnEngineTick());
+			RunWatchedTickPhase("SubModule.AnimusForgeTerminalBehavior.OnEngineTick", () => AnimusForgeTerminalBehavior.Instance?.OnEngineTick());
+			RunWatchedTickPhase("SubModule.CustomPolicyBehavior.OnEngineTick", () => CustomPolicyBehavior.Instance?.OnEngineTick());
+			RunWatchedTickPhase("SubModule.NobleGatheringBehavior.OnEngineTick", () => NobleGatheringBehavior.Instance?.OnEngineTick());
+			RunWatchedTickPhase("SubModule.VassalageBehavior.OnEngineTick", () => VassalageBehavior.Instance?.OnEngineTick());
+		}
+		catch (Exception ex)
+		{
+			FreezeWatchdog.Mark("SubModule.OnApplicationTick.exception", ex.GetType().Name + ": " + ex.Message, immediate: true);
+			throw;
 		}
 		finally
 		{
-			PerfProbe.EndFrame(perfFrame, "SubModule.OnApplicationTick.total");
+			using (FreezeWatchdog.Scope("SubModule.PerfProbe.EndFrame"))
+			{
+				PerfProbe.EndFrame(perfFrame, "SubModule.OnApplicationTick.total");
+			}
+			FreezeWatchdog.EndFrame();
+		}
+	}
+
+	private static void RunWatchedTickPhase(string name, Action action)
+	{
+		using (FreezeWatchdog.Scope(name))
+		using (PerfProbe.Scope(name))
+		{
+			action?.Invoke();
 		}
 	}
 

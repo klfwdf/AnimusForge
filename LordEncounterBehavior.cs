@@ -1829,7 +1829,39 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		catch
 		{
 		}
+		try
+		{
+			if (party.DefaultBehavior == AiBehavior.RaidSettlement && IsVillageSettlement(party.TargetSettlement))
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (party.ShortTermBehavior == AiBehavior.RaidSettlement && IsVillageSettlement(party.ShortTermTargetSettlement))
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
 		return false;
+	}
+
+	private static bool IsVillageSettlement(Settlement settlement)
+	{
+		try
+		{
+			return settlement != null && settlement.IsVillage;
+		}
+		catch
+		{
+			return false;
+		}
 	}
 
 	private static bool IsVillageRaidHeroParty(Hero hero)
@@ -7461,6 +7493,13 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		if (mapEvent == null)
 		{
 			throw new InvalidOperationException("Cannot fallback-open mission because battle is null.");
+		}
+		if (mapEvent.MapEventSettlement != null && mapEvent.MapEventSettlement.IsVillage)
+		{
+			PlayerEncounter.StartVillageBattleMission();
+			PlayerEncounter.StartAttackMission();
+			MapEvent.PlayerMapEvent?.BeginWait();
+			return;
 		}
 		bool flag = PlayerEncounter.IsNavalEncounter();
 		IMapScene mapSceneWrapper = Campaign.Current.MapSceneWrapper;

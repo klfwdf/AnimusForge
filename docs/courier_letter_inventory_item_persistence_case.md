@@ -25,6 +25,7 @@
 
 - 用稳定模板物品创建 `ItemObject`。
 - 复制模板物品的原生属性、分类、组件、价值、重量、是否商品等字段。
+- 稳定模板必须排除食物和动物，避免物品被自动消费或进入牲畜逻辑。
 - 只改 `StringId` 和显示名称。
 - 信件内容放进显示名称，不替换原版 `ItemComponent`。
 
@@ -59,6 +60,31 @@ TrySetRewardItemObjectName(target, text);
 ```
 
 `ApplyGeneratedRewardItemRpState(...)` 这个名字现在只是历史命名。它不能再设置 RP 组件、不能改类型、不能改是否商品。
+
+### 食物和动物不能作为生成模板
+
+失败路径是用奶酪、粮食、肉、鱼、酒、牲畜等作为生成物品模板。即使显示名正确，物品仍会继承食物自动消费或动物逻辑，最后可能在游戏推进时从库存里消失。
+
+成功做法是：
+
+- `IsStableGeneratedRewardTemplateItem(...)` 必须排除食物和动物。
+- 模板打分时，食物和动物必须返回 0。
+- 如果相似度匹配先选中了食物或动物，创建入口必须 fallback 到安全模板。
+- 安全模板优先选择非食物 `Goods` 或 `Book`。
+
+成功代码锚点：`RewardSystemBehavior.IsGeneratedRewardAutoConsumedTemplateItem(...)`
+
+```csharp
+return item.Type == ItemObject.ItemTypeEnum.Animal
+    || item.IsFood
+    || ItemCategoryIsAny(item,
+        DefaultItemCategories.Meat,
+        DefaultItemCategories.Fish,
+        DefaultItemCategories.Grain,
+        DefaultItemCategories.Beer,
+        DefaultItemCategories.Wine,
+        DefaultItemCategories.DateFruit);
+```
 
 ### 全局 manifest 不能作为游戏数据源
 
@@ -283,6 +309,7 @@ return (isReply ? name + "的回信：" : "来自" + name + "的信：") + "\n" 
 - 不要把生成信件强制设为 `ItemObject.ItemTypeEnum.Book`。
 - 不要把信件内容塞进自定义 `ItemComponent` 后替换模板组件。
 - 不要设置 `NotMerchandise=true` 来表达 RP 物品。
+- 不要用食物或动物作为生成物品模板。
 - 不要把 `GeneratedRewardItems.json` 或任何日志目录文件作为正式存档数据。
 - 不要在读档时把全局 manifest 合并到当前存档记录。
 - 不要通过后台重试长期恢复信件库存。

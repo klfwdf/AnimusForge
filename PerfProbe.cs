@@ -135,14 +135,8 @@ internal static class PerfProbe
 
 	private static bool IsEnabled()
 	{
-		try
-		{
-			return Logger.IsModLogicEnabled;
-		}
-		catch
-		{
-			return false;
-		}
+		// Disabled for player diagnostics: the periodic frame window spam drowns out freeze checkpoints.
+		return false;
 	}
 
 	private static void RecordFrameDt(float dt)

@@ -7598,6 +7598,10 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 	private static float CalculateGeneratedRewardTemplateScore(string lookup, RewardItemInfo info, float aliasScore)
 	{
 		ItemObject item = info?.Item;
+		if (IsGeneratedRewardAutoConsumedTemplateItem(item))
+		{
+			return 0f;
+		}
 		float score = Math.Max(0f, aliasScore);
 		if (IsGeneratedRewardMiscTemplateItem(item))
 		{
@@ -7767,7 +7771,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 
 	private static bool IsGeneratedRewardMiscTemplateItem(ItemObject item)
 	{
-		return item != null && (item.Type == ItemObject.ItemTypeEnum.Goods || item.Type == ItemObject.ItemTypeEnum.Animal || item.Type == ItemObject.ItemTypeEnum.Book);
+		return item != null && !IsGeneratedRewardAutoConsumedTemplateItem(item) && (item.Type == ItemObject.ItemTypeEnum.Goods || item.Type == ItemObject.ItemTypeEnum.Book);
 	}
 
 	private static bool IsGeneratedRewardWeaponOrArmorTemplateItem(ItemObject item)
@@ -8107,7 +8111,19 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 		resolution = null;
 		string requestedName = (lookup ?? "").Trim();
 		ItemObject templateItem = templateResolution?.Item;
-		if (string.IsNullOrWhiteSpace(requestedName) || templateItem == null)
+		if (string.IsNullOrWhiteSpace(requestedName))
+		{
+			return false;
+		}
+		if (!IsStableGeneratedRewardTemplateItem(templateItem))
+		{
+			templateItem = ResolveGeneratedInventoryTemplateItem(templateResolution?.MatchedStringId, requestedName);
+		}
+		if (!IsStableGeneratedRewardTemplateItem(templateItem))
+		{
+			templateItem = ResolveGeneratedInventoryTemplateItem(null, requestedName);
+		}
+		if (!IsStableGeneratedRewardTemplateItem(templateItem))
 		{
 			return false;
 		}
@@ -8549,7 +8565,18 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			return false;
 		}
 		string stringId = (item.StringId ?? "").Trim();
-		return !IsGeneratedRewardItemStringId(stringId) && !stringId.StartsWith("af_generated_reward_pending_", StringComparison.OrdinalIgnoreCase);
+		return !IsGeneratedRewardAutoConsumedTemplateItem(item) && !IsGeneratedRewardItemStringId(stringId) && !stringId.StartsWith("af_generated_reward_pending_", StringComparison.OrdinalIgnoreCase);
+	}
+
+	private static bool IsGeneratedRewardAutoConsumedTemplateItem(ItemObject item)
+	{
+		if (item == null)
+		{
+			return false;
+		}
+		return item.Type == ItemObject.ItemTypeEnum.Animal
+			|| item.IsFood
+			|| ItemCategoryIsAny(item, DefaultItemCategories.Meat, DefaultItemCategories.Fish, DefaultItemCategories.Grain, DefaultItemCategories.Beer, DefaultItemCategories.Wine, DefaultItemCategories.DateFruit);
 	}
 
 	private GeneratedRewardRosterItemRecord NormalizeGeneratedRewardRosterItemRecord(string fallbackKey, GeneratedRewardRosterItemRecord record)
