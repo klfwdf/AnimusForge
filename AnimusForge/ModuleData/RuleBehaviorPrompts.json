@@ -858,7 +858,7 @@
             "TopicLabel": "Royal Diplomacy / King-to-King Negotiation",
             "Code": "DIPLOMACY",
             "NonHeroInstruction": "你不是国王或贵族，无法参与国与国之间的外交谈判。如果玩家提及相关话题，请表示你没有这个资格。",
-            "Instruction": "【国王外交规则】你是王国统治者。玩家是国王时可谈宣战、议和、结盟、贸易等王国外交；玩家不是国王时，只谈政治承认、停战、互不侵犯、贡金、觐见或建国前条件，正式王国同盟/贸易/和约需建国后。游戏内84天=一年，21天=一季度。",
+            "Instruction": "【国王外交规则】你是王国统治者。玩家是国王时可谈宣战、议和、结盟、贸易等王国外交；玩家不是国王时，只谈政治承认、停战、互不侵犯、贡金、觐见或建国前条件，正式王国同盟/贸易/和约需建国后。游戏内84天=一年，21天=一季度。术语规范：贡金为0的议和必须称为“无条件和平”，禁止称为“白和平”。",
             "PostprocessRules": [
                 {
                     "Tag": "[ACTION:DIPLOMACY:DECLARE_WAR:id1:id2]",
@@ -866,7 +866,7 @@
                 },
                 {
                     "Tag": "[ACTION:DIPLOMACY:MAKE_PEACE:付贡金方ID:收贡金方ID:tributeAmount:durationDays]",
-                    "Description": "议和需双方国王无条件同意。可谈判天数和贡金：tributeAmount: 0/auto/数字，durationDays: default/1-252（21天=一季度，84天=一年）。两个ID必须是玩家+你的王国。若同时有PROPOSE标签可用，国王间外交优先用DIPLOMACY。"
+                    "Description": "议和需双方国王无条件同意。可谈判天数和贡金：tributeAmount: 0=无条件和平/auto/数字，durationDays: default/1-252（21天=一季度，84天=一年）。两个ID必须是玩家+你的王国。禁止将无条件和平称为“白和平”。若同时有PROPOSE标签可用，国王间外交优先用DIPLOMACY。"
                 },
                 {
                     "Tag": "[ACTION:DIPLOMACY:FORM_ALLIANCE:id1:id2:durationDays]",

@@ -658,7 +658,7 @@ namespace AnimusForge
 				if (IsPlayerKing())
 				{
 					sb.AppendLine(); sb.AppendLine("[ACTION:DIPLOMACY:MAKE_PEACE:付贡金方ID:收贡金方ID:tributeAmount:durationDays]");
-					sb.AppendLine("  两个ID必须是玩家王国和你的王国。tributeAmount: 0=白和平 / auto / 具体数字。durationDays: default=100 / 1-252。双方同意后输出。");
+					sb.AppendLine("  两个ID必须是玩家王国和你的王国。tributeAmount: 0=无条件和平 / auto / 具体数字。durationDays: default=100 / 1-252。双方同意后输出。");
 				}
 
 				// FORM_ALLIANCE (king only)

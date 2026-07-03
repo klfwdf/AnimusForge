@@ -1592,7 +1592,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		string kind = (diplomacyKind ?? "").Trim().ToUpperInvariant();
 		if (kind == "MAKE_PEACE")
 		{
-			return senderName + "致" + playerName + "：\n\n我们两国，" + senderKingdomName + "与" + playerKingdomName + "，继续流血只会削弱各自的王冠。我愿意讨论议和，包括白和平、贡金方向和期限。若你愿意给出条件，请回信或当面谈判。";
+			return senderName + "致" + playerName + "：\n\n我们两国，" + senderKingdomName + "与" + playerKingdomName + "，继续流血只会削弱各自的王冠。我愿意讨论议和，包括无条件和平、贡金方向和期限。若你愿意给出条件，请回信或当面谈判。";
 		}
 		if (kind == "FORM_ALLIANCE")
 		{
