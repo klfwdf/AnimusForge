@@ -6253,6 +6253,23 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		{
 			return "";
 		}
+		return BuildMeetingTauntInstructionBody(target, targetCharacter);
+	}
+
+	internal static string BuildForcedMeetingTauntRuntimeInstructionForExternal(Hero target, CharacterObject targetCharacter)
+	{
+		try
+		{
+			return BuildMeetingTauntInstructionBody(target, targetCharacter);
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	private static string BuildMeetingTauntInstructionBody(Hero target, CharacterObject targetCharacter)
+	{
 		string text = (MyBehavior.BuildPlayerPublicDisplayNameForExternal() ?? "").Trim();
 		if (string.IsNullOrWhiteSpace(text))
 		{

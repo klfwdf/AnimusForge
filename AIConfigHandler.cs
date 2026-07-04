@@ -2226,7 +2226,10 @@ public static class AIConfigHandler
 			}
 			upsert(BuildLegacyRulePrompt("duel", _guardrail?.Duel?.IsEnabled ?? true, duelRegistryInstruction, _guardrail?.Duel?.AcceptKeywords ?? new List<string>(), "combat", 90, _guardrail?.Duel?.TopicNumber ?? 0, _guardrail?.Duel?.TopicLabel ?? "", _guardrail?.Duel?.Code ?? ""));
 			upsert(BuildLegacyRulePrompt("reward", _guardrail?.Reward?.IsEnabled ?? true, _guardrail?.Reward?.Instruction ?? "", _guardrail?.Reward?.TriggerKeywords ?? new List<string>(), "trade", 80, _guardrail?.Reward?.TopicNumber ?? 0, _guardrail?.Reward?.TopicLabel ?? "", _guardrail?.Reward?.Code ?? ""));
-			upsert(BuildLegacyRulePrompt("loan", _guardrail?.Loan?.IsEnabled ?? true, _guardrail?.Loan?.Instruction ?? "", _guardrail?.Loan?.TriggerKeywords ?? new List<string>(), "finance", 85, _guardrail?.Loan?.TopicNumber ?? 0, _guardrail?.Loan?.TopicLabel ?? "", _guardrail?.Loan?.Code ?? ""));
+			if (_guardrail?.Loan != null)
+			{
+				upsert(BuildLegacyRulePrompt("loan", _guardrail.Loan.IsEnabled, _guardrail.Loan.Instruction ?? "", _guardrail.Loan.TriggerKeywords ?? new List<string>(), "finance", 85, _guardrail.Loan.TopicNumber, _guardrail.Loan.TopicLabel ?? "", _guardrail.Loan.Code ?? ""));
+			}
 			upsert(BuildLegacyRulePrompt("surroundings", _guardrail?.Surroundings?.IsEnabled ?? true, _guardrail?.Surroundings?.Instruction ?? "", _guardrail?.Surroundings?.TriggerKeywords ?? new List<string>(), "world", 70, _guardrail?.Surroundings?.TopicNumber ?? 0, _guardrail?.Surroundings?.TopicLabel ?? "", _guardrail?.Surroundings?.Code ?? ""));
 			if (_guardrail?.RulePrompts != null && _guardrail.RulePrompts.Count > 0)
 			{
@@ -2350,6 +2353,10 @@ public static class AIConfigHandler
 						addSeed(text);
 					}
 				}
+			}
+			if (string.Equals((ruleTag ?? "").Trim(), "reward", StringComparison.OrdinalIgnoreCase))
+			{
+				addSeed(BuildRuleInstructionSeed(ruleTag, ruleInstruction));
 			}
 			if (seeds.Count <= 0)
 			{
@@ -6184,7 +6191,7 @@ public static class AIConfigHandler
 				}
 				if (string.Equals(text, "meeting_taunt", StringComparison.OrdinalIgnoreCase))
 				{
-					string text4 = SceneTauntBehavior.BuildUnifiedTauntRuntimeInstructionForExternal(ResolveConversationTargetHero(), ResolveConversationTargetCharacter(), ResolveConversationTargetAgentIndex());
+					string text4 = LordEncounterBehavior.BuildForcedMeetingTauntRuntimeInstructionForExternal(ResolveConversationTargetHero(), ResolveConversationTargetCharacter());
 					if (!string.IsNullOrWhiteSpace(text4))
 					{
 						value = text4;
@@ -6652,14 +6659,45 @@ public static class AIConfigHandler
 	{
 		try
 		{
+			List<string> list = new List<string>();
 			Hero hero = targetHero ?? ResolveConversationTargetHero();
 			string text = ResolveHeroJoinPartyRuntimeStateKey(hero);
+			if (!string.IsNullOrWhiteSpace(text))
+			{
+				string text2 = ResolveRuleRuntimeText("hero_join_party", text, forConstraint: false, BuildHeroJoinPartyRuntimeTokens(hero));
+				if (!string.IsNullOrWhiteSpace(text2))
+				{
+					list.Add(text2.Trim());
+				}
+			}
+			string playerRulerRecruitmentText = BuildRuntimePlayerKingdomRecruitmentInstruction();
+			if (!string.IsNullOrWhiteSpace(playerRulerRecruitmentText))
+			{
+				list.Add(playerRulerRecruitmentText.Trim());
+			}
+			return string.Join("\n", list.Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase)).Trim();
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	private static string BuildRuntimePlayerKingdomRecruitmentInstruction()
+	{
+		try
+		{
+			Dictionary<string, string> dictionary = BuildKingdomServiceRuntimeTokens(out var playerClan, out var kingdom, out var _, out var _, out var _, out var _, out var _, out var _, out var _, out var _, out var _);
+			if (playerClan == null || !IsPlayerKingdomRecruitmentModeActive(playerClan, kingdom))
+			{
+				return "";
+			}
+			string text = ResolvePlayerKingdomRecruitmentStateKey(playerClan, kingdom, ResolveConversationTargetClan(), ResolveConversationTargetHero());
 			if (string.IsNullOrWhiteSpace(text))
 			{
 				return "";
 			}
-			string text2 = ResolveRuleRuntimeText("hero_join_party", text, forConstraint: false, BuildHeroJoinPartyRuntimeTokens(hero));
-			return string.IsNullOrWhiteSpace(text2) ? "" : text2.Trim();
+			return ResolveKingdomServiceRuntimeText(text, forConstraint: false, dictionary);
 		}
 		catch
 		{
@@ -7196,44 +7234,12 @@ public static class AIConfigHandler
 				Clan clan = ResolveConversationTargetClan();
 				Hero hero = ResolveConversationTargetHero();
 				string text4 = ResolvePlayerKingdomRecruitmentStateKey(playerClan, kingdom, clan, hero);
-				if (string.IsNullOrWhiteSpace(text4))
-				{
-					Logger.Log("AIConfig", "[KingdomServicePostprocessRules] player_ruler empty_state playerClan=" + (playerClan?.StringId ?? "") + " playerKingdom=" + (kingdom?.StringId ?? "") + " targetClan=" + (clan?.StringId ?? "") + " targetHero=" + (hero?.StringId ?? ""));
-					return list;
-				}
 				string text5 = "";
 				if (dictionary != null && dictionary.TryGetValue("targetClanId", out var value1))
 				{
 					text5 = (value1 ?? "").Trim();
 				}
-				foreach (PostprocessRuleEntry guardrailRulePostprocessRule2 in GetGuardrailRulePostprocessRules("kingdom_service"))
-				{
-					string text6 = (guardrailRulePostprocessRule2?.Tag ?? "").Trim();
-					string description2 = guardrailRulePostprocessRule2?.Description ?? "";
-					if (string.IsNullOrWhiteSpace(text6))
-					{
-						continue;
-					}
-					if (!IsPlayerRulerKingdomServicePostprocessTag(text6))
-					{
-						continue;
-					}
-					if (text6.IndexOf("{targetClanId}", StringComparison.OrdinalIgnoreCase) >= 0)
-					{
-						if (string.IsNullOrWhiteSpace(text5))
-						{
-							continue;
-						}
-						text6 = text6.Replace("{targetClanId}", text5);
-						description2 = description2.Replace("{targetClanId}", text5);
-					}
-					list.Add(new PostprocessRuleEntry
-					{
-						Tag = text6,
-						Description = description2
-					});
-				}
-				Logger.Log("AIConfig", "[KingdomServicePostprocessRules] player_ruler state=" + text4 + " playerClan=" + (playerClan?.StringId ?? "") + " playerKingdom=" + (kingdom?.StringId ?? "") + " targetClan=" + (clan?.StringId ?? "") + " targetHero=" + (hero?.StringId ?? "") + " targetClanIdToken=" + text5 + " rules=" + ((list.Count == 0) ? "（无）" : string.Join(",", list.Select((PostprocessRuleEntry x) => x?.Tag ?? "").Where((string x) => !string.IsNullOrWhiteSpace(x)))));
+				Logger.Log("AIConfig", "[KingdomServicePostprocessRules] player_ruler state=" + text4 + " playerClan=" + (playerClan?.StringId ?? "") + " playerKingdom=" + (kingdom?.StringId ?? "") + " targetClan=" + (clan?.StringId ?? "") + " targetHero=" + (hero?.StringId ?? "") + " targetClanIdToken=" + text5 + " rules=（无，CLAN_JOIN_PLAYER_KINGDOM已迁移到NPC_JOIN）");
 				return list;
 			}
 			string text = ResolveRuntimeKingdomServiceStateKeyForPostprocess(kingdom, flag, kingdom2, flag2, num, num2, num3, num4, num5, num6);
@@ -7281,6 +7287,116 @@ public static class AIConfigHandler
 				});
 			}
 			Logger.Log("AIConfig", "[KingdomServicePostprocessRules] state=" + text + " playerClan=" + (playerClan?.StringId ?? "") + " playerKingdom=" + (kingdom?.StringId ?? "") + " targetKingdom=" + (kingdom2?.StringId ?? "") + " targetKingdomIdToken=" + text2 + " isMercenaryService=" + flag + " isSameKingdom=" + flag2 + " playerTier=" + num + " mercTier=" + num2 + " vassalTier=" + num3 + " trustCurrent=" + num6 + " trustMerc=" + num4 + " trustVassal=" + num5 + " rules=" + ((list.Count == 0) ? "（无）" : string.Join(",", list.Select((PostprocessRuleEntry x) => x?.Tag ?? "").Where((string x) => !string.IsNullOrWhiteSpace(x)))));
+		}
+		catch
+		{
+		}
+		return list;
+	}
+
+	public static List<PostprocessRuleEntry> BuildRuntimeHeroJoinPartyPostprocessRules(bool includePersonalJoinRule = true)
+	{
+		List<PostprocessRuleEntry> list = new List<PostprocessRuleEntry>();
+		try
+		{
+			foreach (PostprocessRuleEntry guardrailRulePostprocessRule in GetGuardrailRulePostprocessRules("hero_join_party"))
+			{
+				string text = (guardrailRulePostprocessRule?.Tag ?? "").Trim();
+				if (string.IsNullOrWhiteSpace(text) || IsPlayerRulerKingdomServicePostprocessTag(text))
+				{
+					continue;
+				}
+				if (!includePersonalJoinRule && string.Equals(text, "[A:H_J_P_P]", StringComparison.OrdinalIgnoreCase))
+				{
+					continue;
+				}
+				if (list.Any((PostprocessRuleEntry x) => string.Equals((x?.Tag ?? "").Trim(), text, StringComparison.OrdinalIgnoreCase)))
+				{
+					continue;
+				}
+				list.Add(new PostprocessRuleEntry
+				{
+					Tag = text,
+					Description = guardrailRulePostprocessRule?.Description ?? ""
+				});
+			}
+			foreach (PostprocessRuleEntry runtimeClanJoinRule in BuildRuntimePlayerRulerClanJoinPostprocessRules("hero_join_party", "HeroJoinPartyPostprocessRules"))
+			{
+				string text2 = (runtimeClanJoinRule?.Tag ?? "").Trim();
+				if (string.IsNullOrWhiteSpace(text2))
+				{
+					continue;
+				}
+				if (list.Any((PostprocessRuleEntry x) => string.Equals((x?.Tag ?? "").Trim(), text2, StringComparison.OrdinalIgnoreCase)))
+				{
+					continue;
+				}
+				list.Add(runtimeClanJoinRule);
+			}
+			Logger.Log("AIConfig", "[HeroJoinPartyPostprocessRules] includePersonalJoin=" + includePersonalJoinRule + " rules=" + ((list.Count == 0) ? "（无）" : string.Join(",", list.Select((PostprocessRuleEntry x) => x?.Tag ?? "").Where((string x) => !string.IsNullOrWhiteSpace(x)))));
+		}
+		catch
+		{
+		}
+		return list;
+	}
+
+	private static List<PostprocessRuleEntry> BuildRuntimePlayerRulerClanJoinPostprocessRules(string sourceRuleId, string logPrefix)
+	{
+		List<PostprocessRuleEntry> list = new List<PostprocessRuleEntry>();
+		try
+		{
+			Dictionary<string, string> dictionary = BuildKingdomServiceRuntimeTokens(out var playerClan, out var kingdom, out var flag, out var kingdom2, out var flag2, out var num, out var num2, out var num3, out var num4, out var num5, out var num6);
+			if (playerClan == null)
+			{
+				Logger.Log("AIConfig", "[" + logPrefix + "] playerClan=null targetKingdomId=" + ((dictionary != null && dictionary.TryGetValue("targetKingdomId", out var value0)) ? (value0 ?? "") : "") + " playerTier=" + num + " mercTier=" + num2 + " vassalTier=" + num3 + " trustCurrent=" + num6 + " trustMerc=" + num4 + " trustVassal=" + num5);
+				return list;
+			}
+			if (!IsPlayerKingdomRecruitmentModeActive(playerClan, kingdom))
+			{
+				return list;
+			}
+			Clan clan = ResolveConversationTargetClan();
+			Hero hero = ResolveConversationTargetHero();
+			string text = ResolvePlayerKingdomRecruitmentStateKey(playerClan, kingdom, clan, hero);
+			if (string.IsNullOrWhiteSpace(text))
+			{
+				Logger.Log("AIConfig", "[" + logPrefix + "] player_ruler empty_state playerClan=" + (playerClan?.StringId ?? "") + " playerKingdom=" + (kingdom?.StringId ?? "") + " targetClan=" + (clan?.StringId ?? "") + " targetHero=" + (hero?.StringId ?? ""));
+				return list;
+			}
+			string text2 = "";
+			if (dictionary != null && dictionary.TryGetValue("targetClanId", out var value1))
+			{
+				text2 = (value1 ?? "").Trim();
+			}
+			foreach (PostprocessRuleEntry guardrailRulePostprocessRule in GetGuardrailRulePostprocessRules(sourceRuleId))
+			{
+				string text3 = (guardrailRulePostprocessRule?.Tag ?? "").Trim();
+				string description = guardrailRulePostprocessRule?.Description ?? "";
+				if (string.IsNullOrWhiteSpace(text3))
+				{
+					continue;
+				}
+				if (!IsPlayerRulerKingdomServicePostprocessTag(text3))
+				{
+					continue;
+				}
+				if (text3.IndexOf("{targetClanId}", StringComparison.OrdinalIgnoreCase) >= 0)
+				{
+					if (string.IsNullOrWhiteSpace(text2))
+					{
+						continue;
+					}
+					text3 = text3.Replace("{targetClanId}", text2);
+					description = description.Replace("{targetClanId}", text2);
+				}
+				list.Add(new PostprocessRuleEntry
+				{
+					Tag = text3,
+					Description = description
+				});
+			}
+			Logger.Log("AIConfig", "[" + logPrefix + "] player_ruler state=" + text + " playerClan=" + (playerClan?.StringId ?? "") + " playerKingdom=" + (kingdom?.StringId ?? "") + " targetClan=" + (clan?.StringId ?? "") + " targetHero=" + (hero?.StringId ?? "") + " targetClanIdToken=" + text2 + " rules=" + ((list.Count == 0) ? "（无）" : string.Join(",", list.Select((PostprocessRuleEntry x) => x?.Tag ?? "").Where((string x) => !string.IsNullOrWhiteSpace(x)))));
 		}
 		catch
 		{

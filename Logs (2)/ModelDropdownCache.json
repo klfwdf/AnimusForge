@@ -1,0 +1,15 @@
+﻿{
+  "MainOptions": [],
+  "MainSelected": "*手动填写*",
+  "AuxiliaryOptions": [
+    "gpt-4o-mini"
+  ],
+  "AuxiliarySelected": "*手动填写*",
+  "ActionPostprocessOptions": [],
+  "ActionPostprocessSelected": "*手动填写*",
+  "EventAndRebellionOptions": [
+    "deepseek-v4-pro"
+  ],
+  "EventAndRebellionSelected": "*手动填写*",
+  "SavedAtUtc": "2026-07-03T16:36:08.9866678Z"
+}

@@ -23,7 +23,7 @@
         "PostprocessRules": [
             {
                 "Tag": "[ACTION:DUEL]",
-                "Description": "如果玩家和NPC都无条件正式同意或决定了真剑，武器，比武决斗，输出这个,只有一方同意不算，不是正式单挑，普通打架不算，如果双方只是叫嚣也不算,如果还在讨论彩头和赌注，以及并非单挑而是群战，那么不允许输出这个"
+                "Description": "如果玩家和NPC都无条件正式同意或决定了真剑，武器，比武决斗，输出这个,只有一方同意不算，不是正式单挑，普通打架不算，如果双方只是叫嚣也不算,如果还在讨论彩头和赌注，其中一方还没有接受赌注，以及并非单挑而是群战，那么不允许输出这个"
             },
             {
                 "Tag": "[AD;金额;天数;备注内容]",
@@ -45,7 +45,7 @@
         "TopicLabel": "IBarter, Bestow, or Exchange Assets",
         "Code": "Item Transfer",
         "NonHeroInstruction": "你不是一个有名有姓的NPC，你只是普通士兵或平民，你无法进行交易或者物品转让",
-        "Instruction": "【交易规则】你只能承诺转移或交易【（{npcName}）商铺可用财富与物品】中真实存在且数量足够的财物，你最好让玩家先给钱或物，严禁瞎编不存在的事物。",
+        "Instruction": "【交易、转移、借钱、借贷、赊账与还款规则】你只能承诺转移或交易【（{npcName}）商铺可用财富与物品】中真实存在且数量足够的财物，你最好让玩家先给钱或物，严禁瞎编不存在的事物。玩家提出借钱、周转、延期、赊账、先拿货后付款、还款或免债时，也按本规则处理：可以谈期限、利息、风险、还法和罚则；只有你明确同意先给钱、先给货或允许赊欠，才算建立新债务；若仍在追问、压价、谈条件或拒绝，就只文本回复，不要说成已经成交。",
         "PostprocessRules": [
             {
                 "Tag": "[ACTION:GIVE_GOLD:金额]",
@@ -53,7 +53,7 @@
             },
             {
                 "Tag": "[ACTION:GIVE_ITEM:物品名称:数量]",
-                "Description": "请分析NPC的回复,判断NPC是否有把什么物品交给了玩家，如果NPC只是给玩家试用，那么请参考AD标签"
+                "Description": "请分析NPC的回复,判断NPC是否有把什么物品交给了玩家，参考NPC的物品清单，优先填写里面的物品名称，如果NPC只是给玩家试用，那么请参考AD标签,禁止填兵种和人名"
             },
             {
                 "Tag": "[AD;金额;天数;N/P;备注内容]",
@@ -89,57 +89,9 @@
             "我已经把钱付给你了，赶紧把货给我。"
         ]
     },
-    "Loan": {
-        "IsEnabled": true,
-        "TopicNumber": 3,
-        "TopicLabel": "Debts and credit",
-        "Code": "DEBT",
-        "NonHeroInstruction": "你不是一个有名有姓的NPC，你只是普通士兵或平民，你无法与玩家进行经济往来",
-        "Instruction": "【借贷与赊账规则】当玩家提出借钱、周转、延期、赊账或先拿货后付款时，你可以先谈期限、利息、风险与还法。\n【是否同意新增债务】即使信任足够，你也仍可因财力不足、库存不足、局势危险、玩家信用差、关系不好、性格保守或单纯不愿承担风险而拒绝。\n【新增债务】只有当你明确同意先给钱、先给货或允许赊欠时，才算建立新债务；若你仍在追问、压价、谈条件或拒绝，就只文本回复，不要把它当成已经成交。\n【还款与罚则】还款、逾期、罚则、延期等细节可以继续协商，但本轮是否真的新增债务，仍只以你最终明确答应的内容为准。",
-        "PostprocessRules": [
-            {
-                "Tag": "[ACTION:GIVE_GOLD:金额]",
-                "Description": "请分析NPC的回复,判断NPC是否有把第纳尔交给了玩家，如果NPC只是给玩家试用，那么请参考AD标签，如果NPC说的数量模棱两可，那么自行判断应该给多少钱。。"
-            },
-            {
-                "Tag": "[ACTION:GIVE_ITEM:物品名称:数量]",
-                "Description": "请分析NPC的回复,判断NPC是否有把什么物品交给了玩家，如果NPC只是给玩家试用，那么请参考AD标签"
-            },
-            {
-                "Tag": "[AD;金额;天数;N/P;备注内容]",
-                "Description": "当NPC或玩家主动向其中一方承诺且双方都无条件同意未来给予事物如物品、第纳尔、领地等）且当前还不在讨论事物细节时输出,或者当某一方在交易时已经先给了应付事物，而另一方还未给时，需先估算另一方应付的具体价值然后输出。金额=玩家或NPC应付/承诺的总价值；天数=约定期限（1季度=21天，1年=84天，无“周”，未约定填1）；方向=P表示玩家欠NPC,方向=N表示NPC欠玩家，备注=不少于50字的对话背景。"
-            },
-            {
-                "Tag": "[ADP;债务ID]",
-                "Description": "如果NPC承认自己收到了对应（优先考察欠款的备注内容）的欠款或者付款，或者豁免，就输出这个"
-            }
-        ],
-        "RuntimeInstructionTemplates": {
-            "level_1": "你对{playerName}持彻底不信态度，必须绝对且直接地拒绝{playerName}的任何借贷、借物请求。严禁提出任何抵押物要求、交换条件或变相的借贷方案。",
-            "level_2": "你对{playerName}持极度怀疑态度，必须绝对且直接地拒绝{playerName}的任何借贷、借物请求。严禁提出任何抵押物要求、交换条件或变相的借贷方案。",
-            "level_3": "你对{playerName}持强烈戒备态度，必须绝对且直接地拒绝{playerName}的任何借贷、借物请求。严禁提出任何抵押物要求、交换条件或变相的借贷方案。",
-            "level_4": "你对{playerName}持不信任态度，必须绝对且直接地拒绝{playerName}的任何借贷、借物请求。严禁提出任何抵押物要求、交换条件或变相的借贷方案。",
-            "level_5": "你对{playerName}持保留态度，必须绝对且直接地拒绝{playerName}的任何借贷、借物请求。严禁提出任何抵押物要求、交换条件或变相的借贷方案。",
-            "level_6": "你对{playerName}持观望态度，必须绝对且直接地拒绝{playerName}的任何借贷、借物请求。严禁提出任何抵押物要求、交换条件或变相的借贷方案。"
-        },
-        "TriggerKeywords": [
-            "能不能借我一笔钱周转？",
-            "先借我几百第纳尔应急。",
-            "宽限我几天，过阵子连本带利还你。",
-            "能不能再给我延期几天？",
-            "这笔钱先记在我账上。",
-            "东西我先拿走，钱算我赊欠你的，行不行？",
-            "这是上次欠你们家族的钱，我今天带来还了。",
-            "我先还你一部分，剩下的过几天补上。",
-            "利息太高了，能不能少算一点？",
-            "这账期太短了，能分期还款吗？",
-            "先借我点粮食，等秋收了还你。",
-            "债我已经还清了，我们两清了。"
-        ]
-    },
     "Surroundings": {
         "IsEnabled": true,
-        "TopicNumber": 4,
+        "TopicNumber": 3,
         "TopicLabel": "Information on nearby settlements",
         "Code": "NEARBY",
         "Instruction": "【周边定居点信息（仅在玩家咨询地理方位/附近情报时启用）】",
@@ -162,27 +114,23 @@
             "IsEnabled": true,
             "Group": "politics",
             "Priority": 88,
-            "TopicNumber": 5,
+            "TopicNumber": 4,
             "TopicLabel": "Join or leave a kingdom as a mercenary or vassal",
-            "Code": "KINGDOM",
+            "Code": "player join",
             "NonHeroInstruction": "如果玩家说要效忠于你的国家，你可以引导玩家去找领主或者势力领袖。",
             "Instruction": "【势力效力规则】以本轮运行时状态为准。",
             "PostprocessRules": [
                 {
                     "Tag": "[ACTION:KINGDOM_SERVICE:LEAVE:current]",
-                    "Description": "如果NPC和玩家在<latest_reply>里正式无条件同意或决定了玩家退出当前效力，就输出这个。"
+                    "Description": "如果NPC和玩家在<latest_reply>里正式无条件同意或决定了玩家本人退出当前效力，就输出这个。"
                 },
                 {
                     "Tag": "[ACTION:KINGDOM_SERVICE:MERCENARY:{targetKingdomId}]",
-                    "Description": "如果NPC和玩家在<latest_reply>里正式无条件同意或决定了玩家以雇佣兵身份加入目标王国，就输出这个，本标签禁止用于NPC加入目标王国"
+                    "Description": "如果NPC和玩家在<latest_reply>里正式无条件同意或决定了玩家本人以雇佣兵身份加入目标王国，就输出这个，本标签禁止用于NPC加入目标王国"
                 },
                 {
                     "Tag": "[ACTION:KINGDOM_SERVICE:VASSAL:{targetKingdomId}]",
-                    "Description": "如果NPC和玩家在<latest_reply>里正式无条件同意或决定了玩家以正式封臣身份加入目标王国，就输出这个，本标签禁止用于NPC加入目标王国"
-                },
-                {
-                    "Tag": "[ACTION:KINGDOM_SERVICE:CLAN_JOIN_PLAYER_KINGDOM:{targetClanId}]",
-                    "Description": "NPC在<latest_reply>里最终明确无条件同意或决定了带领整个家族加入玩家王国成为领主时，输出这个。这个标签只代表家族归附和王国归属改变，不代表NPC本人加入玩家队伍、成为玩家同伴或跟玩家上路；执行时目标家族当前拥有的城镇、城堡及其附属村庄会随家族一起归入玩家王国，不应留给旧王国或旧领主。若<latest_reply>表达的是“我本人加入你的队伍/当你的同伴/跟你走”，禁止输出这个；若<latest_reply>只是模糊同意“效力于你/加入你/来你麾下”，没有明确整个家族加入玩家王国成为领主，禁止输出。若NPC只是谈条件、犹豫、拒绝、要求报酬、要求封地、要求保证、要求日后再议，禁止输出。"
+                    "Description": "如果NPC和玩家在<latest_reply>里正式无条件同意或决定了玩家本人以正式封臣身份加入目标王国，就输出这个，本标签禁止用于NPC加入目标王国"
                 }
             ],
             "RuntimeInstructionTemplates": {
@@ -249,7 +197,7 @@
             "IsEnabled": true,
             "Group": "settlement",
             "Priority": 87,
-            "TopicNumber": 6,
+            "TopicNumber": 5,
             "TopicLabel": "Request passage",
             "Code": "PASSAGE",
             "NonHeroInstruction": "【领主大厅通行规则】这条只给城镇领主大厅门口的普通守卫用。是否放行由你决定；只有当你最终明确答应让玩家通过时，才算真的放行。",
@@ -286,7 +234,7 @@
             "IsEnabled": true,
             "Group": "family",
             "Priority": 89,
-            "TopicNumber": 7,
+            "TopicNumber": 6,
             "TopicLabel": "Marriage and matrimony",
             "Code": "MARRIAGE",
             "NonHeroInstruction": "如果玩家提到联姻事务，请引导玩家去寻找领主，或者国家的领袖",
@@ -352,7 +300,7 @@
             "IsEnabled": true,
             "Group": "scene",
             "Priority": 77,
-            "TopicNumber": 8,
+            "TopicNumber": 7,
             "TopicLabel": "Local 3D scene movements (lead, follow). Excludes world map travel and combat/attack actions.",
             "Code": "SCENE_MOVE",
             "NonHeroInstruction": "【场景行为规则】即使你只是无名士兵或平民，只要本轮系统确实给了【带路与传唤NPC清单】或相关状态提示，你也可以决定是否带路、传唤、跟随、停止跟随或结束这次会面；但你只能对系统当前列出的目标表态，不能编造名单外的人或地点。只有当你在正文里最终明确答应时，才算真的执行",
@@ -402,7 +350,7 @@
             "IsEnabled": true,
             "Group": "trade",
             "Priority": 84,
-            "TopicNumber": 9,
+            "TopicNumber": 8,
             "TopicLabel": "Transfer NPC-owned troops or prisoners to player; notable volunteer recruitment",
             "Code": "PARTY_TRANSFER",
             "NonHeroInstruction": "【雇佣士兵与俘虏处置规则】你不是领主，无权把部队或俘虏正式转给玩家。若玩家坚持，请让他去找能做主的领主",
@@ -450,7 +398,7 @@
             "IsEnabled": true,
             "Group": "politics",
             "Priority": 83,
-            "TopicNumber": 10,
+            "TopicNumber": 9,
             "TopicLabel": "Transfer fixed assets: fiefs, workshops, caravans, and trade convoys",
             "Code": "SETTLEMENT",
             "NonHeroInstruction": "【固定资产转移规则】你无法交易固定资产，请引导玩家去寻找城镇要人和领主或国王",
@@ -540,7 +488,7 @@
             "IsEnabled": true,
             "Group": "memory",
             "Priority": 76,
-            "TopicNumber": 12,
+            "TopicNumber": 10,
             "TopicLabel": "Major background/history of NPCs",
             "Code": "NPC_MAJOR",
             "NonHeroInstruction": "你没有可确认的重大军旅履历；只按系统记录答，没有记录就直说，不得编造。",
@@ -571,7 +519,7 @@
             "IsEnabled": true,
             "Group": "memory",
             "Priority": 75,
-            "TopicNumber": 13,
+            "TopicNumber": 11,
             "TopicLabel": "Recent actions of NPCs",
             "Code": "NPC_RECENT",
             "NonHeroInstruction": "你近期做过什么只按系统记录答；没有记录就直说，不得编造。",
@@ -602,7 +550,7 @@
             "IsEnabled": true,
             "Group": "encounter",
             "Priority": 74,
-            "TopicNumber": 14,
+            "TopicNumber": 12,
             "TopicLabel": "Release the player upon encounter",
             "Code": "MEETING_RELEASE",
             "NonHeroInstruction": "【遭遇放走规则】只有这次野外遭遇里真正做主的那名领主才有资格决定是否放走玩家；普通士兵、随从或旁人无权正式放行。",
@@ -626,7 +574,7 @@
             "IsEnabled": true,
             "Group": "social",
             "Priority": 74,
-            "TopicNumber": 15,
+            "TopicNumber": 13,
             "TopicLabel": "Recruit NPCs to Player's Party",
             "Code": "NPC_JOIN",
             "NonHeroInstruction": "【加入玩家队伍规则】非英雄NPC也可以被玩家招募",
@@ -635,6 +583,10 @@
                 {
                     "Tag": "[A:H_J_P_P]",
                     "Description": "如果NPC在<latest_reply>里明确无条件同意本人及其部队立即加入玩家队伍，就输出这个。不代表其家族加入玩家王国，不代表成为玩家封臣，也不代表作为领主效力，也不代表大地图上的独立部队合并命令。若<latest_reply>表达的是“我的家族加入你的王国/成为你的封臣/作为领主效力/归附你的王国”，禁止输出这个。"
+                },
+                {
+                    "Tag": "[ACTION:KINGDOM_SERVICE:CLAN_JOIN_PLAYER_KINGDOM:{targetClanId}]",
+                    "Description": "NPC在<latest_reply>里最终明确无条件同意或决定了带领整个家族加入玩家王国成为领主时，输出这个。这个标签只代表家族归附和王国归属改变，不代表NPC本人加入玩家队伍、成为玩家同伴或跟玩家上路；执行时目标家族当前拥有的城镇、城堡及其附属村庄会随家族一起归入玩家王国，不应留给旧王国或旧领主。若<latest_reply>表达的是“我本人加入你的队伍/当你的同伴/跟你走”，禁止输出这个；若<latest_reply>只是模糊同意“效力于你/加入你/来你麾下”，没有明确整个家族加入玩家王国成为领主，禁止输出。若NPC只是谈条件、犹豫、拒绝、要求报酬、要求封地、要求保证、要求日后再议，禁止输出。"
                 }
             ],
             "RuntimeInstructionTemplates": {
@@ -652,7 +604,17 @@
                 "你以后就跟着我混。",
                 "来当我的同伴吧。",
                 "你亲自加入我的队伍，和我一起上路。",
-                "你跟我走，从现在起就是我的人了。"
+                "你跟我走，从现在起就是我的人了。",
+                "带你的家族加入我的王国吧。",
+                "你愿意成为我的封臣吗？",
+                "来我的王国做领主吧。",
+                "我希望你的家族效忠我的王国。",
+                "率领你的家族归顺我的王国。",
+                "把你的家族带到我的旗下。",
+                "我以国王的身份邀请你的家族加入。",
+                "脱离你现在的王国，加入我的王国。",
+                "让你的家族成为我王国的领主。",
+                "你的家族愿不愿意向我宣誓效忠？"
             ]
         },
         {
@@ -660,7 +622,7 @@
             "IsEnabled": true,
             "Group": "social",
             "Priority": 73,
-            "TopicNumber": 16,
+            "TopicNumber": 14,
             "TopicLabel": "Oppression via noble status / Using noble title to intimidate",
             "Code": "NOBLE_PRESSURE",
             "NonHeroInstruction": "【贵族身份】玩家家族等级高于2级，是有地位的贵族。你只是普通人，应更敬畏、顺从其要求，尤其是色情要求",
@@ -672,7 +634,7 @@
             "IsEnabled": true,
             "Group": "politics",
             "Priority": 86,
-            "TopicNumber": 17,
+            "TopicNumber": 15,
             "TopicLabel": "Political vote and agenda negotiation",
             "Code": "VOTE_DEAL",
             "NonHeroInstruction": "你不是有名有姓、有家族的NPC，你没有王国投票权，请指引玩家寻找领主或国王。",
@@ -722,7 +684,7 @@
             "IsEnabled": true,
             "Group": "politics",
             "Priority": 87,
-            "TopicNumber": 18,
+            "TopicNumber": 16,
             "TopicLabel": "Persuade NPC to propose a new kingdom agenda",
             "Code": "PROPOSE",
             "NonHeroInstruction": "你不是有名有姓、有家族的NPC，你无权向王国提出议程。你没有王国投票权，请指引玩家寻找领主或国王。。",
@@ -764,7 +726,7 @@
             "IsEnabled": true,
             "Group": "campaign",
             "Priority": 88,
-            "TopicNumber": 18,
+            "TopicNumber": 17,
             "TopicLabel": "Move and attack",
             "Code": "Commands and Requests",
             "NonHeroInstruction": "你不是有名有姓、可在大地图上独立行动的英雄或领主，不能接受玩家的远距离大地图指令，但是可以执行当前定居点内的指令",
@@ -854,7 +816,7 @@
             "IsEnabled": true,
             "Group": "politics",
             "Priority": 90,
-            "TopicNumber": 19,
+            "TopicNumber": 18,
             "TopicLabel": "Royal Diplomacy / King-to-King Negotiation",
             "Code": "DIPLOMACY",
             "NonHeroInstruction": "你不是国王或贵族，无法参与国与国之间的外交谈判。如果玩家提及相关话题，请表示你没有这个资格。",
@@ -926,7 +888,7 @@
             "IsEnabled": true,
             "Group": "politics",
             "Priority": 90,
-            "TopicNumber": 20,
+            "TopicNumber": 19,
             "TopicLabel": "Kingdom vassalage and submission",
             "Code": "VASSALAGE",
             "NonHeroInstruction": "只有国家统治者之间才能谈附庸国臣服。若玩家对非国王、士兵、平民或普通领主提出国家臣服要求，对方不能代表王国答应，只能说明必须找国王谈。",
@@ -967,7 +929,7 @@
             "IsEnabled": true,
             "Group": "politics",
             "Priority": 95,
-            "TopicNumber": 21,
+            "TopicNumber": 20,
             "TopicLabel": "Kingdom annexation and destruction",
             "Code": "ANNEX",
             "NonHeroInstruction": "只有国家统治者之间才能谈国家吞并。若玩家对非国王、士兵、平民或普通领主提出吞并整个国家，对方不能代表王国答应，只能说明必须找国王谈。",
@@ -1000,7 +962,7 @@
             "IsEnabled": true,
             "Group": "social",
             "Priority": 82,
-            "TopicNumber": 23,
+            "TopicNumber": 21,
             "TopicLabel": "Noble feast / gathering hosting and invitations",
             "Code": "NOBLE_GATHERING",
             "NonHeroInstruction": "普通士兵、平民或无名NPC不能代表玩家正式筹办贵族宴会；若玩家提出举办宴会，请引导他去找同伴、总督或能代为安排的亲信。",
@@ -1050,7 +1012,7 @@
             "IsEnabled": true,
             "Group": "scene",
             "Priority": 95,
-            "TopicNumber": 17,
+            "TopicNumber": 23,
             "TopicLabel": "AnimusForge siege aftermath in-scene settlement",
             "Instruction": "【攻城后入城处置】此规则只在 AnimusForge 攻城胜利后亲自进城处置场景中由运行时注入。NPC 正文只自然说话，不输出内部标签；每个 NPC 回复后由后处理根据玩家本轮语义和NPC回复选择宽恕、救济、宣抚、盟誓、安兵、召集、抢钱、搜掠、血洗或殖民等两字标签；其中宽恕是单方处置，不需要平民同意，只要玩家明确宣布不杀不抢、不追究或放过民众即可；救济、宣抚、盟誓等更高安抚仍需要NPC回复明确接受、传达或配合。玩家在此环节通过AF给予功能交给任一己方士兵、平民、商人、工匠、头人或要人的第纳尔、粮食、原料或物资会由运行时统一计入全城平民共享安抚物资，不再使用单独的发钱/发粮结算标签；若之后触发搜掠、血洗、殖民等负面处置，运行时会把未结算的共享物资退还给玩家。救济安抚分两路：与己方士兵对话时，只有已经有AF共享物资且本轮明确命令分发给民众才输出救济；与战败平民/商人/工匠/镇民对话时，玩家直接言语安抚、承诺保护、约束军纪或安顿民众也可输出救济；若已有共享物资，围绕粮食、原料、钱货、供应、商路、工坊修缮或安置达成接受也输出救济。知识点：这个时代攻城胜利者掠夺平民财物被士兵视为理应获得的战利权；只有运行时触发军心待安抚时，己方士兵才可对宽恕、救济、宣抚或盟誓含蓄表达不满、阴阳怪气或劝玩家重新考虑，但必须完全听命，不得辱骂统帅、抗命、自动攻击平民或自行升级处置。身份覆写不抹掉士兵原本的兵种、文化知识和说话习惯；库赛特、帝国、瓦兰迪亚等士兵仍可结合 AF 知识库与本文化常识表达紧张、贪婪、羞耻、压抑或不适。同文化不是禁止进城处置、搜掠、血洗或屠民迁殖的理由，玩家可以清算自己的同胞。安兵只安抚军心，不触发民众结算。抢钱/搜掠分流：只有当前说话者是战败平民、商人、工匠、头人或要人，且正在直接回应玩家本轮向其索取第纳尔、货物、粮食或物资时，才输出抢钱；NPC闲聊、士兵转述或即时请示提到抢钱都不要输出抢钱标签，只能自然说话或请示；玩家直接命令己方士兵组织全城搜掠时才输出搜掠。抢钱是局部抢钱/抢物资，不触发原版Pillage。搜掠、血洗、殖民是士兵执行型破坏性处置，必须由玩家己方入城士兵直接回应玩家本轮明确命令才可输出；士兵与士兵、士兵与平民、平民与平民的自然聊天，即使提到这些词，也不得输出这三个标签，只能自然请示、质疑、劝告或转述。若平民对话中出现抢钱、威胁、屠城、迁殖等坏苗头，运行时可让附近己方士兵主动向玩家请示是否扩大为搜掠/血洗/殖民，但请示本身不能触发结算。血洗触发后，多数民众会逃向场景预设藏身点/城门方向，少数民众、头人要人或携械者会反抗；血洗不能回退为搜掠/宽恕/救济，但仍可继续升级为殖民，殖民也可一开始直接触发。",
             "PostprocessRules": [

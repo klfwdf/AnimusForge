@@ -80,6 +80,12 @@ public static class Patch_GameMenu_ActivateGameMenu
 			{
 				return true;
 			}
+			if (DuelBehavior.TrySuppressStaleWildernessDuelEncounterMenuActivation(menuId, "GameMenu.ActivateGameMenu"))
+			{
+				Logger.LogTrace("UI_Intercept", "Suppressed stale native 'encounter' menu after AnimusForge wilderness duel cleanup.");
+				LordEncounterBehavior.LogEncounterDiagnostic("GameMenu.ActivateGameMenu", "wilderness_duel_stale_encounter_suppressed", menuId);
+				return false;
+			}
 			if (LordEncounterBehavior.TryResolvePendingPeacefulMeetingCleanupForExternal("activate_native_encounter_menu"))
 			{
 				Logger.LogTrace("UI_Intercept", "Suppressed native 'encounter' menu after peaceful custom meeting cleanup.");

@@ -53,7 +53,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 	private const float NpcDiplomacyLetterGlobalCooldownDays = 5f;
 	private const float NpcDiplomacyLetterSenderCooldownDays = 21f;
 	private const float NpcDiplomacyLetterSendChance = 0.25f;
-	private static readonly string[] CourierExcludedRuleIds = new[] { "duel", "lords_hall_access", "scene_mechanism_actions", "encounter_release_player", "noble_deference" };
+	private static readonly string[] CourierExcludedRuleIds = new[] { "duel", "meeting_taunt", "lords_hall_access", "scene_mechanism_actions", "encounter_release_player", "noble_deference" };
 
 	private enum CourierStage
 	{

@@ -9,6 +9,7 @@ using SandBox.Missions.MissionLogics.Arena;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Actions;
 using TaleWorlds.CampaignSystem.Encounters;
+using TaleWorlds.CampaignSystem.GameState;
 using TaleWorlds.CampaignSystem.GameMenus;
 using TaleWorlds.CampaignSystem.Map;
 using TaleWorlds.CampaignSystem.MapEvents;
@@ -1493,6 +1494,18 @@ public class DuelBehavior : CampaignBehaviorBase
 
 	private static WildernessDuelBattleRuntime _wildernessDuelRuntime;
 
+	private static long _wildernessDuelEncounterMenuGuardUntilUtcTicks;
+
+	private static long _wildernessDuelEncounterMenuGuardLastLogUtcTicks;
+
+	private static string _wildernessDuelEncounterMenuGuardReason = "";
+
+	private static bool _wildernessDuelEncounterMenuExitRequested;
+
+	private static long _wildernessDuelEncounterMenuExitRequestUntilUtcTicks;
+
+	private static long _wildernessDuelEncounterMenuExitLastAttemptUtcTicks;
+
 	private static string _pendingNonHeroDuelMemoryId = "";
 
 	private static string _pendingNonHeroDuelMemoryName = "";
@@ -1587,6 +1600,13 @@ public class DuelBehavior : CampaignBehaviorBase
 		PatchHarmonyClass(harmony, typeof(WildernessDuelPlayerEncounterDefeatPatch));
 		PatchHarmonyClass(harmony, typeof(WildernessDuelPlayerEncounterEndPatch));
 		PatchHarmonyClass(harmony, typeof(WildernessDuelBattleRewardsZeroPatch));
+		PatchHarmonyClass(harmony, typeof(WildernessDuelCheckEnemyAttackableHonorablyPatch));
+		PatchHarmonyClass(harmony, typeof(WildernessDuelEncounterAttackConditionPatch));
+		PatchHarmonyClass(harmony, typeof(WildernessDuelEncounterOrderAttackConditionPatch));
+		PatchHarmonyClass(harmony, typeof(WildernessDuelEncounterOrderAttackConsequencePatch));
+		PatchHarmonyClass(harmony, typeof(WildernessDuelEncounterLeaveConsequencePatch));
+		PatchHarmonyClass(harmony, typeof(WildernessDuelGameMenuOptionConditionSafePatch));
+		PatchHarmonyClass(harmony, typeof(WildernessDuelGameMenuOptionConsequenceSafePatch));
 	}
 
 	private static void PatchHarmonyClass(Harmony harmony, Type patchType)
@@ -2435,6 +2455,385 @@ public class DuelBehavior : CampaignBehaviorBase
 		return missionPart + "; " + conversationPart + "; " + encounterPart + "; active=" + _arenaMissionActive + "; started=" + _arenaMissionStartedOnce + "; leaveRequested=" + _arenaMissionLeaveRequested + "; returnToMap=" + _returnToMapAfterIndependentDuel;
 	}
 
+	private static void MarkWildernessDuelEncounterMenuGuard(string reason)
+	{
+		try
+		{
+			_wildernessDuelEncounterMenuGuardUntilUtcTicks = DateTime.UtcNow.Ticks + TimeSpan.FromSeconds(45.0).Ticks;
+			_wildernessDuelEncounterMenuGuardReason = reason ?? "";
+			RequestWildernessDuelEncounterMenuExit(reason);
+		}
+		catch
+		{
+			_wildernessDuelEncounterMenuGuardUntilUtcTicks = long.MaxValue;
+			_wildernessDuelEncounterMenuGuardReason = reason ?? "";
+			_wildernessDuelEncounterMenuExitRequested = true;
+			_wildernessDuelEncounterMenuExitRequestUntilUtcTicks = long.MaxValue;
+		}
+	}
+
+	private static bool IsWildernessDuelEncounterMenuGuardActive()
+	{
+		if (_wildernessDuelEncounterMenuGuardUntilUtcTicks <= 0L)
+		{
+			return false;
+		}
+		try
+		{
+			if (DateTime.UtcNow.Ticks <= _wildernessDuelEncounterMenuGuardUntilUtcTicks)
+			{
+				return true;
+			}
+		}
+		catch
+		{
+			return true;
+		}
+		_wildernessDuelEncounterMenuGuardUntilUtcTicks = 0L;
+		_wildernessDuelEncounterMenuGuardReason = "";
+		return false;
+	}
+
+	private static bool IsWildernessDuelEncounterMenuExitRequestActive()
+	{
+		if (!_wildernessDuelEncounterMenuExitRequested)
+		{
+			return false;
+		}
+		try
+		{
+			if (DateTime.UtcNow.Ticks <= _wildernessDuelEncounterMenuExitRequestUntilUtcTicks)
+			{
+				return true;
+			}
+		}
+		catch
+		{
+			return true;
+		}
+		_wildernessDuelEncounterMenuExitRequested = false;
+		_wildernessDuelEncounterMenuExitRequestUntilUtcTicks = 0L;
+		return false;
+	}
+
+	private static bool HasIncompleteNativeEncounterAttackContext()
+	{
+		try
+		{
+			if (PlayerEncounter.Current == null)
+			{
+				return true;
+			}
+		}
+		catch
+		{
+			return true;
+		}
+		PartyBase encounteredParty = null;
+		try
+		{
+			encounteredParty = PlayerEncounterCompat.GetEncounteredPartySafe();
+		}
+		catch
+		{
+			encounteredParty = null;
+		}
+		if (encounteredParty == null)
+		{
+			try
+			{
+				encounteredParty = PlayerEncounter.EncounteredParty;
+			}
+			catch
+			{
+				encounteredParty = null;
+			}
+		}
+		if (encounteredParty == null)
+		{
+			return true;
+		}
+		try
+		{
+			if (MapEvent.PlayerMapEvent != null)
+			{
+				return false;
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			return PlayerEncounterCompat.GetCurrentMapEventSafe() == null;
+		}
+		catch
+		{
+			return true;
+		}
+	}
+
+	internal static bool ShouldSuppressWildernessDuelEncounterMenuCondition(string source)
+	{
+		if (!IsWildernessDuelEncounterMenuGuardActive() && !IsWildernessDuelEncounterMenuExitRequestActive())
+		{
+			return false;
+		}
+		if (!HasIncompleteNativeEncounterAttackContext())
+		{
+			return false;
+		}
+		RequestWildernessDuelEncounterMenuExit(source);
+		LogWildernessDuelEncounterMenuGuard(source, null, "prefix");
+		return true;
+	}
+
+	internal static bool TryHandleStaleWildernessDuelEncounterMenuConsequence(string source, bool allowExpiredGuard = false)
+	{
+		if (!IsWildernessDuelEncounterMenuGuardActive() && !IsWildernessDuelEncounterMenuExitRequestActive() && !allowExpiredGuard)
+		{
+			return false;
+		}
+		if (!HasIncompleteNativeEncounterAttackContext())
+		{
+			return false;
+		}
+		RequestWildernessDuelEncounterMenuExit(source);
+		LogWildernessDuelEncounterMenuGuard(source, null, "consequence");
+		TryExitStaleWildernessDuelEncounterMenu(source);
+		return true;
+	}
+
+	internal static bool TrySuppressStaleWildernessDuelEncounterMenuActivation(string menuId, string source)
+	{
+		if (!string.Equals(menuId, "encounter", StringComparison.Ordinal))
+		{
+			return false;
+		}
+		if (!IsWildernessDuelEncounterMenuGuardActive() && !IsWildernessDuelEncounterMenuExitRequestActive())
+		{
+			return false;
+		}
+		if (!HasIncompleteNativeEncounterAttackContext())
+		{
+			return false;
+		}
+		RequestWildernessDuelEncounterMenuExit(source);
+		LogWildernessDuelEncounterMenuGuard(source, null, "activate");
+		TryExitStaleWildernessDuelEncounterMenu(source);
+		return true;
+	}
+
+	internal static void GlobalWildernessDuelEncounterMenuGuardTick()
+	{
+		try
+		{
+			if (!IsWildernessDuelEncounterMenuGuardActive() && !IsWildernessDuelEncounterMenuExitRequestActive())
+			{
+				return;
+			}
+			if (!HasIncompleteNativeEncounterAttackContext())
+			{
+				return;
+			}
+			TryExitStaleWildernessDuelEncounterMenu("GlobalWildernessDuelEncounterMenuGuardTick");
+		}
+		catch
+		{
+		}
+	}
+
+	internal static bool TryHandleStaleWildernessDuelEncounterMenuOption(MenuContext menuContext, string optionId, string source)
+	{
+		bool hasMenuContext = menuContext != null;
+		if (!IsEncounterMenuContext(menuContext) && (hasMenuContext || !IsWildernessDuelNativeEncounterOptionId(optionId)))
+		{
+			return false;
+		}
+		if (!IsWildernessDuelEncounterMenuGuardActive() && !IsWildernessDuelEncounterMenuExitRequestActive())
+		{
+			return false;
+		}
+		if (!HasIncompleteNativeEncounterAttackContext())
+		{
+			return false;
+		}
+		RequestWildernessDuelEncounterMenuExit(source);
+		LogWildernessDuelEncounterMenuGuard(source, null, "option:" + (optionId ?? ""));
+		TryExitStaleWildernessDuelEncounterMenu(source);
+		return true;
+	}
+
+	private static bool IsEncounterMenuContext(MenuContext menuContext)
+	{
+		try
+		{
+			return string.Equals(menuContext?.GameMenu?.StringId, "encounter", StringComparison.Ordinal);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static void RequestWildernessDuelEncounterMenuExit(string source)
+	{
+		try
+		{
+			_wildernessDuelEncounterMenuExitRequested = true;
+			_wildernessDuelEncounterMenuExitRequestUntilUtcTicks = DateTime.UtcNow.Ticks + TimeSpan.FromSeconds(45.0).Ticks;
+		}
+		catch
+		{
+			_wildernessDuelEncounterMenuExitRequested = true;
+			_wildernessDuelEncounterMenuExitRequestUntilUtcTicks = long.MaxValue;
+		}
+	}
+
+	private static void ClearWildernessDuelEncounterMenuExitRequest()
+	{
+		_wildernessDuelEncounterMenuExitRequested = false;
+		_wildernessDuelEncounterMenuExitRequestUntilUtcTicks = 0L;
+	}
+
+	private static void TryExitStaleWildernessDuelEncounterMenu(string source)
+	{
+		try
+		{
+			MenuContext currentMenuContext = null;
+			try
+			{
+				currentMenuContext = Campaign.Current?.CurrentMenuContext;
+			}
+			catch
+			{
+				currentMenuContext = null;
+			}
+			if (!IsEncounterMenuContext(currentMenuContext))
+			{
+				ClearWildernessDuelEncounterMenuExitRequest();
+				return;
+			}
+			long ticks = DateTime.UtcNow.Ticks;
+			if (_wildernessDuelEncounterMenuExitLastAttemptUtcTicks > 0L && ticks - _wildernessDuelEncounterMenuExitLastAttemptUtcTicks < TimeSpan.FromMilliseconds(250.0).Ticks)
+			{
+				return;
+			}
+			_wildernessDuelEncounterMenuExitLastAttemptUtcTicks = ticks;
+			Campaign.Current?.GameMenuManager?.SetNextMenu(null);
+			GameMenu.ExitToLast();
+		}
+		catch (Exception ex)
+		{
+			LogWildernessDuelEncounterMenuGuard(source, ex, "exit_to_last_failed");
+		}
+	}
+
+	internal static bool IsWildernessDuelNativeEncounterLeaveOptionId(string optionId)
+	{
+		return string.Equals((optionId ?? "").Trim(), "leave", StringComparison.Ordinal);
+	}
+
+	internal static void EnableWildernessDuelEncounterLeaveMenuOption(GameMenuOption option)
+	{
+		try
+		{
+			option?.SetEnable(true);
+			if (option != null)
+			{
+				option.OptionLeaveType = GameMenuOption.LeaveType.Leave;
+			}
+		}
+		catch
+		{
+		}
+	}
+
+	internal static void DisableWildernessDuelEncounterMenuOption(GameMenuOption option)
+	{
+		try
+		{
+			option?.SetEnable(false);
+			if (option != null)
+			{
+				option.OptionLeaveType = GameMenuOption.LeaveType.HostileAction;
+			}
+		}
+		catch
+		{
+		}
+	}
+
+	internal static bool TryHandleWildernessDuelEncounterMenuConditionException(Exception exception, string source, string optionId = null)
+	{
+		if (exception == null)
+		{
+			return false;
+		}
+		bool guardActive = IsWildernessDuelEncounterMenuGuardActive();
+		if (!guardActive && !HasIncompleteNativeEncounterAttackContext())
+		{
+			return false;
+		}
+		if (!guardActive && exception is not NullReferenceException)
+		{
+			return false;
+		}
+		RequestWildernessDuelEncounterMenuExit(source);
+		TryExitStaleWildernessDuelEncounterMenu(source);
+		LogWildernessDuelEncounterMenuGuard(source, exception, optionId ?? "finalizer");
+		return true;
+	}
+
+	internal static void DisableWildernessDuelEncounterAttackMenuArgs(MenuCallbackArgs args)
+	{
+		if (args == null)
+		{
+			return;
+		}
+		try
+		{
+			args.optionLeaveType = GameMenuOption.LeaveType.HostileAction;
+			args.IsEnabled = false;
+			args.Tooltip = new TextObject("{=AnimusForgeWildernessDuelEncounterCleared}The duel encounter has already ended.");
+		}
+		catch
+		{
+		}
+	}
+
+	internal static bool IsWildernessDuelNativeEncounterOptionId(string optionId)
+	{
+		string text = (optionId ?? "").Trim();
+		return string.Equals(text, "attack", StringComparison.Ordinal)
+			|| string.Equals(text, "str_order_attack", StringComparison.Ordinal)
+			|| string.Equals(text, "order_attack", StringComparison.Ordinal)
+			|| string.Equals(text, "leave", StringComparison.Ordinal)
+			|| string.Equals(text, "leave_soldiers_behind", StringComparison.Ordinal);
+	}
+
+	private static void LogWildernessDuelEncounterMenuGuard(string source, Exception exception, string stage)
+	{
+		try
+		{
+			long ticks = DateTime.UtcNow.Ticks;
+			if (ticks - _wildernessDuelEncounterMenuGuardLastLogUtcTicks < TimeSpan.FromSeconds(2.0).Ticks)
+			{
+				return;
+			}
+			_wildernessDuelEncounterMenuGuardLastLogUtcTicks = ticks;
+			Logger.Log("DuelBehavior",
+				"[WildernessDuel] suppressed stale native encounter menu condition"
+				+ " stage=" + (stage ?? "")
+				+ " source=" + (source ?? "")
+				+ " reason=" + (_wildernessDuelEncounterMenuGuardReason ?? "")
+				+ " error=" + (exception == null ? "none" : exception.GetType().Name + ":" + exception.Message));
+		}
+		catch
+		{
+		}
+	}
+
 	private static void LogWildernessDuelDiagnostic(string stage, int diagnosticId, Hero target = null, MissionInitializerRecord? rec = null)
 	{
 		try
@@ -2536,6 +2935,7 @@ public class DuelBehavior : CampaignBehaviorBase
 
 	private static void CleanupWildernessDuelMapEventAndPlayerEncounter(MapEvent mapEvent, string source)
 	{
+		MarkWildernessDuelEncounterMenuGuard(source);
 		try
 		{
 			if (mapEvent != null)
@@ -2820,6 +3220,7 @@ public class DuelBehavior : CampaignBehaviorBase
 		bool playerWon = !playerDefeated;
 		Hero targetHero = runtime.TargetHero;
 		CharacterObject targetCharacter = runtime.TargetCharacter ?? targetHero?.CharacterObject;
+		MarkWildernessDuelEncounterMenuGuard("settle:" + (source ?? ""));
 		try
 		{
 			if (Instance != null && targetHero != null && !string.IsNullOrEmpty(targetHero.StringId))
@@ -3979,6 +4380,7 @@ public class DuelBehavior : CampaignBehaviorBase
 		GlobalSourceMissionLeaveTick();
 		GlobalArenaLeaveTick();
 		GlobalTownMenuTick();
+		GlobalWildernessDuelEncounterMenuGuardTick();
 		Mission mission = Mission.Current;
 		if (mission == null)
 		{
@@ -5641,6 +6043,283 @@ public class DuelBehavior : CampaignBehaviorBase
 				}
 			}
 		}
+	}
+}
+
+[HarmonyPatch(typeof(Helpers.MenuHelper), nameof(Helpers.MenuHelper.CheckEnemyAttackableHonorably))]
+public static class WildernessDuelCheckEnemyAttackableHonorablyPatch
+{
+	public static bool Prefix(MenuCallbackArgs args)
+	{
+		try
+		{
+			if (!DuelBehavior.ShouldSuppressWildernessDuelEncounterMenuCondition("MenuHelper.CheckEnemyAttackableHonorably"))
+			{
+				return true;
+			}
+			DuelBehavior.DisableWildernessDuelEncounterAttackMenuArgs(args);
+			return false;
+		}
+		catch
+		{
+			return true;
+		}
+	}
+
+	public static Exception Finalizer(Exception __exception, MenuCallbackArgs args)
+	{
+		try
+		{
+			if (DuelBehavior.TryHandleWildernessDuelEncounterMenuConditionException(__exception, "MenuHelper.CheckEnemyAttackableHonorably"))
+			{
+				DuelBehavior.DisableWildernessDuelEncounterAttackMenuArgs(args);
+				return null;
+			}
+		}
+		catch
+		{
+		}
+		return __exception;
+	}
+}
+
+[HarmonyPatch(typeof(Helpers.MenuHelper), nameof(Helpers.MenuHelper.EncounterAttackCondition))]
+public static class WildernessDuelEncounterAttackConditionPatch
+{
+	public static bool Prefix(MenuCallbackArgs args, ref bool __result)
+	{
+		try
+		{
+			if (!DuelBehavior.ShouldSuppressWildernessDuelEncounterMenuCondition("MenuHelper.EncounterAttackCondition"))
+			{
+				return true;
+			}
+			DuelBehavior.DisableWildernessDuelEncounterAttackMenuArgs(args);
+			__result = false;
+			return false;
+		}
+		catch
+		{
+			return true;
+		}
+	}
+
+	public static Exception Finalizer(Exception __exception, MenuCallbackArgs args, ref bool __result)
+	{
+		try
+		{
+			if (DuelBehavior.TryHandleWildernessDuelEncounterMenuConditionException(__exception, "MenuHelper.EncounterAttackCondition"))
+			{
+				DuelBehavior.DisableWildernessDuelEncounterAttackMenuArgs(args);
+				__result = false;
+				return null;
+			}
+		}
+		catch
+		{
+		}
+		return __exception;
+	}
+}
+
+[HarmonyPatch(typeof(Helpers.MenuHelper), nameof(Helpers.MenuHelper.EncounterOrderAttackCondition))]
+public static class WildernessDuelEncounterOrderAttackConditionPatch
+{
+	public static bool Prefix(MenuCallbackArgs args, ref bool __result)
+	{
+		try
+		{
+			if (!DuelBehavior.ShouldSuppressWildernessDuelEncounterMenuCondition("MenuHelper.EncounterOrderAttackCondition"))
+			{
+				return true;
+			}
+			DuelBehavior.DisableWildernessDuelEncounterAttackMenuArgs(args);
+			__result = false;
+			return false;
+		}
+		catch
+		{
+			return true;
+		}
+	}
+
+	public static Exception Finalizer(Exception __exception, MenuCallbackArgs args, ref bool __result)
+	{
+		try
+		{
+			if (DuelBehavior.TryHandleWildernessDuelEncounterMenuConditionException(__exception, "MenuHelper.EncounterOrderAttackCondition"))
+			{
+				DuelBehavior.DisableWildernessDuelEncounterAttackMenuArgs(args);
+				__result = false;
+				return null;
+			}
+		}
+		catch
+		{
+		}
+		return __exception;
+	}
+}
+
+[HarmonyPatch(typeof(Helpers.MenuHelper), nameof(Helpers.MenuHelper.EncounterOrderAttackConsequence))]
+public static class WildernessDuelEncounterOrderAttackConsequencePatch
+{
+	public static bool Prefix(MenuCallbackArgs args)
+	{
+		try
+		{
+			return !DuelBehavior.TryHandleStaleWildernessDuelEncounterMenuConsequence("MenuHelper.EncounterOrderAttackConsequence");
+		}
+		catch
+		{
+			return true;
+		}
+	}
+
+	public static Exception Finalizer(Exception __exception)
+	{
+		try
+		{
+			if (DuelBehavior.TryHandleWildernessDuelEncounterMenuConditionException(__exception, "MenuHelper.EncounterOrderAttackConsequence"))
+			{
+				DuelBehavior.TryHandleStaleWildernessDuelEncounterMenuConsequence("MenuHelper.EncounterOrderAttackConsequence.Finalizer", allowExpiredGuard: true);
+				return null;
+			}
+		}
+		catch
+		{
+		}
+		return __exception;
+	}
+}
+
+[HarmonyPatch(typeof(Helpers.MenuHelper), nameof(Helpers.MenuHelper.EncounterLeaveConsequence))]
+public static class WildernessDuelEncounterLeaveConsequencePatch
+{
+	public static bool Prefix()
+	{
+		try
+		{
+			return !DuelBehavior.TryHandleStaleWildernessDuelEncounterMenuConsequence("MenuHelper.EncounterLeaveConsequence");
+		}
+		catch
+		{
+			return true;
+		}
+	}
+
+	public static Exception Finalizer(Exception __exception)
+	{
+		try
+		{
+			if (DuelBehavior.TryHandleWildernessDuelEncounterMenuConditionException(__exception, "MenuHelper.EncounterLeaveConsequence"))
+			{
+				DuelBehavior.TryHandleStaleWildernessDuelEncounterMenuConsequence("MenuHelper.EncounterLeaveConsequence.Finalizer", allowExpiredGuard: true);
+				return null;
+			}
+		}
+		catch
+		{
+		}
+		return __exception;
+	}
+}
+
+[HarmonyPatch(typeof(GameMenuOption), nameof(GameMenuOption.GetConditionsHold))]
+public static class WildernessDuelGameMenuOptionConditionSafePatch
+{
+	public static bool Prefix(GameMenuOption __instance, MenuContext menuContext, ref bool __result)
+	{
+		try
+		{
+			string optionId = __instance?.IdString ?? "";
+			if (!DuelBehavior.TryHandleStaleWildernessDuelEncounterMenuOption(menuContext, optionId, "GameMenuOption.GetConditionsHold"))
+			{
+				return true;
+			}
+			if (DuelBehavior.IsWildernessDuelNativeEncounterLeaveOptionId(optionId))
+			{
+				DuelBehavior.EnableWildernessDuelEncounterLeaveMenuOption(__instance);
+				__result = true;
+			}
+			else
+			{
+				DuelBehavior.DisableWildernessDuelEncounterMenuOption(__instance);
+				__result = false;
+			}
+			return false;
+		}
+		catch
+		{
+			return true;
+		}
+	}
+
+	public static Exception Finalizer(Exception __exception, GameMenuOption __instance, MenuContext menuContext, ref bool __result)
+	{
+		try
+		{
+			if (__exception == null)
+			{
+				return null;
+			}
+			string optionId = __instance?.IdString ?? "";
+			bool handledStaleOption = DuelBehavior.TryHandleStaleWildernessDuelEncounterMenuOption(menuContext, optionId, "GameMenuOption.GetConditionsHold.Finalizer");
+			if (!handledStaleOption)
+			{
+				return __exception;
+			}
+			if (DuelBehavior.TryHandleWildernessDuelEncounterMenuConditionException(__exception, "GameMenuOption.GetConditionsHold", optionId))
+			{
+				if (DuelBehavior.IsWildernessDuelNativeEncounterLeaveOptionId(optionId))
+				{
+					DuelBehavior.EnableWildernessDuelEncounterLeaveMenuOption(__instance);
+					__result = true;
+				}
+				else
+				{
+					DuelBehavior.DisableWildernessDuelEncounterMenuOption(__instance);
+					__result = false;
+				}
+				return null;
+			}
+		}
+		catch
+		{
+		}
+		return __exception;
+	}
+}
+
+[HarmonyPatch(typeof(GameMenuOption), nameof(GameMenuOption.RunConsequence))]
+public static class WildernessDuelGameMenuOptionConsequenceSafePatch
+{
+	public static bool Prefix(GameMenuOption __instance, MenuContext menuContext)
+	{
+		try
+		{
+			return !DuelBehavior.TryHandleStaleWildernessDuelEncounterMenuOption(menuContext, __instance?.IdString ?? "", "GameMenuOption.RunConsequence");
+		}
+		catch
+		{
+			return true;
+		}
+	}
+
+	public static Exception Finalizer(Exception __exception, GameMenuOption __instance, MenuContext menuContext)
+	{
+		try
+		{
+			string optionId = __instance?.IdString ?? "";
+			if (__exception != null && DuelBehavior.TryHandleStaleWildernessDuelEncounterMenuOption(menuContext, optionId, "GameMenuOption.RunConsequence.Finalizer"))
+			{
+				return null;
+			}
+		}
+		catch
+		{
+		}
+		return __exception;
 	}
 }
 

@@ -1,0 +1,911 @@
+﻿
+
+====== 游戏启动 2026-06-22 00:31:47 ======
+[00:31:48] [DiplomacyBehavior] [Harmony] Diplomacy context injection applied.
+[00:31:48] [VoteDeal] [Harmony] DetermineSupport: patched 11 concrete subclass(es), 0 error(s).
+[00:31:48] [VoteDeal] [Harmony] Kingdom.AddDecision delay hook applied (player=21d, others=3d).
+[00:31:48] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: MakePeaceKingdomDecision.
+[00:31:48] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: StartAllianceDecision.
+[00:31:48] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: TradeAgreementDecision.
+[00:31:48] [VoteDeal] [Harmony] Bilateral diplomacy cancellation guard applied.
+[00:31:48] [VoteDeal] [Harmony] KingdomDecision.NeedsPlayerResolution agenda auto-resolve patch applied.
+[00:31:48] [VoteDeal] [Harmony] ForceDecideDecision block patch applied.
+[00:31:48] [VoteDeal] [Harmony] Original kingdom vote reminders suppressed.
+[00:31:48] [VoteDeal] [Agenda] TabSelection patches applied via VoteDeal Harmony.
+
+
+====== 游戏启动 2026-06-22 01:00:12 ======
+[01:00:12] [DiplomacyBehavior] [Harmony] Diplomacy context injection applied.
+[01:00:12] [VoteDeal] [Harmony] DetermineSupport: patched 11 concrete subclass(es), 0 error(s).
+[01:00:12] [VoteDeal] [Harmony] Kingdom.AddDecision delay hook applied (player=21d, others=3d).
+[01:00:12] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: MakePeaceKingdomDecision.
+[01:00:12] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: StartAllianceDecision.
+[01:00:12] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: TradeAgreementDecision.
+[01:00:12] [VoteDeal] [Harmony] Bilateral diplomacy cancellation guard applied.
+[01:00:12] [VoteDeal] [Harmony] KingdomDecision.NeedsPlayerResolution agenda auto-resolve patch applied.
+[01:00:12] [VoteDeal] [Harmony] ForceDecideDecision block patch applied.
+[01:00:12] [VoteDeal] [Harmony] Original kingdom vote reminders suppressed.
+[01:00:12] [VoteDeal] [Agenda] TabSelection patches applied via VoteDeal Harmony.
+
+
+====== 游戏启动 2026-06-22 02:54:39 ======
+[02:54:39] [DiplomacyBehavior] [Harmony] Diplomacy context injection applied.
+[02:54:39] [VoteDeal] [Harmony] DetermineSupport: patched 11 concrete subclass(es), 0 error(s).
+[02:54:39] [VoteDeal] [Harmony] Kingdom.AddDecision delay hook applied (player=21d, others=3d).
+[02:54:39] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: MakePeaceKingdomDecision.
+[02:54:39] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: StartAllianceDecision.
+[02:54:39] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: TradeAgreementDecision.
+[02:54:39] [VoteDeal] [Harmony] Bilateral diplomacy cancellation guard applied.
+[02:54:39] [VoteDeal] [Harmony] KingdomDecision.NeedsPlayerResolution agenda auto-resolve patch applied.
+[02:54:39] [VoteDeal] [Harmony] ForceDecideDecision block patch applied.
+[02:54:39] [VoteDeal] [Harmony] Original kingdom vote reminders suppressed.
+[02:54:39] [VoteDeal] [Agenda] TabSelection patches applied via VoteDeal Harmony.
+
+
+====== 游戏启动 2026-06-22 03:09:57 ======
+[03:09:57] [DiplomacyBehavior] [Harmony] Diplomacy context injection applied.
+[03:09:57] [VoteDeal] [Harmony] DetermineSupport: patched 11 concrete subclass(es), 0 error(s).
+[03:09:57] [VoteDeal] [Harmony] Kingdom.AddDecision delay hook applied (player=21d, others=3d).
+[03:09:57] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: MakePeaceKingdomDecision.
+[03:09:57] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: StartAllianceDecision.
+[03:09:57] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: TradeAgreementDecision.
+[03:09:57] [VoteDeal] [Harmony] Bilateral diplomacy cancellation guard applied.
+[03:09:57] [VoteDeal] [Harmony] KingdomDecision.NeedsPlayerResolution agenda auto-resolve patch applied.
+[03:09:57] [VoteDeal] [Harmony] ForceDecideDecision block patch applied.
+[03:09:57] [VoteDeal] [Harmony] Original kingdom vote reminders suppressed.
+[03:09:57] [VoteDeal] [Agenda] TabSelection patches applied via VoteDeal Harmony.
+
+
+====== 游戏启动 2026-06-23 01:13:46 ======
+[01:13:46] [DiplomacyBehavior] [Harmony] Diplomacy context injection applied.
+[01:13:46] [VoteDeal] [Harmony] DetermineSupport: patched 11 concrete subclass(es), 0 error(s).
+[01:13:46] [VoteDeal] [Harmony] Kingdom.AddDecision delay hook applied (player=21d, others=3d).
+[01:13:46] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: MakePeaceKingdomDecision.
+[01:13:46] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: StartAllianceDecision.
+[01:13:46] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: TradeAgreementDecision.
+[01:13:46] [VoteDeal] [Harmony] Bilateral diplomacy cancellation guard applied.
+[01:13:46] [VoteDeal] [Harmony] KingdomDecision.NeedsPlayerResolution agenda auto-resolve patch applied.
+[01:13:46] [VoteDeal] [Harmony] ForceDecideDecision block patch applied.
+[01:13:46] [VoteDeal] [Harmony] Original kingdom vote reminders suppressed.
+[01:13:46] [VoteDeal] [Agenda] TabSelection patches applied via VoteDeal Harmony.
+
+
+====== 游戏启动 2026-06-23 01:55:19 ======
+[01:55:19] [DiplomacyBehavior] [Harmony] Diplomacy context injection applied.
+[01:55:19] [VoteDeal] [Harmony] DetermineSupport: patched 11 concrete subclass(es), 0 error(s).
+[01:55:19] [VoteDeal] [Harmony] Kingdom.AddDecision delay hook applied (player=21d, others=3d).
+[01:55:19] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: MakePeaceKingdomDecision.
+[01:55:19] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: StartAllianceDecision.
+[01:55:19] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: TradeAgreementDecision.
+[01:55:19] [VoteDeal] [Harmony] Bilateral diplomacy cancellation guard applied.
+[01:55:19] [VoteDeal] [Harmony] KingdomDecision.NeedsPlayerResolution agenda auto-resolve patch applied.
+[01:55:19] [VoteDeal] [Harmony] ForceDecideDecision block patch applied.
+[01:55:19] [VoteDeal] [Harmony] Original kingdom vote reminders suppressed.
+[01:55:19] [VoteDeal] [Agenda] TabSelection patches applied via VoteDeal Harmony.
+
+
+====== 游戏启动 2026-06-23 02:31:50 ======
+[02:31:50] [DiplomacyBehavior] [Harmony] Diplomacy context injection applied.
+[02:31:50] [VoteDeal] [Harmony] DetermineSupport: patched 11 concrete subclass(es), 0 error(s).
+[02:31:50] [VoteDeal] [Harmony] Kingdom.AddDecision delay hook applied (player=21d, others=3d).
+[02:31:50] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: MakePeaceKingdomDecision.
+[02:31:50] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: StartAllianceDecision.
+[02:31:50] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: TradeAgreementDecision.
+[02:31:50] [VoteDeal] [Harmony] Bilateral diplomacy cancellation guard applied.
+[02:31:50] [VoteDeal] [Harmony] KingdomDecision.NeedsPlayerResolution agenda auto-resolve patch applied.
+[02:31:50] [VoteDeal] [Harmony] ForceDecideDecision block patch applied.
+[02:31:50] [VoteDeal] [Harmony] Original kingdom vote reminders suppressed.
+[02:31:50] [VoteDeal] [Agenda] TabSelection patches applied via VoteDeal Harmony.
+
+
+====== 游戏启动 2026-06-23 03:07:43 ======
+[03:07:43] [DiplomacyBehavior] [Harmony] Diplomacy context injection applied.
+[03:07:43] [VoteDeal] [Harmony] DetermineSupport: patched 11 concrete subclass(es), 0 error(s).
+[03:07:43] [VoteDeal] [Harmony] Kingdom.AddDecision delay hook applied (player=21d, others=3d).
+[03:07:43] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: MakePeaceKingdomDecision.
+[03:07:43] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: StartAllianceDecision.
+[03:07:43] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: TradeAgreementDecision.
+[03:07:43] [VoteDeal] [Harmony] Bilateral diplomacy cancellation guard applied.
+[03:07:43] [VoteDeal] [Harmony] KingdomDecision.NeedsPlayerResolution agenda auto-resolve patch applied.
+[03:07:43] [VoteDeal] [Harmony] ForceDecideDecision block patch applied.
+[03:07:43] [VoteDeal] [Harmony] Original kingdom vote reminders suppressed.
+[03:07:43] [VoteDeal] [Agenda] TabSelection patches applied via VoteDeal Harmony.
+
+
+====== 游戏启动 2026-06-23 03:11:30 ======
+[03:11:30] [DiplomacyBehavior] [Harmony] Diplomacy context injection applied.
+[03:11:30] [VoteDeal] [Harmony] DetermineSupport: patched 11 concrete subclass(es), 0 error(s).
+[03:11:30] [VoteDeal] [Harmony] Kingdom.AddDecision delay hook applied (player=21d, others=3d).
+[03:11:30] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: MakePeaceKingdomDecision.
+[03:11:30] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: StartAllianceDecision.
+[03:11:30] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: TradeAgreementDecision.
+[03:11:30] [VoteDeal] [Harmony] Bilateral diplomacy cancellation guard applied.
+[03:11:30] [VoteDeal] [Harmony] KingdomDecision.NeedsPlayerResolution agenda auto-resolve patch applied.
+[03:11:30] [VoteDeal] [Harmony] ForceDecideDecision block patch applied.
+[03:11:31] [VoteDeal] [Harmony] Original kingdom vote reminders suppressed.
+[03:11:31] [VoteDeal] [Agenda] TabSelection patches applied via VoteDeal Harmony.
+
+
+====== 游戏启动 2026-06-24 00:11:58 ======
+[00:11:58] [DiplomacyBehavior] [Harmony] Diplomacy context injection applied.
+[00:11:58] [VoteDeal] [Harmony] DetermineSupport: patched 11 concrete subclass(es), 0 error(s).
+[00:11:58] [VoteDeal] [Harmony] Kingdom.AddDecision delay hook applied (player=21d, others=3d).
+[00:11:58] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: MakePeaceKingdomDecision.
+[00:11:58] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: StartAllianceDecision.
+[00:11:58] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: TradeAgreementDecision.
+[00:11:58] [VoteDeal] [Harmony] Bilateral diplomacy cancellation guard applied.
+[00:11:58] [VoteDeal] [Harmony] KingdomDecision.NeedsPlayerResolution agenda auto-resolve patch applied.
+[00:11:58] [VoteDeal] [Harmony] ForceDecideDecision block patch applied.
+[00:11:58] [VoteDeal] [Harmony] Original kingdom vote reminders suppressed.
+[00:11:58] [VoteDeal] [Agenda] TabSelection patches applied via VoteDeal Harmony.
+
+
+====== 游戏启动 2026-06-24 00:39:33 ======
+[00:39:33] [DiplomacyBehavior] [Harmony] Diplomacy context injection applied.
+[00:39:33] [VoteDeal] [Harmony] DetermineSupport: patched 11 concrete subclass(es), 0 error(s).
+[00:39:33] [VoteDeal] [Harmony] Kingdom.AddDecision delay hook applied (player=21d, others=3d).
+[00:39:33] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: MakePeaceKingdomDecision.
+[00:39:33] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: StartAllianceDecision.
+[00:39:33] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: TradeAgreementDecision.
+[00:39:33] [VoteDeal] [Harmony] Bilateral diplomacy cancellation guard applied.
+[00:39:33] [VoteDeal] [Harmony] KingdomDecision.NeedsPlayerResolution agenda auto-resolve patch applied.
+[00:39:33] [VoteDeal] [Harmony] ForceDecideDecision block patch applied.
+[00:39:33] [VoteDeal] [Harmony] Original kingdom vote reminders suppressed.
+[00:39:33] [VoteDeal] [Agenda] TabSelection patches applied via VoteDeal Harmony.
+
+
+====== 游戏启动 2026-06-24 00:57:08 ======
+[00:57:08] [DiplomacyBehavior] [Harmony] Diplomacy context injection applied.
+[00:57:08] [VoteDeal] [Harmony] DetermineSupport: patched 11 concrete subclass(es), 0 error(s).
+[00:57:08] [VoteDeal] [Harmony] Kingdom.AddDecision delay hook applied (player=21d, others=3d).
+[00:57:08] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: MakePeaceKingdomDecision.
+[00:57:08] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: StartAllianceDecision.
+[00:57:08] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: TradeAgreementDecision.
+[00:57:08] [VoteDeal] [Harmony] Bilateral diplomacy cancellation guard applied.
+[00:57:08] [VoteDeal] [Harmony] KingdomDecision.NeedsPlayerResolution agenda auto-resolve patch applied.
+[00:57:08] [VoteDeal] [Harmony] ForceDecideDecision block patch applied.
+[00:57:08] [VoteDeal] [Harmony] Original kingdom vote reminders suppressed.
+[00:57:08] [VoteDeal] [Agenda] TabSelection patches applied via VoteDeal Harmony.
+
+
+====== 游戏启动 2026-06-25 01:15:37 ======
+[01:15:38] [DiplomacyBehavior] [Harmony] Diplomacy context injection applied.
+[01:15:38] [VoteDeal] [Harmony] DetermineSupport: patched 11 concrete subclass(es), 0 error(s).
+[01:15:38] [VoteDeal] [Harmony] Kingdom.AddDecision delay hook applied (player=21d, others=3d).
+[01:15:38] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: MakePeaceKingdomDecision.
+[01:15:38] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: StartAllianceDecision.
+[01:15:38] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: TradeAgreementDecision.
+[01:15:38] [VoteDeal] [Harmony] Bilateral diplomacy cancellation guard applied.
+[01:15:38] [VoteDeal] [Harmony] KingdomDecision.NeedsPlayerResolution agenda auto-resolve patch applied.
+[01:15:38] [VoteDeal] [Harmony] ForceDecideDecision block patch applied.
+[01:15:38] [VoteDeal] [Harmony] Original kingdom vote reminders suppressed.
+[01:15:38] [VoteDeal] [Agenda] TabSelection patches applied via VoteDeal Harmony.
+
+
+====== 游戏启动 2026-06-25 01:29:52 ======
+[01:29:52] [DiplomacyBehavior] [Harmony] Diplomacy context injection applied.
+[01:29:52] [VoteDeal] [Harmony] DetermineSupport: patched 11 concrete subclass(es), 0 error(s).
+[01:29:52] [VoteDeal] [Harmony] Kingdom.AddDecision delay hook applied (player=21d, others=3d).
+[01:29:52] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: MakePeaceKingdomDecision.
+[01:29:52] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: StartAllianceDecision.
+[01:29:52] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: TradeAgreementDecision.
+[01:29:52] [VoteDeal] [Harmony] Bilateral diplomacy cancellation guard applied.
+[01:29:52] [VoteDeal] [Harmony] KingdomDecision.NeedsPlayerResolution agenda auto-resolve patch applied.
+[01:29:52] [VoteDeal] [Harmony] ForceDecideDecision block patch applied.
+[01:29:52] [VoteDeal] [Harmony] Original kingdom vote reminders suppressed.
+[01:29:52] [VoteDeal] [Agenda] TabSelection patches applied via VoteDeal Harmony.
+
+
+====== 游戏启动 2026-06-25 02:11:19 ======
+[02:11:19] [DiplomacyBehavior] [Harmony] Diplomacy context injection applied.
+[02:11:19] [VoteDeal] [Harmony] DetermineSupport: patched 11 concrete subclass(es), 0 error(s).
+[02:11:19] [VoteDeal] [Harmony] Kingdom.AddDecision delay hook applied (player=21d, others=3d).
+[02:11:19] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: MakePeaceKingdomDecision.
+[02:11:19] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: StartAllianceDecision.
+[02:11:19] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: TradeAgreementDecision.
+[02:11:19] [VoteDeal] [Harmony] Bilateral diplomacy cancellation guard applied.
+[02:11:19] [VoteDeal] [Harmony] KingdomDecision.NeedsPlayerResolution agenda auto-resolve patch applied.
+[02:11:19] [VoteDeal] [Harmony] ForceDecideDecision block patch applied.
+[02:11:19] [VoteDeal] [Harmony] Original kingdom vote reminders suppressed.
+[02:11:19] [VoteDeal] [Agenda] TabSelection patches applied via VoteDeal Harmony.
+
+
+====== 游戏启动 2026-06-26 01:07:15 ======
+[01:07:16] [DiplomacyBehavior] [Harmony] Diplomacy context injection applied.
+[01:07:16] [VoteDeal] [Harmony] DetermineSupport: patched 11 concrete subclass(es), 0 error(s).
+[01:07:16] [VoteDeal] [Harmony] Kingdom.AddDecision delay hook applied (player=21d, others=3d).
+[01:07:16] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: MakePeaceKingdomDecision.
+[01:07:16] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: StartAllianceDecision.
+[01:07:16] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: TradeAgreementDecision.
+[01:07:16] [VoteDeal] [Harmony] Bilateral diplomacy cancellation guard applied.
+[01:07:16] [VoteDeal] [Harmony] KingdomDecision.NeedsPlayerResolution agenda auto-resolve patch applied.
+[01:07:16] [VoteDeal] [Harmony] ForceDecideDecision block patch applied.
+[01:07:16] [VoteDeal] [Harmony] Original kingdom vote reminders suppressed.
+[01:07:16] [VoteDeal] [Agenda] TabSelection patches applied via VoteDeal Harmony.
+
+
+====== 游戏启动 2026-06-26 01:25:55 ======
+[01:25:56] [DiplomacyBehavior] [Harmony] Diplomacy context injection applied.
+[01:25:56] [VoteDeal] [Harmony] DetermineSupport: patched 11 concrete subclass(es), 0 error(s).
+[01:25:56] [VoteDeal] [Harmony] Kingdom.AddDecision delay hook applied (player=21d, others=3d).
+[01:25:56] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: MakePeaceKingdomDecision.
+[01:25:56] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: StartAllianceDecision.
+[01:25:56] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: TradeAgreementDecision.
+[01:25:56] [VoteDeal] [Harmony] Bilateral diplomacy cancellation guard applied.
+[01:25:56] [VoteDeal] [Harmony] KingdomDecision.NeedsPlayerResolution agenda auto-resolve patch applied.
+[01:25:56] [VoteDeal] [Harmony] ForceDecideDecision block patch applied.
+[01:25:56] [VoteDeal] [Harmony] Original kingdom vote reminders suppressed.
+[01:25:56] [VoteDeal] [Agenda] TabSelection patches applied via VoteDeal Harmony.
+
+
+====== 游戏启动 2026-06-26 01:28:37 ======
+[01:28:38] [DiplomacyBehavior] [Harmony] Diplomacy context injection applied.
+[01:28:38] [VoteDeal] [Harmony] DetermineSupport: patched 11 concrete subclass(es), 0 error(s).
+[01:28:38] [VoteDeal] [Harmony] Kingdom.AddDecision delay hook applied (player=21d, others=3d).
+[01:28:38] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: MakePeaceKingdomDecision.
+[01:28:38] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: StartAllianceDecision.
+[01:28:38] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: TradeAgreementDecision.
+[01:28:38] [VoteDeal] [Harmony] Bilateral diplomacy cancellation guard applied.
+[01:28:38] [VoteDeal] [Harmony] KingdomDecision.NeedsPlayerResolution agenda auto-resolve patch applied.
+[01:28:38] [VoteDeal] [Harmony] ForceDecideDecision block patch applied.
+[01:28:38] [VoteDeal] [Harmony] Original kingdom vote reminders suppressed.
+[01:28:38] [VoteDeal] [Agenda] TabSelection patches applied via VoteDeal Harmony.
+
+
+====== 游戏启动 2026-06-26 02:55:22 ======
+[02:55:22] [DiplomacyBehavior] [Harmony] Diplomacy context injection applied.
+[02:55:22] [VoteDeal] [Harmony] DetermineSupport: patched 11 concrete subclass(es), 0 error(s).
+[02:55:22] [VoteDeal] [Harmony] Kingdom.AddDecision delay hook applied (player=21d, others=3d).
+[02:55:22] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: MakePeaceKingdomDecision.
+[02:55:22] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: StartAllianceDecision.
+[02:55:22] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: TradeAgreementDecision.
+[02:55:22] [VoteDeal] [Harmony] Bilateral diplomacy cancellation guard applied.
+[02:55:22] [VoteDeal] [Harmony] KingdomDecision.NeedsPlayerResolution agenda auto-resolve patch applied.
+[02:55:22] [VoteDeal] [Harmony] ForceDecideDecision block patch applied.
+[02:55:22] [VoteDeal] [Harmony] Original kingdom vote reminders suppressed.
+[02:55:22] [VoteDeal] [Agenda] TabSelection patches applied via VoteDeal Harmony.
+
+
+====== 游戏启动 2026-06-26 02:58:58 ======
+[02:58:58] [DiplomacyBehavior] [Harmony] Diplomacy context injection applied.
+[02:58:58] [VoteDeal] [Harmony] DetermineSupport: patched 11 concrete subclass(es), 0 error(s).
+[02:58:58] [VoteDeal] [Harmony] Kingdom.AddDecision delay hook applied (player=21d, others=3d).
+[02:58:58] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: MakePeaceKingdomDecision.
+[02:58:58] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: StartAllianceDecision.
+[02:58:58] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: TradeAgreementDecision.
+[02:58:58] [VoteDeal] [Harmony] Bilateral diplomacy cancellation guard applied.
+[02:58:58] [VoteDeal] [Harmony] KingdomDecision.NeedsPlayerResolution agenda auto-resolve patch applied.
+[02:58:58] [VoteDeal] [Harmony] ForceDecideDecision block patch applied.
+[02:58:58] [VoteDeal] [Harmony] Original kingdom vote reminders suppressed.
+[02:58:58] [VoteDeal] [Agenda] TabSelection patches applied via VoteDeal Harmony.
+
+
+====== 游戏启动 2026-06-27 00:07:50 ======
+[00:07:50] [DiplomacyBehavior] [Harmony] Diplomacy context injection applied.
+[00:07:50] [VoteDeal] [Harmony] DetermineSupport: patched 11 concrete subclass(es), 0 error(s).
+[00:07:50] [VoteDeal] [Harmony] Kingdom.AddDecision delay hook applied (player=21d, others=3d).
+[00:07:50] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: MakePeaceKingdomDecision.
+[00:07:50] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: StartAllianceDecision.
+[00:07:50] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: TradeAgreementDecision.
+[00:07:50] [VoteDeal] [Harmony] Bilateral diplomacy cancellation guard applied.
+[00:07:50] [VoteDeal] [Harmony] KingdomDecision.NeedsPlayerResolution agenda auto-resolve patch applied.
+[00:07:50] [VoteDeal] [Harmony] ForceDecideDecision block patch applied.
+[00:07:50] [VoteDeal] [Harmony] Original kingdom vote reminders suppressed.
+[00:07:50] [VoteDeal] [Agenda] TabSelection patches applied via VoteDeal Harmony.
+
+
+====== 游戏启动 2026-06-27 00:57:56 ======
+[00:57:56] [DiplomacyBehavior] [Harmony] Diplomacy context injection applied.
+[00:57:56] [VoteDeal] [Harmony] DetermineSupport: patched 11 concrete subclass(es), 0 error(s).
+[00:57:56] [VoteDeal] [Harmony] Kingdom.AddDecision delay hook applied (player=21d, others=3d).
+[00:57:56] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: MakePeaceKingdomDecision.
+[00:57:56] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: StartAllianceDecision.
+[00:57:56] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: TradeAgreementDecision.
+[00:57:56] [VoteDeal] [Harmony] Bilateral diplomacy cancellation guard applied.
+[00:57:56] [VoteDeal] [Harmony] KingdomDecision.NeedsPlayerResolution agenda auto-resolve patch applied.
+[00:57:56] [VoteDeal] [Harmony] ForceDecideDecision block patch applied.
+[00:57:56] [VoteDeal] [Harmony] Original kingdom vote reminders suppressed.
+[00:57:56] [VoteDeal] [Agenda] TabSelection patches applied via VoteDeal Harmony.
+
+
+====== 游戏启动 2026-06-27 00:59:35 ======
+[00:59:36] [DiplomacyBehavior] [Harmony] Diplomacy context injection applied.
+[00:59:36] [VoteDeal] [Harmony] DetermineSupport: patched 11 concrete subclass(es), 0 error(s).
+[00:59:36] [VoteDeal] [Harmony] Kingdom.AddDecision delay hook applied (player=21d, others=3d).
+[00:59:36] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: MakePeaceKingdomDecision.
+[00:59:36] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: StartAllianceDecision.
+[00:59:36] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: TradeAgreementDecision.
+[00:59:36] [VoteDeal] [Harmony] Bilateral diplomacy cancellation guard applied.
+[00:59:36] [VoteDeal] [Harmony] KingdomDecision.NeedsPlayerResolution agenda auto-resolve patch applied.
+[00:59:36] [VoteDeal] [Harmony] ForceDecideDecision block patch applied.
+[00:59:36] [VoteDeal] [Harmony] Original kingdom vote reminders suppressed.
+[00:59:36] [VoteDeal] [Agenda] TabSelection patches applied via VoteDeal Harmony.
+
+
+====== 游戏启动 2026-06-28 02:12:05 ======
+[02:12:06] [DiplomacyBehavior] [Harmony] Diplomacy context injection applied.
+[02:12:06] [VoteDeal] [Harmony] DetermineSupport: patched 11 concrete subclass(es), 0 error(s).
+[02:12:06] [VoteDeal] [Harmony] Kingdom.AddDecision delay hook applied (player=21d, others=3d).
+[02:12:06] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: MakePeaceKingdomDecision.
+[02:12:06] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: StartAllianceDecision.
+[02:12:06] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: TradeAgreementDecision.
+[02:12:06] [VoteDeal] [Harmony] Bilateral diplomacy cancellation guard applied.
+[02:12:06] [VoteDeal] [Harmony] KingdomDecision.NeedsPlayerResolution agenda auto-resolve patch applied.
+[02:12:06] [VoteDeal] [Harmony] ForceDecideDecision block patch applied.
+[02:12:06] [VoteDeal] [Harmony] Original kingdom vote reminders suppressed.
+[02:12:06] [VoteDeal] [Agenda] TabSelection patches applied via VoteDeal Harmony.
+
+
+====== 游戏启动 2026-06-28 02:40:54 ======
+[02:40:54] [DiplomacyBehavior] [Harmony] Diplomacy context injection applied.
+[02:40:54] [VoteDeal] [Harmony] DetermineSupport: patched 11 concrete subclass(es), 0 error(s).
+[02:40:54] [VoteDeal] [Harmony] Kingdom.AddDecision delay hook applied (player=21d, others=3d).
+[02:40:54] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: MakePeaceKingdomDecision.
+[02:40:54] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: StartAllianceDecision.
+[02:40:54] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: TradeAgreementDecision.
+[02:40:54] [VoteDeal] [Harmony] Bilateral diplomacy cancellation guard applied.
+[02:40:54] [VoteDeal] [Harmony] KingdomDecision.NeedsPlayerResolution agenda auto-resolve patch applied.
+[02:40:54] [VoteDeal] [Harmony] ForceDecideDecision block patch applied.
+[02:40:54] [VoteDeal] [Harmony] Original kingdom vote reminders suppressed.
+[02:40:54] [VoteDeal] [Agenda] TabSelection patches applied via VoteDeal Harmony.
+
+
+====== 游戏启动 2026-06-28 02:52:18 ======
+[02:52:18] [DiplomacyBehavior] [Harmony] Diplomacy context injection applied.
+[02:52:18] [VoteDeal] [Harmony] DetermineSupport: patched 11 concrete subclass(es), 0 error(s).
+[02:52:18] [VoteDeal] [Harmony] Kingdom.AddDecision delay hook applied (player=21d, others=3d).
+[02:52:18] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: MakePeaceKingdomDecision.
+[02:52:18] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: StartAllianceDecision.
+[02:52:18] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: TradeAgreementDecision.
+[02:52:18] [VoteDeal] [Harmony] Bilateral diplomacy cancellation guard applied.
+[02:52:18] [VoteDeal] [Harmony] KingdomDecision.NeedsPlayerResolution agenda auto-resolve patch applied.
+[02:52:18] [VoteDeal] [Harmony] ForceDecideDecision block patch applied.
+[02:52:18] [VoteDeal] [Harmony] Original kingdom vote reminders suppressed.
+[02:52:18] [VoteDeal] [Agenda] TabSelection patches applied via VoteDeal Harmony.
+
+
+====== 游戏启动 2026-06-28 13:39:34 ======
+[13:39:34] [DiplomacyBehavior] [Harmony] Diplomacy context injection applied.
+[13:39:34] [VoteDeal] [Harmony] DetermineSupport: patched 11 concrete subclass(es), 0 error(s).
+[13:39:34] [VoteDeal] [Harmony] Kingdom.AddDecision delay hook applied (player=21d, others=3d).
+[13:39:34] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: MakePeaceKingdomDecision.
+[13:39:34] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: StartAllianceDecision.
+[13:39:34] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: TradeAgreementDecision.
+[13:39:34] [VoteDeal] [Harmony] Bilateral diplomacy cancellation guard applied.
+[13:39:34] [VoteDeal] [Harmony] KingdomDecision.NeedsPlayerResolution agenda auto-resolve patch applied.
+[13:39:34] [VoteDeal] [Harmony] ForceDecideDecision block patch applied.
+[13:39:34] [VoteDeal] [Harmony] Original kingdom vote reminders suppressed.
+[13:39:34] [VoteDeal] [Agenda] TabSelection patches applied via VoteDeal Harmony.
+
+
+====== 游戏启动 2026-06-28 17:30:09 ======
+[17:30:09] [DiplomacyBehavior] [Harmony] Diplomacy context injection applied.
+[17:30:09] [VoteDeal] [Harmony] DetermineSupport: patched 11 concrete subclass(es), 0 error(s).
+[17:30:09] [VoteDeal] [Harmony] Kingdom.AddDecision delay hook applied (player=21d, others=3d).
+[17:30:09] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: MakePeaceKingdomDecision.
+[17:30:09] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: StartAllianceDecision.
+[17:30:09] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: TradeAgreementDecision.
+[17:30:09] [VoteDeal] [Harmony] Bilateral diplomacy cancellation guard applied.
+[17:30:09] [VoteDeal] [Harmony] KingdomDecision.NeedsPlayerResolution agenda auto-resolve patch applied.
+[17:30:09] [VoteDeal] [Harmony] ForceDecideDecision block patch applied.
+[17:30:09] [VoteDeal] [Harmony] Original kingdom vote reminders suppressed.
+[17:30:09] [VoteDeal] [Agenda] TabSelection patches applied via VoteDeal Harmony.
+
+
+====== 游戏启动 2026-06-28 17:59:24 ======
+[17:59:24] [DiplomacyBehavior] [Harmony] Diplomacy context injection applied.
+[17:59:24] [VoteDeal] [Harmony] DetermineSupport: patched 11 concrete subclass(es), 0 error(s).
+[17:59:24] [VoteDeal] [Harmony] Kingdom.AddDecision delay hook applied (player=21d, others=3d).
+[17:59:24] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: MakePeaceKingdomDecision.
+[17:59:24] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: StartAllianceDecision.
+[17:59:24] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: TradeAgreementDecision.
+[17:59:24] [VoteDeal] [Harmony] Bilateral diplomacy cancellation guard applied.
+[17:59:24] [VoteDeal] [Harmony] KingdomDecision.NeedsPlayerResolution agenda auto-resolve patch applied.
+[17:59:24] [VoteDeal] [Harmony] ForceDecideDecision block patch applied.
+[17:59:24] [VoteDeal] [Harmony] Original kingdom vote reminders suppressed.
+[17:59:24] [VoteDeal] [Agenda] TabSelection patches applied via VoteDeal Harmony.
+
+
+====== 游戏启动 2026-06-28 18:40:45 ======
+[18:40:45] [DiplomacyBehavior] [Harmony] Diplomacy context injection applied.
+[18:40:46] [VoteDeal] [Harmony] DetermineSupport: patched 11 concrete subclass(es), 0 error(s).
+[18:40:46] [VoteDeal] [Harmony] Kingdom.AddDecision delay hook applied (player=21d, others=3d).
+[18:40:46] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: MakePeaceKingdomDecision.
+[18:40:46] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: StartAllianceDecision.
+[18:40:46] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: TradeAgreementDecision.
+[18:40:46] [VoteDeal] [Harmony] Bilateral diplomacy cancellation guard applied.
+[18:40:46] [VoteDeal] [Harmony] KingdomDecision.NeedsPlayerResolution agenda auto-resolve patch applied.
+[18:40:46] [VoteDeal] [Harmony] ForceDecideDecision block patch applied.
+[18:40:46] [VoteDeal] [Harmony] Original kingdom vote reminders suppressed.
+[18:40:46] [VoteDeal] [Agenda] TabSelection patches applied via VoteDeal Harmony.
+
+
+====== 游戏启动 2026-06-28 18:58:06 ======
+[18:58:06] [DiplomacyBehavior] [Harmony] Diplomacy context injection applied.
+[18:58:06] [VoteDeal] [Harmony] DetermineSupport: patched 11 concrete subclass(es), 0 error(s).
+[18:58:06] [VoteDeal] [Harmony] Kingdom.AddDecision delay hook applied (player=21d, others=3d).
+[18:58:06] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: MakePeaceKingdomDecision.
+[18:58:06] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: StartAllianceDecision.
+[18:58:06] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: TradeAgreementDecision.
+[18:58:06] [VoteDeal] [Harmony] Bilateral diplomacy cancellation guard applied.
+[18:58:06] [VoteDeal] [Harmony] KingdomDecision.NeedsPlayerResolution agenda auto-resolve patch applied.
+[18:58:06] [VoteDeal] [Harmony] ForceDecideDecision block patch applied.
+[18:58:06] [VoteDeal] [Harmony] Original kingdom vote reminders suppressed.
+[18:58:06] [VoteDeal] [Agenda] TabSelection patches applied via VoteDeal Harmony.
+
+
+====== 游戏启动 2026-06-28 19:21:29 ======
+[19:21:30] [DiplomacyBehavior] [Harmony] Diplomacy context injection applied.
+[19:21:30] [VoteDeal] [Harmony] DetermineSupport: patched 11 concrete subclass(es), 0 error(s).
+[19:21:30] [VoteDeal] [Harmony] Kingdom.AddDecision delay hook applied (player=21d, others=3d).
+[19:21:30] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: MakePeaceKingdomDecision.
+[19:21:30] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: StartAllianceDecision.
+[19:21:30] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: TradeAgreementDecision.
+[19:21:30] [VoteDeal] [Harmony] Bilateral diplomacy cancellation guard applied.
+[19:21:30] [VoteDeal] [Harmony] KingdomDecision.NeedsPlayerResolution agenda auto-resolve patch applied.
+[19:21:30] [VoteDeal] [Harmony] ForceDecideDecision block patch applied.
+[19:21:30] [VoteDeal] [Harmony] Original kingdom vote reminders suppressed.
+[19:21:30] [VoteDeal] [Agenda] TabSelection patches applied via VoteDeal Harmony.
+
+
+====== 游戏启动 2026-06-29 02:00:45 ======
+[02:00:45] [DiplomacyBehavior] [Harmony] Diplomacy context injection applied.
+[02:00:45] [VoteDeal] [Harmony] DetermineSupport: patched 11 concrete subclass(es), 0 error(s).
+[02:00:45] [VoteDeal] [Harmony] Kingdom.AddDecision delay hook applied (player=21d, others=3d).
+[02:00:45] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: MakePeaceKingdomDecision.
+[02:00:45] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: StartAllianceDecision.
+[02:00:45] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: TradeAgreementDecision.
+[02:00:45] [VoteDeal] [Harmony] Bilateral diplomacy cancellation guard applied.
+[02:00:45] [VoteDeal] [Harmony] KingdomDecision.NeedsPlayerResolution agenda auto-resolve patch applied.
+[02:00:45] [VoteDeal] [Harmony] ForceDecideDecision block patch applied.
+[02:00:45] [VoteDeal] [Harmony] Original kingdom vote reminders suppressed.
+[02:00:45] [VoteDeal] [Agenda] TabSelection patches applied via VoteDeal Harmony.
+
+
+====== 游戏启动 2026-06-29 02:07:47 ======
+[02:07:48] [DiplomacyBehavior] [Harmony] Diplomacy context injection applied.
+[02:07:48] [VoteDeal] [Harmony] DetermineSupport: patched 11 concrete subclass(es), 0 error(s).
+[02:07:48] [VoteDeal] [Harmony] Kingdom.AddDecision delay hook applied (player=21d, others=3d).
+[02:07:48] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: MakePeaceKingdomDecision.
+[02:07:48] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: StartAllianceDecision.
+[02:07:48] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: TradeAgreementDecision.
+[02:07:48] [VoteDeal] [Harmony] Bilateral diplomacy cancellation guard applied.
+[02:07:48] [VoteDeal] [Harmony] KingdomDecision.NeedsPlayerResolution agenda auto-resolve patch applied.
+[02:07:48] [VoteDeal] [Harmony] ForceDecideDecision block patch applied.
+[02:07:48] [VoteDeal] [Harmony] Original kingdom vote reminders suppressed.
+[02:07:48] [VoteDeal] [Agenda] TabSelection patches applied via VoteDeal Harmony.
+
+
+====== 游戏启动 2026-06-29 02:17:05 ======
+[02:17:05] [DiplomacyBehavior] [Harmony] Diplomacy context injection applied.
+[02:17:05] [VoteDeal] [Harmony] DetermineSupport: patched 11 concrete subclass(es), 0 error(s).
+[02:17:05] [VoteDeal] [Harmony] Kingdom.AddDecision delay hook applied (player=21d, others=3d).
+[02:17:05] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: MakePeaceKingdomDecision.
+[02:17:05] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: StartAllianceDecision.
+[02:17:05] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: TradeAgreementDecision.
+[02:17:05] [VoteDeal] [Harmony] Bilateral diplomacy cancellation guard applied.
+[02:17:05] [VoteDeal] [Harmony] KingdomDecision.NeedsPlayerResolution agenda auto-resolve patch applied.
+[02:17:05] [VoteDeal] [Harmony] ForceDecideDecision block patch applied.
+[02:17:05] [VoteDeal] [Harmony] Original kingdom vote reminders suppressed.
+[02:17:05] [VoteDeal] [Agenda] TabSelection patches applied via VoteDeal Harmony.
+
+
+====== 游戏启动 2026-06-29 02:47:10 ======
+[02:47:10] [DiplomacyBehavior] [Harmony] Diplomacy context injection applied.
+[02:47:10] [VoteDeal] [Harmony] DetermineSupport: patched 11 concrete subclass(es), 0 error(s).
+[02:47:10] [VoteDeal] [Harmony] Kingdom.AddDecision delay hook applied (player=21d, others=3d).
+[02:47:10] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: MakePeaceKingdomDecision.
+[02:47:10] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: StartAllianceDecision.
+[02:47:10] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: TradeAgreementDecision.
+[02:47:10] [VoteDeal] [Harmony] Bilateral diplomacy cancellation guard applied.
+[02:47:10] [VoteDeal] [Harmony] KingdomDecision.NeedsPlayerResolution agenda auto-resolve patch applied.
+[02:47:10] [VoteDeal] [Harmony] ForceDecideDecision block patch applied.
+[02:47:10] [VoteDeal] [Harmony] Original kingdom vote reminders suppressed.
+[02:47:10] [VoteDeal] [Agenda] TabSelection patches applied via VoteDeal Harmony.
+
+
+====== 游戏启动 2026-06-29 02:58:00 ======
+[02:58:00] [DiplomacyBehavior] [Harmony] Diplomacy context injection applied.
+[02:58:00] [VoteDeal] [Harmony] DetermineSupport: patched 11 concrete subclass(es), 0 error(s).
+[02:58:00] [VoteDeal] [Harmony] Kingdom.AddDecision delay hook applied (player=21d, others=3d).
+[02:58:00] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: MakePeaceKingdomDecision.
+[02:58:00] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: StartAllianceDecision.
+[02:58:00] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: TradeAgreementDecision.
+[02:58:00] [VoteDeal] [Harmony] Bilateral diplomacy cancellation guard applied.
+[02:58:00] [VoteDeal] [Harmony] KingdomDecision.NeedsPlayerResolution agenda auto-resolve patch applied.
+[02:58:00] [VoteDeal] [Harmony] ForceDecideDecision block patch applied.
+[02:58:00] [VoteDeal] [Harmony] Original kingdom vote reminders suppressed.
+[02:58:00] [VoteDeal] [Agenda] TabSelection patches applied via VoteDeal Harmony.
+
+
+====== 游戏启动 2026-06-30 00:45:10 ======
+[00:45:10] [DiplomacyBehavior] [Harmony] Diplomacy context injection applied.
+[00:45:10] [VoteDeal] [Harmony] DetermineSupport: patched 11 concrete subclass(es), 0 error(s).
+[00:45:10] [VoteDeal] [Harmony] Kingdom.AddDecision delay hook applied (player=21d, others=3d).
+[00:45:10] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: MakePeaceKingdomDecision.
+[00:45:10] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: StartAllianceDecision.
+[00:45:10] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: TradeAgreementDecision.
+[00:45:10] [VoteDeal] [Harmony] Bilateral diplomacy cancellation guard applied.
+[00:45:10] [VoteDeal] [Harmony] KingdomDecision.NeedsPlayerResolution agenda auto-resolve patch applied.
+[00:45:10] [VoteDeal] [Harmony] ForceDecideDecision block patch applied.
+[00:45:10] [VoteDeal] [Harmony] Original kingdom vote reminders suppressed.
+[00:45:10] [VoteDeal] [Agenda] TabSelection patches applied via VoteDeal Harmony.
+
+
+====== 游戏启动 2026-06-30 01:12:50 ======
+[01:12:51] [DiplomacyBehavior] [Harmony] Diplomacy context injection applied.
+[01:12:51] [VoteDeal] [Harmony] DetermineSupport: patched 11 concrete subclass(es), 0 error(s).
+[01:12:51] [VoteDeal] [Harmony] Kingdom.AddDecision delay hook applied (player=21d, others=3d).
+[01:12:51] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: MakePeaceKingdomDecision.
+[01:12:51] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: StartAllianceDecision.
+[01:12:51] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: TradeAgreementDecision.
+[01:12:51] [VoteDeal] [Harmony] Bilateral diplomacy cancellation guard applied.
+[01:12:51] [VoteDeal] [Harmony] KingdomDecision.NeedsPlayerResolution agenda auto-resolve patch applied.
+[01:12:51] [VoteDeal] [Harmony] ForceDecideDecision block patch applied.
+[01:12:51] [VoteDeal] [Harmony] Original kingdom vote reminders suppressed.
+[01:12:51] [VoteDeal] [Agenda] TabSelection patches applied via VoteDeal Harmony.
+
+
+====== 游戏启动 2026-06-30 01:15:10 ======
+[01:15:10] [DiplomacyBehavior] [Harmony] Diplomacy context injection applied.
+[01:15:10] [VoteDeal] [Harmony] DetermineSupport: patched 11 concrete subclass(es), 0 error(s).
+[01:15:10] [VoteDeal] [Harmony] Kingdom.AddDecision delay hook applied (player=21d, others=3d).
+[01:15:10] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: MakePeaceKingdomDecision.
+[01:15:10] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: StartAllianceDecision.
+[01:15:10] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: TradeAgreementDecision.
+[01:15:10] [VoteDeal] [Harmony] Bilateral diplomacy cancellation guard applied.
+[01:15:10] [VoteDeal] [Harmony] KingdomDecision.NeedsPlayerResolution agenda auto-resolve patch applied.
+[01:15:10] [VoteDeal] [Harmony] ForceDecideDecision block patch applied.
+[01:15:10] [VoteDeal] [Harmony] Original kingdom vote reminders suppressed.
+[01:15:10] [VoteDeal] [Agenda] TabSelection patches applied via VoteDeal Harmony.
+
+
+====== 游戏启动 2026-06-30 01:17:25 ======
+[01:17:25] [DiplomacyBehavior] [Harmony] Diplomacy context injection applied.
+[01:17:25] [VoteDeal] [Harmony] DetermineSupport: patched 11 concrete subclass(es), 0 error(s).
+[01:17:25] [VoteDeal] [Harmony] Kingdom.AddDecision delay hook applied (player=21d, others=3d).
+[01:17:25] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: MakePeaceKingdomDecision.
+[01:17:25] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: StartAllianceDecision.
+[01:17:25] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: TradeAgreementDecision.
+[01:17:25] [VoteDeal] [Harmony] Bilateral diplomacy cancellation guard applied.
+[01:17:25] [VoteDeal] [Harmony] KingdomDecision.NeedsPlayerResolution agenda auto-resolve patch applied.
+[01:17:25] [VoteDeal] [Harmony] ForceDecideDecision block patch applied.
+[01:17:25] [VoteDeal] [Harmony] Original kingdom vote reminders suppressed.
+[01:17:25] [VoteDeal] [Agenda] TabSelection patches applied via VoteDeal Harmony.
+
+
+====== 游戏启动 2026-06-30 01:20:12 ======
+[01:20:12] [DiplomacyBehavior] [Harmony] Diplomacy context injection applied.
+[01:20:12] [VoteDeal] [Harmony] DetermineSupport: patched 11 concrete subclass(es), 0 error(s).
+[01:20:12] [VoteDeal] [Harmony] Kingdom.AddDecision delay hook applied (player=21d, others=3d).
+[01:20:12] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: MakePeaceKingdomDecision.
+[01:20:12] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: StartAllianceDecision.
+[01:20:12] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: TradeAgreementDecision.
+[01:20:12] [VoteDeal] [Harmony] Bilateral diplomacy cancellation guard applied.
+[01:20:12] [VoteDeal] [Harmony] KingdomDecision.NeedsPlayerResolution agenda auto-resolve patch applied.
+[01:20:12] [VoteDeal] [Harmony] ForceDecideDecision block patch applied.
+[01:20:12] [VoteDeal] [Harmony] Original kingdom vote reminders suppressed.
+[01:20:12] [VoteDeal] [Agenda] TabSelection patches applied via VoteDeal Harmony.
+
+
+====== 游戏启动 2026-06-30 01:22:55 ======
+[01:22:55] [DiplomacyBehavior] [Harmony] Diplomacy context injection applied.
+[01:22:55] [VoteDeal] [Harmony] DetermineSupport: patched 11 concrete subclass(es), 0 error(s).
+[01:22:55] [VoteDeal] [Harmony] Kingdom.AddDecision delay hook applied (player=21d, others=3d).
+[01:22:55] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: MakePeaceKingdomDecision.
+[01:22:55] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: StartAllianceDecision.
+[01:22:55] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: TradeAgreementDecision.
+[01:22:55] [VoteDeal] [Harmony] Bilateral diplomacy cancellation guard applied.
+[01:22:55] [VoteDeal] [Harmony] KingdomDecision.NeedsPlayerResolution agenda auto-resolve patch applied.
+[01:22:55] [VoteDeal] [Harmony] ForceDecideDecision block patch applied.
+[01:22:55] [VoteDeal] [Harmony] Original kingdom vote reminders suppressed.
+[01:22:55] [VoteDeal] [Agenda] TabSelection patches applied via VoteDeal Harmony.
+
+
+====== 游戏启动 2026-06-30 01:25:51 ======
+[01:25:51] [DiplomacyBehavior] [Harmony] Diplomacy context injection applied.
+[01:25:51] [VoteDeal] [Harmony] DetermineSupport: patched 11 concrete subclass(es), 0 error(s).
+[01:25:51] [VoteDeal] [Harmony] Kingdom.AddDecision delay hook applied (player=21d, others=3d).
+[01:25:51] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: MakePeaceKingdomDecision.
+[01:25:51] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: StartAllianceDecision.
+[01:25:51] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: TradeAgreementDecision.
+[01:25:51] [VoteDeal] [Harmony] Bilateral diplomacy cancellation guard applied.
+[01:25:51] [VoteDeal] [Harmony] KingdomDecision.NeedsPlayerResolution agenda auto-resolve patch applied.
+[01:25:51] [VoteDeal] [Harmony] ForceDecideDecision block patch applied.
+[01:25:51] [VoteDeal] [Harmony] Original kingdom vote reminders suppressed.
+[01:25:51] [VoteDeal] [Agenda] TabSelection patches applied via VoteDeal Harmony.
+
+
+====== 游戏启动 2026-06-30 01:27:57 ======
+[01:27:57] [DiplomacyBehavior] [Harmony] Diplomacy context injection applied.
+[01:27:57] [VoteDeal] [Harmony] DetermineSupport: patched 11 concrete subclass(es), 0 error(s).
+[01:27:57] [VoteDeal] [Harmony] Kingdom.AddDecision delay hook applied (player=21d, others=3d).
+[01:27:57] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: MakePeaceKingdomDecision.
+[01:27:57] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: StartAllianceDecision.
+[01:27:57] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: TradeAgreementDecision.
+[01:27:57] [VoteDeal] [Harmony] Bilateral diplomacy cancellation guard applied.
+[01:27:57] [VoteDeal] [Harmony] KingdomDecision.NeedsPlayerResolution agenda auto-resolve patch applied.
+[01:27:57] [VoteDeal] [Harmony] ForceDecideDecision block patch applied.
+[01:27:57] [VoteDeal] [Harmony] Original kingdom vote reminders suppressed.
+[01:27:57] [VoteDeal] [Agenda] TabSelection patches applied via VoteDeal Harmony.
+
+
+====== 游戏启动 2026-06-30 01:58:05 ======
+[01:58:05] [DiplomacyBehavior] [Harmony] Diplomacy context injection applied.
+[01:58:05] [VoteDeal] [Harmony] DetermineSupport: patched 11 concrete subclass(es), 0 error(s).
+[01:58:05] [VoteDeal] [Harmony] Kingdom.AddDecision delay hook applied (player=21d, others=3d).
+[01:58:05] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: MakePeaceKingdomDecision.
+[01:58:05] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: StartAllianceDecision.
+[01:58:05] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: TradeAgreementDecision.
+[01:58:05] [VoteDeal] [Harmony] Bilateral diplomacy cancellation guard applied.
+[01:58:05] [VoteDeal] [Harmony] KingdomDecision.NeedsPlayerResolution agenda auto-resolve patch applied.
+[01:58:05] [VoteDeal] [Harmony] ForceDecideDecision block patch applied.
+[01:58:05] [VoteDeal] [Harmony] Original kingdom vote reminders suppressed.
+[01:58:05] [VoteDeal] [Agenda] TabSelection patches applied via VoteDeal Harmony.
+
+
+====== 游戏启动 2026-06-30 01:58:09 ======
+[01:58:09] [DiplomacyBehavior] [Harmony] Diplomacy context injection applied.
+[01:58:09] [VoteDeal] [Harmony] DetermineSupport: patched 11 concrete subclass(es), 0 error(s).
+[01:58:09] [VoteDeal] [Harmony] Kingdom.AddDecision delay hook applied (player=21d, others=3d).
+[01:58:09] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: MakePeaceKingdomDecision.
+[01:58:09] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: StartAllianceDecision.
+[01:58:09] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: TradeAgreementDecision.
+[01:58:09] [VoteDeal] [Harmony] Bilateral diplomacy cancellation guard applied.
+[01:58:10] [VoteDeal] [Harmony] KingdomDecision.NeedsPlayerResolution agenda auto-resolve patch applied.
+[01:58:10] [VoteDeal] [Harmony] ForceDecideDecision block patch applied.
+[01:58:10] [VoteDeal] [Harmony] Original kingdom vote reminders suppressed.
+[01:58:10] [VoteDeal] [Agenda] TabSelection patches applied via VoteDeal Harmony.
+[01:58:46] [PerfProbe] window=23.7s frames=3 avgFrameDtMs=55.56 maxFrameDtMs=66.67 slowFrames>=50ms=2 criticalFrames>=100ms=0 state= mission=False conversation=False menu=
+[01:58:46] [PerfProbe] top[1] name=SubModule.OnApplicationTick.total count=2 avgMs=6.971 maxMs=13.866 slow>=3.0ms=1 sumMs=13.942
+[01:58:46] [PerfProbe] top[2] name=SubModule.AnimusForgeNativeConversationOverlay.OnApplicationTick count=2 avgMs=1.143 maxMs=2.282 slow>=3.0ms=0 sumMs=2.287
+[01:58:46] [PerfProbe] top[3] name=SubModule.ConversationHelper.Tick count=2 avgMs=0.857 maxMs=1.711 slow>=3.0ms=0 sumMs=1.713
+[01:58:46] [PerfProbe] top[4] name=SubModule.EncyclopediaHeroPersonaPatch.OnApplicationTick count=2 avgMs=0.821 maxMs=1.639 slow>=3.0ms=0 sumMs=1.642
+[01:58:46] [PerfProbe] top[5] name=SubModule.BannerlordExceptionSentinel.OnApplicationTick count=2 avgMs=0.741 maxMs=1.480 slow>=3.0ms=0 sumMs=1.482
+[01:58:46] [PerfProbe] top[6] name=SubModule.LordEncounterBehavior.OnEngineTick count=2 avgMs=0.652 maxMs=1.301 slow>=3.0ms=0 sumMs=1.303
+[01:58:46] [PerfProbe] top[7] name=SubModule.ShoutTextInputPopup.ProcessDeferredCloseIfNeeded count=3 avgMs=0.262 maxMs=0.782 slow>=3.0ms=0 sumMs=0.785
+[01:58:46] [PerfProbe] top[8] name=SubModule.DuelBehavior.OnEngineTick count=2 avgMs=0.316 maxMs=0.632 slow>=3.0ms=0 sumMs=0.633
+[01:58:46] [PerfProbe] top[9] name=SubModule.AnimusForgeConversationHistoryLogPopup.OnApplicationTick count=2 avgMs=0.251 maxMs=0.501 slow>=3.0ms=0 sumMs=0.502
+[01:58:46] [PerfProbe] top[10] name=SubModule.Logger.OnApplicationTick count=2 avgMs=0.238 maxMs=0.473 slow>=3.0ms=0 sumMs=0.475
+[01:58:46] [PerfProbe] top[11] name=SubModule.NobleGatheringBehavior.OnEngineTick count=2 avgMs=0.195 maxMs=0.389 slow>=3.0ms=0 sumMs=0.391
+[01:58:46] [PerfProbe] top[12] name=SubModule.McmDropdownRuntimeRefresh.OnApplicationTick count=2 avgMs=0.160 maxMs=0.319 slow>=3.0ms=0 sumMs=0.320
+[01:58:46] [PerfProbe] top[13] name=SubModule.NativeConversationAnswerAreaController.OnApplicationTick count=2 avgMs=0.146 maxMs=0.291 slow>=3.0ms=0 sumMs=0.293
+[01:58:46] [PerfProbe] top[14] name=SubModule.ShoutBehavior.NativeConversationTts.OnApplicationTick count=2 avgMs=0.142 maxMs=0.284 slow>=3.0ms=0 sumMs=0.285
+
+
+====== 游戏启动 2026-06-30 02:41:18 ======
+[02:41:18] [DiplomacyBehavior] [Harmony] Diplomacy context injection applied.
+[02:41:18] [VoteDeal] [Harmony] DetermineSupport: patched 11 concrete subclass(es), 0 error(s).
+[02:41:18] [VoteDeal] [Harmony] Kingdom.AddDecision delay hook applied (player=21d, others=3d).
+[02:41:18] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: MakePeaceKingdomDecision.
+[02:41:18] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: StartAllianceDecision.
+[02:41:18] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: TradeAgreementDecision.
+[02:41:18] [VoteDeal] [Harmony] Bilateral diplomacy cancellation guard applied.
+[02:41:18] [VoteDeal] [Harmony] KingdomDecision.NeedsPlayerResolution agenda auto-resolve patch applied.
+[02:41:18] [VoteDeal] [Harmony] ForceDecideDecision block patch applied.
+[02:41:18] [VoteDeal] [Harmony] Original kingdom vote reminders suppressed.
+[02:41:18] [VoteDeal] [Agenda] TabSelection patches applied via VoteDeal Harmony.
+
+
+====== 游戏启动 2026-06-30 03:10:56 ======
+[03:10:56] [DiplomacyBehavior] [Harmony] Diplomacy context injection applied.
+[03:10:56] [VoteDeal] [Harmony] DetermineSupport: patched 11 concrete subclass(es), 0 error(s).
+[03:10:56] [VoteDeal] [Harmony] Kingdom.AddDecision delay hook applied (player=21d, others=3d).
+[03:10:56] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: MakePeaceKingdomDecision.
+[03:10:56] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: StartAllianceDecision.
+[03:10:56] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: TradeAgreementDecision.
+[03:10:56] [VoteDeal] [Harmony] Bilateral diplomacy cancellation guard applied.
+[03:10:56] [VoteDeal] [Harmony] KingdomDecision.NeedsPlayerResolution agenda auto-resolve patch applied.
+[03:10:56] [VoteDeal] [Harmony] ForceDecideDecision block patch applied.
+[03:10:56] [VoteDeal] [Harmony] Original kingdom vote reminders suppressed.
+[03:10:56] [VoteDeal] [Agenda] TabSelection patches applied via VoteDeal Harmony.
+
+
+====== 游戏启动 2026-07-01 01:34:56 ======
+[01:34:56] [DiplomacyBehavior] [Harmony] Diplomacy context injection applied.
+[01:34:56] [VoteDeal] [Harmony] DetermineSupport: patched 11 concrete subclass(es), 0 error(s).
+[01:34:56] [VoteDeal] [Harmony] Kingdom.AddDecision delay hook applied (player=21d, others=3d).
+[01:34:56] [VoteDeal] [Harmony] KingdomDecisionProposalBehavior.UpdateKingdomDecisions delay hook applied.
+[01:34:56] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: MakePeaceKingdomDecision.
+[01:34:56] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: StartAllianceDecision.
+[01:34:56] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: TradeAgreementDecision.
+[01:34:56] [VoteDeal] [Harmony] Bilateral diplomacy cancellation guard applied.
+[01:34:56] [VoteDeal] [Harmony] KingdomDecision.NeedsPlayerResolution agenda auto-resolve patch applied.
+[01:34:56] [VoteDeal] [Harmony] ForceDecideDecision block patch applied.
+[01:34:56] [VoteDeal] [Harmony] Original kingdom vote reminders suppressed.
+[01:34:56] [VoteDeal] [Agenda] TabSelection patches applied via VoteDeal Harmony.
+
+
+====== 游戏启动 2026-07-01 02:25:43 ======
+[02:25:43] [DiplomacyBehavior] [Harmony] Diplomacy context injection applied.
+[02:25:43] [VoteDeal] [Harmony] DetermineSupport: patched 11 concrete subclass(es), 0 error(s).
+[02:25:43] [VoteDeal] [Harmony] Kingdom.AddDecision delay hook applied (player=21d, others=3d).
+[02:25:43] [VoteDeal] [Harmony] KingdomDecisionProposalBehavior.UpdateKingdomDecisions delay hook applied.
+[02:25:43] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: MakePeaceKingdomDecision.
+[02:25:43] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: StartAllianceDecision.
+[02:25:43] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: TradeAgreementDecision.
+[02:25:43] [VoteDeal] [Harmony] Bilateral diplomacy cancellation guard applied.
+[02:25:43] [VoteDeal] [Harmony] KingdomDecision.NeedsPlayerResolution agenda auto-resolve patch applied.
+[02:25:43] [VoteDeal] [Harmony] ForceDecideDecision block patch applied.
+[02:25:43] [VoteDeal] [Harmony] Original kingdom vote reminders suppressed.
+[02:25:43] [VoteDeal] [Agenda] TabSelection patches applied via VoteDeal Harmony.
+
+
+====== 游戏启动 2026-07-01 02:27:11 ======
+[02:27:11] [DiplomacyBehavior] [Harmony] Diplomacy context injection applied.
+[02:27:11] [VoteDeal] [Harmony] DetermineSupport: patched 11 concrete subclass(es), 0 error(s).
+[02:27:11] [VoteDeal] [Harmony] Kingdom.AddDecision delay hook applied (player=21d, others=3d).
+[02:27:11] [VoteDeal] [Harmony] KingdomDecisionProposalBehavior.UpdateKingdomDecisions delay hook applied.
+[02:27:11] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: MakePeaceKingdomDecision.
+[02:27:11] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: StartAllianceDecision.
+[02:27:11] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: TradeAgreementDecision.
+[02:27:11] [VoteDeal] [Harmony] Bilateral diplomacy cancellation guard applied.
+[02:27:11] [VoteDeal] [Harmony] KingdomDecision.NeedsPlayerResolution agenda auto-resolve patch applied.
+[02:27:11] [VoteDeal] [Harmony] ForceDecideDecision block patch applied.
+[02:27:11] [VoteDeal] [Harmony] Original kingdom vote reminders suppressed.
+[02:27:11] [VoteDeal] [Agenda] TabSelection patches applied via VoteDeal Harmony.
+
+
+====== 游戏启动 2026-07-01 02:46:43 ======
+[02:46:43] [DiplomacyBehavior] [Harmony] Diplomacy context injection applied.
+[02:46:43] [VoteDeal] [Harmony] DetermineSupport: patched 11 concrete subclass(es), 0 error(s).
+[02:46:43] [VoteDeal] [Harmony] Kingdom.AddDecision delay hook applied (player=21d, others=3d).
+[02:46:43] [VoteDeal] [Harmony] KingdomDecisionProposalBehavior.UpdateKingdomDecisions delay hook applied.
+[02:46:43] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: MakePeaceKingdomDecision.
+[02:46:43] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: StartAllianceDecision.
+[02:46:43] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: TradeAgreementDecision.
+[02:46:43] [VoteDeal] [Harmony] Bilateral diplomacy cancellation guard applied.
+[02:46:43] [VoteDeal] [Harmony] KingdomDecision.NeedsPlayerResolution agenda auto-resolve patch applied.
+[02:46:43] [VoteDeal] [Harmony] ForceDecideDecision block patch applied.
+[02:46:43] [VoteDeal] [Harmony] Original kingdom vote reminders suppressed.
+[02:46:43] [VoteDeal] [Agenda] TabSelection patches applied via VoteDeal Harmony.
+
+
+====== 游戏启动 2026-07-02 01:34:05 ======
+[01:34:05] [DiplomacyBehavior] [Harmony] Diplomacy context injection applied.
+[01:34:05] [VoteDeal] [Harmony] DetermineSupport: patched 11 concrete subclass(es), 0 error(s).
+[01:34:05] [VoteDeal] [Harmony] Kingdom.AddDecision delay hook applied (player=21d, others=3d).
+[01:34:05] [VoteDeal] [Harmony] KingdomDecisionProposalBehavior.UpdateKingdomDecisions delay hook applied.
+[01:34:05] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: MakePeaceKingdomDecision.
+[01:34:05] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: StartAllianceDecision.
+[01:34:05] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: TradeAgreementDecision.
+[01:34:05] [VoteDeal] [Harmony] Bilateral diplomacy cancellation guard applied.
+[01:34:05] [VoteDeal] [Harmony] KingdomDecision.NeedsPlayerResolution agenda auto-resolve patch applied.
+[01:34:05] [VoteDeal] [Harmony] ForceDecideDecision block patch applied.
+[01:34:05] [VoteDeal] [Harmony] Original kingdom vote reminders suppressed.
+[01:34:05] [VoteDeal] [Agenda] TabSelection patches applied via VoteDeal Harmony.
+
+
+====== 游戏启动 2026-07-02 12:42:18 ======
+[12:42:18] [DiplomacyBehavior] [Harmony] Diplomacy context injection applied.
+[12:42:18] [VoteDeal] [Harmony] DetermineSupport: patched 11 concrete subclass(es), 0 error(s).
+[12:42:18] [VoteDeal] [Harmony] Kingdom.AddDecision delay hook applied (player=21d, others=3d).
+[12:42:18] [VoteDeal] [Harmony] KingdomDecisionProposalBehavior.UpdateKingdomDecisions delay hook applied.
+[12:42:18] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: MakePeaceKingdomDecision.
+[12:42:18] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: StartAllianceDecision.
+[12:42:18] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: TradeAgreementDecision.
+[12:42:18] [VoteDeal] [Harmony] Bilateral diplomacy cancellation guard applied.
+[12:42:18] [VoteDeal] [Harmony] KingdomDecision.NeedsPlayerResolution agenda auto-resolve patch applied.
+[12:42:18] [VoteDeal] [Harmony] ForceDecideDecision block patch applied.
+[12:42:18] [VoteDeal] [Harmony] Original kingdom vote reminders suppressed.
+[12:42:18] [VoteDeal] [Agenda] TabSelection patches applied via VoteDeal Harmony.
+
+
+====== 游戏启动 2026-07-02 12:44:43 ======
+[12:44:43] [DiplomacyBehavior] [Harmony] Diplomacy context injection applied.
+[12:44:44] [VoteDeal] [Harmony] DetermineSupport: patched 11 concrete subclass(es), 0 error(s).
+[12:44:44] [VoteDeal] [Harmony] Kingdom.AddDecision delay hook applied (player=21d, others=3d).
+[12:44:44] [VoteDeal] [Harmony] KingdomDecisionProposalBehavior.UpdateKingdomDecisions delay hook applied.
+[12:44:44] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: MakePeaceKingdomDecision.
+[12:44:44] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: StartAllianceDecision.
+[12:44:44] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: TradeAgreementDecision.
+[12:44:44] [VoteDeal] [Harmony] Bilateral diplomacy cancellation guard applied.
+[12:44:44] [VoteDeal] [Harmony] KingdomDecision.NeedsPlayerResolution agenda auto-resolve patch applied.
+[12:44:44] [VoteDeal] [Harmony] ForceDecideDecision block patch applied.
+[12:44:44] [VoteDeal] [Harmony] Original kingdom vote reminders suppressed.
+[12:44:44] [VoteDeal] [Agenda] TabSelection patches applied via VoteDeal Harmony.
+
+
+====== 游戏启动 2026-07-03 00:49:37 ======
+[00:49:37] [DiplomacyBehavior] [Harmony] Diplomacy context injection applied.
+[00:49:37] [VoteDeal] [Harmony] DetermineSupport: patched 11 concrete subclass(es), 0 error(s).
+[00:49:37] [VoteDeal] [Harmony] Kingdom.AddDecision delay hook applied (player=21d, others=3d).
+[00:49:37] [VoteDeal] [Harmony] KingdomDecisionProposalBehavior.UpdateKingdomDecisions delay hook applied.
+[00:49:37] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: MakePeaceKingdomDecision.
+[00:49:37] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: StartAllianceDecision.
+[00:49:37] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: TradeAgreementDecision.
+[00:49:37] [VoteDeal] [Harmony] Bilateral diplomacy cancellation guard applied.
+[00:49:37] [VoteDeal] [Harmony] KingdomDecision.NeedsPlayerResolution agenda auto-resolve patch applied.
+[00:49:37] [VoteDeal] [Harmony] ForceDecideDecision block patch applied.
+[00:49:37] [VoteDeal] [Harmony] Original kingdom vote reminders suppressed.
+[00:49:37] [VoteDeal] [Agenda] TabSelection patches applied via VoteDeal Harmony.
+
+
+====== 游戏启动 2026-07-03 01:06:00 ======
+[01:06:01] [DiplomacyBehavior] [Harmony] Diplomacy context injection applied.
+[01:06:01] [VoteDeal] [Harmony] DetermineSupport: patched 11 concrete subclass(es), 0 error(s).
+[01:06:01] [VoteDeal] [Harmony] Kingdom.AddDecision delay hook applied (player=21d, others=3d).
+[01:06:01] [VoteDeal] [Harmony] KingdomDecisionProposalBehavior.UpdateKingdomDecisions delay hook applied.
+[01:06:01] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: MakePeaceKingdomDecision.
+[01:06:01] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: StartAllianceDecision.
+[01:06:01] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: TradeAgreementDecision.
+[01:06:01] [VoteDeal] [Harmony] Bilateral diplomacy cancellation guard applied.
+[01:06:01] [VoteDeal] [Harmony] KingdomDecision.NeedsPlayerResolution agenda auto-resolve patch applied.
+[01:06:01] [VoteDeal] [Harmony] ForceDecideDecision block patch applied.
+[01:06:01] [VoteDeal] [Harmony] Original kingdom vote reminders suppressed.
+[01:06:01] [VoteDeal] [Agenda] TabSelection patches applied via VoteDeal Harmony.
+
+
+====== 游戏启动 2026-07-03 01:11:20 ======
+[01:11:20] [DiplomacyBehavior] [Harmony] Diplomacy context injection applied.
+[01:11:20] [VoteDeal] [Harmony] DetermineSupport: patched 11 concrete subclass(es), 0 error(s).
+[01:11:20] [VoteDeal] [Harmony] Kingdom.AddDecision delay hook applied (player=21d, others=3d).
+[01:11:20] [VoteDeal] [Harmony] KingdomDecisionProposalBehavior.UpdateKingdomDecisions delay hook applied.
+[01:11:20] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: MakePeaceKingdomDecision.
+[01:11:20] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: StartAllianceDecision.
+[01:11:20] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: TradeAgreementDecision.
+[01:11:20] [VoteDeal] [Harmony] Bilateral diplomacy cancellation guard applied.
+[01:11:20] [VoteDeal] [Harmony] KingdomDecision.NeedsPlayerResolution agenda auto-resolve patch applied.
+[01:11:20] [VoteDeal] [Harmony] ForceDecideDecision block patch applied.
+[01:11:20] [VoteDeal] [Harmony] Original kingdom vote reminders suppressed.
+[01:11:20] [VoteDeal] [Agenda] TabSelection patches applied via VoteDeal Harmony.
+
+
+====== 游戏启动 2026-07-03 01:15:48 ======
+[01:15:48] [DiplomacyBehavior] [Harmony] Diplomacy context injection applied.
+[01:15:49] [VoteDeal] [Harmony] DetermineSupport: patched 11 concrete subclass(es), 0 error(s).
+[01:15:49] [VoteDeal] [Harmony] Kingdom.AddDecision delay hook applied (player=21d, others=3d).
+[01:15:49] [VoteDeal] [Harmony] KingdomDecisionProposalBehavior.UpdateKingdomDecisions delay hook applied.
+[01:15:49] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: MakePeaceKingdomDecision.
+[01:15:49] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: StartAllianceDecision.
+[01:15:49] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: TradeAgreementDecision.
+[01:15:49] [VoteDeal] [Harmony] Bilateral diplomacy cancellation guard applied.
+[01:15:49] [VoteDeal] [Harmony] KingdomDecision.NeedsPlayerResolution agenda auto-resolve patch applied.
+[01:15:49] [VoteDeal] [Harmony] ForceDecideDecision block patch applied.
+[01:15:49] [VoteDeal] [Harmony] Original kingdom vote reminders suppressed.
+[01:15:49] [VoteDeal] [Agenda] TabSelection patches applied via VoteDeal Harmony.
+
+
+====== 游戏启动 2026-07-03 02:06:57 ======
+[02:06:57] [DiplomacyBehavior] [Harmony] Diplomacy context injection applied.
+[02:06:58] [VoteDeal] [Harmony] DetermineSupport: patched 11 concrete subclass(es), 0 error(s).
+[02:06:58] [VoteDeal] [Harmony] Kingdom.AddDecision delay hook applied (player=21d, others=3d).
+[02:06:58] [VoteDeal] [Harmony] KingdomDecisionProposalBehavior.UpdateKingdomDecisions delay hook applied.
+[02:06:58] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: MakePeaceKingdomDecision.
+[02:06:58] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: StartAllianceDecision.
+[02:06:58] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: TradeAgreementDecision.
+[02:06:58] [VoteDeal] [Harmony] Bilateral diplomacy cancellation guard applied.
+[02:06:58] [VoteDeal] [Harmony] KingdomDecision.NeedsPlayerResolution agenda auto-resolve patch applied.
+[02:06:58] [VoteDeal] [Harmony] ForceDecideDecision block patch applied.
+[02:06:58] [VoteDeal] [Harmony] Original kingdom vote reminders suppressed.
+[02:06:58] [VoteDeal] [Agenda] TabSelection patches applied via VoteDeal Harmony.
+
+
+====== 游戏启动 2026-07-03 23:46:55 ======
+[23:46:55] [DiplomacyBehavior] [Harmony] Diplomacy context injection applied.
+[23:46:55] [VoteDeal] [Harmony] DetermineSupport: patched 11 concrete subclass(es), 0 error(s).
+[23:46:55] [VoteDeal] [Harmony] Kingdom.AddDecision delay hook applied (player=21d, others=3d).
+[23:46:55] [VoteDeal] [Harmony] KingdomDecisionProposalBehavior.UpdateKingdomDecisions delay hook applied.
+[23:46:55] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: MakePeaceKingdomDecision.
+[23:46:55] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: StartAllianceDecision.
+[23:46:55] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: TradeAgreementDecision.
+[23:46:55] [VoteDeal] [Harmony] Bilateral diplomacy cancellation guard applied.
+[23:46:56] [VoteDeal] [Harmony] KingdomDecision.NeedsPlayerResolution agenda auto-resolve patch applied.
+[23:46:56] [VoteDeal] [Harmony] ForceDecideDecision block patch applied.
+[23:46:56] [VoteDeal] [Harmony] Original kingdom vote reminders suppressed.
+[23:46:56] [VoteDeal] [Agenda] TabSelection patches applied via VoteDeal Harmony.
+
+
+====== 游戏启动 2026-07-04 00:35:55 ======
+[00:35:55] [DiplomacyBehavior] [Harmony] Diplomacy context injection applied.
+[00:35:55] [VoteDeal] [Harmony] DetermineSupport: patched 11 concrete subclass(es), 0 error(s).
+[00:35:55] [VoteDeal] [Harmony] Kingdom.AddDecision delay hook applied (player=21d, others=3d).
+[00:35:55] [VoteDeal] [Harmony] KingdomDecisionProposalBehavior.UpdateKingdomDecisions delay hook applied.
+[00:35:55] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: MakePeaceKingdomDecision.
+[00:35:55] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: StartAllianceDecision.
+[00:35:55] [VoteDeal] [Harmony] Bilateral diplomacy hooks applied: TradeAgreementDecision.
+[00:35:55] [VoteDeal] [Harmony] Bilateral diplomacy cancellation guard applied.
+[00:35:55] [VoteDeal] [Harmony] KingdomDecision.NeedsPlayerResolution agenda auto-resolve patch applied.
+[00:35:55] [VoteDeal] [Harmony] ForceDecideDecision block patch applied.
+[00:35:55] [VoteDeal] [Harmony] Original kingdom vote reminders suppressed.
+[00:35:55] [VoteDeal] [Agenda] TabSelection patches applied via VoteDeal Harmony.

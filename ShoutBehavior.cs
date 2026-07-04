@@ -16277,12 +16277,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		case "encounter_release_player":
 			return !string.IsNullOrWhiteSpace(LordEncounterBehavior.BuildMeetingPlayerReleaseRuntimeInstructionForExternal(hero));
 		case "meeting_taunt":
-			PartyBase meetingTauntParty = null;
-			if (hero == null)
-			{
-				TryResolveNativeConversationMeetingTauntParty(targetHero, targetCharacter, targetAgentIndex, out meetingTauntParty);
-			}
-			return !string.IsNullOrWhiteSpace(LordEncounterBehavior.BuildMeetingTauntRuntimeInstructionForExternal(hero, targetCharacter, meetingTauntParty)) || !string.IsNullOrWhiteSpace(SceneTauntBehavior.BuildUnifiedTauntRuntimeInstructionForExternal(hero, targetCharacter, targetAgentIndex));
+			return !string.IsNullOrWhiteSpace(LordEncounterBehavior.BuildForcedMeetingTauntRuntimeInstructionForExternal(hero, targetCharacter));
 		case "hero_join_party":
 			if (hero != null)
 			{
@@ -16404,17 +16399,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 		string extraFact = proactiveFactText;
 		string nativeMeetingTauntRuleBlock = "";
-		PartyBase nativeMeetingTauntParty = null;
-		if (targetHero == null)
-		{
-			TryResolveNativeConversationMeetingTauntParty(targetHero, targetCharacter, nativeTargetAgentIndex, out nativeMeetingTauntParty);
-		}
-		string nativeMeetingTauntInstruction = (LordEncounterBehavior.BuildMeetingTauntRuntimeInstructionForExternal(targetHero, targetCharacter, nativeMeetingTauntParty) ?? "").Trim();
-		if (string.IsNullOrWhiteSpace(nativeMeetingTauntInstruction))
-		{
-			nativeMeetingTauntInstruction = (SceneTauntBehavior.BuildSceneTauntRuntimeInstructionForExternal(targetHero, targetCharacter, nativeTargetAgentIndex) ?? "").Trim();
-		}
-		if (!AfGcczShoutBridge.ShouldUseExclusivePreprocessRuleRouting() && !string.IsNullOrWhiteSpace(nativeMeetingTauntInstruction))
+		string nativeMeetingTauntInstruction = (LordEncounterBehavior.BuildForcedMeetingTauntRuntimeInstructionForExternal(targetHero, targetCharacter) ?? "").Trim();
+		if (!string.IsNullOrWhiteSpace(nativeMeetingTauntInstruction))
 		{
 			nativeMeetingTauntRuleBlock = "【附加规则:meeting_taunt】" + Environment.NewLine + nativeMeetingTauntInstruction;
 		}
@@ -16478,10 +16464,6 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		bool meetingReleaseRuleInjected = HasInjectedRuleBlockForPostprocess(combinedRuleInspectionBlock, "encounter_release_player");
 		bool vanillaIssueRuleInjected = HasInjectedRuleBlockForPostprocess(combinedRuleInspectionBlock, "vanilla_issue");
 		bool heroJoinPartyRuleInjected = HasInjectedRuleBlockForPostprocess(combinedRuleInspectionBlock, "hero_join_party");
-		if (heroJoinPartyRuleInjected && ShouldSuppressHeroJoinPartyPostprocessForScene(nativePostprocessHero))
-		{
-			heroJoinPartyRuleInjected = false;
-		}
 		bool sceneMechanismRuleInjected = HasInjectedRuleBlockForPostprocess(combinedRuleInspectionBlock, "scene_mechanism_actions");
 		if (AIConfigHandler.ShouldExcludeSceneMoveRuleForCurrentMission())
 		{
@@ -16587,8 +16569,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		bool lordsHallPostprocessSelected = lordsHallRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "lords_hall_access");
 		bool meetingReleasePostprocessSelected = meetingReleaseRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "encounter_release_player");
 		bool vanillaIssuePostprocessSelected = vanillaIssueRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "vanilla_issue");
-		bool heroJoinPartyPostprocessSelected = (heroJoinPartyRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "hero_join_party"))
-			&& !ShouldSuppressHeroJoinPartyPostprocessForScene(nativePostprocessHero);
+		bool heroJoinPartyPostprocessSelected = heroJoinPartyRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "hero_join_party");
 		bool sceneMechanismPostprocessSelected = (sceneMechanismRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "scene_mechanism_actions")) && !AIConfigHandler.ShouldExcludeSceneMoveRuleForCurrentMission();
 		bool partyTransferPostprocessSelected = partyTransferRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "party_transfer");
 		bool settlementTransferPostprocessSelected = settlementTransferRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "settlement_transfer");
@@ -18834,10 +18815,6 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			meetingReleaseRuleInjected = meetingReleaseRuleInjected || HasPreprocessRuleHit(preprocessRuleHits, "encounter_release_player");
 			vanillaIssueRuleInjected = vanillaIssueRuleInjected || HasPreprocessRuleHit(preprocessRuleHits, "vanilla_issue");
 			heroJoinPartyRuleInjected = heroJoinPartyRuleInjected || HasPreprocessRuleHit(preprocessRuleHits, "hero_join_party");
-			if (heroJoinPartyRuleInjected && ShouldSuppressHeroJoinPartyPostprocessForScene(targetHero ?? targetCharacter?.HeroObject))
-			{
-				heroJoinPartyRuleInjected = false;
-			}
 			sceneMechanismRuleInjected = sceneMechanismRuleInjected || HasPreprocessRuleHit(preprocessRuleHits, "scene_mechanism_actions");
 			partyTransferRuleInjected = partyTransferRuleInjected || HasPreprocessRuleHit(preprocessRuleHits, "party_transfer");
 			settlementTransferRuleInjected = settlementTransferRuleInjected || HasPreprocessRuleHit(preprocessRuleHits, "settlement_transfer");
@@ -18900,7 +18877,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			List<PostprocessRuleEntry> lordsHallRules = lordsHallRuleInjected ? MergePostprocessRulesForScene(AIConfigHandler.GetGuardrailRulePostprocessRules("lords_hall_access"), AIConfigHandler.BuildRuntimeLordsHallAccessPostprocessRules() ?? new List<PostprocessRuleEntry>()) : null;
 			List<PostprocessRuleEntry> meetingReleaseRules = meetingReleaseRuleInjected ? MergePostprocessRulesForScene(AIConfigHandler.GetGuardrailRulePostprocessRules("encounter_release_player"), LordEncounterBehavior.BuildMeetingPlayerReleasePostprocessRulesForExternal(targetHero ?? targetCharacter?.HeroObject)) : null;
 			List<PostprocessRuleEntry> vanillaIssueRules = vanillaIssueRuleInjected ? (VanillaIssueOfferBridge.BuildRuntimePostprocessRulesForExternal(targetHero ?? targetCharacter?.HeroObject) ?? new List<PostprocessRuleEntry>()) : null;
-			List<PostprocessRuleEntry> heroJoinPartyRules = heroJoinPartyRuleInjected ? (AIConfigHandler.GetGuardrailRulePostprocessRules("hero_join_party") ?? new List<PostprocessRuleEntry>()) : null;
+			List<PostprocessRuleEntry> heroJoinPartyRules = heroJoinPartyRuleInjected ? (AIConfigHandler.BuildRuntimeHeroJoinPartyPostprocessRules(!ShouldSuppressHeroJoinPartyPostprocessForScene(targetHero ?? targetCharacter?.HeroObject)) ?? new List<PostprocessRuleEntry>()) : null;
+			if (heroJoinPartyRuleInjected && (heroJoinPartyRules == null || heroJoinPartyRules.Count == 0))
+			{
+				heroJoinPartyRuleInjected = false;
+			}
 			List<PostprocessRuleEntry> mechanismRules = sceneMechanismRuleInjected ? (AIConfigHandler.GetGuardrailRulePostprocessRules("scene_mechanism_actions") ?? new List<PostprocessRuleEntry>()) : null;
 			List<PostprocessRuleEntry> partyTransferRules = partyTransferRuleInjected ? (AIConfigHandler.GetGuardrailRulePostprocessRules("party_transfer") ?? new List<PostprocessRuleEntry>()) : null;
 			List<PostprocessRuleEntry> settlementTransferRules = settlementTransferRuleInjected ? (AIConfigHandler.GetGuardrailRulePostprocessRules("settlement_transfer") ?? new List<PostprocessRuleEntry>()) : null;
@@ -21456,7 +21437,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		List<string> list = new List<string>();
 		HashSet<string> hashSet2 = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 		string text = "";
-		foreach (Match item in Regex.Matches(raw ?? "", "\\[(?:ACTION:MOOD:[^\\]\\r\\n]*|A:H_J_P_P)\\]", RegexOptions.IgnoreCase))
+		foreach (Match item in Regex.Matches(raw ?? "", "\\[(?:ACTION:[^\\]\\r\\n]*|A:H_J_P_P)\\]", RegexOptions.IgnoreCase))
 		{
 			string text3 = (item?.Value ?? "").Trim();
 			if (string.IsNullOrWhiteSpace(text3))
@@ -21534,10 +21515,6 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		bool proposeAgendaRuleInjected = HasPreprocessRuleHit(preprocessRuleHits, "propose_agenda");
 		kingdomVassalageRuleInjected = kingdomVassalageRuleInjected || kingdomVassalagePreprocessHit;
 		kingdomAnnexationRuleInjected = kingdomAnnexationRuleInjected || kingdomAnnexationPreprocessHit;
-		if (heroJoinPartyRuleInjected && ShouldSuppressHeroJoinPartyPostprocessForScene(targetHero ?? targetCharacter?.HeroObject))
-		{
-			heroJoinPartyRuleInjected = false;
-		}
 		if (diplomacyRuleInjected && !DiplomacyBehavior.CanUseDiplomacyActionPostprocessForExternal(targetHero, targetCharacter))
 		{
 			diplomacyRuleInjected = false;
@@ -21603,7 +21580,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		List<PostprocessRuleEntry> lordsHallRules = lordsHallRuleInjected ? MergePostprocessRulesForScene(AIConfigHandler.GetGuardrailRulePostprocessRules("lords_hall_access"), AIConfigHandler.BuildRuntimeLordsHallAccessPostprocessRules() ?? new List<PostprocessRuleEntry>()) : null;
 		List<PostprocessRuleEntry> meetingReleaseRules = meetingReleaseRuleInjected ? MergePostprocessRulesForScene(AIConfigHandler.GetGuardrailRulePostprocessRules("encounter_release_player"), LordEncounterBehavior.BuildMeetingPlayerReleasePostprocessRulesForExternal(targetHero ?? targetCharacter?.HeroObject)) : null;
 		List<PostprocessRuleEntry> vanillaIssueRules = vanillaIssueRuleInjected ? (VanillaIssueOfferBridge.BuildRuntimePostprocessRulesForExternal(targetHero ?? targetCharacter?.HeroObject) ?? new List<PostprocessRuleEntry>()) : null;
-		List<PostprocessRuleEntry> heroJoinPartyRules = heroJoinPartyRuleInjected ? (AIConfigHandler.GetGuardrailRulePostprocessRules("hero_join_party") ?? new List<PostprocessRuleEntry>()) : null;
+		List<PostprocessRuleEntry> heroJoinPartyRules = heroJoinPartyRuleInjected ? (AIConfigHandler.BuildRuntimeHeroJoinPartyPostprocessRules(!ShouldSuppressHeroJoinPartyPostprocessForScene(targetHero ?? targetCharacter?.HeroObject)) ?? new List<PostprocessRuleEntry>()) : null;
+		if (heroJoinPartyRuleInjected && (heroJoinPartyRules == null || heroJoinPartyRules.Count == 0))
+		{
+			heroJoinPartyRuleInjected = false;
+		}
 		List<PostprocessRuleEntry> mechanismRules = sceneMechanismRuleInjected ? MergePostprocessRulesForScene(AIConfigHandler.GetGuardrailRulePostprocessRules("scene_mechanism_actions"), sceneMechanismRules ?? new List<PostprocessRuleEntry>()) : null;
 		List<PostprocessRuleEntry> partyTransferRules = partyTransferRuleInjected ? (AIConfigHandler.GetGuardrailRulePostprocessRules("party_transfer") ?? new List<PostprocessRuleEntry>()) : null;
 		List<PostprocessRuleEntry> settlementTransferRules = settlementTransferRuleInjected ? (AIConfigHandler.GetGuardrailRulePostprocessRules("settlement_transfer") ?? new List<PostprocessRuleEntry>()) : null;
@@ -23568,10 +23549,6 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					meetingReleaseRuleInjected = HasInjectedRuleBlockForPostprocess(combinedRuleInspectionBlock, "encounter_release_player");
 					vanillaIssueRuleInjected = HasInjectedRuleBlockForPostprocess(combinedRuleInspectionBlock, "vanilla_issue");
 					heroJoinPartyRuleInjected = HasInjectedRuleBlockForPostprocess(combinedRuleInspectionBlock, "hero_join_party");
-					if (heroJoinPartyRuleInjected && ShouldSuppressHeroJoinPartyPostprocessForScene(speakingHero))
-					{
-						heroJoinPartyRuleInjected = false;
-					}
 					sceneMechanismRuleInjected = HasInjectedRuleBlockForPostprocess(combinedRuleInspectionBlock, "scene_mechanism_actions");
 					if (AIConfigHandler.ShouldExcludeSceneMoveRuleForCurrentMission())
 					{
@@ -23714,8 +23691,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					bool lordsHallPostprocessSelected = lordsHallRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "lords_hall_access");
 					bool meetingReleasePostprocessSelected = meetingReleaseRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "encounter_release_player");
 					bool vanillaIssuePostprocessSelected = vanillaIssueRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "vanilla_issue");
-					bool heroJoinPartyPostprocessSelected = (heroJoinPartyRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "hero_join_party"))
-						&& !ShouldSuppressHeroJoinPartyPostprocessForScene(speakingHero);
+					bool heroJoinPartyPostprocessSelected = heroJoinPartyRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "hero_join_party");
 					bool sceneMechanismPostprocessSelected = (sceneMechanismRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "scene_mechanism_actions")) && !AIConfigHandler.ShouldExcludeSceneMoveRuleForCurrentMission();
 					bool partyTransferPostprocessSelected = partyTransferRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "party_transfer");
 					bool settlementTransferPostprocessSelected = settlementTransferRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "settlement_transfer");

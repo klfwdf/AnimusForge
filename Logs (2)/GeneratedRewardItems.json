@@ -1,0 +1,34 @@
+{
+  "af_generated_reward_307245EF": {
+    "GeneratedStringId": "af_generated_reward_307245EF",
+    "DisplayName": "残卷",
+    "TemplateStringId": "linen",
+    "ObjectId": 328975150,
+    "LegacyObjectIds": [],
+    "LastTouchedDay": 91242
+  },
+  "af_generated_reward_55863622": {
+    "GeneratedStringId": "af_generated_reward_55863622",
+    "DisplayName": "地契抄件",
+    "TemplateStringId": "fish",
+    "ObjectId": 314016597,
+    "LegacyObjectIds": [],
+    "LastTouchedDay": 91242
+  },
+  "af_generated_reward_5100E875": {
+    "GeneratedStringId": "af_generated_reward_5100E875",
+    "DisplayName": "豳周调令",
+    "TemplateStringId": "fish",
+    "ObjectId": 318799811,
+    "LegacyObjectIds": [],
+    "LastTouchedDay": 91242
+  },
+  "af_generated_reward_6FC8F85B": {
+    "GeneratedStringId": "af_generated_reward_6FC8F85B",
+    "DisplayName": "帛书",
+    "TemplateStringId": "grain",
+    "ObjectId": 327393502,
+    "LegacyObjectIds": [],
+    "LastTouchedDay": 91242
+  }
+}

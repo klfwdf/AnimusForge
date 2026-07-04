@@ -576,6 +576,10 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private class NpcPersonaProfile
 	{
+		public string HeroId;
+
+		public string HeroName;
+
 		public string Personality;
 
 		public string Background;
@@ -16487,7 +16491,7 @@ public class MyBehavior : CampaignBehaviorBase
 				_npcPersonaProfileStorage.Clear();
 				foreach (KeyValuePair<string, NpcPersonaProfile> npcPersonaProfile2 in _npcPersonaProfiles)
 				{
-					if (!string.IsNullOrEmpty(npcPersonaProfile2.Key) && npcPersonaProfile2.Value != null)
+					if (!string.IsNullOrEmpty(npcPersonaProfile2.Key) && TryPrepareNpcPersonaProfileForWrite(npcPersonaProfile2.Key, npcPersonaProfile2.Value))
 					{
 						try
 						{
@@ -17322,6 +17326,18 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		if (_npcPersonaProfiles.TryGetValue(stringId, out var value))
 		{
+			if (IsNpcPersonaProfileIdentityMismatch(npc, value))
+			{
+				_npcPersonaProfiles.Remove(stringId);
+				value = null;
+			}
+			else
+			{
+				return value;
+			}
+		}
+		if (value != null)
+		{
 			return value;
 		}
 		if (!createIfMissing)
@@ -17360,6 +17376,7 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			profile = new NpcPersonaProfile();
 		}
+		StampNpcPersonaProfile(stringId, profile);
 		profile.Personality = text;
 		profile.Background = text2;
 		profile.VoiceId = text3;
@@ -17375,6 +17392,10 @@ public class MyBehavior : CampaignBehaviorBase
 			string stringId = hero.StringId;
 			if (!string.IsNullOrEmpty(stringId) && _npcPersonaProfiles != null && _npcPersonaProfiles.TryGetValue(stringId, out var value) && value != null)
 			{
+				if (IsNpcPersonaProfileIdentityMismatch(hero, value))
+				{
+					return;
+				}
 				personality = value.Personality ?? "";
 				background = value.Background ?? "";
 			}
@@ -17459,6 +17480,10 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		if (_npcPersonaProfiles.TryGetValue(stringId, out var value) && value != null)
 		{
+			if (IsNpcPersonaProfileIdentityMismatch(hero, value))
+			{
+				return "";
+			}
 			return (value.VoiceId ?? "").Trim();
 		}
 		return "";
@@ -25753,7 +25778,7 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 		if (string.Equals(id, "meeting_taunt", StringComparison.OrdinalIgnoreCase))
 		{
-			string runtime = SceneTauntBehavior.BuildUnifiedTauntRuntimeInstructionForExternal(hero, targetCharacter, targetAgentIndex);
+			string runtime = LordEncounterBehavior.BuildForcedMeetingTauntRuntimeInstructionForExternal(hero, targetCharacter);
 			if (!string.IsNullOrWhiteSpace(runtime))
 			{
 				text = runtime;
@@ -26333,7 +26358,7 @@ public class MyBehavior : CampaignBehaviorBase
 		return baseInstruction;
 	}
 
-	private string BuildTriggeredRuleInstructions(string input, Hero targetHero, bool useDuelContext, bool isQualified, int playerTier, bool useRewardContext, bool isLoanContext, bool isSurroundingsContext, bool hasAnyHero = true, CharacterObject targetCharacter = null, string kingdomIdOverride = null, int targetAgentIndex = -1, string npcLastUtterance = null, bool includeDuelStakeContext = false, bool playerWonLastDuel = false, bool worldMapPartyCommandContext = false, IEnumerable<string> excludedRuleIds = null, IEnumerable<string> preselectedRuleIds = null)
+	private string BuildTriggeredRuleInstructions(string input, Hero targetHero, bool useDuelContext, bool isQualified, int playerTier, bool useRewardContext, bool isLoanContext, bool isSurroundingsContext, bool hasAnyHero = true, CharacterObject targetCharacter = null, string kingdomIdOverride = null, int targetAgentIndex = -1, string npcLastUtterance = null, bool includeDuelStakeContext = false, bool playerWonLastDuel = false, bool worldMapPartyCommandContext = false, IEnumerable<string> excludedRuleIds = null, IEnumerable<string> preselectedRuleIds = null, bool suppressForcedMeetingTaunt = false)
 	{
 		try
 		{
@@ -26460,12 +26485,12 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				stringBuilder.AppendLine(text3.Trim());
 			}
-			if (!AfGcczShoutBridge.ShouldUseExclusivePreprocessRuleRouting())
+			if (!suppressForcedMeetingTaunt && stringBuilder.ToString().IndexOf("【附加规则:meeting_taunt】", StringComparison.OrdinalIgnoreCase) < 0)
 			{
-				string text4 = SceneTauntBehavior.BuildUnifiedTauntRuntimeInstructionForExternal(targetHero, targetCharacter, targetAgentIndex);
+				string text4 = LordEncounterBehavior.BuildForcedMeetingTauntRuntimeInstructionForExternal(targetHero ?? targetCharacter?.HeroObject, targetCharacter);
 				if (!string.IsNullOrWhiteSpace(text4))
 				{
-					stringBuilder.AppendLine(text4.Trim());
+					AppendRuleBlock(stringBuilder, "meeting_taunt", text4);
 				}
 			}
 			return stringBuilder.ToString().Trim();
@@ -28232,7 +28257,7 @@ public class MyBehavior : CampaignBehaviorBase
 				}
 			}
 		}
-		string value8 = suppressDynamicRuleAndLore ? "" : BuildTriggeredRuleInstructions(input, targetHero, flag2, isQualified, num, flag7, flag8, flag5, hasAnyHero, targetCharacter, kingdomIdOverride, targetAgentIndex, npcLastUtterance, includeDuelStakeContext, playerWonLastDuelForRule, worldMapPartyCommandHit, excludedRuleIdSet, auxiliaryRuleHitIds);
+		string value8 = suppressDynamicRuleAndLore ? "" : BuildTriggeredRuleInstructions(input, targetHero, flag2, isQualified, num, flag7, flag8, flag5, hasAnyHero, targetCharacter, kingdomIdOverride, targetAgentIndex, npcLastUtterance, includeDuelStakeContext, playerWonLastDuelForRule, worldMapPartyCommandHit, excludedRuleIdSet, auxiliaryRuleHitIds, IsPromptRuleExcluded(explicitExcludedRuleIdSet, "meeting_taunt"));
 		bool excludeNpcShortReport2 = ShouldExcludeNpcShortReportFromWeeklyShortLayer(value8, targetHero, targetCharacter, kingdomIdOverride);
 		string value8a = BuildWeeklyShortReportsPromptBlock(targetHero, targetCharacter, kingdomIdOverride, excludeNpcShortReport2);
 		if (!string.IsNullOrWhiteSpace(value8a))
@@ -49389,6 +49414,11 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				value = new NpcPersonaProfile();
 			}
+			if (!TryPrepareNpcPersonaProfileForWrite(heroId, value))
+			{
+				value = new NpcPersonaProfile();
+				StampNpcPersonaProfile(heroId, value);
+			}
 			string path2 = Path.Combine(text2, BuildNpcDataFileName(heroId));
 			WriteJson(path2, value);
 			InformationManager.DisplayMessage(new InformationMessage("导出完成：" + text));
@@ -49759,6 +49789,12 @@ public class MyBehavior : CampaignBehaviorBase
 				InformationManager.DisplayMessage(new InformationMessage("导入失败：该NPC没有对应的导出文件。"));
 				return;
 			}
+			if (!TryResolveNpcDataFileHeroIdForImport(text3, out var resolvedHeroId, out var warning) || !string.Equals((resolvedHeroId ?? "").Trim(), (heroId ?? "").Trim(), StringComparison.OrdinalIgnoreCase))
+			{
+				InformationManager.DisplayMessage(new InformationMessage("导入失败：个性/背景文件与当前NPC不匹配。"));
+				Logger.Log("NpcPersona", "[WARN] Skipped single persona import file " + Path.GetFileName(text3) + " for hero=" + heroId + ": " + (warning ?? ("resolvedHeroId=" + resolvedHeroId)));
+				return;
+			}
 			NpcPersonaProfile prof = ReadJson<NpcPersonaProfile>(text3);
 			if (_npcPersonaProfiles == null)
 			{
@@ -49782,6 +49818,7 @@ public class MyBehavior : CampaignBehaviorBase
 				}
 				else
 				{
+					StampNpcPersonaProfile(heroId, prof);
 					_npcPersonaProfiles[heroId] = prof;
 				}
 				InformationManager.DisplayMessage(new InformationMessage("导入完成：" + importDir));
@@ -49924,7 +49961,7 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				foreach (KeyValuePair<string, NpcPersonaProfile> npcPersonaProfile in _npcPersonaProfiles)
 				{
-					if (!string.IsNullOrEmpty(npcPersonaProfile.Key) && npcPersonaProfile.Value != null)
+					if (!string.IsNullOrEmpty(npcPersonaProfile.Key) && TryPrepareNpcPersonaProfileForWrite(npcPersonaProfile.Key, npcPersonaProfile.Value))
 					{
 						string path2 = Path.Combine(text2, BuildNpcDataFileName(npcPersonaProfile.Key));
 						WriteJson(path2, npcPersonaProfile.Value);
@@ -50031,14 +50068,18 @@ public class MyBehavior : CampaignBehaviorBase
 				string[] array = files;
 				foreach (string text in array)
 				{
-					string text2 = TryParseHeroIdFromNpcFileName(text);
-					if (!string.IsNullOrEmpty(text2))
+					if (TryResolveNpcDataFileHeroIdForImport(text, out var text2, out var warning))
 					{
 						NpcPersonaProfile npcPersonaProfile = ReadJson<NpcPersonaProfile>(text);
 						if (npcPersonaProfile != null)
 						{
+							StampNpcPersonaProfile(text2, npcPersonaProfile);
 							pbNew[text2] = npcPersonaProfile;
 						}
+					}
+					else
+					{
+						Logger.Log("NpcPersona", "[WARN] Skipped persona import file " + Path.GetFileName(text) + ": " + warning);
 					}
 				}
 				num2 = pbNew.Count;
@@ -50244,7 +50285,7 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				foreach (KeyValuePair<string, NpcPersonaProfile> npcPersonaProfile in _npcPersonaProfiles)
 				{
-					if (!string.IsNullOrEmpty(npcPersonaProfile.Key) && npcPersonaProfile.Value != null)
+					if (!string.IsNullOrEmpty(npcPersonaProfile.Key) && TryPrepareNpcPersonaProfileForWrite(npcPersonaProfile.Key, npcPersonaProfile.Value))
 					{
 						string path2 = Path.Combine(text2, BuildNpcDataFileName(npcPersonaProfile.Key));
 						WriteJson(path2, npcPersonaProfile.Value);
@@ -50344,7 +50385,7 @@ public class MyBehavior : CampaignBehaviorBase
 			{
 				foreach (KeyValuePair<string, NpcPersonaProfile> npcPersonaProfile in _npcPersonaProfiles)
 				{
-					if (!string.IsNullOrEmpty(npcPersonaProfile.Key) && npcPersonaProfile.Value != null)
+					if (!string.IsNullOrEmpty(npcPersonaProfile.Key) && TryPrepareNpcPersonaProfileForWrite(npcPersonaProfile.Key, npcPersonaProfile.Value))
 					{
 						string path2 = Path.Combine(text2, BuildNpcDataFileName(npcPersonaProfile.Key));
 						WriteJson(path2, npcPersonaProfile.Value);
@@ -51813,14 +51854,18 @@ public class MyBehavior : CampaignBehaviorBase
 			string[] array = files;
 			foreach (string text in array)
 			{
-				string text2 = TryParseHeroIdFromNpcFileName(text);
-				if (!string.IsNullOrEmpty(text2))
+				if (TryResolveNpcDataFileHeroIdForImport(text, out var text2, out var warning))
 				{
 					NpcPersonaProfile npcPersonaProfile = ReadJson<NpcPersonaProfile>(text);
 					if (npcPersonaProfile != null)
 					{
+						StampNpcPersonaProfile(text2, npcPersonaProfile);
 						dict[text2] = npcPersonaProfile;
 					}
+				}
+				else
+				{
+					Logger.Log("NpcPersona", "[WARN] Skipped persona import file " + Path.GetFileName(text) + ": " + warning);
 				}
 			}
 			int num = 0;
@@ -52455,14 +52500,18 @@ public class MyBehavior : CampaignBehaviorBase
 				string[] array = files;
 				foreach (string text in array)
 				{
-					string text2 = TryParseHeroIdFromNpcFileName(text);
-					if (!string.IsNullOrEmpty(text2))
+					if (TryResolveNpcDataFileHeroIdForImport(text, out var text2, out var warning))
 					{
 						NpcPersonaProfile npcPersonaProfile = ReadJson<NpcPersonaProfile>(text);
 						if (npcPersonaProfile != null)
 						{
+							StampNpcPersonaProfile(text2, npcPersonaProfile);
 							pbNew[text2] = npcPersonaProfile;
 						}
+					}
+					else
+					{
+						Logger.Log("NpcPersona", "[WARN] Skipped persona import file " + Path.GetFileName(text) + ": " + warning);
 					}
 				}
 				num2 = pbNew.Count;
@@ -53246,14 +53295,24 @@ public class MyBehavior : CampaignBehaviorBase
 				return null;
 			}
 			string result = null;
+			string nameMatchedResult = null;
 			DateTime dateTime = DateTime.MinValue;
+			DateTime nameMatchedDateTime = DateTime.MinValue;
+			Hero targetHero = ResolveHeroByIdForNpcData(text);
 			string[] files = Directory.GetFiles(dir, "*.json");
 			string[] array = files;
 			foreach (string text2 in array)
 			{
-				string text3 = TryParseHeroIdFromNpcFileName(text2);
+				if (!TryParseNpcFileNameParts(text2, out var text3, out var fileDisplayName))
+				{
+					continue;
+				}
 				if (!(text3 != text))
 				{
+					if (targetHero != null && !IsNpcFileDisplayNameCompatibleWithHero(fileDisplayName, targetHero, IsAutoGeneratedNpcHeroId(text)))
+					{
+						continue;
+					}
 					DateTime lastWriteTimeUtc = File.GetLastWriteTimeUtc(text2);
 					if (lastWriteTimeUtc > dateTime)
 					{
@@ -53261,13 +53320,241 @@ public class MyBehavior : CampaignBehaviorBase
 						dateTime = lastWriteTimeUtc;
 					}
 				}
+				else if (targetHero != null && IsNpcFileDisplayNameSpecified(fileDisplayName) && IsNpcFileDisplayNameCompatibleWithHero(fileDisplayName, targetHero, strictWhenNameMissing: true))
+				{
+					DateTime lastWriteTimeUtc2 = File.GetLastWriteTimeUtc(text2);
+					if (lastWriteTimeUtc2 > nameMatchedDateTime)
+					{
+						nameMatchedResult = text2;
+						nameMatchedDateTime = lastWriteTimeUtc2;
+					}
+				}
 			}
-			return result;
+			return result ?? nameMatchedResult;
 		}
 		catch
 		{
 			return null;
 		}
+	}
+
+	private static Hero ResolveHeroByIdForNpcData(string heroId)
+	{
+		string text = (heroId ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return null;
+		}
+		try
+		{
+			return Hero.Find(text) ?? Hero.FindFirst((Hero x) => x != null && string.Equals((x.StringId ?? "").Trim(), text, StringComparison.OrdinalIgnoreCase));
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static bool IsAutoGeneratedNpcHeroId(string heroId)
+	{
+		string text = (heroId ?? "").Trim();
+		return text.StartsWith("CharacterObject_", StringComparison.OrdinalIgnoreCase);
+	}
+
+	private static bool TryParseNpcFileNameParts(string filePath, out string heroId, out string displayName)
+	{
+		heroId = "";
+		displayName = "";
+		try
+		{
+			string text = Path.GetFileNameWithoutExtension(filePath) ?? "";
+			int num = text.IndexOf("__", StringComparison.Ordinal);
+			if (num <= 0)
+			{
+				return false;
+			}
+			heroId = (text.Substring(0, num) ?? "").Trim();
+			displayName = ((num + 2 < text.Length) ? text.Substring(num + 2) : "").Trim();
+			return !string.IsNullOrEmpty(heroId);
+		}
+		catch
+		{
+			heroId = "";
+			displayName = "";
+			return false;
+		}
+	}
+
+	private static string NormalizeNpcFileDisplayName(string value)
+	{
+		string text = (value ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return "";
+		}
+		try
+		{
+			foreach (char oldChar in Path.GetInvalidFileNameChars())
+			{
+				text = text.Replace(oldChar, '_');
+			}
+		}
+		catch
+		{
+		}
+		while (text.Contains("  "))
+		{
+			text = text.Replace("  ", " ");
+		}
+		return text.Trim();
+	}
+
+	private static bool IsNpcFileDisplayNameSpecified(string displayName)
+	{
+		string text = NormalizeNpcFileDisplayName(displayName);
+		return !string.IsNullOrWhiteSpace(text)
+			&& !string.Equals(text, "NPC", StringComparison.OrdinalIgnoreCase)
+			&& !string.Equals(text, "unknown", StringComparison.OrdinalIgnoreCase);
+	}
+
+	private static bool IsNpcFileDisplayNameCompatibleWithHero(string fileDisplayName, Hero hero, bool strictWhenNameMissing)
+	{
+		if (hero == null)
+		{
+			return !strictWhenNameMissing;
+		}
+		if (!IsNpcFileDisplayNameSpecified(fileDisplayName))
+		{
+			return !strictWhenNameMissing;
+		}
+		string text = NormalizeNpcFileDisplayName(fileDisplayName);
+		string text2 = NormalizeNpcFileDisplayName(hero.Name?.ToString() ?? "");
+		return !string.IsNullOrWhiteSpace(text2) && string.Equals(text, text2, StringComparison.OrdinalIgnoreCase);
+	}
+
+	private static Hero ResolveUniqueHeroByNpcFileDisplayName(string fileDisplayName)
+	{
+		if (!IsNpcFileDisplayNameSpecified(fileDisplayName))
+		{
+			return null;
+		}
+		string text = NormalizeNpcFileDisplayName(fileDisplayName);
+		try
+		{
+			List<Hero> list = ((IEnumerable<Hero>)Hero.AllAliveHeroes ?? Enumerable.Empty<Hero>())
+				.Where((Hero x) => x != null && string.Equals(NormalizeNpcFileDisplayName(x.Name?.ToString() ?? ""), text, StringComparison.OrdinalIgnoreCase))
+				.Take(2)
+				.ToList();
+			return list.Count == 1 ? list[0] : null;
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static bool TryResolveNpcDataFileHeroIdForImport(string filePath, out string resolvedHeroId, out string warning)
+	{
+		resolvedHeroId = "";
+		warning = "";
+		if (!TryParseNpcFileNameParts(filePath, out var parsedHeroId, out var fileDisplayName))
+		{
+			warning = "文件名缺少 heroId__名字 格式。";
+			return false;
+		}
+		Hero currentHeroById = ResolveHeroByIdForNpcData(parsedHeroId);
+		bool autoGeneratedId = IsAutoGeneratedNpcHeroId(parsedHeroId);
+		if (currentHeroById != null && IsNpcFileDisplayNameCompatibleWithHero(fileDisplayName, currentHeroById, autoGeneratedId))
+		{
+			resolvedHeroId = (currentHeroById.StringId ?? parsedHeroId).Trim();
+			return !string.IsNullOrWhiteSpace(resolvedHeroId);
+		}
+		Hero currentHeroByName = ResolveUniqueHeroByNpcFileDisplayName(fileDisplayName);
+		if (currentHeroByName != null)
+		{
+			resolvedHeroId = (currentHeroByName.StringId ?? "").Trim();
+			if (!string.Equals(resolvedHeroId, parsedHeroId, StringComparison.OrdinalIgnoreCase))
+			{
+				Logger.Log("NpcPersona", "[INFO] Remapped NPC data file by unique name: file=" + Path.GetFileName(filePath) + " oldId=" + parsedHeroId + " newId=" + resolvedHeroId + " name=" + (currentHeroByName.Name?.ToString() ?? ""));
+			}
+			return !string.IsNullOrWhiteSpace(resolvedHeroId);
+		}
+		if (currentHeroById != null)
+		{
+			warning = "文件名人物名“" + NormalizeNpcFileDisplayName(fileDisplayName) + "”与当前同 ID 人物“" + (currentHeroById.Name?.ToString() ?? "") + "”不一致。";
+			return false;
+		}
+		if (autoGeneratedId)
+		{
+			warning = "自动编号 " + parsedHeroId + " 在当前存档中不可可靠匹配，且文件名人物名不能唯一匹配。";
+			return false;
+		}
+		resolvedHeroId = parsedHeroId;
+		return true;
+	}
+
+	private static void StampNpcPersonaProfile(string heroId, NpcPersonaProfile profile)
+	{
+		if (profile == null)
+		{
+			return;
+		}
+		string text = (heroId ?? "").Trim();
+		profile.HeroId = text;
+		try
+		{
+			profile.HeroName = ResolveHeroByIdForNpcData(text)?.Name?.ToString() ?? "";
+		}
+		catch
+		{
+			profile.HeroName = "";
+		}
+	}
+
+	private static bool TryPrepareNpcPersonaProfileForWrite(string heroId, NpcPersonaProfile profile)
+	{
+		if (string.IsNullOrWhiteSpace(heroId) || profile == null)
+		{
+			return false;
+		}
+		Hero hero = ResolveHeroByIdForNpcData(heroId);
+		if (IsNpcPersonaProfileIdentityMismatch(hero, profile))
+		{
+			Logger.Log("NpcPersona", "[WARN] Skipped mismatched persona profile for export/save: heroId=" + heroId + " heroName=" + (hero?.Name?.ToString() ?? ""));
+			return false;
+		}
+		StampNpcPersonaProfile(heroId, profile);
+		return true;
+	}
+
+	private static bool IsNpcPersonaProfileIdentityMismatch(Hero hero, NpcPersonaProfile profile)
+	{
+		if (hero == null || profile == null)
+		{
+			return false;
+		}
+		string currentId = (hero.StringId ?? "").Trim();
+		string profileId = (profile.HeroId ?? "").Trim();
+		bool currentIdIsAutoGenerated = IsAutoGeneratedNpcHeroId(currentId);
+		if (!string.IsNullOrWhiteSpace(profileId) && !string.IsNullOrWhiteSpace(currentId) && !string.Equals(profileId, currentId, StringComparison.OrdinalIgnoreCase))
+		{
+			return true;
+		}
+		if (currentIdIsAutoGenerated && string.IsNullOrWhiteSpace(profileId) && string.IsNullOrWhiteSpace(profile.HeroName)
+			&& (!string.IsNullOrWhiteSpace(profile.Personality) || !string.IsNullOrWhiteSpace(profile.Background)))
+		{
+			return true;
+		}
+		string profileName = NormalizeNpcFileDisplayName(profile.HeroName);
+		if (currentIdIsAutoGenerated && IsNpcFileDisplayNameSpecified(profileName))
+		{
+			string currentName = NormalizeNpcFileDisplayName(hero.Name?.ToString() ?? "");
+			if (!string.IsNullOrWhiteSpace(currentName) && !string.Equals(profileName, currentName, StringComparison.OrdinalIgnoreCase))
+			{
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private static string BuildNpcDataFileName(string heroId)
@@ -53300,22 +53587,7 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private static string TryParseHeroIdFromNpcFileName(string filePath)
 	{
-		try
-		{
-			string text = Path.GetFileNameWithoutExtension(filePath) ?? "";
-			int num = text.IndexOf("__", StringComparison.Ordinal);
-			if (num <= 0)
-			{
-				return null;
-			}
-			string text2 = text.Substring(0, num);
-			text2 = (text2 ?? "").Trim();
-			return string.IsNullOrEmpty(text2) ? null : text2;
-		}
-		catch
-		{
-			return null;
-		}
+		return TryParseNpcFileNameParts(filePath, out var heroId, out var _) ? heroId : null;
 	}
 
 	private static string GetPlayerExportsRootPath()
