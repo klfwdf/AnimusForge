@@ -1215,7 +1215,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyGroup("12. 事件系统（开发）")]
 	public int WeeklyReportPopupBodyFontSize { get; set; } = 18;
 
-	[SettingPropertyBool("启用周报阅读经验奖励", Order = 4, RequireRestart = false, HintText = "开启后，从地图通知打开周报并停留满 10 秒，会按周报三栏字数给玩家魅力、统御和管理经验。")]
+	[SettingPropertyBool("启用周报阅读经验奖励", Order = 4, RequireRestart = false, HintText = "开启后，从地图通知打开周报并停留满 10 秒，会按三栏字数累计经验；每研读 20 篇后一次性给玩家魅力、统御和管理经验。")]
 	[SettingPropertyGroup("12. 事件系统（开发）")]
 	public bool EnableWeeklyReportReadingXpReward { get; set; } = true;
 

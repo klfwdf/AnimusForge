@@ -408,7 +408,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 	{
 		Clan clan = Clan.PlayerClan;
 		Clan clan2 = speaker?.Clan;
-		if (clan == null || clan2 == null)
+		if (clan == null || clan2 == null || clan == clan2)
 		{
 			yield break;
 		}
@@ -3055,6 +3055,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 			MarriageRuntimeFacts marriageRuntimeFacts = BuildMarriageRuntimeFacts(speaker);
 			string marriageRuntimeConstraintState = GetMarriageRuntimeConstraintState(marriageRuntimeFacts);
 			bool isLeaderSpeaker = IsMarriagePostprocessClanLeaderSpeaker(speaker);
+			bool allowFormal = IsMarriageFormalPostprocessEligibleSpeaker(speaker, out var formalBlockedReason);
 			HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 			foreach (PostprocessRuleEntry guardrailRulePostprocessRule in guardrailRulePostprocessRules)
 			{
@@ -3063,9 +3064,14 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 				{
 					continue;
 				}
+				bool isFormal = text.StartsWith("[ACTION:MARRIAGE_FORMAL:", StringComparison.OrdinalIgnoreCase);
 				bool isElope = text.StartsWith("[ACTION:MARRIAGE_ELOPE:", StringComparison.OrdinalIgnoreCase);
 				bool isDivorce = text.StartsWith("[ACTION:DIVORCE:", StringComparison.OrdinalIgnoreCase);
-				if (!isLeaderSpeaker && !isElope && !isDivorce)
+				if (isFormal && !allowFormal)
+				{
+					continue;
+				}
+				if (!isFormal && !isLeaderSpeaker && !isElope && !isDivorce)
 				{
 					continue;
 				}
@@ -3087,7 +3093,9 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 					});
 				}
 			}
-			Logger.Log("Romance", "[MarriagePostprocessRules] unrestricted=True leaderSpeaker=" + isLeaderSpeaker
+			Logger.Log("Romance", "[MarriagePostprocessRules] runtimeFiltered=True leaderSpeaker=" + isLeaderSpeaker
+				+ " formalAllowed=" + allowFormal
+				+ " formalBlockedReason=" + (formalBlockedReason ?? "")
 				+ " state=" + marriageRuntimeConstraintState
 				+ " rules=" + ((list.Count == 0) ? "（无）" : string.Join(",", list.Select((PostprocessRuleEntry x) => x?.Tag ?? "").Where((string x) => !string.IsNullOrWhiteSpace(x)))));
 		}
@@ -3110,9 +3118,49 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private static bool IsMarriageFormalPostprocessEligibleSpeaker(Hero speaker, out string blockedReason)
+	{
+		blockedReason = "";
+		try
+		{
+			if (!IsMarriagePostprocessClanLeaderSpeaker(speaker))
+			{
+				blockedReason = "speaker_not_clan_leader";
+				return false;
+			}
+			if (IsPlayerCompanionOrFamily(speaker))
+			{
+				blockedReason = "player_companion_or_family";
+				return false;
+			}
+			Clan playerClan = Clan.PlayerClan ?? Hero.MainHero?.Clan;
+			if (playerClan == null || speaker.Clan == null)
+			{
+				blockedReason = "missing_clan";
+				return false;
+			}
+			if (speaker.Clan == playerClan)
+			{
+				blockedReason = "same_player_clan";
+				return false;
+			}
+			if (!HasAnyFormalMarriagePair(playerClan, speaker.Clan, out var reason))
+			{
+				blockedReason = string.IsNullOrWhiteSpace(reason) ? "no_formal_pair" : reason;
+				return false;
+			}
+			return true;
+		}
+		catch (Exception ex)
+		{
+			blockedReason = "exception:" + ex.Message;
+			return false;
+		}
+	}
+
 	public bool ShouldInjectMarriagePostprocessForExternal(Hero speaker)
 	{
-		return IsMarriagePostprocessClanLeaderSpeaker(speaker);
+		return BuildRuntimeMarriagePostprocessRules(speaker).Count > 0;
 	}
 
 	public List<PostprocessRuleEntry> BuildRuntimeMarriagePostprocessRulesForExternal(Hero speaker)

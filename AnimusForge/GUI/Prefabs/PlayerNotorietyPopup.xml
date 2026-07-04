@@ -67,6 +67,12 @@
               </Children>
             </Widget>
 
+            <ButtonWidget DoNotPassEventsToChildren="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="170" SuggestedHeight="34" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="248" MarginTop="488" Brush="Popup.Done.Button" Command.Click="ExecuteToggleLowProfile" UpdateChildrenStates="true">
+              <Children>
+                <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="20" VerticalAlignment="Center" MarginLeft="12" MarginRight="12" Brush="Popup.Button.Text" Brush.FontSize="15" Text="@LowProfileToggleText" DoNotAcceptEvents="true" />
+              </Children>
+            </ButtonWidget>
+
             <ButtonWidget IsVisible="@ShowEditButton" DoNotPassEventsToChildren="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="140" SuggestedHeight="34" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="430" MarginTop="488" Brush="Popup.Done.Button" Command.Click="ExecuteEdit" UpdateChildrenStates="true">
               <Children>
                 <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="20" VerticalAlignment="Center" MarginLeft="12" MarginRight="12" Brush="Popup.Button.Text" Brush.FontSize="15" Text="@EditText" DoNotAcceptEvents="true" />

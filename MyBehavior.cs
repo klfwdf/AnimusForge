@@ -1655,9 +1655,19 @@ public class MyBehavior : CampaignBehaviorBase
 
 	private int _lastProcessedKingdomRebellionWeek = -1;
 
+	private const int WeeklyReportReadingXpBatchSize = 20;
+
 	private List<string> _unreadWeeklyReportNoticeEventIds = new List<string>();
 
 	private List<string> _weeklyReportReadingXpClaimedEventIds = new List<string>();
+
+	private int _weeklyReportReadingXpPendingCount;
+
+	private int _weeklyReportReadingXpPendingCharm;
+
+	private int _weeklyReportReadingXpPendingLeadership;
+
+	private int _weeklyReportReadingXpPendingSteward;
 
 	private readonly HashSet<string> _weeklyReportNoticeEventIdsShownThisSession = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
@@ -16537,6 +16547,20 @@ public class MyBehavior : CampaignBehaviorBase
 				List<string> weeklyReportReadingXpClaimedEventIds = new List<string>(_weeklyReportReadingXpClaimedEventIds);
 				dataStore.SyncData("_af_weeklyReportReadingXpClaimed_v1", ref weeklyReportReadingXpClaimedEventIds);
 				_weeklyReportReadingXpClaimedEventIds = SanitizeWeeklyReportReadingXpClaimedEventIds(weeklyReportReadingXpClaimedEventIds).Where((string x) => FindWeeklyReportRecordById(x) != null).ToList();
+				NormalizeWeeklyReportReadingXpPendingBatch();
+				int weeklyReportReadingXpPendingCount = _weeklyReportReadingXpPendingCount;
+				int weeklyReportReadingXpPendingCharm = _weeklyReportReadingXpPendingCharm;
+				int weeklyReportReadingXpPendingLeadership = _weeklyReportReadingXpPendingLeadership;
+				int weeklyReportReadingXpPendingSteward = _weeklyReportReadingXpPendingSteward;
+				dataStore.SyncData("_af_weeklyReportReadingXpPendingCount_v1", ref weeklyReportReadingXpPendingCount);
+				dataStore.SyncData("_af_weeklyReportReadingXpPendingCharm_v1", ref weeklyReportReadingXpPendingCharm);
+				dataStore.SyncData("_af_weeklyReportReadingXpPendingLeadership_v1", ref weeklyReportReadingXpPendingLeadership);
+				dataStore.SyncData("_af_weeklyReportReadingXpPendingSteward_v1", ref weeklyReportReadingXpPendingSteward);
+				_weeklyReportReadingXpPendingCount = weeklyReportReadingXpPendingCount;
+				_weeklyReportReadingXpPendingCharm = weeklyReportReadingXpPendingCharm;
+				_weeklyReportReadingXpPendingLeadership = weeklyReportReadingXpPendingLeadership;
+				_weeklyReportReadingXpPendingSteward = weeklyReportReadingXpPendingSteward;
+				NormalizeWeeklyReportReadingXpPendingBatch();
 				try
 				{
 					_eventSourceMaterialJsonStorage = JsonConvert.SerializeObject(SanitizeEventSourceMaterials(_eventSourceMaterials));
@@ -16956,6 +16980,11 @@ public class MyBehavior : CampaignBehaviorBase
 			List<string> weeklyReportReadingXpClaimedEventIdsLoad = new List<string>();
 			dataStore.SyncData("_af_weeklyReportReadingXpClaimed_v1", ref weeklyReportReadingXpClaimedEventIdsLoad);
 			_weeklyReportReadingXpClaimedEventIds = SanitizeWeeklyReportReadingXpClaimedEventIds(weeklyReportReadingXpClaimedEventIdsLoad).Where((string x) => FindWeeklyReportRecordById(x) != null).ToList();
+			dataStore.SyncData("_af_weeklyReportReadingXpPendingCount_v1", ref _weeklyReportReadingXpPendingCount);
+			dataStore.SyncData("_af_weeklyReportReadingXpPendingCharm_v1", ref _weeklyReportReadingXpPendingCharm);
+			dataStore.SyncData("_af_weeklyReportReadingXpPendingLeadership_v1", ref _weeklyReportReadingXpPendingLeadership);
+			dataStore.SyncData("_af_weeklyReportReadingXpPendingSteward_v1", ref _weeklyReportReadingXpPendingSteward);
+			NormalizeWeeklyReportReadingXpPendingBatch();
 			_weeklyReportNoticeEventIdsShownThisSession.Clear();
 			_weeklyReportRegisteredMapNotificationView = null;
 			_eventSourceMaterials.Clear();
@@ -43659,21 +43688,53 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
-		if (leadershipXp > 0)
-		{
-			mainHero.AddSkillXp(DefaultSkills.Leadership, leadershipXp);
-		}
-		if (charmXp > 0)
-		{
-			mainHero.AddSkillXp(DefaultSkills.Charm, charmXp);
-		}
-		if (stewardXp > 0)
-		{
-			mainHero.AddSkillXp(DefaultSkills.Steward, stewardXp);
-		}
 		_weeklyReportReadingXpClaimedEventIds.Add(text);
-		InformationManager.DisplayMessage(new InformationMessage("周报研读完成：魅力 +" + charmXp + "，统御 +" + leadershipXp + "，管理 +" + stewardXp + "。"));
-		Logger.Log("EventWeeklyReport", "[ReadingXp] eventId=" + text + " charm=" + charmXp + " leadership=" + leadershipXp + " steward=" + stewardXp + " per100=" + xpPerHundred + " cap=" + skillCap);
+		NormalizeWeeklyReportReadingXpPendingBatch();
+		_weeklyReportReadingXpPendingCount++;
+		_weeklyReportReadingXpPendingCharm += charmXp;
+		_weeklyReportReadingXpPendingLeadership += leadershipXp;
+		_weeklyReportReadingXpPendingSteward += stewardXp;
+		Logger.Log("EventWeeklyReport", "[ReadingXp] accumulated eventId=" + text + " pending_count=" + _weeklyReportReadingXpPendingCount + "/" + WeeklyReportReadingXpBatchSize + " charm+=" + charmXp + " leadership+=" + leadershipXp + " steward+=" + stewardXp + " pending_charm=" + _weeklyReportReadingXpPendingCharm + " pending_leadership=" + _weeklyReportReadingXpPendingLeadership + " pending_steward=" + _weeklyReportReadingXpPendingSteward + " per100=" + xpPerHundred + " cap=" + skillCap);
+		if (_weeklyReportReadingXpPendingCount < WeeklyReportReadingXpBatchSize)
+		{
+			return;
+		}
+		int batchCount = _weeklyReportReadingXpPendingCount;
+		int batchCharm = _weeklyReportReadingXpPendingCharm;
+		int batchLeadership = _weeklyReportReadingXpPendingLeadership;
+		int batchSteward = _weeklyReportReadingXpPendingSteward;
+		if (batchLeadership > 0)
+		{
+			mainHero.AddSkillXp(DefaultSkills.Leadership, batchLeadership);
+		}
+		if (batchCharm > 0)
+		{
+			mainHero.AddSkillXp(DefaultSkills.Charm, batchCharm);
+		}
+		if (batchSteward > 0)
+		{
+			mainHero.AddSkillXp(DefaultSkills.Steward, batchSteward);
+		}
+		_weeklyReportReadingXpPendingCount = 0;
+		_weeklyReportReadingXpPendingCharm = 0;
+		_weeklyReportReadingXpPendingLeadership = 0;
+		_weeklyReportReadingXpPendingSteward = 0;
+		InformationManager.DisplayMessage(new InformationMessage("周报研读突破：累计研读 " + batchCount + " 篇，魅力 +" + batchCharm + "，统御 +" + batchLeadership + "，管理 +" + batchSteward + "。"));
+		Logger.Log("EventWeeklyReport", "[ReadingXp] batch_awarded count=" + batchCount + " charm=" + batchCharm + " leadership=" + batchLeadership + " steward=" + batchSteward);
+	}
+
+	private void NormalizeWeeklyReportReadingXpPendingBatch()
+	{
+		_weeklyReportReadingXpPendingCount = Math.Max(0, _weeklyReportReadingXpPendingCount);
+		_weeklyReportReadingXpPendingCharm = Math.Max(0, _weeklyReportReadingXpPendingCharm);
+		_weeklyReportReadingXpPendingLeadership = Math.Max(0, _weeklyReportReadingXpPendingLeadership);
+		_weeklyReportReadingXpPendingSteward = Math.Max(0, _weeklyReportReadingXpPendingSteward);
+		if (_weeklyReportReadingXpPendingCount == 0)
+		{
+			_weeklyReportReadingXpPendingCharm = 0;
+			_weeklyReportReadingXpPendingLeadership = 0;
+			_weeklyReportReadingXpPendingSteward = 0;
+		}
 	}
 
 	private static int CalculateWeeklyReportReadingXp(int meaningfulUnitCount, int xpPerHundred, int skillCap)
@@ -44155,6 +44216,10 @@ public class MyBehavior : CampaignBehaviorBase
 		_lastProcessedKingdomRebellionWeek = -1;
 		_unreadWeeklyReportNoticeEventIds = new List<string>();
 		_weeklyReportReadingXpClaimedEventIds = new List<string>();
+		_weeklyReportReadingXpPendingCount = 0;
+		_weeklyReportReadingXpPendingCharm = 0;
+		_weeklyReportReadingXpPendingLeadership = 0;
+		_weeklyReportReadingXpPendingSteward = 0;
 		_weeklyReportNoticeEventIdsShownThisSession.Clear();
 		_weeklyReportRegisteredMapNotificationView = null;
 		_weeklyReportGenerationInProgress = false;

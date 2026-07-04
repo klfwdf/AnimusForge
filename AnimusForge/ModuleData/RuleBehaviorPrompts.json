@@ -122,15 +122,15 @@
             "PostprocessRules": [
                 {
                     "Tag": "[ACTION:KINGDOM_SERVICE:LEAVE:current]",
-                    "Description": "如果NPC和玩家在<latest_reply>里正式无条件同意或决定了玩家本人退出当前效力，就输出这个。"
+                    "Description": "如果NPC和玩家在<latest_reply>里都正式无条件同意或决定了玩家本人退出当前效力，就输出这个。"
                 },
                 {
                     "Tag": "[ACTION:KINGDOM_SERVICE:MERCENARY:{targetKingdomId}]",
-                    "Description": "如果NPC和玩家在<latest_reply>里正式无条件同意或决定了玩家本人以雇佣兵身份加入目标王国，就输出这个，本标签禁止用于NPC加入目标王国"
+                    "Description": "如果NPC和玩家在<latest_reply>里都正式无条件同意或决定了玩家本人以雇佣兵身份加入目标王国，就输出这个，本标签禁止用于NPC加入目标王国"
                 },
                 {
                     "Tag": "[ACTION:KINGDOM_SERVICE:VASSAL:{targetKingdomId}]",
-                    "Description": "如果NPC和玩家在<latest_reply>里正式无条件同意或决定了玩家本人以正式封臣身份加入目标王国，就输出这个，本标签禁止用于NPC加入目标王国"
+                    "Description": "如果NPC和玩家在<latest_reply>里都正式无条件同意或决定了玩家本人以正式封臣身份加入目标王国，就输出这个，本标签禁止用于NPC加入目标王国"
                 }
             ],
             "RuntimeInstructionTemplates": {
@@ -246,7 +246,7 @@
                 },
                 {
                     "Tag": "[ACTION:MARRIAGE_ELOPE:targetHeroId]",
-                    "Description": "如果NPC在<latest_reply>里同意或决定了无条件同意与玩家私奔，就输出这个"
+                    "Description": "如果NPC在<latest_reply>里同意或决定了无条件同意自己本人与玩家私奔，就输出这个"
                 },
                 {
                     "Tag": "[ACTION:DIVORCE:playerClanHeroId:targetHeroId]",
@@ -582,11 +582,11 @@
             "PostprocessRules": [
                 {
                     "Tag": "[A:H_J_P_P]",
-                    "Description": "如果NPC在<latest_reply>里明确无条件同意本人及其部队立即加入玩家队伍，就输出这个。不代表其家族加入玩家王国，不代表成为玩家封臣，也不代表作为领主效力，也不代表大地图上的独立部队合并命令。若<latest_reply>表达的是“我的家族加入你的王国/成为你的封臣/作为领主效力/归附你的王国”，禁止输出这个。"
+                    "Description": "如果NPC在<latest_reply>里明确无条件同意本人或及其部队立即加入玩家队伍，就输出这个。"
                 },
                 {
                     "Tag": "[ACTION:KINGDOM_SERVICE:CLAN_JOIN_PLAYER_KINGDOM:{targetClanId}]",
-                    "Description": "NPC在<latest_reply>里最终明确无条件同意或决定了带领整个家族加入玩家王国成为领主时，输出这个。这个标签只代表家族归附和王国归属改变，不代表NPC本人加入玩家队伍、成为玩家同伴或跟玩家上路；执行时目标家族当前拥有的城镇、城堡及其附属村庄会随家族一起归入玩家王国，不应留给旧王国或旧领主。若<latest_reply>表达的是“我本人加入你的队伍/当你的同伴/跟你走”，禁止输出这个；若<latest_reply>只是模糊同意“效力于你/加入你/来你麾下”，没有明确整个家族加入玩家王国成为领主，禁止输出。若NPC只是谈条件、犹豫、拒绝、要求报酬、要求封地、要求保证、要求日后再议，禁止输出。"
+                    "Description": "NPC在<latest_reply>里最终明确无条件同意或决定了带领整个家族加入玩家王国成为领主时，输出这个。若NPC只是谈条件、犹豫、拒绝、要求报酬、要求封地、要求保证、要求日后再议，禁止输出。"
                 }
             ],
             "RuntimeInstructionTemplates": {

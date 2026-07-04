@@ -14,6 +14,7 @@ using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
 using TaleWorlds.Localization;
+using TaleWorlds.MountAndBlade;
 
 namespace AnimusForge;
 
@@ -1343,9 +1344,153 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 			.Replace("你", name);
 	}
 
+	private bool IsLowProfileModeEnabled()
+	{
+		_state = NormalizeState(_state);
+		return _state.LowProfileModeEnabled;
+	}
+
+	private void SetLowProfileModeEnabled(bool enabled)
+	{
+		_state = NormalizeState(_state);
+		if (_state.LowProfileModeEnabled == enabled)
+		{
+			return;
+		}
+		_state.LowProfileModeEnabled = enabled;
+		_activeConversationStates.Clear();
+		LogDebug("low profile mode=" + enabled);
+	}
+
+	private static bool IsObserverAllowedDuringLowProfile(Hero observer)
+	{
+		return IsValidObserver(observer) && IsHeroInPlayerMainParty(observer) && IsPlayerCompanionOrFamilyObserver(observer);
+	}
+
+	private static bool IsObserverKeyAllowedDuringLowProfile(string observerKey)
+	{
+		string key = NormalizeObserverKey(observerKey);
+		if (string.IsNullOrWhiteSpace(key) || key == PlayerHeroId)
+		{
+			return false;
+		}
+		Hero observer = FindHeroById(key);
+		if (IsValidObserver(observer))
+		{
+			return IsObserverAllowedDuringLowProfile(observer);
+		}
+		if (!TryResolveAgentIndexFromObserverKey(key, out int agentIndex))
+		{
+			return false;
+		}
+		return IsAgentFromPlayerMainParty(FindMissionAgentByIndex(agentIndex));
+	}
+
+	private static bool TryResolveAgentIndexFromObserverKey(string observerKey, out int agentIndex)
+	{
+		agentIndex = -1;
+		string key = NormalizeObserverKey(observerKey);
+		if (string.IsNullOrWhiteSpace(key))
+		{
+			return false;
+		}
+		const string marker = "agent:";
+		int markerIndex = key.IndexOf(marker, StringComparison.OrdinalIgnoreCase);
+		if (markerIndex < 0)
+		{
+			return false;
+		}
+		int start = markerIndex + marker.Length;
+		int end = start;
+		while (end < key.Length && char.IsDigit(key[end]))
+		{
+			end++;
+		}
+		if (end <= start)
+		{
+			return false;
+		}
+		return int.TryParse(key.Substring(start, end - start), out agentIndex) && agentIndex >= 0;
+	}
+
+	private static Agent FindMissionAgentByIndex(int agentIndex)
+	{
+		if (agentIndex < 0)
+		{
+			return null;
+		}
+		try
+		{
+			return Mission.Current?.Agents?.FirstOrDefault(agent => agent != null && agent.Index == agentIndex);
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static bool IsAgentFromPlayerMainParty(Agent agent)
+	{
+		try
+		{
+			PartyBase party = agent?.Origin?.BattleCombatant as PartyBase;
+			return IsStrictPlayerMainPartyBase(party);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static bool IsStrictPlayerMainPartyBase(PartyBase party)
+	{
+		try
+		{
+			if (party == null)
+			{
+				return false;
+			}
+			if (party == PartyBase.MainParty)
+			{
+				return true;
+			}
+			MobileParty mobileParty = party.MobileParty;
+			return mobileParty != null && (mobileParty == MobileParty.MainParty || mobileParty.IsMainParty);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static bool IsHeroInPlayerMainParty(Hero hero)
+	{
+		try
+		{
+			if (!IsValidObserver(hero))
+			{
+				return false;
+			}
+			MobileParty mainParty = MobileParty.MainParty;
+			if (hero.PartyBelongedTo != null && (hero.PartyBelongedTo == mainParty || hero.PartyBelongedTo.IsMainParty || hero.PartyBelongedTo.Party == PartyBase.MainParty))
+			{
+				return true;
+			}
+			return mainParty?.MemberRoster != null && hero.CharacterObject != null && mainParty.MemberRoster.Contains(hero.CharacterObject);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
 	private bool DoesObserverKnowPlayer(Hero observer)
 	{
 		if (!IsValidObserver(observer))
+		{
+			return false;
+		}
+		if (IsLowProfileModeEnabled() && !IsObserverAllowedDuringLowProfile(observer))
 		{
 			return false;
 		}
@@ -1370,6 +1515,20 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 			return false;
 		}
 		Hero observer = FindHeroById(key);
+		if (IsLowProfileModeEnabled())
+		{
+			if (IsValidObserver(observer))
+			{
+				if (!IsObserverAllowedDuringLowProfile(observer))
+				{
+					return false;
+				}
+			}
+			else
+			{
+				return IsObserverKeyAllowedDuringLowProfile(key);
+			}
+		}
 		if (IsObserverInPlayerOwnedSettlement(observer))
 		{
 			MarkObserverKnowsPlayer(observer, "player_owned_settlement");
@@ -1394,6 +1553,10 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 		{
 			return false;
 		}
+		if (IsLowProfileModeEnabled() && !IsObserverAllowedDuringLowProfile(observer))
+		{
+			return false;
+		}
 		if (IsPlayerCompanionOrFamilyObserver(observer))
 		{
 			return true;
@@ -1413,6 +1576,20 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 			return false;
 		}
 		Hero observer = FindHeroById(key);
+		if (IsLowProfileModeEnabled())
+		{
+			if (IsValidObserver(observer))
+			{
+				if (!IsObserverAllowedDuringLowProfile(observer))
+				{
+					return false;
+				}
+			}
+			else
+			{
+				return IsObserverKeyAllowedDuringLowProfile(key);
+			}
+		}
 		if (IsObserverInPlayerOwnedSettlement(observer))
 		{
 			return true;
@@ -1431,6 +1608,10 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
+		if (IsLowProfileModeEnabled() && !IsObserverAllowedDuringLowProfile(observer))
+		{
+			return;
+		}
 		MarkObserverKnowsPlayer(GetHeroId(observer), reason);
 	}
 
@@ -1438,6 +1619,10 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 	{
 		string key = NormalizeObserverKey(observerKey);
 		if (string.IsNullOrWhiteSpace(key) || key == PlayerHeroId)
+		{
+			return;
+		}
+		if (IsLowProfileModeEnabled() && !IsObserverKeyAllowedDuringLowProfile(key))
 		{
 			return;
 		}
@@ -1498,6 +1683,10 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 		{
 			return false;
 		}
+		if (IsLowProfileModeEnabled() && !IsObserverAllowedDuringLowProfile(observer))
+		{
+			return false;
+		}
 		return CanObserverKnowRecentActions(GetHeroId(observer), observer?.Culture?.StringId, courier);
 	}
 
@@ -1507,6 +1696,25 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 		if (string.IsNullOrWhiteSpace(key) || key == PlayerHeroId)
 		{
 			return false;
+		}
+		if (IsLowProfileModeEnabled())
+		{
+			Hero observer = FindHeroById(key);
+			if (IsValidObserver(observer))
+			{
+				if (!IsObserverAllowedDuringLowProfile(observer))
+				{
+					return false;
+				}
+			}
+			else if (IsObserverKeyAllowedDuringLowProfile(key))
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
 		}
 		PlayerNpcKnowledgeState state = GetNpcKnowledgeState(key, create: true);
 		if (state.KnowsMajorHistory || DoesObserverKnowPlayer(key, cultureId))
@@ -1526,12 +1734,20 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 		{
 			return 0;
 		}
+		if (IsLowProfileModeEnabled() && !IsObserverAllowedDuringLowProfile(observer))
+		{
+			return 0;
+		}
 		return GetEffectiveNotoriety(GetHeroId(observer), observer?.Culture?.StringId);
 	}
 
 	private int GetEffectiveNotoriety(string observerKey, string cultureId)
 	{
 		_state = NormalizeState(_state);
+		if (IsLowProfileModeEnabled() && !IsObserverKeyAllowedDuringLowProfile(observerKey))
+		{
+			return 0;
+		}
 		string normalizedCultureId = NormalizeCultureId(cultureId);
 		double culture = 0.0;
 		if (!string.IsNullOrWhiteSpace(normalizedCultureId) && _state.CultureNotoriety.TryGetValue(normalizedCultureId, out double value))
@@ -1805,6 +2021,8 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 			WorldFillPercent = effectiveWorld,
 			ShowEditButton = canEdit,
 			EditText = "编辑履历",
+			IsLowProfileModeEnabled = IsLowProfileModeEnabled(),
+			LowProfileToggleText = IsLowProfileModeEnabled() ? "关闭低调模式" : "开启低调模式",
 			CultureRows = BuildPlayerNotorietyCultureRows()
 		};
 	}
@@ -1813,6 +2031,11 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 	{
 		_state = NormalizeState(_state);
 		StringBuilder sb = new StringBuilder();
+		if (IsLowProfileModeEnabled())
+		{
+			sb.AppendLine("【低调模式】已开启。除当前主队伍内的士兵和同伴外，其他人暂时不会认出玩家；低调期间的新行为仍会进入重大履历、近期行动和周报素材。");
+			sb.AppendLine();
+		}
 		string playerName = "玩家";
 		string summary = RenderPlayerActionTextForPrompt((_state.MajorSummary ?? "").Trim(), playerName);
 		if (!string.IsNullOrWhiteSpace(summary))
@@ -2026,7 +2249,7 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 	private void OpenPlayerNotorietyView()
 	{
 		bool canEdit = MyBehavior.IsDevDataManagementEnabledForExternal();
-		if (PlayerNotorietyPopup.Show(BuildPlayerNotorietyPopupData(canEdit), canEdit ? OpenPlayerMajorHistoryEditor : null))
+		if (PlayerNotorietyPopup.Show(BuildPlayerNotorietyPopupData(canEdit), canEdit ? OpenPlayerMajorHistoryEditor : null, ToggleLowProfileModeFromPopup))
 		{
 			return;
 		}
@@ -2037,6 +2260,14 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 			return;
 		}
 		InformationManager.ShowInquiry(new InquiryData("玩家知名度与履历", text, true, false, "关闭", "", null, null));
+	}
+
+	private PlayerNotorietyPopupData ToggleLowProfileModeFromPopup()
+	{
+		bool enabled = !IsLowProfileModeEnabled();
+		SetLowProfileModeEnabled(enabled);
+		InformationManager.DisplayMessage(new InformationMessage(enabled ? "已开启低调模式。" : "已关闭低调模式。"));
+		return BuildPlayerNotorietyPopupData(MyBehavior.IsDevDataManagementEnabledForExternal());
 	}
 
 	private void OpenPlayerMajorHistoryEditor()
@@ -3063,6 +3294,7 @@ public sealed class PlayerNotorietyBehavior : CampaignBehaviorBase
 
 	private sealed class PlayerNotorietyState
 	{
+		public bool LowProfileModeEnabled;
 		public double WorldNotoriety;
 		public Dictionary<string, double> CultureNotoriety = new Dictionary<string, double>(StringComparer.OrdinalIgnoreCase);
 		public Dictionary<string, PlayerNpcKnowledgeState> NpcKnowledge = new Dictionary<string, PlayerNpcKnowledgeState>(StringComparer.OrdinalIgnoreCase);

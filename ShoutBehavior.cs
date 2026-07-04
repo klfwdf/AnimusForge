@@ -18892,7 +18892,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			List<PostprocessRuleEntry> nobleGatheringRules = nobleGatheringRuleInjected ? (NobleGatheringBehavior.BuildRuntimePostprocessRulesForExternal(targetHero ?? targetCharacter?.HeroObject) ?? new List<PostprocessRuleEntry>()) : null;
 			Hero marriageSpeaker = targetHero ?? targetCharacter?.HeroObject;
 			List<PostprocessRuleEntry> marriageRuntimeRules = marriageRuleInjected ? (RomanceSystemBehavior.Instance?.BuildRuntimeMarriagePostprocessRulesForExternal(marriageSpeaker) ?? new List<PostprocessRuleEntry>()) : null;
-			List<PostprocessRuleEntry> marriageRules = marriageRuleInjected ? MergePostprocessRulesForScene(AIConfigHandler.GetGuardrailRulePostprocessRules("marriage") ?? new List<PostprocessRuleEntry>(), marriageRuntimeRules) : null;
+			List<PostprocessRuleEntry> marriageRules = marriageRuleInjected ? marriageRuntimeRules : null;
 			List<PostprocessRuleEntry> siegeInterventionRules = AfGcczShoutBridge.BuildPostprocessRules(siegeInterventionRuleInjected);
 			bool npcSurrenderPostprocessEnabled = IsNpcSurrenderPostprocessContext();
 			List<PostprocessRuleEntry> npcSurrenderRules = BuildNpcSurrenderPostprocessRulesForScene(npcSurrenderPostprocessEnabled);
@@ -21595,7 +21595,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		List<PostprocessRuleEntry> nobleGatheringRules = nobleGatheringRuleInjected ? (NobleGatheringBehavior.BuildRuntimePostprocessRulesForExternal(targetHero ?? targetCharacter?.HeroObject) ?? new List<PostprocessRuleEntry>()) : null;
 		Hero marriageSpeaker = targetHero ?? targetCharacter?.HeroObject;
 		List<PostprocessRuleEntry> marriageRuntimeRules = marriageRuleInjected ? (RomanceSystemBehavior.Instance?.BuildRuntimeMarriagePostprocessRulesForExternal(marriageSpeaker) ?? new List<PostprocessRuleEntry>()) : null;
-		List<PostprocessRuleEntry> marriageRules = marriageRuleInjected ? MergePostprocessRulesForScene(AIConfigHandler.GetGuardrailRulePostprocessRules("marriage") ?? new List<PostprocessRuleEntry>(), marriageRuntimeRules) : null;
+		List<PostprocessRuleEntry> marriageRules = marriageRuleInjected ? marriageRuntimeRules : null;
 		Settlement siegeSurrenderSettlement = null;
 		BattleSideEnum siegeSurrenderSide = BattleSideEnum.None;
 		string siegeSurrenderSideLabel = "";
@@ -24351,10 +24351,6 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				SpeakerAgentIndex = -1,
 				VisibleAgentIndices = visibleAgentIndices
 			}));
-			if (_publicConversationHistory.Count > 40)
-			{
-				_publicConversationHistory.RemoveAt(0);
-			}
 			foreach (NpcDataPacket nearbyDatum in nearbyData)
 			{
 				int agentIndex = nearbyDatum.AgentIndex;
@@ -24371,10 +24367,6 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					SpeakerAgentIndex = -1,
 					VisibleAgentIndices = visibleAgentIndices
 				}));
-				while (_npcConversationHistory[agentIndex].Count > 40)
-				{
-					_npcConversationHistory[agentIndex].RemoveAt(0);
-				}
 			}
 		}
 		AppendSceneEventToNativeSharedHistoryForTargets(nearbyData, "系统", text, "fact", eventSequence);
@@ -24465,19 +24457,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			lock (_historyLock)
 			{
 				_publicConversationHistory.Add(message);
-				if (_publicConversationHistory.Count > 40)
-				{
-					_publicConversationHistory.RemoveAt(0);
-				}
 				if (!_npcConversationHistory.ContainsKey(targetAgentIndex))
 				{
 					_npcConversationHistory[targetAgentIndex] = new List<ConversationMessage>();
 				}
 				_npcConversationHistory[targetAgentIndex].Add(message);
-				while (_npcConversationHistory[targetAgentIndex].Count > 40)
-				{
-					_npcConversationHistory[targetAgentIndex].RemoveAt(0);
-				}
 			}
 		}
 		catch (Exception ex)
@@ -24735,20 +24719,12 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		lock (_historyLock)
 		{
 			_publicConversationHistory.Add(message);
-			while (_publicConversationHistory.Count > 40)
-			{
-				_publicConversationHistory.RemoveAt(0);
-			}
 			if (!_npcConversationHistory.TryGetValue(targetAgentIndex, out var history) || history == null)
 			{
 				history = new List<ConversationMessage>();
 				_npcConversationHistory[targetAgentIndex] = history;
 			}
 			history.Add(message);
-			while (history.Count > 40)
-			{
-				history.RemoveAt(0);
-			}
 		}
 		if (mirrorToNativeSharedHistory)
 		{
@@ -24803,10 +24779,6 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				PlayerDistanceMeters = playerDistanceMeters,
 				VisibleAgentIndices = visibleAgentIndices
 			}));
-			if (_publicConversationHistory.Count > 40)
-			{
-				_publicConversationHistory.RemoveAt(0);
-			}
 			foreach (NpcDataPacket nearbyDatum in nearbyData)
 			{
 				int agentIndex = nearbyDatum.AgentIndex;
@@ -24941,10 +24913,6 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					SpeakerAgentIndex = speakerAgentIndex,
 					VisibleAgentIndices = visibleAgentIndices
 				}));
-				if (_npcConversationHistory[agentIndex].Count > 40)
-				{
-					_npcConversationHistory[agentIndex].RemoveRange(0, 2);
-				}
 				RemoveExpiredSingleUseSceneNpcFacts(_npcConversationHistory[agentIndex]);
 			}
 			_publicConversationHistory.Add(StampConversationMessageWithCurrentMemoryContext(new ConversationMessage
@@ -24956,10 +24924,6 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				SpeakerAgentIndex = speakerAgentIndex,
 				VisibleAgentIndices = visibleAgentIndices
 			}));
-			if (_publicConversationHistory.Count > 40)
-			{
-				_publicConversationHistory.RemoveAt(0);
-			}
 			RemoveExpiredSingleUseSceneNpcFacts(_publicConversationHistory);
 		}
 		NpcDataPacket speakerNpc = nearbyData?.FirstOrDefault((NpcDataPacket x) => x != null && x.AgentIndex == speakerAgentIndex) ?? ResolveSceneNpcDataForSharedHistory(speakerAgentIndex, speakerName);
@@ -24989,10 +24953,6 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				SpeakerAgentIndex = -1,
 				VisibleAgentIndices = visibleAgentIndices
 			}));
-			if (_publicConversationHistory.Count > 40)
-			{
-				_publicConversationHistory.RemoveAt(0);
-			}
 			if (nearbyData == null)
 			{
 				return;
@@ -25017,10 +24977,6 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					SpeakerAgentIndex = -1,
 					VisibleAgentIndices = visibleAgentIndices
 				}));
-				if (_npcConversationHistory[agentIndex].Count > 40)
-				{
-					_npcConversationHistory[agentIndex].RemoveRange(0, Math.Min(2, _npcConversationHistory[agentIndex].Count));
-				}
 				if (isAfefFact)
 				{
 					afefPendingTargets.Add(nearbyDatum);
@@ -30191,7 +30147,7 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 		return result;
 	}
 
-	private List<object> BuildStrictSceneMessagesForNpc(int npcAgentIndex, string systemPrompt, IEnumerable<string> prefixUserSections, IEnumerable<string> suffixUserSections = null, bool currentInputAlreadyRecorded = true, string currentPlayerInput = null, int maxHistoryMessages = 18, bool suppressReplyFormatInstruction = false, IEnumerable<ConversationMessage> injectedHistoryMessages = null, bool includeSceneHistory = true, IEnumerable<ConversationMessage> persistentHistoryMessages = null, IEnumerable<ConversationMessage> pendingCurrentAfefFactMessages = null)
+	private List<object> BuildStrictSceneMessagesForNpc(int npcAgentIndex, string systemPrompt, IEnumerable<string> prefixUserSections, IEnumerable<string> suffixUserSections = null, bool currentInputAlreadyRecorded = true, string currentPlayerInput = null, int maxHistoryMessages = 0, bool suppressReplyFormatInstruction = false, IEnumerable<ConversationMessage> injectedHistoryMessages = null, bool includeSceneHistory = true, IEnumerable<ConversationMessage> persistentHistoryMessages = null, IEnumerable<ConversationMessage> pendingCurrentAfefFactMessages = null)
 	{
 		List<object> list = new List<object>
 		{
@@ -30254,7 +30210,7 @@ private static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessa
 				}
 			}
 		}
-		Logger.LogVerbose("ShoutStrict", "strict_messages:" + npcAgentIndex, () => "npc=" + npcAgentIndex + " messages=" + list.Count + " persistentHistory=" + persistentChatMessages.Count + " historyCap=" + maxHistoryMessages, 2.0);
+		Logger.LogVerbose("ShoutStrict", "strict_messages:" + npcAgentIndex, () => "npc=" + npcAgentIndex + " messages=" + list.Count + " persistentHistory=" + persistentChatMessages.Count + " historyCap=" + ((maxHistoryMessages <= 0) ? "unlimited" : maxHistoryMessages.ToString()), 2.0);
 		return list;
 	}
 
