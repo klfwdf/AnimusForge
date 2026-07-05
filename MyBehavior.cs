@@ -12573,6 +12573,30 @@ public class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
+	public static void RecordNobleGatheringWeeklyMaterialForExternal(string stableKey, string label, string snapshotText, string kingdomId, string settlementId, string actorHeroId, bool includeInWorld)
+	{
+		try
+		{
+			MyBehavior behavior = Instance ?? Campaign.Current?.GetCampaignBehavior<MyBehavior>();
+			behavior?.RecordEventSourceMaterial(
+				"noble_gathering",
+				label,
+				snapshotText,
+				stableKey,
+				kingdomId,
+				settlementId,
+				includeInWorld,
+				includeInKingdom: true,
+				actorHeroId: actorHeroId,
+				actorKingdomId: kingdomId);
+			Logger.Log("EventWeeklyReport", "[NobleGathering] source_material_recorded key=" + (stableKey ?? "") + " kingdom=" + (kingdomId ?? "") + " world=" + includeInWorld);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("EventWeeklyReport", "[NobleGathering][WARN] record weekly material failed: " + ex.Message);
+		}
+	}
+
 	public static void RecordCustomPolicyWeeklyMaterialForExternal(string recordId, string policyName, string dateText, string policySummary, string feedbackSummary, string effectSummary, string playerKingdomId, string playerKingdomName, string targetKingdomId, string targetKingdomName, string effectId, int submittedDay, string gameDate, bool includeInWorld)
 	{
 		try
