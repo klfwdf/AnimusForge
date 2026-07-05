@@ -278,6 +278,7 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 			new InquiryElement("custom_policy_management", "政策管理", null, isEnabled: true, "撰写自定义政策，或查看已经成功落地的政策记录。"),
 			new InquiryElement("vassalage_management", "臣属国管理", null, isEnabled: true, "只查看已有臣属国；解约、改约、吞并请通过 LLM 对话推进。"),
 			new InquiryElement("player_persona", "修改玩家外貌与背景", null, isEnabled: true, ""),
+			new InquiryElement("settlement_entry_troops", "进城随行配置", null, isEnabled: true, "配置 SETS 进城/城堡/村庄自动带入的同伴和士兵。"),
 			new InquiryElement("troop_inspection", "检阅士兵", null, isEnabled: true, ""),
 			new InquiryElement("military_exercise", "军事演习", null, isEnabled: true, ""),
 			new InquiryElement("api_onboarding", "重新进行API首次引导", null, isEnabled: true, "只重新选择和测试 API 配置，不进入数据库导入或首次使用流程。"),
@@ -310,6 +311,11 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 			else if (string.Equals(text, "player_persona", StringComparison.Ordinal))
 			{
 				OpenPlayerPersonaEditor();
+			}
+			else if (string.Equals(text, "settlement_entry_troops", StringComparison.Ordinal))
+			{
+				CloseTerminal();
+				SettlementEntryTroopSelectionBehavior.OpenConfigFromTerminal();
 			}
 			else if (string.Equals(text, "troop_inspection", StringComparison.Ordinal))
 			{

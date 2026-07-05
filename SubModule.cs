@@ -434,6 +434,14 @@ public class SubModule : MBSubModuleBase
 			}
 			try
 			{
+				SettlementEntryTroopSelectionBehavior.RegisterHarmonyPatches(harmony);
+			}
+			catch (Exception ex18ba)
+			{
+				Logger.LogTrace("SubModule", ">>> SETS patches init failed: " + ex18ba.Message);
+			}
+			try
+			{
 				MilitaryExerciseBehavior.RegisterHarmonyPatches(harmony);
 			}
 			catch (Exception ex18c)
@@ -521,6 +529,7 @@ public class SubModule : MBSubModuleBase
 			campaignGameStarter.AddBehavior(new ProactiveNpcRequestBehavior());
 			campaignGameStarter.AddBehavior(new SceneTauntBehavior());
 			campaignGameStarter.AddBehavior(new SiegeAiInterventionBehavior());
+			campaignGameStarter.AddBehavior(new SettlementEntryTroopSelectionBehavior());
 			campaignGameStarter.AddBehavior(new VoteDealBehavior());
 			campaignGameStarter.AddBehavior(new DiplomacyBehavior());
 			campaignGameStarter.AddBehavior(new VanillaIssuePromptBehavior());
