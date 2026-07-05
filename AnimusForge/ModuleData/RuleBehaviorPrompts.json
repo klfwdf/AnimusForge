@@ -23,19 +23,19 @@
         "PostprocessRules": [
             {
                 "Tag": "[ACTION:DUEL]",
-                "Description": "如果玩家和NPC都无条件正式同意或决定了真剑，武器，比武决斗，输出这个,只有一方同意不算，不是正式单挑，普通打架不算，如果双方只是叫嚣也不算,如果还在讨论彩头和赌注，其中一方还没有接受赌注，以及并非单挑而是群战，那么不允许输出这个"
+                "Description": "如果玩家和NPC都同意或决定了真剑、武器、比武决斗，输出这个。若玩家提出友谊决斗、决斗彩头或以物/钱为赌注，NPC列出双方赌注和胜负归属，即使末尾问“如何？”，也视为NPC接受决斗条件。 只要输出[ACTION:DUEL]且表内有DUEL_LINE_WIN/LOSE，就必须同时输出两条台词标签；台词内容可短。若表内AD是N/P格式，保留方向字段。"
             },
             {
                 "Tag": "[AD;金额;天数;备注内容]",
-                "Description": "仅在你输出[ACTION:DUEL]时才可以输出此标签。此标签只作用于玩家是否下了赌注，如果玩家赌的是物品，请通过对话判断物品的金额，如果是多个物品，请计算总金额。如果双方没有说明赌注交付时间，那么默认1天,备注内容写玩家下了什么赌注，以及一些说明，字数不少于100字，由你自行判断改写什么"
+                "Description": "仅在输出[ACTION:DUEL]且存在赌注时输出。玩家赌第纳尔时金额填玩家赌注金额；若标签表同时存在N/P格式AD，优先输出[AD;金额;1;P;备注]。 只要输出[ACTION:DUEL]且表内有DUEL_LINE_WIN/LOSE，就必须同时输出两条台词标签；台词内容可短。若表内AD是N/P格式，保留方向字段。"
             },
             {
                 "Tag": "[ACTION:DUEL_LINE_WIN:吹嘘的内容]",
-                "Description": "如果输出了[ACTION:DUEL]，那么也必须要输出这个NPC决斗胜利后的吹嘘，内容由标签输出器自行创作"
+                "Description": "如果输出[ACTION:DUEL]，必须输出NPC获胜后的吹嘘台词。 只要输出[ACTION:DUEL]且表内有DUEL_LINE_WIN/LOSE，就必须同时输出两条台词标签；台词内容可短。若表内AD是N/P格式，保留方向字段。"
             },
             {
                 "Tag": "[ACTION:DUEL_LINE_LOSE:吐槽的内容]",
-                "Description": "如果输出了[ACTION:DUEL]，那么也必须要输出这个NPC决斗失败后的吐槽，内容由标签输出器自行创作"
+                "Description": "如果输出[ACTION:DUEL]，必须输出NPC战败后的吐槽台词。 只要输出[ACTION:DUEL]且表内有DUEL_LINE_WIN/LOSE，就必须同时输出两条台词标签；台词内容可短。若表内AD是N/P格式，保留方向字段。"
             }
         ]
     },
@@ -49,19 +49,19 @@
         "PostprocessRules": [
             {
                 "Tag": "[ACTION:GIVE_GOLD:金额]",
-                "Description": "请分析NPC的回复,判断NPC是否有把第纳尔交给了玩家，如果NPC只是给玩家试用，那么请参考AD标签，如果NPC说的数量模棱两可，那么自行判断应该给多少钱。"
+                "Description": "当<latest_reply>中NPC明确把第纳尔、钱、赎金、财物或等值金币立即交给玩家、归玩家、留下给玩家时输出。若NPC说给出身上钱财、剩余钱财、扣除路费后交出余额，应结合NPC物品清单中的第纳尔数和玩家要求估算金额。不要因为本轮没有AFEF就改成AD；AFEF只用于判断history里的既成事实。 玩家要求留下所有钱、身上钱财、全部第纳尔且NPC回答成交、既然如此、这笔账清楚、成王败寇接受时，用NPC物品清单中的第纳尔数输出GIVE_GOLD；不要因语气像赎金就改AD。"
             },
             {
                 "Tag": "[ACTION:GIVE_ITEM:物品名称:数量]",
-                "Description": "请分析NPC的回复,判断NPC是否有把什么物品交给了玩家，参考NPC的物品清单，优先填写里面的物品名称，如果NPC只是给玩家试用，那么请参考AD标签,禁止填兵种和人名"
+                "Description": "当<latest_reply>中NPC明确把物品、装备、武器、马匹、货物、俘获物立即交给玩家、归玩家、留下给玩家时输出。必须优先使用NPC物品清单中的具体名称和数量；玩家说装备马匹、甲胄马匹、这些财物、破铜烂铁、身上装备且NPC同意时，展开NPC清单中的私人战斗装备和明确马匹/坐骑条目，逐项重复输出。禁止输出泛称如装备、甲胄、盔甲、马匹、财物，除非清单中真实物品名就是该词。 玩家要求留下装备马匹、兵刃甲胄、所有装备、财物或抵押品，且NPC同意留下、交出、归玩家、权当抵押时，逐项展开NPC私人战斗装备和马匹/坐骑。抵押的实物仍是本轮交给玩家，输出GIVE_ITEM，禁止只输出AD。"
             },
             {
                 "Tag": "[AD;金额;天数;N/P;备注内容]",
-                "Description": "当NPC或玩家主动向其中一方承诺且双方都无条件同意未来给予事物如物品、第纳尔、领地等）且当前还不在讨论事物细节时输出,或者当某一方在交易时已经先给了应付事物，而另一方还未给时，需先估算另一方应付的具体价值然后输出。金额=玩家或NPC应付/承诺的总价值；天数=约定期限（1季度=21天，1年=84天，无“周”，未约定填1）；方向=P表示玩家欠NPC,方向=N表示NPC欠玩家，备注=不少于50字的对话背景。"
+                "Description": "只在双方形成未来承诺、赊欠、延期付款、未结清交换或一方已交付另一方仍未履行时输出。NPC承诺赎金、贡金、尾款、稍后回国/回城后支付或推动履约，但本轮未实际交付时输出AD；NPC欠玩家用N，玩家欠NPC用P，天数未明说填1。若同轮既即时交付部分物品又保留未来尾款，可以同时输出GIVE和AD。 装备、马匹、兵刃、甲胄等实物已经被NPC留下或权当抵押时，不要用AD代替GIVE_ITEM；只有未来付款、未来赎金、回城后支付或未履行尾款才用AD。 AD格式必须以[AD;开头，禁止[AD:。"
             },
             {
                 "Tag": "[ADP;债务ID]",
-                "Description": "如果NPC承认自己收到了对应（优先考察欠款的备注内容）的欠款或者付款，或者豁免，就输出这个"
+                "Description": "当<latest_reply>中NPC明确承认收到既有债务付款、确认债务已还清、勾销、免除或核销时输出。债务ID必须来自债务提示、AFEF历史或明确金额；若文本说八十万/800000债务一笔勾销且没有ID，可用金额数字。 只在明确债务/定金到账、已收到既有债务付款、还清、勾销、一笔勾销、免除时输出；格式必须是[ADP;ID]，禁止[ADP:ID]。仅有未来付款、记账、按批次结算、余款稍后支付时不要输出。"
             }
         ],
         "RuntimeInstructionTemplates": {
@@ -126,11 +126,11 @@
                 },
                 {
                     "Tag": "[ACTION:KINGDOM_SERVICE:MERCENARY:{targetKingdomId}]",
-                    "Description": "如果NPC和玩家在<latest_reply>里都正式无条件同意或决定了玩家本人以雇佣兵身份加入目标王国，就输出这个，本标签禁止用于NPC加入目标王国"
+                    "Description": "NPC明确同意以雇佣兵身份为某王国效力时输出。targetKingdomId必须使用运行时事实里的王国原始ID，如 empire_s、empire_w、vlandia；禁止翻译或改写。 targetKingdomId只填运行时原始王国ID，如 empire_s、sturgia、vlandia；禁止输出kingdom:empire_s或中文名。"
                 },
                 {
                     "Tag": "[ACTION:KINGDOM_SERVICE:VASSAL:{targetKingdomId}]",
-                    "Description": "如果NPC和玩家在<latest_reply>里都正式无条件同意或决定了玩家本人以正式封臣身份加入目标王国，就输出这个，本标签禁止用于NPC加入目标王国"
+                    "Description": "NPC明确同意以封臣身份加入/效忠某王国时输出。targetKingdomId必须使用运行时事实里的王国原始ID，如 empire_s、empire_w、vlandia；禁止翻译成south_empire等英文别名。 targetKingdomId只填运行时原始王国ID，如 empire_s、sturgia、vlandia；禁止输出kingdom:empire_s或中文名。"
                 }
             ],
             "RuntimeInstructionTemplates": {
@@ -242,7 +242,7 @@
             "PostprocessRules": [
                 {
                     "Tag": "[ACTION:MARRIAGE_FORMAL:playerClanHeroId:targetHeroId]",
-                    "Description": "如果NPC在<latest_reply>里同意或决定了无条件同意某一对系统事实清单中的婚配对象正式成婚，就输出对应标签，若有条件，请勿输出；若同时明确彩礼金额，也可在末尾追加 :金额"
+                    "Description": "当<latest_reply>中NPC明确同意正式婚约、家族联姻或让指定双方结婚，并且双方ID都能从候选清单唯一确定时输出。不要因为还需仪式而改成只输出情绪。"
                 },
                 {
                     "Tag": "[ACTION:MARRIAGE_ELOPE:targetHeroId]",
@@ -358,11 +358,11 @@
             "PostprocessRules": [
                 {
                     "Tag": "[ATT:部队编号:数量]",
-                    "Description": "仅当 NPC 在 <latest_reply>中明确无条件同意，将其当前拥有的某支带有编号的部队转移到玩家队伍中，或者允许玩家从当前名人（notable）处招募一支带有编号的原版游戏名人志愿兵时，才进行输出。部队编号必须从本回合提供的编号列表中直接复制，而不能使用部队的名称。当玩家向 NPC 给予、分拨或承诺提供部队时，或者当玩家正在为 NPC 组建同伴部队时，绝不能输出此指令；这些情况属于 WORLDMAP_ORDER:CREATE_COMPANION_PARTY 指令的处理范畴。"
+                    "Description": "当<latest_reply>中NPC明确把自己清单中的士兵、部队、随从、家族兵交给玩家或允许玩家带走时输出。编号必须来自运行时部队清单，数量按NPC同意数量；多个兵种重复输出。"
                 },
                 {
                     "Tag": "[ATP:俘虏编号:数量]",
-                    "Description": "如果NPC在<latest_reply>里明确无条件同意或决定了把【你当前可转移俘虏】中的某种俘虏交给玩家，就输出这个；俘虏编号必须复制本轮编号清单，不要填写俘虏名称"
+                    "Description": "当<latest_reply>中NPC明确把俘虏交给玩家、释放给玩家处置或允许玩家带走俘虏时输出。编号必须来自运行时俘虏清单，多个俘虏可重复输出。"
                 }
             ],
             "RuntimeInstructionTemplates": {
@@ -406,7 +406,7 @@
             "PostprocessRules": [
                 {
                     "Tag": "[ACTION:SETTLEMENT_TRANSFER:TO_PLAYER:固定资产ID或编号]",
-                    "Description": "这是固定资产转移唯一标签，仅限NPC把【你当前可转移固定资产】中的城市、城堡、工坊、商队或商船队转给玩家；绝不可理解为玩家转移资产给NPC。若<latest_reply>还只是在报价、要求玩家先付款、压价、拒绝、反问、继续谈条件或说付款后再转，不允许输出。只有NPC明确同意现在转移，才可输出"
+                    "Description": "当<latest_reply>中NPC明确把【你当前可转移固定资产】里的城市、城堡、工坊、商队或其他固定资产交给玩家、割让给玩家、归玩家、移交给玩家时输出。必须只用【你当前可转移固定资产】里的原始ID；禁止用中文名，禁止使用【玩家当前可手动交付固定资产】。若说城市/城池优先输出该清单里类型为城市的ID；明确说城堡再输出城堡ID。NPC说履行承诺、移交城池、割让领地、督促议会移交、照你说的办时，回看history最近条件和该清单。若同句还同意和平、贸易、债务核销或接话，同轮保留DIPLOMACY、ADP或RELAY。 只允许输出[ACTION:SETTLEMENT_TRANSFER:TO_PLAYER:原始ID]；禁止[SETTLEMENT_TRANSFER:中文名]、[SETTLEMENT_TRANSFER:settlement:?]等旧格式。 输出前自检：本机制唯一合法格式是[ACTION:SETTLEMENT_TRANSFER:TO_PLAYER:原始ID]；禁止[SETTLEMENT_TRANSFER:...]、[A:SETTLEMENT_TRANSFER:...]、中文名、unknown或settlement:前缀旧格式。"
                 }
             ],
             "TriggerKeywords": [
@@ -582,15 +582,14 @@
             "PostprocessRules": [
                 {
                     "Tag": "[A:H_J_P_P]",
-                    "Description": "如果NPC在<latest_reply>里明确无条件同意本人或及其部队立即加入玩家队伍，就输出这个。"
+                    "Description": "当前说话的有名NPC本人在<latest_reply>中明确同意加入玩家队伍、跟随玩家、为玩家效力或随玩家同行时输出。不要要求额外AFEF；本标签就是把本轮同意转成机制动作。第三人加入不得用此标签。 如果同一句说的是家族/氏族/全族/族人/土地/领地向玩家效忠或加入玩家王国，这是CLAN_JOIN，不是本人入队；有CLAN_JOIN标签时不要输出本标签。"
                 },
                 {
                     "Tag": "[ACTION:KINGDOM_SERVICE:CLAN_JOIN_PLAYER_KINGDOM:{targetClanId}]",
-                    "Description": "NPC在<latest_reply>里最终明确无条件同意或决定了带领整个家族加入玩家王国成为领主时，输出这个。若NPC只是谈条件、犹豫、拒绝、要求报酬、要求封地、要求保证、要求日后再议，禁止输出。"
+                    "Description": "NPC明确同意让其家族加入玩家王国时输出。targetClanId必须使用运行时事实里的家族原始ID，禁止用家族名、英文别名或自造ID。 “以家族/氏族族长之名”“带领我的家族、土地、人民”“我本人及某某家族站在陛下一边”“全族向你效忠/归附/加入你的王国”都输出CLAN_JOIN。targetClanId必须从运行时家族/候选清单原样复制，不加clan:前缀；若无法看到原始ID，不要自造中文ID。"
                 }
             ],
             "RuntimeInstructionTemplates": {
-                "imprisoned": "【加入玩家队伍动态事实】你被囚禁中，不能立即加入玩家队伍。",
                 "already_in_player_party": "【加入玩家队伍动态事实】你已经处于玩家的队伍当中。",
                 "already_in_player_kingdom": "【加入玩家队伍动态事实】你已经处于玩家的王国中。如果玩家提出要你加入他的队伍，你可以考虑是否同意,注意，要求你的部队跟随和加入队伍有本质区别。"
             },
@@ -642,7 +641,7 @@
             "PostprocessRules": [
                 {
                     "Tag": "[ACTION:VOTE_DEAL:议程编号:选项编号:权重:备注]",
-                    "Description": "当你最终明确无条件同意或决定了玩家投票交易时，必须使用此精确格式。议程编号和选项编号见后处理清单（如A1:O2=投A1议程的O2选项）。权重可选SLIGHTLY_FAVOR（稍微支持）、STRONGLY_FAVOR（强烈支持）、FULLY_PUSH（全力推动）。备注=中文简要描述承诺。只有在玩家已实际交付承诺的报酬（如有）且最终明确成交时才输出，还在谈条件或拒绝时禁止输出。禁止使用SUPPORT/OPPOSE旧格式。 如果你不是家族族长，禁止输出此标签。如果你所属氏族是某议程的提案氏族，禁止就该议程输出此标签。"
+                    "Description": "当NPC在<latest_reply>中明确同意就某个运行时议程支持、反对、投票、拉票或改变投票承诺时输出。必须能唯一匹配议程编号和选项编号；交易条件可以和金钱、领地、外交标签同轮共存。 全力支持/全力推动/动用影响力时，权重填FULLY_PUSH；禁止SUPPORT、1、100或空值。"
                 }
             ],
             "RuntimeInstructionTemplates": {
@@ -692,7 +691,7 @@
             "PostprocessRules": [
                 {
                     "Tag": "[ACTION:PROPOSE:类型:目标名:方向]",
-                    "Description": "当你最终明确无条件同意玩家要求、向王国提出议程时，必须使用此精确格式。类型可选：WAR（宣战）、PEACE（和平）、POLICY（政策）、EXPEL（驱逐）、ALLIANCE（联盟）、TRADE（贸易协定）、FIEF（封地再分配）。目标名=你要提议的具体目标势力/政策/氏族/领地名称。方向仅用于政策类型：ADOPT=采纳政策、ABOLISH=废除政策，其他类型留空。只有在玩家已实际交付承诺的报酬（如有）且最终明确成交时才输出，还在谈条件或拒绝时禁止输出。如果你不是家族族长或不是贵族（封臣/国王），禁止输出此标签。"
+                    "Description": "当NPC明确同意回国、向议会、元老院、贵族会议或王国机构提出战争、和平、贸易、联盟、政策、封地等议程时输出。若NPC已经同意外交结果并说会下达、推动、安排或提出相关议程，可与DIPLOMACY标签同轮输出。 类型只用英文大类PEACE/TRADE/ALLIANCE/WAR/POLICY/FIEF。文书、法案、政策、改革、议程文本一律用POLICY；不要因目标名含“贸易”而改成TRADE，也不要把目标名改成城市ID。"
                 }
             ],
             "RuntimeInstructionTemplates": {
@@ -734,7 +733,7 @@
             "PostprocessRules": [
                 {
                     "Tag": "[ACTION:WORLDMAP_ORDER:GO_TO_SETTLEMENT:settlement:{id}:{days}]",
-                    "Description": "仅当玩家要求且NPC明确无条件同意或NPC自行决定了前往或守备某个定居点时输出。{id}必须来自后处理上下文提供的定居点候选原版ID，禁止根据名称猜ID。{days}为到达后停留天数；玩家未指定时填3。"
+                    "Description": "玩家要求NPC去、走到、赶往、守备、驻扎、支援某定居点，且NPC同意/从命/出发/会去/可以走一趟时输出。{id}必须来自运行时定居点候选原始ID；玩家说附近/最近时可用【玩家当前地点ID】里的最近定居点ID；未指定天数填3。若同时创建同伴队伍或合兵条件成立，同轮也输出CREATE_COMPANION_PARTY/MERGE_TO_PLAYER。 玩家说在这里、此地、本城、当前地点多待几天、看看这座城，且NPC同意带玩家在本城行动时，id使用【玩家当前地点ID】的当前定居点ID，天数默认3；这不是FOLLOW。 格式必须是[ACTION:WORLDMAP_ORDER:GO_TO_SETTLEMENT:settlement:town_X:3]或castle_X/village_X；若运行时写settlement:town_X，去掉前缀settlement:后再填入{id}。"
                 },
                 {
                     "Tag": "[ACTION:WORLDMAP_ORDER:PATROL_SETTLEMENT:settlement:{id}:{days}]",
@@ -742,7 +741,7 @@
                 },
                 {
                     "Tag": "[ACTION:WORLDMAP_ORDER:FOLLOW:{hero|party}:{id}:{days}]",
-                    "Description": "仅当玩家要求且NPC明确无条件同意或NPC自行决定了跟随大地图目标时，才输出此内容。仅对提供的英雄候选者使用目标类型 hero；当玩家要求跟随“我/玩家/我的旗帜/我的部队”时，使用运行时补充事实里的玩家本人固定ID，目标类型写hero，{id}填写该ID中hero:之后的部分。仅对提供的附近可见的队伍候选者使用目标类型 party。{id} 必须是上下文中的原始英雄 ID、玩家本人固定ID或原始附近队伍 ID；切勿根据名称进行猜测。{days} 是追上目标后的持续时间；如果未指定，则默认为 3。"
+                    "Description": "当NPC明确同意自己的队伍跟随玩家、跟随指定英雄或跟随指定部队时输出。玩家说跟我走、一起出发、加入我的部队、随军同行，NPC同意时目标用hero:main_hero，天数默认3。 加入我的部队、随军同行、一起出发若NPC同意，且表内同时有CREATE_COMPANION_PARTY、FOLLOW、MERGE_TO_PLAYER，应同轮全部输出，不要只输出FOLLOW。 只有跟我走、一起回去、路上告诉我、跟随玩家这类随玩家移动才输出FOLLOW；单纯去某地、守某地、留在本城几天不要额外输出FOLLOW。 若标签表含SCENE_FOLLOW_PLAYER且语境是场景内NPC本人跟随玩家，输出SCENE_FOLLOW_PLAYER，不要用本标签替代。去守某地/驻扎某地也不要输出本标签。 去守/驻扎/支援/赶往某城堡或城镇是GO_TO_SETTLEMENT，不是FOLLOW；这种场景即使NPC说“陪你走一趟/走吧”也不要输出FOLLOW，除非明确跟随玩家本人或玩家部队。"
                 },
                 {
                     "Tag": "[ACTION:WORLDMAP_ORDER:ATTACK:{hero|party|settlement}:{id}:{days}:{AI|FORCE}]",
@@ -750,15 +749,15 @@
                 },
                 {
                     "Tag": "[ACTION:WORLDMAP_ORDER:MERGE_TO_PLAYER:{days}]",
-                    "Description": "仅当玩家要求且NPC明确无条件同意或NPC自行决定了把自己的独立同伴部队并入玩家主队时输出。{days}为向玩家靠近的期限或到位后处理等待天数；未指定填1。"
+                    "Description": "当NPC明确同意带队并入玩家队伍、向玩家靠拢合兵、加入玩家军队行动时输出。玩家说加入我的部队、一起出发、随部队行动且NPC同意时输出，天数默认3。若NPC当前还没有可命令队伍但同意创建同伴队伍，先输出CREATE_COMPANION_PARTY，再输出本标签。 加入我的部队、随军同行、一起出发若NPC同意，且表内同时有CREATE_COMPANION_PARTY、FOLLOW、MERGE_TO_PLAYER，应同轮全部输出，不要只输出FOLLOW。 若NPC同意与玩家一起回去、一起行动、在当前城镇陪同停留，且表内有本标签，应输出MERGE_TO_PLAYER:3。 跟随玩家、一起回去、玩家在当前城镇多待几天且NPC陪同停留时，若表内有本标签，必须输出MERGE_TO_PLAYER:3；STOP、单纯巡逻、单纯攻击不强制合兵。 NPC以玩家部下/新兵/随军身份同意与玩家一起去守某定居点时，若同轮输出GO_TO_SETTLEMENT且表内有本标签，输出MERGE_TO_PLAYER:3。"
                 },
                 {
                     "Tag": "[ACTION:WORLDMAP_ORDER:CREATE_COMPANION_PARTY]",
-                    "Description": "此标签会为NPC创建一支新的队伍，执行其他ACTION:WORLDMAP类别的标签时，无论如何都必须先在最开头输入此标签，执行其他非ACTION:WORLDMAP时，禁止输出此标签"
+                    "Description": "当NPC本人同意建立或带领一支新队伍执行世界地图命令时输出。玩家说加入我的部队、跟我走、一起出发、随军同行，NPC说从命、效劳、随行、为您效力，也视为同意创建/带领同伴队伍。若同一轮还同意跟随、前往、攻击或合兵，应同时输出对应WORLDMAP_ORDER标签。 加入我的部队、随军同行、一起出发若NPC同意，且表内同时有CREATE_COMPANION_PARTY、FOLLOW、MERGE_TO_PLAYER，应同轮全部输出，不要只输出FOLLOW。 若NPC同意一起回去、走吧、路上告诉我、一起出发，或同意在当前城镇陪同玩家停留行动，且表内有本标签，应输出本标签。 只要同轮输出非STOP的大地图移动/跟随/前往/合兵命令且表内有本标签，通常也输出本标签；但场景内SCENE_FOLLOW_PLAYER优先时不要输出本标签。 NPC本人作为可带队英雄同意执行GO_TO_SETTLEMENT或MERGE_TO_PLAYER时，若表内有本标签，同轮输出本标签；场景内SCENE_FOLLOW_PLAYER优先时除外。"
                 },
                 {
                     "Tag": "[ACTION:WORLDMAP_ORDER:STOP]",
-                    "Description": "仅当玩家要求且NPC明确无条件同意或NPC自行决定了停止当前大地图命令并回归原版AI时输出。玩家说“你可以自由行动了”“不用继续待在那里”“不用再巡逻/跟随/追击了”“取消之前的命令”“回到你自己的安排”等，且NPC正文表示收到、遵命、会自由行动或恢复自行安排，也属于明确同意停止当前大地图命令。STOP会清空该NPC当前命令队列，不应与其他大地图命令同时输出。"
+                    "Description": "玩家要求停止、取消、别再跟随/巡逻/追击、自由行动、你走吧、放你离开、回到自己的安排，且NPC接受、道谢、遵命、准备离开或恢复自主行动时输出。STOP清空当前大地图命令，不与其他WORLDMAP_ORDER同轮输出。"
                 }
             ],
             "TriggerKeywords": [
@@ -824,15 +823,15 @@
             "PostprocessRules": [
                 {
                     "Tag": "[ACTION:DIPLOMACY:DECLARE_WAR:id1:id2]",
-                    "Description": "【强制覆盖】本标签不看NPC是否同意，只看<latest_reply>中玩家是否对你方宣战。只要玩家说了宣战的话（如\"宣战\"\"这是战书\"\"开战\"等），即使NPC暴怒拒绝，也必须输出本标签，填 玩家王国ID:你的王国ID。当你的王国在id1位时（你对别国宣战），才需要你明确同意后输出。"
+                    "Description": "当<latest_reply>中玩家对NPC王国宣战，或NPC国王明确同意自己王国向一个或多个第三方王国宣战、开战、讨伐、出兵时输出。多目标宣战可重复输出。id1=宣战方王国ID，id2=被宣战方王国ID；必须从运行时事实复制原始ID，禁止用中文王国名。"
                 },
                 {
                     "Tag": "[ACTION:DIPLOMACY:MAKE_PEACE:付贡金方ID:收贡金方ID:tributeAmount:durationDays]",
-                    "Description": "议和需双方国王无条件同意。可谈判天数和贡金：tributeAmount: 0=无条件和平/auto/数字，durationDays: default/1-252（21天=一季度，84天=一年）。两个ID必须是玩家+你的王国。禁止将无条件和平称为“白和平”。若同时有PROPOSE标签可用，国王间外交优先用DIPLOMACY。"
+                    "Description": "当双方国王在<latest_reply>中就停战、休战、议和、和平达成明确同意时输出。NPC说即刻停火、下达停战指令、推动/提交休战议程、以贡金/赎金/领地换和平，或用如你所愿/既然你已应允接受history里的和平条件，也输出。tributeAmount用history或本轮明确金额；未明说填0或auto；durationDays未明说填default。若NPC/对方让步求和或支付贡金，付贡金方通常是NPC王国，收贡金方通常是玩家王国；若玩家明确向NPC支付，则相反。若同句还有贸易、结盟、提案，分别输出所有成立标签。ID必须从运行时事实原样复制。 若history已有一组和平条件，latest_reply用如您所愿、既然你已应允、契约已成、即刻停火、下令撤军接受时，必须输出和平。无贡金或tributeAmount=0时默认ID顺序为玩家王国ID:你的王国ID；有贡金时第一位是付贡金方，第二位是收贡金方。 history里有停战/停火/和平条件，latest_reply说契约已成、既然你已应允、下令撤军、推动休战议程时必须输出MAKE_PEACE。"
                 },
                 {
                     "Tag": "[ACTION:DIPLOMACY:FORM_ALLIANCE:id1:id2:durationDays]",
-                    "Description": "结盟需双方国王无条件同意。可谈判天数：default=系统默认/1-252（21天=一季度，84天=一年）。两个ID必须是玩家+你的王国。每国最多2同盟。若同时有PROPOSE标签可用，优先DIPLOMACY。"
+                    "Description": "当双方国王明确同意结盟、同盟、盟约、共同防御、军事协作，或NPC承诺提交/推动结盟议程且认可具体盟约时输出。NPC用同意/照此办理/既然你已应允接受history里的结盟条件时也输出；若同句还有和平、贸易或臣服，也要分别输出所有已同意标签。durationDays：未明说填default；一年=84；一季度=21；N个月=N*21。ID顺序按标签占位和运行时事实复制，不要互换。 若history同一组条件包含友谊、长期友好、盟约、共同防御或以释放家人臣僚换长久友谊，latest_reply接受整组条件时必须同轮输出结盟；默认ID顺序为玩家王国ID:你的王国ID。 history里有同盟、互不侵犯、军事政治支持、长久友谊，latest_reply接受整组协议时必须输出FORM_ALLIANCE。"
                 },
                 {
                     "Tag": "[ACTION:DIPLOMACY:BREAK_ALLIANCE:id1:id2]",
@@ -840,11 +839,15 @@
                 },
                 {
                     "Tag": "[ACTION:DIPLOMACY:MAKE_TRADE:id1:id2:durationDays]",
-                    "Description": "贸易协议需双方国王无条件同意。可谈判天数：default=系统默认/1-252（21天=一季度，84天=一年）。两个ID必须是玩家+你的王国。若同时有PROPOSE标签可用，优先DIPLOMACY。"
+                    "Description": "当双方国王明确同意贸易协议、贸易协定、免税贸易、商队通行、恢复商贸，或NPC承诺提交/推动贸易协定议程且认可具体贸易条款时输出。NPC在latest_reply接受history里的免税贸易或商路安排，也必须输出。可与MAKE_PEACE、FORM_ALLIANCE、PROPOSE:TRADE同轮输出。durationDays：未明说填default；一年=84；一季度=21；N个月=N*21。ID顺序按标签占位和运行时事实复制，不要互换。 若history同一组条件包含免税贸易、贸易协议、商路安排，latest_reply接受整组条件时必须同轮输出贸易；默认ID顺序为玩家王国ID:你的王国ID。 history里有免税贸易、维持贸易、贸易协定、商路安排，latest_reply接受整组协议时必须输出MAKE_TRADE，不要只输出和平。"
                 },
                 {
                     "Tag": "[ACTION:DIPLOMACY:CANCEL_TRADE:id1:id2]",
                     "Description": "【强制覆盖】单方取消贸易不看NPC是否同意。两个ID必须是玩家+你的王国。若同时有PROPOSE可用，优先DIPLOMACY。"
+                },
+                {
+                    "Tag": "[ACTION:KINGDOM_ANNEX:target_kingdom_id={targetKingdomId}]",
+                    "Description": "如果NPC国王在<latest_reply>里最终明确无条件同意让自己的整个王国并入玩家王国，明确放弃独立王权，并明确所有家族归入玩家王国，就输出这个。target_kingdom_id 必须使用运行时事实中的目标王国ID。若NPC只是同意求和、结盟、停战、赔款、朝贡、卫戍、臣属、附庸/傀儡、保护国、普通归顺、保留王号或保留独立外交，都不得输出。"
                 }
             ],
             "TriggerKeywords": [
@@ -863,7 +866,19 @@
                 "你我两国同气连枝，理应结盟。",
                 "如果继续打下去对谁都没好处，不如讲和。",
                 "你们已经输了，接受条件停战吧。",
-                "我带了停战协议，你看看吧。"
+                "我带了停战协议，你看看吧。",
+                "把你的整个国家并入我的王国。",
+                "你的王国放弃独立，加入我的王国。",
+                "让你的所有家族都归入我的王国。",
+                "我要求吞并你的王国。",
+                "你的国家从今天起不再独立，成为我国的一部分。",
+                "放弃王权，把你的王国整体交给我。",
+                "以国王身份接受我的吞并条件。",
+                "你的家族和领主全部转入我的王国。",
+                "你的王冠交给我，你的国家并入我的版图。",
+                "不是臣属，不是朝贡，而是彻底并入我的王国。",
+                "不保留独立王国，全部家族加入玩家王国。",
+                "接受国家吞并，结束你的独立统治。"
             ],
             "RuntimeInstructionTemplates": {
                 "no_kingdom": "【外交状态提示】你当前不属于任何王国，无法进行外交谈判。",
@@ -896,15 +911,15 @@
             "PostprocessRules": [
                 {
                     "Tag": "[ACTION:VASSALAGE:SUBMIT:TRIBUTARY:{kingdomId}]",
-                    "Description": "如果NPC国王在<latest_reply>里最终明确无条件同意让自己的王国成为朝贡国/Tributary，或明确说交钱、纳贡、以贡赋换取玩家王国保护但不出兵，就输出这个。kingdomId 必须使用运行时事实中的目标王国ID。若NPC同意的是取消独立王权、整个国家并入玩家王国、所有家族归入玩家王国，不得输出臣属标签，应由国家吞并规则处理。"
+                    "Description": "如果NPC国王在<latest_reply>里最终明确无条件同意让自己的王国成为朝贡国/Tributary，或明确说交钱、纳贡、以贡赋换取玩家王国保护但不出兵，就输出这个。若同一句还提到和平、停战、贸易、商队或提出议程，应同时输出外交/议程标签。kingdomId 必须使用运行时事实中的目标王国ID。"
                 },
                 {
                     "Tag": "[ACTION:VASSALAGE:SUBMIT:GARRISON:{kingdomId}]",
-                    "Description": "如果NPC国王在<latest_reply>里最终明确无条件同意让自己的王国成为卫戍国/Garrison，或明确说军事臣属、承担出兵义务、没有军事自主权但不纳贡，就输出这个。kingdomId 必须使用运行时事实中的目标王国ID。若NPC同意的是取消独立王权、整个国家并入玩家王国、所有家族归入玩家王国，不得输出臣属标签，应由国家吞并规则处理。"
+                    "Description": "如果NPC国王明确同意让自己的王国成为卫戍国/Garrison或军事臣属，就输出这个。若同句还同意和平或贸易，也要同时输出。kingdomId必须来自运行时事实。"
                 },
                 {
                     "Tag": "[ACTION:VASSALAGE:SUBMIT:VASSAL:{kingdomId}]",
-                    "Description": "如果NPC国王在<latest_reply>里最终明确无条件同意让自己的王国成为附庸国/Vassal，也就是傀儡国，外交军事受玩家王国控制并承担出钱出兵义务，但仍保留目标王国作为臣属国存在，就输出这个。注意“附庸国”只对应这个标签。kingdomId 必须使用运行时事实中的目标王国ID。若NPC同意的是取消独立王权、整个国家并入玩家王国、所有家族归入玩家王国，不得输出臣属标签，应由国家吞并规则处理。"
+                    "Description": "如果NPC国王明确同意让自己的王国成为附庸国/Vassal，也就是傀儡国，输出这个。若同句还同意和平、贸易、贡金或议程，也要分别输出对应标签。kingdomId必须来自运行时事实。"
                 }
             ],
             "RuntimeInstructionTemplates": {},
@@ -922,39 +937,6 @@
                 "我们签一份臣服条约。",
                 "你的王国愿意成为我的朝贡国吗？",
                 "履行卫戍国的军事义务。"
-            ]
-        },
-        {
-            "Id": "kingdom_annexation",
-            "IsEnabled": true,
-            "Group": "politics",
-            "Priority": 95,
-            "TopicNumber": 20,
-            "TopicLabel": "Kingdom annexation and destruction",
-            "Code": "ANNEX",
-            "NonHeroInstruction": "只有国家统治者之间才能谈国家吞并。若玩家对非国王、士兵、平民或普通领主提出吞并整个国家，对方不能代表王国答应，只能说明必须找国王谈。",
-            "Instruction": "【AF国家吞并谈判规则】以运行时事实为准：玩家必须是自己王国的国王，对话对象必须是另一个NPC王国的国王。本规则只处理“对方整个国家并入玩家王国”：目标王国放弃独立王权，所有家族归入玩家王国，原家族保留其领地归属并成为玩家王国臣民。正文里只能自然谈判，不要写动作标签。只有当你在<latest_reply>中已经最终明确接受整个国家并入玩家王国、放弃独立王权、让所有家族归入玩家王国时，才算同意吞并；如果仍在谈条件、索要保证、犹豫、拖延、拒绝、反问或只是表达尊重，就不算同意。国家吞并不是朝贡国、卫戍国、附庸国/傀儡国、保护国或保留王号的臣属条约；若对方只愿意保留王号、保留独立外交、承认宗主地位、成为朝贡国/卫戍国/附庸国/保护国，都不是国家吞并。普通求和、结盟、停战、赔款、战争赔偿、朝贡、臣服、附庸、臣属国、保护国、互不侵犯或暂时归顺都不是国家吞并，不能当作吞并共识。",
-            "PostprocessRules": [
-                {
-                    "Tag": "[ACTION:KINGDOM_ANNEX:target_kingdom_id={targetKingdomId}]",
-                    "Description": "如果NPC国王在<latest_reply>里最终明确无条件同意让自己的整个王国并入玩家王国，明确放弃独立王权，并明确所有家族归入玩家王国，就输出这个。若NPC只是同意求和、结盟、停战、赔款、朝贡、卫戍、臣属、附庸/傀儡、保护国、普通归顺、保留王号或保留独立外交，都不得输出。"
-                }
-            ],
-            "RuntimeInstructionTemplates": {},
-            "RuntimeConstraintTemplates": {},
-            "TriggerKeywords": [
-                "把你的整个国家并入我的王国。",
-                "你的王国放弃独立，加入我的王国。",
-                "让你的所有家族都归入我的王国。",
-                "我要求吞并你的王国。",
-                "你的国家从今天起不再独立，成为我国的一部分。",
-                "放弃王权，把你的王国整体交给我。",
-                "以国王身份接受我的吞并条件。",
-                "你的家族和领主全部转入我的王国。",
-                "你的王冠交给我，你的国家并入我的版图。",
-                "不是臣属，不是朝贡，而是彻底并入我的王国。",
-                "不保留独立王国，全部家族加入玩家王国。",
-                "接受国家吞并，结束你的独立统治。"
             ]
         },
         {
@@ -1002,7 +984,7 @@
             "PostprocessRules": [
                 {
                     "Tag": "[RELAY:接力编号]",
-                    "Description": "你必须输出在场人物列表中你认为下一个最适合发言的NPC的接力编号；以及尽量选还未发言的人，如果最新消息中有人表示不想聊了，或者有事要走了，那么不要输出此标签"
+                    "Description": "RELAY是接力/切换说话人，不要求NPC同意。玩家或NPC本轮点名在场人物，或说诸位、各位、大家、朋友们、剩余的人、其他人、你们、他们、同僚、族长、领主们并要求表态、确认、行动、三思、接话、回答、发表意见、交接、放走时输出。编号从【在场人物列表】原样复制；latest_reply里出现名字时用该名字编号，没有名字但面向群体时用列表第一个。只要目标成立，不要只输出情绪。 玩家说“你们该行动了”“刚刚没听见吗”“诸位/各位表态”“其他人/剩下的人继续/交接/放人”时，RELAY必须与已成立的领地、给物、外交等动作同轮共存；不要因为当前NPC已经回答就省略RELAY。"
                 }
             ],
             "TriggerKeywords": []

@@ -1980,10 +1980,6 @@ public static class AIConfigHandler
 		{
 			return DiplomacyBehavior.CanInjectDiplomacyRuleForExternal(ResolveConversationTargetHero(), ResolveConversationTargetCharacter());
 		}
-		if (string.Equals(text, "kingdom_annexation", StringComparison.OrdinalIgnoreCase))
-		{
-			return KingdomAnnexationBehavior.CanInjectAnnexationRuleForExternal(ResolveConversationTargetHero(), ResolveConversationTargetCharacter());
-		}
 		if (string.Equals(text, "vote_deal", StringComparison.OrdinalIgnoreCase)
 			|| string.Equals(text, "propose_agenda", StringComparison.OrdinalIgnoreCase))
 		{
@@ -5809,8 +5805,9 @@ public static class AIConfigHandler
 			return text.IndexOf("[ACTION:KINGDOM_SERVICE:", StringComparison.OrdinalIgnoreCase) >= 0;
 		case "kingdom_vassalage":
 			return text.IndexOf("[ACTION:VASSALAGE:", StringComparison.OrdinalIgnoreCase) >= 0;
-		case "kingdom_annexation":
-			return text.IndexOf("[ACTION:KINGDOM_ANNEX:", StringComparison.OrdinalIgnoreCase) >= 0;
+		case "diplomacy":
+			return text.IndexOf("[ACTION:DIPLOMACY:", StringComparison.OrdinalIgnoreCase) >= 0
+				|| text.IndexOf("[ACTION:KINGDOM_ANNEX:", StringComparison.OrdinalIgnoreCase) >= 0;
 		case "marriage":
 			return text.IndexOf("[ACTION:MARRIAGE_", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("[ACTION:DIVORCE:", StringComparison.OrdinalIgnoreCase) >= 0;
 		case "party_transfer":
@@ -6168,14 +6165,13 @@ public static class AIConfigHandler
 						["instructionPreview"] = runtimeVassalageInstruction
 					});
 				}
-				if (hasAnyHero && string.Equals(text, "kingdom_annexation", StringComparison.OrdinalIgnoreCase))
+				if (hasAnyHero && string.Equals(text, "diplomacy", StringComparison.OrdinalIgnoreCase))
 				{
 					string runtimeAnnexationInstruction = KingdomAnnexationBehavior.BuildRuntimeAnnexationInstructionForExternal(ResolveConversationTargetHero(), ResolveConversationTargetCharacter());
-					if (string.IsNullOrWhiteSpace(runtimeAnnexationInstruction))
+					if (!string.IsNullOrWhiteSpace(runtimeAnnexationInstruction))
 					{
-						continue;
+						value = string.Join("\n", new string[2] { value, runtimeAnnexationInstruction }.Where((string x) => !string.IsNullOrWhiteSpace(x))).Trim();
 					}
-					value = runtimeAnnexationInstruction;
 				}
 				if (hasAnyHero && string.Equals(text, "marriage", StringComparison.OrdinalIgnoreCase))
 				{
@@ -6705,27 +6701,11 @@ public static class AIConfigHandler
 		}
 	}
 
-	public static bool IsHeroImprisonedForHeroJoin(Hero hero)
-	{
-		try
-		{
-			return hero != null && (hero.IsPrisoner || hero.PartyBelongedToAsPrisoner != null);
-		}
-		catch
-		{
-			return false;
-		}
-	}
-
 	private static string ResolveHeroJoinPartyRuntimeStateKey(Hero targetHero)
 	{
 		if (targetHero == null || targetHero == Hero.MainHero)
 		{
 			return "";
-		}
-		if (IsHeroImprisonedForHeroJoin(targetHero))
-		{
-			return "imprisoned";
 		}
 		try
 		{
@@ -7294,11 +7274,17 @@ public static class AIConfigHandler
 		return list;
 	}
 
-	public static List<PostprocessRuleEntry> BuildRuntimeHeroJoinPartyPostprocessRules(bool includePersonalJoinRule = true)
+	public static List<PostprocessRuleEntry> BuildRuntimeHeroJoinPartyPostprocessRules(bool includePersonalJoinRule = true, Hero targetHero = null)
 	{
 		List<PostprocessRuleEntry> list = new List<PostprocessRuleEntry>();
 		try
 		{
+			Hero hero = targetHero ?? ResolveConversationTargetHero();
+			bool suppressPlayerPartyTarget = IsPlayerPartyTradeLimitedTarget(hero);
+			if (suppressPlayerPartyTarget)
+			{
+				includePersonalJoinRule = false;
+			}
 			foreach (PostprocessRuleEntry guardrailRulePostprocessRule in GetGuardrailRulePostprocessRules("hero_join_party"))
 			{
 				string text = (guardrailRulePostprocessRule?.Tag ?? "").Trim();
@@ -7320,7 +7306,7 @@ public static class AIConfigHandler
 					Description = guardrailRulePostprocessRule?.Description ?? ""
 				});
 			}
-			foreach (PostprocessRuleEntry runtimeClanJoinRule in BuildRuntimePlayerRulerClanJoinPostprocessRules("hero_join_party", "HeroJoinPartyPostprocessRules"))
+			foreach (PostprocessRuleEntry runtimeClanJoinRule in BuildRuntimePlayerRulerClanJoinPostprocessRules("hero_join_party", "HeroJoinPartyPostprocessRules", hero))
 			{
 				string text2 = (runtimeClanJoinRule?.Tag ?? "").Trim();
 				if (string.IsNullOrWhiteSpace(text2))
@@ -7333,7 +7319,7 @@ public static class AIConfigHandler
 				}
 				list.Add(runtimeClanJoinRule);
 			}
-			Logger.Log("AIConfig", "[HeroJoinPartyPostprocessRules] includePersonalJoin=" + includePersonalJoinRule + " rules=" + ((list.Count == 0) ? "（无）" : string.Join(",", list.Select((PostprocessRuleEntry x) => x?.Tag ?? "").Where((string x) => !string.IsNullOrWhiteSpace(x)))));
+			Logger.Log("AIConfig", "[HeroJoinPartyPostprocessRules] targetHero=" + (hero?.StringId ?? "") + " suppressPlayerPartyTarget=" + suppressPlayerPartyTarget + " includePersonalJoin=" + includePersonalJoinRule + " rules=" + ((list.Count == 0) ? "（无）" : string.Join(",", list.Select((PostprocessRuleEntry x) => x?.Tag ?? "").Where((string x) => !string.IsNullOrWhiteSpace(x)))));
 		}
 		catch
 		{
@@ -7341,11 +7327,17 @@ public static class AIConfigHandler
 		return list;
 	}
 
-	private static List<PostprocessRuleEntry> BuildRuntimePlayerRulerClanJoinPostprocessRules(string sourceRuleId, string logPrefix)
+	private static List<PostprocessRuleEntry> BuildRuntimePlayerRulerClanJoinPostprocessRules(string sourceRuleId, string logPrefix, Hero targetHero = null)
 	{
 		List<PostprocessRuleEntry> list = new List<PostprocessRuleEntry>();
 		try
 		{
+			Hero hero = targetHero ?? ResolveConversationTargetHero();
+			if (IsPlayerPartyTradeLimitedTarget(hero))
+			{
+				Logger.Log("AIConfig", "[" + logPrefix + "] player_ruler skipped_player_party_target targetHero=" + (hero?.StringId ?? ""));
+				return list;
+			}
 			Dictionary<string, string> dictionary = BuildKingdomServiceRuntimeTokens(out var playerClan, out var kingdom, out var flag, out var kingdom2, out var flag2, out var num, out var num2, out var num3, out var num4, out var num5, out var num6);
 			if (playerClan == null)
 			{
@@ -7356,18 +7348,25 @@ public static class AIConfigHandler
 			{
 				return list;
 			}
-			Clan clan = ResolveConversationTargetClan();
-			Hero hero = ResolveConversationTargetHero();
+			Clan clan = hero?.Clan ?? ResolveConversationTargetClan();
 			string text = ResolvePlayerKingdomRecruitmentStateKey(playerClan, kingdom, clan, hero);
 			if (string.IsNullOrWhiteSpace(text))
 			{
 				Logger.Log("AIConfig", "[" + logPrefix + "] player_ruler empty_state playerClan=" + (playerClan?.StringId ?? "") + " playerKingdom=" + (kingdom?.StringId ?? "") + " targetClan=" + (clan?.StringId ?? "") + " targetHero=" + (hero?.StringId ?? ""));
 				return list;
 			}
-			string text2 = "";
+			if (!string.Equals(text, "player_ruler_target_ready", StringComparison.OrdinalIgnoreCase))
+			{
+				Logger.Log("AIConfig", "[" + logPrefix + "] player_ruler blocked_state=" + text + " playerClan=" + (playerClan?.StringId ?? "") + " playerKingdom=" + (kingdom?.StringId ?? "") + " targetClan=" + (clan?.StringId ?? "") + " targetHero=" + (hero?.StringId ?? "") + " rules=（无）");
+				return list;
+			}
+			string text2 = (clan?.StringId ?? "").Trim();
 			if (dictionary != null && dictionary.TryGetValue("targetClanId", out var value1))
 			{
-				text2 = (value1 ?? "").Trim();
+				if (string.IsNullOrWhiteSpace(text2))
+				{
+					text2 = (value1 ?? "").Trim();
+				}
 			}
 			foreach (PostprocessRuleEntry guardrailRulePostprocessRule in GetGuardrailRulePostprocessRules(sourceRuleId))
 			{
@@ -7883,8 +7882,6 @@ public static class AIConfigHandler
 			}
 			case "diplomacy":
 				return DiplomacyBehavior.CanInjectDiplomacyRuleForExternal(ResolveConversationTargetHero(), ResolveConversationTargetCharacter());
-			case "kingdom_annexation":
-				return KingdomAnnexationBehavior.CanInjectAnnexationRuleForExternal(ResolveConversationTargetHero(), ResolveConversationTargetCharacter());
 			case "vote_deal":
 			case "propose_agenda":
 				return IsKingdomLordOrKingRuleTargetForPreprocess(ResolveConversationTargetHero(), ResolveConversationTargetCharacter());
@@ -7927,7 +7924,7 @@ public static class AIConfigHandler
 			{
 				return VassalageBehavior.BuildRuntimeVassalageConstraintHintForExternal(ResolveConversationTargetHero(), ResolveConversationTargetCharacter());
 			}
-			if (text == "kingdom_annexation")
+			if (text == "diplomacy")
 			{
 				return KingdomAnnexationBehavior.BuildRuntimeAnnexationConstraintHintForExternal(ResolveConversationTargetHero(), ResolveConversationTargetCharacter());
 			}

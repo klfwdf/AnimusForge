@@ -2965,20 +2965,20 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			bool settlementTransferInjected = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "settlement_transfer");
 			bool voteDealInjected = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "vote_deal");
 			bool diplomacyInjected = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "diplomacy");
+			bool diplomacySelected = HasPreprocessRuleHit(selectedRuleHits, "diplomacy");
+			diplomacyInjected = diplomacyInjected || diplomacySelected;
 			bool worldMapPartyCommandInjected = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "worldmap_party_command");
 			bool kingdomServiceInjected = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "kingdom_service");
 			bool kingdomVassalageRuleBlockInjected = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "kingdom_vassalage");
-			bool kingdomAnnexationRuleBlockInjected = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "kingdom_annexation");
 			bool kingdomVassalageSelected = HasPreprocessRuleHit(selectedRuleHits, "kingdom_vassalage");
-			bool kingdomAnnexationSelected = HasPreprocessRuleHit(selectedRuleHits, "kingdom_annexation");
 			bool kingdomVassalageInjected = kingdomVassalageRuleBlockInjected || kingdomVassalageSelected;
-			bool kingdomAnnexationInjected = kingdomAnnexationRuleBlockInjected || kingdomAnnexationSelected;
+			bool kingdomAnnexationInjected = false;
 			Log("postprocess setup chain=courier session=" + session.Id
 				+ " selectedRuleHits=" + ((selectedRuleHits == null || selectedRuleHits.Count == 0) ? "(none)" : string.Join(",", selectedRuleHits))
 				+ " kingdom_vassalage_selected=" + kingdomVassalageSelected
-				+ " kingdom_annexation_selected=" + kingdomAnnexationSelected
+				+ " diplomacy_selected=" + diplomacySelected
 				+ " kingdom_vassalage_block=" + kingdomVassalageRuleBlockInjected
-				+ " kingdom_annexation_block=" + kingdomAnnexationRuleBlockInjected
+				+ " diplomacy_block=" + diplomacyInjected
 				+ " kingdomVassalageInjected=" + kingdomVassalageInjected
 				+ " kingdomAnnexationInjected=" + kingdomAnnexationInjected);
 			string postprocessed = null;

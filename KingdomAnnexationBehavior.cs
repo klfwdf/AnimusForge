@@ -210,10 +210,10 @@ public sealed class KingdomAnnexationBehavior : CampaignBehaviorBase
 			return result;
 		}
 		string targetKingdomId = (targetKingdom.StringId ?? "").Trim();
-		foreach (PostprocessRuleEntry rule in AIConfigHandler.GetGuardrailRulePostprocessRules("kingdom_annexation") ?? new List<PostprocessRuleEntry>())
+		foreach (PostprocessRuleEntry rule in AIConfigHandler.GetGuardrailRulePostprocessRules("diplomacy") ?? new List<PostprocessRuleEntry>())
 		{
 			string tag = (rule?.Tag ?? "").Trim();
-			if (string.IsNullOrWhiteSpace(tag))
+			if (string.IsNullOrWhiteSpace(tag) || !tag.StartsWith("[ACTION:KINGDOM_ANNEX:", StringComparison.OrdinalIgnoreCase))
 			{
 				continue;
 			}

@@ -25738,8 +25738,7 @@ public class MyBehavior : CampaignBehaviorBase
 	{
 		string id = (ruleId ?? "").Trim();
 		return string.Equals(id, "kingdom_service", StringComparison.OrdinalIgnoreCase)
-			|| string.Equals(id, "kingdom_vassalage", StringComparison.OrdinalIgnoreCase)
-			|| string.Equals(id, "kingdom_annexation", StringComparison.OrdinalIgnoreCase);
+			|| string.Equals(id, "kingdom_vassalage", StringComparison.OrdinalIgnoreCase);
 	}
 
 	private static bool IsRuntimeGatedPreprocessRuleId(string ruleId)
@@ -25784,14 +25783,13 @@ public class MyBehavior : CampaignBehaviorBase
 				text = runtime;
 			}
 		}
-		if (hasAnyHero && string.Equals(id, "kingdom_annexation", StringComparison.OrdinalIgnoreCase))
+		if (hasAnyHero && string.Equals(id, "diplomacy", StringComparison.OrdinalIgnoreCase))
 		{
 			string runtime = KingdomAnnexationBehavior.BuildRuntimeAnnexationInstructionForExternal(hero, targetCharacter);
-			if (string.IsNullOrWhiteSpace(runtime))
+			if (!string.IsNullOrWhiteSpace(runtime))
 			{
-				return "";
+				text = string.Join("\n", new string[2] { text, runtime }.Where((string x) => !string.IsNullOrWhiteSpace(x))).Trim();
 			}
-			text = runtime;
 		}
 		if (hasAnyHero && string.Equals(id, "marriage", StringComparison.OrdinalIgnoreCase))
 		{
@@ -26028,9 +26026,9 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 			AddReferralTip(tips, "外交找国王");
 		}
-		else if (AnyRestrictedReferralRuleBlocked(hasAnyHero, targetHero, targetCharacter, targetAgentIndex, excludedRuleIdSet, "kingdom_vassalage", "kingdom_annexation"))
+		else if (AnyRestrictedReferralRuleBlocked(hasAnyHero, targetHero, targetCharacter, targetAgentIndex, excludedRuleIdSet, "kingdom_vassalage"))
 		{
-			AddReferralTip(tips, "臣属/吞并需双方国王");
+			AddReferralTip(tips, "臣属需双方国王");
 		}
 		if (AnyRestrictedReferralRuleBlocked(hasAnyHero, targetHero, targetCharacter, targetAgentIndex, excludedRuleIdSet, "vote_deal", "propose_agenda"))
 		{
@@ -26099,7 +26097,6 @@ public class MyBehavior : CampaignBehaviorBase
 		{
 		case "diplomacy":
 		case "kingdom_vassalage":
-		case "kingdom_annexation":
 		case "vote_deal":
 		case "propose_agenda":
 		case "marriage":
@@ -28101,6 +28098,18 @@ public class MyBehavior : CampaignBehaviorBase
 		flag2 = flag && HasDuelRuntimeTarget(targetHero, targetCharacter, targetAgentIndex);
 		bool flag7 = flag3;
 		bool flag8 = flag4;
+		bool persistentAdpDebtPostprocess = false;
+		if (!suppressDynamicRuleAndLore && AIConfigHandler.LoanEnabled && !IsPromptRuleExcluded(preprocessExcludedRuleIdSet, "loan") && RewardSystemBehavior.Instance != null)
+		{
+			try
+			{
+				persistentAdpDebtPostprocess = RewardSystemBehavior.Instance.HasUnpaidDebtForInteraction(targetHero, targetCharacter);
+			}
+			catch
+			{
+				persistentAdpDebtPostprocess = false;
+			}
+		}
 		if (partyTransferHit && IsPartyTransferRuleEligible(targetHero, targetCharacter))
 		{
 			flag7 = flag7 || AIConfigHandler.RewardEnabled;
@@ -28121,7 +28130,7 @@ public class MyBehavior : CampaignBehaviorBase
 		string text10 = (string.IsNullOrWhiteSpace(matchedKeyword8) ? "" : $"{matchedKeyword8}@{score8:0.00}");
 		string text7 = targetHero?.Name?.ToString() ?? "某人";
 		Logger.Log("Logic", $"[SemanticTrigger-Shout] DuelHit={flag} [{text2}] RewardHit={flag3} [{text3}] LoanHit={flag4} [{text4}] PartyTransferHit={partyTransferHit} [{text9}] WorldMapHit={worldMapPartyCommandHit} [{text10}] SurroundingsHit={flag5} [{text5}] KingdomServiceHit={flag6} [{text6}] MarriageHit={marriageHit} [{text8}] NpcRecall={(string.IsNullOrWhiteSpace(npcLastUtterance) ? "off" : "on")} Input='{input}' NPC='{text7}'");
-		Logger.Log("Logic", $"[RuleInjectionDebug] stage=semantic targetHero={(targetHero?.StringId ?? "null")} targetCharacter={(targetCharacter?.StringId ?? "null")} liveDuel={liveDuelSemanticHit} liveReward={liveRewardSemanticHit} liveLoan={liveLoanSemanticHit} auxRuleHits={(auxiliaryRuleHitIds == null ? "(skip)" : ((auxiliaryRuleHitIds.Count == 0) ? "(none)" : string.Join(",", auxiliaryRuleHitIds)))} finalDuel={flag} finalReward={flag3} finalLoan={flag4} useDuelContext={flag2} qualified={isQualified} marriageHit={marriageHit} partyTransferHit={partyTransferHit} worldMapHit={worldMapPartyCommandHit}");
+		Logger.Log("Logic", $"[RuleInjectionDebug] stage=semantic targetHero={(targetHero?.StringId ?? "null")} targetCharacter={(targetCharacter?.StringId ?? "null")} liveDuel={liveDuelSemanticHit} liveReward={liveRewardSemanticHit} liveLoan={liveLoanSemanticHit} auxRuleHits={(auxiliaryRuleHitIds == null ? "(skip)" : ((auxiliaryRuleHitIds.Count == 0) ? "(none)" : string.Join(",", auxiliaryRuleHitIds)))} finalDuel={flag} finalReward={flag3} finalLoan={flag4} persistentAdpDebtPostprocess={persistentAdpDebtPostprocess} useDuelContext={flag2} qualified={isQualified} marriageHit={marriageHit} partyTransferHit={partyTransferHit} worldMapHit={worldMapPartyCommandHit}");
 		StringBuilder stringBuilder = new StringBuilder();
 		MentionedWorldEntities mentionedEntities = new MentionedWorldEntities();
 		if (!suppressDynamicRuleAndLore)
@@ -28385,6 +28394,10 @@ public class MyBehavior : CampaignBehaviorBase
 		if (flag4 && !IsPromptRuleExcluded(preprocessExcludedRuleIdSet, "loan"))
 		{
 			preprocessRuleIds.Add("loan");
+		}
+		if (persistentAdpDebtPostprocess && !IsPromptRuleExcluded(preprocessExcludedRuleIdSet, "loan"))
+		{
+			preprocessRuleIds.Add(ShoutBehavior.PersistentAdpDebtPostprocessRuleId);
 		}
 		if (flag5 && !IsPromptRuleExcluded(preprocessExcludedRuleIdSet, "surroundings"))
 		{

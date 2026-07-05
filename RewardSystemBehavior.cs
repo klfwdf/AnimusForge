@@ -4693,11 +4693,6 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 				statusText = $"执行跳过：{joiningHero.Name} 已经在玩家队伍中。";
 				return false;
 			}
-			if (AIConfigHandler.IsHeroImprisonedForHeroJoin(joiningHero))
-			{
-				statusText = $"执行失败：{joiningHero.Name} 正处于囚禁状态，不能通过入队标签直接加入玩家队伍。";
-				return false;
-			}
 			List<string> transitionNotes = new List<string>();
 			// Capture the original clan before AddCompanionAction changes Hero.Clan through CompanionOf.
 			Clan originalClan = GetHeroBackingClan(joiningHero) ?? joiningHero.Clan;
@@ -5079,6 +5074,7 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 			if (encountered == joinedParty)
 			{
 				PlayerEncounter.LeaveEncounter = true;
+				ConversationExceptionGuard.MarkCurrentConversationStale("wilderness_nonhero_join_party");
 			}
 		}
 		catch
@@ -13420,6 +13416,26 @@ public class RewardSystemBehavior : CampaignBehaviorBase
 	private DebtRecord GetSettlementMerchantDebtRecord(Settlement settlement, SettlementMerchantKind kind)
 	{
 		return GetDebtRecordByKey(BuildSettlementMerchantDebtKey(settlement, kind));
+	}
+
+	public bool HasUnpaidDebtForInteraction(Hero targetHero, CharacterObject targetCharacter = null, Settlement settlement = null)
+	{
+		Hero hero = targetHero ?? targetCharacter?.HeroObject;
+		if (hero != null && HasUnpaidDebt(hero))
+		{
+			return true;
+		}
+		if (targetCharacter == null || !TryGetSettlementMerchantKind(targetCharacter, out var kind))
+		{
+			return false;
+		}
+		DebtRecord settlementMerchantDebtRecord = GetSettlementMerchantDebtRecord(settlement ?? Settlement.CurrentSettlement, kind);
+		if (settlementMerchantDebtRecord == null)
+		{
+			return false;
+		}
+		NormalizeDebtRecord(settlementMerchantDebtRecord);
+		return HasDebtContent(settlementMerchantDebtRecord);
 	}
 
 	public bool HasUnpaidDebt(Hero npc)

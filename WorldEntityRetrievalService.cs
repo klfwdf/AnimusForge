@@ -135,6 +135,14 @@ public static class WorldEntityRetrievalService
 
 	private const int MainPromptKingdomEncyclopediaTextCap = 600;
 
+	private const int EntityRetrievalSoftBudgetMs = 1500;
+
+	private const int EntityRetrievalHardBudgetMs = 3000;
+
+	private const int EntityRetrievalProgressLogInterval = 500;
+
+	private const int EntityRetrievalBudgetCheckInterval = 64;
+
 	private sealed class EntityMatch<T>
 	{
 		public T Value;
@@ -169,10 +177,88 @@ public static class WorldEntityRetrievalService
 		public float Distance;
 	}
 
+	private sealed class WorldEntityRetrievalBudget
+	{
+		private readonly Stopwatch _stopwatch;
+		private bool _softLogged;
+		private bool _hardLogged;
+
+		public WorldEntityRetrievalBudget(Stopwatch stopwatch)
+		{
+			_stopwatch = stopwatch;
+		}
+
+		public long ElapsedMs
+		{
+			get
+			{
+				return _stopwatch?.ElapsedMilliseconds ?? 0L;
+			}
+		}
+
+		public bool IsSoftExceeded
+		{
+			get
+			{
+				return ElapsedMs >= EntityRetrievalSoftBudgetMs;
+			}
+		}
+
+		public bool IsHardExceeded
+		{
+			get
+			{
+				return ElapsedMs >= EntityRetrievalHardBudgetMs;
+			}
+		}
+
+		public bool TryMarkSoftExceeded()
+		{
+			if (!IsSoftExceeded || _softLogged)
+			{
+				return false;
+			}
+			_softLogged = true;
+			return true;
+		}
+
+		public bool TryMarkHardExceeded()
+		{
+			if (!IsHardExceeded || _hardLogged)
+			{
+				return false;
+			}
+			_hardLogged = true;
+			return true;
+		}
+	}
+
+	private sealed class FuzzyTextProfile
+	{
+		public string Raw;
+
+		public string Normalized;
+
+		public List<string> Tokens;
+	}
+
+	private sealed class EntityCandidateSnapshot<T> where T : class
+	{
+		public T Value;
+
+		public string Id;
+
+		public string Name;
+
+		public List<FuzzyTextProfile> Aliases;
+	}
+
 	public static WorldEntityPromptContext BuildPromptContext(MentionedWorldEntities mentions, string playerDisplayName, Hero contextHero = null, bool includeResidentKingdoms = false, IEnumerable<string> activeRuleIds = null)
 	{
 		WorldEntityPromptContext result = new WorldEntityPromptContext();
 		Stopwatch totalSw = Stopwatch.StartNew();
+		using FreezeWatchdog.ScopeToken freezeScope = FreezeWatchdog.Scope("WorldEntityRetrieval.BuildPromptContext");
+		WorldEntityRetrievalBudget budget = new WorldEntityRetrievalBudget(totalSw);
 		try
 		{
 			if (Campaign.Current == null)
@@ -186,7 +272,9 @@ public static class WorldEntityRetrievalService
 			bool searchTroopsFromTerms = ShouldSearchTroopEntitiesFromTerms(activeRuleIdSet);
 			List<string> itemMentions = BuildTypedMentionList(mentions?.Items, searchItemsFromTerms ? mentions?.Terms : null);
 			List<string> troopMentions = BuildTypedMentionList(mentions?.Troops, searchTroopsFromTerms ? mentions?.Terms : null);
-			Logger.Log("WorldEntityRetrieval", "[WorldEntityPerf] start mentions=" + allMentions.Count + " heroes=" + CountList(mentions?.Heroes) + " settlements=" + CountList(mentions?.Settlements) + " clans=" + CountList(mentions?.Clans) + " kingdoms=" + CountList(mentions?.Kingdoms) + " items=" + CountList(mentions?.Items) + " troops=" + CountList(mentions?.Troops) + " terms=" + CountList(mentions?.Terms) + " itemMentions=" + itemMentions.Count + " troopMentions=" + troopMentions.Count + " visibleParties=" + visibleParties.Count + " contextHero=" + (contextHero?.StringId ?? "") + " includeResidentKingdoms=" + includeResidentKingdoms + " activeRules=" + FormatMentionsForLog(activeRuleIdSet));
+			string startDetail = "mentions=" + allMentions.Count + " itemMentions=" + itemMentions.Count + " troopMentions=" + troopMentions.Count + " visibleParties=" + visibleParties.Count + " contextHero=" + (contextHero?.StringId ?? "");
+			FreezeWatchdog.Mark("WorldEntityRetrieval.start", startDetail, immediate: true);
+			Logger.Log("WorldEntityRetrieval", "[WorldEntityPerf] start mentions=" + allMentions.Count + " heroes=" + CountList(mentions?.Heroes) + " settlements=" + CountList(mentions?.Settlements) + " clans=" + CountList(mentions?.Clans) + " kingdoms=" + CountList(mentions?.Kingdoms) + " items=" + CountList(mentions?.Items) + " troops=" + CountList(mentions?.Troops) + " terms=" + CountList(mentions?.Terms) + " itemMentions=" + itemMentions.Count + " troopMentions=" + troopMentions.Count + " visibleParties=" + visibleParties.Count + " contextHero=" + (contextHero?.StringId ?? "") + " includeResidentKingdoms=" + includeResidentKingdoms + " activeRules=" + FormatMentionsForLog(activeRuleIdSet) + " " + FormatBudgetForLog(budget));
 			List<EntityMatch<Hero>> heroes = new List<EntityMatch<Hero>>();
 			List<EntityMatch<Settlement>> settlements = new List<EntityMatch<Settlement>>();
 			List<EntityMatch<Clan>> clans = new List<EntityMatch<Clan>>();
@@ -223,22 +311,40 @@ public static class WorldEntityRetrievalService
 				if (allMentions.Count > 0)
 				{
 					Dictionary<string, int> mentionPriority = BuildMentionPriority(allMentions);
-					heroes = FindMatches("hero", allMentions, mentionPriority, heroCandidates, GetHeroAliases, (Hero x) => "hero:" + SafeStringId(x?.StringId), (Hero x) => SafeName(x?.Name, x?.StringId ?? "Hero"));
-					settlements = FindMatches("settlement", allMentions, mentionPriority, settlementCandidates, GetSettlementAliases, (Settlement x) => "settlement:" + SafeStringId(x?.StringId), (Settlement x) => SafeName(x?.Name, x?.StringId ?? "Settlement"));
-					clans = FindMatches("clan", allMentions, mentionPriority, clanCandidates, GetClanAliases, (Clan x) => "clan:" + SafeStringId(x?.StringId), (Clan x) => SafeName(x?.Name, x?.StringId ?? "Clan"));
-					kingdoms = FindMatches("kingdom", allMentions, mentionPriority, kingdomCandidates, GetKingdomAliases, (Kingdom x) => "kingdom:" + SafeStringId(x?.StringId), (Kingdom x) => SafeName(x?.Name, x?.StringId ?? "Kingdom"));
+					if (CanContinueWorldEntityMatch("hero", budget))
+					{
+						heroes = FindMatches("hero", allMentions, mentionPriority, heroCandidates, GetHeroAliases, (Hero x) => "hero:" + SafeStringId(x?.StringId), (Hero x) => SafeName(x?.Name, x?.StringId ?? "Hero"), budget);
+					}
+					if (CanContinueWorldEntityMatch("settlement", budget))
+					{
+						settlements = FindMatches("settlement", allMentions, mentionPriority, settlementCandidates, GetSettlementAliases, (Settlement x) => "settlement:" + SafeStringId(x?.StringId), (Settlement x) => SafeName(x?.Name, x?.StringId ?? "Settlement"), budget);
+					}
+					if (CanContinueWorldEntityMatch("clan", budget))
+					{
+						clans = FindMatches("clan", allMentions, mentionPriority, clanCandidates, GetClanAliases, (Clan x) => "clan:" + SafeStringId(x?.StringId), (Clan x) => SafeName(x?.Name, x?.StringId ?? "Clan"), budget);
+					}
+					if (CanContinueWorldEntityMatch("kingdom", budget))
+					{
+						kingdoms = FindMatches("kingdom", allMentions, mentionPriority, kingdomCandidates, GetKingdomAliases, (Kingdom x) => "kingdom:" + SafeStringId(x?.StringId), (Kingdom x) => SafeName(x?.Name, x?.StringId ?? "Kingdom"), budget);
+					}
 				}
 				if (itemMentions.Count > 0)
 				{
 					Dictionary<string, int> itemMentionPriority = BuildMentionPriority(itemMentions);
-					items = FindMatches("item", itemMentions, itemMentionPriority, itemCandidates, GetItemAliases, (ItemObject x) => "item:" + SafeStringId(x?.StringId), (ItemObject x) => SafeName(x?.Name, x?.StringId ?? "Item"));
+					if (CanContinueWorldEntityMatch("item", budget))
+					{
+						items = FindMatches("item", itemMentions, itemMentionPriority, itemCandidates, GetItemAliases, (ItemObject x) => "item:" + SafeStringId(x?.StringId), (ItemObject x) => SafeName(x?.Name, x?.StringId ?? "Item"), budget);
+					}
 				}
 				if (troopMentions.Count > 0)
 				{
 					Dictionary<string, int> troopMentionPriority = BuildMentionPriority(troopMentions);
-					troops = FindMatches("troop", troopMentions, troopMentionPriority, troopCandidates, GetTroopAliases, (CharacterObject x) => "troop:" + SafeStringId(x?.StringId), (CharacterObject x) => SafeName(x?.Name, x?.StringId ?? "Troop"));
+					if (CanContinueWorldEntityMatch("troop", budget))
+					{
+						troops = FindMatches("troop", troopMentions, troopMentionPriority, troopCandidates, GetTroopAliases, (CharacterObject x) => "troop:" + SafeStringId(x?.StringId), (CharacterObject x) => SafeName(x?.Name, x?.StringId ?? "Troop"), budget);
+					}
 				}
-				Logger.Log("WorldEntityRetrieval", "[WorldEntityPerf] all_match_done heroMatches=" + heroes.Count + " settlementMatches=" + settlements.Count + " clanMatches=" + clans.Count + " kingdomMatches=" + kingdoms.Count + " itemMatches=" + items.Count + " troopMatches=" + troops.Count + " ms=" + Math.Round(stageSw.Elapsed.TotalMilliseconds, 2));
+				Logger.Log("WorldEntityRetrieval", "[WorldEntityPerf] all_match_done heroMatches=" + heroes.Count + " settlementMatches=" + settlements.Count + " clanMatches=" + clans.Count + " kingdomMatches=" + kingdoms.Count + " itemMatches=" + items.Count + " troopMatches=" + troops.Count + " ms=" + Math.Round(stageSw.Elapsed.TotalMilliseconds, 2) + " hardBudgetExceeded=" + budget.IsHardExceeded);
 				stageSw.Restart();
 				ApplyGlobalInjectionLimit(maxInjectedEntities, ref heroes, ref settlements, ref clans, ref kingdoms, ref items, ref troops);
 				Logger.Log("WorldEntityRetrieval", "[WorldEntityPerf] global_limit_done heroMatches=" + heroes.Count + " settlementMatches=" + settlements.Count + " clanMatches=" + clans.Count + " kingdomMatches=" + kingdoms.Count + " itemMatches=" + items.Count + " troopMatches=" + troops.Count + " ms=" + Math.Round(stageSw.Elapsed.TotalMilliseconds, 2));
@@ -266,9 +372,11 @@ public static class WorldEntityRetrievalService
 			result.MatchCount = count;
 			Stopwatch buildSw = Stopwatch.StartNew();
 			Logger.Log("WorldEntityRetrieval", "[WorldEntityPerf] build_blocks_start matchCount=" + count);
+			FreezeWatchdog.Mark("WorldEntityRetrieval.build_blocks_start", "matchCount=" + count, immediate: true);
 			result.MainPromptBlock = BuildMainPromptBlock(playerDisplayName, contextHero, heroes, settlements, clans, kingdoms, items, troops, visibleParties);
 			result.PostprocessPromptBlock = BuildPostprocessPromptBlock(postprocessHeroes, postprocessSettlements, postprocessClans, postprocessKingdoms, postprocessItems, postprocessTroops, visibleParties);
 			Logger.Log("WorldEntityRetrieval", "[WorldEntityPerf] build_blocks_done mainLen=" + ((result.MainPromptBlock ?? "").Length) + " postLen=" + ((result.PostprocessPromptBlock ?? "").Length) + " blockMs=" + Math.Round(buildSw.Elapsed.TotalMilliseconds, 2) + " totalMs=" + Math.Round(totalSw.Elapsed.TotalMilliseconds, 2));
+			FreezeWatchdog.Mark("WorldEntityRetrieval.done", "matches=" + result.MatchCount + " totalMs=" + Math.Round(totalSw.Elapsed.TotalMilliseconds, 2) + " hardBudgetExceeded=" + budget.IsHardExceeded, immediate: true);
 			return result;
 		}
 		catch (Exception ex)
@@ -484,15 +592,28 @@ public static class WorldEntityRetrievalService
 		}).OrderBy((EntityMatch<T> x) => x.MentionPriority).ThenByDescending((EntityMatch<T> x) => x.Score).ThenBy((EntityMatch<T> x) => x.Name, StringComparer.OrdinalIgnoreCase).ToList();
 	}
 
-	private static List<EntityMatch<T>> FindMatches<T>(string category, IEnumerable<string> mentions, Dictionary<string, int> mentionPriority, IEnumerable<T> candidates, Func<T, IEnumerable<string>> aliases, Func<T, string> idSelector, Func<T, string> nameSelector) where T : class
+	private static List<EntityMatch<T>> FindMatches<T>(string category, IEnumerable<string> mentions, Dictionary<string, int> mentionPriority, IEnumerable<T> candidates, Func<T, IEnumerable<string>> aliases, Func<T, string> idSelector, Func<T, string> nameSelector, WorldEntityRetrievalBudget budget) where T : class
 	{
+		using FreezeWatchdog.ScopeToken freezeScope = FreezeWatchdog.Scope("WorldEntityRetrieval.FindMatches." + (string.IsNullOrWhiteSpace(category) ? "unknown" : category));
 		Stopwatch categorySw = Stopwatch.StartNew();
 		Dictionary<string, EntityMatch<T>> selected = new Dictionary<string, EntityMatch<T>>(StringComparer.OrdinalIgnoreCase);
 		List<T> candidateList = (candidates ?? Enumerable.Empty<T>()).Where((T x) => x != null).ToList();
 		List<string> mentionList = (mentions ?? Enumerable.Empty<string>()).Select((string x) => (x ?? "").Trim()).Where((string x) => !string.IsNullOrWhiteSpace(x)).ToList();
-		Logger.Log("WorldEntityRetrieval", "[WorldEntityPerf] match_category_start category=" + (category ?? "") + " mentions=" + mentionList.Count + " candidates=" + candidateList.Count);
+		Logger.Log("WorldEntityRetrieval", "[WorldEntityPerf] match_category_start category=" + (category ?? "") + " mentions=" + mentionList.Count + " candidates=" + candidateList.Count + " " + FormatBudgetForLog(budget));
+		FreezeWatchdog.Mark("WorldEntityRetrieval.match_category_start", "category=" + (category ?? "") + " mentions=" + mentionList.Count + " candidates=" + candidateList.Count, immediate: true);
+		List<EntityCandidateSnapshot<T>> snapshots = BuildCandidateSnapshots(category, candidateList, aliases, idSelector, nameSelector, budget);
+		if (IsHardBudgetExceeded(budget))
+		{
+			LogWorldEntityBudgetStop("match_category_before_scoring", category, "", 0, snapshots.Count, selected.Count, budget);
+			return selected.Values.OrderBy((EntityMatch<T> x) => x.MentionPriority).ThenByDescending((EntityMatch<T> x) => x.Score).ThenBy((EntityMatch<T> x) => x.Name, StringComparer.OrdinalIgnoreCase).ToList();
+		}
 		foreach (string mentionRaw in mentionList)
 		{
+			if (IsHardBudgetExceeded(budget))
+			{
+				LogWorldEntityBudgetStop("match_category", category, "", 0, snapshots.Count, selected.Count, budget);
+				break;
+			}
 			Stopwatch mentionSw = Stopwatch.StartNew();
 			string mention = (mentionRaw ?? "").Trim();
 			if (string.IsNullOrWhiteSpace(mention))
@@ -500,33 +621,49 @@ public static class WorldEntityRetrievalService
 				continue;
 			}
 			int priority = GetMentionPriority(mentionPriority, mention);
+			FuzzyTextProfile mentionProfile = BuildFuzzyTextProfile(mention);
 			List<EntityMatch<T>> scored = new List<EntityMatch<T>>();
 			int scanned = 0;
-			Logger.Log("WorldEntityRetrieval", "[WorldEntityPerf] match_mention_start category=" + (category ?? "") + " mention=" + PreviewWorldEntityLogValue(mention, 80) + " candidates=" + candidateList.Count);
-			foreach (T candidate in candidateList)
+			bool budgetStopped = false;
+			Logger.Log("WorldEntityRetrieval", "[WorldEntityPerf] match_mention_start category=" + (category ?? "") + " mention=" + PreviewWorldEntityLogValue(mention, 80) + " candidates=" + snapshots.Count);
+			foreach (EntityCandidateSnapshot<T> candidate in snapshots)
 			{
 				scanned++;
-				float score = CalculateBestScore(mention, aliases(candidate));
+				float score = CalculateBestScore(mentionProfile, candidate.Aliases);
 				if (score >= MatchThreshold)
 				{
 					scored.Add(new EntityMatch<T>
 					{
-						Value = candidate,
-						Id = idSelector(candidate) ?? "",
-						Name = nameSelector(candidate) ?? "",
+						Value = candidate.Value,
+						Id = candidate.Id ?? "",
+						Name = candidate.Name ?? "",
 						Mention = mention,
 						Score = score,
 						MentionPriority = priority
 					});
 				}
-				if (candidateList.Count >= 500 && scanned % 500 == 0)
+				if (snapshots.Count >= EntityRetrievalProgressLogInterval && scanned % EntityRetrievalProgressLogInterval == 0)
 				{
-					Logger.Log("WorldEntityRetrieval", "[WorldEntityPerf] match_scan_progress category=" + (category ?? "") + " mention=" + PreviewWorldEntityLogValue(mention, 80) + " scanned=" + scanned + "/" + candidateList.Count + " scored=" + scored.Count + " ms=" + Math.Round(mentionSw.Elapsed.TotalMilliseconds, 2));
+					Logger.Log("WorldEntityRetrieval", "[WorldEntityPerf] match_scan_progress category=" + (category ?? "") + " mention=" + PreviewWorldEntityLogValue(mention, 80) + " scanned=" + scanned + "/" + snapshots.Count + " scored=" + scored.Count + " ms=" + Math.Round(mentionSw.Elapsed.TotalMilliseconds, 2) + " " + FormatBudgetForLog(budget));
+				}
+				if (budget != null && scanned % EntityRetrievalBudgetCheckInterval == 0)
+				{
+					LogSoftBudgetOnceIfNeeded("match_scan", category, mention, scanned, snapshots.Count, selected.Count, budget);
+					if (IsHardBudgetExceeded(budget))
+					{
+						budgetStopped = true;
+						LogWorldEntityBudgetStop("match_scan", category, mention, scanned, snapshots.Count, selected.Count, budget);
+						break;
+					}
 				}
 			}
 			if (scored.Count == 0)
 			{
-				Logger.Log("WorldEntityRetrieval", "[WorldEntityPerf] match_mention_done category=" + (category ?? "") + " mention=" + PreviewWorldEntityLogValue(mention, 80) + " scored=0 selectedTotal=" + selected.Count + " ms=" + Math.Round(mentionSw.Elapsed.TotalMilliseconds, 2));
+				Logger.Log("WorldEntityRetrieval", "[WorldEntityPerf] match_mention_done category=" + (category ?? "") + " mention=" + PreviewWorldEntityLogValue(mention, 80) + " scored=0 selectedTotal=" + selected.Count + " scanned=" + scanned + "/" + snapshots.Count + " budgetStopped=" + budgetStopped + " ms=" + Math.Round(mentionSw.Elapsed.TotalMilliseconds, 2));
+				if (budgetStopped)
+				{
+					break;
+				}
 				continue;
 			}
 			float best = scored.Max((EntityMatch<T> x) => x.Score);
@@ -543,11 +680,147 @@ public static class WorldEntityRetrievalService
 					selected[key] = match;
 				}
 			}
-			Logger.Log("WorldEntityRetrieval", "[WorldEntityPerf] match_mention_done category=" + (category ?? "") + " mention=" + PreviewWorldEntityLogValue(mention, 80) + " scored=" + scored.Count + " selectedTotal=" + selected.Count + " best=" + best.ToString("0.###", CultureInfo.InvariantCulture) + " ms=" + Math.Round(mentionSw.Elapsed.TotalMilliseconds, 2));
+			Logger.Log("WorldEntityRetrieval", "[WorldEntityPerf] match_mention_done category=" + (category ?? "") + " mention=" + PreviewWorldEntityLogValue(mention, 80) + " scored=" + scored.Count + " selectedTotal=" + selected.Count + " best=" + best.ToString("0.###", CultureInfo.InvariantCulture) + " scanned=" + scanned + "/" + snapshots.Count + " budgetStopped=" + budgetStopped + " ms=" + Math.Round(mentionSw.Elapsed.TotalMilliseconds, 2));
+			if (budgetStopped)
+			{
+				break;
+			}
 		}
 		List<EntityMatch<T>> result = selected.Values.OrderBy((EntityMatch<T> x) => x.MentionPriority).ThenByDescending((EntityMatch<T> x) => x.Score).ThenBy((EntityMatch<T> x) => x.Name, StringComparer.OrdinalIgnoreCase).ToList();
-		Logger.Log("WorldEntityRetrieval", "[WorldEntityPerf] match_category_done category=" + (category ?? "") + " result=" + result.Count + " ms=" + Math.Round(categorySw.Elapsed.TotalMilliseconds, 2));
+		Logger.Log("WorldEntityRetrieval", "[WorldEntityPerf] match_category_done category=" + (category ?? "") + " result=" + result.Count + " ms=" + Math.Round(categorySw.Elapsed.TotalMilliseconds, 2) + " hardBudgetExceeded=" + (budget?.IsHardExceeded == true));
+		FreezeWatchdog.Mark("WorldEntityRetrieval.match_category_done", "category=" + (category ?? "") + " result=" + result.Count + " ms=" + Math.Round(categorySw.Elapsed.TotalMilliseconds, 2), immediate: true);
 		return result;
+	}
+
+	private static List<EntityCandidateSnapshot<T>> BuildCandidateSnapshots<T>(string category, List<T> candidates, Func<T, IEnumerable<string>> aliases, Func<T, string> idSelector, Func<T, string> nameSelector, WorldEntityRetrievalBudget budget) where T : class
+	{
+		using FreezeWatchdog.ScopeToken freezeScope = FreezeWatchdog.Scope("WorldEntityRetrieval.AliasCache." + (string.IsNullOrWhiteSpace(category) ? "unknown" : category));
+		Stopwatch sw = Stopwatch.StartNew();
+		List<EntityCandidateSnapshot<T>> snapshots = new List<EntityCandidateSnapshot<T>>();
+		List<T> candidateList = candidates ?? new List<T>();
+		int scanned = 0;
+		int aliasCount = 0;
+		Logger.Log("WorldEntityRetrieval", "[WorldEntityPerf] alias_cache_start category=" + (category ?? "") + " candidates=" + candidateList.Count + " " + FormatBudgetForLog(budget));
+		FreezeWatchdog.Mark("WorldEntityRetrieval.alias_cache_start", "category=" + (category ?? "") + " candidates=" + candidateList.Count, immediate: true);
+		foreach (T candidate in candidateList)
+		{
+			if (candidate == null)
+			{
+				continue;
+			}
+			scanned++;
+			EntityCandidateSnapshot<T> snapshot = new EntityCandidateSnapshot<T>
+			{
+				Value = candidate,
+				Id = SafeSelectorValue(idSelector, candidate),
+				Name = SafeSelectorValue(nameSelector, candidate),
+				Aliases = BuildAliasProfiles(SafeAliases(aliases, candidate))
+			};
+			if (snapshot.Aliases.Count == 0 && !string.IsNullOrWhiteSpace(snapshot.Name))
+			{
+				snapshot.Aliases.Add(BuildFuzzyTextProfile(snapshot.Name));
+			}
+			aliasCount += snapshot.Aliases.Count;
+			snapshots.Add(snapshot);
+			if (candidateList.Count >= EntityRetrievalProgressLogInterval && scanned % EntityRetrievalProgressLogInterval == 0)
+			{
+				Logger.Log("WorldEntityRetrieval", "[WorldEntityPerf] alias_cache_progress category=" + (category ?? "") + " scanned=" + scanned + "/" + candidateList.Count + " snapshots=" + snapshots.Count + " aliases=" + aliasCount + " ms=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2) + " " + FormatBudgetForLog(budget));
+			}
+			if (budget != null && scanned % EntityRetrievalBudgetCheckInterval == 0)
+			{
+				LogSoftBudgetOnceIfNeeded("alias_cache", category, "", scanned, candidateList.Count, snapshots.Count, budget);
+				if (IsHardBudgetExceeded(budget))
+				{
+					LogWorldEntityBudgetStop("alias_cache", category, "", scanned, candidateList.Count, snapshots.Count, budget);
+					break;
+				}
+			}
+		}
+		Logger.Log("WorldEntityRetrieval", "[WorldEntityPerf] alias_cache_done category=" + (category ?? "") + " scanned=" + scanned + "/" + candidateList.Count + " snapshots=" + snapshots.Count + " aliases=" + aliasCount + " ms=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2) + " hardBudgetExceeded=" + (budget?.IsHardExceeded == true));
+		FreezeWatchdog.Mark("WorldEntityRetrieval.alias_cache_done", "category=" + (category ?? "") + " snapshots=" + snapshots.Count + " aliases=" + aliasCount + " ms=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2), immediate: true);
+		return snapshots;
+	}
+
+	private static string SafeSelectorValue<T>(Func<T, string> selector, T value) where T : class
+	{
+		try
+		{
+			return (selector?.Invoke(value) ?? "").Trim();
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	private static IEnumerable<string> SafeAliases<T>(Func<T, IEnumerable<string>> aliases, T value) where T : class
+	{
+		List<string> result = new List<string>();
+		try
+		{
+			foreach (string alias in aliases?.Invoke(value) ?? Enumerable.Empty<string>())
+			{
+				result.Add(alias);
+			}
+		}
+		catch
+		{
+		}
+		return result;
+	}
+
+	private static List<FuzzyTextProfile> BuildAliasProfiles(IEnumerable<string> aliases)
+	{
+		List<FuzzyTextProfile> result = new List<FuzzyTextProfile>();
+		HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		foreach (string alias in aliases ?? Enumerable.Empty<string>())
+		{
+			string text = (alias ?? "").Trim();
+			if (!string.IsNullOrWhiteSpace(text) && seen.Add(text))
+			{
+				result.Add(BuildFuzzyTextProfile(text));
+			}
+		}
+		return result;
+	}
+
+	private static bool CanContinueWorldEntityMatch(string category, WorldEntityRetrievalBudget budget)
+	{
+		if (!IsHardBudgetExceeded(budget))
+		{
+			return true;
+		}
+		LogWorldEntityBudgetStop("match_category_skipped", category, "", 0, 0, 0, budget);
+		return false;
+	}
+
+	private static bool IsHardBudgetExceeded(WorldEntityRetrievalBudget budget)
+	{
+		return budget != null && budget.IsHardExceeded;
+	}
+
+	private static void LogSoftBudgetOnceIfNeeded(string phase, string category, string mention, int scanned, int total, int selectedTotal, WorldEntityRetrievalBudget budget)
+	{
+		if (budget == null || !budget.TryMarkSoftExceeded())
+		{
+			return;
+		}
+		Logger.Log("WorldEntityRetrieval", "[WorldEntityPerf] soft_budget_exceeded phase=" + (phase ?? "") + " category=" + (category ?? "") + " mention=" + PreviewWorldEntityLogValue(mention, 80) + " scanned=" + scanned + "/" + total + " selectedTotal=" + selectedTotal + " " + FormatBudgetForLog(budget));
+		FreezeWatchdog.Mark("WorldEntityRetrieval.soft_budget_exceeded", "phase=" + (phase ?? "") + " category=" + (category ?? "") + " scanned=" + scanned + "/" + total + " selectedTotal=" + selectedTotal + " " + FormatBudgetForLog(budget), immediate: true);
+	}
+
+	private static void LogWorldEntityBudgetStop(string phase, string category, string mention, int scanned, int total, int selectedTotal, WorldEntityRetrievalBudget budget)
+	{
+		Logger.Log("WorldEntityRetrieval", "[WorldEntityPerf] hard_budget_stop phase=" + (phase ?? "") + " category=" + (category ?? "") + " mention=" + PreviewWorldEntityLogValue(mention, 80) + " scanned=" + scanned + "/" + total + " selectedTotal=" + selectedTotal + " " + FormatBudgetForLog(budget));
+		if (budget == null || budget.TryMarkHardExceeded())
+		{
+			FreezeWatchdog.Mark("WorldEntityRetrieval.hard_budget_stop", "phase=" + (phase ?? "") + " category=" + (category ?? "") + " scanned=" + scanned + "/" + total + " selectedTotal=" + selectedTotal + " " + FormatBudgetForLog(budget), immediate: true);
+		}
+	}
+
+	private static string FormatBudgetForLog(WorldEntityRetrievalBudget budget)
+	{
+		return "budgetMs=" + (budget?.ElapsedMs ?? 0L) + "/" + EntityRetrievalHardBudgetMs + " softMs=" + EntityRetrievalSoftBudgetMs;
 	}
 
 	private static string PreviewWorldEntityLogValue(string value, int maxLen)
@@ -571,8 +844,13 @@ public static class WorldEntityRetrievalService
 
 	private static float CalculateBestScore(string mention, IEnumerable<string> aliases)
 	{
+		return CalculateBestScore(BuildFuzzyTextProfile(mention), BuildAliasProfiles(aliases));
+	}
+
+	private static float CalculateBestScore(FuzzyTextProfile mention, IEnumerable<FuzzyTextProfile> aliases)
+	{
 		float best = 0f;
-		foreach (string alias in aliases ?? Enumerable.Empty<string>())
+		foreach (FuzzyTextProfile alias in aliases ?? Enumerable.Empty<FuzzyTextProfile>())
 		{
 			best = Math.Max(best, CalculateFuzzyScore(mention, alias));
 		}
@@ -610,8 +888,13 @@ public static class WorldEntityRetrievalService
 
 	private static float CalculateFuzzyScore(string left, string right)
 	{
-		string a = NormalizeFuzzyText(left);
-		string b = NormalizeFuzzyText(right);
+		return CalculateFuzzyScore(BuildFuzzyTextProfile(left), BuildFuzzyTextProfile(right));
+	}
+
+	private static float CalculateFuzzyScore(FuzzyTextProfile left, FuzzyTextProfile right)
+	{
+		string a = left?.Normalized ?? "";
+		string b = right?.Normalized ?? "";
 		if (string.IsNullOrWhiteSpace(a) || string.IsNullOrWhiteSpace(b))
 		{
 			return 0f;
@@ -637,6 +920,17 @@ public static class WorldEntityRetrievalService
 		best = Math.Max(best, distanceScore);
 		best = Math.Max(best, TokenOverlapScore(left, right));
 		return Math.Max(0f, Math.Min(1f, best));
+	}
+
+	private static FuzzyTextProfile BuildFuzzyTextProfile(string value)
+	{
+		string raw = (value ?? "").Trim();
+		return new FuzzyTextProfile
+		{
+			Raw = raw,
+			Normalized = NormalizeFuzzyText(raw),
+			Tokens = SplitTokens(raw)
+		};
 	}
 
 	private static string NormalizeFuzzyText(string value)
@@ -737,8 +1031,13 @@ public static class WorldEntityRetrievalService
 
 	private static float TokenOverlapScore(string left, string right)
 	{
-		List<string> a = SplitTokens(left);
-		List<string> b = SplitTokens(right);
+		return TokenOverlapScore(BuildFuzzyTextProfile(left), BuildFuzzyTextProfile(right));
+	}
+
+	private static float TokenOverlapScore(FuzzyTextProfile left, FuzzyTextProfile right)
+	{
+		List<string> a = left?.Tokens ?? new List<string>();
+		List<string> b = right?.Tokens ?? new List<string>();
 		if (a.Count == 0 || b.Count == 0)
 		{
 			return 0f;

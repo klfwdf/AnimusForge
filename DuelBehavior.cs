@@ -3043,14 +3043,22 @@ public class DuelBehavior : CampaignBehaviorBase
 		}
 		try
 		{
-			dummyParty.MemberRoster.AddToCounts(targetCharacter, 1, insertAtFront: true, woundedCount: 0, xpChange: 0, removeDepleted: true, index: -1);
 			if (target != null)
 			{
+				AddHeroToPartyAction.Apply(target, dummyParty, showNotification: false);
+				NormalizeHeroRosterCount(originalParty?.MemberRoster, targetCharacter, 0, "wilderness_create_original");
+				NormalizeHeroRosterCount(dummyParty.MemberRoster, targetCharacter, 1, "wilderness_create_dummy");
+				RebindHeroToPartyForWildernessDuel(target, dummyParty, "wilderness_create_dummy");
 				dummyParty.PartyComponent?.ChangePartyLeader(target);
 			}
+			else
+			{
+				dummyParty.MemberRoster.AddToCounts(targetCharacter, 1, insertAtFront: true, woundedCount: 0, xpChange: 0, removeDepleted: true, index: -1);
+			}
 		}
-		catch
+		catch (Exception ex)
 		{
+			Logger.Log("DuelBehavior", "[WildernessDuel][WARN] add target to dummy party failed: " + ex.Message);
 		}
 		WildernessDuelBattleRuntime runtime = new WildernessDuelBattleRuntime
 		{
@@ -3282,24 +3290,116 @@ public class DuelBehavior : CampaignBehaviorBase
 
 	private static bool RosterContainsCharacter(TroopRoster roster, CharacterObject character)
 	{
+		return GetRosterCount(roster, character) > 0;
+	}
+
+	private static int GetRosterCount(TroopRoster roster, CharacterObject character)
+	{
 		if (roster == null || character == null)
 		{
-			return false;
+			return 0;
 		}
 		try
 		{
-			foreach (TroopRosterElement element in roster.GetTroopRoster())
+			int index = roster.FindIndexOfTroop(character);
+			if (index < 0)
 			{
-				if (element.Character == character && element.Number > 0)
-				{
-					return true;
-				}
+				return 0;
 			}
+			return Math.Max(0, roster.GetElementCopyAtIndex(index).Number);
 		}
 		catch
 		{
 		}
-		return false;
+		return 0;
+	}
+
+	private static void NormalizeHeroRosterCount(TroopRoster roster, CharacterObject character, int desiredCount, string label)
+	{
+		if (roster == null || character == null || !character.IsHero)
+		{
+			return;
+		}
+		desiredCount = Math.Max(0, desiredCount);
+		try
+		{
+			int current = GetRosterCount(roster, character);
+			while (current > desiredCount)
+			{
+				RemoveOneHeroFromRoster(roster, character, label);
+				current = GetRosterCount(roster, character);
+			}
+			if (current < desiredCount)
+			{
+				roster.AddToCounts(character, desiredCount - current, insertAtFront: true, woundedCount: 0, xpChange: 0, removeDepleted: true, index: -1);
+				Logger.Log("DuelBehavior", "[WildernessDuel] hero roster restored label=" + (label ?? "") + " hero=" + (character.StringId ?? "") + " count=" + desiredCount);
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("DuelBehavior", "[WildernessDuel][WARN] normalize hero roster failed label=" + (label ?? "") + " hero=" + (character?.StringId ?? "") + ": " + ex.Message);
+		}
+	}
+
+	private static void RemoveAllHeroFromRoster(TroopRoster roster, CharacterObject character, string label)
+	{
+		if (roster == null || character == null || !character.IsHero)
+		{
+			return;
+		}
+		try
+		{
+			int guard = 0;
+			while (GetRosterCount(roster, character) > 0 && guard++ < 8)
+			{
+				RemoveOneHeroFromRoster(roster, character, label);
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("DuelBehavior", "[WildernessDuel][WARN] remove hero roster failed label=" + (label ?? "") + " hero=" + (character?.StringId ?? "") + ": " + ex.Message);
+		}
+	}
+
+	private static void RemoveOneHeroFromRoster(TroopRoster roster, CharacterObject character, string label)
+	{
+		if (roster == null || character == null || !character.IsHero)
+		{
+			return;
+		}
+		int index = roster.FindIndexOfTroop(character);
+		if (index < 0)
+		{
+			return;
+		}
+		TroopRosterElement element = roster.GetElementCopyAtIndex(index);
+		if (element.Number <= 0)
+		{
+			return;
+		}
+		int woundedDelta = element.WoundedNumber > 0 ? -1 : 0;
+		roster.AddToCounts(character, -1, insertAtFront: false, woundedCount: woundedDelta, xpChange: 0, removeDepleted: true, index: -1);
+		Logger.Log("DuelBehavior", "[WildernessDuel] hero roster entry removed label=" + (label ?? "") + " hero=" + (character.StringId ?? "") + " woundedDelta=" + woundedDelta);
+	}
+
+	private static void RebindHeroToPartyForWildernessDuel(Hero hero, MobileParty party, string label)
+	{
+		if (hero == null || party == null)
+		{
+			return;
+		}
+		try
+		{
+			if (hero.PartyBelongedTo != party)
+			{
+				SetPrivateField(hero, "_partyBelongedTo", party);
+				Logger.Log("DuelBehavior", "[WildernessDuel] rebound target hero party label=" + (label ?? "") + " hero=" + (hero.StringId ?? "") + " party=" + (party.StringId ?? "null"));
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("DuelBehavior", "[WildernessDuel][WARN] rebind target hero failed label=" + (label ?? "") + " hero=" + (hero?.StringId ?? "") + ": " + ex.Message);
+		}
 	}
 
 	private static void CleanupWildernessDuelRuntime(WildernessDuelBattleRuntime runtime, string source)
@@ -3319,16 +3419,26 @@ public class DuelBehavior : CampaignBehaviorBase
 				{
 					try
 					{
-						if (target.PartyBelongedTo != runtime.TargetOriginalParty)
+						CharacterObject targetCharacter = target.CharacterObject;
+						int originalCount = GetRosterCount(runtime.TargetOriginalParty.MemberRoster, targetCharacter);
+						if (originalCount <= 0)
 						{
-							AddHeroToPartyAction.Apply(target, runtime.TargetOriginalParty, showNotification: false);
+							if (target.PartyBelongedTo != runtime.TargetOriginalParty && GetRosterCount(dummy?.MemberRoster, targetCharacter) > 0)
+							{
+								AddHeroToPartyAction.Apply(target, runtime.TargetOriginalParty, showNotification: false);
+							}
+							else
+							{
+								runtime.TargetOriginalParty.MemberRoster.AddToCounts(targetCharacter, 1, insertAtFront: true, woundedCount: 0, xpChange: 0, removeDepleted: true, index: -1);
+							}
 							Logger.Log("DuelBehavior", "[WildernessDuel] restored target hero to original party id=" + runtime.TargetOriginalParty.StringId + ", target=" + target.StringId);
 						}
-						else if (!RosterContainsCharacter(runtime.TargetOriginalParty.MemberRoster, target.CharacterObject))
+						else if (target.PartyBelongedTo != runtime.TargetOriginalParty)
 						{
-							runtime.TargetOriginalParty.MemberRoster.AddToCounts(target.CharacterObject, 1, insertAtFront: true, woundedCount: 0, xpChange: 0, removeDepleted: true, index: -1);
-							Logger.Log("DuelBehavior", "[WildernessDuel] restored missing target roster entry id=" + runtime.TargetOriginalParty.StringId + ", target=" + target.StringId);
+							RemoveAllHeroFromRoster(dummy?.MemberRoster, targetCharacter, "wilderness_cleanup_dummy_existing_original");
 						}
+						NormalizeHeroRosterCount(runtime.TargetOriginalParty.MemberRoster, targetCharacter, 1, "wilderness_cleanup_original");
+						RebindHeroToPartyForWildernessDuel(target, runtime.TargetOriginalParty, "wilderness_cleanup_original");
 						if (runtime.TargetWasOriginalLeader && runtime.TargetOriginalParty.PartyComponent != null)
 						{
 							runtime.TargetOriginalParty.PartyComponent.ChangePartyLeader(target);
@@ -3343,7 +3453,11 @@ public class DuelBehavior : CampaignBehaviorBase
 				{
 					try
 					{
-						dummy.MemberRoster.RemoveTroop(target.CharacterObject, 1);
+						RemoveAllHeroFromRoster(dummy.MemberRoster, target.CharacterObject, "wilderness_cleanup_dummy");
+						if (runtime.TargetOriginalParty != null && runtime.TargetOriginalParty.IsActive)
+						{
+							RebindHeroToPartyForWildernessDuel(target, runtime.TargetOriginalParty, "wilderness_cleanup_after_dummy");
+						}
 					}
 					catch
 					{
