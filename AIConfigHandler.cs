@@ -4046,6 +4046,12 @@ public static class AIConfigHandler
 				stringBuilder.AppendLine(guardrailAuxiliaryTopic.Code + ": " + guardrailAuxiliaryTopic.Label);
 			}
 		}
+		string text6 = NormalizeAuxiliaryRoutingRequestText(_guardrail?.AuxiliaryRoutingGuidance ?? "");
+		if (!string.IsNullOrWhiteSpace(text6))
+		{
+			stringBuilder.AppendLine("Routing hints:");
+			stringBuilder.AppendLine(text6);
+		}
 		stringBuilder.AppendLine();
 		stringBuilder.AppendLine("Scene interaction history (up to the previous 3 dialogue turns):");
 		stringBuilder.AppendLine(NormalizeAuxiliaryRoutingRequestText(historyBlock));

@@ -569,6 +569,18 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		}
 	}
 
+	public static bool IsEncyclopediaHeroPersonaAutoGenerationEnabled()
+	{
+		try
+		{
+			return GetSettings()?.EnableEncyclopediaHeroPersonaAutoGeneration ?? true;
+		}
+		catch
+		{
+			return true;
+		}
+	}
+
 	public int GetEventAndRebellionApiMaxTokens()
 	{
 		EventAndRebellionApiMaxTokens = ClampApiMaxTokens(EventAndRebellionApiMaxTokens, DefaultEventAndRebellionApiMaxTokens);
@@ -587,31 +599,35 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	[SettingPropertyGroup("4. 开发者选项")]
 	public bool EnableAdultHeroPersonaAutoGeneration { get; set; } = true;
 
-	[SettingPropertyBool("【日志】写入 Mod_Logic.txt", Order = 3, RequireRestart = false, HintText = "总逻辑日志开关。关闭后不再写入 Mod_Logic.txt。")]
+	[SettingPropertyBool("百科查看自动生成个性与背景", Order = 3, RequireRestart = false, HintText = "开启后，在 Hero/NPC 百科页查看没有完整个性或背景的人物时，会自动使用前处理API补齐。关闭后只显示已有资料，不会因打开百科而发起生成。")]
 	[SettingPropertyGroup("4. 开发者选项")]
-	public bool EnableModLogicLog { get; set; } = false;
+	public bool EnableEncyclopediaHeroPersonaAutoGeneration { get; set; } = true;
 
-	[SettingPropertyBool("【日志】写入详细调试日志", Order = 4, RequireRestart = false, HintText = "只在排查问题时开启。开启后会写入更细的 Mod_Logic 诊断日志；大型剧本大地图可能产生较多日志。")]
+	[SettingPropertyBool("【日志】写入 Mod_Logic.txt", Order = 4, RequireRestart = false, HintText = "总逻辑日志开关。关闭后不再写入 Mod_Logic.txt。")]
+	[SettingPropertyGroup("4. 开发者选项")]
+	public bool EnableModLogicLog { get; set; } = true;
+
+	[SettingPropertyBool("【日志】写入详细调试日志", Order = 5, RequireRestart = false, HintText = "只在排查问题时开启。开启后会写入更细的 Mod_Logic 诊断日志；大型剧本大地图可能产生较多日志。")]
 	[SettingPropertyGroup("4. 开发者选项")]
 	public bool EnableVerboseModLogicLog { get; set; } = false;
 
-	[SettingPropertyBool("【日志】写入 Observability.jsonl", Order = 5, RequireRestart = false, HintText = "结构化观测日志开关。关闭后不再写入 Observability.jsonl。")]
+	[SettingPropertyBool("【日志】写入 Observability.jsonl", Order = 6, RequireRestart = false, HintText = "结构化观测日志开关。关闭后不再写入 Observability.jsonl。")]
 	[SettingPropertyGroup("4. 开发者选项")]
 	public bool EnableObservabilityLog { get; set; } = false;
 
-	[SettingPropertyBool("【日志】写入 HitRate_Stats.txt", Order = 6, RequireRestart = false, HintText = "命中率统计日志开关。关闭后不再写入 HitRate_Stats.txt。")]
+	[SettingPropertyBool("【日志】写入 HitRate_Stats.txt", Order = 7, RequireRestart = false, HintText = "命中率统计日志开关。关闭后不再写入 HitRate_Stats.txt。")]
 	[SettingPropertyGroup("4. 开发者选项")]
 	public bool EnableHitRateStatsLog { get; set; } = false;
 
-	[SettingPropertyBool("【日志】写入 Token_Stats.txt", Order = 7, RequireRestart = false, HintText = "Token 统计日志开关。关闭后不再写入 Token_Stats.txt。")]
+	[SettingPropertyBool("【日志】写入 Token_Stats.txt", Order = 8, RequireRestart = false, HintText = "Token 统计日志开关。关闭后不再写入 Token_Stats.txt。")]
 	[SettingPropertyGroup("4. 开发者选项")]
 	public bool EnableTokenStatsLog { get; set; } = true;
 
-	[SettingPropertyBool("【日志】写入 Event_Logs.txt", Order = 8, RequireRestart = false, HintText = "事件系统周报生成日志开关。关闭后不再写入 Event_Logs.txt。")]
+	[SettingPropertyBool("【日志】写入 Event_Logs.txt", Order = 9, RequireRestart = false, HintText = "事件系统周报生成日志开关。关闭后不再写入 Event_Logs.txt。")]
 	[SettingPropertyGroup("4. 开发者选项")]
 	public bool EnableEventLogs { get; set; } = true;
 
-	[SettingPropertyDropdown("【日志】定时清理所有日志", Order = 9, RequireRestart = false, HintText = "按真实时间定时清空 AnimusForge/Logs 下的所有当前日志文件。会保留文件本身与 UTF-8 BOM。默认每3天。")]
+	[SettingPropertyDropdown("【日志】定时清理所有日志", Order = 10, RequireRestart = false, HintText = "按真实时间定时清空 AnimusForge/Logs 下的所有当前日志文件。会保留文件本身与 UTF-8 BOM。默认每3天。")]
 	[SettingPropertyGroup("4. 开发者选项")]
 	public Dropdown<string> LogCleanupIntervalDropdown
 	{
@@ -626,11 +642,11 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		}
 	}
 
-	[SettingPropertyBool("【性能】延后日结维护", Order = 10, RequireRestart = false, HintText = "开启后，每日结算只登记 AnimusForge 维护任务，记忆总览、王国维护和周报准备会在后续大地图 tick 中按预算分批执行。默认开启。")]
+	[SettingPropertyBool("【性能】延后日结维护", Order = 11, RequireRestart = false, HintText = "开启后，每日结算只登记 AnimusForge 维护任务，记忆总览、王国维护和周报准备会在后续大地图 tick 中按预算分批执行。默认开启。")]
 	[SettingPropertyGroup("4. 开发者选项")]
 	public bool EnableDeferredDailyMaintenance { get; set; } = true;
 
-	[SettingPropertyInteger("【性能】日结维护每帧预算(ms)", 1, 10, "0", Order = 11, RequireRestart = false, HintText = "延后日结维护开启时，每个大地图 tick 最多用于后台维护的毫秒数。默认 3；调高会更快完成后台任务但更可能产生帧尖峰。")]
+	[SettingPropertyInteger("【性能】日结维护每帧预算(ms)", 1, 10, "0", Order = 12, RequireRestart = false, HintText = "延后日结维护开启时，每个大地图 tick 最多用于后台维护的毫秒数。默认 3；调高会更快完成后台任务但更可能产生帧尖峰。")]
 	[SettingPropertyGroup("4. 开发者选项")]
 	public int DailyMaintenanceFrameBudgetMs { get; set; } = 3;
 

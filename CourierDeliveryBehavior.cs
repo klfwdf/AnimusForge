@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -16,6 +17,7 @@ using TaleWorlds.CampaignSystem.Actions;
 using TaleWorlds.CampaignSystem.CampaignBehaviors;
 using TaleWorlds.CampaignSystem.GameComponents;
 using TaleWorlds.CampaignSystem.GameState;
+using TaleWorlds.CampaignSystem.MapEvents;
 using TaleWorlds.CampaignSystem.Naval;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Party.PartyComponents;
@@ -219,6 +221,11 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 	private static MapNotificationView _courierReplyRegisteredMapNotificationView;
 	private static readonly Dictionary<string, long> LastTrackerEventPulseTicks = new Dictionary<string, long>(StringComparer.OrdinalIgnoreCase);
 	private static readonly Dictionary<string, long> LastCourierLogicPulseTicks = new Dictionary<string, long>(StringComparer.OrdinalIgnoreCase);
+	private sealed class CourierMapEventMarker { }
+	private static readonly ConditionalWeakTable<MapEvent, CourierMapEventMarker> CourierMapEventMarkers = new ConditionalWeakTable<MapEvent, CourierMapEventMarker>();
+	private static readonly FieldInfo MapEventFinishCalledField = AccessTools.Field(typeof(MapEvent), "_isFinishCalled");
+	private static readonly PropertyInfo MapEventSideLeaderPartyProperty = AccessTools.Property(typeof(MapEventSide), nameof(MapEventSide.LeaderParty));
+	private static readonly FieldInfo MapEventSideMapFactionField = AccessTools.Field(typeof(MapEventSide), "_mapFaction");
 
 	private readonly Dictionary<string, CourierSession> _sessions = new Dictionary<string, CourierSession>(StringComparer.OrdinalIgnoreCase);
 	private readonly object _sessionLock = new object();
@@ -500,6 +507,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			_courierHarmony = activeHarmony;
 			MethodInfoAccess.PatchDefaultEncounterModel(activeHarmony);
 			MethodInfoAccess.PatchCustomPartyComponentBanner(activeHarmony);
+			MethodInfoAccess.PatchCourierMapEventSafety(activeHarmony);
 			AnimusForgeCourierUiSprites.EnsurePatched(activeHarmony);
 			Log("harmony patches registered");
 		}
@@ -513,12 +521,20 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			if (party == null || Instance == null)
+			if (party == null)
 			{
 				return false;
 			}
 			string partyId = (party.StringId ?? "").Trim();
 			if (string.IsNullOrWhiteSpace(partyId))
+			{
+				return false;
+			}
+			if (IsCourierPartyId(partyId))
+			{
+				return true;
+			}
+			if (Instance == null)
 			{
 				return false;
 			}
@@ -540,6 +556,12 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		{
 			return false;
 		}
+	}
+
+	private static bool IsCourierPartyId(string partyId)
+	{
+		return !string.IsNullOrWhiteSpace(partyId)
+			&& partyId.Trim().StartsWith(CourierPartyPrefix, StringComparison.OrdinalIgnoreCase);
 	}
 
 	public static bool IsBanditOrOutlawParty(MobileParty party)
@@ -1258,6 +1280,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		};
 		MoveRosterFromMainParty(flow.CrewRoster, courier, "crew");
 		AssignCourierLeader(courier);
+		EnsureCourierCampaignIdentity(courier, session, "create_session");
 		PrepareOutgoingPayload(session, courier);
 		session.DeliveryFactText = BuildDeliveryFactText(session, delivered: false, flow.Recipient);
 		PlayerNotorietyBehavior.NoteCourierSentForExternal(flow.Recipient);
@@ -1666,6 +1689,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 				LetterText = letterText.Trim(),
 				CrewEntries = BuildCargoEntriesFromRoster(members, "crew")
 			};
+			EnsureCourierCampaignIdentity(courier, session, "create_inbound_session");
 			session.DeliveryFactText = BuildInboundDeliveryFactText(session, delivered: false, sender);
 			lock (_sessionLock)
 			{
@@ -1756,6 +1780,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 				CrewEntries = BuildCargoEntriesFromRoster(members, "crew"),
 				ReplyGenerated = true
 			};
+			EnsureCourierCampaignIdentity(courier, session, "create_inbound_generic_session");
 			session.DeliveryFactText = BuildInboundDeliveryFactText(session, delivered: false, sender);
 			lock (_sessionLock)
 			{
@@ -6359,6 +6384,7 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			{
 				return;
 			}
+			EnsureCourierCampaignIdentity(courier, TryFindCourierSessionByPartyId(courier.StringId), reason);
 			EnsureCourierNonSettlementCombatState(courier, reason);
 			if (courier.Ai != null)
 			{
@@ -6820,6 +6846,168 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		catch
 		{
 			return null;
+		}
+	}
+
+	private static CourierSession TryFindCourierSessionByPartyId(string partyId, bool includeTerminal = false)
+	{
+		try
+		{
+			CourierDeliveryBehavior instance = Instance;
+			string id = (partyId ?? "").Trim();
+			if (instance == null || string.IsNullOrWhiteSpace(id))
+			{
+				return null;
+			}
+			lock (instance._sessionLock)
+			{
+				return instance._sessions.Values.FirstOrDefault(x => x != null
+					&& string.Equals((x.CourierPartyId ?? "").Trim(), id, StringComparison.OrdinalIgnoreCase)
+					&& (includeTerminal || !IsTerminalStage(x)));
+			}
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static Hero SafePartyOwner(PartyBase party)
+	{
+		try
+		{
+			return party?.Owner;
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static IFaction SafeMapFaction(PartyBase party)
+	{
+		try
+		{
+			return party?.MapFaction;
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static IFaction SafeMapFaction(MobileParty party)
+	{
+		try
+		{
+			return party?.MapFaction;
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static IFaction SafeClanMapFaction(Clan clan)
+	{
+		try
+		{
+			return clan?.MapFaction;
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static Hero ResolveCourierIdentityOwner(CourierSession session, MobileParty courier)
+	{
+		Hero owner = SafePartyOwner(courier?.Party);
+		if (owner != null && !owner.IsDead)
+		{
+			return owner;
+		}
+		if (IsInboundToPlayer(session))
+		{
+			Hero sender = ResolveHeroByIdForCourier(session?.SenderHeroId);
+			if (sender != null && !sender.IsDead)
+			{
+				return sender;
+			}
+		}
+		if (Hero.MainHero != null && !Hero.MainHero.IsDead)
+		{
+			return Hero.MainHero;
+		}
+		Hero recipient = ResolveHeroByIdForCourier(session?.RecipientHeroId);
+		if (recipient != null && !recipient.IsDead)
+		{
+			return recipient;
+		}
+		Hero senderFallback = ResolveHeroByIdForCourier(session?.SenderHeroId);
+		if (senderFallback != null && !senderFallback.IsDead)
+		{
+			return senderFallback;
+		}
+		Hero playerClanLeader = Clan.PlayerClan?.Leader;
+		return playerClanLeader != null && !playerClanLeader.IsDead ? playerClanLeader : null;
+	}
+
+	private static Clan ResolveCourierIdentityClan(MobileParty courier, Hero owner)
+	{
+		if (SafeClanMapFaction(Clan.PlayerClan) != null)
+		{
+			return Clan.PlayerClan;
+		}
+		if (SafeClanMapFaction(owner?.Clan) != null)
+		{
+			return owner.Clan;
+		}
+		if (SafeClanMapFaction(courier?.ActualClan) != null)
+		{
+			return courier.ActualClan;
+		}
+		if (SafeClanMapFaction(Hero.MainHero?.Clan) != null)
+		{
+			return Hero.MainHero.Clan;
+		}
+		return courier?.ActualClan ?? owner?.Clan ?? Clan.PlayerClan ?? Hero.MainHero?.Clan;
+	}
+
+	private static void EnsureCourierCampaignIdentity(MobileParty courier, CourierSession session, string reason)
+	{
+		try
+		{
+			if (courier == null)
+			{
+				return;
+			}
+			MarkCourierCurrentMapEvent(courier);
+			Hero owner = ResolveCourierIdentityOwner(session, courier);
+			Hero currentOwner = SafePartyOwner(courier.Party);
+			if ((currentOwner == null || currentOwner.IsDead) && owner != null && courier.Party != null)
+			{
+				courier.Party.SetCustomOwner(owner);
+				currentOwner = owner;
+			}
+			Clan desiredClan = ResolveCourierIdentityClan(courier, currentOwner ?? owner);
+			if ((courier.ActualClan == null || SafeMapFaction(courier) == null) && desiredClan != null)
+			{
+				courier.ActualClan = desiredClan;
+			}
+			if (SafeMapFaction(courier) == null && Clan.PlayerClan != null)
+			{
+				courier.ActualClan = Clan.PlayerClan;
+			}
+			LogCourierStatusVerbose("identity:" + (courier.StringId ?? ""), "identity_checked party=" + (courier.StringId ?? "") +
+				" reason=" + (reason ?? "") +
+				" owner=" + (SafePartyOwner(courier.Party)?.StringId ?? "null") +
+				" actualClan=" + (courier.ActualClan?.StringId ?? "null") +
+				" mapFaction=" + (SafeMapFaction(courier)?.StringId ?? "null"), 10.0);
+		}
+		catch (Exception ex)
+		{
+			Log("courier identity repair failed party=" + (courier?.StringId ?? "") + " reason=" + (reason ?? "") + " error=" + ex.Message);
 		}
 	}
 
@@ -7547,6 +7735,484 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private static int GetRuntimeHash(object value)
+	{
+		return value == null ? 0 : RuntimeHelpers.GetHashCode(value);
+	}
+
+	private static void MarkCourierMapEvent(MapEvent mapEvent)
+	{
+		if (mapEvent == null)
+		{
+			return;
+		}
+		try
+		{
+			CourierMapEventMarkers.GetValue(mapEvent, _ => new CourierMapEventMarker());
+		}
+		catch
+		{
+		}
+	}
+
+	private static bool IsKnownCourierMapEvent(MapEvent mapEvent)
+	{
+		if (mapEvent == null)
+		{
+			return false;
+		}
+		try
+		{
+			return CourierMapEventMarkers.TryGetValue(mapEvent, out _);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static void MarkCourierCurrentMapEvent(MobileParty courier)
+	{
+		try
+		{
+			MapEvent mapEvent = courier?.MapEvent;
+			if (mapEvent != null)
+			{
+				MarkCourierMapEvent(mapEvent);
+			}
+		}
+		catch
+		{
+		}
+	}
+
+	private static bool IsCourierPartyOrId(MobileParty party)
+	{
+		try
+		{
+			return party != null && (IsCourierParty(party) || IsCourierPartyId(party.StringId));
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static bool TryGetCourierFromPartyBase(PartyBase party, out MobileParty courier)
+	{
+		courier = null;
+		try
+		{
+			MobileParty mobileParty = party?.MobileParty;
+			if (mobileParty == null || !IsCourierPartyOrId(mobileParty))
+			{
+				return false;
+			}
+			courier = mobileParty;
+			return true;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static bool TryGetCourierFromMapEventSide(MapEventSide side, out MobileParty courier)
+	{
+		courier = null;
+		try
+		{
+			if (TryGetCourierFromPartyBase(side?.LeaderParty, out courier))
+			{
+				return true;
+			}
+			if (side?.Parties == null)
+			{
+				return false;
+			}
+			foreach (MapEventParty eventParty in side.Parties)
+			{
+				if (TryGetCourierFromPartyBase(eventParty?.Party, out courier))
+				{
+					return true;
+				}
+			}
+		}
+		catch
+		{
+		}
+		return false;
+	}
+
+	private static bool TryFindCourierInMapEvent(MapEvent mapEvent, out MobileParty courier, out CourierSession session)
+	{
+		courier = null;
+		session = null;
+		try
+		{
+			if (mapEvent == null)
+			{
+				return false;
+			}
+			if (TryGetCourierFromMapEventSide(mapEvent.AttackerSide, out courier) || TryGetCourierFromMapEventSide(mapEvent.DefenderSide, out courier))
+			{
+				session = TryFindCourierSessionByPartyId(courier?.StringId, includeTerminal: true);
+				MarkCourierMapEvent(mapEvent);
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		return false;
+	}
+
+	private static IEnumerable<MapEventSide> GetSafeMapEventSides(MapEvent mapEvent)
+	{
+		if (mapEvent == null)
+		{
+			yield break;
+		}
+		MapEventSide attacker = null;
+		MapEventSide defender = null;
+		try
+		{
+			attacker = mapEvent.AttackerSide;
+			defender = mapEvent.DefenderSide;
+		}
+		catch
+		{
+		}
+		if (attacker != null)
+		{
+			yield return attacker;
+		}
+		if (defender != null && !ReferenceEquals(defender, attacker))
+		{
+			yield return defender;
+		}
+	}
+
+	private static IEnumerable<MobileParty> CollectCourierParties(MapEvent mapEvent)
+	{
+		HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		foreach (MapEventSide side in GetSafeMapEventSides(mapEvent))
+		{
+			if (TryGetCourierFromPartyBase(side?.LeaderParty, out MobileParty leaderCourier))
+			{
+				string id = (leaderCourier.StringId ?? "").Trim();
+				if (string.IsNullOrWhiteSpace(id) || seen.Add(id))
+				{
+					yield return leaderCourier;
+				}
+			}
+			if (side?.Parties == null)
+			{
+				continue;
+			}
+			foreach (MapEventParty eventParty in side.Parties)
+			{
+				if (!TryGetCourierFromPartyBase(eventParty?.Party, out MobileParty partyCourier))
+				{
+					continue;
+				}
+				string id = (partyCourier.StringId ?? "").Trim();
+				if (string.IsNullOrWhiteSpace(id) || seen.Add(id))
+				{
+					yield return partyCourier;
+				}
+			}
+		}
+	}
+
+	private static PartyBase SafeLeaderParty(MapEventSide side)
+	{
+		try
+		{
+			return side?.LeaderParty;
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static string SafePartyBaseLogId(PartyBase party)
+	{
+		try
+		{
+			if (party?.MobileParty != null)
+			{
+				return party.MobileParty.StringId ?? party.MobileParty.Name?.ToString() ?? "mobile_party";
+			}
+			if (party?.Settlement != null)
+			{
+				return party.Settlement.StringId ?? party.Settlement.Name?.ToString() ?? "settlement";
+			}
+			return party?.Name?.ToString() ?? "null";
+		}
+		catch
+		{
+			return "unknown";
+		}
+	}
+
+	private static PartyBase FindSidePartyWithFaction(MapEventSide side)
+	{
+		try
+		{
+			PartyBase leader = SafeLeaderParty(side);
+			if (SafeMapFaction(leader) != null)
+			{
+				return leader;
+			}
+			if (side?.Parties == null)
+			{
+				return null;
+			}
+			foreach (MapEventParty eventParty in side.Parties)
+			{
+				PartyBase party = eventParty?.Party;
+				if (party != null && SafeMapFaction(party) != null)
+				{
+					return party;
+				}
+			}
+		}
+		catch
+		{
+		}
+		return null;
+	}
+
+	private static bool TrySetMapEventSideLeaderParty(MapEventSide side, PartyBase party, string reason)
+	{
+		try
+		{
+			if (side == null || party == null || MapEventSideLeaderPartyProperty == null)
+			{
+				return false;
+			}
+			MapEventSideLeaderPartyProperty.SetValue(side, party, null);
+			IFaction faction = SafeMapFaction(party);
+			if (faction != null && MapEventSideMapFactionField != null)
+			{
+				MapEventSideMapFactionField.SetValue(side, faction);
+			}
+			LogCourierStatusVerbose("map_event_side_leader_repair:" + GetRuntimeHash(side), "map_event_side_leader_repair reason=" + (reason ?? "") +
+				" leader=" + SafePartyBaseLogId(party) +
+				" faction=" + (faction?.StringId ?? "null"), 10.0);
+			return SafeLeaderParty(side) == party;
+		}
+		catch (Exception ex)
+		{
+			Log("map event side leader repair failed reason=" + (reason ?? "") + " error=" + ex.Message);
+			return false;
+		}
+	}
+
+	private static void RepairMapEventSideLeaderFaction(MapEventSide side, string reason)
+	{
+		try
+		{
+			PartyBase leader = SafeLeaderParty(side);
+			if (leader != null && SafeMapFaction(leader) != null)
+			{
+				return;
+			}
+			PartyBase replacement = FindSidePartyWithFaction(side);
+			if (replacement == null)
+			{
+				return;
+			}
+			if (!ReferenceEquals(leader, replacement))
+			{
+				TrySetMapEventSideLeaderParty(side, replacement, reason);
+				return;
+			}
+			if (MapEventSideMapFactionField != null)
+			{
+				MapEventSideMapFactionField.SetValue(side, SafeMapFaction(replacement));
+			}
+		}
+		catch (Exception ex)
+		{
+			Log("map event side faction repair failed reason=" + (reason ?? "") + " error=" + ex.Message);
+		}
+	}
+
+	private static void PrepareCourierMapEventForNativeUpdate(MapEvent mapEvent, MobileParty knownCourier, CourierSession session, string reason)
+	{
+		try
+		{
+			if (mapEvent == null)
+			{
+				return;
+			}
+			MarkCourierMapEvent(mapEvent);
+			if (knownCourier != null)
+			{
+				EnsureCourierCampaignIdentity(knownCourier, session ?? TryFindCourierSessionByPartyId(knownCourier.StringId, includeTerminal: true), reason);
+			}
+			foreach (MobileParty courier in CollectCourierParties(mapEvent))
+			{
+				EnsureCourierCampaignIdentity(courier, TryFindCourierSessionByPartyId(courier.StringId, includeTerminal: true), reason);
+			}
+			foreach (MapEventSide side in GetSafeMapEventSides(mapEvent))
+			{
+				RepairMapEventSideLeaderFaction(side, reason);
+			}
+		}
+		catch (Exception ex)
+		{
+			Log("courier map event prepare failed reason=" + (reason ?? "") + " error=" + ex.Message);
+		}
+	}
+
+	private static bool TryValidateMapEventLeaderFactions(MapEvent mapEvent, out string reason)
+	{
+		reason = "";
+		try
+		{
+			PartyBase attacker = SafeLeaderParty(mapEvent?.AttackerSide);
+			PartyBase defender = SafeLeaderParty(mapEvent?.DefenderSide);
+			if (attacker == null || defender == null)
+			{
+				reason = "leader_party_null attacker=" + (attacker == null) + " defender=" + (defender == null);
+				return false;
+			}
+			IFaction attackerFaction = SafeMapFaction(attacker);
+			IFaction defenderFaction = SafeMapFaction(defender);
+			if (attackerFaction == null || defenderFaction == null)
+			{
+				reason = "leader_faction_null attacker=" + (attackerFaction == null) + " defender=" + (defenderFaction == null);
+				return false;
+			}
+			return true;
+		}
+		catch (Exception ex)
+		{
+			reason = "validate_exception:" + ex.Message;
+			return false;
+		}
+	}
+
+	private static void SetCourierMapEventFinishCalled(MapEvent mapEvent)
+	{
+		try
+		{
+			MapEventFinishCalledField?.SetValue(mapEvent, true);
+		}
+		catch
+		{
+		}
+	}
+
+	private static bool TryFinalizeCourierMapEvent(MapEvent mapEvent, MobileParty courier, CourierSession session, string reason, Exception sourceException)
+	{
+		try
+		{
+			if (mapEvent == null)
+			{
+				return false;
+			}
+			MarkCourierMapEvent(mapEvent);
+			PrepareCourierMapEventForNativeUpdate(mapEvent, courier, session, reason);
+			SetCourierMapEventFinishCalled(mapEvent);
+			mapEvent.DiplomaticallyFinished = true;
+			if (!mapEvent.IsFinalized)
+			{
+				mapEvent.FinalizeEvent();
+			}
+			Log("courier map event finalized reason=" + (reason ?? "") +
+				" courier=" + (courier?.StringId ?? "null") +
+				" exception=" + (sourceException == null ? "none" : sourceException.GetType().Name + ":" + sourceException.Message));
+			return true;
+		}
+		catch (Exception ex)
+		{
+			Log("courier map event finalize failed reason=" + (reason ?? "") + " error=" + ex);
+			try
+			{
+				if (mapEvent != null && !mapEvent.IsFinalized)
+				{
+					mapEvent.ResetBattleState();
+					SetCourierMapEventFinishCalled(mapEvent);
+					mapEvent.DiplomaticallyFinished = true;
+					mapEvent.FinalizeEvent();
+					Log("courier map event finalized after reset reason=" + (reason ?? ""));
+					return true;
+				}
+			}
+			catch (Exception retryEx)
+			{
+				Log("courier map event reset finalize failed reason=" + (reason ?? "") + " error=" + retryEx);
+			}
+			return false;
+		}
+	}
+
+	public static bool CourierMapEventUpdatePrefix(MapEvent __instance)
+	{
+		try
+		{
+			if (__instance == null)
+			{
+				return true;
+			}
+			bool hasCourier = TryFindCourierInMapEvent(__instance, out MobileParty courier, out CourierSession session);
+			bool knownCourierMapEvent = hasCourier || IsKnownCourierMapEvent(__instance);
+			if (!knownCourierMapEvent)
+			{
+				return true;
+			}
+			if (__instance.IsFinalized)
+			{
+				SetCourierMapEventFinishCalled(__instance);
+				return false;
+			}
+			PrepareCourierMapEventForNativeUpdate(__instance, courier, session, "update_prefix");
+			if (!TryValidateMapEventLeaderFactions(__instance, out string invalidReason))
+			{
+				return !TryFinalizeCourierMapEvent(__instance, courier, session, "update_prefix_invalid:" + invalidReason, null);
+			}
+		}
+		catch (Exception ex)
+		{
+			Log("courier map event prefix failed: " + ex);
+		}
+		return true;
+	}
+
+	public static Exception CourierMapEventUpdateFinalizer(MapEvent __instance, Exception __exception)
+	{
+		if (__exception == null)
+		{
+			return null;
+		}
+		try
+		{
+			if (!(__exception is NullReferenceException))
+			{
+				return __exception;
+			}
+			bool hasCourier = TryFindCourierInMapEvent(__instance, out MobileParty courier, out CourierSession session);
+			if (!hasCourier && !IsKnownCourierMapEvent(__instance))
+			{
+				return __exception;
+			}
+			if (TryFinalizeCourierMapEvent(__instance, courier, session, "update_finalizer_null_reference", __exception))
+			{
+				return null;
+			}
+		}
+		catch (Exception ex)
+		{
+			Log("courier map event finalizer failed: " + ex);
+		}
+		return __exception;
+	}
+
 	private static class MethodInfoAccess
 	{
 		public static void PatchDefaultEncounterModel(Harmony harmony)
@@ -7564,6 +8230,18 @@ public sealed class CourierDeliveryBehavior : CampaignBehaviorBase
 			if (method != null)
 			{
 				harmony.Patch(method, prefix: new HarmonyMethod(typeof(CourierDeliveryBehavior), nameof(CustomPartyComponentGetDefaultComponentBannerPrefix)));
+			}
+		}
+
+		public static void PatchCourierMapEventSafety(Harmony harmony)
+		{
+			var method = AccessTools.Method(typeof(MapEvent), "Update");
+			if (method != null)
+			{
+				harmony.Patch(
+					method,
+					prefix: new HarmonyMethod(typeof(CourierDeliveryBehavior), nameof(CourierMapEventUpdatePrefix)),
+					finalizer: new HarmonyMethod(typeof(CourierDeliveryBehavior), nameof(CourierMapEventUpdateFinalizer)));
 			}
 		}
 	}

@@ -506,14 +506,7 @@ internal static class FreezeWatchdog
 
 	private static bool IsEnabled()
 	{
-		try
-		{
-			return Logger.IsModLogicEnabled;
-		}
-		catch
-		{
-			return false;
-		}
+		return true;
 	}
 
 	private static double TimestampDeltaMs(long startTimestamp, long endTimestamp)
