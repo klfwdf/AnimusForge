@@ -1621,6 +1621,23 @@ public class ShoutBehavior : CampaignBehaviorBase
 		}
 	}
 
+	public static void OnApplicationTickForMainThreadActionsExternal()
+	{
+		try
+		{
+			ShoutBehavior instance = CurrentInstance;
+			if (instance == null)
+			{
+				return;
+			}
+			instance.DrainMainThreadActionsForMissionTick();
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("ShoutBehavior", "[NativeConversation] main-thread action application tick drain failed: " + ex.Message);
+		}
+	}
+
 	private void BeginShoutProcessing(string reason)
 	{
 		_isProcessingShout = true;
@@ -1955,6 +1972,8 @@ public class ShoutBehavior : CampaignBehaviorBase
 	private const double SceneMainThreadActionBudgetMs13 = 6.0;
 
 	private const double SceneMainThreadActionSlowMs = 40.0;
+
+	private const int NativeConversationMainThreadPreprocessTimeoutMs = 30000;
 
 	private ConcurrentQueue<Action> _mainThreadActions = new ConcurrentQueue<Action>();
 
@@ -15916,6 +15935,104 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 	}
 
+	private Task<T> RunNativeConversationMainThreadFuncAsync<T>(string operationName, string targetLog, int targetAgentIndex, Func<T> func, T fallback)
+	{
+		if (func == null)
+		{
+			return Task.FromResult(fallback);
+		}
+		string op = string.IsNullOrWhiteSpace(operationName) ? "operation" : operationName.Trim();
+		string target = string.IsNullOrWhiteSpace(targetLog) ? "unknown" : targetLog.Trim();
+		if (IsBannerlordMainThreadForNativeActions())
+		{
+			Stopwatch directSw = Stopwatch.StartNew();
+			FreezeWatchdog.Mark("NativeConversation." + op + "_direct_start", "target=" + target + " agent=" + targetAgentIndex, immediate: true);
+			try
+			{
+				T direct = func();
+				directSw.Stop();
+				Logger.Log("Logic", "[NativePerf] " + op + "_mainthread_direct target=" + target + " agent=" + targetAgentIndex + " ms=" + Math.Round(directSw.Elapsed.TotalMilliseconds, 2));
+				FreezeWatchdog.Mark("NativeConversation." + op + "_direct_done", "target=" + target + " agent=" + targetAgentIndex + " ms=" + Math.Round(directSw.Elapsed.TotalMilliseconds, 2), immediate: true);
+				return Task.FromResult(direct);
+			}
+			catch (Exception ex)
+			{
+				directSw.Stop();
+				Logger.Log("ShoutBehavior", "[NativeConversation] " + op + " direct failed target=" + target + " agent=" + targetAgentIndex + " ms=" + Math.Round(directSw.Elapsed.TotalMilliseconds, 2) + " error=" + ex.Message);
+				FreezeWatchdog.Mark("NativeConversation." + op + "_direct_exception", ex.GetType().Name + ": " + ex.Message + " target=" + target + " agent=" + targetAgentIndex, immediate: true);
+				return Task.FromResult(fallback);
+			}
+		}
+		TaskCompletionSource<T> tcs = new TaskCompletionSource<T>(TaskCreationOptions.RunContinuationsAsynchronously);
+		bool cancelledBeforeRun = false;
+		try
+		{
+			_mainThreadActions.Enqueue(delegate
+			{
+				if (cancelledBeforeRun)
+				{
+					FreezeWatchdog.Mark("NativeConversation." + op + "_mainthread_skipped", "target=" + target + " agent=" + targetAgentIndex, immediate: true);
+					return;
+				}
+				Stopwatch actionSw = Stopwatch.StartNew();
+				try
+				{
+					Logger.Log("Logic", "[NativePerf] " + op + "_mainthread_start target=" + target + " agent=" + targetAgentIndex);
+					FreezeWatchdog.Mark("NativeConversation." + op + "_mainthread_start", "target=" + target + " agent=" + targetAgentIndex, immediate: true);
+					T result = func();
+					actionSw.Stop();
+					Logger.Log("Logic", "[NativePerf] " + op + "_mainthread_done target=" + target + " agent=" + targetAgentIndex + " ms=" + Math.Round(actionSw.Elapsed.TotalMilliseconds, 2));
+					FreezeWatchdog.Mark("NativeConversation." + op + "_mainthread_done", "target=" + target + " agent=" + targetAgentIndex + " ms=" + Math.Round(actionSw.Elapsed.TotalMilliseconds, 2), immediate: true);
+					tcs.TrySetResult(result);
+				}
+				catch (Exception ex)
+				{
+					actionSw.Stop();
+					Logger.Log("ShoutBehavior", "[NativeConversation] " + op + " main-thread failed target=" + target + " agent=" + targetAgentIndex + " ms=" + Math.Round(actionSw.Elapsed.TotalMilliseconds, 2) + " error=" + ex.Message);
+					FreezeWatchdog.Mark("NativeConversation." + op + "_mainthread_exception", ex.GetType().Name + ": " + ex.Message + " target=" + target + " agent=" + targetAgentIndex, immediate: true);
+					tcs.TrySetResult(fallback);
+				}
+			});
+			Logger.Log("Logic", "[NativePerf] " + op + "_queued target=" + target + " agent=" + targetAgentIndex + " callerThread=" + Thread.CurrentThread.ManagedThreadId + " pending=" + _mainThreadActions.Count);
+			FreezeWatchdog.Mark("NativeConversation." + op + "_queued", "target=" + target + " agent=" + targetAgentIndex + " callerThread=" + Thread.CurrentThread.ManagedThreadId + " pending=" + _mainThreadActions.Count, immediate: true);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("ShoutBehavior", "[NativeConversation] queue " + op + " failed target=" + target + " agent=" + targetAgentIndex + " error=" + ex.Message);
+			FreezeWatchdog.Mark("NativeConversation." + op + "_queue_exception", ex.GetType().Name + ": " + ex.Message + " target=" + target + " agent=" + targetAgentIndex, immediate: true);
+			tcs.TrySetResult(fallback);
+		}
+		return AwaitNativeConversationMainThreadFuncAsync(tcs.Task, op, target, targetAgentIndex, () => cancelledBeforeRun = true, fallback);
+	}
+
+	private static async Task<T> AwaitNativeConversationMainThreadFuncAsync<T>(Task<T> task, string operationName, string targetLog, int targetAgentIndex, Action onTimeout, T fallback)
+	{
+		try
+		{
+			Task completed = await Task.WhenAny(task, Task.Delay(NativeConversationMainThreadPreprocessTimeoutMs)).ConfigureAwait(false);
+			if (completed == task)
+			{
+				return await task.ConfigureAwait(false);
+			}
+			try
+			{
+				onTimeout?.Invoke();
+			}
+			catch
+			{
+			}
+			Logger.Log("ShoutBehavior", "[NativeConversation] " + operationName + " main-thread queue timeout target=" + targetLog + " agent=" + targetAgentIndex + " timeoutMs=" + NativeConversationMainThreadPreprocessTimeoutMs);
+			FreezeWatchdog.Mark("NativeConversation." + operationName + "_mainthread_timeout", "target=" + targetLog + " agent=" + targetAgentIndex + " timeoutMs=" + NativeConversationMainThreadPreprocessTimeoutMs, immediate: true);
+			return fallback;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("ShoutBehavior", "[NativeConversation] " + operationName + " main-thread await failed target=" + targetLog + " agent=" + targetAgentIndex + " error=" + ex.Message);
+			FreezeWatchdog.Mark("NativeConversation." + operationName + "_mainthread_await_exception", ex.GetType().Name + ": " + ex.Message + " target=" + targetLog + " agent=" + targetAgentIndex, immediate: true);
+			return fallback;
+		}
+	}
+
 	private Task<string> ApplyNativeConversationGameActionsOnMainThreadAsync(Hero targetHero, CharacterObject targetCharacter, NpcDataPacket npc, List<NpcDataPacket> allNpcData, List<SceneSummonPromptTarget> sceneSummonTargets, List<SceneGuidePromptTarget> sceneGuideTargets, string content, string npcName, int targetAgentIndex)
 	{
 		string initial = content ?? "";
@@ -16435,7 +16552,22 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		Task<string> persistedHeroHistoryTask = Task.Run(() => BuildNativeConversationPersistedHistoryContextForPrompt(targetHero, targetCharacter, shouldRecordPlayerInput ? promptPlayerText : "", currentNativeDialogText, includeCurrentSceneSessionInPersistedHistory));
 		Stopwatch nativePreprocessSw = Stopwatch.StartNew();
 		FreezeWatchdog.Mark("NativeConversation.preprocess_start", "target=" + (targetHero?.StringId ?? targetCharacter?.StringId ?? npcName ?? "unknown") + " agent=" + nativeTargetAgentIndex, immediate: true);
-		MyBehavior.ShoutPromptContext ctx = MyBehavior.BuildShoutPromptContextForExternal(targetHero, routingInput, extraFact, cultureId, hasAnyHero: npc.IsHero, targetCharacter: targetCharacter, kingdomIdOverride: null, targetAgentIndex: nativeTargetAgentIndex, preprocessExcludedRuleIds: preprocessExcludedRuleIds);
+		string nativeTargetLog = targetHero?.StringId ?? targetCharacter?.StringId ?? npcName ?? "unknown";
+		MyBehavior.ShoutPromptContext ctx = await RunNativeConversationMainThreadFuncAsync(
+			"preprocess_context",
+			nativeTargetLog,
+			nativeTargetAgentIndex,
+			() => MyBehavior.BuildShoutPromptContextForExternal(targetHero, routingInput, extraFact, cultureId, hasAnyHero: npc.IsHero, targetCharacter: targetCharacter, kingdomIdOverride: null, targetAgentIndex: nativeTargetAgentIndex, preprocessExcludedRuleIds: preprocessExcludedRuleIds),
+			new MyBehavior.ShoutPromptContext
+			{
+				Extras = "",
+				EntityPostprocessContext = "",
+				PreprocessRuleIds = new List<string>(),
+				UseDuelContext = false,
+				UseRewardContext = false,
+				IsLoanContext = false,
+				IsQualified = true
+			}).ConfigureAwait(false);
 		nativePreprocessSw.Stop();
 		List<string> postprocessPreprocessHits = ctx?.PreprocessRuleIds ?? new List<string>();
 		string postprocessEntityContext = ctx?.EntityPostprocessContext ?? "";
